@@ -1,96 +1,215 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 923091DB94D;
-	Fri, 13 Sep 2024 14:05:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49DDD43144;
+	Fri, 13 Sep 2024 14:06:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726236347; cv=none; b=gVjZZxVrVvh+Jp6z0wqmYVFErddTz0qfVC3Cky7jz5BAytOSTnLJ5EAo0+rYKTmOgEB76TNY5ynNsWIhF+zHLKD1XtD/sX1Mg/ktkw/fqqsDjJhX9yvKWKEGb0aEBL3aCIflhfigzKy03M9OFhtgle5DvAQG3nyQ8/kws/RKJfQ=
+	t=1726236418; cv=none; b=Jtzb/mBoKeOXtwp3Ujkp9uOhFV08ehVqZPYkpWvvCC71WKBdfe8P2HuSPvAeu74Cw+KiPUB1chOKd32A+vfJjoEE0SpHIl/8DshucwqKRBMJxzbdr1pBZL793oWeu8flqa2aJCaE8GbO8TfAXTOioz5P9oT9VW+dFt8d0mCGIc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726236347; c=relaxed/simple;
-	bh=qOLlB2ODIZHd9tadFjGmdop49h0yAytpCHar4CpvpYM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=sks8Ky7pAM/FT83zkBSjSZpkfe7jSLjkwO8fDUdPqUDCiMRuG2q2lP2JM8w7TLVSJVuthpsmyIxvJ7NhYFU77SK8s1GXa908UNblBvDNj+6WGebJH/j2AZVOQo33FtZeRkhv3yZdL9TmjQx5OOkT+wtwgJLtuer1I66zpMb30r4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=IFp1Ksdd; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=lPiu3/6x; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1726236418; c=relaxed/simple;
+	bh=UXwyPH+Uj+G+0UKGaXTyXocMgN54SL5IhIJD9U6CYYY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UzsLVT6wV/JFSqXDnCbzX6glwOAUSaVKsiPfALfzXVANM5HzDOcrPPkePizKxZlRlG0Jyixe4R8t2fO+uWPYddpiF5J0X+b8QHMDUZZQA9Iiovgyqhyzkj+bOgEsRlOtn3GkC1F9nLlSpBvmnhKZWNTb2KsshjUIRWYt0Tza6C8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nyf84WlN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="IFp1Ksdd";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="lPiu3/6x"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1726236343;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=P8MmvbSxGrzA2amsSYnDkpZhNgQm94vpI9KV4RVr0co=;
-	b=IFp1KsddfJeXyxTmgTnEHkZrw44Bgmp3mTutq06MHLiE3lyMlHOzyWLMlrDpwu3Cht4Puu
-	5fL9UMNfmfaz1GE6W9UxkDOSxU6yk9DlN46OX9N5rK6ljdxeBMOG7YYve1e36eXKUDF8Ex
-	y+oNqP/NKHvnnVXjPFrfWTo0c+VH1eLb+IW7aSsdCuXcOexR4ILFnp3PioLCst0odPNmzq
-	FqYOa7fcUdbwiLKFdvjz6i8j5V/KX4xJfO2DjfyWZA4qKc8VQY8o11SSs+KZFnwy8hyKbF
-	YBOff2m6TqO9WvuvE+ZFcT6kyghVqf8mBeqX46KOOxWA84jL5fA9jO+QJ9mk9g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1726236343;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=P8MmvbSxGrzA2amsSYnDkpZhNgQm94vpI9KV4RVr0co=;
-	b=lPiu3/6xN4ewvXHEFOrqhvILd/pCS0vHbt8IFr5rLywXuK6mKdOYcdceBBIQNlnH9DhrLF
-	SlAG+xsowFGU6bDw==
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nyf84WlN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88EB9C4CEC0;
+	Fri, 13 Sep 2024 14:06:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1726236417;
+	bh=UXwyPH+Uj+G+0UKGaXTyXocMgN54SL5IhIJD9U6CYYY=;
+	h=Date:From:To:List-Id:Cc:Subject:References:In-Reply-To:From;
+	b=Nyf84WlNh7ncSAZOfCMWFIolG1UOZsIbD1p4oW6HX5wj8jDtDZUHqANNrjTC3zEGe
+	 SIpn/62Gaj7r6WCehzGD6DZMUyEIpK2irKXY0QO4WPH+/UYIrszeaAqpNyyM1HDP7S
+	 XiRBEBDqRNXQyBvNM/FaJO3sQJ150fnr68tUuqoMTFKpT6QfjxYMnQgubZQUPavzBT
+	 SCt+C5zBID2FIXmzGTk5V2TBftlNdTA4XwPqYjKJY+vtALxdEf8TpNdiGftd0gJvWJ
+	 BhsK28Tbr22uNFkxhQ13fdRf5U2LkfEVH+F4MZlmD6L2dwIShrGm8If9+bbJWQTDD/
+	 Zd6c/kesseV5g==
+Date: Fri, 13 Sep 2024 09:06:56 -0500
+From: Rob Herring <robh@kernel.org>
+To: Arturs Artamonovs <arturs.artamonovs@analog.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Greg Malysa <greg.malysa@timesys.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Utsav Agarwal <Utsav.Agarwal@analog.com>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
 	Thomas Gleixner <tglx@linutronix.de>,
-	Esben Haabendal <esben@geanix.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Peter Collingbourne <pcc@google.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Serge Semin <fancer.lancer@gmail.com>
-Subject: [PATCH next v2 4/4] serial: 8250: Revert "drop lockdep annotation from serial8250_clear_IER()"
-Date: Fri, 13 Sep 2024 16:11:38 +0206
-Message-Id: <20240913140538.221708-5-john.ogness@linutronix.de>
-In-Reply-To: <20240913140538.221708-1-john.ogness@linutronix.de>
-References: <20240913140538.221708-1-john.ogness@linutronix.de>
+	Andi Shyti <andi.shyti@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	Olof Johansson <olof@lixom.net>, soc@kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-serial@vger.kernel.org, adsp-linux@analog.com,
+	Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+Subject: Re: [PATCH 18/21] dt-bindings: serial: adi,uart4: add adi,uart4
+ driver documentation
+Message-ID: <20240913140656.GA3835385-robh@kernel.org>
+References: <20240912-test-v1-0-458fa57c8ccf@analog.com>
+ <20240912-test-v1-18-458fa57c8ccf@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240912-test-v1-18-458fa57c8ccf@analog.com>
 
-The 8250 driver no longer depends on @oops_in_progress and
-will no longer violate the port->lock locking constraints.
+On Thu, Sep 12, 2024 at 07:25:03PM +0100, Arturs Artamonovs wrote:
+> Add serial driver bindings.
 
-This reverts commit 3d9e6f556e235ddcdc9f73600fdd46fe1736b090.
+Don''t need 'documentation' in the the subject. That's redundant with 
+'dt-bindings'.
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/8250/8250_port.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index d58a0fa95e3b..fdef0cd01b2d 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -706,6 +706,9 @@ static void __serial8250_clear_IER(struct uart_8250_port *up)
- 
- static inline void serial8250_clear_IER(struct uart_8250_port *up)
- {
-+	/* Port locked to synchronize UART_IER access against the console. */
-+	lockdep_assert_held_once(&up->port.lock);
-+
- 	__serial8250_clear_IER(up);
- }
- 
--- 
-2.39.2
+> 
+> Signed-off-by: Arturs Artamonovs <Arturs.Artamonovs@analog.com>
 
+Your S-o-b goes last since you are sending the patch.
+
+> Signed-off-by: Utsav Agarwal <Utsav.Agarwal@analog.com>
+
+Not clear what Utsav's role was. Needs Co-developed-by?
+
+> Co-developed-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+> Signed-off-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+> Co-developed-by: Greg Malysa <greg.malysa@timesys.com>
+> Signed-off-by: Greg Malysa <greg.malysa@timesys.com>
+> ---
+>  .../devicetree/bindings/serial/adi,uart.yaml       | 85 ++++++++++++++++++++++
+>  1 file changed, 85 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/adi,uart.yaml b/Documentation/devicetree/bindings/serial/adi,uart.yaml
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..de58059efa7e21acaa5b7f4984ffadca18f7f53a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/adi,uart.yaml
+> @@ -0,0 +1,85 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/adi,uart4.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices UART Driver for SC5XX-family processors
+
+Bindings aren't a driver.
+
+> +
+> +maintainers:
+> +  - Arturs Artamonovs <arturs.artamonovs@analog.com>
+> +  - Utsav Agarwal <Utsav.Agarwal@analog.com>
+> +
+> +description: |
+
+Don't need '|'.
+
+> +  Analog Devices UART Driver for SC59X-family processors
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,uart
+
+Only 1 UART implementation for all of Analog Devices ever.
+
+compatibles should be specific to SoC.
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  dmas:
+> +    maxItems: 2
+> +    minItems: 2
+> +    description: TX and RX DMA cluster numbers
+> +
+> +  dma-names:
+> +    maxItems: 2
+> +    minItems: 2
+> +    description: DMA channel names (tx and rx)
+
+Names need to be constraints, not freeform text. Plenty of examples to 
+look at...
+
+> +
+> +  clocks:
+> +    maxItems: 1
+> +    description: Clock being used for UART
+
+That's obvious. Drop description or say something unique to this device.
+
+> +
+> +  clock-names:
+> +    maxItems: 1
+> +    description: Clock name (sclk0)
+> +
+> +  interrupt-names:
+> +    minItems: 3
+> +    maxItems: 3
+> +    description: Interrupt names (tx + rx + status)
+> +
+> +  interrupts:
+> +    minItems: 3
+> +    maxItems: 3
+> +    description: GIC interrupt numbers
+> +
+> +  adi,use-edbo:
+> +    type: boolean
+> +    description: Enable divide by one in divisor
+
+Versus divide by ???
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +  - interrupt-names
+> +  - interrupts
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/clock/adi-sc5xx-clock.h>
+> +
+> +    uart0: uart@31003000 {
+
+serial@...
+
+Drop unused labels.
+
+> +      compatible = "adi,uart";
+> +      reg = <0x31003000 0x40>;
+> +      clocks = <&clk ADSP_SC598_CLK_CGU0_SCLK0>;
+> +      clock-names = "sclk0";
+> +      interrupt-parent = <&gic>;
+> +      interrupt-names = "tx", "rx", "status";
+> +      interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
+> +                   <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>,
+> +                   <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
+> +      adi,use-edbo;
+> +      status = "disabled";
+
+Examples should be enabled. Drop.
+
+> +    };
+> +
+> 
+> -- 
+> 2.25.1
+> 
