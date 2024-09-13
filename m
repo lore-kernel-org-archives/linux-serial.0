@@ -1,60 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fout6-smtp.messagingengine.com (fout6-smtp.messagingengine.com [103.168.172.149])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B84F4323D;
-	Fri, 13 Sep 2024 05:57:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D7C177107;
+	Fri, 13 Sep 2024 07:22:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726207071; cv=none; b=NHjuLX8rzLgbs1+TH6yVxhBUnMzs96JNd6QnUnFbYyylWShPwht0SzsOvXQJRuWyINZsMsmIeMN1H2gzhAzdLkBhkXksN/6rv6ZrrbH/J6FPNbRZGvHFJ06x0jmcxDR3fY63WP4lfqAhE74hNTZDAA+KqpeAUMvft1kBYEp5UGY=
+	t=1726212152; cv=none; b=KMhMUGcAz0EY/1BCkt6+3DkkzHFSLrKlYiGxQIQJtPyudD65SESAbvgEV7rbKWYKrNfKQyWC7C71Sa6ahAs3rlHYCoFYImWR4H58ip6w+o8EQ08Ef7zY8wTTZQ7jnU7xylNKXzTkGbjkYQAjZKWRXJnhsybV8p2ai/BZvPE2br8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726207071; c=relaxed/simple;
-	bh=i2oHzhi3OjrA/yeKLYHkzWF/t73q/CvWLnOx7mHRCPE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F5y9lufb0mqkSAgoYQRCEQdRSE2feepOphbIAxXSQTax1qVfH3A1ySDXKSImlZv6+ZptiVwewmczLHb67zaN9VNNBoajEKUoSJBjTGq8eFUNlxginyMhAuCI0tchGlM7JXwq9h958tGOhrGay8NbnyYz1UdPM+X2Gu4RC9YGlQo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=RPpDGyt1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726212152; c=relaxed/simple;
+	bh=SE9XGIr259kH8liELfyjmoiYbUShJgwxtNyTPVcNnf0=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=d4iwtzV8F2SMFpn6vKHGaXWtUN2+u1yM1aUZHQ1/uZk1eDvpeccf1UEUWKVxJY+2bng44b0S3T/zRZDR36MUNCSDlW7+8Z1UBDU/AvBH7wmEWf/DmiJ0LN9i4Gzx48MrtUb/BtODf2iAp6hrgmo7YPPrZLaQU7dqF2cdB9G2Uq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=H5Zwon+4; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Kbk/Kh6a; arc=none smtp.client-ip=103.168.172.149
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="RPpDGyt1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B59D9C4CEC0;
-	Fri, 13 Sep 2024 05:57:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1726207071;
-	bh=i2oHzhi3OjrA/yeKLYHkzWF/t73q/CvWLnOx7mHRCPE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RPpDGyt1hAmEtLoJ6yK1ErU81O1+IVwAixICc6f+hXmByIY2e4zkTfGNczGCNgwXd
-	 KUgtHwpUL264b+Iv0sqk+mEcCTTTLfZ7F294eCUzrL3ErdEFAJzkv+9wpu3AJh/H7X
-	 LMACN7E1MJCwimOhdldylTaOqLdVe2HlpY2z/Tcg=
-Date: Fri, 13 Sep 2024 07:57:48 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Raul E Rangel <rrangel@chromium.org>
-Cc: linux-serial@vger.kernel.org, pmladek@suse.com,
-	rafael.j.wysocki@intel.com, ribalda@chromium.org,
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] earlycon: Print a notice when uartclk is unknown
-Message-ID: <2024091340-tacky-everybody-b582@gregkh>
-References: <20240912173901.3969597-1-rrangel@chromium.org>
- <20240912113616.2.Id2235082fc6c2d238789dfc3ee923492e9ed7387@changeid>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="H5Zwon+4";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Kbk/Kh6a"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfout.phl.internal (Postfix) with ESMTP id 91FCB138025C;
+	Fri, 13 Sep 2024 03:22:28 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Fri, 13 Sep 2024 03:22:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1726212148;
+	 x=1726298548; bh=2oQEFoCPYi2QMn8U1xO87M2WoQhLkPtOwQ6Ztptql7Q=; b=
+	H5Zwon+48gp+9ycLozX3Po/oWzAGByal1NW0PjUn7dwtSaelJ47YcLKjEgkXAxtv
+	y+WLvTdVzA4JC/hn7OFoy26iMDJKNPDnT1N38XZjpXf5aHbP/p0Pha8KtojA9scc
+	k6Mt+stHyTQegighu+vxFTq8aN+vGqK5xxZIEQrukKbSOe5k5QlNQrDnywEauuvM
+	1shhGcFkauXa88DufvLFmbbQHaAH2j3nrunLH5d+ah6z0ZlCdeRZVB2t9m8FViPZ
+	5GXwTLzCv1LMsfMd8PSXLayF/LD2TJo3VpU2ts2zLKMIMSjDqWEqnH4hd6vc/8Zr
+	7R9aLhNnarDP61lkcHsU7w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1726212148; x=
+	1726298548; bh=2oQEFoCPYi2QMn8U1xO87M2WoQhLkPtOwQ6Ztptql7Q=; b=K
+	bk/Kh6a69Tx4wdnHdfhpjYPQGjz8LJNEQBlkAgE607gyKYh+maLUh9kR24Y7j/gS
+	c8WYteuRU6Nd3XX/6A22HRJKlvEJ4AU/N3kVGWX4wmYZ5Fj7K69mZx4XpDNRejVh
+	IcEHwQ94kivtlgV5++1TpKZeoJHp9ARtRMXpndrZV0Doo4QJ3zDGFqHgJbn+aU3b
+	2cKrnhMovk4XKshjIuFgg0dSkyaCyGSN7FRRzYFxiPAKPU8G8qL6q4wlMUuk9qF8
+	jRljW0KPcKd1DlAt7CBFfhh1uDSsHHjuFXaMJFsRKG5666qr4e7N8J73uN3+Cj9x
+	STdgvT5VVaL08drpesUwQ==
+X-ME-Sender: <xms:M-jjZjwcGKF3oD8QhWro4BuCDKETNJlwQblWPVsNK0TadIWU4CMbEw>
+    <xme:M-jjZrQJ6Jfu22_qk7PfUtdM4dMbHliVhJlZc6jJRf9t2n5iaxkpscK4rXzE7QtU2
+    cSDELSJ505hQfVeww4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrudejiedgfeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
+    guvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefg
+    gfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepvdek
+    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehuthhsrghvrdgrghgrrhifrghlse
+    grnhgrlhhoghdrtghomhdprhgtphhtthhopegrughsphdqlhhinhhugiesrghnrghlohhg
+    rdgtohhmpdhrtghpthhtoheprghrthhurhhsrdgrrhhtrghmohhnohhvshesrghnrghloh
+    hgrdgtohhmpdhrtghpthhtoheptggrthgrlhhinhdrmhgrrhhinhgrshesrghrmhdrtgho
+    mhdprhgtphhtthhopehmthhurhhquhgvthhtvgessggrhihlihgsrhgvrdgtohhmpdhrtg
+    hpthhtohepsghrghhlsegsghguvghvrdhplhdprhgtphhtthhopegrnhguihdrshhhhiht
+    iheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheptghonhhorhdoughtsehkvghrnhgvlh
+    drohhrghdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:M-jjZtUx1CcaU5ttqpfhH-cw3bJ-0cydHgOkPJUla9O9k65EqDZ5Kg>
+    <xmx:M-jjZtgBXoUGwddeLK9ny-NPLeQ9xOXA9oNJTqOp1NbxAUF8zALWlw>
+    <xmx:M-jjZlCdEn7NcUyv51eObd7AD7sCQuNtdJQoIzVyR_AlJutfTJEQHw>
+    <xmx:M-jjZmJ36U236uMjiigd2_wn-qRvMwBCnstt6HdEYW92wFAJmug1OA>
+    <xmx:NOjjZij9dCyUJGL4ETJCpWZg2kzk_N7BRjAc0OEz_jAAS3-AZ3OnNjC9>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id D4D33222006F; Fri, 13 Sep 2024 03:22:27 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240912113616.2.Id2235082fc6c2d238789dfc3ee923492e9ed7387@changeid>
+Date: Fri, 13 Sep 2024 07:22:07 +0000
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: arturs.artamonovs@analog.com, "Catalin Marinas" <catalin.marinas@arm.com>,
+ "Will Deacon" <will@kernel.org>, "Greg Malysa" <greg.malysa@timesys.com>,
+ "Philipp Zabel" <p.zabel@pengutronix.de>, "Rob Herring" <robh@kernel.org>,
+ "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+ "Conor Dooley" <conor+dt@kernel.org>,
+ "Utsav Agarwal" <Utsav.Agarwal@analog.com>,
+ "Michael Turquette" <mturquette@baylibre.com>,
+ "Stephen Boyd" <sboyd@kernel.org>,
+ "Linus Walleij" <linus.walleij@linaro.org>,
+ "Bartosz Golaszewski" <brgl@bgdev.pl>,
+ "Thomas Gleixner" <tglx@linutronix.de>, "Andi Shyti" <andi.shyti@kernel.org>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>, "Olof Johansson" <olof@lixom.net>,
+ soc@kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+ adsp-linux@analog.com,
+ "Nathan Barrett-Morrison" <nathan.morrison@timesys.com>
+Message-Id: <193d68e0-e347-46b5-b6d2-107042b93ca1@app.fastmail.com>
+In-Reply-To: <20240912-test-v1-2-458fa57c8ccf@analog.com>
+References: <20240912-test-v1-0-458fa57c8ccf@analog.com>
+ <20240912-test-v1-2-458fa57c8ccf@analog.com>
+Subject: Re: [PATCH 02/21] reset: Add driver for ADI ADSP-SC5xx reset controller
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Thu, Sep 12, 2024 at 11:36:20AM -0600, Raul E Rangel wrote:
-> When trying to construct an earlycon=uart parameter it's hard to debug
-> why it's not working.  In my specific case it was because the default
-> uartclk earlycon assumes doesn't match my hardware. This change adds a
-> notice so that the user is made aware of that this assumption is being
-> made. This should hopefully lead to them adding a <uartclk> option to
-> their earlycon parameter.
-> 
-> Booting with `console=uart,mmio32,0xfedc9000,115200n8`:
-> [    0.000000] earlycon: uart: Unknown uartclk, assuming 1843200hz
-> [    0.000000] earlycon: uart0 at MMIO32 0x00000000fedc9000 (options '115200n8')
-> 
-> Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+On Thu, Sep 12, 2024, at 18:24, Arturs Artamonovs via B4 Relay wrote:
+> From: Arturs Artamonovs <arturs.artamonovs@analog.com>
+>
+> Adding support for ADI ADSP reset controller. This driver allows
+> trigger a software reset.
+>
+> Signed-off-by: Arturs Artamonovs <Arturs.Artamonovs@analog.com>
+> Co-developed-by: Utsav Agarwal <Utsav.Agarwal@analog.com>
+> Signed-off-by: Utsav Agarwal <Utsav.Agarwal@analog.com>
+> Co-developed-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+> Signed-off-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+> Co-developed-by: Greg Malysa <greg.malysa@timesys.com>
+> Signed-off-by: Greg Malysa <greg.malysa@timesys.com>
+> ---
+>  drivers/reset/Makefile | 1 +
+>  1 file changed, 1 insertion(+)
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+It looks like you accidentally dropped the actual driver during
+a rebase, this is only the Makefile change.
+
+       Arnd
