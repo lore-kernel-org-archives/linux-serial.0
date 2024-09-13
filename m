@@ -1,51 +1,52 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 049BA82D70;
-	Fri, 13 Sep 2024 18:51:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BBCD126C01;
+	Fri, 13 Sep 2024 19:12:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726253463; cv=none; b=PKGKDjtzcBCnrQU6gfCbEGz001lpbxz4f2YsGXsVtt6SrrzKVtWxKUllbSw0VydBOsS4cSGu/49HQQ5DPenBz2yF88+y9y8TexYIzzQr14iSRCdy03REIvX2LyNScVMNoAW+VeHdjXfDOjJr/zliC8c0FSF4ccfHYYMher7IAo8=
+	t=1726254761; cv=none; b=C3J4tAZnv8iabrMEljKAhQFXBVQh2dQQXJ9RpKg7doOU0jvlK0GkdvNzElTJHDYpwzgBBf3AkXxuiEK8UWdCxNd9i8Gwoq/OXF3PpPeh9YpkgDHmkp8fweusuJ9qsAtI56FmW0TNpG7uTQr/lOFZSFFi41QXaF8sRpjJ6o2l+/0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726253463; c=relaxed/simple;
-	bh=jRSiZboWWwNqI3fzr+wltOm9Xr75AofUf2tdZLQMYlE=;
+	s=arc-20240116; t=1726254761; c=relaxed/simple;
+	bh=i/WaPSFd1chhL2mX04X6RMIpG+jLWmtttFyp9XWK2ns=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=crN4s3Ck/xJAdt1idlQBg7eadgRZ4JZXrlyOIowXJJSvv4xZOEXE7dKygJcyIlZ6u8aOHCBeHZ50t0sLYE/mvVA9JTCmwyKYKl/wxgjYwRikVdvqCdDuoviP9K5dpNOoORSBHDNcsJmSkco//uQnNERNAbU0b9rnyP4RI4rVowU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=sPK0DUih; arc=none smtp.client-ip=74.208.4.196
+	 MIME-Version:Content-Type; b=bF6tm+u31hAmj6niHFNKwamj/5as3S3HMIS+KWvcJM17U9ojKXWJOtrNx3ZJjoPMtD1I1yHNM/F/k3lSogeAHeIKQvFRSMakfJUfCTWmRYweCxRmozkfdt6Adklohseul4QRmswc9K5fFvB2Hwsg7DvvqfMhWkKC3CnwOFzHYpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=VMzpyeRN; arc=none smtp.client-ip=74.208.4.194
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="sPK0DUih"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="VMzpyeRN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1726253450; x=1726858250; i=parker@finest.io;
-	bh=jRSiZboWWwNqI3fzr+wltOm9Xr75AofUf2tdZLQMYlE=;
+	s=s1-ionos; t=1726254750; x=1726859550; i=parker@finest.io;
+	bh=dVQ9rbg+bDpJXJkFTaMWlx9VfHsJREbbaLMzU4KTkSs=;
 	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=sPK0DUihSR8Cf2cBrRE61dUxW7gt4llMizphwNThye+4f1c0l1j1k/gpz9zC6+YB
-	 nUDPJS/ckvoMjra7Lxn0nI7pN0LuhOevWeeVX0b0FELWvyv02yWsjIcCgRGQ5qIU0
-	 tM0NM5TwRsDPDNPNzAL6SyobDBDqOkOsfqkRZj+xh1KkXZHCGngmU+jkWb1Vb7hY5
-	 SsAJm1rVXT3p8ZEpKV5/zOj58WXfBLngfVfzmzNXTonv7Xl/WVGMKPnizE5ucIZE5
-	 OcWlMIEto1IA3cYO0rxToPg3hYfBVYB+glOA9nLjcQYjl8857X+eIskdKIY+cHw4+
-	 S9HT7I/09XjuNCf07A==
+	b=VMzpyeRNOQmqBwiChX3m5oke9v8FWEQDihqtZnSWSiXNe6xdyXvwteRhI7SVNRxQ
+	 CeTiL7aEu07jlxXLSv+uVGZC43ZobKt8infaCIFqiYULvKcuHJZCvmIpoKRgwpZts
+	 cadQZhKYXFmVS3tFKRpDzxwzGsU5x+hgJ8nQwkBiwbDyENFByK5w+p6z3NFmt2m4y
+	 UcGy4rrHcV4/YEmC9T90c8jcFKtnNXfvDzgxcbTCGFFJg95dxFS3CmdJfb2DYo1s5
+	 CYH+tHAc9t2gQDYsxJqqkznJMZ5OzQsaTTsmPSP+pjeHEfZnj2pb671kjQzH1PALh
+	 /prAZKpHMlvsJuXF/Q==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
  mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0LwsP8-1rw9zd3IeO-00qnjy; Fri, 13 Sep 2024 20:50:49 +0200
-Date: Fri, 13 Sep 2024 14:50:48 -0400
+ 0LtZ1G-1roS9y2cDs-00yWpV; Fri, 13 Sep 2024 21:12:30 +0200
+Date: Fri, 13 Sep 2024 15:12:28 -0400
 From: Parker Newman <parker@finest.io>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
  <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Parker Newman
  <pnewman@connecttech.com>
-Subject: Re: [PATCH v1 0/6] serial: 8250_exar: Replace custom EEPROM code
- with eeprom_93cx6
-Message-ID: <20240913145048.1f5d4141@SWDEV2.connecttech.local>
-In-Reply-To: <ZuR_-cV5zy1mwel3@smile.fi.intel.com>
+Subject: Re: [PATCH v1 3/6] misc: eeprom: eeprom_93cx6: Replace
+ printk(KERN_ERR ...) with pr_err()
+Message-ID: <20240913151228.2b312e9b@SWDEV2.connecttech.local>
+In-Reply-To: <ZuR8PawGrcDxCioi@smile.fi.intel.com>
 References: <cover.1726237379.git.pnewman@connecttech.com>
-	<ZuR_-cV5zy1mwel3@smile.fi.intel.com>
+	<127dcc7f60d15a1cc9007c9e5b06a1aa2b170e19.1726237379.git.pnewman@connecttech.com>
+	<ZuR8PawGrcDxCioi@smile.fi.intel.com>
 Organization: Connect Tech Inc.
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -56,58 +57,65 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:+0MUIOtggsbR/T1fH1riCcFCl9l335qeqEDC8bHXRQKvSS0kRFJ
- T0Upr61X2VG0gP35/VU+flzScSRDlgH5fwFnIolnsmmOEHyXnfdctRgbuuejHgUcJ7Plvd3
- R2AfoLYVidCwhDtDPeA7oFeUOSShBmDtgZ63yDVSjbXPGcopp8grvCFwZwZapZ8Ab1U0zyt
- RLjQYuqqA6PEAKcivUOMg==
+X-Provags-ID: V03:K1:Pi22FxzqxwJEmtkGCaJx+76+eCuRmwhpcgHleOBQ6l0G+YnqCOZ
+ 2UOLuKyeBKC/5yq72+/O6Guggptgaue87OwBXyyJgBHjOi6RXA8PZOTq2X0Gxq855+77yDo
+ PSPvXoXZ95MOP9RZwpaHdElYIhPWUuzrmKIamvwjUd6gokcvsAT9VQlU18ShuSpoS5I1Hgi
+ 7HaV4BXENsiy8rPrSwwAA==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:BR0tYh5aNk0=;s+D2d+KBW0JEmaawC4e5OhGfwm6
- ggvrFi3P14CK4pCo0lboKRyVu7QVNM80pViyvnDZDodnZXqjIcDUiN9DnK1IJq3KhPY5RSymI
- LdvhWLfIcibk9QsvWoGAxyM++7Mdo206a3WYdozGWEznpytL1GCP6OXbZ/JHo/utwP+u4rHXH
- UUGMhC1/OyyL4/w39i08V2RWtCoSmHPNGNxBpTGRZVheVxuv0Bv7fs1yB73OH30evYc0H+3S1
- 3LaofTjz8ZV+XxtogO0Q9DIITzYJJPfSraTU7xyI1hktcmtAhS82ZnsZIB4GK0aeqphcnOSNI
- SzbQ6n5iO94ndthYCcVaB/BenmTx4UjiCZIqg2CddauZ8GHDgP6pR+0+QEzhucr/hJuiYGHgM
- oqAxLhDlS2oi/ks2DlLw6FAXQaacwlEBTxZIxqCH1fZ7KBRJaPibngRusTaI+zUBn4SiHda/l
- d0q0od48/om21l7Q2O0BYa2Vor1q7lYSbkZvRKRRfFf15mjGrtUhPDLjHsqb5AN1CDaC/DqUb
- 3Bq3KkABWhJ2k/uozmVBcUgi6zgSBIKVvVIbb507SwmAVbZBdubTkNEEytYbCpvq11t/dpHL7
- th+AbHXFhAO8SjXiRz6IgI8IMiM+uTgvB+/9rUfkzHup/MKJxyF14DpiJJtAD5Nqmmqs+vKwu
- apHDSrdtRKMWVX+U64kAkvslWnetdK3oUBz1ua2Qvnl2qWIonZbXUYI32idluWTgs0LO3GWtY
- YlOla8y4sFN1mQRRJ9Bcw51XhnLgOUv7g==
+UI-OutboundReport: notjunk:1;M01:P0:It7dLGnhpkY=;f5hJPByBkGaRzYFI0ZHca8Ptrsh
+ OWU2f8xOnOPZnHzpN+KXzIwvA7YHEoo0tIAT3rSGEkmeRZ6ZXxKQiWOln/VyuZgbQDL4UATtn
+ rTWnXNAlfHLkFYWTx78iWwRf5ydoQlzwSUHlZhQAR1v2DfqPxNtkft76QbSG3PeJX7/8GzpzP
+ O8NQUpFoUEbv3JllIPMYiTvT+MDa1rjHA7Qe5l+Ooa/egJJiJDUZVS5WRwZawlan/LrBIyN3f
+ slSAFNdKCreXeJzus9a1jiFRX44UPnG+leMw+N/Ka4VxmlTgJooqTADzfKSxocyja2EZaSPG+
+ z83FEkepBZG7AzHnSG9QhawTv+2VYNJlc2AgxYnPpBq73xduJE9m6zZxgMEJKeP1ABFgsoeLY
+ dlOdUXD3/24bmfjKxCNEWx+pKzEhEuZh2SbKUvEu/7bm868vuPKdwWdk+u5A2HqLLiiNGVuCA
+ n0mskd7xsvhMZF5Nu37hwve1cyR6C5s+NS3FpRN1qNtFHdhDJaV3EcmWMSSYNX/uc83MK/ukt
+ 2OyQXYXqT00RvI4qg82v0CJcrBzLUF4LS4jSWcymkHondHZ/uC2O2ftMXHLDMdDJcSNo7O4nA
+ 2C55iTKj0SY77tBX5kBVtbKklCXefRK2UFET6cTDSRiF7i8fPiRVzvT+AoAb1fq24Mp2Twb/C
+ /SJ8bzkX24wmzUnV59FVaDz+7qu3Lmebsdjlgz1nO2IR8gVB9iY1t1crCoMXJx9cX/0hMs/ng
+ gQBllGD4J2bcNJ1KvOzFyZIIUwv5rWENA==
 
-On Fri, 13 Sep 2024 21:10:01 +0300
+On Fri, 13 Sep 2024 20:54:05 +0300
 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> On Fri, Sep 13, 2024 at 10:55:37AM -0400, Parker Newman wrote:
+> On Fri, Sep 13, 2024 at 10:55:40AM -0400, Parker Newman wrote:
 > > From: Parker Newman <pnewman@connecttech.com>
 > >
-> > This series of patches replaces the custom 93cx6 EEPROM read functions=
- in
-> > the 8250_exar driver with the eeprom_93cx6 driver. This removes duplic=
-ate code
-> > and improves code readability.
+> > Replace printk(KERN_ERR ...) with pr_err() to improve readability.
 > >
-> > In order to use the eeprom_93cx6 driver a quirk needed to be added to =
-add an
-> > extra clock cycle before reading from the EEPROM. This is similar to t=
-he
-> > quirk in the eeprom_93xx46 driver.
+> > Fixes checkpatch warning:
 > >
-> > More details in associated patch and mailing list discussion with
-> > Andy Shevchenko about these changes:
-> > Link: https://lore.kernel.org/linux-serial/Ztr5u2wEt8VF1IdI@black.fi.i=
-ntel.com/
+> > WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then
+> > dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+> > +			printk(KERN_ERR "%s: timeout\n", __func__);
 >
-> Thanks for the prompt update!
->
-> However we are close to the merge window, I think Greg won't accept this=
- until
-> v6.12-rc1 is out. So, we have a two or three weeks of time.
->
-> Meanwhile I have some (small) comments, I just sent in individual replie=
-s.
-> Overall, LGTM.
+> First of all, you probably want pr_fmt() to be defined.
+
+Good point, I will add.
+
+> Second, I would replace the entire while loop by the read_poll_timeout()=
+ macro
+> from iopoll.h (note to use "true" for sleep before check and drop that o=
+ne from
+> before the loop in the driver).
+
+Good idea.
+
+> Naturally the pr_err() change can be combined with read_poll_timeout(), =
+but
+> if you go with pr_fmt() perhaps it still makes sense to have separate ch=
+anges.
+> I dunno which one is better, up to you.
 >
 
-Thanks for the review! I will create a v2 with your feedback some time nex=
-t week.
+Sorry if I am miss-reading but do you mean the pr_err() and pr_fmt() can b=
+e combined
+and the read_poll_timeout() change should be made in a separate patch afte=
+r?
+
+Or should I be adding the pr_fmt() define in its own patch, followed by th=
+e pr_err()
+and read_poll_timeout() in a patch?
+
+Thanks,
 Parker
