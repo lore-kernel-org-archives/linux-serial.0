@@ -1,65 +1,82 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B4D41CF29F;
-	Sat, 14 Sep 2024 13:27:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB5A91CF2B0;
+	Sat, 14 Sep 2024 14:19:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726320424; cv=none; b=cn6IzJZvGvmZcZY8s+Yv3N5+0R2WRcxVZ0s/fZAGSY2Vdkr39z4eHPdGYy4tgTcnc169UTPHy126ivAkcXLt8hPvpAv+JgBPhUwJchaTAop7ZaVC/+DLsnWXG//pHcnCkHofSy06fBz/QjmzRHxN6DYT/wUdkJZijvPvC8jdtGo=
+	t=1726323552; cv=none; b=mN1wUtf1MSNc3Jig69WGK9VMAw8OnNnVTK6rfxPUMTsR4546TCiUy6RWrR3WS6ZFqMCfbmBKYhXIHGI9FNZE63WacsV+F4ZrqhykN8OGQ4a/HL3HiygxYv4Z5rU2Vsn9lsig137c6M7GhcMMpLTITjPKN/i3q29wg1JthL5Dmcs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726320424; c=relaxed/simple;
-	bh=0iCbeeeXJT3CsVcE5IfF7h0YLO40dMvutHLSliTDO1k=;
+	s=arc-20240116; t=1726323552; c=relaxed/simple;
+	bh=N9wMgdRefGu42K7ypeuSJnPQEd7Ns/OJA/BRmLa/8qc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j2e2oIYgj6c3xZuToKcnKdzFW3Mju/JWpO5T3f7Xd028ceJIwTnRdAobKXCO3EEs8TvHMZxN6kTw5ZHesKRFkcQxLUsyI/csYNRToCOx6ejPbIPiJVRIC3LhVgC2mBpk4rjVO84Ag5RoBy71v6IxGR6R4ViYwAv0Zg/JJytd9FE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i3s+JIeY; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=uJJp/zNV6wlh/bIXFG2F2Eswyc4T3XC0E8BnKqw93pziEiNWswDrzzsOfVFA9+5O+Z4HH+G3SJiBTci5KCjGqMe8qKfnzSWLXWWaEKDCXABVD4zN1hpQuMNata+f+2ZV9oPPTlgbUNJPsEapFQGTEmh6UMDKeO643hJMp2DtX78=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=USgBtCjV; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i3s+JIeY"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="USgBtCjV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726320423; x=1757856423;
+  t=1726323552; x=1757859552;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=0iCbeeeXJT3CsVcE5IfF7h0YLO40dMvutHLSliTDO1k=;
-  b=i3s+JIeYrV+i2rs1SEAcPSwlMF/N7AmcLcppItCn3b5/554ZxFd1UI62
-   u3q+tT7hVPoPv0wpU5P+N31gzqZqy37dtXHVFpGTwzrqs4mqatodCpEhP
-   XQLxMCPiZyRPvI0K2H1O71yAViJtsIQMQWEECBq5njVRhX1EmUjjNc0+m
-   HaiAK/TwTYR2zWyfQXAihU0KIG4Aheuq21w+jcou4Jxg6cevYSiEX+Wg8
-   KdPnCBbcj5N3QjNUUtvAPOXCh9J+xwsSTkUFm8diHi/xmol9IWsdXS6tF
-   9pJcATRj9OakfGyPqf8Dw3HqMjuu+W7ZgjnqoP07Ux/VbhJeL1JbZ/UxO
+  bh=N9wMgdRefGu42K7ypeuSJnPQEd7Ns/OJA/BRmLa/8qc=;
+  b=USgBtCjVcxufnJh9KVshcT6/3aSddwTsIRIxa+Ulnels+esyy0gAXEV5
+   PNr3wAGmQi8cgru5XhKuinNueGZcFwEpm0rFBztt5uzCOm77k2vLGLJU8
+   2Z0nq27B7TjEI7DJoTe7/EdyIwRLmoUR1k52Aw1Pn1DFwN9oPTKN+mZ89
+   5/lXiJhlrhm+GJzMLX1Mhlf9P2/34yeY6EVYNhPS5vqmsBlvYHMF7bI2d
+   B5TUdbze0dKXJUHn/R8R474SKgwNYd1eqwdvgifl5IWm2sUDwklZOlq42
+   WYUJr/ZbWJm4IEPZKh9j9LYBAqTaXcSxhb7V6s8fKHnYXNlTpGjUTA82N
    w==;
-X-CSE-ConnectionGUID: LrBVB0OzQziyrwTjQzQMnA==
-X-CSE-MsgGUID: avmW+4oVSNKt1+MoHMbYsA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11195"; a="24698589"
+X-CSE-ConnectionGUID: cQGj1BAaSe64yTfLvQ6EMQ==
+X-CSE-MsgGUID: AVh9oKYtQ3aaT2zxoofULA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11195"; a="25090381"
 X-IronPort-AV: E=Sophos;i="6.10,229,1719903600"; 
-   d="scan'208";a="24698589"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2024 06:27:02 -0700
-X-CSE-ConnectionGUID: TrLKQcrGS8uu6BPCPQD6bw==
-X-CSE-MsgGUID: 4nJvjZHzRDSvfJc3DHXEMQ==
+   d="scan'208";a="25090381"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2024 07:19:11 -0700
+X-CSE-ConnectionGUID: bLVvHNP4RYS89Cob7sBRYA==
+X-CSE-MsgGUID: 1WBix8DISMO95aCgNnVb5w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.10,229,1719903600"; 
-   d="scan'208";a="68268766"
+   d="scan'208";a="99080744"
 Received: from lkp-server01.sh.intel.com (HELO 53e96f405c61) ([10.239.97.150])
-  by orviesa010.jf.intel.com with ESMTP; 14 Sep 2024 06:27:00 -0700
+  by orviesa002.jf.intel.com with ESMTP; 14 Sep 2024 07:19:03 -0700
 Received: from kbuild by 53e96f405c61 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1spSnh-0007mI-2M;
-	Sat, 14 Sep 2024 13:26:57 +0000
-Date: Sat, 14 Sep 2024 21:26:27 +0800
+	id 1spTc5-0007pg-0v;
+	Sat, 14 Sep 2024 14:19:01 +0000
+Date: Sat, 14 Sep 2024 22:18:45 +0800
 From: kernel test robot <lkp@intel.com>
-To: Parker Newman <parker@finest.io>,
+To: Arturs Artamonovs via B4 Relay <devnull+arturs.artamonovs.analog.com@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Greg Malysa <greg.malysa@timesys.com>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Utsav Agarwal <Utsav.Agarwal@analog.com>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Andi Shyti <andi.shyti@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v1 4/6] serial: 8250_exar: Replace custom EEPROM read
- with eeprom_93cx6
-Message-ID: <202409142138.yCOHBlL1-lkp@intel.com>
-References: <78dead78311ea619e0be99cc32ee0df1610a480d.1726237379.git.pnewman@connecttech.com>
+	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	Olof Johansson <olof@lixom.net>, soc@kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org,
+	Arturs Artamonovs <arturs.artamonovs@analog.com>,
+	adsp-linux@analog.com,
+	Nathan Barrett-Morrison <nathan.morrison@timesys.com>
+Subject: Re: [PATCH 07/21] clock: Add driver for ADI ADSP-SC5xx clock
+Message-ID: <202409142102.LvuMEIro-lkp@intel.com>
+References: <20240912-test-v1-7-458fa57c8ccf@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -68,56 +85,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <78dead78311ea619e0be99cc32ee0df1610a480d.1726237379.git.pnewman@connecttech.com>
+In-Reply-To: <20240912-test-v1-7-458fa57c8ccf@analog.com>
 
-Hi Parker,
+Hi Arturs,
 
 kernel test robot noticed the following build warnings:
 
-[auto build test WARNING on 5ed771f174726ae879945d4f148a9005ac909cb7]
+[auto build test WARNING on da3ea35007d0af457a0afc87e84fddaebc4e0b63]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Parker-Newman/misc-eeprom-eeprom_93cx6-Add-quirk-for-extra-read-clock-cycle/20240913-230345
-base:   5ed771f174726ae879945d4f148a9005ac909cb7
-patch link:    https://lore.kernel.org/r/78dead78311ea619e0be99cc32ee0df1610a480d.1726237379.git.pnewman%40connecttech.com
-patch subject: [PATCH v1 4/6] serial: 8250_exar: Replace custom EEPROM read with eeprom_93cx6
-config: x86_64-randconfig-122-20240914 (https://download.01.org/0day-ci/archive/20240914/202409142138.yCOHBlL1-lkp@intel.com/config)
+url:    https://github.com/intel-lab-lkp/linux/commits/Arturs-Artamonovs-via-B4-Relay/arm64-Add-ADI-ADSP-SC598-SoC/20240913-022308
+base:   da3ea35007d0af457a0afc87e84fddaebc4e0b63
+patch link:    https://lore.kernel.org/r/20240912-test-v1-7-458fa57c8ccf%40analog.com
+patch subject: [PATCH 07/21] clock: Add driver for ADI ADSP-SC5xx clock
 compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240914/202409142138.yCOHBlL1-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202409142138.yCOHBlL1-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202409142102.LvuMEIro-lkp@intel.com/
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/tty/serial/8250/8250_exar.c:739:13: sparse: sparse: restricted __le32 degrades to integer
+includecheck warnings: (new ones prefixed by >>)
+>> drivers/clk/adi/clk-adi-sc598.c: linux/clk.h is included more than once.
 
-vim +739 drivers/tty/serial/8250/8250_exar.c
+vim +9 drivers/clk/adi/clk-adi-sc598.c
 
-   721	
-   722	/**
-   723	 * cti_read_osc_freq() - Read the UART oscillator frequency from EEPROM
-   724	 * @priv: Device's private structure
-   725	 * @eeprom_offset: Offset where the oscillator frequency is stored
-   726	 *
-   727	 * CTI XR17x15X and XR17V25X cards have the serial boards oscillator frequency
-   728	 * stored in the EEPROM. FPGA and XR17V35X based cards use the PCI/PCIe clock.
-   729	 *
-   730	 * Return: frequency on success, negative error code on failure
-   731	 */
-   732	static int cti_read_osc_freq(struct exar8250 *priv, u8 eeprom_offset)
-   733	{
-   734		__le32 osc_freq_le;
-   735	
-   736		eeprom_93cx6_multiread(&priv->eeprom, eeprom_offset,
-   737					(__le16 *)&osc_freq_le, 2);
-   738	
- > 739		if (osc_freq_le == 0xFFFFFFFF)
-   740			return -EIO;
-   741	
-   742		return le32_to_cpu(osc_freq_le);
-   743	}
-   744	
+   > 9	#include <linux/clk.h>
+    10	#include <linux/clk-provider.h>
+  > 11	#include <linux/clk.h>
+    12	#include <linux/err.h>
+    13	#include <linux/module.h>
+    14	#include <linux/of_address.h>
+    15	
 
 -- 
 0-DAY CI Kernel Test Service
