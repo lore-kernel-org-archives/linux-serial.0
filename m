@@ -1,55 +1,50 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AAA6522F;
-	Sat, 14 Sep 2024 17:56:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 570E01CF5D2;
+	Sat, 14 Sep 2024 18:50:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726336574; cv=none; b=WtgyLB5XCKpA7ioEWVtxsCz3uPfxQKhRBY4JBVWudomC3ChKl9b5C35x0D/SGn1QdHl2r0pA+uwwnjfFewNuVUEe2X2mECOO2kDEtj85QLm73XDEpyclUvD5tlKnh2Gs3/Gh7DuMJrhu0wgjITNxticNFDn69mSItbtBFkMVsOk=
+	t=1726339854; cv=none; b=aT9ARfNZKtWvVdHvYmzhw6i7KGJnhHm46G0qbupd476buKbbtMk5JU7CBHUK7AXxKZDtCvGZ8bn5LkckqE+ETlrVyXctGqky6W7bfjVv0VK4qFJhoi7BIZtAMSx5l1L3lzofRKlpaP9wp/gn/1LUb8C9uDCfvTOD40arFpAq5v4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726336574; c=relaxed/simple;
-	bh=usg5zuvL6dMiMtReqxAmcXPlYBF1AWzxevclY567A/4=;
+	s=arc-20240116; t=1726339854; c=relaxed/simple;
+	bh=1+0i56bgZWFuRczRUSZOUy6y6O3IBgMKZJEbVdhGTMI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eGPxkqOOeL2frg0ZxgqulD244E4Pn3cRqlgLHYfr5DlwhmK1eAXyi2ScBrvMhgaHNfN6+Bn8MX1c33+kQSZXNuGbynbL7n6v+bacrvua2YQSoIFMZLSfG8eiZxup+bUZq/kpSwzgEWD56dCsu32TGYxjlDro0ArzPuMq4QtE03c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=BCKnMStk; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="BCKnMStk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78388C4CEC0;
-	Sat, 14 Sep 2024 17:56:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1726336573;
-	bh=usg5zuvL6dMiMtReqxAmcXPlYBF1AWzxevclY567A/4=;
-	h=Date:From:To:List-Id:Cc:Subject:References:In-Reply-To:From;
-	b=BCKnMStk0KD+KF5iLNc2XB3G3YDXTC7IF5zt1upbDpbkyTewGa+L+bN3T+QCIm+/Y
-	 dcUP4wpxJ5OVej1SrXlGVNH6rMQsZ8gFAsxwg3lKkaE7rzFkVGFbcQIkMnzvhVM6Kr
-	 M5RTY7BxqmGcL3I30T4qtMRxT9JvvK30B023vO8c=
-Date: Sat, 14 Sep 2024 19:56:09 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Markus Elfring <Markus.Elfring@web.de>
-Cc: Arturs Artamonovs <Arturs.Artamonovs@analog.com>,
-	Greg Malysa <greg.malysa@timesys.com>,
-	Nathan Barrett-Morrison <nathan.morrison@timesys.com>,
-	Utsav Agarwal <Utsav.Agarwal@analog.com>,
-	linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	soc@kernel.org, Andi Shyti <andi.shyti@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>, Bartosz Golaszewski <brgl@bgdev.pl>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Olof Johansson <olof@lixom.net>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Rob Herring <robh@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>, adsp-linux@analog.com
-Subject: Re: [PATCH 01/21] arm64: Add ADI ADSP-SC598 SoC
-Message-ID: <2024091459-company-diabolic-a9ed@gregkh>
-References: <20240912-test-v1-1-458fa57c8ccf@analog.com>
- <b6af2603-7f72-47d7-98b9-6dc2761dfb74@web.de>
+	 Content-Type:Content-Disposition:In-Reply-To; b=M1T3gQeUU9KsvsVW2Lv1y3ZzEF+n4lC/FDDq24gy+U5XusyReUDFkfKF2yLF7dkZkh5m2yKaKKUjeJPSkeoblEYs3Q0+FBzjnvPWpL8TRqQ0M23RQxuoqaolrwprWnrqLcLRnVpT1ppV8LcuIM5OddBEwLlXI1JYS1LICnMaFm8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
+X-CSE-ConnectionGUID: JcQCkXBnQWGIpL2noeEPJg==
+X-CSE-MsgGUID: wj9o/3EVQu2+GpsGYgv90Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11195"; a="35807446"
+X-IronPort-AV: E=Sophos;i="6.10,229,1719903600"; 
+   d="scan'208";a="35807446"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2024 11:50:52 -0700
+X-CSE-ConnectionGUID: Yw+FtJ8qTrqIUtQscRy50Q==
+X-CSE-MsgGUID: pgMcnzDpR7qiQnIVDNhQjQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,229,1719903600"; 
+   d="scan'208";a="68954373"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orviesa007.jf.intel.com with ESMTP; 14 Sep 2024 11:50:50 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id B444032A; Sat, 14 Sep 2024 21:50:48 +0300 (EEST)
+Date: Sat, 14 Sep 2024 21:50:48 +0300
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+To: Serge Semin <fancer.lancer@gmail.com>,
+	Ferry Toth <ftoth@exalondelft.nl>
+Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v4 0/6] dmaengine: dw: Fix src/dst addr width
+ misconfig
+Message-ID: <ZuXbCKUs1iOqFu51@black.fi.intel.com>
+References: <20240802075100.6475-1-fancer.lancer@gmail.com>
+ <CAHp75VcnfrOOC610JxAdTwJv8j1i_Abo72E0h1aqRbrYOWRrZw@mail.gmail.com>
+ <rsy7z45nhl74nzvq5a2ij4eeqgzu3htje2xpparxgam7jowo6a@6l75wjh2dqll>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -59,50 +54,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b6af2603-7f72-47d7-98b9-6dc2761dfb74@web.de>
+In-Reply-To: <rsy7z45nhl74nzvq5a2ij4eeqgzu3htje2xpparxgam7jowo6a@6l75wjh2dqll>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Sat, Sep 14, 2024 at 07:15:08PM +0200, Markus Elfring wrote:
-> …
-> > +++ b/drivers/soc/adi/system.c
-> > @@ -0,0 +1,257 @@
-> …
-> > +static void adi_system_config_remove(struct platform_device *pdev)
-> +{
-> > +	struct adi_system_config *config = platform_get_drvdata(pdev);
-> > +	unsigned long flags;
-> > +
-> > +	spin_lock_irqsave(&adi_system_config_lock, flags);
-> > +	list_del(&config->list);
-> > +	spin_unlock_irqrestore(&adi_system_config_lock, flags);
-> > +}
-> …
+On Mon, Aug 05, 2024 at 03:25:35PM +0300, Serge Semin wrote:
+> On Sat, Aug 03, 2024 at 09:29:54PM +0200, Andy Shevchenko wrote:
+> > On Fri, Aug 2, 2024 at 9:51 AM Serge Semin <fancer.lancer@gmail.com> wrote:
+> > >
+> > > The main goal of this series is to fix the data disappearance in case of
+> > > the DW UART handled by the DW AHB DMA engine. The problem happens on a
+> > > portion of the data received when the pre-initialized DEV_TO_MEM
+> > > DMA-transfer is paused and then disabled. The data just hangs up in the
+> > > DMA-engine FIFO and isn't flushed out to the memory on the DMA-channel
+> > > suspension (see the second commit log for details). On a way to find the
+> > > denoted problem fix it was discovered that the driver doesn't verify the
+> > > peripheral device address width specified by a client driver, which in its
+> > > turn if unsupported or undefined value passed may cause DMA-transfer being
+> > > misconfigured. It's fixed in the first patch of the series.
+> > >
+> > > In addition to that three cleanup patches follow the fixes described above
+> > > in order to make the DWC-engine configuration procedure more coherent.
+> > > First one simplifies the CTL_LO register setup methods. Second and third
+> > > patches simplify the max-burst calculation procedure and unify it with the
+> > > rest of the verification methods. Please see the patches log for more
+> > > details.
+> > >
+> > > Final patch is another cleanup which unifies the status variables naming
+> > > in the driver.
+> > 
+> > Acked-by: Andy Shevchenko <andy@kernel.org>
 > 
-> Under which circumstances would you become interested to apply a statement
-> like “guard(spinlock_irqsave)(&adi_system_config_lock);”?
-> https://elixir.bootlin.com/linux/v6.11-rc7/source/include/linux/spinlock.h#L572
-> 
-> Regards,
-> Markus
-> 
+> Awesome! Thanks.
+
+Not really :-)
+This series broke iDMA32 + SPI PXA2xx on Intel Merrifield. I haven't
+had time to investigate further, but rolling back all patches helps.
+
++Cc: Ferry who might also test and maybe investigate as he reported the
+issue to me initially.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Hi,
-
-This is the semi-friendly patch-bot of Greg Kroah-Hartman.
-
-Markus, you seem to have sent a nonsensical or otherwise pointless
-review comment to a patch submission on a Linux kernel developer mailing
-list.  I strongly suggest that you not do this anymore.  Please do not
-bother developers who are actively working to produce patches and
-features with comments that, in the end, are a waste of time.
-
-Patch submitter, please ignore Markus's suggestion; you do not need to
-follow it at all.  The person/bot/AI that sent it is being ignored by
-almost all Linux kernel maintainers for having a persistent pattern of
-behavior of producing distracting and pointless commentary, and
-inability to adapt to feedback.  Please feel free to also ignore emails
-from them.
-
-thanks,
-
-greg k-h's patch email bot
