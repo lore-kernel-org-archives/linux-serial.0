@@ -1,100 +1,80 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 570E01CF5D2;
-	Sat, 14 Sep 2024 18:50:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 069C718C1F;
+	Sat, 14 Sep 2024 18:58:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726339854; cv=none; b=aT9ARfNZKtWvVdHvYmzhw6i7KGJnhHm46G0qbupd476buKbbtMk5JU7CBHUK7AXxKZDtCvGZ8bn5LkckqE+ETlrVyXctGqky6W7bfjVv0VK4qFJhoi7BIZtAMSx5l1L3lzofRKlpaP9wp/gn/1LUb8C9uDCfvTOD40arFpAq5v4=
+	t=1726340335; cv=none; b=EfuW/UkU+W33TyP1pE6V35ME24q+Dv2BuwWvv6DSuT7polBhu9te+asm6OK/RL4EmLH1+5oSErD0vFQdlutWSXL0bbPnCSVGLvdPLv81fu6XtnenNb6PXP4isIW/tO3h82yHp5ct5AcFymj25dwDaYwQ4ldA6N6bi3gyqd4me5s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726339854; c=relaxed/simple;
-	bh=1+0i56bgZWFuRczRUSZOUy6y6O3IBgMKZJEbVdhGTMI=;
+	s=arc-20240116; t=1726340335; c=relaxed/simple;
+	bh=Ag8EUoRntaBY11eoaLPLw4SDAfflI0AQ+/LpKMj6ACk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=M1T3gQeUU9KsvsVW2Lv1y3ZzEF+n4lC/FDDq24gy+U5XusyReUDFkfKF2yLF7dkZkh5m2yKaKKUjeJPSkeoblEYs3Q0+FBzjnvPWpL8TRqQ0M23RQxuoqaolrwprWnrqLcLRnVpT1ppV8LcuIM5OddBEwLlXI1JYS1LICnMaFm8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-X-CSE-ConnectionGUID: JcQCkXBnQWGIpL2noeEPJg==
-X-CSE-MsgGUID: wj9o/3EVQu2+GpsGYgv90Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11195"; a="35807446"
-X-IronPort-AV: E=Sophos;i="6.10,229,1719903600"; 
-   d="scan'208";a="35807446"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2024 11:50:52 -0700
-X-CSE-ConnectionGUID: Yw+FtJ8qTrqIUtQscRy50Q==
-X-CSE-MsgGUID: pgMcnzDpR7qiQnIVDNhQjQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,229,1719903600"; 
-   d="scan'208";a="68954373"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa007.jf.intel.com with ESMTP; 14 Sep 2024 11:50:50 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id B444032A; Sat, 14 Sep 2024 21:50:48 +0300 (EEST)
-Date: Sat, 14 Sep 2024 21:50:48 +0300
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-To: Serge Semin <fancer.lancer@gmail.com>,
-	Ferry Toth <ftoth@exalondelft.nl>
-Cc: Viresh Kumar <vireshk@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 0/6] dmaengine: dw: Fix src/dst addr width
- misconfig
-Message-ID: <ZuXbCKUs1iOqFu51@black.fi.intel.com>
-References: <20240802075100.6475-1-fancer.lancer@gmail.com>
- <CAHp75VcnfrOOC610JxAdTwJv8j1i_Abo72E0h1aqRbrYOWRrZw@mail.gmail.com>
- <rsy7z45nhl74nzvq5a2ij4eeqgzu3htje2xpparxgam7jowo6a@6l75wjh2dqll>
+	 Content-Type:Content-Disposition:In-Reply-To; b=haBrMmSIdL4qs/zfccg9El24m16T2v1TroiHFTXg+P2WX6NR1GcpU+2bcwMkJs0s1vgvM5KUuACZzBraE9rM11nhhJHfVKNCwK7eaJkBqJSVIZojV5IcFqDE3NgyuKZTVs34KZpmcTZwf4DaxJStrrfqAjxHlrZaEWllblXt0cc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=1EgSQjG2; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="1EgSQjG2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC80EC4CEC0;
+	Sat, 14 Sep 2024 18:58:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1726340334;
+	bh=Ag8EUoRntaBY11eoaLPLw4SDAfflI0AQ+/LpKMj6ACk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=1EgSQjG2WL040FNMDcqJUX8RXkOTsCbqeYQE3xiHCK1lkJSX5OJ1fXo8l7Ayb1Zgz
+	 a793I6ighlVpCmHTTJ1PLjeYPJzzzpH4d1VdXTQ8mkLMSAl5NUADOw2leq4mlXnae/
+	 FYL8C3O1X7PE5bJMH5LD0b+8dFFWQH8RE9T1Jm8U=
+Date: Sat, 14 Sep 2024 20:58:50 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Parker Newman <parker@finest.io>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v1 3/6] misc: eeprom: eeprom_93cx6: Replace
+ printk(KERN_ERR ...) with pr_err()
+Message-ID: <2024091438-charity-borough-54b3@gregkh>
+References: <cover.1726237379.git.pnewman@connecttech.com>
+ <127dcc7f60d15a1cc9007c9e5b06a1aa2b170e19.1726237379.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <rsy7z45nhl74nzvq5a2ij4eeqgzu3htje2xpparxgam7jowo6a@6l75wjh2dqll>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <127dcc7f60d15a1cc9007c9e5b06a1aa2b170e19.1726237379.git.pnewman@connecttech.com>
 
-On Mon, Aug 05, 2024 at 03:25:35PM +0300, Serge Semin wrote:
-> On Sat, Aug 03, 2024 at 09:29:54PM +0200, Andy Shevchenko wrote:
-> > On Fri, Aug 2, 2024 at 9:51 AM Serge Semin <fancer.lancer@gmail.com> wrote:
-> > >
-> > > The main goal of this series is to fix the data disappearance in case of
-> > > the DW UART handled by the DW AHB DMA engine. The problem happens on a
-> > > portion of the data received when the pre-initialized DEV_TO_MEM
-> > > DMA-transfer is paused and then disabled. The data just hangs up in the
-> > > DMA-engine FIFO and isn't flushed out to the memory on the DMA-channel
-> > > suspension (see the second commit log for details). On a way to find the
-> > > denoted problem fix it was discovered that the driver doesn't verify the
-> > > peripheral device address width specified by a client driver, which in its
-> > > turn if unsupported or undefined value passed may cause DMA-transfer being
-> > > misconfigured. It's fixed in the first patch of the series.
-> > >
-> > > In addition to that three cleanup patches follow the fixes described above
-> > > in order to make the DWC-engine configuration procedure more coherent.
-> > > First one simplifies the CTL_LO register setup methods. Second and third
-> > > patches simplify the max-burst calculation procedure and unify it with the
-> > > rest of the verification methods. Please see the patches log for more
-> > > details.
-> > >
-> > > Final patch is another cleanup which unifies the status variables naming
-> > > in the driver.
-> > 
-> > Acked-by: Andy Shevchenko <andy@kernel.org>
+On Fri, Sep 13, 2024 at 10:55:40AM -0400, Parker Newman wrote:
+> From: Parker Newman <pnewman@connecttech.com>
 > 
-> Awesome! Thanks.
+> Replace printk(KERN_ERR ...) with pr_err() to improve readability.
+> 
+> Fixes checkpatch warning:
+> 
+> WARNING: Prefer [subsystem eg: netdev]_err([subsystem]dev, ... then
+> dev_err(dev, ... then pr_err(...  to printk(KERN_ERR ...
+> +			printk(KERN_ERR "%s: timeout\n", __func__);
+> 
+> Signed-off-by: Parker Newman <pnewman@connecttech.com>
+> ---
+>  drivers/misc/eeprom/eeprom_93cx6.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/misc/eeprom/eeprom_93cx6.c b/drivers/misc/eeprom/eeprom_93cx6.c
+> index 64da22edefa4..755be9a4ffd4 100644
+> --- a/drivers/misc/eeprom/eeprom_93cx6.c
+> +++ b/drivers/misc/eeprom/eeprom_93cx6.c
+> @@ -378,7 +378,7 @@ void eeprom_93cx6_write(struct eeprom_93cx6 *eeprom, u8 addr, u16 data)
+>  		usleep_range(1000, 2000);
+> 
+>  		if (--timeout <= 0) {
+> -			printk(KERN_ERR "%s: timeout\n", __func__);
+> +			pr_err("%s: timeout\n", __func__);
 
-Not really :-)
-This series broke iDMA32 + SPI PXA2xx on Intel Merrifield. I haven't
-had time to investigate further, but rolling back all patches helps.
+It's a device, please use dev_err().
 
-+Cc: Ferry who might also test and maybe investigate as he reported the
-issue to me initially.
+thanks,
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+greg k-h
