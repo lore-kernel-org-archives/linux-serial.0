@@ -1,93 +1,124 @@
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDA291CEEB3
-	for <linux-serial@vger.kernel.org>; Sat, 14 Sep 2024 10:58:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B4D41CF29F;
+	Sat, 14 Sep 2024 13:27:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726311508; cv=none; b=p9bOaJm96F6V+k3V15cWRR/IlJWZ5+ToWlvpLKDW2mEtInvEa3Oi9HPWFpmsIyrVvbJHMgxkeez5foqOyLNDv3x/YlemmuXo16j/rxZ7aO1rX5DA3vdZUH+wlGcLJOBl9JzO5VHzvVCIs8XXAC6pKq3ST4n1uIC67/B4k6Ol32c=
+	t=1726320424; cv=none; b=cn6IzJZvGvmZcZY8s+Yv3N5+0R2WRcxVZ0s/fZAGSY2Vdkr39z4eHPdGYy4tgTcnc169UTPHy126ivAkcXLt8hPvpAv+JgBPhUwJchaTAop7ZaVC/+DLsnWXG//pHcnCkHofSy06fBz/QjmzRHxN6DYT/wUdkJZijvPvC8jdtGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726311508; c=relaxed/simple;
-	bh=S3EHlT4pj65GnBkMEsNwf341ydw7Jg8R5ZcGRxNIdak=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=aHHptiiHX/dNHCHMRSYL2Tdbq4JwaSYNtWEz7Li9Y1fHF/px3Q6EqMNsJhjy/7i1EUrZIzsrfECfdTXx3pXULXG4GBMNkOhWaSQh/0h6dinbfiwMn4K3mcfSeP9m1pgV1IK17rBX6LsFQh6DGluOLBvWxaZriPVnMqRbGuE5VKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-3a047cb2e7dso57012955ab.3
-        for <linux-serial@vger.kernel.org>; Sat, 14 Sep 2024 03:58:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726311506; x=1726916306;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jNsanaAnUqKnJPrB9ujnMWafkXbSugNGS//lVxE3QOI=;
-        b=XtcF3NA7pEkGQ/1nF5mP6q7DoqvPitXq6CEDk5+Z1DHmm6D1wdWV6gMM0Ypj4vZxKE
-         /CA69bPXojstryhI23yQsSsoYq35N2psPGrpkz8aOFFgcKESUzPBKqK0hUEOIgWGyApk
-         sCkHgbpCYIITwZ2K2y/RcpcLtzr3q6/Wfx+c+c9ZwmLfldj4ltA+xN3zB+FmpXo+SRda
-         JDNM3rVy6dNBAvPUGXix6CLJhG9pqLhJkqDarsdkHzLou7cVHhxxyLYTsTkPM3pIF2sr
-         JtvY+58Y6YiudKhv74VapSS+D0KCdAL2+7zLOVjZ5zatuf4cSrUzy0bsWqWX+v8BRS9c
-         bq3Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUwrXuYjzqvuwN9Nd5hW7+28nUqeGhQVbGYOqgevuIHZ26B9dALv2+VcwFnP9UJZF6rdRD64eDH6PVaK0Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy5e9Tey5RCCGWt1UfGVRy1HGf8umLhiEHGOEGHfWYdj+VMVymx
-	0WPPxDBxPfAxIDyhPHtKakm9SP8IWXW9cH04HRLMQHqms+qqZHkC3OzTs7ZUrXQXvdflK80B1sQ
-	7f41xjexJLKm9EjMpg3nrvpESyqmwcfOvOvg/JvGXfSaw5UGd36Vvv28=
-X-Google-Smtp-Source: AGHT+IE7cyEMFXq0PLoldynD4nLYkoTuyeUjye9q3jPn/FRYgLjwv8eiyTn2khxvdRdMQWeUBbBXmR1qe8E0+JvcgOMLwFwciUPH
+	s=arc-20240116; t=1726320424; c=relaxed/simple;
+	bh=0iCbeeeXJT3CsVcE5IfF7h0YLO40dMvutHLSliTDO1k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=j2e2oIYgj6c3xZuToKcnKdzFW3Mju/JWpO5T3f7Xd028ceJIwTnRdAobKXCO3EEs8TvHMZxN6kTw5ZHesKRFkcQxLUsyI/csYNRToCOx6ejPbIPiJVRIC3LhVgC2mBpk4rjVO84Ag5RoBy71v6IxGR6R4ViYwAv0Zg/JJytd9FE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i3s+JIeY; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i3s+JIeY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1726320423; x=1757856423;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0iCbeeeXJT3CsVcE5IfF7h0YLO40dMvutHLSliTDO1k=;
+  b=i3s+JIeYrV+i2rs1SEAcPSwlMF/N7AmcLcppItCn3b5/554ZxFd1UI62
+   u3q+tT7hVPoPv0wpU5P+N31gzqZqy37dtXHVFpGTwzrqs4mqatodCpEhP
+   XQLxMCPiZyRPvI0K2H1O71yAViJtsIQMQWEECBq5njVRhX1EmUjjNc0+m
+   HaiAK/TwTYR2zWyfQXAihU0KIG4Aheuq21w+jcou4Jxg6cevYSiEX+Wg8
+   KdPnCBbcj5N3QjNUUtvAPOXCh9J+xwsSTkUFm8diHi/xmol9IWsdXS6tF
+   9pJcATRj9OakfGyPqf8Dw3HqMjuu+W7ZgjnqoP07Ux/VbhJeL1JbZ/UxO
+   w==;
+X-CSE-ConnectionGUID: LrBVB0OzQziyrwTjQzQMnA==
+X-CSE-MsgGUID: avmW+4oVSNKt1+MoHMbYsA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11195"; a="24698589"
+X-IronPort-AV: E=Sophos;i="6.10,229,1719903600"; 
+   d="scan'208";a="24698589"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2024 06:27:02 -0700
+X-CSE-ConnectionGUID: TrLKQcrGS8uu6BPCPQD6bw==
+X-CSE-MsgGUID: 4nJvjZHzRDSvfJc3DHXEMQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,229,1719903600"; 
+   d="scan'208";a="68268766"
+Received: from lkp-server01.sh.intel.com (HELO 53e96f405c61) ([10.239.97.150])
+  by orviesa010.jf.intel.com with ESMTP; 14 Sep 2024 06:27:00 -0700
+Received: from kbuild by 53e96f405c61 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1spSnh-0007mI-2M;
+	Sat, 14 Sep 2024 13:26:57 +0000
+Date: Sat, 14 Sep 2024 21:26:27 +0800
+From: kernel test robot <lkp@intel.com>
+To: Parker Newman <parker@finest.io>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v1 4/6] serial: 8250_exar: Replace custom EEPROM read
+ with eeprom_93cx6
+Message-ID: <202409142138.yCOHBlL1-lkp@intel.com>
+References: <78dead78311ea619e0be99cc32ee0df1610a480d.1726237379.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a92:cd82:0:b0:39f:500e:2ffc with SMTP id
- e9e14a558f8ab-3a084941b35mr98911775ab.17.1726311505991; Sat, 14 Sep 2024
- 03:58:25 -0700 (PDT)
-Date: Sat, 14 Sep 2024 03:58:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <66e56c51.050a0220.3a9b1.0030.GAE@google.com>
-Subject: [syzbot] Monthly serial report (Sep 2024)
-From: syzbot <syzbot+list1e0c4845fea51e9130ce@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78dead78311ea619e0be99cc32ee0df1610a480d.1726237379.git.pnewman@connecttech.com>
 
-Hello serial maintainers/developers,
+Hi Parker,
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+kernel test robot noticed the following build warnings:
 
-During the period, 2 new issues were detected and 0 were fixed.
-In total, 18 issues are still open and 42 have been fixed so far.
+[auto build test WARNING on 5ed771f174726ae879945d4f148a9005ac909cb7]
 
-Some of the still happening issues:
+url:    https://github.com/intel-lab-lkp/linux/commits/Parker-Newman/misc-eeprom-eeprom_93cx6-Add-quirk-for-extra-read-clock-cycle/20240913-230345
+base:   5ed771f174726ae879945d4f148a9005ac909cb7
+patch link:    https://lore.kernel.org/r/78dead78311ea619e0be99cc32ee0df1610a480d.1726237379.git.pnewman%40connecttech.com
+patch subject: [PATCH v1 4/6] serial: 8250_exar: Replace custom EEPROM read with eeprom_93cx6
+config: x86_64-randconfig-122-20240914 (https://download.01.org/0day-ci/archive/20240914/202409142138.yCOHBlL1-lkp@intel.com/config)
+compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240914/202409142138.yCOHBlL1-lkp@intel.com/reproduce)
 
-Ref Crashes Repro Title
-<1> 393     Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
-                  https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-<2> 152     Yes   INFO: task can't die in show_free_areas
-                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-<3> 15      Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
-                  https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
-<4> 12      No    KMSAN: uninit-value in n_tty_receive_buf_closing (3)
-                  https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
-<5> 8       No    general protection fault in n_tty_receive_buf_common (2)
-                  https://syzkaller.appspot.com/bug?extid=2dda672e146ff12ccb02
-<6> 5       No    KMSAN: uninit-value in gsmld_receive_buf
-                  https://syzkaller.appspot.com/bug?extid=2f64914d6a3a8ce91bdd
-<7> 3       No    KMSAN: kernel-infoleak in tty_read
-                  https://syzkaller.appspot.com/bug?extid=aa7ddf2352c316bb08d0
-<8> 1       No    possible deadlock in tty_buffer_flush (3)
-                  https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202409142138.yCOHBlL1-lkp@intel.com/
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/tty/serial/8250/8250_exar.c:739:13: sparse: sparse: restricted __le32 degrades to integer
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+vim +739 drivers/tty/serial/8250/8250_exar.c
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
+   721	
+   722	/**
+   723	 * cti_read_osc_freq() - Read the UART oscillator frequency from EEPROM
+   724	 * @priv: Device's private structure
+   725	 * @eeprom_offset: Offset where the oscillator frequency is stored
+   726	 *
+   727	 * CTI XR17x15X and XR17V25X cards have the serial boards oscillator frequency
+   728	 * stored in the EEPROM. FPGA and XR17V35X based cards use the PCI/PCIe clock.
+   729	 *
+   730	 * Return: frequency on success, negative error code on failure
+   731	 */
+   732	static int cti_read_osc_freq(struct exar8250 *priv, u8 eeprom_offset)
+   733	{
+   734		__le32 osc_freq_le;
+   735	
+   736		eeprom_93cx6_multiread(&priv->eeprom, eeprom_offset,
+   737					(__le16 *)&osc_freq_le, 2);
+   738	
+ > 739		if (osc_freq_le == 0xFFFFFFFF)
+   740			return -EIO;
+   741	
+   742		return le32_to_cpu(osc_freq_le);
+   743	}
+   744	
 
-You may send multiple commands in a single email message.
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
