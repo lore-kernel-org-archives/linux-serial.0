@@ -1,39 +1,61 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEEF32F860;
-	Fri, 13 Sep 2024 22:09:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81895EAF6;
+	Sat, 14 Sep 2024 02:56:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726265389; cv=none; b=cS+iWkyL6Jj/+SPs7cdJg2C9oro0oD6/hZrjHGiR3mCKLqfozT6Jf4GTvMEX+yRhJtSvfmJcVLDM6BxIyDVKN+btUqAuqG20dxnN2cnIZTPEgFsNANzhed+YJtRYNpvf90TOX0KFQdWymSI8zvL/shPkzoR1+V6SvW6Dpw3Jxu0=
+	t=1726282605; cv=none; b=EMg+osIEeZGyQENGEdwFyTiI5SZnBBA65/9sH8f7J1M4KW5NCeUjhlApQp8yjvc1XEb5e+nB0wJJhoi5Yrcq94frJE9+Yf0oHDj4lc/AW0gk9p8jaXHLKcA6+cX//EwIUoKUWgoJ3mQetVyBAYuz1Wob8sn7hw2kAFkcFEh6CII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726265389; c=relaxed/simple;
-	bh=K/iEXjVUhgmzM3lXfypy6y/N+L0OGi5s2QOtiMvs+NA=;
+	s=arc-20240116; t=1726282605; c=relaxed/simple;
+	bh=TfRF/a3tZMACX33Nym0bwiApVNFyDJF2lXEejWZJEFc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KE/GY3W2s51JAudM9Um0m1Nw5vykoiU2UhER2dZSxyZR4xOfNtvJP+4WiqHOjHwYa6CU3f2drxMvVpuzLv8egPTDHYm1IvAaZmukjYXrI2Ah+Jnz5p+bNaP300Ojm02lbEHI7yqpGm4wYPdnenvJBHjFyAafmWCGvLSxfPbMLik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sugiPAUB; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=LRlifns6r5eBFmlbTjnLLEbI4AJwImKBOS0cDXz4Xj3Y9hiALZiUzJ355ieKL0CEWfcwvsFJzeGbO8HLeAf8fU+YKP8iP6ikDfK7iBDbOBuzxxbt3cLjiZ7zIDsL431WH58DqGpm/L76UN2qxl/VwzX++fCQTHfflm6qqZkyCpc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y6ROz1cV; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sugiPAUB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6015EC4CEC6;
-	Fri, 13 Sep 2024 22:09:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726265388;
-	bh=K/iEXjVUhgmzM3lXfypy6y/N+L0OGi5s2QOtiMvs+NA=;
-	h=Date:From:To:List-Id:Cc:Subject:References:In-Reply-To:From;
-	b=sugiPAUB2t+bXCDe68rkGJRIiJBSnKdBxmCxpDWNuRsgH1tZMYWcGul/RTq2jrlrs
-	 76PXW0GCAi4J1tHaUI4858jMiHEemjVRRO6t+31QcEEo93vQWefe5eJXhe1z7fEYqh
-	 MpdESXl5fNPeavJgsMzJ+3T3LJlKe4vmiFBOvsisMZnJpjUw7qBPftV8K3jebn5CYt
-	 UeSZSBYwBNtIuayWAchGgeC94n7UMvaPyVvE7/hanW29RcoKRLNLsj3ieurSaZeWM3
-	 IdCqK33ugnZ/DTRBpkBcC6jLCy3Uw/RhsMP6MFF1HttlM8FB/nQcDnJh3n2zljZsPl
-	 bpNticQuMAaGw==
-Date: Fri, 13 Sep 2024 17:09:42 -0500
-From: Rob Herring <robh@kernel.org>
-To: Arturs Artamonovs <arturs.artamonovs@analog.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y6ROz1cV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1726282604; x=1757818604;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TfRF/a3tZMACX33Nym0bwiApVNFyDJF2lXEejWZJEFc=;
+  b=Y6ROz1cV9Q4pK9EO01Wc6uTTdSG0BAPytWDfjIK1Ss/o3UDSUxEYfKeL
+   SFB+6xvJe5CnUi/rJLN0mQL21hEy0bEhmf5soEPphGB3osaARay0t7sFx
+   gVIiW3YUTIv8VDS4g53L3SDS4isgk7RiLKwGVE4BSMAReUxdDt9vMzj7n
+   oRi+D+tlLdSczBzTVJOrt6myDcNgCBlEvdEAMd1LjcNsi2y+/OQkYWbBP
+   uSSgFzUjut2YFolsHY68jAXx+YYMukNtyHUhEXi3nkfo4ozYxxVwqXV+K
+   maDmCSIHhQE3bINHw/UWmPE7ETQdVMp0bo5CroE5kf6SQWhFy1+uc8IvH
+   Q==;
+X-CSE-ConnectionGUID: wZJxR0HHS9OM8wC5Hlvz/A==
+X-CSE-MsgGUID: P/UhmpTpRY64dJf8KlKrRw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11194"; a="35770262"
+X-IronPort-AV: E=Sophos;i="6.10,227,1719903600"; 
+   d="scan'208";a="35770262"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Sep 2024 19:56:43 -0700
+X-CSE-ConnectionGUID: lEjkV/aDSI6kXppHOWZz9Q==
+X-CSE-MsgGUID: G84aYRYRSwaILiSOQmbkAw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,227,1719903600"; 
+   d="scan'208";a="91561390"
+Received: from lkp-server01.sh.intel.com (HELO 53e96f405c61) ([10.239.97.150])
+  by fmviesa002.fm.intel.com with ESMTP; 13 Sep 2024 19:56:36 -0700
+Received: from kbuild by 53e96f405c61 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1spIxe-0007Hg-0m;
+	Sat, 14 Sep 2024 02:56:34 +0000
+Date: Sat, 14 Sep 2024 10:55:58 +0800
+From: kernel test robot <lkp@intel.com>
+To: Arturs Artamonovs via B4 Relay <devnull+arturs.artamonovs.analog.com@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
 	Will Deacon <will@kernel.org>,
 	Greg Malysa <greg.malysa@timesys.com>,
 	Philipp Zabel <p.zabel@pengutronix.de>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Utsav Agarwal <Utsav.Agarwal@analog.com>,
 	Michael Turquette <mturquette@baylibre.com>,
@@ -44,17 +66,18 @@ Cc: Catalin Marinas <catalin.marinas@arm.com>,
 	Andi Shyti <andi.shyti@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Olof Johansson <olof@lixom.net>, soc@kernel.org,
+	Olof Johansson <olof@lixom.net>, soc@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
 	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-	linux-serial@vger.kernel.org, adsp-linux@analog.com,
+	linux-serial@vger.kernel.org,
+	Arturs Artamonovs <arturs.artamonovs@analog.com>,
+	adsp-linux@analog.com,
 	Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-Subject: Re: [PATCH 14/21] dt-bindings: pinctrl: adi,adsp-pinctrl: add
- bindings
-Message-ID: <20240913220942.GC878799-robh@kernel.org>
-References: <20240912-test-v1-0-458fa57c8ccf@analog.com>
- <20240912-test-v1-14-458fa57c8ccf@analog.com>
+Subject: Re: [PATCH 13/21] pinctrl: Add drivers for ADI ADSP-SC5xx platform
+Message-ID: <202409141049.53oom3zJ-lkp@intel.com>
+References: <20240912-test-v1-13-458fa57c8ccf@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -63,148 +86,81 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240912-test-v1-14-458fa57c8ccf@analog.com>
+In-Reply-To: <20240912-test-v1-13-458fa57c8ccf@analog.com>
 
-On Thu, Sep 12, 2024 at 07:24:59PM +0100, Arturs Artamonovs wrote:
-> Add PINCTRL driver bindings.
-> 
-> Signed-off-by: Arturs Artamonovs <Arturs.Artamonovs@analog.com>
-> Co-developed-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-> Signed-off-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-> Co-developed-by: Greg Malysa <greg.malysa@timesys.com>
-> Signed-off-by: Greg Malysa <greg.malysa@timesys.com>
-> ---
->  .../bindings/pinctrl/adi,adsp-pinctrl.yaml         | 83 ++++++++++++++++++++++
->  include/dt-bindings/pinctrl/adi-adsp.h             | 19 +++++
->  2 files changed, 102 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/pinctrl/adi,adsp-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/adi,adsp-pinctrl.yaml
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..073442b4f680bf536f631b4c17a1d3195c2233d6
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/pinctrl/adi,adsp-pinctrl.yaml
-> @@ -0,0 +1,83 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/pinctrl/adi,adsp-pinctrl.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices Pinmuxing Control for SC5XX Processor Family
-> +
-> +maintainers:
-> +  - Arturs Artamonovs <arturs.artamonovs@analog.com>
-> +  - Utsav Agarwal <Utsav.Agarwal@analog.com>
-> +
-> +description: |
-> +  Pinmuxing Control Driver for Configuring Processor Pins/Pads
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,adsp-pinctrl
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 1
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  "adi,port-sizes":
+Hi Arturs,
 
-Don't need quotes.
+kernel test robot noticed the following build warnings:
 
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    maxItems: 9
-> +    description: Space delimited integer list denoting number of pins per port
-> +      Ports A-I exist, so this is up to 9 items long
+[auto build test WARNING on da3ea35007d0af457a0afc87e84fddaebc4e0b63]
 
-No constraints on the entries?
+url:    https://github.com/intel-lab-lkp/linux/commits/Arturs-Artamonovs-via-B4-Relay/arm64-Add-ADI-ADSP-SC598-SoC/20240913-022308
+base:   da3ea35007d0af457a0afc87e84fddaebc4e0b63
+patch link:    https://lore.kernel.org/r/20240912-test-v1-13-458fa57c8ccf%40analog.com
+patch subject: [PATCH 13/21] pinctrl: Add drivers for ADI ADSP-SC5xx platform
+config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20240914/202409141049.53oom3zJ-lkp@intel.com/config)
+compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project bf684034844c660b778f0eba103582f582b710c9)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240914/202409141049.53oom3zJ-lkp@intel.com/reproduce)
 
-> +
-> +  "adi,no-drive-strength":
-> +    type: boolean
-> +    description: Indicate missing drive strength registers
-> +
-> +  "adi,no-pull-up-down":
-> +    type: boolean
-> +    description: Indicate missing pull up/down enable registers
-> +
-> +patternProperties:
-> +  '-pins$':
-> +    type: object
-> +    additionalProperties: false
-> +
-> +    properties:
-> +      pins:
-> +        type: object
-> +        description: |
-> +          A pinctrl node should contain a pin property, specifying the actual
-> +          pins to use.
-> +
-> +        properties:
-> +          pinmux:
-> +            $ref: /schemas/types.yaml#/definitions/uint32-array
-> +            description: |
-> +              pinmux is used to specify which of the available functionalities
-> +              for a given pin are actually used.
-> +
-> +        additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +  - reg
-> +  - "adi,port-sizes"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    pinctrl0: pinctrl@31004600 {
-> +      compatible = "adi,adsp-pinctrl";
-> +      #address-cells = <1>;
-> +      #size-cells = <1>;
-> +      reg = <0x31004600 0x400>;
-> +      adi,port-sizes = <16 16 16 16 16 16 16 16 7>;
-> +    };
-> +
-> diff --git a/include/dt-bindings/pinctrl/adi-adsp.h b/include/dt-bindings/pinctrl/adi-adsp.h
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..dc5b86a0d9190acdd242a6ba4972c3aac7a61821
-> --- /dev/null
-> +++ b/include/dt-bindings/pinctrl/adi-adsp.h
-> @@ -0,0 +1,19 @@
-> +/* SPDX-License-Identifier: GPL-2.0*/
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202409141049.53oom3zJ-lkp@intel.com/
 
-Missing space                         ^
+All warnings (new ones prefixed by >>):
 
-New bindings should be dual licensed.
+>> drivers/pinctrl/pinctrl-adsp.c:291: warning: Function parameter or struct member 'pctldev' not described in 'adsp_pinctrl_dt_node_to_map'
+>> drivers/pinctrl/pinctrl-adsp.c:291: warning: Function parameter or struct member 'np' not described in 'adsp_pinctrl_dt_node_to_map'
+>> drivers/pinctrl/pinctrl-adsp.c:291: warning: Function parameter or struct member 'map' not described in 'adsp_pinctrl_dt_node_to_map'
+>> drivers/pinctrl/pinctrl-adsp.c:291: warning: Function parameter or struct member 'num_maps' not described in 'adsp_pinctrl_dt_node_to_map'
+>> drivers/pinctrl/pinctrl-adsp.c:291: warning: expecting prototype for Handle device tree structures like(). Prototype was for adsp_pinctrl_dt_node_to_map() instead
 
 
-> +/*
-> + * Macros for populating pinmux properties on the pincontroller
-> + *
-> + * Copyright 2022-2024 - Analog Devices Inc.
-> + */
-> +
-> +#ifndef DT_BINDINGS_PINCTRL_ADI_ADSP_H
-> +#define DT_BINDINGS_PINCTRL_ADI_ADSP_H
-> +
-> +#define ADI_ADSP_PINFUNC_GPIO     0
-> +#define ADI_ADSP_PINFUNC_ALT0     1
-> +#define ADI_ADSP_PINFUNC_ALT1     2
-> +#define ADI_ADSP_PINFUNC_ALT2     3
-> +#define ADI_ADSP_PINFUNC_ALT3     4
-> +
-> +#define ADI_ADSP_PINMUX(port, pin, func) ((((port - 'A')*16 + pin) << 8) + func)
-> +
-> +#endif
-> 
-> -- 
-> 2.25.1
-> 
+vim +291 drivers/pinctrl/pinctrl-adsp.c
+
+   271	
+   272	/**
+   273	 * Handle device tree structures like:
+   274	 *
+   275	 * pinctrl_uart0_hwflow: uart0_hwflow_pins {
+   276	 *   pins_rxtx_ {
+   277	 *     pinmux = <1>, <2>;
+   278	 *     some-padconf-flag;
+   279	 *   };
+   280	 *   pins_hwflow {
+   281	 *     pinmux = <3>, <4>;
+   282	 *     some-other-padconf-flag;
+   283	 *   };
+   284	 * };
+   285	 *
+   286	 * where &pinctrl_uart0_hwflow is passed as an entry in pinctrl-0 on uart driver and
+   287	 * enables all sub-pins at once
+   288	 */
+   289	static int adsp_pinctrl_dt_node_to_map(struct pinctrl_dev *pctldev,
+   290		struct device_node *np, struct pinctrl_map **map, unsigned int *num_maps)
+ > 291	{
+   292		unsigned int reserved_maps;
+   293		struct device_node *child_np;
+   294		int ret;
+   295	
+   296		reserved_maps = 0;
+   297		*map = NULL;
+   298		*num_maps = 0;
+   299	
+   300		for_each_child_of_node(np, child_np) {
+   301			ret = adsp_pinctrl_dt_subnode_to_map(pctldev, child_np, map,
+   302						&reserved_maps, num_maps);
+   303			if (ret < 0)
+   304				goto exit;
+   305		}
+   306		return 0;
+   307	
+   308	exit:
+   309		pinctrl_utils_free_map(pctldev, *map, *num_maps);
+   310		return ret;
+   311	}
+   312	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
