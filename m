@@ -1,35 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89C83157A59;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B78FF15B119;
 	Mon, 16 Sep 2024 17:27:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726507623; cv=none; b=dHWV3pUxx6IGCNHYmut/CFhafyGt7CY7EJhp+sRWPJ9qMQBi1UnE92vvjo4vk/tGESc+i+UYkaoljViNybcuTQgBjOoJ7fU61Z47ioNRW+R8vGLArV5NhhwCen1q+u5GMl1t1x5xXmfg4ZXm6qOzaf5TwQSc8n39T2pnNqII/pY=
+	t=1726507623; cv=none; b=RADY7PA61c+pesGT4uC/Hqtd7whO2BXZN8oyV1Ypda0IMZ3U6D3oEszAl7kxhpy8nnZ0vDWdB19UNfaohTO9gL5ZlSMkFAXCBEJjf8riDsLROb0B7OjamyodV3K9TF76PDo/hi2c+XdVDgYpfMk+icRJNF4LWeyvR1CXUZOAMjI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1726507623; c=relaxed/simple;
-	bh=wbyyvVbAwK0TTkdf+yzuQfBYJwErlMDyLPtz/JPez44=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fDfFkqXPEUuFILXZREd9aU4YPh2lWl99PtX8/EAhGIoRuuf1Pz6CTdpT2XC84pSPwxuRJPi3DdPzHccoTkkfHktfQd9Yzgxln5fkDW8jRU1eyjeJqBLs3PWRGHawpMSVgeY9/nf3Qnjlk9ngA7nB26v81jBTUtDulOXnyc+cmDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gszUH7vQ; arc=none smtp.client-ip=10.30.226.201
+	bh=z7EdTYsA6V/W1MQGmwRQQ0qDBVubOwIJcaV8C9pFbP0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Za2/ZHrL/oh7sFXWsTHxD0OChAXCjoHSyhaNBEhttpXTls2f12i/0g340Me+vyi724AsoebwMTqKrm0Rje5+Cey8OvYA+hyTzXpXyU5jxn6mpeLVsumumUEfp7uYI5YzziB/c3+nDpSYI0Lba7pu1EpuOH5z7qcy7W4cD3/3KB4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b3PZC4sx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gszUH7vQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25933C4CEC5;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b3PZC4sx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35274C4AF09;
 	Mon, 16 Sep 2024 17:27:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1726507623;
-	bh=wbyyvVbAwK0TTkdf+yzuQfBYJwErlMDyLPtz/JPez44=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gszUH7vQP6plBOSjalJjSiurW/X6SUQPWF3kSYXfLj30TsVpQ3z3Q7/9Vk/3vrc5F
-	 xsq7lzQomUKt3CGg/7hABYasWsNDdQTLw8VyXV+xkq6T+r0zhguAMR8cjO4IZWSQdk
-	 +0oLxzPWPbhJcfghdVyJOmayfETaheMqwAzeoCJPMpIDgD8jcy7sTXilsgJ0xdVIvQ
-	 cXSSrikfHWmTCwqJLMRGYXI20AHxPBoqYkUhfKfEaQ21W08HUtn3ICh1qjg8h8WjNb
-	 C9vMj50xwm2Rktwz91c7VkZys80EO8WcWhBKLPm60dWl1JqIROz0WUtPi7rMFRo6bH
-	 Vj7vx8bkg5LUw==
+	bh=z7EdTYsA6V/W1MQGmwRQQ0qDBVubOwIJcaV8C9pFbP0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=b3PZC4sxX1L5FZFU0wRPV0/FP5Y9E/xMAzKFKfwsvuFFuFBNlH/X3e4m6/6Ni+kz3
+	 Ryb6KVUrBUR8kQ7/78YOiCHJtUWeiCKr0oc4Bl/tAdqHJS7VXeZVP8MEEaAh52be24
+	 IwnF9HvxDz4mYU9x1g5349jQ3yW4jo8CNpAr3RXNHfyyoeITmGqSoQh0KiL7lIXUi7
+	 UUATM98V5JLFt8N3bCRBT23Yr8o9Ty3jN2W41ePwdu7bsYpjgnFi4nQ3O0OvLKkwi4
+	 +4RnkDude2/CBmrD8waywbje+YOHPLCycE8UA6bH2Fs1c0bdTOSSFS8WtLP+j+x6Ms
+	 q0ATUFcs4pPDw==
 Received: from johan by xi.lan with local (Exim 4.97.1)
 	(envelope-from <johan+linaro@kernel.org>)
-	id 1sqFVT-00000000238-02yb;
-	Mon, 16 Sep 2024 19:27:23 +0200
+	id 1sqFVS-0000000022u-059e;
+	Mon, 16 Sep 2024 19:27:22 +0200
 From: Johan Hovold <johan+linaro@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>,
@@ -38,12 +37,10 @@ Cc: Jiri Slaby <jirislaby@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 3/3] serial: qcom-geni: fix receiver enable
-Date: Mon, 16 Sep 2024 19:26:42 +0200
-Message-ID: <20240916172642.7814-4-johan+linaro@kernel.org>
+Subject: [PATCH 0/3] serial: qcom-geni: fix receiver enable
+Date: Mon, 16 Sep 2024 19:26:39 +0200
+Message-ID: <20240916172642.7814-1-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.44.2
-In-Reply-To: <20240916172642.7814-1-johan+linaro@kernel.org>
-References: <20240916172642.7814-1-johan+linaro@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -52,63 +49,23 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The receiver should be enabled in the startup() callback and there is no
-need to stop it on every termios update.
+This series is a follow-up to the console fixes that have been merged
+for 6.12-rc1 but that can interact badly with some pre-existing bugs.
 
-Since commit 6f3c3cafb115 ("serial: qcom-geni: disable interrupts during
-console writes") the calls to manipulate the secondary interrupts, which
-were done without holding the port lock, can lead to the receiver being
-left disabled when set_termios() races with the console code (e.g. when
-init opens the tty during boot).
+Specifically, the receiver could end up being disabled when
+set_termios() races with the console code during boot.
 
-Fixes: 6f3c3cafb115 ("serial: qcom-geni: disable interrupts during console writes")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/tty/serial/qcom_geni_serial.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+Johan
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 88ad5a6e7de2..85c2742e6cc4 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1167,6 +1167,11 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
- 		if (ret)
- 			return ret;
- 	}
-+
-+	uart_port_lock_irq(uport);
-+	qcom_geni_serial_start_rx(uport);
-+	uart_port_unlock_irq(uport);
-+
- 	enable_irq(uport->irq);
- 
- 	return 0;
-@@ -1252,7 +1257,6 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	unsigned int avg_bw_core;
- 	unsigned long timeout;
- 
--	qcom_geni_serial_stop_rx(uport);
- 	/* baud rate */
- 	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
- 
-@@ -1268,7 +1272,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 		dev_err(port->se.dev,
- 			"Couldn't find suitable clock rate for %u\n",
- 			baud * sampling_rate);
--		goto out_restart_rx;
-+		return;
- 	}
- 
- 	dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div = %u\n",
-@@ -1359,8 +1363,6 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
- 	writel(ser_clk_cfg, uport->membase + GENI_SER_M_CLK_CFG);
- 	writel(ser_clk_cfg, uport->membase + GENI_SER_S_CLK_CFG);
--out_restart_rx:
--	qcom_geni_serial_start_rx(uport);
- }
- 
- #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
+
+Johan Hovold (3):
+  serial: qcom-geni: fix premature receiver enable
+  serial: qcom-geni: fix shutdown race
+  serial: qcom-geni: fix receiver enable
+
+ drivers/tty/serial/qcom_geni_serial.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
+
 -- 
 2.44.2
 
