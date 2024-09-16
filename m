@@ -1,149 +1,135 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7C8315853E;
-	Mon, 16 Sep 2024 15:21:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A99AC1581F2;
+	Mon, 16 Sep 2024 15:27:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726500071; cv=none; b=l6IScVG7z/5CiLX/SpZfN398ZrQMiDnqrN7embQiTxo91+Hnu2rdGFXVo/NahkuvdSJL7Jk87pno0b3T9GkFUkS3HNxQwAn0BiRzgpqkvli1Kh4uC+JS/p3VvbWuBG01SLOLHsC0YFVKWshQ6ijMNH61N9/pVXW3XgSHrT2tPDo=
+	t=1726500455; cv=none; b=NEDcojTtvxYjUnCMleakpIB67jyZyU+M3nL/Amob2co6CO1itgEBcpQWXm6+jTgifqf13q8v5fOh6ZCEpo6EkXWwYxWV/OpKuFRgzCmyCLPLSBrFsbhXN7Kw3mAGyYQy/na62YqGOMyvR35iuKzPmRp4D7hgHpJjghdx26lrjzI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726500071; c=relaxed/simple;
-	bh=PY0xJxQ4hwk1+xou1p24LXNwzkAJahCidlWqhzdjA30=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HcdWCRGOJqIGKkJW2Y58Mqk50iy0ftap5k7eRUsnJAkrISwaPZSGHncAbp+ca2hKidihY/stiAaMDbc3uO9CWEuqUOywk42jx4e59ZsoZurRBE2kPWef+3uTQdDSduL7lwfQDaxlzLdUfK+jZ0U24yy+J2Kxdh5mb1u/ksotHMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=gMEibFmb; arc=none smtp.client-ip=74.208.4.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
+	s=arc-20240116; t=1726500455; c=relaxed/simple;
+	bh=ybn60viRg3GivcawU0AcW2NTeCsVAOOgH7XfXF/QLs4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CkDIzGM2ixwBX34ZVdB3UIWnFcvT2wJczt4LiSkMMEAF7+snmzO2mChpYtYJXVTsvmi1lL78VQms4iMXiQwp28Nb4leHBCCxEREMhSjxC3mJntAhTVQTpJhMhVcMZ7Uq0SBRgZpc0u4XvPTEh3utEK6gqLID2a9Zd+LBeRB06U8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QcMBgl88; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="gMEibFmb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1726500059; x=1727104859; i=parker@finest.io;
-	bh=FstobPROtwQJKqY+r15ubuze1htAwesjXp6QUZIwGNs=;
-	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
-	 content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=gMEibFmb2Cy7Vi40O9XGk6Rs8wE5yaPw2Xc+gMbxKDIQ7TW83nWeERulqe44PEDf
-	 sKil1RcIdi1ImAREGNu/90xQt/Tg5wwG0D0Uqrq3MVLPDHuQ/0Wo5p9vWpCOqiFW2
-	 dZwn1RBFUiPDmcQ2x2JRm7DyOZSfLI/2bG++Gr3byFaWqzi/zU4xBD84aJ/ehvemB
-	 gcchWgYtuortKHX2V84Bds+FLfeiHdB0IPxu9VI4QxI4Y2jWhZyTadWWIcHXwJwfD
-	 iTZzTN8SbyZ8Ysxa9k10/XgMuNEwKrDinktDKHChf7XJPNqO8FtsXH6osJkRRY3Ui
-	 hUYuE4RF63RjZcTr4A==
-X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
-Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
- mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
- 0MPWEB-1suuUc0TEv-00BWkH; Mon, 16 Sep 2024 17:20:59 +0200
-Date: Mon, 16 Sep 2024 11:20:56 -0400
-From: Parker Newman <parker@finest.io>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Parker Newman
- <pnewman@connecttech.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QcMBgl88"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1726500454; x=1758036454;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ybn60viRg3GivcawU0AcW2NTeCsVAOOgH7XfXF/QLs4=;
+  b=QcMBgl88aJtWkYA8pFjoC1Xx9NVVk0UZrZiIVId6XHr95jzh/X4TePzR
+   0HOYv+1l89nNNA4qWxG8s8tdkcqMvEVgdWFx3LI7cAtIg71JnB3p9AcfB
+   H7K0nDT6/f/BtatCmmZk7zE37cKYfD2/Zg6euZgnADvpoUDPJQn13lmgR
+   S6uDL/HniFPa0NXloCLVswKfbFIuke5sl/4YDykJn7chhCEIP+VoKkDAq
+   dKSKF6FQ+MtzKM+KOq+YGTAaxd9EP3sXMa92GD9biYPI5eYD/6vAFwLgo
+   HM7HIKwHRCuFHmsAeRrqGjcFTHZ99hQ0gr7sTBHqJv8ke+I+V7fr2yN8J
+   w==;
+X-CSE-ConnectionGUID: jpHBCUUeTcySpbBymtMQUA==
+X-CSE-MsgGUID: f4V7hz3FTwOofqwX6014wQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11197"; a="42848112"
+X-IronPort-AV: E=Sophos;i="6.10,233,1719903600"; 
+   d="scan'208";a="42848112"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 08:27:33 -0700
+X-CSE-ConnectionGUID: 5sCWBK5QT+6icFZNaoTSpA==
+X-CSE-MsgGUID: ckvy+jtoQbOE0TVStyhSJA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,233,1719903600"; 
+   d="scan'208";a="73258548"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 08:27:31 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1sqDdQ-00000009VTc-3Cu1;
+	Mon, 16 Sep 2024 18:27:28 +0300
+Date: Mon, 16 Sep 2024 18:27:28 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Parker Newman <parker@finest.io>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Parker Newman <pnewman@connecttech.com>
 Subject: Re: [PATCH v1 3/6] misc: eeprom: eeprom_93cx6: Replace
  printk(KERN_ERR ...) with pr_err()
-Message-ID: <20240916112056.25193a17@SWDEV2.connecttech.local>
-In-Reply-To: <ZugiB0GoNF50OdYC@smile.fi.intel.com>
+Message-ID: <ZuhOYFx5ZvzkvG2o@smile.fi.intel.com>
 References: <cover.1726237379.git.pnewman@connecttech.com>
-	<127dcc7f60d15a1cc9007c9e5b06a1aa2b170e19.1726237379.git.pnewman@connecttech.com>
-	<2024091438-charity-borough-54b3@gregkh>
-	<ZugAeVWeMZGtjYme@smile.fi.intel.com>
-	<2024091632-oboe-subfloor-afc8@gregkh>
-	<ZugJT4nl1l04biJd@smile.fi.intel.com>
-	<20240916080410.464c2b5f@SWDEV2.connecttech.local>
-	<ZugiB0GoNF50OdYC@smile.fi.intel.com>
-Organization: Connect Tech Inc.
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+ <127dcc7f60d15a1cc9007c9e5b06a1aa2b170e19.1726237379.git.pnewman@connecttech.com>
+ <2024091438-charity-borough-54b3@gregkh>
+ <ZugAeVWeMZGtjYme@smile.fi.intel.com>
+ <2024091632-oboe-subfloor-afc8@gregkh>
+ <ZugJT4nl1l04biJd@smile.fi.intel.com>
+ <20240916080410.464c2b5f@SWDEV2.connecttech.local>
+ <ZugiB0GoNF50OdYC@smile.fi.intel.com>
+ <20240916112056.25193a17@SWDEV2.connecttech.local>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:gH10NaUTvJhE5B2C4x27JHgAL3aF/ejqtSkT/C1KsAx9vRYiJHC
- QaJ2X4+oyIETHnpSzKsSrr6CXaz725RmxczHTyPCGDL37eu7vtfq5SYB90j2l0isKerQask
- 7CJ7osjNRJzim4YZHBDNrgIWHn4KIu3ShjpAM0gLqyhMTylCi4f/bJwpIaAXg4qE09P0LiE
- HYIGNZWzv6jcFwHgK0SBQ==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:mDMYxQpDzXw=;q65vlWOx09SJxoqHqOHURw5mYZc
- YB6l3BdEc1ow2QLLEYFrGbjsD/5plx2BtadjGrgXSDX2tff5qFGb3+kp1xI5JQ/IozOpKimZm
- /oG+dxdk2Eo7l8aApwl8Bu1iPZ6L3JXv8vgCimfIezQq937OWsaXgAHI+K5R1nbRTOywBf3Ke
- MTKw7kSk2Pb7kNVtX2IrAHW0xjVgCvvjXcvWHOU57KskEPGrgNmB46UfqLY5a4FRdsBqWWgBM
- K1BOTrWulWFLWyOI/413vPhK/EbUuA9Te1IICdO01Pi+zuMujVuhotNXbpDgzifeqJI0uHfyE
- uD++3bkbgb9SK7MO0at8ZbIVqJLIHPdTVoic7qedgi20iAYlSxcjDWVYq180t6kE0kFJ9AC0R
- G+g//YJTSJ9CMAD2ObOtdkZjjjw5/64da8Jb7twyalUcleL6ZuEu0MXmRxUK9P+bNuSCU1R3f
- 8aNWbSKsywlaYWywodQB1zgwL6+3Mp8YhJA9biDDKmR9FHlsDj6YhTgx3/fxBbnmZ1OJ6K//H
- kSngo4UvC8CgsPb1bH8Nr8lvG5qEue1dR1VCHYKfOuiu/vjd0X94VG0FtwNAamSm6mkt2F9Oi
- CNM4v3Gj5ue7iWQhkPrHaKF+JLiU4WS81Jsue6YpgoT5HGJoHTxGuEH+4Qbdoq1NrROMNxZ6x
- JghzqzDI4PYVHkqvQj8JDIC8s4IHs91wNoz0neNgLiKDN5S/j6KyaTeoXUPvK6rIeXcBCNzEz
- 3bnINlo0JLw5IMnVZVCnC/+CNinmjOSlg==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240916112056.25193a17@SWDEV2.connecttech.local>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, 16 Sep 2024 15:18:15 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Mon, Sep 16, 2024 at 11:20:56AM -0400, Parker Newman wrote:
+> On Mon, 16 Sep 2024 15:18:15 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Mon, Sep 16, 2024 at 08:04:10AM -0400, Parker Newman wrote:
+> > > On Mon, 16 Sep 2024 13:32:47 +0300
+> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > > On Mon, Sep 16, 2024 at 12:25:52PM +0200, Greg Kroah-Hartman wrote:
+> > > > > On Mon, Sep 16, 2024 at 12:55:05PM +0300, Andy Shevchenko wrote:
+> > > > > > On Sat, Sep 14, 2024 at 08:58:50PM +0200, Greg Kroah-Hartman wrote:
+> > > > > > > On Fri, Sep 13, 2024 at 10:55:40AM -0400, Parker Newman wrote:
 
-> On Mon, Sep 16, 2024 at 08:04:10AM -0400, Parker Newman wrote:
-> > On Mon, 16 Sep 2024 13:32:47 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > On Mon, Sep 16, 2024 at 12:25:52PM +0200, Greg Kroah-Hartman wrote:
-> > > > On Mon, Sep 16, 2024 at 12:55:05PM +0300, Andy Shevchenko wrote:
-> > > > > On Sat, Sep 14, 2024 at 08:58:50PM +0200, Greg Kroah-Hartman wro=
-te:
-> > > > > > On Fri, Sep 13, 2024 at 10:55:40AM -0400, Parker Newman wrote:
->
-> ...
->
-> > > > > > > -			printk(KERN_ERR "%s: timeout\n", __func__);
-> > > > > > > +			pr_err("%s: timeout\n", __func__);
+...
+
+> > > > > > > > -			printk(KERN_ERR "%s: timeout\n", __func__);
+> > > > > > > > +			pr_err("%s: timeout\n", __func__);
+> > > > > > >
+> > > > > > > It's a device, please use dev_err().
 > > > > > >
-> > > > > > It's a device, please use dev_err().
+> > > > > > The problem is that this library doesn't know about this fact. I.e. it would
+> > > > > > need a new member just for this message. Instead, maybe drop the message as we
+> > > > > > anyway get a unique enough error code?
 > > > > >
-> > > > > The problem is that this library doesn't know about this fact. I=
-.e. it would
-> > > > > need a new member just for this message. Instead, maybe drop the=
- message as we
-> > > > > anyway get a unique enough error code?
+> > > > > Fair enough, although adding real device pointers would be good to do in
+> > > > > the future...
 > > > >
-> > > > Fair enough, although adding real device pointers would be good to=
- do in
-> > > > the future...
+> > > > Let's then do it when it will be the real need? Because I don't think this
+> > > > message is _so_ important. I believe one of the upper layers (whichever calls
+> > > > this function) should propagate the error code up to the user space. If it's
+> > > > not the case _that_ has to be fixed.
+> > > >
+> > > > TL;DR: Let's remove the message for now.
 > > >
-> > > Let's then do it when it will be the real need? Because I don't thin=
-k this
-> > > message is _so_ important. I believe one of the upper layers (whiche=
-ver calls
-> > > this function) should propagate the error code up to the user space.=
- If it's
-> > > not the case _that_ has to be fixed.
-> > >
-> > > TL;DR: Let's remove the message for now.
+> > > I can remove the message or leave it as is and drop this patch from the series.
+> > > One could make the argument that any error indication it is better than none
+> > > in this case.
 > >
-> > I can remove the message or leave it as is and drop this patch from th=
-e series.
-> > One could make the argument that any error indication it is better tha=
-n none
-> > in this case.
->
-> I think you can drop the message and make the patch to be last in the se=
-ries,
-> so it can be easily abandoned (in case that decision will be made) witho=
-ut
-> throttling the rest. At the same time in the commit message explain that=
- with
-> move to read_poll_timeout() we drop the seems redundant message. I'm fin=
-e with
-> that approach. But at the end of the day it's not that critical to the m=
-ain
-> purpose, i.e. cleaning up the Exar serial driver.
->
+> > I think you can drop the message and make the patch to be last in the series,
+> > so it can be easily abandoned (in case that decision will be made) without
+> > throttling the rest. At the same time in the commit message explain that with
+> > move to read_poll_timeout() we drop the seems redundant message. I'm fine with
+> > that approach. But at the end of the day it's not that critical to the main
+> > purpose, i.e. cleaning up the Exar serial driver.
+> 
+> I don't think read_poll_timeout() will work directly because eeprom->register_read()
+> does not return a value. I could add a "is write complete" wrapper function
+> to work around that I guess. However, I think I will just drop this patch from
+> the series as fixing it properly will be a big change and like you said its not
+> critical to the main patch.
 
-I don't think read_poll_timeout() will work directly because eeprom->regis=
-ter_read()
-does not return a value. I could add a "is write complete" wrapper functio=
-n
-to work around that I guess. However, I think I will just drop this patch =
-from
-the series as fixing it properly will be a big change and like you said it=
-s not
-critical to the main patch.
+Sure, fine with me.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
