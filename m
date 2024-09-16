@@ -1,72 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B36E145341;
-	Mon, 16 Sep 2024 14:41:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7C8315853E;
+	Mon, 16 Sep 2024 15:21:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726497715; cv=none; b=bGvsFUrcHpZ0ZbpTWMPwPmY8xSXstHYY2aAoUMcIrl8epHbRCj/1tHR34wQ4/47aChhKuPjn4nR81qghKlKCRrOHjAgZEWLN3aXOu3x43iwLm001/XZ0Zyqiw98+RN3MOkOdaNPY1aUD7dfwei1Su1xObWN7Yc4+Yiu5mPu1538=
+	t=1726500071; cv=none; b=l6IScVG7z/5CiLX/SpZfN398ZrQMiDnqrN7embQiTxo91+Hnu2rdGFXVo/NahkuvdSJL7Jk87pno0b3T9GkFUkS3HNxQwAn0BiRzgpqkvli1Kh4uC+JS/p3VvbWuBG01SLOLHsC0YFVKWshQ6ijMNH61N9/pVXW3XgSHrT2tPDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726497715; c=relaxed/simple;
-	bh=TvNvTadpeWWADBUOxHDYrBzD2/aZE1g+HZQzSwjfZp8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IUy6PLKJUS3twfAXfSkM2xDPB88RLYgZoV37j/7em2uC6LQUVPHNjCslflDBt3NxbILeww+i1ixr7E3K4pcqPijFz7zYY8HJa27u5A7v7TabgHQu6Rxdth1nU5dO06s0xkcfkhbJrUN1eJKj4/vyPgCFb2NmBM9f1M4CGS+xxmE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TNAw/DDe; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726500071; c=relaxed/simple;
+	bh=PY0xJxQ4hwk1+xou1p24LXNwzkAJahCidlWqhzdjA30=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HcdWCRGOJqIGKkJW2Y58Mqk50iy0ftap5k7eRUsnJAkrISwaPZSGHncAbp+ca2hKidihY/stiAaMDbc3uO9CWEuqUOywk42jx4e59ZsoZurRBE2kPWef+3uTQdDSduL7lwfQDaxlzLdUfK+jZ0U24yy+J2Kxdh5mb1u/ksotHMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=gMEibFmb; arc=none smtp.client-ip=74.208.4.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TNAw/DDe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1C48C4CEC5;
-	Mon, 16 Sep 2024 14:41:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726497715;
-	bh=TvNvTadpeWWADBUOxHDYrBzD2/aZE1g+HZQzSwjfZp8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TNAw/DDeFj0QqDaKKQSWIeAsZ8jmH1PUPyZFJCVIrI+S3dQVWrQVxUIV+dsIOAokB
-	 xbiqYXKbl+2sXnD+v1paI4O9cu1oBGgfaDyX/eo8Y5pY/g8jhda7+/XLsq7dDGIg8C
-	 7o13VNczctrnuB2cEEysSdSHHuCUArXXNs8IMzvMGhwIs3Gt0D4q+hlUc1EMDhT3Ue
-	 /h7IcGSgEB8zrKoSNnSZG8pMefYfhe+kLlPNtnIniNO/aS9SoCFFbrHHofZsb4Jse+
-	 Zta8wkJiFifxocCKxG7JDbtoHjJ7Rdh7TsX331Qv85fyWbtXdx2Z/LirqW5FYJNU/2
-	 XkJMoOonDjTDg==
-Date: Mon, 16 Sep 2024 16:41:50 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Michal Simek <michal.simek@amd.com>
-Cc: linux-kernel@vger.kernel.org, monstr@monstr.eu, 
-	michal.simek@xilinx.com, git@xilinx.com, stable@vger.kernel.org, 
-	Benjamin Gaignard <benjamin.gaignard@st.com>, Conor Dooley <conor+dt@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>, 
-	"open list:TTY LAYER AND SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v3] dt-bindings: serial: rs485: Fix rs485-rts-delay
- property
-Message-ID: <7hffs3njqqoavz4gtxbukse4c3zbdkc6ocwq5ku5dbwzz23lvr@jodq7fj4fnzx>
-References: <820c639b9e22fe037730ed44d1b044cdb6d28b75.1726480384.git.michal.simek@amd.com>
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="gMEibFmb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1726500059; x=1727104859; i=parker@finest.io;
+	bh=FstobPROtwQJKqY+r15ubuze1htAwesjXp6QUZIwGNs=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=gMEibFmb2Cy7Vi40O9XGk6Rs8wE5yaPw2Xc+gMbxKDIQ7TW83nWeERulqe44PEDf
+	 sKil1RcIdi1ImAREGNu/90xQt/Tg5wwG0D0Uqrq3MVLPDHuQ/0Wo5p9vWpCOqiFW2
+	 dZwn1RBFUiPDmcQ2x2JRm7DyOZSfLI/2bG++Gr3byFaWqzi/zU4xBD84aJ/ehvemB
+	 gcchWgYtuortKHX2V84Bds+FLfeiHdB0IPxu9VI4QxI4Y2jWhZyTadWWIcHXwJwfD
+	 iTZzTN8SbyZ8Ysxa9k10/XgMuNEwKrDinktDKHChf7XJPNqO8FtsXH6osJkRRY3Ui
+	 hUYuE4RF63RjZcTr4A==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0MPWEB-1suuUc0TEv-00BWkH; Mon, 16 Sep 2024 17:20:59 +0200
+Date: Mon, 16 Sep 2024 11:20:56 -0400
+From: Parker Newman <parker@finest.io>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Parker Newman
+ <pnewman@connecttech.com>
+Subject: Re: [PATCH v1 3/6] misc: eeprom: eeprom_93cx6: Replace
+ printk(KERN_ERR ...) with pr_err()
+Message-ID: <20240916112056.25193a17@SWDEV2.connecttech.local>
+In-Reply-To: <ZugiB0GoNF50OdYC@smile.fi.intel.com>
+References: <cover.1726237379.git.pnewman@connecttech.com>
+	<127dcc7f60d15a1cc9007c9e5b06a1aa2b170e19.1726237379.git.pnewman@connecttech.com>
+	<2024091438-charity-borough-54b3@gregkh>
+	<ZugAeVWeMZGtjYme@smile.fi.intel.com>
+	<2024091632-oboe-subfloor-afc8@gregkh>
+	<ZugJT4nl1l04biJd@smile.fi.intel.com>
+	<20240916080410.464c2b5f@SWDEV2.connecttech.local>
+	<ZugiB0GoNF50OdYC@smile.fi.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <820c639b9e22fe037730ed44d1b044cdb6d28b75.1726480384.git.michal.simek@amd.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:gH10NaUTvJhE5B2C4x27JHgAL3aF/ejqtSkT/C1KsAx9vRYiJHC
+ QaJ2X4+oyIETHnpSzKsSrr6CXaz725RmxczHTyPCGDL37eu7vtfq5SYB90j2l0isKerQask
+ 7CJ7osjNRJzim4YZHBDNrgIWHn4KIu3ShjpAM0gLqyhMTylCi4f/bJwpIaAXg4qE09P0LiE
+ HYIGNZWzv6jcFwHgK0SBQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:mDMYxQpDzXw=;q65vlWOx09SJxoqHqOHURw5mYZc
+ YB6l3BdEc1ow2QLLEYFrGbjsD/5plx2BtadjGrgXSDX2tff5qFGb3+kp1xI5JQ/IozOpKimZm
+ /oG+dxdk2Eo7l8aApwl8Bu1iPZ6L3JXv8vgCimfIezQq937OWsaXgAHI+K5R1nbRTOywBf3Ke
+ MTKw7kSk2Pb7kNVtX2IrAHW0xjVgCvvjXcvWHOU57KskEPGrgNmB46UfqLY5a4FRdsBqWWgBM
+ K1BOTrWulWFLWyOI/413vPhK/EbUuA9Te1IICdO01Pi+zuMujVuhotNXbpDgzifeqJI0uHfyE
+ uD++3bkbgb9SK7MO0at8ZbIVqJLIHPdTVoic7qedgi20iAYlSxcjDWVYq180t6kE0kFJ9AC0R
+ G+g//YJTSJ9CMAD2ObOtdkZjjjw5/64da8Jb7twyalUcleL6ZuEu0MXmRxUK9P+bNuSCU1R3f
+ 8aNWbSKsywlaYWywodQB1zgwL6+3Mp8YhJA9biDDKmR9FHlsDj6YhTgx3/fxBbnmZ1OJ6K//H
+ kSngo4UvC8CgsPb1bH8Nr8lvG5qEue1dR1VCHYKfOuiu/vjd0X94VG0FtwNAamSm6mkt2F9Oi
+ CNM4v3Gj5ue7iWQhkPrHaKF+JLiU4WS81Jsue6YpgoT5HGJoHTxGuEH+4Qbdoq1NrROMNxZ6x
+ JghzqzDI4PYVHkqvQj8JDIC8s4IHs91wNoz0neNgLiKDN5S/j6KyaTeoXUPvK6rIeXcBCNzEz
+ 3bnINlo0JLw5IMnVZVCnC/+CNinmjOSlg==
 
-On Mon, Sep 16, 2024 at 11:53:06AM +0200, Michal Simek wrote:
-> Code expects array only with 2 items which should be checked.
-> But also item checking is not working as it should likely because of
-> incorrect items description.
-> 
-> Fixes: d50f974c4f7f ("dt-bindings: serial: Convert rs485 bindings to json-schema")
-> Signed-off-by: Michal Simek <michal.simek@amd.com>
-> Cc: <stable@vger.kernel.org>
-> ---
+On Mon, 16 Sep 2024 15:18:15 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-You disappeared from IRC, before I was able to answer, so the answer is
-here:
+> On Mon, Sep 16, 2024 at 08:04:10AM -0400, Parker Newman wrote:
+> > On Mon, 16 Sep 2024 13:32:47 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > > On Mon, Sep 16, 2024 at 12:25:52PM +0200, Greg Kroah-Hartman wrote:
+> > > > On Mon, Sep 16, 2024 at 12:55:05PM +0300, Andy Shevchenko wrote:
+> > > > > On Sat, Sep 14, 2024 at 08:58:50PM +0200, Greg Kroah-Hartman wro=
+te:
+> > > > > > On Fri, Sep 13, 2024 at 10:55:40AM -0400, Parker Newman wrote:
+>
+> ...
+>
+> > > > > > > -			printk(KERN_ERR "%s: timeout\n", __func__);
+> > > > > > > +			pr_err("%s: timeout\n", __func__);
+> > > > > >
+> > > > > > It's a device, please use dev_err().
+> > > > >
+> > > > > The problem is that this library doesn't know about this fact. I=
+.e. it would
+> > > > > need a new member just for this message. Instead, maybe drop the=
+ message as we
+> > > > > anyway get a unique enough error code?
+> > > >
+> > > > Fair enough, although adding real device pointers would be good to=
+ do in
+> > > > the future...
+> > >
+> > > Let's then do it when it will be the real need? Because I don't thin=
+k this
+> > > message is _so_ important. I believe one of the upper layers (whiche=
+ver calls
+> > > this function) should propagate the error code up to the user space.=
+ If it's
+> > > not the case _that_ has to be fixed.
+> > >
+> > > TL;DR: Let's remove the message for now.
+> >
+> > I can remove the message or leave it as is and drop this patch from th=
+e series.
+> > One could make the argument that any error indication it is better tha=
+n none
+> > in this case.
+>
+> I think you can drop the message and make the patch to be last in the se=
+ries,
+> so it can be easily abandoned (in case that decision will be made) witho=
+ut
+> throttling the rest. At the same time in the commit message explain that=
+ with
+> move to read_poll_timeout() we drop the seems redundant message. I'm fin=
+e with
+> that approach. But at the end of the day it's not that critical to the m=
+ain
+> purpose, i.e. cleaning up the Exar serial driver.
+>
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-
-Thanks.
-
-Best regards,
-Krzysztof
-
+I don't think read_poll_timeout() will work directly because eeprom->regis=
+ter_read()
+does not return a value. I could add a "is write complete" wrapper functio=
+n
+to work around that I guess. However, I think I will just drop this patch =
+from
+the series as fixing it properly will be a big change and like you said it=
+s not
+critical to the main patch.
