@@ -1,144 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821AA5476B;
-	Mon, 16 Sep 2024 09:05:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B75114A4E2;
+	Mon, 16 Sep 2024 09:55:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726477527; cv=none; b=NuQlvtgjc7mzG5tVeUHrmKJBGTMtfO/PSZNvvYfiOnZ3FR34PbVZbnjZaVVr3ISwaDx5su1uSm8j9rlv0R4tnoxDZvFYKb+YjPD8Y8HV81MJhGjguxPYyFB6rTqaRiJekNYzKS9B6K1Yuu4PntM433O0JCvtdgU0a0d2EM7uleg=
+	t=1726480513; cv=none; b=AXsxVP2qUyKCpiMea8BCu2M6BTz8bxwUub+B0YShsl3jvz4XnhoBIXpXO3gVYeqphMV7J27k9wzpvuC5TVZkD49FS3dYFg8E70iTP8qz1pi1lTb2huVBzUn/y5P5ywkXTgLp/y92lkZipPCcqLLQLgXfuJY/YrDarOYt+ZueTy8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726477527; c=relaxed/simple;
-	bh=wBxUqQLLrwq59Zhb3C0KoQvKRZb8B40EpK018OhlRMQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=U4dyRh8hNXyNwB+1wrK0InIi5P94joO7dSKvIGf2I2lVKqbLcC4Gfzf9cPrL+opspAKJLFwJGx9G0Fmm9mMXT6JEQ1S35W59cu5NO1Rkcu+TGsc5oyhD93lT6k4lAslLerV2q1mV5jRoGdgzzCKxr4IFtKY9WaSNORmxTY/X7t8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cy2w1NgN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726480513; c=relaxed/simple;
+	bh=/WFKC3SoO7nnl0ody5g+rBvMFJbQKowrTvuCU4rEXK4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MyhLY3QUZm8zQBWH/E7c6sSECd8ndcPRv3LvSRIA6+upm48fQW9gPgue3NKxM3gDvRiT3p15kfhE9u5cOmV84eet3TFMfgNpuvneKp0FbojL3HV1u/mnZ64/cmVeD7N2gKoMGgvSdH8YGZODIPrB/mLpg/1o0uh+G1aU9Ht06WU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ipiij/ay; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cy2w1NgN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D4F3C4CEC4;
-	Mon, 16 Sep 2024 09:05:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726477526;
-	bh=wBxUqQLLrwq59Zhb3C0KoQvKRZb8B40EpK018OhlRMQ=;
-	h=Date:Subject:List-Id:To:Cc:References:From:In-Reply-To:From;
-	b=Cy2w1NgNyoRLL+7QPzvUnLAdrIN4k6r1jLnw5u+zWW1Bqhf9afydJkemaxo4zgASM
-	 i6yVpDpSNHtDEh4KesVe0tMbeH5EQaE0wxDvs+Xam0k7JXZOBFOjgGoaMnbpvU5uQ/
-	 0Us39SocfsYqG8PLeukXZKZ9qt1WSkZlsywwuV6GXMwCHZmpynUo8W696AQi5FSzKV
-	 SRG3C8DGM42pS1NSrCVtkgWF+Cb/8jfphx9iqL+TldnMK4tezDxPo+o7T2jgM1ZIxM
-	 fACLBDjfPWE1MakSShVw5iAefszB538u1Lvypxv8YwT3lR5Cf3uCx0o3Vlse8VCJ1Y
-	 C1Fn03Vo1x1Gw==
-Message-ID: <58e9506d-cb27-4808-bc73-422af4154fa1@kernel.org>
-Date: Mon, 16 Sep 2024 11:05:15 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ipiij/ay"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1726480512; x=1758016512;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/WFKC3SoO7nnl0ody5g+rBvMFJbQKowrTvuCU4rEXK4=;
+  b=Ipiij/ayEK8afb6kIU4aaojVr+9CZpYnnTD4CFrrxKJPWY0oGesxBTTk
+   jEfBgg6B1yaDWC+yUujmJCW4moj3TUwvDiLcipGMXVQPXuVT85cRjbNEz
+   GLOvxXhuTDQpQ8dn8/Yva5jr4V10VXemXZhOdEsENogluv8GC4r+y7LaE
+   QvZ3KwFtdQ01EgMgP5fkXvccUQMt/tckbQEUT+eB7MbgGLfpdBT50JVzm
+   rg4vL7M8S0lRno7rjDamKcYQV+blErAJFAh4M6Yxk95XQJI6gNUuu/qd2
+   f36/AvE+Bin8BmT4J2xm9hyDKNmdo0OwVvSifwhCD/MmUpb8BwKJbJtVI
+   Q==;
+X-CSE-ConnectionGUID: 0y8ZCWAJT1im7eltVOv5Xg==
+X-CSE-MsgGUID: Bb2sifChQmOrPPOclar5JQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11196"; a="42774824"
+X-IronPort-AV: E=Sophos;i="6.10,233,1719903600"; 
+   d="scan'208";a="42774824"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 02:55:11 -0700
+X-CSE-ConnectionGUID: HBZnngcETzKM3OIs32/ToA==
+X-CSE-MsgGUID: b1OfRFM3QdmSW2Eh4EZ6WQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,233,1719903600"; 
+   d="scan'208";a="68699289"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa010.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 02:55:09 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1sq8Rm-00000009PeS-1LiL;
+	Mon, 16 Sep 2024 12:55:06 +0300
+Date: Mon, 16 Sep 2024 12:55:05 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Parker Newman <parker@finest.io>, Jiri Slaby <jirislaby@kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH v1 3/6] misc: eeprom: eeprom_93cx6: Replace
+ printk(KERN_ERR ...) with pr_err()
+Message-ID: <ZugAeVWeMZGtjYme@smile.fi.intel.com>
+References: <cover.1726237379.git.pnewman@connecttech.com>
+ <127dcc7f60d15a1cc9007c9e5b06a1aa2b170e19.1726237379.git.pnewman@connecttech.com>
+ <2024091438-charity-borough-54b3@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/21] Adding support of ADI ARMv8 ADSP-SC598 SoC.
-To: arturs.artamonovs@analog.com, Catalin Marinas <catalin.marinas@arm.com>,
- Will Deacon <will@kernel.org>, Greg Malysa <greg.malysa@timesys.com>,
- Philipp Zabel <p.zabel@pengutronix.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Utsav Agarwal <Utsav.Agarwal@analog.com>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Thomas Gleixner <tglx@linutronix.de>,
- Andi Shyti <andi.shyti@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
- Olof Johansson <olof@lixom.net>, soc@kernel.org
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-serial@vger.kernel.org, adsp-linux@analog.com,
- Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-References: <20240912-test-v1-0-458fa57c8ccf@analog.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20240912-test-v1-0-458fa57c8ccf@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2024091438-charity-borough-54b3@gregkh>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On 12/09/2024 20:24, Arturs Artamonovs via B4 Relay wrote:
-> This set of patches based on ADI fork of Linux Kerenl that support family of ADSP-SC5xx
-> SoC's and used by customers for some time . Patch series contains minimal set
-> of changes to add ADSP-SC598 support to upstream kernel. This series include
-> UART,I2C,IRQCHIP,RCU drivers and device-tree to be able boot on EV-SC598-SOM
-> board into serial shell and able to reset the board. Current SOM board
-> requires I2C expander to enable UART output.
+On Sat, Sep 14, 2024 at 08:58:50PM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Sep 13, 2024 at 10:55:40AM -0400, Parker Newman wrote:
+
+...
+
+> > -			printk(KERN_ERR "%s: timeout\n", __func__);
+> > +			pr_err("%s: timeout\n", __func__);
 > 
-> UART,I2C and PINCTRL drivers are based on old Blackfin drivers with
-> ADSP-SC5xx related bug fixes and improvments.
-> 
-> Signed-off-by: Arturs Artamonovs <arturs.artamonovs@analog.com>
-> ---
+> It's a device, please use dev_err().
 
-For new platform, be sure you have 0 warnings:
-1. Please run standard kernel tools for static analysis, like
-coccinelle, smatch and sparse, and fix reported warnings.
+The problem is that this library doesn't know about this fact. I.e. it would
+need a new member just for this message. Instead, maybe drop the message as we
+anyway get a unique enough error code?
 
-2. Also check for warnings when building with W=1. Most of these
-commands (checks or W=1 build) can build specific targets, like some
-directory, to narrow the scope to only your code. The code here looks
-like it needs a fix. Feel free to get in touch if the warning is not clear.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-3. Fix all compile test warning reported by LKP and check for common
-configs, regardless of reports.
-
-4. Please run `make dtbs_check W=1` (see
-Documentation/devicetree/bindings/writing-schema.rst or
-https://www.linaro.org/blog/tips-and-tricks-for-validating-devicetree-sources-with-the-devicetree-schema/
-for instructions).
-
-5. Please run scripts/checkpatch.pl and fix reported warnings. Then
-please run `scripts/checkpatch.pl --strict` and (probably) fix more
-warnings. Some warnings can be ignored, especially from --strict run.
-
-
-Best regards,
-Krzysztof
 
