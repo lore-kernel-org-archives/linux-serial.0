@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D03612BF02;
-	Mon, 16 Sep 2024 07:13:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821AA5476B;
+	Mon, 16 Sep 2024 09:05:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726470808; cv=none; b=osJGnBVk7Gzm3OitlUKNy3vj+Hpr1MO8K6aprIV8e6/REwSgCYUVFh3bKGFDIXM1Pp6oxptfEwBz4BNnNOM66xt+G/F+xPOQwk2PyCgk8VT1OMPago2EhD8TcTiENBo5vhPakh6Gicy0R9aTMSaga24L3Dc34X0Nt7JTMlTNRC4=
+	t=1726477527; cv=none; b=NuQlvtgjc7mzG5tVeUHrmKJBGTMtfO/PSZNvvYfiOnZ3FR34PbVZbnjZaVVr3ISwaDx5su1uSm8j9rlv0R4tnoxDZvFYKb+YjPD8Y8HV81MJhGjguxPYyFB6rTqaRiJekNYzKS9B6K1Yuu4PntM433O0JCvtdgU0a0d2EM7uleg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726470808; c=relaxed/simple;
-	bh=2a0pJBR14LWlAhQYOY88JR1dcJJ7eFFl68zpz6H3ptM=;
+	s=arc-20240116; t=1726477527; c=relaxed/simple;
+	bh=wBxUqQLLrwq59Zhb3C0KoQvKRZb8B40EpK018OhlRMQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YiOD4exV8c6OJ95sJ4cuILnVOawxWiLHYBiN7b/CFZG9wCb4BXoveCceTVlxgRGrOgn/O5H8aQRy4X6+WcDL9f8ipgk6nkguEQ/U6EnC2BjuVXQs7sT7FvWzM0UEDYOXHtAtCgH5o5rSdjIYCgeHzaoln+CX9Apo/87KPraKBEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tIVXUipk; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=U4dyRh8hNXyNwB+1wrK0InIi5P94joO7dSKvIGf2I2lVKqbLcC4Gfzf9cPrL+opspAKJLFwJGx9G0Fmm9mMXT6JEQ1S35W59cu5NO1Rkcu+TGsc5oyhD93lT6k4lAslLerV2q1mV5jRoGdgzzCKxr4IFtKY9WaSNORmxTY/X7t8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cy2w1NgN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tIVXUipk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD29FC4CEC4;
-	Mon, 16 Sep 2024 07:13:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cy2w1NgN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D4F3C4CEC4;
+	Mon, 16 Sep 2024 09:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726470807;
-	bh=2a0pJBR14LWlAhQYOY88JR1dcJJ7eFFl68zpz6H3ptM=;
+	s=k20201202; t=1726477526;
+	bh=wBxUqQLLrwq59Zhb3C0KoQvKRZb8B40EpK018OhlRMQ=;
 	h=Date:Subject:List-Id:To:Cc:References:From:In-Reply-To:From;
-	b=tIVXUipkjSS946n9IFKZDr7qxpXiEO8TmFKDEMFxxhox7mEIpqXQ94hkR8v+tse0C
-	 5mlk9MePKNgtSxsWdCkBYizq1ksD1Jpblu/QlYGzIpsPa5nVFcADXYVl9BJUKhzQ4w
-	 xo7GBem/3My7g0ooLu3514Xrpxe9JeqCCTeHrz9a4+93OsykOdNX0iQxMstY06+i0F
-	 Mrt9JlxP3WZXoPI+R0OTV0OwbSB4XsIU96T/8yj/0Ts0QKHfhpDx/MlbZ33RZqOUBS
-	 rtMAhB6XYuN/GIR5ZLr68/prT9uDMt7wJhSoKbnMd9Ed4+dkGWifVhxIs//IjiGk1j
-	 X8YVi7Ob3WT0Q==
-Message-ID: <ad7ac580-3593-4b44-b6c9-5c43b80b135e@kernel.org>
-Date: Mon, 16 Sep 2024 09:13:14 +0200
+	b=Cy2w1NgNyoRLL+7QPzvUnLAdrIN4k6r1jLnw5u+zWW1Bqhf9afydJkemaxo4zgASM
+	 i6yVpDpSNHtDEh4KesVe0tMbeH5EQaE0wxDvs+Xam0k7JXZOBFOjgGoaMnbpvU5uQ/
+	 0Us39SocfsYqG8PLeukXZKZ9qt1WSkZlsywwuV6GXMwCHZmpynUo8W696AQi5FSzKV
+	 SRG3C8DGM42pS1NSrCVtkgWF+Cb/8jfphx9iqL+TldnMK4tezDxPo+o7T2jgM1ZIxM
+	 fACLBDjfPWE1MakSShVw5iAefszB538u1Lvypxv8YwT3lR5Cf3uCx0o3Vlse8VCJ1Y
+	 C1Fn03Vo1x1Gw==
+Message-ID: <58e9506d-cb27-4808-bc73-422af4154fa1@kernel.org>
+Date: Mon, 16 Sep 2024 11:05:15 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,7 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 15/21] i2c: Add driver for ADI ADSP-SC5xx platforms
+Subject: Re: [PATCH 00/21] Adding support of ADI ARMv8 ADSP-SC598 SoC.
 To: arturs.artamonovs@analog.com, Catalin Marinas <catalin.marinas@arm.com>,
  Will Deacon <will@kernel.org>, Greg Malysa <greg.malysa@timesys.com>,
  Philipp Zabel <p.zabel@pengutronix.de>, Rob Herring <robh@kernel.org>,
@@ -54,7 +54,6 @@ Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, adsp-linux@analog.com,
  Nathan Barrett-Morrison <nathan.morrison@timesys.com>
 References: <20240912-test-v1-0-458fa57c8ccf@analog.com>
- <20240912-test-v1-15-458fa57c8ccf@analog.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -100,267 +99,45 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20240912-test-v1-15-458fa57c8ccf@analog.com>
+In-Reply-To: <20240912-test-v1-0-458fa57c8ccf@analog.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 12/09/2024 20:25, Arturs Artamonovs via B4 Relay wrote:
-> From: Arturs Artamonovs <arturs.artamonovs@analog.com>
+On 12/09/2024 20:24, Arturs Artamonovs via B4 Relay wrote:
+> This set of patches based on ADI fork of Linux Kerenl that support family of ADSP-SC5xx
+> SoC's and used by customers for some time . Patch series contains minimal set
+> of changes to add ADSP-SC598 support to upstream kernel. This series include
+> UART,I2C,IRQCHIP,RCU drivers and device-tree to be able boot on EV-SC598-SOM
+> board into serial shell and able to reset the board. Current SOM board
+> requires I2C expander to enable UART output.
 > 
-> Add support for I2C on SC5xx
+> UART,I2C and PINCTRL drivers are based on old Blackfin drivers with
+> ADSP-SC5xx related bug fixes and improvments.
 > 
-> Signed-off-by: Arturs Artamonovs <Arturs.Artamonovs@analog.com>
-> Co-developed-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-> Signed-off-by: Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-> Co-developed-by: Greg Malysa <greg.malysa@timesys.com>
-> Signed-off-by: Greg Malysa <greg.malysa@timesys.com>
-
-As in all patches - chain looks wrong.
-
+> Signed-off-by: Arturs Artamonovs <arturs.artamonovs@analog.com>
 > ---
->  drivers/i2c/busses/Kconfig       |  17 +
->  drivers/i2c/busses/Makefile      |   1 +
->  drivers/i2c/busses/i2c-adi-twi.c | 940 +++++++++++++++++++++++++++++++++++++++
->  3 files changed, 958 insertions(+)
 
+For new platform, be sure you have 0 warnings:
+1. Please run standard kernel tools for static analysis, like
+coccinelle, smatch and sparse, and fix reported warnings.
 
+2. Also check for warnings when building with W=1. Most of these
+commands (checks or W=1 build) can build specific targets, like some
+directory, to narrow the scope to only your code. The code here looks
+like it needs a fix. Feel free to get in touch if the warning is not clear.
 
-> +static SIMPLE_DEV_PM_OPS(i2c_adi_twi_pm,
-> +			 i2c_adi_twi_suspend, i2c_adi_twi_resume);
-> +#define I2C_ADI_TWI_PM_OPS	(&i2c_adi_twi_pm)
-> +#else
-> +#define I2C_ADI_TWI_PM_OPS	NULL
-> +#endif
-> +
-> +#ifdef CONFIG_OF
+3. Fix all compile test warning reported by LKP and check for common
+configs, regardless of reports.
 
-Drop
+4. Please run `make dtbs_check W=1` (see
+Documentation/devicetree/bindings/writing-schema.rst or
+https://www.linaro.org/blog/tips-and-tricks-for-validating-devicetree-sources-with-the-devicetree-schema/
+for instructions).
 
-> +static const struct of_device_id adi_twi_of_match[] = {
-> +	{
-> +		.compatible = "adi,twi",
-> +	},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, adi_twi_of_match);
-> +#endif
-> +
-> +static int i2c_adi_twi_probe(struct platform_device *pdev)
-> +{
-> +	struct adi_twi_iface *iface;
-> +	struct i2c_adapter *p_adap;
-> +	struct resource *res;
-> +	const struct of_device_id *match;
-> +	struct device_node *node = pdev->dev.of_node;
-> +	int rc;
-> +	unsigned int clkhilow;
-> +	u16 writeValue;
-> +
-> +	iface = devm_kzalloc(&pdev->dev, sizeof(*iface), GFP_KERNEL);
-> +	if (!iface)
-> +		return -ENOMEM;
-> +
-> +	spin_lock_init(&(iface->lock));
-> +
-> +	match = of_match_device(of_match_ptr(adi_twi_of_match), &pdev->dev);
+5. Please run scripts/checkpatch.pl and fix reported warnings. Then
+please run `scripts/checkpatch.pl --strict` and (probably) fix more
+warnings. Some warnings can be ignored, especially from --strict run.
 
-Drop of_mathc_ptr
-
-> +	if (match) {
-> +		if (of_property_read_u32(node, "clock-khz",
-
-Uh? I really do not get what is this.
-
-
-> +			&iface->twi_clk))
-
-Really odd alignment.
-
-> +			iface->twi_clk = 50;
-> +	} else
-> +		iface->twi_clk = CONFIG_I2C_ADI_TWI_CLK_KHZ;
-> +
-> +	iface->sclk = devm_clk_get(&pdev->dev, "sclk0");
-> +	if (IS_ERR(iface->sclk)) {
-> +		if (PTR_ERR(iface->sclk) != -EPROBE_DEFER)
-> +			dev_err(&pdev->dev, "Missing i2c clock\n");
-
-Eh... there is nowhere such code. Please work with upstream code, not
-downstream. When writing drivers take UPSTREAM driver as template.
-Whatever you have in downstream is not a good to send to us.
-
-Syntax is return dev_err_probe.
-
-> +		return PTR_ERR(iface->sclk);
-> +	}
-> +
-> +	/* Find and map our resources */
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (res == NULL) {
-> +		dev_err(&pdev->dev, "Cannot get IORESOURCE_MEM\n");
-> +		return -ENOENT;
-> +	}
-> +
-> +	iface->regs_base = devm_ioremap_resource(&pdev->dev, res);
-
-Combine these two calls with proper helper.
-
-> +	if (IS_ERR(iface->regs_base)) {
-> +		dev_err(&pdev->dev, "Cannot map IO\n");
-> +		return PTR_ERR(iface->regs_base);
-> +	}
-> +
-> +	iface->irq = platform_get_irq(pdev, 0);
-> +	if (iface->irq < 0) {
-
-Here you have correct, other patch has a bug. That makes me wonder about
-consistency of this code. There are several other hints that people
-wrote it with quite different coding style.
-
-> +		dev_err(&pdev->dev, "No IRQ specified\n");
-> +		return -ENOENT;
-
-No. return the error. Anyway, that's never a correct errno. Read
-description of this errno: no such file. This is not a file you are
-getting here.
-
-This comment applies to all your code.
-
-> +	}
-> +
-> +	p_adap = &iface->adap;
-> +	p_adap->nr = pdev->id;
-> +	strscpy(p_adap->name, pdev->name, sizeof(p_adap->name));
-> +	p_adap->algo = &adi_twi_algorithm;
-> +	p_adap->algo_data = iface;
-> +	p_adap->class = I2C_CLASS_DEPRECATED;
-> +	p_adap->dev.parent = &pdev->dev;
-> +	p_adap->dev.of_node = node;
-> +	p_adap->timeout = 5 * HZ;
-> +	p_adap->retries = 3;
-> +
-> +	rc = devm_request_irq(&pdev->dev, iface->irq, adi_twi_interrupt_entry,
-> +		0, pdev->name, iface);
-> +	if (rc) {
-> +		dev_err(&pdev->dev, "Can't get IRQ %d !\n", iface->irq);
-> +		rc = -ENODEV;
-
-???
-
-Sorry, this driver is in really poor shape.
-
-> +		goto out_error;
-> +	}
-> +
-> +	/* Set TWI internal clock as 10MHz */
-> +	clk_prepare_enable(iface->sclk);
-> +	if (rc) {
-> +		dev_err(&pdev->dev, "Could not enable sclk\n");
-> +		goto out_error;
-
-return
-
-> +	}
-> +
-> +	writeValue = ((clk_get_rate(iface->sclk) / 1000 / 1000 + 5) / 10) & 0x7F;
-
-No camelCase. Please follow Linux coding style.
-
-> +	iowrite16(writeValue, &iface->regs_base->control);
-> +
-> +	/*
-> +	 * We will not end up with a CLKDIV=0 because no one will specify
-> +	 * 20kHz SCL or less in Kconfig now. (5 * 1000 / 20 = 250)
-> +	 */
-> +	clkhilow = ((10 * 1000 / iface->twi_clk) + 1) / 2;
-> +
-> +	/* Set Twi interface clock as specified */
-> +	writeValue = (clkhilow << 8) | clkhilow;
-> +	iowrite16(writeValue, &iface->regs_base->clkdiv);
-> +
-> +	/* Enable TWI */
-> +	writeValue = ioread16(&iface->regs_base->control) | TWI_ENA;
-> +	iowrite16(writeValue, &iface->regs_base->control);
-> +
-> +	rc = i2c_add_numbered_adapter(p_adap);
-> +	if (rc < 0)
-> +		goto disable_clk;
-> +
-> +	platform_set_drvdata(pdev, iface);
-> +
-> +	dev_info(&pdev->dev, "ADI on-chip I2C TWI Controller, regs_base@%p\n",
-> +		iface->regs_base);
-
-Drop. Driver should be silent on success.
-
-> +
-> +	return 0;
-> +
-> +disable_clk:
-> +	clk_disable_unprepare(iface->sclk);
-
-devm_clk_get_enabled
-
-> +
-> +out_error:
-
-Drop
-
-> +	return rc;
-> +}
-> +
-> +static void i2c_adi_twi_remove(struct platform_device *pdev)
-> +{
-> +	struct adi_twi_iface *iface = platform_get_drvdata(pdev);
-> +
-> +	clk_disable_unprepare(iface->sclk);
-> +	i2c_del_adapter(&(iface->adap));
-> +}
-> +
-> +static struct platform_driver i2c_adi_twi_driver = {
-> +	.probe		= i2c_adi_twi_probe,
-> +	.remove		= i2c_adi_twi_remove,
-> +	.driver		= {
-> +		.name	= "i2c-adi-twi",
-> +		.pm	= I2C_ADI_TWI_PM_OPS,
-> +		.of_match_table = of_match_ptr(adi_twi_of_match),
-
-Drop of_match_ptr. None of your other code has it, right? This should
-make you wonder.
-
-> +	},
-> +};
-> +
-> +static int __init i2c_adi_twi_init(void)
-> +{
-> +	return platform_driver_register(&i2c_adi_twi_driver);
-> +}
-> +
-> +static void __exit i2c_adi_twi_exit(void)
-> +{
-> +	platform_driver_unregister(&i2c_adi_twi_driver);
-> +}
-> +
-> +subsys_initcall(i2c_adi_twi_init);
-
-No, i2c driver can be just module platform driver.
-
-> +module_exit(i2c_adi_twi_exit);
-> +
-> +MODULE_AUTHOR("Bryan Wu, Sonic Zhang");
-> +MODULE_DESCRIPTION("ADI on-chip I2C TWI Controller Driver");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_ALIAS("platform:i2c-adi-twi");
-
-You should not need MODULE_ALIAS() in normal cases. If you need it,
-usually it means your device ID table is wrong (e.g. misses either
-entries or MODULE_DEVICE_TABLE()). MODULE_ALIAS() is not a substitute
-for incomplete ID table.
-
-> \ No newline at end of file
-
-
-> 
 
 Best regards,
 Krzysztof
