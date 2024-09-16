@@ -1,135 +1,87 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A99AC1581F2;
-	Mon, 16 Sep 2024 15:27:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D2A15AD9B;
+	Mon, 16 Sep 2024 17:27:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726500455; cv=none; b=NEDcojTtvxYjUnCMleakpIB67jyZyU+M3nL/Amob2co6CO1itgEBcpQWXm6+jTgifqf13q8v5fOh6ZCEpo6EkXWwYxWV/OpKuFRgzCmyCLPLSBrFsbhXN7Kw3mAGyYQy/na62YqGOMyvR35iuKzPmRp4D7hgHpJjghdx26lrjzI=
+	t=1726507623; cv=none; b=lmVu6csPQGIA8IsKv2+sbf2QhRil8vEJUCx5y8dboc5EHSZWOrfGnFRd3n63d2Hnqmlp6SyJd+qKL2m3UxFoph3w8f8cJUU5ZC3Ca4ar9zvr2wK30WZXO53eVFuHVJHgA/+vyi2SBljWZCekcrPhT8npJ0tOS7bKRrxn7hO6f3g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726500455; c=relaxed/simple;
-	bh=ybn60viRg3GivcawU0AcW2NTeCsVAOOgH7XfXF/QLs4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CkDIzGM2ixwBX34ZVdB3UIWnFcvT2wJczt4LiSkMMEAF7+snmzO2mChpYtYJXVTsvmi1lL78VQms4iMXiQwp28Nb4leHBCCxEREMhSjxC3mJntAhTVQTpJhMhVcMZ7Uq0SBRgZpc0u4XvPTEh3utEK6gqLID2a9Zd+LBeRB06U8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QcMBgl88; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1726507623; c=relaxed/simple;
+	bh=5qUhOm/N1xmDx37BzF4Us12jj7jxEK7J2OvOQCs+KIc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=RUgBYn2EnggjRgWwNY4T8UiOTOy6GAhAlMDmcRrQESysF5zq9gzPjtr+VqGU39/kkrdqZ7K4F33PSkWEK3PmLLL2vwa8gRPsrJKc9oYsrxSG1A5ClRt6p17h4Ripu74uT+kIkkeZhoSU1OQEDEMIK2OicLxCtNJFTzfad3G2Klo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DfKZ0IwF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QcMBgl88"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726500454; x=1758036454;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ybn60viRg3GivcawU0AcW2NTeCsVAOOgH7XfXF/QLs4=;
-  b=QcMBgl88aJtWkYA8pFjoC1Xx9NVVk0UZrZiIVId6XHr95jzh/X4TePzR
-   0HOYv+1l89nNNA4qWxG8s8tdkcqMvEVgdWFx3LI7cAtIg71JnB3p9AcfB
-   H7K0nDT6/f/BtatCmmZk7zE37cKYfD2/Zg6euZgnADvpoUDPJQn13lmgR
-   S6uDL/HniFPa0NXloCLVswKfbFIuke5sl/4YDykJn7chhCEIP+VoKkDAq
-   dKSKF6FQ+MtzKM+KOq+YGTAaxd9EP3sXMa92GD9biYPI5eYD/6vAFwLgo
-   HM7HIKwHRCuFHmsAeRrqGjcFTHZ99hQ0gr7sTBHqJv8ke+I+V7fr2yN8J
-   w==;
-X-CSE-ConnectionGUID: jpHBCUUeTcySpbBymtMQUA==
-X-CSE-MsgGUID: f4V7hz3FTwOofqwX6014wQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11197"; a="42848112"
-X-IronPort-AV: E=Sophos;i="6.10,233,1719903600"; 
-   d="scan'208";a="42848112"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 08:27:33 -0700
-X-CSE-ConnectionGUID: 5sCWBK5QT+6icFZNaoTSpA==
-X-CSE-MsgGUID: ckvy+jtoQbOE0TVStyhSJA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,233,1719903600"; 
-   d="scan'208";a="73258548"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2024 08:27:31 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1sqDdQ-00000009VTc-3Cu1;
-	Mon, 16 Sep 2024 18:27:28 +0300
-Date: Mon, 16 Sep 2024 18:27:28 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Parker Newman <parker@finest.io>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Parker Newman <pnewman@connecttech.com>
-Subject: Re: [PATCH v1 3/6] misc: eeprom: eeprom_93cx6: Replace
- printk(KERN_ERR ...) with pr_err()
-Message-ID: <ZuhOYFx5ZvzkvG2o@smile.fi.intel.com>
-References: <cover.1726237379.git.pnewman@connecttech.com>
- <127dcc7f60d15a1cc9007c9e5b06a1aa2b170e19.1726237379.git.pnewman@connecttech.com>
- <2024091438-charity-borough-54b3@gregkh>
- <ZugAeVWeMZGtjYme@smile.fi.intel.com>
- <2024091632-oboe-subfloor-afc8@gregkh>
- <ZugJT4nl1l04biJd@smile.fi.intel.com>
- <20240916080410.464c2b5f@SWDEV2.connecttech.local>
- <ZugiB0GoNF50OdYC@smile.fi.intel.com>
- <20240916112056.25193a17@SWDEV2.connecttech.local>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DfKZ0IwF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32F8CC4CED3;
+	Mon, 16 Sep 2024 17:27:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1726507623;
+	bh=5qUhOm/N1xmDx37BzF4Us12jj7jxEK7J2OvOQCs+KIc=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=DfKZ0IwF1udZMyn5LKM4gMYAnIY4mM6dt4LOFY2RCTt3At5qS+hMZpPmgKDCuR/p6
+	 k84EeefGYh/HaDUie//XokwSUGUPgJplID/uo9euiZW1bpXjEPGMJMftnmZmHIss13
+	 NGzgJLo6KQyUV5ko+dndHApXfXU7KmSv64LgiBqbxnaoBhadi44NM2vH/tggB4Me/1
+	 55Bm1TDP/1X4KVW7jjew5kJNpZSegNZgO0NETOjYBKSQelLBDnemWsKGtCnX6h1Knq
+	 GcQL+mYdp3IiG13RyqJ3BIRXo4MKzMozW0HKRTSvpWB2TYesLuo/WjGhQQzIC2360O
+	 EEA+lHyaVgd9Q==
+Received: from johan by xi.lan with local (Exim 4.97.1)
+	(envelope-from <johan+linaro@kernel.org>)
+	id 1sqFVS-00000000234-3RXq;
+	Mon, 16 Sep 2024 19:27:22 +0200
+From: Johan Hovold <johan+linaro@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Johan Hovold <johan+linaro@kernel.org>,
+	stable@vger.kernel.org,
+	Aniket Randive <quic_arandive@quicinc.com>
+Subject: [PATCH 1/3] serial: qcom-geni: fix premature receiver enable
+Date: Mon, 16 Sep 2024 19:26:40 +0200
+Message-ID: <20240916172642.7814-2-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.44.2
+In-Reply-To: <20240916172642.7814-1-johan+linaro@kernel.org>
+References: <20240916172642.7814-1-johan+linaro@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240916112056.25193a17@SWDEV2.connecttech.local>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Mon, Sep 16, 2024 at 11:20:56AM -0400, Parker Newman wrote:
-> On Mon, 16 Sep 2024 15:18:15 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > On Mon, Sep 16, 2024 at 08:04:10AM -0400, Parker Newman wrote:
-> > > On Mon, 16 Sep 2024 13:32:47 +0300
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > > > On Mon, Sep 16, 2024 at 12:25:52PM +0200, Greg Kroah-Hartman wrote:
-> > > > > On Mon, Sep 16, 2024 at 12:55:05PM +0300, Andy Shevchenko wrote:
-> > > > > > On Sat, Sep 14, 2024 at 08:58:50PM +0200, Greg Kroah-Hartman wrote:
-> > > > > > > On Fri, Sep 13, 2024 at 10:55:40AM -0400, Parker Newman wrote:
+The receiver should no be enabled until the port is opened so drop the
+bogus call to start tx from the setup code which is shared with the
+console implementation.
 
-...
+This was added for some confused implementation of hibernation support,
+but the receiver must not be started unconditionally as the port may not
+have been open when hibernating the system.
 
-> > > > > > > > -			printk(KERN_ERR "%s: timeout\n", __func__);
-> > > > > > > > +			pr_err("%s: timeout\n", __func__);
-> > > > > > >
-> > > > > > > It's a device, please use dev_err().
-> > > > > >
-> > > > > > The problem is that this library doesn't know about this fact. I.e. it would
-> > > > > > need a new member just for this message. Instead, maybe drop the message as we
-> > > > > > anyway get a unique enough error code?
-> > > > >
-> > > > > Fair enough, although adding real device pointers would be good to do in
-> > > > > the future...
-> > > >
-> > > > Let's then do it when it will be the real need? Because I don't think this
-> > > > message is _so_ important. I believe one of the upper layers (whichever calls
-> > > > this function) should propagate the error code up to the user space. If it's
-> > > > not the case _that_ has to be fixed.
-> > > >
-> > > > TL;DR: Let's remove the message for now.
-> > >
-> > > I can remove the message or leave it as is and drop this patch from the series.
-> > > One could make the argument that any error indication it is better than none
-> > > in this case.
-> >
-> > I think you can drop the message and make the patch to be last in the series,
-> > so it can be easily abandoned (in case that decision will be made) without
-> > throttling the rest. At the same time in the commit message explain that with
-> > move to read_poll_timeout() we drop the seems redundant message. I'm fine with
-> > that approach. But at the end of the day it's not that critical to the main
-> > purpose, i.e. cleaning up the Exar serial driver.
-> 
-> I don't think read_poll_timeout() will work directly because eeprom->register_read()
-> does not return a value. I could add a "is write complete" wrapper function
-> to work around that I guess. However, I think I will just drop this patch from
-> the series as fixing it properly will be a big change and like you said its not
-> critical to the main patch.
+Fixes: 35781d8356a2 ("tty: serial: qcom-geni-serial: Add support for Hibernation feature")
+Cc: stable@vger.kernel.org	# 6.2
+Cc: Aniket Randive <quic_arandive@quicinc.com>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Sure, fine with me.
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 6f0db310cf69..9ea6bd09e665 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1152,7 +1152,6 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
+ 			       false, true, true);
+ 	geni_se_init(&port->se, UART_RX_WM, port->rx_fifo_depth - 2);
+ 	geni_se_select_mode(&port->se, port->dev_data->mode);
+-	qcom_geni_serial_start_rx(uport);
+ 	port->setup = true;
+ 
+ 	return 0;
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.44.2
 
