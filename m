@@ -1,124 +1,115 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27C3D17A918
-	for <linux-serial@vger.kernel.org>; Tue, 17 Sep 2024 15:13:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA6C179967;
+	Tue, 17 Sep 2024 20:15:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726586003; cv=none; b=AzMC4HpGuBaNvkXdlZeQRm17aqWvRji6sB3ix/Fuzcr8fGJOAi+wpdzfis3W31f4MrkgcG+NF1/ah7tOFBLs4E1CvcjjsOFRTg6TND9wLmLmmP0oIilMwQL+/2TtMdqE2q3N4oeL4inpcoo/rjitdv2qY2oExa08Ph7ystait6o=
+	t=1726604105; cv=none; b=exn/S5hxkRFO0Ak1upino74aQ9+D8MJKt4MFmXhmceLjzqP9DF36yYFvmTTvgIBr2ka96d07KgcXaL+BTdXMyyIgEDhS5VrcpeNmy1YZtoR2cnY5DjYEgLs5AU+g0UJgumSbZpTY4EDzM7ZHn72M8ajm+HzC7YRcWuyT2o56r8U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726586003; c=relaxed/simple;
-	bh=C6BIJE5gYeC/g2Oak4zV9l7IfmZQnQtGYVUJTeQWod0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=O7GVmhy5XQud+QdVgOD+Ff6ziSyprj5wN4PZyk6/sDYHpCsfxkLMR9jOvkvIELVFAL/rHEs05EU0u2QWpZTZwx9nk7RkjmwcIgPx2CDQ8mnBQefmjx2kVYaEfiWx67q/AJT+QkJXoBHYI6o7tqtBOd1l2CJZp3hflUIJ7BbELEg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=yStfJrlM; arc=none smtp.client-ip=209.85.208.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
+	s=arc-20240116; t=1726604105; c=relaxed/simple;
+	bh=81iSzbOqnhSne0ktuF01wg+nnD9mtVaFvoeVj8EBkw8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Mx3oJ/K9/oqKSaTWgF3VHJSzHAgunO62N7VUJLq6ZVBiKB6yamXf4ruxVTWK48kyP8KfVmRC79rm3PPkZTknNfqLcN+E/2ef41pTJjKBfAVNorMBLSmd9KkzR/O4oa3jZvr+t9Dy4sre+kd6q7OKqiQagPh8B6N95jUzPyGuVhU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=Th5+iAsG; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="yStfJrlM"
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2f75c6ed428so45141441fa.0
-        for <linux-serial@vger.kernel.org>; Tue, 17 Sep 2024 08:13:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1726585999; x=1727190799; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=H9QCqlRh9eT2CMbCDWw6auXzAwjAo/ozmjDpAB5cjRo=;
-        b=yStfJrlMhN4gbrtmJKgz2O1MF4AD9CH88Hy2nqW1pq8ElVywcJ9EWqGDOdgYxXttK3
-         bpwNR7HMVpke9eioC5kp4efzUPDBtbLw/zwKnyiwwVTAUtoc+MnnWa/Bxdgmh/hA44HT
-         BHGIcFBfWSANWEvCNbEIUIlgPA0j4hRcZKBaIr8Cc5ol4CGb5cAjzT7KNzezLATyMX+c
-         V9FSbsT3RqhDYQgR65gGd6NEEakSeeB55APgcKITHi9TYhWNxuCYEfS/99nmVCfbM7Ra
-         fv3smgOYTpVcrx0MNpN3lNBkS/txwcAoq6MUCn9iDgRrr08mWSWix2kSc8OyzXPobYka
-         GWkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726585999; x=1727190799;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=H9QCqlRh9eT2CMbCDWw6auXzAwjAo/ozmjDpAB5cjRo=;
-        b=SxeJRRc/UQg+o+E+wp6FB9R3ioeUEONh3lrFpQJsnvQATvD8U93s0XO4d4700mMQIX
-         XOKn5d3ssNGYRT+v84Y4F+Bk4iXx4JjzMjUeFcDUPIXsctIQ0coK+RVtbxtFOe4JI0Vd
-         9hHp9g0X77ARUOA1F7cq14dHO/Mdi3ctXo6pJP8TkYRtsFM1DO5czayzqPq0VFJdGKGQ
-         Cz4pYb4yXQpgIyzA2o6Qjq23DYFGFqh+/CMHRghf9giInQL4kdxPL6A5tuzq2YqDwX6A
-         iXol/RYi8lYhya/CfUfgtCzKBRFnAlDh9QFpD22k28d0ujBbLTUCpgDQsInqZniu4fSv
-         8kcQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXhMpqrpu8hPzooITjl/Q2wPt+BOECaiGRKtZMm0pV+R+ZCua/f+G08ufa6TnCb2mmXUNJtXesAaCFDsoY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXG+4OUtJQT0gGjLDgz3d2y/kizZ8o8DomPzQBjIkv6uB1GUa2
-	t4H+SqfnZH3e2ADo9nZtEuhi5Qbsunnp/hWVoagqlFr5GgQGZidFQilvqEA+1rfm2DdcEVJIY7L
-	a6C+BazOnTNmWTpOEDCypgfBmbcmoByXr/fgnDjrZFsTBY0e+9og=
-X-Google-Smtp-Source: AGHT+IEjk8ZHjlHyyFFjPJuCGwJFKhZ0kGO8bejy0WGDuXef54JZ6Xsqkq0B58+CUBKCRRCNpr78RpMazH22iNaAcZ8=
-X-Received: by 2002:a2e:bc19:0:b0:2f7:5e7f:b4e1 with SMTP id
- 38308e7fff4ca-2f791b4d3fcmr82055101fa.30.1726585998980; Tue, 17 Sep 2024
- 08:13:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="Th5+iAsG"
+Received: from mail01.disroot.lan (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id D9E282004E;
+	Tue, 17 Sep 2024 22:14:59 +0200 (CEST)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from layka.disroot.org ([127.0.0.1])
+ by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
+ id Z5SgtwYYZVmj; Tue, 17 Sep 2024 22:14:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1726604098; bh=81iSzbOqnhSne0ktuF01wg+nnD9mtVaFvoeVj8EBkw8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Th5+iAsGerByToyw4NuXu8K47DlwvEDYpiK0yxRx5l/RxP8eRTk9Tm/L/5lcBEv99
+	 y3um4swxXKfFj5++rSau/mlVnzW2SqcbI4TWoNO2VDtzgNWtmtTlAyfZ8WZDDARLlk
+	 njS39OGvoKPoyXdQ8nsieeU/tpVdGWrTp1PdtAJ/Cuw0wtP9+CWySSTKqzWZdY3Qy3
+	 Dlf5vTvHGhqBWP8LK9KMyRlPhE0/CGUAopEuf2GseFQiB86ZAGDFg7Qt2LcWr5n1sP
+	 i1rVOELPo+x6mIj5Tfaoj2l7RcZ7YAEo2Yom9g51I1QImo6U12IAJzDuR8vkB9T2mX
+	 nsMCVFH3CzB7A==
+Date: Tue, 17 Sep 2024 20:14:36 +0000
+From: Yao Zi <ziyao@disroot.org>
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+	Andy Yan <andyshrk@163.com>,
+	Muhammed Efe Cetin <efectn@protonmail.com>,
+	Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
+	Ondrej Jirman <megi@xff.cz>, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Celeste Liu <CoelacanthusHex@gmail.com>
+Subject: Re: [PATCH v4 0/4] Add initial support for Rockchip RK3528 SoC
+Message-ID: <ZunjLMQGEcES2zIV@pineapple>
+References: <20240829092705.6241-1-ziyao@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240916172642.7814-1-johan+linaro@kernel.org> <20240916172642.7814-3-johan+linaro@kernel.org>
-In-Reply-To: <20240916172642.7814-3-johan+linaro@kernel.org>
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Tue, 17 Sep 2024 17:13:07 +0200
-Message-ID: <CAMRc=Md-B3MCdjBA6Z03Tn09Qdq_O=2Gij=0kr8HiLtpp11kVg@mail.gmail.com>
-Subject: Re: [PATCH 2/3] serial: qcom-geni: fix shutdown race
-To: Johan Hovold <johan+linaro@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Douglas Anderson <dianders@chromium.org>, linux-arm-msm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	stable@vger.kernel.org, Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240829092705.6241-1-ziyao@disroot.org>
 
-On Mon, Sep 16, 2024 at 7:27=E2=80=AFPM Johan Hovold <johan+linaro@kernel.o=
-rg> wrote:
->
-> A commit adding back the stopping of tx on port shutdown failed to add
-> back the locking which had also been removed by commit e83766334f96
-> ("tty: serial: qcom_geni_serial: No need to stop tx/rx on UART
-> shutdown").
->
-> Holding the port lock is needed to serialise against the console code,
-> which may update the interrupt enable register and access the port
-> state.
->
-> The call to stop rx that was added by the same commit is redundant as
-> serial core will already have taken care of that and can thus be
-> removed.
->
-> Fixes: d8aca2f96813 ("tty: serial: qcom-geni-serial: stop operations in p=
-rogress at shutdown")
-> Fixes: 947cc4ecc06c ("serial: qcom-geni: fix soft lockup on sw flow contr=
-ol and suspend")
-> Cc: stable@vger.kernel.org      # 6.3
-> Cc: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
-com_geni_serial.c
-> index 9ea6bd09e665..88ad5a6e7de2 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1096,10 +1096,10 @@ static void qcom_geni_serial_shutdown(struct uart=
-_port *uport)
->  {
->         disable_irq(uport->irq);
->
-> +       uart_port_lock_irq(uport);
->         qcom_geni_serial_stop_tx(uport);
-> -       qcom_geni_serial_stop_rx(uport);
-> -
->         qcom_geni_serial_cancel_tx_cmd(uport);
-> +       uart_port_unlock_irq(uport);
->  }
->
->  static void qcom_geni_serial_flush_buffer(struct uart_port *uport)
-> --
-> 2.44.2
->
->
+On Thu, Aug 29, 2024 at 09:27:01AM +0000, Yao Zi wrote:
+> Rockchip RK3528 is a quad-core ARM Cortex-A53 SoC designed for
+> multimedia application. This series add a basic device tree with CPU,
+> interrupts and UART nodes for it and is able to boot into a kernel with
+> only UART console.
+> 
+> Has been tested on Radxa E20C board[1] with vendor U-boot, successfully
+> booted into initramfs with this log[2].
+> 
+> [1]: https://docs.radxa.com/en/e/e20c
+> [2]: https://gist.github.com/ziyao233/b74523a1e3e8bf36286a572e008ca319
+> 
+> Changed from v3:
+> - move mmio devices into soc node
+> https://lore.kernel.org/all/20240814155014.18097-1-ziyao@disroot.org/
+> 
+> Changed from v2:
+> - fix fixed-clock nodename
+> https://lore.kernel.org/all/20240811140725.64866-1-ziyao@disroot.org/
+> 
+> Changed from v1:
+> - fix stdout-path
+> - style improvements
+> https://lore.kernel.org/all/20240803125510.4699-2-ziyao@disroot.org/
+> 
+> Yao Zi (4):
+>   dt-bindings: serial: snps-dw-apb-uart: Document Rockchip RK3528
+>   dt-bindings: arm: rockchip: Add Radxa E20C board
+>   arm64: dts: rockchip: Add base DT for rk3528 SoC
+>   arm64: dts: rockchip: Add Radxa e20c board
+> 
+>  .../devicetree/bindings/arm/rockchip.yaml     |   5 +
+>  .../bindings/serial/snps-dw-apb-uart.yaml     |   1 +
+>  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
+>  .../boot/dts/rockchip/rk3528-radxa-e20c.dts   |  22 ++
+>  arch/arm64/boot/dts/rockchip/rk3528.dtsi      | 189 ++++++++++++++++++
+>  5 files changed, 218 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
+> 
+> -- 
+> 2.46.0
+> 
 
-Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Ping on this thread. Is it possible to get this merged in v6.12? Or
+anything else I need to do?
+
+Thanks for your time.
+
+Best regards,
+Yao Zi
