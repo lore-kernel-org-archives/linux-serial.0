@@ -1,131 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6C8D17A591;
-	Tue, 17 Sep 2024 21:08:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADC5838FA1;
+	Tue, 17 Sep 2024 23:14:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726607282; cv=none; b=Ej9L496Q1YJQvmL2PORmDorKLW8IJBl1k9SbzRE/fSZgDslf62iMtKktoaRXI94x8kycToOR4rG6Rzh2P+BAyNLI8iXu7vQKRB0Y7TYxyiVCuLZAMmyDJhKm8AI+hLfewVf4g2lUjY16hibz3jFe1LULTCJ4dPE9VihATyQbK/g=
+	t=1726614846; cv=none; b=hdJGmrJyNhekNRAsn95XhpCfqbZHY96ZLOOFpvi+pv00I5jGCJcjB14QtqdI9a2pRAM3i2xiLw/1MBhKFo0al2MHqS0zjl4eyJh3rOfLF3e7t4dglw4UGebYBo3AmStN85JDKTPzcFeijZdIMqyKaHoQEijdGWzHcrKRuo9ep4g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726607282; c=relaxed/simple;
-	bh=Xw3qFVde4mW/vVW5R3FHyrkUkN6HRIPohqAfP8ki1cI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gpm86PngAXCsRvCTexiLdvOakvuHASqkzb0hdL1skBcejwsaKLpP+UxMtP5tEol0pksW4cu9HbFi84ZhsjGe0jV12g8m7WeWsrb3OzlIpS4Lbrl9fMSamKq2qurFbAWJuTgHKJMkG6gf3XEkB9Kwvvaoui17QvxZ6IXW2QKY0zE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CsbDwsQM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1726614846; c=relaxed/simple;
+	bh=9uuB5ejb+qvV8e3P+mzsDCQqb+5wYFLw06IFjWGrVuY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=YCVy+ox5bsafP4MokvasMiw1iNtbsFxLg8o+OvlPzOwqTtk8gbKBAUUaetk129Fr4XXPXN4jlUljQ3tXYJn9zcl9k53/TaCfIR7OzknlhguAuq9xREIn0P1KuTwekxI1CIoItowQoMFhsrmXHX+EF0Ed6dQOwxDyulENxce/ajE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=v1pf5bMa; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CsbDwsQM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A7AFC4CEC5;
-	Tue, 17 Sep 2024 21:07:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1726607282;
-	bh=Xw3qFVde4mW/vVW5R3FHyrkUkN6HRIPohqAfP8ki1cI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CsbDwsQMzYP89sJ1xwuAWKIoRn8xBwDKXeZc2aPQxof68aoPY2YRumZdSdWdEc+Ho
-	 bENcFwj9e2++zZDEjW5+MefLdrq9A7siRX0dYBhKXcollwOX8h6rvTqCIXASx6zlsT
-	 eCQ3DnxsA7D4JgP+zlUg/XWpEUZE5HuM3eHqwTIE18TbkNf/zdkqH0lyNQ8JS7MGIV
-	 EgDUjZhWlOBVSDbinAUrSP8yB/jDA1sZsLgrJiZ9hgOf0Uzueilgi8rybxwdvawVL1
-	 3wNiEVxcHWM7tZ2bhrPRO9GHpav6z2H5S8wcRzE9aDScHsr16Jy/xFTrrl3bulziAm
-	 K4nxuAfu/2ZlQ==
-Date: Tue, 17 Sep 2024 22:08:03 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Palmer Dabbelt <palmer@dabbelt.com>
-Cc: dlan@gentoo.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, Paul Walmsley <paul.walmsley@sifive.com>,
-	aou@eecs.berkeley.edu, cyy@cyyself.name, daniel.lezcano@linaro.org,
-	tglx@linutronix.de, samuel.holland@sifive.com, anup@brainfault.org,
-	Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
-	lkundrak@v3.sk, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-	linux-serial@vger.kernel.org, jesse@rivosinc.com,
-	jszhang@kernel.org, inochiama@outlook.com, uwu@icenowy.me,
-	zhangmeng.kevin@spacemit.com, kevin.z.m@hotmail.com,
-	Conor Dooley <conor.dooley@microchip.com>, matthias.bgg@kernel.org
-Subject: Re: [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
-Message-ID: <20240917-spoilage-nimble-a8303fd04482@squawk>
-References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
- <mhng-5bc45db9-5deb-4db6-8733-561768b2968c@palmer-ri-x1c9>
+	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="v1pf5bMa"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=O0f4fMiSZzhyqnmcGQxhgWk91t8Qt5UtvlepWEOO714=; b=v1pf5bMaWt60Y9OWAVsnZCkuR2
+	PTJaC+UN2QUDYr6VI69SdTOUUS0N3+zc6z6bm2fJb6cW6iPGVPZ5CpqEZCvwSyTQzNQFePdMQ5STb
+	TV/EG+S96nL4HDnb2m7f70YOM/LfUJsJsBKdPqHDpFTaju4V3gDILPAsuew/qb/eav0BEacukcR5I
+	VCDMVdVRx6kTx4GKZO2ISx4B4gBSHeJwzHxiUIuzkilNy8NoEQBSMYsSQuL/tYAxut+kDNabGEMt8
+	Cobh3I6p91J3+alOs/8208rgyw2369ATNccsFy21Nh4ucODLS59pFZqAY9EA+ZcI82mhIUb8uJQo1
+	axXYtJSg==;
+Received: from [213.164.25.30] (helo=phil.localnet)
+	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <heiko@sntech.de>)
+	id 1sqhNu-000126-HM; Wed, 18 Sep 2024 01:13:26 +0200
+From: Heiko Stuebner <heiko@sntech.de>
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Chris Morgan <macromorgan@hotmail.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
+ Andy Yan <andyshrk@163.com>, Muhammed Efe Cetin <efectn@protonmail.com>,
+ Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
+ Ondrej Jirman <megi@xff.cz>, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Yao Zi <ziyao@disroot.org>
+Cc: Celeste Liu <CoelacanthusHex@gmail.com>
+Subject: Re: [PATCH v4 0/4] Add initial support for Rockchip RK3528 SoC
+Date: Wed, 18 Sep 2024 01:13:25 +0200
+Message-ID: <23655990.6Emhk5qWAg@phil>
+In-Reply-To: <ZunjLMQGEcES2zIV@pineapple>
+References:
+ <20240829092705.6241-1-ziyao@disroot.org> <ZunjLMQGEcES2zIV@pineapple>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="v4bulkuQot7/4uA1"
-Content-Disposition: inline
-In-Reply-To: <mhng-5bc45db9-5deb-4db6-8733-561768b2968c@palmer-ri-x1c9>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+
+Hey,
+
+Am Dienstag, 17. September 2024, 22:14:36 CEST schrieb Yao Zi:
+> On Thu, Aug 29, 2024 at 09:27:01AM +0000, Yao Zi wrote:
+> > Rockchip RK3528 is a quad-core ARM Cortex-A53 SoC designed for
+> > multimedia application. This series add a basic device tree with CPU,
+> > interrupts and UART nodes for it and is able to boot into a kernel with
+> > only UART console.
+> > 
+> > Has been tested on Radxa E20C board[1] with vendor U-boot, successfully
+> > booted into initramfs with this log[2].
+
+> Ping on this thread. Is it possible to get this merged in v6.12? Or
+> anything else I need to do?
+
+sadly nope. From a timeline point of view things should ideally be in the
+Rockchip tree by -rc6 . Which then move to the soc tree and from there
+to Linus' tree.
+
+There is this rule that all new development for a -rc1 kernel should be
+present in linux-next _before_ the merge-window opens.
+
+The thing we need to figure out for your series is the uart binding,
+because that _should_ go through the tree handling serial drivers.
+Greg is in your cc list but with the amount of mail he gets, I don't
+think he has single-parts of patch series on his radar.
+
+So I guess the easiest way would be to send the uart-binding from patch 1
+as a completely separate patch with adapted Cc list, so that it's obvious
+this should go through the serial tree.
+
+From talking with Collabora people today at the Open Source Summit, it
+seems that's also their plan for the rk3576 that is stuck at a similar
+state.
 
 
---v4bulkuQot7/4uA1
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hope that helps a bit to explain
+Heiko
 
-On Tue, Sep 17, 2024 at 06:04:29AM -0700, Palmer Dabbelt wrote:
-> On Mon, 29 Jul 2024 17:28:03 PDT (-0700), dlan@gentoo.org wrote:
-> > SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vect=
-or
-> > 1.0 and Zicond evaluation now. Add initial support for it to allow more
-> > people to participate in building drivers to mainline for it.
-> >=20
-> > This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
-> > bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
-> > Zicboz, which does not in the vendor dts on its U-Boot. Then successful=
-ly
-> > booted to busybox on initrd with this log[3].
-> >=20
-> > As previous discussion in patch v1[4], maintainer expect more basic dri=
-vers
-> > ready before really merging it, which would be fine. For other follow-u=
-p patches,
-> > that are clk, pinctrl/gpio, reset.. My current goal would target at a h=
-eadless
-> > system including SD card, emmc, and ethernet.
->=20
-> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
->=20
-> if you guys want to take this through some SOC tree.  I'm not really sure
-> what the bar is for SOC support to get merged, but I'd be happy to just s=
-ee
-> this booting at all -- we've got a bunch of them floating around and the
-> vendor kernels are pretty crusty, so anything's an improvement on my end.
 
-I've asked for clock and ideally pinctrl support before merging it. We
-had a conversation about the usefulness etc of some of the initial
-devicetrees merged for some platforms a few months back, that lead to me
-not merging the k230 support I had queued up. I know this isn't exactly
-a "fair" barrier to entry, as it is likely that platforms supported by
-hobbyists are going to be more affected than companies that usually come
-with that basic level, but have to draw a line somewhere.
-Both clock and pinctrl are currently in progress for the k1, hopefully
-wont take too much longer before this is mergeable.
-
-In other news, nobody has really made an "official" statement about who
-is going to maintain this particular platform. People have expressed
-interest (including the submitter of the series, IIRC) but there's no
-MAINTAINERS entry added here AFAICT. I used to have an entry that
-covered arch/riscv/boot/dts/*, with exclusions for sunxi and renesas,
-but with Drew taking on thead and sophgo being the res=E3=81=BDonsibility of
-Chen Wang and Inochi, I no longer have that wildcard.
-
-I'm happy to apply patches for the platform if noone else is interested
-in that side of things, provided there are willing reviewers, but I
-would much rather that someone else took up the responsibility of
-applying patches and sending PRs - and of course I am happy to help
-whoever that is with the process.
-
-Cheers,
-Conor.
-
---v4bulkuQot7/4uA1
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZunvrwAKCRB4tDGHoIJi
-0vJfAQCKzg29et4gyyvvDvcq+H0Lr+9pUp0MuhQz0BQ1+12qRAD/ZabDnCrlmXdm
-mcstHKWqUcb70WAc/TNCUbS+pCiwsgo=
-=JYI3
------END PGP SIGNATURE-----
-
---v4bulkuQot7/4uA1--
