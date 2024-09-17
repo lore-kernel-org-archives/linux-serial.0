@@ -1,178 +1,210 @@
-Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F0616A930
-	for <linux-serial@vger.kernel.org>; Tue, 17 Sep 2024 13:04:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 008BF15AAD6
+	for <linux-serial@vger.kernel.org>; Tue, 17 Sep 2024 13:10:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726578274; cv=none; b=BR/irutTpBhvUXEcCKKdCwZgCGb0JaJ0TSZ0AsMXYiUmy1CEQjCKzHRyG/HUTFDFJKfYK40vobMxp9vUiXUhKWRsgle5GWt+HjRcccUuBNDMJ0LnwR6XY5guNP0WYX8DdlULzQ9MkRUPtxQxz1gldHi+DYbGyP0/mPotLoXZMAU=
+	t=1726578628; cv=none; b=fQwxk2u6b1zRe6pAA3VXNvK3OQTXIYkFgbZD3g9/jCt/XZMR7PImMu5ufMwOvjnWkQ33tLjNYeImKEToUdaj4xOF6OVVEx5+DyIAZ5hm3LaiCJqB8qEHdZyNPxox/VWXsyk8/WuwXWESzBVeA9YFRUM8o8v9Ja4crSVs2SBhG1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726578274; c=relaxed/simple;
-	bh=2amREECiuWPtLoFri60bme/WheSMSQNmC+FaNhqC314=;
-	h=Date:Subject:In-Reply-To:CC:From:To:Message-ID:Mime-Version:
-	 Content-Type; b=C/VbTxrsXC9Os1fqBCMKF/tjMczEPfh3ufrPyyOs3HWrN4os8dC95ZfbVQeSAEUTZs/hzh4mtdxsurqw7PXHOcXWYsSgSQrRZH4khvrKuwbaRG3vTk3e/YC+zGwyiXGYUrwHxPFYSSSIYzKJZwGKZ90yLaAqp9Eg1VmOE2CVES0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dabbelt.com; spf=pass smtp.mailfrom=dabbelt.com; dkim=pass (2048-bit key) header.d=dabbelt-com.20230601.gappssmtp.com header.i=@dabbelt-com.20230601.gappssmtp.com header.b=aMuwWkph; arc=none smtp.client-ip=209.85.215.180
+	s=arc-20240116; t=1726578628; c=relaxed/simple;
+	bh=ZH2QndDVxXKun5T0YQ831uYRPaFGatEyken8xicj57c=;
+	h=Date:Subject:In-Reply-To:CC:From:To:Message-ID; b=H4BtKm+MbEy5039hjOYZa+pDsh2FVGQoO3Dj3AoT2J5eGNA/cJ7VtQKe9aKB/ZLUQLu1ygYxrn6nrutM+8Y6GIWUeP8WyKSH8uly2baNLrogLX/Q83vvQfu6xBkf/kPnBUo05K7ffHenUWyacUP4AbtH8viAuFYWKazWQVfes8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dabbelt.com; spf=pass smtp.mailfrom=dabbelt.com; dkim=pass (2048-bit key) header.d=dabbelt-com.20230601.gappssmtp.com header.i=@dabbelt-com.20230601.gappssmtp.com header.b=mz1XAu4B; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dabbelt.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dabbelt.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dabbelt-com.20230601.gappssmtp.com header.i=@dabbelt-com.20230601.gappssmtp.com header.b="aMuwWkph"
-Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-7db233cef22so3166853a12.0
-        for <linux-serial@vger.kernel.org>; Tue, 17 Sep 2024 06:04:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=dabbelt-com.20230601.gappssmtp.com header.i=@dabbelt-com.20230601.gappssmtp.com header.b="mz1XAu4B"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-205722ba00cso46522845ad.0
+        for <linux-serial@vger.kernel.org>; Tue, 17 Sep 2024 06:10:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20230601.gappssmtp.com; s=20230601; t=1726578270; x=1727183070; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=9fC01ApAI2xiRo01+6ZsMz3W1Z0be43G8VgU22JuKOg=;
-        b=aMuwWkph2p6meip8c/zrt5bA+W1cS7gHPGop4A2wE99Z34xpJF89tzJV2jhQWsrve2
-         NUrcPpWdjG3BfLBeiAYaOE6OwCmeY1pOJWd+01MfjIjHjKcZ7knkgv5OPWEsXrR9ISOW
-         U7lxN+wYvkgxpkqu88dOq3H2tdQIgmLGomSlgF6TR243BaUTbK8rJn/xI+Jcf2tEtE3A
-         7xbf47VemWhE6KFje0UmePYDPTHc9R36i0IZjqIOU8w3QNtg9ZdgVZzlMSYp7dzDoMsG
-         SpYzvNa3buPudb/r0Q+SRr819OXP9obQkn65ViHRH37Qaj2UH7qsE9ZrQ3K7eYjIUHOV
-         DTXA==
+        d=dabbelt-com.20230601.gappssmtp.com; s=20230601; t=1726578626; x=1727183426; darn=vger.kernel.org;
+        h=message-id:to:from:cc:in-reply-to:subject:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tmpipaU5ffyWBh3m6fh3V3iGFrcojyzndJ3rQy5E5JM=;
+        b=mz1XAu4BGRbr6IrTw0Dieok3tAeTzO7FLFn6Px45kSFTZBOQ8t74YZmy5RyqYmLYvV
+         fRmj0Z8iXiD2ewC/z8VrFE+kYklw2c/Q1cM1tZB4Z5SdsQj3L/lKopxljjOLVohe7hQV
+         mbTdTpel/XYiglljN4CsW7IunqRuQDAY1Onj1607CQr3PeMyTI3BXLPZqThne5KiDSrP
+         a7q5KxwGaOse9mP3SCvwqyIJrBeMDKYGTVviEKv8SvfUmtkzNkvlYRy/XELQ1XPcLXnp
+         HUQH1K4S2+qEErVVJbAbf2WYkq1bxIqZLOEAl9DmqHP6BvVQcFQRI1F6Jck4OFVQj6jI
+         Fw1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726578270; x=1727183070;
-        h=content-transfer-encoding:mime-version:message-id:to:from:cc
-         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9fC01ApAI2xiRo01+6ZsMz3W1Z0be43G8VgU22JuKOg=;
-        b=CKM7xwUeQjq+NhnP4MAEbj64rHd0/oCQaraGHQXy5WcG/Zb+BCFcFbcAt3ZAzp1B9m
-         8kFtfVTh+gYgNIYaaDX857VRxbZMFjltdtYouwWTNe39rtB9UzUIZVrUruRlTG/Sf4oh
-         pIukuQj3jJJdXwAnQMF1dWzrbX+JIDk4wIb7ZrSxSxZ7crVryuSgt9Q57TWqfUxIBPiV
-         JeV+QecvTi/baE0XfUl6SgGCTUURNEishmtrP9IFnywdpXYOv+PKs3bKRBs4mjT/eL6E
-         I6A61mDxkS3GTjA/qH9ZIeYHKIHzC69S1CZvZGWsQ8nlLSLvgNIx7fZmo4fX8FoR5c8N
-         TnVA==
-X-Forwarded-Encrypted: i=1; AJvYcCWmtfaE5n3E6DSJy0To4DHK/Jtw8Hks5p6x7tBLC5y36UzcGb8Kn2h5SpJ2YQFzm7mgohrzYLES23v6weg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz5LnHHT3vGutlZkv/Fn0lZqP+ur2t35dFOq2LtKfCCH3O9j9mx
-	YIUE8CX1nDVptgR3Z6VkYhCsapGl689PiMk7YX3zDDtUjrThAfDjaOB4g+YhLcE=
-X-Google-Smtp-Source: AGHT+IEJWwmnIQGoJxuHkNWb54HgOHUJ5HPr7nQy44p04MsUVikXslcg4GRjyMp4pqihjfW9E+yrbg==
-X-Received: by 2002:a05:6a20:43a0:b0:1cf:4679:9b97 with SMTP id adf61e73a8af0-1d112e8beffmr22291992637.37.1726578270424;
-        Tue, 17 Sep 2024 06:04:30 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1726578626; x=1727183426;
+        h=message-id:to:from:cc:in-reply-to:subject:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=tmpipaU5ffyWBh3m6fh3V3iGFrcojyzndJ3rQy5E5JM=;
+        b=NKDDhW0GynS6v1P5/qKAguEjRtF0yD3OiU+GbJf8g41S2j0p+ukHjNl7JpW1YK8vfI
+         BHwtrNbgNBNoSGna/ZAI3MmAMdhf4cRLBKkvJ4lyupjX8hNxWtuaN4zAK5daXFoSXDZ5
+         k7PJi8wlnwZT0uxzir23q6sU13LQmTReKmlH0uKvqNNdaPoh1c/dC6CArtTgpTqIQNKW
+         jPmelo1mJ0e6Xwvx3aetMKJVy6Rq6lu8AZPFIasA2ZN53BUU9Vs3Z+mKe8IWfHm18vsT
+         8l5o3e888jGdXdxkQykLFgJAm1vzct7AAVDnT3iGd88aopVCRimUgvPBBDa+PnicbMPx
+         dkpg==
+X-Forwarded-Encrypted: i=1; AJvYcCUD4NKpqgtg1f/zNg5WDHhm/wtDeYflnT/sRu8fQbt0SCcpy2mq6acXWWwbjjbFMM7DmoP9lk+1mXcmSG8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyVNBFBli2Uc/Y9JxGLfLoRHP0hUO07CM8rkzcSaMAVeSzMmIJJ
+	x7Fy5aN+kHaiEMvw/HKdvazhYMGDc/RRXBxpUTTjP7Ll8b3Gw0ez7txv+UKFZKE=
+X-Google-Smtp-Source: AGHT+IHr2PTsAEqZCBw/S1zvsTs5J8nFAVPnfPYChOs8eSgK4C2WuQJcW+CGfn1gsM2xolgbVSznbg==
+X-Received: by 2002:a17:902:da84:b0:206:c911:9d75 with SMTP id d9443c01a7336-2076e3b2654mr255519565ad.20.1726578626018;
+        Tue, 17 Sep 2024 06:10:26 -0700 (PDT)
 Received: from localhost ([213.208.157.38])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71944b7b329sm5151248b3a.136.2024.09.17.06.04.28
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-207945db10csm50158835ad.53.2024.09.17.06.10.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Sep 2024 06:04:29 -0700 (PDT)
-Date: Tue, 17 Sep 2024 06:04:29 -0700 (PDT)
-X-Google-Original-Date: Tue, 17 Sep 2024 06:04:20 PDT (-0700)
-Subject:     Re: [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
-In-Reply-To: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
-CC: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-  Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu, cyy@cyyself.name, dlan@gentoo.org,
-  daniel.lezcano@linaro.org, tglx@linutronix.de, samuel.holland@sifive.com, anup@brainfault.org,
-  Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org, lkundrak@v3.sk, devicetree@vger.kernel.org,
-  linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-  jesse@rivosinc.com, jszhang@kernel.org, inochiama@outlook.com, uwu@icenowy.me,
-  zhangmeng.kevin@spacemit.com, kevin.z.m@hotmail.com, Conor Dooley <conor.dooley@microchip.com>,
-  matthias.bgg@kernel.org
+        Tue, 17 Sep 2024 06:10:25 -0700 (PDT)
+Date: Tue, 17 Sep 2024 06:10:25 -0700 (PDT)
+X-Google-Original-Date: Tue, 17 Sep 2024 06:10:18 PDT (-0700)
+Subject:     Re: [PATCH] serial: 8250_platform: Enable generic 16550A platform devices
+In-Reply-To: <20240730051218.767580-1-sunilvl@ventanamicro.com>
+CC: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+  linux-riscv@lists.infradead.org, Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
+  andriy.shevchenko@linux.intel.com, andrei.warkentin@intel.com, apatel@ventanamicro.com, ajones@ventanamicro.com,
+  dfustini@tenstorrent.com, Sunil V L <sunilvl@ventanamicro.com>
 From: Palmer Dabbelt <palmer@dabbelt.com>
-To: dlan@gentoo.org
-Message-ID: <mhng-5bc45db9-5deb-4db6-8733-561768b2968c@palmer-ri-x1c9>
+To: Sunil V L <sunilvl@ventanamicro.com>
+Message-ID: <mhng-d52ac6ff-2221-4613-9fce-f73467495389@palmer-ri-x1c9>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-On Mon, 29 Jul 2024 17:28:03 PDT (-0700), dlan@gentoo.org wrote:
-> SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
-> 1.0 and Zicond evaluation now. Add initial support for it to allow more
-> people to participate in building drivers to mainline for it.
+On Mon, 29 Jul 2024 22:12:18 PDT (-0700), Sunil V L wrote:
+> Currently, 8250_platform driver is used only for devices with fixed
+> serial ports (plat_serial8250_port). Extend this driver for any generic
+> 16550A platform devices which can be probed using standard hardware
+> discovery mechanisms like ACPI.
 >
-> This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
-> bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
-> Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
-> booted to busybox on initrd with this log[3].
+> This is required in particular for RISC-V which has non-PNP generic
+> 16550A compatible UART that needs to be enumerated as ACPI platform
+> device.
 >
-> As previous discussion in patch v1[4], maintainer expect more basic drivers
-> ready before really merging it, which would be fine. For other follow-up patches,
-> that are clk, pinctrl/gpio, reset.. My current goal would target at a headless
-> system including SD card, emmc, and ethernet.
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+> ---
+>  drivers/tty/serial/8250/8250_platform.c | 77 +++++++++++++++++++++++++
+>  1 file changed, 77 insertions(+)
+
+
+It seems a bit awkward that we need something RISC-V specific here.  I 
+guess the idea is that we don't want to depend on PNP because we'd end 
+up with a bunch of PCI dependencies as well?  That seems like kind of an 
+odd way to do things, but I'm frequently suprised by ACPI stuff so
 
 Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
 
-if you guys want to take this through some SOC tree.  I'm not really 
-sure what the bar is for SOC support to get merged, but I'd be happy to 
-just see this booting at all -- we've got a bunch of them floating 
-around and the vendor kernels are pretty crusty, so anything's an 
-improvement on my end.
+if someone was waiting for me...
 
-> In this series, the uart node has no 'fifo-size', 'tx-threshold' property populated,
-> will add them once this patch is resolved, see thread [5]
+> diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
+> index d5c8d851348d..bdfb16bed4f2 100644
+> --- a/drivers/tty/serial/8250/8250_platform.c
+> +++ b/drivers/tty/serial/8250/8250_platform.c
+> @@ -6,7 +6,9 @@
+>   *	      PNP 8250/16550 ports
+>   *	      "serial8250" platform devices
+>   */
+> +#include <linux/acpi.h>
+>  #include <linux/array_size.h>
+> +#include <linux/io.h>
+>  #include <linux/module.h>
+>  #include <linux/moduleparam.h>
+>  #include <linux/once.h>
+> @@ -100,6 +102,65 @@ void __init serial8250_isa_init_ports(void)
+>  	DO_ONCE(__serial8250_isa_init_ports);
+>  }
 >
-> P.S: talked to Yangyu, I will help and take care of this patch series, thanks
+> +/*
+> + * Generic 16550A platform devices
+> + */
+> +static int serial8250_platform_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct uart_8250_port uart = { 0 };
+> +	struct resource *regs;
+> +	unsigned char iotype;
+> +	int ret, line;
+> +
+> +	regs = platform_get_resource(pdev, IORESOURCE_IO, 0);
+> +	if (regs) {
+> +		uart.port.iobase = regs->start;
+> +		iotype = UPIO_PORT;
+> +	} else {
+> +		regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +		if (!regs) {
+> +			dev_err(dev, "no registers defined\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		uart.port.mapbase = regs->start;
+> +		uart.port.mapsize = resource_size(regs);
+> +		uart.port.flags = UPF_IOREMAP;
+> +		iotype = UPIO_MEM;
+> +	}
+> +
+> +	/* Default clock frequency*/
+> +	uart.port.uartclk = 1843200;
+> +	uart.port.type = PORT_16550A;
+> +	uart.port.dev = &pdev->dev;
+> +	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
+> +	ret = uart_read_and_validate_port_properties(&uart.port);
+> +	/* no interrupt -> fall back to polling */
+> +	if (ret == -ENXIO)
+> +		ret = 0;
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (uart.port.mapbase) {
+> +		uart.port.membase = devm_ioremap(dev, uart.port.mapbase, uart.port.mapsize);
+> +		if (!uart.port.membase)
+> +			return -ENOMEM;
+> +	}
+> +
+> +	/*
+> +	 * The previous call may not set iotype correctly when reg-io-width
+> +	 * property is absent and it doesn't support IO port resource.
+> +	 */
+> +	uart.port.iotype = iotype;
+> +
+> +	line = serial8250_register_8250_port(&uart);
+> +	if (line < 0)
+> +		return -ENODEV;
+> +
+> +	return 0;
+> +}
+> +
+>  /*
+>   * Register a set of serial devices attached to a platform device.  The
+>   * list is terminated with a zero flags entry, which means we expect
+> @@ -110,6 +171,15 @@ static int serial8250_probe(struct platform_device *dev)
+>  	struct plat_serial8250_port *p = dev_get_platdata(&dev->dev);
+>  	struct uart_8250_port uart;
+>  	int ret, i, irqflag = 0;
+> +	struct fwnode_handle *fwnode = dev_fwnode(&dev->dev);
+> +
+> +	/*
+> +	 * Probe platform UART devices defined using standard hardware
+> +	 * discovery mechanism like ACPI or DT. Support only ACPI based
+> +	 * serial device for now.
+> +	 */
+> +	if (!p && is_acpi_node(fwnode))
+> +		return serial8250_platform_probe(dev);
 >
-> ---
-> Changes in v5:
-> - fix cache-sets in dts
-> - collect Rob's Ack
-> - rebase to 6.11-rc1
-> - Link to v4: https://lore.kernel.org/r/20240709-k1-01-basic-dt-v4-0-ae5bb5e56aaf@gentoo.org
+>  	memset(&uart, 0, sizeof(uart));
 >
-> Changes in v4:
->  - add i/d-cache, l2-cache info
->  - squash uart1 dts node
->  - update tags
->  - Link to v3: https://lore.kernel.org/r/20240703-k1-01-basic-dt-v3-0-12f73b47461e@gentoo.org
+> @@ -198,6 +268,12 @@ static int serial8250_resume(struct platform_device *dev)
+>  	return 0;
+>  }
 >
-> Changes in v3:
->  - fix dt_binding_check error
->  - fix plic compatible
->  - fix uart node name
->  - add uart1 dts node
->  - collect tags
->  - Link to v2: https://lore.kernel.org/r/20240627-k1-01-basic-dt-v2-0-cc06c7555f07@gentoo.org
->
-> Changes in v2:
->  - fix timebase-frequency according to current setting
->  - add other uart dt nodes, fix input frequency
->  - introduce new uart compatible for K1 SoC
->  - add 'k1' prefix to bananapi-f3.dts
->  - fix k1-clint compatible
->  - fix some typos
->  - Link to v1: https://lore.kernel.org/r/tencent_BC64B7B1876F5D10479BD19112F73F262505@qq.com
->
-> Link: https://github.com/BPI-SINOVOIP/armbian-build/tree/v24.04.30 [1]
-> Link: https://gist.github.com/cyyself/a07096e6e99c949ed13f8fa16d884402 [2]
-> Link: https://gist.github.com/cyyself/a2201c01f5c8955a119641f97b7d0280 [3]
-> Link: https://lore.kernel.org/r/20240618-hardwood-footrest-ab5ec5bce3cf@wendy [4]
-> Link: https://lore.kernel.org/linux-riscv/20240706082928.2238-1-jszhang@kernel.org/ [5]
->
-> Signed-off-by: Yangyu Chen <cyy@cyyself.name>
-> Signed-off-by: Yixun Lan <dlan@gentoo.org>
->
-> ---
-> Yangyu Chen (9):
->       dt-bindings: vendor-prefixes: add spacemit
->       dt-bindings: riscv: Add SpacemiT X60 compatibles
->       dt-bindings: riscv: add SpacemiT K1 bindings
->       dt-bindings: timer: Add SpacemiT K1 CLINT
->       dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
->       riscv: add SpacemiT SoC family Kconfig support
->       riscv: dts: add initial SpacemiT K1 SoC device tree
->       riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
->       riscv: defconfig: enable SpacemiT SoC
->
-> Yixun Lan (1):
->       dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
->
->  .../interrupt-controller/sifive,plic-1.0.0.yaml    |   1 +
->  Documentation/devicetree/bindings/riscv/cpus.yaml  |   1 +
->  .../devicetree/bindings/riscv/spacemit.yaml        |  28 ++
->  Documentation/devicetree/bindings/serial/8250.yaml |   4 +-
->  .../devicetree/bindings/timer/sifive,clint.yaml    |   1 +
->  .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
->  arch/riscv/Kconfig.socs                            |   5 +
->  arch/riscv/boot/dts/Makefile                       |   1 +
->  arch/riscv/boot/dts/spacemit/Makefile              |   2 +
->  arch/riscv/boot/dts/spacemit/k1-bananapi-f3.dts    |  19 +
->  arch/riscv/boot/dts/spacemit/k1.dtsi               | 459 +++++++++++++++++++++
->  arch/riscv/configs/defconfig                       |   1 +
->  12 files changed, 523 insertions(+), 1 deletion(-)
-> ---
-> base-commit: 8400291e289ee6b2bf9779ff1c83a291501f017b
-> change-id: 20240626-k1-01-basic-dt-1aa31eeebcd2
->
-> Best regards,
+> +static const struct acpi_device_id acpi_platform_serial_table[] = {
+> +	{ "RSCV0003", 0 }, // RISC-V Generic 16550A UART
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, acpi_platform_serial_table);
+> +
+>  static struct platform_driver serial8250_isa_driver = {
+>  	.probe		= serial8250_probe,
+>  	.remove_new	= serial8250_remove,
+> @@ -205,6 +281,7 @@ static struct platform_driver serial8250_isa_driver = {
+>  	.resume		= serial8250_resume,
+>  	.driver		= {
+>  		.name	= "serial8250",
+> +		.acpi_match_table = ACPI_PTR(acpi_platform_serial_table),
+>  	},
+>  };
