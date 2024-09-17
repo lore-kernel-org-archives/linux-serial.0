@@ -1,115 +1,131 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA6C179967;
-	Tue, 17 Sep 2024 20:15:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6C8D17A591;
+	Tue, 17 Sep 2024 21:08:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726604105; cv=none; b=exn/S5hxkRFO0Ak1upino74aQ9+D8MJKt4MFmXhmceLjzqP9DF36yYFvmTTvgIBr2ka96d07KgcXaL+BTdXMyyIgEDhS5VrcpeNmy1YZtoR2cnY5DjYEgLs5AU+g0UJgumSbZpTY4EDzM7ZHn72M8ajm+HzC7YRcWuyT2o56r8U=
+	t=1726607282; cv=none; b=Ej9L496Q1YJQvmL2PORmDorKLW8IJBl1k9SbzRE/fSZgDslf62iMtKktoaRXI94x8kycToOR4rG6Rzh2P+BAyNLI8iXu7vQKRB0Y7TYxyiVCuLZAMmyDJhKm8AI+hLfewVf4g2lUjY16hibz3jFe1LULTCJ4dPE9VihATyQbK/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726604105; c=relaxed/simple;
-	bh=81iSzbOqnhSne0ktuF01wg+nnD9mtVaFvoeVj8EBkw8=;
+	s=arc-20240116; t=1726607282; c=relaxed/simple;
+	bh=Xw3qFVde4mW/vVW5R3FHyrkUkN6HRIPohqAfP8ki1cI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Mx3oJ/K9/oqKSaTWgF3VHJSzHAgunO62N7VUJLq6ZVBiKB6yamXf4ruxVTWK48kyP8KfVmRC79rm3PPkZTknNfqLcN+E/2ef41pTJjKBfAVNorMBLSmd9KkzR/O4oa3jZvr+t9Dy4sre+kd6q7OKqiQagPh8B6N95jUzPyGuVhU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=Th5+iAsG; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=gpm86PngAXCsRvCTexiLdvOakvuHASqkzb0hdL1skBcejwsaKLpP+UxMtP5tEol0pksW4cu9HbFi84ZhsjGe0jV12g8m7WeWsrb3OzlIpS4Lbrl9fMSamKq2qurFbAWJuTgHKJMkG6gf3XEkB9Kwvvaoui17QvxZ6IXW2QKY0zE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CsbDwsQM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="Th5+iAsG"
-Received: from mail01.disroot.lan (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id D9E282004E;
-	Tue, 17 Sep 2024 22:14:59 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
- by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
- id Z5SgtwYYZVmj; Tue, 17 Sep 2024 22:14:58 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1726604098; bh=81iSzbOqnhSne0ktuF01wg+nnD9mtVaFvoeVj8EBkw8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Th5+iAsGerByToyw4NuXu8K47DlwvEDYpiK0yxRx5l/RxP8eRTk9Tm/L/5lcBEv99
-	 y3um4swxXKfFj5++rSau/mlVnzW2SqcbI4TWoNO2VDtzgNWtmtTlAyfZ8WZDDARLlk
-	 njS39OGvoKPoyXdQ8nsieeU/tpVdGWrTp1PdtAJ/Cuw0wtP9+CWySSTKqzWZdY3Qy3
-	 Dlf5vTvHGhqBWP8LK9KMyRlPhE0/CGUAopEuf2GseFQiB86ZAGDFg7Qt2LcWr5n1sP
-	 i1rVOELPo+x6mIj5Tfaoj2l7RcZ7YAEo2Yom9g51I1QImo6U12IAJzDuR8vkB9T2mX
-	 nsMCVFH3CzB7A==
-Date: Tue, 17 Sep 2024 20:14:36 +0000
-From: Yao Zi <ziyao@disroot.org>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Jonas Karlman <jonas@kwiboo.se>, Tim Lunn <tim@feathertop.org>,
-	Andy Yan <andyshrk@163.com>,
-	Muhammed Efe Cetin <efectn@protonmail.com>,
-	Jagan Teki <jagan@edgeble.ai>, Dragan Simic <dsimic@manjaro.org>,
-	Ondrej Jirman <megi@xff.cz>, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: Celeste Liu <CoelacanthusHex@gmail.com>
-Subject: Re: [PATCH v4 0/4] Add initial support for Rockchip RK3528 SoC
-Message-ID: <ZunjLMQGEcES2zIV@pineapple>
-References: <20240829092705.6241-1-ziyao@disroot.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CsbDwsQM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A7AFC4CEC5;
+	Tue, 17 Sep 2024 21:07:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1726607282;
+	bh=Xw3qFVde4mW/vVW5R3FHyrkUkN6HRIPohqAfP8ki1cI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CsbDwsQMzYP89sJ1xwuAWKIoRn8xBwDKXeZc2aPQxof68aoPY2YRumZdSdWdEc+Ho
+	 bENcFwj9e2++zZDEjW5+MefLdrq9A7siRX0dYBhKXcollwOX8h6rvTqCIXASx6zlsT
+	 eCQ3DnxsA7D4JgP+zlUg/XWpEUZE5HuM3eHqwTIE18TbkNf/zdkqH0lyNQ8JS7MGIV
+	 EgDUjZhWlOBVSDbinAUrSP8yB/jDA1sZsLgrJiZ9hgOf0Uzueilgi8rybxwdvawVL1
+	 3wNiEVxcHWM7tZ2bhrPRO9GHpav6z2H5S8wcRzE9aDScHsr16Jy/xFTrrl3bulziAm
+	 K4nxuAfu/2ZlQ==
+Date: Tue, 17 Sep 2024 22:08:03 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: dlan@gentoo.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, Paul Walmsley <paul.walmsley@sifive.com>,
+	aou@eecs.berkeley.edu, cyy@cyyself.name, daniel.lezcano@linaro.org,
+	tglx@linutronix.de, samuel.holland@sifive.com, anup@brainfault.org,
+	Greg KH <gregkh@linuxfoundation.org>, jirislaby@kernel.org,
+	lkundrak@v3.sk, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org, jesse@rivosinc.com,
+	jszhang@kernel.org, inochiama@outlook.com, uwu@icenowy.me,
+	zhangmeng.kevin@spacemit.com, kevin.z.m@hotmail.com,
+	Conor Dooley <conor.dooley@microchip.com>, matthias.bgg@kernel.org
+Subject: Re: [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
+Message-ID: <20240917-spoilage-nimble-a8303fd04482@squawk>
+References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
+ <mhng-5bc45db9-5deb-4db6-8733-561768b2968c@palmer-ri-x1c9>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="v4bulkuQot7/4uA1"
 Content-Disposition: inline
-In-Reply-To: <20240829092705.6241-1-ziyao@disroot.org>
+In-Reply-To: <mhng-5bc45db9-5deb-4db6-8733-561768b2968c@palmer-ri-x1c9>
 
-On Thu, Aug 29, 2024 at 09:27:01AM +0000, Yao Zi wrote:
-> Rockchip RK3528 is a quad-core ARM Cortex-A53 SoC designed for
-> multimedia application. This series add a basic device tree with CPU,
-> interrupts and UART nodes for it and is able to boot into a kernel with
-> only UART console.
-> 
-> Has been tested on Radxa E20C board[1] with vendor U-boot, successfully
-> booted into initramfs with this log[2].
-> 
-> [1]: https://docs.radxa.com/en/e/e20c
-> [2]: https://gist.github.com/ziyao233/b74523a1e3e8bf36286a572e008ca319
-> 
-> Changed from v3:
-> - move mmio devices into soc node
-> https://lore.kernel.org/all/20240814155014.18097-1-ziyao@disroot.org/
-> 
-> Changed from v2:
-> - fix fixed-clock nodename
-> https://lore.kernel.org/all/20240811140725.64866-1-ziyao@disroot.org/
-> 
-> Changed from v1:
-> - fix stdout-path
-> - style improvements
-> https://lore.kernel.org/all/20240803125510.4699-2-ziyao@disroot.org/
-> 
-> Yao Zi (4):
->   dt-bindings: serial: snps-dw-apb-uart: Document Rockchip RK3528
->   dt-bindings: arm: rockchip: Add Radxa E20C board
->   arm64: dts: rockchip: Add base DT for rk3528 SoC
->   arm64: dts: rockchip: Add Radxa e20c board
-> 
->  .../devicetree/bindings/arm/rockchip.yaml     |   5 +
->  .../bindings/serial/snps-dw-apb-uart.yaml     |   1 +
->  arch/arm64/boot/dts/rockchip/Makefile         |   1 +
->  .../boot/dts/rockchip/rk3528-radxa-e20c.dts   |  22 ++
->  arch/arm64/boot/dts/rockchip/rk3528.dtsi      | 189 ++++++++++++++++++
->  5 files changed, 218 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528-radxa-e20c.dts
->  create mode 100644 arch/arm64/boot/dts/rockchip/rk3528.dtsi
-> 
-> -- 
-> 2.46.0
-> 
 
-Ping on this thread. Is it possible to get this merged in v6.12? Or
-anything else I need to do?
+--v4bulkuQot7/4uA1
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for your time.
+On Tue, Sep 17, 2024 at 06:04:29AM -0700, Palmer Dabbelt wrote:
+> On Mon, 29 Jul 2024 17:28:03 PDT (-0700), dlan@gentoo.org wrote:
+> > SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vect=
+or
+> > 1.0 and Zicond evaluation now. Add initial support for it to allow more
+> > people to participate in building drivers to mainline for it.
+> >=20
+> > This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
+> > bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
+> > Zicboz, which does not in the vendor dts on its U-Boot. Then successful=
+ly
+> > booted to busybox on initrd with this log[3].
+> >=20
+> > As previous discussion in patch v1[4], maintainer expect more basic dri=
+vers
+> > ready before really merging it, which would be fine. For other follow-u=
+p patches,
+> > that are clk, pinctrl/gpio, reset.. My current goal would target at a h=
+eadless
+> > system including SD card, emmc, and ethernet.
+>=20
+> Acked-by: Palmer Dabbelt <palmer@rivosinc.com>
+>=20
+> if you guys want to take this through some SOC tree.  I'm not really sure
+> what the bar is for SOC support to get merged, but I'd be happy to just s=
+ee
+> this booting at all -- we've got a bunch of them floating around and the
+> vendor kernels are pretty crusty, so anything's an improvement on my end.
 
-Best regards,
-Yao Zi
+I've asked for clock and ideally pinctrl support before merging it. We
+had a conversation about the usefulness etc of some of the initial
+devicetrees merged for some platforms a few months back, that lead to me
+not merging the k230 support I had queued up. I know this isn't exactly
+a "fair" barrier to entry, as it is likely that platforms supported by
+hobbyists are going to be more affected than companies that usually come
+with that basic level, but have to draw a line somewhere.
+Both clock and pinctrl are currently in progress for the k1, hopefully
+wont take too much longer before this is mergeable.
+
+In other news, nobody has really made an "official" statement about who
+is going to maintain this particular platform. People have expressed
+interest (including the submitter of the series, IIRC) but there's no
+MAINTAINERS entry added here AFAICT. I used to have an entry that
+covered arch/riscv/boot/dts/*, with exclusions for sunxi and renesas,
+but with Drew taking on thead and sophgo being the res=E3=81=BDonsibility of
+Chen Wang and Inochi, I no longer have that wildcard.
+
+I'm happy to apply patches for the platform if noone else is interested
+in that side of things, provided there are willing reviewers, but I
+would much rather that someone else took up the responsibility of
+applying patches and sending PRs - and of course I am happy to help
+whoever that is with the process.
+
+Cheers,
+Conor.
+
+--v4bulkuQot7/4uA1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZunvrwAKCRB4tDGHoIJi
+0vJfAQCKzg29et4gyyvvDvcq+H0Lr+9pUp0MuhQz0BQ1+12qRAD/ZabDnCrlmXdm
+mcstHKWqUcb70WAc/TNCUbS+pCiwsgo=
+=JYI3
+-----END PGP SIGNATURE-----
+
+--v4bulkuQot7/4uA1--
