@@ -1,58 +1,57 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com [209.85.208.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67E328175B
-	for <linux-serial@vger.kernel.org>; Wed, 18 Sep 2024 09:53:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E789D17B418
+	for <linux-serial@vger.kernel.org>; Wed, 18 Sep 2024 12:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726653215; cv=none; b=PgaxVXHnFTWmdS/uhmPeAkn08jNVByr5f6un+o01ef9G7MqpJF8zJegBOXQ8FeQkNsO/SD6PHVGYBzqBpiEL+08/D2pL6yQcBKUMHNMPvS/NQNvtTzsKI5rOT/L4v3DhflNBm7AWmukbNrzP/GPH2UullaNbH1lDLItBMoct0PE=
+	t=1726662407; cv=none; b=BkLvYo2obUoviHlvk/WS4OxwkRR249zPGL+ShOYac2p4VStzhYDy1jwMB8UlRwZkErzvPyMZtMfRhWDia8fo7tCUyNrf6CcQsdgb0NtgqIUIYVME8mSOwZ3ZbskLEtmdug+MNKmoAVMfzsn6TbhCnx51M1s2uQqovWvlyjjnIrU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726653215; c=relaxed/simple;
-	bh=qX3WYQ6+Vf/oHkvyYC7tQqdcfeK8ooGc7TQuG0J4/8g=;
+	s=arc-20240116; t=1726662407; c=relaxed/simple;
+	bh=owkSPE+N434gd412TfpJW7YM2i6bFDTs176bOwmFdnw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m5yrH0sUbSOF5NTjbhaM577WF2P3GjlMuWHSLhsimG2ZOlBgQCU3XiUKNfvUBv29OceO/aW3LUDN/a0oqfGCtUdViNQIy/kM+3zPPbnv7N1+k66qrl/51JErH7YqtxNftDD7K5qDa7Nh8xyTTL5LqTH5Bay2UA8tkl97a1GkkFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=UG5uqqPU; arc=none smtp.client-ip=209.85.167.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=d3cNyWYKzRoYPSkmACq0jDQKeOg8w89zSz11GQweoMHjGXLzr/FyN7u9LazadfNADnm4cqJ8REwnGmyGxYzEfNv7v0S+640XxIx685qUDGLAT+3bVbIK+UNDSUrY5PPJofEXHK4drcqO3c+dBaY2Z8dYAZUy1vZqqovObIeJIlg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=BfnZLIWt; arc=none smtp.client-ip=209.85.208.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="UG5uqqPU"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5367ae52a01so5986477e87.3
-        for <linux-serial@vger.kernel.org>; Wed, 18 Sep 2024 02:53:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="BfnZLIWt"
+Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-2f762de00fbso71326211fa.2
+        for <linux-serial@vger.kernel.org>; Wed, 18 Sep 2024 05:26:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1726653211; x=1727258011; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1726662402; x=1727267202; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=upynp3eGtaZUvy8FwKmWHNrTSvjQZK+dz1216GoCigI=;
-        b=UG5uqqPUAAKks/48aphmRg6pW8eGj0PYXA8UNzrGuQSZDFTEKx/4l+DhAZfUSBHUKN
-         l05E2ZqqzDHiS/DPiUqxaFNqHl1cbDUOZ1l7ORZ72Y81Pp0BNsSesEK6ZGCDivu6c6y1
-         5hhRNfuobukU9dhjxQayGxDsxycpK9S7/XVXmPv2FeMY9E+XhWCeYD7PXHObeTJ2SknF
-         k8zq7TPP5yTdnm+8cSt631YXy6jNppLAJFHenmJhqSMSZmBDXMOc6fE3p7QdVydahug3
-         XIntAojmfJA+MXFxWzFlZiYSVqI5vN2jegbPyw9nqE4und4kQLSt++/4XDHOd1PhZXon
-         qAfQ==
+        bh=cgAU7H+QNm1aqh8qRj4zRQupf73QoF2RSPiKY8v8FoM=;
+        b=BfnZLIWtPMVtg8mvdAmSKLG2WigkOeBljbFnHMjcd2y+MjLCkshxzD6oaGTDAUtMeU
+         kRr1erKMaoFslWajD0Ewo/4ifNOH0BHviaiJdWAzVQDfmQ7IhoW3eih8WrzRGrQ+BCdU
+         BOhimVpHisyjAgN90bSWi72Qt+0vtSjRCJGe1NUVHBIFy9jImBi9xACckuNNBcviKcyf
+         wkx169+tgpTyOezoweqGP2dA09gLTWs/hk5BJAhh3Yv1B16vqE1GShhiBiUhVahlFxfw
+         WjYazcawgVUeHmaX05I9yHvdwJIZFLD7sS8YaoL8o5DCpCselCF5qPWXK17MZOzMGABH
+         0j/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726653211; x=1727258011;
+        d=1e100.net; s=20230601; t=1726662402; x=1727267202;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=upynp3eGtaZUvy8FwKmWHNrTSvjQZK+dz1216GoCigI=;
-        b=ipXX1O9YySZTzjStAt4PoMr4P25YGSOEv3U80ivO0APK4ALjwT3SjylYmJwX41aFov
-         W/dkRqWPwavWhJBMWiCTqFExN75udjse7VHjDSEmTYWOEDuMg6mteoqbKvsOEWpr1Wlv
-         2bGtWNBZRXjRjMic+uswqMacna0u2VC1mXmCrDZvfavzcGXDeyXUq4Gbij/niLscux/o
-         h9ITYKfMe4joLVh9lcF8MIuHdUDanfeuJ5l7vZgY1OPSrgf/FOZ71sPQURuMZ6m4zBB8
-         S6GJaraJ+ShNxme8rLEgPoVB5HQTC0cC6C4lihqFu03OGOGYIEH7S7lMHATlUdiGLVZE
-         XwFA==
-X-Forwarded-Encrypted: i=1; AJvYcCU8bC/91MsVYZDbDzs8DF9tQYXSuB+DEl9zHKv2rhFu8bi2r9NpO3b33eo6ydcmxog7fl8i6PGNQSHslDI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxo6JruFHR1+i5jxc/LLgx2rO6aLN85Asa3GKfTnQ+3KiLiLo6l
-	IdNB1L3cytK6A14sgxIF5fdhBlZQiIa8PcfQ1rtbWy0lrA5dL+eGWKw5XeRx2yAZf9KXdZX8rep
-	U
-X-Google-Smtp-Source: AGHT+IHpLFVaei2ayXOSJPg4gOV/F1ms9cHgsY6XrAy2tPIaJLJ7WLMBOrHs/jINB0vWDzucU8A1WA==
-X-Received: by 2002:a05:6512:6c3:b0:533:4652:983a with SMTP id 2adb3069b0e04-5367fef1846mr10734532e87.35.1726653211318;
-        Wed, 18 Sep 2024 02:53:31 -0700 (PDT)
+        bh=cgAU7H+QNm1aqh8qRj4zRQupf73QoF2RSPiKY8v8FoM=;
+        b=YI4hgeB4jj3zSVz1t6beG9F+407jmbpQRp05qsJWERezm1A4o/OZE+DqRNkvUJpD+p
+         0do+j78ckDWjeJ681U4DidSuaZTViqHzceMHgvvOsHsxNtGH9CvU0wZksEHrcJs5bBEY
+         XfWVo1LTvH9N46PsLspVlplaHBt4hjzHIOoC09SlS/XYz5vWdQsJqQtak5tcvuCtXrq2
+         lK24FEI0cA/YNi9xkB8eaZdns7kZ1y7F+a7446D/xrl7W5DhdgKTX4+TB2TYN1OwoT4n
+         j/q3cqwRxibH9+4hhwJz4qY59YNvCJmemv5Sw2Ah4r22v5zF8iEZQm6MnuYJjjUOF4Ok
+         amow==
+X-Forwarded-Encrypted: i=1; AJvYcCVvbvBYAhnzLQx3FRo1IlGuTxa1HMZarqjUYvxcq3qYQTPtv9MM1exTBeOeMIvjIygdYbbL2FkQ39I9pgU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxboSFce3tYqsdceV1/ZWgPQ1xcqQgLdRna13AgQkPLs/J0Zzes
+	M4iVCU7u71kFb4tIAeDORmtXRPUve+hb8nu8Z0pjUEgH8hyhATP8VY7mASODieY=
+X-Google-Smtp-Source: AGHT+IEC/F6EZ09kmQx5BVBSXoY98rkEXpb8znml9Z7Ud4EnUNW9fTdlXL3qQ9lBJjSySlTwEV3JKA==
+X-Received: by 2002:a05:651c:2118:b0:2f3:e2fd:7dcd with SMTP id 38308e7fff4ca-2f787dad3f9mr116066101fa.6.1726662401814;
+        Wed, 18 Sep 2024 05:26:41 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-207946d19cfsm61744945ad.157.2024.09.18.02.53.17
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2dd609af18dsm1459973a91.40.2024.09.18.05.26.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Sep 2024 02:53:30 -0700 (PDT)
-Date: Wed, 18 Sep 2024 11:53:12 +0200
+        Wed, 18 Sep 2024 05:26:41 -0700 (PDT)
+Date: Wed, 18 Sep 2024 14:26:25 +0200
 From: Petr Mladek <pmladek@suse.com>
 To: John Ogness <john.ogness@linutronix.de>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -63,21 +62,18 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Sunil V L <sunilvl@ventanamicro.com>, Arnd Bergmann <arnd@arndb.de>,
-	Tony Lindgren <tony@atomide.com>, Udit Kumar <u-kumar1@ti.com>,
-	Ronald Wahl <ronald.wahl@raritan.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
 	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Thomas Richard <thomas.richard@bootlin.com>,
-	Griffin Kroah-Hartman <griffin@kroah.com>,
+	Arnd Bergmann <arnd@arndb.de>,
 	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH next v2 2/4] serial: 8250: Split out IER from
- rs485_stop_tx()
-Message-ID: <ZuqjCN18dSUDEa0d@pathway.suse.cz>
+	Serge Semin <fancer.lancer@gmail.com>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH next v2 3/4] serial: 8250: Switch to nbcon console
+Message-ID: <ZurG8YMmBmVVxttj@pathway.suse.cz>
 References: <20240913140538.221708-1-john.ogness@linutronix.de>
- <20240913140538.221708-3-john.ogness@linutronix.de>
+ <20240913140538.221708-4-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -86,144 +82,42 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240913140538.221708-3-john.ogness@linutronix.de>
+In-Reply-To: <20240913140538.221708-4-john.ogness@linutronix.de>
 
-On Fri 2024-09-13 16:11:36, John Ogness wrote:
-> Move IER handling out of rs485_stop_tx() callback and into a new
-> wrapper serial8250_rs485_stop_tx(). Replace all callback call sites
-> with wrapper, except for the console write() callback, where it is
-> inappropriate to modify IER.
+On Fri 2024-09-13 16:11:37, John Ogness wrote:
+> Implement the necessary callbacks to switch the 8250 console driver
+> to perform as an nbcon console.
+> 
+> Add implementations for the nbcon console callbacks (write_atomic,
+> write_thread, device_lock, device_unlock) and add CON_NBCON to the
+> initial flags.
+> 
+> All register access in the callbacks are within unsafe sections.
+> The write_thread() callback allows safe handover/takeover per byte.
+> The write_atomic() callback allows safe handover/takeover per
+> printk record and adds a preceding newline if it took over mid-line.
+> 
+> For the write_atomic() case, a new irq_work is used to defer modem
+> control since it may be a context that does not allow waking up
+> tasks.
 
-It would be great to provide more details:
+It would be fair to mention that it does not longer support fifo in
+the 8250 driver. It basically reverted the commit 8f3631f0f6eb42e5
+("serial/8250: Use fifo in 8250 console driver").
 
-  + why it is done (IER modification requires port lock?)
+It is not usable in write_thread() because it would not allow
+a safe takeover between emitting particular characters.
 
-  + why it is suddenly safe to call serial8250_em485_handle_stop_tx()
-    without holding &p->port.lock
+It might still be used in write_atomic() but it is probably not
+worth it. This callback is used "only" in emergency and panic
+situations.
 
+> Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -558,7 +558,7 @@ static int serial8250_em485_init(struct uart_8250_port *p)
->  
->  deassert_rts:
->  	if (p->em485->tx_stopped)
-> -		p->rs485_stop_tx(p);
-> +		serial8250_rs485_stop_tx(p);
+Otherwise, it looks good to me. And it even works fine.
+With an updated commit message:
 
-This would keep the same functionality only when
-
-	p->rs485_stop_tx == serial8250_em485_stop_tx
-
-Is it always the case?
-Is it OK when it is not the case?
-
-For example, serial8250_em485_init() is involved in bcm2835aux driver
-probe which uses another rs485_stop_tx() callback, see below.
-
->  
->  	return 0;
->  }
-> @@ -1397,16 +1396,29 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p)
->  	/*
->  	 * Empty the RX FIFO, we are not interested in anything
->  	 * received during the half-duplex transmission.
-> -	 * Enable previously disabled RX interrupts.
->  	 */
-> -	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
-> +	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX))
->  		serial8250_clear_and_reinit_fifos(p);
-> +}
-> +EXPORT_SYMBOL_GPL(serial8250_em485_stop_tx);
-> +
-> +/**
-> + * serial8250_rs485_stop_tx() - stop rs485 transmission, restore RX interrupts
-> + * @p: uart 8250 port
-> + */
-> +void serial8250_rs485_stop_tx(struct uart_8250_port *p)
-> +{
-> +	/* Port locked to synchronize UART_IER access against the console. */
-> +	lockdep_assert_held_once(&p->port.lock);
-> +
-> +	p->rs485_stop_tx(p);
->  
-> +	/* Enable previously disabled RX interrupts. */
-> +	if (!(p->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
->  		p->ier |= UART_IER_RLSI | UART_IER_RDI;
->  		serial_port_out(&p->port, UART_IER, p->ier);
->  	}
->  }
-> -EXPORT_SYMBOL_GPL(serial8250_em485_stop_tx);
->  
->  static enum hrtimer_restart serial8250_em485_handle_stop_tx(struct hrtimer *t)
->  {
-> @@ -1418,7 +1430,7 @@ static enum hrtimer_restart serial8250_em485_handle_stop_tx(struct hrtimer *t)
->  	serial8250_rpm_get(p);
->  	uart_port_lock_irqsave(&p->port, &flags);
->  	if (em485->active_timer == &em485->stop_tx_timer) {
-> -		p->rs485_stop_tx(p);
-> +		serial8250_rs485_stop_tx(p);
-
-This causes that UART_IER is manipulated for all p->rs485_stop_tx()
-callbacks. Is that correct, please?
-
-For example, it seems serial8250_em485_handle_stop_tx() might be used
-also by bcm2835aux driver. It set by:
-
-static int serial8250_em485_init(struct uart_8250_port *p)
-{
-	[...]
-	p->em485->stop_tx_timer.function = &serial8250_em485_handle_stop_tx;
-	[...]
-}
-
-which is called via
-
-int serial8250_em485_config(struct uart_port *port, struct ktermios *termios,
-			    struct serial_rs485 *rs485)
-{
-	[...]
-	if (rs485->flags & SER_RS485_ENABLED)
-		return serial8250_em485_init(up);
-	[...]
-}
-
-which is set by:
-
-static int bcm2835aux_serial_probe(struct platform_device *pdev)
-{
-	[...]
-	up.port.rs485_config = serial8250_em485_config;		<--------
-	[...]
-	up.rs485_stop_tx = bcm2835aux_rs485_stop_tx;
-	[...]
-}
-
-But this same _probe() call sets
-
-	up.rs485_stop_tx = bcm2835aux_rs485_stop_tx;
-
-which does not manipulate UART_IER.
-
->  		em485->active_timer = NULL;
->  		em485->tx_stopped = true;
->  	}
-> @@ -1450,7 +1462,7 @@ static void __stop_tx_rs485(struct uart_8250_port *p, u64 stop_delay)
->  		em485->active_timer = &em485->stop_tx_timer;
->  		hrtimer_start(&em485->stop_tx_timer, ns_to_ktime(stop_delay), HRTIMER_MODE_REL);
->  	} else {
-> -		p->rs485_stop_tx(p);
-> +		serial8250_rs485_stop_tx(p);
-
-I can't find easily whether serial8250_em485_stop_tx() is always set
-as p->rs485_stop_tx callback here. I would expect that it might be
-another callback. It is a callback after all.
-
-Is it always safe?
-
->  		em485->active_timer = NULL;
->  		em485->tx_stopped = true;
->  	}
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
 Best Regards,
 Petr
