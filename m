@@ -1,78 +1,75 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBC7718990D
-	for <linux-serial@vger.kernel.org>; Wed, 18 Sep 2024 12:52:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED8781F16B;
+	Wed, 18 Sep 2024 14:01:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726663945; cv=none; b=LpPDK5/f/IEKwIerVIIFhG9Xxb5BfgJEoJsRSnlXArX8A42E0hpPUCCKaRzCeaV3SlBuom0i4c2RIheTMt75fyUlHfeA3Ee0fKwbnbg2iVLBSPX0oXQhwkjJAKP4xk2U25RIg9KjVCix9CUueYEvhTQ7ZT0a2q/tSSEkG871YCc=
+	t=1726668099; cv=none; b=EOg0+RpKoW5DlrTcJYyE1nE58tFLKkT+vdig7+AmXaMP8Il+VT7OTilFjfFDHQxGGIhB7maMq9Yc41vFvglV1pcS1GFartSIODPGdrkeIiv9utdCAH5TfUuRFXZCXBNRCWVen1kk9Ed6GzrvN5o3M73W3jPFdtw9o3q6AVuvluM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726663945; c=relaxed/simple;
-	bh=5QbounyFpdeLyPpqYbR0StL4YuvH2a6AMVNNNNvb9Cs=;
+	s=arc-20240116; t=1726668099; c=relaxed/simple;
+	bh=TC05tVa/tpsMqGnaGxHFacAi74RCpUHHCRaCpn7/MkQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YCbgtqKgKzJH+NZUPfK0G6K96VMsry+j5R2uhe4dxUxdeObSgv1K+4c3iETE+cWMW0/MYPyHtfldKhN8C4ADRKFWKDF+iUzZcZ7Y+eDWA7jOec90wUNWdEPNC2cgTD6unp3e/DlOl+L4mIQC91Vb+5T1XTE1y9QF63dvw4W7YzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=NgCT4nhi; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=BOXYUdzT6XJXGiKtwo1SS9Nf0gOhYlJEsmXiYLvjJqgJThUl1+PtThm7ffJDArgheYBBP/g9mNbhD3q2uwkyquC94LFDdB2ggn1PYSwJDKRuqqSYStTVxkRoaM3EYfs5n/VN3prWOucJIMYUsOqgWJXpTI2GtZfFQXyCnxJvgg8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BV3eaoYt; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="NgCT4nhi"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-42e5e1e6d37so36052765e9.3
-        for <linux-serial@vger.kernel.org>; Wed, 18 Sep 2024 05:52:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1726663941; x=1727268741; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+s5jBMUot9g03xEiSgGkzS9qg+YNVwIhQFcEqltV6D0=;
-        b=NgCT4nhiqTYFBrzcC9iixqV4la5ZcYUfAPFjOMXQSN0dtPg6wtkLGbszmdGa3h7dJf
-         JLGiPTvldGF376yuuctA1BjQIdJPYa2zKvGWS0/lQnMIPOjRHoMrEWOjmVPjIAHGlpjJ
-         jam+z2BZtkgQSBbw2BqK4T7t4HM1Z6X4BjQwz5Tjl8Aov8mO3NpO7P778HVNA4T7fYUf
-         JY9RarhV2ZQ7f7E5f2RsL5i8AOmOq8tVkR94HtwGrMmSIIrnUdWQaH7wiCbkZTQlLxHR
-         yTEhaa22uiArE6WquudZabBtzpk+yOHRaPbcDccQTGq3hnlCZ8Sa7o6UbmvUdocChDMe
-         moVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726663941; x=1727268741;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+s5jBMUot9g03xEiSgGkzS9qg+YNVwIhQFcEqltV6D0=;
-        b=gZfZqzecn+QWZJoXoa9cwIEuUA1G1lTrKw2z7r5NmEqeezGVR1s/BKeFsjbhR9USwv
-         ytkX+bWaQCtkC+9yGFlWB5Jq6jm/9CrjroMD6cW37YF/vubasdPZHzvS2lUX0vE2Vih7
-         XaZXiP2e35nDoNUe3j9l8giScW6Bx/zUFuePQ49Cz+hNhQLky1Eay7sBpQ0eqwvAMExH
-         Pks1qyeokxh+w5kMRVrveTB/tQk6BUXE4b5ATlyXLMqMBLS7R89h5x7RX/XutkzQTh3P
-         g9E4tJwBbnzbvNYqhmndpH42g5AYaS9+Vz9XGCuH1jbiHcgqwGAfIRQ1KeE96A01fBAK
-         oXdg==
-X-Forwarded-Encrypted: i=1; AJvYcCVbx3DXXXoqEgwW8C70Pxl8yT0jPMV+vfOTdhl7bGEKSu5VdeUSxAf2ebLUC1N0dPsjV3CPZvo0vdA8tt0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyQMK/fPRqDbQ9eWnTIZvHzzJSo85SEm9vbfhFe5OKnja0Z3p+W
-	CWA968lO9mHPYwZFKVCWbYLUq5+5hvf+qGtlKUxEVxwqZssjkheAbtbPx6jcID8P/5i/cd5oqRy
-	B
-X-Google-Smtp-Source: AGHT+IG1ehOCKV8YfrxH+CjYDke8qE4rmuwAM6XvhbWHjYwR2pC+c9kHprUmLkqGKwV66QYZbIfGtg==
-X-Received: by 2002:adf:a3c6:0:b0:374:cb30:b9b3 with SMTP id ffacd0b85a97d-378c2cfed36mr11530408f8f.2.1726663941116;
-        Wed, 18 Sep 2024 05:52:21 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20794601083sm64767585ad.71.2024.09.18.05.52.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Sep 2024 05:52:20 -0700 (PDT)
-Date: Wed, 18 Sep 2024 14:52:06 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BV3eaoYt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1726668098; x=1758204098;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TC05tVa/tpsMqGnaGxHFacAi74RCpUHHCRaCpn7/MkQ=;
+  b=BV3eaoYtTxhneQVDRv2UcK8tANTcSQBOZ7L3LYmR3rDj7tOomd6gHScy
+   8POL1C+Kx9Yf+8a1XofYHiBP8oqy5DswekJdoU/SKJ5oMAklFw2WUgql2
+   xfMwoxxI/rWBvt8a3EJV6DfVcO1pGz7ri1zEOUiBl9G710P7mYmp2wkfG
+   vPH3x7KegcH5mVW7jBTd0H67CbLF2kqO9FS0Xp3PdEiue/UeSY92TGx/H
+   44AQ8eUWlYrY+6PGeowxOC/mxDFvyPn5pptbdtsNPHxO3mfE2P5I1F76J
+   FpRI+68VfN9zFeQJUyjk21qMK4ChXO+AC+qNtDh9PXgMGszmvIUtudvH1
+   A==;
+X-CSE-ConnectionGUID: JXc3jD3uSFmjrZJIp8oQdA==
+X-CSE-MsgGUID: co95DV1EQveHiyKLiigRlQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11199"; a="28487237"
+X-IronPort-AV: E=Sophos;i="6.10,238,1719903600"; 
+   d="scan'208";a="28487237"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2024 07:01:36 -0700
+X-CSE-ConnectionGUID: j6C+cUOzTmaw/3LGnOiEvA==
+X-CSE-MsgGUID: ecYhGilzT5WPQmxF1c2XHQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.10,238,1719903600"; 
+   d="scan'208";a="74399299"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Sep 2024 07:01:31 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1sqvFH-0000000ACKv-2En7;
+	Wed, 18 Sep 2024 17:01:27 +0300
+Date: Wed, 18 Sep 2024 17:01:27 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: John Ogness <john.ogness@linutronix.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
 	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Peter Collingbourne <pcc@google.com>,
+	linux-kernel@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
 	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH next v2 4/4] serial: 8250: Revert "drop lockdep
- annotation from serial8250_clear_IER()"
-Message-ID: <ZurM9ufiMsjT6qKo@pathway.suse.cz>
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH next v2 3/4] serial: 8250: Switch to nbcon console
+Message-ID: <ZurdNw6lRYwClbuf@smile.fi.intel.com>
 References: <20240913140538.221708-1-john.ogness@linutronix.de>
- <20240913140538.221708-5-john.ogness@linutronix.de>
+ <20240913140538.221708-4-john.ogness@linutronix.de>
+ <ZurG8YMmBmVVxttj@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -81,19 +78,47 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240913140538.221708-5-john.ogness@linutronix.de>
+In-Reply-To: <ZurG8YMmBmVVxttj@pathway.suse.cz>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Fri 2024-09-13 16:11:38, John Ogness wrote:
-> The 8250 driver no longer depends on @oops_in_progress and
-> will no longer violate the port->lock locking constraints.
+On Wed, Sep 18, 2024 at 02:26:25PM +0200, Petr Mladek wrote:
+> On Fri 2024-09-13 16:11:37, John Ogness wrote:
+> > Implement the necessary callbacks to switch the 8250 console driver
+> > to perform as an nbcon console.
+> > 
+> > Add implementations for the nbcon console callbacks (write_atomic,
+> > write_thread, device_lock, device_unlock) and add CON_NBCON to the
+> > initial flags.
+> > 
+> > All register access in the callbacks are within unsafe sections.
+> > The write_thread() callback allows safe handover/takeover per byte.
+> > The write_atomic() callback allows safe handover/takeover per
+> > printk record and adds a preceding newline if it took over mid-line.
+> > 
+> > For the write_atomic() case, a new irq_work is used to defer modem
+> > control since it may be a context that does not allow waking up
+> > tasks.
 > 
-> This reverts commit 3d9e6f556e235ddcdc9f73600fdd46fe1736b090.
->
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+> It would be fair to mention that it does not longer support fifo in
+> the 8250 driver. It basically reverted the commit 8f3631f0f6eb42e5
+> ("serial/8250: Use fifo in 8250 console driver").
+> 
+> It is not usable in write_thread() because it would not allow
+> a safe takeover between emitting particular characters.
+> 
+> It might still be used in write_atomic() but it is probably not
+> worth it. This callback is used "only" in emergency and panic
+> situations.
 
-Makes sense.
+This is unfortunate. It will drop down the efficiency of printing.
+I think it should be done differently, i.e. the takeover the code
+has to drop FIFO (IIRC it's easy to achieve by disabling it or so)
+and switch to printing the panic/emergency message. But still at
+some baud rate speeds draining the FIFO to the other end may be
+not a bad idea as it takes a few dozens of microseconds.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Best Regards,
-Petr
+
