@@ -1,216 +1,294 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F6AC1DDC9
-	for <linux-serial@vger.kernel.org>; Thu, 19 Sep 2024 15:02:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F17D2208D0;
+	Thu, 19 Sep 2024 19:12:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726758133; cv=none; b=eiBj7dmQTZcELZnztHzYDzyHdthbyz0IWLSUsG5DNGnfeUdtS4Q+1jPfLFIKCmBRWP3iIHqfzv/RUeYDmT5KFCoN2GrcJUI0SS68CTPQBue5Gr2KKyDKlAZM7cU3W6uvK9O6JRvB1quNykqJ+tX2DzXLe4PYkQMSrBGsZ2+deJY=
+	t=1726773148; cv=none; b=L/dcH7/BJdZ23yKS2CHhhAcuGGNlQnPBIBqH9SUxt5cdNoyjdmojmXknBPEP+onrVn04RfGWmEKHkQxYClCwOVQYWIXdpGKMIj88DSF1uRDlKfWHB3vjKsnc2WXd79GeToz0OpE4ELCPe+u4xUcgt+KYyjN5Jcg4i0DGpNS1Nb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726758133; c=relaxed/simple;
-	bh=YpUk7QNqAoJUkAbDvBnTy3VZp3BINGaqpAaOyQTJMqE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qGsJNQ4gnA0OCiK5qL2QkkdZJD+ERSoHc9V6xbZxNeXX2ZEaJN8CWJl9Fi0LTvJj1nyXbXoQ6pNFCY1Qhf3roBjy9FlEWdU4gxeherMCqX+NS/8ddZLTGXGtOcqETMiOSfJkd9vm6gCpPFaYzLrJFdrfo3QfMdcwOuWEtdBE/kY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=V5gxiNxS; arc=none smtp.client-ip=209.85.167.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1726773148; c=relaxed/simple;
+	bh=zGHRtNH0HtiNux6L2M1nTJQ42ddSQcZjRws0nmEhOqk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:From:In-Reply-To:
+	 Content-Type:References; b=UhmPOrLv0G3ZzYzNbbEDA93qeZURnfIZUpy2KYxDNGevMiRyzao6KNPijLmf0E1a7OdFXb+3uFzoHiu0KqAJRIYRbxu+p4yCmwr91cJ13EVR/sJ3QPYPD9pQT1tsN1xwwXeIguEHog8Fu8Rzk2YCjP6N7mz2bZ0hCy+QCBW/dD0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=fzvLBANY; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="V5gxiNxS"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5365aec6fc1so1187149e87.3
-        for <linux-serial@vger.kernel.org>; Thu, 19 Sep 2024 08:02:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1726758129; x=1727362929; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uCm2GzzK+q+0wa6+stISbobtFnZrzd/LjiQZU2jYSWs=;
-        b=V5gxiNxSUp0+xSFLz7LiQtg8HtpnxGvBDU6aE60/CbhUQJGbC9PJxvG0fhFf8xX5RR
-         4vDdyE78H9xK1yBV1Cz2duZ2j6h1OXFbsFS+/Dc8GiH4gcdKBts4b/JGdBaSSWWgzOdp
-         Hra/oo8hbgMwbPuVT9D2Ygj5H2oXluxgJ0Kaa950UNyHYTwpzS/1ST1RvoaQyGo25Tl0
-         wKY0xLkPSzUi3331n7tA+odUTQS66VnjN6NoPFOaHsxd32iQA1uHvu+r6EX6FE6FejwM
-         2JLFATCDfa4eibeq3ywoAfmSOuEpdrnMfGyLq4m2ygTskI9nPeoKWdn2n9SXGxgpysRN
-         cINg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1726758129; x=1727362929;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uCm2GzzK+q+0wa6+stISbobtFnZrzd/LjiQZU2jYSWs=;
-        b=s5Ee6ta3wZvxkXgOmSYjP7qBRg/ydlX4jsD1+ixD9lLIhOt934wgWVFzACdCwwmQs5
-         OfJiGOuvGk8jc90H+O2hM6xZrt3YLkbUnEQbO5k9GwGZOEEWfPgWg+8TbUocgmloR5ed
-         VbjBsP8qeuiiaU8osnyyQzt7gpI2z2c/jqvQ8IAnkQZmj87TvgGFcxpfu5m3DEDx3vyz
-         Zk1AwoByiMYEclvhcry7ZcBJ9kYWvb8Jty1MI2bNRjJ/tQ2AKakUDwx0JqKpVAcTf/UR
-         LcqpvqwNbuHs8uNNJgtwkREoUaBvuW7hSx9aD5vwaa0PnPipbH0iOlytueef0NJEejpK
-         8iEg==
-X-Forwarded-Encrypted: i=1; AJvYcCWnna4i0Z9UWArHkuNcp0MaV9rJZZWkNlG1plYN/UU+tAdFpvyMaR2iSuETHVnXFqncOxO0OuKJBc4O0a0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwvtBlkdfmKOnc3SgEDgJWS571tANc2TSieMu07gj3vRi0CXBh4
-	DzfPFZJ3jABOgA6Jvkti74ZRVkd1DL/uIWWUzAOb6F4PMoK5VoKf2g/XDDF15Xs=
-X-Google-Smtp-Source: AGHT+IFRQsoIHdcvjt2JIpniZeK8k6MPo4O04rrl7ltLpXb2c258J/bIcA534MWSbuTQYrLAiz5l1Q==
-X-Received: by 2002:a05:6512:3b0e:b0:52e:9fe0:bee4 with SMTP id 2adb3069b0e04-53678fb731bmr14420533e87.9.1726758128411;
-        Thu, 19 Sep 2024 08:02:08 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2dd6ef978besm1958074a91.57.2024.09.19.08.01.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Sep 2024 08:02:06 -0700 (PDT)
-Date: Thu, 19 Sep 2024 17:01:49 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Sunil V L <sunilvl@ventanamicro.com>, Arnd Bergmann <arnd@arndb.de>,
-	Florian Fainelli <f.fainelli@gmail.com>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH next v2 1/4] serial: 8250: Split out IER from
- rs485_start_tx()
-Message-ID: <Zuw83ZyzeKxA6RmE@pathway.suse.cz>
-References: <20240913140538.221708-1-john.ogness@linutronix.de>
- <20240913140538.221708-2-john.ogness@linutronix.de>
- <ZumWuketXcGQNw49@pathway.suse.cz>
- <84ldzproiy.fsf@jogness.linutronix.de>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="fzvLBANY"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240919191221euoutp010ddd44cc9e7483f2de1362b72161a6e4~2uwYTi6ct2616526165euoutp01c;
+	Thu, 19 Sep 2024 19:12:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240919191221euoutp010ddd44cc9e7483f2de1362b72161a6e4~2uwYTi6ct2616526165euoutp01c
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1726773141;
+	bh=5wMWZ+g85x3/VQ4fe0nCOsxCOPo6Ph9ygPWjlPbrfW0=;
+	h=Date:Subject:To:CC:From:In-Reply-To:References:From;
+	b=fzvLBANYeCN29tswLwUd47pXXc6AIHl4SdOotmBcpN7h4RgkQuES0RWvwTyB+1PqY
+	 l6fR+qZymcrJAUga1SRkwi8ZqVPiz8MlXoCeBIAsBlKEdUKM91n2A8+xvmdQxxaeiC
+	 HXq/LEs57wGuy/k0nXaH8BWMs//KbjyFOD+WNJ8w=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20240919191221eucas1p17631c52c12e9eac528029fc313e0de7c~2uwX8PxpR2404624046eucas1p1A;
+	Thu, 19 Sep 2024 19:12:21 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 7C.44.09624.5977CE66; Thu, 19
+	Sep 2024 20:12:21 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20240919191220eucas1p23f207681d0268c632f46323fd5ac9107~2uwXFO6tm3227632276eucas1p2i;
+	Thu, 19 Sep 2024 19:12:20 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20240919191220eusmtrp2b6213760a633a6ab532f5875087dc3ab~2uwXCvxYJ2424224242eusmtrp2m;
+	Thu, 19 Sep 2024 19:12:20 +0000 (GMT)
+X-AuditID: cbfec7f2-c11ff70000002598-0c-66ec7795e51c
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id 13.E4.14621.4977CE66; Thu, 19
+	Sep 2024 20:12:20 +0100 (BST)
+Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20240919191220eusmtip26823cf362cdfc852c6290fd3d6148856~2uwWtZnoN2388723887eusmtip2S;
+	Thu, 19 Sep 2024 19:12:20 +0000 (GMT)
+Received: from [106.110.32.87] (106.110.32.87) by CAMSVWEXC02.scsc.local
+	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+	Thu, 19 Sep 2024 20:12:17 +0100
+Message-ID: <d2726a61-37fa-4c39-aad6-08bf99d8d14b@samsung.com>
+Date: Thu, 19 Sep 2024 21:12:15 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <84ldzproiy.fsf@jogness.linutronix.de>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/8] drm/xe: xe_gen_wa_oob: fix
+ program_invocation_short_name for macos
+Content-Language: en-GB
+To: Masahiro Yamada <masahiroy@kernel.org>
+CC: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier
+	<nicolas@fjasle.eu>, Lucas De Marchi <lucas.demarchi@intel.com>,
+	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>, Maarten Lankhorst
+	<maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
+	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>,
+	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault
+	<samuel.thibault@ens-lyon.org>, Paul Moore <paul@paul-moore.com>, "Stephen
+ Smalley" <stephen.smalley.work@gmail.com>, Ondrej Mosnacek
+	<omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will
+	Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton
+	<oliver.upton@linux.dev>, James Morse <james.morse@arm.com>, Suzuki K
+	Poulose <suzuki.poulose@arm.com>, Zenghui Yu <yuzenghui@huawei.com>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, "Bill
+ Wendling" <morbo@google.com>, Justin Stitt <justinstitt@google.com>, "Simona
+ Vetter" <simona.vetter@ffwll.ch>, <linux-kernel@vger.kernel.org>,
+	<linux-kbuild@vger.kernel.org>, <intel-xe@lists.freedesktop.org>,
+	<dri-devel@lists.freedesktop.org>, <speakup@linux-speakup.org>,
+	<selinux@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<kvmarm@lists.linux.dev>, <linux-serial@vger.kernel.org>,
+	<llvm@lists.linux.dev>, Finn Behrens <me@kloenk.dev>, "Daniel Gomez
+ (Samsung)" <d+samsung@kruces.com>, <gost.dev@samsung.com>
+From: Daniel Gomez <da.gomez@samsung.com>
+In-Reply-To: <CAK7LNAQDxVGOa5g3f_dqZ5nD_u8_a++T+ussL+AWuOXs-XOsow@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Ta0yTVxjHPe+1INWXStejEIldumUQmCboziZBt/DhXYKJlw8ys0y68YJM
+	bmkpbm5GRO7gxkUodNAhlFtlQysgV3HAWjpAQBCRy2CRu1ynjovMjlLM+PZ/nvP7P8/5n+Tw
+	cMFrag8vIDiMkwVLA8WUNVGpX+lwSb8w47d/6qUQtTzOw9B8YRJAeu0kjmpNQzjqeTlPoav5
+	ZRRavjOJoeF7RRiay3FAGTfzKaTuMhJouryJQLqnvSRaq6nCUHdNNoXa8q/RaPR6A4XGnhZS
+	6MZiBYH+GukjUXW2kUT1Zd0U0nU/J1FMfCGJYkvGKLSQbMLQeH0LidJXZig0m/w7jQZSlQRq
+	UPXSqHhZCVCHQU8jU8NeVFnVDtBERxpAWQMDAD2rWh9cPpNCoryYD1DU4EH0pOAWfdSJLVWX
+	ArZO306x9f/kEmxN4x2KrVYN0WyuTsFGNc+SbH7dFMbqtPEUq45XY6zp2gjJNpvyaPZGRDrO
+	qo0n2IacUpodTjRgx+EZa3dfLjAgnJO97+FjfS6mNpMOnd77TcTN7RFgUpQArHiQcYPKSTVI
+	ANY8AVMMYFNsBW0pXgAYvZyHmykB8xzAfzMlbxxZtRGUBSoCcHC2ebNYh14tpW0W1QDqO1oI
+	s4XPeEDdgyVg1gQjgbdq50hL3xYas0Y3GCHjCIf7M2mz3sX4wIIE5QaPMyIY+aJkg7djnOBg
+	QRxpXoAzUzZwIrVzw0wx78F7Rt2G2Yo5AdVRf65r3jr0EVS2fGqZ4wivVvyEWyLsg5kpJYRF
+	X4J/lPdj5pmQqd0OC283kpYDTzg3ZtyEdsFpQzlt0Q7QVP0zZtH+UPOrapMJhXUDKtK8FzKH
+	4Q9tgZb2x7BszYBZ2jtg36yt5To7YGqlEk8GEtWWl1BtSaz6P4BqS4BcQGiBiFPIg/w5+YFg
+	7oKrXBokVwT7u34VEqQD61+k9bXh7yqQM73o2ggwHmgEkIeL7fiihSk/Ad9X+u1FThZyVqYI
+	5OSNwJ5HiEV8ia8jJ2D8pWHceY4L5WRvTjGe1Z4IjBdx+rvVw5rVDLfOZ6aetyQtXp2/ZPu8
+	i+mzT43f9r4c03vSTubYcX/V9vShhVFh/nzSqZNj9p454R9OdOFKr6b6ZEnrl5ELS2ekI3e1
+	ogRx0aL7F9ijT74XeOAZLp2XNCkhjo8Mv7Xv65OIAxTuV8Z3DmmOK1wOKdWSh86Ul+agzcP4
+	aFrS/06c/2fO2kjC/ZV18f36Rd+gNJFwjZdUW9fNVwjHghyWcx7HSJOqekabvS+mGBShsZrG
+	bd47n5iOxF05u63ncrhNtN+K9q7n1yFt9keDAj8vSuZnHdv99phDz/Wu+dYmbX54lPD8j4nO
+	6snoBjc2/kHskd1FiWGD5ftnmsSE/Jz0gBMuk0v/A5xW+OaRBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Te0yTVxjGPV+/S0GYHxXCgRHFJixCYqFA8WCAbQmZ3xYzZWK2wQAb+bhf
+	TEsFXYzNIHUUMSAqUKFiG1Aum65cLJTLYKzIGJLRwZgIuClyEUEGKjiwA8oS/vud8z7v87zn
+	5Bwuh3eXdObGp6SxkhRxEp+0xnvedo3uu5w+E+NlGnBA9/7QYGiu4gJAxqpJDjKYRzjo95dz
+	JMrU3ibRUu0khsZab2JottQFXa3Wkkj9WzeOput+wpHu8SCBVpr0GDI1lZDoV20uhZ5cbiPR
+	+OMKEt2Yr8fRX4+GCNRY0k2gltsmEulMCwRSZFcQ6HzlOIle5Jkx9LTlHoGuLM+Q6HnezxQa
+	vlSIozbVIIVuLRUC1NdlpJC5bRdq0PcCNNFXAFDx8DBAz/RrxnUz+QTSKPajrIci9Gf5HeoD
+	D6ZGXQOYZmMvybS8KsOZpo5akmlUjVBMmU7GZHU+Jxht8xTG6KqySUadrcYYc+4jguk0ayjm
+	hvwKh1F3hzBtpTUUM5bThR2BYYIASaosjXWNS5WmBfLDhchbIPRHAm9ff4HQZ3/EAW8R3zMo
+	IJpNij/FSjyDjgviFIYi6uT0rgx59XY5mHRUAisupH1hsUFOKoE1l0eXA9hfqsEsBRf4w+IA
+	YeGdcGVQuSmaB7BCn7O5aASwaDxzo8OWDoK6+6/BOuO0G7xjmCUs+3awu/gJvs4O9G449qCI
+	Wued9HFYrizc0HNoR/jNYuWG3p72gA/LvyXWAzj0hA08f0uHWdI0GOzXjm6kkbQ7bO3WbThZ
+	0SFQnTVKWZwQ1M60b/JumFl/jWM5wx5YlF+JW/gsXFh9CvKAg2rLgKotg6i2WKm2WJUBvArY
+	szJpcmyyVCiQipOlspRYwYnUZB1Ye8ENxuVaPVBPzws6AMYFHQByOXx7W8cXUzE822jx6TOs
+	JDVKIktipR1AtHZL+RxnhxOpa18gJS1K6OclEvr6+XuJ/P18+I62H5n6Ynh0rDiNTWTZk6zk
+	/z6Ma+Usx04lMZ9mlX14eDl0OXdHztRLyvcXm72dE831nzXyE2Nmffr1wW6ai1czMkcC4NeG
+	g4PtxRE20ZENipCDRVYXI123lZTWykP6icaZQNPNdCv3c70GP55LwqF/ek43/AgJuGB0c7Ie
+	0r/zSWhynsLp+6++e/8s7RmGuEcH4qvD/9W/MkGdKGT2820KLLp9X/r2yXEZqZrLiFsNi+ap
+	90TefYZlX3fvNKY05a944b0fc5WH/r7+4FigwT3qrS48tL4kaNU1ZuTI/OuFa+L77znWti6t
+	RPRgb84l2CgTqYL6gpwCWH3mSx/jgPldwZtFeztZwiWe3URZ3Y4+py8OD104EBx8lI9L48RC
+	D45EKv4P8XlwBEoEAAA=
+X-CMS-MailID: 20240919191220eucas1p23f207681d0268c632f46323fd5ac9107
+X-Msg-Generator: CA
+X-RootMTR: 20240906144003eucas1p1b8c2be4807e04ced52c4902bfbfb9783
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20240906144003eucas1p1b8c2be4807e04ced52c4902bfbfb9783
+References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
+	<20240906-macos-build-support-v2-3-06beff418848@samsung.com>
+	<CGME20240906144003eucas1p1b8c2be4807e04ced52c4902bfbfb9783@eucas1p1.samsung.com>
+	<CAK7LNAQDxVGOa5g3f_dqZ5nD_u8_a++T+ussL+AWuOXs-XOsow@mail.gmail.com>
 
-On Wed 2024-09-18 17:10:53, John Ogness wrote:
-> On 2024-09-17, Petr Mladek <pmladek@suse.com> wrote:
-> > Sigh, I am trying to review this patch but I am not familiar with the
-> > code. Feel free to ignore me when the questions are completely off.
+On 9/6/2024 4:39 PM, Masahiro Yamada wrote:
+> On Fri, Sep 6, 2024 at 8:01 PM Daniel Gomez via B4 Relay
+> <devnull+da.gomez.samsung.com@kernel.org> wrote:
+>>
+>> From: Daniel Gomez <da.gomez@samsung.com>
+>>
+>> Use getprogname() [1] instead of program_invocation_short_name() [2]
+>> for macOS hosts.
+>>
+>> [1]:
+>> https://www.gnu.org/software/gnulib/manual/html_node/
+>> program_005finvocation_005fshort_005fname.html
+>>
+>> [2]:
+>> https://developer.apple.com/library/archive/documentation/System/
+>> Conceptual/ManPages_iPhoneOS/man3/getprogname.3.html
+>>
+>> Fixes build error for macOS hosts:
+>>
+>> drivers/gpu/drm/xe/xe_gen_wa_oob.c:34:3: error: use of
+>> undeclared identifier 'program_invocation_short_name'    34 |
+>> program_invocation_short_name);       |                 ^ 1 error
+>> generated.
+>>
+>> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+>> Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
+>> ---
+>>   drivers/gpu/drm/xe/xe_gen_wa_oob.c | 4 ++++
+>>   1 file changed, 4 insertions(+)
+>>
+>> diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+>> index 904cf47925aa..0d933644d8a0 100644
+>> --- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+>> +++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+>> @@ -8,6 +8,7 @@
+>>   #include <errno.h>
+>>   #include <stdbool.h>
+>>   #include <stdio.h>
+>> +#include <stdlib.h>
+>>   #include <string.h>
+>>
+>>   #define HEADER \
+>> @@ -30,6 +31,9 @@
+>>
+>>   static void print_usage(FILE *f)
+>>   {
+>> +#ifdef __APPLE__
+>> +       const char *program_invocation_short_name = getprogname();
+>> +#endif
+>>          fprintf(f, "usage: %s <input-rule-file> <generated-c-source-file> <generated-c-header-file>\n",
+>>                  program_invocation_short_name);
+>>   }
+>>
+>> --
+>> 2.46.0
+>>
+>>
 > 
-> I appreciate you researching where the code came from. I made my changes
-> based on what I see the code doing now.
 > 
-> >> --- a/drivers/tty/serial/8250/8250_port.c
-> >> +++ b/drivers/tty/serial/8250/8250_port.c
-> >>  void serial8250_em485_start_tx(struct uart_8250_port *up)
-> >>  {
-> >>  	unsigned char mcr = serial8250_in_MCR(up);
-> >>  
-> >> +	/*
-> >> +	 * Some chips set the UART_LSR_DR bit even when UART_IER_RDI is
-> >> +	 * disabled, so explicitly mask it.
-> >> +	 */
-> >>  	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
-> >> -		serial8250_stop_rx(&up->port);
-> >> +		up->port.read_status_mask &= ~UART_LSR_DR;
-> >
-> > This change is related to disabling UART_IER_RDI but we do not longer
-> > disable it in this code path.
 > 
-> Correct. It will be disabled in the new wrapper
-> serial8250_em485_start_tx(). For the console write() callback, RDI is
-> already being disabled (IER is cleared). It will not use the wrapper.
+> Before adding such #ifdef, you should check how other programs do.
 > 
-> > Why do we need to do it here, please?
 > 
-> Because the console write() callback also needs to clear LSR_DR. That
-> part of the callback needs to stay.
 > 
-> > Why is it needed only in the em485-specific path, please?
 > 
-> Only RS485 deals with controlling TX/RX directions.
 > 
-> > On one hand, the comment talks about UART_LSR_DR and UART_IER_RDI
-> > so seems to be relater.
 > 
-> I do not know if the LSR_DR modify is strictly necessary. I am just
-> preserving the existing behavior (and related comment). The disabling of
-> IER_RDI will still happen (via wrapper or explicitly as in the console
-> write() callback).
 > 
-> >>  static bool start_tx_rs485(struct uart_port *port)
-> >>  {
-> >> @@ -1585,7 +1600,7 @@ static bool start_tx_rs485(struct uart_port *port)
-> >>  	if (em485->tx_stopped) {
-> >>  		em485->tx_stopped = false;
-> >>  
-> >> -		up->rs485_start_tx(up);
-> >> +		serial8250_rs485_start_tx(up);
-> >
-> > If I get this correctly then this keeps the existing behavior when
-> >
-> >     up->rs485_start_tx == serial8250_em485_start_tx
 > 
-> Correct.
 > 
-> > Is this always the case, please?
+> Solution 1 : hard-code the program name
 > 
-> Yes.
 > 
-> > Can start_tx_rs485() be called for the 8250_bcm2835aux.c driver?
+> diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+> b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+> index 106ee2b027f0..9e9a29e2cecf 100644
+> --- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+> +++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+> @@ -30,8 +30,7 @@
 > 
-> Yes.
+>   static void print_usage(FILE *f)
+>   {
+> -       fprintf(f, "usage: %s <input-rule-file>
+> <generated-c-source-file> <generated-c-header-file>\n",
+> -               program_invocation_short_name);
+> +       fprintf(f, "usage: xe_gen_wa_oob <input-rule-file>
+> <generated-c-source-file> <generated-c-header-file>\n");
+>   }
+> 
+>   static void print_parse_error(const char *err_msg, const char *line,
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> Solution 2: use argv[0]
+> 
+> 
+> diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+> b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+> index 106ee2b027f0..600c63e88e46 100644
+> --- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+> +++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
+> @@ -28,10 +28,10 @@
+>          "\n" \
+>          "#endif\n"
+> 
+> -static void print_usage(FILE *f)
+> +static void print_usage(FILE *f, const char *progname)
+>   {
+>          fprintf(f, "usage: %s <input-rule-file>
+> <generated-c-source-file> <generated-c-header-file>\n",
+> -               program_invocation_short_name);
+> +               progname);
+>   }
+> 
+>   static void print_parse_error(const char *err_msg, const char *line,
+> @@ -136,7 +136,7 @@ int main(int argc, const char *argv[])
+> 
+>          if (argc < 3) {
+>                  fprintf(stderr, "ERROR: wrong arguments\n");
+> -               print_usage(stderr);
+> +               print_usage(stderr, argv[0]);
+>                  return 1;
+>          }
 
-IMHO, the answer "Yes" to both last questions can't be valid.
-The 8250_bcm2835aux driver does:
 
-static int bcm2835aux_serial_probe(struct platform_device *pdev)
-{
-	[...]
-	up.rs485_start_tx = bcm2835aux_rs485_start_tx;
-	[...]
-}
+This approach looks good to me. I will drop Lucas' tag in favor to this. 
+Please, Lucas let me know if you disagree any of the proposals here or 
+if you have any preference. Otherwise, I'll resend this with solution 2.
 
-As a result, the 1st "Yes" was not correct:
 
-	up->rs485_start_tx != serial8250_em485_start_tx
 
-and this patch would change the behavior for the 8250_bcm2835aux driver.
-Before, start_tx_rs485() called directly:
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
 
-	up->rs485_start_tx(up);
-
-Newly, it would call:
-
-	void serial8250_rs485_start_tx(struct uart_8250_port *up)
-	{
-		if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
-			serial8250_stop_rx(&up->port);
-
-		up->rs485_start_tx(up);
-	}
-
-It means that it could call serial8250_stop_rx() even when it was not
-called by the original code.
-
-And SER_RS485_RX_DURING_TX seems to be checked even in
-drivers/tty/serial/8250/8250_bcm2835aux.c. So, it looks like it
-might be (un)set even for this driver.
-
-Or is this code path prevented in start_tx_rs485()? I mean that
-em485->tx_stopped could never be true for the 8250_bcm2835aux
-driver?
-
-But I see
-
-	static int bcm2835aux_serial_probe(struct platform_device *pdev)
-	{
-		[...]
-		up.port.rs485_config = serial8250_em485_config;
-		up.port.rs485_supported = serial8250_em485_supported;
-		[...]
-	}
-
-=> It looks like even bcm2835aux driver could have the em485 thing.
-   But it obviously wanted to something special in
-   up->rs485_start_tx().
-
-It looks to me that the change might either cause regression.
-Or it would deserve a comment unless the validity is obvious for people
-familiar with the code.
-
-Best Regards,
-Petr
