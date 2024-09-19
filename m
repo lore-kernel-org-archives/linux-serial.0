@@ -1,84 +1,124 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
+Received: from mail-lj1-f172.google.com (mail-lj1-f172.google.com [209.85.208.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AF4219CD07;
-	Thu, 19 Sep 2024 11:16:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C10319DF4C
+	for <linux-serial@vger.kernel.org>; Thu, 19 Sep 2024 12:57:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726744583; cv=none; b=ElgIjaCZ0cfS+FlPQ6mKATR4PQtQFyVfIppCV8mIqKSZQaLJaHeT/vok6ij7DL84H6cZrMR2fXmZdihIiNCDeZwrXnpAoKZqch/38dq5U30Jf4TQnzKu9SPrA4TDpzI4fy+9yKcvLmVcV5D18XoAv2QguWmvaoqFWNTvN2PhrBo=
+	t=1726750676; cv=none; b=AYc7R+4D+NIpzUGvyDe4/UQ9iZmxDivqCIaVj3ejphQ+q45Kvt5oaxJn+qTQ7zf6urQg7sxm73YBx81rSoAKpQVFTksCtJ3lFk+uQlsb2FkYeP0wew9t1UTfrEvDSZ9QZ5/rHaTzK6TTd/se9P5ExPxbyla9bWvjTCjQ33LG2NQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726744583; c=relaxed/simple;
-	bh=trcBH8zzl6PsP1oY6MIhqNhFu0NHretoyOUcqxJsYhU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KofDfz3FSsw4Spfy7J3jHOuWTixeO8JtacKNsVuh69FftZHOmsLLokS9Tpp3kgUkhTAjClgxhv7zDvIPT08giWCs2ZOeTV16u3QASgb2NBQx9HzdpKNCbbrU9t226o5r95WFYUjtz84Oh4QNbSN9mNTIAppFhO+sBXTSLca70zs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=M1Hy8zEQ; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
+	s=arc-20240116; t=1726750676; c=relaxed/simple;
+	bh=76ELJO2trC1AW62eOoSKaxfwlQZw6rut1Tua7Zv1+cQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=POCkahjKEbLUNTN64vh+KF0L2G4s0ntRdpAamhXpVAA+Da0E5ftg32rGgVb7NOEOwxEAAEY8f6QE7+sQS9ZtNqxkvAwu/tRGcXU7pMsx5EKcIEfTc9UPNiX9+EhBr5bIyFWsKfyY1Dc4gOHwrwdbrx6kmLf2jiUmcr7KoC1f0TM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Hq6aECeD; arc=none smtp.client-ip=209.85.208.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="M1Hy8zEQ"
-Received: from mail01.disroot.lan (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id 25EF223D9E;
-	Thu, 19 Sep 2024 13:16:19 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
- by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
- id qqxPeLJWN-RH; Thu, 19 Sep 2024 13:16:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1726744578; bh=trcBH8zzl6PsP1oY6MIhqNhFu0NHretoyOUcqxJsYhU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=M1Hy8zEQcZ1qgc1TNFfp+Rz1+hUyYlFxv1HxA6YE1C+os4GqVMqyEXv/XAqibpt1s
-	 D+IggyDrXYR/DSlI+LD36Kv1guDD4985gOECFUNzTp/q++8V/UKaZBBi771XgXLAt0
-	 QY0bOZ1mRK+3dciCUFTeto1BC+JUSWF2cZ9BSAHLaXkcR/nhb2wcooYAQyisF/+dSO
-	 l48sTNfRaLFAjjnSRm4bNNYQqzw6N3srY3jrGns0BvY7eCjQD9KmodSw39b70ujem2
-	 dxarZuYmxtvv7x06ZHYCrYw2Y0eD0UzfLATaRkiXGwcNAGVUJsfM5kAhiR7cEx+GAW
-	 FXt55BA81hHlw==
-From: Yao Zi <ziyao@disroot.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Yao Zi <ziyao@disroot.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	Heiko Stuebner <heiko@sntech.de>
-Subject: [RESEND PATCH v4 1/1] dt-bindings: serial: snps-dw-apb-uart: Document Rockchip RK3528
-Date: Thu, 19 Sep 2024 11:14:15 +0000
-Message-ID: <20240919111413.45413-4-ziyao@disroot.org>
-In-Reply-To: <20240919111413.45413-3-ziyao@disroot.org>
-References: <20240919111413.45413-3-ziyao@disroot.org>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Hq6aECeD"
+Received: by mail-lj1-f172.google.com with SMTP id 38308e7fff4ca-2f762de00e5so8962141fa.3
+        for <linux-serial@vger.kernel.org>; Thu, 19 Sep 2024 05:57:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1726750672; x=1727355472; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fpL5nrSfWFIRQTaDmvo3b1v9flOhJaDZgUF3bcUIUyc=;
+        b=Hq6aECeDvaTnhEO3mmxdMBndV33kFS9r3tIOjTPHKJhYr8F5fkIr+Mq6pQrzKyla2z
+         EHruX7MZthDo9INLHrVQt68rbnPBdFS4NatQvpLxdM6KjI3iFRuX3QheXxj+gju5WIxF
+         j8pUQb34ZpsrZNZbZ7fYFzf11wgamM9+AdArUeQ55CgjkbHgATbYLKbnMEvYf5hSjIKr
+         mUgy9OwKkd7xDDtD2c5UB3+V9tvKpka/49blNKvhFknQEvZpiMyMLgqr1zl+rX14X0vM
+         O2PpJ0u/4q61UajfvVS3BADj3lHRxLuVrasJHI3r6OgaZwahYWq4pySaDtFif7RmtKVA
+         EjPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1726750672; x=1727355472;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fpL5nrSfWFIRQTaDmvo3b1v9flOhJaDZgUF3bcUIUyc=;
+        b=Bc3VG0H5gHzyyT2r0xnF73lIUNxYMcc41NbF/7+is0666mfPS7yEUKdQ/1sI0GGwBG
+         hfurbNWOw4KDZwqUrW8fmzqHvXRJt57SARhHzQ6sHxyB/3RaLyoYVyXmYpPafzdf2Xdg
+         X7Sy10ORwHfCPCFR31K3XhYLzE/fNoEAa1nFKlVW3+LIbv0YHts+9nmOD05XDhMbJYUS
+         n7xobW4vEPm9iKjDzghJaB3xG70I/LMoQ5jCUUVoSaSk2IeC6epDXsSOL8Le2o/yB9Us
+         eutXyo+XoLOXBIV/3XyUAgfpVUE7ZdEpg0yi/F8IWNQJOY0eI+qgXYLgtiS6nRZUa392
+         8Gbw==
+X-Forwarded-Encrypted: i=1; AJvYcCV626d8gP1wvD2UKdtOYuefGg8NKFAASVh84MJWzvpXhpZPsnRAcnV73cW1U04MIhDAtZESP0bcHLJ1dTU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzFXD/mBv9McGwFs4WX9Ueqc02JKpWOWYm6JU+CTX2T0cHW++hN
+	lE9d9DSDINfD40kmkz38qG67LaNDe09APtNrI6PzdwHWfY9xqPn2iuJiGlNtUQE=
+X-Google-Smtp-Source: AGHT+IG4h95qe6GKSksmnJpvKJM8XOEJO8HMQY3bFlHGG7ixgB+TFNte/YhFDrha1wGPiRsX+C3SXQ==
+X-Received: by 2002:a2e:bea6:0:b0:2ef:22ad:77b5 with SMTP id 38308e7fff4ca-2f787f447c9mr138932411fa.29.1726750671610;
+        Thu, 19 Sep 2024 05:57:51 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20794601017sm79331225ad.85.2024.09.19.05.57.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Sep 2024 05:57:50 -0700 (PDT)
+Date: Thu, 19 Sep 2024 14:57:35 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Raul E Rangel <rrangel@chromium.org>
+Cc: linux-kernel@vger.kernel.org, Raul E Rangel <rrangel@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Huang Shijie <shijie@os.amperecomputing.com>,
+	Ingo Molnar <mingo@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Yuntao Wang <ytcoode@gmail.com>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] init: Don't proxy `console=` to earlycon
+Message-ID: <ZuwfvyiOMAzciZX2@pathway.suse.cz>
+References: <20240911123507.v2.1.Id08823b2f848237ae90ce5c5fa7e027e97c33ad3@changeid>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240911123507.v2.1.Id08823b2f848237ae90ce5c5fa7e027e97c33ad3@changeid>
 
-Rockchip RK3528 comes with a snps-dw-apb-uart compatible UART. Document
-it in dt-bindings.
+On Wed 2024-09-11 12:35:14, Raul E Rangel wrote:
+> Today we are proxying the `console=` command line args to the
+> `param_setup_earlycon()` handler. This is done because the following are
+> equivalent:
+> 
+>     console=uart[8250],mmio,<addr>[,options]
+>     earlycon=uart[8250],mmio,<addr>[,options]
+> 
+> Both invocations enable an early `bootconsole`. `console=uartXXXX` is
+> just an alias for `earlycon=uartXXXX`.
+> 
+> In addition, when `earlycon=` (empty value) or just `earlycon`
+> (no value) is specified on the command line, we enable the earlycon
+> `bootconsole` specified by the SPCR table or the DT.
+> 
+> The problem arises when `console=` (empty value) is specified on the
+> command line. It's intention is to disable the `console`, but what
+> happens instead is that the SPRC/DT console gets enabled.
+> 
+> This happens because we are proxying the `console=` (empty value)
+> parameter to the `earlycon` handler. The `earlycon` handler then sees
+> that the parameter value is empty, so it enables the SPCR/DT
+> `bootconsole`.
+> 
+> This change makes it so that the `console` or `console=` parameters no
+> longer enable the SPCR/DT `bootconsole`. I also cleans up the hack in
+> `main.c` that would forward the `console` parameter to the `earlycon`
+> handler.
+> 
+> Signed-off-by: Raul E Rangel <rrangel@chromium.org>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Signed-off-by: Yao Zi <ziyao@disroot.org>
----
- Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml | 1 +
- 1 file changed, 1 insertion(+)
+It like this approach. It works well:
 
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-index 4cdb0dcaccf3..4573044be189 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-@@ -48,6 +48,7 @@ properties:
-               - rockchip,rk3328-uart
-               - rockchip,rk3368-uart
-               - rockchip,rk3399-uart
-+              - rockchip,rk3528-uart
-               - rockchip,rk3568-uart
-               - rockchip,rk3588-uart
-               - rockchip,rv1108-uart
--- 
-2.46.0
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Tested-by: Petr Mladek <pmladek@suse.com>
 
+I could take it via the printk tree for 6.13. From my POV, it is too
+late for 6.12. I am sorry I have been busy with the printk rework :-(
+
+I am going to wait few days for another eventual review or taker.
+
+Best Regards,
+Petr
