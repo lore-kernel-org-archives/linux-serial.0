@@ -1,64 +1,52 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63AF317DFFE;
-	Fri, 20 Sep 2024 15:58:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D483C184529;
+	Fri, 20 Sep 2024 15:59:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726847910; cv=none; b=UeLm/0ECzYaz9MYcuFyFFIgcfyHeB7gMaRsLbGmLu7SI2GCVz+4VKNLXPZdzYBsqP9EbZ5GUKbR2UJfbCiATfZ8V8EtTvN1SFrkMImemiFn5ZNPIhz6C4VFGcatCdN5idngnH1Vu2clPmh9bsf4yD9SwR49CGZa5A/x0wRLfQtM=
+	t=1726847992; cv=none; b=qqdWME5PKdE/w/4wh50S58rr7HdM0Ov0LdwvyI03fFitJPJ4AdISMi33JqMNbRkrvo1DJR8b+WnMnglyq5M88iqt7A48u+vGS2MFy7nGJqiH48Wkf/3CRjf89Ov/kuSP8lgHwGV4bYEAd0xxFaRfhXQVx+dECeupXdhdebAWPnU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726847910; c=relaxed/simple;
-	bh=XNfFFrRVo8a4wL2UR3VbWZtjgrhwmDIpuPmCd0POBCI=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=pjB+Jj8KWfzoQE7SHoKX5uxHQJ0RLAc4Gek9D6GmAXiNVSqImSPPtww7apdkaXBu54EHRbsJqWjqXu32WAh/yMIVWYVzjLMPhw54poQ1E/FcV5j1RWPzMA393LA1752Ku2sVw8zgoK4aqPHj+vDAf0Q9Av22QovDo9n44ItJFb4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SEVnVaUC; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1726847992; c=relaxed/simple;
+	bh=NrvtUmVKMPdS19Qc9jCiERsOP8QlTsh/EdRB1HEzGys=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=sTJagaz/SOx2QjyfDQd2ydSE5hLGAsXGYCntKpc9iltznVaDYT5+349SoE4JuAri7A2/u6VDHrjH8AlcrKHTtcY2yvzbW3qxS85v5kufLiKq8+3DEk961UbUYfmp3WPI42oPU2JxGqWRD6wXT8NVdpyty41re9VNpQ+jav9VLAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=ii1K6T5W; arc=none smtp.client-ip=74.208.4.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SEVnVaUC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1726847910; x=1758383910;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=XNfFFrRVo8a4wL2UR3VbWZtjgrhwmDIpuPmCd0POBCI=;
-  b=SEVnVaUCMGV+Kol5lmhpldq3L11PeVo6fBzvxj46pbuyhm6g5J5wbJdo
-   0mURDAZBYyEnUAhNbtocnsFR1FhtJ7fN5dC27XgxQB2CN3+jHwlbKYymg
-   7Wmf8LE4E8zIZUb+hUbARr2DuThijLn/ATapaL26dCXoXAx+9ByixThCT
-   KCJaN8JWVJc/iWsTAvVsR+uDCGZVn7gBOUsktQRrI+f8RKK5dRNwnF2ee
-   x4knmDJxRra/hMxNx5TjP49aGN3cS2UszATrR0XkBL6roqr/LBkI+IkXT
-   6fvt28kOukSiW9d6Ho3xLcRchmMkDTNsgw2qHCHmaFwYvOcaIU7i3fvWr
-   g==;
-X-CSE-ConnectionGUID: aGx7cwjqQcC2Q97OVoxLkA==
-X-CSE-MsgGUID: 2IztmSfHTS+ncdHZfWmbdg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11201"; a="36993372"
-X-IronPort-AV: E=Sophos;i="6.10,244,1719903600"; 
-   d="scan'208";a="36993372"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2024 08:58:29 -0700
-X-CSE-ConnectionGUID: yXk6fyQHQN2yIOKlPR89xA==
-X-CSE-MsgGUID: eZG4rdVpRyKxvYFXLfNMrg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.10,244,1719903600"; 
-   d="scan'208";a="70787342"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.61])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Sep 2024 08:58:24 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Fri, 20 Sep 2024 18:58:21 +0300 (EEST)
-To: Jiri Slaby <jslaby@suse.cz>, LiangCheng Wang <zaq14760@gmail.com>
-cc: shawnguo@kernel.org, s.hauer@pengutronix.de, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, kernel@pengutronix.de, 
-    festevam@gmail.com, u.kleine-koenig@pengutronix.de, 
-    cniedermaier@dh-electronics.com, l.sanfilippo@kunbus.com, 
-    linux@rasmusvillemoes.dk, stefan.eichenberger@toradex.com, 
-    tglx@linutronix.de, rickaran@axis.com, LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, imx@lists.linux.dev, 
-    linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 1/1] drivers: tty: imx: fix flags of rs485 not work
- properly
-In-Reply-To: <7a31001d-da37-4deb-a366-084a4027bcd2@suse.cz>
-Message-ID: <f09c546e-4f0c-81a0-8acf-24f4e5d29229@linux.intel.com>
-References: <20240906021905.197891-1-zaq14760@gmail.com> <7a31001d-da37-4deb-a366-084a4027bcd2@suse.cz>
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="ii1K6T5W"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1726847983; x=1727452783; i=parker@finest.io;
+	bh=wrGYpc01AWGZLGrC5c35iF2VBvUt7L4GDpkU5WRmA3s=;
+	h=X-UI-Sender-Class:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:
+	 References:MIME-Version:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=ii1K6T5WX5gQ7ICmHa6LNyWWdIUZ5+cSBjSHQ4gU8d+2qQ/meYMiBu52QBHQ0Py8
+	 U/sf95LfEf1JSe7ZgzwWJZTL4XgcSKIJCbitt8yxvOSq23rRrCbic7xyFxVS1x8vb
+	 8qU0EF/i2+YZgdY1GwzTR9ipzmpycBNshjriCB7oEg5c8bVmBVMDDhcIJzdycBDpY
+	 JDPIZAS4VTKPWBrOXlpr1uPeym1TO5lppw2Gf/986xw/rtwuEiilFxwIvw8fexCwb
+	 pBcNktpudzCj1q/b3sneVWGGk9qTOlXZb3O9MqQnzW4MK2Bno+y82rKRYhPvsRntY
+	 gHfeYnymd2lXYZ7XcQ==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from SWDEV2.connecttech.local ([98.159.241.229]) by
+ mrelay.perfora.net (mreueus003 [74.208.5.2]) with ESMTPSA (Nemesis) id
+ 0MWUKy-1sU6Td2eao-00Nk7P; Fri, 20 Sep 2024 17:59:43 +0200
+Date: Fri, 20 Sep 2024 11:59:41 -0400
+From: Parker Newman <parker@finest.io>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Parker Newman
+ <pnewman@connecttech.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v1 1/1] serial: 8250_exar: Group CTI EEPROM offsets by
+ device
+Message-ID: <20240920115941.1d10f84d@SWDEV2.connecttech.local>
+In-Reply-To: <Zu2ZfpnnY6z4BBG9@smile.fi.intel.com>
+References: <20240920154430.3323820-1-andriy.shevchenko@linux.intel.com>
+	<Zu2ZfpnnY6z4BBG9@smile.fi.intel.com>
+Organization: Connect Tech Inc.
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,42 +54,57 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:gPgB0A7drArX4nGZnl/hZ95PhL/BHRDrOR7xF+/d00ZtWeYLzEJ
+ gDXFBlms9G0PauVc9sopVa17DFETkTNKbpIDiQy2nmtkF4fns4F7QVYYfBMY90HRdnB0J5/
+ nltlErLvYCrhFPdrJSlKtcHsStazD4t+EyXECR/iIi+PvU3ypJ+jJSRGkDIY427bMjJKOH2
+ CVdIMjTmbTwggjiWakVBg==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:VknTNGBkkME=;gaHxzftQnYgo77PZWZFZ/DaZbRs
+ s6hz9FwG+rnj+VgYvs/5mZA9QyyRkF2Y34n72Hx02wXTbbClDRwg1Ek+5vY4xGcm45xGggIbJ
+ XOCV9oShKtEdelU5HDeGdk1JRL5fYhRyCk2QbJdmpxyjeUa/ifE3pBtYhYs+h1WQyJHO0BsJr
+ Ae45oFathPesDYbgZMLp1aZj3Te5w+3XV+hv57QgkoyiWu9iR3GaFGU1uFmjknmB1O1ZvzwN6
+ 9mJW1j2ozMzeoCcr/Sm3Cj472LY49QUC47WY6yxEf7WSE4Onqa8iMIVY41NMFlaYIYJEXdf+q
+ z/Ou20VU4tvZt1wVLUMduqpiAA7SR5h59XjZVX2IOPfRXVCsPMjk6Vq7uVzCCKvdDvge3VhDT
+ Gd7Sfei2HSjs4pYF6YOq6TxxlcgMCPPyC06GKc78f3/sJW8R0f21h0Fb/l2kr96WIuVBEU5LL
+ /0dZfii1I/u6oDp5sf4JVrmw/bYsOIfPSyBDxaov+jFubCjUsNu99VJyHlbBxZHqLJVIVwIhZ
+ ho4ks6OVPPW64xnJTPIDWdMR0w1J2g24GXWJ9uNoS5PSLeCXJRFom7XFK0KvepaiZvsmkbWeo
+ Fm5w9JM6yDwgRENrWKgmS8GLK0UjWK/TEOXXsB9yapiC2wp1KtatrOy0ii4g792QOcM04LWH0
+ ARULZru1xYVhCbNxqBHpT0GhSI7rDKtTvJ8m9Mkd1S9UpeYC77YmJHhl1/IDXUA2YuOJ/rYik
+ mQ2DqDQzhfk/e46fqiwR1p54mXg4P9eaQ==
 
-On Fri, 6 Sep 2024, Jiri Slaby wrote:
+On Fri, 20 Sep 2024 18:49:18 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> It seems gmail refuses to send this to zaq14760@gmail.com (the author).
-> 
-> On 06. 09. 24, 4:19, LiangCheng Wang wrote:
-> > The rs485.flags are lost in functions such as imx_uart_stop_tx(),
-> > causing the function of RS485 to be invalid when using the
-> > serial port as the RS485 port. Use a variable to store the state to
-> > avoid this issue.
-> 
-> AFAICT, this feels rather wrong. Any rs485 experts around?
+> On Fri, Sep 20, 2024 at 06:43:24PM +0300, Andy Shevchenko wrote:
+> > It's not obvious from the first glance that the list of the CTI EEPROM
+> > offsets covers three different models, let's group them accordingly fo=
+r
+> > better readability.
+> >
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> >
+> > Parker, feel free to append this one to your v3 as a last patch.
+>
 
-It is wrong. The patch makes no sense at all and prevents 
-reconfiguring/setting rs485 from userspace.
+Will do.
 
-> At minimum, how are the flags "lost" and why this does not matter to other
-> drivers?
+> A bit more hints for usage of `b4`. As I described earlier you may use b=
+4
+> to gather the tags, but also to inject / append other patches to the ser=
+ies.
+>
+> Like with this one, after you collected yours, just run
+>
+> 	b4 am -s $<message ID of this email thread>
+>
+> followed by
+>
+> 	git am ...
+>
+> as the tool hints you. It will take care about everything you need.
+>
 
-Perhaps some userspace program is altering rs485 settings, definitely 
-nothing in imx_uart_stop_tx() writes to it. I'm skeptical it would be a 
-problem in the kernel, especially given the patch that is supposed to 
-"avoid the issue" (whatever the issue is).
-
-> > --- a/drivers/tty/serial/imx.c
-> > +++ b/drivers/tty/serial/imx.c
-> > @@ -209,7 +209,7 @@ struct imx_port {
-> >   	const struct imx_uart_data *devdata;
-> >     	struct mctrl_gpios *gpios;
-> > -
-> > +	int flags;
-> 
-> Definitely not int for flags.
-
-Driver is not supposed to duplicate the rs485 flags at all.
-
--- 
- i.
-
+Thanks again for the tips!
+-Parker
