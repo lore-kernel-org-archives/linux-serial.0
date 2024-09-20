@@ -1,38 +1,37 @@
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD14D2AE69;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD1842D638;
 	Fri, 20 Sep 2024 14:04:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726841058; cv=none; b=phBOKjSnlIw3Ry8fPyOLFUBNQeSEuokTmUphTz+Gph8zcL+lL72eu+MuhkVynNdU5e4ZU1rW5DMjmA8OVAxnP9I5yD+F/iZTw29ZP9OGyJOgBuTV0m2iTCaTzCHIeYjFTmUsqrKjdtUamMhUofH3m6U1rni/KIpuJTykiklY/kQ=
+	t=1726841058; cv=none; b=dkSCX+YCU/j93wLVY7lTrzukNKXL1WphlzlGQEIRoY9GysPGxGQteY14SHHsj9llTe6LSOMalF7jAsk7Bf1o88ElWoLO9cvRnzBuOL44eKEOi8VfzrJoXtCJmiphuItDvTwYsGg9NzySyALJHPNXT5hDmvqElrpZ8kOS/8E+SyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1726841058; c=relaxed/simple;
-	bh=PUPG6M15p+uvnOpnoGrSj/aP7/FefHXOvVcbz2G0/zo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hLcLvyoEOeYDuzi/vIqOrZofiENgrpUiefa1nyIE0EabqoYKvxOEysEgbId0iThwmsAHkD0w7LZ7b/bVyRmxwGYkzKc0HLbo+a//OEooeYxAGNko2ibQ5EqBd92p0DBoedZ9W58GgGybmTI1eJS+8s7o4wU46j/SOYzNU3gIXVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=n+DpnBEO; arc=none smtp.client-ip=74.208.4.197
+	bh=j66VQ1fvE8/8VpS3wXfWW24Xi81y7pNfLqg+Xw7+1mM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DKMYLupBGU4rCr3q1VDbrmJqgGlaa3nvIhN4XmZWWP0+r98QUGM/1WWhOaDN18lcwbbaN2e0ckISI4FMlF5lJayTIXuh8JCmAnS5KGZ6u4YRfH52JKX3WQTlkb8vbmZW0kmbTwRlsfSMzZ+TVK8ao7dBjGkV3dZLSZIl38YTgOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=HuGUst7y; arc=none smtp.client-ip=74.208.4.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="n+DpnBEO"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="HuGUst7y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
 	s=s1-ionos; t=1726841037; x=1727445837; i=parker@finest.io;
-	bh=Oh8wCdTiw7MRiL8RwHCp3icYa+qrj95ZJRnetzTNmZg=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:cc:
+	bh=0uxUw95odIsHL7hwIEFBBP/4w7jv8NAoCGe2lMCgos4=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:
+	 MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=n+DpnBEOe012DfzRWrHa+vFuIMrJT3Nf4dsa2qKBSrFmYUXrdBu/zuQGnAySjdrc
-	 PxJ9GBp2nOwspRQ7F221ELLYW9nhb12/bFCYhrDxw0ENlzAJjthnrbZKr0ANn9cYH
-	 SFdMDeDzybGF9/CFBqc4p9pzQUUtWIyWhLACVdqV0c0JYW6ObBDx1OjJKaprmzOX2
-	 zKFgJ3qgcoa9usUDJHRId9KKrOEKXjyoVuzh7gPnjeDtt7P07IXHN5e6mMQKW7S/V
-	 QhgRNaerPl2oC3TzJ/WUPv2XQg3bdD3Yz4Z0RXriZnJkygNJ5e70qkV8d2YrfZJUZ
-	 BGgpODaIYQEvZ9sOew==
+	b=HuGUst7yAgJyl52dvkVGi+L6zlJWjSzpfkI9+m6r2unT17sWu3/s2P+T4snRYR9D
+	 i3MwA9CCE4XN6FlGneBpTGcQy2xmugfn8+u2NtbNdKXpj9iS2Xz2StKzj7UJwzp1R
+	 ZZ3T38v1T32zuTOxTX6R6mYHDtIq8ECMEZWsUjTPkInKIvFfOTRebazGuFfLL2oX2
+	 C8sPkDm+3JRpgvtIImXsoiTAKuddgcBfnCUGhwx63l8/EqxNWAIKWm6u3Aw6mP9jh
+	 fZOdna24M3YAVLKNEk835lxpWcx3b3KLbIv/J53DxCI8Hkh7Q2VLZHSvHjwOsIK70
+	 J5YHYqvuZFuzq6aq/g==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus002
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0M3ys8-1s1Klb2GN0-016nir; Fri, 20 Sep
- 2024 16:03:57 +0200
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0MfFYy-1sctZm2fiU-00R8Fl; Fri, 20 Sep
+ 2024 16:03:56 +0200
 From: Parker Newman <parker@finest.io>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -41,12 +40,10 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v2 2/4] misc: eeprom: eeprom_93cx6: Switch to BIT() macro
-Date: Fri, 20 Sep 2024 10:03:22 -0400
-Message-ID: <1c2406fc139015988b996b26b240963b9a35d754.1726838531.git.pnewman@connecttech.com>
+Subject: [PATCH v2 0/4] serial: 8250_exar: Replace custom EEPROM code with eeprom_93cx6
+Date: Fri, 20 Sep 2024 10:03:20 -0400
+Message-ID: <cover.1726838531.git.pnewman@connecttech.com>
 X-Mailer: git-send-email 2.46.0
-In-Reply-To: <cover.1726838531.git.pnewman@connecttech.com>
-References: <cover.1726838531.git.pnewman@connecttech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -54,66 +51,64 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:9Wv3aUwIDsx4x9cSI6mWBJflqxEt3IXmfu9IXjVGpZOGytEGYbu
- pTX9jo+nSck6/2mrUAVpkLzBbm3llv9Sg5VtGQYacFAHu5xSfCvbSIVtU7PPlAwF2w3162f
- EdBEzEgH6+/VmBq25LmcOwsKSj8fX7B1OTcgpI1CtdGLpyDo01KDfH66hz+hHyuOVjcIczg
- Cj9WZDB7a7p7d0OBh38mA==
+X-Provags-ID: V03:K1:N0+wb7PVLd/XNLVLQyGzt+7m35ny9yY4/HbboVxAnFvXkrV03MK
+ sUCwS7lZrfUywoQZ7Xns1FFTVdSxYVZuvWsXAlt4zstx7PG2nvUrMbQNTzlU7hkWFITgNDt
+ lqHbwLMhRLbqLh/NKoRNJ5L/4Y9TAI9lFPmvz59mkKB5e6yvW1B2RoJT4DDz3FFkZZKosq8
+ nSQXmtP+Gd+3HmbwQ4Xzg==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:guI1ujW0iqk=;rb8o7sSIkOwm5JcEqVpEeXHTAYV
- mg9uQhNIoTiCm83tJqd+1LnltAVGVESwHWTG7B6oh2/encLVQ8EbVDNc+PywOm5cdlPY3/xf4
- YZtNPgS4aGJraaBhsaGJaLXiMmGJveFmNpQTh45PBHrZKgUxnBDVcnS8mNMBFtVBn4dvsxmtd
- /795+nB+fZ8ZpaYVjfwiLxkS7MjKjPT4QowtkPjl31HzgcREaaOZzANVn4xCTz6uwyuWGY9DA
- HIscOgzSD+LRpOkTeLxXbDOZNuWhp9AB1hrhdpi8s2x6UYIun4Y9C2p+Glu6rR4rmj1aWUaJc
- kMnbVsUNvht+odgR/FiTrSy2FyRZe1tF1x8MQkvGKBoYXZ//iBH9z/zwu1o3E1/whxx65U9To
- 3xcqulytF+NZiLbMUy+KbRru/E7LiGw1HV7Ki3z0fYMxhSV6I4C04gCBLbtDr5inzMCVpAhDy
- 6F4HerQuptYmvURChKQ2QAWUw26mmbkiam7P5B3LnfQFuF53ynvVD4YPMXiy+F4BZ8HDSFR+6
- uiD4GGpYUaah8R9qsizCrVBGoxS1kNGObJrswshL0Od1U+9ja1ceGdNdjMU/+jZykgNYezj3w
- Uved/TQs+6OdfRv84EobDA3/FN7E2Y2/aw2OsJ5BG/Njx2yBxBNDYp07Rp7XDu/KxpizAAuFk
- EJ3KcHETydo/LcVYIJ6G3/aPEU7DLPv9ZbgUxNUw0gD2iCi9/QsE5uKopQgR1O4fF9ytedbIq
- wodpVn8eeCrTQy83JuV6OqDnVtHqZD4VA==
+UI-OutboundReport: notjunk:1;M01:P0:VuWNG6JCRno=;l9oUfQX+1R9uPe6hmRkhPe9Bjab
+ xDWrT31PWqNWj3SjgxrCioolWGCsWz3DDeRKMnjbXxtBt6aX0dkMYmjfzadybpqhSq0o3yP1l
+ BeTrO271kb08CD8nII/dIYX3tnB2ggpB2YKk5M1Aeclzew7+kKvSah1URp1JIzISUeX0rDIXn
+ 7x+RvQfvtrE8UB0hw7kEDsALVGrUtCmbLYgMQaH5/Q4+zxanuNuevti2UErWAdg9FSDbIIqVC
+ OycraMzQL/3XRDVCslxyyIYhKiRApWWWGu31BVHP/x1AnMP65YRIA1rXfjqAvOVHCWKgOppTD
+ B/UGFJpP3AS2WDLX5WJLMmjyVT6XwglBVufIMAVyfe6ZJMY18QDs+eBx0Fp1/gTLbq6o9xCIV
+ IOy0Y/wya4HIRq8diYOXDm810AIQFsvE4y/Dfi9pt+fonFb6d2eXsqNbc0pclK3XVPbm4UzC8
+ oLiMdkdyZY3Z8splfeMpkORySeQ3jmRX5MNcPdeACJ9M62hLsZKWyGylRWS/LdJgzYCk1ZoqZ
+ kWkwINAGnKr/uUrwslV3ZFg1jBGiQXKb1k5Pdl6D6Bw8hpTQgxeJfLSdBypEtVZnmEyuqJ0xi
+ N/CiJFNX+rIHOTroVELws7VN8ClN9Dz/1k7ZfcE1NZ8IKPz8/fWCvcEpqrvW6hyVB6vpXDf7w
+ 1wjLXxG5bCEJla6q5lgDFNFJv2AVp46x5Rqv12vvi5hsiXLg85L3QOBpsNGoQXjcRJQ8Z9tFc
+ tyqOAaD6GAeZRyyd4PMMlbCokAo3jbJuA==
 
 From: Parker Newman <pnewman@connecttech.com>
 
-Use the BIT() macro rather than (1 << (i - 1)).
+This series of patches replaces the custom 93cx6 EEPROM read functions in
+the 8250_exar driver with the eeprom_93cx6 driver. This removes duplicate =
+code
+and improves code readability.
 
-Signed-off-by: Parker Newman <pnewman@connecttech.com>
-=2D--
- drivers/misc/eeprom/eeprom_93cx6.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+In order to use the eeprom_93cx6 driver a quirk needed to be added to add =
+an
+extra clock cycle before reading from the EEPROM. This is similar to the
+quirk in the eeprom_93xx46 driver.
 
-diff --git a/drivers/misc/eeprom/eeprom_93cx6.c b/drivers/misc/eeprom/eepr=
-om_93cx6.c
-index 4c9827fe9217..e6f0e0fc1ca2 100644
-=2D-- a/drivers/misc/eeprom/eeprom_93cx6.c
-+++ b/drivers/misc/eeprom/eeprom_93cx6.c
-@@ -8,6 +8,7 @@
-  * Supported chipsets: 93c46 & 93c66.
-  */
+More details in associated patch and mailing list discussion with
+Andy Shevchenko about these changes:
+Link: https://lore.kernel.org/linux-serial/Ztr5u2wEt8VF1IdI@black.fi.intel=
+.com/
 
-+#include <linux/bits.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/delay.h>
-@@ -102,7 +103,7 @@ static void eeprom_93cx6_write_bits(struct eeprom_93cx=
-6 *eeprom,
- 		/*
- 		 * Check if this bit needs to be set.
- 		 */
--		eeprom->reg_data_in =3D !!(data & (1 << (i - 1)));
-+		eeprom->reg_data_in =3D !!(data & BIT(i - 1));
+Changes in v2:
+- Dropped patch 3 "misc: eeprom: eeprom_93cx6: Replace printk(KERN_ERR...)=
+ with pr_err()".
+- Moved Kconfig change into main patch.
+- Moved quirk define into struct eeprom_93cx6.
+- Moved quirk check function into eeprom_93cx6.h.
+- Refactored cti_read_osc_freq() based on feedback.
+- Minor commit message formatting fixes.
 
- 		/*
- 		 * Write the bit to the eeprom register.
-@@ -152,7 +153,7 @@ static void eeprom_93cx6_read_bits(struct eeprom_93cx6=
- *eeprom,
- 		 * Read if the bit has been set.
- 		 */
- 		if (eeprom->reg_data_out)
--			buf |=3D (1 << (i - 1));
-+			buf |=3D BIT(i - 1);
+Parker Newman (4):
+  misc: eeprom: eeprom_93cx6: Add quirk for extra read clock cycle
+  misc: eeprom: eeprom_93cx6: Switch to BIT() macro
+  serial: 8250_exar: Replace custom EEPROM read with eeprom_93cx6
+  serial: 8250_exar: Remove old exar_ee_read() and other unneeded code
 
- 		eeprom_93cx6_pulse_low(eeprom);
- 	}
+ drivers/misc/eeprom/eeprom_93cx6.c  |  15 +++-
+ drivers/tty/serial/8250/8250_exar.c | 121 ++++++++--------------------
+ drivers/tty/serial/8250/Kconfig     |   1 +
+ include/linux/eeprom_93cx6.h        |  12 +++
+ 4 files changed, 58 insertions(+), 91 deletions(-)
+
+
+base-commit: 5ed771f174726ae879945d4f148a9005ac909cb7
 =2D-
 2.46.0
 
