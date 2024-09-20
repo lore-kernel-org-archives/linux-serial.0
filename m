@@ -1,294 +1,146 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F17D2208D0;
-	Thu, 19 Sep 2024 19:12:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCAA0136658;
+	Fri, 20 Sep 2024 09:33:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726773148; cv=none; b=L/dcH7/BJdZ23yKS2CHhhAcuGGNlQnPBIBqH9SUxt5cdNoyjdmojmXknBPEP+onrVn04RfGWmEKHkQxYClCwOVQYWIXdpGKMIj88DSF1uRDlKfWHB3vjKsnc2WXd79GeToz0OpE4ELCPe+u4xUcgt+KYyjN5Jcg4i0DGpNS1Nb4=
+	t=1726824838; cv=none; b=r+fISoHhT9RCGRNKCmn2MrXVfHax7fT7iV7qaUuKNtDMaGPb4gVAqIaw4cegsEBWBRUhi/kkDRhwBUBpTe2F1agqlL8JRjyc7w7P2rEqOSbR4Tvajfb+36tuIxVb2Dm3/1F6f9bfPFxuSrVnpYhmUbqoRJB9o+kyWgHB5q81kNY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726773148; c=relaxed/simple;
-	bh=zGHRtNH0HtiNux6L2M1nTJQ42ddSQcZjRws0nmEhOqk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:From:In-Reply-To:
-	 Content-Type:References; b=UhmPOrLv0G3ZzYzNbbEDA93qeZURnfIZUpy2KYxDNGevMiRyzao6KNPijLmf0E1a7OdFXb+3uFzoHiu0KqAJRIYRbxu+p4yCmwr91cJ13EVR/sJ3QPYPD9pQT1tsN1xwwXeIguEHog8Fu8Rzk2YCjP6N7mz2bZ0hCy+QCBW/dD0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=fzvLBANY; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1726824838; c=relaxed/simple;
+	bh=UFbl4cZt/wsuZP01cfVUbeRDzPjLazHarkFswDwq4PM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WgmOLf1tSG5ZWcABtKMUqmuwhlaclkKUI5sWYb8Saz/kf4rUQnKYM7rVRT4uicaRYG0Wqn4WeRExy3P72WpsNZlYyq8RL0yrkDE1Tiu1ACMt08ijhCLD+PVK5ND+W1YO+QZ6difmwm5GQPXbbsiFt/AaEzxjvd+aTME2cgNGMGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ceKtXrCe; arc=none smtp.client-ip=209.85.167.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="fzvLBANY"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240919191221euoutp010ddd44cc9e7483f2de1362b72161a6e4~2uwYTi6ct2616526165euoutp01c;
-	Thu, 19 Sep 2024 19:12:21 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240919191221euoutp010ddd44cc9e7483f2de1362b72161a6e4~2uwYTi6ct2616526165euoutp01c
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1726773141;
-	bh=5wMWZ+g85x3/VQ4fe0nCOsxCOPo6Ph9ygPWjlPbrfW0=;
-	h=Date:Subject:To:CC:From:In-Reply-To:References:From;
-	b=fzvLBANYeCN29tswLwUd47pXXc6AIHl4SdOotmBcpN7h4RgkQuES0RWvwTyB+1PqY
-	 l6fR+qZymcrJAUga1SRkwi8ZqVPiz8MlXoCeBIAsBlKEdUKM91n2A8+xvmdQxxaeiC
-	 HXq/LEs57wGuy/k0nXaH8BWMs//KbjyFOD+WNJ8w=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20240919191221eucas1p17631c52c12e9eac528029fc313e0de7c~2uwX8PxpR2404624046eucas1p1A;
-	Thu, 19 Sep 2024 19:12:21 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 7C.44.09624.5977CE66; Thu, 19
-	Sep 2024 20:12:21 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240919191220eucas1p23f207681d0268c632f46323fd5ac9107~2uwXFO6tm3227632276eucas1p2i;
-	Thu, 19 Sep 2024 19:12:20 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20240919191220eusmtrp2b6213760a633a6ab532f5875087dc3ab~2uwXCvxYJ2424224242eusmtrp2m;
-	Thu, 19 Sep 2024 19:12:20 +0000 (GMT)
-X-AuditID: cbfec7f2-c11ff70000002598-0c-66ec7795e51c
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 13.E4.14621.4977CE66; Thu, 19
-	Sep 2024 20:12:20 +0100 (BST)
-Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240919191220eusmtip26823cf362cdfc852c6290fd3d6148856~2uwWtZnoN2388723887eusmtip2S;
-	Thu, 19 Sep 2024 19:12:20 +0000 (GMT)
-Received: from [106.110.32.87] (106.110.32.87) by CAMSVWEXC02.scsc.local
-	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Thu, 19 Sep 2024 20:12:17 +0100
-Message-ID: <d2726a61-37fa-4c39-aad6-08bf99d8d14b@samsung.com>
-Date: Thu, 19 Sep 2024 21:12:15 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ceKtXrCe"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5356aa9a0afso3150427e87.2;
+        Fri, 20 Sep 2024 02:33:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1726824835; x=1727429635; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=zgzYQQIygAr6qxmvFaGpF3Ge/dSNGjAm5OZ5ZHk08eU=;
+        b=ceKtXrCej9zCkpmrQ0IT6GxjcSU8zNiG+8mDWl0YiVyFB7wSrj+ZPWHM47DY2HRFqK
+         ML8uV8MDQ1dUAKN6fmUgrqlV3+mcYoz+mjDvPwdx8kJFqMyVbnbnSuNMG1SbQBpbSGtp
+         GZPRVEuhTrr+45SwDiikvfmnsmh2DwpIupwAfzGdtNHj90vRCP1XA3cc2Zs8D5PiAV4+
+         KqcT2LV1lcp2d2nsn0YrVZfYh2/HT+wNkadirf/uvBDb7X8QD8sX7ULiXhlS0qA98MUG
+         ch8BHCYSlEq6CWrx73YToza1vOAX7h7z1bfJ62v+S9FhqZGSO155gqTFapUSfLtKu8DX
+         xwOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1726824835; x=1727429635;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zgzYQQIygAr6qxmvFaGpF3Ge/dSNGjAm5OZ5ZHk08eU=;
+        b=cmH78Nu/YIQjmeY8auOYssKjnwaHdQCOCM89SiGNrll8zOiq8t7WX/Q0bPjzlxZdL7
+         0AMo/xhHDOYh+Xfn2SaxL7mlw2GGxaRhX2+SlTAlXpbh7GK5UblhOmMyzNefM0RD6EBf
+         LWChDe/adt3JWLsryPqfJiewcRUEJxbQUwC2aaesiYLZwWqL/++M61+nv/OtzZW8P4dv
+         frolhk+L439qUW9Emuum4vhhjNJ8Wb27DjB7a969H8OOG2BKXa+zpF7ylPS20Zujiva2
+         AULtc76h2DTcrsmZfSYgsDLCA+n86CipoHn+Nj9jjA99Y+0BNTlIoRfVo/PeZNvuTJYm
+         9SgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU4Rjc5TS/U+24oKJfqWzgx1W8vXMrAPdABS60dhSjrYp2+VflPUEAuotQbdXSuOxSu7AAoPU4F9iq8ENjq@vger.kernel.org, AJvYcCVV9XKXRpfbp6TniZN1vtAMyhXJXkHZqXD7mZmV2c/YdaTibEFF2O8XMuZyjp6S05rRyXAI/1YmRrf3blod@vger.kernel.org, AJvYcCWLiys0YZe1fJhhiW7z8Qc4CEJsgomhaSQLjuiAAHgbEuecbWAbk55fULESL+eZeDR6+WIF35dzAc8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzi8Wf6NarMUBQLbIBzGdd4oC57ovz09cHI7+7k+vLM52lu380x
+	0/4+1Kom77nDsLATS8jHJdmu75j+I2xXgLYp4dRHcZLMhA5Se1/u5EZR5w==
+X-Google-Smtp-Source: AGHT+IEZw33lFEgDQbTs/1HGnrG9vMhwEkSnbqvhxO5oF309XqhOuIj8ZmqezF+isCotfBHS+GFgNQ==
+X-Received: by 2002:a05:6512:33ca:b0:52e:936e:a237 with SMTP id 2adb3069b0e04-536ac2e5b7amr1513374e87.16.1726824834373;
+        Fri, 20 Sep 2024 02:33:54 -0700 (PDT)
+Received: from mobilestation ([93.157.254.210])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-536a687cfc9sm519861e87.189.2024.09.20.02.33.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Sep 2024 02:33:53 -0700 (PDT)
+Date: Fri, 20 Sep 2024 12:33:51 +0300
+From: Serge Semin <fancer.lancer@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Hans de Goede <hdegoede@redhat.com>, Viresh Kumar <vireshk@kernel.org>, 
+	Vinod Koul <vkoul@kernel.org>, Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, dmaengine@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] dmaengine: dw: Fix sys freeze and XFER-bit set error
+ for UARTs
+Message-ID: <kpujn6pqnxerasd6zhkfgxrgyidb3tmxuoqgauheoosdhnwatr@spdtf46m7bnu>
+References: <20240911184710.4207-1-fancer.lancer@gmail.com>
+ <ZugsFPWRZQnH9RaS@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/8] drm/xe: xe_gen_wa_oob: fix
- program_invocation_short_name for macos
-Content-Language: en-GB
-To: Masahiro Yamada <masahiroy@kernel.org>
-CC: Nathan Chancellor <nathan@kernel.org>, Nicolas Schier
-	<nicolas@fjasle.eu>, Lucas De Marchi <lucas.demarchi@intel.com>,
-	=?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>, Maarten Lankhorst
-	<maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>,
-	William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon <chris@the-brannons.com>,
-	Kirk Reiser <kirk@reisers.ca>, Samuel Thibault
-	<samuel.thibault@ens-lyon.org>, Paul Moore <paul@paul-moore.com>, "Stephen
- Smalley" <stephen.smalley.work@gmail.com>, Ondrej Mosnacek
-	<omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will
-	Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>, Oliver Upton
-	<oliver.upton@linux.dev>, James Morse <james.morse@arm.com>, Suzuki K
-	Poulose <suzuki.poulose@arm.com>, Zenghui Yu <yuzenghui@huawei.com>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, Jiri Slaby
-	<jirislaby@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, "Bill
- Wendling" <morbo@google.com>, Justin Stitt <justinstitt@google.com>, "Simona
- Vetter" <simona.vetter@ffwll.ch>, <linux-kernel@vger.kernel.org>,
-	<linux-kbuild@vger.kernel.org>, <intel-xe@lists.freedesktop.org>,
-	<dri-devel@lists.freedesktop.org>, <speakup@linux-speakup.org>,
-	<selinux@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<kvmarm@lists.linux.dev>, <linux-serial@vger.kernel.org>,
-	<llvm@lists.linux.dev>, Finn Behrens <me@kloenk.dev>, "Daniel Gomez
- (Samsung)" <d+samsung@kruces.com>, <gost.dev@samsung.com>
-From: Daniel Gomez <da.gomez@samsung.com>
-In-Reply-To: <CAK7LNAQDxVGOa5g3f_dqZ5nD_u8_a++T+ussL+AWuOXs-XOsow@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Ta0yTVxjHPe+1INWXStejEIldumUQmCboziZBt/DhXYKJlw8ys0y68YJM
-	bmkpbm5GRO7gxkUodNAhlFtlQysgV3HAWjpAQBCRy2CRu1ynjovMjlLM+PZ/nvP7P8/5n+Tw
-	cMFrag8vIDiMkwVLA8WUNVGpX+lwSb8w47d/6qUQtTzOw9B8YRJAeu0kjmpNQzjqeTlPoav5
-	ZRRavjOJoeF7RRiay3FAGTfzKaTuMhJouryJQLqnvSRaq6nCUHdNNoXa8q/RaPR6A4XGnhZS
-	6MZiBYH+GukjUXW2kUT1Zd0U0nU/J1FMfCGJYkvGKLSQbMLQeH0LidJXZig0m/w7jQZSlQRq
-	UPXSqHhZCVCHQU8jU8NeVFnVDtBERxpAWQMDAD2rWh9cPpNCoryYD1DU4EH0pOAWfdSJLVWX
-	ArZO306x9f/kEmxN4x2KrVYN0WyuTsFGNc+SbH7dFMbqtPEUq45XY6zp2gjJNpvyaPZGRDrO
-	qo0n2IacUpodTjRgx+EZa3dfLjAgnJO97+FjfS6mNpMOnd77TcTN7RFgUpQArHiQcYPKSTVI
-	ANY8AVMMYFNsBW0pXgAYvZyHmykB8xzAfzMlbxxZtRGUBSoCcHC2ebNYh14tpW0W1QDqO1oI
-	s4XPeEDdgyVg1gQjgbdq50hL3xYas0Y3GCHjCIf7M2mz3sX4wIIE5QaPMyIY+aJkg7djnOBg
-	QRxpXoAzUzZwIrVzw0wx78F7Rt2G2Yo5AdVRf65r3jr0EVS2fGqZ4wivVvyEWyLsg5kpJYRF
-	X4J/lPdj5pmQqd0OC283kpYDTzg3ZtyEdsFpQzlt0Q7QVP0zZtH+UPOrapMJhXUDKtK8FzKH
-	4Q9tgZb2x7BszYBZ2jtg36yt5To7YGqlEk8GEtWWl1BtSaz6P4BqS4BcQGiBiFPIg/w5+YFg
-	7oKrXBokVwT7u34VEqQD61+k9bXh7yqQM73o2ggwHmgEkIeL7fiihSk/Ad9X+u1FThZyVqYI
-	5OSNwJ5HiEV8ia8jJ2D8pWHceY4L5WRvTjGe1Z4IjBdx+rvVw5rVDLfOZ6aetyQtXp2/ZPu8
-	i+mzT43f9r4c03vSTubYcX/V9vShhVFh/nzSqZNj9p454R9OdOFKr6b6ZEnrl5ELS2ekI3e1
-	ogRx0aL7F9ijT74XeOAZLp2XNCkhjo8Mv7Xv65OIAxTuV8Z3DmmOK1wOKdWSh86Ul+agzcP4
-	aFrS/06c/2fO2kjC/ZV18f36Rd+gNJFwjZdUW9fNVwjHghyWcx7HSJOqekabvS+mGBShsZrG
-	bd47n5iOxF05u63ncrhNtN+K9q7n1yFt9keDAj8vSuZnHdv99phDz/Wu+dYmbX54lPD8j4nO
-	6snoBjc2/kHskd1FiWGD5ftnmsSE/Jz0gBMuk0v/A5xW+OaRBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Te0yTVxjGPV+/S0GYHxXCgRHFJixCYqFA8WCAbQmZ3xYzZWK2wQAb+bhf
-	TEsFXYzNIHUUMSAqUKFiG1Aum65cLJTLYKzIGJLRwZgIuClyEUEGKjiwA8oS/vud8z7v87zn
-	5Bwuh3eXdObGp6SxkhRxEp+0xnvedo3uu5w+E+NlGnBA9/7QYGiu4gJAxqpJDjKYRzjo95dz
-	JMrU3ibRUu0khsZab2JottQFXa3Wkkj9WzeOput+wpHu8SCBVpr0GDI1lZDoV20uhZ5cbiPR
-	+OMKEt2Yr8fRX4+GCNRY0k2gltsmEulMCwRSZFcQ6HzlOIle5Jkx9LTlHoGuLM+Q6HnezxQa
-	vlSIozbVIIVuLRUC1NdlpJC5bRdq0PcCNNFXAFDx8DBAz/RrxnUz+QTSKPajrIci9Gf5HeoD
-	D6ZGXQOYZmMvybS8KsOZpo5akmlUjVBMmU7GZHU+Jxht8xTG6KqySUadrcYYc+4jguk0ayjm
-	hvwKh1F3hzBtpTUUM5bThR2BYYIASaosjXWNS5WmBfLDhchbIPRHAm9ff4HQZ3/EAW8R3zMo
-	IJpNij/FSjyDjgviFIYi6uT0rgx59XY5mHRUAisupH1hsUFOKoE1l0eXA9hfqsEsBRf4w+IA
-	YeGdcGVQuSmaB7BCn7O5aASwaDxzo8OWDoK6+6/BOuO0G7xjmCUs+3awu/gJvs4O9G449qCI
-	Wued9HFYrizc0HNoR/jNYuWG3p72gA/LvyXWAzj0hA08f0uHWdI0GOzXjm6kkbQ7bO3WbThZ
-	0SFQnTVKWZwQ1M60b/JumFl/jWM5wx5YlF+JW/gsXFh9CvKAg2rLgKotg6i2WKm2WJUBvArY
-	szJpcmyyVCiQipOlspRYwYnUZB1Ye8ENxuVaPVBPzws6AMYFHQByOXx7W8cXUzE822jx6TOs
-	JDVKIktipR1AtHZL+RxnhxOpa18gJS1K6OclEvr6+XuJ/P18+I62H5n6Ynh0rDiNTWTZk6zk
-	/z6Ma+Usx04lMZ9mlX14eDl0OXdHztRLyvcXm72dE831nzXyE2Nmffr1wW6ai1czMkcC4NeG
-	g4PtxRE20ZENipCDRVYXI123lZTWykP6icaZQNPNdCv3c70GP55LwqF/ek43/AgJuGB0c7Ie
-	0r/zSWhynsLp+6++e/8s7RmGuEcH4qvD/9W/MkGdKGT2820KLLp9X/r2yXEZqZrLiFsNi+ap
-	90TefYZlX3fvNKY05a944b0fc5WH/r7+4FigwT3qrS48tL4kaNU1ZuTI/OuFa+L77znWti6t
-	RPRgb84l2CgTqYL6gpwCWH3mSx/jgPldwZtFeztZwiWe3URZ3Y4+py8OD104EBx8lI9L48RC
-	D45EKv4P8XlwBEoEAAA=
-X-CMS-MailID: 20240919191220eucas1p23f207681d0268c632f46323fd5ac9107
-X-Msg-Generator: CA
-X-RootMTR: 20240906144003eucas1p1b8c2be4807e04ced52c4902bfbfb9783
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240906144003eucas1p1b8c2be4807e04ced52c4902bfbfb9783
-References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
-	<20240906-macos-build-support-v2-3-06beff418848@samsung.com>
-	<CGME20240906144003eucas1p1b8c2be4807e04ced52c4902bfbfb9783@eucas1p1.samsung.com>
-	<CAK7LNAQDxVGOa5g3f_dqZ5nD_u8_a++T+ussL+AWuOXs-XOsow@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZugsFPWRZQnH9RaS@smile.fi.intel.com>
 
-On 9/6/2024 4:39 PM, Masahiro Yamada wrote:
-> On Fri, Sep 6, 2024 at 8:01 PM Daniel Gomez via B4 Relay
-> <devnull+da.gomez.samsung.com@kernel.org> wrote:
->>
->> From: Daniel Gomez <da.gomez@samsung.com>
->>
->> Use getprogname() [1] instead of program_invocation_short_name() [2]
->> for macOS hosts.
->>
->> [1]:
->> https://www.gnu.org/software/gnulib/manual/html_node/
->> program_005finvocation_005fshort_005fname.html
->>
->> [2]:
->> https://developer.apple.com/library/archive/documentation/System/
->> Conceptual/ManPages_iPhoneOS/man3/getprogname.3.html
->>
->> Fixes build error for macOS hosts:
->>
->> drivers/gpu/drm/xe/xe_gen_wa_oob.c:34:3: error: use of
->> undeclared identifier 'program_invocation_short_name'    34 |
->> program_invocation_short_name);       |                 ^ 1 error
->> generated.
->>
->> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
->> Reviewed-by: Lucas De Marchi <lucas.demarchi@intel.com>
->> ---
->>   drivers/gpu/drm/xe/xe_gen_wa_oob.c | 4 ++++
->>   1 file changed, 4 insertions(+)
->>
->> diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
->> index 904cf47925aa..0d933644d8a0 100644
->> --- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
->> +++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
->> @@ -8,6 +8,7 @@
->>   #include <errno.h>
->>   #include <stdbool.h>
->>   #include <stdio.h>
->> +#include <stdlib.h>
->>   #include <string.h>
->>
->>   #define HEADER \
->> @@ -30,6 +31,9 @@
->>
->>   static void print_usage(FILE *f)
->>   {
->> +#ifdef __APPLE__
->> +       const char *program_invocation_short_name = getprogname();
->> +#endif
->>          fprintf(f, "usage: %s <input-rule-file> <generated-c-source-file> <generated-c-header-file>\n",
->>                  program_invocation_short_name);
->>   }
->>
->> --
->> 2.46.0
->>
->>
-> 
-> 
-> 
-> Before adding such #ifdef, you should check how other programs do.
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> Solution 1 : hard-code the program name
-> 
-> 
-> diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> index 106ee2b027f0..9e9a29e2cecf 100644
-> --- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> +++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> @@ -30,8 +30,7 @@
-> 
->   static void print_usage(FILE *f)
->   {
-> -       fprintf(f, "usage: %s <input-rule-file>
-> <generated-c-source-file> <generated-c-header-file>\n",
-> -               program_invocation_short_name);
-> +       fprintf(f, "usage: xe_gen_wa_oob <input-rule-file>
-> <generated-c-source-file> <generated-c-header-file>\n");
->   }
-> 
->   static void print_parse_error(const char *err_msg, const char *line,
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> 
-> Solution 2: use argv[0]
-> 
-> 
-> diff --git a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> index 106ee2b027f0..600c63e88e46 100644
-> --- a/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> +++ b/drivers/gpu/drm/xe/xe_gen_wa_oob.c
-> @@ -28,10 +28,10 @@
->          "\n" \
->          "#endif\n"
-> 
-> -static void print_usage(FILE *f)
-> +static void print_usage(FILE *f, const char *progname)
->   {
->          fprintf(f, "usage: %s <input-rule-file>
-> <generated-c-source-file> <generated-c-header-file>\n",
-> -               program_invocation_short_name);
-> +               progname);
->   }
-> 
->   static void print_parse_error(const char *err_msg, const char *line,
-> @@ -136,7 +136,7 @@ int main(int argc, const char *argv[])
-> 
->          if (argc < 3) {
->                  fprintf(stderr, "ERROR: wrong arguments\n");
-> -               print_usage(stderr);
-> +               print_usage(stderr, argv[0]);
->                  return 1;
->          }
+Hi Andy
 
-
-This approach looks good to me. I will drop Lucas' tag in favor to this. 
-Please, Lucas let me know if you disagree any of the proposals here or 
-if you have any preference. Otherwise, I'll resend this with solution 2.
-
-
-
-> 
-> 
-> 
-> 
-> 
-> 
-> 
+On Mon, Sep 16, 2024 at 04:01:08PM +0300, Andy Shevchenko wrote:
+> On Wed, Sep 11, 2024 at 09:46:08PM +0300, Serge Semin wrote:
+> > The main goal of the series is to fix the DW DMAC driver to be working
+> > better with the serial 8250 device driver implementation. In particular it
+> > was discovered that there is a random system freeze (caused by a
+> > deadlock) and an occasional "BUG: XFER bit set, but channel not idle"
+> > error printed to the log when the DW APB UART interface is used in
+> > conjunction with the DW DMA controller. Although I guess the problem can
+> > be found for any 8250 device using DW DMAC for the Tx/Rx-transfers
+> > execution. Anyway this short series contains two patches fixing these
+> > bugs. Please see the respective patches log for details.
+> > 
+> > Link: https://lore.kernel.org/dmaengine/20240802080756.7415-1-fancer.lancer@gmail.com/
+> > Changelog RFC:
+> > - Add a new patch:
+> >   [PATCH 2/2] dmaengine: dw: Fix XFER bit set, but channel not idle error
+> >   fixing the "XFER bit set, but channel not idle" error.
+> > - Instead of just dropping the dwc_scan_descriptors() method invocation
+> >   calculate the residue in the Tx-status getter.
 > 
 
+> FWIW, this series does not regress on Intel Merrifield (SPI case),
+> Tested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+
+Great! Thanks.
+
+> P.S.
+> However it might need an additional tests for the DW UART based platforms.
+> Cc'ed to Hans just in case (it might that he can add this to his repo for
+> testing on Bay Trail and Cherry Trail that may have use of DW UART for BT
+> operations).
+
+It's not enough though. The DW UART controller must be connected to
+the DW DMAC handshaking interface on the platform. The kernel must be
+properly setup for that too. In that case the test would be done on
+a proper target. Do the Bay Trail and Cherry Trail chips support such
+HW-setup? If so the additional test would be very welcome.
+
+Sometime ago you said that you seemed to meet a similar issue on older
+machines:
+https://lore.kernel.org/dmaengine/CAHp75VdXqS6xqdsQCyhaMNLvzwkFn9HU8k9SLcT=KSwF9QPN4Q@mail.gmail.com/
+If it's still possible could you please perform at least some smoke
+test on those devices?
+
+In case of my device this series and a previous one
+https://lore.kernel.org/dmaengine/20240802075100.6475-1-fancer.lancer@gmail.com/
+fixed all the critical issues for the DW UART + DW DMAC buddies:
+1. Sudden data disappearing at the tail of the transfers (previous
+patch set).
+2. Random system freeze (this patch set).
+
+There is another problem caused by the too slow coherent memory IO on
+my device. Due to that the data gets to be copied too slow in the
+__dma_rx_complete()->tty_insert_flip_string() call. As a result a fast
+incoming traffic overflows the DW UART inbound FIFO. But that can be
+worked around by decreasing the Rx DMA-buffer size. (There are some
+more generic fixes possible, but they haven't shown to be as effective
+as the buffer size reduction.)
+
+-Serge(y)
+
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
+> 
