@@ -1,46 +1,60 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A83BD528;
-	Mon, 23 Sep 2024 09:44:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C3B5150994;
+	Tue, 24 Sep 2024 08:51:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727084672; cv=none; b=rFWwIsLXK4c4zjN1+nHRzzS5kSqAQdfb/sfyA0p2EtbB3hDgNwjwt8hLgi8Pe5FCLxM16SHfxdl1Xe2xATH+ZvMIXQ64iZqkZx7nD9pf2KRJEkiOVN0OfsrmZRIx44UeU9/lGSbVrbv6QHhKc6xpmnLtFjyM71XK3UYAnEfakWc=
+	t=1727167918; cv=none; b=o2mbqsKXj0JZQPxYIiQizYqfBVU4CrwHalN26E1ptHZUR8ROUl4rNnbnau4gexu97YzvNJRYQucdL6jsmPgM2AbO2aPxjsshdL3u7hCiSAngT01l0HJCjEQX6DnKWUNAbvLM0i5/uBA6P2HiKANv3BDtutkaMK/em/T6L/B17+M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727084672; c=relaxed/simple;
-	bh=+L9zo0Y0IbRyVNmNctKrEvHN+xXePa5ffnG6jnguyMw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Tpa1Hyhee77UmSTrRxliH8eD6PSEM98FcCxe12QdSqu462qKr1cOqNtXlHOHWBNgMcHcuZf7ywEMK8En2EOHhdJplhFSiOEmrqA/OinUcd81ghKZxtWD/53p6FS1/mFnU5hTLyrw+azb8lSFlz7AHLSI/d3wo+mJAbeyQ2K4wNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-374c1e5fe79so2941436f8f.1;
-        Mon, 23 Sep 2024 02:44:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727084669; x=1727689469;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AnFrKNjmvDN+T3qauVVSSpYxYgzs8YQCyhijAXVVj5A=;
-        b=wV39isaM5jbODLUayzgetjtViypWDZFimDZK9ihBtezx7a6X6yKjkhX+RU4mfszvWP
-         KklYoHoKrQhFI00XpAnMQiHW9blx/DS/1GbVGHRrejTCBkv+nT0JLlAqESFu4y1ttLTN
-         juy8/gXU/8RaZhIasNulZiNQ2d6lv3WmneTv+AsFsvXZDrxE4W7NIEA40bYnjpNlxlBk
-         WRG+6hqwKLUusRMSreYwZevYR6rmFvUSPlgOdenv8Tkjr0BIFK01xqXflYIC4Ck0hq1O
-         nhyoMSnIgSoPOEstaJUlf0+pGocO3IHYGlUFg75fmQWlivs/EC5G5WnFD4+arsRf72iB
-         gr3Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXHD7uRDqLmmsmVyDBM8IYWRPahO2R/KGME2ZBqTtxGLo1+vecoR4ajr8cqiz6NbUK27sMyX3ObEGo2Qcs=@vger.kernel.org, AJvYcCXfth5hrUXjB8SOLp3uRYAE2ZCz9bfs7MeJWmtoCB5vzhU0WyxOoxvN4mHWVTKXvQdvs8wmAVy7rRxkp2r9@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx9ccwjLXF6w+cVSLsgCFv3LYtwcNNGyE2BTF1+JSd4blt9Jc0U
-	hv2skm94dZdGMqwmAaQjby9FKDf84HlUeIdNTo5dIrRTcqqDWfuj
-X-Google-Smtp-Source: AGHT+IFZflKHVwSuVXNsh12+3OVdGy3OAea/J9oU57PIfZALvwf+9JaosbjLZazYOktBIioKOuNh+w==
-X-Received: by 2002:adf:f951:0:b0:374:d157:c019 with SMTP id ffacd0b85a97d-37a43147a81mr6934351f8f.12.1727084668448;
-        Mon, 23 Sep 2024 02:44:28 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::aaaa:69? ([2a0b:e7c0:0:107::aaaa:69])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42e7afd6c64sm96811055e9.27.2024.09.23.02.44.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Sep 2024 02:44:27 -0700 (PDT)
-Message-ID: <051fdbe1-e5d9-4d5d-bc1a-921d8d3d4a9e@kernel.org>
-Date: Mon, 23 Sep 2024 11:44:25 +0200
+	s=arc-20240116; t=1727167918; c=relaxed/simple;
+	bh=OGJsRxm/aSvp0aTvmxcwKCi2GclZN3honIQF+YDTsPs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:From:In-Reply-To:
+	 Content-Type:References; b=GtJruUwp8VcYzKb/qRoTo3ZoMBOLQrJSAUL5ZdEadg2Y78YpRX5apJSHMg0H1TmSqXr8XEDdBWGavvSPvIoAnFeKBWpVgC3+jHpyIQUlu5OLk4S0cYM3sfdomyQul5e73Y0/0zW8XaYUhPKoWNg832wP1cdD+0P3uNwDFVCN2YE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=FTyRjvbe; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="FTyRjvbe"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240924085148euoutp014d81d8b6306e607e4bf3f5cba5893293~4Ig-EUA_-1855518555euoutp013;
+	Tue, 24 Sep 2024 08:51:48 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240924085148euoutp014d81d8b6306e607e4bf3f5cba5893293~4Ig-EUA_-1855518555euoutp013
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1727167908;
+	bh=+OENs58HAqzqyrRb3PODk/cmg326VKfftT83cloY8MU=;
+	h=Date:Subject:To:CC:From:In-Reply-To:References:From;
+	b=FTyRjvbeE8EmsNK62SMrSA+7VgKYquSRnqZ8sf0a/9Musfv8e59SiytOejz1XTuAF
+	 ZpB/Gv7ZqjLHR2EMfyY6JnPfWgaV4W8+nzvH7mc2A1VNNathWqbn/2Ho5N4Q/wVepu
+	 7ptaX/HQSCvyxEcLlm+wPp3PsblRfCKylcQi6+gI=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20240924085147eucas1p14ec5d74b01509ae2d000edd5e6bfff9c~4Ig_1XQHX0782607826eucas1p1R;
+	Tue, 24 Sep 2024 08:51:47 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges3new.samsung.com (EUCPMTA) with SMTP id D3.BE.09620.3AD72F66; Tue, 24
+	Sep 2024 09:51:47 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20240924085147eucas1p166c893c894c86bb9c9f1a4a588f00c0f~4Ig_M8NsH1841818418eucas1p1T;
+	Tue, 24 Sep 2024 08:51:47 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20240924085147eusmtrp15fcc19f3a3d28b3166e599dba1351bbd~4Ig_KNUiJ2571425714eusmtrp1h;
+	Tue, 24 Sep 2024 08:51:47 +0000 (GMT)
+X-AuditID: cbfec7f5-d1bff70000002594-30-66f27da3d6f1
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id 7B.88.19096.3AD72F66; Tue, 24
+	Sep 2024 09:51:47 +0100 (BST)
+Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20240924085146eusmtip2621f4dfeadc8cf4bdb0ef250758c5e04~4Ig92tMVK1318013180eusmtip28;
+	Tue, 24 Sep 2024 08:51:46 +0000 (GMT)
+Received: from [106.110.32.87] (106.110.32.87) by CAMSVWEXC02.scsc.local
+	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+	Tue, 24 Sep 2024 09:51:44 +0100
+Message-ID: <33953236-138f-4141-a5af-9ea60d148ed3@samsung.com>
+Date: Tue, 24 Sep 2024 10:51:43 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,106 +62,195 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: rp2: Fix reset with non forgiving PCIe host bridges
-To: Florian Fainelli <florian.fainelli@broadcom.com>,
- linux-serial@vger.kernel.org
-Cc: Jim Quinlan <james.quinlan@broadcom.com>,
- Kevin Cernekee <cernekee@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- John Ogness <john.ogness@linutronix.de>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Thomas Gleixner <tglx@linutronix.de>,
- "open list:TTY LAYER AND SERIAL DRIVERS" <linux-kernel@vger.kernel.org>
-References: <20240906225435.707837-1-florian.fainelli@broadcom.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20240906225435.707837-1-florian.fainelli@broadcom.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 8/8] Documentation: add howto build in macos
+Content-Language: en-GB
+To: Marc Zyngier <maz@kernel.org>
+CC: Masahiro Yamada <masahiroy@kernel.org>, Nathan Chancellor
+	<nathan@kernel.org>, Nicolas Schier <nicolas@fjasle.eu>, Lucas De Marchi
+	<lucas.demarchi@intel.com>, =?UTF-8?Q?Thomas_Hellstr=C3=B6m?=
+	<thomas.hellstrom@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+	<mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, David Airlie
+	<airlied@gmail.com>, William Hubbs <w.d.hubbs@gmail.com>, Chris Brannon
+	<chris@the-brannons.com>, Kirk Reiser <kirk@reisers.ca>, Samuel Thibault
+	<samuel.thibault@ens-lyon.org>, Paul Moore <paul@paul-moore.com>, "Stephen
+ Smalley" <stephen.smalley.work@gmail.com>, Ondrej Mosnacek
+	<omosnace@redhat.com>, Catalin Marinas <catalin.marinas@arm.com>, Will
+	Deacon <will@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, James Morse
+	<james.morse@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, Zenghui Yu
+	<yuzenghui@huawei.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Jiri Slaby" <jirislaby@kernel.org>, Nick Desaulniers
+	<ndesaulniers@google.com>, Bill Wendling <morbo@google.com>, Justin Stitt
+	<justinstitt@google.com>, Simona Vetter <simona.vetter@ffwll.ch>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	"speakup@linux-speakup.org" <speakup@linux-speakup.org>,
+	"selinux@vger.kernel.org" <selinux@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "kvmarm@lists.linux.dev"
+	<kvmarm@lists.linux.dev>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, "llvm@lists.linux.dev"
+	<llvm@lists.linux.dev>, Finn Behrens <me@kloenk.dev>, "gost.dev@samsung.com"
+	<gost.dev@samsung.com>, "Daniel Gomez (Samsung)" <d+samsung@kruces.com>
+From: Daniel Gomez <da.gomez@samsung.com>
+In-Reply-To: <86cylev7o7.wl-maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
+X-Brightmail-Tracker: H4sIAAAAAAAAA01TbUxTVxjOuW1vC1vxiiycIAFhkAXYmIqMEzDOyTDX/XGLGUY3szVwi4TP
+	tCC6AKmATEAmoPJRBaGVTxmwAl1BSmPFQoEKBMMKHVBTQGBFRGTAxuygFyP/nvd5n+d53/ck
+	h8Owf4M7cSJjEyhBLC/aHbdlyjXrTz6Rprzi75d3+aGePyQYWqy6BpCmbpaBHljGGejpyiKO
+	0qWNOFprnsXQZGc1hl6UOqPC+1IclQ1pmWi+5RETyUwjLLTRrsDQcPsdHPVLc9lo6qYKR9Om
+	KhxVLLUy0TOjnoXa7mhZSNk4jCPZ8DILZWZVsdDPtdM4eplnwdCMsoeFbq2bcbSQ95iNDAVF
+	TKQSj7BRzVoRQAPdGjayqFyQXKED6PnADYBKDAaA/lJsBreY81lIkhmAMv70R6OVTeyj3mR9
+	WT0gOzQ6nFT+Xc4k29XNONkmHmeT5bJEMqNrgUVKO+YwUlaXhZNlWWUYack1ssgui4RNVohu
+	Mcgy7TekqrSeTU7mdGNfw7O2h8Op6MgLlODTIz/anu9/RMXr912cmTPgIjDmlA1sOJA4BCfV
+	KyAb2HLsiRoAh7t/Y9LFawB7V6+w6GIZQJ3kKfOt5d8cNU43qgHMKb75TmVSmrbD2gA0DCyB
+	LQuXOAKNjWLGFmYSnnC8IYdF87uhtmTKGvsB4Qonx4rZW3gPEQwVfb9b9QzCEaa9rrXqHQg3
+	+GpQax3AIDp2waapPusAnPCCnVqZ1WxD+EDtpHST52yKAmFRzwk6xxWmt95m0Ce4weL82u1z
+	UmBvyxhG4wfvQfmcLY2/hPLh0W1+D5zvbmHT2Bn23bi27Y2A9xrE2zgedhjErK2xkAiCv/RH
+	0/QX0NCwzqZpO6hf2E1vYwcL5EWMPOAp3vEQ4h0Hi9/tL96xfzlg1gFHKlEYE0EJ/WKpJF8h
+	L0aYGBvhGxYXIwObX6TvTfeKAtTML/mqAcYBagA5DHcHbsHoEt+eG8679BMliPtBkBhNCdVg
+	L4fp7sj1DHel7IkIXgIVRVHxlOBtF+PYOIkw6X/P0tIveR2fWLUb4pf7mPcfL4lZ4B/tvdBX
+	qLlbKgnWzlBhj59/VpLAnTW62PgcG1WFVn77UibS6Zr8e8OI7z9Ub5xM9FIpyYD3q5pXI8+G
+	3tWHSo0O5wb511f+cU1ejovXBdpcHgG3Y4MmuCHOSQkeAQczr6tChqKGhAc0+uj706dOv3ji
+	LOIHJacVHLxX8bndsdTKPAV4WH1a4dg+uBEcJTmXupDyVWay6DuzQ3mLW0i+weLXcWafrtCs
+	73QzJjp4pH5UetXOqcrsfdUL9A4euuKRffKhMmkkeeLXw12hucLMy4H+GWcG+S5rxMh4yIpJ
+	FuV3cXH5VKur0669H5vcmcLzvAPeDIGQ9z9+jZ1mkQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Ta1BTRxiGu+fknBNoMz0glzW1KulVWwIJt4Uqvc20x1pnan/YInUwowdQ
+	gTi5OK0jHTSUQpQRgqikkAECCJQpEoEE5FITCwRhqA1ELkVALoKFKqitFGoKiZ3h37P7ve/7
+	fbuzy8U9jSSfeyhJwcqSJAkC0p1z42n7bX998kJsYMnPJOq4VYyh+2VnAGqrnMbRVccwjnof
+	3yeRSl9NoidXpjE00nIJQ38WbEDnf9STSHfTykH3ai0cZBi3E2i50YQhW2M+ibr0mRSaONdK
+	osnxMhIVzddx0NhoP4Ea8q0Eaq62kchge0igtIwyAn1fMUmiB1kODE01dxAod3GWRHNZv1Bo
+	SHOBg1q1dgqVP7kAUE97G4UcrRtRvakboLs9OQDlDQ0B9IdpJbh2NptAxWlhKPX3EDRQepl6
+	bytTpasCTFNbN8k0/1XIYRrNV0imQTtMMYUGJZN6fY5g9E0zGGOozCAZXYYOYxyZowRz3VFM
+	MUUpuTijs+5mWguqKGbkdDv2Gdwr3CaTKhXs5nipXLFdEC1CYqEoHAnFweFCUVDYvghxiCAg
+	cttBNuHQMVYWELlfGN9lYY/2b/56amaITAGDfDVw40I6GC6dNpNq4M71pEsBtJTV4a7CBljz
+	qI9w8Tq4bFc/E80DuHhZg7sWDQDeXurnrKp4dCQcrdY63Rz6NTj802nCte8BrXkTTo03vQmO
+	DF6kVnkd/SE03TA69TjtC089qnDqvWg/uPCrFaw2wOmmF+H4bA3h6qbGYfbJTqebpLfAFqvB
+	yW70W9A6ogeuJAT1s9coF2+Cqrofnp3HD17MruC4OBk+/HcKZAFv7ZoBtWsG0a6J0q6JKgSc
+	SuDFKuWJcYlysVAuSZQrk+KEB6SJBrDyguvbFmtNoOLevNAMMC4wA8jFBV48zcB8rCfvoOSb
+	46xMGiNTJrByMwhZuaVsnO99QLryBZIUMaLQwBBRcGh4YEh4aJDAl0f29sR60nESBXuEZY+y
+	sv99GNeNn4Ltjce6f7Otr/1qqEAq1u4BldEdph0lZOwXhuSxSPuJXRpjSYOqUxpcn+5j1+Z8
+	nOufPve37fVvd9DmVj61K/eF59YnqV8ZOxbZeesjxkf3NG1qd579Zl/L2LlhVR1yV76/MSe/
+	r/TUdO/oJftjSbmC3B4xMRzA8KI+5apHwvLufODn/nJTm0XGvup2bVT8/CQ3Jn9f8uEH/Uci
+	cN+oN2qM3prjhp3kO5+8G9V5xsw97PhHlf6l5eyy154ZXHWVr/DQfNf9UnLH0n57UaZSd/LO
+	2wM7PWhvS7PRNrElp8V9wL+jPCuPN2P7PPG8JsanYCG0882uQTwnOpU4YQwS1t01ewg48niJ
+	aCsuk0v+A+CoJCNKBAAA
+X-CMS-MailID: 20240924085147eucas1p166c893c894c86bb9c9f1a4a588f00c0f
+X-Msg-Generator: CA
+X-RootMTR: 20240908090349eucas1p2a9561859c83a19a8bad4ea2eef184e35
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20240908090349eucas1p2a9561859c83a19a8bad4ea2eef184e35
+References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
+	<20240906-macos-build-support-v2-8-06beff418848@samsung.com>
+	<CAK7LNASpWSXbjF_7n0MhosNism=BpvHOnKsa344RPM_wmC9dGA@mail.gmail.com>
+	<CABj0suBQCc8=0tLng=OWW=K1hjFuLFZWhbjsqHtz2FzZt4i0sw@mail.gmail.com>
+	<CGME20240908090349eucas1p2a9561859c83a19a8bad4ea2eef184e35@eucas1p2.samsung.com>
+	<86cylev7o7.wl-maz@kernel.org>
 
-On 07. 09. 24, 0:54, Florian Fainelli wrote:
-> The write to RP2_GLOBAL_CMD followed by an immediate read of
-> RP2_GLOBAL_CMD in rp2_reset_asic() is intented to flush out the write,
-> however by then the device is already in reset and cannot respond to a
-> memory cycle access.
+On 9/8/2024 11:03 AM, Marc Zyngier wrote:
+> On Sat, 07 Sep 2024 10:32:20 +0100,
+> "Daniel Gomez (Samsung)" <d+samsung@kruces.com> wrote:
+>>
+>> On Sat, Sep 7, 2024 at 10:33 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>>>
+>>> On Fri, Sep 6, 2024 at 8:01 PM Daniel Gomez via B4 Relay
+>>> <devnull+da.gomez.samsung.com@kernel.org> wrote:
+>>>>
+>>>> From: Daniel Gomez <da.gomez@samsung.com>
+>>>>
+>>>> Add documentation under kbuild/llvm to inform about the experimental
+>>>> support for building the Linux kernel in macOS hosts environments.
+>>>>
+>>>> Signed-off-by: Daniel Gomez <da.gomez@samsung.com>
+>>>
+>>>
+>>> Instead, you can add this instruction to:
+>>>
+>>> https://protect2.fireeye.com/v1/url?k=f33af8a2-92b1ed94-f33b73ed-74fe485cbff1-7d382b34bfd617fc&q=1&e=c7a3e869-d48e-4168-88a9-03cd717797f0&u=https%3A%2F%2Fgithub.com%2Fbee-headers%2Fhomebrew-bee-headers%2Fblob%2Fmain%2FREADME.md
+>>
+>> Sure, that can be done as well. But the effort here is to have this
+>> integrated. So, I think documentation should be in-tree.
 > 
-> On platforms such as the Raspberry Pi 4 and others using the
-> pcie-brcmstb.c driver, any memory access to a device that cannot respond
-> is met with a fatal system error, rather than being substituted with all
-> 1s as is usually the case on PC platforms.
-> 
-> Swapping the delay and the read ensures that the device has finished
-> resetting before we attempt to read from it.
-> 
-> Fixes: 7d9f49afa451 ("serial: rp2: New driver for Comtrol RocketPort 2 cards")
-> Suggested-by: Jim Quinlan <james.quinlan@broadcom.com>
-> Signed-off-by: Florian Fainelli <florian.fainelli@broadcom.com>
-> ---
->   drivers/tty/serial/rp2.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/rp2.c b/drivers/tty/serial/rp2.c
-> index 4132fcff7d4e..8bab2aedc499 100644
-> --- a/drivers/tty/serial/rp2.c
-> +++ b/drivers/tty/serial/rp2.c
-> @@ -577,8 +577,8 @@ static void rp2_reset_asic(struct rp2_card *card, unsigned int asic_id)
->   	u32 clk_cfg;
->   
->   	writew(1, base + RP2_GLOBAL_CMD);
-> -	readw(base + RP2_GLOBAL_CMD);
->   	msleep(100);
-> +	readw(base + RP2_GLOBAL_CMD);
+> I think this ship sailed the moment you ended-up with an external
+> dependency.
 
-The read was there to force PCI posting to really flush the write to the 
-device before the sleep (and not to post). How is this ensured now? (In 
-fact, instead of the move, you could have deleted it completely.)
+The external dependency is not different in Linux hosts. We depend on 
+byteswap.h, elf.h and endian.h headers. However, these are provided by 
+glibc and musl, and macOS (at least in arm64/Homebrew) does not provide 
+any of these.
 
-Can you actually read another register which a resetting device would reply?
+To fix the dependency with these missing headers, it was suggested in v1 
+[1][2] to create a "development kit" for this hosts. And that is what 
+Bee Headers [3][4] aims to provide.
 
-thanks,
--- 
-js
-suse labs
+[1]https://lore.kernel.org/all/20240807-mottled-stoic-degu-d1e4cb@lindesnes/
+[2]https://lore.kernel.org/all/ZrSoOM9z4VnqhOf2@fjasle.eu/
+
+[3] https://github.com/bee-headers/headers
+[4] https://github.com/bee-headers/homebrew-bee-headers
+
+I don't see any other alternative to provide the missing headers other 
+than the suggested. Please let me know if you think other paths can be 
+explored and tested.
+
+> 
+> Having looked at this series (and in particular patch #4 which falls
+> under my remit), I can't help but think that the whole thing should
+> simply live as a wrapper around the pristine build system instead of
+> hacking things inside of it. You already pull external dependencies
+> (the include files). Just add a script that sets things up
+> (environment variables that already exist) and calls 'make' in the
+> kernel tree.
+
+Agree. This aligns very well with other feedback.
+
+I've added a script to the Bee Headers [5] to help users init their 
+shell/Makefile environment.
+
+[5] 
+https://github.com/bee-headers/homebrew-bee-headers/blob/main/bee-headers.rb#L28
+
+> 
+> I also dislike that this is forcing "native" developers to cater for
+> an operating system they are unlikely to have access to. If I break
+> this hack tomorrow by adding a new dependency that MacOS doesn't
+> provide, how do I fix it? Should I drop my changes on the floor?
+> 
+> As an alternative, and since you already have to create a special
+> file-system to contain your kernel tree, you may as well run Linux in
+> a VM, which I am told works pretty well (QEMU supports HVF, and there
+> are plenty of corporate-friendly alternatives). This would solve your
+> problem once and for all.
+
+This is a use case I'm trying to avoid with this series. QEMU HVF works 
+very well indeed but extracting the built objects/vmlinux/*.ko etc is 
+tedious and slow. Building natively allows users to boot a VM with QEMU 
+and -kernel argument directly. This is way faster than the suggested 
+alternative. In addition, lldb can be used to debug the kernel from the 
+host.
+
+> 
+> Please don't take the above the wrong way. I'm sympathetic to what you
+> are trying to do. But this is IMO going in the wrong direction.
+
+First patch has been merged already and after some fixes in the build 
+system from Masahiro, this series only requires a small change in 
+xe_gen_wa_oob to make this work if users of this provide the missing 
+headers and set up the build environment properly.
+
+I will send a v3 later today with the remaining patch.
+
+Thanks Marc for sharing your views!
+
+> 
+> Thanks,
+> 
+> 	M.
+> 
 
