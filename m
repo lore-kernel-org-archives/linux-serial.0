@@ -1,156 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.web.de (mout.web.de [212.227.17.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26AC31591F1;
-	Wed, 25 Sep 2024 14:27:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAE4A3770D;
+	Wed, 25 Sep 2024 14:45:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727274461; cv=none; b=SxaUfHmpW2PcS+9BJIh2bzDrCLBoXL0nIasoSgdDN7odv0KKW2DQ5lDJ7mbxA0+og8uOhhtgjgK/m0F4R4fLowhxSBmx2wFHmvoyyTjSsB8XZMVJz1P3esu8rlyFX5vv4JEpFuSP7H1bRX73cMfOG1V3xxKwokJUyf0sjuEF6Lo=
+	t=1727275521; cv=none; b=PbJ56Zcm4bGB2zbJXpJfTqAZNoskIWi8nFa+3OgEmKWgoD/yp6F7awnTv1PFYMHVKYP3e0X1FMQTqikyPT89UlioLPabKBF+UGgw2CEe/zzvgYyKElgUDONJhireM8jolnSa3pC3wTvc23B+1eW9RMt7aKmCcdtwx7XlmXfRuMM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727274461; c=relaxed/simple;
-	bh=63oaX325SYpxbL3bIK8gMNOxof7JWBN8Cv11K1SrD2I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iQj543ozy7060ZgV38xYqfSBqFAV0JfGcIblp4CLOqm3/fipmLtdRTWKr3T6VdBrMzjpv1Hloj5b5VPKymuvOUDZK7WDUH+Rbpvgu15XApARc4UjVBebNcmW9pU8OUXGDNdCf4kB977m6tC+HVtuMiwspzVFpx1/1h7JyxCerc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mg00ml7N; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1727275521; c=relaxed/simple;
+	bh=aCQbL7dF8bvGol6YIVUGOYiuq5XdVTTI8DgtLt/G+VA=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=cMS1y8Vd6Zj7yV+4Pjceqm6c6Ug2q+5Esk3HRA/5sxk635Vracrqdd8rP6ZlJPurCH6QX4BS7oG/USlLlOtaoOv3mKa3DcMhJYurgrYZBRHMrd4RbJcVSQ2WiIHEzbNk+U8CjPHdulzLwtXtE+ah8r0bG50HhCE5PwfoZcmil8U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=EQB6wfO3; arc=none smtp.client-ip=212.227.17.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mg00ml7N"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD72DC4CEC9;
-	Wed, 25 Sep 2024 14:27:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727274460;
-	bh=63oaX325SYpxbL3bIK8gMNOxof7JWBN8Cv11K1SrD2I=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Mg00ml7NxMoy3bqxa5/5kyfPA3sl37LnByf7e3eE3+siVonLVNa+lbhLOCHk2WGVx
-	 tE8vLB6T+9rk49Y8d2vqBQWEOSQs4jG9KR5rkP1/cx96CFF3VD62wllvuNIVV9BWTq
-	 N6hzcGS4Q46ktrnzv9AQDegIPK/lGESky1zo0lyfl0wGX3QDc0aAZPYICfbXsX0xMl
-	 QrMgaZDHxAaAa2916wzsqP53Ip9DdPXVJgWcmD8HRTHyMZQL1tfbmS/1NRpWBXx6w3
-	 1Jrp6sr1fP4NtghSWf5wczOFnEIGXHlgEH0kFqZAxC/Tmr7WoBEPsez/NYazNuQK08
-	 wIt7/UJPacSXQ==
-Date: Wed, 25 Sep 2024 15:27:35 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Chester Lin <chester62515@gmail.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	NXP S32 Linux Team <s32@nxp.com>,
-	Christophe Lizzi <clizzi@redhat.com>,
-	Alberto Ruiz <aruizrui@redhat.com>,
-	Enric Balletbo <eballetb@redhat.com>
-Subject: Re: [PATCH 1/2] dt-bindings: linflexuart: add clock definitions
-Message-ID: <20240925-enunciate-bleak-04799744ae2b@spud>
-References: <20240924141247.132455-1-ciprianmarian.costea@oss.nxp.com>
- <20240924141247.132455-2-ciprianmarian.costea@oss.nxp.com>
- <20240924-twitch-embody-0ffb3ab7fd26@spud>
- <b8024c74-f5d7-4b56-96ea-dee5d8dd9a98@oss.nxp.com>
- <20240924-exposure-juiciness-c0e9a0c54854@spud>
- <a043494e-0dd3-4db1-93c7-55f59dbe2d0f@oss.nxp.com>
- <20240924-pulverize-ranging-0ec3fca845a0@spud>
- <b1282273-51d9-436f-bf39-749ff21f4ea2@oss.nxp.com>
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="EQB6wfO3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1727275509; x=1727880309; i=markus.elfring@web.de;
+	bh=TsWyf1tLlFqi0zeqVIDw1sDXr1M2uMya2IFc+ykY6u0=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:From:
+	 Subject:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=EQB6wfO39aLBZsoooW3NerOA/NMRJjoasXE1cG9hkRSOenrdovVZgUqRWp5COihW
+	 nLDBV9y8NnFG+DLoDhF7rVxq5z9x7pOhx9WJG591dCRLRigMYS4+fggD2dioyZkOv
+	 C8f1j3J9CR11ttd22UHazbzZOd3yb2Pqo810WIHETUUraiyzAS8YKeA8U0EMy0jrT
+	 nom1VdoKlzKdy6V7X58N6dBKyd2DULWcI+aHPRXvwYJ2TNLiZUGXFr51X4i8n1/06
+	 t0WIAeWyq3MF/vRSj6a45jPH/0JNE/yYpkeD27kdpCZ8itS0ii8mayxG64zFtlFxn
+	 DeNUIXNGHheFD0HfFg==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.21] ([94.31.84.95]) by smtp.web.de (mrweb106
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MnG2Q-1sATrN1Axw-00mLmc; Wed, 25
+ Sep 2024 16:45:09 +0200
+Message-ID: <f1216028-ef38-4f05-996b-bafc71777abd@web.de>
+Date: Wed, 25 Sep 2024 16:45:06 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="B3l/DQ6TwETtwbP9"
-Content-Disposition: inline
-In-Reply-To: <b1282273-51d9-436f-bf39-749ff21f4ea2@oss.nxp.com>
-
-
---B3l/DQ6TwETtwbP9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+To: linux-serial@vger.kernel.org,
+ Alexander Stein <alexander.stein@ew.tq-group.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Peng Fan <peng.fan@nxp.com>,
+ Sherry Sun <sherry.sun@nxp.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+Content-Language: en-GB
+Cc: LKML <linux-kernel@vger.kernel.org>, kernel-janitors@vger.kernel.org
+From: Markus Elfring <Markus.Elfring@web.de>
+Subject: [PATCH] tty: serial: fsl_lpuart: Use common code in
+ lpuart_global_reset()
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:9jkkLVsaL/iWBpu6jmFJB7K3jL8mWlukwV+25UaUp/DjIhZY9tM
+ ssLmIOq1tjHac8OQOSYr4GeVJUMZU+wiogfyfpHsLHDzwB7CsXfl44eVsd2a/1YHzhR55BR
+ ePqBTJJrr67O108kHZSMz4HznwZBecVao6SNtjqrDp89kK43WVUv7/0iJK92+kwqr8TllYV
+ PqNA9j4wqryA3tPNaFAiA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:wCJw6HKMH2Y=;JgVHGL0SjEFwIqv+JRvsshpN4mi
+ 23eY5kpjAc3DzSdV2l8PZQUpBDDTJuf8J1lCHh0EMOYYXBAPDU9lOtNCFl00JHHYM4N39bJ+G
+ uzOGOjKX5dCVIHAZPiKsKhNXSBzPwXW1Omjwp8MqSfCURJmDOHjbJZE+Y7utCg+tEnbZcQO+c
+ UIF2sHqHQUL3Pd2Zc+Y0qXfvvqO1W5P3LFjiohIgwTMvHALbP7FEn3KQdA1g6pFye/dGbf8Sn
+ yDNGe+EW1BnoYOuLUwYB5bZn+S6eWTlU06YRs8J99DVST2sEG9dadjvTKIRmYR7sZ8Wr/V813
+ rdNnXuLMUnOcK36Mm+b4Juz/iO3fo9ZJB/SsaDqm+FC+3oAbpT9bjWMRiqdxbPSc5SzlBk9W0
+ 1YNS2ESejoZe07Gl/8poofpKrRAt3a+BwXf0Pe46LACiV4KLXVxvPgJJM0Z6B3in6uO8HUeX3
+ 85dfY2YPj/F0XM7XSFJ3HgT5t/GkFRy/0/OMdXUIOVM7CdlhvJb9IXs6EvAuVC5tTEBOV4H2W
+ uQ73mZan1sIIw5D9635ZI35MdS5ojJM1eWweIqjO7sFyT+vK36u0uOHRfLx9A9YJrv4uDQBZZ
+ /PkLB0v2Db/xvGeJATw/Q+N1nFA1geIc2Qeluk0PaHk9BmIv77RwJZFN/7cGu4f+PpOHXfsXB
+ O78ySO/xlirSjrilLznECMlA0GC+/TwEPf6UNanISMre7CFf5RYBP2dbjIy4gBKWxAq3Ggs80
+ P7m9W/8C2+iLpvodubYntQBUOxrEOsGbWFBXzCD3+EJcvtFxImY+/8Gf/UIVRYZyI5EVLpfWW
+ I67B8GdAHxqoDatfPkznIcjA==
 
-On Tue, Sep 24, 2024 at 06:32:30PM +0300, Ciprian Marian Costea wrote:
-> On 9/24/2024 6:27 PM, Conor Dooley wrote:
-> > On Tue, Sep 24, 2024 at 06:17:11PM +0300, Ciprian Marian Costea wrote:
-> > > On 9/24/2024 6:01 PM, Conor Dooley wrote:
-> > > > On Tue, Sep 24, 2024 at 05:52:13PM +0300, Ciprian Marian Costea wro=
-te:
-> > > > > On 9/24/2024 5:24 PM, Conor Dooley wrote:
-> > > > > > On Tue, Sep 24, 2024 at 05:12:46PM +0300, Ciprian Costea wrote:
-> > > > > > > From: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
-> > > > > > >=20
-> > > > > > > Add clock definitions for NXP LINFlexD UART bindings
-> > > > > > > and update the binding examples with S32G2 node.
-> > > > > > >=20
-> > > > > > > Signed-off-by: Ciprian Marian Costea <ciprianmarian.costea@os=
-s.nxp.com>
-> > > > > > > ---
-> > > > > > >     .../bindings/serial/fsl,s32-linflexuart.yaml  | 21 ++++++=
-+++++++++++++
-> > > > > > >     1 file changed, 21 insertions(+)
-> > > > > > >=20
-> > > > > > > diff --git a/Documentation/devicetree/bindings/serial/fsl,s32=
--linflexuart.yaml b/Documentation/devicetree/bindings/serial/fsl,s32-linfle=
-xuart.yaml
-> > > > > > > index 4171f524a928..45fcab9e186d 100644
-> > > > > > > --- a/Documentation/devicetree/bindings/serial/fsl,s32-linfle=
-xuart.yaml
-> > > > > > > +++ b/Documentation/devicetree/bindings/serial/fsl,s32-linfle=
-xuart.yaml
-> > > > > > > @@ -34,6 +34,14 @@ properties:
-> > > > > > >       interrupts:
-> > > > > > >         maxItems: 1
-> > > > > > > +  clocks:
-> > > > > > > +    maxItems: 2
-> > > > > > > +
-> > > > > > > +  clock-names:
-> > > > > > > +    items:
-> > > > > > > +      - const: ipg
-> > > > > > > +      - const: lin
-> > > > > >=20
-> > > > > > Can all devices have 2 clocks, or just the s32g2?
-> > > > > >=20
-> > > > >=20
-> > > > > All devices (S32G2, S32G3 and S32V234) have 2 clocks for LINFlexD=
- module.
-> > > >=20
-> > > > I see. How come the driver is capable of working without them?
-> > > >=20
-> > >=20
-> > > The driver was working because the LINFlexD clocks were configured an=
-d kept
-> > > enabled by the downstream bootloader (TF-A and U-Boot). This is not i=
-deal
-> > > since LINFlexD Linux driver should manage those clocks independently =
-and not
-> > > rely on a previous bootloader configuration (hence the need for this =
-current
-> > > patchset).
-> >=20
-> > I'd also mark them as required in the binding too, but the driver will
-> > still have to account for them being missing, for backwards
-> > compatibility reasons. Add a comment explaining the history to the
-> > commit message when you do that.
->=20
-> Already in the second patch from this patchset the clocking support was
-> added in the LINFlexD driver as optional, indeed for backwards
-> compatibility.
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Wed, 25 Sep 2024 16:36:20 +0200
 
-Oh great.
+Add a label so that two statements can be better reused at the end of
+this function implementation.
 
-> I presumed that because of this optional clock enablement, I should not a=
-dd
-> the clocks as required in the bindings, but I will do so in V2. Thanks.
+This issue was detected by using the Coccinelle software.
 
-IMO required is correct, since it would not have worked properly if the
-bootloader hadn't done the setup.
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+=2D--
+ drivers/tty/serial/fsl_lpuart.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
---B3l/DQ6TwETtwbP9
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpua=
+rt.c
+index 77efa7ee6eda..b63419c1a4ea 100644
+=2D-- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -2811,8 +2811,7 @@ static int lpuart_global_reset(struct lpuart_port *s=
+port)
+ 					      port)) {
+ 				dev_warn(sport->port.dev,
+ 					 "timeout waiting for transmit engine to complete\n");
+-				clk_disable_unprepare(sport->ipg_clk);
+-				return 0;
++				goto disable_unprepare_clk;
+ 			}
+ 		}
 
------BEGIN PGP SIGNATURE-----
+@@ -2828,7 +2827,7 @@ static int lpuart_global_reset(struct lpuart_port *s=
+port)
+ 			lpuart32_write(port, ctrl, UARTCTRL);
+ 		}
+ 	}
+-
++disable_unprepare_clk:
+ 	clk_disable_unprepare(sport->ipg_clk);
+ 	return 0;
+ }
+=2D-
+2.46.1
 
-iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZvQd1wAKCRB4tDGHoIJi
-0jpzAQC4u1mfSbrQguccpgycXMf3WJfiiUTr6Errb/EdwGB3EwD+NVIBniKKkhll
-1mtG/XuKnspmfTTIWW9UXBLlNyzkpwE=
-=Czve
------END PGP SIGNATURE-----
-
---B3l/DQ6TwETtwbP9--
