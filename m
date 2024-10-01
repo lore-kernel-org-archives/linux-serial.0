@@ -1,43 +1,38 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06B401ACDE3
-	for <linux-serial@vger.kernel.org>; Tue,  1 Oct 2024 07:25:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1DDE1ACDE3;
+	Tue,  1 Oct 2024 07:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727767510; cv=none; b=B2hHci9YG55RloIZ+pipxAFLjmlZG5E6gY37M8hWTxN7AmDasGYjbrhpfsgIELdP+kNvA5yVKI2WQcvi7PaXnN2xWNso+YykkOKrsK922ajdiQvPJzPquk0oghWq1bsWaoJEr+HW2nk+gL5nFeVKGqm2RoS/7X3NN9dQo/tS0ro=
+	t=1727767799; cv=none; b=cW6rVYJeqkngm4clo1KQsUyJ1kqfg/UK4xLfvD9RBWirE+BjMnqjTaZZFFMK/ZhW+ZyJ092ar96Ncv8XURBJk4UndBTXogfTPJCybiM9vJFKmxP3ari0MpabFSdaqm8OXpeLpdYbZY6PVXkmLO9x6r5oaQI9xtF7KLZRdooJYRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727767510; c=relaxed/simple;
-	bh=jq7gk2jfZ+hdJ5OeRVSANOBdMJ5J12z2YwRxflKCCIQ=;
+	s=arc-20240116; t=1727767799; c=relaxed/simple;
+	bh=yT84ekL+hl6tF8lC3SdrEWmhtB1mVIHa8fq/Svq3ucs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qUKKDNXzmN1jlv6zhtN7zaQF/zADdtJQOr+T3fz2icunxfkWNAkuS0rPiwks91pAoiRuplU4+EXtsne3Xz3WYpYMAVmNixKDwGRjA37sdNuFNegJcO6iXvSzaeWa+0xMYnz5eougbttXl0wc9j2uYv++EbswUq6qZZrH226NaW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mfe@pengutronix.de>)
-	id 1svXFe-0001fs-Ec; Tue, 01 Oct 2024 09:24:54 +0200
-Received: from [2a0a:edc0:2:b01:1d::c5] (helo=pty.whiteo.stw.pengutronix.de)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <mfe@pengutronix.de>)
-	id 1svXFd-002p0t-VX; Tue, 01 Oct 2024 09:24:53 +0200
-Received: from mfe by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
-	(envelope-from <mfe@pengutronix.de>)
-	id 1svXFd-004tso-2r;
-	Tue, 01 Oct 2024 09:24:53 +0200
-Date: Tue, 1 Oct 2024 09:24:53 +0200
-From: Marco Felsch <m.felsch@pengutronix.de>
-To: Rob Herring <robh@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Johan Hovold <johan@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-usb@vger.kernel.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=slCrikMVnQ5Q9QzH2YwvmcghzrsVEGDMRDYzh1Fl9jGCLuNgqNd9NnCFttss5oFdENmZ/9y1vk5N3jIQErOURftTaJkFt+04uX24Eh7LalbrXvWE4mm6IUGbxfApai8ryG06fr0iRk/hstVivS1sWiKqJQA4YIgGwH4vw9j/ikg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Q2EtqIs1; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Q2EtqIs1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B23BC4CEC6;
+	Tue,  1 Oct 2024 07:29:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1727767799;
+	bh=yT84ekL+hl6tF8lC3SdrEWmhtB1mVIHa8fq/Svq3ucs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Q2EtqIs1WYE/BHq4SWprvzdvlRDrGNPWuSoHP2C4y6o8ixX1T6vFko2r6U0AVXlC/
+	 0NGeaQbgNM3tp+Db0uvpKPKujTCWHpARFabwdFlWNLqoqkQlWv+X14CZug9U56sbJZ
+	 M2RAp852UkC0rYslRHvSUnrWzmnrvfNsoMajsfdI=
+Date: Tue, 1 Oct 2024 09:29:56 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Marco Felsch <m.felsch@pengutronix.de>
+Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
 Subject: Re: [PATCH 0/3] USB-Serial serdev support
-Message-ID: <20241001072453.3xv5sqxaj4zjprnz@pengutronix.de>
+Message-ID: <2024100109-maker-ravine-7c65@gregkh>
 References: <20240807-v6-10-topic-usb-serial-serdev-v1-0-ed2cc5da591f@pengutronix.de>
+ <20241001072453.3xv5sqxaj4zjprnz@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,92 +41,20 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240807-v6-10-topic-usb-serial-serdev-v1-0-ed2cc5da591f@pengutronix.de>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+In-Reply-To: <20241001072453.3xv5sqxaj4zjprnz@pengutronix.de>
 
-Hi,
-
-gentle ping as this is series is two months old now.
-
-Regards,
-  Marco
-
-On 24-08-07, Marco Felsch wrote:
+On Tue, Oct 01, 2024 at 09:24:53AM +0200, Marco Felsch wrote:
 > Hi,
 > 
-> this patchset is based on Johan's patches [1] but dropped the need of
-> the special 'serial' of-node [2].
-> 
-> With the patches in place and the usb hierarchy described in properly we
-> can use serdev on-top of usb-serial. The below example adds the support
-> for the following hierarchy:
->  - host->usb-hub->ftdi-usb-uart->bt/wlan-module:
-> 
-> &usb_dwc3_1 {
-> 	dr_mode = "host";
-> 	status = "okay";
-> 
-> 	hub@1 {
-> 		compatible = "usb424,2514";
-> 		reg = <1>;
-> 
-> 		vdd-supply = <&reg>;
-> 		reset-gpios = <&gpio4 5 GPIO_ACTIVE_LOW>;
-> 
-> 		#address-cells = <1>;
-> 		#size-cells = <0>;
-> 
-> 		device@1 {
-> 			compatible = "usb403,6010";
-> 			reg = <1>;
-> 
-> 			#address-cells = <2>;
-> 			#size-cells = <0>;
-> 
-> 			interface@0 {
-> 				compatible = "usbif403,6010.config1.0";
-> 				reg = <0 1>;
-> 
-> 				#address-cells = <1>;
-> 				#size-cells = <0>;
-> 
-> 				bluetooth {
-> 					compatible = "nxp,88w8987-bt";
-> 					fw-init-baudrate = <3000000>;
-> 				};
-> 			};
-> 		};
-> 	};
-> };
-> 
-> If no serdev node is found the usb-serial is exposed as usual and can be
-> accessed via /dev/ttyUSBx.
-> 
-> Regards,
->   Marco
-> 
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git/log/?h=usb-serial-of
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git/commit/?h=usb-serial-of&id=b19239022c92567a6a9ed40e8522e84972b0997f
-> 
-> Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
-> ---
-> Marco Felsch (3):
->       serdev: ttyport: make use of tty_kopen_exclusive
->       USB: serial: cosmetic cleanup <space><tab> mix
->       USB: serial: enable serdev support
-> 
->  drivers/tty/serdev/serdev-ttyport.c |  9 ++++++---
->  drivers/usb/serial/bus.c            | 10 ++++++----
->  2 files changed, 12 insertions(+), 7 deletions(-)
-> ---
-> base-commit: 0c3836482481200ead7b416ca80c68a29cfdaabd
-> change-id: 20240807-v6-10-topic-usb-serial-serdev-83a7f8f86432
-> 
-> Best regards,
-> -- 
-> Marco Felsch <m.felsch@pengutronix.de>
-> 
-> 
+> gentle ping as this is series is two months old now.
+
+And it was rejected as serdev does not support hotplug which of course,
+usb-serial does.
+
+So until serdev is fixed up to handle that correctly, this is not going
+anywhere, nor should you want it to as then you would be in charge of
+code that does not work properly :)
+
+thanks,
+
+greg k-h
