@@ -1,36 +1,43 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DDD541A84;
-	Mon, 30 Sep 2024 13:20:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06B401ACDE3
+	for <linux-serial@vger.kernel.org>; Tue,  1 Oct 2024 07:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727702438; cv=none; b=M2eUkt+/2+fseKWFur7XjmlubRoH+stFpI4l1wPdjavT5yKpRJ3HztOkxjsEJtp7QwXtX7M6LI+7nsAmnpGVM4fYIBmkdZ2l25VgOjJ+SSG95ugLpk9WV81RcOutQHZoXMWJHX2pnuZADMc58MeUMUiwjpzPnrOZ31ECXZCxJyI=
+	t=1727767510; cv=none; b=B2hHci9YG55RloIZ+pipxAFLjmlZG5E6gY37M8hWTxN7AmDasGYjbrhpfsgIELdP+kNvA5yVKI2WQcvi7PaXnN2xWNso+YykkOKrsK922ajdiQvPJzPquk0oghWq1bsWaoJEr+HW2nk+gL5nFeVKGqm2RoS/7X3NN9dQo/tS0ro=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727702438; c=relaxed/simple;
-	bh=DfQWv74Bofv4LcwKSBOirEpzeBIhtH8ZvuwlHa3F6Pc=;
+	s=arc-20240116; t=1727767510; c=relaxed/simple;
+	bh=jq7gk2jfZ+hdJ5OeRVSANOBdMJ5J12z2YwRxflKCCIQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TfS1MXzGSDC24Bf1Z2ZUZP+VOo+whavHpLUTGl6+tRBMdcftBn73A1M56lWwYiumthsEYjLJ45AOS4Mvm7CauFIYVgYv1QN9+b0YZ5dTBAFGwvEq0DihuxmSCY/g7h+llp3oWKnk7QCJpxfrz4MNihi38lY+a6Gm8IVmycRy8Iw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=tuWQBEVv; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="tuWQBEVv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A2BC4CEC7;
-	Mon, 30 Sep 2024 13:20:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1727702437;
-	bh=DfQWv74Bofv4LcwKSBOirEpzeBIhtH8ZvuwlHa3F6Pc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=tuWQBEVvLd+gnosFw5oTxIpugsmfkcHombzdldMXrTjexi8oUZN/71xQxXyikyavm
-	 LloYkQ2ao7Pgk18YdPZ7HVuFZcN84HiD2ftNmgJDiWdnL3g2ewJI5MsYBHnBZ113MP
-	 5Li8nDPkF2MtSIHn3a/gjf+7K8VSEe/lC5HtRGms=
-Date: Mon, 30 Sep 2024 15:20:30 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: winterver <295107659@qq.com>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] dio: Improve readability: rename dio_scodetophysaddr
-Message-ID: <2024093049-police-petunia-91a6@gregkh>
-References: <tencent_A926284D28E1F878F1888699245B2E06CF0A@qq.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=qUKKDNXzmN1jlv6zhtN7zaQF/zADdtJQOr+T3fz2icunxfkWNAkuS0rPiwks91pAoiRuplU4+EXtsne3Xz3WYpYMAVmNixKDwGRjA37sdNuFNegJcO6iXvSzaeWa+0xMYnz5eougbttXl0wc9j2uYv++EbswUq6qZZrH226NaW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1svXFe-0001fs-Ec; Tue, 01 Oct 2024 09:24:54 +0200
+Received: from [2a0a:edc0:2:b01:1d::c5] (helo=pty.whiteo.stw.pengutronix.de)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1svXFd-002p0t-VX; Tue, 01 Oct 2024 09:24:53 +0200
+Received: from mfe by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1svXFd-004tso-2r;
+	Tue, 01 Oct 2024 09:24:53 +0200
+Date: Tue, 1 Oct 2024 09:24:53 +0200
+From: Marco Felsch <m.felsch@pengutronix.de>
+To: Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Johan Hovold <johan@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-usb@vger.kernel.org
+Subject: Re: [PATCH 0/3] USB-Serial serdev support
+Message-ID: <20241001072453.3xv5sqxaj4zjprnz@pengutronix.de>
+References: <20240807-v6-10-topic-usb-serial-serdev-v1-0-ed2cc5da591f@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -39,61 +46,92 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <tencent_A926284D28E1F878F1888699245B2E06CF0A@qq.com>
-
-On Mon, Sep 30, 2024 at 11:18:37AM +0800, winterver wrote:
-> Rename dio_scodetophysaddr to dio_scode_to_physaddr.
-> Also dio_scodetoipl -> dio_scode_to_ipl and dio_scode_to_name
-> -> dio_scode_to_name, though they're not implemented yet.
-> I've searched these names in the repo. There are only a few of references.
-> I think it's OK and worth renaming them for readability.
-> 
-> Signed-off-by: winterver <295107659@qq.com>
+In-Reply-To: <20240807-v6-10-topic-usb-serial-serdev-v1-0-ed2cc5da591f@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
 Hi,
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+gentle ping as this is series is two months old now.
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+Regards,
+  Marco
 
-- Your patch did many different things all at once, making it difficult
-  to review.  All Linux kernel patches need to only do one thing at a
-  time.  If you need to do multiple things (such as clean up all coding
-  style issues in a file/driver), do it in a sequence of patches, each
-  one doing only one thing.  This will make it easier to review the
-  patches to ensure that they are correct, and to help alleviate any
-  merge issues that larger patches can cause.
-
-- You did not specify a description of why the patch is needed, or
-  possibly, any description at all, in the email body.  Please read the
-  section entitled "The canonical patch format" in the kernel file,
-  Documentation/process/submitting-patches.rst for what is needed in
-  order to properly describe the change.
-
-- You did not write a descriptive Subject: for the patch, allowing Greg,
-  and everyone else, to know what this patch is all about.  Please read
-  the section entitled "The canonical patch format" in the kernel file,
-  Documentation/process/submitting-patches.rst for what a proper
-  Subject: line should look like.
-
-- It looks like you did not use your "real" name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file,
-  Documentation/process/submitting-patches.rst for how to do this
-  correctly.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+On 24-08-07, Marco Felsch wrote:
+> Hi,
+> 
+> this patchset is based on Johan's patches [1] but dropped the need of
+> the special 'serial' of-node [2].
+> 
+> With the patches in place and the usb hierarchy described in properly we
+> can use serdev on-top of usb-serial. The below example adds the support
+> for the following hierarchy:
+>  - host->usb-hub->ftdi-usb-uart->bt/wlan-module:
+> 
+> &usb_dwc3_1 {
+> 	dr_mode = "host";
+> 	status = "okay";
+> 
+> 	hub@1 {
+> 		compatible = "usb424,2514";
+> 		reg = <1>;
+> 
+> 		vdd-supply = <&reg>;
+> 		reset-gpios = <&gpio4 5 GPIO_ACTIVE_LOW>;
+> 
+> 		#address-cells = <1>;
+> 		#size-cells = <0>;
+> 
+> 		device@1 {
+> 			compatible = "usb403,6010";
+> 			reg = <1>;
+> 
+> 			#address-cells = <2>;
+> 			#size-cells = <0>;
+> 
+> 			interface@0 {
+> 				compatible = "usbif403,6010.config1.0";
+> 				reg = <0 1>;
+> 
+> 				#address-cells = <1>;
+> 				#size-cells = <0>;
+> 
+> 				bluetooth {
+> 					compatible = "nxp,88w8987-bt";
+> 					fw-init-baudrate = <3000000>;
+> 				};
+> 			};
+> 		};
+> 	};
+> };
+> 
+> If no serdev node is found the usb-serial is exposed as usual and can be
+> accessed via /dev/ttyUSBx.
+> 
+> Regards,
+>   Marco
+> 
+> [1] https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git/log/?h=usb-serial-of
+> [2] https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git/commit/?h=usb-serial-of&id=b19239022c92567a6a9ed40e8522e84972b0997f
+> 
+> Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+> ---
+> Marco Felsch (3):
+>       serdev: ttyport: make use of tty_kopen_exclusive
+>       USB: serial: cosmetic cleanup <space><tab> mix
+>       USB: serial: enable serdev support
+> 
+>  drivers/tty/serdev/serdev-ttyport.c |  9 ++++++---
+>  drivers/usb/serial/bus.c            | 10 ++++++----
+>  2 files changed, 12 insertions(+), 7 deletions(-)
+> ---
+> base-commit: 0c3836482481200ead7b416ca80c68a29cfdaabd
+> change-id: 20240807-v6-10-topic-usb-serial-serdev-83a7f8f86432
+> 
+> Best regards,
+> -- 
+> Marco Felsch <m.felsch@pengutronix.de>
+> 
+> 
