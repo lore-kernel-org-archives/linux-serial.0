@@ -1,156 +1,107 @@
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 017611C9B76
-	for <linux-serial@vger.kernel.org>; Tue,  1 Oct 2024 15:14:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA9BB2AE66
+	for <linux-serial@vger.kernel.org>; Tue,  1 Oct 2024 15:31:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727795695; cv=none; b=qfi1pdZbtZK+VmxnSMG94IdYVAVPK+zjawD+Pw9U4lhyLQ5bNegp7EDmWgjzMtrq6sUnxFT6gwfh1PnFLQHeZQb6PYnu12ZoVvJrtycLfVJAwPJWv1Bp+0GGPb2fDoQ6fuUjXE31vysOh95dclbkGSslryNlViGI/Iibx0zf/nM=
+	t=1727796686; cv=none; b=rRpF1+4ab6PbAJNVB0xgMDguH+oF4+jRe6uPF6ZHzKsB0qWIA8R4p/I6xkYLFtZisTlrqhpTB/bMj0ewjy29hAw3ygnVi63/tL7V6D/ET/VBO+X4gOLytXrLJSoOi/8ccwwScWgtwNXtejDPcixfuTgTtKka6FU8bfUTLD36iic=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727795695; c=relaxed/simple;
-	bh=K7etQLbsdRPA9ww2bgOCB4P1qo2jzjsVUWz7e6BZbX4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CJYGA1JdmXXP11md39/skehXgvtv4KxERZ60wl51hyWPqCvvdbCxXYGxYEvJkatt6auQsXNI/nSz6INgx39/dD/8s8zCGh+nrwwMM8OUgTU+NeWMlbNo+df13VH1wDKaWFVWVtY36UA6hi+eVo2A4ctuWwBMkanbHBPnfGjRhPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=S1OfRk18; arc=none smtp.client-ip=209.85.167.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1727796686; c=relaxed/simple;
+	bh=JAFit4a9JHw6vw5PCQYOzUgxBXhAzWamEl3MWG7x3q0=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=q6eYpzGZZL9BsiKgKv2jXz1z9yYkxKBwCuUEbA1RdhdD1KKo/CvGyeT3MtU8KAF1zxBIVDY1twnGpPdkugkXd3vvcGWgeJiIUZsmSvYE0s3AqiwerJ4EAv38PL/6zQ9xSx0QV4kITey8nQ3sII2hsDPv8cG5hMnhq80X1S55hoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ov++uYHn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="S1OfRk18"
-Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-3e163e2a9fdso162318b6e.2
-        for <linux-serial@vger.kernel.org>; Tue, 01 Oct 2024 08:14:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1727795692; x=1728400492; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oXk/gs0HYEU1ezw3ww3vXkMichEEjYvt1gYwWCgyPCc=;
-        b=S1OfRk18+pPseAcyuu5l5U+E4eYU2t0YnJNd7ELnZ3qK2ssbxJWKaBSsD1pHm8r67o
-         u94evu8R2xSNeejesh8ONH1mIJcz58laE0SVvyD/nKbB10OlflkLHxxKfh9M205+ik9H
-         ftYzfvdbWsejWpQQ52DxCxG7yKeR9KRtf1arw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727795692; x=1728400492;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oXk/gs0HYEU1ezw3ww3vXkMichEEjYvt1gYwWCgyPCc=;
-        b=dnBRtcTiO1yvLKM2OFvBFNrACumbLuJT7x8QGAe+WklrekacXDUa/9cjSEK6jicqUt
-         fvC3H+smb8/zbXRBl3SMe/2Q7hrae9KK3rPDm5swnuK+1gty+AkxWFd5uMA7Y6EvQwMo
-         aIx2ZbJ5rDoIlDcr3FbcC4iQIdF6UEO2mHTi/RRhsGOwfwldyCsgvbuOoc69Wnu5N6Wl
-         FIpTap/EXnhaEJWV3/GhnAQ4mfN60ouPyyi59JhJ+MSFoSwFQkFFY6WIKETtxJUiaCqM
-         /ngNGdcUusC8vtC6sXZljiw/P8s3ng8IXQr1HNISmQWVYBr4yE287E/dRMIuRldn/mgm
-         Z42w==
-X-Forwarded-Encrypted: i=1; AJvYcCV85ygVByhflPIzx6Byp0xdrcetdLJu9YK7HPc9z08xDrXK1IX0qNAALc33IVI3PnuHdVdOg9EU+iWD0Xg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzOlija+vbEK5mB1CG3O/o6e5hE3YTFa62Vcn0v1y770Pr7eLQR
-	zXkn5cYvhlPFOls4bYw71Cx23N8hyypFLrsJsMcEVcyYNzQu23sEmjdsZq5/Tpg0Ln0iEBBA78I
-	=
-X-Google-Smtp-Source: AGHT+IH+1DjBTtE4oAiJ5nYLQrSihVWWKtUtFTHCdH6sonHXfbLM6XNV0VwS7he1vCcG4PQNRjGLAw==
-X-Received: by 2002:a05:6808:1406:b0:3e3:a285:b284 with SMTP id 5614622812f47-3e3b40f9214mr60462b6e.11.1727795691735;
-        Tue, 01 Oct 2024 08:14:51 -0700 (PDT)
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com. [209.85.215.170])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7e6db617088sm8225938a12.93.2024.10.01.08.14.50
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Oct 2024 08:14:50 -0700 (PDT)
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-7d4f85766f0so4842596a12.2
-        for <linux-serial@vger.kernel.org>; Tue, 01 Oct 2024 08:14:50 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXqAKUZse+P6BeqZRb3KEutq2v2ejpzdxn9sozlgnf5uNgBqLqlfc1Nq9eXJzq/77XOr2PG7hvIA6YFj/w=@vger.kernel.org
-X-Received: by 2002:a17:90a:b38b:b0:2e1:5a55:a4b9 with SMTP id
- 98e67ed59e1d1-2e18456a9a3mr52944a91.2.1727795689370; Tue, 01 Oct 2024
- 08:14:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ov++uYHn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AAD0C4CEC7;
+	Tue,  1 Oct 2024 15:31:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727796686;
+	bh=JAFit4a9JHw6vw5PCQYOzUgxBXhAzWamEl3MWG7x3q0=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=Ov++uYHnq8+JdrJS8yRD7KBtHHBFr3A2YaSMAQ6Jmt/IPgvbY/mEF8NQwIBksm7Y+
+	 PvNMNpUk+dhio1SZoe6YerbflmEwXu4MZxAg1pQ90klfYSdLhat9l7jLaOIh/GkvGp
+	 ct5YURqkzM1PH37jM3IQzBNifRzBfJUmF1j3WIFhd+P4jX8mEviFrowc0Y66AGneLD
+	 PfjLdz6TeGjt93LpLgQXjYdbJP2qSX/wdkb84Z16SFOHdC4OJ/bnJIXL/RnDW+tOfx
+	 lpyRr6BZ01pxRjyLKTVgEnDmEqfxi+M3UqFcQj/mYZwlcAxpfN56UyIV5d7fs+fwLb
+	 dsm7xQDKcBXEg==
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfauth.phl.internal (Postfix) with ESMTP id 2A6061200043;
+	Tue,  1 Oct 2024 11:31:25 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Tue, 01 Oct 2024 11:31:25 -0400
+X-ME-Sender: <xms:zRX8ZkFmkqmC89auh6N78ET0irhsgx4yaOCJihE0s7eBJ2YLh3zRzA>
+    <xme:zRX8ZtULFqWupe-rgM4Kjk7GnlBwvZPZG_ca0cE3AMOiaiiQyFcn8yQVvVD_ts5mI
+    Yt8hSLKp329bh6anz8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrvddujedgkeekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtqhertdertdej
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusehkvghrnhgvlh
+    drohhrgheqnecuggftrfgrthhtvghrnhepudefjeetteelhfegudekhfetffehtefhtdev
+    keehfefgtdehheeghfektdekvdefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomheprghrnhguodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhi
+    thihqdduvdekhedujedtvdegqddvkeejtddtvdeigedqrghrnhgupeepkhgvrhhnvghlrd
+    horhhgsegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepkedpmhhouggvpehsmhhtphho
+    uhhtpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpth
+    htohephhgtrgeslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehstghhnhgvlhhl
+    vgeslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehilhhpohdrjhgrrhhvihhnvg
+    hnsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepghhrvghgkhhhsehlihhn
+    uhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtohepmhgrtghrohesohhrtggrmh
+    drmhgvrdhukhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghr
+    nhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvg
+    hrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:zRX8ZuK_wK69nPcFt17hPNyHkcia4bjqMR7TWi99cfEjeGJyNOrrhw>
+    <xmx:zRX8ZmErsrk546EfandA8147KrxanZz29TZRetZksAfHCAxB3W1iRg>
+    <xmx:zRX8ZqVihXueKq681xNrPMggdHgW0_wYO4WoM7t9YjXrwk3cRAQ-xQ>
+    <xmx:zRX8ZpPabfVrHYKBfalF2nQzGsXxGXS8EGmI5m-xdheAY93AqpjyVw>
+    <xmx:zRX8Zh20R56ojEh4rwUmC1HXW_UD-fMrJV2wlxbtt_5llnuR_IgpT-63>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id EB7DA2220071; Tue,  1 Oct 2024 11:31:24 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240911123507.v2.1.Id08823b2f848237ae90ce5c5fa7e027e97c33ad3@changeid>
- <ZuwfvyiOMAzciZX2@pathway.suse.cz> <CAHQZ30CVM3toTJCki_ao_+_2VkOxmB+a=BU73HF+4WCM0qRbwA@mail.gmail.com>
- <ZvwQiSNEwD6XB0yA@pathway.suse.cz>
-In-Reply-To: <ZvwQiSNEwD6XB0yA@pathway.suse.cz>
-From: Raul Rangel <rrangel@chromium.org>
-Date: Tue, 1 Oct 2024 09:14:35 -0600
-X-Gmail-Original-Message-ID: <CAHQZ30DMD9eqN7hFL8z6+XuJ1N_0EfyE8d9F2Vv+CsHn0UBAdQ@mail.gmail.com>
-Message-ID: <CAHQZ30DMD9eqN7hFL8z6+XuJ1N_0EfyE8d9F2Vv+CsHn0UBAdQ@mail.gmail.com>
-Subject: Re: [PATCH v2] init: Don't proxy `console=` to earlycon
-To: Petr Mladek <pmladek@suse.com>
-Cc: linux-kernel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>, 
-	Christophe Leroy <christophe.leroy@csgroup.eu>, Geert Uytterhoeven <geert+renesas@glider.be>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Huang Shijie <shijie@os.amperecomputing.com>, 
-	Ingo Molnar <mingo@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Luis Chamberlain <mcgrof@kernel.org>, Masami Hiramatsu <mhiramat@kernel.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
-	Yuntao Wang <ytcoode@gmail.com>, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 01 Oct 2024 15:31:03 +0000
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: "Niklas Schnelle" <schnelle@linux.ibm.com>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
+ linux-kernel@vger.kernel.org
+Message-Id: <a009093c-06f6-4ea7-8e72-6ad84125262a@app.fastmail.com>
+In-Reply-To: <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com>
+ <20240405152924.252598-2-schnelle@linux.ibm.com>
+ <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
+ <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com>
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 1, 2024 at 9:09=E2=80=AFAM Petr Mladek <pmladek@suse.com> wrote=
-:
+On Tue, Oct 1, 2024, at 11:21, Niklas Schnelle wrote:
+> On Thu, 2024-05-23 at 03:11 +0100, Maciej W. Rozycki wrote:
 >
-> On Tue 2024-09-24 10:05:08, Raul Rangel wrote:
-> > On Thu, Sep 19, 2024 at 6:57=E2=80=AFAM Petr Mladek <pmladek@suse.com> =
-wrote:
-> >
-> > > On Wed 2024-09-11 12:35:14, Raul E Rangel wrote:
-> > > > Today we are proxying the `console=3D` command line args to the
-> > > > `param_setup_earlycon()` handler. This is done because the followin=
-g are
-> > > > equivalent:
-> > > >
-> > > >     console=3Duart[8250],mmio,<addr>[,options]
-> > > >     earlycon=3Duart[8250],mmio,<addr>[,options]
-> > > >
-> > > > Both invocations enable an early `bootconsole`. `console=3DuartXXXX=
-` is
-> > > > just an alias for `earlycon=3DuartXXXX`.
-> > > >
-> > > > In addition, when `earlycon=3D` (empty value) or just `earlycon`
-> > > > (no value) is specified on the command line, we enable the earlycon
-> > > > `bootconsole` specified by the SPCR table or the DT.
-> > > >
-> > > > The problem arises when `console=3D` (empty value) is specified on =
-the
-> > > > command line. It's intention is to disable the `console`, but what
-> > > > happens instead is that the SPRC/DT console gets enabled.
-> > > >
-> > > > This happens because we are proxying the `console=3D` (empty value)
-> > > > parameter to the `earlycon` handler. The `earlycon` handler then se=
-es
-> > > > that the parameter value is empty, so it enables the SPCR/DT
-> > > > `bootconsole`.
-> > > >
-> > > > This change makes it so that the `console` or `console=3D` paramete=
-rs no
-> > > > longer enable the SPCR/DT `bootconsole`. I also cleans up the hack =
-in
-> > > > `main.c` that would forward the `console` parameter to the `earlyco=
-n`
-> > > > handler.
-> > > >
-> > > > Signed-off-by: Raul E Rangel <rrangel@chromium.org>
-> > >
-> > > It like this approach. It works well:
-> > >
-> > > Reviewed-by: Petr Mladek <pmladek@suse.com>
-> > > Tested-by: Petr Mladek <pmladek@suse.com>
-> > >
-> >
-> > Thanks for reviewing and testing! I know it takes a significant amount =
-of
-> > time, so thank you.
-> >
-> > >
-> > > I could take it via the printk tree for 6.13. From my POV, it is too
-> > > late for 6.12. I am sorry I have been busy with the printk rework :-(
-> > >
-> >
-> > 6.13 is fine. As long as it lands upstream I can cherry pick the patch =
-into
-> > our forks without any pushback.
->
-> JFYI, the patch has been committed into printk/linux.git,
-> branch for-6.13.
+> With 2 more HAS_IOPORT patches having gone into v6.12-rc1 I'm looking
+> at what's left and we're down to 4 prerequisite patches[0] before being
+> able to compile-time disable inb()/outb()/=E2=80=A6. This one being by=
+ far the
+> largest of these. Looking at your suggestion it seems that to compile
+> 8250_pci.c without HAS_IOPORT I'll have to add #ifdef CONFIG_HAS_IOPORT
+> around the MOXI section as that uses I/O ports unconditionally. The
+> rest seems fine and I guess would theoretically work on a system with
+> !HAS_IOPORT. I'll send a v2 with that included.=20
 
-Thank you!
->
-> Best Regards,
-> Petr
+I think that is the correct approach, yes. From what I can tell, the
+older version of the 8250 patch added the #ifdef blocks for all other
+port types that need port I/O, but the moxa version was added later
+than that and just needs the same change.
+
+      Arnd
