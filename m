@@ -1,77 +1,75 @@
 Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4546D19D09A;
-	Tue,  1 Oct 2024 09:04:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6191119D88B;
+	Tue,  1 Oct 2024 11:21:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727773491; cv=none; b=N96Fw9ld6+Gx56/suq6DVglM6DrbEibDvmUm/CQQmMN+Z6ZAuruzMbmVO9n1c8lTtcp4eCTg9tj/pojnA8eAg8gZeiHRh2toJwSoTUcMxlUC7naofl+mNZoB5nqO9yXbA0EiwfkMDuTkKaGZP18k2SMSciM77yD4Dfq3lZNz9W4=
+	t=1727781690; cv=none; b=SwIO4IvzSGfrMpN5YBm7XegHlucgWFU7Is8PQOa7PqoIwngq3rtZnwN9s/LnBbWMZCWC6xdNLmqtDSt2DE2HBeUk9+sZHjie46cBteM2spK/D7HXO7+MLdN5cDNFfpwCERLUsQ32YXtHbHbdFynypZAKV84qBwRNB+3E/OjMqoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727773491; c=relaxed/simple;
-	bh=pcyRYXfXStIO68zZuqp7v07QMHd4uecY195KlLVTT3M=;
+	s=arc-20240116; t=1727781690; c=relaxed/simple;
+	bh=1vTPaZGQX3EUuPBhITzJrddTYMHuSGz5Qru0H/6VaIw=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=ljvGY/Fp9fYg6ogC6BW+x6KDpl0LMAwot0W5c96mj/+YD6jpcDB4IFXJpfC6kdYB4zKnrajWvGNPz4FH6w9xP4l/6fWknxzxPQKRIR5r4ADdLtOJQFwWDzI8yv/KwqjNRgJF2sYGib8Hr1k7dF6wtYlcgRIquN5IpwlScih+DdU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=GJZwYUZz; arc=none smtp.client-ip=148.163.158.5
+	 Content-Type:MIME-Version; b=PlejBRGJxfQrSzznH5TmT2t9At8Tq1j90dkwBRvx4B+DFZT/Y3RDekEpQrQ2RHulRqSQVYmIRULmho44ZHzpdwe0qDsukDJTS9Z0AjjEcgQ4MH0PD+KDcNkzMsaVkTMnsmZI/OIgeJoyML/gzUR5lcAEUbKWDtsiJ82XA5mJI5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=YsvYvMzI; arc=none smtp.client-ip=148.163.158.5
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="GJZwYUZz"
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="YsvYvMzI"
 Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4916LKUb011406;
-	Tue, 1 Oct 2024 09:04:43 GMT
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 491AqRpH006120;
+	Tue, 1 Oct 2024 11:21:19 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
 	message-id:subject:from:to:cc:date:in-reply-to:references
 	:content-type:content-transfer-encoding:mime-version; s=pp1; bh=
-	tdBC5b4bwQHTrJ7t9unzhXhcZ8BQHL5o0XhNiyLrtow=; b=GJZwYUZzK5IrCYEF
-	fY6NP0J4q83hBNcII5c79CI6V2cJFKbvIeVEQR9TTfCuCXZ1U/YLw47P0hgADbQp
-	ZObe0G2aBzkkGDL5bxiwWQutbDTIIkYNlh6ZuJX/J7qDy8W8dz0GZygZ+B/F28Bv
-	f+nfXC8LGmAR+L7JvcWNoOVivVezKFlj4+fX7ocWwHOEGGqM08hPMzjlaLTC5qQ5
-	Z3VycwB2CH+mulkcKd/FY+ZcGfdrQU0Qc8l8FZK4H8puQi6ngFoTEj6ysGp5NWeo
-	r++UwtF4GprX8kn8h+WEuhm/oXH+H7CFI8Qqxr5A6c3kFTeFQIdXGK1P38gYXW+5
-	DlD+mg==
+	A/8/a4MUeiALZH0okYRtj0SzI30SD2d1BXffOxXx9RY=; b=YsvYvMzImAmR1KOV
+	fF0xcyODAvwZ+Lkgke+iO8JewGWXJu1drNd5DD1X5SLxfwhem9oF2iwSHmWE6Q0O
+	1m51mut1ktjeHVv0j9bAheKaEA2suGuRKeCIFkJdpCz2WWlWFrgtUjOu8Wzkfi8B
+	vB0Ix1pKg/DqfbIE8vN/efdhQ6n6pB166YwUZaID6XwUUDj39dMK9zbF0VrnD9ua
+	i5HJvJHzCOAai1OVU2a79NLoAhFQt52yOKrG/qJz1PvUkPpYHbAen57q2cli+pFD
+	4jYMaG3VPEOt8FaSlSR2eIB2tOeKJ2YpOjHC1xiYbdDslfQaE/BPOfN7A1xtxiZ+
+	DHxMlg==
 Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 420bqs0s9g-1
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 420fq4r4hu-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 01 Oct 2024 09:04:43 +0000 (GMT)
+	Tue, 01 Oct 2024 11:21:19 +0000 (GMT)
 Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 4915k5rL017852;
-	Tue, 1 Oct 2024 09:04:42 GMT
-Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
-	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 41xw4muc51-1
+	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 49196PL3017902;
+	Tue, 1 Oct 2024 11:21:18 GMT
+Received: from smtprelay07.wdc07v.mail.ibm.com ([172.16.1.74])
+	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 41xw4muyjv-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 01 Oct 2024 09:04:42 +0000
-Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
-	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 49194g3348824728
+	Tue, 01 Oct 2024 11:21:18 +0000
+Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
+	by smtprelay07.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 491BLIr925494100
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 1 Oct 2024 09:04:42 GMT
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 330A958056;
-	Tue,  1 Oct 2024 09:04:42 +0000 (GMT)
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 1343958065;
-	Tue,  1 Oct 2024 09:04:41 +0000 (GMT)
+	Tue, 1 Oct 2024 11:21:18 GMT
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 4826358054;
+	Tue,  1 Oct 2024 11:21:18 +0000 (GMT)
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id DF9A45805A;
+	Tue,  1 Oct 2024 11:21:16 +0000 (GMT)
 Received: from oc-fedora.boeblingen.de.ibm.com (unknown [9.152.212.119])
-	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  1 Oct 2024 09:04:40 +0000 (GMT)
-Message-ID: <2ca919f5ffa5d8c94b7e594206421675a741c3a3.camel@linux.ibm.com>
+	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue,  1 Oct 2024 11:21:16 +0000 (GMT)
+Message-ID: <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com>
 Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
 From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Arnd Bergmann <arnd@kernel.org>,
-        Ilpo =?ISO-8859-1?Q?J=E4rvinen?=
-	 <ilpo.jarvinen@linux.intel.com>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby
-	 <jirislaby@kernel.org>,
-        linux-serial <linux-serial@vger.kernel.org>,
-        Heiko
- Carstens <hca@linux.ibm.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Date: Tue, 01 Oct 2024 11:04:40 +0200
-In-Reply-To: <80c20c7b-4e7a-43af-8b59-7f2a98272e99@app.fastmail.com>
+ <jirislaby@kernel.org>,
+        Ilpo =?ISO-8859-1?Q?J=E4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>,
+        linux-serial@vger.kernel.org, Arnd
+ Bergmann <arnd@kernel.org>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org
+Date: Tue, 01 Oct 2024 13:21:16 +0200
+In-Reply-To: <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
 References: <20240405152924.252598-1-schnelle@linux.ibm.com>
 	 <20240405152924.252598-2-schnelle@linux.ibm.com>
-	 <1a14ac6e-30e9-048e-50cc-c1c3aacc2118@linux.intel.com>
-	 <80c20c7b-4e7a-43af-8b59-7f2a98272e99@app.fastmail.com>
+	 <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
 Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
  keydata=mQINBGHm3M8BEAC+MIQkfoPIAKdjjk84OSQ8erd2OICj98+GdhMQpIjHXn/RJdCZLa58k
  /ay5x0xIHkWzx1JJOm4Lki7WEzRbYDexQEJP0xUia0U+4Yg7PJL4Dg/W4Ho28dRBROoJjgJSLSHwc
@@ -128,50 +126,111 @@ Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
  B+QQCR/FYGpTFkO4DRVfapT8njDrsWyVpP9o64VNZP42S+DuRGWfUKCMAXsM/wPzRiDEVfnZMcUR9
  vwLSHeoV7MiIFC0xIrp5ES9R00t4UFgqtGc36DV71qjR+66Im0=
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: x3SZ7zGujIKP_LBC0sECh4jCBl17vcnR
+X-Proofpoint-GUID: x3SZ7zGujIKP_LBC0sECh4jCBl17vcnR
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: rJEqgMkL5vYcQ1OH67KUj1Pjw8tYwNds
-X-Proofpoint-ORIG-GUID: rJEqgMkL5vYcQ1OH67KUj1Pjw8tYwNds
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
  definitions=2024-10-01_07,2024-09-30_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 priorityscore=1501
- clxscore=1011 lowpriorityscore=0 suspectscore=0 mlxlogscore=693
- bulkscore=0 phishscore=0 spamscore=0 adultscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2408220000 definitions=main-2410010058
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 suspectscore=0
+ clxscore=1011 bulkscore=0 impostorscore=0 mlxscore=0 phishscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2408220000 definitions=main-2410010072
 
-On Mon, 2024-04-08 at 12:17 +0200, Arnd Bergmann wrote:
-> On Mon, Apr 8, 2024, at 11:54, Ilpo J=C3=A4rvinen wrote:
-> > On Fri, 5 Apr 2024, Niklas Schnelle wrote:
+On Thu, 2024-05-23 at 03:11 +0100, Maciej W. Rozycki wrote:
+> On Fri, 5 Apr 2024, Niklas Schnelle wrote:
 >=20
-> > >  config SERIAL_8250_CS
-> > >  	tristate "8250/16550 PCMCIA device support"
-> > > -	depends on PCMCIA && SERIAL_8250
-> > > +	depends on PCMCIA && SERIAL_8250 && HAS_IOPORT
-> > >  	help
-> > >  	  Say Y here to enable support for 16-bit PCMCIA serial devices,
-> > >  	  including serial port cards, modems, and the modem functions of
-> >=20
-> > What about drivers that use SERIAL8250_PORT()?
+> > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
+50/8250_pci.c
+> > index 0d35c77fad9e..38ac5236d2ea 100644
+> > --- a/drivers/tty/serial/8250/8250_pci.c
+> > +++ b/drivers/tty/serial/8250/8250_pci.c
+> > @@ -928,6 +928,7 @@ static int pci_netmos_init(struct pci_dev *dev)
+> >  	return num_serial;
+> >  }
+> > =20
+> > +#ifdef CONFIG_HAS_IOPORT
+> >  /*
+> >   * These chips are available with optionally one parallel port and up =
+to
+> >   * two serial ports. Unfortunately they all have the same product id.
+> [...]
+> > diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/=
+Kconfig
+> > index 47ff50763c04..54bf98869abf 100644
+> > --- a/drivers/tty/serial/8250/Kconfig
+> > +++ b/drivers/tty/serial/8250/Kconfig
+> > @@ -136,7 +135,7 @@ config SERIAL_8250_PCILIB
+> > =20
+> >  config SERIAL_8250_PCI
+> >  	tristate "8250/16550 PCI device support"
+> > -	depends on SERIAL_8250 && PCI
+> > +	depends on SERIAL_8250 && PCI && HAS_IOPORT
+> >  	select SERIAL_8250_PCILIB
+> >  	default SERIAL_8250
+> >  	help
 >=20
-> It probably makes sense to hide these, since they won't ever
-> work. I probably missed them in my initial series because they
-> don't cause a compile-time error, but I agree that there is no
-> use in showing the options here.
+>  This is clearly wrong, there is PCIe 8250 serial hardware that does MMIO=
+=20
+> only, so the option has to stay possible to enable.  I have such hardware=
+=20
+> as shown in this log:
 >=20
+> Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+> serial 0001:01:00.0: enabling device (0140 -> 0142)
+> serial 0001:01:00.0: detected caps 00000700 should be 00000500
+> 0001:01:00.0: ttyS0 at MMIO 0x600c080401000 (irq =3D 40, base_baud =3D 15=
+625000) is a 16C950/954
+> serial 0001:01:00.0: detected caps 00000700 should be 00000500
+> 0001:01:00.0: ttyS1 at MMIO 0x600c080401200 (irq =3D 40, base_baud =3D 15=
+625000) is a 16C950/954
+>=20
+> which is from a POWER9 system.  Which as you may know has no PCI port I/O=
+=20
+> support in hardware, so it is quite relevant here.  I'd like to keep this=
+=20
+> PCIe serial option functional with my system.
+>=20
+>  Also your change itself modifies 8250_pci.c (cited above for reference),=
+=20
+> which would make no sense if SERIAL_8250_PCI was permanently disabled for=
+=20
+> !HAS_IOPORT.  Shall I take it than that the Kconfig change I question has=
+=20
+> been made merely by mistake?
+>=20
+>   Maciej
 
-As far as I can tell SERTIAL8250_PORT() is used by SERIAL_8250_ACCENT,
-SERIAL_8250_BOCA, and SERIAL_8250_EXAR_ST16C554 all of these already
-depend on ISA which implies HAS_IOPORT. So I don't think we need to add
-HAS_IOPORT dependencies here?
+Hi Maciej,
+
+With 2 more HAS_IOPORT patches having gone into v6.12-rc1 I'm looking
+at what's left and we're down to 4 prerequisite patches[0] before being
+able to compile-time disable inb()/outb()/=E2=80=A6. This one being by far =
+the
+largest of these. Looking at your suggestion it seems that to compile
+8250_pci.c without HAS_IOPORT I'll have to add #ifdef CONFIG_HAS_IOPORT
+around the MOXI section as that uses I/O ports unconditionally. The
+rest seems fine and I guess would theoretically work on a system with
+!HAS_IOPORT. I'll send a v2 with that included.=20
+
+Note however that even though your POWER9 system does not have I/O port
+support in hardware we still have HAS_IOPORT enabled for arch/powerpc
+if PCI is enabed so even with this patch as is your POWER9 system
+should not be affected.
 
 Thanks,
 Niklas
+
+[0]
+https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git/log/?h=3Dhas=
+_ioport
