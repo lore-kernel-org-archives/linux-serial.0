@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C3FF1C245F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C4751C2DA5;
 	Tue,  1 Oct 2024 12:51:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727787071; cv=none; b=UEulrr7toOsCCsr1RZg6ymHs3Fw1iI6Q0wUMEzPkF6IGkk1P6Ejj2nHf09Xi7kzuOUEuYQuDU046evnNoaPpkN06PAiaeon/nBkuaAzuI2Ql6HZbm8DZNZduME0WSu3Ah6otnuwlThaJQ6ev/G7iS6yvdjnWw05UVY/ODkF3Qww=
+	t=1727787071; cv=none; b=q5v2XzSnb/EddxZVgyODXTmdi5i5fhcNEf+UXGV5QUzyaZgaw/D4bCuQsD1z8KY3f4jI4+VoFS7EgM/qVKqSX6z2rK7C97bb8Ci0qeX58kTqYYoW6gIX7Mu/GcJEMaN39pkvvTuhbS42jEzwlaJSL8ILh/+NLBeklgvbOPXE6Jw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1727787071; c=relaxed/simple;
-	bh=hPaxSeDJ1aGZNJvz+/cNIjIukyj2Wnde/8UoejTcVrE=;
+	bh=n14DOMLu+tTkfzWSwxnagK5nwZFIdud0kYQvc+s8lB8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qo6tqgik5m/3KRjSp22tm4ncdBHnbjJOlabBXInWwYqZr6srlNg6iBQ3svUmWZ6jatQM+UbyORsWRyMvEFzNQac0kRT1nHS4K/xHtjFeDRL4F45KdZ5GiMuy3v+yQCSs0A4QeqZe7OmSJDugFiYTnmhkuRy/LG0nU3OqhF1u7s8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZDJQW6zT; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=pWPlsxscsETbmbhhz36anqyOKl7WeXA4tO4buze4IVmlnpDfHk6YbBmRIMtdWd4c5JrobjtGNl5c7OpWJQFdk1rlYtrBit27v21fTczAo26s6vkpDybc+OMqzbNZXj1P7f+4tKueAwpFHplckhyRDIs6KuW5HP0AIUTDOlPzTyA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PldLBLov; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZDJQW6zT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF9F4C4CECD;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PldLBLov"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9BEDC4AF09;
 	Tue,  1 Oct 2024 12:51:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727787070;
-	bh=hPaxSeDJ1aGZNJvz+/cNIjIukyj2Wnde/8UoejTcVrE=;
+	s=k20201202; t=1727787071;
+	bh=n14DOMLu+tTkfzWSwxnagK5nwZFIdud0kYQvc+s8lB8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=ZDJQW6zTJQc78P6uzypLd8EsVnn/frB19SXivNy4Q1Yi0dtxCVVVvnSNrdfs7bdXI
-	 ptXiMgbKysxUp/t9M+T4UviRa/sBJbBiFBHJZey9whRi6eVqwEZJt8VdkLuhWwpdMS
-	 VXWrXbSyBxYZ+kW6+g3iwbfxPe8woAemB2KNmlPgnMMl5B4cGl19Qi3N8OECno5T+j
-	 m6P9LdzdNMMKebIpumtu9lF0sIR7uGZMTKvWkCPVPGB9TNQ/LVV71t59rwCJF+bcoq
-	 kPtjPYLlDZCH28TuadXJo3Dzc7wF66BS6Zwwwg4dAO32RPa14MPOmnzn09HZW8KeNF
-	 kXOYy4HvfZhqw==
+	b=PldLBLovX7GBq3jtWtaU6FGiLT2Y7EHjBoiqflV2PS7A+Slg9aWx/vLHSAsijLuVP
+	 ZN0tOvLV+90AmtaUVSy6BtK48xgm5+h9THowTpJbOGbQHSWTCnHteCPSb/n4ZXlbSS
+	 09w+UD7dAFeEp0qWxnzBnYdvODGeEmBvOwwOdqkow0sJL5QNhr3lxSnqESGxj3wATX
+	 uhVVs96kvodNNynt8TZ/g/HxSSxgnUGtl2+6wc6ZGPtPx8FDF+39MpXR5NM7XSALEx
+	 slm0Tt4q6t/KqGroHvNOy9yk6eAI165o7fXzSMZoPd5V1TSKp+We3ualJ0xpJ2TqUv
+	 f6oTllHogg2Jg==
 Received: from johan by xi.lan with local (Exim 4.97.1)
 	(envelope-from <johan+linaro@kernel.org>)
-	id 1svcLP-000000002mG-02ff;
+	id 1svcLP-000000002mK-0sJo;
 	Tue, 01 Oct 2024 14:51:11 +0200
 From: Johan Hovold <johan+linaro@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -42,9 +42,9 @@ Cc: Jiri Slaby <jirislaby@kernel.org>,
 	Johan Hovold <johan+linaro@kernel.org>,
 	stable@vger.kernel.org,
 	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: [PATCH v2 2/7] serial: qcom-geni: fix shutdown race
-Date: Tue,  1 Oct 2024 14:50:28 +0200
-Message-ID: <20241001125033.10625-3-johan+linaro@kernel.org>
+Subject: [PATCH v2 4/7] serial: qcom-geni: fix receiver enable
+Date: Tue,  1 Oct 2024 14:50:30 +0200
+Message-ID: <20241001125033.10625-5-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <20241001125033.10625-1-johan+linaro@kernel.org>
 References: <20241001125033.10625-1-johan+linaro@kernel.org>
@@ -56,41 +56,71 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-A commit adding back the stopping of tx on port shutdown failed to add
-back the locking which had also been removed by commit e83766334f96
-("tty: serial: qcom_geni_serial: No need to stop tx/rx on UART
-shutdown").
+The receiver should be enabled in the startup() callback and there is no
+need to stop it on every termios update.
 
-Holding the port lock is needed to serialise against the console code,
-which may update the interrupt enable register and access the port
-state.
+Since commit 6f3c3cafb115 ("serial: qcom-geni: disable interrupts during
+console writes") the calls to manipulate the secondary interrupts, which
+were done without holding the port lock, can lead to the receiver being
+left disabled when set_termios() races with the console code (e.g. when
+init opens the tty during boot).
 
-Fixes: d8aca2f96813 ("tty: serial: qcom-geni-serial: stop operations in progress at shutdown")
-Fixes: 947cc4ecc06c ("serial: qcom-geni: fix soft lockup on sw flow control and suspend")
-Cc: stable@vger.kernel.org	# 6.3
+The calls to stop and start rx in set_termios() can similarly race with
+DMA completion and, for example, cause the DMA buffer to be unmapped
+twice or the mapping to be leaked.
+
+Fixes: 6f3c3cafb115 ("serial: qcom-geni: disable interrupts during console writes")
+Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for serial engine DMA")
+Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver support for GENI based QUP")
+Cc: stable@vger.kernel.org      # 6.3
 Cc: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tty/serial/qcom_geni_serial.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 9ea6bd09e665..b6a8729cee6d 100644
+index dea688db0d7c..5b6c5388efee 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1096,10 +1096,12 @@ static void qcom_geni_serial_shutdown(struct uart_port *uport)
- {
- 	disable_irq(uport->irq);
- 
+@@ -1179,6 +1179,11 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+ 		if (ret)
+ 			return ret;
+ 	}
++
 +	uart_port_lock_irq(uport);
- 	qcom_geni_serial_stop_tx(uport);
- 	qcom_geni_serial_stop_rx(uport);
- 
- 	qcom_geni_serial_cancel_tx_cmd(uport);
++	qcom_geni_serial_start_rx(uport);
 +	uart_port_unlock_irq(uport);
++
+ 	enable_irq(uport->irq);
+ 
+ 	return 0;
+@@ -1264,7 +1269,6 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	unsigned int avg_bw_core;
+ 	unsigned long timeout;
+ 
+-	qcom_geni_serial_stop_rx(uport);
+ 	/* baud rate */
+ 	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
+ 
+@@ -1280,7 +1284,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 		dev_err(port->se.dev,
+ 			"Couldn't find suitable clock rate for %u\n",
+ 			baud * sampling_rate);
+-		goto out_restart_rx;
++		return;
+ 	}
+ 
+ 	dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div = %u\n",
+@@ -1371,8 +1375,6 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
+ 	writel(ser_clk_cfg, uport->membase + GENI_SER_M_CLK_CFG);
+ 	writel(ser_clk_cfg, uport->membase + GENI_SER_S_CLK_CFG);
+-out_restart_rx:
+-	qcom_geni_serial_start_rx(uport);
  }
  
- static void qcom_geni_serial_flush_buffer(struct uart_port *uport)
+ #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
 -- 
 2.45.2
 
