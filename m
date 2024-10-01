@@ -1,83 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C34BB6AA7;
-	Tue,  1 Oct 2024 13:39:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 824EB1C3F32;
+	Tue,  1 Oct 2024 13:50:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727789952; cv=none; b=NPoPtfLlqljS9MsKl9UhMt5yJRE5tNaMXbzI+MaTkSFH9XT4JZazVoHB/hJAV7Du95hCFcIT9Ng/18HWbNkebxr16r99Wvuus8eNaL6onQOBhvfBz3JgiaN8/Z9c9/mb7jwNbMns19q55h+rKC/29vjr0g1SJSTmYOANx6lnngE=
+	t=1727790651; cv=none; b=ohkzphgUgVoHAYwEbXWdInK9iLyQxIpW/wP7RdCh/3/atMmGVW6jfNtQe9D94v5yOSRBssLtdwYZ5gDn1arXKJV9qpC1ySquuIvVFIGsG2U0leW5Pvrl+J23ivzJzh7OIq9B3QmQYXwQotlmF0zdAEPtkp2W/yUsGEC9Sx/Ej30=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727789952; c=relaxed/simple;
-	bh=aw8Zi8+Zmdb80JGksXuvNr/EE6LmzOtQfwjx4i3y3Ms=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=liu1zGlSvtfwtZCH7o1O0Cpuv3b8zLleiXvP0ce22xlqhpvCW4sffoOVvM9w5NxlReUR7J14Bwl6U5ATHcmIsLlEQwhFyO5EVuTTFVuJdvw6UI128M7Mm0V1HaZQIQTMFtJ9nRqkcHmyq2pXUcKREr+2VeL6gJCkNkslPtf3tw0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i3LBZkwN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1727790651; c=relaxed/simple;
+	bh=ya6s4OjLzDBKkaqKYGPBmAej5LeuqLuwewX2rXjZYJs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=ZOmt2H1q9Nwl447MNSDKIVbt9mZ83XBrNPm206DYZI7ZJnq2FXNeDDYn/e2eZgjchpnZC2ubIjBQVUNIzDpMU2E7UnJWwmR7iAGutAwdxYpyYqYzmVFZsCkG5/kLbu0BYAJCaDcA37Eamn4ChLQEoWBDuCLCWhHPmW6ZPDZyqxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=GnuMn/Lg; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i3LBZkwN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FDD6C4CECD;
-	Tue,  1 Oct 2024 13:39:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727789952;
-	bh=aw8Zi8+Zmdb80JGksXuvNr/EE6LmzOtQfwjx4i3y3Ms=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=i3LBZkwNp5vUpwy3ZnUfzXzvbSGDmnlrmu2dQKB3hn5jfhKJ9Jy0OBNRLV7Z5WacK
-	 01HkNEq4xPZ75IqOXU+ln8/C5A0L4Y91kEMIH0EwkvhA0Uq8FizFbLySDlZeM4b24b
-	 TmVqLHE4Bhe9bhwEBiH4TwIkJb7e+o/vsEHd6oi7Z/YTuM/t6BI8iUN2eCGzsVpN3W
-	 BLHwvdFeD3TAY59ktr3ddvli8I+LtOeU+UQg3xCDgQYg4/cdXB31duDRwMkNPV/Kkz
-	 xOrt8E7opL6XntmLOHI6bMrMtuu+BUp54l7CYDV7dlpPXOKBWwdaLy9q272irAJPUr
-	 A3LmkIiwEKRaA==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1svd5r-000000003nU-21Bx;
-	Tue, 01 Oct 2024 15:39:12 +0200
-Date: Tue, 1 Oct 2024 15:39:11 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Bartosz Golaszewski <brgl@bgdev.pl>
-Cc: Johan Hovold <johan+linaro@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, stable@vger.kernel.org,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: Re: [PATCH v2 2/7] serial: qcom-geni: fix shutdown race
-Message-ID: <Zvv7f-3cQ92YlKik@hovoldconsulting.com>
-References: <20241001125033.10625-1-johan+linaro@kernel.org>
- <20241001125033.10625-3-johan+linaro@kernel.org>
- <CAMRc=MeYSsh+MOrOHSabiHuyGOrZK330WuNXcGDtg-siJFya=g@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="GnuMn/Lg"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4919L1xt008272;
+	Tue, 1 Oct 2024 13:50:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	9VLqU+1fU/5jRjetzCchLu2MxMyXC5eBuEI49ITUIwU=; b=GnuMn/LgYS5WJzeo
+	vxSR4oJlHXGYnPLXJIB6IJh5IFsygVUPXf492+3OsH5Dw8iwuqyaPUtolT/ZW3BL
+	B3xC8+n7+lIN1MtunB0gfIDWjOuBX4D1Ww8ccIiAMvRHUo5tjd7DPCU+Ms8BdERl
+	zFN/JCdvbkU+Jy0YeRp0L8yeVIMl/lBUvdjjFLNfD+2NT02t5jMMsChTHjUy5tTt
+	UNtJU5PcA5+zRucXJUQQmBH8HVXJ4ksrKa11yS/PWqcp0aW/f5VDCL53mntZ/I7D
+	zs4ENaL2firkQEFF3AZClkyXoML/xNfCA/I6c67UOl+VZJz4ijBWpp5Nsf/26ZF0
+	yYO+MA==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 41x9vu8dra-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 01 Oct 2024 13:50:44 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 491DohWH000842
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 1 Oct 2024 13:50:43 GMT
+Received: from [10.217.219.207] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 1 Oct 2024
+ 06:50:40 -0700
+Message-ID: <b7c9b01a-3bf7-44f2-be8d-24ef5f3fce74@quicinc.com>
+Date: Tue, 1 Oct 2024 19:20:36 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMRc=MeYSsh+MOrOHSabiHuyGOrZK330WuNXcGDtg-siJFya=g@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/7] serial: qcom-geni: fix premature receiver enable
+To: Johan Hovold <johan+linaro@kernel.org>,
+        Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>
+CC: Jiri Slaby <jirislaby@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Douglas Anderson
+	<dianders@chromium.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <stable@vger.kernel.org>,
+        Aniket Randive <quic_arandive@quicinc.com>
+References: <20241001125033.10625-1-johan+linaro@kernel.org>
+ <20241001125033.10625-2-johan+linaro@kernel.org>
+Content-Language: en-US
+From: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+In-Reply-To: <20241001125033.10625-2-johan+linaro@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: W0LmDSeJrm03zOcYsJ9sRXydL859rAfW
+X-Proofpoint-ORIG-GUID: W0LmDSeJrm03zOcYsJ9sRXydL859rAfW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
+ lowpriorityscore=0 clxscore=1011 spamscore=0 suspectscore=0 phishscore=0
+ priorityscore=1501 malwarescore=0 adultscore=0 mlxscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2408220000
+ definitions=main-2410010089
 
-On Tue, Oct 01, 2024 at 03:36:57PM +0200, Bartosz Golaszewski wrote:
-> On Tue, Oct 1, 2024 at 2:51 PM Johan Hovold <johan+linaro@kernel.org> wrote:
-> >
-> > A commit adding back the stopping of tx on port shutdown failed to add
-> > back the locking which had also been removed by commit e83766334f96
-> > ("tty: serial: qcom_geni_serial: No need to stop tx/rx on UART
-> > shutdown").
-> >
-> > Holding the port lock is needed to serialise against the console code,
-> > which may update the interrupt enable register and access the port
-> > state.
-> >
-> > Fixes: d8aca2f96813 ("tty: serial: qcom-geni-serial: stop operations in progress at shutdown")
-> > Fixes: 947cc4ecc06c ("serial: qcom-geni: fix soft lockup on sw flow control and suspend")
-> > Cc: stable@vger.kernel.org      # 6.3
-> > Cc: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Thanks Johan for the fixes.
 
-> I already reviewed this[1]. I suggest using b4 for automated tag pickup.
-
-There were changes in v2 so I dropped your tag on purpose.
-
-Johan
+On 10/1/2024 6:20 PM, Johan Hovold wrote:
+> The receiver should not be enabled until the port is opened so drop the
+> bogus call to start rx from the setup code which is shared with the
+> console implementation.
+> 
+> This was added for some confused implementation of hibernation support,
+> but the receiver must not be started unconditionally as the port may not
+> have been open when hibernating the system.
+> 
+> Fixes: 35781d8356a2 ("tty: serial: qcom-geni-serial: Add support for Hibernation feature")
+> Cc:stable@vger.kernel.org	# 6.2
+> Cc: Aniket Randive<quic_arandive@quicinc.com>
+> Signed-off-by: Johan Hovold<johan+linaro@kernel.org>
+> ---
+>   drivers/tty/serial/qcom_geni_serial.c | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 6f0db310cf69..9ea6bd09e665 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -1152,7 +1152,6 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
+>   			       false, true, true);
+>   	geni_se_init(&port->se, UART_RX_WM, port->rx_fifo_depth - 2);
+>   	geni_se_select_mode(&port->se, port->dev_data->mode);
+> -	qcom_geni_serial_start_rx(uport);
+Does it mean hibernation will break now ? Not sure if its tested with 
+hibernation. I can see this call was added to port_setup specifically 
+for hibernation but now after removing it, where is it getting fixed ?
+I think RX will not be initialized after hibernation.
+>   	port->setup = true;
+>   
+>   	return 0;
+> -- 2.45.2
