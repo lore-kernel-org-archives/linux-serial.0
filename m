@@ -1,38 +1,38 @@
 Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0C771D1E81;
-	Wed,  2 Oct 2024 14:14:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 075781D0E17;
+	Wed,  2 Oct 2024 14:14:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727878492; cv=none; b=BGNgdoqNnf1pPHVxpI0NoHWesLhFWEj/txZ0wRtniPIZfmNv8MBkjRtih/eGYAikehgacPvdqp+z7FdKJYCIO0t7zMt9Lo9a9kcxZNKiS6EzvMneCa2FVnfV7aAK5Ym0wjTjB4I7Pnhipp12qEyFv7lGGAh25+SDdpEFhl7+Hlo=
+	t=1727878492; cv=none; b=BuQ/WWCwM+QpEEI5TE+RguJZTe9CgrrMfhxVzklj8ZzxBuAfeYCtm9cRzPyMUxlJYuyVUIHnivJTF1EavJt+bxwmcwqpYb3eF9fC0bwrpJo1ILLU+vMgcH9weoFJexhCVrzdNjQdNYc7HlCGpbon+KU+w4pa+7klV0Qzrn9mIFQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1727878492; c=relaxed/simple;
-	bh=UU7yluTaOlljkJZ4DRQSHi6pc3cchlz5TUalSQExE7o=;
+	bh=KndFyGM1uAUMUOnpOlWVUKPyDe0gPzTWSQrE7Ofea8U=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=dA0fkXYGxXplUiAY+ZbUtStN8madl+W935FRt/kroL7UaAAP4EWv6NtY6v7gw+86JVOTl7Setw8OfMbB1rLSPnsg23R4CcRirXCt9zUDAJlE/OwxH7XQdhgjSChN4JpILqz7BmudyE91ynHJAHzLq+d2EQE52SgjGkJ1HHUsKvk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=AkednfYO; arc=none smtp.client-ip=74.208.4.194
+	 MIME-Version; b=H3zP6FiyVzaLVU2tuW5SSap0coO5ZUY7uRbpHVgyHmgQEknfWsZ78fQtKUT3pck0IOq01Y9h3JeNgzKKgxAKMFYgPnvFUZP/unL49MP72/roo2OdnC1GpynAOT7ULX/X4+24Qkc7mK710X58m9XnLPKMVUhBbfF1wXn/lRVnt6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=2bkZYRht; arc=none smtp.client-ip=74.208.4.194
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="AkednfYO"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="2bkZYRht"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1727878479; x=1728483279; i=parker@finest.io;
-	bh=3n7fgjvLVeXDdg2K3Wk9P0E65/TYuhLwHMyaE6PUfiQ=;
+	s=s1-ionos; t=1727878478; x=1728483278; i=parker@finest.io;
+	bh=z4NFjvndw+1Z7Ias/lvqJM5lh4X+wHBD6u0I1U1F6AE=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=AkednfYO5uVgL1RLFdkK0Mx+FU6XnK7We1+yHkEGU/vZuqfdqmZZK6/8u28YapZ8
-	 8vwk2mT7fZa6sBqrvgN5uxdArBm+Wdyp8OvMaMJbM458aJB7+CPfdJStru3k1+OCZ
-	 7hYImlRqG1LE2p8gDuumJZJs51dmLmIDUb4bn6MeUk8mBdbpjaUriZdkPDxW7kOjr
-	 N9nX61cT9MFuW8mDfLFmxewJGbaikoWuKIqZizky17jtj7+l7O+Kd6tPzV4qU50I4
-	 d2pFg4f3tmaiXIlp1fv0uk3BEwnIeNWOiaXPHu8uibAqXPAW+5MUJMrQNlhAWvZ12
-	 vSiVfxcl6o8XbqrRQw==
+	b=2bkZYRhtp7GyZ80SxT8ciswV2jiuPEYD/6HF2mYLndn7vtaJsKSXlgSfR17ugHD0
+	 VnlI9+/l4AmpoNpDHJPB/+Qw/1ArjK/1k9IjHY7A7K4GgHPWCfXmQp0ab27kf5UcI
+	 T7p1fveQv3Sza6xQ1Pz4v3cxRQO28PC1EYizPhsQUX+5FE5bt/t3IACyuL3qS8pVV
+	 pa+B8v2aD+UO7uKcaWlXs/eeSll+Idb9nQseIuDZ7kgGOpvfTgkS/hppyQAganYJn
+	 wk0wc3lQ7Fiwkb7iuhlZblUtKG/ygmzwmi9Kp6t++usACj0JR9GxEL+b9YKKypjMi
+	 aWEYOc2/6FBzjrqRMA==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus004
- [74.208.5.2]) with ESMTPSA (Nemesis) id 1MXpU8-1sNr7b2Ekm-00NLX0; Wed, 02 Oct
- 2024 16:14:39 +0200
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 1M5fxm-1spweK2BCM-00Dt6K; Wed, 02 Oct
+ 2024 16:14:38 +0200
 From: Parker Newman <parker@finest.io>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -41,9 +41,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v3 4/5] serial: 8250_exar: Remove old exar_ee_read() and other unneeded code
-Date: Wed,  2 Oct 2024 10:14:10 -0400
-Message-ID: <9d3b61f6bf003206aebe4db9f32366cc8e214201.1727873292.git.pnewman@connecttech.com>
+Subject: [PATCH v3 2/5] misc: eeprom: eeprom_93cx6: Switch to BIT() macro
+Date: Wed,  2 Oct 2024 10:14:08 -0400
+Message-ID: <8fd3f721e7d4dcab4dd2ed1befda40e25a772f69.1727873292.git.pnewman@connecttech.com>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <cover.1727873292.git.pnewman@connecttech.com>
 References: <cover.1727873292.git.pnewman@connecttech.com>
@@ -54,175 +54,67 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:WRA6HwT7j+NPmxhTrtyCTO/7VQnn29zgH72FHEPcms4KVm7otv+
- TYvT3vFosKCJBG9swwuhgYkxRZvtmopmY2Qh1DE31LYtLTE46hCMb4ZiEvzqoGNhJmWnZQh
- cWZb61u5wikbZ3UsOL95Ke4iimg6KmllHPV0ZCGaJJ4fGi7ftVSZJbGYo1NtUIIRwKUgocU
- wQBmbXl+7armIR++m0TWw==
+X-Provags-ID: V03:K1:ij6KXZAU2un7D/KYVE+SfixR/JJgAhKUewfPrghZQUMVQ0yDNTi
+ ba9Irh4Y1XnO3FYv34GEUSI8ikDwujeC/k2BLa8QAxkcMoVJo+1PoGi5i5UveFkJzPz+9th
+ O8FWOA5Pvu1qS4ywNxedWeQfJGGsL+NO/ExYHuHyMaGaHj5lI7kcpKLybmHgsam0LC8gUmC
+ e9/B+fABNrNu/cNgZ6Khw==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:vWw+SiNbtHQ=;gboFqfcyrgnVG+IIjeFEJnh5Yc/
- T9nN1m5PRzw7t1zHmStnYfDRtROgp0qoixdhYatfoL7gViG25uJRmNHr73SwODR8+heAALDnx
- lW1+Ygrlx+Tfn3EKxq4j/uaYIzQV+C5tpdc+gmbwGT7bylaZWiHfMHF4+34yz9RIUmXIlJKZF
- FwjmcbMT2QEgWnha3bOB+VbMrZ3XZzuOJ60kpeNEe77Y7WfwRNLDPnHJpiauI92GAe3ZLSPYR
- cbwEDZmmQUWS0npDySTqENh9jm2sf9c/Twq6MjfuHQc4YJlsf3jIA24pvbvM83NmFmjDIy432
- iyK0D1EZRUiEQXcIcnZ/tVkmgQJzZNjvPN6aAFSr1gHyd+fNsnBO/va4yNtb5VCWeC3BdxZ8A
- zt+FiO1jOzIKj9rNFi38wjavKtD0Od/TXvbuGRef+SsfnpIm7V3+qopvetEnDYhdd41l15W2N
- OPLESexNt1sXfvsP5FqLM/jXUtZBsj/Xo2jVMRL/9xeh93r3NOz4F9TuKUpeZReLkrFmFGlhq
- kf3oX4XdfPLJFbXqkyKdIbxGgALjfnRJPW+4DMSE6S1e2zHJ5jXW+qu4HTO3bt9vSpTYoypFh
- 42IycJJ3GPH7r9B9+xIrbRmtqYRHT4cssed3v06mDf4IM1DM1UD5TDH3saLUH9tz0hl/D2oJj
- DbEMQE7dNc1X06YUvHXom91a1OK8Szmn4jGsxcU9eFE2FD4wKjjLEvgW43FYoRLNdnTaXbyXH
- e0fEnsa/uVzDw9zRbhANqGx5VXT1SSYvw==
+UI-OutboundReport: notjunk:1;M01:P0:xjNnPogB/vw=;TyaBfoT9D2p60BJy3SW4+yXCP/8
+ VKd3WNEetnI4PQv3wqmBIdQk+9THJhv0mflrC95SL+KoPpSPX80SzRhOT4aIUc/6Pm9bLUDd7
+ uB1qmbRWwV2D3kropqYjrslCewIJO1SxBn0drwNjbI/FNe2lT6NflBIzEB6o1Xag/N+awHkoN
+ khzAXP12eOPRnYCfGGLFHi9QfZ42eP+9G/0TbJBRYn+lCGNhXiUykm/vf7HIHAf6Bk4uh8eUM
+ 192uNDewfnuyRyNx1IYdu6wuCLQP4goIjZKRYHPY+N5OoN0zkaiui+TLtN4/m4WQkUXML5JZ0
+ ZUZ68nqBT72f7MYHniugF8isjlTnbJ2J2fn6nhvL7KwxzFWG0JKj0suBRx7OJvTpIrJVuVLJj
+ ldqXpjoLMseBN3urZgmcDwzBgYAow0jVvCKFGbGjDWaEIUJoOM4PzKCtvuAThdLJTnLgV3yQk
+ yNGYy8dmaj1PSdBT87JjyIMKt7TpbfSPL0jZX9iYfRn1PAJN3o489v3QfP7SDTAUBFJfxHvkT
+ OImgeOzR0433ii33rE6FegewHE1q6Ny5as5WMsAT+mVU+PXON/CkXnHT+rbQMHHALuRL3E/DI
+ sxfZyaq9VVRUh+NpZvKwHkhyIEQpJ34wCIZw7to8/blSy4CdP4ZVOCjDNwHAf/Nfs2HBo3iyy
+ y8QPFAAlGAJgAV7FK92ea0UwMbsYJbuMx8aW1MvSmZClr2jURzTboYzDzH/Ox0+VvVpD34UYa
+ YPR8g+q5zREUpCjR7KE4qhAKFbozsDsyg==
 
 From: Parker Newman <pnewman@connecttech.com>
 
-Remove the old exar_ee_read() and associated helper functions.
-Remove defines that are no longer needed after the switch to using the
-eeprom_93cx6 driver.
-Add CTI_EE_MASK_OSC_FREQ define.
+Use the BIT() macro rather than (1 << (i - 1)).
 
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Parker Newman <pnewman@connecttech.com>
 =2D--
-Changes in v3:
-- Commit message wording.
-- Rebased to v6.12-rc1.
-- Remove CTI_EE_MASK_OSC_FREQ_LOWER and CTI_EE_MASK_OSC_FREQ_UPPER.
-- Add CTI_EE_MASK_OSC_FREQ define.
+ drivers/misc/eeprom/eeprom_93cx6.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
- drivers/tty/serial/8250/8250_exar.c | 95 +----------------------------
- 1 file changed, 2 insertions(+), 93 deletions(-)
+diff --git a/drivers/misc/eeprom/eeprom_93cx6.c b/drivers/misc/eeprom/eepr=
+om_93cx6.c
+index 4c9827fe9217..e6f0e0fc1ca2 100644
+=2D-- a/drivers/misc/eeprom/eeprom_93cx6.c
++++ b/drivers/misc/eeprom/eeprom_93cx6.c
+@@ -8,6 +8,7 @@
+  * Supported chipsets: 93c46 & 93c66.
+  */
 
-diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
-/8250_exar.c
-index c40e86920110..470e8128c79a 100644
-=2D-- a/drivers/tty/serial/8250/8250_exar.c
-+++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -136,8 +136,6 @@
- #define UART_EXAR_REGB_EECS		BIT(5)
- #define UART_EXAR_REGB_EEDI		BIT(6)
- #define UART_EXAR_REGB_EEDO		BIT(7)
--#define UART_EXAR_REGB_EE_ADDR_SIZE	6
--#define UART_EXAR_REGB_EE_DATA_SIZE	16
++#include <linux/bits.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/delay.h>
+@@ -102,7 +103,7 @@ static void eeprom_93cx6_write_bits(struct eeprom_93cx=
+6 *eeprom,
+ 		/*
+ 		 * Check if this bit needs to be set.
+ 		 */
+-		eeprom->reg_data_in =3D !!(data & (1 << (i - 1)));
++		eeprom->reg_data_in =3D !!(data & BIT(i - 1));
 
- #define UART_EXAR_XR17C15X_PORT_OFFSET	0x200
- #define UART_EXAR_XR17V25X_PORT_OFFSET	0x200
-@@ -190,8 +188,7 @@
- #define CTI_EE_OFF_XR17V35X_PORT_FLAGS	0x14  /* 1 word */
+ 		/*
+ 		 * Write the bit to the eeprom register.
+@@ -152,7 +153,7 @@ static void eeprom_93cx6_read_bits(struct eeprom_93cx6=
+ *eeprom,
+ 		 * Read if the bit has been set.
+ 		 */
+ 		if (eeprom->reg_data_out)
+-			buf |=3D (1 << (i - 1));
++			buf |=3D BIT(i - 1);
 
- #define CTI_EE_MASK_PORT_FLAGS_TYPE	GENMASK(7, 0)
--#define CTI_EE_MASK_OSC_FREQ_LOWER	GENMASK(15, 0)
--#define CTI_EE_MASK_OSC_FREQ_UPPER	GENMASK(31, 16)
-+#define CTI_EE_MASK_OSC_FREQ		GENMASK(31, 0)
-
- #define CTI_FPGA_RS485_IO_REG		0x2008
- #define CTI_FPGA_CFG_INT_EN_REG		0x48
-@@ -269,94 +266,6 @@ static inline u8 exar_read_reg(struct exar8250 *priv,=
- unsigned int reg)
- 	return readb(priv->virt + reg);
- }
-
--static inline void exar_ee_select(struct exar8250 *priv)
--{
--	// Set chip select pin high to enable EEPROM reads/writes
--	exar_write_reg(priv, UART_EXAR_REGB, UART_EXAR_REGB_EECS);
--	// Min ~500ns delay needed between CS assert and EEPROM access
--	udelay(1);
--}
--
--static inline void exar_ee_deselect(struct exar8250 *priv)
--{
--	exar_write_reg(priv, UART_EXAR_REGB, 0x00);
--}
--
--static inline void exar_ee_write_bit(struct exar8250 *priv, u8 bit)
--{
--	u8 value =3D UART_EXAR_REGB_EECS;
--
--	if (bit)
--		value |=3D UART_EXAR_REGB_EEDI;
--
--	// Clock out the bit on the EEPROM interface
--	exar_write_reg(priv, UART_EXAR_REGB, value);
--	// 2us delay =3D ~500khz clock speed
--	udelay(2);
--
--	value |=3D UART_EXAR_REGB_EECK;
--
--	exar_write_reg(priv, UART_EXAR_REGB, value);
--	udelay(2);
--}
--
--static inline u8 exar_ee_read_bit(struct exar8250 *priv)
--{
--	u8 regb;
--	u8 value =3D UART_EXAR_REGB_EECS;
--
--	// Clock in the bit on the EEPROM interface
--	exar_write_reg(priv, UART_EXAR_REGB, value);
--	// 2us delay =3D ~500khz clock speed
--	udelay(2);
--
--	value |=3D UART_EXAR_REGB_EECK;
--
--	exar_write_reg(priv, UART_EXAR_REGB, value);
--	udelay(2);
--
--	regb =3D exar_read_reg(priv, UART_EXAR_REGB);
--
--	return (regb & UART_EXAR_REGB_EEDO ? 1 : 0);
--}
--
--/**
-- * exar_ee_read() - Read a word from the EEPROM
-- * @priv: Device's private structure
-- * @ee_addr: Offset of EEPROM to read word from
-- *
-- * Read a single 16bit word from an Exar UART's EEPROM.
-- * The type of the EEPROM is AT93C46D.
-- *
-- * Return: EEPROM word
-- */
--static u16 exar_ee_read(struct exar8250 *priv, u8 ee_addr)
--{
--	int i;
--	u16 data =3D 0;
--
--	exar_ee_select(priv);
--
--	// Send read command (opcode 110)
--	exar_ee_write_bit(priv, 1);
--	exar_ee_write_bit(priv, 1);
--	exar_ee_write_bit(priv, 0);
--
--	// Send address to read from
--	for (i =3D UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >=3D 0; i--)
--		exar_ee_write_bit(priv, ee_addr & BIT(i));
--
--	// Read data 1 bit at a time starting with a dummy bit
--	for (i =3D UART_EXAR_REGB_EE_DATA_SIZE; i >=3D 0; i--) {
--		if (exar_ee_read_bit(priv))
--			data |=3D BIT(i);
--	}
--
--	exar_ee_deselect(priv);
--
--	return data;
--}
--
- static void exar_eeprom_93cx6_reg_read(struct eeprom_93cx6 *eeprom)
- {
- 	struct exar8250 *priv =3D eeprom->data;
-@@ -737,7 +646,7 @@ static int cti_read_osc_freq(struct exar8250 *priv, u8=
- eeprom_offset)
- 	eeprom_93cx6_multiread(&priv->eeprom, eeprom_offset, ee_words, ARRAY_SIZ=
-E(ee_words));
-
- 	osc_freq =3D le16_to_cpu(ee_words[0]) | (le16_to_cpu(ee_words[1]) << 16)=
-;
--	if (osc_freq =3D=3D GENMASK(31, 0))
-+	if (osc_freq =3D=3D CTI_EE_MASK_OSC_FREQ)
- 		return -EIO;
-
- 	return osc_freq;
+ 		eeprom_93cx6_pulse_low(eeprom);
+ 	}
 =2D-
 2.46.0
 
