@@ -1,110 +1,127 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B1491D0787
-	for <linux-serial@vger.kernel.org>; Wed,  2 Oct 2024 13:53:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 265DA1D0DC8;
+	Wed,  2 Oct 2024 14:14:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727877232; cv=none; b=X4HOpilA7mnuBYKZPv4cOHFz4EM+nWHjsNKdbprRgVQUDHf1PtcQafBl4ZGge3qDzcRsBoOgO9KhzyTu2HFurFWfeCcW2Y6PahFrWlRSlrPaZ8cjFIrQ2B1pWjvJC4MyDwTOp/o8jfbCo3CHhSD64l/grMEvfos0PYWiLSZQUOM=
+	t=1727878490; cv=none; b=Iy/POlMSe+XQs9D12mjefNWIwNZap/TctOM4TSwPcZWYR8Rx5uD3jGK06v8nbaK2BPcauLXOMvhqymH2NpTlDvuvkl0C6CfVSYeM3jkNISPwV+B1HOswyp8Mr1fYrniOef4dNgDnxMlKpmi7Uu4zrJ/l5B+NtWNPp3LJIFTEehw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727877232; c=relaxed/simple;
-	bh=j6xi0yErQ1R9JnzgLN0C+zTW2E96PBAw77wYIYi2zGY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VwEkr40AU4ZldmNAbZ0jEJx14QJ4rnMLx+T0HH8o/PNlQEg9QTTUsWNdTT3t0/tqcCqHu/y5/Cfra2TBduYYuzDRKeqXqGXSAOW1I08ywkkxl913qXupq/DUKxULj9oLHiQQ/yDE7Atqm/2h14gXePYSmjWV0UfJX2IBlb3hHPc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=XEKqrHZk; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1727878490; c=relaxed/simple;
+	bh=OyS183jf67mwBWsh4j88c8tRLda0kQJja6uWtxNnKBM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Zt8sKZkmJeilgonX85rzKCR4BPwESPAAJYizDC8GZezXl20i6KxdHOHXBgqisZUwPSeU7tFBDWTHIf7ExwmiN9YnKDhbW11eTH5rR776REISkmLWm1UaXAejLibCeda6Ue0RcMv4IeZw4sDeiFL1yPNNuoOYnDg1fMtF7UK3mN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=V+wLyxcq; arc=none smtp.client-ip=74.208.4.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="XEKqrHZk"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2fad75b46a3so28475571fa.2
-        for <linux-serial@vger.kernel.org>; Wed, 02 Oct 2024 06:53:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1727877228; x=1728482028; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j6xi0yErQ1R9JnzgLN0C+zTW2E96PBAw77wYIYi2zGY=;
-        b=XEKqrHZknefWA6d3N2kVwvX256DlJKf930Ah7NCrJDk20YfcxhYg3m6HznUt8iFKQ6
-         4fFFUqHqW5fLOLzWHVF79/9y69eewoFZsEd0DnJumM/WX/VIxbP7qt0XSG70/HJ05FCi
-         o2O4nnaAXF3kVuAqI0N8XsFOH74gTDLElAGQHqkMzsKtB5WyAxwh6UgcESq3AnvvK6D+
-         6KLM8Z9kTlNw3EjKTpF89RIt2V8krPr/5BpvPjxvPxF1soDFXz2rVjWnTxrD/qdSMKYZ
-         iKRJIj15e82Jk+SOJFqg4uTmtFSPFda8V4ba88a/uFw0pGNKTPzUChyk4Vi8I4vH1L0x
-         TWSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727877228; x=1728482028;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=j6xi0yErQ1R9JnzgLN0C+zTW2E96PBAw77wYIYi2zGY=;
-        b=Vuubas7T54kd0pQnEd8ZaU4VFDURHVJO+fbPhLKqdNPpqA4RlTvLAe8ZyRHiZTfin4
-         jXNXgaqZiZCbTO2pd0R6812WculC7VN2R8XTm4XsZMDqlI7G6FfHU7nDdCJcpyP+eQC3
-         ly/HTMymkoNWtjcfgtJLp/9I6jOgRXTMo996aco+LjPCL5yux+V0CiQ2GeeMhHrONG+x
-         aQfP7Ed+QXJnVwUHCVB2YSdEzXilDExIDLi3M45ZGnG5LtY2GoUiOXd/cWb+Og2c5oKV
-         hAYBg2+gYicKJJ+ZAlnHj8JcJpG7QQ5T0HmwizUwkXOPqi+zFhGRmMpWcXc2iyhD71oe
-         vBnA==
-X-Forwarded-Encrypted: i=1; AJvYcCVqu3s21tafViHlNyzdcv69ZbYZ8ZcJm+pcXYYjFZqRQUdJBJ5s4lSmx750PXh/Ex3KtHz9uPLcpJxAl90=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxGsVzU7dtj+MtgZRHZ55PFEw3BQm3DOugCgMm9a7qhqXOzQa7l
-	Z3GucirNYiwxKn/qrsEBlt3plJPq20bnq40t0OzFxK60ZqWQomWPVo1xIyZ/gbFUCY7GLbDquhO
-	wKPq9KwxKSj5k6nUbWdWcO26kVFDR2x24SLXJcA==
-X-Google-Smtp-Source: AGHT+IH6J/1hIBQYUuOO6E4cFW0dSWZmODFCQ9NK7J4/38LglqeQ+e19d7bbsLpye8LH/IrpVT7SzxHTLiNIBgM3MX8=
-X-Received: by 2002:a05:6512:31cd:b0:533:4676:c21c with SMTP id
- 2adb3069b0e04-539a079f587mr2037762e87.44.1727877228234; Wed, 02 Oct 2024
- 06:53:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="V+wLyxcq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
+	s=s1-ionos; t=1727878477; x=1728483277; i=parker@finest.io;
+	bh=/ZT84YaV0vocSEpWm92lvDoMRyfuTXqlQ7/V9g+7jNY=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:
+	 MIME-Version:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=V+wLyxcqdKDei7MN8RJ58D2szKxFuMVKYobESge4X1tAyLNIJk11BDwq/no9Nexd
+	 tdvu/oVASW9q1vWAhjt6owBgIxtAV5bXYbaGYcILiC8SVxInSUUYVIlcjLWQnYy1q
+	 BYXwvnv9bEVJxxSpquhpaKUPqDnu5v+8pADhLzxP79qHRnq1vWiVifgvsEjWPMjJr
+	 LeGkFjoMw9G38FD6J8S2ek3hbIChMyq6B67sZM8gMmRRvYJT1S/xfFgZZeItjfqzf
+	 lSEz8uBE15tL2Xx7PDsDppryno7JCm66Hv/IJ8daadRnoPkUT3z+rkFg36/Nenq4H
+	 2KjA1s2QpyiMArBNJg==
+X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
+Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus004
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 1MgfCq-1sFEFl2MUG-00nVIg; Wed, 02 Oct
+ 2024 16:14:37 +0200
+From: Parker Newman <parker@finest.io>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Parker Newman <pnewman@connecttech.com>
+Subject: [PATCH v3 0/5] serial: 8250_exar: Replace custom EEPROM code with eeprom_93cx6
+Date: Wed,  2 Oct 2024 10:14:06 -0400
+Message-ID: <cover.1727873292.git.pnewman@connecttech.com>
+X-Mailer: git-send-email 2.46.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240912-test-v1-0-458fa57c8ccf@analog.com> <20240912-test-v1-9-458fa57c8ccf@analog.com>
- <CACRpkdZb6AhxB7XEtOsxV5_oa=c1h2+ZApLFsTS_MQs-cjLmsg@mail.gmail.com> <CAAjXUapu1DBqnk24ng0izU7opn67YxiwpGpFtqrBmqNgyCxRVA@mail.gmail.com>
-In-Reply-To: <CAAjXUapu1DBqnk24ng0izU7opn67YxiwpGpFtqrBmqNgyCxRVA@mail.gmail.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 2 Oct 2024 15:53:36 +0200
-Message-ID: <CACRpkdY7jJXOsKwyfbZWGq90jhnufwDeeF3=Dy0Rfps0rxmBGQ@mail.gmail.com>
-Subject: Re: [PATCH 09/21] gpio: add driver for ADI ADSP-SC5xx platform
-To: Greg Malysa <greg.malysa@timesys.com>
-Cc: arturs.artamonovs@analog.com, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Utsav Agarwal <Utsav.Agarwal@analog.com>, Michael Turquette <mturquette@baylibre.com>, 
-	Stephen Boyd <sboyd@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>, Thomas Gleixner <tglx@linutronix.de>, 
-	Andi Shyti <andi.shyti@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>, soc@kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-clk@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	linux-serial@vger.kernel.org, adsp-linux@analog.com, 
-	Nathan Barrett-Morrison <nathan.morrison@timesys.com>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:h+sbhQTjMriMRpQb84DQBsWDS++iAvuO0BZXCLhgTamyLy2Ps2b
+ kqTteege1eTnNy7pwvukNVwnLJRRpax4UUP71pdiQF5YsGnjdLEP4M9N5GMdMwC1BWYNUbN
+ jt2sF4ZMaEy+FGTwUbQY7ZA9uvDw+AeExT1/AnOvoARGta9eJ2IYHqxhnmZinxRvpomZeDa
+ Fov8qfGM953Q/HdsSVuZg==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:hvPTFnEG13A=;vqaSg7o26ysBiq87yIKXnbGT8eS
+ 2ab+wT+qZ1hOoPIfsvYlb5WzIMTf2Rf69SJiQlo+rIzwntgP4a9BbRm+zdauyIz27/pEnqiMi
+ XsOJq6THMrPQY4dmg9UPJSGfsr+SPFHwE/OW/gMIP7M4Lo3seDlOhSMH54DCqACnurBXaNoch
+ WCshq43HaU/9RdmYXJXsNQiXQe4sIpAu1FcMFMuzZJNqb+Y2S5/bZv3rhiXSTdI5f+QpXMM63
+ m+s30WzZxuUFE297ZbflCCMeD50olWROIaykDPCo54C9rShanUHBxel1NwmyUeUzu7MiR9KzH
+ bcGVb+nQ8nOFYZFn1XjMaAMOcZhTE62wSz1r4vESOxNP0HK7x9bcH4/KAWc0QWGiUh+oWlddp
+ /t6h60+5VffZR/K7hGQQ5PRjUCDjAAH+wMDbKzNbWuC42c5xNK0gXuMF0W0XXrIjCzLhmYSAJ
+ LAcQmcFMrT8ns9hOGmPMXkNXKal7ifFcVVpGt+m7GffWAA2PfbPohmRztrvuHA7PD91jWMxuY
+ UeUkqeVlSXvqrfllcMTHIVWiI7YExun0veHj8UT2yk5JTjTm2ljTIsAtL7At3jsokh2Aj6EmM
+ j7SEYmWjDmlCEx5AOSXWN9d4J4wogxQ9QKEgceOdOl6gT2DzeM8MV5gTSZoUAQDjQiLMGRNKl
+ W8nazXnvZsdIxcHcWf9fGbLersJL2lXcrP5Hbql3YWZpFyLkUiUjnuQ15zduNLT7EFZ5LJ9u/
+ eA1iOzgw0hRteGAQ111nLCsfeTGTdMTsQ==
 
-On Tue, Oct 1, 2024 at 11:58=E2=80=AFPM Greg Malysa <greg.malysa@timesys.co=
-m> wrote:
+From: Parker Newman <pnewman@connecttech.com>
 
-> > Interrupt enable in the direction function? No thanks, poke the
-> > interrupt registers in your irqchip if you make one (you currently
-> > do not) in this case I'd say just disable all interrupts in probe()
-> > using something like writew(base + ADSP_PORT_REG_INEN_SET, 0xffff)
-> > and be done with it.
-> >
->
-> This will come up next time too so I wanted to mention that INEN here
-> means "input enable." The PORT design has two registers for
-> controlling pin direction, one to enable/disable output drivers (DIR)
-> and one to enable input drivers (INEN) to be able to read the pin
-> state from the gpio data register. If I recall the bare metal
-> reference code toggled both but we can review if setting INEN for all
-> pins and leaving it is acceptable as well to simplify things.
+This series of patches replaces the custom 93cx6 EEPROM read functions in
+the 8250_exar driver with the eeprom_93cx6 driver. This removes duplicate =
+code
+and improves code readability.
 
-Aha so that's what it means!
+In order to use the eeprom_93cx6 driver a quirk needed to be added to add =
+an
+extra clock cycle before reading from the EEPROM. This is similar to the
+quirk in the eeprom_93xx46 driver.
 
-Yeah play around with it and see what you can come up with.
+More details in associated patch and mailing list discussion with
+Andy Shevchenko about these changes:
+Link: https://lore.kernel.org/linux-serial/Ztr5u2wEt8VF1IdI@black.fi.intel=
+.com/
 
-Perhaps you need to override the input/output enable
-callbacks with local versions rather than the gpio-mmio
-ones to set all bits. (This is possible to do after
-bgpio_init() but before adding the gpio_chip if necessary.)
+Changes in v2:
+- Dropped patch 3 "misc: eeprom: eeprom_93cx6: Replace printk(KERN_ERR...)=
+ with pr_err()".
+- Moved Kconfig change into main patch.
+- Moved quirk define into struct eeprom_93cx6.
+- Moved quirk check function into eeprom_93cx6.h.
+- Refactored cti_read_osc_freq() based on feedback.
+- Minor commit message formatting fixes.
 
-Yours,
-Linus Walleij
+Changes in v3:
+- Rebased to v6.12-rc1.
+- Minor commit message rewording.
+- Replace CTI_EE_MASK_OSC_FREQ_UPPER/LOWER with a single define in patch 4=
+.
+- Add patch 5 from Andy Shevchenko: "serial: 8250_exar: Group CTI EEPROM o=
+ffsets by device".
+Link:https://lore.kernel.org/linux-serial/20240920154430.3323820-1-andriy.=
+shevchenko@linux.intel.com/
+
+Andy Shevchenko (1):
+  serial: 8250_exar: Group CTI EEPROM offsets by device
+
+Parker Newman (4):
+  misc: eeprom: eeprom_93cx6: Add quirk for extra read clock cycle
+  misc: eeprom: eeprom_93cx6: Switch to BIT() macro
+  serial: 8250_exar: Replace custom EEPROM read with eeprom_93cx6
+  serial: 8250_exar: Remove old exar_ee_read() and other unneeded code
+
+ drivers/misc/eeprom/eeprom_93cx6.c  |  15 +++-
+ drivers/tty/serial/8250/8250_exar.c | 130 ++++++++--------------------
+ drivers/tty/serial/8250/Kconfig     |   1 +
+ include/linux/eeprom_93cx6.h        |  12 +++
+ 4 files changed, 63 insertions(+), 95 deletions(-)
+
+
+base-commit: 9852d85ec9d492ebef56dc5f229416c925758edc
+=2D-
+2.46.0
+
