@@ -1,184 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15E4C194AE8;
-	Wed,  2 Oct 2024 22:00:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48AA0DDD2;
+	Wed,  2 Oct 2024 22:59:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727906447; cv=none; b=Ikf2yN/Jj4Nr11OQ7eCNQRlG6JcwRhNAiQF23IWM+oEHDZ3iqjPbhF+NSgQijzhCDQmFyCfaS7iM3B3lFt1VtvsYzJHXT82fElygsVXwlP1AwpfLKitVuTiFiudyx/67T6HL5kwBtg7SHL0SerI85SaJOsBb+e2nW07xpJYOfsE=
+	t=1727909992; cv=none; b=XcPf+grR6U3fBNqeFcBivyC/XPT+pHXJoY1Gs885QOl048+aOjAetHnEcuTbFlJmHaBC2JTcaQyaIxDSYnqsCXyM7iRRxbB4l+7RJyBYjyRrLEcz1kj4rT4jvhFNskmap+HkEfUogGYqvu8VeOEUtcHCS8Qi2UxWGA8RLcix1Uk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727906447; c=relaxed/simple;
-	bh=fBzz3jOPes2BLCPMA4IAywQAst4FILIw5XqmwFZKG50=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=AQG7t5AEVhGRY6n2F/MqFR1TcJprknmqFHrZ6dxIsrJPV8BvZ6UXqK8N7mrVxCTIwReOqb92VbamKElaFQsFhDTmEnHRGsfktjQezEaKGAM4ZMj4VEIkgPX5dItjbBQAxdXzGn2J3zJsC8wEUXwK6LQnMA13UWhZ/7IYm7kl+88=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZMlJMkTt; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZMlJMkTt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727E7C4CED0;
-	Wed,  2 Oct 2024 22:00:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727906446;
-	bh=fBzz3jOPes2BLCPMA4IAywQAst4FILIw5XqmwFZKG50=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=ZMlJMkTtj8oZbUrJ1jAGItW40J5JFAgRddOHbpTcoBQ+f//KTR12mzvIO+nxgU7wv
-	 eiOG3LilBCDW5qXwucDxgT866n9kkz3K3fG/rf5y3dF2LmwSyWdCFtxT/0Cm5Qkpir
-	 u4318j9nE10WEHsQ0mUfLI+7ePYlhiEsaIc9mAEjRyCC+XhZB7vY7XbEbOFgVwENJw
-	 PFDvQMe/l+Z+hA3NWP6+7c7jgU/airkEMc8lHU7uv7IAD6pX6Y2mq4t2FoH6TeklTL
-	 98vnxrAQUL2H3Oo4jslfeiWj8ijxPYt+RdcyGxOpim2nktcbghymtOxH1k0cYc5Sx7
-	 e/Jz1r8TG1dNQ==
-Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 7B0891200043;
-	Wed,  2 Oct 2024 18:00:39 -0400 (EDT)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-10.internal (MEProxy); Wed, 02 Oct 2024 18:00:39 -0400
-X-ME-Sender: <xms:h8L9ZvUCsZ3I9yGVDywey9pF2jgW_w8_TFUR2tWUHEu8dmAid9_KPg>
-    <xme:h8L9Znl82KS6o4PXo2qbRZS22LcxqKrsVa1iEhDZsJpksYAtzHH_qAEzv9LjOW5qT
-    BAuBfatZMtcXIZpbF8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrvddvtddgtdeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
-    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
-    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
-    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusehkvghrnhgvlh
-    drohhrgheqnecuggftrfgrthhtvghrnhepjeejffetteefteekieejudeguedvgfeffeei
-    tdduieekgeegfeekhfduhfelhfevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
-    hmpehmrghilhhfrhhomheprghrnhguodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhi
-    thihqdduvdekhedujedtvdegqddvkeejtddtvdeigedqrghrnhgupeepkhgvrhhnvghlrd
-    horhhgsegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepkedpmhhouggvpehsmhhtphho
-    uhhtpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpth
-    htohephhgtrgeslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehstghhnhgvlhhl
-    vgeslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehilhhpohdrjhgrrhhvihhnvg
-    hnsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepghhrvghgkhhhsehlihhn
-    uhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtohepmhgrtghrohesohhrtggrmh
-    drmhgvrdhukhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghr
-    nhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvg
-    hrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:h8L9ZrYN7lTSwsaywRGXIWCxDwxYTApBgUVJ7HZfUKQm2XWdu1Jsvg>
-    <xmx:h8L9ZqXGWMaKdsVzxS3oRAXf0hITWsX6aEnezrb3uq8vL3wByFW8CQ>
-    <xmx:h8L9ZpmWpKitDdkf1lP9xvks4X5DH8xdCeReLFZJzY4u3LqPuJ2BlA>
-    <xmx:h8L9ZncxVLFWndy4LFSl730Wa4n78Nb_z6bSJ_18IoJsODd_lluX3w>
-    <xmx:h8L9ZjGLm2O9XlpnwRAB6Ed_pMulZ_2bWX1NBisaRj-JFigWWIR3cyEJ>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 4F0322220071; Wed,  2 Oct 2024 18:00:39 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	s=arc-20240116; t=1727909992; c=relaxed/simple;
+	bh=vUnDHQhPCZR3/5PFaWY/V+EEQ7SJ8JR4e/Ru6a70Yek=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=GvonJy9fqTz9jLGZihg4rYrPKwVQsFYLfuT+/hU0zPFp+EeWFbxy5lY2RfuSkLUiWi7QKYUcVCMjucbvHMQ7V0sUV5TzWWVgcXiHOLIFxDMcGQWcls1aQzDgtHv3AFrQO9fQLjCJWzR7YCEQHJJrg0omsZboHgbpg7vMofaW2uE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 3FEC292009C; Thu,  3 Oct 2024 00:59:48 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 38E6692009B;
+	Wed,  2 Oct 2024 23:59:48 +0100 (BST)
+Date: Wed, 2 Oct 2024 23:59:48 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Arnd Bergmann <arnd@kernel.org>
+cc: Niklas Schnelle <schnelle@linux.ibm.com>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+    linux-serial@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>, 
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+In-Reply-To: <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
+Message-ID: <alpine.DEB.2.21.2410022305040.45128@angie.orcam.me.uk>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com> <20240405152924.252598-2-schnelle@linux.ibm.com> <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk> <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com> <alpine.DEB.2.21.2410011707550.45128@angie.orcam.me.uk>
+ <7bcec0eb88c3891d23f5c9f224e708e4a9bb8b89.camel@linux.ibm.com> <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk> <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Wed, 02 Oct 2024 22:00:08 +0000
-From: "Arnd Bergmann" <arnd@kernel.org>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>,
- "Niklas Schnelle" <schnelle@linux.ibm.com>
-Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
- linux-kernel@vger.kernel.org
-Message-Id: <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
-In-Reply-To: <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk>
-References: <20240405152924.252598-1-schnelle@linux.ibm.com>
- <20240405152924.252598-2-schnelle@linux.ibm.com>
- <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
- <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com>
- <alpine.DEB.2.21.2410011707550.45128@angie.orcam.me.uk>
- <7bcec0eb88c3891d23f5c9f224e708e4a9bb8b89.camel@linux.ibm.com>
- <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk>
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 
-On Wed, Oct 2, 2024, at 18:12, Maciej W. Rozycki wrote:
-> On Wed, 2 Oct 2024, Niklas Schnelle wrote:
->
->> >  Ideally we could come with a slightly user-friendlier change that would 
->> > report the inability to handle port I/O devices as they are discovered 
->> > rather than just silently ignoring them.
->> 
->> I think this would generally get quite ugly as one would have to keep
->> around enough of the drivers which can't possibly work in that
->> !HAS_IOPORT kernel to identify the device and print some error. It's
->> also not what happens when anything else isn't supported by your kernel
->> build. And I don't think we can just look for any I/O ports either
->> because they could be an alternative access method that isn't required.
->
->  There might be corner cases, but offhand I think it's simpler than you 
-> outline.  There are two cases to handle here:
->
-> 1. Code you've #ifdef'd out that explicitly refers port I/O resources.
->    So rather than having struct entries referring to problematic `*_init' 
->    handlers #ifdef'd out we can keep them and make them call an error 
->    reporting function if (!IS_ENABLED(CONFIG_HAS_IOPORT)).  As a side 
->    effect the structure of code will improve as we don't really like 
->    #ifdefs sprinkled throughout.
->
-> 2. Code that infers the access type required from BARs.  It has to handle 
->    the unsupported case anyway, so rather than doing it silently it can 
->    call the same error reporting function.
->
-> Yes, there's some work to be done here, but nothing exceedingly tough I 
-> believe.
+On Wed, 2 Oct 2024, Arnd Bergmann wrote:
 
-I agree that this shouldn't be hard to finish. The IS_ENABLED()
-check is not that easy to do as I think we need to keep calling
-inb()/outb() outside of an #ifdef a compile-time error.
+> I agree that this shouldn't be hard to finish. The IS_ENABLED()
+> check is not that easy to do as I think we need to keep calling
+> inb()/outb() outside of an #ifdef a compile-time error.
 
-However, I think most of the inb/outb usage in 8250_pci.c can
-just be converted to either serial_port_in()/serial_port_out(),
-using the 8250 specific wrappers, or to ioread8()/iowrite8()
-in combination with pci_iomap().
+ Can we just provide dummy prototypes with `__attribute__((error("...")))' 
+instead?  This will surely prevent us from having to bend backwards so as 
+to make sure the compiler won't see any spurious references to these 
+inexistent functions or macros.  We already have a `__compiletime_error()' 
+macro for this purpose even.
 
-It might help to add a UPIO_IOMAP type to replace UPIO_PORT
-for the PCI drivers and just use pci_iomap() exclusively in that
-driver.
+> Part of the problem that Niklas is trying to solve with the
+> CONFIG_HAS_IOPORT annotations is to prevent an invalid inb()/outb()
+> from turning into a NULL pointer dereference as it currently does
+> on architectures that have no way to support PIO but get the
+> default implementation from asm-generic/io.h.
 
->  Also I think this case is a bit special, because it's different from a 
-> missing driver.  The driver is there and the hardware is there visible in 
-> the PCI hierarchy, there's nothing reported and other serial ports work, 
-> or a similar serial port works elsewhere, so why doesn't this one?  The 
-> user may not necessarily be aware of the peculiarity that the lack of 
-> support for port I/O is.
+ It can be worse than that.  Part of my confusion with the defxx driver 
+trying to do port I/O with my POWER9 system came from the mapping actually 
+resulting in non-NULL invalid pointers, dereferencing which caused a flood 
+of obscure messages produced to the system console by the system firmware:
 
-Part of the problem that Niklas is trying to solve with the
-CONFIG_HAS_IOPORT annotations is to prevent an invalid inb()/outb()
-from turning into a NULL pointer dereference as it currently does
-on architectures that have no way to support PIO but get the
-default implementation from asm-generic/io.h.
+LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+IPMI: dropping non severe PEL event
+LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+IPMI: dropping non severe PEL event
+LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+IPMI: dropping non severe PEL event
+LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+IPMI: dropping non severe PEL event
+[...]
 
-It's not clear if having a silently non-working driver or one
-that crashes makes it easier to debug for users. Having a clear
-warning message in the PCI probe code is probably the best
-we can hope for.
+from which it was all but obvious that they were caused by an attempt to 
+use PCI port I/O with a system lacking support for it.
 
->  I was not and discovered it the hard way in the course of installing my 
-> POWER9 system and trying to make the defxx driver work as supplied by the 
-> distribution.  It took me a few days to conclude there is no bug anywhere 
-> except for the system lacking support for port I/O and the driver having 
-> been configured by the packager via a Kconfig option to use that access 
-> type.  Also I had PHB4 documentation to hand to refer to and track down 
-> the relevant bits.
->
->  I ended up updating the driver to choose the access type automatically 
-> (as the board resources are dual-mapped, via both a port I/O and an MMIO 
-> BAR), and would have done so long before if I was aware of the existence 
-> of such systems.
->
->  Now I consider myself a reasonably seasoned systems software developer, 
-> so what can an ordinary user say?  They might be utterly confused and 
-> either report it as a system bug (if they were so determined) or just 
-> conclude Linux is junk.
+> It's not clear if having a silently non-working driver or one
+> that crashes makes it easier to debug for users. Having a clear
+> warning message in the PCI probe code is probably the best
+> we can hope for.
 
-I think that anyone using hardware that relies on port I/O on
-non-x86 is at this point going to have a reasonable understanding
-of the system, so I'm not too worried here. ;-)
+ I agree.  Enthusiastically.
 
->  A message such as:
->
-> serial 0001:01:00.0: cannot handle, no port I/O support in the system
->
-> would definitely help.
+> I think that anyone using hardware that relies on port I/O on
+> non-x86 is at this point going to have a reasonable understanding
+> of the system, so I'm not too worried here. ;-)
 
-Right.
+ Well, virtually all non-x86 systems continue supporting PCI/e port I/O 
+via a suitably decoded CPU-side MMIO window, so I think coming across one 
+that doesn't can still be a nasty surprise even in 2024.  For instance 
+I've been happily using a PC parallel port PCIe option card, one of the 
+very few interfaces if not the only one remaining that have not ever seen 
+an MMIO variant, with my RISC-V hardware, newer than said POWER9 system.
 
-       Arnd
+ So far it's been the s390 and a couple of POWER system implementations 
+that have support for PCI/e port I/O removed.  Have I missed anything?
+
+  Maciej
