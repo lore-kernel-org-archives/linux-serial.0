@@ -1,38 +1,38 @@
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBFE31D096F;
-	Wed,  2 Oct 2024 15:13:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65DD91D0977;
+	Wed,  2 Oct 2024 15:13:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.208.4.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727881987; cv=none; b=Hc9oGoffq+zdMdJTY6Ru0L/563DmkbC6euTHHjqs4QhQ79BpDIhv20Q2PR3Hmhsoj/bWWpwrPN1LZoJYNdPHilsQWgv0mmnhYuyQACE5K8IDKF8ZYFKBkIlgqfsk6IVB1isC+0LqYNhJQ7ajMnoDn4m9q+I3pZFjEDSMxxiTw7Q=
+	t=1727881988; cv=none; b=mP67b13r+NvJVxwrAZGghdP6uBlKId5DzjyNa7ujUHpB4tXeeNms4WxIGlweCtlHhwmERevZ6ZDLmHiMJn436b9i/uRGBqTt3sHF4/mtL+Z1xg58nLxWxfIWFdwvDTg0xSELHWygxicvxrDZ8x0HJnRTejVHydMAaqr/qDhIFRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727881987; c=relaxed/simple;
-	bh=tY70Ze/CHWwT5bdbgC6inckAJYqueXmmMbOmrFgxhLY=;
+	s=arc-20240116; t=1727881988; c=relaxed/simple;
+	bh=/qPIkJ6n8RnNU1FkT1OzWc5ZvQyz7g5ZgNu+tm14gy4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PQf32XF7YKp69C7yqVqkVCOvOffWUkgkcbFe5WItRb3zp4wElOoXhWomYCeHdGjT05NB0p1DYtBuVblxbqS9MMHe11BCKAClbIVJhfeW3mj5TfAZwn2fvULOXsKxtu8W1Bk9uHaGBU41PUVEWTdLVAZrB67AXlJYqTfdmcGj3O0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=Js/UIovm; arc=none smtp.client-ip=74.208.4.197
+	 MIME-Version; b=P0Ups6zHKhOp2D2L9Vm6t43qEcXy9zh4FDAQHjDdlnRkDDDuFT6UOkA3+y/1wUA0NhZ+4GZDWuFrAym5EJoGbCM9r0NaI24ZWIYSrIjXUyQUHBpF+WffcXgbnSEPbRAANDaoJj5b7TlKZVrbzAf8Fb+RxP1QGEPkhbUxWjo3Odc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io; spf=pass smtp.mailfrom=finest.io; dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b=2ZOykGVu; arc=none smtp.client-ip=74.208.4.194
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=finest.io
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=finest.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="Js/UIovm"
+	dkim=pass (2048-bit key) header.d=finest.io header.i=parker@finest.io header.b="2ZOykGVu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=finest.io;
-	s=s1-ionos; t=1727881975; x=1728486775; i=parker@finest.io;
-	bh=Mt9PJle5Skz6w5r8Bol4+nvFpa1B3jTPEiwNoAdON2E=;
+	s=s1-ionos; t=1727881976; x=1728486776; i=parker@finest.io;
+	bh=JOzP2lvNRCJkoFukbKvYKYvYZ4eg3b4MdMP26Bf590Y=;
 	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:Message-ID:In-Reply-To:
 	 References:MIME-Version:Content-Transfer-Encoding:cc:
 	 content-transfer-encoding:content-type:date:from:message-id:
 	 mime-version:reply-to:subject:to;
-	b=Js/UIovmefFM1gurV1mmphYdcPZaYeQky9Ufv0SN5qfNySZDMqsZLquE4+GWPWGM
-	 VnNPa/I+7ZxDSZvsZ8cPI0nHCajP1HK2puyMLPS7KHUpdtUCPY8W19rD3FHq0nvOv
-	 OB/6JShVKkXvYpruwSZyeNEmVBFz0kt0wtyT781UyUd21XZbMGahk7OHQvzWsTy7i
-	 pklRXWYdkDnDR+gChxlBHM0S35xEXRAzbcYOepKLWTXGT2iyqnEGZSPRyQtT8baDA
-	 A9r/Z9tNQAo16OKc2L8VTWr/mXfqmesEye81eHRvwmzCvn2aK+Dpj+BEH7Sk/vaPb
-	 mKRAuVVXCyeJSyu6Ww==
+	b=2ZOykGVuXWNF34tDrAkWpUT6AXCpoH952zYIgoituq+ayykKo66o4y3evg1yuLbA
+	 QnCU0Qgb5hwn6tFMFgvHkLG+di2WwLBJjvZp0it9TXlybb36f+2Qq3iIDvQJyHWkM
+	 gYuMtGr1CMvbfiWXyaSAds8uP0ck8PMGcBR+jZPwGGKNPKIKrEiY9qqK+fbD9om6z
+	 jcxnv6OSIpdXIf6n73f3TUo68NxZsfdm95ifYb/Uum1zQI7+pgUmILZERBFvS/2FV
+	 pIlrSIXDQxJfAR8/TzRYA6aIMwz3fcUkf/m0ugKIYlT0gLYGRPyMH2AntKcRZXDdp
+	 83JZIwgpddYGgz9V5g==
 X-UI-Sender-Class: 55c96926-9e95-11ee-ae09-1f7a4046a0f6
 Received: from finest.io ([98.159.241.229]) by mrelay.perfora.net (mreueus003
- [74.208.5.2]) with ESMTPSA (Nemesis) id 0LqBHC-1sIZXj0anY-00krAw; Wed, 02 Oct
- 2024 17:12:55 +0200
+ [74.208.5.2]) with ESMTPSA (Nemesis) id 0M2bMR-1s3uwf1zzJ-018ApD; Wed, 02 Oct
+ 2024 17:12:56 +0200
 From: Parker Newman <parker@finest.io>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -41,9 +41,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Parker Newman <pnewman@connecttech.com>
-Subject: [PATCH v4 1/5] misc: eeprom: eeprom_93cx6: Add quirk for extra read clock cycle
-Date: Wed,  2 Oct 2024 11:12:33 -0400
-Message-ID: <0f23973efefccd2544705a0480b4ad4c2353e407.1727880931.git.pnewman@connecttech.com>
+Subject: [PATCH v4 4/5] serial: 8250_exar: Remove old exar_ee_read() and other unneeded code
+Date: Wed,  2 Oct 2024 11:12:36 -0400
+Message-ID: <ed756c48965a95ce3384ebb7fe2441b4928b4510.1727880931.git.pnewman@connecttech.com>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <cover.1727880931.git.pnewman@connecttech.com>
 References: <cover.1727880931.git.pnewman@connecttech.com>
@@ -54,149 +54,155 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:fFVlQdoOksGNgvYqYzX3MV3voUlaHvA47a8twACPN+rbVGsPhH7
- vjxK5DVeFyviuKJz1wkUeqQwCndMBrjWaTBJjcGm3VigFqj41Xp0Ln8pWPbmRhNMTAmyTX9
- wmRBH/lmo+GgXcNCGavT6OHVANrgrXgkRGcZ09BLGpEU7UGr2NtcDPEbF+SjVoPRfwrWozl
- +rGAUiVbkQjsCp3SoQfYg==
+X-Provags-ID: V03:K1:ZKkEuX/vMv7rEaPVRwC0sf+1njpjqxPAsqiC7f8hdLwjoRUgm7z
+ v2b1OECESfTwR0Bsmhg3Pxm3WhxlsH3w0pxh56fDZNpLmpFdRzJdRGkpSSv/W6d2bgz1Lvz
+ 5xWzGFMJA4V6CZSEY4NZE4s0UxuC6cKOv0Y9jXHTk8MPjPi9J3/39werSCEsYw2tVzaSrNP
+ ZMp/wZup94Jyoi0MTJNyg==
 X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:Mxd/X1rVyMk=;4GIIT9aT+ckUyyYciL64cClzFN4
- 7jWFw6JVxKVJR61U0TuIfh7cl3pARnP6IpbnEE0XbTIXZ0DVbSLIrT93NIaGtLu8hA9Nhp8eK
- I2GZ2wU3prpdC3JQU9K/VWZYz3zqYGoOYe0LjI+hwy1tWx5g+Iq6TZApN3EBFrluCkyn/pJWO
- Nor/DXm4ep2rUiSz8nqavBGN6OZFNTgbX8kwyDL9zUZSXLT+PLoXlyEaTIAYOyus8y/8jLHur
- Y4I9z+5b/NZTFi9yO488N/Ffo61rBe/bFHZqOINpdDh/h8/uKku2PpbSKaiS1M8dhfDr63EVB
- ezwLLM2v0ftIetXXPFCT1toBugXjopi5rMjXYNTD+sdKhT1G6ls0Os1QQ139oqQIgF3waeUfj
- vge0g/qoiZQCDbNV9b95ZsNVb8ApocT10K9ZOOom2eDfHEZb4KPeezN0PTHrlHUO7ya17hFas
- quk50mg5YcgkLnAuPRTxN57vSB0oOoSS41E9Xt5Hz3fJm0Wamehx3ymbwWMYTWijhgLJ4ykDn
- MQnvcdsdyb8McD3r4DcREgXhy9EGVtbcJa5TFhCs7gHJZmnyZ+ez806zagH4NZAwnm8Lo1BVl
- I7M4RpGF3kx9Nr2ET8vdsj+M7+gqk0GrtIAqdXyfb4xczSqHFSWCcuL061EVww244dj8aIYdV
- oR7qkkaWvLZa8TrI9DLGe/GGALu7IlR1+lfmpv13dEOpjRBYjU6REoJ8kBW8xCFAgiCMLIzvG
- obq96ghNTyRRfqx7VEWtvb2rCaBOm+VhA==
+UI-OutboundReport: notjunk:1;M01:P0:Lkc8gQo12cs=;lQy7r91v9ageP7IeRhij/V60axi
+ P/WYJhZk1ycLWtSsMSm7jECy8SpAWJlMwV6Coc9rOGPetZOO2ilEESHlrCyMeXPcJEPbym/PU
+ 9Tbq5emy76/IpP7WCgKXkVFXFHZxlzncxx6Pcv2QjHlalWp/7EUkD6rR2mM+v2vF+k8F48ffF
+ MEh5lBH3LuIim24aooKOqkI0dprdr6LEFiP65wFIlV8DYs4VpLkRtzkCO0FmxJhhXfTySoVwi
+ BkliZtMTHYqsrL/FNnZhWkwqsvaSXANT2+GCn8Q9Yv+3N9Dx7/bTNKEwu1Kc7xE3taJTZJYu0
+ enVCJYpaWDZA2RfO7i8ebsYjYDku9gWKbRvb6+QIomHXWRddkX4iLTzwYD3T4XuQiLX10Xmyu
+ WfMMg5vUBY9C0weBJZUJj9A1ONivdJ2cUN3R/qdHkpJcaFJZA9FFzdxmvXBMkTBpGwz6nEfFQ
+ D3+mupH43sjJA0kijLwAWRHhLHtWboV5yxlI4mecQeftOms9Ld8vmUDQYX6fQqq0PCRW1eqB6
+ Cn8nXBYQU8dxywMH4s8Q992c6GZ8D4Ca0fnO6Ofx0/80IQobDyOm1YLv5o5g5nyY50bFEQuoK
+ JJTGFY8bxeNqSq7fxF+Owfnm//VTq7aZ6Ai52pA20kjoZiVVCGCUz+axXkzlufwdvvidwjIdo
+ BJHkxLjV8W6fR1Z//W9JHpavfldovY9Vlyse5EaWcyfpgokMEWvIowLbZ72LQJwPuRITRs7eo
+ oWrLPTonv6ghRrph2alEKK3+nnyOFhxgw==
 
 From: Parker Newman <pnewman@connecttech.com>
 
-Add a quirk similar to eeprom_93xx46 to add an extra clock cycle before
-reading data from the EEPROM.
+Remove the old exar_ee_read() and associated helper functions.
+Remove defines that are no longer needed after the switch to using the
+eeprom_93cx6 driver.
 
-The 93Cx6 family of EEPROMs output a "dummy 0 bit" between the writing
-of the op-code/address from the host to the EEPROM and the reading of
-the actual data from the EEPROM.
-
-More info can be found on page 6 of the AT93C46 datasheet (linked below).
-Similar notes are found in other 93xx6 datasheets.
-
-In summary the read operation for a 93Cx6 EEPROM is:
-Write to EEPROM:	110[A5-A0]	(9 bits)
-Read from EEPROM:	0[D15-D0]	(17 bits)
-
-Where:
-	110 is the start bit and READ OpCode
-	[A5-A0] is the address to read from
-	0 is a "dummy bit" preceding the actual data
-	[D15-D0] is the actual data.
-
-Looking at the READ timing diagrams in the 93Cx6 datasheets the dummy
-bit should be clocked out on the last address bit clock cycle meaning it
-should be discarded naturally.
-
-However, depending on the hardware configuration sometimes this dummy
-bit is not discarded. This is the case with Exar PCI UARTs which require
-an extra clock cycle between sending the address and reading the data.
-
-Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-5193-SEE=
-PROM-AT93C46D-Datasheet.pdf
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Parker Newman <pnewman@connecttech.com>
 =2D--
-Changes in v2:
-- Moved quirk define into struct eeprom_93cx6.
-- Moved has_quirk_extra_read_cycle() from eeprom_93cx6.c into eeprom_93cx6=
-.h.
-- Fixed commit message formatting.
-
 Changes in v3:
 - Commit message wording.
 - Rebased to v6.12-rc1.
+- Remove CTI_EE_MASK_OSC_FREQ_LOWER and CTI_EE_MASK_OSC_FREQ_UPPER.
+- Add CTI_EE_MASK_OSC_FREQ define.
 
 Changes in v4:
-- Remove trailing newline.
+- Move CTI_EE_MASK_OSC_FREQ change from this patch to patch 3.
 
- drivers/misc/eeprom/eeprom_93cx6.c | 10 ++++++++++
- include/linux/eeprom_93cx6.h       | 11 +++++++++++
- 2 files changed, 21 insertions(+)
+ drivers/tty/serial/8250/8250_exar.c | 90 -----------------------------
+ 1 file changed, 90 deletions(-)
 
-diff --git a/drivers/misc/eeprom/eeprom_93cx6.c b/drivers/misc/eeprom/eepr=
-om_93cx6.c
-index 9627294fe3e9..4c9827fe9217 100644
-=2D-- a/drivers/misc/eeprom/eeprom_93cx6.c
-+++ b/drivers/misc/eeprom/eeprom_93cx6.c
-@@ -186,6 +186,11 @@ void eeprom_93cx6_read(struct eeprom_93cx6 *eeprom, c=
-onst u8 word,
- 	eeprom_93cx6_write_bits(eeprom, command,
- 		PCI_EEPROM_WIDTH_OPCODE + eeprom->width);
+diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250=
+/8250_exar.c
+index e9f57516fbee..470e8128c79a 100644
+=2D-- a/drivers/tty/serial/8250/8250_exar.c
++++ b/drivers/tty/serial/8250/8250_exar.c
+@@ -136,8 +136,6 @@
+ #define UART_EXAR_REGB_EECS		BIT(5)
+ #define UART_EXAR_REGB_EEDI		BIT(6)
+ #define UART_EXAR_REGB_EEDO		BIT(7)
+-#define UART_EXAR_REGB_EE_ADDR_SIZE	6
+-#define UART_EXAR_REGB_EE_DATA_SIZE	16
 
-+	if (has_quirk_extra_read_cycle(eeprom)) {
-+		eeprom_93cx6_pulse_high(eeprom);
-+		eeprom_93cx6_pulse_low(eeprom);
-+	}
-+
- 	/*
- 	 * Read the requested 16 bits.
- 	 */
-@@ -252,6 +257,11 @@ void eeprom_93cx6_readb(struct eeprom_93cx6 *eeprom, =
-const u8 byte,
- 	eeprom_93cx6_write_bits(eeprom, command,
- 		PCI_EEPROM_WIDTH_OPCODE + eeprom->width + 1);
+ #define UART_EXAR_XR17C15X_PORT_OFFSET	0x200
+ #define UART_EXAR_XR17V25X_PORT_OFFSET	0x200
+@@ -268,94 +266,6 @@ static inline u8 exar_read_reg(struct exar8250 *priv,=
+ unsigned int reg)
+ 	return readb(priv->virt + reg);
+ }
 
-+	if (has_quirk_extra_read_cycle(eeprom)) {
-+		eeprom_93cx6_pulse_high(eeprom);
-+		eeprom_93cx6_pulse_low(eeprom);
-+	}
-+
- 	/*
- 	 * Read the requested 8 bits.
- 	 */
-diff --git a/include/linux/eeprom_93cx6.h b/include/linux/eeprom_93cx6.h
-index c860c72a921d..3a485cc0e0fa 100644
-=2D-- a/include/linux/eeprom_93cx6.h
-+++ b/include/linux/eeprom_93cx6.h
-@@ -11,6 +11,8 @@
- 	Supported chipsets: 93c46, 93c56 and 93c66.
-  */
-
-+#include <linux/bits.h>
-+
- /*
-  * EEPROM operation defines.
-  */
-@@ -34,6 +36,7 @@
-  * @register_write(struct eeprom_93cx6 *eeprom): handler to
-  * write to the eeprom register by using all reg_* fields.
-  * @width: eeprom width, should be one of the PCI_EEPROM_WIDTH_* defines
-+ * @quirks: eeprom or controller quirks
-  * @drive_data: Set if we're driving the data line.
-  * @reg_data_in: register field to indicate data input
-  * @reg_data_out: register field to indicate data output
-@@ -50,6 +53,9 @@ struct eeprom_93cx6 {
- 	void (*register_write)(struct eeprom_93cx6 *eeprom);
-
- 	int width;
-+	unsigned int quirks;
-+/* Some EEPROMs require an extra clock cycle before reading */
-+#define PCI_EEPROM_QUIRK_EXTRA_READ_CYCLE	BIT(0)
-
- 	char drive_data;
- 	char reg_data_in;
-@@ -71,3 +77,8 @@ extern void eeprom_93cx6_wren(struct eeprom_93cx6 *eepro=
-m, bool enable);
-
- extern void eeprom_93cx6_write(struct eeprom_93cx6 *eeprom,
- 			       u8 addr, u16 data);
-+
-+static inline bool has_quirk_extra_read_cycle(struct eeprom_93cx6 *eeprom=
-)
-+{
-+	return eeprom->quirks & PCI_EEPROM_QUIRK_EXTRA_READ_CYCLE;
-+}
+-static inline void exar_ee_select(struct exar8250 *priv)
+-{
+-	// Set chip select pin high to enable EEPROM reads/writes
+-	exar_write_reg(priv, UART_EXAR_REGB, UART_EXAR_REGB_EECS);
+-	// Min ~500ns delay needed between CS assert and EEPROM access
+-	udelay(1);
+-}
+-
+-static inline void exar_ee_deselect(struct exar8250 *priv)
+-{
+-	exar_write_reg(priv, UART_EXAR_REGB, 0x00);
+-}
+-
+-static inline void exar_ee_write_bit(struct exar8250 *priv, u8 bit)
+-{
+-	u8 value =3D UART_EXAR_REGB_EECS;
+-
+-	if (bit)
+-		value |=3D UART_EXAR_REGB_EEDI;
+-
+-	// Clock out the bit on the EEPROM interface
+-	exar_write_reg(priv, UART_EXAR_REGB, value);
+-	// 2us delay =3D ~500khz clock speed
+-	udelay(2);
+-
+-	value |=3D UART_EXAR_REGB_EECK;
+-
+-	exar_write_reg(priv, UART_EXAR_REGB, value);
+-	udelay(2);
+-}
+-
+-static inline u8 exar_ee_read_bit(struct exar8250 *priv)
+-{
+-	u8 regb;
+-	u8 value =3D UART_EXAR_REGB_EECS;
+-
+-	// Clock in the bit on the EEPROM interface
+-	exar_write_reg(priv, UART_EXAR_REGB, value);
+-	// 2us delay =3D ~500khz clock speed
+-	udelay(2);
+-
+-	value |=3D UART_EXAR_REGB_EECK;
+-
+-	exar_write_reg(priv, UART_EXAR_REGB, value);
+-	udelay(2);
+-
+-	regb =3D exar_read_reg(priv, UART_EXAR_REGB);
+-
+-	return (regb & UART_EXAR_REGB_EEDO ? 1 : 0);
+-}
+-
+-/**
+- * exar_ee_read() - Read a word from the EEPROM
+- * @priv: Device's private structure
+- * @ee_addr: Offset of EEPROM to read word from
+- *
+- * Read a single 16bit word from an Exar UART's EEPROM.
+- * The type of the EEPROM is AT93C46D.
+- *
+- * Return: EEPROM word
+- */
+-static u16 exar_ee_read(struct exar8250 *priv, u8 ee_addr)
+-{
+-	int i;
+-	u16 data =3D 0;
+-
+-	exar_ee_select(priv);
+-
+-	// Send read command (opcode 110)
+-	exar_ee_write_bit(priv, 1);
+-	exar_ee_write_bit(priv, 1);
+-	exar_ee_write_bit(priv, 0);
+-
+-	// Send address to read from
+-	for (i =3D UART_EXAR_REGB_EE_ADDR_SIZE - 1; i >=3D 0; i--)
+-		exar_ee_write_bit(priv, ee_addr & BIT(i));
+-
+-	// Read data 1 bit at a time starting with a dummy bit
+-	for (i =3D UART_EXAR_REGB_EE_DATA_SIZE; i >=3D 0; i--) {
+-		if (exar_ee_read_bit(priv))
+-			data |=3D BIT(i);
+-	}
+-
+-	exar_ee_deselect(priv);
+-
+-	return data;
+-}
+-
+ static void exar_eeprom_93cx6_reg_read(struct eeprom_93cx6 *eeprom)
+ {
+ 	struct exar8250 *priv =3D eeprom->data;
 =2D-
 2.46.0
 
