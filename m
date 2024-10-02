@@ -1,166 +1,184 @@
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 559601D0431;
-	Wed,  2 Oct 2024 18:41:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.62.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15E4C194AE8;
+	Wed,  2 Oct 2024 22:00:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727894511; cv=none; b=BpSrz3VzEhpmk0jb+xUJcD3kTTLXBXKqId6tlOlJKCCpwqTMuNvvIkx7Y+1+bSW99fNHk6YXbveH+/JrX7atFFHYt7HyOC/Tyv+Vq3O0Oo8BKgm1ZKkn9f7TD77yizm9cNMYUM85PWYTiPJ/zIudR+AhzWet1uphb5qcxz6fs/M=
+	t=1727906447; cv=none; b=Ikf2yN/Jj4Nr11OQ7eCNQRlG6JcwRhNAiQF23IWM+oEHDZ3iqjPbhF+NSgQijzhCDQmFyCfaS7iM3B3lFt1VtvsYzJHXT82fElygsVXwlP1AwpfLKitVuTiFiudyx/67T6HL5kwBtg7SHL0SerI85SaJOsBb+e2nW07xpJYOfsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727894511; c=relaxed/simple;
-	bh=JKE1QjGzfsOmvyp0yAYM6Te10fCsyTqWk4OqCJlP3N4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Wymk+tqqBLJpId5Ufy00Nv8Pt2f6ofYi80CIP43slaPt7PA+eoVTruVU5wjlWwtK0oxJm2jjjWo3Y0rmtuc4923T/+/QLE8ijHimcUoarF4/jlwL0Sy8p4PTikWpjlz2hoWRu0Uc156aKmTG5RQ/cF45kTT/kAYGcLoalip11jQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=denx.de; spf=pass smtp.mailfrom=denx.de; dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b=dN4eCUGP; arc=none smtp.client-ip=85.214.62.61
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=denx.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=denx.de
+	s=arc-20240116; t=1727906447; c=relaxed/simple;
+	bh=fBzz3jOPes2BLCPMA4IAywQAst4FILIw5XqmwFZKG50=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=AQG7t5AEVhGRY6n2F/MqFR1TcJprknmqFHrZ6dxIsrJPV8BvZ6UXqK8N7mrVxCTIwReOqb92VbamKElaFQsFhDTmEnHRGsfktjQezEaKGAM4ZMj4VEIkgPX5dItjbBQAxdXzGn2J3zJsC8wEUXwK6LQnMA13UWhZ/7IYm7kl+88=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZMlJMkTt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b="dN4eCUGP"
-Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-	(No client certificate requested)
-	(Authenticated sender: marex@denx.de)
-	by phobos.denx.de (Postfix) with ESMTPSA id 9ED0A88F44;
-	Wed,  2 Oct 2024 20:41:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-	s=phobos-20191101; t=1727894506;
-	bh=zuPq8tlRciTxlcbGOB0i7tsntZdMbWeR5LKsvLq22ZU=;
-	h=From:To:Cc:Subject:Date:From;
-	b=dN4eCUGPYJu8qYlYJL8JmdrYPyNZGIpGkOW0kg4oygCoWO78WU+3Sd37CjRO7cj3C
-	 pN2LGe8ww3sRrIpR4WNjZ+SMsoHlO2pX4pXW/Svc4Mkxjxc/pMnqHiCdIpcE6S+B1H
-	 ZcJj17RerMoso/w/YxW/xhtYbeD+i1yl1K8isq3+L9w+4jJyIdfYbl1yt8dqSB/+Li
-	 VmyEX340nleck3tFdpDArZ50wLuCUZ4XV5Mz9wOu5bdheyRhmrQpm0utItzdxhhZxt
-	 6tOHvlQku2IQPD3FGPwSSs60dlSBbPbw0kDEwZ7359VhVgAbVxF4vVsjqbvZIPz/+7
-	 HzAJjwTx2xnQA==
-From: Marek Vasut <marex@denx.de>
-To: linux-serial@vger.kernel.org
-Cc: Marek Vasut <marex@denx.de>,
-	Esben Haabendal <esben@geanix.com>,
-	Christoph Niedermaier <cniedermaier@dh-electronics.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Fabio Estevam <festevam@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-	Rickard x Andersson <rickaran@axis.com>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Shawn Guo <shawnguo@kernel.org>,
-	Stefan Eichenberger <stefan.eichenberger@toradex.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	imx@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	stable@vger.kernel.org
-Subject: [PATCH v2] serial: imx: Update mctrl old_status on RTSD interrupt
-Date: Wed,  2 Oct 2024 20:40:38 +0200
-Message-ID: <20241002184133.19427-1-marex@denx.de>
-X-Mailer: git-send-email 2.45.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZMlJMkTt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 727E7C4CED0;
+	Wed,  2 Oct 2024 22:00:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1727906446;
+	bh=fBzz3jOPes2BLCPMA4IAywQAst4FILIw5XqmwFZKG50=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=ZMlJMkTtj8oZbUrJ1jAGItW40J5JFAgRddOHbpTcoBQ+f//KTR12mzvIO+nxgU7wv
+	 eiOG3LilBCDW5qXwucDxgT866n9kkz3K3fG/rf5y3dF2LmwSyWdCFtxT/0Cm5Qkpir
+	 u4318j9nE10WEHsQ0mUfLI+7ePYlhiEsaIc9mAEjRyCC+XhZB7vY7XbEbOFgVwENJw
+	 PFDvQMe/l+Z+hA3NWP6+7c7jgU/airkEMc8lHU7uv7IAD6pX6Y2mq4t2FoH6TeklTL
+	 98vnxrAQUL2H3Oo4jslfeiWj8ijxPYt+RdcyGxOpim2nktcbghymtOxH1k0cYc5Sx7
+	 e/Jz1r8TG1dNQ==
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfauth.phl.internal (Postfix) with ESMTP id 7B0891200043;
+	Wed,  2 Oct 2024 18:00:39 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Wed, 02 Oct 2024 18:00:39 -0400
+X-ME-Sender: <xms:h8L9ZvUCsZ3I9yGVDywey9pF2jgW_w8_TFUR2tWUHEu8dmAid9_KPg>
+    <xme:h8L9Znl82KS6o4PXo2qbRZS22LcxqKrsVa1iEhDZsJpksYAtzHH_qAEzv9LjOW5qT
+    BAuBfatZMtcXIZpbF8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrvddvtddgtdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusehkvghrnhgvlh
+    drohhrgheqnecuggftrfgrthhtvghrnhepjeejffetteefteekieejudeguedvgfeffeei
+    tdduieekgeegfeekhfduhfelhfevnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomheprghrnhguodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhi
+    thihqdduvdekhedujedtvdegqddvkeejtddtvdeigedqrghrnhgupeepkhgvrhhnvghlrd
+    horhhgsegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepkedpmhhouggvpehsmhhtphho
+    uhhtpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpth
+    htohephhgtrgeslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehstghhnhgvlhhl
+    vgeslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehilhhpohdrjhgrrhhvihhnvg
+    hnsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepghhrvghgkhhhsehlihhn
+    uhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtohepmhgrtghrohesohhrtggrmh
+    drmhgvrdhukhdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghr
+    nhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvg
+    hrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:h8L9ZrYN7lTSwsaywRGXIWCxDwxYTApBgUVJ7HZfUKQm2XWdu1Jsvg>
+    <xmx:h8L9ZqXGWMaKdsVzxS3oRAXf0hITWsX6aEnezrb3uq8vL3wByFW8CQ>
+    <xmx:h8L9ZpmWpKitDdkf1lP9xvks4X5DH8xdCeReLFZJzY4u3LqPuJ2BlA>
+    <xmx:h8L9ZncxVLFWndy4LFSl730Wa4n78Nb_z6bSJ_18IoJsODd_lluX3w>
+    <xmx:h8L9ZjGLm2O9XlpnwRAB6Ed_pMulZ_2bWX1NBisaRj-JFigWWIR3cyEJ>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 4F0322220071; Wed,  2 Oct 2024 18:00:39 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
-X-Virus-Status: Clean
+Date: Wed, 02 Oct 2024 22:00:08 +0000
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>,
+ "Niklas Schnelle" <schnelle@linux.ibm.com>
+Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
+ linux-kernel@vger.kernel.org
+Message-Id: <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
+In-Reply-To: <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com>
+ <20240405152924.252598-2-schnelle@linux.ibm.com>
+ <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
+ <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com>
+ <alpine.DEB.2.21.2410011707550.45128@angie.orcam.me.uk>
+ <7bcec0eb88c3891d23f5c9f224e708e4a9bb8b89.camel@linux.ibm.com>
+ <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk>
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-When sending data using DMA at high baudrate (4 Mbdps in local test case) to
-a device with small RX buffer which keeps asserting RTS after every received
-byte, it is possible that the iMX UART driver would not recognize the falling
-edge of RTS input signal and get stuck, unable to transmit any more data.
+On Wed, Oct 2, 2024, at 18:12, Maciej W. Rozycki wrote:
+> On Wed, 2 Oct 2024, Niklas Schnelle wrote:
+>
+>> >  Ideally we could come with a slightly user-friendlier change that would 
+>> > report the inability to handle port I/O devices as they are discovered 
+>> > rather than just silently ignoring them.
+>> 
+>> I think this would generally get quite ugly as one would have to keep
+>> around enough of the drivers which can't possibly work in that
+>> !HAS_IOPORT kernel to identify the device and print some error. It's
+>> also not what happens when anything else isn't supported by your kernel
+>> build. And I don't think we can just look for any I/O ports either
+>> because they could be an alternative access method that isn't required.
+>
+>  There might be corner cases, but offhand I think it's simpler than you 
+> outline.  There are two cases to handle here:
+>
+> 1. Code you've #ifdef'd out that explicitly refers port I/O resources.
+>    So rather than having struct entries referring to problematic `*_init' 
+>    handlers #ifdef'd out we can keep them and make them call an error 
+>    reporting function if (!IS_ENABLED(CONFIG_HAS_IOPORT)).  As a side 
+>    effect the structure of code will improve as we don't really like 
+>    #ifdefs sprinkled throughout.
+>
+> 2. Code that infers the access type required from BARs.  It has to handle 
+>    the unsupported case anyway, so rather than doing it silently it can 
+>    call the same error reporting function.
+>
+> Yes, there's some work to be done here, but nothing exceedingly tough I 
+> believe.
 
-This condition happens when the following sequence of events occur:
-- imx_uart_mctrl_check() is called at some point and takes a snapshot of UART
-  control signal status into sport->old_status using imx_uart_get_hwmctrl().
-  The RTSS/TIOCM_CTS bit is of interest here (*).
-- DMA transfer occurs, the remote device asserts RTS signal after each byte.
-  The i.MX UART driver recognizes each such RTS signal change, raises an
-  interrupt with USR1 register RTSD bit set, which leads to invocation of
-  __imx_uart_rtsint(), which calls uart_handle_cts_change().
-  - If the RTS signal is deasserted, uart_handle_cts_change() clears
-    port->hw_stopped and unblocks the port for further data transfers.
-  - If the RTS is asserted, uart_handle_cts_change() sets port->hw_stopped
-    and blocks the port for further data transfers. This may occur as the
-    last interrupt of a transfer, which means port->hw_stopped remains set
-    and the port remains blocked (**).
-- Any further data transfer attempts will trigger imx_uart_mctrl_check(),
-  which will read current status of UART control signals by calling
-  imx_uart_get_hwmctrl() (***) and compare it with sport->old_status .
-  - If current status differs from sport->old_status for RTS signal,
-    uart_handle_cts_change() is called and possibly unblocks the port
-    by clearing port->hw_stopped .
-  - If current status does not differ from sport->old_status for RTS
-    signal, no action occurs. This may occur in case prior snapshot (*)
-    was taken before any transfer so the RTS is deasserted, current
-    snapshot (***) was taken after a transfer and therefore RTS is
-    deasserted again, which means current status and sport->old_status
-    are identical. In case (**) triggered when RTS got asserted, and
-    made port->hw_stopped set, the port->hw_stopped will remain set
-    because no change on RTS line is recognized by this driver and
-    uart_handle_cts_change() is not called from here to unblock the
-    port->hw_stopped.
+I agree that this shouldn't be hard to finish. The IS_ENABLED()
+check is not that easy to do as I think we need to keep calling
+inb()/outb() outside of an #ifdef a compile-time error.
 
-Update sport->old_status in __imx_uart_rtsint() accordingly to make
-imx_uart_mctrl_check() detect such RTS change. Note that TIOCM_CAR
-and TIOCM_RI bits in sport->old_status do not suffer from this problem.
+However, I think most of the inb/outb usage in 8250_pci.c can
+just be converted to either serial_port_in()/serial_port_out(),
+using the 8250 specific wrappers, or to ioread8()/iowrite8()
+in combination with pci_iomap().
 
-Fixes: ceca629e0b48 ("[ARM] 2971/1: i.MX uart handle rts irq")
-Reviewed-by: Esben Haabendal <esben@geanix.com>
-Signed-off-by: Marek Vasut <marex@denx.de>
----
-Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Esben Haabendal <esben@geanix.com>
-Cc: Fabio Estevam <festevam@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc: Rickard x Andersson <rickaran@axis.com>
-Cc: Sascha Hauer <s.hauer@pengutronix.de>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Cc: Stefan Eichenberger <stefan.eichenberger@toradex.com>
-Cc: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
-Cc: imx@lists.linux.dev
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-serial@vger.kernel.org
-Cc: stable@vger.kernel.org
----
-V2: - Add code comment
-    - Add RB from Esben
----
- drivers/tty/serial/imx.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+It might help to add a UPIO_IOMAP type to replace UPIO_PORT
+for the PCI drivers and just use pci_iomap() exclusively in that
+driver.
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 67d4a72eda770..90974d338f3c0 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -762,6 +762,21 @@ static irqreturn_t __imx_uart_rtsint(int irq, void *dev_id)
- 
- 	imx_uart_writel(sport, USR1_RTSD, USR1);
- 	usr1 = imx_uart_readl(sport, USR1) & USR1_RTSS;
-+	/*
-+	 * Update sport->old_status here, so any follow-up calls to
-+	 * imx_uart_mctrl_check() will be able to recognize that RTS
-+	 * state changed since last imx_uart_mctrl_check() call.
-+	 *
-+	 * In case RTS has been detected as asserted here and later on
-+	 * deasserted by the time imx_uart_mctrl_check() was called,
-+	 * imx_uart_mctrl_check() can detect the RTS state change and
-+	 * trigger uart_handle_cts_change() to unblock the port for
-+	 * further TX transfers.
-+	 */
-+	if (usr1 & USR1_RTSS)
-+		sport->old_status |= TIOCM_CTS;
-+	else
-+		sport->old_status &= ~TIOCM_CTS;
- 	uart_handle_cts_change(&sport->port, usr1);
- 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
- 
--- 
-2.45.2
+>  Also I think this case is a bit special, because it's different from a 
+> missing driver.  The driver is there and the hardware is there visible in 
+> the PCI hierarchy, there's nothing reported and other serial ports work, 
+> or a similar serial port works elsewhere, so why doesn't this one?  The 
+> user may not necessarily be aware of the peculiarity that the lack of 
+> support for port I/O is.
 
+Part of the problem that Niklas is trying to solve with the
+CONFIG_HAS_IOPORT annotations is to prevent an invalid inb()/outb()
+from turning into a NULL pointer dereference as it currently does
+on architectures that have no way to support PIO but get the
+default implementation from asm-generic/io.h.
+
+It's not clear if having a silently non-working driver or one
+that crashes makes it easier to debug for users. Having a clear
+warning message in the PCI probe code is probably the best
+we can hope for.
+
+>  I was not and discovered it the hard way in the course of installing my 
+> POWER9 system and trying to make the defxx driver work as supplied by the 
+> distribution.  It took me a few days to conclude there is no bug anywhere 
+> except for the system lacking support for port I/O and the driver having 
+> been configured by the packager via a Kconfig option to use that access 
+> type.  Also I had PHB4 documentation to hand to refer to and track down 
+> the relevant bits.
+>
+>  I ended up updating the driver to choose the access type automatically 
+> (as the board resources are dual-mapped, via both a port I/O and an MMIO 
+> BAR), and would have done so long before if I was aware of the existence 
+> of such systems.
+>
+>  Now I consider myself a reasonably seasoned systems software developer, 
+> so what can an ordinary user say?  They might be utterly confused and 
+> either report it as a system bug (if they were so determined) or just 
+> conclude Linux is junk.
+
+I think that anyone using hardware that relies on port I/O on
+non-x86 is at this point going to have a reasonable understanding
+of the system, so I'm not too worried here. ;-)
+
+>  A message such as:
+>
+> serial 0001:01:00.0: cannot handle, no port I/O support in the system
+>
+> would definitely help.
+
+Right.
+
+       Arnd
