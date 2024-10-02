@@ -1,150 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C70F71D0F7F;
-	Wed,  2 Oct 2024 18:13:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 559601D0431;
+	Wed,  2 Oct 2024 18:41:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.62.61
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727892794; cv=none; b=ocsS1BWAJKYR+Eb7hi5FoMhfbLMoq2I7SFpx2MV90dhE33Kuk7E/89aAZ7XTYBhI6TS0azTatR0lQI6YPwJ0+XmDlz0epqdBwKfyZXEzkluNbk1BvqPnOnGqsV5zJdzla1u08l536BOniVETU100u5lsKfLle9PCzjIvp9CuIcE=
+	t=1727894511; cv=none; b=BpSrz3VzEhpmk0jb+xUJcD3kTTLXBXKqId6tlOlJKCCpwqTMuNvvIkx7Y+1+bSW99fNHk6YXbveH+/JrX7atFFHYt7HyOC/Tyv+Vq3O0Oo8BKgm1ZKkn9f7TD77yizm9cNMYUM85PWYTiPJ/zIudR+AhzWet1uphb5qcxz6fs/M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727892794; c=relaxed/simple;
-	bh=grwSoWKPsOI8pRGhnuHfLCDv1R3IvWwGE3IGbB7BvHU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VuWQ5HN82ubjMDmZrZfKVxexUxI3JEk5Au94rlxHq45DMVagiIudUoR+vsqfNoG+93y2hJ0dPaPhN5/JHEFp6F9rcvTfqzAnQqbpq0GxEPRn+Wx+p0AJp34Efkiggk1a9EeMyLHEZEGGNGcpJ+Kwyno8/KX2YAhCXzrLGAcTv0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dRhTMiHK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1727894511; c=relaxed/simple;
+	bh=JKE1QjGzfsOmvyp0yAYM6Te10fCsyTqWk4OqCJlP3N4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Wymk+tqqBLJpId5Ufy00Nv8Pt2f6ofYi80CIP43slaPt7PA+eoVTruVU5wjlWwtK0oxJm2jjjWo3Y0rmtuc4923T/+/QLE8ijHimcUoarF4/jlwL0Sy8p4PTikWpjlz2hoWRu0Uc156aKmTG5RQ/cF45kTT/kAYGcLoalip11jQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=denx.de; spf=pass smtp.mailfrom=denx.de; dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b=dN4eCUGP; arc=none smtp.client-ip=85.214.62.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=denx.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=denx.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dRhTMiHK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82DB1C4CED1;
-	Wed,  2 Oct 2024 18:13:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1727892794;
-	bh=grwSoWKPsOI8pRGhnuHfLCDv1R3IvWwGE3IGbB7BvHU=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=dRhTMiHKT1RnETVX+Hkwembxlg2VggFcKSlhr7s8hLH64V0gcLgNOkOL94eScWePu
-	 1ayKicEl7qSutBlLWK62FYfrFnsvNPb4r4tQmgfUDpN4kNTESitrgO69FKGyYmuC7i
-	 RguPCxczFsmZcwYOkOiRF3RCF+HuXZ0pCaeKZsXzx0FUzplX8tlMTqKAftYQsxmRIY
-	 fufdEFLxriX1YYPRLtmoA6buicBoncwPsjKZkA8JL5awTdNeMihc7J4T46rvWrpGRp
-	 mTZtEJ82tPztFo2qBNMjKBGPBmCXZ6dXdQ3AsBvafdqPHeS9XACFVkR2mMw5KWvMII
-	 d7Mkw7mTba3SA==
-Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-3e039666812so101336b6e.1;
-        Wed, 02 Oct 2024 11:13:14 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWtAMjAcS5E4AS3lZZAhdLlTFO2bf0ZbdRc7M8dz/gkVLmoxo7sQShxuyY6oSrLaVhmD5qhVlRIDZaJIK6L@vger.kernel.org, AJvYcCX8JzoOH1IjC+k/1UgzWfVvbGRJSxLwOMAPng98L6d2HoJe/9uC7fVnvP1POi67SmZBXaTIt7PAGIbx@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzs2w1Hubi5YiOqcAzoDc6CYLR1zIdeUxcYXUzj9lk7+MSu3F7Z
-	WUoR82FG+4IwE/sMReSKNTrCq+AHcXNNZFbQOI9FLo9jvmgMAOwWO+/z8FmvxmkWNHy7Or3xWXy
-	oTSr9kvBNf6nJwe67S2JECeIqTIE=
-X-Google-Smtp-Source: AGHT+IE3dupSoce4kYpZO3+6P99yFSc6BYr72zwY1Tqta07GNvTEYwGWWcgn1Fx1RxCjaVyg5dSaBYUyfRESgyNJPrY=
-X-Received: by 2002:a05:6808:3196:b0:3e3:a7f2:1aa4 with SMTP id
- 5614622812f47-3e3b40e5856mr3269526b6e.8.1727892793837; Wed, 02 Oct 2024
- 11:13:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=denx.de header.i=@denx.de header.b="dN4eCUGP"
+Received: from tr.lan (ip-86-49-120-218.bb.vodafone.cz [86.49.120.218])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+	(No client certificate requested)
+	(Authenticated sender: marex@denx.de)
+	by phobos.denx.de (Postfix) with ESMTPSA id 9ED0A88F44;
+	Wed,  2 Oct 2024 20:41:45 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+	s=phobos-20191101; t=1727894506;
+	bh=zuPq8tlRciTxlcbGOB0i7tsntZdMbWeR5LKsvLq22ZU=;
+	h=From:To:Cc:Subject:Date:From;
+	b=dN4eCUGPYJu8qYlYJL8JmdrYPyNZGIpGkOW0kg4oygCoWO78WU+3Sd37CjRO7cj3C
+	 pN2LGe8ww3sRrIpR4WNjZ+SMsoHlO2pX4pXW/Svc4Mkxjxc/pMnqHiCdIpcE6S+B1H
+	 ZcJj17RerMoso/w/YxW/xhtYbeD+i1yl1K8isq3+L9w+4jJyIdfYbl1yt8dqSB/+Li
+	 VmyEX340nleck3tFdpDArZ50wLuCUZ4XV5Mz9wOu5bdheyRhmrQpm0utItzdxhhZxt
+	 6tOHvlQku2IQPD3FGPwSSs60dlSBbPbw0kDEwZ7359VhVgAbVxF4vVsjqbvZIPz/+7
+	 HzAJjwTx2xnQA==
+From: Marek Vasut <marex@denx.de>
+To: linux-serial@vger.kernel.org
+Cc: Marek Vasut <marex@denx.de>,
+	Esben Haabendal <esben@geanix.com>,
+	Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	Fabio Estevam <festevam@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+	Rickard x Andersson <rickaran@axis.com>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Stefan Eichenberger <stefan.eichenberger@toradex.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	stable@vger.kernel.org
+Subject: [PATCH v2] serial: imx: Update mctrl old_status on RTSD interrupt
+Date: Wed,  2 Oct 2024 20:40:38 +0200
+Message-ID: <20241002184133.19427-1-marex@denx.de>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20240912173901.3969597-1-rrangel@chromium.org> <20240912113616.3.I1b7a5033a2191cb0cdbadc2d51666a97f16cc663@changeid>
-In-Reply-To: <20240912113616.3.I1b7a5033a2191cb0cdbadc2d51666a97f16cc663@changeid>
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Date: Wed, 2 Oct 2024 20:13:02 +0200
-X-Gmail-Original-Message-ID: <CAJZ5v0hmf55OA1f4egzE7F0ET+7af_+pcxmnOSxO5Snd6L5CrQ@mail.gmail.com>
-Message-ID: <CAJZ5v0hmf55OA1f4egzE7F0ET+7af_+pcxmnOSxO5Snd6L5CrQ@mail.gmail.com>
-Subject: Re: [PATCH 3/3] ACPI: SPCR: Add support for rev 3
-To: Raul E Rangel <rrangel@chromium.org>
-Cc: linux-serial@vger.kernel.org, pmladek@suse.com, rafael.j.wysocki@intel.com, 
-	ribalda@chromium.org, Len Brown <lenb@kernel.org>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Robert Moore <robert.moore@intel.com>, acpica-devel@lists.linux.dev, 
-	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.8 at phobos.denx.de
+X-Virus-Status: Clean
 
-On Thu, Sep 12, 2024 at 7:39=E2=80=AFPM Raul E Rangel <rrangel@chromium.org=
-> wrote:
->
-> Revision 3 supports specifying the UART input clock. This allows for
-> proper computation of the UART divisor when the baud rate is specified.
->
-> The earlycon code can accept the following format (See `parse_options`
-> in `earlycon.c`.):
-> * <name>,io|mmio|mmio32|mmio32be,<addr>,<baud>,<uartclk>,<options>
->
-> This change makes it so the uartclk is passed along if it's defined in
-> the SPCR table.
->
-> Booting with `earlycon` and a SPCR v3 table that has the uartclk and
-> baud defined:
-> [    0.028251] ACPI: SPCR: console: uart,mmio32,0xfedc9000,115200,4800000=
-0
-> [    0.028267] earlycon: uart0 at MMIO32 0x00000000fedc9000 (options '115=
-200,48000000')
-> [    0.028272] printk: legacy bootconsole [uart0] enabled
->
-> Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serports=
-/serial-port-console-redirection-table
->
-> Signed-off-by: Raul E Rangel <rrangel@chromium.org>
->
-> ---
->
->  drivers/acpi/spcr.c   | 5 ++++-
->  include/acpi/actbl3.h | 6 +++---
->  2 files changed, 7 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
-> index cd36a97b0ea2c7..67ae42afcc59ef 100644
-> --- a/drivers/acpi/spcr.c
-> +++ b/drivers/acpi/spcr.c
-> @@ -209,9 +209,12 @@ int __init acpi_parse_spcr(bool enable_earlycon, boo=
-l enable_console)
->         if (!baud_rate) {
->                 snprintf(opts, sizeof(opts), "%s,%s,0x%llx", uart, iotype=
-,
->                          table->serial_port.address);
-> -       } else {
-> +       } else if (table->header.revision <=3D 2 || !table->uartclk) {
->                 snprintf(opts, sizeof(opts), "%s,%s,0x%llx,%d", uart, iot=
-ype,
->                          table->serial_port.address, baud_rate);
-> +       } else {
-> +               snprintf(opts, sizeof(opts), "%s,%s,0x%llx,%d,%d", uart, =
-iotype,
-> +                        table->serial_port.address, baud_rate, table->ua=
-rtclk);
->         }
->
->         pr_info("console: %s\n", opts);
-> diff --git a/include/acpi/actbl3.h b/include/acpi/actbl3.h
-> index 8f775e3a08fdfb..afe45a2379866a 100644
-> --- a/include/acpi/actbl3.h
-> +++ b/include/acpi/actbl3.h
+When sending data using DMA at high baudrate (4 Mbdps in local test case) to
+a device with small RX buffer which keeps asserting RTS after every received
+byte, it is possible that the iMX UART driver would not recognize the falling
+edge of RTS input signal and get stuck, unable to transmit any more data.
 
-The part of the patch below is outdated - SPCR v4 is supported already.
+This condition happens when the following sequence of events occur:
+- imx_uart_mctrl_check() is called at some point and takes a snapshot of UART
+  control signal status into sport->old_status using imx_uart_get_hwmctrl().
+  The RTSS/TIOCM_CTS bit is of interest here (*).
+- DMA transfer occurs, the remote device asserts RTS signal after each byte.
+  The i.MX UART driver recognizes each such RTS signal change, raises an
+  interrupt with USR1 register RTSD bit set, which leads to invocation of
+  __imx_uart_rtsint(), which calls uart_handle_cts_change().
+  - If the RTS signal is deasserted, uart_handle_cts_change() clears
+    port->hw_stopped and unblocks the port for further data transfers.
+  - If the RTS is asserted, uart_handle_cts_change() sets port->hw_stopped
+    and blocks the port for further data transfers. This may occur as the
+    last interrupt of a transfer, which means port->hw_stopped remains set
+    and the port remains blocked (**).
+- Any further data transfer attempts will trigger imx_uart_mctrl_check(),
+  which will read current status of UART control signals by calling
+  imx_uart_get_hwmctrl() (***) and compare it with sport->old_status .
+  - If current status differs from sport->old_status for RTS signal,
+    uart_handle_cts_change() is called and possibly unblocks the port
+    by clearing port->hw_stopped .
+  - If current status does not differ from sport->old_status for RTS
+    signal, no action occurs. This may occur in case prior snapshot (*)
+    was taken before any transfer so the RTS is deasserted, current
+    snapshot (***) was taken after a transfer and therefore RTS is
+    deasserted again, which means current status and sport->old_status
+    are identical. In case (**) triggered when RTS got asserted, and
+    made port->hw_stopped set, the port->hw_stopped will remain set
+    because no change on RTS line is recognized by this driver and
+    uart_handle_cts_change() is not called from here to unblock the
+    port->hw_stopped.
 
-Please rebase on the current mainline kernel source.
+Update sport->old_status in __imx_uart_rtsint() accordingly to make
+imx_uart_mctrl_check() detect such RTS change. Note that TIOCM_CAR
+and TIOCM_RI bits in sport->old_status do not suffer from this problem.
 
-> @@ -92,10 +92,10 @@ struct acpi_table_slit {
->  /***********************************************************************=
-********
->   *
->   * SPCR - Serial Port Console Redirection table
-> - *        Version 2
-> + *        Version 3
->   *
->   * Conforms to "Serial Port Console Redirection Table",
-> - * Version 1.03, August 10, 2015
-> + * Version 1.08, October 7, 2021
->   *
->   ***********************************************************************=
-*******/
->
-> @@ -120,7 +120,7 @@ struct acpi_table_spcr {
->         u8 pci_function;
->         u32 pci_flags;
->         u8 pci_segment;
-> -       u32 reserved2;
-> +       u32 uartclk;
->  };
->
->  /* Masks for pci_flags field above */
-> --
-> 2.46.0.662.g92d0881bb0-goog
->
+Fixes: ceca629e0b48 ("[ARM] 2971/1: i.MX uart handle rts irq")
+Reviewed-by: Esben Haabendal <esben@geanix.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+---
+Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Esben Haabendal <esben@geanix.com>
+Cc: Fabio Estevam <festevam@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: Rickard x Andersson <rickaran@axis.com>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Stefan Eichenberger <stefan.eichenberger@toradex.com>
+Cc: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
+Cc: imx@lists.linux.dev
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-serial@vger.kernel.org
+Cc: stable@vger.kernel.org
+---
+V2: - Add code comment
+    - Add RB from Esben
+---
+ drivers/tty/serial/imx.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 67d4a72eda770..90974d338f3c0 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -762,6 +762,21 @@ static irqreturn_t __imx_uart_rtsint(int irq, void *dev_id)
+ 
+ 	imx_uart_writel(sport, USR1_RTSD, USR1);
+ 	usr1 = imx_uart_readl(sport, USR1) & USR1_RTSS;
++	/*
++	 * Update sport->old_status here, so any follow-up calls to
++	 * imx_uart_mctrl_check() will be able to recognize that RTS
++	 * state changed since last imx_uart_mctrl_check() call.
++	 *
++	 * In case RTS has been detected as asserted here and later on
++	 * deasserted by the time imx_uart_mctrl_check() was called,
++	 * imx_uart_mctrl_check() can detect the RTS state change and
++	 * trigger uart_handle_cts_change() to unblock the port for
++	 * further TX transfers.
++	 */
++	if (usr1 & USR1_RTSS)
++		sport->old_status |= TIOCM_CTS;
++	else
++		sport->old_status &= ~TIOCM_CTS;
+ 	uart_handle_cts_change(&sport->port, usr1);
+ 	wake_up_interruptible(&sport->port.state->port.delta_msr_wait);
+ 
+-- 
+2.45.2
+
