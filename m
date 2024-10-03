@@ -1,100 +1,133 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 48AA0DDD2;
-	Wed,  2 Oct 2024 22:59:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 789AF5A79B
+	for <linux-serial@vger.kernel.org>; Thu,  3 Oct 2024 18:30:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727909992; cv=none; b=XcPf+grR6U3fBNqeFcBivyC/XPT+pHXJoY1Gs885QOl048+aOjAetHnEcuTbFlJmHaBC2JTcaQyaIxDSYnqsCXyM7iRRxbB4l+7RJyBYjyRrLEcz1kj4rT4jvhFNskmap+HkEfUogGYqvu8VeOEUtcHCS8Qi2UxWGA8RLcix1Uk=
+	t=1727980223; cv=none; b=Fl+tbeqZG6dQXcOX75aCP3/aIKJKpbgIIQHLAh+KBSlEIGA6z7+IoOiBN7Bxosyqnme5Ep0CsiBSI2Yig4ogB0BPelib6BZZfTdCjdc6qXI02VAeBThVPjyzSf3BwhD/P/snVGoxPKRCETzIdX4IOFg2RZW6gOc5RyWDzoiSlNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727909992; c=relaxed/simple;
-	bh=vUnDHQhPCZR3/5PFaWY/V+EEQ7SJ8JR4e/Ru6a70Yek=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=GvonJy9fqTz9jLGZihg4rYrPKwVQsFYLfuT+/hU0zPFp+EeWFbxy5lY2RfuSkLUiWi7QKYUcVCMjucbvHMQ7V0sUV5TzWWVgcXiHOLIFxDMcGQWcls1aQzDgtHv3AFrQO9fQLjCJWzR7YCEQHJJrg0omsZboHgbpg7vMofaW2uE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id 3FEC292009C; Thu,  3 Oct 2024 00:59:48 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id 38E6692009B;
-	Wed,  2 Oct 2024 23:59:48 +0100 (BST)
-Date: Wed, 2 Oct 2024 23:59:48 +0100 (BST)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Arnd Bergmann <arnd@kernel.org>
-cc: Niklas Schnelle <schnelle@linux.ibm.com>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-    linux-serial@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>, 
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-In-Reply-To: <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
-Message-ID: <alpine.DEB.2.21.2410022305040.45128@angie.orcam.me.uk>
-References: <20240405152924.252598-1-schnelle@linux.ibm.com> <20240405152924.252598-2-schnelle@linux.ibm.com> <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk> <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com> <alpine.DEB.2.21.2410011707550.45128@angie.orcam.me.uk>
- <7bcec0eb88c3891d23f5c9f224e708e4a9bb8b89.camel@linux.ibm.com> <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk> <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1727980223; c=relaxed/simple;
+	bh=Njq0fwvF+5VhnQZ1131zaikWJHtF2S4Q3i8c1LX2lvI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cdC032yTavE2GZfi56tVxAdB4glGnFG3wt3YYJuy0uJGcnQ2ijxksdvEQou0B4i1gWGv0aLAMIuF2RREd0nXwZ/IIvlZWr34L+qm+FPbDlZlZ3nYE3k5YeOUMuvMJWRBnpetKcoWxnh4wiblLhjgB7szF1MePCr8VI+opqXz65s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=fb1SgGiY; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fb1SgGiY"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-53991d05416so1623995e87.2
+        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 11:30:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1727980217; x=1728585017; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uQhmHIpIANYWDxfaKfnE9P0S3zwxERnpg0mMy9nFKho=;
+        b=fb1SgGiY57LbfmRHv1G3tLy50zXrgozh7jEeNshBWKbqaV6FdXUYA8m15zu3s8Qjru
+         c9wbzOmIclZu1mqCuzil+qlvsPKlGRuPx/ptEx6KqhZ3bobxwpxhAuVIjla6H8/J0n/0
+         q5gxUWq8EVjWmNnpNeCA+JPseHRO6r7WeCBL8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1727980217; x=1728585017;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=uQhmHIpIANYWDxfaKfnE9P0S3zwxERnpg0mMy9nFKho=;
+        b=wKCpJB17j98djf7FIzluvkdNOf32ivgIAO7cB/y9DP34cYBVBBlk1ixR7Y3Ln+5hmU
+         AB9CB2/MYn6OaM7dEnqgA7CIPVBHhvIAdVovZKkdQ7SIW4re6eSApJoWanIKkatZw3wJ
+         LfN5rUZZmVXwo7r9dpY4UXvmruLt7JU2v7g46cXLBDOmegM4+RcA5iiQtOTYwLgZBigc
+         0fAeMwOGq90HvAqySbC/+sYlzyxJ8lHTsyUGxpObKzzPqBYakI0DenmBaXBebIvYfFiu
+         SXseKSA/YTBeMOUx5SwSh8hyHc6CA7lgS6i6w3EIT553hbCHGF+BtRNS5I9m2oEPdS14
+         HO6g==
+X-Forwarded-Encrypted: i=1; AJvYcCXEJ1JmpEOv71kPK3diTPE+fC62vEBI7kGbW/UMRvJeYSJwlmkWaYbD+kK3u1LMn6FCLya6tYKik/inpTA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yywg3sDzmpDHVPwEPl51X3qE2fLlU1WuEewljRdTcxfMsPSOqvv
+	StdbdwHsXOhY3+JNDHP3jgzWgFzmF9KQ2JIeO3HlOgdm2Y8lzylj/IfBG2NfL4Ko2IIMlN/ZIie
+	pzVHt
+X-Google-Smtp-Source: AGHT+IH+jWJpb2oKWbYKRwhQa+RlRaZMf4JDsIcvOfJECD4gpfxJbuJX3bonh28qdfqxxtoy/7PL9g==
+X-Received: by 2002:a05:6512:31c8:b0:539:9510:2b8a with SMTP id 2adb3069b0e04-539ab9e6d07mr263168e87.53.1727980216932;
+        Thu, 03 Oct 2024 11:30:16 -0700 (PDT)
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com. [209.85.208.182])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-539a8256b74sm232679e87.81.2024.10.03.11.30.15
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Oct 2024 11:30:16 -0700 (PDT)
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2fac6b3c220so20056881fa.2
+        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 11:30:15 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWxHBrFfkvxRletSDpQwpJCCwyRII4cHuTyY7ivmifd3QBRAYeMeG8AwkFs7+hPu71D8+eEbedLT13nTTg=@vger.kernel.org
+X-Received: by 2002:a05:651c:b10:b0:2fa:e52f:4476 with SMTP id
+ 38308e7fff4ca-2fae52f46b7mr54095681fa.45.1727980214619; Thu, 03 Oct 2024
+ 11:30:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20241001125033.10625-1-johan+linaro@kernel.org> <20241001125033.10625-2-johan+linaro@kernel.org>
+In-Reply-To: <20241001125033.10625-2-johan+linaro@kernel.org>
+From: Doug Anderson <dianders@chromium.org>
+Date: Thu, 3 Oct 2024 11:29:58 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=V31VFVoTWstVUnC_qDBmaUCb5Xv7pyUxUto7mquR5U4Q@mail.gmail.com>
+Message-ID: <CAD=FV=V31VFVoTWstVUnC_qDBmaUCb5Xv7pyUxUto7mquR5U4Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/7] serial: qcom-geni: fix premature receiver enable
+To: Johan Hovold <johan+linaro@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, stable@vger.kernel.org, 
+	Aniket Randive <quic_arandive@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 2 Oct 2024, Arnd Bergmann wrote:
+Hi,
 
-> I agree that this shouldn't be hard to finish. The IS_ENABLED()
-> check is not that easy to do as I think we need to keep calling
-> inb()/outb() outside of an #ifdef a compile-time error.
+On Tue, Oct 1, 2024 at 5:51=E2=80=AFAM Johan Hovold <johan+linaro@kernel.or=
+g> wrote:
+>
+> The receiver should not be enabled until the port is opened so drop the
+> bogus call to start rx from the setup code which is shared with the
+> console implementation.
+>
+> This was added for some confused implementation of hibernation support,
+> but the receiver must not be started unconditionally as the port may not
+> have been open when hibernating the system.
 
- Can we just provide dummy prototypes with `__attribute__((error("...")))' 
-instead?  This will surely prevent us from having to bend backwards so as 
-to make sure the compiler won't see any spurious references to these 
-inexistent functions or macros.  We already have a `__compiletime_error()' 
-macro for this purpose even.
+Could you provide a motivation for your patch in the description? Is
+patch needed for something (perhaps a future patch in the series)? Is
+it fixing a bug? Does it save power? Is the call harmless but cleaner
+to get rid of?
 
-> Part of the problem that Niklas is trying to solve with the
-> CONFIG_HAS_IOPORT annotations is to prevent an invalid inb()/outb()
-> from turning into a NULL pointer dereference as it currently does
-> on architectures that have no way to support PIO but get the
-> default implementation from asm-generic/io.h.
 
- It can be worse than that.  Part of my confusion with the defxx driver 
-trying to do port I/O with my POWER9 system came from the mapping actually 
-resulting in non-NULL invalid pointers, dereferencing which caused a flood 
-of obscure messages produced to the system console by the system firmware:
+> Fixes: 35781d8356a2 ("tty: serial: qcom-geni-serial: Add support for Hibe=
+rnation feature")
+> Cc: stable@vger.kernel.org      # 6.2
+> Cc: Aniket Randive <quic_arandive@quicinc.com>
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
+com_geni_serial.c
+> index 6f0db310cf69..9ea6bd09e665 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -1152,7 +1152,6 @@ static int qcom_geni_serial_port_setup(struct uart_=
+port *uport)
+>                                false, true, true);
+>         geni_se_init(&port->se, UART_RX_WM, port->rx_fifo_depth - 2);
+>         geni_se_select_mode(&port->se, port->dev_data->mode);
+> -       qcom_geni_serial_start_rx(uport);
 
-LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
-IPMI: dropping non severe PEL event
-LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
-IPMI: dropping non severe PEL event
-LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
-IPMI: dropping non severe PEL event
-LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
-IPMI: dropping non severe PEL event
-[...]
+FWIW, I found at least one thing that's broken by your patch. If you
+enable kgdb (but _not_ "kgdboc_earlycon") and then add "kgdbwait" to
+the kernel command line parameters then things will be broken after
+your patch. You'll drop into the debugger but can't interact with it.
+The "kgdboc_earlycon" path handles this because of
+"qcom_geni_serial_enable_early_read()" but it doesn't seem like
+there's anything that handles it for normal kgdb. If you drop in the
+debugger later it'll probably work if you've got an "agetty" running
+because that'll enable the RX path.
 
-from which it was all but obvious that they were caused by an attempt to 
-use PCI port I/O with a system lacking support for it.
 
-> It's not clear if having a silently non-working driver or one
-> that crashes makes it easier to debug for users. Having a clear
-> warning message in the PCI probe code is probably the best
-> we can hope for.
-
- I agree.  Enthusiastically.
-
-> I think that anyone using hardware that relies on port I/O on
-> non-x86 is at this point going to have a reasonable understanding
-> of the system, so I'm not too worried here. ;-)
-
- Well, virtually all non-x86 systems continue supporting PCI/e port I/O 
-via a suitably decoded CPU-side MMIO window, so I think coming across one 
-that doesn't can still be a nasty surprise even in 2024.  For instance 
-I've been happily using a PC parallel port PCIe option card, one of the 
-very few interfaces if not the only one remaining that have not ever seen 
-an MMIO variant, with my RISC-V hardware, newer than said POWER9 system.
-
- So far it's been the s390 and a couple of POWER system implementations 
-that have support for PCI/e port I/O removed.  Have I missed anything?
-
-  Maciej
+-Doug
