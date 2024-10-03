@@ -1,80 +1,81 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7B627711F
-	for <linux-serial@vger.kernel.org>; Thu,  3 Oct 2024 20:10:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 580A91AAE05
+	for <linux-serial@vger.kernel.org>; Thu,  3 Oct 2024 20:11:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727986257; cv=none; b=TJpb8XZ+XfEeZ7h5g6nbIPuQZV4tEALs2pvjgprWyIHUfA0xWP4sxq8Zap+FZloP6XQ+gRrFckxnKgilai6twuKuCV6oBaGCnTbW/TJ2pR898ir1vCXPhnnsQhnlytaUWXwM/eo064g/mRxhf3ww4EEyXBtO95d2MNew+9K4jLU=
+	t=1727986273; cv=none; b=WdGVGVCWnZYviUCGCkbARoz1CNZWuKPcb8N7TRfVPbjNakbRlQ2ih+nW59YDtao7g2ZIznK1AmO5PwqoFrkG+sgL93dNcJmVuZGRvcK18DWJossoBptZavxpZGgVv4o+mU9nO6SBdLcv2SlP3FpqybASvxmWqzJgvwOZJNlWojI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727986257; c=relaxed/simple;
-	bh=5mClyvmoE8/T4i63r9o6eFa9xXDQuoJ3ToU1moxvGuY=;
+	s=arc-20240116; t=1727986273; c=relaxed/simple;
+	bh=mFfQYJY4Gj/y2j2eWGpy+miI5FqUx4eMg4Hz/3GPObU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=W3rMrihb1q3gDm04ILrdi+UwmtEUCN/CBbN+ItmH1s0T1vr/P7p9yhPzDr2qz3ViiY5rNYfOBSkyFOL8QPKUcFVMSmb4NStbNmFpagN4gchOkOqU0Tk+yVLGkJVz5MXw2PFIkFph2FERG5GuAbrBHBr//n3ic4E6q713/vwHaPw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=D9l/LxIN; arc=none smtp.client-ip=209.85.167.45
+	 To:Cc:Content-Type; b=F73tpjO/XqWSXeUKMoDZA50+Gxr4pf3VBKpcCFvNb9HUjuHTUAgkNIrbCCZ0PDhSJkmL1pKshKvd1zvSS8StKbCoJZGJH70sT73xnKAL+7TGuk1PmagIIIDiW0bC2erI4bhbWQYB+6VDWdwM842dO2pjtzFj2oX94r73DH5cZhE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=H6eWEv5p; arc=none smtp.client-ip=209.85.167.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="D9l/LxIN"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-53991d05416so1729440e87.2
-        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 13:10:55 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="H6eWEv5p"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-5398b2f43b9so2315219e87.1
+        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 13:11:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1727986253; x=1728591053; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1727986266; x=1728591066; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5OT7NXgiXezelCOBUF+N5L8bbD4enjmEO6qRhbNzjnk=;
-        b=D9l/LxIN8usEpBIQfFHJquDzJ1AOQ10/IE2HHrWzAcYi52b7v97FlA+OBFnK2oEAKQ
-         dBBeZNdqgJFwHGwHsh63ruE0DBGyIs20eSoqXsPJ59VhksrlxKxeQWQzzpvuXnQt/wYp
-         xPzgKsb/IbM1yzVMsZGU6DVkRxAn5j+a1jd+s=
+        bh=WJ4SQGwcH2xs9+ZoWZiOyyo2Nn/MvzkFL6Ok3JvG8Eg=;
+        b=H6eWEv5pMzlVC/12cV5ri1ylRpij7rKubQ2nHiuzYeBo2qVBG6RyK9wXEgEI4sGl5g
+         jrRQZrBPSNwV9AoGFNB/4WpF96IwAYXvqQ321Nlog4pZleV58E+4sTRKjuwoF/MTvOG2
+         rjuziZUpcuhOKyXzGcKexvhgLKV9CbkVxOZQE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727986253; x=1728591053;
+        d=1e100.net; s=20230601; t=1727986266; x=1728591066;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=5OT7NXgiXezelCOBUF+N5L8bbD4enjmEO6qRhbNzjnk=;
-        b=USs4XLFHliOMdtUp45yyoPKrQF7lIAPKdClG6aSj2qaDRNLGBHtNbGhiNqruov9sof
-         tPeDwoBhI99Q+yzV5M1LKs23SF/4ai8/RBSGD4lsv7IUuKfaKDKpVCUAFO1+jl+0Fdn6
-         DKurqmvbG8GlGfeZLE91PoyVHAEzl0+rumJIpOCILnQ5+Ksj495N7+OLHalOSpGrRoMA
-         Qo8Fr/tXfmQxJWdpkoZCEj6vLrOdkx8iOJS6MIlm3bu1ztPsVaazVkurnbna9NN3X9eP
-         g5L3wce2JRKYUUQS0ykm7PRqRGyv4mUCwJ9SpUKbamrrwATZ5lVcEDnNowzJ1RXp7pfr
-         SaIg==
-X-Forwarded-Encrypted: i=1; AJvYcCWIAjVCNon3mqKTltTrv3Uos9Wnaf5Q/LeUJyVyXzyRWxtj1dxUL7dceVJi8lOsaFPZG7AUg7uOlRo/tPc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxeJ7L9B/ERYsmSEOxfbbqu8UZ5fLFLz3MosIbsL2dsKP2TKmLp
-	Y1n7lU3fqhnz9sQ9uvz2NfZk+2bL2hcMVvWWr9Z/1imJ4T2WD8QLz8NVfLXpzvrWUFvyz0GDSRF
-	k6g==
-X-Google-Smtp-Source: AGHT+IG3a321mxZbamucnMnKuFFNdCjh8CKy15cL8KaOmHuDTHKrzY4bgPPkP/4iDmtEVAAXEtlZ0w==
-X-Received: by 2002:a05:6512:224a:b0:539:a3cd:97ba with SMTP id 2adb3069b0e04-539ab87dfa2mr387654e87.36.1727986252903;
-        Thu, 03 Oct 2024 13:10:52 -0700 (PDT)
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com. [209.85.208.171])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-539a8257039sm247631e87.116.2024.10.03.13.10.51
+        bh=WJ4SQGwcH2xs9+ZoWZiOyyo2Nn/MvzkFL6Ok3JvG8Eg=;
+        b=MLK12zup09OaXevBlwbt8bOqI9USdq/xlU0OnTjIVWAI4dbGxq14YOK9P7LofMHabW
+         jXOVImvDoWrysnOrvE+bJqzEH5U6Gr3h5lzx1DF5yXHC+OHFCSv4O53nmXEX4NaOTqtZ
+         /zFlkvBK18IFpA1lSBB5ezcun/xKjG5wkIam/OeFxXbZklULivO+hkxmVMGPRNtkpNjB
+         rE9QYjN0kADXP+KUVdYXbSdSkKJcrxAFODY2QN0/VeB+Tux0eLtrafrHCiF4/aOUPkjx
+         uvcdaVW+GuV0AvOdFC6xslreR2k9Bu3MjP3bTpAZE4KBOXt1tPdOLkZYTlYkMIEMfafZ
+         XUqw==
+X-Forwarded-Encrypted: i=1; AJvYcCXCYCMWzwzYO00bG/hIVDEcLzv89/Zrc/zqCsLBAxznS3RKcQgEIcghjs3yfNPYX+uD9lIRwVPkKJvGODk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx3FLP8YslYnRYlgP715p+15dmfPxMBA7GehS0/QculIYwe7HSc
+	pO+NczZq/xAc3euCHXC2nt9ITaHaxh1eb0R9+iytvOsMQBsHKwExDAMnTQcPXG07A5ghkk9pePY
+	v7A==
+X-Google-Smtp-Source: AGHT+IG+HSnRv7eLxULCdjXPzKxUT4QpRaoicGYY8uDTbosk2KFbBNym8fFv3Yb8FiqjcYbbCPDFBw==
+X-Received: by 2002:a05:6512:ad2:b0:52c:ccb3:71f7 with SMTP id 2adb3069b0e04-539ac1439e0mr95938e87.9.1727986266123;
+        Thu, 03 Oct 2024 13:11:06 -0700 (PDT)
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com. [209.85.208.181])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-539a82a576dsm253504e87.243.2024.10.03.13.11.04
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Oct 2024 13:10:51 -0700 (PDT)
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-2fad6de2590so24413491fa.0
-        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 13:10:51 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWtawHG3L5a35p5zYI0E2aJfTsMb2Kicl8KoUEWudoUWHmJIb4rbfc6LYcR7yQqMXYJvImVECbMqvDGpcs=@vger.kernel.org
-X-Received: by 2002:a05:6512:3087:b0:539:8f68:e036 with SMTP id
- 2adb3069b0e04-539ab87df04mr503870e87.34.1727986251309; Thu, 03 Oct 2024
- 13:10:51 -0700 (PDT)
+        Thu, 03 Oct 2024 13:11:04 -0700 (PDT)
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2fac275471dso14660131fa.0
+        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 13:11:04 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVbvX6Y7HAo3kFbjId4QFTYbx4AxI2NS2bXLAw+eGnSbNUDmSsRfHYwSFeDyqDAarM2Xwz0WAyt4mqKxeQ=@vger.kernel.org
+X-Received: by 2002:a2e:b894:0:b0:2fa:cc50:e6c1 with SMTP id
+ 38308e7fff4ca-2faea26773bmr14843331fa.22.1727986264213; Thu, 03 Oct 2024
+ 13:11:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241001125033.10625-1-johan+linaro@kernel.org> <20241001125033.10625-8-johan+linaro@kernel.org>
-In-Reply-To: <20241001125033.10625-8-johan+linaro@kernel.org>
+References: <20241001125033.10625-1-johan+linaro@kernel.org> <20241001125033.10625-5-johan+linaro@kernel.org>
+In-Reply-To: <20241001125033.10625-5-johan+linaro@kernel.org>
 From: Doug Anderson <dianders@chromium.org>
-Date: Thu, 3 Oct 2024 13:10:37 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UXu79-HOhWuwumJNkpNCup5EHND1nPk5SHyc7Kx9iX+Q@mail.gmail.com>
-Message-ID: <CAD=FV=UXu79-HOhWuwumJNkpNCup5EHND1nPk5SHyc7Kx9iX+Q@mail.gmail.com>
-Subject: Re: [PATCH v2 7/7] serial: qcom-geni: drop unused receive parameter
+Date: Thu, 3 Oct 2024 13:10:47 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Vwmb8Miyca4kE1sdjMCx7LVCYqaXhLmPPqsojUHdEk-g@mail.gmail.com>
+Message-ID: <CAD=FV=Vwmb8Miyca4kE1sdjMCx7LVCYqaXhLmPPqsojUHdEk-g@mail.gmail.com>
+Subject: Re: [PATCH v2 4/7] serial: qcom-geni: fix receiver enable
 To: Johan Hovold <johan+linaro@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
 	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
 	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
+	linux-serial@vger.kernel.org, stable@vger.kernel.org, 
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -83,21 +84,55 @@ Hi,
 On Tue, Oct 1, 2024 at 5:51=E2=80=AFAM Johan Hovold <johan+linaro@kernel.or=
 g> wrote:
 >
-> Serial drivers should not be dropping characters themselves, but at
-> least drop the unused 'drop' parameter from the receive handler for now.
+> The receiver should be enabled in the startup() callback and there is no
+> need to stop it on every termios update.
 >
+> Since commit 6f3c3cafb115 ("serial: qcom-geni: disable interrupts during
+> console writes") the calls to manipulate the secondary interrupts, which
+> were done without holding the port lock, can lead to the receiver being
+> left disabled when set_termios() races with the console code (e.g. when
+> init opens the tty during boot).
+>
+> The calls to stop and start rx in set_termios() can similarly race with
+> DMA completion and, for example, cause the DMA buffer to be unmapped
+> twice or the mapping to be leaked.
+>
+> Fixes: 6f3c3cafb115 ("serial: qcom-geni: disable interrupts during consol=
+e writes")
+> Fixes: 2aaa43c70778 ("tty: serial: qcom-geni-serial: add support for seri=
+al engine DMA")
+> Fixes: c4f528795d1a ("tty: serial: msm_geni_serial: Add serial driver sup=
+port for GENI based QUP")
+> Cc: stable@vger.kernel.org      # 6.3
+> Cc: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > ---
->  drivers/tty/serial/qcom_geni_serial.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/tty/serial/qcom_geni_serial.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
+com_geni_serial.c
+> index dea688db0d7c..5b6c5388efee 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -1179,6 +1179,11 @@ static int qcom_geni_serial_startup(struct uart_po=
+rt *uport)
+>                 if (ret)
+>                         return ret;
+>         }
+> +
+> +       uart_port_lock_irq(uport);
+> +       qcom_geni_serial_start_rx(uport);
+> +       uart_port_unlock_irq(uport);
 
-Sure. I haven't spent any time figuring out what serial drivers are
-supposed to do with parity errors occur (I don't think I've ever used
-a UART that enabled the parity bit in all my years), but at least I
-agree that getting rid of this useless parameter makes sense.
+I _think_ you don't need the locking here. The documentation for the
+"startup" callback say:
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+ * Interrupts: globally disabled.
 
-I guess while reviewing this patch I can also see that, indeed, parity
-errors seem to be "GP0" and break seems to be (strangely) GP2 and GP3.
-I guess that answers some of the questions I had on patch #5.
+Other than that, this looks reasonable to me. I seem to recall
+previous discussions where _someone_ was relying on the
+qcom_geni_serial_start_rx() at the end of termios for some reason
+(which always felt like a bad design), but I can't find those old
+discussions. I suspect that the fact that you've added the start_rx in
+startup() is what we needed.
