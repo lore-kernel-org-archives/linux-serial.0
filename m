@@ -1,75 +1,75 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A6B51ABEB4
-	for <linux-serial@vger.kernel.org>; Thu,  3 Oct 2024 19:55:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D587A78281
+	for <linux-serial@vger.kernel.org>; Thu,  3 Oct 2024 20:07:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727985360; cv=none; b=haTTUH17c+Lv1+teD4Oo6/fT88AX2rbmxseCj8CFyXXa90CpAWbHkCYhNQY88L2hucUsBJ394NvWjWjIGXZqKZMq0nj4z9uR9GYGCwcU5HeOWmVbbnetwZkTG6kahAyvYYOFhelORiOuvcd4hI6S5O+i7VUJqr+USXjq3kZrdOQ=
+	t=1727986026; cv=none; b=Iui44RF2HjiEmL78ebr2BiS1OyjvgqGnE303cq9tebueVh7Dh8ytz42sxg/2hZtcPvUK4WVXemmZtjCs7dFFRhV7lAlqzk9P1bGgW7UVTKjPAOI8Gxmvpw0PEPIW3TAp8zyg1nasv21tncKOBwKCHjSWoChKNQ/qUS5KPbsjwtE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727985360; c=relaxed/simple;
-	bh=5EccGR70GSzvWHC68nC+X+tqsSbWiKZAhks9ypGfRZs=;
+	s=arc-20240116; t=1727986026; c=relaxed/simple;
+	bh=TnhcYpa/NRBNowU8LjRQnpY1dIEz8TtqcanEbYw8s+M=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cjOtDXImaBeHEQXapo2lBJyTIQNRHKnXG2Ud7W95lRj5h4Udb+BqJyc/1mceNtVv+zRA2Z+Zljb8OnPA65NccrDtJxMbZkz+skhythCEJGbWjmN8fYWq+0jLzLnK0phb+QF7Y7EN1hPq1rBWbjykKiFWV5Wmx/pMFi/AnAWx6fg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=bIqTpKe4; arc=none smtp.client-ip=209.85.167.41
+	 To:Cc:Content-Type; b=Kjxvh+5ZhJJQmC57QEdzXZlfQ+SmBO0+aM/iUNvsLZStEFeYD0At991a9qUTj4A2w8o6ELc2c6eCCrVXFQx92Vhr+iTjRTOSP8+kAInjBuEuYIPLOz2lJiwAXPrfrc7Ypp4gAqQRQmMGH4XzW6O3ai5vVDw6wQYR+SHFNvJfy+U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=WRFy0XIh; arc=none smtp.client-ip=209.85.167.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="bIqTpKe4"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5389fbb28f3so1442291e87.1
-        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 12:55:58 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="WRFy0XIh"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-53991d05416so1725969e87.2
+        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 13:07:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1727985355; x=1728590155; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1727986021; x=1728590821; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=o9YMrf0Tzihdplb/RBKwiSK1PmhTX7h2pmpItk8J4v8=;
-        b=bIqTpKe4iyhZq9xmUzl5zpJ4G6fRhduh0q3wJWuWhPRbQ8V7ZG2XgbBUYckU7d8esV
-         OW8N6Ba9bL1VSaCVUiVLmhAe+p02FPJP7+id43p/HrpbSaPYuLl3t6DA2/4e+AX+4aiv
-         rq1WE0f0FRxqzsO/nvvE1+GHW9QLQRoSJ8mjA=
+        bh=rKF05LoiruBsD6AHIRVSBunf1dIpsE0purL42isX/Q4=;
+        b=WRFy0XIhIZWYM/HRcMdHhZ+w47m12HgWZI9vSOAPyvGHOGuwOFg/LTB14t4+EAJ2PL
+         Y1nXHrz7vNGtbExaa3/pT/llj5DyYxPrkTIh6Rl5KIlvo4m8eLgSu+G+CW1bCaTHOZLX
+         6ru7GoenElM5cPfQm57jlghm0jQ87VFLHhmSo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1727985355; x=1728590155;
+        d=1e100.net; s=20230601; t=1727986021; x=1728590821;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=o9YMrf0Tzihdplb/RBKwiSK1PmhTX7h2pmpItk8J4v8=;
-        b=hCQwQ15Uoyn1pbCkzzxStpPGLsw7v+qmmfUctZNi7bYbT7hzOij9Vtk63t0RXiMZl8
-         nL8474/i1Dh931w4n1AV7cI4kHFpT7HlPMXzheJwY/Xi3E/TLkkfDBb/IcoaelRRX9rO
-         Qa5xhXYq6Ix1HgjUCYZYXMQApyjAqN6/rAhOUNt+LeWxtKgNy16TP8uPAgwMy7s0rO2l
-         WwzEMT22/yT6tYLvGcg26k5RLWb3TmrPXVod2FIWDar3q4pv3x1aZ1JoWzoGqFiZz1rM
-         zcMjw51qBFSpEE85FeJW+WzqZRntHZnMBIcFgEUkK6x9O9OviLy1PTsQu9H4slfGrbK6
-         TrFg==
-X-Forwarded-Encrypted: i=1; AJvYcCUTytUhcezzk6YTX8SlRocbrW6fOUr1qtpig3D1Q+5a+3WQjWZWvx/174ASG4XMMWtqUdkdGJSQ91UE93c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxT8ZGJt52qimSZGkW04b7gHMzNgcKJn38bxKLoBrDUPxM289UM
-	70gW8WnLVcczQctsLOB/eoa5Yd+/iyMRfyYCFopFjwf0ZlQ9exJi75IwcWZJIIKkQ3YI8OQOTcO
-	VG2qh
-X-Google-Smtp-Source: AGHT+IHe4Ry2rbbG/m5YfI1aw0PsiQnZMGw+vwqFEE136BYhdAnjWGokqs9PEXXBA0Oo7WjNWYzO0g==
-X-Received: by 2002:a05:6512:3da4:b0:52f:260:c459 with SMTP id 2adb3069b0e04-539ac170ea3mr87552e87.22.1727985355307;
-        Thu, 03 Oct 2024 12:55:55 -0700 (PDT)
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-539a82aba11sm247462e87.299.2024.10.03.12.55.53
+        bh=rKF05LoiruBsD6AHIRVSBunf1dIpsE0purL42isX/Q4=;
+        b=LStgXDnrbXpyvlWMnqTJYWDYnlXcOEWOA0NcYu0/6zCVBXyAzgqONXKLLUt4onSDwX
+         Hde3mGBRrCHC+2gOQWCpx2FgW/bVaXeEDZEyYuGdXhCQVshJq0buy2yaETF9UiJmJR0Q
+         be96b24edZ1+usnBUx/7edyFq9vdwEj7UglhVKr4wpFcAFkER6NanNs8sOOF/rGKYk3o
+         tc7osmhSDZ1OZc61SLKq9NdAVbL0HcoNvitRogqLcdf2ETbcGuPw3ybAeugSk02PToaS
+         SB5lf+j4DwhZv+FJoOYc83cnSaXqBGhx7v9glQavyDkPQPp+MLY05/qZWbSkfGCFIGRx
+         HZHQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXsxkdRe41yiEfWE15UcLW3uL1feOx5cEPG6zI5fLgd1jHL2eGpHdrQvw/ys7KDvLQ44GeMFWkcPZ/BI98=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxNRQkYgLjq+fWvmL/L5a6i6+paOx8mVkImr019xX+iT4vi1P2M
+	YANzOIhuL/clmn+dGEyzFaVvoe3DRAWcxzBIpyh1NAzRm29I4BVsSCrQEddzXfszRiiYHOjNKhV
+	RyFHE
+X-Google-Smtp-Source: AGHT+IGOYs1ZzkdjIl67fuDcKerV8TfBOcoduuVdGLnyN7X3bErO5eGVkcEEjy521Bu7u0HrqEJigg==
+X-Received: by 2002:a05:6512:b98:b0:536:55cc:963e with SMTP id 2adb3069b0e04-539ab9cf28bmr513430e87.44.1727986020519;
+        Thu, 03 Oct 2024 13:07:00 -0700 (PDT)
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com. [209.85.167.48])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-539a82a3b14sm253060e87.208.2024.10.03.13.06.59
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Oct 2024 12:55:54 -0700 (PDT)
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-5398e58ceebso1372348e87.0
-        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 12:55:53 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCW8Rtr2VsgBsZU0/FVuj/F6KXovYLZOmlPjxUuuT4TeyaxpYs9kET9zeuaiTfjabZYTIWJcPX0fwQU7dy0=@vger.kernel.org
-X-Received: by 2002:ac2:4e06:0:b0:539:9476:25a with SMTP id
- 2adb3069b0e04-539a627ba0fmr1592030e87.21.1727985353524; Thu, 03 Oct 2024
- 12:55:53 -0700 (PDT)
+        Thu, 03 Oct 2024 13:06:59 -0700 (PDT)
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5398b589032so2278631e87.1
+        for <linux-serial@vger.kernel.org>; Thu, 03 Oct 2024 13:06:59 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWbbU8IXtim4ncf0SWrG2dTkuWLHnCpyJG7pCYTDdeRRNcb9Bo8JbXD7uIApqh34vvIzircngMK2WZyv6Q=@vger.kernel.org
+X-Received: by 2002:a05:6512:3d07:b0:52e:fa5f:b6a7 with SMTP id
+ 2adb3069b0e04-539ab8659c5mr452850e87.13.1727986019089; Thu, 03 Oct 2024
+ 13:06:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241001125033.10625-1-johan+linaro@kernel.org> <20241001125033.10625-6-johan+linaro@kernel.org>
-In-Reply-To: <20241001125033.10625-6-johan+linaro@kernel.org>
+References: <20241001125033.10625-1-johan+linaro@kernel.org> <20241001125033.10625-7-johan+linaro@kernel.org>
+In-Reply-To: <20241001125033.10625-7-johan+linaro@kernel.org>
 From: Doug Anderson <dianders@chromium.org>
-Date: Thu, 3 Oct 2024 12:55:39 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=V9FfwKREBfBbCRiqH3y2K=oTfQPj1Nx1paxrVwFD-efg@mail.gmail.com>
-Message-ID: <CAD=FV=V9FfwKREBfBbCRiqH3y2K=oTfQPj1Nx1paxrVwFD-efg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] serial: qcom-geni: fix rx cancel dma status bit
+Date: Thu, 3 Oct 2024 13:06:43 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=W9fEQ-g_LWK18SfZq4ZmFN_QbrBCwKRx3BTc0i-UXEcA@mail.gmail.com>
+Message-ID: <CAD=FV=W9fEQ-g_LWK18SfZq4ZmFN_QbrBCwKRx3BTc0i-UXEcA@mail.gmail.com>
+Subject: Re: [PATCH v2 6/7] serial: qcom-geni: drop flip buffer WARN()
 To: Johan Hovold <johan+linaro@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
 	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
@@ -83,48 +83,44 @@ Hi,
 On Tue, Oct 1, 2024 at 5:51=E2=80=AFAM Johan Hovold <johan+linaro@kernel.or=
 g> wrote:
 >
-> Cancelling an rx command is signalled using bit 14 of the rx DMA status
-> register and not bit 11.
+> Drop the unnecessary WARN() in case the TTY buffers are ever full in
+> favour of a rate limited dev_err() which doesn't kill the machine when
+> panic_on_warn is set.
 >
-> This bit is currently unused, but this error becomes apparent, for
-> example, when tracing the status register when closing the port.
->
-> Fixes: eddac5af0654 ("soc: qcom: Add GENI based QUP Wrapper driver")
 > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > ---
->  include/linux/soc/qcom/geni-se.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/tty/serial/qcom_geni_serial.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 >
-> diff --git a/include/linux/soc/qcom/geni-se.h b/include/linux/soc/qcom/ge=
-ni-se.h
-> index c3bca9c0bf2c..2996a3c28ef3 100644
-> --- a/include/linux/soc/qcom/geni-se.h
-> +++ b/include/linux/soc/qcom/geni-se.h
-> @@ -258,8 +258,8 @@ struct geni_se {
->  #define RX_DMA_PARITY_ERR              BIT(5)
->  #define RX_DMA_BREAK                   GENMASK(8, 7)
->  #define RX_GENI_GP_IRQ                 GENMASK(10, 5)
-> -#define RX_GENI_CANCEL_IRQ             BIT(11)
->  #define RX_GENI_GP_IRQ_EXT             GENMASK(13, 12)
-> +#define RX_GENI_CANCEL_IRQ             BIT(14)
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
+com_geni_serial.c
+> index 5b6c5388efee..8bc4b240bf59 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -570,9 +570,8 @@ static void handle_rx_uart(struct uart_port *uport, u=
+32 bytes, bool drop)
+>
+>         ret =3D tty_insert_flip_string(tport, port->rx_buf, bytes);
+>         if (ret !=3D bytes) {
+> -               dev_err(uport->dev, "%s:Unable to push data ret %d_bytes =
+%d\n",
+> -                               __func__, ret, bytes);
+> -               WARN_ON_ONCE(1);
+> +               dev_err_ratelimited(uport->dev, "failed to push data (%d =
+< %u)\n",
+> +                               ret, bytes);
 
-This looks right, but do you want to fix all the rest of the wrong
-bits in this list while you're at it? Things look OK up to the
-"RX_FLUSH_DONE" and then they're wrong. Specifically:
+Not that it really matters, but since you're fixing the type of
+"bytes" to %u you probably should fix "ret" to %u too, which means
+changing the type of it? Officially tty_insert_flip_string returns the
+(unsigned) size_t.
 
-* My datasheet doesn't have RX_DMA_PARITY_ERR. Unless maybe it's one
-of the "GP" IRQs?
+As a nit, I'd also say that your error message shouldn't assert "<"
+unless you change your "if" test to "<". It seems safer to use !=3D so
+IMO the printout should also say "!=3D".
 
-* My datassheet doesn't have RX_DMA_BREAK. Unless maybe it's one of
-the "GP" IRQs (though why would it be two bits big?)
-
-* RX_GENI_GP_IRQ is 12:5, not 10:5
-
-* My datasheet has RX_GENI_CMD_FAILURE as BIT(15).
-
-In any case, this does make it better so:
+I'd hope you're not hitting this error a lot because it means you're
+dropping bytes, but getting rid of the WARN_ON and changing to
+ratelimited makes sense to me.
 
 Reviewed-by: Douglas Anderson <dianders@chromium.org>
-
-
--Doug
