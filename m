@@ -1,123 +1,177 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89FD31C82E6
-	for <linux-serial@vger.kernel.org>; Fri,  4 Oct 2024 16:57:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A242854767
+	for <linux-serial@vger.kernel.org>; Fri,  4 Oct 2024 17:45:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728061043; cv=none; b=BDxLwhgNrEJykrSftb/xan4jpjQXieqpNabikiVyYM003GLpRNSxrpM18k+Dpca1Th0UC1Y2tncz1oQN4OGvX3SwOmwSG6K27isVaVrE4Et0TFIjNslY9U+IJHYJhYwPz4yuisWimDlcT1fmpXzwJuKbtpStPWX6jL0ZtiT6YEM=
+	t=1728063958; cv=none; b=kOu2/u7aE7+PWD3t2/57aluFO/HfYtXecplzNUG04ji8FEoi1ioBUvqI1AeUrizHf0Hrr4K8AHI8tLfAejmmupYGuqzXjgooqwNVmeVxZgRfAT1sHmdbicOfUSQDoP0o5BpOLn8MKPmXu6cEn4A47gOf22ApsFGVbb/4KGvndKE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728061043; c=relaxed/simple;
-	bh=mBIgP43hFA332wU/wQG7YLLmCpJoVABP/u7z1pRmDBc=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=k5b70pyPyJy1QIqQ2UIBtwzaqc46wMBLmKmag0DUSXvejlNC2Q7zVmjiskZzgH9MAxn66O9/Vwyte0jEyJX/nRKbEqOiH89YfPTThpEB6LSKKVGCerfuILr0Yc9Np+etYVmMxIjrqJUmwQ5zCpHjL17S7i3WEHHLC7kXgJ3n6Vw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AQ5hjuCT; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1728063958; c=relaxed/simple;
+	bh=TI6mcXb4V5s95OY28ThDa+Nttx+DA0b7i9XYbIv6P9Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Aqirug9KAOXXZHXezhdW7jVSee5Wyvd6aqSIaKU1I3BfRCA1dWwq8xyPd8jpdAnnBBY8aKM7S8r7YgrbIMzEcchABQ4sq4sBbWkJcgwDpKhtCHbdjgEUGWolPPoo/ST15STghAcR0+Khl+NRjkodXmz2ulA403yN2DdG23EYYC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=XUVrqwQ7; arc=none smtp.client-ip=209.85.215.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AQ5hjuCT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0884EC4CECD;
-	Fri,  4 Oct 2024 16:57:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728061043;
-	bh=mBIgP43hFA332wU/wQG7YLLmCpJoVABP/u7z1pRmDBc=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=AQ5hjuCTtjWaEiY0KN0MuiNo0cJoVvRdJATqYT2QiRx4m/X/eVCCA0UnV42qQyVxN
-	 hxSAoounLztU0pUmXqf5zhh8/53+lCKRep5QtIWvJzIK0trDhQUPcIoeMU1TBuiKiX
-	 guZO7aIJldCjD6yhFrjzeh3xd1y2Ktx3fS/QwLKJR7iXPfwhWrCcUgzGxAI+AZoF6V
-	 ChDSsSMZd9HzHygRULkmkX0BnJiq9fsz4qcSWfOF6zBbKGRevVKhJ1uAvPmCk/XfVO
-	 p7WgHcd4qtdRTfLgtNmXJSy9/mk8FJ+xYBE8foZ8kuDFxTNt04YL226XeB+mD6KKWC
-	 SiIHmS6hRrd2A==
-Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 000931200043;
-	Fri,  4 Oct 2024 12:57:21 -0400 (EDT)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-10.internal (MEProxy); Fri, 04 Oct 2024 12:57:22 -0400
-X-ME-Sender: <xms:cR4AZ8gTM0i9tbbhc_5jErCz7g3sMfFzTbOTejazRXSgeF_KmXfX7g>
-    <xme:cR4AZ1A425XkaAu7Luv3qx9utPd187Dbvhlx4MvvsZwOx8y4GeTOO7sa98GL0rONM
-    Vazc44gBTAAGvEIh98>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrvddvfedguddtiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
-    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
-    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
-    tdenucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvg
-    hlrdhorhhgqeenucggtffrrghtthgvrhhnpeejjeffteetfeetkeeijedugeeuvdfgfeef
-    iedtudeikeeggeefkefhudfhlefhveenucevlhhushhtvghrufhiiigvpedtnecurfgrrh
-    grmhepmhgrihhlfhhrohhmpegrrhhnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghl
-    ihhthidquddvkeehudejtddvgedqvdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlh
-    drohhrghesrghrnhgusgdruggvpdhnsggprhgtphhtthhopeekpdhmohguvgepshhmthhp
-    ohhuthdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtph
-    htthhopehhtggrsehlihhnuhigrdhisghmrdgtohhmpdhrtghpthhtohepshgthhhnvghl
-    lhgvsehlihhnuhigrdhisghmrdgtohhmpdhrtghpthhtohepihhlphhordhjrghrvhhinh
-    gvnheslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopehgrhgvghhkhheslhhi
-    nhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehmrggtrhhosehorhgtrg
-    hmrdhmvgdruhhkpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgv
-    rhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkh
-    gvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:cR4AZ0EyDwR_4kMZSw3G0PRrTj9HGULuUPHmCX-q356OFLmZbmqnpQ>
-    <xmx:cR4AZ9Q3blhZPQ7fiSoXfO4JKSCsz315YRyQYDmuzuzkF2ip3pE7IQ>
-    <xmx:cR4AZ5wByjji00qWzDAmApNWfZolVcHpaXLiRpewjtUmgIMOhwu3sA>
-    <xmx:cR4AZ75zK_An49-mwDyagl1TWjkn21YRRTM_Zl0_KEOmZafWPpbbyw>
-    <xmx:cR4AZ2yNQjaqRvSQRmtOD00K9fwtijtHDZbVgNrKaI4W4Zp9xHdzG2bn>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id BC6C32220073; Fri,  4 Oct 2024 12:57:21 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="XUVrqwQ7"
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-7db637d1e4eso1749098a12.2
+        for <linux-serial@vger.kernel.org>; Fri, 04 Oct 2024 10:45:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1728063956; x=1728668756; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1hTEi2pGCxMRGUpF5+1bzMouLoBbQyVgP6nKgujfGZc=;
+        b=XUVrqwQ71xfWtyrURKkM2S/CkVr1OI6s/zA24zO1EN9F6sppGPlvRBvq20B51s55Zx
+         0GmFz+NcMX5ThEAEfsMPAfyA4owZHuzJEHJWd+YQfm6LJLBC9mICCgmDmYPeKAcEpNTV
+         rRJtsZbUIDD6JADlFdrfVKYOGMwvqMlth+MSE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728063956; x=1728668756;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1hTEi2pGCxMRGUpF5+1bzMouLoBbQyVgP6nKgujfGZc=;
+        b=OnYi9oTHe6mJiyhkjazn63zCAXcCR1qZigVqlFmAMFLgflgda9Af0FN9Pv4XH2LrMx
+         7zXDKD2K9psuTlEg0ekMfiZ9xmhTwK+kvlDOOuMsPJ6+8H+xxfKyH/n0rqay8xj7tz2l
+         xvRmfs+qnrzuBznYgZsdeqmv4TJPzNzWJLayhYjk34pE94pR5/8STwVff822h7PTjMHq
+         9HS6Zf7ItecPDvL6/YkRblYECzRLUmTJuEwL2ZsNWc7+vBWvAWTPv4LFp+IqQs2XaxuH
+         DJjCKqLt17YEv0Gz3NzBALPI0whQAwxNiyhDYMLozAPPufZg1caYBSRQGqIakaha4QGc
+         QQxg==
+X-Gm-Message-State: AOJu0YzHVxsdsVRwZNzhavHrlqfuo/MQjyO/m3Pqr4cssbvQbROxKSQ0
+	ejcoXqnJTiEeJxi1WsmkXdU0g8oyvrhpyigbZ9wTJcc7fukcPt50Y1ln09JrWm16ivaNRvGD/HI
+	=
+X-Google-Smtp-Source: AGHT+IHKfB5RBNG892KluPnNY2awuHuyxUs79lXdV76TWiytW399NS6rRa5JdZXYwR0DXyOZb1vE3g==
+X-Received: by 2002:a05:6a20:c78f:b0:1cf:23cb:b927 with SMTP id adf61e73a8af0-1d6dfabacc3mr5892431637.34.1728063955740;
+        Fri, 04 Oct 2024 10:45:55 -0700 (PDT)
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com. [209.85.215.180])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7e9f6c35e68sm219665a12.65.2024.10.04.10.45.53
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 04 Oct 2024 10:45:54 -0700 (PDT)
+Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-7e9ad969a4fso1473441a12.3
+        for <linux-serial@vger.kernel.org>; Fri, 04 Oct 2024 10:45:53 -0700 (PDT)
+X-Received: by 2002:a05:6a20:9f8f:b0:1d2:e1b5:2b51 with SMTP id
+ adf61e73a8af0-1d6dfa1e516mr5534269637.8.1728063952820; Fri, 04 Oct 2024
+ 10:45:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Fri, 04 Oct 2024 16:57:01 +0000
-From: "Arnd Bergmann" <arnd@kernel.org>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: "Niklas Schnelle" <schnelle@linux.ibm.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
- linux-kernel@vger.kernel.org
-Message-Id: <be4faaed-be22-42e5-bcc2-6a992b4f9b58@app.fastmail.com>
-In-Reply-To: <alpine.DEB.2.21.2410041642140.45128@angie.orcam.me.uk>
-References: <20240405152924.252598-1-schnelle@linux.ibm.com>
- <20240405152924.252598-2-schnelle@linux.ibm.com>
- <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
- <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com>
- <alpine.DEB.2.21.2410011707550.45128@angie.orcam.me.uk>
- <7bcec0eb88c3891d23f5c9f224e708e4a9bb8b89.camel@linux.ibm.com>
- <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk>
- <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
- <alpine.DEB.2.21.2410022305040.45128@angie.orcam.me.uk>
- <b59d81ee-04af-4557-9d35-ec2c03fbcbe7@app.fastmail.com>
- <alpine.DEB.2.21.2410041642140.45128@angie.orcam.me.uk>
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+References: <20240912173901.3969597-1-rrangel@chromium.org>
+ <20240912113616.3.I1b7a5033a2191cb0cdbadc2d51666a97f16cc663@changeid> <CAJZ5v0hmf55OA1f4egzE7F0ET+7af_+pcxmnOSxO5Snd6L5CrQ@mail.gmail.com>
+In-Reply-To: <CAJZ5v0hmf55OA1f4egzE7F0ET+7af_+pcxmnOSxO5Snd6L5CrQ@mail.gmail.com>
+From: Raul Rangel <rrangel@chromium.org>
+Date: Fri, 4 Oct 2024 11:45:39 -0600
+X-Gmail-Original-Message-ID: <CAHQZ30CRYoH_-rY7hMgasbkyqEBpgVfH6PZRzuaU=2g4S_oGtA@mail.gmail.com>
+Message-ID: <CAHQZ30CRYoH_-rY7hMgasbkyqEBpgVfH6PZRzuaU=2g4S_oGtA@mail.gmail.com>
+Subject: Re: [PATCH 3/3] ACPI: SPCR: Add support for rev 3
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: linux-serial@vger.kernel.org, pmladek@suse.com, rafael.j.wysocki@intel.com, 
+	ribalda@chromium.org, Len Brown <lenb@kernel.org>, 
+	Robert Moore <robert.moore@intel.com>, acpica-devel@lists.linux.dev, 
+	linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 4, 2024, at 16:24, Maciej W. Rozycki wrote:
-> On Fri, 4 Oct 2024, Arnd Bergmann wrote:
->> There are also a lot of Arm systems that have no I/O space support at
->> all, such as the Apple M2 I'm using at the moment.
+On Wed, Oct 2, 2024 at 12:13=E2=80=AFPM Rafael J. Wysocki <rafael@kernel.or=
+g> wrote:
 >
->  Thanks for letting me know.  Is it AArch64 only that has no port I/O 
-> support in the PCIe root complex nowadays, or is it 32-bit ARM as well?
+> On Thu, Sep 12, 2024 at 7:39=E2=80=AFPM Raul E Rangel <rrangel@chromium.o=
+rg> wrote:
+> >
+> > Revision 3 supports specifying the UART input clock. This allows for
+> > proper computation of the UART divisor when the baud rate is specified.
+> >
+> > The earlycon code can accept the following format (See `parse_options`
+> > in `earlycon.c`.):
+> > * <name>,io|mmio|mmio32|mmio32be,<addr>,<baud>,<uartclk>,<options>
+> >
+> > This change makes it so the uartclk is passed along if it's defined in
+> > the SPCR table.
+> >
+> > Booting with `earlycon` and a SPCR v3 table that has the uartclk and
+> > baud defined:
+> > [    0.028251] ACPI: SPCR: console: uart,mmio32,0xfedc9000,115200,48000=
+000
+> > [    0.028267] earlycon: uart0 at MMIO32 0x00000000fedc9000 (options '1=
+15200,48000000')
+> > [    0.028272] printk: legacy bootconsole [uart0] enabled
+> >
+> > Link: https://learn.microsoft.com/en-us/windows-hardware/drivers/serpor=
+ts/serial-port-console-redirection-table
+> >
+> > Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+> >
+> > ---
+> >
+> >  drivers/acpi/spcr.c   | 5 ++++-
+> >  include/acpi/actbl3.h | 6 +++---
+> >  2 files changed, 7 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/acpi/spcr.c b/drivers/acpi/spcr.c
+> > index cd36a97b0ea2c7..67ae42afcc59ef 100644
+> > --- a/drivers/acpi/spcr.c
+> > +++ b/drivers/acpi/spcr.c
+> > @@ -209,9 +209,12 @@ int __init acpi_parse_spcr(bool enable_earlycon, b=
+ool enable_console)
+> >         if (!baud_rate) {
+> >                 snprintf(opts, sizeof(opts), "%s,%s,0x%llx", uart, ioty=
+pe,
+> >                          table->serial_port.address);
+> > -       } else {
+> > +       } else if (table->header.revision <=3D 2 || !table->uartclk) {
+> >                 snprintf(opts, sizeof(opts), "%s,%s,0x%llx,%d", uart, i=
+otype,
+> >                          table->serial_port.address, baud_rate);
+> > +       } else {
+> > +               snprintf(opts, sizeof(opts), "%s,%s,0x%llx,%d,%d", uart=
+, iotype,
+> > +                        table->serial_port.address, baud_rate, table->=
+uartclk);
+> >         }
+> >
+> >         pr_info("console: %s\n", opts);
+> > diff --git a/include/acpi/actbl3.h b/include/acpi/actbl3.h
+> > index 8f775e3a08fdfb..afe45a2379866a 100644
+> > --- a/include/acpi/actbl3.h
+> > +++ b/include/acpi/actbl3.h
+>
+> The part of the patch below is outdated - SPCR v4 is supported already.
+>
+> Please rebase on the current mainline kernel source.
 
-I'm fairly sure we have some on 32-bit as well, it's certainly
-up to the specific SoC rather than the architecture.
+Oh awesome. Should I send out all three patches again? Or just this
+one? I think patches 1 and 2 can be merged.
 
-I think I've seen three different cases:
-
-- Apple leaves out every feature from hardware that they don't
-  have to do for compliance, this also includes CPU stuff like
-  32-bit mode, big-endian or cacheable PCI mappings. I think IBMs
-  ppc64 chips are in a similar situation
-
-- Some devices can probably do I/O space in hardware, but this is
-  left out from the driver or the DT because it has not been
-  validated to work
-
-- Some devices have a limited number of mapping windows that
-  are shared between prefetchable-memory, non-prefetchable-memory,
-  config and io space. Leaving out I/O space completely is
-  easier than runtime remapping of the windows
-
-      Arnd
+>
+> > @@ -92,10 +92,10 @@ struct acpi_table_slit {
+> >  /*********************************************************************=
+**********
+> >   *
+> >   * SPCR - Serial Port Console Redirection table
+> > - *        Version 2
+> > + *        Version 3
+> >   *
+> >   * Conforms to "Serial Port Console Redirection Table",
+> > - * Version 1.03, August 10, 2015
+> > + * Version 1.08, October 7, 2021
+> >   *
+> >   *********************************************************************=
+*********/
+> >
+> > @@ -120,7 +120,7 @@ struct acpi_table_spcr {
+> >         u8 pci_function;
+> >         u32 pci_flags;
+> >         u8 pci_segment;
+> > -       u32 reserved2;
+> > +       u32 uartclk;
+> >  };
+> >
+> >  /* Masks for pci_flags field above */
+> > --
+> > 2.46.0.662.g92d0881bb0-goog
+> >
