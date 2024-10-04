@@ -1,62 +1,62 @@
 Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C8D42178F1;
-	Fri,  4 Oct 2024 14:44:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C131E377D;
+	Fri,  4 Oct 2024 16:03:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728053063; cv=none; b=iVikp/RRp7gCeXi+P/LTZOwEAIWGZAiPQY2pDv/ljWSOy5SbbbQ7Y9QdwyxAp60Trd3SyK9Swa1GeUrOVzOALQ/W7qltzmzhzLOH7xi/+5fXDdfWNo2+VdhBkhk5IIEEJN+7GudtBUIn9wmMjLq7qsX1zegj7H5JwvDsgWJvwqA=
+	t=1728057839; cv=none; b=fzuBytcU2hBiF03TE3yuNAtNNJCWdVb6iI3vkZk3VgyaY49NS8Zb21R1/oGRwUvHcQG7Rk4wfEv7b5Cwyzgnj0PZFHjjZBUwR0fpwXI9bxpZru8zekzCfaq4A/P4E1eJ3ctJ0+Fl67wCCxXm1MuP8w2qLFWzb/oZKPZquVikVdA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728053063; c=relaxed/simple;
-	bh=c2f4wjWndb0oUKVDRlhoacnlrzzFZKKdtwtL6jC5O1U=;
+	s=arc-20240116; t=1728057839; c=relaxed/simple;
+	bh=9ea+zWqqt7siqy6qOXzP3uto4QAFiHkliWHiG5UbJss=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=pERgvcg3Wdm0sx+3Yf697izuzjvNNO8a3Id91Sb75IBgM8VmPXZErJCaR4ahfHMpGQWhx0DDonUkXIj/T+GXgTh4iVqBitQ2S39012SSSlY3mEUQMgML/uToV67/zcT86LqnB6MCQiMfGDWsJs/vxGhDMBgR2Iijvk/1eh6vONw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=rxeTqOkD; arc=none smtp.client-ip=148.163.158.5
+	 Content-Type:MIME-Version; b=mf9fCsZ3pcBhdOkrrZc+Oq9MXrnZHzG/PNF+Qd8GK7BnSLi04eRXocgUzRZml0KsiG8BId0m+l/Rt47mpXbHTKCrBrsH9bJYjWEG6LHfpFhr7z+nyZQ5pzwEjH+c6IUn/PDcKFeCs+ZGc0gn7x80ekYatlf5S4yCAHGikYa/KHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=F/4QE4ix; arc=none smtp.client-ip=148.163.158.5
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="rxeTqOkD"
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 494DnaOt006946;
-	Fri, 4 Oct 2024 14:44:08 GMT
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="F/4QE4ix"
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 494Fv0wJ019827;
+	Fri, 4 Oct 2024 16:03:49 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
 	message-id:subject:from:to:cc:date:in-reply-to:references
 	:content-type:content-transfer-encoding:mime-version; s=pp1; bh=
-	zpDY2+Mo91IH7ru01R+RLsb8SsQF3OYQ3s8Q+4K8eCQ=; b=rxeTqOkDcffu4yGw
-	jzS2TLwT5KmWRVG3XnbWZfpv6f3XmT9FiofgyzA9vEXtTQfh9SF0Eu2QK9jnqMoH
-	TaRO5E22rIXQR49p+y/PSAh5Uxtfcpj6S07oXo6yh3y36fA3SnDf7V2hE/er6QpZ
-	ih4Omgd2y1V7cm5Ke22wK577GkJXQm4xG8f/ZZ7eTNH5UlbdXbGwgq2e5Sa7T4qE
-	yLq6KYySlgz1D1BZUOLG+a4fRXdlLdx+zHTwaSWX34i4NHIOsQ/0mU+pSCISmZDe
-	M39M2jFP9j3oEuYXFAO9UIc8snp19OLlHOU8CktzeefBPgeBHArmQMHz+1DtziYr
-	j19e5Q==
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 422hk6g814-1
+	jQ+wFzVfxPX35cujQ6GKn6bMYeR2bpXlEYcS8vgA8KM=; b=F/4QE4ixnDdhXNAM
+	/dgaMgRih8r1GXCniF/7uaZLS1VbrMpapYXv1zHdVYKNZltPkL/viEq/ZmKZEqBO
+	T6EdfAov62st6+L2/nSfpGG1X79cIjmpTaytU2LVs/BzPnV1+7Oi6Ylj3IG6h+J/
+	yqGwaG0GfA5DI7lgemgJtQCqLiQpE3/NsmIDx9Yhld/fAwjXLKuqCJZItLYTKg6Y
+	lkhG7nT5vOlz5UHzk6kf4Wl8nid2RLejz/lBrpActInJaKGzl5JlB3MqSDVuuYe7
+	7HoIo1/CMXYH3cI8MXt9HpH6g9iU+J2XYzGnANBcTPvHYMeKxfYfo23BMAraMPCt
+	Jlx9hQ==
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 422kejg19f-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 04 Oct 2024 14:44:08 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 494DmLDU009297;
-	Fri, 4 Oct 2024 14:44:07 GMT
-Received: from smtprelay01.wdc07v.mail.ibm.com ([172.16.1.68])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 42207kmjfj-1
+	Fri, 04 Oct 2024 16:03:48 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 494DqsmE017912;
+	Fri, 4 Oct 2024 16:03:47 GMT
+Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 42207jcw8f-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 04 Oct 2024 14:44:07 +0000
-Received: from smtpav01.wdc07v.mail.ibm.com (smtpav01.wdc07v.mail.ibm.com [10.39.53.228])
-	by smtprelay01.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 494Ei6nB48759488
+	Fri, 04 Oct 2024 16:03:47 +0000
+Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
+	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 494G3leU37355964
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 4 Oct 2024 14:44:06 GMT
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 94A1958059;
-	Fri,  4 Oct 2024 14:44:06 +0000 (GMT)
-Received: from smtpav01.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D75745804B;
-	Fri,  4 Oct 2024 14:44:04 +0000 (GMT)
+	Fri, 4 Oct 2024 16:03:47 GMT
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6CB1958067;
+	Fri,  4 Oct 2024 16:03:47 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id F05535805D;
+	Fri,  4 Oct 2024 16:03:45 +0000 (GMT)
 Received: from [9.171.87.189] (unknown [9.171.87.189])
-	by smtpav01.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Fri,  4 Oct 2024 14:44:04 +0000 (GMT)
-Message-ID: <bcd2ef21b387ee4cd3a4aa78cad85f8fae02699b.camel@linux.ibm.com>
+	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Fri,  4 Oct 2024 16:03:45 +0000 (GMT)
+Message-ID: <d5c4e2aa1cc04bf1259fb6bd44f269621693b114.camel@linux.ibm.com>
 Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
 From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>, Arnd Bergmann <arnd@kernel.org>
+To: Arnd Bergmann <arnd@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby
  <jirislaby@kernel.org>,
@@ -65,8 +65,8 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-serial@vger.kernel.org, Heiko
  Carstens <hca@linux.ibm.com>,
         linux-kernel@vger.kernel.org
-Date: Fri, 04 Oct 2024 16:44:04 +0200
-In-Reply-To: <e916ff3347cef88981d8e519fe1bcedfabfbea24.camel@linux.ibm.com>
+Date: Fri, 04 Oct 2024 18:03:45 +0200
+In-Reply-To: <eedc037b-8790-4269-8ed6-d641b9cbc4ad@app.fastmail.com>
 References: <20240405152924.252598-1-schnelle@linux.ibm.com>
 	 <20240405152924.252598-2-schnelle@linux.ibm.com>
 	 <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
@@ -77,6 +77,7 @@ References: <20240405152924.252598-1-schnelle@linux.ibm.com>
 	 <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
 	 <alpine.DEB.2.21.2410022305040.45128@angie.orcam.me.uk>
 	 <e916ff3347cef88981d8e519fe1bcedfabfbea24.camel@linux.ibm.com>
+	 <eedc037b-8790-4269-8ed6-d641b9cbc4ad@app.fastmail.com>
 Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
  keydata=mQINBGHm3M8BEAC+MIQkfoPIAKdjjk84OSQ8erd2OICj98+GdhMQpIjHXn/RJdCZLa58k
  /ay5x0xIHkWzx1JJOm4Lki7WEzRbYDexQEJP0xUia0U+4Yg7PJL4Dg/W4Ho28dRBROoJjgJSLSHwc
@@ -133,108 +134,85 @@ Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
  B+QQCR/FYGpTFkO4DRVfapT8njDrsWyVpP9o64VNZP42S+DuRGWfUKCMAXsM/wPzRiDEVfnZMcUR9
  vwLSHeoV7MiIFC0xIrp5ES9R00t4UFgqtGc36DV71qjR+66Im0=
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 3NTYzQI5m5Wy7SGGvJ6rn2aOCydiMFkN
-X-Proofpoint-GUID: 3NTYzQI5m5Wy7SGGvJ6rn2aOCydiMFkN
 Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: f7farfyOx9g5_m6IR_CEmrzVVB8AzlLg
+X-Proofpoint-GUID: f7farfyOx9g5_m6IR_CEmrzVVB8AzlLg
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-04_10,2024-10-04_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
- priorityscore=1501 mlxlogscore=999 spamscore=0 lowpriorityscore=0
- impostorscore=0 phishscore=0 bulkscore=0 clxscore=1015 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410040100
+ definitions=2024-10-04_13,2024-10-04_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
+ mlxlogscore=844 adultscore=0 clxscore=1015 impostorscore=0 phishscore=0
+ priorityscore=1501 bulkscore=0 suspectscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410040110
 
-On Fri, 2024-10-04 at 12:09 +0200, Niklas Schnelle wrote:
-> On Wed, 2024-10-02 at 23:59 +0100, Maciej W. Rozycki wrote:
-> > On Wed, 2 Oct 2024, Arnd Bergmann wrote:
-> >=20
+On Fri, 2024-10-04 at 12:48 +0000, Arnd Bergmann wrote:
+> On Fri, Oct 4, 2024, at 10:09, Niklas Schnelle wrote:
+>=20
+> > I'm working on a new proposal for 8250 now. Basically I think we can
+> > put the warning/error in serial8250_pci_setup_port(). And then for
+> > those 8250_pci.c "sub drivers" that require I/O ports instead of just
+> > ifdeffing out their setup/init/exit we can define anything but setup to
+> > NULL and setup to pci_default_setup() such that the latter will find
+> > the I/O port BAR via FL_GET_BASE() and subsequently cause the error
+> > print in serial8250_pci_setup_port(). It's admittedly a bit odd but it
+> > also keeps the #ifdefs to just around the code that wouldn't compile.
+>=20
+> Right, makes sense.
+>=20
+> > One thing I'm not happy with yet is the handling around
+> > is_upf_fourport(port) in 8250_pci.c. With !HAS_IOPORT this is defined
+> > as false. With that it makes sure that inb_p()/outb_p() aren't called
+> > but I think this only works because the compiler usually drops the dead
+> > if clause. I think there were previous discussions around this but I
+> > think just like IS_ENABLED() checks this isn't quite correct.
+>=20
+> Not sure what you mean, we rely on dead code elimination in all
+> kinds of places. The only bit to be aware of is that normal
+> 'inline' functions may not get constant-folded all the time,
+> but anything that is either a macro or __always_inline does
+> work.
+
+Ah ok, didn't know this was okay to rely on. Then I can roll the extra
+#ifdefs back. Need to address the test bot's finding anyway. There we
+can get #ifdef __i386__ but also !HAS_IOPORT on um.
+
+>=20
+> I just verified that the version below does what Maciej
+> suggested with IS_ENABLED() in 8250-pci, and this works fine.
+>=20
+>        Arnd
+
+Your version below is also pretty nice a bit more spread out but less
+#ifdefs. That said at least in my NeoVim setup the #ifdefs are nicely
+grayed out via clang-analyzer / lsp which to me actually makes #ifdefs
+quite easy to see at a glance but that's probably a niche opinion.
+
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250=
+/8250_pci.c
+> index 6709b6a5f301..784190824aad 100644
+> --- a/drivers/tty/serial/8250/8250_pci.c
+> +++ b/drivers/tty/serial/8250/8250_pci.c
+> @@ -928,6 +928,14 @@ static int pci_netmos_init(struct pci_dev *dev)
+>  	return num_serial;
+>  }
+> =20
+> +static int serial_8250_need_ioport(struct pci_dev *dev)
+> +{
+> +	dev_warn(&dev->dev,
+> +		 "Serial port not supported because of missing I/O resource\n");
+> +
+> +	return -ENXIO;
+> +}
+> +
 ---8<---
-> > > Part of the problem that Niklas is trying to solve with the
-> > > CONFIG_HAS_IOPORT annotations is to prevent an invalid inb()/outb()
-> > > from turning into a NULL pointer dereference as it currently does
-> > > on architectures that have no way to support PIO but get the
-> > > default implementation from asm-generic/io.h.
-> >=20
-> >  It can be worse than that.  Part of my confusion with the defxx driver=
-=20
-> > trying to do port I/O with my POWER9 system came from the mapping actua=
-lly=20
-> > resulting in non-NULL invalid pointers, dereferencing which caused a fl=
-ood=20
-> > of obscure messages produced to the system console by the system firmwa=
-re:
-> >=20
-> > LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
-> > IPMI: dropping non severe PEL event
-> > LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
-> > IPMI: dropping non severe PEL event
-> > LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
-> > IPMI: dropping non severe PEL event
-> > LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
-> > IPMI: dropping non severe PEL event
-> > [...]
-> >=20
-> > from which it was all but obvious that they were caused by an attempt t=
-o=20
-> > use PCI port I/O with a system lacking support for it.
-> >=20
-> > > It's not clear if having a silently non-working driver or one
-> > > that crashes makes it easier to debug for users. Having a clear
-> > > warning message in the PCI probe code is probably the best
-> > > we can hope for.
-> >=20
-> >  I agree.  Enthusiastically.
->=20
-> I think there was also a bit of a misunderstanding. My argument that
-> this would be very ugly in the general case was really meant as general
-> case outside of drivers like 8250 that deals with both I/O port and
-> MMIO i.e. we can't warn/error when !HAS_IOPORT deactivates a whole
-> driver because seeing an I/O port BAR in common PCI code doesn't mean
-> that it is required for use of the device.
->=20
-> I'm working on a new proposal for 8250 now. Basically I think we can
-> put the warning/error in serial8250_pci_setup_port(). And then for
-> those 8250_pci.c "sub drivers" that require I/O ports instead of just
-> ifdeffing out their setup/init/exit we can define anything but setup to
-> NULL and setup to pci_default_setup() such that the latter will find
-> the I/O port BAR via FL_GET_BASE() and subsequently cause the error
-> print in serial8250_pci_setup_port(). It's admittedly a bit odd but it
-> also keeps the #ifdefs to just around the code that wouldn't compile.
 
-I've now got this to compile on s390x with the !S390 check removed in
-Kconfig. Instead of "misusing" pci_default_setup() I instead added a
-pci_fail_io_port_setup() helper that prints the error and returns -
-EINVAL.
-
->=20
-> One thing I'm not happy with yet is the handling around
-> is_upf_fourport(port) in 8250_pci.c. With !HAS_IOPORT this is defined
-> as false. With that it makes sure that inb_p()/outb_p() aren't called
-> but I think this only works because the compiler usually drops the dead
-> if clause. I think there were previous discussions around this but I
-> think just like IS_ENABLED() checks this isn't quite correct.
-
-It's not the nicest but I added the necessary #ifdefs in 8250_port.c
-and at least they are small sections. As Arnd said we will go back to a
-single series. So I've also switched to a b4 prep workflow which I
-usually use nowadays and so the current code can be found here:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git/log/?h=3Db4/=
-has_ioport
-
-I plan to resend on Monday based on v6.12-rc2 which will also include
-the bcachefs fix to fix building on Big Endian which I was previously
-carrying for my s390x development convenience.
-
-Thanks,
-Niklas=20
