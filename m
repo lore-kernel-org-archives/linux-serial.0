@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32CFB1F9414;
-	Fri,  4 Oct 2024 18:23:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E61B7208996;
+	Fri,  4 Oct 2024 18:26:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728066210; cv=none; b=pr1dJFlX2+NqrtnDn1xaGc4FOQQlWHMkbtR1sWdIcKVgYKVjPnRV+kAb+UXAkFo1LZ6kWDlgj1dfoIjH4lkl+CbifMjz0ghh6IuUc4N0P2dBXShSGSx3vl8nF0mJqO0VbHczaYcJx/JGlpEoT1uL30qwaKFvbmF7y6hnDC28zQE=
+	t=1728066376; cv=none; b=knWbx3AGIvf0fMC/aYzJnC+H3ktgt38D9420zcD98UFNCpmtATx6dZq9z4YP+kLvuAy2hmue+fudu4b4Z0xRu0V8OC52an/8w5U7Vf/j8SVlHluel3FMoIGbnYjO2Hih6tyjsLDaKppurDUQ+1GtrZDjuXxr28dQfcA74/CJJVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728066210; c=relaxed/simple;
-	bh=oB/xfsbQWtP1t80oPNfDpypV217aBFCJCfzVqiYBLxM=;
+	s=arc-20240116; t=1728066376; c=relaxed/simple;
+	bh=NJGnrY2RZc9Cv8MR8oKVCHBB63DJZbvM1YsLKGc3Ky8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hejt0clzE1ASjWHU+UtpRp3DfaV1JuuoqLnOTbFtRObr3jpKko7oRbXqsdHAtZMMei8RHGJQFbWQwoLCBUhfnjJQdmQJEAwVfraiq8ystpWGz4ZYcq2q/GMQ2q35BvZgQkNuctfYsLY81aQFvE1RgfJHK6fN9AK6EyHY+urxQJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MUBOxwhZ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=JVT54Xvq868DnI1WMo9ChnaMKNEJusKJU4IMFMdIMmTo77AY9ALsengR4rJXd/+v8ez1dbLwFw3H5dCWzsFg8ZVmQ4y/hZ83TxH4s6YqiUK2Ue4kWzJ0u3bsYwLrvqv8sVmFDBhsD6Z3CR4NWCBu3eRaYjHsg2s805hgxGs06i8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lm69bqRO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MUBOxwhZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0C87C4CEC6;
-	Fri,  4 Oct 2024 18:23:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lm69bqRO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 860FCC4CECC;
+	Fri,  4 Oct 2024 18:26:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728066210;
-	bh=oB/xfsbQWtP1t80oPNfDpypV217aBFCJCfzVqiYBLxM=;
+	s=k20201202; t=1728066375;
+	bh=NJGnrY2RZc9Cv8MR8oKVCHBB63DJZbvM1YsLKGc3Ky8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=MUBOxwhZGw9nIX6gmBKe6u6QTpqjV047W74Ox1YR/CAxHJBMC7pUlKk7djUWcTndS
-	 jXX4T/IJqtrSbIjq7VgNQSN8ARyDX3eoqjvppHBNL9rCaqSReqJcapgCkAKwYk/Jh6
-	 8TCffIrfRcMM8MPm0dsxydiz9LZBJWq27Z2RWlWBe4f5rdHSwkublSD9emLb8pGBoq
-	 wvJNZSmLywEyoDOAOw3irR+d3ImFQaGZQwxIfG0WmWS4ANttPiBL9pxcb4fPnjNSJu
-	 vC7OQuZYlaIIdzubN2ucLAcFrt3aZYSnrxD8xQ8p8Hs/6l5tOYchN+niFqlQyu4Dge
-	 a0uKQq31/uRBw==
+	b=lm69bqROadMUNOYc9pNroxlSkJrwLN7ri5NuozjNXo0wBUUzVRlAIrs393UC1+WcA
+	 Chh5qncFWfZt0Uj5Tt2n2BbeqXkXjN9ZJcenQRDMzxgghyCCSC3Oo98DZCdWer1JDD
+	 +zu4/704ddlWXhb3QxbN7yEJr4E7TV5pwcKSyoE+mlWm+lgqfSu1bNfCUa+hVDaMuZ
+	 0A56fQ1hYx7qHjaCoDgSsIQyP0ktdtvQ2mNVDfuXgP6viM/gZ/6wMTjaVAvZq1btNP
+	 ZCFi5T15YkEOfCcXxTp96bNmpnJWd7aoMdWl92xW2OZxWVJEESu5B1PvWHzZQuXpot
+	 Y8yCUBXDIIGUQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -39,12 +39,12 @@ Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
 	l.sanfilippo@kunbus.com,
 	pcc@google.com,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.10 46/70] serial: protect uart_port_dtr_rts() in uart_shutdown() too
-Date: Fri,  4 Oct 2024 14:20:44 -0400
-Message-ID: <20241004182200.3670903-46-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.6 40/58] serial: protect uart_port_dtr_rts() in uart_shutdown() too
+Date: Fri,  4 Oct 2024 14:24:13 -0400
+Message-ID: <20241004182503.3672477-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241004182200.3670903-1-sashal@kernel.org>
-References: <20241004182200.3670903-1-sashal@kernel.org>
+In-Reply-To: <20241004182503.3672477-1-sashal@kernel.org>
+References: <20241004182503.3672477-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -53,7 +53,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.10.13
+X-stable-base: Linux 6.6.54
 Content-Transfer-Encoding: 8bit
 
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
@@ -85,10 +85,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 9967444eae10c..dcd04db0e3eee 100644
+index ed8798fdf522a..d7c59d690a74d 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -407,14 +407,16 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+@@ -374,14 +374,16 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
  		/*
  		 * Turn off DTR and RTS early.
  		 */
