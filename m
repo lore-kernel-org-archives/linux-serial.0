@@ -1,218 +1,167 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C131E377D;
-	Fri,  4 Oct 2024 16:03:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 670EE1C75E4;
+	Fri,  4 Oct 2024 16:24:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728057839; cv=none; b=fzuBytcU2hBiF03TE3yuNAtNNJCWdVb6iI3vkZk3VgyaY49NS8Zb21R1/oGRwUvHcQG7Rk4wfEv7b5Cwyzgnj0PZFHjjZBUwR0fpwXI9bxpZru8zekzCfaq4A/P4E1eJ3ctJ0+Fl67wCCxXm1MuP8w2qLFWzb/oZKPZquVikVdA=
+	t=1728059051; cv=none; b=en2hEHwvTcC0RE6DynxsCLxFuBozYAC3jbkER+dBmtBmz8+YMkfIBp+Vu6gpGbYTqb3rl6xUHDv4Rpe4ZZtPIRpmm6wZc0QTiq25GN1OlhULXKTiYt6SyI6iPkr+YANbeAr8TdoMTKqsdfP1lE/8Q1p5aWnejXbT8iKS8RRsijg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728057839; c=relaxed/simple;
-	bh=9ea+zWqqt7siqy6qOXzP3uto4QAFiHkliWHiG5UbJss=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=mf9fCsZ3pcBhdOkrrZc+Oq9MXrnZHzG/PNF+Qd8GK7BnSLi04eRXocgUzRZml0KsiG8BId0m+l/Rt47mpXbHTKCrBrsH9bJYjWEG6LHfpFhr7z+nyZQ5pzwEjH+c6IUn/PDcKFeCs+ZGc0gn7x80ekYatlf5S4yCAHGikYa/KHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=F/4QE4ix; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="F/4QE4ix"
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 494Fv0wJ019827;
-	Fri, 4 Oct 2024 16:03:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
-	message-id:subject:from:to:cc:date:in-reply-to:references
-	:content-type:content-transfer-encoding:mime-version; s=pp1; bh=
-	jQ+wFzVfxPX35cujQ6GKn6bMYeR2bpXlEYcS8vgA8KM=; b=F/4QE4ixnDdhXNAM
-	/dgaMgRih8r1GXCniF/7uaZLS1VbrMpapYXv1zHdVYKNZltPkL/viEq/ZmKZEqBO
-	T6EdfAov62st6+L2/nSfpGG1X79cIjmpTaytU2LVs/BzPnV1+7Oi6Ylj3IG6h+J/
-	yqGwaG0GfA5DI7lgemgJtQCqLiQpE3/NsmIDx9Yhld/fAwjXLKuqCJZItLYTKg6Y
-	lkhG7nT5vOlz5UHzk6kf4Wl8nid2RLejz/lBrpActInJaKGzl5JlB3MqSDVuuYe7
-	7HoIo1/CMXYH3cI8MXt9HpH6g9iU+J2XYzGnANBcTPvHYMeKxfYfo23BMAraMPCt
-	Jlx9hQ==
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 422kejg19f-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 04 Oct 2024 16:03:48 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 494DqsmE017912;
-	Fri, 4 Oct 2024 16:03:47 GMT
-Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 42207jcw8f-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 04 Oct 2024 16:03:47 +0000
-Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
-	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 494G3leU37355964
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 4 Oct 2024 16:03:47 GMT
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6CB1958067;
-	Fri,  4 Oct 2024 16:03:47 +0000 (GMT)
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id F05535805D;
-	Fri,  4 Oct 2024 16:03:45 +0000 (GMT)
-Received: from [9.171.87.189] (unknown [9.171.87.189])
-	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Fri,  4 Oct 2024 16:03:45 +0000 (GMT)
-Message-ID: <d5c4e2aa1cc04bf1259fb6bd44f269621693b114.camel@linux.ibm.com>
+	s=arc-20240116; t=1728059051; c=relaxed/simple;
+	bh=MIXwu4c46lO6pDES3z40SL2p1LX6813TKrzziANSpO4=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=miBlHO8xZ4XJk/HphM8nlVEd8fKH3RYd/lwchE1yFNWT81iO4YMPg633dqKQB/pbcDFaVRnTkiws/C0mssS0wawO+l2s8AHOLAS+lBXSt9NFTWHJaoTr1dSXduIKuGLsZi5Oi6ZXDcqVpV/HN7qaObmNhn2lGyIBScaRTT0ahDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 0A92992009C; Fri,  4 Oct 2024 18:24:01 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 0673C92009B;
+	Fri,  4 Oct 2024 17:24:01 +0100 (BST)
+Date: Fri, 4 Oct 2024 17:24:00 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Arnd Bergmann <arnd@kernel.org>
+cc: Niklas Schnelle <schnelle@linux.ibm.com>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+    linux-serial@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>, 
+    linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Arnd Bergmann <arnd@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
- <jirislaby@kernel.org>,
-        Ilpo =?ISO-8859-1?Q?J=E4rvinen?=
- <ilpo.jarvinen@linux.intel.com>,
-        linux-serial@vger.kernel.org, Heiko
- Carstens <hca@linux.ibm.com>,
-        linux-kernel@vger.kernel.org
-Date: Fri, 04 Oct 2024 18:03:45 +0200
-In-Reply-To: <eedc037b-8790-4269-8ed6-d641b9cbc4ad@app.fastmail.com>
-References: <20240405152924.252598-1-schnelle@linux.ibm.com>
-	 <20240405152924.252598-2-schnelle@linux.ibm.com>
-	 <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
-	 <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com>
-	 <alpine.DEB.2.21.2410011707550.45128@angie.orcam.me.uk>
-	 <7bcec0eb88c3891d23f5c9f224e708e4a9bb8b89.camel@linux.ibm.com>
-	 <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk>
-	 <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
-	 <alpine.DEB.2.21.2410022305040.45128@angie.orcam.me.uk>
-	 <e916ff3347cef88981d8e519fe1bcedfabfbea24.camel@linux.ibm.com>
-	 <eedc037b-8790-4269-8ed6-d641b9cbc4ad@app.fastmail.com>
-Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
- keydata=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
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
+In-Reply-To: <b59d81ee-04af-4557-9d35-ec2c03fbcbe7@app.fastmail.com>
+Message-ID: <alpine.DEB.2.21.2410041642140.45128@angie.orcam.me.uk>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com> <20240405152924.252598-2-schnelle@linux.ibm.com> <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk> <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com> <alpine.DEB.2.21.2410011707550.45128@angie.orcam.me.uk>
+ <7bcec0eb88c3891d23f5c9f224e708e4a9bb8b89.camel@linux.ibm.com> <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk> <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com> <alpine.DEB.2.21.2410022305040.45128@angie.orcam.me.uk>
+ <b59d81ee-04af-4557-9d35-ec2c03fbcbe7@app.fastmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: f7farfyOx9g5_m6IR_CEmrzVVB8AzlLg
-X-Proofpoint-GUID: f7farfyOx9g5_m6IR_CEmrzVVB8AzlLg
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-04_13,2024-10-04_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- mlxlogscore=844 adultscore=0 clxscore=1015 impostorscore=0 phishscore=0
- priorityscore=1501 bulkscore=0 suspectscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410040110
+Content-Type: text/plain; charset=US-ASCII
 
-On Fri, 2024-10-04 at 12:48 +0000, Arnd Bergmann wrote:
-> On Fri, Oct 4, 2024, at 10:09, Niklas Schnelle wrote:
->=20
-> > I'm working on a new proposal for 8250 now. Basically I think we can
-> > put the warning/error in serial8250_pci_setup_port(). And then for
-> > those 8250_pci.c "sub drivers" that require I/O ports instead of just
-> > ifdeffing out their setup/init/exit we can define anything but setup to
-> > NULL and setup to pci_default_setup() such that the latter will find
-> > the I/O port BAR via FL_GET_BASE() and subsequently cause the error
-> > print in serial8250_pci_setup_port(). It's admittedly a bit odd but it
-> > also keeps the #ifdefs to just around the code that wouldn't compile.
->=20
-> Right, makes sense.
->=20
-> > One thing I'm not happy with yet is the handling around
-> > is_upf_fourport(port) in 8250_pci.c. With !HAS_IOPORT this is defined
-> > as false. With that it makes sure that inb_p()/outb_p() aren't called
-> > but I think this only works because the compiler usually drops the dead
-> > if clause. I think there were previous discussions around this but I
-> > think just like IS_ENABLED() checks this isn't quite correct.
->=20
-> Not sure what you mean, we rely on dead code elimination in all
-> kinds of places. The only bit to be aware of is that normal
-> 'inline' functions may not get constant-folded all the time,
-> but anything that is either a macro or __always_inline does
-> work.
+On Fri, 4 Oct 2024, Arnd Bergmann wrote:
 
-Ah ok, didn't know this was okay to rely on. Then I can roll the extra
-#ifdefs back. Need to address the test bot's finding anyway. There we
-can get #ifdef __i386__ but also !HAS_IOPORT on um.
+> >  It can be worse than that.  Part of my confusion with the defxx driver 
+> > trying to do port I/O with my POWER9 system came from the mapping actually 
+> > resulting in non-NULL invalid pointers, dereferencing which caused a flood 
+> > of obscure messages produced to the system console by the system firmware:
+> >
+> > LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+> > IPMI: dropping non severe PEL event
+> > LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+> > IPMI: dropping non severe PEL event
+> > LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+> > IPMI: dropping non severe PEL event
+> > LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+> > IPMI: dropping non severe PEL event
+> > [...]
+> >
+> > from which it was all but obvious that they were caused by an attempt to 
+> > use PCI port I/O with a system lacking support for it.
+> 
+> Ah, that's too bad. I think this is a result of the patch that
+> Michael did to shut up the NULL pointer warning we get, see
+> be140f1732b5 ("powerpc/64: Set _IO_BASE to POISON_POINTER_DELTA
+> not 0 for CONFIG_PCI=n"). I really wish we could have finished
+> Niklas' series earlier to avoid this.
 
->=20
-> I just verified that the version below does what Maciej
-> suggested with IS_ENABLED() in 8250-pci, and this works fine.
->=20
->        Arnd
+ That was back in 2020 (5.9.0), so long before be140f1732b5, and it's a 
+production system, so I don't want to fiddle with it beyond necessity:
 
-Your version below is also pretty nice a bit more spread out but less
-#ifdefs. That said at least in my NeoVim setup the #ifdefs are nicely
-grayed out via clang-analyzer / lsp which to me actually makes #ifdefs
-quite easy to see at a glance but that's probably a niche opinion.
+$ uptime
+ 16:53:27 up 466 days,  9:49,  5 users,  load average: 0.14, 0.12, 0.09
+$ 
 
->=20
-> diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250=
-/8250_pci.c
-> index 6709b6a5f301..784190824aad 100644
-> --- a/drivers/tty/serial/8250/8250_pci.c
-> +++ b/drivers/tty/serial/8250/8250_pci.c
-> @@ -928,6 +928,14 @@ static int pci_netmos_init(struct pci_dev *dev)
->  	return num_serial;
->  }
-> =20
-> +static int serial_8250_need_ioport(struct pci_dev *dev)
-> +{
-> +	dev_warn(&dev->dev,
-> +		 "Serial port not supported because of missing I/O resource\n");
-> +
-> +	return -ENXIO;
-> +}
-> +
----8<---
+ Essentially defxx has this code (not changed much since, except that 
+`dfx_use_mmio' is now always true for PCI):
 
+	if (!dfx_use_mmio)
+		region = request_region(bar_start[0], bar_len[0],
+					bdev->driver->name);
+	if (!region) {
+		dfx_register_res_err(print_name, dfx_use_mmio,
+				     bar_start[0], bar_len[0]);
+		err = -EBUSY;
+		goto err_out_disable;
+	}
+	/* ... */
+	if (dfx_use_mmio) {
+		/* ... */
+	} else {
+		bp->base.port = bar_start[0];
+		dev->base_addr = bar_start[0];
+	}
+
+so whatever came out of BAR[1]:
+
+pci 0031:02:04.0: [1011:000f] type 00 class 0x020200
+pci 0031:02:04.0: reg 0x10: [mem 0x620c080020000-0x620c08002007f]
+pci 0031:02:04.0: reg 0x14: [io  0x0000-0x007f]
+pci 0031:02:04.0: reg 0x18: [mem 0x620c080030000-0x620c08003ffff]
+pci 0031:02:04.0: BAR0 [mem size 0x00000080]: requesting alignment to 0x10000
+
+was supplied to `inl'/`outl' and wreaked havoc.
+
+ First of all I think `request_region', etc. ought to fail in the first 
+place with non-port-I/O systems: why does a request for a resource that 
+cannot be satisfied succeed?  It would have already solved the issue with 
+defxx, making the driver gracefully fail to register the device.  I don't 
+know if this has been fixed since.
+
+ Second, rather than relying on a magic mapping in the physical space 
+causing a bus error (unless you are absolutely sure it is going to work in 
+100% cases), I think it would make sense to make port I/O accessors call 
+BUG_ON(no_port_io) explicitly for platforms where it is only known at run 
+time whether PCI/e port I/O is available or not.  Port I/O is the opposite 
+of performance already, so a couple of extra instructions will be lost in 
+the latency and at least POWER has conditional traps, so there'd be no 
+branch penalty.
+
+> >  Well, virtually all non-x86 systems continue supporting PCI/e port I/O 
+> > via a suitably decoded CPU-side MMIO window, so I think coming across one 
+> > that doesn't can still be a nasty surprise even in 2024.  For instance 
+> > I've been happily using a PC parallel port PCIe option card, one of the 
+> > very few interfaces if not the only one remaining that have not ever seen 
+> > an MMIO variant, with my RISC-V hardware, newer than said POWER9 system.
+> >
+> >  So far it's been the s390 and a couple of POWER system implementations 
+> > that have support for PCI/e port I/O removed.  Have I missed anything?
+> 
+> I meant PCIe cards with I/O space here, not host bridges. I know you
+> have a lot of them, but what I've heard from Arm platform maintainers
+> is that they tend to struggle finding any PCIe cards to test their
+> hsot bridge drivers on, and I expect that a lot of them are actually
+> broken because they have never been tested and just copied the
+> implementation badly from some other driver.
+
+ I would expect serial ports to be the most common PCIe options still 
+using port I/O.  Sadly OxSemi was acquired and their line of devices, 
+which support MMIO, cancelled at one point and my observations seem to 
+indicate that what is still manufactured uses port I/O (correct me if I'm 
+wrong please).  Last time I checked OxSemi-based option cards were still 
+available though, but one may have to check with the supplier as to 
+whether they have been configured for MMIO or port I/O, as they're not 
+dual-mapped.
+
+> I think the only new PCIe devices you can find today that still use
+> I/O space are ones with compatibility registers for IBM PC style
+> hardware (vga, uart, parport), but most users would never have used
+> one of those and instead use the native register interface of their
+> GPU (on non-x86), USB-serial and no parport. Other devices that
+> needed I/O space never worked on PCIe anyway because of the lack
+> of ISA style DMA.
+
+ I think serial port options are the most likely devices still in use, 
+given that UARTs continue being widely used in industrial applications.  
+Depending on application a USB serial adapter may or may not be suitable 
+to interface those.
+
+> There are also a lot of Arm systems that have no I/O space support at
+> all, such as the Apple M2 I'm using at the moment.
+
+ Thanks for letting me know.  Is it AArch64 only that has no port I/O 
+support in the PCIe root complex nowadays, or is it 32-bit ARM as well?
+
+  Maciej
