@@ -1,117 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E61B7208996;
-	Fri,  4 Oct 2024 18:26:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCB471D8A1D
+	for <linux-serial@vger.kernel.org>; Fri,  4 Oct 2024 19:23:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728066376; cv=none; b=knWbx3AGIvf0fMC/aYzJnC+H3ktgt38D9420zcD98UFNCpmtATx6dZq9z4YP+kLvuAy2hmue+fudu4b4Z0xRu0V8OC52an/8w5U7Vf/j8SVlHluel3FMoIGbnYjO2Hih6tyjsLDaKppurDUQ+1GtrZDjuXxr28dQfcA74/CJJVg=
+	t=1728069816; cv=none; b=C3kYtpr/QJBkbG+Vd3HwEPWMbOuD4emtsCDnJliKM/6cGwu2TzIEO+dHtjyaLlJu4tTJF5Ft6vkiMbOCqfHBNun6E0jg8Xgq3aM56PuY5EYiBhqGPBRRZZY/WgdHVQ4lM02fsYzdcR6476LBd3AjIQRe9lcLPD/E2IiYENadgIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728066376; c=relaxed/simple;
-	bh=NJGnrY2RZc9Cv8MR8oKVCHBB63DJZbvM1YsLKGc3Ky8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=JVT54Xvq868DnI1WMo9ChnaMKNEJusKJU4IMFMdIMmTo77AY9ALsengR4rJXd/+v8ez1dbLwFw3H5dCWzsFg8ZVmQ4y/hZ83TxH4s6YqiUK2Ue4kWzJ0u3bsYwLrvqv8sVmFDBhsD6Z3CR4NWCBu3eRaYjHsg2s805hgxGs06i8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lm69bqRO; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lm69bqRO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 860FCC4CECC;
-	Fri,  4 Oct 2024 18:26:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728066375;
-	bh=NJGnrY2RZc9Cv8MR8oKVCHBB63DJZbvM1YsLKGc3Ky8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lm69bqROadMUNOYc9pNroxlSkJrwLN7ri5NuozjNXo0wBUUzVRlAIrs393UC1+WcA
-	 Chh5qncFWfZt0Uj5Tt2n2BbeqXkXjN9ZJcenQRDMzxgghyCCSC3Oo98DZCdWer1JDD
-	 +zu4/704ddlWXhb3QxbN7yEJr4E7TV5pwcKSyoE+mlWm+lgqfSu1bNfCUa+hVDaMuZ
-	 0A56fQ1hYx7qHjaCoDgSsIQyP0ktdtvQ2mNVDfuXgP6viM/gZ/6wMTjaVAvZq1btNP
-	 ZCFi5T15YkEOfCcXxTp96bNmpnJWd7aoMdWl92xW2OZxWVJEESu5B1PvWHzZQuXpot
-	 Y8yCUBXDIIGUQ==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Peter Hurley <peter@hurleysoftware.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sasha Levin <sashal@kernel.org>,
-	tony.lindgren@linux.intel.com,
-	andriy.shevchenko@linux.intel.com,
-	ilpo.jarvinen@linux.intel.com,
-	l.sanfilippo@kunbus.com,
-	pcc@google.com,
-	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.6 40/58] serial: protect uart_port_dtr_rts() in uart_shutdown() too
-Date: Fri,  4 Oct 2024 14:24:13 -0400
-Message-ID: <20241004182503.3672477-40-sashal@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241004182503.3672477-1-sashal@kernel.org>
-References: <20241004182503.3672477-1-sashal@kernel.org>
+	s=arc-20240116; t=1728069816; c=relaxed/simple;
+	bh=LIHBlJDrk0SjV7GfXmASvYTBduv7AtQJsAwnpPnT7E4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Mavtu4QY7Kr1uyVv+NNTyLiwZUrV5cWL0YvoiBsgz3Dup+T/3HpiAAER1K7y4XZAQJcoW3dOrmFKyYP8pM/0xfSxJlpSPm8jHkNCb/kryvpq816qhPcVegvbKAW1QcA0BBScxmYxufON5SIb3gcjbpewFWoC+WLRb7jxVtFuW4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=baylibre.com; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-71de9e1f431so813847b3a.3
+        for <linux-serial@vger.kernel.org>; Fri, 04 Oct 2024 12:23:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728069813; x=1728674613;
+        h=content-transfer-encoding:mime-version:message-id:date:references
+         :in-reply-to:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=HVP6wZY3TdnTPrvNs2XHPwde52TP9y357r9JHUGOqcY=;
+        b=wz4dzxMOFnopBO6rs0JFHwsyhUuMcPvtbDhipj1G9x+QQZumE+FtSdESKT20oyNMbQ
+         AzzTYcFNB+4D3STlGfw+R4d2hjVQyNC9j+1jsxwgP+sdN03WMsWzXVE9IIrkbBVB9zXN
+         GslRiCc9lZ35LHXKPq911Lua/FmiFrZQ28plYGNvt0bS70HoWbqzi/0VdmomDhIAGUMi
+         pk/5N8aGC5Z+muv4o/UgraHL7pfARdw5nNadvYo8TRwC3vVxiah0fGTgGzg75Fb0A25g
+         v5n0rJDySvl/RJZc6fAH3XTYtGwqpQ3UpQpHCmUfRk5rl/ya4Qj2zOSXPCB3JF0Z4o4M
+         pHgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW5s2IWYuWbSwXvIQqypm3eMJ8xjf3YNiq7cQ3Xa1MpaMuN8MJaw00iva9lo3hOZ8ZV0le/1yMDSxLh0ms=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwP5ZCSG3/FIsmQn0BLLh3G8ZlF2PARL6bXRkiInEfjLohPe7pa
+	OsKOhMJFzzyr5okuzZoa/qXbghrz1P5G2dQSw0DLukFPEsAtcij4w/Dbrsukf1I=
+X-Google-Smtp-Source: AGHT+IFY/GbIjby5jeGcx5GC4nUtT59Yfq73X+l91j/pZJ2Qxem06oYk62q7xSsFfvdY7BpnYHgWWQ==
+X-Received: by 2002:a05:6a00:3d0b:b0:714:17b5:c1d9 with SMTP id d2e1a72fcca58-71de239e82dmr6207456b3a.1.1728069812981;
+        Fri, 04 Oct 2024 12:23:32 -0700 (PDT)
+Received: from localhost ([71.212.170.185])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71df0d47990sm219412b3a.138.2024.10.04.12.23.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Oct 2024 12:23:32 -0700 (PDT)
+From: Kevin Hilman <khilman@kernel.org>
+To: Thomas Richard <thomas.richard@bootlin.com>, Greg KH
+ <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, tony@atomide.com, linux-serial@vger.kernel.org,
+ gregory.clement@bootlin.com, u-kumar1@ti.com, d-gole@ti.com,
+ thomas.petazzoni@bootlin.com
+Subject: Re: [PATCH] serial: 8250_omap: Set the console genpd always on if
+ no console suspend
+In-Reply-To: <3fbe606e-fb0e-4ff8-924b-a8bbe046ee4b@bootlin.com>
+References: <20231017130540.1149721-1-thomas.richard@bootlin.com>
+ <7hzfplplfs.fsf@baylibre.com> <2024081318-litigator-slinky-8f0b@gregkh>
+ <7ha5hgpchq.fsf@baylibre.com>
+ <b8faffb0-7ae6-4f20-a8fb-34222535b623@bootlin.com>
+ <3fbe606e-fb0e-4ff8-924b-a8bbe046ee4b@bootlin.com>
+Date: Fri, 04 Oct 2024 12:23:31 -0700
+Message-ID: <7ha5fjlljg.fsf@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.6.54
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Thomas Richard <thomas.richard@bootlin.com> writes:
 
-[ Upstream commit 602babaa84d627923713acaf5f7e9a4369e77473 ]
+[...]
 
-Commit af224ca2df29 (serial: core: Prevent unsafe uart port access, part
-3) added few uport == NULL checks. It added one to uart_shutdown(), so
-the commit assumes, uport can be NULL in there. But right after that
-protection, there is an unprotected "uart_port_dtr_rts(uport, false);"
-call. That is invoked only if HUPCL is set, so I assume that is the
-reason why we do not see lots of these reports.
+> I finally found the culprit.
+> Just adding the GENPD_FLAG_ACTIVE_WAKEUP flag by default caused the
+> panic, even without the call of device_set_wakeup_path().
+>
+> With some debug, I found that the wakeup_path of all my uarts (even
+> other uarts not used by the console) was set.
+> So the corresponding power domains were not powered off [1].
+> Consequently they are not powered on during the resume [2].
+>
+> But on my platform (J7200), the SoC is fully off during suspend-to-ram.
+> Even if a power domain is not powered off by Linux, at the end all the
+> SoC is off.
+> And if Linux doesn't power off a power domain, it doesn't power on it.
 
-Or it cannot be NULL at this point at all for some reason :P.
+OK, so the core of the problem is here.  The SoC firmware is going to
+power of the domain during system-wide suspend, no matter what Linux
+tries to do.  So there's a fundamental disconnect between what Linux
+thinks is the state of the power domain and the actual hardware state.
+I'm not sure how to work around that other than if the firmware is
+always going to power off the domain, then GENPD_FLAG_ACTIVE_WAKEUP=20
+cannot be used for that domain, since it's effectively ignored.
 
-Until the above is investigated, stay on the safe side and move this
-dereference to the if too.
+> The wakeup_path of all my uarts is set here [3] because devices are
+> wakeup capable [4].
 
-I got this inconsistency from Coverity under CID 1585130. Thanks.
+Ok, but now This behavior is now changed in v6.12-rc1[6] (introduced by
+this[7] series.)  Now, UARTs default to wakeup capable (not enabled),
+and wakeups are only enabled if the DT property `wakeup-source` is used.
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Peter Hurley <peter@hurleysoftware.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20240805102046.307511-3-jirislaby@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/serial_core.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+This should at least allow you to focus on only UARTs that are intended
+as wakeup sources for the platform, instead of the current (pre v.6.12) beh=
+avior=20
+where all UARTs default to wakeup-enabled.
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index ed8798fdf522a..d7c59d690a74d 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -374,14 +374,16 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
- 		/*
- 		 * Turn off DTR and RTS early.
- 		 */
--		if (uport && uart_console(uport) && tty) {
--			uport->cons->cflag = tty->termios.c_cflag;
--			uport->cons->ispeed = tty->termios.c_ispeed;
--			uport->cons->ospeed = tty->termios.c_ospeed;
--		}
-+		if (uport) {
-+			if (uart_console(uport) && tty) {
-+				uport->cons->cflag = tty->termios.c_cflag;
-+				uport->cons->ispeed = tty->termios.c_ispeed;
-+				uport->cons->ospeed = tty->termios.c_ospeed;
-+			}
- 
--		if (!tty || C_HUPCL(tty))
--			uart_port_dtr_rts(uport, false);
-+			if (!tty || C_HUPCL(tty))
-+				uart_port_dtr_rts(uport, false);
-+		}
- 
- 		uart_port_shutdown(port);
- 	}
--- 
-2.43.0
+Kevin
 
+> It was added by commit 8512220c5782d [5].
+> If I remove the wakeup_path modification (diff at the end of the email),
+> Th=C3=A9o's proposal works well. But it's probably too rough, and I have =
+no
+> idea about the impact on other platforms.
+>
+> If you have an idea to fix correctly this wakeup_path issue, please let
+> me know :)
+>
+> [1]
+> https://elixir.bootlin.com/linux/v6.11/source/drivers/pmdomain/core.c#L13=
+72
+> [2]
+> https://elixir.bootlin.com/linux/v6.11/source/drivers/pmdomain/core.c#L14=
+27
+> [3]
+> https://elixir.bootlin.com/linux/v6.10.10/source/drivers/base/power/main.=
+c#L1687
+> [4]
+> https://elixir.bootlin.com/linux/v6.11/source/drivers/tty/serial/8250/825=
+0_omap.c#L1526
+> [5]
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit=
+/?id=3D8512220c5782d
+
+[6] https://elixir.bootlin.com/linux/v6.12-rc1/source/drivers/tty/serial/82=
+50/8250_omap.c#L1525
+[7] https://lore.kernel.org/all/20240807141227.1093006-1-msp@baylibre.com/
