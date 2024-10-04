@@ -1,115 +1,158 @@
-Received: from fgw20-7.mail.saunalahti.fi (fgw20-7.mail.saunalahti.fi [62.142.5.81])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 157801AC89A
-	for <linux-serial@vger.kernel.org>; Thu,  3 Oct 2024 22:33:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CBD682499
+	for <linux-serial@vger.kernel.org>; Fri,  4 Oct 2024 06:54:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727994802; cv=none; b=WpjUzVsTbm38lLxSAjxdwQqzdRvQyMiKyuWitgtceZ46dMWB8Gy7jZfpfyEAFBh/esXCpbub+z15Vi4jYYTr1bc+5DWBgLPOhp24FgvamkAAku5QmVXtloT+qt1ruc6NlPlxhOfbCi4iD2H5zhAPYwC94b1tD1FLrXiiCoCT0SY=
+	t=1728024854; cv=none; b=Nm0Q9P+RAbC54YncR5tWGHSk4VKEe1cfIK4QYzojbavGlabDxPmUib9l8ulQl1MiLCRzL5cj65mDVg9iIQaJixT15TfbnZ4urbWwLDrDR+n/joNs7dlYITYP0/sDguly7oFNPZqF3sgucAsoh+rq61h5lhGaP1b6ys5h7QRjsO4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727994802; c=relaxed/simple;
-	bh=9pOyjIY2Fu8sZWJ+h9Hhks0ngUMcydTiz+NvzoER/+Y=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Rw++eoX/FPE0oQykpYebJyS//OvYAGKQcflbHitfQtWdudU5vl4g+TDkuKouUFh7TFmYhawU0kR1BUKjdhmQDlMxbgDaqcvSVS4l8UdxNmvzxs38D8ZYPpnnqYPq9k5AKFtcjaZMyFuQ9Bf/CMU8z5IvmDl0zu8etNET/q1sot8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-Received: from localhost (88-113-25-87.elisa-laajakaista.fi [88.113.25.87])
-	by fgw20.mail.saunalahti.fi (Halon) with ESMTP
-	id 6ccef329-81d7-11ef-995b-005056bd6ce9;
-	Fri, 04 Oct 2024 01:32:55 +0300 (EEST)
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 4 Oct 2024 01:32:50 +0300
-To: Daniel Gomez <da.gomez@samsung.com>
-Cc: Masahiro Yamada <masahiroy@kernel.org>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nicolas Schier <nicolas@fjasle.eu>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>,
-	William Hubbs <w.d.hubbs@gmail.com>,
-	Chris Brannon <chris@the-brannons.com>,
-	Kirk Reiser <kirk@reisers.ca>,
-	Samuel Thibault <samuel.thibault@ens-lyon.org>,
-	Paul Moore <paul@paul-moore.com>,
-	Stephen Smalley <stephen.smalley.work@gmail.com>,
-	Ondrej Mosnacek <omosnace@redhat.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Oliver Upton <oliver.upton@linux.dev>,
-	James Morse <james.morse@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Zenghui Yu <yuzenghui@huawei.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>,
-	Simona Vetter <simona.vetter@ffwll.ch>,
-	linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-	intel-xe@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-	speakup@linux-speakup.org, selinux@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
-	linux-serial@vger.kernel.org, llvm@lists.linux.dev,
-	Finn Behrens <me@kloenk.dev>,
-	"Daniel Gomez (Samsung)" <d+samsung@kruces.com>,
-	gost.dev@samsung.com
-Subject: Re: [PATCH v2 2/8] file2alias: fix uuid_t definitions for macos
-Message-ID: <Zv8bkoJA5oDIe6If@surfacebook.localdomain>
-References: <20240906-macos-build-support-v2-0-06beff418848@samsung.com>
- <20240906-macos-build-support-v2-2-06beff418848@samsung.com>
+	s=arc-20240116; t=1728024854; c=relaxed/simple;
+	bh=dHbeqTOFijkf+HG0GxeHaA5ZnKKP1WS0EPmt37KZWYM=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=XfHIE2SaqdLJe/srGh3ts71wXFpxfutxGWfAYSUkd8NksZ+ZpObq8r6X1dYw9txlGT+4Me/69zVF17E6M2kRdWLvzp15LsKAAH7pxmATDRSUPwb6l8bKrrLRyjwhMVfFdVPpZdmeWNHZ952PpSS57Fz/4PuIXmT2F8rB1+d4BN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GH3q6Kaa; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GH3q6Kaa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F10AEC4CECC;
+	Fri,  4 Oct 2024 06:54:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728024854;
+	bh=dHbeqTOFijkf+HG0GxeHaA5ZnKKP1WS0EPmt37KZWYM=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=GH3q6Kaa5r5RSbncazDzIPRYW1dDSe/EHsUU81j78iA9l1SSDX4NgC0GGrddXCpMQ
+	 azRJvdZFhoZsNCEmUbMgiCMWKTFDS5PnE8aAl1ocLdc9JPpL3EAAIG/v7jAhwKRM8a
+	 Ul5b43c9YVIoASViyJ1Tr0h69EitJLgKxB1KKFHjKf80xgTzldbSoeGl7KXnagW5TE
+	 tdBfKzGjjFWVYyKSiuPSJagfiHFuxPmYMcvs7bWM/yrTuHUlqQGMvA6VrFRkzVkUZk
+	 21QBUPnXYg40VkPMnWT5z+5hrKcFqaOQMZT0E4z5B2lx4swXDUeICws2Pg+jU+4kG9
+	 BSmWhKEtBuF6Q==
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfauth.phl.internal (Postfix) with ESMTP id F3DEC1200069;
+	Fri,  4 Oct 2024 02:54:12 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Fri, 04 Oct 2024 02:54:13 -0400
+X-ME-Sender: <xms:FJH_ZjX-mTJ5qSZB52-76AC1bEOrsGJ2LzotzJ6LyrcPXzg3SSjetQ>
+    <xme:FJH_Zrn2xnyE9p1sON2MpfX9AIRoFVWNulLkJCaU2Af3tfQxxaVD-cXrTy6Ra71o1
+    VuLdrNxqh4sT4q_m0w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrvddvvddguddugecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
+    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
+    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
+    tdenucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvg
+    hlrdhorhhgqeenucggtffrrghtthgvrhhnpeejjeffteetfeetkeeijedugeeuvdfgfeef
+    iedtudeikeeggeefkefhudfhlefhveenucevlhhushhtvghrufhiiigvpedtnecurfgrrh
+    grmhepmhgrihhlfhhrohhmpegrrhhnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghl
+    ihhthidquddvkeehudejtddvgedqvdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlh
+    drohhrghesrghrnhgusgdruggvpdhnsggprhgtphhtthhopeekpdhmohguvgepshhmthhp
+    ohhuthdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtph
+    htthhopehhtggrsehlihhnuhigrdhisghmrdgtohhmpdhrtghpthhtohepshgthhhnvghl
+    lhgvsehlihhnuhigrdhisghmrdgtohhmpdhrtghpthhtohepihhlphhordhjrghrvhhinh
+    gvnheslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopehgrhgvghhkhheslhhi
+    nhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehmrggtrhhosehorhgtrg
+    hmrdhmvgdruhhkpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgv
+    rhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkh
+    gvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:FJH_ZvaaTbq7YwQP5PTXD8qijyf0GwxK1lwDYe3ZeMg-rtHaUXTPUw>
+    <xmx:FJH_ZuVq739NZbNaUqYvIOpOTa-pTJagZeYIkFWoI9gjNdOMGKZEow>
+    <xmx:FJH_ZtkFWvBsiPVEIm2_wQJTzBcKrRVM3C2Unrc6FvR3TwwibsxcSg>
+    <xmx:FJH_ZrcPiEougHjDp2aRgjiB43kXD2juTSb3l7yUNGNyGdctbHTHmQ>
+    <xmx:FJH_ZnGsXpuGcmOzHAbcobxQeY-beaijC00gDHCVORFNfN0VqK0Gii2m>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id C11CB2220071; Fri,  4 Oct 2024 02:54:12 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240906-macos-build-support-v2-2-06beff418848@samsung.com>
+Date: Fri, 04 Oct 2024 06:53:51 +0000
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: "Niklas Schnelle" <schnelle@linux.ibm.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
+ linux-kernel@vger.kernel.org
+Message-Id: <b59d81ee-04af-4557-9d35-ec2c03fbcbe7@app.fastmail.com>
+In-Reply-To: <alpine.DEB.2.21.2410022305040.45128@angie.orcam.me.uk>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com>
+ <20240405152924.252598-2-schnelle@linux.ibm.com>
+ <alpine.DEB.2.21.2405230244140.1257@angie.orcam.me.uk>
+ <ef2912910d006c573324bcf063cb76e843dc8267.camel@linux.ibm.com>
+ <alpine.DEB.2.21.2410011707550.45128@angie.orcam.me.uk>
+ <7bcec0eb88c3891d23f5c9f224e708e4a9bb8b89.camel@linux.ibm.com>
+ <alpine.DEB.2.21.2410021632150.45128@angie.orcam.me.uk>
+ <84bbda13-ded1-4ada-a765-9d012d3f4abd@app.fastmail.com>
+ <alpine.DEB.2.21.2410022305040.45128@angie.orcam.me.uk>
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-Fri, Sep 06, 2024 at 01:01:29PM +0200, Daniel Gomez kirjoitti:
-> The uuid_t struct defined in sys/types.h on macOS hosts conflicts with
-> the one defined in file2alias, resulting in the typedef redefinition
-> error below. To resolve this conflict, define the _UUID_T and
-> __GETHOSTUUID_ in file2alias HOSTCFLAGS.
-> 
-> Error:
->   HOSTCC  scripts/mod/file2alias.o scripts/mod/file2alias.c:45:3:
-> error: typedef redefinition with different types ('struct uuid_t' vs
-> '__darwin_uuid_t' (aka 'unsigned char[16]'))    45 | } uuid_t;       |
-> ^
-> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
->    sys/_types/_uuid_t.h:31:25: note: previous definition is here 31 |
->    typedef __darwin_uuid_t uuid_t;    |                         ^
-> scripts/mod/file2alias.c:1354:7: error: member reference base
->  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
->  'unsigned char[16]') is not a structure or union 1354 |
->  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
->  ~~~~^ ~
-> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
->    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
->    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
->    |                                                        ^~~~~~~~~~~
-> scripts/mod/file2alias.c:1354:19: error: member reference base
->  type 'typeof (((struct tee_client_device_id *)0)->uuid)' (aka
->  'unsigned char[16]') is not a structure or union 1354 |
->  uuid->b[0], uuid->b[1], uuid->b[2], uuid->b[3], uuid->b[4],      |
->  ~~~~^ ~
-> /Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/usr/include/
->    secure/_stdio.h:47:56: note: expanded from macro 'sprintf' 47 |
->    __builtin___sprintf_chk (str, 0, __darwin_obsz(str), __VA_ARGS__)
->    |                                                        ^~~~~~~~~~~
+On Wed, Oct 2, 2024, at 22:59, Maciej W. Rozycki wrote:
+> On Wed, 2 Oct 2024, Arnd Bergmann wrote:
+>> Part of the problem that Niklas is trying to solve with the
+>> CONFIG_HAS_IOPORT annotations is to prevent an invalid inb()/outb()
+>> from turning into a NULL pointer dereference as it currently does
+>> on architectures that have no way to support PIO but get the
+>> default implementation from asm-generic/io.h.
+>
+>  It can be worse than that.  Part of my confusion with the defxx driver 
+> trying to do port I/O with my POWER9 system came from the mapping actually 
+> resulting in non-NULL invalid pointers, dereferencing which caused a flood 
+> of obscure messages produced to the system console by the system firmware:
+>
+> LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+> IPMI: dropping non severe PEL event
+> LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+> IPMI: dropping non severe PEL event
+> LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+> IPMI: dropping non severe PEL event
+> LPC[000]: Got SYNC no-response error. Error address reg: 0xd0010014
+> IPMI: dropping non severe PEL event
+> [...]
+>
+> from which it was all but obvious that they were caused by an attempt to 
+> use PCI port I/O with a system lacking support for it.
 
-Please, shrink this to the valuable ~3-5 lines. No need to repeat the same for
-each case!
+Ah, that's too bad. I think this is a result of the patch that
+Michael did to shut up the NULL pointer warning we get, see
+be140f1732b5 ("powerpc/64: Set _IO_BASE to POISON_POINTER_DELTA
+not 0 for CONFIG_PCI=n"). I really wish we could have finished
+Niklas' series earlier to avoid this.
 
--- 
-With Best Regards,
-Andy Shevchenko
+>> I think that anyone using hardware that relies on port I/O on
+>> non-x86 is at this point going to have a reasonable understanding
+>> of the system, so I'm not too worried here. ;-)
+>
+>  Well, virtually all non-x86 systems continue supporting PCI/e port I/O 
+> via a suitably decoded CPU-side MMIO window, so I think coming across one 
+> that doesn't can still be a nasty surprise even in 2024.  For instance 
+> I've been happily using a PC parallel port PCIe option card, one of the 
+> very few interfaces if not the only one remaining that have not ever seen 
+> an MMIO variant, with my RISC-V hardware, newer than said POWER9 system.
+>
+>  So far it's been the s390 and a couple of POWER system implementations 
+> that have support for PCI/e port I/O removed.  Have I missed anything?
 
+I meant PCIe cards with I/O space here, not host bridges. I know you
+have a lot of them, but what I've heard from Arm platform maintainers
+is that they tend to struggle finding any PCIe cards to test their
+hsot bridge drivers on, and I expect that a lot of them are actually
+broken because they have never been tested and just copied the
+implementation badly from some other driver.
 
+I think the only new PCIe devices you can find today that still use
+I/O space are ones with compatibility registers for IBM PC style
+hardware (vga, uart, parport), but most users would never have used
+one of those and instead use the native register interface of their
+GPU (on non-x86), USB-serial and no parport. Other devices that
+needed I/O space never worked on PCIe anyway because of the lack
+of ISA style DMA.
+
+There are also a lot of Arm systems that have no I/O space support at
+all, such as the Apple M2 I'm using at the moment.
+
+      Arnd
