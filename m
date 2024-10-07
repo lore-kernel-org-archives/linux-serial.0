@@ -1,547 +1,1028 @@
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D63E91DE3B2;
-	Mon,  7 Oct 2024 18:49:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.167.242.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4551681727
+	for <linux-serial@vger.kernel.org>; Mon,  7 Oct 2024 20:58:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728326974; cv=none; b=VXrflAbwtt7klbI+dRywslFhvosQBfWMzzd6X3zEti4tEnxst2i039B34T59ZeTim/VMAaBKizGUY4qGkQZc4k4qrzhEzFt6+Nb60nmY7R5HGDA68/TR8n3LUIm30CIQ7rexkTZln595V/YCP/vNwoV7MZq3vrCOk9dfrRVcfMA=
+	t=1728334727; cv=none; b=JM2LREbPw7lPO3eTkHQPIDCq1kxIEn6XLBBerLGiKKzlG1ZVV/lNqAoWxsspib6IU6wJWrFt2RMa3AGgqHAo6u3ZDOWKYGO7hMGzItBdmmcR+iPThacWWVjcwUd4TlfHiCJwlcWlJmcJorWZf0AxjIeioXj72d3AxRYN46v7HDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728326974; c=relaxed/simple;
-	bh=eBAgU4TmtLHHFe+2PKttKiZlsLqzfPymsgFdfO1tKvw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rePAuso7G6crfTCPJ5WM3klYtEkovX5M0xqv/HFnmP+5c7lVSsu+AN0bI1EeefYAq00oVByRHbtZk5T0EO7ew/VziA1sN9n+v8joFOSA8OTwvgQ/nRMiiy7hjWiekG9LtvCIf23am60e00xuNxZU8W8Up2EDHX/YDgcu3ixa35E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com; spf=pass smtp.mailfrom=ideasonboard.com; dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b=YxMqCYuP; arc=none smtp.client-ip=213.167.242.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
+	s=arc-20240116; t=1728334727; c=relaxed/simple;
+	bh=4XefouF3I7PlToBWXo9tVuRM84DvN1mhtuatIyFdOtI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=AZaLt/1YELkdPsbmePdpJIQLDe/JfNzMjPHUk+qE3mfazwFLcYKNmPi2gLn2ysHlALuRxRPfc6HdNDK+v+Nf+KHrLlSYVrMqklLX4RnZ6NX2vwCPGb9TS4dm7/gWoBwzYMOsvI5bBmOY1c27XkUKy2j99jTVNYrx0YH2+gnkttg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=uBS/QCuZ; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b="YxMqCYuP"
-Received: from pendragon.ideasonboard.com (unknown [132.205.230.14])
-	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9E180792;
-	Mon,  7 Oct 2024 20:47:53 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-	s=mail; t=1728326874;
-	bh=eBAgU4TmtLHHFe+2PKttKiZlsLqzfPymsgFdfO1tKvw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=YxMqCYuP18UxhrvcDMto2rVlJwCnBlnrLPHGecCn/SWafNHkhjQUd4kQgMOwkuzNG
-	 sbdnKsqH2YkkrIiENlozQeYUWG/mBmxsVxBb/FNJQA9DXq0Xkdo5iWBsyO7xZe5PpT
-	 FnOZcGKSw3+FPkItlf4Kx/1LC+vtH2HoIoYeyVDE=
-Date: Mon, 7 Oct 2024 21:49:24 +0300
-From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Cc: Sakari Ailus <sakari.ailus@linux.intel.com>,
-	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-	linux-gpio@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-	nouveau@lists.freedesktop.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
-	linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-input@vger.kernel.org, patches@opensource.cirrus.com,
-	iommu@lists.linux.dev, imx@lists.linux.dev,
-	linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org,
-	linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org,
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org,
-	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-usb@vger.kernel.org,
-	linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org,
-	asahi@lists.linux.dev, rafael@kernel.org,
-	Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 00/51] treewide: Switch to __pm_runtime_put_autosuspend()
-Message-ID: <20241007184924.GH14766@pendragon.ideasonboard.com>
-References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
- <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="uBS/QCuZ"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a9952ea05c5so211078166b.2
+        for <linux-serial@vger.kernel.org>; Mon, 07 Oct 2024 13:58:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1728334721; x=1728939521; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IyN0uuDETAWA3p7xoFGqn49SkFSe/uu1Btr4uRYXkfM=;
+        b=uBS/QCuZ3vwlV8/iK4RLi0k8csmzDw0P8I6WLgVP/r6p4oKM1e1pe3OW5sng2G55d4
+         x2dPuyBEX2rt+3pQOplf4jYwc1Y4LJ3d0l+8SenESYLNDQU9xqnbfryR+OnRE/2sC5tT
+         c1Q6OjS9i2rnc6MqpPxzrfPMhTJ4QQH14RbM9Wn+vdwLUt5eHYJQSszIj7oD6e20dwkw
+         A+lREfza82t3E3Is3/2uQypGVVjSAe9nPribLmN0lAEpiCC6CXphGhVtFfRGHanqFEt7
+         My0XUAof0KSSz5jCEhOSEJpJUt4wrSrmDfb0ilauhAPTk7TKYv/J3WvcLd6QqPdsJZ0V
+         BNCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728334721; x=1728939521;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IyN0uuDETAWA3p7xoFGqn49SkFSe/uu1Btr4uRYXkfM=;
+        b=XPP/0CsIrP75mc//JH2aL3g6FLjCSgaoNqrlPFdpLHrO2CQlD443wsNmpUsFASLdUQ
+         U2kFbTB5KA8VHVtarEPfPNX+Ase6AILzXsQJfNdUeWBUPHo++CH+i7k95lVSD7ccUAE+
+         HgGJPbT4mz/fTbTby4vzL+PLv5CD9BjyuMhDJrzR9a94Y2+I5RPQ7OA13mWv9SJplufI
+         t1xbrY9mzbPGMWU2dJGuD4R5EWZwB4mgu9WQ3cLce+NH6yGUiMyuaQVLaaxC3+DvcrBu
+         emLSNcFI2oM8q0fOLZHpOmwT1zEFsACYAPBApg/6jaJsggGebZV3tCbzj1cIhiw9995X
+         dBxw==
+X-Gm-Message-State: AOJu0YydiVnl4FXJbgWEZRpC34hNKyQ+N8wcLAyWbHHVE14qCFk4Q4gC
+	pqk2I9f4HixB9kk6arAH+JrUaENaF1N8bDaKsP+748P9ADtiHqIuv3fKaKNK+9c=
+X-Google-Smtp-Source: AGHT+IEDC9o/gSTkFiM0aYTXjV2+YB0JN2IA0ftKNRa0JRa5E2WhMSBNMLv32ZF17YjtKcAO9zrrSg==
+X-Received: by 2002:a17:907:3f8a:b0:a99:5240:381e with SMTP id a640c23a62f3a-a9952403a3dmr491151266b.18.1728334721472;
+        Mon, 07 Oct 2024 13:58:41 -0700 (PDT)
+Received: from localhost ([2a02:8071:b783:6940:492d:9548:aca1:239d])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9940f613c2sm334539766b.4.2024.10.07.13.58.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Oct 2024 13:58:41 -0700 (PDT)
+From: =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [PATCH] serial: Switch back to struct platform_driver::remove()
+Date: Mon,  7 Oct 2024 22:58:04 +0200
+Message-ID: <20241007205803.444994-7-u.kleine-koenig@baylibre.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=38129; i=u.kleine-koenig@baylibre.com; h=from:subject; bh=4XefouF3I7PlToBWXo9tVuRM84DvN1mhtuatIyFdOtI=; b=owEBbQGS/pANAwAKAY+A+1h9Ev5OAcsmYgBnBEte9LHAY+vEw+os4NmfyfmadRjLE518UXYRB rq1q2hWFKKJATMEAAEKAB0WIQQ/gaxpOnoeWYmt/tOPgPtYfRL+TgUCZwRLXgAKCRCPgPtYfRL+ TvYjB/0drCspvN0RaT8PpWbXKIHH8pkDpMrVB8alulAdV26YMBjhRhE4hbm2zFvR5qi2IuMXaDn DrQENbHZhrXIR4T/e1/BNb28+8lInBMW9avEimpQsew2xIQyTua6oTm5q3Ju3oWYLNawwjDn+6I 1jX9PEmuHZJfvrrcX2lAg8pv9sKPX42XxdGExQ4KwGM7kP6rc496w52LZYaW/NXrffqKBMM+X19 16ddfizK+m9Rl9rZdLZLf0gqB+I2OIW8LuTO8kZchLeia7YuOASR3cr922E9mICBbGS3UedLJTa CxtTcPyUZngQzUF/ppHu6scGp0UA/zQ1QO3B48XYSX9eulso
+X-Developer-Key: i=u.kleine-koenig@baylibre.com; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
 
-Hi Ulf,
+After commit 0edb555a65d1 ("platform: Make platform_driver::remove()
+return void") .remove() is (again) the right callback to implement for
+platform drivers.
 
-On Fri, Oct 04, 2024 at 04:38:36PM +0200, Ulf Hansson wrote:
-> On Fri, 4 Oct 2024 at 11:41, Sakari Ailus <sakari.ailus@linux.intel.com> wrote:
-> >
-> > Hello everyone,
-> >
-> > This set will switch the users of pm_runtime_put_autosuspend() to
-> > __pm_runtime_put_autosuspend() while the former will soon be re-purposed
-> > to include a call to pm_runtime_mark_last_busy(). The two are almost
-> > always used together, apart from bugs which are likely common. Going
-> > forward, most new users should be using pm_runtime_put_autosuspend().
-> >
-> > Once this conversion is done and pm_runtime_put_autosuspend() re-purposed,
-> > I'll post another set to merge the calls to __pm_runtime_put_autosuspend()
-> > and pm_runtime_mark_last_busy().
-> 
-> That sounds like it could cause a lot of churns.
-> 
-> Why not add a new helper function that does the
-> pm_runtime_put_autosuspend() and the pm_runtime_mark_last_busy()
-> things? Then we can start moving users over to this new interface,
-> rather than having this intermediate step?
+Convert all platform drivers below drivers/tty/serial to use .remove(),
+with the eventual goal to drop struct platform_driver::remove_new(). As
+.remove() and .remove_new() have the same prototypes, conversion is done
+by just changing the structure member name in the driver initializer.
 
-I think the API would be nicer if we used the shortest and simplest
-function names for the most common use cases. Following
-pm_runtime_put_autosuspend() with pm_runtime_mark_last_busy() is that
-most common use case. That's why I like Sakari's approach of repurposing
-pm_runtime_put_autosuspend(), and introducing
-__pm_runtime_put_autosuspend() for the odd cases where
-pm_runtime_mark_last_busy() shouldn't be called.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@baylibre.com>
+---
+Hello,
 
-> > The diff in these patches have been generated using the following
-> > Coccinelle script (besides a manual change in
-> > drivers/iio/magnetometer/af8133j.c):
-> >
-> > ----------8<-------------------
-> > @@
-> > expression E1;
-> >
-> > @@
-> >
-> > - pm_runtime_put_autosuspend(E1)
-> > + __pm_runtime_put_autosuspend(E1)
-> > ----------8<-------------------
-> >
-> > These patches are on top of today's linux-next (i.e. next-20241004).
-> >
-> > Sakari Ailus (51):
-> >   accel/ivpu: Switch to __pm_runtime_put_autosuspend()
-> >   bluetooth: Switch to __pm_runtime_put_autosuspend()
-> >   bus: sunxi-rsb: Switch to __pm_runtime_put_autosuspend()
-> >   hwrng: Switch to __pm_runtime_put_autosuspend()
-> >   clk: Switch to __pm_runtime_put_autosuspend()
-> >   crypto: Switch to __pm_runtime_put_autosuspend()
-> >   dmaengine: Switch to __pm_runtime_put_autosuspend()
-> >   gpio: Switch to __pm_runtime_put_autosuspend()
-> >   drm/amd: Switch to __pm_runtime_put_autosuspend()
-> >   drm/nouveau: Switch to __pm_runtime_put_autosuspend()
-> >   drm/radeon: Switch to __pm_runtime_put_autosuspend()
-> >   drm/panfrost: Switch to __pm_runtime_put_autosuspend()
-> >   drivers: drm: Switch to __pm_runtime_put_autosuspend()
-> >   HSI: omap_ssi_port: Switch to __pm_runtime_put_autosuspend()
-> >   stm class: Switch to __pm_runtime_put_autosuspend()
-> >   i2c: Switch to __pm_runtime_put_autosuspend()
-> >   i3c: master: svc: Switch to __pm_runtime_put_autosuspend()
-> >   i3c: dw: Switch to __pm_runtime_put_autosuspend()
-> >   iio: Switch to __pm_runtime_put_autosuspend()
-> >   Input: omap4-keypad: Switch to __pm_runtime_put_autosuspend()
-> >   Input: cs40l50: Switch to __pm_runtime_put_autosuspend()
-> >   iommu/arm-smmu: Switch to __pm_runtime_put_autosuspend()
-> >   irqchip/imx-irqsteer: Switch to __pm_runtime_put_autosuspend()
-> >   mailbox: mtk-cmdq-mailbox: Switch to __pm_runtime_put_autosuspend()
-> >   media: Switch to __pm_runtime_put_autosuspend()
-> >   mfd: Switch to __pm_runtime_put_autosuspend()
-> >   mei: Switch to __pm_runtime_put_autosuspend()
-> >   mmc: Switch to __pm_runtime_put_autosuspend()
-> >   mtd: rawnand: gpmi: Switch to __pm_runtime_put_autosuspend()
-> >   net: Switch to __pm_runtime_put_autosuspend()
-> >   nfc: trf7970a: Switch to __pm_runtime_put_autosuspend()
-> >   PCI/portdrv: Switch to __pm_runtime_put_autosuspend()
-> >   phy: motorola: phy-mapphone-mdm6600: Switch to
-> >     __pm_runtime_put_autosuspend()
-> >   phy: ti: phy-twl4030-usb: Switch to __pm_runtime_put_autosuspend()
-> >   power: Switch to __pm_runtime_put_autosuspend()
-> >   pwm: img: Switch to __pm_runtime_put_autosuspend()
-> >   regulator: stm32-vrefbuf: Switch to __pm_runtime_put_autosuspend()
-> >   remoteproc: omap: Switch to __pm_runtime_put_autosuspend()
-> >   slimbus: Switch to __pm_runtime_put_autosuspend()
-> >   soundwire: Switch to __pm_runtime_put_autosuspend()
-> >   spi: Switch to __pm_runtime_put_autosuspend()
-> >   staging: Switch to __pm_runtime_put_autosuspend()
-> >   thunderbolt: Switch to __pm_runtime_put_autosuspend()
-> >   serial: Switch to __pm_runtime_put_autosuspend()
-> >   usb: Switch to __pm_runtime_put_autosuspend()
-> >   w1: omap-hdq: Switch to __pm_runtime_put_autosuspend()
-> >   staging: greybus: Switch to __pm_runtime_put_autosuspend()
-> >   ALSA: hda: Switch to __pm_runtime_put_autosuspend()
-> >   ASoC: Switch to __pm_runtime_put_autosuspend()
-> >   ALSA: intel_hdmi: Switch to __pm_runtime_put_autosuspend()
-> >   soc: apple: mailbox: Switch to __pm_runtime_put_autosuspend()
-> >
-> >  drivers/accel/ivpu/ivpu_drv.c                 |   2 +-
-> >  drivers/accel/ivpu/ivpu_pm.c                  |   8 +-
-> >  drivers/bluetooth/btmtksdio.c                 |   2 +-
-> >  drivers/bluetooth/hci_bcm.c                   |   6 +-
-> >  drivers/bluetooth/hci_h5.c                    |   4 +-
-> >  drivers/bluetooth/hci_intel.c                 |   6 +-
-> >  drivers/bus/sunxi-rsb.c                       |   4 +-
-> >  drivers/char/hw_random/cctrng.c               |   2 +-
-> >  drivers/char/hw_random/omap3-rom-rng.c        |   2 +-
-> >  drivers/clk/imx/clk-imx8qxp-lpcg.c            |   2 +-
-> >  drivers/clk/imx/clk-scu.c                     |   2 +-
-> >  drivers/clk/qcom/lpassaudiocc-sc7280.c        |   4 +-
-> >  drivers/clk/qcom/lpasscorecc-sc7180.c         |   4 +-
-> >  drivers/crypto/ccree/cc_pm.c                  |   2 +-
-> >  drivers/crypto/hisilicon/qm.c                 |   2 +-
-> >  drivers/crypto/omap-aes-gcm.c                 |   2 +-
-> >  drivers/crypto/omap-aes.c                     |   2 +-
-> >  drivers/crypto/omap-des.c                     |   2 +-
-> >  drivers/crypto/omap-sham.c                    |   2 +-
-> >  drivers/crypto/rockchip/rk3288_crypto_ahash.c |   2 +-
-> >  .../crypto/rockchip/rk3288_crypto_skcipher.c  |   2 +-
-> >  drivers/crypto/stm32/stm32-crc32.c            |   4 +-
-> >  drivers/crypto/stm32/stm32-cryp.c             |   2 +-
-> >  drivers/crypto/stm32/stm32-hash.c             |   2 +-
-> >  drivers/dma/at_xdmac.c                        |  24 +--
-> >  drivers/dma/pl330.c                           |  14 +-
-> >  drivers/dma/qcom/bam_dma.c                    |  10 +-
-> >  drivers/dma/qcom/hidma.c                      |  18 +-
-> >  drivers/dma/qcom/hidma_dbg.c                  |   2 +-
-> >  drivers/dma/qcom/hidma_mgmt.c                 |   4 +-
-> >  drivers/dma/ste_dma40.c                       |  16 +-
-> >  drivers/dma/ti/cppi41.c                       |  10 +-
-> >  drivers/dma/xilinx/zynqmp_dma.c               |   2 +-
-> >  drivers/gpio/gpio-arizona.c                   |  10 +-
-> >  drivers/gpio/gpio-mxc.c                       |   2 +-
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c      |   2 +-
-> >  .../gpu/drm/amd/amdgpu/amdgpu_connectors.c    |  16 +-
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c   | 120 ++++++------
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_display.c   |   2 +-
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c       |   6 +-
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c     |   6 +-
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_gfx.c       |   4 +-
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_kms.c       |   4 +-
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_rap.c       |   4 +-
-> >  drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c       |   2 +-
-> >  .../gpu/drm/amd/amdgpu/amdgpu_securedisplay.c |   4 +-
-> >  drivers/gpu/drm/amd/amdkfd/kfd_process.c      |   4 +-
-> >  .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |   2 +-
-> >  drivers/gpu/drm/amd/pm/amdgpu_pm.c            | 178 +++++++++---------
-> >  .../drm/bridge/analogix/analogix_dp_core.c    |   2 +-
-> >  drivers/gpu/drm/bridge/analogix/anx7625.c     |   4 +-
-> >  drivers/gpu/drm/bridge/parade-ps8640.c        |   4 +-
-> >  drivers/gpu/drm/bridge/ti-sn65dsi86.c         |  14 +-
-> >  drivers/gpu/drm/etnaviv/etnaviv_gpu.c         |  12 +-
-> >  drivers/gpu/drm/exynos/exynos_drm_fimc.c      |   4 +-
-> >  drivers/gpu/drm/exynos/exynos_drm_g2d.c       |   4 +-
-> >  drivers/gpu/drm/exynos/exynos_drm_gsc.c       |   6 +-
-> >  drivers/gpu/drm/exynos/exynos_drm_rotator.c   |   2 +-
-> >  drivers/gpu/drm/exynos/exynos_drm_scaler.c    |   2 +-
-> >  drivers/gpu/drm/i915/intel_runtime_pm.c       |   4 +-
-> >  drivers/gpu/drm/imx/dcss/dcss-crtc.c          |   2 +-
-> >  drivers/gpu/drm/lima/lima_sched.c             |   2 +-
-> >  drivers/gpu/drm/msm/adreno/adreno_device.c    |   2 +-
-> >  drivers/gpu/drm/msm/adreno/adreno_gpu.c       |   2 +-
-> >  drivers/gpu/drm/msm/msm_gpu.c                 |   2 +-
-> >  drivers/gpu/drm/msm/msm_iommu.c               |   4 +-
-> >  drivers/gpu/drm/msm/msm_submitqueue.c         |   2 +-
-> >  drivers/gpu/drm/nouveau/dispnv50/disp.c       |  10 +-
-> >  drivers/gpu/drm/nouveau/nouveau_connector.c   |   4 +-
-> >  drivers/gpu/drm/nouveau/nouveau_debugfs.c     |   8 +-
-> >  drivers/gpu/drm/nouveau/nouveau_display.c     |   4 +-
-> >  drivers/gpu/drm/nouveau/nouveau_drm.c         |  10 +-
-> >  drivers/gpu/drm/nouveau/nouveau_gem.c         |  10 +-
-> >  drivers/gpu/drm/panel/panel-edp.c             |   8 +-
-> >  .../gpu/drm/panel/panel-samsung-atna33xc20.c  |   6 +-
-> >  drivers/gpu/drm/panel/panel-simple.c          |   6 +-
-> >  drivers/gpu/drm/panfrost/panfrost_job.c       |   4 +-
-> >  drivers/gpu/drm/panfrost/panfrost_mmu.c       |   4 +-
-> >  drivers/gpu/drm/panfrost/panfrost_perfcnt.c   |   4 +-
-> >  drivers/gpu/drm/panthor/panthor_device.c      |   2 +-
-> >  drivers/gpu/drm/panthor/panthor_sched.c       |   6 +-
-> >  drivers/gpu/drm/radeon/radeon_acpi.c          |   2 +-
-> >  drivers/gpu/drm/radeon/radeon_connectors.c    |  20 +-
-> >  drivers/gpu/drm/radeon/radeon_display.c       |   6 +-
-> >  drivers/gpu/drm/radeon/radeon_drv.c           |   4 +-
-> >  drivers/gpu/drm/radeon/radeon_fbdev.c         |   4 +-
-> >  drivers/gpu/drm/radeon/radeon_kms.c           |  10 +-
-> >  drivers/gpu/drm/tegra/submit.c                |   2 +-
-> >  drivers/gpu/drm/tidss/tidss_drv.c             |   2 +-
-> >  drivers/gpu/drm/vc4/vc4_v3d.c                 |   2 +-
-> >  drivers/hsi/controllers/omap_ssi_port.c       |  42 ++---
-> >  drivers/hwtracing/stm/core.c                  |   8 +-
-> >  drivers/i2c/busses/i2c-amd-mp2-pci.c          |   2 +-
-> >  drivers/i2c/busses/i2c-amd-mp2.h              |   2 +-
-> >  drivers/i2c/busses/i2c-at91-master.c          |   2 +-
-> >  drivers/i2c/busses/i2c-cadence.c              |   2 +-
-> >  drivers/i2c/busses/i2c-davinci.c              |   4 +-
-> >  drivers/i2c/busses/i2c-designware-master.c    |   2 +-
-> >  drivers/i2c/busses/i2c-designware-pcidrv.c    |   2 +-
-> >  drivers/i2c/busses/i2c-hix5hd2.c              |   2 +-
-> >  drivers/i2c/busses/i2c-i801.c                 |   4 +-
-> >  drivers/i2c/busses/i2c-img-scb.c              |   6 +-
-> >  drivers/i2c/busses/i2c-imx-lpi2c.c            |   6 +-
-> >  drivers/i2c/busses/i2c-imx.c                  |   4 +-
-> >  drivers/i2c/busses/i2c-mv64xxx.c              |   2 +-
-> >  drivers/i2c/busses/i2c-nvidia-gpu.c           |   4 +-
-> >  drivers/i2c/busses/i2c-omap.c                 |   6 +-
-> >  drivers/i2c/busses/i2c-qcom-cci.c             |   2 +-
-> >  drivers/i2c/busses/i2c-qcom-geni.c            |   2 +-
-> >  drivers/i2c/busses/i2c-qup.c                  |   4 +-
-> >  drivers/i2c/busses/i2c-riic.c                 |   4 +-
-> >  drivers/i2c/busses/i2c-rzv2m.c                |   2 +-
-> >  drivers/i2c/busses/i2c-sprd.c                 |   4 +-
-> >  drivers/i2c/busses/i2c-stm32f7.c              |  10 +-
-> >  drivers/i2c/busses/i2c-xiic.c                 |   2 +-
-> >  drivers/i3c/master/dw-i3c-master.c            |  16 +-
-> >  drivers/i3c/master/svc-i3c-master.c           |  16 +-
-> >  drivers/iio/accel/bmc150-accel-core.c         |   2 +-
-> >  drivers/iio/accel/bmi088-accel-core.c         |   6 +-
-> >  drivers/iio/accel/fxls8962af-core.c           |   2 +-
-> >  drivers/iio/accel/kxcjk-1013.c                |   2 +-
-> >  drivers/iio/accel/kxsd9.c                     |   6 +-
-> >  drivers/iio/accel/mma8452.c                   |   2 +-
-> >  drivers/iio/accel/mma9551_core.c              |   2 +-
-> >  drivers/iio/accel/msa311.c                    |  12 +-
-> >  drivers/iio/adc/ab8500-gpadc.c                |   2 +-
-> >  drivers/iio/adc/at91-sama5d2_adc.c            |  20 +-
-> >  drivers/iio/adc/rcar-gyroadc.c                |   2 +-
-> >  drivers/iio/adc/stm32-adc-core.c              |   2 +-
-> >  drivers/iio/adc/stm32-adc.c                   |  12 +-
-> >  drivers/iio/adc/sun4i-gpadc-iio.c             |   4 +-
-> >  drivers/iio/adc/ti-ads1015.c                  |   2 +-
-> >  drivers/iio/adc/ti-ads1100.c                  |   2 +-
-> >  drivers/iio/adc/ti-ads1119.c                  |   4 +-
-> >  drivers/iio/chemical/atlas-sensor.c           |   4 +-
-> >  .../common/hid-sensors/hid-sensor-trigger.c   |   2 +-
-> >  drivers/iio/dac/stm32-dac.c                   |   6 +-
-> >  drivers/iio/gyro/bmg160_core.c                |   2 +-
-> >  drivers/iio/gyro/fxas21002c_core.c            |   2 +-
-> >  drivers/iio/gyro/mpu3050-core.c               |   6 +-
-> >  drivers/iio/gyro/mpu3050-i2c.c                |   2 +-
-> >  .../iio/imu/inv_icm42600/inv_icm42600_accel.c |  10 +-
-> >  .../imu/inv_icm42600/inv_icm42600_buffer.c    |   2 +-
-> >  .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  |  10 +-
-> >  .../iio/imu/inv_icm42600/inv_icm42600_temp.c  |   2 +-
-> >  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    |  14 +-
-> >  drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |   4 +-
-> >  drivers/iio/imu/kmx61.c                       |   2 +-
-> >  drivers/iio/light/apds9306.c                  |   6 +-
-> >  drivers/iio/light/apds9960.c                  |   4 +-
-> >  drivers/iio/light/bh1780.c                    |   2 +-
-> >  drivers/iio/light/gp2ap002.c                  |   4 +-
-> >  drivers/iio/light/isl29028.c                  |   2 +-
-> >  drivers/iio/light/ltrf216a.c                  |   2 +-
-> >  drivers/iio/light/pa12203001.c                |   2 +-
-> >  drivers/iio/light/rpr0521.c                   |   2 +-
-> >  drivers/iio/light/tsl2583.c                   |   2 +-
-> >  drivers/iio/light/tsl2591.c                   |   4 +-
-> >  drivers/iio/light/us5182d.c                   |   2 +-
-> >  drivers/iio/light/vcnl4000.c                  |   2 +-
-> >  drivers/iio/light/vcnl4035.c                  |   2 +-
-> >  drivers/iio/magnetometer/af8133j.c            |   4 +-
-> >  drivers/iio/magnetometer/ak8974.c             |   4 +-
-> >  drivers/iio/magnetometer/ak8975.c             |   2 +-
-> >  drivers/iio/magnetometer/bmc150_magn.c        |   2 +-
-> >  drivers/iio/magnetometer/tmag5273.c           |   4 +-
-> >  drivers/iio/magnetometer/yamaha-yas530.c      |   4 +-
-> >  drivers/iio/pressure/bmp280-core.c            |  10 +-
-> >  drivers/iio/pressure/icp10100.c               |   2 +-
-> >  drivers/iio/pressure/mpl115.c                 |   4 +-
-> >  drivers/iio/pressure/zpa2326.c                |   4 +-
-> >  .../iio/proximity/pulsedlight-lidar-lite-v2.c |   2 +-
-> >  drivers/iio/proximity/srf04.c                 |   2 +-
-> >  drivers/iio/temperature/mlx90614.c            |   4 +-
-> >  drivers/iio/temperature/mlx90632.c            |   4 +-
-> >  drivers/iio/temperature/mlx90635.c            |   4 +-
-> >  drivers/input/keyboard/omap4-keypad.c         |   8 +-
-> >  drivers/input/misc/cs40l50-vibra.c            |   8 +-
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.c         |   2 +-
-> >  drivers/irqchip/irq-imx-irqsteer.c            |   2 +-
-> >  drivers/mailbox/mtk-cmdq-mailbox.c            |  10 +-
-> >  drivers/media/i2c/alvium-csi2.c               |   2 +-
-> >  drivers/media/i2c/ccs/ccs-core.c              |  10 +-
-> >  drivers/media/i2c/dw9719.c                    |   2 +-
-> >  drivers/media/i2c/gc0308.c                    |   6 +-
-> >  drivers/media/i2c/gc2145.c                    |   8 +-
-> >  drivers/media/i2c/imx283.c                    |   6 +-
-> >  drivers/media/i2c/imx290.c                    |   6 +-
-> >  drivers/media/i2c/imx296.c                    |   4 +-
-> >  drivers/media/i2c/imx415.c                    |   4 +-
-> >  drivers/media/i2c/mt9m114.c                   |  12 +-
-> >  drivers/media/i2c/ov2680.c                    |   2 +-
-> >  drivers/media/i2c/ov4689.c                    |   6 +-
-> >  drivers/media/i2c/ov5640.c                    |   8 +-
-> >  drivers/media/i2c/ov5645.c                    |   6 +-
-> >  drivers/media/i2c/ov5693.c                    |   2 +-
-> >  drivers/media/i2c/ov64a40.c                   |   8 +-
-> >  drivers/media/i2c/ov7251.c                    |   2 +-
-> >  drivers/media/i2c/ov8858.c                    |   4 +-
-> >  drivers/media/i2c/thp7312.c                   |   8 +-
-> >  drivers/media/i2c/video-i2c.c                 |   8 +-
-> >  .../media/platform/nvidia/tegra-vde/h264.c    |   4 +-
-> >  drivers/media/platform/qcom/venus/vdec.c      |   4 +-
-> >  drivers/media/platform/qcom/venus/venc.c      |   4 +-
-> >  .../platform/raspberrypi/pisp_be/pisp_be.c    |   4 +-
-> >  .../media/platform/st/sti/delta/delta-v4l2.c  |   4 +-
-> >  drivers/media/platform/st/sti/hva/hva-hw.c    |   8 +-
-> >  .../media/platform/verisilicon/hantro_drv.c   |   2 +-
-> >  drivers/media/rc/gpio-ir-recv.c               |   2 +-
-> >  drivers/mfd/arizona-irq.c                     |   2 +-
-> >  drivers/mfd/cs40l50-core.c                    |   2 +-
-> >  drivers/mfd/cs42l43.c                         |   2 +-
-> >  drivers/misc/mei/client.c                     |  14 +-
-> >  drivers/mmc/core/core.c                       |   4 +-
-> >  drivers/mmc/host/atmel-mci.c                  |   4 +-
-> >  drivers/mmc/host/dw_mmc-rockchip.c            |   2 +-
-> >  drivers/mmc/host/dw_mmc.c                     |   2 +-
-> >  drivers/mmc/host/mmci.c                       |   2 +-
-> >  drivers/mmc/host/omap_hsmmc.c                 |   6 +-
-> >  drivers/mmc/host/sdhci-msm.c                  |   2 +-
-> >  drivers/mmc/host/sdhci-of-at91.c              |   2 +-
-> >  drivers/mmc/host/sdhci-omap.c                 |   4 +-
-> >  drivers/mmc/host/sdhci-pci-core.c             |   2 +-
-> >  drivers/mmc/host/sdhci-pxav3.c                |   6 +-
-> >  drivers/mmc/host/sdhci-sprd.c                 |   2 +-
-> >  drivers/mmc/host/sdhci-xenon.c                |   2 +-
-> >  drivers/mmc/host/sdhci_am654.c                |   2 +-
-> >  drivers/mmc/host/tmio_mmc_core.c              |   2 +-
-> >  drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c    |  10 +-
-> >  drivers/net/ethernet/cadence/macb_main.c      |  10 +-
-> >  drivers/net/ethernet/freescale/fec_main.c     |  16 +-
-> >  drivers/net/ethernet/renesas/ravb_main.c      |   8 +-
-> >  drivers/net/ethernet/ti/davinci_mdio.c        |  14 +-
-> >  drivers/net/ipa/ipa_interrupt.c               |   2 +-
-> >  drivers/net/ipa/ipa_main.c                    |   2 +-
-> >  drivers/net/ipa/ipa_modem.c                   |   8 +-
-> >  drivers/net/ipa/ipa_smp2p.c                   |   4 +-
-> >  drivers/net/ipa/ipa_uc.c                      |   4 +-
-> >  drivers/net/wireless/ath/wil6210/pm.c         |   2 +-
-> >  drivers/net/wireless/ti/wl18xx/debugfs.c      |   6 +-
-> >  drivers/net/wireless/ti/wlcore/cmd.c          |   2 +-
-> >  drivers/net/wireless/ti/wlcore/debugfs.c      |  22 +--
-> >  drivers/net/wireless/ti/wlcore/main.c         |  72 +++----
-> >  drivers/net/wireless/ti/wlcore/scan.c         |   2 +-
-> >  drivers/net/wireless/ti/wlcore/sysfs.c        |   2 +-
-> >  drivers/net/wireless/ti/wlcore/testmode.c     |   4 +-
-> >  drivers/net/wireless/ti/wlcore/tx.c           |   2 +-
-> >  drivers/net/wireless/ti/wlcore/vendor_cmd.c   |   6 +-
-> >  drivers/net/wwan/qcom_bam_dmux.c              |   4 +-
-> >  drivers/net/wwan/t7xx/t7xx_hif_cldma.c        |   6 +-
-> >  drivers/net/wwan/t7xx/t7xx_hif_dpmaif_rx.c    |   6 +-
-> >  drivers/net/wwan/t7xx/t7xx_hif_dpmaif_tx.c    |   4 +-
-> >  drivers/nfc/trf7970a.c                        |   2 +-
-> >  drivers/pci/pcie/portdrv.c                    |   2 +-
-> >  drivers/phy/motorola/phy-mapphone-mdm6600.c   |   4 +-
-> >  drivers/phy/ti/phy-twl4030-usb.c              |   8 +-
-> >  drivers/power/supply/bq24190_charger.c        |  28 +--
-> >  drivers/power/supply/twl4030_charger.c        |   2 +-
-> >  drivers/pwm/pwm-img.c                         |   4 +-
-> >  drivers/regulator/stm32-vrefbuf.c             |  12 +-
-> >  drivers/remoteproc/omap_remoteproc.c          |   6 +-
-> >  drivers/slimbus/core.c                        |   2 +-
-> >  drivers/slimbus/messaging.c                   |   4 +-
-> >  drivers/soc/apple/mailbox.c                   |   2 +-
-> >  drivers/soundwire/bus.c                       |   2 +-
-> >  drivers/soundwire/cadence_master.c            |   2 +-
-> >  drivers/soundwire/qcom.c                      |   6 +-
-> >  drivers/spi/atmel-quadspi.c                   |  10 +-
-> >  drivers/spi/spi-cadence-quadspi.c             |   4 +-
-> >  drivers/spi/spi-cadence.c                     |   2 +-
-> >  drivers/spi/spi-dw-pci.c                      |   2 +-
-> >  drivers/spi/spi-fsl-espi.c                    |   4 +-
-> >  drivers/spi/spi-fsl-lpspi.c                   |   4 +-
-> >  drivers/spi/spi-imx.c                         |   6 +-
-> >  drivers/spi/spi-mtk-nor.c                     |   2 +-
-> >  drivers/spi/spi-omap2-mcspi.c                 |   6 +-
-> >  drivers/spi/spi-pxa2xx-pci.c                  |   2 +-
-> >  drivers/spi/spi-s3c64xx.c                     |   6 +-
-> >  drivers/spi/spi-sprd.c                        |   2 +-
-> >  drivers/spi/spi-stm32-qspi.c                  |  14 +-
-> >  drivers/spi/spi-stm32.c                       |   4 +-
-> >  drivers/spi/spi-ti-qspi.c                     |   4 +-
-> >  drivers/spi/spi-zynqmp-gqspi.c                |   2 +-
-> >  drivers/spi/spi.c                             |   6 +-
-> >  drivers/staging/greybus/gbphy.h               |   2 +-
-> >  drivers/staging/media/rkvdec/rkvdec.c         |   2 +-
-> >  drivers/thunderbolt/debugfs.c                 |  22 +--
-> >  drivers/thunderbolt/domain.c                  |   4 +-
-> >  drivers/thunderbolt/icm.c                     |  14 +-
-> >  drivers/thunderbolt/nhi.c                     |   2 +-
-> >  drivers/thunderbolt/retimer.c                 |   4 +-
-> >  drivers/thunderbolt/switch.c                  |   6 +-
-> >  drivers/thunderbolt/tb.c                      |  18 +-
-> >  drivers/thunderbolt/usb4_port.c               |   4 +-
-> >  drivers/tty/serial/8250/8250_omap.c           |  18 +-
-> >  drivers/tty/serial/8250/8250_port.c           |   4 +-
-> >  drivers/tty/serial/fsl_lpuart.c               |   2 +-
-> >  drivers/tty/serial/serial_core.c              |   2 +-
-> >  drivers/tty/serial/uartlite.c                 |   4 +-
-> >  drivers/tty/serial/xilinx_uartps.c            |   2 +-
-> >  drivers/usb/cdns3/cdns3-gadget.c              |   2 +-
-> >  drivers/usb/cdns3/cdnsp-gadget.c              |   2 +-
-> >  drivers/usb/chipidea/core.c                   |   2 +-
-> >  drivers/usb/chipidea/otg_fsm.c                |   2 +-
-> >  drivers/usb/dwc3/core.c                       |   2 +-
-> >  drivers/usb/dwc3/dwc3-am62.c                  |   2 +-
-> >  drivers/usb/dwc3/dwc3-imx8mp.c                |   2 +-
-> >  drivers/usb/gadget/udc/cdns2/cdns2-gadget.c   |   2 +-
-> >  drivers/usb/host/xhci-mtk.c                   |   2 +-
-> >  drivers/usb/misc/apple-mfi-fastcharge.c       |   2 +-
-> >  drivers/usb/mtu3/mtu3_plat.c                  |   2 +-
-> >  drivers/usb/musb/musb_core.c                  |  10 +-
-> >  drivers/usb/musb/musb_debugfs.c               |  10 +-
-> >  drivers/usb/musb/musb_dsps.c                  |   2 +-
-> >  drivers/usb/musb/musb_gadget.c                |   8 +-
-> >  drivers/usb/musb/omap2430.c                   |   2 +-
-> >  drivers/w1/masters/omap_hdq.c                 |  10 +-
-> >  include/linux/greybus/bundle.h                |   2 +-
-> >  sound/hda/hdac_device.c                       |   2 +-
-> >  sound/pci/hda/cs35l41_hda.c                   |   8 +-
-> >  sound/pci/hda/cs35l56_hda.c                   |   2 +-
-> >  sound/pci/hda/hda_intel.c                     |   2 +-
-> >  sound/pci/hda/tas2781_hda_i2c.c               |   6 +-
-> >  sound/soc/atmel/mchp-spdifrx.c                |  12 +-
-> >  sound/soc/codecs/arizona-jack.c               |  12 +-
-> >  sound/soc/codecs/arizona.c                    |   2 +-
-> >  sound/soc/codecs/cs35l41.c                    |   4 +-
-> >  sound/soc/codecs/cs35l45.c                    |   2 +-
-> >  sound/soc/codecs/cs35l56-sdw.c                |   4 +-
-> >  sound/soc/codecs/cs35l56-shared.c             |   2 +-
-> >  sound/soc/codecs/cs35l56.c                    |   2 +-
-> >  sound/soc/codecs/cs42l42-sdw.c                |   2 +-
-> >  sound/soc/codecs/cs42l42.c                    |   4 +-
-> >  sound/soc/codecs/cs42l43-jack.c               |  10 +-
-> >  sound/soc/codecs/cs42l43.c                    |   4 +-
-> >  sound/soc/codecs/hda.c                        |   6 +-
-> >  sound/soc/codecs/madera.c                     |   6 +-
-> >  sound/soc/codecs/max98363.c                   |   2 +-
-> >  sound/soc/codecs/max98373-sdw.c               |   2 +-
-> >  sound/soc/codecs/rt1017-sdca-sdw.c            |   2 +-
-> >  sound/soc/codecs/rt1308-sdw.c                 |   2 +-
-> >  sound/soc/codecs/rt1316-sdw.c                 |   2 +-
-> >  sound/soc/codecs/rt1318-sdw.c                 |   2 +-
-> >  sound/soc/codecs/rt1320-sdw.c                 |   2 +-
-> >  sound/soc/codecs/rt5682-sdw.c                 |   2 +-
-> >  sound/soc/codecs/rt700.c                      |   4 +-
-> >  sound/soc/codecs/rt711-sdca.c                 |   4 +-
-> >  sound/soc/codecs/rt711.c                      |   4 +-
-> >  sound/soc/codecs/rt712-sdca-dmic.c            |   2 +-
-> >  sound/soc/codecs/rt712-sdca.c                 |   4 +-
-> >  sound/soc/codecs/rt715-sdca.c                 |   2 +-
-> >  sound/soc/codecs/rt715.c                      |   2 +-
-> >  sound/soc/codecs/rt722-sdca.c                 |   4 +-
-> >  sound/soc/codecs/wcd-mbhc-v2.c                |   4 +-
-> >  sound/soc/codecs/wsa881x.c                    |   2 +-
-> >  sound/soc/codecs/wsa884x.c                    |   2 +-
-> >  sound/soc/intel/atom/sst/sst_pvt.c            |   2 +-
-> >  sound/soc/intel/avs/core.c                    |   2 +-
-> >  sound/soc/intel/avs/debugfs.c                 |   4 +-
-> >  sound/soc/intel/avs/pcm.c                     |   2 +-
-> >  sound/soc/intel/catpt/pcm.c                   |  12 +-
-> >  sound/soc/intel/catpt/sysfs.c                 |   2 +-
-> >  sound/soc/soc-component.c                     |   2 +-
-> >  sound/soc/sof/control.c                       |   2 +-
-> >  sound/soc/sof/debug.c                         |   2 +-
-> >  sound/soc/sof/ipc3-dtrace.c                   |   2 +-
-> >  sound/soc/sof/ipc4-loader.c                   |   2 +-
-> >  sound/soc/sof/pcm.c                           |   2 +-
-> >  sound/soc/sof/sof-client-ipc-flood-test.c     |   2 +-
-> >  .../soc/sof/sof-client-ipc-kernel-injector.c  |   2 +-
-> >  sound/soc/sof/sof-client-ipc-msg-injector.c   |   2 +-
-> >  sound/soc/sof/sof-client-probes.c             |   6 +-
-> >  sound/x86/intel_hdmi_audio.c                  |   6 +-
-> >  373 files changed, 1076 insertions(+), 1076 deletions(-)
+given the simplicity of the individual changes I do this all in a single
+patch. I you don't agree, please tell and I will happily split it.
 
+It's based on Friday's next, feel free to drop changes that result in a
+conflict when you come around to apply this. I'll care for the fallout
+at a later time then. (Having said that, if you use b4 am -3 and git am
+-3, there should be hardly any conflict.)
+
+Note I didn't Cc: all the individual driver maintainers to not trigger
+sending limits and spam filters.
+
+Best regards
+Uwe
+
+ drivers/tty/serial/8250/8250_aspeed_vuart.c | 2 +-
+ drivers/tty/serial/8250/8250_bcm2835aux.c   | 2 +-
+ drivers/tty/serial/8250/8250_bcm7271.c      | 2 +-
+ drivers/tty/serial/8250/8250_dw.c           | 2 +-
+ drivers/tty/serial/8250/8250_em.c           | 2 +-
+ drivers/tty/serial/8250/8250_fsl.c          | 2 +-
+ drivers/tty/serial/8250/8250_ingenic.c      | 2 +-
+ drivers/tty/serial/8250/8250_ioc3.c         | 2 +-
+ drivers/tty/serial/8250/8250_lpc18xx.c      | 2 +-
+ drivers/tty/serial/8250/8250_mtk.c          | 2 +-
+ drivers/tty/serial/8250/8250_of.c           | 2 +-
+ drivers/tty/serial/8250/8250_omap.c         | 2 +-
+ drivers/tty/serial/8250/8250_platform.c     | 2 +-
+ drivers/tty/serial/8250/8250_pxa.c          | 2 +-
+ drivers/tty/serial/8250/8250_tegra.c        | 2 +-
+ drivers/tty/serial/8250/8250_uniphier.c     | 2 +-
+ drivers/tty/serial/altera_jtaguart.c        | 2 +-
+ drivers/tty/serial/altera_uart.c            | 2 +-
+ drivers/tty/serial/amba-pl011.c             | 2 +-
+ drivers/tty/serial/ar933x_uart.c            | 2 +-
+ drivers/tty/serial/atmel_serial.c           | 2 +-
+ drivers/tty/serial/bcm63xx_uart.c           | 2 +-
+ drivers/tty/serial/clps711x.c               | 2 +-
+ drivers/tty/serial/cpm_uart.c               | 2 +-
+ drivers/tty/serial/digicolor-usart.c        | 2 +-
+ drivers/tty/serial/esp32_acm.c              | 2 +-
+ drivers/tty/serial/esp32_uart.c             | 2 +-
+ drivers/tty/serial/fsl_linflexuart.c        | 2 +-
+ drivers/tty/serial/fsl_lpuart.c             | 2 +-
+ drivers/tty/serial/imx.c                    | 2 +-
+ drivers/tty/serial/lantiq.c                 | 2 +-
+ drivers/tty/serial/liteuart.c               | 2 +-
+ drivers/tty/serial/lpc32xx_hs.c             | 2 +-
+ drivers/tty/serial/ma35d1_serial.c          | 2 +-
+ drivers/tty/serial/mcf.c                    | 2 +-
+ drivers/tty/serial/meson_uart.c             | 2 +-
+ drivers/tty/serial/milbeaut_usio.c          | 2 +-
+ drivers/tty/serial/mpc52xx_uart.c           | 2 +-
+ drivers/tty/serial/msm_serial.c             | 2 +-
+ drivers/tty/serial/mxs-auart.c              | 2 +-
+ drivers/tty/serial/omap-serial.c            | 2 +-
+ drivers/tty/serial/owl-uart.c               | 2 +-
+ drivers/tty/serial/pic32_uart.c             | 2 +-
+ drivers/tty/serial/pmac_zilog.c             | 2 +-
+ drivers/tty/serial/qcom_geni_serial.c       | 2 +-
+ drivers/tty/serial/rda-uart.c               | 2 +-
+ drivers/tty/serial/sa1100.c                 | 2 +-
+ drivers/tty/serial/samsung_tty.c            | 2 +-
+ drivers/tty/serial/sccnxp.c                 | 2 +-
+ drivers/tty/serial/serial-tegra.c           | 2 +-
+ drivers/tty/serial/serial_txx9.c            | 2 +-
+ drivers/tty/serial/sh-sci.c                 | 2 +-
+ drivers/tty/serial/sifive.c                 | 2 +-
+ drivers/tty/serial/sprd_serial.c            | 2 +-
+ drivers/tty/serial/st-asc.c                 | 2 +-
+ drivers/tty/serial/stm32-usart.c            | 2 +-
+ drivers/tty/serial/sunhv.c                  | 2 +-
+ drivers/tty/serial/sunplus-uart.c           | 2 +-
+ drivers/tty/serial/sunsab.c                 | 2 +-
+ drivers/tty/serial/sunsu.c                  | 2 +-
+ drivers/tty/serial/sunzilog.c               | 2 +-
+ drivers/tty/serial/tegra-tcu.c              | 2 +-
+ drivers/tty/serial/timbuart.c               | 2 +-
+ drivers/tty/serial/uartlite.c               | 2 +-
+ drivers/tty/serial/ucc_uart.c               | 2 +-
+ drivers/tty/serial/xilinx_uartps.c          | 2 +-
+ 66 files changed, 66 insertions(+), 66 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_aspeed_vuart.c b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+index 25c201cfb91e..e5da9ce26006 100644
+--- a/drivers/tty/serial/8250/8250_aspeed_vuart.c
++++ b/drivers/tty/serial/8250/8250_aspeed_vuart.c
+@@ -569,7 +569,7 @@ static struct platform_driver aspeed_vuart_driver = {
+ 		.of_match_table = aspeed_vuart_table,
+ 	},
+ 	.probe = aspeed_vuart_probe,
+-	.remove_new = aspeed_vuart_remove,
++	.remove = aspeed_vuart_remove,
+ };
+ 
+ module_platform_driver(aspeed_vuart_driver);
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index d7a0f271263a..fdb53b54e99e 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -267,7 +267,7 @@ static struct platform_driver bcm2835aux_serial_driver = {
+ 		.pm = pm_ptr(&bcm2835aux_dev_pm_ops),
+ 	},
+ 	.probe  = bcm2835aux_serial_probe,
+-	.remove_new = bcm2835aux_serial_remove,
++	.remove = bcm2835aux_serial_remove,
+ };
+ module_platform_driver(bcm2835aux_serial_driver);
+ 
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 2569ca69223f..a713ffce533c 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -1204,7 +1204,7 @@ static struct platform_driver brcmuart_platform_driver = {
+ 		.of_match_table = brcmuart_dt_ids,
+ 	},
+ 	.probe		= brcmuart_probe,
+-	.remove_new	= brcmuart_remove,
++	.remove		= brcmuart_remove,
+ };
+ 
+ static int __init brcmuart_init(void)
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index ab9e7f204260..3b278bf8520d 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -796,7 +796,7 @@ static struct platform_driver dw8250_platform_driver = {
+ 		.acpi_match_table = dw8250_acpi_match,
+ 	},
+ 	.probe			= dw8250_probe,
+-	.remove_new		= dw8250_remove,
++	.remove			= dw8250_remove,
+ };
+ 
+ module_platform_driver(dw8250_platform_driver);
+diff --git a/drivers/tty/serial/8250/8250_em.c b/drivers/tty/serial/8250/8250_em.c
+index a754755100ff..35094f884492 100644
+--- a/drivers/tty/serial/8250/8250_em.c
++++ b/drivers/tty/serial/8250/8250_em.c
+@@ -219,7 +219,7 @@ static struct platform_driver serial8250_em_platform_driver = {
+ 		.of_match_table = serial8250_em_dt_ids,
+ 	},
+ 	.probe			= serial8250_em_probe,
+-	.remove_new		= serial8250_em_remove,
++	.remove			= serial8250_em_remove,
+ };
+ 
+ module_platform_driver(serial8250_em_platform_driver);
+diff --git a/drivers/tty/serial/8250/8250_fsl.c b/drivers/tty/serial/8250/8250_fsl.c
+index b4ed442082a8..1b7bd55619c6 100644
+--- a/drivers/tty/serial/8250/8250_fsl.c
++++ b/drivers/tty/serial/8250/8250_fsl.c
+@@ -179,7 +179,7 @@ static struct platform_driver fsl8250_platform_driver = {
+ 		.acpi_match_table	= ACPI_PTR(fsl_8250_acpi_id),
+ 	},
+ 	.probe			= fsl8250_acpi_probe,
+-	.remove_new		= fsl8250_acpi_remove,
++	.remove			= fsl8250_acpi_remove,
+ };
+ 
+ module_platform_driver(fsl8250_platform_driver);
+diff --git a/drivers/tty/serial/8250/8250_ingenic.c b/drivers/tty/serial/8250/8250_ingenic.c
+index a2783e38a2e3..a73dd3773640 100644
+--- a/drivers/tty/serial/8250/8250_ingenic.c
++++ b/drivers/tty/serial/8250/8250_ingenic.c
+@@ -361,7 +361,7 @@ static struct platform_driver ingenic_uart_platform_driver = {
+ 		.of_match_table	= of_match,
+ 	},
+ 	.probe			= ingenic_uart_probe,
+-	.remove_new		= ingenic_uart_remove,
++	.remove			= ingenic_uart_remove,
+ };
+ 
+ module_platform_driver(ingenic_uart_platform_driver);
+diff --git a/drivers/tty/serial/8250/8250_ioc3.c b/drivers/tty/serial/8250/8250_ioc3.c
+index 50c77c3dacf2..499e80aa4cf9 100644
+--- a/drivers/tty/serial/8250/8250_ioc3.c
++++ b/drivers/tty/serial/8250/8250_ioc3.c
+@@ -84,7 +84,7 @@ static void serial8250_ioc3_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver serial8250_ioc3_driver = {
+ 	.probe  = serial8250_ioc3_probe,
+-	.remove_new = serial8250_ioc3_remove,
++	.remove = serial8250_ioc3_remove,
+ 	.driver = {
+ 		.name = "ioc3-serial8250",
+ 	}
+diff --git a/drivers/tty/serial/8250/8250_lpc18xx.c b/drivers/tty/serial/8250/8250_lpc18xx.c
+index 47e1a056a60c..d52445948da0 100644
+--- a/drivers/tty/serial/8250/8250_lpc18xx.c
++++ b/drivers/tty/serial/8250/8250_lpc18xx.c
+@@ -195,7 +195,7 @@ MODULE_DEVICE_TABLE(of, lpc18xx_serial_match);
+ 
+ static struct platform_driver lpc18xx_serial_driver = {
+ 	.probe  = lpc18xx_serial_probe,
+-	.remove_new = lpc18xx_serial_remove,
++	.remove = lpc18xx_serial_remove,
+ 	.driver = {
+ 		.name = "lpc18xx-uart",
+ 		.of_match_table = lpc18xx_serial_match,
+diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
+index b9cca210e171..ed2225bc0544 100644
+--- a/drivers/tty/serial/8250/8250_mtk.c
++++ b/drivers/tty/serial/8250/8250_mtk.c
+@@ -654,7 +654,7 @@ static struct platform_driver mtk8250_platform_driver = {
+ 		.of_match_table	= mtk8250_of_match,
+ 	},
+ 	.probe			= mtk8250_probe,
+-	.remove_new		= mtk8250_remove,
++	.remove			= mtk8250_remove,
+ };
+ module_platform_driver(mtk8250_platform_driver);
+ 
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index e14f47ef1172..64aed7efc569 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -352,7 +352,7 @@ static struct platform_driver of_platform_serial_driver = {
+ 		.pm = &of_serial_pm_ops,
+ 	},
+ 	.probe = of_platform_serial_probe,
+-	.remove_new = of_platform_serial_remove,
++	.remove = of_platform_serial_remove,
+ };
+ 
+ module_platform_driver(of_platform_serial_driver);
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 88b58f44e4e9..9b99a50ccc4f 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -1867,7 +1867,7 @@ static struct platform_driver omap8250_platform_driver = {
+ 		.of_match_table = omap8250_dt_ids,
+ 	},
+ 	.probe			= omap8250_probe,
+-	.remove_new		= omap8250_remove,
++	.remove			= omap8250_remove,
+ };
+ module_platform_driver(omap8250_platform_driver);
+ 
+diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
+index be7ff07cbdd0..8bdc1879d952 100644
+--- a/drivers/tty/serial/8250/8250_platform.c
++++ b/drivers/tty/serial/8250/8250_platform.c
+@@ -285,7 +285,7 @@ MODULE_DEVICE_TABLE(acpi, acpi_platform_serial_table);
+ 
+ static struct platform_driver serial8250_isa_driver = {
+ 	.probe		= serial8250_probe,
+-	.remove_new	= serial8250_remove,
++	.remove		= serial8250_remove,
+ 	.suspend	= serial8250_suspend,
+ 	.resume		= serial8250_resume,
+ 	.driver		= {
+diff --git a/drivers/tty/serial/8250/8250_pxa.c b/drivers/tty/serial/8250/8250_pxa.c
+index 96dd6126296c..6dd0190b4843 100644
+--- a/drivers/tty/serial/8250/8250_pxa.c
++++ b/drivers/tty/serial/8250/8250_pxa.c
+@@ -154,7 +154,7 @@ static void serial_pxa_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver serial_pxa_driver = {
+ 	.probe          = serial_pxa_probe,
+-	.remove_new     = serial_pxa_remove,
++	.remove         = serial_pxa_remove,
+ 
+ 	.driver		= {
+ 		.name	= "pxa2xx-uart",
+diff --git a/drivers/tty/serial/8250/8250_tegra.c b/drivers/tty/serial/8250/8250_tegra.c
+index 60a80d00d251..2f3b0075763f 100644
+--- a/drivers/tty/serial/8250/8250_tegra.c
++++ b/drivers/tty/serial/8250/8250_tegra.c
+@@ -182,7 +182,7 @@ static struct platform_driver tegra_uart_driver = {
+ 		.acpi_match_table = ACPI_PTR(tegra_uart_acpi_match),
+ 	},
+ 	.probe = tegra_uart_probe,
+-	.remove_new = tegra_uart_remove,
++	.remove = tegra_uart_remove,
+ };
+ 
+ module_platform_driver(tegra_uart_driver);
+diff --git a/drivers/tty/serial/8250/8250_uniphier.c b/drivers/tty/serial/8250/8250_uniphier.c
+index 670d2ca0f757..4874a9632db3 100644
+--- a/drivers/tty/serial/8250/8250_uniphier.c
++++ b/drivers/tty/serial/8250/8250_uniphier.c
+@@ -282,7 +282,7 @@ MODULE_DEVICE_TABLE(of, uniphier_uart_match);
+ 
+ static struct platform_driver uniphier_uart_platform_driver = {
+ 	.probe		= uniphier_uart_probe,
+-	.remove_new	= uniphier_uart_remove,
++	.remove		= uniphier_uart_remove,
+ 	.driver = {
+ 		.name	= "uniphier-uart",
+ 		.of_match_table = uniphier_uart_match,
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index effcba71ea77..6162108c758e 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -449,7 +449,7 @@ MODULE_DEVICE_TABLE(of, altera_jtaguart_match);
+ 
+ static struct platform_driver altera_jtaguart_platform_driver = {
+ 	.probe	= altera_jtaguart_probe,
+-	.remove_new = altera_jtaguart_remove,
++	.remove = altera_jtaguart_remove,
+ 	.driver	= {
+ 		.name		= DRV_NAME,
+ 		.of_match_table	= of_match_ptr(altera_jtaguart_match),
+diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
+index 897f0995b2fe..8eed2542627e 100644
+--- a/drivers/tty/serial/altera_uart.c
++++ b/drivers/tty/serial/altera_uart.c
+@@ -617,7 +617,7 @@ MODULE_DEVICE_TABLE(of, altera_uart_match);
+ 
+ static struct platform_driver altera_uart_platform_driver = {
+ 	.probe	= altera_uart_probe,
+-	.remove_new = altera_uart_remove,
++	.remove = altera_uart_remove,
+ 	.driver	= {
+ 		.name		= DRV_NAME,
+ 		.of_match_table	= of_match_ptr(altera_uart_match),
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 7d0134ecd82f..56e587b94823 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2937,7 +2937,7 @@ MODULE_DEVICE_TABLE(acpi, sbsa_uart_acpi_match);
+ 
+ static struct platform_driver arm_sbsa_uart_platform_driver = {
+ 	.probe		= sbsa_uart_probe,
+-	.remove_new	= sbsa_uart_remove,
++	.remove		= sbsa_uart_remove,
+ 	.driver	= {
+ 		.name	= "sbsa-uart",
+ 		.pm	= &pl011_dev_pm_ops,
+diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
+index 47889a557119..8bb33556b312 100644
+--- a/drivers/tty/serial/ar933x_uart.c
++++ b/drivers/tty/serial/ar933x_uart.c
+@@ -832,7 +832,7 @@ MODULE_DEVICE_TABLE(of, ar933x_uart_of_ids);
+ 
+ static struct platform_driver ar933x_uart_platform_driver = {
+ 	.probe		= ar933x_uart_probe,
+-	.remove_new	= ar933x_uart_remove,
++	.remove		= ar933x_uart_remove,
+ 	.driver		= {
+ 		.name		= DRIVER_NAME,
+ 		.of_match_table = of_match_ptr(ar933x_uart_of_ids),
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 09b246c9e389..b9be993ebdf4 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -3017,7 +3017,7 @@ static SIMPLE_DEV_PM_OPS(atmel_serial_pm_ops, atmel_serial_suspend,
+ 
+ static struct platform_driver atmel_serial_driver = {
+ 	.probe		= atmel_serial_probe,
+-	.remove_new	= atmel_serial_remove,
++	.remove		= atmel_serial_remove,
+ 	.driver		= {
+ 		.name			= "atmel_usart_serial",
+ 		.of_match_table		= of_match_ptr(atmel_serial_dt_ids),
+diff --git a/drivers/tty/serial/bcm63xx_uart.c b/drivers/tty/serial/bcm63xx_uart.c
+index b88cc28c94e3..51df9d2d8bfc 100644
+--- a/drivers/tty/serial/bcm63xx_uart.c
++++ b/drivers/tty/serial/bcm63xx_uart.c
+@@ -884,7 +884,7 @@ MODULE_DEVICE_TABLE(of, bcm63xx_of_match);
+  */
+ static struct platform_driver bcm_uart_platform_driver = {
+ 	.probe	= bcm_uart_probe,
+-	.remove_new = bcm_uart_remove,
++	.remove = bcm_uart_remove,
+ 	.driver	= {
+ 		.name  = "bcm63xx_uart",
+ 		.of_match_table = bcm63xx_of_match,
+diff --git a/drivers/tty/serial/clps711x.c b/drivers/tty/serial/clps711x.c
+index 30425a3d19fb..83186bf50002 100644
+--- a/drivers/tty/serial/clps711x.c
++++ b/drivers/tty/serial/clps711x.c
+@@ -529,7 +529,7 @@ static struct platform_driver clps711x_uart_platform = {
+ 		.of_match_table	= of_match_ptr(clps711x_uart_dt_ids),
+ 	},
+ 	.probe	= uart_clps711x_probe,
+-	.remove_new = uart_clps711x_remove,
++	.remove = uart_clps711x_remove,
+ };
+ 
+ static int __init uart_clps711x_init(void)
+diff --git a/drivers/tty/serial/cpm_uart.c b/drivers/tty/serial/cpm_uart.c
+index a927478f581d..550712a13593 100644
+--- a/drivers/tty/serial/cpm_uart.c
++++ b/drivers/tty/serial/cpm_uart.c
+@@ -1573,7 +1573,7 @@ static struct platform_driver cpm_uart_driver = {
+ 		.of_match_table = cpm_uart_match,
+ 	},
+ 	.probe = cpm_uart_probe,
+-	.remove_new = cpm_uart_remove,
++	.remove = cpm_uart_remove,
+  };
+ 
+ static int __init cpm_uart_init(void)
+diff --git a/drivers/tty/serial/digicolor-usart.c b/drivers/tty/serial/digicolor-usart.c
+index 2ccd13cc0a89..d2482df5cb9b 100644
+--- a/drivers/tty/serial/digicolor-usart.c
++++ b/drivers/tty/serial/digicolor-usart.c
+@@ -522,7 +522,7 @@ static struct platform_driver digicolor_uart_platform = {
+ 		.of_match_table	= of_match_ptr(digicolor_uart_dt_ids),
+ 	},
+ 	.probe	= digicolor_uart_probe,
+-	.remove_new = digicolor_uart_remove,
++	.remove = digicolor_uart_remove,
+ };
+ 
+ static int __init digicolor_uart_init(void)
+diff --git a/drivers/tty/serial/esp32_acm.c b/drivers/tty/serial/esp32_acm.c
+index 85eb0392e379..bb7cc65427f0 100644
+--- a/drivers/tty/serial/esp32_acm.c
++++ b/drivers/tty/serial/esp32_acm.c
+@@ -423,7 +423,7 @@ static void esp32s3_acm_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver esp32s3_acm_driver = {
+ 	.probe		= esp32s3_acm_probe,
+-	.remove_new	= esp32s3_acm_remove,
++	.remove		= esp32s3_acm_remove,
+ 	.driver		= {
+ 		.name	= DRIVER_NAME,
+ 		.of_match_table	= esp32s3_acm_dt_ids,
+diff --git a/drivers/tty/serial/esp32_uart.c b/drivers/tty/serial/esp32_uart.c
+index 8c86cf9cb763..667c2198a03a 100644
+--- a/drivers/tty/serial/esp32_uart.c
++++ b/drivers/tty/serial/esp32_uart.c
+@@ -743,7 +743,7 @@ static void esp32_uart_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver esp32_uart_driver = {
+ 	.probe		= esp32_uart_probe,
+-	.remove_new	= esp32_uart_remove,
++	.remove		= esp32_uart_remove,
+ 	.driver		= {
+ 		.name	= DRIVER_NAME,
+ 		.of_match_table	= esp32_uart_dt_ids,
+diff --git a/drivers/tty/serial/fsl_linflexuart.c b/drivers/tty/serial/fsl_linflexuart.c
+index e972df4b188d..e70a56de1fce 100644
+--- a/drivers/tty/serial/fsl_linflexuart.c
++++ b/drivers/tty/serial/fsl_linflexuart.c
+@@ -882,7 +882,7 @@ static SIMPLE_DEV_PM_OPS(linflex_pm_ops, linflex_suspend, linflex_resume);
+ 
+ static struct platform_driver linflex_driver = {
+ 	.probe		= linflex_probe,
+-	.remove_new	= linflex_remove,
++	.remove		= linflex_remove,
+ 	.driver		= {
+ 		.name	= DRIVER_NAME,
+ 		.of_match_table	= linflex_dt_ids,
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 77efa7ee6eda..c14a83c86029 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -3206,7 +3206,7 @@ static const struct dev_pm_ops lpuart_pm_ops = {
+ 
+ static struct platform_driver lpuart_driver = {
+ 	.probe		= lpuart_probe,
+-	.remove_new	= lpuart_remove,
++	.remove		= lpuart_remove,
+ 	.driver		= {
+ 		.name	= "fsl-lpuart",
+ 		.of_match_table = lpuart_dt_ids,
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 67d4a72eda77..f7367969a42a 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -2702,7 +2702,7 @@ static const struct dev_pm_ops imx_uart_pm_ops = {
+ 
+ static struct platform_driver imx_uart_platform_driver = {
+ 	.probe = imx_uart_probe,
+-	.remove_new = imx_uart_remove,
++	.remove = imx_uart_remove,
+ 
+ 	.driver = {
+ 		.name = "imx-uart",
+diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+index a0731773ce75..58a3ab030d67 100644
+--- a/drivers/tty/serial/lantiq.c
++++ b/drivers/tty/serial/lantiq.c
+@@ -915,7 +915,7 @@ MODULE_DEVICE_TABLE(of, ltq_asc_match);
+ 
+ static struct platform_driver lqasc_driver = {
+ 	.probe		= lqasc_probe,
+-	.remove_new	= lqasc_remove,
++	.remove		= lqasc_remove,
+ 	.driver		= {
+ 		.name	= DRVNAME,
+ 		.of_match_table = ltq_asc_match,
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index 3ce369f76349..6c13cf1ab646 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -353,7 +353,7 @@ MODULE_DEVICE_TABLE(of, liteuart_of_match);
+ 
+ static struct platform_driver liteuart_platform_driver = {
+ 	.probe = liteuart_probe,
+-	.remove_new = liteuart_remove,
++	.remove = liteuart_remove,
+ 	.driver = {
+ 		.name = KBUILD_MODNAME,
+ 		.of_match_table = liteuart_of_match,
+diff --git a/drivers/tty/serial/lpc32xx_hs.c b/drivers/tty/serial/lpc32xx_hs.c
+index 3e4ac46de1bc..42c5f9bc18b7 100644
+--- a/drivers/tty/serial/lpc32xx_hs.c
++++ b/drivers/tty/serial/lpc32xx_hs.c
+@@ -695,7 +695,7 @@ MODULE_DEVICE_TABLE(of, serial_hs_lpc32xx_dt_ids);
+ 
+ static struct platform_driver serial_hs_lpc32xx_driver = {
+ 	.probe		= serial_hs_lpc32xx_probe,
+-	.remove_new	= serial_hs_lpc32xx_remove,
++	.remove		= serial_hs_lpc32xx_remove,
+ 	.suspend	= serial_hs_lpc32xx_suspend,
+ 	.resume		= serial_hs_lpc32xx_resume,
+ 	.driver		= {
+diff --git a/drivers/tty/serial/ma35d1_serial.c b/drivers/tty/serial/ma35d1_serial.c
+index 3b4206e815fe..8dcad52eedfd 100644
+--- a/drivers/tty/serial/ma35d1_serial.c
++++ b/drivers/tty/serial/ma35d1_serial.c
+@@ -794,7 +794,7 @@ static int ma35d1serial_resume(struct platform_device *dev)
+ 
+ static struct platform_driver ma35d1serial_driver = {
+ 	.probe      = ma35d1serial_probe,
+-	.remove_new = ma35d1serial_remove,
++	.remove     = ma35d1serial_remove,
+ 	.suspend    = ma35d1serial_suspend,
+ 	.resume     = ma35d1serial_resume,
+ 	.driver     = {
+diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+index 58858dd352c5..93e7dda4d39a 100644
+--- a/drivers/tty/serial/mcf.c
++++ b/drivers/tty/serial/mcf.c
+@@ -616,7 +616,7 @@ static void mcf_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver mcf_platform_driver = {
+ 	.probe		= mcf_probe,
+-	.remove_new	= mcf_remove,
++	.remove		= mcf_remove,
+ 	.driver		= {
+ 		.name	= "mcfuart",
+ 	},
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 8eb586ac3b0d..a6cb2a535f9d 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -842,7 +842,7 @@ MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
+ 
+ static  struct platform_driver meson_uart_platform_driver = {
+ 	.probe		= meson_uart_probe,
+-	.remove_new	= meson_uart_remove,
++	.remove		= meson_uart_remove,
+ 	.driver		= {
+ 		.name		= "meson_uart",
+ 		.of_match_table	= meson_uart_dt_match,
+diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
+index fb082ee73d5b..059bea18dbab 100644
+--- a/drivers/tty/serial/milbeaut_usio.c
++++ b/drivers/tty/serial/milbeaut_usio.c
+@@ -570,7 +570,7 @@ MODULE_DEVICE_TABLE(of, mlb_usio_dt_ids);
+ 
+ static struct platform_driver mlb_usio_driver = {
+ 	.probe          = mlb_usio_probe,
+-	.remove_new     = mlb_usio_remove,
++	.remove         = mlb_usio_remove,
+ 	.driver         = {
+ 		.name   = USIO_NAME,
+ 		.of_match_table = mlb_usio_dt_ids,
+diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
+index 95dae5e27b28..f55aa353aed9 100644
+--- a/drivers/tty/serial/mpc52xx_uart.c
++++ b/drivers/tty/serial/mpc52xx_uart.c
+@@ -1843,7 +1843,7 @@ MODULE_DEVICE_TABLE(of, mpc52xx_uart_of_match);
+ 
+ static struct platform_driver mpc52xx_uart_of_driver = {
+ 	.probe		= mpc52xx_uart_of_probe,
+-	.remove_new	= mpc52xx_uart_of_remove,
++	.remove		= mpc52xx_uart_of_remove,
+ #ifdef CONFIG_PM
+ 	.suspend	= mpc52xx_uart_of_suspend,
+ 	.resume		= mpc52xx_uart_of_resume,
+diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
+index 0a9c5219df88..1b137e068444 100644
+--- a/drivers/tty/serial/msm_serial.c
++++ b/drivers/tty/serial/msm_serial.c
+@@ -1894,7 +1894,7 @@ static const struct dev_pm_ops msm_serial_dev_pm_ops = {
+ };
+ 
+ static struct platform_driver msm_platform_driver = {
+-	.remove_new = msm_serial_remove,
++	.remove = msm_serial_remove,
+ 	.probe = msm_serial_probe,
+ 	.driver = {
+ 		.name = "msm_serial",
+diff --git a/drivers/tty/serial/mxs-auart.c b/drivers/tty/serial/mxs-auart.c
+index a1c76565c399..cc65c9fb6446 100644
+--- a/drivers/tty/serial/mxs-auart.c
++++ b/drivers/tty/serial/mxs-auart.c
+@@ -1704,7 +1704,7 @@ static void mxs_auart_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver mxs_auart_driver = {
+ 	.probe = mxs_auart_probe,
+-	.remove_new = mxs_auart_remove,
++	.remove = mxs_auart_remove,
+ 	.driver = {
+ 		.name = "mxs-auart",
+ 		.of_match_table = mxs_auart_dt_ids,
+diff --git a/drivers/tty/serial/omap-serial.c b/drivers/tty/serial/omap-serial.c
+index d7e172eeaab1..0b85f47ff19e 100644
+--- a/drivers/tty/serial/omap-serial.c
++++ b/drivers/tty/serial/omap-serial.c
+@@ -1802,7 +1802,7 @@ MODULE_DEVICE_TABLE(of, omap_serial_of_match);
+ 
+ static struct platform_driver serial_omap_driver = {
+ 	.probe          = serial_omap_probe,
+-	.remove_new     = serial_omap_remove,
++	.remove         = serial_omap_remove,
+ 	.driver		= {
+ 		.name	= OMAP_SERIAL_DRIVER_NAME,
+ 		.pm	= &serial_omap_dev_pm_ops,
+diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+index ecec483d4d59..0542882cfbbe 100644
+--- a/drivers/tty/serial/owl-uart.c
++++ b/drivers/tty/serial/owl-uart.c
+@@ -730,7 +730,7 @@ static void owl_uart_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver owl_uart_platform_driver = {
+ 	.probe = owl_uart_probe,
+-	.remove_new = owl_uart_remove,
++	.remove = owl_uart_remove,
+ 	.driver = {
+ 		.name = "owl-uart",
+ 		.of_match_table = owl_uart_dt_matches,
+diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+index 261c8115a700..14d50bd7f1bd 100644
+--- a/drivers/tty/serial/pic32_uart.c
++++ b/drivers/tty/serial/pic32_uart.c
+@@ -956,7 +956,7 @@ MODULE_DEVICE_TABLE(of, pic32_serial_dt_ids);
+ 
+ static struct platform_driver pic32_uart_platform_driver = {
+ 	.probe		= pic32_uart_probe,
+-	.remove_new	= pic32_uart_remove,
++	.remove		= pic32_uart_remove,
+ 	.driver		= {
+ 		.name	= PIC32_DEV_NAME,
+ 		.of_match_table	= of_match_ptr(pic32_serial_dt_ids),
+diff --git a/drivers/tty/serial/pmac_zilog.c b/drivers/tty/serial/pmac_zilog.c
+index 8969b11cc0a9..e3a919328695 100644
+--- a/drivers/tty/serial/pmac_zilog.c
++++ b/drivers/tty/serial/pmac_zilog.c
+@@ -1776,7 +1776,7 @@ static struct macio_driver pmz_driver = {
+ 
+ static struct platform_driver pmz_driver = {
+ 	.probe		= pmz_attach,
+-	.remove_new	= pmz_detach,
++	.remove		= pmz_detach,
+ 	.driver		= {
+ 		.name		= "scc",
+ 	},
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 6f0db310cf69..a433a3c6e1ae 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1846,7 +1846,7 @@ static const struct of_device_id qcom_geni_serial_match_table[] = {
+ MODULE_DEVICE_TABLE(of, qcom_geni_serial_match_table);
+ 
+ static struct platform_driver qcom_geni_serial_platform_driver = {
+-	.remove_new = qcom_geni_serial_remove,
++	.remove = qcom_geni_serial_remove,
+ 	.probe = qcom_geni_serial_probe,
+ 	.driver = {
+ 		.name = "qcom_geni_serial",
+diff --git a/drivers/tty/serial/rda-uart.c b/drivers/tty/serial/rda-uart.c
+index 663e35e424bd..87fa30d68687 100644
+--- a/drivers/tty/serial/rda-uart.c
++++ b/drivers/tty/serial/rda-uart.c
+@@ -777,7 +777,7 @@ static void rda_uart_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver rda_uart_platform_driver = {
+ 	.probe = rda_uart_probe,
+-	.remove_new = rda_uart_remove,
++	.remove = rda_uart_remove,
+ 	.driver = {
+ 		.name = "rda-uart",
+ 		.of_match_table = rda_uart_dt_matches,
+diff --git a/drivers/tty/serial/sa1100.c b/drivers/tty/serial/sa1100.c
+index 79c794fa6545..3c34027687d2 100644
+--- a/drivers/tty/serial/sa1100.c
++++ b/drivers/tty/serial/sa1100.c
+@@ -880,7 +880,7 @@ static void sa1100_serial_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver sa11x0_serial_driver = {
+ 	.probe		= sa1100_serial_probe,
+-	.remove_new	= sa1100_serial_remove,
++	.remove		= sa1100_serial_remove,
+ 	.suspend	= sa1100_serial_suspend,
+ 	.resume		= sa1100_serial_resume,
+ 	.driver		= {
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 0d184ee2f9ce..405b1a27a4fd 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2653,7 +2653,7 @@ MODULE_DEVICE_TABLE(of, s3c24xx_uart_dt_match);
+ 
+ static struct platform_driver samsung_serial_driver = {
+ 	.probe		= s3c24xx_serial_probe,
+-	.remove_new	= s3c24xx_serial_remove,
++	.remove		= s3c24xx_serial_remove,
+ 	.id_table	= s3c24xx_serial_driver_ids,
+ 	.driver		= {
+ 		.name	= "samsung-uart",
+diff --git a/drivers/tty/serial/sccnxp.c b/drivers/tty/serial/sccnxp.c
+index 6d1d142fd216..4c851dae6624 100644
+--- a/drivers/tty/serial/sccnxp.c
++++ b/drivers/tty/serial/sccnxp.c
+@@ -1052,7 +1052,7 @@ static struct platform_driver sccnxp_uart_driver = {
+ 		.name	= SCCNXP_NAME,
+ 	},
+ 	.probe		= sccnxp_probe,
+-	.remove_new	= sccnxp_remove,
++	.remove		= sccnxp_remove,
+ 	.id_table	= sccnxp_id_table,
+ };
+ module_platform_driver(sccnxp_uart_driver);
+diff --git a/drivers/tty/serial/serial-tegra.c b/drivers/tty/serial/serial-tegra.c
+index 1183ca54ab92..8004fc00fb9c 100644
+--- a/drivers/tty/serial/serial-tegra.c
++++ b/drivers/tty/serial/serial-tegra.c
+@@ -1648,7 +1648,7 @@ static const struct dev_pm_ops tegra_uart_pm_ops = {
+ 
+ static struct platform_driver tegra_uart_platform_driver = {
+ 	.probe		= tegra_uart_probe,
+-	.remove_new	= tegra_uart_remove,
++	.remove		= tegra_uart_remove,
+ 	.driver		= {
+ 		.name	= "serial-tegra",
+ 		.of_match_table = tegra_uart_of_match,
+diff --git a/drivers/tty/serial/serial_txx9.c b/drivers/tty/serial/serial_txx9.c
+index abba39722958..436a559234df 100644
+--- a/drivers/tty/serial/serial_txx9.c
++++ b/drivers/tty/serial/serial_txx9.c
+@@ -1097,7 +1097,7 @@ static int serial_txx9_resume(struct platform_device *dev)
+ 
+ static struct platform_driver serial_txx9_plat_driver = {
+ 	.probe		= serial_txx9_probe,
+-	.remove_new	= serial_txx9_remove,
++	.remove		= serial_txx9_remove,
+ #ifdef CONFIG_PM
+ 	.suspend	= serial_txx9_suspend,
+ 	.resume		= serial_txx9_resume,
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index b80e9a528e17..df523c744423 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3505,7 +3505,7 @@ static SIMPLE_DEV_PM_OPS(sci_dev_pm_ops, sci_suspend, sci_resume);
+ 
+ static struct platform_driver sci_driver = {
+ 	.probe		= sci_probe,
+-	.remove_new	= sci_remove,
++	.remove		= sci_remove,
+ 	.driver		= {
+ 		.name	= "sh-sci",
+ 		.pm	= &sci_dev_pm_ops,
+diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+index cbfce65c9d22..5904a2d4cefa 100644
+--- a/drivers/tty/serial/sifive.c
++++ b/drivers/tty/serial/sifive.c
+@@ -1040,7 +1040,7 @@ MODULE_DEVICE_TABLE(of, sifive_serial_of_match);
+ 
+ static struct platform_driver sifive_serial_platform_driver = {
+ 	.probe		= sifive_serial_probe,
+-	.remove_new	= sifive_serial_remove,
++	.remove		= sifive_serial_remove,
+ 	.driver		= {
+ 		.name	= SIFIVE_SERIAL_NAME,
+ 		.pm = pm_sleep_ptr(&sifive_uart_pm_ops),
+diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+index 3fc54cc02a1f..397a284e3fdc 100644
+--- a/drivers/tty/serial/sprd_serial.c
++++ b/drivers/tty/serial/sprd_serial.c
+@@ -1255,7 +1255,7 @@ MODULE_DEVICE_TABLE(of, serial_ids);
+ 
+ static struct platform_driver sprd_platform_driver = {
+ 	.probe		= sprd_probe,
+-	.remove_new	= sprd_remove,
++	.remove		= sprd_remove,
+ 	.driver		= {
+ 		.name	= "sprd_serial",
+ 		.of_match_table = serial_ids,
+diff --git a/drivers/tty/serial/st-asc.c b/drivers/tty/serial/st-asc.c
+index 8aea59f8ca13..6ed9a327702b 100644
+--- a/drivers/tty/serial/st-asc.c
++++ b/drivers/tty/serial/st-asc.c
+@@ -934,7 +934,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(asc_serial_pm_ops, asc_serial_suspend,
+ 
+ static struct platform_driver asc_serial_driver = {
+ 	.probe		= asc_serial_probe,
+-	.remove_new	= asc_serial_remove,
++	.remove		= asc_serial_remove,
+ 	.driver	= {
+ 		.name	= DRIVER_NAME,
+ 		.pm	= pm_sleep_ptr(&asc_serial_pm_ops),
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index e1e7bc04c579..7dc254546075 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -2188,7 +2188,7 @@ static const struct dev_pm_ops stm32_serial_pm_ops = {
+ 
+ static struct platform_driver stm32_serial_driver = {
+ 	.probe		= stm32_usart_serial_probe,
+-	.remove_new	= stm32_usart_serial_remove,
++	.remove		= stm32_usart_serial_remove,
+ 	.driver	= {
+ 		.name	= DRIVER_NAME,
+ 		.pm	= &stm32_serial_pm_ops,
+diff --git a/drivers/tty/serial/sunhv.c b/drivers/tty/serial/sunhv.c
+index 7f60679fdde1..2b3ec65d595d 100644
+--- a/drivers/tty/serial/sunhv.c
++++ b/drivers/tty/serial/sunhv.c
+@@ -633,7 +633,7 @@ static struct platform_driver hv_driver = {
+ 		.of_match_table = hv_match,
+ 	},
+ 	.probe		= hv_probe,
+-	.remove_new	= hv_remove,
++	.remove		= hv_remove,
+ };
+ 
+ static int __init sunhv_init(void)
+diff --git a/drivers/tty/serial/sunplus-uart.c b/drivers/tty/serial/sunplus-uart.c
+index abf7c449308d..38deee571b0d 100644
+--- a/drivers/tty/serial/sunplus-uart.c
++++ b/drivers/tty/serial/sunplus-uart.c
+@@ -697,7 +697,7 @@ MODULE_DEVICE_TABLE(of, sp_uart_of_match);
+ 
+ static struct platform_driver sunplus_uart_platform_driver = {
+ 	.probe		= sunplus_uart_probe,
+-	.remove_new	= sunplus_uart_remove,
++	.remove		= sunplus_uart_remove,
+ 	.driver = {
+ 		.name	= "sunplus_uart",
+ 		.of_match_table = sp_uart_of_match,
+diff --git a/drivers/tty/serial/sunsab.c b/drivers/tty/serial/sunsab.c
+index 1acbe2fba746..df906ccf2e8a 100644
+--- a/drivers/tty/serial/sunsab.c
++++ b/drivers/tty/serial/sunsab.c
+@@ -1100,7 +1100,7 @@ static struct platform_driver sab_driver = {
+ 		.of_match_table = sab_match,
+ 	},
+ 	.probe		= sab_probe,
+-	.remove_new	= sab_remove,
++	.remove		= sab_remove,
+ };
+ 
+ static int __init sunsab_init(void)
+diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
+index 0f463da5e7ce..7f0fef07e141 100644
+--- a/drivers/tty/serial/sunsu.c
++++ b/drivers/tty/serial/sunsu.c
+@@ -1549,7 +1549,7 @@ static struct platform_driver su_driver = {
+ 		.of_match_table = su_match,
+ 	},
+ 	.probe		= su_probe,
+-	.remove_new	= su_remove,
++	.remove		= su_remove,
+ };
+ 
+ static int __init sunsu_init(void)
+diff --git a/drivers/tty/serial/sunzilog.c b/drivers/tty/serial/sunzilog.c
+index 71758ad4241c..0551c24c06f5 100644
+--- a/drivers/tty/serial/sunzilog.c
++++ b/drivers/tty/serial/sunzilog.c
+@@ -1538,7 +1538,7 @@ static struct platform_driver zs_driver = {
+ 		.of_match_table = zs_match,
+ 	},
+ 	.probe		= zs_probe,
+-	.remove_new	= zs_remove,
++	.remove		= zs_remove,
+ };
+ 
+ static int __init sunzilog_init(void)
+diff --git a/drivers/tty/serial/tegra-tcu.c b/drivers/tty/serial/tegra-tcu.c
+index 21ca5fcadf49..7033dbfe8ba1 100644
+--- a/drivers/tty/serial/tegra-tcu.c
++++ b/drivers/tty/serial/tegra-tcu.c
+@@ -293,7 +293,7 @@ static struct platform_driver tegra_tcu_driver = {
+ 		.of_match_table = tegra_tcu_match,
+ 	},
+ 	.probe = tegra_tcu_probe,
+-	.remove_new = tegra_tcu_remove,
++	.remove = tegra_tcu_remove,
+ };
+ module_platform_driver(tegra_tcu_driver);
+ 
+diff --git a/drivers/tty/serial/timbuart.c b/drivers/tty/serial/timbuart.c
+index 43fa0938b5e3..6fa93c3872a7 100644
+--- a/drivers/tty/serial/timbuart.c
++++ b/drivers/tty/serial/timbuart.c
+@@ -485,7 +485,7 @@ static struct platform_driver timbuart_platform_driver = {
+ 		.name	= "timb-uart",
+ 	},
+ 	.probe		= timbuart_probe,
+-	.remove_new	= timbuart_remove,
++	.remove		= timbuart_remove,
+ };
+ 
+ module_platform_driver(timbuart_platform_driver);
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 68357ac8ffe3..a41e7fc373b7 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -915,7 +915,7 @@ MODULE_ALIAS("platform:uartlite");
+ 
+ static struct platform_driver ulite_platform_driver = {
+ 	.probe = ulite_probe,
+-	.remove_new = ulite_remove,
++	.remove = ulite_remove,
+ 	.driver = {
+ 		.name  = "uartlite",
+ 		.of_match_table = of_match_ptr(ulite_of_match),
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index 53bb8c5ef499..6e27843437ab 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -1484,7 +1484,7 @@ static struct platform_driver ucc_uart_of_driver = {
+ 		.of_match_table    = ucc_uart_match,
+ 	},
+ 	.probe  	= ucc_uart_probe,
+-	.remove_new 	= ucc_uart_remove,
++	.remove 	= ucc_uart_remove,
+ };
+ 
+ static int __init ucc_uart_init(void)
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index 777392914819..beb151be4d32 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -1903,7 +1903,7 @@ static void cdns_uart_remove(struct platform_device *pdev)
+ 
+ static struct platform_driver cdns_uart_platform_driver = {
+ 	.probe   = cdns_uart_probe,
+-	.remove_new = cdns_uart_remove,
++	.remove  = cdns_uart_remove,
+ 	.driver  = {
+ 		.name = CDNS_UART_NAME,
+ 		.of_match_table = cdns_uart_of_match,
+
+base-commit: 58ca61c1a866bfdaa5e19fb19a2416764f847d75
 -- 
-Regards,
+2.45.2
 
-Laurent Pinchart
