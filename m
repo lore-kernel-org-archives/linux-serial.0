@@ -1,90 +1,72 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43925199E92;
-	Tue,  8 Oct 2024 08:35:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF9571422A8;
+	Tue,  8 Oct 2024 08:38:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728376526; cv=none; b=B1D8GRWEPQLeAfBSCHr0lsH/8JZsurUvlR0AhRBKLva6Nixbl0O7F3HRKMqW+OkCmyVgMdx3wqEQNTXKN9kdxZimYS+pwgiGrG8kq+lgcSr1butnzsjsG9DwqPFAVeIUPK/YLOHjSX3ye8/HSmP+ltDuCSp3UZEvtQBv2HChd0s=
+	t=1728376682; cv=none; b=F7vpF2nRGk2kaL1hTIZfrnemCTZkoI2FIEXwUd8c1oukLgnUQHQJ8OU+2xIYLgP5fSzWHwRoXu6pYHgYUdrVedvqE+6xDuRGyiq6XVo+IoNKOotdWw/cDOGVhF1L/EUTpkqRo1yv2PAhLdLB6Owlom77bED50gBv59EtNh+Nc3A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728376526; c=relaxed/simple;
-	bh=YhFfJuMCV4lTci8xB84pERvoub1l7ZXh/JbnRzKvkE4=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=OzUEnBC42kAZZDYcNiy3CtW4m/VR4Da+1Reo4W0gG38WJmA877v0nSv2MvdYqaNB2j0GJ5PdeuwUtmojFfHzcXTwoerSgTpgiSC9CGuogSW6lzu1ySUGI7kaM9KDCGp2BgheSobU5YqQWHlXg0hcVpyzXY7ve1cr0HuNv1My8cI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=MqtpQSXm; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1728376682; c=relaxed/simple;
+	bh=6eDVLcMow972i4aZcmm3VEJCEQO7PY9kXFSk28hSIF0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qFA1DXlSPhOCowuGALEGo/ZzzWS4a5wNTOZk0pbBXl4KgUe4BBuSs2vkldas3CTpA3w2DTvLI/2vSbqXcejx7cGzFL+uLf4z9BffQPUKwIG4ip3HEPNyuJs7FAnLkIZEAqUZ70FDvDV3dQVQaiMVx/35sbDBu2pBpSks6xDIzbU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=qat6nI5x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="MqtpQSXm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1728376525; x=1759912525;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YhFfJuMCV4lTci8xB84pERvoub1l7ZXh/JbnRzKvkE4=;
-  b=MqtpQSXmYvMGveHajhO8SSl4P6HLIKFGnmgcMpVH4j+o5522RfeOqnKN
-   YOjzYbXzSLeAXobwkbcc62tiFH+yHZ38VXaf18OCId0iv2FndQaX/QU3G
-   zB+AGhjEhUvi8xguWgLp14YcbXhDnqq8hRhOKkt5Qf8QgybNQTs/Fr00n
-   WR/GaCOEebg/k52nDnRvjrBXfr1p7GbtgKHIEG6Jm7sCC9NIXvHdBff0D
-   fiQeqlN9k4I1hU9pzbbabIzIiA0VZP5a+wQTua0KVsTyM5hgZ2vJtyv2u
-   1lBX7MM4jelkhEZSPupZgTpSt6LWAxpu5o1bO4An3zS7fgnzlSFIdZfx9
-   g==;
-X-CSE-ConnectionGUID: VNNFp7ZBRESLYVTNhM1m7w==
-X-CSE-MsgGUID: VTUf1i0WR4iiR9cwNszzgA==
-X-IronPort-AV: E=Sophos;i="6.11,186,1725346800"; 
-   d="scan'208";a="33314300"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 08 Oct 2024 01:35:24 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 8 Oct 2024 01:35:04 -0700
-Received: from archlinux.microchip.com (10.10.85.11) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.35 via Frontend Transport; Tue, 8 Oct 2024 01:35:01 -0700
-From: Mihai Sain <mihai.sain@microchip.com>
-To: <richard.genoud@bootlin.com>, <gregkh@linuxfoundation.org>,
-	<jirislaby@kernel.org>, <nicolas.ferre@microchip.com>,
-	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>
-CC: Mihai Sain <mihai.sain@microchip.com>
-Subject: [PATCH 1/2] tty: atmel_serial: print the controller version
-Date: Tue, 8 Oct 2024 11:34:59 +0300
-Message-ID: <20241008083459.51249-1-mihai.sain@microchip.com>
-X-Mailer: git-send-email 2.47.0
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="qat6nI5x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 021C2C4CEC7;
+	Tue,  8 Oct 2024 08:38:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1728376681;
+	bh=6eDVLcMow972i4aZcmm3VEJCEQO7PY9kXFSk28hSIF0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qat6nI5xfIlWrewKaqWx+n6UttT1ryoMQ0w0EgzjP6cQVfi1nqBbIFk+MZ1DJ1iQV
+	 3mYE1HMndtI9xwTy18FbAXbqeDX1du1t8G1UhIQF4eI8UlKgcbPy4Gjse8FphTg+UB
+	 KW4A/W4y7vjSsTNZ08C+Vm7+HKvZwGFXM7InfldA=
+Date: Tue, 8 Oct 2024 10:37:58 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Mihai Sain <mihai.sain@microchip.com>
+Cc: richard.genoud@bootlin.com, jirislaby@kernel.org,
+	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+	claudiu.beznea@tuxon.dev, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/2] tty: atmel_serial: print the controller version
+Message-ID: <2024100842-luncheon-severity-afc0@gregkh>
+References: <20241008083459.51249-1-mihai.sain@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241008083459.51249-1-mihai.sain@microchip.com>
 
-Add support to print the controller version similar
-to other at91 drivers like spi and twi.
+On Tue, Oct 08, 2024 at 11:34:59AM +0300, Mihai Sain wrote:
+> Add support to print the controller version similar
+> to other at91 drivers like spi and twi.
+> 
+> Signed-off-by: Mihai Sain <mihai.sain@microchip.com>
+> ---
+>  drivers/tty/serial/atmel_serial.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+> index 09b246c9e389..5f93974918c0 100644
+> --- a/drivers/tty/serial/atmel_serial.c
+> +++ b/drivers/tty/serial/atmel_serial.c
+> @@ -2970,6 +2970,8 @@ static int atmel_serial_probe(struct platform_device *pdev)
+>  	 */
+>  	clk_disable_unprepare(atmel_port->clk);
+>  
+> +	dev_info(&pdev->dev, "AT91 USART Controller version %#x",
+> +		 atmel_uart_readl(&atmel_port->uart, ATMEL_US_VERSION));
 
-Signed-off-by: Mihai Sain <mihai.sain@microchip.com>
----
- drivers/tty/serial/atmel_serial.c | 2 ++
- 1 file changed, 2 insertions(+)
+No, the other drivers need to be fixed up, when drivers are working
+properly, they are quiet.  This driver is correct by being quiet, please
+send patches for the other ones to remove these types of lines.
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 09b246c9e389..5f93974918c0 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -2970,6 +2970,8 @@ static int atmel_serial_probe(struct platform_device *pdev)
- 	 */
- 	clk_disable_unprepare(atmel_port->clk);
- 
-+	dev_info(&pdev->dev, "AT91 USART Controller version %#x",
-+		 atmel_uart_readl(&atmel_port->uart, ATMEL_US_VERSION));
- 	return 0;
- 
- err_add_port:
+thanks,
 
-base-commit: 87d6aab2389e5ce0197d8257d5f8ee965a67c4cd
--- 
-2.47.0
-
+greg k-h
