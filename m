@@ -1,325 +1,183 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E5191DE4CB;
-	Tue,  8 Oct 2024 12:41:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C67A220B1E5;
+	Tue,  8 Oct 2024 18:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728391293; cv=none; b=t/DqEu1hQbS6KzRYwQMDNOMm1x2aa2FZwSUw+dhLaA7XHfcUA+8bAPZ+YaN9KEmPNASB4lSKll0PbbtU3s7giRC/rJqO4N0SHOn8Cmz4tMLV0Wdz0JcWA1yLV/BBD+pH5IqHOdTpxKVrbz/9sNRSUj0etcBGESYSAob1jxErshY=
+	t=1728411908; cv=none; b=iY4WxDlRVJ4m4OGBPQ1ELg85C6r0yZ+QDYeTfC1N+NEWbdte9IXY2ireisz0C8oJQSkjTtmfLl2Fawg/WyizRNiveUVThcMuOPPd37ItABn/GUNRI29vPt51qdQprLEIZJBhrKNxN2e0Eh524SuD1DrWZlkspZUJ0ccktCXb7Mk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728391293; c=relaxed/simple;
-	bh=j7KaGUsyaLEUfGtXkukiFzIvWKJHDMnnZRqJknyuK2M=;
-	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=nesT8sn1N/Qg8t+Em/FpGz2xbulHBymfRRAqmcD/+ZkRMBTglOkKBE09EcrkbVa0giQXGHanKK8r2AswDOaZlGnyhFjcQfBYdnD+6oarhFOSsLD4q45ItB3NpVCOLD2hAHEmI3uzf4w8oCgDYaRpxGCCZ2Xg5rthjJOSZ8dpeOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=WiIVuAXi; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1728411908; c=relaxed/simple;
+	bh=gbTLwyB5anW/NVNa27O4GYEgcT7Zt8zwGlDOBl4w9X4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DSjJ3y7jGCHPN0opTgBqBhLeVfPa0Y6k3x4lo2gFVhGf+YIXbRfaJHdkCYrJtWpj41BhLpVVGwnlq+UUDc0oVHa4+ULwK2vSOh9Iihv9qEZD8L1PG01Wuw4lQNgus1HhQsHBqwrmhWFcAPQIDmycPDt0RIAoPq6xgw5TFhRiC+o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QWv3+c7h; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="WiIVuAXi"
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 498BsMpS006194;
-	Tue, 8 Oct 2024 12:40:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from
-	:date:subject:content-type:message-id:references:in-reply-to:to
-	:cc:content-transfer-encoding:mime-version; s=pp1; bh=gJGd5/wr8D
-	cxtqBm0AFwiAsWUR/rh1W6zfn73uIs31M=; b=WiIVuAXi//XTK+GAvS53FesISF
-	AEcXXbY57tr/ItEJeGg2zH0XgEu8CDF8jbUsxvbCgl1R8rG5uTyl5008CqprqWb/
-	7DH1KymenTA8aQITz/kojV7/oWg9Pmq8hOZD/DrCkMtQRYr+/Hx1Xc7VKvPaCqg4
-	2jGBDpD3R6p9ZHjCMxl17A5FRWy5oDZy3EHEHRNRrcvkrpozqs3coDOOo+EcOOW8
-	1JNs7sP7RaLe8I2s7/eAbvsatYXmqXx80ZgyLLEQ09626fGhO/1bZKVn7MMiLJiV
-	SRqw9hS6BIWYjoTn38AUyMRYndeBdmr8WocshnCYr6ZnuKXi87jfrvgsrx2A==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42549908pf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Oct 2024 12:40:58 +0000 (GMT)
-Received: from m0356516.ppops.net (m0356516.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 498Ca5Ne023011;
-	Tue, 8 Oct 2024 12:40:58 GMT
-Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42549908p5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Oct 2024 12:40:58 +0000 (GMT)
-Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 498APkGC010715;
-	Tue, 8 Oct 2024 12:40:57 GMT
-Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
-	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 423j0jc124-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Oct 2024 12:40:57 +0000
-Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
-	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 498CetU627001508
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 8 Oct 2024 12:40:55 GMT
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7BD8058054;
-	Tue,  8 Oct 2024 12:40:55 +0000 (GMT)
-Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8AC4F58066;
-	Tue,  8 Oct 2024 12:40:50 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  8 Oct 2024 12:40:50 +0000 (GMT)
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-Date: Tue, 08 Oct 2024 14:39:46 +0200
-Subject: [PATCH v8 5/5] asm-generic/io.h: Remove I/O port accessors for
- HAS_IOPORT=n
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20241008-b4-has_ioport-v8-5-793e68aeadda@linux.ibm.com>
-References: <20241008-b4-has_ioport-v8-0-793e68aeadda@linux.ibm.com>
-In-Reply-To: <20241008-b4-has_ioport-v8-0-793e68aeadda@linux.ibm.com>
-To: Brian Cain <bcain@quicinc.com>, Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Dave Airlie <airlied@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        =?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Heiko Carstens <hca@linux.ibm.com>
-Cc: linux-kernel@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux.dev, spice-devel@lists.freedesktop.org,
-        intel-xe@lists.freedesktop.org, linux-serial@vger.kernel.org,
-        linux-arch@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>,
-        Arnd Bergmann <arnd@kernel.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5763;
- i=schnelle@linux.ibm.com; h=from:subject:message-id;
- bh=j7KaGUsyaLEUfGtXkukiFzIvWKJHDMnnZRqJknyuK2M=;
- b=owGbwMvMwCX2Wz534YHOJ2GMp9WSGNJZNQzXGM6a7CKhPjMv48StB+W1vKk2+zfa73tq8F3Ch
- Zlh+/t1HaUsDGJcDLJiiiyLupz91hVMMd0T1N8BM4eVCWQIAxenAEzkYj3DP/VVKno+F2SXiM5L
- /LnePUmH+2RMuGLmLp17u3OFnDrV1jEyzHW/f+uGsRTDg67md8Vn9boW+/jNmC26ysZjy47kVS8
- cWAE=
-X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
- fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 5qJmzXVUXu_PPGWzienVGSvZhaeyctpR
-X-Proofpoint-ORIG-GUID: RHnEoljeT0f3lG_stDyffoOEyw6MUwE3
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QWv3+c7h"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579F8C4CED3;
+	Tue,  8 Oct 2024 18:25:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728411907;
+	bh=gbTLwyB5anW/NVNa27O4GYEgcT7Zt8zwGlDOBl4w9X4=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=QWv3+c7hgheNar52dT93kuaRJqQGwrTlm+2qt+dJoGyQzAHIgU0jubrC8ThWhyZIZ
+	 RS8ECJijkXPnKWXZt/DHYo4oNlel2cdA7QmeMfgDuBLkCfLLpl6vQcl4DNTcV5EyFH
+	 5h8XYKukhwE21LUBMtMTij4WxRmO6XhWfjQaEwayPWgg9ncS5s6vbgtpgFKR2d4Ze1
+	 U8RaeSIFzvB8vNoypQgBEdP43kZiPZVbc5vt/+kjhif0hCbio5j23Z7Fbcd2MdU+Eu
+	 u4mqS8NwdiP912BRPYfCL4ckK1zD9U7UpC3cflIOLH9kTp0r9qM6ScGNZWHbmYuBvP
+	 5BPH6goJRp7XQ==
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-5e5d0a80db4so3217626eaf.3;
+        Tue, 08 Oct 2024 11:25:07 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCU3C3tK00jRXhoDZ96Dzj87jGGWiyg2EPXq2wo8twXZRCit9AeTBQH0qi7g71NeR3ndkIDf6zbCO2tCxOF3Go0=@vger.kernel.org, AJvYcCUD9UjTrJPYFCwGiVUYkyUEeZBiugwoiKWgkR6f1ZvJQUXSh7pQwb/ehWVwZSj34Obki6ROqP4T+Nwp@vger.kernel.org, AJvYcCUPVbBzCw6zvLiCONNyI1ddGYtUzA+MHpEDBCAsW6t6M65XCOKNj56eshvi2CmN/CpJORuxiTRooGbqUVBR1clH@vger.kernel.org, AJvYcCUafMoirgA3e5dJkDINiZqnh5qLjlbeI47XxJzi6PBgWdYgzJC00+bADWoklUhSt3fTGKXgi/2b7Cs=@vger.kernel.org, AJvYcCUdD/AhSYyBNDirh3PISBiwwXRNURiDVDcxQf77QQEDXCi3oTIY1JW+fz4/Zi5cCG7IsIVcnpYom8xN0XA=@vger.kernel.org, AJvYcCVKjPj8S9Cx++kzEGvwFgrQJ5Ii5xMsQlR05NMOg45G5iaauB8vEZpCTeJI6P5uFkoXKuBGJDKCo+nem6s=@vger.kernel.org, AJvYcCVL45VzJJc9nt6spfbiiO6L9DTnzo7i3yke7UoO/oTfZAtHo/vlmCCdXaBDUIv/E6ydRcx/oQplLjjzoA7H@vger.kernel.org, AJvYcCVMz5l8ZPHKtmjYCxJBkY4DRurKhkDBubjnyu3jKklDdLaVd6ej5iYbecElBzbNN/lfRjj4gAvLQyjH@vger.kernel.org, AJvYcCVTcIwXSAUbucn8TVDe1qx0PSHPmATijxKPLeBF/liopYXcLQ8ScAgnF3Yqj0X5rhu4cG5E48jqB8mc@vger.kernel.org, AJvYcCWClUGOO7yG560xUvaFYQCo7slmKdQbsRUjiXB1uhxLvpc+HouPwj4fFoi+FEBisNLRNDd1VQVWiaYj@vger.kernel.org, AJvYcCWOEzBzz0LjlFp6HFvZ11F5QnLq5gjO/21J41JjqVltZc+rpksNlzjeDYalgS79mIC58zE0xBoS@vger.kernel.org, AJvYcCWULSQYYztWyt0PcUroL3N0kIvSh9DCjJZM98nMzpRDokvJjojrZrBiVQDakYuM4uzVnRAV/gE1Sxxi@vger.kernel.org, AJvYcCWgM7Gzxm3gksn1fv9oUHSIJdAhDMK/c6wMzi8J+4YrDwp7epUQPKTEk0BxwOgVby4JbrU4dCZLlTRV@vger.kernel.org, AJvYcCWgXdWexWcVGuVAFwrVWY48r1t9Edbc4p9omIYy5/zgYxMqkiS5sbXJiYfIIlbuXNrhESuKJGWJvHyDiA==@vger.kernel.org, AJvYcCWxiJ/5XtFlUli+/zTZtnfq87fGeioVam9UlDjBmhZoMk8Gu976EkD63HnmmqLXDlr7LvNr4HVIJH9Ql2A7Ryfy/w==@vger.kernel.org, AJvYcCX3ch1TTIOzPm7XF+W4zOr7q8QsmZwzR1oJ6GKkz9XQ7vvlp/fHRjHux9+g6nUd4Z7CK8d5lW0ih6JDg28p@vger.kernel.org, AJvYcCX53X85N4Ri3qdiFm276KT5SNw18oK2Tre6x/w5VUfxRK+Pdh/J9GkRjmO26bM+wd3NMHx4AZ25PlEO@vger.kernel.org, AJvYcCX6L4fi/TdH5zDCtPYXvMzGM/qWvxLz34wO/6FzIoBhCYOEckc7qxU6Wy8CYN8mt+zVyjyO7nLMlK+3@vger.kernel.org, AJvYcCXCupac8c380ExASXZG1cOW3GSRrTD4pOsNa//Ehzy7Mc9+nhrMK91rRqiQYYUUNzHoUj4qEvu62hzFjFM=@vger.kernel.org, AJvYcCXN28OzyeGZgOPyw9ddKIIB6Tx6vMl50ZBIBrdKVVHELeHm6OnE7vFC/CpfnJolMr7yZJBzEiCuiH6TWjk1@vger.kernel.org
+X-Gm-Message-State: AOJu0YxDtei8K4c+yglZWIg+wthGPZHkZ7UnsIQmNflJFGICsDhc9KZf
+	6UGNS75k6Og3dhkPiDn96OjfZNpuVrvIjIr8L8jxLZ+rzJat6qBtCvWOpeT+mLhY8C7hDo0/oWm
+	HENFfnjpCC32JdxMZanz8yplv9AQ=
+X-Google-Smtp-Source: AGHT+IE8/UzrmOfg0dgL+a7sFpnmZmTmVZlVfZVXeH9h9sR6Zbx0f+k3/XHDUWx/NQFfJo1odWsZ7gtN5j50xL2u+GA=
+X-Received: by 2002:a05:6820:228e:b0:5e1:d741:6f04 with SMTP id
+ 006d021491bc7-5e7cc079979mr12626737eaf.3.1728411906564; Tue, 08 Oct 2024
+ 11:25:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-08_10,2024-10-08_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
- priorityscore=1501 impostorscore=0 spamscore=0 malwarescore=0
- lowpriorityscore=0 suspectscore=0 phishscore=0 adultscore=0 clxscore=1015
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410080078
+References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
+ <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
+ <20241007184924.GH14766@pendragon.ideasonboard.com> <CAPDyKFpQVnF7eQv3dup8k-3EijnMjuveCG9sZ=Rpey1Y6MBJEg@mail.gmail.com>
+ <20241007222502.GG30699@pendragon.ideasonboard.com> <CAPDyKFrGNwna6Y2pqSRaBbRYHKRaD2ayqQHLtoqLPOu9Et7qTg@mail.gmail.com>
+In-Reply-To: <CAPDyKFrGNwna6Y2pqSRaBbRYHKRaD2ayqQHLtoqLPOu9Et7qTg@mail.gmail.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Tue, 8 Oct 2024 20:24:55 +0200
+X-Gmail-Original-Message-ID: <CAJZ5v0jvJyS7D5-wURi2kyWN-rmNa+YqupeQJ000pQRVd9VBcQ@mail.gmail.com>
+Message-ID: <CAJZ5v0jvJyS7D5-wURi2kyWN-rmNa+YqupeQJ000pQRVd9VBcQ@mail.gmail.com>
+Subject: Re: [PATCH 00/51] treewide: Switch to __pm_runtime_put_autosuspend()
+To: Ulf Hansson <ulf.hansson@linaro.org>, 
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
+	Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org, 
+	linux-bluetooth@vger.kernel.org, linux-clk@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
+	linux-gpio@vger.kernel.org, amd-gfx@lists.freedesktop.org, 
+	nouveau@lists.freedesktop.org, linux-stm32@st-md-mailman.stormreply.com, 
+	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, 
+	linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org, 
+	linux-input@vger.kernel.org, patches@opensource.cirrus.com, 
+	iommu@lists.linux.dev, imx@lists.linux.dev, 
+	linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org, 
+	linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, 
+	netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
+	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org, 
+	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, 
+	linux-staging@lists.linux.dev, linux-usb@vger.kernel.org, 
+	linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org, 
+	asahi@lists.linux.dev, Andy Shevchenko <andy.shevchenko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-With all subsystems and drivers either declaring their dependence on
-HAS_IOPORT or fencing I/O port specific code sections we can finally
-make inb()/outb() and friends compile-time dependent on HAS_IOPORT as
-suggested by Linus in the linked mail. The main benefit of this is that
-on platforms such as s390 which have no meaningful way of implementing
-inb()/outb() their use without the proper HAS_IOPORT dependency will
-result in easy to catch and fix compile-time errors instead of compiling
-code that can never work.
+On Tue, Oct 8, 2024 at 12:35=E2=80=AFAM Ulf Hansson <ulf.hansson@linaro.org=
+> wrote:
+>
+> On Tue, 8 Oct 2024 at 00:25, Laurent Pinchart
+> <laurent.pinchart@ideasonboard.com> wrote:
+> >
+> > Hi Ulf,
+> >
+> > On Tue, Oct 08, 2024 at 12:08:24AM +0200, Ulf Hansson wrote:
+> > > On Mon, 7 Oct 2024 at 20:49, Laurent Pinchart wrote:
+> > > > On Fri, Oct 04, 2024 at 04:38:36PM +0200, Ulf Hansson wrote:
+> > > > > On Fri, 4 Oct 2024 at 11:41, Sakari Ailus wrote:
+> > > > > >
+> > > > > > Hello everyone,
+> > > > > >
+> > > > > > This set will switch the users of pm_runtime_put_autosuspend() =
+to
+> > > > > > __pm_runtime_put_autosuspend() while the former will soon be re=
+-purposed
+> > > > > > to include a call to pm_runtime_mark_last_busy(). The two are a=
+lmost
+> > > > > > always used together, apart from bugs which are likely common. =
+Going
+> > > > > > forward, most new users should be using pm_runtime_put_autosusp=
+end().
+> > > > > >
+> > > > > > Once this conversion is done and pm_runtime_put_autosuspend() r=
+e-purposed,
+> > > > > > I'll post another set to merge the calls to __pm_runtime_put_au=
+tosuspend()
+> > > > > > and pm_runtime_mark_last_busy().
+> > > > >
+> > > > > That sounds like it could cause a lot of churns.
+> > > > >
+> > > > > Why not add a new helper function that does the
+> > > > > pm_runtime_put_autosuspend() and the pm_runtime_mark_last_busy()
+> > > > > things? Then we can start moving users over to this new interface=
+,
+> > > > > rather than having this intermediate step?
+> > > >
+> > > > I think the API would be nicer if we used the shortest and simplest
+> > > > function names for the most common use cases. Following
+> > > > pm_runtime_put_autosuspend() with pm_runtime_mark_last_busy() is th=
+at
+> > > > most common use case. That's why I like Sakari's approach of repurp=
+osing
+> > > > pm_runtime_put_autosuspend(), and introducing
+> > > > __pm_runtime_put_autosuspend() for the odd cases where
+> > > > pm_runtime_mark_last_busy() shouldn't be called.
+> > >
+> > > Okay, so the reason for this approach is because we couldn't find a
+> > > short and descriptive name that could be used in favor of
+> > > pm_runtime_put_autosuspend(). Let me throw some ideas at it and maybe
+> > > you like it - or not. :-)
+> >
+> > I like the idea at least :-)
+> >
+> > > I don't know what options you guys discussed, but to me the entire
+> > > "autosuspend"-suffix isn't really that necessary in my opinion. There
+> > > are more ways than calling pm_runtime_put_autosuspend() that triggers
+> > > us to use the RPM_AUTO flag for rpm_suspend(). For example, just
+> > > calling pm_runtime_put() has the similar effect.
+> >
+> > To be honest, I'm lost there. pm_runtime_put() calls
+> > __pm_runtime_idle(RPM_GET_PUT | RPM_ASYNC), while
+> > pm_runtime_put_autosuspend() calls __pm_runtime_suspend(RPM_GET_PUT |
+> > RPM_ASYNC | RPM_AUTO).
+>
+> __pm_runtime_idle() ends up calling rpm_idle(), which may call
+> rpm_suspend() - if it succeeds to idle the device. In that case, it
+> tags on the RPM_AUTO flag in the call to rpm_suspend(). Quite similar
+> to what is happening when calling pm_runtime_put_autosuspend().
 
-Link: https://lore.kernel.org/lkml/CAHk-=wg80je=K7madF4e7WrRNp37e3qh6y10Svhdc7O8SZ_-8g@mail.gmail.com/
-Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
----
- include/asm-generic/io.h | 60 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 60 insertions(+)
+Right.
 
-diff --git a/include/asm-generic/io.h b/include/asm-generic/io.h
-index 80de699bf6af4b7b77f582c0469c43e978f67a43..1027be6a62bcbcd5f6797e0fa42035208d0ca79f 100644
---- a/include/asm-generic/io.h
-+++ b/include/asm-generic/io.h
-@@ -540,6 +540,7 @@ static inline void writesq(volatile void __iomem *addr, const void *buffer,
- 
- #if !defined(inb) && !defined(_inb)
- #define _inb _inb
-+#ifdef CONFIG_HAS_IOPORT
- static inline u8 _inb(unsigned long addr)
- {
- 	u8 val;
-@@ -549,10 +550,15 @@ static inline u8 _inb(unsigned long addr)
- 	__io_par(val);
- 	return val;
- }
-+#else
-+u8 _inb(unsigned long addr)
-+	__compiletime_error("inb()) requires CONFIG_HAS_IOPORT");
-+#endif
- #endif
- 
- #if !defined(inw) && !defined(_inw)
- #define _inw _inw
-+#ifdef CONFIG_HAS_IOPORT
- static inline u16 _inw(unsigned long addr)
- {
- 	u16 val;
-@@ -562,10 +568,15 @@ static inline u16 _inw(unsigned long addr)
- 	__io_par(val);
- 	return val;
- }
-+#else
-+u16 _inw(unsigned long addr)
-+	__compiletime_error("inw() requires CONFIG_HAS_IOPORT");
-+#endif
- #endif
- 
- #if !defined(inl) && !defined(_inl)
- #define _inl _inl
-+#ifdef CONFIG_HAS_IOPORT
- static inline u32 _inl(unsigned long addr)
- {
- 	u32 val;
-@@ -575,36 +586,55 @@ static inline u32 _inl(unsigned long addr)
- 	__io_par(val);
- 	return val;
- }
-+#else
-+u32 _inl(unsigned long addr)
-+	__compiletime_error("inl() requires CONFIG_HAS_IOPORT");
-+#endif
- #endif
- 
- #if !defined(outb) && !defined(_outb)
- #define _outb _outb
-+#ifdef CONFIG_HAS_IOPORT
- static inline void _outb(u8 value, unsigned long addr)
- {
- 	__io_pbw();
- 	__raw_writeb(value, PCI_IOBASE + addr);
- 	__io_paw();
- }
-+#else
-+void _outb(u8 value, unsigned long addr)
-+	__compiletime_error("outb() requires CONFIG_HAS_IOPORT");
-+#endif
- #endif
- 
- #if !defined(outw) && !defined(_outw)
- #define _outw _outw
-+#ifdef CONFIG_HAS_IOPORT
- static inline void _outw(u16 value, unsigned long addr)
- {
- 	__io_pbw();
- 	__raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
- 	__io_paw();
- }
-+#else
-+void _outw(u16 value, unsigned long addr)
-+	__compiletime_error("outw() requires CONFIG_HAS_IOPORT");
-+#endif
- #endif
- 
- #if !defined(outl) && !defined(_outl)
- #define _outl _outl
-+#ifdef CONFIG_HAS_IOPORT
- static inline void _outl(u32 value, unsigned long addr)
- {
- 	__io_pbw();
- 	__raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
- 	__io_paw();
- }
-+#else
-+void _outl(u32 value, unsigned long addr)
-+	__compiletime_error("outl() requires CONFIG_HAS_IOPORT");
-+#endif
- #endif
- 
- #include <linux/logic_pio.h>
-@@ -688,53 +718,83 @@ static inline void outl_p(u32 value, unsigned long addr)
- 
- #ifndef insb
- #define insb insb
-+#ifdef CONFIG_HAS_IOPORT
- static inline void insb(unsigned long addr, void *buffer, unsigned int count)
- {
- 	readsb(PCI_IOBASE + addr, buffer, count);
- }
-+#else
-+void insb(unsigned long addr, void *buffer, unsigned int count)
-+	__compiletime_error("insb() requires HAS_IOPORT");
-+#endif
- #endif
- 
- #ifndef insw
- #define insw insw
-+#ifdef CONFIG_HAS_IOPORT
- static inline void insw(unsigned long addr, void *buffer, unsigned int count)
- {
- 	readsw(PCI_IOBASE + addr, buffer, count);
- }
-+#else
-+void insw(unsigned long addr, void *buffer, unsigned int count)
-+	__compiletime_error("insw() requires HAS_IOPORT");
-+#endif
- #endif
- 
- #ifndef insl
- #define insl insl
-+#ifdef CONFIG_HAS_IOPORT
- static inline void insl(unsigned long addr, void *buffer, unsigned int count)
- {
- 	readsl(PCI_IOBASE + addr, buffer, count);
- }
-+#else
-+void insl(unsigned long addr, void *buffer, unsigned int count)
-+	__compiletime_error("insl() requires HAS_IOPORT");
-+#endif
- #endif
- 
- #ifndef outsb
- #define outsb outsb
-+#ifdef CONFIG_HAS_IOPORT
- static inline void outsb(unsigned long addr, const void *buffer,
- 			 unsigned int count)
- {
- 	writesb(PCI_IOBASE + addr, buffer, count);
- }
-+#else
-+void outsb(unsigned long addr, const void *buffer, unsigned int count)
-+	__compiletime_error("outsb() requires HAS_IOPORT");
-+#endif
- #endif
- 
- #ifndef outsw
- #define outsw outsw
-+#ifdef CONFIG_HAS_IOPORT
- static inline void outsw(unsigned long addr, const void *buffer,
- 			 unsigned int count)
- {
- 	writesw(PCI_IOBASE + addr, buffer, count);
- }
-+#else
-+void outsw(unsigned long addr, const void *buffer, unsigned int count)
-+	__compiletime_error("outsw() requires HAS_IOPORT");
-+#endif
- #endif
- 
- #ifndef outsl
- #define outsl outsl
-+#ifdef CONFIG_HAS_IOPORT
- static inline void outsl(unsigned long addr, const void *buffer,
- 			 unsigned int count)
- {
- 	writesl(PCI_IOBASE + addr, buffer, count);
- }
-+#else
-+void outsl(unsigned long addr, const void *buffer, unsigned int count)
-+	__compiletime_error("outsl() requires HAS_IOPORT");
-+#endif
- #endif
- 
- #ifndef insb_p
+For almost everybody, except for a small bunch of drivers that
+actually have a .runtime_idle() callback, pm_runtime_put() is
+literally equivalent to pm_runtime_put_autosuspend().
 
--- 
-2.43.0
+So really the question is why anyone who doesn't provide a
+.runtime_idle() callback bothers with using this special
+pm_runtime_put_autosuspend() thing, which really means "do a
+runtime_put(), but skip my .runtime_idle() callback".
 
+> >
+> > >
+> > > Moreover, it's similar for pm_runtime_mark_last_busy(), it's called
+> > > during rpm_resume() too, for example. So why bother about having
+> > > "mark_last_busy" in the new name too.
+> > >
+> > > That said, my suggestion is simply "pm_runtime_put_suspend".
+> >
+> > Can we do even better, and make pm_runtime_put() to handle autosuspend
+> > automatically when autosuspend is enabled ?
+>
+> As stated above, this is already the case.
+
+What really is needed appears to be a combination of
+pm_runtime_mark_last_busy() with pm_runtime_put().
+
+Granted, pm_runtime_put() could do the pm_runtime_mark_last_busy()
+thing automatically if autosuspend is enabled and the only consequence
+of it might be delaying a suspend of the device until its autosuspend
+timer expires, which should not be a problem in the vast majority of
+cases.
