@@ -1,178 +1,309 @@
-Received: from mail-yb1-f173.google.com (mail-yb1-f173.google.com [209.85.219.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F81A18DF87
-	for <linux-serial@vger.kernel.org>; Mon,  7 Oct 2024 22:35:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF1EB42AB1;
+	Tue,  8 Oct 2024 08:16:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728340531; cv=none; b=e0lxNSFnJZDk5IZS5xi+S1r1sYWWY5gZ4FUmAGhjLzXSS1KUTQteDWOcBGbNKIcCvHUTv2XYdLBG7C9Z/mGsIkm8HiFa2YV+++/90kK7TnJlniaPLxHnbjJt8DogmHYzu6XvX9ga4qUyaMEGQWuyKztz8ogqogn2EJ/t+5ZjAuA=
+	t=1728375417; cv=none; b=TW+GIueYyEjvtgnEkSCIEx20Fbu1w2/NFwSVoP401avJy+56r/fqHjcD1ipzN31sbpae1CVjaS3FAAD9WBigF26pRBvcUTOqy+SXece5ER1tb1EYIaK38hlVCKWJIzMojdyNQ1vDXbMcJL8WReIlFe3BhAQCnX/k+VsLIC1IFVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728340531; c=relaxed/simple;
-	bh=gesjil9Y0RZgbcjmX5qHd/S97rHztDCcedkOm+1cl0k=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Bu5AdPzC+HFly0hwh3yMhT3CE7IbdOl8/uD/k23dKZcOJl4eZyRStdFppLGy8flHl5xYxJty478Gc0/QL+UQq9ffo5Z1Ybvo/lxyTDurszvSnnGc2znfnnxTNy0ik0B9+v+BD6eF2PjZpTwFGOS1FBx9AOBH50wW9Ng2eJVR47s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=e3VL5Ud8; arc=none smtp.client-ip=209.85.219.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1728375417; c=relaxed/simple;
+	bh=5q8CuvYmRN2mTkCNyu36VRINnt4vc3iLD6wxwxK1Q28=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=mnvqPAFQNR9XAdBYkI+7D6vWCjcb/b7InlZl+MqGqvzDIsDPeXkHAKgovAqesmWlo3ydaK5RyyCpa2oUKmjasupnJsao+fhO/Q8hugNFaLTq/EymDYr8bvydAhrTrH4zL8nXAQmtf2AT6xGIDsvHVSrmOnFuNBe/pZ4oT44GT4Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=sHo4fQUn; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="e3VL5Ud8"
-Received: by mail-yb1-f173.google.com with SMTP id 3f1490d57ef6-e026a2238d8so4471281276.0
-        for <linux-serial@vger.kernel.org>; Mon, 07 Oct 2024 15:35:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1728340526; x=1728945326; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=gesjil9Y0RZgbcjmX5qHd/S97rHztDCcedkOm+1cl0k=;
-        b=e3VL5Ud84GLI+E2x3bA8ztpqvuFMv57yd9aYEVQJXCzdGLPTTmXpQqv3Opq72bJmux
-         KBHMo3MVO1HOzdmTO8H+pcTCfVPqaiTDnPTpbQzl0qQR7IL44jHkwS4bzBufrjeR8qhe
-         DDLiaWivcex7UxcVlthWRdgNLBWzi+M8qTeDx57baSkDWFH1agIYPgvRPadbYLCLtjZu
-         06qTHbdte5aRDCOnGRwQe0feCJbqguEWevqetTaa5WoZI91EWlvvh0bLcBUS4nMqHsf9
-         D1KWrNcsh7YIcTiYbXUJhkPijHa5aKTMIfa20aY8luGYazLflzR5ecy/UydbOSAfiQM/
-         3TDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728340526; x=1728945326;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gesjil9Y0RZgbcjmX5qHd/S97rHztDCcedkOm+1cl0k=;
-        b=er2jkcjQCt4nZzkWIB4kwEXG+6QS01qresxr1YXNzXWoaRH/PBNcob+ElV9ze4arfp
-         gmzbySvKsO6pggrJYs278aheHCA9grINRA+AwCQ7I/0WOJCmpwGaW2uIELdJMn3XV2AQ
-         LJza3fUHwPdhHh4zF2YGtNOWZ5uZhhHOCYonTe/TsLxOOf1bOqwVOCmx+aufStnu2vh/
-         T4VgjleLKNU8v2C0sGbNN3gS0GCX00E330f7k1TRQLqAdnM6srzfMtPtQmImOf+Bc6Il
-         XN4szit3y3nOxl8JSXCDx2ohq3fDKO8SAGj7ALvPcu0wkCXIQnl7GMT41tPAq4CmwOWn
-         p0qA==
-X-Forwarded-Encrypted: i=1; AJvYcCVgub/1vklXwwR0nVWbRWmcOYyX0lmjer9dohoVTLB0Zwor8ruLN93j8/OeUIBHndW4Hxp+yJY8E4JviD8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwpUOIk9/Y6U1N2ytwiLZFqqScXFGmWcTSbynF0uj2fHmFOCiPc
-	ZQEjUz3vuhxYop5H7aTK7ei8kdGTTP+4wBIRhSVMSDM2ikwR7HkPBG9YD2GNgSX3FTuVOZT+5T1
-	WB5EdN8ETwt+bPtFSXW3ZpseJF6czKiHRkLcQug==
-X-Google-Smtp-Source: AGHT+IGYLLRVc3CeXKReIUVnntYlZ+ULRb29gPUl3UTx4hoqAUGdx6q2aFDzdnacRWqcM/cOYseo4GoEdp7e3a8qLZE=
-X-Received: by 2002:a05:6902:2305:b0:e28:6ec7:4353 with SMTP id
- 3f1490d57ef6-e2893964043mr10612649276.54.1728340526338; Mon, 07 Oct 2024
- 15:35:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="sHo4fQUn"
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4987rMsl004958;
+	Tue, 8 Oct 2024 08:16:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
+	message-id:subject:from:to:cc:date:in-reply-to:references
+	:content-type:content-transfer-encoding:mime-version; s=pp1; bh=
+	voeEqfxsFd+/77zpL5D+y4gMqcRDIhp51epNuVuJ7ZY=; b=sHo4fQUndC+aATfq
+	x6FtjA95IrCiTWSM6Yr7QeMxglakVe5pbc2Lny9bHH3w2g60v/FUJFod3LKkW2t3
+	N9Pi7SjUPHgcQWGBIf4w2QGfe4makFe056rO1xayTZCnOlROqwylWhMPwFioQyHW
+	KGuC4s5rETTg2OY0uX29prBMNt5LcxufaLfNaAx8+FfqefBKIJORu1HCscCuGS+9
+	fkOyY0qB6TGhps22fVYWALcULALv0kGbxz3ffFjMzsQvjkesCv/Ad5QJbE4DuBg1
+	04ZUnfmws0Y/Zv/r7uv2uJiWCjDAKB3VId3NfJpujjWTcwpOZKbDD7B/x1jktc6G
+	VelTPA==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4250r104aj-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 08 Oct 2024 08:16:33 +0000 (GMT)
+Received: from m0360072.ppops.net (m0360072.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 4988GW4P030718;
+	Tue, 8 Oct 2024 08:16:32 GMT
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4250r104a6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 08 Oct 2024 08:16:32 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 4985aeJf011598;
+	Tue, 8 Oct 2024 08:16:31 GMT
+Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 423g5xk6ec-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 08 Oct 2024 08:16:31 +0000
+Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
+	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4988GUNT36765958
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 8 Oct 2024 08:16:30 GMT
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 94E565805E;
+	Tue,  8 Oct 2024 08:16:30 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 782595805A;
+	Tue,  8 Oct 2024 08:16:26 +0000 (GMT)
+Received: from oc-fedora.boeblingen.de.ibm.com (unknown [9.152.212.119])
+	by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Tue,  8 Oct 2024 08:16:26 +0000 (GMT)
+Message-ID: <46d81b40dda20ada3b5847353a866172b419c811.camel@linux.ibm.com>
+Subject: Re: [PATCH v6 4/5] tty: serial: handle HAS_IOPORT dependencies
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Brian Cain <bcain@quicinc.com>, Marcel Holtmann <marcel@holtmann.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Patrik Jakobsson
+ <patrik.r.jakobsson@gmail.com>,
+        Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Dave Airlie <airlied@redhat.com>, Gerd
+ Hoffmann <kraxel@redhat.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Arnd
+ Bergmann <arnd@arndb.de>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org,
+        linux-hexagon@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, virtualization@lists.linux.dev,
+        spice-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+        linux-serial@vger.kernel.org, linux-arch@vger.kernel.org,
+        Arnd Bergmann <arnd@kernel.org>
+Date: Tue, 08 Oct 2024 10:16:25 +0200
+In-Reply-To: <alpine.DEB.2.21.2410072109130.30973@angie.orcam.me.uk>
+References: <20241007-b4-has_ioport-v6-0-03f7240da6e5@linux.ibm.com>
+	 <20241007-b4-has_ioport-v6-4-03f7240da6e5@linux.ibm.com>
+	 <alpine.DEB.2.21.2410072109130.30973@angie.orcam.me.uk>
+Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
+ keydata=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
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: lJvN_sQ-aLNDSuNh0LDS6vl7xXhIFy-h
+X-Proofpoint-ORIG-GUID: 7DRb96EpW2B3fOngjvAD841iHZjNSk_4
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241004094101.113349-1-sakari.ailus@linux.intel.com>
- <CAPDyKFp0N6UJhnHS164Tdf=xkWB0jzq65L9TdvYazeBQ-6WjeQ@mail.gmail.com>
- <20241007184924.GH14766@pendragon.ideasonboard.com> <CAPDyKFpQVnF7eQv3dup8k-3EijnMjuveCG9sZ=Rpey1Y6MBJEg@mail.gmail.com>
- <20241007222502.GG30699@pendragon.ideasonboard.com>
-In-Reply-To: <20241007222502.GG30699@pendragon.ideasonboard.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Tue, 8 Oct 2024 00:34:49 +0200
-Message-ID: <CAPDyKFrGNwna6Y2pqSRaBbRYHKRaD2ayqQHLtoqLPOu9Et7qTg@mail.gmail.com>
-Subject: Re: [PATCH 00/51] treewide: Switch to __pm_runtime_put_autosuspend()
-To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Sakari Ailus <sakari.ailus@linux.intel.com>, dri-devel@lists.freedesktop.org, 
-	linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
-	linux-clk@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	dmaengine@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	amd-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org, 
-	linux-stm32@st-md-mailman.stormreply.com, 
-	linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org, 
-	linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org, 
-	linux-input@vger.kernel.org, patches@opensource.cirrus.com, 
-	iommu@lists.linux.dev, imx@lists.linux.dev, 
-	linux-mediatek@lists.infradead.org, linux-media@vger.kernel.org, 
-	linux-mmc@vger.kernel.org, linux-mtd@lists.infradead.org, 
-	netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	linux-pci@vger.kernel.org, linux-phy@lists.infradead.org, 
-	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
-	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-staging@lists.linux.dev, linux-usb@vger.kernel.org, 
-	linux-serial@vger.kernel.org, greybus-dev@lists.linaro.org, 
-	asahi@lists.linux.dev, rafael@kernel.org, 
-	Andy Shevchenko <andy.shevchenko@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-10-08_05,2024-10-08_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 bulkscore=0 suspectscore=0 mlxlogscore=999 adultscore=0
+ clxscore=1015 impostorscore=0 mlxscore=0 phishscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410080050
 
-On Tue, 8 Oct 2024 at 00:25, Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
->
-> Hi Ulf,
->
-> On Tue, Oct 08, 2024 at 12:08:24AM +0200, Ulf Hansson wrote:
-> > On Mon, 7 Oct 2024 at 20:49, Laurent Pinchart wrote:
-> > > On Fri, Oct 04, 2024 at 04:38:36PM +0200, Ulf Hansson wrote:
-> > > > On Fri, 4 Oct 2024 at 11:41, Sakari Ailus wrote:
-> > > > >
-> > > > > Hello everyone,
-> > > > >
-> > > > > This set will switch the users of pm_runtime_put_autosuspend() to
-> > > > > __pm_runtime_put_autosuspend() while the former will soon be re-purposed
-> > > > > to include a call to pm_runtime_mark_last_busy(). The two are almost
-> > > > > always used together, apart from bugs which are likely common. Going
-> > > > > forward, most new users should be using pm_runtime_put_autosuspend().
-> > > > >
-> > > > > Once this conversion is done and pm_runtime_put_autosuspend() re-purposed,
-> > > > > I'll post another set to merge the calls to __pm_runtime_put_autosuspend()
-> > > > > and pm_runtime_mark_last_busy().
-> > > >
-> > > > That sounds like it could cause a lot of churns.
-> > > >
-> > > > Why not add a new helper function that does the
-> > > > pm_runtime_put_autosuspend() and the pm_runtime_mark_last_busy()
-> > > > things? Then we can start moving users over to this new interface,
-> > > > rather than having this intermediate step?
-> > >
-> > > I think the API would be nicer if we used the shortest and simplest
-> > > function names for the most common use cases. Following
-> > > pm_runtime_put_autosuspend() with pm_runtime_mark_last_busy() is that
-> > > most common use case. That's why I like Sakari's approach of repurposing
-> > > pm_runtime_put_autosuspend(), and introducing
-> > > __pm_runtime_put_autosuspend() for the odd cases where
-> > > pm_runtime_mark_last_busy() shouldn't be called.
-> >
-> > Okay, so the reason for this approach is because we couldn't find a
-> > short and descriptive name that could be used in favor of
-> > pm_runtime_put_autosuspend(). Let me throw some ideas at it and maybe
-> > you like it - or not. :-)
->
-> I like the idea at least :-)
->
-> > I don't know what options you guys discussed, but to me the entire
-> > "autosuspend"-suffix isn't really that necessary in my opinion. There
-> > are more ways than calling pm_runtime_put_autosuspend() that triggers
-> > us to use the RPM_AUTO flag for rpm_suspend(). For example, just
-> > calling pm_runtime_put() has the similar effect.
->
-> To be honest, I'm lost there. pm_runtime_put() calls
-> __pm_runtime_idle(RPM_GET_PUT | RPM_ASYNC), while
-> pm_runtime_put_autosuspend() calls __pm_runtime_suspend(RPM_GET_PUT |
-> RPM_ASYNC | RPM_AUTO).
+On Mon, 2024-10-07 at 22:09 +0100, Maciej W. Rozycki wrote:
+> On Mon, 7 Oct 2024, Niklas Schnelle wrote:
+>=20
+> > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
+50/8250_pci.c
+> > index 6709b6a5f3011db38acc58dc7223158fe4fcf72e..6a638feb44e443a1998980d=
+d037748f227ec1bc8 100644
+> > --- a/drivers/tty/serial/8250/8250_pci.c
+> > +++ b/drivers/tty/serial/8250/8250_pci.c
+> [...]
+> >  	iobase =3D pci_resource_start(dev, 0);
+> >  	outb(0x0, iobase + CH384_XINT_ENABLE_REG);
+> >  }
+> > =20
+> > -
+> >  static int
+> >  pci_sunix_setup(struct serial_private *priv,
+> >  		const struct pciserial_board *board,
+>=20
+>  Gratuitous change here.
+>=20
+> > diff --git a/drivers/tty/serial/8250/8250_pcilib.c b/drivers/tty/serial=
+/8250/8250_pcilib.c
+> > index ea906d721b2c3eac15c9e8d62cc6fa56c3ef6150..fc1882d7515b5814ff1240f=
+fdbe1009ab908ad6b 100644
+> > --- a/drivers/tty/serial/8250/8250_pcilib.c
+> > +++ b/drivers/tty/serial/8250/8250_pcilib.c
+> > @@ -28,6 +28,10 @@ int serial8250_pci_setup_port(struct pci_dev *dev, s=
+truct uart_8250_port *port,
+> >  		port->port.membase =3D pcim_iomap_table(dev)[bar] + offset;
+> >  		port->port.regshift =3D regshift;
+> >  	} else {
+> > +		if (!IS_ENABLED(CONFIG_HAS_IOPORT)) {
+> > +			pr_err("Serial port %lx requires I/O port support\n", port->port.io=
+base);
+> > +			return -EINVAL;
+> > +		}
+> >  		port->port.iotype =3D UPIO_PORT;
+> >  		port->port.iobase =3D pci_resource_start(dev, bar) + offset;
+> >  		port->port.mapbase =3D 0;
+>=20
+>  Can we please flatten this conditional and get rid of the negation, and=
+=20
+> also use `pci_err' for clear identification (`port->port.iobase' may not=
+=20
+> even have been set to anything meaningful if this triggers)?  I.e.:
+>=20
+> 		/* ... */
+> 	} else if (IS_ENABLED(CONFIG_HAS_IOPORT)) {
+> 		/* ... */
+> 	} else {
+> 		pci_err(dev, "serial port requires I/O port support\n");
+> 		return -EINVAL;
+> 	}
+>=20
+> I'd also say "port I/O" (by analogy to "memory-mapped I/O") rather than=20
+> "I/O port", but I can imagine it might be debatable.
 
-__pm_runtime_idle() ends up calling rpm_idle(), which may call
-rpm_suspend() - if it succeeds to idle the device. In that case, it
-tags on the RPM_AUTO flag in the call to rpm_suspend(). Quite similar
-to what is happening when calling pm_runtime_put_autosuspend().
+Agree this looks better, will change it.
 
->
-> >
-> > Moreover, it's similar for pm_runtime_mark_last_busy(), it's called
-> > during rpm_resume() too, for example. So why bother about having
-> > "mark_last_busy" in the new name too.
-> >
-> > That said, my suggestion is simply "pm_runtime_put_suspend".
->
-> Can we do even better, and make pm_runtime_put() to handle autosuspend
-> automatically when autosuspend is enabled ?
+>=20
+> > +static __always_inline bool is_upf_fourport(struct uart_port *port)
+> > +{
+> > +	if (!IS_ENABLED(CONFIG_HAS_IOPORT))
+> > +		return false;
+> > +
+> > +	return port->flags & UPF_FOURPORT;
+> > +}
+>=20
+>  Can we perhaps avoid adding this helper and then tweaking code throughou=
+t=20
+> by having:
+>=20
+> #ifdef CONFIG_SERIAL_8250_FOURPORT
+> #define UPF_FOURPORT		((__force upf_t) ASYNC_FOURPORT       /* 1  */ )
+> #else
+> #define UPF_FOURPORT		0
+> #endif
+>=20
+> in include/linux/serial_core.h instead?  I can see the flag is reused by=
+=20
+> drivers/tty/serial/sunsu.c, but from a glance over it seems rubbish to me=
+=20
+> and such a change won't hurt the driver anyway.
 
-As stated above, this is already the case.
+I'll look at this, do you think this is okay regarding matching the
+user-space definitions in include/uapi/linux/tty_flags.h?
 
->
-> > If you don't like it, I will certainly not object to your current
-> > approach, even if I think it leads to unnecessary churns.
-> >
-> > [...]
-> >
-> > Kind regards
-> > Uffe
->
-> --
-> Regards,
->
-> Laurent Pinchart
+>=20
+> > @@ -1174,7 +1201,7 @@ static void autoconfig(struct uart_8250_port *up)
+> >  		 */
+> >  		scratch =3D serial_in(up, UART_IER);
+> >  		serial_out(up, UART_IER, 0);
+> > -#ifdef __i386__
+> > +#if defined(__i386__) && defined(CONFIG_HAS_IOPORT)
+> >  		outb(0xff, 0x080);
+> >  #endif
+> >  		/*
+> > @@ -1183,7 +1210,7 @@ static void autoconfig(struct uart_8250_port *up)
+> >  		 */
+> >  		scratch2 =3D serial_in(up, UART_IER) & UART_IER_ALL_INTR;
+> >  		serial_out(up, UART_IER, UART_IER_ALL_INTR);
+> > -#ifdef __i386__
+> > +#if defined(__i386__) && defined(CONFIG_HAS_IOPORT)
+> >  		outb(0, 0x080);
+> >  #endif
+> >  		scratch3 =3D serial_in(up, UART_IER) & UART_IER_ALL_INTR;
+>=20
+>  Nah, i386 does have machine OUTB instructions, it has the port I/O=20
+> address space in the ISA, so these two changes make no sense to me. =20
+>=20
+>  Though this #ifdef should likely be converted to CONFIG_X86_32 via a=20
+> separate change.
 
-Kind regards
-Uffe
+This is needed for Usermode Linux (UM) which sets __i386__ but also
+doesn't have CONFIG_HAS_IOPORT. This was spotted by the kernel test bot
+here: https://lore.kernel.org/all/202410031712.BwfGjrQY-lkp@intel.com/
+
+>=20
+> > @@ -1306,12 +1333,12 @@ static void autoconfig_irq(struct uart_8250_por=
+t *up)
+> >  {
+> >  	struct uart_port *port =3D &up->port;
+> >  	unsigned char save_mcr, save_ier;
+> > +	unsigned long irqs;
+> >  	unsigned char save_ICP =3D 0;
+> >  	unsigned int ICP =3D 0;
+> > -	unsigned long irqs;
+> >  	int irq;
+>=20
+>  Gratuitous change here (also breaking the reverse Christmas tree order).
+>=20
+>  Thanks for making the clean-ups we discussed.
+>=20
+>   Maciej
+
+WIll drop this hunk
