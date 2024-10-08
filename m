@@ -1,204 +1,207 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C79E21D4166;
-	Tue,  8 Oct 2024 11:42:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30A0B1DE894;
+	Tue,  8 Oct 2024 12:40:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728387731; cv=none; b=Eugyp/oT1xBiGrZMN9X9Ttz03/k+3cunMp2Gdz/jqrX5936reU1QycphPWGvwuSFsz2fmVN2zMILQjiG/zqo4IiNZIAGPrifL2slRGc9+V9WcLVSgrXUSWf3wAG9mSvEuEIZRHUCnH8LtAJXYNOFmUmeHFUeKhgYLLWqhszBa4g=
+	t=1728391252; cv=none; b=JWUqh2lnT7dDeALdzGf5KlLchwyqLxROL0L3GMGf3dnFFBLj/QWZizP4x4fU7XnExYXJq6b1bhLUQtM9KmTGfXVQLfif93UPHUa0ZKkmR+UOf4kv/GTeyOijhVbNyCs07qlWC4Cy+yvGrROkEV/SW/asvcO2AdMOVY7s2EaQtLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728387731; c=relaxed/simple;
-	bh=Lp9AYVVZM+PFlgt76Gj2Nvii36acf4wAsaA0HWrpl9I=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=AFfYKwKQY18ZTaYuWjXxs14TvTdpqAzhC73GMD7PxfhqdZTHPFw929ZkRmBXxfsxnVly6fa1m6izhSVt8qzVKPuLfXuZrAZLrciK8u6nwXZX2F6LUFFSGpwoboI3gxpE8XjYpA1vXDVuxbuoiRN+NQRA1ikmqHS+E4UlUt5/zCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=kXJ24ZIK; arc=none smtp.client-ip=148.163.156.1
+	s=arc-20240116; t=1728391252; c=relaxed/simple;
+	bh=6iXTfylcHiouPDPsYMMA7jBlfpR78tVFP+VwvM5uYoY=;
+	h=From:Subject:Date:Message-Id:Content-Type:To:Cc:MIME-Version; b=lPZ7ZSbmT3NxXvV/RBqBut3n/nUBYIfUTeA/BZso3gn/HYJcB7tegk5rhNBk0Pp5FKPnELwm6GWsbZHV/EdVUCmkQ73Q4WXAZ5fZNOyy6OQBk/IWpu9pAwZ+PfENJYz/wgSId1ENoyVgVEoWM1uFfmYOMAesJGbZA4Im/gGImbM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Mj1wSlLT; arc=none smtp.client-ip=148.163.158.5
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="kXJ24ZIK"
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 498Anine003729;
-	Tue, 8 Oct 2024 11:41:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=
-	message-id:subject:from:to:cc:date:in-reply-to:references
-	:content-type:content-transfer-encoding:mime-version; s=pp1; bh=
-	2OdK9xOOrXHKiIckvX1X8hc/wi2jrlp68qipKHgyVS4=; b=kXJ24ZIKCZm0HYt7
-	sJPu46G3bXa/Zq5/EptztOlmXuobZreQmGGh2YyILWU0nU7NGYOLSiWnQYyZm3+Z
-	E5SwFYhSWNSdun4IF2Gyuq08H2/Xo8si6yEbgKR9lr1jhnBuwXZzSSJlndGYXYMm
-	PYg5ktXQHhDGg5yay+uyvIVaiQ+5aDKeWlpBOX4MBo7Itl8e5VdXRdWGibnKxtnJ
-	l4go0/njyZxcyLmJi8rsCzUqjCQuznaF2MkG+EVgNPOqQBJuOjN0LZfDyFge+pbU
-	lsD4OHv0Px5qM7j1gg0DZe8qDEFZch9/v3lsUQ2VoLVac2VsY5Q9sLtau4uN+OLY
-	8zy7zA==
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Mj1wSlLT"
+Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 498BsMk5006181;
+	Tue, 8 Oct 2024 12:40:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from
+	:subject:date:message-id:content-type:to:cc
+	:content-transfer-encoding:mime-version; s=pp1; bh=pOl4ktgChjI1x
+	ihRyfZf3GuH04LsHn6DYGpUG7dt7hA=; b=Mj1wSlLTzLFGjeC9FjwerlOHFa+zM
+	DKEJgymPSia+4AoUadZhZAMwDj8BTkhZsNk+keJducR3JuupSbWIDCgAmGyWMfi7
+	fKdoMxW1XKYopwBCxx0/Ni9O7Q6oKAZEjnfoh8hiTz1nK8WBXWkRTPviLZx4My/j
+	7W9MMehDmYxifC9Nk8p8tmuHx7daSEsyNq0dsHQ0H0r1U5s50Xlbw3KmTTUHJ9bD
+	6PSZebNxsp8OE/uCAjhh3VqQwA6kDKUIc64WO5rIsW2KS3fTIwFM/hPVwnfq8ZBb
+	0op3/3nx6x6iPk+dlDtCMb0V0QnGiv0JiG56KCM4z1DmtYQZK6K8UKb7g==
 Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4253axr7vy-1
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42549908jn-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Oct 2024 11:41:51 +0000 (GMT)
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 498BfoTr014847;
-	Tue, 8 Oct 2024 11:41:50 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 4253axr7vu-1
+	Tue, 08 Oct 2024 12:40:31 +0000 (GMT)
+Received: from m0356516.ppops.net (m0356516.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 498Cd65c030660;
+	Tue, 8 Oct 2024 12:40:31 GMT
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42549908jc-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Oct 2024 11:41:50 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 498AVNBh022867;
-	Tue, 8 Oct 2024 11:41:49 GMT
+	Tue, 08 Oct 2024 12:40:31 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 498CR5Ef011521;
+	Tue, 8 Oct 2024 12:40:30 GMT
 Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 423jg0umsx-1
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 423g5xmcdp-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 08 Oct 2024 11:41:49 +0000
-Received: from smtpav06.dal12v.mail.ibm.com (smtpav06.dal12v.mail.ibm.com [10.241.53.105])
-	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 498BfmSq23528050
+	Tue, 08 Oct 2024 12:40:30 +0000
+Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
+	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 498CeTgG23659234
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 8 Oct 2024 11:41:48 GMT
-Received: from smtpav06.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id EE18158059;
-	Tue,  8 Oct 2024 11:41:47 +0000 (GMT)
-Received: from smtpav06.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D895C58043;
-	Tue,  8 Oct 2024 11:41:43 +0000 (GMT)
-Received: from oc-fedora.boeblingen.de.ibm.com (unknown [9.152.212.119])
-	by smtpav06.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Tue,  8 Oct 2024 11:41:43 +0000 (GMT)
-Message-ID: <e45757daee03bdc68e00753513342ba21b375d8d.camel@linux.ibm.com>
-Subject: Re: [PATCH v7 4/5] tty: serial: handle HAS_IOPORT dependencies
+	Tue, 8 Oct 2024 12:40:29 GMT
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id E9B4A58062;
+	Tue,  8 Oct 2024 12:40:28 +0000 (GMT)
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id ED9585805A;
+	Tue,  8 Oct 2024 12:40:23 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Tue,  8 Oct 2024 12:40:23 +0000 (GMT)
 From: Niklas Schnelle <schnelle@linux.ibm.com>
+Subject: [PATCH v8 0/5] treewide: Remove I/O port accessors for
+ HAS_IOPORT=n
+Date: Tue, 08 Oct 2024 14:39:41 +0200
+Message-Id: <20241008-b4-has_ioport-v8-0-793e68aeadda@linux.ibm.com>
+Content-Type: text/plain; charset="utf-8"
+X-B4-Tracking: v=1; b=H4sIAA0oBWcC/13M0QqCMBTG8VeRXTc5rrVZV71HRMx5zAPpZLNhi
+ O/eFILw8v/B95tZQE8Y2CWbmcdIgVyfojxkzLamfyKnOjUTIGQBIHkleWvCg9zg/MgVGKssFjV
+ WiqXP4LGhafNu99QthdH5z8ZHta4/Se+kqDhwODZaSKiNwtP1Rf17yqnqcus6tmpR/wvlXtBJK
+ JWQFs5G1lrvhWVZvn32tpDwAAAA
+X-Change-ID: 20241004-b4-has_ioport-60ac6ce1deb6
 To: Brian Cain <bcain@quicinc.com>, Marcel Holtmann <marcel@holtmann.org>,
         Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Patrik Jakobsson
- <patrik.r.jakobsson@gmail.com>,
-        Maarten Lankhorst
- <maarten.lankhorst@linux.intel.com>,
+        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
         Thomas Zimmermann <tzimmermann@suse.de>,
         David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Dave Airlie <airlied@redhat.com>, Gerd
- Hoffmann <kraxel@redhat.com>,
+        Dave Airlie <airlied@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>,
         Lucas De Marchi <lucas.demarchi@intel.com>,
-        Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+        =?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Arnd
- Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
         "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Heiko
- Carstens <hca@linux.ibm.com>
+        Heiko Carstens <hca@linux.ibm.com>
 Cc: linux-kernel@vger.kernel.org, linux-hexagon@vger.kernel.org,
         linux-bluetooth@vger.kernel.org, dri-devel@lists.freedesktop.org,
         virtualization@lists.linux.dev, spice-devel@lists.freedesktop.org,
         intel-xe@lists.freedesktop.org, linux-serial@vger.kernel.org,
-        linux-arch@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>
-Date: Tue, 08 Oct 2024 13:41:43 +0200
-In-Reply-To: <20241008-b4-has_ioport-v7-4-8624c09a4d77@linux.ibm.com>
-References: <20241008-b4-has_ioport-v7-0-8624c09a4d77@linux.ibm.com>
-	 <20241008-b4-has_ioport-v7-4-8624c09a4d77@linux.ibm.com>
-Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
- keydata=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
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.4 (3.52.4-1.fc40) 
+        linux-arch@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3575;
+ i=schnelle@linux.ibm.com; h=from:subject:message-id;
+ bh=6iXTfylcHiouPDPsYMMA7jBlfpR78tVFP+VwvM5uYoY=;
+ b=owGbwMvMwCX2Wz534YHOJ2GMp9WSGNJZNQR1GfR3Oexh8l07SfSNMveB6KMvjBLeLDuY7Naol
+ y/w/lleRykLgxgXg6yYIsuiLme/dQVTTPcE9XfAzGFlAhnCwMUpABOxFWZkeB7v8H3a5zoJq7ne
+ bSt2R9i9beTdwt5+/p6dxLpwVQvfAIZ/tm+2tV282m/4Tu954GuOHw9fnD0+zYWH+fSkN9kV/Wt
+ msQMA
+X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
+ fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: jWlKYB-UbWEldWzuXtPPoAOoIOffl0Yg
+X-Proofpoint-ORIG-GUID: -wc3D3PcYgnXknBTnJB55CoCv5dzwH-2
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 8zcBE5puYyjXZffsQTbCTNDIgNY-U6Oc
-X-Proofpoint-GUID: 5WdjQqqVyboLtik2AWhLZE5Z_zhPUTD_
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
  definitions=2024-10-08_10,2024-10-08_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
- phishscore=0 adultscore=0 bulkscore=0 mlxscore=0 priorityscore=1501
- impostorscore=0 spamscore=0 mlxlogscore=999 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410080072
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=999
+ priorityscore=1501 impostorscore=0 spamscore=0 malwarescore=0
+ lowpriorityscore=0 suspectscore=0 phishscore=0 adultscore=0 clxscore=1015
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2409260000 definitions=main-2410080078
 
-On Tue, 2024-10-08 at 13:32 +0200, Niklas Schnelle wrote:
-> In a future patch HAS_IOPORT=3Dn will disable inb()/outb() and friends at
-> compile time. We thus need to add HAS_IOPORT as dependency for those
-> drivers using them unconditionally. Some 8250 serial drivers support
-> MMIO only use, so fence only the parts requiring I/O ports and print an
-> error message if a device can't be supported with the current
-> configuration.
->=20
-> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Arnd Bergmann <arnd@kernel.org>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->=20
----8<---
-> diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kc=
-onfig
-> index 47ff50763c048c89b19b7c9f13f462bc5368ab43..afa75020d132de2210545fbe5=
-4e0d03df4b72a41 100644
-> --- a/drivers/tty/serial/8250/Kconfig
-> +++ b/drivers/tty/serial/8250/Kconfig
-> @@ -6,7 +6,6 @@
-> =20
->  config SERIAL_8250
->  	tristate "8250/16550 and compatible serial support"
-> -	depends on !S390
->  	select SERIAL_CORE
->  	select SERIAL_MCTRL_GPIO if GPIOLIB
->  	help
+Hi All,
 
-Sorry ;-( I didn't mean to commit the above hunk. I always need to
-change this for my test compiles and it slipped in. With this series it
-all builds but we previously decided we don't want this as part of this
-patch. I'll send a v8.
+This is a follow up in my long running effort of making inb()/outb() and
+similar I/O port accessors compile-time optional. After initially
+sending this as a treewide series with the latest revision at[0]
+we switched to per subsystem series. Now though as we're left with only
+5 patches left I'm going back to a single series with Arnd planning
+to take this via the the asm-generic tree.
+
+This series may also be viewed for your convenience on my git.kernel.org
+tree[1] under the b4/has_ioport branch. As for compile-time vs runtime
+see Linus' reply to my first attempt[2].
+
+Thanks,
+Niklas
+
+[0] https://lore.kernel.org/all/20230522105049.1467313-1-schnelle@linux.ibm.com/
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/niks/linux.git
+[2] https://lore.kernel.org/lkml/CAHk-=wg80je=K7madF4e7WrRNp37e3qh6y10Svhdc7O8SZ_-8g@mail.gmail.com/
+
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+Changes in v8:
+- Don't remove "depends on !S390" for SERIAL_8250
+- Link to v7: https://lore.kernel.org/r/20241008-b4-has_ioport-v7-0-8624c09a4d77@linux.ibm.com
+
+Changes in v7:
+- Renamed serial_8250_need_ioport() helper to
+  serial_8250_warn_need_ioport() and move it to 8250_pcilib.c so it can
+  be used in serial8250_pci_setup_port()
+- Flattened if in serial8250_pci_setup_port() (Maciej)
+- Removed gratuituous changes (Maciej)
+- Removed is_upf_fourport() helper in favor of zeroing UPF_FOURPORT
+  if CONFIG_HAS_IOPORT is not set (Maciej)
+- Link to v6: https://lore.kernel.org/r/20241007-b4-has_ioport-v6-0-03f7240da6e5@linux.ibm.com
+
+Changes since v5 / per subsystem patches:
+
+drm:
+- Add HAS_IOPORT dependency for GMA500
+tty: serial:
+- Make 8250 PCI driver emit an error message when trying to use devices
+  which require I/O ports without CONFIG_HAS_IOPORT (Maciej)
+- Use early returns + dead code elimination to skip inb()/outb() uses
+  in quirks (Arnd)
+- In 8250 PCI driver also handle fintek and moxi quirks
+- In 8250 ports code handle um's defined(__i385__) &&
+  defined(CONFIG_HAS_IOPORT) case
+- Use IS_ENABLED() early return also in is_upf_fourport()
+  __always_inline to force constant folding
+
+---
+Niklas Schnelle (5):
+      hexagon: Don't select GENERIC_IOMAP without HAS_IOPORT support
+      Bluetooth: add HAS_IOPORT dependencies
+      drm: handle HAS_IOPORT dependencies
+      tty: serial: handle HAS_IOPORT dependencies
+      asm-generic/io.h: Remove I/O port accessors for HAS_IOPORT=n
+
+ arch/hexagon/Kconfig                  |  1 -
+ drivers/bluetooth/Kconfig             |  6 ++--
+ drivers/gpu/drm/gma500/Kconfig        |  2 +-
+ drivers/gpu/drm/qxl/Kconfig           |  1 +
+ drivers/gpu/drm/tiny/bochs.c          | 17 ++++++++++
+ drivers/gpu/drm/tiny/cirrus.c         |  2 ++
+ drivers/gpu/drm/xe/Kconfig            |  2 +-
+ drivers/tty/Kconfig                   |  4 +--
+ drivers/tty/serial/8250/8250_early.c  |  4 +++
+ drivers/tty/serial/8250/8250_pci.c    | 40 +++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_pcilib.c | 12 ++++++-
+ drivers/tty/serial/8250/8250_pcilib.h |  2 ++
+ drivers/tty/serial/8250/8250_port.c   | 27 +++++++++++++---
+ drivers/tty/serial/8250/Kconfig       |  4 +--
+ drivers/tty/serial/Kconfig            |  2 +-
+ include/asm-generic/io.h              | 60 +++++++++++++++++++++++++++++++++++
+ include/linux/serial_core.h           |  4 +++
+ 17 files changed, 174 insertions(+), 16 deletions(-)
+---
+base-commit: 8cf0b93919e13d1e8d4466eb4080a4c4d9d66d7b
+change-id: 20241004-b4-has_ioport-60ac6ce1deb6
+
+Best regards,
+-- 
+Niklas Schnelle
+
