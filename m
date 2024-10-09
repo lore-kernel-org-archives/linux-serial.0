@@ -1,54 +1,74 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7414F1A4F0C;
-	Wed,  9 Oct 2024 14:51:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E22F1E282B;
+	Wed,  9 Oct 2024 23:39:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728485490; cv=none; b=roTM2bg2GyfeySKZmaDjZbFBKKjjj9BfBGHvYmpUg1YzgLXN3OAGh1ZGLfB/qAIqjY5KKs+hwGgqbVDbARIkmzo5G3v1MjWimbEFuXTkLg0/n4bgd1v5FOyyT8chqFHkQtPG453yx7htGzQqy8z82d8NUaJsDlX1ww+t8IhJliQ=
+	t=1728517159; cv=none; b=qPCvQuzUPdpLa/WO3CzWat7QY94R91jA/e+41kbFzHzH4w6fgUEmh9PaQAuCIUi65mYRFBMdWPFI3uZGUf8FGfaGz862zv5fR8bsy0zjCfZBH8bLmcTcsXGR93w2/X1dXqpQL67vSt16e25mPs+dVLkOBk1yCxZQ+TU4Gzm3sQo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728485490; c=relaxed/simple;
-	bh=5X379KfhJLHXk+Rf6uIayisvi5RGJbFHeIw5cV9JW6A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=VWIup4NuIdYklimMHXX+iIZhsetGtysUYssoD9Dc+1ra9OG4oENk8vgEGWJeEwR3fANxOgsZvkwv0ay6RE4/dcK0t57rEI6Sb0+gvLcxFk+owPsW17fFOIxkfstJcjMwUq0/UBd5AUAnv3splxhRWgHqFXZ1u+ynps+HKJpuxl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nEuKbpyT; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1728517159; c=relaxed/simple;
+	bh=rSnkf6AzN1stli715Dvd/eCIAIPoikgjlJs78kTVG34=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OEPOf0S3D41+rIiRKtKbxi8b5tG2SItl/GSEiC0IkARwZIPs8itSLH4mateCCn718hwQcYt47vEDhiP+zsQ6OYuBlnDjsaJg8GchTaxrCy85jhd+6nF2193p5nv1m9nKhsibgwHPcDMKQHD7V3Sa7SJM18NEktwPOeR04lKnu0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XsIGYjoW; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nEuKbpyT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC69C4CECD;
-	Wed,  9 Oct 2024 14:51:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728485490;
-	bh=5X379KfhJLHXk+Rf6uIayisvi5RGJbFHeIw5cV9JW6A=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=nEuKbpyT5LQP7PES7W35eK5pZYm8yUjsKC0ph6dxnJuNEUG9BezUGwuzBUsVXoWVP
-	 K41HrXiFXOdW7ZIYQGTYXGLpZ1RBWCwEPF6XnXasuyceF6O6Gqasv1B1tx1gjies1z
-	 T3TNpsSjF/eaprvlBrIzjLiDSZCeEbPQPsDpPB/BOIMXVuR7r4JUOpgBSWKqXbFZD0
-	 KZd9kDKC2XraOZYV8XZYFcZ7eq46LnwILZ1eMgo5PLR4zN0hUw7wOBz3QU1i9Sv/dS
-	 vaAbtlbuMwUSYQDThl8ZolIJHa1CAyQqKD4pQOK/P6aOYpFe7B+FYUnwninwf8zNG0
-	 +xN1+NG26Fm2g==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan+linaro@kernel.org>)
-	id 1syY2G-000000004OX-2ypK;
-	Wed, 09 Oct 2024 16:51:32 +0200
-From: Johan Hovold <johan+linaro@kernel.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>,
-	linux-arm-msm@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XsIGYjoW"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-20b7259be6fso3371405ad.0;
+        Wed, 09 Oct 2024 16:39:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1728517158; x=1729121958; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=7YDVGuCGzfm2yKn8XXH6Zv5BAq55NN1l2El92j++bwE=;
+        b=XsIGYjoW3H10Pd0jCcMChC9duj3Abps5REHECVfwn8k4QH/Ik4x5yN0YqGnxT+sWFz
+         PCPF98TopM4cagFFbSOa+zJ54sxnaieCSwUNJkdLkeUSka4DFmZ7mjaWOdow755Mji42
+         XSvyy0tVeX2SYFcKBehOCQokYhosdBglBj0OA4BEoW609OCd3iUsSIOdQaLZjDc91BOG
+         Y99IzY2mtotHjs07jrQxMSc5ASm/A3pgVJPXZplHJy8Tm5Evn9q3xXJ6DAzsZTEak5UB
+         n3o1kaVhEJ8ZIm4qPGnuMWJUlZv9Q/8+taLB5kuPC9TPTXOtpyfu1JV6NH1689FlWBBP
+         47KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728517158; x=1729121958;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7YDVGuCGzfm2yKn8XXH6Zv5BAq55NN1l2El92j++bwE=;
+        b=S3Mi+E5TFYpQVetw9kSW5oZ37RxCeMBkt+slvFVdYHo3DM1TJp4iZBUXVtrUGB7NGm
+         HK7AjJjsKNxv3M7F0+q71nxoSpNMScOCGM7uGRIW69KIMT89CmJq72vHqEDeOFBzBgbY
+         cGWruYc5pnIm7P/e7NKdFeAmc3M0EeO3h8Kee/Xs01BS68fmMDVRffYpujeKGamoVuUb
+         bpIBp+tTvWoB5vQtqXISHU0b0+6KVVQ0CoJKKf1w6GEI+ldCtNvlF1+rhgGtQvYfrcuN
+         n369Or3X20wC3UE5tCWFwfWktkjUmRU9rNqv/PwGj/HYmQPQEF5OOCXDuQNltvbeVFea
+         NlEQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU703UeAhbi5gx9tXaWopBKe0yDu4tMIkK3Was6yNIf2aYATxY65kVS2skOlT2Cw/Mv4fHpibMoIzS4@vger.kernel.org, AJvYcCUhMiJKeLzhc4+FCWRjfZVIs8eVbWJ+hKmEWwl8zjOVEZjfz9iGpTqvCXJrol60CsQFGCs5TyVU7FBW+hTK@vger.kernel.org, AJvYcCWCnjjKWP5HBnLi/CUh9Pm3/yW9H1I6Xi6QVVmdOyIvQKAvIWdTzDGox4PRSCVAgih3n0EbEHseWgAHWoGk@vger.kernel.org
+X-Gm-Message-State: AOJu0YxsPYeymuvI34fvyB10bOwbAonS7iHFylwJ9k3aX0GK13H9TiFM
+	BAK1BX475ymkmpn8QLBtSAPpKlhPa0LI/iwsN8sy9CSDmhDeNXZI
+X-Google-Smtp-Source: AGHT+IFwVVyJJA9t3xXddWLFUsO9r8hffb9ogg4a0pigMHQ92EYSNpcj53Uo1V1aEcW82g4GITTM9g==
+X-Received: by 2002:a17:902:e845:b0:20b:8c13:533f with SMTP id d9443c01a7336-20c637341f2mr54030135ad.24.1728517157805;
+        Wed, 09 Oct 2024 16:39:17 -0700 (PDT)
+Received: from localhost ([2001:da8:7001:11::cb])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20c138ca835sm75542885ad.68.2024.10.09.16.39.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Oct 2024 16:39:17 -0700 (PDT)
+From: Inochi Amaoto <inochiama@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Chen Wang <unicorn_wang@outlook.com>,
+	Inochi Amaoto <inochiama@outlook.com>
+Cc: Yixun Lan <dlan@gentoo.org>,
+	Inochi Amaoto <inochiama@gmail.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	Johan Hovold <johan+linaro@kernel.org>,
-	stable@vger.kernel.org,
-	Aniket Randive <quic_arandive@quicinc.com>
-Subject: [PATCH v3 2/9] serial: qcom-geni: revert broken hibernation support
-Date: Wed,  9 Oct 2024 16:51:03 +0200
-Message-ID: <20241009145110.16847-3-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20241009145110.16847-1-johan+linaro@kernel.org>
-References: <20241009145110.16847-1-johan+linaro@kernel.org>
+	devicetree@vger.kernel.org
+Subject: [PATCH 0/2] serial: 8250_dw: Introduce SG2044 uart support.
+Date: Thu, 10 Oct 2024 07:39:04 +0800
+Message-ID: <20241009233908.153188-1-inochiama@gmail.com>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -57,97 +77,19 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This reverts commit 35781d8356a2eecaa6074ceeb80ee22e252fcdae.
+SG2044 relys on an internal divisor when calculating bitrate, which
+means a wrong clock for the most common bitrates. So a quirk is needed
+for this uart device to skip the set rate call and only relys on the
+internal UART divisor.
 
-Hibernation is not supported on Qualcomm platforms with mainline
-kernels yet a broken vendor implementation for the GENI serial driver
-made it upstream.
+Inochi Amaoto (2):
+  dt-bindings: serial: snps-dw-apb-uart: Add Sophgo SG2044 uarts
+  serial: 8250_dw: Add Sophgo SG2044 quirk
 
-This is effectively dead code that cannot be tested and should just be
-removed, but if these paths were ever hit for an open non-console port
-they would crash the machine as the driver would fail to enable clocks
-during restore() (i.e. all ports would have to be closed by drivers and
-user space before hibernating the system to avoid this as a comment in
-the code hinted at).
+ .../devicetree/bindings/serial/snps-dw-apb-uart.yaml        | 4 ++++
+ drivers/tty/serial/8250/8250_dw.c                           | 6 ++++++
+ 2 files changed, 10 insertions(+)
 
-The broken implementation also added a random call to enable the
-receiver in the port setup code where it does not belong and which
-enables the receiver prematurely for console ports.
-
-Fixes: 35781d8356a2 ("tty: serial: qcom-geni-serial: Add support for Hibernation feature")
-Cc: stable@vger.kernel.org	# 6.2
-Cc: Aniket Randive <quic_arandive@quicinc.com>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/tty/serial/qcom_geni_serial.c | 41 ++-------------------------
- 1 file changed, 2 insertions(+), 39 deletions(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index c237c9d107cd..2e4a5361f137 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1170,7 +1170,6 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
- 			       false, true, true);
- 	geni_se_init(&port->se, UART_RX_WM, port->rx_fifo_depth - 2);
- 	geni_se_select_mode(&port->se, port->dev_data->mode);
--	qcom_geni_serial_start_rx(uport);
- 	port->setup = true;
- 
- 	return 0;
-@@ -1799,38 +1798,6 @@ static int qcom_geni_serial_sys_resume(struct device *dev)
- 	return ret;
- }
- 
--static int qcom_geni_serial_sys_hib_resume(struct device *dev)
--{
--	int ret = 0;
--	struct uart_port *uport;
--	struct qcom_geni_private_data *private_data;
--	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
--
--	uport = &port->uport;
--	private_data = uport->private_data;
--
--	if (uart_console(uport)) {
--		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
--		geni_icc_set_bw(&port->se);
--		ret = uart_resume_port(private_data->drv, uport);
--		/*
--		 * For hibernation usecase clients for
--		 * console UART won't call port setup during restore,
--		 * hence call port setup for console uart.
--		 */
--		qcom_geni_serial_port_setup(uport);
--	} else {
--		/*
--		 * Peripheral register settings are lost during hibernation.
--		 * Update setup flag such that port setup happens again
--		 * during next session. Clients of HS-UART will close and
--		 * open the port during hibernation.
--		 */
--		port->setup = false;
--	}
--	return ret;
--}
--
- static const struct qcom_geni_device_data qcom_geni_console_data = {
- 	.console = true,
- 	.mode = GENI_SE_FIFO,
-@@ -1842,12 +1809,8 @@ static const struct qcom_geni_device_data qcom_geni_uart_data = {
- };
- 
- static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
--	.suspend = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
--	.resume = pm_sleep_ptr(qcom_geni_serial_sys_resume),
--	.freeze = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
--	.poweroff = pm_sleep_ptr(qcom_geni_serial_sys_suspend),
--	.restore = pm_sleep_ptr(qcom_geni_serial_sys_hib_resume),
--	.thaw = pm_sleep_ptr(qcom_geni_serial_sys_hib_resume),
-+	SYSTEM_SLEEP_PM_OPS(qcom_geni_serial_sys_suspend,
-+					qcom_geni_serial_sys_resume)
- };
- 
- static const struct of_device_id qcom_geni_serial_match_table[] = {
--- 
-2.45.2
+--
+2.47.0
 
