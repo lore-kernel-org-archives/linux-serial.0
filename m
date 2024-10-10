@@ -1,83 +1,89 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78F2F3A268;
-	Thu, 10 Oct 2024 06:12:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 569121C1AC9;
+	Thu, 10 Oct 2024 07:12:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728540766; cv=none; b=lLoe9OYfKIE5Fnss3OIBIaFY1hzzVtFO4b6f3jBiYenPbSiBEiSd8U1WnLHKnb89RftWX5ds3h3PnVz/jTuF/RBw4XHl0MAVuoUBlBBL0bM7Ln7eJGNi3qNLtCshURM6l4QqYTb2KmThAOMpGFp5/Wwmw0P6XlXhUYhUZNHSWWo=
+	t=1728544353; cv=none; b=FFLpwC/jl4s9EMPmY9m8rnyTJJYHNkoEjwO/fVYaBDm2qheD877eGzVYe4A0EJa6k4kLgWRneZzg9s92lNcxhFMd3MoQNzK+8sLGwAihuUdRsvm3GdDXij9uKSCNR+nQXJvhFMa0ZmA3P1i6M9RMj0r3BnOgErDr6QniQu8fDOI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728540766; c=relaxed/simple;
-	bh=RSlw7l0cabl6wOx55r750YjZqE2kSodlcvE52712u28=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AHbzmol7bXaGfajGBhQqP7UNWROJKcAQoGWFEoeHfcRZ5c/o8zYHBlIK3RR4OnB13SE2S9MHykYpJTTEP4ONqujOFS8Vtl1bEpUo1vW9Q4gUmTF1ro9G+RZOWFrkhr9v5FtWGnIR3dalX72AnbxomU9UQvZwMpsqh7I8+FL3UDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KvHEwupo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1728544353; c=relaxed/simple;
+	bh=Cn4B1F4k0S5ou9J1Z37x5AXecRflwso2j6cZdMR+zes=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BM7L60Fk5NFGL4fsVN5Gbt3zb0tph3S/yoCqetbFDWDwdJuPOmQwJlA2BOqHiw7oh0+wdOrnvSdXhGjGhYIuWWIEsFyokLOAFOV7ZMoX37fXAG6+imNYEA1fPMne7pSzWVAYX2mkPFDk8s958w+UrNk8p1xqyY6egRloTW9mrBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=btSHV4JP; arc=none smtp.client-ip=217.70.183.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KvHEwupo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2074DC4CEC6;
-	Thu, 10 Oct 2024 06:12:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1728540766;
-	bh=RSlw7l0cabl6wOx55r750YjZqE2kSodlcvE52712u28=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KvHEwupoOFlkFA68blGTmEGN9C3ieIL7cXJpRAw/wiNTPuE9CGVqfJkoAJYuiH+AV
-	 dWqXFnLrvM1do3roPxoAJKdAbFYXoTSiK/bTVNFkGfkF5CQd5QibZfYHZB7LbUhpEq
-	 YxsZ8a4tOk9KnP7lYnaf6Kf95QWgxkp6+FjvZ3ILGIeAm3mND/3NFwFMlj+tfTlLrh
-	 eKeUjc0bs6WV4icQyYco+cM7XrBASA3gEv92Nv8au4q+DN4L2+nXooH7DrNJdWVkzh
-	 nU7eTKZmh+E4rnqD2Ai1hmvZxez6RbAfqlLgU4rGEM6ZrfmdxbQ8tArq4k+FnnfS3k
-	 rEaI4/y/Mx9sg==
-Date: Thu, 10 Oct 2024 08:12:41 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Inochi Amaoto <inochiama@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Chen Wang <unicorn_wang@outlook.com>, Inochi Amaoto <inochiama@outlook.com>, 
-	Yixun Lan <dlan@gentoo.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: serial: snps-dw-apb-uart: Add Sophgo
- SG2044 uarts
-Message-ID: <oyvqsywyznanpx5oflnemcsrk7r7nnhvxl6ly7b55oan2boi5d@kobrtldqbj6m>
-References: <20241009233908.153188-1-inochiama@gmail.com>
- <20241009233908.153188-2-inochiama@gmail.com>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="btSHV4JP"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id AB8161C0006;
+	Thu, 10 Oct 2024 07:12:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1728544349;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=eZhJCmqORkBi7oe0upO8alJrZ9x/l0/NdakZ2rFJ6Nk=;
+	b=btSHV4JPklv8RMfZ2wfFB3tKpMR4PyGYB3cKus0VrB2MvhLr9/AaCB/9112DxD9gBMUJB4
+	uiMZM5BFgcKec9iA1PEaMrCyEbd5w61aylY8Yn5BsFocOWTBmUPfnTMQa3MsJtC2h3FnRb
+	FnxDfG3lM3q7m3nIlpA/DK8jMI9ZD+ZJyMwg4Ct9BWpUxmDAy4nXAKCuFf95fveHwnQfvi
+	WBM+KcUH/8ATrOvOEBysNb6X2efRUO24kviJKPRIg/35nVWNjLlMKL6PhZ82Nd+fwP38Fb
+	QErayO7QEZpQfRU/yQ+lOd4bG7VRNBGFvf/r70PX9FAR/arBwS8+bgB8EYM/cg==
+Message-ID: <fc2c103c-f113-4eca-91fb-3b9904d31d67@bootlin.com>
+Date: Thu, 10 Oct 2024 09:12:28 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20241009233908.153188-2-inochiama@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] pmdomain: ti-sci: set the GENPD_FLAG_ACTIVE_WAKEUP
+ flag for all PM domains
+To: Ulf Hansson <ulf.hansson@linaro.org>
+Cc: Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+ Santosh Shilimkar <ssantosh@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, u-kumar1@ti.com, tony@atomide.com,
+ khilman@kernel.org, gregory.clement@bootlin.com,
+ thomas.petazzoni@bootlin.com, theo.lebrun@bootlin.com,
+ richard.genoud@bootlin.com
+References: <20241008-8250-omap-no-console-suspend-v1-0-e7f0365c02f0@bootlin.com>
+ <20241008-8250-omap-no-console-suspend-v1-1-e7f0365c02f0@bootlin.com>
+ <CAPDyKFroumouYavhaHp=aSh=0WsDO=_4kbVgS-+Y7CADyO-Kmg@mail.gmail.com>
+Content-Language: en-US
+From: Thomas Richard <thomas.richard@bootlin.com>
+In-Reply-To: <CAPDyKFroumouYavhaHp=aSh=0WsDO=_4kbVgS-+Y7CADyO-Kmg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-GND-Sasl: thomas.richard@bootlin.com
 
-On Thu, Oct 10, 2024 at 07:39:05AM +0800, Inochi Amaoto wrote:
-> Add compatibles string for the Sophgo SG2044 uarts.
+On 10/9/24 15:17, Ulf Hansson wrote:
+> On Tue, 8 Oct 2024 at 11:34, Thomas Richard <thomas.richard@bootlin.com> wrote:
+>>
+>> With this flag, if a device is marked on the wakeup path, the corresponding
+>> PM domain is kept powered on.
+> 
+> Perhaps extend this with some more information that it fixes a problem
+> for the uart console too?
 
-This we see from the diff, say something about hardware.
+Yes, I'll send a v2 (only the patch 1/2) with a more verbose commit message.
 
 > 
-> Signed-off-by: Inochi Amaoto <inochiama@gmail.com>
-> ---
->  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml          | 4 ++++
->  1 file changed, 4 insertions(+)
+>>
+>> Suggested-by: Théo Lebrun <theo.lebrun@bootlin.com>
+>> Signed-off-by: Thomas Richard <thomas.richard@bootlin.com>
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> index 4cdb0dcaccf3..6963f89a1848 100644
-> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> @@ -58,6 +58,10 @@ properties:
->                - brcm,bcm11351-dw-apb-uart
->                - brcm,bcm21664-dw-apb-uart
->            - const: snps,dw-apb-uart
-> +      - items:
-> +          - enum:
-> +              - sophgo,sg2044-uart
+> Should we add a stable/fixes tag?
 
-I would just add it to starfive enum, but this is fine as well.
+I guess no.
+The first implementation, which was reverted, didn't have a stable/fixes
+tag.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Regards,
 
-Best regards,
-Krzysztof
+Thomas
 
