@@ -1,121 +1,146 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1573019E7D3;
-	Thu, 10 Oct 2024 15:00:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667E01CCEF1
+	for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2024 16:14:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728572451; cv=none; b=d8gxx/rPvHwPn12oXTNsaeYSuYfpug8vzR42Zu1IhZjqY5xGHy/6KM81CF24BjE8MK6nMr5Igo+BIUfOwm1Q9QH2IetuESesBinUgw1sZa68WqDoR0p9yUzli4SNPgPAWGLLnX8YwVxT1Bd6kMICqFncCdjDVSOXzxZofbu95d8=
+	t=1728576875; cv=none; b=U9Ld/zBHlLr9XbvPrKtFiVa1TUuWbCYQo8KdptmUtlXoOHXl1Ucg2Zs8L1gbvWBTPX1dFtSOX6KS8r42vQWgyKb0ossQsElxbIWjpxB1dJb5cFYW4GMi3a7bgbYdupZeEzz/2pR3UxiqR64JwMv3d/bnUkCYIVhNYDY8f2PVHIs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728572451; c=relaxed/simple;
-	bh=z47HeD9ahRKP+YVSP51eG5FY2Y0Loe0o9seT+rV1wSQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ObgfzJM2j5HFxSjiXUCc6c+fRzFnZxQT27w2QdnZA3Fu2NGOxsTUE58E16iq5Hg/Dkal5DKdYaC2m9CUnckHp5zRnL1oWq39PtzvcvcGZxpRoXwQq9uu913BHHEr9gm/5EZs9q7JkviJ5SGY75J+iw//YcSnWhlLz7nAI6E8w7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lbvDQqSt; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lbvDQqSt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728572450; x=1760108450;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=z47HeD9ahRKP+YVSP51eG5FY2Y0Loe0o9seT+rV1wSQ=;
-  b=lbvDQqStpY0c3dlhp5UyyRSjYfc6vIwrXPrS2u8PY+Z7+VsaR27dUj/P
-   m4ePowmmMq5D3QZ0RQ5DXghCMQFKbGZpZBUCBfemdh/RevRBlulLNShha
-   ADkVihZmMjtvxed6F2P88VfNuh0ibjexUIIMG/ljknb3ZIs4vlKeeiCm4
-   CDSMebRwuRTaDfBSvu9Ej4vTxvTvbhWqjhVwzlbOR25UylxWsPnn8zWnA
-   080e4zVqZK7qWdxNKK1Ea87DNCo1VNfu8veIBtre5AYcU0TZZZ53F9xoa
-   aLS8u27E7QmNauHDby5sXxfUAtP5+v3KpRBk5qyNNFEknui007DtJnDlJ
-   Q==;
-X-CSE-ConnectionGUID: I48N6zjyTH+ExuwMuo3mqw==
-X-CSE-MsgGUID: GSluXrUsQEOX4c01pDtCXw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11220"; a="27808478"
-X-IronPort-AV: E=Sophos;i="6.11,193,1725346800"; 
-   d="scan'208";a="27808478"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 08:00:41 -0700
-X-CSE-ConnectionGUID: 7RkOvKm2SMGzGkgpdfxOEA==
-X-CSE-MsgGUID: gilISOZ9Rx6UmZst3O9khg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,193,1725346800"; 
-   d="scan'208";a="76229673"
-Received: from smile.fi.intel.com ([10.237.72.154])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Oct 2024 08:00:38 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1syueZ-00000001ZUI-0tSd;
-	Thu, 10 Oct 2024 18:00:35 +0300
-Date: Thu, 10 Oct 2024 18:00:34 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Inochi Amaoto <inochiama@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Chen Wang <unicorn_wang@outlook.com>,
-	Inochi Amaoto <inochiama@outlook.com>, Yixun Lan <dlan@gentoo.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: 8250_dw: Add Sophgo SG2044 quirk
-Message-ID: <ZwfsEpqgi9zH9P_t@smile.fi.intel.com>
-References: <20241009233908.153188-1-inochiama@gmail.com>
- <20241009233908.153188-3-inochiama@gmail.com>
+	s=arc-20240116; t=1728576875; c=relaxed/simple;
+	bh=v49gd/Nb+FyIdhlg8fr61T4W9gSocllzctpMIEdTQ5U=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=GMN/cJj2kcaD/wZqBj44n6UpOAFswdXEPb5XVTIypJxte4uiNkpUQxIoZbljBwNu8kJAPAFh6LdmIgtYeMEtKSCEr/CZLtcl2cVeQqgDEnFxmV5ksx17hMoFc44zz/G1xN0nKz7b+jXVi4aXGVS/K7CKvt/irHD0uvqbjroqUx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-3a3ae775193so8296625ab.1
+        for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2024 09:14:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728576873; x=1729181673;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lIFxVb1FmDfK2PJKmv3dgTK2BMItDdXdJ1krqU6KjrI=;
+        b=NLiZcPD4iGhqibRpGOEQirt8fLKR1CU0gMbd5eofc3kkatgFGAJ77FCIPkTkNB/WGI
+         yq5xUQu6B7aY4k2IIqEfQUg2s7dSnxNfHgDf/zI+dLUdVocsSYVXEfb9e81d9XuUuvT0
+         vlrUP41R0CiIPZ+hRhhNwFYZhv4qiPticio+1bG2YpWkX90TV0wkCGMc+ozhdb4l5JT2
+         m6sX/XYL31qdLO2QZrrZchKN25ybu1+2gl0L07fWG6Ll8OECbOWOWc5gq4iGqIZVmGRa
+         tnVaWArbrwRKcW3RCxYn/Oxe1eQ4cw0V3qAZFMmm/fjTQqxL/MoHssGujgULjq1+gEb7
+         vYgg==
+X-Forwarded-Encrypted: i=1; AJvYcCWbD1OqTsFA8tDjSemW7sOKMuNAzXxaq8GImMlKko7SN91nbZbyYi9Z1hSRjQEPPsDaD/LrZVH3ytiF164=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzhI7qwhOvlSYCnEZ7snPTWaxnU96ZKxWwv9Y0StMkj/CZ/xVjD
+	if/8byCg6Cpz2aSRdcdwkg09+3vBOeTbjRaGs8ApkEvdKFnT6N8A49WddTEI89xmYj2R7FZ35Bc
+	QJbM7WXVWy7sFfIinmEAZxqgKsAC1/ANiR8GS/fzRBs1N4KomVsBrLOU=
+X-Google-Smtp-Source: AGHT+IHsnuMdq3Jm/+33YY3qVXnZpnJQ9Pjg+b7XZJhRjAZkYBTD5ZeFYybAQP5cCchsEQAMqYVCBvSfAE7OMyVAuzmEYtIazxaX
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241009233908.153188-3-inochiama@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Received: by 2002:a05:6e02:1d86:b0:3a3:b254:ca2c with SMTP id
+ e9e14a558f8ab-3a3b254cad5mr14537025ab.25.1728576873555; Thu, 10 Oct 2024
+ 09:14:33 -0700 (PDT)
+Date: Thu, 10 Oct 2024 09:14:33 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6707fd69.050a0220.3e960.0000.GAE@google.com>
+Subject: [syzbot] [serial?] KMSAN: kernel-infoleak in con_font_op (2)
+From: syzbot <syzbot+955da2d57931604ee691@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Oct 10, 2024 at 07:39:06AM +0800, Inochi Amaoto wrote:
-> SG2044 relys on an internal divisor when calculating bitrate, which
-> means a wrong clock for the most common bitrates. So add a quirk for
-> this uart device to skip the set rate call and only relys on the
-> internal UART divisor.
+Hello,
 
-...
+syzbot found the following issue on:
 
-> +static const struct dw8250_platform_data dw8250_sophgo_sg2044_data = {
-> +	.usr_reg = DW_UART_USR,
-> +	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
-> +};
-> +
->  static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
->  	.usr_reg = DW_UART_USR,
->  	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+HEAD commit:    8f602276d390 Merge tag 'bcachefs-2024-10-05' of git://evil..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14a8f307980000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d302f14701986aa0
+dashboard link: https://syzkaller.appspot.com/bug?extid=955da2d57931604ee691
+compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
 
-For the bare minimum this should be deduplicated as to have one record for now.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
-	.usr_reg = DW_UART_USR,
-	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
-};
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/241996bfa3de/disk-8f602276.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/417de1b4ca32/vmlinux-8f602276.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/2c793c19b953/bzImage-8f602276.xz
 
-If we need different quirks in the future, they can be split again.
-Or, if you certain that new quirks will come, mention this in
-the commit message.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+955da2d57931604ee691@syzkaller.appspotmail.com
 
-...
+=====================================================
+BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:114 [inline]
+BUG: KMSAN: kernel-infoleak in _inline_copy_to_user include/linux/uaccess.h:187 [inline]
+BUG: KMSAN: kernel-infoleak in _copy_to_user+0xbc/0x110 lib/usercopy.c:26
+ instrument_copy_to_user include/linux/instrumented.h:114 [inline]
+ _inline_copy_to_user include/linux/uaccess.h:187 [inline]
+ _copy_to_user+0xbc/0x110 lib/usercopy.c:26
+ copy_to_user include/linux/uaccess.h:216 [inline]
+ con_font_get drivers/tty/vt/vt.c:4760 [inline]
+ con_font_op+0x14a2/0x1710 drivers/tty/vt/vt.c:4854
+ vt_k_ioctl drivers/tty/vt/vt_ioctl.c:474 [inline]
+ vt_ioctl+0x2b6e/0x2fe0 drivers/tty/vt/vt_ioctl.c:751
+ tty_ioctl+0xd0c/0x1990 drivers/tty/tty_io.c:2803
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0x25e/0x450 fs/ioctl.c:893
+ __x64_sys_ioctl+0x96/0xe0 fs/ioctl.c:893
+ x64_sys_call+0x18bf/0x3ba0 arch/x86/include/generated/asm/syscalls_64.h:17
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xcd/0x1e0 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
->  	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
->  	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
->  	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
-> +	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_sophgo_sg2044_data },
->  	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_starfive_jh7100_data },
+Uninit was created at:
+ ___kmalloc_large_node+0x22c/0x370 mm/slub.c:4219
+ __kmalloc_large_node_noprof+0x3f/0x1e0 mm/slub.c:4236
+ __do_kmalloc_node mm/slub.c:4252 [inline]
+ __kmalloc_node_noprof+0x9d6/0xf50 mm/slub.c:4270
+ __kvmalloc_node_noprof+0xc0/0x2d0 mm/util.c:658
+ con_font_get drivers/tty/vt/vt.c:4729 [inline]
+ con_font_op+0x659/0x1710 drivers/tty/vt/vt.c:4854
+ vt_k_ioctl drivers/tty/vt/vt_ioctl.c:474 [inline]
+ vt_ioctl+0x2b6e/0x2fe0 drivers/tty/vt/vt_ioctl.c:751
+ tty_ioctl+0xd0c/0x1990 drivers/tty/tty_io.c:2803
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0x25e/0x450 fs/ioctl.c:893
+ __x64_sys_ioctl+0x96/0xe0 fs/ioctl.c:893
+ x64_sys_call+0x18bf/0x3ba0 arch/x86/include/generated/asm/syscalls_64.h:17
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xcd/0x1e0 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
 
-I think my proposal for having a common compatible for those two is a no-go
-as compatible strings are for the (unique) hardware and shouldn't be abstracted
-based on some Linux or other OS shortcuts / quirks.
+Bytes 61440-76799 of 76800 are uninitialized
+Memory access of size 76800 starts at ffff8880b5c00000
+Data copied to user address 0000000020000880
 
--- 
-With Best Regards,
-Andy Shevchenko
+CPU: 0 UID: 0 PID: 7973 Comm: syz.2.4245 Tainted: G        W          6.12.0-rc1-syzkaller-00349-g8f602276d390 #0
+Tainted: [W]=WARN
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/13/2024
+=====================================================
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
