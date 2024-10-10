@@ -1,146 +1,99 @@
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667E01CCEF1
-	for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2024 16:14:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 354753D3B8;
+	Thu, 10 Oct 2024 17:46:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728576875; cv=none; b=U9Ld/zBHlLr9XbvPrKtFiVa1TUuWbCYQo8KdptmUtlXoOHXl1Ucg2Zs8L1gbvWBTPX1dFtSOX6KS8r42vQWgyKb0ossQsElxbIWjpxB1dJb5cFYW4GMi3a7bgbYdupZeEzz/2pR3UxiqR64JwMv3d/bnUkCYIVhNYDY8f2PVHIs=
+	t=1728582392; cv=none; b=ABqt/SzFGufC77cDtlg5V5YkmqcP7nr8B3L2NlCaGbDoUACWHx3Uf4E/BD8JrH2mdRBVP2ovo2azFm4tNIQC+GKDVgm2P8WdXK40n4yisFrZnE5Tt3cMj4K1RPJVTIi53ma2a6f8bywZI3XijG72Zfiix3ctacqUhDiMSh5X+dQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728576875; c=relaxed/simple;
-	bh=v49gd/Nb+FyIdhlg8fr61T4W9gSocllzctpMIEdTQ5U=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=GMN/cJj2kcaD/wZqBj44n6UpOAFswdXEPb5XVTIypJxte4uiNkpUQxIoZbljBwNu8kJAPAFh6LdmIgtYeMEtKSCEr/CZLtcl2cVeQqgDEnFxmV5ksx17hMoFc44zz/G1xN0nKz7b+jXVi4aXGVS/K7CKvt/irHD0uvqbjroqUx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-3a3ae775193so8296625ab.1
-        for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2024 09:14:34 -0700 (PDT)
+	s=arc-20240116; t=1728582392; c=relaxed/simple;
+	bh=mn/ZPOf2DDxL/uHo6xPSIFgWMJvXHVeziNYrO1fVmWA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rODi9/r6ayB7+h48M+pz/zeRSygDFVL7FeP57+nyAWGuZVdfjHMQZ/7cJe74ZyhnT5D3XXuibFNP1s7CjRGAGwerKJ1vOcukWNOk/rOVzc/PYrCkt8KoZyHVEMV9B5ag313fWhXy8sJR6y5KH8PqqWWOGfTlY2rAwcpsR0NGwmY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=D3vpkT8D; arc=none smtp.client-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D3vpkT8D"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-2e2e6a1042dso388110a91.2;
+        Thu, 10 Oct 2024 10:46:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1728582390; x=1729187190; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Fodw2y9RXjh33ztN0s4LLH7quAMnnnuBtbSFabngXnU=;
+        b=D3vpkT8DU4ujH5v6B1uAXlCGJT/5Z+LS7XWaRy4QcUkTNePUMEji9s2RS/X62ms+vC
+         ZfL4WKtOjjC/MSL2+h1Z447yK663v4RORyBvemribQyAU8iTXgwtqEVyAbcxfU/MlbMg
+         zSKVE9HjNbmdkPlC3LlzkQMVjaGyfxsQQlLBZOrECc60k0uE8Ti5QtfwurK/2otCtzCh
+         zBHWoW3M7AT8BkYRwyIaEJ5HVj6vOEejCr+77GkukHXSEn6Qzcm1JL/J/h3iYVc8aG+e
+         5ISbDE69tK2InB+EXfOJPEc0h1RdmgXHFp/urwOC7UnjrNsT68TdXVB/UTrTJbEbrEj5
+         SZ7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728576873; x=1729181673;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lIFxVb1FmDfK2PJKmv3dgTK2BMItDdXdJ1krqU6KjrI=;
-        b=NLiZcPD4iGhqibRpGOEQirt8fLKR1CU0gMbd5eofc3kkatgFGAJ77FCIPkTkNB/WGI
-         yq5xUQu6B7aY4k2IIqEfQUg2s7dSnxNfHgDf/zI+dLUdVocsSYVXEfb9e81d9XuUuvT0
-         vlrUP41R0CiIPZ+hRhhNwFYZhv4qiPticio+1bG2YpWkX90TV0wkCGMc+ozhdb4l5JT2
-         m6sX/XYL31qdLO2QZrrZchKN25ybu1+2gl0L07fWG6Ll8OECbOWOWc5gq4iGqIZVmGRa
-         tnVaWArbrwRKcW3RCxYn/Oxe1eQ4cw0V3qAZFMmm/fjTQqxL/MoHssGujgULjq1+gEb7
-         vYgg==
-X-Forwarded-Encrypted: i=1; AJvYcCWbD1OqTsFA8tDjSemW7sOKMuNAzXxaq8GImMlKko7SN91nbZbyYi9Z1hSRjQEPPsDaD/LrZVH3ytiF164=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzhI7qwhOvlSYCnEZ7snPTWaxnU96ZKxWwv9Y0StMkj/CZ/xVjD
-	if/8byCg6Cpz2aSRdcdwkg09+3vBOeTbjRaGs8ApkEvdKFnT6N8A49WddTEI89xmYj2R7FZ35Bc
-	QJbM7WXVWy7sFfIinmEAZxqgKsAC1/ANiR8GS/fzRBs1N4KomVsBrLOU=
-X-Google-Smtp-Source: AGHT+IHsnuMdq3Jm/+33YY3qVXnZpnJQ9Pjg+b7XZJhRjAZkYBTD5ZeFYybAQP5cCchsEQAMqYVCBvSfAE7OMyVAuzmEYtIazxaX
+        d=1e100.net; s=20230601; t=1728582390; x=1729187190;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Fodw2y9RXjh33ztN0s4LLH7quAMnnnuBtbSFabngXnU=;
+        b=MAOCX+0c08sIN375Wj9fBc7PlK3PuG2gSqePc56mhWWQJpcrO+roh7eJsKUmFfloK3
+         mDnUAPw1GvnViZdZBV5+MU+ZTKk9bka1u284NRp2TSricQkt6h/UwYsHFIMQUPKEYSYa
+         2ZmuinPus9AtkLvD6tGVyQFF9DgMaUvVhjPMoQCrU35mYX7QxPCbVycgF1wRlyN3c5pl
+         0h7h05suH77Q+Bf8ieDcmuarh6XISd8frQ41DyM4ZZ7HNxFkoxAzyBz5RiQOoHpdTdiO
+         vcL6lOKPab7o8dqhvAuzxYXoMhZ3P9qvUKauNxyfmMv0R8A3c3eG5gxQ/Z+98YSaA4dp
+         ZakA==
+X-Forwarded-Encrypted: i=1; AJvYcCWuPvlcYJSej9tGkVhz7RsOCAtAd8u5+/RFTWCzcwTxWPUf/rdO/6288n0CB1SGDLTHtfxBzY8+9R4JeMjI@vger.kernel.org, AJvYcCX+zM2sEA60TkekAHwi866gM4GDLBlKKgZCoiVhi5hEXtOGvm7JClvDWYIjQSttBH+JGfjIHkjFdIfNlXo=@vger.kernel.org, AJvYcCXsOBgVyEETVoSPVtXKyBEdgc+VW0/YnIyy+AM1IalfZ8RrNSdRifmn2M9XZt96DNByw5dD0Um0@vger.kernel.org
+X-Gm-Message-State: AOJu0YzGwYTflSP4v11e30F5vjF2qIuWp07NdCQWBS2ryvf6w9tdbzak
+	UzdMUwB0q4Ji8vJPfHefZcTao/LPncbieFzWisMmB/9uxwyHvtL8
+X-Google-Smtp-Source: AGHT+IG2UOEz7aX30q4xZnAkGlmF8olOXxivWfzqq9oco5P2NO3C5dX05PT0Jpd4+OrBTJ8rLpEuTQ==
+X-Received: by 2002:a17:90a:688c:b0:2e0:894f:198e with SMTP id 98e67ed59e1d1-2e2a2525180mr8536555a91.30.1728582390270;
+        Thu, 10 Oct 2024 10:46:30 -0700 (PDT)
+Received: from kernelexploit-virtual-machine.localdomain ([121.185.186.233])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e2d5df0ce8sm1629325a91.14.2024.10.10.10.46.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2024 10:46:29 -0700 (PDT)
+From: Jeongjun Park <aha310510@gmail.com>
+To: gregkh@linuxfoundation.org
+Cc: jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	stable@vger.kernel.org,
+	syzbot+955da2d57931604ee691@syzkaller.appspotmail.com,
+	Jeongjun Park <aha310510@gmail.com>
+Subject: [PATCH] vt: prevent kernel-infoleak in con_font_get()
+Date: Fri, 11 Oct 2024 02:46:19 +0900
+Message-Id: <20241010174619.59662-1-aha310510@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1d86:b0:3a3:b254:ca2c with SMTP id
- e9e14a558f8ab-3a3b254cad5mr14537025ab.25.1728576873555; Thu, 10 Oct 2024
- 09:14:33 -0700 (PDT)
-Date: Thu, 10 Oct 2024 09:14:33 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6707fd69.050a0220.3e960.0000.GAE@google.com>
-Subject: [syzbot] [serial?] KMSAN: kernel-infoleak in con_font_op (2)
-From: syzbot <syzbot+955da2d57931604ee691@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hello,
+font.data may not initialize all memory spaces depending on the implementation
+of vc->vc_sw->con_font_get. This may cause info-leak, so to prevent this, it
+is safest to modify it to initialize the allocated memory space to 0, and it
+generally does not affect the overall performance of the system.
 
-syzbot found the following issue on:
-
-HEAD commit:    8f602276d390 Merge tag 'bcachefs-2024-10-05' of git://evil..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=14a8f307980000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d302f14701986aa0
-dashboard link: https://syzkaller.appspot.com/bug?extid=955da2d57931604ee691
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/241996bfa3de/disk-8f602276.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/417de1b4ca32/vmlinux-8f602276.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/2c793c19b953/bzImage-8f602276.xz
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Cc: stable@vger.kernel.org
 Reported-by: syzbot+955da2d57931604ee691@syzkaller.appspotmail.com
-
-=====================================================
-BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:114 [inline]
-BUG: KMSAN: kernel-infoleak in _inline_copy_to_user include/linux/uaccess.h:187 [inline]
-BUG: KMSAN: kernel-infoleak in _copy_to_user+0xbc/0x110 lib/usercopy.c:26
- instrument_copy_to_user include/linux/instrumented.h:114 [inline]
- _inline_copy_to_user include/linux/uaccess.h:187 [inline]
- _copy_to_user+0xbc/0x110 lib/usercopy.c:26
- copy_to_user include/linux/uaccess.h:216 [inline]
- con_font_get drivers/tty/vt/vt.c:4760 [inline]
- con_font_op+0x14a2/0x1710 drivers/tty/vt/vt.c:4854
- vt_k_ioctl drivers/tty/vt/vt_ioctl.c:474 [inline]
- vt_ioctl+0x2b6e/0x2fe0 drivers/tty/vt/vt_ioctl.c:751
- tty_ioctl+0xd0c/0x1990 drivers/tty/tty_io.c:2803
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:907 [inline]
- __se_sys_ioctl+0x25e/0x450 fs/ioctl.c:893
- __x64_sys_ioctl+0x96/0xe0 fs/ioctl.c:893
- x64_sys_call+0x18bf/0x3ba0 arch/x86/include/generated/asm/syscalls_64.h:17
- do_syscall_x64 arch/x86/entry/common.c:52 [inline]
- do_syscall_64+0xcd/0x1e0 arch/x86/entry/common.c:83
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-Uninit was created at:
- ___kmalloc_large_node+0x22c/0x370 mm/slub.c:4219
- __kmalloc_large_node_noprof+0x3f/0x1e0 mm/slub.c:4236
- __do_kmalloc_node mm/slub.c:4252 [inline]
- __kmalloc_node_noprof+0x9d6/0xf50 mm/slub.c:4270
- __kvmalloc_node_noprof+0xc0/0x2d0 mm/util.c:658
- con_font_get drivers/tty/vt/vt.c:4729 [inline]
- con_font_op+0x659/0x1710 drivers/tty/vt/vt.c:4854
- vt_k_ioctl drivers/tty/vt/vt_ioctl.c:474 [inline]
- vt_ioctl+0x2b6e/0x2fe0 drivers/tty/vt/vt_ioctl.c:751
- tty_ioctl+0xd0c/0x1990 drivers/tty/tty_io.c:2803
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:907 [inline]
- __se_sys_ioctl+0x25e/0x450 fs/ioctl.c:893
- __x64_sys_ioctl+0x96/0xe0 fs/ioctl.c:893
- x64_sys_call+0x18bf/0x3ba0 arch/x86/include/generated/asm/syscalls_64.h:17
- do_syscall_x64 arch/x86/entry/common.c:52 [inline]
- do_syscall_64+0xcd/0x1e0 arch/x86/entry/common.c:83
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-Bytes 61440-76799 of 76800 are uninitialized
-Memory access of size 76800 starts at ffff8880b5c00000
-Data copied to user address 0000000020000880
-
-CPU: 0 UID: 0 PID: 7973 Comm: syz.2.4245 Tainted: G        W          6.12.0-rc1-syzkaller-00349-g8f602276d390 #0
-Tainted: [W]=WARN
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/13/2024
-=====================================================
-
-
+Fixes: 05e2600cb0a4 ("VT: Bump font size limitation to 64x128 pixels")
+Signed-off-by: Jeongjun Park <aha310510@gmail.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/tty/vt/vt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index cd87e3d1291e..96842ce817af 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -4726,7 +4726,7 @@ static int con_font_get(struct vc_data *vc, struct console_font_op *op)
+ 		return -EINVAL;
+ 
+ 	if (op->data) {
+-		font.data = kvmalloc(max_font_size, GFP_KERNEL);
++		font.data = kvzalloc(max_font_size, GFP_KERNEL);
+ 		if (!font.data)
+ 			return -ENOMEM;
+ 	} else
+--
