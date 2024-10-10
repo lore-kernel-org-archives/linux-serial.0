@@ -1,110 +1,156 @@
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3AE61CCEF0;
-	Thu, 10 Oct 2024 18:48:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.248
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12D781BCA1E
+	for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2024 22:30:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728586099; cv=none; b=WRFketTX9B5QqfQljbul5MoKJq9ATCoIRG/afX8ELIXQUpPI5xMJxnO/JxNqJpQtt0dCQbvQpJ5Yx+WSJrXhsLecKshYgFQNgF7uQxV0knVHUsXtlMpy5flSSsZpkbisPHH8Ax8tBf5fy2dMybi0eu3EnpPukLyc+lXZa7K0SYs=
+	t=1728599426; cv=none; b=Bd97d6Bcc3pzOgJo8+cxPlJxYVAEUXofJHaRcf+VakHoM/vqkd9uFklArCM8Cj87COQWAfbwJ+TLXO6uCz+Yqji2Yd4ibsMNloAiilPdZ6wQn3QdO0dUoYt8m+640bza+MLdY1Gu1KEiJ2qin+lkhspI6RqLiDb5dZCjfTTQhzc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728586099; c=relaxed/simple;
-	bh=PQJkDvEyk3UIfsKwpvyY3mLyiKWfKdTOLxySV12GXAA=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Rxx+sR5MvToAwLKGRR0o2tYVH2N3AZC0PIXyGej5x5Wf3Vi7r8hM3Cq0tsrwJSUsF33Z1lOq3XkdMyILeybd76ne9GvMTvQH0vWlxfLD1d3KjER1WmNSvNHMuE9RXXw+sbh7RWxtpYtH+5Vlc0dajSJPE8B5EFvoep/x+rQRGTU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=KrwFmaU3; arc=none smtp.client-ip=198.47.23.248
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1728599426; c=relaxed/simple;
+	bh=CdmSXbDHAWq8dgUJmRamn05jbHQQT0TVNYOiCJ/xXdY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DN5JmSR9BdjeOzR78132oZGJUznVbHF2h0OJG2N2J28k9dS4kzq93fGCvImF5w3IuhVvXkLxW/QpoHpfFbabIcfx3/JEKq1oSxYI18MTX93w4Ma0zix2vC4cQPHLN9s9mtmhoKELJEMdsMlTgUswa8I62tv0dC7kUIDmojPTDLs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=PE6M7PAN; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="KrwFmaU3"
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-	by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 49AIm6HT127830;
-	Thu, 10 Oct 2024 13:48:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1728586086;
-	bh=1oTPBF+SUaJaGZnyWmHn1NEj1otLNrz6Cnmjj8FEe5s=;
-	h=From:To:CC:Subject:Date:In-Reply-To:References;
-	b=KrwFmaU33OAvMoM65SdPjTIQr2STEQGegSm2qJ7bWElyUgYtMvnC511P9urEWgarX
-	 N3aHkrc98mR6WvYkbpMApcuchpKusx0X4QXh6BQg5c2mWLehzsxXdattcuOvRDPj4V
-	 uXQ/MGDbCc2P+SxMsWKRV9JIf1O8qb1kHqnaKwPA=
-Received: from DFLE101.ent.ti.com (dfle101.ent.ti.com [10.64.6.22])
-	by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 49AIm6oB034468
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 10 Oct 2024 13:48:06 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Thu, 10
- Oct 2024 13:48:06 -0500
-Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Thu, 10 Oct 2024 13:48:06 -0500
-Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 49AIm3VA011182;
-	Thu, 10 Oct 2024 13:48:06 -0500
-From: Judith Mendez <jm@ti.com>
-To: Grygorii Strashko <grygorii.strashko@ti.com>,
-        Santosh Shilimkar
-	<ssantosh@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Linus Walleij
-	<linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-CC: <linux-omap@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        Judith Mendez
-	<jm@ti.com>, Bin Liu <b-liu@ti.com>
-Subject: [PATCH 2/2] serial: 8250: omap: Move pm_runtime_get_sync
-Date: Thu, 10 Oct 2024 13:48:02 -0500
-Message-ID: <20241010184802.203441-3-jm@ti.com>
-X-Mailer: git-send-email 2.46.2
-In-Reply-To: <20241010184802.203441-1-jm@ti.com>
-References: <20241010184802.203441-1-jm@ti.com>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="PE6M7PAN"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a9951fba3b4so222654266b.1
+        for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2024 15:30:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1728599420; x=1729204220; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1tjzEcZp4sdEI4rizDgYHU+pcwb4fTKSCVr7AMb0oZQ=;
+        b=PE6M7PANLNqAMURMXJVBC6WFAs2aw1PLurVOSZmQkQgRx+Xdx4vlMg298jctGcPQsM
+         FUco1B4ECmWEy9bUWmMw8LK1jkBY2QH+LivIYiKw596AwOTsVPztvNGeD6rIVX/axi3r
+         o58Lj/WGgPRuahBCl5exBJRntoKgTjIb2SAUs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728599420; x=1729204220;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1tjzEcZp4sdEI4rizDgYHU+pcwb4fTKSCVr7AMb0oZQ=;
+        b=MBhgrzxxPblHIBMTp8cNsglR8+wfks/UNlAz8P/uqiXkfyj7bYuPEkVl1eLXjoCh4j
+         8+ePzUiyne6pfpT4ib+UOtsjk/J6AfYivo0R7++x+ihg5AqZGNgtzk6+ulVbwhmYhJHe
+         0X2dlhi1KvF/zYv0CPWGu9ysBFenIyD9GmrLucGPdJwK1w7vpCd7KWkzV3rubPA6EsYC
+         Y8Qf7s0YSFLV+6BcS1cCo2YtwWoi6CJ+q1ioHokch9M97VA6Kdf6twbGV68/+/trlf9u
+         UgmRfEkTWICTeqPTGVMmSpKQRoC5OalXuF4ONkdVt6qoCIq/whDXLsTUUCz/xrt7ATob
+         /wkw==
+X-Forwarded-Encrypted: i=1; AJvYcCUB18MNwJyLbyFwrlrOqZ8mBPOTgLd5kjKfvor/Nm0+NX9PiZyXSc1L7gP3Q1/gM+PXqpujyV6NH6Hd8VQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwbqfcKliN4WaprefiCxRag3D/VszHT9P8S7Va6VRppbYIT8mam
+	yeNhaiLPjtlOxk5MUcLA9BuP+cO3xRzlztKZiYPxmN6mlZvNI09r/7B0oTlny4wl3CPA+U2vW9+
+	MLg==
+X-Google-Smtp-Source: AGHT+IECHO9ztoDUQy3nWDRpn3fOM4xRNVOF4VOz4ARA5LaWgC89z0+fzstYM/6O0vUqa4+CyM7m8Q==
+X-Received: by 2002:a17:907:e68a:b0:a99:4ff7:720e with SMTP id a640c23a62f3a-a99b96ad565mr38776366b.47.1728599419887;
+        Thu, 10 Oct 2024 15:30:19 -0700 (PDT)
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a99a7f5b09fsm143525666b.91.2024.10.10.15.30.18
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Oct 2024 15:30:18 -0700 (PDT)
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-37d447de11dso868251f8f.1
+        for <linux-serial@vger.kernel.org>; Thu, 10 Oct 2024 15:30:18 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVvNU4ybiXlssGEbgb2mf59z2t9CgKs1OOJ9q3wzpHmfc5RIVL6CaaN2gQHNHE8YxKxvvROjqo0JbEe244=@vger.kernel.org
+X-Received: by 2002:a05:6000:181a:b0:37c:cd1d:b87e with SMTP id
+ ffacd0b85a97d-37d551d50a7mr437367f8f.18.1728599418059; Thu, 10 Oct 2024
+ 15:30:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+References: <20241001125033.10625-1-johan+linaro@kernel.org>
+ <20241001125033.10625-3-johan+linaro@kernel.org> <CAD=FV=UoU5Nd7sW66cjQzor+BP+W_f7uw0MGRaF6y7PH7KRN_g@mail.gmail.com>
+ <ZwaO0hCKdPpojvnn@hovoldconsulting.com>
+In-Reply-To: <ZwaO0hCKdPpojvnn@hovoldconsulting.com>
+From: Doug Anderson <dianders@chromium.org>
+Date: Thu, 10 Oct 2024 15:30:05 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=UZtZ1-0SkN2sOMp6YdU02em_RnK85Heg5z0jkH4U30eQ@mail.gmail.com>
+Message-ID: <CAD=FV=UZtZ1-0SkN2sOMp6YdU02em_RnK85Heg5z0jkH4U30eQ@mail.gmail.com>
+Subject: Re: [PATCH v2 2/7] serial: qcom-geni: fix shutdown race
+To: Johan Hovold <johan@kernel.org>
+Cc: Johan Hovold <johan+linaro@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, stable@vger.kernel.org, 
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Currently in omap_8250_shutdown, the dma->rx_running
-flag is set to zero in omap_8250_rx_dma_flush. Next
-pm_runtime_get_sync is called, which is a runtime
-resume call stack which can re-set the flag. When the
-call omap_8250_shutdown returns, the flag is expected
-to be UN-SET, but this is not the case. This is causing
-issues the next time UART is re-opened and omap_8250_rx_dma
-is called. Fix by moving pm_runtime_get_sync before the
-omap_8250_rx_dma_flush.
+Hi,
 
-Fixes: 0e31c8d173ab ("tty: serial: 8250_omap: add custom DMA-RX callback")
-Signed-off-by: Bin Liu <b-liu@ti.com>
-Signed-off-by: Judith Mendez <jm@ti.com>
----
- drivers/tty/serial/8250/8250_omap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On Wed, Oct 9, 2024 at 7:10=E2=80=AFAM Johan Hovold <johan@kernel.org> wrot=
+e:
+>
+> On Thu, Oct 03, 2024 at 11:30:08AM -0700, Doug Anderson wrote:
+> > On Tue, Oct 1, 2024 at 5:51=E2=80=AFAM Johan Hovold <johan+linaro@kerne=
+l.org> wrote:
+> > >
+> > > A commit adding back the stopping of tx on port shutdown failed to ad=
+d
+> > > back the locking which had also been removed by commit e83766334f96
+> > > ("tty: serial: qcom_geni_serial: No need to stop tx/rx on UART
+> > > shutdown").
+> >
+> > Hmmm, when I look at that commit it makes me think that the problem
+> > that commit e83766334f96 ("tty: serial: qcom_geni_serial: No need to
+> > stop tx/rx on UART shutdown") was fixing was re-introduced by commit
+> > d8aca2f96813 ("tty: serial: qcom-geni-serial: stop operations in
+> > progress at shutdown"). ...and indeed, it was. :(
+> >
+> > I can't interact with kgdb if I do this:
+> >
+> > 1. ssh over to DUT
+> > 2. Kill the console process (on ChromeOS stop console-ttyMSM0)
+> > 3. Drop in the debugger (echo g > /proc/sysrq-trigger)
+>
+> Yeah, don't do that then. ;)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 88b58f44e4e9..0dd68bdbfbcf 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -776,12 +776,12 @@ static void omap_8250_shutdown(struct uart_port *port)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct omap8250_priv *priv = port->private_data;
- 
-+	pm_runtime_get_sync(port->dev);
-+
- 	flush_work(&priv->qos_work);
- 	if (up->dma)
- 		omap_8250_rx_dma_flush(up);
- 
--	pm_runtime_get_sync(port->dev);
--
- 	serial_out(up, UART_OMAP_WER, 0);
- 	if (priv->habit & UART_HAS_EFR2)
- 		serial_out(up, UART_OMAP_EFR2, 0x0);
--- 
-2.46.2
+The problem is, I don't always have a choice. As talked about in the
+message of commit e83766334f96 ("tty: serial: qcom_geni_serial: No
+need to stop tx/rx on UART shutdown"), the above steps attempt to
+simulate what happened organically: a crash in late shutdown. During
+shutdown the agetty has been killed by the init system and I don't
+have a choice about it. If I get a kernel crash then (which isn't
+uncommon since shutdown code tends to trigger seldom-used code paths)
+then I can't debug it. :(
 
+We need to fix this.
+
+
+> Not sure how your "console process" works, but this should only happen
+> if you do not enable the serial console (console=3DttyMSM0) and then try
+> to use a polled console (as enabling the console will prevent port
+> shutdown from being called).
+
+That simply doesn't seem to be the case for me. The port shutdown
+seems to be called. To confirm, I put a printout at the start of
+qcom_geni_serial_shutdown(). I see in my /proc/cmdline:
+
+console=3DttyMSM0,115200n8
+
+...and I indeed verify that I see console messages on my UART. I then run:
+
+stop console-ttyMSM0
+
+...and I see on the UART:
+
+[   92.916964] DOUG: qcom_geni_serial_shutdown
+[   92.922703] init: console-ttyMSM0 main process (611) killed by TERM sign=
+al
+
+Console messages keep coming out the UART even though the agetty isn't
+there. Now I (via ssh) drop into the debugger:
+
+echo g > /proc/sysrq-trigger
+
+I see the "kgdb" prompt but I can't interact with it because
+qcom_geni_serial_shutdown() stopped RX.
+
+
+-Doug
