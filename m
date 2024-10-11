@@ -1,74 +1,71 @@
-Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CAE9567D;
-	Fri, 11 Oct 2024 01:12:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38D7A2F44;
+	Fri, 11 Oct 2024 02:05:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728609122; cv=none; b=kBDsm64v5WxfIpSjBRllAYU9GoBApE1y+aW7/7uU8klGZAyfvfBVZHru/OhWcATSvwMTy0YqoVAkf90yduSZny+1kpec0au4iPjIF5Muugf7Lgh06wi2w4JINrxPTY9suPA6lYVPgS477i0bwVYgS0LEuHkQXarULtWXXJE2f0I=
+	t=1728612350; cv=none; b=mAnFI9ZJT+IWffHILvChst5Ra28hIrDIjjRXlAO+ENORn7x+CrZJpuMxpYk4suFCq64vL46kv2w8NxHA8E2NBVUWF3lEdvX/Ws23VujaA/LD+s4pPVzmKaXNU4R1KyrPaL0ShGqrBHiIYUsXxS+Obo/ffhXTmLQjDekCepvtIA4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728609122; c=relaxed/simple;
-	bh=kz6Wp9ySt2hzSQjerKMpWk13uiAYKPo+Vl5JeQAuAu4=;
+	s=arc-20240116; t=1728612350; c=relaxed/simple;
+	bh=vHuEZcU46TUvH8mparYcu3kye8WC+W6Lnmy/CF/ZVEE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UNOpfUqj1+n24t8/UaggG1YO+p+/mXK2CdnQrd9rG+P82cpf2VDH90tX3uDFh4/K3Z6yjw8FdaNOHWJxPYfc/A2J5F4sGEmDY9KfyZQzQB1IU7O1anhgoB/kQVRAgq+P1rvlL80Pq3idMyEAZLQ4CNoc+Ac4GFfinGYl1Q58iW4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cgT9S0GK; arc=none smtp.client-ip=209.85.210.175
+	 Content-Type:Content-Disposition:In-Reply-To; b=aC0+BeSjhjFqifQSkgLcFqo03iOYtWmsS8SLgSny5xGyjRyvMuhu7/Wqi5U676hZhT+5Z7YMX7tir1PxKjbO68h79yfICZ6Hs6bYt83MD0yUE2dROfF9gD/msb2gxiA1gMFQ0Dfi7qYTUDlOOEWkA+Dl/WgxMTNcBP6STGFwMRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MN6UrIKQ; arc=none smtp.client-ip=209.85.210.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cgT9S0GK"
-Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-71def715ebdso1076974b3a.2;
-        Thu, 10 Oct 2024 18:12:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MN6UrIKQ"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-71de9e1f374so1184115b3a.1;
+        Thu, 10 Oct 2024 19:05:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1728609120; x=1729213920; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1728612348; x=1729217148; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AAOc/rBakUrniDiHlg2qpejgAj7CPI/jsjOw6Ywi1cw=;
-        b=cgT9S0GKpPWQieZlYGSIzXfL0XONcOeBxFi10dxGFBxTrQRHlQq7caWhEqk1iZKW9V
-         tj7tDbtlo0Seq7ITqQNoisuDcfTsELykEIideRlbxOUdaqoVX1C6sCtn6GXjGLR4rEX3
-         G8uBmbqSHRyc2oSYXpSqQk5QNV+GhfiFWVBAs/Vyxuqn6ptmmFDzyptDkMNb1shnIHVm
-         zRwhIe9v2bPs6MvoEuaVtFIJk9B9+ohxMTKmrcD30G/Xh9pA9c+uqjeZ2lI0IDWEssbX
-         Q49QW6v5kXrNMFQU92pVthK8f5ATjHsg/M06O3k+U5HT6Hf+1C8vLKt3sHNS0CWV2yux
-         gkKg==
+        bh=nBa0HVFlTx/ulHFaJHxBXCf+2rtUpuR2CqDm5ZXZhd0=;
+        b=MN6UrIKQsiTbGH11RgVjVjVAdit3JuWJo1MlxH0SEm6ydcL3T/OcYw62StIONW+h4j
+         rTBZTwzBxx5+CfVrzyMmHKhayUBaiv470HFHg+yrJJUsHjUpWiEM9qEOJhd+lIqIoWz7
+         d3QjmE2pMX+1i8eSfFzbElNAj2NsArAxpZZqr5H7nhAwW2QmgIqgY/N6UmZVJxrvGXNp
+         NdREOYMlLq67Y66CFmC6byB14tEsKx2dYp4rWB7Q0rjLzkqv6xF5AIYTPDgfe6vZPv/u
+         XC9JvR3FSu2JZxGTjEOx8aIHuogb2fMdOeferKhEcUsd+XKZZLMlK2G6t60jJv6iIpFm
+         fieA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728609120; x=1729213920;
+        d=1e100.net; s=20230601; t=1728612348; x=1729217148;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=AAOc/rBakUrniDiHlg2qpejgAj7CPI/jsjOw6Ywi1cw=;
-        b=iAQdIDktXoFxSLic4VwRnqm7qZmqSTEbiHgAn5hRhy39VJIuT+wVDoxj32YkdpIf5f
-         ScoVxv7FC3GbNYwbWevuYuZxurdYl77ypo+Ddjicw3s1EhPdZGsMwIDnH9afV/LLUG8S
-         cCr+08r8Y9e3YGO2S0sGjnW5yut4v8QVIGs5rvNE/eo5NndtWsxI0QHLTIuap6omYQRi
-         fqMFWa6v2GinCe61H4JvTCPR4tn1zGdpF3fg7ayVkeNx9mD82NF+2PNUKNFcOloV7XwJ
-         EfyaSBAFpDR79aBrqX+/xAkN8GWtejyPg90esfwU6Vu0UatpcTxdLB+qaXk7vqRkzvGL
-         La6w==
-X-Forwarded-Encrypted: i=1; AJvYcCUfa5+l0ZSfd5fkR9mis3bqjNf9hDWpHT/9Gma2+tOcroNgat/MsXfgQyeoMhGpt9A9S0AHasL2wsnYnEO0@vger.kernel.org, AJvYcCV6Gnmh3VOa028f/LhmiqgI/4Y9h7lGF5zmDko9M42bVqaId9a6aDfxrW2vU8y1yMVAQq4ZCjop/FZhvxDj@vger.kernel.org, AJvYcCXEUq5S4TfYmp7fnPhpuK9MYaT7SIUTX1j7vpHz7wAjm2en8DsyV8IJIbs/Jvmkm6mudYQamyhxSbCJ@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx7lo98Ydetuweo7+FKARpgego5GYdfR7Ln1+ZheU/w3GvIGcpR
-	uhd7ZHejFoG25tpwqMw0E4+mMhJLsLSFFDuWdGzsBtOtv1G4n5Vu
-X-Google-Smtp-Source: AGHT+IHHQvFx/g0NSBQ/2WU5QX9vrmE/ZQ7W5Xx12EJZBah7AEPBBqYXC9VcoE3PO1Vowj3IeW5tRg==
-X-Received: by 2002:a05:6a21:e8b:b0:1cf:4da0:d95c with SMTP id adf61e73a8af0-1d8bcf453d9mr1508105637.23.1728609120231;
-        Thu, 10 Oct 2024 18:12:00 -0700 (PDT)
-Received: from localhost ([2001:da8:7001:11::cb])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7ea449596d3sm1599794a12.61.2024.10.10.18.11.59
+        bh=nBa0HVFlTx/ulHFaJHxBXCf+2rtUpuR2CqDm5ZXZhd0=;
+        b=dyJVYeuuuT14Q0Bt3QqKNSm6vlOICyg5T9aMCMQRPrcMPwi3gGKYq0ji2l2iQrIUa8
+         el+jXfcZvakymY3IKVylo87geihE8b1yXEasLy76MsGhS9SGb4Enur5cXFsL5qIhTbco
+         zItri+7q3LVgT30Fn/uMwinh4O6X6wWRadKCJlPTMwjY1GXjc4lJ3SsR0/8T44D7F5Rk
+         JBCIDagMCGlrC9DJwB6Ujnu7hh6Hn8yY4/iY7H5hak/WCrip0Q65wKWPetXzHA/790+D
+         KIrH/4d5/N1cy5zjwJjAVQB6RD2PyycUqHLPIGVTPt6vlMxw06dB4OkzuSUCoddDO+e3
+         aHWQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUEYQXyr8D+wegkCpwhzGVmU9DiV/mFXqgqE1HMWUp3j2DrlKqP8l+gwuTF3dxawhd/F6MQKYkfsJ3Y4prs@vger.kernel.org, AJvYcCWhjhjtZ9ZwLrVKZa5UtgGOzlD4eokO6SZRG/blJlfpDdwTruU9vGPaZPCRPyyjhNCk+gmdULO0XJD+@vger.kernel.org, AJvYcCXlR3ELflE2rERaNoTQk+Jsb01rQoaP0wuutg+qT7DepV/Bi3CaYtHqEURnIkp4Kt1dfN/lAPSflpfIgM++@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw2FGdJQRTwghPfPXKan1+79LusbNd1BGZT6aPmirIm4p6TYE+w
+	0KMRgjPIT0h0L0UvH3mCVX6x5elPZyUbCTD5KavLgQd4mdHLhsH8
+X-Google-Smtp-Source: AGHT+IFoBLg3ADyoPXqJerURjjDOeJhY3kwc15+7Xmxl0MVsyk/aH5I59w5u81ACvlNiPkf/aVAZYg==
+X-Received: by 2002:a05:6a21:478b:b0:1d8:a307:ac0a with SMTP id adf61e73a8af0-1d8bcf453c6mr1561286637.24.1728612348032;
+        Thu, 10 Oct 2024 19:05:48 -0700 (PDT)
+Received: from localhost ([121.250.214.124])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71e2aab9aa7sm1692652b3a.152.2024.10.10.19.05.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2024 18:11:59 -0700 (PDT)
-Date: Fri, 11 Oct 2024 09:11:37 +0800
+        Thu, 10 Oct 2024 19:05:47 -0700 (PDT)
+Date: Fri, 11 Oct 2024 10:05:40 +0800
 From: Inochi Amaoto <inochiama@gmail.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
 	Inochi Amaoto <inochiama@gmail.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
 	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Chen Wang <unicorn_wang@outlook.com>, 
 	Inochi Amaoto <inochiama@outlook.com>, Yixun Lan <dlan@gentoo.org>, linux-kernel@vger.kernel.org, 
 	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: serial: snps-dw-apb-uart: Add Sophgo
- SG2044 uarts
-Message-ID: <vinnmu45snxveh6f3emo7nhom6s2z5d7hf5pzeozyowfa3twt7@ykeidfboxfiv>
+Subject: Re: [PATCH 2/2] serial: 8250_dw: Add Sophgo SG2044 quirk
+Message-ID: <lsv65gsdza77bfhoewuyqznts56hnz2b7cvqxngmy6gktfys35@g7bg5ruug3yc>
 References: <20241009233908.153188-1-inochiama@gmail.com>
- <20241009233908.153188-2-inochiama@gmail.com>
- <oyvqsywyznanpx5oflnemcsrk7r7nnhvxl6ly7b55oan2boi5d@kobrtldqbj6m>
- <muz6ze7cxho5niz67agoxwnaowumzlcto2vwydmxs2yzdjmisi@symog2asftmv>
- <ZwfquBFOVJEz5lTT@smile.fi.intel.com>
+ <20241009233908.153188-3-inochiama@gmail.com>
+ <ZwfsEpqgi9zH9P_t@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -77,33 +74,56 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZwfquBFOVJEz5lTT@smile.fi.intel.com>
+In-Reply-To: <ZwfsEpqgi9zH9P_t@smile.fi.intel.com>
 
-On Thu, Oct 10, 2024 at 05:54:48PM +0300, Andy Shevchenko wrote:
-> On Thu, Oct 10, 2024 at 04:23:05PM +0800, Inochi Amaoto wrote:
-> > On Thu, Oct 10, 2024 at 08:12:41AM +0200, Krzysztof Kozlowski wrote:
-> > > On Thu, Oct 10, 2024 at 07:39:05AM +0800, Inochi Amaoto wrote:
-> > > > Add compatibles string for the Sophgo SG2044 uarts.
-> > > 
-> > > This we see from the diff, say something about hardware.
-> > 
-> > The reason for this compatiable (and the hardware) is mainly in the
-> > next patch. Will it be better to submit a new verion with improved
-> > description? If so, I wonder whether I can reserve your ack.
-> > 
-> > > I would just add it to starfive enum, but this is fine as well.
+On Thu, Oct 10, 2024 at 06:00:34PM +0300, Andy Shevchenko wrote:
+> On Thu, Oct 10, 2024 at 07:39:06AM +0800, Inochi Amaoto wrote:
+> > SG2044 relys on an internal divisor when calculating bitrate, which
+> > means a wrong clock for the most common bitrates. So add a quirk for
+> > this uart device to skip the set rate call and only relys on the
+> > internal UART divisor.
 > 
-> Even after reading the second patch I don't understand why you shouldn't re-use
-> the starfive compatible or make a new one that covers this quirk? At least I would
-> see that as second patch is basically not needed.
+> ...
+> 
+> > +static const struct dw8250_platform_data dw8250_sophgo_sg2044_data = {
+> > +	.usr_reg = DW_UART_USR,
+> > +	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+> > +};
+> > +
+> >  static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
+> >  	.usr_reg = DW_UART_USR,
+> >  	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+> 
+> For the bare minimum this should be deduplicated as to have one record for now.
+> 
+> static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
+> 	.usr_reg = DW_UART_USR,
+> 	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+> };
+> 
+> If we need different quirks in the future, they can be split again.
+> Or, if you certain that new quirks will come, mention this in
+> the commit message.
 > 
 
-I do not think it is good to re-use the starfive compatible, it is weird
-that a sophgo SoC has a peripheral on the statfive SoC. Another suggestion
-for adding a new one that covers the quirk is a good idea for me, but I am
-not sure whether it may cause some misunderstanding like reuse the starfive
-compatible. If the second one is possible, it is OK for me to drop the second
-patch.
+Yes, renaming this quirk as a common one is better. I will prefer if
+this patch is necessary. Duplication is not a good idea.
 
-Regard,
+> ...
+> 
+> >  	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
+> >  	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
+> >  	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
+> > +	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_sophgo_sg2044_data },
+> >  	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_starfive_jh7100_data },
+> 
+> I think my proposal for having a common compatible for those two is a no-go
+> as compatible strings are for the (unique) hardware and shouldn't be abstracted
+> based on some Linux or other OS shortcuts / quirks.
+> 
+
+Yes, a common compatible is not a good idea. But it is OK to share a common quirk,
+which means they have the same problem.
+
+Regards,
 Inochi
