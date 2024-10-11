@@ -1,71 +1,42 @@
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38D7A2F44;
-	Fri, 11 Oct 2024 02:05:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFF111392;
+	Fri, 11 Oct 2024 04:46:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728612350; cv=none; b=mAnFI9ZJT+IWffHILvChst5Ra28hIrDIjjRXlAO+ENORn7x+CrZJpuMxpYk4suFCq64vL46kv2w8NxHA8E2NBVUWF3lEdvX/Ws23VujaA/LD+s4pPVzmKaXNU4R1KyrPaL0ShGqrBHiIYUsXxS+Obo/ffhXTmLQjDekCepvtIA4=
+	t=1728621970; cv=none; b=hUYh0DIdtW3NbI+9bdntHPMuSEMAPTTmKr/2aiKtP1q4OilPrz02dPNeB/lQeEhbTSFKgwrj4GrFAaUS+X5W9uUWIeNi0UbNa5e4luXNgsJ4KbNOqpf9f2ApJ1tvY2KP6BuQ3qmOE/pobJIkk5lMFyRidJEpz6Lqc85c5si2XrY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728612350; c=relaxed/simple;
-	bh=vHuEZcU46TUvH8mparYcu3kye8WC+W6Lnmy/CF/ZVEE=;
+	s=arc-20240116; t=1728621970; c=relaxed/simple;
+	bh=V9ZExzkaPjw7sLS5aK7k8w5fJSCH/Aqbe7bVDfChCqw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aC0+BeSjhjFqifQSkgLcFqo03iOYtWmsS8SLgSny5xGyjRyvMuhu7/Wqi5U676hZhT+5Z7YMX7tir1PxKjbO68h79yfICZ6Hs6bYt83MD0yUE2dROfF9gD/msb2gxiA1gMFQ0Dfi7qYTUDlOOEWkA+Dl/WgxMTNcBP6STGFwMRY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MN6UrIKQ; arc=none smtp.client-ip=209.85.210.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=dBOlwQ9fLDC5ssSSv5JxQNCeCDVt+m5aCK0igf58p+mlFiXDQxJBKQ/SkK09VXDq+Ev1akFst1uw/MNEUZ85naPigzvVdqBfgD8OIv5x6v0fkPrutzS1K/4LbOHH5N0Mq/KtwfOxAVpfUlY/avp9pcS34qfaMapfZN8vCPoxUO8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=swBhvHwt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MN6UrIKQ"
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-71de9e1f374so1184115b3a.1;
-        Thu, 10 Oct 2024 19:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1728612348; x=1729217148; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nBa0HVFlTx/ulHFaJHxBXCf+2rtUpuR2CqDm5ZXZhd0=;
-        b=MN6UrIKQsiTbGH11RgVjVjVAdit3JuWJo1MlxH0SEm6ydcL3T/OcYw62StIONW+h4j
-         rTBZTwzBxx5+CfVrzyMmHKhayUBaiv470HFHg+yrJJUsHjUpWiEM9qEOJhd+lIqIoWz7
-         d3QjmE2pMX+1i8eSfFzbElNAj2NsArAxpZZqr5H7nhAwW2QmgIqgY/N6UmZVJxrvGXNp
-         NdREOYMlLq67Y66CFmC6byB14tEsKx2dYp4rWB7Q0rjLzkqv6xF5AIYTPDgfe6vZPv/u
-         XC9JvR3FSu2JZxGTjEOx8aIHuogb2fMdOeferKhEcUsd+XKZZLMlK2G6t60jJv6iIpFm
-         fieA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728612348; x=1729217148;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nBa0HVFlTx/ulHFaJHxBXCf+2rtUpuR2CqDm5ZXZhd0=;
-        b=dyJVYeuuuT14Q0Bt3QqKNSm6vlOICyg5T9aMCMQRPrcMPwi3gGKYq0ji2l2iQrIUa8
-         el+jXfcZvakymY3IKVylo87geihE8b1yXEasLy76MsGhS9SGb4Enur5cXFsL5qIhTbco
-         zItri+7q3LVgT30Fn/uMwinh4O6X6wWRadKCJlPTMwjY1GXjc4lJ3SsR0/8T44D7F5Rk
-         JBCIDagMCGlrC9DJwB6Ujnu7hh6Hn8yY4/iY7H5hak/WCrip0Q65wKWPetXzHA/790+D
-         KIrH/4d5/N1cy5zjwJjAVQB6RD2PyycUqHLPIGVTPt6vlMxw06dB4OkzuSUCoddDO+e3
-         aHWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUEYQXyr8D+wegkCpwhzGVmU9DiV/mFXqgqE1HMWUp3j2DrlKqP8l+gwuTF3dxawhd/F6MQKYkfsJ3Y4prs@vger.kernel.org, AJvYcCWhjhjtZ9ZwLrVKZa5UtgGOzlD4eokO6SZRG/blJlfpDdwTruU9vGPaZPCRPyyjhNCk+gmdULO0XJD+@vger.kernel.org, AJvYcCXlR3ELflE2rERaNoTQk+Jsb01rQoaP0wuutg+qT7DepV/Bi3CaYtHqEURnIkp4Kt1dfN/lAPSflpfIgM++@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw2FGdJQRTwghPfPXKan1+79LusbNd1BGZT6aPmirIm4p6TYE+w
-	0KMRgjPIT0h0L0UvH3mCVX6x5elPZyUbCTD5KavLgQd4mdHLhsH8
-X-Google-Smtp-Source: AGHT+IFoBLg3ADyoPXqJerURjjDOeJhY3kwc15+7Xmxl0MVsyk/aH5I59w5u81ACvlNiPkf/aVAZYg==
-X-Received: by 2002:a05:6a21:478b:b0:1d8:a307:ac0a with SMTP id adf61e73a8af0-1d8bcf453c6mr1561286637.24.1728612348032;
-        Thu, 10 Oct 2024 19:05:48 -0700 (PDT)
-Received: from localhost ([121.250.214.124])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71e2aab9aa7sm1692652b3a.152.2024.10.10.19.05.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Oct 2024 19:05:47 -0700 (PDT)
-Date: Fri, 11 Oct 2024 10:05:40 +0800
-From: Inochi Amaoto <inochiama@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Inochi Amaoto <inochiama@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Chen Wang <unicorn_wang@outlook.com>, 
-	Inochi Amaoto <inochiama@outlook.com>, Yixun Lan <dlan@gentoo.org>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: 8250_dw: Add Sophgo SG2044 quirk
-Message-ID: <lsv65gsdza77bfhoewuyqznts56hnz2b7cvqxngmy6gktfys35@g7bg5ruug3yc>
-References: <20241009233908.153188-1-inochiama@gmail.com>
- <20241009233908.153188-3-inochiama@gmail.com>
- <ZwfsEpqgi9zH9P_t@smile.fi.intel.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="swBhvHwt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056A9C4CEC3;
+	Fri, 11 Oct 2024 04:46:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1728621969;
+	bh=V9ZExzkaPjw7sLS5aK7k8w5fJSCH/Aqbe7bVDfChCqw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=swBhvHwtDB4ctG7VsCgkyNray4VQXs34QgP0CAXSHAkbeGPn57MborrgMF588/pYQ
+	 WPu3Vp5Qkh7mE6GiRm2n+Jf6mMR6irAFpKe7TS1WYROC+azqE8Kj9xoJ6Ep9LASVC2
+	 LNyuVAQO0VoAJUNycbeYRUo+nJSTAzjwi93REW0I=
+Date: Fri, 11 Oct 2024 06:46:06 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Judith Mendez <jm@ti.com>
+Cc: Grygorii Strashko <grygorii.strashko@ti.com>,
+	Santosh Shilimkar <ssantosh@kernel.org>,
+	Kevin Hilman <khilman@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>, linux-omap@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, Bin Liu <b-liu@ti.com>
+Subject: Re: [PATCH 2/2] serial: 8250: omap: Move pm_runtime_get_sync
+Message-ID: <2024101154-vest-freeing-dd4f@gregkh>
+References: <20241010184802.203441-1-jm@ti.com>
+ <20241010184802.203441-3-jm@ti.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -74,56 +45,76 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZwfsEpqgi9zH9P_t@smile.fi.intel.com>
+In-Reply-To: <20241010184802.203441-3-jm@ti.com>
 
-On Thu, Oct 10, 2024 at 06:00:34PM +0300, Andy Shevchenko wrote:
-> On Thu, Oct 10, 2024 at 07:39:06AM +0800, Inochi Amaoto wrote:
-> > SG2044 relys on an internal divisor when calculating bitrate, which
-> > means a wrong clock for the most common bitrates. So add a quirk for
-> > this uart device to skip the set rate call and only relys on the
-> > internal UART divisor.
+On Thu, Oct 10, 2024 at 01:48:02PM -0500, Judith Mendez wrote:
+> Currently in omap_8250_shutdown, the dma->rx_running
+> flag is set to zero in omap_8250_rx_dma_flush. Next
+> pm_runtime_get_sync is called, which is a runtime
+> resume call stack which can re-set the flag. When the
+> call omap_8250_shutdown returns, the flag is expected
+> to be UN-SET, but this is not the case. This is causing
+> issues the next time UART is re-opened and omap_8250_rx_dma
+> is called. Fix by moving pm_runtime_get_sync before the
+> omap_8250_rx_dma_flush.
 > 
-> ...
+> Fixes: 0e31c8d173ab ("tty: serial: 8250_omap: add custom DMA-RX callback")
+> Signed-off-by: Bin Liu <b-liu@ti.com>
+> Signed-off-by: Judith Mendez <jm@ti.com>
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> > +static const struct dw8250_platform_data dw8250_sophgo_sg2044_data = {
-> > +	.usr_reg = DW_UART_USR,
-> > +	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
-> > +};
-> > +
-> >  static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
-> >  	.usr_reg = DW_UART_USR,
-> >  	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index 88b58f44e4e9..0dd68bdbfbcf 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -776,12 +776,12 @@ static void omap_8250_shutdown(struct uart_port *port)
+>  	struct uart_8250_port *up = up_to_u8250p(port);
+>  	struct omap8250_priv *priv = port->private_data;
+>  
+> +	pm_runtime_get_sync(port->dev);
+> +
+>  	flush_work(&priv->qos_work);
+>  	if (up->dma)
+>  		omap_8250_rx_dma_flush(up);
+>  
+> -	pm_runtime_get_sync(port->dev);
+> -
+>  	serial_out(up, UART_OMAP_WER, 0);
+>  	if (priv->habit & UART_HAS_EFR2)
+>  		serial_out(up, UART_OMAP_EFR2, 0x0);
+> -- 
+> 2.46.2
 > 
-> For the bare minimum this should be deduplicated as to have one record for now.
-> 
-> static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
-> 	.usr_reg = DW_UART_USR,
-> 	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
-> };
-> 
-> If we need different quirks in the future, they can be split again.
-> Or, if you certain that new quirks will come, mention this in
-> the commit message.
-> 
-
-Yes, renaming this quirk as a common one is better. I will prefer if
-this patch is necessary. Duplication is not a good idea.
-
-> ...
-> 
-> >  	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
-> >  	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
-> >  	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
-> > +	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_sophgo_sg2044_data },
-> >  	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_starfive_jh7100_data },
-> 
-> I think my proposal for having a common compatible for those two is a no-go
-> as compatible strings are for the (unique) hardware and shouldn't be abstracted
-> based on some Linux or other OS shortcuts / quirks.
 > 
 
-Yes, a common compatible is not a good idea. But it is OK to share a common quirk,
-which means they have the same problem.
+Hi,
 
-Regards,
-Inochi
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
+
+You are receiving this message because of the following common error(s)
+as indicated below:
+
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documentation/process/stable-kernel-rules.rst file for how to resolve
+  this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
