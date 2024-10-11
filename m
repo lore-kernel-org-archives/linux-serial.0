@@ -1,42 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFF111392;
-	Fri, 11 Oct 2024 04:46:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FF0E192D77;
+	Fri, 11 Oct 2024 06:09:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728621970; cv=none; b=hUYh0DIdtW3NbI+9bdntHPMuSEMAPTTmKr/2aiKtP1q4OilPrz02dPNeB/lQeEhbTSFKgwrj4GrFAaUS+X5W9uUWIeNi0UbNa5e4luXNgsJ4KbNOqpf9f2ApJ1tvY2KP6BuQ3qmOE/pobJIkk5lMFyRidJEpz6Lqc85c5si2XrY=
+	t=1728626964; cv=none; b=b3LZ/3CWf+DeqHas05oKQ9Mk6q4zxa0gtQhU5eSJ3j+OEOfJsHiAJUcbkpcvjGusuhakLaHrRUrQeSqLoJuuGbIe1TitDloxqnNTSZj1IrDYqNFpphqWno3Ype6pPO8dyJFSRbOHSMY3Mr8qM2dHZGPtZFagySCBoVK4+OzyuGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728621970; c=relaxed/simple;
-	bh=V9ZExzkaPjw7sLS5aK7k8w5fJSCH/Aqbe7bVDfChCqw=;
+	s=arc-20240116; t=1728626964; c=relaxed/simple;
+	bh=i9cYUz3cSkHkjlbjXX2TL+CxfIfYsIh3kS/FujNH0ns=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dBOlwQ9fLDC5ssSSv5JxQNCeCDVt+m5aCK0igf58p+mlFiXDQxJBKQ/SkK09VXDq+Ev1akFst1uw/MNEUZ85naPigzvVdqBfgD8OIv5x6v0fkPrutzS1K/4LbOHH5N0Mq/KtwfOxAVpfUlY/avp9pcS34qfaMapfZN8vCPoxUO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=swBhvHwt; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=cJTGtbH4d87CKPj1RaSN0cbnvQvOUHm1OgBnEffI1UGeDsY2sXtzAaY62nNW67fQ04fev7TbKZ/43ILgKQbd4hwdu9ZZQ3vSwv83DUAk1GsxuxePAT72RxEus00DuuRXX41NUPFiGg9XHHG6+kG+ZPhymGnGfbCIQ9q1dAo/KrU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=bF4rdRfG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="swBhvHwt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056A9C4CEC3;
-	Fri, 11 Oct 2024 04:46:08 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="bF4rdRfG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26B52C4CEC3;
+	Fri, 11 Oct 2024 06:09:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1728621969;
-	bh=V9ZExzkaPjw7sLS5aK7k8w5fJSCH/Aqbe7bVDfChCqw=;
+	s=korg; t=1728626963;
+	bh=i9cYUz3cSkHkjlbjXX2TL+CxfIfYsIh3kS/FujNH0ns=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=swBhvHwtDB4ctG7VsCgkyNray4VQXs34QgP0CAXSHAkbeGPn57MborrgMF588/pYQ
-	 WPu3Vp5Qkh7mE6GiRm2n+Jf6mMR6irAFpKe7TS1WYROC+azqE8Kj9xoJ6Ep9LASVC2
-	 LNyuVAQO0VoAJUNycbeYRUo+nJSTAzjwi93REW0I=
-Date: Fri, 11 Oct 2024 06:46:06 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Judith Mendez <jm@ti.com>
-Cc: Grygorii Strashko <grygorii.strashko@ti.com>,
-	Santosh Shilimkar <ssantosh@kernel.org>,
-	Kevin Hilman <khilman@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@bgdev.pl>, linux-omap@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Bin Liu <b-liu@ti.com>
-Subject: Re: [PATCH 2/2] serial: 8250: omap: Move pm_runtime_get_sync
-Message-ID: <2024101154-vest-freeing-dd4f@gregkh>
-References: <20241010184802.203441-1-jm@ti.com>
- <20241010184802.203441-3-jm@ti.com>
+	b=bF4rdRfGhj7EVWEvLjIfvY+4Raq2vEZe+yssbLN3OZ7fW7bmvDXav08gT+gBmnGSN
+	 +kmbBAOFkJtlYBrDlPTHGKAwQ7ax+wesMXi2/XL+kUHhYtiJRprpUQREwCqcUwTNpH
+	 tw+1wq1CQATrSDYV/rW/qsI+U6tk1p7cmzHdYaBs=
+Date: Fri, 11 Oct 2024 08:09:20 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Brian Cain <bcain@quicinc.com>, Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Dave Airlie <airlied@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>,
+	Lucas De Marchi <lucas.demarchi@intel.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	"Maciej W. Rozycki" <macro@orcam.me.uk>,
+	Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org,
+	linux-hexagon@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, virtualization@lists.linux.dev,
+	spice-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+	linux-serial@vger.kernel.org, linux-arch@vger.kernel.org,
+	Arnd Bergmann <arnd@kernel.org>
+Subject: Re: [PATCH v8 4/5] tty: serial: handle HAS_IOPORT dependencies
+Message-ID: <2024101112-tile-cupping-3431@gregkh>
+References: <20241008-b4-has_ioport-v8-0-793e68aeadda@linux.ibm.com>
+ <20241008-b4-has_ioport-v8-4-793e68aeadda@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -45,76 +57,19 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241010184802.203441-3-jm@ti.com>
+In-Reply-To: <20241008-b4-has_ioport-v8-4-793e68aeadda@linux.ibm.com>
 
-On Thu, Oct 10, 2024 at 01:48:02PM -0500, Judith Mendez wrote:
-> Currently in omap_8250_shutdown, the dma->rx_running
-> flag is set to zero in omap_8250_rx_dma_flush. Next
-> pm_runtime_get_sync is called, which is a runtime
-> resume call stack which can re-set the flag. When the
-> call omap_8250_shutdown returns, the flag is expected
-> to be UN-SET, but this is not the case. This is causing
-> issues the next time UART is re-opened and omap_8250_rx_dma
-> is called. Fix by moving pm_runtime_get_sync before the
-> omap_8250_rx_dma_flush.
+On Tue, Oct 08, 2024 at 02:39:45PM +0200, Niklas Schnelle wrote:
+> In a future patch HAS_IOPORT=n will disable inb()/outb() and friends at
+> compile time. We thus need to add HAS_IOPORT as dependency for those
+> drivers using them unconditionally. Some 8250 serial drivers support
+> MMIO only use, so fence only the parts requiring I/O ports and print an
+> error message if a device can't be supported with the current
+> configuration.
 > 
-> Fixes: 0e31c8d173ab ("tty: serial: 8250_omap: add custom DMA-RX callback")
-> Signed-off-by: Bin Liu <b-liu@ti.com>
-> Signed-off-by: Judith Mendez <jm@ti.com>
+> Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Arnd Bergmann <arnd@kernel.org>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 > ---
->  drivers/tty/serial/8250/8250_omap.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-> index 88b58f44e4e9..0dd68bdbfbcf 100644
-> --- a/drivers/tty/serial/8250/8250_omap.c
-> +++ b/drivers/tty/serial/8250/8250_omap.c
-> @@ -776,12 +776,12 @@ static void omap_8250_shutdown(struct uart_port *port)
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  	struct omap8250_priv *priv = port->private_data;
->  
-> +	pm_runtime_get_sync(port->dev);
-> +
->  	flush_work(&priv->qos_work);
->  	if (up->dma)
->  		omap_8250_rx_dma_flush(up);
->  
-> -	pm_runtime_get_sync(port->dev);
-> -
->  	serial_out(up, UART_OMAP_WER, 0);
->  	if (priv->habit & UART_HAS_EFR2)
->  		serial_out(up, UART_OMAP_EFR2, 0x0);
-> -- 
-> 2.46.2
-> 
-> 
 
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
