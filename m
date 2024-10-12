@@ -1,57 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9003BDDC1
-	for <linux-serial@vger.kernel.org>; Sat, 12 Oct 2024 02:51:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF6AB4642D
+	for <linux-serial@vger.kernel.org>; Sat, 12 Oct 2024 02:58:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728701512; cv=none; b=gwU0PzbbC6f0didniHMUB4aWucLDuonsLLKDGMP0060KyrCBWsPGKhLyeccuDoL4Q+imbqfmcOyWOqtnfKBeiZ01MKiRqDM6x15ZImrlTa6LyHzeRQnWfelzglOuDSvOT2Zsnnyc7MJshGCmrfhm2fumr1FffluUpVFgnKwn9Fw=
+	t=1728701932; cv=none; b=OshrRJ81Kj88eiR6qoIpfqw2G1B5s2RMnjF4ZNEqOKGtq5Os++N4VR3DcWXJrD/vfS/LeXilAu5ObyBLVMVybpnvBFRbsokuJMxNE6oXaGgBB3X0kM8c3/cS1fywnTrZZ76NOybTMSUM3O/KEPg7Pn0qH8f/FwWwfIVaSvqrIQQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728701512; c=relaxed/simple;
-	bh=9nBZvTxQhmQRFga6H2OtvAFHHX7gLDV5vJx/tpxbubA=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=YbXCjwzwhJiMUUjt3w7EngnBMrknkdBiLRH1MxVegnZ+Ba6aFqZWI3UZsGkxjjsJzK6uvD0+Laf2iWzj4KGCEapzOENq7IdHH62vb7zHCX0xos0d6IZDhiCDdF1fxi5aMKIGyki+ZfRDG6wie+Q+W3ghFj0sa15K0iMuonjGdWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H5iFWnbv; arc=none smtp.client-ip=192.198.163.10
+	s=arc-20240116; t=1728701932; c=relaxed/simple;
+	bh=r84ZIvVL5MZtTxMFuQwp206WoB6hZTGGb9XI6ohmZx4=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=E4AiXxMMLMU5rrDG0E0VPOtkAncZWGt6HnjyhuTabPN6G75jhZwptHUugFZSgErihQs6ngq8zrcQlOSD4y/mLPyOD4/iaMpAowTSqon3egbx2cKIQyRv8A6w6GjKkz+c6vdCkipgWLcEumHuhGEjrx1Y2n6+Qpex+fN4O3vFiRo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=l/Jmz3Cw; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H5iFWnbv"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l/Jmz3Cw"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1728701511; x=1760237511;
+  t=1728701931; x=1760237931;
   h=date:from:to:cc:subject:message-id;
-  bh=9nBZvTxQhmQRFga6H2OtvAFHHX7gLDV5vJx/tpxbubA=;
-  b=H5iFWnbvkvUYMHeG285cO7NYs3uJEWVmCcELc6Mcy03IGURiTwyolsWa
-   zptomCnPJ274mBr+d8Jc1KarMmBvP6M9McQlVOv03/7E+R2M5XXHOfRJk
-   +nTHgTHN38E8b/O9aCi2PRZlYiTzFZTTujerWpvmO0iuGdqaC3q5WVhDq
-   8sAbayXgm0Mwo+YE7JW/MrQPcUesrHs7/ceVBD/GIlENQJpbzHLfBEGoQ
-   cHxsBNQAVoi+Zn9EVmY9D3242wHzd3go94w5hCJOPF307SbbdY0DmfRrw
-   U4j52rCoVN5LK8+FKOyAtTnvSdT8Vkt4opthskP8ELMbFKVAGS/wbMBQG
-   g==;
-X-CSE-ConnectionGUID: qDqNcIcKQemm9fyIzQFr/Q==
-X-CSE-MsgGUID: 6u+46vv+QVG97Zk7sd0aaw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="39490428"
+  bh=r84ZIvVL5MZtTxMFuQwp206WoB6hZTGGb9XI6ohmZx4=;
+  b=l/Jmz3CwKWTZijvR6vGxfGnXxudGJayPu+ys/Em8i54C+U5kNajbk5ix
+   Kt1iTTZTFWdBLfuuWX+R8hiOHO7XrBUPZSpG1GY5g6ADitJwYFAG4iacY
+   UcFSRWk3EoRB9vxlLKBJ9GyWDOzBVXlZG2g89VCgH/VfTVkzLM2PLnvJ+
+   EanZhluDwo4BikNI+SlutIJvo6pQ+qiuFkzJV5krfmRxy7QPOkdeIwK/v
+   REqo0f/MtMFPxXE2B25UCykGkCrcwyF3m8eYXaRtkoEo2zQgbXMplYXSB
+   W8tLM9aD+ZnHCn3gl7ZH0kcac/eVQdMeW/xgXh8gHGKW8qVsrZ+XGvZMc
+   w==;
+X-CSE-ConnectionGUID: G8ydojtWTYiot6SVvFcBqA==
+X-CSE-MsgGUID: fAC0PxMrTF2ibR0sJFm6Fw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="27921962"
 X-IronPort-AV: E=Sophos;i="6.11,197,1725346800"; 
-   d="scan'208";a="39490428"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2024 19:51:50 -0700
-X-CSE-ConnectionGUID: 7HQxJai5SSWPmwa5uuev3A==
-X-CSE-MsgGUID: /3LYNAsnQMSp9wQfJVFVUw==
+   d="scan'208";a="27921962"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2024 19:58:51 -0700
+X-CSE-ConnectionGUID: BAI1tSMVTve8s6GM9bNOmA==
+X-CSE-MsgGUID: iOzXx4OcRn+AwCWj8LMhZg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,197,1725346800"; 
-   d="scan'208";a="81697862"
+   d="scan'208";a="77900703"
 Received: from lkp-server01.sh.intel.com (HELO a48cf1aa22e8) ([10.239.97.150])
-  by fmviesa004.fm.intel.com with ESMTP; 11 Oct 2024 19:51:49 -0700
+  by orviesa008.jf.intel.com with ESMTP; 11 Oct 2024 19:58:49 -0700
 Received: from kbuild by a48cf1aa22e8 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1szSEN-000Cyp-0I;
-	Sat, 12 Oct 2024 02:51:47 +0000
-Date: Sat, 12 Oct 2024 10:51:10 +0800
+	id 1szSL9-000Cz1-0j;
+	Sat, 12 Oct 2024 02:58:47 +0000
+Date: Sat, 12 Oct 2024 10:58:44 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- f5927d832bb823dbe827603a083f225911208cb6
-Message-ID: <202410121056.OuhgaMBa-lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ be847a3a8d4ec4bf270c2455376d11f2de61bfb3
+Message-ID: <202410121030.XKRAXqFp-lkp@intel.com>
 User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,10 +59,10 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: f5927d832bb823dbe827603a083f225911208cb6  serial: 8250_exar: Remove old exar_ee_read() and other unneeded code
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: be847a3a8d4ec4bf270c2455376d11f2de61bfb3  serial: qcom-geni: rename suspend functions
 
-elapsed time: 1139m
+elapsed time: 1147m
 
 configs tested: 94
 configs skipped: 3
