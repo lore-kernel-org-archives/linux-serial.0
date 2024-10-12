@@ -1,76 +1,128 @@
-Received: from mail.andi.de1.cc (mail.andi.de1.cc [178.238.236.174])
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B5031547EC;
-	Sat, 12 Oct 2024 12:27:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.238.236.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30CC1EA65;
+	Sat, 12 Oct 2024 17:35:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728736040; cv=none; b=sJ6hsZEAN3hZakEzj/aHG61T9zJLWXO/V2EP8d/UhZZimZaza77W33u9SvfX0A5rXtndY6S9V7rADtszeOwRPXreN5PG+qlJESMZqm91hh439KEAKwGgufKsfuddT4zP/7FPnvk5N7VyMikPNPnyASDpCX1Ym8LJRP7LCeSonHg=
+	t=1728754553; cv=none; b=LEQlaKkIIfGmd5yjyRBLwu61+aL/dLdbR3e80Lc3jsYkUGPWcc3tb5zfcOQgGVRR6uyaCQCUJXEIdFwQTnNC38afPA5qLAVZIMIDuWcKb+zjk0nd12KnkgBi7LjejTAHBWEmkFCtW3T3PvwrjCAxj2NDvChsjn+loNp2/lnm00U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728736040; c=relaxed/simple;
-	bh=AW3dEJfXkbvZDC5i5vXpP3e1g5C6PDrzUBF9uv7oO34=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KkPA6HhOpGmBpfgf1z9twGB0dHVaYTkllUmY869AxTwfe9Xrv4Dxo+xXt8l6DF9ckZNeH24WHxguYc3IfXP4O+5y1YiscNKyXyNxMZs8Vf9Ad4srYVJ5WITdSN5skpOjpQLmRC63I8lBccPWE3lECP4MFGI5wdUvN49sT34LvUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info; spf=pass smtp.mailfrom=kemnade.info; dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.b=1mnqTPr0; arc=none smtp.client-ip=178.238.236.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kemnade.info
+	s=arc-20240116; t=1728754553; c=relaxed/simple;
+	bh=B/ZlyxiX2NnLgtqIFj15AHbmeHrL4+2HNnXLckZf1o0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Cbdk1g6XQgyaN/hjBEtwPxhuZnBxNxKtNbqy8Wa6JbEYq4ywIiKc6K3d8EcTMxTnkMGRsrfNnP8c4Hoq78uvhzmZNut7L93yr8FzlvyYdsTtXkTSa1X+TeXrZ+KdLZb5OpIdjsi+YeOUqwtFrJkvaspdCbVMxBuqCsEciC22+4I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b=uNW5X8oQ; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="1mnqTPr0"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=kemnade.info; s=20220719; h=References:In-Reply-To:Cc:From:Sender:Reply-To:
+	dkim=pass (2048-bit key) header.d=sntech.de header.i=@sntech.de header.b="uNW5X8oQ"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Transfer-Encoding:Content-Type:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
 	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=4ouJYdrPCXF2NJQrf7iMXlQZzT4n+FtO70LbtnE4RZU=; b=1mnqTPr0eBEi3IeJWGox1VV5/1
-	inNkaoFOaWMs96HyZ2kcGkhbzo32MQCaV9GLJESuvPKnN8KZ2gbhmOovzeSMblWibDR/MZG/xkHwa
-	9/BCRYDBkY3gTtPGyivmAT4lCVk6HhimUy9kcfNoUa+eApDA9OofreMMjYlEdy0MO2zEjrB72oes3
-	uReUcx4lhaAYTiM7C3tm9ODy3+M0b7UGI9yOITXzKa3mzXBH/L2uQWpfhE6w2IBJJKOnCXCk1ti1w
-	xGjvoLshLjrdCPbUAQj/X/XaK2lQOrZpr0++0OMN6a606W5dND76raZ3Q8FDviwDS1/MgeLVPfIJS
-	hlxmkWng==;
-Date: Sat, 12 Oct 2024 14:27:05 +0200
-From: Andreas Kemnade <andreas@kemnade.info>
-To: Judith Mendez <jm@ti.com>
-Cc: Santosh Shilimkar <ssantosh@kernel.org>, Kevin Hilman
- <khilman@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz
- Golaszewski <brgl@bgdev.pl>, <linux-omap@vger.kernel.org>,
- <linux-gpio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Bin Liu
- <b-liu@ti.com>, <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH RESEND 2/2] serial: 8250: omap: Move pm_runtime_get_sync
-Message-ID: <20241012142705.45948f7d@akair>
-In-Reply-To: <20241011173356.870883-3-jm@ti.com>
-References: <20241011173356.870883-1-jm@ti.com>
-	<20241011173356.870883-3-jm@ti.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
+	Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=AQhSOcq/aIa70jmnVrqHrmUcq5CjjmXv02YVDlavj3k=; b=uNW5X8oQ7/TOXG/4sbWLaBuPTX
+	YhTRKIC5395aQiOZ1mAgpFu9zMCVrMdHEvsjMa+K18IBsUeUOB6PobQ3n8OZ+nPxV4Q27YkZe8coz
+	qcjrqQmwNZwMQU4iWqxW49gryiGIwmCUHim2VMqBPZ5+pSdfB2lOMP/SnEdQxAQExVutDL1hNZ3Mu
+	NkEmQDESZlZPLSRAbYtm/hH2zpiua1nLzyWmBXKnU00t5/6x0ArIsm6/OmjE/JZjOXRtGVoAN35nD
+	Q0rBgWgWdfCNun0FhYuVsoavbXds6RNJxe0OlHuDAA9JmVmDGwctciSJegyQVsH4FD7zdVQBf7iMF
+	uYUE3DvA==;
+Received: from i53875b34.versanet.de ([83.135.91.52] helo=phil.lan)
+	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <heiko@sntech.de>)
+	id 1szg1D-00019k-IQ; Sat, 12 Oct 2024 19:35:07 +0200
+From: Heiko Stuebner <heiko@sntech.de>
+To: linux-kernel@vger.kernel.org,
+	Detlev Casanova <detlev.casanova@collabora.com>
+Cc: Heiko Stuebner <heiko@sntech.de>,
+	Jonas Karlman <jonas@kwiboo.se>,
+	Muhammed Efe Cetin <efectn@protonmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Elon Zhang <zhangzj@rock-chips.com>,
+	Jagan Teki <jagan@edgeble.ai>,
+	Jimmy Hon <honyuenkwun@gmail.com>,
+	linux-serial@vger.kernel.org,
+	Guenter Roeck <linux@roeck-us.net>,
+	Conor Dooley <conor+dt@kernel.org>,
+	linux-watchdog@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Simona Vetter <simona.vetter@ffwll.ch>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Jamie Iles <jamie@jamieiles.com>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>,
+	Wim Van Sebroeck <wim@linux-watchdog.org>,
+	Yifeng Zhao <yifeng.zhao@rock-chips.com>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Dragan Simic <dsimic@manjaro.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Liang Chen <cl@rock-chips.com>,
+	dri-devel@lists.freedesktop.org,
+	Alexey Charkov <alchark@gmail.com>,
+	linux-i2c@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Michael Riesch <michael.riesch@wolfvision.net>,
+	Maxime Ripard <mripard@kernel.org>,
+	linux-spi@vger.kernel.org,
+	Ondrej Jirman <megi@xff.cz>,
+	Andy Yan <andyshrk@163.com>,
+	kernel@collabora.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	Finley Xiao <finley.xiao@rock-chips.com>,
+	Elaine Zhang <zhangqing@rock-chips.com>,
+	Rob Herring <robh@kernel.org>,
+	Tim Lunn <tim@feathertop.org>
+Subject: Re: (subset) [PATCH v4 0/9] Add device tree for ArmSoM Sige 5 board
+Date: Sat, 12 Oct 2024 19:35:04 +0200
+Message-ID: <172875437678.35125.9831204281305504545.b4-ty@sntech.de>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240903152308.13565-1-detlev.casanova@collabora.com>
+References: <20240903152308.13565-1-detlev.casanova@collabora.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Am Fri, 11 Oct 2024 12:33:56 -0500
-schrieb Judith Mendez <jm@ti.com>:
-
-> Currently in omap_8250_shutdown, the dma->rx_running
-> flag is set to zero in omap_8250_rx_dma_flush. Next
-> pm_runtime_get_sync is called, which is a runtime
-> resume call stack which can re-set the flag. When the
-> call omap_8250_shutdown returns, the flag is expected
-> to be UN-SET, but this is not the case. This is causing
-> issues the next time UART is re-opened and omap_8250_rx_dma
-> is called. Fix by moving pm_runtime_get_sync before the
-> omap_8250_rx_dma_flush.
+On Tue, 3 Sep 2024 11:22:30 -0400, Detlev Casanova wrote:
+> Add the rk3576-armsom-sige5 device tree as well as its rk3576.dtsi base
+> and pinctrl information in rk3576-pinctrl.dtsi.
 > 
-> Signed-off-by: Bin Liu <b-liu@ti.com>
-> Signed-off-by: Judith Mendez <jm@ti.com>
+> The other commits add DT bindings documentation for the devices that
+> already work with the current corresponding drivers.
+> 
+> Note that as is, the rockchip gpio driver needs the gpio nodes
+> to be children of the pinctrl node, even though this is deprecated.
+> 
+> [...]
 
-Is this a theorectical problem or some real practical problem?
-So you are running a system with runtime pm enabled on serial
-console.
-How did you come across this issue?
-I could run the serial console/getty with runtime pm autosuspend enabled
-without issues all the years.
+Applied, thanks!
 
-Regards,
-Andreas
+[1/9] dt-bindings: arm: rockchip: Add ArmSoM Sige 5
+      commit: 78dee7b6ef085c6a1becad536035bdd39557c9b0
+[8/9] arm64: dts: rockchip: Add rk3576 SoC base DT
+      commit: 4b9dc5d536b988fbd84e68e8d8ac420752b185b6
+[9/9] arm64: dts: rockchip: Add rk3576-armsom-sige5 board
+      commit: 54a18f63eb1aaf50cad17dd64076293f2817e1d5
+
+changes:
+- added some lines between node
+- resortet regulator nodes
+- removed trailing whitespace from one line
+- drop clock-frequency from armsom sige5 rtc@51
+- drop rockchip,grf from cru (lookup is done via compatible)
+- order gpu interrupts like expected in the binding
+- adjust mmc compatible to binding
+
+
+Best regards,
+-- 
+Heiko Stuebner <heiko@sntech.de>
