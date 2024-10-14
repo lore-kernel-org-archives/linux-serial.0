@@ -1,102 +1,92 @@
-Received: from mail.andi.de1.cc (mail.andi.de1.cc [178.238.236.174])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C8341AE01F;
-	Mon, 14 Oct 2024 15:22:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.238.236.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8FF51B4F2B;
+	Mon, 14 Oct 2024 15:56:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728919365; cv=none; b=MjwUeAsVZbtvmk5ojjtb2N97ksn1eVRe2SZ5dZx9/oO/rxsL7J25FDPTW/LXJ0+YkmMZKJ/G/XjIdqy1ypX4uJk18+pelkBuDzFlt13kb4DkNkwSQRe7CK7OQM7JIqFBd2lmOX2sgpj5sgofmfr6g7FMu7nzh3WgsijV9xLOeRM=
+	t=1728921376; cv=none; b=sGD60R8M+Hlt+/XY3UCWTr2uDZTz/scGNszCOQwNEzM0IXG3DI1C3BAqEH2p3cLEAf6Wb6FiJnDTrbji4jzVBM80LuHWiDYL3SPgwS8YR0ToFploJSv/0Zl2YqbcGZOtFi6e0CtZNhCfrNYLDg6Yt8TUCrFgatKcGNy9ZYGX3ug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728919365; c=relaxed/simple;
-	bh=riXFOTomC+rJMGpA1bmlrqeX3Yd+ngcuOvBAzntGC3Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KUETXbv+L6/Aagd1h2138a4JFeELk13+Yyr7Jer07lpbkydqppPlj1t9gqwV7hsZb3jzNgVcD2y3oF+s+e1Ftf1jXzPC39mo5i3/6qba2kq8pgsD/6luKtOhxi9OmG2pfCmyUXG+blCrYwhgTpEAdlJ17RjB5p0K3tRGjsGEBq8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info; spf=pass smtp.mailfrom=kemnade.info; dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.b=HzQokqH2; arc=none smtp.client-ip=178.238.236.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kemnade.info
+	s=arc-20240116; t=1728921376; c=relaxed/simple;
+	bh=RdNdTs4gWFa8xA+1hi9htDSIKKlwmLFj74jVWogayEM=;
+	h=Date:Content-Type:MIME-Version:From:To:Cc:In-Reply-To:References:
+	 Message-Id:Subject; b=ow+jHmD3k1vxnTud02WghWL6PUiFIcBf2KqgwNmlB5xK17vGbZBuCI2JflXyKorwbrOMhrh6KBDKvNCH8NRjKRPCUPoGrLWKPL9eKqscrbJQPFoviw3yY9Odh/U1g+im00BFsZUJCOvlvw5CUolpfbyM7n4Ril5aBj3NZs5ZsFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FeSb95v6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="HzQokqH2"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=kemnade.info; s=20220719; h=References:In-Reply-To:Cc:From:Sender:Reply-To:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=riXFOTomC+rJMGpA1bmlrqeX3Yd+ngcuOvBAzntGC3Y=; b=HzQokqH2HhbTAwK0NvS/BSx/lN
-	S+gpVOrdx1XnxxgppSHuLlOyRzSg1/TAGLw+Hv7IYnoXWkgYcFj0htDoLTAghLwy9vx9s6ivPlNdg
-	rtqVtcqPsSA2ttFf4Vt4NvE6drpug/dFXTTLFSBohy2wQ9bs6KSgnSw72/GHlDlHoS7/5w7pIAPm0
-	qr4+KoYm2HsCSW/G0x1sn0fWpQBivOAcu961c1vgDhtNjLvVKTK96mLsLDgf31WtECME0qE0wNlga
-	srHIudAXzkLkyWd8RP2Tbq5pDyFbP4wTsBDEosrzXuRZPgiiCIZ8BcM+Rs+um/q9P0beHkTSIOqWM
-	onwvGadQ==;
-Date: Mon, 14 Oct 2024 17:22:37 +0200
-From: Andreas Kemnade <andreas@kemnade.info>
-To: Bin Liu <binmlist@gmail.com>
-Cc: Judith Mendez <jm@ti.com>, Santosh Shilimkar <ssantosh@kernel.org>,
- Kevin Hilman <khilman@kernel.org>, Linus Walleij
- <linus.walleij@linaro.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
- linux-omap@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Bin Liu <b-liu@ti.com>,
- linux-serial@vger.kernel.org
-Subject: Re: [PATCH RESEND 2/2] serial: 8250: omap: Move pm_runtime_get_sync
-Message-ID: <20241014172237.63e9625f@akair>
-In-Reply-To: <4297747A-8AB9-4E50-93FF-723672B6471C@gmail.com>
-References: <20241012142705.45948f7d@akair>
-	<4297747A-8AB9-4E50-93FF-723672B6471C@gmail.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FeSb95v6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1212EC4CEC3;
+	Mon, 14 Oct 2024 15:56:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1728921376;
+	bh=RdNdTs4gWFa8xA+1hi9htDSIKKlwmLFj74jVWogayEM=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=FeSb95v6y18mAB5rVvY4u9Kmh5FFSPyKzcrMh8uVcSFGaG+hkbODTKIULH1uZ63/U
+	 YqreHb9YRvpjDrmFVdWoIUzoYRhuoEnl3B6UFyjAs1nBoeFq/5OgiJpgV5JUW8X5er
+	 s8vKdWhJmu4zwgEpbWUFYhjAtlxVr9yH2SB/TIQblFQcY3kFu+uxhb1LSTmsSP4QVA
+	 O7F0bkRzYKvYPs6L7mtJt2uTRnjzakIq//zjtX2ClKnWoCgV8F/rsqW/+bkyBcWIcB
+	 oY+fHrE3k1nr0ONLS61IqOdNQ8bP0FBWvjyTUDm8oVdZhJI7sPmV5gwdT8HOl7iE39
+	 JSs4BGsSwmrCg==
+Date: Mon, 14 Oct 2024 10:56:14 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Ciprian Costea <ciprianmarian.costea@oss.nxp.com>
+Cc: Christophe Lizzi <clizzi@redhat.com>, 
+ Alberto Ruiz <aruizrui@redhat.com>, Chester Lin <chester62515@gmail.com>, 
+ linux-serial@vger.kernel.org, Enric Balletbo <eballetb@redhat.com>, 
+ Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, 
+ devicetree@vger.kernel.org, NXP S32 Linux Team <s32@nxp.com>
+In-Reply-To: <20241014144501.388050-2-ciprianmarian.costea@oss.nxp.com>
+References: <20241014144501.388050-1-ciprianmarian.costea@oss.nxp.com>
+ <20241014144501.388050-2-ciprianmarian.costea@oss.nxp.com>
+Message-Id: <172892137480.1497237.16573929497529624657.robh@kernel.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: linflexuart: add clock definitions
 
-Am Sun, 13 Oct 2024 21:52:05 -0500
-schrieb Bin Liu <binmlist@gmail.com>:
 
-> Hi,
->=20
-> Somehow this email wasn=E2=80=99t cc=E2=80=99d to my company email account
-> b-liu@ti.com, so I am replying from my personal email which
-> subscribed to the mailing list, and sorry if the formatting is wrong
-> since I am writing this response on my phone.=C2=A0
->=20
-> On Oct 12, 2024, at 7:27=E2=80=AFAM, Andreas Kemnade <andreas@kemnade.inf=
-o>
-> wrote:
-> >=20
-> > =EF=BB=BFAm Fri, 11 Oct 2024 12:33:56 -0500
-> > schrieb Judith Mendez <jm@ti.com>:
-> >=20
-> > Currently in omap_8250_shutdown, the dma->rx_running
-> >> flag is set to zero in omap_8250_rx_dma_flush. Next
-> >> pm_runtime_get_sync is called, which is a runtime
-> >> resume call stack which can re-set the flag. When the
-> >> call omap_8250_shutdown returns, the flag is expected
-> >> to be UN-SET, but this is not the case. This is causing
-> >> issues the next time UART is re-opened and omap_8250_rx_dma
-> >> is called. Fix by moving pm_runtime_get_sync before the
-> >> omap_8250_rx_dma_flush.
-> >>=20
-> >> Signed-off-by: Bin Liu <b-liu@ti.com>
-> >> Signed-off-by: Judith Mendez <jm@ti.com>
-> >>=20
-> > Is this a theorectical problem or some real practical problem?
-> > So you are running a system with runtime pm enabled on serial
-> > console.
-> > How did you come across this issue?
-> > I could run the serial console/getty with runtime pm autosuspend
-> > enabled without issues all the years.
-> >=20
-> Yes this is a real issue reported on AM335x. Please see the report
-> linked below.
->=20
-> PROCESSOR-SDK-AM335X: Possible bug in 8250_omap UART driver -
-> Processors forum - Processors - TI E2E support forums e2e.ti.com
->=20
->=20
-Thanks for information, so it looks like material for backporting.
-Maybe add the link in the description and add the cc stable and=20
-add back the fixes tag.
+On Mon, 14 Oct 2024 17:45:00 +0300, Ciprian Costea wrote:
+> From: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
+> 
+> Add clock definitions for NXP LINFlexD UART bindings
+> and update the binding examples with S32G2 node.
+> 
+> Signed-off-by: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
+> ---
+>  .../bindings/serial/fsl,s32-linflexuart.yaml  | 27 +++++++++++++++++++
+>  1 file changed, 27 insertions(+)
+> 
 
-Regards,
-Andreas
+My bot found errors running 'make dt_binding_check' on your patch:
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.example.dtb: serial@40053000: 'clocks' is a required property
+	from schema $id: http://devicetree.org/schemas/serial/fsl,s32-linflexuart.yaml#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.example.dtb: serial@40053000: 'clock-names' is a required property
+	from schema $id: http://devicetree.org/schemas/serial/fsl,s32-linflexuart.yaml#
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20241014144501.388050-2-ciprianmarian.costea@oss.nxp.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
