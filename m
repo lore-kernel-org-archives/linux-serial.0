@@ -1,89 +1,93 @@
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 097EF1C82E3
-	for <linux-serial@vger.kernel.org>; Tue, 15 Oct 2024 08:33:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0B1A15099D;
+	Tue, 15 Oct 2024 11:34:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728981208; cv=none; b=uCMLBJLMS8lJeOS2Z7I2Pk2eo9sXlUAxaHkyiur+GYyVb9t/FMhMu/CBc5U/LoeQWrwKj+9Nb0rBqOXC20qwLh9uN63l879Xc90LI8sIPY8Os/bfZt4khvFgqBYAqhDx81+P3VmhqHqFBsYvVBDdTbOY8GOvD1pDFy3e2BZX/o0=
+	t=1728992081; cv=none; b=fwzddyZs+EPMnuZUO9lGzVIMpjFNGa/t9PFJ9MlU31JDBh2sLj6MrlRQv+gaSUdYGp4eDsNI7Sa8DH+QEqTJyqtlYqatU/XY2Vk2s8CJ+S001J3SFmj7rgyqgC+dlsvvYqYLrjCKiF3irD686IXsR0zBrkLzfIjkkb5R9HzOpJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728981208; c=relaxed/simple;
-	bh=l0KnU1jEnOmVtqvVeeOzYzZ+gH3uccCWi6iDMciRvAw=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=iHN6QYfhNUZAkMvL9CqjqsrrfXKzMhwmeGbsF1qx36sS1yosv3z5b9cuZkPfpE9dhrj9wXcR0AV3Z1hIorU6Bf+J58ICmSo5/jSJRgMT5sNuWgbtegTHsYCJj+F029g0kviFFOdehLwX9oqo+FoCcwk+GzFNDXtkLePhGEv+/1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-83780092c0eso319418339f.1
-        for <linux-serial@vger.kernel.org>; Tue, 15 Oct 2024 01:33:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728981205; x=1729586005;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=JG1+mKjuFX1R5St19IEjhFL/nfMVyVLuhi5QnUBNr2U=;
-        b=uGplYtqagd15577TlaanW0QErGILH8VfczBcXOvSRDcXAPYH4f4criRT/YVVnxRFZM
-         zWUtSKZVZSnqKHDOhqiuvbQnpKroRffTk+TmifqAaSA2E/Js9GEiALepmntf+GvbWRXP
-         zq7Pxc+6GpaPUa7BBruB4OeKY4teWJ/88O8vk766StVvgNKF0e7+HG4S1XzFO/F/ocrC
-         0aW4G8zdXl/o3DIjtZi0Ydqe5Xwvs3RYx1nPBoX2lS8PdoKoVk+HYNMqAVoWvdX140Lc
-         x5PpFuVPr1vu2ReZ87uJDNuRbG7aImo2wZ9lV5wDIgzz30Qj4wCI/HNLmzphueE05zkw
-         0EhQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVYgCAoMAGjM6M9m6zvaj2RFT01TQL6ymG3MiquCpKGhsjhaK659efd7c5wgAgsAZ7XrXn3T181qwOZQK4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwJDeybg3yfaGt3zQiR9oGjnSUmrbqkejA8JdznNlgxOZu2zvQv
-	5L9NOh+xky8U0F3hrJzr6D2yomUHEWaFqjyU1HXzTz+DtFtYdzxqFDlnTuRpeq+0oiT7B+6Xd7w
-	gxxW6gZzokYgkxskWmXxdku5p3bmG0YhKwCTadUd7ybqAK+iKTRl8lsw=
-X-Google-Smtp-Source: AGHT+IEMyuaPYAGshOPlblIJqFJISjdqEEjpzojYE0wgROrTk5FGNj5JIoyMr/Oj7268qeO3d3r2lZh6bBYa9S14mGh5d4z4jkoG
+	s=arc-20240116; t=1728992081; c=relaxed/simple;
+	bh=QQ5YIhldVyNwIwAkOJehyVg5fvH4Y/bF5BwZEh4dw2A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PfawJDtcnaf/O5NnEpLkeuA7W+cHzSvVvpIIHlodZzit4xQwzB7CIx5rs4Pf0zZ3ealFmvEd+WGP8T43D3FCCcGmw6OlygsGLscSHfylkKzEUe68pSJDSW/Bh09K1BF4lnq83EufGn8AQB7gt4M9/zfr9zB1Afpb0yRvTNUn0ak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L5Q0OswE; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L5Q0OswE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1728992080; x=1760528080;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=QQ5YIhldVyNwIwAkOJehyVg5fvH4Y/bF5BwZEh4dw2A=;
+  b=L5Q0OswEQrZtscwOaWu9hbtuTkIenWl0Sk3ZDVo999MmGO7tg/g/PIQX
+   RArTkDexryrBIsItX0SsTRXA5J9RodjuoJqLFTBK+XCC9HizavSXAAxSD
+   LpIF9FufqL0F087kpfq22PbZC4ey1Cd7OA/SvQR5TtQU7qtTZmmnCYm/q
+   d5GweydUzr+Pt2t1AZwvaq1+wMTy2LbtBjyJzgKo6klcUjQmVhg3LNVJq
+   sB+MM+vLRV+ceT9FoBPZDlmbUzalHRXUEtMPbhfr9SQmHiLTzyzxy2W1C
+   vfLTy2f7tbYBy0lMHW+uk01I0A8awlIoixsd6d6vTdfBI8utO1TLexkPT
+   w==;
+X-CSE-ConnectionGUID: 7g2GMlWbQaGZjWExOjYAiw==
+X-CSE-MsgGUID: MypAoUM6TxaUPFWC2TX6hw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="38933972"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="38933972"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2024 04:34:40 -0700
+X-CSE-ConnectionGUID: aDq4v7IAQlKN3BvHFnTo+g==
+X-CSE-MsgGUID: uBeHfze4QbexSbsA0OX6bQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,205,1725346800"; 
+   d="scan'208";a="82916412"
+Received: from smile.fi.intel.com ([10.237.72.154])
+  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2024 04:34:36 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1t0fov-00000003Fds-1u6y;
+	Tue, 15 Oct 2024 14:34:33 +0300
+Date: Tue, 15 Oct 2024 14:34:33 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Omer Faruk BULUT <m.omerfarukbulut@gmail.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, pmladek@suse.com,
+	paulmck@kernel.org, john.ogness@linutronix.de, tony@atomide.com,
+	arnd@arndb.de, u.kleine-koenig@pengutronix.de,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 2/2] 8250_core.c : Global variable shouldn't be
+ initialized to NULL
+Message-ID: <Zw5TSaN9BGyNwrsT@smile.fi.intel.com>
+References: <20241014180415.2365-1-m.omerfarukbulut@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:13a7:b0:3a0:9159:1561 with SMTP id
- e9e14a558f8ab-3a3b5f233e1mr126389635ab.2.1728981205184; Tue, 15 Oct 2024
- 01:33:25 -0700 (PDT)
-Date: Tue, 15 Oct 2024 01:33:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <670e28d5.050a0220.f16b.0007.GAE@google.com>
-Subject: [syzbot] Monthly serial report (Oct 2024)
-From: syzbot <syzbot+list171ab5036cef2d0e0705@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241014180415.2365-1-m.omerfarukbulut@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Hello serial maintainers/developers,
+On Mon, Oct 14, 2024 at 09:04:15PM +0300, Omer Faruk BULUT wrote:
+> I check it with checkpatch. Then remove the NULL part.
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+checkpatch may be false positive. Please, add a better analysis
+that it's fine to do a such cleanup. Note, this variable is _not_
+static.
 
-During the period, 0 new issues were detected and 0 were fixed.
-In total, 16 issues are still open and 42 have been fixed so far.
+...
 
-Some of the still happening issues:
+> -const struct uart_ops *univ8250_port_base_ops = NULL;
+> +const struct uart_ops *univ8250_port_base_ops;
 
-Ref Crashes Repro Title
-<1> 494     Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
-                  https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-<2> 156     Yes   KASAN: stack-out-of-bounds Read in sched_show_task
-                  https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
-<3> 28      Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
-                  https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
-<4> 26      No    KMSAN: uninit-value in n_tty_receive_buf_closing (3)
-                  https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
-<5> 10      Yes   INFO: rcu detected stall in console_callback
-                  https://syzkaller.appspot.com/bug?extid=32af18ae7b894a681f2d
-<6> 7       No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
-                  https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
+Is it guaranteed to be NULL for non-static variables? If so,
+we want to know the details.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+>  struct uart_ops univ8250_port_ops;
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+-- 
+With Best Regards,
+Andy Shevchenko
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
 
-You may send multiple commands in a single email message.
