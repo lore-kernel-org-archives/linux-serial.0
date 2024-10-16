@@ -1,147 +1,146 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73E04212634;
-	Wed, 16 Oct 2024 17:03:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2D5A18A933;
+	Wed, 16 Oct 2024 18:11:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729098213; cv=none; b=GYnOAy/n/w77Y9XxVt6KCuD0NYFKPFBdc4R3ZUiFevyjUUpTpVkAQRyVsIe04w5gQ3l/PEtx2Ex0UAzPDavRqcBVmGusHUolsWXe0d1eQa0qOW+zzAtCrnGE3iIkSjfuJatiAdBsNQbf2+6qUMi6RJ14ulFMzGJVdhhVjmixRDE=
+	t=1729102312; cv=none; b=Eh/4Devl0DyeBvLkZMIYc1AF2rS0jKHk25rBLmdSFWflrAjPEj3Dueptl2MLRGTMkzSX9CZoPkVIewFH094luL6sbrgT1J+7YFHYMlmm+aTe73APQKvNSoQCul/AypBmrO0AbaY0ttiACgmhFQYCcbqwL2WMcZucDxr17i4R6lg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729098213; c=relaxed/simple;
-	bh=F/aU2sHXwjZHWO3m/bFKodRBVQZGao3dZspIyBubxII=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=AjPl9BbUisRY3xrP0LI0RCtV6m7nIItJwRAhTcllSJqJTwnCFnejj49Ad7dpSH8L/bqp6tZfKzEvWEtBHb+tIdMQ66XO/vZ9NtamrazwfH3om2iWfCYkZREuJYGJqehZxz846eSBXWy5P4XSVmwqNiBKQl/RD81bRQuJ6q1Px/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id B979421EE1;
-	Wed, 16 Oct 2024 17:03:29 +0000 (UTC)
-Authentication-Results: smtp-out1.suse.de;
-	none
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3FC9513433;
-	Wed, 16 Oct 2024 17:03:29 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 9e6QAeHxD2dyTQAAD6G6ig
-	(envelope-from <mpdesouza@suse.com>); Wed, 16 Oct 2024 17:03:29 +0000
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Wed, 16 Oct 2024 14:03:02 -0300
-Subject: [PATCH 2/2] tty: sysrq: Use printk_loud_console context on
- __handle_sysrq
+	s=arc-20240116; t=1729102312; c=relaxed/simple;
+	bh=+Wn+Zx7onK8xaH489hDkGOEs/OTWomDLOs5/E97dhOw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=EHLzGqnEXM4VZoUNwTiiaVPntPxAhUjOH8Q0DmKCn5RXpWg5zbewnAIZe2H9c3CPMLF3uE19dPi7Gd2VJ8Edizq7ChQOLllDmB+jOl6KR2e3Z5gVsoZhDZFyY1UoIZYA5yQYn+15t+Lfwk7f+Ob7VOPXYaPtkVtaQTINavta2nY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=YwSKQ73I; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=L8bYn70U; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="YwSKQ73I";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="L8bYn70U"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1729102308;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=kvAgcpABznH0KWyxGhEZ8TIjmB/x70Rq0aMQaMrxErQ=;
+	b=YwSKQ73IfSIQOzsYw2Z8Xx+yQ0BHXvgHtCc5MDOW7dovN+Xw/arAqK/4iORFGhu9LDkVeM
+	PaN3OK05ha29Av82/GLcHiJiSe/N44wKBZBEVH8icElHpV6T6SnVd1Prqpus/3VOXVpjbo
+	+SBstJ3noe0FToeGKBTO/EfJFXSkzUIWlpFYq6mYjVjzJLnfUulR7/DKeoVrKm3xjfWhJd
+	WjVKx5WJvmSYodenqEsR90tSAu5dFCx/pSYY19zCpuwnaAE9NQrKJ1IzJSwvwcmiJ2O4w6
+	ff2giYNKoSuobVqK1MzRECYa/JCV0orkBz1G2fC3XhhB5KDPnUyZ1GNJTcx4Cg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1729102308;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=kvAgcpABznH0KWyxGhEZ8TIjmB/x70Rq0aMQaMrxErQ=;
+	b=L8bYn70UqZcP2iKldhYHnVv7gh4R30TOJKkQc6AMBR/o63oLhDhYbyMRW9dnJusejiZIjT
+	Tv29b2ZaAATa0+Dg==
+To: Marcos Paulo de Souza <mpdesouza@suse.com>, Petr Mladek
+ <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, Sergey
+ Senozhatsky <senozhatsky@chromium.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Marcos Paulo
+ de Souza <mpdesouza@suse.com>
+Subject: Re: [PATCH 1/2] printk: Introduce LOUD_CON flag
+In-Reply-To: <20241016-printk-loud-con-v1-1-065e4dad6632@suse.com>
+References: <20241016-printk-loud-con-v1-0-065e4dad6632@suse.com>
+ <20241016-printk-loud-con-v1-1-065e4dad6632@suse.com>
+Date: Wed, 16 Oct 2024 20:17:48 +0206
+Message-ID: <84plnz29zv.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241016-printk-loud-con-v1-2-065e4dad6632@suse.com>
-References: <20241016-printk-loud-con-v1-0-065e4dad6632@suse.com>
-In-Reply-To: <20241016-printk-loud-con-v1-0-065e4dad6632@suse.com>
-To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
- John Ogness <john.ogness@linutronix.de>, 
- Sergey Senozhatsky <senozhatsky@chromium.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- Marcos Paulo de Souza <mpdesouza@suse.com>
-X-Mailer: b4 0.14-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1729098195; l=2232;
- i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=F/aU2sHXwjZHWO3m/bFKodRBVQZGao3dZspIyBubxII=;
- b=IuIKzjlkdpQ6PhHDrZvZO+AXN3E0QXYqHX1yuTLlWDk5Q7q65QT4o6CK+uA8/zhhJgfRIAGP7
- Va1Wk5NWACXDk/8lnj3DtYp6a2xX55sZeK3uogVc0ptegCZR25EJAWf
-X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
- pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
-X-Rspamd-Pre-Result: action=no action;
-	module=replies;
-	Message is reply to one we originated
-X-Spam-Level: 
-X-Spamd-Result: default: False [-4.00 / 50.00];
-	REPLY(-4.00)[];
-	ASN(0.00)[asn:25478, ipnet:::/0, country:RU]
-X-Spam-Score: -4.00
-X-Spam-Flag: NO
-X-Rspamd-Queue-Id: B979421EE1
-X-Rspamd-Pre-Result: action=no action;
-	module=replies;
-	Message is reply to one we originated
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+Content-Type: text/plain
 
-By using the printk_loud_console the loglevel workaround can be removed.
-The workaround existed to always send the sysrq header message to all
-consoles not matter what was the current loglevel.
+Hi Marcus,
 
-Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
----
- drivers/tty/sysrq.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+On 2024-10-16, Marcos Paulo de Souza <mpdesouza@suse.com> wrote:
+> Introduce LOUD_CON flag to printk.
 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index 930b04e3d148..1ff11cf6275a 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -583,7 +583,6 @@ static void __sysrq_put_key_op(u8 key, const struct sysrq_key_op *op_p)
- void __handle_sysrq(u8 key, bool check_mask)
- {
- 	const struct sysrq_key_op *op_p;
--	int orig_log_level;
- 	int orig_suppress_printk;
- 	int i;
- 
-@@ -593,13 +592,12 @@ void __handle_sysrq(u8 key, bool check_mask)
- 	rcu_sysrq_start();
- 	rcu_read_lock();
- 	/*
--	 * Raise the apparent loglevel to maximum so that the sysrq header
--	 * is shown to provide the user with positive feedback.  We do not
--	 * simply emit this at KERN_EMERG as that would change message
--	 * routing in the consumers of /proc/kmsg.
-+	 * Enter in the console_loud context so that sysrq header is shown to
-+	 * provide the user with positive feedback.  We do not simply emit this
-+	 * at KERN_EMERG as that would change message routing in the consumers
-+	 * of /proc/kmsg.
- 	 */
--	orig_log_level = console_loglevel;
--	console_loglevel = CONSOLE_LOGLEVEL_DEFAULT;
-+	printk_loud_console_enter();
- 
- 	op_p = __sysrq_get_key_op(key);
- 	if (op_p) {
-@@ -609,11 +607,11 @@ void __handle_sysrq(u8 key, bool check_mask)
- 		 */
- 		if (!check_mask || sysrq_on_mask(op_p->enable_mask)) {
- 			pr_info("%s\n", op_p->action_msg);
--			console_loglevel = orig_log_level;
-+			printk_loud_console_exit();
- 			op_p->handler(key);
- 		} else {
- 			pr_info("This sysrq operation is disabled.\n");
--			console_loglevel = orig_log_level;
-+			printk_loud_console_exit();
- 		}
- 	} else {
- 		pr_info("HELP : ");
-@@ -631,7 +629,7 @@ void __handle_sysrq(u8 key, bool check_mask)
- 			}
- 		}
- 		pr_cont("\n");
--		console_loglevel = orig_log_level;
-+		printk_loud_console_exit();
- 	}
- 	rcu_read_unlock();
- 	rcu_sysrq_end();
+Generally speaking, I do not like the name "LOUD_CON". The flag is
+related to records, not consoles. Something like "NO_SUPPRESS" or
+"FORCE_PRINT" might be more appropriate. Note that naming is not my
+strength.
 
--- 
-2.46.1
+> The new flag will make it possible to
+> create a context where printk messages will never be suppressed. This
+> new context information will be stored in the already existing
+> printk_context per-CPU variable. This variable was changed from 'int' to
+> 'unsigned int' to avoid issues with automatic casting.
+>
+> This mechanism will be used in the next patch to create a loud_console
+> context on sysrq handling, removing an existing workaround on the
+> loglevel global variable. The workaround existed to make sure that sysrq
+> header messages were sent to all consoles.
 
+IMO the more interesting aspect is that the "loud" flag is stored in the
+ringbuffer so that the message is not suppressed, even if printed later
+(for example because it was deferred). This actually even fixes a bug
+since the current workaround will not perform as expected if the sysrq
+records are deferred (for example due to threaded printing or consoles
+that are registered later).
+
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index beb808f4c367..b893825fe21d 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -1321,6 +1321,7 @@ static void boot_delay_msec(int level)
+>  	unsigned long timeout;
+>  
+>  	if ((boot_delay == 0 || system_state >= SYSTEM_RUNNING)
+> +		|| is_printk_console_loud()
+>  		|| suppress_message_printing(level)) {
+
+I do not think "loud" should be a reason to skip the delays. The delays
+are there to slow down printing. I would think that for "loud" messages,
+this is even more important. I suppose this function (as well as
+printk_delay()) would need a new boolean parameter whether it is a
+"loud" message. Then:
+
+	|| (!loud_con && suppress_message_printing(level))
+
+> @@ -2273,6 +2274,9 @@ int vprintk_store(int facility, int level,
+>  	if (dev_info)
+>  		flags |= LOG_NEWLINE;
+>  
+> +	if (is_printk_console_loud())
+> +		flags |= LOG_LOUD_CON;
+> +
+>  	if (flags & LOG_CONT) {
+>  		prb_rec_init_wr(&r, reserve_size);
+>  		if (prb_reserve_in_last(&e, prb, &r, caller_id, PRINTKRB_RECORD_MAX)) {
+
+I guess LOG_LOUD_CON should also be set in the LOG_CONT case (like
+LOG_NEWLINE does).
+
+> diff --git a/kernel/printk/printk_safe.c b/kernel/printk/printk_safe.c
+> index 2b35a9d3919d..4618988baeea 100644
+> --- a/kernel/printk/printk_safe.c
+> +++ b/kernel/printk/printk_safe.c
+> @@ -12,7 +12,30 @@
+>  
+>  #include "internal.h"
+>  
+> -static DEFINE_PER_CPU(int, printk_context);
+> +static DEFINE_PER_CPU(unsigned int, printk_context);
+> +
+> +#define PRINTK_SAFE_CONTEXT_MASK		0x0000ffffU
+> +#define PRINTK_LOUD_CONSOLE_CONTEXT_MASK	0xffff0000U
+> +#define PRINTK_LOUD_CONSOLE_CONTEXT_OFFSET	0x00010000U
+> +
+> +void noinstr printk_loud_console_enter(void)
+> +{
+> +	cant_migrate();
+> +	this_cpu_add(printk_context, PRINTK_LOUD_CONSOLE_CONTEXT_OFFSET);
+> +}
+
+Have you tested this with lockdep? AFAICT, the write_sysrq_trigger()
+path can migrate since it is only using rcu_read_lock() in
+__handle_sysrq().
+
+John Ogness
