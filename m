@@ -1,53 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E918A1547C3;
-	Fri, 18 Oct 2024 03:44:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A760A176AB5;
+	Fri, 18 Oct 2024 04:37:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729223047; cv=none; b=AbwvIkBYbaNNpPxvGK4zeh+X3R194TxDLf1XG6gpHKCudnhR3/2IwNcRjz7SEGk9U1ekuFBRW0/u8QHu0C8qjVdoKowCuTEOVc/LA0gifD0nR4Wio7dxMKWJkNLZBBgqbayqHzCg+X0KVfT75fw7mpFMq/zQ0NwsXPIZUrM5tN8=
+	t=1729226230; cv=none; b=I1reBNQjbvZvCiBB9T+jcRt2SnV1tzc+rrjeJR2mSCwJB9U7DeFDoW3I3vKqcZQ0g/pSiCivlRV2jljk+NLuCN08fqeRXmJ8+FFczTsZZaQWuYVXbf0stO55gUyO5g5M28v/ZTCp9xy15tjdZKxXTp3sQDBCAPebm+AX2BKVUvs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729223047; c=relaxed/simple;
-	bh=H8vlp8zt5LbQ3oWxLa0uGme6oWHI5mjpEIFX+GssDMg=;
+	s=arc-20240116; t=1729226230; c=relaxed/simple;
+	bh=U1fgLhH6lmdomPuzPUhhgaMswZjBn491Xqqurfw0z7o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=piCuaTL1AyGNF+gVfQud32NWznlR9I+sq/GKMw8pWANVGIYepWW/+csddIoLhF/a2Ay+h25suyJgl6DJiw3/tTiknEgQaGlWutPtA7lgtCIn4XrJ5r/YOLYo5s2WLyRRuBvHVtU4AL/dZ/gX8UjF3XJNEQcMXGhs0RMQdTTm1gk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mdtA5bR9; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=cko8iAiRR0l99ldPecypTFZPKB7Uq5JLCv3Khg2QGnbmpwB50KAbmKIrXiIN1T2p6ollf83f4ZJxZCTpxOb9pvejKJfztUH+3pHXX1by36SDKqWcGKd4vPHTFbiZhJ/yug/YHlA6Jcw+DJ2mPfRJneTUjyJUEKpGldm/DMUCRII=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A/SDwm3A; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mdtA5bR9"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A/SDwm3A"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729223046; x=1760759046;
+  t=1729226227; x=1760762227;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=H8vlp8zt5LbQ3oWxLa0uGme6oWHI5mjpEIFX+GssDMg=;
-  b=mdtA5bR9/t1B3Rq4jR+GpLUfc8QBAbwUpOD5JRiPG4aB2w+DWrZy8biZ
-   yCF6tybKjpkBE9Q971Ytr6ViLIhs7ueP4tcIhyI7bGsicyx43LOIzZOPS
-   vyD/b5GxOfv/jcneVS4ZNKGYgc2PNz/MJlEgfB89dmGpw1R1d+9qKUK9g
-   G/Sw7iYN3hHryEGfyXSc7ujqMuTWjwPfH7EvQFx+nVkzXUJe4Sm6ddpdw
-   1iIZ8WbwkIkWd1f7ZSypAiHxk+5Hn5r8qEk8RuUPxHpg3ftCko9wVUfWi
-   DsOwx668s94yYXE+57MlkYhUl/0iB6jvMdGaP7nVBZn6dZq/Jjzz0AVbU
+  bh=U1fgLhH6lmdomPuzPUhhgaMswZjBn491Xqqurfw0z7o=;
+  b=A/SDwm3Aom81pH0hvNFoSZVpNdQr5rY/g/1SBExa1cFAM09MAXGIihUH
+   u4AwPszTxX+P9TKdpFCC882i3TZ49Rr3aONXsFNIUUdbXLRCHQXfgABon
+   iWUPvm4o7wB7ax/X500j/NRgPb1nRNR5t5oU8IzJzMb8K/EM20rGH0xOV
+   BQ85dMV5Zgpxx0jkHeZcwzV887DOMd4s2Q3B12hsZlLbk/8WZe2rxPR3Q
+   KQxrnYvNC8xXwB6GiLDP12AWX0EBgE4wYI0usziUoaEL9e/7kEOXSMGq9
+   eojJhMsdfY/LeN+qZePt7Nw9SQ8NCCZX+gqeJMoXCnLYZ459BbiewfpXJ
    g==;
-X-CSE-ConnectionGUID: Q938H+syTreSLBdPfWJUcg==
-X-CSE-MsgGUID: q4uwlzcKS3Gc1LUXGXiUFw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="32424429"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="32424429"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2024 20:44:06 -0700
-X-CSE-ConnectionGUID: pC1GArHgTHG590frpVmg/Q==
-X-CSE-MsgGUID: voGyqymqQIq48f+iQT2jLQ==
+X-CSE-ConnectionGUID: eHivP1OSQICbO06CLktUnA==
+X-CSE-MsgGUID: /BD00JnMTEqEYDk1WACUyA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11228"; a="28875673"
+X-IronPort-AV: E=Sophos;i="6.11,212,1725346800"; 
+   d="scan'208";a="28875673"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Oct 2024 21:37:07 -0700
+X-CSE-ConnectionGUID: 1rr+7d3USUqhm9O0KJNYpw==
+X-CSE-MsgGUID: c2UWR/ciRdmAVsTJmFOJgA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.11,212,1725346800"; 
-   d="scan'208";a="78355491"
+   d="scan'208";a="83394723"
 Received: from lkp-server01.sh.intel.com (HELO a48cf1aa22e8) ([10.239.97.150])
-  by fmviesa006.fm.intel.com with ESMTP; 17 Oct 2024 20:44:02 -0700
+  by fmviesa004.fm.intel.com with ESMTP; 17 Oct 2024 21:37:04 -0700
 Received: from kbuild by a48cf1aa22e8 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1t1duC-000NEJ-2T;
-	Fri, 18 Oct 2024 03:44:00 +0000
-Date: Fri, 18 Oct 2024 11:43:59 +0800
+	id 1t1ejW-000NGr-1J;
+	Fri, 18 Oct 2024 04:37:02 +0000
+Date: Fri, 18 Oct 2024 12:36:05 +0800
 From: kernel test robot <lkp@intel.com>
 To: Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Petr Mladek <pmladek@suse.com>,
@@ -56,12 +56,12 @@ To: Marcos Paulo de Souza <mpdesouza@suse.com>,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	Marcos Paulo de Souza <mpdesouza@suse.com>
 Subject: Re: [PATCH 2/2] tty: sysrq: Use printk_loud_console context on
  __handle_sysrq
-Message-ID: <202410181116.WA27FpBB-lkp@intel.com>
+Message-ID: <202410181205.VT06PKmP-lkp@intel.com>
 References: <20241016-printk-loud-con-v1-2-065e4dad6632@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -83,25 +83,30 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Marcos-Paulo-de-Souza/pri
 base:   1d227fcc72223cbdd34d0ce13541cbaab5e0d72f
 patch link:    https://lore.kernel.org/r/20241016-printk-loud-con-v1-2-065e4dad6632%40suse.com
 patch subject: [PATCH 2/2] tty: sysrq: Use printk_loud_console context on __handle_sysrq
-config: x86_64-buildonly-randconfig-004-20241018 (https://download.01.org/0day-ci/archive/20241018/202410181116.WA27FpBB-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241018/202410181116.WA27FpBB-lkp@intel.com/reproduce)
+config: i386-buildonly-randconfig-001-20241018 (https://download.01.org/0day-ci/archive/20241018/202410181205.VT06PKmP-lkp@intel.com/config)
+compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241018/202410181205.VT06PKmP-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202410181116.WA27FpBB-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202410181205.VT06PKmP-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   drivers/tty/sysrq.c: In function '__handle_sysrq':
->> drivers/tty/sysrq.c:600:9: error: implicit declaration of function 'printk_loud_console_enter' [-Werror=implicit-function-declaration]
+>> drivers/tty/sysrq.c:600:2: error: call to undeclared function 'printk_loud_console_enter'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
      600 |         printk_loud_console_enter();
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/tty/sysrq.c:610:25: error: implicit declaration of function 'printk_loud_console_exit' [-Werror=implicit-function-declaration]
+         |         ^
+>> drivers/tty/sysrq.c:610:4: error: call to undeclared function 'printk_loud_console_exit'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
      610 |                         printk_loud_console_exit();
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+         |                         ^
+   drivers/tty/sysrq.c:614:4: error: call to undeclared function 'printk_loud_console_exit'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     614 |                         printk_loud_console_exit();
+         |                         ^
+   drivers/tty/sysrq.c:632:3: error: call to undeclared function 'printk_loud_console_exit'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     632 |                 printk_loud_console_exit();
+         |                 ^
+   4 errors generated.
 
 
 vim +/printk_loud_console_enter +600 drivers/tty/sysrq.c
