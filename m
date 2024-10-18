@@ -1,132 +1,195 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32A5018E748;
-	Fri, 18 Oct 2024 09:21:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7C62748A
+	for <linux-serial@vger.kernel.org>; Fri, 18 Oct 2024 12:11:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729243292; cv=none; b=PAZLf3LVcG1kks6lt7ZPKtDFS8fVk25X2dcKbhHWWHr6YNe/DdHI4i+EtzuQor78j6QYZiE7xA6yVn7AzC/ipl9ptZJCQohxD8oy3GfuZtIPq82lWEkvTm19UMYnVqA3pJDoOMCtjsRZSywpzBJ2xVoZv0CjVkffDZuc6IWsc0U=
+	t=1729253474; cv=none; b=H6bzPFlGpVEjxC1c+JLLrbRELulsu6Pkd9JlMbQpYhKjUoqZmFJ8cd1n0yj0iIAFhP9Nh8QSu2Q+ZPNtjXRKYHnH0RDsa1jFjeo7M3hKIhgShZKA5GgVbrFKBMJWvzcvQ1kOPOLWB3X4MT92VOlvZ5h4vl/X0urK1qBDXZqoQNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729243292; c=relaxed/simple;
-	bh=o8RYb+boopz9ONUb3znNlQTCvIN/RRJTyKCP3iQJtF8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KI3AMa2LI0Q65uod9PbEk16S11qzyotRTiyQbmGUcH3VzIBuahZNhDXVvFPFkCJBs3ST+eE7pK01cnOwaHnfC/VItxhVRN2o+h872y9eSOjpXKOVheA2Qs9cd13d6Om3rMHxq2tt91QxqGpi2T3uWtyxl+BCTUuvCnnr9joXDOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z8e1eYoS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1729253474; c=relaxed/simple;
+	bh=nshwy4YmoJw0jGdEpwSGaBuAdYlD+Lztn5xLB9hKFLg=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Mgjt2RU1b9haou9BZbHKWZesYUdOlC6TtG8eipNA9cZYpcZW4JfmL6f0lQmM6dxoyyN0oV9DJUWQvaXLNA7/gCLFsnqOuOwwsrPaYiJtwP9uh8V1A7bjdlrXx61XgKqwCf+Jvjiv55TW9TAGElyrpn6zHmXp1TfQaDsbd/wH9T4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=WMgPtJOt; arc=none smtp.client-ip=209.85.208.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z8e1eYoS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7CDBC4CEC3;
-	Fri, 18 Oct 2024 09:21:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1729243291;
-	bh=o8RYb+boopz9ONUb3znNlQTCvIN/RRJTyKCP3iQJtF8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Z8e1eYoSquj52NLzfEQws3o29doJr70ZoPqRNZxhaVrMlN4JNUTZ7vY0hWP3j9tqA
-	 SFQ+ZK89RHaac3gopZOkZ43Rsvj4yVb6BHBWabklzBtHAAFG7G3v4dVHzIFm8Xxah4
-	 iPRIW9nWd4+F32+p2RWZ5igh49B1cI4vhrYJjq4/kZ7W+U5cC8K7MKtme93BFB5/S9
-	 9qG2NX0m/AfMRO712XIKRzv4FrnmcYQt5DwP5N57m4TONaLRKIh6nbcQkGZ3J6oOaB
-	 MWzBQ5grln2JvumjsnRNGYd8KtIpNGp6SXsp6GKLwgzVuVqPek5spPYaDZEaa3iynV
-	 8riFzF1gzPTzQ==
-Received: from johan by xi.lan with local (Exim 4.97.1)
-	(envelope-from <johan@kernel.org>)
-	id 1t1jAy-0000000022l-0D2C;
-	Fri, 18 Oct 2024 11:21:40 +0200
-Date: Fri, 18 Oct 2024 11:21:40 +0200
-From: Johan Hovold <johan@kernel.org>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Johan Hovold <johan+linaro@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, stable@vger.kernel.org,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-Subject: Re: [PATCH v2 2/7] serial: qcom-geni: fix shutdown race
-Message-ID: <ZxIopDwcqf8xqJK8@hovoldconsulting.com>
-References: <20241001125033.10625-1-johan+linaro@kernel.org>
- <20241001125033.10625-3-johan+linaro@kernel.org>
- <CAD=FV=UoU5Nd7sW66cjQzor+BP+W_f7uw0MGRaF6y7PH7KRN_g@mail.gmail.com>
- <ZwaO0hCKdPpojvnn@hovoldconsulting.com>
- <CAD=FV=UZtZ1-0SkN2sOMp6YdU02em_RnK85Heg5z0jkH4U30eQ@mail.gmail.com>
- <ZwjK-s0sMn9HOF04@hovoldconsulting.com>
- <CAD=FV=XuEPGtDCe4ssXPy2avigqviTBAycc0Q_U_Pwi9x6t23g@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="WMgPtJOt"
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-2fb3110b964so20676451fa.1
+        for <linux-serial@vger.kernel.org>; Fri, 18 Oct 2024 05:11:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1729253469; x=1729858269; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=+dP4y57dpvhGZO8kM1bT3Kzo6ofN0wKTJz+jjLsNKtc=;
+        b=WMgPtJOt9YFAbiygaDxe7tfeZJ6aPijI383WXlIqeLOiLjccpsySG+YjtL/OQazgs7
+         u278u3sixFJXbbzyAYIgbgCp9WPLBRDD2hAGh6oxfzkDRjJeUungcZS9DKgbpA/CWKcE
+         vbfegsFPZ3ZEUMAZoKEM9ogV4bqGrl32qxNvnvZ9QNcylxPJMVxhZrN6pGsLcgRXcuIV
+         GQ9Qaq2r2gN3KxLda79SPSQzSpSscsjHipUyasJ1J6e/xDnzJDbQ6Pcr3GOC233tSjwd
+         9LqhYMuWKNeG2oiqe0LX4k5gPyGVMGj+3glSimeR7dbM72OvgKLeqQRMfwsG20Tm2EtQ
+         ETOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729253469; x=1729858269;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=+dP4y57dpvhGZO8kM1bT3Kzo6ofN0wKTJz+jjLsNKtc=;
+        b=Tg0SzcGFKWTJcKZXRAEzHKraOv39s413GgYyW1+erji7GiOXdmXW9hydy2UPmgdqwX
+         ijoXZDD6zj1N531NlCITYKekOWqDseCo73eKG26cuGiK/yGhKzI7hj6LxxMHCZkw5sFH
+         h74UJIcq3AtgXeoGuZm1H/ILfuge7/xIvvb0chnQyjz8/d8f3vsG59nhapJjTWcNBpzc
+         m8sXGT5CExBo381lFUbwKyj8t5vc7HF29v5I4elPd2uR/H0TsiX0ynIv/GaIBWCV/rWj
+         8NihIxKizK66kVd+O/saweHsfTsoosW5Mg7HA+IJt7K3I7RyZd97n7vu8MtJ1dq/cx+i
+         xEcw==
+X-Forwarded-Encrypted: i=1; AJvYcCVPQPQp2XbLuvouqIlALVgLT/g7m6U8i4pGhdtTechSbxQRDmSeAdA1DHdiVA463RRcgQuM32qAbYPkscI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzu9JLAphYQ2PPqAyLsBSP8vM637TQJWTni9pg1crcnHJk/my+o
+	9ig0ZovYroIlD2dwjHb/5StU603tk6F0Ao4tZQtlXU7DExkqme7iPAMJJi/+lsE=
+X-Google-Smtp-Source: AGHT+IERqjgfjd2KcdtAegt7UEtSmI59Xh+MNOddMx8ewokEGCeMvlEXmBUej+QBSbS8xMPwi6b2ig==
+X-Received: by 2002:a2e:920d:0:b0:2fb:3bef:6233 with SMTP id 38308e7fff4ca-2fb831e739fmr10390581fa.33.1729253468977;
+        Fri, 18 Oct 2024 05:11:08 -0700 (PDT)
+Received: from ?IPv6:2804:5078:817:9d00:58f2:fc97:371f:2? ([2804:5078:817:9d00:58f2:fc97:371f:2])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71ea33119e0sm1290881b3a.6.2024.10.18.05.11.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Oct 2024 05:11:08 -0700 (PDT)
+Message-ID: <5a88e070b7bb8dcfe495e9c120c0d62c992c4e7c.camel@suse.com>
+Subject: Re: [PATCH 1/2] printk: Introduce LOUD_CON flag
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+To: John Ogness <john.ogness@linutronix.de>, Petr Mladek <pmladek@suse.com>,
+  Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Greg Kroah-Hartman	
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Date: Fri, 18 Oct 2024 09:11:04 -0300
+In-Reply-To: <84plnz29zv.fsf@jogness.linutronix.de>
+References: <20241016-printk-loud-con-v1-0-065e4dad6632@suse.com>
+	 <20241016-printk-loud-con-v1-1-065e4dad6632@suse.com>
+	 <84plnz29zv.fsf@jogness.linutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.0 (by Flathub.org) 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=XuEPGtDCe4ssXPy2avigqviTBAycc0Q_U_Pwi9x6t23g@mail.gmail.com>
 
-On Fri, Oct 11, 2024 at 07:30:30AM -0700, Doug Anderson wrote:
-> On Thu, Oct 10, 2024 at 11:51 PM Johan Hovold <johan@kernel.org> wrote:
-> >
-> > > > Not sure how your "console process" works, but this should only happen
-> > > > if you do not enable the serial console (console=ttyMSM0) and then try
-> > > > to use a polled console (as enabling the console will prevent port
-> > > > shutdown from being called).
+On Wed, 2024-10-16 at 20:17 +0206, John Ogness wrote:
+> Hi Marcus,
+>=20
+> On 2024-10-16, Marcos Paulo de Souza <mpdesouza@suse.com> wrote:
+> > Introduce LOUD_CON flag to printk.
+>=20
+> Generally speaking, I do not like the name "LOUD_CON". The flag is
+> related to records, not consoles. Something like "NO_SUPPRESS" or
+> "FORCE_PRINT" might be more appropriate. Note that naming is not my
+> strength.
 
-> > And this is with a Chromium kernel, not mainline?
-> 
-> Who do you take me for?!?!  :-P :-P :-P Of course it's with mainline.
+Makes sense. I'll talk with Petr to check which better name we case,
+but personally speaking I liked FORCE_CON that he suggested.
 
-Heh. Just checking. I was sure about shutdown() not being called when
-closing ports, but yeah, you can indeed hit this via hangup() as serial
-core was only half-converted over to use the tty port implementation in
-2016.
+>=20
+> > The new flag will make it possible to
+> > create a context where printk messages will never be suppressed.
+> > This
+> > new context information will be stored in the already existing
+> > printk_context per-CPU variable. This variable was changed from
+> > 'int' to
+> > 'unsigned int' to avoid issues with automatic casting.
+> >=20
+> > This mechanism will be used in the next patch to create a
+> > loud_console
+> > context on sysrq handling, removing an existing workaround on the
+> > loglevel global variable. The workaround existed to make sure that
+> > sysrq
+> > header messages were sent to all consoles.
+>=20
+> IMO the more interesting aspect is that the "loud" flag is stored in
+> the
+> ringbuffer so that the message is not suppressed, even if printed
+> later
+> (for example because it was deferred). This actually even fixes a bug
+> since the current workaround will not perform as expected if the
+> sysrq
+> records are deferred (for example due to threaded printing or
+> consoles
+> that are registered later).
 
-> > If you take a look at tty_port_shutdown() there's a hack in there for
-> > consoles that was added back in 2010 and that prevents shutdown() from
-> > called for console ports.
-> >
-> > Put perhaps you manage to hit shutdown() via some other path. Serial
-> > core is not yet using tty_port_hangup() so a hangup might trigger
-> > that...
-> >
-> > Could you check that with a dump_stack()?
+Indeed, I'll describe that this new behavior fixes a problem.
 
-> lazor-rev9 ~ # stop console-ttyMSM0
+>=20
+> > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> > index beb808f4c367..b893825fe21d 100644
+> > --- a/kernel/printk/printk.c
+> > +++ b/kernel/printk/printk.c
+> > @@ -1321,6 +1321,7 @@ static void boot_delay_msec(int level)
+> > =C2=A0	unsigned long timeout;
+> > =C2=A0
+> > =C2=A0	if ((boot_delay =3D=3D 0 || system_state >=3D SYSTEM_RUNNING)
+> > +		|| is_printk_console_loud()
+> > =C2=A0		|| suppress_message_printing(level)) {
+>=20
+> I do not think "loud" should be a reason to skip the delays. The
+> delays
+> are there to slow down printing. I would think that for "loud"
+> messages,
+> this is even more important. I suppose this function (as well as
+> printk_delay()) would need a new boolean parameter whether it is a
+> "loud" message. Then:
+>=20
+> 	|| (!loud_con && suppress_message_printing(level))
 
-> [   68.812702]  qcom_geni_serial_shutdown+0x38/0x110
-> [   68.817578]  uart_port_shutdown+0x48/0x68
-> [   68.821736]  uart_shutdown+0xcc/0x170
-> [   68.825530]  uart_hangup+0x54/0x158
-> [   68.829154]  __tty_hangup+0x20c/0x318
-> [   68.832954]  tty_vhangup_session+0x20/0x38
-> [   68.837195]  disassociate_ctty+0xe8/0x1a8
-> [   68.841355]  do_exit+0x10c/0x358
-> [   68.844716]  do_group_exit+0x9c/0xa8
-> [   68.848441]  get_signal+0x408/0x4d8
-> [   68.852071]  do_signal+0xa8/0x770
+Done locally, thanks!
 
-Thanks for confirming. I see this too when stopping a getty.
+>=20
+> > @@ -2273,6 +2274,9 @@ int vprintk_store(int facility, int level,
+> > =C2=A0	if (dev_info)
+> > =C2=A0		flags |=3D LOG_NEWLINE;
+> > =C2=A0
+> > +	if (is_printk_console_loud())
+> > +		flags |=3D LOG_LOUD_CON;
+> > +
+> > =C2=A0	if (flags & LOG_CONT) {
+> > =C2=A0		prb_rec_init_wr(&r, reserve_size);
+> > =C2=A0		if (prb_reserve_in_last(&e, prb, &r, caller_id,
+> > PRINTKRB_RECORD_MAX)) {
+>=20
+> I guess LOG_LOUD_CON should also be set in the LOG_CONT case (like
+> LOG_NEWLINE does).
+>=20
+> > diff --git a/kernel/printk/printk_safe.c
+> > b/kernel/printk/printk_safe.c
+> > index 2b35a9d3919d..4618988baeea 100644
+> > --- a/kernel/printk/printk_safe.c
+> > +++ b/kernel/printk/printk_safe.c
+> > @@ -12,7 +12,30 @@
+> > =C2=A0
+> > =C2=A0#include "internal.h"
+> > =C2=A0
+> > -static DEFINE_PER_CPU(int, printk_context);
+> > +static DEFINE_PER_CPU(unsigned int, printk_context);
+> > +
+> > +#define PRINTK_SAFE_CONTEXT_MASK		0x0000ffffU
+> > +#define PRINTK_LOUD_CONSOLE_CONTEXT_MASK	0xffff0000U
+> > +#define PRINTK_LOUD_CONSOLE_CONTEXT_OFFSET	0x00010000U
+> > +
+> > +void noinstr printk_loud_console_enter(void)
+> > +{
+> > +	cant_migrate();
+> > +	this_cpu_add(printk_context,
+> > PRINTK_LOUD_CONSOLE_CONTEXT_OFFSET);
+> > +}
+>=20
+> Have you tested this with lockdep? AFAICT, the write_sysrq_trigger()
+> path can migrate since it is only using rcu_read_lock() in
+> __handle_sysrq().
 
-> > > Now I (via ssh) drop into the debugger:
-> > >
-> > > echo g > /proc/sysrq-trigger
-> > >
-> > > I see the "kgdb" prompt but I can't interact with it because
-> > > qcom_geni_serial_shutdown() stopped RX.
-> >
-> > How about simply amending poll_get_char() so that it enables the
-> > receiver if it's not already enabled?
-> 
-> Yeah, this would probably work.
+Now I have and I found the error. Let me investigate how I can proceed
+here.
 
-Seems we should clean up serial core so that it at least behaves
-consistently on hangup and close.
+Thanks a lot for the review!
 
-Having someone think trough and document how these polled consoles are
-supposed to work would also be good and save people modifying these
-drivers a lot of work.
+>=20
+> John Ogness
 
-If they are restricted to when the console is active, there would be no
-need for most of poll_init(), and we already prevent the console from
-being shut down on hangup() and close().
-
-And then we now also have the detachable console mess to consider...
-
-Johan
