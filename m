@@ -1,55 +1,57 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22099FC0A;
-	Sun, 20 Oct 2024 18:02:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5313B82866;
+	Sun, 20 Oct 2024 18:02:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729447328; cv=none; b=MJkG6lRHZ+rZN7GGZGV/7yTEZOz0DumjYkkm67fMJzxfIU9rrppeq4lolJLqhuvyZrQd+Au3gW8inRQ5qoKuKlaW7dZSbBtavP0YMGAWzOQxm8ldPA8MKzsHG+hvYIOn+GleNAo8VD0d/Knck33nYSiw8LcavMIHwcK+wu5mn1o=
+	t=1729447329; cv=none; b=EO1milLngJVRGNDQii3ekfrnjWtycVx8aS4rQWi2ioIwvKtNQRmg+s1YB/xHARpky71xQpDXV2nWhzpUGrRAMPA90YtlwevQfHK2TsWzL2xK/GCqP+4rPNXcDs5MUSMbOy4OWgJjvXsOkYOsahTZEOc8QlpI0pY1/+94GP8/cos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729447328; c=relaxed/simple;
-	bh=m6r/u6nn0z2hqH3ks8cUNqKPx6n+R76j+TxMCz/3QnY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IGb/BZQhqbbFaPecjXDkmSNeJGWV5IeTM83tjripT1uzmIT/QRuSEoMavb0k/ujNUEsTm3nwWcjVaQbMAASrKkiBAwz3QOG3yWDiIfF51okravql9wNMESl0vR9KfreHzR7p/JTe3dQDd8UR5gPryad2pFAW5iAvWq8aNVwVH98=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AXEX0NW5; arc=none smtp.client-ip=209.85.128.46
+	s=arc-20240116; t=1729447329; c=relaxed/simple;
+	bh=UinalwRB3ARrKgdjgwMn0So5wH2T5c7BnVVlH3YYDA8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=hmoxHj9rqgUj9qRBMvmhQ9kVbmYuwQU3HP0hCRko5Sqdq93DJPgA3GyCYIovTvuhikGFLo/t7fJWfAYk6MJUleawrW3E0SCXZuUdjA3KYC+DVjV6XMDrD3Fu36guTI2KPnhYdPrdaXEaXmQg5UfgX7BCYQPFwgoxsz6bG+u65r8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fT0E4Zpe; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AXEX0NW5"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43167ff0f91so15989965e9.1;
-        Sun, 20 Oct 2024 11:02:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fT0E4Zpe"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-431616c23b5so15125675e9.0;
+        Sun, 20 Oct 2024 11:02:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1729447324; x=1730052124; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=8/mwlwjjwtoQhRvD/uWxXM/Y4o9ZU4631Nv77kKHaY4=;
-        b=AXEX0NW5hKSUwNHExUpdz2R5JXgzSrQydtZFQvZppRcXbwLKBCNKL/DoRdR5hRk6V+
-         k76Vhy2bdmCvLqY1PPZtq3Iwug2Uw1gVDx0Hc3DDiie9gAqROnzRjBYDGPSCFvD7wk7K
-         Q5aobtls/b/G/S2h/fsrx57GeHy/9+wB9keHgIty6sehdWd1nQ2MiXwEpMMTrjLIuqc1
-         V2UGfVyL0lciEuzTqaH7q5C70Z/2k8bBScLIamF11QhsXTJlZp1Ms0pYM1QqabHgHtWN
-         CuWiwsQBxV4el4Qwp3dk08FPicOyR/X3NvCmDib09peBrcFX7d951O0NaUEXvfyUrMNq
-         BqfQ==
+        d=gmail.com; s=20230601; t=1729447325; x=1730052125; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PWLz0nOfxq6+oJG5q7DR2DISAyUCoTN+vEPpZde2Mgw=;
+        b=fT0E4ZpeSv95zx7qO4vqzkKadcOgb9C0BewjLG/t8Wyb3pO5R9xBsQmgZCogSTIYQs
+         d2vKftYSeZgXD290iJrD0ExLooxeUFm+LuHSqor5DMlrY7pZOMTmIScaA4Ksi2Cijyf8
+         2u2HxWMw5jofm3taqY+MLsQd2bEtyctxaiD4B7qqgb9rd0rGilkCtyDv/JKBETMfs9R3
+         hQSou8PJuz5cHRmyS6kT+NRW/4L/wUkJLkf46XXPNrJKHod4JpCwfJV2Qenxs+K2zBSV
+         XptekXU8q/6CgFvJEuEp5GsgwFN8wU0pRHma2A/a8+Ik4DQxo7u9m93ZQLB5tHmtkLsm
+         l0kQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729447324; x=1730052124;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8/mwlwjjwtoQhRvD/uWxXM/Y4o9ZU4631Nv77kKHaY4=;
-        b=p87wlPtkW51GGiY5cKoSULdQ5WT6w4sd6PbCmjtSkW/4OzwvB2kEoCXAo+/49rBbPA
-         Hv1npIGGdkHkBcJcm4giJ2q3WqgsJKCXTCU5pG6SHo3Gm1BqU9MU87hQtUIRG5/4ZE6a
-         pfA3GRAhjleYCltt8xTDktun7evjSOAm8mOcsHoAhGtj2p3TVSzwdfPBLtO6EiER6iE9
-         BFKUHJZvTD64WgF/lzc5xo6N3y9ZOKXZinHs/7zoA2qBNQaRunts8M9+S8DrGPH9Pa8Q
-         rdi8EYQtkB0JD6jgVj3y9TIVv9ZU6FH7WA8geM70CrAJqbz0dTOH7O2Xz49JpYKIP2Xq
-         DsDA==
-X-Forwarded-Encrypted: i=1; AJvYcCUHp6cQvGQ8sUtz0nuZCIJEEybO9ZYnGYszCeKgldXsDojk5WOZYfO9vvlF0k8p/viYWDb7nh5k6n8RtemA@vger.kernel.org, AJvYcCVAh+wk7Ndx20gbEk5a99R9SGQ1t+3BclVoDyv2wmevbuEUlaj8E9RstrFVTAXXYi7+l+y5/QTB4GShoEgF@vger.kernel.org, AJvYcCXeBVpHUMcUcy2tZylU3ftVvZW9Jmb+2BwdUZq6fwx7uvOWtr2cEdSgKUBFvdAoH+ngYXEHSOZX39/n@vger.kernel.org
-X-Gm-Message-State: AOJu0YxyYKK3yJOmt1fh1QXsji+xDdbE8tZxV1sXRBUJhYSqo5BIT5U/
-	4fDshyrHXg9z+kLONVQrh5eq7RcV2td5sghyWl3no6YheauZ0l0D
-X-Google-Smtp-Source: AGHT+IF2KlJHlLBhH1K51KC+tGjI/jpHud5v4rP4jsKAXI8Ldbd6pwtY7BfboxMkzoJUTOT5iPxq6w==
-X-Received: by 2002:a05:600c:45c3:b0:42f:8515:e490 with SMTP id 5b1f17b1804b1-4316161f58bmr79960115e9.5.1729447324276;
-        Sun, 20 Oct 2024 11:02:04 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1729447325; x=1730052125;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PWLz0nOfxq6+oJG5q7DR2DISAyUCoTN+vEPpZde2Mgw=;
+        b=GmrIH8M4ULKNRmaw0+U68XKMqCNoEv4rzpm51TFW6/+YC3n+cxN6gb9BeLZG5lMniB
+         nYsB+zOSBho83WQ8x9QeUtN8iryyf6v33qBuxP05wsh/Y//Fb9fR/3h4QfyS4BHmmu0W
+         5d6E6LNktk9RgPXMYAGIe3qhEvHx9fYxb1+tI+zsArmzVVN97jJh2SghaKzHGjM/39B5
+         JhBUjdRzeuPCIlDAt1noqRkGfSx+c2p1iF1Yui/pfszD5mSQYpPJ7vMXsIdwtExYP/SS
+         b8xFo0pM46ZW1KsVMfrRSLx+2nLm0PA5LOx4/PP2ArfH3RYriwyCE4pmJiA+3KEX2ZZi
+         gsRw==
+X-Forwarded-Encrypted: i=1; AJvYcCVhsQzSIgUmzV2yDzenqZv8JgngDwLg/7SD4Dtmn1+evL9JAY/Ecn5OtT8OQWM9BUHbCbJ+qTof/AhOt1gX@vger.kernel.org, AJvYcCWZ0kwRlfY+Q77dgrBhexHOa9RLUyN35WHzmLcpqdgJwmxe4xn6TbO0vXVycjbPo0/qaQFa0FU59TwK@vger.kernel.org, AJvYcCXKngknU8sjEO6DDkiSfpCo+u0GfT/X0vsBpBrA2WMFsksnna53MWVq29yOjzzBFp/PGJBDpV4qt4GxiFho@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy8Ar7t7nJImdp5H/mtWcxDMK74oBWQlV6Y/q20WSgNPn42KgU2
+	ikykUpopDQlpfDEFk0FLWTd4YL2o830FOMUF9GzIMo56d/ZJNBw2RuEzIRv8
+X-Google-Smtp-Source: AGHT+IGOvOY1iPYyM/tgrqHIiOAkqT3mUbSYqYCANESsmcuw+Gag7BIBmkBpxgKf4XTKCqAjRE5WWg==
+X-Received: by 2002:a05:600c:5110:b0:431:52da:9d89 with SMTP id 5b1f17b1804b1-4316161df7bmr51737235e9.1.1729447325484;
+        Sun, 20 Oct 2024 11:02:05 -0700 (PDT)
 Received: from ivaylo-T580.. (91-139-201-119.stz.ddns.bulsat.com. [91.139.201.119])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4316f5cc57esm29922105e9.48.2024.10.20.11.02.03
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4316f5cc57esm29922105e9.48.2024.10.20.11.02.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 20 Oct 2024 11:02:03 -0700 (PDT)
+        Sun, 20 Oct 2024 11:02:05 -0700 (PDT)
 From: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
 To: Krzysztof Kozlowski <krzk@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -62,10 +64,12 @@ Cc: linux-samsung-soc@vger.kernel.org,
 	devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v1 0/2] tty: serial: samsung: Add Exynos8895 compatible
-Date: Sun, 20 Oct 2024 21:01:59 +0300
-Message-ID: <20241020180201.376151-1-ivo.ivanov.ivanov1@gmail.com>
+Subject: [PATCH v1 1/2] dt-bindings: serial: samsung: Add samsung,exynos8895-uart compatible
+Date: Sun, 20 Oct 2024 21:02:00 +0300
+Message-ID: <20241020180201.376151-2-ivo.ivanov.ivanov1@gmail.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20241020180201.376151-1-ivo.ivanov.ivanov1@gmail.com>
+References: <20241020180201.376151-1-ivo.ivanov.ivanov1@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -74,23 +78,52 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hey folks,
+Add dedicated samsung,exynos8895-uart compatible to the dt-schema for
+representing uart of the Exynos8895 SoC.
 
-This patchset adds serial driver support for Exynos8895 SoC. The main
-difference from other exynos platforms is that fifosize is only
-specified via the samsung,uart-fifosize DT property.
+Like GS101, it has a required DT property samsung,uart-fifosize, but
+it does not exhibit the 32 bit register access limit.
 
-Newer Exynos platforms also specify fifosize via DT, so in such case
-this compatible could be used with oneOf.
-
-Ivaylo Ivanov (2):
-  dt-bindings: serial: samsung: Add samsung,exynos8895-uart compatible
-  tty: serial: samsung: Add Exynos8895 compatible
-
+Signed-off-by: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
+---
  .../bindings/serial/samsung_uart.yaml           | 17 +++++++++++++++++
- drivers/tty/serial/samsung_tty.c                | 13 +++++++++++++
- 2 files changed, 30 insertions(+)
+ 1 file changed, 17 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 788c80e47..2491b6048 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -27,6 +27,7 @@ properties:
+           - samsung,exynos4210-uart
+           - samsung,exynos5433-uart
+           - samsung,exynos850-uart
++          - samsung,exynos8895-uart
+       - items:
+           - enum:
+               - samsung,exynos7-uart
+@@ -172,6 +173,22 @@ allOf:
+         clock-names:
+           maxItems: 2
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - samsung,exynos8895-uart
++    then:
++      required:
++        - samsung,uart-fifosize
++      properties:
++        clocks:
++          maxItems: 2
++
++        clock-names:
++          maxItems: 2
++
+ unevaluatedProperties: false
+ 
+ examples:
 -- 
 2.43.0
 
