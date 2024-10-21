@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A4E823DD;
-	Mon, 21 Oct 2024 09:29:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5707F1E3779;
+	Mon, 21 Oct 2024 09:31:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729502968; cv=none; b=HHhPbgi2BMxl/qeNWQCiSCyMlXxbVkkij9xnTCmxsOUumXYvn5UQu4EqaRXiTJtW6385p9p1kXpb0rtTaFDGIxwKsCEkuuD9U1RJj7qlZzruL7VWMzA7tduCLSDEeG5OG9m8EZiWJXlI3/qkD0biQ4n69dI9T7UKkM64wGzDLeM=
+	t=1729503086; cv=none; b=e8kZwuXyOEVOGnVWS4GfQh43Wz4vBWU8U5ukUMYhUPK4e5B9TpB/+e9NJYNBDCJoRmcyu16QLy4dfDXZ+LuwtcLvZlqIYgwoAaMwB9jQZskxNHmEaJfZrcVY37SZfIbT3TkLqWscL0KYjU4mgvWbIR/CDwyF+72qXUjuIcJMRoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729502968; c=relaxed/simple;
-	bh=/JzRc1Cme3nFE2GF5Li7+9M42QY8EO1CGP6MGSomNUA=;
+	s=arc-20240116; t=1729503086; c=relaxed/simple;
+	bh=14gLEXzYPJ2mkJ4+l7UphcbwfQJ7L0h1cweXAkAc7mQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WJ1vN6+90kEUhL3RIAABX35I0knBXdC+t3yLe/6nrKwezbToE59GoSzAOFhGxX9Wvs6G4eKEfNBEstS0TmxKuXpzay/B96kXORNQdtuAaq9sl/HgNjvftV2M64HJCSQRK8p1bfXvNmh2UYR509cpmoyJlfwUTGKZLxHYrr81S/Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UwP45KV/; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=G3A63t8kz1WatsxnMOTSOOjzVsNNNwrx1jMxMufNXhIvMNUBqnifREG81yEOFp0UFpohX59AKXuTY+wTsdgx5CJ11RcBXfkHpVCg1WrrMQv8CSIXyzEZ9riARRTjWDCd33hxBJ1pbVJLJ1HyvhkPZlSCMtaKrOdMFbey4+PHvww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SNowFPeX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UwP45KV/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED35C4CEC3;
-	Mon, 21 Oct 2024 09:29:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SNowFPeX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D069C4CEC3;
+	Mon, 21 Oct 2024 09:31:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1729502967;
-	bh=/JzRc1Cme3nFE2GF5Li7+9M42QY8EO1CGP6MGSomNUA=;
+	s=k20201202; t=1729503085;
+	bh=14gLEXzYPJ2mkJ4+l7UphcbwfQJ7L0h1cweXAkAc7mQ=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=UwP45KV/t0Nr9Lroc7vCF7jMZej/deezkrIHvNGrN8elAKsON3pkX4AALgntfm8E0
-	 /DQ4QLdBZiHz6nThZLwVTma3hdc9FcUO0xJNgzwY7DQxizP7eY5I8WlBbY5BLmCeOd
-	 Xk35GvAJQFw6NrYbVgsSEMgwDOaG/fwqPLQbnoLG6uVnlCrdejRgzLar3TEi9usnSE
-	 NI/4t2cGb4ThnZM8rCiViJipiHi6gj0qrmbqS3UWvle2xpMwsv4ne5bX9sPpV58tnH
-	 SGMdaYfsNiBhtDmaGsnaRpu9KZG1KcOvUPrRW1jCZg4ALw7Ut607cswOL/ZGCPoIFP
-	 ofzkCFJFdlqWw==
-Message-ID: <09c1e8a0-f669-42ef-bbd2-44649fad35d8@kernel.org>
-Date: Mon, 21 Oct 2024 11:29:20 +0200
+	b=SNowFPeXOsIWCkuLoj4PZqCvbtU59r8/oDHzXgcip2q5718B1eFtt3gq01BTeoP4x
+	 H6cuhlbVANkiI+UJc84lYjuzt7TPtW6VYFXMK4eS4gcJISguHE69085U0XZMS7zScP
+	 xGQHdoruTqYbaOXmyDHp7vPI/2AYoRFgtMs4LeYz4mAmORDuZHznnaVMMsDkna+oZ4
+	 FTbYKeVAY7n9JUS+WMuBwV6o9JPoHWuB+Jl7Y5NlrPySksm5g3G6Ma4cxMt4acJ1hC
+	 wKbaeq3GWNTAs2wRLUiyHSfGnmI+95UbU6Xo3k8sN2wlHmwxuQLaD5a6TDy+xnfE+G
+	 p66ouryOi2DUQ==
+Message-ID: <6ad87494-b4e9-4f05-93f3-dcfc65310159@kernel.org>
+Date: Mon, 21 Oct 2024 11:31:19 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,8 +35,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 1/2] dt-bindings: serial: samsung: Add
- samsung,exynos8895-uart compatible
+Subject: Re: [PATCH v1 2/2] tty: serial: samsung: Add Exynos8895 compatible
 To: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
@@ -45,7 +44,7 @@ Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
  devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-kernel@vger.kernel.org
 References: <20241020180201.376151-1-ivo.ivanov.ivanov1@gmail.com>
- <20241020180201.376151-2-ivo.ivanov.ivanov1@gmail.com>
+ <20241020180201.376151-3-ivo.ivanov.ivanov1@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -91,46 +90,22 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <20241020180201.376151-2-ivo.ivanov.ivanov1@gmail.com>
+In-Reply-To: <20241020180201.376151-3-ivo.ivanov.ivanov1@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 20/10/2024 20:02, Ivaylo Ivanov wrote:
-> Add dedicated samsung,exynos8895-uart compatible to the dt-schema for
-> representing uart of the Exynos8895 SoC.
-> 
-> Like GS101, it has a required DT property samsung,uart-fifosize, but
-> it does not exhibit the 32 bit register access limit.
+> Add serial driver data for Exynos8895 SoC. The main difference from
+> other platforms is that fifosize is only specified via the
+> samsung,uart-fifosize DT property.
 > 
 > Signed-off-by: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
 > ---
->  .../bindings/serial/samsung_uart.yaml           | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
+>  drivers/tty/serial/samsung_tty.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> index 788c80e47..2491b6048 100644
-> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> @@ -27,6 +27,7 @@ properties:
->            - samsung,exynos4210-uart
->            - samsung,exynos5433-uart
->            - samsung,exynos850-uart
-> +          - samsung,exynos8895-uart
->        - items:
->            - enum:
->                - samsung,exynos7-uart
-> @@ -172,6 +173,22 @@ allOf:
->          clock-names:
->            maxItems: 2
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - samsung,exynos8895-uart
 
-This looks exactly like gs101, so please grow the enum there.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
 Krzysztof
