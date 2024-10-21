@@ -1,123 +1,134 @@
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8909D1F7089;
-	Mon, 21 Oct 2024 12:23:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D64DE1D1E7A;
+	Mon, 21 Oct 2024 12:51:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729513431; cv=none; b=pY2B8XmyNQGfBSM784i890Um1mm5j73wi/OaF8YNS3cbQxvWqxU+3s+fGAV8/Wwgxc2ft/0fSW8v9kvDQCvvXmr7jyTwYbMdf/WCHUeh5YEDKWI5mBOM4O0w0hJ1yeme8dT3yPQVJveqtGiG5kaI8AFdRKESahVLv+eE4/FqAxA=
+	t=1729515099; cv=none; b=V9AYfKMD8+1qhdR+JdXmHGii57tIbX1sduPFs+BnvjUjZFp1TKXGyLvTP5i/668X9z9O3uHRsAwfhXqvThjo+TGLZuFBgWThiCvHBCEjQd1OT4RbQ0mwRTncXWrxP55xtAK/24Hhn0mp/pfHPA3UkcvcN9W4Xs5fCpgu9u94VLE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729513431; c=relaxed/simple;
-	bh=x9slBDnJ/jFLTcaoGTUOyBDa28EHs3QGP8fa7TcQpqU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Jhpe2dmLQaPOigmA37qv5G/6sGM/LUkKoVgnIGqhJ2jcqRRn02VFEMR3q2aSrZ6mY43l/071ML2Hkc3R/YZdSyZ/U03bF4xeKf6AG9jhx7sBOXOZrqC0bpybtgfzZkzeZoJ2gHM/5mfP5Ot75Rqqeq3SIyZ8cqQvfKGcJ+G9d/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ler/M14P; arc=none smtp.client-ip=209.85.167.181
+	s=arc-20240116; t=1729515099; c=relaxed/simple;
+	bh=Lv9VrjmXHa8PT28MwNQ7rdLj1ClF1IBCgpDEoygVeNE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OoYWHIgqCj+PXp9CQo7MgCo7iqL65nFIycF5+UPTrb8ELbunK002IzJ9mXc5jIA60PbApB9XLrICuxJ+6ctAa1bt4D8sliIxsZkze6YqIp1i0Pd8+n7Fnllw8oFchoawPE9qAfAq5sMAzE19AOMVfLA8Ovb9piVbTYLF7/QFMPY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=htfcfLWN; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ler/M14P"
-Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-3e602a73ba1so1471170b6e.2;
-        Mon, 21 Oct 2024 05:23:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="htfcfLWN"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-42f6bec84b5so49682355e9.1;
+        Mon, 21 Oct 2024 05:51:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1729513428; x=1730118228; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OgXSaFGWlsNd0CbHWwjqIDW8aVdA/ighcZzKc7cVXd0=;
-        b=ler/M14Pvr+PqN1I2le5IzHjACmFeDxPSgKIPZiJGiAJfKSrp4AxqBsdT1kyg8apW1
-         m7CfvcP0lm3LwOK5zeBhfj4eRO7ZepC+5MZYVFF/uLiIIesLtQPfpKyBIM4sZ0IevhLk
-         v60ZG8NSsrLZqp29wzrFElVeYQ3VM0l9GOGqE43Pe2P0de0K9uTJ7SmVqUY3+T4sLGOg
-         yhNqrZem9K/LOL0J/Is62HRic9Vnr0WE2NJHg0l6GJh6EcwdpU8Zi1vb7EvMkD1LjNmM
-         5x8fWR6JWQ0A4nEt/HsoxF2oFJCKONNFXOmKh/Vm2mp/Go+uCedUkKBxjrUEGyu6dmgK
-         E9Iw==
+        d=gmail.com; s=20230601; t=1729515096; x=1730119896; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=fWgOmOfi/coO/g3WzFFtfVpzbPBXbofxJwFTWwltwcA=;
+        b=htfcfLWNW2vi1yLHg9r1ptPrxgdaMZ1sLPg45suI6tRx8WwLCzFlQoALnohkIg6NJz
+         qIyYfNkpXmmM90rVbyEnOFrQnYpoe/AnKVCfAyqp9sh6OZYIIgTS1kWLj1OHLyiW8U38
+         tAG4VNG81PECZ+Ah/6l6RA6ncfXPafGW2V6Nz158QVETT/HUg2I0EXH3wEXEzZHHxXgM
+         awFf8eT1aNZiNYw0D/dYR41HXmHn76/LSvTacH4tw+qbdhabIZyu3JsCHMEKxgFqD635
+         D09bO6H9u5z4pWAzVTCHHNrlJXmbJT7Ei7OQyetdHOfw0uKoomQ0hT6XXTWgHEzIcvxm
+         4UnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729513428; x=1730118228;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OgXSaFGWlsNd0CbHWwjqIDW8aVdA/ighcZzKc7cVXd0=;
-        b=X174Us7KiX919R1N/e7Drh/4Yp3t5BLVai7GLyy3uSZae0CHxVkpjJyYzvshidTPuQ
-         F+HU1tfPpRGY+M0eT2QfG0Pdib674Sxa4s/uoZh8yyEyfWqNnXVytqf1IE3I0oO1NPC+
-         WbWUR+eTawIlv5Amv5EeV5DZSrFfe7LHF5414hY3X5lNOfmh5tFJsYU88ZpWNKQuIH3V
-         i4yesS642nQzNCSEubQCnPG3OJ4fY3o4/tWn/HhYhM0h4Hh6LsdamhbN/t3lmW/EW42C
-         j1mN9h3juxnWxP0HabGnAVTvoibhtBLskfYUWr1XCQfMeMtyamLby7rFNcCrAijmWbHR
-         uboQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU3ZDsaNsYfbSZTFSKI015scFl+1MvJ9RNUIl4EIcJwMEM78BjvbCNQJCQ6Mejqt5jmnpEGHAgpDsas@vger.kernel.org, AJvYcCWj5qMpWRGdh2KDNGzskPWspcfUuambngDWosYLm4v0FpVkwUSDna6W6RzDqJ09J+0mdoAtFuTGm+1T7VCu@vger.kernel.org, AJvYcCXSrCCvAwqthx6vw9SPsTht5/hcfOimJd4AlpNDqCINuTSSx36aaTQKtzsA5OejJrb55gnM9xs9LOBqqv0P@vger.kernel.org
-X-Gm-Message-State: AOJu0YzlUmjeJfRv4BVDwwXH27nRj/Q/AGVBugg1Wj5aN8DUbMbfse2S
-	dCxkXvyXv7x9s8Agb+tOUBKu8NDZi1kg/7QNoddGQY3k66mA7Pm6
-X-Google-Smtp-Source: AGHT+IG6AbXnc+JnTbQtqAFHScJgxFYihFzpe/ayUKl45Zmwl2fKaZXsfhokHl5gSrgPWj7HcVOoDQ==
-X-Received: by 2002:a05:6808:2f0a:b0:3e6:1170:a58f with SMTP id 5614622812f47-3e61170a67cmr3003068b6e.5.1729513428463;
-        Mon, 21 Oct 2024 05:23:48 -0700 (PDT)
-Received: from localhost ([2001:da8:7001:11::cb])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7eaebd061c1sm2332892a12.19.2024.10.21.05.23.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Oct 2024 05:23:48 -0700 (PDT)
-Date: Mon, 21 Oct 2024 20:23:30 +0800
-From: Inochi Amaoto <inochiama@gmail.com>
-To: Conor Dooley <conor@kernel.org>, Inochi Amaoto <inochiama@gmail.com>
-Cc: Chen Wang <unicorn_wang@outlook.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Inochi Amaoto <inochiama@outlook.com>, 
-	Yixun Lan <dlan@gentoo.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: serial: snps-dw-apb-uart: Add Sophgo
- SG2044 uarts
-Message-ID: <2zawe64brm3sfuslh443352wfupgnhb4xw7jragkzxu6kgg6t7@b4qiya3jdij4>
-References: <20241021072606.585878-1-inochiama@gmail.com>
- <20241021072606.585878-2-inochiama@gmail.com>
- <20241021-outlying-washday-8f171dedc703@spud>
- <r5ngs2j776jcy6sfirwzmtsoljotatfvgmlmv4sj4xksye2bff@xtn7adafbpfz>
- <20241021-rosy-drove-1ae3c8985405@spud>
+        d=1e100.net; s=20230601; t=1729515096; x=1730119896;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fWgOmOfi/coO/g3WzFFtfVpzbPBXbofxJwFTWwltwcA=;
+        b=cEfojQQxethiFNSzf5Gw0jue3sam3Ly2NQKC93mMq8Z/zMlEkaeO/asSQcba0+bsl2
+         cBNyeeJ8tsH8EayylcITdje2tWCkfogw94k/SnI/bglS4PFnwMwKqfGD3YzyTLZ+Dl6t
+         oc7KOJeq/Te5tT5YrAzNwnvq302m2nSaiJGkaEYo1LaKzd3HKVLx9ze6ll9ccN5hq70K
+         MPDLEHpPVHTsxdJ5K/p0CEaQl21hpmm+nVS0Bp5BaLCghzYGPo9u02ybyWjZHDMq1euC
+         QOZ6doXIbMW/MIkpG6l7YNDrdpclgPeNTuVBKXrX5flh5TeTgAv/8+s6IR6ZbXMtL7jF
+         n8oQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUqwCPP/eeEhthFy4z1PrK+OuKYPlQnYaXIV+jVHCeshi5C7cqiTG85HAC/1ZTZCT6kJfCDbmtaizLhER1s@vger.kernel.org, AJvYcCV90IrgksoS9BGE7An/OHJ+xR6uhH9UCcHBfEtkVfWNsh2nIuplJfRFQ7l4Vlm40I523IS97yrAR79IElWL@vger.kernel.org, AJvYcCVnf7XnWMefAJYDBzkEhtGEs9js+flAKAbXQvsNpm0LBdaZ/TqCEbf4g2UcBgPbUNqWURj8Pxdpptqt@vger.kernel.org
+X-Gm-Message-State: AOJu0YxyVlFbx08Ki1++IZ+7zWrBP+ovAN0eFlFmUsd1gH/v2IC8a4PK
+	zsqgT0lO6Z35c/AaTZqgYr8NW+LTID/8OqlJe36bLc966GfS7zEu
+X-Google-Smtp-Source: AGHT+IE5W1CAoDs1sVbKlEaGdGprifJoywoWBYxAmpwzSv+xmCNh9vaXDVP3VMWtWv+l2NUfwnQTlg==
+X-Received: by 2002:a05:600c:474e:b0:431:47d4:19bd with SMTP id 5b1f17b1804b1-431616287aamr99170455e9.9.1729515095885;
+        Mon, 21 Oct 2024 05:51:35 -0700 (PDT)
+Received: from [192.168.1.105] (91-139-201-119.stz.ddns.bulsat.com. [91.139.201.119])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4316f58f2c3sm56826175e9.27.2024.10.21.05.51.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Oct 2024 05:51:35 -0700 (PDT)
+Message-ID: <d20c05a7-5411-4a2a-950a-8a48b0c2e127@gmail.com>
+Date: Mon, 21 Oct 2024 15:51:33 +0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241021-rosy-drove-1ae3c8985405@spud>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/2] dt-bindings: serial: samsung: Add
+ samsung,exynos8895-uart compatible
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+ Rob Herring <robh@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+References: <20241020180201.376151-1-ivo.ivanov.ivanov1@gmail.com>
+ <20241020180201.376151-2-ivo.ivanov.ivanov1@gmail.com>
+ <09c1e8a0-f669-42ef-bbd2-44649fad35d8@kernel.org>
+Content-Language: en-US
+From: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
+In-Reply-To: <09c1e8a0-f669-42ef-bbd2-44649fad35d8@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 21, 2024 at 01:21:58PM +0100, Conor Dooley wrote:
-> On Mon, Oct 21, 2024 at 08:18:58PM +0800, Inochi Amaoto wrote:
-> > On Mon, Oct 21, 2024 at 01:10:52PM +0100, Conor Dooley wrote:
-> > > On Mon, Oct 21, 2024 at 03:26:05PM +0800, Inochi Amaoto wrote:
-> > > > The UART of SG2044 is modified version of the standard Synopsys
-> > > > DesignWare UART. The UART on SG2044 relys on the internal divisor
-> > > > and can not set right clock rate for the common bitrates.
-> > > > 
-> > > > Add compatibles string for the Sophgo SG2044 uarts.
-> > > > 
-> > > > Signed-off-by: Inochi Amaoto <inochiama@gmail.com>
-> > > > ---
-> > > >  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml          | 4 ++++
-> > > >  1 file changed, 4 insertions(+)
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> > > > index 4cdb0dcaccf3..6963f89a1848 100644
-> > > > --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> > > > +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-> > > > @@ -58,6 +58,10 @@ properties:
-> > > >                - brcm,bcm11351-dw-apb-uart
-> > > >                - brcm,bcm21664-dw-apb-uart
-> > > >            - const: snps,dw-apb-uart
-> > > > +      - items:
-> > > > +          - enum:
-> > > > +              - sophgo,sg2044-uart
-> > > > +          - const: snps,dw-apb-uart
-> > > 
-> > > Why does each vendor have an items entry of its own? Seems like needless
-> > > clutter of the file IMO, except for the renesas bit.
-> > 
-> > I just follow others when writing this binding. I think it may need
-> > another patch to fix this problem, right?
-> 
-> Yeah. But I'd hold off to see if someone gives a rationale for it being
-> done this way before sending that. I've not deleted this thread, and
-> will send an ack if someone justifies why the binding is written like
-> this.
 
-Thanks.
+On 10/21/24 12:29, Krzysztof Kozlowski wrote:
+> On 20/10/2024 20:02, Ivaylo Ivanov wrote:
+>> Add dedicated samsung,exynos8895-uart compatible to the dt-schema for
+>> representing uart of the Exynos8895 SoC.
+>>
+>> Like GS101, it has a required DT property samsung,uart-fifosize, but
+>> it does not exhibit the 32 bit register access limit.
+>>
+>> Signed-off-by: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
+>> ---
+>>  .../bindings/serial/samsung_uart.yaml           | 17 +++++++++++++++++
+>>  1 file changed, 17 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+>> index 788c80e47..2491b6048 100644
+>> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+>> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+>> @@ -27,6 +27,7 @@ properties:
+>>            - samsung,exynos4210-uart
+>>            - samsung,exynos5433-uart
+>>            - samsung,exynos850-uart
+>> +          - samsung,exynos8895-uart
+>>        - items:
+>>            - enum:
+>>                - samsung,exynos7-uart
+>> @@ -172,6 +173,22 @@ allOf:
+>>          clock-names:
+>>            maxItems: 2
+>>  
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          contains:
+>> +            enum:
+>> +              - samsung,exynos8895-uart
+> This looks exactly like gs101, so please grow the enum there.
 
+It's missing the reg-io-width property. My initial idea was to add a
+
+completely new entry, so new exynos platforms that don't exhibit
+
+the same issue could grow the enum there.
+
+Although now that I think about it, I could grow the gs101 enum and set
+
+the  reg-io-width property for gs101 after that list.
+
+Best regards, Ivo.
+
+> Best regards,
+> Krzysztof
+>
