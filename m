@@ -1,227 +1,133 @@
-Received: from flow-a6-smtp.messagingengine.com (flow-a6-smtp.messagingengine.com [103.168.172.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B36171974F4;
-	Mon, 21 Oct 2024 10:08:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF1E01E4113;
+	Mon, 21 Oct 2024 10:09:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729505324; cv=none; b=j2lKbzfhBazpnPxoJgrUIq/b3CzRVm1J1QrVg4fm7eNuTs5XN2K+jrb3NPnOA2TlMQfTAzyGlLP8TeOAJT9g+yWi+9xsFtZpOGTU8pLS9gws3/lxtHpEE1R7QtBGJYYDFrjGGPRqs94oUafOLpsL5F8vb0olf6Ylco73RHRmxRo=
+	t=1729505361; cv=none; b=YoCss2oFtlnL1oYcxEM8x77hzQ1A2onKWSLtiB1C0idA9U1rDqnDCK5eDV7s+xmW7LB5YnPhcklHgZ5pmmj9QKc870JbYcH1HAj+6Ecqg9G9KcC1jlgivoihXOhC0GN2vTxGnTwEg4aXrZ1PFA+ljbyiKj96A2LLCW8TtNfqdtQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729505324; c=relaxed/simple;
-	bh=Wmxsy2S2l7rPsX04lUxjnO6Uob6a4ayEHcsoLJ8T0TA=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=M61bpl9XXg90T+wdGPK0xMTYsQkG+9UMjq7XiVJzdksapHgQsJsOpV4LLZerR43NwXWvzSwjPH+EcUd770KlKhUkZYhw8PauumVPAjaFyfpSHphNDs9K08Diw4j+2ZjFVrNkCWfQI9CEBKtemhmjeAyc3GqsQt92rjxRdL6/A6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=ne/IPE08; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=c+yT9YJV; arc=none smtp.client-ip=103.168.172.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1729505361; c=relaxed/simple;
+	bh=2XWylLirGe485hFoO5ABdA5oJnm8V+XCxwoKVzuF+gc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Usl4v0BmSOgbYXmUeb2Syw8zQqXaXCIQ7G7bFYark7PkndFWzB+pHO+b7Y7cV88eRvw0Y8TjB+O3skQCEOkpt0vmYr1jsWOlJt4D54a1AnRY0rqBbd+PgkV0sG9a10m5GK8lNNq7BlsZOxvcyzDVPU+97kze0hVkznPJkkH7RX4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m9d3x7O9; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="ne/IPE08";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="c+yT9YJV"
-Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
-	by mailflow.phl.internal (Postfix) with ESMTP id BAD6B2001BC;
-	Mon, 21 Oct 2024 06:08:41 -0400 (EDT)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-10.internal (MEProxy); Mon, 21 Oct 2024 06:08:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1729505321;
-	 x=1729512521; bh=ghSlNe0tmFIbW8pbUYudW/CbWTjZ+S6+ujlr6qqnF/E=; b=
-	ne/IPE08UonRdshCEbTY4eWggIuJdw7ggRLwVWX6T78qDjRqTQRxe8A6YsUhbWkX
-	fIjZUVpDjQEEtkjJlKtRrQ4SzcACH9iXutk4zanQBogR4otxUePp6c6f1IjcMh20
-	EHYmUpptTI/quDvu8UjQi8cNIZ1tO11br17DIeQbvohy5u+KEpGpa69ULQPI/WMV
-	Ci8IqRqEH5xOzjI16MWAtEJ56raEr0Wi5FT44Hr8BoB4dzFA7DgYJhnIpFXC9r6P
-	+yH6cvNHjo3+zsJmhNTDhNzqy9nmPdQ0cC2UY1Be+GpI1+K6KfZQC4IdLuzXGg3s
-	lpgYr94GWBUllJMI63hVxg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1729505321; x=
-	1729512521; bh=ghSlNe0tmFIbW8pbUYudW/CbWTjZ+S6+ujlr6qqnF/E=; b=c
-	+yT9YJVNdsrrwGaHaBDLiJ9XZ4izTUNteC1asRAHk8AdWfX3WorexOGb71M8j4uC
-	zORjv/TdqGZDpylQB0WryzahKC4T3PQnVwuG1fgtzPPCVzBEpdXnGLxATCsmIig/
-	H96DDBEWYMOty9sHtCLaZ93EKfqIQ9GQUldQShv6EqsRiJ2YyaiOSfUhYdT4UfU7
-	MEZh6q1r48ORtasV2o1IOR+T/D2+qmbYUNoOyJCD12cuIgp1CNyi58VEbLkN3AqD
-	3i05ArUpxC7CCQcPNoNHHDKliwuCUHAyCxhbku0HVNvpSCwTHglC6p6cDZaamA4N
-	UtpN4HsdEnl6gCT6kEuwQ==
-X-ME-Sender: <xms:KSgWZ6S6R2n1f2T0QCQexTgiV-KSMlaMM2gkoOq12JijmTNZ1Da6pA>
-    <xme:KSgWZ_zrX9SKSefI_hsukUWNkowAAXFNzJVOU5WQN8cskfd-UktwCKcRh5niCSPF9
-    B-wUzhhhk-7zGgwpLQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrvdehledgvdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
-    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
-    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
-    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
-    guvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefg
-    gfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
-    hmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepvdel
-    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehsihhmohhnrgesfhhffihllhdrtg
-    hhpdhrtghpthhtoheprghirhhlihgvugesghhmrghilhdrtghomhdprhgtphhtthhopehl
-    uhhiiidruggvnhhtiiesghhmrghilhdrtghomhdprhgtphhtthhopehprghtrhhikhdrrh
-    drjhgrkhhosghsshhonhesghhmrghilhdrtghomhdprhgtphhtthhopehmrghrtggvlhes
-    hhholhhtmhgrnhhnrdhorhhgpdhrtghpthhtoheplhhutggrshdruggvmhgrrhgthhhise
-    hinhhtvghlrdgtohhmpdhrtghpthhtoheprhhoughrihhgohdrvhhivhhisehinhhtvghl
-    rdgtohhmpdhrtghpthhtoheprghrnhgusehkvghrnhgvlhdrohhrghdprhgtphhtthhope
-    hjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:KSgWZ306jKZbZyxIuNn24nj8C_gZvqx8j2vZtEOD83IWkVo0nTYHqw>
-    <xmx:KSgWZ2ChYHyNQtPFROKXIN2jjht4D_m7Shh_6ifCQapVKZZio003WA>
-    <xmx:KSgWZzi65AZ8OiKDEBbUvjM6UWP-jI8InMkFEuc1FbIPK1bIuuD40g>
-    <xmx:KSgWZyo2OCvdSDoNogZ2pNuyd_R1Z-2mydlod75TWuAx6fAolN5qiA>
-    <xmx:KSgWZ05XjI0ejUOeJbkMdLt1Sg5fEKNECBVD0njAWDAczeUufW1V0bbf>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 003F42220071; Mon, 21 Oct 2024 06:08:40 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m9d3x7O9"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-20b5affde14so29088865ad.3;
+        Mon, 21 Oct 2024 03:09:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1729505359; x=1730110159; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Yeq8CDDkDOrSnhrxHij8VmLVC6Z1DWY5RzKY0fBvsb4=;
+        b=m9d3x7O9GYbzld+8ZtHzUGSO5USfu9EZDhAoPK541lhWjrQV0tUlgnfJcGS5Cj+2dB
+         pzm1zlVunTv7EfAwKCsMUdPWr0fXs6lXDaEi5dgGf6aLL6NmKBLzT6EPZtToiksFaiq6
+         OfrUiDDJ1Ha1fTBab8RY3EvW8ovD9Zi3EpB5CAACMCdQtS7YgY+ECh+w/bqr0QNXzP5b
+         7VXmqiVzNL1RW0xdqaueCQ4xAliotogxdH5MweuS9EJC++YobyKRT5OYhI8gpoi7bewQ
+         d68/DqvAvUZJzJr/Rz/XPEfJYOYII7LtfP+b+NhyDop9WmSvocrX5E2Odi8vSk1SwX4g
+         HGCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1729505359; x=1730110159;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Yeq8CDDkDOrSnhrxHij8VmLVC6Z1DWY5RzKY0fBvsb4=;
+        b=H00ViAWP286YGPWfrP1Vt7IH27k8Z45Y03Y8U36s8x/iJBnOXtztTwY3axts9Jv5c9
+         IUBogigjDVb23UBueW8awewZhRqcLgUAjwxDGhEX0XljGUx+ylJ/GP9kmcBHJT2rdFvw
+         6JFONuVLCcW1pYKp2uhcRK3jx5G2u1xQynUd+qFnyE465wgZc5+PytIqRUl6UkDiT6rQ
+         e37Hy89LOzL0hr+M35WW0elMWeuCA4ztLXOpMTcEljJk0+Qy2T8C7ICrV/e7vPH4LLPz
+         ge25U/T/mhBahAyVc9lZ0Wd/luewGy+iTbqwGlupUH2iKIJQNyfNIM5+T26bjTJvmf/L
+         zrQQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW24rCU7nXuXigYuUuvq/xuPA0QldNqcKF6npbM6eIvDRs6Ra0AQ6zQ0Hv+ME/yzshSxblbEpbO/v3y3IU4@vger.kernel.org, AJvYcCX1VoeNL1gVGYHE7z8WqBmg1BRVWaT8Y6Tolz4cXbJTWK9qtHk+bDk6UnY+wnFIm+0oopufR6L4EzsV23gY@vger.kernel.org, AJvYcCXl+FkT4Eag1j0M8W1EG7aJvQgeI9agjmyRyKBSYr65pEkV9Ck+MRzfBddX9ZL6DNQ8f58+7cE3PvUb@vger.kernel.org
+X-Gm-Message-State: AOJu0YzuHrTiSCbTTYcaaU6PM54pwBQyAkdmW3JJag40VAX9GoRxAYMU
+	PzWOLyH96+vom+OSIbiS8qdJ5WVXq7ScTkmGzXGhwqb6dDzqAWtH
+X-Google-Smtp-Source: AGHT+IGBVSe3fGC8jwkNg83HVZynlz+8eS6hkHiMJMQb3ltPpok70fN7+VYi13IU+PQuxS5Q2gB9RQ==
+X-Received: by 2002:a17:903:2342:b0:20c:7a0b:74a5 with SMTP id d9443c01a7336-20e5a9055e3mr143289685ad.39.1729505358749;
+        Mon, 21 Oct 2024 03:09:18 -0700 (PDT)
+Received: from localhost ([2001:da8:7001:11::cb])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20e7ef0e0ecsm22543135ad.109.2024.10.21.03.09.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Oct 2024 03:09:18 -0700 (PDT)
+Date: Mon, 21 Oct 2024 18:08:59 +0800
+From: Inochi Amaoto <inochiama@gmail.com>
+To: Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>, 
+	Inochi Amaoto <inochiama@gmail.com>
+Cc: Chen Wang <unicorn_wang@outlook.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Inochi Amaoto <inochiama@outlook.com>, Yixun Lan <dlan@gentoo.org>, LKML <linux-kernel@vger.kernel.org>, 
+	linux-serial <linux-serial@vger.kernel.org>, devicetree@vger.kernel.org, linux-riscv@lists.infradead.org
+Subject: Re: [PATCH v2 2/2] serial: 8250_dw: Add Sophgo SG2044 quirk
+Message-ID: <tm7jtf3swggiilznwo3xcqjlhd2a7cguwk3nay3bhmaxo23mf5@qw2fyjwapoxe>
+References: <20241021072606.585878-1-inochiama@gmail.com>
+ <20241021072606.585878-3-inochiama@gmail.com>
+ <29d8e2a6-d0e7-0f74-1f5c-4f285ec1e9ee@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Mon, 21 Oct 2024 10:08:19 +0000
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Thomas Zimmermann" <tzimmermann@suse.de>,
- "Niklas Schnelle" <schnelle@linux.ibm.com>, "Brian Cain" <bcain@quicinc.com>,
- "Marcel Holtmann" <marcel@holtmann.org>,
- "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
- "Patrik Jakobsson" <patrik.r.jakobsson@gmail.com>,
- "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>,
- "Maxime Ripard" <mripard@kernel.org>, "Dave Airlie" <airlied@gmail.com>,
- "Simona Vetter" <simona@ffwll.ch>, "Dave Airlie" <airlied@redhat.com>,
- "Gerd Hoffmann" <kraxel@redhat.com>,
- "Lucas De Marchi" <lucas.demarchi@intel.com>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>,
- "Heiko Carstens" <hca@linux.ibm.com>
-Cc: linux-kernel@vger.kernel.org, linux-hexagon@vger.kernel.org,
- linux-bluetooth@vger.kernel.org, dri-devel@lists.freedesktop.org,
- virtualization@lists.linux.dev, spice-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, linux-serial@vger.kernel.org,
- Linux-Arch <linux-arch@vger.kernel.org>, "Arnd Bergmann" <arnd@kernel.org>
-Message-Id: <a25086c4-e2fc-4ffc-bc20-afa50e560d96@app.fastmail.com>
-In-Reply-To: <64cc9c8f-fff3-4845-bb32-d7f1046ef619@suse.de>
-References: <20241008-b4-has_ioport-v8-0-793e68aeadda@linux.ibm.com>
- <20241008-b4-has_ioport-v8-3-793e68aeadda@linux.ibm.com>
- <64cc9c8f-fff3-4845-bb32-d7f1046ef619@suse.de>
-Subject: Re: [PATCH v8 3/5] drm: handle HAS_IOPORT dependencies
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <29d8e2a6-d0e7-0f74-1f5c-4f285ec1e9ee@linux.intel.com>
 
-On Mon, Oct 21, 2024, at 07:52, Thomas Zimmermann wrote:
-> Am 08.10.24 um 14:39 schrieb Niklas Schnelle:
-d 100644
->> --- a/drivers/gpu/drm/qxl/Kconfig
->> +++ b/drivers/gpu/drm/qxl/Kconfig
->> @@ -2,6 +2,7 @@
->>   config DRM_QXL
->>   	tristate "QXL virtual GPU"
->>   	depends on DRM && PCI && MMU
->> +	depends on HAS_IOPORT
->
-> Is there a difference between this style (multiple 'depends on') and the 
-> one used for gma500 (&& && &&)?
+On Mon, Oct 21, 2024 at 11:52:38AM +0300, Ilpo Järvinen wrote:
+> On Mon, 21 Oct 2024, Inochi Amaoto wrote:
+> 
+> > SG2044 relys on an internal divisor when calculating bitrate, which
+> > means a wrong clock for the most common bitrates. So add a quirk for
+> > this uart device to skip the set rate call and only relys on the
+> > internal UART divisor.
+> > 
+> > Signed-off-by: Inochi Amaoto <inochiama@gmail.com>
+> 
+> Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+> 
+> I wonder though does this mean the numbers userspace can read from kernel 
+> are bogus and if something can be done about that?
+> 
 
-No, it's the same. Doing it in one line is mainly useful
-if you have some '||' as well.
+I am not sure whether the clock rate can be read by the userspace.
+At least it report the right baud speed by using stty.
 
->> @@ -105,7 +106,9 @@ static void bochs_vga_writeb(struct bochs_device *bochs, u16 ioport, u8 val)
->>   
->>   		writeb(val, bochs->mmio + offset);
->>   	} else {
->> +#ifdef CONFIG_HAS_IOPORT
->>   		outb(val, ioport);
->> +#endif
->
-> Could you provide empty defines for the out() interfaces at the top of 
-> the file?
+Regards,
+Inochi
 
-That no longer works since there are now __compiletime_error()
-versions of these funcitons. However we can do it more nicely like:
+> 
+> > ---
+> >  drivers/tty/serial/8250/8250_dw.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> > index ab9e7f204260..51894c93c8a3 100644
+> > --- a/drivers/tty/serial/8250/8250_dw.c
+> > +++ b/drivers/tty/serial/8250/8250_dw.c
+> > @@ -750,7 +750,7 @@ static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
+> >  	.quirks = DW_UART_QUIRK_CPR_VALUE | DW_UART_QUIRK_IS_DMA_FC,
+> >  };
+> >  
+> > -static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
+> > +static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
+> >  	.usr_reg = DW_UART_USR,
+> >  	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
+> >  };
+> > @@ -760,7 +760,8 @@ static const struct of_device_id dw8250_of_match[] = {
+> >  	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
+> >  	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
+> >  	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
+> > -	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_starfive_jh7100_data },
+> > +	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_skip_set_rate_data },
+> > +	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_skip_set_rate_data },
+> >  	{ /* Sentinel */ }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, dw8250_of_match);
+> > 
 
-diff --git a/drivers/gpu/drm/tiny/bochs.c b/drivers/gpu/drm/tiny/bochs.c
-index 9b337f948434..034af6e32200 100644
---- a/drivers/gpu/drm/tiny/bochs.c
-+++ b/drivers/gpu/drm/tiny/bochs.c
-@@ -112,14 +112,12 @@ static void bochs_vga_writeb(struct bochs_device *bochs, u16 ioport, u8 val)
- 	if (WARN_ON(ioport < 0x3c0 || ioport > 0x3df))
- 		return;
- 
--	if (bochs->mmio) {
-+	if (!IS_DEFINED(CONFIG_HAS_IOPORT) || bochs->mmio) {
- 		int offset = ioport - 0x3c0 + 0x400;
- 
- 		writeb(val, bochs->mmio + offset);
- 	} else {
--#ifdef CONFIG_HAS_IOPORT
- 		outb(val, ioport);
--#endif
- 	}
- }
- 
-@@ -128,16 +126,12 @@ static u8 bochs_vga_readb(struct bochs_device *bochs, u16 ioport)
- 	if (WARN_ON(ioport < 0x3c0 || ioport > 0x3df))
- 		return 0xff;
- 
--	if (bochs->mmio) {
-+	if (!IS_DEFINED(CONFIG_HAS_IOPORT) || bochs->mmio) {
- 		int offset = ioport - 0x3c0 + 0x400;
- 
- 		return readb(bochs->mmio + offset);
- 	} else {
--#ifdef CONFIG_HAS_IOPORT
- 		return inb(ioport);
--#else
--		return 0xff;
--#endif
- 	}
- }
- 
-@@ -145,32 +139,26 @@ static u16 bochs_dispi_read(struct bochs_device *bochs, u16 reg)
- {
- 	u16 ret = 0;
- 
--	if (bochs->mmio) {
-+	if (!IS_DEFINED(CONFIG_HAS_IOPORT) || bochs->mmio) {
- 		int offset = 0x500 + (reg << 1);
- 
- 		ret = readw(bochs->mmio + offset);
- 	} else {
--#ifdef CONFIG_HAS_IOPORT
- 		outw(reg, VBE_DISPI_IOPORT_INDEX);
- 		ret = inw(VBE_DISPI_IOPORT_DATA);
--#else
--		ret = 0xffff;
--#endif
- 	}
- 	return ret;
- }
- 
- static void bochs_dispi_write(struct bochs_device *bochs, u16 reg, u16 val)
- {
--	if (bochs->mmio) {
-+	if (!IS_DEFINED(CONFIG_HAS_IOPORT) || bochs->mmio) {
- 		int offset = 0x500 + (reg << 1);
- 
- 		writew(val, bochs->mmio + offset);
- 	} else {
--#ifdef CONFIG_HAS_IOPORT
- 		outw(reg, VBE_DISPI_IOPORT_INDEX);
- 		outw(val, VBE_DISPI_IOPORT_DATA);
--#endif
- 	}
- }
- 
-> And the in() interfaces could be defined to 0xff[ff].
->
-> I assume that you don't want to provide such empty macros in the 
-> kernel's io.h header?
-
-That was the original idea many years ago, but Linus rejected
-my pull request for it, so Niklas worked through all drivers
-individually to add the dependencies instead.
-
-     Arnd
