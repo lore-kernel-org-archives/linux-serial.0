@@ -1,405 +1,166 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCE1A197A7F
-	for <linux-serial@vger.kernel.org>; Thu, 24 Oct 2024 07:32:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 857651AB525
+	for <linux-serial@vger.kernel.org>; Thu, 24 Oct 2024 08:34:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729755181; cv=none; b=df/nXk1eqhwmknbiTYVK7Wf2p7Q7ok8I90Y6uKWwH+xuJqVnM3YwIL0WzaIAauvLTP7Tpclk2KRyQuzv5iTsCEJIk92EO/8DcWkGLOAMRh0TqsQmIrYg4OjdZO/VMsACfYrXAab6UgxodjNfkwBc+7vpmU2Gd6/efGHCFrtQQkE=
+	t=1729758901; cv=none; b=l1wY0cdQAL0E74qXNxTyr61KHLcX8Csj6RaHj7kUXFbG/kEICpNCSYwbXIuFd038jphECy/omQhShDtNXSYykePv7zD/ywZcaO6Rq3HaSLWPWBLKe6MAFx0iDdxYGRO5ik1ow23olVGhvfB6ITvy58qfTvw+IA/sc/M6Vmu9VIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729755181; c=relaxed/simple;
-	bh=nJqXthfNYcSxCYe9bmtfSmfLkjd47vC2hW9848xH2AY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LI3ai/AFuSYS37y3LrQuEjQvvS6Ir/n1zJTzppqjxgdZzVc9r0vyBp0ZhSL80pFEqWNEuC2noFC0H/CR5j3A+9hvZ18yWwNzeFHTcYUV53Ay4gW98iLuElDjDxmlM3+Mdlfi2ew05+6rLFvmYgYTcbm5R4PPqIQIN91TpYN9k3Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=iP7dz2hm; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1729758901; c=relaxed/simple;
+	bh=xJRgSKPTW//y4N0qDBNp340kpAEEE1G/wOAMoRlGLVE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dR46hvbcaPUX22zBcG885e1TpBxbTDoeVn8pWRHnCrqjplvG3UNcRPOc9opIBWWHqYPNrS/3W5bNyCxkerq2ogAOnhYj/Y49zPHXc62Q0sFdkKKfuHewmonJbYLij3aEAt8iOqVqvE4Yn57fxztcvKwI6382tf+61rdy6xRGkOw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=OxZN2Jev; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="iP7dz2hm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1729755176;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nJqXthfNYcSxCYe9bmtfSmfLkjd47vC2hW9848xH2AY=;
-	b=iP7dz2hmexHT8k2O0ckDkzrq8KnCE+3wPk3VnIos826c8R2X52+OBJb4INrc0LBt8aBIAi
-	JJag597IOcTNpun+98/vh8URNVySZLCzFkG7z74Mh+WtbN0KoozaQr/FdMusPhSPNk5hVI
-	oVTgltUlyQX1g529LdXk8LyPBiQU8Zo=
-Received: from mail-yw1-f200.google.com (mail-yw1-f200.google.com
- [209.85.128.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-298-okrcV1ZZOv-LjwcDHGtQdQ-1; Thu, 24 Oct 2024 03:32:55 -0400
-X-MC-Unique: okrcV1ZZOv-LjwcDHGtQdQ-1
-Received: by mail-yw1-f200.google.com with SMTP id 00721157ae682-6e5bdb9244eso10424927b3.2
-        for <linux-serial@vger.kernel.org>; Thu, 24 Oct 2024 00:32:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="OxZN2Jev"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4315e62afe0so6686075e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 24 Oct 2024 01:34:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1729758897; x=1730363697; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=U3hnG6kUasRgo7MmwBN61ENgj7Tvm7iouRipv+d+4kU=;
+        b=OxZN2Jev+BwMSxMC4KtGRW/f+d+ARUVNKvVGn3i/CXue43xVRxTk/cQmZBwrRM/xuk
+         ZU1Qcz/KX0WjalXlpNkaYFP/M+p/gFX2cl/Y5ILvZH37uzQdw4jE+/tVjp67oSCA9Jq1
+         pRs0O/bKjTSUMGtlNyjuR9vhoU8yMVtaM3pCALeQn3opTj8Fug4/E0osc6Y/eLZ3X4kb
+         me7sS8RQoH5b/Q8aHB5Dxy3AEorKXlNpnEN757QDNtHZlF/V+HFcN/+jNQzu0XTMnpa+
+         nElQr863e3lH7cFr0Sy9LOHBg/A2aki9HVIoZ+w+OSfCFpIivOLniTpv58il76fbuSto
+         cv9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729755175; x=1730359975;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=6QtnlkYe/1PnWLS5Ii6raZ83O0JHoz7C7QG5MqJpjr0=;
-        b=WWAivGG+rC+5yKJ+6XehArcXyMaE8kPkWOgkklXHZczfH0Q/ePbDz048cGy0etDHB5
-         zfT23BwFca82/qT3Jbz1NTohfIhPqHzBPa3N4BAPuC7DW2oGaCSLnrB7OrXRA53lM6cs
-         aveZRvZh+MkaM/2HVToe3oafoiZR5wLNeFklmVprjLuCd9DPbzs5nOVltdZaQXZbzbUo
-         ChCFvm3KHWu0tTZxC1E9N+QEUhgE6Q8mT4hdzu2/oRGiSHsGMhaeYG3mtbhNfCz60sKq
-         aJi5T0XONzy4+q0IC2wd7qGiy7bjwqptHG0dM4au/KCYOe8MB1OPXkFK4fLVzB8KVQ74
-         fcsw==
-X-Forwarded-Encrypted: i=1; AJvYcCXkExbDflo3dRVdqhKSIOBXs8wVOaumRQgTcOToo0pJt2mo6xxq70Ili4DjgsReDh2jqLaxChUzCpCJHf0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywy8BejijiDrV8W+7hH16t0jzgNhZWCv6asong/K0HR7VPBgcco
-	fTl1MX6Lyz/or2n8uIg+dvXUI75P4dFIsgZQ1hXiioA2NXKedVH+W3iAl0b95ulPU7d0LyZRf8V
-	1LxDlIL4nwHGcZGLPAbCZNxcZcXdJSAm7UPvoqZTBzL1Gn/ZhGXAPu64Bq+Y6hw==
-X-Received: by 2002:a05:690c:6e03:b0:6db:cf6c:a7c4 with SMTP id 00721157ae682-6e866331c20mr10690527b3.45.1729755174541;
-        Thu, 24 Oct 2024 00:32:54 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFwjzENxysw+j7YRfDKeQxYY43g6inqzMz9Yd8c7a5bPrsRFqYGaOrxa6Un2MKjvPM7S1dLyw==
-X-Received: by 2002:a05:690c:6e03:b0:6db:cf6c:a7c4 with SMTP id 00721157ae682-6e866331c20mr10690047b3.45.1729755174061;
-        Thu, 24 Oct 2024 00:32:54 -0700 (PDT)
-Received: from dhcp-64-16.muc.redhat.com (nat-pool-muc-t.redhat.com. [149.14.88.26])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6ce008ac8f1sm47141046d6.26.2024.10.24.00.32.47
+        d=1e100.net; s=20230601; t=1729758897; x=1730363697;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=U3hnG6kUasRgo7MmwBN61ENgj7Tvm7iouRipv+d+4kU=;
+        b=mVGAiRFAe46+JftvirY/PDLKi5OPdyhdToh5O+Pco81iX2whlh1t6RqOHBFkHh53PD
+         qq8+h5IjloCXSJcxNdImseXp9uJiph6Jv0+zvD7SjsWdfX/Yg5sFB3bYQXko0NzvuV65
+         X2c96u0nd56PgboP3m+LbTZnI46BtCSVDwX8/Oe6UYhn5G9dYGPM4ah+HyZVudGlbvvB
+         SHW/xEpGQrSmMHDvyX7njo5HAuFwjdJhfqFQI2uSfoQYh+IfOGJ2DKuIpBn07nTvuIVh
+         9/HGeSzFAo6khDiV+MrB4wE77kBD+YwVuEE81IvA+mlgXKf+fcWR/pYnlXqShkhD5U+o
+         ZLuQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWQ1rMbtrBXmRrlAdTrbQNATNJPKiYQjmBq0FHHQKjkp1OkCO+7C6Dy+5iIrbUmJK0I7mlGhptlL0sbsug=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyfn6qz3rrEe6LgJFuXgUa5n53i/BxsZlX/eKf7GUB61untI2ws
+	GIBMKWpmMLtWiXZWFQS1LWy7p/Y9oc9Cg9ZYbmecwCr6MAYsOzK78t+vE/oR61Q=
+X-Google-Smtp-Source: AGHT+IGttkM//WyojeDGYn9Lj1Z4+3EZSZteZF44Ruav/px318p2KtzUl9T9lR1Dxi6OlwDs18wvdw==
+X-Received: by 2002:a05:6000:10c5:b0:37d:45f0:dd08 with SMTP id ffacd0b85a97d-3803ac846ecmr877594f8f.11.1729758896811;
+        Thu, 24 Oct 2024 01:34:56 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.50])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-37ee0b94131sm10731293f8f.81.2024.10.24.01.34.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2024 00:32:53 -0700 (PDT)
-Message-ID: <7be870fc2b2fa01b89708208c78cc041029252aa.camel@redhat.com>
-Subject: Re: linux: Goodbye from a Linux community volunteer
-From: Philipp Stanner <pstanner@redhat.com>
-To: Serge Semin <fancer.lancer@gmail.com>, Jon Mason <jdmason@kudzu.us>, 
- Dave Jiang <dave.jiang@intel.com>, Allen Hubbe <allenbh@gmail.com>,
- ntb@lists.linux.dev, Andy Shevchenko <andy@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Kory Maincent
- <kory.maincent@bootlin.com>, Cai Huoqing <cai.huoqing@linux.dev>, 
- dmaengine@vger.kernel.org, Mark Brown <broonie@kernel.org>, 
- linux-spi@vger.kernel.org, Damien Le Moal <dlemoal@kernel.org>, 
- linux-ide@vger.kernel.org, Paul Burton <paulburton@kernel.org>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, Arnd Bergmann <arnd@arndb.de>,
- Jiaxun Yang <jiaxun.yang@flygoat.com>,  linux-mips@vger.kernel.org, Bjorn
- Helgaas <bhelgaas@google.com>, Manivannan Sadhasivam
- <manivannan.sadhasivam@linaro.org>, Yoshihiro Shimoda
- <yoshihiro.shimoda.uh@renesas.com>,  linux-pci@vger.kernel.org, "David S.
- Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Paolo
- Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>, Russell King
- <linux@armlinux.org.uk>, Vladimir Oltean <olteanv@gmail.com>, Keguang Zhang
- <keguang.zhang@gmail.com>, Yanteng Si <siyanteng@loongson.cn>, 
- netdev@vger.kernel.org, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk@kernel.org>, Guenter Roeck <linux@roeck-us.net>, 
- linux-hwmon@vger.kernel.org, Borislav Petkov <bp@alien8.de>, 
- linux-edac@vger.kernel.org, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>,  linux-serial@vger.kernel.org
-Cc: Andrew Halaney <ajhalaney@gmail.com>, Nikita Travkin <nikita@trvn.ru>, 
- Ivan Kokshaysky <ink@jurassic.park.msu.ru>, Alexander Shiyan
- <shc_work@mail.ru>, Dmitry Kozlov <xeb@mail.ru>,  Sergey Shtylyov
- <s.shtylyov@omp.ru>, Evgeniy Dushistov <dushistov@mail.ru>, Geert
- Uytterhoeven <geert@linux-m68k.org>, Sergio Paracuellos
- <sergio.paracuellos@gmail.com>,  Nikita Shubin <nikita.shubin@maquefel.me>,
- linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Thu, 24 Oct 2024 09:32:46 +0200
-In-Reply-To: <2m53bmuzemamzc4jzk2bj7tli22ruaaqqe34a2shtdtqrd52hp@alifh66en3rj>
-References: <2m53bmuzemamzc4jzk2bj7tli22ruaaqqe34a2shtdtqrd52hp@alifh66en3rj>
-User-Agent: Evolution 3.52.4 (3.52.4-1.fc40)
+        Thu, 24 Oct 2024 01:34:56 -0700 (PDT)
+Date: Thu, 24 Oct 2024 10:34:54 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: John Ogness <john.ogness@linutronix.de>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH 1/2] printk: Introduce LOUD_CON flag
+Message-ID: <ZxoGriUNSepndV77@pathway.suse.cz>
+References: <20241016-printk-loud-con-v1-0-065e4dad6632@suse.com>
+ <20241016-printk-loud-con-v1-1-065e4dad6632@suse.com>
+ <84plnz29zv.fsf@jogness.linutronix.de>
+ <ZxDl-VcVAI8DGM40@pathway.suse.cz>
+ <847ca5rigk.fsf@jogness.linutronix.de>
+ <ZxZYKe0t7jWX-_1K@pathway.suse.cz>
+ <8434kpfsvr.fsf@jogness.linutronix.de>
+ <533f6a578d8489c1107ba83ce1e49b6e2d5c84ce.camel@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <533f6a578d8489c1107ba83ce1e49b6e2d5c84ce.camel@suse.com>
 
-On Thu, 2024-10-24 at 07:27 +0300, Serge Semin wrote:
-> Hello Linux-kernel community,
->=20
-> I am sure you have already heard the news caused by the recent Greg'
-> commit
-> 6e90b675cf942e ("MAINTAINERS: Remove some entries due to various
-> compliance
-> requirements."). As you may have noticed the change concerned some of
-> the
-> Ru-related developers removal from the list of the official kernel
-> maintainers,
-> including me.
->=20
-> The community members rightly noted that the _quite_ short commit log
-> contained
-> very vague terms with no explicit change justification. No matter how
-> hard I
-> tried to get more details about the reason, alas the senior
-> maintainer I was
-> discussing the matter with haven't given an explanation to what
-> compliance
-> requirements that was. I won't cite the exact emails text since it
-> was a private
-> messaging, but the key words are "sanctions", "sorry", "nothing I can
-> do", "talk
-> to your (company) lawyer"... I can't say for all the guys affected by
-> the
-> change, but my work for the community has been purely _volunteer_ for
-> more than
-> a year now (and less than half of it had been payable before that).
-> For that
-> reason I have no any (company) lawyer to talk to, and honestly after
-> the way the
-> patch has been merged in I don't really want to now. Silently, behind
-> everyone's
-> back, _bypassing_ the standard patch-review process, with no affected
-> developers/subsystem notified - it's indeed the worse way to do what
-> has been
-> done. No gratitude, no credits to the developers for all these years
-> of the
-> devoted work for the community. No matter the reason of the situation
-> but
-> haven't we deserved more than that? Adding to the GREDITS file at
-> least, no?..
->=20
-> I can't believe the kernel senior maintainers didn't consider that
-> the patch
-> wouldn't go unnoticed, and the situation might get out of control
-> with
-> unpredictable results for the community, if not straight away then in
-> the middle
-> or long term perspective. I am sure there have been plenty ways to
-> solve the
-> problem less harmfully, but they decided to take the easiest path.
-> Alas what's
-> done is done. A bifurcation point slightly initiated a year ago has
-> just been
-> fully implemented. The reason of the situation is obviously in the
-> political
-> ground which in this case surely shatters a basement the community
-> has been built
-> on in the first place. If so then God knows what might be next (who
-> else might
-> be sanctioned...), but the implemented move clearly sends a bad
-> signal to the
-> Linux community new comers, to the already working volunteers and
-> hobbyists like
-> me.
+On Wed 2024-10-23 17:36:04, Marcos Paulo de Souza wrote:
+> On Mon, 2024-10-21 at 16:17 +0206, John Ogness wrote:
+> > On 2024-10-21, Petr Mladek <pmladek@suse.com> wrote:
+> > > > That will not work because migrate_enable() can only be called
+> > > > from
+> > > > can_sleep context. Instead, the migrate_disable()/enable() should
+> > > > be at
+> > > > the few (one?) call sites where
+> > > > printk_loud_console_enter()/exit() is
+> > > > used from task context.
+> > > 
+> > > Hmm, if I get it correctly, we could not use migrate_disable() in
+> > > __handle_sysrq() because it can be called also in atomic context,
+> > 
+> > I am talking about callers of __handle_sysrq() and/or their callers.
+> > 
+> > For example write_sysrq_trigger() could do:
+> > 
+> > 	migrate_disable();
+> > 	__handle_sysrq(c, false);
+> > 	migrate_enable();
+> > 
+> > Or a new wrapper could be introduced for this purpose:
+> > 
+> > static inline void wrapper handle_sysrq_task(u8 key, bool check_mask)
+> > {
+> > 	migrate_disable();
+> > 	__handle_sysrq(key, check_mask);
+> > 	migrate_enable();
+> > }
+> > 
+> > A quick grep shows about 25 call sites to check.
+> >
+> > > I do not see any easy way how to distinguish whether it was called
+> > > in
+> > > an atomic context or not.
+> > 
+> > There is no clean way to do that. If this information is needed, it
+> > must
+> > be tracked by the call chain.
+> > 
+> > > So, I see three possibilities:
+> > > 
+> > >   1. Explicitly call preempt_disable() in __handle_sysrq().
+> > > 
+> > >      It would be just around the the single line or the help. But
+> > > still,
+> > >      I do not like it much.
+> > 
+> > Not acceptable for PREEMPT_RT since sysrq is exposed to external
+> > inputs.
+> > 
+> > >   2. Avoid the per-CPU variable. Force adding the
+> > > LOUD_CON/FORCE_CON
+> > >      flag using a global variable, e.g. printk_force_console.
+> > > 
+> > >      The problem is that it might affect also messages printed by
+> > >      other CPUs. And there might be many.
+> > > 
+> > >      Well, console_loglevel is a global variable. The original code
+> > >      had a similar problem.
+> > 
+> > If disabling migration is not an option for you, this would be my
+> > second
+> > choice. I assume tagging too many messages is better than not tagging
+> > enough. And, as you say, this is effectively what the current code is
+> > trying to do.
+> 
+> Thanks for your input John. I talked with Petr and he suggested to
+> follow this option. I'll prepare the changes and send them after
+> reviewing them with Petr.
 
-I'm also quite shocked and even baffled about how this has been
-handled. This is not how leaders should communicate difficult or big
-decisions. It's the most disappointing event I have witnessed in the
-project.
+Just for record. I propose this way because disabling migration would
+require checking all callers (25 as mentioned above).
+migrate_disable() is needed and can be called only in the task
+context.
 
-There is the form and there is the content =E2=80=93 about the content one
-cannot do much, when the state he or his organization resides in gives
-an order.
+I do not think that it is worth the effort. And it would be error
+prone (hard to maintain).
 
-But about the form one can indeed do much. No "Thank you!", no "I hope
-we can work together again once the world has become sane(r)"... srsly,
-what the hell.
-
-No idea why they felt the need to do it that way, but it certainly is
-not the open source way, neither is it decent or honorable.
-
-
-That said, thank you for all your work, Serge!
-
-I believe that nothing that has been accomplished with a candid mindset
-and decent intentions is ever done for nothing, although it often pays
-off way differently than expected.
-So I hope this will be the case for you, too.
-
-Take care,
-Philipp
-
-
->=20
-> Thus even if it was still possible for me to send patches or perform
-> some
-> reviews, after what has been done my motivation to do that as a
-> volunteer has
-> simply vanished. (I might be doing a commercial upstreaming in future
-> though).
-> But before saying goodbye I'd like to express my gratitude to all the
-> community
-> members I have been lucky to work with during all these years.
-> Specifically:
->=20
-> NTB-folks, Jon, Dave, Allen. NTB was my starting point in the kernel
-> upstream
-> work. Thanks for the initial advices and despite of very-very-very
-> tough reviews
-> with several complete patchset refactorings, I learned a lot back
-> then. That
-> experience helped me afterwards. Thanks a lot for that. BTW since
-> then I've got
-> several thank-you letters for the IDT NTB and IDT EEPROM drivers. If
-> not for you
-> it wouldn't have been possible.
->=20
-> Andy, it's hard to remember who else would have given me more on my
-> Linux kernel
-> journey as you have. We first met in the I2C subsystem review of my
-> DW I2C
-> driver patches. Afterwards we've got to be frequently meeting here
-> and there -
-> GPIO, SPI, TTY, DMA, NET, etc, clean/fixes/features patch(set)s.
-> Quite heat
-> discussions in your first reviews drove me crazy really. But all the
-> time we
-> managed to come up with some consensus somehow. And you never quit
-> the
-> discussions calmly explaining your point over and over. You never
-> refused to
-> provide more detailed justification to your requests/comments even
-> though you
-> didn't have to. Thanks to that I learned how to be patient to
-> reviewers
-> and reviewees. And of course thank you for the Linux-kernel
-> knowledges and all
-> the tips and tricks you shared.
->=20
-> * Andy, please note due to the situation I am not going to work on my
-> DW DMAC
-> fixes patchset anymore. So if you ever wish to have DW UART stably
-> working with the
-> DW DMA-engine driver, then feel free to pick the series up:
-> Link:
-> https://lore.kernel.org/dmaengine/20240911184710.4207-1-fancer.lancer@gma=
-il.com/
->=20
-> Linus (Walleij), after you merged one of my pretty much heavy
-> patchset in you
-> suggested to me to continue the DW APB GPIO driver maintaining. It
-> was a first
-> time I was asked to maintain a not-my driver. Thank you for the
-> trust. I'll
-> never forget that.
->=20
-> Mark, thank you very much for entrusting the DW APB SSI driver
-> maintenance to
-> me. I've put a lot of efforts into making it more generic and less
-> errors-prune,
-> especially when it comes working under a DMA-engine control or
-> working in the
-> mem-ops mode. I am sure the results have been beneficial to a lot of
-> DW
-> SPI-controller users since then.
->=20
-> Damien, our first and last meeting was at my generic AHCI-platform
-> and DW AHCI
-> SATA driver patches review. You didn't make it a quick and easy path.
-> But still
-> all the reviews comments were purely on the technical basis, and the
-> patches
-> were eventually merged in. Thank you for your time and experience
-> I've got from
-> the reviews.
->=20
-> Paul, Thomas, Arnd, Jiaxun, we met several times in the mailing list
-> during my
-> MIPS P5600 patches and just generic MIPS patches review. It was
-> always a
-> pleasure to discuss the matters with such brilliant experts in the
-> field. Alas
-> I've spent too much time working on the patches for another
-> subsystems and
-> failed to submit all the MIPS-related bits. Sorry I didn't keep my
-> promise, but
-> as you can see the circumstances have suddenly drawn its own
-> deadline.
->=20
-> Bjorn, Mani, we were working quite a lot with you in the framework of
-> the DW
-> PCIe RC drivers. You reviewed my patches. I helped you to review
-> another patches
-> for some time. Despite of some arguing it was always a pleasure to
-> work with
-> you.=C2=A0 Mani, special thanks for the cooperative DW eDMA driver
-> maintenance. I
-> think we were doing a great work together.
->=20
-> Paolo, Jakub, David, Andrew, Vladimir, Russell. The network subsystem
-> and
-> particularly the STMMAC driver (no doubt the driver sucks) have
-> turned to be a
-> kind of obstacle on which my current Linux-kernel activity has
-> stopped. I really
-> hope that at least in some way my help with the incoming STMMAC and
-> DW XPCS
-> patches reviews lightened up your maintainance duty. I know Russell
-> might
-> disagree, but I honestly think that all our discussions were useful
-> after all,
-> at least for me. I also think we did a great work working together
-> with Russell
-> on the DW GMAC/QoS ETH PCS patches. Hopefully you'll find a time to
-> finish it up
-> after all.=20
->=20
-> Rob, Krzysztof, from your reviews I've learned a lot about the most
-> hardwary part
-> of the kernel - DT sources and DT-bindings. All your comments have
-> been laconic
-> and straight to the point. That made reviews quick and easy. Thank
-> you very
-> much for that.
->=20
-> Guenter, special thanks for reviewing and accepting my patches to the
-> hwmon and
-> watchdog subsystems. It was pleasure to be working with you.
->=20
-> Borislav, we disagreed and argued a lot. So my DW uMCTL2 DDRC EDAC
-> patches even
-> got stuck in limbo for quite a long time. Anyway thank you for the
-> time
-> you spent reviewing my patches and trying to explain your point.
->=20
-> * Borislav, it looks like I won't be able to work on my Synopsys EDAC
-> patchsets
-> anymore. If you or somebody else could pick them up and finish up the
-> work it
-> would be great (you can find it in the lore archive). The patches
-> convert the
-> mainly Zynq(MP)-specific Synopsys EDAC driver to supporting the
-> generic DW
-> uMCTL2 DDRC. It would be very beneficial for each platform based on
-> that
-> controller.
->=20
-> Greg, we met several times in the mailing lists. You reviewed my
-> patches sent
-> for the USB and TTY subsystems, and all the time the process was
-> straight,
-> highly professional, and simpler than in the most of my other case.
-> Thank you very much for that.
->=20
-> Yoshihiro, Keguang, Yanteng, Kory, Cai and everybody I was lucky to
-> meet in the
-> kernel mailing lists, but forgot to mention here. Thank you for the
-> time spent
-> for our cooperative work on making the Linux kernel better. It was a
-> pleasure to
-> meet you here.
->=20
-> I also wish to say huge thanks to the community members trying to
-> defend the kicked off maintainers and for support you expressed in
-> these days. It means a lot.
->=20
-> A little bit statics of my kernel-work at the end:
->=20
-> Signed-off patches:=09=09518
-> Reviewed and Acked patches:=09253
-> Tested patches:=09=09=0980
->=20
-> You might say not the greatest achievement for seven years comparing
-> to some
-> other developers. Perhaps. But I meant each of these tags, be sure.
->=20
-> I guess that's it. If you ever need some info or consultation
-> regarding the
-> drivers I used to maintain or the respective hardware or the Synopsys
-> IP-cores
-> (about which I've got quite comprehensive knowledge by this time),
-> feel free to
-> reach me out via this email. I am always willing to help to the
-> community
-> members.
->=20
-> Hope we'll meet someday in more pleasant circumstances and drink a
-> couple or more beers together. But now it's time to say good bye.
-> Sorry for a long-read text. I wish good luck on your Linux-way.
->=20
-> Best Regards,
-> -Serge(y)
->=20
-
+Best Regards,
+Petr
