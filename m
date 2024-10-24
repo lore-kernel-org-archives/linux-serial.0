@@ -1,115 +1,165 @@
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C58D01FDFB4
-	for <linux-serial@vger.kernel.org>; Thu, 24 Oct 2024 17:35:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.9.28.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 695661FC7EA;
+	Thu, 24 Oct 2024 17:56:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729791318; cv=none; b=ZR0kj+iIprOikCdHLWlg0NPqcokY01xoLpFh4+ldyCD5tMbBXx6CvFKJfAAfdTLy0uoClxxyg9PU2Co1wk9AnNsS0BMiXe1FDySO0dEFLKkIgk9Enbh8Xfqt/rndYRjl1OydwLd4xeD0gdAgeTSbsDnHCRy06Pr7V6TmsX2I59I=
+	t=1729792587; cv=none; b=KrUkGSRk6Wu2HWSP1Zzeiqt6Pwaa7caHwi3/dTwQEmnuRb0zubtZ2K+9b6fYTNsy6mfzN06tmTU7BNofVyvqAfrEYP/0My9/h+UxnkbiKWSZ+VtlXNRN4Lso31mKwyskN2JtGwFcSUWAQm14tGhnBslqtMl3JkElpg3Q2XsnQzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729791318; c=relaxed/simple;
-	bh=dxDEy3Ofp3BOYT0Im+CkYgv7qvt95bsEmjU7sRJ9nQY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NgAiyHr+IaQ0J98x02icwofOloH2FTQgN3hSvLZHRRwvMZ1vOrWER+YtwHzucJQdb5W65/GH5Gnh9YYt0OVTsNPwWfPmu50iEj6hn7kum3rbE0hbEP9O45nva8Eyulxka4bBrgR6cUAqOA0HArOcAWG9vXB2H2LBoNTibrRRE1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu; spf=pass smtp.mailfrom=mit.edu; dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b=lywpdKPr; arc=none smtp.client-ip=18.9.28.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
+	s=arc-20240116; t=1729792587; c=relaxed/simple;
+	bh=pJfEvcklGNmMrN2u9QI22EkwnjUVJjMUQzN4oenrdnE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ZBfoywhXZVpACz+BfcF8zihlwfbZa/IUxrix6Dk85Sbg9a2e7rtXOa+WZ4qjYmZ7bhqZHYjA6QP/gOBXOmP/MCwLanMj/glcqYiuM+0rqCPMDs1p+Ee99hS+WI5zdimMCgxttr4EyKXDCX/qib0q0PTjXn99VbY9ys5NQuGWMgo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=IKA64ztA; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="lywpdKPr"
-Received: from cwcc.thunk.org (pool-173-48-115-113.bstnma.fios.verizon.net [173.48.115.113])
-	(authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 49OHZ5EN029614
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 24 Oct 2024 13:35:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-	t=1729791306; bh=THgZTjgepZWEIghS4JPw/+y40a1os2Kh9HRPApjh/t0=;
-	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
-	b=lywpdKPrC66vtufIFAhSkiaAn4gKYzeIrHFw9mZRsd5RncMll/SGI/E3YJgUnY7Xa
-	 ykp0s7TZhnNKCUeULcD8bf+MSLRBDpPNgEg4pGwZhQjEmoWTPH0uqeoTBCTeCEp48x
-	 e4wAS50XkH9kEvzwDHEUc2D4rzXgVbKgMFOHCDnnw7F13gChzWg7KVEM5/LhKN9xl3
-	 d4Jh4fm19vN+UhCElBSOCuwtN4pIbXUYk1kbjkjCQvRDBa/j4Ob+sH6NhYFtMVauIQ
-	 VHlIrbk5K6dNa4wpqdhV8+3n3s/0gqeVevLiZSPYDKXY01LqMm+lMDpC+xcjesw5aN
-	 aDdgj3YClK0QQ==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-	id E584815C0329; Thu, 24 Oct 2024 13:35:04 -0400 (EDT)
-Date: Thu, 24 Oct 2024 13:35:04 -0400
-From: "Theodore Ts'o" <tytso@mit.edu>
-To: Hantong Chen <cxwdyx620@gmail.com>
-Cc: james.bottomley@hansenpartnership.com, ajhalaney@gmail.com,
-        allenbh@gmail.com, andrew@lunn.ch, andriy.shevchenko@linux.intel.com,
-        andy@kernel.org, arnd@arndb.de, bhelgaas@google.com, bp@alien8.de,
-        broonie@kernel.org, cai.huoqing@linux.dev, dave.jiang@intel.com,
-        davem@davemloft.net, dlemoal@kernel.org, dmaengine@vger.kernel.org,
-        dushistov@mail.ru, fancer.lancer@gmail.com, geert@linux-m68k.org,
-        gregkh@linuxfoundation.org, ink@jurassic.park.msu.ru, jdmason@kudzu.us,
-        jiaxun.yang@flygoat.com, keguang.zhang@gmail.com,
-        kory.maincent@bootlin.com, krzk@kernel.org, kuba@kernel.org,
-        linux-edac@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux@armlinux.org.uk, linux@roeck-us.net,
-        manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
-        nikita.shubin@maquefel.me, nikita@trvn.ru, ntb@lists.linux.dev,
-        olteanv@gmail.com, pabeni@redhat.com, paulburton@kernel.org,
-        robh@kernel.org, s.shtylyov@omp.ru, sergio.paracuellos@gmail.com,
-        shc_work@mail.ru, siyanteng@loongson.cn, tsbogend@alpha.franken.de,
-        xeb@mail.ru, yoshihiro.shimoda.uh@renesas.com
-Subject: Re: linux: Goodbye from a Linux community volunteer
-Message-ID: <20241024173504.GN3204734@mit.edu>
-References: <e7d548a7fc835f9f3c9cb2e5ed97dfdfa164813f.camel@HansenPartnership.com>
- <20241024165650.174-1-cxwdyx620@gmail.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="IKA64ztA"
+Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49OGXrvJ016758;
+	Thu, 24 Oct 2024 17:56:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=3LyFLj
+	L8Yyakboki3xOWjFqUv3Ts5bBdNjMbUaQozo0=; b=IKA64ztAENOpVCqvn2BM4k
+	eBgbFd+u56QDHFQv3ekONODYNM+7Ogi/7RXgsqefSHbAHfXnQyAX1S5XSZYU57Oz
+	us7zB9rFluBG3qwXxwggZn0m6Mko0YP8r95du6ki05qPgAZGygiTk+A1f/ATG2vf
+	4h6qb9kjWTHjqJTdZpvS+MOqjx+GR8M8j2Nlzxl3HZW1pBO++1XF8fsXASy/HY+F
+	pQkLHolyhzgThdTqmgtluLo1IFK6BqV3MQ/k2JbsO8CwjGKqYYnt+s1oAY8uL2Cn
+	CZNZqqsSCbIuXjoM3Rz7BpaXRIGbHsOeV6PaklABZTr43w/ZCkrzLY/g3p17PW0w
+	==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42emajt2k6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 24 Oct 2024 17:56:06 +0000 (GMT)
+Received: from m0353725.ppops.net (m0353725.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 49OHrFRb028350;
+	Thu, 24 Oct 2024 17:56:05 GMT
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42emajt2k1-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 24 Oct 2024 17:56:05 +0000 (GMT)
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 49OEWT7C008796;
+	Thu, 24 Oct 2024 17:56:04 GMT
+Received: from smtprelay05.dal12v.mail.ibm.com ([172.16.1.7])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 42emkasq7q-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 24 Oct 2024 17:56:04 +0000
+Received: from smtpav03.wdc07v.mail.ibm.com (smtpav03.wdc07v.mail.ibm.com [10.39.53.230])
+	by smtprelay05.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 49OHu37837945732
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 24 Oct 2024 17:56:03 GMT
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8469258054;
+	Thu, 24 Oct 2024 17:56:03 +0000 (GMT)
+Received: from smtpav03.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id DD32A5805C;
+	Thu, 24 Oct 2024 17:55:58 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by smtpav03.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Thu, 24 Oct 2024 17:55:58 +0000 (GMT)
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+Date: Thu, 24 Oct 2024 19:54:41 +0200
+Subject: [PATCH v9 2/5] Bluetooth: add HAS_IOPORT dependencies
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241024165650.174-1-cxwdyx620@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20241024-b4-has_ioport-v9-2-6a6668593f71@linux.ibm.com>
+References: <20241024-b4-has_ioport-v9-0-6a6668593f71@linux.ibm.com>
+In-Reply-To: <20241024-b4-has_ioport-v9-0-6a6668593f71@linux.ibm.com>
+To: Brian Cain <bcain@quicinc.com>, Marcel Holtmann <marcel@holtmann.org>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Dave Airlie <airlied@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        =?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Heiko Carstens <hca@linux.ibm.com>
+Cc: linux-kernel@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux.dev, spice-devel@lists.freedesktop.org,
+        intel-xe@lists.freedesktop.org, linux-serial@vger.kernel.org,
+        linux-arch@vger.kernel.org, Niklas Schnelle <schnelle@linux.ibm.com>,
+        Arnd Bergmann <arnd@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1456;
+ i=schnelle@linux.ibm.com; h=from:subject:message-id;
+ bh=pJfEvcklGNmMrN2u9QI22EkwnjUVJjMUQzN4oenrdnE=;
+ b=owGbwMvMwCX2Wz534YHOJ2GMp9WSGNKlutgTrxtUX+lZbH1wZx+T9QTzgKp/ls9P7Fy6476zd
+ 9XWvXNNOkpZGMS4GGTFFFkWdTn7rSuYYronqL8DZg4rE8gQBi5OAZjI63MMf6XLtcNtt/aeZElI
+ bL7tf12zsV3y7A+WCRU7qqaX7l1a4srwT5tjp3uhqLGgQN6912btWprT70ekiXLxCcYf232LTfw
+ 1GwA=
+X-Developer-Key: i=schnelle@linux.ibm.com; a=openpgp;
+ fpr=9DB000B2D2752030A5F72DDCAFE43F15E8C26090
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: IIbcPKs_O30yPQ3Dbh1Y1ZKVphvQuY4m
+X-Proofpoint-GUID: QcsaUtEx0xSI6N2I4-IXLJ-TWCkGmNgg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
+ definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ mlxscore=0 phishscore=0 priorityscore=1501 suspectscore=0 impostorscore=0
+ lowpriorityscore=0 spamscore=0 mlxlogscore=929 bulkscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2409260000
+ definitions=main-2410240145
 
-On Thu, Oct 24, 2024 at 04:56:50PM +0000, Hantong Chen wrote:
-> 
-> For People???s Republic of China, there are about 500 entities that
-> are on the U.S. OFAC SDN / non-SDN lists, especially HUAWEI, which
-> is one of the most active employers from versions 5.16 through 6.1,
-> according to statistics. This is unacceptable, and we must take
-> immediate action to address it, with the **same** reason.
+In a future patch HAS_IOPORT=n will disable inb()/outb() and friends at
+compile time. We thus need to add HAS_IOPORT as dependency for those
+drivers using them.
 
-There are multiple sanctions programs, and at least in the US, for the
-sanctions program which Huawei is in, there is an exception for
-conversations and patches that take place in a public mailing list,
-such as LKML.  As a result, as the ext4 maintainer, I am comfortable
-taking patches from engineers employed by Huawei, and I consider them
-valued members of the ext4 development community.
+Co-developed-by: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Arnd Bergmann <arnd@kernel.org>
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+---
+ drivers/bluetooth/Kconfig | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-However, note that China is *not* actively attacking Taiwai
-militarily, while there are Russian missiles and drones, some of which
-may controlled by embedded Linux systems, that are being used against
-Ukraine even as we speak.  Hence, it should not be surprising that the
-rules imposed by the US Government might be different for Huawei
-compared to other sanctioned entities that are directly or indirectly
-controlled by the Russian Military-Industrial complex.
+diff --git a/drivers/bluetooth/Kconfig b/drivers/bluetooth/Kconfig
+index 18767b54df352e929692850dc789d9377839e094..4ab32abf0f48644715d4c27ec0d2fdaccef62b76 100644
+--- a/drivers/bluetooth/Kconfig
++++ b/drivers/bluetooth/Kconfig
+@@ -336,7 +336,7 @@ config BT_HCIBFUSB
+ 
+ config BT_HCIDTL1
+ 	tristate "HCI DTL1 (PC Card) driver"
+-	depends on PCMCIA
++	depends on PCMCIA && HAS_IOPORT
+ 	help
+ 	  Bluetooth HCI DTL1 (PC Card) driver.
+ 	  This driver provides support for Bluetooth PCMCIA devices with
+@@ -349,7 +349,7 @@ config BT_HCIDTL1
+ 
+ config BT_HCIBT3C
+ 	tristate "HCI BT3C (PC Card) driver"
+-	depends on PCMCIA
++	depends on PCMCIA && HAS_IOPORT
+ 	select FW_LOADER
+ 	help
+ 	  Bluetooth HCI BT3C (PC Card) driver.
+@@ -363,7 +363,7 @@ config BT_HCIBT3C
+ 
+ config BT_HCIBLUECARD
+ 	tristate "HCI BlueCard (PC Card) driver"
+-	depends on PCMCIA
++	depends on PCMCIA && HAS_IOPORT
+ 	help
+ 	  Bluetooth HCI BlueCard (PC Card) driver.
+ 	  This driver provides support for Bluetooth PCMCIA devices with
 
-There are also other sanctions regimes imposed by Japan, European
-Countries, etc., which might be more or less strict.  So in general,
-if you are not sure what you need to do as an US, European, Japanese,
-etc. citizen who might be subject to civil or criminal penalties ----
-talk to a lawyer.
+-- 
+2.45.2
 
-The bottom line is that it is a false equivalence to claim that
-sanctions involving China and Russia are the same.  They very much
-aren't; one country is engaging in an active shooting war (or if you
-prefer, "special military operation"), and the other is not.
-
-Of course, if China were to militarily attack Taiwan or some other
-country in Asia, circumstances might change at some point in the
-future.  Hopefully Chinese leaders will pursue a path of wisdom and
-those consequences won't come to pass.  Ultimately, though, that's not
-up to any of us on this mail thread.
-
-Cheers,
-
-					- Ted
