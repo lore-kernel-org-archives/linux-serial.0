@@ -1,201 +1,267 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from flow-a1-smtp.messagingengine.com (flow-a1-smtp.messagingengine.com [103.168.172.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89BED1B394E;
-	Thu, 24 Oct 2024 09:31:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C0F01CACD9;
+	Thu, 24 Oct 2024 11:02:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.136
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729762291; cv=none; b=eOo2Tuc9X/+RCSWUNlyJuObD1uwchxo12JxOHZu24IGq8z9IV5soBvBilIb/G6a1fsjSC5Bg3dvVJvdoH6wUIDmSZOULKczoEDCd/066Xet/wNJEO99DTnVOhGPE7ASDcjSisxNBR1vZLHHlf4AHKYUjslsMnUZXVLYz//tt6Xs=
+	t=1729767745; cv=none; b=JeGJmXbhlGq94sCScckEHr63wd0btpec6m4dHSa/LU0M36Cx9mP8cIHVR/DLBWDy4K92/5BmRgwfbJMtBXhSTWibkNckr1Tj7cR3E9/sD7Bvb2OxucvIEws4MqGNWfC3xoQM0aOiGbtlrpnoMejxPNEe7CMcIyMGF9tsNVGeoqY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729762291; c=relaxed/simple;
-	bh=iJgps4A6Dt6TDZzBkBksjB0r8OfSsAkmp6iYgjJBW4U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LbdnQtBu7UdoFv5Zp9AkKY1PVsdev+13DuhzA7LzNDiAGHt+YTOFqnVUi0TMvel9KEpMFRUjHQIKudb5nElNpIPWuBuk6R7USPDu9uwlVthWxpqIoC9JIjVSYieREn2+BbkS6z/TmBOsKZS19Jm3YHLlluFJ1ijPNJAPg/ar0vY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=JSoqJntJ; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1729767745; c=relaxed/simple;
+	bh=jojXZXqVAoeJiiE0qE5SBA6J6/tjFaOx8MsDaM22Qhc=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=XnyAIMdSAf+0KL0jwLP/VWelEsixZ6Y+TDX3mGcnVwYvB6Hf1Kgf/kAvNjdlWXvJR6nn4EiVnBhghn+lUBLRrNHNL4Q+coNLcNO5Oy/JwrOgDV/jEnD9eBHc3VG3DzAO4bm19j8jkt56wC2PmFJUB0Gvdch5g7B8pFF7PyjyL8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=flygoat.com; spf=pass smtp.mailfrom=flygoat.com; dkim=pass (2048-bit key) header.d=flygoat.com header.i=@flygoat.com header.b=NAfqEWAK; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=O3d7xXuA; arc=none smtp.client-ip=103.168.172.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=flygoat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flygoat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="JSoqJntJ"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49O7X44G026963;
-	Thu, 24 Oct 2024 09:30:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=ad3G7t
-	gT1LngrbCIX5zxplfREJhzCNpOY81vO9NiHaw=; b=JSoqJntJJMYj6dZwqdaVVU
-	020F4AtcQvGN330K1KOAPMVgEeu+nDHuiJh5VgYMiIyIWfYxydU5vejx4VeEhicx
-	ywEHKuPTrN/VxW9AsAlrfnkw+I8BJVgWo9qdLOykjrNhWK7BdewaDaVNTu+5zEzv
-	/OUATsvFRaMqVDccpfSYGmSfhtCdcV0gQEnoWKJV6rRx7DSsShbCPprVX5U7Q7kC
-	K60ljMe4HsbX69v7Hf5jvRo2tFHMK6sKJgEjtYQJEe3UP9LiNGRLFBQOnv/unHUS
-	Sap4hmsjcpSkjGbE+LIaaFaZggd2kHmA4m3ZR+5XiQg8Y1EBqjHSQOMH30i385yg
-	==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42fhxnrjmq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 24 Oct 2024 09:30:52 +0000 (GMT)
-Received: from m0360083.ppops.net (m0360083.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 49O9UqU1015425;
-	Thu, 24 Oct 2024 09:30:52 GMT
-Received: from ppma21.wdc07v.mail.ibm.com (5b.69.3da9.ip4.static.sl-reverse.com [169.61.105.91])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42fhxnrjmg-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 24 Oct 2024 09:30:52 +0000 (GMT)
-Received: from pps.filterd (ppma21.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma21.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 49O6otaq014287;
-	Thu, 24 Oct 2024 09:30:50 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma21.wdc07v.mail.ibm.com (PPS) with ESMTPS id 42emhfqptj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 24 Oct 2024 09:30:50 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 49O9UmIP12452224
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 24 Oct 2024 09:30:48 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8D14C2004B;
-	Thu, 24 Oct 2024 09:30:48 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 42C3E20043;
-	Thu, 24 Oct 2024 09:30:48 +0000 (GMT)
-Received: from oc-fedora.boeblingen.de.ibm.com (unknown [9.152.212.119])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Thu, 24 Oct 2024 09:30:48 +0000 (GMT)
-Date: Thu, 24 Oct 2024 11:30:40 +0200
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Thomas Zimmermann <tzimmermann@suse.de>, Arnd Bergmann <arnd@arndb.de>,
-        Brian Cain <bcain@quicinc.com>, Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>, Dave Airlie <airlied@gmail.com>,
-        Simona Vetter <simona@ffwll.ch>, Dave Airlie <airlied@redhat.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Maciej W. Rozycki" <macro@orcam.me.uk>,
-        Heiko Carstens <hca@linux.ibm.com>
-Cc: linux-kernel@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux.dev, spice-devel@lists.freedesktop.org,
-        intel-xe@lists.freedesktop.org, linux-serial@vger.kernel.org,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [PATCH v8 3/5] drm: handle HAS_IOPORT dependencies
-Message-ID: <eptfarsehuuiulqz5523xu7h26jvb365rd3u5mx3mmubw74uld@53ebnpkpq6sc>
-References: <20241008-b4-has_ioport-v8-0-793e68aeadda@linux.ibm.com>
- <20241008-b4-has_ioport-v8-3-793e68aeadda@linux.ibm.com>
- <64cc9c8f-fff3-4845-bb32-d7f1046ef619@suse.de>
- <a25086c4-e2fc-4ffc-bc20-afa50e560d96@app.fastmail.com>
- <aa679655-290e-4d19-9195-1a581431b9e6@suse.de>
- <892ba1e2f94a278813621a4872e841d66456e2f7.camel@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=flygoat.com header.i=@flygoat.com header.b="NAfqEWAK";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="O3d7xXuA"
+Received: from phl-compute-09.internal (phl-compute-09.phl.internal [10.202.2.49])
+	by mailflow.phl.internal (Postfix) with ESMTP id 3DA85200607;
+	Thu, 24 Oct 2024 07:02:22 -0400 (EDT)
+Received: from phl-imap-12 ([10.202.2.86])
+  by phl-compute-09.internal (MEProxy); Thu, 24 Oct 2024 07:02:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1729767742;
+	 x=1729774942; bh=jojXZXqVAoeJiiE0qE5SBA6J6/tjFaOx8MsDaM22Qhc=; b=
+	NAfqEWAKIIe52yRfX7BmL+rSCi0zqiR+TgnnHwC1N8q93OMieX98UnaMAVraMlR4
+	8ufe1aSSqRfQPzNfzQLUrovEvVS4BcQFyEY0UnmyscqiBgapfQwy5d5eGivdXwI7
+	n8sqzwkjiAvwBiBv9NwvBFH4zbO15+7HuWAyIvAt0ECVRARLVaC5hzw7+1h2Fr63
+	jawANEqLswUuFq4TJdqz+Om9LHA4m5QrQOwNXVZp37e3YDpmbnpNl7cscQ5GIP1p
+	c8RSWyflqZL90OOX9pBAAMq/Blpx3Ai/VuP/pXtr8eo5MewFiihRKKCBFYz/YrGZ
+	kED4xVVbZ9wel+ihRjjgAA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1729767742; x=
+	1729774942; bh=jojXZXqVAoeJiiE0qE5SBA6J6/tjFaOx8MsDaM22Qhc=; b=O
+	3d7xXuAcvW0Qq/z6uywgXUts/ZXFt6318f0LHPYz5cBPgPA+82Wx547UOlgt4mt6
+	4DSL+xVIueXLuw7Ey65M4gG8bdWRTR5xowgfKCkp2v0BOIg21IiIwB7GmlhDynmh
+	/ONUMoP7I0aMf5mKFo9ypnv8J1d2K2sOi/zVhnFbUP4mnztZCQE/bHzHY41AZqff
+	cZ926wUOUv21aliWRb967/qQ4cO7CIFXmM3GEBpMbE9D4gxiI6j4JEZ8l7ao1JgL
+	zoTbIh8ioEYl0NE+fHP19UZ79Tq0IHULvoopAdWu9vU+c/yDP6hz0L7bCM5jYfWd
+	7N11mKTS5cPl4DQk+qq5Q==
+X-ME-Sender: <xms:OSkaZwYi6qXucuYIwiY1qmXzfR6nKepL2fFWERUO0a3uqWdlAUZj7A>
+    <xme:OSkaZ7b8v9hm6WHgyzWLQqRUA2Gu0cdf3gtBG8rDBHIbr2vpCnZo-YpT_paU0f-et
+    TnC_Nooxz13smP1Y0w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrvdejtddgtdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtqhertdertdej
+    necuhfhrohhmpedflfhirgiguhhnucgjrghnghdfuceojhhirgiguhhnrdihrghnghesfh
+    hlhihgohgrthdrtghomheqnecuggftrfgrthhtvghrnhepjeehfeduvddtgffgvdffkeet
+    hefhlefgvdevvdekuefffeekheehgeevhfevteejnecuvehluhhsthgvrhfuihiivgeptd
+    enucfrrghrrghmpehmrghilhhfrhhomhepjhhirgiguhhnrdihrghnghesfhhlhihgohgr
+    thdrtghomhdpnhgspghrtghpthhtohephedtpdhmohguvgepshhmthhpohhuthdprhgtph
+    htthhopegsphesrghlihgvnhekrdguvgdprhgtphhtthhopehtshgsohhgvghnugesrghl
+    phhhrgdrfhhrrghnkhgvnhdruggvpdhrtghpthhtoheplhhinhhugiesrghrmhhlihhnuh
+    igrdhorhhgrdhukhdprhgtphhtthhopegrrhhnugesrghrnhgusgdruggvpdhrtghpthht
+    ohepkhhorhihrdhmrghinhgtvghnthessghoohhtlhhinhdrtghomhdprhgtphhtthhope
+    gurghvvghmsegurghvvghmlhhofhhtrdhnvghtpdhrtghpthhtoheprghjhhgrlhgrnhgv
+    hiesghhmrghilhdrtghomhdprhgtphhtthhopegrlhhlvghnsghhsehgmhgrihhlrdgtoh
+    hmpdhrtghpthhtohepfhgrnhgtvghrrdhlrghntggvrhesghhmrghilhdrtghomh
+X-ME-Proxy: <xmx:OSkaZ6918ok4nCWtaeypNr0jCqJgoYdwdkZ-H8UVF8SBnGah4cPDOA>
+    <xmx:OSkaZ6rBLhZ96gJ0NqiVC3l5MgBdKbGrZfVFlg2s3lrL4XfLDDL19Q>
+    <xmx:OSkaZ7r14qQsA_4HawOnccrLNqSwfIm2GuPkVdJ6rQg4ocIRKzO6Xw>
+    <xmx:OSkaZ4RYxnFS-ltvfOenDmyuK6PudNl-AhqQXTzm73JaU2a-20QK8g>
+    <xmx:PikaZ57_I6E1pak3ObJRl0Rdo0XYuS48ftEpMkv0g2LwNeE6gbr05mCr>
+Feedback-ID: ifd894703:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id B60F31C20066; Thu, 24 Oct 2024 07:02:17 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Date: Thu, 24 Oct 2024 12:01:36 +0100
+From: "Jiaxun Yang" <jiaxun.yang@flygoat.com>
+To: "Serge Semin" <fancer.lancer@gmail.com>, "Jon Mason" <jdmason@kudzu.us>,
+ "Dave Jiang" <dave.jiang@intel.com>, "Allen Hubbe" <allenbh@gmail.com>,
+ ntb@lists.linux.dev, "Andy Shevchenko" <andy@kernel.org>,
+ "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
+ "Kory Maincent" <kory.maincent@bootlin.com>,
+ "Cai Huoqing" <cai.huoqing@linux.dev>, dmaengine@vger.kernel.org,
+ "Mark Brown" <broonie@kernel.org>, linux-spi@vger.kernel.org,
+ "Damien Le Moal" <dlemoal@kernel.org>, linux-ide@vger.kernel.org,
+ "paulburton@kernel.org" <paulburton@kernel.org>,
+ "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>,
+ "Arnd Bergmann" <arnd@arndb.de>,
+ "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+ "Bjorn Helgaas" <bhelgaas@google.com>,
+ "Manivannan Sadhasivam" <manivannan.sadhasivam@linaro.org>,
+ "Yoshihiro Shimoda" <yoshihiro.shimoda.uh@renesas.com>,
+ linux-pci <linux-pci@vger.kernel.org>,
+ "David S . Miller" <davem@davemloft.net>,
+ "Jakub Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redhat.com>,
+ "Andrew Lunn" <andrew@lunn.ch>, "Russell King" <linux@armlinux.org.uk>,
+ "Vladimir Oltean" <olteanv@gmail.com>,
+ "Kelvin Cheung" <keguang.zhang@gmail.com>,
+ "Yanteng Si" <siyanteng@loongson.cn>, netdev@vger.kernel.org,
+ "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski" <krzk@kernel.org>,
+ "Guenter Roeck" <linux@roeck-us.net>, linux-hwmon@vger.kernel.org,
+ "Borislav Petkov" <bp@alien8.de>, linux-edac@vger.kernel.org,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ linux-serial@vger.kernel.org
+Cc: "Andrew Halaney" <ajhalaney@gmail.com>, "Nikita Travkin" <nikita@trvn.ru>,
+ "Ivan Kokshaysky" <ink@jurassic.park.msu.ru>,
+ "Alexander Shiyan" <shc_work@mail.ru>, "Dmitry Kozlov" <xeb@mail.ru>,
+ "Sergey Shtylyov" <s.shtylyov@omp.ru>,
+ "Evgeniy Dushistov" <dushistov@mail.ru>,
+ "Geert Uytterhoeven" <geert@linux-m68k.org>,
+ "Sergio Paracuellos" <sergio.paracuellos@gmail.com>,
+ "Nikita Shubin" <nikita.shubin@maquefel.me>,
+ linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <91609bd7-da45-4fea-9e23-91e5f85b3c05@app.fastmail.com>
+In-Reply-To: 
+ <2m53bmuzemamzc4jzk2bj7tli22ruaaqqe34a2shtdtqrd52hp@alifh66en3rj>
+References: <2m53bmuzemamzc4jzk2bj7tli22ruaaqqe34a2shtdtqrd52hp@alifh66en3rj>
+Subject: Re: linux: Goodbye from a Linux community volunteer
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <892ba1e2f94a278813621a4872e841d66456e2f7.camel@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: wJpB2cynEZVL7E3mkIzZ2ArKfrNnIlDQ
-X-Proofpoint-GUID: Fwu-J5BH5WGsugJjHbEIa2RHlaLwjr2D
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- mlxlogscore=999 malwarescore=0 impostorscore=0 bulkscore=0
- priorityscore=1501 mlxscore=0 suspectscore=0 lowpriorityscore=0
- phishscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410240073
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 21, 2024 at 01:18:20PM +0200, Niklas Schnelle wrote:
-> On Mon, 2024-10-21 at 12:58 +0200, Thomas Zimmermann wrote:
-> > Hi
-> > 
-> > Am 21.10.24 um 12:08 schrieb Arnd Bergmann:
-> > > On Mon, Oct 21, 2024, at 07:52, Thomas Zimmermann wrote:
-> > > > Am 08.10.24 um 14:39 schrieb Niklas Schnelle:
-> > > d 100644
-> > > > > --- a/drivers/gpu/drm/qxl/Kconfig
-> > > > > +++ b/drivers/gpu/drm/qxl/Kconfig
-> > > > > @@ -2,6 +2,7 @@
-> > > > >    config DRM_QXL
-> > > > >    	tristate "QXL virtual GPU"
-> > > > >    	depends on DRM && PCI && MMU
-> > > > > +	depends on HAS_IOPORT
-> > > > Is there a difference between this style (multiple 'depends on') and the
-> > > > one used for gma500 (&& && &&)?
-> > > No, it's the same. Doing it in one line is mainly useful
-> > > if you have some '||' as well.
-> > > 
-> > > > > @@ -105,7 +106,9 @@ static void bochs_vga_writeb(struct bochs_device *bochs, u16 ioport, u8 val)
-> > > > >    
-> > > > >    		writeb(val, bochs->mmio + offset);
-> > > > >    	} else {
-> > > > > +#ifdef CONFIG_HAS_IOPORT
-> > > > >    		outb(val, ioport);
-> > > > > +#endif
-> > > > Could you provide empty defines for the out() interfaces at the top of
-> > > > the file?
-> > > That no longer works since there are now __compiletime_error()
-> > > versions of these funcitons. However we can do it more nicely like:
-> > > 
-> > > diff --git a/drivers/gpu/drm/tiny/bochs.c b/drivers/gpu/drm/tiny/bochs.c
-> > > index 9b337f948434..034af6e32200 100644
-> > > --- a/drivers/gpu/drm/tiny/bochs.c
-> > > +++ b/drivers/gpu/drm/tiny/bochs.c
-> > > @@ -112,14 +112,12 @@ static void bochs_vga_writeb(struct bochs_device *bochs, u16 ioport, u8 val)
-> > >   	if (WARN_ON(ioport < 0x3c0 || ioport > 0x3df))
-> > >   		return;
-> > >   
-> > > -	if (bochs->mmio) {
-> > > +	if (!IS_DEFINED(CONFIG_HAS_IOPORT) || bochs->mmio) {
-> > >   		int offset = ioport - 0x3c0 + 0x400;
-> > >   
-> > >   		writeb(val, bochs->mmio + offset);
-> > >   	} else {
-> > > -#ifdef CONFIG_HAS_IOPORT
-> > >   		outb(val, ioport);
-> > > -#endif
-> > >   	}
-> > 
-> > For all functions with such a pattern, could we use:
-> > 
-> > bool bochs_uses_mmio(bochs)
-> > {
-> >      return !IS_DEFINED(CONFIG_HAS_IOPORT) || bochs->mmio
-> > }
-> > 
-> > void writeb_func()
-> > {
-> >      if (bochs_uses_mmio()) {
-> >        writeb()
-> > #if CONFIG_HAS_IOPORT
-> >      } else {
-> >        outb()
-> > #endif
-> >      }
-> > }
-> > 
-> 
-> I think if the helper were __always_inline we could still take
-> advantage of the dead code elimination and combine this with Arnd's
-> approach. Though I feel like it is a bit odd to try to do the MMIO
-> approach despite bochs->mmio being false on !HAS_IOPORT systems.
-> Is that what you wanted to correct by keeping the #ifdef
-> CONFIG_HAS_IOPORT around the else? And yes the warning makes sense to
-> me too.
 
-Working on this now, I think we don't need a warning in the bochs_uses_mmio()
-helper because we should never get here with !IS_ENABLED(CONFIG_HAS_IOPORT)
-at runtime thanks to the check added in bochs_hw_init(). This also takes
-care of my original worry that we might try writeb()/readb() with an invalid
-bochs->mmio value. I'll sent a v9 with the helper added and #ifdefs's removed.
 
-Thanks,
-Niklas
+=E5=9C=A82024=E5=B9=B410=E6=9C=8824=E6=97=A5=E5=8D=81=E6=9C=88 =E4=B8=8A=
+=E5=8D=885:27=EF=BC=8CSerge Semin=E5=86=99=E9=81=93=EF=BC=9A
+> Hello Linux-kernel community,
+>
+> I am sure you have already heard the news caused by the recent Greg' c=
+ommit
+> 6e90b675cf942e ("MAINTAINERS: Remove some entries due to various compl=
+iance
+> requirements."). As you may have noticed the change concerned some of =
+the
+> Ru-related developers removal from the list of the official kernel mai=
+ntainers,
+> including me.
+>
+> The community members rightly noted that the _quite_ short commit log =
+contained
+> very vague terms with no explicit change justification. No matter how =
+hard I
+> tried to get more details about the reason, alas the senior maintainer=
+ I was
+> discussing the matter with haven't given an explanation to what compli=
+ance
+> requirements that was. I won't cite the exact emails text since it was=
+ a private
+> messaging, but the key words are "sanctions", "sorry", "nothing I can =
+do", "talk
+> to your (company) lawyer"... I can't say for all the guys affected by =
+the
+> change, but my work for the community has been purely _volunteer_ for =
+more than
+> a year now (and less than half of it had been payable before that). Fo=
+r that
+> reason I have no any (company) lawyer to talk to, and honestly after t=
+he way the
+> patch has been merged in I don't really want to now. Silently, behind =
+everyone's
+> back, _bypassing_ the standard patch-review process, with no affected
+> developers/subsystem notified - it's indeed the worse way to do what h=
+as been
+> done. No gratitude, no credits to the developers for all these years o=
+f the
+> devoted work for the community. No matter the reason of the situation =
+but
+> haven't we deserved more than that? Adding to the GREDITS file at leas=
+t, no?..
+>
+> I can't believe the kernel senior maintainers didn't consider that the=20
+> patch
+> wouldn't go unnoticed, and the situation might get out of control with
+> unpredictable results for the community, if not straight away then in=20
+> the middle
+> or long term perspective. I am sure there have been plenty ways to=20
+> solve the
+> problem less harmfully, but they decided to take the easiest path. Ala=
+s=20
+> what's
+> done is done. A bifurcation point slightly initiated a year ago has=20
+> just been
+> fully implemented. The reason of the situation is obviously in the=20
+> political
+> ground which in this case surely shatters a basement the community has=20
+> been built
+> on in the first place. If so then God knows what might be next (who=20
+> else might
+> be sanctioned...), but the implemented move clearly sends a bad signal=20
+> to the
+> Linux community new comers, to the already working volunteers and=20
+> hobbyists like
+> me.
+
+Hi Serge,
+
+I was shocked by the way senior maintainers handle that patch when peopl=
+e put it
+under my radar. Then I scroll down it and see all those familiar names i=
+ncluding
+Sergey Shtylyov and you...
+
+This is certainly not the way things should be done. Even if legal requi=
+rements
+necessitate the action, there are far better ways to handle it. Instead,=
+ the most
+absurd and shameful option has been chosen.
+
+It's deeply disappointing to me that, when doubts were raised about the =
+process,
+Linus resorted to personal attacks rather than addressing our concerns. =
+As a hobbyist
+driven by the ideals of free software, with Linus as a role model, I now=
+ find myself
+questioning my own beliefs.
+
+Where are we going? Where should we go?
+
+>
+[...]
+>
+> Paul, Thomas, Arnd, Jiaxun, we met several times in the mailing list d=
+uring my
+> MIPS P5600 patches and just generic MIPS patches review. It was always=
+ a
+> pleasure to discuss the matters with such brilliant experts in the fie=
+ld. Alas
+> I've spent too much time working on the patches for another subsystems=
+ and
+> failed to submit all the MIPS-related bits. Sorry I didn't keep my pro=
+mise, but
+> as you can see the circumstances have suddenly drawn its own deadline.
+
+Thank you, Serge. It's always a pleasure working with you. Your professi=
+onalism has
+been truly impressive, and our discussions were consistently constructiv=
+e. I
+especially appreciate how your bug reports and review comments are alway=
+s backed by
+detailed reasoning, it really stood out to me.
+
+You'll be missed. I'll see what I can do here for your work on MIPS.
+
+>
+[...]
+>
+> Hope we'll meet someday in more pleasant circumstances and drink a
+> couple or more beers together. But now it's time to say good bye.
+> Sorry for a long-read text. I wish good luck on your Linux-way.
+
+I'm happy to have a pint with you if we can meet someday.
+
+For now, take care.
+
+Thanks
+>
+> Best Regards,
+> -Serge(y)
+
+--=20
+- Jiaxun
