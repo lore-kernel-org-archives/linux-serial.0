@@ -1,55 +1,57 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB0F158862;
-	Thu, 24 Oct 2024 06:21:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB050187844;
+	Thu, 24 Oct 2024 06:21:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729750891; cv=none; b=jBvy8Jbg3DC67aIB4BHXb6p64ygsRM9Z/0bBulZbul0JXEEuhpzoBrqa3xb/P/D+i5n6G61MH5Bh9qsvqwjQ7eECIa+cS7fnjQxapYUy4wxo2nom/oux7cXdTLLRbyiAm535pivMDHrI+WkqJ42I6p2FKBvTSldxW3ChRoM1p60=
+	t=1729750894; cv=none; b=aAV52ip4xB70tjPJViQ1VMxONGnnZpNejrKIP6HcHphxsoysHlP6M1CWGVsJivu2RtzDY4VyKDc0FOnZyqxPVuatP/RE6siBZXohU0+ZAJDH6Hr3hiohvv7+McoOT+g9jJ5O5mmXa4C3vs26pjvq6rR4KCo+quhp4kmLvPTN2XM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729750891; c=relaxed/simple;
-	bh=zjdRAM3+B0fHHnv9z2n5vLwdmjBLqdMCyxaBsi5vyxw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=YagjL5gljb0D9OhjpwJejPYKj36u27RkiUmuDybq4ToJ4jrIkSoOB8ho+Nt4zd+i+5N81ChRlvzmbvBUeFrwDzKK4FNo50MtLHVbfoQSJA0Ysl2RXKccEPbTk/hcZ3sgsTkE9u13aVo2L82hDWJb9lz23W8dQYvz8WB+8l64m6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gzg7VnwY; arc=none smtp.client-ip=209.85.210.182
+	s=arc-20240116; t=1729750894; c=relaxed/simple;
+	bh=SAL1ZFOKz54xkX7if3nDHhZBFUVe/vx27KllaIc9ORs=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=pDLgI3RAzQdhbd3xQ/YeDGNpixxotBHF0Uj7sGLhKh/LX0o2oYL8+5ELMHuKv2VM0u2dxzB9YGLkr+WjYmcmwchVxO7KfeDcqzivOGCl9pOdLxp2a7f2sYq95GNosXHgJZG46jtDAz3PudDuxMhBHakX6jtATD7k0WRD0GhNU/4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mV3wElXn; arc=none smtp.client-ip=209.85.215.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gzg7VnwY"
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-71e625b00bcso419202b3a.3;
-        Wed, 23 Oct 2024 23:21:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mV3wElXn"
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-7ea8c4ce232so424783a12.0;
+        Wed, 23 Oct 2024 23:21:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1729750889; x=1730355689; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=x4nEvqW9fLhXxDii9vep5FesFUn6q0T5hajwCKZq+J0=;
-        b=gzg7VnwYjJOARcH48hTzxKUe0Z6leycr2acfpqBTne6xS9N03lB2bXKBljTA2v5rOl
-         h1OYjs6vu8TmEjo1T91yL8SENAelsaBz6B1yycOGloCBlEYtMPMkRF+2ZffXVgOwLO7S
-         Kakh0DlSt+M0hkeHtKXc487C8D9nMY633B867rBVEKI4HKbjVBJDoH8eTdFH0Rv56PkC
-         RxrElOe82y+/0XkJVuvlxPDN4bwDuHW0vqFjEsbOANZr+QJLUMbMNfwOtF73FOEq9/nl
-         It2nfVhNAktw9cgyR7XKjxBMGzXlPvE05JlUuED7DbC4gchpZzxDZB6Q0dCPKia8RZXp
-         R0Ag==
+        d=gmail.com; s=20230601; t=1729750892; x=1730355692; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fDgtB4TxYaCxnBhpqg+CpBKlIVuputp4+NjyIq5WWQE=;
+        b=mV3wElXnQadwz+3jpohr7LkXJPbrMCnOttvZhZ5gVkkYqOf8ieMvRfzAvGQWrQ5h5u
+         cH9xWFZIXe0ca9r2SWZ/MGamR+3L96PJF125SDmsIK6cTTjCVKPUW1T4Wh+e9qNSo8M/
+         9i++fzWH0o62syTXV8DGBvGs5BEolGBTuCxPM/TYTpZYS8wdo4NTLLTF/7yXHB6WCRo7
+         XZVFY70DqEuAmQrzy8ZY3gnb5dNiiaeGE1gmv6ndzBbhiS0S6VVQT05D0ThEj+AilXRz
+         S6Vicf2QDfxbbY2L7X/sDvQDhzwi0aKzVEJT7y41zq5xXC+0nLnUdviy3Odw9kUZ0/Mk
+         qj6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729750889; x=1730355689;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=x4nEvqW9fLhXxDii9vep5FesFUn6q0T5hajwCKZq+J0=;
-        b=d+tJyr9F8JSq73SdBQtUPdE0Dqfajd8JRalBCxqzVOcjb04UcH341mSY4MVpPcyfuv
-         MNEIk/8C2dTHnusEbnkPoUQhVJdXqSyQ9eGSJTatyN7xydWPE1w3RkUi4wMt8imx0HLM
-         Uq71XQBscntzS/fwjZlP2RSGMtb6WeT/Ej8B7oKPS2iCP49Ec+G4b0XRm1bsqXfLblF1
-         DX5qQOSIVEIWdsgNjiCYlolw2OgaEAPS9TwYEQeZGlHBofOA+/Fmh7BSkmwkNifjNaUg
-         To+Cl92Wc1Ygxgo0LtBdai0678upF3TPCp8rlvshuofUAo98gaq9Y+xPF5VK65sRbXCI
-         EpUA==
-X-Forwarded-Encrypted: i=1; AJvYcCWq0rwJXIjJ9mCf8ZvksV3Z6c6uU6z77STU2rHv6eJaNw8Yn7By1YEh+6rBhuIdB5ll8N5oO87/C890Iosh@vger.kernel.org, AJvYcCWsbHHgJBS0RhTZk+Iucdf7hQONocURduNc8+HMBN9ROs4BhnvPg9yTNVm1V5HeKfNMEhSypPrtEJSV@vger.kernel.org, AJvYcCXVOr5tR33+crSDXpo0THW89SYceTuHmt+Ix5dQzVbigM0qqK9YtNSW/7+VzLIwFtFWvPZzhL1qScz0e/En@vger.kernel.org
-X-Gm-Message-State: AOJu0YwFEem3+Mo18u6hhu9Jw6zfli9aaFHW9EvmG3LPvOBaufPJWba+
-	K8pD2i4n4S8p43J+zaJQPvl7Mdtrpw/fn9ptfNlbmCYBkldt+5Wy
-X-Google-Smtp-Source: AGHT+IEMd+aK3RmvP9zA1UR+zfF7vh6KGqHTBpZsv4u2gw/qihAXA7q52QRbb04tV94hvDyTdiugcA==
-X-Received: by 2002:a05:6a00:4f90:b0:71d:f4ef:6b3a with SMTP id d2e1a72fcca58-72030b61826mr6992531b3a.21.1729750889306;
-        Wed, 23 Oct 2024 23:21:29 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1729750892; x=1730355692;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=fDgtB4TxYaCxnBhpqg+CpBKlIVuputp4+NjyIq5WWQE=;
+        b=Uj0JIh/3iZJ5FmHJ7+2y+/Waj80JOyZEoiGWtlDwvrZwj4+ixNWhIk6yLSSdeQIaRl
+         1ee1aZwY5mYOo49TKFynN38UiuAgYnfHrP8+hfBet0TejnTVYGS8nJG1tGTTXhHk89vM
+         iQEFSHGsJTV/ArAG7sWztZMQnbEtPfDG4WwkQMWspsI66fo9jxtU8RVoO5A5aTC2Dqxc
+         KsDqsh0z6KQxKLIeE+nrWr+hFpuqk9c2tl2Bk9O8H2zW+kdNXXn/glGFSONOT9xvJibs
+         4sjhnm83HL/9z+ywS8lvnyFjIR9vJ+rfsvmx4FGjK6QbsMgIiHFseBLs9Ebyblji3mxS
+         CkkA==
+X-Forwarded-Encrypted: i=1; AJvYcCW5NjShFwMebNsXjvaadVcSoQigbi7s97WKLizYyR6mUQKHkQMCTivNUJ4FzqYYPamEcNivOi+2fnH/iFx2@vger.kernel.org, AJvYcCWyVHfU4nqlBt8ifEhbeHfezSSwPBTQ+bDpxRoS1GXR32A3x9kDc5844NglT1UWedieJD8M8laLpOpP@vger.kernel.org, AJvYcCXAXb08ebHWJBb79zGW5B4kQY8V/V01Q/FcMCQZ+kj/Yl6IoFw4rv1RJtDH46a29/7+5nGjru/a0dInKsvI@vger.kernel.org
+X-Gm-Message-State: AOJu0YxawkefnxOFx2SF7XgFyMW4vNLJWNLzDrnszC3oeaY0iMC4zc4P
+	a8SK/1u86XfS8BtyXGukgkQ1u7dStlOFSQ0sMpcUx9s5Ac5f6kq/
+X-Google-Smtp-Source: AGHT+IE931KoYITeAlNOY36KyowbgknJ2iPC5xPTo043o9G/IoVNLfyPn6c0ijnCAxbiXijJANsByw==
+X-Received: by 2002:a05:6a20:c793:b0:1d9:23ab:470 with SMTP id adf61e73a8af0-1d978b35328mr6450483637.29.1729750892094;
+        Wed, 23 Oct 2024 23:21:32 -0700 (PDT)
 Received: from localhost ([121.250.214.124])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71ec141b799sm7267231b3a.192.2024.10.23.23.21.28
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-71ec1312df0sm7315711b3a.20.2024.10.23.23.21.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2024 23:21:28 -0700 (PDT)
+        Wed, 23 Oct 2024 23:21:31 -0700 (PDT)
 From: Inochi Amaoto <inochiama@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -63,45 +65,62 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: Inochi Amaoto <inochiama@gmail.com>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH v3 0/3] serial: 8250_dw: Introduce SG2044 uart support.
-Date: Thu, 24 Oct 2024 14:21:00 +0800
-Message-ID: <20241024062105.782330-1-inochiama@gmail.com>
+	devicetree@vger.kernel.org,
+	Conor Dooley <conor@kernel.org>
+Subject: [PATCH v3 1/3] dt-bindings: serial: snps,dw-apb-uart: merge duplicate compatible entry.
+Date: Thu, 24 Oct 2024 14:21:01 +0800
+Message-ID: <20241024062105.782330-2-inochiama@gmail.com>
 X-Mailer: git-send-email 2.47.0
+In-Reply-To: <20241024062105.782330-1-inochiama@gmail.com>
+References: <20241024062105.782330-1-inochiama@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-SG2044 relys on an internal divisor when calculating bitrate, which
-means a wrong clock for the most common bitrates. So a quirk is needed
-for this uart device to skip the set rate call and only relys on the
-internal UART divisor.
+Each vendor have an items entry of its own compatible, It is needless
+and can be merged as it share the same base "snps,dw-apb-uart"
+compatible.
 
+Merge the duplicate compatible entry into one item entry.
 
-Changed from v1:
-1. patch 1: improve the bindings commit message.
-2. patch 2: rename jh7100 quirk and rename the quirk to
-            dw8250_skip_set_rate_data.
+Signed-off-by: Inochi Amaoto <inochiama@gmail.com>
+Suggested-by: Conor Dooley <conor@kernel.org>
+---
+ .../devicetree/bindings/serial/snps-dw-apb-uart.yaml   | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-Changed from v2:
-1. patch 1: add a new patch to merge the vendor specific compatibles
-2. patch 2: adopt the new patch.
-
-Inochi Amaoto (3):
-  dt-bindings: serial: snps,dw-apb-uart: merge duplicate compatible
-    entry.
-  dt-bindings: serial: snps-dw-apb-uart: Add Sophgo SG2044 uarts
-  serial: 8250_dw: Add Sophgo SG2044 quirk
-
- .../devicetree/bindings/serial/snps-dw-apb-uart.yaml  | 11 +++--------
- drivers/tty/serial/8250/8250_dw.c                     |  5 +++--
- 2 files changed, 6 insertions(+), 10 deletions(-)
-
---
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+index 4cdb0dcaccf3..c104bd8446cf 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+@@ -37,6 +37,8 @@ properties:
+           - const: renesas,rzn1-uart
+       - items:
+           - enum:
++              - brcm,bcm11351-dw-apb-uart
++              - brcm,bcm21664-dw-apb-uart
+               - rockchip,px30-uart
+               - rockchip,rk1808-uart
+               - rockchip,rk3036-uart
+@@ -52,14 +54,6 @@ properties:
+               - rockchip,rk3588-uart
+               - rockchip,rv1108-uart
+               - rockchip,rv1126-uart
+-          - const: snps,dw-apb-uart
+-      - items:
+-          - enum:
+-              - brcm,bcm11351-dw-apb-uart
+-              - brcm,bcm21664-dw-apb-uart
+-          - const: snps,dw-apb-uart
+-      - items:
+-          - enum:
+               - starfive,jh7100-hsuart
+               - starfive,jh7100-uart
+               - starfive,jh7110-uart
+-- 
 2.47.0
 
