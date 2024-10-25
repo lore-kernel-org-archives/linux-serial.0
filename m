@@ -1,61 +1,63 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A940166F33
-	for <linux-serial@vger.kernel.org>; Fri, 25 Oct 2024 15:00:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA505175D46
+	for <linux-serial@vger.kernel.org>; Fri, 25 Oct 2024 15:00:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729868445; cv=none; b=SOZtwBitVnRSXwZDArFmVZWikmnyzUOjrYRhi93vxMeRvNEQTDOcp0b/HzqER2s2INC11vkcf5/XdOy//rR5L1ZERc8cfNCmIb7+DrtLxJBxtLXJSG2X4Ca3xuLycuVIG9chYF3hH1mfb8tjVPJrN1YNNORm3vLy3Y1413mkv2Q=
+	t=1729868446; cv=none; b=jM5I48gv0Bx84cfz/ImPWc7ljzSxMlOXNKWid8OjOoKbwiZ3EVq388IVqE30vNneSWTbVqQd6d/wwslREqVdzRxgKjFp2Zu/Rj33aZyNfjg91pG0XyZZhpnyTiJy4LvUydDQA87nqywCar4SAkxDLusiH+ISCPOGapR+4kYtdY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729868445; c=relaxed/simple;
-	bh=qn2zisIVAp1A3sOByjD0CKUjzgN/331GtrAdNv9H2Gs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=he7k/xVDDY1QBlOFX80ZgxRjFFzEfH/+pssyazWRYkarXjDrHtpG/sHG2B7Jk1kDt6Ih7/5Xc5mHjN9bk0R/DMT5mbFxARSG1jg2CPzwOEf4PXk/7ZaeetkoEvnfkNnKwNIl45EpESXmF6nYikCbiPnKrNU3AzGn6UnYGloSC/A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Qob7HIc4; arc=none smtp.client-ip=170.10.129.124
+	s=arc-20240116; t=1729868446; c=relaxed/simple;
+	bh=s6xBjYgC8JsEjVYTXZALRaY3DljRr0l2UeRg0HzxlUs=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OxfCti28lZtlPja+sV/bFAbtB4kOLF0lD46x/1qLcjCQBFfQtbIY7tzIG3NZULECOAH9OQnaC8JGN8tozOWjl0ld13WZySrCBrw2bbnFzdd1+Z/g94+mMX7qVK1rDMuNTfLUCcya3i5nWvMbtX1lNqeW4NvqARLtPOp3xqo5pvI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=RLJQmV8t; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Qob7HIc4"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RLJQmV8t"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1729868440;
+	s=mimecast20190719; t=1729868442;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=6mk7pVJi4FxC5YCmtGMcoceHkePQhE8sXwo0Yl4cl4Y=;
-	b=Qob7HIc4Wrm3dkeebT65QDRBQdpwoDIr50JdBVgorj40sDsV1WuiJcMLitmOc2WTxbIrIN
-	S1nPL4XT2eeE/DmmOobRZ2wf+wCnVEe3ePTwXu0bpOwqsHE/7Eo8NuN4Y1Bbpx7cy8XgLS
-	k0I1KyDjI9nPDwARkxi54pqE1icV5Ss=
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ryss9fvWehXfEU+PDJn7zlGdxW8bFi37+f8Je+z7dQs=;
+	b=RLJQmV8tskoxIBr8mK84PumnLsiDXTz0bvaCnv73wjt1bd8L+0cRI3I9P5Pbh6Ha2BUpzE
+	VwSW3+vn4fH0qxEVX0bXa/LxHpS/dLfr18/Dbh+9bA0PtMdyavWnLDtJlLGzBgE3D6CH/f
+	NsMzRigQAW2ykPGOC3m4WLho+EAvB14=
 Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
  [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-509-1RB2wHZ8NYmrua8qfXaZhg-1; Fri, 25 Oct 2024 11:00:37 -0400
-X-MC-Unique: 1RB2wHZ8NYmrua8qfXaZhg-1
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-37d52ccc50eso1013551f8f.3
-        for <linux-serial@vger.kernel.org>; Fri, 25 Oct 2024 08:00:36 -0700 (PDT)
+ us-mta-403-Oo1sU00zPASwEB6RFE5c_Q-1; Fri, 25 Oct 2024 11:00:41 -0400
+X-MC-Unique: Oo1sU00zPASwEB6RFE5c_Q-1
+Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-37d56061a4cso1083867f8f.2
+        for <linux-serial@vger.kernel.org>; Fri, 25 Oct 2024 08:00:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1729868436; x=1730473236;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6mk7pVJi4FxC5YCmtGMcoceHkePQhE8sXwo0Yl4cl4Y=;
-        b=l2wBNmWu32bq2dVTDoGHyxYDhCck27kzvVS3BRG0umNefELPBM3G2m6+hOYIZcMZAw
-         y3TP2GYJGZHq8jpGLPfF5OLhgiISSGqkkz5bLK8O2hc+0qZN8S2BbQRnTt5ugWx8gByZ
-         MmKCnJMySF/AaoEClcbyIZUJJMp4LDMdxLxQ5q1nVoQ18ey9YD7iwRKfl6RxBQtRnUM/
-         hKc615NTEcHs7q376xvtUSgsZGp4feTRoCUzhATaDHv8xeM89ZJ6t3Es3xtXqhnLvRrj
-         6V8GU4Nq0sZ14VnCOL9emygxSoLDP0UC3H6SJeT1q+eZpB3cvxoBd24aRnIp1W4gAPNn
-         8aeg==
-X-Forwarded-Encrypted: i=1; AJvYcCVxNY6djCdq/INtoAotWUg9uezITRVA0KuMQUWVkYVZT3425YzTlnpUrAnTmgpWIZjqZ1tHDrImaKu1+zc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx2+y+GPZAFq3cJOXg+5hIX6/8/by3zkok13KWnL9qMy6QwXTcQ
-	M67kZApLYQr2MmcP+w02ZD4/7V8bwoR7l4YyfD0Sm7Rm/ZK3HSTl3oCyv9E8BYa2r0D5sLQ4x+8
-	TKxrmb7941xYom26htECqXvksrpm0IhUXrxDMmLApBOE3t9QZKh42iJRmfZWnow==
-X-Received: by 2002:adf:eac4:0:b0:37c:d2f0:7331 with SMTP id ffacd0b85a97d-3803ab1a8bbmr4410331f8f.0.1729868435653;
-        Fri, 25 Oct 2024 08:00:35 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHDs+qGkPhYGAaZ+QRORXNw+V6iATQJifr1mVHJ8hw/ogKGV0BNUWn6+ubNlvP8p8bNny4MNA==
-X-Received: by 2002:adf:eac4:0:b0:37c:d2f0:7331 with SMTP id ffacd0b85a97d-3803ab1a8bbmr4410253f8f.0.1729868435070;
-        Fri, 25 Oct 2024 08:00:35 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1729868440; x=1730473240;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ryss9fvWehXfEU+PDJn7zlGdxW8bFi37+f8Je+z7dQs=;
+        b=Nhvmsvtw5Q3zjJH5qy5cA7edkbrJCkadLC0eROF3MHC+eKRUpH48PW/e5MMgTPcl08
+         lyCPyO1AfJtZxd+heDAzCYDEJwtahr5kwOP97mSOaSQzYDIf/D1C7A9XGHP2ct8hUmaW
+         4u790Aha/+HNUm8zjftO8MHyyej3fAv3erKHDVrkJkZIAHZnWyYvTKnbae+cb4X9VLYp
+         3pXgXY1uNB4U3gN6Y08z65PgMgP03IuCNsgMyJZMXeaKGW6L6XmJHJwfr2Q7k7XD2uv9
+         3P+jzhUJZP0RXPywuu1jvd9jDgTAthyMv2BHHK+wzuEKzymus6ugkfaDMQjyoE7fZGRk
+         dDrw==
+X-Forwarded-Encrypted: i=1; AJvYcCVLuJBrZzHaB/hLTxSwOgrtoPugWHLWM1vRrih/nsgbzahCWi/JoGKbODwdMJDtlTK1bPABeYpoAIFFfDk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz3KWTjj6r+41p7D3ssVlGMkJlLuja/jaNVoEYi7HD6JwzXcBqH
+	TI+6bsUhWetrJd5Ai3jKk8gQ3f23u7D1odPqqVdM9crJsdSOP0x07tCNFgWzdeWtMGwtFWQ725k
+	95lypwWQjedIanVhCUiq1+uB1QNlQMkAgfWQ7DlHBooV41mvPRlMa0vcneMur6w==
+X-Received: by 2002:a5d:56c2:0:b0:374:c17a:55b5 with SMTP id ffacd0b85a97d-37efcf06dc1mr6436949f8f.14.1729868439414;
+        Fri, 25 Oct 2024 08:00:39 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IF8ckOXkNlZIey2we3esP6YdjimmyCdm/ffeP6OkAIjJrVOU9m50FFPLlquaywIvtz5sXMgiw==
+X-Received: by 2002:a5d:56c2:0:b0:374:c17a:55b5 with SMTP id ffacd0b85a97d-37efcf06dc1mr6436886f8f.14.1729868438713;
+        Fri, 25 Oct 2024 08:00:38 -0700 (PDT)
 Received: from eisenberg.fritz.box (200116b82de5ba00738ac8dadaac7543.dip.versatel-1u1.de. [2001:16b8:2de5:ba00:738a:c8da:daac:7543])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38058b9216fsm1727189f8f.100.2024.10.25.08.00.33
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38058b9216fsm1727189f8f.100.2024.10.25.08.00.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2024 08:00:34 -0700 (PDT)
+        Fri, 25 Oct 2024 08:00:38 -0700 (PDT)
 From: Philipp Stanner <pstanner@redhat.com>
 To: Jonathan Corbet <corbet@lwn.net>,
 	Damien Le Moal <dlemoal@kernel.org>,
@@ -108,10 +110,12 @@ Cc: linux-doc@vger.kernel.org,
 	linux-pci@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-sound@vger.kernel.org
-Subject: [PATCH 00/10] Remove pcim_iomap_regions_request_all()
-Date: Fri, 25 Oct 2024 16:59:43 +0200
-Message-ID: <20241025145959.185373-1-pstanner@redhat.com>
+Subject: [PATCH 02/10] ata: ahci: Replace deprecated PCI functions
+Date: Fri, 25 Oct 2024 16:59:45 +0200
+Message-ID: <20241025145959.185373-3-pstanner@redhat.com>
 X-Mailer: git-send-email 2.47.0
+In-Reply-To: <20241025145959.185373-1-pstanner@redhat.com>
+References: <20241025145959.185373-1-pstanner@redhat.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -120,75 +124,71 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
 
-All Acked-by's are in place now.
+pcim_iomap_regions_request_all() and pcim_iomap_table() have been
+deprecated by the PCI subsystem in commit e354bb84a4c1 ("PCI: Deprecate
+pcim_iomap_table(), pcim_iomap_regions_request_all()").
 
-Changes in v5:
-  - Add Acked-by's from Alexander and Bharat (the latter sent off-list,
-    because of some issue with receiving the previous patch sets).
+Replace these functions with their successors, pcim_iomap() and
+pcim_request_all_regions().
 
-Changes in v4:
-  - Add Acked-by's from Giovanni and Kalle.
+Signed-off-by: Philipp Stanner <pstanner@redhat.com>
+Acked-by: Damien Le Moal <dlemoal@kernel.org>
+---
+ drivers/ata/acard-ahci.c | 6 ++++--
+ drivers/ata/ahci.c       | 6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-Changes in v3:
-  - Add missing full stops to commit messages (Andy).
-
-Changes in v2:
-  - Fix a bug in patch №4 ("crypto: marvell ...") where an error code
-    was not set before printing it. (Me)
-  - Apply Damien's Reviewed- / Acked-by to patches 1, 2 and 10. (Damien)
-  - Apply Serge's Acked-by to patch №7. (Serge)
-  - Apply Jiri's Reviewed-by to patch №8. (Jiri)
-  - Apply Takashi Iwai's Reviewed-by to patch №9. (Takashi)
-
-
-Hi all,
-
-the PCI subsystem is currently working on cleaning up its devres API. To
-do so, a few functions will be replaced with better alternatives.
-
-This series removes pcim_iomap_regions_request_all(), which has been
-deprecated already, and accordingly replaces the calls to
-pcim_iomap_table() (which were only necessary because of
-pcim_iomap_regions_request_all() in the first place) with calls to
-pcim_iomap().
-
-Would be great if you can take a look whether this behaves as you
-intended for your respective component.
-
-Cheers,
-Philipp
-
-Philipp Stanner (10):
-  PCI: Make pcim_request_all_regions() a public function
-  ata: ahci: Replace deprecated PCI functions
-  crypto: qat - replace deprecated PCI functions
-  crypto: marvell - replace deprecated PCI functions
-  intel_th: pci: Replace deprecated PCI functions
-  wifi: iwlwifi: replace deprecated PCI functions
-  ntb: idt: Replace deprecated PCI functions
-  serial: rp2: Replace deprecated PCI functions
-  ALSA: korg1212: Replace deprecated PCI functions
-  PCI: Remove pcim_iomap_regions_request_all()
-
- .../driver-api/driver-model/devres.rst        |  1 -
- drivers/ata/acard-ahci.c                      |  6 +-
- drivers/ata/ahci.c                            |  6 +-
- drivers/crypto/intel/qat/qat_420xx/adf_drv.c  | 11 +++-
- drivers/crypto/intel/qat/qat_4xxx/adf_drv.c   | 11 +++-
- .../marvell/octeontx2/otx2_cptpf_main.c       | 14 +++--
- .../marvell/octeontx2/otx2_cptvf_main.c       | 13 ++--
- drivers/hwtracing/intel_th/pci.c              |  9 ++-
- .../net/wireless/intel/iwlwifi/pcie/trans.c   | 16 ++---
- drivers/ntb/hw/idt/ntb_hw_idt.c               | 13 ++--
- drivers/pci/devres.c                          | 59 +------------------
- drivers/tty/serial/rp2.c                      | 12 ++--
- include/linux/pci.h                           |  3 +-
- sound/pci/korg1212/korg1212.c                 |  6 +-
- 14 files changed, 76 insertions(+), 104 deletions(-)
-
+diff --git a/drivers/ata/acard-ahci.c b/drivers/ata/acard-ahci.c
+index 547f56341705..3999305b5356 100644
+--- a/drivers/ata/acard-ahci.c
++++ b/drivers/ata/acard-ahci.c
+@@ -370,7 +370,7 @@ static int acard_ahci_init_one(struct pci_dev *pdev, const struct pci_device_id
+ 	/* AHCI controllers often implement SFF compatible interface.
+ 	 * Grab all PCI BARs just in case.
+ 	 */
+-	rc = pcim_iomap_regions_request_all(pdev, 1 << AHCI_PCI_BAR, DRV_NAME);
++	rc = pcim_request_all_regions(pdev, DRV_NAME);
+ 	if (rc == -EBUSY)
+ 		pcim_pin_device(pdev);
+ 	if (rc)
+@@ -386,7 +386,9 @@ static int acard_ahci_init_one(struct pci_dev *pdev, const struct pci_device_id
+ 	if (!(hpriv->flags & AHCI_HFLAG_NO_MSI))
+ 		pci_enable_msi(pdev);
+ 
+-	hpriv->mmio = pcim_iomap_table(pdev)[AHCI_PCI_BAR];
++	hpriv->mmio = pcim_iomap(pdev, AHCI_PCI_BAR, 0);
++	if (!hpriv->mmio)
++		return -ENOMEM;
+ 
+ 	/* save initial config */
+ 	ahci_save_initial_config(&pdev->dev, hpriv);
+diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
+index 45f63b09828a..2043dfb52ae8 100644
+--- a/drivers/ata/ahci.c
++++ b/drivers/ata/ahci.c
+@@ -1869,7 +1869,7 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	/* AHCI controllers often implement SFF compatible interface.
+ 	 * Grab all PCI BARs just in case.
+ 	 */
+-	rc = pcim_iomap_regions_request_all(pdev, 1 << ahci_pci_bar, DRV_NAME);
++	rc = pcim_request_all_regions(pdev, DRV_NAME);
+ 	if (rc == -EBUSY)
+ 		pcim_pin_device(pdev);
+ 	if (rc)
+@@ -1893,7 +1893,9 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (ahci_sb600_enable_64bit(pdev))
+ 		hpriv->flags &= ~AHCI_HFLAG_32BIT_ONLY;
+ 
+-	hpriv->mmio = pcim_iomap_table(pdev)[ahci_pci_bar];
++	hpriv->mmio = pcim_iomap(pdev, ahci_pci_bar, 0);
++	if (!hpriv->mmio)
++		return -ENOMEM;
+ 
+ 	/* detect remapped nvme devices */
+ 	ahci_remap_check(pdev, ahci_pci_bar, hpriv);
 -- 
 2.47.0
 
