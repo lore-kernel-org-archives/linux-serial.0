@@ -1,105 +1,141 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from flow-b6-smtp.messagingengine.com (flow-b6-smtp.messagingengine.com [202.12.124.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E200452F76;
-	Fri, 25 Oct 2024 13:19:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8859521218A;
+	Fri, 25 Oct 2024 13:41:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729862384; cv=none; b=iYRDfiwzqQsXaU5jkkKxhz7tGDNhu7bHLD29V6cAb9gWsYCjfXTBXXTIkZ4zWyvypel8wdIAHV5fAi96X9gM0AGc/yGb37AQzR1I2Cv03VHpSiRYHybgbGqtVcrLXbLgmg887mn3YfPTwhdsVcfyermS6pn72cBVXAVH4CcyX2M=
+	t=1729863706; cv=none; b=N5bKdTTJjmpBBNpKS4dj4vibSIcJ4ZpyYl+Hy01ugUQUUn9rtJz0WvVdtALXSsCSYkd+2UYVlZWC8D8EHWt3ld4aszPJX/wlYgF8CtMqmJh5GdBWeb/lIBcCto9JTeDRyGnXWxiO89li5JvgZkPH/8vumDRNVpDKdIOiFElW9rI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729862384; c=relaxed/simple;
-	bh=V1sOFV4W/vYmfHOo/YccbeoVgUSseDX9b1vcA4AQoKM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=upFX3+12YziKHGC9VS9BwK1FMODYS3Ve2/+uBUR8XupRoSgQ8ibI72SpnBviiupnp3dqmSmFcZtF9w+byXDxNEX8dMOii0S9pglWGq7DvFEaQC7rAPDysM7RPm0oeewXzM1k/JBSfWCc8D4UWZjyiJCEmx2C/Ci8YW2E3uZyxkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QI3j/BnC; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1729863706; c=relaxed/simple;
+	bh=Wm3muLnceJyby21UvU1uoDEPNrI5UR+r2idw9Fs/ibI=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=XxKNJkEdWGa90UukURTzrvO0Bj6sYNBtMZRVaJF3izcztE2fmn9UBVD3qhwJvOeHXcESnXmdhl8JUtULlTDN9HUQaf8x5MUkjx7ftsHZ9HLJD+K2De1g2WejE+l7hVstDjNIarygOtesGIP4pn9t6kyO42IPNSz+IHUk85fzTxQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=pjD28qXy; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=SBPgG+xz; arc=none smtp.client-ip=202.12.124.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QI3j/BnC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1729862382; x=1761398382;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=V1sOFV4W/vYmfHOo/YccbeoVgUSseDX9b1vcA4AQoKM=;
-  b=QI3j/BnCYIGI0MU9Q+TJ17TcwbEVYW5m0WvLVTaBueYUkrOBkW6nyP4M
-   n+2e7lnp6t797f0K6W8zSkMqPU7WtQQQa9/0mFF5KLVn6F/DPjQbNWxTN
-   dnwLLRzgKnpC3NxxWbVXtYss84DzZdLAPhX7WS/qJVs5guaNjp4c1Dr0M
-   nUqbY/FJWUP6BQ5w06gX48p/NdBkfmEi2g67T+HK8jVjEhvIeGAkAvnqw
-   pPdf7nhl2Of4ekcyFOU8yuQn5Uybw3HjyjJeQTJ1LK1nLnQgdbd14Gro1
-   kQgG4jj+ii1abvGuLibXr1oyFJGJ4UmhBd+2HoZMS7XCcU05ZrBDySIhv
-   Q==;
-X-CSE-ConnectionGUID: OLNuQvDyRlmR41UclrXNrA==
-X-CSE-MsgGUID: CgICE2zCQxC4K5iaf8DH9g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11236"; a="40145735"
-X-IronPort-AV: E=Sophos;i="6.11,231,1725346800"; 
-   d="scan'208";a="40145735"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2024 06:19:24 -0700
-X-CSE-ConnectionGUID: Bl0XnzdTSbukqiK0fd1Znw==
-X-CSE-MsgGUID: f6sOCNSFReipYddQD8BK3w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,231,1725346800"; 
-   d="scan'208";a="80931768"
-Received: from smile.fi.intel.com ([10.237.72.154])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Oct 2024 06:19:14 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1t4KDd-00000006vFW-1Hxw;
-	Fri, 25 Oct 2024 16:19:09 +0300
-Date: Fri, 25 Oct 2024 16:19:09 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Oleksiy Protas <elfy.ua@gmail.com>
-Cc: d.milivojevic@gmail.com, ajhalaney@gmail.com, allenbh@gmail.com,
-	andrew@lunn.ch, arnd@arndb.de, bhelgaas@google.com, bp@alien8.de,
-	broonie@kernel.org, cai.huoqing@linux.dev, dave.jiang@intel.com,
-	davem@davemloft.net, dlemoal@kernel.org, dmaengine@vger.kernel.org,
-	dushistov@mail.ru, fancer.lancer@gmail.com, geert@linux-m68k.org,
-	gregkh@linuxfoundation.org, ink@jurassic.park.msu.ru,
-	jdmason@kudzu.us, jiaxun.yang@flygoat.com, keguang.zhang@gmail.com,
-	kory.maincent@bootlin.com, krzk@kernel.org, kuba@kernel.org,
-	linux-edac@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mips@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-spi@vger.kernel.org, linux@armlinux.org.uk,
-	linux@roeck-us.net, manivannan.sadhasivam@linaro.org,
-	netdev@vger.kernel.org, nikita.shubin@maquefel.me, nikita@trvn.ru,
-	ntb@lists.linux.dev, olteanv@gmail.com, pabeni@redhat.com,
-	paulburton@kernel.org, robh@kernel.org, s.shtylyov@omp.ru,
-	sergio.paracuellos@gmail.com, shc_work@mail.ru,
-	siyanteng@loongson.cn, tsbogend@alpha.franken.de, xeb@mail.ru,
-	yoshihiro.shimoda.uh@renesas.com
-Subject: Re: linux: Goodbye from a Linux community volunteer
-Message-ID: <ZxuazYt5GMJWJ8xP@smile.fi.intel.com>
-References: <CALtW_ahkg9W0wm09cxkJxiSQCH=42smeK=fqh5cQ9sRSNsjeXA@mail.gmail.com>
- <20241025030102.319485-1-elfy.ua@gmail.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="pjD28qXy";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="SBPgG+xz"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailflow.stl.internal (Postfix) with ESMTP id EC6081D400AF;
+	Fri, 25 Oct 2024 09:41:41 -0400 (EDT)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Fri, 25 Oct 2024 09:41:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1729863701;
+	 x=1729870901; bh=gtfk2cbRSvuRRxrihIJOvS/KfF1nzk8xhMXUtPvsUnI=; b=
+	pjD28qXyOpY/LIxXbSbERv3rie6/Izt8nvJXnVFFhB2PBxXkVUlWs06gqvKSF3J4
+	naLVGH1RomAtn/gp9CuMI8EIoAlYiaARGr18Pppe828HCdbHX+IPCIo+Kq0a3kUD
+	XUHerAmJ7z5Wfe8LdM7h/sEseQIvCeVk7Eqf4nNILcsdoN5A4YJze79/h+cR8DXF
+	LN6Me7jKhh6hXhlD7+XjQiQX336Rzs9bWxJUxcL3CmRaBu6fIt4OFg9Rj0oof8Fy
+	2Hd4UT/koWG2vrqcsgoXfZBX8PaHAI9MlyvDefw/q3pLVHq9wV4+fwWD8fnQFp9N
+	EIl+GmX/SPA5dZSq1NSrAA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1729863701; x=
+	1729870901; bh=gtfk2cbRSvuRRxrihIJOvS/KfF1nzk8xhMXUtPvsUnI=; b=S
+	BPgG+xzhv1g2MYdU4AZF7hh9UMShquw74Z2eAmwVsl2zTSrUguBWZiYF2CNJbhVW
+	imRzugNw5phZ8dbUbOS+2l11wuRzI4RK8JEfycORiMx1Wjd/N3zbClZF6IYdPoCv
+	70H++0tO9R/xvoaocFnUU0dOeEm4xjxQ0t/TcRz44iQN/qES7ajUC+nSaImy5ZoI
+	aDjcNYZMl/a1abMv/y2N8EExnl9YVgZJsTNWPEFJ7wzXRt8MvFsRozWE7M9siYN/
+	NJ7RKs6+MpyHhXfHOwxuBt57qZyK11UzBWw5nK9tA8QFODDFPdrmJCmYaeInDdjq
+	VOyF9a6tluJZZZ3s4Zn6A==
+X-ME-Sender: <xms:FKAbZ3qJFUGpbpsUW9_fereCvIhEuKomff311XueYsVaFQRy9hSq5A>
+    <xme:FKAbZxpBHeAYEXwZR4XB1HB-FDE_GiaX8VYvGhuwBQsZh3PYIkiRPI7I_ZaQPSHRe
+    1oH-bPesLZArVAW_c4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeftddrvdejvddgieejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
+    guvgeqnecuggftrfgrthhtvghrnhepfefhheetffduvdfgieeghfejtedvkeetkeejfeek
+    keelffejteevvdeghffhiefhnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlh
+    hushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugesrghr
+    nhgusgdruggvpdhnsggprhgtphhtthhopedvledpmhhouggvpehsmhhtphhouhhtpdhrtg
+    hpthhtohepshhimhhonhgrsehffhiflhhlrdgthhdprhgtphhtthhopegrihhrlhhivggu
+    sehgmhgrihhlrdgtohhmpdhrtghpthhtoheplhhuihiirdguvghnthiisehgmhgrihhlrd
+    gtohhmpdhrtghpthhtohepphgrthhrihhkrdhrrdhjrghkohgsshhsohhnsehgmhgrihhl
+    rdgtohhmpdhrtghpthhtohepmhgrrhgtvghlsehhohhlthhmrghnnhdrohhrghdprhgtph
+    htthhopehluhgtrghsrdguvghmrghrtghhihesihhnthgvlhdrtghomhdprhgtphhtthho
+    pehrohgurhhighhordhvihhvihesihhnthgvlhdrtghomhdprhgtphhtthhopegrrhhnug
+    eskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghl
+    rdhorhhg
+X-ME-Proxy: <xmx:FKAbZ0NsSjwocGY-XDJ1P7KQXGP_qoc3vqROaN1LyW6uNN_DS-vB2A>
+    <xmx:FKAbZ662m7W6ZMDHKtvgoeDpUmD9Vpl0KgD5uqQpI1MQxmzY8ecOjg>
+    <xmx:FKAbZ27gGML-ufU0a_1Y8OiNjEgKf5iqUggzFXgiBV1uP9QZr-BUkQ>
+    <xmx:FKAbZyj_iMh9pE2a6JJFbCNnnMpSyGii9q8Iu8GGvaTegKT49w4jBA>
+    <xmx:FaAbZ5wrMkfCwMUJK-_yw-HtdhtVOFf66SdycleW6ivOtc1nCpOXItmP>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id B8BF82220071; Fri, 25 Oct 2024 09:41:40 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241025030102.319485-1-elfy.ua@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Date: Fri, 25 Oct 2024 13:41:10 +0000
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Niklas Schnelle" <schnelle@linux.ibm.com>,
+ "Brian Cain" <bcain@quicinc.com>, "Marcel Holtmann" <marcel@holtmann.org>,
+ "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+ "Patrik Jakobsson" <patrik.r.jakobsson@gmail.com>,
+ "Maarten Lankhorst" <maarten.lankhorst@linux.intel.com>,
+ "Maxime Ripard" <mripard@kernel.org>,
+ "Thomas Zimmermann" <tzimmermann@suse.de>, "Dave Airlie" <airlied@gmail.com>,
+ "Simona Vetter" <simona@ffwll.ch>, "Dave Airlie" <airlied@redhat.com>,
+ "Gerd Hoffmann" <kraxel@redhat.com>,
+ "Lucas De Marchi" <lucas.demarchi@intel.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>,
+ "Heiko Carstens" <hca@linux.ibm.com>
+Cc: linux-kernel@vger.kernel.org, linux-hexagon@vger.kernel.org,
+ linux-bluetooth@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ virtualization@lists.linux.dev, spice-devel@lists.freedesktop.org,
+ intel-xe@lists.freedesktop.org, linux-serial@vger.kernel.org,
+ Linux-Arch <linux-arch@vger.kernel.org>, "Arnd Bergmann" <arnd@kernel.org>
+Message-Id: <72b75acf-743d-4fe7-9246-aa5a4efabb58@app.fastmail.com>
+In-Reply-To: <20241024-b4-has_ioport-v9-0-6a6668593f71@linux.ibm.com>
+References: <20241024-b4-has_ioport-v9-0-6a6668593f71@linux.ibm.com>
+Subject: Re: [PATCH v9 0/5] treewide: Remove I/O port accessors for HAS_IOPORT=n
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 25, 2024 at 06:01:02AM +0300, Oleksiy Protas wrote:
-> Brate Dragane,
-> 
-> I was not aware of the fact that either Raytheon or Boeing are directly supplying the Russian invasion. That would be a concerning development indeed.
-> 
-> If you possess any information of that being the case, I urge you to contact GUR anonymously at their official whistleblowing email: gur_official@proton.me
-> 
-> Thank you for your diligence, only together we can stop the war.
+On Thu, Oct 24, 2024, at 17:54, Niklas Schnelle wrote:
+> Hi All,
+>
+> This is a follow up in my long running effort of making inb()/outb() and
+> similar I/O port accessors compile-time optional. After initially
+> sending this as a treewide series with the latest revision at[0]
+> we switched to per subsystem series. Now though as we're left with only
+> 5 patches left I'm going back to a single series with Arnd planning
+> to take this via the the asm-generic tree.
+>
+> This series may also be viewed for your convenience on my git.kernel.org
+> tree[1] under the b4/has_ioport branch. As for compile-time vs runtime
+> see Linus' reply to my first attempt[2].
 
-Bravo!
+Hi Niklas,
 
-P.S. "Don't feed the trolls".
+Thanks for your endless work on this. I have now pulled it into
+the asm-generic tree as I want to ensure we get enough time to
+test this as part of linux-next before the merge window.
 
--- 
-With Best Regards,
-Andy Shevchenko
+If minor issues still come up, I would try to fix those as
+add-on patches to avoid rebasing my tree.
 
+I also expect that we will continue with add-on patches in
+the future, in particular I hope to make HAS_IOPORT optional
+on arm, arm64 and powerpc, and only enabled for
+configurations that actually want it.
 
+     Arnd
