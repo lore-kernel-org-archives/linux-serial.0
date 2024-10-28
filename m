@@ -1,126 +1,95 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C0DB18A921;
-	Mon, 28 Oct 2024 13:22:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59BD41EBFFA
+	for <linux-serial@vger.kernel.org>; Mon, 28 Oct 2024 22:57:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730121759; cv=none; b=NpjWZ8bi83H4jkeWmTSGpw8jgpb4x/lDWHC+CQU657ZH9z2mAbt5804Fn7TlcK2Shs6oavzswOTv2SVPpjh+Ay++dWuX3W+gTJFu6Op7kHeeqdCwqfgLqdun2b4W1lnwd61uEquqvpqwyq+nvVUdHqgdE/u+fS8nutgJvtN0+Fw=
+	t=1730156232; cv=none; b=cy+m6kR0fXdtFso7bXoEJY7h70FXTYZAI+t3ku5duEzEMKIboBSkwPMtZQzJfcap9EIaCxq/IEoBpErQ4X2LCFc+djYjc5Km802E2nx7yV92LlYgnZk+euIrHzNJTDsbYEfRhxerM4xlyA0Ao/7UA8206I1yUfvcq7o994L4jro=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730121759; c=relaxed/simple;
-	bh=roDEL1+bPO2wS+cBM+y0aiHYpgneB1/8mG78KA5yY64=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Fc0OSroGi8xXczKP+aDiU/w0kNzYsQUZyk5s29iN6wsXM9wq216fD5cr8kAmn1sW2fY1RRnNnb5bvbgqrX9w8DDEWOIED9mzsk5WdHniD7hHigMod+TUiRfI8hmqjEICNgZ+SjltRYS5fAgPPQMD7d6oawc6vI/9Eqs95Q/npx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=LDFUQwsS; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OIZ4ris+; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="LDFUQwsS";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OIZ4ris+"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1730121756;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=apY6S+qeU253Dd/TKZK2biKnIZhCt99HbkaZ7kbjDVE=;
-	b=LDFUQwsSME0pYe9xdUvkoGlcU7qsslf7g7nlRu5paPljeoREOtOjM6krVD9I+SeYHKjQ6t
-	08Lnthd4DiYwVsDTa+7vom92MS+JNwqk4XK6wyUKHYQx5UrUyHVoJOL/ddt9XoYY1TmMl1
-	zzdKyoExedY7FBs86UZyFbNF2kUHAewWuVtXsZc8wOkixnKdhZN2/f0FphbmQjmoOpw1ip
-	LW+rTccgZoo13JAOYjnrE2lsnJ7fut26CbRA76NNDHvO5vIgJUYamaTeNg/yWGfueGuoHJ
-	LgyMHQ4cZaOLX/GHzB5F9hKmminpkVjmDnm5e+OQMMKi70TEsfCW2Koqh6vLvQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1730121756;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=apY6S+qeU253Dd/TKZK2biKnIZhCt99HbkaZ7kbjDVE=;
-	b=OIZ4ris+cVy5tg+Br/SXpkJX931O3A4q3LdJXlkysQjqZUG6kzAeVpKuyQXAvYuhjii3L+
-	aghviZNEtjFUehCw==
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas
- Gleixner <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Geert
- Uytterhoeven <geert+renesas@glider.be>, Arnd Bergmann <arnd@arndb.de>, Uwe
- =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>, Tony
- Lindgren
- <tony@atomide.com>, Rengarajan S <rengarajan.s@microchip.com>, Peter
- Collingbourne <pcc@google.com>, Serge Semin <fancer.lancer@gmail.com>,
- Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH tty-next v3 5/6] serial: 8250: Switch to nbcon console
-In-Reply-To: <ZxupiKSSpZlyKhz-@smile.fi.intel.com>
-References: <20241025105728.602310-1-john.ogness@linutronix.de>
- <20241025105728.602310-6-john.ogness@linutronix.de>
- <ZxupiKSSpZlyKhz-@smile.fi.intel.com>
-Date: Mon, 28 Oct 2024 14:28:35 +0106
-Message-ID: <848qu8nyzo.fsf@jogness.linutronix.de>
+	s=arc-20240116; t=1730156232; c=relaxed/simple;
+	bh=zBxzWB+7NYfQRp0L19AL6OTNfIqJpNwmV/Utz6grqUk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ea9rAVI9fTmiBZgoRGPXMRBipXfdo6KSOdB2x/slk4IwLID/Slzs3srhbu8kFCrR65vXHITrOoFrasiUvLZZHZr71I7Fq77Oz51Ke19qsxiokVVzQnfORF9VUxfOLmonMT8o+eGbU+ykLwpHmuDByVYU0aV8lANJ7mh+G9CzsAQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1t5YfW-000798-Vm; Mon, 28 Oct 2024 23:57:02 +0100
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1t5YfW-000vc8-2A;
+	Mon, 28 Oct 2024 23:57:02 +0100
+Received: from mfe by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1t5YfW-000tfx-1s;
+	Mon, 28 Oct 2024 23:57:02 +0100
+Date: Mon, 28 Oct 2024 23:57:02 +0100
+From: Marco Felsch <m.felsch@pengutronix.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 0/3] USB-Serial serdev support
+Message-ID: <20241028225702.tdtfqzhm335vvuv5@pengutronix.de>
+References: <20240807-v6-10-topic-usb-serial-serdev-v1-0-ed2cc5da591f@pengutronix.de>
+ <20241001072453.3xv5sqxaj4zjprnz@pengutronix.de>
+ <2024100109-maker-ravine-7c65@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2024100109-maker-ravine-7c65@gregkh>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-On 2024-10-25, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->> +/*
->> + * Only to be used directly by the console write callbacks, which may not
->> + * require the port lock. Use serial8250_clear_IER() instead for all other
->> + * cases.
->> + */
->> +static void __serial8250_clear_IER(struct uart_8250_port *up)
->>  {
->>  	if (up->capabilities & UART_CAP_UUE)
->>  		serial_out(up, UART_IER, UART_IER_UUE);
->
->>  		serial_out(up, UART_IER, 0);
->>  }
->>  
->> +static inline void serial8250_clear_IER(struct uart_8250_port *up)
->> +{
->> +	__serial8250_clear_IER(up);
->
-> Shouldn't this have a lockdep annotation to differentiate with the
-> above?
+Hi Greg,
 
-Yes, but the follow-up patch adds the annotation as a clean "revert
-patch". I can add a line about that in the commit message.
+On 24-10-01, Greg Kroah-Hartman wrote:
+> On Tue, Oct 01, 2024 at 09:24:53AM +0200, Marco Felsch wrote:
+> > Hi,
+> > 
+> > gentle ping as this is series is two months old now.
+> 
+> And it was rejected as serdev does not support hotplug which of course,
+> usb-serial does.
 
->> +static void serial8250_console_byte_write(struct uart_8250_port *up,
->> +					  struct nbcon_write_context *wctxt)
->> +{
->> +	const char *s = READ_ONCE(wctxt->outbuf);
->> +	const char *end = s + READ_ONCE(wctxt->len);
->
-> Is there any possibility that outbuf value be changed before we get
-> the len and at the end we get the wrong pointer?
+I hoped to get some feedback on my answer [1]. Regarding hotplug
+support: serdev _requires_ some sort of firmware like OF (not sure if it
+does work with ACPI too). That said, if serdev finds no firmware a
+fallback is provided to the standard serial handling.
 
-No. I was concerned about compiler optimization, since @outbuf can
-become NULL. However, it can only become NULL if ownership was
-transferred, and that is properly checked anyway. I will remove the
-READ_ONCE() usage for v4.
+The firmware could either be added directly by the platform OF file or
+via OF-overlays. By making use of overlays we could gain some kind of
+hotplug: Once a usb devices was detected and the driver has an
+overlay, the overlay gets applied and the probe continues, like we do it
+for PCIe devices now [2]. For devices which don't have a registered
+overlay the standard usb-serial setup is done by exposing the serial
+interface to the userspace.
 
->>  struct uart_8250_port {
->
->>  	u16			lsr_save_mask;
->>  #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
->>  	unsigned char		msr_saved_flags;
->> +	struct irq_work		modem_status_work;
->> +
->> +	bool			console_line_ended;	/* line fully output */
->>  
->>  	struct uart_8250_dma	*dma;
->>  	const struct uart_8250_ops *ops;
->
-> Btw, have you run `pahole` on this? Perhaps there are better places
-> for new members?
+> So until serdev is fixed up to handle that correctly, this is not going
+> anywhere, nor should you want it to as then you would be in charge of
+> code that does not work properly :)
 
-Indeed there are. Placing it above the MSR_SAVE_FLAGS macro will reduce
-an existing 3-byte hole to 2-bytes and avoid creating a new 7-byte
-hole.
+Regards,
+  Marco
 
-Thanks.
+[1] https://lore.kernel.org/all/20240917044948.i2eog4ondf7vna7q@pengutronix.de/
+[2] https://lore.kernel.org/all/7512cbb7911b8395d926e9e9e390fbb55ce3aea9.camel@pengutronix.de/
 
-John
+> 
+> thanks,
+> 
+> greg k-h
+> 
