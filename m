@@ -1,184 +1,159 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0065156C6A;
-	Tue, 29 Oct 2024 16:15:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9358F198E6E
+	for <linux-serial@vger.kernel.org>; Tue, 29 Oct 2024 16:24:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730218512; cv=none; b=cL1qpCQst3xDRq1AnEExThV6+3pp50ihH/g4dTcqrE77HtfVDKkSQ9rC8zwgCiYqZ0hE0KR+m4i3HJMq+UBsUmmHjYRfRfG2P+44feQE4dpzKC57U/6tqQ3tkGevckTughOPwq5vS8+VqY+JHJqo5ISkkK7/QHPUtLgpPfeg+xs=
+	t=1730219068; cv=none; b=QxBTYQ7O+N1/uNEDtvajtThpES1Trmg3lsyFNs5ilfn8OPsuyEeinVT940DBWa578ARZ0LXbko3VY3Y20xVqe5I/Yh0KWBwWJ6NZosNFYgiCXtV1Rx4aPQ9wa2YdL/zjgkK/co97BzT2xsy1lx+YYqD07e3GFpOTnAF1Dmy12EA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730218512; c=relaxed/simple;
-	bh=ko6gR0ckGiSy5Rv42UiUqIPbYkcVTd8F+RnziAQ+JWs=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=ZU62HzGvD7SOWEWnrwA9N9zgrB66dnGW+D1GashMl06ocDC+Haeaxi9PTMyFnJ8MAyxVoGZ2ALNUH4ChwqG5skzhbz9GyuxWVOsiyZWUYCefSQgPW32MeH+ofKEwm5QFl8x4cWTJpT7LZp6vpgG0li9bU7GBGomuH/BJDyzGTjo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=ll9Oqseg; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1730219068; c=relaxed/simple;
+	bh=C65qfDDDxCTRTP97/W4uzaYzCBQIJJ/LO3jBSxMCD/U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pUD1cQu5lXdv4fEzAqWpodrYu+erW8thvQNr7O5e6MklWRFEQGenDTrJN8qNfNZKB/UCXoElTfuP5O+RjyXTdNOpT7D8xRpr92sm5hydSPOM9TJ3AbV8CL7hLKhg8wZo3xiVyJhmPqLLixvIwIn1NHD29yK+LPR8rPDeFzPx+pk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=IQskdFxX; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="ll9Oqseg"
-Received: from pps.filterd (m0356516.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 49TCEGms019630;
-	Tue, 29 Oct 2024 16:15:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=Nc2gvX
-	SzfPsYVcxSilPgkvHxK3JKsWTCor0tPluKDGk=; b=ll9OqsegKG5UDEc0rB/IZt
-	92a8rUTADzReaJAhZ5m6+7kL3/Fswc21flkNvChFlR1zzFsNYFm3efIOYVrLpOvd
-	hoFl1Xnh3YrI6lttOKgKCrQVRtKufonoMjDb7ypERQ6gtWM8gUJkINYJKkzhdOY7
-	4dIu068CAUMEMzQPFCcsDSDe0jXmdJ6aGVWSLAsLpXTsUqh1fXyjpJXnw8xr5HPl
-	xwDos/C4A/cyWKzwpb8wGbhED7igqNDkfEqPWNEbn2qzHL1OdnQqeQ+O67buutAw
-	hxPO7QlSdj5c8+ZGkE1d3gz1tQMu5ASiGMLJGLmKI6pl0elFxsO1mM4JBicVG59g
-	==
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 42jyhbh4jr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 29 Oct 2024 16:15:01 +0000 (GMT)
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 49TGBHve015836;
-	Tue, 29 Oct 2024 16:15:00 GMT
-Received: from smtprelay06.dal12v.mail.ibm.com ([172.16.1.8])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 42hdf1bf17-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 29 Oct 2024 16:15:00 +0000
-Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
-	by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 49TGExQg38732108
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 29 Oct 2024 16:14:59 GMT
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 959F358056;
-	Tue, 29 Oct 2024 16:14:59 +0000 (GMT)
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2AE265803F;
-	Tue, 29 Oct 2024 16:14:58 +0000 (GMT)
-Received: from [9.152.212.119] (unknown [9.152.212.119])
-	by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Tue, 29 Oct 2024 16:14:57 +0000 (GMT)
-Message-ID: <e5e4b697118ac7fdff408665756a0adca36efda1.camel@linux.ibm.com>
-Subject: Re: [PATCH] tty: serial: export serial_8250_warn_need_ioport
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Arnd Bergmann <arnd@kernel.org>,
-        Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "Maciej W.
- Rozycki" <macro@orcam.me.uk>
-Cc: Arnd Bergmann <arnd@arndb.de>, Jeff Johnson <quic_jjohnson@quicinc.com>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Date: Tue, 29 Oct 2024 17:14:57 +0100
-In-Reply-To: <20241029152804.3318094-1-arnd@kernel.org>
-References: <20241029152804.3318094-1-arnd@kernel.org>
-Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
- keydata=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
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IQskdFxX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1730219065;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sBEBhcwFRWdEyrYlXSEyJ0AeIl4d7kyeomTAvUDYmHc=;
+	b=IQskdFxXVTSlDLL3zo5Vb5Dfoapo8Ft+bVuO6bbequ/ahZgFJKnHPkcCFZ4GzdFWTWUqq5
+	wpn1YjVzQ2uOE+Ae+ZFT1Tuwl8RtRCUwzFHoQsWBVK4Wr1nCPfWHFhRyilUp3TlNIxpbx7
+	lzotZDsTGXcy5VzfBF6EYud6S4kaIi0=
+Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
+ (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-635-rx-gZuZfNt6DqaA-qm1PGg-1; Tue,
+ 29 Oct 2024 12:24:19 -0400
+X-MC-Unique: rx-gZuZfNt6DqaA-qm1PGg-1
+Received: from mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 440761955D4C;
+	Tue, 29 Oct 2024 16:24:17 +0000 (UTC)
+Received: from wcosta-thinkpadt14gen4.rmtbr.csb (unknown [10.22.88.170])
+	by mx-prod-int-04.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with SMTP id 0CAFE19560AA;
+	Tue, 29 Oct 2024 16:24:10 +0000 (UTC)
+Date: Tue, 29 Oct 2024 13:24:09 -0300
+From: Wander Lairson Costa <wander@redhat.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: John Ogness <john.ogness@linutronix.de>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
+	Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>, 
+	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Rengarajan S <rengarajan.s@microchip.com>, Jeff Johnson <quic_jjohnson@quicinc.com>, 
+	Serge Semin <fancer.lancer@gmail.com>, Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH tty-next v3 1/6] serial: 8250: Adjust the timeout for
+ FIFO mode
+Message-ID: <gdgngas4qc4mv4efghwzi5z7zbg7imvupjcyiskbyedivclwoi@vus4vxbsnqgu>
+References: <20241025105728.602310-1-john.ogness@linutronix.de>
+ <20241025105728.602310-2-john.ogness@linutronix.de>
+ <Zxug3qF9KUOn4VaM@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: aEqNqL5y7IxfYkV8GT5I4yRvfYOdzgpE
-X-Proofpoint-ORIG-GUID: aEqNqL5y7IxfYkV8GT5I4yRvfYOdzgpE
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1051,Hydra:6.0.680,FMLib:17.12.62.30
- definitions=2024-10-15_01,2024-10-11_01,2024-09-30_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxscore=0
- malwarescore=0 bulkscore=0 priorityscore=1501 lowpriorityscore=0
- suspectscore=0 phishscore=0 impostorscore=0 mlxlogscore=999 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2409260000 definitions=main-2410290122
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zxug3qF9KUOn4VaM@smile.fi.intel.com>
+X-Scanned-By: MIMEDefang 3.0 on 10.30.177.40
 
-On Tue, 2024-10-29 at 15:27 +0000, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->=20
-> The newly added function is used from a loadable module, so it has
-> to be exported the same way as the other function in this file:
->=20
-> ERROR: modpost: "serial_8250_warn_need_ioport" [drivers/tty/serial/8250/8=
-250_pci.ko] undefined!
->=20
-> Fixes: 7c7e6c8924e7 ("tty: serial: handle HAS_IOPORT dependencies")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> The build regression is currently part of my asm-generic tree, so I've
-> applied this fixup on top.
->=20
->  drivers/tty/serial/8250/8250_pcilib.c | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_pcilib.c b/drivers/tty/serial/8=
-250/8250_pcilib.c
-> index ec4d04177802..3bdccf76f71d 100644
-> --- a/drivers/tty/serial/8250/8250_pcilib.c
-> +++ b/drivers/tty/serial/8250/8250_pcilib.c
-> @@ -19,6 +19,7 @@ int serial_8250_warn_need_ioport(struct pci_dev *dev)
-> =20
->  	return -ENXIO;
->  }
-> +EXPORT_SYMBOL_NS_GPL(serial_8250_warn_need_ioport, SERIAL_8250_PCI);
-> =20
->  int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port=
- *port,
->  		   u8 bar, unsigned int offset, int regshift)
+On Fri, Oct 25, 2024 at 04:45:02PM +0300, Andy Shevchenko wrote:
+> On Fri, Oct 25, 2024 at 01:03:23PM +0206, John Ogness wrote:
+> > After a console has fed a line into TX, it uses wait_for_xmitr()
+> > to wait until the data has been sent out before returning to the
+> > printk code. However, wait_for_xmitr() will timeout after 10ms,
+> 
+> printk here is a function reference or module?
+> For the latter I would use the filename to be sure it's clear,
+> like printk.c. For the former (and it seems you know that)
+> we may use printk().
+> 
+> > regardless if the data has been transmitted or not.
+> > 
+> > For single bytes, this timeout is sufficient even at very slow
+> > baud rates, such as 1200bps. However, when FIFO mode is used,
+> > there may be 64 bytes pushed into the FIFO at once. At a baud
+> > rate of 115200bps, the 10ms timeout is still sufficient.
+> > However, when using lower baud rates (such as 57600bps), the
+> > timeout is _not_ sufficient. This causes longer lines to be cut
+> > off, resulting in lost and horribly misformatted output on the
+> > console.
+> > 
+> > When using FIFO mode, take the number of bytes into account to
+> > determine an appropriate max timeout. Increasing the timeout
+> 
+> maximum
+> (in order not to mix with max() function)
+> 
+> > does not affect performance since ideally the timeout never
+> > occurs.
+> 
+> ...
+> 
+> >  /*
+> >   *	Wait for transmitter & holding register to empty
+> > + *	with timeout
+> 
+> Can you fix the style while at it?
+> 
+> >   */
+> 
+>  /* Wait for transmitter & holding register to empty with timeout */
+> 
+> ...
+> 
+> >  static void serial8250_console_fifo_write(struct uart_8250_port *up,
+> >  					  const char *s, unsigned int count)
+> >  {
+> > -	int i;
+> >  	const char *end = s + count;
+> >  	unsigned int fifosize = up->tx_loadsz;
+> > +	unsigned int tx_count = 0;
+> >  	bool cr_sent = false;
+> > +	unsigned int i;
+> >  
+> >  	while (s != end) {
+> > -		wait_for_lsr(up, UART_LSR_THRE);
+> > +		/* Allow timeout for each byte of a possibly full FIFO. */
+> 
+> Does the one-line comment style in this file use periods? If not, drop,
+> otherwise apply it to the above proposal.
+> 
+> > +		for (i = 0; i < fifosize; i++) {
+> > +			if (wait_for_lsr(up, UART_LSR_THRE))
+> > +				break;
+> > +		}
+> 
+> > +	}
+> > +
+> > +	/* Allow timeout for each byte written. */
+> > +	for (i = 0; i < tx_count; i++) {
+> > +		if (wait_for_lsr(up, UART_LSR_THRE))
+> > +			break;
+> 
+> This effectively repeats the above. Even for the fix case I would still add
+> a new helper to deduplicate.
 
-Looks like I forgot to try the last version plus the temporarily
-removed !S390 with allmodconfig instead of allyesconfig.=C2=A0
++1
 
-Thanks for the fix!
+With this fixed, Reviewed-by: Wander Lairson Costa <wander@redhat.com>
+> 
+> >  	}
+> >  }
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
 
-Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
