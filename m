@@ -1,139 +1,154 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2009F200CA2;
-	Wed, 30 Oct 2024 15:03:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7772A14F90;
+	Wed, 30 Oct 2024 21:11:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730300611; cv=none; b=fSLnKluJDFy8cQ5uINPhoHsKjosiiOTeF6XdRmLU/BB5HZ7On6Tto8iPB2AXUMJizjICbB/tfMHL/a8XKleFweHtFz4876vlwDvxfH7QLFP6wg1tOvRaQi+WtJwBF3pR6F4d9bRXMcsoAoiv2tdtLxDBBByIiQBGZXf2516TNkg=
+	t=1730322663; cv=none; b=btWfmSMr/y/PexnDcYKHsXtpXNtvOoMcmH7dgHgxrKly+fMraUK6qrpxsWQ313DbTQMV5OALmVP0x83nwoalXy3KJjQjwLfy4/HuLM/nNpLdOq9np4X3wU7q0UG+A6Vvs9Vp9kxEpKadfk2HM7DfXIQI6kp0bVMugfl3HGZ/uxc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730300611; c=relaxed/simple;
-	bh=NAJDFpr9nmdU19C3JKcxMzbLsCujnceVqhZ/RKnEwwg=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=Af+TFKHbaNb+31NyYomIGXM73EbTT6cTqSu98SsoWPf9nOox0LZkrVYTYwFp+I+wNaLYmJk8frvjgX/RPZmzBKdUFVwnUGYm49zXP0bFaKHdfny3PyILmseqRbzytFLMMDTu/p8ax9QRp+1oc96YfhX0b314DFEoItACsgBOMu0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de; spf=pass smtp.mailfrom=gmx.de; dkim=pass (2048-bit key) header.d=gmx.de header.i=metux@gmx.de header.b=qomTIikI; arc=none smtp.client-ip=212.227.15.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.de
+	s=arc-20240116; t=1730322663; c=relaxed/simple;
+	bh=49YpfPgybjyunYRlnfXehdPEI1xELY9QE5/uJT2eRPQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=OKdXsIS+svbrCFi7nUIkBnbKoaGi7E13i1aa1umAF0RR/uqCBe5bCk9ZqMOqoyWQecBz7Nm09ymc5GW6juw/Q3fF9w2GsLeWihun5XJXkr/vDMJs2cyJHpRCr/q2cFSqQOhS3rpF3Ev6t+VTd0xSju95xYR+tas00Vn9LY+dPyA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pkEQfGIc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.de header.i=metux@gmx.de header.b="qomTIikI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.de;
-	s=s31663417; t=1730300534; x=1730905334; i=metux@gmx.de;
-	bh=NAJDFpr9nmdU19C3JKcxMzbLsCujnceVqhZ/RKnEwwg=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:From:To:
-	 Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 cc:content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=qomTIikI/OgfmxAbFKh1e8iCRJShu7EnlgU5G434TkB+7QieI60zcRnRQmNHY7mL
-	 26XECiyiNu12zXTWRy2asSgHeF6VwbBHM3aDnQ3uox6d+N5j3vyz2V29nf9ZEHI/7
-	 qUlSXTqxVipxXZ1JSehQTzpHDHQPSPiL/eaweFb8E7BUCEPOvfqCWNoLR7qjkN1j/
-	 p49vWpG4avdBGfWZrfUUn1QQPJYBKupzAA27zZiM0BrIysUJtE3I4oi18t2KU2Jgp
-	 NR5BKuTzLj4AssNq/jcoRi8JEym9/1eHXVRmJDUQ/Hacah+zbe10IoOhncuicwk4Q
-	 B7fK/ijaayh5nLVM0A==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.178] ([77.2.112.201]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1M5wPh-1tCUne2tcR-003w9y; Wed, 30
- Oct 2024 16:02:13 +0100
-Message-ID: <0369c687-db33-4665-b3dc-143000ef2e47@gmx.de>
-Date: Wed, 30 Oct 2024 16:02:48 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pkEQfGIc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB149C4CECE;
+	Wed, 30 Oct 2024 21:11:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1730322663;
+	bh=49YpfPgybjyunYRlnfXehdPEI1xELY9QE5/uJT2eRPQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=pkEQfGIccHm/wjiCrCCWe/fH7mfNqtwdKRguI2XyD+0KsDUZwN+Z3GEyLkB72KLSy
+	 ulaBG27WfSdkBPsSCq9Yjp/3JTK5hLojfRSklS9RUiQPlAcnN7CviYKk/XyzFK0ByX
+	 Ip+k/evjUE7lioJxM7T4DzxFai1kidYxX7YiT7IXRP34r0U25bFA99l8ZHQOmfqDpU
+	 1YHV4iYYti/4gl4juv7KbZgDYPOhzdN4tgMBXwvF191SrIvWNuZizINVQBdIJ1KUlB
+	 zAB3Bq3cuJ15LzgOUrz0K+qEuKnNH6URIYvoC6qQ0lGtlTrzqYvfrsPzuyf4NmCutU
+	 +Q30d8ivn5xlA==
+Date: Wed, 30 Oct 2024 16:11:00 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Philipp Stanner <pstanner@redhat.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, Damien Le Moal <dlemoal@kernel.org>,
+	Niklas Cassel <cassel@kernel.org>,
+	Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	Boris Brezillon <bbrezillon@kernel.org>,
+	Arnaud Ebalard <arno@natisbad.org>,
+	Srujana Challa <schalla@marvell.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+	Kalle Valo <kvalo@kernel.org>, Jon Mason <jdmason@kudzu.us>,
+	Dave Jiang <dave.jiang@intel.com>, Allen Hubbe <allenbh@gmail.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Kevin Cernekee <cernekee@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Jie Wang <jie.wang@intel.com>,
+	Michal Witwicki <michal.witwicki@intel.com>,
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+	Adam Guerin <adam.guerin@intel.com>,
+	Damian Muszynski <damian.muszynski@intel.com>,
+	Bharat Bhushan <bbhushan2@marvell.com>,
+	Nithin Dabilpuram <ndabilpuram@marvell.com>,
+	Johannes Berg <johannes.berg@intel.com>,
+	Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+	Benjamin Berg <benjamin.berg@intel.com>,
+	Breno Leitao <leitao@debian.org>,
+	Yedidya Benshimol <yedidya.ben.shimol@intel.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	zhang jiao <zhangjiao2@cmss.chinamobile.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-ide@vger.kernel.org, qat-linux@intel.com,
+	linux-crypto@vger.kernel.org, linux-wireless@vger.kernel.org,
+	ntb@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-sound@vger.kernel.org
+Subject: Re: [PATCH v6 00/10] Remove pcim_iomap_regions_request_all()
+Message-ID: <20241030211100.GA1220400@bhelgaas>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Maintainers now blocked from kernel.org mail access [WAS Re:
- linux: Goodbye from a Linux community volunteer]
-From: metux <metux@gmx.de>
-To: Hantong Chen <cxwdyx620@gmail.com>, tytso@mit.edu
-Cc: ajhalaney@gmail.com, allenbh@gmail.com, andrew@lunn.ch,
- andriy.shevchenko@linux.intel.com, andy@kernel.org, arnd@arndb.de,
- bhelgaas@google.com, bp@alien8.de, broonie@kernel.org,
- cai.huoqing@linux.dev, dave.jiang@intel.com, davem@davemloft.net,
- dlemoal@kernel.org, dmaengine@vger.kernel.org, dushistov@mail.ru,
- fancer.lancer@gmail.com, geert@linux-m68k.org, gregkh@linuxfoundation.org,
- ink@jurassic.park.msu.ru, james.bottomley@hansenpartnership.com,
- jdmason@kudzu.us, jiaxun.yang@flygoat.com, keguang.zhang@gmail.com,
- kory.maincent@bootlin.com, krzk@kernel.org, kuba@kernel.org,
- linux-edac@vger.kernel.org, linux-hwmon@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-spi@vger.kernel.org, linux@armlinux.org.uk, linux@roeck-us.net,
- manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
- nikita.shubin@maquefel.me, nikita@trvn.ru, ntb@lists.linux.dev,
- olteanv@gmail.com, pabeni@redhat.com, paulburton@kernel.org,
- robh@kernel.org, s.shtylyov@omp.ru, sergio.paracuellos@gmail.com,
- shc_work@mail.ru, siyanteng@loongson.cn, tsbogend@alpha.franken.de,
- xeb@mail.ru, yoshihiro.shimoda.uh@renesas.com
-References: <20241024173504.GN3204734@mit.edu>
- <20241024181917.1119-1-cxwdyx620@gmail.com>
- <e3559794-ab4a-48f2-8c28-52ef46258051@metux.net>
-Content-Language: tl
-In-Reply-To: <e3559794-ab4a-48f2-8c28-52ef46258051@metux.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:jSWmplSFQgV90c2A0bkkvj2t8ExnIUMHHQD7NlbYYqtnVH71j/A
- Pj4uZIi6YPufmEMjudXa4dJHIygmTV1wIFJJkHGM+GIBFRAfnlev+sgkCZr+MF54lQRidxS
- bkG2HCXJq0essmv69s27h4WdycA0Rnb+4K1fnTHuD/qBR+mEDSBS53MElG91weJLYtaeg5k
- OTPFgaQ3fak8gIXNj4JDQ==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:WLKWUYisdM4=;2yNj/laS7SIY5FYvJFi4MhOmvxZ
- pHFbD0J1kye994bqbqLhdCTnBHW8Ug5JybvfzVUSlvhHAACTecoQE51xKKnV5hpKkUhCo8yLr
- /EvJ6VglOAgdSAY02WiKyUBPuOArNFiBamR/Fukdo2XJTgsXt550Q9Uu3s0mVOwxlXCMnWMns
- Fn7g+nMUVDwZg2peIk913PvjXMFh4d9Lkvh3kvC90QEiN4qogLfcOyB8IyykJPV3DQeeXp5hf
- +MrDjTpn28aqOi4W0rgu+IoyVD3neDdXwidld0Di4C2B0Xjeof79KSNCRhE6HCopzETXFL3/P
- Eq20+VJdDS4NGHO7dtKR96RqKlqckwmu3AywKAhNuZLL3xf4qG/GG7lFzucn1PmOwB9qzuDQ0
- T83E1gkoEctHd2TIp9iZslkwtRvZoLEaBVqlMchJ2WhOacIxu0B7j2GBH/lqButUW3kxkamyr
- QKLpEtwiYtP4mMfbOjHeKNuT587VBOcJ0soGtjcr5abLWdDOKEep1at+A6hNDrbBSP1f6/IBo
- BK+2+hzwJ3piZW/Yn1eaXBx6/3MBI0Lr+ftdHokUiS61Mp+GLxSd3NlP9E5Ud6tWQlNEOE+TO
- 3A3+h1iPb9qNj+J4fjqMCG2p0nA6l58zMiSBfI4P0CjndwksOOuTcigJ6T1hzsfD+NMuWWKR6
- sAOmiaHvt7qnuiw6srIxEdbhvlRklDpq1Rv8Lrce6Ts8Z8qBYDnh7sqT0QOx+5KI9Lsu5iX3q
- 5le4iVFFC4QhG4eqQ5l+1SnoJ0wgVAVlJ5k6YKhwZo8jzqS56dXAir9zu5tn+DGzJFsWUTgbd
- rbwM2pncFYXiGznL6foV5OhA==
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20241030112743.104395-1-pstanner@redhat.com>
 
-Resending with another address, since the other one is
-hard-blocked / censored by kernel.org mail server.
+On Wed, Oct 30, 2024 at 12:27:33PM +0100, Philipp Stanner wrote:
+> Changes in v6:
+>   - Add Ilpo's RB to patch #1
+>   - Rephrase error log messages in patch #6. (Ilpo)
+> 
+> Changes in v5:
+>   - Add Acked-by's from Alexander and Bharat (the latter sent off-list,
+>     because of some issue with receiving the previous patch sets).
+> 
+> Changes in v4:
+>   - Add Acked-by's from Giovanni and Kalle.
+> 
+> Changes in v3:
+>   - Add missing full stops to commit messages (Andy).
+> 
+> Changes in v2:
+>   - Fix a bug in patch №4 ("crypto: marvell ...") where an error code
+>     was not set before printing it. (Me)
+>   - Apply Damien's Reviewed- / Acked-by to patches 1, 2 and 10. (Damien)
+>   - Apply Serge's Acked-by to patch №7. (Serge)
+>   - Apply Jiri's Reviewed-by to patch №8. (Jiri)
+>   - Apply Takashi Iwai's Reviewed-by to patch №9. (Takashi)
+> 
+> 
+> Hi all,
+> 
+> the PCI subsystem is currently working on cleaning up its devres API. To
+> do so, a few functions will be replaced with better alternatives.
+> 
+> This series removes pcim_iomap_regions_request_all(), which has been
+> deprecated already, and accordingly replaces the calls to
+> pcim_iomap_table() (which were only necessary because of
+> pcim_iomap_regions_request_all() in the first place) with calls to
+> pcim_iomap().
+> 
+> Would be great if you can take a look whether this behaves as you
+> intended for your respective component.
+> 
+> Cheers,
+> Philipp
+> 
+> Philipp Stanner (10):
+>   PCI: Make pcim_request_all_regions() a public function
+>   ata: ahci: Replace deprecated PCI functions
+>   crypto: qat - replace deprecated PCI functions
+>   crypto: marvell - replace deprecated PCI functions
+>   intel_th: pci: Replace deprecated PCI functions
+>   wifi: iwlwifi: replace deprecated PCI functions
+>   ntb: idt: Replace deprecated PCI functions
+>   serial: rp2: Replace deprecated PCI functions
+>   ALSA: korg1212: Replace deprecated PCI functions
+>   PCI: Remove pcim_iomap_regions_request_all()
+> 
+>  .../driver-api/driver-model/devres.rst        |  1 -
+>  drivers/ata/acard-ahci.c                      |  6 +-
+>  drivers/ata/ahci.c                            |  6 +-
+>  drivers/crypto/intel/qat/qat_420xx/adf_drv.c  | 11 +++-
+>  drivers/crypto/intel/qat/qat_4xxx/adf_drv.c   | 11 +++-
+>  .../marvell/octeontx2/otx2_cptpf_main.c       | 14 +++--
+>  .../marvell/octeontx2/otx2_cptvf_main.c       | 13 ++--
+>  drivers/hwtracing/intel_th/pci.c              |  9 ++-
+>  .../net/wireless/intel/iwlwifi/pcie/trans.c   | 16 ++---
+>  drivers/ntb/hw/idt/ntb_hw_idt.c               | 13 ++--
+>  drivers/pci/devres.c                          | 59 +------------------
+>  drivers/tty/serial/rp2.c                      | 12 ++--
+>  include/linux/pci.h                           |  3 +-
+>  sound/pci/korg1212/korg1212.c                 |  6 +-
+>  14 files changed, 76 insertions(+), 104 deletions(-)
 
-On 30.10.24 15:33, Enrico Weigelt, metux IT consult wrote:
-> On 24.10.24 20:19, Hantong Chen wrote:
->
->> What LF and Linus done will inevitably create a climate of fear where
->> contributors and maintainers from the *Countries of Particular Concern*
->> feels endangered.
->
-> And it's getting worse:
->
-> They're now blocking mail traffic on kernel.org, even from maintainers.
-> (my whole company is hard-marked as "spam"). Anything @kernel.org -
-> lists as well as invidual inboxes.
->
-> Still in the process of compiling evidence report. Anybody out there
-> who's affected too, let me know - will be added to the report.
->
-> I wonder when this one will be blocked, too. (I've still got many more
-> left).
->
->> This is clearly NOT what contributors truly want. People from around
->> the world
->> once firmly believed that Linux was a free and open-source project.
->> However,
->> Greg's commit and Linus' response deeply disappoint them.
->
-> Indeed. The trust that had been bulit up in decades is now finally
-> destroyed - just by a few mails.
->
-> Linux has been turned into POSS, politware.
->
->> Open-source projects might be international, but the people or
->> organizations
->> controlling them are not. This is the source of concern and
->> disappointment.
->
-> That's why those projects should never depend on just a few individuals
-> or organisations in one specific country.
->
->
->
-> --mtx
->
+Applied to pci/devm for v6.13, thanks!
