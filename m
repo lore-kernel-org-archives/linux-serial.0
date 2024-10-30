@@ -1,250 +1,196 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF5C563CB;
-	Wed, 30 Oct 2024 06:33:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E20481E3DCE
+	for <linux-serial@vger.kernel.org>; Wed, 30 Oct 2024 11:28:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730270010; cv=none; b=Dg0SzucxGmEID8cP3Ddwk2Jpudn4xix8Ot6f8/0h2lNMDlp+IoEWjHJlsxojPsRF2s5tCAsOCPaXA9UIrscNGSXfHUm0z/KlPGyRVF9yFd8P2TE368Ah+bxhLmyvIGK2h0QRNLfkcTzosCAxVzKUVFgJwl3x1KggP8+SnoQ4U1o=
+	t=1730287698; cv=none; b=nZGBCM/oatQeKPAeoH7MLbqhvqYnsX4rTawxJqjGkqSlb9+P1cvvmaGg0jBbl6ZipcFRsdgzz5gY9hpXo73Rth1+NLu5Mwi1wtNiQ4rHEpKNW3g+HpS+3kREZ7LhNNlPfXHVJ0DC+1/vD+uNNXHZ8httFZwdOK32HqA4NtvnGFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730270010; c=relaxed/simple;
-	bh=SC0Xu24Wqh43ElDcUACTlpmVLeS1VgEZ9q2pTiK0tTQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lmwy4N3F1RGJc6upUleMq2q93ykz/zDukHrYtDsH+OHnSbTxq8kfsrVvO+MCVZySpIB44fiGHY58owUb3/q9tsrcDkbrTPd/KhOkH4DB7qz80g+QPECbnIxF3sMf60n3N4f6QuSdtveJCpET8r8FyUrdikTqoB42UbL6Wdp9HCM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kf3J6PxE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1730287698; c=relaxed/simple;
+	bh=1nBiOt4E9hWg/0zn3g4OFCyMxJcpq+nbeiFpVMj1Z9M=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Aux84zroJhfYkFozqPALP1o7ZvWAG4Rn5bmZF0OTb4HX0Bm5I3fqCQvvJcdNXZ37wkrxGv3fCLU3KhfdpFRHvdb9snhFzd7GAyuLhrhVpvFYkFqvr+PRkQhgECub33V+g/HcGNEe5XcX1P+J+WZmXqVBaE7eUZk8/Yn+TlJl8hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=a+Naaeaa; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kf3J6PxE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13655C4CEE6;
-	Wed, 30 Oct 2024 06:33:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730270009;
-	bh=SC0Xu24Wqh43ElDcUACTlpmVLeS1VgEZ9q2pTiK0tTQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=kf3J6PxEKPDD4Fz76JOnhxqOI1OG68PL1+OtmdWR48jgGSd4xHgBHoljIc2JAsvir
-	 8ALulSMNeCtgUxLpj3RFMuxF5YjUa4CsJdCCmVsFZt9fgZcbRhs8Ds9j54DvyeP+Jp
-	 FtIowtsja5piCmhoXVWCOvFYvTRrksj6Wu9FkdpoXR81Uys+1rrtQYTFhb7VEcZdHL
-	 5/8mFOvhAg94PcAOZ3mRzc2CGBm6mrUnhowYJiYSmmMEBDCoIqGA190Ur7tlze0iLA
-	 M+PDLRoO/3AumSvVPIr3eypPvsG3ggcpyPHnZINVicOJkee4aV3voJtSPYzhZqnKHD
-	 uFO6sA8QE4ycA==
-Message-ID: <419edf13-3f5e-4d30-90d8-88118f77f704@kernel.org>
-Date: Wed, 30 Oct 2024 07:33:24 +0100
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="a+Naaeaa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1730287695;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=F5SOWMgY56iXsI2F11A2ajlpJiSFnTM4sKk1Get+9MQ=;
+	b=a+NaaeaaKJno8CT/BASz0ZJCQm9fPymncP98pfKd5eyo8DK5AQqZ/PQA8qBbbSQnH1DnRb
+	haEKOAXIVjiK+X0VeWTOll+qcBjlkRGVvw8saKHwUvKT22xmWnjnZWpv2766a2ERyITIpB
+	H6ErQvjINkCLl8T+Ybz69o5qaeXUnng=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-537-kcweEhrdOUGTUBKpGeJ3TQ-1; Wed, 30 Oct 2024 07:28:13 -0400
+X-MC-Unique: kcweEhrdOUGTUBKpGeJ3TQ-1
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-a9a1af73615so459779366b.0
+        for <linux-serial@vger.kernel.org>; Wed, 30 Oct 2024 04:28:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1730287693; x=1730892493;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=F5SOWMgY56iXsI2F11A2ajlpJiSFnTM4sKk1Get+9MQ=;
+        b=BBP21q0852aqpHuLzCywBVvibQMZrpw7TCm1i256GCyEEfBEhPyuhY2pQ4i2xgYdSd
+         NUSZM0Q8w4Vcj2L3SlrqFTsSQEnXgmzc/7pFHBWSavBnkegVQPojZXKy5LsCH2TlAB5O
+         EkRgiY76icbNxRp2zDngYcWRT1Lfc2YZiHEaJj4qBUMaYeL5C1AWjNOaT2ZOfkUjIaUI
+         l2VIIFo/VTuFMUdj6M/g4Lt4tsKZMWboCNUXL/zsdhKgBbpMZW/sIVuIqvsLIMqUtTCg
+         1Lzxa3elLXw0BULhFJ0cZqt50KRS0s5Ii4xfKHzzizr9UBX8P1P2vdSnxdwa61um4Pwo
+         VDYg==
+X-Forwarded-Encrypted: i=1; AJvYcCV56m4wfhJ4SziZOpgPCX/HDNdJCDrvcuPigh7bgjixUGI/S5bzRMB+mttIbYcyYyZpWdTJHXSBN5A8L2g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwKVqPwMbIn2q0qZ8dCEb9EVB4azPWNeo9wpY5A5UMs3fXl6Iiv
+	UQcoAV74iHiS1gT0ISyL0T2UzGq1CRkNGCvMAZGE2Xn3L4FxPQOjXVuJhXudNf0XWGACuZxZ2/L
+	D2aRgdDcSopN/SQJWdgdVVNCuIhhblmwCbb/a7zakNd5IbjGR5p20kh+GjQengw==
+X-Received: by 2002:a17:907:3ea6:b0:a9a:d52:9e79 with SMTP id a640c23a62f3a-a9de632e87cmr1484260666b.60.1730287692596;
+        Wed, 30 Oct 2024 04:28:12 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHnDINiXRUE96BlR23lv9C+OQFBClKdFZUq7ld2UJ9kzdhczUGabkr4/M1e9W23thWxvBAWBg==
+X-Received: by 2002:a17:907:3ea6:b0:a9a:d52:9e79 with SMTP id a640c23a62f3a-a9de632e87cmr1484255566b.60.1730287692107;
+        Wed, 30 Oct 2024 04:28:12 -0700 (PDT)
+Received: from eisenberg.fritz.box ([2001:16b8:3db7:f800:98bb:372a:45f9:41e4])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-a9b30f58991sm557324566b.159.2024.10.30.04.28.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Oct 2024 04:28:11 -0700 (PDT)
+From: Philipp Stanner <pstanner@redhat.com>
+To: Jonathan Corbet <corbet@lwn.net>,
+	Damien Le Moal <dlemoal@kernel.org>,
+	Niklas Cassel <cassel@kernel.org>,
+	Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	Boris Brezillon <bbrezillon@kernel.org>,
+	Arnaud Ebalard <arno@natisbad.org>,
+	Srujana Challa <schalla@marvell.com>,
+	Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+	Miri Korenblit <miriam.rachel.korenblit@intel.com>,
+	Kalle Valo <kvalo@kernel.org>,
+	Jon Mason <jdmason@kudzu.us>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Allen Hubbe <allenbh@gmail.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Kevin Cernekee <cernekee@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>,
+	Mark Brown <broonie@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	Philipp Stanner <pstanner@redhat.com>,
+	Jie Wang <jie.wang@intel.com>,
+	Michal Witwicki <michal.witwicki@intel.com>,
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+	Adam Guerin <adam.guerin@intel.com>,
+	Damian Muszynski <damian.muszynski@intel.com>,
+	Bharat Bhushan <bbhushan2@marvell.com>,
+	Nithin Dabilpuram <ndabilpuram@marvell.com>,
+	Johannes Berg <johannes.berg@intel.com>,
+	Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+	Benjamin Berg <benjamin.berg@intel.com>,
+	Breno Leitao <leitao@debian.org>,
+	Yedidya Benshimol <yedidya.ben.shimol@intel.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	zhang jiao <zhangjiao2@cmss.chinamobile.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-ide@vger.kernel.org,
+	qat-linux@intel.com,
+	linux-crypto@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	ntb@lists.linux.dev,
+	linux-pci@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-sound@vger.kernel.org
+Subject: [PATCH v6 00/10] Remove pcim_iomap_regions_request_all()
+Date: Wed, 30 Oct 2024 12:27:33 +0100
+Message-ID: <20241030112743.104395-1-pstanner@redhat.com>
+X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH tty-next v3 5/6] serial: 8250: Switch to nbcon console
-To: John Ogness <john.ogness@linutronix.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Petr Mladek <pmladek@suse.com>,
- Sergey Senozhatsky <senozhatsky@chromium.org>,
- Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>,
- Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Geert Uytterhoeven <geert+renesas@glider.be>, Arnd Bergmann <arnd@arndb.de>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
- Tony Lindgren <tony@atomide.com>, Rengarajan S <rengarajan.s@microchip.com>,
- Peter Collingbourne <pcc@google.com>, Serge Semin <fancer.lancer@gmail.com>,
- Lino Sanfilippo <l.sanfilippo@kunbus.com>
-References: <20241025105728.602310-1-john.ogness@linutronix.de>
- <20241025105728.602310-6-john.ogness@linutronix.de>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20241025105728.602310-6-john.ogness@linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 25. 10. 24, 12:57, John Ogness wrote:
-> Implement the necessary callbacks to switch the 8250 console driver
-> to perform as an nbcon console.
-> 
-> Add implementations for the nbcon console callbacks (write_atomic,
-> write_thread, device_lock, device_unlock) and add CON_NBCON to the
-> initial flags.
-> 
-> All register access in the callbacks are within unsafe sections.
-> The write callbacks allow safe handover/takeover per byte and add
-> a preceding newline if they take over mid-line.
-> 
-> For the write_atomic() case, a new irq_work is used to defer modem
-> control since it may be a context that does not allow waking up
-> tasks.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
-> ---
->   drivers/tty/serial/8250/8250_core.c |  35 +++++-
->   drivers/tty/serial/8250/8250_port.c | 159 ++++++++++++++++++++++------
->   include/linux/serial_8250.h         |   7 +-
->   3 files changed, 164 insertions(+), 37 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-> index 5f9f06911795..7184100129bd 100644
-> --- a/drivers/tty/serial/8250/8250_core.c
-> +++ b/drivers/tty/serial/8250/8250_core.c
-> @@ -388,12 +388,34 @@ void __init serial8250_register_ports(struct uart_driver *drv, struct device *de
->   
->   #ifdef CONFIG_SERIAL_8250_CONSOLE
->   
-> -static void univ8250_console_write(struct console *co, const char *s,
-> -				   unsigned int count)
-> +static void univ8250_console_write_atomic(struct console *co,
+Changes in v6:
+  - Add Ilpo's RB to patch #1
+  - Rephrase error log messages in patch #6. (Ilpo)
 
-Once 'co'.
+Changes in v5:
+  - Add Acked-by's from Alexander and Bharat (the latter sent off-list,
+    because of some issue with receiving the previous patch sets).
 
-> +					  struct nbcon_write_context *wctxt)
->   {
->   	struct uart_8250_port *up = &serial8250_ports[co->index];
->   
-> -	serial8250_console_write(up, s, count);
-> +	serial8250_console_write(up, wctxt, true);
-> +}
-> +
-> +static void univ8250_console_write_thread(struct console *co,
+Changes in v4:
+  - Add Acked-by's from Giovanni and Kalle.
 
-Second time co.
+Changes in v3:
+  - Add missing full stops to commit messages (Andy).
 
-> +					  struct nbcon_write_context *wctxt)
-> +{
-> +	struct uart_8250_port *up = &serial8250_ports[co->index];
-> +
-> +	serial8250_console_write(up, wctxt, false);
-> +}
-> +
-> +static void univ8250_console_device_lock(struct console *con, unsigned long *flags)
+Changes in v2:
+  - Fix a bug in patch №4 ("crypto: marvell ...") where an error code
+    was not set before printing it. (Me)
+  - Apply Damien's Reviewed- / Acked-by to patches 1, 2 and 10. (Damien)
+  - Apply Serge's Acked-by to patch №7. (Serge)
+  - Apply Jiri's Reviewed-by to patch №8. (Jiri)
+  - Apply Takashi Iwai's Reviewed-by to patch №9. (Takashi)
 
-And suddenly, it is 'con'.
 
-> +{
-> +	struct uart_port *up = &serial8250_ports[con->index].port;
-> +
-> +	__uart_port_lock_irqsave(up, flags);
-> +}
-> +
-> +static void univ8250_console_device_unlock(struct console *con, unsigned long flags)
-> +{
-> +	struct uart_port *up = &serial8250_ports[con->index].port;
-> +
-> +	__uart_port_unlock_irqrestore(up, flags);
->   }
->   
+Hi all,
 
-...
->   static void serial8250_console_putchar(struct uart_port *port, unsigned char ch)
->   {
-> +	struct uart_8250_port *up = up_to_u8250p(port);
-> +
->   	serial_port_out(port, UART_TX, ch);
-> +
-> +	if (ch == '\n')
-> +		up->console_line_ended = true;
-> +	else
-> +		up->console_line_ended = false;
+the PCI subsystem is currently working on cleaning up its devres API. To
+do so, a few functions will be replaced with better alternatives.
 
-So simply:
-    up->console_line_ended = ch == '\n';
-?
+This series removes pcim_iomap_regions_request_all(), which has been
+deprecated already, and accordingly replaces the calls to
+pcim_iomap_table() (which were only necessary because of
+pcim_iomap_regions_request_all() in the first place) with calls to
+pcim_iomap().
 
-...
-> -void serial8250_console_write(struct uart_8250_port *up, const char *s,
-> -			      unsigned int count)
-> +void serial8250_console_write(struct uart_8250_port *up,
-> +			      struct nbcon_write_context *wctxt,
-> +			      bool is_atomic)
->   {
->   	struct uart_8250_em485 *em485 = up->em485;
->   	struct uart_port *port = &up->port;
-> -	unsigned long flags;
-> -	unsigned int ier, use_fifo;
-> -	int locked = 1;
-> -
-> -	touch_nmi_watchdog();
-> +	unsigned int ier;
-> +	bool use_fifo;
->   
-> -	if (oops_in_progress)
-> -		locked = uart_port_trylock_irqsave(port, &flags);
-> -	else
-> -		uart_port_lock_irqsave(port, &flags);
-> +	if (!nbcon_enter_unsafe(wctxt))
-> +		return;
->   
->   	/*
-> -	 *	First save the IER then disable the interrupts
-> +	 * First save IER then disable the interrupts. The special variant
+Would be great if you can take a look whether this behaves as you
+intended for your respective component.
 
-When you are at it:
-"First, save the IER, then"
+Cheers,
+Philipp
 
-(BTW why did you remove the "the"?)
+Philipp Stanner (10):
+  PCI: Make pcim_request_all_regions() a public function
+  ata: ahci: Replace deprecated PCI functions
+  crypto: qat - replace deprecated PCI functions
+  crypto: marvell - replace deprecated PCI functions
+  intel_th: pci: Replace deprecated PCI functions
+  wifi: iwlwifi: replace deprecated PCI functions
+  ntb: idt: Replace deprecated PCI functions
+  serial: rp2: Replace deprecated PCI functions
+  ALSA: korg1212: Replace deprecated PCI functions
+  PCI: Remove pcim_iomap_regions_request_all()
 
-> +	 * to clear IER is used because console printing may occur without
-> +	 * holding the port lock.
->   	 */
->   	ier = serial_port_in(port, UART_IER);
-> -	serial8250_clear_IER(up);
-> +	__serial8250_clear_IER(up);
->   
->   	/* check scratch reg to see if port powered off during system sleep */
->   	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
+ .../driver-api/driver-model/devres.rst        |  1 -
+ drivers/ata/acard-ahci.c                      |  6 +-
+ drivers/ata/ahci.c                            |  6 +-
+ drivers/crypto/intel/qat/qat_420xx/adf_drv.c  | 11 +++-
+ drivers/crypto/intel/qat/qat_4xxx/adf_drv.c   | 11 +++-
+ .../marvell/octeontx2/otx2_cptpf_main.c       | 14 +++--
+ .../marvell/octeontx2/otx2_cptvf_main.c       | 13 ++--
+ drivers/hwtracing/intel_th/pci.c              |  9 ++-
+ .../net/wireless/intel/iwlwifi/pcie/trans.c   | 16 ++---
+ drivers/ntb/hw/idt/ntb_hw_idt.c               | 13 ++--
+ drivers/pci/devres.c                          | 59 +------------------
+ drivers/tty/serial/rp2.c                      | 12 ++--
+ include/linux/pci.h                           |  3 +-
+ sound/pci/korg1212/korg1212.c                 |  6 +-
+ 14 files changed, 76 insertions(+), 104 deletions(-)
 
-> @@ -3497,6 +3593,9 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
->   	if (!port->iobase && !port->membase)
->   		return -ENODEV;
->   
-> +	up->console_line_ended = true;
-> +	up->modem_status_work = IRQ_WORK_INIT(modem_status_handler);
-
-Looks weird ^^^.
-
-Do:
-   init_irq_work(&up->modem_status_work, modem_status_handler)
-
-thanks,
 -- 
-js
-suse labs
+2.47.0
+
