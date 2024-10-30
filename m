@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAEC633E7
-	for <linux-serial@vger.kernel.org>; Wed, 30 Oct 2024 05:15:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716B033E7
+	for <linux-serial@vger.kernel.org>; Wed, 30 Oct 2024 05:16:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730265351; cv=none; b=TRbGMvqkjvKvfXRi+8OWN642uPC7Dxbj6NJLt1r25lmSDlmYLlG0Suq9rRh9oi+hsVjaCNwuDWzuP4rlWK6cBiTAyfQj+zuGwhyhE6o7b84gR3b/PHuMYielxJn9UlJqvH7TCMMtcrv1v0BKdM+pkej6DFrFop3+ro+qNQrqmW4=
+	t=1730265371; cv=none; b=A8KouYfrzEeEaIOf6jqE5QOvCv62kcGJOnhEG/Oqg0mXVkB2eNV7Wd/GIt774mVji9CpSOaXqLXMSCuXNDUZpx4BX3dNXyovWRCW9TVMC5JGvBvVjOCdXvMMnXiuE2lkptkeHHPca5sksa5sV6aAKnHVppoYJwHvz7RyzGpzLnM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730265351; c=relaxed/simple;
-	bh=LA5NgFAPQbShFvFcGWQ4i7DdjFXRe6xtzSyIaH/1kkQ=;
+	s=arc-20240116; t=1730265371; c=relaxed/simple;
+	bh=v2z72YXeU67Q9M1lIhTf0pNzOQS3AXW8Y2DZFiO/ppE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YBGU8o7icHKVZESgg9ky1eoav+BSkTO+NGNkB0k0Hx9+jI7TbYtmpuUQqf6TAtiVrrcVUhsB00iG5FPdRunYdlGblx3sIfcnV/eHcG11ALKaU2A4eqtjiA+EDpcnNWTXyQ3z0eY5+4cLIGJVy5j/alX1RUud4mVemm/SAyPuroo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NM/cQRWQ; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=e3bNOqROpQoMTJ62Je0mX9ey0WNmPffDbOloqvnDfNVi2BkXhBiLweTtUoZ8ejg5kde9R6AljOQpIut6vxMIDtUkxKD5nS6WTLZmVkGMKPJQh++6gyY6Wdv7WNqeyrr7OPlOJZds2RegB6jIkIVpj5D71PJvYtC7OZ3veFzn0qg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O+HjIZu7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NM/cQRWQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2329FC4CEE4;
-	Wed, 30 Oct 2024 05:15:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O+HjIZu7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FB0DC4CEE4;
+	Wed, 30 Oct 2024 05:16:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730265351;
-	bh=LA5NgFAPQbShFvFcGWQ4i7DdjFXRe6xtzSyIaH/1kkQ=;
+	s=k20201202; t=1730265371;
+	bh=v2z72YXeU67Q9M1lIhTf0pNzOQS3AXW8Y2DZFiO/ppE=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=NM/cQRWQNIY3vk/7udkFG/Q5G+4oslppSC+oJ/DFGEQau5TXSy0xhUxPY+j5BxgDZ
-	 nFP3AzpeaeB0GuuZImR84mX3MYWIbbv5oUQAdkI2YTBpRuJJnNCPg9Ld+OcJVoS1af
-	 bUm0lzls+TdCkx20vu3jfiu0ZbOJi+DkRtL73lEzgMWZXs7wk4Be0eOC1BgYxEN4SJ
-	 3uOqjSdzuQsu+XzJ4hAlzt+/tQ44M6yg/E+1pYAmyW/THl9j4k+JT7n14c0xYhhL4C
-	 Wl+ykLp4QEIzN4VpYVskLSwOF6fNG/N4h7agllzz92XYYvWWeKHCXv5gDLvBARYF1q
-	 G3YxMFndyQ/KQ==
-Message-ID: <26034117-26b6-4eeb-bd66-969955b70e9b@kernel.org>
-Date: Wed, 30 Oct 2024 06:15:48 +0100
+	b=O+HjIZu7UZNZGz/vwUsg20Cjx+dCdGADeHk9BpZ7/WUu7ABc5KzVP4LHUTxOvaAh+
+	 N5vpSeR91js3Ku1Tc07m16D2ycILHFJL9MKJlGk6qCbRImBCTAy1vH92equ0jBI8Un
+	 OAAZMhB/g1h791luignN754iLpob0Imo868X0RHIO+LAnVcI1Gk1A+30umVZ0WwSS6
+	 O2eXj1rH6kHxMZADi0t6NfOojYubW71/inB9oZgmuL7ijYcTagYh/z/LBiNlWi2Iff
+	 0/c7ZEl0Ib2UD8YslOG3rPwqzhbfusS7XybrPA+VUZ00AZyO/QJRXOa6up/G8hFa7S
+	 EX/VmeBv8/sDg==
+Message-ID: <8be9296f-86fd-4fc6-b0fe-6f8235763bce@kernel.org>
+Date: Wed, 30 Oct 2024 06:16:08 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,11 +35,11 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] altera_uart: Use dev_err() to report error attaching IRQ
- handler
+Subject: Re: [PATCH] altera_jtaguart: Use dev_err() to report error attaching
+ IRQ
 To: Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20241029130258.4679-1-tklauser@distanz.ch>
+References: <20241029130307.5003-1-tklauser@distanz.ch>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -84,39 +84,19 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20241029130258.4679-1-tklauser@distanz.ch>
+In-Reply-To: <20241029130307.5003-1-tklauser@distanz.ch>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 29. 10. 24, 14:02, Tobias Klauser wrote:
-> In case of multiple Altera UART ports available on the system, the error
-> message will contain information about the port for which attaching the
-> IRQ handler failed.
-
-And port->dev is properly set in altera_uart_probe().
+On 29. 10. 24, 14:03, Tobias Klauser wrote:
+> In case of multiple Altera JTAG UART ports available on the system, the
+> error message will contain information about the port for which
+> attaching the IRQ handler failed.
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
 > Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
-> ---
->   drivers/tty/serial/altera_uart.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-> index 8eed2542627e..1da9cd465426 100644
-> --- a/drivers/tty/serial/altera_uart.c
-> +++ b/drivers/tty/serial/altera_uart.c
-> @@ -307,7 +307,7 @@ static int altera_uart_startup(struct uart_port *port)
->   		ret = request_irq(port->irq, altera_uart_interrupt, 0,
->   				dev_name(port->dev), port);
->   		if (ret) {
-> -			pr_err(DRV_NAME ": unable to attach Altera UART %d "
-> +			dev_err(port->dev, "unable to attach Altera UART %d "
->   			       "interrupt vector=%d\n", port->line, port->irq);
 
-The string should be on a single line. But that's a different story/patch.
-
-thanks,
 -- 
 js
 suse labs
