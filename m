@@ -1,69 +1,62 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFEDD19341D;
-	Thu, 31 Oct 2024 09:13:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A43219580A;
+	Thu, 31 Oct 2024 09:25:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730366037; cv=none; b=H6MQIiQhPZlHnstz0d12sQI7vwvwVXLpUkRBUx9cqWd73lF0i1/R4ax+bfgAA9Buo78yEEeMu/mkIpgL3IGUf+2Q8o9/f1W+DXtvP6xxtfIff8NrWoBzbVZ8K+DKV4M9jn520w+h+/iHzsX5HqdLYsai9TGgXzUnWa03weqJoBY=
+	t=1730366746; cv=none; b=FWtfEHIl/j0wfZUMh5AE8CGh3ZbSpKhUseTEDew7tw13/25kfQIOG6nK2i65XUo9yO/jFTCPD5RrIjs5DCgwqATYOHlnboEeMNw7dz1rcQYr/PLRldHXc1R8PE3EyZsyflQLPbEsc55HxCVnTy2yETfEE3puPG1BL4KtcRJWfig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730366037; c=relaxed/simple;
-	bh=zXT/PgNOBSorDcFpVKMfQwyGZVWmcB8yF73UsbQqhvU=;
+	s=arc-20240116; t=1730366746; c=relaxed/simple;
+	bh=R9P3BdZPMugAhiXUvDfpQpJdWt09YfI6FBbcP0deauY=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=u13auRrSHZbFGChmDeONgjq/E5nrWAYP270pXe3Zf0BcUoiJpwJ+mT9KFQa3c84cCbv5EX4DXmpkN7sFqtETd/8uAIMHUSMR0GND0yvB/vEiYNkVp+booAUTuYVZbmbzSPlfYhzs0u1rFaUHIgAQ46Qa02FuUOXKIS5be+SBngk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=3cXMAKP9; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=CKko7n5T; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version:Content-Type; b=tyrhc9Opl2rSCuowbk1k3S00nE1hxfKUI6eknyKuA3M1OfEdS9WTZ83Gs3qL0Qa4WHGs4pM2ES+Col+IkppECjFDerjkCoFlQ9O4Sru9DJTGzPfwl64SuW5rW1QS4O91U3MaQFTsRVMLlxrbMj1hXF8O0b1iUw0OQJw7QK7iobU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0BRaxfe8; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=G0iEi24X; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="3cXMAKP9";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="CKko7n5T"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0BRaxfe8";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="G0iEi24X"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1730366034;
+	s=2020; t=1730366742;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=DrD0ZfuHoa6x/lqplhytCjOw0Xel3ZOQUIA62v3IfKk=;
-	b=3cXMAKP9i9urmv40oh5aOvpiqjxr5tJ38d79UA5I636s3QeCC16+tHval5Nk0DSaNZCiJl
-	T8Z+RcZg8ciKTwXFm8lx/+KLg6t9af1W52MV7T8sXgZs49TMkcT/ax8VczQ/iEjfUWwigA
-	Mz6X/UV489Kg3iKgYFLBGTuTmBph7jXddgS721mzVgFIdzaotaQCSVt/v48VKFRBQ6AZh7
-	1K0UU6n6Ps1K67S0aMzPUl7vSW2sZwfc3Zdi9WIw0UGw9s79hVzIL5rgFgKQuwSj4AU5lJ
-	1bYpuo+LZRywXWAeNLvXlO/hsCWbf9IvO6PkEWe5Z1p0sQ9rbmxSyQ7Xmsss/w==
+	bh=s4XOhA+qbKcOxUwuBV6wIIlJrCI0gaIgvaqmgKGx/kE=;
+	b=0BRaxfe8HIoM+0ljJwS/7adDuXuq9rl9de0yDWJxJwSue5d5K6g5HrxPVIfeqeF4wI7y6w
+	n9GK10fBMidSxW1W0UsW3g/hRlP3/ZFRkuQ4FsSn2BR+k4kMjeG9Bc/5TosfGKU7httKiD
+	3HguzmcMtbA1E/WHWdTfNAMFNdX0kDFqvAeOcfHcr+XVtYF3f5kY3dVnqfh9pc1CLyaiu4
+	6oUOCVeHLXEzm74OG7hUqyAQpsLVlnrAmdkRBHDwXGbfQibPTDFtgIMHo/wm0ntVvIluKQ
+	dHUJbm9S+m1MiewcFNOHIMUPSxpOyQ4IJTm2e9u/RqxzSIzop9MF/qK1/oXL5w==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1730366034;
+	s=2020e; t=1730366742;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=DrD0ZfuHoa6x/lqplhytCjOw0Xel3ZOQUIA62v3IfKk=;
-	b=CKko7n5TAyXddi94osYz3Z1LksU9iEockc/SoL53s5olauKZSw6RBCaZD7sFQX1qqSo+eh
-	MU9CYrJuxciUi2Ag==
+	bh=s4XOhA+qbKcOxUwuBV6wIIlJrCI0gaIgvaqmgKGx/kE=;
+	b=G0iEi24XT31tI4NdGX5W4gMg1rJdLA/f3QtfC1PUJ49OZLA7TVBHwtDdNtiXuBMenO6Llu
+	Nab2V6gtyCtocdDw==
 To: Jiri Slaby <jirislaby@kernel.org>, Greg Kroah-Hartman
  <gregkh@linuxfoundation.org>
 Cc: Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
  <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas
  Gleixner <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Florian
- Fainelli <florian.fainelli@broadcom.com>, Broadcom internal kernel review
- list <bcm-kernel-feedback-list@broadcom.com>, Ray Jui <rjui@broadcom.com>,
- Scott Branden <sbranden@broadcom.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, "Paul E. McKenney"
- <paulmck@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Stefan Wahren
- <wahrenst@gmx.net>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
- <u.kleine-koenig@baylibre.com>, Kevin
- Hilman <khilman@baylibre.com>, Markus Schneider-Pargmann
- <msp@baylibre.com>, Ronald Wahl <ronald.wahl@raritan.com>, Udit Kumar
- <u-kumar1@ti.com>, Griffin Kroah-Hartman <griffin@kroah.com>, Rengarajan S
- <rengarajan.s@microchip.com>, Lino Sanfilippo <l.sanfilippo@kunbus.com>,
- Serge Semin <fancer.lancer@gmail.com>,
- linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH tty-next v3 4/6] serial: 8250: Specify console context
- for rs485_start/stop_tx
-In-Reply-To: <91303556-2632-49ca-be5d-9105c75b8a63@kernel.org>
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy
+ Shevchenko <andriy.shevchenko@linux.intel.com>, Geert Uytterhoeven
+ <geert+renesas@glider.be>, Arnd Bergmann <arnd@arndb.de>, Uwe =?utf-8?Q?K?=
+ =?utf-8?Q?leine-K=C3=B6nig?=
+ <u.kleine-koenig@pengutronix.de>, Tony Lindgren <tony@atomide.com>,
+ Rengarajan S <rengarajan.s@microchip.com>, Peter Collingbourne
+ <pcc@google.com>, Serge Semin <fancer.lancer@gmail.com>, Lino Sanfilippo
+ <l.sanfilippo@kunbus.com>
+Subject: Re: [PATCH tty-next v3 5/6] serial: 8250: Switch to nbcon console
+In-Reply-To: <419edf13-3f5e-4d30-90d8-88118f77f704@kernel.org>
 References: <20241025105728.602310-1-john.ogness@linutronix.de>
- <20241025105728.602310-5-john.ogness@linutronix.de>
- <91303556-2632-49ca-be5d-9105c75b8a63@kernel.org>
-Date: Thu, 31 Oct 2024 10:19:53 +0106
-Message-ID: <84plngljn2.fsf@jogness.linutronix.de>
+ <20241025105728.602310-6-john.ogness@linutronix.de>
+ <419edf13-3f5e-4d30-90d8-88118f77f704@kernel.org>
+Date: Thu, 31 Oct 2024 10:31:41 +0106
+Message-ID: <84msiklj3e.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -73,39 +66,68 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 On 2024-10-30, Jiri Slaby <jirislaby@kernel.org> wrote:
->> -void serial8250_em485_start_tx(struct uart_8250_port *up)
->> +void serial8250_em485_start_tx(struct uart_8250_port *up, bool in_con)
->>   {
->>   	unsigned char mcr = serial8250_in_MCR(up);
->>   
->> -	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX))
->> -		serial8250_stop_rx(&up->port);
->> +	if (!(up->port.rs485.flags & SER_RS485_RX_DURING_TX)) {
->> +		/*
->> +		 * In console context, caller handles interrupt disabling. So
->> +		 * only LSR_DR masking is needed.
->> +		 */
->> +		if (in_con)
->> +			__serial8250_stop_rx_mask_dr(&up->port);
->> +		else
->> +			serial8250_stop_rx(&up->port);
+>> -static void univ8250_console_write(struct console *co, const char *s,
+>> -				   unsigned int count)
+>> +static void univ8250_console_write_atomic(struct console *co,
 >
-> Would it make sense to propagate in_con into serial8250_stop_rx() and do 
-> the logic there? That would effectively eliminate patch 2/6.
+> Once 'co'.
 
-I considered this, however:
+>> +static void univ8250_console_write_thread(struct console *co,
+>
+> Second time co.
 
-1. The whole idea of stopping RX in order to do TX is an RS485
-issue. Modifying the general ->stop_rx() callback for this purpose is
-kind of out of place.
+>> +static void univ8250_console_device_lock(struct console *con, unsigned long *flags)
+>
+> And suddenly, it is 'con'.
 
-2. The ->stop_rx() callback is a general uart_ops callback. Changing its
-prototype would literally affect all serial drivers. OTOH the
-->rs485_start_tx() callback is specific to the 8250 driver. (It seems
-each driver has implemented their own method for handling the RS485
-hacks.)
+Sorry. The printk folks like "con". The 8250 folks seem to like "co". I
+will switch to "co" for the 8250 changes.
 
-So I would prefer to keep the necessary RS485 changes 8250-specific for
-now.
+>>   static void serial8250_console_putchar(struct uart_port *port, unsigned char ch)
+>>   {
+>> +	struct uart_8250_port *up = up_to_u8250p(port);
+>> +
+>>   	serial_port_out(port, UART_TX, ch);
+>> +
+>> +	if (ch == '\n')
+>> +		up->console_line_ended = true;
+>> +	else
+>> +		up->console_line_ended = false;
+>
+> So simply:
+>     up->console_line_ended = ch == '\n';
+
+OK, although I would also add parenthesis to make the inline boolean
+evaluation visually more obvious:
+
+	up->console_line_ended = (ch == '\n');
+
+>>   	/*
+>> -	 *	First save the IER then disable the interrupts
+>> +	 * First save IER then disable the interrupts. The special variant
+>
+> When you are at it:
+> "First, save the IER, then"
+
+OK.
+
+> (BTW why did you remove the "the"?)
+
+If IER is the name of a register, the "the" is inappropriate. If IER is
+just an abbreviation for "interrupt enable register" then the "the" is
+correct. In this case, both are correct, so it depends on how you read
+it. ;-)
+
+Anyway, I have no problems leaving the "the" in place.
+
+>> +	up->console_line_ended = true;
+>> +	up->modem_status_work = IRQ_WORK_INIT(modem_status_handler);
+>
+> Looks weird ^^^.
+>
+> Do:
+>    init_irq_work(&up->modem_status_work, modem_status_handler)
+
+Right. Thanks.
 
 John
