@@ -1,124 +1,80 @@
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3728519DF60;
-	Thu, 31 Oct 2024 17:23:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.142
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F0952837A;
+	Fri,  1 Nov 2024 01:24:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730395408; cv=none; b=TnAnhgTeDu1kxbj8r6r8p7yuHGcZqrHm3HddBbNlQa1K2wIRo/e/xuVM7OtGDH9EAK47nY99Gmr6m1NmkuGHk8HAyUKCTSRv7RhyITabUDpjWCNV9rAzViFFj/hpFRvPY9uwy0gTwOUYt6XMhKQ9Inqo7YJnpvdIbducJ8gpoOM=
+	t=1730424302; cv=none; b=DXl+pgxhVv5+z/KXyAYj49ti+/SjEYCmYYlhyfgYg6g0S9dMNu2HD5o4RV/oHr3SEu/Djqn4gSLKQ35YGnqdBwJPrpYRJmoYyw2GnBciIJRNcM+30SVpkFAabvhavSFxBecMCFLftNv+FwxB8B48af4MFQa/JjYDQbmaxsnqEAo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730395408; c=relaxed/simple;
-	bh=aCDK/sXM3SgFDux9XvTqAvGfN/okqVMFQNUlKyGIalM=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=LjQgo2lmXWmUSkjO3HHWtN9kDDRekSS4n0BEJ5VidFwRujO0gUbmN6sXnIamnezP+KDcHSrgVyCIefKajtn7bWXD73zWYbJfVldKYlBt5BzD+SEIQ1cbE1tXDtw49OJDrjqAO60Xts+X0RJUtJOTdo4Ej8Qhnv1eP2n9gIUi9yI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=J4ReKVPc; arc=none smtp.client-ip=198.47.19.142
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="J4ReKVPc"
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 49VHNFuM108643;
-	Thu, 31 Oct 2024 12:23:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1730395395;
-	bh=pyc5mtkPJw5E2FWifYXQA9O+3uyDDN9DH0eaPCzh9Yo=;
-	h=From:To:CC:Subject:Date;
-	b=J4ReKVPcSi8juriugwCFk22wPKkmJcKj9iLZ7oGnTFySh0KePlR0jYY9QibQBWIfS
-	 B7eKoIgFcYr003hVkn2ZNzQcnilKRVYdnZ8JLXCFAWb/C7yPYmaB1dsU/zzq6ADCrH
-	 zjg2gtAn6WkboZuf62ysmd7F/+qMdBfV6r3C99kw=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTP id 49VHNF1J057526;
-	Thu, 31 Oct 2024 12:23:15 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Thu, 31
- Oct 2024 12:23:15 -0500
-Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Thu, 31 Oct 2024 12:23:15 -0500
-Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 49VHNF3o014863;
-	Thu, 31 Oct 2024 12:23:15 -0500
-From: Judith Mendez <jm@ti.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>
-CC: Vignesh Raghavendra <vigneshr@ti.com>,
-        Andreas Kemnade
-	<andreas@kemnade.info>, Andrew Davis <afd@ti.com>,
-        Bin Liu <b-liu@ti.com>, Judith Mendez <jm@ti.com>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <stable@vger.kernel.org>
-Subject: [PATCH v2] serial: 8250: omap: Move pm_runtime_get_sync
-Date: Thu, 31 Oct 2024 12:23:15 -0500
-Message-ID: <20241031172315.453750-1-jm@ti.com>
-X-Mailer: git-send-email 2.47.0
+	s=arc-20240116; t=1730424302; c=relaxed/simple;
+	bh=yONwKUo0FegqYXaDGUV1hJvt/V+QPQFVfsrZJo5ADY8=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=W9OO3lk4waMbUW/5CoFpUyz8FQ9vFHlRzCc3jR1vC4v+RASs6AeF7YYQI6uMDoSrriezyrVnyywfiHTsXfm6YnX9h/jlU7tFL0/KVR+FXj88V+V+2fkrg6SwdQxVzhQoq5mY2SphjmE0ION0KFKzeUyQ5LDB7YQccI1u4lh5ePE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 3102E92009C; Fri,  1 Nov 2024 02:24:53 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 29A0D92009B;
+	Fri,  1 Nov 2024 01:24:53 +0000 (GMT)
+Date: Fri, 1 Nov 2024 01:24:53 +0000 (GMT)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: John Ogness <john.ogness@linutronix.de>
+cc: Jiri Slaby <jirislaby@kernel.org>, 
+    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Petr Mladek <pmladek@suse.com>, 
+    Sergey Senozhatsky <senozhatsky@chromium.org>, 
+    Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>, 
+    Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org, 
+    linux-kernel@vger.kernel.org, 
+    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+    Rengarajan S <rengarajan.s@microchip.com>, 
+    Jeff Johnson <quic_jjohnson@quicinc.com>, 
+    Serge Semin <fancer.lancer@gmail.com>, 
+    Lino Sanfilippo <l.sanfilippo@kunbus.com>, 
+    Wander Lairson Costa <wander@redhat.com>
+Subject: Re: [PATCH tty-next v3 1/6] serial: 8250: Adjust the timeout for
+ FIFO mode
+In-Reply-To: <84sesclkqx.fsf@jogness.linutronix.de>
+Message-ID: <alpine.DEB.2.21.2411010102150.40463@angie.orcam.me.uk>
+References: <20241025105728.602310-1-john.ogness@linutronix.de> <20241025105728.602310-2-john.ogness@linutronix.de> <837a7ecd-be29-4865-9543-cb6f7e7e46e7@kernel.org> <alpine.DEB.2.21.2410310349450.40463@angie.orcam.me.uk>
+ <84sesclkqx.fsf@jogness.linutronix.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+Content-Type: text/plain; charset=US-ASCII
 
-From: Bin Liu <b-liu@ti.com>
+On Thu, 31 Oct 2024, John Ogness wrote:
 
-Currently in omap_8250_shutdown, the dma->rx_running flag is
-set to zero in omap_8250_rx_dma_flush. Next pm_runtime_get_sync
-is called, which is a runtime resume call stack which can
-re-set the flag. When the call omap_8250_shutdown returns, the
-flag is expected to be UN-SET, but this is not the case. This
-is causing issues the next time UART is re-opened and
-omap_8250_rx_dma is called. Fix by moving pm_runtime_get_sync
-before the omap_8250_rx_dma_flush.
+> >> THRE only signals there is a space for one character.
+> >
+> >  Nope[1]:
+> >
+> > "In the FIFO mode, THRE is set when the transmit FIFO is empty; it is 
+> > cleared when at least one byte is written to the transmit FIFO."
+> >
+> > It seems common enough a misconception that once I actually had to fix the 
+> > bad interpretation of THRE in an unpublished platform driver to get decent 
+> > performance out of it at higher rates such as 230400bps, as it only pushed 
+> > one byte at a time to the FIFO while it had it all available once THRE has 
+> > been set.
+> 
+> I do not know if this is true for all 8250-variants. If there is some
+> variant where it functions as Jiri expected, then it would mean
+> significant text loss during longer messages. But that would already be
+> a problem in the current mainline driver.
 
-cc: stable@vger.kernel.org
-Fixes: 0e31c8d173ab ("tty: serial: 8250_omap: add custom DMA-RX callback")
-Signed-off-by: Bin Liu <b-liu@ti.com>
-[Judith: Add commit message]
-Signed-off-by: Judith Mendez <jm@ti.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
-Tested-by: Kevin Hilman <khilman@baylibre.com>
----
-Issue seen on am335x devices so far [0].
-The patch has been tested with sanity boot test on am335x EVM,
-am335x-boneblack and am57xx-beagle-x15.
+ Or rather in my case it would prevent communication from working at all; 
+I actually had to fix the issue for networking over a serial line rather 
+than just exchanging text messages, and hence a particular need to make it 
+run fast.
 
-Changes since v1 RESEND:
-- Fix email header and commit description length
-- Add fixes tag, add link [0], cc stable, add kevin's reviewed-by/tested-by's
-- Separate patch from patch series [1]
+ I don't expect any 550 clone to work in a different manner, but I find 
+the TI manual particularly unambiguous and well-written, and also old 
+enough for the 550 to be the state of the art rather than just legacy.
 
-[0] https://e2e.ti.com/support/processors-group/processors/f/processors-forum/1365142/am3352-resume-from-standby-problem-with-kernel-6-1-46
-
-Link to v1 RESEND:
-[1] https://lore.kernel.org/linux-omap/20241011173356.870883-1-jm@ti.com/
----
- drivers/tty/serial/8250/8250_omap.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 88b58f44e4e97..0dd68bdbfbcf7 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -776,12 +776,12 @@ static void omap_8250_shutdown(struct uart_port *port)
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 	struct omap8250_priv *priv = port->private_data;
- 
-+	pm_runtime_get_sync(port->dev);
-+
- 	flush_work(&priv->qos_work);
- 	if (up->dma)
- 		omap_8250_rx_dma_flush(up);
- 
--	pm_runtime_get_sync(port->dev);
--
- 	serial_out(up, UART_OMAP_WER, 0);
- 	if (priv->habit & UART_HAS_EFR2)
- 		serial_out(up, UART_OMAP_EFR2, 0x0);
--- 
-2.47.0
-
+  Maciej
