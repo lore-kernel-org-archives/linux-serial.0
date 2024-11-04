@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D25F38F97;
-	Mon,  4 Nov 2024 06:34:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A995918E04E;
+	Mon,  4 Nov 2024 06:44:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730702072; cv=none; b=l7XwTYsObwyUZJ87PZ9qfPlo61znEhFsDSSc6CTQTNfIoLy8djqjrwcG3yvnHiTGAOjqKbDUPMafGlgQbKiOvVzSyNgCSv23AnYp+U2OrrAze01oAXP9Kfb1eukPVpGgcUafdLJKteiKeyi6HxC5i25i1j2iGZTXRMC9tNvrPhQ=
+	t=1730702678; cv=none; b=AFHROyxoTaImqtpsk/tVGmNCFBdsS+8fLhFN+U7LRNu72/L+bPiCnD8/jqDKCSPCurr/IsFweaL+SKVbBeVb/q3aICj3zaHaC6Ef7GvV8UfzDesqHYMo3osJgzDwEOvaSb+XoWJdjt1ES4hYqt2m6O8Mi0UIKxuRFjJHpSDj1F0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730702072; c=relaxed/simple;
-	bh=fNO+fhKEjl/2w1YQEqtNRbIXbB1NwkH2rt67rYlzzNg=;
+	s=arc-20240116; t=1730702678; c=relaxed/simple;
+	bh=js54YLhYust3jK8sIDaxO+svd/7b/xLRVpzqn3DDqgg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EU+NpVFkdXd3tlAlVDNyU1mnxG7tP5Px4DXigyURUNB5YwBtg9bu6hhMwBgnDCz/S+VQ0K8x8cTgRVWRLWVLy1zF/qZ8OaeZIjxPjJP6KUhQkUTy/IuO9Njz3JG5FazZoyzksd8yM0ZBFwGL/GyAXqGLCqwdj80G45sXqxDatbs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kFm1x9FG; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=ml6oqNFAK90irJufnw6H3Sbk2ue2dUcJcwG3wpAB5jrPaoBaNgkx0m0lEdbmgloadvmepXTExZO9wkbY182UkE89QR3wcrp+XeVHCwJHdJDXOHIj7O5A6xorWfpXTfPrXNll1J5IsvGpZN/48/aVL3nIxz145j2dcbwSVj3dgLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=boyuWMU5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kFm1x9FG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2AEEC4CECE;
-	Mon,  4 Nov 2024 06:34:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="boyuWMU5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D0BC4CECE;
+	Mon,  4 Nov 2024 06:44:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730702072;
-	bh=fNO+fhKEjl/2w1YQEqtNRbIXbB1NwkH2rt67rYlzzNg=;
+	s=k20201202; t=1730702678;
+	bh=js54YLhYust3jK8sIDaxO+svd/7b/xLRVpzqn3DDqgg=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=kFm1x9FGpjsK0ZDJyP3A+RW6eRvo20Atkwy6cruCArFY72sxiZ6qSdJp2M5hGfXPy
-	 mXI3ROIvFGypc8w1pM7sLqOi9aoRJh1mPw0NZ+Db9KnBrLaQmZcklDRDx0r4l9jUtK
-	 W2mpBnzjspixYHIFZhviNm7QvmE+7loTP8YqDJRYpBrU+md1V4OYIXuH8a2dkEHMhM
-	 esV58/c1PRqQGS7xS2IkLSBwLNGWajCje0Q973e6hb3SljJW6dAOA048zzDs7RyvvY
-	 ju0w+py/57HiGOQwwuqr1JQJLPrpbZqQmWJqGK+UXAPY74hSGjKEkl1OZQWrw536Fl
-	 X/AaJz/kB3PsA==
-Message-ID: <2fab2ef8-d0d6-4b94-90b6-7c16641a2f68@kernel.org>
-Date: Mon, 4 Nov 2024 07:34:26 +0100
+	b=boyuWMU5QR8UXjvB/7EDUrlhx3vFtfiu7OAZVAbK0mObJvBu++DfrBFQ/9OVQUHT7
+	 T/uW4GMM5IVrPVi1kLKPSgVVyMTAQpZOFq8pS0vIgcGgOOMvv3F14b6vuTy61boIFE
+	 jR8ERhXZ3PHdHfhYbS0yVdDwGp3N4TmuLy2nND7VDoPS1ug495udtE02TBDi8Bpe3Z
+	 vB3Yfat+TByUsZrxT8JIf0+rlGlgNcheVPP4pN8QZVEjUerAaCKnJkRq99p2pM7I+4
+	 BEkDThD/eiogI+u72Om7M6ZMHLw6CQqcbRMaYDmHXrcD1TOxB4tdnG1ddfmdhQOiTo
+	 vb4hGwVy5BTdA==
+Message-ID: <fcfa2fec-7267-4d16-9f01-898b4223313d@kernel.org>
+Date: Mon, 4 Nov 2024 07:44:33 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,9 +37,9 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH tty-next v3 1/6] serial: 8250: Adjust the timeout for FIFO
  mode
-To: "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: John Ogness <john.ogness@linutronix.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+To: John Ogness <john.ogness@linutronix.de>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
  <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>,
  Thomas Gleixner <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
@@ -54,6 +54,7 @@ References: <20241025105728.602310-1-john.ogness@linutronix.de>
  <20241025105728.602310-2-john.ogness@linutronix.de>
  <837a7ecd-be29-4865-9543-cb6f7e7e46e7@kernel.org>
  <alpine.DEB.2.21.2410310349450.40463@angie.orcam.me.uk>
+ <84sesclkqx.fsf@jogness.linutronix.de>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -98,82 +99,52 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <alpine.DEB.2.21.2410310349450.40463@angie.orcam.me.uk>
+In-Reply-To: <84sesclkqx.fsf@jogness.linutronix.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 31. 10. 24, 5:44, Maciej W. Rozycki wrote:
-> On Wed, 30 Oct 2024, Jiri Slaby wrote:
-> 
->>> @@ -3306,13 +3310,18 @@ static void serial8250_console_restore(struct
->>> uart_8250_port *up)
->>>    static void serial8250_console_fifo_write(struct uart_8250_port *up,
->>>    					  const char *s, unsigned int count)
->>>    {
->>> -	int i;
->>>    	const char *end = s + count;
->>>    	unsigned int fifosize = up->tx_loadsz;
->>> +	unsigned int tx_count = 0;
->>>    	bool cr_sent = false;
->>> +	unsigned int i;
->>>      	while (s != end) {
->>> -		wait_for_lsr(up, UART_LSR_THRE);
->>> +		/* Allow timeout for each byte of a possibly full FIFO. */
->>> +		for (i = 0; i < fifosize; i++) {
->>> +			if (wait_for_lsr(up, UART_LSR_THRE))
->>> +				break;
->>> +		}
+On 31. 10. 24, 9:49, John Ogness wrote:
+>>>> +	/* Allow timeout for each byte written. */
+>>>> +	for (i = 0; i < tx_count; i++) {
+>>>> +		if (wait_for_lsr(up, UART_LSR_THRE))
+>>>
+>>> This ensures you sent one character from the FIFO. The FIFO still can contain
+>>> plenty of them. Did you want UART_LSR_TEMT?
 >>
->> THRE only signals there is a space for one character.
-> 
->   Nope[1]:
-> 
-> "In the FIFO mode, THRE is set when the transmit FIFO is empty; it is
-> cleared when at least one byte is written to the transmit FIFO."
-
-Hmm, I was confused by NXP's 16c650b [1] datasheet then (or I cannot parse):
-===
-The THR empty flag in the LSR register will be set to a logic 1 when the 
-transmitter is empty or when data is transferred to the TSR. Note that a 
-write operation can be performed when the THR empty flag is set
-(logic 0 = FIFO full; logic 1 = at least one FIFO location available).
-===
-
-But indeed in the LSR[5] bit description, they state:
-===
-In the FIFO mode, this bit is set when the transmit FIFO is
-empty; it is cleared when at least 1 byte is written to the transmit FIFO.
-===
-
-Anyway, it still does not answer the original question: Instead of 
-looping fifosize multiplied by random timeout, can we re-use 
-port->frame_time?
-
-[1] SC16C650B -- 5 V, 3.3 V and 2.5 V UART with 32-byte FIFOs and 
-infrared (IrDA) encoder/decoder; Rev. 04 — 14 September 2009; Product 
-data sheet
-
->>> +	/* Allow timeout for each byte written. */
->>> +	for (i = 0; i < tx_count; i++) {
->>> +		if (wait_for_lsr(up, UART_LSR_THRE))
+>>   The difference between THRE and TEMT is the state of the shift register
+>> only[2]:
 >>
->> This ensures you sent one character from the FIFO. The FIFO still can contain
->> plenty of them. Did you want UART_LSR_TEMT?
+>> "In the FIFO mode, TEMT is set when the transmitter FIFO and shift
+>> register are both empty."
 > 
->   The difference between THRE and TEMT is the state of the shift register
-> only[2]:
+> If we wait for TEMT, we lose significant advantages of having the FIFO.
+
+But you wait for THRE, so effectively waiting for FIFO to flush. The 
+difference is only one byte (TSR), or what am I missing?
+
+>>> But what's the purpose of spinning _here_? The kernel can run and FIFO
+>>> too. Without the kernel waiting for the FIFO.
 > 
-> "In the FIFO mode, TEMT is set when the transmitter FIFO and shift
-> register are both empty."
+> When serial8250_console_fifo_write() exits, the caller just does a
+> single wait_for_xmitr() ... with a 10ms timeout. In the FIFO case, for
+> <=56k baudrates, it can easily hit the timeout and thus continue before
+> the FIFO has been emptied.
+>> By waiting on UART_LSR_THRE after filling the FIFO,
+> serial8250_console_fifo_write() waits until the hardware has had a
+> chance to shift out all the data. Then the final wait_for_xmitr() in the
+> caller only waits for the final byte to go out on the line.
 
-Sure. The question still holds:
+For the first loop, that's all right. But why would you want to wait for 
+the FIFO to flush at the end of the function? It's not only the last 
+byte, it's the last batch (aka 'tx_count'), right?
 
- > But what's the purpose of spinning _here_? The kernel can run and 
-FIFO too. Without the kernel waiting for the FIFO.
+> Please keep in mind that none of these timeouts should trigger during
+> normal operation.
+> 
+> For v4 I am doing some refactoring (as suggested by Andy) so that the
+> wait-code looks a bit cleaner.
 
-If we want to wait for fifo to empty, why not *also* the TSR. Meaning:
-
- > Did you want UART_LSR_TEMT?
+OK, let's see then :).
 
 thanks,
 -- 
