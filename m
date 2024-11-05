@@ -1,105 +1,154 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB377225D7
-	for <linux-serial@vger.kernel.org>; Tue,  5 Nov 2024 16:12:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D762212D1B;
+	Tue,  5 Nov 2024 19:45:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730823143; cv=none; b=Ep00oHSlFZhRqpxWMjOjBl3/WYWyUgh/il7ltH9UiNnEfi+tpQ5oE47IB/Md1Eswrd3CAY4nFLESBVrGjjCultIfIE49SowUYpTZD9ucyec5b3kl3BDL0vIljptD4WhVkzRI2VLpOPPKdCaSzkEHBijhmCIDXKFhmm+LQ/qD/zg=
+	t=1730835925; cv=none; b=elvenZHYQhs10Y/pVkb2qxz0Da8ye8uHABzUCNZFHDtH5BwBeHr2Rl9FM7fPlgthmqo/rhtMDmHNxeyPm5XPYrV5V9Gy8naLc9g9eSbvAcFohen++tKS6fg6zd42rEf+TEChDEuyDIJfKs9CcJDnXFTMvuw4n0wUueVdDl/v6e0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730823143; c=relaxed/simple;
-	bh=I2iRxkKM3NVWx6uzM/D8cb0+2M5mNdXMffas92BQWb4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OfYVg7uS7lZHfWOaxuYIHOMfEOgQFjidNuOjXfVB/fmJqOtOkrbfhurVS+/xSLdEfcnOL3XEj1H1+HbHqhgw/QD50LWybXAfs+6I0quBHqugUOqfVJEUwFqR/8yQ/Y/aOmW/0csqm48PU3M/EHlcp4pAXknnm9z10rbXOEhrLpc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=XH15P0nX; arc=none smtp.client-ip=209.85.167.45
+	s=arc-20240116; t=1730835925; c=relaxed/simple;
+	bh=+uo+oOme1CmB+5q1MaRBiCVlq4P8kWEEAkNPOmwqjhE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=JIJgdAZiPetEwJh5E4n2t2HaBfqoPL2ULacUF97ExXBcsoFOoEzJf/ZShcJ1YFld4AkhxhwEuX4lHnrEd23F3XsZCir44ahzF5uQXm69NtErlakfVo8CnSC9mFC4OScQmzWCGThCEyqoq6xvLpr9g+FA9Wt1Gg1WmVlFDtHzx7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=hts3+1cO; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=hts3+1cO; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="XH15P0nX"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-539f0f9ee49so6476805e87.1
-        for <linux-serial@vger.kernel.org>; Tue, 05 Nov 2024 08:12:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1730823140; x=1731427940; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ttEjCbfgdrl3BvdcxSy4ImFqrGW8bqc6UJKJrO4z/W4=;
-        b=XH15P0nXH0JnXxkhNgKSvra/9I6ccz2rNz5MPSZAmxmzGF2E2n2rUuVelhZmtdC9+d
-         atYKStBhCotae630pUu7TN2Iwpnzaokei4QsZDhPCFwFLTlogOg2sVBE3HpELpGA5Y4v
-         so6NFVpJFk1MesZlmYTuFbSK5osIHijCA7KuP8ftDFK1KjAJUdPBYiItwrXnYTc/HHCN
-         bgUntHX17HO1Z7mlDqHw/saDCfSbU7GJGZXp1HV5FIDRqyPuNTmgZT6bez6eT+RFNFWY
-         /sJzGbo2+bGAP8Va/IoKTFK3KWb9ArDTxhilCJSbz17vKNP96Ji5IUf+v4P3Ec89IY5N
-         Sb+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730823140; x=1731427940;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ttEjCbfgdrl3BvdcxSy4ImFqrGW8bqc6UJKJrO4z/W4=;
-        b=TB1ZJ1SbnIV09YfcsyzglHFEhgXJV9FZkzgCEYMesmGKmi399FQk9GJgrDNnR5bP7z
-         X7VbSLzNPQoob9k0OyT/FnThCRV2Q13BSMtupSPVzkoVcVVepIopsYlb6795eCULFdNT
-         2PTmkrjAv/XyB5eRAUF1D+BZhnwG4trnn9piiGR/QseRKxdqYqrqU/4FGzbX+tYnLoBy
-         5+SXM9xrgre/ht2HGZjD1aF05AKSAH0nR+o0Z1wMc3T3u8CLPAO7YEVcFHKGyua2DvDj
-         bkv7OGLNCgv13lSsQlklvLxjb3wq+WGm+51Y/4lzxN426rGEBecEfF/BO7DNyXsbYiOW
-         g0OA==
-X-Forwarded-Encrypted: i=1; AJvYcCUtsqCq3tMYDd7emBFMJ4NUTLq3SErwKF2nKGxdO5R33lsyXczwzV5DpGkmu3oj0rgItylJZy4+uxEtskA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyzNaDe98sQ8tbliifZPIBf6oEAbiiLwfSWxhbXDiDy7g1mKwCw
-	w8TkJbOH9GRZUtMjQocSpCmnxZ0SG7KdPpRHCo3g5J2pFtaELtK8hJjGwCodzX0=
-X-Google-Smtp-Source: AGHT+IHPUZr9A8FatRKEkRnjc/0qlX1T40Gkj0a50Y3dgrMI0+B4zd94X/VE7MRVgwbK4ko1t11QaQ==
-X-Received: by 2002:a05:6512:4022:b0:539:e333:1822 with SMTP id 2adb3069b0e04-53b348b7dc7mr18666577e87.4.1730823139852;
-        Tue, 05 Nov 2024 08:12:19 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-431bd947c26sm226956235e9.26.2024.11.05.08.12.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Nov 2024 08:12:19 -0800 (PST)
-Date: Tue, 5 Nov 2024 17:12:17 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>
-Subject: Re: [PATCH tty-next v3 2/6] serial: 8250: Use high-level write
- function for FIFO
-Message-ID: <ZypD4Uu7Xbbq7iMe@pathway.suse.cz>
-References: <20241025105728.602310-1-john.ogness@linutronix.de>
- <20241025105728.602310-3-john.ogness@linutronix.de>
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="hts3+1cO";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="hts3+1cO"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 274E221C47;
+	Tue,  5 Nov 2024 19:45:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1730835921; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=fMzs0oF1vJx8lm3wAkmwj3i+sa0jFwrWXBRSF2GMRk4=;
+	b=hts3+1cOTTX8dmhQIXPanc/s9/tu5atrKCBDB8D9g85OPw7K0oATY6s1GBVZ8LFar3Z/Vz
+	NgR48TIjShlG5zpl5n3hVPNFy/Ug8wIIh2yYrjAGw3He0KBLYTHE3YbORKUFtwQ5CAp/fD
+	9QwAwjDKcyQEfCGwMImg9lCohKpPTxE=
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=hts3+1cO
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1730835921; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=fMzs0oF1vJx8lm3wAkmwj3i+sa0jFwrWXBRSF2GMRk4=;
+	b=hts3+1cOTTX8dmhQIXPanc/s9/tu5atrKCBDB8D9g85OPw7K0oATY6s1GBVZ8LFar3Z/Vz
+	NgR48TIjShlG5zpl5n3hVPNFy/Ug8wIIh2yYrjAGw3He0KBLYTHE3YbORKUFtwQ5CAp/fD
+	9QwAwjDKcyQEfCGwMImg9lCohKpPTxE=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A439613964;
+	Tue,  5 Nov 2024 19:45:20 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id YAiKGtB1KmdhAQAAD6G6ig
+	(envelope-from <mpdesouza@suse.com>); Tue, 05 Nov 2024 19:45:20 +0000
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: [PATCH v2 0/2] printk: Add force_con printk flag to not suppress
+ sysrq header msgs
+Date: Tue, 05 Nov 2024 16:45:07 -0300
+Message-Id: <20241105-printk-loud-con-v2-0-bd3ecdf7b0e4@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241025105728.602310-3-john.ogness@linutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMN1KmcC/3WNyw6CMBBFf4XM2jF9QBNd+R+EBdCpTNSWtNBoC
+ P9uZe/ynOSeu0GiyJTgWm0QKXPi4AuoUwXj1Ps7IdvCoISqpZAG58h+eeAzrBbH4FHoQV+0bZx
+ xA5TVHMnx+yi2XeGJ0xLi5zjI8mf/t7JEgcI0VNveGqPVLa2JzmN4Qbfv+xcinka4rQAAAA==
+To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
+ John Ogness <john.ogness@linutronix.de>, 
+ Sergey Senozhatsky <senozhatsky@chromium.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Marcos Paulo de Souza <mpdesouza@suse.com>
+X-Mailer: b4 0.14-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1730835918; l=1588;
+ i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
+ bh=+uo+oOme1CmB+5q1MaRBiCVlq4P8kWEEAkNPOmwqjhE=;
+ b=GANmkBkyIGRuGsy6J/6rBaJXRo6nCdmHngg5RfZ3ZTGCTOzCZgjQdmok+NCKcLiFYr0AxrR/e
+ QpPVQ383NWRBLNiG2/UiikXyZAXdsxlyCZ0zTid0PmYkYkjXJZ4JR9c
+X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
+ pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
+X-Rspamd-Queue-Id: 274E221C47
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.51 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	RCPT_COUNT_SEVEN(0.00)[9];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ASN(0.00)[asn:25478, ipnet:::/0, country:RU];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	RCVD_COUNT_TWO(0.00)[2];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.com:+]
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Score: -4.51
+X-Spam-Flag: NO
 
-On Fri 2024-10-25 13:03:24, John Ogness wrote:
-> Currently serial8250_console_fifo_write() directly writes into the
-> UART_TX register, rather than using the high-level function
-> serial8250_console_putchar(). This is because
-> serial8250_console_putchar() waits for the holding register to
-> become empty. That would defeat the purpose of the FIFO code.
-> 
-> Move the LSR_THRE waiting to a new function
-> serial8250_console_wait_putchar() so that the FIFO code can use
-> serial8250_console_putchar(). This will be particularly important
-> for a follow-up commit, where output bytes are inspected to track
-> newlines.
-> 
-> This is only refactoring and has no functional change.
-> 
-> Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Hello,
 
-Looks good:
+This is the second version of the patchset. It now addresses comments
+from John and Petr, while also mentioning that the current work solves
+one issue on handle_sysrq when the printk messages are deferred.
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+The original cover-letter in is the v1.
 
-Best Regards,
-Petr
+Please review!
+
+Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+---
+Changes in v2:
+- Mentioned that it fixes a bug related to loglevel= dance (suggested by John)
+- Changed to loud_con to FORCE_CON (John, Petr)
+- Don't skip printk delay if FORCE_CON is specified (John)
+- Set FORCE_CON when LOG_CONT is handled (John)
+- Changed force_con from a per-CPU variable to a global variable because
+  we can't disable migration on the callsites. (John, Petr)
+- Used is_printk_force_console() on boot_delay_msec(), since it's used
+  when the message is stored, instead of setting is as an argument.
+- Link to v1: https://lore.kernel.org/r/20241016-printk-loud-con-v1-0-065e4dad6632@suse.com
+
+---
+Marcos Paulo de Souza (2):
+      printk: Introduce FORCE_CON flag
+      tty: sysrq: Use printk_force_console context on __handle_sysrq
+
+ drivers/tty/sysrq.c         | 18 ++++++++----------
+ include/linux/printk.h      |  3 +++
+ kernel/printk/internal.h    |  3 +++
+ kernel/printk/printk.c      | 21 ++++++++++++++++-----
+ kernel/printk/printk_safe.c | 18 ++++++++++++++++++
+ 5 files changed, 48 insertions(+), 15 deletions(-)
+---
+base-commit: d9f4b813ae5c9bcdc9fcbaa1f4c9829bdc272532
+change-id: 20241016-printk-loud-con-03b393d5f6fb
+
+Best regards,
+-- 
+Marcos Paulo de Souza <mpdesouza@suse.com>
+
