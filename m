@@ -1,61 +1,62 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AC6E212EF9;
-	Tue,  5 Nov 2024 19:45:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CD0D2139C6;
+	Tue,  5 Nov 2024 19:45:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730835932; cv=none; b=un96CeyT/QYGyzpwIsqLH411cpYbtSxaG7br6kMTe6S3qUE9ejJQ4n6h/v0Z4ZqA947gH1nVfgs2fcyfqtHkvTglTnqDOpu756CqOkgmusi69A330aWJ8/QZ7EDDf6LEF+TM4B7Mamm9sJXXYccN4ONIb2hPkGVVKTSiHopBm1M=
+	t=1730835935; cv=none; b=XhXqI0Yp0ZVEL8x8eYC+ZYAWjhZLv2CZ05Ln9sa9AD32oQFesL/NgWqfMFk9xwiY1FbSliq4XJpDYx33npJ9s/cbksjYuaB8IwBzZJC4yIiNatpQeKheZgQfmDJSQSJyDUyfVcR5CzidfVlz4jIrlG4Gpu5cBGZD+2sIkfMECU8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730835932; c=relaxed/simple;
-	bh=Ys6Cvvlb0Pcb4EQF8t3wjO/hZu09C+3sm+GbOJXJgmY=;
+	s=arc-20240116; t=1730835935; c=relaxed/simple;
+	bh=0kvyEY3nEuZnN+PoAH3AIJtBuFfrTiwNq+0w6Mq33w8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=LoOauzPX8CkVOq10vB843cjgK/65qGEEinkwI+827CvN6CsQpOHEMbrUch+iG5XYi97i11ZqxRnIXIQV0gTUfr6Nh2ooZakZHy2k45m9BOI4caFUhuvMptXjQnmjY6TI+zjeaEI+n7lcowHaaknlMYY8anCwkgTAujoDJFJy6SE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=tsBon+9p; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=tsBon+9p; arc=none smtp.client-ip=195.135.223.130
+	 In-Reply-To:To:Cc; b=uQSr7asyg0gnK46M2B2UIZVdPiiLFxW+E0tAe6ClTj5ys+clIoO0V7Fzj4ZN7fXRATku1naitAqWzmoGWwO9qpAEcEzgJbMj8/0W+6/bQ3P3K0t+dkXbwVKB2dwS2AGonb35Oh+CsaWeIBasromK5DPZk6RAmIZqxkxljMzHWn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=oyYNI7Ig; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=oyYNI7Ig; arc=none smtp.client-ip=195.135.223.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="tsBon+9p";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="tsBon+9p"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="oyYNI7Ig";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="oyYNI7Ig"
 Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 5186021E69;
-	Tue,  5 Nov 2024 19:45:24 +0000 (UTC)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 79EB71FEEE;
+	Tue,  5 Nov 2024 19:45:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1730835924; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1730835931; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=WA9WgYzXkhvGh7Q38/NOTSc0PGe0/C72wL7VgDsiacY=;
-	b=tsBon+9ppXus0FQSQgD8/uRXiT25xxNv5MnBr5Tmr6D6TzjnD0Ff5KNnfXM8tI8nSzOEho
-	valLV/hi9TAPS8+boVBsiI+5R5EwkSKFLqFbVzGn6x50I7ZbnoWgYpvbMMlesso1mrlBv2
-	S74TXuqnool6iJ/lMBkRB7znwiQyVOU=
-Authentication-Results: smtp-out1.suse.de;
+	bh=GaTkffWngPwzxlqQc7OJbRE/O6/uT+c7yWAmXfiIZI4=;
+	b=oyYNI7Igop0LOnE2rkZqWFs986gWu/qwuvdIw3V6st7XG+C62Cl+nMZTlIXKPy6ElKq+G7
+	gEiHxBTuMhXYqcnwnYcTv9ZinTPKVJ4+SjSNMtY9q0dHA2sUUjNPplumvm6xyr055k4uz0
+	dB9pH5wFH7bS9NkXuMYfMA3HH9tFgB4=
+Authentication-Results: smtp-out2.suse.de;
 	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1730835924; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1730835931; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=WA9WgYzXkhvGh7Q38/NOTSc0PGe0/C72wL7VgDsiacY=;
-	b=tsBon+9ppXus0FQSQgD8/uRXiT25xxNv5MnBr5Tmr6D6TzjnD0Ff5KNnfXM8tI8nSzOEho
-	valLV/hi9TAPS8+boVBsiI+5R5EwkSKFLqFbVzGn6x50I7ZbnoWgYpvbMMlesso1mrlBv2
-	S74TXuqnool6iJ/lMBkRB7znwiQyVOU=
+	bh=GaTkffWngPwzxlqQc7OJbRE/O6/uT+c7yWAmXfiIZI4=;
+	b=oyYNI7Igop0LOnE2rkZqWFs986gWu/qwuvdIw3V6st7XG+C62Cl+nMZTlIXKPy6ElKq+G7
+	gEiHxBTuMhXYqcnwnYcTv9ZinTPKVJ4+SjSNMtY9q0dHA2sUUjNPplumvm6xyr055k4uz0
+	dB9pH5wFH7bS9NkXuMYfMA3HH9tFgB4=
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id D0A5313964;
-	Tue,  5 Nov 2024 19:45:23 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 05E8213964;
+	Tue,  5 Nov 2024 19:45:30 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id k3SGJdN1KmdmAQAAD6G6ig
-	(envelope-from <mpdesouza@suse.com>); Tue, 05 Nov 2024 19:45:23 +0000
+	id A6KWL9p1KmduAQAAD6G6ig
+	(envelope-from <mpdesouza@suse.com>); Tue, 05 Nov 2024 19:45:30 +0000
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Tue, 05 Nov 2024 16:45:08 -0300
-Subject: [PATCH v2 1/2] printk: Introduce FORCE_CON flag
+Date: Tue, 05 Nov 2024 16:45:09 -0300
+Subject: [PATCH v2 2/2] tty: sysrq: Use printk_force_console context on
+ __handle_sysrq
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -64,7 +65,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241105-printk-loud-con-v2-1-bd3ecdf7b0e4@suse.com>
+Message-Id: <20241105-printk-loud-con-v2-2-bd3ecdf7b0e4@suse.com>
 References: <20241105-printk-loud-con-v2-0-bd3ecdf7b0e4@suse.com>
 In-Reply-To: <20241105-printk-loud-con-v2-0-bd3ecdf7b0e4@suse.com>
 To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
@@ -75,14 +76,14 @@ To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>,
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
  Marcos Paulo de Souza <mpdesouza@suse.com>
 X-Mailer: b4 0.14-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1730835918; l=5026;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1730835918; l=2428;
  i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=Ys6Cvvlb0Pcb4EQF8t3wjO/hZu09C+3sm+GbOJXJgmY=;
- b=Y6wjd5V3b1UAcO8t77h0czbeWg7yZ7zFQb5K2G4jxJfp4xcPIUm6x+C0mmE4uYZ61HQCXi1SN
- cEsiHYaZPrVBYltmkuTfruQT+qDInZiUvIoMfdxEBGJXQpcEAkvNUgD
+ bh=0kvyEY3nEuZnN+PoAH3AIJtBuFfrTiwNq+0w6Mq33w8=;
+ b=s+/pxg/DhWOwq9wj7DxTh1HD+9EUwvRE0wD+aYyxJY5GesFqa6JXbnsVDYwt11evRumYYsx80
+ lwHXzL6n8SGAa7iONto6JvS+ybCd4fJOKCJNV60iaXqr4B0ML1/iA7a
 X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
  pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
-X-Spam-Level: 
+X-Spam-Score: -4.30
 X-Spamd-Result: default: False [-4.30 / 50.00];
 	BAYES_HAM(-3.00)[100.00%];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
@@ -101,154 +102,75 @@ X-Spamd-Result: default: False [-4.30 / 50.00];
 	TO_MATCH_ENVRCPT_ALL(0.00)[];
 	RCVD_COUNT_TWO(0.00)[2];
 	TO_DN_SOME(0.00)[]
-X-Spam-Score: -4.30
 X-Spam-Flag: NO
+X-Spam-Level: 
 
-Introduce FORCE_CON flag to printk. The new flag will make it possible to
-create a context where printk messages will never be suppressed.
-
-This mechanism will be used in the next patch to create a force_con
-context on sysrq handling, removing an existing workaround on the
-loglevel global variable. The workaround existed to make sure that sysrq
-header messages were sent to all consoles, but this doesn't work with
-deferred messages because the loglevel might be restored to its original
-value before a console flushes the messages.
+By using the printk_force_console the loglevel workaround can be removed.
+The workaround existed to always send the sysrq header message to all
+consoles not matter what was the current loglevel, but it won't work for
+deferred messages, since the loglevel can be restore before the message
+is printed, suppressing the message that wasn't supposed to be
+suppressed by the workaround.
 
 Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 ---
- include/linux/printk.h      |  3 +++
- kernel/printk/internal.h    |  3 +++
- kernel/printk/printk.c      | 21 ++++++++++++++++-----
- kernel/printk/printk_safe.c | 18 ++++++++++++++++++
- 4 files changed, 40 insertions(+), 5 deletions(-)
+ drivers/tty/sysrq.c | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
-diff --git a/include/linux/printk.h b/include/linux/printk.h
-index eca9bb2ee637..232e5fd06701 100644
---- a/include/linux/printk.h
-+++ b/include/linux/printk.h
-@@ -166,6 +166,9 @@ __printf(1, 2) __cold int _printk_deferred(const char *fmt, ...);
- extern void __printk_deferred_enter(void);
- extern void __printk_deferred_exit(void);
- 
-+extern void printk_force_console_enter(void);
-+extern void printk_force_console_exit(void);
-+
- /*
-  * The printk_deferred_enter/exit macros are available only as a hack for
-  * some code paths that need to defer all printk console printing. Interrupts
-diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
-index 3fcb48502adb..c6bb47666aef 100644
---- a/kernel/printk/internal.h
-+++ b/kernel/printk/internal.h
-@@ -53,6 +53,8 @@ int devkmsg_sysctl_set_loglvl(const struct ctl_table *table, int write,
- 
- /* Flags for a single printk record. */
- enum printk_info_flags {
-+	/* always show on console, ignore console_loglevel */
-+	LOG_FORCE_CON	= 1,
- 	LOG_NEWLINE	= 2,	/* text ended with a newline */
- 	LOG_CONT	= 8,	/* text is a fragment of a continuation line */
- };
-@@ -90,6 +92,7 @@ bool printk_percpu_data_ready(void);
- 
- void defer_console_output(void);
- bool is_printk_legacy_deferred(void);
-+bool is_printk_force_console(void);
- 
- u16 printk_parse_prefix(const char *text, int *level,
- 			enum printk_info_flags *flags);
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index beb808f4c367..911f2a32f1cb 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -1319,11 +1319,11 @@ static void boot_delay_msec(int level)
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index 930b04e3d148..f85ce02e4725 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -583,7 +583,6 @@ static void __sysrq_put_key_op(u8 key, const struct sysrq_key_op *op_p)
+ void __handle_sysrq(u8 key, bool check_mask)
  {
- 	unsigned long long k;
- 	unsigned long timeout;
-+	bool suppress = !is_printk_force_console() &&
-+			suppress_message_printing(level);
+ 	const struct sysrq_key_op *op_p;
+-	int orig_log_level;
+ 	int orig_suppress_printk;
+ 	int i;
  
--	if ((boot_delay == 0 || system_state >= SYSTEM_RUNNING)
--		|| suppress_message_printing(level)) {
-+	if ((boot_delay == 0 || system_state >= SYSTEM_RUNNING) || suppress)
- 		return;
--	}
- 
- 	k = (unsigned long long)loops_per_msec * boot_delay;
- 
-@@ -2273,6 +2273,9 @@ int vprintk_store(int facility, int level,
- 	if (dev_info)
- 		flags |= LOG_NEWLINE;
- 
-+	if (is_printk_force_console())
-+		flags |= LOG_FORCE_CON;
-+
- 	if (flags & LOG_CONT) {
- 		prb_rec_init_wr(&r, reserve_size);
- 		if (prb_reserve_in_last(&e, prb, &r, caller_id, PRINTKRB_RECORD_MAX)) {
-@@ -2280,6 +2283,9 @@ int vprintk_store(int facility, int level,
- 						 facility, &flags, fmt, args);
- 			r.info->text_len += text_len;
- 
-+			if (flags & LOG_FORCE_CON)
-+				r.info->flags |= LOG_FORCE_CON;
-+
- 			if (flags & LOG_NEWLINE) {
- 				r.info->flags |= LOG_NEWLINE;
- 				prb_final_commit(&e);
-@@ -2947,6 +2953,7 @@ bool printk_get_next_message(struct printk_message *pmsg, u64 seq,
- 	struct printk_info info;
- 	struct printk_record r;
- 	size_t len = 0;
-+	bool force_con;
- 
+@@ -593,13 +592,12 @@ void __handle_sysrq(u8 key, bool check_mask)
+ 	rcu_sysrq_start();
+ 	rcu_read_lock();
  	/*
- 	 * Formatting extended messages requires a separate buffer, so use the
-@@ -2965,9 +2972,13 @@ bool printk_get_next_message(struct printk_message *pmsg, u64 seq,
+-	 * Raise the apparent loglevel to maximum so that the sysrq header
+-	 * is shown to provide the user with positive feedback.  We do not
+-	 * simply emit this at KERN_EMERG as that would change message
+-	 * routing in the consumers of /proc/kmsg.
++	 * Enter in the force_console context so that sysrq header is shown to
++	 * provide the user with positive feedback.  We do not simply emit this
++	 * at KERN_EMERG as that would change message routing in the consumers
++	 * of /proc/kmsg.
+ 	 */
+-	orig_log_level = console_loglevel;
+-	console_loglevel = CONSOLE_LOGLEVEL_DEFAULT;
++	printk_force_console_enter();
  
- 	pmsg->seq = r.info->seq;
- 	pmsg->dropped = r.info->seq - seq;
-+	force_con = r.info->flags & LOG_FORCE_CON;
- 
--	/* Skip record that has level above the console loglevel. */
--	if (may_suppress && suppress_message_printing(r.info->level))
-+	/*
-+	 * Skip records that are not forced to be printed on consoles and that
-+	 * has level above the console loglevel.
-+	 */
-+	if (!force_con && may_suppress && suppress_message_printing(r.info->level))
- 		goto out;
- 
- 	if (is_extended) {
-diff --git a/kernel/printk/printk_safe.c b/kernel/printk/printk_safe.c
-index 2b35a9d3919d..6f94418d53ff 100644
---- a/kernel/printk/printk_safe.c
-+++ b/kernel/printk/printk_safe.c
-@@ -12,6 +12,24 @@
- 
- #include "internal.h"
- 
-+/* Context where printk messages are never suppressed */
-+static atomic_t force_con;
-+
-+void printk_force_console_enter(void)
-+{
-+	atomic_inc(&force_con);
-+}
-+
-+void printk_force_console_exit(void)
-+{
-+	atomic_dec(&force_con);
-+}
-+
-+bool is_printk_force_console(void)
-+{
-+	return atomic_read(&force_con);
-+}
-+
- static DEFINE_PER_CPU(int, printk_context);
- 
- /* Can be preempted by NMI. */
+ 	op_p = __sysrq_get_key_op(key);
+ 	if (op_p) {
+@@ -609,11 +607,11 @@ void __handle_sysrq(u8 key, bool check_mask)
+ 		 */
+ 		if (!check_mask || sysrq_on_mask(op_p->enable_mask)) {
+ 			pr_info("%s\n", op_p->action_msg);
+-			console_loglevel = orig_log_level;
++			printk_force_console_exit();
+ 			op_p->handler(key);
+ 		} else {
+ 			pr_info("This sysrq operation is disabled.\n");
+-			console_loglevel = orig_log_level;
++			printk_force_console_exit();
+ 		}
+ 	} else {
+ 		pr_info("HELP : ");
+@@ -631,7 +629,7 @@ void __handle_sysrq(u8 key, bool check_mask)
+ 			}
+ 		}
+ 		pr_cont("\n");
+-		console_loglevel = orig_log_level;
++		printk_force_console_exit();
+ 	}
+ 	rcu_read_unlock();
+ 	rcu_sysrq_end();
 
 -- 
 2.47.0
