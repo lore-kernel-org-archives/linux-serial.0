@@ -1,86 +1,70 @@
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C3B41E7657
-	for <linux-serial@vger.kernel.org>; Wed,  6 Nov 2024 12:01:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D222D201256;
+	Wed,  6 Nov 2024 14:27:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730894513; cv=none; b=pUHoI3PDp52vbqcxK2kPO2541Sg1NFcAY9ke+Iie3oPYxAhOaFSdSWWz4+H1b+mV/RICqq1PC6SoFg97KlkpE3uTtbhdcSm6FcgmLn8tdifM15nM35Gegy4D6hJTcx8dKeX0J8Hm1/peF89KUd9woc3ki2d7CZ4rX0vrTY8A2OY=
+	t=1730903251; cv=none; b=Xp2DGexWc9S89GAOAtNAgk0T01AUEUseHHgxPSM8HDpbJSE9VWbuYPIcYZ0GKjvCxQLHGlc64ZTDh9CFLnJXoE8hP8y2C9QHstCVBWjO7cz+SG4D2xAuG3BjOK4NPR0O5NKLGYI1kLBI4Mt/jQsOxf2wuTxU/RreKoverX+iliA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730894513; c=relaxed/simple;
-	bh=l2nLfEhXQdqdldj7HMRPD/BKF+Yo/cZTkzGKteJPuqI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=EA9LjH26n8S2w4SmlUjEpsAbWb/1I3vDstBKQxobnYVJaWmlLnytOEuj6e5w1k7xzT1lRq1WqAu7YXs39sYHtt3yQtrcfX8cCk8pJW1juuN+ynQLotr8MU6wYLfSCvXNAGjSTq2s3hMFH+N9c5VJ6ECnEOzL6yI67jXX6W6bfks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=p7eZhhzi; arc=none smtp.client-ip=209.85.208.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1730903251; c=relaxed/simple;
+	bh=Rv37NiT3+iDJ5CgpqJWaTOJjv4nw5P8z90idJ9ZnGXQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kn4oCR5z7Soxq7x0erGxVdJvEGSfRXUjoYgVwfL+9iT9W9E+ubxBaTo96n3sR7OMjS6b/mpyaaUZVto1OF4hI4zlFGxWmTPMCEhWCH/CrxOf0Sa4b3gPZXT76VM4nYAdv0qlEccAEcW2WYm9gAGy5IVA8gplNmtUAIzEIqZjcFI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d50ehJic; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="p7eZhhzi"
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-2f7657f9f62so56627641fa.3
-        for <linux-serial@vger.kernel.org>; Wed, 06 Nov 2024 04:01:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d50ehJic"
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-72097a5ca74so6364556b3a.3;
+        Wed, 06 Nov 2024 06:27:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1730894510; x=1731499310; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2JwPCGHe69m/pJb0qH1LaF4qTTUiifIIPi692eTZlzU=;
-        b=p7eZhhzip/ycZoC9bUx4Xj/Raxbv8DKTYi0hclsnVElxx1IDTDWMDv5/zujT7ImHPF
-         wl+QzTqzCAUbSiT83jzRNj1QjmEajok6udXAvz1YjO+CBItLEtdzfvJVcrlMrR2me5nQ
-         Oy+mcAQGzcu9mGqqUC3jChXcooSuEafTKKTviT0GUVpUbcY/SvG4A5ttcARCb1+DsVdL
-         VFoxJYqMPk4TSKdw3W+21R+zUCWcRP6NVyA4w+RTQ5258ECYkB76+xabnDgfJV1B7ydE
-         G4gQEvlHSKhjCT3FpxG+0MrY6BcJvtSqOR3FLmyez6BYFyTTcw2HHg4+kHBSSzURMwun
-         wbXw==
+        d=gmail.com; s=20230601; t=1730903249; x=1731508049; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0JcE14w5p6N0fo4tVcmmC31puUI/DV24DnItGCBT3I0=;
+        b=d50ehJicInFMRGDh5UVL+kCMbNe3ZG8FgIKSHWDuqcJhydmdSe2UVJrS7LOVewAUoZ
+         A1o/AcISTU5EQCQEcUMeU7LGpYgwsHk6236Ml+j2p4WwKxDNw8iD9qCX3Kst1PIr6FpA
+         yf2rH9RFbo/0ZTuP6+9vppbxGmpZ2zgupvmZS/zhF95iyUmtLhKLNE0ePSdxPxTLLucv
+         tPIA8/gcsW945jMRJjNCOySnUtFrpmddIRt+M8c8hcGAuzHZLAy6AbuP690pLQFkybLu
+         0TMHNF2lKXMAv9K9vDmi2RYJ6kAyUi4IpmYOVBH0FqvegUAWjURUit2xRb+7V1gr8sFv
+         t2lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730894510; x=1731499310;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2JwPCGHe69m/pJb0qH1LaF4qTTUiifIIPi692eTZlzU=;
-        b=EC9gK+SnN60HV+6vY+L+J3q5QCTf+IH7T1PCPeTLXTSNyE5vN2RmFipuRxEGIIT/IW
-         pBzyxkMAlCnq75jU2/O9oyMhzkBZiFBthybwqfngCF3KVgGAIx+1+v5yC4ZFXwK3YVin
-         0e9RcRy7Sy6RR0wMiO3swXAPX/Z1F5YOM1kxP/1YTO3lmvC1xETsIlh9f8Iu5qpukXJr
-         hoVuGy5gu+ATt5lVnauJuWUq8PjtCWZOk0lOsYbCN0KdJvFShk7Au7sCWbMBp5QyJ3Xe
-         PYsj00FHDUF12YeJnmymGbVnxwHmp35BdQUcRx2fLRfLjB/el/wzr5PsJl2+fdbNInBP
-         MU4w==
-X-Forwarded-Encrypted: i=1; AJvYcCUOCFqXOOXgPXPnHa3MB17s2tN3Ni8V+HJJ3UGFFFqdKthVF1+IS1s5hox9UH6RgGUD8g4gEOF/BVHtvr4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YygbnWUiUyZOrj+5Xat8KC2ibbxhtiizJfg+9OfXH8XpksRX9lh
-	dS0LXzXN0jQg0k/6x6qhegHgZZfTjIb7rJhODArO4aUACg+Sg0lWq1LMU3F4+f4=
-X-Google-Smtp-Source: AGHT+IGmZAnyNN2H3HVq8mWB2A4J8BfLSHy4gBsMu6TgAseykCSA2VwSabOZhkZzxv828ZqhYx8Qgw==
-X-Received: by 2002:a2e:b8c8:0:b0:2fb:4b0d:9092 with SMTP id 38308e7fff4ca-2fcbdf69fbemr189607851fa.1.1730894509534;
-        Wed, 06 Nov 2024 04:01:49 -0800 (PST)
-Received: from claudiu-X670E-Pro-RS.. ([82.78.167.28])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5cee6afe528sm2697984a12.55.2024.11.06.04.01.47
+        d=1e100.net; s=20230601; t=1730903249; x=1731508049;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0JcE14w5p6N0fo4tVcmmC31puUI/DV24DnItGCBT3I0=;
+        b=Xc40sEhEdCn5jULHlTz6L/RldmpmE6tB0AFTmpHd6v2fQ2FTe1/m7doQl07J1uUXj5
+         xvxaoR9Ct36OW3eaIszLBaCD7DFrHcQfjP9c4T4sVcd5ACy4wz70jwBqZobkPP/czY69
+         gMpIkHCILeWQXduvXAYdPSNjxO3dazJk75csrtDTq5eztI79pB1DV/Jw3QXfYIQ/hBd/
+         KnpR6CWLQUb7qQ2e5iX7VBv0zvVu9AsLPzbgxOK41o8+oqKRNJ9zip30CWCOKhZzwaD4
+         xAKOni33OFjTlQUOtMqnN0CJqje8ynw5yq5LC9M52zSosTPfNPkTevinoWBvMhiQOi8R
+         rphw==
+X-Forwarded-Encrypted: i=1; AJvYcCUy4tWaZqMbqI0mTD/EVq5XOkKH1kZTwbVsvTfxm+WQg9sBKnlMwuNgWrlZr1DirfImanv43/Z9vtBHkQg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxiLoVvU5dLfGrrajXdQ1KK8RDAagiOz0x36HyRs0JTvtjmlQh4
+	ENNpN8/NuYzxFmNKpDDATUIsPP2zeaLcy5UmrP8BVe4ZjEnfML9m
+X-Google-Smtp-Source: AGHT+IFg06EqOdCF2rpOYxi14EtM+wTa5t4FQVjglGsXDwwnpcFEc0NFnQQneJknXwmLobufAnZm3A==
+X-Received: by 2002:a05:6a00:3d51:b0:71e:cd0:cc99 with SMTP id d2e1a72fcca58-720c98a1bfamr29992840b3a.4.1730903248950;
+        Wed, 06 Nov 2024 06:27:28 -0800 (PST)
+Received: from Kuchus.. ([27.7.141.222])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-720bc1ed2f7sm11843129b3a.64.2024.11.06.06.27.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2024 04:01:49 -0800 (PST)
-From: Claudiu <claudiu.beznea@tuxon.dev>
-X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
-To: geert+renesas@glider.be,
-	magnus.damm@gmail.com,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	mturquette@baylibre.com,
-	sboyd@kernel.org,
+        Wed, 06 Nov 2024 06:27:28 -0800 (PST)
+From: Shivam Chaudhary <cvam0000@gmail.com>
+To: richard.genoud@bootlin.com,
 	gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
-	p.zabel@pengutronix.de,
-	lethal@linux-sh.org,
-	g.liakhovetski@gmx.de,
-	ysato@users.sourceforge.jp,
-	ulrich.hecht+renesas@gmail.com
-Cc: claudiu.beznea@tuxon.dev,
-	linux-renesas-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-clk@vger.kernel.org,
+	nicolas.ferre@microchip.com,
+	alexandre.belloni@bootlin.com,
+	Hari.PrasathGE@microchip.com
+Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH 9/9] arm64: dts: renesas: r9a08g045s33-smarc-pmod: Add overlay for SCIF1
-Date: Wed,  6 Nov 2024 14:01:18 +0200
-Message-Id: <20241106120118.1719888-10-claudiu.beznea.uj@bp.renesas.com>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20241106120118.1719888-1-claudiu.beznea.uj@bp.renesas.com>
-References: <20241106120118.1719888-1-claudiu.beznea.uj@bp.renesas.com>
+	linux-arm-kernel@lists.infradead.org,
+	Shivam Chaudhary <cvam0000@gmail.com>
+Subject: [PATCH v2] tty: atmel_serial: Fix typo retreives to retrieves
+Date: Wed,  6 Nov 2024 19:57:20 +0530
+Message-Id: <20241106142720.41351-1-cvam0000@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,86 +73,34 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Fix typo 'retreives' to 'retrieves' in atmel_serial.c file.
 
-Add DT overlay for SCIF1 (of the Renesas RZ/G3S SoC) routed through the
-PMOD1_3A interface available on the Renesas RZ SMARC Carrier II board.
-
-Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Signed-off-by: Shivam Chaudhary <cvam0000@gmail.com>
 ---
- arch/arm64/boot/dts/renesas/Makefile          |  3 ++
- .../dts/renesas/r9a08g045s33-smarc-pmod.dtso  | 48 +++++++++++++++++++
- 2 files changed, 51 insertions(+)
- create mode 100644 arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod.dtso
 
-diff --git a/arch/arm64/boot/dts/renesas/Makefile b/arch/arm64/boot/dts/renesas/Makefile
-index 97228a3cb99c..7ad52630d350 100644
---- a/arch/arm64/boot/dts/renesas/Makefile
-+++ b/arch/arm64/boot/dts/renesas/Makefile
-@@ -137,6 +137,9 @@ r9a07g054l2-smarc-cru-csi-ov5645-dtbs := r9a07g054l2-smarc.dtb r9a07g054l2-smarc
- dtb-$(CONFIG_ARCH_R9A07G054) += r9a07g054l2-smarc-cru-csi-ov5645.dtb
+v1->v2
+ - Improve subject line.
+ - Improve commit message.
+
+v1: https://lore.kernel.org/all/20241024172300.968015-1-cvam0000@gmail.com/
+
+
+ drivers/tty/serial/atmel_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 09b246c9e389..bb1978db6939 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1166,7 +1166,7 @@ static void atmel_rx_from_dma(struct uart_port *port)
+ 		port->icount.rx += count;
+ 	}
  
- dtb-$(CONFIG_ARCH_R9A08G045) += r9a08g045s33-smarc.dtb
-+dtb-$(CONFIG_ARCH_R9A07G043) += r9a08g045s33-smarc-pmod.dtbo
-+r9a08g045s33-smarc-pmod-dtbs := r9a08g045s33-smarc.dtb r9a08g045s33-smarc-pmod.dtbo
-+dtb-$(CONFIG_ARCH_R9A07G043) += r9a08g045s33-smarc-pmod.dtb
+-	/* USART retreives ownership of RX DMA buffer */
++	/* USART retrieves ownership of RX DMA buffer */
+ 	dma_sync_single_for_device(port->dev, atmel_port->rx_phys,
+ 				   ATMEL_SERIAL_RX_SIZE, DMA_FROM_DEVICE);
  
- dtb-$(CONFIG_ARCH_R9A09G011) += r9a09g011-v2mevk2.dtb
- 
-diff --git a/arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod.dtso b/arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod.dtso
-new file mode 100644
-index 000000000000..7d637ab110e1
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod.dtso
-@@ -0,0 +1,48 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for the RZ/G3S SMARC Carrier II EVK PMOD parts
-+ *
-+ * Copyright (C) 2024 Renesas Electronics Corp.
-+ *
-+ *
-+ * [Connection]
-+ *
-+ * SMARC Carrier II EVK
-+ * +--------------------------------------------+
-+ * |PMOD1_3A (PMOD1 PIN HEADER)			|
-+ * |	SCIF1_CTS# (pin1)  (pin7)  PMOD1_GPIO10	|
-+ * |	SCIF1_TXD  (pin2)  (pin8)  PMOD1_GPIO11	|
-+ * |	SCIF1_RXD  (pin3)  (pin9)  PMOD1_GPIO12	|
-+ * |	SCIF1_RTS# (pin4)  (pin10) PMOD1_GPIO13	|
-+ * |	GND	   (pin5)  (pin11) GND		|
-+ * |	PWR_PMOD1  (pin6)  (pin12) GND		|
-+ * +--------------------------------------------+
-+ *
-+ */
-+
-+/dts-v1/;
-+/plugin/;
-+
-+#include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
-+
-+&{/} {
-+	aliases {
-+		serial0 = "/soc/serial@1004bc00";
-+	};
-+};
-+
-+&pinctrl {
-+	scif1_pins: scif1-pins {
-+		pinmux = <RZG2L_PORT_PINMUX(14, 0, 1)>, /* TXD */
-+			 <RZG2L_PORT_PINMUX(14, 1, 1)>, /* RXD */
-+			 <RZG2L_PORT_PINMUX(16, 0, 1)>, /* CTS */
-+			 <RZG2L_PORT_PINMUX(16, 1, 1)>; /* RTS */
-+	};
-+};
-+
-+&scif1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&scif1_pins>;
-+	uart-has-rtscts;
-+	status = "okay";
-+};
 -- 
-2.39.2
+2.34.1
 
