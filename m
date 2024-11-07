@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 863B3193070;
-	Thu,  7 Nov 2024 07:10:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 145EE19539F;
+	Thu,  7 Nov 2024 07:11:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730963420; cv=none; b=de8PUVhOZGSgDLBXr/CAbKcyKOyVGZAFi9oWGPR8f/4yqQUv3eaRVQzpfXV6Z9Io3hw3Qyz4QFEBq6v5xqXTs9DzQ1qT1uZkrqasl5MTCZCfTtAfzVz4O8xuo5X+YKcDTOM0CGJsb56Hp3umVJ2zF46FTdd3Jsh0OjgUQQlIgx4=
+	t=1730963492; cv=none; b=kU83Y+uQEj2qvDAjbk2vTqCHAXmgABuk89a9HcneNe7p/Un+jruP7beUyiIHMNJIum1DxDcIS35RZUPG94S6yC4pS0voLtAg1sH1Uueu4Buz3qyzTLn9TJOx5PlgHzcuyYoB37u3LeuYtnxfa3WBLHLw+6ldU+zQXAbIYsiqWOo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730963420; c=relaxed/simple;
-	bh=YxO7O986VmLXhCSW4uofNGfPD1MSNmH02mKHd0zlHfo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qX4pxKmP/9d3bJeQW9wBPVxm/thHKDkfewDZvVO69VB+hJ7KWs95CZ1JyR+DqdZ9N7vGo06m2CoOqTLUwGBoXLznRZI5ouzGtqHl4xOpGt2DOrpOKSeCKmTjByv525XM+t83yT/dfWf2g4a+ELYpsSzaRfqRmGovmGWOGpuydgc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q6P7DB8t; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1730963492; c=relaxed/simple;
+	bh=Azs9pasN3x08hUEU2+s+v/pYHL4/7i1ADPdf0X65eZ0=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=Lauz8tgAQU2NKbYoBxakRzxy6fMedFvDTxIiMPfaLYkFAKobxd8ghnHKnq+A+8F94++z4nLtFwqHVq4xm6cQcVk9j1ZJiFvuOxTU9Qfp3+CBQrC9M5cAt0R6Q6UhmMenQ5mkajvj3lLdhOUbRuAfvzkNq4+d0pX8SDx0IEg5x68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OvlLcUC8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q6P7DB8t"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 125C8C4CECC;
-	Thu,  7 Nov 2024 07:10:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OvlLcUC8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8657FC4CECC;
+	Thu,  7 Nov 2024 07:11:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730963420;
-	bh=YxO7O986VmLXhCSW4uofNGfPD1MSNmH02mKHd0zlHfo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Q6P7DB8t9+L0QN9Buu4U7R8NuRP/4e9lZHMZsr1z/zUi3thmlbyvrMxexWufxQAuS
-	 imAWYYZkNb0EekIjq+A8n7LECNMLX5jVwtU11S6al+RpJWHtNwFkElRhRPF2w6pTcL
-	 4lKzhdgSTvanZpzLeEbdIkNgcD8dADF5OiAD/5h84K5fIelnQwIpPTmjXHZQXw6wz/
-	 iGy8iNIL//DidITaBfgpsxbLmqrn5mXQDHAJQUB2wfIoQKpuor4kBvAOhLDAYYtUqC
-	 EyasTdmw3iWnN6msrmxB1jATv9EABnvp0UwbstCDaXwWTb1avJwrKiO2r7l2rCBn0U
-	 5dLJmmT1xXM6A==
-Message-ID: <bc49f1de-8cce-404d-927a-ebe606c99026@kernel.org>
-Date: Thu, 7 Nov 2024 08:10:15 +0100
+	s=k20201202; t=1730963491;
+	bh=Azs9pasN3x08hUEU2+s+v/pYHL4/7i1ADPdf0X65eZ0=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+	b=OvlLcUC8BJcDPd9trNaPvUnHzWZZjTZs2zO3o6wdhnNl3LYw579jbROt1ZQKJHQS/
+	 Cr4QFh1KEFk6BId0hdq0f0W1Sw9NhdKoY4Ao4T9yu7t/GDXULg/ai/RDIN4jc0s33r
+	 Ovm7B3d2/yglQkxD5h5oY3eYMF1DwOhtj05xK/i3dIwK+AEmGUaVuM6GMqu1aQpntf
+	 9lmmJ93IwaQukeXA73uOft1bW4eCXg1q5mR7MZN6SJm0j0WW1pIuTE+aqa3vqNGNTP
+	 HQs7tzLxI9mPs3r5TzIieVvyDfC5HbzK7x9HriS9QSJYtekmo0vtkmKU7IPI1uFtFF
+	 2kpQEdGzXHzKw==
+Message-ID: <6fa97654-19f6-4c5b-8db5-e76aafcf4227@kernel.org>
+Date: Thu, 7 Nov 2024 08:11:27 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,14 +36,15 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] tty:hvc:Fix incorrect formatted output
+From: Jiri Slaby <jirislaby@kernel.org>
 To: liujing <liujing@cmss.chinamobile.com>, mpe@ellerman.id.au
 Cc: npiggin@gmail.com, christophe.leroy@csgroup.eu, naveen@kernel.org,
  maddy@linux.ibm.com, gregkh@linuxfoundation.org,
  linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org
 References: <20241107054704.3247-1-liujing@cmss.chinamobile.com>
+ <bc49f1de-8cce-404d-927a-ebe606c99026@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -86,42 +87,51 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20241107054704.3247-1-liujing@cmss.chinamobile.com>
+In-Reply-To: <bc49f1de-8cce-404d-927a-ebe606c99026@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 07. 11. 24, 6:47, liujing wrote:
-> The termno parameter is defined as an unsigned int
-> in hvc_opal_probe function,
+Also please fix the subject. See:
+git log --oneline drivers/tty/hvc/hvc_opal.c
 
-"The termno parameter is defined as an unsigned int in hvc_opal_probe()."
-
-We place () after function names, then "function" is not needed.
-
- > So when it output should be modified to %u format.
-
-I cannot parse this. Perhaps:
-"So when it is output, a %u specifier should be used for formatting."
-? But feel free to use your own words, but somehow spell (or chatgpt) 
-check it.
-
-> Signed-off-by: liujing <liujing@cmss.chinamobile.com>
+On 07. 11. 24, 8:10, Jiri Slaby wrote:
+> On 07. 11. 24, 6:47, liujing wrote:
+>> The termno parameter is defined as an unsigned int
+>> in hvc_opal_probe function,
 > 
-> diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
-> index 095c33ad10f8..1d2e7f2ce088 100644
-> --- a/drivers/tty/hvc/hvc_opal.c
-> +++ b/drivers/tty/hvc/hvc_opal.c
-> @@ -199,7 +199,7 @@ static int hvc_opal_probe(struct platform_device *dev)
->   		/* Instanciate now to establish a mapping index==vtermno */
->   		hvc_instantiate(termno, termno, ops);
->   	} else {
-> -		pr_err("hvc_opal: Device %pOF has duplicate terminal number #%d\n",
-> +		pr_err("hvc_opal: Device %pOF has duplicate terminal number #%u\n",
->   		       dev->dev.of_node, termno);
+> "The termno parameter is defined as an unsigned int in hvc_opal_probe()."
+> 
+> We place () after function names, then "function" is not needed.
+> 
+>  > So when it output should be modified to %u format.
+> 
+> I cannot parse this. Perhaps:
+> "So when it is output, a %u specifier should be used for formatting."
+> ? But feel free to use your own words, but somehow spell (or chatgpt) 
+> check it.
+> 
+>> Signed-off-by: liujing <liujing@cmss.chinamobile.com>
+>>
+>> diff --git a/drivers/tty/hvc/hvc_opal.c b/drivers/tty/hvc/hvc_opal.c
+>> index 095c33ad10f8..1d2e7f2ce088 100644
+>> --- a/drivers/tty/hvc/hvc_opal.c
+>> +++ b/drivers/tty/hvc/hvc_opal.c
+>> @@ -199,7 +199,7 @@ static int hvc_opal_probe(struct platform_device 
+>> *dev)
+>>           /* Instanciate now to establish a mapping index==vtermno */
+>>           hvc_instantiate(termno, termno, ops);
+>>       } else {
+>> -        pr_err("hvc_opal: Device %pOF has duplicate terminal number 
+>> #%d\n",
+>> +        pr_err("hvc_opal: Device %pOF has duplicate terminal number 
+>> #%u\n",
+>>                  dev->dev.of_node, termno);
+> 
+> There are more occurrences of this. Care to fix them all?
+> 
+> thanks,
 
-There are more occurrences of this. Care to fix them all?
-
-thanks,
 -- 
 js
 suse labs
+
