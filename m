@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 574841DFE2C;
-	Thu,  7 Nov 2024 11:53:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D82052076BA;
+	Thu,  7 Nov 2024 11:54:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730980413; cv=none; b=Pn9wIjWwrP3Z7lD+lwOk/Nkcd1zHqR5qmeqC5m13yKk70re3c7UywvKxeL3hDlLWpq7whnHuMfgnasVe5/JNCTomEYPg+QfPR7CQ7QG4uYJobLKy1l9yi8YqGgMAyHs+4C3+2+I4LoBgciUH93wITPJfFZin9Bx8gZ6XnSrJ11Y=
+	t=1730980448; cv=none; b=ZxWUPZ2kBijunCBKj6rgti0tHclF0llc/Duqr5LIEQg1qdSXpl8/au4L0nSMrQ3t96MjO7hIRhiaSmndvEcphZr4uVOY4CgOlMYHhwa5AXyBlYMRFG/ym1dgtHg9Qn7ylKc/Vyj3MAuSnl1Gh/qyzgFPfqnWAgk8e/ueid2nF10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730980413; c=relaxed/simple;
-	bh=lQShtX1xHLif6a0h3ePs2bUzdGEuq2ATqXDXqf11lRM=;
+	s=arc-20240116; t=1730980448; c=relaxed/simple;
+	bh=We2aQazlW3YNlsaSjCI8JHhaM1dMyFndLwfZISOrbXk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uDJvwXEAqU7JVSZxwSS/paz36krEpVN2fdBeq4HbRIhdYi/kD7BKAyPcQesPdABNfGz6ypzFGS49Rwy5phXE0ag1wFLVXHfIF3KXb/rIDXjpoOgyBZncwL0scS+8BBp5tXhGy8VVBZYtyEme0SO1bnF/om/sREeGcap8rZ6brHk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CAgf7Ddy; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=JbUryR//ihPgNmrcdET+BTGUqrnHrmtOMP/psLv8o4gtKNrkX7sFRHl1ihh0P1Hj4fAC9/FjgAnjF3bWHb2LbRnlRAd84t/Qdeo79kXQdezVkkdxjUCV7LcVY5k0siaaOr/vNBt7vdAo6PBBKDm1P0DIJBbcOW5l1Z7SysyKQqA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SqYDesjf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CAgf7Ddy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8EB8C4CECC;
-	Thu,  7 Nov 2024 11:53:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SqYDesjf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3FEAC4CECC;
+	Thu,  7 Nov 2024 11:54:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1730980412;
-	bh=lQShtX1xHLif6a0h3ePs2bUzdGEuq2ATqXDXqf11lRM=;
+	s=k20201202; t=1730980447;
+	bh=We2aQazlW3YNlsaSjCI8JHhaM1dMyFndLwfZISOrbXk=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=CAgf7DdybHQPGM0zDq5BvjGzqm6DJ03InCD51owQBAZGYf5Y1qbTkeZRkPKuGqAC8
-	 5kqoFAGeyCfXvXJBG8fB7ooIvXoHZA/cYJ5lgeMdLIo8jvq3AYM2TMvSX5KfLzJ0Ff
-	 S1rMBJAMeKKHB0Ywxo167gk0VuDYstaHBiFJ9RzaQidfuRwMwr2IvgHa31qCK3h022
-	 /NtsQRSb/HkD/J4UApLDuCGSp3in1294v7KxDnHsVkq0Sxu5Kp4R8uryJYGpha+315
-	 5Qa0Y6uGodqh7r+yi4RtM7VN4c/KHOP8kNXx00jG5ETYgrKO7oxZt8JlgfuxUEy/Nl
-	 zW155QUqyM99A==
-Message-ID: <f16771dc-533d-43b9-8c04-6470191fd191@kernel.org>
-Date: Thu, 7 Nov 2024 12:53:25 +0100
+	b=SqYDesjfEt+1h7/C5A+DjIUUIhLaUEw3j4SwrS/ghyte+n/vfoUUmjUQ561qKCNuU
+	 jMvFQ/XbbGW9txO7TvtPOtZATLZs7dKb1W60uf14IMeqXg8UBDdfNB76NjIhWxN79/
+	 p+8PjX6xVoRp4qQXLLxMDRv+fIC39r3Rt39e2NU7Zn0Pb+QLqbnY/9MzU8grAcfan+
+	 REV7ZFxzJU13vQiXVRWQzhAv4AnTaDfGmGERxUE7wAaSJRdwrdY6bB5vEvGEX7Gatr
+	 /TE2Fg0WZR0ktokrOSdT2+gLDudeQIB0DueF2IiqlnDSkQmRqcCEEdK7ThFsBYV6Wq
+	 a6lTf7kspsXwg==
+Message-ID: <7437a82f-be1d-45d0-9151-886564fabb4b@kernel.org>
+Date: Thu, 7 Nov 2024 12:53:59 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -97,38 +97,6 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 07/11/2024 12:46, Ciprian Costea wrote:
-> From: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
-> 
-> Add clock definitions for NXP LINFlexD UART bindings
-> and update the binding examples with S32G2 node.
-
-Why?
-
-What you are doing we see easily from the diff. I do not see why. Your
-commit msg must explain this.
-
-> 
-> Signed-off-by: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
-
-Please use subject prefixes matching the subsystem. You can get them for
-example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
-your patch is touching. For bindings, the preferred subjects are
-explained here:
-https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
-
-Missing serial prefix and final is fsl,s32-linflexuart, not linflexuart
-
-> ---
->  .../bindings/serial/fsl,s32-linflexuart.yaml  | 29 +++++++++++++++++++
->  1 file changed, 29 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
-> index 4171f524a928..2716a9cd6c22 100644
-> --- a/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/fsl,s32-linflexuart.yaml
-> @@ -34,10 +34,24 @@ properties:
->    interrupts:
->      maxItems: 1
 >  
 > +  clocks:
 > +    items:
@@ -148,29 +116,9 @@ Missing serial prefix and final is fsl,s32-linflexuart, not linflexuart
 >    - interrupts
 > +  - clocks
 > +  - clock-names
->  
->  unevaluatedProperties: false
->  
-> @@ -47,4 +61,19 @@ examples:
->          compatible = "fsl,s32v234-linflexuart";
->          reg = <0x40053000 0x1000>;
->          interrupts = <0 59 4>;
-> +        clocks = <&clks 132>, <&clks 131>;
-> +        clock-names = "ipg", "lin";
-> +    };
-> +
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    serial@401c8000 {
-> +        compatible = "nxp,s32g2-linflexuart",
-> +                     "fsl,s32v234-linflexuart";
-> +        reg = <0x401c8000 0x3000>;
-> +        interrupts = <GIC_SPI 82 IRQ_TYPE_EDGE_RISING>;
-> +        clocks = <&clks 13>, <&clks 14>;
 
-Nope, drop the example. Not explained why you need it and really no point.
+Ah, and that's an ABI break. That's a NAK unless explained in commit msg
+(including impact on users).
 
 Best regards,
 Krzysztof
