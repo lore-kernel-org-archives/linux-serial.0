@@ -1,57 +1,57 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 285171E3DF8
-	for <linux-serial@vger.kernel.org>; Fri,  8 Nov 2024 10:05:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 170DD1E47B8
+	for <linux-serial@vger.kernel.org>; Fri,  8 Nov 2024 10:05:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731060342; cv=none; b=eqljjaFXSZapb+Z/vRfZMlicWnPa8DtZp5HZsiiNj+Y8SwQ1i1ix0HDTgXHm2KLxf1NbOUFKYDqRtF4natFX1p7K37Y5Av6HKhGPIeYnpgnWLDwY+64FcNsYG2XjHZW/CB6SJ7bYWI9xLmFTbuvSirSHyUDm+JWmH35orN3loJ4=
+	t=1731060343; cv=none; b=Grrq4axuPC6gGyx28GoMYwX03Lv68W+pSVA3Zf+NyYnBIDAfWPbdyORGsqqb215iy7qKPRKg0ZRvX10aFLOTKltcJmmuyIRSAZtRIhx/TeY1Dvpf7WJ5knwVxdbnWNl8NRjbke+INf19IRZn7hGrikX9cQ037rkpSsXh3phL560=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731060342; c=relaxed/simple;
-	bh=iS4YhpIy3CXjMYWmuHDYc8XpbjiHC1FYXeViz/2PurM=;
+	s=arc-20240116; t=1731060343; c=relaxed/simple;
+	bh=2I3QYGgD+fQ78laCU7YBzXYtfRiP/TAEmsHKexsSybI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=J6mUGYfVAVDJDoMep56146WOfkRnx4wiOf19AXxui+QPLyzr1j9YPdtP/0UBO60jz05Tz3PL6TGXxwAieC3yrbMPicfbEFUagzR14icyXW/COAlrhBXNodsMy+hbL8f3DXdvQuT+WTYkJXd4VU57/N/jCprzIvF4Dq8GVi9rs/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=eZ5AsxDn; arc=none smtp.client-ip=209.85.208.52
+	 MIME-Version; b=Y7n3oytQdTo3tfZKaqVfp6Fsruy4E9viLfIoELXkpRAMmpAkZmGWEmVJd2zObQUiar4BoPOjGjMQ1FdGoVBhxlwf/axY517u8vr4ofwpP7t3oZdH1kCdroAjrpHt+ac7HjQ4yBS4juz6yL21s6Lj5e7guoDrCGoniG+ZQUGkZIY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=SGKaUYWX; arc=none smtp.client-ip=209.85.208.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="eZ5AsxDn"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-5cefc36c5d4so2569547a12.0
-        for <linux-serial@vger.kernel.org>; Fri, 08 Nov 2024 02:05:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="SGKaUYWX"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-5c941623a5aso5277109a12.0
+        for <linux-serial@vger.kernel.org>; Fri, 08 Nov 2024 02:05:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1731060338; x=1731665138; darn=vger.kernel.org;
+        d=tuxon.dev; s=google; t=1731060340; x=1731665140; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=39hZMJu6Jb8W5Z8tLGOBPgwWiBv/C6HY49AbdW1iCro=;
-        b=eZ5AsxDnZHvZ33kZcTbfJR3T3IMFc54EGgqWceCKJsEtgLp+41wHHVTHQy+AlB1zNw
-         W4MOPWD8yLqg2US2oqkSATZpf23+l5blLgg8xwIWD7glMwwcnBZgcwMAy8W5DZRnkc9S
-         q1akq5OzbGoJdtjjeV5+Ncz39hOQEy95Yevy7oyTcn3g/c4+vIJFR7NM8z9CL8K5YZ30
-         5uTaW4CtYDGiAgh28Dac2+gctYjDF71PKuZpL3Dnfd59tI/524x7ir4G4dGiwY3hS8ok
-         KZlonv3AUG8VSXzPEzDzRBbeNHPcVbF6HLUUwmROFETFYK8hZVIuixvv1yWi0TqqcW+T
-         zSrg==
+        bh=zYxgBdR3L0zZjTE6Q2Xo+f56VcHJlv6CSX9bi7CoE5s=;
+        b=SGKaUYWX3E5Z5NKJx6rNFdmtyCME62h8Tri5XYBQh5CiXJqc0Dvy1fNz5K0aDqYpER
+         6dVPwKLfrGZ1/nhQ3kwZBF5nzaF3ncTVUlcZ1JIuODR8im6cYOn6EdZtnSYu1tm/KhQt
+         ho8VSEeMfhkQojum+k1XUNY8L7adg0Zd5pATXt2Yc1fg1vk+TXpDL0SB1D5Ruew1XmHE
+         8R4r0oQiKTzRwnxFx3Z+7DyYbZe845f3mH9AUFSnsqYVNlQGxFZdoVC0gfCRcdZvYM9k
+         YKn22grrMOnidCJ/je23Nx34z+WerDTpyg1WHNRc6oq+/XWnLlyPgZpx/8HSFPH+86U7
+         TCwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731060338; x=1731665138;
+        d=1e100.net; s=20230601; t=1731060340; x=1731665140;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=39hZMJu6Jb8W5Z8tLGOBPgwWiBv/C6HY49AbdW1iCro=;
-        b=TA1SamFmAHqkLrmzgRVv6nsc/Bmn4VcrNRpsgvxfdvIxniYmQlvPloY1Rkt1zB5FkC
-         +yOI8eIAzJ7gEwAIL7wAtEwxigUgOpNT0F4SGPXgQDSxJPmycYn5VwjLxMohG91EEOHm
-         72Zbg/cR7b89+kQ15s1lQHiuDI9XaqHAjhyMe+PznkxkjMiysNRCDhEajDUPvWfQmlcH
-         WxGOLi8LvuJEnQvK/BE5MUy26OI8kDRFu3BsetS74qyu/es4eKTJ8YQfrVIEhLZntuYS
-         hIVD2BySWrsBO8zydphcgDt/9EjkKwONA/TB4mAJEMr0pz0OTS3P/KF/bE5F638BbkUP
-         uj4A==
-X-Forwarded-Encrypted: i=1; AJvYcCUJDhG0X7e9T60707rBqs9hBANUpHwvw9w5BYOBFnX//35xgh0LqgT7sidg8mDDxszTelHv1MwEnTYfyoQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfIvE7Q4Ft8CLVp8tmUmuRvC3PNcZgLYm0DbdOguySRAnrjC9R
-	CXaq5T+E7SyiASNwDSAgt3tQEtlx0F8ol2YnWsV29IfhtL05h34NVqNABvNBVJU=
-X-Google-Smtp-Source: AGHT+IHCKuShyBLYUaSNRjOJi/AwsIWesxGTAj6K0+n35l2geAvDpqqD8UzDqCcqkG+0+JCuN2pmiw==
-X-Received: by 2002:a05:6402:1e8c:b0:5ce:b1da:3003 with SMTP id 4fb4d7f45d1cf-5cf0a324b64mr1611311a12.20.1731060338404;
-        Fri, 08 Nov 2024 02:05:38 -0800 (PST)
+        bh=zYxgBdR3L0zZjTE6Q2Xo+f56VcHJlv6CSX9bi7CoE5s=;
+        b=vieqV2DCc5MRdco/44vT2aqFJarp8lCe+Y8euyxqU355e/UPkVTyumwq2UBTwsqILg
+         HtDXPudVzPEs0qYeIzA/vf5h8DzAKYrt1eO4OOUZsp76RxQd5Ef3TfnskdExRDmwhGd2
+         TLSQt6DyJM+Gz+3HHVhsFJSBMQumCw2mzJLrQTGAOuVk5txIR1h8/z8+lj4/7TB/g0Vz
+         KDOo/orM79R/llW/iMYhAYAEplbD+BjhD4UzQEPYuIm8oJ7rhfEP/O2aGa1YIj2J5Mwd
+         ZcBAs9YW2BRmcH1iT08vdQO7UeszRwjzW23K80Ox9uNSFgOuZWsbt8o1YuAuqpJrqLGq
+         1KuA==
+X-Forwarded-Encrypted: i=1; AJvYcCXbzAG7YMwyukrTsDa4eMZKjObG4rR6q8Vmu/W1XjCg61yYzFXw9GYBvVt2GUVW1nzp9XvzS3aQ3RJGwX0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzI+vnarMr4n2IsnWrpkx3jyJ6u/GzyzLkQgtjwjlcaw0YyMx8z
+	jcWOjSpZDd870rivaMqnFNXG/TZcF9YZKd2BzmYoZfFpP7pyoW0KSHc+fcatFJ0=
+X-Google-Smtp-Source: AGHT+IE7N7pylKiTXaEOCIxixMFZUU7WhiCw4v1X0VOaK6v6PAdm72v+9Seyb/j9PC7MrQVlSHFH2A==
+X-Received: by 2002:a05:6402:4021:b0:5cf:1214:8146 with SMTP id 4fb4d7f45d1cf-5cf12148226mr1044954a12.4.1731060340387;
+        Fri, 08 Nov 2024 02:05:40 -0800 (PST)
 Received: from claudiu-X670E-Pro-RS.. ([82.78.167.28])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5cf03c4f0bdsm1775959a12.56.2024.11.08.02.05.36
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5cf03c4f0bdsm1775959a12.56.2024.11.08.02.05.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2024 02:05:37 -0800 (PST)
+        Fri, 08 Nov 2024 02:05:39 -0800 (PST)
 From: Claudiu <claudiu.beznea@tuxon.dev>
 X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
 To: geert+renesas@glider.be,
@@ -73,9 +73,9 @@ Cc: linux-renesas-soc@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	claudiu.beznea@tuxon.dev,
 	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH v2 6/8] arm64: dts: renesas: rzg3s-smarc-switches: Add a header to describe different switches
-Date: Fri,  8 Nov 2024 12:05:11 +0200
-Message-Id: <20241108100513.2814957-7-claudiu.beznea.uj@bp.renesas.com>
+Subject: [PATCH v2 7/8] arm64: dts: renesas: rzg3s-smarc: Enable SCIF3
+Date: Fri,  8 Nov 2024 12:05:12 +0200
+Message-Id: <20241108100513.2814957-8-claudiu.beznea.uj@bp.renesas.com>
 X-Mailer: git-send-email 2.39.2
 In-Reply-To: <20241108100513.2814957-1-claudiu.beznea.uj@bp.renesas.com>
 References: <20241108100513.2814957-1-claudiu.beznea.uj@bp.renesas.com>
@@ -89,24 +89,8 @@ Content-Transfer-Encoding: 8bit
 
 From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-There are different switches available on both the RZ/G3S SMARC Module and
-RZ SMARC Carrier II boards. These switches are used to route different SoC
-signals to different parts available on board.
-
-These switches are described in device trees through macros. These macros
-are set accordingly such that the resulted compiled dtb to describe the
-on-board switches states.
-
-Based on the SW_CONFIG3 switch state (populated on the module board), the
-SCIF3 SoC interface is routed or not to an U(S)ART pin header available on
-the carrier board. As the SCIF3 is accessible through the carrier board,
-the device tree enables it in the carrier DTS. To be able to cope with
-these type of configurations, add a header file where all the on-board
-switches can be described and shared accordingly between module and carrier
-board.
-
-Commit prepares the code to enable SCIF3 on the RZ/G3S carrier device
-tree.
+Enable SCIF3. It is routed on the RZ SMARC Carrier II board on SER1_UART
+interface.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 ---
@@ -114,80 +98,55 @@ Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 Changes in v2:
 - none
 
- .../boot/dts/renesas/rzg3s-smarc-som.dtsi     | 20 +-----------
- .../boot/dts/renesas/rzg3s-smarc-switches.h   | 32 +++++++++++++++++++
- 2 files changed, 33 insertions(+), 19 deletions(-)
- create mode 100644 arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
+ arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi b/arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi
-index 55c72c8a0735..5c88e130c89e 100644
---- a/arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi
-+++ b/arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi
-@@ -9,25 +9,7 @@
- #include <dt-bindings/gpio/gpio.h>
+diff --git a/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi b/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
+index 33b9873b225a..1be21ece131e 100644
+--- a/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
++++ b/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
+@@ -9,9 +9,14 @@
+ #include <dt-bindings/input/input.h>
  #include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
  
--/*
-- * On-board switches' states:
-- * @SW_OFF: switch's state is OFF
-- * @SW_ON:  switch's state is ON
-- */
--#define SW_OFF		0
--#define SW_ON		1
--
--/*
-- * SW_CONFIG[x] switches' states:
-- * @SW_CONFIG2:
-- *	SW_OFF - SD0 is connected to eMMC
-- *	SW_ON  - SD0 is connected to uSD0 card
-- * @SW_CONFIG3:
-- *	SW_OFF - SD2 is connected to SoC
-- *	SW_ON  - SCIF1, SSI0, IRQ0, IRQ1 connected to SoC
-- */
--#define SW_CONFIG2	SW_OFF
--#define SW_CONFIG3	SW_ON
 +#include "rzg3s-smarc-switches.h"
- 
++
  / {
- 	compatible = "renesas,rzg3s-smarcm", "renesas,r9a08g045s33", "renesas,r9a08g045";
-diff --git a/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h b/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-new file mode 100644
-index 000000000000..e2d9b953f627
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * On-board switches for the Renesas RZ/G3S SMARC Module and RZ SMARC Carrier II
-+ * boards.
-+ *
-+ * Copyright (C) 2024 Renesas Electronics Corp.
-+ */
+ 	aliases {
+ 		i2c0 = &i2c0;
++#if SW_CONFIG3 == SW_ON
++		serial1 = &scif3;
++#endif
+ 		serial3 = &scif0;
+ 		mmc1 = &sdhi1;
+ 	};
+@@ -102,6 +107,11 @@ scif0_pins: scif0 {
+ 			 <RZG2L_PORT_PINMUX(6, 4, 1)>; /* TXD */
+ 	};
+ 
++	scif3_pins: scif3 {
++		pinmux = <RZG2L_PORT_PINMUX(17, 2, 7)>, /* RXD */
++			 <RZG2L_PORT_PINMUX(17, 3, 7)>; /* TXD */
++	};
 +
-+#ifndef __RZG3S_SMARC_SWITCHES__
-+#define __RZG3S_SMARC_SWITCHES__
+ 	sdhi1_pins: sd1 {
+ 		data {
+ 			pins = "SD1_DATA0", "SD1_DATA1", "SD1_DATA2", "SD1_DATA3";
+@@ -141,6 +151,14 @@ &scif0 {
+ 	status = "okay";
+ };
+ 
++#if SW_CONFIG3 == SW_ON
++&scif3 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&scif3_pins>;
++	status = "okay";
++};
++#endif
 +
-+/*
-+ * On-board switches' states:
-+ * @SW_OFF: switch's state is OFF
-+ * @SW_ON:  switch's state is ON
-+ */
-+#define SW_OFF		0
-+#define SW_ON		1
-+
-+/*
-+ * SW_CONFIG[x] switches' states:
-+ * @SW_CONFIG2:
-+ *	SW_OFF - SD0 is connected to eMMC
-+ *	SW_ON  - SD0 is connected to uSD0 card
-+ * @SW_CONFIG3:
-+ *	SW_OFF - SD2 is connected to SoC
-+ *	SW_ON  - SCIF3, SSI3, IRQ0, IRQ1 connected to SoC
-+ */
-+#define SW_CONFIG2	SW_OFF
-+#define SW_CONFIG3	SW_ON
-+
-+#endif /* __RZG3S_SMARC_SWITCHES__ */
+ &sdhi1 {
+ 	pinctrl-0 = <&sdhi1_pins>;
+ 	pinctrl-1 = <&sdhi1_pins_uhs>;
 -- 
 2.39.2
 
