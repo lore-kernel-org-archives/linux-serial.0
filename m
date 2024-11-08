@@ -1,134 +1,143 @@
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E65913FFC
-	for <linux-serial@vger.kernel.org>; Fri,  8 Nov 2024 01:13:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE6B91E0E15
+	for <linux-serial@vger.kernel.org>; Fri,  8 Nov 2024 10:05:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731028427; cv=none; b=blYQ+hisQ1iu8SmRZVf9Q+XCAo2lIPtnN5SLTrncmToz+30iPxAIKJT7ei8CVfg4uI6C/SdBUrWiob0blTvRaYdJgKH9KrIOqGd4QD5jU/i0zEEDQEkANg2O66/sDQH86X/CasP6id9Lm0l6kPXVPN5th0iBNYLUvXY0HveWBNo=
+	t=1731060328; cv=none; b=eJvmeRKVSL+YMfxNDmkQgpdjCe/YDXGhc3YEQV7vTxEYLbr37e/Q9fJsCJNy4rBVs4AjBGDaKqZNXwQZIqK0RM6/F5sI/UuUxgdJQiEvyg+MurND/ApUzTY0I5BGjUw+IAFZMtEkClxXY+zICIbJmA4sCga2eaDV1Kn26aDHY2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731028427; c=relaxed/simple;
-	bh=zeHWontwHTd/NI4pX+2gW5Fw1q4DH4KwttEvVasE0m0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=D5sSOj6FJUa9s9GKYDrQP2Saj9QxrRUCNiJ037VIW23dECUUuJpnGlISQAVr3ZD1HMame9u3xrSdNIYhrdh4X60zU9eO57hcTjEbr/OHMw5yYxdemK7A1hQvFGDGME6sFhCSdtUN9gFAByNPNCkWE952hJS63khE05IBCedbD4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=osandov.com; spf=none smtp.mailfrom=osandov.com; dkim=pass (2048-bit key) header.d=osandov-com.20230601.gappssmtp.com header.i=@osandov-com.20230601.gappssmtp.com header.b=qT5Mo5yL; arc=none smtp.client-ip=209.85.216.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=osandov.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=osandov.com
+	s=arc-20240116; t=1731060328; c=relaxed/simple;
+	bh=MoiEayfj/UT4sKXcIMbQM1ehNea+yL0fmJc/mIJizOM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=sL/T0McEIZxp0TkawPiutyFITdGBrp9pB+k9nEEyJ4USmD5GY4mfk8fT+SAQ8LwDNr7Eb2WFdPu4LnJ0OjnwJjB58dGtZx9Pd2yCAq2YNbGGy+BGRiI5qH5eX9A0Neyf1uyNmNXm4rvZw9KY+u7CNUgxoKVXliFN0gGI8Oz7Ii4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=V2JzjlHe; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=osandov-com.20230601.gappssmtp.com header.i=@osandov-com.20230601.gappssmtp.com header.b="qT5Mo5yL"
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-2e2d83f15f3so189885a91.0
-        for <linux-serial@vger.kernel.org>; Thu, 07 Nov 2024 17:13:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="V2JzjlHe"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-5cece886771so3339505a12.0
+        for <linux-serial@vger.kernel.org>; Fri, 08 Nov 2024 02:05:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=osandov-com.20230601.gappssmtp.com; s=20230601; t=1731028426; x=1731633226; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=vojMdALZ39vwtHBszmMZroCBITCSq9d1wu4bY+CRc2o=;
-        b=qT5Mo5yLeH4riT9hN8gETsoSeom+aMtac+ZPkiDEpHAnNthUaRJRjGTAwg01dmKyob
-         ZadyJRdB/lk/VhQOZgtF5uoYRacEuzE9taUsyrOH8qfJFHxrTKTqjU0u4diFlsGboM0d
-         XFC0PsdONcd27OWagCrv+t4s/UKYUFCmKkAY8RgMS7p7rtvdJLgmzTpoHwCvyjeIe6Y6
-         XR9irZEVOBw/PT8m7qTEoZaQzppe+YdNKZd4+tMhPyVT34/m78UBQhKN0DyyxIIPjX6i
-         0I5D9a5YPXfU4KzVg1Jq1IN4dLCAGSm/b3SMQzj/ECxfBuqC9HcwovTxsfse0yQ7uTgK
-         zJwQ==
+        d=tuxon.dev; s=google; t=1731060324; x=1731665124; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=YAL+kPG7hjMLlYG3CXYUDbVL7KyCjm02rxkbC7MtBh8=;
+        b=V2JzjlHeXAIkJraCy7xNnDKYVdjf4omzERSJmJ4rHqk977pqA26q8NKNnnEGKGdoKy
+         Vzarlfb8qTfR0Q7557n9xRQbIwxm+tRQTkgrN1ZEwHxS7hW/n+F6OLtPZkEp49VY6FZS
+         JMr+/Cd/EziTGyubF90TOHv1olVLokRjO3Wp9QvCFMz6ZC8lf3YRozSw8DYYn8N6ePVv
+         3gjBMkJ3pLwyAVLE3Da4grqJ2oxxuG/AEyOyYPdQNApPVY0kUtENOtg23ghB7EhenqCQ
+         gPA1x3ITy6KowQA9qFwqkg95K2pU5FHgJHSjC0EtWr+EG9a0W+SI0KWbvj+XA/SezW56
+         v12A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731028426; x=1731633226;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vojMdALZ39vwtHBszmMZroCBITCSq9d1wu4bY+CRc2o=;
-        b=LXhGmVJ8MxNp2MQW3aEX0XNT+m2dZ9TPMif1thUgaaG7QXPvABrrxXlmJQsD6ItYCA
-         rP8qZHzG3G6OguOKej3HRFx5J/unF/RRgHJyDfyiZX+tZwyUwpjMfuWRe+qEawHfufUJ
-         K0HMnaUZzidXH3aiSmK8x5R6p57qjleqNiUmF96eOrgJYLenAuJF9ui7lKgBFrrbHDzZ
-         YvIPhpPSKYrT03qvcmbGBaGzSQ0GtV5mQMWFm48JByCQ9122FGEhgsTqRQK/wct326hu
-         f+kqwqy2h4L4PGpQWgKNDSmz0YlCCjVl65iAC1dq9n6NiwpnppBuJhiFl7j7JydEq2nG
-         34NA==
-X-Forwarded-Encrypted: i=1; AJvYcCVXnNj4rLrG7+/wsNtlmmnwbzrQupIVBppgHx88ydRhwWRsl7X4c5nQILPzsO6BEH6ufzn1njGvStFIhs0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyseEOUQFslwlnBNpm6dKjvMVps2RhW4lA+AcfnZRqbY0ruZGic
-	qKuHgSV3TMlFIfBGtgPyW7pbv2wVzH+hggshtMW4uX0LISV6jc/p9BmYDLNmAlM=
-X-Google-Smtp-Source: AGHT+IH21ltIpBPjnrRcYJWYLm4UclJcdDvZJUr56kqpFJO6GDKOCxS+TGm7zeNIo6h3U62NB4Geeg==
-X-Received: by 2002:a17:902:ea0a:b0:20c:f648:e388 with SMTP id d9443c01a7336-211835337aamr6302515ad.7.1731028425594;
-        Thu, 07 Nov 2024 17:13:45 -0800 (PST)
-Received: from telecaster ([2601:602:8980:9170::5633])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2e9a5fee67fsm2228985a91.49.2024.11.07.17.13.44
+        d=1e100.net; s=20230601; t=1731060324; x=1731665124;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YAL+kPG7hjMLlYG3CXYUDbVL7KyCjm02rxkbC7MtBh8=;
+        b=qLJP1HCNMiC+pBb1efChcctP7fqhmDTMsbgmrIuydvukWiLuTNY8hUpHozqQD6ZdpC
+         A3koSPnEMRjpKnyh5Trsp6fIKr2GLJ7TE5dpyg5hKnj9XmKL6AA00s858+RpuDdWGGoE
+         sIdrwQ1nrWlIzfxphmn1JUIA8g4paWfhJd9KzJgiwdn0AOswpfbkBsiqKtFzxV6Bzvlv
+         YE/MUClyBZ+Us5uZGabBiAkjD8UfNlEoy8nINxze4iSG56+n6k5LUim5MPLv87Fs6SIn
+         aAVCLlfXMMhv+mxWtDXdIZvZJCVfQKwmU2kMQvx00RlkdH4qTsa8jkafDuxyNJlADmJR
+         pJ6A==
+X-Forwarded-Encrypted: i=1; AJvYcCUB+LQSRsmRZd1lbxQMtyKFxjyDfX1t7GKj1BRfjwU3Qzed5G+8DdApfH5yAIBcGTfIo37x0SasKnKX3sg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz/3mJUk/82lu7+eUh89gqBYjGDgL0NqDcJrwIN0BKFBc530tQa
+	6B79YlOztcH91fm3iFE99fsnuJLESEPEn2loA5qikz4DkYmcBkGOuObMxRa49C0=
+X-Google-Smtp-Source: AGHT+IG2NrO+sM70OPw1AksJyK2vMcksl4JvBsYJxXbdWHnFOrPxekQAQy53PSFcnZw9polXCbL+5A==
+X-Received: by 2002:a05:6402:274b:b0:5ce:dd82:1b15 with SMTP id 4fb4d7f45d1cf-5cf097371f0mr2586609a12.14.1731060323636;
+        Fri, 08 Nov 2024 02:05:23 -0800 (PST)
+Received: from claudiu-X670E-Pro-RS.. ([82.78.167.28])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5cf03c4f0bdsm1775959a12.56.2024.11.08.02.05.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2024 17:13:44 -0800 (PST)
-Date: Thu, 7 Nov 2024 17:13:44 -0800
-From: Omar Sandoval <osandov@osandov.com>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Jason Wessel <jason.wessel@windriver.com>,
-	Daniel Thompson <daniel.thompson@linaro.org>,
-	Amal Raj T <amalrajt@meta.com>,
-	Stephen Brennan <stephen.s.brennan@oracle.com>,
-	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
-	linux-debuggers@vger.kernel.org
-Subject: Re: kgdb replacing newline with CRLF in custom query response
-Message-ID: <Zy1lyACVnZK4xwuW@telecaster>
-References: <Zy093jVKPs9gSVx2@telecaster>
- <CAD=FV=UZKZ_RL73+JLjeW2FmAfifSyXqLV3M30XzmJSPE9Trzw@mail.gmail.com>
+        Fri, 08 Nov 2024 02:05:23 -0800 (PST)
+From: Claudiu <claudiu.beznea@tuxon.dev>
+X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
+To: geert+renesas@glider.be,
+	magnus.damm@gmail.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	mturquette@baylibre.com,
+	sboyd@kernel.org,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	p.zabel@pengutronix.de,
+	g.liakhovetski@gmx.de,
+	lethal@linux-sh.org
+Cc: linux-renesas-soc@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	claudiu.beznea@tuxon.dev,
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Subject: [PATCH v2 0/8] Add support for the rest of Renesas RZ/G3S serial interfaces
+Date: Fri,  8 Nov 2024 12:05:05 +0200
+Message-Id: <20241108100513.2814957-1-claudiu.beznea.uj@bp.renesas.com>
+X-Mailer: git-send-email 2.39.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=UZKZ_RL73+JLjeW2FmAfifSyXqLV3M30XzmJSPE9Trzw@mail.gmail.com>
 
-On Thu, Nov 07, 2024 at 05:08:58PM -0800, Doug Anderson wrote:
-> Hi,
-> 
-> On Thu, Nov 7, 2024 at 2:23 PM Omar Sandoval <osandov@osandov.com> wrote:
-> >
-> > Hi everyone,
-> >
-> > Amal is working on adding a custom query packet to kgdb for getting the
-> > kernel's vmcoreinfo. The rationale and details are available here:
-> > https://github.com/osandov/drgn/wiki/GDB-Remote-Protocol-proposal:-linux.vmcoreinfo-query-packet
-> >
-> > vmcoreinfo is about 3kB, so we were hoping to avoid hex-encoding the
-> > response and doubling the time it takes to transmit over a slow serial
-> > connection. Instead, we were hoping to use the escaped binary format,
-> > which escapes the characters #$}* and leaves other bytes untouched.
-> >
-> > We ran into a problem, though: vmcoreinfo contains newline characters,
-> > which the serial core replaces with CRLF; see commit c7d44a02ac60
-> > ("serial_core: Commonalize crlf when working w/ a non open console
-> > port").
-> 
-> FWIW, the problem predates that commit, but that commit at least moved
-> it to be someplace common. Before that some serial drivers were
-> hardcoding it... ;-)
-> 
-> 
-> > This effectively corrupts the data and causes a checksum
-> > mismatch.
-> >
-> > We'd love some input on how to work around this, especially from the
-> > kgdb maintainers. Here are a few options, in descending order of my
-> > preference:
-> >
-> > 1. Disable the LF -> CRLF replacement while sending binary data.
-> > 2. Escape the newlines using some other custom scheme.
-> > 3. Give up and hex-encode the response.
-> 
-> I haven't tried prototyping it, but what about moving the LR -> CRLF
-> code to kdb_msg_write(). It would be really easy to do this in the
-> case where we're doing "dbg_io_ops->write_char()" since we're already
-> processing character at a time. It would be harder to do this when
-> also sending the output to the various console, but may not _too_
-> hard? You could loop searching for "\n" and send all the characters
-> before the "\n", then send a "\r", then send the "\n" and all the
-> characters up to the next "\n".
-> 
-> If you did this then you'd lose the "\n" to "\r\n" combination in the
-> gdb stub, but _probably_ that doesn't matter?
+From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-That sounds reasonable. I was concerned whether this would affect
-anything else using the ->poll_put_char() tty operation, but kgdb seems
-to be the only user, does that sound right?
+Hi,
 
-Thanks for the quick response!
+The Renesas RZ/G3S SoC has 6 serial interfaces. One of them is used
+as debug console (and it is already enabled in the current code base).
+Series adds support for the remaining ones.
 
-Omar
+Patches:
+-    01/08 - adds clock, reset and power domain support for the serial
+             interfaces
+-    02/08 - serial driver fix patch identified while adding RZ/G3S
+             support
+-    03/08 - extends suspend to RAM support on the serial driver for
+             the RZ/G3S SoC
+- 04-08/08 - add device tree support
+
+Merge strategy, if any:
+- patch 01/08 can go through Renesas tree
+- patches 02-03/08 can go through serial tree
+- patches 04-08/08 can go through Renesas tree
+
+Thank you,
+Claudiu Beznea
+
+Changes in v2:
+- drop patch "serial: sh-sci: Clean sci_ports[0] after at earlycon exit"
+  from v1 as it was already applied
+- used bool instead of atomic_t in patch
+  "serial: sh-sci: Check if TX data was written to device in .tx_empty()"
+
+Claudiu Beznea (8):
+  clk: renesas: r9a08g045: Add clock, reset and power domain for the
+    remaining SCIFs
+  serial: sh-sci: Check if TX data was written to device in .tx_empty()
+  serial: sh-sci: Update the suspend/resume support
+  arm64: dts: renesas: r9a08g045: Add the remaining SCIF interfaces
+  arm64: dts: renesas: rzg3s-smarc: Fix the debug serial alias
+  arm64: dts: renesas: rzg3s-smarc-switches: Add a header to describe
+    different switches
+  arm64: dts: renesas: rzg3s-smarc: Enable SCIF3
+  arm64: dts: renesas: r9a08g045s33-smarc-pmod: Add overlay for SCIF1
+
+ arch/arm64/boot/dts/renesas/Makefile          |  3 +
+ arch/arm64/boot/dts/renesas/r9a08g045.dtsi    | 90 +++++++++++++++++++
+ .../dts/renesas/r9a08g045s33-smarc-pmod.dtso  | 48 ++++++++++
+ .../boot/dts/renesas/rzg3s-smarc-som.dtsi     | 25 +-----
+ .../boot/dts/renesas/rzg3s-smarc-switches.h   | 32 +++++++
+ arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi  | 25 +++++-
+ drivers/clk/renesas/r9a08g045-cpg.c           | 20 +++++
+ drivers/tty/serial/sh-sci.c                   | 64 +++++++++++--
+ 8 files changed, 273 insertions(+), 34 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod.dtso
+ create mode 100644 arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
+
+-- 
+2.39.2
+
