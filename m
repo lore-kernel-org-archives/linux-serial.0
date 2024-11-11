@@ -1,118 +1,93 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 405E5185E53
-	for <linux-serial@vger.kernel.org>; Mon, 11 Nov 2024 13:37:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7777156C72;
+	Mon, 11 Nov 2024 20:07:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731332265; cv=none; b=cc8x9b2/jJMGs9Av1ChA1itnOXA7OUUGv/fw+4tZgqCuvFJjv1ibvpwiFEzLoagqzvkkhWokk3THpbPCc6FyTNkN5unvRwPvpmv59g7+omX/FjKScvpPk9EMaGMOYbLYHZ41P//2QM+92WfNpfFv5xVSXkzt4GXK3WVWjHymOOY=
+	t=1731355643; cv=none; b=jyoKSCd+r68sdHM2sqSEeopnl50Le/GLM8g/QxhSIT1faohocGECA5qo9B8MW2f5b3DsJ7yiJ6ezT5+fL/CodYucSFYKx+SHw8X2cuyeDvnYfbb5TBZ2bb0R/I9p/ucqeJdPZdw/dCoWk+hupLl56Gj7VxcqmMS2iIOAeEtdru0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731332265; c=relaxed/simple;
-	bh=zldQuZy7Vw8Jc/U9Gqrx5DoU6JGXukbJ4pnR6Ieqjxc=;
+	s=arc-20240116; t=1731355643; c=relaxed/simple;
+	bh=6pVsE2CJCXEP+zojvkWyghZFggypw44sgN8gww7BHhQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h5q66jx800N5EC71bY8VM2vCxkoI+GP783L+km1f64DGQika3dT7hKvacab2myNgFCny9KOQhqBYYJhVqkNcS7ONssf9f0FiF2lPQR6U25xgTD6ylBUgUnNWXUJp2RswV8hab9M0ZhC8oUnG6jnExeORZJ1+ospCZL553oRUPD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Bk5lvahY; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=RKpP1JqaW4Hbu0GdBsmGqqKPODvbAkHXOKAdSJdtYP5rba9LSCiZLKAR0iSl6zldoXXQA5rokQaW3LSU0HYpW/G4is9tVvohBBS9+vXN6gcY82rE6pCsBWm+B3xd/gSzrgmcAs4qhmdS5vVHAPup8EbvFLpWEgvH+wW7k9KKaGw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aahHXekZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Bk5lvahY"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4315839a7c9so42878145e9.3
-        for <linux-serial@vger.kernel.org>; Mon, 11 Nov 2024 05:37:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1731332262; x=1731937062; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=H3alwZykr3cxEiilJjH/3zMnNgVJKTf1Srqg5Us7D+k=;
-        b=Bk5lvahYiGE4jL6tcHqoopyu1WfjPDKbyX9SCGrki38ITA/li6vQ4fSa17eLU+lIEI
-         HDrsOhffM/DSoNIop0GykMihgHxucYtxYSCMHPNguohhSSp8co+Kk4SVaVwzEN0rSVQN
-         SHY2N22Xf3167NC32mYBFscPBa48OzLZj63HaCbMkc6wSm4Ze82x+8gHLAwcpI04fqd0
-         h4xKHtRtjYxM4aQG42Cx+4hmCi8Qyn9KSg7UptIO76TJF0Vis95OM3QDqpLEOrrt7K8L
-         OQMJPHmP0VzSIxicV5aWPRJ+Kd7LQMzXMVZA1WMmKPeLPmcoCJGegf0VYyyQJB2lDtt5
-         WNYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731332262; x=1731937062;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=H3alwZykr3cxEiilJjH/3zMnNgVJKTf1Srqg5Us7D+k=;
-        b=qfL0Zde8TrPMgVI3YMI4ialu0mY6Uq8XR9BtZG+hAa1A3YE55TU2cjAMGeJ/zNdEGh
-         JHcLCVHELw+h0aFV7VW3UQmBbj/hoqJTKIqk/rCfdFSKR0jWtaoD70myno/XOmu31nHz
-         N0/a/O5Xj9pvu9ydm+SQSM30TVSV/aBtyi5Jnbrv1SM0YdQQmFK/UYGImBfnXGt6MfCV
-         4SPOc+NAnsSUHrKy4NP8tR1efLSZGdTOfZZDp6XCen/Stmgt01gizRNISWRe4vDLH6oO
-         WHihx5uT6gSdXdEw3RqIcD00NV5GRDnVidJRt9jpT+Pc222KNsoxVsxN7L7/2cWPlLbe
-         kvng==
-X-Forwarded-Encrypted: i=1; AJvYcCVSu9ew2miPIOfkKhC5gNTzJjuts5mvC243kpF9KOaBEwL/h9n/+cXyq5zix9Zb/eakvEuiDR5XdJkqPe4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwW4xn0AejC2QmkDUYjK3GS/u31QetmQ7vz2vTzt7nTG21dEYnV
-	hQnisssWmXYYTV2bk49YQ8rte0hd7eGHFMBGaw+1l/lbv40Lh4GhONrpcuyas2w=
-X-Google-Smtp-Source: AGHT+IHN6VX3szu3asu+FTdSapdN3XKQswp3SlPLA1xm4qyKmZWBrqljtY+pMYxuZ/VQ0J6d4xUkSQ==
-X-Received: by 2002:a05:600c:8715:b0:431:93d8:e1a1 with SMTP id 5b1f17b1804b1-432b751bcc2mr103836265e9.27.1731332261641;
-        Mon, 11 Nov 2024 05:37:41 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432b054b3fesm173495965e9.17.2024.11.11.05.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2024 05:37:41 -0800 (PST)
-Date: Mon, 11 Nov 2024 14:37:38 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] printk: Add force_con printk flag to not suppress
- sysrq header msgs
-Message-ID: <ZzIIouTeCZiwJihg@pathway.suse.cz>
-References: <20241105-printk-loud-con-v2-0-bd3ecdf7b0e4@suse.com>
- <ZyzjcLF-wleMTpoY@pathway.suse.cz>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aahHXekZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B7C0C4CECF;
+	Mon, 11 Nov 2024 20:07:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731355643;
+	bh=6pVsE2CJCXEP+zojvkWyghZFggypw44sgN8gww7BHhQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=aahHXekZGYzHfCqbMox4sD3D1Lvhog4LCwAh+MoJjx/FvoSgXZUNlKfhqwdXcJt4T
+	 R7SfynJ6FVvOqwAiGC2rw2psmlSMs8mELb8BNrq7Bd954I6Mo7gH1LjgvFLA8YBykQ
+	 05DmayYUN1r0Yu3z3qn5fw2MFzu1qUPDYmfhwczh1QtM6Ty7i3EL8XL0JT2Atag0fo
+	 ik8dUDhfEWaM8/bJ4fcP/g4SAcitHgVwNcJPbv7r/73LNAhTl1BcFB2XNWOYcpz/LF
+	 zQObnmuX7N8mfU1dmheUxqwPytjkhOJ2/NTaPCKJkzr20NQVM0bhwxNsPOFCbn87Zf
+	 S5QwR1tY+UjGw==
+Date: Mon, 11 Nov 2024 20:07:18 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Ciprian Costea <ciprianmarian.costea@oss.nxp.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Chester Lin <chester62515@gmail.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	imx@lists.linux.dev, NXP S32 Linux <s32@nxp.com>,
+	Christophe Lizzi <clizzi@redhat.com>,
+	Alberto Ruiz <aruizrui@redhat.com>,
+	Enric Balletbo <eballetb@redhat.com>
+Subject: Re: [PATCH v4 1/2] dt-bindings: serial: fsl-linflexuart: add clock
+ definitions
+Message-ID: <20241111-jinx-paralysis-cedd30e8d814@spud>
+References: <20241111112921.2411242-1-ciprianmarian.costea@oss.nxp.com>
+ <20241111112921.2411242-2-ciprianmarian.costea@oss.nxp.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="weSy6AEd5ZgY8ZdK"
+Content-Disposition: inline
+In-Reply-To: <20241111112921.2411242-2-ciprianmarian.costea@oss.nxp.com>
+
+
+--weSy6AEd5ZgY8ZdK
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ZyzjcLF-wleMTpoY@pathway.suse.cz>
+Content-Transfer-Encoding: quoted-printable
 
-On Thu 2024-11-07 16:57:40, Petr Mladek wrote:
-> On Tue 2024-11-05 16:45:07, Marcos Paulo de Souza wrote:
-> > Hello,
-> > 
-> > This is the second version of the patchset. It now addresses comments
-> > from John and Petr, while also mentioning that the current work solves
-> > one issue on handle_sysrq when the printk messages are deferred.
-> > 
-> > The original cover-letter in is the v1.
-> > 
-> > Please review!
-> > 
-> > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> > ---
-> > Changes in v2:
-> > - Mentioned that it fixes a bug related to loglevel= dance (suggested by John)
-> > - Changed to loud_con to FORCE_CON (John, Petr)
-> > - Don't skip printk delay if FORCE_CON is specified (John)
-> > - Set FORCE_CON when LOG_CONT is handled (John)
-> > - Changed force_con from a per-CPU variable to a global variable because
-> >   we can't disable migration on the callsites. (John, Petr)
-> > - Used is_printk_force_console() on boot_delay_msec(), since it's used
-> >   when the message is stored, instead of setting is as an argument.
-> > - Link to v1: https://lore.kernel.org/r/20241016-printk-loud-con-v1-0-065e4dad6632@suse.com
-> > ---
-> > Marcos Paulo de Souza (2):
-> >       printk: Introduce FORCE_CON flag
-> >       tty: sysrq: Use printk_force_console context on __handle_sysrq
-> 
-> The patchset looks ready for linux-next from my POV. I am going to
-> push it there tomorrow or on Monday unless anyone complains.
-> 
-> There was some bike-shedding about the code style in the reviews.
-> But the proposals did not look like a big win. I think that it
-> is not worth a respin.
+On Mon, Nov 11, 2024 at 01:29:20PM +0200, Ciprian Costea wrote:
+> From: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
+>=20
+> Add clock definitions for NXP LINFlexD UART bindings.
+>=20
+> The LINFlexD driver was working because the LINFlexD clocks were
+> configured and kept enabled by the downstream bootloader (TF-A [1]
+> and U-Boot [2]). This is not ideal since LINFlexD Linux driver should
+> manage its clocks independently and not rely on a previous bootloader
+> configuration.
+>=20
+> [1] https://github.com/nxp-auto-linux/arm-trusted-firmware
+> [2] https://github.com/nxp-auto-linux/u-boot
+>=20
+> Signed-off-by: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
 
-JFYI, the patchset has been committed into printk/linux.git,
-branch for-6.13-force-console.
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
-Best Regards,
-Petr
+--weSy6AEd5ZgY8ZdK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZzJj9gAKCRB4tDGHoIJi
+0tM3AP4+ylAt5jU2/dXlB4U9kkvigneTQ15jdBARV5cl2P7LfwD/b1TT0y+6ewBD
+idDpy3xnQLc7Jhqpids2Jy5Xv0uO7gI=
+=vLhV
+-----END PGP SIGNATURE-----
+
+--weSy6AEd5ZgY8ZdK--
