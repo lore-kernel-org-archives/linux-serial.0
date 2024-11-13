@@ -1,79 +1,58 @@
-Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
+Received: from sym2.noone.org (sym.noone.org [178.63.92.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E687E1FB897;
-	Wed, 13 Nov 2024 11:11:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=222.66.158.135
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99D701FF611
+	for <linux-serial@vger.kernel.org>; Wed, 13 Nov 2024 11:49:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.92.236
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731496279; cv=none; b=jcxdMKw2fbdC/deqsw7ZrSFXygQg9+ccbXoxD2hFXbxElB8KjrLBu02+sEnGMZLsjBRRp+XxN2uvKAk1vM8l6lNYhTfxCtf6b0mdrg8F6+C60+LkbHT5hqeL4SHK6Mv40N7R2dm3qpMF9trdQFBCC9GyMnPTb7s3IOUQ4wmOtpM=
+	t=1731498556; cv=none; b=smVCMiwyrNXod6oqd9q9fRo3/caPMh7OWaODGyAI89agz3bocVYVVJJdN1AfoxOTyuUH7rvGUrMdwnNqGPfJz57kn0NTB6oOsefQQ7LnGx9ebhRJW84i1TqXfVF192U+Nhs6E7Bkp3kcGxFmr6QPnPYae4MfFygNPwtkVw5Kz/U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731496279; c=relaxed/simple;
-	bh=7IOmtBsoXUsjSZ/nwSZs90vr9M0qMVamz1gKQiMAu+I=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=nBfBpCYOz/Zu3+RihziTl0b0oIQG8UL+vajT4pToNret4d0z285jXGux4USRanfT6ocGGEl+eZ04FaOhnjFQ36YCEtYrkSamEcXlWuVQ09Rz6EV6iVVbEViMOPU2cSqZhvcQeMaNbq5ud4CggjmYz/hMQXlxt2mhKhHfWja1lCk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com; spf=pass smtp.mailfrom=unisoc.com; arc=none smtp.client-ip=222.66.158.135
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
-Received: from dlp.unisoc.com ([10.29.3.86])
-	by SHSQR01.spreadtrum.com with ESMTP id 4ADB5Md2009431;
-	Wed, 13 Nov 2024 19:05:22 +0800 (+08)
-	(envelope-from Wenhua.Lin@unisoc.com)
-Received: from SHDLP.spreadtrum.com (shmbx06.spreadtrum.com [10.0.1.11])
-	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4XpL5F0d0fz2L0nH8;
-	Wed, 13 Nov 2024 19:04:17 +0800 (CST)
-Received: from zeshkernups01.spreadtrum.com (10.29.55.99) by
- shmbx06.spreadtrum.com (10.0.1.11) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Wed, 13 Nov 2024 19:05:21 +0800
-From: Wenhua Lin <Wenhua.Lin@unisoc.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>
-CC: Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang
-	<baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Cixi
- Geng <cixi.geng@linux.dev>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, wenhua lin
-	<wenhua.lin1994@gmail.com>,
-        Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Xiongpeng Wu
-	<xiongpeng.wu@unisoc.com>,
-        Zhaochen Su <Zhaochen.Su@unisoc.com>,
-        Zhirong Qiu
-	<Zhirong.Qiu@unisoc.com>
-Subject: [PATCH 0/2] serial: sprd: Modification of UNISOC Platform UART Driver
-Date: Wed, 13 Nov 2024 19:05:14 +0800
-Message-ID: <20241113110516.2166328-1-Wenhua.Lin@unisoc.com>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1731498556; c=relaxed/simple;
+	bh=LIuxohaxGqozPvoT47YiF+HA/Kl/4CBvMfL4rdmMAp8=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=Kg6sTCHfIbdf9SDmkJM/lWI36BsRryY8dzIfdGj1/Z3vRG4ssphEPDQxEJnK9imNXNFv/wO2lCyz8OPjuikH+wJ43hIq5CKuFBHeqjk96enkQhxVOoG1lloCANgftBiGoEglH6bN+FtSvgtmChDeva+FrKARVZNDF9ihhFJfSZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=distanz.ch; spf=none smtp.mailfrom=sym.noone.org; arc=none smtp.client-ip=178.63.92.236
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=distanz.ch
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sym.noone.org
+Received: by sym2.noone.org (Postfix, from userid 1002)
+	id 4XpLyV5Nwrz3j1C8; Wed, 13 Nov 2024 12:43:30 +0100 (CET)
+From: Tobias Klauser <tklauser@distanz.ch>
+To: linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH] tty/serial/altera_jtaguart: unwrap error log string
+Date: Wed, 13 Nov 2024 12:43:30 +0100
+Message-Id: <20241113114330.16995-1-tklauser@distanz.ch>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
- shmbx06.spreadtrum.com (10.0.1.11)
-X-MAIL:SHSQR01.spreadtrum.com 4ADB5Md2009431
 
-In order to be compatible with UNISOC's new UART IP, the UART driver uses
-private data for adaptation. Patch1 adds UART timeout interrupt BIT17, and
-the old project uses BIT13. In order to be compatible with all projects,
-private data is used for adaptation. Patch2 adds a new compatible string.
+The error log string should be a single line, unwrap it.
 
-Wenhua Lin (2):
-  serial: sprd: Add support for sc9632
-  dt-bindings: serial: Add a new compatible string for ums9632
+Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+Link: https://lore.kernel.org/all/26034117-26b6-4eeb-bd66-969955b70e9b@kernel.org/
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+---
+ drivers/tty/serial/altera_jtaguart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- .../devicetree/bindings/serial/sprd-uart.yaml |  1 +
- drivers/tty/serial/sprd_serial.c              | 41 ++++++++++++++++---
- 2 files changed, 37 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/tty/serial/altera_jtaguart.c b/drivers/tty/serial/altera_jtaguart.c
+index 4c7bde5dd856..b9c3c3bed0c1 100644
+--- a/drivers/tty/serial/altera_jtaguart.c
++++ b/drivers/tty/serial/altera_jtaguart.c
+@@ -175,8 +175,8 @@ static int altera_jtaguart_startup(struct uart_port *port)
+ 	ret = request_irq(port->irq, altera_jtaguart_interrupt, 0,
+ 			DRV_NAME, port);
+ 	if (ret) {
+-		dev_err(port->dev, "unable to attach Altera JTAG UART %d "
+-		       "interrupt vector=%d\n", port->line, port->irq);
++		dev_err(port->dev, "unable to attach Altera JTAG UART %d interrupt vector=%d\n",
++			port->line, port->irq);
+ 		return ret;
+ 	}
+ 
 -- 
-2.34.1
+2.43.0
+
