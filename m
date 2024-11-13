@@ -1,22 +1,22 @@
 Received: from wangsu.com (mail.wangsu.com [180.101.34.75])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B74D13B298;
-	Wed, 13 Nov 2024 02:36:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 002F013B298;
+	Wed, 13 Nov 2024 02:37:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.101.34.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731465426; cv=none; b=Z1EbI//9xL8VhoFcQRQsl4TZyomIdAow6J8QSMO6Ksn2Gc2WvXyovo0xAmFP4YXEOZNP+UKuCPW6FkQlqiISiW/8+dg/PM7af6VlZancujQ1v67TN9hl1ULvpD5Qbffd5PJYwJNch2MV/CXzCLb053OeIduZlROrNkckZjS+LnA=
+	t=1731465469; cv=none; b=ZM9l77ctJEYkQWHZb9Z7TX0p7esS+cJoZNJ7F+3AcTHmr/nIX+DCT04iKWH7hn9pZQHsoJCIMmTSnxlLs1JjpguD9fyLAOj7BP9ArPVPMr5Yms1VQTuA0E/TjjUu8WlZVhDR5cgg+jap0Z9uOimdLAWSUBGGfc/m+5K+WK445z4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731465426; c=relaxed/simple;
-	bh=oB0JvUZo8wFvnKXDflP33tQ7CYflFhFggZG5PiVAOgI=;
+	s=arc-20240116; t=1731465469; c=relaxed/simple;
+	bh=2BdB3GPebvJRUmxzE4KrR5lqQuzWj9e3V9zMxeyhm2A=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tLcEWlDL2FpxKFVn9YnKyA5zdRwOFLoKjOR4ctSBDwITl1DXscD9Whbq4XV8dBbjMsRR2v4vMfyUE/6DmmH1LxEcj8lhjyda4Clgqbd7gTdzfvZCA50okydZdr9PZpaQtWgo6LewVH1oIdxS+V/4+3o3et7wt0SYsn7wcYJQgBY=
+	 In-Reply-To:Content-Type; b=m4FEU1Og1KlXbZtBMlga1kak2/S0dQfSx0hc1cAr94ZVza3iLEKpnEfJxnpWVkuNqncBzKhPPchzJd6s6MJTuGKSm8ayLgCCl7uq0BwNTXQHzlmljzuVcrhj+xccHnH9LNn2eiTXR6u3xI7iuvIymmOyEARTIAXAdDTYTwxrQ/U=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wangsu.com; spf=pass smtp.mailfrom=wangsu.com; arc=none smtp.client-ip=180.101.34.75
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wangsu.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wangsu.com
 Received: from [10.8.162.84] (unknown [59.61.78.234])
-	by app2 (Coremail) with SMTP id SyJltAAHDpaEEDRnpJ58AQ--.278S2;
-	Wed, 13 Nov 2024 10:35:49 +0800 (CST)
-Message-ID: <af2a2a7e-1604-4e24-bee6-f31498e0b25d@wangsu.com>
-Date: Wed, 13 Nov 2024 10:35:48 +0800
+	by app2 (Coremail) with SMTP id SyJltADn7ZXsEDRnNp98AQ--.281S2;
+	Wed, 13 Nov 2024 10:37:33 +0800 (CST)
+Message-ID: <97eed46f-0088-4183-aef4-d6b5c942f074@wangsu.com>
+Date: Wed, 13 Nov 2024 10:37:32 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -24,7 +24,7 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] coredump: Fixes core_pipe_limit sysctl proc_handler
+Subject: Re: [PATCH 2/3] sysctl: Fix underflow value setting risk in vm_table
 To: nicolas.bouchinet@clip-os.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, linux-fsdevel@vger.kernel.org
 Cc: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
@@ -36,16 +36,16 @@ Cc: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
  Andrew Morton <akpm@linux-foundation.org>,
  Neil Horman <nhorman@tuxdriver.com>, Theodore Ts'o <tytso@mit.edu>
 References: <20241112131357.49582-1-nicolas.bouchinet@clip-os.org>
- <20241112131357.49582-2-nicolas.bouchinet@clip-os.org>
+ <20241112131357.49582-3-nicolas.bouchinet@clip-os.org>
 Content-Language: en-US
 From: Lin Feng <linf@wangsu.com>
-In-Reply-To: <20241112131357.49582-2-nicolas.bouchinet@clip-os.org>
+In-Reply-To: <20241112131357.49582-3-nicolas.bouchinet@clip-os.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID:SyJltAAHDpaEEDRnpJ58AQ--.278S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxuF1xXryxGr18uw1xuFW7Jwb_yoW5Xw4Dpr
-	17Ka47KFW8CF1Iyr1IyF43Za4rurWFkFyfWw47GF4IvFnxWr1rXrnFkryYgFsrKr1v9w1Y
-	vrnxKas8WFyYyFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID:SyJltADn7ZXsEDRnNp98AQ--.281S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7uw4xWrWDJrWkWw13KryrCrg_yoW8Gry8pr
+	93XryYka1UJw1SyasIkF1Svr1Igw48KFW3Ga9rKrWfX34DXryrXr1ftFWagFWIkrWIkFZI
+	v3Z0qr98uw4YyFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
 	9KBjDU0xBIdaVrnRJUUU9Yb7Iv0xC_Kw4lb4IE77IF4wAFc2x0x2IEx4CE42xK8VAvwI8I
 	cIk0rVWrJVCq3wA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjx
 	v20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK
@@ -61,71 +61,44 @@ X-Coremail-Antispam: 1UD129KBjvJXoWxuF1xXryxGr18uw1xuFW7Jwb_yoW5Xw4Dpr
 	nIWIevJa73UjIFyTuYvjxUqVcEUUUUU
 X-CM-SenderInfo: holqwq5zdqw23xof0z/
 
-Hi,
+Thanks!
 
-see comments below please.
+Reviewed-by: Lin Feng <linf@wangsu.com>
 
 On 11/12/24 21:13, nicolas.bouchinet@clip-os.org wrote:
 > From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
 > 
-> proc_dointvec converts a string to a vector of signed int, which is
-> stored in the unsigned int .data core_pipe_limit.
-> It was thus authorized to write a negative value to core_pipe_limit
-> sysctl which once stored in core_pipe_limit, leads to the signed int
-> dump_count check against core_pipe_limit never be true. The same can be
-> achieved with core_pipe_limit set to INT_MAX.
+> Commit 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in
+> vm_table") fixes underflow value setting risk in vm_table but misses
+> vdso_enabled sysctl.
 > 
-> Any negative write or >= to INT_MAX in core_pipe_limit sysctl would
-> hypothetically allow a user to create very high load on the system by
-> running processes that produces a coredump in case the core_pattern
-> sysctl is configured to pipe core files to user space helper.
-> Memory or PID exhaustion should happen before but it anyway breaks the
-> core_pipe_limit semantic
+> vdso_enabled sysctl is initialized with .extra1 value as SYSCTL_ZERO to
+> avoid negative value writes but the proc_handler is proc_dointvec and not
+> proc_dointvec_minmax and thus do not uses .extra1 and .extra2.
 > 
-> This commit fixes this by changing core_pipe_limit sysctl's proc_handler
-> to proc_dointvec_minmax and bound checking between SYSCTL_ZERO and
-> SYSCTL_INT_MAX.
+> The following command thus works :
 > 
-> Fixes: a293980c2e26 ("exec: let do_coredump() limit the number of concurrent dumps to pipes")
+> # echo -1 > /proc/sys/vm/vdso_enabled
+> 
+> This patch properly sets the proc_handler to proc_dointvec_minmax.
+> 
+> Fixes: 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in vm_table")
 > Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
 > ---
->  fs/coredump.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+>  kernel/sysctl.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/fs/coredump.c b/fs/coredump.c
-> index 7f12ff6ad1d3e..8ea5896e518dd 100644
-> --- a/fs/coredump.c
-> +++ b/fs/coredump.c
-> @@ -616,7 +616,8 @@ void do_coredump(const kernel_siginfo_t *siginfo)
->  		cprm.limit = RLIM_INFINITY;
->  
->  		dump_count = atomic_inc_return(&core_dump_count);
-> -		if (core_pipe_limit && (core_pipe_limit < dump_count)) {
-> +		if ((core_pipe_limit && (core_pipe_limit < dump_count)) ||
-> +		    (core_pipe_limit && dump_count == INT_MAX)) {
-
-While comparing between 'unsigned int' and 'signed int', C deems them both
-to 'unsigned int', so as an insane user sets core_pipe_limit to INT_MAX,
-and dump_count(signed int) does overflow INT_MAX, checking for 
-'core_pipe_limit < dump_count' is passed, thus codes skips core dump.
-
-So IMO it's enough after changing proc_handler to proc_dointvec_minmax.
-
-Others in this patch:
-Reviewed-by: Lin Feng <linf@wangsu.com>
-
->  			printk(KERN_WARNING "Pid %d(%s) over core_pipe_limit\n",
->  			       task_tgid_vnr(current), current->comm);
->  			printk(KERN_WARNING "Skipping core dump\n");
-> @@ -1024,7 +1025,9 @@ static struct ctl_table coredump_sysctls[] = {
->  		.data		= &core_pipe_limit,
->  		.maxlen		= sizeof(unsigned int),
+> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+> index 79e6cb1d5c48f..37b1c1a760985 100644
+> --- a/kernel/sysctl.c
+> +++ b/kernel/sysctl.c
+> @@ -2194,7 +2194,7 @@ static struct ctl_table vm_table[] = {
+>  		.maxlen		= sizeof(vdso_enabled),
+>  #endif
 >  		.mode		= 0644,
 > -		.proc_handler	= proc_dointvec,
 > +		.proc_handler	= proc_dointvec_minmax,
-> +		.extra1		= SYSCTL_ZERO,
-> +		.extra2		= SYSCTL_INT_MAX,
+>  		.extra1		= SYSCTL_ZERO,
 >  	},
->  	{
->  		.procname       = "core_file_note_size_limit",
+>  #endif
 
