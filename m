@@ -1,119 +1,122 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC01713C90A;
-	Wed, 13 Nov 2024 05:31:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 582A81BD519;
+	Wed, 13 Nov 2024 09:08:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731475913; cv=none; b=Gy9PPpzyo7ZYyvH8WZ5EzmADJERfnEDpimkac9BMkFLpVVxhqcugqQ0/rXqqhgZXmkgGXZh3hzrQhUExMS6d4ItQEN+8Zly8LCy9Eqspzapvx2JE1lVEfXmRVwS+Pb2h/Mp7wxjZns/SVJ3DCal0UmkguAQz1YhsYeOAcLjZGh4=
+	t=1731488929; cv=none; b=DwYmmKUA3xh/X2Zs1pzbEQUh+Y9lrfhUW3blCCrDTiJyiHp2iVD/SmAvrQJBHRTzv8hFes5WREQYGAPwmF2SXGv+6IX3QlG48LhvK2+u/uUYybGw5hjdFoHvORDh4E9qit8bjybCgNAmROHeKCDilxgWZiB3EfDpKHwgkhG99mc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731475913; c=relaxed/simple;
-	bh=nD4PMiCRrW7d72p1BT5XYYPetAcnUV83YaVcdEjJHfo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tWgd7X61qGIoUyi6VpVGBb8wnuj9Umxc4MKXBr8XbzH/glkmBptItNZdLeyEUnKKuAPM3k7RZ5WffUT6U6aSAGwSI2+r/8Fix3MS/42X7zT4LA59FCB5qNb8PeyBF6mNx82HudSPGdAhhEfY2+zQa7o8vT3dqRhzyoQK0L7S4es=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=a4MZMKyP; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1731488929; c=relaxed/simple;
+	bh=hAlOVw3Y2srLBF3nP8gky9MN8oK474twFFhXp8hKWA8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ktwhRpLl8zoqr3SeJcqc1sKAc4GVEHx90b34RoaYh/PqvnSYHlVDqzDpg3VLaaUtv3sCF3Vw/69dp55PDpIkSiFl1MPnW6WCh9f4OCNtVkegMuG90IJMsxi7fwV8o7L5EjZGyQOxamy6Urww9gYSV8Mwajivjbu7e9KgDyXN68E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=naUquatE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="a4MZMKyP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1B4AC4CECD;
-	Wed, 13 Nov 2024 05:31:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1731475912;
-	bh=nD4PMiCRrW7d72p1BT5XYYPetAcnUV83YaVcdEjJHfo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=a4MZMKyPAceGXYjBtG3wlL56WNj0S+GUy9b7uIFrKBMLFzwFqqCB5/PpfVnzmXfJh
-	 aXQoRM3kzE7qp86AIY6nyKfH0nkx4ywAX3ebk4Y9gflYREqfjYGPd1Sk4icD4o/Xa+
-	 tPkN9Gum+ZJq+4KSO39ii1ytitoiTmm/tleHRBK8=
-Date: Wed, 13 Nov 2024 06:31:49 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Kartik <kkartik@nvidia.com>
-Cc: linux@armlinux.org.uk, jirislaby@kernel.org, theo.lebrun@bootlin.com,
-	linus.walleij@linaro.org, ilpo.jarvinen@linux.intel.com,
-	l.sanfilippo@kunbus.com, konradybcio@kernel.org,
-	christophe.jaillet@wanadoo.fr, arnd@arndb.de,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: amba-pl011: Fix RX stall when DMA is used
-Message-ID: <2024111318-clang-chute-a7f4@gregkh>
-References: <20241113051023.3125-1-kkartik@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="naUquatE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2D26C4CECD;
+	Wed, 13 Nov 2024 09:08:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731488928;
+	bh=hAlOVw3Y2srLBF3nP8gky9MN8oK474twFFhXp8hKWA8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=naUquatEiLc7gqhY9P/5jypq4jPHX2oKtX/SFk8+QwDnW5A0aqOMw+GIw+Nk8MbYH
+	 GKko+rPhfmRyz/eKrg6TAS1JJU9FYH8GgRk7oHhtou+4lMFsgVQdTnOP8ZjoJ8kxkx
+	 TFkne9dvsBQyBaXx8X+GHInupOVZSt2UYQ6CO/KNdEOMCAdiKqDIex1lxksryPaX1v
+	 +Ty4To6WMzjT2QkzboDoWAxL/1MEfEs7W2cwBBEXbv8l3wwtu8610baP+wHn+lrRhn
+	 2SMhML2uQRfNSaqE5VCr8IET2pIjGLPtu76Reocw/M+ngAZcIomlXVgs8f1cuuYn5z
+	 GwbNBG0mVe64w==
+Message-ID: <9bb4de26-9053-4abd-a319-3e4361784ecb@kernel.org>
+Date: Wed, 13 Nov 2024 10:08:43 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241113051023.3125-1-kkartik@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] tty: ldsic: fix tty_ldisc_autoload sysctl's
+ proc_handler
+To: nicolas.bouchinet@clip-os.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Cc: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Alexander Viro <viro@zeniv.linux.org.uk>,
+ Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+ Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>,
+ Joel Granados <j.granados@samsung.com>, Neil Horman <nhorman@tuxdriver.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Lin Feng <linf@wangsu.com>,
+ Theodore Ts'o <tytso@mit.edu>
+References: <20241112131357.49582-1-nicolas.bouchinet@clip-os.org>
+ <20241112131357.49582-4-nicolas.bouchinet@clip-os.org>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20241112131357.49582-4-nicolas.bouchinet@clip-os.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 13, 2024 at 10:40:23AM +0530, Kartik wrote:
-> Function pl011_throttle_rx() calls pl011_stop_rx() to disable RX, which
-> also disables the RX DMA by clearing the RXDMAE bit of the DMACR
-> register. However, to properly unthrottle RX when DMA is used, the
-> function pl011_unthrottle_rx() is expected to set the RXDMAE bit of
-> the DMACR register, which it currently lacks. This causes RX to stall
-> after the throttle API is called.
+On 12. 11. 24, 14:13, nicolas.bouchinet@clip-os.org wrote:
+> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
 > 
-> Set RXDMAE bit in the DMACR register while unthrottling RX if RX DMA is
-> used.
+> Commit 7c0cca7c847e ("tty: ldisc: add sysctl to prevent autoloading of
+> ldiscs") introduces the tty_ldisc_autoload sysctl with the wrong
+> proc_handler. .extra1 and .extra2 parameters are set to avoid other values
+> thant SYSCTL_ZERO or SYSCTL_ONE to be set but proc_dointvec do not uses
+> them.
 > 
-> Fixes: 211565b10099 ("serial: pl011: UPSTAT_AUTORTS requires .throttle/unthrottle")
-> Signed-off-by: Kartik <kkartik@nvidia.com>
-> ---
->  drivers/tty/serial/amba-pl011.c | 5 +++++
->  1 file changed, 5 insertions(+)
+> This commit fixes this by using proc_dointvec_minmax instead of
+> proc_dointvec.
 > 
-> diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-> index 4c4b0d470c65..f40714685166 100644
-> --- a/drivers/tty/serial/amba-pl011.c
-> +++ b/drivers/tty/serial/amba-pl011.c
-> @@ -1819,6 +1819,11 @@ static void pl011_unthrottle_rx(struct uart_port *port)
->  
->  	pl011_write(uap->im, uap, REG_IMSC);
->  
-> +	if (uap->using_rx_dma) {
-> +		uap->dmacr |= UART011_RXDMAE;
-> +		pl011_write(uap->dmacr, uap, REG_DMACR);
-> +	}
-> +
->  	uart_port_unlock_irqrestore(&uap->port, flags);
->  }
->  
-> -- 
-> 2.47.0
-> 
-> 
+> Fixes: 7c0cca7c847e ("tty: ldisc: add sysctl to prevent autoloading of ldiscs")
+> Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
 
-Hi,
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- It looks like you did not use your "real" name for the patch on either
-  the Signed-off-by: line, or the From: line (both of which have to
-  match).  Please read the kernel file,
-  Documentation/process/submitting-patches.rst for how to do this
-  correctly.
-
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+I hope noone managed to store 2+ to that sysctl yet...
 
 thanks,
-
-greg k-h's patch email bot
+-- 
+js
+suse labs
