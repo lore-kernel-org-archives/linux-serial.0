@@ -1,197 +1,131 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BFEB2F5A
-	for <linux-serial@vger.kernel.org>; Wed, 13 Nov 2024 01:01:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+Received: from wangsu.com (mail.wangsu.com [180.101.34.75])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B74D13B298;
+	Wed, 13 Nov 2024 02:36:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.101.34.75
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731459704; cv=none; b=kKVFfoO9tjV2jNc8/4RnAm6pLXb1CcsAim9VikoTS7I2jf8iFXAj6HsumUNzYI0Wl+wXaMebxe63lNlRyW+mXCH3B0dJm6TaAGh74K2co1GXWFR42raMQzf+MLsv/KZzJ0q+/pASEOipYLODSObwWwcAG0jey6UujZiq4p+0ZSI=
+	t=1731465426; cv=none; b=Z1EbI//9xL8VhoFcQRQsl4TZyomIdAow6J8QSMO6Ksn2Gc2WvXyovo0xAmFP4YXEOZNP+UKuCPW6FkQlqiISiW/8+dg/PM7af6VlZancujQ1v67TN9hl1ULvpD5Qbffd5PJYwJNch2MV/CXzCLb053OeIduZlROrNkckZjS+LnA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731459704; c=relaxed/simple;
-	bh=Gd2Pq2dabr2E0IBd5Af2CcwzpfjTrG8LuSjSApHsCdk=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=qGZsZHtF+NYD/X2mNFgj1MXUQPA2P4H+q9vZ+0MNwrn4VhiJdgPCA9NnVF2pryzEf5PW1qaRjDEJ0uqBe83UjVCI4SUi3eMCc1Ec66Qtz2OfVrG6XxiOZxGJ26xHTxPtgUcRXrSaQO9FKjx8yQO4rrgypsRUFwwIgmkoR6b1Lmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h15kvTFx; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h15kvTFx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731459703; x=1762995703;
-  h=date:from:to:cc:subject:message-id;
-  bh=Gd2Pq2dabr2E0IBd5Af2CcwzpfjTrG8LuSjSApHsCdk=;
-  b=h15kvTFxWW4/tYWTXyp3Z5+ly+yvw+S5n5lCMUmJbp8j/Nktljj2yfGh
-   NrUSC7qcazcLtEPh2UuJQIzzBrvpzmTpuZKmf/6U1Sn0043EIEmy/B0qU
-   kI9lD002/3HFtaFpRI03bgHeGsj90UgF49wim8JR7dOYX4j/ERpg3acQr
-   d2Jhz0uonPCiuOTiSJRfm5QO5xom+aSm1pdMTvapAuAPiiotGdL0KJVpY
-   XWK47j8GOOZgVlO6yvxaktQH2MzK8x+wOLEPemaM5un/6S94FvpnvWN7g
-   qlb/qmPmmaNO3pMYZpWVcOL/HwRb/DZq70qoJgUb/xOOn+7exm2o1F5vX
-   A==;
-X-CSE-ConnectionGUID: opfow3yQSKyEU+qPrUymdw==
-X-CSE-MsgGUID: 1bt0pc2HTGmTNwROvN8mZw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11254"; a="34193735"
-X-IronPort-AV: E=Sophos;i="6.12,149,1728975600"; 
-   d="scan'208";a="34193735"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2024 17:01:42 -0800
-X-CSE-ConnectionGUID: ZfoC+4uCQzWQ6FmcePvUsQ==
-X-CSE-MsgGUID: ewtgpeB8R/C9gd7XZDW7iQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="92640558"
-Received: from lkp-server01.sh.intel.com (HELO bcfed0da017c) ([10.239.97.150])
-  by orviesa003.jf.intel.com with ESMTP; 12 Nov 2024 17:01:41 -0800
-Received: from kbuild by bcfed0da017c with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tB1lK-0001ts-2o;
-	Wed, 13 Nov 2024 01:01:38 +0000
-Date: Wed, 13 Nov 2024 09:00:49 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 166105c9030a30ba08574a9998afc7b60bc72dd7
-Message-ID: <202411130944.co32huea-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	s=arc-20240116; t=1731465426; c=relaxed/simple;
+	bh=oB0JvUZo8wFvnKXDflP33tQ7CYflFhFggZG5PiVAOgI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tLcEWlDL2FpxKFVn9YnKyA5zdRwOFLoKjOR4ctSBDwITl1DXscD9Whbq4XV8dBbjMsRR2v4vMfyUE/6DmmH1LxEcj8lhjyda4Clgqbd7gTdzfvZCA50okydZdr9PZpaQtWgo6LewVH1oIdxS+V/4+3o3et7wt0SYsn7wcYJQgBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wangsu.com; spf=pass smtp.mailfrom=wangsu.com; arc=none smtp.client-ip=180.101.34.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wangsu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wangsu.com
+Received: from [10.8.162.84] (unknown [59.61.78.234])
+	by app2 (Coremail) with SMTP id SyJltAAHDpaEEDRnpJ58AQ--.278S2;
+	Wed, 13 Nov 2024 10:35:49 +0800 (CST)
+Message-ID: <af2a2a7e-1604-4e24-bee6-f31498e0b25d@wangsu.com>
+Date: Wed, 13 Nov 2024 10:35:48 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] coredump: Fixes core_pipe_limit sysctl proc_handler
+To: nicolas.bouchinet@clip-os.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Cc: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>,
+ Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+ Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>,
+ Joel Granados <j.granados@samsung.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Neil Horman <nhorman@tuxdriver.com>, Theodore Ts'o <tytso@mit.edu>
+References: <20241112131357.49582-1-nicolas.bouchinet@clip-os.org>
+ <20241112131357.49582-2-nicolas.bouchinet@clip-os.org>
+Content-Language: en-US
+From: Lin Feng <linf@wangsu.com>
+In-Reply-To: <20241112131357.49582-2-nicolas.bouchinet@clip-os.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:SyJltAAHDpaEEDRnpJ58AQ--.278S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxuF1xXryxGr18uw1xuFW7Jwb_yoW5Xw4Dpr
+	17Ka47KFW8CF1Iyr1IyF43Za4rurWFkFyfWw47GF4IvFnxWr1rXrnFkryYgFsrKr1v9w1Y
+	vrnxKas8WFyYyFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUU9Yb7Iv0xC_Kw4lb4IE77IF4wAFc2x0x2IEx4CE42xK8VAvwI8I
+	cIk0rVWrJVCq3wA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjx
+	v20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4UJVWxJr1l84ACjcxK
+	6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4
+	CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0EF7xvrVAajcxG14v2
+	6r4j6F4UMcIj6x8ErcxFaVAv8VW8GwAv7VCY1x0262k0Y48FwI0_Gr1j6F4UJwAm72CE4I
+	kC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK
+	67AK6r4UMxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_Gr4l4I8I3I0E4IkC6x
+	0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2
+	zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF
+	4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWU
+	CwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCT
+	nIWIevJa73UjIFyTuYvjxUqVcEUUUUU
+X-CM-SenderInfo: holqwq5zdqw23xof0z/
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 166105c9030a30ba08574a9998afc7b60bc72dd7  serial: 8250_fintek: Add support for F81216E
+Hi,
 
-elapsed time: 766m
+see comments below please.
 
-configs tested: 120
-configs skipped: 2
+On 11/12/24 21:13, nicolas.bouchinet@clip-os.org wrote:
+> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
+> 
+> proc_dointvec converts a string to a vector of signed int, which is
+> stored in the unsigned int .data core_pipe_limit.
+> It was thus authorized to write a negative value to core_pipe_limit
+> sysctl which once stored in core_pipe_limit, leads to the signed int
+> dump_count check against core_pipe_limit never be true. The same can be
+> achieved with core_pipe_limit set to INT_MAX.
+> 
+> Any negative write or >= to INT_MAX in core_pipe_limit sysctl would
+> hypothetically allow a user to create very high load on the system by
+> running processes that produces a coredump in case the core_pattern
+> sysctl is configured to pipe core files to user space helper.
+> Memory or PID exhaustion should happen before but it anyway breaks the
+> core_pipe_limit semantic
+> 
+> This commit fixes this by changing core_pipe_limit sysctl's proc_handler
+> to proc_dointvec_minmax and bound checking between SYSCTL_ZERO and
+> SYSCTL_INT_MAX.
+> 
+> Fixes: a293980c2e26 ("exec: let do_coredump() limit the number of concurrent dumps to pipes")
+> Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
+> ---
+>  fs/coredump.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/fs/coredump.c b/fs/coredump.c
+> index 7f12ff6ad1d3e..8ea5896e518dd 100644
+> --- a/fs/coredump.c
+> +++ b/fs/coredump.c
+> @@ -616,7 +616,8 @@ void do_coredump(const kernel_siginfo_t *siginfo)
+>  		cprm.limit = RLIM_INFINITY;
+>  
+>  		dump_count = atomic_inc_return(&core_dump_count);
+> -		if (core_pipe_limit && (core_pipe_limit < dump_count)) {
+> +		if ((core_pipe_limit && (core_pipe_limit < dump_count)) ||
+> +		    (core_pipe_limit && dump_count == INT_MAX)) {
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+While comparing between 'unsigned int' and 'signed int', C deems them both
+to 'unsigned int', so as an insane user sets core_pipe_limit to INT_MAX,
+and dump_count(signed int) does overflow INT_MAX, checking for 
+'core_pipe_limit < dump_count' is passed, thus codes skips core dump.
 
-tested configs:
-alpha                       allnoconfig    gcc-14.2.0
-alpha                      allyesconfig    clang-20
-alpha                      allyesconfig    gcc-14.2.0
-arc                        allmodconfig    clang-20
-arc                        allmodconfig    gcc-13.2.0
-arc                         allnoconfig    gcc-14.2.0
-arc                        allyesconfig    clang-20
-arc                        allyesconfig    gcc-13.2.0
-arc                      hsdk_defconfig    gcc-14.2.0
-arm                        allmodconfig    clang-20
-arm                        allmodconfig    gcc-14.2.0
-arm                         allnoconfig    gcc-14.2.0
-arm                        allyesconfig    clang-20
-arm                        allyesconfig    gcc-14.2.0
-arm                   at91_dt_defconfig    clang-20
-arm               davinci_all_defconfig    gcc-14.2.0
-arm                integrator_defconfig    clang-20
-arm                  keystone_defconfig    gcc-14.2.0
-arm                  mvebu_v5_defconfig    gcc-14.2.0
-arm                 netwinder_defconfig    clang-20
-arm                      qcom_defconfig    clang-20
-arm                  shmobile_defconfig    gcc-14.2.0
-arm64                      alldefconfig    gcc-14.2.0
-arm64                      allmodconfig    clang-20
-arm64                       allnoconfig    gcc-14.2.0
-arm64                         defconfig    clang-20
-csky                        allnoconfig    gcc-14.2.0
-hexagon                    allmodconfig    clang-20
-hexagon                     allnoconfig    gcc-14.2.0
-hexagon                    allyesconfig    clang-20
-i386                       allmodconfig    clang-19
-i386                       allmodconfig    gcc-12
-i386                        allnoconfig    clang-19
-i386                        allnoconfig    gcc-12
-i386                       allyesconfig    clang-19
-i386                       allyesconfig    gcc-12
-i386                          defconfig    clang-19
-loongarch                  allmodconfig    gcc-14.2.0
-loongarch                   allnoconfig    gcc-14.2.0
-m68k                       allmodconfig    gcc-14.2.0
-m68k                        allnoconfig    gcc-14.2.0
-m68k                       allyesconfig    gcc-14.2.0
-m68k                 m5249evb_defconfig    gcc-14.2.0
-m68k                 m5475evb_defconfig    clang-20
-microblaze                 allmodconfig    gcc-14.2.0
-microblaze                  allnoconfig    gcc-14.2.0
-microblaze                 allyesconfig    gcc-14.2.0
-mips                        allnoconfig    gcc-14.2.0
-mips                  qi_lb60_defconfig    gcc-14.2.0
-mips                     xway_defconfig    clang-20
-nios2                       allnoconfig    gcc-14.2.0
-openrisc                    allnoconfig    clang-20
-openrisc                    allnoconfig    gcc-14.2.0
-openrisc                   allyesconfig    gcc-14.2.0
-openrisc                      defconfig    gcc-12
-parisc                     allmodconfig    gcc-14.2.0
-parisc                      allnoconfig    clang-20
-parisc                      allnoconfig    gcc-14.2.0
-parisc                     allyesconfig    gcc-14.2.0
-parisc                        defconfig    gcc-12
-powerpc              adder875_defconfig    clang-20
-powerpc                    allmodconfig    gcc-14.2.0
-powerpc                     allnoconfig    clang-20
-powerpc                     allnoconfig    gcc-14.2.0
-powerpc                    allyesconfig    clang-20
-powerpc                    allyesconfig    gcc-14.2.0
-powerpc                  cell_defconfig    clang-20
-powerpc           linkstation_defconfig    gcc-14.2.0
-powerpc               mpc512x_defconfig    gcc-14.2.0
-powerpc               mpc5200_defconfig    clang-20
-powerpc           mpc836x_rdk_defconfig    clang-20
-powerpc            mpc866_ads_defconfig    clang-20
-powerpc                pcm030_defconfig    clang-20
-powerpc               ppa8548_defconfig    gcc-14.2.0
-powerpc               sequoia_defconfig    gcc-14.2.0
-powerpc               tqm8555_defconfig    gcc-14.2.0
-riscv                      allmodconfig    clang-20
-riscv                      allmodconfig    gcc-14.2.0
-riscv                       allnoconfig    clang-20
-riscv                       allnoconfig    gcc-14.2.0
-riscv                      allyesconfig    clang-20
-riscv                      allyesconfig    gcc-14.2.0
-riscv                         defconfig    gcc-12
-s390                       allmodconfig    clang-20
-s390                       allmodconfig    gcc-14.2.0
-s390                        allnoconfig    clang-20
-s390                       allyesconfig    gcc-14.2.0
-s390                          defconfig    gcc-12
-sh                         allmodconfig    gcc-14.2.0
-sh                          allnoconfig    gcc-14.2.0
-sh                         allyesconfig    gcc-14.2.0
-sh                   apsh4a3a_defconfig    gcc-14.2.0
-sh                            defconfig    gcc-12
-sh          ecovec24-romimage_defconfig    clang-20
-sh             secureedge5410_defconfig    clang-20
-sh               sh7710voipgw_defconfig    gcc-14.2.0
-sh             sh7724_generic_defconfig    clang-20
-sh                       shx3_defconfig    clang-20
-sparc                      allmodconfig    gcc-14.2.0
-sparc64                       defconfig    gcc-12
-um                         allmodconfig    clang-20
-um                          allnoconfig    clang-17
-um                          allnoconfig    clang-20
-um                         allyesconfig    clang-20
-um                         allyesconfig    gcc-12
-um                            defconfig    gcc-12
-um                       i386_defconfig    gcc-12
-um                     x86_64_defconfig    gcc-12
-x86_64                      allnoconfig    clang-19
-x86_64                     allyesconfig    clang-19
-x86_64                        defconfig    clang-19
-x86_64                        defconfig    gcc-11
-x86_64                            kexec    clang-19
-x86_64                            kexec    gcc-12
-x86_64                         rhel-8.3    gcc-12
-x86_64                     rhel-8.3-bpf    clang-19
-x86_64                   rhel-8.3-kunit    clang-19
-x86_64                     rhel-8.3-ltp    clang-19
-x86_64                    rhel-8.3-rust    clang-19
-xtensa                      allnoconfig    gcc-14.2.0
+So IMO it's enough after changing proc_handler to proc_dointvec_minmax.
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Others in this patch:
+Reviewed-by: Lin Feng <linf@wangsu.com>
+
+>  			printk(KERN_WARNING "Pid %d(%s) over core_pipe_limit\n",
+>  			       task_tgid_vnr(current), current->comm);
+>  			printk(KERN_WARNING "Skipping core dump\n");
+> @@ -1024,7 +1025,9 @@ static struct ctl_table coredump_sysctls[] = {
+>  		.data		= &core_pipe_limit,
+>  		.maxlen		= sizeof(unsigned int),
+>  		.mode		= 0644,
+> -		.proc_handler	= proc_dointvec,
+> +		.proc_handler	= proc_dointvec_minmax,
+> +		.extra1		= SYSCTL_ZERO,
+> +		.extra2		= SYSCTL_INT_MAX,
+>  	},
+>  	{
+>  		.procname       = "core_file_note_size_limit",
+
