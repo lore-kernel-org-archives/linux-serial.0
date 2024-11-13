@@ -1,143 +1,137 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5DF282ED;
-	Wed, 13 Nov 2024 14:15:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA37620605E;
+	Wed, 13 Nov 2024 17:58:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731507337; cv=none; b=oBf/xWukP///0uYnhOAnZVp7ycLxmMQzbb6oBEkXJ+29SXl8qAzYTR0BqA9X3vIyHxTixlGpeDpwg+YQhK8Obhmva5sXwk0SFOhMSnyCexwWo8q5fyP1nFzpp3ZkZhNwULYk3L+1W79yaQ2ni68FKPxGr6pqYj70HlmUH4pzKNg=
+	t=1731520691; cv=none; b=MlCa4rJqU+F2FTQBT8krlvond3JNZuDywl+PDVm1W4PGOpN2EmNtDCI416XGYLk0NwDLsxmsKBswcr8WFMT31ot70KOmip9rGJAX+Wem3NOLg9qKiXcz2NhRFpBQeEMH7qxJ0IWm2nD3K9OA8m9pJt22UoS5/64goS+Ha5OnKU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731507337; c=relaxed/simple;
-	bh=7bz1ZkCIXCTeCZ66UcbnuOpr52mVq/zPBK//duEynWo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=h6xac8XK4Ko6x75yAudmQDZDcdhKtay5H9iRmPs3ooBV0WfAtiCeW0WQQQSjuxIB+eFLQii1rrITIC+bq2eyCCzda8VmMZA8kZT40HvvtDepVOIn4J5YesJ+BXD44wzJY5LT7faaPKBTzvyQ/JD4TYMxovl06R5a4PfXWTjq6pY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org; spf=pass smtp.mailfrom=clip-os.org; dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b=EAHfmF6+; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=clip-os.org
+	s=arc-20240116; t=1731520691; c=relaxed/simple;
+	bh=faWalIyVIG2cFG7+jPlwAYn07vjQFuWZUKaHRiRuR8E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NJKyMxqG0j4fSx2OjDIFGmuGN2rBAPZri74kkNyeW/qfgQoAisMelOVm7XBltCdYoEeB6EC71bgZdPGIbmVq7TSw+IKnTqVFNoJMJ9Kmyyy13n9GBM3UuDVlgrYELlF1U8p9Uq9B6ldwvwtufQTUj5TlfxbHYc7Hi49s/W6gDt4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Vbb4sQ7D; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b="EAHfmF6+"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id B9FF31BF20D;
-	Wed, 13 Nov 2024 14:15:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=clip-os.org; s=gm1;
-	t=1731507332;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WAq2o06namGsLDTq7nlV6jW6jaGMlKlDc8EB/0EBouM=;
-	b=EAHfmF6+QLYqonprBmJRtq/92+JLr1DYUYQtuMmN67gNCWEqadnqK5D0PVljjN3PVUSGRc
-	rtF/95MzineQ2WV1wkDnLMpQ9w0q/VRn4cy4FP3Epx10W2iipi5hvzIeffU1M7Swd02EJB
-	2REHIvaJke6s3OtT4e1RtkUqOk8LKL1gE8CtuKB+5noeRkN4E0+8gibl/cuqgCJVpRIwW0
-	F8k2Eq9n5VOs1rgvh4GMoPSA30iRnqTgu8PmoKV6mNWeLB+egPqTBK+UjV6g+4nRIlstnx
-	q7zUC3+b+xc3akxPQrPCIJ9kqV3mTfp+h8i0rhWOH/4DMDQpF4w/5XzzY+5PBA==
-Message-ID: <f616c1aa-65e7-44e8-90ac-5be8e3f88927@clip-os.org>
-Date: Wed, 13 Nov 2024 15:15:29 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Vbb4sQ7D"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1731520690; x=1763056690;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=faWalIyVIG2cFG7+jPlwAYn07vjQFuWZUKaHRiRuR8E=;
+  b=Vbb4sQ7D1OT9K7COTN9U6c3/wVosfVsLLu4wMky3dhHs/6LqNuBkk/dW
+   ILrD/hM66bRpzsQuD12xBn0y1CVI0EX+nWy7mi5CFtGvXaIv1Ax6qROKi
+   9PMn0q6QIa2vMVDH406/0wbeD8DAbp7xMvgxjlo5Qhu/g0lZLvStsGc8C
+   iJ0/vAmCQz8OSieZ1o2ZPnFlPFrDU0StMT4GLI4X9Lo/+QzFYSFLCXboS
+   acL9atEKNyWiU+7dgXHBYyhDhNMI0TENvrNK48EDuTEKzPBN18V6x2sbN
+   RVqEax9A8TaEueslMpNAyvLIUELCo41ZPosBsIZQOqWbpSxusSrqRe7CN
+   A==;
+X-CSE-ConnectionGUID: RSQ0AV5SRWSDnohEE2QKow==
+X-CSE-MsgGUID: BituA+NPRumxpem9ybZGLQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="53972258"
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="53972258"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2024 09:58:09 -0800
+X-CSE-ConnectionGUID: qPvyOlvBQSy3MTCGYkYepA==
+X-CSE-MsgGUID: uZHB1VCBTOSYMIkD/g4alg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,151,1728975600"; 
+   d="scan'208";a="118756535"
+Received: from lkp-server01.sh.intel.com (HELO 80bd855f15b3) ([10.239.97.150])
+  by orviesa002.jf.intel.com with ESMTP; 13 Nov 2024 09:58:06 -0800
+Received: from kbuild by 80bd855f15b3 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tBHcx-0000bN-1o;
+	Wed, 13 Nov 2024 17:58:03 +0000
+Date: Thu, 14 Nov 2024 01:57:55 +0800
+From: kernel test robot <lkp@intel.com>
+To: Kartik <kkartik@nvidia.com>, linux@armlinux.org.uk,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	theo.lebrun@bootlin.com, linus.walleij@linaro.org,
+	ilpo.jarvinen@linux.intel.com, l.sanfilippo@kunbus.com,
+	konradybcio@kernel.org, christophe.jaillet@wanadoo.fr,
+	arnd@arndb.de, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH] serial: amba-pl011: Fix RX stall when DMA is used
+Message-ID: <202411140119.QKkmNN97-lkp@intel.com>
+References: <20241113051023.3125-1-kkartik@nvidia.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] coredump: Fixes core_pipe_limit sysctl proc_handler
-To: Lin Feng <linf@wangsu.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Cc: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>,
- Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
- Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>,
- Joel Granados <j.granados@samsung.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Neil Horman <nhorman@tuxdriver.com>, Theodore Ts'o <tytso@mit.edu>
-References: <20241112131357.49582-1-nicolas.bouchinet@clip-os.org>
- <20241112131357.49582-2-nicolas.bouchinet@clip-os.org>
- <af2a2a7e-1604-4e24-bee6-f31498e0b25d@wangsu.com>
-Content-Language: en-US
-From: Nicolas Bouchinet <nicolas.bouchinet@clip-os.org>
-In-Reply-To: <af2a2a7e-1604-4e24-bee6-f31498e0b25d@wangsu.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-GND-Sasl: nicolas.bouchinet@clip-os.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241113051023.3125-1-kkartik@nvidia.com>
 
-Hi Lin,
+Hi Kartik,
 
-Thanks for your review.
+kernel test robot noticed the following build errors:
 
-On 11/13/24 03:35, Lin Feng wrote:
-> Hi,
->
-> see comments below please.
->
-> On 11/12/24 21:13, nicolas.bouchinet@clip-os.org wrote:
->> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
->>
->> proc_dointvec converts a string to a vector of signed int, which is
->> stored in the unsigned int .data core_pipe_limit.
->> It was thus authorized to write a negative value to core_pipe_limit
->> sysctl which once stored in core_pipe_limit, leads to the signed int
->> dump_count check against core_pipe_limit never be true. The same can be
->> achieved with core_pipe_limit set to INT_MAX.
->>
->> Any negative write or >= to INT_MAX in core_pipe_limit sysctl would
->> hypothetically allow a user to create very high load on the system by
->> running processes that produces a coredump in case the core_pattern
->> sysctl is configured to pipe core files to user space helper.
->> Memory or PID exhaustion should happen before but it anyway breaks the
->> core_pipe_limit semantic
->>
->> This commit fixes this by changing core_pipe_limit sysctl's proc_handler
->> to proc_dointvec_minmax and bound checking between SYSCTL_ZERO and
->> SYSCTL_INT_MAX.
->>
->> Fixes: a293980c2e26 ("exec: let do_coredump() limit the number of concurrent dumps to pipes")
->> Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
->> ---
->>   fs/coredump.c | 7 +++++--
->>   1 file changed, 5 insertions(+), 2 deletions(-)
->>
->> diff --git a/fs/coredump.c b/fs/coredump.c
->> index 7f12ff6ad1d3e..8ea5896e518dd 100644
->> --- a/fs/coredump.c
->> +++ b/fs/coredump.c
->> @@ -616,7 +616,8 @@ void do_coredump(const kernel_siginfo_t *siginfo)
->>   		cprm.limit = RLIM_INFINITY;
->>   
->>   		dump_count = atomic_inc_return(&core_dump_count);
->> -		if (core_pipe_limit && (core_pipe_limit < dump_count)) {
->> +		if ((core_pipe_limit && (core_pipe_limit < dump_count)) ||
->> +		    (core_pipe_limit && dump_count == INT_MAX)) {
-> While comparing between 'unsigned int' and 'signed int', C deems them both
-> to 'unsigned int', so as an insane user sets core_pipe_limit to INT_MAX,
-> and dump_count(signed int) does overflow INT_MAX, checking for
-> 'core_pipe_limit < dump_count' is passed, thus codes skips core dump.
->
-> So IMO it's enough after changing proc_handler to proc_dointvec_minmax.
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus soc/for-next linus/master v6.12-rc7 next-20241113]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Indeed, but the dump_count == INT_MAX is not here to catch overflow but 
-if both dump_count
-and core_pipe_limit are equal to INT_MAX. core_pipe_limit will not be 
-inferior to dump_count.
-Or maybe I am missing something ?
+url:    https://github.com/intel-lab-lkp/linux/commits/Kartik/serial-amba-pl011-Fix-RX-stall-when-DMA-is-used/20241113-131203
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20241113051023.3125-1-kkartik%40nvidia.com
+patch subject: [PATCH] serial: amba-pl011: Fix RX stall when DMA is used
+config: arm64-randconfig-003-20241113 (https://download.01.org/0day-ci/archive/20241114/202411140119.QKkmNN97-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241114/202411140119.QKkmNN97-lkp@intel.com/reproduce)
 
-I should factorize the test though, this is kind of ugly.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202411140119.QKkmNN97-lkp@intel.com/
 
->
-> Others in this patch:
-> Reviewed-by: Lin Feng <linf@wangsu.com>
->
->>   			printk(KERN_WARNING "Pid %d(%s) over core_pipe_limit\n",
->>   			       task_tgid_vnr(current), current->comm);
->>   			printk(KERN_WARNING "Skipping core dump\n");
->> @@ -1024,7 +1025,9 @@ static struct ctl_table coredump_sysctls[] = {
->>   		.data		= &core_pipe_limit,
->>   		.maxlen		= sizeof(unsigned int),
->>   		.mode		= 0644,
->> -		.proc_handler	= proc_dointvec,
->> +		.proc_handler	= proc_dointvec_minmax,
->> +		.extra1		= SYSCTL_ZERO,
->> +		.extra2		= SYSCTL_INT_MAX,
->>   	},
->>   	{
->>   		.procname       = "core_file_note_size_limit",
->
+All errors (new ones prefixed by >>):
+
+   drivers/tty/serial/amba-pl011.c: In function 'pl011_unthrottle_rx':
+>> drivers/tty/serial/amba-pl011.c:1822:16: error: 'struct uart_amba_port' has no member named 'using_rx_dma'
+    1822 |         if (uap->using_rx_dma) {
+         |                ^~
+>> drivers/tty/serial/amba-pl011.c:1823:20: error: 'struct uart_amba_port' has no member named 'dmacr'
+    1823 |                 uap->dmacr |= UART011_RXDMAE;
+         |                    ^~
+   drivers/tty/serial/amba-pl011.c:1824:32: error: 'struct uart_amba_port' has no member named 'dmacr'
+    1824 |                 pl011_write(uap->dmacr, uap, REG_DMACR);
+         |                                ^~
+
+
+vim +1822 drivers/tty/serial/amba-pl011.c
+
+  1808	
+  1809	static void pl011_unthrottle_rx(struct uart_port *port)
+  1810	{
+  1811		struct uart_amba_port *uap = container_of(port, struct uart_amba_port, port);
+  1812		unsigned long flags;
+  1813	
+  1814		uart_port_lock_irqsave(&uap->port, &flags);
+  1815	
+  1816		uap->im = UART011_RTIM;
+  1817		if (!pl011_dma_rx_running(uap))
+  1818			uap->im |= UART011_RXIM;
+  1819	
+  1820		pl011_write(uap->im, uap, REG_IMSC);
+  1821	
+> 1822		if (uap->using_rx_dma) {
+> 1823			uap->dmacr |= UART011_RXDMAE;
+  1824			pl011_write(uap->dmacr, uap, REG_DMACR);
+  1825		}
+  1826	
+  1827		uart_port_unlock_irqrestore(&uap->port, flags);
+  1828	}
+  1829	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
