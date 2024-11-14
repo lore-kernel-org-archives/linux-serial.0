@@ -1,59 +1,37 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6AF71F666B
-	for <linux-serial@vger.kernel.org>; Thu, 14 Nov 2024 08:11:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B08AFF9E6;
+	Thu, 14 Nov 2024 14:26:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731571896; cv=none; b=c6hk9+2Iba131UqNODr9egxtZOpY8lDxBgrLhIAHAFHWaqBS0IZ/F8/LQOsGogFubg7atCWOU/h7ezZ5O4SAjDC4OpwthyIDh/7TJguteUg9C7SQuk4LouSIueFcnJIyGb24QHU+ezD2HFNeJX+8OOqTWuJtr++qjtAnYv/zLsk=
+	t=1731594381; cv=none; b=QKCn170VnJHV6uOqy5c2fLs2xGIucmFHHACHg0XiIq7u0OvlhNTrWnpyLXrGGznJdKgIFTkou1+lc3OfckLyNUbHeEMr0uAws26Hj1a4LHIr0lRUShfApqD+ZF+DcQt9jDy8b6KpZq4EO0kk37mCVtFYNyCobQ2VQLxDkDKv3/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731571896; c=relaxed/simple;
-	bh=Dak7zVPoLqnhTV81XfL68498x/xktW2DL9spdvnsLQg=;
+	s=arc-20240116; t=1731594381; c=relaxed/simple;
+	bh=X67V1xjPx8h+tSm9+06VK7LjjJn3e1u215jRbqrzvjU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VxAYMnRwp5yS7+AZ+JKDD52iNxbJHVBTxRPTEj1GiTxPE2uHltQ765pste/dnetC4VNenHdeSgdy11pLAJtlzc62kv63l9JwpTsntZxkBGuRdYIrRzwBxffHnGgX0BWtZKgsNHXhi2zn4HpXwQkkbzaq2DCC+ZzbaReW5NrNzIY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=fn2+HGiN; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	 In-Reply-To:Content-Type; b=BfeHzOAW/gC9lEWexTbT/VnguWoCVUY5vYYD2lWxvJ3KzQdLLszDnUppKvd6OfIyNKTVgh1dBzCKRtHWMBRNnWmwnAXTSCB1tZtPBySOBmnxyeCAwprZG+JFyaQwPi5UMUHRRoB0dhbaqbG+k8CP0aOzhRKAnek3YpT4jNN6VGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org; spf=pass smtp.mailfrom=clip-os.org; dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b=cD3wmupX; arc=none smtp.client-ip=217.70.183.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=clip-os.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="fn2+HGiN"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4315839a7c9so3280395e9.3
-        for <linux-serial@vger.kernel.org>; Thu, 14 Nov 2024 00:11:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1731571891; x=1732176691; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=BtK7Koq5plsXkaoeepNkxSJgKDlZH5uwXtI9Rumwzq0=;
-        b=fn2+HGiNc8jvO6VW3mCTV+zv+fIXozZh0EHlGIjXTNb94zdqz0fSwIrEUUkP9Sh+FG
-         WisFiBkpPTyvH+c04psi3TrdL3pYRoYT7H7QHUjlpf/Y5813MucTAvz2aXQlvnOg/C2/
-         Oc7wKu4Ibmgxcukyy61mMZ6H/18B7hH47HZNkXBjL6H3sLEbHN/+Ac2ORRTj29ktGfJC
-         z3XmEpO5knKBzshHw6u4uJHrU56dz7dK0uTEsgTwm1kds3ZAZfEPZMGRpkN5FMWbSfPZ
-         pUPfGpWRGMNdDLYIk1w1GS+qoQC6jtC8pUvWSr3LJso0aUCTcvRy78KLMyPs6A99cqeZ
-         WKvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731571891; x=1732176691;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BtK7Koq5plsXkaoeepNkxSJgKDlZH5uwXtI9Rumwzq0=;
-        b=FjIPbBFj9T1ZH3c/nWovywUOMvEHG+4F0t9uBsf3kmT+W+g/C8tzuUsWjsD0rnmSax
-         5f/zxQAK4H3mNLj7H+Tb3Idfp9rbOq2Bf5RvdYyV3Elgapy0J+Lo4AJKvzn3ZHNoDhE9
-         e19uqQOYHz5bDplrI7tP5g5fLf7BT/36Mr8/LhjhCb3g6Rt/xEowSs9nwCVheSJEvHeI
-         3wMGEZRVR2hkmLDYEnZeHUFSgVj3IeEUFqzU0Ei2/FDxtgh5eW0g5CQq4gzC49bKwUNF
-         h4Uzp5LLKHTfkFxZDBH5WjU5pfHCXZYIk7SgQPkLKUdLUpy3+uN8721i6lqtQybh0eZE
-         qMfg==
-X-Forwarded-Encrypted: i=1; AJvYcCUqwysx+4dZ7zDmF4F5yzTNQHkJC7P1ZgrsX/hAJfNoPyejtUD+rPT78gqijwUf8d4YBRr9CCZisv+ewiw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywsfi/MRH3QNWErfEQTy2L58RbN0SqieFAiuH0agyt5WrvWniAt
-	3a9dT1d6SUeK+NBl7fNOuvUTsib33FwWoUJ19tmSWP8XBBDh6PAZorVQoxVJCZY=
-X-Google-Smtp-Source: AGHT+IGQwL97xGZDE67jemb32d4K5FWvWjN8w39M98m1r+VimY0ubTvizw1TQfZpwlKMc9NeHCwreA==
-X-Received: by 2002:a05:600c:3b82:b0:42c:bb10:7292 with SMTP id 5b1f17b1804b1-432b74fc98cmr197271285e9.1.1731571890834;
-        Thu, 14 Nov 2024 00:11:30 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.28])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432da2982fasm14730395e9.36.2024.11.14.00.11.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Nov 2024 00:11:30 -0800 (PST)
-Message-ID: <20138ae9-ce35-40a5-be10-d0c6da23f5d1@tuxon.dev>
-Date: Thu, 14 Nov 2024 10:11:27 +0200
+	dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b="cD3wmupX"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 14D3B60007;
+	Thu, 14 Nov 2024 14:25:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=clip-os.org; s=gm1;
+	t=1731594370;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=vA7tfGBEgNX6EndwaQ8kIuuNkGQyzJxfZT7/8TI0Oog=;
+	b=cD3wmupX5VV+Aw8Fnnwvh/qnGMpnsueFCYK3UMiHHpYKFOH8Olw1CHG39RDOvlCrLattMT
+	1kRbuveEwx0BMRyWnIlo9Rd/G3dK91G/OcOVAc/j+bK6UyIWMfjXogK26KkwfDPdsr+5wX
+	IKJ+0aYy9LooHHB10TugfZWGgZgUi0x3AJmQ5XAjzxqiF/rbx92mXfRHZEcVjqX3O2hFmc
+	bu5wTVkzQkNzqMLT6P+SM3o7vgS06337cFHRToiiJCCJkeD1JiGSyKh8j4avd2c8dkFhKy
+	J00dapgBHfXV3Rc5NUZqcVszgx2AmGVY7OmCqsY158obZ1AD0CzzClcqPyvbQw==
+Message-ID: <040b7d4a-3967-444d-b166-e75df43e1a0c@clip-os.org>
+Date: Thu, 14 Nov 2024 15:25:56 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -61,122 +39,120 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/8] serial: sh-sci: Check if TX data was written to
- device in .tx_empty()
+Subject: Re: [PATCH 1/3] coredump: Fixes core_pipe_limit sysctl proc_handler
+To: Lin Feng <linf@wangsu.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Cc: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>,
+ Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+ Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>,
+ Joel Granados <j.granados@samsung.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Neil Horman <nhorman@tuxdriver.com>, Theodore Ts'o <tytso@mit.edu>
+References: <20241112131357.49582-1-nicolas.bouchinet@clip-os.org>
+ <20241112131357.49582-2-nicolas.bouchinet@clip-os.org>
+ <af2a2a7e-1604-4e24-bee6-f31498e0b25d@wangsu.com>
+ <f616c1aa-65e7-44e8-90ac-5be8e3f88927@clip-os.org>
+ <7454ba19-6c78-4318-8164-21d4b14bee08@wangsu.com>
 Content-Language: en-US
-To: Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
- magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
- gregkh@linuxfoundation.org, p.zabel@pengutronix.de, g.liakhovetski@gmx.de,
- lethal@linux-sh.org
-Cc: linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
- linux-serial@vger.kernel.org,
- Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, stable@vger.kernel.org
-References: <20241108100513.2814957-1-claudiu.beznea.uj@bp.renesas.com>
- <20241108100513.2814957-3-claudiu.beznea.uj@bp.renesas.com>
- <530f4a8e-b71a-4db1-a2cc-df1fcfa132ec@kernel.org>
- <3711546e-a551-4cc9-a378-17aab5b426ef@tuxon.dev>
- <b3f67cd7-056a-43c2-98dc-e983649124ed@kernel.org>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <b3f67cd7-056a-43c2-98dc-e983649124ed@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From: Nicolas Bouchinet <nicolas.bouchinet@clip-os.org>
+In-Reply-To: <7454ba19-6c78-4318-8164-21d4b14bee08@wangsu.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: nicolas.bouchinet@clip-os.org
 
-Hi, Jiri,
 
-On 14.11.2024 08:26, Jiri Slaby wrote:
+On 11/14/24 02:34, Lin Feng wrote:
 > Hi,
-> 
-> On 08. 11. 24, 13:19, Claudiu Beznea wrote:
->> On 08.11.2024 12:57, Jiri Slaby wrote:
->>> On 08. 11. 24, 11:05, Claudiu wrote:
-> ...
->>>> --- a/drivers/tty/serial/sh-sci.c
->>>> +++ b/drivers/tty/serial/sh-sci.c
->>>> @@ -157,6 +157,7 @@ struct sci_port {
->>>>          bool has_rtscts;
->>>>        bool autorts;
->>>> +    bool first_time_tx;
+>
+> On 11/13/24 22:15, Nicolas Bouchinet wrote:
+>> Hi Lin,
+>>
+>> Thanks for your review.
+>>
+>> On 11/13/24 03:35, Lin Feng wrote:
+>>> Hi,
 >>>
->>> This is a misnomer. It suggests to be set only during the first TX.
->>
->> I chose this naming as this was the scenario I discovered it didn't work.
->> Reproducible though these steps:
->>
->> 1/ open the serial device (w/o running any TX/RX)
->> 2/ call tx_empty()
->>
->> What
->>> about ::did_tx, ::performed_tx, ::transmitted, or alike?
->>
->> I have nothing against any of these. Can you please let me know if you have
->> a preferred one?
-> 
-> No, you choose, or invent even better one :). Or let AI do it for you.
-> 
->>>> @@ -885,6 +887,7 @@ static void sci_transmit_chars(struct uart_port *port)
->>>>            }
->>>>              sci_serial_out(port, SCxTDR, c);
->>>> +        s->first_time_tx = true;
->>>>              port->icount.tx++;
->>>>        } while (--count > 0);
->>>> @@ -1241,6 +1244,8 @@ static void sci_dma_tx_complete(void *arg)
->>>>        if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
->>>>            uart_write_wakeup(port);
->>>>    +    s->first_time_tx = true;
+>>> see comments below please.
 >>>
->>> This is too late IMO. The first in-flight dma won't be accounted in
->>> sci_tx_empty(). From DMA submit up to now.
->>
->> If it's in-flight we can't determine it's status anyway with one variable.
->> We can set this variable later but it wouldn't tell the truth as the TX
->> might be in progress anyway or may have been finished?
->>
->> The hardware might help with this though the TEND bit. According to the HW
->> manual, the TEND bit has the following meaning:
->>
->> 0: Transmission is in the waiting state or in progress.
->> 1: Transmission is completed.
->>
->> But the problem, from my point of view, is that the 0 has double meaning.
->>
->> I noticed the tx_empty() is called in kernel multiple times before
->> declaring TX is empty or not. E.g., uart_suspend_port() call it 3 times,
->> uart_wait_until_sent() call it in a while () look with a timeout. There is
->> the uart_ioctl() which calls it though uart_get_lsr_info() only one time
->> but I presumed the user space might implement the same multiple trials
->> approach before declaring it empty.
->>
->> Because of this I considered it wouldn't be harmful for the scenario you
->> described "The first in-flight dma won't be accounted in sci_tx_empty()"
->> as the user may try again later to check the status. For this reason I also
->> chose to have no extra locking around this variable.
-> 
-> What about the below?
-> 
->>>> @@ -2076,6 +2081,10 @@ static unsigned int sci_tx_empty(struct uart_port
->>>> *port)
->>>>    {
->>>>        unsigned short status = sci_serial_in(port, SCxSR);
->>>>        unsigned short in_tx_fifo = sci_txfill(port);
->>>> +    struct sci_port *s = to_sci_port(port);
->>>> +
->>>> +    if (!s->first_time_tx)
->>>> +        return TIOCSER_TEMT;
+>>> On 11/12/24 21:13, nicolas.bouchinet@clip-os.org wrote:
+>>>> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
+>>>>
+>>>> proc_dointvec converts a string to a vector of signed int, which is
+>>>> stored in the unsigned int .data core_pipe_limit.
+>>>> It was thus authorized to write a negative value to core_pipe_limit
+>>>> sysctl which once stored in core_pipe_limit, leads to the signed int
+>>>> dump_count check against core_pipe_limit never be true. The same can be
+>>>> achieved with core_pipe_limit set to INT_MAX.
+>>>>
+>>>> Any negative write or >= to INT_MAX in core_pipe_limit sysctl would
+>>>> hypothetically allow a user to create very high load on the system by
+>>>> running processes that produces a coredump in case the core_pattern
+>>>> sysctl is configured to pipe core files to user space helper.
+>>>> Memory or PID exhaustion should happen before but it anyway breaks the
+>>>> core_pipe_limit semantic
+>>>>
+>>>> This commit fixes this by changing core_pipe_limit sysctl's proc_handler
+>>>> to proc_dointvec_minmax and bound checking between SYSCTL_ZERO and
+>>>> SYSCTL_INT_MAX.
+>>>>
+>>>> Fixes: a293980c2e26 ("exec: let do_coredump() limit the number of concurrent dumps to pipes")
+>>>> Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
+>>>> ---
+>>>>    fs/coredump.c | 7 +++++--
+>>>>    1 file changed, 5 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/fs/coredump.c b/fs/coredump.c
+>>>> index 7f12ff6ad1d3e..8ea5896e518dd 100644
+>>>> --- a/fs/coredump.c
+>>>> +++ b/fs/coredump.c
+>>>> @@ -616,7 +616,8 @@ void do_coredump(const kernel_siginfo_t *siginfo)
+>>>>    		cprm.limit = RLIM_INFINITY;
+>>>>    
+>>>>    		dump_count = atomic_inc_return(&core_dump_count);
+>>>> -		if (core_pipe_limit && (core_pipe_limit < dump_count)) {
+>>>> +		if ((core_pipe_limit && (core_pipe_limit < dump_count)) ||
+>>>> +		    (core_pipe_limit && dump_count == INT_MAX)) {
+>>> While comparing between 'unsigned int' and 'signed int', C deems them both
+>>> to 'unsigned int', so as an insane user sets core_pipe_limit to INT_MAX,
+>>> and dump_count(signed int) does overflow INT_MAX, checking for
+>>> 'core_pipe_limit < dump_count' is passed, thus codes skips core dump.
 >>>
->>> So perhaps check if there is a TX DMA running here too?
-> 
-> This ^^^? Like dmaengine_tx_status()?
+>>> So IMO it's enough after changing proc_handler to proc_dointvec_minmax.
+>> Indeed, but the dump_count == INT_MAX is not here to catch overflow but
+>> if both dump_count
+>> and core_pipe_limit are equal to INT_MAX. core_pipe_limit will not be
+>> inferior to dump_count.
+>> Or maybe I am missing something ?
+>>
+> Extracted from man core:
+>         Since Linux 2.6.32, the /proc/sys/kernel/core_pipe_limit can be used to
+>         defend against this possibility.  The value in this  file  defines  how
+>         many  concurrent crashing processes may be piped to user-space programs
+>         in parallel.  If this value is exceeded, then those crashing  processes
+>         above  this  value are noted in the kernel log and their core dumps are
+>         skipped.
+>
+> Since no spinlock protecting us, due to the concurrent running of
+> atomic_inc_return(&core_dump_count), even with the changing above
+> it's not guaranteed that core_dump_count can't exceed core_pipe_limit).
+> As you said, suppose both of them are equal to INT_MAX(0x7fffffff),
+> and before any dummping thread drops core_dump_count, one new thread
+> comes in then hits atomic_inc_return(&core_dump_count) and now
+> (unsigned int)core_dump_count is 0x80000000, but original codes checking
+> for core_pipe_limit still works as expected.
 
-I missed that I can use this ^. Thanks for pointing it.
+You are absolutely right about this. Moreover, as stated in my commit
+message, pid or memory exhaustion should occur before reaching this
+scenario.
 
-Claudiu
+Thank's for your comment and review. I'll fix and push a v2.
 
-> 
->>>
->>>>          return (status & SCxSR_TEND(port)) && !in_tx_fifo ? TIOCSER_TEMT
->>>> : 0;
->>>>    }
->>>
->>> thanks,
+>
+> Please correct me if I'm wrong :)
+>
+> Thanks,
+> linfeng
+>
+>
