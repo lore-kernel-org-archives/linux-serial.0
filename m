@@ -1,98 +1,86 @@
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F389C18CBEE;
-	Thu, 14 Nov 2024 16:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 152B71AA7A5;
+	Thu, 14 Nov 2024 20:12:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731601666; cv=none; b=IGr+36MRloHodSixqIDg4NZoqX2ZCc+r8fry+v5tBEIx9A4l7U6lgBckBIVwSLTAHMZJCx2U0BC40BbN8Hohebf9zy2IhhPWJFCQyUKG7ZEzrsTgt1L/w+1Fim9UIJAq7NQxNUY4BJaA/OB98OdwpOBsmcDvdnarxexF0gSFs0E=
+	t=1731615129; cv=none; b=kDX12Y1SIb5Wa64NXwQ1ppkhObATjyM3NmpcLD2pQDOV1xkDn0pRUL13iBQgIuQi9ecSdzHyYegcwLHRc8QA8ccbrQJlwh1itpToO6gGs72Qv1qN3yBaUl5toBIR5hLj4JpJUb+tp5aN6VOvaqw785z4CWA21nYjbz0efXsDleA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731601666; c=relaxed/simple;
-	bh=n5hyX6yMomOaBzphPxzWAbVrcJaUdxbAmwSzohj0OEg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gcnIh3qphGqvqtrp+1w0Dojw4CcK9HkO47yfqxxHYTtXd4Y28oEWgIVGyyr8cVBOasEPa4/+iFQSWs2NAiIK5khzLt6Z56f43/b83sws+gmwMEKGxDWCFET3MfHpDR+0a5TzOUdfhLsHSEIL+mN6OKxUpce/J22j7csLV7mRI1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org; spf=pass smtp.mailfrom=clip-os.org; dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b=WDyLFrSq; arc=none smtp.client-ip=217.70.183.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=clip-os.org
+	s=arc-20240116; t=1731615129; c=relaxed/simple;
+	bh=H7uW/0TAcgDzBQEFWvgxrMAxLVeZi9+y4ArBI5hHAew=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yy+sFLFy9H1YTw69cr4VS9hD4fK1bFCDJynfABTS1Swfp7n+gqgp2sxsYdr3luyTRsUjHJoBy40RDDQNDwvnaopC8Xtt/qGjDoURHIAlr3Y2G4KCVpxbEoDb6ewTpWFVexnpGGUmM2xEnDGs8JEs4WD+3V69IFh3g0A/MaQiKdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nAYnHdS9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b="WDyLFrSq"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id CDFCB1C0007;
-	Thu, 14 Nov 2024 16:27:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=clip-os.org; s=gm1;
-	t=1731601662;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=8TPoafWSqHQ3L6VZWGol10eaPnstQLMyyt96RSAYCQ0=;
-	b=WDyLFrSqJmEjmOtTCzCChcWaYROO0VuqcA411o2X0wx2J9FXRoFGB7goiSmWzBFiVEA1g0
-	oXXIU+c1WAgAY9JM43ch9OzSyVFH3u8oH8rI+otcf1WdbdGyN0ZBGxWkHolgpKHlFjcdQ6
-	MwHXRKJxFWh53bD6JZ6y40K6jT/XAKFDVu25rr+OB0BhGLwmRAAd2hanWh4NdoT/IKGqvd
-	qo/6xGkCGP40377itTRTYuLR8xNRFtLlggO3o2InkA8t0QEurKPd6DWOAyyuysA0xiDT92
-	X9gGRoCg4oJ/QMKFdNx9g83FJ5ey4SxtFyY7+3wULcImuQ2OUiKbVIXdjzBwrg==
-From: nicolas.bouchinet@clip-os.org
-To: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org
-Cc: nicolas.bouchinet@clip-os.org,
-	Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nAYnHdS9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E357C4CECD;
+	Thu, 14 Nov 2024 20:12:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731615128;
+	bh=H7uW/0TAcgDzBQEFWvgxrMAxLVeZi9+y4ArBI5hHAew=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nAYnHdS9rYqtw0awHr+P8jMRURaVEW094WZ08UVpANHlc7ZKch0ul3YbktacCAqzB
+	 Wot80Iyic2BTa4h39EX0kqgwoQN349jvraHME40U4kWfQuQcUuwb8MvojM6oTqeIcD
+	 L2qqH6FzfDC5hxzAkVkyELsdcV3Sd9Ee4HRHt5jogDxgWLv/nEg4c4qrZZgEkDMpPA
+	 whDG5JHwD//Oz4iNMP3rvqFubRVazW+XtUbxlKYMXLsbpe1ciYjqoSv06JKVacGvwY
+	 IhvWz5e8d6ioKjOLMdQV1TNvpYHXPZvEokRdW8PtdjoSWBGdrTvLDTQyGXtJQ0ohvk
+	 s5e2xKiSgko6w==
+Date: Thu, 14 Nov 2024 20:12:03 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Wenhua Lin <Wenhua.Lin@unisoc.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	Jan Kara <jack@suse.cz>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Kees Cook <kees@kernel.org>,
-	Joel Granados <j.granados@samsung.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Neil Horman <nhorman@tuxdriver.com>,
-	Lin Feng <linf@wangsu.com>,
-	"Theodore Ts'o" <tytso@mit.edu>
-Subject: [PATCH v2 3/3] tty: ldsic: fix tty_ldisc_autoload sysctl's proc_handler
-Date: Thu, 14 Nov 2024 17:25:52 +0100
-Message-ID: <20241114162638.57392-4-nicolas.bouchinet@clip-os.org>
-X-Mailer: git-send-email 2.47.0
-In-Reply-To: <20241114162638.57392-1-nicolas.bouchinet@clip-os.org>
-References: <20241114162638.57392-1-nicolas.bouchinet@clip-os.org>
+	Bartosz Golaszewski <brgl@bgdev.pl>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Cixi Geng <cixi.geng@linux.dev>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	wenhua lin <wenhua.lin1994@gmail.com>,
+	Xiongpeng Wu <xiongpeng.wu@unisoc.com>,
+	Zhaochen Su <Zhaochen.Su@unisoc.com>,
+	Zhirong Qiu <Zhirong.Qiu@unisoc.com>
+Subject: Re: [PATCH 2/2] dt-bindings: serial: Add a new compatible string for
+ ums9632
+Message-ID: <20241114-elude-apache-770a335fad1a@spud>
+References: <20241113110516.2166328-1-Wenhua.Lin@unisoc.com>
+ <20241113110516.2166328-3-Wenhua.Lin@unisoc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-GND-Sasl: nicolas.bouchinet@clip-os.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Z7LI916VMgKQTvjY"
+Content-Disposition: inline
+In-Reply-To: <20241113110516.2166328-3-Wenhua.Lin@unisoc.com>
 
-From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
 
-Commit 7c0cca7c847e ("tty: ldisc: add sysctl to prevent autoloading of
-ldiscs") introduces the tty_ldisc_autoload sysctl with the wrong
-proc_handler. .extra1 and .extra2 parameters are set to avoid other values
-thant SYSCTL_ZERO or SYSCTL_ONE to be set but proc_dointvec do not uses
-them.
+--Z7LI916VMgKQTvjY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-This commit fixes this by using proc_dointvec_minmax instead of
-proc_dointvec.
+On Wed, Nov 13, 2024 at 07:05:16PM +0800, Wenhua Lin wrote:
+> The UMS9632 uses the SC9632 serial device.
+>=20
+> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 
-Fixes: 7c0cca7c847e ("tty: ldisc: add sysctl to prevent autoloading of ldiscs")
-Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
----
- drivers/tty/tty_io.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 407b0d87b7c10..f211154367420 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -3631,7 +3631,7 @@ static struct ctl_table tty_table[] = {
- 		.data		= &tty_ldisc_autoload,
- 		.maxlen		= sizeof(tty_ldisc_autoload),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
- 		.extra2		= SYSCTL_ONE,
- 	},
--- 
-2.47.0
+--Z7LI916VMgKQTvjY
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZzZZkwAKCRB4tDGHoIJi
+0ka8AQDKLDahMB2xlr+o8OldBHxl/bNAxIwALvNRV87kPSh+1wEA4s/fvR+87JkY
+12FgdA7/wcmyhX4bIWkWHtnv35OV9gc=
+=gyfr
+-----END PGP SIGNATURE-----
+
+--Z7LI916VMgKQTvjY--
