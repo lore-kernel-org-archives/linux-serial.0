@@ -1,238 +1,182 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA4F1E9080;
-	Thu, 14 Nov 2024 07:50:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6AF71F666B
+	for <linux-serial@vger.kernel.org>; Thu, 14 Nov 2024 08:11:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731570645; cv=none; b=YCzQL9aKrpWASLeWp5QWSuFxj5OzCmVLFDpWq3Pb462huXSSb3KOntM/frffpGcqpntKxv/D4pwImjqrVt0CqZx1WYf91ia5gtCnWoesh5dV7wGkHmiGYZl4N10VxHOX+dNLcJnbKepOykoOoxyytmJDX3RWiywqKWt21cDx2T8=
+	t=1731571896; cv=none; b=c6hk9+2Iba131UqNODr9egxtZOpY8lDxBgrLhIAHAFHWaqBS0IZ/F8/LQOsGogFubg7atCWOU/h7ezZ5O4SAjDC4OpwthyIDh/7TJguteUg9C7SQuk4LouSIueFcnJIyGb24QHU+ezD2HFNeJX+8OOqTWuJtr++qjtAnYv/zLsk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731570645; c=relaxed/simple;
-	bh=VEEdV2j4NTseykCPPGLuk4dbGlTHdNyaisNPkK2RWmc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=g6JM+cvjpwbp2qLVd5TMorRF/VJmgtpj4F9vjmGeBFj6XTf0Oo7shlnAUP+rSRuX7HOXR9SbTpdi3W6RgZB5otdxAV6RjiuYzK3BzbDNf5lHyX5u4I7m1L5DumNZybFhZUuYZlHq7RLa1LpaaQBpAQHTDBmVXN61KHsz+1dh9LM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JIcvsFDz; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1731571896; c=relaxed/simple;
+	bh=Dak7zVPoLqnhTV81XfL68498x/xktW2DL9spdvnsLQg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=VxAYMnRwp5yS7+AZ+JKDD52iNxbJHVBTxRPTEj1GiTxPE2uHltQ765pste/dnetC4VNenHdeSgdy11pLAJtlzc62kv63l9JwpTsntZxkBGuRdYIrRzwBxffHnGgX0BWtZKgsNHXhi2zn4HpXwQkkbzaq2DCC+ZzbaReW5NrNzIY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=fn2+HGiN; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JIcvsFDz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731570643; x=1763106643;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VEEdV2j4NTseykCPPGLuk4dbGlTHdNyaisNPkK2RWmc=;
-  b=JIcvsFDzMg6zEuS5BN5tOD1REKxUOzZT/+PJjID616EGUgL4O5GPOFAm
-   vAa7g0z9VVTpLEqoj0/TjL06/J/lfUq7coSSL10ENv56HPMwAPyxIFhqy
-   ub8yKBgzwLFQVdnyRXQsq3U/njNfzR/6OHOntVB+/k5flX6Z72WHUKCX9
-   pZtZ3TDVMjg41o1/wzU0P3dp/EoIKZgPX6L7/rJodqXcBpLv2jibHms5u
-   kWpztNAA0DJQl/2mc8/iP1N9az7uED6UChsEeDgLJ2orsYOXFb3RawFuT
-   tWL6v79Rx2JLf3hNb/B7AZYKeYTRFtvRlucEeMZGTLs3Z0zQMWGr8nHUM
-   A==;
-X-CSE-ConnectionGUID: 0TRftLKCQyaCmISb9h6G7w==
-X-CSE-MsgGUID: cYmvHQvBRLKCRmZO1n/XVQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11222"; a="31469695"
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="31469695"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2024 23:50:42 -0800
-X-CSE-ConnectionGUID: gmLL/F8nR6OHb4eKqSuS0w==
-X-CSE-MsgGUID: 6OtMX8/LQWCyFoj1fP5Tbg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,153,1728975600"; 
-   d="scan'208";a="93171172"
-Received: from smile.fi.intel.com ([10.237.72.154])
-  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Nov 2024 23:50:39 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tBUce-0000000EdWX-1pu3;
-	Thu, 14 Nov 2024 09:50:36 +0200
-Date: Thu, 14 Nov 2024 09:50:36 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Leonardo Bras <leobras@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Tony Lindgren <tony@atomide.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Shanker Donthineni <sdonthineni@nvidia.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/4] irq: Introduce IRQ_HANDLED_MANY
-Message-ID: <ZzWrzC1QhhlNqLpl@smile.fi.intel.com>
-References: <20240216075948.131372-2-leobras@redhat.com>
- <20240216075948.131372-5-leobras@redhat.com>
- <87zfvwai62.ffs@tglx>
- <87v86kaf84.ffs@tglx>
- <ZdWMja3BfCZsbF_q@LeoBras>
- <87edd5hljz.ffs@tglx>
- <ZdghE6TNHgZ_bi19@LeoBras>
- <ZzVxIfb5KpL97P4Q@LeoBras>
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="fn2+HGiN"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4315839a7c9so3280395e9.3
+        for <linux-serial@vger.kernel.org>; Thu, 14 Nov 2024 00:11:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tuxon.dev; s=google; t=1731571891; x=1732176691; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BtK7Koq5plsXkaoeepNkxSJgKDlZH5uwXtI9Rumwzq0=;
+        b=fn2+HGiNc8jvO6VW3mCTV+zv+fIXozZh0EHlGIjXTNb94zdqz0fSwIrEUUkP9Sh+FG
+         WisFiBkpPTyvH+c04psi3TrdL3pYRoYT7H7QHUjlpf/Y5813MucTAvz2aXQlvnOg/C2/
+         Oc7wKu4Ibmgxcukyy61mMZ6H/18B7hH47HZNkXBjL6H3sLEbHN/+Ac2ORRTj29ktGfJC
+         z3XmEpO5knKBzshHw6u4uJHrU56dz7dK0uTEsgTwm1kds3ZAZfEPZMGRpkN5FMWbSfPZ
+         pUPfGpWRGMNdDLYIk1w1GS+qoQC6jtC8pUvWSr3LJso0aUCTcvRy78KLMyPs6A99cqeZ
+         WKvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731571891; x=1732176691;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BtK7Koq5plsXkaoeepNkxSJgKDlZH5uwXtI9Rumwzq0=;
+        b=FjIPbBFj9T1ZH3c/nWovywUOMvEHG+4F0t9uBsf3kmT+W+g/C8tzuUsWjsD0rnmSax
+         5f/zxQAK4H3mNLj7H+Tb3Idfp9rbOq2Bf5RvdYyV3Elgapy0J+Lo4AJKvzn3ZHNoDhE9
+         e19uqQOYHz5bDplrI7tP5g5fLf7BT/36Mr8/LhjhCb3g6Rt/xEowSs9nwCVheSJEvHeI
+         3wMGEZRVR2hkmLDYEnZeHUFSgVj3IeEUFqzU0Ei2/FDxtgh5eW0g5CQq4gzC49bKwUNF
+         h4Uzp5LLKHTfkFxZDBH5WjU5pfHCXZYIk7SgQPkLKUdLUpy3+uN8721i6lqtQybh0eZE
+         qMfg==
+X-Forwarded-Encrypted: i=1; AJvYcCUqwysx+4dZ7zDmF4F5yzTNQHkJC7P1ZgrsX/hAJfNoPyejtUD+rPT78gqijwUf8d4YBRr9CCZisv+ewiw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywsfi/MRH3QNWErfEQTy2L58RbN0SqieFAiuH0agyt5WrvWniAt
+	3a9dT1d6SUeK+NBl7fNOuvUTsib33FwWoUJ19tmSWP8XBBDh6PAZorVQoxVJCZY=
+X-Google-Smtp-Source: AGHT+IGQwL97xGZDE67jemb32d4K5FWvWjN8w39M98m1r+VimY0ubTvizw1TQfZpwlKMc9NeHCwreA==
+X-Received: by 2002:a05:600c:3b82:b0:42c:bb10:7292 with SMTP id 5b1f17b1804b1-432b74fc98cmr197271285e9.1.1731571890834;
+        Thu, 14 Nov 2024 00:11:30 -0800 (PST)
+Received: from [192.168.50.4] ([82.78.167.28])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432da2982fasm14730395e9.36.2024.11.14.00.11.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Nov 2024 00:11:30 -0800 (PST)
+Message-ID: <20138ae9-ce35-40a5-be10-d0c6da23f5d1@tuxon.dev>
+Date: Thu, 14 Nov 2024 10:11:27 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZzVxIfb5KpL97P4Q@LeoBras>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/8] serial: sh-sci: Check if TX data was written to
+ device in .tx_empty()
+Content-Language: en-US
+To: Jiri Slaby <jirislaby@kernel.org>, geert+renesas@glider.be,
+ magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
+ gregkh@linuxfoundation.org, p.zabel@pengutronix.de, g.liakhovetski@gmx.de,
+ lethal@linux-sh.org
+Cc: linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-serial@vger.kernel.org,
+ Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, stable@vger.kernel.org
+References: <20241108100513.2814957-1-claudiu.beznea.uj@bp.renesas.com>
+ <20241108100513.2814957-3-claudiu.beznea.uj@bp.renesas.com>
+ <530f4a8e-b71a-4db1-a2cc-df1fcfa132ec@kernel.org>
+ <3711546e-a551-4cc9-a378-17aab5b426ef@tuxon.dev>
+ <b3f67cd7-056a-43c2-98dc-e983649124ed@kernel.org>
+From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+In-Reply-To: <b3f67cd7-056a-43c2-98dc-e983649124ed@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Nov 14, 2024 at 12:40:17AM -0300, Leonardo Bras wrote:
-> On Fri, Feb 23, 2024 at 01:37:39AM -0300, Leonardo Bras wrote:
-> > On Wed, Feb 21, 2024 at 04:41:20PM +0100, Thomas Gleixner wrote:
-> > > On Wed, Feb 21 2024 at 02:39, Leonardo Bras wrote:
-> > > > On Mon, Feb 19, 2024 at 12:03:07PM +0100, Thomas Gleixner wrote:
-> > > >> >> Is scenarios where there is no need to keep track of IRQ handled, convert
-> > > >> >> it back to IRQ_HANDLED.
-> > > >> >
-> > > >> > That's not really workable as you'd have to update tons of drivers just
-> > > >> > to deal with that corner case. That's error prone and just extra
-> > > >> > complexity all over the place.
-> > > >
-> > > > I agree, that's a downside of this implementation. 
-> > > 
-> > > A serious one which is not really workable. See below.
-> > > 
-> > > > I agree the above may be able to solve the issue, but it would make 2 extra 
-> > > > atomic ops necessary in the thread handling the IRQ, as well as one extra 
-> > > > atomic operation in note_interrupt(), which could increase latency on this 
-> > > > IRQ deferring the handler to a thread.
-> > > >
-> > > > I mean, yes, the cpu running note_interrupt() would probably already have 
-> > > > exclusiveness for this cacheline, but it further increases cacheline 
-> > > > bouncing and also adds the mem barriers that incur on atomic operations, 
-> > > > even if we use an extra bit from threads_handled instead of allocate a new 
-> > > > field for threads_running.
-> > > 
-> > > I think that's a strawman. Atomic operations can of course be more
-> > > expensive than non-atomic ones, but they only start to make a difference
-> > > when the cache line is contended. That's not the case here for the
-> > > normal operations.
-> > > 
-> > > Interrupts and their threads are strictly targeted to a single CPU and
-> > > the cache line is already hot and had to be made exclusive because of
-> > > other write operations to it.
-> > > 
-> > > There is usually no concurrency at all, except for administrative
-> > > operations like enable/disable or affinity changes. Those administrative
-> > > operations are not high frequency and the resulting cache line bouncing
-> > > is unavoidable even without that change. But does it matter in the
-> > > larger picture? I don't think so.
-> > 
-> > That's a fair point, but there are some use cases that use CPU Isolation on 
-> > top of PREEMPT_RT in order to reduce interference on a CPU running an RT 
-> > workload.
-> > 
-> > For those cases, IIRC the handler will run on a different (housekeeping) 
-> > CPU when those IRQs originate on an Isolated CPU, meaning the above 
-> > described cacheline bouncing is expected.
-> > 
-> > 
-> > > 
-> > > > On top of that, let's think on a scenario where the threaded handler will 
-> > > > solve a lot of requests, but not necessarily spend a lot of time doing so.
-> > > > This allows the thread to run for little time while solving a lot of 
-> > > > requests.
-> > > >
-> > > > In this scenario, note_interrupt() could return without incrementing 
-> > > > irqs_unhandled for those IRQ that happen while the brief thread is running, 
-> > > > but every other IRQ would cause note_interrupt() to increase 
-> > > > irqs_unhandled, which would cause the bug to still reproduce.
-> > > 
-> > > In theory yes. Does it happen in practice?
-> > > 
-> > > But that exposes a flaw in the actual detection code. The code is
-> > > unconditionally accumulating if there is an unhandled interrupt within
-> > > 100ms after the last unhandled one. IOW, if there is a periodic
-> > > unhandled one every 50ms, the interrupt will be shut down after 100000 *
-> > > 50ms = 5000s ~= 83.3m ~= 1.4h. And it neither cares about the number of
-> > > actually handled interrupts.
-> > > 
-> > > The spurious detector is really about runaway interrupts which hog a CPU
-> > > completely, but the above is not what we want to protect against.
-> > 
-> > Now it makes a lot more sense to me.
-> > Thanks!
+Hi, Jiri,
+
+On 14.11.2024 08:26, Jiri Slaby wrote:
+> Hi,
 > 
-> Hi Thomas,
+> On 08. 11. 24, 13:19, Claudiu Beznea wrote:
+>> On 08.11.2024 12:57, Jiri Slaby wrote:
+>>> On 08. 11. 24, 11:05, Claudiu wrote:
+> ...
+>>>> --- a/drivers/tty/serial/sh-sci.c
+>>>> +++ b/drivers/tty/serial/sh-sci.c
+>>>> @@ -157,6 +157,7 @@ struct sci_port {
+>>>>          bool has_rtscts;
+>>>>        bool autorts;
+>>>> +    bool first_time_tx;
+>>>
+>>> This is a misnomer. It suggests to be set only during the first TX.
+>>
+>> I chose this naming as this was the scenario I discovered it didn't work.
+>> Reproducible though these steps:
+>>
+>> 1/ open the serial device (w/o running any TX/RX)
+>> 2/ call tx_empty()
+>>
+>> What
+>>> about ::did_tx, ::performed_tx, ::transmitted, or alike?
+>>
+>> I have nothing against any of these. Can you please let me know if you have
+>> a preferred one?
 > 
-> I would like to go back to this discussion :)
-> From what I could understand, and read back the thread:
+> No, you choose, or invent even better one :). Or let AI do it for you.
 > 
-> - The spurious detector is used to avoid cpu hog when a lots of IRQs are 
->   hitting a cpu, but few ( < 100 / 100k) are being handled. It works by
->   disabling that interruption.
+>>>> @@ -885,6 +887,7 @@ static void sci_transmit_chars(struct uart_port *port)
+>>>>            }
+>>>>              sci_serial_out(port, SCxTDR, c);
+>>>> +        s->first_time_tx = true;
+>>>>              port->icount.tx++;
+>>>>        } while (--count > 0);
+>>>> @@ -1241,6 +1244,8 @@ static void sci_dma_tx_complete(void *arg)
+>>>>        if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
+>>>>            uart_write_wakeup(port);
+>>>>    +    s->first_time_tx = true;
+>>>
+>>> This is too late IMO. The first in-flight dma won't be accounted in
+>>> sci_tx_empty(). From DMA submit up to now.
+>>
+>> If it's in-flight we can't determine it's status anyway with one variable.
+>> We can set this variable later but it wouldn't tell the truth as the TX
+>> might be in progress anyway or may have been finished?
+>>
+>> The hardware might help with this though the TEND bit. According to the HW
+>> manual, the TEND bit has the following meaning:
+>>
+>> 0: Transmission is in the waiting state or in progress.
+>> 1: Transmission is completed.
+>>
+>> But the problem, from my point of view, is that the 0 has double meaning.
+>>
+>> I noticed the tx_empty() is called in kernel multiple times before
+>> declaring TX is empty or not. E.g., uart_suspend_port() call it 3 times,
+>> uart_wait_until_sent() call it in a while () look with a timeout. There is
+>> the uart_ioctl() which calls it though uart_get_lsr_info() only one time
+>> but I presumed the user space might implement the same multiple trials
+>> approach before declaring it empty.
+>>
+>> Because of this I considered it wouldn't be harmful for the scenario you
+>> described "The first in-flight dma won't be accounted in sci_tx_empty()"
+>> as the user may try again later to check the status. For this reason I also
+>> chose to have no extra locking around this variable.
 > 
-> - The bug I am dealing with (on serial8250), happens to fit exactly at
->   above case: lots of requests, but few are handled.
->   The reason: threaded handler, many requests, and they are dealt with in 
->   batch: multiple requests are handled at once, but a single IRQ_HANDLED 
->   returned.
+> What about the below?
 > 
-> - My proposed solution: Find a way of accounting the requests handled.
+>>>> @@ -2076,6 +2081,10 @@ static unsigned int sci_tx_empty(struct uart_port
+>>>> *port)
+>>>>    {
+>>>>        unsigned short status = sci_serial_in(port, SCxSR);
+>>>>        unsigned short in_tx_fifo = sci_txfill(port);
+>>>> +    struct sci_port *s = to_sci_port(port);
+>>>> +
+>>>> +    if (!s->first_time_tx)
+>>>> +        return TIOCSER_TEMT;
+>>>
+>>> So perhaps check if there is a TX DMA running here too?
 > 
->   - Implementation: add an option for drivers voluntarily report how 
->     many requests they handled. Current drivers need no change.
+> This ^^^? Like dmaengine_tx_status()?
 
->   - Limitation: If this issue is found on another driver, we need to 
->     implement accounting there as well. This may only happen on drivers
->     which handle over 1k requests at once.
+I missed that I can use this ^. Thanks for pointing it.
 
-> What was left for me TODO:
-> Think on a generic solution for this issue, to avoid dealing with that 
-> in a per-driver basis. 
+Claudiu
+
 > 
-> That's what I was able to think about:
-
-> - Only the driver code knows how many requests it handled, so without  
->   touching them we can't know how many requests were properly handled.
-
-Hmm... But do I understand correctly the following:
-
-- the IRQ core knows the amount of generated IRQs for the device (so it's kinda
-obvious that IRQ number maps to the driver);
-
-- the IRQ core disables IRQ while handling an IRQ number in question;
-
-- the driver is supposed to handle all IRQs that were reported at the beginning
-o.f its handler;
-
-- taking the above the amount of handled IRQs is what came till the disabling
-IRQ. IRQs that came after should be replayed when IRQ gets enabled.
-
-?
-
-> - I could try thinking a different solution, which involves changing only
->   the spurious detector.
-> 
->   - For that I would need to find a particular characteristic we would want 
->     to avoid spurious detection against, and make sure it won't miss an
->     actual case we want to be protected about.
-> 
-> Generic solutions(?) proposed:
-> - Zero irqs_unhandled if threaded & handles a single request in 100k
->   - Problem: A regular issue with the interruption would not be detected 
->     in the driver. 
-> 
-> - Skip detection if threaded & the handling thread is running
->   - Problem 1: the thread may run shortly and batch handle a lot of stuff, 
->   not being detected by the spurious detector. 
->   - Problem 2: the thread may get stuck, not handle the IRQs and also not
->   being detected by the spurious handler. (IIUC)
-> 
-> 
-> In the end, I could not find a proper way of telling apart
-> a - "this is a real spurious IRQ behavior, which needs to be disabled", and 
-> b - "this is just a handler that batch-handles it's requests",
-> without touching the drivers' code.
-> 
-> Do you have any suggestion on how to do that?
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+>>>
+>>>>          return (status & SCxSR_TEND(port)) && !in_tx_fifo ? TIOCSER_TEMT
+>>>> : 0;
+>>>>    }
+>>>
+>>> thanks,
