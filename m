@@ -1,54 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACB20BE4E;
-	Thu, 14 Nov 2024 20:36:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 699AD17BB1A;
+	Fri, 15 Nov 2024 05:47:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731616569; cv=none; b=LPswV/u2HtJwSfWmVFqpVTw/n3cJ+Dn/iTXDf3ZTG09wKFmo2ZKu8EZiW6e9H3pwFwq7u3ZLzOGavzpte/LWxZas/Y34PRAIOMnIITTz8u9MkX2ZQFJWfPVwO8zJHoiKL80jC/28I3z9pu0bS1bgg9+5m6ksDOve2WxE0tkUvhU=
+	t=1731649665; cv=none; b=BxGgKrcsybPbZVUD/t0WIQ5jeO4p5lfRINAzs0UBN39Mn0KtW7GrnLbEPOjutbSEudCAwgli60Qv3MjxLvPH3zVTtXS5QX98LPUzGTdKHLmaXTB4yFQ4fY3ohktoAjS4rCxzeM1eO7SVwkmtGuLd7GDQ5oYl2IgdUcyFmb+D39w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731616569; c=relaxed/simple;
-	bh=e4CuMeBuFl8hY3128pbc9WW5lE8Q2llRmDotkDlHzho=;
-	h=Message-ID:Content-Type:MIME-Version:In-Reply-To:References:
-	 Subject:From:Cc:To:Date; b=lbI9OQ+LmpQoegb7fq2Qn09o9YLNz9UUEhIx32xJJTPx3xS6konToANQb5Hgc4gCiXm0owIkkhp0vt/O3DLoH5k9cpBtKxDeSfQ9s04KFSG70iTkA4HtIdJH76aRh/7lseFpCEsXZWiFiT71u/ELW3hIvTpEbI84O136scOWV60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vt0jn7J6; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1731649665; c=relaxed/simple;
+	bh=2D978/Kh0o7jy7TQTaiVDXbS6B7RZq0zRoacBF7TCIk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=APHyXcaxxqhf6S9uCuUwtFFAz8CxV8lGUQgdAS56B/pOJ4EmAv8kYzKjsSNnWazwgP1PJef6w/Wf5Gby7/l3R87Cv6rPIsTPfOLSHV3No2hvVATGacGZsuvL/BkO9TuM13tAdtEMACSfN+OziSqdx4kR8TB2ItUnGuTgm6zQa0w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=L6jmp3QU; arc=none smtp.client-ip=115.124.30.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vt0jn7J6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71522C4CECF;
-	Thu, 14 Nov 2024 20:36:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1731616569;
-	bh=e4CuMeBuFl8hY3128pbc9WW5lE8Q2llRmDotkDlHzho=;
-	h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-	b=Vt0jn7J65ZBeZSkFV7IzswP1sljgEdr+7BjB+hi68CTHdbYGpfvrbf7LrMmq69fYO
-	 g37fBDpL+1g2sHXr3V+8LgMvGk2Jt3WZAthQafLnnoYkvPoWGUzPxIJT1/Fyz7hh5x
-	 jLLSN0ALORwjHKypfzTvc6htO/0DhiYL3eH8CnoGJyZuBU1hh1ugH7v7dKdjXYNfw0
-	 pHV122hsY3PLrJLDqA138iaM8Uz60wHZgrysQ71vxSJ9ecgcAdKnvuKlr1xHmUcqJX
-	 RKgszYaG8hQuETL2uGETmUI0BjCY1nDw4n5LrLFmiMt86rnaN1rY5N1TE+DMZCQJHK
-	 bbu+v+wQroScQ==
-Message-ID: <35463049ef7cc47172ccfbec487166ec.sboyd@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="L6jmp3QU"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1731649660; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=9RSKVoG9dlyN3iKCC7I0h5MQFiQl9bMyOsjyGONj2vw=;
+	b=L6jmp3QUDdsSdInN4P6UoJUT2u2BYJezVskTVd9XZtUQ0zLu0ILTLbjVHEazO/M3aBUhOutPvTjuyZDGDys/5Dmwfz3CbA8DuVpCgcxT0Ls6hvx2ITxZ66hqw0856FoBsNFvt2TozugsH9hSAgaMLZ0lvZWzs9vwEl13jxnshV8=
+Received: from 30.74.144.124(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0WJRboEN_1731649658 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Fri, 15 Nov 2024 13:47:39 +0800
+Message-ID: <3f89369f-7c0a-47c3-a22a-a125847edb98@linux.alibaba.com>
+Date: Fri, 15 Nov 2024 13:47:37 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20241108112355.20251-1-robert.marko@sartura.hr>
-References: <20241108112355.20251-1-robert.marko@sartura.hr>
-Subject: Re: [PATCH 1/3] clk: lan966x: make it selectable for ARCH_LAN969X
-From: Stephen Boyd <sboyd@kernel.org>
-Cc: luka.perkov@sartura.hr, Robert Marko <robert.marko@sartura.hr>
-To: Robert Marko <robert.marko@sartura.hr>, gregkh@linuxfoundation.org, jirislaby@kernel.org, lee@kernel.org, linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, mturquette@baylibre.com
-Date: Thu, 14 Nov 2024 12:36:07 -0800
-User-Agent: alot/0.12.dev1+gaa8c22fdeedb
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] serial: sprd: Add support for sc9632
+To: Wenhua Lin <Wenhua.Lin@unisoc.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Cixi Geng <cixi.geng@linux.dev>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ wenhua lin <wenhua.lin1994@gmail.com>, Xiongpeng Wu
+ <xiongpeng.wu@unisoc.com>, Zhaochen Su <Zhaochen.Su@unisoc.com>,
+ Zhirong Qiu <Zhirong.Qiu@unisoc.com>
+References: <20241113110516.2166328-1-Wenhua.Lin@unisoc.com>
+ <20241113110516.2166328-2-Wenhua.Lin@unisoc.com>
+From: Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20241113110516.2166328-2-Wenhua.Lin@unisoc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Quoting Robert Marko (2024-11-08 03:22:34)
-> LAN969x uses the same LAN966x clock driver so make it selectable for
-> ARCH_LAN969X.
->=20
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+
+
+On 2024/11/13 19:05, Wenhua Lin wrote:
+> Due to the platform's new project uart ip upgrade,
+> the new project's timeout interrupt needs to use bit17
+> while other projects' timeout interrupt needs to use
+> bit13, using private data to adapt and be compatible
+> with all projects.
+> 
+> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 > ---
+>   drivers/tty/serial/sprd_serial.c | 41 ++++++++++++++++++++++++++++----
+>   1 file changed, 36 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sprd_serial.c b/drivers/tty/serial/sprd_serial.c
+> index 3fc54cc02a1f..882580c3cf37 100644
+> --- a/drivers/tty/serial/sprd_serial.c
+> +++ b/drivers/tty/serial/sprd_serial.c
+> @@ -53,10 +53,12 @@
+>   #define SPRD_IEN_TX_EMPTY	BIT(1)
+>   #define SPRD_IEN_BREAK_DETECT	BIT(7)
+>   #define SPRD_IEN_TIMEOUT	BIT(13)
+> +#define SPRD_IEN_DATA_TIMEOUT	BIT(17)
 
-Applied to clk-next
+I don't know the meaning of 'DATA' in the new macro name. But I have no 
+better name now:) Otherwise look good to me.
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
