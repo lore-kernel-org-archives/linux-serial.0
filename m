@@ -1,221 +1,112 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49CDE1E104E
-	for <linux-serial@vger.kernel.org>; Fri, 15 Nov 2024 15:41:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7B7F1D6DC5
+	for <linux-serial@vger.kernel.org>; Fri, 15 Nov 2024 17:57:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731685278; cv=none; b=pt8H70y5OG3y5nD4xtm/J4o7h9WLgblL3iLvmALhJRsLY4NJOZd4xd4Uv5wo81lq9hOFY+TojF7FMY/XnbJvfdsJ7SmGhGv9i7REPnLD4G3D5jC4rytR2DNS+ZFnpf6RP9+5nIHIrBwrNXCafkTtOg8dhtozvNFxEqm6dn9s+Lc=
+	t=1731693437; cv=none; b=sbrFYcnUnhEsQajXQVkrJBDz9s4HyBrKVAHd2pIk7C3BvkyZ8rzfyggddCWeARZ4UjLaTwSuWElL9zDHhsgg54M5D7bB96udooEbdRyRocpAK/SeNAPmmXB0JeCpPbwwMWFDoqfQeTYCw8sZPERsRX4umBQOzbyusIK8PXTSHqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731685278; c=relaxed/simple;
-	bh=IwcWL9noBhnrXNkKWPZEX0fe61sz3sYzX7u7aAfB4GU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=hFOBUNoeO1//+rHKF+9wOtb+0P5Sri4YaFlL1xbQWwZIBHqhAkM24Te2R7LGXI+T11wHaBTCgFD8bSLfkn1yDKSUCp7mkvSIY2OY0gpFkUckWNkasRV9Vl7F5D4nvfi/M9zcf/VGAIUOY3dN7ToA1GweHo6gUSIUn2iY8mniIFw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <p.zabel@pengutronix.de>)
-	id 1tByR6-00052q-GD; Fri, 15 Nov 2024 16:40:40 +0100
-Received: from lupine.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::4e] helo=lupine)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <p.zabel@pengutronix.de>)
-	id 1tByR5-000vi2-1A;
-	Fri, 15 Nov 2024 16:40:39 +0100
-Received: from pza by lupine with local (Exim 4.96)
-	(envelope-from <p.zabel@pengutronix.de>)
-	id 1tByR5-0008Oe-0r;
-	Fri, 15 Nov 2024 16:40:39 +0100
-Message-ID: <81e131554a34c7b2f795a904f2b561f3c86e0baf.camel@pengutronix.de>
-Subject: Re: [PATCH v3 3/8] serial: sh-sci: Update the suspend/resume support
-From: Philipp Zabel <p.zabel@pengutronix.de>
-To: Claudiu <claudiu.beznea@tuxon.dev>, geert+renesas@glider.be, 
- magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org,  mturquette@baylibre.com, sboyd@kernel.org,
- gregkh@linuxfoundation.org,  jirislaby@kernel.org, lethal@linux-sh.org,
- g.liakhovetski@gmx.de
-Cc: linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, 
- linux-serial@vger.kernel.org, Claudiu Beznea
- <claudiu.beznea.uj@bp.renesas.com>
-Date: Fri, 15 Nov 2024 16:40:39 +0100
-In-Reply-To: <20241115134401.3893008-4-claudiu.beznea.uj@bp.renesas.com>
-References: <20241115134401.3893008-1-claudiu.beznea.uj@bp.renesas.com>
-	 <20241115134401.3893008-4-claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-2 
+	s=arc-20240116; t=1731693437; c=relaxed/simple;
+	bh=tqUC4NRe2FsZbgMAFBDs225f2ppUqDIgLL2znENzBRw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GyaGuwv8b6wjweNNdjIfGr9bLKIHX4UnBRtcv8fIKr9fo2ElMZ0zDyv8FqqPoEkZfpROyurwhLbf+8vFg0ut85xc22Mz4s9Hg2SozIVbXlIcRcfKKK5r9Wu8JpjlLo9qo44k76SU0DSPDcx7f0RKzqkRhniFp9V8o8nRe0ciAF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=osandov.com; spf=none smtp.mailfrom=osandov.com; dkim=pass (2048-bit key) header.d=osandov-com.20230601.gappssmtp.com header.i=@osandov-com.20230601.gappssmtp.com header.b=T/rdvJQU; arc=none smtp.client-ip=209.85.215.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=osandov.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=osandov.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=osandov-com.20230601.gappssmtp.com header.i=@osandov-com.20230601.gappssmtp.com header.b="T/rdvJQU"
+Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-7ea6f99e6eeso284615a12.1
+        for <linux-serial@vger.kernel.org>; Fri, 15 Nov 2024 09:57:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=osandov-com.20230601.gappssmtp.com; s=20230601; t=1731693435; x=1732298235; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=pPMynzIfXj/zMSO4ZhSnrSnqX/mfMYS9/DB2RGzQRzQ=;
+        b=T/rdvJQUTHLsmWGbo7np95QObUpRI7HzN7DwcwkapWC3cVURRfPlF5yCMHzAidupCo
+         KW7wzO6PWfF8LtZdPnTbT7IYU9icWSwOwjPUlrvVqU+gX5lPUnuYnyCFNOSjXkuf+ffd
+         77KOlLcpjP1br6SfalzKrqdl3TyQrAKtIFI32NVUy0cVyHLH/W9Ud22XAbOX2gO0jqBH
+         eHqrJp+2JojcEHl0VjXLm7TjaFVmtxf6jbo+BbhWdiVF9xEvyDe1RClK2Xn2WTGZb+ZR
+         IoLigM9uO9RMLGQ0xnxAxsJGlCz3Dxxrgq2lyYJKc+/aOIokFed5aBF6vCgYfCaYbm0S
+         UjgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1731693435; x=1732298235;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pPMynzIfXj/zMSO4ZhSnrSnqX/mfMYS9/DB2RGzQRzQ=;
+        b=fAa3hn/SuSi2/MySogCNhcg4o0Xe9ZrzOqBO4kkVnHxaVp6fRNWxqJYmhC6eb/voyM
+         Gmoj+Ke0UhFBViFIWUoB/HAMLNi96BvGOEb3UmmU+w12x06yVEchliotwPjQZl33I0u+
+         YmB4pGufVNrl3N+8Az11/5ubWv/T3OPMI6s5ye4ys4+k9e3HFlbAXtL96S50AtkkibYi
+         8iFIIWW4jS4nY03qzaZMPe/rZaunKL3KTWiZjW1RNT/PDLT/gXrT+zwVKzslupPEr4Y3
+         fyTnHpFTNFmV26MIYqf8nuvpE2YsbDNmJFgLYaili6O3lHsjDnpLz1ylMlvQjnJ39bNI
+         Ju1Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXW43ji+Qrwl02mkY8fThmSfVwdKue7exWxJFzVCjx/08quOCT/BbNchhm8fMkMRTEHp6c5jUpFbux8wRU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzX+MOyPjA39x6zxFMS0RQKpBvqaRXGUSxxNbCBnrQAxwmVvvHe
+	Rz4wyty3xLT5OZfHB0EKOaxpacb8Lut5EEiP+R/iBdltZ0vqxSb85xE1xESB4uE=
+X-Google-Smtp-Source: AGHT+IFxT+B+vMFlR0BBju7TkQiKChJdJTO0QJor6trNTdWqEqoACrtnOTxsAxhAkxPiZV7G9qlR0w==
+X-Received: by 2002:a05:6a21:6d92:b0:1d9:14b4:9bf2 with SMTP id adf61e73a8af0-1dc909b622amr2399351637.0.1731693434983;
+        Fri, 15 Nov 2024 09:57:14 -0800 (PST)
+Received: from telecaster ([2620:10d:c090:500::7:3740])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-7f8c1c2c505sm1542663a12.18.2024.11.15.09.57.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Nov 2024 09:57:14 -0800 (PST)
+Date: Fri, 15 Nov 2024 09:57:12 -0800
+From: Omar Sandoval <osandov@osandov.com>
+To: Daniel Thompson <daniel.thompson@linaro.org>
+Cc: Doug Anderson <dianders@chromium.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Amal Raj T <amalrajt@meta.com>,
+	Stephen Brennan <stephen.s.brennan@oracle.com>,
+	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org,
+	linux-debuggers@vger.kernel.org
+Subject: Re: kgdb replacing newline with CRLF in custom query response
+Message-ID: <ZzeLeFcMtx1ipt9R@telecaster>
+References: <Zy093jVKPs9gSVx2@telecaster>
+ <CAD=FV=UZKZ_RL73+JLjeW2FmAfifSyXqLV3M30XzmJSPE9Trzw@mail.gmail.com>
+ <Zy1lyACVnZK4xwuW@telecaster>
+ <CAD=FV=U2eiG1TuTq48VL+kNCxN6qp_ZcDk3o_6p3B_ENOspQ9Q@mail.gmail.com>
+ <Zy45mCCGZ9sHsXTT@telecaster>
+ <CAD=FV=WN5Nzjs2KowMbTij8CZ+T_eZxJ5rLdyyBDk-1H_Dj3cg@mail.gmail.com>
+ <20241115144933.GB4408@aspen.lan>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241115144933.GB4408@aspen.lan>
 
-On Fr, 2024-11-15 at 15:43 +0200, Claudiu wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->=20
-> The Renesas RZ/G3S supports a power saving mode where power to most of th=
-e
-> SoC components is turned off. When returning from this power saving mode,
-> SoC components need to be re-configured.
->=20
-> The SCIFs on the Renesas RZ/G3S need to be re-configured as well when
-> returning from this power saving mode. The sh-sci code already configures
-> the SCIF clocks, power domain and registers by calling uart_resume_port()
-> in sci_resume(). On suspend path the SCIF UART ports are suspended
-> accordingly (by calling uart_suspend_port() in sci_suspend()). The only
-> missing setting is the reset signal. For this assert/de-assert the reset
-> signal on driver suspend/resume.
->=20
-> In case the no_console_suspend is specified by the user, the registers ne=
-ed
-> to be saved on suspend path and restore on resume path. To do this the
-> sci_console_setup() function was added. There is no need to cache/restore
-> the status or FIFO registers. Only the control registers. To differentiat=
-e
-> b/w these, the struct sci_port_params::regs was updated with a new member
-> that specifies if the register needs to be chached on suspend. Only the
-> RZ_SCIFA instances were updated with this new support as the hardware for
-> the rest of variants was missing for testing.
->=20
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> ---
->=20
-> Changes in v3:
-> - none
->=20
-> Changes in v2:
-> - rebased on top of the update version of patch 2/8 from
->   this series
->=20
->  drivers/tty/serial/sh-sci.c | 53 ++++++++++++++++++++++++++++++-------
->  1 file changed, 44 insertions(+), 9 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index ade151ff39d2..e53496d2708e 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -101,7 +101,7 @@ enum SCI_CLKS {
->  		if ((_port)->sampling_rate_mask & SCI_SR((_sr)))
-> =20
->  struct plat_sci_reg {
-> -	u8 offset, size;
-> +	u8 offset, size, suspend_cacheable;
->  };
-> =20
->  struct sci_port_params {
-> @@ -134,6 +134,8 @@ struct sci_port {
->  	struct dma_chan			*chan_tx;
->  	struct dma_chan			*chan_rx;
-> =20
-> +	struct reset_control		*rstc;
-> +
->  #ifdef CONFIG_SERIAL_SH_SCI_DMA
->  	struct dma_chan			*chan_tx_saved;
->  	struct dma_chan			*chan_rx_saved;
-> @@ -153,6 +155,7 @@ struct sci_port {
->  	int				rx_trigger;
->  	struct timer_list		rx_fifo_timer;
->  	int				rx_fifo_timeout;
-> +	unsigned int			console_cached_regs[SCIx_NR_REGS];
->  	u16				hscif_tot;
-> =20
->  	bool has_rtscts;
-> @@ -298,17 +301,17 @@ static const struct sci_port_params sci_port_params=
-[SCIx_NR_REGTYPES] =3D {
->  	 */
->  	[SCIx_RZ_SCIFA_REGTYPE] =3D {
->  		.regs =3D {
-> -			[SCSMR]		=3D { 0x00, 16 },
-> -			[SCBRR]		=3D { 0x02,  8 },
-> -			[SCSCR]		=3D { 0x04, 16 },
-> +			[SCSMR]		=3D { 0x00, 16, 1 },
-> +			[SCBRR]		=3D { 0x02,  8, 1 },
-> +			[SCSCR]		=3D { 0x04, 16, 1 },
->  			[SCxTDR]	=3D { 0x06,  8 },
->  			[SCxSR]		=3D { 0x08, 16 },
->  			[SCxRDR]	=3D { 0x0A,  8 },
-> -			[SCFCR]		=3D { 0x0C, 16 },
-> +			[SCFCR]		=3D { 0x0C, 16, 1 },
->  			[SCFDR]		=3D { 0x0E, 16 },
-> -			[SCSPTR]	=3D { 0x10, 16 },
-> +			[SCSPTR]	=3D { 0x10, 16, 1 },
->  			[SCLSR]		=3D { 0x12, 16 },
-> -			[SEMR]		=3D { 0x14, 8 },
-> +			[SEMR]		=3D { 0x14, 8, 1 },
->  		},
->  		.fifosize =3D 16,
->  		.overrun_reg =3D SCLSR,
-> @@ -3380,6 +3383,7 @@ static struct plat_sci_port *sci_parse_dt(struct pl=
-atform_device *pdev,
->  	}
-> =20
->  	sp =3D &sci_ports[id];
-> +	sp->rstc =3D rstc;
->  	*dev_id =3D id;
-> =20
->  	p->type =3D SCI_OF_TYPE(data);
-> @@ -3507,13 +3511,34 @@ static int sci_probe(struct platform_device *dev)
->  	return 0;
->  }
-> =20
-> +static void sci_console_setup(struct sci_port *s, bool save)
-> +{
-> +	for (u16 i =3D 0; i < SCIx_NR_REGS; i++) {
-> +		struct uart_port *port =3D &s->port;
-> +
-> +		if (!s->params->regs[i].suspend_cacheable)
-> +			continue;
-> +
-> +		if (save)
-> +			s->console_cached_regs[i] =3D sci_serial_in(port, i);
-> +		else
-> +			sci_serial_out(port, i, s->console_cached_regs[i]);
-> +	}
-> +}
-> +
->  static __maybe_unused int sci_suspend(struct device *dev)
->  {
->  	struct sci_port *sport =3D dev_get_drvdata(dev);
-> =20
-> -	if (sport)
-> +	if (sport) {
->  		uart_suspend_port(&sci_uart_driver, &sport->port);
-> =20
-> +		if (!console_suspend_enabled && uart_console(&sport->port))
-> +			sci_console_setup(sport, true);
-> +		else
-> +			return reset_control_assert(sport->rstc);
-> +	}
-> +
->  	return 0;
->  }
-> =20
-> @@ -3521,8 +3546,18 @@ static __maybe_unused int sci_resume(struct device=
- *dev)
->  {
->  	struct sci_port *sport =3D dev_get_drvdata(dev);
-> =20
-> -	if (sport)
-> +	if (sport) {
-> +		if (!console_suspend_enabled && uart_console(&sport->port)) {
-> +			sci_console_setup(sport, false);
-> +		} else {
-> +			int ret =3D reset_control_deassert(sport->rstc);
+On Fri, Nov 15, 2024 at 02:49:33PM +0000, Daniel Thompson wrote:
+> On Fri, Nov 08, 2024 at 09:37:32AM -0800, Doug Anderson wrote:
 
-With this, is the reset_control_deassert() in sci_parse_dt() still
-needed?
+[snip]
 
-Likewise, does the reset_control_assert() in sci_suspend() remove the
-need for the sci_reset_control_assert() devm action?
+> > Bleh. It _probably_ wouldn't be a big deal to do the LF -> CRLF for
+> > all these, but I don't know for sure. I guess worst case you could add
+> > some flag in the "dbg_io_ops" and figure out how to set it just for
+> > UARTs?
+> 
+> I find myself in a similar position to Doug.
+> 
+> It sounds reasonable to move the CR synthesis into kdb_msg_write() but I
+> also am not certain the other polling backends will handle this correctly.
+> 
+> However I did apply the following patch and run a few tests and it all
+> looks good. Specifically there are no regressions from the kgdb test
+> suite although that's unsurprising since that suite exclusively tests
+> the serial port. I also fired up the kdb,kms polling backends on x86
+> and verified that I didn't get double line feeds in kdb (I did not).
+> 
+> That means I'd certainly accept patches based on Doug's idea and if it
+> proves later that we have to revert and add a new dbg_io_ops pointer to
+> switch the handler between binary and ascii modes then so be it!
 
-regards
-Philipp
+Perfect, thanks for testing this, Daniel. Amal will include a
+preparatory patch along those lines when he sends the VMCOREINFO packet
+patch.
+
+Thanks,
+Omar
