@@ -1,106 +1,97 @@
-Received: from out-181.mta0.migadu.com (out-181.mta0.migadu.com [91.218.175.181])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53AFF189528
-	for <linux-serial@vger.kernel.org>; Fri, 15 Nov 2024 08:40:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62731192B94;
+	Fri, 15 Nov 2024 11:00:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731660044; cv=none; b=BDCAnOU77HbJ+Tb0XRDbO0zniNU8I+/bJA+DtDOcZ5czZe/A0HjNlhhtLhWGN10ctPYK7NgZ9FsAxnQrS+j+WAePp+K/OG5nP9JqX0owMyFiKWyziIvHC4alGcplRc5fLgqS+2ZbPXmiElUF/qXNpDG8CmUlRdmaQCxtH9R4qBw=
+	t=1731668426; cv=none; b=U9CJNJv62CyDkNfM0JxXzXJ7FEmZ9tmuo65tXi6v5NfrW3ZqOetVPW/XihqACFCL1FQqzXIF+KoKO6DZvAZOmr08BYbI8ibXkVImINDioWJBXVKhhYfYJo1/GxSNwP6IAK4EBc7tnSd5daV8ak0tQ6xMzWPANmzXL1H8o7QGZxY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731660044; c=relaxed/simple;
-	bh=3pxHkELdFRmY716/LLr2+noVM+cr/XuZCNRaEBsV8bk=;
-	h=MIME-Version:Date:Content-Type:From:Message-ID:Subject:To:Cc:
-	 In-Reply-To:References; b=GXjddvJSTUsMMr3dvidkBEyYOXlXmNZBAQkTSmrs5Iq/aKto1lM5eMcL0UjQqS/GN6B6CSnsRUgxTop4BOV2qOPTAqLUoaJo0MEqNhTwGOiShXQXuIa6nVTwW4FYEIP+8cZJViO8Wop0SiA0TAPp96R+oqePjmUM6dJTwz6+gyc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=D8T4Jkgp; arc=none smtp.client-ip=91.218.175.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1731668426; c=relaxed/simple;
+	bh=uv6Tugb0FyVdARW47Hj8ctsIKq72UmaOcD/cqo6KJmE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=pL+1YuWKZxRYQHCRmDYl5U/9i8RM+TWPpQiM8oNf4pwqURovzM+6MLYyanFa7M/3cM6HJQdD2AoA6wfv52AIc9i+xqJEddY1D4hSMNyFOETt+4/bhy9OrPXckEXe7VDopt1wqFEgnzkVv8rybskkmKqmRksnlXH1OB6vuPJZipw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UCB0qj0v; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="D8T4Jkgp"
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UCB0qj0v"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1677C4CECF;
+	Fri, 15 Nov 2024 11:00:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1731668425;
+	bh=uv6Tugb0FyVdARW47Hj8ctsIKq72UmaOcD/cqo6KJmE=;
+	h=From:To:Cc:Subject:Date:From;
+	b=UCB0qj0vU80l/6+YptCo9AJ7kOm9CVNs8xnzAkqLLs6aZlbE1uhsFPUk29AANlNB5
+	 xEPPq/AUufVz58M8k7r/yjcUzu8uhmZwaEl/9gd2pOUQfVNal8IylkVCGmv1iCuacf
+	 k9nJ9QHMcYTVxTwhxL7GtD3cay+mgX0eYskaGzdqyMf14FeYYUDHFUqOYMGNKzcNF9
+	 BBtcQ/T+S+/I4N29yRkakaml+k2aGTtkpSPJ+gbxr9C4+Jy3+oVE0nYpnAC/tNAnFa
+	 sWv7Re77pGX7M7Oqshd/4iVjVTbyw71+DtG9+oMNuTMSXJ1K/PfscCGnueUEePTTbF
+	 E8tPiv1GHqWFA==
+From: Arnd Bergmann <arnd@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Kartik Rajput <kkartik@nvidia.com>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+	kernel test robot <lkp@intel.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	=?UTF-8?q?Th=C3=A9o=20Lebrun?= <theo.lebrun@bootlin.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] serial: amba-pl011: fix build regression
+Date: Fri, 15 Nov 2024 11:59:54 +0100
+Message-Id: <20241115110021.744332-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1731660040;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3pxHkELdFRmY716/LLr2+noVM+cr/XuZCNRaEBsV8bk=;
-	b=D8T4JkgpLTv7Lv6jSYEAwoMLeWZ1nxmv8U9bU9Ss0Yn8gT/PdOfvf0PDKV2OymWPGKBEes
-	4rvF+lWpRRxljc17TsbuVMkXbR+G1PItyLYWavPiLOnF/qVj6KfuE+0/viDWIJkQnsgLv5
-	glwCQnOpdXhrPWHrfwQ3aeClxO8NuIA=
-Date: Fri, 15 Nov 2024 08:40:38 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: cixi.geng@linux.dev
-Message-ID: <88ee4a5c504c86ef16362343eebf6b7cff8f585a@linux.dev>
-TLS-Required: No
-Subject: Re: [PATCH 2/2] dt-bindings: serial: Add a new compatible string for
- ums9632
-To: "Wenhua Lin" <Wenhua.Lin@unisoc.com>, "Greg Kroah-Hartman"
- <gregkh@linuxfoundation.org>, "Jiri Slaby" <jirislaby@kernel.org>,
- "Bartosz Golaszewski" <brgl@bgdev.pl>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley"
- <conor+dt@kernel.org>
-Cc: "Orson Zhai" <orsonzhai@gmail.com>, "Baolin Wang"
- <baolin.wang@linux.alibaba.com>, "Chunyan Zhang" <zhang.lyra@gmail.com>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, "wenhua lin" <wenhua.lin1994@gmail.com>,
- "Wenhua Lin" <Wenhua.Lin@unisoc.com>, "Xiongpeng Wu"
- <xiongpeng.wu@unisoc.com>, "Zhaochen Su" <Zhaochen.Su@unisoc.com>,
- "Zhirong Qiu" <Zhirong.Qiu@unisoc.com>
-In-Reply-To: <20241113110516.2166328-3-Wenhua.Lin@unisoc.com>
-References: <20241113110516.2166328-1-Wenhua.Lin@unisoc.com>
- <20241113110516.2166328-3-Wenhua.Lin@unisoc.com>
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
 
-2024=E5=B9=B411=E6=9C=8813=E6=97=A5 19:05, "Wenhua Lin" <Wenhua.Lin@uniso=
-c.com> =E5=86=99=E5=88=B0:
+From: Arnd Bergmann <arnd@arndb.de>
 
+When CONFIG_DMA_ENGINE is disabled, the driver now fails to build:
 
+drivers/tty/serial/amba-pl011.c: In function 'pl011_unthrottle_rx':
+drivers/tty/serial/amba-pl011.c:1822:16: error: 'struct uart_amba_port' has no member named 'using_rx_dma'
+ 1822 |         if (uap->using_rx_dma) {
+      |                ^~
+drivers/tty/serial/amba-pl011.c:1823:20: error: 'struct uart_amba_port' has no member named 'dmacr'
+ 1823 |                 uap->dmacr |= UART011_RXDMAE;
+      |                    ^~
+drivers/tty/serial/amba-pl011.c:1824:32: error: 'struct uart_amba_port' has no member named 'dmacr'
+ 1824 |                 pl011_write(uap->dmacr, uap, REG_DMACR);
+      |                                ^~
 
->=20
->=20The UMS9632 uses the SC9632 serial device.
->=20
->=20Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
->=20
->=20---
->=20
->=20 Documentation/devicetree/bindings/serial/sprd-uart.yaml | 1 +
->=20
->=20 1 file changed, 1 insertion(+)
->=20
->=20diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.yaml =
-b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
->=20
->=20index f4dbb6dc2b6e..a2a5056eba04 100644
->=20
->=20--- a/Documentation/devicetree/bindings/serial/sprd-uart.yaml
->=20
->=20+++ b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
->=20
->=20@@ -17,6 +17,7 @@ properties:
->=20
->=20 oneOf:
->=20
->=20 - items:
->=20
->=20 - enum:
->=20
->=20+ - sprd,sc9632-uart
->=20
->=20 - sprd,sc9860-uart
->=20
->=20 - sprd,sc9863a-uart
->=20
->=20 - sprd,ums512-uart
->=20
->=20--=20
->=20
-> 2.34.1
->
-Acked-by: Cixi Geng <cixi.geng@linux.dev>
+Add the missing #ifdef check around these field accesses, matching
+what other parts of this driver do.
+
+Fixes: 2bcacc1c87ac ("serial: amba-pl011: Fix RX stall when DMA is used")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202411140617.nkjeHhsK-lkp@intel.com/
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/tty/serial/amba-pl011.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index f0db65bb8b6f..214bfbf03a97 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1819,10 +1819,12 @@ static void pl011_unthrottle_rx(struct uart_port *port)
+ 
+ 	pl011_write(uap->im, uap, REG_IMSC);
+ 
++#ifdef CONFIG_DMA_ENGINE
+ 	if (uap->using_rx_dma) {
+ 		uap->dmacr |= UART011_RXDMAE;
+ 		pl011_write(uap->dmacr, uap, REG_DMACR);
+ 	}
++#endif
+ 
+ 	uart_port_unlock_irqrestore(&uap->port, flags);
+ }
+-- 
+2.39.5
+
