@@ -1,73 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C2180B;
-	Sat, 16 Nov 2024 17:20:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C424CB666;
+	Sat, 16 Nov 2024 17:59:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731777601; cv=none; b=Jua/cbhbn00qkwR2jzpM9XoDpR7rtfx5upDuWBoi2ZOJEQQvzLDMwpR/Sfe6e8COcjSYWeM/Fhql89vsLi3EzyPhzb4TFhbhWD4VJBCXeXrRBP+ZjrbT88bvgFtfLIax2K8MALZsb7wazgCxEA68cLzbTsc4vTqrOnDIw+zvlAY=
+	t=1731779946; cv=none; b=U3Ie1+ml8QHWT2WopXo2gHGdI4xbZEHJAnAvNkxFXoJRSauUrKpuOib8dL+USB3L1ni6JHlqX95yOi3+ztlhsq26gvGJNqFjuhvel+wvrzx0g2vyOebl/Wj/0yruCnkwOk6w7RpX4ojwOwqmgjgMrpqQcWJ+rhJbmifSLYdd3bc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731777601; c=relaxed/simple;
-	bh=yqI+iGQw0KKBlMGT5ZrpKAwYDUZLMe1fnYU3dBtqako=;
+	s=arc-20240116; t=1731779946; c=relaxed/simple;
+	bh=qpWAfAW/flM6FCElfxnZMg+YR7oaJxHVMGq8ZpKccD0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TBpFepFkZLPrDiiAazWC50tuxaMQiUihJ9kncrqoxV2GHBEnLSBuool6QnT75kWvsc/Rs9i+7/X7SSZZR6d+ciBBU4fU9r5y2YqMVmPA5ewWqYncdwsE819qTpf8ib2L+Vgae2NW5iwNkrCGcz4x3ah3yzS4uikRH9lMwLAbk04=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=yEHLCnJ+; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=Upn5CD21VIs+W3cfs66fiKytUhJb5Atqry/JWVQxK3PNwVkWLmU6RiZFl1O8lyKukrgGFERsQhrBeDV1H9JL0RO46ipYLOUIgHtllc4CfEnJ0sc9ILjm7LfUJb3zwFUlxnn10xTPMUlC+xlclQUSKbd4wpz6oKHrke2byJxzzoA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=lbvwvNLQ; arc=none smtp.client-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="yEHLCnJ+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26596C4CEC3;
-	Sat, 16 Nov 2024 17:19:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1731777600;
-	bh=yqI+iGQw0KKBlMGT5ZrpKAwYDUZLMe1fnYU3dBtqako=;
+	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="lbvwvNLQ"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 4ED4540E0263;
+	Sat, 16 Nov 2024 17:59:01 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
+	header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id 3S_k-VtsdwLh; Sat, 16 Nov 2024 17:58:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1731779935; bh=sdUnsdGYam1RArzz2rGqxpxolNET71VTUgEXOl5+a1c=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=yEHLCnJ+MZrzDtRrxiqoa/P/Wcs51HrOV9Ko+MbzQxXO+iL9dQE13amIPhm/mlKw8
-	 7GxKp+5fYrJlhA7USCJ73Nti6ZPHbvaIm3nrZSAk/PCwKmpyUxMhV4cYPcKEd6oZgA
-	 6NE/zDaNySVUpw94EiPGTkX6uDZZbYYY9tmSbRgk=
-Date: Sat, 16 Nov 2024 18:19:36 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Borislav Petkov <bp@alien8.de>
+	b=lbvwvNLQ2FPtanTdDsA9EOgDcJf/vLT1vST3kq60+xdLUTo4fc3k1Hrq3Ta9bvAef
+	 ckeRYNmT61plmgNYL5vMBOsSV1ibSnzo998QP/CXt+aTy0knGeTC4sn1ekm0GlqOjR
+	 5N5LZlR6HvWN1LrHD8UG1YFjjTr29MWrkHD88aKcEJakfA/5tE4/ozH2BDpP6nbTjw
+	 T1lWBEr7NMsOIN0RuQLqM9R/uVfbYm9IWuzUEAJZQ0T8ag1Um3ghf3kz53LGM01Gaf
+	 yawQaa+huczGBVKzPzIMq7XpqvMrdjdBWoAe89DMOB9ZctJuTxBHoDdEaK4uLIyyN1
+	 TZN7ITab3GG+JwdH1MBnBUpEusJGdsr68OqP0bk9N7wgz5YsDvdOsVIoLctapCk6Xt
+	 MKHx6ACqernnKiuCQesmU1d80xNqaIeyrPTmXYtRMR/L6JDRPYkiIP89IcU2qT079D
+	 v0CRa4lElyXmexVeZSEFbAhmoxGtAQ0kXYEtcvcB5cAjjoQv97krqWMrH9Mvq245JG
+	 EOF4DyQZcHWt1kJxSpB31/STdjEtYX5F2BkGlLzxNIre2a6D7EUwNNpFuOmFKJmfp+
+	 mLhDRBf2BExbcaggjp63Q/efdSXTrFFRsR4c/A9LZqX6je3kr0TyZY/aNL6oxOVsXB
+	 OP+P6xF4aVAbKwSyNiiXWuEA=
+Received: from zn.tnic (p200300ea9736a13e329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9736:a13e:329c:23ff:fea6:a903])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A1B9840E0219;
+	Sat, 16 Nov 2024 17:58:51 +0000 (UTC)
+Date: Sat, 16 Nov 2024 18:58:46 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
 	lkml <linux-kernel@vger.kernel.org>
 Subject: Re: serial 00:06: Runtime PM usage count underflow!
-Message-ID: <2024111656-try-flatten-b215@gregkh>
+Message-ID: <20241116175846.GDZzjdVlO79wtX7mlF@fat_crate.local>
 References: <20241116170727.GCZzjRT5WGcOMKFDYq@fat_crate.local>
+ <2024111656-try-flatten-b215@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20241116170727.GCZzjRT5WGcOMKFDYq@fat_crate.local>
+In-Reply-To: <2024111656-try-flatten-b215@gregkh>
 
-On Sat, Nov 16, 2024 at 06:07:27PM +0100, Borislav Petkov wrote:
-> Hi folks,
-> 
-> got a box here which says:
-> 
-> [    4.654361] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-> [    4.660820] 00:06: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-> [    4.668313] printk: legacy console [ttyS0] disabled
-> [    4.676903] serial 00:06: Runtime PM usage count underflow!
-> [    4.677175] serial 00:06: disabled
-> [    4.677264] serial 00:06: unable to assign resources
-> [    4.677356] serial 00:06: probe with driver serial failed with error -16
-> [    4.677923] printk: legacy console [ttyS0] disabled
-> 
-> Any suggestions?
+On Sat, Nov 16, 2024 at 06:19:36PM +0100, Greg Kroah-Hartman wrote:
+> Look in the bios, that seems to be the "old" pnp serial device?  Does it
+> really have a serial port on the board?
 
-Look in the bios, that seems to be the "old" pnp serial device?  Does it
-really have a serial port on the board?  Is it enabled properly?
+Yeah, there is a COM1 connector and I've attached a serial port brace to have
+the connector on the back of the board.
 
-That is odd, what's the chance that someone didn't enable it in acpi
-somehow?
+> Is it enabled properly?
 
-> I'd like to use the serial cable to catch dmesg but somehow the driver doesn't
-> like the chip...
+BIOS says:
 
-It should be the bog-standard 16550 PNP device, check the resource
-settings somewhere?  Sorry I can't think of anything else at the
-moment...
+Serial(COM) Port 0 Configuration
+	Port		Enabled
+	Settings	IO=3F8H, IRQ=4
 
-greg k-h
+It was on "Auto" before but neither setting changed anything.
+
+I don't know how relevant this is about that same PCI device:
+
+pnp 00:06: [dma 0 disabled]
+
+I'll try to upgrade the BIOS, maybe it really is an ACPI f*ckup.
+
+Thx!
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
