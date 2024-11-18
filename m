@@ -1,134 +1,203 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2089.outbound.protection.outlook.com [40.107.20.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2133719C54B;
-	Mon, 18 Nov 2024 14:14:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731939298; cv=none; b=gkvWpxu4RKf7SDXIdg1/il4nzY/K64u2FlqmImE1CPx30CqJaWYH3JFSNM94a/0+oCnkj1Up9ThNGigNR5f2RxpXzsKKS0AxwP8ovqPrXAdmDI1ve7GemQ0oZSHtNXiWqFPVSt492A1d760E+RqNqOsnt9u12IB38XYIzdOtVEY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731939298; c=relaxed/simple;
-	bh=GpI8lRABSdwbFRSzHGnkl6CDaoqumg8eqpp6Bxfw5fg=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=Qq5nJs6zpg1Ppd0m3fCBz0G8jSW/hdznNnmeG6Qy8W58EN1bWOsvbaNEwOIYRrt6GXSp7Frbsx4w+lcCwocQX9aEGxZVmjNgK4BkPtRBeX3MqiZFTYkC46bc4Dm8rdfHU5HB+N7aVvURCtpdzZMh3WWAuM1AaSN85nWsGOP4szI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DbvXGSlZ; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01FC779DC7;
+	Mon, 18 Nov 2024 15:44:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.89
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1731944699; cv=fail; b=ggzQGveYw6ZJwTsRQT+0qR11QnORxnO93XyCyQNPvchNsFK2Qowurmo9EFV+RXQtJjlcvdWNp8uO+OmLaWHOXox8v64Qi/EunTpOUNTambN6MgBWRuobsk8K+WZty18moeNQy7qZVeUT8nGBpaeXBrzeRDa5IYhyZK0ILvx+sFs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1731944699; c=relaxed/simple;
+	bh=+vvmXdxzsWvVeeZihpyhZlT7ZthlGKMM2LLVWMAH28k=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=sLoZArgXjDK/yK9OF67Ut9PW7CzvzQvV2kt1q2og6LTFaWyJ6752O9Vmo5awzZ+xyrEryAo0wYO6rHJnIohV7YKkJvfDA5dvM3QUhvSMhT4OJIDbLQg+7Y6ljiy3+8yozwogC7yEuVL9cl70jV94n/yS63WrMTV9xJmRQ5p3mZE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=bjKxG5c7; arc=fail smtp.client-ip=40.107.20.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DbvXGSlZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1731939296; x=1763475296;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=GpI8lRABSdwbFRSzHGnkl6CDaoqumg8eqpp6Bxfw5fg=;
-  b=DbvXGSlZDQYjtW7DaYC2fzo4yoa7zEALG8ga3jUmFwf0JhnRZi2B5GIT
-   S9SfqsPOQp7g1q3FL+SBzVtSwAo/TNLef8OoWuRGwAjYL+ECBjGD8WDFp
-   AeNTizjjPb/VFNwXjgg+Gt5dRASu54ARgIThuTw0KqNILm/+r3LWUmvRu
-   B1VyX5stbGyaMU3w6HdT4ecWOW0hs9nTRPwz3vmYsaTk8V9eXdOxswn98
-   Y5jGuim+AIX1MtMy2dNn47h4xtxxG8tJzC4L4bLmWfovL4Vht5KOBdYww
-   fG2LNGj6ho1nYL2hC3o9d8x9R9vOaF1GJcKVez9jImJH8IhlUQH3kq6zt
-   Q==;
-X-CSE-ConnectionGUID: MbrCVx2dRxezyTwhxKJyeg==
-X-CSE-MsgGUID: 2lVmVBp+RamXnB9PH39MeA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11260"; a="42536356"
-X-IronPort-AV: E=Sophos;i="6.12,164,1728975600"; 
-   d="scan'208";a="42536356"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2024 06:14:26 -0800
-X-CSE-ConnectionGUID: QAK2gS4ASq++OiWGQ1jlbQ==
-X-CSE-MsgGUID: iVZFi8/dTVKAAN86aZsUMw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,164,1728975600"; 
-   d="scan'208";a="89261282"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.193])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2024 06:14:24 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 18 Nov 2024 16:14:20 +0200 (EET)
-To: Borislav Petkov <bp@alien8.de>
-cc: linux-serial <linux-serial@vger.kernel.org>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: Re: serial 00:06: Runtime PM usage count underflow!
-In-Reply-To: <20241116170727.GCZzjRT5WGcOMKFDYq@fat_crate.local>
-Message-ID: <ca76fb23-013d-9745-188b-b519096aa784@linux.intel.com>
-References: <20241116170727.GCZzjRT5WGcOMKFDYq@fat_crate.local>
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="bjKxG5c7"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vB/D8Hy75aZoIVI9AwAaZ6eCfDnJpx+ogk2oOo7pjLNLNDtXI6VEs8fA9wWbKqvO0h5l9HUs1ERwcg668p7m0jUFAd0hdOxGJNGpvW4q/eNJVJlwM7MdQWNpoUCFaV55bQfCnPUOm0y8q/kjphUpcYZSvFUQcNMn13Vggy64plw+Q21f2hDjPEse/6HhT/bBDSF+ruOJpj73viv055WxG836JdGSi4ZZRPLGat21iFAOVFgFSLZtoGgCrhgLUhRWvbrcjXBXoBqFDRrrlaHGLSDbhrayN5mlOhzB49W6gSOwusHU60Vj3wWxPm/qZ3/JvL5XCOOJVf47ZOJO57GiIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GxYZ9Wrpf7IkQ6GkQMZBtVZ/QiPrv2+TUTbuukG+XN4=;
+ b=Pd6zSg5oPoEwjtUAH4e81+J1ybQPgu9g37YJVOtBtI4OpbrX+pxidDs4NBrXnmAGdL5IB6eqAw4DbnIZRrTlsWerBMVI66/C6/e0mZ0CL+3IdXwTGfymE4Qm1azbVeF26AxkGrbs6n58GucjdfPahJRduPMhSkKrs3d64IIGT2ClY4+P4NMY1CQwX8pJUGbCwGoQEpx694UZgOkexh4eBavpHinutXMHY6KowkD2KsAAYjXo1EJnum9ZtTVy0BzGASajnS9pZ4MO+vLCaXgOWU1fnS3XpEsfM0GWGNySDA5c5Bl9b6s19Z7eGNhfaRz4xjdTTglfzF6UVSZgHvMrsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GxYZ9Wrpf7IkQ6GkQMZBtVZ/QiPrv2+TUTbuukG+XN4=;
+ b=bjKxG5c7PaKMvPkHwD2jbuFzUvxewDRFZI5h4fDo2AzrpeLE0fSc6ooVgfrS8yYmPbH7+C181ShylQVXoS0msFvsDCLFzQONSGmhwvQOF7jj7Eow9Hers4NSyOWDjtOABNAs87dP4zSqH5arY7eRsgl3y6837wAVa5OAH3a1e19B324IWP/2qoqZGNhNE8T02As2YAwsQwnDx5Jvl886VWfNvQwCqRh4Sebe3EH/AEFLqRHqO4q1iCQfd0N9c9MYvaZvrvWrERes1yU3vkaUrbGO3iSM9SQ0qsIfKqKq/JMFltjT1st79Ij1Yl3MLXqu9gBweb8buNzehOk1sSY50g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9251.eurprd04.prod.outlook.com (2603:10a6:10:352::15)
+ by AM7PR04MB7175.eurprd04.prod.outlook.com (2603:10a6:20b:111::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8158.23; Mon, 18 Nov
+ 2024 15:44:52 +0000
+Received: from DU0PR04MB9251.eurprd04.prod.outlook.com
+ ([fe80::708f:69ee:15df:6ebd]) by DU0PR04MB9251.eurprd04.prod.outlook.com
+ ([fe80::708f:69ee:15df:6ebd%6]) with mapi id 15.20.8158.021; Mon, 18 Nov 2024
+ 15:44:52 +0000
+From: Ciprian Costea <ciprianmarian.costea@oss.nxp.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Chester Lin <chester62515@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	imx@lists.linux.dev,
+	NXP S32 Linux <s32@nxp.com>,
+	Christophe Lizzi <clizzi@redhat.com>,
+	Alberto Ruiz <aruizrui@redhat.com>,
+	Enric Balletbo <eballetb@redhat.com>,
+	Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
+Subject: [PATCH v5 0/2] add NXP LINFlexD UART clock support for S32G2/S32G3
+Date: Mon, 18 Nov 2024 17:44:46 +0200
+Message-ID: <20241118154449.3895692-1-ciprianmarian.costea@oss.nxp.com>
+X-Mailer: git-send-email 2.45.2
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AS4P190CA0002.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5de::11) To DU0PR04MB9251.eurprd04.prod.outlook.com
+ (2603:10a6:10:352::15)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1024098145-1731939260=:933"
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU0PR04MB9251:EE_|AM7PR04MB7175:EE_
+X-MS-Office365-Filtering-Correlation-Id: b8430b2b-c41f-48ce-3b7d-08dd07e7f12c
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|7416014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?c3Fta2doR3cyNGo0aFpGU1FMMWtTeVB1c1RrRGI0djg0N2tjZzFLZ3lCWVhU?=
+ =?utf-8?B?eWFuOWt1dEtGQnRiZmxzdEkvcC9oODZ6eThha0pCVFFIRzNVcXkyMnpROXZJ?=
+ =?utf-8?B?OHdnRjZBcDdLVEZnUTdqZnlVVUQxWWVIWGVzaWdUQVAySUdlTS9VK3BJcXNL?=
+ =?utf-8?B?Vi9VRnJRd0RkK0hiNEQ3MElOUkFQTmltRWFNSGR0bjRoUWpNTVRrcHB2NEV4?=
+ =?utf-8?B?MUNJbFRPektWWG5JQ2dKd0p3dlhab1g1Y1YydkE2cFUrZTBWMmkyZm9PTXk3?=
+ =?utf-8?B?aHdVN082Z3NGbmFJUFE2dTNGbit3MHZoaGNHY20xZ21VQjJObWRDUmdrUXlq?=
+ =?utf-8?B?cmFhcGtzNG5CZElZRzFoLzFTdXorNkFrcWdsWEs4VFErckhjZzF4SWNuUmY3?=
+ =?utf-8?B?aC80YmxtUFVoQnkwWFhRcWEwVENleGdyZWxGNGlkTW1ieFRIL1gxcHYxcFl4?=
+ =?utf-8?B?SU5la3hGb2JaRGRoR3V4Wk1nbFlEVkdWcHlwUVZHWkZ0TzJTM1pROEZQWTR2?=
+ =?utf-8?B?YjBXR3R2dGJSYmpxVnpXaG5Ja1VtbCs0WDY2S3MvSTFLMzlHRDR0RUlPbGNn?=
+ =?utf-8?B?UG5PeGd0dkRpNms1R2JBbS9oZC9ScTd2VUR6S1gwSEY3S2hESnF2a2NnM01I?=
+ =?utf-8?B?YXY5b0JidmRza3ViMjlnWHJuTEdsL1QzMG1nT054emY0ekVBcFJ3YjFaZUsz?=
+ =?utf-8?B?RmNLSFhlTVhibE45SGR4dHJUODZsaHpMT0xLZHN3V0ZocUJGNGpxNkNMVzdk?=
+ =?utf-8?B?Z21DeDJseDB6MDRaTW5GSEtsSlNrMy8xWTlxQUZrbkxrMEdPbVJRVkdqOUxo?=
+ =?utf-8?B?VEdieldYcnVGT1ZBcCtEV1NmWUljOGlRaEZkRnZic0NUZEdsNUQyY2pFcFpz?=
+ =?utf-8?B?VzU3K0trdUpqS2wrZ2hHVjJYVTNuZFpvN1pZcGJId0J4MnF0SUFhVmc3bGJj?=
+ =?utf-8?B?bEZXZ2U1OFJCUFJLblhoUXNmWDcwblFRd0JEbkpnNDE4Vm4wRWFvejFDV0xB?=
+ =?utf-8?B?ZkVLYkUxb05FZHBkNGFKejRJcEU3cGNPRHBjVVpIZWpIczhra2VBWDQvSzQ5?=
+ =?utf-8?B?Mk93RG9Udlgwb1hyS3dGWmNYaDJkdFowVElKT01CWTVKcEdHK1NycUlRQ3N4?=
+ =?utf-8?B?YnJFMzlIWjhmTC9ZQU9DWFRWcVNucDRFTHBRNHB3YytKU2lQaFk2ZUs0cjUx?=
+ =?utf-8?B?Z1RJb09LQmhXYzdJczl0RVZXd3JCUzI0WnB2djkrSUg4cXQvVUpvR3BEWUdv?=
+ =?utf-8?B?Ym1aRmtDU3VCMTB2cmh5OVI4dHpSeDZOY3JoUHVtQmxsYm5OZEZjdFJDUlBB?=
+ =?utf-8?B?aXN6Ulc1L2dBN3pnb3NtYlFQVTdEREZWQkgzendRUzAyMzhFOWV6VUQyV3BP?=
+ =?utf-8?B?SVVLMHBCR2VUNWRmMW5Ta2VVdFNYclV6MUk0NGdwVUpkN1VqZHlvQzlWNFh4?=
+ =?utf-8?B?ZklVOVRBNUpZdUwvTHBsUDdGWlZLRGt6Z3orczNMYUV5dFNjQlRSQmE4WWNH?=
+ =?utf-8?B?MkxianNPckpwZGY3cVM0ZXN2bnZJNVp0VHZueXBwVkF0bDc0ZERPeGk0c01h?=
+ =?utf-8?B?bjFFNEVnOCtwYW1wcEw3YzZNT3RvRU1WMXgxK1lzTkIrbE1DalpseFdyaHdz?=
+ =?utf-8?B?Zm5mb1VLU3h1ajlheVhTeDVOcnUrb05wa0JJUjRKemk4KzZBYUREeDRFbnQ1?=
+ =?utf-8?B?dUJ3Y0o3RlZ4Mm9WQko1QmU5NmcxY1dNWE9IV0lnNmNsd1cvcGlFS0JRPT0=?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9251.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?YnlpekplZ2J2TkRQenl2ZWtYTmMzdFVXUTQvUndKazNaZ1NrVUQxOThpL0Iw?=
+ =?utf-8?B?OFV6U3JwdFpzK3p3VUIvVjQ0ZHhiSXRxeHVzb2Q2YWRwYVN3cjJleTBVV1p6?=
+ =?utf-8?B?ZHN0NVZCQlVJZTRQOSsybWQ2dkV3bVZaUkNwTkhoOWxkYUJ3MmlPVXNIS215?=
+ =?utf-8?B?R09teVFTdlZmTm9KOEllMVFMMlQ5UXFFZTRMUlR4K1VLeEtZM2FKV0RBUWp4?=
+ =?utf-8?B?V3B3L1BWUmNBeDFTUUFsSFNUTnNvMGhEeHRLR0lNa2lueEJxU1BHSjg4UDc2?=
+ =?utf-8?B?eUc1SUo0emxMYjBBQWxNTlZoelFsRlVRREhhNE9yTkQ4SVg4VDNEZTJ2WUtM?=
+ =?utf-8?B?T1BOYm4yckw2WkJ0ME5VTE5WU1BHdFJhNWNkTS9xSUlzU00rdHl3bHE1NU1l?=
+ =?utf-8?B?dEZzS3A5RVBUWFFVLzIzVXZGM0lIemhrQ09XUlUvWFN3TDdTcEtYQlVMSnZO?=
+ =?utf-8?B?ZkNqRHlSSFpqb0pJSkRXQlFQeGRwUTZoUnhrTzc0dWFhaGlUam1VRUtBUVAy?=
+ =?utf-8?B?NGlhWS9xMzYvRll3UGI2eGJ4VFJKRzNoQm5jcXdobkR0YlVVTm9lNXNReEFl?=
+ =?utf-8?B?MnNOa0NqYllyL2ZXdWpRaXB0cHRpd3RPRE5oN3hKSkl2c052MHZZb1g0OG1n?=
+ =?utf-8?B?aUk4V285eDBLZGJybjE4RkdpQXd6MncwYXBuOHJ4SDI1T0JoZG94dWdrZFht?=
+ =?utf-8?B?aU16UnhVRS9FRWFnTHNNS01BV3R4VHRKRHN0SFZBb2hXM01tY3BsMGVHK1pE?=
+ =?utf-8?B?L1o5dVluVmVOS1YxZUdJWlJzVWZ6eXVpVTlZemFMOFRyZTFqdnFUaktDS0Vq?=
+ =?utf-8?B?UVNKbkdvemZqNTl3dnNidGV4NWlzTW0rcGhIem1aanFIck5HWEVZdVc1cHJ6?=
+ =?utf-8?B?Vi9VM1RuTmZSWExlaUw4WlJHVFFSQVdoTE9rbVhFMEFPZzVkWDlWaERwRDZx?=
+ =?utf-8?B?aUVJLytFUWY3azhuQ0IyNnpUcmNGR28wNng1QURVVW9Obyt2akR1Rkc0ODVz?=
+ =?utf-8?B?Q25pVjh0WHZBRms4bHRrWjkwQ3FBNnJqVW8zZVRaaGlTTDQzb2hjb2RuR3dI?=
+ =?utf-8?B?cHpFaEkxenZZVk0xNmFNZEFOUjNQRWVMM2tjcnltUWN2RGY5ckgxOFFITVpt?=
+ =?utf-8?B?L3VGeDhsUjJ5NXNzeitrL24rRjEwUkloWlYrUGJ6aEpjbjNQQ0xVRzhaZis3?=
+ =?utf-8?B?YmVQa3R1SmhtbHBnOW5XVFg2WUdGT0ozeDgreFlyRURObGJUVS9tZnR1aWJv?=
+ =?utf-8?B?cXV0T2srSlVUUGY5bm5YcEZlOU9RSUQvZjNzVXhxQUwyOUVsK2xDRTQzWTJp?=
+ =?utf-8?B?RnowaHhPQ1dEenRwZTFIS3VsdzV1RG5Yc25BM0lUY3lQeEJmTXhQN3R3aEJK?=
+ =?utf-8?B?N0RHaFE0SDFESmFMc3RPODJ6Y21IMjFMaysrOUxRcXM0endCdjNiTUtsdzRi?=
+ =?utf-8?B?VFFzbHRDdkdldlF6TkM3eEUxeXArWXl0dGNqRUxRUVBtZFptcVJnUHo4ZXZX?=
+ =?utf-8?B?RTNQdURjMFdsWWR5ZHlpOTJTdUV4bEhPN1BHbXhNYkQyVTczQlZxR3d4aUZC?=
+ =?utf-8?B?MXREOVRvQ2gvQVFWQ0JqU1J2QTBKN05teFpyU1QxZXhWck1TM3JQZ0tYVkRm?=
+ =?utf-8?B?SG0wbzE2TUNYUEJVUE9lMW5JN3RDWnZNK1VYalU0Q0lxcEN0WWJ0K3pONTAw?=
+ =?utf-8?B?QS9xRlRGbWRVeGJaSDhLdUNFREMvY3ZtVXZRODVsSmg5cHVkNmRDWWpkMTFU?=
+ =?utf-8?B?KzFZVC9sSDAvRUR6U1hLQlJZS0VrL1Fxa1Q1ZHNtK2g4ejRXK2ZlQ0drMWVZ?=
+ =?utf-8?B?bjF1REp0aTVlUmI0a1ZtSXZoeVZDVER2VFBoSGlWWllsbGpjM3dTZ05aN1Ar?=
+ =?utf-8?B?MHRCN2UrTVNmK0xveHJEY3dlb1liYlVmdkZaSUpxayt4akdMaWJmOStVR3VM?=
+ =?utf-8?B?cHlaeTZQMGo2UGR4QnRSVGk5aUlJQk9kazRDUkcyWjRFK0RxSEVBMFh0ZUYv?=
+ =?utf-8?B?SytzYnN6YS9VRE1xTFBkZjFxUVNxMndlakM2bjdiNExGRFlQTHNnN0JhTDl5?=
+ =?utf-8?B?RjVtK1JvZGtlOHJvajV4Qy9uS1ExSGNZbXNHdTA1ZzNmSnAwN0Q1VzVZSmtl?=
+ =?utf-8?B?OEdhdkllN0ZXOGxpTi9ML1RsSjZMajJsTUJwVWRmNHpxNGtYRVVudmhJNFdU?=
+ =?utf-8?B?M2c9PQ==?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8430b2b-c41f-48ce-3b7d-08dd07e7f12c
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9251.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2024 15:44:52.3277
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0q5jK4uBFd2PTly0xleyfezo3yoezhEN3L5oOFD90t75HfxabIqZoJidqBl1psCeiYBjqDw431Duy6n4fh7zq8B4+L25ktYlUXMJzdyey6s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7175
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+From: Ciprian Marian Costea <ciprianmarian.costea@oss.nxp.com>
 
---8323328-1024098145-1731939260=:933
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+LINFlexD driver was working on S32 based boards without clock management
+because the downstream bootloaders (TF-A [1] and U-Boot [2]) were
+performing the LINFlexD clock management.
 
-On Sat, 16 Nov 2024, Borislav Petkov wrote:
+LINFlexD driver from Linux Kernel should manage its clocks independently
+and not rely on a previous bootloader configuration.
 
-> Hi folks,
->=20
-> got a box here which says:
->=20
-> [    4.654361] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-> [    4.660820] 00:06: ttyS0 at I/O 0x3f8 (irq =3D 4, base_baud =3D 115200=
-) is a 16550A
-> [    4.668313] printk: legacy console [ttyS0] disabled
-> [    4.676903] serial 00:06: Runtime PM usage count underflow!
-> [    4.677175] serial 00:06: disabled
-> [    4.677264] serial 00:06: unable to assign resources
-> [    4.677356] serial 00:06: probe with driver serial failed with error -=
-16
-> [    4.677923] printk: legacy console [ttyS0] disabled
->=20
-> Any suggestions?
->=20
-> I'd like to use the serial cable to catch dmesg but somehow the driver do=
-esn't
-> like the chip...
+[1] https://github.com/nxp-auto-linux/arm-trusted-firmware
+[2] https://github.com/nxp-auto-linux/u-boot
 
-I think "Runtime PM usage count underflow!" is not related to the probe=20
-problem you're seeing. Nonetheless, this patch might solve the underflow:
+Changes in V5:
+- Use 'devm_add_action_or_reset' to disable LINFlexD clocks if errors
+occur on the probe path.
 
---
-[PATCH 1/1] tty: serial: 8250: Fix another runtime PM usage counter underfl=
-ow
+Changes in V4:
+- Switched clock management to 'clk bulk' API usage
+- Added more context for this patchset
 
-The commit f9b11229b79c ("serial: 8250: Fix PM usage_count for console
-handover") fixed one runtime PM usage counter balance problem that
-occurs because .dev is not set during univ8250 setup preventing call to
-pm_runtime_get_sync(). Later, univ8250_console_exit() will trigger the
-runtime PM usage counter underflow as .dev is already set at that time.
+Changes in V3:
+- Fixed an error reported by 'dt_bindings_check'
 
-Call pm_runtime_get_sync() to balance the RPM usage counter also in
-serial8250_register_8250_port() before trying to add the port.
+Changes in V2:
+- Updated bindings by adding more information related to required
+LINFlexD clocks
 
-Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
----
- drivers/tty/serial/8250/8250_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+Ciprian Marian Costea (2):
+  dt-bindings: serial: fsl-linflexuart: add clock definitions
+  serial: fsl_linflexuart: add clock management
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/=
-8250_core.c
-index 5f9f06911795..68baf75bdadc 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -812,6 +812,9 @@ int serial8250_register_8250_port(const struct uart_825=
-0_port *up)
- =09=09=09uart->dl_write =3D up->dl_write;
-=20
- =09=09if (uart->port.type !=3D PORT_8250_CIR) {
-+=09=09=09if (uart_console_registered(&uart->port))
-+=09=09=09=09pm_runtime_get_sync(uart->port.dev);
-+
- =09=09=09if (serial8250_isa_config !=3D NULL)
- =09=09=09=09serial8250_isa_config(0, &uart->port,
- =09=09=09=09=09=09&uart->capabilities);
---=20
-2.39.5
+ .../bindings/serial/fsl,s32-linflexuart.yaml  | 16 ++++
+ drivers/tty/serial/fsl_linflexuart.c          | 95 ++++++++++++++++---
+ 2 files changed, 97 insertions(+), 14 deletions(-)
 
---8323328-1024098145-1731939260=:933--
+-- 
+2.45.2
+
