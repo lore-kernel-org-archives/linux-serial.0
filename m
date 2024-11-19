@@ -1,300 +1,228 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx-lax3-2.ucr.edu (mx-lax3-2.ucr.edu [169.235.156.37])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67C35A935
-	for <linux-serial@vger.kernel.org>; Tue, 19 Nov 2024 01:16:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBF0A13C82E
+	for <linux-serial@vger.kernel.org>; Tue, 19 Nov 2024 05:24:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=169.235.156.37
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731978972; cv=none; b=LmLDVRLgRu2tsgt5gBrZ8XdRkodvFJwGuDz+Fz9UqrbaW74bIV1B8zQzSco/1FuJBMERHPssuIlP4OB5O83uJOUyIEqUt69zNiZgOo+1mtLc2jq/8LSFwo6dnIYTbLUUTt7OIdKgixBGPU1Zngn5rBqbp5XeFHKD3oY0U8lX03E=
+	t=1731993859; cv=none; b=EToL/Kztg9UpZBKU4BJqXTcoRT5TOSy2iaZp6uQ2k/ovatsAUW8zrgA9jSJCUKkaC6LyTdscV9JHRKkDgv4fYgMGx8+9OyOGmGIydOVaV0RarGBY2wq3qe8oVvH7FpcdwYe95pUgDoReN2GihdopGGTIqK1dtcRPlYas7wlsgdM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731978972; c=relaxed/simple;
-	bh=3pMm3Ue6P1qWaA1KaoMNrqQZGa9Huj8L4J3+h8WjYbg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type:Content-Disposition; b=FC9StAk71xYp4G7/82QRRyudQmQw07h69FscSvqFK6hTZTanL0xEMI/a1oqHpfzLIiwFA/nO6U0uE34zJluHNPvVJ740EazGk5emh2aDAnZcvbYgKEOjDu0gzF7bEfVuuTCCCecUxTZJiAz7jPaLa/BxY8AnqoWHDZk6AFaJVFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=PVxQU0jR; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1731993859; c=relaxed/simple;
+	bh=RSIWF9dWhK5bG+0/7bgkNz1VCaANPiyJxvYDBREv8/w=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=D1i59grMA1JXqDb0wXdPkJt60GoI9Bb8p/ORrOGLLHjn0aMfwg2lsYCYqgbNNHNrzeGqNJvPelujTR0QMOC0VDPi5mJUXYD1IohrmFrT2dLEy8ni+73Nh2NMbhCsn4AuL6MsQ6klPxxFPS8Mfpq7vJEwY0sOsJPUlHQvtzTQO3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu; spf=pass smtp.mailfrom=ucr.edu; dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=Wg6BiVUn; dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b=J6b/IQqL; arc=none smtp.client-ip=169.235.156.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=email.ucr.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ucr.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PVxQU0jR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1731978969;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=L18b2/xSUIajlm/HuShpy5h2B9YfsZl/5JQ3xGw/ud8=;
-	b=PVxQU0jR3efYJ/RaWdsrKYQ5Xh02OrRxkc2xe7bzU27vJuHU63X6+IGR+XUcvSXpGd58ZB
-	44BYNf0RR/V55KUXSJPENT1c8KZzw80CcQUtqK1PVAx2wkTh5tQqKxxT3T6LsQ1C/c1rIj
-	R7iUIG8gfnQhCZwDNliyhiQE81JeY68=
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
- [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-625-r34GC4u5OzWIDnLApnLUZg-1; Mon, 18 Nov 2024 20:16:05 -0500
-X-MC-Unique: r34GC4u5OzWIDnLApnLUZg-1
-X-Mimecast-MFC-AGG-ID: r34GC4u5OzWIDnLApnLUZg
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-21159b15562so50222095ad.0
-        for <linux-serial@vger.kernel.org>; Mon, 18 Nov 2024 17:16:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="Wg6BiVUn";
+	dkim=pass (1024-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="J6b/IQqL"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
+  t=1731993857; x=1763529857;
+  h=dkim-signature:x-google-dkim-signature:
+   x-forwarded-encrypted:x-gm-message-state:
+   x-google-smtp-source:mime-version:from:date:message-id:
+   subject:to:content-type:x-cse-connectionguid:
+   x-cse-msgguid;
+  bh=RSIWF9dWhK5bG+0/7bgkNz1VCaANPiyJxvYDBREv8/w=;
+  b=Wg6BiVUn0rqU4f3LNa+2ksditxVhvJkInghpNJ90/tbxNgpQMTMf3XI2
+   sYcmHPdGLQ3bIB8ATn7ZustRe3pTySfR4O3xPy/xFILAl7o0R4lWFE2Vs
+   YExTdRivnPnhDY4gx1anaCYvubQy/ratPI6eczoF5umWyxwPjyZKOfZ08
+   62AvrxSKI57kJlCVd8B6f7Izz3HIiBXJRNHfGpswQwuCtJj+3A8Pod0tG
+   5NFX5/t/kkij1FQtR0skI2Pf4gnCFkDtVWLVAyJbvDufQRzbk2fDoeB7r
+   T/+tW3rB6HFJA41C9I8hyAX91EwMiA8h2aKZTO1zVr57i1zRm5vKOfQfd
+   Q==;
+X-CSE-ConnectionGUID: RZPihEO3RsC9xuVGssKXGg==
+X-CSE-MsgGUID: KH7aspHaQ7+c/wORdeuYLA==
+Received: from mail-io1-f71.google.com ([209.85.166.71])
+  by smtp-lax3-2.ucr.edu with ESMTP/TLS/TLS_AES_256_GCM_SHA384; 18 Nov 2024 21:23:08 -0800
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-83abd63a132so430638539f.1
+        for <linux-serial@vger.kernel.org>; Mon, 18 Nov 2024 21:23:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ucr.edu; s=rmail; t=1731993786; x=1732598586; darn=vger.kernel.org;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=z7RSfGOcNLlRwLMd+5dBsRSHhdnFAckzvVBCNqgl1Iw=;
+        b=J6b/IQqLRLI69xSV144+6lwxtW296PkD74R+5OUpbHDL+lmZB7rfc/2sUHBmtGGbwa
+         DxansFT+CgfCzITixHUEPH0IHTA0/jYeVW5teVBMlyy0broNgyNvsF3aL9BNLxIYNG1I
+         KhtnPMTZydG61c3BoHJuOW0esP8Cb7cZyBI0I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731978965; x=1732583765;
-        h=content-transfer-encoding:content-disposition:mime-version
-         :references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L18b2/xSUIajlm/HuShpy5h2B9YfsZl/5JQ3xGw/ud8=;
-        b=oEJp4I8X3kXEGDUCOf+GRsKE8lw2v/r/syzRGhSnRuxQ3xTiN/Z//5Q9n9dBEl6sGz
-         tGrkWjHuy2YnwRCvb7/wy1KxeJ86wm1vnGEJ5w/Nbub1Idn8PUahSGlBci50NsADeWWz
-         y3nUD9+5GWXi1BDFH8fVe+xckZXUlbWUYBKpzNMZBZPmjSuINYrIGweUDI80XRYogzrw
-         H3YOBG3OjprzT+NYpDys8athd0HlZKRqgwrtlg/Zl27q1G9te778gSLw39qUhQGTtiFg
-         oGwd1qTr4PJaNOMzq1p6IT/O6wRxq87o81vl1p7wNvU4EAsapbTb7LYf6qfxHPClDcpi
-         77vg==
-X-Forwarded-Encrypted: i=1; AJvYcCWzz/Ryz9D0PaPp9wwuPJnuj2+JrMi+/erNE1md18U5/6zBQBeZPqfoJj4WI1Lza2X5UE1ts2m24qLGSL4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyw+n09Fv2SNmt5CAsw9H1vLuAJlD36f3Uu8X1cgyrpfXglUKul
-	qYiwaajh3lq/agZqAnwktiDUEb7EgsnAZDLWonSudqtpSQNoaYWFkFhqV4FKNJUGz7EiX+RI4wa
-	BHBVwr3LNcpG6Jxqqimub4m30ryHrVdytOrTFWXDNn6R4Fwj4LUB3iUH1vJvXVg==
-X-Received: by 2002:a17:902:e54d:b0:20c:80d9:9982 with SMTP id d9443c01a7336-211d0eceb07mr218289375ad.47.1731978964785;
-        Mon, 18 Nov 2024 17:16:04 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IERcvwzst7pUKzOzWBWQqObtmxtzT8PM+xLo9oibjhsHZh/Zd3+Z5Y0hVr1Ox3ZMiwNZacGXA==
-X-Received: by 2002:a17:902:e54d:b0:20c:80d9:9982 with SMTP id d9443c01a7336-211d0eceb07mr218289075ad.47.1731978964383;
-        Mon, 18 Nov 2024 17:16:04 -0800 (PST)
-Received: from localhost.localdomain ([2804:1b3:a802:71b8:8bf1:7908:7779:c115])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-211d0ec9124sm63222775ad.101.2024.11.18.17.15.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Nov 2024 17:16:03 -0800 (PST)
-From: Leonardo Bras <leobras@redhat.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Leonardo Bras <leobras@redhat.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Tony Lindgren <tony@atomide.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Shanker Donthineni <sdonthineni@nvidia.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/4] irq: Introduce IRQ_HANDLED_MANY
-Date: Mon, 18 Nov 2024 22:15:40 -0300
-Message-ID: <ZzvmvBdqJpAyUicm@LeoBras>
-X-Mailer: git-send-email 2.47.0
-In-Reply-To: <ZzWrzC1QhhlNqLpl@smile.fi.intel.com>
-References: <20240216075948.131372-2-leobras@redhat.com> <20240216075948.131372-5-leobras@redhat.com> <87zfvwai62.ffs@tglx> <87v86kaf84.ffs@tglx> <ZdWMja3BfCZsbF_q@LeoBras> <87edd5hljz.ffs@tglx> <ZdghE6TNHgZ_bi19@LeoBras> <ZzVxIfb5KpL97P4Q@LeoBras> <ZzWrzC1QhhlNqLpl@smile.fi.intel.com>
+        d=1e100.net; s=20230601; t=1731993786; x=1732598586;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=z7RSfGOcNLlRwLMd+5dBsRSHhdnFAckzvVBCNqgl1Iw=;
+        b=HVSufkC50IZ4038M6q2Xrw/TLjIH9dC2+AeLQTndtKkgnnZGNyGFKxXrLEuAo7+6d0
+         mnss5p00QjD8jwd5igeoxSPY76uJrGXLm2mU7n1drD1wbLM4YvhqvulX0z+R/EdMg48t
+         5wA/lTd3F1pD83t5ARycBjZ/Y5o6odpwgJ7ks3WDy29CNKThocHUzRR9NVdiPstYEc5d
+         qGGW+VllN8N9pZ1XYZ4OImU6nlXsHIo1RM8XXQXrspXL3r9MELF2jxhJsmR9hGigsVRs
+         KbqMmcsakgPmXFPcARAu+B/OWTp81IAnkjx0V3v9mBPN9/qZjz+5rwpmoqkoNDzB3d+I
+         xpug==
+X-Forwarded-Encrypted: i=1; AJvYcCX4x/f1+nL6hnKTBNPjSGqCbe0ejDAGLaDsuGzvCeo58QTXeGuEErhGDPzOYp5w0j7Rt5sGgYAuOPGnz1E=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyoIkNZekeTc+Hkt2Fb9kjHbRirk5zsg0cbft0n1ffTzUg1rNx6
+	qf5Waim6WH/56sokSdWgcfN2Kn9oEcEZ+5IBgJB27IY1A31b6+qWxR/pCSl5YMfK4X0YDLQh7eu
+	qHVmtBIV7G6sU+FMyMeLcZxtt809LvRwbhpwNyQG7ILeb6vi1zQnJXGvJ2bHHE+25LkklAloAm3
+	eGPBBRo0TKBN+AUEHGGnZqvZQGN0iPJv3peQ4KxNkB6Hxj6e4G
+X-Received: by 2002:a05:6602:611a:b0:82c:ec0f:a081 with SMTP id ca18e2360f4ac-83ea8abcdbemr206901039f.4.1731993786339;
+        Mon, 18 Nov 2024 21:23:06 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEr7JIuo+Q8xum+7MTkOOdjvwMuhzU3MUjpVITuW3scWIk+NPW/z5/EqehSYHebQuGWYDaVDYWhsNEwCsr03w8=
+X-Received: by 2002:a05:6602:611a:b0:82c:ec0f:a081 with SMTP id
+ ca18e2360f4ac-83ea8abcdbemr206899939f.4.1731993786028; Mon, 18 Nov 2024
+ 21:23:06 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: QxuaZlsbXqG2_ksgVKT3T_uuwX8_GODJ8oLl4t5pX7o_1731978965
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+From: Juefei Pu <juefei.pu@email.ucr.edu>
+Date: Mon, 18 Nov 2024 21:22:54 -0800
+Message-ID: <CANikGpf8mkdZ+MVjLWoBEg0XZOBmwHVGaZVKX6eBSst+a2-Y8w@mail.gmail.com>
+Subject: BUG: KASAN: slab-use-after-free Read in gsm_dlci_config
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Nov 14, 2024 at 09:50:36AM +0200, Andy Shevchenko wrote:
-> On Thu, Nov 14, 2024 at 12:40:17AM -0300, Leonardo Bras wrote:
-> > On Fri, Feb 23, 2024 at 01:37:39AM -0300, Leonardo Bras wrote:
-> > > On Wed, Feb 21, 2024 at 04:41:20PM +0100, Thomas Gleixner wrote:
-> > > > On Wed, Feb 21 2024 at 02:39, Leonardo Bras wrote:
-> > > > > On Mon, Feb 19, 2024 at 12:03:07PM +0100, Thomas Gleixner wrote:
-> > > > >> >> Is scenarios where there is no need to keep track of IRQ handled, convert
-> > > > >> >> it back to IRQ_HANDLED.
-> > > > >> >
-> > > > >> > That's not really workable as you'd have to update tons of drivers just
-> > > > >> > to deal with that corner case. That's error prone and just extra
-> > > > >> > complexity all over the place.
-> > > > >
-> > > > > I agree, that's a downside of this implementation. 
-> > > > 
-> > > > A serious one which is not really workable. See below.
-> > > > 
-> > > > > I agree the above may be able to solve the issue, but it would make 2 extra 
-> > > > > atomic ops necessary in the thread handling the IRQ, as well as one extra 
-> > > > > atomic operation in note_interrupt(), which could increase latency on this 
-> > > > > IRQ deferring the handler to a thread.
-> > > > >
-> > > > > I mean, yes, the cpu running note_interrupt() would probably already have 
-> > > > > exclusiveness for this cacheline, but it further increases cacheline 
-> > > > > bouncing and also adds the mem barriers that incur on atomic operations, 
-> > > > > even if we use an extra bit from threads_handled instead of allocate a new 
-> > > > > field for threads_running.
-> > > > 
-> > > > I think that's a strawman. Atomic operations can of course be more
-> > > > expensive than non-atomic ones, but they only start to make a difference
-> > > > when the cache line is contended. That's not the case here for the
-> > > > normal operations.
-> > > > 
-> > > > Interrupts and their threads are strictly targeted to a single CPU and
-> > > > the cache line is already hot and had to be made exclusive because of
-> > > > other write operations to it.
-> > > > 
-> > > > There is usually no concurrency at all, except for administrative
-> > > > operations like enable/disable or affinity changes. Those administrative
-> > > > operations are not high frequency and the resulting cache line bouncing
-> > > > is unavoidable even without that change. But does it matter in the
-> > > > larger picture? I don't think so.
-> > > 
-> > > That's a fair point, but there are some use cases that use CPU Isolation on 
-> > > top of PREEMPT_RT in order to reduce interference on a CPU running an RT 
-> > > workload.
-> > > 
-> > > For those cases, IIRC the handler will run on a different (housekeeping) 
-> > > CPU when those IRQs originate on an Isolated CPU, meaning the above 
-> > > described cacheline bouncing is expected.
-> > > 
-> > > 
-> > > > 
-> > > > > On top of that, let's think on a scenario where the threaded handler will 
-> > > > > solve a lot of requests, but not necessarily spend a lot of time doing so.
-> > > > > This allows the thread to run for little time while solving a lot of 
-> > > > > requests.
-> > > > >
-> > > > > In this scenario, note_interrupt() could return without incrementing 
-> > > > > irqs_unhandled for those IRQ that happen while the brief thread is running, 
-> > > > > but every other IRQ would cause note_interrupt() to increase 
-> > > > > irqs_unhandled, which would cause the bug to still reproduce.
-> > > > 
-> > > > In theory yes. Does it happen in practice?
-> > > > 
-> > > > But that exposes a flaw in the actual detection code. The code is
-> > > > unconditionally accumulating if there is an unhandled interrupt within
-> > > > 100ms after the last unhandled one. IOW, if there is a periodic
-> > > > unhandled one every 50ms, the interrupt will be shut down after 100000 *
-> > > > 50ms = 5000s ~= 83.3m ~= 1.4h. And it neither cares about the number of
-> > > > actually handled interrupts.
-> > > > 
-> > > > The spurious detector is really about runaway interrupts which hog a CPU
-> > > > completely, but the above is not what we want to protect against.
-> > > 
-> > > Now it makes a lot more sense to me.
-> > > Thanks!
-> > 
-> > Hi Thomas,
-> > 
-> > I would like to go back to this discussion :)
-> > From what I could understand, and read back the thread:
-> > 
-> > - The spurious detector is used to avoid cpu hog when a lots of IRQs are 
-> >   hitting a cpu, but few ( < 100 / 100k) are being handled. It works by
-> >   disabling that interruption.
-> > 
-> > - The bug I am dealing with (on serial8250), happens to fit exactly at
-> >   above case: lots of requests, but few are handled.
-> >   The reason: threaded handler, many requests, and they are dealt with in 
-> >   batch: multiple requests are handled at once, but a single IRQ_HANDLED 
-> >   returned.
-> > 
-> > - My proposed solution: Find a way of accounting the requests handled.
-> > 
-> >   - Implementation: add an option for drivers voluntarily report how 
-> >     many requests they handled. Current drivers need no change.
-> 
-> >   - Limitation: If this issue is found on another driver, we need to 
-> >     implement accounting there as well. This may only happen on drivers
-> >     which handle over 1k requests at once.
-> 
-> > What was left for me TODO:
-> > Think on a generic solution for this issue, to avoid dealing with that 
-> > in a per-driver basis. 
-> > 
-> > That's what I was able to think about:
-> 
-> > - Only the driver code knows how many requests it handled, so without  
-> >   touching them we can't know how many requests were properly handled.
-> 
+Hello,
+We found the following issue using syzkaller on Linux v6.11.
+In function `gsm_dlci_config`, a use-after-free on object `dlci` has
+been detected.
+Since the reproducer takes around 10 seconds to trigger the bug, it
+might be a race condition one.
+The C reproducer is available
+at:https://gist.github.com/TomAPU/2ef61db5e741daa2b4b040fd874b9e92#file-gsmvuln-c
 
-Hello Andy, thanks for reviewing!
+==================================================================
+BUG: KASAN: slab-use-after-free in gsm_dlci_config+0x7b7/0x1020
+drivers/tty/n_gsm.c:2588
+Read of size 4 at addr ffff88803dab000c by task syz.0.361/12086
 
+CPU: 0 PID: 12086 Comm: syz.0.361 Not tainted 6.10.0 #13
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.15.0-1 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x23d/0x360 lib/dump_stack.c:114
+ print_address_description+0x77/0x360 mm/kasan/report.c:377
+ print_report+0xfd/0x210 mm/kasan/report.c:488
+ kasan_report+0x13f/0x170 mm/kasan/report.c:601
+ gsm_dlci_config+0x7b7/0x1020 drivers/tty/n_gsm.c:2588
+ gsmld_ioctl+0xbbc/0x2540 drivers/tty/n_gsm.c:3880
+ tty_ioctl+0x98f/0xdb0 drivers/tty/tty_io.c:2812
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xfe/0x170 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0x7e/0x150 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x67/0x6f
+RIP: 0033:0x7f86c25809b9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48
+89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f86c3429038 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f86c2745f80 RCX: 00007f86c25809b9
+RDX: 0000000020000200 RSI: 0000000040384708 RDI: 0000000000000003
+RBP: 00007f86c25f4f70 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000000 R14: 00007f86c2745f80 R15: 00007ffd81f1d488
+ </TASK>
 
-> Hmm... But do I understand correctly the following:
-> 
-> - the IRQ core knows the amount of generated IRQs for the device (so it's kinda
-> obvious that IRQ number maps to the driver);
+Allocated by task 12086:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3b/0x70 mm/kasan/common.c:68
+ poison_kmalloc_redzone mm/kasan/common.c:370 [inline]
+ __kasan_kmalloc+0x94/0xa0 mm/kasan/common.c:387
+ kasan_kmalloc include/linux/kasan.h:211 [inline]
+ kmalloc_trace_noprof+0x19e/0x2b0 mm/slub.c:4154
+ kmalloc_noprof include/linux/slab.h:660 [inline]
+ kzalloc_noprof include/linux/slab.h:778 [inline]
+ gsm_dlci_alloc+0x53/0x6c0 drivers/tty/n_gsm.c:2643
+ gsmld_ioctl+0xb99/0x2540 drivers/tty/n_gsm.c:3876
+ tty_ioctl+0x98f/0xdb0 drivers/tty/tty_io.c:2812
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xfe/0x170 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0x7e/0x150 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x67/0x6f
 
-Yes, I could understand that as well.
+Freed by task 12087:
+ kasan_save_stack mm/kasan/common.c:47 [inline]
+ kasan_save_track+0x3b/0x70 mm/kasan/common.c:68
+ kasan_save_free_info+0x3c/0x50 mm/kasan/generic.c:579
+ poison_slab_object+0xe0/0x140 mm/kasan/common.c:240
+ __kasan_slab_free+0x33/0x50 mm/kasan/common.c:256
+ kasan_slab_free include/linux/kasan.h:184 [inline]
+ slab_free_hook mm/slub.c:2196 [inline]
+ slab_free mm/slub.c:4438 [inline]
+ kfree+0x118/0x2a0 mm/slub.c:4559
+ dlci_put drivers/tty/n_gsm.c:2706 [inline]
+ gsm_dlci_release drivers/tty/n_gsm.c:2739 [inline]
+ gsm_cleanup_mux+0x5a2/0x930 drivers/tty/n_gsm.c:3156
+ gsm_config drivers/tty/n_gsm.c:3408 [inline]
+ gsmld_ioctl+0x13c4/0x2540 drivers/tty/n_gsm.c:3839
+ tty_ioctl+0x98f/0xdb0 drivers/tty/tty_io.c:2812
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xfe/0x170 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0x7e/0x150 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x67/0x6f
 
-> 
-> - the IRQ core disables IRQ while handling an IRQ number in question;
+The buggy address belongs to the object at ffff88803dab0000
+ which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 12 bytes inside of
+ freed 2048-byte region [ffff88803dab0000, ffff88803dab0800)
 
-Not necessarily:
-When on irqs are force-threaded, only a quick handler is called, returning 
-IRQ_WAKE_THREAD, which is supposed to wake up the handler thread.
+The buggy address belongs to the physical page:
+page: refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x3dab0
+head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+flags: 0xfff00000000040(head|node=0|zone=1|lastcpupid=0x7ff)
+page_type: 0xffffefff(slab)
+raw: 00fff00000000040 ffff888013042000 dead000000000100 dead000000000122
+raw: 0000000000000000 0000000000080008 00000001ffffefff 0000000000000000
+head: 00fff00000000040 ffff888013042000 dead000000000100 dead000000000122
+head: 0000000000000000 0000000000080008 00000001ffffefff 0000000000000000
+head: 00fff00000000003 ffffea0000f6ac01 ffffffffffffffff 0000000000000000
+head: 0000000000000008 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask
+0xd2820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC),
+pid 8050, tgid 8050 (syz-executor), ts 139463488880, free_ts 0
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x1db/0x220 mm/page_alloc.c:1473
+ prep_new_page mm/page_alloc.c:1481 [inline]
+ get_page_from_freelist+0x7e5/0x860 mm/page_alloc.c:3425
+ __alloc_pages_noprof+0x25a/0x580 mm/page_alloc.c:4683
+ __alloc_pages_node_noprof include/linux/gfp.h:269 [inline]
+ alloc_pages_node_noprof include/linux/gfp.h:296 [inline]
+ alloc_slab_page+0x67/0x130 mm/slub.c:2265
+ allocate_slab+0x5c/0x240 mm/slub.c:2428
+ new_slab mm/slub.c:2481 [inline]
+ ___slab_alloc+0xc6b/0x10c0 mm/slub.c:3667
+ __slab_alloc+0x58/0xa0 mm/slub.c:3757
+ __slab_alloc_node mm/slub.c:3810 [inline]
+ slab_alloc_node mm/slub.c:3990 [inline]
+ __do_kmalloc_node mm/slub.c:4122 [inline]
+ kmalloc_node_track_caller_noprof+0x268/0x410 mm/slub.c:4143
+ kmalloc_reserve+0x10e/0x2a0 net/core/skbuff.c:597
+ __alloc_skb+0x1e8/0x430 net/core/skbuff.c:666
+ alloc_skb include/linux/skbuff.h:1308 [inline]
+ nlmsg_new include/net/netlink.h:1015 [inline]
+ inet6_ifinfo_notify+0x6e/0x110 net/ipv6/addrconf.c:6161
+ addrconf_notify+0xca7/0x1000 net/ipv6/addrconf.c:3762
+ notifier_call_chain kernel/notifier.c:93 [inline]
+ raw_notifier_call_chain+0xe0/0x180 kernel/notifier.c:461
+ __dev_notify_flags+0x201/0x400
+ dev_change_flags+0xe8/0x190 net/core/dev.c:8858
+ do_setlink+0xcc7/0x41e0 net/core/rtnetlink.c:2900
+page_owner free stack trace missing
 
-  * @IRQ_WAKE_THREAD:   handler requests to wake the handler thread
-
-In this case (which is what I am dealing with), the actual handler will run 
-in thread context (which I suppose don't disable IRQ for sched-out 
-purposes).
-
-> 
-> - the driver is supposed to handle all IRQs that were reported at the beginning
-> o.f its handler;
-
-That I am not aware about. I suppose it depends on driver implementation.
-
-But if this one is correct, and must be true for every handler, then my 
-first approach should be the right fix. See [1] below.
-
-
-Below I am assuming handled IRQs = 'handlers which returned IRQ_HANDLED':
-
-> 
-> - taking the above the amount of handled IRQs is what came till the disabling
-> IRQ.
-
-Sure
-
-> IRQs that came after should be replayed when IRQ gets enabled.
-> 
-> ?
-
-Not sure about this one as well.
-You mean the ones that got queued for thread-handling, but somehow got 
-paused since the interrupt got disabled?
-
-If not, I guess once you disable an IRQ no interruption on that line happens,
-so I don't think any interruption gets saved for later (at least not in 
-kernel level).
-
-But I may be wrong here, it's a guess.
-
-> 
-> > - I could try thinking a different solution, which involves changing only
-> >   the spurious detector.
-> > 
-> >   - For that I would need to find a particular characteristic we would want 
-> >     to avoid spurious detection against, and make sure it won't miss an
-> >     actual case we want to be protected about.
-> > 
-> > Generic solutions(?) proposed:
-
-[1] here:
-
-> > - Zero irqs_unhandled if threaded & handles a single request in 100k
-> >   - Problem: A regular issue with the interruption would not be detected 
-> >     in the driver. 
-> > 
-> > - Skip detection if threaded & the handling thread is running
-> >   - Problem 1: the thread may run shortly and batch handle a lot of stuff, 
-> >   not being detected by the spurious detector. 
-> >   - Problem 2: the thread may get stuck, not handle the IRQs and also not
-> >   being detected by the spurious handler. (IIUC)
-> > 
-> > 
-> > In the end, I could not find a proper way of telling apart
-> > a - "this is a real spurious IRQ behavior, which needs to be disabled", and 
-> > b - "this is just a handler that batch-handles it's requests",
-> > without touching the drivers' code.
-> > 
-> > Do you have any suggestion on how to do that?
-> 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
-
-Thanks!
-Leo
-
+Memory state around the buggy address:
+ ffff88803daaff00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88803daaff80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88803dab0000: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                      ^
+ ffff88803dab0080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88803dab0100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
