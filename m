@@ -1,165 +1,142 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E37B1CF7AE;
-	Tue, 19 Nov 2024 16:23:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711BF1CEAAA;
+	Tue, 19 Nov 2024 16:41:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732033436; cv=none; b=S1H7hiPdAHzzINIyklW+sjjFwul2w/dHXqp9FKwM3JzIUBC6m//aSsf0zDSx6kHs5j8qliyxTTDuK/GPKFZJU31PsZqDTrMqCWhBALex2l5tlcrwnxJK2fsotsmtUtaJbtjks3qfPV/B+2Knjojfoogt/8bUDvJaiZYFsb29aQg=
+	t=1732034474; cv=none; b=N3KtoyEozIjpk4BXJYrsOID1NyDDLZS4aBw3n5tlx9oaqrDPBwJMvJy5CcMp8abm2fGRdiz5AahXnbUfCJepnT+SEzC5W6hSfHqOmrSLNeY5VR1+Ex6CRhNhu6UidIK+NbgUrmbhgXzCWr1kwK5C/QxSmbvCScw/lPxD4+E5Y7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732033436; c=relaxed/simple;
-	bh=LSRdOwWVhxFzk1KBx29WAMi60HC/Qo9FvfMm4nhpA9E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Cc08nKc37h2inneglRG64dAy9nHu/PF9jIkHaAiXm6WDR8tIlBnT6b+FJjlqA5wAazAzdjcH+Me86suVZcU28KfT0GKCw9n3AoJsrjMm/Oolez4OHXl4tcCnD2UmoSybpAtRwVtT9WmuymfHSM7622p/Hs6iuz9JRV3ihg23gmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g6hmRTcs; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1732034474; c=relaxed/simple;
+	bh=mSEjV9HeiX3fGZWRfQeuUvS8Yds5ecN+q0LpFFL71mg=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=KTYIdyheiWN8lmuJm5khaovx4hktEG3fxgHCb/p5GQy+GQfPkjQojenVzLNOTs0TiTWjFm1hlAWBvsszwSyqe2+2pSS1VuAl42lLm4zwB8ngZMLOxa1euQb+nbzOvd/JtKQdKs26FPYGJJT6H7Qu91f5Yt7NVpBZy5DX7iRMkAU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=iHn6JGMA; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g6hmRTcs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1EF4C4CECF;
-	Tue, 19 Nov 2024 16:23:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732033436;
-	bh=LSRdOwWVhxFzk1KBx29WAMi60HC/Qo9FvfMm4nhpA9E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=g6hmRTcsFrfIB7D2y5/mfHljmWKST1y77Hb27hjUnK0eOp7MZaCumycTh8Pq7/he3
-	 wtmBk5pO8r79Mv5fNcMqxeZ0Hep+jjNQpNEjOHGvpc52JYPZvCm6eqcmGeKpiiVT76
-	 zjbIqXg+vB7AKZOX1XEPG6rrvR1cLqnJbcuEWNFYR5qfvG5mc7NgJYKFmUJBE3mGjK
-	 oJdE4daaBrrWceqAW2UHdgqow3ce09w5eAJYRI1lBMjBVBU1bo//zW1qrGh7BUltQQ
-	 de5ckQFQai0dicL73v+SUXnpaE1BItxVpaM6qVb54PxJ3g4K0DdT4/dokdh33HvTU4
-	 4cEXp2pkWkTXg==
-Date: Tue, 19 Nov 2024 10:23:54 -0600
-From: Rob Herring <robh@kernel.org>
-To: Claudiu <claudiu.beznea@tuxon.dev>
-Cc: geert+renesas@glider.be, magnus.damm@gmail.com, krzk+dt@kernel.org,
-	conor+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	p.zabel@pengutronix.de, lethal@linux-sh.org, g.liakhovetski@gmx.de,
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: Re: [PATCH v3 6/8] arm64: dts: renesas: rzg3s-smarc-switches: Add a
- header to describe different switches
-Message-ID: <20241119162354.GA1761971-robh@kernel.org>
-References: <20241115134401.3893008-1-claudiu.beznea.uj@bp.renesas.com>
- <20241115134401.3893008-7-claudiu.beznea.uj@bp.renesas.com>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="iHn6JGMA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1732034472; x=1763570472;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mSEjV9HeiX3fGZWRfQeuUvS8Yds5ecN+q0LpFFL71mg=;
+  b=iHn6JGMAqNXOHWDPUIphpzuwfMioZ+ktYdyTNDIWlX85ru8ioN3Vj0Od
+   c6MlLghzSUucBOQTfXPX1Gj44Rwuu9gWxdQdMlTQbxgiSEB3dOD8EHFKg
+   FCwsdG8H/iRgsOs2v5nNOrkijJeNIJB83Ah8pfFV2393ou4hI+SUryn+m
+   RpzdBV3ads7Vx17NqiuF/1eNrWWOME9fVehwNMKhojGmMDD5AXJu6H827
+   x+1FEQdE2OpqUlY45nCbZny4VRvq8mdfssh75ed5PjqpcRwVKHqpEAiFT
+   DQtcoLKdmgf7IcFp8e6QvArMoHLHutMhGV0a5lKbuPL+8WIBgbS50PSKm
+   Q==;
+X-CSE-ConnectionGUID: jnnvkeRdTYaD0RwnHEXOug==
+X-CSE-MsgGUID: WIw7SjvARGOo5K2yNqCvNQ==
+X-IronPort-AV: E=Sophos;i="6.12,166,1728975600"; 
+   d="scan'208";a="35018884"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 19 Nov 2024 09:41:11 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 19 Nov 2024 09:40:53 -0700
+Received: from ryan-Precision-3630-Tower.microchip.com (10.10.85.11) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.35 via Frontend Transport; Tue, 19 Nov 2024 09:40:53 -0700
+From: <Ryan.Wanner@microchip.com>
+To: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+	<claudiu.beznea@tuxon.dev>, <mturquette@baylibre.com>, <sboyd@kernel.org>,
+	<arnd@arndb.de>
+CC: <dharma.b@microchip.com>, <mihai.sain@microchip.com>,
+	<romain.sioen@microchip.com>, <varshini.rajendran@microchip.com>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+	<linux-mmc@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>, Ryan Wanner
+	<Ryan.Wanner@microchip.com>
+Subject: [PATCH 00/15] Add support for SAMA7D65
+Date: Tue, 19 Nov 2024 09:40:06 -0700
+Message-ID: <cover.1732030972.git.Ryan.Wanner@microchip.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241115134401.3893008-7-claudiu.beznea.uj@bp.renesas.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On Fri, Nov 15, 2024 at 03:43:59PM +0200, Claudiu wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> 
-> There are different switches available on both the RZ/G3S SMARC Module and
-> RZ SMARC Carrier II boards. These switches are used to route different SoC
-> signals to different parts available on board.
-> 
-> These switches are described in device trees through macros. These macros
-> are set accordingly such that the resulted compiled dtb to describe the
-> on-board switches states.
-> 
-> Based on the SW_CONFIG3 switch state (populated on the module board), the
-> SCIF3 SoC interface is routed or not to an U(S)ART pin header available on
-> the carrier board. As the SCIF3 is accessible through the carrier board,
-> the device tree enables it in the carrier DTS. To be able to cope with
-> these type of configurations, add a header file where all the on-board
-> switches can be described and shared accordingly between module and carrier
-> board.
-> 
-> Commit prepares the code to enable SCIF3 on the RZ/G3S carrier device
-> tree.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> ---
-> 
-> Changes in v3:
-> - none
-> 
-> Changes in v2:
-> - none
-> 
->  .../boot/dts/renesas/rzg3s-smarc-som.dtsi     | 20 +-----------
->  .../boot/dts/renesas/rzg3s-smarc-switches.h   | 32 +++++++++++++++++++
->  2 files changed, 33 insertions(+), 19 deletions(-)
->  create mode 100644 arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-> 
-> diff --git a/arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi b/arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi
-> index 55c72c8a0735..5c88e130c89e 100644
-> --- a/arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi
-> +++ b/arch/arm64/boot/dts/renesas/rzg3s-smarc-som.dtsi
-> @@ -9,25 +9,7 @@
->  #include <dt-bindings/gpio/gpio.h>
->  #include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
->  
-> -/*
-> - * On-board switches' states:
-> - * @SW_OFF: switch's state is OFF
-> - * @SW_ON:  switch's state is ON
-> - */
-> -#define SW_OFF		0
-> -#define SW_ON		1
-> -
-> -/*
-> - * SW_CONFIG[x] switches' states:
-> - * @SW_CONFIG2:
-> - *	SW_OFF - SD0 is connected to eMMC
-> - *	SW_ON  - SD0 is connected to uSD0 card
-> - * @SW_CONFIG3:
-> - *	SW_OFF - SD2 is connected to SoC
-> - *	SW_ON  - SCIF1, SSI0, IRQ0, IRQ1 connected to SoC
-> - */
-> -#define SW_CONFIG2	SW_OFF
-> -#define SW_CONFIG3	SW_ON
-> +#include "rzg3s-smarc-switches.h"
->  
->  / {
->  	compatible = "renesas,rzg3s-smarcm", "renesas,r9a08g045s33", "renesas,r9a08g045";
-> diff --git a/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h b/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-> new file mode 100644
-> index 000000000000..e2d9b953f627
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-> @@ -0,0 +1,32 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
+From: Ryan Wanner <Ryan.Wanner@microchip.com>
 
-Use the same license as the .dtsi file.
+This series adds support for the SAMA7D65 SoC.
 
-> +/*
-> + * On-board switches for the Renesas RZ/G3S SMARC Module and RZ SMARC Carrier II
-> + * boards.
-> + *
-> + * Copyright (C) 2024 Renesas Electronics Corp.
-> + */
-> +
-> +#ifndef __RZG3S_SMARC_SWITCHES__
-> +#define __RZG3S_SMARC_SWITCHES__
-> +
-> +/*
-> + * On-board switches' states:
-> + * @SW_OFF: switch's state is OFF
-> + * @SW_ON:  switch's state is ON
-> + */
-> +#define SW_OFF		0
-> +#define SW_ON		1
-> +
-> +/*
-> + * SW_CONFIG[x] switches' states:
-> + * @SW_CONFIG2:
-> + *	SW_OFF - SD0 is connected to eMMC
-> + *	SW_ON  - SD0 is connected to uSD0 card
-> + * @SW_CONFIG3:
-> + *	SW_OFF - SD2 is connected to SoC
-> + *	SW_ON  - SCIF3, SSI3, IRQ0, IRQ1 connected to SoC
-> + */
-> +#define SW_CONFIG2	SW_OFF
-> +#define SW_CONFIG3	SW_ON
-> +
-> +#endif /* __RZG3S_SMARC_SWITCHES__ */
-> -- 
-> 2.39.2
-> 
+There have been patches in this series that have been tagged as
+Reviewed-by or Acked-by, I will link these threads below.
+
+1) https://lore.kernel.org/lkml/20240829-sama7d65-core-dt-v1-1-e5d882886f59@microchip.com/
+2) https://lore.kernel.org/lkml/20240829-sama7d65-sck-v1-1-3e7b19e3cbf9@microchip.com/
+3) https://lore.kernel.org/lkml/20240829-sama7d65-next-v1-1-53d4e50b550d@microchip.com/
+4) https://lore.kernel.org/lkml/1da0abbb-94e5-42fd-a2d2-71d5d7d253fb@microchip.com/
+
+The clock system patches have been sent before and are added to this set
+to follow the correct practice of submitting patches. I will list that
+thread below.
+
+1) https://lore.kernel.org/linux-arm-kernel/d970e158-db74-4ffe-9fb4-57026ac0a947@tuxon.dev/
+
+Dharma Balasubiramani (7):
+  dt-bindings: mfd: atmel,sama5d2-flexcom: add
+    microchip,sama7d65-flexcom
+  dt-bindings: atmel-sysreg: add sama7d65 RAM and PIT
+  dt-bindings: mmc: atmel,sama5d2-sdhci: add microchip,sama7d65-sdhci
+  dt-bindings: serial: atmel,at91-usart: add microchip,sama7d65-usart
+  dt-bindings: pinctrl: at91-pio4: add microchip,sama7d65-pinctrl
+  dt-bindings: clocks: atmel,at91sam9x5-sckc: add sama7d65
+  dt-bindings: clock: Add SAMA7D65 PMC compatible string
+
+Romain Sioen (2):
+  dt-bindings: ARM: at91: Document Microchip SAMA7D65 Curiosity
+  ARM: dts: microchip: add support for sama7d65_curiosity board
+
+Ryan Wanner (5):
+  ARM: configs: at91: sama7: add new SoC config
+  ARM: dts: microchip: add sama7d65 SoC DT
+  clk: at91: clk-master: increase maximum number of clocks
+  clk: at91: clk-sam9x60-pll: increase maximum amount of plls
+  clk: at91: sama7d65: add sama7d65 pmc driver
+
+Varshini Rajendran (1):
+  dt-bindings: clock: at91: Allow MCKs to be exported and referenced in
+    DT
+
+ .../devicetree/bindings/arm/atmel-at91.yaml   |    7 +
+ .../devicetree/bindings/arm/atmel-sysregs.txt |   14 +-
+ .../bindings/clock/atmel,at91rm9200-pmc.yaml  |    2 +
+ .../bindings/clock/atmel,at91sam9x5-sckc.yaml |    1 +
+ .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |    9 +-
+ .../bindings/mmc/atmel,sama5d2-sdhci.yaml     |    1 +
+ .../pinctrl/atmel,at91-pio4-pinctrl.txt       |    1 +
+ .../bindings/serial/atmel,at91-usart.yaml     |    1 +
+ arch/arm/boot/dts/microchip/Makefile          |    3 +
+ .../dts/microchip/at91-sama7d65_curiosity.dts |   89 ++
+ .../arm/boot/dts/microchip/sama7d65-pinfunc.h |  947 ++++++++++++
+ arch/arm/boot/dts/microchip/sama7d65.dtsi     |  155 ++
+ arch/arm/configs/multi_v7_defconfig           |    1 +
+ arch/arm/configs/sama7_defconfig              |    1 +
+ arch/arm/mach-at91/Kconfig                    |   12 +
+ drivers/clk/at91/Makefile                     |    1 +
+ drivers/clk/at91/clk-master.c                 |    2 +-
+ drivers/clk/at91/clk-sam9x60-pll.c            |    2 +-
+ drivers/clk/at91/pmc.c                        |    1 +
+ drivers/clk/at91/sama7d65.c                   | 1373 +++++++++++++++++
+ include/dt-bindings/clock/at91.h              |    4 +
+ 21 files changed, 2614 insertions(+), 13 deletions(-)
+ create mode 100644 arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts
+ create mode 100644 arch/arm/boot/dts/microchip/sama7d65-pinfunc.h
+ create mode 100644 arch/arm/boot/dts/microchip/sama7d65.dtsi
+ create mode 100644 drivers/clk/at91/sama7d65.c
+
+-- 
+2.43.0
+
