@@ -1,106 +1,117 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E216136A;
-	Wed, 20 Nov 2024 09:10:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 643F31991AA;
+	Wed, 20 Nov 2024 12:54:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732093836; cv=none; b=po/RanqqrlfimhHipA9FXZBWmzZJ9k7vX/GTH0kMyV5YXF2+sPMCAEHjMM8i9wOm9HyXh73bZf3W14kvr+bbN1JucLl/Tj5p4APimjMAlZ11jv51rMs9bqYwlW5Or0YKBXrL7fk+qAdBHFKdx0kE968r35aIKDI0YRkhoIQAxl4=
+	t=1732107241; cv=none; b=nmD799d33ZLsG/pVEkvAk0gmiRyvxxhEp3k6/gTl4hCQ/JY1ksSMw1MWiA/M9/1FgBMkUHluv1tQr8/NSVR6bs8T9M53LDDQQjPcT/czQfzpNTU2IgdZGe4uSVaVigHnk7gwXl1fsiAyF4lmzZSIiNEMmWPSfHeOLHkIbBHYIso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732093836; c=relaxed/simple;
-	bh=1jaJsKKteL7Dxc/ZzChtUpKlevAAkZGk4u0JO8qXnyA=;
+	s=arc-20240116; t=1732107241; c=relaxed/simple;
+	bh=Cf+A+DhKDyMUlVitgWBjgzEXAtDZpWZUoLr4r7ASY0Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gmbYUbaOcTzePsAK/QFJyZ/aaYgeT96u2w0tsdd6PdltRq/ujeOGXOWu0Rgn5WI64tPYcjJttW+4mNIyyzjFM3P435N6wiL9WT9cHT5T1JJyGKtxxD+p3XilvZWvo0tt5KzCR+fHpe+LcFJ1jUC52eEvWAQ0yyKKGOGFak58PqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RJNPQP8U; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=O26Eyd/JZDgJCh08EJZdGrCdE6j2JXgn3khGYwUizoQhgUSQ0LUdCqD6y8GrC56gqLxxmcsdIVdzZKmjeulp3BaDe9CRryGYpS/AhiDruUNtsVRWbAZqEKB0VaEoXm77nOjPFbXrOP9kywEdU9VY5zEU+fgQaN4RmT/elG/CKDA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b7rDMHJ1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RJNPQP8U"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C7D8C4CECD;
-	Wed, 20 Nov 2024 09:10:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b7rDMHJ1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9340CC4CECD;
+	Wed, 20 Nov 2024 12:54:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732093836;
-	bh=1jaJsKKteL7Dxc/ZzChtUpKlevAAkZGk4u0JO8qXnyA=;
+	s=k20201202; t=1732107241;
+	bh=Cf+A+DhKDyMUlVitgWBjgzEXAtDZpWZUoLr4r7ASY0Q=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RJNPQP8UGS9y+f6JhF/4MX8qu2oPIklJkzHRwsKj/Oy3v+YBstHyeVr4rXP/7r0Cs
-	 eKVJiPu+ipywRwip5oqqzwdRM7xlbvEoNsc2oLyCM5yj4hMqUxOkw2kn3etYApzuHt
-	 gAkqtK5xqaUDJAqOBKwD1f+zJfqTfyvenJjCShF+ULsPjxWTsiiir1EajZS2ESTTSt
-	 x5gsxsw6vGc1OhdNqmC/pQsuPL2sn9zV6cEDBp9zRq7gK7kNDKkBPUZWzQS5RbPXC1
-	 /tfYCLoxKAkUzb5/ejG30rrJguZbAGkya44zn8NaoQsFI7CJPWLLyPPVPTbzMTrOel
-	 +8DmOulLDgW4g==
-Date: Wed, 20 Nov 2024 10:10:32 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Ryan.Wanner@microchip.com
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev, 
-	mturquette@baylibre.com, sboyd@kernel.org, arnd@arndb.de, dharma.b@microchip.com, 
-	mihai.sain@microchip.com, romain.sioen@microchip.com, varshini.rajendran@microchip.com, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-mmc@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 11/15] ARM: dts: microchip: add sama7d65 SoC DT
-Message-ID: <ishcitppbc7asngzpp5dl3htkitxpeu3dgtmz44swcg2h7dmup@zc2etw2hrsbg>
-References: <cover.1732030972.git.Ryan.Wanner@microchip.com>
- <1006a1e4464ef7c46b33ad44bf71b3143283ee6e.1732030972.git.Ryan.Wanner@microchip.com>
+	b=b7rDMHJ1BeyrSWqAqJuId7NEzbaVndXG9WkvuWdfWQu9qWUNYq/AMnY20tOEoNLor
+	 G88UM5yCaCRsVi9F7b/0rPqWrGcUUjdBF6LnjinbXht2dvyax3+EaWUd6+Eu06+684
+	 sh91lAmwqQ12eUkKadUZ/R5S540NQ4SfXOmWt0a1bE3NpjksiHPsl0MVUxlcBMyiS8
+	 QTbs3/WNEVAajhvMItaIIiYQde9NwNb0CCHR8c8UZL4gSyQIo4b5JQdBoJHnlIWcOK
+	 9E5CD30Il/vMGqwA7D8P8pzLG1hM54X1gBg5mO+uk8/AbDK/VaUFO1RvPa0B849Bfe
+	 JCoFao1GRCRfA==
+Date: Wed, 20 Nov 2024 13:53:33 +0100
+From: Joel Granados <joel.granados@kernel.org>
+To: nicolas.bouchinet@clip-os.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
+	Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>, 
+	Joel Granados <j.granados@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Neil Horman <nhorman@tuxdriver.com>, Lin Feng <linf@wangsu.com>, Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH v2 2/3] sysctl: Fix underflow value setting risk in
+ vm_table
+Message-ID: <4ietaibtqwl4xfqluvy6ua6cr3nkymmyzzmoo3a62lf65wtltq@s6imawclrht6>
+References: <20241114162638.57392-1-nicolas.bouchinet@clip-os.org>
+ <20241114162638.57392-3-nicolas.bouchinet@clip-os.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1006a1e4464ef7c46b33ad44bf71b3143283ee6e.1732030972.git.Ryan.Wanner@microchip.com>
+In-Reply-To: <20241114162638.57392-3-nicolas.bouchinet@clip-os.org>
 
-On Tue, Nov 19, 2024 at 09:40:17AM -0700, Ryan.Wanner@microchip.com wrote:
-> From: Ryan Wanner <Ryan.Wanner@microchip.com>
+On Thu, Nov 14, 2024 at 05:25:51PM +0100, nicolas.bouchinet@clip-os.org wrote:
+> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
 > 
-> Add Device Tree for sama7d65 SoC.
+> Commit 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in
+> vm_table") fixes underflow value setting risk in vm_table but misses
+> vdso_enabled sysctl.
 > 
-> Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
-> Co-developed-by: Romain Sioen <romain.sioen@microchip.com>
-> Signed-off-by: Romain Sioen <romain.sioen@microchip.com>
-> Co-developed-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-> Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-> Signed-off-by: Dharma Balasubiramani <dharma.b@microchip.com>
+> vdso_enabled sysctl is initialized with .extra1 value as SYSCTL_ZERO to
+> avoid negative value writes but the proc_handler is proc_dointvec and not
+> proc_dointvec_minmax and thus do not uses .extra1 and .extra2.
+> 
+> The following command thus works :
+> 
+> `# echo -1 > /proc/sys/vm/vdso_enabled`
+It would be interesting to know what happens when you do a
+# echo (INT_MAX + 1) > /proc/sys/vm/vdso_enabled
 
-Totally confusing SoB chain. Please read carefully submitting patches.
+This is the reasons why I'm interested in such a test:
 
-...
+1. Both proc_dointvec and proc_dointvec_minmax (calls proc_dointvec) have a
+   overflow check where they will return -EINVAL if what is given by the user is
+   greater than (unsiged long)INT_MAX; this will evaluate can evaluate to true
+   or false depending on the architecture where we are running.
 
-> +	clocks {
-> +		slow_xtal: clock-slowxtal {
-> +			compatible = "fixed-clock";
-> +			#clock-cells = <0>;
-> +		};
-> +
-> +		main_xtal: clock-mainxtal {
-> +			compatible = "fixed-clock";
-> +			#clock-cells = <0>;
-> +		};
-> +	};
-> +
-> +	vddout25: fixed-regulator-vddout25 {
+2. I noticed that vdso_enabled is an unsigned long. And so the expectation is
+   that the range is 0 to ULONG_MAX, which in some cases (depending on the arch)
+   would not be the case.
 
-s/fixed-//
+So my question is: What is the expected range for this value? Because you might
+not be getting the whole range in the cases where int is 32 bit and long is 64
+bit.
 
-> +		compatible = "regulator-fixed";
-> +
-> +		regulator-name = "VDDOUT25";
-> +		regulator-min-microvolt = <2500000>;
-> +		regulator-max-microvolt = <2500000>;
-> +		regulator-boot-on;
-> +		status = "disabled";
-> +	};
-> +
-> +	soc {
-> +		compatible = "simple-bus";
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +		ranges;
-> +
-> +		pioA: pinctrl@e0014000 {
+> 
+> This patch properly sets the proc_handler to proc_dointvec_minmax.
+> 
+> Fixes: 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in vm_table")
+> Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
+> ---
+>  kernel/sysctl.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+> index 79e6cb1d5c48f..37b1c1a760985 100644
+> --- a/kernel/sysctl.c
+> +++ b/kernel/sysctl.c
+> @@ -2194,7 +2194,7 @@ static struct ctl_table vm_table[] = {
+>  		.maxlen		= sizeof(vdso_enabled),
+>  #endif
+>  		.mode		= 0644,
+> -		.proc_handler	= proc_dointvec,
+> +		.proc_handler	= proc_dointvec_minmax,
+>  		.extra1		= SYSCTL_ZERO,
+Any reason why extra2 is not defined. I know that it was not defined before, but
+this does not mean that it will not have an upper limit. The way that I read the
+situation is that this will be bounded by the overflow check done in
+proc_dointvec and will have an upper limit of INT_MAX.
 
-labels are lowercase.
+Please correct me if I have read the situation incorrectly.
 
-Best regards,
-Krzysztof
+Best
 
+-- 
+
+Joel Granados
