@@ -1,113 +1,106 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2B574068;
-	Thu, 21 Nov 2024 13:34:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4BAB4502F;
+	Thu, 21 Nov 2024 21:32:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732196084; cv=none; b=i4GTUYH+wEU5EyDX/aNBSnuoCUDBbt33awVFycbZWJ7Bboy5mUKlg9FyZBCazeW6de6bJAjL+VGaxR7ujTbtvncYn6ifFDQS/EsrdFv7jQnD4v3p7KxLHr/HdEA4nldAIosvllxjqQhb3KvTUBTU3k8L7OGTFT+itkmPbDWbMt0=
+	t=1732224766; cv=none; b=RJ6EeP+oU80iOGrehP9K2bZGIx6NtjQWp+44Z5914RgNtTHSSzolitVBiqQPvclUh0OUOtMlP3jI7xKJnsJV+lL5vtfz5WboTA4wqc4yDfMr8ViQUk4arErrxDGB1Oiy5ZI5ixl8EIq9Rg4Doqrj+OOvI5GgnYZTcuHeVS1dTaw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732196084; c=relaxed/simple;
-	bh=3VAWSEMdPqFgjrGm6l2Uy/QQVQCT9+sxRgSacC4mFtU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CuM3BdIq3CQ5DO/btsyGk77WYgnjxrusjFmmUpQzhuvKu+pcF9292SFZ+eIhDFei107ychDBbHQkorRZFQro+JquscLMlCtBvy4lKGDf0thqpNZ78d9jiWaHv5ZEhW9p3/+3ehBUPx5BXKvLCwM0Ew2oFZWxVguKOCs+R0qfb4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YhP5tC6i; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1732224766; c=relaxed/simple;
+	bh=htrvxQ/acJt2mn32w1njKdyG5hdJdbkfDKs+NrdqLFY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BMqpM1eAFH7yKh3NlLwm0DOGOXZt2clgKrMOShgMvELh3CIYMcTXQjnBzXqaiDWpIuhQ8T6r9/EfFU325tx3rOrbtKUcrdw/cJyW5v6/WRHTxwswtE7PwSuiniE020lwS9UbW06KZd//5gxWg2iPkGfI/Lb9d4NG/9tnYIHjN+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=s9uT45ix; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YhP5tC6i"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3127AC4CECC;
-	Thu, 21 Nov 2024 13:34:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732196083;
-	bh=3VAWSEMdPqFgjrGm6l2Uy/QQVQCT9+sxRgSacC4mFtU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=YhP5tC6iyvSmiZslllmusYS0qVZ1CBR/TK+kr53RiIDmgUdQIPkUO6QYLOE8b1b8w
-	 hktIhfY5Mm4CMcJAPI8zx6o0UxBwDxaBusuUaQwRW029ZzmCrdSW9FepabmcZ7GWPq
-	 CYRoI+7yvhM4/VgiLyltwmHx6YcRGiVIg/jE9Ea2WK8YM/Avea1iiNFTQDXESuGInS
-	 gv8ZZswo6CPvtD6kIIrgLFk+P5G1Pj5NgqZqDzzvB9gsuZSdh2SnET5e3b2yEUfdGT
-	 FPqGg+/3kCeQ4WUmrkoS5bFlVpm955FHb/G1lb+Tz7OQuAHRJBEBPDHPd3YolmVbvc
-	 HAfWG9uvtGgVA==
-Message-ID: <0b9495e8-b89e-4fff-b7a0-060d7631522a@kernel.org>
-Date: Thu, 21 Nov 2024 14:34:35 +0100
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="s9uT45ix"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D9E1C4CECC;
+	Thu, 21 Nov 2024 21:32:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1732224765;
+	bh=htrvxQ/acJt2mn32w1njKdyG5hdJdbkfDKs+NrdqLFY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=s9uT45ixbZuVdMo+D7KF90yl/M4gz4FOZG+z4QHSwZQfBNYtRrDTQPsMu4MO3iA2k
+	 KELBNAWcrzFY/wAazJxMr+f7n9L4juBJIsbng4iTsYokcXzUXiV61ml2PxRXi/d1Z+
+	 sXDGeU4Ie5dXi7xqKv8lgIOngFjO7GAhkwmoxzjA=
+Date: Thu, 21 Nov 2024 22:32:19 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Claudiu <claudiu.beznea@tuxon.dev>
+Cc: geert+renesas@glider.be, magnus.damm@gmail.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, mturquette@baylibre.com,
+	sboyd@kernel.org, jirislaby@kernel.org, p.zabel@pengutronix.de,
+	lethal@linux-sh.org, g.liakhovetski@gmx.de,
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v3 2/8] serial: sh-sci: Check if TX data was written to
+ device in .tx_empty()
+Message-ID: <2024112128-faceted-moonstone-027f@gregkh>
+References: <20241115134401.3893008-1-claudiu.beznea.uj@bp.renesas.com>
+ <20241115134401.3893008-3-claudiu.beznea.uj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dt-bindings: serial: Add a new compatible string for
- ums9632
-To: Stanislav Jakubek <stano.jakubek@gmail.com>, wenhua.lin@unisoc.com
-Cc: Zhaochen.Su@unisoc.com, Zhirong.Qiu@unisoc.com,
- baolin.wang@linux.alibaba.com, brgl@bgdev.pl, cixi.geng@linux.dev,
- conor+dt@kernel.org, devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, krzk+dt@kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, orsonzhai@gmail.com, robh@kernel.org,
- wenhua.lin1994@gmail.com, xiongpeng.wu@unisoc.com, zhang.lyra@gmail.com
-References: <Zz8m8PqHX_7VzgoP@standask-GA-A55M-S2HP>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <Zz8m8PqHX_7VzgoP@standask-GA-A55M-S2HP>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241115134401.3893008-3-claudiu.beznea.uj@bp.renesas.com>
 
-On 21/11/2024 13:26, Stanislav Jakubek wrote:
-> Correct me if I'm wrong, but this patch seems incorrect to me.
-> The 1st patch suggets that the sc9632-uart is incompatible with sc9836-uart,
-> but here you make it fallback to it anyway.
+On Fri, Nov 15, 2024 at 03:43:55PM +0200, Claudiu wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 > 
-> Also, both of the patches seem to have made it to linux-next without the
-> reviews/Acks from maintainers. Maybe Greg was a bit too fast here :)
+> On the Renesas RZ/G3S, when doing suspend to RAM, the uart_suspend_port()
+> is called. The uart_suspend_port() calls 3 times the
+> struct uart_port::ops::tx_empty() before shutting down the port.
+> 
+> According to the documentation, the struct uart_port::ops::tx_empty()
+> API tests whether the transmitter FIFO and shifter for the port is
+> empty.
+> 
+> The Renesas RZ/G3S SCIFA IP reports the number of data units stored in the
+> transmit FIFO through the FDR (FIFO Data Count Register). The data units
+> in the FIFOs are written in the shift register and transmitted from there.
+> The TEND bit in the Serial Status Register reports if the data was
+> transmitted from the shift register.
+> 
+> In the previous code, in the tx_empty() API implemented by the sh-sci
+> driver, it is considered that the TX is empty if the hardware reports the
+> TEND bit set and the number of data units in the FIFO is zero.
+> 
+> According to the HW manual, the TEND bit has the following meaning:
+> 
+> 0: Transmission is in the waiting state or in progress.
+> 1: Transmission is completed.
+> 
+> It has been noticed that when opening the serial device w/o using it and
+> then switch to a power saving mode, the tx_empty() call in the
+> uart_port_suspend() function fails, leading to the "Unable to drain
+> transmitter" message being printed on the console. This is because the
+> TEND=0 if nothing has been transmitted and the FIFOs are empty. As the
+> TEND=0 has double meaning (waiting state, in progress) we can't
+> determined the scenario described above.
+> 
+> Add a software workaround for this. This sets a variable if any data has
+> been sent on the serial console (when using PIO) or if the DMA callback has
+> been called (meaning something has been transmitted). In the tx_empty()
+> API the status of the DMA transaction is also checked and if it is
+> completed or in progress the code falls back in checking the hardware
+> registers instead of relying on the software variable.
+> 
+> Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Yeah, this looks odd and considering totally empty commit msg (nothing
-useful there), it looks like wrong choice.
+Why is this bug/regression fix burried in a long series?  It should be
+sent individually so that it could be applied on its own as it is not
+related to the other ones, right?
 
-Please explain the compatibility aspects. In the future: you have entire
-commit msg to describe the hardware, instead of repeating the obvious -
-what is visible from the diff.
+Or are you ok with waiting for this to show up in 6.14-rc1?
 
-Best regards,
-Krzysztof
+thanks,
+
+greg k-h
