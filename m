@@ -1,146 +1,144 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic310-15.consmr.mail.bf2.yahoo.com (sonic310-15.consmr.mail.bf2.yahoo.com [74.6.135.125])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 862AE15E5CA;
-	Fri, 22 Nov 2024 23:34:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D440208A9
+	for <linux-serial@vger.kernel.org>; Fri, 22 Nov 2024 23:54:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.135.125
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732318478; cv=none; b=t0m8exoNuUv+KhlzG6I3puxxy4EX22HSU9OK69xANAkXfM3ueNYtF0u9+ulT11b94bH717TYVqKo4m05VlmU5JPBmgKb37tkX47giCdPjBif/8ajk7HP9bo+NIOYb+8T/1Cp5EnrxPE7ayG/dmYfNJBAtdN+PZ+btZty4yReu34=
+	t=1732319669; cv=none; b=KnJeFwrtrp/JBZVo94s1WOnjYW78eUaYyUim3K1bSRpyFoo+ukbale7ThOmeHiat7ZaUNTSixsERHm7DS9Gzp/yWVq5K75Lsf2P8OlXR8mIgCyv7u9J5zoL2Hs+W+HWowfo3EiCBTl8z57O1asHiFMfwAh3GOj5+cws0fRS0QWI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732318478; c=relaxed/simple;
-	bh=JFYgkSmnLeANkWfWjakLFqx6yo9Spcs5iuPUlcKJpBA=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=td/cnnkpxAPmUs6LiTTO73QwHOOoYXAo96zr3sS59G0G2uFklqCmXn/SgIkO4G8C7f4iLoehO04BrgwSJwfM/YIlPZZhOd0TlHYWhbuqwbKxhfqY96A2edqQMEA9Zi7+lUMNiWV30wmSORukWtjqPHQyOAtM9RzdbxeWlaxewSM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NshzSmH2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1732319669; c=relaxed/simple;
+	bh=Px45QG5wMBqsx4SLxUDpTdTfuK5HQkGCkKpsSNEkaUA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NiAB7kP6dW4nc/YHejMPoqntnuvG4UZQmPIn0NqMlMAeOAHFVw/JsoJlh7GVY0aq5QjUZqF4IXq3A4Vq0d6SSpSjGb4wYVZOONESayYz4exHjdYP68hFBX4cqrpKYyaPCn+v3oQPFlZClpZT6fobJGld4iXONJXFc8A5wrNFgIs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=XZC/tRi4; arc=none smtp.client-ip=74.6.135.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NshzSmH2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 302F3C4CECE;
-	Fri, 22 Nov 2024 23:34:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1732318478;
-	bh=JFYgkSmnLeANkWfWjakLFqx6yo9Spcs5iuPUlcKJpBA=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=NshzSmH2IEadLX2z+JXJNGVHclm4bMilvJ/1k4nk4UtKCLobVdf8BL8QviXBf9F5f
-	 brl9w+PxDWEmpHpP04LVs5NZScU+H7yBmny1jvHmB/b65i3r2l6jE7boGsYGC/jKE6
-	 savrD7sS/03Usr5039uFihiBoDq7wIlshYmjNwuxIEj9AbDTP07VErqdBp9kWvSE4f
-	 iEayicUtOl957jtVbtKL0Ru720ONQ6vVep+JnpGbzMM8FA8Wcs3V421pSvg1WXs/yE
-	 bbKEoBs0zo72Rm57avnmRnMG0sK8qXCYJVsMTFNAZl66N1eD/1CxW73gggg/rF8wSc
-	 odRlbFiGBaSjw==
-Message-ID: <ddcbade39fb8a4dcac57c66c59fcc0b4d56dcaa6.camel@kernel.org>
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-From: Niklas Schnelle <niks@kernel.org>
-To: Guenter Roeck <linux@roeck-us.net>, Niklas Schnelle
- <schnelle@linux.ibm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby	
- <jirislaby@kernel.org>, Ilpo =?ISO-8859-1?Q?J=E4rvinen?=	
- <ilpo.jarvinen@linux.intel.com>, linux-serial@vger.kernel.org, Arnd
- Bergmann	 <arnd@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, 
-	linux-kernel@vger.kernel.org
-Date: Sat, 23 Nov 2024 00:34:34 +0100
-In-Reply-To: <92c2c05a-be0d-4017-a766-62832668512d@roeck-us.net>
-References: <20240405152924.252598-1-schnelle@linux.ibm.com>
-	 <20240405152924.252598-2-schnelle@linux.ibm.com>
-	 <38bf3b8b-81c4-42c9-902d-b5719f3881c5@roeck-us.net>
-	 <3b75b92805648577ed05ff221d0c56e381aa1c7c.camel@linux.ibm.com>
-	 <92c2c05a-be0d-4017-a766-62832668512d@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.2 
+	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="XZC/tRi4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1732319660; bh=XcebQec07jzXTrfAZrzNgm8590Jm3hrgaHHTMTCk89Q=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=XZC/tRi4t09ITL1yQgQNVgm7bS2CHeL4WpAYAWdi4nLmvkjYudsZHtxlbOB6Uc/pfBempfsnigy+LZznig7pjIqFhNE5MDoXDcS67c0Qbu6LMUbc+kCjfhKTlNyiJfAsM7WNa8kjbnexbi4FF4Px8gG0ddvsu82jq+XCPef/EINK+ZO26zvPr4kp7q3QZxZT93x2KThCAcjwyh2nNq+nKDVq5gUi9z7JIP0BBz8yJL2BT2QeB3ei6UzDF9xFI+JH0b5ETVrWeKrHAfNj04V8StEK7gChYVkepJaZRjtf6FDGZ26pMRtdtlCo9JrkvbKljcK8EqMaqFI8vyr0crQevQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1732319660; bh=X5/068k9a7Io1grIvOcTalFLcllga5dcqIVD3ohnbKx=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=tY2SijnqEOHPWwUYUAuw1X8iY2zhfejeAuNskkGGZzcDOP1sjKWZOlA86n/hGte1QRoKXGXxJXBbH0LFTcR+BHQa+yZP2IQ8NN+hwjRewMoyKEVrA8MfS/dfKO6A8idk8Fhw+gLkSt1L9FSEB1oIha5ZrV/IR02yyP0fo4VjdPpqx0IWvgayI/xKL9rsdd1ggHUzsjr1IohZfnoTtIKiz13JsxH5NfCRF32dAf8uZ9UyXoBPSUYGYJMHsGXyiO8oYSODs8MzNxe/PvE9gURTSQbwe1qgV5/+Fjt4bRcWaag0jRQvI4MfqEwuf72b5epQ0WEshS8+ZjK+bxb0A6kPNQ==
+X-YMail-OSG: yi9awj0VM1nyy_7ywC5wCXozf9vWpwY2nlSjsz8nzVsoiaukq6iCBzr5LEedNrN
+ z055cdqB0bfa9G7ecbt_TWIxRG8hadwZkhApCeikmWV8GLjp91gCijVWK5vE7Elcc1gV8vmgmQgK
+ m6vVwZ3.s1oZPhj3mnC6dut6H3DprMr.0Vq6TMEbtD3IOWMM9q2yUlgmPFZQUsSt3ahHv5BSU2Vt
+ Pkz6zyXz0MCwv3qCE4gQa_KrxoJF4.47xkZg32xKLrxEtIQcN5n06pN85AhA26GQQkRWJHrCw5Kp
+ WTJ5y6e2XNilxp_mhYDj5LdLJGJjgka05En5HQ2Q7nnkyNqFUGaoJZinoPMm8G9Mb8DCUXYAFBB.
+ To5MMGGMYbuyDR7y6w8l0p_wkR_kmG5ROQmsg0f8CrtuETNIPdmYBkIOnyHz9hkpR3LTZGPUQlKE
+ Igq8H3GaPb7NUZ5_fSXeb9RXIFwhgQkK9AX3X29awRypxLL6LfljiS8W7UojsDde3pu2bpB26LcO
+ bQPXvBqoOFdvbPtXMCDsFGS.J761yxw_LO6.KKKZTp7ha1QM2PXK0GSf5fj5Yl9Tod7u9Cg3PB8L
+ ElYPjaMC45kK7gXyFfD2siofq4j7lPzJabLMnurvxtGAJFW7Y33k9j3hLE7WTicWzK2ivCY0AU2z
+ aCGON1HDrZ0KgQdj9rmw7yXHS_RgiPwIS.EnKQWpEc3JZTNtXZ0HHHcJsErrFw_FBrEluTkaRSue
+ UnVyN9r7ZogweQvkU7ZpWEfpTxiW3fxRw_26tnKu4ZqH0726QCcCotu4_NaTxhHHn79iYkjCRDI2
+ 7ErKxvw.JM6z0AZ_E9r8R.mj0ZOeaY_opBYTrVFiLpJ9Ih2kMP_vufnXxFDWpnK9qHTCh4X50Sns
+ EOBTtjbyICpZpgU4g6aI1ZN024wUO6S4yUM6C3TBpBhQVeu8e_gjF.0jLuYYNPCdZEhqF52j9AAS
+ QeInk2ba_VcLzCN5b560oaxOHmJ3LhpjFyI5Sz3_IewMxnmMPE2sUeDtjNv2DtuHPa2Mfm9uYIdP
+ D4ajVEDWLYLgF1nMNoBizFeh6xUIHZHNoaHhErdNJJFy6PBzD0A8WoomO4HAhk17mTiNk1IKX9L8
+ zd8YL7E7C7R8IIHE7TfgLHA.cE.hRaIlm8GV4LLbNxhjCaxR53ZmNLQ2Om7406tNNiO235UXNdPv
+ gSolpn8y0HkEZ9D0B6pgaTf7MqiMlucLax.ifBTz0tC9g9K.lIAQjgR7zvQaD20_5DG9aQi9yYLU
+ GZ1nNXe.Q1d.lhZNu2fgzX2_Cf8ybJ2yIR23KixNZxcPlGXRDrP2zXmcylAn4VPe9ebuqvovDSOA
+ 56VeZyfxVoENTBvz5VA0ZoTSNzXaOj.czPBbxPUxdPdR.27nGRJUkeS9u2HbnBjuPVn7k3Qp.8Qv
+ .BwLCYdjdiwmQE0FqK4.lk1z9RmA8pM_oUfk2MdZs.QH1ldLqq_aTk2ApbtzTvH9VmBHhorFTuN8
+ vA.psnuY4QLdFrqZzMcC24wqfdL_BzwBy1YdveOiGeDOUHte8UB7n8WeYURZPBJHDYDFJDBtvOXM
+ 4FKGqwKEeFWqsZ_k1o5pg1_a.qrBJdBOvkBpQM1r2ylD5ZzLrgdsU4SYNDU8bhi8jDCO8rvXh0GT
+ 7_TEyNI2xMVZqZ7cFn3Fhiq3.e5fCCCmaPnqyiaEzvE91a2V2znCKYikNKXTCdfcPigSd0u7GoBS
+ jT7Mxd0n.rMhwQEDiArLbn4Uw9587tvAcuR.ZrPep9vpdAJOWEsB4z3k326lvG.B2Lr4Mt_EJZb6
+ 6jEiayAdROMZ7.zD5KxGGIiQjw83j6YoUVC6FE_KQ23EFthjXoIs022FriQ1laGnIoeaptEr2HiY
+ JWYckmnFR1CRxFL0GChUuiTi6F.LZyWRYRlbq.6dh4bVhtBNZp2HTHcOwuhVeiw3mEb41n1HAl15
+ uB0yuzAhmi_AutUzr3TyHb_Eisq25crcIRQXKiOx3yUqSt8MAvhOtyPY_nHwuD3nVMnPBd25Xte4
+ X6zukuZCkGXzPit0GHRQFxDCwXqtCtS8KkTJN0wFeFbqHqncwW_Cx5x6HTBYc.XgAKgD2SScwxAq
+ 3TuibtqnlJGyr5ipMVbOQ1H4ENQslHDEAXFDOYbZ20k90F0QCap1abAsfmdCvnLlvi4WhQi6SSbd
+ GXdf9S28WAIV0QexnipbAHV4bBxEkGb8VKKX3jU6n7L1MRDzo_6geP2066Qzy2zGAPu.RnapB_gt
+ RnRKnROn6CnG0dP9y_OdGalsnowHM8sTn.83jo0k45RiuWAbHLZv3wR.CgyZM_V0csDwlfxEmxMh
+ 3xogF88WpUvWkH9oLeA--
+X-Sonic-MF: <bluescreen_avenger@verizon.net>
+X-Sonic-ID: 9ebfe8ec-9e56-4838-89cf-aac4788eb787
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.bf2.yahoo.com with HTTP; Fri, 22 Nov 2024 23:54:20 +0000
+Received: by hermes--production-bf1-66bb576cbb-dxqpr (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 52fa6f45a421e925c7017fe74ca5f885;
+          Fri, 22 Nov 2024 23:54:19 +0000 (UTC)
+From: nerdopolis <bluescreen_avenger@verizon.net>
+To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Gil Pedersen <gpdev@gpost.dk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH 0/1] Fix to allow more correct isatty()
+Date: Fri, 22 Nov 2024 18:54:17 -0500
+Message-ID: <16989967.geO5KgaWL5@nerdopolis2>
+In-Reply-To: <20241121111506.4717-1-gpdev@gpost.dk>
+References: <20241121111506.4717-1-gpdev@gpost.dk>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Mailer: WebService/1.1.22941 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 
-On Fri, 2024-11-22 at 09:07 -0800, Guenter Roeck wrote:
-> On 11/22/24 07:35, Niklas Schnelle wrote:
-> > On Fri, 2024-11-22 at 07:18 -0800, Guenter Roeck wrote:
-> > > On Fri, Apr 05, 2024 at 05:29:24PM +0200, Niklas Schnelle wrote:
-> > > > In a future patch HAS_IOPORT=3Dn will disable inb()/outb() and
-> > > > friends at
-> > > > compile time. We thus need to add HAS_IOPORT as dependency for
-> > > > those
-> > > > drivers using them unconditionally. For 8250 based drivers some
-> > > > support
-> > > > MMIO only use so fence only the parts requiring I/O ports.
-> > > >=20
-> > > > Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> > > > Signed-off-by: Arnd Bergmann <arnd@kernel.org>
-> > > > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> > > ...
-> > > > @@ -422,10 +443,12 @@ static void set_io_from_upio(struct
-> > > > uart_port *p)
-> > > > =C2=A0=C2=A0	up->dl_write =3D default_serial_dl_write;
-> > > > =C2=A0=20
-> > > > +	default:
-> > > > +		WARN(1, "Unsupported UART type %x\n", p-
-> > > > >iotype);
-> > >=20
-> > > So, according to this patch, the serial uart on microblaze,
-> > > nios2,
-> > > openrisc, xtensa, and possibly others is not or no longer
-> > > supported.
-> > >=20
-> > > WARNING: CPU: 0 PID: 0 at drivers/tty/serial/8250/8250_port.c:470
-> > > serial8250_set_defaults+0x1a8/0x22c
-> > > Unsupported UART type 0
-> > >=20
-> > > Any special reason ?
-> > >=20
-> > > Guenter
-> >=20
-> > So according to the warning the p->iotype is 0 which is UPIO_PORT.
-> > For UPIO_PORT the switch above the WARN would pick io_serial_in()
-> > and
-> > io_serial_out() as handlers. These use inb() respectively outb() to
-> > access the serial so I don't see how they would work with
-> > !HAS_IOPORT
-> > and it most definitely won't work for s390.
-> >=20
-> > Now for Microblaze Kconfig says to select HAS_IOPORT if PCI so I'd
-> > assume that it can use inb()/outb() and maybe the PCI requirement
-> > is
-> > not correct if this isn't a PCI device and it used to work with
-> > inb()/outb()? For nios2, openrisc, and xtensa they don't select
-> > HAS_IOPORT so either it really won't work anyway or they should
-> > select
-> > it. Can you tell us more about the devices involved where you saw
-> > this?
-> >=20
->=20
-> This is seen when booting the affected architectures with qemu.
->=20
-> Logs:
->=20
-> https://kerneltests.org/builders/qemu-microblaze-master/builds/327/steps/=
-qemubuildcommand/logs/stdio
-> https://kerneltests.org/builders/qemu-nios2-master/builds/314/steps/qemub=
-uildcommand/logs/stdio
-> https://kerneltests.org/builders/qemu-openrisc-master/builds/301
-> https://kerneltests.org/builders/qemu-xtensa-master/builds/311/steps/qemu=
-buildcommand/logs/stdio
->=20
-> Guenter
->=20
+On Thursday, November 21, 2024 6:12:53 AM EST Gil Pedersen wrote:
+> This patch comes from an issue discovered in systemd, where it can fail to
+> restore a text TTY session after a GUI session is stopped when compiled
+> with musl libc.
+> 
+> The specific systemd integration issue is currently resolved in the musl
+> master branch by closer aligning the implementation with glibc, but the
+> underlying isatty() implementation is still flawed since it can return 0
+> (false) for something that is definitely a TTY. Essentially both musl
+> and glibc give up correctly handling this case on Linux due to
+> inadequate/buggy kernel APIs.
+> 
+> Thus I am proposing this patch as a solution to fix the kernel APIs. An
+> alternative fix could be to add a new IOCTL to specifically handle this,
+> but that seems overkill.
+> 
+This is pretty cool as it fixes the /dev/console-is-a-disconnected-/dev/ttyS0
+issue I found this year
+https://github.com/systemd/systemd/pull/33690
+and
 
-Am I seeing it right that despite the warning and the code setting
-no_serial_in / no_serial_out the console=3DttyS0 in the above qemu boots
-still worked? Also for example in the nios2 case I see the warning 4
-times. So this makes me wonder since the warning is new is it possible
-that set_io_from_upio() has been called with an invalid / all
-zero port before but it was invisible.
+https://lore.kernel.org/all/2669238.7s5MMGUR32@nerdopolis2/
+namely on vt-less kernels that now have /dev/console as /dev/ttyS0 instead of
+/dev/tty0 or a virtual device.
 
-The way I'm reading __serial8250_isa_init_ports() and in particular the
-first loop if nr_uarts is e.g. 5 in the nios case but only the first
-entry in serial8250_ports[] has the IOMEM 8250 it will still call
-serial8250_setup_port() on the 4 other unintalized/zero elements which
-would explain the iotype being 0. And as far as I can see nr_uarts is
-just set to the value of CONFIG_SERIAL_8250_RUNTIME_UARTS in
-8250_platform.c.
 
-I may be totally off though this console_init() stuff has me a little
-confused and it's been a long day.
+So yeah, when you have hardware and you've been using vt-enabled kernels
+on it for years (where your /dev/ttyS0 doesn't even have an rs232 port, let
+alone connected to anything), and then when you upgrade to a vt-less kernel,
+sometime in the future, because of systemd's isatty() check failing, and
+refusing to write to /dev/console, Plymouth's new log display facility in turn
+gets far fewer logs from systemd, because of the ioctl failure in isatty()
 
-Regards,
-Niklas
+
+MY idea for this solution was that kernels turning off CONFIG_VT_CONSOLE could
+then turn on a CONFIG_NULL_TTY_CONSOLE that would get selected at the same time
+the VT console would have, so that if distros choose to do so, the virtual
+/dev/ttynull device to always work for User Space. (that way kernels that never
+had CONFIG_VT_CONSOLE turned on won't have a behavior change as well)
+
+
+(the one benefit to my idea is that Plymouth goes into text mode logging when
+the console device is /dev/ttyS0, so Desktop distros would need to add a new
+"plymouth.graphical" to their grub commands to get the splash to work again,
+however when the console device is /dev/ttynull it automatically assumes that
+the user wants a splash screen.) This is more specific to Plymouth though
+
+
+However testing this patch and it also works, and this won't need a new
+configuration change.
+> Link: https://github.com/systemd/systemd/pull/34039
+> Link: https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/70711
+> Link: https://www.openwall.com/lists/musl/2024/08/20/2
+> Link: https://git.musl-libc.org/cgit/musl/commit/src/unistd/isatty.c?id=c94a0c16f08894ce3be6dafb0fe80baa77a6ff2a
+> Link: https://sourceware.org/bugzilla/show_bug.cgi?id=32103
+> 
+> Gil Pedersen (1):
+>   tty: respond to TIOCGWINSZ when hung
+> 
+>  drivers/tty/tty_io.c | 29 ++++++++++++++++++++++-------
+>  1 file changed, 22 insertions(+), 7 deletions(-)
+> 
+> 
+
+
+
+
