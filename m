@@ -1,81 +1,85 @@
-Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D933189F43;
-	Fri, 22 Nov 2024 20:44:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EBDB16EBEC;
+	Fri, 22 Nov 2024 22:54:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732308278; cv=none; b=NGuyOcY42EYa6Q2lt51RCD1GWNp1IDmStG8db5gMIwHywlKgXmZ9hd6SLmFubzzjWrfEhICGfumPHkoXB0XbRyh45xFUgn4CZGA6MaAshqWwgZk/cv4RTWOIOGxrHnQqHQ4mszQfvcV2uwZMrfcMz0hgnJbe0oag8izTOEuImNE=
+	t=1732316045; cv=none; b=kT/hEdAkAIZaKLR0/8D6rPI3fYeefj2cY5kbDqQTVIQVcR5HTyu2Lpb0ACe+yeWIbaJF5Pkh0K5AS955xg6Ae1WpQE79TMhHQAlwv1ipFaUsil5CbVAFHbJ3Ho48MDY4kEuKMDpJ2VA+N3Sbb+uhUQPbW1me4nm6piunHX5dQd4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732308278; c=relaxed/simple;
-	bh=HjFl3Oj6q9LDqx8ujmWl/zaen/dx9B0zKKpUssZ/+yo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VnJpkmYGGapoUIwKk7ueBRv/BKgVd5HncYIst6xEFnwctooxnjTp0JNvpzbq3CZsan3gNFFISdI9/1rUy0qCGLsxw626Iyh70vXl5wn83FeM6BsGkK5F33iSYaPHrbaeDgN+gLUJSQSk0D9uhLG/+o2wGva63SUPd+V8C3W3blc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gbTSlCsB; arc=none smtp.client-ip=209.85.216.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1732316045; c=relaxed/simple;
+	bh=7cl79AxGHXbS/CI6KOpEnUB0/ltJq38rzwVVv1fM2Gg=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=NYfo/1atdm9U2tPmaVicUfw4ToELPOg1bHpKs3O37iiWM3Tnk0ubMgMcrFy3aKLfMkVdiDo0rN3ryfo/EBNpLGWJIiFF2g3ZajFID7Zo/EYaZMWmx1hN88geV/X1J+AfpNe8DkWL3H5pUodVIzm5rz2jgIqSva60KB9jccMZPiU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z0W+zO+6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gbTSlCsB"
-Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-2ea1e605193so2164758a91.0;
-        Fri, 22 Nov 2024 12:44:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1732308276; x=1732913076; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:sender:from:to:cc:subject:date:message-id:reply-to;
-        bh=RNsPdMG2oW5mX4YcRyTduEGbHWZOLSJxPYLHyQ64sGM=;
-        b=gbTSlCsBMD7zMPfSbPsVWCEFl9L8gULvO1FlC7wH01bNEsSdUPNJFH+ZTbxKwqCsPi
-         DRO/EcIlnaf98uN0WZiAdTioUVcQVhd8XsvBoj22HgblByYB7cSmO0SrpeLcwnrONhvX
-         7imhIfR65lFIO3uhAJJ8qnTPoaMIUeYF2FQ9DfB39nfKl6wvpNEfGGdJv2VELkhHifXp
-         N43maB0DBVeQPHL9lU5iIRLWmqO1aRJLu3w5tcU6SuPo/YNzOzV1oO++/ghkMOeWaGTV
-         GFjp5K1QkfBy73ZPrXdr3oBsuxr77DT4f6ylkX6aVHL4FKM1QnrrKZh+y6hfqogeuqPX
-         wG4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732308276; x=1732913076;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:sender:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RNsPdMG2oW5mX4YcRyTduEGbHWZOLSJxPYLHyQ64sGM=;
-        b=GFaVn9aJ0qN/+wNhYivtvjuGAekS23JxGwXTcTh+aVCHSACMgeobfuLcotC2rSzn9e
-         YvRzi3kTRzxJ76Idl3PrYKjqUTvIcqkSoM6npc653LTM0DMiZAIK5zJ5X4FJpJG4snaS
-         xAXZVdH4Up57bmpg5JIm0FecvaxnCpqxqhm+9VFzpSY0nadQ09rpZyeT1I2VQIUdx2Qs
-         T0U85Xh20vqr8rfPkreLX6tJQDki27a38qw/dt0pFP/vaYNC34BZLX3H0CDuBLvPEg4M
-         BrlZkk8DaL5mQqZWLOTpOGilI/xaNgozZ4UZFFhGFfrJy6atESr9Yuh/u0WtHKn6tFbJ
-         0bVg==
-X-Forwarded-Encrypted: i=1; AJvYcCUSvdLkiJAOqmnlgUJ3rMsdA7QQkYYNREARxKfNhiImjzqpGO8KGBvHgEbdk0vwTNgLeYSfbN1arqcsJMAe@vger.kernel.org, AJvYcCWuOqjFMjsZ6eNwUp715e+ZFMfnaYqccTtIYXqC4mun8/mNKK9wJo+HTKoC5ds+iPXLoJ/e/mqE0cjuNwA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/fZfj9AqGSzj4WK6H091HKA76YN/plXf+EopPnYDpapK8D/Ex
-	iLTizat1D8ApR7Srq2Rheus4Ng+I8XpkXs8RQHv7h9OVwDgHOaOqFEkK0Q==
-X-Gm-Gg: ASbGncvkVxWgKJxJizO7lSzEYO/4KjE1o14AD0ewI2aiOEecbrhnwnnvd1dWXHGgxKr
-	kNAzaeckmPGvTKKqvRKBY0JBbJCkVelGMkoSE3IaIdeWWzBxrcjWxYPzS+zkR5vNZarDfs+NTO1
-	dq+o7IvXQ+zMIwMZgdBBXbG8oEJlh2UsPBXHERHldyyR9lrM2ptJlqLAj4FLw3cUamcdLIzncyI
-	Gu6l5F1Q9AmEOMzMsdnv9+ix5Yd1Jmcu6cBMxZet28FmoMtTHG/E1TjellAlqABt7N37C5l4VTp
-	mfiMu+Pvmdc02KNoy1KNPJc=
-X-Google-Smtp-Source: AGHT+IG4NU4UZF0cebWOExJFU97sW6oQwwHPkQIFpcc+f91vpFhUKPVI6wUFjM4lXx9kc1fyeqF/cA==
-X-Received: by 2002:a17:90b:4c4b:b0:2ea:77d9:6346 with SMTP id 98e67ed59e1d1-2eb0e22f276mr5083893a91.11.1732308276085;
-        Fri, 22 Nov 2024 12:44:36 -0800 (PST)
-Received: from ?IPV6:2600:1700:e321:62f0:da43:aeff:fecc:bfd5? ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2ead02ea422sm5563673a91.6.2024.11.22.12.44.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Nov 2024 12:44:34 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <791f37f3-2b93-47f1-b0a3-46825c09f222@roeck-us.net>
-Date: Fri, 22 Nov 2024 12:44:33 -0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z0W+zO+6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86DB3C4CED3;
+	Fri, 22 Nov 2024 22:54:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1732316045;
+	bh=7cl79AxGHXbS/CI6KOpEnUB0/ltJq38rzwVVv1fM2Gg=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=Z0W+zO+6rMvddB33Xt2z2A6oIXuJgxQWqOoPIvjgOLJCy9/huUJZJrpIWNAwrxjmC
+	 IHaQ9RN0MEveQepxiGVpT6c9bBUWS8J1GvJtpV9t7S7mVGd+iBqvGYBVavuSzjRKe7
+	 VD6m0fDqLUaCRWNIQ78pdKCi9VxNvD9Lj9G9aWdwT96rPsgdW/cN/oUvmmD4TewT7j
+	 t4JH5Nu3stEvEI2wMQmdPTidCbdrXh1ge/gUO/msXnLQzE9FhktZuWUu4zzGVo2tTp
+	 djREy/qE1Tm8rZjq11rx+1EzSW3HGzAfjDY2c1naGfUWEihWQ+ydS7A+zt4FCBc+Go
+	 kD2ucJWIRW0pA==
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfauth.phl.internal (Postfix) with ESMTP id 794AC1200073;
+	Fri, 22 Nov 2024 17:54:03 -0500 (EST)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Fri, 22 Nov 2024 17:54:03 -0500
+X-ME-Sender: <xms:iwtBZyXX3_p_hOteZ2JZiU4hTRUfvL4ypK08HmfcOzL_85nCAC3pPg>
+    <xme:iwtBZ-n0q6AyjuVDkmm2kaZU3BoCSvzysWOJxiwwg8cf-ksBv-cSt870qvh7_mmUK
+    IlLXmXbEt8RU7uxJPQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrgedtgddtfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdpuffr
+    tefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnth
+    hsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredttden
+    ucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvghlrd
+    horhhgqeenucggtffrrghtthgvrhhnpeejjeffteetfeetkeeijedugeeuvdfgfeefiedt
+    udeikeeggeefkefhudfhlefhveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpegrrhhnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihht
+    hidquddvkeehudejtddvgedqvdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlhdroh
+    hrghesrghrnhgusgdruggvpdhnsggprhgtphhtthhopeelpdhmohguvgepshhmthhpohhu
+    thdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphhtth
+    hopehhtggrsehlihhnuhigrdhisghmrdgtohhmpdhrtghpthhtohepshgthhhnvghllhgv
+    sehlihhnuhigrdhisghmrdgtohhmpdhrtghpthhtoheprghnughrihihrdhshhgvvhgthh
+    gvnhhkoheslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopehilhhpohdrjhgr
+    rhhvihhnvghnsehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepghhrvghgkh
+    hhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtoheplhhinhhugies
+    rhhovggtkhdquhhsrdhnvghtpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvgh
+    gvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehv
+    ghgvrhdrkhgvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:iwtBZ2b1bLOdIkr3lyPxRKxsxYRDBABmV0l2JUe8JcxOOlL1TtoMjw>
+    <xmx:iwtBZ5WMyTzBHk3pVy0UverBHNUF-5SZ5FpOYTkWdTdUtxxvcNr_ZQ>
+    <xmx:iwtBZ8l9vgHv-PUIgTJK9WkJ9xqF0476bLKbXiKwhv6bGGqF_T2ioQ>
+    <xmx:iwtBZ-fAUKepLl9PN0O5IYe2wkqEIq-QT_bfEMiOcsiYUZDUkHIxrg>
+    <xmx:iwtBZ-E9Q2Qk7NdW4R3GdtuN67GVnu3FQuSXylDJpImNGGecWKJqDI-G>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 49F7A2220072; Fri, 22 Nov 2024 17:54:03 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-To: Arnd Bergmann <arnd@kernel.org>, Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
+Date: Fri, 22 Nov 2024 23:51:38 +0100
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: "Guenter Roeck" <linux@roeck-us.net>,
+ "Niklas Schnelle" <schnelle@linux.ibm.com>
+Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
  =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- linux-serial@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+ linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
  linux-kernel@vger.kernel.org,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+ "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
+Message-Id: <eb1c5d4b-0662-41dd-826c-d3c3cf78de2b@app.fastmail.com>
+In-Reply-To: <791f37f3-2b93-47f1-b0a3-46825c09f222@roeck-us.net>
 References: <20240405152924.252598-1-schnelle@linux.ibm.com>
  <20240405152924.252598-2-schnelle@linux.ibm.com>
  <38bf3b8b-81c4-42c9-902d-b5719f3881c5@roeck-us.net>
@@ -83,124 +87,120 @@ References: <20240405152924.252598-1-schnelle@linux.ibm.com>
  <472eb22a-dcb1-4fbb-bf2c-a4173706bc7a@app.fastmail.com>
  <27685942-fb62-44c5-86ed-98beb547ffed@roeck-us.net>
  <744920ba-551c-466b-ac5c-2607b81261a0@app.fastmail.com>
-Content-Language: en-US
-From: Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- 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
- mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-In-Reply-To: <744920ba-551c-466b-ac5c-2607b81261a0@app.fastmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <791f37f3-2b93-47f1-b0a3-46825c09f222@roeck-us.net>
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
-On 11/22/24 11:24, Arnd Bergmann wrote:
-> On Fri, Nov 22, 2024, at 18:22, Guenter Roeck wrote:
->> On 11/22/24 08:31, Arnd Bergmann wrote:
->>> On Fri, Nov 22, 2024, at 16:35, Niklas Schnelle wrote:
->>>> On Fri, 2024-11-22 at 07:18 -0800, Guenter Roeck wrote:
->>> So in all four cases, the normal uart should keep working,
->>> and if something tried to start up an ISA style 8250, I
->>> would expect to see the new version produce the WARN()
->>> in place of what was a NULL pointer dereference (reading
->>> from (u8 *)0x2f8) before.
->>>
->>> Since there are so many ways to set up a broken 8250,
->>> it is still possible that something tries to add another
->>> UPIO_PORT uart, and that this causes the WARN() to trigger,
->>> if we find any of those, the fix is to no stop registering
->>> broken ports.
->>>
->>
->> The call chain in all cases is
->>
->> [    0.013596] Call Trace:
->> [    0.013796]  [<d06eb249>] dump_stack+0x9/0xc
->> [    0.014115]  [<d000c12c>] __warn+0x94/0xbc
->> [    0.014332]  [<d000c29c>] warn_slowpath_fmt+0x148/0x184
->> [    0.014560]  [<d04f03d8>] set_io_from_upio+0x70/0x98
->> [    0.014781]  [<d04f0459>] serial8250_set_defaults+0x59/0x8c
->> [    0.015013]  [<d04efa6a>] serial8250_setup_port+0x6e/0x90
->> [    0.015240]  [<d0ae2a12>] serial8250_isa_init_ports+0x32/0x5c
->> [    0.015473]  [<d0ae28a1>] univ8250_console_init+0x15/0x24
->> [    0.015698]  [<d0ad0684>] console_init+0x18/0x20
->> [    0.015926]  [<d0acbf43>] start_kernel+0x3db/0x4cc
->> [    0.016145]  [<d06ebc37>] _startup+0x13b/0x13b
->>
->> That seems unconditional. What is the architecture expected to do to
->> prevent this call chain from being executed ?
-> 
-> This looks like a bug in drivers/tty/serial/8250/8250_platform.c
-> to me, not something the architectures did wrong. My impression
-> from __serial8250_isa_init_ports() is that this is supposed
-> to initialize exactly the ports in the old_serial_port[]
-> array, which is filled only on alpha, m68k and x86 but not
-> on the other ones.
-> 
-> Andy moved this code in ffd8e8bd26e9 ("serial: 8250: Extract
-> platform driver"), but I don't think this move by itself
-> changed anything.
-> 
-> serial8250_setup_port() is where it ends up using the
-> uninitialized serial8250_ports[index] contents. Since
-> port->iotype is not set to anything here, it defaults to
-> '0', which happens to be UPIO_PORT.
-> 
-> The reason it doesn't immediately crash and burn is that
-> this is still only setting up the structures for later
-> use, but I assume that trying to use console=ttyS0, or
-> opening /dev/ttyS0 on the uninitialized port would
-> then cause an oops.
-> 
+On Fri, Nov 22, 2024, at 21:44, Guenter Roeck wrote:
+> On 11/22/24 11:24, Arnd Bergmann wrote:
+>> 
+>> serial8250_setup_port() is where it ends up using the
+>> uninitialized serial8250_ports[index] contents. Since
+>> port->iotype is not set to anything here, it defaults to
+>> '0', which happens to be UPIO_PORT.
+>> 
+>> The reason it doesn't immediately crash and burn is that
+>> this is still only setting up the structures for later
+>> use, but I assume that trying to use console=ttyS0, or
+>> opening /dev/ttyS0 on the uninitialized port would
+>> then cause an oops.
+>> 
+>
+> All four affected platforms use ttyS0, only it is mmio based,
+> not io port based.
 
-All four affected platforms use ttyS0, only it is mmio based,
-not io port based.
+Right, so I think the problem is really the 8250_platform.c
+file trying to handle all possible cases on x86 (acpi,
+isapnp, legacy isa) that may define the same UARTs, but
+also trying to handle non-legacy ports with their own
+special cases on other architectures.
 
-Guenter
+The patch below is a first idea of how we can skip the
+legacy ISA case on architectures that don't define those.
+If this works, we can try to come up with a better way of
+doing that. Ideally all the pre-DT boardfile machines that
+define their own "serial8250" platform_device (with platform_data)
+should use a different identifier the x86-legacy case that
+uses the platform_device (without platform_data). Similarly,
+I think the riscv special ACPI port needs its own trivial
+driver without all the ISA magic.
 
-> The bit I'm less sure about is why the
-> serial8250_setup_port() function is called here in
-> the first place. I assume it does something for
-> /some/ architecture, but it's clearly wrong for
-> most of them.
-> 
->         Arnd
+      Arnd
 
+diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
+index 66fd6d5d4835..610b31517734 100644
+--- a/drivers/tty/serial/8250/8250_platform.c
++++ b/drivers/tty/serial/8250/8250_platform.c
+@@ -101,7 +101,8 @@ static void __init __serial8250_isa_init_ports(void)
+ 
+ void __init serial8250_isa_init_ports(void)
+ {
+-	DO_ONCE(__serial8250_isa_init_ports);
++	if (ARRAY_SIZE(old_serial_port))
++		DO_ONCE(__serial8250_isa_init_ports);
+ }
+ 
+ /*
+@@ -283,7 +284,7 @@ static const struct acpi_device_id acpi_platform_serial_table[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, acpi_platform_serial_table);
+ 
+-static struct platform_driver serial8250_isa_driver = {
++static struct platform_driver serial8250_platform_driver = {
+ 	.probe		= serial8250_probe,
+ 	.remove		= serial8250_remove,
+ 	.suspend	= serial8250_suspend,
+@@ -300,7 +301,7 @@ static struct platform_driver serial8250_isa_driver = {
+  */
+ struct platform_device *serial8250_isa_devs;
+ 
+-static int __init serial8250_init(void)
++static int __init serial8250_isa_init(void)
+ {
+ 	int ret;
+ 
+@@ -337,11 +338,8 @@ static int __init serial8250_init(void)
+ 
+ 	serial8250_register_ports(&serial8250_reg, &serial8250_isa_devs->dev);
+ 
+-	ret = platform_driver_register(&serial8250_isa_driver);
+-	if (ret == 0)
+-		goto out;
++	return 0;
+ 
+-	platform_device_del(serial8250_isa_devs);
+ put_dev:
+ 	platform_device_put(serial8250_isa_devs);
+ unreg_pnp:
+@@ -355,6 +353,17 @@ static int __init serial8250_init(void)
+ out:
+ 	return ret;
+ }
++
++static int __init serial8250_init(void)
++{
++	if (ARRAY_SIZE(old_serial_port)) {
++		int ret = serial8250_isa_init();
++		if (ret)
++			return ret;
++	}
++
++	return platform_driver_register(&serial8250_platform_driver);
++}
+ module_init(serial8250_init);
+ 
+ static void __exit serial8250_exit(void)
+@@ -368,7 +377,11 @@ static void __exit serial8250_exit(void)
+ 	 */
+ 	serial8250_isa_devs = NULL;
+ 
+-	platform_driver_unregister(&serial8250_isa_driver);
++	platform_driver_unregister(&serial8250_platform_driver);
++
++	if (!ARRAY_SIZE(old_serial_port))
++		return;
++
+ 	platform_device_unregister(isa_dev);
+ 
+ 	serial8250_pnp_exit();
