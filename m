@@ -1,28 +1,34 @@
-Received: from frickel.club (v2202101137437138133.supersrv.de [45.136.28.37])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A373D15E5CA;
-	Fri, 22 Nov 2024 23:33:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.136.28.37
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 862AE15E5CA;
+	Fri, 22 Nov 2024 23:34:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732318398; cv=none; b=NJ4N3DJntBgojrN0OfDAVfg+dDlWdue1z0XFtKslCEekyzBNDRzHWeV/MCwpaK0ZCV4aedAffSPh1NmXPYhF27lEUku5pfZKpvi92mpAxenXzXMvVebCZ3ZVaT41IILYh2hbRAp6wW/WHsLhJRsR24YgsU87hYdq2is4D+IlMvk=
+	t=1732318478; cv=none; b=t0m8exoNuUv+KhlzG6I3puxxy4EX22HSU9OK69xANAkXfM3ueNYtF0u9+ulT11b94bH717TYVqKo4m05VlmU5JPBmgKb37tkX47giCdPjBif/8ajk7HP9bo+NIOYb+8T/1Cp5EnrxPE7ayG/dmYfNJBAtdN+PZ+btZty4yReu34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732318398; c=relaxed/simple;
-	bh=t3f4EdLZ0yKHLzwaQv4afxfuzoev+wJiOIjHbtPgnsQ=;
+	s=arc-20240116; t=1732318478; c=relaxed/simple;
+	bh=JFYgkSmnLeANkWfWjakLFqx6yo9Spcs5iuPUlcKJpBA=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=W6BZaRb/WPsv/l6qZr0o0/y+yA+oquiL8+N8TJC7/PMVf7ZHWqy8g693KNsMd6hEbzo/7SKDkwzvJsr0vHmiV/u8cVLhj88iOnUTCzE/o/nw8TpuDd56F8L4ad/Viu+rL5c9WD5LOwBW9nexA+ft/olf9TNG1RP93BPeNiQ/TrI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=frickel.club; spf=pass smtp.mailfrom=frickel.club; arc=none smtp.client-ip=45.136.28.37
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=frickel.club
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=frickel.club
-Received: by frickel.club (Postfix, from userid 182)
-	id EA05B267E76F; Fri, 22 Nov 2024 23:27:27 +0000 (UTC)
-X-Spam-Level: 
-Received: from [IPv6:2a02:8070:a482:2a00:8261:5fff:fe07:44d5] (unknown [IPv6:2a02:8070:a482:2a00:8261:5fff:fe07:44d5])
-	by frickel.club (Postfix) with ESMTPSA id 75BCF267E753;
-	Fri, 22 Nov 2024 23:27:19 +0000 (UTC)
-Message-ID: <a3889b8fd189246f439f429837c034bd75ccf307.camel@frickel.club>
+	 Content-Type:MIME-Version; b=td/cnnkpxAPmUs6LiTTO73QwHOOoYXAo96zr3sS59G0G2uFklqCmXn/SgIkO4G8C7f4iLoehO04BrgwSJwfM/YIlPZZhOd0TlHYWhbuqwbKxhfqY96A2edqQMEA9Zi7+lUMNiWV30wmSORukWtjqPHQyOAtM9RzdbxeWlaxewSM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NshzSmH2; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NshzSmH2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 302F3C4CECE;
+	Fri, 22 Nov 2024 23:34:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1732318478;
+	bh=JFYgkSmnLeANkWfWjakLFqx6yo9Spcs5iuPUlcKJpBA=;
+	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+	b=NshzSmH2IEadLX2z+JXJNGVHclm4bMilvJ/1k4nk4UtKCLobVdf8BL8QviXBf9F5f
+	 brl9w+PxDWEmpHpP04LVs5NZScU+H7yBmny1jvHmB/b65i3r2l6jE7boGsYGC/jKE6
+	 savrD7sS/03Usr5039uFihiBoDq7wIlshYmjNwuxIEj9AbDTP07VErqdBp9kWvSE4f
+	 iEayicUtOl957jtVbtKL0Ru720ONQ6vVep+JnpGbzMM8FA8Wcs3V421pSvg1WXs/yE
+	 bbKEoBs0zo72Rm57avnmRnMG0sK8qXCYJVsMTFNAZl66N1eD/1CxW73gggg/rF8wSc
+	 odRlbFiGBaSjw==
+Message-ID: <ddcbade39fb8a4dcac57c66c59fcc0b4d56dcaa6.camel@kernel.org>
 Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-From: Niklas Schnelle <niks@frickel.club>
+From: Niklas Schnelle <niks@kernel.org>
 To: Guenter Roeck <linux@roeck-us.net>, Niklas Schnelle
  <schnelle@linux.ibm.com>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby	
@@ -30,7 +36,7 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
  <ilpo.jarvinen@linux.intel.com>, linux-serial@vger.kernel.org, Arnd
  Bergmann	 <arnd@kernel.org>, Heiko Carstens <hca@linux.ibm.com>, 
 	linux-kernel@vger.kernel.org
-Date: Sat, 23 Nov 2024 00:27:18 +0100
+Date: Sat, 23 Nov 2024 00:34:34 +0100
 In-Reply-To: <92c2c05a-be0d-4017-a766-62832668512d@roeck-us.net>
 References: <20240405152924.252598-1-schnelle@linux.ibm.com>
 	 <20240405152924.252598-2-schnelle@linux.ibm.com>
@@ -116,6 +122,7 @@ uildcommand/logs/stdio
 buildcommand/logs/stdio
 >=20
 > Guenter
+>=20
 
 Am I seeing it right that despite the warning and the code setting
 no_serial_in / no_serial_out the console=3DttyS0 in the above qemu boots
