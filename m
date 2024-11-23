@@ -1,144 +1,220 @@
-Received: from sonic310-15.consmr.mail.bf2.yahoo.com (sonic310-15.consmr.mail.bf2.yahoo.com [74.6.135.125])
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D440208A9
-	for <linux-serial@vger.kernel.org>; Fri, 22 Nov 2024 23:54:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.135.125
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18AD748A;
+	Sat, 23 Nov 2024 02:14:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732319669; cv=none; b=KnJeFwrtrp/JBZVo94s1WOnjYW78eUaYyUim3K1bSRpyFoo+ukbale7ThOmeHiat7ZaUNTSixsERHm7DS9Gzp/yWVq5K75Lsf2P8OlXR8mIgCyv7u9J5zoL2Hs+W+HWowfo3EiCBTl8z57O1asHiFMfwAh3GOj5+cws0fRS0QWI=
+	t=1732328058; cv=none; b=tEEJwsNAmkN55TL0Sml1NQ0dIYo80wGnaWysgCuZlhPoTZ/KmRjR2ogGX8LgvAxhbInm9ODBNEUv29nAwYRSku+HgJI3RtXQFicoWorqmA45jib1ebrgaSTjMU2wBAeAO5NbsRFs8+UMI2OXZQ+Ck6G1MPOJg1ZQNpzeRCYfH1s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732319669; c=relaxed/simple;
-	bh=Px45QG5wMBqsx4SLxUDpTdTfuK5HQkGCkKpsSNEkaUA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NiAB7kP6dW4nc/YHejMPoqntnuvG4UZQmPIn0NqMlMAeOAHFVw/JsoJlh7GVY0aq5QjUZqF4IXq3A4Vq0d6SSpSjGb4wYVZOONESayYz4exHjdYP68hFBX4cqrpKYyaPCn+v3oQPFlZClpZT6fobJGld4iXONJXFc8A5wrNFgIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=XZC/tRi4; arc=none smtp.client-ip=74.6.135.125
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
+	s=arc-20240116; t=1732328058; c=relaxed/simple;
+	bh=EX4pMqx25HLXNXZjnFJMqrGwghQLt5+EG9kK/bHl8HY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YEJS4Xlb93bAVu74d0iSlxkq7MCW/b1mWZi9DkUiGTbblf23C18S9ejWiIaguYRflM5bMU7jSvPgKJUFtuxJVDv3ix2BmeyUHYOZKXdM6eOzZ6Ta+0imcl9qFt8fr3XN3S+DJMkNyefLVm/lOzkM62x6QXxljWp0cRQ4rZJysZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M2NrwM7e; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="XZC/tRi4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1732319660; bh=XcebQec07jzXTrfAZrzNgm8590Jm3hrgaHHTMTCk89Q=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=XZC/tRi4t09ITL1yQgQNVgm7bS2CHeL4WpAYAWdi4nLmvkjYudsZHtxlbOB6Uc/pfBempfsnigy+LZznig7pjIqFhNE5MDoXDcS67c0Qbu6LMUbc+kCjfhKTlNyiJfAsM7WNa8kjbnexbi4FF4Px8gG0ddvsu82jq+XCPef/EINK+ZO26zvPr4kp7q3QZxZT93x2KThCAcjwyh2nNq+nKDVq5gUi9z7JIP0BBz8yJL2BT2QeB3ei6UzDF9xFI+JH0b5ETVrWeKrHAfNj04V8StEK7gChYVkepJaZRjtf6FDGZ26pMRtdtlCo9JrkvbKljcK8EqMaqFI8vyr0crQevQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1732319660; bh=X5/068k9a7Io1grIvOcTalFLcllga5dcqIVD3ohnbKx=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=tY2SijnqEOHPWwUYUAuw1X8iY2zhfejeAuNskkGGZzcDOP1sjKWZOlA86n/hGte1QRoKXGXxJXBbH0LFTcR+BHQa+yZP2IQ8NN+hwjRewMoyKEVrA8MfS/dfKO6A8idk8Fhw+gLkSt1L9FSEB1oIha5ZrV/IR02yyP0fo4VjdPpqx0IWvgayI/xKL9rsdd1ggHUzsjr1IohZfnoTtIKiz13JsxH5NfCRF32dAf8uZ9UyXoBPSUYGYJMHsGXyiO8oYSODs8MzNxe/PvE9gURTSQbwe1qgV5/+Fjt4bRcWaag0jRQvI4MfqEwuf72b5epQ0WEshS8+ZjK+bxb0A6kPNQ==
-X-YMail-OSG: yi9awj0VM1nyy_7ywC5wCXozf9vWpwY2nlSjsz8nzVsoiaukq6iCBzr5LEedNrN
- z055cdqB0bfa9G7ecbt_TWIxRG8hadwZkhApCeikmWV8GLjp91gCijVWK5vE7Elcc1gV8vmgmQgK
- m6vVwZ3.s1oZPhj3mnC6dut6H3DprMr.0Vq6TMEbtD3IOWMM9q2yUlgmPFZQUsSt3ahHv5BSU2Vt
- Pkz6zyXz0MCwv3qCE4gQa_KrxoJF4.47xkZg32xKLrxEtIQcN5n06pN85AhA26GQQkRWJHrCw5Kp
- WTJ5y6e2XNilxp_mhYDj5LdLJGJjgka05En5HQ2Q7nnkyNqFUGaoJZinoPMm8G9Mb8DCUXYAFBB.
- To5MMGGMYbuyDR7y6w8l0p_wkR_kmG5ROQmsg0f8CrtuETNIPdmYBkIOnyHz9hkpR3LTZGPUQlKE
- Igq8H3GaPb7NUZ5_fSXeb9RXIFwhgQkK9AX3X29awRypxLL6LfljiS8W7UojsDde3pu2bpB26LcO
- bQPXvBqoOFdvbPtXMCDsFGS.J761yxw_LO6.KKKZTp7ha1QM2PXK0GSf5fj5Yl9Tod7u9Cg3PB8L
- ElYPjaMC45kK7gXyFfD2siofq4j7lPzJabLMnurvxtGAJFW7Y33k9j3hLE7WTicWzK2ivCY0AU2z
- aCGON1HDrZ0KgQdj9rmw7yXHS_RgiPwIS.EnKQWpEc3JZTNtXZ0HHHcJsErrFw_FBrEluTkaRSue
- UnVyN9r7ZogweQvkU7ZpWEfpTxiW3fxRw_26tnKu4ZqH0726QCcCotu4_NaTxhHHn79iYkjCRDI2
- 7ErKxvw.JM6z0AZ_E9r8R.mj0ZOeaY_opBYTrVFiLpJ9Ih2kMP_vufnXxFDWpnK9qHTCh4X50Sns
- EOBTtjbyICpZpgU4g6aI1ZN024wUO6S4yUM6C3TBpBhQVeu8e_gjF.0jLuYYNPCdZEhqF52j9AAS
- QeInk2ba_VcLzCN5b560oaxOHmJ3LhpjFyI5Sz3_IewMxnmMPE2sUeDtjNv2DtuHPa2Mfm9uYIdP
- D4ajVEDWLYLgF1nMNoBizFeh6xUIHZHNoaHhErdNJJFy6PBzD0A8WoomO4HAhk17mTiNk1IKX9L8
- zd8YL7E7C7R8IIHE7TfgLHA.cE.hRaIlm8GV4LLbNxhjCaxR53ZmNLQ2Om7406tNNiO235UXNdPv
- gSolpn8y0HkEZ9D0B6pgaTf7MqiMlucLax.ifBTz0tC9g9K.lIAQjgR7zvQaD20_5DG9aQi9yYLU
- GZ1nNXe.Q1d.lhZNu2fgzX2_Cf8ybJ2yIR23KixNZxcPlGXRDrP2zXmcylAn4VPe9ebuqvovDSOA
- 56VeZyfxVoENTBvz5VA0ZoTSNzXaOj.czPBbxPUxdPdR.27nGRJUkeS9u2HbnBjuPVn7k3Qp.8Qv
- .BwLCYdjdiwmQE0FqK4.lk1z9RmA8pM_oUfk2MdZs.QH1ldLqq_aTk2ApbtzTvH9VmBHhorFTuN8
- vA.psnuY4QLdFrqZzMcC24wqfdL_BzwBy1YdveOiGeDOUHte8UB7n8WeYURZPBJHDYDFJDBtvOXM
- 4FKGqwKEeFWqsZ_k1o5pg1_a.qrBJdBOvkBpQM1r2ylD5ZzLrgdsU4SYNDU8bhi8jDCO8rvXh0GT
- 7_TEyNI2xMVZqZ7cFn3Fhiq3.e5fCCCmaPnqyiaEzvE91a2V2znCKYikNKXTCdfcPigSd0u7GoBS
- jT7Mxd0n.rMhwQEDiArLbn4Uw9587tvAcuR.ZrPep9vpdAJOWEsB4z3k326lvG.B2Lr4Mt_EJZb6
- 6jEiayAdROMZ7.zD5KxGGIiQjw83j6YoUVC6FE_KQ23EFthjXoIs022FriQ1laGnIoeaptEr2HiY
- JWYckmnFR1CRxFL0GChUuiTi6F.LZyWRYRlbq.6dh4bVhtBNZp2HTHcOwuhVeiw3mEb41n1HAl15
- uB0yuzAhmi_AutUzr3TyHb_Eisq25crcIRQXKiOx3yUqSt8MAvhOtyPY_nHwuD3nVMnPBd25Xte4
- X6zukuZCkGXzPit0GHRQFxDCwXqtCtS8KkTJN0wFeFbqHqncwW_Cx5x6HTBYc.XgAKgD2SScwxAq
- 3TuibtqnlJGyr5ipMVbOQ1H4ENQslHDEAXFDOYbZ20k90F0QCap1abAsfmdCvnLlvi4WhQi6SSbd
- GXdf9S28WAIV0QexnipbAHV4bBxEkGb8VKKX3jU6n7L1MRDzo_6geP2066Qzy2zGAPu.RnapB_gt
- RnRKnROn6CnG0dP9y_OdGalsnowHM8sTn.83jo0k45RiuWAbHLZv3wR.CgyZM_V0csDwlfxEmxMh
- 3xogF88WpUvWkH9oLeA--
-X-Sonic-MF: <bluescreen_avenger@verizon.net>
-X-Sonic-ID: 9ebfe8ec-9e56-4838-89cf-aac4788eb787
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.bf2.yahoo.com with HTTP; Fri, 22 Nov 2024 23:54:20 +0000
-Received: by hermes--production-bf1-66bb576cbb-dxqpr (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 52fa6f45a421e925c7017fe74ca5f885;
-          Fri, 22 Nov 2024 23:54:19 +0000 (UTC)
-From: nerdopolis <bluescreen_avenger@verizon.net>
-To: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- Gil Pedersen <gpdev@gpost.dk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH 0/1] Fix to allow more correct isatty()
-Date: Fri, 22 Nov 2024 18:54:17 -0500
-Message-ID: <16989967.geO5KgaWL5@nerdopolis2>
-In-Reply-To: <20241121111506.4717-1-gpdev@gpost.dk>
-References: <20241121111506.4717-1-gpdev@gpost.dk>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M2NrwM7e"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-21263dbbbc4so29240675ad.1;
+        Fri, 22 Nov 2024 18:14:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1732328056; x=1732932856; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=5tm0SQFRalTTa/1kWMTGU16lgeqQakuZDDSuhOCG4NU=;
+        b=M2NrwM7eQ18wtJ1sn5yiCsM9Xzq+l2vShH6xClQXmNmIahuvGAe/cDiWmITxuvTdPo
+         Sk4+Urx+hWm7AT7MQT1kUciqxUvtuylF1HdQcCpQUPr6rhnn3f58aSU15CoZL7svyYSO
+         KiC+LUN/Y/WmQHzJlFAS8bs1hXTzbHG7CxiNf69ZSk22AJ7t9PYuZQwHuMOKN0Pnaekg
+         rt+ttZW/UpJtLPD3IW8e1VLYhB+bSrrc+1DBmwesDjpQkAtGN2ICPZrhaowUqi839lyz
+         GUnvD0wBrnjBJZR6mhNP7xju8XMyxAws4gGf1wHTvCktrERH4nTzXrbG2LBD95ekJzw8
+         B1Zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732328056; x=1732932856;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:sender:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5tm0SQFRalTTa/1kWMTGU16lgeqQakuZDDSuhOCG4NU=;
+        b=pS+VtUkcFVDa1c6Xu930BsLxpgnq7kDjF+btmkbKGFuKHL6mN8h8OHTspGM8SOloyx
+         kwzJJ7Or15rrCCw+mdPFZ/MnAQ+fbONVcX2+PbMSEKBgZfvm520b4fRv63PdarGYb34m
+         HVcqRQi3jvISJt1Qght6T/TGDiq4g9KMmCZKHMC6JrwjyCF3enFII1OMqo6GrWVvLEmt
+         5hqcOF23g1v+RPBfMy3r11WaOCvI6SfNrNemwVDnUlATWU4aDxbzdZvOteK6b646B6NK
+         X7VvmcIOdIojb+7bX3GnfJbBPYpi5H8lOSHj+d1eRupbhYsA01J2QNp2pRtw00smiAhz
+         VtbA==
+X-Forwarded-Encrypted: i=1; AJvYcCUCqvTbHeN+EwT90BdmO/yN24MRAPyITmzqCu1Esvumgd19M2vluqHNgT4/3UHRrp31mq0FR02NzV7BL/o=@vger.kernel.org, AJvYcCV86+D0M/NcdnZi1U+FR5exDPtbbo6lVQYl82MUFdLg30mx2ZGsu6n8VWN/8INgoZFh1zFYRhf+TrEWgO3J@vger.kernel.org
+X-Gm-Message-State: AOJu0YzAp76Nfb/0AFpd7ETfa+UnspR6OLkgDTYzQsk1+F518MsrEwZV
+	AdxHYuP8xhDDNQz5mgdKKdlAjOVCONijF5YfYaW3G3iUmAlVjUxr
+X-Gm-Gg: ASbGncuowgEKmtxors+KKGE7w+OWe/dHcAM7ik0YPPWZEjNYAupJF7tJ4lXVGngt0Ii
+	lwB5j/PofmLfO4Ac4S0pue29QlSnNMMvYGOsbYDY0BrrFoXaaF64R9o48niIV+yvqpNCDEfeTx6
+	LhozQI8NPXIprYTNEqOykeZx4EEYYIonD5hVXyQzogc2rt13N0GHN6TohF+QJXrpA477qa+cRJc
+	QE/zhJ0B9TitXsHpSi2lxHgKXk9fzAxCq7XSs36QyUCELlWlafxrreviWspzlV8cO2BoMSyYZk8
+	vf2SR8FSSTDEn+H8iHkd6tA=
+X-Google-Smtp-Source: AGHT+IEEUTDG1x7QE08+4xA/5EJ+JQcxV8Bd3tAOVdlBof2etNmTJRl2cmvJk/PsOJU8wNtJel6acA==
+X-Received: by 2002:a17:903:230d:b0:20c:5cdd:a9e with SMTP id d9443c01a7336-2129fd21f41mr60315745ad.28.1732328056118;
+        Fri, 22 Nov 2024 18:14:16 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:da43:aeff:fecc:bfd5? ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2129db8c951sm23188185ad.32.2024.11.22.18.14.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Nov 2024 18:14:15 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <3d1e5e90-4675-4319-9f58-3c3d5b6f4b8a@roeck-us.net>
+Date: Fri, 22 Nov 2024 18:14:13 -0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Mailer: WebService/1.1.22941 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+To: Arnd Bergmann <arnd@kernel.org>, Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-serial@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+ linux-kernel@vger.kernel.org,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20240405152924.252598-1-schnelle@linux.ibm.com>
+ <20240405152924.252598-2-schnelle@linux.ibm.com>
+ <38bf3b8b-81c4-42c9-902d-b5719f3881c5@roeck-us.net>
+ <3b75b92805648577ed05ff221d0c56e381aa1c7c.camel@linux.ibm.com>
+ <472eb22a-dcb1-4fbb-bf2c-a4173706bc7a@app.fastmail.com>
+ <27685942-fb62-44c5-86ed-98beb547ffed@roeck-us.net>
+ <744920ba-551c-466b-ac5c-2607b81261a0@app.fastmail.com>
+ <791f37f3-2b93-47f1-b0a3-46825c09f222@roeck-us.net>
+ <eb1c5d4b-0662-41dd-826c-d3c3cf78de2b@app.fastmail.com>
+Content-Language: en-US
+From: Guenter Roeck <linux@roeck-us.net>
+Autocrypt: addr=linux@roeck-us.net; keydata=
+ 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
+ mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
+In-Reply-To: <eb1c5d4b-0662-41dd-826c-d3c3cf78de2b@app.fastmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thursday, November 21, 2024 6:12:53 AM EST Gil Pedersen wrote:
-> This patch comes from an issue discovered in systemd, where it can fail to
-> restore a text TTY session after a GUI session is stopped when compiled
-> with musl libc.
+On 11/22/24 14:51, Arnd Bergmann wrote:
+> On Fri, Nov 22, 2024, at 21:44, Guenter Roeck wrote:
+>> On 11/22/24 11:24, Arnd Bergmann wrote:
+>>>
+>>> serial8250_setup_port() is where it ends up using the
+>>> uninitialized serial8250_ports[index] contents. Since
+>>> port->iotype is not set to anything here, it defaults to
+>>> '0', which happens to be UPIO_PORT.
+>>>
+>>> The reason it doesn't immediately crash and burn is that
+>>> this is still only setting up the structures for later
+>>> use, but I assume that trying to use console=ttyS0, or
+>>> opening /dev/ttyS0 on the uninitialized port would
+>>> then cause an oops.
+>>>
+>>
+>> All four affected platforms use ttyS0, only it is mmio based,
+>> not io port based.
 > 
-> The specific systemd integration issue is currently resolved in the musl
-> master branch by closer aligning the implementation with glibc, but the
-> underlying isatty() implementation is still flawed since it can return 0
-> (false) for something that is definitely a TTY. Essentially both musl
-> and glibc give up correctly handling this case on Linux due to
-> inadequate/buggy kernel APIs.
+> Right, so I think the problem is really the 8250_platform.c
+> file trying to handle all possible cases on x86 (acpi,
+> isapnp, legacy isa) that may define the same UARTs, but
+> also trying to handle non-legacy ports with their own
+> special cases on other architectures.
 > 
-> Thus I am proposing this patch as a solution to fix the kernel APIs. An
-> alternative fix could be to add a new IOCTL to specifically handle this,
-> but that seems overkill.
+> The patch below is a first idea of how we can skip the
+> legacy ISA case on architectures that don't define those.
+> If this works, we can try to come up with a better way of
+> doing that. Ideally all the pre-DT boardfile machines that
+> define their own "serial8250" platform_device (with platform_data)
+> should use a different identifier the x86-legacy case that
+> uses the platform_device (without platform_data). Similarly,
+> I think the riscv special ACPI port needs its own trivial
+> driver without all the ISA magic.
 > 
-This is pretty cool as it fixes the /dev/console-is-a-disconnected-/dev/ttyS0
-issue I found this year
-https://github.com/systemd/systemd/pull/33690
-and
-
-https://lore.kernel.org/all/2669238.7s5MMGUR32@nerdopolis2/
-namely on vt-less kernels that now have /dev/console as /dev/ttyS0 instead of
-/dev/tty0 or a virtual device.
-
-
-So yeah, when you have hardware and you've been using vt-enabled kernels
-on it for years (where your /dev/ttyS0 doesn't even have an rs232 port, let
-alone connected to anything), and then when you upgrade to a vt-less kernel,
-sometime in the future, because of systemd's isatty() check failing, and
-refusing to write to /dev/console, Plymouth's new log display facility in turn
-gets far fewer logs from systemd, because of the ioctl failure in isatty()
-
-
-MY idea for this solution was that kernels turning off CONFIG_VT_CONSOLE could
-then turn on a CONFIG_NULL_TTY_CONSOLE that would get selected at the same time
-the VT console would have, so that if distros choose to do so, the virtual
-/dev/ttynull device to always work for User Space. (that way kernels that never
-had CONFIG_VT_CONSOLE turned on won't have a behavior change as well)
-
-
-(the one benefit to my idea is that Plymouth goes into text mode logging when
-the console device is /dev/ttyS0, so Desktop distros would need to add a new
-"plymouth.graphical" to their grub commands to get the splash to work again,
-however when the console device is /dev/ttynull it automatically assumes that
-the user wants a splash screen.) This is more specific to Plymouth though
-
-
-However testing this patch and it also works, and this won't need a new
-configuration change.
-> Link: https://github.com/systemd/systemd/pull/34039
-> Link: https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/70711
-> Link: https://www.openwall.com/lists/musl/2024/08/20/2
-> Link: https://git.musl-libc.org/cgit/musl/commit/src/unistd/isatty.c?id=c94a0c16f08894ce3be6dafb0fe80baa77a6ff2a
-> Link: https://sourceware.org/bugzilla/show_bug.cgi?id=32103
+>        Arnd
 > 
-> Gil Pedersen (1):
->   tty: respond to TIOCGWINSZ when hung
-> 
->  drivers/tty/tty_io.c | 29 ++++++++++++++++++++++-------
->  1 file changed, 22 insertions(+), 7 deletions(-)
-> 
-> 
+> diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
+> index 66fd6d5d4835..610b31517734 100644
+> --- a/drivers/tty/serial/8250/8250_platform.c
+> +++ b/drivers/tty/serial/8250/8250_platform.c
+
+That didn't work.
 
 
 
+[    0.005735] Console: colour dummy device 80x25
+[    0.006393] BUG: spinlock bad magic on CPU#0, swapper/0
+[    0.006459]  lock: serial8250_ports+0x0/0x980, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+[    0.007102] CPU: 0 UID: 0 PID: 0 Comm: swapper Not tainted 6.12.0-07881-g6206e39999ae #1
+[    0.007359] Stack:
+[    0.007671] > 00000100 00000000 d09f9e10 d0951c2c
+[    0.007765]   d0951c2c 00000000 00000000 d0b06170
+[    0.007841]   9003f5ee d09f9e60 00000055 d0dd9900
+[    0.007884]   00000000 00000004 d09f9e40 00000000
+[    0.007925]   9003f681 d09f9e80 d0dd9900 d08f5924
+[    0.007976] > 00000000 d08f5890 ffffffff 00000000
+[    0.008019]   906f66b9 d09f9ea0 d0dd9900 00000000
+[    0.008059] > 00000000 00000480 00000000 d0a06d74
+[    0.008099]   904efe6a d09f9ec0 d0dd9900 00060300
+[    0.008139] > 00000000 00000000 00000001 00000000
+[    0.008180]   9004368d d09f9ef0 d0aa7238 d7ff70a4
+[    0.008220] > d04efe6a 00000000 00000001 00000000
+[    0.008260]   00000000 00000000 00000001 00000000
+[    0.008301]   90044a84 d09f9f10 d0aa7238 d04efe14
+[    0.008340] > d0dd9900 000000c4 d0a06d74 d0a00400
+[    0.008381]   90ae6710 d09f9f30 d0aa7238 d0cedea0
+[    0.008443] Call Trace:
+[    0.008502]  [<d06ed63d>] dump_stack+0x9/0xc
+[    0.008624]  [<d003f5ee>] spin_dump+0x4a/0x78
+[    0.008677]  [<d003f681>] do_raw_spin_lock+0x1d/0x68
+[    0.008727]  [<d06f66b9>] _raw_spin_lock_irqsave+0x41/0x54
+[    0.008780]  [<d04efe6a>] univ8250_console_setup+0x56/0x104
+[    0.008829]  [<d004368d>] try_enable_preferred_console+0x75/0xf4
+[    0.008877]  [<d0044a84>] register_console+0xf4/0x3e4
+[    0.008923]  [<d0ae6710>] univ8250_console_init+0x20/0x24
+[    0.008970]  [<d0ad44f0>] console_init+0x18/0x20
+[    0.009018]  [<d0acfdaf>] start_kernel+0x3db/0x4cc
+[    0.009063]  [<d06ee02b>] _startup+0x13b/0x13b
+
+That was xtensa. Others are just silent.
+
+Guenter
 
