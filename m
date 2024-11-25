@@ -1,230 +1,152 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17664186E59
-	for <linux-serial@vger.kernel.org>; Mon, 25 Nov 2024 11:59:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E33891AF0C5
+	for <linux-serial@vger.kernel.org>; Mon, 25 Nov 2024 13:51:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732535949; cv=none; b=PWgeMZn5ocZdo2ItJaCQSou351uPCG45cxWqq62vv8quF/tg7g5X6jo5gls/vcVnYsOivx3uU20CihlFOTOzj81Kd8la7Hah8xHcoKXVXuzmRUH0Z9doS0CZ2aYmp/V0++o/L6OdkAr3FcjDnIY0Vs7I0sRvLmLe614rAeEAA2k=
+	t=1732542689; cv=none; b=e9ccHyVGsVVrpbg73iYV/7sYhq5gNy+FhOqZsWoKtRZX/lwmjy04fBjS8aQYd9qegs+NNiAZV/HKEEXRdqS3FkG/I6NENjp70faHIw+WP2Wzph0G/c6b/5bXvGlu5RlSRIwUQwRRiOdSVYkym3srWlDwONpZZgKPHvQwwM94dsM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732535949; c=relaxed/simple;
-	bh=Nqj89ZYUKmsbGkLtnnKcQvhP2tYl+KP8++ciMLWTUf0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Kq9LlVgLCWIdtjWrjYvMkr5Tq/rfr6C7XAHXaYvwnVtT6lU72wxkOLWkeS7e0Z/+4RMR1hfjYGv84TgkzuvXSw220lEAnLTSTW6m4sAGjWKBQD70LZXRkoplNaWEBfyzj3m+ojeTE/7fvX63x+2hLEFXoG2YcuRZbSYN7H3osPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=dUnZUxij; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1732542689; c=relaxed/simple;
+	bh=b/xDcNgHmFl8rKmdpCvpIoRImffNPXL78sWyibQPD7M=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=eXmLZWTjiXzN4Umm38F+CntkSF8q7zTWimJHIc3UsbN0Bh7eN+FHNj5lSlU6Ftg/SzPaLEs1zqWQ9afy8Bf24z61ydKrLu3vKZWQrvA1dKg7WkO4Ms6NK462EKBOslLwuS9JA/dzbJN0dt9JIJt/EUI/i04b9YKl7Pm902llqcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fkqjqmqN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="dUnZUxij"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-434a10588f3so4225265e9.1
-        for <linux-serial@vger.kernel.org>; Mon, 25 Nov 2024 03:59:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1732535945; x=1733140745; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=UvTqih4zuDxpRIabgMXl7QO1Llp9lafNLgIxNa0SNLQ=;
-        b=dUnZUxijDEgCGZL9qxR/U5h3Wt9CbukI+wBnX0/xmU6m7TrK6Wj+a5DWv+nx3b1Ase
-         k/chRXTYhiUsOJLnFWsimG23ugvjj/POx52Y64XrbnemT0pIxrBBsytIpE+Wucgg/kgG
-         bwEcC9oGbovQ1ofJR5BIuNt2hZGa78Kv3ONe0xTY6XFePkcttn73rb9DMC6+FVPm6USv
-         /p/qxnBO09E7mFX9N1gPvjeHtI3k6sjY+kwaB95Z2MDETRrqe7RjmmrBor0T8VBpVWOq
-         7EPaYV01w/Csx8oSVKLwDG++QwpXMvog3qCe+G2UdCjdEsAFz9hjhg5t4baQEm45eK+3
-         PFUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732535945; x=1733140745;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=UvTqih4zuDxpRIabgMXl7QO1Llp9lafNLgIxNa0SNLQ=;
-        b=TFZQAKB79VZSkh5VmU11L/ctosBWlE4js0RUwNtGEP5tg3r7quU1/WAr77LEWmPof/
-         ogFFMoB7KzoCaQOB/n0HICucRWZottt3u3bl55ujQTNEYASfq7jDXWlMkqLGz1jURCC1
-         LJy6peLZowiFeZ65XthRBwgk/Smpc3ixPgERkbAi+THKvojkojYEgpCjbP/b126Ql+mK
-         Zxsu9FOrVm6dQ3HB4IeUBp0V+k7LO3Fir4KmIeUMDwcN7RGojW6+Ogd1bH2mi0trFjte
-         fao1EFGeH2qDA6QvsCifQfUDe5Ok/iY3oYJx2fNXg56xdIhbX3hdvESFFrVQ+YAoZ2br
-         9hGg==
-X-Forwarded-Encrypted: i=1; AJvYcCU2PaaH738QwZeXumrEKq1MAxpWp6FXbglE/eJnPPgC7HTw2Kte7SLDxgkODrmixf4RTGdIWPg30DKTVu0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxLTmq2yh6iDr0L762IkV+c1jKBYHT1Cf4c4NpgX51ITVlDljwz
-	A9klDmx3fwiJTQoZpgtwwasmCbOgjSUr0IK5dmMJtMS71tb0ermQ9cQmeljPmiM=
-X-Gm-Gg: ASbGncs8Bm7EYtf9bp9T8AHpJoChoswQWZ5nNV3CN0NAvn7HZX9N0C76y0OPUwZKIdf
-	23ZVhWSIKZ7LIFB0BEtm0qMuiiMCAmRePtvc2Q6w+Kv3tSzA9ihIXCLnUyZzV4GwcRSFSM9v6tj
-	EXJbrGKvobtIzcSwmO3Kh/JTmv9KTv0ZvfYUAxfuBazH7rfwpQE1mm/RPOUJ8qukc0k4mSDukuJ
-	NmH4sPLPSWo0x5f5QabHN/aV4tj80CP4D56RMesVcd2Zla0MZpExiAf0ajoISbSgPhwTE3PyidZ
-	dIg=
-X-Google-Smtp-Source: AGHT+IERI7AZlN3KrYfCNnJKk/X3paLDn8H+fVm0RkY5gq03QR61gDdmNk5OamtVv2fyVuPTYoynqg==
-X-Received: by 2002:a05:600c:1381:b0:431:5044:e388 with SMTP id 5b1f17b1804b1-433ce4ab0a0mr92338485e9.22.1732535945185;
-        Mon, 25 Nov 2024 03:59:05 -0800 (PST)
-Received: from claudiu-X670E-Pro-RS.. ([82.78.167.28])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3825fad5fa2sm10459677f8f.1.2024.11.25.03.59.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Nov 2024 03:59:04 -0800 (PST)
-From: Claudiu <claudiu.beznea@tuxon.dev>
-X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	geert+renesas@glider.be,
-	prabhakar.mahadev-lad.rj@bp.renesas.com,
-	g.liakhovetski@gmx.de,
-	lethal@linux-sh.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	claudiu.beznea@tuxon.dev,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] serial: sh-sci: Check if TX data was written to device in .tx_empty()
-Date: Mon, 25 Nov 2024 13:58:56 +0200
-Message-Id: <20241125115856.513642-1-claudiu.beznea.uj@bp.renesas.com>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fkqjqmqN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1290C4CED3;
+	Mon, 25 Nov 2024 13:51:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1732542688;
+	bh=b/xDcNgHmFl8rKmdpCvpIoRImffNPXL78sWyibQPD7M=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
+	b=fkqjqmqNzOXvxFuWxwOXiGjrxhD9X9gIgEjlsFQeE4IGGF19QuzBSMoO8aVed6FTj
+	 oBqG2skEbE/wEaQ0kWUj3/QTLX0TMK9otzbfOs/g9vSUI4luJMad2w0vzUK3za4Uy9
+	 VMQ8WekPgUHk6j/xF71Uh8+tUGXsEhXOSyz9NwfrPvLAB0tLaWXYSmRYaNAeOh+7T3
+	 0QTXpEksyh1xs4B+LgUT5mhaZ93JFPOCc52jeOSw73KY+26Z6saF/q3usjUgi7n4ba
+	 Ble9/aBrRYBpe9Z+Fy6dGoXgpFTWwnXwLKgwxbYTl6sCW6el3wmCie4PNNBjDa7MFZ
+	 qfDbuTsNts+8A==
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfauth.phl.internal (Postfix) with ESMTP id EEF071200066;
+	Mon, 25 Nov 2024 08:51:26 -0500 (EST)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Mon, 25 Nov 2024 08:51:26 -0500
+X-ME-Sender: <xms:3oBEZ7XtfIa05c4nb-UGxWSNPwaZLHRJhbBkVK6GzHser_Lu2uXH6Q>
+    <xme:3oBEZznwk-EQga7xWLhZyKB7w-bdG70WJRxHPTEZaT-DZn-oKBWEqP8zALWXCc9I5
+    MubbhBMWaUpyNOEkGA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrgeehgdehiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdpuffr
+    tefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnth
+    hsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredttden
+    ucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvghlrd
+    horhhgqeenucggtffrrghtthgvrhhnpeejjeffteetfeetkeeijedugeeuvdfgfeefiedt
+    udeikeeggeefkefhudfhlefhveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpegrrhhnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihht
+    hidquddvkeehudejtddvgedqvdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlhdroh
+    hrghesrghrnhgusgdruggvpdhnsggprhgtphhtthhopedutddpmhhouggvpehsmhhtphho
+    uhhtpdhrtghpthhtohephigrnhhghihinhhglhhirghngheshhhurgifvghirdgtohhmpd
+    hrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthhtohep
+    hhgtrgeslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehstghhnhgvlhhlvgeslh
+    hinhhugidrihgsmhdrtghomhdprhgtphhtthhopegrnhgurhhihidrshhhvghvtghhvghn
+    khhosehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepihhlphhordhjrghrvh
+    hinhgvnheslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopehgrhgvghhkhhes
+    lhhinhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehlihhnuhigsehroh
+    gvtghkqdhushdrnhgvthdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghr
+    rdhkvghrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:3oBEZ3bWvM-OeoNQG3eWTUtm5KAvJUfZBviEZZDAV2H8Eulc07GTDw>
+    <xmx:3oBEZ2XAwGkOuI5fJvqVrwYFPRE419D55N5S9O6YZB3QXLurm5H7Qg>
+    <xmx:3oBEZ1ltTGPEJmJHLjwMj37acX7iltNoU9Vlu8ET1IH9KMOE0wBYuQ>
+    <xmx:3oBEZzchu25dpbazZ_oElvabJKrRS-gaY98kC8jQLv1CUU3KreukTQ>
+    <xmx:3oBEZ_Ef1ghYAHc4oRcdXP1BDCh0D-_IUq7nWIa0M7JFagkYqtgVSFdW>
+Feedback-ID: i36794607:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id BC0FF2220072; Mon, 25 Nov 2024 08:51:26 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date: Mon, 25 Nov 2024 14:50:56 +0100
+From: "Arnd Bergmann" <arnd@kernel.org>
+To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
+Cc: "Guenter Roeck" <linux@roeck-us.net>,
+ "Niklas Schnelle" <schnelle@linux.ibm.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>,
+ =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+ linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
+ linux-kernel@vger.kernel.org, "Yang Yingliang" <yangyingliang@huawei.com>
+Message-Id: <1a7da799-f15b-4714-a3bd-4c0b1f48fc09@app.fastmail.com>
+In-Reply-To: <Z0Re61Tk5lN2Xuxi@smile.fi.intel.com>
+References: <20240405152924.252598-2-schnelle@linux.ibm.com>
+ <38bf3b8b-81c4-42c9-902d-b5719f3881c5@roeck-us.net>
+ <3b75b92805648577ed05ff221d0c56e381aa1c7c.camel@linux.ibm.com>
+ <472eb22a-dcb1-4fbb-bf2c-a4173706bc7a@app.fastmail.com>
+ <27685942-fb62-44c5-86ed-98beb547ffed@roeck-us.net>
+ <744920ba-551c-466b-ac5c-2607b81261a0@app.fastmail.com>
+ <Z0QtZky8Sr7qUW7v@smile.fi.intel.com>
+ <00f5e842-3ee9-4d83-8836-0ff4f703fa3c@app.fastmail.com>
+ <Z0RSZ-YD_BozMs1n@smile.fi.intel.com>
+ <be43108e-4135-4927-ba58-141836fde6af@app.fastmail.com>
+ <Z0Re61Tk5lN2Xuxi@smile.fi.intel.com>
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+On Mon, Nov 25, 2024, at 12:26, Andy Shevchenko wrote:
+> On Mon, Nov 25, 2024 at 12:06:16PM +0100, Arnd Bergmann wrote:
+>> What I suspect is going on with the f4c23a140d80 commit
+>> is the same bug I mentioned earlier in this thread, where
+>> __serial8250_isa_init_ports() just always registers
+>> 'nr_uarts' (CONFIG_SERIAL_8250_RUNTIME_UARTS) ports,
+>> unlike any other serial driver.
+>
+> But the configuration can give less than old_serial_port contains.
+> See dozens of the explicit settings in the defconfigs.
 
-On the Renesas RZ/G3S, when doing suspend to RAM, the uart_suspend_port()
-is called. The uart_suspend_port() calls 3 times the
-struct uart_port::ops::tx_empty() before shutting down the port.
+I don't see any of the upstream defconfigs doing this
+though, the only ones setting CONFIG_SERIAL_8250_RUNTIME_UARTS
+are those that have an empty old_serial_port[]. 
 
-According to the documentation, the struct uart_port::ops::tx_empty()
-API tests whether the transmitter FIFO and shifter for the port is
-empty.
+Note that SERIAL_PORT_DFNS is only defined on x86, alpha
+and m68k (for q40), which are the main PC-like platforms.
+I see that all three have identical definitions of
+SERIAL_PORT_DFNS, so I think these should just be moved
+next to the __serial8250_isa_init_ports definition, with
+the entire thing moved into a separate ISA driver or
+an #ifdef around it. This is of course not the problem
+at hand, but it would help separate the x86/isa and
+non-x86 platform device cases further.
 
-The Renesas RZ/G3S SCIFA IP reports the number of data units stored in the
-transmit FIFO through the FDR (FIFO Data Count Register). The data units
-in the FIFOs are written in the shift register and transmitted from there.
-The TEND bit in the Serial Status Register reports if the data was
-transmitted from the shift register.
+>> This used to be required before 9d86719f8769 ("serial:
+>> 8250: Allow using ports higher than SERIAL_8250_RUNTIME_UARTS"),
+>> but I don't see why this is still a thing now, other than
+>> for using setserial on i486-class PCs with nonstandard ISA
+>> ports.
+>> 
+>> On non-x86 machines, it only ever seems to create extra
+>> ports that are likely to crash the system if opened, either
+>> because they lack proper serial_in/serial_out callbacks,
+>> or because the default UPIO_PORT callbacks end up poking
+>> unmapped memory.
+>> 
+>> Do you see any reason why we can't just do the version below?
+>
+> Perhaps we may do this way (it seems better to me than previous 
+> suggestions), but it also needs to be carefully checked against
+> those configurations that set it explicitly.
 
-In the previous code, in the tx_empty() API implemented by the sh-sci
-driver, it is considered that the TX is empty if the hardware reports the
-TEND bit set and the number of data units in the FIFO is zero.
+Yes, at least to make sure that the numbering of the uarts
+does not change. I expect it's actually the same, but don't
+know for sure.
 
-According to the HW manual, the TEND bit has the following meaning:
+> If we go this way, it would be also nice to add a comment explaining that
+> this is module parameter (as it's done for those ones above).
+>
+>> +unsigned int nr_uarts = ARRAY_SIZE(old_serial_port);;
 
-0: Transmission is in the waiting state or in progress.
-1: Transmission is completed.
+Right.
 
-It has been noticed that when opening the serial device w/o using it and
-then switch to a power saving mode, the tx_empty() call in the
-uart_port_suspend() function fails, leading to the "Unable to drain
-transmitter" message being printed on the console. This is because the
-TEND=0 if nothing has been transmitted and the FIFOs are empty. As the
-TEND=0 has double meaning (waiting state, in progress) we can't
-determined the scenario described above.
-
-Add a software workaround for this. This sets a variable if any data has
-been sent on the serial console (when using PIO) or if the DMA callback has
-been called (meaning something has been transmitted). In the tx_empty()
-API the status of the DMA transaction is also checked and if it is
-completed or in progress the code falls back in checking the hardware
-registers instead of relying on the software variable.
-
-Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
----
-
-Patch was initially part of series at [1].
-
-Changes since [1]:
-- checked the s->chan_tx validity in sci_dma_check_tx_occurred()
-
-
-[1] https://lore.kernel.org/all/20241115134401.3893008-1-claudiu.beznea.uj@bp.renesas.com/
-
- drivers/tty/serial/sh-sci.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 136e0c257af1..680f0203fda4 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -157,6 +157,7 @@ struct sci_port {
- 
- 	bool has_rtscts;
- 	bool autorts;
-+	bool tx_occurred;
- };
- 
- #define SCI_NPORTS CONFIG_SERIAL_SH_SCI_NR_UARTS
-@@ -850,6 +851,7 @@ static void sci_transmit_chars(struct uart_port *port)
- {
- 	struct tty_port *tport = &port->state->port;
- 	unsigned int stopped = uart_tx_stopped(port);
-+	struct sci_port *s = to_sci_port(port);
- 	unsigned short status;
- 	unsigned short ctrl;
- 	int count;
-@@ -885,6 +887,7 @@ static void sci_transmit_chars(struct uart_port *port)
- 		}
- 
- 		sci_serial_out(port, SCxTDR, c);
-+		s->tx_occurred = true;
- 
- 		port->icount.tx++;
- 	} while (--count > 0);
-@@ -1241,6 +1244,8 @@ static void sci_dma_tx_complete(void *arg)
- 	if (kfifo_len(&tport->xmit_fifo) < WAKEUP_CHARS)
- 		uart_write_wakeup(port);
- 
-+	s->tx_occurred = true;
-+
- 	if (!kfifo_is_empty(&tport->xmit_fifo)) {
- 		s->cookie_tx = 0;
- 		schedule_work(&s->work_tx);
-@@ -1731,6 +1736,19 @@ static void sci_flush_buffer(struct uart_port *port)
- 		s->cookie_tx = -EINVAL;
- 	}
- }
-+
-+static void sci_dma_check_tx_occurred(struct sci_port *s)
-+{
-+	struct dma_tx_state state;
-+	enum dma_status status;
-+
-+	if (!s->chan_tx)
-+		return;
-+
-+	status = dmaengine_tx_status(s->chan_tx, s->cookie_tx, &state);
-+	if (status == DMA_COMPLETE || status == DMA_IN_PROGRESS)
-+		s->tx_occurred = true;
-+}
- #else /* !CONFIG_SERIAL_SH_SCI_DMA */
- static inline void sci_request_dma(struct uart_port *port)
- {
-@@ -1740,6 +1758,10 @@ static inline void sci_free_dma(struct uart_port *port)
- {
- }
- 
-+static void sci_dma_check_tx_occurred(struct sci_port *s)
-+{
-+}
-+
- #define sci_flush_buffer	NULL
- #endif /* !CONFIG_SERIAL_SH_SCI_DMA */
- 
-@@ -2076,6 +2098,12 @@ static unsigned int sci_tx_empty(struct uart_port *port)
- {
- 	unsigned short status = sci_serial_in(port, SCxSR);
- 	unsigned short in_tx_fifo = sci_txfill(port);
-+	struct sci_port *s = to_sci_port(port);
-+
-+	sci_dma_check_tx_occurred(s);
-+
-+	if (!s->tx_occurred)
-+		return TIOCSER_TEMT;
- 
- 	return (status & SCxSR_TEND(port)) && !in_tx_fifo ? TIOCSER_TEMT : 0;
- }
-@@ -2247,6 +2275,7 @@ static int sci_startup(struct uart_port *port)
- 
- 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
- 
-+	s->tx_occurred = false;
- 	sci_request_dma(port);
- 
- 	ret = sci_request_irq(s);
--- 
-2.39.2
-
+     Arnd
