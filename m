@@ -1,101 +1,119 @@
-Received: from sonic305-1.consmr.mail.bf2.yahoo.com (sonic305-1.consmr.mail.bf2.yahoo.com [74.6.133.40])
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE8B14D428
-	for <linux-serial@vger.kernel.org>; Fri, 29 Nov 2024 04:36:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.133.40
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBAD11386DA;
+	Fri, 29 Nov 2024 07:58:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732854979; cv=none; b=FM259JkfLD/4VpRQRWpankDch53g8jvpuZkv3FrSLCKm1wwAMXfCmD+kkS6/cpGmeZQAnwoUbHOCtpWn78bMeHZeB+2f2cGOZTeu1YnDswd824XBJRoJXcBOTfeMhf9IYkOl+hx0A9l633DEfHujh0pAduPwm8kwUTPaZqH7plA=
+	t=1732867127; cv=none; b=khYRyOF7TordxEB1DgPPa5tHkuyjI5B0S9SuBJbpWkrJRYwA4RCxk9IbIZlKvke5DYfiCkLm6WpjIG3XRXrLW2ohhCC5oidtMIdIybIeh50wZU1HUMiN+4jDqmQt6fvp5HqzEy9ul+0/Bt0cqaznzE4xSg35xuuT8THqfteY9kw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732854979; c=relaxed/simple;
-	bh=+/KmO3a3ZqPkpk88xYk2TASZx3w+zAIDLk4JhcnfO3A=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:References; b=DZoWcsG/02fEcxMYkZbS9qS2waDiwutxoCAuxEb7bdvQzSL1dK7W/W3t/3tm4NLWVzfK7hZgYGh82Mk6RUKHalVAodmz3kBJkkhSjGic7EM49V5/L4fJvfArJQ8i0TluumLDMl/OkpHZ/Q4l+71Z113Ucb7Tte25/Awchm+5qhY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=HH9997Nc; arc=none smtp.client-ip=74.6.133.40
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="HH9997Nc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1732854976; bh=GQSojATNMkj2XY8rz6LmsRqO9TSCVXvI4iHLwdFwzks=; h=From:To:Cc:Subject:Date:References:From:Subject:Reply-To; b=HH9997NcncJx8MzvDHZRRLL4ghvo45rRNcSrSFyKADaW4v0Ugh8b9/QBa5uX79FaMRDbS7MrKlMC34qLJNz2pYBg4fECWi2XZpDwQNXxjjXL+5YltB1bAHTGWs6tHS/tN/VuAfVh08F+9KtZ1B1sK6zbdug2++DSuYifB+0xQapgdO25NlYBY7Rzo9z3uKRkWHE3L3tWV/cJqyqieMWFr2HFLYsEKAGin7q+EL0VWbCQ8Ac7KDzpRsfl6fZEELbayW/b/FEZhC/oOgM3gILOI5kV7Jzq6QPPIp96Z8nPPtrNoSzDNhePuOn3+TbQ1UgYd4YHDIx3qsVjUusNTxyhSg==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1732854976; bh=7RzgHPwIy9OGQj/sXsANIsXF9ePijAbvmwU7JeUxUDE=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=SsST8VcpU79fBDWd7LJEVpp0JtnIjULj9BhI3o5ZUDCnZDbnAe8c33LDlcVddIHSZ2WE4/hVQaafterL2weB1Q2+N/4joqFLKGqmLM8Aipz3O2GeuKNebqv5JW9cSojEPogtzTCUUri5TBYU2UndkOmV7PJUrSo/CAZJjkT6Z4Ko5d3LMwxJfmDrMPv/9hQWoq6o3w129yC7abCa7CuooumtEojRLFnKyaD/w+2ZYeUqEXIoxCsXlssnxA/F3q5EkLgNi37hhSZjnMidPR89ASsCpwOcqQBP7tetL6GweeR0jMjcGvcpfEVRiI1rrsJuV4Za2tLt5bx9liNNT1ZvIw==
-X-YMail-OSG: AMSU.RMVM1mb6bKRvoYirGQKxOZVMJWCgdDqu5v7FdoEhWK8eIccml0v4EFSHY1
- JU5RphcaVbkv10w0R5D_JTx67NbJFP1zgo1dZfssY34mnvwAY3xHGuPTTNoQ9xJC98XZp3N9Kf.e
- 3hPJoJvewqy69HIMKGVFyVWcPmSjEyiPJRTKpmLjuMUJQP9tqfm2Z7QW18.ejM1ToJqldGwXSFf7
- 9bfi3pVlBFKf_K.xAxM2TsWjc.UkFA6ozUeruAl4WaTcMaDoBq5ps3sb8LHHFYqxX1vDzZ3hUFrp
- 0GuXSmPzrb6dRsRtpi29VrZGIaGt1_3ISPuPSgnxz_3hZACJSkwOagx0VntM4IECaqSeRSIOBqlo
- ax.9y6YA3.qX3q7hGF7_KHji4nI6Om6Ae4TCaoshiOdfsdAlqlaigNl9HchkdZFkHA7eIFiDKLQI
- jjSzlQmOJ6ptipPS4zWcM76JHAaP5FLJMZoCrcZcs9zedbhhT8mjtkoef0hrxZ2_6Ik83XePo7FC
- vZMIrVGtaeHFyOR7iIgOpS_li_riOTfsQlDpqFFlfUolP6EvYqM485dEXFX3oqegD8jG7ogNWQEt
- OfxR2kHYIDGgtzF4.12AEgjlQNkXr9TgvHwc3RXK3nRcCKzYypscGesYW.KgoeV74qxS_BPiQ_DH
- 2F3Wa2UhHaKMAWIC9SxFfO2zXKTH7pDkaaf57wPzzWYb.T6qFpErafTrAWJ4cVPtEJbr4qczudDW
- YevbO2pxFdbP479PElYGWPeAGOR5tR6iFYdKsltyA4d9qQPsR1fLci0cU7PsNyeIIAR1N_.HdHhQ
- mZ7SXkqjZ7diL5T.pns1.cegBjDWOGJRcLcr8qyyNW7xFCLAvIn_2PAOyIKu.g6aEqRYP9G1v19p
- uSytSUubfFr.fWw1wt0i0_HXR250QIVCC.AVBYD4nup20m4Jdu6WIrkPcfWkDD5_iBG7x5RlIWml
- ceYzM6NBIwGoTi3xFHuL4on1adsmfifarkhOFZZz2wMfvk3YJ.MnynMMpHKfBMrZ5j8VqCHb13vr
- NG7qZCuGnxytJrP837fsfaMBtvVSSIZ3IL1wqtgTtxA2G8i_sCZ2y8Ur4UfLnU_OWHj.fHKAVmRs
- BWpIhPr0dvuXYYU5lqvywS.MfAi2FlaeTgOdlMKiGOCqZScGc7UdzA2gkd0dS7edzD22_tZ4qTFw
- w6DOSJsZZEhjOtNRuOuth9dr3RyM2jiIjBXyjpJ.OQF38mjQTGgsMoreJSQr4ZvRdueQI9qQmd9p
- XsqNPX1qxA5t1HDZbLGyPnlY3GK1M0O2kVXnBF4j4AZ8Gx3H6jxRf2OA01jl7wujvo2RraPvTina
- by_qwjx6lswZiv2YWhuHGz5BBny_0GO7..FOHaD25QjYKZsWyTTyYEYCDXfcozo_QO06DLHcxsQG
- Om9ovVPBlRVuYRpj9s5HKVGA2JMwgcGMJfXUmcvaMPEr32tCo06v8occKdJdn4wOEnPhqyjoYoL2
- ODoHtfITzvkkrIMtO000OpcD.jRm.pYp1yrfdwuvUDyf3vAP_fKgaNeRYp09oTu6nAZvIyrRYraY
- ktkPKVfItlPhAgnMz7j6_q6HSKKdBXf85eWknX7rvk8wuXGiTLIaNPr86yemciv5ud50yfK8nsF2
- SwPFb4d38wTOIvd9UPgLaQ0Nsn_6lo04khs9O7DzmIe2G0Cft3M4lqob6JNiw2jNeiFgPehLQIX4
- uySRzYDwO4wgkfYtxx5CWWFhmWwoeEaT0_1SQRbe.ru8erdwbkpa5ui5UeUeTtRQmbrArEXpQVPI
- lLaN1Mn.xIakdySoWc8MyouSnoGOc0Nj578WY93CTPQtXFTL.gi7ttX9OQRmFdkITdRRXXev25Eg
- viWaZWmCWq49JanPLS7FXm5TaP5WAuF1H1bhrYP3buNUS5J48rI8B0i22R3mhgM.16JLzTQwtX1p
- kd9MV_xf6mhmKPp0InuFPZHDNhKaUq7qgSTm88HJ1W89W51OgF58aINB6EwPf33Hiwaqz_EXQI0o
- BJWORXxAlcA4aoyBdoqqEwRMaN.Suk6ZBmVPojXEO4gQlOluGfWApxlOaPIKp7Di5E1Ee1IJXixr
- ThkEFHCiKihwaxHCNfTKF8.u_6hpBc_iC9Yh1rCDxhIA.Gcz.27VfiVyS5_71NB.RVJCAIMfxsXe
- _KT83YdXKEBPJ9Xl.yMFzjjpMPN5gaoZHcpNu43KnOjfASTGuRQHmALJU_TfeL0ezmLCqrtNZoOo
- qSmaNopED3kkD4BbubDcJ4EJ0EbKnNnDrnhU74be8z9Lbq_JplX9JnqEpLbpVQxCPBViZnhlb3L1
- WU_dbo9zh8IMi
-X-Sonic-MF: <bluescreen_avenger@verizon.net>
-X-Sonic-ID: b678fd99-ae38-49d4-b635-e51f217fb12e
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.bf2.yahoo.com with HTTP; Fri, 29 Nov 2024 04:36:16 +0000
-Received: by hermes--production-bf1-66bb576cbb-h2pjb (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID af1c0b40292d512b9d850181f2953147;
-          Fri, 29 Nov 2024 04:15:58 +0000 (UTC)
-From: n3rdopolis <bluescreen_avenger@verizon.net>
-To: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: n3rdopolis <bluescreen_avenger@verizon.net>
-Subject: [PATCH 0/2] Optionally allow ttynull to be selected as a default console
-Date: Thu, 28 Nov 2024 23:15:47 -0500
-Message-ID: <20241129041549.778959-1-bluescreen_avenger@verizon.net>
-X-Mailer: git-send-email 2.45.2
+	s=arc-20240116; t=1732867127; c=relaxed/simple;
+	bh=DGGweeKTa+RH+0DnaUtBC1/0fD3GQ1ZhcpPHK7Zfy7w=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qsbBAFF6eRlArrWDsU1RYxGJrnw5pEqNUcvd9kHU+owdTX9OzjC+7cQMdesjKQmWki409kqLA2L4X7Xfj/8H8MhjZH5tFlYjIG+TGawNQ8p+BkyZy9A3aRgmRAvluhHFD8uGxKpPGZYqyKcJ6b2NSQMORKeXlhanJxg9cUMF90A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-51514257e57so426557e0c.2;
+        Thu, 28 Nov 2024 23:58:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732867120; x=1733471920;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=s+Gp1qiNTq0xAIAUyk8qXxpMaz1cYGia2c+m2zi+2Rk=;
+        b=LHSuhS4quPTe+DvNOFd3dsYaCfIpL5VkmbwNAMBePQkiPuzkXVec2xToRFOxxWdgJC
+         xDcQeOdii9z3jYiturOtDKpre9EAgEGXjVa0FX8gQDfPmO9dOQVQ9e5jpYVGlzn/P2Eq
+         kVhfrTLZpQT/qC+FPVJLQcx5jTfxjCfm6wwkxTdVeAh4dXjPCMPlL60u99KGhxe3y8qU
+         CW0gTN0o3jfa+GuZ0GMt1NXPl0h/l1Mxz2Zv/JcTPvmGNiSfQ7QQVCGSuktzjOHK9akJ
+         BVvX59zCSVUpgV8pHwxdRqlLJgYIusDI2MVQ2qJHgTQfljuN+W3IC+YSH506u4QMZ7UY
+         0kdQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVb9u4EnBXyr65+ZwsOJzVZEoYSy1A433bkkGRINykfMNbT8BVqe2FgK/LdFjVcLwUGYdCjNYQBHNyJV1xE@vger.kernel.org, AJvYcCVtPKlLOIuKfR4vnYXa/Ova3Nh7SZM5Urw/K0dEdfsKQDadidj+7Ubo9JsC65ZG0CCQ/5eV68kWzgu4a8c=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy/qcwxpmCkDHYNIBXKTcxHkXiB0ozgdKJqGIT4l17kHujDZfBO
+	qSMThZcGiK8g18dIghMkmzwKohqolM2/oCrFHNjbMJafh/y6xMILHClWVpuDj4o=
+X-Gm-Gg: ASbGncuHIc78RbGP4b6ytzOE8GwEMWMurOG+5i6YFaMir2ne/Z0j2QzIw93oBxgw46J
+	aRTkYf+qpqkbfkCBIKtYXnnSWe1xZ+fYVArliFxI6oPadFWWpZjkioEDLn61S+KSe0lBylm/DS/
+	gawkucD5df8h8RUBNXwG2iVxsY8iXgYKKMF7vdFYONk3X5UWRHWkOGV2gLlqU5wcPk52JyBmCtv
+	XdMg0dqtTOrQoPHWHoyYwzTrKul91uMw5hJ7gYpWHLTVrZRHfdY7xxm/fO0lPmqjvzjAE09x3ox
+	d9NWoab3Q3Kp
+X-Google-Smtp-Source: AGHT+IEN5Mru+x7LyJ/6RxmLLiTi46Tt0KvF/yIkcVNiTr7ssz6fmSSCpHJghLNUiHV6uk6/4g5DZQ==
+X-Received: by 2002:a05:6122:458b:b0:515:4fab:b1a3 with SMTP id 71dfb90a1353d-51556762babmr12082065e0c.0.1732867120569;
+        Thu, 28 Nov 2024 23:58:40 -0800 (PST)
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com. [209.85.217.53])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5156d0f8bf7sm434714e0c.52.2024.11.28.23.58.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Nov 2024 23:58:40 -0800 (PST)
+Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-4aefcb3242aso525754137.1;
+        Thu, 28 Nov 2024 23:58:40 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUCYixANJr7ZlfC4lK3splcdBRCSSXaiBRDQle7uJgTvZW+2pHU/BuVqGofvoaA8TZ23lnfllWNHSNMm3A=@vger.kernel.org, AJvYcCV8kXv00xSPhLtcWBbGJLOm4M5nwejAGpE6eRG1BABtXhn6TDmGMRTS+l2P4A3czL+FlLjmJqhWttqSxdHj@vger.kernel.org
+X-Received: by 2002:a05:6102:cd0:b0:4af:4983:d8c8 with SMTP id
+ ada2fe7eead31-4af4983d95cmr10883213137.10.1732867119928; Thu, 28 Nov 2024
+ 23:58:39 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-References: <20241129041549.778959-1-bluescreen_avenger.ref@verizon.net>
+References: <Z0lCihhE75lE9Zjd@kroah.com>
+In-Reply-To: <Z0lCihhE75lE9Zjd@kroah.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 29 Nov 2024 08:58:28 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXwdyb6RA5jksNfw-M9h_nERvm8M4b7XU1_1N-C+bf94A@mail.gmail.com>
+Message-ID: <CAMuHMdXwdyb6RA5jksNfw-M9h_nERvm8M4b7XU1_1N-C+bf94A@mail.gmail.com>
+Subject: Re: [GIT PULL] TTY / Serial driver changes for 6.13-rc1
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, 
+	Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-When switching to a CONFIG_VT=n world, at least on x86 systems,
-/dev/console becomes /dev/ttyS0. This can cause some undesired effects.
-/dev/console's behavior is now tied to the physical /dev/ttyS0, which when
-disconnected can cause isatty() to fail when /dev/ttyS0 is disconnected,
-and users who upgrade to a theoretical vt-less kernel from their
-distribution who have a device such as a science instrument connected to
-their /dev/ttyS0 port will suddenly see it receive kernel log messages.
+Hi Greg,
 
-When the new CONFIG_NULL_TTY_CONSOLE option is turned on, this will allow
-the ttynull device to be leveraged as the default console. Distributions
-that had CONFIG_VT turned on before will be able to leverage this option
-to where /dev/console is still backed by a psuedo device, avoiding these
-issues, without needing to enable the entire VT subsystem.
+On Fri, Nov 29, 2024 at 5:26=E2=80=AFAM Greg KH <gregkh@linuxfoundation.org=
+> wrote:
+> The following changes since commit 42f7652d3eb527d03665b09edac47f85fb6009=
+24:
+>
+>   Linux 6.12-rc4 (2024-10-20 15:19:38 -0700)
+>
+> are available in the Git repository at:
+>
+>   git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6=
+.13-rc1
+>
+> for you to fetch changes up to b5a23a60e8ab5711f4952912424347bf3864ce8d:
+>
+>   serial: amba-pl011: fix build regression (2024-11-16 09:52:55 +0100)
+>
+> ----------------------------------------------------------------
+> TTY / Serial driver updates for 6.13-rc1
 
-n3rdopolis (2):
-  ttynull: Add an option to allow ttynull to be used as a console device
-  tty: Change order of ttynull to be loaded sooner.
+[...]
 
- drivers/tty/Kconfig   | 18 +++++++++++++++++-
- drivers/tty/Makefile  |  3 ++-
- drivers/tty/ttynull.c | 16 +++++++++++++++-
- 3 files changed, 34 insertions(+), 3 deletions(-)
+> All of these have been in linux-next for a while with no reported
+> issues.
 
--- 
-2.45.2
+Oh, how do I love this boilerplate...
 
+> Claudiu Beznea (1):
+>       serial: sh-sci: Clean sci_ports[0] after at earlycon exit
+
+"BUG: spinlock bad magic"
+https://lore.kernel.org/all/CAMuHMdX57_AEYC_6CbrJn-+B+ivU8oFiXR0FXF7Lrqv5dW=
+ZWYA@mail.gmail.com/
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
