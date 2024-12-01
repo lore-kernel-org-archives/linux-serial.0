@@ -1,143 +1,221 @@
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C689A15A8;
-	Sun,  1 Dec 2024 00:04:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6CEB320F
+	for <linux-serial@vger.kernel.org>; Sun,  1 Dec 2024 04:06:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733011487; cv=none; b=gV7m6TqHhrTx1+fK7zfNaneIHMMxpCehyPViamnKlhHjKnF5LiJoJ+8BbjFVH+C7CpKRaqFxCTA6lXrRo4XDXMr7nDQsEWJLEozjATr3unbceGxmvenQP6WmW1DE4mL0/H2bS9UPzv1In0W6WDDqEdcxnHT4v5Ecqifha/aXv28=
+	t=1733025963; cv=none; b=X+SXRmITsTMGOdSEw8g8Ly/M4WF8EFB6HDmeiTR85aHFn4TmxHQ5fR1xC4zpU8kf0JzXKpPlZQIDKgpMgx16/Zq5Ml4E/GM+D4yqAeRs39bAnSdbM/v/wp48/0CxGXC5qZAHK7GPfYMcCxNU74jWHbakF/aYclJqotiIHPK94w4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733011487; c=relaxed/simple;
-	bh=MLnJgorJwh+hbxtr/zQo6L4PQuQDTv95fqiNd+XnGIM=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=PZ8I+cipW4uVvpSpR8mo2gcVJSS9PqeIukBZuxZSOqjMJnaue5V925J887DXS0nVlMaIm5n5XpFbN84XCqOfSrUjRfRgzJ7Md2189+G1ALmvQWWYJx1kPur10FhUYtkRB1sf70JTc/6VlY0lPLIzdnToEpH7lt/50PmHKlX4+sc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-	id B841992009C; Sun,  1 Dec 2024 01:04:36 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-	by angie.orcam.me.uk (Postfix) with ESMTP id B1B9692009B;
-	Sun,  1 Dec 2024 00:04:36 +0000 (GMT)
-Date: Sun, 1 Dec 2024 00:04:36 +0000 (GMT)
-From: "Maciej W. Rozycki" <macro@orcam.me.uk>
-To: Jiri Slaby <jirislaby@kernel.org>
-cc: John Ogness <john.ogness@linutronix.de>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Petr Mladek <pmladek@suse.com>, 
-    Sergey Senozhatsky <senozhatsky@chromium.org>, 
-    Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner <tglx@linutronix.de>, 
-    Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org, 
-    linux-kernel@vger.kernel.org, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Rengarajan S <rengarajan.s@microchip.com>, 
-    Jeff Johnson <quic_jjohnson@quicinc.com>, 
-    Serge Semin <fancer.lancer@gmail.com>, 
-    Lino Sanfilippo <l.sanfilippo@kunbus.com>, 
-    Wander Lairson Costa <wander@redhat.com>
-Subject: Re: [PATCH tty-next v3 1/6] serial: 8250: Adjust the timeout for
- FIFO mode
-In-Reply-To: <2fab2ef8-d0d6-4b94-90b6-7c16641a2f68@kernel.org>
-Message-ID: <alpine.DEB.2.21.2411080343040.9262@angie.orcam.me.uk>
-References: <20241025105728.602310-1-john.ogness@linutronix.de> <20241025105728.602310-2-john.ogness@linutronix.de> <837a7ecd-be29-4865-9543-cb6f7e7e46e7@kernel.org> <alpine.DEB.2.21.2410310349450.40463@angie.orcam.me.uk>
- <2fab2ef8-d0d6-4b94-90b6-7c16641a2f68@kernel.org>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	s=arc-20240116; t=1733025963; c=relaxed/simple;
+	bh=Kv+JbSr3aNlPrfM4ERsQxyXSiK8g1XFugwD2ItmYENM=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=r4QiA9PX7nny1vxg+1vcHjRV/r2+xnbfcl03aWv3ljEOrHhlxbDNeWYkhqfUjaRi07tMC/A6XwGRnAUemeBkJgSg8UOYfLX6C8mL/MhcJJOsME19YIxFwRAgbJHhpHx0SxhpgoeLzuF5XukWfLjPi0MoGN+GTvBofuG6rdwdSoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cfJf/OTp; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cfJf/OTp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1733025962; x=1764561962;
+  h=date:from:to:cc:subject:message-id;
+  bh=Kv+JbSr3aNlPrfM4ERsQxyXSiK8g1XFugwD2ItmYENM=;
+  b=cfJf/OTpqBEc9QodT0TYfKruVaNwCgVSy04SRx+Qo0d0u8Dub7MwrFfH
+   6G5NqV7x4D3gG8aQ4QEV/e8XVCqeSrhsG5WHH64myVK21CL+9YZz16991
+   zHC8oz4ON3FC1BJOgqDJy65pKgtIsbYndDfjr3G/ysufSREFGtYojai1d
+   oJJUf7oR9utwftORRNTRblNOUm/5SwwLTiOQ4tYF7COsH9epfVjo3oKIf
+   3seVHosf4TKMhkhprvdTF2KWqi1qpaPR9AL1rz17isesaG5YoGW/YztN7
+   ZNwnMnWKeLOl3xO7kBw2kvRgrA/hszwX901D2O4i/Uvb9p+9jU+1jLal+
+   g==;
+X-CSE-ConnectionGUID: Ewbc1aSHTjGbZcCEL7Vrwg==
+X-CSE-MsgGUID: 3UjrMOruRJiMq663bQ6IPg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11272"; a="33138076"
+X-IronPort-AV: E=Sophos;i="6.12,199,1728975600"; 
+   d="scan'208";a="33138076"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2024 20:06:01 -0800
+X-CSE-ConnectionGUID: jYAdqA/6ShyFkgnBHN3/Vg==
+X-CSE-MsgGUID: b7wWgyeSSGeVjU+TguM/Ug==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,199,1728975600"; 
+   d="scan'208";a="123648443"
+Received: from lkp-server02.sh.intel.com (HELO 36a1563c48ff) ([10.239.97.151])
+  by orviesa002.jf.intel.com with ESMTP; 30 Nov 2024 20:06:01 -0800
+Received: from kbuild by 36a1563c48ff with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tHbDZ-0001Dp-2F;
+	Sun, 01 Dec 2024 04:05:57 +0000
+Date: Sun, 01 Dec 2024 12:03:03 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 718632467d88e98816fa01ab12681ef1c2aa56f8
+Message-ID: <202412011253.5jnCafmu-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 
-On Mon, 4 Nov 2024, Jiri Slaby wrote:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 718632467d88e98816fa01ab12681ef1c2aa56f8  Revert "serial: sh-sci: Clean sci_ports[0] after at earlycon exit"
 
-> > > THRE only signals there is a space for one character.
-> > 
-> >   Nope[1]:
-> > 
-> > "In the FIFO mode, THRE is set when the transmit FIFO is empty; it is
-> > cleared when at least one byte is written to the transmit FIFO."
-> 
-> Hmm, I was confused by NXP's 16c650b [1] datasheet then (or I cannot parse):
-> ===
-> The THR empty flag in the LSR register will be set to a logic 1 when the
-> transmitter is empty or when data is transferred to the TSR. Note that a write
-> operation can be performed when the THR empty flag is set
-> (logic 0 = FIFO full; logic 1 = at least one FIFO location available).
-> ===
+elapsed time: 721m
 
- This description seems broken indeed and I find your interpretation of it
-correct.  I do hope this is just an editorial mistake with the NXP device.
+configs tested: 144
+configs skipped: 14
 
-> But indeed in the LSR[5] bit description, they state:
-> ===
-> In the FIFO mode, this bit is set when the transmit FIFO is
-> empty; it is cleared when at least 1 byte is written to the transmit FIFO.
-> ===
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
- FWIW I chased documentation for the original 16550A device and it uses 
-analogous wording[1]:
+tested configs:
+alpha                             allnoconfig    gcc-14.2.0
+alpha                            allyesconfig    clang-20
+alpha                            allyesconfig    gcc-14.2.0
+arc                              allmodconfig    clang-20
+arc                              allmodconfig    gcc-13.2.0
+arc                               allnoconfig    gcc-13.2.0
+arc                               allnoconfig    gcc-14.2.0
+arc                              allyesconfig    clang-20
+arc                              allyesconfig    gcc-13.2.0
+arc                          axs101_defconfig    gcc-13.2.0
+arc                          axs103_defconfig    gcc-13.2.0
+arc                     nsimosci_hs_defconfig    gcc-13.2.0
+arc                   randconfig-001-20241201    gcc-13.2.0
+arc                   randconfig-002-20241201    gcc-13.2.0
+arc                           tb10x_defconfig    gcc-13.2.0
+arm                              allmodconfig    clang-20
+arm                              allmodconfig    gcc-14.2.0
+arm                               allnoconfig    clang-20
+arm                               allnoconfig    gcc-14.2.0
+arm                              allyesconfig    clang-20
+arm                              allyesconfig    gcc-14.2.0
+arm                        clps711x_defconfig    clang-20
+arm                      footbridge_defconfig    clang-20
+arm                       imx_v4_v5_defconfig    clang-20
+arm                          ixp4xx_defconfig    gcc-14.2.0
+arm                            mmp2_defconfig    gcc-14.2.0
+arm                            mps2_defconfig    clang-20
+arm                        multi_v7_defconfig    clang-20
+arm                           omap1_defconfig    gcc-14.2.0
+arm                   randconfig-001-20241201    clang-20
+arm                   randconfig-002-20241201    gcc-14.2.0
+arm                   randconfig-003-20241201    clang-20
+arm                   randconfig-004-20241201    clang-20
+arm                           sama7_defconfig    clang-20
+arm                        shmobile_defconfig    gcc-14.2.0
+arm                           stm32_defconfig    clang-20
+arm                           sunxi_defconfig    clang-20
+arm                         wpcm450_defconfig    clang-20
+arm64                            allmodconfig    clang-20
+arm64                             allnoconfig    gcc-14.2.0
+arm64                 randconfig-001-20241201    clang-15
+arm64                 randconfig-002-20241201    clang-20
+arm64                 randconfig-003-20241201    gcc-14.2.0
+arm64                 randconfig-004-20241201    clang-20
+csky                              allnoconfig    gcc-14.2.0
+csky                                defconfig    gcc-14.2.0
+hexagon                          allmodconfig    clang-20
+hexagon                           allnoconfig    clang-20
+hexagon                           allnoconfig    gcc-14.2.0
+hexagon                          allyesconfig    clang-20
+i386        buildonly-randconfig-001-20241201    gcc-12
+i386        buildonly-randconfig-002-20241201    clang-19
+i386        buildonly-randconfig-003-20241201    clang-19
+i386        buildonly-randconfig-004-20241201    gcc-12
+i386        buildonly-randconfig-005-20241201    clang-19
+i386        buildonly-randconfig-006-20241201    gcc-12
+loongarch                        allmodconfig    gcc-14.2.0
+loongarch                         allnoconfig    gcc-14.2.0
+loongarch                 loongson3_defconfig    gcc-14.2.0
+m68k                             allmodconfig    gcc-14.2.0
+m68k                              allnoconfig    gcc-14.2.0
+m68k                             allyesconfig    gcc-14.2.0
+m68k                         amcore_defconfig    clang-20
+m68k                       m5249evb_defconfig    gcc-14.2.0
+m68k                        m5407c3_defconfig    clang-20
+m68k                          multi_defconfig    gcc-14.2.0
+m68k                           sun3_defconfig    clang-20
+microblaze                       allmodconfig    gcc-14.2.0
+microblaze                        allnoconfig    gcc-14.2.0
+microblaze                       allyesconfig    gcc-14.2.0
+mips                              allnoconfig    gcc-14.2.0
+mips                         db1xxx_defconfig    clang-20
+mips                          eyeq6_defconfig    clang-14
+mips                           ip27_defconfig    gcc-14.2.0
+mips                           ip32_defconfig    clang-20
+mips                     loongson1b_defconfig    clang-15
+nios2                             allnoconfig    gcc-14.2.0
+openrisc                          allnoconfig    gcc-14.2.0
+openrisc                         allyesconfig    gcc-14.2.0
+parisc                           allmodconfig    gcc-14.2.0
+parisc                            allnoconfig    gcc-14.2.0
+parisc                           allyesconfig    gcc-14.2.0
+powerpc                          allmodconfig    gcc-14.2.0
+powerpc                           allnoconfig    gcc-14.2.0
+powerpc                          allyesconfig    clang-20
+powerpc                          allyesconfig    gcc-14.2.0
+powerpc                     asp8347_defconfig    clang-17
+powerpc                   currituck_defconfig    clang-20
+powerpc                    gamecube_defconfig    clang-20
+powerpc                    ge_imp3a_defconfig    clang-20
+powerpc                    ge_imp3a_defconfig    gcc-14.2.0
+powerpc                  iss476-smp_defconfig    gcc-14.2.0
+powerpc                   lite5200b_defconfig    clang-20
+powerpc                 mpc837x_rdb_defconfig    gcc-14.2.0
+powerpc                  mpc866_ads_defconfig    clang-20
+powerpc                      pasemi_defconfig    clang-20
+powerpc                     ppa8548_defconfig    gcc-14.2.0
+powerpc                      ppc64e_defconfig    clang-20
+powerpc                      ppc6xx_defconfig    gcc-14.2.0
+powerpc                         ps3_defconfig    gcc-14.2.0
+powerpc64                        alldefconfig    clang-20
+riscv                            allmodconfig    clang-20
+riscv                            allmodconfig    gcc-14.2.0
+riscv                             allnoconfig    gcc-14.2.0
+riscv                            allyesconfig    clang-20
+riscv                            allyesconfig    gcc-14.2.0
+s390                             alldefconfig    gcc-14.2.0
+s390                             allmodconfig    clang-20
+s390                             allmodconfig    gcc-14.2.0
+s390                              allnoconfig    clang-20
+s390                             allyesconfig    gcc-14.2.0
+s390                       zfcpdump_defconfig    clang-20
+sh                               allmodconfig    gcc-14.2.0
+sh                                allnoconfig    gcc-14.2.0
+sh                               allyesconfig    gcc-14.2.0
+sh                         apsh4a3a_defconfig    clang-20
+sh                         ecovec24_defconfig    clang-20
+sh                        edosk7705_defconfig    gcc-14.2.0
+sh                             espt_defconfig    gcc-14.2.0
+sh                            hp6xx_defconfig    gcc-14.2.0
+sh                 kfr2r09-romimage_defconfig    clang-20
+sh                 kfr2r09-romimage_defconfig    gcc-14.2.0
+sh                          kfr2r09_defconfig    gcc-14.2.0
+sh                          r7785rp_defconfig    gcc-14.2.0
+sh                           se7619_defconfig    gcc-14.2.0
+sh                   sh7724_generic_defconfig    gcc-14.2.0
+sh                             shx3_defconfig    gcc-14.2.0
+sparc                            alldefconfig    gcc-14.2.0
+sparc                            allmodconfig    gcc-14.2.0
+sparc                             allnoconfig    gcc-14.2.0
+um                               allmodconfig    clang-20
+um                                allnoconfig    clang-17
+um                               allyesconfig    clang-20
+um                               allyesconfig    gcc-12
+x86_64      buildonly-randconfig-001-20241201    clang-19
+x86_64      buildonly-randconfig-002-20241201    gcc-12
+x86_64      buildonly-randconfig-003-20241201    gcc-12
+x86_64      buildonly-randconfig-004-20241201    clang-19
+x86_64      buildonly-randconfig-005-20241201    clang-19
+x86_64      buildonly-randconfig-006-20241201    gcc-12
+xtensa                            allnoconfig    gcc-14.2.0
+xtensa                  audio_kc705_defconfig    gcc-14.2.0
+xtensa                       common_defconfig    clang-20
+xtensa                  nommu_kc705_defconfig    clang-20
 
-"Bit 5: This bit is the Transmitter Holding Register Empty (THRE)
-indicator. Bit 5 indicates that the UART is ready to
-accept a new character for transmission. In addition, this bit
-causes the UART to issue an interrupt to the CPU when the
-Transmit Holding Register Empty Interrupt enable is set
-high. The THRE bit is set to a logic 1 when a character is
-transferred from the Transmitter Holding Register into the
-Transmitter Shift Register. The bit is reset to logic 0 concur-
-rently with the loading of the Transmitter Holding Register
-by the CPU. In the FIFO mode this bit is set when the XMIT
-FIFO is empty; it is cleared when at least 1 byte is written to
-the XMIT FIFO."
-
-It further documents polled operation for THRE[2]:
-
-"LSR5 will indicate when the XMIT FIFO is empty."
-
-and provides further details as to the transmit FIFO[3]:
-
-"The NS16550A transmitter optimizes the CPU/UART data
-transaction via the following features:
-
-"1. The depth of the Transmitter (Tx) FIFO ensures that as
-    many as 16 characters can be transferred when the
-    CPU services the Tx interrupt. Once again, this effec-
-    tively buffers the CPU transfer rate from the serial data
-    rate.
-
-"2. The Transmitter (Tx) FIFO is similar in structure to
-    FIFOs the user may have previously set up in RAM. The
-    Tx depth allows the CPU to load 16 characters each
-    time it switches context to the service routine. This re-
-    duces the impact of the CPU time lost in context switch-
-    ing.
-
-"3. Since a time lag in servicing an asynchronous transmit-
-    ter usually has no penalty, CPU latency time is of no
-    concern to transmitter operation."
-
-This design choice may result in "choppy" transmission due to the transmit 
-handler invocation latency, but as noted above it is intentional.  DMA can 
-be used with the NS16550A if it is required to avoid this issue, and later 
-compatible UART designs such as the 650 give more flexibility as to the Tx 
-FIFO fill level trigger threshold.
-
-References:
-
-[1] National Semiconductor Corporation, "Microcommunication Elements 
-    Databook, 1987 Edition", "NS16550A Universal Asynchronous 
-    Receiver/Transmitter with FIFOs", Section 8.4 "LINE STATUS REGISTER", 
-    p. 2-73
-
-[2] same, Section 8.12 "FIFO POLLED MODE OPERATION", p. 2-75
-
-[3] same, Martin S. Michael, Daniel G. Durich, Application Note 491, "The 
-    NS 16550A: UART Design and Application Considerations", Section 1.0 
-    "Design Considerations and Operation of the New UART Features", p. 5-4
-
-Available from: 
-<http://bitsavers.org/components/national/_dataBooks/1987_National_Microcommunications_Elements_Data_Book.pdf>.
-
- HTH,
-
-  Maciej
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
