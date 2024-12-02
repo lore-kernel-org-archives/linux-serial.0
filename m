@@ -1,221 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6CEB320F
-	for <linux-serial@vger.kernel.org>; Sun,  1 Dec 2024 04:06:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2015017E;
+	Mon,  2 Dec 2024 06:12:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733025963; cv=none; b=X+SXRmITsTMGOdSEw8g8Ly/M4WF8EFB6HDmeiTR85aHFn4TmxHQ5fR1xC4zpU8kf0JzXKpPlZQIDKgpMgx16/Zq5Ml4E/GM+D4yqAeRs39bAnSdbM/v/wp48/0CxGXC5qZAHK7GPfYMcCxNU74jWHbakF/aYclJqotiIHPK94w4=
+	t=1733119937; cv=none; b=AhNoHxy7IbcYxtCNXuBqkFSGy/YdfyfiNDWzzwtcfumtYnEUFRST/URztocRCPOlwPgdAMLzVz8/5H4nAYBr1/6ePL8RLUvrbcRF1jXNfroUqQ8KHcp2yIhPf09HGRPzsl0hr48E9sTKxg0jsWdNPa22UWwtWKIsWY46837DtI0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733025963; c=relaxed/simple;
-	bh=Kv+JbSr3aNlPrfM4ERsQxyXSiK8g1XFugwD2ItmYENM=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=r4QiA9PX7nny1vxg+1vcHjRV/r2+xnbfcl03aWv3ljEOrHhlxbDNeWYkhqfUjaRi07tMC/A6XwGRnAUemeBkJgSg8UOYfLX6C8mL/MhcJJOsME19YIxFwRAgbJHhpHx0SxhpgoeLzuF5XukWfLjPi0MoGN+GTvBofuG6rdwdSoM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cfJf/OTp; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1733119937; c=relaxed/simple;
+	bh=av2/qGxfETVVpYWjdPwqPFx/7HMHwabf8lIR+vBntXw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=enAPSygDprLujgAFEqW6whZUfhMdl7f9rjs5S8A5M93WuTCjqWiZpaS6jutvnt4xYVjeJOQ7F2HFbp92xoTdIpOPM8rSW7bPW9kS5g6ZbEDhycHyzd249TIj3QyOtRVr4K2cBmYzathTapElvL1cZKJsK31hYUDMsaG9q34gzmE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QniMDvTA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cfJf/OTp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1733025962; x=1764561962;
-  h=date:from:to:cc:subject:message-id;
-  bh=Kv+JbSr3aNlPrfM4ERsQxyXSiK8g1XFugwD2ItmYENM=;
-  b=cfJf/OTpqBEc9QodT0TYfKruVaNwCgVSy04SRx+Qo0d0u8Dub7MwrFfH
-   6G5NqV7x4D3gG8aQ4QEV/e8XVCqeSrhsG5WHH64myVK21CL+9YZz16991
-   zHC8oz4ON3FC1BJOgqDJy65pKgtIsbYndDfjr3G/ysufSREFGtYojai1d
-   oJJUf7oR9utwftORRNTRblNOUm/5SwwLTiOQ4tYF7COsH9epfVjo3oKIf
-   3seVHosf4TKMhkhprvdTF2KWqi1qpaPR9AL1rz17isesaG5YoGW/YztN7
-   ZNwnMnWKeLOl3xO7kBw2kvRgrA/hszwX901D2O4i/Uvb9p+9jU+1jLal+
-   g==;
-X-CSE-ConnectionGUID: Ewbc1aSHTjGbZcCEL7Vrwg==
-X-CSE-MsgGUID: 3UjrMOruRJiMq663bQ6IPg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11272"; a="33138076"
-X-IronPort-AV: E=Sophos;i="6.12,199,1728975600"; 
-   d="scan'208";a="33138076"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Nov 2024 20:06:01 -0800
-X-CSE-ConnectionGUID: jYAdqA/6ShyFkgnBHN3/Vg==
-X-CSE-MsgGUID: b7wWgyeSSGeVjU+TguM/Ug==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,199,1728975600"; 
-   d="scan'208";a="123648443"
-Received: from lkp-server02.sh.intel.com (HELO 36a1563c48ff) ([10.239.97.151])
-  by orviesa002.jf.intel.com with ESMTP; 30 Nov 2024 20:06:01 -0800
-Received: from kbuild by 36a1563c48ff with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tHbDZ-0001Dp-2F;
-	Sun, 01 Dec 2024 04:05:57 +0000
-Date: Sun, 01 Dec 2024 12:03:03 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 718632467d88e98816fa01ab12681ef1c2aa56f8
-Message-ID: <202412011253.5jnCafmu-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QniMDvTA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 999D2C4CED2;
+	Mon,  2 Dec 2024 06:12:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733119936;
+	bh=av2/qGxfETVVpYWjdPwqPFx/7HMHwabf8lIR+vBntXw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=QniMDvTA6GB3amtZcVS0cBYMdgTa/XN3jumFMLpoYRgh2uIPL5UR38shdNEQrKHt6
+	 BLKq8Fh1/vfSSzDoHHDe+GpQqECknIG3CcWcCGCSF4ckdl2TzXJovcZkDb+TCsjwMm
+	 XzyquP6Ywr56hEw5d5NrksmBFNbQiWYnwFKS3rplZGVaR/yuVnH881KhniICq4T5Kz
+	 WdVvLyPBNf4xBnQTmR8Z9rFDamGVWmBlrL4OgGKfNl4zxQNIJHWFqm7RvuuUfEcR/r
+	 ruKKELR3s82iqpEORLx5XZ7YLgJGHdal7NXbWPfCwpSfqSGaiE8nBUZtALaqdzRlro
+	 q8UXWaP4A9bkQ==
+Message-ID: <848cbe1c-d84d-4377-8709-bb98d1d83146@kernel.org>
+Date: Mon, 2 Dec 2024 07:12:11 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH tty-next v3 1/6] serial: 8250: Adjust the timeout for FIFO
+ mode
+To: John Ogness <john.ogness@linutronix.de>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Rengarajan S <rengarajan.s@microchip.com>,
+ Jeff Johnson <quic_jjohnson@quicinc.com>,
+ Serge Semin <fancer.lancer@gmail.com>,
+ Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+ Wander Lairson Costa <wander@redhat.com>
+References: <20241025105728.602310-1-john.ogness@linutronix.de>
+ <20241025105728.602310-2-john.ogness@linutronix.de>
+ <837a7ecd-be29-4865-9543-cb6f7e7e46e7@kernel.org>
+ <alpine.DEB.2.21.2410310349450.40463@angie.orcam.me.uk>
+ <2fab2ef8-d0d6-4b94-90b6-7c16641a2f68@kernel.org>
+ <84ldxzccjl.fsf@jogness.linutronix.de>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <84ldxzccjl.fsf@jogness.linutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 718632467d88e98816fa01ab12681ef1c2aa56f8  Revert "serial: sh-sci: Clean sci_ports[0] after at earlycon exit"
+On 04. 11. 24, 15:13, John Ogness wrote:
+> On 2024-11-04, Jiri Slaby <jirislaby@kernel.org> wrote:
+>> Instead of looping fifosize multiplied by random timeout, can we
+>> re-use port->frame_time?
+> 
+> Rather than 10k loops, we could loop
+> 
+> 	(port->frame_time * some_scaled_padding) / 1000
+> 
+> times. The padding is important because we should not timeout in the
+> normal scenario. Perhaps using ~2 as @some_padding. Something like:
+> 
+> 	port->frame_time >> 9
+> 
+> ?
 
-elapsed time: 721m
+No, spell it out as you did above:
+   port->frame_time * 2 / NSEC_PER_USEC
 
-configs tested: 144
-configs skipped: 14
+>>>    The difference between THRE and TEMT is the state of the shift register
+>>> only[2]:
+>>>
+>>> "In the FIFO mode, TEMT is set when the transmitter FIFO and shift
+>>> register are both empty."
+>>
+>> But what's the purpose of spinning _here_? The kernel can run and
+>> FIFO too. Without the kernel waiting for the FIFO.
+>>
+>> If we want to wait for fifo to empty, why not *also* the TSR. Meaning:
+>>
+>> Did you want UART_LSR_TEMT?
+> 
+> Let us assume we have a line with 640 characters and a FIFO of 64
+> bytes. For this line, we must wait for the FIFO to empty 10 times. It is
+> enough to wait for THRE for each of the 64-byte blocks because we are
+> only interested in refilling the FIFO at this point. Only at the very
+> end (in the caller...  serial8250_console_write()) do we need to wait
+> for everything to flush to the wire (TEMT).
+> 
+> By waiting on TEMT for each of the 64-byte blocks, we are waiting longer
+> than necessary. This creates a small window where the FIFO is empty and
+> there is nothing being transmitted.
+> 
+> I did a simple test on my beaglebone-black hardware, sending 100 lines
+> of 924 bytes at 9600 bps. Since my hardware uses a 64-byte FIFO, each
+> line would have 14 such windows.
+> 
+> And indeed, waiting for TEMT rather than only THRE for the 64-byte
+> blocks resulted in an extra 30ms total transfer for all 92400
+> bytes. That is about 20us lost in each window by unnecessarily waiting
+> for TEMT.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Sure -- you still misunderstand me. I am still asking why do you want to 
+wait for the TX machinery at the *end* (for the last 64 B of the 640 B 
+line) of transmission at all? It occurs to me as wasted cycles.
 
-tested configs:
-alpha                             allnoconfig    gcc-14.2.0
-alpha                            allyesconfig    clang-20
-alpha                            allyesconfig    gcc-14.2.0
-arc                              allmodconfig    clang-20
-arc                              allmodconfig    gcc-13.2.0
-arc                               allnoconfig    gcc-13.2.0
-arc                               allnoconfig    gcc-14.2.0
-arc                              allyesconfig    clang-20
-arc                              allyesconfig    gcc-13.2.0
-arc                          axs101_defconfig    gcc-13.2.0
-arc                          axs103_defconfig    gcc-13.2.0
-arc                     nsimosci_hs_defconfig    gcc-13.2.0
-arc                   randconfig-001-20241201    gcc-13.2.0
-arc                   randconfig-002-20241201    gcc-13.2.0
-arc                           tb10x_defconfig    gcc-13.2.0
-arm                              allmodconfig    clang-20
-arm                              allmodconfig    gcc-14.2.0
-arm                               allnoconfig    clang-20
-arm                               allnoconfig    gcc-14.2.0
-arm                              allyesconfig    clang-20
-arm                              allyesconfig    gcc-14.2.0
-arm                        clps711x_defconfig    clang-20
-arm                      footbridge_defconfig    clang-20
-arm                       imx_v4_v5_defconfig    clang-20
-arm                          ixp4xx_defconfig    gcc-14.2.0
-arm                            mmp2_defconfig    gcc-14.2.0
-arm                            mps2_defconfig    clang-20
-arm                        multi_v7_defconfig    clang-20
-arm                           omap1_defconfig    gcc-14.2.0
-arm                   randconfig-001-20241201    clang-20
-arm                   randconfig-002-20241201    gcc-14.2.0
-arm                   randconfig-003-20241201    clang-20
-arm                   randconfig-004-20241201    clang-20
-arm                           sama7_defconfig    clang-20
-arm                        shmobile_defconfig    gcc-14.2.0
-arm                           stm32_defconfig    clang-20
-arm                           sunxi_defconfig    clang-20
-arm                         wpcm450_defconfig    clang-20
-arm64                            allmodconfig    clang-20
-arm64                             allnoconfig    gcc-14.2.0
-arm64                 randconfig-001-20241201    clang-15
-arm64                 randconfig-002-20241201    clang-20
-arm64                 randconfig-003-20241201    gcc-14.2.0
-arm64                 randconfig-004-20241201    clang-20
-csky                              allnoconfig    gcc-14.2.0
-csky                                defconfig    gcc-14.2.0
-hexagon                          allmodconfig    clang-20
-hexagon                           allnoconfig    clang-20
-hexagon                           allnoconfig    gcc-14.2.0
-hexagon                          allyesconfig    clang-20
-i386        buildonly-randconfig-001-20241201    gcc-12
-i386        buildonly-randconfig-002-20241201    clang-19
-i386        buildonly-randconfig-003-20241201    clang-19
-i386        buildonly-randconfig-004-20241201    gcc-12
-i386        buildonly-randconfig-005-20241201    clang-19
-i386        buildonly-randconfig-006-20241201    gcc-12
-loongarch                        allmodconfig    gcc-14.2.0
-loongarch                         allnoconfig    gcc-14.2.0
-loongarch                 loongson3_defconfig    gcc-14.2.0
-m68k                             allmodconfig    gcc-14.2.0
-m68k                              allnoconfig    gcc-14.2.0
-m68k                             allyesconfig    gcc-14.2.0
-m68k                         amcore_defconfig    clang-20
-m68k                       m5249evb_defconfig    gcc-14.2.0
-m68k                        m5407c3_defconfig    clang-20
-m68k                          multi_defconfig    gcc-14.2.0
-m68k                           sun3_defconfig    clang-20
-microblaze                       allmodconfig    gcc-14.2.0
-microblaze                        allnoconfig    gcc-14.2.0
-microblaze                       allyesconfig    gcc-14.2.0
-mips                              allnoconfig    gcc-14.2.0
-mips                         db1xxx_defconfig    clang-20
-mips                          eyeq6_defconfig    clang-14
-mips                           ip27_defconfig    gcc-14.2.0
-mips                           ip32_defconfig    clang-20
-mips                     loongson1b_defconfig    clang-15
-nios2                             allnoconfig    gcc-14.2.0
-openrisc                          allnoconfig    gcc-14.2.0
-openrisc                         allyesconfig    gcc-14.2.0
-parisc                           allmodconfig    gcc-14.2.0
-parisc                            allnoconfig    gcc-14.2.0
-parisc                           allyesconfig    gcc-14.2.0
-powerpc                          allmodconfig    gcc-14.2.0
-powerpc                           allnoconfig    gcc-14.2.0
-powerpc                          allyesconfig    clang-20
-powerpc                          allyesconfig    gcc-14.2.0
-powerpc                     asp8347_defconfig    clang-17
-powerpc                   currituck_defconfig    clang-20
-powerpc                    gamecube_defconfig    clang-20
-powerpc                    ge_imp3a_defconfig    clang-20
-powerpc                    ge_imp3a_defconfig    gcc-14.2.0
-powerpc                  iss476-smp_defconfig    gcc-14.2.0
-powerpc                   lite5200b_defconfig    clang-20
-powerpc                 mpc837x_rdb_defconfig    gcc-14.2.0
-powerpc                  mpc866_ads_defconfig    clang-20
-powerpc                      pasemi_defconfig    clang-20
-powerpc                     ppa8548_defconfig    gcc-14.2.0
-powerpc                      ppc64e_defconfig    clang-20
-powerpc                      ppc6xx_defconfig    gcc-14.2.0
-powerpc                         ps3_defconfig    gcc-14.2.0
-powerpc64                        alldefconfig    clang-20
-riscv                            allmodconfig    clang-20
-riscv                            allmodconfig    gcc-14.2.0
-riscv                             allnoconfig    gcc-14.2.0
-riscv                            allyesconfig    clang-20
-riscv                            allyesconfig    gcc-14.2.0
-s390                             alldefconfig    gcc-14.2.0
-s390                             allmodconfig    clang-20
-s390                             allmodconfig    gcc-14.2.0
-s390                              allnoconfig    clang-20
-s390                             allyesconfig    gcc-14.2.0
-s390                       zfcpdump_defconfig    clang-20
-sh                               allmodconfig    gcc-14.2.0
-sh                                allnoconfig    gcc-14.2.0
-sh                               allyesconfig    gcc-14.2.0
-sh                         apsh4a3a_defconfig    clang-20
-sh                         ecovec24_defconfig    clang-20
-sh                        edosk7705_defconfig    gcc-14.2.0
-sh                             espt_defconfig    gcc-14.2.0
-sh                            hp6xx_defconfig    gcc-14.2.0
-sh                 kfr2r09-romimage_defconfig    clang-20
-sh                 kfr2r09-romimage_defconfig    gcc-14.2.0
-sh                          kfr2r09_defconfig    gcc-14.2.0
-sh                          r7785rp_defconfig    gcc-14.2.0
-sh                           se7619_defconfig    gcc-14.2.0
-sh                   sh7724_generic_defconfig    gcc-14.2.0
-sh                             shx3_defconfig    gcc-14.2.0
-sparc                            alldefconfig    gcc-14.2.0
-sparc                            allmodconfig    gcc-14.2.0
-sparc                             allnoconfig    gcc-14.2.0
-um                               allmodconfig    clang-20
-um                                allnoconfig    clang-17
-um                               allyesconfig    clang-20
-um                               allyesconfig    gcc-12
-x86_64      buildonly-randconfig-001-20241201    clang-19
-x86_64      buildonly-randconfig-002-20241201    gcc-12
-x86_64      buildonly-randconfig-003-20241201    gcc-12
-x86_64      buildonly-randconfig-004-20241201    clang-19
-x86_64      buildonly-randconfig-005-20241201    clang-19
-x86_64      buildonly-randconfig-006-20241201    gcc-12
-xtensa                            allnoconfig    gcc-14.2.0
-xtensa                  audio_kc705_defconfig    gcc-14.2.0
-xtensa                       common_defconfig    clang-20
-xtensa                  nommu_kc705_defconfig    clang-20
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+thanks,
+-- 
+js
+suse labs
