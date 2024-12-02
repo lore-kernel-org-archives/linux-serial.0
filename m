@@ -1,166 +1,309 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2015017E;
-	Mon,  2 Dec 2024 06:12:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE4D11FA167;
+	Mon,  2 Dec 2024 10:39:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.240
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733119937; cv=none; b=AhNoHxy7IbcYxtCNXuBqkFSGy/YdfyfiNDWzzwtcfumtYnEUFRST/URztocRCPOlwPgdAMLzVz8/5H4nAYBr1/6ePL8RLUvrbcRF1jXNfroUqQ8KHcp2yIhPf09HGRPzsl0hr48E9sTKxg0jsWdNPa22UWwtWKIsWY46837DtI0=
+	t=1733135995; cv=none; b=rBau1dFDmTnQbbcARXYwn02b6S/dFxivptj4p4x+KkrOTaOh7PipZJ3rSEXpopTPKNG7lA89RQY+fVTb4nlNGu7fpsla0ztVKKB3oPoK5aA69bq7M5Z/CsRGpAv3PC223kR4g9aJ+5rO9kdmN2hug3HARIc+eD4QVJlQAAlOu/A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733119937; c=relaxed/simple;
-	bh=av2/qGxfETVVpYWjdPwqPFx/7HMHwabf8lIR+vBntXw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=enAPSygDprLujgAFEqW6whZUfhMdl7f9rjs5S8A5M93WuTCjqWiZpaS6jutvnt4xYVjeJOQ7F2HFbp92xoTdIpOPM8rSW7bPW9kS5g6ZbEDhycHyzd249TIj3QyOtRVr4K2cBmYzathTapElvL1cZKJsK31hYUDMsaG9q34gzmE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QniMDvTA; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1733135995; c=relaxed/simple;
+	bh=eK6yjxsDp6WwhycvLzAI+Os6thQ0t/rKpZCVkatl/kk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Q992UL1krNT2E/K76tj3LFLYKiiVvLu2w4n9/ZLY/5YcaUDH2Nl6NRZFYDoDkjufrJgWIrLJW67lhKtstFKUKrIEMcW+3sb8cwvLzA6ns0EcH7Cugg3GlxchGz1Dx9A6cdWp7kyNyIpEFnMt8LEm4VSt3x5jacmQAfni91JsS/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yoseli.org; spf=none smtp.mailfrom=yoseli.org; dkim=pass (2048-bit key) header.d=yoseli.org header.i=@yoseli.org header.b=WA6WwHq2; arc=none smtp.client-ip=217.70.178.240
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yoseli.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=yoseli.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QniMDvTA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 999D2C4CED2;
-	Mon,  2 Dec 2024 06:12:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733119936;
-	bh=av2/qGxfETVVpYWjdPwqPFx/7HMHwabf8lIR+vBntXw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=QniMDvTA6GB3amtZcVS0cBYMdgTa/XN3jumFMLpoYRgh2uIPL5UR38shdNEQrKHt6
-	 BLKq8Fh1/vfSSzDoHHDe+GpQqECknIG3CcWcCGCSF4ckdl2TzXJovcZkDb+TCsjwMm
-	 XzyquP6Ywr56hEw5d5NrksmBFNbQiWYnwFKS3rplZGVaR/yuVnH881KhniICq4T5Kz
-	 WdVvLyPBNf4xBnQTmR8Z9rFDamGVWmBlrL4OgGKfNl4zxQNIJHWFqm7RvuuUfEcR/r
-	 ruKKELR3s82iqpEORLx5XZ7YLgJGHdal7NXbWPfCwpSfqSGaiE8nBUZtALaqdzRlro
-	 q8UXWaP4A9bkQ==
-Message-ID: <848cbe1c-d84d-4377-8709-bb98d1d83146@kernel.org>
-Date: Mon, 2 Dec 2024 07:12:11 +0100
+	dkim=pass (2048-bit key) header.d=yoseli.org header.i=@yoseli.org header.b="WA6WwHq2"
+Received: from relay9-d.mail.gandi.net (unknown [217.70.183.199])
+	by mslow1.mail.gandi.net (Postfix) with ESMTP id 706E9C2164;
+	Mon,  2 Dec 2024 10:34:31 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 66A5FFF806;
+	Mon,  2 Dec 2024 10:34:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yoseli.org; s=gm1;
+	t=1733135663;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=ztHX/ZoXirD5Kwovsqs5OlEVZDsoMYIef909rL/emsY=;
+	b=WA6WwHq2Mm8ChwQDDMNvUQ7sRyt0VyTLOPMiu0PMpEifDUXMlX3vpD4XL18kFry79JEP8G
+	g2QOPe5+8IV2hqunDDkxLPW7vt8QmZlZkWfs5isiURY10+476/cM3gynYiCo5ptuPOoQRo
+	DVuli/nhCV3waV5kgn5sc8rBGdE7ER/FE6Q8/ZvT4yEs2xKT3AarbBRvZ8Ftq5Y77qEd6s
+	dHlnj2ad8wqPK08FoKc1atxakoyGhVaGdkAWLAvaYM14T7BXC6aztKDMoGhKSEB5e8zlaF
+	OUvjYvKYoQm8jriJrZgafjxjNvOmLd0/OVdjfGaINrEZ3TOr1XRfED1bQlmuIg==
+From: Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
+Date: Mon, 02 Dec 2024 11:34:18 +0100
+Subject: [PATCH] m68k: coldfire: Support resources for UART
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH tty-next v3 1/6] serial: 8250: Adjust the timeout for FIFO
- mode
-To: John Ogness <john.ogness@linutronix.de>,
- "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>,
- Thomas Gleixner <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Rengarajan S <rengarajan.s@microchip.com>,
- Jeff Johnson <quic_jjohnson@quicinc.com>,
- Serge Semin <fancer.lancer@gmail.com>,
- Lino Sanfilippo <l.sanfilippo@kunbus.com>,
- Wander Lairson Costa <wander@redhat.com>
-References: <20241025105728.602310-1-john.ogness@linutronix.de>
- <20241025105728.602310-2-john.ogness@linutronix.de>
- <837a7ecd-be29-4865-9543-cb6f7e7e46e7@kernel.org>
- <alpine.DEB.2.21.2410310349450.40463@angie.orcam.me.uk>
- <2fab2ef8-d0d6-4b94-90b6-7c16641a2f68@kernel.org>
- <84ldxzccjl.fsf@jogness.linutronix.de>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <84ldxzccjl.fsf@jogness.linutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20241202-m5441x_uart_resource-v1-1-6b28cb295fb5@yoseli.org>
+X-B4-Tracking: v=1; b=H4sIACmNTWcC/x2MSQqAMBDAviJztmAXFf2KSNE66hxcmKoIpX+3e
+ AnkkATwyIQe2iwA40Oejj2JzDNw67AvKGhKDqpQRiaIrTRGvvYe+LKM/rjZoahVM+rCyVJXGlJ
+ 6Ms70/tuuj/ED3Tcxj2YAAAA=
+X-Change-ID: 20241202-m5441x_uart_resource-729b30c15363
+To: Greg Ungerer <gerg@linux-m68k.org>, 
+ Geert Uytterhoeven <geert@linux-m68k.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, 
+ Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1733135661; l=6941;
+ i=jeanmichel.hautbois@yoseli.org; s=20240925; h=from:subject:message-id;
+ bh=eK6yjxsDp6WwhycvLzAI+Os6thQ0t/rKpZCVkatl/kk=;
+ b=gEPFeyR1Efxg+G/L3sujYuDGlqvtW69oVm91xDeG5DM4gcJgE7bG5Sh1qC0o8UljZX/QdSXEX
+ Vhi81Ak/Fm0Dkrjf+DxLMRJQmQx7fK0ujm8RkPm+48FNPczDJKAfAkx
+X-Developer-Key: i=jeanmichel.hautbois@yoseli.org; a=ed25519;
+ pk=MsMTVmoV69wLIlSkHlFoACIMVNQFyvJzvsJSQsn/kq4=
+X-GND-Sasl: jeanmichel.hautbois@yoseli.org
 
-On 04. 11. 24, 15:13, John Ogness wrote:
-> On 2024-11-04, Jiri Slaby <jirislaby@kernel.org> wrote:
->> Instead of looping fifosize multiplied by random timeout, can we
->> re-use port->frame_time?
-> 
-> Rather than 10k loops, we could loop
-> 
-> 	(port->frame_time * some_scaled_padding) / 1000
-> 
-> times. The padding is important because we should not timeout in the
-> normal scenario. Perhaps using ~2 as @some_padding. Something like:
-> 
-> 	port->frame_time >> 9
-> 
-> ?
+In order to use the eDMA channels for UART, the mcf_platform_uart needs
+to be changed. Instead of adding another custom member for the
+structure, use a resource tree in a platform_device per UART. It then
+makes it possible to have a device named like "mcfuart.N" with N the
+UART number.
 
-No, spell it out as you did above:
-   port->frame_time * 2 / NSEC_PER_USEC
+Later, adding the dma channel in the mcf tty driver will also be more
+straightfoward.
 
->>>    The difference between THRE and TEMT is the state of the shift register
->>> only[2]:
->>>
->>> "In the FIFO mode, TEMT is set when the transmitter FIFO and shift
->>> register are both empty."
->>
->> But what's the purpose of spinning _here_? The kernel can run and
->> FIFO too. Without the kernel waiting for the FIFO.
->>
->> If we want to wait for fifo to empty, why not *also* the TSR. Meaning:
->>
->> Did you want UART_LSR_TEMT?
-> 
-> Let us assume we have a line with 640 characters and a FIFO of 64
-> bytes. For this line, we must wait for the FIFO to empty 10 times. It is
-> enough to wait for THRE for each of the 64-byte blocks because we are
-> only interested in refilling the FIFO at this point. Only at the very
-> end (in the caller...  serial8250_console_write()) do we need to wait
-> for everything to flush to the wire (TEMT).
-> 
-> By waiting on TEMT for each of the 64-byte blocks, we are waiting longer
-> than necessary. This creates a small window where the FIFO is empty and
-> there is nothing being transmitted.
-> 
-> I did a simple test on my beaglebone-black hardware, sending 100 lines
-> of 924 bytes at 9600 bps. Since my hardware uses a 64-byte FIFO, each
-> line would have 14 such windows.
-> 
-> And indeed, waiting for TEMT rather than only THRE for the 64-byte
-> blocks resulted in an extra 30ms total transfer for all 92400
-> bytes. That is about 20us lost in each window by unnecessarily waiting
-> for TEMT.
+Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
+---
+ arch/m68k/coldfire/device.c | 96 ++++++++++++++-------------------------------
+ drivers/tty/serial/mcf.c    | 69 +++++++++++++++++++-------------
+ 2 files changed, 70 insertions(+), 95 deletions(-)
 
-Sure -- you still misunderstand me. I am still asking why do you want to 
-wait for the TX machinery at the *end* (for the last 64 B of the 640 B 
-line) of transmission at all? It occurs to me as wasted cycles.
+diff --git a/arch/m68k/coldfire/device.c b/arch/m68k/coldfire/device.c
+index b6958ec2a220cf91a78a14fc7fa18749451412f7..fd7d0b0ce7eb2970cb8ffe33589fe8d7e88c268d 100644
+--- a/arch/m68k/coldfire/device.c
++++ b/arch/m68k/coldfire/device.c
+@@ -24,73 +24,35 @@
+ #include <linux/platform_data/dma-mcf-edma.h>
+ #include <linux/platform_data/mmc-esdhc-mcf.h>
+ 
+-/*
+- *	All current ColdFire parts contain from 2, 3, 4 or 10 UARTS.
+- */
+-static struct mcf_platform_uart mcf_uart_platform_data[] = {
+-	{
+-		.mapbase	= MCFUART_BASE0,
+-		.irq		= MCF_IRQ_UART0,
+-	},
+-	{
+-		.mapbase	= MCFUART_BASE1,
+-		.irq		= MCF_IRQ_UART1,
+-	},
+-#ifdef MCFUART_BASE2
+-	{
+-		.mapbase	= MCFUART_BASE2,
+-		.irq		= MCF_IRQ_UART2,
+-	},
+-#endif
+-#ifdef MCFUART_BASE3
+-	{
+-		.mapbase	= MCFUART_BASE3,
+-		.irq		= MCF_IRQ_UART3,
+-	},
+-#endif
+-#ifdef MCFUART_BASE4
+-	{
+-		.mapbase	= MCFUART_BASE4,
+-		.irq		= MCF_IRQ_UART4,
+-	},
+-#endif
+-#ifdef MCFUART_BASE5
+-	{
+-		.mapbase	= MCFUART_BASE5,
+-		.irq		= MCF_IRQ_UART5,
+-	},
+-#endif
+-#ifdef MCFUART_BASE6
+-	{
+-		.mapbase	= MCFUART_BASE6,
+-		.irq		= MCF_IRQ_UART6,
+-	},
+-#endif
+-#ifdef MCFUART_BASE7
+-	{
+-		.mapbase	= MCFUART_BASE7,
+-		.irq		= MCF_IRQ_UART7,
++static u64 mcf_uart_mask = DMA_BIT_MASK(32);
++
++static struct resource mcf_uart0_resource[] = {
++	[0] = {
++		.start = MCFUART_BASE0,
++		.end   = MCFUART_BASE0 + 0x3fff,
++		.flags = IORESOURCE_MEM,
+ 	},
+-#endif
+-#ifdef MCFUART_BASE8
+-	{
+-		.mapbase	= MCFUART_BASE8,
+-		.irq		= MCF_IRQ_UART8,
++	[1] = {
++		.start = 2,
++		.end   = 3,
++		.flags = IORESOURCE_DMA,
+ 	},
+-#endif
+-#ifdef MCFUART_BASE9
+-	{
+-		.mapbase	= MCFUART_BASE9,
+-		.irq		= MCF_IRQ_UART9,
++	[2] = {
++		.start = MCF_IRQ_UART0,
++		.end   = MCF_IRQ_UART0,
++		.flags = IORESOURCE_IRQ,
+ 	},
+-#endif
+-	{ },
+ };
+ 
+-static struct platform_device mcf_uart = {
++static struct platform_device mcf_uart0 = {
+ 	.name			= "mcfuart",
+ 	.id			= 0,
+-	.dev.platform_data	= mcf_uart_platform_data,
++	.num_resources = ARRAY_SIZE(mcf_uart0_resource),
++	.resource = mcf_uart0_resource,
++	.dev = {
++		.dma_mask = &mcf_uart_mask,
++		.coherent_dma_mask = DMA_BIT_MASK(32),
++	},
+ };
+ 
+ #ifdef MCFFEC_BASE0
+@@ -485,12 +447,12 @@ static struct platform_device mcf_i2c5 = {
+ static const struct dma_slave_map mcf_edma_map[] = {
+ 	{ "dreq0", "rx-tx", MCF_EDMA_FILTER_PARAM(0) },
+ 	{ "dreq1", "rx-tx", MCF_EDMA_FILTER_PARAM(1) },
+-	{ "uart.0", "rx", MCF_EDMA_FILTER_PARAM(2) },
+-	{ "uart.0", "tx", MCF_EDMA_FILTER_PARAM(3) },
+-	{ "uart.1", "rx", MCF_EDMA_FILTER_PARAM(4) },
+-	{ "uart.1", "tx", MCF_EDMA_FILTER_PARAM(5) },
+-	{ "uart.2", "rx", MCF_EDMA_FILTER_PARAM(6) },
+-	{ "uart.2", "tx", MCF_EDMA_FILTER_PARAM(7) },
++	{ "mcfuart.0", "rx", MCF_EDMA_FILTER_PARAM(2) },
++	{ "mcfuart.0", "tx", MCF_EDMA_FILTER_PARAM(3) },
++	{ "mcfuart.1", "rx", MCF_EDMA_FILTER_PARAM(4) },
++	{ "mcfuart.1", "tx", MCF_EDMA_FILTER_PARAM(5) },
++	{ "mcfuart.2", "rx", MCF_EDMA_FILTER_PARAM(6) },
++	{ "mcfuart.2", "tx", MCF_EDMA_FILTER_PARAM(7) },
+ 	{ "timer0", "rx-tx", MCF_EDMA_FILTER_PARAM(8) },
+ 	{ "timer1", "rx-tx", MCF_EDMA_FILTER_PARAM(9) },
+ 	{ "timer2", "rx-tx", MCF_EDMA_FILTER_PARAM(10) },
+@@ -623,7 +585,7 @@ static struct platform_device mcf_flexcan0 = {
+ #endif /* MCFFLEXCAN_SIZE */
+ 
+ static struct platform_device *mcf_devices[] __initdata = {
+-	&mcf_uart,
++	&mcf_uart0,
+ #ifdef MCFFEC_BASE0
+ 	&mcf_fec0,
+ #endif
+diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
+index 93e7dda4d39acd23daf8c0d4c29ac8d666f263c5..07b8decfdb6005f0265dd130765e45c3fd1715eb 100644
+--- a/drivers/tty/serial/mcf.c
++++ b/drivers/tty/serial/mcf.c
+@@ -570,31 +570,46 @@ static struct uart_driver mcf_driver = {
+ 
+ static int mcf_probe(struct platform_device *pdev)
+ {
+-	struct mcf_platform_uart *platp = dev_get_platdata(&pdev->dev);
+ 	struct uart_port *port;
+-	int i;
+-
+-	for (i = 0; ((i < MCF_MAXPORTS) && (platp[i].mapbase)); i++) {
+-		port = &mcf_ports[i].port;
+-
+-		port->line = i;
+-		port->type = PORT_MCF;
+-		port->mapbase = platp[i].mapbase;
+-		port->membase = (platp[i].membase) ? platp[i].membase :
+-			(unsigned char __iomem *) platp[i].mapbase;
+-		port->dev = &pdev->dev;
+-		port->iotype = SERIAL_IO_MEM;
+-		port->irq = platp[i].irq;
+-		port->uartclk = MCF_BUSCLK;
+-		port->ops = &mcf_uart_ops;
+-		port->flags = UPF_BOOT_AUTOCONF;
+-		port->rs485_config = mcf_config_rs485;
+-		port->rs485_supported = mcf_rs485_supported;
+-		port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
+-
+-		uart_add_one_port(&mcf_driver, port);
++	struct mcf_uart *pp;
++	struct resource *res;
++	void __iomem *base;
++	int id = pdev->id;
++
++	if (id == -1 || id >= MCF_MAXPORTS) {
++		dev_err(&pdev->dev, "uart%d out of range\n",
++			id);
++		return -EINVAL;
+ 	}
+ 
++	port = &mcf_ports[id].port;
++	port->line = id;
++
++	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	if (IS_ERR(base))
++		return PTR_ERR(base);
++
++	port->mapbase = res->start;
++	port->membase = base;
++
++	port->irq = platform_get_irq(pdev, 0);
++	if (port->irq < 0)
++		return port->irq;
++
++	port->type = PORT_MCF;
++	port->dev = &pdev->dev;
++	port->iotype = SERIAL_IO_MEM;
++	port->uartclk = MCF_BUSCLK;
++	port->ops = &mcf_uart_ops;
++	port->flags = UPF_BOOT_AUTOCONF;
++	port->rs485_config = mcf_config_rs485;
++	port->rs485_supported = mcf_rs485_supported;
++	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
++
++	pp = container_of(port, struct mcf_uart, port);
++
++	uart_add_one_port(&mcf_driver, port);
++
+ 	return 0;
+ }
+ 
+@@ -603,13 +618,11 @@ static int mcf_probe(struct platform_device *pdev)
+ static void mcf_remove(struct platform_device *pdev)
+ {
+ 	struct uart_port *port;
+-	int i;
++	int id = pdev->id;
+ 
+-	for (i = 0; (i < MCF_MAXPORTS); i++) {
+-		port = &mcf_ports[i].port;
+-		if (port)
+-			uart_remove_one_port(&mcf_driver, port);
+-	}
++	port = &mcf_ports[id].port;
++	if (port)
++		uart_remove_one_port(&mcf_driver, port);
+ }
+ 
+ /****************************************************************************/
 
-thanks,
+---
+base-commit: e457f18d7f25288d143c1fe024a620d0b15caec1
+change-id: 20241202-m5441x_uart_resource-729b30c15363
+
+Best regards,
 -- 
-js
-suse labs
+Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
+
