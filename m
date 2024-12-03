@@ -1,233 +1,223 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from pv50p00im-zteg10011501.me.com (pv50p00im-zteg10011501.me.com [17.58.6.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A92F91DB940;
-	Mon,  2 Dec 2024 22:53:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E38F31CAB8
+	for <linux-serial@vger.kernel.org>; Tue,  3 Dec 2024 00:34:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=17.58.6.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733180028; cv=none; b=tjw28cjk0yS7xMLjCYepYWY6LU5Ing2EIO1R9f1kfZ8hqXHHX7HGIpU24fvh8vU7dkpbtTz1qTXhJAzK9MenHuzsV1Z7hCUe1JzzVcfsvNjVPDzKji8YpJMUJiXdvubu5K2sFTqIHsqymZHenmTVeCz2IPNAAqtdkxvDiZ+lzfg=
+	t=1733186103; cv=none; b=dzn+We5CRaeCXTFhBYDULVN60V4SNlh/SPYbLc/QFFTKXAresCNhDBjgUqg2ZEYgBk8PEVOAEW7Loux953dN5tmpylfI9Y3YQyKAKz0elXaKX8T8Vyw3CANLqJ+4frNF+F8HgcMffVDK2PZih0WMN3xVm5UJZ+Y1TveDBa54u3g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733180028; c=relaxed/simple;
-	bh=umAtyiEdVDSEwuVpr46VQyUei4fpNCUW6qDeIBUuwB8=;
-	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:MIME-Version:
-	 Content-Type; b=R5QNIwUiStQEJAsS5Hree+nrNL5PAwE1n2bYiXVmohO3pqOJEr8Aan8Y/zX70wI/Mij9Z7ee+IfrRx83cZjEmp3t81E4R4GgG2zXnfAXPnwekfy91A9IQnUhOwzL4X6E5AJmtopTNkbgyAwnDGnENysc/mKGo77Bz4CpINhL0Ys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=cMqdO3vd; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=J6lXaYpf; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1733186103; c=relaxed/simple;
+	bh=90Z3uIVjxiaduJ4fj5p/v/pFRaVs8rKzXxaWEN8s1Fs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=jJLHz+DhdYA44HMsS0SVnwnyf05bn8QaBuf3ot4Jv690B+8otuSqIwIsdzI9jemv6lINn1btfQ7DvhEFbJY03u+wcfSTDOTIkwNelPhxj2yJla+fIJifyiDRITEY0btAHReGgPFbTYLXLcvB8MJ+jq+A08ncfqyFwbJgtm/JyyY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=miqyYlVd; arc=none smtp.client-ip=17.58.6.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="cMqdO3vd";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="J6lXaYpf"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1733180024;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to; bh=Z/7ozj1F9DWdKtUweFnvIkBOQ9IWOLmUOfgEfHrhgB0=;
-	b=cMqdO3vdgSDQRkyM7PWYleXsyFt9/dosXGlh1HhKOWs08QdyNqSt4v+x0/X93u/AEqMCWK
-	8COFJMnMuAVntfoBYAlFoad+6zvUx357b7LwU+HwxRuYC1uK0pxmrlKKRnl09DyFCKyOhz
-	uyeIFypI3UIENid4RhqVQzNHvJuQXUIlpLbHLDwwwJZtZBFNXIfMSl1YmZhXIM/tJx8B5L
-	j48Oe/sswjf4yPm8YE8hQTE+09yJHOApJFw8BdgYxeGYUVWTmeq3+w9cORQy/s+ebEhml+
-	dyr+IfQ+2nRH6e0RgpkEFdM8VpNkt9LyR+BwxOVhlAN/LXh2ta9fxVgDv2HpmA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1733180024;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to; bh=Z/7ozj1F9DWdKtUweFnvIkBOQ9IWOLmUOfgEfHrhgB0=;
-	b=J6lXaYpf8lPziFD4PIC5ZIT1rO4RsdQ0VUpN6X+mg49S/o0Fp9+pVH7JUyEv52NLzToQlU
-	sdJGEHgwdEuQcuDg==
-To: Leonardo Bras <leobras@redhat.com>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>
-Cc: Leonardo Bras <leobras@redhat.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Tony
- Lindgren <tony@atomide.com>, John Ogness <john.ogness@linutronix.de>, Ilpo
- =?utf-8?Q?J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, Uwe
- =?utf-8?Q?Kleine-K=C3=B6nig?=
- <u.kleine-koenig@pengutronix.de>, Florian Fainelli
- <florian.fainelli@broadcom.com>, Shanker Donthineni
- <sdonthineni@nvidia.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/4] irq: Introduce IRQ_HANDLED_MANY
-In-Reply-To: <ZzvmvBdqJpAyUicm@LeoBras>
-Date: Mon, 02 Dec 2024 23:53:43 +0100
-Message-ID: <87ed2pvgqw.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="miqyYlVd"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
+	s=1a1hai; t=1733186099;
+	bh=oHbx7nufqBC9FciDzS/LGxt7hmN8dQX6iuRN6cbwUA4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:
+	 x-icloud-hme;
+	b=miqyYlVd243flQ1IvVsliQiE9DHrrSD+z1j3Ao2U3BsVp7icRgsik+yX27rSCj4D+
+	 T5K/safPmJG6H2G4WE9j7bBQvaFexypWm7FZEDou1MHIH9tDRRWMiQ1UPriELs/+hg
+	 sXJNUkBBU1moy8uzw4v/v66n2uZ4nRbGFXnHbTcyy0JERpSfQmvHQ8NAx4kDoEqPtw
+	 K44qvDlYPQIBfuW/hOl+sPtWJcXOrD96VbESU02KGCiiJXJdFSzYBJ54ViTlBPnRB9
+	 QOAY9cdzyUWJL5EMG594jIK63Bf2SXcNzUNd7nw2qi11pPaZME4OnmSK9qWoRG15E/
+	 2icgiJHx3EH4g==
+Received: from [192.168.1.26] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+	by pv50p00im-zteg10011501.me.com (Postfix) with ESMTPSA id A517C4A0115;
+	Tue,  3 Dec 2024 00:34:38 +0000 (UTC)
+From: Zijun Hu <zijun_hu@icloud.com>
+Subject: [PATCH v2 00/32] driver core: Constify API device_find_child() and
+ adapt for various existing usages
+Date: Tue, 03 Dec 2024 08:33:22 +0800
+Message-Id: <20241203-const_dfc_done-v2-0-7436a98c497f@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIANJRTmcC/2XMQQ6CMBCF4auQWVvTFozgynsYQsp0KrOwxRaJh
+ vTuVrYu/5e8b4NEkSnBpdog0sqJgy+hDxXgZPydBNvSoKVulJZKYPBpGazDwQZPwhjCs6J6HMl
+ AOc2RHL938NaXnjgtIX52f1W/dadkq/6oVQkpOtueqHZdU+N4fb4Y2eMRwwP6nPMXYHxV6a4AA
+ AA=
+X-Change-ID: 20241201-const_dfc_done-aaec71e3bbea
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Chun-Kuang Hu <chunkuang.hu@kernel.org>, 
+ Philipp Zabel <p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>, 
+ Simona Vetter <simona@ffwll.ch>, Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>, 
+ Martin Tuma <martin.tuma@digiteqautomotive.com>, 
+ Mauro Carvalho Chehab <mchehab@kernel.org>, 
+ Andreas Noever <andreas.noever@gmail.com>, 
+ Michael Jamet <michael.jamet@intel.com>, 
+ Mika Westerberg <mika.westerberg@linux.intel.com>, 
+ Yehezkel Bernat <YehezkelShB@gmail.com>, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, Andrew Lunn <andrew@lunn.ch>, 
+ Vladimir Oltean <olteanv@gmail.com>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+ Simon Horman <horms@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, 
+ Dan Williams <dan.j.williams@intel.com>, 
+ Vishal Verma <vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>, 
+ Ira Weiny <ira.weiny@intel.com>, Takashi Sakamoto <o-takashi@sakamocchi.jp>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>, 
+ Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>, 
+ Mike Christie <michael.christie@oracle.com>, 
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
+ "Martin K. Petersen" <martin.petersen@oracle.com>, 
+ Nilesh Javali <njavali@marvell.com>, 
+ Manish Rangankar <mrangankar@marvell.com>, 
+ GR-QLogic-Storage-Upstream@marvell.com, Davidlohr Bueso <dave@stgolabs.net>, 
+ Jonathan Cameron <jonathan.cameron@huawei.com>, 
+ Alison Schofield <alison.schofield@intel.com>, 
+ Andreas Larsson <andreas@gaisler.com>, Stuart Yoder <stuyoder@gmail.com>, 
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, Jens Axboe <axboe@kernel.dk>, 
+ Sudeep Holla <sudeep.holla@arm.com>, 
+ Cristian Marussi <cristian.marussi@arm.com>, 
+ Ard Biesheuvel <ardb@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+ Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Zijun Hu <zijun_hu@icloud.com>, linux-kernel@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org, 
+ linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org, 
+ linux-media@vger.kernel.org, linux-usb@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, netdev@vger.kernel.org, 
+ linux-pwm@vger.kernel.org, nvdimm@lists.linux.dev, 
+ linux1394-devel@lists.sourceforge.net, linux-serial@vger.kernel.org, 
+ linux-sound@vger.kernel.org, open-iscsi@googlegroups.com, 
+ linux-scsi@vger.kernel.org, linux-cxl@vger.kernel.org, 
+ sparclinux@vger.kernel.org, linux-block@vger.kernel.org, 
+ arm-scmi@vger.kernel.org, linux-efi@vger.kernel.org, 
+ linux-remoteproc@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
+X-Mailer: b4 0.14.2
+X-Proofpoint-GUID: cTyu1VL48UqVhY7zPwUQPPYeAfZYowdo
+X-Proofpoint-ORIG-GUID: cTyu1VL48UqVhY7zPwUQPPYeAfZYowdo
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2024-12-02_14,2024-12-02_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0
+ mlxlogscore=999 mlxscore=0 spamscore=0 suspectscore=0 malwarescore=0
+ clxscore=1011 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2308100000 definitions=main-2412030002
+X-Apple-Remote-Links: v=1;h=KCk=;charset=UTF-8
 
-On Mon, Nov 18 2024 at 22:15, Leonardo Bras wrote:
-> On Thu, Nov 14, 2024 at 09:50:36AM +0200, Andy Shevchenko wrote:
->> - the IRQ core disables IRQ while handling an IRQ number in question;
->
-> Not necessarily:
-> When on irqs are force-threaded, only a quick handler is called, returning 
-> IRQ_WAKE_THREAD, which is supposed to wake up the handler thread.
->
->   * @IRQ_WAKE_THREAD:   handler requests to wake the handler thread
->
-> In this case (which is what I am dealing with), the actual handler will run 
-> in thread context (which I suppose don't disable IRQ for sched-out 
-> purposes).
+This patch series is to constify the following API:
+struct device *device_find_child(struct device *dev, void *data,
+		int (*match)(struct device *dev, void *data));
+To :
+struct device *device_find_child(struct device *dev, const void *data,
+				 device_match_t match);
+typedef int (*device_match_t)(struct device *dev, const void *data);
 
-Let's talk about the disable irq concepts here. There are 3 distinct variants:
+Why to constify the API?
 
-  1) Disable interrupts on the local CPU: local_irq_disable/save().
+- Protect caller's match data @*data which is for comparison and lookup
+  and the API does not actually need to modify @*data.
 
-     This only prevents the CPU from handling a pending interrupt,
-     but does not prevent new interrupts from being marked pending
-     in the interrupt controller.
+- Make the API's parameters (@match)() and @data have the same type as
+  all of other device finding APIs (bus|class|driver)_find_device().
 
-  2) Disable interrupts in the interrupt controller
+- All kinds of existing device matching functions can be directly taken
+  as the API's argument, they were exported by driver core.
 
-     disable_irq*() variants handle that. They come with two
-     flavors: LAZY and UNLAZY
+How to constify the API?
 
-     LAZY does not mask the interrupt line right away. It only is masked
-     when an interrupt arrives while the line is marked "disabled". This
-     then sets the PENDING bit, which in turn causes a replay of the
-     interrupt once enable_irq() is bringing the disabled count down to
-     zero. LAZY has two purposes:
+- Now, no (@match)() argument of the API usages is modifying its match
+  data @*data after previous cleanup, so it is easy and safe to make its
+  parameter @data take const void * as type.
 
-       A) Prevent losing edge type interrupts
+- Simplify involved codes further if it is possbile with benefits
+  brought by constifying the API.
 
-       B) Optimization to avoid the maybe costly hardware access
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+---
+Changes in v2:
+- Series v1 have no code review comments and are posted a long time ago, so may ignore differences.
+- Link to v1: https://lore.kernel.org/r/20240811-const_dfc_done-v1-0-9d85e3f943cb@quicinc.com
+- Motivation link: https://lore.kernel.org/lkml/917359cc-a421-41dd-93f4-d28937fe2325@icloud.com
 
-     UNLAZY masks the interrupt right away.
+---
+Zijun Hu (32):
+      driver core: Constify API device_find_child()
+      driver core: Introduce device_match_type() to match device with a device type
+      drm/mediatek: Adapt for constified device_find_child()
+      hwmon: Adapt for constified device_find_child()
+      media: pci: mgb4: Adapt for constified device_find_child()
+      thunderbolt: Adapt for constified device_find_child()
+      gpio: sim: Remove gpio_sim_dev_match_fwnode()
+      net: dsa: Adapt for constified device_find_child()
+      pwm: Adapt for constified device_find_child()
+      nvdimm: Adapt for constified device_find_child()
+      libnvdimm: Simplify nd_namespace_store() implementation
+      firewire: core: Adapt for constified device_find_child()
+      serial: core: Adapt for constified device_find_child()
+      usb: typec: class: Remove both cable_match() and partner_match()
+      usb: typec: class: Adapt for constified device_find_child()
+      slimbus: core: Simplify of_find_slim_device() implementation
+      slimbus: core: Constify slim_eaddr_equal()
+      slimbus: core: Adapt for constified device_find_child()
+      scsi: iscsi: Constify API iscsi_find_flashnode_sess()
+      scsi: qla4xxx: Adapt for constified iscsi_find_flashnode_sess()
+      scsi: iscsi: Adapt for constified device_find_child()
+      cxl/region: Adapt for constified device_find_child()
+      cxl/pmem: Remove match_nvdimm_bridge()
+      cxl/core/pci: Adapt for constified device_find_child()
+      cxl/test: Adapt for constified device_find_child()
+      sparc: vio: Adapt for constified device_find_child()
+      bus: fsl-mc: Adapt for constified device_find_child()
+      block: sunvdc: Adapt for constified device_find_child()
+      firmware: arm_scmi: Adapt for constified device_find_child()
+      efi: dev-path-parser: Adapt for constified device_find_child()
+      rpmsg: core: Adapt for constified device_find_child()
+      driver core: Simplify API device_find_child_by_name() implementation
 
-  3) Disable interrupts at the device level
+ arch/sparc/kernel/vio.c                |  6 +++---
+ drivers/base/core.c                    | 30 ++++++++++--------------------
+ drivers/block/sunvdc.c                 |  6 +++---
+ drivers/bus/fsl-mc/dprc-driver.c       |  6 +++---
+ drivers/cxl/core/pci.c                 |  4 ++--
+ drivers/cxl/core/pmem.c                |  9 +++------
+ drivers/cxl/core/region.c              | 21 ++++++++++++---------
+ drivers/firewire/core-device.c         |  4 ++--
+ drivers/firmware/arm_scmi/bus.c        |  4 ++--
+ drivers/firmware/efi/dev-path-parser.c |  4 ++--
+ drivers/gpio/gpio-sim.c                |  7 +------
+ drivers/gpu/drm/mediatek/mtk_drm_drv.c |  2 +-
+ drivers/hwmon/hwmon.c                  |  2 +-
+ drivers/media/pci/mgb4/mgb4_core.c     |  4 ++--
+ drivers/nvdimm/bus.c                   |  2 +-
+ drivers/nvdimm/claim.c                 |  9 +--------
+ drivers/pwm/core.c                     |  2 +-
+ drivers/rpmsg/rpmsg_core.c             |  4 ++--
+ drivers/scsi/qla4xxx/ql4_os.c          |  3 ++-
+ drivers/scsi/scsi_transport_iscsi.c    | 10 +++++-----
+ drivers/slimbus/core.c                 | 17 +++++------------
+ drivers/thunderbolt/retimer.c          |  2 +-
+ drivers/thunderbolt/xdomain.c          |  2 +-
+ drivers/tty/serial/serial_core.c       |  4 ++--
+ drivers/usb/typec/class.c              | 31 ++++++++++++++-----------------
+ include/linux/device.h                 |  4 ++--
+ include/linux/device/bus.h             |  1 +
+ include/scsi/scsi_transport_iscsi.h    |  4 ++--
+ net/dsa/dsa.c                          |  2 +-
+ tools/testing/cxl/test/cxl.c           |  2 +-
+ 30 files changed, 89 insertions(+), 119 deletions(-)
+---
+base-commit: 40384c840ea1944d7c5a392e8975ed088ecf0b37
+change-id: 20241201-const_dfc_done-aaec71e3bbea
 
-     This prevents the device from raising interrupts.
+Best regards,
+-- 
+Zijun Hu <quic_zijuhu@quicinc.com>
 
-Now there is another twist with force threaded interrupts.
-
-If the interrupt is level triggered the interrupt line is masked in the
-hard interrupt handler and unmasked when the thread returns.
-         
-For edge type interrupts that's handled differently in order to not lose
-an edge. The line is not masked, so that if the device raises an
-interrupt before the threaded handler returns, the threaded handler is
-marked runnable again. That again comes in two flavors:
-
-  1) Non-RT kernel
-
-     That cannot result in a scenario where the force threaded handler
-     loops and interrupts keep arriving at the CPU because the CPU has
-     interrupts disabled across the force threaded handler and at least
-     on x86 and arm64 that's the CPU which is target of the hardware
-     interrupt.
-
-     So at max there can come a few interrupts between the first
-     interrupt and the threaded handler being scheduled in, but I doubt
-     it can be more than three.
-
-  2) RT kernel
-
-     The forced threaded handler runs with CPU interrupts enabled, so
-     when the threaded handler deals with the device, new interrupts can
-     come in at the hardware level and are accounted for, which is what
-     you are trying to address, right?
-
-     So the total amount of TX bytes, i.e. PASS_LIMIT * tx_loadsz,
-     becomes large enough to trigger the irq storm detector, right?
-
-That obviously begs two questions:
-
-  1) Why do you want to deal with this interrupt flood at the storm
-     detector and not at the root cause of the whole thing?
-
-     It does not make any sense to take a gazillion of interrupts for
-     nothing and then work around the resulting detector fallout.
-
-     The obvious adhoc cure is to add this to serial8250_interrupt():
-
-        if (IS_ENABLED(CONFIG_PREEMPT_RT))
-        	disable_irq_nosync(irq);
-                
-        magic_loop();
-
-        if (IS_ENABLED(CONFIG_PREEMPT_RT))
-        	enable_irq(irq);
-
-     Ideally we'd disable interrupt generation in the IER register
-     around the loop, but that's another can of worms as this can't be
-     done easily without holding port lock across the IER disabled
-     section. Also see below.
-
-
-  2) Is the 512 iterations loop (PASS_LIMIT) still appropriate?
-
-     That loop in serial8250_interrupt() looks pretty horrible even on a
-     non-RT kernel with an emulated UART.
-
-     The issue is mostly irrelevant on real hardware as the FIFO writes
-     are faster than the UART can empty the FIFO. So unless there are
-     two FIFO UARTs sharing the same interrupt line _and_ writing
-     large amount of data at the same time the loop will terminate after
-     one write cycle. There won't be an interrupt per TX byte either.
-
-     On emulated hardware this is very different because the write
-     causes a VMEXIT with a full round trip to user space, which
-     consumes the character and immediately raises the TX empty
-     interrupt again because there is no "slow" hardware involved.
-
-     With the default qemu FIFO depth of 16 bytes, this results in up to
-     512 * 16 = 8192 bytes written out with interrupts disabled for one
-     invocation of the interrupt handler (threaded or not)...
-
-     I just traced interrupt entry/exit in a VM and for a file with 256k
-     bytes written to /dev/ttyS0 this results in:
-
-     Interrupts:          35
-     Bytes/Interrupt:  ~7490
-     Tmax:            104725 us
-     Tavg:             96778 us
-
-     So one interrupt handler invocation which writes up to 8k takes
-     roughly 100ms with interrupts disabled...
-
-     Now looking at the host side. For every write to the TX FIFO there
-     are _four_ invocations of kvm_set_irq() originating from kvm_vm_ioctl_irq_line():
-
-      CPU 36/KVM-2063    [097] ..... 1466862.728737: kvm_pio: pio_write at 0x3f8 size 1 count 1 val 0xd 
-      CPU 36/KVM-2063    [097] ..... 1466862.728742: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 36/KVM-2063    [097] ..... 1466862.728749: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 36/KVM-2063    [097] ..... 1466862.728754: kvm_set_irq: gsi 4 level 1 source 0
-      CPU 36/KVM-2063    [097] ..... 1466862.728762: kvm_set_irq: gsi 4 level 1 source 0
-      CPU 36/KVM-2063    [097] ..... 1466862.728783: kvm_pio: pio_write at 0x3f8 size 1 count 1 val 0xa 
-      CPU 36/KVM-2063    [097] ..... 1466862.728787: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 36/KVM-2063    [097] ..... 1466862.728792: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 36/KVM-2063    [097] ..... 1466862.728797: kvm_set_irq: gsi 4 level 1 source 0
-      CPU 36/KVM-2063    [097] ..... 1466862.728809: kvm_set_irq: gsi 4 level 1 source 0
-
-     No idea why this needs four ioctls and not only two, but this
-     clearly demonstrates that each byte written creates an edge
-     interrupt. No surprise that the storm detector triggers on RT. But
-     this also makes it clear why it's a patently bad idea to work
-     around this in the detector...
-
-     Now being "smart" and disabling THRI in the IER before the write
-     loop in serial8250_tx_chars() changes the picture to:
-     
-      CPU 18/KVM-2045    [092] ..... 1466230.357478: kvm_pio: pio_write at 0x3f9 size 1 count 1 val 0x5
-
-      IER.THRI is cleared now so it's expected that nothing fiddles with
-      the interrupt line anymore, right? But ....
-
-      CPU 18/KVM-2045    [092] ..... 1466230.357479: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 18/KVM-2045    [092] ..... 1466230.357481: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 18/KVM-2045    [092] ..... 1466230.357484: kvm_pio: pio_write at 0x3f8 size 1 count 1 val 0x73 
-      CPU 18/KVM-2045    [092] ..... 1466230.357485: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 18/KVM-2045    [092] ..... 1466230.357487: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 18/KVM-2045    [092] ..... 1466230.357489: kvm_set_irq: gsi 4 level 0 source 0
-      CPU 18/KVM-2045    [092] ..... 1466230.357491: kvm_set_irq: gsi 4 level 0 source 0
-      ....
-
-     So every write to the TX FIFO sets the level to 0 four times in a
-     row to not create an edge. That's truly impressive!
-
-Thanks,
-
-        tglx
