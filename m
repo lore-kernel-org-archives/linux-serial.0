@@ -1,66 +1,84 @@
-Received: from cmccmta2.chinamobile.com (cmccmta6.chinamobile.com [111.22.67.139])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDFF61DF997;
-	Tue,  3 Dec 2024 09:54:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.22.67.139
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D50261DDA37;
+	Tue,  3 Dec 2024 10:50:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733219675; cv=none; b=rsu4VTSAkwrB7LPD2jiUtFwEvGWViSmb8JW5DQs0saundmGXJN8hcUq22kOwp5JovCEqyoQMooxdasLMsxgIZw5Edhye5gy+SRfqddXvtt7k7guNlgNWlEp1BcQNPxFEZ4j/lu8sxLz1kP3tCU675oSMBU1ZyAwQOooCRLCNnaw=
+	t=1733223042; cv=none; b=rSAzAdPfieu18j9c3WfgFfSmw/JKnqAqsLGEKHcN/uT6LdVFfBmWAl4HJrr3O7FyS7vmpuhttkv274s078Qh7QaTWuQsntMkVHtD1nBZmljx5zkIyIxMncoouocaohZ0ojxXlRCfdCvqC/CiuNe2rfIqlP/CaRXdqAuV7OCHqFA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733219675; c=relaxed/simple;
-	bh=TwPJesTdogR03ZpiZLNMvWwUYaMAP2evG8yhNNGxTeA=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=pXhCcmVi4qNMW7DkvrcXVz/xIFypzf63OaSHhaxDp89YSIJ6Wm6+uDp8yaXf6SQrwXwbojI49J9NdxPK87jIQ9RGUEhM45lCpMW1QRE41xxJiQ2KTRUpnPgG13ILeCXIcYQzNp+c9ASiaUsG+XGepSTw/V2c5gaWmpM94X0X+hE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com; spf=pass smtp.mailfrom=cmss.chinamobile.com; arc=none smtp.client-ip=111.22.67.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app05-12005 (RichMail) with SMTP id 2ee5674ed555d4e-c1d65;
-	Tue, 03 Dec 2024 17:54:29 +0800 (CST)
-X-RM-TRANSID:2ee5674ed555d4e-c1d65
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from ubuntu.localdomain (unknown[10.55.1.70])
-	by rmsmtp-syy-appsvr08-12008 (RichMail) with SMTP id 2ee8674ed555b7b-274ad;
-	Tue, 03 Dec 2024 17:54:29 +0800 (CST)
-X-RM-TRANSID:2ee8674ed555b7b-274ad
-From: Zhu Jun <zhujun2@cmss.chinamobile.com>
-To: gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	zhujun2@cmss.chinamobile.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] serial: mpc52xx: Fix typo in mpc52xx_uart.c
-Date: Tue,  3 Dec 2024 01:54:28 -0800
-Message-Id: <20241203095428.8559-1-zhujun2@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.17.1
+	s=arc-20240116; t=1733223042; c=relaxed/simple;
+	bh=H+aZeWO1C99Vy3dMeHF6AwCee+MLij92uMHaEAwmYf4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=UGKOSiFiNlfXhVLWWFp78t3kMIs8zVDSXXE5VCgnBw2NlXIobbrHDzIRlJhGUUwF7zQZNiHDOZtSXLni9LlojyJPc3lTqYkvjTsOCHjZsrWKxxka++LEE0PysQoa63DkyQICHhUsIa+bCvojvgEpgHi0qU9KPJ+ztFek+5ONM1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+X-CSE-ConnectionGUID: elaYuPkqQ0+qL09p5QgKYQ==
+X-CSE-MsgGUID: WyWNG/DvSy6bgv8uZrIbGA==
+X-IronPort-AV: E=Sophos;i="6.12,204,1728918000"; 
+   d="scan'208";a="230754406"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 03 Dec 2024 19:50:38 +0900
+Received: from localhost.localdomain (unknown [10.226.93.2])
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 0808D4003FA5;
+	Tue,  3 Dec 2024 19:50:12 +0900 (JST)
+From: Biju Das <biju.das.jz@bp.renesas.com>
+To: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	Biju Das <biju.das.au@gmail.com>,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v2 01/13] dt-bindings: serial: renesas: Document RZ/G3E (r9a09g047) scif
+Date: Tue,  3 Dec 2024 10:49:28 +0000
+Message-ID: <20241203105005.103927-2-biju.das.jz@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20241203105005.103927-1-biju.das.jz@bp.renesas.com>
+References: <20241203105005.103927-1-biju.das.jz@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-The word 'accoding' is wrong, so fix it.
+Document scif bindings for the Renesas RZ/G3E (a.k.a r9a09g047) SoC.
+SCIF interface in Renesas RZ/G3E is similar to the one available in
+RZ/V2H.
 
-Signed-off-by: Zhu Jun <zhujun2@cmss.chinamobile.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
- drivers/tty/serial/mpc52xx_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v1->v2:
+ * Collected Ack from Conor Dooley.
+---
+ Documentation/devicetree/bindings/serial/renesas,scif.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/mpc52xx_uart.c b/drivers/tty/serial/mpc52xx_uart.c
-index f55aa353a..2204cc3e3 100644
---- a/drivers/tty/serial/mpc52xx_uart.c
-+++ b/drivers/tty/serial/mpc52xx_uart.c
-@@ -1621,7 +1621,7 @@ mpc52xx_console_setup(struct console *co, char *options)
- 		 (void *)port->mapbase, port->membase,
- 		 port->irq, port->uartclk);
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+index 51d9fb0f4763..8e82999e6acb 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+@@ -83,6 +83,11 @@ properties:
  
--	/* Setup the port parameters accoding to options */
-+	/* Setup the port parameters according to options */
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 	else
+       - const: renesas,scif-r9a09g057       # RZ/V2H(P)
+ 
++      - items:
++          - enum:
++              - renesas,scif-r9a09g047      # RZ/G3E
++          - const: renesas,scif-r9a09g057   # RZ/V2H fallback
++
+   reg:
+     maxItems: 1
+ 
 -- 
-2.17.1
-
-
+2.43.0
 
