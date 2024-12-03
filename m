@@ -1,106 +1,133 @@
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4E9518BC1D;
-	Tue,  3 Dec 2024 17:02:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AC851F8916
+	for <linux-serial@vger.kernel.org>; Tue,  3 Dec 2024 17:08:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733245334; cv=none; b=aO7JB17vREYaZsO0AuuwaiyRF2e4aJ1D9oajS8BnJ5SOkqiTfqBCK4nIsjC19mjq3ta+g1uDZq6f9GT6j0bTYNKWNjGcjX8l1EiUc6Gf1Au8/DYStiOsq2GAlZNymH2IpA1ItGQeDTeQ5Cjf0qQ7oWJ7uhlyHGpzQhj+Ygnqr1M=
+	t=1733245723; cv=none; b=Ohbc0ks4skO2pZGKf8Q6AvQTE20BysQlxUzP1aR4io8Hd9fQ8XEv9RoOIHrFFaXNPH3VxccyTfKpk8lBIISNZhP6TmY7YyjmyVdxcfMBCJ6SqyzxrLjXbbEIqrYQ9gBVZOIqlKDkggYBK23sWSv1fA+aIS4QhxEZGvawK7cshr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733245334; c=relaxed/simple;
-	bh=tHd1xpF9ReBe59sxkmE3IDuWaO8b9RAA27+1QwWYrVI=;
+	s=arc-20240116; t=1733245723; c=relaxed/simple;
+	bh=NP8cNgL+fyqg8ZjfW3jq6NL7heqoYkWX5tF9ZORhO7s=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cH3grY4smAlEbBcVKbRX6evd7hupQhsjlCTXDvGhVtxFe24xzBWLGaXJ0YDcQmBmtKEKUZjXTKJullFmCNYhfpyiVWXRDQEHhcnWSYCr/ouHFolNWZt8Y4BPB8l6H83LdRAWlg5uJC/IQ1FeusleoEUsnu+ULSa8GOoBj/8dXRY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.160.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	 To:Cc:Content-Type; b=WsfeeIfgDiYp+BjjSM2N3tuTrneJpi8JQmKQ2Dy4BvuWp3evyVvxc235zubxwAcppj2EgMHbgy06bPJ2Ln1DUYqaX+r/Lwlhs1zJMRL94a9PcP7bp4IP+ONJvioGAjMyzvqnW77XlQexP1K/Xf9s6UZiFOYnaucTuWjo9f8d+Ac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mG1Gxp3I; arc=none smtp.client-ip=209.85.160.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-29e2a50586dso2515925fac.0;
-        Tue, 03 Dec 2024 09:02:11 -0800 (PST)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mG1Gxp3I"
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-29e149aff1dso2281829fac.1
+        for <linux-serial@vger.kernel.org>; Tue, 03 Dec 2024 09:08:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1733245721; x=1733850521; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DWZOLcnD848OfgUh4KttNpM7Hk/F3dHoVGRATcyycQg=;
+        b=mG1Gxp3I+51WQRWnSIMM4xamfTrJdFNIBCqp4Zs8iUzG3Lp68Jecb3wAfA88RC0xFZ
+         tag+8inqAaykLGApO1ifrEzRw1BulZKNa/EU5DqIHESqp76IsQBWgwW8UascakucZupe
+         ZtnheAhO+YJh230qtf/pyycP3Vq+EU4K9jij9QGVI7kZejDAApvc5sUWL8/+3V9GWk3I
+         Enfo3YdpvJaAMciSPqDQ/eWs/CWHhOLYHyYE3vrr/JQQhdq3zk+emw5y26IIgydeRVH8
+         IpmZxpNXuKVg16JtENKd9/f5SByOXEC5RGWsu/l4btAFido1t8UN0EeGT8yF33hKgLNJ
+         gaJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733245330; x=1733850130;
+        d=1e100.net; s=20230601; t=1733245721; x=1733850521;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=PKrpmCLU9PNcLqWaiy+hdhFCQ8nXgm75CgKRo23r1dw=;
-        b=WtGRRxFwqJFil+LCzJ/Dh35/zFdx2YKYQ7xBYfTWvkQT1mkG5uvueOyWz79NB+KKNs
-         LMHfC0jxqJONz5EAcnV2758D0s9mBx+n4hWprtmGN+V86+iERBtvxV/+Sly4qUAG5r67
-         S4PCbVRNmROv14NQXN9WZm5jbzF7q+jij0P9uiLHRJ6y8mosWm0SFDhO/cpT0V96q5Cd
-         fS4yHwenTqqp5VF1+ZLmcAvjbN1jDn97eNfNhbg9uKMIXsT2g3/k/zHNKHBWvY9kmTBJ
-         gekiqCFyTVSrKWXY6WzVqZDKC7dZmnYBDR7j8TIAg9cxpfprMw6IckbiPK+jpYMU4KgQ
-         kjnQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUk+AxnAZovy4LZFIYxuY4HPL1KrTQ9gEJMCDRS6Low0dJLQG8HVdz2fpxPulz2tRNY3lqaDhf13GMZTqki7HQCFg==@vger.kernel.org, AJvYcCUt7wteWk8Uz5EdlBnijXE8019vbJdh6lHpFhtlaSojBRG3PPWznP3PfB3Q7q95kVFPer10o6EzRYo=@vger.kernel.org, AJvYcCXRSe5EM/iE2JmYIkBEclFCe8UrGOiVCV/jKNOldXDzJurOpQTyA18rDSKE29fdAYDFtzYrIE+sTkECXgLJ@vger.kernel.org
-X-Gm-Message-State: AOJu0YxX4/jJ+UDGeDnPAyezUyF6Urgxph+413oiru0TV9F8SWh393Cy
-	T1Yxx3jbMaoWfDD+sFBehjLvcSpiWCJvii/hImiOuZhjEcaOEt0RjCcunyKU
-X-Gm-Gg: ASbGnct4Fpssrjwb7mGM/cTN/FuZqbuMOVyfbsWNA+mUghiKda4aYsbl2Lv+jknsngO
-	KGoYjDrLoignRtVHU1kKZHxQeuyw9s8sHHBGuIpuamVpptO25kqbDuRufCctu+js4GFmvD3GxPm
-	lk3eTnCXmECCR0fVbL0RIrYmgqN7nyeflMieaPcgYHuhW8wXqxApUaRTPBNkxwQM+2fRHKKgNJv
-	q5aIjqewP6hye63I6+m47ZJY7bMtCNTenSY7OEy8YSh1vHhpZqxk0F4CYcO8Xt2OKyRnxS3smDL
-	qeXvYhuEiIsa
-X-Google-Smtp-Source: AGHT+IHnDhYCcnhu6oKHnA4ywWogrCGwfCLe5za361VgeZPWxISKd7QzS0VIwlR7svIu7WdGF7VouQ==
-X-Received: by 2002:a05:6871:e7c4:b0:29e:443b:edcd with SMTP id 586e51a60fabf-29e888da8a1mr3693838fac.37.1733245328794;
-        Tue, 03 Dec 2024 09:02:08 -0800 (PST)
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com. [209.85.161.46])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-29de92d8150sm3817050fac.27.2024.12.03.09.02.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Dec 2024 09:02:08 -0800 (PST)
-Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-5f1f81e51b1so2616848eaf.3;
-        Tue, 03 Dec 2024 09:02:08 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUhkfhTr3kfqw6QCwqH6BlYfgO3S7S2cs0Q77lgGqimzYX5st99sxISBqcI0/rmiwVIt7cAuxNWCum5lz3I@vger.kernel.org, AJvYcCV/dm49I2W+a+YJamZkhw8dVO2tDqSv5cR7U2J0kdrSd0gCHtUORg1RIyl8A9LNNgcotuGwlfV5aY8=@vger.kernel.org, AJvYcCXBO8P1KRjrLM5sQBqe0Z80KlS/ckWz2PvHj2jzowmpey0yjNDRIoBxxFsgcUIgXqa9JtiBYahVVuxaMsU9MKMI7w==@vger.kernel.org
-X-Received: by 2002:a05:6358:7a7:b0:1b8:33f2:7c81 with SMTP id
- e5c5f4694b2df-1caeaaa0ed7mr295075555d.8.1733245327728; Tue, 03 Dec 2024
- 09:02:07 -0800 (PST)
+        bh=DWZOLcnD848OfgUh4KttNpM7Hk/F3dHoVGRATcyycQg=;
+        b=B7cEFptaV61QmGLFVHh+a1NYpih3RGbKe+dJztLo7mq6Qvfs80RTz4iz68WeYvFz6y
+         dCn4ytWqcMTX45dCv4LZKf2KWsJtYD0JpzHvkfaXpciRAjWrdswZhmIhut7GvFWEvsHy
+         hDCBB2dxuh6GJytPWdW0PZc5wma2VesKvLXzH5H0cZJ7GzZndXvjLHoj3bV+JHTnTfJA
+         8rg2mQAXVuxQnleXRtAoRREJOoiczeA1mJKauP7dfnvtLH26wMnBKiMdzRKpN9FWT/Tb
+         DXsBBZ3d4qcRbQpIR3IP1H7irXatEmBaAQ26qFK33wfUYHZUbsQsvbiaNVG8xfIZ4nCn
+         qvfw==
+X-Forwarded-Encrypted: i=1; AJvYcCVfeRe0slqhA9KEgxzfH0iUcQJqSMCH1KfmJHmh9fqYar7NYvcnWt7T6iH7BzUoikb9SIMxhphAHDNt7y0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyDXLv9TSJxUaztmGiWRg9y6UqTTLuYXLmNAr0/me8sMZjmBKdg
+	au45xddOrFn9oBNg/6kbW0Hi4hL0CdZ01y2IKADKgUPnDz5MWs5fqIogaTDCjvb8F0y4QS50ZGl
+	OSl61pRGpyTRhpLbVUrimInaoJqhr2B+z
+X-Gm-Gg: ASbGncsyluOa4kqjLdJp7xQ5006+jryWwH7POvpjv3MwbMYNFpiJfGHQ4IHnQuUKBhH
+	t3AIy5qaScjKGK8PnlXz2iONRpVJ7xnxm
+X-Google-Smtp-Source: AGHT+IE6WDtflI7Y5pKiec2ndPVEeQqndW7W+VH04f+4zjguUfSOv5/Z9OXQfLU9TR+Uy7xaCSdUihikMEQqAcA5y98=
+X-Received: by 2002:a05:6870:d205:b0:29e:3132:5897 with SMTP id
+ 586e51a60fabf-29e885a9493mr3244931fac.5.1733245721009; Tue, 03 Dec 2024
+ 09:08:41 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <e097e5c11afe5bd4c01135779c9a40e707ef6374.1733243287.git.geert+renesas@glider.be>
- <b71bb27e-003f-4b5d-8654-c7639b105e29@tuxon.dev>
-In-Reply-To: <b71bb27e-003f-4b5d-8654-c7639b105e29@tuxon.dev>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 3 Dec 2024 18:01:55 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVCQauLFcw+tsoqyXnbYuLhYHfJoeCbq--bBc9fDPjXPQ@mail.gmail.com>
-Message-ID: <CAMuHMdVCQauLFcw+tsoqyXnbYuLhYHfJoeCbq--bBc9fDPjXPQ@mail.gmail.com>
-Subject: Re: [PATCH] serial: sh-sci: Use plain struct copy in early_console_setup()
-To: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, 
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, linux-serial@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, linux-sh@vger.kernel.org
+References: <CAHhAz+jqTxsMipLLnBvRAC8cyN=QhTe5sToh45FN=AyrZ9XnNQ@mail.gmail.com>
+ <2024120338-atrocious-policy-1ce0@gregkh>
+In-Reply-To: <2024120338-atrocious-policy-1ce0@gregkh>
+From: Muni Sekhar <munisekharrms@gmail.com>
+Date: Tue, 3 Dec 2024 22:38:30 +0530
+Message-ID: <CAHhAz+jk5dzBJfEoWYWAf=UKE-43s=qARFX3MkqmMgEAD8zcXg@mail.gmail.com>
+Subject: Re: Query Regarding UART Controller Device Driver in Linux Kernel
+To: Greg KH <greg@kroah.com>
+Cc: kernelnewbies <kernelnewbies@kernelnewbies.org>, 
+	linux-serial <linux-serial@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Claudiu,
-
-On Tue, Dec 3, 2024 at 5:45=E2=80=AFPM Claudiu Beznea <claudiu.beznea@tuxon=
-.dev> wrote:
-> On 03.12.2024 18:30, Geert Uytterhoeven wrote:
-> > Using memcpy() prevents the compiler from doing any checking on the
-> > types of the passed pointer parameters.  Copy the structure using struc=
-t
-> > assignment instead, to increase type-safety.
-> >
-> > No change in generated code on all relevant architectures
-> > (arm/arm64/riscv/sh).
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Tue, Dec 3, 2024 at 7:26=E2=80=AFPM Greg KH <greg@kroah.com> wrote:
 >
-> Not sure, do you think it should carry a fixes tag?
+> On Tue, Dec 03, 2024 at 04:47:31PM +0530, Muni Sekhar wrote:
+> > Dear Linux Kernel Community,
+> >
+> > I hope this email finds you well. I need to work on the high speed
+> > UART controller driver in the Linux kernel, and I have a few questions
+> > that I would appreciate your guidance on:
+> >
+> > I understand that the Linux kernel tree contains multiple source code
+> > files related to UART controller device drivers. Could you please
+> > point me to the relevant source code paths for these drivers?
+>
+> Where have you looked that you did not find them?  (hint,
+> drivers/tty/serial is where they are located...)
+>
+> > What is the maximum supported UART baud rate in the current kernel
+> > driver's supports? For example, if the hardware supports high-speed
+> > baud rates (e.g., 12 Mbps), are there any specific design strategies
+> > or modifications needed in the driver to support such high speeds?
+>
+> Many different uarts support different high-speed rates, it depends on
+> the hardware.  And yes, there are different ways of going that fast, but
+> again, it depends on the hardware.
+>
+> What exact hardware type are you working with?  Does it not already work
+> properly with Linux?
+The hardware I am working with is Xilinx based UART controller with
+DMA capability.
+Can you provide examples of hardware platforms or available UART
+controller drivers that support speeds up to 12 Mbps or higher? What
+specific modifications or configurations are required in the driver to
+enable such high baud rates?
 
-Not really, as it's not a bug fix.
+>
+> > Are there any user-space utilities available for testing UART
+> > interfaces in Linux? If so, could you kindly share details on these
+> > utilities or provide any resources that would be useful for testing?
+>
+> There are loads of them, but it depends on what you want to test.  What
+> exactly are you wishing to test/validate?
+I am looking for test utilities to stress-test high-speed data
+transfers between two systems over UART, checking for correct
+reception of a large data payload. It includes,  transferring data at
+a high baud rate, and verifying its integrity at the receiving end.
+Could you clarify which utilities are commonly used for testing UART
+interfaces at different levels (e.g., performance, stability, data
+integrity, error checking)? Are there any specific utilities or
+resources you would recommend for testing high-speed UARTs?
+>
+> thanks,
+>
+> greg k-h
 
-Gr{oetje,eeting}s,
 
-                        Geert
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
 
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+--
+Thanks,
+Sekhar
