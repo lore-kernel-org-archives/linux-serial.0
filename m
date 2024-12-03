@@ -1,135 +1,90 @@
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B06DD1E2842;
-	Tue,  3 Dec 2024 10:55:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C10021E3787
+	for <linux-serial@vger.kernel.org>; Tue,  3 Dec 2024 11:17:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733223337; cv=none; b=oQ1IBAnNNteIfYI07FtTWsOpjXDivjUFYnMh6bGKB3/UlFn0wJdRgMFpxat2Hns+iEMRquZ3zfQYxG83hYxBNNz83rIns6r0rGI2A1UDbEZq9jZhyFK7UTXAhT8IqYEsEhsE0Ly9a9yeothDHMz39kSc0sxZ8CR1+QIWpSQ2bxw=
+	t=1733224665; cv=none; b=sbVbw7pHNyvNGqfBsqqvdrrtCnIiSPOE3DLvAhMc1l3fHlBe2zB4gvJKMWfxjG1PnuZRMmlPVV/GZCOY9ocYileDknJgPVSDwtYQxn8ip0YV2QETCjTAF54CybxptFxaeLJknZzUlWyNybpyuqvF8ZtDftZuO1G/ko+8+lT7mek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733223337; c=relaxed/simple;
-	bh=Vim/J6LsT0PZqvwl3u3LqVeBurE46EnszYLQJTsBeYI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YdoZ/nbHnHbAzpzrKsUgkP83shfkMfxYM31JBRb2cfPmglviOTyIikTIvc7M1lH5bbNCjl+0nGxHk3fxNM2DUlgf+b4KJIdxtFMS/pRmOrp9b4dgvGHVBsB933fOUV9AnpcqPrDPNUPTjTDqAOoT3HMVb1muwjeZSKMmUhooL9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
-X-CSE-ConnectionGUID: oIfldQERQbeRmEyV1GqSrQ==
-X-CSE-MsgGUID: /IvVzJx4SSCo1h/wlQm+3g==
-X-IronPort-AV: E=Sophos;i="6.12,204,1728918000"; 
-   d="scan'208";a="230754377"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 03 Dec 2024 19:50:26 +0900
-Received: from localhost.localdomain (unknown [10.226.93.2])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id EC5C14003ED9;
-	Tue,  3 Dec 2024 19:50:07 +0900 (JST)
-From: Biju Das <biju.das.jz@bp.renesas.com>
-To: Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: Biju Das <biju.das.jz@bp.renesas.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-clk@vger.kernel.org,
-	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-	Biju Das <biju.das.au@gmail.com>
-Subject: [PATCH v2 00/13] Add support for Renesas RZ/G3E SoC and SMARC-EVK platform
-Date: Tue,  3 Dec 2024 10:49:27 +0000
-Message-ID: <20241203105005.103927-1-biju.das.jz@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
+	s=arc-20240116; t=1733224665; c=relaxed/simple;
+	bh=GL/bQ5r6c9bWsrmtuXgNYYRcGjeSMv6UWL57z9PNotc=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=IvBYUHI6wsEY0bD1ImAfrA+j+OmA2WySj1jQMM2MgnsbGesmNMau87uvJ2lcEBAF0UYz1p2UaTGgNxp/mQw2oth57Gzjo2xWlZMwhKKid0OogSyXFwvjAZLRC2ahVXRSbdd2Swi8N81BDBvNwN/ARMi1L47zwWCIkZiZl97o9Z4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aBQGDoGF; arc=none smtp.client-ip=209.85.161.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aBQGDoGF"
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-5ee8eaa1694so2333296eaf.0
+        for <linux-serial@vger.kernel.org>; Tue, 03 Dec 2024 03:17:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1733224663; x=1733829463; darn=vger.kernel.org;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=sOHbFwHOJSjDxvHaRCi5M6vvE6Bu+ubhCYatqOP8Nfo=;
+        b=aBQGDoGFdF52rzSKdvvN5dE9udlRW5I7bxge3hG6eXzFjHtoWeD8+HhtYnq4yTuuU6
+         1Rt+wSTey+/QKfloc2zgiScydo+cYm6Kb5bIuDmKzBm1ZYTHBFlRPTrJNkg6Y1Ca0BHr
+         SsQGyPOg+l9jwf2mWvFahoCAx0XvftosrMuu1GokKS9dtSqS8gwYEw3yz7zxM4ilrZBy
+         YBeYjCr74ksS8xmkKv9EKmDg6MHWV3BvPsRt9ydvmEBoG2MQa39m94LwQFTlOvVyKKVv
+         gXFBvi6reaS5EpUBrGug6bzH/ugMSzmPZ/Jrol2G926wmZztw813KjBQc4+LX20AWi8z
+         a2Sg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733224663; x=1733829463;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sOHbFwHOJSjDxvHaRCi5M6vvE6Bu+ubhCYatqOP8Nfo=;
+        b=d6xPpTOTOZ6ZyqhtzVafi0f9PR8rV186LxDRevMbtdxQBtXdvKBdjdf2P24slEuO+E
+         wumXC3+kynAwYB440zsb0R18JJXbm25isnNm+lgEQgRkjVD590P17bkoiAsDR5xRSE0B
+         eBIHvhRWnZoKCM2T9kJg4kNimfI5emo7CeHZuLl68/3vmjCEmjoqNPAQPZqBsbr0WedF
+         1J0pQcSou5gA9+reugvU2bpQCm93wCHse6R1I9/s6mc/k4GmQFEF8zByYKhRRxSPLi3X
+         1JBGCqFvTkqKVcHyRapVh5BoFZ2YZ18jY8bL+3SxdCMPKQwuGswMiAo6uUDCEVzAzPQ9
+         L2CQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXLv7c/uFEibKIl9HD4UBUt4Hh92UZh9vTdC7nwRUVz5nq3tHHKkuI69ZiIV9LGj5CscS1/OLNtNlS8rTQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyPKNp1mXyni/NTjD1qR0IYTfLfI8nWcPjXlfNdS9wuVJhICY9N
+	fL/b/kWf6ndf+ITBxt/WI50wbucf06sIInjQeibK+rNeSsv1O642WdJJ1PzM3oBqGwNoZt0Egd9
+	qBtnmu2x9iViPTWlhALNsK0Io/NIHld6j
+X-Gm-Gg: ASbGncsKJodwqep+cwn+8BwY9+62v4tSmV0e1ERVFVczaiftefJoQQHuIksr7IvYdmQ
+	+8Pryp/ZGl+jIcitHc/imZDYx5N/qwOKwSQ==
+X-Google-Smtp-Source: AGHT+IElWcAa+7s/KWOEX3M6NEqSMZjVXetIBogY1FxjCwcQAPiylrbSx/A2sQjsTT5Xo4CHb9y1iXEmZUPWlry08aM=
+X-Received: by 2002:a05:6820:4c87:b0:5e1:ebf1:816d with SMTP id
+ 006d021491bc7-5f25adf69c6mr1076836eaf.4.1733224662708; Tue, 03 Dec 2024
+ 03:17:42 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: Muni Sekhar <munisekharrms@gmail.com>
+Date: Tue, 3 Dec 2024 16:47:31 +0530
+Message-ID: <CAHhAz+jqTxsMipLLnBvRAC8cyN=QhTe5sToh45FN=AyrZ9XnNQ@mail.gmail.com>
+Subject: Query Regarding UART Controller Device Driver in Linux Kernel
+To: kernelnewbies <kernelnewbies@kernelnewbies.org>, 
+	linux-serial <linux-serial@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 
-Hi all,
+Dear Linux Kernel Community,
 
-This patch series adds initial support for the Renesas RZ/G3E SoC and
-RZ/G3E SMARC EVK platform. The RZ/G3E device is a general-purpose
-microprocessor with a quad-core CA-55, single core CM-33, Ethos-U55 NPU
-, Mali-G52 3-D Graphics and other peripherals.
+I hope this email finds you well. I need to work on the high speed
+UART controller driver in the Linux kernel, and I have a few questions
+that I would appreciate your guidance on:
 
-Support for below list of blocks added on SoC DTSI (r9a09g047.dtsi):
- - EXT CLKs
- - 4X CA55
- - SCIF
- - CPG
- - GIC
- - ARMv8 Timer
+I understand that the Linux kernel tree contains multiple source code
+files related to UART controller device drivers. Could you please
+point me to the relevant source code paths for these drivers?
 
-This adds also support for the RZ/G3E SMARC EVK board
-(r9a09g047e57-smarc.dts) and enable the following peripheral:
- - SCIF
+What is the maximum supported UART baud rate in the current kernel
+driver's supports? For example, if the hardware supports high-speed
+baud rates (e.g., 12 Mbps), are there any specific design strategies
+or modifications needed in the driver to support such high speeds?
 
-This patch series depend upon [1]
-[1] https://lore.kernel.org/all/20241202203916.48668-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+Are there any user-space utilities available for testing UART
+interfaces in Linux? If so, could you kindly share details on these
+utilities or provide any resources that would be useful for testing?
 
-Note:
- This patch series gives a linux prompt with initramfs. Later there is a
-plan to add support for SoC Identification using SYSC driver and
-pin controller.
+Thank you for your time and support. I look forward to your response.
 
-v1->v2:
- * Collected tags.
- * Fixed typo "CORE_CLK*"->"CORECLK*" to match with hardware manual in the
-   clk bindings.
- * Added MSTOP data for RZ/V2H CRU IP.
- * Fixed typo clock->clk in error path of rzv2h_cpg_register_mod_clk().
- * Added OPP table support for frequency scaling.
-
-Biju Das (13):
-  dt-bindings: serial: renesas: Document RZ/G3E (r9a09g047) scif
-  dt-bindings: soc: renesas: Document Renesas RZ/G3E SoC variants
-  dt-bindings: soc: renesas: Document RZ/G3E SMARC SoM and Carrier-II
-    EVK
-  dt-bindings: clock: renesas: Document RZ/G3E SoC CPG
-  soc: renesas: Add RZ/G3E (R9A09G047) config option
-  clk: renesas: Add support for RZ/G3E SoC
-  clk: renesas: rzv2h-cpg: Add MSTOP support
-  clk: renesas: r9a09g047: Add CA55 core clocks
-  arm64: dts: renesas: Add initial DTSI for RZ/G3E SoC
-  arm64: dts: renesas: r9a09g047: Add OPP table
-  arm64: dts: renesas: Add initial support for RZ/G3E SMARC SoM
-  arm64: dts: renesas: Add initial device tree for RZ/G3E SMARC EVK
-    board
-  arm64: defconfig: Enable R9A09G047 SoC
-
- .../bindings/clock/renesas,rzv2h-cpg.yaml     |  15 +-
- .../bindings/serial/renesas,scif.yaml         |   5 +
- .../bindings/soc/renesas/renesas.yaml         |  17 ++
- arch/arm64/boot/dts/renesas/Makefile          |   2 +
- arch/arm64/boot/dts/renesas/r9a09g047.dtsi    | 185 ++++++++++++++++++
- arch/arm64/boot/dts/renesas/r9a09g047e37.dtsi |  18 ++
- .../boot/dts/renesas/r9a09g047e57-smarc.dts   |  18 ++
- arch/arm64/boot/dts/renesas/r9a09g047e57.dtsi |  13 ++
- .../boot/dts/renesas/renesas-smarc2.dtsi      |  24 +++
- .../boot/dts/renesas/rzg3e-smarc-som.dtsi     |  28 +++
- arch/arm64/configs/defconfig                  |   1 +
- drivers/clk/renesas/Kconfig                   |   7 +-
- drivers/clk/renesas/Makefile                  |   1 +
- drivers/clk/renesas/r9a09g047-cpg.c           | 116 +++++++++++
- drivers/clk/renesas/r9a09g057-cpg.c           | 153 ++++++++++-----
- drivers/clk/renesas/rzv2h-cpg.c               |  98 +++++++++-
- drivers/clk/renesas/rzv2h-cpg.h               |  27 ++-
- drivers/soc/renesas/Kconfig                   |   5 +
- .../dt-bindings/clock/renesas,r9a09g047-cpg.h |  21 ++
- 19 files changed, 686 insertions(+), 68 deletions(-)
- create mode 100644 arch/arm64/boot/dts/renesas/r9a09g047.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a09g047e37.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/r9a09g047e57-smarc.dts
- create mode 100644 arch/arm64/boot/dts/renesas/r9a09g047e57.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/renesas-smarc2.dtsi
- create mode 100644 arch/arm64/boot/dts/renesas/rzg3e-smarc-som.dtsi
- create mode 100644 drivers/clk/renesas/r9a09g047-cpg.c
- create mode 100644 include/dt-bindings/clock/renesas,r9a09g047-cpg.h
 
 -- 
-2.43.0
-
+Thanks,
+Sekhar
