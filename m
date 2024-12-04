@@ -1,151 +1,72 @@
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED80B20DD74
-	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 17:26:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07FAC202C3D;
+	Wed,  4 Dec 2024 18:06:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733333174; cv=none; b=A7u8BB9YT4QmN06UqtDdqTFSeHQgAeN2o+yq5onRL5wxbLU1kpX4dx7MyBZB+a0WSBbMvKVRlWTRGV3swotER6bTrZSf3A6xSCUpApkeKPbqk4Tn1G7noutlqyK2YrEwiCXTBhquLNIsLquFIxI+pd1E471YtGhI8IB7oijsh58=
+	t=1733335614; cv=none; b=NnD1J9TYzPEtu7iObCKjnIWrb9t0TAS4d5V9/jTuQ4TBOdz7b9D/2ftDpSaoJh+NDMNP1w1NPNugvu6bCSIU3i6mrwSJbTRJyq/56VtEwv/7HFRsZDWycoVCgtyg92+joST6BG0pdGzjCzZeA3tJ0d24S/EUy7h8QbKzdzqQtPU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733333174; c=relaxed/simple;
-	bh=3XOKyfOtCe+byiVNEcWIU0XMb6iWf0YuG2kDOBxGSKk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KfBHCgosiFVfiX5Vr2xoLeoo+yts9IryjClTmaGiXlqxAJxVwYzBbumo6dNkkpfirGoo2WgxzGr/YV2NH52/sj4/agp0c9v8SkdVhK2SRZZRAEhGP9xNyO28JwUAHoIvgRcuEeoGWx/KvLgK8Ldycck9CqujPRUyfLXaIjz4eB8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=LSKG2vqp; arc=none smtp.client-ip=209.85.208.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1733335614; c=relaxed/simple;
+	bh=BzdpRSI6bTwBmCu3ueQwkbr9uSAZ4xHSZF+RLh4Fh7E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Aktm5RyGFSH7UWpuO3eDl8vFseJqb5UQd+4J1Xls1fF9ZfIB85OFhJu9HoSvDzP6ndKGzQWDYa/Cc6gl9TCEalfHO/Fbf8AhSyRuK18mybX1fgRZaNU+oolNVIQUVdng/8w2YBxo+QFx+BnudrRoh3KBtOsXh0w/cSwR/1VxZPs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=X0LAUChE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="LSKG2vqp"
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-3001b14d696so5620141fa.3
-        for <linux-serial@vger.kernel.org>; Wed, 04 Dec 2024 09:26:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1733333169; x=1733937969; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wcxUVGNwDSHYT0cP1lB+JvbULa6oEpjDSAOsUsCsW1c=;
-        b=LSKG2vqprD3CCsdcM8jWHqrbrOpbuAGhAlFzg/M4LGr9jIQ2EBeekSdY8OU7LUL/2q
-         QGfDRQQdYikv6OWWcgp1Qjso/q0Uxjqti+wqhT2Sk/eGIIt21TVLvYwOWj0g93FjI6+E
-         3Hz3pNUf+i9ca7bS5qmDB/j1gKcQwjjgYfaYA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733333169; x=1733937969;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=wcxUVGNwDSHYT0cP1lB+JvbULa6oEpjDSAOsUsCsW1c=;
-        b=JGpjK/ramsLWZOpz90zDzed1U49fIO5IqX18pri+EVvblmtzjnDbpFT55gDSb89cz3
-         WjImCuH43mL2zaGnmiCuLYoi99Htenod6wHX5+HJC2dK8+17De6a1uYGUw6dXdf3qMEj
-         IsbRqMeMa4Jyiu2cMaM3whfxdaxz4TSzCjRQZ4gLQlwZq4ma3Eqb9xP9KWXFbRwVFvl5
-         W1ySPdNDn4stCbnVIPWlp391osScbH0dY9iFtjfAi284YGB44Lso0hITHf7QrolsZRZV
-         XwFALq2KWb2AQavFe1U/d272r8XfFX1nBdXS53S/ykRGMzmSwbmFsrl22dB1DebHHwJW
-         uVuA==
-X-Forwarded-Encrypted: i=1; AJvYcCWuUrICARLpnAo0PmIe1EqEb6WXS4+rOn2lX/GCZo+vYvHKJ+HmRMCcsCKXox09EymmuYHuSOzBaVxfiH0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzIVhe+mLojwvSBHqsVNAV2ywnjKjRTE9i/pOZeQgFZ0mhSM6CL
-	9a/Z/eSrhUDySsqbI5qpUiAVVgqSLz6xt1XPyaoN0N8Dn86EgS+p2PLi5T8jElt8Y21x3jX/ZHo
-	92w==
-X-Gm-Gg: ASbGncuIdptcaijo7xlijJvh+QrMhJvic1B9aUV/x396pXxi9ALQP099q0mlZnWjqqp
-	nrspZOGO1nBIRuI5C15Fogs1pWpNbFEEzs/hgWJey1+jVW23mt9Velvhu+bYPGvmpMhHBvvpDmh
-	niUk0HlXZ0se34tWn1C488rstCfLqdz9SCE+4jJlYkyw2wdIAJlwwYwnCBA4wjBLqrcocRYVTDC
-	kyWBpk6LvbuZpOoIFtC1Vyf17KOpDJUR3bPsfSYWiP34ef8T5/Bca1ekmPcJ3gX8SWmNuQC6ynR
-	7iDWh5F5TmASWEMU9g==
-X-Google-Smtp-Source: AGHT+IGXcKaKTHF/VoD52LeKbjS09hWGqjbprcYWr99bT9D5YJchWgU/gnz32jMMP3dykM2qJtu1Ew==
-X-Received: by 2002:a2e:bea2:0:b0:2ff:c3d2:b0ab with SMTP id 38308e7fff4ca-30009caa186mr41140521fa.29.1733333168998;
-        Wed, 04 Dec 2024 09:26:08 -0800 (PST)
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com. [209.85.208.174])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-2ffdfbe5466sm20463661fa.30.2024.12.04.09.26.07
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Dec 2024 09:26:08 -0800 (PST)
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2ffa97d99d6so72217861fa.1
-        for <linux-serial@vger.kernel.org>; Wed, 04 Dec 2024 09:26:07 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCU1rwlgDIy/ga25+z9t6Ggyo2TSEqNF2Q1hjU17nLioRQ9qJhDf2qeILB1lL439gO+MCo+O4Hz7/Mjjplo=@vger.kernel.org
-X-Received: by 2002:a2e:a108:0:b0:2ff:c027:cf5c with SMTP id
- 38308e7fff4ca-30009c3f871mr30428561fa.16.1733333166812; Wed, 04 Dec 2024
- 09:26:06 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="X0LAUChE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0433C4CECD;
+	Wed,  4 Dec 2024 18:06:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1733335613;
+	bh=BzdpRSI6bTwBmCu3ueQwkbr9uSAZ4xHSZF+RLh4Fh7E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=X0LAUChEwCPgA/VV4AdrWeghoSmRJwM3kFdlmCvtH1sNdyQjGIku5l02DRS+r+4JP
+	 fH/F8RLqBOUhqLV+npZVhKCAXL4NH5dcHgGDyXVzD7ZJP5FYT16/Q6KmeJpKzdypuF
+	 XfezvmK2NKWu3YyUX2XYRW69SCu4R4ksQOT7R70M=
+Date: Wed, 4 Dec 2024 19:06:50 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: n3rdopolis <bluescreen_avenger@verizon.net>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH 1/2] ttynull: Add an option to allow ttynull to be used
+ as a console device
+Message-ID: <2024120408-moneyless-stood-cda2@gregkh>
+References: <20241129041549.778959-1-bluescreen_avenger@verizon.net>
+ <20241129041549.778959-2-bluescreen_avenger@verizon.net>
+ <2024120401-grapple-saddlebag-e674@gregkh>
+ <1791540.X513TT2pbd@nerdopolis2>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241204150326.1470749-1-quic_vdadhani@quicinc.com> <20241204150326.1470749-2-quic_vdadhani@quicinc.com>
-In-Reply-To: <20241204150326.1470749-2-quic_vdadhani@quicinc.com>
-From: Doug Anderson <dianders@chromium.org>
-Date: Wed, 4 Dec 2024 09:25:54 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=XF+9wxZ5xNtO3Uy8QW9UY4tb+KR46jkondvBeQuVLsrA@mail.gmail.com>
-Message-ID: <CAD=FV=XF+9wxZ5xNtO3Uy8QW9UY4tb+KR46jkondvBeQuVLsrA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/7] dt-bindings: i2c: qcom,i2c-geni: Document DT
- properties for QUP firmware loading
-To: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-Cc: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	broonie@kernel.or, andersson@kernel.org, konradybcio@kernel.org, 
-	johan+linaro@kernel.org, agross@kernel.org, linux-arm-msm@vger.kernel.org, 
-	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-spi@vger.kernel.org, =quic_msavaliy@quicinc.com, 
-	quic_anupkulk@quicinc.com, Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1791540.X513TT2pbd@nerdopolis2>
 
-Hi,
+On Wed, Dec 04, 2024 at 12:06:56PM -0500, n3rdopolis wrote:
+> On Wednesday, December 4, 2024 10:41:44 AM EST Greg Kroah-Hartman wrote:
+> > On Thu, Nov 28, 2024 at 11:15:48PM -0500, n3rdopolis wrote:
+> > > Add a config option CONFIG_NULL_TTY_CONSOLE that will have ttynull be
+> > > initialized by console_initcall() and selected as a possible console
+> > > device.
+> > > Signed-off-by: n3rdopolis <bluescreen_avenger@verizon.net>
+> > 
+> > Meta-comments, we need a blank line before the s-o-b line, AND we need a
+> > real name here, sorry.  I can't do anything with these (including
+> > reviewing them), until that happens.
+> > 
+> Oh, I thought that I didn't need a real name
+> 
+> I found a recent thread that seems like it suggests that I thought
+> https://lore.kernel.org/all/20241121165806.476008-40-alex.bennee@linaro.org/[1]
+> https://drewdevault.com/2023/10/31/On-real-names.html[2]
+> Or do I need to wait for that change to the guideline be merged?
 
-On Wed, Dec 4, 2024 at 7:03=E2=80=AFAM Viken Dadhaniya
-<quic_vdadhani@quicinc.com> wrote:
->
-> Document the 'qcom,load-firmware' and 'qcom,xfer-mode' properties to
-> support SE(Serial Engine) firmware loading from the protocol driver and t=
-o
-> select the data transfer mode, either GPI DMA (Generic Packet Interface)
-> or non-GPI mode (PIO/CPU DMA).
->
-> I2C controller can operate in one of two modes based on the
-> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
->
-> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-> ---
->  .../devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml   | 11 +++++++++++
->  1 file changed, 11 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yam=
-l b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
-> index 9f66a3bb1f80..a26f34fce1bb 100644
-> --- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
-> @@ -66,6 +66,15 @@ properties:
->    required-opps:
->      maxItems: 1
->
-> +  qcom,load-firmware:
-> +    type: boolean
-> +    description: Optional property to load SE (serial engine) Firmware f=
-rom protocol driver.
-> +
-> +  qcom,xfer-mode:
-> +    description: Value 1,2 and 3 represents FIFO, CPU DMA and GSI DMA mo=
-de respectively.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 2, 3]
+That change has been merged a long time ago, but as far as I can tell,
+this signed-off-by you used here does not meet this category.
 
-I'm a little confused about this. I'll admit I haven't fully analyzed
-your patch with actual code in it, but in the past "CPU DMA" mode and
-"FIFO" mode were compatible with each other and then it was up to the
-driver to decide which of the two modes made sense in any given
-situation. For instance, last I looked at the i2c driver it tried to
-use DMA for large transfers and FIFO for small transfers. The SPI
-driver also has some cases where it will use DMA mode and then
-fallback to FIFO mode.
+thanks,
 
-...so what exactly is the point of differentiating between "FIFO" and
-"CPU DMA" mode here?
-
-Then when it comes to "GSI DMA" mode, my understanding is that the
-firmware for "GSI DMA" mode is always loaded by Trustzone because the
-whole point is that the GSI mode arbitrates between multiple clients.
-Presumably if the firmware already loaded the GSI firmware then the
-code would just detect that case. ...so there shouldn't need to be any
-reason to specify GSI mode here either, right?
-
--Doug
+greg k-h
