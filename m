@@ -1,131 +1,136 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 511DB7DA62
-	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 03:53:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34553184;
+	Wed,  4 Dec 2024 07:14:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733284440; cv=none; b=kCHu9Fr+VtLEQO9ZPAe6eFkl1nGFp1VQ2peGs/muPeqIBaepCKJt+p3heJyQBsn+ci6vBt69gHyZLr9Hb5H0iZV1uvIeJ4BBEFQcHzQknfKTzCMcHm1d6MlOpiHce+tw7rQMpEo75tgchWw2RZPd37zhRBKKP/Y367l5m8+02l0=
+	t=1733296487; cv=none; b=dAMa4gbWNApnFzPCjGix4jn0a2mq54ZmpL+HdECxwd+PSVbYDexmXViGO+IHmwhOyYgH9h1ZnS5tx3ah5P+pBH2vSYw1IZ8OW/xYmWuAI9Kue4pzB4jaX0OcCnsHvfyR2WqGh2M/I7qq3sK2eNG2pp6aizYCCkJR1e74276UKcs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733284440; c=relaxed/simple;
-	bh=31FUpc8bW300BJ83AFyeys8k4DCR2Qf+Gt1CDF1VorQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MWskNk3b22tg87gXo0jOMPJiehm0jJC1k53dOxWoN1DvqP0e79OQ3eCc1mf+wvUKhG2KoKgtwdd4PstnbT4k+f4bdONyfuug7I11BLgBy9WdJljxFghKq4xUPrc5dpz2zrEMVS78MPwknf/0tTJ6Ob3ypMBbKpudFSLilOkFTK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Yc0RICcW; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1733296487; c=relaxed/simple;
+	bh=5zNcSh3mZKePkawVDiO1jvH5kno4N7sHW5GQf/o65KU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kiR/X+L4KgJJDUwyn47oscipb9kbin2MnKXJXvQaq8Ylf20T9upPWZpanmrwzlOCU2/ZOOiQ2fHVKLi3QMUAMxuRCRW5b6nMt3qsB/xvqXrQr1/VRcn03AwOvGNcMmsrAcCf5dHAuu13J3rJaQNnNKLhxSYLvi5Qj3hliSJuHDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SFgqgT7z; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Yc0RICcW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1733284438; x=1764820438;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=31FUpc8bW300BJ83AFyeys8k4DCR2Qf+Gt1CDF1VorQ=;
-  b=Yc0RICcWapmzXM+F4of0nfDD5cPQ1LZbJJLXrmFW7hoSRq9IcFF3xQtr
-   1fvrbq6RH37V1EArE8EtTpTMkas59UpxtiBjABzQtxljf9bW+19Sw3dfx
-   MSeX/13hnPVd9VrjM1vGyaTAJX5NjkJxNPxPBxinoHRRbEkv/R67Rubdm
-   IKR50oYx8WUmqKScNjMe1a3GnC+r6EUN/p/GDQkSWRWjW5e1dxjIiaOVw
-   0diCB3/HxobcO1WrJmPVZbIGuACUM8C8SyUnlxE4esPlFDDwVFRRcDqjS
-   qa88cJZPoey+9DSHXCbbbu1OKX2/eJvBcQ/X2W6H+z3hyebH+wQfApcnD
-   Q==;
-X-CSE-ConnectionGUID: WeBbxP+tSZadJnvx4cHOxA==
-X-CSE-MsgGUID: 6zEOCxrDQYyTIXb3Bb+37A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11275"; a="44010558"
-X-IronPort-AV: E=Sophos;i="6.12,206,1728975600"; 
-   d="scan'208";a="44010558"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2024 19:53:58 -0800
-X-CSE-ConnectionGUID: z9IJUEsKQnCPvrSzZSqozg==
-X-CSE-MsgGUID: NenBQDsHTiG7sU0SzrJGcg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,206,1728975600"; 
-   d="scan'208";a="131096108"
-Received: from lkp-server02.sh.intel.com (HELO 1f5a171d57e2) ([10.239.97.151])
-  by orviesa001.jf.intel.com with ESMTP; 03 Dec 2024 19:53:57 -0800
-Received: from kbuild by 1f5a171d57e2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tIgSX-0002Sr-2T;
-	Wed, 04 Dec 2024 03:53:53 +0000
-Date: Wed, 4 Dec 2024 11:53:05 +0800
-From: kernel test robot <lkp@intel.com>
-To: Tobias Klauser <tklauser@distanz.ch>, linux-serial@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2] serial: altera_jtaguart: Use KBUILD_MODNAME
-Message-ID: <202412041125.xMeUiURB-lkp@intel.com>
-References: <20241203131727.9078-1-tklauser@distanz.ch>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SFgqgT7z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE476C4CED1;
+	Wed,  4 Dec 2024 07:14:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733296486;
+	bh=5zNcSh3mZKePkawVDiO1jvH5kno4N7sHW5GQf/o65KU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=SFgqgT7zDsWAHSZpaLswFk2iD5LBMSw5SsS8u7vV3dh1z0ERyZFuUWk5/vOpViXti
+	 MPh4HOPdrXBhiAAZEnMX/whAspbCSWeDOscx3X4uO8X0EST3/KO8tRKZ+gQNTRMtas
+	 YIGqafH7tmywzPyuM1G4cEcQAhzweurRsuRWC+Kj24KrMKTKrQ9AgIIFb1C/Gdh/On
+	 yon3dH/h0MQy9IdMwT1b24dq0ONb9qHf4G6Z8yNnaAC0PoJKLG59idLs2P4MEEEqXj
+	 hzyLJyvY3c+QYUFn8tc9HJw9fuLncGqligIACs3kuMZGCsMwQAj4g38KWw0DhwqRRt
+	 HQpAbzV7Yo5DA==
+Message-ID: <5ca95d14-84a7-48af-a5e3-cefc558d2e7f@kernel.org>
+Date: Wed, 4 Dec 2024 08:14:42 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241203131727.9078-1-tklauser@distanz.ch>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 2/2] serial: 8250_pci: Share WCH IDs with
+ parport_serial driver
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Cameron Williams <cang1@live.co.uk>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Fenghua Yu <fenghua.yu@intel.com>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-pci@vger.kernel.org
+Cc: Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+ Bjorn Helgaas <bhelgaas@google.com>
+References: <20241204031114.1029882-1-andriy.shevchenko@linux.intel.com>
+ <20241204031114.1029882-3-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20241204031114.1029882-3-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Tobias,
+On 04. 12. 24, 4:09, Andy Shevchenko wrote:
+> parport_serial driver uses subset of WCH IDs that are present in 8250_pci.
+> Share them via pci_ids.h and switch parport_serial to use defined constants.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>   drivers/parport/parport_serial.c   | 12 ++++++++----
+>   drivers/tty/serial/8250/8250_pci.c | 10 ++--------
+>   include/linux/pci_ids.h            | 11 +++++++++++
+>   3 files changed, 21 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/parport/parport_serial.c b/drivers/parport/parport_serial.c
+> index 3644997a8342..24d4f3a3ec3d 100644
+> --- a/drivers/parport/parport_serial.c
+> +++ b/drivers/parport/parport_serial.c
+> @@ -266,10 +266,14 @@ static struct pci_device_id parport_serial_pci_tbl[] = {
+>   	{ 0x1409, 0x7168, 0x1409, 0xd079, 0, 0, timedia_9079c },
+>   
+>   	/* WCH CARDS */
+> -	{ 0x4348, 0x5053, PCI_ANY_ID, PCI_ANY_ID, 0, 0, wch_ch353_1s1p},
+> -	{ 0x4348, 0x7053, 0x4348, 0x3253, 0, 0, wch_ch353_2s1p},
+> -	{ 0x1c00, 0x3050, 0x1c00, 0x3050, 0, 0, wch_ch382_0s1p},
+> -	{ 0x1c00, 0x3250, 0x1c00, 0x3250, 0, 0, wch_ch382_2s1p},
+> +	{ PCI_VENDOR_ID_WCHCN, PCI_DEVICE_ID_WCHCN_CH353_1S1P,
+> +	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, wch_ch353_1s1p },
+> +	{ PCI_VENDOR_ID_WCHCN, PCI_DEVICE_ID_WCHCN_CH353_2S1P,
+> +	  0x4348, 0x3253, 0, 0, wch_ch353_2s1p },
+> +	{ PCI_VENDOR_ID_WCHIC, PCI_DEVICE_ID_WCHIC_CH382_0S1P,
+> +	  0x1c00, 0x3050, 0, 0, wch_ch382_0s1p },
+> +	{ PCI_VENDOR_ID_WCHIC, PCI_DEVICE_ID_WCHIC_CH382_2S1P,
+> +	  0x1c00, 0x3250, 0, 0, wch_ch382_2s1p },
 
-kernel test robot noticed the following build errors:
+I know this is the current pattern in the file. But what about using 
+PCI_DEVICE_DATA() for the first and PCI_DEVICE_SUB() + .driver_data for 
+the rest? Otherwise it occurs as a load of incomprehensible constants.
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.13-rc1 next-20241128]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Tobias-Klauser/serial-altera_jtaguart-Use-KBUILD_MODNAME/20241203-211936
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20241203131727.9078-1-tklauser%40distanz.ch
-patch subject: [PATCH v2] serial: altera_jtaguart: Use KBUILD_MODNAME
-config: i386-buildonly-randconfig-002-20241204 (https://download.01.org/0day-ci/archive/20241204/202412041125.xMeUiURB-lkp@intel.com/config)
-compiler: clang version 19.1.3 (https://github.com/llvm/llvm-project ab51eccf88f5321e7c60591c5546b254b6afab99)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241204/202412041125.xMeUiURB-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202412041125.xMeUiURB-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/altera_jtaguart.c:174:4: error: use of undeclared identifier 'DRV_NAME'
-     174 |                         DRV_NAME, port);
-         |                         ^
-   1 error generated.
-
-
-vim +/DRV_NAME +174 drivers/tty/serial/altera_jtaguart.c
-
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  167  
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  168  static int altera_jtaguart_startup(struct uart_port *port)
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  169  {
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  170  	unsigned long flags;
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  171  	int ret;
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  172  
-9cfb5c05fee914c drivers/tty/serial/altera_jtaguart.c Yong Zhang        2011-09-22  173  	ret = request_irq(port->irq, altera_jtaguart_interrupt, 0,
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05 @174  			DRV_NAME, port);
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  175  	if (ret) {
-3f356922d4cb9c7 drivers/tty/serial/altera_jtaguart.c Tobias Klauser    2024-11-13  176  		dev_err(port->dev, "unable to attach Altera JTAG UART %d interrupt vector=%d\n",
-3f356922d4cb9c7 drivers/tty/serial/altera_jtaguart.c Tobias Klauser    2024-11-13  177  			port->line, port->irq);
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  178  		return ret;
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  179  	}
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  180  
-adcdb2c7f0b59a7 drivers/tty/serial/altera_jtaguart.c Thomas Gleixner   2023-09-14  181  	uart_port_lock_irqsave(port, &flags);
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  182  
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  183  	/* Enable RX interrupts now */
-4e2b16a62d9975c drivers/tty/serial/altera_jtaguart.c Jiri Slaby (SUSE  2022-11-15  184) 	port->read_status_mask = ALTERA_JTAGUART_CONTROL_RE_MSK;
-4e2b16a62d9975c drivers/tty/serial/altera_jtaguart.c Jiri Slaby (SUSE  2022-11-15  185) 	writel(port->read_status_mask,
-4e2b16a62d9975c drivers/tty/serial/altera_jtaguart.c Jiri Slaby (SUSE  2022-11-15  186) 			port->membase + ALTERA_JTAGUART_CONTROL_REG);
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  187  
-adcdb2c7f0b59a7 drivers/tty/serial/altera_jtaguart.c Thomas Gleixner   2023-09-14  188  	uart_port_unlock_irqrestore(port, flags);
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  189  
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  190  	return 0;
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  191  }
-5bcd601049c6b2a drivers/serial/altera_jtaguart.c     Tobias Klauser    2010-05-05  192  
-
+thanks,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+js
+suse labs
