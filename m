@@ -1,113 +1,166 @@
-Received: from sonic305-2.consmr.mail.bf2.yahoo.com (sonic305-2.consmr.mail.bf2.yahoo.com [74.6.133.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A8681C3C04
-	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 19:48:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.133.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961A21F1316;
+	Wed,  4 Dec 2024 20:20:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733341692; cv=none; b=r7g3ZQX2Mz9SdKPeO6zxP9gNT2j/Y21qdkpLZjnmAinEBCWC8ETIq670f9qV4jzOCn72KSUYlDS+iFlZEZbX9XsYHt1OlHCjdAHwa1cg/nCcD24iY+nBW6P+gVVY91fLaxrz8i8ITRG8yQ2xXFDH5aQPuKL83KqusJrjmK1tZL8=
+	t=1733343617; cv=none; b=M8a3wKHxnvP81mTGOx5hcVBRi1iFdDh2hQrIhn40S4aj919wOmq6p1/EgtRWqCn5aO2DwuJhyVVru2BHuy+IY5MgcX8JfRKnAzC6j9PXSejtl9VKGXcJBkOTv+/PNbm1eFMbdLZs3XOqXQhtlBDwPly519XKARpORUrTiOoiFSg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733341692; c=relaxed/simple;
-	bh=K0wcnXLcZ/RtqU+ivOA6ood/1YWbzuCuZIIkq/uqnlk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Er2nmA6/0ByZ2VPcUmpguNOdgQTufgJrWefv+WiHHkbvGk7YoJZitsH11qFkhkMCNuBRUxDJ10Bmw6Jio5fCRJP3Obiy7RxKU1/q3oQyAsbB8H8j3QJ11o6iWKIkygpvp35BQxUhiRAEbz2DZ+6KNy2iVvNUhq8HLrW596SfmMg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=pAAJrZ1N; arc=none smtp.client-ip=74.6.133.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
+	s=arc-20240116; t=1733343617; c=relaxed/simple;
+	bh=2DwAxXKr5OmgZNqp/rw57rkElXZOOYwlLMtsGH2s168=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UD68N60d+sJbWJd50e3Xd33ApvWkVMqAnwapFo8fz/bALE8xYJqRc7G6SvqsgoFHWI0nOewfPdPRq7Itmq0WIOBAHjFYsENsGCxaDNlJjHZkmksFyF974dNVKIv1I0P7a2eREeQz+WUnpss9CKeWBSbfC2YfLwhnoXIuA9FciNg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=M8lm2Enu; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="pAAJrZ1N"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1733341686; bh=mYbA5vc0s8RXvK4HptomEuPbET34RtMCpXkIm36hcVA=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=pAAJrZ1ND1pNRiAXMERonizcRRE15cSim2jOeErf9hm0GTsbchckuqROL2HPnSVOykPi+IvxVxHWlDLToHS2hIePlumnS0DegbcF77YUFUvUoCjIdlDtawvp87nvud42WVBraG50EJLBlDahV5FDTxXie7da3tahnLl6toimjs+wo11JqtgmSsxx493ypmsf1xOLqkhiC1lFrhDtl2nJiPpWURIXNiy+wpfLvQZDSjsbIwQF9UNTyD8YkIWHSt5kjDD2YZ7Arc44hPb37btKtZ/FDPgUwTFDb7b6ccryl9kNduxXbWgpC+LOEj4UmZw55TagxbAM9Bsq0rCj1SIRnw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1733341686; bh=MdszAzdl/nbpC7Wm81EL5h0FpAdQQI1UYHYCwYS6X6N=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=kJ1/EFGDTd/Vy4FOrj6XxhdpDq/jmGxRdF1HZxdNDZs+CKLQqbweoVL8tRGJeNoSXIllG4O/sBzL8zp4FbL0FNmVDoa/f2KgYDaan3mAdv9KmB8XePcNUqPEAKQ4efWoDTgT64fxgRvp3MeAMok2bqBPRF+6BJxrzRXsecT7dNvBBDAZ/Ik6SB3XvxALGfi1Gfp4+/ZRJTFy9RgUKQsn1mXpASked93ScyuPu0ILNpJG7oky6kAWB+kZGmzEh5LFX6zfo7in6fTm5U3I5miep2s4MyKCO6amhVJHZxwl9Q4GjpFOqp0ARRS3WHRpXWROzGf2bFXeukB3DUOT5tg0Ow==
-X-YMail-OSG: fvlMYtAVM1lIxQN4lY5k_6afP1vDxCLoa6W4oReg2WvVjjiGK7SXqF.B1JeI7c5
- VSH49IfJG0SY5xThI4BZ_AEoz8BXraouHLe7VhWN2zl66nC3LlnnY6QG9yBtvzVUT5kyHGka9_FB
- wdXjvjunlopf1JeYiGWShXTssCZGgHD2czVbx8pvPz_M3j7Vf34HZf4eX2z7Vt7isSoJc_HKMEui
- DhcoIFYT938b_ftkoFryMgqdygAzhijIm4Xk3WoaytzXhRFEADJjP5s8v.T0ko_KjVXDLbhYV3K_
- t42tDqEorpDIF20hLind0y7lelJAAyyAdzhygplj2DHiuuGWc9Q2BfWmh4QKIgg0KQ06OGCnBzm9
- aC9Ld4qtTXOpb3IpZZgA7Vkgph4VdlriXN8r3ikCrs0L5NcclWaRiyzS6EuXjW3F_i_NAqgYD8b7
- tYM25eN60kz_hHVMkjUMcB5KCZzot7OAl4ijjcNv0iybzrU8s0J5urqAoSBZ30yF738oMQRPpGl1
- M96s5QlChYAxJDlEGjEHZ3EKhk1OHEIWhcM7xtB0EEVvdqEHCwRTw.R62oOtS8Qj7f_7msOHPD33
- dVI6t0IcUINH_W7FU0vgN1pJbz1XNBsWyzo0WuFEg92i4iy3wyXGIZEAyuSDISYQIl8VlUoGyOFO
- Ks1QeuWr1st3MDzDC0msHNLwlxMVIddW4GtecmpGzajFpTUT_YV6y0aCN6zPnY1Q5SFPaScFKKiQ
- zGn1mbGRIZXjyCQwQJwVG0E9BPU6muumM9yZIPr3yZS_oPBf4k.9RcOZ5Av_k0A67RBqCJZjeRGJ
- IfwFIAAYVKhVrTK37ugASZ4.Khpu7aXd7iduYxz5FqBRKYqP6..w.g1jROqXF5VXjwiwlajv05B4
- hTMNhkG2_MBDt3NBWmV.Esidf_knJ4t27zL_1crFmE1O.o.VJgBdhXa9smap7uVHDlFi.sz7oz..
- MRfvMsi824dWI4kR6oyfUB6QMiaGMi2gdeQOm8KWdHrRJ.IZ5_rU1PH5C4BJm4f.F.Plb.172OBt
- zGCyMkQ0uCtpdKP5rOZ8Aw2bmbTUT0GfAUkOwP.PY59bHSKAPjW5dnBfwkhdvEva.rEl2PTAqcXL
- p6rlwFWO1r2Rz8bdzNXL2KYnGkSqWYf_nr40tZ.pb0OTUBl9xnEjw9JddMj5NR26j7A8t9tHZvdo
- FCCP2zMuL.0IzINHB1M9_P7O9anxo0m1ZcChwlzeQET.toIxVL5iIDJQ5PrD6zZmQNu0p2aoUYEP
- lxaQx9MaRT0lqaalAFjWkARU2CSWt1VkUYi0uWX64SUquiiPjOC6kqF3yzWf7pqPWYJlCFiphBRJ
- BgJxhdKxtKwEmW_HPTiM9gG1aHwW2YIVe1ZsmqJfGaTZhbFa5qiP9PDSo7H8nhrGZrAQ2_NO5aCW
- 5i0ULLIGebZoJPMlIDhRrLwlDn_wObePAOR.flEkIFNwwL00FmoroZnUCXZPAKspcAJcWhNuU_GS
- TodrV7vXS0NxpxtQxoFQboMniOzHiRBFR78mC66ZIAFV6q48E4pXfp8.B8v772nsyRssGZRuuJUM
- 4AyoY9Jvm1oZJ8LZeKb12uB1Asz64a1d88piKLJgoCqneOQClOMRvOlw24n7s8Fpwk5X7q6tvfNz
- _3w9n_Dk1ooo0cQuAR_L0BRU485lyDhqCmLG14U9w7BZw_onUipKmQVU.qY66LkfX29Kj8YkbcJB
- DU0F4HQLnxxhE95nHvpUJQJK3MiaTR_g6EDbqBpwE2WyDesF.DtG10XgeXcdPfkwLaPmJTkaTL6B
- aDQxsmnzbdsW8x7Z1PTOl800bjM35mimGNtc3.VSguakCFcr6AQUXUMyvVQnGA8qkp1NZZyKwUyj
- l6Gc7w0RmrqjetzErm3FleWc4Bo6me_3JAMWIZpYQBzOrRTwrj6hmpDdkGs1.tRQqqSMaX3Mg0uo
- QbHnmBDyPc3pzld_8chi9e744prFrrSXVWngWrrXpYepxwUXrovF.0A9I9F2M8BILWO0V_NiOq4x
- qQ.BX7PjUmJOZG624JSJDa0I_BAgnGtZ9YteJM933bWITw9mWfmtNvtYeqTJxyhZU9ds2CEbl1mA
- BXfZg6ujjAfPEW6fa5wiIdS3bFKTLys6ytqChdc6XtqQ447ejNVKvcLl7sAWfZK7N1emHFJaEWSG
- 6m7Ch01_aWjEUIzOyPFbDGx9RK30yTbWdVLK013g4BfIHr4fEPrC9py2q3.7S_jW3w.t0B8yaF0I
- poGTGrWHyZcHO2PGjt0sJBu5aSvW5rI23OCGMs_MViV4EZop2OXGNmLFRkFRfMqY-
-X-Sonic-MF: <bluescreen_avenger@verizon.net>
-X-Sonic-ID: b98b651c-f1cd-48ec-860b-add473fb1d46
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic305.consmr.mail.bf2.yahoo.com with HTTP; Wed, 4 Dec 2024 19:48:06 +0000
-Received: by hermes--production-bf1-66bb576cbb-q5j52 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 5adf508ed2686e3ad514bc3ba5d7462d;
-          Wed, 04 Dec 2024 19:37:56 +0000 (UTC)
-From: n3rdopolis <bluescreen_avenger@verizon.net>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH 1/2] ttynull: Add an option to allow ttynull to be used as a
- console device
-Date: Wed, 04 Dec 2024 14:37:55 -0500
-Message-ID: <6622246.K2JlShyGXD@nerdopolis2>
-In-Reply-To: <2024120408-moneyless-stood-cda2@gregkh>
-References: <20241129041549.778959-1-bluescreen_avenger@verizon.net>
- <1791540.X513TT2pbd@nerdopolis2> <2024120408-moneyless-stood-cda2@gregkh>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M8lm2Enu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1733343616; x=1764879616;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2DwAxXKr5OmgZNqp/rw57rkElXZOOYwlLMtsGH2s168=;
+  b=M8lm2EnuJ0A1mAPggTtULvCr0HyMm8n5UMxEj1yZuzhfzAbkQQPjHo3v
+   yiF7Qsl2a9USGG2xcEv3PirZIW5klCmMmrVoLM8MMeRQBcCBTe1hn4EW+
+   0nlIiGtWUO/I7JKtRbUsITLkxRM7lPb0TTXVWSs/ZYXnTrquxB9c8NtgW
+   XGw7Xp8tYThoVzhkiWYrh3APMfxpgtsazlVNrByxouKkrx0X3YdaMwnTO
+   s0cXaeZkauDM1uHqtsF76gECj+cIbjyVYH5Q3HxaTh/jxnZ7Oerf3dk9B
+   7JkaJr45J88t1fMQjRPWMFVxfXFC9FOgXrD88R25CIWXCZZwSr0vX7yaQ
+   w==;
+X-CSE-ConnectionGUID: D333gxziSWa6AoiQmKwpAw==
+X-CSE-MsgGUID: SoWwH3IQRXy/m68ZNPLIKA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11276"; a="44664944"
+X-IronPort-AV: E=Sophos;i="6.12,208,1728975600"; 
+   d="scan'208";a="44664944"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2024 12:20:15 -0800
+X-CSE-ConnectionGUID: IU3ZpTEuTOejbQP8wEFewg==
+X-CSE-MsgGUID: bE2DErQ6T+qJMIn+xvSW/A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,208,1728975600"; 
+   d="scan'208";a="93773478"
+Received: from lkp-server02.sh.intel.com (HELO 1f5a171d57e2) ([10.239.97.151])
+  by orviesa009.jf.intel.com with ESMTP; 04 Dec 2024 12:20:09 -0800
+Received: from kbuild by 1f5a171d57e2 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tIvqs-0003SH-1D;
+	Wed, 04 Dec 2024 20:20:02 +0000
+Date: Thu, 5 Dec 2024 04:19:25 +0800
+From: kernel test robot <lkp@intel.com>
+To: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
+	andersson@kernel.org, konradybcio@kernel.org,
+	johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, =quic_msavaliy@quicinc.com,
+	quic_anupkulk@quicinc.com,
+	Viken Dadhaniya <quic_vdadhani@quicinc.com>,
+	Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+Subject: Re: [PATCH v1 4/7] soc: qcom: geni-se:: Add support to load QUP SE
+ Firmware via Linux subsystem
+Message-ID: <202412050429.SJvNsU2f-lkp@intel.com>
+References: <20241204150326.1470749-5-quic_vdadhani@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Mailer: WebService/1.1.22941 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241204150326.1470749-5-quic_vdadhani@quicinc.com>
 
-On Wednesday, December 4, 2024 1:06:50 PM EST Greg Kroah-Hartman wrote:
-> On Wed, Dec 04, 2024 at 12:06:56PM -0500, n3rdopolis wrote:
-> > On Wednesday, December 4, 2024 10:41:44 AM EST Greg Kroah-Hartman wrote:
-> > > On Thu, Nov 28, 2024 at 11:15:48PM -0500, n3rdopolis wrote:
-> > > > Add a config option CONFIG_NULL_TTY_CONSOLE that will have ttynull be
-> > > > initialized by console_initcall() and selected as a possible console
-> > > > device.
-> > > > Signed-off-by: n3rdopolis <bluescreen_avenger@verizon.net>
-> > > 
-> > > Meta-comments, we need a blank line before the s-o-b line, AND we need a
-> > > real name here, sorry.  I can't do anything with these (including
-> > > reviewing them), until that happens.
-> > > 
-> > Oh, I thought that I didn't need a real name
-> > 
-> > I found a recent thread that seems like it suggests that I thought
-> > https://lore.kernel.org/all/20241121165806.476008-40-alex.bennee@linaro.org/[1]
-> > https://drewdevault.com/2023/10/31/On-real-names.html[2]
-> > Or do I need to wait for that change to the guideline be merged?
-> 
-> That change has been merged a long time ago, but as far as I can tell,
-> this signed-off-by you used here does not meet this category.
-> 
-Oh, what would it take to meet that category? I've been using this nick to
-contribute to other projects, and it matches my GitHub name, and FreeDesktop
-GitLab name
+Hi Viken,
 
-Thanks
-> thanks,
-> 
-> greg k-h
-> 
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on andi-shyti/i2c/i2c-host]
+[also build test WARNING on tty/tty-testing tty/tty-next tty/tty-linus broonie-spi/for-next linus/master v6.13-rc1 next-20241204]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Viken-Dadhaniya/dt-bindings-i2c-qcom-i2c-geni-Document-DT-properties-for-QUP-firmware-loading/20241204-230736
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/andi.shyti/linux.git i2c/i2c-host
+patch link:    https://lore.kernel.org/r/20241204150326.1470749-5-quic_vdadhani%40quicinc.com
+patch subject: [PATCH v1 4/7] soc: qcom: geni-se:: Add support to load QUP SE Firmware via Linux subsystem
+config: arm-randconfig-002 (https://download.01.org/0day-ci/archive/20241205/202412050429.SJvNsU2f-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241205/202412050429.SJvNsU2f-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202412050429.SJvNsU2f-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+   drivers/soc/qcom/qcom-geni-se.c: In function 'read_elf':
+>> drivers/soc/qcom/qcom-geni-se.c:975:23: warning: assignment discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
+     975 |                 *phdr = &phdrs[i];
+         |                       ^
+   drivers/soc/qcom/qcom-geni-se.c: At top level:
+   drivers/soc/qcom/qcom-geni-se.c:1268:5: warning: no previous prototype for 'qup_fw_load' [-Wmissing-prototypes]
+    1268 | int qup_fw_load(struct qup_se_rsc *rsc)
+         |     ^~~~~~~~~~~
 
 
+vim +/const +975 drivers/soc/qcom/qcom-geni-se.c
 
+   946	
+   947	/**
+   948	 * read_elf: Function to read elf file.
+   949	 * @rsc: A pointer to SE resources structure.
+   950	 * @fw: A pointer to the fw buffer.
+   951	 * @pelfseg: A pointer to SE specific elf header.
+   952	 * @phdr: pointer to one of the valid headers from list from fw buffer.
+   953	 *
+   954	 * This function reads the ELF file and outputs the pointer to header
+   955	 * data which contains the FW data and any other details.
+   956	 *
+   957	 * return: Return 0 if no error, else return error value.
+   958	 */
+   959	static int read_elf(struct qup_se_rsc *rsc, const struct firmware *fw,
+   960			    struct elf_se_hdr **pelfseg, struct elf32_phdr **phdr)
+   961	{
+   962		const struct elf32_phdr *phdrs;
+   963		const struct elf32_hdr *ehdr;
+   964		const u8 *addr;
+   965		int i;
+   966	
+   967		ehdr = (struct elf32_hdr *)fw->data;
+   968	
+   969		if (ehdr->e_phnum < 2)
+   970			return -EINVAL;
+   971	
+   972		phdrs = (struct elf32_phdr *)(ehdr + 1);
+   973	
+   974		for (i = 0; i < ehdr->e_phnum; i++) {
+ > 975			*phdr = &phdrs[i];
+   976			if (!elf_phdr_valid(*phdr))
+   977				continue;
+   978	
+   979			if ((*phdr)->p_filesz >= sizeof(struct elf_se_hdr)) {
+   980				addr =  fw->data + (*phdr)->p_offset;
+   981				*pelfseg = (struct elf_se_hdr *)addr;
+   982	
+   983				if ((*pelfseg)->magic == MAGIC_NUM_SE &&
+   984				    (*pelfseg)->version == 1 &&
+   985				    valid_seg_size(*pelfseg, (*phdr)->p_filesz))
+   986					if ((*pelfseg)->serial_protocol == rsc->protocol &&
+   987					    (*pelfseg)->serial_protocol != GENI_SE_NONE)
+   988						return 0;
+   989			}
+   990		}
+   991		return -EINVAL;
+   992	}
+   993	
 
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
