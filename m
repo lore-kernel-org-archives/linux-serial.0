@@ -1,152 +1,139 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 918A7171CD
-	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 22:18:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3A311F03F6
+	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 22:36:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733350703; cv=none; b=JlV4IILJp4+LCrL6RrloMSYXC4DSS7l/eDS4Z5yUr1+RXF32SLof9mFLsJIoLaFbDpvbSZ+ppAu2Ioy6tuJzv9cQW0nQFiU4muTC9yDRanVgTcvMyNfyLpJh4yS6zyA+HI5c8f/B26g73uhCZuyHz6KIe4VJ4fXfFEjB9YCYpDU=
+	t=1733351782; cv=none; b=BL669X8AoNWGlgPybQPpo90XQ9r1/ZFklerj4HrCefzk+IaDEU72KVSP3tVsfef74MlellAWDOJCNcsDHHh7HyvoAFQWYAjxO2KlTpPquauEWExIXu9vTrVW6znLd76JrJQAlWvI2UfAu13WCh89bj9BF2kHtvCUwGDpmMWZYcU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733350703; c=relaxed/simple;
-	bh=qU5q0LrfZfd0gc6aCN9UL8zXfE1IkaXyTJAJEv6IAJA=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=naCRJa5z22+kBIEOrl7eEHKHf9gGetbEuYzsQ93dMTNSBmbrzP4Icgj5vnsdGgpE74htQAujCcO7lFrha5VzL1SjRyomHTc3REa3T3J1ZFl5TNQNgEO7mBwtlieCntdpoY7ttW9+cR/J93+APGygO8actUZZ1LAqfRwEL4VokXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lpuBpkja; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1733351782; c=relaxed/simple;
+	bh=8nyNe6nBOf2Dk/jqULA7hpqv08Qyov1aCsfLJP+e0ac=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b4dwPkuOIbYpXKcbrblrZEWv094XB7VudBnSb0x1rsczdTBGw4c8n7ipbrZ8XCuuHEdyz3n8HWLvXmdD22fJNtdchWDtJEdlzri1NYQIclvlHihDBoQ1mL8aUGsHCKoTz7jzpn5jbsRTls4nWJ6wb8pV+Dari1HVzOmucRSpwCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=fB4WuRcM; arc=none smtp.client-ip=209.85.167.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lpuBpkja"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E906CC4CECD;
-	Wed,  4 Dec 2024 22:18:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733350703;
-	bh=qU5q0LrfZfd0gc6aCN9UL8zXfE1IkaXyTJAJEv6IAJA=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=lpuBpkjayZLGNHDd5Nm0JwCmC2cSiqR3n6bBL0kmAA44deplIPR3QGho8Tft0MsV1
-	 cnJ9Kpkih9/ALRlBL0IYnpnkRMPy9BKABkWQw61O4FJNHIwQO6DJR3tg61kIoCE1Iv
-	 hejDpZXl37SI6+TvtajLzIYd/TG2CnO40GoRR0lLViIyjnC1eU8A3xIdXA6c1iFWla
-	 DgGMpDt9m7CH3+vJ8XCBCSJGVC+7Cs54g59qgPkBeR5fr39XPuPtxXQx8I55n/ldPk
-	 WoWdOJJtcjd/S8gkiO3WLBEESV+JCfm+BmWLRF+fUq/MXvpVxxU9yFKGjy+g//purk
-	 Sb3tilCaVuWmw==
-Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
-	by mailfauth.phl.internal (Postfix) with ESMTP id E9428120006A;
-	Wed,  4 Dec 2024 17:18:21 -0500 (EST)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-10.internal (MEProxy); Wed, 04 Dec 2024 17:18:21 -0500
-X-ME-Sender: <xms:LdVQZw140ccJoZBYp-VWOw-jHBSutfZAbckYPLHqNQEBIvKVnJrqFA>
-    <xme:LdVQZ7Hn_X-7yB7XP7mb_oFJsxs4SB3ycZGhcP8nfxvEu3qoNhfwPTlRXYqpDKI3W
-    rNw6IKvm_dMEfr7-8U>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrieehgdduheehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
-    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
-    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
-    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusehkvghrnhgvlh
-    drohhrgheqnecuggftrfgrthhtvghrnhepjeetgeeuhfffvefgheeuteduveeiueeuffeh
-    vdevhfejtdfhuddtteehgfefkeelnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenuc
-    evlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnugdo
-    mhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidquddvkeehudejtddvgedqvdekje
-    dttddvieegqdgrrhhnugeppehkvghrnhgvlhdrohhrghesrghrnhgusgdruggvpdhnsggp
-    rhgtphhtthhopedutddpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohephigrnhhghi
-    hinhhglhhirghngheshhhurgifvghirdgtohhmpdhrtghpthhtohepjhhirhhishhlrggs
-    hieskhgvrhhnvghlrdhorhhgpdhrtghpthhtohephhgtrgeslhhinhhugidrihgsmhdrtg
-    homhdprhgtphhtthhopehstghhnhgvlhhlvgeslhhinhhugidrihgsmhdrtghomhdprhgt
-    phhtthhopegrnhgurhhihidrshhhvghvtghhvghnkhhosehlihhnuhigrdhinhhtvghlrd
-    gtohhmpdhrtghpthhtohepihhlphhordhjrghrvhhinhgvnheslhhinhhugidrihhnthgv
-    lhdrtghomhdprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonh
-    drohhrghdprhgtphhtthhopehlihhnuhigsehrohgvtghkqdhushdrnhgvthdprhgtphht
-    thhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:LdVQZ44E0alFHkc7uQH1W3zPRPu02HhkJlWEHja1wXr43j2Dcl3q0Q>
-    <xmx:LdVQZ53w4bOWG7sOo6y3qRTbJ0PDU75DG9WO2c0xaGRS9msh2XMStw>
-    <xmx:LdVQZzFFYMgrv08RUo0uZKt8vHZQRa8S3GjviIhsetXXkJorJ19Kvg>
-    <xmx:LdVQZy8YOpeIcacJMXjZcKf44wNI6LSALD2IrozbEJJgk9N_rBq-SQ>
-    <xmx:LdVQZ4kXaBUIYbDVQGeZlnhgj5q5AnQnURmnT6-kTF_cGnS2nK4tAk0j>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id B8F442220073; Wed,  4 Dec 2024 17:18:21 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fB4WuRcM"
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-53de556ecdaso356112e87.1
+        for <linux-serial@vger.kernel.org>; Wed, 04 Dec 2024 14:36:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1733351778; x=1733956578; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+mmQIbMpMz7O0AOKTkxfl8dFrxJ33xOJobw0OfEwbNw=;
+        b=fB4WuRcM3FIp3T0F7f5PzJzFKbU/bMYUYGPDay+g8J48QH0dCklAeeNTvHN3ZmW/Yd
+         9C0xzANYRgGvyyjJxKgQzKq1mRnbNWxpkFdrKB/XVHomB0HhOZwlVfQnbgCrkgB3JFEJ
+         JFgH0auMNwDgnydg/bUUCSk6vRZk07hwwJuYtnXfwkDqdQFMRB0O+5dfXToOQbH0DKxJ
+         9qkDmYVDfxCj7Q0jrdONvImyT3Q6YJ/9Hi8R2DLDDWXhQBjbTkmZOz1S1/k7/gI7P7ek
+         O7EkwK42zF/uvdRPRGogcgaflKYKCJ+qv1hj2asg5NwIITHtI2+Va7d6K/APbo0YKG6A
+         cEmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733351778; x=1733956578;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+mmQIbMpMz7O0AOKTkxfl8dFrxJ33xOJobw0OfEwbNw=;
+        b=eIZreQXWxoRw1cu6Zud6y2sBDfln3tqON2aX5aFz5ai+Z2JJTafeihhYJjMzE7+X3C
+         PliQy0YvkEsW5BzJLOQ+1Yi9n6ZkDyiRtIG9Z1yB8rCYAWV8Q2Kc4u0VyhV4mjAaXTQ4
+         2foR+0d7AxgQu2uDXYUEQLbQQ5eygE4pSFb5x7pja9b0rUWz7vFQ0j5Js/g5OXOCzejp
+         W6+jx1xn/A+Bdz7NDnGTQETuzvUu+xVx98noMIPIb/sicZT85/kfZCNdkv/wANk8WR9/
+         QsLpLq/gy3FY2q57dbH1J4m3EC/3HI5gpIpUIhP5sT3SMNmNDMrSrDcAQ1XcH97Nzjj6
+         dWdA==
+X-Forwarded-Encrypted: i=1; AJvYcCWC9sLZQghbKAf9VTwVlK6M5oaqWk2P2mYkKSjHu/AyYKwdKyNjLjxEvgyeC+tGddDf8Msm4GWaXNlazl8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxRYk92L7DAgpU0EJZHYaFgfs7V+0A/cMwUQUB05pobFl19z1sN
+	B2eo31rFJQrbNvHBUOJB/OOEeYyjb4VUmfgVCZATksG6hXLhHQbRyyXcNNDaC0k=
+X-Gm-Gg: ASbGncv1M50D2ViQndTtOwltQ5mHCUz83FfqYVMkYxucnRxUa0ReihxH5AlkYXbQZPp
+	vpzXaNAYEjOIyi1TXrESPnExRvSsCw6lYY9xuiZCp7ehV9gE7kRrnUDJoPATPsk8jg7F8lklVGy
+	Flvv3T+6g/pf4F7yX/A63NV8hS38gC/a0+f1ElBW0eMBFBx6Y8+EkebS1JgqGfPhkkmbWQAonpd
+	8YVEdYteRz3vWZCoBAXXfg3KJH9EkqJ7fC0uT6fIrhWlX/s8CHMFoMTVHTB5uPGZcrf2Q6l6Iuv
+	3Oz2WI8PypqAamZEeGmyeNrmB/7daQ==
+X-Google-Smtp-Source: AGHT+IGuGoCD3puMElK86ZdB02YG7dUQkM6ohz8Me4tads6hOhrBog3l0JNlc1YxUZmWAvJj211T6g==
+X-Received: by 2002:a05:6512:220d:b0:53d:d3c1:9fc4 with SMTP id 2adb3069b0e04-53e12a31944mr5017238e87.41.1733351778075;
+        Wed, 04 Dec 2024 14:36:18 -0800 (PST)
+Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--b8c.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::b8c])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53e229ca47esm21650e87.264.2024.12.04.14.36.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Dec 2024 14:36:16 -0800 (PST)
+Date: Thu, 5 Dec 2024 00:36:14 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+Cc: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	broonie@kernel.or, andersson@kernel.org, konradybcio@kernel.org, 
+	johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, 
+	=quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com, 
+	Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+Subject: Re: [PATCH v1 1/7] dt-bindings: i2c: qcom,i2c-geni: Document DT
+ properties for QUP firmware loading
+Message-ID: <garuc5au5464xpmj3exlull4o2763xrkqubplde56xmyfhfhmn@cpd4bbt4dfyr>
+References: <20241204150326.1470749-1-quic_vdadhani@quicinc.com>
+ <20241204150326.1470749-2-quic_vdadhani@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Wed, 04 Dec 2024 23:17:56 +0100
-From: "Arnd Bergmann" <arnd@kernel.org>
-To: "Guenter Roeck" <linux@roeck-us.net>
-Cc: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>,
- "Niklas Schnelle" <schnelle@linux.ibm.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
- linux-kernel@vger.kernel.org, "Yang Yingliang" <yangyingliang@huawei.com>
-Message-Id: <acdab483-05a4-4fa8-ae1c-70ed53402aa2@app.fastmail.com>
-In-Reply-To: <4446d7dc-efb0-4395-8fcb-7177d9e07b5c@roeck-us.net>
-References: <38bf3b8b-81c4-42c9-902d-b5719f3881c5@roeck-us.net>
- <3b75b92805648577ed05ff221d0c56e381aa1c7c.camel@linux.ibm.com>
- <472eb22a-dcb1-4fbb-bf2c-a4173706bc7a@app.fastmail.com>
- <27685942-fb62-44c5-86ed-98beb547ffed@roeck-us.net>
- <744920ba-551c-466b-ac5c-2607b81261a0@app.fastmail.com>
- <Z0QtZky8Sr7qUW7v@smile.fi.intel.com>
- <00f5e842-3ee9-4d83-8836-0ff4f703fa3c@app.fastmail.com>
- <Z0RSZ-YD_BozMs1n@smile.fi.intel.com>
- <be43108e-4135-4927-ba58-141836fde6af@app.fastmail.com>
- <30a38025-afae-4bdf-a468-21ae2cd5a7b3@app.fastmail.com>
- <4446d7dc-efb0-4395-8fcb-7177d9e07b5c@roeck-us.net>
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241204150326.1470749-2-quic_vdadhani@quicinc.com>
 
-On Wed, Dec 4, 2024, at 22:09, Guenter Roeck wrote:
-> On Mon, Nov 25, 2024 at 04:59:00PM +0100, Arnd Bergmann wrote:
->> On Mon, Nov 25, 2024, at 12:06, Arnd Bergmann wrote:
->> > +unsigned int nr_uarts = ARRAY_SIZE(old_serial_port);;
->> > +
->> 
->> Unfortunately, this breaks on non-x86 because of the check
->> added in 59cfc45f17d6 ("serial: 8250: Do nothing if nr_uarts=0").
->> 
->> I still think it's the right idea, but need to unwind further
->> to make this possible, and find a different fix for the bug
->> from that commit.
->> 
->
-> I decided to apply the patch below to my fixes branch. It doesn't change
-> the code, it just gets rid of the warning backtrace.
+On Wed, Dec 04, 2024 at 08:33:20PM +0530, Viken Dadhaniya wrote:
+> Document the 'qcom,load-firmware' and 'qcom,xfer-mode' properties to
+> support SE(Serial Engine) firmware loading from the protocol driver and to
+> select the data transfer mode, either GPI DMA (Generic Packet Interface)
+> or non-GPI mode (PIO/CPU DMA).
+> 
+> I2C controller can operate in one of two modes based on the
+> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
+> 
+> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+> ---
+>  .../devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml   | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> index 9f66a3bb1f80..a26f34fce1bb 100644
+> --- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> @@ -66,6 +66,15 @@ properties:
+>    required-opps:
+>      maxItems: 1
+>  
+> +  qcom,load-firmware:
+> +    type: boolean
+> +    description: Optional property to load SE (serial engine) Firmware from protocol driver.
+> +
+> +  qcom,xfer-mode:
+> +    description: Value 1,2 and 3 represents FIFO, CPU DMA and GSI DMA mode respectively.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [1, 2, 3]
+> +
+>  required:
+>    - compatible
+>    - interrupts
+> @@ -142,5 +151,7 @@ examples:
+>          interconnect-names = "qup-core", "qup-config", "qup-memory";
+>          power-domains = <&rpmhpd SC7180_CX>;
+>          required-opps = <&rpmhpd_opp_low_svs>;
+> +        qcom,load-firmware;
 
-I got stuck in this rabbit hole of running into more issues
-with the 8250 driver. Any time you touch something, it breaks
-elsewhere.
+please use instead:
+firmware-name = "qcom/sc7180/qupv3.elf"
 
-I've uploaded what I have here now:
+> +        qcom,xfer-mode = <1>;
+>      };
+>  ...
+> -- 
+> 2.34.1
+> 
 
-https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/log/?h=8250-cleanup
-
-but this probably needs more testing, and a few smaller changes
-
->  drivers/tty/serial/8250/8250_port.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/serial/8250/8250_port.c 
-> b/drivers/tty/serial/8250/8250_port.c
-> index 4d63d80e78a9..649e74e9b52f 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -467,7 +467,8 @@ static void set_io_from_upio(struct uart_port *p)
->  		break;
->  #endif
->  	default:
-> -		WARN(1, "Unsupported UART type %x\n", p->iotype);
-> +		WARN(p->iotype != UPIO_PORT || p->iobase,
-> +		     "Unsupported UART type %x\n", p->iotype);
->  		p->serial_in = no_serial_in;
->  		p->serial_out = no_serial_out;
->  	}
-
-I had considered this at first but didn't really want to do
-it like this because we should not be registering empty ports
-on platforms that don't use the setserial style override for
-the port configuration.
-
-It does of course address the warning, just not the
-underlying bug.
-
-      Arnd
+-- 
+With best wishes
+Dmitry
