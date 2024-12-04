@@ -1,156 +1,138 @@
-Received: from pv50p00im-zteg10011401.me.com (pv50p00im-zteg10011401.me.com [17.58.6.41])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50D771B87C4
-	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 12:27:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=17.58.6.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8054B1B87CA;
+	Wed,  4 Dec 2024 15:03:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733315227; cv=none; b=W7vt/NbOrrVomhWIThQF4p3Fa6kV8kFGQTq6OX+bbDZdliNf686SrJCGD9qzJQEEnnecr9TYqa2KalX405UUHQobTAY5/lF1Ago0NBVngwectW9jZhkoZdgpRka4fnUZnhys2mRcM9ZGf07mSpIySM8qgzWI5NeRb6D2E1MrMjQ=
+	t=1733324621; cv=none; b=VmJ3q8hXPt2YKgQjzYQYK/bYXB+IBnaXKG2AZN3UICuLbWqoM+E3uly7kbw6w4myK3vWUqgFDNkKXJv2yKG2IhDH9kSi5KY3aIRel7vYSUUIMRjCJwpiIefHkOSOpRHRObtDoasB8GK14fGolt3RlvyrG/GnjaZpJ1WHc2fGZMU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733315227; c=relaxed/simple;
-	bh=b3cKO8E37kdGEfPQBy2NupErjAuGZ0w9V7NN+3pjucc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FRYgFgbVJTu+ifuyH5U4tB9r/jFGT2F9vkkSzWIy50tXL0271m8ojgmj2IVOni12465/b+Xr/kq/CqnHHqu+YRGRFPIhDrdvIyYpKAR7p1PaJVXwMRAr5rL5hO96OmZHf44vOkMKJUyjQc2VNhx2y9iPvB3WysIZwbEM37rj0+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=aDx0LVkM; arc=none smtp.client-ip=17.58.6.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
+	s=arc-20240116; t=1733324621; c=relaxed/simple;
+	bh=RJZpRdXklt9afDLfyrX0kbFxsMEnivc1AyA4R+ZkLNk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mDNA7wP7gU+pMVhHMbI0rmEdbwtMMfc4RPtt+Vn9uIomo5l1yUe0BEpgIf6j7mFwDZacDG389x+z2YfXE5Lw9X8OQoxcWl20pwj6Bu+tNp6goJBbcE5OnZPgwccYPnc35K3SovkXwJYCRWkiaqy/Tg4gSSWPsOmnEwD0Ul/81DI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=LBz0K0Dv; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="aDx0LVkM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-	s=1a1hai; t=1733315226;
-	bh=tDbYa+5DWmHdZ9lmVLNA7xMZvJoZ/PCpc6Zau1xliNU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:
-	 x-icloud-hme;
-	b=aDx0LVkMUXFI75QpCfQtwEzziTl2NnjdGJ/9Nl6EjkD9AoNOPkj0pNJDmDS0yOxmo
-	 cFAXLbMOmPcOl5uunRBBrqBVYZF5ppxfVoWTl3S1fXUPYvDXVgmxgrfgiOzuzDhljR
-	 JXz5mSklSuuNIhx7A4INyoL4v8SXD0un9r9AkY3EWP5hUjq0cVMBNRe3UAI+WH+UEp
-	 aQcXPRWXKjSKZb3dQybv2/fEczrg8mOY6isUSLdmtOWnHvZ0W1/xlosR4mnRECds2h
-	 6Ay6kSNLijQWwdsoHl1pqn9BntMizpWoDbFHr5J8zkhSqKMjCSXP0KeQ2EZIN5IQ7P
-	 WHMoRxUFUJF5Q==
-Received: from [192.168.1.26] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-	by pv50p00im-zteg10011401.me.com (Postfix) with ESMTPSA id B793434BA6BD;
-	Wed,  4 Dec 2024 12:26:37 +0000 (UTC)
-Message-ID: <235ce0a9-1db1-4558-817b-6f92f22be5ab@icloud.com>
-Date: Wed, 4 Dec 2024 20:26:22 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="LBz0K0Dv"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4B46qpTC024061;
+	Wed, 4 Dec 2024 15:03:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=7pWlAWVrXj0TJ0a5lUMNguM4peO0VQ6AkqY
+	khPgM/WM=; b=LBz0K0DvvSg8F4PGc9xipn8lwTgdzeb2v1V6eD61loGNM5HYrLu
+	3sKeAOq4/NMoYmDrf61QLVuLn1oZpBU5I1cchQStx7C6aAadiX/SnzyO/0bfh8EH
+	EPv8/WesRChi4XCkm/2G7Sa2QDuQLsTp/PQNFMnSRkhun2sPqckveRqbgXwMu5OM
+	0oywPRvqDldH+beBA1K/CRcMdGz1qus8wvamncH5/AlLMOY+4XgDa56+QEGRdcWD
+	chpLco2irFowrGuS22nsWDpVcnl+/LN82gEDLTgcARyQk3VuFn/FVMcRSH2U1KXN
+	dM92KqV7aYthdxRqFQct9VbQ+YhygbZ16VQ==
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 439vnyvkam-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 04 Dec 2024 15:03:34 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 4B4F3U8R025562;
+	Wed, 4 Dec 2024 15:03:30 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 437uskx4tm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 04 Dec 2024 15:03:30 +0000
+Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 4B4F3Tmp025554;
+	Wed, 4 Dec 2024 15:03:29 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com ([10.213.97.252])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 4B4F3TWC025547
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 04 Dec 2024 15:03:29 +0000
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4047106)
+	id EAC01503; Wed,  4 Dec 2024 20:33:28 +0530 (+0530)
+From: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+To: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+        conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        broonie@kernel.or, andersson@kernel.org, konradybcio@kernel.org,
+        johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Cc: =quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com,
+        Viken Dadhaniya <quic_vdadhani@quicinc.com>
+Subject: [PATCH v1 0/7] Add support to load QUP SE firmware from
+Date: Wed,  4 Dec 2024 20:33:19 +0530
+Message-Id: <20241204150326.1470749-1-quic_vdadhani@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/32] driver core: Constify API device_find_child()
- and adapt for various existing usages
-To: James Bottomley <James.Bottomley@HansenPartnership.com>,
- =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <thomas@t-8ch.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Chun-Kuang Hu <chunkuang.hu@kernel.org>,
- Philipp Zabel <p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>,
- Simona Vetter <simona@ffwll.ch>, Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>,
- Martin Tuma <martin.tuma@digiteqautomotive.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Andreas Noever <andreas.noever@gmail.com>,
- Michael Jamet <michael.jamet@intel.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Yehezkel Bernat <YehezkelShB@gmail.com>,
- Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski
- <brgl@bgdev.pl>, Andrew Lunn <andrew@lunn.ch>,
- Vladimir Oltean <olteanv@gmail.com>, "David S. Miller"
- <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Simon Horman <horms@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
- Vishal Verma <vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ira Weiny <ira.weiny@intel.com>, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
- Jiri Slaby <jirislaby@kernel.org>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
- Mike Christie <michael.christie@oracle.com>,
- "Martin K. Petersen" <martin.petersen@oracle.com>,
- Nilesh Javali <njavali@marvell.com>,
- Manish Rangankar <mrangankar@marvell.com>,
- GR-QLogic-Storage-Upstream@marvell.com, Davidlohr Bueso <dave@stgolabs.net>,
- Jonathan Cameron <jonathan.cameron@huawei.com>,
- Alison Schofield <alison.schofield@intel.com>,
- Andreas Larsson <andreas@gaisler.com>, Stuart Yoder <stuyoder@gmail.com>,
- Laurentiu Tudor <laurentiu.tudor@nxp.com>, Jens Axboe <axboe@kernel.dk>,
- Sudeep Holla <sudeep.holla@arm.com>,
- Cristian Marussi <cristian.marussi@arm.com>, Ard Biesheuvel
- <ardb@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
- linux-media@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
- linux-pwm@vger.kernel.org, nvdimm@lists.linux.dev,
- linux1394-devel@lists.sourceforge.net, linux-serial@vger.kernel.org,
- linux-sound@vger.kernel.org, open-iscsi@googlegroups.com,
- linux-scsi@vger.kernel.org, linux-cxl@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
- arm-scmi@vger.kernel.org, linux-efi@vger.kernel.org,
- linux-remoteproc@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
-References: <20241203-const_dfc_done-v2-0-7436a98c497f@quicinc.com>
- <g32cigmktmj4egkq2tof27el2yss4liccfxgebkgqvkil32mlb@e3ta4ezv7y4m>
- <9d34bd6f-b120-428a-837b-5a5813e14618@icloud.com>
- <2024120320-manual-jockey-dfd1@gregkh>
- <b9885785-d4d4-4c72-b425-3dc552651d7e@icloud.com>
- <8eb7c0c54b280b8eb72f82032ede802c001ab087.camel@HansenPartnership.com>
- <8fb887a0-3634-4e07-9f0d-d8d7c72ca802@t-8ch.de>
- <f5ea7e17-5550-4658-8f4c-1c51827c7627@icloud.com>
- <108c63c753f2f637a72c2e105ac138f80d4b0859.camel@HansenPartnership.com>
-Content-Language: en-US
-From: Zijun Hu <zijun_hu@icloud.com>
-In-Reply-To: <108c63c753f2f637a72c2e105ac138f80d4b0859.camel@HansenPartnership.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: Ptou9-aUclkqdkvBrep0JqLqpE5OAxzN
-X-Proofpoint-GUID: Ptou9-aUclkqdkvBrep0JqLqpE5OAxzN
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: Z05rgUxWlbQ_1pqq0XpWAVQkHOj1gUP0
+X-Proofpoint-GUID: Z05rgUxWlbQ_1pqq0XpWAVQkHOj1gUP0
 X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2024-12-04_09,2024-12-04_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- mlxlogscore=999 suspectscore=0 malwarescore=0 bulkscore=0 mlxscore=0
- spamscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2308100000 definitions=main-2412040096
+ engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
+ definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 adultscore=0
+ mlxlogscore=999 bulkscore=0 impostorscore=0 mlxscore=0 suspectscore=0
+ spamscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2412040115
 
-On 2024/12/3 23:34, James Bottomley wrote:
->>> This also enables an incremental migration.
->> change the API prototype from:
->> device_find_child(..., void *data_0, int (*match)(struct device *dev,
->> void *data));
->>
->> to:
->> device_find_child(..., const void *data_0, int (*match)(struct device
->> *dev, const void *data));
->>
->> For @data_0,  void * -> const void * is okay.
->> but for @match, the problem is function pointer type incompatibility.
->>
->> there are two solutions base on discussions.
->>
->> 1) squashing likewise Greg mentioned.
->>    Do all of the "prep work" first, and then
->>    do the const change at the very end, all at once.
->>
->> 2)  as changing platform_driver's remove() prototype.
->> Commit: e70140ba0d2b ("Get rid of 'remove_new' relic from platform
->> driver struct")
->>
->>  introduce extra device_find_child_new() which is constified  -> use
->> *_new() replace ALL device_find_child() instances one by one -> 
->> remove device_find_child() -> rename *_new() to device_find_child()
->> once.
-> Why bother with the last step, which churns the entire code base again?
+In Qualcomm SoCs, firmware loading for Serial Engines (SE) in the QUP
+hardware has traditionally been managed by TrustZone (TZ). This setup
+handled Serial Engines(SE) assignments and access control permissions,
+ensuring a high level of security but limiting flexibility and
+accessibility.
+ 
+This limitation poses a significant challenge for developers who need more
+flexibility to enable any protocol on any of the SEs within the QUP
+hardware.
+ 
+To address this, we are introducing a change that opens the firmware
+loading mechanism to the Linux environment. This enhancement increases
+flexibility and allows for more streamlined and efficient management. We
+can now handle SE assignments and access control permissions directly
+within Linux, eliminating the dependency on TZ.
+ 
+We propose an alternative method for firmware loading and SE
+ownership/transfer mode configuration based on device tree configuration.
+This method does not rely on other execution environments, making it
+accessible to all developers.
+ 
+For SEs used prior to the kernel, their firmware will be loaded by the
+respective image drivers (e.g., Debug UART, Secure or trusted SE).
+Additionally, the GSI firmware, which is common to all SEs per QUPV3 core,
+will not be loaded by Linux driver but TZ only. At the kernel level, only
+the SE protocol driver should load the respective protocol firmware.
 
-keep the good API name device_find_child().
+Viken Dadhaniya (7):
+  dt-bindings: i2c: qcom,i2c-geni: Document DT properties for QUP
+    firmware loading
+  spi: dt-bindings: Document DT properties for QUP firmware loading
+  dt-bindings: serial: Document DT properties for QUP firmware loading
+  soc: qcom: geni-se:: Add support to load QUP SE Firmware via Linux
+    subsystem
+  i2c: qcom-geni: Load i2c qup Firmware from linux side
+  spi: geni-qcom: Load spi qup Firmware from linux side
+  serial: qcom-geni: Load UART qup Firmware from linux side
 
-> Why not call the new function device_find_child_const() and simply keep
-> it (it's descriptive of its function).  That way you can have a patch
-> series without merging and at the end simply remove the old function.
+ .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |  11 +
+ .../serial/qcom,serial-geni-qcom.yaml         |  12 +
+ .../bindings/spi/qcom,spi-geni-qcom.yaml      |  11 +
+ drivers/i2c/busses/i2c-qcom-geni.c            |  11 +-
+ drivers/soc/qcom/qcom-geni-se.c               | 445 ++++++++++++++++++
+ drivers/spi/spi-geni-qcom.c                   |   7 +-
+ drivers/tty/serial/qcom_geni_serial.c         |   7 +-
+ include/linux/soc/qcom/geni-se.h              |  17 +
+ include/linux/soc/qcom/qup-fw-load.h          | 179 +++++++
+ 9 files changed, 692 insertions(+), 8 deletions(-)
+ create mode 100644 include/linux/soc/qcom/qup-fw-load.h
 
-device_find_child is a good name for the API, 'find' already means const.
+-- 
+2.34.1
 
