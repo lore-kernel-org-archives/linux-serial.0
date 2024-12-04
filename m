@@ -1,133 +1,173 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bedivere.hansenpartnership.com (bedivere.hansenpartnership.com [96.44.175.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72C1E2941C
-	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 16:12:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44E3820CCE4;
+	Wed,  4 Dec 2024 16:42:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.44.175.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733328774; cv=none; b=sPfsmPL9aaxtNEhC2U+LN5BqGX5LkqknXDeLdnhTTljN4TgbnGN0v6Mqs4rvC3/H+A9tw1kGMA/aZcB2Iup+OBFXpdoakVM6pnnlfhhMfaIeAD/ojryLPKGwUzzbxW9MHHhhJGGfXJv8I05XfsT9zg0XSbPae+SozevJ1gDc3Mk=
+	t=1733330566; cv=none; b=M5r7f52+KjUR+/IMvrT/kERb7/1tzrblJ9QBDgqZlgbufr/38VU95Kf8C1H6QSqEgZA5VzgHSTrhdrWsH9GkRp49Stgs7zz2HCW8q9t6Xz32lp+gjLYoAaVxy+NyMl/2ZpHgVFcCCTTPPlDM/E1J85UjatBkD9qoyGo536C/nNY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733328774; c=relaxed/simple;
-	bh=WMotf16BNP2hl+VFEpZRiKSDivn8XEcTtqQ7ghZ/DsY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KrifG7TgeesAh95sDunZI4k6mpo3t9jct2d+9JaDQQCXBVeurldui4XqNJGldghY24h/MFw+1AuOolmbUM++BapiPSiMnO9bOtSTqqPVHnp5EfoMaVuffv6oo06z/8xVIyOelDQve+br9bqzcR4ibRohBLJ2a8wQjRQLz6WD5PU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=WBedOOG/; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1733330566; c=relaxed/simple;
+	bh=/tV2/rqC9g/RzItU4xjpFfq9TJiKncFzSdSN5cVSPCI=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=SwVBeuyi5v4Lu3+qjVlZ8iH1SiBRWChE28dBLwbwKnQdQjFyYFaUJ3HjQ0Whr0F8P3iZtcbx2PFNWv2XgHcRGqazdjRc+nPb+PqT2WDeYUYqAIGgpTrIbLt1FgzXtOJ9TPs5Yql3fWFXJf/y3h0MDt6urmx/iYF6l1SdgnQnq3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=HansenPartnership.com; spf=pass smtp.mailfrom=HansenPartnership.com; dkim=pass (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b=u7h8O5xt; dkim=pass (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b=jwLrm3XJ; arc=none smtp.client-ip=96.44.175.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=HansenPartnership.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=HansenPartnership.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="WBedOOG/"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-434a1639637so64999065e9.1
-        for <linux-serial@vger.kernel.org>; Wed, 04 Dec 2024 08:12:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1733328771; x=1733933571; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=hQTQKeCKhE7MCIO8rjYyScRAwZVqxhfCtHNY0N/EVfU=;
-        b=WBedOOG/+cUqDyNvxcPeikjnyJG+pPqA8DckCC0q0CIKPZWjBx5842PCKtvmVNA9Di
-         d5CtgrbUrbJCWw6VBQodsnNaQxYilSxj/l5C+PGyQs+Meih5jpzZ7ZmqPXQU6MkwAkWm
-         Dr7lbIirLOZxq8XN4sFN3LpBvGL+afxcw51SYWc6hud4nrDpkgO2CJ5mtkojNoLH7C4z
-         nQqJEcquknH3baW1JWspGUPPFcCMSH8DCMWPGneTwfcMoq7ASaMlGVdimQcvrlEsIZS8
-         zGHX1/eGn2nRAgQw8zgQoV2bcgabENqChk9FKLWKqQfFpy4XctzjZtWQN3/9ejOSEuC0
-         BDoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733328771; x=1733933571;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=hQTQKeCKhE7MCIO8rjYyScRAwZVqxhfCtHNY0N/EVfU=;
-        b=BGPAgP8uw5e9k7KLstChl4S5UyeHhgFzkCLjXSRGFjuX/d7KBNOTeSrZ16daSGJ+5Z
-         gkgJgszl/vd5IOzDrdreFKFUaipG70YjN09yiWB/p1zuAVQd6lEEKxr0Wl7y78dNF2jw
-         o3UxZ2efIiBkbo4M1eUjgsOo5wXR6mlMiSkCFLUGOWGjel5TAawcHbBPtu2JyTHCQ/pR
-         lRuXGHaF2q5J1NWK95GG1F12OhKeOzgY0sMMeVlGWylxe5Y8aNvxYc5yRWg2F7czev+U
-         4rhr+UW+N/LjqpNLF/f3JadnbzgejeKBmDI5afJqqTnwqilJM7gNlNPbdVA6SgdhCPLX
-         JF2Q==
-X-Gm-Message-State: AOJu0YwZJyHkgQZUM4lkxiacW/gs1IHtQfbqx7rsNysjFT8FwJ+IBgBo
-	8T+ce7cWDz5PhwlVTpwqNNHEmvQSUPb8g/t+ho5posLozd3tSSMVMrFsVaFqHyQ=
-X-Gm-Gg: ASbGncsPcHUe3Y9YgP2PpQARyIgQDuqyTaDWniJjnnzdhWvnJKqwLwMZdn2BqXYfx5+
-	WJH3xFwuAKR2xD3sWz8K4zg7rQKZJG1qXcofYjNk8Lijvakxfdn/ygb9GeAxEH4DOSy9IQMtn+C
-	t6b0frX3FGv+1fjIlbGCTxpmOW6p3IWzibD/cApbnjnjC1urp3K6QkDXLr0kllZfTOykiOHuboW
-	qtvS5LSC6poXlqpDqqd5nkw4YkSipfpBtuSr6E+6piBX8YckWCk8lSIlR4=
-X-Google-Smtp-Source: AGHT+IHSduioKZEL8oXnhOPYaiOLYjsifTz/WCnsJQmND2DTXtSP9onkHLbSag5wfD9W0f7uppzcdg==
-X-Received: by 2002:a05:600c:3550:b0:434:a781:f5d5 with SMTP id 5b1f17b1804b1-434d0a15047mr70591065e9.30.1733328770818;
-        Wed, 04 Dec 2024 08:12:50 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.161])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-385e3b99249sm13430700f8f.88.2024.12.04.08.12.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Dec 2024 08:12:50 -0800 (PST)
-Message-ID: <ae80262c-82c6-466f-bbcf-90ba3551dabc@tuxon.dev>
-Date: Wed, 4 Dec 2024 18:12:49 +0200
+	dkim=pass (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b="u7h8O5xt";
+	dkim=pass (1024-bit key) header.d=hansenpartnership.com header.i=@hansenpartnership.com header.b="jwLrm3XJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+	d=hansenpartnership.com; s=20151216; t=1733330562;
+	bh=/tV2/rqC9g/RzItU4xjpFfq9TJiKncFzSdSN5cVSPCI=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+	b=u7h8O5xtkqg9XTRjnm2AByw4j1oANOrzOdAZMt8HHLl3Yjm3FyhEHxMbav7cjDIHA
+	 rH9JDDrakhhHcgYv4A62tmDfzUMvJQoGwAdV/vD+hl7hO/48F0u9n++jPP9OAsaCaz
+	 8lQA+iSncabPRQrhy+aNTkLi+yhrKeJAE1MSyUWQ=
+Received: from localhost (localhost [127.0.0.1])
+	by bedivere.hansenpartnership.com (Postfix) with ESMTP id 0036B12819C7;
+	Wed, 04 Dec 2024 11:42:42 -0500 (EST)
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+ by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavis, port 10024)
+ with ESMTP id UnAtfjdAjrWL; Wed,  4 Dec 2024 11:42:41 -0500 (EST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+	d=hansenpartnership.com; s=20151216; t=1733330561;
+	bh=/tV2/rqC9g/RzItU4xjpFfq9TJiKncFzSdSN5cVSPCI=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
+	b=jwLrm3XJJg0bE+y+jmRYNMFwEElygfQC2HGQiHPd5Xz/u0WtyW7YWY3rX060euBo7
+	 f9S1jUzBwKhA2RFoWPD/ZkuHcVNkBdGsPnMe1XGCn2DaqvTsyQjVXKsqZzFLZSZ0Tt
+	 bvl4/NIRU0Ww5p2EbpvPP+Glg6xJuhny+E4/K7oQ=
+Received: from lingrow.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4302:c21::a774])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 13309128116A;
+	Wed, 04 Dec 2024 11:42:36 -0500 (EST)
+Message-ID: <5c905df49a332b1136787a524955b46b6153c012.camel@HansenPartnership.com>
+Subject: Re: [PATCH v2 00/32] driver core: Constify API device_find_child()
+ and adapt for various existing usages
+From: James Bottomley <James.Bottomley@HansenPartnership.com>
+To: Zijun Hu <zijun_hu@icloud.com>, Thomas =?ISO-8859-1?Q?Wei=DFschuh?=
+	 <thomas@t-8ch.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Uwe
+ =?ISO-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, Chun-Kuang Hu <chunkuang.hu@kernel.org>, Philipp Zabel
+ <p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>, Simona Vetter
+ <simona@ffwll.ch>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Jean
+ Delvare <jdelvare@suse.com>,  Guenter Roeck <linux@roeck-us.net>, Martin
+ Tuma <martin.tuma@digiteqautomotive.com>, Mauro Carvalho Chehab
+ <mchehab@kernel.org>, Andreas Noever <andreas.noever@gmail.com>, Michael
+ Jamet <michael.jamet@intel.com>, Mika Westerberg
+ <mika.westerberg@linux.intel.com>,  Yehezkel Bernat
+ <YehezkelShB@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Bartosz
+ Golaszewski <brgl@bgdev.pl>, Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean
+ <olteanv@gmail.com>,  "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+ <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, Dan Williams
+ <dan.j.williams@intel.com>, Vishal Verma <vishal.l.verma@intel.com>, Dave
+ Jiang <dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>, Takashi
+ Sakamoto <o-takashi@sakamocchi.jp>, Jiri Slaby <jirislaby@kernel.org>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>, Srinivas Kandagatla
+ <srinivas.kandagatla@linaro.org>, Lee Duncan <lduncan@suse.com>, Chris
+ Leech <cleech@redhat.com>, Mike Christie <michael.christie@oracle.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>, Nilesh Javali
+ <njavali@marvell.com>, Manish Rangankar <mrangankar@marvell.com>,
+ GR-QLogic-Storage-Upstream@marvell.com, Davidlohr Bueso
+ <dave@stgolabs.net>, Jonathan Cameron <jonathan.cameron@huawei.com>, Alison
+ Schofield <alison.schofield@intel.com>, Andreas Larsson
+ <andreas@gaisler.com>, Stuart Yoder <stuyoder@gmail.com>, Laurentiu Tudor
+ <laurentiu.tudor@nxp.com>, Jens Axboe <axboe@kernel.dk>, Sudeep Holla
+ <sudeep.holla@arm.com>, Cristian Marussi <cristian.marussi@arm.com>, Ard
+ Biesheuvel <ardb@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>, 
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
+ linux-hwmon@vger.kernel.org, linux-media@vger.kernel.org, 
+ linux-usb@vger.kernel.org, linux-gpio@vger.kernel.org,
+ netdev@vger.kernel.org,  linux-pwm@vger.kernel.org, nvdimm@lists.linux.dev,
+  linux1394-devel@lists.sourceforge.net, linux-serial@vger.kernel.org, 
+ linux-sound@vger.kernel.org, open-iscsi@googlegroups.com, 
+ linux-scsi@vger.kernel.org, linux-cxl@vger.kernel.org, 
+ sparclinux@vger.kernel.org, linux-block@vger.kernel.org, 
+ arm-scmi@vger.kernel.org, linux-efi@vger.kernel.org, 
+ linux-remoteproc@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
+Date: Wed, 04 Dec 2024 11:42:34 -0500
+In-Reply-To: <235ce0a9-1db1-4558-817b-6f92f22be5ab@icloud.com>
+References: <20241203-const_dfc_done-v2-0-7436a98c497f@quicinc.com>
+	 <g32cigmktmj4egkq2tof27el2yss4liccfxgebkgqvkil32mlb@e3ta4ezv7y4m>
+	 <9d34bd6f-b120-428a-837b-5a5813e14618@icloud.com>
+	 <2024120320-manual-jockey-dfd1@gregkh>
+	 <b9885785-d4d4-4c72-b425-3dc552651d7e@icloud.com>
+	 <8eb7c0c54b280b8eb72f82032ede802c001ab087.camel@HansenPartnership.com>
+	 <8fb887a0-3634-4e07-9f0d-d8d7c72ca802@t-8ch.de>
+	 <f5ea7e17-5550-4658-8f4c-1c51827c7627@icloud.com>
+	 <108c63c753f2f637a72c2e105ac138f80d4b0859.camel@HansenPartnership.com>
+	 <235ce0a9-1db1-4558-817b-6f92f22be5ab@icloud.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: sh-sci: Use plain struct copy in
- early_console_setup()
-Content-Language: en-US
-To: Geert Uytterhoeven <geert+renesas@glider.be>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Wolfram Sang <wsa+renesas@sang-engineering.com>,
- Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
- Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc: linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
- linux-sh@vger.kernel.org
-References: <e097e5c11afe5bd4c01135779c9a40e707ef6374.1733243287.git.geert+renesas@glider.be>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-In-Reply-To: <e097e5c11afe5bd4c01135779c9a40e707ef6374.1733243287.git.geert+renesas@glider.be>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Hi, Geert,
-
-On 03.12.2024 18:30, Geert Uytterhoeven wrote:
-> Using memcpy() prevents the compiler from doing any checking on the
-> types of the passed pointer parameters.  Copy the structure using struct
-> assignment instead, to increase type-safety.
+On Wed, 2024-12-04 at 20:26 +0800, Zijun Hu wrote:
+> On 2024/12/3 23:34, James Bottomley wrote:
+> > > > This also enables an incremental migration.
+> > > change the API prototype from:
+> > > device_find_child(..., void *data_0, int (*match)(struct device
+> > > *dev, void *data));
+> > > 
+> > > to:
+> > > device_find_child(..., const void *data_0, int (*match)(struct
+> > > device *dev, const void *data));
+> > > 
+> > > For @data_0,  void * -> const void * is okay.
+> > > but for @match, the problem is function pointer type
+> > > incompatibility.
+> > > 
+> > > there are two solutions base on discussions.
+> > > 
+> > > 1) squashing likewise Greg mentioned.
+> > >    Do all of the "prep work" first, and then
+> > >    do the const change at the very end, all at once.
+> > > 
+> > > 2)  as changing platform_driver's remove() prototype.
+> > > Commit: e70140ba0d2b ("Get rid of 'remove_new' relic from
+> > > platform driver struct")
+> > > 
+> > >  introduce extra device_find_child_new() which is constified  ->
+> > > use *_new() replace ALL device_find_child() instances one by one
+> > > -> remove device_find_child() -> rename *_new() to
+> > > device_find_child() once.
+> > Why bother with the last step, which churns the entire code base
+> > again?
 > 
-> No change in generated code on all relevant architectures
-> (arm/arm64/riscv/sh).
+> keep the good API name device_find_child().
+
+Well, I think it's a good opportunity to rename the API better, but if
+that's the goal, you can still do it with _Generic() without churning
+the code base a second time.  The example is in
+slab.h:kmem_cache_create
+
+> > Why not call the new function device_find_child_const() and simply
+> > keep it (it's descriptive of its function).  That way you can have
+> > a patch series without merging and at the end simply remove the old
+> > function.
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> device_find_child is a good name for the API, 'find' already means
+> const.
 
-I've tested this on RZ/G3S on top of series at [1] and device tree + clock
-patches from [2], with renesas_defconfig and with upstream config, in the
-following scenarios:
+Not to me it doesn't, but that's actually not what I think is wrong
+with the API name: it actually only returns the first match, so I'd
+marginally prefer it to be called device_find_first_child() ... not
+enough to churn the code to change it, but since you're doing that
+anyway it might make sense as an update.
 
-1/ "earlycon keep_bootcon" in bootargs
-2/ "earlycon" in bootargs
-3/ none of the "earlycon keep_bootcon", "earlycon" in bootargs
+Regards,
 
-All good!
+James
 
-Tested-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-
-Thank you,
-Claudiu
-
-[1]
-https://lore.kernel.org/all/20241204155806.3781200-1-claudiu.beznea.uj@bp.renesas.com/
-[2]
-https://lore.kernel.org/all/20241115134401.3893008-1-claudiu.beznea.uj@bp.renesas.com/
-
-> ---
->  drivers/tty/serial/sh-sci.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index df523c7444230836..1ed13ce2c2952547 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -3542,7 +3542,7 @@ static int __init early_console_setup(struct earlycon_device *device,
->  		return -ENODEV;
->  
->  	device->port.type = type;
-> -	memcpy(&sci_ports[0].port, &device->port, sizeof(struct uart_port));
-> +	sci_ports[0].port = device->port;
->  	port_cfg.type = type;
->  	sci_ports[0].cfg = &port_cfg;
->  	sci_ports[0].params = sci_probe_regmap(&port_cfg);
