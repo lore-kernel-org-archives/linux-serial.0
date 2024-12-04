@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CDC3212B1A;
-	Wed,  4 Dec 2024 23:35:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD712215F49;
+	Wed,  4 Dec 2024 23:35:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733355329; cv=none; b=dIjEZopfUEGcFB7lB3eUiCr7E5R9JZk7Uq9IMiG7CRP22UckETyu5vonwrwmODW/7a2taBbpTedvowieYcC0ifgfrsBWbSbYDFeki1f6q0L8WhcAFOVe/2nyUpApLB0S7clgIWROMFlzIYbgrd1+cncpP8/9WQXj6cvw301IJTM=
+	t=1733355348; cv=none; b=awY8juF/uu90Q5A3u8y1Io73ArSpvCIjTmFuQ6pvhvy6KBTMXxLPBw9+74WG2HJNKWte/h8D43xcPpN6KdWp3iqDjvg6nyjFmghGNb8QLJMdF4f3sNf1i94DSSnv3qtJR+Uit/60yQZplA0jbW9gpTH8M7yCORxl8l7PCisvLG8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733355329; c=relaxed/simple;
-	bh=nXLeo5Lvnrbx7/XuHNCN/7+mLimUxnLn37cF4/DCK+w=;
+	s=arc-20240116; t=1733355348; c=relaxed/simple;
+	bh=334qt/j7qYLk4mEYTYpVdCFHGSuiH7C3EuTPiPIgl6I=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lISbSy6+uvUz4HGYVWSJ2n9dWRqjZ/2dE4x4Ycq2xysPf2d8BorLG5jQCuAmZcYAiNOjF8jYJ6ccPqcwpvKBXF8dBY/T865oGj2C07czRYWi4PXFOHw0DE6DY7UpFIdKVR/y0TxmfbSrHNvE+38Y3mCS8JBjahhE2yRWwMoCKFQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RbsB5HLg; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=XdtGeCYgue9dMWZsuAB1wBW5YGiRVexyKaj7QJoHmIkll0kpV6OgLxhdn+oqnD/1VNWgbvgbx9UkpJVHgWpn6ENgoURPR30CXa4qGgS2Lx6rB6BMR5NyV5tVkbbzCVWl0WrVVldHD+rTmMvZ+Epj2ZJY/JBu+Qyxv1zElJXGftU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r5MkavW1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RbsB5HLg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AA2CC4CED6;
-	Wed,  4 Dec 2024 23:35:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r5MkavW1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B75AC4CED6;
+	Wed,  4 Dec 2024 23:35:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733355325;
-	bh=nXLeo5Lvnrbx7/XuHNCN/7+mLimUxnLn37cF4/DCK+w=;
+	s=k20201202; t=1733355348;
+	bh=334qt/j7qYLk4mEYTYpVdCFHGSuiH7C3EuTPiPIgl6I=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=RbsB5HLgEGQG7gxSo+AyRbgY9PEvgVNMo9qYhNnGdHPsHcz6ajWwmFcp0PSeLwttA
-	 wJxS02SNKCbj7on0MLgQjic/VKC0gcR01qYCwKCn+j+fZQ+LU1EoALvwYrnOGac1Q8
-	 9oa1p8l13ubHV4TDL/RHGS5bHiFUQqV5emUHtWsqzjQbzONINRgazj496HZy5m8I15
-	 DmISXK4EvwFXuEk1cjjGA4BCXdzLDu4SdVwk2zyU/IpxNQSrZET1qnGPiPDz817bkz
-	 edwoesKyBp+D0S/9BpK6wa/ju0XDjL6oqhCz/tBZCq92wk0T2ztGCLTGAPt/eULXQW
-	 rUhBVYRRs4jbw==
+	b=r5MkavW18GD5ueA1W1L97iCVNKR0QDyCB5yMmRKZlEZY6B94jaymkHsT55HJn3plO
+	 5gbR+/56VsHcd2hGOMhSqNWAWj0+PQo/aqyiuE5cMQfLgjXKgEwiIgwr5dS7Kb2pkX
+	 V6BHauqFuNbtfP/FAsYZECvS8Lt2V49w4QrkpFnINS7B5Rase0DhtUaLoKY/1yVlGy
+	 iZRa3SUf+M06xnc34gHzpISZ+EReEkJ6P6VF+5VnxkY9XcPZWg48Y1rzUjqta0JJ5+
+	 G8tTbkShRYFNewHsu0OVAmkz9PiB4/3XP+0wMz+cizGbaK4YBozjLjQ7dxkMIrJETz
+	 vi7/L51SafQ3Q==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -38,12 +38,12 @@ Cc: Inochi Amaoto <inochiama@gmail.com>,
 	unicorn_wang@outlook.com,
 	inochiama@outlook.com,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.11 3/7] serial: 8250_dw: Add Sophgo SG2044 quirk
-Date: Wed,  4 Dec 2024 17:23:45 -0500
-Message-ID: <20241204222402.2249702-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.6 3/6] serial: 8250_dw: Add Sophgo SG2044 quirk
+Date: Wed,  4 Dec 2024 17:24:12 -0500
+Message-ID: <20241204222425.2250046-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241204222402.2249702-1-sashal@kernel.org>
-References: <20241204222402.2249702-1-sashal@kernel.org>
+In-Reply-To: <20241204222425.2250046-1-sashal@kernel.org>
+References: <20241204222425.2250046-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -53,7 +53,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.11.10
+X-stable-base: Linux 6.6.63
 Content-Transfer-Encoding: 8bit
 
 From: Inochi Amaoto <inochiama@gmail.com>
@@ -76,10 +76,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index ab9e7f2042602..51894c93c8a31 100644
+index 8aed33be2ebf4..eaf4a907380aa 100644
 --- a/drivers/tty/serial/8250/8250_dw.c
 +++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -750,7 +750,7 @@ static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
+@@ -785,7 +785,7 @@ static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
  	.quirks = DW_UART_QUIRK_CPR_VALUE | DW_UART_QUIRK_IS_DMA_FC,
  };
  
@@ -88,7 +88,7 @@ index ab9e7f2042602..51894c93c8a31 100644
  	.usr_reg = DW_UART_USR,
  	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
  };
-@@ -760,7 +760,8 @@ static const struct of_device_id dw8250_of_match[] = {
+@@ -795,7 +795,8 @@ static const struct of_device_id dw8250_of_match[] = {
  	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
  	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
  	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
