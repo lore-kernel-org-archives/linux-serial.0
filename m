@@ -1,183 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9F5A190696;
-	Wed,  4 Dec 2024 21:23:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3826C192B99
+	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 21:38:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733347428; cv=none; b=CiBokvckQ5bGU5v5ucOjHQGoeItYvKBL5UiA2O21vt/7wBb9Ln/M2wHpRl6zeMe0g9hbrDpNY3ALa0xyN5lAoaF/9V7DfmtNt/0/s4OLJdXGgQxOchsyZqnqYbGWTXZSDF2uVmMZsTazU3eaX3AWyzPOmBHsQFNh66p+Ek12HVo=
+	t=1733348311; cv=none; b=BcHmUtgdtAYDZXStDlxPJoiLReNtPIY5Q4CGzVb8AVJknN31KpzFRpZcXLCkWy1081CHPzNO5fjwCH3X/iwPBdAqUoV+tkg/LRlHPljeeiPKHsXksmM7I3KxbtjCoN1ISRMkQxepXkS4gLHNF2eTfQKATnKuHaABzKjHRtsCx68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733347428; c=relaxed/simple;
-	bh=SYresexVuihEbtFpKspS20LpBlURd+mfZxrEx78+LYw=;
+	s=arc-20240116; t=1733348311; c=relaxed/simple;
+	bh=PEf0TIVTGAtIoNHi4r/UatjwkdUVK11dFXmdPoci8T8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k91dpjaTFxiWGk/8btwHSgytgYX/7Cn+QdGyHcFwfWMEy6yRupAiRy/kfgeHvNpQCKKWtZNgdmFNi6DypffC51jCk4+ecfSPmPSBa53tlw14I/1O+O6VhYLvAkbzeBqtrUmpz4V0F5xaoTSgdRS1g4SRVdcUNZDM6/27fvvm22M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KsAOUROv; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=QMtJme1lcr5tnKyI2dJQDb5CWnkp77L0nE81fW3vIdzHxP/n70MaUfkr4EA9yNiG2Eu5BxCzRFo9f5JKctFc4YvIro+KGhFPGkCyOlPWjxvsifkMRzWurRn8Jd1MCqZg8GyjaIphemdnuJ8ys69rj2J6PQUawtB0Jt57QmWp1IE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=FwcU3EnA; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KsAOUROv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1733347427; x=1764883427;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SYresexVuihEbtFpKspS20LpBlURd+mfZxrEx78+LYw=;
-  b=KsAOUROvA2XltG8pAJo9MkZEuvjakffRL6HpUZKSZ+mZCx29HyXD/PF1
-   hHQbZqR9CiC5YpCLNn8jWXhb6P/LK76CCem0wm2jCW0mxJ1jWOPK6/76i
-   4jhL2WmBCMTlD4WwRI4138UEh09nAgEk7WH7XXOO/TCzSFeQN6X8MY8Yv
-   LBmNA4lCsJH/Fwa1DcR5ZF8Q1u2yN9+9UyXtQvjAeEjkOfK6SOgVVcGMq
-   1TkfPI5wW0sN+B5YMHxvHTyKjgt0/uHbK8XsaScNF6WH/9XHKuoe+EMyb
-   /ZkeuUWMnpZP6eq5PiNNFgyz6Pc60zL7L85rSlwvU+htRt1Ao93zh7O/g
-   Q==;
-X-CSE-ConnectionGUID: zLbDmcKuTA+7np2WNFjWDg==
-X-CSE-MsgGUID: lMFSsmScTp2XWj0syw+KBw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11276"; a="36480157"
-X-IronPort-AV: E=Sophos;i="6.12,208,1728975600"; 
-   d="scan'208";a="36480157"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Dec 2024 13:23:45 -0800
-X-CSE-ConnectionGUID: I5msKDoLTuiUgPkb0enNRw==
-X-CSE-MsgGUID: +kYhVszvTda+p8e150Savg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,208,1728975600"; 
-   d="scan'208";a="93783615"
-Received: from lkp-server02.sh.intel.com (HELO 1f5a171d57e2) ([10.239.97.151])
-  by orviesa009.jf.intel.com with ESMTP; 04 Dec 2024 13:23:39 -0800
-Received: from kbuild by 1f5a171d57e2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tIwqJ-0003Vq-1m;
-	Wed, 04 Dec 2024 21:23:32 +0000
-Date: Thu, 5 Dec 2024 05:22:07 +0800
-From: kernel test robot <lkp@intel.com>
-To: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
-	andersson@kernel.org, konradybcio@kernel.org,
-	johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	=quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com,
-	Viken Dadhaniya <quic_vdadhani@quicinc.com>,
-	Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-Subject: Re: [PATCH v1 4/7] soc: qcom: geni-se:: Add support to load QUP SE
- Firmware via Linux subsystem
-Message-ID: <202412050408.rTlLBe7e-lkp@intel.com>
-References: <20241204150326.1470749-5-quic_vdadhani@quicinc.com>
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="FwcU3EnA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=relu
+	rSGfk4UWvf/m26HwWLUB2BXRcYs4tnMyP0GrJrE=; b=FwcU3EnAmLIiolpfr866
+	3SeCzWrSjjYN9SFg/cE7Whjs1cF/tvVrTb0pdqr3axQUNFWJb6aInJxy81VE9hdI
+	G/Cgltsk9tP1DQd+o1H6dEPtf1/heToaF+HHkcf3axKi0s1YNk3ou7AeZfoN3w7q
+	E0wG6iPz9afAMD+UbisjcZz5RT8Ije+C5MPg/WuZRynWOWxuIQywcEh8BX5qZf8L
+	WY7fzojQN+n6CiUkxmWm/S+WVy38Sf6f1p2p4yJxSMMu1ZbVI4RjIWAHcXkeQVu1
+	7c260z+B1J8WzGbogsNGJbVeGsJQ3RvG4M8BXbL9gZvDTpJaMiNHe+W5Qbt2QHmg
+	sQ==
+Received: (qmail 3704914 invoked from network); 4 Dec 2024 22:38:18 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 4 Dec 2024 22:38:18 +0100
+X-UD-Smtp-Session: l3s3148p1@lmeYmXgoFpEujnvc
+Date: Wed, 4 Dec 2024 22:38:17 +0100
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: Claudiu <claudiu.beznea@tuxon.dev>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	geert+renesas@glider.be, prabhakar.mahadev-lad.rj@bp.renesas.com,
+	lethal@linux-sh.org, g.liakhovetski@gmx.de, groeck@chromium.org,
+	mka@chromium.org, ulrich.hecht+renesas@gmail.com,
+	ysato@users.sourceforge.jp, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Subject: Re: [PATCH RFT 0/6] serial: sh-sci: Fixes for earlycon and
+ keep_bootcon
+Message-ID: <Z1DLyQdzUzJzRUJJ@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Claudiu <claudiu.beznea@tuxon.dev>, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, geert+renesas@glider.be,
+	prabhakar.mahadev-lad.rj@bp.renesas.com, lethal@linux-sh.org,
+	g.liakhovetski@gmx.de, groeck@chromium.org, mka@chromium.org,
+	ulrich.hecht+renesas@gmail.com, ysato@users.sourceforge.jp,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+References: <20241204155806.3781200-1-claudiu.beznea.uj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="DeUx3klT7io+wydR"
+Content-Disposition: inline
+In-Reply-To: <20241204155806.3781200-1-claudiu.beznea.uj@bp.renesas.com>
+
+
+--DeUx3klT7io+wydR
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20241204150326.1470749-5-quic_vdadhani@quicinc.com>
+Content-Transfer-Encoding: quoted-printable
 
-Hi Viken,
+Hi Claudiu,
 
-kernel test robot noticed the following build errors:
+> in the following scenarios:
+>=20
+> 1/ "earlycon keep_bootcon" were present in bootargs
+> 2/ only "earlycon" was present in bootargs
+> 3/ none of the "earlycon" or "earlycon keep_bootcon" were present in
+>    bootargs
+=2E..
+> Please give it a try on your devices as well.
 
-[auto build test ERROR on andi-shyti/i2c/i2c-host]
-[also build test ERROR on tty/tty-testing tty/tty-next tty/tty-linus broonie-spi/for-next linus/master v6.13-rc1 next-20241204]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Will happily do so. Is there something to look for? Except for "it
+works"?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Viken-Dadhaniya/dt-bindings-i2c-qcom-i2c-geni-Document-DT-properties-for-QUP-firmware-loading/20241204-230736
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/andi.shyti/linux.git i2c/i2c-host
-patch link:    https://lore.kernel.org/r/20241204150326.1470749-5-quic_vdadhani%40quicinc.com
-patch subject: [PATCH v1 4/7] soc: qcom: geni-se:: Add support to load QUP SE Firmware via Linux subsystem
-config: x86_64-buildonly-randconfig-003-20241205 (https://download.01.org/0day-ci/archive/20241205/202412050408.rTlLBe7e-lkp@intel.com/config)
-compiler: clang version 19.1.3 (https://github.com/llvm/llvm-project ab51eccf88f5321e7c60591c5546b254b6afab99)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20241205/202412050408.rTlLBe7e-lkp@intel.com/reproduce)
+Happy hacking,
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202412050408.rTlLBe7e-lkp@intel.com/
-
-All error/warnings (new ones prefixed by >>):
-
-   In file included from drivers/soc/qcom/qcom-geni-se.c:11:
-   In file included from include/linux/dma-mapping.h:8:
-   In file included from include/linux/scatterlist.h:8:
-   In file included from include/linux/mm.h:2223:
-   include/linux/vmstat.h:518:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
-     518 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
-         |                               ~~~~~~~~~~~ ^ ~~~
->> drivers/soc/qcom/qcom-geni-se.c:975:9: error: assigning to 'struct elf32_phdr *' from 'const struct elf32_phdr *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
-     975 |                 *phdr = &phdrs[i];
-         |                       ^ ~~~~~~~~~
->> drivers/soc/qcom/qcom-geni-se.c:1182:2: warning: variable 'reg_value' is uninitialized when used here [-Wuninitialized]
-    1182 |         reg_value |= DMA_GENERAL_CFG_AHB_SEC_SLV_CLK_CGC_ON_BMSK |
-         |         ^~~~~~~~~
-   drivers/soc/qcom/qcom-geni-se.c:1136:18: note: initialize the variable 'reg_value' to silence this warning
-    1136 |         u32 i, reg_value, mask, ramn_cnt;
-         |                         ^
-         |                          = 0
-   drivers/soc/qcom/qcom-geni-se.c:1268:5: warning: no previous prototype for function 'qup_fw_load' [-Wmissing-prototypes]
-    1268 | int qup_fw_load(struct qup_se_rsc *rsc)
-         |     ^
-   drivers/soc/qcom/qcom-geni-se.c:1268:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-    1268 | int qup_fw_load(struct qup_se_rsc *rsc)
-         | ^
-         | static 
-   3 warnings and 1 error generated.
+   Wolfram
 
 
-vim +975 drivers/soc/qcom/qcom-geni-se.c
+--DeUx3klT7io+wydR
+Content-Type: application/pgp-signature; name="signature.asc"
 
-   946	
-   947	/**
-   948	 * read_elf: Function to read elf file.
-   949	 * @rsc: A pointer to SE resources structure.
-   950	 * @fw: A pointer to the fw buffer.
-   951	 * @pelfseg: A pointer to SE specific elf header.
-   952	 * @phdr: pointer to one of the valid headers from list from fw buffer.
-   953	 *
-   954	 * This function reads the ELF file and outputs the pointer to header
-   955	 * data which contains the FW data and any other details.
-   956	 *
-   957	 * return: Return 0 if no error, else return error value.
-   958	 */
-   959	static int read_elf(struct qup_se_rsc *rsc, const struct firmware *fw,
-   960			    struct elf_se_hdr **pelfseg, struct elf32_phdr **phdr)
-   961	{
-   962		const struct elf32_phdr *phdrs;
-   963		const struct elf32_hdr *ehdr;
-   964		const u8 *addr;
-   965		int i;
-   966	
-   967		ehdr = (struct elf32_hdr *)fw->data;
-   968	
-   969		if (ehdr->e_phnum < 2)
-   970			return -EINVAL;
-   971	
-   972		phdrs = (struct elf32_phdr *)(ehdr + 1);
-   973	
-   974		for (i = 0; i < ehdr->e_phnum; i++) {
- > 975			*phdr = &phdrs[i];
-   976			if (!elf_phdr_valid(*phdr))
-   977				continue;
-   978	
-   979			if ((*phdr)->p_filesz >= sizeof(struct elf_se_hdr)) {
-   980				addr =  fw->data + (*phdr)->p_offset;
-   981				*pelfseg = (struct elf_se_hdr *)addr;
-   982	
-   983				if ((*pelfseg)->magic == MAGIC_NUM_SE &&
-   984				    (*pelfseg)->version == 1 &&
-   985				    valid_seg_size(*pelfseg, (*phdr)->p_filesz))
-   986					if ((*pelfseg)->serial_protocol == rsc->protocol &&
-   987					    (*pelfseg)->serial_protocol != GENI_SE_NONE)
-   988						return 0;
-   989			}
-   990		}
-   991		return -EINVAL;
-   992	}
-   993	
+-----BEGIN PGP SIGNATURE-----
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmdQy8UACgkQFA3kzBSg
+KbYIVQ//SkakjiEEA2dKMMQiuQ9f8TlGspKLHvZDLHL55jSr0JipzU83BgdSR8DJ
+0N97uZ8tVroQk2/AxYqtxeiPpyAGTTIJR38MyPGqknURfm1EF5AB/mEXk63cCEns
+TvN24BOu5GbVj0Nexpt3MMpQPJAOhib9Pp4pAnqrtrUgGym7TdA3+8WwMBQWnfmy
+g15WVsofR+R77UI8VWCx/1LJy2q0O+SJqcmufdVAKKHfkEJMOZePuejKMAqRxjxm
+bNCre46iYU8T4rfgiJp9ZiaVG1lcdQwgxk/UONbnvCT0ul5QRGfyIIDd+oGScAFX
+d3XoGaf3nP08d/oElK5GFKW24NNfigDM9G560r8D6HDt1Uxc1FOMXOVOrvBHOfFa
+kON2ZeV7cCrUZl/3gOeiQT0W2NUSlC6BlcCl7ReJnNBDCs+0zsgDJdeYA0ql7jaw
+4wgV6QKul4yKyfh6fROvgFTpU/weMLtUcdyay7O7lN04H/yGJvAee8Oo7qCLBzGx
+Vr8HS8D3Wqjh88qwIdZJ7JIKpkyhAMRXCEWwKdMXNw51RryWDuCoGk1chmnbkeQN
+NqxI4L7Ha5XtiuQNXqB5guaJwQjLZxOIQxCbg6OrQnIzE4LngzQOUzSWPIoe2oH4
+bPE9vYF17VtGOhrgzqERQl/J3DPzas9AVU6h3qtkC1S4tKj3Srg=
+=4Gxl
+-----END PGP SIGNATURE-----
+
+--DeUx3klT7io+wydR--
