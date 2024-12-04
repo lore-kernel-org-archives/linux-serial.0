@@ -1,37 +1,37 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from pv50p00im-zteg10011401.me.com (pv50p00im-zteg10011401.me.com [17.58.6.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85FE01B0F36;
-	Wed,  4 Dec 2024 11:32:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50D771B87C4
+	for <linux-serial@vger.kernel.org>; Wed,  4 Dec 2024 12:27:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=17.58.6.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733311968; cv=none; b=o/YqFD0rBZdNJAJvwkrf0/o9CP+e1gf7y56dO9wxUuYQz5OB6sFHvmzfCsOgpOtmK8/EV04D0IyjpHDFlZUevPVBEqZCAmLgsJXUckb645Cvk1elLgiujrmm2ztuJEj7Qk5/x1zG0XjlDBjYxURXCqoxAk9zCZPfBvS1qm6NibU=
+	t=1733315227; cv=none; b=W7vt/NbOrrVomhWIThQF4p3Fa6kV8kFGQTq6OX+bbDZdliNf686SrJCGD9qzJQEEnnecr9TYqa2KalX405UUHQobTAY5/lF1Ago0NBVngwectW9jZhkoZdgpRka4fnUZnhys2mRcM9ZGf07mSpIySM8qgzWI5NeRb6D2E1MrMjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733311968; c=relaxed/simple;
-	bh=dA1yiddXlJ43w+M4Cyz2yPT4xcOLtzQ6cRdcjBQFf5I=;
+	s=arc-20240116; t=1733315227; c=relaxed/simple;
+	bh=b3cKO8E37kdGEfPQBy2NupErjAuGZ0w9V7NN+3pjucc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EG6kutDxfRbszBP5ga3D2c4BLq2+NrHs9M4jNQr3B4cqopI8U2Ql7wCHtMrtWr6N+BevOStup5pmUN2PI6hGucDVP+CDUY+BLX5JimAgOjdivx//0UXyAuH6eLTBJz6oSML19lML2UpGaDMM2m1JYlE9Ky5/tNR2ZOSTHIbcecE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yoseli.org; spf=none smtp.mailfrom=yoseli.org; dkim=pass (2048-bit key) header.d=yoseli.org header.i=@yoseli.org header.b=bbjt92vz; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=yoseli.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=yoseli.org
+	 In-Reply-To:Content-Type; b=FRYgFgbVJTu+ifuyH5U4tB9r/jFGT2F9vkkSzWIy50tXL0271m8ojgmj2IVOni12465/b+Xr/kq/CqnHHqu+YRGRFPIhDrdvIyYpKAR7p1PaJVXwMRAr5rL5hO96OmZHf44vOkMKJUyjQc2VNhx2y9iPvB3WysIZwbEM37rj0+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=aDx0LVkM; arc=none smtp.client-ip=17.58.6.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yoseli.org header.i=@yoseli.org header.b="bbjt92vz"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 7886640004;
-	Wed,  4 Dec 2024 11:32:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yoseli.org; s=gm1;
-	t=1733311958;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=gg5n5zYJ5hayh4Xp4MAljdiNLsCqbkWepRSpw2Wh1aU=;
-	b=bbjt92vzK5cON2e4T4g0ZMH7LTJ21rPNUwGRcQPyXkSAHnl/ojxXCbgiUVYhrrE8d6HAgy
-	OPS44/6Io+2+RY+Hg4tn4g1m+LHTNJRIcWoRvvAD3PMdZ/Xng5OsshdRx8OvX0btDeQ1kL
-	TElYjcdtE+howsLUHTGlUiQ9fsa6hLkT6n42ylg8oow56k7S9mERweKL0w8WZlMSoo+0sn
-	HNCh6W05m1uQNIzNksoWVIN0ieuOwcTJQb1Q9FAuYVQE1pv3hVv0p6puLkQFPTRlFE2yKL
-	8/KzLqOtBN25H3RDxA0HYNoqa6zMH6ygkKI/Fl8u30g15jI0A0XN9aNH6321VA==
-Message-ID: <014e09e3-f311-46f8-b159-6913bd6bba2f@yoseli.org>
-Date: Wed, 4 Dec 2024 12:32:36 +0100
+	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="aDx0LVkM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
+	s=1a1hai; t=1733315226;
+	bh=tDbYa+5DWmHdZ9lmVLNA7xMZvJoZ/PCpc6Zau1xliNU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:
+	 x-icloud-hme;
+	b=aDx0LVkMUXFI75QpCfQtwEzziTl2NnjdGJ/9Nl6EjkD9AoNOPkj0pNJDmDS0yOxmo
+	 cFAXLbMOmPcOl5uunRBBrqBVYZF5ppxfVoWTl3S1fXUPYvDXVgmxgrfgiOzuzDhljR
+	 JXz5mSklSuuNIhx7A4INyoL4v8SXD0un9r9AkY3EWP5hUjq0cVMBNRe3UAI+WH+UEp
+	 aQcXPRWXKjSKZb3dQybv2/fEczrg8mOY6isUSLdmtOWnHvZ0W1/xlosR4mnRECds2h
+	 6Ay6kSNLijQWwdsoHl1pqn9BntMizpWoDbFHr5J8zkhSqKMjCSXP0KeQ2EZIN5IQ7P
+	 WHMoRxUFUJF5Q==
+Received: from [192.168.1.26] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+	by pv50p00im-zteg10011401.me.com (Postfix) with ESMTPSA id B793434BA6BD;
+	Wed,  4 Dec 2024 12:26:37 +0000 (UTC)
+Message-ID: <235ce0a9-1db1-4558-817b-6f92f22be5ab@icloud.com>
+Date: Wed, 4 Dec 2024 20:26:22 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -39,393 +39,118 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] m68k: coldfire: Support resources for UART
-To: Greg Ungerer <gerg@linux-m68k.org>,
- Geert Uytterhoeven <geert@linux-m68k.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20241202-m5441x_uart_resource-v1-1-6b28cb295fb5@yoseli.org>
- <52517849-48ed-4fe8-8638-ec2a4dc2bcbd@linux-m68k.org>
- <a06e4806-8b5a-4073-96d5-2a37103e572f@yoseli.org>
- <cf9cd17a-30d6-43e7-ae59-2f34d6f2dc00@linux-m68k.org>
+Subject: Re: [PATCH v2 00/32] driver core: Constify API device_find_child()
+ and adapt for various existing usages
+To: James Bottomley <James.Bottomley@HansenPartnership.com>,
+ =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <thomas@t-8ch.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Philipp Zabel <p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>,
+ Martin Tuma <martin.tuma@digiteqautomotive.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Andreas Noever <andreas.noever@gmail.com>,
+ Michael Jamet <michael.jamet@intel.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Yehezkel Bernat <YehezkelShB@gmail.com>,
+ Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski
+ <brgl@bgdev.pl>, Andrew Lunn <andrew@lunn.ch>,
+ Vladimir Oltean <olteanv@gmail.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
+ Vishal Verma <vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ira Weiny <ira.weiny@intel.com>, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+ Mike Christie <michael.christie@oracle.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ Nilesh Javali <njavali@marvell.com>,
+ Manish Rangankar <mrangankar@marvell.com>,
+ GR-QLogic-Storage-Upstream@marvell.com, Davidlohr Bueso <dave@stgolabs.net>,
+ Jonathan Cameron <jonathan.cameron@huawei.com>,
+ Alison Schofield <alison.schofield@intel.com>,
+ Andreas Larsson <andreas@gaisler.com>, Stuart Yoder <stuyoder@gmail.com>,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, Jens Axboe <axboe@kernel.dk>,
+ Sudeep Holla <sudeep.holla@arm.com>,
+ Cristian Marussi <cristian.marussi@arm.com>, Ard Biesheuvel
+ <ardb@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
+ linux-pwm@vger.kernel.org, nvdimm@lists.linux.dev,
+ linux1394-devel@lists.sourceforge.net, linux-serial@vger.kernel.org,
+ linux-sound@vger.kernel.org, open-iscsi@googlegroups.com,
+ linux-scsi@vger.kernel.org, linux-cxl@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+ arm-scmi@vger.kernel.org, linux-efi@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
+References: <20241203-const_dfc_done-v2-0-7436a98c497f@quicinc.com>
+ <g32cigmktmj4egkq2tof27el2yss4liccfxgebkgqvkil32mlb@e3ta4ezv7y4m>
+ <9d34bd6f-b120-428a-837b-5a5813e14618@icloud.com>
+ <2024120320-manual-jockey-dfd1@gregkh>
+ <b9885785-d4d4-4c72-b425-3dc552651d7e@icloud.com>
+ <8eb7c0c54b280b8eb72f82032ede802c001ab087.camel@HansenPartnership.com>
+ <8fb887a0-3634-4e07-9f0d-d8d7c72ca802@t-8ch.de>
+ <f5ea7e17-5550-4658-8f4c-1c51827c7627@icloud.com>
+ <108c63c753f2f637a72c2e105ac138f80d4b0859.camel@HansenPartnership.com>
 Content-Language: en-US
-From: Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
-In-Reply-To: <cf9cd17a-30d6-43e7-ae59-2f34d6f2dc00@linux-m68k.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Zijun Hu <zijun_hu@icloud.com>
+In-Reply-To: <108c63c753f2f637a72c2e105ac138f80d4b0859.camel@HansenPartnership.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-GND-Sasl: jeanmichel.hautbois@yoseli.org
+X-Proofpoint-ORIG-GUID: Ptou9-aUclkqdkvBrep0JqLqpE5OAxzN
+X-Proofpoint-GUID: Ptou9-aUclkqdkvBrep0JqLqpE5OAxzN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2024-12-04_09,2024-12-04_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
+ mlxlogscore=999 suspectscore=0 malwarescore=0 bulkscore=0 mlxscore=0
+ spamscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2308100000 definitions=main-2412040096
 
-Hi Greg,
-
-On 04/12/2024 12:15, Greg Ungerer wrote:
-> Hi JM,
-> 
-> On 4/12/24 20:58, Jean-Michel Hautbois wrote:
->> On 04/12/2024 11:54, Greg Ungerer wrote:
->>> On 2/12/24 20:34, Jean-Michel Hautbois wrote:
->>>> In order to use the eDMA channels for UART, the mcf_platform_uart needs
->>>> to be changed. Instead of adding another custom member for the
->>>> structure, use a resource tree in a platform_device per UART. It then
->>>> makes it possible to have a device named like "mcfuart.N" with N the
->>>> UART number.
->>>>
->>>> Later, adding the dma channel in the mcf tty driver will also be more
->>>> straightfoward.
->>>>
->>>> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@yoseli.org>
->>>> ---
->>>>   arch/m68k/coldfire/device.c | 96 +++++++++++++ 
->>>> +-------------------------------
->>>>   drivers/tty/serial/mcf.c    | 69 +++++++++++++++++++-------------
->>>>   2 files changed, 70 insertions(+), 95 deletions(-)
->>>>
->>>> diff --git a/arch/m68k/coldfire/device.c b/arch/m68k/coldfire/device.c
->>>> index 
->>>> b6958ec2a220cf91a78a14fc7fa18749451412f7..fd7d0b0ce7eb2970cb8ffe33589fe8d7e88c268d 100644
->>>> --- a/arch/m68k/coldfire/device.c
->>>> +++ b/arch/m68k/coldfire/device.c
->>>> @@ -24,73 +24,35 @@
->>>>   #include <linux/platform_data/dma-mcf-edma.h>
->>>>   #include <linux/platform_data/mmc-esdhc-mcf.h>
->>>> -/*
->>>> - *    All current ColdFire parts contain from 2, 3, 4 or 10 UARTS.
->>>> - */
->>>> -static struct mcf_platform_uart mcf_uart_platform_data[] = {
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE0,
->>>> -        .irq        = MCF_IRQ_UART0,
->>>> -    },
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE1,
->>>> -        .irq        = MCF_IRQ_UART1,
->>>> -    },
->>>> -#ifdef MCFUART_BASE2
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE2,
->>>> -        .irq        = MCF_IRQ_UART2,
->>>> -    },
->>>> -#endif
->>>> -#ifdef MCFUART_BASE3
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE3,
->>>> -        .irq        = MCF_IRQ_UART3,
->>>> -    },
->>>> -#endif
->>>> -#ifdef MCFUART_BASE4
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE4,
->>>> -        .irq        = MCF_IRQ_UART4,
->>>> -    },
->>>> -#endif
->>>> -#ifdef MCFUART_BASE5
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE5,
->>>> -        .irq        = MCF_IRQ_UART5,
->>>> -    },
->>>> -#endif
->>>> -#ifdef MCFUART_BASE6
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE6,
->>>> -        .irq        = MCF_IRQ_UART6,
->>>> -    },
->>>> -#endif
->>>> -#ifdef MCFUART_BASE7
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE7,
->>>> -        .irq        = MCF_IRQ_UART7,
->>>> +static u64 mcf_uart_mask = DMA_BIT_MASK(32);
->>>> +
->>>> +static struct resource mcf_uart0_resource[] = {
->>>> +    [0] = {
->>>> +        .start = MCFUART_BASE0,
->>>> +        .end   = MCFUART_BASE0 + 0x3fff,
->>>> +        .flags = IORESOURCE_MEM,
->>>>       },
->>>> -#endif
->>>> -#ifdef MCFUART_BASE8
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE8,
->>>> -        .irq        = MCF_IRQ_UART8,
->>>> +    [1] = {
->>>> +        .start = 2,
->>>> +        .end   = 3,
->>>> +        .flags = IORESOURCE_DMA,
->>>>       },
->>>> -#endif
->>>> -#ifdef MCFUART_BASE9
->>>> -    {
->>>> -        .mapbase    = MCFUART_BASE9,
->>>> -        .irq        = MCF_IRQ_UART9,
->>>> +    [2] = {
->>>> +        .start = MCF_IRQ_UART0,
->>>> +        .end   = MCF_IRQ_UART0,
->>>> +        .flags = IORESOURCE_IRQ,
->>>>       },
->>>> -#endif
->>>> -    { },
->>>>   };
->>>> -static struct platform_device mcf_uart = {
->>>> +static struct platform_device mcf_uart0 = {
->>>>       .name            = "mcfuart",
->>>>       .id            = 0,
->>>> -    .dev.platform_data    = mcf_uart_platform_data,
->>>> +    .num_resources = ARRAY_SIZE(mcf_uart0_resource),
->>>> +    .resource = mcf_uart0_resource,
->>>> +    .dev = {
->>>> +        .dma_mask = &mcf_uart_mask,
->>>> +        .coherent_dma_mask = DMA_BIT_MASK(32),
->>>> +    },
->>>>   };
->>>>   #ifdef MCFFEC_BASE0
->>>> @@ -485,12 +447,12 @@ static struct platform_device mcf_i2c5 = {
->>>>   static const struct dma_slave_map mcf_edma_map[] = {
->>>>       { "dreq0", "rx-tx", MCF_EDMA_FILTER_PARAM(0) },
->>>>       { "dreq1", "rx-tx", MCF_EDMA_FILTER_PARAM(1) },
->>>> -    { "uart.0", "rx", MCF_EDMA_FILTER_PARAM(2) },
->>>> -    { "uart.0", "tx", MCF_EDMA_FILTER_PARAM(3) },
->>>> -    { "uart.1", "rx", MCF_EDMA_FILTER_PARAM(4) },
->>>> -    { "uart.1", "tx", MCF_EDMA_FILTER_PARAM(5) },
->>>> -    { "uart.2", "rx", MCF_EDMA_FILTER_PARAM(6) },
->>>> -    { "uart.2", "tx", MCF_EDMA_FILTER_PARAM(7) },
->>>> +    { "mcfuart.0", "rx", MCF_EDMA_FILTER_PARAM(2) },
->>>> +    { "mcfuart.0", "tx", MCF_EDMA_FILTER_PARAM(3) },
->>>> +    { "mcfuart.1", "rx", MCF_EDMA_FILTER_PARAM(4) },
->>>> +    { "mcfuart.1", "tx", MCF_EDMA_FILTER_PARAM(5) },
->>>> +    { "mcfuart.2", "rx", MCF_EDMA_FILTER_PARAM(6) },
->>>> +    { "mcfuart.2", "tx", MCF_EDMA_FILTER_PARAM(7) },
->>>>       { "timer0", "rx-tx", MCF_EDMA_FILTER_PARAM(8) },
->>>>       { "timer1", "rx-tx", MCF_EDMA_FILTER_PARAM(9) },
->>>>       { "timer2", "rx-tx", MCF_EDMA_FILTER_PARAM(10) },
->>>> @@ -623,7 +585,7 @@ static struct platform_device mcf_flexcan0 = {
->>>>   #endif /* MCFFLEXCAN_SIZE */
->>>>   static struct platform_device *mcf_devices[] __initdata = {
->>>> -    &mcf_uart,
->>>> +    &mcf_uart0,
->>>>   #ifdef MCFFEC_BASE0
->>>>       &mcf_fec0,
->>>>   #endif
->>>> diff --git a/drivers/tty/serial/mcf.c b/drivers/tty/serial/mcf.c
->>>> index 
->>>> 93e7dda4d39acd23daf8c0d4c29ac8d666f263c5..07b8decfdb6005f0265dd130765e45c3fd1715eb 100644
->>>> --- a/drivers/tty/serial/mcf.c
->>>> +++ b/drivers/tty/serial/mcf.c
->>>> @@ -570,31 +570,46 @@ static struct uart_driver mcf_driver = {
->>>>   static int mcf_probe(struct platform_device *pdev)
->>>>   {
->>>> -    struct mcf_platform_uart *platp = dev_get_platdata(&pdev->dev);
->>>>       struct uart_port *port;
->>>> -    int i;
->>>> -
->>>> -    for (i = 0; ((i < MCF_MAXPORTS) && (platp[i].mapbase)); i++) {
->>>> -        port = &mcf_ports[i].port;
->>>> -
->>>> -        port->line = i;
->>>> -        port->type = PORT_MCF;
->>>> -        port->mapbase = platp[i].mapbase;
->>>> -        port->membase = (platp[i].membase) ? platp[i].membase :
->>>> -            (unsigned char __iomem *) platp[i].mapbase;
->>>> -        port->dev = &pdev->dev;
->>>> -        port->iotype = SERIAL_IO_MEM;
->>>> -        port->irq = platp[i].irq;
->>>> -        port->uartclk = MCF_BUSCLK;
->>>> -        port->ops = &mcf_uart_ops;
->>>> -        port->flags = UPF_BOOT_AUTOCONF;
->>>> -        port->rs485_config = mcf_config_rs485;
->>>> -        port->rs485_supported = mcf_rs485_supported;
->>>> -        port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
->>>> -
->>>> -        uart_add_one_port(&mcf_driver, port);
->>>> +    struct mcf_uart *pp;
->>>> +    struct resource *res;
->>>> +    void __iomem *base;
->>>> +    int id = pdev->id;
->>>> +
->>>> +    if (id == -1 || id >= MCF_MAXPORTS) {
->>>> +        dev_err(&pdev->dev, "uart%d out of range\n",
->>>> +            id);
->>>> +        return -EINVAL;
->>>>       }
->>>> +    port = &mcf_ports[id].port;
->>>> +    port->line = id;
->>>> +
->>>> +    base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
->>>> +    if (IS_ERR(base))
->>>> +        return PTR_ERR(base);
->>>> +
->>>> +    port->mapbase = res->start;
->>>> +    port->membase = base;
->>>> +
->>>> +    port->irq = platform_get_irq(pdev, 0);
->>>> +    if (port->irq < 0)
->>>> +        return port->irq;
->>>> +
->>>> +    port->type = PORT_MCF;
->>>> +    port->dev = &pdev->dev;
->>>> +    port->iotype = SERIAL_IO_MEM;
->>>> +    port->uartclk = MCF_BUSCLK;
->>>> +    port->ops = &mcf_uart_ops;
->>>> +    port->flags = UPF_BOOT_AUTOCONF;
->>>> +    port->rs485_config = mcf_config_rs485;
->>>> +    port->rs485_supported = mcf_rs485_supported;
->>>> +    port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_MCF_CONSOLE);
->>>> +
->>>> +    pp = container_of(port, struct mcf_uart, port);
->>>> +
->>>> +    uart_add_one_port(&mcf_driver, port);
->>>> +
->>>
->>> This breaks platforms with more than one UART - which is quite a few of
->>> the ColdFire platforms. Numerous boards bring and use more than one 
->>> UART.
+On 2024/12/3 23:34, James Bottomley wrote:
+>>> This also enables an incremental migration.
+>> change the API prototype from:
+>> device_find_child(..., void *data_0, int (*match)(struct device *dev,
+>> void *data));
 >>
->> I don't get why, as I have two uarts here, and each is detected 
->> properly when declaring those in my platform ? I get that it breaks 
->> existing detection (we are parsing all uarts even when only one or two 
->> is used) but it does not prevent it to work ?
-> 
-> Building and testing on an M5208EVB platform.
-> With original un-modified code boot console shows:
-> 
-> ...
-> [    0.110000] romfs: ROMFS MTD (C) 2007 Red Hat, Inc.
-> [    0.110000] ColdFire internal UART serial driver
-> [    0.110000] mcfuart.0: ttyS0 at MMIO 0xfc060000 (irq = 90, base_baud 
-> = 5208333) is a ColdFire UART
-> [    0.120000] printk: legacy console [ttyS0] enabled
-> [    0.120000] mcfuart.0: ttyS1 at MMIO 0xfc064000 (irq = 91, base_baud 
-> = 5208333) is a ColdFire UART
-> [    0.120000] mcfuart.0: ttyS2 at MMIO 0xfc068000 (irq = 92, base_baud 
-> = 5208333) is a ColdFire UART
-> [    0.130000] brd: module loaded
-> ...
-> 
-> 
-> But with this change applied only the first port is probed:
-> 
-> ...
-> [    0.120000] romfs: ROMFS MTD (C) 2007 Red Hat, Inc.
-> [    0.120000] ColdFire internal UART serial driver
-> [    0.130000] mcfuart.0: ttyS0 at MMIO 0xfc060000 (irq = 90, base_baud 
-> = 5208333) is a ColdFire UART
-> [    0.130000] printk: legacy console [ttyS0] enabled
-> [    0.130000] brd: module loaded
-> ...
-
-OK, I see what you mean. Let me try to explain why I did it :-).
-
-The idea is to avoid probing a UART device which may exist as such on 
-the core, but not be used as UART at all (on my board, for instance, I 
-have uart2 and uart6, I don't need any other UART to be probed).
-
-So, based on what I think is the dts philosophy, you declare the devices 
-you really need to probe ?
-
-I can add all the uarts as resources with the ifdefs like before, but on 
-the M54418 it will always probe 10 devices, which sounds like a bit 
-overkill ?
-
-Thanks !
-JM
-
-> 
-> Regards
-> Greg
-> 
-> 
-> 
->> static struct resource mcf_uart2_resource[] = {
->>      [0] = {
->>          .start = MCFUART_BASE2,
->>          .end   = MCFUART_BASE2 + 0x3fff,
->>          .flags = IORESOURCE_MEM,
->>      },
->>      [1] = {
->>          .start = 6,
->>          .end   = 7,
->>          .flags = IORESOURCE_DMA,
->>      },
->>      [2] = {
->>          .start = MCF_IRQ_UART2,
->>          .end   = MCF_IRQ_UART2,
->>          .flags = IORESOURCE_IRQ,
->>      },
->> };
+>> to:
+>> device_find_child(..., const void *data_0, int (*match)(struct device
+>> *dev, const void *data));
 >>
->> static struct platform_device mcf_uart2 = {
->>      .name            = "mcfuart",
->>      .id            = 2,
->>      .num_resources = ARRAY_SIZE(mcf_uart2_resource),
->>      .resource = mcf_uart2_resource,
->>      .dev = {
->>          .dma_mask = &mcf_uart_mask,
->>          .coherent_dma_mask = DMA_BIT_MASK(32),
->>      },
->> };
+>> For @data_0,  void * -> const void * is okay.
+>> but for @match, the problem is function pointer type incompatibility.
 >>
->> static struct resource mcf_uart6_resource[] = {
->>      [0] = {
->>          .start = MCFUART_BASE6,
->>          .end   = MCFUART_BASE6 + 0x3fff,
->>          .flags = IORESOURCE_MEM,
->>      },
->>      [1] = {
->>          .start = 22,
->>          .end   = 23,
->>          .flags = IORESOURCE_DMA,
->>      },
->>      [2] = {
->>          .start = MCF_IRQ_UART6,
->>          .end   = MCF_IRQ_UART6,
->>          .flags = IORESOURCE_IRQ,
->>      },
->> };
+>> there are two solutions base on discussions.
 >>
->> static struct platform_device mcf_uart6 = {
->>      .name            = "mcfuart",
->>      .id            = 6,
->>      .num_resources = ARRAY_SIZE(mcf_uart6_resource),
->>      .resource = mcf_uart6_resource,
->>      .dev = {
->>          .dma_mask = &mcf_uart_mask,
->>          .coherent_dma_mask = DMA_BIT_MASK(32),
->>      },
->> };
+>> 1) squashing likewise Greg mentioned.
+>>    Do all of the "prep work" first, and then
+>>    do the const change at the very end, all at once.
 >>
->> JM
+>> 2)  as changing platform_driver's remove() prototype.
+>> Commit: e70140ba0d2b ("Get rid of 'remove_new' relic from platform
+>> driver struct")
 >>
->>>
->>> Regards
->>> Greg
->>>
->>>
->>>
->>>>       return 0;
->>>>   }
->>>> @@ -603,13 +618,11 @@ static int mcf_probe(struct platform_device 
->>>> *pdev)
->>>>   static void mcf_remove(struct platform_device *pdev)
->>>>   {
->>>>       struct uart_port *port;
->>>> -    int i;
->>>> +    int id = pdev->id;
->>>> -    for (i = 0; (i < MCF_MAXPORTS); i++) {
->>>> -        port = &mcf_ports[i].port;
->>>> -        if (port)
->>>> -            uart_remove_one_port(&mcf_driver, port);
->>>> -    }
->>>> +    port = &mcf_ports[id].port;
->>>> +    if (port)
->>>> +        uart_remove_one_port(&mcf_driver, port);
->>>>   }
->>>>   / 
->>>> ****************************************************************************/
->>>>
->>>> ---
->>>> base-commit: e457f18d7f25288d143c1fe024a620d0b15caec1
->>>> change-id: 20241202-m5441x_uart_resource-729b30c15363
->>>>
->>>> Best regards,
->>
+>>  introduce extra device_find_child_new() which is constified  -> use
+>> *_new() replace ALL device_find_child() instances one by one -> 
+>> remove device_find_child() -> rename *_new() to device_find_child()
+>> once.
+> Why bother with the last step, which churns the entire code base again?
+
+keep the good API name device_find_child().
+
+> Why not call the new function device_find_child_const() and simply keep
+> it (it's descriptive of its function).  That way you can have a patch
+> series without merging and at the end simply remove the old function.
+
+device_find_child is a good name for the API, 'find' already means const.
 
