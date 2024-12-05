@@ -1,79 +1,111 @@
-Received: from sym2.noone.org (sym.noone.org [178.63.92.236])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE2CF1D54F4
-	for <linux-serial@vger.kernel.org>; Thu,  5 Dec 2024 09:12:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.92.236
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 387291D3566;
+	Thu,  5 Dec 2024 10:37:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733389929; cv=none; b=ddX5r1OsrORfDiX1wWDJCq7P9UnvujATY6L0B0W6u0QFzslW3zqzCy4ZAMGTZLIkRxOC7d5ZPK1mT8N9l2M5S6itOCeQzj2sPgz1wxtCBADnG9ABOnN1yRw6HXzXqGf2cdKQ1mHa7vqpZUjgnX26R8GMWWOBiQMNBG5YOYcP/oY=
+	t=1733395052; cv=none; b=ZUeEyGfyrhBpNHb6vQQyfLdJTIDJRXQUHgU6ZOBFr1vBV67tCnXM3LkPogLxrOCEt7aZ1t6PTfG+bgO3QRblaHi0e3OgW5ttH1J5v3Sfnk4qkFNgS1gRjdDqiwD+OQgWKvE4hJOwhtdT+HCXEaI7A3Saxakp882G0gnV1QbHUKo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733389929; c=relaxed/simple;
-	bh=XnWT7P98gZo4YtdUnZhQORL+DpBX3vkudEFPuNlSmgE=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=dKGJfBVydaNAsVGqCuW0+NnqZy2gXG9QS4ktghorlyHEoBfr7uvuXvq+MTtmCcbuSWqj9re1utbWcUbBb64grcztBs8FNYFTeNml5IdXKqVU0+pfJgp25tMl7QQC4G6nSVzWBSyqwzaCnGvz86hjdIF4QbPEzeKp8fC1WMJFUbA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=distanz.ch; spf=none smtp.mailfrom=sym.noone.org; arc=none smtp.client-ip=178.63.92.236
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=distanz.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sym.noone.org
-Received: by sym2.noone.org (Postfix, from userid 1002)
-	id 4Y3pYG72wqz3j1C8; Thu,  5 Dec 2024 10:11:38 +0100 (CET)
-From: Tobias Klauser <tklauser@distanz.ch>
-To: linux-serial@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH] serial: altera_uart: Use KBUILD_MODNAME
-Date: Thu,  5 Dec 2024 10:11:38 +0100
-Message-Id: <20241205091138.25894-1-tklauser@distanz.ch>
-X-Mailer: git-send-email 2.11.0
+	s=arc-20240116; t=1733395052; c=relaxed/simple;
+	bh=k0Ri1gJvfMPkkmwOG5H5IkESAn8lv1SqrkOcLFEGEog=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GhAYxoL7+WcdIHF1+5N4BwfzLBUQvE+KMxh8x9XANRk/hHxLWFRVVLZwpiPkVFJM2iPTLiRumMG7lv7zFyflgWx81gI4Se2z17zXBjawaFnHl6wbeV36pLzHYkxiuHBoHp84nP+VElKCuIRlXfgiYwvNHWqKFHID/71xyY+Ec9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=guWl3kaO; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="guWl3kaO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 853FDC4CED1;
+	Thu,  5 Dec 2024 10:37:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1733395052;
+	bh=k0Ri1gJvfMPkkmwOG5H5IkESAn8lv1SqrkOcLFEGEog=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=guWl3kaOoGEK+6hAPbImxmyWGcZsuvgDfS+SvtpN9yapsfB7pqHGGfp5hVdYv+Q5w
+	 vuRJCFOEzZPcd6Zebd/3fx8AKcwYYRIt2OSrHd1J3yxUb8h1Rom0Xy/H5DqebnGf5X
+	 2dcCaDOq9qqgy/7JnLhrUhhwK5k8bnLOoFX2Tzhd9Y9CvAuLbKVQ0fdaEysiLRWUwk
+	 SYb80dJWMM3YYx1tkOF51oLUhxScy1I23lx2EE8ZPxRTsY8jpWX6xygI0m+rKvAwdl
+	 2OBp+y6LpIANTG9T4G1GK6HuX4jdFpJVpP8FmAHs6E8qRz13DpF2xkEdujO4j3Rh0T
+	 szxkvQEuQm43Q==
+Date: Thu, 5 Dec 2024 11:37:29 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: quic_zijuhu <quic_zijuhu@quicinc.com>
+Cc: Zijun Hu <zijun_hu@icloud.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, James Bottomley <James.Bottomley@hansenpartnership.com>, 
+	Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <thomas@t-8ch.de>, linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev, 
+	linux-sound@vger.kernel.org, sparclinux@vger.kernel.org, linux-block@vger.kernel.org, 
+	linux-cxl@vger.kernel.org, linux1394-devel@lists.sourceforge.net, arm-scmi@vger.kernel.org, 
+	linux-efi@vger.kernel.org, linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linux-mediatek@lists.infradead.org, linux-hwmon@vger.kernel.org, linux-media@vger.kernel.org, 
+	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org, linux-scsi@vger.kernel.org, 
+	open-iscsi@googlegroups.com, linux-usb@vger.kernel.org, linux-serial@vger.kernel.org, 
+	netdev@vger.kernel.org
+Subject: Re: [PATCH v3 08/11] gpio: sim: Remove gpio_sim_dev_match_fwnode()
+Message-ID: <eyu7nm5hvwfqxgysnrzsvianzf7abvlovpxfo7snsxowmuuhpj@tah3gkqm5ldj>
+References: <20241205-const_dfc_done-v3-0-1611f1486b5a@quicinc.com>
+ <20241205-const_dfc_done-v3-8-1611f1486b5a@quicinc.com>
+ <7ugfaj2h3sy77jpaadco5xtjalnten3gmvozowcle3g7zcdqs4@sqf5l47onbsi>
+ <ac42e652-4128-44ea-976e-5234360d8183@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ak6zeaiacfbfwyki"
+Content-Disposition: inline
+In-Reply-To: <ac42e652-4128-44ea-976e-5234360d8183@quicinc.com>
 
-There is no need to redefine the driver name. Use KBUILD_MODNAME and get
-rid of DRV_NAME altogether.
 
-Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
----
- drivers/tty/serial/altera_uart.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+--ak6zeaiacfbfwyki
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v3 08/11] gpio: sim: Remove gpio_sim_dev_match_fwnode()
+MIME-Version: 1.0
 
-diff --git a/drivers/tty/serial/altera_uart.c b/drivers/tty/serial/altera_uart.c
-index c94655453c33..1759137121cc 100644
---- a/drivers/tty/serial/altera_uart.c
-+++ b/drivers/tty/serial/altera_uart.c
-@@ -24,7 +24,6 @@
- #include <linux/io.h>
- #include <linux/altera_uart.h>
- 
--#define DRV_NAME "altera_uart"
- #define SERIAL_ALTERA_MAJOR 204
- #define SERIAL_ALTERA_MINOR 213
- 
-@@ -518,7 +517,7 @@ OF_EARLYCON_DECLARE(uart, "altr,uart-1.0", altera_uart_earlycon_setup);
-  */
- static struct uart_driver altera_uart_driver = {
- 	.owner		= THIS_MODULE,
--	.driver_name	= DRV_NAME,
-+	.driver_name	= KBUILD_MODNAME,
- 	.dev_name	= "ttyAL",
- 	.major		= SERIAL_ALTERA_MAJOR,
- 	.minor		= SERIAL_ALTERA_MINOR,
-@@ -619,7 +618,7 @@ static struct platform_driver altera_uart_platform_driver = {
- 	.probe	= altera_uart_probe,
- 	.remove = altera_uart_remove,
- 	.driver	= {
--		.name		= DRV_NAME,
-+		.name		= KBUILD_MODNAME,
- 		.of_match_table	= of_match_ptr(altera_uart_match),
- 	},
- };
-@@ -649,5 +648,5 @@ module_exit(altera_uart_exit);
- MODULE_DESCRIPTION("Altera UART driver");
- MODULE_AUTHOR("Thomas Chou <thomas@wytron.com.tw>");
- MODULE_LICENSE("GPL");
--MODULE_ALIAS("platform:" DRV_NAME);
-+MODULE_ALIAS("platform:" KBUILD_MODNAME);
- MODULE_ALIAS_CHARDEV_MAJOR(SERIAL_ALTERA_MAJOR);
--- 
-2.47.1
+On Thu, Dec 05, 2024 at 04:37:08PM +0800, quic_zijuhu wrote:
+> On 12/5/2024 4:10 PM, Uwe Kleine-K=F6nig wrote:
+> > On Thu, Dec 05, 2024 at 08:10:17AM +0800, Zijun Hu wrote:
+> >> From: Zijun Hu <quic_zijuhu@quicinc.com>
+> >>
+> >> gpio_sim_dev_match_fwnode() is a simple wrapper of device_match_fwnode=
+()
+> >> Remvoe the unnecessary wrapper.
 
+Just spotted: s/Remvoe/Remove/
+
+> >> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+> >> ---
+> >>  drivers/gpio/gpio-sim.c | 7 +------
+> >=20
+> > I think if you move this patch before patch #4 in your series, you only
+> > have to touch this file once.
+>=20
+> the precondition of this change is patch #4, it will have building error
+> if moving it before #4.
+>=20
+> actually, we can only do simplifications with benefits brought by #4.
+
+Ah I see. I thought that device_match_fwnode only got the const for the
+2nd parameter in patch #4.
+
+Best regards
+Uwe
+
+--ak6zeaiacfbfwyki
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmdRgmcACgkQj4D7WH0S
+/k6zeggAlBhwMJaGpQIgAi04teyouKX4a/XAJG3tLwpz4YweEcrMm/fv0N42hp/d
+7zUKHjQRRcVM6+TSObZ6uKEFMpac+G1YG1Fze2rNPdlf5IUOCrpKqKUaziMyvEc+
+hhaccpLCXjp9gi7H7tEBDfmrR6/S3i1nnYOeDn6tYmhKVx14uA57l4Isj2h+CIax
+P5d+Gq9NQl5IXDnqiEez80oo8LFhLQQIjIeO1YQM7GrbXaqoD+CfZTGXe4/woRc5
+JjzksiJqSccUbPlwM+90bh5Oj0H2VARUaJTRcHTRANM4ZFTSfWCep0Wkg8DSw343
+fYW4rY4vIXpWKVG9LM4j7NAoluIWvQ==
+=myq/
+-----END PGP SIGNATURE-----
+
+--ak6zeaiacfbfwyki--
