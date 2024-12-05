@@ -1,103 +1,171 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from pv50p00im-tydg10011801.me.com (pv50p00im-tydg10011801.me.com [17.58.6.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBF82226EC1;
-	Wed,  4 Dec 2024 23:36:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2C2F7E9
+	for <linux-serial@vger.kernel.org>; Thu,  5 Dec 2024 00:07:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=17.58.6.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733355368; cv=none; b=rzSYgLFIRBA3StIJVt6Ow5xVuigtrqkFoEMWphBCXDG+wl2jY2XttdrQCVLWxfZ1OtuBxAY0uiPoq7oQ2HlJUuijthOPZ6RTWla19fulCohWlQtATwsEmm8CpMmxUmUbOYZZeuzbO19eClyknOW4ki3FKFufxLEhPLKERmYLM+A=
+	t=1733357279; cv=none; b=XuP0LulSvfJ3HKiWl9iQee84ViblC/XfKtmVno74o+jzxS9ySzff6RP5HQmVl6nIVCqw33lJeaubhWyW0x5DQmRbp9hmg7XhjttHaCq+oVylHgTWtx+sPOSWdCI78HQlATQfFhOV+kczRRft9q9fF26+gWxGozpMs1wo/PGHw/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733355368; c=relaxed/simple;
-	bh=Rm/MIvVBWlETnetubNF/S/6ivRcUw/2qry7QLyjvVNw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NjUeJbCoiuD1oRxfUwcFRnkmof8IqtG/we+PKN/o71Q77r+OBZwf61sSWBh32fHvzNm3JcRj9u9N7On/Q/Y/SAFxi+VF5klR2WhvENrpifEL3m/Wmlzq8a6sPWvAAk46WMUGmO2K3yppx1F80vYRcLq2npTpRmC4JJmDx/rphZk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DV2zR0Ek; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1733357279; c=relaxed/simple;
+	bh=jXDu8pWjhuYPdMP7VqE1gBu4NrjerabEKnAlH0ltUtc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=F97Cf+LqBrqXR3mz3LgVePm2r/CL74DgW0bPFFfhKNgSf3X+usOkbbr2x9K0G8Krw3VXAdWe/lr0NsQ5BFwCD93lN07ZUz2y5fAERCX5s48wHXJEdJJ8h7oLxYp+8N/4IDTk6iE+uZUpdHNO8/xKtA65sdwakIHOVr6HUUdhB8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=viUyMPDu; arc=none smtp.client-ip=17.58.6.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DV2zR0Ek"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C8E6C4CED6;
-	Wed,  4 Dec 2024 23:36:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733355367;
-	bh=Rm/MIvVBWlETnetubNF/S/6ivRcUw/2qry7QLyjvVNw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=DV2zR0Ek0D20SmbB3UW+/iTcludKr1NRcGrtdH9EsVkovq8NdlJ4xlu6TKEuCp94N
-	 C4HIixHKHxEgx897JLg8YMGxVwdavlszo02Ghun+c3JQPdeqk5b5JUhwg0khLNC/Ez
-	 NlLjjsEgIJ9h+tLm5Ics5fjXuSEFeZoBjd9e1ks3zWG0E4H2x91YwkS+FdxpYpxB92
-	 CUX8jxC7RNApx4Hhc/JK9jnX5mCz8Lp2KSBmx425oCs4YWsfx5AtXCOpGawKoXCa3B
-	 WpJvvQt+SeGNjL09z1/xMU5tbHLBx7ty4OmQTLtpLEpUdqHy927XufDaoK5jGXebMt
-	 1Ek0w2FkzXzag==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Inochi Amaoto <inochiama@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sasha Levin <sashal@kernel.org>,
-	jirislaby@kernel.org,
-	unicorn_wang@outlook.com,
-	inochiama@outlook.com,
-	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 3/4] serial: 8250_dw: Add Sophgo SG2044 quirk
-Date: Wed,  4 Dec 2024 17:24:35 -0500
-Message-ID: <20241204222444.2250332-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20241204222444.2250332-1-sashal@kernel.org>
-References: <20241204222444.2250332-1-sashal@kernel.org>
+	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="viUyMPDu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
+	s=1a1hai; t=1733357275;
+	bh=T0i1UIwZu179fqDDvM1SaMgHe4/s268Ao/wTXHvJFpU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:
+	 x-icloud-hme;
+	b=viUyMPDupWXi4CsrMrPO0pTZeZeGxPoM+enltzZDnkb+kI0qdByPZT5LU1xBetse2
+	 NtaWPzW2mnfiL0cDcb5AxsMAlW09DyzC74O6RR3cBb+ZzhEN7re48DHO1hdcod+aXb
+	 zbl3rMYxZGrv7wQqdRJsrWCp9PSwtE6uiLaNWgjCRsBT8D1ZUgFnCeCL+arYkrJDex
+	 wriQVWYopBjYxrWk6ouKFvfzOLXBz2VSyl6NuyevHO9GGv1V4cTmquonLgabfDNxjR
+	 5eSkEUOnbtt2Et4RjPSCmjNRxtqblo8cbQN/o+14zsvC0nuehSg5FcL9uofh/yy5ZC
+	 z6tN/Ugl8ZG4Q==
+Received: from [192.168.1.26] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
+	by pv50p00im-tydg10011801.me.com (Postfix) with ESMTPSA id 9CBA68001C9;
+	Thu,  5 Dec 2024 00:07:24 +0000 (UTC)
+Message-ID: <3a4de1bb-3eb2-469a-8ff7-ff706804f5bb@icloud.com>
+Date: Thu, 5 Dec 2024 08:07:20 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/32] driver core: Constify API device_find_child()
+ and adapt for various existing usages
+To: James Bottomley <James.Bottomley@HansenPartnership.com>,
+ =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <thomas@t-8ch.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Philipp Zabel <p.zabel@pengutronix.de>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>,
+ Martin Tuma <martin.tuma@digiteqautomotive.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Andreas Noever <andreas.noever@gmail.com>,
+ Michael Jamet <michael.jamet@intel.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Yehezkel Bernat <YehezkelShB@gmail.com>,
+ Linus Walleij <linus.walleij@linaro.org>, Bartosz Golaszewski
+ <brgl@bgdev.pl>, Andrew Lunn <andrew@lunn.ch>,
+ Vladimir Oltean <olteanv@gmail.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
+ Vishal Verma <vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ira Weiny <ira.weiny@intel.com>, Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Lee Duncan <lduncan@suse.com>, Chris Leech <cleech@redhat.com>,
+ Mike Christie <michael.christie@oracle.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ Nilesh Javali <njavali@marvell.com>,
+ Manish Rangankar <mrangankar@marvell.com>,
+ GR-QLogic-Storage-Upstream@marvell.com, Davidlohr Bueso <dave@stgolabs.net>,
+ Jonathan Cameron <jonathan.cameron@huawei.com>,
+ Alison Schofield <alison.schofield@intel.com>,
+ Andreas Larsson <andreas@gaisler.com>, Stuart Yoder <stuyoder@gmail.com>,
+ Laurentiu Tudor <laurentiu.tudor@nxp.com>, Jens Axboe <axboe@kernel.dk>,
+ Sudeep Holla <sudeep.holla@arm.com>,
+ Cristian Marussi <cristian.marussi@arm.com>, Ard Biesheuvel
+ <ardb@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-gpio@vger.kernel.org, netdev@vger.kernel.org,
+ linux-pwm@vger.kernel.org, nvdimm@lists.linux.dev,
+ linux1394-devel@lists.sourceforge.net, linux-serial@vger.kernel.org,
+ linux-sound@vger.kernel.org, open-iscsi@googlegroups.com,
+ linux-scsi@vger.kernel.org, linux-cxl@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+ arm-scmi@vger.kernel.org, linux-efi@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
+References: <20241203-const_dfc_done-v2-0-7436a98c497f@quicinc.com>
+ <g32cigmktmj4egkq2tof27el2yss4liccfxgebkgqvkil32mlb@e3ta4ezv7y4m>
+ <9d34bd6f-b120-428a-837b-5a5813e14618@icloud.com>
+ <2024120320-manual-jockey-dfd1@gregkh>
+ <b9885785-d4d4-4c72-b425-3dc552651d7e@icloud.com>
+ <8eb7c0c54b280b8eb72f82032ede802c001ab087.camel@HansenPartnership.com>
+ <8fb887a0-3634-4e07-9f0d-d8d7c72ca802@t-8ch.de>
+ <f5ea7e17-5550-4658-8f4c-1c51827c7627@icloud.com>
+ <108c63c753f2f637a72c2e105ac138f80d4b0859.camel@HansenPartnership.com>
+ <235ce0a9-1db1-4558-817b-6f92f22be5ab@icloud.com>
+ <5c905df49a332b1136787a524955b46b6153c012.camel@HansenPartnership.com>
+Content-Language: en-US
+From: Zijun Hu <zijun_hu@icloud.com>
+In-Reply-To: <5c905df49a332b1136787a524955b46b6153c012.camel@HansenPartnership.com>
 Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.119
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: SnhSPaefh2SqVr4UPg8Q8Npi4W-Py9Af
+X-Proofpoint-ORIG-GUID: SnhSPaefh2SqVr4UPg8Q8Npi4W-Py9Af
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2024-12-04_19,2024-12-04_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0
+ mlxlogscore=999 adultscore=0 suspectscore=0 bulkscore=0 spamscore=0
+ phishscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2308100000 definitions=main-2412040186
 
-From: Inochi Amaoto <inochiama@gmail.com>
+On 2024/12/5 00:42, James Bottomley wrote:
+>>>>  introduce extra device_find_child_new() which is constified  ->
+>>>> use *_new() replace ALL device_find_child() instances one by one
+>>>> -> remove device_find_child() -> rename *_new() to
+>>>> device_find_child() once.
+>>> Why bother with the last step, which churns the entire code base
+>>> again?
+>> keep the good API name device_find_child().
+> Well, I think it's a good opportunity to rename the API better, but if
+> that's the goal, you can still do it with _Generic() without churning
+> the code base a second time.  The example is in
+> slab.h:kmem_cache_create
+> 
 
-[ Upstream commit cad4dda82c7eedcfc22597267e710ccbcf39d572 ]
+i understand these solutions _Generic()/_new/squashing.
+every solutions have its advantages and disadvantages.
 
-SG2044 relys on an internal divisor when calculating bitrate, which
-means a wrong clock for the most common bitrates. So add a quirk for
-this uart device to skip the set rate call and only relys on the
-internal UART divisor.
+i decide to use squashing solution for this concrete scenario after some
+considerations since:
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Inochi Amaoto <inochiama@gmail.com>
-Link: https://lore.kernel.org/r/20241024062105.782330-4-inochiama@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/8250/8250_dw.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+1) it has the minimal patch count to achieve target.
+2) every patch is valuable, but other solutions needs to undo beginning
+  patch finally.
+3) for the squashing patch, i will only make the least and simplest
+changes for various match functions, that will compensate its
+disadvantages.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index a1f2259cc9a98..72f9aab75ab12 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -770,7 +770,7 @@ static const struct dw8250_platform_data dw8250_renesas_rzn1_data = {
- 	.quirks = DW_UART_QUIRK_IS_DMA_FC,
- };
- 
--static const struct dw8250_platform_data dw8250_starfive_jh7100_data = {
-+static const struct dw8250_platform_data dw8250_skip_set_rate_data = {
- 	.usr_reg = DW_UART_USR,
- 	.quirks = DW_UART_QUIRK_SKIP_SET_RATE,
- };
-@@ -780,7 +780,8 @@ static const struct of_device_id dw8250_of_match[] = {
- 	{ .compatible = "cavium,octeon-3860-uart", .data = &dw8250_octeon_3860_data },
- 	{ .compatible = "marvell,armada-38x-uart", .data = &dw8250_armada_38x_data },
- 	{ .compatible = "renesas,rzn1-uart", .data = &dw8250_renesas_rzn1_data },
--	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_starfive_jh7100_data },
-+	{ .compatible = "sophgo,sg2044-uart", .data = &dw8250_skip_set_rate_data },
-+	{ .compatible = "starfive,jh7100-uart", .data = &dw8250_skip_set_rate_data },
- 	{ /* Sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
--- 
-2.43.0
+>>> Why not call the new function device_find_child_const() and simply
+>>> keep it (it's descriptive of its function).  That way you can have
+>>> a patch series without merging and at the end simply remove the old
+>>> function.
+>> device_find_child is a good name for the API, 'find' already means
+>> const.
+> Not to me it doesn't, but that's actually not what I think is wrong
+> with the API name: it actually only returns the first match, so I'd
+> marginally prefer it to be called device_find_first_child() ... not
+> enough to churn the code to change it, but since you're doing that
+> anyway it might make sense as an update.
+
+name device_find_child appeared 18 years ago, it is good to keep this
+name developers known about.
+
+the API only return one device *, it should be obvious that it is the
+first device which meet matching condition.
+
+Other device finding APIs (bus|class|driver)_find_device() does not have
+concern about 'first'
+
+So, IMO, current name is good.
 
