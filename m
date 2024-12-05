@@ -1,109 +1,121 @@
-Received: from pv50p00im-tydg10021701.me.com (pv50p00im-tydg10021701.me.com [17.58.6.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 482CC218AC4
-	for <linux-serial@vger.kernel.org>; Thu,  5 Dec 2024 13:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=17.58.6.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00315149C64;
+	Thu,  5 Dec 2024 14:30:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733404771; cv=none; b=Cmn1E+2n4emToGXwVETgthVbCAPHgl0wRqDlH9AQD0t7EuZHk2bZ56ukVFHgo34kaHOsFHayJx5kgAI5Ssvqzyarfmsx7L24JMsNcOManu3NSuohbWO0ZPOsE9GsQqdkkptDtdAXl+DEyxpo/ayvG5U4PZOWSWWw1nLeuqL2Pxc=
+	t=1733409040; cv=none; b=OcZyCgOcrKRN8V2sJG7Ionr/+C6vQi9wsGydSS2l2NIE75jDHOt1M1mP6PTjlVljdkce1YbhBVBcYD8Bn8pMDGDSY/Rt0U250Bi6gg0ivWrEL7xrGPBsfHn2WObrY6LbOYK1heScj5M0P/zCJS1ghQ9Ah0pXyPXLJnIwtcFg3j0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733404771; c=relaxed/simple;
-	bh=Y8SH9YRW4Y+tbLnxz2fC5g3ZDI0vc4mItkQNyvm6VZk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=B+/BaCfdi/l0wSnn3Cz5KisOTiPhWdUqXoKYnry6p5Mrr5yutDi39ritT0VEVerYT4reOSSI3BwT5AJy5omV99TgqLKwItqxyWIN0IlWIUrw70rD8apAKGZJfgSVDmSOrNyv8rLwKlOu9qO/JDbnZZDmzEaqkHy9FvWGm2mJ33I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=IN6sqLn/; arc=none smtp.client-ip=17.58.6.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
+	s=arc-20240116; t=1733409040; c=relaxed/simple;
+	bh=OiwgSxQfHlmQ6tROXTRNVk6s2AZzWxI+eoVvuLTacg4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nw4xYOnOgB6VXTRJpxzD2Rd8wxg7T6hYGmWfwvgJqxIEhTKrDlQyQyE98qPGw9As65lsfEdVy3J2y32z0s9PDI+J2ui/P2UhrY22v7N8sNl70dtYU9UNkz+w55xhAhe2UIZj5pexTEmT3XP6IjGUfkI6wLvj+UBDs6+dc30reIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Arn+xJxO; arc=none smtp.client-ip=209.85.210.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="IN6sqLn/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-	s=1a1hai; t=1733404763;
-	bh=DeIIq7By5hb3j6D6u79xafAimRNm6W+G83In10fjfT4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:
-	 x-icloud-hme;
-	b=IN6sqLn/x5OCaqJO4vF5gn/fcjmZc3fZlyeytDMJnKp7XQ3de7PoFnmqSe0zeC9a5
-	 vUwI0Tptt7E+4Q3DWUqdgUpD0xOI9lBpQ4RQvwZlnJGvBh2ctgzycf7q159ExifH7K
-	 a8AIRvkTNSgebMbC7lLYAk5B4kjmGYrIRQclMfECHJrJ1+KGG+jAbVUk+xSHPoDbnh
-	 1e9j8QEBXLJX5ZxwWzRD/5Q41qX+s8eZZmLJoAKcnBcHGPNxbbfWDhHq6Q/v1949Vm
-	 rVciEGx0K4GT+eFIHW+pi7hnAXPVyGUzlxkEJ6XEG1lJhoSlPxkPp1AOo8we43GZSE
-	 xVpU9Q2Rr6i5g==
-Received: from [192.168.1.26] (pv50p00im-dlb-asmtp-mailmevip.me.com [17.56.9.10])
-	by pv50p00im-tydg10021701.me.com (Postfix) with ESMTPSA id C58AC3A1052;
-	Thu,  5 Dec 2024 13:19:06 +0000 (UTC)
-Message-ID: <f150fd45-7f84-4036-aa0e-32bd04fbeb67@icloud.com>
-Date: Thu, 5 Dec 2024 21:19:02 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Arn+xJxO"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-724f42c1c38so874955b3a.1;
+        Thu, 05 Dec 2024 06:30:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1733409038; x=1734013838; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date:message-id:reply-to;
+        bh=kthHmfOrOpY4URMvESIeLk3w0T43oHDEXmAro9LffwE=;
+        b=Arn+xJxODQisZOp5jmJ5toIQChjEXrDT3ugCt9L85abaRbpiNaHcqZ1IwK+agj4a89
+         VBfL0iJn9weoAbOxgDlix/ozR1dsziuR3jUtpEUG2xBQTlItm1lOEZKxKwXBxcDoH+cp
+         xmcpH/ZGhDHmB3cynDpBLjVsGYtvEVxENTYWHEruXmTVREn8Et02h/TMQ/WEyfNVwyvR
+         IOjmQBHs4PKkWpIDzC2oy9iHppQFIJNLyM1XSiXNo5BzanV0LGO01uBgoIjnAD4ivKg/
+         rh9jS0adljLDAhGAe+ALMIG3YHh25GkqupKRYMUO0LDtXDKoTj65+ArRIyMxTRJMBEEJ
+         BWyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733409038; x=1734013838;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kthHmfOrOpY4URMvESIeLk3w0T43oHDEXmAro9LffwE=;
+        b=FRmFHKST+eJ66stQuC8/gWuCMsg7ZUEDR9sPwwsJ5TLr800Qo3y01AteWCgGvsBnaB
+         b4RxUu0idz+PJi/KBIP7q/DAg1PHi80AhHdGqEQpyp+pa7L+J7/xjfeH6O72z8jxjFFd
+         I7z8V2eSGGoAe+2d08K/cV1to7JxPdIEwIs96JGZqz6Te6JbeM6evqmm5l9Zav/8fIQV
+         4jAMM0yz9qKg427xS2OOEA4h3Uvn31UCUnmUmZtwBXb8+sxtb6etqAY74Z9EEKbth5wl
+         +xgS0QEWvDU2EOmyAcM6s6Btg+Pi60dwMegx52tsTtk2HSrr9RWa7cNJdIy9aMtd/+TY
+         LUcA==
+X-Forwarded-Encrypted: i=1; AJvYcCVIDJEY7jhbohTvvQfHGowlyodJM4c41/KnmUg2zICNxc3qehnuTvt2Calr9YEro8zJKcgMRlNwS5s1keM=@vger.kernel.org, AJvYcCWEUpiMY4lpM+IaP/AEfJKYvp6TIkDOIaQVlRDL3HQNhicchRy0LXnFzBvR7WHbwhOFlnCOGamHfUBDjAoz@vger.kernel.org
+X-Gm-Message-State: AOJu0YwqVgDex8eJQ9/bBT6uHSpTtZWcafQydzBUKI3wv/RSNO7mIhp2
+	BUI8QRfG4tRR0EV9uNFQQf3LvXxDU8oL9U2KT7UVWN5J1WEOQQpt
+X-Gm-Gg: ASbGnctKsSsip0u6y4yGTN0mgZct0ZdkA+oxZHJmrVtPwU/QqSKx3ZXjx/P9Vihnukb
+	neQLAzpN/U12KaDFw5GdmYmNlfhF2hjZR4+xNclQwThjkik6GZ7zqzf5hOgxedVXDLMxl+uYT+z
+	5KayJuicdtW3UJsvjJy39v9qd64uV/gFUmp7RIKtTf6yAuLPnS8qhonxlbrX/z4Jvp9K6etaMOI
+	IozulehAOXhxdvTjrJ+N5KtHlObWxWUtF2v2sFFlI2TfxPDb5nsxyJxZswhUC4=
+X-Google-Smtp-Source: AGHT+IEz0yueMzMGwJH0eHaYecCvXG3wej4zZ73Uo2vwFp0/q3L22SojfbiYhciElgDy6oXiXyZvNQ==
+X-Received: by 2002:a17:903:22cb:b0:215:6e28:826e with SMTP id d9443c01a7336-215bcfc4b83mr139711555ad.6.1733409038046;
+        Thu, 05 Dec 2024 06:30:38 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-215f8f31857sm13205655ad.253.2024.12.05.06.30.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Dec 2024 06:30:37 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Guenter Roeck <linux@roeck-us.net>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Niklas Schnelle <schnelle@linux.ibm.com>
+Subject: [PATCH] tty: serial: Work around warning backtrace in serial8250_set_defaults
+Date: Thu,  5 Dec 2024 06:30:33 -0800
+Message-ID: <20241205143033.2695333-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 08/11] gpio: sim: Remove gpio_sim_dev_match_fwnode()
-To: =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
- quic_zijuhu <quic_zijuhu@quicinc.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- James Bottomley <James.Bottomley@hansenpartnership.com>,
- =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <thomas@t-8ch.de>,
- linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev,
- linux-sound@vger.kernel.org, sparclinux@vger.kernel.org,
- linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
- linux1394-devel@lists.sourceforge.net, arm-scmi@vger.kernel.org,
- linux-efi@vger.kernel.org, linux-gpio@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
- linux-hwmon@vger.kernel.org, linux-media@vger.kernel.org,
- linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
- linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-serial@vger.kernel.org, netdev@vger.kernel.org
-References: <20241205-const_dfc_done-v3-0-1611f1486b5a@quicinc.com>
- <20241205-const_dfc_done-v3-8-1611f1486b5a@quicinc.com>
- <7ugfaj2h3sy77jpaadco5xtjalnten3gmvozowcle3g7zcdqs4@sqf5l47onbsi>
- <ac42e652-4128-44ea-976e-5234360d8183@quicinc.com>
- <eyu7nm5hvwfqxgysnrzsvianzf7abvlovpxfo7snsxowmuuhpj@tah3gkqm5ldj>
-Content-Language: en-US
-From: Zijun Hu <zijun_hu@icloud.com>
-In-Reply-To: <eyu7nm5hvwfqxgysnrzsvianzf7abvlovpxfo7snsxowmuuhpj@tah3gkqm5ldj>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: 2qHgOEYCHFJo6csSrQf0NeEl1TvG8_uZ
-X-Proofpoint-ORIG-GUID: 2qHgOEYCHFJo6csSrQf0NeEl1TvG8_uZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2024-12-05_11,2024-12-05_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=736 spamscore=0
- phishscore=0 clxscore=1011 suspectscore=0 mlxscore=0 malwarescore=0
- bulkscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2308100000 definitions=main-2412050096
 
-On 2024/12/5 18:37, Uwe Kleine-König wrote:
-> On Thu, Dec 05, 2024 at 04:37:08PM +0800, quic_zijuhu wrote:
->> On 12/5/2024 4:10 PM, Uwe Kleine-König wrote:
->>> On Thu, Dec 05, 2024 at 08:10:17AM +0800, Zijun Hu wrote:
->>>> From: Zijun Hu <quic_zijuhu@quicinc.com>
->>>>
->>>> gpio_sim_dev_match_fwnode() is a simple wrapper of device_match_fwnode()
->>>> Remvoe the unnecessary wrapper.
-> 
-> Just spotted: s/Remvoe/Remove/
-> 
+Commit 7c7e6c8924e7 ("tty: serial: handle HAS_IOPORT dependencies")
+triggers warning backtraces on a number of platforms which don't support
+IO ports.
 
-this typo error is my mistake, will correct it.
+WARNING: CPU: 0 PID: 0 at drivers/tty/serial/8250/8250_port.c:470 serial8250_set_defaults+0x148/0x1d8
+Unsupported UART type 0
 
->>>> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
->>>> ---
->>>>  drivers/gpio/gpio-sim.c | 7 +------
->>>
->>> I think if you move this patch before patch #4 in your series, you only
->>> have to touch this file once.
->>
->> the precondition of this change is patch #4, it will have building error
->> if moving it before #4.
->>
->> actually, we can only do simplifications with benefits brought by #4.
-> 
-> Ah I see. I thought that device_match_fwnode only got the const for the
-> 2nd parameter in patch #4.
-> 
-> Best regards
-> Uwe
+The problem is seen because serial8250_set_defaults() is called for
+all members of the serial8250_ports[] array even if that array is
+not initialized.
+
+Work around the problem by only displaying the warning if the port
+type is not 0 (UPIO_PORT) or if iobase is set for the port.
+
+Fixes: 7c7e6c8924e7 ("tty: serial: handle HAS_IOPORT dependencies")
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+---
+A complete fix will require a sequence of patches, which will have to be
+tested thoroughly and is thus not 6.13 material. This patch doesn't fix
+the underlying problem, but it is good enough for 6.13, or at least not
+worse than 6.12, while at the same time avoiding the warning backtrace.
+
+ drivers/tty/serial/8250/8250_port.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 4d63d80e78a9..649e74e9b52f 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -467,7 +467,8 @@ static void set_io_from_upio(struct uart_port *p)
+ 		break;
+ #endif
+ 	default:
+-		WARN(1, "Unsupported UART type %x\n", p->iotype);
++		WARN(p->iotype != UPIO_PORT || p->iobase,
++		     "Unsupported UART type %x\n", p->iotype);
+ 		p->serial_in = no_serial_in;
+ 		p->serial_out = no_serial_out;
+ 	}
+-- 
+2.45.2
 
