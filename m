@@ -1,144 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic313-14.consmr.mail.bf2.yahoo.com (sonic313-14.consmr.mail.bf2.yahoo.com [74.6.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37710BA20
-	for <linux-serial@vger.kernel.org>; Fri,  6 Dec 2024 16:03:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10CDD22068F
+	for <linux-serial@vger.kernel.org>; Fri,  6 Dec 2024 17:36:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733500990; cv=none; b=GnjpaEobl6Mu2NyhOtdxfG3kYT6V5zHMTdMukyPRToae55lvsKWg3oNrzwPgaWrOZuCsgQDEIM6Sy72CxQA9PgjJB5h2guAUhy/Vq2swgt1XEQpFjBDaM10hbQV6rjWE4Sl1qLlSy/MlcNERMYKMvstjTr6/25lkNEhWOogHHB4=
+	t=1733506597; cv=none; b=i1kEYrInWZuF9rMIBGtkcze/0S25q83Sl8U00w51YUCoxhgkD+u8T2ZRzIzzFI6j7jZqv0vXNMgPsi3n9Sns2pmKEpLFzlhKQfLKXNGpXIQM//d2SvVS8SdKfoflNSpw8uVg17j15W+VCZGSU5jstIY1Uk5A14jpX6MEsMSuZac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733500990; c=relaxed/simple;
-	bh=mZV+xN6vU67NFP4ieN6iMI5586pQQ2JbDme+JaRFSPI=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=ZDl+2a5sWo3pK3oNn1LTylxdpHKFdkIagbkL9iPuh3LvFH6qSdTWu3cfimzaJIa3KrxzYq+Oba9uvKT4+zDGQ1/+355PgkSQkYRWvUiXuFkWwTXYZE55IDNLtHy93ktgTsOUlvdb9nkk1HjSp94z53c+IOD+aOlnhOYvuLR0ex4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=heeikZ6Y; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1733506597; c=relaxed/simple;
+	bh=/mvRGvb8G6xZ5bKh/acDQjXrAyZNrDqTGhdgjSvjD/U=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VgZO7JUZiRg/idrAhJEAvMkC4NOkf9Wb/CfMOmu/CjSzAnWnorCW90h/P0LQMth0R5j0Ps1p5ZnPidtDu2RszxgiIbobG+Ql9DyT9yP7RC38PGNgNs5wRdA9ECOP6d7DbEQYBowSpVtwu5cMxjBIq9ImLvOyeTs+urwcY+8PzOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=IW+nWapV; arc=none smtp.client-ip=74.6.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="heeikZ6Y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A893C4AF0B;
-	Fri,  6 Dec 2024 16:03:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733500989;
-	bh=mZV+xN6vU67NFP4ieN6iMI5586pQQ2JbDme+JaRFSPI=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=heeikZ6YgYntHa2EKRkRP7PKK3PAVkFmaMJV51lSd0daQJcuCplCVG4VCWUr3Objb
-	 /apxNsE/U4vyiGOTQApZtxs4FgHMo+0NPutKK/fb1fcJMFNCl8hvrViNCuspHWbc7v
-	 Khv3RZhYfpIHPa2egDiHds1Y5msh9kQU46EIH00ZpOIj7r+WwzNAh1rOZqebEN0BQe
-	 EJNU6WU98wYBmvbX+4d8WX+PA/TUsx327eiN2XttQdAAGB2AnDQ4GShDllv12TKeLL
-	 zo6fH6zIOkUw6GHjpNfV2T/K5HBfF69YftfXOTmMcNN/9nJEYx++fV8MgDs9k1Tnun
-	 gprwMk62tcXsA==
-Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 5AAED1200068;
-	Fri,  6 Dec 2024 11:03:08 -0500 (EST)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-10.internal (MEProxy); Fri, 06 Dec 2024 11:03:08 -0500
-X-ME-Sender: <xms:OyBTZ90zrQ3HTOiakSHFiQUJjMMr2Rl41S6uXk3B1R9H0p0aqUDo8w>
-    <xme:OyBTZ0G_CS0SXO9LSRUGQHd3gp-CYdL2_1F6P53FkeWI3ait9HVErQ967Sbh7CbTs
-    63AM5-S5RBFtITb0Iw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrieelgdekvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdpuffr
-    tefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnth
-    hsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredttden
-    ucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvghlrd
-    horhhgqeenucggtffrrghtthgvrhhnpeejjeffteetfeetkeeijedugeeuvdfgfeefiedt
-    udeikeeggeefkefhudfhlefhveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpegrrhhnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihht
-    hidquddvkeehudejtddvgedqvdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlhdroh
-    hrghesrghrnhgusgdruggvpdhnsggprhgtphhtthhopedutddpmhhouggvpehsmhhtphho
-    uhhtpdhrtghpthhtohephigrnhhghihinhhglhhirghngheshhhurgifvghirdgtohhmpd
-    hrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthhtohep
-    hhgtrgeslhhinhhugidrihgsmhdrtghomhdprhgtphhtthhopehstghhnhgvlhhlvgeslh
-    hinhhugidrihgsmhdrtghomhdprhgtphhtthhopegrnhgurhhihidrshhhvghvtghhvghn
-    khhosehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepihhlphhordhjrghrvh
-    hinhgvnheslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopehgrhgvghhkhhes
-    lhhinhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehlihhnuhigsehroh
-    gvtghkqdhushdrnhgvthdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghr
-    rdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:OyBTZ94sR5Q4XBfxZ16lUBreB2awIr5guWbGY5cmWmkcyuu0nU2pIA>
-    <xmx:OyBTZ636KDoTm8uMopku2yjxZ9VDsyWeoEnO4vzlu_S62CfamZKIpA>
-    <xmx:OyBTZwHuae4A3yKy0g928pvzgMR07N8M_enIDmouYLREjlrpTEoXJg>
-    <xmx:OyBTZ7_YwXbLCKxY9Sn9dnKxYO_IjG94E-O6PYB8Xh9SPL30t13U6w>
-    <xmx:PCBTZ9l09p1091XHzkA11IFgyAZt2RxrphUCZvEEmQ9MDsfQeZIZ1-7n>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id AD5602220074; Fri,  6 Dec 2024 11:03:07 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="IW+nWapV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1733506588; bh=PRmZEtRle3VKbT216MubtI9sERRDGhVhmN8FOunTpLk=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=IW+nWapVr8RwZukhDbGAokhF2ivLfxGt7ZMuKUab94ErgrevQy62DaHetkx9brpykD0EiwkJ45d+RdC1PKTirCaWnLwwnTS2OwOWBaBxRvyxWrbMh+O09HDwauIpzugVrJ3B3JRvK7MS+Tk3lx3NyZR+0LPx6SwOzm0xjwtaE2HbG008xQsHAPwyuZ2s1Nu9olsuM92Vv4K8e29rYscW3IhE45wCC9l8fm0WWBtYCRJST5l3HhA3iCr2Uonhep/JmNsHs8PVpvxHF4mfbliKw8+pU0pxXP39Q/7ht69V+jpZO5OyPlVaYGRSfOlNF5nG/cvurHY6O+Ka2Ffnc5hPUg==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1733506588; bh=07xCs4CMQv1OLVLggaApZ5ESZUKrvqaD/HZTIiJS0ne=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=iybAW1EJOYexTzhrbftIXcAK2t6nZsBYRMfWDghW0piz++Kmqdg6sox7EzF+BkOpsqPpGCTuU43ekVUyQrtq4890ebv4v2CcK5Xv+relaQilBjrrtth/WJSdNAr4FA0qwOw7e0ExFzYMe8bjEzoxs9xjl281eFklP5rBU1ga4Yaj/hsI9sDOmETX8QBUkiNNG2FaNqpJoERaDg1pko9IOjxWjb+LoQhZveW23OSHUwhZ1XbY5GE+PBGFU17O0/B5u9bHdJAI6y5zxxe6dN94o0zpBg7D17KRVZ4ROmEnukXQ/kEGLvmmVXdR14Mu2nAumR4HxxWx2SAf3CxHeHqDiQ==
+X-YMail-OSG: hxFP6O0VM1mz1bkfm1YC66A9Bije4KniFDecJKk6QZkArML7Kj.Ny2.6FbKfgcB
+ NA66P9jZOhrmHwaHhc2G5yelGrbYoKwH70qiIEeCcbwvjgcbqzRI8mZxQtSQPIdTbB3YcQfjO94r
+ 4ACibzEimSwgzh9SXfvdewio_E.16cb5Rde326OXrurdbIwwkBfx5OeCCkdJ.TxGSSRH.BTQcHpf
+ 75TjoytXSKo3Ft5coeupC6ACIvq..YEIzIJLEnkoCQl75heW6oQHddyWw3iLzp6pCxO0dkZKjnvk
+ Vj6hJvwFjCASTH5gbUKZAAeua7W3QMhPzdLLJml2vWFp9B6n2RXvovQEJpoGUmjaCqRnx7qVATw.
+ UDFtykyaB7eVYW9Jqx72_xXvABOTMuebzmZVP0NQPjEb5ZxnECK3KW_KF2JpYvJmJ5rlZu.QhphY
+ sGjT_OVQTEfYGGdehN6_tSh8DC.nM0xRxgNIyDZZ2b3cWh51LdMEAOxkXAQ.oEl8Edp7WbAGYeto
+ CZDGoNTzx7S8rauyrp3WOTNhaw0aEXVJcXSoKJKNkBxIdMdwaaQgzFPQDJht.HKDI3zJWSkjtrQn
+ 9rDf2NPx6bWvD3V8QEfnHYagepE7AXhNRWJmI7UKvcf9NVLL0GEtOjxfFGlum3f.wQMG57egLC_o
+ I_FITiuRW0yIpGAbM1eckqU7sm_5SQiut.oXR7JkvI3OSCABB96dwY9_Qy_H.FDvuVTakdf3JNwZ
+ QXIRtY9hPxT2jnI6iGbNGiKUeTX1ZxoAWsMaXPnqJpoH9f8YZyL2GneOEsQjGnaDmyPIVy_gl44n
+ mf5uHfCMa7vLTdDDvxe74O_58PbtDRaJSzDGItHReO3XRaYRG7rl13UTTjQbXnfPlau.cFIXoQFB
+ thvN7ukrcvOKHyEC44_pSiHMHi6ap21FQ4dQRXWeQg.NzATcP1KXXFP4Tq7aOYE3kU7nHn6Ag9Gw
+ KY_Cg0Qi_dTcnA51q_DgY6gXJlcbvEt7paINPkWsNzb7FNqpqPLhBP6lLMxLsekViS8d6Ri_7Pw9
+ g_0L69y_q5jHXOntNSza6vQMvvMu6FRK7iX9GvqkdkrpSggs1UqZKE39_5gYBmVlfC61jkQllVwO
+ aysVitoOBjwpvhWtinCpxEk.2feFwZ.4cDqzsbX0sbpfgwdhQ1CdTag9LO2tn7SlKVCSTpWhNVNw
+ dFosBzn_3yN84bpMosUERcWbrbmcHWrM._8NzfNScUUq5851cCZJZll3PFnHrekNsdZffjIr6hRR
+ O9tZhRgyiPg546ltZhL5qDmXdRpUvHBbvVR9IflAypKVkM0eDL3V7ZJAPhBFtnAfc_PcxhmXOIEE
+ DDtWTesqqsmVa_Iv5rGLmBB6QRLz43_FcoCVzDNmKHwrOKRGqPsTfaJTuuJWr1fYuqYHPQY9DjwO
+ 1X4fVMw.JlEM2k1nJQ.f_fzJPekMP4mGTV1kQiKKUKRYq7hKAEBxkRoRSnx7l3DXGDslHGCU9CKM
+ xF3A1De8Y39QI_fiSTuOck1h90eugjzb2rlGjZ1g9ru5lYVOy83aKeEJdGbmTWEcjAb3p8UGSCSP
+ fCC4V.ZO99HecwtErEW4mDomnAGi8EWNnMQnrpXXy3n2Uy_7h2k2LmNd1qOVnCh1TmOmFY_UWf3B
+ zCQieA3U8p3Drp_cg.ojeyEh40cO_Hu.l2FNdGl08ixf8eic3foNPZYVtcg2SNMN6HcfxYYgxTRu
+ 0_I1U8oDBDdqn32psDiq0Kx1gTjkoYwXglD4wcZc7MCVhVh6JpXJwL90bxuacV1.b0eBv_4dZiSg
+ kGcrpsEkB61IN6v5kogtSljaEWs2eVEo1tVeA0fChpDU7ZCMoeoptd9NyBhTnqIR_8uW8luZKgIY
+ 4ehhGcm_mBNFXscJ1iGjh.mhUW62TzpMiINMtr_9oyLupIgkCVy4EJrT7cE_Pf47buIuxaG32BEq
+ 1GRLEnVtnjD1MBc6QpVKje6zKsAJTJb44GLg65To8XRWwHfxTOFajT09D7KdRz0nNUOQ6vLquQQ5
+ IJEVSE5lex_ZN6iMG482Ir_U70pc0zRsbLFUB8Z9wFxYxSFX1bHQnNv7G6Fiz3erharlcinQHggm
+ 6TMdlP61Q9_jtRe.MeeJM6b8a1.vgLs2Z7wwWyZsujk203FVAXj2tBncwGScxAgnyJKSsXHctNSl
+ U0xCOcKqnEIDlAHtVR28aJEEcvCDpEZwCSFnMWeAqAl6_Fa3PhVPI.9RjJEI4WwdKGWKX8wLELGY
+ GsTti8v9qJG.Ki6pgRQEPv1onJvrGnHWZfSPuJyo9NnQeBLDzwXSfh.qtBA--
+X-Sonic-MF: <bluescreen_avenger@verizon.net>
+X-Sonic-ID: 479efaa1-4fdb-4406-8593-03a020f2f64a
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.bf2.yahoo.com with HTTP; Fri, 6 Dec 2024 17:36:28 +0000
+Received: by hermes--production-bf1-66bb576cbb-h2pjb (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 64cf1929a7458f2c6ec659f4a8414399;
+          Fri, 06 Dec 2024 17:36:22 +0000 (UTC)
+From: n3rdopolis <bluescreen_avenger@verizon.net>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH 1/2] ttynull: Add an option to allow ttynull to be used as a
+ console device
+Date: Fri, 06 Dec 2024 12:36:21 -0500
+Message-ID: <3758619.RUnXabflUD@nerdopolis2>
+In-Reply-To: <6622246.K2JlShyGXD@nerdopolis2>
+References: <20241129041549.778959-1-bluescreen_avenger@verizon.net>
+ <2024120408-moneyless-stood-cda2@gregkh> <6622246.K2JlShyGXD@nerdopolis2>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Fri, 06 Dec 2024 17:02:04 +0100
-From: "Arnd Bergmann" <arnd@kernel.org>
-To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
-Cc: "Guenter Roeck" <linux@roeck-us.net>,
- "Niklas Schnelle" <schnelle@linux.ibm.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- linux-serial@vger.kernel.org, "Heiko Carstens" <hca@linux.ibm.com>,
- linux-kernel@vger.kernel.org, "Yang Yingliang" <yangyingliang@huawei.com>
-Message-Id: <e855900a-28d2-424b-8b3e-63c3c10c2848@app.fastmail.com>
-In-Reply-To: <Z1Mb15vOY4fJjsKt@smile.fi.intel.com>
-References: <472eb22a-dcb1-4fbb-bf2c-a4173706bc7a@app.fastmail.com>
- <27685942-fb62-44c5-86ed-98beb547ffed@roeck-us.net>
- <744920ba-551c-466b-ac5c-2607b81261a0@app.fastmail.com>
- <Z0QtZky8Sr7qUW7v@smile.fi.intel.com>
- <00f5e842-3ee9-4d83-8836-0ff4f703fa3c@app.fastmail.com>
- <Z0RSZ-YD_BozMs1n@smile.fi.intel.com>
- <be43108e-4135-4927-ba58-141836fde6af@app.fastmail.com>
- <30a38025-afae-4bdf-a468-21ae2cd5a7b3@app.fastmail.com>
- <4446d7dc-efb0-4395-8fcb-7177d9e07b5c@roeck-us.net>
- <acdab483-05a4-4fa8-ae1c-70ed53402aa2@app.fastmail.com>
- <Z1Mb15vOY4fJjsKt@smile.fi.intel.com>
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Mailer: WebService/1.1.23040 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 
-On Fri, Dec 6, 2024, at 16:44, Andy Shevchenko wrote:
-> On Wed, Dec 04, 2024 at 11:17:56PM +0100, Arnd Bergmann wrote:
->> On Wed, Dec 4, 2024, at 22:09, Guenter Roeck wrote:
->
->> I got stuck in this rabbit hole of running into more issues
->> with the 8250 driver. Any time you touch something, it breaks
->> elsewhere.
->> 
->> I've uploaded what I have here now:
->
-> FWIW, I have briefly looked at it, some patches I appreciate very much, some of
-> them I think need more testing and one thing I don't really like is putting
-> code back to 8250_core. Thinking about that, perhaps we need to restore 8250.c
-> (or alike) for collecting non-library / non-_particular_-driver-leaf?
+On Wednesday, December 4, 2024 2:37:55 PM EST n3rdopolis wrote:
+> On Wednesday, December 4, 2024 1:06:50 PM EST Greg Kroah-Hartman wrote:
+> > On Wed, Dec 04, 2024 at 12:06:56PM -0500, n3rdopolis wrote:
+> > > On Wednesday, December 4, 2024 10:41:44 AM EST Greg Kroah-Hartman wrote:
+> > > > On Thu, Nov 28, 2024 at 11:15:48PM -0500, n3rdopolis wrote:
+> > > > > Add a config option CONFIG_NULL_TTY_CONSOLE that will have ttynull be
+> > > > > initialized by console_initcall() and selected as a possible console
+> > > > > device.
+> > > > > Signed-off-by: n3rdopolis <bluescreen_avenger@verizon.net>
+> > > > 
+> > > > Meta-comments, we need a blank line before the s-o-b line, AND we need a
+> > > > real name here, sorry.  I can't do anything with these (including
+> > > > reviewing them), until that happens.
+> > > > 
+> > > Oh, I thought that I didn't need a real name
+> > > 
+> > > I found a recent thread that seems like it suggests that I thought
+> > > https://lore.kernel.org/all/20241121165806.476008-40-alex.bennee@linaro.org/[1]
+> > > https://drewdevault.com/2023/10/31/On-real-names.html[2]
+> > > Or do I need to wait for that change to the guideline be merged?
+> > 
+> > That change has been merged a long time ago, but as far as I can tell,
+> > this signed-off-by you used here does not meet this category.
+> > 
+> Oh, what would it take to meet that category? I've been using this nick to
+> contribute to other projects, and it matches my GitHub name, and FreeDesktop
+> GitLab name
+> 
+What if I made the signed-off-by (and committer name) this email address? would
+that work?
+> Thanks
+> > thanks,
+> > 
+> > greg k-h
+> > 
+> 
+> 
 
-Thanks for taking a look!
 
-I thought you might have different ideas on where some of the
-code needs to go,  as you were the one who moved it out
-previously.
 
-However, I think the two bits that I ended up moving back
-really belong in the core:
 
-- serial8250_setup_ports() is needed to get the
-  serial8250_ports[] into a sane state. Ideally this
-  array would just be statically initialized, but I don't
-  think we can actually express that in C code.
-
-- serial8250_init()/serial8250_exit() are required for
-  registering the driver itself (serial8250_reg) Having
-  that part in the ISA driver made no sense to me.
-
-The bit that is definitely ugly is how serial8250_isa_init()
-gets called from serial8250_init() and univ8250_console_init(),
-and I would prefer to remove that, but any attempt to do
-that made it worse.
-
-The problem here is that we can't just rely on link order:
-For the console initcall and  serial8250_isa_init_ports(),
-we have to call this before the core driver initialization,
-but the serial8250-isa platform device has to be registered
-after the core driver does. If we link both files into
-a loadable module, there is an additional problem of
-not being able to have more than one module_init() call.
-
-      Arnd
