@@ -1,48 +1,47 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4FED1FFC6D;
-	Fri,  6 Dec 2024 20:01:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 913C61D6DBC;
+	Fri,  6 Dec 2024 20:01:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733515278; cv=none; b=gQRnXyHGEVGcKUAblPrGP4BvS8MLALVsuMP47+t2ibKeGpMldV2N48DFmOTn9J5Y8gWOf37SMKQcLEUmAzG9OO+uN378OyIgnkgsyKR+5Hpq9pEO3pMOMgQ3DgIuRmf18L3kHQKlpGjT+xOpD22MJ/EqwLpBTrDhYvTdAGWmP+I=
+	t=1733515284; cv=none; b=CpNeeGa1lQswWj8E3XUHIJ2a/Ci1ZD/lX/nxD0xQ8biDJopZajqSNOVVxWNOSFPesbf1lXo730epaLUDZKt0AETqKD5RlyAq1ILLTMD01oPeDxLaWYNzfdHMAkVbW7e53AQOckAs0q4J9m/HpEItGmHdxIaI7fD1RebZeX0iigQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733515278; c=relaxed/simple;
-	bh=KNQoFP05xOPexS8j/GoRwMlR4e/mNFKxzyI0QPzhAfo=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WlhhAnLzlGMyTrzYEZux5ZHoX6OSaSNxvz/EMGgnBWF/IyhUfZ5WRRoZIFxe4r3bRs4w7NjxSxLaTM1hr/RbXGJkpDxHFGynYs5lXHG2se+7e0wESzbeDJcsbwj1JrYlc8UqUZetu/kYb4gwT8lYiydgErhb2k3aehZs1hOeduk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=zsmdq+UU; arc=none smtp.client-ip=68.232.154.123
+	s=arc-20240116; t=1733515284; c=relaxed/simple;
+	bh=Nbyfn+1oYpcw+P1XPkh6jD6oqLO72wK92m4lABnV+GU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=qWK2WG0qJYeng5WdBFwr18xkra3iqeg+6lLMjlN9TApv/+OS5hXnJ3hYL8Ml3Z65FDj13ewbAab0YVJjDbBeJcT5WZ97Qp/7IApcYH4z1fkfY6JI7NEbVazkYBrZG6aWKTkKZX2eHPbTdkjYoE6hZiwoad6g9dHgUUcc3XkXa3I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=tmFKyt9/; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="zsmdq+UU"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="tmFKyt9/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1733515276; x=1765051276;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KNQoFP05xOPexS8j/GoRwMlR4e/mNFKxzyI0QPzhAfo=;
-  b=zsmdq+UUQUoAiZLcC7blGWsQ2MzyQO5WEhUwX6bgdlcD4SmzCHHDvoUM
-   IQrlQoxeWmbSfaKL5jghYlYELQUA3ROz+WytbWJO78AZT2sxGdTYCxmGp
-   O9Cf+R5hz5PX0vQySa823rPJHUu0010QetO66T6h0DoPj9etjYpbJ9FZA
-   H/tj6ahNOCYXBWv5U697BzrHTK8nk7QfbAWD6N69aMTkx4Z3d4XyRlWbw
-   BFznq+xkyP3HnNAC2RMoTJtUdd4GGx5OgVMlaGfepuoOR4nUvpN0UtzLu
-   oM0rfiVtTv8tFsDSRenswh6gylwLRqkTyEktQMh1sK3fTr63K+t8GSnUl
-   Q==;
-X-CSE-ConnectionGUID: 9plLhrxgQXuYZUyQ8wJyMg==
-X-CSE-MsgGUID: YO0nKaSFT2+c+g7XFsmctw==
+  t=1733515282; x=1765051282;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Nbyfn+1oYpcw+P1XPkh6jD6oqLO72wK92m4lABnV+GU=;
+  b=tmFKyt9/JRnsgbcF2LoA3rZYz4FS+YtOFfmYBRTgd8HvZAzgscHnIlBG
+   K13ICcN4ORBmvCH/DhfbHlpkoTqKndlZg1UzgGT0KPckB2UpJL3hk/Xnr
+   uq6lZqlQELIVujR3AjPSC6GsPe9ji+82o3i5P29FJfU4oiU0PlNZP1Q0a
+   dLDxpjbZH7GnwOyyRbo0OxbIlCVP/IDDqrUm+foh5vHVbFFNPqiV11M/r
+   bc8/nhsNh7pOl+5AsEa8XzRnxOHna5xKoM3rFz4w7JNbhL1Wn/U3yYpiN
+   E4WKQ7BMCDPp16KBRCy3/xfoBlU94BSv8MI0fnlJo6M5yrrWYhGhxYXAb
+   g==;
+X-CSE-ConnectionGUID: wHv5dacKTzaP3KMzdbJ8Aw==
+X-CSE-MsgGUID: 1NUJjekURzSRYGbtL23iQg==
 X-IronPort-AV: E=Sophos;i="6.12,214,1728975600"; 
-   d="scan'208";a="34926408"
+   d="scan'208";a="202686982"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Dec 2024 13:01:13 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Dec 2024 13:01:21 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 6 Dec 2024 13:01:10 -0700
+ 15.1.2507.35; Fri, 6 Dec 2024 13:01:09 -0700
 Received: from ryan-Precision-3630-Tower.microchip.com (10.10.85.11) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.35 via Frontend Transport; Fri, 6 Dec 2024 13:01:10 -0700
+ 15.1.2507.35 via Frontend Transport; Fri, 6 Dec 2024 13:01:09 -0700
 From: <Ryan.Wanner@microchip.com>
 To: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
 	<nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
@@ -54,12 +53,10 @@ CC: <dharma.b@microchip.com>, <mihai.sain@microchip.com>,
 	<linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
 	<linux-gpio@vger.kernel.org>, <linux-spi@vger.kernel.org>,
 	<linux-serial@vger.kernel.org>, Ryan Wanner <Ryan.Wanner@microchip.com>
-Subject: [PATCH v3 09/13] ARM: dts: microchip: add sama7d65 SoC DT
-Date: Fri, 6 Dec 2024 12:59:54 -0700
-Message-ID: <f62e2600a8e88e4be9d87b346c41bb4781f8f667.1733505542.git.Ryan.Wanner@microchip.com>
+Subject: [PATCH v3 00/13] Add support for SAMA7D65
+Date: Fri, 6 Dec 2024 12:59:45 -0700
+Message-ID: <cover.1733505542.git.Ryan.Wanner@microchip.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1733505542.git.Ryan.Wanner@microchip.com>
-References: <cover.1733505542.git.Ryan.Wanner@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -71,171 +68,85 @@ Content-Type: text/plain
 
 From: Ryan Wanner <Ryan.Wanner@microchip.com>
 
-Add Device Tree for sama7d65 SoC.
+This series adds support for the SAMA7D65 SoC.
 
-Co-developed-by: Dharma Balasubiramani <dharma.b@microchip.com>
-Signed-off-by: Dharma Balasubiramani <dharma.b@microchip.com>
-Co-developed-by: Romain Sioen <romain.sioen@microchip.com>
-Signed-off-by: Romain Sioen <romain.sioen@microchip.com>
-Co-developed-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-Signed-off-by: Varshini Rajendran <varshini.rajendran@microchip.com>
-Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
----
- arch/arm/boot/dts/microchip/sama7d65.dtsi | 145 ++++++++++++++++++++++
- 1 file changed, 145 insertions(+)
+V2 of this series [1].
+
+For the pinctrl and pit64 timers those will have DTB warnings due to
+those bindings not being in the .yaml format.
+
+Changes v1->v2:
+- V1 set was sent incorrectly as multiple seprate patches v2 took all
+  those patches and put them in 1 thread.
+
+Changes v2->v3:
+- Correct the patch order to follow correct practice.
+- Correct flexcom dt-binding commit messge to reflect the changes in the
+  coding style.
+- Add missing SoB tags to patches.
+- Moved export clocks to DT patch to be included with the clock binding
+  patch.
+- Separate Kconfig changes and defconfig changes into different patches
+  and removed unused Kconfig params.
+- Correct confusing SoB and Co-developed chain.
+- Removed unsued nodes in DTSI file and sorted includes
+  alphanumerically.
+- Fix incorrect dts formatting.
+- Separate dts and pinmux changes into two patches.
+- Combine PLL and MCK changes into core clock driver patch.
+- Correct formatting in main clock driver.
+- MMC dt-binding changes are applied for next so have been removed from
+  the set [2].
+
+1) https://lore.kernel.org/linux-arm-kernel/cover.1732030972.git.Ryan.Wanner@microchip.com/T/#m9691b4d58b62f36f6cbac1d06883c985766c2c0d
+2) https://lore.kernel.org/linux-arm-kernel/cover.1732030972.git.Ryan.Wanner@microchip.com/T/#mccf6521c07e74e1c7dc61b09ae0ebdbbdde73a28
+
+Dharma Balasubiramani (6):
+  dt-bindings: mfd: atmel,sama5d2-flexcom: add
+    microchip,sama7d65-flexcom
+  dt-bindings: atmel-sysreg: add sama7d65 RAM and PIT
+  dt-bindings: serial: atmel,at91-usart: add microchip,sama7d65-usart
+  dt-bindings: pinctrl: at91-pio4: add microchip,sama7d65-pinctrl
+  dt-bindings: clocks: atmel,at91sam9x5-sckc: add sama7d65
+  dt-bindings: clock: Add SAMA7D65 PMC compatible string
+
+Romain Sioen (2):
+  dt-bindings: ARM: at91: Document Microchip SAMA7D65 Curiosity
+  ARM: dts: microchip: add support for sama7d65_curiosity board
+
+Ryan Wanner (5):
+  clk: at91: sama7d65: add sama7d65 pmc driver
+  ARM: dts: microchip: add sama7d65 SoC DT
+  ARM: dts: at91: Add sama7d65 pinmux
+  ARM: configs: at91: sama7: add new SoC config
+  ARM: at91: add new SoC sama7d65
+
+ .../devicetree/bindings/arm/atmel-at91.yaml   |    7 +
+ .../devicetree/bindings/arm/atmel-sysregs.txt |   14 +-
+ .../bindings/clock/atmel,at91rm9200-pmc.yaml  |    2 +
+ .../bindings/clock/atmel,at91sam9x5-sckc.yaml |    1 +
+ .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |    9 +-
+ .../pinctrl/atmel,at91-pio4-pinctrl.txt       |    1 +
+ .../bindings/serial/atmel,at91-usart.yaml     |    1 +
+ arch/arm/boot/dts/microchip/Makefile          |    3 +
+ .../dts/microchip/at91-sama7d65_curiosity.dts |   89 ++
+ .../arm/boot/dts/microchip/sama7d65-pinfunc.h |  947 ++++++++++++
+ arch/arm/boot/dts/microchip/sama7d65.dtsi     |  145 ++
+ arch/arm/configs/multi_v7_defconfig           |    1 +
+ arch/arm/configs/sama7_defconfig              |    1 +
+ arch/arm/mach-at91/Kconfig                    |    9 +
+ drivers/clk/at91/Makefile                     |    1 +
+ drivers/clk/at91/clk-master.c                 |    2 +-
+ drivers/clk/at91/clk-sam9x60-pll.c            |    2 +-
+ drivers/clk/at91/pmc.c                        |    1 +
+ drivers/clk/at91/sama7d65.c                   | 1373 +++++++++++++++++
+ include/dt-bindings/clock/at91.h              |    4 +
+ 20 files changed, 2600 insertions(+), 13 deletions(-)
+ create mode 100644 arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts
+ create mode 100644 arch/arm/boot/dts/microchip/sama7d65-pinfunc.h
  create mode 100644 arch/arm/boot/dts/microchip/sama7d65.dtsi
+ create mode 100644 drivers/clk/at91/sama7d65.c
 
-diff --git a/arch/arm/boot/dts/microchip/sama7d65.dtsi b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-new file mode 100644
-index 000000000000..0dcd80690210
---- /dev/null
-+++ b/arch/arm/boot/dts/microchip/sama7d65.dtsi
-@@ -0,0 +1,145 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ *  sama7d65.dtsi - Device Tree Include file for SAMA7D65 SoC
-+ *
-+ *  Copyright (C) 2024 Microchip Technology, Inc. and its subsidiaries
-+ *
-+ *  Author: Ryan Wanner <Ryan.Wanner@microchip.com>
-+ *
-+ */
-+
-+#include <dt-bindings/clock/at91.h>
-+#include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/interrupt-controller/arm-gic.h>
-+#include <dt-bindings/interrupt-controller/irq.h>
-+#include <dt-bindings/mfd/at91-usart.h>
-+
-+/ {
-+	model = "Microchip SAMA7D65 family SoC";
-+	compatible = "microchip,sama7d65";
-+	#address-cells = <1>;
-+	#size-cells = <1>;
-+	interrupt-parent = <&gic>;
-+
-+	cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		cpu0: cpu@0 {
-+			compatible = "arm,cortex-a7";
-+			reg = <0x0>;
-+			device_type = "cpu";
-+			clocks = <&pmc PMC_TYPE_CORE PMC_CPUPLL>;
-+			clock-names = "cpu";
-+		};
-+	};
-+
-+	clocks {
-+		main_xtal: clock-mainxtal {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+		};
-+
-+		 slow_xtal: clock-slowxtal {
-+			compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+		};
-+
-+	};
-+
-+	soc {
-+		compatible = "simple-bus";
-+		ranges;
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+
-+		pioa: pinctrl@e0014000 {
-+			compatible = "microchip,sama7d65-pinctrl";
-+			reg = <0xe0014000 0x800>;
-+			interrupts = <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 10>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+		};
-+
-+		pmc: clock-controller@e0018000 {
-+			compatible = "microchip,sama7d65-pmc", "syscon";
-+			reg = <0xe0018000 0x200>;
-+			interrupts = <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>;
-+			#clock-cells = <2>;
-+			clocks = <&clk32k 1>, <&clk32k 0>, <&main_xtal>;
-+			clock-names = "td_slck", "md_slck", "main_xtal";
-+		};
-+
-+		clk32k: clock-controller@e001d500 {
-+			compatible = "microchip,sama7d65-sckc", "microchip,sam9x60-sckc";
-+			reg = <0xe001d500 0x4>;
-+			clocks = <&slow_xtal>;
-+			#clock-cells = <1>;
-+		};
-+
-+		sdmmc1: mmc@e1208000 {
-+			compatible = "microchip,sama7d65-sdhci", "microchip,sam9x60-sdhci";
-+			reg = <0xe1208000 0x400>;
-+			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 76>, <&pmc PMC_TYPE_GCK 76>;
-+			clock-names = "hclock", "multclk";
-+			assigned-clocks = <&pmc PMC_TYPE_GCK 76>;
-+			assigned-clock-rates = <200000000>;
-+			assigned-clock-parents = <&pmc PMC_TYPE_CORE PMC_MCK1>;
-+			status = "disabled";
-+		};
-+
-+		pit64b0: timer@e1800000 {
-+			compatible = "microchip,sama7d65-pit64b", "microchip,sam9x60-pit64b";
-+			reg = <0xe1800000 0x100>;
-+			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 66>, <&pmc PMC_TYPE_GCK 66>;
-+			clock-names = "pclk", "gclk";
-+		};
-+
-+		pit64b1: timer@e1804000 {
-+			compatible = "microchip,sama7d65-pit64b", "microchip,sam9x60-pit64b";
-+			reg = <0xe1804000 0x100>;
-+			interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 67>, <&pmc PMC_TYPE_GCK 67>;
-+			clock-names = "pclk", "gclk";
-+		};
-+
-+		flx6: flexcom@e2020000 {
-+			compatible = "microchip,sama7d65-flexcom", "atmel,sama5d2-flexcom";
-+			reg = <0xe2020000 0x200>;
-+			ranges = <0x0 0xe2020000 0x800>;
-+			#address-cells = <1>;
-+			#size-cells = <1>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 40>;
-+			status = "disabled";
-+
-+			uart6: serial@200 {
-+				compatible = "microchip,sama7d65-usart", "atmel,at91sam9260-usart";
-+				reg = <0x200 0x200>;
-+				atmel,usart-mode = <AT91_USART_MODE_SERIAL>;
-+				interrupts = <GIC_SPI 40 IRQ_TYPE_LEVEL_HIGH>;
-+				clocks = <&pmc PMC_TYPE_PERIPHERAL 40>;
-+				clock-names = "usart";
-+				atmel,fifo-size = <16>;
-+				status = "disabled";
-+			};
-+		};
-+
-+		gic: interrupt-controller@e8c11000 {
-+			compatible = "arm,cortex-a7-gic";
-+			reg = <0xe8c11000 0x1000>,
-+			      <0xe8c12000 0x2000>;
-+			#interrupt-cells = <3>;
-+			#address-cells = <0>;
-+			interrupt-controller;
-+		};
-+	};
-+};
 -- 
 2.43.0
 
