@@ -1,143 +1,110 @@
-Received: from mail-lj1-f195.google.com (mail-lj1-f195.google.com [209.85.208.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B68E148832
-	for <linux-serial@vger.kernel.org>; Fri,  6 Dec 2024 15:27:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D706920C462;
+	Fri,  6 Dec 2024 15:44:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733498826; cv=none; b=K5K8ljTGt5LgE/NmikvNIXNSLmhiS0fahv738jjGHLfrKARdKVBXoY2ChUosDY/JyrHwFVWbgC6w7wcC6U9Mjbyl34ZfnvPoIiQM3olo47a+lT1N/CPaG6xwD28tL99TroywwwI23QLCqFi8ckhMIJZtfmBv3tWAuRwuPPJ26Pg=
+	t=1733499871; cv=none; b=eB3ry/E+Q5rBUB9pusP3DFk2z3XOoZ6ePH6gIAzblAaLoXVrJfA/RXTwIe57/xkw3e+oDyeqWl7Gt70uUX8rsauDAfQMKZX4W8h0OX8MYb5zZxAlDLjV4e6p+aiCbyb99aO/RVKMXZoL3mB6nv2LVOeJ7qUiwpMknt4u7rZzZOA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733498826; c=relaxed/simple;
-	bh=DZ4iBJ/iWM8KSa7H29avWC680AIZt2rf5AWA6M/3SAs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ingcxOe+Bqa9LyGweG0brQmazW6AryuyiV3RIMWmKjJPrcaR4qxiOVkWPKkrG5NA6bfyzzqrHF8DCih1t9GzMUyFT43byK3uS0xsXYsJcH1/9UV41WvmZT1PwpLy8PKOMxLAyQmj9y248nhsT7CqzjNxvd1pq01yWF/d/Xa4HR0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=lWc1IZGV; arc=none smtp.client-ip=209.85.208.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1733499871; c=relaxed/simple;
+	bh=Ny++rUcaXgW8F97ufViqfTwXgVLk2FQNVuzmyCkinHE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=H0rdOQqI0Y9mPh8ygNpt7DvUJUsaF0ebvMySWD0QeRMryMe9FeBUog3HEBLJ4n0Maat80NfAYrM6KrJIPMtXvnDolyMK4td9jOPs75e5qbdXGaMzjMzd/PbC1OEn9//jg+2lsmq7jY+z4jF7Y2TKvodNZ8dPDtKG/Q/eei6GIt8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HxkoavMz; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="lWc1IZGV"
-Received: by mail-lj1-f195.google.com with SMTP id 38308e7fff4ca-2ffa49f623cso22687451fa.1
-        for <linux-serial@vger.kernel.org>; Fri, 06 Dec 2024 07:27:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1733498823; x=1734103623; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tZUn4bZBalbJgAp7xW/bITYcNU46rh/GtC4lpWqRHs4=;
-        b=lWc1IZGVzgOULjBdDUf0VtaAnKBv0FVAimNIfEeHXlM2QTWDx2jh6GPeqb0pXGqnfv
-         xh6ReG38HIO5eZf3Yp6EncXUJEBwcu3jKSiuirc7LRnqmeJ9F9k2W5MejbCY9ETw1i1Z
-         52yzARay2ZoyTNtsbHW/ZGDChD5OxraA+1o/s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733498823; x=1734103623;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tZUn4bZBalbJgAp7xW/bITYcNU46rh/GtC4lpWqRHs4=;
-        b=bUPa06cUZHoT5RxF5NyG+qy/e+KrtYPtJZRIP9tQKrSRJAIdfPDi9qUX2KJDo/rOdt
-         Fq2DPeAfuOB3TdT+YwAPGAkYdoZIUGUUwHzOq13mBhPL9dqRWujg/6mzgnB6khMizEqa
-         A1VVzDMhFJ1ThzZk790qK20t9lk3DT+dfTpVkk+wAdufk32eTFpcP9indBDabs+RbMDO
-         ffKUwbW0jUTzdaREty8ZrfFv7ZSrYo4PkF1SatLAa/zI+bct3qH3acrD4cSdtLi3vMzo
-         Gz+2GnmovXNI4oEnQfLn2yQ9iwmTLUEcV+SxeSihxjSAzZLTqIcJ+dPnunhGlFZ7Gxbl
-         YR0w==
-X-Forwarded-Encrypted: i=1; AJvYcCWGWBbY8c0z1aSbvwLH7A5zK3TBP9PgcpRUJj8T/8uztearJsvGAtCAsXBsAUYFkNflcU/3oDsvQgpVDLE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy8Gd1kSdwX8j+e4TvPts3uGOOlD+7bWNoC5u8NaAjnw96bPZql
-	XFZpofc/JCpzxa+drJM57hbJuPCeymU+cHbjVcT0hkI1r9g9Dv5LS3cRlryNhYIrCLCzqqvpuki
-	DS79X
-X-Gm-Gg: ASbGncse0m9YRYEvF5OiODzBao2FlA7PbBJrqPH4N9eG2SiE2LSBq1E9y6XI978Icyg
-	PsJwJllKhkmy1oH5jC25lG4rssXFgU8Suqq4x+cF03kKQsQCle09X4+NIteAStI0Aikjxq3nXgP
-	94FuDT2cZ+Q8zCsapWXE0a73kIYtnkTSiuwqgz37zi58/Ry+7iPYVKa6BwS630jYaaCdpe85Ibs
-	WzOTNquMVU3c1zbkBCFmZGr0nNOQLdMpRaNEFkq0ANDB26tVaDEboSQa0XE/A7pO3yj39cKBEIE
-	++0Cu8Bp2cSFhHXVrg==
-X-Google-Smtp-Source: AGHT+IGDEydqfBHk0e7Ak9VSbuNx6ltDBZXZTKklR0CTEz4RumhnlBac0JaJQcboguQEhRjSvcfIAQ==
-X-Received: by 2002:a05:6512:3051:b0:53e:398c:bf9e with SMTP id 2adb3069b0e04-53e398cc127mr174948e87.55.1733498822750;
-        Fri, 06 Dec 2024 07:27:02 -0800 (PST)
-Received: from mail-lj1-f176.google.com (mail-lj1-f176.google.com. [209.85.208.176])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53e229ba9fcsm532332e87.113.2024.12.06.07.27.02
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Dec 2024 07:27:02 -0800 (PST)
-Received: by mail-lj1-f176.google.com with SMTP id 38308e7fff4ca-3003c82c95cso1369131fa.3
-        for <linux-serial@vger.kernel.org>; Fri, 06 Dec 2024 07:27:02 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCWSAUzKIC0wFEG12t0EfKrX4q1Jo9qMQBwa5oQmXMTYx9uANF/gklwLLWQy6zfdQYV4RuIx4ERYQTtzcng=@vger.kernel.org
-X-Received: by 2002:a05:651c:2119:b0:300:18ed:4313 with SMTP id
- 38308e7fff4ca-3002f8bd5ecmr10190331fa.9.1733498821759; Fri, 06 Dec 2024
- 07:27:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HxkoavMz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1733499870; x=1765035870;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Ny++rUcaXgW8F97ufViqfTwXgVLk2FQNVuzmyCkinHE=;
+  b=HxkoavMzxJ7o7fGaMV6X2JeAtNgUIRmo4SpBYK8QdnwKeN7YedsZEfMW
+   cx7d+Cr1BW1DG5ai0OiKmUbRtT1INKhyPY9h7SOWDEL4FgWMpeBiA0KLE
+   dg+opkcvT1UZPwXEEcXZ4pbgjN8fVf21CeltRmewrgfCmDcowYhirbfHq
+   wVS4EieStdEM1RYpasvz40BlSEmp6RSy0v6cenoYl8rNqxiXkiDklNknn
+   5nSwmI6GwLJTcBQA5lU83Us7Wa84J1K0nMTMd+C0dpf19trHPDYzXvtYW
+   pJpXaOxXqm1NF0epaULelpnia/Pr5SyWvWzevWaKTkKoRW28DkkqnEzwT
+   A==;
+X-CSE-ConnectionGUID: mEzt7pyKSbWm9WUwgWb+jw==
+X-CSE-MsgGUID: a/wFhheuRaqBoNwCc2asPw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11278"; a="33737576"
+X-IronPort-AV: E=Sophos;i="6.12,213,1728975600"; 
+   d="scan'208";a="33737576"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2024 07:44:29 -0800
+X-CSE-ConnectionGUID: qwQ9mNvYQc+xpe82cpP+dQ==
+X-CSE-MsgGUID: zgDGVInUTwmnHkjEE9B/5w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,213,1728975600"; 
+   d="scan'208";a="95246338"
+Received: from smile.fi.intel.com ([10.237.72.154])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Dec 2024 07:44:26 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1tJaVE-00000004YaX-05b2;
+	Fri, 06 Dec 2024 17:44:24 +0200
+Date: Fri, 6 Dec 2024 17:44:23 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Guenter Roeck <linux@roeck-us.net>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-serial@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+	linux-kernel@vger.kernel.org,
+	Yang Yingliang <yangyingliang@huawei.com>
+Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
+Message-ID: <Z1Mb15vOY4fJjsKt@smile.fi.intel.com>
+References: <472eb22a-dcb1-4fbb-bf2c-a4173706bc7a@app.fastmail.com>
+ <27685942-fb62-44c5-86ed-98beb547ffed@roeck-us.net>
+ <744920ba-551c-466b-ac5c-2607b81261a0@app.fastmail.com>
+ <Z0QtZky8Sr7qUW7v@smile.fi.intel.com>
+ <00f5e842-3ee9-4d83-8836-0ff4f703fa3c@app.fastmail.com>
+ <Z0RSZ-YD_BozMs1n@smile.fi.intel.com>
+ <be43108e-4135-4927-ba58-141836fde6af@app.fastmail.com>
+ <30a38025-afae-4bdf-a468-21ae2cd5a7b3@app.fastmail.com>
+ <4446d7dc-efb0-4395-8fcb-7177d9e07b5c@roeck-us.net>
+ <acdab483-05a4-4fa8-ae1c-70ed53402aa2@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241206003100.38142-1-rdunlap@infradead.org>
-In-Reply-To: <20241206003100.38142-1-rdunlap@infradead.org>
-From: Doug Anderson <dianders@chromium.org>
-Date: Fri, 6 Dec 2024 07:26:50 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=WzC=AA7MVX_qN1fsPL3Y8JA__0_cL5UWGoea0kJj5PVQ@mail.gmail.com>
-Message-ID: <CAD=FV=WzC=AA7MVX_qN1fsPL3Y8JA__0_cL5UWGoea0kJj5PVQ@mail.gmail.com>
-Subject: Re: [PATCH v2] Documentation: move dev-tools debugging files to process/debugging/
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-doc@vger.kernel.org, 
-	Sebastian Fricke <sebastian.fricke@collabora.com>, Jonathan Corbet <corbet@lwn.net>, 
-	workflows@vger.kernel.org, Jason Wessel <jason.wessel@windriver.com>, 
-	Daniel Thompson <danielt@kernel.org>, linux-debuggers@vger.kernel.org, 
-	kgdb-bugreport@lists.sourceforge.net, Alex Shi <alexs@kernel.org>, 
-	Yanteng Si <siyanteng@loongson.cn>, Hu Haowen <2023002089@link.tyut.edu.cn>, 
-	Andrew Morton <akpm@linux-foundation.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <acdab483-05a4-4fa8-ae1c-70ed53402aa2@app.fastmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Hi,
+On Wed, Dec 04, 2024 at 11:17:56PM +0100, Arnd Bergmann wrote:
+> On Wed, Dec 4, 2024, at 22:09, Guenter Roeck wrote:
 
-On Thu, Dec 5, 2024 at 4:31=E2=80=AFPM Randy Dunlap <rdunlap@infradead.org>=
- wrote:
->
-> Move gdb and kgdb debugging documentation to the dedicated
-> debugging directory (Documentation/process/debugging/).
-> Adjust the index.rst files to follow the file movement.
-> Adjust files that refer to these moved files to follow the file movement.
-> Update location of kgdb.rst in MAINTAINERS file.
->
-> Note: translations are not updated.
->
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Sebastian Fricke <sebastian.fricke@collabora.com>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: workflows@vger.kernel.org
-> Cc: Jason Wessel <jason.wessel@windriver.com>
-> Cc: Daniel Thompson <danielt@kernel.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: linux-debuggers@vger.kernel.org
-> Cc: kgdb-bugreport@lists.sourceforge.net
-> Cc: Doug Anderson <dianders@chromium.org>
-> Cc: Alex Shi <alexs@kernel.org>
-> Cc: Yanteng Si <siyanteng@loongson.cn>
-> Cc: Hu Haowen <2023002089@link.tyut.edu.cn>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: linux-serial@vger.kernel.org
-> ---
-> v2: Make process/debugging/index alpha by filename.
->     Update references to the moved files.
->
->  Documentation/admin-guide/README.rst                                  | =
-4 ++--
->  Documentation/dev-tools/index.rst                                     | =
-2 --
->  .../{dev-tools =3D> process/debugging}/gdb-kernel-debugging.rst         =
-| 0
->  Documentation/process/debugging/index.rst                             | =
-2 ++
->  Documentation/{dev-tools =3D> process/debugging}/kgdb.rst               =
-| 0
->  MAINTAINERS                                                           | =
-2 +-
->  include/linux/tty_driver.h                                            | =
-2 +-
->  lib/Kconfig.debug                                                     | =
-2 +-
->  lib/Kconfig.kgdb                                                      | =
-2 +-
->  9 files changed, 8 insertions(+), 8 deletions(-)
+...
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> I got stuck in this rabbit hole of running into more issues
+> with the 8250 driver. Any time you touch something, it breaks
+> elsewhere.
+> 
+> I've uploaded what I have here now:
+
+FWIW, I have briefly looked at it, some patches I appreciate very much, some of
+them I think need more testing and one thing I don't really like is putting
+code back to 8250_core. Thinking about that, perhaps we need to restore 8250.c
+(or alike) for collecting non-library / non-_particular_-driver-leaf?
+
+> https://git.kernel.org/pub/scm/linux/kernel/git/arnd/playground.git/log/?h=8250-cleanup
+> 
+> but this probably needs more testing, and a few smaller changes
+
+Definitely!
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
