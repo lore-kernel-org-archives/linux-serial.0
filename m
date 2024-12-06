@@ -1,192 +1,101 @@
-Received: from flow-b5-smtp.messagingengine.com (flow-b5-smtp.messagingengine.com [202.12.124.140])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B94A22066DE;
-	Fri,  6 Dec 2024 13:52:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 683E213D8B5;
+	Fri,  6 Dec 2024 14:30:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733493144; cv=none; b=kb6VoE3kG/l1xrjhHQtLqz3djb+/svPwYng5Y2OJ4GzYMul0oFBNsv4Jyftq+lymRmMZXbaAygMkkzH43alovKusm/Jdt18WpuRsr3hKbGJjvyja5YJ3NU1lj272Q0OE4ARnI0udsAadi/m48JTkaaAuPEh3CATOnFyaQPWZF8U=
+	t=1733495423; cv=none; b=gYLy2OlLPr8LpIOpL+Ja9hqjNOuPDx3q//lvpI+1jhFz8kxUHNlyISqupms5TtjFIRCGdnQeYSNaMY//yv6xCW0E8gVPdV8NPwjZG1kPKiKVSnZHj44SuZSuTW1tUJGaailStFBwL9b15xPOwdG2nmQdntvjC8aimUEbMSABYtk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733493144; c=relaxed/simple;
-	bh=Qg6Ce5uSEcP+55XWYkwP9vkeQ++48Pfctd6qXinl3Gc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IlmuNeRnFgnW5J1zg2XC3ao5yvtDYNznys+fiJ2wPRjdPDLXeGMvPYRpIvHXdUMz71qZWGRlZWQPIigUWD/JgvMp67SBeahMpfMF4f3y/FC/NIRZoCJeDAl0HC6yBDdcNe60/+8ONja747ZJSWVdJA1yJKfpVPd6Stks6tIh1lA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sakamocchi.jp; spf=pass smtp.mailfrom=sakamocchi.jp; dkim=pass (2048-bit key) header.d=sakamocchi.jp header.i=@sakamocchi.jp header.b=MSj7guEp; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=xDNgtnHy; arc=none smtp.client-ip=202.12.124.140
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sakamocchi.jp
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sakamocchi.jp
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sakamocchi.jp header.i=@sakamocchi.jp header.b="MSj7guEp";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="xDNgtnHy"
-Received: from phl-compute-07.internal (phl-compute-07.phl.internal [10.202.2.47])
-	by mailflow.stl.internal (Postfix) with ESMTP id 158141D40557;
-	Fri,  6 Dec 2024 08:52:19 -0500 (EST)
-Received: from phl-mailfrontend-02 ([10.202.2.163])
-  by phl-compute-07.internal (MEProxy); Fri, 06 Dec 2024 08:52:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sakamocchi.jp;
-	 h=cc:cc:content-type:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1733493138; x=
-	1733500338; bh=F/P5NvV/oPgyLOVDdO9jbE313zKQetWBog6B0EvuLEA=; b=M
-	Sj7guEpfYyfJVeSxZkmsMh0zyS2W2XOGFWxV1S085lP0oWUiSQf+HQv4B/im8Smb
-	A/50JTK4DLLh18J9Sjqs2aNhk6S2yarJ+EHcouloSh/oqCB7hArt2q3ZuIFbkj/I
-	fFgU9Qg9R5ZGGvT47CzpDp1KUbo7nK9HO2ae1NPXsXP/wl5BchFWD0yg/JCYjsr9
-	fXIJRALKFsKvFqe71MneVTz8jaGQLkP6wUACGnoi/5zIDs6FZV9i4SCRlzylZIdL
-	JEk2HHQSDWp63JDjM2qb1hil4JrLTf5nQRDL1cyESz6dFceNZAlsmT22L0W8F1gH
-	86D9/srMF3PNNTLIIkUqQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1733493138; x=1733500338; bh=F/P5NvV/oPgyLOVDdO9jbE313zKQetWBog6
-	B0EvuLEA=; b=xDNgtnHy1tK7puhnLX5+esK/IgziPC4HzD0yPzyaPgVs8BauerX
-	5Gh9QHIIwI9c+CUD9aR7FksVyc+wiv9c8kDcmUBxhh3LvOEfxlVik7VuxrqmuwTf
-	XafAHjl0THPYXeq+RMCHSq+xyRbTf81BcpKLtm5vGNbxwyK3XhqSKKD0/eNEBIEs
-	ifGsiqyf80HwoUEiHyMx99sbVBdhIbumQXWTwZBPE4uZQkwcPkqT1sz1khwQ5fKP
-	5LvTH20FG+Z0W6OgHmIRX0xxkcJ4AsJgifC3XCJZIrNaVdO1xmRRG8EZSEdZAiGB
-	55jZB+7jQTMglESe+lwBG7aRRXR4qQbb60A==
-X-ME-Sender: <xms:kgFTZ9eRxZgsQ_HyW0NQeyBhAa8qrP-js82jZsEnrc73rIKbqI5cQg>
-    <xme:kgFTZ7NeULk2V4bgBoKUbD2I9wnDfcKDJoG1qVHeHqzZoP8DCptzP2hkGxpDbhB_u
-    HTxZFgGNz0vK71z6CA>
-X-ME-Received: <xmr:kgFTZ2h8sZq6o250A96V6I672leVJ0PaesW6z8yf8EHC8ehGiJXlNNIQaY-eGODpBFung7qO_vhuMVEX_XB2I8ZKk7sWPvGZxo8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrieelgdehiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdpuffr
-    tefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnth
-    hsucdlqddutddtmdenucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecu
-    hfhrohhmpefvrghkrghshhhiucfurghkrghmohhtohcuoehoqdhtrghkrghshhhisehsrg
-    hkrghmohgttghhihdrjhhpqeenucggtffrrghtthgvrhhnpeehhffhteetgfekvdeiueff
-    veevueeftdelhfejieeitedvleeftdfgfeeuudekueenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehoqdhtrghkrghshhhisehsrghkrghmohgt
-    tghhihdrjhhppdhnsggprhgtphhtthhopedvjedpmhhouggvpehsmhhtphhouhhtpdhrtg
-    hpthhtohepiihijhhunhgphhhusehitghlohhuugdrtghomhdprhgtphhtthhopehgrhgv
-    ghhkhheslhhinhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehukhhlvg
-    hinhgvkheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepjhgrmhgvshdrsghothhtohhm
-    lhgvhieshhgrnhhsvghnphgrrhhtnhgvrhhshhhiphdrtghomhdprhgtphhtthhopehthh
-    homhgrshesthdqkegthhdruggvpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehv
-    ghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepnhhvughimhhmsehlihhsthhsrd
-    hlihhnuhigrdguvghvpdhrtghpthhtoheplhhinhhugidqshhouhhnugesvhhgvghrrdhk
-    vghrnhgvlhdrohhrghdprhgtphhtthhopehsphgrrhgtlhhinhhugiesvhhgvghrrdhkvg
-    hrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:kgFTZ2_UGngVtygK4_p0LKXvJr2g0v9oePYeEVcrzT0gkzTro-YK0g>
-    <xmx:kgFTZ5vx35KJMQHqHYcHa0QjhtFrNmuU_ZD5-UGD0krqFfoJC4mPyQ>
-    <xmx:kgFTZ1G9NWKiaU4m6BL1Na5OaZRNRdHCaRGEc0E-ttIN_XuEHc32wg>
-    <xmx:kgFTZwPzQVAELvWI33zBnvWj1s6ncPtql6n1UYpP22HdnXi_-3k-FA>
-    <xmx:kgFTZ4-yVlVkD3Q8ajGh0oXdOkDvMdTtHW1-CAta77ld53oKIK-nLbK0>
-Feedback-ID: ie8e14432:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 6 Dec 2024 08:52:12 -0500 (EST)
-Date: Fri, 6 Dec 2024 22:52:09 +0900
-From: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-To: Zijun Hu <zijun_hu@icloud.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	James Bottomley <James.Bottomley@hansenpartnership.com>,
-	Thomas =?iso-8859-1?Q?Wei=DFschuh?= <thomas@t-8ch.de>,
-	linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev,
-	linux-sound@vger.kernel.org, sparclinux@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
-	linux1394-devel@lists.sourceforge.net, arm-scmi@vger.kernel.org,
-	linux-efi@vger.kernel.org, linux-gpio@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
-	linux-hwmon@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-	linux-scsi@vger.kernel.org, open-iscsi@googlegroups.com,
-	linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
-	netdev@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
-Subject: Re: [PATCH v3 04/11] driver core: Constify API device_find_child()
- then adapt for various usages
-Message-ID: <20241206135209.GA133715@workstation.local>
-Mail-Followup-To: Zijun Hu <zijun_hu@icloud.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	James Bottomley <James.Bottomley@hansenpartnership.com>,
-	Thomas =?iso-8859-1?Q?Wei=DFschuh?= <thomas@t-8ch.de>,
-	linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev,
-	linux-sound@vger.kernel.org, sparclinux@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
-	linux1394-devel@lists.sourceforge.net, arm-scmi@vger.kernel.org,
-	linux-efi@vger.kernel.org, linux-gpio@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
-	linux-hwmon@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-	linux-scsi@vger.kernel.org, open-iscsi@googlegroups.com,
-	linux-usb@vger.kernel.org, linux-serial@vger.kernel.org,
-	netdev@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
-References: <20241205-const_dfc_done-v3-0-1611f1486b5a@quicinc.com>
- <20241205-const_dfc_done-v3-4-1611f1486b5a@quicinc.com>
+	s=arc-20240116; t=1733495423; c=relaxed/simple;
+	bh=TGVasmDCO3tnOBpJKA4aLJGzJlE4q7jJxKgqMz/34tc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cL+3OA7NqX4z/4n4m8PSbvwuLe3j45HqK1ZJwF9t1GPOmiXfdqROewT3dhbVoJIHbBHwiMU0fNYh5Jyby48jTXpsf2g0BRa3/fifheasL8VNPz+zACbkZC4hJMitF9/E6s0m1IyIxWCFB/gPUlJ0PXLdR8KBcsAWZeSztVl7a3o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-85c4557fce0so165845241.3;
+        Fri, 06 Dec 2024 06:30:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733495419; x=1734100219;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dKDuu8Gf8V/wWQlq1EzhT4nZUUbeswEARFJ5dyRd2oo=;
+        b=JoDov9tIAZv3S0XiVELfDFANQMtL1AMbv9yZr3trzd8r7/Yp9ZgToh/DAxhu9f2t+c
+         JE7rhj3l4vgy5Ij6A5Y0AFjQiiEGEsYccU2QAqZc0Ze7z2Og9N6VX0F7LfGh47HE/6qn
+         zKU1zU0Lcxd8k+jhf11HSzA8j706/XfS8K/PHuJgHkz3R8vdRp2iTEJv7v1UGi0w73uF
+         JmZ+lQXcFpWo9OOVs7NIZRoNvKzbYRQOHGAs39GIEEKm0ZNZRAn0EJGZNhKSAyvayisQ
+         Sc3LJ6IJYcKBnt6gqgupsJSSMqGVTkZSy6KYjwow7hZi0HqyR9VvW6kFMmg1QsDTV+i7
+         QpVg==
+X-Forwarded-Encrypted: i=1; AJvYcCU24aozmzlkDhR0VB13c6oLmr7OSxRPwUo+fd2L2J78271Pv9Xhn8QkIOzDfzg5YokyeVRadP0aJn6X0xC9@vger.kernel.org, AJvYcCVIr+lTrShPFJ4ILJorFwK9bSDhnvRgSuZqkpTjGu6iGjHUwet+14EDrhT4oaWGAQYjjw4uEAk45x41jz+a@vger.kernel.org, AJvYcCVn8ZBS1Lb4epZlue+KwMaNvosHCG+TtPE4K/PkiRzEp+zRb0btbSmm/ge9seKQ0VXm+aym3rTcqJO01Gm+xKLxx1Q=@vger.kernel.org, AJvYcCWjsN61UWJyUjcczIEmtGMSnjVNnbCzA7veV0mL4+yvDHImcjNg1+TDplT6TOC2A2ZGD/I7Nvt3i/yT@vger.kernel.org, AJvYcCXb/dHkAzX+9SJgMMb2PHXmuXvB1BmbZiAIeToeHLidBIOtfHw7lNec0Q1smeLOcd94p33Z4wjK4IRz@vger.kernel.org
+X-Gm-Message-State: AOJu0YwKcOGXnYIe8VeN2DUgxyFQkmfh6FqY4S8AUxuXN8YvK0ztV4pM
+	sgiZbie/Jr3NfW8KieWfaBYfkkC3f5IPrbR4Tny10+0wmH8mbqHLiNXX28dF
+X-Gm-Gg: ASbGncvgsGKBFi6iyTk/PjxSBI2u6Sm4ArLRzD7uv2J9KstYizw9cSAHZOqRuAhSnhU
+	1KT9gV82W7zg0tlZEemwWztsfRmZ/fXv+euLIxc017+HDwNPj61KzINFaMMhwts9VuzGzWldcfG
+	s43+JWez2retFanNbrPtUDoOsivV00KWnAgabOj/RhZbIYVuJS5OjYiawi5hHQ/q/2dsYPx0EWc
+	lWOxbzdO3/pRtLTm9W7IUTO9wLNvBpk2Eg8xjCkPClaUKpYpkcBucbk942yfcMWzYHUot0A3c5d
+	JE7UBTGor/Dl0c2H
+X-Google-Smtp-Source: AGHT+IFcxhlJzUj7uxEx3SlyHKEVyAMYIbTLbaPBa9NHFLbRhbWv8Im71D6vq/QsTyuX8H251q9xug==
+X-Received: by 2002:a05:6122:2a12:b0:501:2556:1cd9 with SMTP id 71dfb90a1353d-515fcae3475mr3236127e0c.10.1733495417846;
+        Fri, 06 Dec 2024 06:30:17 -0800 (PST)
+Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com. [209.85.221.173])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-515eaf60863sm333026e0c.46.2024.12.06.06.30.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Dec 2024 06:30:17 -0800 (PST)
+Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-515e7d76f65so559484e0c.1;
+        Fri, 06 Dec 2024 06:30:17 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUOCI/QBEIPAZXg/hy65ZDihgsmbJL1rZrU4N87EK0159IdHT2tOa8YEJnOgj/XmRTeQgZTsrUVGkkK6J0e2eebqbs=@vger.kernel.org, AJvYcCVIh/jo2/QDtWg84msfrc3wVAWXUJGAQQhbh8VwpUZg3aeKTi6J4scCCLtvNoLaxmCP1sChIOFifJ2i@vger.kernel.org, AJvYcCWbXpMGxoeXcMAYN7Me/3Ss0WwC12q5TGyzsPpl3rS8Qg55pdmmnmlfKfosBW7WNy+lnlSGKOP6geUO@vger.kernel.org, AJvYcCXPSzzlFDgHf8DuIr5TEjYUfIIWzFeEoiwbWLXRfzOwedXduLsFRm8QkT2aAQzpCEQhjS6I2MuKUsNtK87k@vger.kernel.org, AJvYcCXjmnBLuBo7OU1h8Jkl6NPMuMmUQQZ65EppfPg/l/ueYe6KIB0oRDofW5AN6jwFS64RyuYO3FerVRBqDHrN@vger.kernel.org
+X-Received: by 2002:a05:6122:2526:b0:50c:79a4:c25 with SMTP id
+ 71dfb90a1353d-515fcac6327mr3656559e0c.8.1733495417121; Fri, 06 Dec 2024
+ 06:30:17 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241205-const_dfc_done-v3-4-1611f1486b5a@quicinc.com>
+References: <20241115134401.3893008-1-claudiu.beznea.uj@bp.renesas.com> <20241115134401.3893008-5-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20241115134401.3893008-5-claudiu.beznea.uj@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 6 Dec 2024 15:30:05 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUoC-MUgOpudNeKqVD-ka_Kiem6kzskX7VCJDH4rVRR2g@mail.gmail.com>
+Message-ID: <CAMuHMdUoC-MUgOpudNeKqVD-ka_Kiem6kzskX7VCJDH4rVRR2g@mail.gmail.com>
+Subject: Re: [PATCH v3 4/8] arm64: dts: renesas: r9a08g045: Add the remaining
+ SCIF interfaces
+To: Claudiu <claudiu.beznea@tuxon.dev>
+Cc: magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, mturquette@baylibre.com, sboyd@kernel.org, 
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, p.zabel@pengutronix.de, 
+	lethal@linux-sh.org, g.liakhovetski@gmx.de, linux-renesas-soc@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Fri, Nov 15, 2024 at 2:50=E2=80=AFPM Claudiu <claudiu.beznea@tuxon.dev> =
+wrote:
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> The Renesas RZ/G3S SoC has 6 SCIF interfaces. SCIF0 is used as debug
+> console. Add the remaining ones.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-On Thu, Dec 05, 2024 at 08:10:13AM +0800, Zijun Hu wrote:
-> From: Zijun Hu <quic_zijuhu@quicinc.com>
-> 
-> Constify the following API:
-> struct device *device_find_child(struct device *dev, void *data,
-> 		int (*match)(struct device *dev, void *data));
-> To :
-> struct device *device_find_child(struct device *dev, const void *data,
->                                  device_match_t match);
-> typedef int (*device_match_t)(struct device *dev, const void *data);
-> with the following reasons:
-> 
-> - Protect caller's match data @*data which is for comparison and lookup
->   and the API does not actually need to modify @*data.
-> 
-> - Make the API's parameters (@match)() and @data have the same type as
->   all of other device finding APIs (bus|class|driver)_find_device().
-> 
-> - All kinds of existing device match functions can be directly taken
->   as the API's argument, they were exported by driver core.
-> 
-> Constify the API and adapt for various existing usages by simply making
-> various match functions take 'const void *' as type of match data @data.
-> 
-> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-> ---
->  arch/sparc/kernel/vio.c                |  6 +++---
->  drivers/base/core.c                    |  6 +++---
->  drivers/block/sunvdc.c                 |  6 +++---
->  drivers/bus/fsl-mc/dprc-driver.c       |  4 ++--
->  drivers/cxl/core/pci.c                 |  4 ++--
->  drivers/cxl/core/pmem.c                |  2 +-
->  drivers/cxl/core/region.c              | 21 ++++++++++++---------
->  drivers/firewire/core-device.c         |  4 ++--
->  drivers/firmware/arm_scmi/bus.c        |  4 ++--
->  drivers/firmware/efi/dev-path-parser.c |  4 ++--
->  drivers/gpio/gpio-sim.c                |  2 +-
->  drivers/gpu/drm/mediatek/mtk_drm_drv.c |  2 +-
->  drivers/hwmon/hwmon.c                  |  2 +-
->  drivers/media/pci/mgb4/mgb4_core.c     |  4 ++--
->  drivers/nvdimm/bus.c                   |  2 +-
->  drivers/pwm/core.c                     |  2 +-
->  drivers/rpmsg/rpmsg_core.c             |  4 ++--
->  drivers/scsi/qla4xxx/ql4_os.c          |  3 ++-
->  drivers/scsi/scsi_transport_iscsi.c    | 10 +++++-----
->  drivers/slimbus/core.c                 |  8 ++++----
->  drivers/thunderbolt/retimer.c          |  2 +-
->  drivers/thunderbolt/xdomain.c          |  2 +-
->  drivers/tty/serial/serial_core.c       |  4 ++--
->  drivers/usb/typec/class.c              |  8 ++++----
->  include/linux/device.h                 |  4 ++--
->  include/scsi/scsi_transport_iscsi.h    |  4 ++--
->  net/dsa/dsa.c                          |  2 +-
->  tools/testing/cxl/test/cxl.c           |  2 +-
->  28 files changed, 66 insertions(+), 62 deletions(-)
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v6.14.
 
-For the changes in FireWire subsystem:
+Gr{oetje,eeting}s,
 
-Reviewed-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
+                        Geert
 
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-Thanks
-
-Takashi Sakamoto
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
