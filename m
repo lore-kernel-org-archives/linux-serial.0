@@ -1,41 +1,41 @@
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADF791FFC69;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A1942135DF;
 	Fri,  6 Dec 2024 20:01:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733515286; cv=none; b=hv+utZUq7mJ+Pj4LjmKQKxZfH0tgA5C1jjRQYslJFZs+M/OTSXJYm+uza0Z19lj5t0R84FociMFgPkl6IXiRgU2PFhDO8p3MU5wQiqEx7wNaUQ6baN33hzgZeuIV1xMARrtNtAZkHAs/kRoeEqh0Gykf+jll9wF/TrN8kFXoKNs=
+	t=1733515286; cv=none; b=EuMMAgbVDmDxn8+VvJ6+I6fyd8+Qk95ntT0EnV9b2/bvMC5DpJKr+ws7EzwBBY5NLL4M5SPJcJWrWgsFPaYvk3awlb3X+K4rZDko5NaS25Ad8npCaKDLFjroBvvvlBCx72CBK6uLEYKEHF4cDhdEF/Q+PpesqQvNYlh6rehZwdw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1733515286; c=relaxed/simple;
-	bh=vxSjUj8/rpVfSBDOAIJy4d6AezOyQPahCixPSn8D4y4=;
+	bh=BCyeqOoY+YLc7OOTB+1JsebdSOtDLOPlnU8NaRAIflg=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TwlaMt+71qSUrZF2+olOxXwZNIykQarhCrQYU5uhs4fS23h4zCvVht+Gsy9uu+P2D+hnTsmSJEn6gL66/+NX289TfeNUJyMhxnn1WRZt5o6VxRQ05sSLYmQ+hJOOkfdripfQMYNUFg6z1e3MQPgQtyniAyw8rBP5DErhf+x4WTc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=XPQ323Uj; arc=none smtp.client-ip=68.232.154.123
+	 MIME-Version:Content-Type; b=AnQTQUcIULtKcGbfjG/mp1foO+EM85W2JFuMoJR0YemXN+os6HJho0sn9wFjGwfxmTjxQV/Y6NuyYY/rDoo6ZHI3rHvB69YRpbw/cSVDpl1yY03Njg4ZakyoH7k6HZoG/IZjoBwv1YfuLJVWr83OlqlEWqrBakcKH+Q0giVpwVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=bKwYRjCE; arc=none smtp.client-ip=68.232.154.123
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="XPQ323Uj"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="bKwYRjCE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1733515284; x=1765051284;
+  t=1733515285; x=1765051285;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=vxSjUj8/rpVfSBDOAIJy4d6AezOyQPahCixPSn8D4y4=;
-  b=XPQ323UjMb79Y4qWbR7Fq/MALAjSE255rXGMXODW+fjly+lU+CLoCJm0
-   Go8jufnFK5U8zCvsygpFaJ9Wz4SU6Fv5WLv8RAOQLIPeGaXspthc/eELo
-   Kjo5ezBIln535cqCIQJTMmxtIYkH8d5JvLfYQyvpMLTXo0yfLjRNBA6db
-   TFHQF7PxAbQXw9qft9TR60vlbfxdO41tfJJPLUiX8ML6BbVZIBeUySyJG
-   XFlOL5UrJ8pvDYtVl2O06J40FO9T/lkyVaLEXquTan+rwhw3w6dKd3N9C
-   B1HFuoGz3PyLYoCIPCz8+Ox2K8NGXDZ64HuLj46uxtb4T+Kec8JuImOc9
-   A==;
+  bh=BCyeqOoY+YLc7OOTB+1JsebdSOtDLOPlnU8NaRAIflg=;
+  b=bKwYRjCELedX+4xsMQEWNKQ9LhjPa8X4jfiGlzk2zmqgqRAQE+rxxKGD
+   Yt4A2gez+SkjxWW8lQkqMk7GO4Q/Ow9kgz5X+5uOv2UJNBHHyI7ZYM34I
+   tTk1lgaoEmF25qDmGEKhk1JQI74w+7ok2hsHzUCGPSlS6WMuQ12T/aY0Q
+   jcknBJuIpTPnz8f48Wd7P+DKMwUUnkzWZ/t7ej4PnLcr+WLLrlcYqHSKb
+   B58TCc874aJ0c6+PQE9ahdTUXSVEUAoVlEYNCkckD3cu0lkNN1o0eOEWh
+   2dmWX5mIz8knP1TJ9GuBm3Mp7xgkJ1ubCXyf5jh2g2/VdxgvMTX1CMF/+
+   w==;
 X-CSE-ConnectionGUID: wHv5dacKTzaP3KMzdbJ8Aw==
-X-CSE-MsgGUID: /c8PheexSnqIMADne7aZhg==
+X-CSE-MsgGUID: NjvV5IrnTPebvbUWN1E1iA==
 X-IronPort-AV: E=Sophos;i="6.12,214,1728975600"; 
-   d="scan'208";a="202686983"
+   d="scan'208";a="202686985"
 X-Amp-Result: SKIPPED(no attachment in message)
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Dec 2024 13:01:21 -0700
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 06 Dec 2024 13:01:22 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -53,10 +53,10 @@ CC: <dharma.b@microchip.com>, <mihai.sain@microchip.com>,
 	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
 	<linux-gpio@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v3 01/13] dt-bindings: ARM: at91: Document Microchip SAMA7D65 Curiosity
-Date: Fri, 6 Dec 2024 12:59:46 -0700
-Message-ID: <d5a22763a2081daa0d2155e2c05b7dc0eb468610.1733505542.git.Ryan.Wanner@microchip.com>
+	<linux-serial@vger.kernel.org>
+Subject: [PATCH v3 03/13] dt-bindings: atmel-sysreg: add sama7d65 RAM and PIT
+Date: Fri, 6 Dec 2024 12:59:48 -0700
+Message-ID: <96e64f01eee264ad0ac4c720a7a1cab4f95c206b.1733505542.git.Ryan.Wanner@microchip.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1733505542.git.Ryan.Wanner@microchip.com>
 References: <cover.1733505542.git.Ryan.Wanner@microchip.com>
@@ -69,37 +69,48 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 
-From: Romain Sioen <romain.sioen@microchip.com>
+From: Dharma Balasubiramani <dharma.b@microchip.com>
 
-Document device tree binding of the Microchip SAMA7D65 Curiosity board.
+Add SAMA7D65 RAM controller, PIT64 DT bindings.
 
-Signed-off-by: Romain Sioen <romain.sioen@microchip.com>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 Signed-off-by: Dharma Balasubiramani <dharma.b@microchip.com>
 Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- Documentation/devicetree/bindings/arm/atmel-at91.yaml | 7 +++++++
- 1 file changed, 7 insertions(+)
+ .../devicetree/bindings/arm/atmel-sysregs.txt      | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/atmel-at91.yaml b/Documentation/devicetree/bindings/arm/atmel-at91.yaml
-index 7160ec80ac1b..0ec29366e6c2 100644
---- a/Documentation/devicetree/bindings/arm/atmel-at91.yaml
-+++ b/Documentation/devicetree/bindings/arm/atmel-at91.yaml
-@@ -180,6 +180,13 @@ properties:
-           - const: atmel,sama5d4
-           - const: atmel,sama5
+diff --git a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
+index 76e2b7978250..93c2a5a341f3 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
++++ b/Documentation/devicetree/bindings/arm/atmel-sysregs.txt
+@@ -13,6 +13,7 @@ PIT Timer required properties:
+ PIT64B Timer required properties:
+ - compatible: Should be "microchip,sam9x60-pit64b" or
+ 			"microchip,sam9x7-pit64b", "microchip,sam9x60-pit64b"
++			"microchip,sama7d65-pit64b", "microchip,sam9x60-pit64b"
+ - reg: Should contain registers location and length
+ - interrupts: Should contain interrupt for PIT64B timer
+ - clocks: Should contain the available clock sources for PIT64B timer.
+@@ -27,12 +28,13 @@ Its subnodes can be:
+ - watchdog: compatible should be "atmel,at91rm9200-wdt"
  
-+      - description: Microchip SAMA7D65 Curiosity Board
-+        items:
-+          - const: microchip,sama7d65-curiosity
-+          - const: microchip,sama7d65
-+          - const: microchip,sama7d6
-+          - const: microchip,sama7
-+
-       - items:
-           - const: microchip,sama7g5ek # SAMA7G5 Evaluation Kit
-           - const: microchip,sama7g5
+ RAMC SDRAM/DDR Controller required properties:
+-- compatible: Should be "atmel,at91rm9200-sdramc", "syscon"
+-			"atmel,at91sam9260-sdramc",
+-			"atmel,at91sam9g45-ddramc",
+-			"atmel,sama5d3-ddramc",
+-			"microchip,sam9x60-ddramc",
+-			"microchip,sama7g5-uddrc",
++- compatible: Should be "atmel,at91rm9200-sdramc", "syscon" or
++			"atmel,at91sam9260-sdramc" or
++			"atmel,at91sam9g45-ddramc" or
++			"atmel,sama5d3-ddramc" or
++			"microchip,sam9x60-ddramc" or
++			"microchip,sama7g5-uddrc" or
++			"microchip,sama7d65-uddrc","microchip,sama7g5-uddrc" or
+ 			"microchip,sam9x7-ddramc", "atmel,sama5d3-ddramc".
+ - reg: Should contain registers location and length
+ 
 -- 
 2.43.0
 
