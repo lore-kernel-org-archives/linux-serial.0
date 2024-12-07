@@ -1,88 +1,61 @@
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C35E04A07;
-	Sat,  7 Dec 2024 00:12:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.120
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37B1E360;
+	Sat,  7 Dec 2024 06:31:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733530363; cv=none; b=nZEoSH4cRrNVZjZ6ZxAnUu7jnqisAQMlYjzUt9xfYPIT3LeIxsy8dGuB3FU/1EDlPkBMh5lRfFIJM1XhNFcBfX/o1NQ4/aLA9q7aOBH1uGvC092egxe7MVAins6bYrC7xg+WK491DJKsnm39DGgVSmcKdeSsk5ExlfMRmx8w/Zs=
+	t=1733553116; cv=none; b=ocL3teCiYBfpIM8YTPrK8P43WxautTpEAmbEL/9JsdWZ1t6v5hjNxcT14ytUX/Iy+sNzLfym59gvdetVTkdpaNQMLrqXu1QcgIDGBtLGasYwo4ned1dZvKcbGBcEhrRIWa3UMRut0IWngyN4dpJtptIvrkoF2/7GZsJoShHZ7XQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733530363; c=relaxed/simple;
-	bh=B0SF8tpB9EeLvhzrBh4i+p6/dp1JQVTjTUX48mccYpg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=sQVNuqIE+VdVNvk3/VvSjSoo2ZWh4PuFcJoTRf8db2Kz7eISI7d2vvWP60XURTKFoPbfHt48Ho6Ak/lO3FCaNcCZNLunBSZNz7Ide6ln2NwRyCPBSGCeMygcBkluVicNBRWzucpziL+J5IPZisOBRvU2/EwW6XWHHTc9uohBNdQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=rnFhX+/s; arc=none smtp.client-ip=185.125.188.120
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
+	s=arc-20240116; t=1733553116; c=relaxed/simple;
+	bh=WX70jKtqu3HbtTsSfomRJ8WtD4pmoAPdhIae74hdd5Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IcEvepGzJR8y9LlGZ/qT0EXsgu7zv/kpEl1dLd/E0vSSR8VyurY838yH57BwWb5pKdtEfwqhIkXKB3nnATXhX+HxoQMHkUh7oK/CDRXLnd846fax3aEqP5xY+OFzdeUXGkq6bYGUnEBbZ7Ox+KSwELVZMEgOGQEcmt/sk+N1984=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Gg+kK+aK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="rnFhX+/s"
-Received: from hwang4-ThinkPad-T14s-Gen-2a.. (unknown [183.155.67.69])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id AA2943F1C8;
-	Sat,  7 Dec 2024 00:12:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1733530359;
-	bh=QRUAQ1ZVncxN0VUq3nC73X4ELlJn2+9laQ5RSsdxalM=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-	b=rnFhX+/sBmc9A7wixK4bjjKzOnLRz/XeZ/Pv2cVECXalJYmiCTEuMdcR67peImlc+
-	 eyBzefSoB5gya4J5YuO2qnUheICWmNGZXNiQTVekcSJV+BSmkJoMOzv+Ker6mntbVN
-	 YCIdNvWkyhCkLnG5ijt9k1U+S3GAY0eR2mzKuQjfBvpVdt+xqGWbqlG10IrmOZOp4P
-	 nMJGxqJrFnRy8NnLW6VRRVKaSFo2JL3PvUgtloIuHIfLR/U+xz847YL6PM+ki2Y8jz
-	 xv6GVsOqtVXVUevP2oFf6cPPSM3fNER7ZOUT/sDCQ/fTF/eEBolu+S9EOrJKwJsN/o
-	 qzyLE8WHRgAUQ==
-From: Hui Wang <hui.wang@canonical.com>
-To: stable@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	gregkh@linuxfoundation.org
-Cc: hvilleneuve@dimonoff.com,
-	hui.wang@canonical.com
-Subject: [stable-kernel-only][5.15.y][5.10.y][PATCH] serial: sc16is7xx: the reg needs to shift in regmap_noinc
-Date: Sat,  7 Dec 2024 08:12:25 +0800
-Message-Id: <20241207001225.203262-1-hui.wang@canonical.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Gg+kK+aK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50404C4CECD;
+	Sat,  7 Dec 2024 06:31:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1733553115;
+	bh=WX70jKtqu3HbtTsSfomRJ8WtD4pmoAPdhIae74hdd5Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Gg+kK+aKrsElWLcF2UvV70Y29Bvj0C7WMKcHzfGojr+gwEyM8G08QzByitFUntH0b
+	 fTYIY5mDqfPKOGwOs4UuxzMqqlRiFdeNbfmpcssrdworiNrzAEdFHT0OBl6POwnl0v
+	 HBEFVZw/wjZ4VIBNykYAKe8tfH5206AfS308UugM=
+Date: Sat, 7 Dec 2024 07:31:52 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Hui Wang <hui.wang@canonical.com>
+Cc: stable@vger.kernel.org, linux-serial@vger.kernel.org,
+	hvilleneuve@dimonoff.com
+Subject: Re: [stable-kernel-only][5.15.y][5.10.y][PATCH] serial: sc16is7xx:
+ the reg needs to shift in regmap_noinc
+Message-ID: <2024120740-violet-breath-763f@gregkh>
+References: <20241207001225.203262-1-hui.wang@canonical.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241207001225.203262-1-hui.wang@canonical.com>
 
-Recently we found the fifo_read() and fifo_write() are broken in our
-5.15 and 5.4 kernels after cherry-pick the commit e635f652696e
-("serial: sc16is7xx: convert from _raw_ to _noinc_ regmap functions
-for FIFO"), that is because the reg needs to shift if we don't
-cherry-pick a prerequiste commit 3837a0379533 ("serial: sc16is7xx:
-improve regmap debugfs by using one regmap per port").
+On Sat, Dec 07, 2024 at 08:12:25AM +0800, Hui Wang wrote:
+> Recently we found the fifo_read() and fifo_write() are broken in our
+> 5.15 and 5.4 kernels after cherry-pick the commit e635f652696e
+> ("serial: sc16is7xx: convert from _raw_ to _noinc_ regmap functions
+> for FIFO"), that is because the reg needs to shift if we don't
+> cherry-pick a prerequiste commit 3837a0379533 ("serial: sc16is7xx:
+> improve regmap debugfs by using one regmap per port").
+> 
+> Here fix it by shifting the reg as regmap_volatile() does.
+> 
+> Signed-off-by: Hui Wang <hui.wang@canonical.com>
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 
-Here fix it by shifting the reg as regmap_volatile() does.
-
-Signed-off-by: Hui Wang <hui.wang@canonical.com>
----
- drivers/tty/serial/sc16is7xx.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index d274a847c6ab..87e34099f369 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -487,7 +487,14 @@ static bool sc16is7xx_regmap_precious(struct device *dev, unsigned int reg)
- 
- static bool sc16is7xx_regmap_noinc(struct device *dev, unsigned int reg)
- {
--	return reg == SC16IS7XX_RHR_REG;
-+	switch (reg >> SC16IS7XX_REG_SHIFT) {
-+	case SC16IS7XX_RHR_REG:
-+		return true;
-+	default:
-+		break;
-+	}
-+
-+	return false;
- }
- 
- /*
--- 
-2.34.1
+Why not take the proper upstream commit instead?
 
