@@ -1,146 +1,206 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49841B425B
-	for <linux-serial@vger.kernel.org>; Mon,  9 Dec 2024 14:37:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 939131A2399
+	for <linux-serial@vger.kernel.org>; Mon,  9 Dec 2024 14:45:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733755049; cv=none; b=X1Df1mQUM1WtTYay8aDkwYMIFuGZ1shG3fUPmGEyNEFtzoG8ChecCQYoHzsWM5yk2J0lHKPMLKUZ7Fvy0VAOfdHVICcg3UCGBPlO4HKOPT3GNXDmxII2kGG0PsrDY2Vq9U9un0qRw1XCS+UH88jT/sXY/rvbsqqmKwD48S884kk=
+	t=1733755550; cv=none; b=jR1MDfjIVQX8HAerCShf9ObxpOg7Pjn1ghf++kNW7J5mv5u//2zYam43Nxx+H0QmFx0ztLZX/CQgJjSofZjS7HJxP6N+gcWmM5kjZrq7DR4gsiPO3J/BACfL0SGE+YXaCoKqF+Tutoq8JuyP6sSntGH4O3uv7Uyd85yMfw/8Zqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733755049; c=relaxed/simple;
-	bh=hwj7xKZdi6rABzF0tFGA2x0rapKpS4MylfkrwNt8HV4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=SrNKgBGEGWBXEai52bCwi5wIm13yoJStyF312QG2O++NyGubDMzZsObQRC0f70AZa1pHaGO4+LJupcX9PEH166Bg3qoQ9dgAWN+naowpw9gdOxJyJcb1dBSEFm12I1tZ2RabRsH/MLDIxUwRFe1JX2+z+nlk9BSmO5fZCP731nM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[IPv6:::1])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <l.stach@pengutronix.de>)
-	id 1tKesi-00068A-Ni; Mon, 09 Dec 2024 15:37:04 +0100
-Message-ID: <ea1ca102ab0ec5068d82935623fd9ffb0b9aade1.camel@pengutronix.de>
-Subject: Re: [PATCH] serial: imx: Use uart_port_lock_irqsave() instead of
- uart_port_lock()
-From: Lucas Stach <l.stach@pengutronix.de>
-To: Xiaolei Wang <xiaolei.wang@windriver.com>, gregkh@linuxfoundation.org, 
-	jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de, 
-	kernel@pengutronix.de, festevam@gmail.com, esben@geanix.com, 
-	linux@rasmusvillemoes.dk, l.sanfilippo@kunbus.com, marex@denx.de, 
-	stefan.eichenberger@toradex.com, cniedermaier@dh-electronics.com, 
-	rickaran@axis.com, xiaoliei.wang@windriver.com
-Cc: linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Date: Mon, 09 Dec 2024 15:37:01 +0100
-In-Reply-To: <20241209124732.693834-1-xiaolei.wang@windriver.com>
-References: <20241209124732.693834-1-xiaolei.wang@windriver.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
+	s=arc-20240116; t=1733755550; c=relaxed/simple;
+	bh=3DccwU8bsNIKxXVNI/DtlsyxRxxXOVT1W4bhGoVeU9o=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=mi7qGlXJfL/MiNLq0PmQMzwaZEXtajss4yjWdjKnlSVGe0B6mjEQnKm87Nl9rDLQ5U5WomYaV2pxOlXmTEXq8m6Sdn4HWrJr02yRf/sFzHH4IIcNHsyGqiVqBzr1dvU/Y/pkAZzs6xNqZ5vRK42J2lnD23iRZmBET9AYvq1WsRo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=j55ps9Bf; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="j55ps9Bf"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-434e9716feaso11555745e9.3
+        for <linux-serial@vger.kernel.org>; Mon, 09 Dec 2024 06:45:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1733755547; x=1734360347; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KTfHlEBruYE/MHyxL3mgFOiuYOmpe0Q5tZ0GAzbgVOc=;
+        b=j55ps9Bfn0M3Sh5sCEQvQIDhCvG6j8t7sQjL74uhOiXfMae5zdG/TqLitcEoMqaAIE
+         /iFW2tCtSKQ7ueL11YzhLXDNnlFOwmsP7wNbcVm8cdH0gq4x4EXAmdAM+YYZQLza/MBr
+         S/lWTRJeQ4QzPgtWps26uFwBKkKC86z7j7L2ASHWrDvbpzEdV/C3XIf+qfU1O/fCh4ma
+         vaUAzdbxXv+gt5Jvr6BbVfBs51mgQkyZ/P26ElglyZcMQZfm4DLO62eQJ+fvBlJhnys/
+         ooSTYoZib3BPSNf2ge8OjzC4zFqpuLEcAmARy3hG5KFOokF6HPXzBGCYW+l3Zum/hpPn
+         3Dng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733755547; x=1734360347;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=KTfHlEBruYE/MHyxL3mgFOiuYOmpe0Q5tZ0GAzbgVOc=;
+        b=PsvRyCdY3dV9bdKdq7X2OpsBIrMbc/WVs/X4y1rB1qV8w6Q76qGV5LT9F9Enr0ghxe
+         k9BEx6eRQkTkhMuz4rtZun2fQRI3og8JDPYIODUcfBT6cu1sCny9DJQPng1x5tx7nvO0
+         2Vqz8/w8WhmqdSI1f1VFvd0kom/hPiQrZ8JGyzOkGG0vQ7qy8zyHW8/m0fLZXxPo8QSc
+         rHwSjn5t8DnmZP1MtE4oHjddC0vgAnn0VqXBIGLx32AH/U8DQgaPneQfEtU42l85LgLJ
+         JkcEdmAui2BAq7QUlduoUCiY1mT/FJ7/SE++jYv/HIuRXzz2Tcp5JoyjqGJd2CCWBhjd
+         Xa5w==
+X-Forwarded-Encrypted: i=1; AJvYcCULcNrTOWSlh8zV/BMhGI+SOE2YffkBdvD62DSMHX1Rrdidnmd4DQMkfIGtQ0pmTjRFV2r6fwHsLR7FZlM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwY9KYw9cGEMDQLfoqyXw5iKiX4XVVeiKlldAb/knJGGQpefDNM
+	yxLuXymD+aLe0zzBv/Ye5tsiyPv/Zj8+ShVyXImhx0wSKZBXSKEI3b5l0NhbO3I=
+X-Gm-Gg: ASbGncvF0d52YPFS0+PgEMxfZVymqLGFe+dpZH74gE9mjF7TKcnRDJywM4a6tMN5oQx
+	UJ2l2CKg+qNOcrHcU3hHT6wWKCK5eBPbXfmrw3UYsLUN0t4qojQYD64pd9LBrKNFbm/SQghWXwA
+	DjyjFHHyIGaRMyazD7My5k1GGFc7K5j5zTAA9KVtX0Lk4Y28Cz55nH03RVxedw6JZbAmdaaiZN6
+	1sWrR1nPiTG4mWli7Ddt+cg2JIxyT1zfT9AB/Lp4LCdSR3INMi2QiQP1MUIOJYv+JaaS/pDjFee
+	f2I9Qbqpq2Hmprrz4gGQWaoEQik=
+X-Google-Smtp-Source: AGHT+IGXczvk8/drcPnzB/3x9sBYxzCR+lhz793QJAVXvYPFhUrR93Cq3xgZf/gTd72hwYjCIfErXw==
+X-Received: by 2002:a05:600c:1f8c:b0:434:a1e7:27b0 with SMTP id 5b1f17b1804b1-434ddeb5379mr93055895e9.11.1733755546975;
+        Mon, 09 Dec 2024 06:45:46 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:982:cbb0:7546:6147:f006:709b? ([2a01:e0a:982:cbb0:7546:6147:f006:709b])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434f7676d45sm45750525e9.33.2024.12.09.06.45.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Dec 2024 06:45:46 -0800 (PST)
+Message-ID: <42b1c187-e924-4690-8338-4c694f3e16d9@linaro.org>
+Date: Mon, 9 Dec 2024 15:45:45 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+User-Agent: Mozilla Thunderbird
+From: neil.armstrong@linaro.org
+Reply-To: neil.armstrong@linaro.org
+Subject: Re: [PATCH v1 0/7] Add support to load QUP SE firmware from
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+ Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
+ andersson@kernel.org, konradybcio@kernel.org, johan+linaro@kernel.org,
+ dianders@chromium.org, agross@kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-spi@vger.kernel.org
+Cc: =quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
+References: <20241204150326.1470749-1-quic_vdadhani@quicinc.com>
+ <9d5e5b8b-aeaf-4ec8-b34a-8edeaec20037@oss.qualcomm.com>
+Content-Language: en-US, fr
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro
+In-Reply-To: <9d5e5b8b-aeaf-4ec8-b34a-8edeaec20037@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Am Montag, dem 09.12.2024 um 20:47 +0800 schrieb Xiaolei Wang:
-> When executing 'ehco mem > /sys/power/state', the following
-> deadlock occurs. Since there is output during the serial
-> port entering the suspend process, the suspend will be
-> interrupted, resulting in the nesting of locks. Therefore,
-> use uart_port_lock_irqsave instead of uart_port_unlock.
->=20
-> WARNING: inconsistent lock state
-> 6.12.0-rc2-00002-g3c199ed5bd64-dirty #23 Not tainted
-> --------------------------------
-> inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
-> sh/494 [HC0[0]:SC0[0]:HE1:SE1] takes:
-> c4db5850 (&port_lock_key){?.-.}-{3:3}, at: imx_uart_enable_wakeup+0x14/0x=
-254
-> {IN-HARDIRQ-W} state was registered at:
->   lock_acquire+0x104/0x348
->   _raw_spin_lock+0x48/0x84
->   imx_uart_int+0x14/0x4dc
->   __handle_irq_event_percpu+0xac/0x2fc
->   handle_irq_event_percpu+0xc/0x40
->   handle_irq_event+0x38/0x8c
->   handle_fasteoi_irq+0xb4/0x1b8
->   handle_irq_desc+0x1c/0x2c
->   gic_handle_irq+0x6c/0xa0
->   generic_handle_arch_irq+0x2c/0x64
->   call_with_stack+0x18/0x20
->   __irq_svc+0x9c/0xbc
->   _raw_spin_unlock_irqrestore+0x2c/0x48
->   uart_write+0xd8/0x3a0
->   do_output_char+0x1a8/0x1e4
->   n_tty_write+0x224/0x440
->   file_tty_write.constprop.0+0x124/0x250
->   do_iter_readv_writev+0x100/0x1e0
->   vfs_writev+0xc4/0x448
->   do_writev+0x68/0xf8
->   ret_fast_syscall+0x0/0x1c
-> irq event stamp: 31593
-> hardirqs last  enabled at (31593): [<c1150e48>] _raw_spin_unlock_irqresto=
-re+0x44/0x48
-> hardirqs last disabled at (31592): [<c07f32f0>] clk_enable_lock+0x60/0x12=
-0
-> softirqs last  enabled at (30334): [<c012d1d4>] handle_softirqs+0x2cc/0x4=
-78
-> softirqs last disabled at (30325): [<c012d510>] __irq_exit_rcu+0x120/0x15=
-c
->=20
-> other info that might help us debug this:
->  Possible unsafe locking scenario:
->=20
->        CPU0
->        ----
->   lock(&port_lock_key);
->   <Interrupt>
->     lock(&port_lock_key);
->=20
-> Fixes: 3c199ed5bd64 ("serial: imx: Grab port lock in imx_uart_enable_wake=
-up()")
-> Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
-> ---
->  drivers/tty/serial/imx.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 17f70e4bee43..4470bcb3ef19 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -2691,8 +2691,9 @@ static void imx_uart_save_context(struct imx_port *=
-sport)
->  static void imx_uart_enable_wakeup(struct imx_port *sport, bool on)
->  {
->  	u32 ucr3;
-> +	unsigned long flags;
-> =20
-> -	uart_port_lock(&sport->port);
-> +	uart_port_lock_irqsave(&sport->port, &flags);
+On 05/12/2024 16:59, Konrad Dybcio wrote:
+> On 4.12.2024 4:03 PM, Viken Dadhaniya wrote:
+>> In Qualcomm SoCs, firmware loading for Serial Engines (SE) in the QUP
+>> hardware has traditionally been managed by TrustZone (TZ). This setup
+>> handled Serial Engines(SE) assignments and access control permissions,
+>> ensuring a high level of security but limiting flexibility and
+>> accessibility.
+>>   
+>> This limitation poses a significant challenge for developers who need more
+>> flexibility to enable any protocol on any of the SEs within the QUP
+>> hardware.
+>>   
+>> To address this, we are introducing a change that opens the firmware
+>> loading mechanism to the Linux environment. This enhancement increases
+>> flexibility and allows for more streamlined and efficient management. We
+>> can now handle SE assignments and access control permissions directly
+>> within Linux, eliminating the dependency on TZ.
+>>   
+>> We propose an alternative method for firmware loading and SE
+>> ownership/transfer mode configuration based on device tree configuration.
+>> This method does not rely on other execution environments, making it
+>> accessible to all developers.
+>>   
+>> For SEs used prior to the kernel, their firmware will be loaded by the
+>> respective image drivers (e.g., Debug UART, Secure or trusted SE).
+>> Additionally, the GSI firmware, which is common to all SEs per QUPV3 core,
+>> will not be loaded by Linux driver but TZ only. At the kernel level, only
+>> the SE protocol driver should load the respective protocol firmware.
+> 
+> I think this is a great opportunity to rethink the SE node in general.
+> 
+> Currently, for each supported protocol, we create a new node that
+> differs in (possibly) interconnects and pinctrl states. These are really
+> defined per-SE however and we can programmatically determine which ones
+> are relevant.
+> 
+> With the growing number of protocols supported, we would have to add
+> 20+ nodes in some cases for each one of them. I think a good one would
+> look like:
+> 
+> geni_se10: serial-engine@abcdef {
+> 	compatible = "qcom,geni-se";
+> 
+> 	reg
+> 	clocks
+> 	power-domains
+> 	interconnects
+> 	...
+> 
+> 	status
+> 
+> 	geni_se10_i2c: i2c {
+> 		// i2c-controller.yaml
+> 	};
+> 
+> 	geni_se10_spi: spi {
+> 		// spi-controller.yaml
+> 	};
+> 
+> 	...
+> }
+> 
+> Or maybe even get rid of the subnodes and restrict that to a single
+> se-protocol = <SE_PROTOCOL_xyz> property, if the bindings folks agree.
+> 
+> We could extend the DMA APIs to dynamically determine the protocol
+> ID and get rid of hardcoding it.
+> 
+> And then we could spawn an instance of the spi, i2c, etc. driver from
+> the GENI SE driver.
 
-This function is only called from process context, so it should be fine
-to use uart_port_lock_irq().
+How/where would you add the peripheral subnodes ? A Serial Engine can only be a
+single type on a board, but I agree we could have a "generic" serial engine node
+that would be differenciated in the board DT with the protocol, and use the bindings
+yaml checked to properly check the subnodes/properties depending on the protocol
+property.
 
-Regards,
-Lucas
+But we would still need all the serial nodes in the SoC DT.
 
-> =20
->  	ucr3 =3D imx_uart_readl(sport, UCR3);
->  	if (on) {
-> @@ -2714,7 +2715,7 @@ static void imx_uart_enable_wakeup(struct imx_port =
-*sport, bool on)
->  		imx_uart_writel(sport, ucr1, UCR1);
->  	}
-> =20
-> -	uart_port_unlock(&sport->port);
-> +	uart_port_unlock_irqrestore(&sport->port, flags);
->  }
-> =20
->  static int imx_uart_suspend_noirq(struct device *dev)
+This may make the software support harder, meaning we would either need to
+have the same compatible probed in sequence from the i2c/spi/uart driver until
+one matches the protocol, or have the qup driver spawn an auxiliary device.
+
+Honestly, not sure it would be much simpler...
+
+Neil
+
+> 
+> Konrad
+> 
 
