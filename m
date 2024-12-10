@@ -1,173 +1,120 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E80251AE01D;
-	Tue, 10 Dec 2024 14:58:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AD4E1CD15
+	for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2024 15:16:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733842736; cv=none; b=Hgatr1FpQcr2sxLUB/L8RxX+2taKbJc68vfEKKcCxicRUhWPyToZqDweuhCmlfKywUUjYbacEqvL0RytzN9pe74GYpQNiZiqfeanfoKSG9zuyFMWKTmg3y83k9v4r6TVphcC1J8aFTH9kCQa7xa4AbBwhpCms4cAqNKHrKUoZy4=
+	t=1733843797; cv=none; b=rSc2eT1FK+Ye5ZCZEsT8ZicovwJmbmz+niW19Yv+3VyHeKeZlCInZ4W2zXWPAliMHWNfNCgognCeq7o2ILTQ7L/GfRK+hls7VH/o1CVX+/WbRjv+Q7Ky/Q2yhSHJjccVKOsoEjXFn6Tvr8EEO67CAELDPWmk60nLXLANK/l/reE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733842736; c=relaxed/simple;
-	bh=hDw7FBC5IO4sAeB4JTfWIbLu6rTXTcS6KrWiZLaOcO8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lZjj2ftFXWfdM7VM0ht464oBkKyqU4+WPxht70pttdWp2NeA+Y+wAxwj6gRqUHqKfUX8CtYDEMD8AFgR5Bg4etoD2Qj4sLHuYnOyqDhS0J6KCu/2uuVU/X/2vKR7HbEKZzs6EYNcHUked7BLGcpUJdXY04mg5FnwKlqLAzYCGpE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org; spf=pass smtp.mailfrom=clip-os.org; dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b=oXlDs6r1; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=clip-os.org
+	s=arc-20240116; t=1733843797; c=relaxed/simple;
+	bh=cMEx2gf52bAp6BVsDAEzu6IQF+0HBT6Ws0MACSlPHkA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ejH+7u9cYAyHq0lGSjPJLJVZvRec8gAyZc7sPNjJ6H/TgWFGH8Wbj6B/vxcBjyR3ZE8V8S705qivgCwJ/LTCNIlzMESnytL142dhc8JTU1znOUA1FajoVKtHd8H0OumK2QEB57MITZYx3KJTfUiPRpE8bx6nODK3FZoOPwf34TY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=qqldTwGz; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=riscstar.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b="oXlDs6r1"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id D22FA1BF206;
-	Tue, 10 Dec 2024 14:58:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=clip-os.org; s=gm1;
-	t=1733842725;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=f/gb/aFXJz3nmCeqMOwXgNVxlqxmAWHfvgPVB0L32PQ=;
-	b=oXlDs6r1u0Ik33AJQzEDQS8HctZuNfqL2EW7HaplSAanWrSoUlm2vJL0rG1GPEsZjvkZCb
-	SCvXMH9F7NOcY65xqHSNUv5X5TpTowlXInFl76BD8EFbBzzZh6dlRt5ELzMwsBpo8jXkAb
-	BAgUa7/EyZp3QbM+RIhSVaXjj7yq4W0wMrpMnUT8RYJTx0B3pJBvcCQ5QCih/KU0FwgUHo
-	0N3HzJV3LqX27vroTEos3DSOUj8GPKEod3Yqdq6ZnFrOxA8ySDSrG8744DaQttf5/tKl9i
-	qazR7H4W9WEkq+nWq5ngdsQPlb/HqMIxh9LPUUrk0PCLUasfGbB1lm51SC9ymQ==
-Message-ID: <2d5447b7-c185-4ce9-852e-b56a28b0306a@clip-os.org>
-Date: Tue, 10 Dec 2024 15:58:41 +0100
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="qqldTwGz"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3862d16b4f5so2531815f8f.0
+        for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2024 07:16:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1733843794; x=1734448594; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3/Hk6Ku9xV4vYVPZ0mEkrD1qjVxMUjhQA0xZ6o+cH5w=;
+        b=qqldTwGzXRHHpqXhnM9hHbNAaFWAL1WTB9KYrDkBO5pTXRZmwjeFI3ydxj5kEGXyOz
+         jutBtLKMiKrBm893DEsz9/5dOW0pKR6vVX6N61ov6B67JTxLJKZz3nLytH1WpAF/MTqO
+         gvSEy/0mldWkb/WNfDCsxP9RPiW7UlojdivkPqIAGjSXdqlUch/TWRvLA7cVtTMfdKbH
+         1jbJ5ZLZdxPHaSx4Japbfe6MHsgGnGMB7CpNuvSuNNoFjWQiWB8J+LL3n3zqCgHyluOn
+         mBPbQjUEAHdo+Fz42CbNPM2dZNcJF22SNV/ekbhI8CkoFrsh7ImCa5ZY9WWjfZh6I4i1
+         tMtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733843794; x=1734448594;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3/Hk6Ku9xV4vYVPZ0mEkrD1qjVxMUjhQA0xZ6o+cH5w=;
+        b=NjyY2rzoHuSbyeGUNHtxzOcuEwXI42XVeASW4H4SqaKCsmjCO9U9FpvtA4rAWawd5w
+         U+6CRzBmvxoCwR+Mdrs5fvoHWcmU4tVOJFsrlf/Nhhk7/C3KED6G+m6a0ZiGvs2otqO1
+         xOjSObINvMotCbTQoQjBaqQ28ozVX3lIIGny8QNs8YiEAoRTw5R1MLVgJtcd79Ij2eYB
+         zJOwJwLI9fE6eLmQhnlrkYzUuIIP63q5FqOEslSbbojAe9L4VWTU8BuHiOpan+wgQ1B8
+         Gx29MxiruqV/cfcykHuU3vOvU3su5LaePD1w3IV5gkGmJsvC48e7uF1oPV4N2r77gkdd
+         d6CA==
+X-Forwarded-Encrypted: i=1; AJvYcCU9G/Vp3HlUSg8rVYCyIEFQQUMV4pWSy4GgwxHK9lbJfn4tUhl8ycS52LpT8awVZxkLZdost4zHZVtDN+4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz/Q9NUdp/8mFWfSHMfNrQK2of6iJ14IfFCMvNP3VU8nWLrOCqH
+	VuJ1XJ9Bw913PNMr8oSJdbJKHhfM/8wcQx/XYPsZUz4SyA+Nw1LnzFseADQVJjs=
+X-Gm-Gg: ASbGncuilDYC0rlTj2C4utWr6G3lDAIkpfHl2GCUCodP+sCzjDeaCY4PR34YM/n8ucl
+	4qQTnqmMxx39aulMkCIUdxgSF6Ll7RRaeOQ33Dh5C8cPP+q0cHZ7omydmKYFWhWzpYrE6fi8rtM
+	fSfX4uuiQ7KacPEzuEIieVv0RM2kYVpSNoUyNjTYqJ7eDewV2zAeDtZmb17W8wZLVuqh9xQNtYJ
+	hrYU8Fq5M1cHmXm/Xi8VDqE6X0I0m5+1WJQg453VYzMRMiFzjuSx5yszOqctPwvEWIJ26QCzEDJ
+	9+OEcWr0RvjqwJye8rjlvdcIgNQdMtqzrgkS
+X-Google-Smtp-Source: AGHT+IEZYgzuNEX0Ja8JZykHzolp0rxxgNyso24X5bGyQrupgg8bLOxUA1VlNVk3vdf2QdgJ1/xovw==
+X-Received: by 2002:a05:6000:20c4:b0:386:2ea9:800 with SMTP id ffacd0b85a97d-386469d5155mr2165720f8f.18.1733843793561;
+        Tue, 10 Dec 2024 07:16:33 -0800 (PST)
+Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3862de365f0sm13005754f8f.3.2024.12.10.07.16.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2024 07:16:33 -0800 (PST)
+Date: Tue, 10 Dec 2024 15:16:31 +0000
+From: Daniel Thompson <daniel@riscstar.com>
+To: Amal Raj T <tjarlama@gmail.com>
+Cc: danielt@kernel.org, dianders@chromium.org, jason.wessel@windriver.com,
+	stephen.s.brennan@oracle.com, amalrajt@meta.com,
+	osandov@osandov.com, linux-debuggers@vger.kernel.org,
+	linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net
+Subject: Re: [PATCH 2/3] serial: Move LF -> CRLF replacement from serial
+ console to kdb
+Message-ID: <Z1hbT4OtEO9gz5Dg@aspen.lan>
+References: <gmail>
+ <20241210133448.3684593-1-tjarlama@gmail.com>
+ <20241210133448.3684593-3-tjarlama@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] sysctl: Fix underflow value setting risk in
- vm_table
-To: Joel Granados <joel.granados@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-fsdevel@vger.kernel.org,
- Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>,
- Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
- Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>,
- Joel Granados <j.granados@samsung.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Neil Horman <nhorman@tuxdriver.com>, Lin Feng <linf@wangsu.com>,
- Theodore Ts'o <tytso@mit.edu>
-References: <20241114162638.57392-1-nicolas.bouchinet@clip-os.org>
- <20241114162638.57392-3-nicolas.bouchinet@clip-os.org>
- <4ietaibtqwl4xfqluvy6ua6cr3nkymmyzzmoo3a62lf65wtltq@s6imawclrht6>
-Content-Language: en-US
-From: Nicolas Bouchinet <nicolas.bouchinet@clip-os.org>
-In-Reply-To: <4ietaibtqwl4xfqluvy6ua6cr3nkymmyzzmoo3a62lf65wtltq@s6imawclrht6>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-GND-Sasl: nicolas.bouchinet@clip-os.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241210133448.3684593-3-tjarlama@gmail.com>
 
-Hi Joel,
-
-
-Thank's for your reply.
-
-I apologize for the reply delay, I wasn't available late weeks.
-
-On 11/20/24 1:53 PM, Joel Granados wrote:
-> On Thu, Nov 14, 2024 at 05:25:51PM +0100, nicolas.bouchinet@clip-os.org wrote:
->> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
->>
->> Commit 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in
->> vm_table") fixes underflow value setting risk in vm_table but misses
->> vdso_enabled sysctl.
->>
->> vdso_enabled sysctl is initialized with .extra1 value as SYSCTL_ZERO to
->> avoid negative value writes but the proc_handler is proc_dointvec and not
->> proc_dointvec_minmax and thus do not uses .extra1 and .extra2.
->>
->> The following command thus works :
->>
->> `# echo -1 > /proc/sys/vm/vdso_enabled`
-> It would be interesting to know what happens when you do a
-> # echo (INT_MAX + 1) > /proc/sys/vm/vdso_enabled
-
-Great question, I'll check that.
-
+On Tue, Dec 10, 2024 at 05:34:47AM -0800, Amal Raj T wrote:
+> From: Amal Raj T <amalrajt@meta.com>
 >
-> This is the reasons why I'm interested in such a test:
+> The current implementation of `poll_put_char` in the serial console driver
+> performs LF -> CRLF replacement, which can corrupt binary data. Since kdb
+> is the only user of `poll_put_char`, this patch moves the LF -> CRLF
+> replacement logic to kdb.
+
+This description only explains why it is safe to change
+uart_poll_put_char() but...
+
+
+
+> Link: https://lore.kernel.org/linux-debuggers/Zy093jVKPs9gSVx2@telecaster/
 >
-> 1. Both proc_dointvec and proc_dointvec_minmax (calls proc_dointvec) have a
->     overflow check where they will return -EINVAL if what is given by the user is
->     greater than (unsiged long)INT_MAX; this will evaluate can evaluate to true
->     or false depending on the architecture where we are running.
-
-Indeed, I'll run tests to avouch behaviors of proc handlers bound checks 
-with
-different architectures.
-
+> Signed-off-by: Amal Raj T <amalrajt@meta.com>
+> ---
+>  drivers/tty/serial/serial_core.c | 4 ----
+>  kernel/debug/kdb/kdb_io.c        | 2 ++
+>  2 files changed, 2 insertions(+), 4 deletions(-)
 >
-> 2. I noticed that vdso_enabled is an unsigned long. And so the expectation is
->     that the range is 0 to ULONG_MAX, which in some cases (depending on the arch)
->     would not be the case.
-Yep, it is. As I've tried to explain in the cover letter
-(https://lore.kernel.org/all/20241112131357.49582-1-nicolas.bouchinet@clip-os.org/),
-there are numerous places where sysctl data type differs from the proc 
-handler
-return type.
-
-AFAIK, for proc_dointvec there is more than 10 different sysctl where it
-happens. The three I've patched represents three common mistakes using
-proc_handlers.
-
+> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+> index 74fa02b23772..ed18492b7f8f 100644
+> --- a/drivers/tty/serial/serial_core.c
+> +++ b/drivers/tty/serial/serial_core.c
+> @@ -2142,8 +2142,6 @@ void uart_console_write(struct uart_port *port, const char *s,
+>  	unsigned int i;
 >
-> So my question is: What is the expected range for this value? Because you might
-> not be getting the whole range in the cases where int is 32 bit and long is 64
-> bit.
->
->> This patch properly sets the proc_handler to proc_dointvec_minmax.
->>
->> Fixes: 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in vm_table")
->> Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
->> ---
->>   kernel/sysctl.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
->> index 79e6cb1d5c48f..37b1c1a760985 100644
->> --- a/kernel/sysctl.c
->> +++ b/kernel/sysctl.c
->> @@ -2194,7 +2194,7 @@ static struct ctl_table vm_table[] = {
->>   		.maxlen		= sizeof(vdso_enabled),
->>   #endif
->>   		.mode		= 0644,
->> -		.proc_handler	= proc_dointvec,
->> +		.proc_handler	= proc_dointvec_minmax,
->>   		.extra1		= SYSCTL_ZERO,
-> Any reason why extra2 is not defined. I know that it was not defined before, but
-> this does not mean that it will not have an upper limit. The way that I read the
-> situation is that this will be bounded by the overflow check done in
-> proc_dointvec and will have an upper limit of INT_MAX.
+>  	for (i = 0; i < count; i++, s++) {
+> -		if (*s == '\n')
+> -			putchar(port, '\r');
+>  		putchar(port, *s);
+>  	}
+>  }
 
-Yes, it is bounded by the overflow checks done in proc_dointvec, I've not
-changed the current sysctl behavior but we should bound it between 0
-and 1 since it seems vdso compat is not supported anymore since
-Commit b0b49f2673f011cad ("x86, vdso: Remove compat vdso support").
+... kgdb isn't the only user of uart_console_write() though, right?
 
-This is the behavior of vdso32_enabled exposed under the abi sysctl
-node.
 
->
-> Please correct me if I have read the situation incorrectly.
-You perfectly understood the problematic of it, thanks a lot for your 
-review.
-
-I'll reply to above questions after I've run more tests.
-
-I saw GKH already merged the third commit of this patchset and 
-backported it to stable branches.
-Should I evict it from future version of this patchset ?
-
-Thanks,
-
-Nicolas
-
->
-> Best
->
+Daniel.
