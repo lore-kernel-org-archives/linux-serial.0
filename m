@@ -1,147 +1,85 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 768771C75F3
-	for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2024 09:01:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4576123DE8D;
+	Tue, 10 Dec 2024 10:37:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733821292; cv=none; b=WfKXNXuFTdy2nXjglISW7jICGRtFHTm8v1DY60WyODxy/NzqUtm7HO4jTkmaBmIonCUgsbq/mR5F2ysoM/08FCPmb2LDEu5SyaS8CGoRFlnzlD5rcq0AFtgvuEzokOOa8sqSKU5grM1jYmxaIzcIdIBglJBB+SgnGoSWyRUtkrc=
+	t=1733827068; cv=none; b=CEr30BwBo1wYOzhaYPehH5EHQTbaMLWBk3brHmzCdqt/h5mpz6fcRvBBd26h8wBxWzWV2gX+9u0NZEG4dVOuez9CtWO2q4nbvp6iGZZ4GZRVehqiZHxZeUitaWGpmyItmxrDF07e1H4Ph6BrCa7/ZSr/7j8RkCKGEZrInadeFGI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733821292; c=relaxed/simple;
-	bh=gBFwtX62HZzRaai0K+v2rk3fcFBb5+CMCQxsV9IEtl8=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=V1539/hVIjQClYZbLDPzDgG6WABf+alAEvrFVfhG8TPBsNufShH536v2d+rs8rClf++CBbLzyf4UQ3t6HN0yLXeRy50CoZUDPmpDAj0RyU+BHZIdPQACoNU/vj3cNZd0hpjzIoeaVVNPDcyP35pr8P1QjjDeAmjLFQW7ORaT5sw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[IPv6:::1])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <l.stach@pengutronix.de>)
-	id 1tKw73-00051L-G9; Tue, 10 Dec 2024 10:01:01 +0100
-Message-ID: <b092fdec6fda26c56b4f2cc5927bbaa4a6d786f9.camel@pengutronix.de>
-Subject: Re: [PATCH v2] serial: imx: Use uart_port_lock_irq() instead of
- uart_port_lock()
-From: Lucas Stach <l.stach@pengutronix.de>
-To: Xiaolei Wang <xiaolei.wang@windriver.com>, gregkh@linuxfoundation.org, 
- jirislaby@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de, 
- kernel@pengutronix.de, festevam@gmail.com, esben@geanix.com, marex@denx.de,
-  ilpo.jarvinen@linux.intel.com, linux@rasmusvillemoes.dk, 
- stefan.eichenberger@toradex.com, l.sanfilippo@kunbus.com, 
- cniedermaier@dh-electronics.com, rickaran@axis.com
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Date: Tue, 10 Dec 2024 10:00:57 +0100
-In-Reply-To: <20241210034223.1493522-1-xiaolei.wang@windriver.com>
-References: <20241210034223.1493522-1-xiaolei.wang@windriver.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
+	s=arc-20240116; t=1733827068; c=relaxed/simple;
+	bh=s2gNrBnpaHs4PuvXcXL3HNFdMIVsXIYH+9x7UBV+JpM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=YIQ6Q+tvxVb8FYc8+SqKhxdk0w5efMzvbJPEF5np9jimDpzaZ8sZXYxZag00RTycvVeHNDxYjDw7Z0UbJPibgrjArdsorWL7yR515cSMVo9x63dCRP/21l/LvzL8DsL4VkM7BTQRLVVXQlGiwEVsydxfLkqnihdto8av9CCHY3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=etWNSVYq; arc=none smtp.client-ip=209.85.167.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="etWNSVYq"
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5401be44b58so2330126e87.0;
+        Tue, 10 Dec 2024 02:37:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1733827063; x=1734431863; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=s2gNrBnpaHs4PuvXcXL3HNFdMIVsXIYH+9x7UBV+JpM=;
+        b=etWNSVYqnQDeWW2iC6KeB33CTncEYSPZ9UtkkOmmiZl1uTm/rA2Sk5SnyoXKlVHlSc
+         EeuJLo2jqmZKQOboB1Hhkcp9BTwa3oeK7bS1msgsX900FbpSPl5jlXob8FSiiEopAj2p
+         /vUe4Ek4hHJNDxlhSu3WD2LOFXes25PY0JSYxRMpCJHqSoHQ8Sjf83IUbKIzb/cI1PQp
+         2LDv5H5HEWBy1RW8uo98xfv2ky9IWtKtEFrW+cOmdvIhjnVDnt01oVEL2AZeZTnivD7Y
+         lr3FlEuw735N3ejEZVTEsDh3WRIeaW8qmckDLzoH2lYkJ00EUbt62+0YOGZ21svRWQNi
+         mdMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733827063; x=1734431863;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=s2gNrBnpaHs4PuvXcXL3HNFdMIVsXIYH+9x7UBV+JpM=;
+        b=v9SAjzqDtglWtZqWf9ofWsRwh/KI0AGUXNyPzMdZQKxBbRZs5BMWeEHhuzkK7zkHAb
+         koqeNufNY4ewOceo5qMNp6j22Bsz17/AbKCnzNtDsbHIC5pMEBI/hN92DOT3pDiL1HBr
+         GBq2ojk4GEUY3nsRZ4WEaICVgG+bvjF1Obn6zQlsnKL1Bnnl/7Q4dyczsBa6pXeEELVX
+         EhjzopnZGwLbEY29h6AT/hTwdKD76AIccFLlmDxkQLNp30xTFndnOPmEPxwO+lc56HMy
+         Goy3uP8kBusK10grlugfQF50pdZKrFqCPsWaOjlrs6BhxMWbhk9ei267jD/IVzaxfVzK
+         vi0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCX7fDLF6kCuly2cqUrStDSty63NJJPPnnF3yzEQGHniDJDgehAl6NBgnO/NazUpCPypBhPkVYjcjc5SjAA3@vger.kernel.org, AJvYcCXxSslCXoScKbX7VCB9GfS6nqQaoBpARUwtcyTlXhJY1wHQVffgdEcdRizkb4AtbML7PnO9B8ILaXixUFk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyo32tNmTM5mwAYt9Ok4cyOJrhFfAQBhZWyLPlgzhKjJVmP+Nl8
+	DpeCR3nMfq/9MNT3ayx2airkaly/Vhm+PzuAuykV/5mNuHR1z3MS6w7M7k11EKRxnTAPKn8nAtt
+	fJxiisCVaNRBUVpvon+HOcGNJ/Qc=
+X-Gm-Gg: ASbGncthnJBrhBNb0GN12iAxxHTPRStoNl5FBH02nuZAszoeVfDUY88cNC5GnRBH4+2
+	bmRNRKatmAloOEf95rEcMq/Byjvg/rEKLnES1xCzuHBjeFzZHxu+v4wuerW1XvEuLrdk=
+X-Google-Smtp-Source: AGHT+IGvfRLPmahm50nu+e2exxVcMFSqXgjT/S6Twd+XgTU6pdYj8SRjRoKw86zHc3Jp+T8FWnjKa+Y2nt08isFeJl4=
+X-Received: by 2002:ac2:5227:0:b0:53e:362e:ed0 with SMTP id
+ 2adb3069b0e04-53e362e0f1emr5392719e87.44.1733827063169; Tue, 10 Dec 2024
+ 02:37:43 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+References: <20241210034223.1493522-1-xiaolei.wang@windriver.com>
+In-Reply-To: <20241210034223.1493522-1-xiaolei.wang@windriver.com>
+From: Fabio Estevam <festevam@gmail.com>
+Date: Tue, 10 Dec 2024 07:37:31 -0300
+Message-ID: <CAOMZO5AzNVd_xut2wBBHeyccFdC+1c4p50Uhzo=+BDbV=mEP2g@mail.gmail.com>
+Subject: Re: [PATCH v2] serial: imx: Use uart_port_lock_irq() instead of uart_port_lock()
+To: Xiaolei Wang <xiaolei.wang@windriver.com>
+Cc: l.stach@pengutronix.de, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, 
+	esben@geanix.com, marex@denx.de, ilpo.jarvinen@linux.intel.com, 
+	linux@rasmusvillemoes.dk, stefan.eichenberger@toradex.com, 
+	l.sanfilippo@kunbus.com, cniedermaier@dh-electronics.com, rickaran@axis.com, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Am Dienstag, dem 10.12.2024 um 11:42 +0800 schrieb Xiaolei Wang:
+On Tue, Dec 10, 2024 at 12:43=E2=80=AFAM Xiaolei Wang
+<xiaolei.wang@windriver.com> wrote:
+>
 > When executing 'ehco mem > /sys/power/state', the following
-> deadlock occurs. Since there is output during the serial
-> port entering the suspend process, the suspend will be
-> interrupted, resulting in the nesting of locks. Therefore,
-> use uart_port_lock_irq() instead of uart_port_unlock().
->=20
-> WARNING: inconsistent lock state
-> 6.12.0-rc2-00002-g3c199ed5bd64-dirty #23 Not tainted
-> --------------------------------
-> inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
-> sh/494 [HC0[0]:SC0[0]:HE1:SE1] takes:
-> c4db5850 (&port_lock_key){?.-.}-{3:3}, at: imx_uart_enable_wakeup+0x14/0x=
-254
-> {IN-HARDIRQ-W} state was registered at:
->   lock_acquire+0x104/0x348
->   _raw_spin_lock+0x48/0x84
->   imx_uart_int+0x14/0x4dc
->   __handle_irq_event_percpu+0xac/0x2fc
->   handle_irq_event_percpu+0xc/0x40
->   handle_irq_event+0x38/0x8c
->   handle_fasteoi_irq+0xb4/0x1b8
->   handle_irq_desc+0x1c/0x2c
->   gic_handle_irq+0x6c/0xa0
->   generic_handle_arch_irq+0x2c/0x64
->   call_with_stack+0x18/0x20
->   __irq_svc+0x9c/0xbc
->   _raw_spin_unlock_irqrestore+0x2c/0x48
->   uart_write+0xd8/0x3a0
->   do_output_char+0x1a8/0x1e4
->   n_tty_write+0x224/0x440
->   file_tty_write.constprop.0+0x124/0x250
->   do_iter_readv_writev+0x100/0x1e0
->   vfs_writev+0xc4/0x448
->   do_writev+0x68/0xf8
->   ret_fast_syscall+0x0/0x1c
-> irq event stamp: 31593
-> hardirqs last  enabled at (31593): [<c1150e48>] _raw_spin_unlock_irqresto=
-re+0x44/0x48
-> hardirqs last disabled at (31592): [<c07f32f0>] clk_enable_lock+0x60/0x12=
-0
-> softirqs last  enabled at (30334): [<c012d1d4>] handle_softirqs+0x2cc/0x4=
-78
-> softirqs last disabled at (30325): [<c012d510>] __irq_exit_rcu+0x120/0x15=
-c
->=20
-> other info that might help us debug this:
->  Possible unsafe locking scenario:
->=20
->        CPU0
->        ----
->   lock(&port_lock_key);
->   <Interrupt>
->     lock(&port_lock_key);
->=20
-> Fixes: 3c199ed5bd64 ("serial: imx: Grab port lock in imx_uart_enable_wake=
-up()")
-> Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
 
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+ehco --> echo
 
-> ---
->=20
-> v1:
->   https://patchwork.kernel.org/project/linux-arm-kernel/patch/20241209124=
-732.693834-1-xiaolei.wang@windriver.com/
-> v2:
->   use uart_port_lock_irq() instead of uart_port_lock_irqsave()
->=20
->  drivers/tty/serial/imx.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 17f70e4bee43..9c59ec128bb4 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -2692,7 +2692,7 @@ static void imx_uart_enable_wakeup(struct imx_port =
-*sport, bool on)
->  {
->  	u32 ucr3;
-> =20
-> -	uart_port_lock(&sport->port);
-> +	uart_port_lock_irq(&sport->port);
-> =20
->  	ucr3 =3D imx_uart_readl(sport, UCR3);
->  	if (on) {
-> @@ -2714,7 +2714,7 @@ static void imx_uart_enable_wakeup(struct imx_port =
-*sport, bool on)
->  		imx_uart_writel(sport, ucr1, UCR1);
->  	}
-> =20
-> -	uart_port_unlock(&sport->port);
-> +	uart_port_unlock_irq(&sport->port);
->  }
-> =20
->  static int imx_uart_suspend_noirq(struct device *dev)
-
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
