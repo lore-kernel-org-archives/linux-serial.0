@@ -1,106 +1,176 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4D802343B2;
-	Tue, 10 Dec 2024 17:01:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BDFC23ED65
+	for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2024 17:42:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733850092; cv=none; b=oahTLT8fNV/K9Ax/wbkG+GKfiusgpGee2TajRIhTuukRLsyiVQLnBqFj8xlHIv2Kts7Dk0Uuh1joVUAagtEs1Qwo3ZFY0NgjERBfhPqK8w+VIE6DNfu3GyNoT4NHpNNauQLmsIpaOLZPldMpcqKmADDjT99O940LHLPaDbQB6Vw=
+	t=1733852569; cv=none; b=AXvHxtJAUOKi09plux5laatzrPMEZr5OFMKqS8IPfPhqxxpyBBSFsYFeSmLa9PTPdfWvh4mn9oqikkGyCd3ggsO+fl/oZiEg/+VwDQy1vSlqG0YLG3JzL9ZGvEp/5b4hwbnOXx9tDywjipKJglLY66z6ly3nuVhTK7UpmQYk47U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733850092; c=relaxed/simple;
-	bh=mm797VLLclLeTXWrwP+BE1WcPEE0w5px/U8Ti5uzt0c=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=CetRgBe+Tk6K/PU7wThAuWGlCjUn16XiK2UKix5dZWKQgaKf/6dGu7g2ZfNtoKGz2xpvASVgyefWu1T3y9JrgbaRJf85azXZfme4WQE4Jjg8LIaOZ5MfCJQfNbbGl7oSxuEv6Ciowqr4BEiLadcS8AqqwUX6tILXOzUFQYX5hmc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WZraJkHl; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1733852569; c=relaxed/simple;
+	bh=zyY+LvfKIlfyAiCLJWS7+1JGxiO0FEIr6sylV/Xgzzg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RpcbTcVSML50o90klql+d9pI2BYhXRGdpaCIVKhBtn44He9aCHZR38TDKoGuHYhZLOqDjcpP+WKL2k0MnxgCUYbzr1k8YBmGG+2vjBVjsFAmVghoHE3eLaqoS/jqeyfEtLCq83CRBEToiN4GkRwwRkkBvl1AehFsR58V8R3I2o4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=RrumTtKl; arc=none smtp.client-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WZraJkHl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1733850091; x=1765386091;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mm797VLLclLeTXWrwP+BE1WcPEE0w5px/U8Ti5uzt0c=;
-  b=WZraJkHlo2B0W1oUcZBOU5gsJdN/QWf/WGjlc4JDT6FBfQQoMMcbVqmx
-   fKYNLHgg1Ah2agAQbBJDXeW03pLdRRXcYidABffYZxNQdDYXmsxWJuzjK
-   hmuaZsLAdzbMxR712bFDEPXtdfHTsYfJ0dwbKT0OIvnJpoK0PGSEyWQI3
-   ib6tm8ogQlZYTc51yFGB6kKHNvKvu4tGnv0Y31rPP/JnNKL11E2KyuHFo
-   kdmSv9mq0wN7gUE/JzUgDVkiTyqVyWVIwovolUGNqGR0dZR96uMVErpcc
-   tzV8uVlBrMsrx/OOoVy6xrXMxGUe6FOfLII2eTcFqZ+b8+90kgV3oDBwS
-   g==;
-X-CSE-ConnectionGUID: S8EiuTuBTIOcsbbvll5GwQ==
-X-CSE-MsgGUID: RwP32CUgRu+Q/5eK/+UAtw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11282"; a="44677705"
-X-IronPort-AV: E=Sophos;i="6.12,223,1728975600"; 
-   d="scan'208";a="44677705"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2024 09:01:30 -0800
-X-CSE-ConnectionGUID: ikSGikKxRnK9sH1BZXOOSQ==
-X-CSE-MsgGUID: 2V8mswXgQxWurh/hShNgrA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="100532132"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.56])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Dec 2024 09:01:26 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To: Arnd Bergmann <arnd@kernel.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Borislav Petkov <bp@alien8.de>,
-	stable@vger.kernel.org
-Subject: [PATCH v2 1/1] tty: serial: 8250: Fix another runtime PM usage counter underflow
-Date: Tue, 10 Dec 2024 19:01:20 +0200
-Message-Id: <20241210170120.2231-1-ilpo.jarvinen@linux.intel.com>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="RrumTtKl"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-53e399e3310so3812709e87.1
+        for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2024 09:42:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1733852565; x=1734457365; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AjuuFtemyP+DI+76rQdawmoZ3eTqeNEd2wfGxX97PdQ=;
+        b=RrumTtKljN5JDlD7+rQ5Vqqem4buCpOhssX2yqD2dt+GByGR1ZK4OupvaLwcOxCevP
+         EXWU9gIm8La01wgEXDvkvD7tt0pBLUlTqz4VgFfX4Xa8w30IzWVGPYgA/PYS2rBeH00V
+         Cy72ZrfnAwlSn4fGi+2vVVlKD6iLJoY/k6RuI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1733852565; x=1734457365;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AjuuFtemyP+DI+76rQdawmoZ3eTqeNEd2wfGxX97PdQ=;
+        b=B0nElBXb6PvgG3SallaDyW3gdWGS+2vGmTtv7xrJ9L6FmoFYjp1LyPZtBTVlCHMA7X
+         ipSBt5/RsdmxFvsXQ+WNDus6MSirNRzfdmRgjNn/dPtcSEcRxqieAoVT5NXA2NQ3u5UO
+         gWwLLSSLvxYaqQd7VNzbpEZ3VAOKJqDwWfOumQkXK8HGswJEeRAFPCgnFq1GcR8dmCy7
+         3Bb+cC52mXe/Cf2CG7mobL8prMlkjjvWDXPpgXDdnlihKYDmY+ozeM4XjXGKCKOHuNjm
+         DTnZFYVNk83FDvAr0RW8vNiLmc4PjXyYO/PfxiTyRf88JGuvHoCma+NPTKiF8oXFLEYH
+         blkQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUIQAPmH5gk2RtWc5aMcKzS5cZySB/R3CXiJUEcxIcVJ0SwhDyyl/mDXXqazQD5yxO+fwNFT97qKT/eH0g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynCI0xU40MBvhSqLFYy4zVIq0BWch7WMYQ5nj8G4v6OIL8Ce+o
+	ZR8+HhL7oOQF9I6rj1FbMAt5C47CY1Knpkzita0KOQ2eLL2r7dacZuZWwm1UNipMfxCJvUDsIM2
+	ZlQ==
+X-Gm-Gg: ASbGncuLqqP/75EmhvDWJY1QDF/Zijg+Qbu44D0+dyzSbuKPGN3h0DZ8e7RHUsBwP/i
+	Iw7VN+/FBcTBxBT6tsdXtSMCJWNE4D41p5n9/IAT+N2HIEPqPzVuKmyVr8wNopayS2+YeNkL0tW
+	AFZIucK9KWEhLumb7EANax90uING1d4WqW7z4b2DjTFOsx+3MDyk9KrThy5z45dL0eIZcjKuENZ
+	hOoQRU4EJW0yr8zULGSKxhfePkNSb3Zgc2AKaTDyAY56kOZBA55u+W65ur0rr3RQB84WmDJ0RLW
+	xO1DdvEq7MEhPQtVuF8+EA==
+X-Google-Smtp-Source: AGHT+IHRhLTKXC+mvDqC6LK517hC1N8Du7kA7JalYmQe+aNrfZEpuZczPCq5Dne9v6pDeQxk2+NxnQ==
+X-Received: by 2002:a05:6512:2812:b0:53e:3729:eaf7 with SMTP id 2adb3069b0e04-53e3729ee24mr6448918e87.34.1733852565041;
+        Tue, 10 Dec 2024 09:42:45 -0800 (PST)
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com. [209.85.208.179])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-53f2307fdd2sm1091540e87.159.2024.12.10.09.42.44
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Dec 2024 09:42:44 -0800 (PST)
+Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-30229d5b1caso19354951fa.2
+        for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2024 09:42:44 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWb68Xm3ws6J2p7XgLAU8rmHzwSIWqv7Th4SzS4arNRtfmeqmZUZ7w3k+o5XudGnxe5P6fZM3eNejDE6hI=@vger.kernel.org
+X-Received: by 2002:a2e:800a:0:b0:302:1c90:58d9 with SMTP id
+ 38308e7fff4ca-30240ced962mr314001fa.16.1733852563643; Tue, 10 Dec 2024
+ 09:42:43 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20241204150326.1470749-1-quic_vdadhani@quicinc.com>
+ <20241204150326.1470749-2-quic_vdadhani@quicinc.com> <CAD=FV=XF+9wxZ5xNtO3Uy8QW9UY4tb+KR46jkondvBeQuVLsrA@mail.gmail.com>
+ <6736db20-127b-45c3-ac90-3e3e359c343b@quicinc.com>
+In-Reply-To: <6736db20-127b-45c3-ac90-3e3e359c343b@quicinc.com>
+From: Doug Anderson <dianders@chromium.org>
+Date: Tue, 10 Dec 2024 09:42:31 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=VReNQ3nw+wfZizL7JjxEX9z=GwDEJAFzheNkW7rSrB5Q@mail.gmail.com>
+X-Gm-Features: AZHOrDkKw2FmHmZQUJPUfL4ELobjfrjI9icl10Uq0FkzH_2PdMnaEbBKyuOx5E0
+Message-ID: <CAD=FV=VReNQ3nw+wfZizL7JjxEX9z=GwDEJAFzheNkW7rSrB5Q@mail.gmail.com>
+Subject: Re: [PATCH v1 1/7] dt-bindings: i2c: qcom,i2c-geni: Document DT
+ properties for QUP firmware loading
+To: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+Cc: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	broonie@kernel.or, andersson@kernel.org, konradybcio@kernel.org, 
+	johan+linaro@kernel.org, agross@kernel.org, linux-arm-msm@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-spi@vger.kernel.org, quic_anupkulk@quicinc.com, 
+	Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The commit f9b11229b79c ("serial: 8250: Fix PM usage_count for console
-handover") fixed one runtime PM usage counter balance problem that
-occurs because .dev is not set during univ8250 setup preventing call to
-pm_runtime_get_sync(). Later, univ8250_console_exit() will trigger the
-runtime PM usage counter underflow as .dev is already set at that time.
+Hi,
 
-Call pm_runtime_get_sync() to balance the RPM usage counter also in
-serial8250_register_8250_port() before trying to add the port.
+On Mon, Dec 9, 2024 at 9:28=E2=80=AFPM Viken Dadhaniya
+<quic_vdadhani@quicinc.com> wrote:
+>
+> On 12/4/2024 10:55 PM, Doug Anderson wrote:
+> > Hi,
+> >
+> > On Wed, Dec 4, 2024 at 7:03=E2=80=AFAM Viken Dadhaniya
+> > <quic_vdadhani@quicinc.com> wrote:
+> >>
+> >> Document the 'qcom,load-firmware' and 'qcom,xfer-mode' properties to
+> >> support SE(Serial Engine) firmware loading from the protocol driver an=
+d to
+> >> select the data transfer mode, either GPI DMA (Generic Packet Interfac=
+e)
+> >> or non-GPI mode (PIO/CPU DMA).
+> >>
+> >> I2C controller can operate in one of two modes based on the
+> >> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
+> >>
+> >> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+> >> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+> >> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+> >> ---
+> >>   .../devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml   | 11 +++++++++=
+++
+> >>   1 file changed, 11 insertions(+)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.=
+yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> >> index 9f66a3bb1f80..a26f34fce1bb 100644
+> >> --- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> >> +++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> >> @@ -66,6 +66,15 @@ properties:
+> >>     required-opps:
+> >>       maxItems: 1
+> >>
+> >> +  qcom,load-firmware:
+> >> +    type: boolean
+> >> +    description: Optional property to load SE (serial engine) Firmwar=
+e from protocol driver.
+> >> +
+> >> +  qcom,xfer-mode:
+> >> +    description: Value 1,2 and 3 represents FIFO, CPU DMA and GSI DMA=
+ mode respectively.
+> >> +    $ref: /schemas/types.yaml#/definitions/uint32
+> >> +    enum: [1, 2, 3]
+> >
+> > I'm a little confused about this. I'll admit I haven't fully analyzed
+> > your patch with actual code in it, but in the past "CPU DMA" mode and
+> > "FIFO" mode were compatible with each other and then it was up to the
+> > driver to decide which of the two modes made sense in any given
+> > situation. For instance, last I looked at the i2c driver it tried to
+> > use DMA for large transfers and FIFO for small transfers. The SPI
+> > driver also has some cases where it will use DMA mode and then
+> > fallback to FIFO mode.
+> >
+> > ...so what exactly is the point of differentiating between "FIFO" and
+> > "CPU DMA" mode here?
+>
+> Yes, correct, Will update in V2.
+> I plan to add 2 modes, GSI and non-GSI(PIO or DMA based on length).
+>
+> >
+> > Then when it comes to "GSI DMA" mode, my understanding is that the
+> > firmware for "GSI DMA" mode is always loaded by Trustzone because the
+> > whole point is that the GSI mode arbitrates between multiple clients.
+> > Presumably if the firmware already loaded the GSI firmware then the
+> > code would just detect that case. ...so there shouldn't need to be any
+> > reason to specify GSI mode here either, right?
+> >
+> > -Doug
+>
+> GSI firmware is loaded from TZ per QUP, but to use GSI mode,
+> we need to configure the SE to use GSI mode by writing into SE register
+> QUPV3_SE_GENI_DMA_MODE_EN and SE_GSI_EVENT_EN. This register is
+> used to configure data transfer mode for Serial Engine.
 
-Reported-by: Borislav Petkov (AMD) <bp@alien8.de>
-Fixes: bedb404e91bb ("serial: 8250_port: Don't use power management for kernel console")
-Cc: <stable@vger.kernel.org>
-Tested-by: Borislav Petkov (AMD) <bp@alien8.de>
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
----
-v2:
-- Added tags
+Can't you detect it's in GSI mode without any device tree property
+like the code does today?
 
- drivers/tty/serial/8250/8250_core.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 5f9f06911795..68baf75bdadc 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -812,6 +812,9 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 			uart->dl_write = up->dl_write;
- 
- 		if (uart->port.type != PORT_8250_CIR) {
-+			if (uart_console_registered(&uart->port))
-+				pm_runtime_get_sync(uart->port.dev);
-+
- 			if (serial8250_isa_config != NULL)
- 				serial8250_isa_config(0, &uart->port,
- 						&uart->capabilities);
--- 
-2.39.5
-
+-Doug
