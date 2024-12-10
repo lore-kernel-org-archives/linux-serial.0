@@ -1,85 +1,118 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4576123DE8D;
-	Tue, 10 Dec 2024 10:37:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A296723DEB6;
+	Tue, 10 Dec 2024 13:34:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733827068; cv=none; b=CEr30BwBo1wYOzhaYPehH5EHQTbaMLWBk3brHmzCdqt/h5mpz6fcRvBBd26h8wBxWzWV2gX+9u0NZEG4dVOuez9CtWO2q4nbvp6iGZZ4GZRVehqiZHxZeUitaWGpmyItmxrDF07e1H4Ph6BrCa7/ZSr/7j8RkCKGEZrInadeFGI=
+	t=1733837693; cv=none; b=jz5Ma0TLSzLbPPPq3sK9ku8CcPYdHqs+n6Ffu1HacywxTJdsu7YgdeH5AynxJc/Uz2q3fV8eTXc1ftE4MehNkNEiAn2OFVXDyyy5bDWzfFlhWhy2OaR50BAkojIDkEgDxOFw93dGJa0W3aTOm69mPW+DxQEDe1/2cX9nHNjDzp0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733827068; c=relaxed/simple;
-	bh=s2gNrBnpaHs4PuvXcXL3HNFdMIVsXIYH+9x7UBV+JpM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YIQ6Q+tvxVb8FYc8+SqKhxdk0w5efMzvbJPEF5np9jimDpzaZ8sZXYxZag00RTycvVeHNDxYjDw7Z0UbJPibgrjArdsorWL7yR515cSMVo9x63dCRP/21l/LvzL8DsL4VkM7BTQRLVVXQlGiwEVsydxfLkqnihdto8av9CCHY3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=etWNSVYq; arc=none smtp.client-ip=209.85.167.45
+	s=arc-20240116; t=1733837693; c=relaxed/simple;
+	bh=0S9jFH6L+gnHSK49ufKw8bSZpaWfMQjCqQKTZ3/L1Sc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Vou6UDiPHGT1Tnd1Vv5m5Z9qnDN6WR7SpnT1BCZqH87/ITcXaiPmdo7b0ZWACRtlscy2aI7T8xLtMtuxb0JttpFvYGsvZPR0Dyy2yb4p4yS+WUGAduqNrOG2PFwbP4BtloYbrlMrga7upKI43tLgy5Smj3YNYsVqlCFQ1JOY3rI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W+q4LjUN; arc=none smtp.client-ip=209.85.222.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="etWNSVYq"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5401be44b58so2330126e87.0;
-        Tue, 10 Dec 2024 02:37:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W+q4LjUN"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-7b6e7f04c98so14311385a.2;
+        Tue, 10 Dec 2024 05:34:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733827063; x=1734431863; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1733837690; x=1734442490; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=s2gNrBnpaHs4PuvXcXL3HNFdMIVsXIYH+9x7UBV+JpM=;
-        b=etWNSVYqnQDeWW2iC6KeB33CTncEYSPZ9UtkkOmmiZl1uTm/rA2Sk5SnyoXKlVHlSc
-         EeuJLo2jqmZKQOboB1Hhkcp9BTwa3oeK7bS1msgsX900FbpSPl5jlXob8FSiiEopAj2p
-         /vUe4Ek4hHJNDxlhSu3WD2LOFXes25PY0JSYxRMpCJHqSoHQ8Sjf83IUbKIzb/cI1PQp
-         2LDv5H5HEWBy1RW8uo98xfv2ky9IWtKtEFrW+cOmdvIhjnVDnt01oVEL2AZeZTnivD7Y
-         lr3FlEuw735N3ejEZVTEsDh3WRIeaW8qmckDLzoH2lYkJ00EUbt62+0YOGZ21svRWQNi
-         mdMQ==
+        bh=4tm3kBZ09JwrPbjgXLy3qFEqmN9/4ag151iXQrlURUU=;
+        b=W+q4LjUNDXPO/+n6nPfDpCxX8t3hBtnC923GVq9otYQtO9FllNb+EaydtAs8Y8u+3V
+         Q9d8vvb40tS28RIptiflh1zNw46HwiNtE1OwDiocp20yjZws7Yp5GfZ9+C2jLupE3809
+         Y6VNvyKHv2R+JKg99n9a9sjt4POZsmLq9COOzH3qAOKFK+yrxmxO5vstqCktCtSeAF3a
+         4nBgz4D0eISU635yFwlkg66JKbijYuxUwIj980fo0k7sXzdBU8o+1sD2tV0y/TQL7AIH
+         db6uf92x3J9iUP80jNTH519YZMV8lb+tQCpMUwe30/85LTR8/SyGReMbg7lFe4A6zcBK
+         /+bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733827063; x=1734431863;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1733837690; x=1734442490;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=s2gNrBnpaHs4PuvXcXL3HNFdMIVsXIYH+9x7UBV+JpM=;
-        b=v9SAjzqDtglWtZqWf9ofWsRwh/KI0AGUXNyPzMdZQKxBbRZs5BMWeEHhuzkK7zkHAb
-         koqeNufNY4ewOceo5qMNp6j22Bsz17/AbKCnzNtDsbHIC5pMEBI/hN92DOT3pDiL1HBr
-         GBq2ojk4GEUY3nsRZ4WEaICVgG+bvjF1Obn6zQlsnKL1Bnnl/7Q4dyczsBa6pXeEELVX
-         EhjzopnZGwLbEY29h6AT/hTwdKD76AIccFLlmDxkQLNp30xTFndnOPmEPxwO+lc56HMy
-         Goy3uP8kBusK10grlugfQF50pdZKrFqCPsWaOjlrs6BhxMWbhk9ei267jD/IVzaxfVzK
-         vi0Q==
-X-Forwarded-Encrypted: i=1; AJvYcCX7fDLF6kCuly2cqUrStDSty63NJJPPnnF3yzEQGHniDJDgehAl6NBgnO/NazUpCPypBhPkVYjcjc5SjAA3@vger.kernel.org, AJvYcCXxSslCXoScKbX7VCB9GfS6nqQaoBpARUwtcyTlXhJY1wHQVffgdEcdRizkb4AtbML7PnO9B8ILaXixUFk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyo32tNmTM5mwAYt9Ok4cyOJrhFfAQBhZWyLPlgzhKjJVmP+Nl8
-	DpeCR3nMfq/9MNT3ayx2airkaly/Vhm+PzuAuykV/5mNuHR1z3MS6w7M7k11EKRxnTAPKn8nAtt
-	fJxiisCVaNRBUVpvon+HOcGNJ/Qc=
-X-Gm-Gg: ASbGncthnJBrhBNb0GN12iAxxHTPRStoNl5FBH02nuZAszoeVfDUY88cNC5GnRBH4+2
-	bmRNRKatmAloOEf95rEcMq/Byjvg/rEKLnES1xCzuHBjeFzZHxu+v4wuerW1XvEuLrdk=
-X-Google-Smtp-Source: AGHT+IGvfRLPmahm50nu+e2exxVcMFSqXgjT/S6Twd+XgTU6pdYj8SRjRoKw86zHc3Jp+T8FWnjKa+Y2nt08isFeJl4=
-X-Received: by 2002:ac2:5227:0:b0:53e:362e:ed0 with SMTP id
- 2adb3069b0e04-53e362e0f1emr5392719e87.44.1733827063169; Tue, 10 Dec 2024
- 02:37:43 -0800 (PST)
+        bh=4tm3kBZ09JwrPbjgXLy3qFEqmN9/4ag151iXQrlURUU=;
+        b=a7VkL/FZBp/W7eS1/ywqt9cb7oa0U4jh5NwqxePZPg73TuI3Yk3VlMee+tjPod/EL3
+         jKSOptOJHHnhB3uS6A0mFtuGuCeESAnM2MCBj9Y/m0Sg7GFUJxpWpajV3RlBOiQJM9A9
+         2s3cbMgPYKewrOqnwsGHbF0ap/iHWcOTjixRinLGWx2petH8DaSwKULZvLwBCloWg3Vi
+         D0JJ4nAWYWw8njy7+MdYciwkCLgBSQWdVFoeX7VmVhgXsTJU4k0pYHTx8MC+4a+kBAF1
+         htlArK1vWmJ/doN+UHErWqiKR5ukdyv2/cAhLwL6/XyD6wO12SqgJK8DEUpezAekrgFm
+         lLbQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWOLOxoHK/PJzQPRVyXv0gflrL5s4zhcnRDWKaD82jrrHcoEgnZ3WoNTyB03QAJqkLZQaZ9uCfs5hjypHXLPj8=@vger.kernel.org, AJvYcCXsUT/U3HLnpoV2JWnGtqPvyfpUr5AzaadDGgyVSJ4kEN7eVT/O1TIaO5sAOv7IzsCbbr6DuPYvdxjrPdXI@vger.kernel.org
+X-Gm-Message-State: AOJu0YwypN4Rk8Ad70eKsIl+icMM08Ctc9jEY9PzudXDktYN8bNODVO7
+	G4sj6W5s0moXD4EBum6Ok8CyqUCzlhUgGE9LC886WmqKnvMjRdrK
+X-Gm-Gg: ASbGncvFYAthZ6+RVxSJuWmfwSkUt5+zw0OgnwyrkMBbkJJafeaTXbcdbgBQYWPALgV
+	MNpTnBZZZKwuRNqqMXoKJF8TXKkJMyAfUaJgUT1bPDb22FiGD6GzHg8Odt2oMQaweSo637IJVlG
+	I2VfeXwiBkLxHGpPgZlRUqetufyMM7olUCARVRQur0QiMMfVVhH470+k7yakCVK5+8B9+dMKLDG
+	iq7DEzhUIuq99TvsbRBAhdz215hck45qGM5I/POjdS7zA==
+X-Google-Smtp-Source: AGHT+IEb78W/6xK9hjh+i1udDJ1MfbMqGecnW4cmrIebp5vNa9F6R1xagx2MRlF79GFTqHP8AZsz/A==
+X-Received: by 2002:a05:620a:19a6:b0:7b1:4579:80ea with SMTP id af79cd13be357-7b6bcb65738mr2835857885a.60.1733837690179;
+        Tue, 10 Dec 2024 05:34:50 -0800 (PST)
+Received: from localhost ([2a03:2880:20ff:9::])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-467664c915dsm20717201cf.4.2024.12.10.05.34.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Dec 2024 05:34:49 -0800 (PST)
+From: Amal Raj T <tjarlama@gmail.com>
+To: danielt@kernel.org,
+	dianders@chromium.org,
+	jason.wessel@windriver.com,
+	stephen.s.brennan@oracle.com
+Cc: tjarlama@gmail.com,
+	amalrajt@meta.com,
+	osandov@osandov.com,
+	linux-debuggers@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net
+Subject: [PATCH 0/3] Add a new command in kgdb for vmcoreinfo
+Date: Tue, 10 Dec 2024 05:34:45 -0800
+Message-ID: <20241210133448.3684593-1-tjarlama@gmail.com>
+X-Mailer: git-send-email 2.43.5
+In-Reply-To: <gmail>
+References: <gmail>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241210034223.1493522-1-xiaolei.wang@windriver.com>
-In-Reply-To: <20241210034223.1493522-1-xiaolei.wang@windriver.com>
-From: Fabio Estevam <festevam@gmail.com>
-Date: Tue, 10 Dec 2024 07:37:31 -0300
-Message-ID: <CAOMZO5AzNVd_xut2wBBHeyccFdC+1c4p50Uhzo=+BDbV=mEP2g@mail.gmail.com>
-Subject: Re: [PATCH v2] serial: imx: Use uart_port_lock_irq() instead of uart_port_lock()
-To: Xiaolei Wang <xiaolei.wang@windriver.com>
-Cc: l.stach@pengutronix.de, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de, 
-	esben@geanix.com, marex@denx.de, ilpo.jarvinen@linux.intel.com, 
-	linux@rasmusvillemoes.dk, stefan.eichenberger@toradex.com, 
-	l.sanfilippo@kunbus.com, cniedermaier@dh-electronics.com, rickaran@axis.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, Dec 10, 2024 at 12:43=E2=80=AFAM Xiaolei Wang
-<xiaolei.wang@windriver.com> wrote:
->
-> When executing 'ehco mem > /sys/power/state', the following
+From: Amal Raj T <amalrajt@meta.com>
 
-ehco --> echo
+This patch set introduces a new custom query packet,
+`qlinux.vmcoreinfo`, to kgdb. This packet retrieves kernel's
+vmcoreinfo text, which contains crucial debugging information
+such as the KASLR offset, kernel release, `phys_base` etc.
 
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
+This implementation includes a new binary-encoder (`mem2ebin`)
+instead of the existing hex-encoder (`mem2hex`) to reduce the
+amount of data sent over the wire.
+
+These changes also move the LF -> CRLF replacement logic from
+serial drivers to KDB, since KDB is the only user of this
+logic, and the existing replacement results in incorrect
+checksums generated by KGDB.
+
+Link:
+- https://github.com/osandov/drgn/wiki/GDB-Remote-Protocol-proposal:-linux.vmcoreinfo-query-packet
+
+Amal Raj T (3):
+  kgdb: Add kgdb_mem2ebin function for converting memory to binary
+    format
+  serial: Move LF -> CRLF replacement from serial console to kdb
+  kgdb: Add command linux.vmcoreinfo to kgdb
+
+ drivers/tty/serial/serial_core.c |  4 ----
+ include/linux/kgdb.h             |  1 +
+ kernel/debug/gdbstub.c           | 41 +++++++++++++++++++++++++++++++-
+ kernel/debug/kdb/kdb_io.c        |  2 ++
+ lib/Kconfig.kgdb                 |  1 +
+ 5 files changed, 44 insertions(+), 5 deletions(-)
+
+-- 
+2.43.5
+
