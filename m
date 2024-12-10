@@ -1,120 +1,100 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AD4E1CD15
-	for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2024 15:16:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634991BD01F;
+	Tue, 10 Dec 2024 15:17:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733843797; cv=none; b=rSc2eT1FK+Ye5ZCZEsT8ZicovwJmbmz+niW19Yv+3VyHeKeZlCInZ4W2zXWPAliMHWNfNCgognCeq7o2ILTQ7L/GfRK+hls7VH/o1CVX+/WbRjv+Q7Ky/Q2yhSHJjccVKOsoEjXFn6Tvr8EEO67CAELDPWmk60nLXLANK/l/reE=
+	t=1733843866; cv=none; b=eSyzuY18jfBEiO1AFyAjdsGrZSA69iD2nnUNGBQoznHT90Hl0B/jFekeLgdWQo4/AEt6/w85zoBnz592acAJupv+ryu6YQK3nc8bBJq56UvHQL/o+Hxh+rFk2QF/6s6UedEXYpSBubZEs252Sq5d1XjfmDYMu3lplLmVXVfSrVo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733843797; c=relaxed/simple;
-	bh=cMEx2gf52bAp6BVsDAEzu6IQF+0HBT6Ws0MACSlPHkA=;
+	s=arc-20240116; t=1733843866; c=relaxed/simple;
+	bh=SuJIrOyGFcXxLDGJ8cbHS+2PO+8WRg8j0//7WEqJlPs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ejH+7u9cYAyHq0lGSjPJLJVZvRec8gAyZc7sPNjJ6H/TgWFGH8Wbj6B/vxcBjyR3ZE8V8S705qivgCwJ/LTCNIlzMESnytL142dhc8JTU1znOUA1FajoVKtHd8H0OumK2QEB57MITZYx3KJTfUiPRpE8bx6nODK3FZoOPwf34TY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=qqldTwGz; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=riscstar.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ieyPEvjl0HstmZpwgpdZ3kWpO8S/z+YCyMgGb85i6u9zLG5TlQ5hTN0KOGs9vqYIU8M4I8YchzAcH47ZvXTdThi5xZal4wP4XbLFKF0OFvqPqrzQmd086kRk19nBJib5CHX98kupVJypn8s+2re5wu9xDGpuFwOOSRMJV7+9GF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=fail (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=jNBtmoyW reason="signature verification failed"; arc=none smtp.client-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="qqldTwGz"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3862d16b4f5so2531815f8f.0
-        for <linux-serial@vger.kernel.org>; Tue, 10 Dec 2024 07:16:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1733843794; x=1734448594; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3/Hk6Ku9xV4vYVPZ0mEkrD1qjVxMUjhQA0xZ6o+cH5w=;
-        b=qqldTwGzXRHHpqXhnM9hHbNAaFWAL1WTB9KYrDkBO5pTXRZmwjeFI3ydxj5kEGXyOz
-         jutBtLKMiKrBm893DEsz9/5dOW0pKR6vVX6N61ov6B67JTxLJKZz3nLytH1WpAF/MTqO
-         gvSEy/0mldWkb/WNfDCsxP9RPiW7UlojdivkPqIAGjSXdqlUch/TWRvLA7cVtTMfdKbH
-         1jbJ5ZLZdxPHaSx4Japbfe6MHsgGnGMB7CpNuvSuNNoFjWQiWB8J+LL3n3zqCgHyluOn
-         mBPbQjUEAHdo+Fz42CbNPM2dZNcJF22SNV/ekbhI8CkoFrsh7ImCa5ZY9WWjfZh6I4i1
-         tMtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733843794; x=1734448594;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3/Hk6Ku9xV4vYVPZ0mEkrD1qjVxMUjhQA0xZ6o+cH5w=;
-        b=NjyY2rzoHuSbyeGUNHtxzOcuEwXI42XVeASW4H4SqaKCsmjCO9U9FpvtA4rAWawd5w
-         U+6CRzBmvxoCwR+Mdrs5fvoHWcmU4tVOJFsrlf/Nhhk7/C3KED6G+m6a0ZiGvs2otqO1
-         xOjSObINvMotCbTQoQjBaqQ28ozVX3lIIGny8QNs8YiEAoRTw5R1MLVgJtcd79Ij2eYB
-         zJOwJwLI9fE6eLmQhnlrkYzUuIIP63q5FqOEslSbbojAe9L4VWTU8BuHiOpan+wgQ1B8
-         Gx29MxiruqV/cfcykHuU3vOvU3su5LaePD1w3IV5gkGmJsvC48e7uF1oPV4N2r77gkdd
-         d6CA==
-X-Forwarded-Encrypted: i=1; AJvYcCU9G/Vp3HlUSg8rVYCyIEFQQUMV4pWSy4GgwxHK9lbJfn4tUhl8ycS52LpT8awVZxkLZdost4zHZVtDN+4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz/Q9NUdp/8mFWfSHMfNrQK2of6iJ14IfFCMvNP3VU8nWLrOCqH
-	VuJ1XJ9Bw913PNMr8oSJdbJKHhfM/8wcQx/XYPsZUz4SyA+Nw1LnzFseADQVJjs=
-X-Gm-Gg: ASbGncuilDYC0rlTj2C4utWr6G3lDAIkpfHl2GCUCodP+sCzjDeaCY4PR34YM/n8ucl
-	4qQTnqmMxx39aulMkCIUdxgSF6Ll7RRaeOQ33Dh5C8cPP+q0cHZ7omydmKYFWhWzpYrE6fi8rtM
-	fSfX4uuiQ7KacPEzuEIieVv0RM2kYVpSNoUyNjTYqJ7eDewV2zAeDtZmb17W8wZLVuqh9xQNtYJ
-	hrYU8Fq5M1cHmXm/Xi8VDqE6X0I0m5+1WJQg453VYzMRMiFzjuSx5yszOqctPwvEWIJ26QCzEDJ
-	9+OEcWr0RvjqwJye8rjlvdcIgNQdMtqzrgkS
-X-Google-Smtp-Source: AGHT+IEZYgzuNEX0Ja8JZykHzolp0rxxgNyso24X5bGyQrupgg8bLOxUA1VlNVk3vdf2QdgJ1/xovw==
-X-Received: by 2002:a05:6000:20c4:b0:386:2ea9:800 with SMTP id ffacd0b85a97d-386469d5155mr2165720f8f.18.1733843793561;
-        Tue, 10 Dec 2024 07:16:33 -0800 (PST)
-Received: from aspen.lan (aztw-34-b2-v4wan-166919-cust780.vm26.cable.virginm.net. [82.37.195.13])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3862de365f0sm13005754f8f.3.2024.12.10.07.16.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Dec 2024 07:16:33 -0800 (PST)
-Date: Tue, 10 Dec 2024 15:16:31 +0000
-From: Daniel Thompson <daniel@riscstar.com>
-To: Amal Raj T <tjarlama@gmail.com>
-Cc: danielt@kernel.org, dianders@chromium.org, jason.wessel@windriver.com,
-	stephen.s.brennan@oracle.com, amalrajt@meta.com,
-	osandov@osandov.com, linux-debuggers@vger.kernel.org,
-	linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net
-Subject: Re: [PATCH 2/3] serial: Move LF -> CRLF replacement from serial
- console to kdb
-Message-ID: <Z1hbT4OtEO9gz5Dg@aspen.lan>
-References: <gmail>
- <20241210133448.3684593-1-tjarlama@gmail.com>
- <20241210133448.3684593-3-tjarlama@gmail.com>
+	dkim=fail reason="signature verification failed" (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="jNBtmoyW"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id CD1BE40E028B;
+	Tue, 10 Dec 2024 15:17:33 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Authentication-Results: mail.alien8.de (amavisd-new); dkim=fail (4096-bit key)
+	reason="fail (body has been altered)" header.d=alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id CW1tLFe7Nb-2; Tue, 10 Dec 2024 15:17:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1733843845; bh=9NTzeutq/r3ndE+cus3KlB/FLsg7STOMKSUO7w2whpI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=jNBtmoyWnrcketINaOAOkDm8MVC4oGCcg9iEE9GlQDiHXjpJ1pCQeyjAUF/xgQ+Nb
+	 ng5JFu3blQ/XC8yodu7tFgOdEJUeOLTRjwuaA4BHoQ2rkwwxsFmjWRpiyNJ23uD7/T
+	 8fbCRvySK3kD85hfpdxnku7TJqiNLRzTtG4IyjOoOEVJOQreCFOQnaiJt6bIPU8I20
+	 xyLRjCNUxlZh9yvHb4BUSZXZvlRnJdZif6TBtzWngvb93jR8JUTWdTun72/cIHt2Ib
+	 ZnZrueTsWtfwkgVy0lkw+BqdnHmZ24osNFY7/nsnzsdIupy5YmCJlj+iXu8otb0syv
+	 FKy0fg3wlTX1J8KIEHUW8tphJIlFWPM9z8d5Vgl6uro9K8c07yMbWivItjiJoonPj1
+	 g+BGHpAIzWnQUJYT5k3qtrxk3v4xdVAIou1wyflgBdU4OHwDBwStUxe3fBY6JsR4Q9
+	 mV1aO44eV4ohlsFDIvTmPk6/iFhc8dQzV0KpzkPaW0+A1Wj4/mpv7oauI/+AWclsdU
+	 rx8uJBKSVBz6HocESlaeRDAczmrwquOKOInJ6yytceN6wJWX4zYin0hN802eeUiYyy
+	 3qxLdRFldWim0HBuHvCQtNuzG01V4wGaTxAs4ZxBSh8bGZvNWKd9bpzHZbLCTp/XXB
+	 onND1u4YNoVKqjSBqjDR8zEg=
+Received: from zn.tnic (p200300ea971f930c329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971f:930c:329c:23ff:fea6:a903])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8A5DF40E0288;
+	Tue, 10 Dec 2024 15:17:20 +0000 (UTC)
+Date: Tue, 10 Dec 2024 16:17:13 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Ilpo =?utf-8?B?SsOkcnZpbmVu?= <ilpo.jarvinen@linux.intel.com>
+Cc: linux-serial <linux-serial@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	lkml <linux-kernel@vger.kernel.org>
+Subject: Re: serial 00:06: Runtime PM usage count underflow!
+Message-ID: <20241210151713.GIZ1hbeSzdnQEqei8J@fat_crate.local>
+References: <20241116170727.GCZzjRT5WGcOMKFDYq@fat_crate.local>
+ <ca76fb23-013d-9745-188b-b519096aa784@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20241210133448.3684593-3-tjarlama@gmail.com>
+In-Reply-To: <ca76fb23-013d-9745-188b-b519096aa784@linux.intel.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Dec 10, 2024 at 05:34:47AM -0800, Amal Raj T wrote:
-> From: Amal Raj T <amalrajt@meta.com>
->
-> The current implementation of `poll_put_char` in the serial console driver
-> performs LF -> CRLF replacement, which can corrupt binary data. Since kdb
-> is the only user of `poll_put_char`, this patch moves the LF -> CRLF
-> replacement logic to kdb.
+On Mon, Nov 18, 2024 at 04:14:20PM +0200, Ilpo J=C3=A4rvinen wrote:
+> I think "Runtime PM usage count underflow!" is not related to the probe=
+=20
+> problem you're seeing. Nonetheless, this patch might solve the underflo=
+w:
+>=20
+> --
+> [PATCH 1/1] tty: serial: 8250: Fix another runtime PM usage counter und=
+erflow
+>=20
+> The commit f9b11229b79c ("serial: 8250: Fix PM usage_count for console
+> handover") fixed one runtime PM usage counter balance problem that
+> occurs because .dev is not set during univ8250 setup preventing call to
+> pm_runtime_get_sync(). Later, univ8250_console_exit() will trigger the
+> runtime PM usage counter underflow as .dev is already set at that time.
+>=20
+> Call pm_runtime_get_sync() to balance the RPM usage counter also in
+> serial8250_register_8250_port() before trying to add the port.
+>=20
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
-This description only explains why it is safe to change
-uart_poll_put_char() but...
+Reported-by: Borislav Petkov (AMD) <bp@alien8.de>
+Tested-by: Borislav Petkov (AMD) <bp@alien8.de>
 
+Thx!
 
+--=20
+Regards/Gruss,
+    Boris.
 
-> Link: https://lore.kernel.org/linux-debuggers/Zy093jVKPs9gSVx2@telecaster/
->
-> Signed-off-by: Amal Raj T <amalrajt@meta.com>
-> ---
->  drivers/tty/serial/serial_core.c | 4 ----
->  kernel/debug/kdb/kdb_io.c        | 2 ++
->  2 files changed, 2 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-> index 74fa02b23772..ed18492b7f8f 100644
-> --- a/drivers/tty/serial/serial_core.c
-> +++ b/drivers/tty/serial/serial_core.c
-> @@ -2142,8 +2142,6 @@ void uart_console_write(struct uart_port *port, const char *s,
->  	unsigned int i;
->
->  	for (i = 0; i < count; i++, s++) {
-> -		if (*s == '\n')
-> -			putchar(port, '\r');
->  		putchar(port, *s);
->  	}
->  }
-
-... kgdb isn't the only user of uart_console_write() though, right?
-
-
-Daniel.
+https://people.kernel.org/tglx/notes-about-netiquette
