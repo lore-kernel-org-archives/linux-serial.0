@@ -1,99 +1,95 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 544E21D63E3
-	for <linux-serial@vger.kernel.org>; Wed, 11 Dec 2024 08:18:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF41B1B6D0D;
+	Wed, 11 Dec 2024 15:25:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733905112; cv=none; b=RM1++Pi0T54fdd00ifcwfDbrEym2sZ2gXIUv180Y7oZwIP1nBDD4gegG1D0yNaGgC0bS0b8HQHI1+Wuz8vdIP6n8fUB2rpp2G8ADeXrVDcHS1KIP7mCKNx/CeLDXVBmu9OyVMy2dbuJKTJRg1d2Jf84CvNPdplmzrFEexaVxtFw=
+	t=1733930748; cv=none; b=o1/9BwqB5V8+TiHvE4Q97tPVZBpakBY6lMws2kxmznEZjl5roqnN2J5da6tDFiNuxFuKOoc4Ynij0dEOWS0e8xN12HLdhhacJz9pKSRYxFtt0o9lf9X26n+CJx2JUDfDTr5bg/kpk0m0Fk0u3veT+LD8aamyO6tkRIU7WL3rmfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733905112; c=relaxed/simple;
-	bh=XskHzUQ0wP3xisQAsDVTIVaMiwmap3TuSXWv2UwOOoE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dnuEDGWSHWhth9mJAP9OkhfTbHE3PDroMRJXwnUMKaCeYqQkLYtrHNmBWt7J2y04wc9hd98RTkdwkz9uT2nT/E9AV9rLadjnMggcL0xqzXJSIHLDdbphzlVIJ9CWnMDYktF+A/YXWUg97+dNS+pLNRAQv0+LJlRw/r6jjHz3+1U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=IoekGvcc; arc=none smtp.client-ip=209.85.208.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
+	s=arc-20240116; t=1733930748; c=relaxed/simple;
+	bh=PX0Dak1GrNxWpNhFmQrRSn4HhzzLwAXXKZWfOHdy07c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=iFv5hypgRZEP7wuudBnp5bVU69M0DYy2uIk7s4VI4k/6krJDdTQzNZiwfpDVQuNOlz5rfcbSm8/AViVCw0m2+lQlFtqrxflVVk5BVEFXwJG42UbSfgbpGR/njWrAp6RCb6hAHJYY+BdSPaQWrDV0wioXhuguTSfVZSRK/H6Ekms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=BLKgsUF/; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="IoekGvcc"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-30227c56b11so25514871fa.3
-        for <linux-serial@vger.kernel.org>; Wed, 11 Dec 2024 00:18:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1733905108; x=1734509908; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XskHzUQ0wP3xisQAsDVTIVaMiwmap3TuSXWv2UwOOoE=;
-        b=IoekGvccNyR3/8I0UHPuhLZecAyr4HJw3FrGwOlZnUyrpVBWhfdQVmXdzzu49yqvat
-         1uMWuL6AJP5/rHSQRtmBLqHoP4gdsWWeZX0hoU3V3P71fSlzxMZgUpqiIfkxvkR77BeS
-         HB2xqPsWS8TK4jmjivCUlpiXyZ4ZzdD5LuqQ/owoA4WnFLVodhfbCCKM3l9NTxUREITk
-         P+r9yEoGDmBSLyznzXbHDdK8AsE9XAVrjfESe+flsVXPOaEqUoLluDMtFzHk2eSi1PX5
-         CEl5D7XkONCmF1YX4dvA2bh965GgrnYMeJWeZpPCkJLGaqTSacwNZp2FhgKA2BKqQdu2
-         zQeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733905108; x=1734509908;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XskHzUQ0wP3xisQAsDVTIVaMiwmap3TuSXWv2UwOOoE=;
-        b=T1efaMIrSrL5oMUsHYnYHCBy0oqX2yLUNKdqaXdBuydnZFMmAOGA9TngQuHJxVQABR
-         JkfVTkWahw9EZ23YOcIYP9EB53Er1m9MYyGj4fMLVo3I+JddcAUaosneWaQBERwy7YQn
-         ApW8cItOplzEkBNOUjXVsVecRVkI2ufHGDxXfB/gQTLbDPBuefVx542xXHVFowDtGucm
-         luWAgaG5iqSsfQILhhct30kNH52eGugWvL/Zab5ngvZ+dc5JjQNRehjI/uEFMF54QHbA
-         t0b/os3Uzmuk2el8JoX43sY6ZsdcMCWEcM5XNdhbpwMM4tMIpSHxOMLQ2JHFz/BrbiKo
-         8dTA==
-X-Forwarded-Encrypted: i=1; AJvYcCVgwAOSSXjSEOCtbVTfE560XCmUjcb4bgHmnyCKpoaPVqNRtinl86yn8n7g6EB1v5NrvQ8erD8neIb+ip4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZ+xzyW6lm25bYXleaJsB+3xWsOirvEQS9GcHIsecT28hF4R57
-	t0Mm8v57DBMZ+/ML/1D3siY+twuUupdiVRAIhjxQPds0gCrnkPEtgX8M0AYcozZ3hAfdn/Zmkfe
-	nRGqVfOA4HHjq6da1hOR6K+QMndwZjRol8LZBCQ==
-X-Gm-Gg: ASbGncshnpMn6+e/sX/duo4LeQn+ffcr9y4B3ZqAH8HnYTabkB4elorv7GN7L9KetI0
-	vGRli7NDipnLRxKqGBkl3od3XUeHTx2BJxtQNyygs63EsD6YQed3Ll9q0QXsL1Odc370=
-X-Google-Smtp-Source: AGHT+IEyqSnEBMMtZyEj5jF6bo6/CxMQUAS8l/Vem+Q0Tg0zwJltPimb/BXxYNi4dNa8OIsM4j3xdj7bHzlce3zdJRY=
-X-Received: by 2002:a2e:bcc6:0:b0:2ff:c95a:a067 with SMTP id
- 38308e7fff4ca-30240d08829mr5734311fa.13.1733905108362; Wed, 11 Dec 2024
- 00:18:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="BLKgsUF/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1733930746; x=1765466746;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PX0Dak1GrNxWpNhFmQrRSn4HhzzLwAXXKZWfOHdy07c=;
+  b=BLKgsUF/wbMyTGyowKR6w+3rieVTd8ha3flvuryhF1JiDRHuGWWi77pB
+   lxRa/o25IEnIlFcR9cylPVAYPCfJFd+69HMnFaNxIx4beiuXGJf5e7y2P
+   jjIZHif8PIqoGpu2AsC/bDw58eAOkRgGOiFna0G59EkXpyIutwGxL8nb9
+   mhZQAiGpC/MyJCj+KuROP2V6ohJqW+xB961Pd3I6qajaXR5mb1WsadoEB
+   Jmnz4zIbQnIB852ljMk8Z9HX8m8GR+ZQ0VYg6MRCXYFm3cBHCrQyvxumq
+   aw6+qAnFmvJxu/BwukHLRgRSOvBXRypu83MPnkW97ykF8iRcg+bQZOOSW
+   g==;
+X-CSE-ConnectionGUID: qgV54QVtS8C7rcxkisT06g==
+X-CSE-MsgGUID: PyP866H5QiSc3zjJIIYzAA==
+X-IronPort-AV: E=Sophos;i="6.12,225,1728975600"; 
+   d="scan'208";a="35876300"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Dec 2024 08:25:44 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Wed, 11 Dec 2024 08:25:31 -0700
+Received: from [10.10.179.162] (10.10.85.11) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.35 via Frontend
+ Transport; Wed, 11 Dec 2024 08:25:31 -0700
+Message-ID: <fb11338b-986f-4a9a-a0dd-e8f4e63941aa@microchip.com>
+Date: Wed, 11 Dec 2024 08:25:32 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241211-const_dfc_done-v4-0-583cc60329df@quicinc.com> <20241211-const_dfc_done-v4-8-583cc60329df@quicinc.com>
-In-Reply-To: <20241211-const_dfc_done-v4-8-583cc60329df@quicinc.com>
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Wed, 11 Dec 2024 09:18:17 +0100
-Message-ID: <CAMRc=MdJuy9ghgLHxbygdHME2EkttZ7zBMJzCis=t94EUMbGiQ@mail.gmail.com>
-Subject: Re: [PATCH v4 08/11] gpio: sim: Remove gpio_sim_dev_match_fwnode()
-To: Zijun Hu <zijun_hu@icloud.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	James Bottomley <James.Bottomley@hansenpartnership.com>, 
-	=?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <thomas@t-8ch.de>, 
-	linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev, 
-	linux-sound@vger.kernel.org, sparclinux@vger.kernel.org, 
-	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org, 
-	linux1394-devel@lists.sourceforge.net, arm-scmi@vger.kernel.org, 
-	linux-efi@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org, 
-	linux-hwmon@vger.kernel.org, linux-media@vger.kernel.org, 
-	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
-	linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org, 
-	linux-serial@vger.kernel.org, netdev@vger.kernel.org, 
-	Zijun Hu <quic_zijuhu@quicinc.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 07/13] dt-bindings: clock: Add SAMA7D65 PMC compatible
+ string
+To: Rob Herring <robh@kernel.org>
+CC: <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+	<claudiu.beznea@tuxon.dev>, <mturquette@baylibre.com>, <sboyd@kernel.org>,
+	<arnd@arndb.de>, <dharma.b@microchip.com>, <mihai.sain@microchip.com>,
+	<romain.sioen@microchip.com>, <varshini.rajendran@microchip.com>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+	<linux-gpio@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>
+References: <cover.1733505542.git.Ryan.Wanner@microchip.com>
+ <5252a28531deaee67af1edd8e72d45ca57783464.1733505542.git.Ryan.Wanner@microchip.com>
+ <20241210164638.GA3770349-robh@kernel.org>
+From: Ryan Wanner <ryan.wanner@microchip.com>
+Content-Language: en-US
+In-Reply-To: <20241210164638.GA3770349-robh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-On Wed, Dec 11, 2024 at 1:10=E2=80=AFAM Zijun Hu <zijun_hu@icloud.com> wrot=
-e:
->
-> From: Zijun Hu <quic_zijuhu@quicinc.com>
->
-> gpio_sim_dev_match_fwnode() is a simple wrapper of API
-> device_match_fwnode().
->
-> Remove the needless wrapper and use the API instead.
->
-> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-> ---
-
-Acked-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+On 12/10/24 09:46, Rob Herring wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On Fri, Dec 06, 2024 at 12:59:52PM -0700, Ryan.Wanner@microchip.com wrote:
+>> From: Dharma Balasubiramani <dharma.b@microchip.com>
+>>
+>> Add the `microchip,sama7d65-pmc` compatible string to the existing binding,
+>> since the SAMA7D65 PMC shares the same properties and clock requirements
+>> as the SAMA7G5.
+>>
+>> Export MCK3 and MCK5 to be accessed and referenced in DT to assign to
+>> the clocks property for sama7d65 SoC.
+>>
+>> Signed-off-by: Dharma Balasubiramani <dharma.b@microchip.com>
+>> Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
+> 
+> Missing Conor's ack.
+I removed the ack because I have changed the original patch that was
+acked. Should the ack not have been removed even though the original
+patch as been changed?
