@@ -1,61 +1,61 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9921A4F22;
-	Wed, 11 Dec 2024 15:39:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBEE41A76D4;
+	Wed, 11 Dec 2024 15:39:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733931600; cv=none; b=BAetw7shd4nTskt7ZmaTJZ1l6I2wu3psc60Ykhfq3+ztvX5tlOWj7A8t48NYErIxitRmQJUQpd82LCeJDLtteCxi+Jza4dRirf9HRVVWM0RQ7+8u+2cL+m1YkNaR9orV+IPT+XVQdnfgqiHF2v7nejTVQTui5dyznZEsqbnKcII=
+	t=1733931601; cv=none; b=eolIPVHjfVdi98Ws4Bamyn1Ue0SwHKKsC9S4IILFKeNV1ti8iBYcpXX3O5/JvJ7TkblhZuYEkEb/jbJxt8qGp5dz/1ukG1r9I3qcJpQUnay2NvdeOtCWqFY9qeFKEw2iHfhCKhyQxBF5XMAZA8iiWc/4TVsSh2p9LjLE4M355Rk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733931600; c=relaxed/simple;
-	bh=bK/LnE7gV1izWYMHECvFCMWCwCay1mdcdg4l2UtGcYM=;
+	s=arc-20240116; t=1733931601; c=relaxed/simple;
+	bh=79LkQbtpoHysSL1ZPUcwM/AH0XRMFLrbsWs+ZtI5+Fo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=p8KY5mYVN5OqePXq0eP+PC3T+LN9brAXs4aZ0OZtvoiMT8pCBF3mZ5UQDVDQ9bRTovnrCorrEtdpY7jfpOkVDxCRZ6E9uSfiDf12LrUHJXdnv2xY2lJNG09IsvfYbHuy/iGxrpRPMlNqxj+0uxveI63lv8zRPAULjXQee3Ncq0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bB49Zi80; arc=none smtp.client-ip=209.85.160.170
+	 MIME-Version; b=hhmwawzIe5I203d/UgQImvuyJ8j96KLth9NURAH+mKHFpSUiqp5qNYV6y6IYte2JlpHfo9PEORKRHe+xzVC+4Hw08cV2HnZEF44Y3DJ7tTiEgBXuyypNSCFdVWzjI9QvO50cTkSISb1SKsAfl0RkwN+OjE5+CNnjMyupwaPM58A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LvfRBKth; arc=none smtp.client-ip=209.85.219.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bB49Zi80"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-4676e708aeaso26088781cf.1;
-        Wed, 11 Dec 2024 07:39:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LvfRBKth"
+Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-6d87ceb58a0so55099696d6.0;
+        Wed, 11 Dec 2024 07:39:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1733931598; x=1734536398; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1733931599; x=1734536399; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=k5g7lXWcRcM3HNMmQpadh/PSrKzcaUKwuppIIByAAAY=;
-        b=bB49Zi80MZNywcl176hYpapwbBk3v6G7N8RdXHIQQs97mFMLG0ddUN1oRmmpCbwpba
-         bWHQl9AkNgrZpSujZybMzlXkXkEhrcyXGLVDIt0cSTkHGpOb8S14iMiwKC0XlAWAmmIR
-         F6eAxZjfiSR8a6OxPkuQq4rsHCKrcNPLWs901nVJ5FD7A7LiMzrO3/3PPxy3mUtGpVrp
-         DGc4P6Dx/jMwEav4tk/qXNlJC4SnBSyvR9P0kzc8awTXt1UNa0uel9MBdvSb61C7Y4zR
-         Vkf6HwVUYRO+6NLmKciBB5syRDPswmqmdJTrWPWgF3bpqThutFHypshU92yjy8JsovUT
-         KMMg==
+        bh=JzYWF+hB4zsSOaGK1QfNyR7COjKgIUgDaP88A8CU/NQ=;
+        b=LvfRBKthZlomQApb9UONveeHrenIPtHuqKORWUcde3sXWexeRsyIR9zXvlOME6NcYT
+         KuN+7uttUMjw4lEDW44GbazcmIn5VzkPAKuRSenovZ51OhkR9G3c2IQBdMfeWLnJHFQn
+         5uGonoDsM+A8yan6z+3Am/4cHpMaC1Oy9h9/77hgXtLqFmnoogPBY9Vp7iyiTggY7xA/
+         JZ3o+MXsFTIC5P5NP/ZA8W0VyEJek1B7BpzGK4KFskFnI8kGYhhSYOJR5wueAHVfcpUM
+         fn8w+xUydx4qwWFGOhDYp+dY4Py23qSbiQQmiJYO6Q85zGHCJjHG387HeNgD76Ci49u+
+         LSjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733931598; x=1734536398;
+        d=1e100.net; s=20230601; t=1733931599; x=1734536399;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=k5g7lXWcRcM3HNMmQpadh/PSrKzcaUKwuppIIByAAAY=;
-        b=Mls16sz1j65KbBOVLy2YdcWtJQOLdbseFXyEvvxGVs89W2Gb/c7y1kIm/hNQlV8Kgj
-         VqR/UyMZLuWMe0iI/oOXI8cH6HoBDUSfBbd/OCHKQQgv9PVUS4V+KtShKLulihM2wuiK
-         hH3eILf6G1hlv17pxp2rgGLjbdFzHWnp0/aNbRao7lf65R/+mrC31Bx+YabKt6lz2UjE
-         X+2GpNrVMmgogtDMrqaHxWTiFKA8a7xthJlEAYcoQQtjksr2MFQ3Dl7EQFOy8yczySyI
-         DDCTTfDDfncPDLa+6vOtXS94fowxMYAOsA3zK8nTLHXM725YarjZ4S2m3SHKP5SeCDQM
-         VVPQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWq9aEklDEho1Au2ZiPpSfNUQlMqc9aXy2ye5Ox4QaF9VmERObMdQ4xm+GJfpcpL4mvpJwc6vZRsjPBGm8BRFw=@vger.kernel.org, AJvYcCXmg8K/E8b5WgjaVWZH/yFlBycpCPGoreArXuwQU/QcLbO5M86mx/zTAtGLfYPpELyAs2r99eNOf9OhBaYR@vger.kernel.org
-X-Gm-Message-State: AOJu0YxXEyvyv0YXN7FNOwuCEchNyanh//NKnfic1ZTmT97PnCwYietY
-	Bz+Pw0KzsbTfco7c3RnZuqOhsUs1k1cr//G1b+Sqn6jTzi99006U
-X-Gm-Gg: ASbGncucBKn4knJ0LSrdjpye9rQOWqWCAFl08nV/qG4zIXk7d7tOieuqIBmeHszxTAP
-	g71cuUWEnWpwmirTJHDUETpB/hcXVyDckwJrz/qinbBTqVYnl+F2bqmiLQMnyrnIAUWTdxelNQM
-	Hl0qH+hUqeLN0JgQ1gJUCSgJ+mrFs8IN+YdESpaVakFEWpQ/tUFvFdOKfiQvHoy5coQOCSy2Bss
-	TNEOdbg0/dtIv8Dwu/HNZtB7mkN6DUf8LLYGTDbUjVQ6WM=
-X-Google-Smtp-Source: AGHT+IFFLNsQdk6dvD0dZBjIsUu+IjGKHxOJT/DadpFaifHqYZURdCbfbL+/qV3TIxCfAhTl4mu94A==
-X-Received: by 2002:ac8:7fc6:0:b0:461:2616:84c3 with SMTP id d75a77b69052e-467892a2539mr63734041cf.8.1733931597600;
-        Wed, 11 Dec 2024 07:39:57 -0800 (PST)
-Received: from localhost ([2a03:2880:20ff:13::])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4677fd42b1csm16184971cf.82.2024.12.11.07.39.57
+        bh=JzYWF+hB4zsSOaGK1QfNyR7COjKgIUgDaP88A8CU/NQ=;
+        b=qpTM0LkJOhbYXqERRT2d/5p540Oqbd7LYTHUBoDda0LbEuWtqC4oqGbEeBLUQQYql+
+         qE518vkB101oWS0IzxCsIXxAkhNNG6dTlvmf1/bBGJgT8cCJQQ+ZqeCa/obI5/ggQM/c
+         PMyFyVTvz2UIrsHHLhXVQ4Q5cXZyFI3Ztc0Ct7Ta9qj4A8DXvqfQ6PXKvS3GUTJl/F+m
+         Da0TbCK8HA1u+A+Xeri1xBWKwKnKTgtL4HrwBHUQSjGbbDJ1BEmJ8caVkGXX/BRH3VWL
+         t3yGzXzuTNe95SbkZ6kk2sJd+yPdB6RgYUuGDlY10nd7MVIDodlj5spY3jz7DgiU2HHx
+         XfOg==
+X-Forwarded-Encrypted: i=1; AJvYcCXfNEOHnok30uOOCR7xPtRkrHxo8eHGfWV4FvyFh3ZFGJCrLfEUEQdPn7ZIM6cL+2hRUuSGqwXiHKujQWLX+/E=@vger.kernel.org, AJvYcCXpIRF4T8BzKIzzf1DurOQZsR93EwgPg/LMQ7wI3Yo0Obm1VcPk/Oq9WXwBWIHCBqKpHjxb1w3eP+eTb9fR@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx9xALyMtWkycf6kozOCu9N+DKyqxwoW4lQjpmEcUOC1I6y+Chw
+	Tk+ZefDhj94/jx76PHbmo+mRj+5Yms4vCXCslNcWVOyyOc0pFV6H
+X-Gm-Gg: ASbGncuANPnhSWeLBHAi61pEfih8LHjWuT0xP/7nRYBUCvluQX5R0LxHFKBx9e6InWP
+	2drPY7WmyPH8mRDw6jgy8fBaiLnPFJq1Cf5oDYbiTBd17q9v1BKrtCHKQbL3zBy3wJiiDIgF0GI
+	A6tDdKhIhY73RRHnBcFsGSHjQqcQUUe/S+ff6NfmvmGvtiDo3WH3X9WnYSH6ALvd0IxuhR8rWQK
+	h6JjX84B1joagDrAsUGEhrb1HoFseaJt6KlSlKm2OtxW5s=
+X-Google-Smtp-Source: AGHT+IEY9BdyQjdhYXrGY2ovssNvMVUMde7K/zJfK2B88kJ4VBLQ+GTAD7ONkZv+gRoHj8pV56Qo+Q==
+X-Received: by 2002:a0c:ec11:0:b0:6da:dc79:a3c3 with SMTP id 6a1803df08f44-6dadc79a656mr24470926d6.5.1733931598612;
+        Wed, 11 Dec 2024 07:39:58 -0800 (PST)
+Received: from localhost ([2a03:2880:20ff:18::])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6d8da6966desm71334596d6.41.2024.12.11.07.39.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Dec 2024 07:39:57 -0800 (PST)
+        Wed, 11 Dec 2024 07:39:58 -0800 (PST)
 From: Amal Raj T <tjarlama@gmail.com>
 To: danielt@kernel.org,
 	dianders@chromium.org,
@@ -67,9 +67,9 @@ Cc: tjarlama@gmail.com,
 	linux-debuggers@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	kgdb-bugreport@lists.sourceforge.net
-Subject: [PATCH v2 1/3] kgdb: Add kgdb_mem2ebin function for converting memory to binary format
-Date: Wed, 11 Dec 2024 07:39:53 -0800
-Message-ID: <20241211153955.33518-2-tjarlama@gmail.com>
+Subject: [PATCH v2 2/3] serial: Move LF -> CRLF replacement from serial console to kdb
+Date: Wed, 11 Dec 2024 07:39:54 -0800
+Message-ID: <20241211153955.33518-3-tjarlama@gmail.com>
 X-Mailer: git-send-email 2.43.5
 In-Reply-To: <20241211153955.33518-1-tjarlama@gmail.com>
 References: <gmail>
@@ -84,74 +84,45 @@ Content-Transfer-Encoding: 8bit
 
 From: Amal Raj T <amalrajt@meta.com>
 
-Add a new function kgdb_mem2ebin that converts memory
-to binary format, escaping special characters
-('$', '#', and '}'). kgdb_mem2ebin function ensures
-that memory data is properly formatted and escaped
-before being sent over the wire. Additionally, this
-function reduces the amount of data exchanged between
-debugger compared to hex.
+The current implementation of `poll_put_char` in the serial console driver
+performs LF -> CRLF replacement, which can corrupt binary data. Since kdb
+is the only user of `poll_put_char`, this patch moves the LF -> CRLF
+replacement logic to kdb.
+
+Link: https://lore.kernel.org/linux-debuggers/Zy093jVKPs9gSVx2@telecaster/
 
 Signed-off-by: Amal Raj T <amalrajt@meta.com>
 ---
- include/linux/kgdb.h   |  1 +
- kernel/debug/gdbstub.c | 31 +++++++++++++++++++++++++++++++
- 2 files changed, 32 insertions(+)
+ drivers/tty/serial/serial_core.c | 2 --
+ kernel/debug/kdb/kdb_io.c        | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/kgdb.h b/include/linux/kgdb.h
-index 76e891ee9e37..fa3cf38a14de 100644
---- a/include/linux/kgdb.h
-+++ b/include/linux/kgdb.h
-@@ -322,6 +322,7 @@ extern struct kgdb_io *dbg_io_ops;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 74fa02b23772..8e702f3deffb 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2738,8 +2738,6 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
+ 	if (!port)
+ 		return;
  
- extern int kgdb_hex2long(char **ptr, unsigned long *long_val);
- extern char *kgdb_mem2hex(char *mem, char *buf, int count);
-+extern char *kgdb_mem2ebin(char *mem, char *buf, int count);
- extern int kgdb_hex2mem(char *buf, char *mem, int count);
- 
- extern int kgdb_isremovedbreak(unsigned long addr);
-diff --git a/kernel/debug/gdbstub.c b/kernel/debug/gdbstub.c
-index f625172d4b67..6198d2eb49c4 100644
---- a/kernel/debug/gdbstub.c
-+++ b/kernel/debug/gdbstub.c
-@@ -257,6 +257,37 @@ char *kgdb_mem2hex(char *mem, char *buf, int count)
- 	return buf;
+-	if (ch == '\n')
+-		port->ops->poll_put_char(port, '\r');
+ 	port->ops->poll_put_char(port, ch);
+ 	uart_port_deref(port);
  }
+diff --git a/kernel/debug/kdb/kdb_io.c b/kernel/debug/kdb/kdb_io.c
+index 6a77f1c779c4..43a7c8ad741a 100644
+--- a/kernel/debug/kdb/kdb_io.c
++++ b/kernel/debug/kdb/kdb_io.c
+@@ -572,6 +572,8 @@ static void kdb_msg_write(const char *msg, int msg_len)
+ 	len = msg_len;
  
-+/*
-+ * Convert memory to binary format for GDB remote protocol
-+ * transmission, escaping special characters ($, #, and }).
-+ */
-+char *kgdb_mem2ebin(char *mem, char *buf, int count)
-+{
-+	char *tmp;
-+	int err;
-+
-+	tmp = buf + count;
-+
-+	err = copy_from_kernel_nofault(tmp, mem, count);
-+	if (err)
-+		return NULL;
-+	while (count > 0) {
-+		unsigned char c = *tmp;
-+
-+		if (c == 0x7d || c == 0x23 || c == 0x24) {
-+			*buf++ = 0x7d;
-+			*buf++ = c ^ 0x20;
-+		} else {
-+			*buf++ = c;
-+		}
-+		count -= 1;
-+		tmp += 1;
-+	}
-+	*buf = 0;
-+
-+	return buf;
-+}
-+
- /*
-  * Convert the hex array pointed to by buf into binary to be placed in
-  * mem.  Return a pointer to the character AFTER the last byte
+ 	while (len--) {
++		if (*cp == '\n')
++			dbg_io_ops->write_char('\r');
+ 		dbg_io_ops->write_char(*cp);
+ 		cp++;
+ 	}
 -- 
 2.43.5
 
