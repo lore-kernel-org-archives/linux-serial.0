@@ -1,72 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74FF5126C01;
-	Thu, 12 Dec 2024 08:17:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08EFD20E02C;
+	Thu, 12 Dec 2024 10:19:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733991470; cv=none; b=crTJNwP3xasPV0AMi5FFjHAReZ9CRm7hMI25X28KY+y8xdwo8kBdZ3Gre0G+N9ahwquPO+FvijkWWiNzRhW5UlX7X+kgjx0dP09ului1gIXBEViqdQHRC0eXqxV7bKdotQy/4qqEdXskHkS8zxqrKeIge/eMRlc3+ABJ0rb28fE=
+	t=1733998753; cv=none; b=josOilj5MbC4I7aYQ/7tXrQ09yVsmutebR7E32pU94egNeS+X5nhrF6f18NLhk6wBCvhfn0mW72cdG0dmg2FACYtGCVUa+DcRpxQ3uZVhkKqIxUlADqDzdgmd5YiKSMw9+C8NDXVhu7g/0clsrTto/Z24+NwJkhTNi2LGT6wypM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733991470; c=relaxed/simple;
-	bh=9L8I21enfW9cEAjR+NIYJvYAjvbWbGI6CWCsEgxGvOM=;
+	s=arc-20240116; t=1733998753; c=relaxed/simple;
+	bh=hnnh1ud49QqX1E1UbJ24ijhdVRhE3HXpcad8vHLOfbs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jyLfBjnVN4vaBuVgcSM56ZWCxEWEy8GGbL4OMz9/P+CDG0vRItA5JcMb3lsNYt/8utP5aR/vSuX+qxZtfosHmHEQdSJWqIycJMUSLCJd+Pn+zR6E+L5D91SnYUhpIRmzJbCRXhgnZvcAi9qPzhsjZag4HqY4+uBZlSaTiSMgq2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tSm2RCRh; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tSm2RCRh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFC03C4CECE;
-	Thu, 12 Dec 2024 08:17:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1733991470;
-	bh=9L8I21enfW9cEAjR+NIYJvYAjvbWbGI6CWCsEgxGvOM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=tSm2RCRhyRfgXBimI0IUQRlYVDBL42c7/flr9mv++UgonqsjrKTnwFh0fvzwbdICJ
-	 qfrat0q/51IMZaQYIcF/uNbbtrt1uhoOJSsq4W1R9Q8qfukE3VPFtlVFNpzaNRxN1D
-	 fZ22f1Y+spDrtToReY5rQTYwTNJsE82ul72AEalx6nOHR8oSq/UgqoVwVtiXcY/BCV
-	 Zrzk+D7JqiR2NhOUZ2HKK6vO5qFW7TVbzgc0EtbHyM02EkJ8eRHWwdBIeGgw8wGdCE
-	 J1QJC1k4/lzBo2gfEQD3aduJLREZ11C7opg+gv1bJxHTfwarwpVRgW/SbpyiTKHR9r
-	 TauA3NvxGedbA==
-Date: Thu, 12 Dec 2024 09:17:47 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Ryan.Wanner@microchip.com
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev, 
-	mturquette@baylibre.com, sboyd@kernel.org, arnd@arndb.de, dharma.b@microchip.com, 
-	mihai.sain@microchip.com, romain.sioen@microchip.com, varshini.rajendran@microchip.com, 
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 07/13] dt-bindings: clock: Add SAMA7D65 PMC compatible
- string
-Message-ID: <faf3547rv7easjc6rwewzn3xdp2y2zc4opsbqvhvsbi6e5g6fd@dkcdkiycp5op>
-References: <cover.1733505542.git.Ryan.Wanner@microchip.com>
- <5252a28531deaee67af1edd8e72d45ca57783464.1733505542.git.Ryan.Wanner@microchip.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=CeM2PrsKPbrZ9t2Ol8zv2MULlEoYvoj4RxJ59E94agGQTTL7bg9AqHdf0S/ofEo59OijUuzi4a3m0YjDhJP7N7hhUhUu0PmYvXT/iTqUS4fF/b4gyAOq1Y6FoON/VpwFgzVniYlX2gNgIMJJkYuAllwOzkeAyaJNPCaJBFHERwI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Date: Thu, 12 Dec 2024 18:19:01 +0800
+From: Yixun Lan <dlan@gentoo.org>
+To: Conor Dooley <conor.dooley@microchip.com>
+Cc: linux-riscv@lists.infradead.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
+	aou@eecs.berkeley.edu, cyy@cyyself.name, daniel.lezcano@linaro.org,
+	tglx@linutronix.de, samuel.holland@sifive.com, anup@brainfault.org,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, lkundrak@v3.sk,
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jesse Taube <mr.bossman075@gmail.com>,
+	inochiama@outlook.com, zhangmeng.kevin@spacemit.com,
+	jszhang@kernel.org, matthias.bgg@kernel.org, kevin.z.m@hotmail.com
+Subject: Re: [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
+Message-ID: <20241212101901-GYA2292414@gentoo>
+References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
+ <173395638199.1729195.1529576042123666894.git-patchwork-notify@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5252a28531deaee67af1edd8e72d45ca57783464.1733505542.git.Ryan.Wanner@microchip.com>
+In-Reply-To: <173395638199.1729195.1529576042123666894.git-patchwork-notify@kernel.org>
 
-On Fri, Dec 06, 2024 at 12:59:52PM -0700, Ryan.Wanner@microchip.com wrote:
-> From: Dharma Balasubiramani <dharma.b@microchip.com>
+Hi Conor:
+
+On 22:33 Wed 11 Dec     , patchwork-bot+linux-riscv@kernel.org wrote:
+> Hello:
 > 
-> Add the `microchip,sama7d65-pmc` compatible string to the existing binding,
-> since the SAMA7D65 PMC shares the same properties and clock requirements
-> as the SAMA7G5.
+> This series was applied to riscv/linux.git (fixes)
+> by Conor Dooley <conor.dooley@microchip.com>:
 > 
-> Export MCK3 and MCK5 to be accessed and referenced in DT to assign to
-> the clocks property for sama7d65 SoC.
+> On Tue, 30 Jul 2024 00:28:03 +0000 you wrote:
+> > SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
+> > 1.0 and Zicond evaluation now. Add initial support for it to allow more
+> > people to participate in building drivers to mainline for it.
+> > 
+> > This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
+> > bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
+> > Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
+> > booted to busybox on initrd with this log[3].
+> > 
+> > [...]
 > 
-> Signed-off-by: Dharma Balasubiramani <dharma.b@microchip.com>
-> Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
-> ---
+> Here is the summary with links:
+>   - [v5,01/10] dt-bindings: vendor-prefixes: add spacemit
+>     https://git.kernel.org/riscv/c/7cf3e9bfc63d
+If I understand correctly, only patch [01/10] of this series was accepted
+to 6.13-rc1
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+for the rest of patches, they would be expected to go through SpacemiT's
+SoC tree? which should I take care of them.. so if no objection, I'd like to
+queue them at branch k1/dt-for-next [1] first, we might rebase or revert if
+something happens before merging (since the clock driver is still under review)
 
-Best regards,
-Krzysztof
+Let me know what you think..
 
+Link: https://github.com/spacemit-com/linux/tree/k1/dt-for-next [1]
+ 
+
+>   - [v5,02/10] dt-bindings: riscv: Add SpacemiT X60 compatibles
+>     (no matching commit)
+>   - [v5,03/10] dt-bindings: riscv: add SpacemiT K1 bindings
+>     (no matching commit)
+>   - [v5,04/10] dt-bindings: timer: Add SpacemiT K1 CLINT
+>     (no matching commit)
+>   - [v5,05/10] dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
+>     (no matching commit)
+>   - [v5,06/10] dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
+>     (no matching commit)
+>   - [v5,07/10] riscv: add SpacemiT SoC family Kconfig support
+>     (no matching commit)
+>   - [v5,08/10] riscv: dts: add initial SpacemiT K1 SoC device tree
+>     (no matching commit)
+>   - [v5,09/10] riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
+>     (no matching commit)
+>   - [v5,10/10] riscv: defconfig: enable SpacemiT SoC
+>     (no matching commit)
+> 
+> You are awesome, thank you!
+> -- 
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> 
+
+-- 
+Yixun Lan (dlan)
+Gentoo Linux Developer
+GPG Key ID AABEFD55
