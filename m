@@ -1,108 +1,100 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08EFD20E02C;
-	Thu, 12 Dec 2024 10:19:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C290208984;
+	Thu, 12 Dec 2024 12:43:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733998753; cv=none; b=josOilj5MbC4I7aYQ/7tXrQ09yVsmutebR7E32pU94egNeS+X5nhrF6f18NLhk6wBCvhfn0mW72cdG0dmg2FACYtGCVUa+DcRpxQ3uZVhkKqIxUlADqDzdgmd5YiKSMw9+C8NDXVhu7g/0clsrTto/Z24+NwJkhTNi2LGT6wypM=
+	t=1734007428; cv=none; b=VCGGwE1fBx+RdqxnrLX9KOv6o1wFTlfqq1S0HPzZIFzEXQmtdVDeum4M1lUerHFzM8805jaKzaiXPtDbsIIVNBA+9G/nJxtT71oa+GRwR/oMKUbQlqhP9rnqdP09+4tURmXwZOt1mDdELJD+UnwEBAPWN9JqpYEQOIroPvDcT2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733998753; c=relaxed/simple;
-	bh=hnnh1ud49QqX1E1UbJ24ijhdVRhE3HXpcad8vHLOfbs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CeM2PrsKPbrZ9t2Ol8zv2MULlEoYvoj4RxJ59E94agGQTTL7bg9AqHdf0S/ofEo59OijUuzi4a3m0YjDhJP7N7hhUhUu0PmYvXT/iTqUS4fF/b4gyAOq1Y6FoON/VpwFgzVniYlX2gNgIMJJkYuAllwOzkeAyaJNPCaJBFHERwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Date: Thu, 12 Dec 2024 18:19:01 +0800
-From: Yixun Lan <dlan@gentoo.org>
-To: Conor Dooley <conor.dooley@microchip.com>
-Cc: linux-riscv@lists.infradead.org, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-	aou@eecs.berkeley.edu, cyy@cyyself.name, daniel.lezcano@linaro.org,
-	tglx@linutronix.de, samuel.holland@sifive.com, anup@brainfault.org,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, lkundrak@v3.sk,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jesse Taube <mr.bossman075@gmail.com>,
-	inochiama@outlook.com, zhangmeng.kevin@spacemit.com,
-	jszhang@kernel.org, matthias.bgg@kernel.org, kevin.z.m@hotmail.com
-Subject: Re: [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
-Message-ID: <20241212101901-GYA2292414@gentoo>
-References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
- <173395638199.1729195.1529576042123666894.git-patchwork-notify@kernel.org>
+	s=arc-20240116; t=1734007428; c=relaxed/simple;
+	bh=3btXi147AzIGDL7nozSUw3gUgxVcbaIZkGDcEzNxV+I=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=I3RDSHETatD8Bg6dEdtunopZu+J7nyCrha6F/BG1G1KRzP02WkpIk2AeeAQCtiGy46WyTpQWsTl9AOg5sDIGkwwIV5w/qPFwueqcneYNTj/N2ubLy36i6H7nmg3LEATBnnxLE+cBzQAY9uKWEx4ySut/jOTf4lePcqDC6N2sgw8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f180.google.com with SMTP id 71dfb90a1353d-5189105c5f5so314471e0c.0;
+        Thu, 12 Dec 2024 04:43:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1734007424; x=1734612224;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Dga/d7asM1k55Drtu8OoXMNL+GZziO1sUeNOAqVL/T8=;
+        b=SsJpYbp6GxulDlp6IZEJesP+g0k7Cic4FPBzlCkC/EJZGmBjL4rVWNjkbtTkCACL5H
+         1Nn7TYVQVbO6PMeWAciyqOI91x7+DT/4/mJxI5fRSukyLrEeSD5uiOUToNOM2Kc6K/0p
+         XlTiRha2/Q9fGSTz7mp1Ar5+Ou4eW9yNX98tgNeqL+Wf3DBSz9XIpE+zv1FNUpJIdRUr
+         S1m3Qq9/Mxrd1xJKaD7hiM1LGFkOZGRpyGYUEFKJceLFY4PVfAhhiI6XNsy4Udzi5ykv
+         fBGkj72OZ1mw6Qt2rqSvdsxcq/uKy3+Za8Cz26lgfeA9Qc3zH8/Mi7iX0tBmEFCI4vVy
+         UXbA==
+X-Forwarded-Encrypted: i=1; AJvYcCUm9yaVkck2HM4NMqx0oHrLoKCuYXM/nhOP2EEht+2ovs4e76PjUpiDLx5bKtUUYitDrgainZkqfZTsu8exoaU1Jso=@vger.kernel.org, AJvYcCWvefbGMoYkaUn76k4ZFFrlfTmC6VS1vt2eFVMyVdUjP6r1lz/182I9rBxhzt/LNjpwPPn9PA7BIXgudpl1@vger.kernel.org, AJvYcCXFIa5m2yV4JlV35rGys+CqczgxInExTttyhWYnDH6PCzFC7FH1rWyHcIXEeqAe4UZeNEXazTBehY7N@vger.kernel.org
+X-Gm-Message-State: AOJu0YyarSZxkLrHI8xjY6RswLmw+V/cFyIE4tXhvd6CAn1x08InwAno
+	JTENvQwQ9HMwHXSSmcDJQZTjys6p7QW5Dl74kHX2+M0zsdNJYLwTYtyg8IrBeVE=
+X-Gm-Gg: ASbGncvcm54/XvuIeooCE+uQMQYeV0+fjIs9/71Jml1XZkSTD1TRHc6aPFxnbrVjkAs
+	CyzCs31taULZCjDUKb/Cmbx1o3s7Wtsiw2p2dYpthYM9uJQqEHjVZ/ny14DS1ZHhtlGynrskjo+
+	ZqgjuqKlbf2fqYT2oq+ZTuBIGXUVX0E1/6Q86QGYn8RlDj3KOUUuV2A96JZEPWRZDegSCNIAmxb
+	D02nL+6cNLl0EQD58oJDZHv4jBFLl6EIkLjerjolB+hPzdon1Q8INceMEzu1t5Vp4NsmMekForx
+	IuUev958rwL3jTaqEO8=
+X-Google-Smtp-Source: AGHT+IHQ5fvcWAWo9i9+oklZR/h4YQZR2d62b3fHSXJE3hebzhICeskydWukIa9dmtCikycYDGTk0A==
+X-Received: by 2002:a05:6122:a21:b0:510:3a9:bb87 with SMTP id 71dfb90a1353d-518c576d2a3mr279931e0c.1.1734007423702;
+        Thu, 12 Dec 2024 04:43:43 -0800 (PST)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5174fbc9923sm728682e0c.11.2024.12.12.04.43.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Dec 2024 04:43:43 -0800 (PST)
+Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-85ba92b3acfso275113241.1;
+        Thu, 12 Dec 2024 04:43:42 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUH4VEH/xeCU3LFx4Xnr/RU3ZNr2ZThzD7Ro1BxbwU3rs1lrYAb+6lQ9N/jpMHaEYusNlQNUBY+AwjgaqSd@vger.kernel.org, AJvYcCVI3XK2Lpc69JIGL+tYm3xZL0SRfo1p2xUJgCWZMnUHN5w04DG5fin7O0os01OAqbESw01WPyCxnVek@vger.kernel.org, AJvYcCVSfPqRmHvtv5QOYnwwXVNE12OoC6ncDP5TDAoAH8znsj/KmL4slUIMyOMjjls8N8te9shogB2oISTPlFLWwPuU8ck=@vger.kernel.org
+X-Received: by 2002:a05:6102:3fa3:b0:4b2:4a40:f284 with SMTP id
+ ada2fe7eead31-4b257fb96aamr39654137.14.1734007422756; Thu, 12 Dec 2024
+ 04:43:42 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <173395638199.1729195.1529576042123666894.git-patchwork-notify@kernel.org>
+References: <20241203105005.103927-1-biju.das.jz@bp.renesas.com> <20241203105005.103927-2-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20241203105005.103927-2-biju.das.jz@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 12 Dec 2024 13:43:31 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdX6ORf7A2juaw0SCxwADDLOpmmENMN2NeXjQY_uJymAWQ@mail.gmail.com>
+Message-ID: <CAMuHMdX6ORf7A2juaw0SCxwADDLOpmmENMN2NeXjQY_uJymAWQ@mail.gmail.com>
+Subject: Re: [PATCH v2 01/13] dt-bindings: serial: renesas: Document RZ/G3E
+ (r9a09g047) scif
+To: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Geert Uytterhoeven <geert+renesas@glider.be>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>, Biju Das <biju.das.au@gmail.com>, 
+	Conor Dooley <conor.dooley@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Conor:
+On Tue, Dec 3, 2024 at 11:50=E2=80=AFAM Biju Das <biju.das.jz@bp.renesas.co=
+m> wrote:
+> Document scif bindings for the Renesas RZ/G3E (a.k.a r9a09g047) SoC.
+> SCIF interface in Renesas RZ/G3E is similar to the one available in
+> RZ/V2H.
+>
+> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-On 22:33 Wed 11 Dec     , patchwork-bot+linux-riscv@kernel.org wrote:
-> Hello:
-> 
-> This series was applied to riscv/linux.git (fixes)
-> by Conor Dooley <conor.dooley@microchip.com>:
-> 
-> On Tue, 30 Jul 2024 00:28:03 +0000 you wrote:
-> > SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
-> > 1.0 and Zicond evaluation now. Add initial support for it to allow more
-> > people to participate in building drivers to mainline for it.
-> > 
-> > This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
-> > bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
-> > Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
-> > booted to busybox on initrd with this log[3].
-> > 
-> > [...]
-> 
-> Here is the summary with links:
->   - [v5,01/10] dt-bindings: vendor-prefixes: add spacemit
->     https://git.kernel.org/riscv/c/7cf3e9bfc63d
-If I understand correctly, only patch [01/10] of this series was accepted
-to 6.13-rc1
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-for the rest of patches, they would be expected to go through SpacemiT's
-SoC tree? which should I take care of them.. so if no objection, I'd like to
-queue them at branch k1/dt-for-next [1] first, we might rebase or revert if
-something happens before merging (since the clock driver is still under review)
+Gr{oetje,eeting}s,
 
-Let me know what you think..
+                        Geert
 
-Link: https://github.com/spacemit-com/linux/tree/k1/dt-for-next [1]
- 
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
->   - [v5,02/10] dt-bindings: riscv: Add SpacemiT X60 compatibles
->     (no matching commit)
->   - [v5,03/10] dt-bindings: riscv: add SpacemiT K1 bindings
->     (no matching commit)
->   - [v5,04/10] dt-bindings: timer: Add SpacemiT K1 CLINT
->     (no matching commit)
->   - [v5,05/10] dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
->     (no matching commit)
->   - [v5,06/10] dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
->     (no matching commit)
->   - [v5,07/10] riscv: add SpacemiT SoC family Kconfig support
->     (no matching commit)
->   - [v5,08/10] riscv: dts: add initial SpacemiT K1 SoC device tree
->     (no matching commit)
->   - [v5,09/10] riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
->     (no matching commit)
->   - [v5,10/10] riscv: defconfig: enable SpacemiT SoC
->     (no matching commit)
-> 
-> You are awesome, thank you!
-> -- 
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
-> 
-> 
-
--- 
-Yixun Lan (dlan)
-Gentoo Linux Developer
-GPG Key ID AABEFD55
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
