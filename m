@@ -1,78 +1,63 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C9DEDDCD;
-	Sat, 14 Dec 2024 14:35:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADD15193425;
+	Sat, 14 Dec 2024 17:39:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734186953; cv=none; b=JOpNAe3pKXgkXYKPkhXZuYK+acpXD/xmS8gRV0J1HSkELJinIIf/HpJv8K2/nr8LEcxmtMJhTUliVTSeUylFXWCTioBaer9M4VRZ/nLbJFIPLS7pxrXiHIMlqhqavkjZhpsBTJ2L2QjiW03b5Ch6IxGT0yrjeiNe9hQbiXGcCgg=
+	t=1734197951; cv=none; b=lH1aGpfuIaZpVMG1zmlwkNWoYbcS/fKaNQtTjqMdXLWGmlLgQHAxB8zTX3SwmV1H8z1YJlCMPNG8MxNMDR/3YnoQRumbg6dRNlQzFnhbxEO0VUIWNnLXWa04ZCDpylcc4tUzkMVshYUWdlNLReRMQ+IEYyeyFd9m2oO29ID934o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734186953; c=relaxed/simple;
-	bh=GCemFsEAndIIDDd8VIHsmnrMBKfq1D4UjXgErbA/Kw8=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=PEiRiDo7conwIZqdgFr12R8eGyaFHAkLVKDs819aelXwJ/+DWuc3KUeyntaSbT3M5aRkUxYoHpOGZQQg9C+9hNHosWIddYnvJds4gHm4rcua4XKDkjuQdDl2uaeRn7WM5wkHqvUS0XANRcZGGQRep2UkOHx87wUEmL6D6+rWnNA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=CEfZRL5T; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1734197951; c=relaxed/simple;
+	bh=Cr4Rwm+dg1QTfsUXryytoljA5XpgthR/cGs6MHMWiGw=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=VmGL4r4lYFjU7YU/E4BT9HFPdKuU2yqWog1g2gmfnwax4lRTn7qjG4zSV6VsvSe05TchnR7KvjcmJEbeY3X1awDqzIEg9qulF3emZ+R10hsWNxT3Qxd47SeJPsBCWIZJTDEjvP0qn0WUlMtKWRrnoT1nZnvGa0fb6BdsHx8U9Fs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=baaP0Wz1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="CEfZRL5T"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B13BC4CED1;
-	Sat, 14 Dec 2024 14:35:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1734186952;
-	bh=GCemFsEAndIIDDd8VIHsmnrMBKfq1D4UjXgErbA/Kw8=;
-	h=Date:From:To:Cc:Subject:From;
-	b=CEfZRL5TMbWZyk4CyX97z4Zlam0xCBDL2UQ4PdzJFd2inGVnjIwaYpCu2aOluIYw2
-	 SD9zyB/miIQCBVq6hNyh0aM6U85XNTRsBpIN4ToboHnLBaAloIWX0tF+JflTDY2q/z
-	 E0PJzSQgKDJ39YJHpTs18Hy9iII3QAZRFVEUE4nk=
-Date: Sat, 14 Dec 2024 15:35:49 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>,
-	Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] Serial driver fixes for 6.13-rc3
-Message-ID: <Z12XxW821DZlGNfD@kroah.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="baaP0Wz1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CDEDC4CED1;
+	Sat, 14 Dec 2024 17:39:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1734197951;
+	bh=Cr4Rwm+dg1QTfsUXryytoljA5XpgthR/cGs6MHMWiGw=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=baaP0Wz1GVaRhLp0fqy+kB1cSx/D2JB6P3y4rWl0f/rxWQyACTyLoMp+qXDv4tvrC
+	 htCc2rMg7CSAlU6f71NFIl94eKdwYdH8V8+fomlrWSp8YqWNnLKmpxA2DmMFtQEAd8
+	 Q8ijs2EBt2CzKvqH/v1sKeVLtGxrh1sfa5vaTGDkGmNbIDE85ubvnnkh6A4/ZS3Kuf
+	 2EfAPWIISu/gmb/oBgaztKJmTber4gQ0BiKrLDraONkpbOymjYjYEfnDfjaOaSVK1j
+	 D/RlFX1xJeXiKa4bHb1NRH5thWQOalo0qwl3YKKlanvIOontd2xIW5dPCivGNhYBKI
+	 +AMs4nZTOtTOw==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 71006380A959;
+	Sat, 14 Dec 2024 17:39:29 +0000 (UTC)
+Subject: Re: [GIT PULL] Serial driver fixes for 6.13-rc3
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <Z12XxW821DZlGNfD@kroah.com>
+References: <Z12XxW821DZlGNfD@kroah.com>
+X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Z12XxW821DZlGNfD@kroah.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.13-rc3
+X-PR-Tracked-Commit-Id: 4e450dfd0f968b79204637bf13280892dff287b1
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 636110be626b1e039b82d6eba4192d3cb82e5c92
+Message-Id: <173419796796.3365831.3907095723312484689.pr-tracker-bot@kernel.org>
+Date: Sat, 14 Dec 2024 17:39:27 +0000
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Geert Uytterhoeven <geert@linux-m68k.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-The following changes since commit cdd30ebb1b9f36159d66f088b61aee264e649d7a:
+The pull request you sent on Sat, 14 Dec 2024 15:35:49 +0100:
 
-  module: Convert symbol namespace to string literal (2024-12-02 11:34:44 -0800)
+> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.13-rc3
 
-are available in the Git repository at:
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/636110be626b1e039b82d6eba4192d3cb82e5c92
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.13-rc3
+Thank you!
 
-for you to fetch changes up to 4e450dfd0f968b79204637bf13280892dff287b1:
-
-  tty: serial: Work around warning backtrace in serial8250_set_defaults (2024-12-06 08:00:01 +0100)
-
-----------------------------------------------------------------
-Serial driver fixes for 6.13-rc3
-
-Here are two small serial driver fixes for 6.13-rc3.  They are:
-  - ioport build fallout fix for the 8250 port driver that should
-    resolve Guenter's runtime problems
-  - sh-sci driver bugfix for a reported problem
-
-Both of these have been in linux-next for a while with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Claudiu Beznea (1):
-      serial: sh-sci: Check if TX data was written to device in .tx_empty()
-
-Guenter Roeck (1):
-      tty: serial: Work around warning backtrace in serial8250_set_defaults
-
- drivers/tty/serial/8250/8250_port.c |  3 ++-
- drivers/tty/serial/sh-sci.c         | 29 +++++++++++++++++++++++++++++
- 2 files changed, 31 insertions(+), 1 deletion(-)
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
