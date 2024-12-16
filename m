@@ -1,65 +1,65 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C2EB126BF7;
-	Mon, 16 Dec 2024 17:12:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6564B1B412A;
+	Mon, 16 Dec 2024 17:12:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734369168; cv=none; b=tSpIPlKQMA8M9k8ro9JOEUtA4WkFY9NDZWthppKIRkC0aawnxlK06srBRDwubJpYSI/pCobwyTPGwYlARRMJZqhPCkZT3lAaHf+7x/Zm60kWEy/3sRb8pmA6CiBUQN9VEzz4buLb8H1k3wmR3Wty7mH2i7RwSxj3jVy7GwoiQUc=
+	t=1734369169; cv=none; b=tgnvaC89zCEK5Ab3H/dU41FeBmIJ8mzfO8mc70DA2WN5rfXj8yyq0SgNHTCr//iwW1P/w1pjuHA1EaJX5N73vVYoAJccJ8znaPLjIXPJTO3+6sYkhi2XzKVjUXB0DSVKaH/EH8ch7bfAosvUD0lZnYc86w9pWLkt0vFTH+zM1EU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734369168; c=relaxed/simple;
-	bh=J+INmCDmt5St8gFAVHmSSPAbzGu2w3mt8prIa6kyE10=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=fVl/Xm+EDVq1OMR65iri5PWhK2VUPgU/i0rgxv8qdmEoRVgYGMfzWbT3a0AdJSo1SR5EX2ug9xqYbRVPykZYu02ZYUhISAr+gw8xChb6SHoy4ah3m248Cu0OG2WaGJ/96C2VVdDLvmNcQ6LL13qgLFzgYIbW0YQ3QoqVmQza7BQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=yqjXRxq7; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Iv0r5I1G; arc=none smtp.client-ip=193.142.43.55
+	s=arc-20240116; t=1734369169; c=relaxed/simple;
+	bh=9ulM/VLZgmh6Vb61H3gobPJULnBEd94G/t+5gQOobO0=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=JIkjfAqkULFUsKl+qIXBaCSdoWLcyDC4NeNhV45TqAN3zIwZLNE0S1ylyMobAh3v9ru2ck8kvZjEdzPPsCJf7iVIc/HxrAZW+f0AuK3FFLT/yXbmwA+De8Puxl0Bz+/v44DBVWeO5yntIxBxeYjRfTQQNwC7TL1Jmtj+MjTxYVc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ZVZKCP/s; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=iL1Jf2wy; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="yqjXRxq7";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Iv0r5I1G"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ZVZKCP/s";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="iL1Jf2wy"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1734369165;
+	s=2020; t=1734369166;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=OzFjs73HSaheFSUIBvL6wjzasVUOcu0z3FSlXjmVgOo=;
-	b=yqjXRxq712UhD3awCtucy+EWGh/7Gd3jlp1opzXUmAJgXSqaRWfyeUdj0b39YCD0wiNDFf
-	2Nl8uIaknZ2iwGC41BgDajp7/fM+RZm+Ir+eAlov+e91FA4z6DgmM/vBm0RUv/fENhcwdr
-	dEjb67s/UW6pmP/v3tfFcgNYfEwCDppXIbteP+7QFIDh0uHiGA97+9NLWYqPxjVJ7v4/ic
-	6kGnJ4kq/d740k7ScmTvfXVPI2sLCfpthqB230iSGkeMlGCP6KLn8YDUZ2jFMw1KE7a6no
-	Rr25J++C6bR2qBJyhwyOzCC/6QBDuCd5mrle8m0/2TN+sMLiE3ABv3YLgQGjog==
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lHekKzUh6KDzBa4Wm/wnMVOz430Naq4Xufxov1IYktQ=;
+	b=ZVZKCP/sC7pSSh58XjkURjnz0P+SeKRcufTrVly1ZJqqlHUKmrtq9qofVVmpWXdZAY0Yn3
+	Rjpq5gO+BM7WAmgjqrazXBXYzrV0po4FTh/YgszxQr3cwcOCKAqUIICcBALL30lSuDscmC
+	TEuA5fhW+MpMDz6YwuNrXV65RNPwmx1i/Rd8pry/AkmVZljT04oi0auxBvQG6tVp1xOwCq
+	z0r5V5bI5Y1omlke6Ae/Undfns3ccPWdGe8AAi7Br7vVHkASnpcf/GnSwrnmx2pKsFUv2C
+	OZOOXr2AkfqozNatVQhBmU53Ma5ekgdPxzFnI3iW7M8nnRBoLDnv+pyqJf+jEA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1734369165;
+	s=2020e; t=1734369166;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=OzFjs73HSaheFSUIBvL6wjzasVUOcu0z3FSlXjmVgOo=;
-	b=Iv0r5I1G9wAwQddrK8HwAT7060gH/G24iPo64t28geGCo3qwXo9VXMDCHkFA/fXJK5lRvs
-	A3xKdQfEjMynKNBA==
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lHekKzUh6KDzBa4Wm/wnMVOz430Naq4Xufxov1IYktQ=;
+	b=iL1Jf2wySkY85dB3YmsPSfqZLtfb/Nz/3G2uOCp9qAftgnocBHLyIYgT+EwarUX9q4BxAE
+	flmXPleQcV62gCDQ==
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>,
 	Esben Haabendal <esben@geanix.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Bart Van Assche <bvanassche@acm.org>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Peter Collingbourne <pcc@google.com>,
 	Kevin Hilman <khilman@baylibre.com>,
 	Markus Schneider-Pargmann <msp@baylibre.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Udit Kumar <u-kumar1@ti.com>,
 	Griffin Kroah-Hartman <griffin@kroah.com>,
-	Petr Mladek <pmladek@suse.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Jeff Johnson <quic_jjohnson@quicinc.com>
-Subject: [PATCH tty-next v1 0/4] serial: 8250: Fix LSR masking
-Date: Mon, 16 Dec 2024 18:18:40 +0106
-Message-Id: <20241216171244.12783-1-john.ogness@linutronix.de>
+	Arnd Bergmann <arnd@arndb.de>,
+	Rengarajan S <rengarajan.s@microchip.com>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Peter Collingbourne <pcc@google.com>
+Subject: [PATCH tty-next v1 2/4] serial: 8250: Do not set UART_LSR_THRE in @read_status_mask
+Date: Mon, 16 Dec 2024 18:18:42 +0106
+Message-Id: <20241216171244.12783-3-john.ogness@linutronix.de>
+In-Reply-To: <20241216171244.12783-1-john.ogness@linutronix.de>
+References: <20241216171244.12783-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -68,51 +68,49 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Since Linux 2.1.8 @read_status_mask is no longer used as a
+general control of which bits are used from the LSR register.
+Instead it has become an additional mask applied to
+@ignore_status_mask. Since UART_LSR_THRE is never set for
+@ignore_status_mask, it serves no purpose to set it for
+@read_status_mask. In fact, it propagates the misconception
+that @read_status_mask can be used as a general mask for LSR
+bits.
 
-During the review process of my 8250 nbcon series, Petr Mladek
-mentioned [0] that it was odd that the console driver clears
-UART_LSR_DR from @read_status_mask but never sets it.
+Do not set UART_LSR_THRE for @read_status_mask.
 
-Since there is literally zero documentation on the
-driver-specific fields @read_status_mask and
-@ignore_status_mask, I embarked on a journey to figure out what
-these fields are for and how they are supposed to be used.
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ drivers/tty/serial/8250/8250_omap.c | 2 +-
+ drivers/tty/serial/8250/8250_port.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-My quest took me back to Linux 1.1.60, where there was the
-first significant change in the purpose of these fields. That
-purpose was then reverted in Linux 2.1.8, but some of the
-pieces were forgotten. Over the years it seems no one really
-noticed as these bogus pieces hung around and were even
-expanded upon.
-
-And yes, I uncovered a subtle bug that has been around longer
-than git.
-
-This series cleans up the usage for the @read_status_mask field
-and adds some documentation so that future developers will know
-what this field is actually for. And the series also fixes the
-subtle bug.
-
-Note that since the 8250 was the original serial driver and was
-copy/pasted as a basis for many later serial drivers, the issue
-may exist in other drivers as well.
-
-[0] https://lore.kernel.org/lkml/ZyuOX4VVbfAFhMfV@pathway.suse.cz
-
-John Ogness (4):
-  serial: 8250: Use @ier bits to determine if Rx is stopped
-  serial: 8250: Do not set UART_LSR_THRE in @read_status_mask
-  serial: 8250: Never adjust UART_LSR_DR in @read_status_mask
-  serial: 8250: Explain the role of @read_status_mask
-
- drivers/tty/serial/8250/8250_core.c |  1 -
- drivers/tty/serial/8250/8250_omap.c |  9 +++++++--
- drivers/tty/serial/8250/8250_port.c | 11 ++++++++---
- 3 files changed, 15 insertions(+), 6 deletions(-)
-
-
-base-commit: 30691a59c85c48575b04e849f675660fd8060cad
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index 9eb9aa766811..5290aed76a5e 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -412,7 +412,7 @@ static void omap_8250_set_termios(struct uart_port *port,
+ 	 */
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+-	up->port.read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
++	up->port.read_status_mask = UART_LSR_OE | UART_LSR_DR;
+ 	if (termios->c_iflag & INPCK)
+ 		up->port.read_status_mask |= UART_LSR_FE | UART_LSR_PE;
+ 	if (termios->c_iflag & (IGNBRK | PARMRK))
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 4d742bfb7e9a..a5c1b069c67b 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2786,7 +2786,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 */
+ 	uart_update_timeout(port, termios->c_cflag, baud);
+ 
+-	port->read_status_mask = UART_LSR_OE | UART_LSR_THRE | UART_LSR_DR;
++	port->read_status_mask = UART_LSR_OE | UART_LSR_DR;
+ 	if (termios->c_iflag & INPCK)
+ 		port->read_status_mask |= UART_LSR_FE | UART_LSR_PE;
+ 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 -- 
 2.39.5
 
