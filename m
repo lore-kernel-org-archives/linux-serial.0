@@ -1,66 +1,45 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D358520457E;
-	Mon, 16 Dec 2024 17:12:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C8B3207E00;
+	Mon, 16 Dec 2024 19:18:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734369170; cv=none; b=g4RNAH8sgsMSYow6TJ2ZpmtnWHOo1tPp1Vls4JJzCWSB4xvkKWqa4GBSv4cQRVyiMFD8sDPlIg6nbYB3X3nzj9tPwZ4+1OibSfPDBo9fOrYPTvpKpqDLLzzR144+1Ye7qz08QJtcel0bRPhMqPKQsopDjY6Zj5x179C7tmyMrnw=
+	t=1734376729; cv=none; b=Z/3btimYkxh4l8R9A6U+IMc+vra2lwGUM4o/3W9Ywb+dN9yDF9/rmXzzlL4aE9AEw7wTVI+ozCZpHT/o+BtNKEoYXF7IUDbZqzsbZ/kGM3BkW6hXJo1z5Dw7+ZxM3jvCVbkPoeU9eUjExmMPXQ7Sebc+W4lIPioBMsijIGH55s8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734369170; c=relaxed/simple;
-	bh=j6/QL3gdZfERetxbMI/0rk9rf92p20Yw3Wr+IsPrr6w=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=P6tiuyn2monopMXO07gAyY7T+n7xvyid/7QEuqQ68pzBZNFi1+bzEfVMvjtPkLaofD5U95DLmVlT0YPBzIHWnaIICI5B2HUhssmYmQ0WCpBQ9P68p2jorZkyU90mhUIC0xcr4qEJ3lkcbzjuWG+7R/IQVOQ7288UEraOlF8T8WM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=UAKnRJGO; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NKyg8KQc; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1734376729; c=relaxed/simple;
+	bh=WwFYAwt27fCugB/li54GwmTHrX1sUMJ3OKtLrIAeSEA=;
+	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
+	 Subject; b=G0T4Rlvg30ccuMjn/6Dmz20IPyWSYkKrtFVRONpe8BvPQ3HIVh3T8o1y5W8m5XeXaIpxv6lb9GwkFLgmieWKjKmXglGRoUvI8Hfd0TtTEGF1dtA0haLmh++7bvXAZHL3feq6HTea7Etfgx0UTq6gSDK8z0g55gxKrTzZ0MQVJdo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=vEa93dtT; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="UAKnRJGO";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NKyg8KQc"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1734369167;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pR/sHqHxQXpD31p3g1/0O7LvU9aHX60Ye5Sne1phnAo=;
-	b=UAKnRJGOs4Z/oTlCMOW2xarcaNaOSY9PNcZhuA24YTVuMtKm2avq0jfbfpXh9N21Kyi392
-	ZG2sG1LDqZ77RjRpJBB/sACEkB+uLILrnuVs4UfauyMxuCjaN2t1ZrB4Oyy5eTY3yylJ+6
-	bKDIYHoz6MseJ4ahfcUB97v8iTLfzy0y8dp8x9FWhpXBr23f/VpvcsKYtVyBj/dLbhx+jd
-	gFG5wqwW1HWBdoX13H3zKwOsU3pUe3sbk/36WS3sxDHcucGvnTlibdqJgQiiv1FeI+fguJ
-	KMqxQ2D6uIBi1tF+CCMFz4FDc1yhUho8pQbRW3PtPrY31J1uPMaOam9t56afuQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1734369167;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pR/sHqHxQXpD31p3g1/0O7LvU9aHX60Ye5Sne1phnAo=;
-	b=NKyg8KQcahkoUwXURAyuEcC6z42AkS/jfd7ylZKnRCJalZTvAIuWmF8KjzhZboMdpQtENa
-	3m/xqnAo4AvYB9Ag==
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Esben Haabendal <esben@geanix.com>,
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="vEa93dtT"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+	:From:subject:date:message-id:reply-to;
+	bh=0QAk008WYmWY1Bk09fKOFWYuqb0WfbqZTl0M750e2xM=; b=vEa93dtTqvFH38Z2Q3FuQqVzaX
+	bqtKE7Y6DF6+ux/odhoovtwm+Gd5ckjNaKBEZ0I4wdZQ9DXf8T+TyXh5dZgzj/hVaFJ1lq9vuGvMu
+	Vtig5N+1ETKCvTTB4yzaoTCPRoGXywXFvWOJB/UlVHpzCMgPpVUmO74t38AD3KH6XB/w=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:42958 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1tNGc6-0002CS-Ve; Mon, 16 Dec 2024 14:18:43 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: stable@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: hugo@hugovil.com,
+	hui.wang@canonical.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
 	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Kevin Hilman <khilman@baylibre.com>,
-	Markus Schneider-Pargmann <msp@baylibre.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Udit Kumar <u-kumar1@ti.com>,
-	Griffin Kroah-Hartman <griffin@kroah.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Rengarajan S <rengarajan.s@microchip.com>,
-	Bart Van Assche <bvanassche@acm.org>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Serge Semin <fancer.lancer@gmail.com>,
-	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
-	Peter Collingbourne <pcc@google.com>
-Subject: [PATCH tty-next v1 4/4] serial: 8250: Explain the role of @read_status_mask
-Date: Mon, 16 Dec 2024 18:18:44 +0106
-Message-Id: <20241216171244.12783-5-john.ogness@linutronix.de>
-In-Reply-To: <20241216171244.12783-1-john.ogness@linutronix.de>
-References: <20241216171244.12783-1-john.ogness@linutronix.de>
+	linux-kernel@vger.kernel.org
+Date: Mon, 16 Dec 2024 14:18:16 -0500
+Message-Id: <20241216191818.1553557-3-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20241216191818.1553557-1-hugo@hugovil.com>
+References: <20241216191818.1553557-1-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -68,54 +47,82 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+Subject: [PATCH 2/4] serial: sc16is7xx: refactor FIFO access functions to increase commonality
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-The role of @read_status_mask has changed over time and seems
-to still cause confusion. This can be expected since there is
-zero documentation about this driver-specific variable.
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Add comments to the initialization of @read_status_mask to
-clarify its role.
+Simplify FIFO access functions by avoiding to declare
+a struct sc16is7xx_port *s variable within each function.
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
+This is mainly done to have more commonality between the max310x and
+sc16is7xx drivers.
+
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Link: https://lore.kernel.org/r/20231221231823.2327894-15-hugo@hugovil.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_omap.c | 6 ++++++
- drivers/tty/serial/8250/8250_port.c | 6 ++++++
- 2 files changed, 12 insertions(+)
+ drivers/tty/serial/sc16is7xx.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 10144fcc0363..42b4aa56b902 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -412,6 +412,12 @@ static void omap_8250_set_termios(struct uart_port *port,
- 	 */
- 	uart_update_timeout(port, termios->c_cflag, baud);
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 3d3f66563b73b..591f97e78cdb7 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -361,17 +361,15 @@ static void sc16is7xx_port_write(struct uart_port *port, u8 reg, u8 val)
+ 	regmap_write(one->regmap, reg, val);
+ }
  
-+	/*
-+	 * Specify which conditions may be considered for error
-+	 * handling and the ignoring of characters. The actual
-+	 * ignoring of characters only occurs if the bit is set
-+	 * in @ignore_status_mask as well.
-+	 */
- 	up->port.read_status_mask = UART_LSR_OE | UART_LSR_DR;
- 	if (termios->c_iflag & INPCK)
- 		up->port.read_status_mask |= UART_LSR_FE | UART_LSR_PE;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 3b9dc2bb06eb..1a65d3e5f3c0 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2785,6 +2785,12 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	 */
- 	uart_update_timeout(port, termios->c_cflag, baud);
+-static void sc16is7xx_fifo_read(struct uart_port *port, unsigned int rxlen)
++static void sc16is7xx_fifo_read(struct uart_port *port, u8 *rxbuf, unsigned int rxlen)
+ {
+-	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
  
-+	/*
-+	 * Specify which conditions may be considered for error
-+	 * handling and the ignoring of characters. The actual
-+	 * ignoring of characters only occurs if the bit is set
-+	 * in @ignore_status_mask as well.
-+	 */
- 	port->read_status_mask = UART_LSR_OE | UART_LSR_DR;
- 	if (termios->c_iflag & INPCK)
- 		port->read_status_mask |= UART_LSR_FE | UART_LSR_PE;
+-	regmap_noinc_read(one->regmap, SC16IS7XX_RHR_REG, s->buf, rxlen);
++	regmap_noinc_read(one->regmap, SC16IS7XX_RHR_REG, rxbuf, rxlen);
+ }
+ 
+-static void sc16is7xx_fifo_write(struct uart_port *port, u8 to_send)
++static void sc16is7xx_fifo_write(struct uart_port *port, u8 *txbuf, u8 to_send)
+ {
+-	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+ 
+ 	/*
+@@ -381,7 +379,7 @@ static void sc16is7xx_fifo_write(struct uart_port *port, u8 to_send)
+ 	if (unlikely(!to_send))
+ 		return;
+ 
+-	regmap_noinc_write(one->regmap, SC16IS7XX_THR_REG, s->buf, to_send);
++	regmap_noinc_write(one->regmap, SC16IS7XX_THR_REG, txbuf, to_send);
+ }
+ 
+ static void sc16is7xx_port_update(struct uart_port *port, u8 reg,
+@@ -583,7 +581,7 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
+ 			s->buf[0] = sc16is7xx_port_read(port, SC16IS7XX_RHR_REG);
+ 			bytes_read = 1;
+ 		} else {
+-			sc16is7xx_fifo_read(port, rxlen);
++			sc16is7xx_fifo_read(port, s->buf, rxlen);
+ 			bytes_read = rxlen;
+ 		}
+ 
+@@ -670,7 +668,7 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
+ 			xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
+ 		}
+ 
+-		sc16is7xx_fifo_write(port, to_send);
++		sc16is7xx_fifo_write(port, s->buf, to_send);
+ 	}
+ 
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 -- 
 2.39.5
 
