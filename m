@@ -1,44 +1,43 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5024B2080F3;
-	Mon, 16 Dec 2024 19:18:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C495D207A25;
+	Mon, 16 Dec 2024 19:18:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734376733; cv=none; b=OK651kfwBJPU+QBptPE1UUCjbIosCDCtr34xoGFGN5LkpADCLcUO49y5LrFt+5u7EpYzkQn13CyJgFOSPw44mn4JOpmTNsj1tV21bE5z1MbvpM1quGiBPVGjiNz2oeFh+50NNxdkXfCSq0QhT6QFLdDYg9TqQzhDul7idKGjkrg=
+	t=1734376733; cv=none; b=FQYnKS8ohf4tcS4NTPN9BknWKPWAxbdkF7SW7Ql9AvPK+XgWyLUU6CYEs3wjE+/laRiAQBmvvBRy7zjIUaGMIpsp6O7Xes4jrX5kgpo1dJ13kCqoO9eEZvABTfZ8xIqg6Ng0EdrY0s/OYDnBoGxpcsXOfrTNrpj56YWxshCxilo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1734376733; c=relaxed/simple;
-	bh=hl0pGQEB7/82kKxzA62tg8G5O7Jqdqf1ZVY7lOSt/EE=;
+	bh=wcSq+lq6vK8t+Gk6gn7qMQFP+gluOvsTGaZKHwrPdII=;
 	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
-	 Content-Type:Subject; b=Q6ZKtguEjs48vEZxm6TrZvEgJAkqfKNMEaO84wQSWnubgpNiT1k8S1p5V7sD4YObZR0p2TRvrxhGU3fReJ0ZnPzQvlYb0jrvlA917ZPQhPgQcaQlcTFpAM4Dw4hpeuriuKb23oMiQCzCUKmbuaW3UqlnuljPCpZdZUxq636ksQU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=BW5fkgWH; arc=none smtp.client-ip=162.243.120.170
+	 Subject; b=nPIIExNwtHecMTtDWTVlAQkf6sQ/RoqPExfve66YiyGQHglbCZa+nxr7UIZ35e9cSqs2tmBl1LRh7oziuAtetzL9Hah0Joc66sPJ/VLLE6r3EHND+pqRGCcoiNsvel3nKIf3PLm7WCUMgtxDAzFh2GIGWVBrbw7Vzqq2eLcnepQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=iKKecr74; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="BW5fkgWH"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="iKKecr74"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=O/i0topftM8ipSFp4ROmDf2I1pusEubFlDlXJTK2PAk=; b=BW5fkgWHfImXkhWpHmIWTmmivJ
-	LbPQ+BKOTLTPmDC3VWOnGwzWUi/h+f2KLNyNUew7RbLZfv732yTpF1Of3uce3mobhm81JaT14065m
-	OT/cT+Wx7+KeYC5BOtYAa/dp2CuH/3JL+OV+ooQ/Cy8ZEggcgBTzA+vuC5VpWZk8Cam4=;
+	bh=LcPZWZ7nEbQi21b+dv55qNCO8wWbzlyxf4/DH86OpqE=; b=iKKecr74hUniSIDv0sTdrxqk+N
+	G6aqoOoFLdge9FJ4dr+gBceCx3Lvv1MCmxCzF8/p934b1MnexZqMlM3J4JSoUKChFDzuFSuKNNV3V
+	60qIEf7FvaY3Fk2gKmfM9u3Y6bqNbUCTEfFsAzG2HhKWn5IoP56X/r2TWcSLotwb0wMg=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:42958 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1tNGc5-0002CS-Uj; Mon, 16 Dec 2024 14:18:42 -0500
+	id 1tNGc8-0002CS-U5; Mon, 16 Dec 2024 14:18:45 -0500
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: stable@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jon Ringle <jringle@gridpoint.com>
 Cc: hugo@hugovil.com,
 	hui.wang@canonical.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Lech Perczak <lech.perczak@camlingroup.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Date: Mon, 16 Dec 2024 14:18:15 -0500
-Message-Id: <20241216191818.1553557-2-hugo@hugovil.com>
+Date: Mon, 16 Dec 2024 14:18:18 -0500
+Message-Id: <20241216191818.1553557-5-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20241216191818.1553557-1-hugo@hugovil.com>
 References: <20241216191818.1553557-1-hugo@hugovil.com>
@@ -48,49 +47,70 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 70.80.174.168
 X-SA-Exim-Mail-From: hugo@hugovil.com
 X-Spam-Level: 
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-Subject: [PATCH 1/4] serial: sc16is7xx: add missing support for rs485 devicetree properties
+Subject: [PATCH 4/4] serial: sc16is7xx: fix invalid FIFO access with special register set
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Retrieve rs485 devicetree properties on registration of sc16is7xx ports in
-case they are attached to an rs485 transceiver.
+When enabling access to the special register set, Receiver time-out and
+RHR interrupts can happen. In this case, the IRQ handler will try to read
+from the FIFO thru the RHR register at address 0x00, but address 0x00 is
+mapped to DLL register, resulting in erroneous FIFO reading.
+
+Call graph example:
+    sc16is7xx_startup(): entry
+    sc16is7xx_ms_proc(): entry
+    sc16is7xx_set_termios(): entry
+    sc16is7xx_set_baud(): DLH/DLL = $009C --> access special register set
+    sc16is7xx_port_irq() entry            --> IIR is 0x0C
+    sc16is7xx_handle_rx() entry
+    sc16is7xx_fifo_read(): --> unable to access FIFO (RHR) because it is
+                               mapped to DLL (LCR=LCR_CONF_MODE_A)
+    sc16is7xx_set_baud(): exit --> Restore access to general register set
+
+Fix the problem by claiming the efr_lock mutex when accessing the Special
+register set.
 
 Reworked to fix conflicts when backporting to linux-5.15.y.
 
+Fixes: dfeae619d781 ("serial: sc16is7xx")
+Cc: stable@vger.kernel.org
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
-Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
-Link: https://lore.kernel.org/r/20230807214556.540627-7-hugo@hugovil.com
+Link: https://lore.kernel.org/r/20240723125302.1305372-3-hugo@hugovil.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
  drivers/tty/serial/sc16is7xx.c | 4 ++++
  1 file changed, 4 insertions(+)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 692c14d7f7d1a..3d3f66563b73b 100644
+index 928c701f0c35a..3b7c238793ef4 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -1307,6 +1307,10 @@ static int sc16is7xx_probe(struct device *dev,
+@@ -537,6 +537,8 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+ 			      prescaler == 1 ? 0 : SC16IS7XX_MCR_CLKSEL_BIT);
  
- 		mutex_init(&s->p[i].efr_lock);
- 
-+		ret = uart_get_rs485_mode(&s->p[i].port);
-+		if (ret)
-+			goto out_ports;
+ 	/* Open the LCR divisors for configuration */
++	mutex_lock(&one->efr_lock);
 +
- 		/* Disable all interrupts */
- 		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_IER_REG, 0);
- 		/* Disable TX/RX */
+ 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
+ 			     SC16IS7XX_LCR_CONF_MODE_A);
+ 
+@@ -549,6 +551,8 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+ 	/* Put LCR back to the normal mode */
+ 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
+ 
++	mutex_unlock(&one->efr_lock);
++
+ 	return DIV_ROUND_CLOSEST((clk / prescaler) / 16, div);
+ }
+ 
 -- 
 2.39.5
 
