@@ -1,84 +1,116 @@
-Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com [209.85.217.53])
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38CF7653;
-	Sun, 15 Dec 2024 21:35:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32B9413B2A4
+	for <linux-serial@vger.kernel.org>; Mon, 16 Dec 2024 14:54:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734298512; cv=none; b=WKEpTKEgFERaAkKHDYCgNP9FtMZltE919grPywyeY/ta133cg+JkmSPHJIDOQjkm9tAT6bmCQBtMARbSgn4/IgwQKByDjRXLG+cAOo8drlC2q5wv11qREm+6ztwZ0N434pc+Z+zw6uadx98uA+UDfP/iknWOrvq+TZ0+rT+BDwU=
+	t=1734360854; cv=none; b=kfnyIRwhvJsGhlqatYiWICzFwXYeppM+PGWPaaOqA/nIyL/C6CgAeSn5lKQSwEnV/a8k3V4x9w8ZnxKWkMmj5gOhrhPjvMec+0Y99V204IzLtOdfFZB2V2psiPThmWHF+kdOY2srATPyYmXP4Zis21IjDQYHtEQ5Ry8qMXRzcv0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734298512; c=relaxed/simple;
-	bh=L2jEgesMzvRR7s8Z6CEUkD1ctQWX2RVk/SLoG5TfXQo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IN0g2SAlYfIwpZqF+PvVf9UL4vLMkvzfKt1e5zQNTcWylUdzR054i4LH2XkJFIeargPhzf64MmRPKlDUKiacr1MJh1g9UbitYXaBNzxOK5OdOUgk4cwnNaQsYac/woQ+yuHzL68EebejYNJienbwI/4LLevrEWdpYAl7/8acYho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BK7LBXHR; arc=none smtp.client-ip=209.85.217.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1734360854; c=relaxed/simple;
+	bh=bn3iJLzlKSMWMJtRrej6vZqzCfJ4v28p5CBRgpdTTFc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KiuzyjIbxNvKGSVGcMXBR+mbZg18VFrlHaQcE1payz1+CdXOf+7UIczTqr97JI5scCxLTKq2r1TFbz7ikTQtSy02pnpMK1R2cd2eMt0eOzwwCOzp2ziZ+LQbO/wpVjmb546hJfZAVdz7mlkdBDdZf+9YWvh4PiTvb1XyCudLTQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hefring.com; spf=none smtp.mailfrom=hefring.com; dkim=pass (2048-bit key) header.d=hefring-com.20230601.gappssmtp.com header.i=@hefring-com.20230601.gappssmtp.com header.b=khiFj1hZ; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hefring.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=hefring.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BK7LBXHR"
-Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-4afe70b41a8so935447137.3;
-        Sun, 15 Dec 2024 13:35:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=hefring-com.20230601.gappssmtp.com header.i=@hefring-com.20230601.gappssmtp.com header.b="khiFj1hZ"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7b6e4d38185so323929585a.0
+        for <linux-serial@vger.kernel.org>; Mon, 16 Dec 2024 06:54:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1734298510; x=1734903310; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=L2jEgesMzvRR7s8Z6CEUkD1ctQWX2RVk/SLoG5TfXQo=;
-        b=BK7LBXHRrB3Tk7/a6DSlZvPglasMCnDBYxryS4gaEtWr553RJvs+XPKqNqzNl05t4H
-         cwEJRuf2y2epRKJKRGiw4wmkJyflNJJelBDH0DG3AQ6OW8YY6jj0AVcadxJWMAYuSM8x
-         d04ZT9dPaiNReFyDg3ydcgDvwEln8NOH+GxiXOiWJegE1smHLcG90jcude0IuicXU2Wy
-         jqPDFI2ScC5Ldd48jpkRIrzgfVy2JtOtnEj+tXqm0zxOlsaUsXdh3wiYY8NTRkAuUOIl
-         3hk6GW1Y3xRttcjxxtSfhSPA6eTQNE6MMcHBmrOQweseLZeceC5TD9NZ9fIA1qltMmpD
-         d2cA==
+        d=hefring-com.20230601.gappssmtp.com; s=20230601; t=1734360851; x=1734965651; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xrDI54RrtTH587z61yGqvhuIg5ioNpJ5JcTwNcL7S14=;
+        b=khiFj1hZMQfNWK+ChbH/E99KZuHkO5g4IZLGAdgr4R83qQJjPqDjs6FffVn3Zo1Ll5
+         wk+hvB2UlOlbhckPaUAGiuBBuT6AHhqv8YlDYPXqpmuBImzA3cUBxYa9he4GOXKe2EOX
+         5aHWLX2anL8xlKdEuSnYeBxEJwfX59rDXorKOprZIEaJvOpkkAyvyGiqATgSQu43Fa+C
+         DueWVt1evD4LhcOfyVCz8ETEOoDL6E1vFRQCEGPWB66mWgGvt7ctQoBXkulyc4b81321
+         0zEXD0z6UiH1B2qUbaJR/0SuKpf7o2mf0pknQReTy4i0IimI+BmY39IWhEwAUzsQs0NH
+         5W5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734298510; x=1734903310;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L2jEgesMzvRR7s8Z6CEUkD1ctQWX2RVk/SLoG5TfXQo=;
-        b=gCbxJdRUJ4KJLyPQNoXk2Viai3ziGTWbZBzOaW1aj1R4SPrgh6h/wd4LSMvYE7Gv8b
-         ROkq0+5R0topDgzXCcFEqpevMofaBW7tHhS0m3qc8qcoSybk6bSYGzJi4eufGEy7XklK
-         YAYOWuH+bpwjebpmsvoO0W48GtbTEqSSjOvAmYfyXkvzJEM5qmE/W9L4X0sdyjHaJcpM
-         JdgBx42+bi75ZsybIfODPVChgi50lJcuu0pU0fdGCBz+xsc+l/zkXJj+hBWNFnMpph9c
-         gntLhN85mW7z5GY/uD9nYW0XZ5qc0XkVqGNOelEjQ1L4hkXfA01QTF/ZGT6PTdpk8R+5
-         DEew==
-X-Forwarded-Encrypted: i=1; AJvYcCWx8TJXlH7ShLpHpGz6kf0X7pUJcIfbGiImnFPQPtpE6OCzibDFLo24Hn//FQ7Kgv5eeaxJ/Kpvve9oJck=@vger.kernel.org, AJvYcCXoF1we4SCRd5mvD+cJLzHzuhMkzYJWX674LcF6JCTfYZQOX6V4J0/qJIgbnka99XTWgz8BzF2SKLUNpGBF@vger.kernel.org
-X-Gm-Message-State: AOJu0YxmP+jgratW2Dc0C3GCkbXV13hUxlp9kyyJG+6uidWMx2QNyA9u
-	IUnbDp12DMmSilsLSpl+eXmiVLbMFfq4qQp3I3bX3L7JytSGigHY
-X-Gm-Gg: ASbGncvis8MPthDiPXkvXkt+OqO1aOvVIhaw04KMfYGYPEYGQLZAER7rBpjTu0VBgGg
-	YaSd7n1dL68T4uA/4vaXiXyG/OBr8XA2s8L81Zm4j26mvFYqhR1cy7x1AzpSLHp4SMIDHIW3gMQ
-	pMvKli7FOQFN7fXBb5fI3T4kzQ/yapza/lsapD2NuIhGj5/cWrDhmMtwu+f3D6x1a+yTLO3Hjay
-	XFPXAkSF5euBtngXFnT4AxihlNnnu8cAg651C0+pO6SgDUy/Pd2VryZonQpXYJ20LDEaOY/RzaO
-	kLWoZxq85ydaL5ipfRv6s8mkO2qYJAYBHsCFVBZrsQ==
-X-Google-Smtp-Source: AGHT+IFlRh31IZ+010iuh+ajbG0NCjdTOV+i60VdK+dpdgRUsWkgjNgSf22bmdkA9RYHu2dPuVqQjA==
-X-Received: by 2002:a05:6102:160b:b0:4b2:4950:16fe with SMTP id ada2fe7eead31-4b25d9c021emr9591228137.14.1734298509990;
-        Sun, 15 Dec 2024 13:35:09 -0800 (PST)
-Received: from granite.localdomain (syn-142-197-128-048.res.spectrum.com. [142.197.128.48])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4b270233605sm597637137.9.2024.12.15.13.35.08
+        d=1e100.net; s=20230601; t=1734360851; x=1734965651;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xrDI54RrtTH587z61yGqvhuIg5ioNpJ5JcTwNcL7S14=;
+        b=CXEoFLRdThxycNCeZPjBmiY2q3AiKGO7iPHpGA94ztCXezvxKC8fUQ7aAKRd1GIqcr
+         /jWKkB3yrLQtCXsvamwuB9vnPAVwNJKAiOFDungHTvspgn/FigzkxGr46qu4WrGAg0xC
+         sU+TxZ6aPYLgTkrDpgmG3yABkrtwDxWfGcPeGzGkz3adeAtqP5XWkUGxNNxq9VnwO7aT
+         ECcgxB9oZp1UNopCmIcpqaBgWNj0aRWlhtHQmGUlzDUK3yfevaOWxFugpgea3kFQMCzM
+         3El+hrmzNkPE0KcGXgCFWlEuSQfDSnu1N11ClvMlA8M3C008XGMLcxU59X47pYxEqJqJ
+         Ez0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXeMYxlXFZSicrJfxlUb0+jZsBqBFiQI6I2SmKtdxik7FHc9gkS8lT4WGLWrx6Mtz0ScmQ5NG1ERvnoGq4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwluDpKs/AyN/v+KdJNOQBcrn3j6h/Kt42oXNeG77bUvg5rcWGt
+	+hFkTSs1rdWjU5ja5+o59YebkUM2F702Rqu/vvEsO7seBwsapElA38Zr6m9TCyaKSCZz1wi10BB
+	ZtHc=
+X-Gm-Gg: ASbGnctpFOGCcGihYTl4WLpq8Egs1mm5cE0bnWb/iRqxORRInVjYMQNqVxzNCB3iei4
+	qH8BZmsM4pCCKbd6v7Kdzm9J1nYLwZvN05QKFfkHrot3Fkk6BiAvxWjJLKJAvtgJYjebEFTVKyU
+	rjphVSBD82BnrttpriXaAwICVv/HaL4ltdZJm4vSOcCjxKzkaGV2FwzgexgcC0wZ/scSlVHLuAv
+	Er2FnR+/VHoIAyw2UvFz1RiGEUqMdsBAhZ0YzIKErvRJhkEjfO4JR+G+zuq5hWtXCGFD/Gs7+kc
+X-Google-Smtp-Source: AGHT+IEejh93L0FZI+AsvKAjo6R6QN8N65ppACXanwMRaMhjPpRdaO8GmKLrZ1p3hnkSIvCPYIc0vQ==
+X-Received: by 2002:a05:620a:4889:b0:7b6:d939:f958 with SMTP id af79cd13be357-7b6fbee8df9mr2384495685a.25.1734360851084;
+        Mon, 16 Dec 2024 06:54:11 -0800 (PST)
+Received: from localhost.localdomain ([50.212.55.90])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7b7047aa633sm230461085a.10.2024.12.16.06.54.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Dec 2024 13:35:09 -0800 (PST)
-Date: Sun, 15 Dec 2024 16:35:07 -0500
-From: Luis Felipe Hernandez <luis.hernandez093@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Thomas =?utf-8?Q?Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	"Ricardo B. Marliere" <rbm@suse.com>
-Subject: Re: [PATCH] tty: mark ctl_table as const
-Message-ID: <Z19Li6s6W1JI4nqx@granite.localdomain>
-References: <20241215-tty-sysctl-const-v1-1-96884e456126@gmail.com>
+        Mon, 16 Dec 2024 06:54:10 -0800 (PST)
+From: Ben Wolsieffer <ben.wolsieffer@hefring.com>
+To: linux-arm-kernel@lists.infradead.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	John Ogness <john.ogness@linutronix.de>,
+	Ben Wolsieffer <ben.wolsieffer@hefring.com>
+Subject: [PATCH] serial: stm32: use port lock wrappers for break control
+Date: Mon, 16 Dec 2024 09:53:23 -0500
+Message-ID: <20241216145323.111612-1-ben.wolsieffer@hefring.com>
+X-Mailer: git-send-email 2.46.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241215-tty-sysctl-const-v1-1-96884e456126@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Sun, Dec 15, 2024 at 04:30:25PM -0500, Luis Felipe Hernandez wrote:
-> Since commit 7abc9b53bd51 ("sysctl: allow registration of const struct
-> ctl_table"), the sysctl registration API allows struct ctl_table variables
-> to be placed into read-only memory.
+Commit 30e945861f3b ("serial: stm32: add support for break control")
+added another usage of the port lock, but was merged on the same day as
+c5d06662551c ("serial: stm32: Use port lock wrappers"), therefore the
+latter did not update this usage to use the port lock wrappers.
 
-Please disregard this patch.
+Fixes: c5d06662551c ("serial: stm32: Use port lock wrappers")
+Signed-off-by: Ben Wolsieffer <ben.wolsieffer@hefring.com>
+---
+ drivers/tty/serial/stm32-usart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
+index 7dc254546075..1ec5d8c3aef8 100644
+--- a/drivers/tty/serial/stm32-usart.c
++++ b/drivers/tty/serial/stm32-usart.c
+@@ -1051,14 +1051,14 @@ static void stm32_usart_break_ctl(struct uart_port *port, int break_state)
+ 	const struct stm32_usart_offsets *ofs = &stm32_port->info->ofs;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&port->lock, flags);
++	uart_port_lock_irqsave(port, &flags);
+ 
+ 	if (break_state)
+ 		stm32_usart_set_bits(port, ofs->rqr, USART_RQR_SBKRQ);
+ 	else
+ 		stm32_usart_clr_bits(port, ofs->rqr, USART_RQR_SBKRQ);
+ 
+-	spin_unlock_irqrestore(&port->lock, flags);
++	uart_port_unlock_irqrestore(port, flags);
+ }
+ 
+ static int stm32_usart_startup(struct uart_port *port)
+-- 
+2.46.1
+
