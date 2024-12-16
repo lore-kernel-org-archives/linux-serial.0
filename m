@@ -1,116 +1,98 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C495D207A25;
-	Mon, 16 Dec 2024 19:18:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BDD01B5EB5;
+	Mon, 16 Dec 2024 20:31:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734376733; cv=none; b=FQYnKS8ohf4tcS4NTPN9BknWKPWAxbdkF7SW7Ql9AvPK+XgWyLUU6CYEs3wjE+/laRiAQBmvvBRy7zjIUaGMIpsp6O7Xes4jrX5kgpo1dJ13kCqoO9eEZvABTfZ8xIqg6Ng0EdrY0s/OYDnBoGxpcsXOfrTNrpj56YWxshCxilo=
+	t=1734381075; cv=none; b=I8pj6IiHa1BHTSD8kanfhqNQQQZ8HeqpH1jIvyFPOROh+WWnTgyrk1IcRFGidnw0j5zozQK/CmvBEYpDeNzme94vG1qdB3A82IUQkEkmX9wl5mGRRlqJVHVasQlXlwRJZLWd/YIs8XpNlZyZ4nQa7GA/Z6w8bja92dxxw2s41Ig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734376733; c=relaxed/simple;
-	bh=wcSq+lq6vK8t+Gk6gn7qMQFP+gluOvsTGaZKHwrPdII=;
-	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
-	 Subject; b=nPIIExNwtHecMTtDWTVlAQkf6sQ/RoqPExfve66YiyGQHglbCZa+nxr7UIZ35e9cSqs2tmBl1LRh7oziuAtetzL9Hah0Joc66sPJ/VLLE6r3EHND+pqRGCcoiNsvel3nKIf3PLm7WCUMgtxDAzFh2GIGWVBrbw7Vzqq2eLcnepQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=iKKecr74; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1734381075; c=relaxed/simple;
+	bh=Pkvx0M9D0fbKwirjbkaHxTSIUhen2l88ORjCv5hvUoM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RsAZ6/go2E0oNo05h90eHgDOl4FC0QEdSsYd7h7k0+XeDDwLxzug7twkVcoIWADP0DLB8aWJ94gfjlcN97CBO9E1vodXTNlEjMrtpU3z65IDbk/nSAbqCwz1rSEjzB0RXtZX3uWB4Mmy2ytaT3RDIjfYIquJxW2ChXci+gPEufI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hAHKF13t; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="iKKecr74"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-	:From:subject:date:message-id:reply-to;
-	bh=LcPZWZ7nEbQi21b+dv55qNCO8wWbzlyxf4/DH86OpqE=; b=iKKecr74hUniSIDv0sTdrxqk+N
-	G6aqoOoFLdge9FJ4dr+gBceCx3Lvv1MCmxCzF8/p934b1MnexZqMlM3J4JSoUKChFDzuFSuKNNV3V
-	60qIEf7FvaY3Fk2gKmfM9u3Y6bqNbUCTEfFsAzG2HhKWn5IoP56X/r2TWcSLotwb0wMg=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:42958 helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1tNGc8-0002CS-U5; Mon, 16 Dec 2024 14:18:45 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: stable@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hAHKF13t"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1734381073; x=1765917073;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Pkvx0M9D0fbKwirjbkaHxTSIUhen2l88ORjCv5hvUoM=;
+  b=hAHKF13twcJg/+ZeILZ/+NWNw6Le9OhEolLAZ+AkDfQJVId8jI97CR+w
+   FB/f/JTefIeAp+H/OPY4qcbrvt/+cqLh7xJv1BmBP/QX/iK3dpcWOg7Ea
+   ue6z6GO8VhwcVCX0mr+Sp7h1cgc9qB9gy4cV8wayaYSq5skMsR1lgLbSz
+   hnVnVG51rk6Bx2bltEE2aSzlxc0VxX7UAq945mSeocf1fm3a74hL5AWpZ
+   X+0EuSxzCH05hRrFBnAf40+6eC2GL4mo1kX3r81AUxqWIpcyCfvX/V+d5
+   Kh7OEpZpgUhNWcySTX7uhadUPJRG7DJf2XvsCZDVlA8XXGD/w07uFnRqn
+   w==;
+X-CSE-ConnectionGUID: f5HMsoOETRyuP/1D63MMmA==
+X-CSE-MsgGUID: fMm5AsQZQESheFTI/sK7Bg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11288"; a="34941442"
+X-IronPort-AV: E=Sophos;i="6.12,239,1728975600"; 
+   d="scan'208";a="34941442"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2024 12:31:12 -0800
+X-CSE-ConnectionGUID: Jjx8HbKYTXmGwj3h8du9Rg==
+X-CSE-MsgGUID: FCSGRj5ST6aM54yqDK7URQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
+   d="scan'208";a="102396460"
+Received: from smile.fi.intel.com ([10.237.72.154])
+  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Dec 2024 12:31:09 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1tNHkA-00000008j00-0iq0;
+	Mon, 16 Dec 2024 22:31:06 +0200
+Date: Mon, 16 Dec 2024 22:31:05 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Jon Ringle <jringle@gridpoint.com>
-Cc: hugo@hugovil.com,
-	hui.wang@canonical.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Date: Mon, 16 Dec 2024 14:18:18 -0500
-Message-Id: <20241216191818.1553557-5-hugo@hugovil.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20241216191818.1553557-1-hugo@hugovil.com>
-References: <20241216191818.1553557-1-hugo@hugovil.com>
+	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+	Rengarajan S <rengarajan.s@microchip.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+	Peter Collingbourne <pcc@google.com>
+Subject: Re: [PATCH tty-next v1 1/4] serial: 8250: Use @ier bits to determine
+ if Rx is stopped
+Message-ID: <Z2COCeWqyauMYYyk@smile.fi.intel.com>
+References: <20241216171244.12783-1-john.ogness@linutronix.de>
+ <20241216171244.12783-2-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-Subject: [PATCH 4/4] serial: sc16is7xx: fix invalid FIFO access with special register set
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241216171244.12783-2-john.ogness@linutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Mon, Dec 16, 2024 at 06:18:41PM +0106, John Ogness wrote:
+> Commit f19c3f6c8109 ("serial: 8250_port: Don't service RX FIFO if
+> throttled") uses @read_status_mask (bit UART_LSR_DR) to determine
+> if Rx has been stopped. However, the bit UART_LSR_DR is not
+> managed properly in @read_status_mask for all Rx stop/start
+> situations and is therefore not suitable for this purpose.
+> 
+> Use the UART_IER_RLSI and UART_IER_RDI bits in @ier instead, as
+> this is already common in 8250-variants and drivers.
 
-When enabling access to the special register set, Receiver time-out and
-RHR interrupts can happen. In this case, the IRQ handler will try to read
-from the FIFO thru the RHR register at address 0x00, but address 0x00 is
-mapped to DLL register, resulting in erroneous FIFO reading.
+Hmm... IER is Interrupt Enable Register, so it has been programmed to the value
+we control, on the opposite the LSR is Line Status Register and defines status
+on the line at the moment of reading. Can you elaborate how your change is correct
+substitute?
 
-Call graph example:
-    sc16is7xx_startup(): entry
-    sc16is7xx_ms_proc(): entry
-    sc16is7xx_set_termios(): entry
-    sc16is7xx_set_baud(): DLH/DLL = $009C --> access special register set
-    sc16is7xx_port_irq() entry            --> IIR is 0x0C
-    sc16is7xx_handle_rx() entry
-    sc16is7xx_fifo_read(): --> unable to access FIFO (RHR) because it is
-                               mapped to DLL (LCR=LCR_CONF_MODE_A)
-    sc16is7xx_set_baud(): exit --> Restore access to general register set
-
-Fix the problem by claiming the efr_lock mutex when accessing the Special
-register set.
-
-Reworked to fix conflicts when backporting to linux-5.15.y.
-
-Fixes: dfeae619d781 ("serial: sc16is7xx")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Link: https://lore.kernel.org/r/20240723125302.1305372-3-hugo@hugovil.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/sc16is7xx.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 928c701f0c35a..3b7c238793ef4 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -537,6 +537,8 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 			      prescaler == 1 ? 0 : SC16IS7XX_MCR_CLKSEL_BIT);
- 
- 	/* Open the LCR divisors for configuration */
-+	mutex_lock(&one->efr_lock);
-+
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
- 			     SC16IS7XX_LCR_CONF_MODE_A);
- 
-@@ -549,6 +551,8 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	/* Put LCR back to the normal mode */
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, lcr);
- 
-+	mutex_unlock(&one->efr_lock);
-+
- 	return DIV_ROUND_CLOSEST((clk / prescaler) / 16, div);
- }
- 
 -- 
-2.39.5
+With Best Regards,
+Andy Shevchenko
+
 
