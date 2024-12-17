@@ -1,97 +1,159 @@
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACCF81DE8AC
-	for <linux-serial@vger.kernel.org>; Tue, 17 Dec 2024 09:47:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ACF7250F8;
+	Tue, 17 Dec 2024 13:58:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734428847; cv=none; b=qYjSH0mTxl09gHM2/MMhgw0RImBz93Z8wLvLMcHGxhJr6BQfxityVeFpXdPGksurmtbDdRsXv2cmw6NzgWJGQUk21gPDaRH+S73NEz1NlX+G1DRSa+OvJlCBZMcH3TcqXFCwQyXBvCwZMfEwsH7R3xuGP8CibVsUto6DdAMMmko=
+	t=1734443884; cv=none; b=e7mx6eAAOoZEzMJPFrmdoKyKo+MiyItz1OidQB3W1czKF8i90qiadubs33ammvzrMyP4A5cO6vvVjZo+s67mNqH97FxR7GGTPFVJWBGGgRMsXQy766jHLFnLi65bTIXz/x3nkqHCStwChEcmbad0byMczRhts+rFYPe9R7Q6whQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734428847; c=relaxed/simple;
-	bh=hOfImkAE2EFl4MZVd3hPvFr9MgN0yNbZ9A1uBeV3ZCc=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=iTLnqwXtESUkjKUCgFwkYDsLoxqF8rQ8FP6He+eM/m7LDUKn/KlVgqMiB6J7dcHVGZX109M8tQ3FpWj0ikXDCOqfl5/yv4JH6g1EOdgMhM4g9EntT79jga3MwN5gFTVR6oHBHm8nJxBIicnnbV2HMobOaYtxLpC0PQDdIIcWuVk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-3a9d075bdc3so96430875ab.3
-        for <linux-serial@vger.kernel.org>; Tue, 17 Dec 2024 01:47:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734428845; x=1735033645;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3C6dwQcR8DXbDgPWAbTVRGbBXyNlVbX5Pvzym/aa2YE=;
-        b=eq8RXVnRx+IynC3VhBPTrN5+3cMwlNeZ9VSHv9OVQzyeSkR9WfU8jQXW9NsQ+U9InS
-         61INpMvz3+KShOKEilzjCRA3IlkP4b/+8uGdQKbUvKm0ZZDH4ljGykir1r9EroKVBoTE
-         bN6ve8anVA++HH8P0BLRFl+ITCzh/qiaiO4oVrBgCEUEo5cUxoyCw8m6Kl1A+VwGbrLA
-         xnYzHErorHS4ZzBA4NDDkeQGaWWVUnS+IVXmplKjcWtZ97CRbzAV8RtWD/JMdtBJHGDS
-         ge6E55ZsqwVhfCBDIFnnUABCMj+MGoOvwrobaE5d3HkFuinw9JqmHKUWgxF6CSLK9whp
-         Wffg==
-X-Forwarded-Encrypted: i=1; AJvYcCXaT3cooVcgw/Ee41/IsPfd5jd1R2t3iQcYEIiBDKbvwV8ifW48+JOO14A0at+DmRuCbimbWaIpyZ/9JNk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwIv6IwWQKnQFtLI352jjz2MG0WW3XBTY0U0up/HZ9nP8HIWcaN
-	ZoiBYRua9p+SQ0QzIPAhhwiq2eFfQ6xwjWLEKkAxVmY8grbP+6cnfQaE4YKgGP41hqTIuHAjFQA
-	+BptprnWGVhq1Nts+xMxokqr3pj5nFWV0D0wBRBMG5kXjGfxLAXzklOc=
-X-Google-Smtp-Source: AGHT+IE8yAkcoeaC0xqa7bhpt81THy6gblPyPnO88aZxjOf6qA0M1VWR9FZmjX1BW26CBU8qXtxIeYFhA3eDqqC8eZ4CRYZ+IyBi
+	s=arc-20240116; t=1734443884; c=relaxed/simple;
+	bh=XbnnnWB54GCHPVqI50/h5Bxg1+5Ht10BYosJiA+usYI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mIHxDN8U8evNDra7teM7ShX5Cfy+vjtNlLoIgZxqCjDQAfyqEMPBRpJZ/S520p9pNrnqrbhfE9zilDgFOrVJUaP9S87God6ylhzcS49PHbiGo/HSou2hxNb8clFs4nJoEWbcvEP0BZ3vBUQjGm2l6eGd30INQE5TchwKD1VErbo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org; spf=pass smtp.mailfrom=clip-os.org; dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b=cEnRonsj; arc=none smtp.client-ip=217.70.183.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=clip-os.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b="cEnRonsj"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id D4010E0005;
+	Tue, 17 Dec 2024 13:57:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=clip-os.org; s=gm1;
+	t=1734443873;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Vp5TDYPPENmQRE2Bn8G4VOZmWwgzqXmCeODjRqgYJLk=;
+	b=cEnRonsj590KJHJuSz5a7nsF9hE3Dxo//7kIS6BvoFo/1y3I3qGYiTmfIvGt7mNn2JVK3v
+	RiEmQSD650bx+SbfZqmcPJwzI8IcNDnqESMkNtFkc7E6CaB10lIBvKv7Ev/aYby12nr8az
+	1fbdIwFst09FjKh0Z8yIklaJcFGzlsNKUgVrsCbb1vQmx2bShIVdUMKT3V3u8bEDXn2z2Q
+	wxly6oQ476Qqn1GztpxynJ272bD5NsD++LZ9GdienqDOVruNSk9xA4q1M4ldtbMFZc8WjN
+	UwbQB1/dbFs51URerIN+w3N8ONr6GdTwr+wzNCP+8vJ9R50LgIjUoX37icHQQA==
+Message-ID: <c3e800d2-0aff-478e-906a-18f8fc6d756a@clip-os.org>
+Date: Tue, 17 Dec 2024 14:57:51 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:174e:b0:3a7:66e0:a98a with SMTP id
- e9e14a558f8ab-3aff6020017mr139728465ab.9.1734428844941; Tue, 17 Dec 2024
- 01:47:24 -0800 (PST)
-Date: Tue, 17 Dec 2024 01:47:24 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <676148ac.050a0220.37aaf.0156.GAE@google.com>
-Subject: [syzbot] Monthly serial report (Dec 2024)
-From: syzbot <syzbot+list5c601fdf620a536bb95a@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/3] sysctl: Fix underflow value setting risk in
+ vm_table
+To: Joel Granados <joel.granados@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org,
+ Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>,
+ Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+ Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>,
+ Joel Granados <j.granados@samsung.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Neil Horman <nhorman@tuxdriver.com>, Lin Feng <linf@wangsu.com>,
+ Theodore Ts'o <tytso@mit.edu>
+References: <20241114162638.57392-1-nicolas.bouchinet@clip-os.org>
+ <20241114162638.57392-3-nicolas.bouchinet@clip-os.org>
+ <4ietaibtqwl4xfqluvy6ua6cr3nkymmyzzmoo3a62lf65wtltq@s6imawclrht6>
+Content-Language: en-US
+From: Nicolas Bouchinet <nicolas.bouchinet@clip-os.org>
+In-Reply-To: <4ietaibtqwl4xfqluvy6ua6cr3nkymmyzzmoo3a62lf65wtltq@s6imawclrht6>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-GND-Sasl: nicolas.bouchinet@clip-os.org
 
-Hello serial maintainers/developers,
+Hi Joel,
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+I've pushed patchset version 3 :
+https://lore.kernel.org/all/20241217132908.38096-1-nicolas.bouchinet@clip-os.org/.
 
-During the period, 2 new issues were detected and 0 were fixed.
-In total, 18 issues are still open and 44 have already been fixed.
+On 11/20/24 13:53, Joel Granados wrote:
+> On Thu, Nov 14, 2024 at 05:25:51PM +0100, nicolas.bouchinet@clip-os.org wrote:
+>> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
+>>
+>> Commit 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in
+>> vm_table") fixes underflow value setting risk in vm_table but misses
+>> vdso_enabled sysctl.
+>>
+>> vdso_enabled sysctl is initialized with .extra1 value as SYSCTL_ZERO to
+>> avoid negative value writes but the proc_handler is proc_dointvec and not
+>> proc_dointvec_minmax and thus do not uses .extra1 and .extra2.
+>>
+>> The following command thus works :
+>>
+>> `# echo -1 > /proc/sys/vm/vdso_enabled`
+> It would be interesting to know what happens when you do a
+> # echo (INT_MAX + 1) > /proc/sys/vm/vdso_enabled
+>
+> This is the reasons why I'm interested in such a test:
+>
+> 1. Both proc_dointvec and proc_dointvec_minmax (calls proc_dointvec) have a
+>     overflow check where they will return -EINVAL if what is given by the user is
+>     greater than (unsiged long)INT_MAX; this will evaluate can evaluate to true
+>     or false depending on the architecture where we are running.
+>
+> 2. I noticed that vdso_enabled is an unsigned long. And so the expectation is
+>     that the range is 0 to ULONG_MAX, which in some cases (depending on the arch)
+>     would not be the case.
+ From my observations, vdso_enabled is a unsigned int. If one wants to
+convert to an unsigned long, proc_doulongvec_minmax should be used
+instead.
 
-Some of the still happening issues:
+IMHO, the main issues are that .data variable type can differ from the 
+return
+type of .proc_handler function. This can lead to undefined behaviors and
+eventually vulnerabilities.
 
-Ref  Crashes Repro Title
-<1>  651     Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
-                   https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-<2>  257     No    INFO: task hung in console_callback (5)
-                   https://syzkaller.appspot.com/bug?extid=1fb20cf68d15e7c2388d
-<3>  167     Yes   INFO: task can't die in show_free_areas
-                   https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-<4>  75      Yes   BUG: soft lockup in tx
-                   https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
-<5>  64      Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
-                   https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
-<6>  48      No    KMSAN: uninit-value in n_tty_receive_buf_closing (3)
-                   https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
-<7>  17      Yes   INFO: rcu detected stall in console_callback
-                   https://syzkaller.appspot.com/bug?extid=32af18ae7b894a681f2d
-<8>  15      No    KMSAN: uninit-value in gsmld_receive_buf
-                   https://syzkaller.appspot.com/bug?extid=2f64914d6a3a8ce91bdd
-<9>  12      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
-                   https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
-<10> 11      No    general protection fault in n_tty_receive_buf_common (2)
-                   https://syzkaller.appspot.com/bug?extid=2dda672e146ff12ccb02
+.extra1 and .extra2 can also be used with proc_handlers that do not uses 
+them.
+I think sysctl_check_table() could be enhanced to control this behavior.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> So my question is: What is the expected range for this value? Because you might
+> not be getting the whole range in the cases where int is 32 bit and long is 64
+> bit.
+If proc_dointvec or its derivative is used, as you said, range is bounded
+by checks in do_proc_dointvec_conv ((unsigned long) INT_MAX).
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+INT_MAX being based on the max value of an int (((int)(~0U >> 1))),
+do_proc_dointvec_conv behavior is thus architecture dependent.
+>
+>> This patch properly sets the proc_handler to proc_dointvec_minmax.
+>>
+>> Fixes: 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in vm_table")
+>> Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
+>> ---
+>>   kernel/sysctl.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+>> index 79e6cb1d5c48f..37b1c1a760985 100644
+>> --- a/kernel/sysctl.c
+>> +++ b/kernel/sysctl.c
+>> @@ -2194,7 +2194,7 @@ static struct ctl_table vm_table[] = {
+>>   		.maxlen		= sizeof(vdso_enabled),
+>>   #endif
+>>   		.mode		= 0644,
+>> -		.proc_handler	= proc_dointvec,
+>> +		.proc_handler	= proc_dointvec_minmax,
+>>   		.extra1		= SYSCTL_ZERO,
+> Any reason why extra2 is not defined. I know that it was not defined before, but
+> this does not mean that it will not have an upper limit. The way that I read the
+> situation is that this will be bounded by the overflow check done in
+> proc_dointvec and will have an upper limit of INT_MAX.
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
+I've added an extra2 parameter to restrict vdso_enabled between 0 and 1 
+in patchset v3.
+https://lore.kernel.org/all/20241217132908.38096-3-nicolas.bouchinet@clip-os.org/
 
-You may send multiple commands in a single email message.
+>
+> Please correct me if I have read the situation incorrectly.
+>
+> Best
+>
+Thanks again for your review,
+
+Best regards,
+
+Nicolas
