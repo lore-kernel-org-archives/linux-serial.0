@@ -1,117 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4996617C219;
-	Wed, 18 Dec 2024 13:32:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19F9F155C87;
+	Wed, 18 Dec 2024 20:05:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734528760; cv=none; b=tDEzuWTcGInaCBGQrlqbAW+712DsH28bLkWNlNsjcVLrrc4t4c2ugt+U8+NOk312Ua69KleQXtUTNf38yZZrH4WcM7f/WbS9/5FIy7GvP0BpNphvCe2tK07wr9LKXyrbZCMtrp9n1Nb1DHSHlaP5k+nNB8JfCpdN2EsgwNh8kCU=
+	t=1734552334; cv=none; b=KiE0oytaA9xTTNoygc9oTAi82i20s+el2gnBBhuw7sVUf/PMdipD8GwGnyIOHLEvqqh/BtB9zNJUMlWltTMuEWm5AzQeSi8oIX2ruYqB1oH0Y4XZ3QPp0EqGIacLERLtDiL4u3exUoIG8bbwdqOpiuB0jaDWd5PpBMPHKCRDMvg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734528760; c=relaxed/simple;
-	bh=Jjd8N6+2GR2EE6mk+TX/lS/tT1fcxYGZfra8llYttAg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Y4VFWvQNDIZn19N8u1o4vMCZ2jqQdhsVB+49GMjJFle9UWLCSVIqrunVuBfHwEQZw25v8H7aOPbr356QvGdecz2qBttzk97y15zUTnxabKApMtaSJRT74NmPNTQmuGzvINWSbbBNMaEbRjCCwrzAbUb+Qvum2qw9gfr8Qct52YA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=meFJfkHl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1734552334; c=relaxed/simple;
+	bh=u02Gn6exfPKIbt3/cnfjpCAV3dtgCIFgzpTVTfE0FT4=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=KuvOvI5GZDGWn0c8CQoaEeVl8pMWtg4IUQrjrYVUMy5ej98hPgn6k00qW36p953sxxd6Z/uRzWow2QDsZx6lPVSUi1mvomLkAi33woum4evVcZKI8uc0POa4vKv4f0TurXvBSomAq+XxaExdV+5iFESILoFEzmSjk8dHB+yWY/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=f3zgNLqH; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="meFJfkHl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A9B1C4CECE;
-	Wed, 18 Dec 2024 13:32:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1734528759;
-	bh=Jjd8N6+2GR2EE6mk+TX/lS/tT1fcxYGZfra8llYttAg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=meFJfkHlncZeORgh4ABJSYi/Eb/ubsB1THwdqnCUyDwXsEcjHxVuMIVb3Q8D7FynA
-	 v+p7qVqWHIqsIJlTYA1HR+lLij0pAwMAf6m+ONPyQ1jRVkuO5Osr4nVMocikGpqs80
-	 Z6xMkkkwgg9aG6AloqLFnhAHstKQY/i9r6gCF0bnoV5KGTnnygY2izUQOYYBbprZ2u
-	 BC5Rg9r3jQ6rK+07tKyDUZKTLUn4iM87Gggg8LI6OeHKkNqZc9uUkLaEZzIwIwZ+Zu
-	 9NnCnk4riSym39JcRIC32KTXx7Qak8FXjOFi2xtz1IKy9dJRDAZ3H/pmzxVoIZ0val
-	 voZ2p6yPBNo7Q==
-Date: Wed, 18 Dec 2024 14:32:34 +0100
-From: Joel Granados <joel.granados@kernel.org>
-To: Nicolas Bouchinet <nicolas.bouchinet@clip-os.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
-	Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>, 
-	Joel Granados <j.granados@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Neil Horman <nhorman@tuxdriver.com>, Lin Feng <linf@wangsu.com>, Theodore Ts'o <tytso@mit.edu>
-Subject: Re: Re: [PATCH v2 2/3] sysctl: Fix underflow value setting risk in
- vm_table
-Message-ID: <gqmqk4wqbyvktq3qfjte6dmo5pb2ydeulqzwsxc6zat7scj5md@er2gwfgcmw2d>
-References: <20241114162638.57392-1-nicolas.bouchinet@clip-os.org>
- <20241114162638.57392-3-nicolas.bouchinet@clip-os.org>
- <4ietaibtqwl4xfqluvy6ua6cr3nkymmyzzmoo3a62lf65wtltq@s6imawclrht6>
- <c3e800d2-0aff-478e-906a-18f8fc6d756a@clip-os.org>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="f3zgNLqH"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=IhMdQNQOcIwIXnR1AI4gbp9UwV92+Iav/NEyjeXxCSw=; b=f3zgNLqHGo1AA19nI2/DYk/XFF
+	Hn/hNqpuodmIu5Sjc0mNfFGmK9eRrclflTW0X+4nHdZxs9UU2yTzU/UprhCkn3TJ6H2W9dcwUxL4K
+	Za/DEYy7Qqtu+0t1i73E/XtdKOncbfwbzbloVFndQ93wUBFBnP9NlmzW+KwsEoad4pc0=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:46792 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1tO0IA-00068J-Pn; Wed, 18 Dec 2024 15:05:11 -0500
+Date: Wed, 18 Dec 2024 15:05:10 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+ hui.wang@canonical.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>, Ilpo
+ =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, Lech Perczak
+ <lech.perczak@camlingroup.com>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-Id: <20241218150510.5424cd78bafbcdc30a894f18@hugovil.com>
+In-Reply-To: <2024121709-fool-keep-c408@gregkh>
+References: <20241216191818.1553557-1-hugo@hugovil.com>
+	<20241216191818.1553557-2-hugo@hugovil.com>
+	<2024121709-fool-keep-c408@gregkh>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c3e800d2-0aff-478e-906a-18f8fc6d756a@clip-os.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -2.1 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH 1/4] serial: sc16is7xx: add missing support for rs485
+ devicetree properties
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Tue, Dec 17, 2024 at 02:57:51PM +0100, Nicolas Bouchinet wrote:
-> Hi Joel,
-> 
-> I've pushed patchset version 3 :
-> https://lore.kernel.org/all/20241217132908.38096-1-nicolas.bouchinet@clip-os.org/.
-> 
-> On 11/20/24 13:53, Joel Granados wrote:
-> > On Thu, Nov 14, 2024 at 05:25:51PM +0100, nicolas.bouchinet@clip-os.org wrote:
-> >> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
-> >>
-> >> Commit 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in
-> >> vm_table") fixes underflow value setting risk in vm_table but misses
-> >> vdso_enabled sysctl.
-> >>
-> >> vdso_enabled sysctl is initialized with .extra1 value as SYSCTL_ZERO to
-> >> avoid negative value writes but the proc_handler is proc_dointvec and not
-> >> proc_dointvec_minmax and thus do not uses .extra1 and .extra2.
-> >>
-> >> The following command thus works :
-> >>
-> >> `# echo -1 > /proc/sys/vm/vdso_enabled`
-> > It would be interesting to know what happens when you do a
-> > # echo (INT_MAX + 1) > /proc/sys/vm/vdso_enabled
-> >
-> > This is the reasons why I'm interested in such a test:
-> >
-> > 1. Both proc_dointvec and proc_dointvec_minmax (calls proc_dointvec) have a
-> >     overflow check where they will return -EINVAL if what is given by the user is
-> >     greater than (unsiged long)INT_MAX; this will evaluate can evaluate to true
-> >     or false depending on the architecture where we are running.
-> >
-> > 2. I noticed that vdso_enabled is an unsigned long. And so the expectation is
-> >     that the range is 0 to ULONG_MAX, which in some cases (depending on the arch)
-> >     would not be the case.
->  From my observations, vdso_enabled is a unsigned int. If one wants to
-> convert to an unsigned long, proc_doulongvec_minmax should be used
-> instead.
-Yep, 100% agree, I miss-read and commented incorrectly. Just ignore my
-previous comment; I don't know what I was smoking...
+On Tue, 17 Dec 2024 07:41:32 +0100
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
 
-> 
-> IMHO, the main issues are that .data variable type can differ from the
-> return type of .proc_handler function. This can lead to undefined
-> behaviors and eventually vulnerabilities.
-I totally agree that it can lead to unexpected behavior. Would have to
-look at a specific case to see if it is really "undefined". 
+> On Mon, Dec 16, 2024 at 02:18:15PM -0500, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> >=20
+> > Retrieve rs485 devicetree properties on registration of sc16is7xx ports=
+ in
+> > case they are attached to an rs485 transceiver.
+> >=20
+> > Reworked to fix conflicts when backporting to linux-5.15.y.
+> >=20
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+> > Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
+> > Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
+> > Link: https://lore.kernel.org/r/20230807214556.540627-7-hugo@hugovil.com
+> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>=20
+> I do not see any commit ids on this series matching up with what is in
+> Linus's tree.  Please fix up and resend the series.
 
-> 
-> .extra1 and .extra2 can also be used with proc_handlers that do not
-> uses them.
-In this case they are just silently ignored. Leading the developer to
-believe that they are range checked, when they are really not.
+Ok will do. I will first submit only this patch to make sure my
+submission follows the stable guidelines.
 
-> I think sysctl_check_table() could be enhanced to control
-> this behavior.
-This might be the case. I can review a proposal if you send it out.
+Hugo.
 
-Best
-
--- 
-
-Joel Granados
+--=20
+Hugo Villeneuve
