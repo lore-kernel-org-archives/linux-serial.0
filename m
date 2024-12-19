@@ -1,76 +1,75 @@
-Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173])
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com [209.85.217.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B3B7221473;
-	Thu, 19 Dec 2024 09:55:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7AAF54727;
+	Thu, 19 Dec 2024 10:18:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734602135; cv=none; b=s3EtKCdCf0IQAfAEo5jGFs8g48fIeDxcsM0mLb6e183SQ2wVdUaQL+jdIODXczl5FJ0uxMY2NgCi9WBEmHGw59+Cuxinldv1Y5su6jb15WEZ4o6NwoxuWZnraSUgqIvqJ61MXaJdiL7jWj8FHL6JEq6i27+xy9FerZerCQaAGYs=
+	t=1734603503; cv=none; b=c4nFFFJoImiV9RNnFozqaxvdP6d+Drk50fKIn7X5ayv5RiqSe6VpWxBE5DQarFn9/2s8Zh7vCiB8rJ5w7Kw5+HiAm6lob8JZiiGkGzOHnkIbfs5m+8yaMcAPLNMl8T2XbvWCdCYI8BOH4AGhtxx016hbgjMSIs9cslSbe0OtSjE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734602135; c=relaxed/simple;
-	bh=fXN8H565+f21GDSedpbN7xPaAZ9fy8mnaMTQk9Pgvtg=;
+	s=arc-20240116; t=1734603503; c=relaxed/simple;
+	bh=rgtJTe0Gx1RWnBYkBZn7VX6aokSfkyEJO5P9yIF7rvA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=s0IYF5qG+kpGX+HE2h4zfKoHNV6Co/ExbUdhX02SjWIucP4bOxlJZ2peSTCxxjr5bw/OqA9Luv77yu3qOpQ03gTiFQUjX/01vNSfVFvZ31dJz3EcYJ/8nGloDrxwHv3SKj0hJSA2ljoLO8xfSOxx0G2bQUBNbWKTMCGw+KFal08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.173
+	 To:Cc:Content-Type; b=CP/YvYbiJ7JqdmgNAu44Q7wnw1xWWMJM+hjo24+bCoki/sV7e4WHX/I5Vjs0RzBIv+0+RuwUutiyjdfFZR2HoMxl2ONJCBWMh8rEQfCczMjJKzHvFIG6CHJkQycReJDI9uUMXIAhWpPOhgIvQE8HZATsBLWFxFElW52IWpg2xTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-5174d53437eso345046e0c.2;
-        Thu, 19 Dec 2024 01:55:33 -0800 (PST)
+Received: by mail-vs1-f54.google.com with SMTP id ada2fe7eead31-4afdd15db60so139747137.1;
+        Thu, 19 Dec 2024 02:18:20 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734602132; x=1735206932;
+        d=1e100.net; s=20230601; t=1734603498; x=1735208298;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=49Ss6c9DP7ZaT5yCe8nYBon7tsWJ8HYjfSAZFOtTYRk=;
-        b=PPXoGgt1J6khPQdL9g7I1jt0NIfyQVaIXnlzDk+/gqSOfBsvwRinwfQlGdoJuIxzQz
-         YNAWz8C8mZQrgU+CWjBwJJptwf6cEhmPtMNMKPyi6hdh2CKxUQxKrvEx5tCSFFxvlXf+
-         OS+RHrv7oMn/352yD9IGxjW0qZ3oi7z+fksp/lrHQOecRse12gZWfOTKbbnWaoC0bssQ
-         HZbc3zWnAZ836/k15fceae7v/zBi+HTqfVYKE6zsOul4ERIUl/zXVmkO43CdRWczx/Dd
-         9lecmmvO0SD+ZtZy8Fh0s/HvnIrvqxfwsIYgBaTGdSQTeIpSNOPJL3RAxM11mwMMde2r
-         Z0rw==
-X-Forwarded-Encrypted: i=1; AJvYcCUGojanT9DOKSNoSNWiTtKVFUsUOIqXougFYCngZJT5GCjC4+hgdJ0JLqGPFyRuhD0PHjL5BUHKptBl/PWv9U0CEcI=@vger.kernel.org, AJvYcCUbKfD39/NJCPF/gaStrOKI/INXh6EPJCRah2Y5Oed4J/lU1eaAFXeFDtUBSvSm+AP1sWyW9nwOrGr7XfM0@vger.kernel.org, AJvYcCWaLOKRPqVEqK/NtdKK6K9rjPqS6G7N/bBDy4F3MJ7ac8QQlxvMk6ow7blXtiOB4yNIvQKWzcZT@vger.kernel.org, AJvYcCXml4lLPtQb05JiecRpLLlWCR40/U7uQ2h4RvPCqcTQYpWmjjxScNwnutkPAhY7w3Ot4OmjDTvNH9xPuJg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyGEuSPMSoITIWfq04p5sLhIgoEt1lSP6X3QUkCli38/djMFiBJ
-	8Z8UC73RMUe7E4mbEEBnkx8rotMp+UOHauOqJAJ2pXnSKVLrcN19HheFM6SQ
-X-Gm-Gg: ASbGnctAY7IQuH2aGF9lgkueBPgHulaSSXjKyYSU63E7XgUeo5FTyFZdaJDhYvil67x
-	d4/CgvIrH7P3dAYAA7ZIOp6XkMw1LS+CDv41JexWTPPVQlEjBsvgf/0vgiV7DQwCIgED2swldqL
-	iULuw7mdwQfNK/MsHD9wA/tiuipuxdK0ORZ1wtw404AdScuuttc2GS1qVSdYPkm2ZU2eWDdMMoy
-	crdfmvwHU94EK1BYqPnq2HSFCdjfv9BU92ejGLONM+yfbbNeeOhXo24o6oDs4ms0tA+vnq94uoM
-	rTtyOdm6qLwHNBDryz0=
-X-Google-Smtp-Source: AGHT+IHf7hFp7t4TKossJI/owZoDCdyUwYGBQysunntCH4UsB2Kc2+MKXn1G98MOkfZziHZYgCBI9Q==
-X-Received: by 2002:a05:6122:d89:b0:518:89d9:dd99 with SMTP id 71dfb90a1353d-51a36c53c02mr6270414e0c.3.1734602131649;
-        Thu, 19 Dec 2024 01:55:31 -0800 (PST)
-Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-51b68b7d551sm86781e0c.11.2024.12.19.01.55.31
+        bh=4PqbgKOQH5A5NDiI8YQAoEdcnZj+UHy3o9vys/k/Gqs=;
+        b=tg5ksbUm0eH0wgbyH4SqoKtvFispmb1ihisMllvXgx1HLnqFfLiWQXb7o9ZCAxVlQH
+         +yxF/kdXi3iBsyHQjVda8KyZmbmxysXn3VfiQ/1b1oFyU1zDNgSBpEq6Qi6ftOV4fbup
+         cSZO1Wr5JoKPJA2HnjdpNOC5WeYeqUA52URw/+rVhOMZ4sTwEk21QnFzcBWyWbaBqNUs
+         Uih3sodOVDOhLqe0TYNMsF/7bRqQOpos3PyCqIZhSPXNxQRH76gzKYW8GdTG8HK5qkw5
+         fqKT3SNgalS2KwpNqt/a8eqXIx3vlKxCrpRrRiTkxbWSUVIC8EtkuMw5S0WHqcyZMA5X
+         piQA==
+X-Forwarded-Encrypted: i=1; AJvYcCWPGlsOoi8iEeE1pB5JRcDUbAQ3EPPjKF3o6p2RiKGba4Rm8Sqk1S9XBPoJ918J2cTu/3UM/jEsTGYEQJth@vger.kernel.org, AJvYcCWdKz6RZs6uaJy3MnRYrjrh7uEPT8crBTWlVL/z9/roCuO5/Oyijke7o1d0lIG2m6PJsIS15X8ev4wi8pSuTvUbUWg=@vger.kernel.org, AJvYcCXysMio25OyNfN4CSzpq8gQv+Mg1x1kfR8hvgC+RcRbiS8aViKJ1x5oFHh5VUjtWyVSvaQQKGsGGsFhlaY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzOsr5QNfxea6IwywvXG7FDT5ftTnbRLFt3grehsUr4b8MTW1bn
+	1QH8BqiNpRHvB2oVO/CRr6K1datrjkcXdIuglXMM8TK+X3lyTJsSBnUmmYho
+X-Gm-Gg: ASbGncuwQFW5BEgcK2gzOWVJh3beYS0JvE+cS2TqoM811fg4ZP4D/2aqMA9t8RNGQC8
+	lxRniFHkjOdcts6OCcDmcu6GmO108vyb2xsvuuTCu32yXsf3964U7GM1XsJCHvr6+ditc3KLL7R
+	bQXqLJNNdZhMQFUl6BQadCac8T07OCKZZQ8kIKVo4MsPkobp1+m53ReJo69e+I/uRlH1lTe5Zh1
+	IqiFLLaC6fnpqK1OD0Y++84mLTceuKYyEKqQ6GQeA4FJ7lI0vEuTiioAYnKiklUf8dfE9JLn6SW
+	Lt1CQFgcLmmCWq/qd8Y=
+X-Google-Smtp-Source: AGHT+IHgtwIupddj1iDxhBRHHqqeDPSD/f0V4+D9jGi9uHJXODq3f3EIO2vhYGgV8csrhCJ+FSv22w==
+X-Received: by 2002:a05:6102:3709:b0:4af:adf8:523f with SMTP id ada2fe7eead31-4b2ae72fd17mr6139801137.9.1734603498340;
+        Thu, 19 Dec 2024 02:18:18 -0800 (PST)
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-8610ac6dd23sm164135241.19.2024.12.19.02.18.18
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Dec 2024 01:55:31 -0800 (PST)
-Received: by mail-vs1-f44.google.com with SMTP id ada2fe7eead31-4afeccfeda2so329286137.1;
-        Thu, 19 Dec 2024 01:55:31 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCU198raFYw+NqaOPihhT7BP1Go/S2HW6R3PJvdUt5IkeUKGL09jXoxSs+jfhQuI0KdsBQj2NLKm7HrEPVfr@vger.kernel.org, AJvYcCVcz8mLLEA+0QFJrtznlCtEdCj8d1rVgDGH6W3obPtmLVvRvns5b4vr0Vj0LtVVFGcVjnnHzai3kASI3q4=@vger.kernel.org, AJvYcCVsPNHQRcR91AkQLSklRny1c/hedVIovtPUtn4GNql4BQKcv9QnkEHIGcue8KZeqe/VnyTwNK0p@vger.kernel.org, AJvYcCWyhtlo3OWqF1ca/MteqsBE8VF7s3HGd8D8/luuv1jJO6kltjZ6HWQFqhyGW0TnZZY823YcEE/0gLnFdCnd/ab64Y8=@vger.kernel.org
-X-Received: by 2002:a05:6102:1517:b0:4b2:5c1a:bb57 with SMTP id
- ada2fe7eead31-4b2ae8cc6b9mr6221129137.20.1734602130834; Thu, 19 Dec 2024
- 01:55:30 -0800 (PST)
+        Thu, 19 Dec 2024 02:18:18 -0800 (PST)
+Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-85c5316f15cso163932241.1;
+        Thu, 19 Dec 2024 02:18:18 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUE37T1mn8cw8DbPeIQUp5ll/h5zpZWkWgz90cA3NFGahfa4TpgoHG+5hBrAJO+xPkwKgGquZ1Bwz4iRCU=@vger.kernel.org, AJvYcCUT2DV2YDKN/V63iOx6+KI2gnHWg9fAd5uYWG3b2d3/hLQje8kRhzKriHGPfDArXqn4AhMNvSGawgGoDzw/l59jJt0=@vger.kernel.org, AJvYcCUmWH9OnOLB5rVX5LRW5+qPo8hjVxHVnYn68fEG8o7ofbGg7mXMsNOFzNL7hB+WdzHudIyuYwYQ1gA1d+zH@vger.kernel.org
+X-Received: by 2002:a05:6102:2b8d:b0:4af:d487:45ef with SMTP id
+ ada2fe7eead31-4b2ae70de4fmr5981814137.5.1734603497927; Thu, 19 Dec 2024
+ 02:18:17 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20241204155806.3781200-1-claudiu.beznea.uj@bp.renesas.com> <20241204155806.3781200-3-claudiu.beznea.uj@bp.renesas.com>
-In-Reply-To: <20241204155806.3781200-3-claudiu.beznea.uj@bp.renesas.com>
+References: <20241204155806.3781200-1-claudiu.beznea.uj@bp.renesas.com> <20241204155806.3781200-4-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20241204155806.3781200-4-claudiu.beznea.uj@bp.renesas.com>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 19 Dec 2024 10:55:19 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWy37+imrUt9wQQoJjxsByarX9AxQZ3Zcaqi+bsJ8OZwg@mail.gmail.com>
-Message-ID: <CAMuHMdWy37+imrUt9wQQoJjxsByarX9AxQZ3Zcaqi+bsJ8OZwg@mail.gmail.com>
-Subject: Re: [PATCH RFT 2/6] serial: sh-sci: Drop __initdata macro for port_cfg
+Date: Thu, 19 Dec 2024 11:18:05 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWQ_kHd3qi3j4D4keyxbaKE5MS6ZzDwJBaNJ4b5skr1QA@mail.gmail.com>
+Message-ID: <CAMuHMdWQ_kHd3qi3j4D4keyxbaKE5MS6ZzDwJBaNJ4b5skr1QA@mail.gmail.com>
+Subject: Re: [PATCH RFT 3/6] serial: sh-sci: Move runtime PM enable to sci_probe_single()
 To: Claudiu <claudiu.beznea@tuxon.dev>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	wsa+renesas@sang-engineering.com, geert+renesas@glider.be, 
-	prabhakar.mahadev-lad.rj@bp.renesas.com, lethal@linux-sh.org, 
-	g.liakhovetski@gmx.de, groeck@chromium.org, mka@chromium.org, 
-	ulrich.hecht+renesas@gmail.com, ysato@users.sourceforge.jp, 
+	wsa+renesas@sang-engineering.com, prabhakar.mahadev-lad.rj@bp.renesas.com, 
+	lethal@linux-sh.org, g.liakhovetski@gmx.de, groeck@chromium.org, 
+	mka@chromium.org, ulrich.hecht+renesas@gmail.com, ysato@users.sourceforge.jp, 
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
 	linux-renesas-soc@vger.kernel.org, 
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, stable@vger.kernel.org
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -80,26 +79,42 @@ On Wed, Dec 4, 2024 at 4:58=E2=80=AFPM Claudiu <claudiu.beznea@tuxon.dev> w=
 rote:
 > From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 >
-> The port_cfg object is used by serial_console_write(), which serves as
-> the write function for the earlycon device. Marking port_cfg as __initdat=
-a
-> causes it to be freed after kernel initialization, resulting in earlycon
-> becoming unavailable thereafter. Remove the __initdata macro from port_cf=
-g
-> to resolve this issue.
+> Relocate the runtime PM enable operation to sci_probe_single(). This chan=
+ge
+> prepares the codebase for upcoming fixes.
+>
+> While at it, replace the existing logic with a direct call to
+> devm_pm_runtime_enable() and remove sci_cleanup_single(). The
+> devm_pm_runtime_enable() function automatically handles disabling runtime
+> PM during driver removal.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
 Thanks for your patch!
 
-> Fixes: dd076cffb8cd ("serial: sh-sci: Fix init data attribute for struct =
-'port_cfg'")
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -3440,7 +3434,6 @@ static int sci_probe_single(struct platform_device =
+*dev,
+>
+>         ret =3D uart_add_one_port(&sci_uart_driver, &sciport->port);
+>         if (ret) {
+> -               sci_cleanup_single(sciport);
+>                 return ret;
+>         }
 
-This commit is not the root cause, as it merely replaced __init by
-__initdata.
+Next line is:
 
-Fixes: 0b0cced19ab15c9e ("serial: sh-sci: Add CONFIG_SERIAL_EARLYCON suppor=
-t")
+    return 0;
 
-For the patch contents:
+so please just merge that into
+
+    return uart_add_one_port(&sci_uart_driver, &sciport->port);
+
+Actually [PATCH 5/6] makes that change, but there is no reason not
+to do that here.
+
+For the logical changes:
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
 Gr{oetje,eeting}s,
