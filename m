@@ -1,90 +1,105 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19F9F155C87;
-	Wed, 18 Dec 2024 20:05:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABAC21E4BE;
+	Thu, 19 Dec 2024 01:19:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734552334; cv=none; b=KiE0oytaA9xTTNoygc9oTAi82i20s+el2gnBBhuw7sVUf/PMdipD8GwGnyIOHLEvqqh/BtB9zNJUMlWltTMuEWm5AzQeSi8oIX2ruYqB1oH0Y4XZ3QPp0EqGIacLERLtDiL4u3exUoIG8bbwdqOpiuB0jaDWd5PpBMPHKCRDMvg=
+	t=1734571177; cv=none; b=CijaVYo4WjqoL7xmUZV+cBLi5l9cif2TkurkuavwRIF0MASVqiHXQDh2kt+ErrGss2NiWVruikVQVlmKT+8HYAXfKRa1h4eIG8LzjDxVCF0vlzZWJrwcawk3GJTrnhPdmqMAIHZlj9GnjSJkQ9NcBIB64zqigc6PPJWWddGyjv0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734552334; c=relaxed/simple;
-	bh=u02Gn6exfPKIbt3/cnfjpCAV3dtgCIFgzpTVTfE0FT4=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=KuvOvI5GZDGWn0c8CQoaEeVl8pMWtg4IUQrjrYVUMy5ej98hPgn6k00qW36p953sxxd6Z/uRzWow2QDsZx6lPVSUi1mvomLkAi33woum4evVcZKI8uc0POa4vKv4f0TurXvBSomAq+XxaExdV+5iFESILoFEzmSjk8dHB+yWY/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=f3zgNLqH; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="f3zgNLqH"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=IhMdQNQOcIwIXnR1AI4gbp9UwV92+Iav/NEyjeXxCSw=; b=f3zgNLqHGo1AA19nI2/DYk/XFF
-	Hn/hNqpuodmIu5Sjc0mNfFGmK9eRrclflTW0X+4nHdZxs9UU2yTzU/UprhCkn3TJ6H2W9dcwUxL4K
-	Za/DEYy7Qqtu+0t1i73E/XtdKOncbfwbzbloVFndQ93wUBFBnP9NlmzW+KwsEoad4pc0=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:46792 helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1tO0IA-00068J-Pn; Wed, 18 Dec 2024 15:05:11 -0500
-Date: Wed, 18 Dec 2024 15:05:10 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: stable@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
- hui.wang@canonical.com, Hugo Villeneuve <hvilleneuve@dimonoff.com>, Ilpo
- =?ISO-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, Lech Perczak
- <lech.perczak@camlingroup.com>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Message-Id: <20241218150510.5424cd78bafbcdc30a894f18@hugovil.com>
-In-Reply-To: <2024121709-fool-keep-c408@gregkh>
-References: <20241216191818.1553557-1-hugo@hugovil.com>
-	<20241216191818.1553557-2-hugo@hugovil.com>
-	<2024121709-fool-keep-c408@gregkh>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1734571177; c=relaxed/simple;
+	bh=I0SewFA1VoefEY975OIzBb5s2oanHjaAzU4Di+5KW3U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oqnSGukAmfl/gOON84ii7T34HW1++rN9uRGMwu5X7cOwLe8rIBXnaYdvxxUDih091fHp3yVVRwevMyl8FEtLw4y1uxKIttXEt9DpzTwCw73Eq0kVAcMFYKSbjBKxqFTJyoQmpfui4m7AkasHgB0kDQX0hbTA+v+AjLTV5T64Lv8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Date: Thu, 19 Dec 2024 09:19:30 +0800
+From: Yixun Lan <dlan@gentoo.org>
+To: Conor Dooley <conor@kernel.org>
+Cc: Conor Dooley <conor.dooley@microchip.com>,
+	linux-riscv@lists.infradead.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, paul.walmsley@sifive.com,
+	palmer@dabbelt.com, aou@eecs.berkeley.edu, cyy@cyyself.name,
+	daniel.lezcano@linaro.org, tglx@linutronix.de,
+	samuel.holland@sifive.com, anup@brainfault.org,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, lkundrak@v3.sk,
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jesse Taube <mr.bossman075@gmail.com>,
+	inochiama@outlook.com, zhangmeng.kevin@spacemit.com,
+	jszhang@kernel.org, matthias.bgg@kernel.org, kevin.z.m@hotmail.com
+Subject: Re: [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
+Message-ID: <20241219011930-GYA3472859@gentoo>
+References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
+ <173395638199.1729195.1529576042123666894.git-patchwork-notify@kernel.org>
+ <20241212101901-GYA2292414@gentoo>
+ <20241215-reward-nutlike-23f481fb1b75@spud>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -2.1 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH 1/4] serial: sc16is7xx: add missing support for rs485
- devicetree properties
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241215-reward-nutlike-23f481fb1b75@spud>
 
-On Tue, 17 Dec 2024 07:41:32 +0100
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+Hi Conor:
 
-> On Mon, Dec 16, 2024 at 02:18:15PM -0500, Hugo Villeneuve wrote:
-> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> >=20
-> > Retrieve rs485 devicetree properties on registration of sc16is7xx ports=
- in
-> > case they are attached to an rs485 transceiver.
-> >=20
-> > Reworked to fix conflicts when backporting to linux-5.15.y.
-> >=20
-> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-> > Reviewed-by: Lech Perczak <lech.perczak@camlingroup.com>
-> > Tested-by: Lech Perczak <lech.perczak@camlingroup.com>
-> > Link: https://lore.kernel.org/r/20230807214556.540627-7-hugo@hugovil.com
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->=20
-> I do not see any commit ids on this series matching up with what is in
-> Linus's tree.  Please fix up and resend the series.
+On 15:04 Sun 15 Dec     , Conor Dooley wrote:
+> On Thu, Dec 12, 2024 at 06:19:01PM +0800, Yixun Lan wrote:
+> > Hi Conor:
+> > 
+> > On 22:33 Wed 11 Dec     , patchwork-bot+linux-riscv@kernel.org wrote:
+> > > Hello:
+> > > 
+> > > This series was applied to riscv/linux.git (fixes)
+> > > by Conor Dooley <conor.dooley@microchip.com>:
+> > > 
+> > > On Tue, 30 Jul 2024 00:28:03 +0000 you wrote:
+> > > > SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
+> > > > 1.0 and Zicond evaluation now. Add initial support for it to allow more
+> > > > people to participate in building drivers to mainline for it.
+> > > > 
+> > > > This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
+> > > > bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
+> > > > Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
+> > > > booted to busybox on initrd with this log[3].
+> > > > 
+> > > > [...]
+> > > 
+> > > Here is the summary with links:
+> > >   - [v5,01/10] dt-bindings: vendor-prefixes: add spacemit
+> > >     https://git.kernel.org/riscv/c/7cf3e9bfc63d
+> > If I understand correctly, only patch [01/10] of this series was accepted
+> > to 6.13-rc1
+> > 
+> > for the rest of patches, they would be expected to go through SpacemiT's
+> > SoC tree? which should I take care of them.. so if no objection, I'd like to
+> > queue them at branch k1/dt-for-next [1] first, we might rebase or revert if
+> > something happens before merging (since the clock driver is still under review)
+> > 
+> > Let me know what you think..
+> 
+> Sure. I had grabbed the first patch because a couple trees needed the
 
-Ok will do. I will first submit only this patch to make sure my
-submission follows the stable guidelines.
+No problem, thanks for helping on this
 
-Hugo.
+> vendor prefix for peripheral drivers. How is the clock driver getting
+> on? Do you think it is close to being merged?
 
---=20
-Hugo Villeneuve
+The clock driver's review is still on-going, the biggest concern is about
+the mix clock implementation [1], which isn't decent, and Haylen's working on
+to have a better version, I'd hope we can catch this in 6.14's merge window..
+
+But, in the worst case if we have to postpone clock to next merge window,
+would you think it's ok to push the basic dts and pinctrl dts first?
+IMHO, they have no hard dependency on clock driver, and pushing them
+first would simplify the future developement..
+
+http://lore.kernel.org/r/Z2LBsQ7a3T3mElLl@ketchup [1]
+
+-- 
+Yixun Lan (dlan)
+Gentoo Linux Developer
+GPG Key ID AABEFD55
