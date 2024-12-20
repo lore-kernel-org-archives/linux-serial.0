@@ -1,131 +1,167 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBBB1A31;
-	Fri, 20 Dec 2024 15:06:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 210586FC5;
+	Fri, 20 Dec 2024 21:09:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734707208; cv=none; b=W235xIiNThFafHYAJgw15ihkbtnRux60/NE17a56u17HzXWlxkbA4Jb//JRhNruqpqyukLyphCvpNySr6rdL1Imuriud7u+3UkcWN7+K50lLVqf+tAnhrZBsMesPvLK5SxXxh47cbg8ebpH/9yhp8txRg7H8oMZfIxqNPPXewgQ=
+	t=1734728950; cv=none; b=UdfOHHXSl5hk3/V7xP+D6wBy/jZbvzOJbDEoP2l7F/GrDtiVMnF1onD23uly7ygW+dABWFgQ7LZWHkIgGURLkMBv5fJC/PPRK3uyv3K/nnOt6oWLeOZ6Cqcc4rD7+N/cq7aNpFevOBHtbxwcw4FDryo2UpLCCNVZGyBhJmWTyt0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734707208; c=relaxed/simple;
-	bh=NmsM/F4zqleWHb4Qc1ZS20C8EsTD9cxVATkXcgWq7V0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=svY4EdCnulAiO36dmXSQMK5FN0tZQBfZ5LojtkT33jQu+28Ts9w7UJZjcd3b5xbp5A5peoij+tYPeRo2vgrJvvuI6Undcl40SFVr6Bb9OoQciul5eBn05oMXMkqa1Ew4fh2XsP9CLACSnlEuSNLpX9Ksodj0ggJYCPAPueOrcP4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=pPRfCtPJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1734728950; c=relaxed/simple;
+	bh=nE6YFhVjyTujE1Nlg54ekW39b7dkaLBnkl31Ltnu8vA=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=R6lUImRP9qLT6xnD9SIhmQtZmHcM2FWZxsjATVbEMU8QJH83s3uhY7YqUnhncpR2YJAcVxXzl3jskONoCCHSYuFoA9LEb2yvpCCG9RGpzyawBYeGC+RW2GP8/7yFf2PGql06sskHC8jW74rk9UnX4dhGFuN5ApGhLwjqzyxDnDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=pUhAl04i; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="pPRfCtPJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44A4FC4CECD;
-	Fri, 20 Dec 2024 15:06:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1734707207;
-	bh=NmsM/F4zqleWHb4Qc1ZS20C8EsTD9cxVATkXcgWq7V0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pPRfCtPJV51UhtrzYU1WQvf3fdzS2Z6c4rp6KXWsT5iSBwQexzx+Z/HjjakCRRSe+
-	 26NAsv291+EqKPN51R8bJKh5TPO/HGAWc1bhs9S1iZVm+TaQ0g2i4/gpYI5RpG9bpa
-	 7DUtd9LlRwCj5c0kcNsrr3T7C8XzMGG3fZW2jpdM=
-Date: Fri, 20 Dec 2024 16:06:44 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Zhongqiu Han <quic_zhonhan@quicinc.com>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: mips_ejtag_fdc: Call cpu_relax() in registers
- polling busy loops
-Message-ID: <2024122019-blame-multitask-8d83@gregkh>
-References: <20241219124254.321778-1-quic_zhonhan@quicinc.com>
- <2024121943-spearmint-yard-4cab@gregkh>
- <edfed594-a22a-4cd1-90d2-2b9f9f878f73@quicinc.com>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="pUhAl04i"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1734728948; x=1766264948;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nE6YFhVjyTujE1Nlg54ekW39b7dkaLBnkl31Ltnu8vA=;
+  b=pUhAl04i8ugm6WPq6e1Y4hhf5j8pS3WjD9C2r1ZxGc+nt8TUrkfwVDGx
+   h5PGDqihbZN2oaEYr3t5wLnV/mqdQeWY844Tkdck2hzNAhrfF6ORvkNZX
+   A0muvKjohwz9dEO4KmmzL/A2xhxxWinBMbk24AtK7i/ob0rqLSVgoHNxk
+   RpTxJdQjqXnq/l64NFQ3Z9y3+7NW3jmCdn2lnUYaoEFDABHNSLN63dxH7
+   SXqFF6Hvkn4r8AGgYqLMyREEhc1+CieCPUx3zzFsPnWXx/1gxEOXBAkK6
+   ihti9oXdhwVribw+Pnephc3XsI0iBeW++PXTEvYxzdX8ddkBDQuyaj/+w
+   w==;
+X-CSE-ConnectionGUID: 6Xn2bQedQHqhtDmL7ky2MQ==
+X-CSE-MsgGUID: VUI4tufrSvmW3ANDm79iKQ==
+X-IronPort-AV: E=Sophos;i="6.12,251,1728975600"; 
+   d="scan'208";a="203274638"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 20 Dec 2024 14:09:06 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Fri, 20 Dec 2024 14:08:42 -0700
+Received: from ryan-Precision-3630-Tower.microchip.com (10.10.85.11) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.35 via Frontend Transport; Fri, 20 Dec 2024 14:08:42 -0700
+From: <Ryan.Wanner@microchip.com>
+To: <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+	<nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+	<claudiu.beznea@tuxon.dev>, <mturquette@baylibre.com>, <sboyd@kernel.org>,
+	<arnd@arndb.de>
+CC: <dharma.b@microchip.com>, <mihai.sain@microchip.com>,
+	<romain.sioen@microchip.com>, <varshini.rajendran@microchip.com>,
+	<devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+	<linux-mmc@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>, Ryan Wanner
+	<Ryan.Wanner@microchip.com>
+Subject: [PATCH v4 00/13]  Add support for SAMA7D65
+Date: Fri, 20 Dec 2024 14:07:01 -0700
+Message-ID: <cover.1734723585.git.Ryan.Wanner@microchip.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <edfed594-a22a-4cd1-90d2-2b9f9f878f73@quicinc.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On Fri, Dec 20, 2024 at 09:46:27PM +0800, Zhongqiu Han wrote:
-> On 12/19/2024 9:28 PM, Greg KH wrote:
-> > On Thu, Dec 19, 2024 at 08:42:54PM +0800, Zhongqiu Han wrote:
-> > > It is considered good practice to call cpu_relax() in busy loops, see
-> > > Documentation/process/volatile-considered-harmful.rst. This can lower CPU
-> > > power consumption or yield to a hyperthreaded twin processor, or serve as
-> > > a compiler barrier. In addition, if something goes wrong in the busy loop
-> > > at least it can prevent things from getting worse.
-> > > 
-> > > Signed-off-by: Zhongqiu Han <quic_zhonhan@quicinc.com>
-> > > ---
-> > >   drivers/tty/mips_ejtag_fdc.c | 4 ++--
-> > >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/tty/mips_ejtag_fdc.c b/drivers/tty/mips_ejtag_fdc.c
-> > > index afbf7738c7c4..b17ead1e9698 100644
-> > > --- a/drivers/tty/mips_ejtag_fdc.c
-> > > +++ b/drivers/tty/mips_ejtag_fdc.c
-> > > @@ -346,7 +346,7 @@ static void mips_ejtag_fdc_console_write(struct console *c, const char *s,
-> > >   		/* Busy wait until there's space in fifo */
-> > >   		while (__raw_readl(regs + REG_FDSTAT) & REG_FDSTAT_TXF)
-> > > -			;
-> > > +			cpu_relax();
-> > >   		__raw_writel(word.word, regs + REG_FDTX(c->index));
-> > >   	}
-> > >   out:
-> > > @@ -1233,7 +1233,7 @@ static void kgdbfdc_push_one(void)
-> > >   	/* Busy wait until there's space in fifo */
-> > >   	while (__raw_readl(regs + REG_FDSTAT) & REG_FDSTAT_TXF)
-> > > -		;
-> > > +		cpu_relax();
-> > 
-> > How did you test this?  Are you _sure_ it is needed at all?  I think you
-> > just made these loops take a lot longer than before :(
-> > 
-> > Have you had problems with these tight loops doing anything bad to your
-> > system?
-> > 
-> > thanks,
-> > 
-> > greg k-h
-> 
-> Hi Greg,
-> Thanks a lot for the review~
-> 
-> Perhaps I should submit an RFC patch and explain the situation, as I
-> don't have a MIPS device for testing. Indeed, the cpu_relax()
-> implementation for MIPS is a memory barrier, which, compared to busy
-> waiting, doesn't save power and can make loops slower than before.
-> However, according to its definition file, for certain MIPS-based
-> architectures like Loongarch-3, it can help force the Loongson-3 SFB
-> (Store-Fill-Buffer) flush to avoid pending writes. Below is the
-> implementation of cpu_relax() for the MIPS architecture and its
-> comments.
-> 
-> -----------------------------------------------------------------
-> arch/mips/include/asm/vdso/processor.h
-> 
-> #ifdef CONFIG_CPU_LOONGSON64
-> /*
->  * Loongson-3's SFB (Store-Fill-Buffer) may buffer writes indefinitely
->  * when a tight read loop is executed, because reads take priority over
->  * writes & the hardware (incorrectly) doesn't ensure that writes will
->  * eventually occur.
->  *
->  * Since spin loops of any kind should have a cpu_relax() in them, force
->  * an SFB flush from cpu_relax() such that any pending writes will
->  * become visible as expected.
->  */
-> #define cpu_relax()	smp_mb()
-> #else
-> #define cpu_relax()	barrier()
-> #endif
-> ----------------------------------------------------------------
-> 
-> Based on this, cpu_relax() should be needed here? :)
+From: Ryan Wanner <Ryan.Wanner@microchip.com>
 
-I don't know, please test and let us know!
+This series adds support for the SAMA7D65 SoC.
 
-Without testing of this on real hardware, we can't take this change for
-obvious reasons.
+V2 of this series [1].
+V3 of this series [2].
 
-thanks,
+For the pinctrl and pit64 timers those will have DTB warnings due to
+those bindings not being in the .yaml format.
 
-greg k-h
+Changes v1->v2:
+- V1 set was sent incorrectly as multiple seprate patches v2 took all
+  those patches and put them in 1 thread.
+
+Changes v2->v3:
+- Correct the patch order to follow correct practice.
+- Correct flexcom dt-binding commit messge to reflect the changes in the
+  coding style.
+- Add missing SoB tags to patches.
+- Moved export clocks to DT patch to be included with the clock binding
+  patch.
+- Separate Kconfig changes and defconfig changes into different patches
+  and removed unused Kconfig params.
+- Correct confusing SoB and Co-developed chain.
+- Removed unsued nodes in DTSI file and sorted includes
+  alphanumerically.
+- Fix incorrect dts formatting.
+- Separate dts and pinmux changes into two patches.
+- Combine PLL and MCK changes into core clock driver patch.
+- Correct formatting in main clock driver.
+- MMC dt-binding changes are applied for next so have been removed from
+  the set [3].
+
+Changes v3->v4:
+- Collect all tags from maintainers.
+- Correct compile error on 11/13 and correct location of vendor specific
+  properties.
+- Add USB and UTMI selections to 12/13 to prevent compile errors due to
+  functions in the clock driver that use the USB clock system.
+- Add "microchip,sama7g5-pinctrl" compatible string as a fall back in
+  9/13.
+- Add missing kfree() to 8/13 to correctly handle error case.
+- Replace bad spacing with correct tab formatting on 7/13.
+
+1) https://lore.kernel.org/linux-arm-kernel/cover.1732030972.git.Ryan.Wanner@microchip.com/T/#m9691b4d58b62f36f6cbac1d06883c985766c2c0d
+2) https://lore.kernel.org/linux-arm-kernel/cover.1733505542.git.Ryan.Wanner@microchip.com/T/#m3b52978236907198f727424e69ef21c8898e95c8
+3) https://lore.kernel.org/linux-arm-kernel/cover.1732030972.git.Ryan.Wanner@microchip.com/T/#mccf6521c07e74e1c7dc61b09ae0ebdbbdde73a28
+
+
+Dharma Balasubiramani (6):
+  dt-bindings: mfd: atmel,sama5d2-flexcom: add
+    microchip,sama7d65-flexcom
+  dt-bindings: atmel-sysreg: add sama7d65 RAM and PIT
+  dt-bindings: serial: atmel,at91-usart: add microchip,sama7d65-usart
+  dt-bindings: pinctrl: at91-pio4: add microchip,sama7d65-pinctrl
+  dt-bindings: clocks: atmel,at91sam9x5-sckc: add sama7d65
+  dt-bindings: clock: Add SAMA7D65 PMC compatible string
+
+Romain Sioen (2):
+  dt-bindings: ARM: at91: Document Microchip SAMA7D65 Curiosity
+  ARM: dts: microchip: add support for sama7d65_curiosity board
+
+Ryan Wanner (5):
+  clk: at91: sama7d65: add sama7d65 pmc driver
+  ARM: dts: microchip: add sama7d65 SoC DT
+  ARM: dts: at91: Add sama7d65 pinmux
+  ARM: configs: at91: sama7: add new SoC config
+  ARM: at91: add new SoC sama7d65
+
+ .../devicetree/bindings/arm/atmel-at91.yaml   |    7 +
+ .../devicetree/bindings/arm/atmel-sysregs.txt |   14 +-
+ .../bindings/clock/atmel,at91rm9200-pmc.yaml  |    2 +
+ .../bindings/clock/atmel,at91sam9x5-sckc.yaml |    1 +
+ .../bindings/mfd/atmel,sama5d2-flexcom.yaml   |    9 +-
+ .../pinctrl/atmel,at91-pio4-pinctrl.txt       |    1 +
+ .../bindings/serial/atmel,at91-usart.yaml     |    1 +
+ arch/arm/boot/dts/microchip/Makefile          |    3 +
+ .../dts/microchip/at91-sama7d65_curiosity.dts |   89 ++
+ .../arm/boot/dts/microchip/sama7d65-pinfunc.h |  947 ++++++++++++
+ arch/arm/boot/dts/microchip/sama7d65.dtsi     |  145 ++
+ arch/arm/configs/multi_v7_defconfig           |    1 +
+ arch/arm/configs/sama7_defconfig              |    1 +
+ arch/arm/mach-at91/Kconfig                    |   11 +
+ drivers/clk/at91/Makefile                     |    1 +
+ drivers/clk/at91/clk-master.c                 |    2 +-
+ drivers/clk/at91/clk-sam9x60-pll.c            |    2 +-
+ drivers/clk/at91/pmc.c                        |    1 +
+ drivers/clk/at91/sama7d65.c                   | 1375 +++++++++++++++++
+ include/dt-bindings/clock/at91.h              |    4 +
+ 20 files changed, 2604 insertions(+), 13 deletions(-)
+ create mode 100644 arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts
+ create mode 100644 arch/arm/boot/dts/microchip/sama7d65-pinfunc.h
+ create mode 100644 arch/arm/boot/dts/microchip/sama7d65.dtsi
+ create mode 100644 drivers/clk/at91/sama7d65.c
+
+-- 
+2.43.0
+
