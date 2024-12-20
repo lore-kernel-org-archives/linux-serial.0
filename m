@@ -1,145 +1,129 @@
-Received: from mail.systec-electronic.com (mail.systec-electronic.com [77.220.239.22])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D4CB25949A;
-	Fri, 20 Dec 2024 05:50:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.220.239.22
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 263F086337;
+	Fri, 20 Dec 2024 07:16:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734673826; cv=none; b=hKGZv5hcw4oXudKp6NRSaC+lm/51A0vfxqw/IdH9CfB4T5OEEJXManVFYh5487oa1rqHDaRem9PuzAWMFvhzDRpoA/YvDhA+aYBH02dsyLQAGfshL/oR7iswD34D4lLBrdL7urqUIzD/8COB+qqoUZVJXubn7t9OJegoCk0WANk=
+	t=1734678998; cv=none; b=JovYzThrStigIlK4AdATVQJU1kc2ItazROgHtJveHh7z8tRdr3kU4PB6zuto5idRokpQOYGHrViJ31R+8Z1NaiL3y4wLu+dHAAjjCUawaHlmDO+CRwc+RWH+Yaw050rYv8dk1+4leZu1LzX1M4ON80Ot4wYO7mFaZysuQJGcBvE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734673826; c=relaxed/simple;
-	bh=Rt9EEptbiT5JTor4VKSUvfjZZlrraLVmHZh0HAVivmY=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=glv+IYEl9K6zvhDSFTTzeF6V19gAT2qOJg5JDUcx0pPLCRh2oH+Y38iak8oG9X0vaps+qBPlIp8C3a97ulIcT+ddskwxJnW3wlxBAr/Wa/pbPHIS3UX5PahKkfRX8YCNRjM5Fvn62TnjYajUqKX+T8FIwYPPQ+/yE7WVfErZ8Xw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=systec-electronic.com; spf=pass smtp.mailfrom=systec-electronic.com; dkim=pass (2048-bit key) header.d=systec-electronic.com header.i=@systec-electronic.com header.b=KeamvsYz; arc=none smtp.client-ip=77.220.239.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=systec-electronic.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=systec-electronic.com
+	s=arc-20240116; t=1734678998; c=relaxed/simple;
+	bh=AVpIzouLcbndFNKIcBiRnthvIDG00QqQ6SA4H/OWDyQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Rm40SHvmrwmplmyoEs4+qrleuN87+8spjY/q4/t/zelI4V0y1xLTnorq8TrYrJgkJOM6fHYmrBmQaRtoWfSuGlVNY2S6jb2JPOAqV49zQIDt9JjEJITfMQlEBmoGCnb/tT/V2RWwAFEdoltoL9mDXit7CSWOQ6Odw0fDAgoGTF4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sQzJdpiL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=systec-electronic.com header.i=@systec-electronic.com header.b="KeamvsYz"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.systec-electronic.com (Postfix) with ESMTP id 76591940010A;
-	Fri, 20 Dec 2024 06:50:17 +0100 (CET)
-Received: from mail.systec-electronic.com ([127.0.0.1])
- by localhost (mail.systec-electronic.com [127.0.0.1]) (amavis, port 10032)
- with ESMTP id cxAVJx7jychw; Fri, 20 Dec 2024 06:50:17 +0100 (CET)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.systec-electronic.com (Postfix) with ESMTP id 45D2794016AB;
-	Fri, 20 Dec 2024 06:50:17 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.systec-electronic.com 45D2794016AB
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=systec-electronic.com; s=B34D3B04-5DC7-11EE-83E3-4D8CAB78E8CD;
-	t=1734673817; bh=t3x5OH81PBlki8yWuznnLWWopP+5nN9pGnWnWMnuAX0=;
-	h=Date:From:To:Message-ID:MIME-Version;
-	b=KeamvsYz9LBWzahZS5KAzSK9SSofdRQ7v4BZrfNTtV3EtgbMCyUFzneLdUCQ/RuMT
-	 vlbaGBWDEf0PoZDKELH4z8pRkloMoNqrz2eHH1P3wyYXxfgN9J6zPEOINwvZ1S1bSH
-	 eq+aRjWPEPOreJ2ieJVam5C7PDWVTsU+iJTj+k4mMtyKXjlqe69MeSxT82hSg8hJCH
-	 PXk9SBNQe/6hpelAi7XmjjdEGcTLwVAfRhzDerAI46jcgNW+JKadYRQxWTZFvwC3Gs
-	 9Eg8XrRtcbC110dwxJ/2IDDvXbf6xoGm9fEl/q2rUc4zkoptqxZHfP4LCsNrldpJK7
-	 IyhPJzaUYwyjA==
-X-Virus-Scanned: amavis at systec-electronic.com
-Received: from mail.systec-electronic.com ([127.0.0.1])
- by localhost (mail.systec-electronic.com [127.0.0.1]) (amavis, port 10026)
- with ESMTP id 5Tl2IiigLhDQ; Fri, 20 Dec 2024 06:50:17 +0100 (CET)
-Received: from ws565760 (unknown [212.185.67.148])
-	by mail.systec-electronic.com (Postfix) with ESMTPSA id E0C34940010A;
-	Fri, 20 Dec 2024 06:50:16 +0100 (CET)
-Date: Fri, 20 Dec 2024 06:50:16 +0100 (CET)
-From: Andre Werner <andre.werner@systec-electronic.com>
-Reply-To: Andre Werner <andre.werner@systec-electronic.com>
-To: Greg KH <gregkh@linuxfoundation.org>
-cc: Andre Werner <andre.werner@systec-electronic.com>, jirislaby@kernel.org, 
-    hvilleneuve@dimonoff.com, andy@kernel.org, linux-kernel@vger.kernel.org, 
-    linux-serial@vger.kernel.org, lech.perczak@camlingroup.com
-Subject: Re: [External Email] Re: [PATCH] serial: sc16is7xx: Add polling
- feature if no IRQ usage possible
-In-Reply-To: <2024121906-reach-hash-3d7c@gregkh>
-Message-ID: <5a524cb7-23d9-63b8-81fc-b68a23fddd65@systec-electronic.com>
-References: <20241219084638.960253-1-andre.werner@systec-electronic.com> <2024121931-turbojet-preamble-b520@gregkh> <fbd224a3-8f10-3ccf-5480-38fcd839d409@systec-electronic.com> <2024121906-reach-hash-3d7c@gregkh>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sQzJdpiL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA33DC4CECD;
+	Fri, 20 Dec 2024 07:16:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1734678997;
+	bh=AVpIzouLcbndFNKIcBiRnthvIDG00QqQ6SA4H/OWDyQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=sQzJdpiLg87kcixCyS+nAPMIgEZvGXAUDSaAAyyrazwVDCnK6PVUMphaUXYaolk2S
+	 5bfnudmHmClXlCpchsViHbCmKWBrsAPPT1QlOZxJ9YIv0Y5Y2hyz+7zFBF6NAB52xv
+	 LaNzifGz2SuddA6Q8gChTa2/wxwuzRxPUVXs6KSw7o939vHKSSYZ3rE+xWmvChG8IQ
+	 H/OUl3W8FJWJ76ne17WQoBC3y5tsXp7sR9KqpYaZvOE21kEgzfjKZqiMp++Szuks18
+	 hRs/9FDv6MdKn0jL5dkg5fLKikfqQKPz3RcHuz3HZN24JcyIK0kfEM/jOI7ZWeliSV
+	 uDsRj/FkHLS9A==
+Message-ID: <99b481f1-7e0d-4c78-8099-6a6466f6a87a@kernel.org>
+Date: Fri, 20 Dec 2024 08:16:34 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tty: mips_ejtag_fdc: Call cpu_relax() in registers
+ polling busy loops
+To: Zhongqiu Han <quic_zhonhan@quicinc.com>, gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20241219124254.321778-1-quic_zhonhan@quicinc.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
+ rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
+ rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
+ i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
+ wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
+ ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
+ cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
+ 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
+ w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
+ YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABzSFKaXJpIFNsYWJ5
+ IDxqaXJpc2xhYnlAa2VybmVsLm9yZz7CwXcEEwEIACEFAlW3RUwCGwMFCwkIBwIGFQgJCgsC
+ BBYCAwECHgECF4AACgkQvSWxBAa0cEnVTg//TQpdIAr8Tn0VAeUjdVIH9XCFw+cPSU+zMSCH
+ eCZoA/N6gitEcnvHoFVVM7b3hK2HgoFUNbmYC0RdcSc80pOF5gCnACSP9XWHGWzeKCARRcQR
+ 4s5YD8I4VV5hqXcKo2DFAtIOVbHDW+0okOzcecdasCakUTr7s2fXz97uuoc2gIBB7bmHUGAH
+ XQXHvdnCLjDjR+eJN+zrtbqZKYSfj89s/ZHn5Slug6w8qOPT1sVNGG+eWPlc5s7XYhT9z66E
+ l5C0rG35JE4PhC+tl7BaE5IwjJlBMHf/cMJxNHAYoQ1hWQCKOfMDQ6bsEr++kGUCbHkrEFwD
+ UVA72iLnnnlZCMevwE4hc0zVhseWhPc/KMYObU1sDGqaCesRLkE3tiE7X2cikmj/qH0CoMWe
+ gjnwnQ2qVJcaPSzJ4QITvchEQ+tbuVAyvn9H+9MkdT7b7b2OaqYsUP8rn/2k1Td5zknUz7iF
+ oJ0Z9wPTl6tDfF8phaMIPISYrhceVOIoL+rWfaikhBulZTIT5ihieY9nQOw6vhOfWkYvv0Dl
+ o4GRnb2ybPQpfEs7WtetOsUgiUbfljTgILFw3CsPW8JESOGQc0Pv8ieznIighqPPFz9g+zSu
+ Ss/rpcsqag5n9rQp/H3WW5zKUpeYcKGaPDp/vSUovMcjp8USIhzBBrmI7UWAtuedG9prjqfO
+ wU0ETpLnhgEQAM+cDWLL+Wvc9cLhA2OXZ/gMmu7NbYKjfth1UyOuBd5emIO+d4RfFM02XFTI
+ t4MxwhAryhsKQQcA4iQNldkbyeviYrPKWjLTjRXT5cD2lpWzr+Jx7mX7InV5JOz1Qq+P+nJW
+ YIBjUKhI03ux89p58CYil24Zpyn2F5cX7U+inY8lJIBwLPBnc9Z0An/DVnUOD+0wIcYVnZAK
+ DiIXODkGqTg3fhZwbbi+KAhtHPFM2fGw2VTUf62IHzV+eBSnamzPOBc1XsJYKRo3FHNeLuS8
+ f4wUe7bWb9O66PPFK/RkeqNX6akkFBf9VfrZ1rTEKAyJ2uqf1EI1olYnENk4+00IBa+BavGQ
+ 8UW9dGW3nbPrfuOV5UUvbnsSQwj67pSdrBQqilr5N/5H9z7VCDQ0dhuJNtvDSlTf2iUFBqgk
+ 3smln31PUYiVPrMP0V4ja0i9qtO/TB01rTfTyXTRtqz53qO5dGsYiliJO5aUmh8swVpotgK4
+ /57h3zGsaXO9PGgnnAdqeKVITaFTLY1ISg+Ptb4KoliiOjrBMmQUSJVtkUXMrCMCeuPDGHo7
+ 39Xc75lcHlGuM3yEB//htKjyprbLeLf1y4xPyTeeF5zg/0ztRZNKZicgEmxyUNBHHnBKHQxz
+ 1j+mzH0HjZZtXjGu2KLJ18G07q0fpz2ZPk2D53Ww39VNI/J9ABEBAAHCwV8EGAECAAkFAk6S
+ 54YCGwwACgkQvSWxBAa0cEk3tRAAgO+DFpbyIa4RlnfpcW17AfnpZi9VR5+zr496n2jH/1ld
+ wRO/S+QNSA8qdABqMb9WI4BNaoANgcg0AS429Mq0taaWKkAjkkGAT7mD1Q5PiLr06Y/+Kzdr
+ 90eUVneqM2TUQQbK+Kh7JwmGVrRGNqQrDk+gRNvKnGwFNeTkTKtJ0P8jYd7P1gZb9Fwj9YLx
+ jhn/sVIhNmEBLBoI7PL+9fbILqJPHgAwW35rpnq4f/EYTykbk1sa13Tav6btJ+4QOgbcezWI
+ wZ5w/JVfEJW9JXp3BFAVzRQ5nVrrLDAJZ8Y5ioWcm99JtSIIxXxt9FJaGc1Bgsi5K/+dyTKL
+ wLMJgiBzbVx8G+fCJJ9YtlNOPWhbKPlrQ8+AY52Aagi9WNhe6XfJdh5g6ptiOILm330mkR4g
+ W6nEgZVyIyTq3ekOuruftWL99qpP5zi+eNrMmLRQx9iecDNgFr342R9bTDlb1TLuRb+/tJ98
+ f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
+ DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
+ S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
+In-Reply-To: <20241219124254.321778-1-quic_zhonhan@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Dear Greg:
+On 19. 12. 24, 13:42, Zhongqiu Han wrote:
+> It is considered good practice to call cpu_relax() in busy loops, see
+> Documentation/process/volatile-considered-harmful.rst. This can lower CPU
+> power consumption or yield to a hyperthreaded twin processor, or serve as
+> a compiler barrier. In addition, if something goes wrong in the busy loop
+> at least it can prevent things from getting worse.
+> 
+> Signed-off-by: Zhongqiu Han <quic_zhonhan@quicinc.com>
+> ---
+>   drivers/tty/mips_ejtag_fdc.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/mips_ejtag_fdc.c b/drivers/tty/mips_ejtag_fdc.c
+> index afbf7738c7c4..b17ead1e9698 100644
+> --- a/drivers/tty/mips_ejtag_fdc.c
+> +++ b/drivers/tty/mips_ejtag_fdc.c
+> @@ -346,7 +346,7 @@ static void mips_ejtag_fdc_console_write(struct console *c, const char *s,
+>   
+>   		/* Busy wait until there's space in fifo */
+>   		while (__raw_readl(regs + REG_FDSTAT) & REG_FDSTAT_TXF)
+> -			;
+> +			cpu_relax();
+>   		__raw_writel(word.word, regs + REG_FDTX(c->index));
+>   	}
+>   out:
+> @@ -1233,7 +1233,7 @@ static void kgdbfdc_push_one(void)
+>   
+>   	/* Busy wait until there's space in fifo */
+>   	while (__raw_readl(regs + REG_FDSTAT) & REG_FDSTAT_TXF)
+> -		;
+> +		cpu_relax();
 
-On Thu, 19 Dec 2024, Greg KH wrote:
+Can this instead be switched to read_poll_timeout_atomic() or alike? 
+Those already contain cpu_relax(), of course...
 
-> On Thu, Dec 19, 2024 at 10:22:40AM +0100, Andre Werner wrote:
-> > Dear Greg,
-> > On Thu, 19 Dec 2024, Greg KH wrote:
-> >
-> > > On Thu, Dec 19, 2024 at 09:46:38AM +0100, Andre Werner wrote:
-> > > > Fall back to polling mode if no interrupt is configured because not
-> > > > possible. If "interrupts" property is missing in devicetree the driver
-> > > > uses a delayed worker to pull state of interrupt status registers.
-> > > >
-> > > > Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
-> > > > ---
-> > > > This driver was tested on Linux 5.10. We had a custom board that was not
-> > > > able to connect the interrupt port. Only I2C was available.
-> > >
-> > > Could you not test this on the latest tree?  5.10 is _VERY_ old now.
-> >
-> > I will try it on devboard with a 6.1 Kernel. Is that okay for you?
->
-> 6.1 was released in December of 2022, 2 full years and hundreds of
-> thousands of changes ago.  Please work off of Linus's latest tree, we
-> can't go back in time :)
-
->
-> > > > @@ -1537,7 +1564,13 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
-> > > >
-> > > >  	/* Always ask for fixed clock rate from a property. */
-> > > >  	device_property_read_u32(dev, "clock-frequency", &uartclk);
-> > > > +	s->polling = !device_property_present(dev, "interrupts");
-> > > >
-> > > > +	if (s->polling) {
-> > > > +		dev_warn(dev,
-> > > > +			 "No interrupt definition found. Falling back to polling mode.\n");
-> > >
-> > > What is a user supposed to do with this message?  And why would a device
-> > > NOT have any interrupts?  This feels like it is just going to pound on
-> > > the device and cause a lot of power drain for just a simple little uart.
-> >
-> > I thought it could be interesting to know that the device has missing
-> > interrupt support.
->
-> Maybe, but as you are now warning a user about this, what are they
-> supposed to do to fix it?
->
-> > > Why can't your system provide a valid irq line?
-> > >
-> >
-> > In our case we have only an I2C available in a connection cable and the
-> > GPIOs are linked through a two way level shifter.
-> > It was a very special situation in our case because target platform and
-> > sensor platform are provided.
-> > The IRQ from the sensor war not able to drive the two way level shifter low so
-> > we always detect outgoing traffic and the IRQ signal but at the target
-> > board after the level shifter the signal remains stable. So
-> > communication failed with a timeout. So we need to force polling the
-> > interrupt status register because
-> > both HW solution should not be changed in any way.
->
-> Again, you are burning a TON of power just for a simple little uart,
-> with your system never being able to go to sleep, are you sure this is
-> something that you want others to emulate and support?
-
-I got your point and I'm fully with. This caused me to print a warning
-in Kernel log because it should not be the general working method.
-In our special case we do not have any other option because the sensor
-module using the SC16IS7xx and the hardware with the MCU running Linux OS
-are fixed. We had no possibilities to move any GPIO or such. This was
-the only chance  to support the dedicated sensor platform and I may be
-the case that someone else faces the same problems. I thought that
-someone else may benefit from this workaround too. But as I got your
-point I'm also fine if it is not merged into main Linux Kernel sources.
-
->
-> thanks,
->
-> greg k-h
->
+thanks,
+-- 
+js
+suse labs
