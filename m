@@ -1,162 +1,118 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2499182B4;
-	Fri, 20 Dec 2024 11:50:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AFA31A7AE3;
+	Fri, 20 Dec 2024 12:21:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734695435; cv=none; b=qOnlvzcaoaE2w2tVYlueyZaraURBhS5XHDYj8ltct8xm8uZxZz3pznujhB2PeEYDaMrSwfn3wumHKKgOBI3u8/1ogcx1RWToQaw+KqoorsYbHIZFvHal0aLucwuKP6yeRAk/rF6uO4pFTA1mEvKhjseYyQgVJLKQYjZ5JlReWeg=
+	t=1734697316; cv=none; b=TDIiwUUrEtm6twyomjSCct5MRfRt/tgfmLYP7tyGJs4zp4xeEktFTHJOdvfE01lI03uCkzQFBbROcerheaD7e1Pu7nDazQAmuoNnEMzaWZzeP63emPIcJxjJSyZmaBXCOh+SizanyH5ZATwo+XqSJFMZREv9avFiCAWnI/EZYp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734695435; c=relaxed/simple;
-	bh=V2rgkmiW6f8CPDVhJw7Ctc2+zmfqJOFw92iW7hHRZEI=;
-	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:MIME-Version:
-	 Content-Type; b=g5RFH39SgH9upLtTOCi2sJ0k+t6NcOKznp59WxA1DyBVM7XpMLZyjefPNMy4tG3hdBXc2eL1rDn8HJuCGcuCQ5e3Xwh1xpaJxGCEulpCGuPGSZ9rAARQza5bdUY7diDsdas0wP0+py1rMnDK4xuWfERrM19FotkQ8MAMynvtyuw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=BvpTWwkr; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NgZifuYk; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1734697316; c=relaxed/simple;
+	bh=JduFaswRmxN5tGLStvzwUiaywMEIItZVTSmKsVx9nOI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rm4jRIh61FDTqFa4Wqoho1YpUA8bygGHav7a9cstSMKlhSuVDC+bbPGXdAGx77au9BuXy6CUCYnYD8s6iLuqXiGA0AboG0Jzab3zzVyaGpoHQxF9Cz88n2PtJg4pJpREJiF49Btjh0DQYiAwCcpna2SOfS5Lr4jX7ZEmu8z7lBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Yq+tb1ps; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="BvpTWwkr";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NgZifuYk"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1734695431;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to; bh=lUKRjsJh4wLt12+BSGF0lbVjgOK/cMAK5vePGhQ1SoU=;
-	b=BvpTWwkrJddVegr5lhnYhXeYutedR9tiDM6f5dhrefFro+1VgepVMv9nLkFcrF3hloUYaL
-	o1zcEJEVlt9ohfqv32YEPQGUP3bwlq+UNttbkSroDoR06eY8/wZUqLYXfqEwqKkQ09tWQR
-	dMrHXzpsDV9UBjyMN49iGG4XbSKy8wjtUUnsYRckSTxyMl+mvQPNc6wvOMTC+WFVt6raVb
-	MLzv5BxCD5dUlgq98xVy1BcY3ivNIsmDpbeKIg/FrkVzlqY/K6wog6SMvFYimepKtAGLH/
-	Z+oYmATuNtEE06W24iMOJ1UpBRq/xpDbHude4W+hdiZNXVzr3IwSA8mBwhOIDw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1734695431;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to; bh=lUKRjsJh4wLt12+BSGF0lbVjgOK/cMAK5vePGhQ1SoU=;
-	b=NgZifuYkXObzFBKIMavpsmFIMqAKQuw6vzCDyolY/lTQPUaMsJlMcEPXMlfaf1hsBxbMy8
-	mAhgVKZCcj/iqjCw==
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Esben Haabendal <esben@geanix.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Arnd Bergmann
- <arnd@arndb.de>, Rengarajan S <rengarajan.s@microchip.com>, Bart Van
- Assche <bvanassche@acm.org>, Niklas Schnelle <schnelle@linux.ibm.com>,
- Serge Semin <fancer.lancer@gmail.com>, Lino Sanfilippo
- <l.sanfilippo@kunbus.com>, Peter Collingbourne <pcc@google.com>
-Subject: Re: [PATCH tty-next v1 1/4] serial: 8250: Use @ier bits to
- determine if Rx is stopped
-In-Reply-To: <Z2CQ8NvNhIOpPcBn@smile.fi.intel.com>
-Date: Fri, 20 Dec 2024 12:56:31 +0106
-Message-ID: <84ed22h8u0.fsf@jogness.linutronix.de>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Yq+tb1ps"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02B3BC4CECD;
+	Fri, 20 Dec 2024 12:21:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1734697316;
+	bh=JduFaswRmxN5tGLStvzwUiaywMEIItZVTSmKsVx9nOI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Yq+tb1psbAD0EEaGVo62BeRkwh9Xj1zwGjU1RnX9bPc3zuKVZ+vFaKjzZirLF0O5Q
+	 cWqZTrj/8oUOashMDH0in9idt9Jf9pCN3xfKSbuna7zWsHJDYmyLi1Jgqy+04F5+b+
+	 WkFCtRLWZn13uCsuIFDP/5NAmVeHVQ3OLBfdEu0A=
+Date: Fri, 20 Dec 2024 13:21:51 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Kever Yang <kever.yang@rock-chips.com>
+Cc: heiko@sntech.de, linux-rockchip@lists.infradead.org,
+	Simon Xue <xxm@rock-chips.com>, Lee Jones <lee@kernel.org>,
+	dri-devel@lists.freedesktop.org, Zhang Rui <rui.zhang@intel.com>,
+	Elaine Zhang <zhangqing@rock-chips.com>, linux-clk@vger.kernel.org,
+	Conor Dooley <conor+dt@kernel.org>, FUKAUMI Naoki <naoki@radxa.com>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Andrew Lunn <andrew+netdev@lunn.ch>, Andy Yan <andyshrk@163.com>,
+	Michael Riesch <michael.riesch@wolfvision.net>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linux-pm@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+	linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-spi@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Jose Abreu <joabreu@synopsys.com>, Jamie Iles <jamie@jamieiles.com>,
+	Detlev Casanova <detlev.casanova@collabora.com>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Frank Wang <frank.wang@rock-chips.com>, linux-mmc@vger.kernel.org,
+	Linus Walleij <linus.walleij@linaro.org>, linux-i2c@vger.kernel.org,
+	Simona Vetter <simona@ffwll.ch>,
+	Finley Xiao <finley.xiao@rock-chips.com>,
+	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-watchdog@vger.kernel.org, David Wu <david.wu@rock-chips.com>,
+	Shresth Prasad <shresthprasad7@gmail.com>,
+	linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Lukasz Luba <lukasz.luba@arm.com>,
+	Jisheng Zhang <jszhang@kernel.org>,
+	Guenter Roeck <linux@roeck-us.net>, linux-iio@vger.kernel.org,
+	linux-pci@vger.kernel.org, David Airlie <airlied@gmail.com>,
+	linux-phy@lists.infradead.org, Jonas Karlman <jonas@kwiboo.se>,
+	Maxime Ripard <mripard@kernel.org>,
+	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+	Vinod Koul <vkoul@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Kishon Vijay Abraham I <kishon@kernel.org>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-pwm@vger.kernel.org,
+	Rob Herring <robh@kernel.org>,
+	Wim Van Sebroeck <wim@linux-watchdog.org>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Mark Brown <broonie@kernel.org>,
+	Dragan Simic <dsimic@manjaro.org>,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Stephen Boyd <sboyd@kernel.org>, Johan Jonker <jbx6244@gmail.com>,
+	Shawn Lin <shawn.lin@rock-chips.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-serial@vger.kernel.org,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	devicetree@vger.kernel.org,
+	Diederik de Haas <didi.debian@cknow.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Tim Lunn <tim@feathertop.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+	netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>
+Subject: Re: [PATCH 00/38] rockchip: Add rk3562 support
+Message-ID: <2024122018-groove-glitzy-f3bc@gregkh>
+References: <20241220103825.3509421-1-kever.yang@rock-chips.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241220103825.3509421-1-kever.yang@rock-chips.com>
 
-On 2024-12-16, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->> > Use the UART_IER_RLSI and UART_IER_RDI bits in @ier instead, as
->> > this is already common in 8250-variants and drivers.
->> 
->> Hmm... IER is Interrupt Enable Register, so it has been programmed to the value
->> we control, on the opposite the LSR is Line Status Register and defines status
->> on the line at the moment of reading. Can you elaborate how your change is correct
->> substitute?
+On Fri, Dec 20, 2024 at 06:37:46PM +0800, Kever Yang wrote:
+> 
+> This patch set adds rk3562 SoC and its evb support.
+> 
+> The patch number is a little bit too big, some of them may need to split
+> out for different maintainers, please let me know which patch need to
+> split out.
 
-The change subsitutes @ier usage for @read_status_mask usage. Both are
-programmed values that we control. Note that the code being replaced
-does _not_ care about the Line Status Register. It is only looking at
-the bit in the mask.
+I recommend you doing the split-apart as you know the dependencies here
+the best, right?  Otherwise we all will just probably ignore them
+assuming someone else is going to review/accept them...
 
-Everywhere that UART_LSR_DR is set/cleared in @read_status_mask,
-UART_IER_RLSI and UART_IER_RDI are also set/cleared in @ier.
+thanks,
 
-Also, there are plenty of examples where the RLSI and RDI bits of @ier
-are used to determine if Rx is enabled. Here are the examples from the
-8250 variants...
-
-In fsl8250_handle_irq() we see that the @ier condition is used for
-deciding if Rx is enabled:
-
-        /* Process incoming characters first */
-        if ((lsr & (UART_LSR_DR | UART_LSR_BI)) &&
-            (up->ier & (UART_IER_RLSI | UART_IER_RDI))) {
-                lsr = serial8250_rx_chars(up, lsr);
-        }
-
-Ditto for brcmuart_hrtimer_func():
-
-        /* re-enable receive unless upper layer has disabled it */
-        if ((up->ier & (UART_IER_RLSI | UART_IER_RDI)) ==
-            (UART_IER_RLSI | UART_IER_RDI)) {
-
-Ditto for fsl8250_handle_irq():
-
-                if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
-                        port->ops->stop_rx(port);
-
-Ditto for omap8250_irq():
-
-                if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
-                        port->ops->stop_rx(port);
-
-> Additionally the common IRQ handler may be called at last in the custom ones
-> and hence potentially the value of saved IER might be different to what the
-> actual register is programmed to.
-
-There is only 1 place where they do not match: serial8250_do_startup()
-
-        /*
-         * Set the IER shadow for rx interrupts but defer actual interrupt
-         * enable until after the FIFOs are enabled; otherwise, an already-
-         * active sender can swamp the interrupt handler with "too much work".
-         */
-        up->ier = UART_IER_RLSI | UART_IER_RDI;
-
-The IER hardware register contains 0 here.
-
-This comes from commit ee3ad90be5ec ("serial: 8250: Defer interrupt
-enable until fifos enabled").
-
-But since IER is 0, there will be no interrupt to land in any handlers
-leading to serial8250_handle_irq().
-
-> Besides that I don't remember all of the mysterious ways of DMA. May it affect
-> the value of IER and when we swtich from DMA to PIO and vice versa we get an
-> incorrect value in the saved variable?
-
-The change being made in this patch is only related to the Rx FIFO
-throttling when hardware flow control is enabled. The "feature" was
-added by commit f19c3f6c810 ("serial: 8250_port: Don't service RX FIFO
-if throttled").
-
-For the omap variant this worked because the omap variant also updates
-the @read_status_mask when unthrottling (no other variant does that).
-
-What confuses me is in 8250_omap.c:__dma_rx_complete() where there is:
-
-        __dma_rx_do_complete(p);
-        if (!priv->throttled) {
-                p->ier |= UART_IER_RLSI | UART_IER_RDI;
-                serial_out(p, UART_IER, p->ier);
-                if (!(priv->habit & UART_HAS_EFR2))
-                        omap_8250_rx_dma(p);
-        }
-
-I would expect to see:
-
-        __dma_rx_do_complete(p);
-        if (!priv->throttled) {
-                p->ier |= UART_IER_RLSI | UART_IER_RDI;
-                p->port.read_status_mask |= UART_LSR_DR;
-                serial_out(p, UART_IER, p->ier);
-        }
-
-But perhaps that is a bug. In fact, it would be exactly the bug that
-this patch is fixing because there are many places where
-@read_status_mask does not mirror Rx enable/disable status (because that
-is not the correct use of @read_status_mask).
-
-John
+greg k-h
