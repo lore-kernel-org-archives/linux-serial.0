@@ -1,253 +1,162 @@
-Received: from mail-m127157.xmail.ntesmail.com (mail-m127157.xmail.ntesmail.com [115.236.127.157])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB0919C56D;
-	Fri, 20 Dec 2024 10:43:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.236.127.157
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2499182B4;
+	Fri, 20 Dec 2024 11:50:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734691437; cv=none; b=PZRUu5qXmLzX5l79DboK37HahVqH1k8xAABbgeA81aJqpeAXMRmh22JFuWdGhfYX+2lg7nGYRt3uoLuCBFFxFX/q2q0DL8n3xYsMXr9BKq5koCQQDEROKZPsiK6cLcaH3gl/Qg3vYSRBd6rx0eQrytIqlQ+OTn4TBj9/qzSRX0Q=
+	t=1734695435; cv=none; b=qOnlvzcaoaE2w2tVYlueyZaraURBhS5XHDYj8ltct8xm8uZxZz3pznujhB2PeEYDaMrSwfn3wumHKKgOBI3u8/1ogcx1RWToQaw+KqoorsYbHIZFvHal0aLucwuKP6yeRAk/rF6uO4pFTA1mEvKhjseYyQgVJLKQYjZ5JlReWeg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734691437; c=relaxed/simple;
-	bh=FLotb8PO7pUbOoGoa3ZcA+IJLn2SEtUGvEV7uvVVTkk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kbln7y/CCeYJY3S9PlwwCdobmOpsBOraPpxJpouwpuGplkxgSESnNkpTn090B/kdHBqxXc2u8p+GLR8k9jPCPAcgbcXdmVGHGw60XNJkwku5wI6zdCunKuGeLKIwIWibwqrXS2c6O1FkrGFO6PM8eUS9WzTk5N0PGR9e7uX1zj4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=LXQtSCOj; arc=none smtp.client-ip=115.236.127.157
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1734695435; c=relaxed/simple;
+	bh=V2rgkmiW6f8CPDVhJw7Ctc2+zmfqJOFw92iW7hHRZEI=;
+	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:MIME-Version:
+	 Content-Type; b=g5RFH39SgH9upLtTOCi2sJ0k+t6NcOKznp59WxA1DyBVM7XpMLZyjefPNMy4tG3hdBXc2eL1rDn8HJuCGcuCQ5e3Xwh1xpaJxGCEulpCGuPGSZ9rAARQza5bdUY7diDsdas0wP0+py1rMnDK4xuWfERrM19FotkQ8MAMynvtyuw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=BvpTWwkr; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NgZifuYk; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="LXQtSCOj"
-Received: from localhost.localdomain (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 656820ed;
-	Fri, 20 Dec 2024 18:38:26 +0800 (GMT+08:00)
-From: Kever Yang <kever.yang@rock-chips.com>
-To: heiko@sntech.de
-Cc: linux-rockchip@lists.infradead.org,
-	Kever Yang <kever.yang@rock-chips.com>,
-	Simon Xue <xxm@rock-chips.com>,
-	Lee Jones <lee@kernel.org>,
-	dri-devel@lists.freedesktop.org,
-	Zhang Rui <rui.zhang@intel.com>,
-	Elaine Zhang <zhangqing@rock-chips.com>,
-	linux-clk@vger.kernel.org,
-	Conor Dooley <conor+dt@kernel.org>,
-	FUKAUMI Naoki <naoki@radxa.com>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	Andy Yan <andyshrk@163.com>,
-	Michael Riesch <michael.riesch@wolfvision.net>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-	linux-pm@vger.kernel.org,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	linux-usb@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-spi@vger.kernel.org,
-	Jakub Kicinski <kuba@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Jose Abreu <joabreu@synopsys.com>,
-	Jamie Iles <jamie@jamieiles.com>,
-	Detlev Casanova <detlev.casanova@collabora.com>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Frank Wang <frank.wang@rock-chips.com>,
-	linux-mmc@vger.kernel.org,
-	Linus Walleij <linus.walleij@linaro.org>,
-	linux-i2c@vger.kernel.org,
-	Simona Vetter <simona@ffwll.ch>,
-	Finley Xiao <finley.xiao@rock-chips.com>,
-	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-watchdog@vger.kernel.org,
-	David Wu <david.wu@rock-chips.com>,
-	Shresth Prasad <shresthprasad7@gmail.com>,
-	linux-gpio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Lukasz Luba <lukasz.luba@arm.com>,
-	Jisheng Zhang <jszhang@kernel.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	linux-iio@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	David Airlie <airlied@gmail.com>,
-	linux-phy@lists.infradead.org,
-	Jonas Karlman <jonas@kwiboo.se>,
-	Maxime Ripard <mripard@kernel.org>,
-	Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-	Vinod Koul <vkoul@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kishon Vijay Abraham I <kishon@kernel.org>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-pwm@vger.kernel.org,
-	Rob Herring <robh@kernel.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Mark Brown <broonie@kernel.org>,
-	Dragan Simic <dsimic@manjaro.org>,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Johan Jonker <jbx6244@gmail.com>,
-	Shawn Lin <shawn.lin@rock-chips.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	linux-serial@vger.kernel.org,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	devicetree@vger.kernel.org,
-	Diederik de Haas <didi.debian@cknow.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Tim Lunn <tim@feathertop.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
-	netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Subject: [PATCH 00/38] rockchip: Add rk3562 support
-Date: Fri, 20 Dec 2024 18:37:46 +0800
-Message-Id: <20241220103825.3509421-1-kever.yang@rock-chips.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="BvpTWwkr";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NgZifuYk"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1734695431;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to; bh=lUKRjsJh4wLt12+BSGF0lbVjgOK/cMAK5vePGhQ1SoU=;
+	b=BvpTWwkrJddVegr5lhnYhXeYutedR9tiDM6f5dhrefFro+1VgepVMv9nLkFcrF3hloUYaL
+	o1zcEJEVlt9ohfqv32YEPQGUP3bwlq+UNttbkSroDoR06eY8/wZUqLYXfqEwqKkQ09tWQR
+	dMrHXzpsDV9UBjyMN49iGG4XbSKy8wjtUUnsYRckSTxyMl+mvQPNc6wvOMTC+WFVt6raVb
+	MLzv5BxCD5dUlgq98xVy1BcY3ivNIsmDpbeKIg/FrkVzlqY/K6wog6SMvFYimepKtAGLH/
+	Z+oYmATuNtEE06W24iMOJ1UpBRq/xpDbHude4W+hdiZNXVzr3IwSA8mBwhOIDw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1734695431;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to; bh=lUKRjsJh4wLt12+BSGF0lbVjgOK/cMAK5vePGhQ1SoU=;
+	b=NgZifuYkXObzFBKIMavpsmFIMqAKQuw6vzCDyolY/lTQPUaMsJlMcEPXMlfaf1hsBxbMy8
+	mAhgVKZCcj/iqjCw==
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Esben Haabendal <esben@geanix.com>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Arnd Bergmann
+ <arnd@arndb.de>, Rengarajan S <rengarajan.s@microchip.com>, Bart Van
+ Assche <bvanassche@acm.org>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Serge Semin <fancer.lancer@gmail.com>, Lino Sanfilippo
+ <l.sanfilippo@kunbus.com>, Peter Collingbourne <pcc@google.com>
+Subject: Re: [PATCH tty-next v1 1/4] serial: 8250: Use @ier bits to
+ determine if Rx is stopped
+In-Reply-To: <Z2CQ8NvNhIOpPcBn@smile.fi.intel.com>
+Date: Fri, 20 Dec 2024 12:56:31 +0106
+Message-ID: <84ed22h8u0.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZQh9LT1ZJGktPSElKGk8fQxhWFRQJFh
-	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSEtNQk
-	tVSktLVUpCWQY+
-X-HM-Tid: 0a93e3a5af4003afkunm656820ed
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nwg6Kxw6GTIRKggeThEUMR4h
-	P0gaCyxVSlVKTEhPTUJKSkpKTElJVTMWGhIXVRAeDR4JVQIaFRw7CRQYEFYYExILCFUYFBZFWVdZ
-	EgtZQVlOQ1VJSVVMVUpKT1lXWQgBWUFOTUpJNwY+
-DKIM-Signature:a=rsa-sha256;
-	b=LXQtSCOj5PQ5rmMQS8JUHg+aVmzux+tnR5NnlpILS50US/QWv5VBCTHDsqEiVs5WhSa9UqWxWgKBEnSg0vucKhE8FyZdsUwbc5ZsdiUz76LZqHiim02ORqBuKb413jRYfReSUFy7jfbzAaPEA5wGkuukfoQqA957T+ZIIQC0lqE=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
-	bh=RUJ3VBWN4hJZF+kjNTXL1lSb1odrwauQvfHGVuJDe90=;
-	h=date:mime-version:subject:message-id:from;
+Content-Type: text/plain
 
+On 2024-12-16, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>> > Use the UART_IER_RLSI and UART_IER_RDI bits in @ier instead, as
+>> > this is already common in 8250-variants and drivers.
+>> 
+>> Hmm... IER is Interrupt Enable Register, so it has been programmed to the value
+>> we control, on the opposite the LSR is Line Status Register and defines status
+>> on the line at the moment of reading. Can you elaborate how your change is correct
+>> substitute?
 
-This patch set adds rk3562 SoC and its evb support.
+The change subsitutes @ier usage for @read_status_mask usage. Both are
+programmed values that we control. Note that the code being replaced
+does _not_ care about the Line Status Register. It is only looking at
+the bit in the mask.
 
-The patch number is a little bit too big, some of them may need to split
-out for different maintainers, please let me know which patch need to
-split out.
+Everywhere that UART_LSR_DR is set/cleared in @read_status_mask,
+UART_IER_RLSI and UART_IER_RDI are also set/cleared in @ier.
 
-Test with GMAC, USB, PCIe, EMMC, SD Card.
+Also, there are plenty of examples where the RLSI and RDI bits of @ier
+are used to determine if Rx is enabled. Here are the examples from the
+8250 variants...
 
-This patch set is base on the patche set for rk3576 evb1 support.
+In fsl8250_handle_irq() we see that the @ier condition is used for
+deciding if Rx is enabled:
 
+        /* Process incoming characters first */
+        if ((lsr & (UART_LSR_DR | UART_LSR_BI)) &&
+            (up->ier & (UART_IER_RLSI | UART_IER_RDI))) {
+                lsr = serial8250_rx_chars(up, lsr);
+        }
 
-David Wu (2):
-  ethernet: stmmac: dwmac-rk: Add gmac support for rk3562
-  ethernet: stmmac: dwmac-rk: Make the phy clock could be used for
-    external phy
+Ditto for brcmuart_hrtimer_func():
 
-Finley Xiao (7):
-  clk: rockchip: add dt-binding header for rk3562
-  clk: rockchip: Add clock controller for the RK3562
-  dt-bindings: add power-domain header for RK3562 SoC
-  nvmem: rockchip-otp: Add support for rk3568-otp
-  nvmem: rockchip-otp: Add support for rk3562
-  arm64: dts: rockchip: add core dtsi for RK3562 Soc
-  arm64: dts: rockchip: Add RK3562 evb2 devicetree
+        /* re-enable receive unless upper layer has disabled it */
+        if ((up->ier & (UART_IER_RLSI | UART_IER_RDI)) ==
+            (UART_IER_RLSI | UART_IER_RDI)) {
 
-Frank Wang (1):
-  phy: rockchip: inno-usb2: add usb2 phy support for rk3562
+Ditto for fsl8250_handle_irq():
 
-Jon Lin (1):
-  phy: rockchip-naneng-combo: Support rk3562
+                if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
+                        port->ops->stop_rx(port);
 
-Kever Yang (24):
-  dt-bindings: clock: add rk3562 cru bindings
-  dt-bindings: pinctrl: Add rk3562 pinctrl support
-  soc: rockchip: power-domain: add power domain support for rk3562
-  dt-bindings: rockchip-thermal: Support the RK3562 SoC compatible
-  dt-bindings: iio: adc: Add rockchip,rk3562-saradc string
-  dt-bindings: net: Add support for rk3562 dwmac
-  dt-bindings: nvmem: rockchip,otp: Add support for rk3562 and rk3568
-  dt-bindings: phy: rockchip: Add rk3562 naneng-combophy compatible
-  dt-bindings: phy: rockchip,inno-usb2phy: add rk3562
-  dt-bindings: PCI: dwc: rockchip: Add rk3562 support
-  dt-bindings: mmc: Add support for rk3562 eMMC
-  dt-bindings: mmc: rockchip-dw-mshc: Add rk3562 compatible string
-  dt-bindings: power: rockchip: Add bindings for rk3562
-  dt-bindings: i2c: i2c-rk3x: Add rk3562 compatible
-  dt-bindings: gpu: Add rockchip,rk3562-mali compatible
-  dt-bindings: watchdog: Add rk3562 compatible
-  dt-bindings: spi: Add rockchip,rk3562-spi compatible
-  dt-bindings: serial: snps-dw-apb-uart: Add support for rk3562
-  dt-bindings: usb: dwc3: add compatible for rk3562
-  dt-bindings: pwm: rockchip: Add rockchip,rk3562-pwm
-  dt-bindings: rockchip: pmu: Add rk3562 compatible
-  dt-bindings: soc: rockchip: Add rk3562 syscon compatibles
-  dt-bindings: arm: rockchip: Add rk3562 evb2 board
-  dt-bindings: mfd: syscon: Add rk3562 QoS register compatible
+Ditto for omap8250_irq():
 
-Shaohan Yao (1):
-  thermal: rockchip: Support the rk3562 SoC in thermal driver
+                if (up->ier & (UART_IER_RLSI | UART_IER_RDI)) {
+                        port->ops->stop_rx(port);
 
-Simon Xue (1):
-  iio: adc: rockchip_saradc: add rk3562
+> Additionally the common IRQ handler may be called at last in the custom ones
+> and hence potentially the value of saved IER might be different to what the
+> actual register is programmed to.
 
-Steven Liu (1):
-  pinctrl: rockchip: add rk3562 support
+There is only 1 place where they do not match: serial8250_do_startup()
 
- .../devicetree/bindings/arm/rockchip.yaml     |    5 +
- .../devicetree/bindings/arm/rockchip/pmu.yaml |    2 +
- .../bindings/clock/rockchip,rk3562-cru.yaml   |   62 +
- .../bindings/gpu/arm,mali-bifrost.yaml        |    3 +-
- .../devicetree/bindings/i2c/i2c-rk3x.yaml     |    1 +
- .../bindings/iio/adc/rockchip-saradc.yaml     |    2 +
- .../devicetree/bindings/mfd/syscon.yaml       |    2 +
- .../bindings/mmc/rockchip-dw-mshc.yaml        |    1 +
- .../bindings/mmc/snps,dwcmshc-sdhci.yaml      |    9 +-
- .../bindings/net/rockchip-dwmac.yaml          |    5 +-
- .../bindings/nvmem/rockchip,otp.yaml          |   49 +-
- .../bindings/pci/rockchip-dw-pcie.yaml        |    1 +
- .../phy/phy-rockchip-naneng-combphy.yaml      |    1 +
- .../bindings/phy/rockchip,inno-usb2phy.yaml   |    3 +-
- .../bindings/pinctrl/rockchip,pinctrl.yaml    |    1 +
- .../power/rockchip,power-controller.yaml      |    1 +
- .../devicetree/bindings/pwm/pwm-rockchip.yaml |    1 +
- .../bindings/serial/snps-dw-apb-uart.yaml     |    1 +
- .../devicetree/bindings/soc/rockchip/grf.yaml |    7 +
- .../devicetree/bindings/spi/spi-rockchip.yaml |    1 +
- .../bindings/thermal/rockchip-thermal.yaml    |    1 +
- .../bindings/usb/rockchip,dwc3.yaml           |    3 +
- .../bindings/watchdog/snps,dw-wdt.yaml        |    1 +
- arch/arm64/boot/dts/rockchip/Makefile         |    1 +
- .../boot/dts/rockchip/rk3562-evb2-v10.dts     |  520 ++++
- .../boot/dts/rockchip/rk3562-pinctrl.dtsi     | 2352 +++++++++++++++++
- arch/arm64/boot/dts/rockchip/rk3562.dtsi      | 1432 ++++++++++
- drivers/clk/rockchip/Kconfig                  |    7 +
- drivers/clk/rockchip/Makefile                 |    1 +
- drivers/clk/rockchip/clk-rk3562.c             | 1111 ++++++++
- drivers/clk/rockchip/clk.h                    |   39 +
- drivers/iio/adc/rockchip_saradc.c             |   24 +-
- .../net/ethernet/stmicro/stmmac/dwmac-rk.c    |  213 +-
- drivers/nvmem/rockchip-otp.c                  |   97 +
- drivers/phy/rockchip/phy-rockchip-inno-usb2.c |   49 +
- .../rockchip/phy-rockchip-naneng-combphy.c    |  152 ++
- drivers/pinctrl/pinctrl-rockchip.c            |  199 +-
- drivers/pinctrl/pinctrl-rockchip.h            |    3 +-
- drivers/pmdomain/rockchip/pm-domains.c        |   48 +-
- drivers/thermal/rockchip_thermal.c            |  112 +-
- include/dt-bindings/clock/rk3562-cru.h        |  733 +++++
- include/dt-bindings/power/rk3562-power.h      |   35 +
- 42 files changed, 7269 insertions(+), 22 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/clock/rockchip,rk3562-cru.yaml
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3562-evb2-v10.dts
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3562-pinctrl.dtsi
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3562.dtsi
- create mode 100644 drivers/clk/rockchip/clk-rk3562.c
- create mode 100644 include/dt-bindings/clock/rk3562-cru.h
- create mode 100644 include/dt-bindings/power/rk3562-power.h
+        /*
+         * Set the IER shadow for rx interrupts but defer actual interrupt
+         * enable until after the FIFOs are enabled; otherwise, an already-
+         * active sender can swamp the interrupt handler with "too much work".
+         */
+        up->ier = UART_IER_RLSI | UART_IER_RDI;
 
--- 
-2.25.1
+The IER hardware register contains 0 here.
 
+This comes from commit ee3ad90be5ec ("serial: 8250: Defer interrupt
+enable until fifos enabled").
+
+But since IER is 0, there will be no interrupt to land in any handlers
+leading to serial8250_handle_irq().
+
+> Besides that I don't remember all of the mysterious ways of DMA. May it affect
+> the value of IER and when we swtich from DMA to PIO and vice versa we get an
+> incorrect value in the saved variable?
+
+The change being made in this patch is only related to the Rx FIFO
+throttling when hardware flow control is enabled. The "feature" was
+added by commit f19c3f6c810 ("serial: 8250_port: Don't service RX FIFO
+if throttled").
+
+For the omap variant this worked because the omap variant also updates
+the @read_status_mask when unthrottling (no other variant does that).
+
+What confuses me is in 8250_omap.c:__dma_rx_complete() where there is:
+
+        __dma_rx_do_complete(p);
+        if (!priv->throttled) {
+                p->ier |= UART_IER_RLSI | UART_IER_RDI;
+                serial_out(p, UART_IER, p->ier);
+                if (!(priv->habit & UART_HAS_EFR2))
+                        omap_8250_rx_dma(p);
+        }
+
+I would expect to see:
+
+        __dma_rx_do_complete(p);
+        if (!priv->throttled) {
+                p->ier |= UART_IER_RLSI | UART_IER_RDI;
+                p->port.read_status_mask |= UART_LSR_DR;
+                serial_out(p, UART_IER, p->ier);
+        }
+
+But perhaps that is a bug. In fact, it would be exactly the bug that
+this patch is fixing because there are many places where
+@read_status_mask does not mirror Rx enable/disable status (because that
+is not the correct use of @read_status_mask).
+
+John
