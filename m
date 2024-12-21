@@ -1,221 +1,337 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8291EE7D9
-	for <linux-serial@vger.kernel.org>; Sat, 21 Dec 2024 09:54:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53CEC290F;
+	Sat, 21 Dec 2024 19:11:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734774896; cv=none; b=DUJ0wfs6E9wvMup1mMHvExg1YhYd3mEql6+IqH7y4hT/YT1RgDXcn0B2yjSd6F7ucQYlSnxqNM333sar5h6REeh/9QIydG9S8gHbJ/Py9RU9bc2pFWIGaybeX+u9jmjLvR2aYMjSQMSou2d/Uhmoy8Ej5AafcynI/yYpWJYe+QA=
+	t=1734808267; cv=none; b=gOEEn0gvR5msCVMcdNmF7rqQ4YqzUrX0hJFfHFD4kflhjz46vn9JMhNTopoQfy9CPmFTqrejHjEK3+yaoGwJL3hK89ic3y1EwXRxGongvNGf2HIFsvovK2d5tqja7n3T8/j2huzLDu/nb9x/WdYkHGHDsrwThMH4+4y0IM71Ep0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734774896; c=relaxed/simple;
-	bh=21yFNzwfr0UlLcKGuuUepm3ZtReVGYrYIeKxCX+f3bs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DDrDQdYhLp9UpBmB3elH8H5zd2cKfpgJUWseFd+Th61pwW3Lj/DNC5RLOwXluuAekzKUxvdXQmJogmW6zVQt6RXxwyPs87fuS1RqocB/2Us+Bwb4NYRsY79rh9Nk8dDgybUU0xltG8+W6jQT1wu4Ku45e1DWiY6FD7irbtTAUno=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=dsvOAYGb; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1734808267; c=relaxed/simple;
+	bh=dbZekWCBFJGefU3x3a2lF2LK8Sg1cUx/oM6Dsyo+yaU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Bpav15xQ9DxjgHvFc6R8N5oAqHGXpVNmoUpVjPSMAl8lLn4WEHEi/HSJ4Q+5tUbrjKCUQgDSZ19Tp5+LXSAKFrDvU/El28YT0a0iKEJlZjlCgXY1DbJk6NgdTz+47HmflEqxiK9MoBieGARH8qCuZIwHh72ETvsvm5qHWA71ruA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d+DnH7a7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="dsvOAYGb"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-43622267b2eso27558295e9.0
-        for <linux-serial@vger.kernel.org>; Sat, 21 Dec 2024 01:54:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1734774893; x=1735379693; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cwAZFmUQt4eB0rDP0wgTLdFM56hhqo5cdun9nc3XWhI=;
-        b=dsvOAYGbBPA3Eext4/AfcijmAjAxFI7Kyik0hZa0kIqinm8lslPnVsaWhYeR48j1vC
-         9W+h/wXbuBDtycvZGFPCDTl5ln1ch+mGeev205g9H1s5T+iRK1cU/RVwQe20FsD6WGWq
-         OEUwBpwll+dB4xRhShtiP5pOLuaZQ5sMy6XazFdVaGdilM0011Q0I12DDuu0ZZG8tO9F
-         ywf1vdq5FHMZgT7tXMy1PZjp9GR4tJjqjgTOoggKHqLHxEA8HLg9vrmZwg/jSW6ip1Jf
-         wg/mCnbFHj5iQNJnJW57Nx5wujIEYcKgOADc+/zWYyZUuNxB85EDzjeQVFBwtSqo+TIb
-         KPkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734774893; x=1735379693;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cwAZFmUQt4eB0rDP0wgTLdFM56hhqo5cdun9nc3XWhI=;
-        b=h/zQbjfHI0RXCK0sPARo4fJFlYqkM+nb1VLyvW/bYEEmV0BgRFk1J4P91hY60Vdd8o
-         jJoKl2pIEUI0HbZOoY1k15Nr6weeOobyqTfYDX/D002y3oDMFecVPCLwntzdjeclI6Gp
-         31Q9TlrBU1P9egTMpesT9oPyC4oHd9Pkh5zf4vx3+M78pX6za4dEB/a02McvMBiYTK9K
-         mjGoVPbn8217CeYXZciX58DmKWQGVHDQSAiBa8hTmsI4aNcsB6A5b4I668A1X2/Gg1Rm
-         gamWUy8/ESYy6QiqyfClNa0RCZ9dlCQen64P0TdzOFbiLrnwoR8YvJn4DeMq/dbLbaL2
-         jSPA==
-X-Forwarded-Encrypted: i=1; AJvYcCU5dcnepM8z7TqzKVl+MZHfpGDw0NkCjJM9gPUOdxXJBhzVAuDsev6qz+SwG+jeHiuSNIxFIo/54Navkso=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwEwyoDOoZnWqYTuNlxi3JdJFsie/vhCHZo8/ouSS6FtAfPa/dn
-	vZe4nRK6IA5RScV71IBzoRynumQTdszfBfLLKJGR2Z8fs7RzQDP7LJma725yzcc=
-X-Gm-Gg: ASbGnctfleWhgAJgefJCbDuu14LndpTcuzCbeBwndsW0xZY8VI19U0CW6BUx+gsWENX
-	K22aOzDrLoNNgNz9DXJ2NFdYY6L1HZHhN9Hhws8417rVL29PvvftJ4wUrYs5wgee2LCkffR5iJK
-	FB+iU6BCH8liIm0ah1UT6My8uuSVrdcMFdgT9H5ZWbKMUgBUd09EatavxA2a7j2UKtYbkQ1Z3uP
-	PimhSyppPlazhVxyjNekPKKu3fPtfWY0J3NCEJITU6L3hg7nYnQpU/cQqwiIxja2A==
-X-Google-Smtp-Source: AGHT+IHcKoHkfYzPKUW32sn+bxr45pcsRO8/E29M/H30qFi/thG67nRERccO7sSQQ0/VwWFJDwPcFQ==
-X-Received: by 2002:a05:600c:1c12:b0:431:58cd:b259 with SMTP id 5b1f17b1804b1-4366d356dfcmr48118195e9.31.1734774893024;
-        Sat, 21 Dec 2024 01:54:53 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.102])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4366128a44fsm70694785e9.43.2024.12.21.01.54.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Dec 2024 01:54:52 -0800 (PST)
-Message-ID: <c2b64230-f038-4da7-bc07-235072535ae1@tuxon.dev>
-Date: Sat, 21 Dec 2024 11:54:51 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d+DnH7a7"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C40A4C4CECE;
+	Sat, 21 Dec 2024 19:11:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1734808266;
+	bh=dbZekWCBFJGefU3x3a2lF2LK8Sg1cUx/oM6Dsyo+yaU=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=d+DnH7a7iqqZ1OHv47Aj+jI8PG7k933dxnE31/GNOg5Uel1QwzoT5UTJ7Zspzg6fI
+	 emBU3BaPFLDAc4CKPfnz80Fle/mtg+Zife5qvM5UfK5OC0CgeCrModh1GByr/cmsOq
+	 zGc29Eb2R/HH5eONX5sBnIxO99iy3SqH08SJVFM4/bbRkdKI7R/6K6XJgi2rHHcUXZ
+	 1qkDKeS0YB9yBw18jQh3o3CdwSePHvnG6nwKpk7AY0wbrV3M/6ts2b+9YAvTNnur9q
+	 xKF0erwrlFXjpfO2HLkJPfwtQ5X2z+cknE4ncLuArQtvNy0PSMrw4zb9kZLwCbzKBN
+	 zCw+ZW1fjGSlg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4546E7718D;
+	Sat, 21 Dec 2024 19:11:06 +0000 (UTC)
+From: Miroslav Ondra via B4 Relay <devnull+ondra.faster.cz@kernel.org>
+Date: Sat, 21 Dec 2024 20:11:04 +0100
+Subject: [PATCH v3] serial: amba-pl011: Fix RTS handling in RS485 mode
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFT 0/6] serial: sh-sci: Fixes for earlycon and
- keep_bootcon
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
- gregkh@linuxfoundation.org, jirislaby@kernel.org,
- prabhakar.mahadev-lad.rj@bp.renesas.com, lethal@linux-sh.org,
- g.liakhovetski@gmx.de, groeck@chromium.org, mka@chromium.org,
- ulrich.hecht+renesas@gmail.com, ysato@users.sourceforge.jp,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-renesas-soc@vger.kernel.org,
- Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-References: <20241204155806.3781200-1-claudiu.beznea.uj@bp.renesas.com>
- <Z1DLyQdzUzJzRUJJ@shikoro> <b6c7b4d3-021c-4a4b-9e91-316603b348c1@tuxon.dev>
- <CAMuHMdWx97OnPWnQn78oL+vVuQXmeaJP-byc_4ZwBMZhMOorxw@mail.gmail.com>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Content-Language: en-US
-In-Reply-To: <CAMuHMdWx97OnPWnQn78oL+vVuQXmeaJP-byc_4ZwBMZhMOorxw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20241221-amba-rts-v3-1-d3d444681419@faster.cz>
+X-B4-Tracking: v=1; b=H4sIAMcSZ2cC/03Muw7CMAyF4VepPGOUuMVcJt4DMSSpQzO0RU5UI
+ aq+O1Enxk/n6F8hiybJcGtWUFlSTvNU0R4aCIObXoKprwYy1Fkii270DrVkDCfmzopnPnuo97d
+ KTJ899XhWR51HLIOK+wsYxtHlIooLoUVDTJc+mJbD9R734Ri+sG0/2yR94JgAAAA=
+X-Change-ID: 20241221-amba-rts-c56641eb667b
+To: Russell King <linux@armlinux.org.uk>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
+ Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Miroslav Ondra <ondra@faster.cz>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1734808265; l=8755;
+ i=ondra@faster.cz; s=20241119; h=from:subject:message-id;
+ bh=7ww/fR+R85ZDHAyR5oTN8K0ZX8dloPYYuhfT7PVTHig=;
+ b=z+ZpYP/eKWyQH4FovOr7wq4aqgZLEDeo3R2grj2HYncGHjLBFEcihivRZuvG5buXdc5Vw2BZQ
+ gLMw737c8zNDJVRP3Iz0nnmRu94H0WUupYuhcz5lukdJHcXVxkLx4OA
+X-Developer-Key: i=ondra@faster.cz; a=ed25519;
+ pk=OgmjYvFJ0npSTnp6LOgY/siJeZ/6t3nOEs4jE9vm0Oc=
+X-Endpoint-Received: by B4 Relay for ondra@faster.cz/20241119 with
+ auth_id=282
+X-Original-From: Miroslav Ondra <ondra@faster.cz>
+Reply-To: ondra@faster.cz
 
-Hi, Geert,
+From: Miroslav Ondra <ondra@faster.cz>
 
-On 19.12.2024 17:11, Geert Uytterhoeven wrote:
-> Hi Claudiu,
-> 
-> On Thu, Dec 5, 2024 at 9:39 AM Claudiu Beznea <claudiu.beznea@tuxon.dev> wrote:
->> On 04.12.2024 23:38, Wolfram Sang wrote:
->>>> in the following scenarios:
->>>>
->>>> 1/ "earlycon keep_bootcon" were present in bootargs
->>>> 2/ only "earlycon" was present in bootargs
->>>> 3/ none of the "earlycon" or "earlycon keep_bootcon" were present in
->>>>    bootargs
->>> ...
->>>> Please give it a try on your devices as well.
->>>
->>> Will happily do so. Is there something to look for? Except for "it
->>> works"?
->>
->> As this code touches the earlycon functionality, of interest are the 3
->> cases highlighted above:
->>
->> 1/ "earlycon keep_bootcon" are both present in bootargs
->> 2/ only "earlycon" is present in bootargs
->> 3/ none of the "earlycon" or "earlycon keep_bootcon" are present in
->>    bootargs
->>
->> One other thing, that I was currently able to test only on RZ/G3S, is to
->> see how it behaves when the debug serial is described in DT with an alias
->> other than zero. E.g., on [1] the debug serial alias on RZ/G3S was changed
->> from 0 to 3. With the new alias (3) there were issues that I've tried to
->> fix with this series.
-> 
-> I gave this a try on Koelsch, which has two easily-accessible usb-serial
-> ports, for all three cases above.  Originally, I had CONFIG_VT_CONSOLE=y
-> (tty0 takes over from earlycon rather early), but I had to disable
-> that to exercise all code paths (ttySC0 takes over much later).
-> 
->   A. CONFIG_VT_CONSOLE=y: OK
->   B. CONFIG_VT_CONSOLE=y earlycon: OK
->        early_console_setup: mapbase 0x00000000e6e60000
->        earlycon: scif0 at MMIO 0x00000000e6e60000 (options '115200n8')
->        printk: legacy bootconsole [scif0] enabled
->        printk: legacy console [tty0] enabled
->        printk: legacy bootconsole [scif0] disabled
->        early_console_exit: Clearing sci_ports[0]
->   C. CONFIG_VT_CONSOLE=n earlycon: OK
->        early_console_setup: mapbase 0x00000000e6e60000
->        earlycon: scif0 at MMIO 0x00000000e6e60000 (options '115200n8')
->        printk: legacy bootconsole [scif0] enabled
->        printk: legacy console [ttySC0] enabled
->        printk: legacy bootconsole [scif0] disabled
->        early_console_exit: Not clearing sci_ports[0]
->   D. CONFIG_VT_CONSOLE=y earlycon keep_bootcon: OK
->        early_console_setup: mapbase 0x00000000e6e60000
->        earlycon: scif0 at MMIO 0x00000000e6e60000 (options '115200n8')
->        printk: legacy bootconsole [scif0] enabled
->        printk: legacy console [tty0] enabled
-> 
-> So all good, but note that these cases worked fine without your
-> series, too.
-> 
-> The real troublesome cases involve using earlycon on a different
-> serial port than serial0.  As I don't have any Renesas boards where
-> chosen/stdout-path does not use serial0, I tried exchanging the serial0
-> and serial1 DT aliases, and updating chosen/stdout-path accordingly.
-> 
->   E. CONFIG_VT_CONSOLE=y: OK
->   F. CONFIG_VT_CONSOLE=y earlycon: OK
->        early_console_setup: mapbase 0x00000000e6e60000
->        earlycon: scif0 at MMIO 0x00000000e6e60000 (options '115200n8')
->        printk: legacy bootconsole [scif0] enabled
->        printk: legacy console [tty0] enabled
->        printk: legacy bootconsole [scif0] disabled
->        early_console_exit: Clearing sci_ports[0]
->   G. CONFIG_VT_CONSOLE=y earlycon keep_bootcon: SCIF1 missing
->        early_console_setup: mapbase 0x00000000e6e60000
->        earlycon: scif0 at MMIO 0x00000000e6e60000 (options '115200n8')
->        printk: legacy bootconsole [scif0] enabled
->        printk: legacy console [tty0] enabled
->        sh-sci e6e68000.serial: error -EBUSY: sci_port[0] is used by earlycon!
->   H. CONFIG_VT_CONSOLE=n earlycon: SCIF1 missing
->        early_console_setup: mapbase 0x00000000e6e60000
->        earlycon: scif0 at MMIO 0x00000000e6e60000 (options '115200n8')
->        printk: legacy bootconsole [scif0] enabled
->        printk: legacy console [ttySC1] enabled
->        printk: legacy bootconsole [scif0] disabled
->        early_console_exit: Not clearing sci_ports[0]
->        sh-sci e6e68000.serial: error -EBUSY: sci_port[0] is used by earlycon!
-> 
-> Case G gives a missing SCIF1, because sci_port[0] is still
-> used for earlycon, as expected.
-> Case H also gives a missing SCIF1, but should succeed IMHO, as earlycon
-> is no longer active.  I think early_console_exit() should clear the
-> earlycon flag regardless.
+Data loss on serial line was observed during communication through
+serial ports ttyAMA1 and ttyAMA2 interconnected via RS485 transcievers.
+Both ports are in one BCM2711 (Compute Module CM40) and they share
+the same interrupt line.
 
-I'll double check it.
+The problem is caused by long waiting for tx queue flush in the function
+pl011_rs485_tx_stop. Udelay or mdelay are used to wait.
+The function is called from the interrupt handler. If multiple devices
+share a single interrupt line, late processing of pending interrupts
+and data loss may occur. When operation of both devices are synchronous,
+collisions are quite often.
 
-> 
-> Note that before your series, cases E-F worked too, but cases G-H gave
-> an initialized but broken SCIF1 instead.
-> 
-> Now, can we improve?
->   - Can we use a proper id instead of zero for earlycon, e.g.
->     sci_probe_earlyprintk() does fill in early_serial_console.index?
+This rework is based on the method used in tty/serial/imx.c
+Use hrtimer instead of udelay and mdelay calls.
+Replace simple bool variable rs485_tx_started by 4-state variable
+rs485_tx_state.
 
-I looked into that but, as of my investigation, index zero is the one used
-in the earlyprintk initialization process. sci_probe_earlyprintk() is
-called from sci_probe(). I'll double checked it though, anyway.
+Tested-by: Lino Sanfilippo <l.sanfilippo@kunbus.com>
+Signed-off-by: Miroslav Ondra <ondra@faster.cz>
+---
+Thanks Lino for testing.
+Thanks Greg for the advice.
+---
+Changes in v3:
+- Collect tags from tester
+- Link to v2: https://lore.kernel.org/r/20241206-master-v2-1-02628dc036c9@faster.cz
 
+Changes in v2:
+- Reword commit message to explain the problem.
+- Link to v1: https://lore.kernel.org/r/20241123-master-v1-1-260194426ea3@faster.cz
+---
+ drivers/tty/serial/amba-pl011.c | 126 ++++++++++++++++++++++++++++++----------
+ 1 file changed, 96 insertions(+), 30 deletions(-)
 
->   - Alternatively, can we use a separate sci_port structure instead
->     of abusing sci_ports[0]?
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 69b7a3e1e418e200944b0b0429b6341d71ecff26..04212c823a91d5a343327292d8ffd95be1465473 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -248,6 +248,13 @@ struct pl011_dmatx_data {
+ 	bool			queued;
+ };
+ 
++enum pl011_rs485_tx_state {
++	OFF,
++	WAIT_AFTER_RTS,
++	SEND,
++	WAIT_AFTER_SEND,
++};
++
+ /*
+  * We wrap our port structure around the generic uart_port.
+  */
+@@ -261,8 +268,10 @@ struct uart_amba_port {
+ 	unsigned int		fifosize;	/* vendor-specific */
+ 	unsigned int		fixed_baud;	/* vendor-set fixed baud rate */
+ 	char			type[12];
+-	bool			rs485_tx_started;
+-	unsigned int		rs485_tx_drain_interval; /* usecs */
++	ktime_t			rs485_tx_drain_interval; /* nano */
++	enum pl011_rs485_tx_state	rs485_tx_state;
++	struct hrtimer		trigger_start_tx;
++	struct hrtimer		trigger_stop_tx;
+ #ifdef CONFIG_DMA_ENGINE
+ 	/* DMA stuff */
+ 	unsigned int		dmacr;		/* dma control reg */
+@@ -1260,30 +1269,31 @@ static inline bool pl011_dma_rx_running(struct uart_amba_port *uap)
+ 
+ static void pl011_rs485_tx_stop(struct uart_amba_port *uap)
+ {
+-	/*
+-	 * To be on the safe side only time out after twice as many iterations
+-	 * as fifo size.
+-	 */
+-	const int MAX_TX_DRAIN_ITERS = uap->port.fifosize * 2;
+ 	struct uart_port *port = &uap->port;
+-	int i = 0;
+ 	u32 cr;
+ 
+-	/* Wait until hardware tx queue is empty */
+-	while (!pl011_tx_empty(port)) {
+-		if (i > MAX_TX_DRAIN_ITERS) {
+-			dev_warn(port->dev,
+-				 "timeout while draining hardware tx queue\n");
+-			break;
+-		}
++	if (uap->rs485_tx_state == SEND)
++		uap->rs485_tx_state = WAIT_AFTER_SEND;
+ 
+-		udelay(uap->rs485_tx_drain_interval);
+-		i++;
++	if (uap->rs485_tx_state == WAIT_AFTER_SEND) {
++		/* Schedule hrtimer if tx queue not empty */
++		if (!pl011_tx_empty(port)) {
++			hrtimer_start(&uap->trigger_stop_tx,
++				      uap->rs485_tx_drain_interval,
++				      HRTIMER_MODE_REL);
++			return;
++		}
++		if (port->rs485.delay_rts_after_send > 0) {
++			hrtimer_start(&uap->trigger_stop_tx,
++				      ms_to_ktime(port->rs485.delay_rts_after_send),
++				      HRTIMER_MODE_REL);
++			return;
++		}
++		/* Continue without any delay */
++	} else if (uap->rs485_tx_state == WAIT_AFTER_RTS) {
++		hrtimer_try_to_cancel(&uap->trigger_start_tx);
+ 	}
+ 
+-	if (port->rs485.delay_rts_after_send)
+-		mdelay(port->rs485.delay_rts_after_send);
+-
+ 	cr = pl011_read(uap, REG_CR);
+ 
+ 	if (port->rs485.flags & SER_RS485_RTS_AFTER_SEND)
+@@ -1296,7 +1306,7 @@ static void pl011_rs485_tx_stop(struct uart_amba_port *uap)
+ 	cr |= UART011_CR_RXE;
+ 	pl011_write(cr, uap, REG_CR);
+ 
+-	uap->rs485_tx_started = false;
++	uap->rs485_tx_state = OFF;
+ }
+ 
+ static void pl011_stop_tx(struct uart_port *port)
+@@ -1304,11 +1314,18 @@ static void pl011_stop_tx(struct uart_port *port)
+ 	struct uart_amba_port *uap =
+ 	    container_of(port, struct uart_amba_port, port);
+ 
++	if (port->rs485.flags & SER_RS485_ENABLED &&
++	    uap->rs485_tx_state == WAIT_AFTER_RTS) {
++		pl011_rs485_tx_stop(uap);
++		return;
++	}
++
+ 	uap->im &= ~UART011_TXIM;
+ 	pl011_write(uap->im, uap, REG_IMSC);
+ 	pl011_dma_tx_stop(uap);
+ 
+-	if ((port->rs485.flags & SER_RS485_ENABLED) && uap->rs485_tx_started)
++	if (port->rs485.flags & SER_RS485_ENABLED &&
++	    uap->rs485_tx_state != OFF)
+ 		pl011_rs485_tx_stop(uap);
+ }
+ 
+@@ -1328,10 +1345,19 @@ static void pl011_rs485_tx_start(struct uart_amba_port *uap)
+ 	struct uart_port *port = &uap->port;
+ 	u32 cr;
+ 
++	if (uap->rs485_tx_state == WAIT_AFTER_RTS) {
++		uap->rs485_tx_state = SEND;
++		return;
++	}
++	if (uap->rs485_tx_state == WAIT_AFTER_SEND) {
++		hrtimer_try_to_cancel(&uap->trigger_stop_tx);
++		uap->rs485_tx_state = SEND;
++		return;
++	}
++	/* uap->rs485_tx_state == OFF */
+ 	/* Enable transmitter */
+ 	cr = pl011_read(uap, REG_CR);
+ 	cr |= UART011_CR_TXE;
+-
+ 	/* Disable receiver if half-duplex */
+ 	if (!(port->rs485.flags & SER_RS485_RX_DURING_TX))
+ 		cr &= ~UART011_CR_RXE;
+@@ -1343,10 +1369,14 @@ static void pl011_rs485_tx_start(struct uart_amba_port *uap)
+ 
+ 	pl011_write(cr, uap, REG_CR);
+ 
+-	if (port->rs485.delay_rts_before_send)
+-		mdelay(port->rs485.delay_rts_before_send);
+-
+-	uap->rs485_tx_started = true;
++	if (port->rs485.delay_rts_before_send > 0) {
++		uap->rs485_tx_state = WAIT_AFTER_RTS;
++		hrtimer_start(&uap->trigger_start_tx,
++			      ms_to_ktime(port->rs485.delay_rts_before_send),
++			      HRTIMER_MODE_REL);
++	} else {
++		uap->rs485_tx_state = SEND;
++	}
+ }
+ 
+ static void pl011_start_tx(struct uart_port *port)
+@@ -1355,13 +1385,44 @@ static void pl011_start_tx(struct uart_port *port)
+ 	    container_of(port, struct uart_amba_port, port);
+ 
+ 	if ((uap->port.rs485.flags & SER_RS485_ENABLED) &&
+-	    !uap->rs485_tx_started)
++	    uap->rs485_tx_state != SEND) {
+ 		pl011_rs485_tx_start(uap);
++		if (uap->rs485_tx_state == WAIT_AFTER_RTS)
++			return;
++	}
+ 
+ 	if (!pl011_dma_tx_start(uap))
+ 		pl011_start_tx_pio(uap);
+ }
+ 
++static enum hrtimer_restart pl011_trigger_start_tx(struct hrtimer *t)
++{
++	struct uart_amba_port *uap =
++	    container_of(t, struct uart_amba_port, trigger_start_tx);
++	unsigned long flags;
++
++	uart_port_lock_irqsave(&uap->port, &flags);
++	if (uap->rs485_tx_state == WAIT_AFTER_RTS)
++		pl011_start_tx(&uap->port);
++	uart_port_unlock_irqrestore(&uap->port, flags);
++
++	return HRTIMER_NORESTART;
++}
++
++static enum hrtimer_restart pl011_trigger_stop_tx(struct hrtimer *t)
++{
++	struct uart_amba_port *uap =
++	    container_of(t, struct uart_amba_port, trigger_stop_tx);
++	unsigned long flags;
++
++	uart_port_lock_irqsave(&uap->port, &flags);
++	if (uap->rs485_tx_state == WAIT_AFTER_SEND)
++		pl011_rs485_tx_stop(uap);
++	uart_port_unlock_irqrestore(&uap->port, flags);
++
++	return HRTIMER_NORESTART;
++}
++
+ static void pl011_stop_rx(struct uart_port *port)
+ {
+ 	struct uart_amba_port *uap =
+@@ -1953,7 +2014,7 @@ static void pl011_shutdown(struct uart_port *port)
+ 
+ 	pl011_dma_shutdown(uap);
+ 
+-	if ((port->rs485.flags & SER_RS485_ENABLED) && uap->rs485_tx_started)
++	if ((port->rs485.flags & SER_RS485_ENABLED && uap->rs485_tx_state != OFF))
+ 		pl011_rs485_tx_stop(uap);
+ 
+ 	free_irq(uap->port.irq, uap);
+@@ -2098,7 +2159,7 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	 * with the given baud rate. We use this as the poll interval when we
+ 	 * wait for the tx queue to empty.
+ 	 */
+-	uap->rs485_tx_drain_interval = DIV_ROUND_UP(bits * 1000 * 1000, baud);
++	uap->rs485_tx_drain_interval = ns_to_ktime(DIV_ROUND_UP(bits * NSEC_PER_SEC, baud));
+ 
+ 	pl011_setup_status_masks(port, termios);
+ 
+@@ -2807,6 +2868,11 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 		}
+ 	}
+ 
++	hrtimer_init(&uap->trigger_start_tx, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++	hrtimer_init(&uap->trigger_stop_tx, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++	uap->trigger_start_tx.function = pl011_trigger_start_tx;
++	uap->trigger_stop_tx.function = pl011_trigger_stop_tx;
++
+ 	ret = pl011_setup_port(&dev->dev, uap, &dev->res, portnr);
+ 	if (ret)
+ 		return ret;
 
-I explored this too, but didn't manage to make it work.
+---
+base-commit: 8155b4ef3466f0e289e8fcc9e6e62f3f4dceeac2
+change-id: 20241221-amba-rts-c56641eb667b
 
-Thank you for running all these tests,
-Claudiu
+Best regards,
+-- 
+Miroslav Ondra <ondra@faster.cz>
 
-> 
-> Thanks!
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
 
