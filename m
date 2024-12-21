@@ -1,63 +1,63 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3604F1EC4CA
-	for <linux-serial@vger.kernel.org>; Sat, 21 Dec 2024 09:16:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B5DB1DE2D7
+	for <linux-serial@vger.kernel.org>; Sat, 21 Dec 2024 09:20:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734772585; cv=none; b=coByINsH8+UgUR89alRopnewKaHvpRsxII0jMdSem+U5ylSjrMUK5nRAG1QWH98oqd/vBTB12tyZQPKWmvqSPhLBehItDbkFL7HJma7v0rYtCGnk1Av1wzfB7TF7R7tYEWzpGIbsdFxs0n6MXfTIVEpmZ8pZwaaPoqvJPlvqnVs=
+	t=1734772857; cv=none; b=O00xosOnYbGFZti4Uv1c0lU9KxDuroV0tMyl2mZhLIVKUEAAWwQ3FLw/WUFC6gx87aOHeOtYSRH09La4lCMx5kGaN1/rWJWcVWknObwyFjXxUUGJnRHHs4ZTLFvMkuEvmc7OHXZStfAVUbqoFtAuqPYJtiP9kQzco9Mhh80iUb0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734772585; c=relaxed/simple;
-	bh=EFzshZOaAHiXln3S9ny1EvTjPXRIIhUR6sm1JxbAkRg=;
+	s=arc-20240116; t=1734772857; c=relaxed/simple;
+	bh=VHnZv4XouvakSLRVDy7IS8oaB15YN6IWvRDzQGCuB9I=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AOTqIk2qnhwBZ2Jl3JfR4YYmK+wBalQ165mBxfFnUKr0KJKG7CZZMQJSjE+930RAchcs+b9l119LZVI7cQmd6zRBqhlvXFg/GZK3SaWvsv4snFfKFXvtQOd/D/PZxM7ci1/Q56mY+qWRGKjzM2PP8YruUHNQTfXHhZFr6QOr9tM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=AaaEw4HT; arc=none smtp.client-ip=209.85.218.51
+	 In-Reply-To:Content-Type; b=SqsU3J6zmj1VEdV/dMVXAvz/TTEGhxuTbFLDOu8YCX8apbZ42KOlNLvCvWurpKmM70QY0uPrYPNYg3ZFT0MB5kmEkktnO7CvJMMKmZBGSivQ5pzEPymsFInlfzpqbI8DPqRvZPXN45hiaVW2D3XW6Kh2l7czHP6nS6TykMXWm9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=Sw+01yZA; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="AaaEw4HT"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-aa5f1909d6fso420922466b.3
-        for <linux-serial@vger.kernel.org>; Sat, 21 Dec 2024 01:16:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="Sw+01yZA"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-3863c36a731so2131545f8f.1
+        for <linux-serial@vger.kernel.org>; Sat, 21 Dec 2024 01:20:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1734772581; x=1735377381; darn=vger.kernel.org;
+        d=tuxon.dev; s=google; t=1734772854; x=1735377654; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:content-language:from
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=I7y7OwDWmkLJB5LcPl9h/nsEPz8MIspvq4TozD4gpmk=;
-        b=AaaEw4HTDMfytB9HwBt0eWNJjpz4oJU5Z7jCa430vzzohZOH+IovJvc2FHKbfbYV9d
-         0FegVBtNUNeF2C4XTApYm41EmIhzHH659pP3IsNIcCI5+l1AwD4KC/9wi76NY0frdQBv
-         XuCupPu71j6ubiSsUKM2XkbOQLeEwK6IOboCyRbEfTYGmnOblNtz9eOp04+DnOmnrD7y
-         xG6VRejVU2l2Z7GrQcT6CH36g4oTBn33h0jJbYKdRL4HP+tfpOjSNdxaXwAGvXJYp2GX
-         Uow1AfxUqPfcVKMAwLRAn8BO1X+TS1fvH5/assHfrwdW289HP0uztUJ2YexYQIzjRLP0
-         SZcA==
+        bh=e0De87n2R9OMl1pqS66ZPnGoUWbdTS9Pio0ovVmKAmI=;
+        b=Sw+01yZAH2gypGA3QP2U/FmENIH+WKZJHdZmwyul3tce+qA2uD3Avqe09a0YxRb+y7
+         nyi/WJkqUx1p+XOxrave3xE2UDLDY6Kg3t/Bi7tNnzpK6sEVFRkOJ81j9qoMN5e+LJJ0
+         oDL/Y5ZuT5oBb/wenLHErX9ubcDwAh0aoyNSYRB4PRKKEVCyxAVAkYTcTFlEAfiNfOYS
+         EIN4lJNuLkXXiGJZ/YKQQBdh4EQNcNRF+D8YQ+r/H2PvbGvGMZ0uMFti8/w5kuS+JBHy
+         qrIYWjUNbZGrnN/F1K79hZMzK6DayNIxj/OLkLSOWBSxb3PgCkWK5U4TBJGpitjOEyHb
+         z4wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734772581; x=1735377381;
+        d=1e100.net; s=20230601; t=1734772854; x=1735377654;
         h=content-transfer-encoding:in-reply-to:content-language:from
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=I7y7OwDWmkLJB5LcPl9h/nsEPz8MIspvq4TozD4gpmk=;
-        b=E1lVP0hXnIuoQxDhPNQEwsa3HuRrQMUfxecp+dS4FPoRC8xfBdeagoJjTnj4dSlTXt
-         zLSVCGZEFHxvLp+flpfeeIXpvmTXHm5IHUVESxCZzjgMojNNsrSJ2GAYnbXTTFjWr6AY
-         tDjRXMPjraS+x5H9qQRWk1spkDzMSz4gx7viacnsU0lqkVtS5ztKb22iCXTKuM6jroJm
-         U+o5bG3Nlti7g6eFgMjzy1ihYKZ+C4MYdQqgTEOjtSr5BwlcYzWmXtSK6G7eg6TOon0k
-         Kyyj5vGjaCuMjiLdq4gMY/9VMQMTevKT9fw6f4V7psV2p99l0qu0w8/nWB5jYORxNETf
-         FGpw==
-X-Forwarded-Encrypted: i=1; AJvYcCXun7YDijWcjXz7V2AlZsrJ/fS5atvwCTChRr4gwOuybkJ9NZmYCo/8EWVuWUnH7nF7Uyn7qRzLb8CpbwA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxqZR6wnvcdDoVAZB/CV9XMUjYTiqujmG2qlBYbmb4+BVdo36ff
-	YZNXBSoLx097dOYS2lEWQMA3baf9Aw2v3BeHe69NE+cfdPlVH2lvxGZcaFVCZyI=
-X-Gm-Gg: ASbGncvo9aMlOzqvyPZFZNPFI94AZ8+SEr6+Z9rQ8jLx4kXY1QcEllAF1+Y7/uCMrIS
-	pigfe1f905nv7RdrWaVoiTuz6hYtsUZ+jXcy0aHG7pt3bUQyARu1JpOglWJWksGHMvhDJ4PLN0G
-	9x3Rkn4b8Ip4Uv0oDtgaHZGk53GHvv0eacBfLBrbPJwrPSa6cfuL7F+OUo6kSDyf24XxrmkjInD
-	6fONzFxkE5ZqqrvSJoPYZsL7ZirsfmpYbV+RHXYyTxiL2Vi+qr6njLsr8imwmJezg==
-X-Google-Smtp-Source: AGHT+IH6Mir6kvKhmopEih92UvP+T0jN4L75qV3Wl9MZkk+P+O1n54beK06Tmw3gpGrq/IpPTKrwPQ==
-X-Received: by 2002:a17:907:94c6:b0:aa6:79fa:b47d with SMTP id a640c23a62f3a-aac2703375bmr565246966b.1.1734772581479;
-        Sat, 21 Dec 2024 01:16:21 -0800 (PST)
+        bh=e0De87n2R9OMl1pqS66ZPnGoUWbdTS9Pio0ovVmKAmI=;
+        b=fz5TedBYnsHEpA5o9qZGT+duV8jcuGQrLFzIRQT4Td54wKFmoMNIgwrBm+DTqSgwYy
+         +538Bdx2LSlvUh1nnVdngNBEe1PMnHevLz2sYsRI/dJItECS4ATFoQGKfhVK33ND6Q2O
+         13q9T58+2xtKmVpw6PIbHwAGeXSWyQs6y/FNdaVkCoj7iNkHtXEcly39IjX+fondO8sm
+         8rhoswEFyTcJRA3DJyUcinoJKl/uiBYoDGyl/inBtWFwF9nZnnqMyqhxUnnhgQUFxl9Y
+         d1K7FLrJQSBqHNzFXwWu6tv/ipIt+GVbN7vEzEYgdh/uTJGJ/P2Ce7KQu0Uqxpesy3Dj
+         EfAw==
+X-Forwarded-Encrypted: i=1; AJvYcCVKKmVDZdyQ+bBT/MwRPOqThsKSU8JeKwIsN/dAAAdjZiyPCnb1JRoYhXGUThaozP1Q1xDSBn6bb2hj8A4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxenEm/lUImOlOUpU3JeaBPcHDyqdE/nS3EP0r42a7HkLGb6f5z
+	eGqcDS8skULxFwQ6JJON0EPZuTG5aFouBqb0deBENwXL/h7rMsA8d0bkW4nyL08=
+X-Gm-Gg: ASbGnctxui2Ci1EVy01h091m38f9yiS0eGZJVnX9ntowIER6mTFufkAUOcwNk5zkN03
+	MWQIkw+VcEQMZi21ddL78CBowviQ3lfaGiCZuwlRnowyoNyijMQI61UXvlmmwfaq6FueKgVvor6
+	KsTC5lGk6+AW7Ktq924z3ivtMEbQ8SL38yF8Qqof0kn27i4NDBfUc1EHAEwaZlRL+ahUFEfa2Xj
+	V1oft4veirPWqKB8EdJlPIyPpOBLdNKxD2N7ODGeaVcaEm5tsPPI2pO7umkaHRiYg==
+X-Google-Smtp-Source: AGHT+IHSawxlzvKqoAwoM2xEIw/46BhuVjzkLBsLv+6XyaH9hxc35l2vQOjv8VzuN9mJzjfLSVNtuw==
+X-Received: by 2002:a05:6000:70a:b0:385:e176:4420 with SMTP id ffacd0b85a97d-38a221e2c89mr5559230f8f.10.1734772853650;
+        Sat, 21 Dec 2024 01:20:53 -0800 (PST)
 Received: from [192.168.50.4] ([82.78.167.102])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0f065391sm259457366b.178.2024.12.21.01.16.19
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43656af6c25sm104008455e9.8.2024.12.21.01.20.51
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Dec 2024 01:16:20 -0800 (PST)
-Message-ID: <316408fc-156d-4c80-b62e-bcf1c4bd3c08@tuxon.dev>
-Date: Sat, 21 Dec 2024 11:16:19 +0200
+        Sat, 21 Dec 2024 01:20:52 -0800 (PST)
+Message-ID: <7685c7a7-3bba-4709-bdb2-1dba22af9146@tuxon.dev>
+Date: Sat, 21 Dec 2024 11:20:51 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -65,8 +65,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFT 1/6] serial: sh-sci: Check if TX data was written to
- device in .tx_empty()
+Subject: Re: [PATCH RFT 3/6] serial: sh-sci: Move runtime PM enable to
+ sci_probe_single()
 To: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
  wsa+renesas@sang-engineering.com, prabhakar.mahadev-lad.rj@bp.renesas.com,
@@ -74,81 +74,73 @@ Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
  mka@chromium.org, ulrich.hecht+renesas@gmail.com,
  ysato@users.sourceforge.jp, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
- Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, stable@vger.kernel.org
+ Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 References: <20241204155806.3781200-1-claudiu.beznea.uj@bp.renesas.com>
- <20241204155806.3781200-2-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdWv-+gWkH2K0r740BaKLwnTm7RdOTd71DkWMDR0A52qEA@mail.gmail.com>
+ <20241204155806.3781200-4-claudiu.beznea.uj@bp.renesas.com>
+ <CAMuHMdWQ_kHd3qi3j4D4keyxbaKE5MS6ZzDwJBaNJ4b5skr1QA@mail.gmail.com>
 From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
 Content-Language: en-US
-In-Reply-To: <CAMuHMdWv-+gWkH2K0r740BaKLwnTm7RdOTd71DkWMDR0A52qEA@mail.gmail.com>
+In-Reply-To: <CAMuHMdWQ_kHd3qi3j4D4keyxbaKE5MS6ZzDwJBaNJ4b5skr1QA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Hi, Geert,
 
-On 19.12.2024 11:46, Geert Uytterhoeven wrote:
+
+On 19.12.2024 12:18, Geert Uytterhoeven wrote:
 > Hi Claudiu,
 > 
 > On Wed, Dec 4, 2024 at 4:58 PM Claudiu <claudiu.beznea@tuxon.dev> wrote:
 >> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 >>
->> On the Renesas RZ/G3S, when doing suspend to RAM, the uart_suspend_port()
->> is called. The uart_suspend_port() calls 3 times the
->> struct uart_port::ops::tx_empty() before shutting down the port.
+>> Relocate the runtime PM enable operation to sci_probe_single(). This change
+>> prepares the codebase for upcoming fixes.
 >>
->> According to the documentation, the struct uart_port::ops::tx_empty()
->> API tests whether the transmitter FIFO and shifter for the port is
->> empty.
+>> While at it, replace the existing logic with a direct call to
+>> devm_pm_runtime_enable() and remove sci_cleanup_single(). The
+>> devm_pm_runtime_enable() function automatically handles disabling runtime
+>> PM during driver removal.
 >>
->> The Renesas RZ/G3S SCIFA IP reports the number of data units stored in the
->> transmit FIFO through the FDR (FIFO Data Count Register). The data units
->> in the FIFOs are written in the shift register and transmitted from there.
->> The TEND bit in the Serial Status Register reports if the data was
->> transmitted from the shift register.
->>
->> In the previous code, in the tx_empty() API implemented by the sh-sci
->> driver, it is considered that the TX is empty if the hardware reports the
->> TEND bit set and the number of data units in the FIFO is zero.
->>
->> According to the HW manual, the TEND bit has the following meaning:
->>
->> 0: Transmission is in the waiting state or in progress.
->> 1: Transmission is completed.
->>
->> It has been noticed that when opening the serial device w/o using it and
->> then switch to a power saving mode, the tx_empty() call in the
->> uart_port_suspend() function fails, leading to the "Unable to drain
->> transmitter" message being printed on the console. This is because the
->> TEND=0 if nothing has been transmitted and the FIFOs are empty. As the
->> TEND=0 has double meaning (waiting state, in progress) we can't
->> determined the scenario described above.
->>
->> Add a software workaround for this. This sets a variable if any data has
->> been sent on the serial console (when using PIO) or if the DMA callback has
->> been called (meaning something has been transmitted). In the tx_empty()
->> API the status of the DMA transaction is also checked and if it is
->> completed or in progress the code falls back in checking the hardware
->> registers instead of relying on the software variable.
->>
->> Fixes: 73a19e4c0301 ("serial: sh-sci: Add DMA support.")
->> Cc: stable@vger.kernel.org
 >> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> Thanks for your patch, which is now commit 7cc0e0a43a910524 ("serial:
-> sh-sci: Check if TX data was written to device in .tx_empty()") in
-> v6.13-rc3.
+> 
+> Thanks for your patch!
 > 
 >> --- a/drivers/tty/serial/sh-sci.c
 >> +++ b/drivers/tty/serial/sh-sci.c
->> @@ -885,6 +887,7 @@ static void sci_transmit_chars(struct uart_port *port)
->>                 }
+>> @@ -3440,7 +3434,6 @@ static int sci_probe_single(struct platform_device *dev,
 >>
->>                 sci_serial_out(port, SCxTDR, c);
->> +               s->tx_occurred = true;
-> And you cannot use the existing port->icount.tx below, as that is not
-> reset to zero on sci_startup(), right?
+>>         ret = uart_add_one_port(&sci_uart_driver, &sciport->port);
+>>         if (ret) {
+>> -               sci_cleanup_single(sciport);
+>>                 return ret;
+>>         }
+> 
+> Next line is:
+> 
+>     return 0;
+> 
+> so please just merge that into
+> 
+>     return uart_add_one_port(&sci_uart_driver, &sciport->port);
+> 
 
-I missed that the driver is incrementing the port->icount.tx . I'm not sure
-we can use it though, as it is not reset on sci_startup(), as you pointed out.
+You're right with these.
+
+> Actually [PATCH 5/6] makes that change, but there is no reason not
+> to do that here.
+
+I remember I chose to keep it like this as I had the impression that if I
+format the patches as proposed by you the 5/6 will just revert what I will
+have been done in this patch. But I think I was wrong.
 
 Thank you,
 Claudiu
+
+> 
+> For the logical changes:
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> 
+> Gr{oetje,eeting}s,
+> 
+>                         Geert
+> 
+
