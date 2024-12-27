@@ -1,131 +1,144 @@
-Received: from mail-il1-f206.google.com (mail-il1-f206.google.com [209.85.166.206])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 424D41F7087
-	for <linux-serial@vger.kernel.org>; Fri, 27 Dec 2024 18:44:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.206
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 614D580BFF;
+	Fri, 27 Dec 2024 22:45:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735325064; cv=none; b=ciVBEsT+FSabSV3Che/KoIYDh4V7mYAvr17Q8xHEtJDkAijxYmiG25t2ARm02zZpuhrE+8k9QyLE7IBbVQmOMIz413f2tCzh3Di55P3BNwWqoKoHpXc1khAI1vr7u/h7APymE9UO4DaERFmbwZkvFFAHfnQpFh6B+wFECjI8LDU=
+	t=1735339532; cv=none; b=sZUQ7uqkpVHYywRbDYgMAUQ9X3fWRNVEqlCYYhxLusJNScHepQe5k2mg9P2wT8eBCPNyeA5G/fPc9EWYwZZteR70urvxa8eBdj9P1pqbg6pZ5dbft7eLX29nGo4bRQ4Ben+0gymnXu3H/JfzSf5Co2yHS581UMIIqH/1vUyq3ec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735325064; c=relaxed/simple;
-	bh=4Apqgk9J+qUO6aCGaYWhcAnAjBxazJVUjn+gJXevae0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:
-	 Content-Type; b=UNbeevWTZ038L8OWTpwLJGol5dVpX9B3PsJTv7ePXdzNFMo9TJNr/P/XBjYPUDSvlFevaft8vjhtrXOsWhdsvWnnCsIUVBGa5SbrHEu+BNzoeJwuNN/UGw+jdHgqSoyD/iszjXB7hS26OT01+ey8jAwG3fRDfDkCSgXT1oRRIng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.206
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f206.google.com with SMTP id e9e14a558f8ab-3a9d303a5ccso152241125ab.3
-        for <linux-serial@vger.kernel.org>; Fri, 27 Dec 2024 10:44:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735325062; x=1735929862;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QPLqgAYcTKqGFZTcRORvA/ervUIhqvNETbWJ36PvHYA=;
-        b=YUpcNVaoV2XxMw4MEB26eZA/ScFl5VXeIrYH8/bQj9J0OAG/IBuW5YNK66+k3jClZV
-         cinRVqa/mapZ28O534fmfk8q9vYnhqldIhKeBv47arEs5UyaXH/hg8jucmcqRvzmcxCX
-         JgmSqPTUa6b41+sTfALPGkHWqO4P6xtcsO/VglNHpCjWgtwzxh0HJRn3uGVuTpfMQtou
-         T0ctZpil/Y3YdaE/377stGwnC07IJVADYPRphfrUA+qolucIlZr96fXdPL65l/7LDLuw
-         u+ZptDjX+nXzNercObLV2p+zwjG5OWJ8UD5VbzL7JDDm0kjHdHq4Gt1JzKkA0oa5fLX6
-         KIRg==
-X-Forwarded-Encrypted: i=1; AJvYcCUrDOI+XmLTBbQat5SiN3pFyF9z3a9dV5zNuohs7Kim2auHcfuHRtFIwzg2TBTRQtoBzrYodaMWrnVGu7U=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzq31eYSuOSscT7OwRLtzcOoMbAZAG0r/sYcUF/AX8a6+pQx1u3
-	byMuzWYZWjEVUbzR5RuXUuYVyxIEoZAnSl2a/C54U8EZhJMSLQmF6OlPc8uZ75dlNWBibSXHZem
-	FmVdiNdnHpgcoWiLQFeB8Lc+ssqfo53cyQtLvBPmCOPqmQS3OtGmtdRw=
-X-Google-Smtp-Source: AGHT+IHp0MaWIWdDPAGEw0AGKngFiwtXvdOmX1Dez8hWVfg9TJHL/HAk7AyilKVDhNIVsGihYW6JiQ9Zn3pgzB1R54iz3BAYd6Ov
+	s=arc-20240116; t=1735339532; c=relaxed/simple;
+	bh=O33YSYtXgqXc0GtVduPaec6FhwXtK8kS8uZrc/TVatc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=pUB46EPRvlTaQSumywnSYbG+BOmANlXy2FCv9Yx08asS4H86V1UEEv489aKqiZCwXTd0a+IYXKFuCbHNqr0tO8JXAkSTvGpqtgdh+NVf1MkdwtlaLc7nQCPa7drsr0BBRMnOH7EwutZV+EP1fDdDl/gd3vel5WldUXFWVQYBVUg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=yxy+X+LQ; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=coYk0RSi; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="yxy+X+LQ";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="coYk0RSi"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1735339524;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=AU+OvOmPVS0Qfj6w2emgT2IVnoV9nyph0SjDWXQfu+k=;
+	b=yxy+X+LQNTzces/KTsZ8rjBKxhO8UIC08KJByrPEqIIEVFjXbulBBvloejidTWtd7OYtzr
+	lLsxGQNwADm2B5TlR0GOsiqLqcSC2/ymIt2wyNpY00mLgDt1u6RmHjcXSKJfAz7RuDA24L
+	Z20ysMbPGpDGMgD28u43MJlLAWWdOW3AKBHd2+whubtlx4eGt9CoMOSR46So6qU9qZOm+l
+	M6C16a2dxvi39tQT8agmzkygEmJXzRxyCFxwusd8xiELbwodG3LQjy76BpDN61FKDZ4e7i
+	codwrS/t4oR8qiRvav97ioX+nV8l3XSzfMn901qOVcw+jJ4qVNphsUkEfTLB4Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1735339524;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=AU+OvOmPVS0Qfj6w2emgT2IVnoV9nyph0SjDWXQfu+k=;
+	b=coYk0RSiNWl0CeOAXg0GxU63IELeK5oCDPQCfYG0iVFCYoluNCDxHPydMexRLPZv7b441l
+	exTiXqRZK7P1y5AA==
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Petr Mladek <pmladek@suse.com>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Esben Haabendal <esben@geanix.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Rengarajan S <rengarajan.s@microchip.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Wander Lairson Costa <wander@redhat.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Sunil V L <sunilvl@ventanamicro.com>,
+	Matt Turner <mattst88@gmail.com>,
+	Stefan Wahren <wahrenst@gmx.net>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+	Kevin Hilman <khilman@baylibre.com>,
+	Markus Schneider-Pargmann <msp@baylibre.com>,
+	Udit Kumar <u-kumar1@ti.com>,
+	Griffin Kroah-Hartman <griffin@kroah.com>,
+	linux-rpi-kernel@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org,
+	Tony Lindgren <tony@atomide.com>
+Subject: [PATCH tty-next v4 0/6] convert 8250 to nbcon
+Date: Fri, 27 Dec 2024 23:51:16 +0106
+Message-Id: <20241227224523.28131-1-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:19ca:b0:3a7:e7bd:9f09 with SMTP id
- e9e14a558f8ab-3c2d1e7df64mr225258345ab.5.1735325062495; Fri, 27 Dec 2024
- 10:44:22 -0800 (PST)
-Date: Fri, 27 Dec 2024 10:44:22 -0800
-In-Reply-To: <0000000000000a1b9a0620097bad@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <676ef586.050a0220.2f3838.0488.GAE@google.com>
-Subject: Re: [syzbot] [serial?] KMSAN: uninit-value in n_tty_receive_buf_closing
- (3)
-From: syzbot <syzbot+dd514b5f0cf048aec256@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-syzbot has found a reproducer for the following issue on:
+This is v4 of a series to convert the 8250 driver to an NBCON
+console, providing both threaded and atomic printing
+implementations. v3 of this series is here [0]. Additional
+background information about NBCON consoles in general is
+available in the cover letter of v2 [1].
 
-HEAD commit:    d6ef8b40d075 Merge tag 'sound-6.13-rc5' of git://git.kerne..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=106692c4580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=f9048090d7bb0d06
-dashboard link: https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
-compiler:       Debian clang version 15.0.6, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1741d018580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16b87adf980000
+The changes since v3:
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/956144bfc94b/disk-d6ef8b40.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/fdff012f5017/vmlinux-d6ef8b40.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/c97fa2a32556/bzImage-d6ef8b40.xz
+- For callbacks ->rs485_stop_tx() and ->rs485_start_tx(),
+  rename argument @in_con to @toggle_ier (inverts meaning).
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+dd514b5f0cf048aec256@syzkaller.appspotmail.com
+- For univ8250_console_device_lock() and
+  univ8250_console_device_unlock(), rename argument @con to @co.
 
-=====================================================
-BUG: KMSAN: uninit-value in n_tty_receive_char_closing drivers/tty/n_tty.c:1454 [inline]
-BUG: KMSAN: uninit-value in n_tty_receive_buf_closing+0x539/0xb40 drivers/tty/n_tty.c:1567
- n_tty_receive_char_closing drivers/tty/n_tty.c:1454 [inline]
- n_tty_receive_buf_closing+0x539/0xb40 drivers/tty/n_tty.c:1567
- __receive_buf drivers/tty/n_tty.c:1630 [inline]
- n_tty_receive_buf_common+0x196b/0x2490 drivers/tty/n_tty.c:1739
- n_tty_receive_buf2+0x4c/0x60 drivers/tty/n_tty.c:1785
- tty_ldisc_receive_buf+0xd0/0x290 drivers/tty/tty_buffer.c:387
- tty_port_default_receive_buf+0xdf/0x190 drivers/tty/tty_port.c:37
- receive_buf drivers/tty/tty_buffer.c:445 [inline]
- flush_to_ldisc+0x473/0xdb0 drivers/tty/tty_buffer.c:495
- process_one_work kernel/workqueue.c:3229 [inline]
- process_scheduled_works+0xae0/0x1c40 kernel/workqueue.c:3310
- worker_thread+0xea7/0x14f0 kernel/workqueue.c:3391
- kthread+0x3e2/0x540 kernel/kthread.c:389
- ret_from_fork+0x6d/0x90 arch/x86/kernel/process.c:147
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
+- Do not introduce helpers __serial8250_stop_rx_mask_dr(),
+  __serial8250_stop_rx_int(), __serial8250_start_rx_int().
 
-Uninit was created at:
- slab_post_alloc_hook mm/slub.c:4125 [inline]
- slab_alloc_node mm/slub.c:4168 [inline]
- __do_kmalloc_node mm/slub.c:4297 [inline]
- __kmalloc_noprof+0x923/0x1230 mm/slub.c:4310
- kmalloc_noprof include/linux/slab.h:905 [inline]
- tty_buffer_alloc drivers/tty/tty_buffer.c:180 [inline]
- __tty_buffer_request_room+0x36e/0x6d0 drivers/tty/tty_buffer.c:273
- __tty_insert_flip_string_flags+0x140/0x570 drivers/tty/tty_buffer.c:309
- tty_insert_flip_char include/linux/tty_flip.h:77 [inline]
- uart_insert_char+0x39e/0xa10 drivers/tty/serial/serial_core.c:3550
- serial8250_read_char+0x1a7/0x5d0 drivers/tty/serial/8250/8250_port.c:1763
- serial8250_rx_chars drivers/tty/serial/8250/8250_port.c:1780 [inline]
- serial8250_handle_irq+0x970/0x1130 drivers/tty/serial/8250/8250_port.c:1944
- serial8250_default_handle_irq+0x120/0x2b0 drivers/tty/serial/8250/8250_port.c:1969
- serial8250_interrupt+0xc5/0x360 drivers/tty/serial/8250/8250_core.c:86
- __handle_irq_event_percpu+0x118/0xca0 kernel/irq/handle.c:158
- handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
- handle_irq_event+0xef/0x2c0 kernel/irq/handle.c:210
- handle_edge_irq+0x340/0xfb0 kernel/irq/chip.c:831
- generic_handle_irq_desc include/linux/irqdesc.h:173 [inline]
- handle_irq arch/x86/kernel/irq.c:247 [inline]
- call_irq_handler arch/x86/kernel/irq.c:259 [inline]
- __common_interrupt+0x97/0x1f0 arch/x86/kernel/irq.c:285
- common_interrupt+0x92/0xb0 arch/x86/kernel/irq.c:278
- asm_common_interrupt+0x2b/0x40 arch/x86/include/asm/idtentry.h:693
+- Use @frame_time to determine per-character timeout, fallback
+  to 10ms if @frame_time not available.
 
-CPU: 1 UID: 0 PID: 59 Comm: kworker/u8:3 Not tainted 6.13.0-rc4-syzkaller-00054-gd6ef8b40d075 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/13/2024
-Workqueue: events_unbound flush_to_ldisc
-=====================================================
+- Use shorter code syntax when setting @console_line_ended.
+
+- Introduce helper function fifo_wait_for_lsr() to wait for
+  multiple characters.
+
+- For serial8250_console_fifo_write() and
+  serial8250_console_byte_write(), remove unnecessary
+  READ_ONCE() usage.
+
+- For serial8250_console_fifo_write() and
+  serial8250_console_byte_write(), use nbcon_can_proceed()
+  rather than repeatedly enter/exit unsafe regions.
+
+- Initialize @modem_status_work using init_irq_work() rather
+  than IRQ_WORK_INIT().
+
+- Commit message and comment style cleanups as requested.
+
+John Ogness
+
+[0] https://lore.kernel.org/lkml/20241025105728.602310-1-john.ogness@linutronix.de
+[1] https://lore.kernel.org/lkml/20240913140538.221708-1-john.ogness@linutronix.de
+
+John Ogness (6):
+  serial: 8250: Adjust the timeout for FIFO mode
+  serial: 8250: Use frame rate to determine timeout
+  serial: 8250: Use high-level writing function for FIFO
+  serial: 8250: Provide flag for IER toggling for RS485
+  serial: 8250: Switch to nbcon console
+  serial: 8250: Revert "drop lockdep annotation from
+    serial8250_clear_IER()"
+
+ drivers/tty/serial/8250/8250.h            |   4 +-
+ drivers/tty/serial/8250/8250_bcm2835aux.c |   4 +-
+ drivers/tty/serial/8250/8250_core.c       |  35 +++-
+ drivers/tty/serial/8250/8250_omap.c       |   2 +-
+ drivers/tty/serial/8250/8250_port.c       | 223 +++++++++++++++++-----
+ include/linux/serial_8250.h               |  12 +-
+ 6 files changed, 214 insertions(+), 66 deletions(-)
 
 
----
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
+base-commit: 2c1fd53af21b8cb13878b054894d33d3383eb1f3
+-- 
+2.39.5
+
