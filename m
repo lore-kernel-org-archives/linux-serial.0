@@ -1,62 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B37781474A7;
-	Fri, 27 Dec 2024 07:38:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06D0214A0BC;
+	Fri, 27 Dec 2024 07:43:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735285136; cv=none; b=DCKxCx0RTFPYUF7PQk1TXhRFgLfE63TmGGWWd/zu+vvYnl9moU06xP1TcEgsvtPytS3cqvt5FDkqviPvQlYkxM782t9kqK072cSfpYyQvlTvTkFWzXgZvBd8Z8vtc6B+SKpOgn147726k6f9ouCO3Ukd4066QqM5fRF33OjrH3g=
+	t=1735285422; cv=none; b=hcDCVezIPGSVUjPh8Shj7cmE3QX/F4IBs9zt9jUsDq0RQnFUYAwIVCTq6bMR5jGUMeSV3wSSHinV/p6o4s8haCeB7vDLysK/V8VapOCaVQScKfLOlU0ep5ARfz98XkiMrkCf59Lc4wNx4nq/PBdSbI75CWhDD9kEW52KnSvvZ0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735285136; c=relaxed/simple;
-	bh=Wf+SvqNi6slsfwtp9CR+b3C0cjM1BKcBVm093pQ2syc=;
+	s=arc-20240116; t=1735285422; c=relaxed/simple;
+	bh=zZhOuRm+PASsS+k7ZVAuUfCNT4LIZdHw6OjN5ARVmYY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pRrxx5VDFIoJzyeI7JA/eqOOdRGnFP4Fx24UF9/GEWn6uMRrVkU1RtSCgO7Btb/E69kTlCVdD5thKswR53WAj810f1glIgzLvQeYUERE49JMpipzEGIcWSXGHqj2QX67wM7t6LbuQ3ITH4wbN/5jBjScwJU0n1RSSAb9Q+q61RA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aTuE13RY; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=RlM22XnNXR6E/z0wBZfCH9PVu1wb6dVJcuRiVUGn24eqe6tPShlEb5csXiNqdTXBVQ+YptZhBJPnknwWFUWDn7iD8gu18RdQZ5L9PKjeJAlHVEKUsYX5oif31Dkc5HEmRI4FpmN9Z0gy4HUJkgAiPnpSntfQRPe6WCG+BqjG0sU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ddaAuQgS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aTuE13RY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E6D2C4CED3;
-	Fri, 27 Dec 2024 07:38:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ddaAuQgS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05BF0C4CED0;
+	Fri, 27 Dec 2024 07:43:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1735285136;
-	bh=Wf+SvqNi6slsfwtp9CR+b3C0cjM1BKcBVm093pQ2syc=;
+	s=k20201202; t=1735285421;
+	bh=zZhOuRm+PASsS+k7ZVAuUfCNT4LIZdHw6OjN5ARVmYY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=aTuE13RYXpFbp4ATHOcud1qoWz6gazgLh6G7+g6K+m+MYZPlTmlVRioMn0km9mkEE
-	 nnTTjnBXZJevN4SHX8nPschH5OjNfKocnRCSFM9T8KfGnWGkIXoZljNeczyVXhfrx1
-	 4BNhx+ANKF+gAznsdRteWmHrJJHiGVK6UDkVMsbK3RCzUiOLDiC6akwNed3GJjIbe/
-	 0ik79J2Z8Ye9WlYsQNJfZ0hF9PF84uZjnNMtpTuI4RgbKUM0h6TZ6SgiULSqNfU7tX
-	 IS5ZupcP/HvUDTuTG6HDZbZoFJSnMfh91qi+HIUmZhi6NOdjhwR245l5M6wLVCG3nM
-	 iZrIdyQYy8NzQ==
-Date: Fri, 27 Dec 2024 08:38:53 +0100
+	b=ddaAuQgSf19y8QIcXS+2Ll0bc63nSIiRT8kMrzva8xDQsFvZbGV9SEcEIw1GqrrRH
+	 OaQKN8ksOpMvxiYdim4SAHFzA1YENP8igJvyAW7zUNVowAgReoZ+iaykOvrmNrpFFB
+	 NuDjGEejKAv3J9DVwlHhkQg8nBjTdCuc/lba+sLOdqxUb8mTQY97MEY2NQwcfkKUCQ
+	 1bYTBm182WBLA035A00yQdP30CSotsLf556gfpyVBzYDsJJyNU2fW1qJ12/OIwMsDT
+	 vR6+uo2xESGxTlS8NEjJ0nzzNdKHsCYjF/TVBioiZLy9aqxigL3DvbmyLr6YZuZ2gr
+	 R9HhrrfjoH5Ew==
+Date: Fri, 27 Dec 2024 08:43:38 +0100
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Kever Yang <kever.yang@rock-chips.com>
 Cc: heiko@sntech.de, linux-rockchip@lists.infradead.org, 
-	Simon Xue <xxm@rock-chips.com>, Guenter Roeck <linux@roeck-us.net>, 
-	Mark Brown <broonie@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, 
-	Frank Wang <frank.wang@rock-chips.com>, Jamie Iles <jamie@jamieiles.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>, 
-	Johan Jonker <jbx6244@gmail.com>, David Airlie <airlied@gmail.com>, 
-	dri-devel@lists.freedesktop.org, Sebastian Reichel <sebastian.reichel@collabora.com>, 
-	linux-i2c@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>, 
-	Simona Vetter <simona@ffwll.ch>, Elaine Zhang <zhangqing@rock-chips.com>, 
-	Conor Dooley <conor+dt@kernel.org>, Finley Xiao <finley.xiao@rock-chips.com>, 
-	Maxime Ripard <mripard@kernel.org>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, 
-	FUKAUMI Naoki <naoki@radxa.com>, linux-pwm@vger.kernel.org, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Andy Yan <andyshrk@163.com>, linux-serial@vger.kernel.org, 
-	Michael Riesch <michael.riesch@wolfvision.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, devicetree@vger.kernel.org, 
-	Diederik de Haas <didi.debian@cknow.org>, linux-watchdog@vger.kernel.org, Rob Herring <robh@kernel.org>, 
-	Lee Jones <lee@kernel.org>, Cristian Ciocaltea <cristian.ciocaltea@collabora.com>, 
-	Wim Van Sebroeck <wim@linux-watchdog.org>, Shresth Prasad <shresthprasad7@gmail.com>, 
-	Tim Lunn <tim@feathertop.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, linux-arm-kernel@lists.infradead.org, 
-	Ulf Hansson <ulf.hansson@linaro.org>, Jisheng Zhang <jszhang@kernel.org>, 
-	Dragan Simic <dsimic@manjaro.org>, Detlev Casanova <detlev.casanova@collabora.com>, 
-	linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-usb@vger.kernel.org, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Subject: Re: [PATCH v2 00/17] rockchip: Add rk3562 support
-Message-ID: <sasnc2ocxnlfp4kprsobu5gkajjb5wdxhld73bg6xocgb3foah@yjmphtvpmyff>
+	devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, 
+	Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, linux-serial@vger.kernel.org, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 09/17] dt-bindings: serial: snps-dw-apb-uart: Add
+ support for rk3562
+Message-ID: <etw5iuii7i7mmedlvqkuufis5pl7zlyiipnu4zeqmfjrvsc2vb@ptgw76zcpsm7>
 References: <20241224094920.3821861-1-kever.yang@rock-chips.com>
+ <20241224094920.3821861-10-kever.yang@rock-chips.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -65,51 +47,14 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20241224094920.3821861-1-kever.yang@rock-chips.com>
+In-Reply-To: <20241224094920.3821861-10-kever.yang@rock-chips.com>
 
-On Tue, Dec 24, 2024 at 05:49:03PM +0800, Kever Yang wrote:
-> 
-> This patch set adds rk3562 SoC and its evb support.
-> 
-> Split out patches belong to different subsystem.
-> 
-> Test with GMAC, USB, PCIe, EMMC, SD Card.
-> 
-> This patch set is base on the patche set for rk3576 evb1 support.
-> 
-> Changes in v2:
-> - Update in sort order
-> - remove grf in cru
-> - Update some properties order
-> 
-> Finley Xiao (2):
->   arm64: dts: rockchip: add core dtsi for RK3562 Soc
->   arm64: dts: rockchip: Add RK3562 evb2 devicetree
-> 
-> Kever Yang (15):
->   dt-bindings: PCI: dwc: rockchip: Add rk3562 support
->   dt-bindings: mmc: Add support for rk3562 eMMC
->   dt-bindings: mmc: rockchip-dw-mshc: Add rk3562 compatible string
->   dt-bindings: power: rockchip: Add bindings for rk3562
->   dt-bindings: i2c: i2c-rk3x: Add rk3562 compatible
->   dt-bindings: gpu: Add rockchip,rk3562-mali compatible
->   dt-bindings: watchdog: Add rk3562 compatible
->   dt-bindings: spi: Add rockchip,rk3562-spi compatible
->   dt-bindings: serial: snps-dw-apb-uart: Add support for rk3562
->   dt-bindings: usb: dwc3: add compatible for rk3562
->   dt-bindings: pwm: rockchip: Add rockchip,rk3562-pwm
->   dt-bindings: rockchip: pmu: Add rk3562 compatible
->   dt-bindings: soc: rockchip: Add rk3562 syscon compatibles
->   dt-bindings: arm: rockchip: Add rk3562 evb2 board
->   dt-bindings: mfd: syscon: Add rk3562 QoS register compatible
+On Tue, Dec 24, 2024 at 05:49:12PM +0800, Kever Yang wrote:
+> Add rockchip,rk3562-uart compitable for rk3562.
 
-You squezzed here like 12 different subsystems. Some of these changes
-suggest missing drivers.
+Typos.
 
-Please read basic upstreaming guide, some previous discussions and get
-internal rock-chips help so we want repeat basics over and over.
-
-Bindings are with drivers. Send them to respective subsystems.
+This we see from the diff. Say something not obvious. Where is the driver change? Why aren't the devices compatible?
 
 Best regards,
 Krzysztof
