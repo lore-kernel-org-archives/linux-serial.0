@@ -1,180 +1,116 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D514A1361;
-	Thu, 26 Dec 2024 13:38:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B37781474A7;
+	Fri, 27 Dec 2024 07:38:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735220325; cv=none; b=MZPKKrrqopvKnF74Oi1Ct4SB4igDSiFYUummkbiknch+MXmxXvIEm2xZr08Nugf2AbnVmNkDv37YNmBOr+luXa+S2M0nenDFjfeaYPWcOW3N2LUrMemZtEnT3o7nmfSQcyObvjwcpHmR8dKCe3uzMvpBzztDAgT0CTbBI874I3Y=
+	t=1735285136; cv=none; b=DCKxCx0RTFPYUF7PQk1TXhRFgLfE63TmGGWWd/zu+vvYnl9moU06xP1TcEgsvtPytS3cqvt5FDkqviPvQlYkxM782t9kqK072cSfpYyQvlTvTkFWzXgZvBd8Z8vtc6B+SKpOgn147726k6f9ouCO3Ukd4066QqM5fRF33OjrH3g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735220325; c=relaxed/simple;
-	bh=WYke9+vLr6vfJ3rn/cjhIdid/DzARTS6PvTjk395DNY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=WDKrmgpjkXeWyB1gE/2B8ZVjPWb/GrdovPbDrpNdcGnF1OJS5bXy4ogie+zwjZQxNIKd1s1iOs2GbKO8/WU5oSNHkJHSzFxfQybMHkdaQ5+3dJfpcVm1gN7tXCvm9Jm1khoO86hLlAHUaQTak43bdX8uZgLZVpaUB4mqRBtN+Vc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=kOKrFGSC; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1735285136; c=relaxed/simple;
+	bh=Wf+SvqNi6slsfwtp9CR+b3C0cjM1BKcBVm093pQ2syc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pRrxx5VDFIoJzyeI7JA/eqOOdRGnFP4Fx24UF9/GEWn6uMRrVkU1RtSCgO7Btb/E69kTlCVdD5thKswR53WAj810f1glIgzLvQeYUERE49JMpipzEGIcWSXGHqj2QX67wM7t6LbuQ3ITH4wbN/5jBjScwJU0n1RSSAb9Q+q61RA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aTuE13RY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="kOKrFGSC"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 4BQ88eAD010707;
-	Thu, 26 Dec 2024 13:38:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	3KXw8WGBI6QW5i0g5MDRf3Se/LD8G7Qa5+z7cpb4ShI=; b=kOKrFGSC4zNARbSf
-	WyitBAagefF9sryXJkkRcsb3f4IT24KUn+9Wp0c0cVZHVSUnpLfr/80CQT7KWyl7
-	2Y8OOD8vdaDD8ShKPswn3m6KgCUX2exJ9mvCQWUTqXqExi0N+TbOmWnN2ZVNYQnU
-	i1A3QIJj8sfjrKJvp1FNXV3ZrntOn8z1gzwT+Xbh+5mWzEjePeFYc/7VVnA7+bxH
-	U3BAPrcb2HVF2FfRO4NA1m8VkCyOwklZk2mK93vxmdyPXb5jJmW7r21B6vKt7ol1
-	qclUD6uT2dopyLX1NmcLkUugJ97Cv8HANCQq63gtEckOb0mG1iGC4K/BYq4H1L4q
-	L9/oqQ==
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 43s3cf9xen-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 26 Dec 2024 13:38:39 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 4BQDccKM012126
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 26 Dec 2024 13:38:38 GMT
-Received: from [10.239.133.66] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 26 Dec
- 2024 05:38:37 -0800
-Message-ID: <77a51ad7-c002-470e-ad6b-13bb7312811d@quicinc.com>
-Date: Thu, 26 Dec 2024 21:38:29 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aTuE13RY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E6D2C4CED3;
+	Fri, 27 Dec 2024 07:38:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1735285136;
+	bh=Wf+SvqNi6slsfwtp9CR+b3C0cjM1BKcBVm093pQ2syc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=aTuE13RYXpFbp4ATHOcud1qoWz6gazgLh6G7+g6K+m+MYZPlTmlVRioMn0km9mkEE
+	 nnTTjnBXZJevN4SHX8nPschH5OjNfKocnRCSFM9T8KfGnWGkIXoZljNeczyVXhfrx1
+	 4BNhx+ANKF+gAznsdRteWmHrJJHiGVK6UDkVMsbK3RCzUiOLDiC6akwNed3GJjIbe/
+	 0ik79J2Z8Ye9WlYsQNJfZ0hF9PF84uZjnNMtpTuI4RgbKUM0h6TZ6SgiULSqNfU7tX
+	 IS5ZupcP/HvUDTuTG6HDZbZoFJSnMfh91qi+HIUmZhi6NOdjhwR245l5M6wLVCG3nM
+	 iZrIdyQYy8NzQ==
+Date: Fri, 27 Dec 2024 08:38:53 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Kever Yang <kever.yang@rock-chips.com>
+Cc: heiko@sntech.de, linux-rockchip@lists.infradead.org, 
+	Simon Xue <xxm@rock-chips.com>, Guenter Roeck <linux@roeck-us.net>, 
+	Mark Brown <broonie@kernel.org>, Chris Morgan <macromorgan@hotmail.com>, 
+	Frank Wang <frank.wang@rock-chips.com>, Jamie Iles <jamie@jamieiles.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org, Jonas Karlman <jonas@kwiboo.se>, 
+	Johan Jonker <jbx6244@gmail.com>, David Airlie <airlied@gmail.com>, 
+	dri-devel@lists.freedesktop.org, Sebastian Reichel <sebastian.reichel@collabora.com>, 
+	linux-i2c@vger.kernel.org, Shawn Lin <shawn.lin@rock-chips.com>, 
+	Simona Vetter <simona@ffwll.ch>, Elaine Zhang <zhangqing@rock-chips.com>, 
+	Conor Dooley <conor+dt@kernel.org>, Finley Xiao <finley.xiao@rock-chips.com>, 
+	Maxime Ripard <mripard@kernel.org>, Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>, 
+	FUKAUMI Naoki <naoki@radxa.com>, linux-pwm@vger.kernel.org, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Andy Yan <andyshrk@163.com>, linux-serial@vger.kernel.org, 
+	Michael Riesch <michael.riesch@wolfvision.net>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, devicetree@vger.kernel.org, 
+	Diederik de Haas <didi.debian@cknow.org>, linux-watchdog@vger.kernel.org, Rob Herring <robh@kernel.org>, 
+	Lee Jones <lee@kernel.org>, Cristian Ciocaltea <cristian.ciocaltea@collabora.com>, 
+	Wim Van Sebroeck <wim@linux-watchdog.org>, Shresth Prasad <shresthprasad7@gmail.com>, 
+	Tim Lunn <tim@feathertop.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, linux-arm-kernel@lists.infradead.org, 
+	Ulf Hansson <ulf.hansson@linaro.org>, Jisheng Zhang <jszhang@kernel.org>, 
+	Dragan Simic <dsimic@manjaro.org>, Detlev Casanova <detlev.casanova@collabora.com>, 
+	linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, 
+	linux-usb@vger.kernel.org, Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Subject: Re: [PATCH v2 00/17] rockchip: Add rk3562 support
+Message-ID: <sasnc2ocxnlfp4kprsobu5gkajjb5wdxhld73bg6xocgb3foah@yjmphtvpmyff>
+References: <20241224094920.3821861-1-kever.yang@rock-chips.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: mips_ejtag_fdc: Call cpu_relax() in registers
- polling busy loops
-To: Greg KH <gregkh@linuxfoundation.org>
-CC: <jirislaby@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>
-References: <20241219124254.321778-1-quic_zhonhan@quicinc.com>
- <2024121943-spearmint-yard-4cab@gregkh>
- <edfed594-a22a-4cd1-90d2-2b9f9f878f73@quicinc.com>
- <2024122019-blame-multitask-8d83@gregkh>
-Content-Language: en-US
-From: Zhongqiu Han <quic_zhonhan@quicinc.com>
-In-Reply-To: <2024122019-blame-multitask-8d83@gregkh>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: qpVdWdrL_bRcnm6DS1jO65RKDIBsSGTb
-X-Proofpoint-ORIG-GUID: qpVdWdrL_bRcnm6DS1jO65RKDIBsSGTb
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- clxscore=1015 bulkscore=0 adultscore=0 mlxlogscore=892 spamscore=0
- phishscore=0 lowpriorityscore=0 impostorscore=0 priorityscore=1501
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2412260120
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20241224094920.3821861-1-kever.yang@rock-chips.com>
 
-On 12/20/2024 11:06 PM, Greg KH wrote:
-> On Fri, Dec 20, 2024 at 09:46:27PM +0800, Zhongqiu Han wrote:
->> On 12/19/2024 9:28 PM, Greg KH wrote:
->>> On Thu, Dec 19, 2024 at 08:42:54PM +0800, Zhongqiu Han wrote:
->>>> It is considered good practice to call cpu_relax() in busy loops, see
->>>> Documentation/process/volatile-considered-harmful.rst. This can lower CPU
->>>> power consumption or yield to a hyperthreaded twin processor, or serve as
->>>> a compiler barrier. In addition, if something goes wrong in the busy loop
->>>> at least it can prevent things from getting worse.
->>>>
->>>> Signed-off-by: Zhongqiu Han <quic_zhonhan@quicinc.com>
->>>> ---
->>>>    drivers/tty/mips_ejtag_fdc.c | 4 ++--
->>>>    1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/tty/mips_ejtag_fdc.c b/drivers/tty/mips_ejtag_fdc.c
->>>> index afbf7738c7c4..b17ead1e9698 100644
->>>> --- a/drivers/tty/mips_ejtag_fdc.c
->>>> +++ b/drivers/tty/mips_ejtag_fdc.c
->>>> @@ -346,7 +346,7 @@ static void mips_ejtag_fdc_console_write(struct console *c, const char *s,
->>>>    		/* Busy wait until there's space in fifo */
->>>>    		while (__raw_readl(regs + REG_FDSTAT) & REG_FDSTAT_TXF)
->>>> -			;
->>>> +			cpu_relax();
->>>>    		__raw_writel(word.word, regs + REG_FDTX(c->index));
->>>>    	}
->>>>    out:
->>>> @@ -1233,7 +1233,7 @@ static void kgdbfdc_push_one(void)
->>>>    	/* Busy wait until there's space in fifo */
->>>>    	while (__raw_readl(regs + REG_FDSTAT) & REG_FDSTAT_TXF)
->>>> -		;
->>>> +		cpu_relax();
->>>
->>> How did you test this?  Are you _sure_ it is needed at all?  I think you
->>> just made these loops take a lot longer than before :(
->>>
->>> Have you had problems with these tight loops doing anything bad to your
->>> system?
->>>
->>> thanks,
->>>
->>> greg k-h
->>
->> Hi Greg,
->> Thanks a lot for the review~
->>
->> Perhaps I should submit an RFC patch and explain the situation, as I
->> don't have a MIPS device for testing. Indeed, the cpu_relax()
->> implementation for MIPS is a memory barrier, which, compared to busy
->> waiting, doesn't save power and can make loops slower than before.
->> However, according to its definition file, for certain MIPS-based
->> architectures like Loongarch-3, it can help force the Loongson-3 SFB
->> (Store-Fill-Buffer) flush to avoid pending writes. Below is the
->> implementation of cpu_relax() for the MIPS architecture and its
->> comments.
->>
->> -----------------------------------------------------------------
->> arch/mips/include/asm/vdso/processor.h
->>
->> #ifdef CONFIG_CPU_LOONGSON64
->> /*
->>   * Loongson-3's SFB (Store-Fill-Buffer) may buffer writes indefinitely
->>   * when a tight read loop is executed, because reads take priority over
->>   * writes & the hardware (incorrectly) doesn't ensure that writes will
->>   * eventually occur.
->>   *
->>   * Since spin loops of any kind should have a cpu_relax() in them, force
->>   * an SFB flush from cpu_relax() such that any pending writes will
->>   * become visible as expected.
->>   */
->> #define cpu_relax()	smp_mb()
->> #else
->> #define cpu_relax()	barrier()
->> #endif
->> ----------------------------------------------------------------
->>
->> Based on this, cpu_relax() should be needed here? :)
+On Tue, Dec 24, 2024 at 05:49:03PM +0800, Kever Yang wrote:
 > 
-> I don't know, please test and let us know!
+> This patch set adds rk3562 SoC and its evb support.
 > 
-> Without testing of this on real hardware, we can't take this change for
-> obvious reasons.
-
-Hi Greg,
-Sorry for the delay reply.
-
-Sure, I will conduct comparative testing if I have the mips device in
-the future, or other developers are also welcome to participate in the
-testing.
-
+> Split out patches belong to different subsystem.
 > 
-> thanks,
+> Test with GMAC, USB, PCIe, EMMC, SD Card.
 > 
-> greg k-h
+> This patch set is base on the patche set for rk3576 evb1 support.
+> 
+> Changes in v2:
+> - Update in sort order
+> - remove grf in cru
+> - Update some properties order
+> 
+> Finley Xiao (2):
+>   arm64: dts: rockchip: add core dtsi for RK3562 Soc
+>   arm64: dts: rockchip: Add RK3562 evb2 devicetree
+> 
+> Kever Yang (15):
+>   dt-bindings: PCI: dwc: rockchip: Add rk3562 support
+>   dt-bindings: mmc: Add support for rk3562 eMMC
+>   dt-bindings: mmc: rockchip-dw-mshc: Add rk3562 compatible string
+>   dt-bindings: power: rockchip: Add bindings for rk3562
+>   dt-bindings: i2c: i2c-rk3x: Add rk3562 compatible
+>   dt-bindings: gpu: Add rockchip,rk3562-mali compatible
+>   dt-bindings: watchdog: Add rk3562 compatible
+>   dt-bindings: spi: Add rockchip,rk3562-spi compatible
+>   dt-bindings: serial: snps-dw-apb-uart: Add support for rk3562
+>   dt-bindings: usb: dwc3: add compatible for rk3562
+>   dt-bindings: pwm: rockchip: Add rockchip,rk3562-pwm
+>   dt-bindings: rockchip: pmu: Add rk3562 compatible
+>   dt-bindings: soc: rockchip: Add rk3562 syscon compatibles
+>   dt-bindings: arm: rockchip: Add rk3562 evb2 board
+>   dt-bindings: mfd: syscon: Add rk3562 QoS register compatible
 
+You squezzed here like 12 different subsystems. Some of these changes
+suggest missing drivers.
 
--- 
-Thx and BRs,
-Zhongqiu Han
+Please read basic upstreaming guide, some previous discussions and get
+internal rock-chips help so we want repeat basics over and over.
+
+Bindings are with drivers. Send them to respective subsystems.
+
+Best regards,
+Krzysztof
+
