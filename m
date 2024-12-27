@@ -1,44 +1,44 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60C55155CB3;
-	Fri, 27 Dec 2024 22:45:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6201D157E88;
+	Fri, 27 Dec 2024 22:45:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735339534; cv=none; b=u9WfkBHf2VxDtrzXUkQv69trjz0gcyXnW0DIzYPl7gy646j/4wS2WhhsMEnlwPxb/rTgy/LF485fckCUkDCgAmxPM2zlUuB/vVcitwHPtr20YS5pbnTS5Gnstp+jDbQHcjOy1kRfRtO9ZqNFPt+74mEzCWnVAvf8J5elzuV7hFE=
+	t=1735339535; cv=none; b=f40AOhBo2deXP7ls1F6ykdv58NMhpJYzQytLPnlaiHeiNpO3Kwmz5WAyxLWMKfsfeb4scZqoqIdufopqq494G3On/S1B6ZTZR0Y3f2v94HkmpVmJ9l0v7GnWA1lL0lCDg+gIHW8hr+VNNdPpHLUTihFkeFobwBpnLLHmBkf3Uls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735339534; c=relaxed/simple;
-	bh=847dnAyEyJU9u4HAy5/kzMTmcQ7OLra1Lu+DFPIQlm4=;
+	s=arc-20240116; t=1735339535; c=relaxed/simple;
+	bh=GkKtEopb/vxipA1rE+mu+UbFX4e/7ABwXI/xzZ7fn+E=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=N0rbX6n6EPPy0irmSXV28lx7+LWW/p4/cRXXVhKyhyDXd52QIEpOMlNCHUaxFQhcq35v5y95cyWaGO+76rCjp21zHVn09UTCrqrQgejXDkwPfWt+icQa16cBQcwxXci55auyyKpCVheCtAuRXY5K1SFtPRxzze4TvM3h6AWghFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=abxtdc+e; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=dddETy03; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version; b=MhIBRqsNmNPEhpijMaRXB/KiBh56TGOcOlbJdUattPG2sU/LN9R9RW1ZKcqAF198RBSnkKA3lEk8vXeAPoiF4MPsXvm6/WimSTKBD3Jng60mPYLw1hup2EtqHWn8yK/PcrLaZ+teSRLZhQEYB9OQ1plFMTY3IV2efTHW+4+xC+I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=X6uz2rsi; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=pbhOgYJn; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="abxtdc+e";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="dddETy03"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="X6uz2rsi";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="pbhOgYJn"
 From: John Ogness <john.ogness@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1735339525;
+	s=2020; t=1735339527;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=PRm5QPZ8g+hOoTns/vkCG62fDERJWECzx09fOxeCZMk=;
-	b=abxtdc+eMP8oYVqwVJeHXRvtPnQmU1MZod0+tFOPuDfF83vdhKffvhAzTqmQN6fqZdjKek
-	yOavVJ3l7/HxVCMEIrSDtLadM0t/c8iZuzAC1lekGKfNLhL24yKYDpI2atx4OZ8wgNGoy6
-	zMszJ7W6NxBYLxAX9djCohlbOgvSQ/29OsTIE9rGSZCu/3uD3RQ+WNHzDb31613kngHU4u
-	/qaKrWHYfYg9Q1W9IYcaYdkCbiuff5TqZNBHp1YbTn1k6ESCCpEWKzzx6Wktday6o2aqjk
-	6gskrXzhQ5C+JtfyBU6Ni7t5HeqjDwfWef6l3t+tZWlALUV5/zoIVlnQIS2Q+A==
+	bh=9X+WdzHUSBBjVLy5D98VD/ORPFzC0dNUp9SeiqSm6E8=;
+	b=X6uz2rsiyzSwXG5rfJRLVj6wlz7PUe2Rqnnm+1t76UqM2thyrJ7jeHk1ZCJmx+2rMqgR+4
+	fp+fJVFk8DFXIYfwQfW9FGMAgTLfstwuebuq22hm17y6e3PZ4RcP9BUGoK5hRIvSyidGCv
+	apzrq4Uy8rrvyiIXO2lq/pGeLV2iYTk3XUdb+gzS9BB/7Ldr391veVlQtCkPkvcWXsbHSl
+	W78U3SjHcrOBd8wzpXM7REXlAdYWsTLRYZ4xs3J3BSfI3SpiavSOulMQa8ePcA/hApIxvR
+	hpQWMRDZpPr2qR4ac3cUd0FchbwPoJfQY9atl3Ofm6nYn0xMI2JWyrwbKDYGaw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1735339525;
+	s=2020e; t=1735339527;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=PRm5QPZ8g+hOoTns/vkCG62fDERJWECzx09fOxeCZMk=;
-	b=dddETy03MjCIrFxjUMsaYMPUU1IdZScxuXGOHH1Dq7z6pQFZ9TFZooA0DHRa+71Hxie0d3
-	Ggw+Uq0g1iIFg4AA==
+	bh=9X+WdzHUSBBjVLy5D98VD/ORPFzC0dNUp9SeiqSm6E8=;
+	b=pbhOgYJnesnVhsiU2Ff21JX3XC8ACIpg4Gcjm9y3jmilnZAmGHhoZ8QgIb5ZLtesGti2NH
+	RcnWD+2BYM8U22DA==
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Jiri Slaby <jirislaby@kernel.org>,
 	Petr Mladek <pmladek@suse.com>,
@@ -50,12 +50,11 @@ Cc: Jiri Slaby <jirislaby@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Arnd Bergmann <arnd@arndb.de>,
-	Rengarajan S <rengarajan.s@microchip.com>,
 	Niklas Schnelle <schnelle@linux.ibm.com>,
 	Serge Semin <fancer.lancer@gmail.com>
-Subject: [PATCH tty-next v4 3/6] serial: 8250: Use high-level writing function for FIFO
-Date: Fri, 27 Dec 2024 23:51:19 +0106
-Message-Id: <20241227224523.28131-4-john.ogness@linutronix.de>
+Subject: [PATCH tty-next v4 6/6] serial: 8250: Revert "drop lockdep annotation from serial8250_clear_IER()"
+Date: Fri, 27 Dec 2024 23:51:22 +0106
+Message-Id: <20241227224523.28131-7-john.ogness@linutronix.de>
 In-Reply-To: <20241227224523.28131-1-john.ogness@linutronix.de>
 References: <20241227224523.28131-1-john.ogness@linutronix.de>
 Precedence: bulk
@@ -66,79 +65,30 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Currently serial8250_console_fifo_write() directly writes into
-the UART_TX register rather than using the high-level function
-serial8250_console_putchar(). This is because
-serial8250_console_putchar() waits for the holding register to
-become empty, which would defeat the purpose of the FIFO code.
+The 8250 driver no longer depends on @oops_in_progress and
+will no longer violate the port->lock locking constraints.
 
-Move the LSR_THRE waiting to a new function
-serial8250_console_wait_putchar() so that the FIFO code can use
-serial8250_console_putchar(). This will be particularly important
-for a follow-up commit, where output bytes are inspected to track
-newlines.
-
-This is only refactoring and has no functional change.
+This reverts commit 3d9e6f556e235ddcdc9f73600fdd46fe1736b090.
 
 Signed-off-by: John Ogness <john.ogness@linutronix.de>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Petr Mladek <pmladek@suse.com>
 ---
- drivers/tty/serial/8250/8250_port.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index aeacf9d452e4..812f003c252d 100644
+index fbba4746eccc..bc70e660a403 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -3297,11 +3297,16 @@ EXPORT_SYMBOL_GPL(serial8250_set_defaults);
- #ifdef CONFIG_SERIAL_8250_CONSOLE
+@@ -726,6 +726,9 @@ static void __serial8250_clear_IER(struct uart_8250_port *up)
  
- static void serial8250_console_putchar(struct uart_port *port, unsigned char ch)
-+{
-+	serial_port_out(port, UART_TX, ch);
-+}
-+
-+static void serial8250_console_wait_putchar(struct uart_port *port, unsigned char ch)
+ static inline void serial8250_clear_IER(struct uart_8250_port *up)
  {
- 	struct uart_8250_port *up = up_to_u8250p(port);
- 
- 	wait_for_xmitr(up, UART_LSR_THRE);
--	serial_port_out(port, UART_TX, ch);
-+	serial8250_console_putchar(port, ch);
++	/* Port locked to synchronize UART_IER access against the console */
++	lockdep_assert_held_once(&up->port.lock);
++
+ 	__serial8250_clear_IER(up);
  }
  
- /*
-@@ -3351,6 +3356,7 @@ static void serial8250_console_fifo_write(struct uart_8250_port *up,
- {
- 	const char *end = s + count;
- 	unsigned int fifosize = up->tx_loadsz;
-+	struct uart_port *port = &up->port;
- 	unsigned int tx_count = 0;
- 	bool cr_sent = false;
- 	unsigned int i;
-@@ -3361,10 +3367,10 @@ static void serial8250_console_fifo_write(struct uart_8250_port *up,
- 
- 		for (i = 0; i < fifosize && s != end; ++i) {
- 			if (*s == '\n' && !cr_sent) {
--				serial_out(up, UART_TX, '\r');
-+				serial8250_console_putchar(port, '\r');
- 				cr_sent = true;
- 			} else {
--				serial_out(up, UART_TX, *s++);
-+				serial8250_console_putchar(port, *s++);
- 				cr_sent = false;
- 			}
- 		}
-@@ -3444,7 +3450,7 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	if (likely(use_fifo))
- 		serial8250_console_fifo_write(up, s, count);
- 	else
--		uart_console_write(port, s, count, serial8250_console_putchar);
-+		uart_console_write(port, s, count, serial8250_console_wait_putchar);
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
 -- 
 2.39.5
 
