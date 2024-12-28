@@ -1,469 +1,153 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic310-15.consmr.mail.bf2.yahoo.com (sonic310-15.consmr.mail.bf2.yahoo.com [74.6.135.125])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993F1158525;
-	Fri, 27 Dec 2024 22:45:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A64BA3D
+	for <linux-serial@vger.kernel.org>; Sat, 28 Dec 2024 00:50:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.6.135.125
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735339536; cv=none; b=ET5xHiZPw3tBuwpmGLneXINxPhXu/d1Hm3ZF0ADwEhc5FCXWeWfeBfX/egSJEYdGU9ucB91vaElNtthfHvAPk5mN3HaTpXK6P/8OUu39rrlaT633/lsjQxg6X/TlxG0BBPyKVvLbbwTTAaMkqc3b2KIuxsL6gpZAtPHDJEFQgk4=
+	t=1735347002; cv=none; b=Hgg7YcAdLbp/9FI6tLHgDgRk6UVeThgcm+JC4Qesg3KNvs2HzL+mDgJBWbPzHBLQ2LiBd9MZvTpHZy6aRvrYaOjPl8BGgg3k4TSUU+k/cPSkPuYIWvJ5M78XreFYRskrwfxJcR4/6E91BnOdgi1TTwmNJT8YWyBuH2nAushEMeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735339536; c=relaxed/simple;
-	bh=2ZGiIUgMsPX77GCLFu0Uu1nElWI3oLL1xw1QVNOvoOk=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=eTpoRmXIyTuHWIQ31ljR9BBVGr2ZKGLx0tMxx0pkqrH4xbKrYYSkMeppcnGURw6LWC/fNA23oEpoyi9nvoenuzWBBEB2mAiFZ9/L1Qr3//JveoAopUj+BBf2PmJT5Rp3y/r+fJYwhM3wp/gduyan1pmdcIDyr4asaUL4g56RNMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=qb/StGQ+; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=X4DP2cRt; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1735347002; c=relaxed/simple;
+	bh=4PRfQXMSIAiKu2aQjmoR0pR8Zb2EkQIgVepoqRPCyIU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uGJYDJlC949vZUZpHj8Ikbt8ohXP7ZSNoZPviRk2ZHgpo2QnStqt2RzvA7DfOpgBa/7xRs3bWiuaiB175pH9DUqvhxorAFP5YdKU6D7gBWZBo3NIKzCp1d9rEizUaKRv5P1dtlaS/n+CNInteTyvpVxyqDxPaOk/nd1lxe+/z/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net; spf=pass smtp.mailfrom=verizon.net; dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b=A8+xtWdB; arc=none smtp.client-ip=74.6.135.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=verizon.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=verizon.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="qb/StGQ+";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="X4DP2cRt"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1735339527;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bkeDrc/RBAn/s0ivBR+9zpc2uVkypfbM9hDUcSXv7JU=;
-	b=qb/StGQ+3taS87EFNEtTNh0s8xS6ZSp753xNzf5QuuKaLJtpblQ24jShwNC34o3qj4FIiE
-	ZBvDmBw//JgUKa4ktx+5MTN6eGB8K5R5LfO/kkIU4NCsMiF6SDsPl95gk6AvCIiecFZz4t
-	divwOJtahhkiXNMgKifaqf9zMkWYD27ZboKSRSuLP4ulVZdMvaA7Io3xedhPF9N7IQA38O
-	mgqJqwMdyMJwaVocS+HypwKUP2HnWD9wI7V+jW45gPmNgLiysHJD3lXa1Q4MYB6qi7rTvb
-	Et2f7wsxfaCP/c+MryMYjHylWyLLUPFpeITzbFcEnNZobJ/RWJQ9S5TEU7ZQ/A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1735339527;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bkeDrc/RBAn/s0ivBR+9zpc2uVkypfbM9hDUcSXv7JU=;
-	b=X4DP2cRtTuqfiMxO0MKnTimCkQSAnH67BJEDtlW+W5wkPZ0aToyNLFpLpuMqX/qIkgQeGD
-	3Nx6ObgCsmcf6BAg==
+	dkim=pass (2048-bit key) header.d=verizon.net header.i=@verizon.net header.b="A8+xtWdB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=verizon.net; s=a2048; t=1735346999; bh=RKbYCKl1m/9k00vtLGfjJI6qws7R7dclRWUPmBVGVsA=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=A8+xtWdBWimarQCBfnXG12O8vyEH8PMdjxJfh/LQsm7mgGigZJl9Srmm5S3SySI1ffqPduJUVA2pzT862zuUwHyaQ1xeoPkbKxLVaEUE1fTgaN0FfByu1kksBIECuZ8wDhM9hviqHoqYtG0ouP1uGustKomtMWPr9TBnd7JScmZG/ldOZPT2jiEVkS5Cr5lQVGrWBDDNkmcp8ddHSsIIdgj9pWDuqTEX/Q9kRKg+thUSF1yDBVluvi9nZbVxwNF0lsLhP7qBtEYdv2rglkzKbh8/HUxC7gffw2hRjzS2wa3TDIrb6Zt875weP4Cp6i9fKe0LF9tMRLY0UF5xdswKdA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1735346999; bh=AuTa0iv6x5fWC1BHGvlrikKIo1qNDpShCTMguJekB7d=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=mZcrCaSt5jkylLlwnpS+8tXR05Rbtu/gUPGWIJ6jf6VDdkd+HhliQmIVtFSUomX5WAND5kdO9woTCYHACOV6/iY9qnxJaAL2pft4meHrEJn9O1zU75jr4vnLTC5XW79ZL2cWxmkZNLvbwbGkAaeE7PowEW8xjt3RcmyzRm2NJhNWsKAW6yCM00b6TKi7/C6OBCOhdg47+Vved5/FCmvNVVIizb9OyN6icFeEmxI4M9E32Q+9Eu1qJZ5C/DgTtCYFGkkf5vD5iR/LksmY+E60pUwozYRr8MNHnYTZGZKHBDf4D2uWClr0187GcAv5La8Te5zYxAQzIA75amhhmitGqw==
+X-YMail-OSG: cLxQQU0VM1n4BCo7c4vufBl9QwHLXc3LH_4gbbDiuWYTuotk7NKMmg7EBIjseK3
+ mNt0khOizUxlZdkGF7EUk1JT7AsWrY7aZANqK9DxwtvEcRMWIKMAzXHHjwb0O1RKIX58q.fkvEB7
+ Vt9nXIaxU4OpVhCk31MfDsZRnZguXyNJNMOzohQunBeKM47qlWlA9Nd_Ellmr5GFfy6oUDK.J1p4
+ 89yiTEF9f_Ab5Z8H0xh.atslKED7nT4BwXydYouiIDxKd8WAh39qqD6CTqz0_KC6pag7M9rjxB6X
+ TRbd_mb5zdZrkVqmEg61jPktwGuBO.lKyBL70d9rFsd00bmr2XFnrkIR3skME.Jly5B2BFPlEFS4
+ fug_0E_6GC4cjYC3EQTlSxyW2PHT.EdqDOsuNOd6Ax1MauNWjlacDdWy8R9SC8Q_mPKJ7GnAU3xA
+ z93Il5JnBThzd4Uw8_BCX4XhAF2jDKbfV47AlUFxBHdzwWnj0bO8VdDKDhkVHOsC75eQIP4_3Eiw
+ DJh1Zhqqj6jfbaPSa4XxYiKpu2HIuUFtk6UOG1egsICewDar3suogFGRxB.qX04bQiL8eDuKhR1T
+ ljjA_k5TMFQ2wyJoVp7RX1h6Dd2SQvgb5lrvyYTuKKXzsEJa6QxJVbIwvlr7ze8rN_fIfxTfVcFx
+ lLekcKF.gADC2g34.Bf60LnwE9U5SV0vKVgeamtwfCaggLIOF.tNH9Aw7wfALIdZKX6GPTdqtqAG
+ XaVw4JyD5rqKw9rDKQg6fL0t_CQVwTDjXsY8nAXMbEtzO05gNBRieqs6ZsarJWdd4h6TW1RO0R5U
+ Ac9Terki8R3S7lv_xQvX8ckcGme4lrjfNOPZZtW4Dq6580GCFbMpDlys7vXcVOZI1QAQvEvuBisr
+ J36GV1dOSwG305Nki84ncHC9up99lSeo_Zxb6WYxX5bnmZjDvtNg9.9TJePe2khW5wi1PaKppvXa
+ Ng6T2JFd3Ht84jC_0_avLRKXffRFaUxfCrL7MM5xbqrXzLEfusQo89dT.nJUP6_dV.fAQzBJTA.P
+ UTMVj02YUqNJZBG2jsm1QSGrG0TgK.WtfWzX3QT_7IF_BLfevNrYUo8oADUO6iEyuWVTT_mIBibN
+ 0HnCdixhgXtJlHPzGMehachMo_JIEa4mbh8Gf9Egbc5zYGTm2Ta9BQFqeo_fuCG5xs75Tg9CI342
+ ssHTLLElAwUjaDw0YqMfG6SuIN0k9_pesI_ikHiPvJf4kFAbb2JnL8_O_yC.kRPvtfC9ASkKW61P
+ MBmIc0IUz3Gk3WzIbYxrZUHr1bfg9ghGnJVUlPd.ewqyR.kqG2BazPbaBxSTyQXhiEL18R0zZrCI
+ a4CecmHphkFYQ6r0YIlMbIBRrdRQJ1YyIm6tjlDbOetO_9RFpnC0xnWLT52DvUfofw7ddsbzRz1q
+ _j9FV4MzEf3gVU6aiiKrU66c2F9LQuOuD6CuuopnyV3BQmhryfw0OkrtSR5zf4nUGj1jelADxsnO
+ tljM4B157eFur1etWdVWod3_bohneCBcPc_9ZJIgsp6VVrx7haf0frg6RaMa6ejRlwuFPOyAEFMH
+ kGjkhGtIPwQYeoqVNruDbAjSfpAnZG20wcOVvMIlGynOVuMeydU4NJ5lb.aqWV2q8sU6BwOgpPJH
+ Zog9.gWsrmlWPdbyLI0rqSBcB6kmpsvh17uxFD9B9Iq13qATYAh1rQs73GzqoJ2BIEC5zud0qt55
+ jutlU6jcT9Tq4so7SU1r2hUdqw2TFdHBKyzLihmanZbDdzUgglqw30UjKALCBpOIHK6b1MdjJvIk
+ LV5ac0dsCKSqbzbx2TAUAFbmBbFZiS2VU1yHB.mPI32tOIySwzoyvR9EHQSFeGvS.eXT_CKOoJI5
+ 0wMa7_4GCbDvWxb7OA4l_Ykc_f.9AxEIHkXGYQ5hpsQ5jYg.HtR1MUS5aHeKvqa.B82WRZpgUy_i
+ 1vTWFAQCGqAGh0MquWDGVkJxLbgr1kwcqakvmHf2tDHkL7W80pizFvDZvWvSthjc6gYuspMKIPwi
+ YDM_XcIfQ2ZBfW9wUhByV90tnOjxWezrbBS1bAzQ_iCNv500kkcS8lAiwrDCL3FOLa_H5NDuiBLC
+ VJENqtnHwJ22K7.oKvtK5Ax_.lxG_dQlYLihMtnmS6IqPgozloI.72aPCHhc3IC.FwI0K3Z1H3L_
+ bWbCp8w_WF9_jpMYqbctdb1TJaJYhVjQ2F6SmLCDu4fwTch1AGnMROpTeivvZ479XUblLOW2VhAv
+ 6qg66UzbVB9Y8NzN0cj3XIWhgMbax7excapi2Oqc3_9rDOEzvPzgcHQdh
+X-Sonic-MF: <bluescreen_avenger@verizon.net>
+X-Sonic-ID: 7b53f4ab-4900-48ad-a07f-ec82a4dbf513
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.bf2.yahoo.com with HTTP; Sat, 28 Dec 2024 00:49:59 +0000
+Received: by hermes--production-bf1-66bb576cbb-rzvf2 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID bf43aeadb212612e72c5c66e49797472;
+          Sat, 28 Dec 2024 00:29:40 +0000 (UTC)
+From: nerdopolis <bluescreen_avenger@verizon.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Esben Haabendal <esben@geanix.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Matt Turner <mattst88@gmail.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Serge Semin <fancer.lancer@gmail.com>
-Subject: [PATCH tty-next v4 5/6] serial: 8250: Switch to nbcon console
-Date: Fri, 27 Dec 2024 23:51:21 +0106
-Message-Id: <20241227224523.28131-6-john.ogness@linutronix.de>
-In-Reply-To: <20241227224523.28131-1-john.ogness@linutronix.de>
-References: <20241227224523.28131-1-john.ogness@linutronix.de>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH 1/2] ttynull: Add an option to allow ttynull to be used as a
+ console device
+Date: Fri, 27 Dec 2024 19:29:39 -0500
+Message-ID: <6116813.UjTJXf6HLC@nerdopolis2>
+In-Reply-To: <2024121006-womb-outgoing-a4b6@gregkh>
+References: <20241129041549.778959-1-bluescreen_avenger@verizon.net>
+ <2682057.tIAgqjz4sF@nerdopolis2> <2024121006-womb-outgoing-a4b6@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Mailer: WebService/1.1.23040 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 
-Implement the necessary callbacks to switch the 8250 console driver
-to perform as an nbcon console.
+On Tuesday, December 10, 2024 2:28:12 AM EST Greg Kroah-Hartman wrote:
+> On Mon, Dec 09, 2024 at 09:56:01PM -0500, nerdopolis wrote:
+> > On Monday, December 9, 2024 1:35:04 AM EST Greg Kroah-Hartman wrote:
+> > > On Sun, Dec 08, 2024 at 09:16:28PM -0500, n3rdopolis wrote:
+> > > > On Sunday, December 8, 2024 8:30:08 AM EST Greg Kroah-Hartman wrote:
+> > > > > On Sun, Dec 08, 2024 at 12:25:12AM -0500, nerdopolis wrote:
+> > > > > > On Saturday, December 7, 2024 1:50:50 AM EST Greg Kroah-Hartman wrote:
+> > > > > > > On Fri, Dec 06, 2024 at 12:36:21PM -0500, n3rdopolis wrote:
+> > > > > > > > On Wednesday, December 4, 2024 2:37:55 PM EST n3rdopolis wrote:
+> > > > > > > > > On Wednesday, December 4, 2024 1:06:50 PM EST Greg Kroah-Hartman wrote:
+> > > > > > > > > > On Wed, Dec 04, 2024 at 12:06:56PM -0500, n3rdopolis wrote:
+> > > > > > > > > > > On Wednesday, December 4, 2024 10:41:44 AM EST Greg Kroah-Hartman wrote:
+> > > > > > > > > > > > On Thu, Nov 28, 2024 at 11:15:48PM -0500, n3rdopolis wrote:
+> > > > > > > > > > > > > Add a config option CONFIG_NULL_TTY_CONSOLE that will have ttynull be
+> > > > > > > > > > > > > initialized by console_initcall() and selected as a possible console
+> > > > > > > > > > > > > device.
+> > > > > > > > > > > > > Signed-off-by: n3rdopolis <bluescreen_avenger@verizon.net>
+> > > > > > > > > > > > 
+> > > > > > > > > > > > Meta-comments, we need a blank line before the s-o-b line, AND we need a
+> > > > > > > > > > > > real name here, sorry.  I can't do anything with these (including
+> > > > > > > > > > > > reviewing them), until that happens.
+> > > > > > > > > > > > 
+> > > > > > > > > > > Oh, I thought that I didn't need a real name
+> > > > > > > > > > > 
+> > > > > > > > > > > I found a recent thread that seems like it suggests that I thought
+> > > > > > > > > > > https://lore.kernel.org/all/20241121165806.476008-40-alex.bennee@linaro.org/[1]
+> > > > > > > > > > > https://drewdevault.com/2023/10/31/On-real-names.html[2]
+> > > > > > > > > > > Or do I need to wait for that change to the guideline be merged?
+> > > > > > > > > > 
+> > > > > > > > > > That change has been merged a long time ago, but as far as I can tell,
+> > > > > > > > > > this signed-off-by you used here does not meet this category.
+> > > > > > > > > > 
+> > > > > > > > > Oh, what would it take to meet that category? I've been using this nick to
+> > > > > > > > > contribute to other projects, and it matches my GitHub name, and FreeDesktop
+> > > > > > > > > GitLab name
+> > > > > > > > > 
+> > > > > > > > What if I made the signed-off-by (and committer name) this email address? would
+> > > > > > > > that work?
+> > > > > > > 
+> > > > > > > Do you sign documents with your bank with an email address in the line
+> > > > > > > that says "name"?
+> > > > > > > 
+> > > > > > No, I guess not, the no pseudonym requirement was dropped, but if my nickname
+> > > > > > doesn't work If I really have to, can it just be my first name, instead of my
+> > > > > > full name if it comes down to it?
+> > > > > 
+> > > > > No.
+> > > > > 
+> > > > 
+> > > > Can I do first name, last initial? Or does it have to be a full name?
+> > > 
+> > > Honestly, based on this long discussion, I really don't think we can
+> > > take any contribution from you without having someone else verify that
+> > > the the name you use here is correct.  Please work with the kernel.org
+> > > ring-of-trust to get a valid signature added to it and then I'll be glad
+> > > to reconsider.
+> > > 
+> > > And note, I'm not singling you out at all, we have recently had to do
+> > > this for many new contributors.
+> > > 
+> > > thanks,
+> > > 
+> > > greg k-h
+> > > 
+> > Understood, and I am sorry, I am trying to go though kernel.org to see,
+> > do you mean asking helpdesk@kernel.org ? I tried reading the documentation, but
+> > maybe I did not look in the right place
+> 
+> https://korg.docs.kernel.org/pgpkeys.html should help out
+> 
+OK, do you think it's possible for me to get this in with like a surrogate or
+something? It might be quicker for someone to get it for me with more trust. I
+guess I will be willing to just be in with written-by or tested-by or something... 
 
-Add implementations for the nbcon console callbacks:
 
-  ->write_atomic()
-  ->write_thread()
-  ->device_lock()
-  ->device_unlock()
-
-and add CON_NBCON to the initial @flags.
-
-All register access in the callbacks are within unsafe sections.
-The ->write_atomic and ->write_therad() callbacks allow safe
-handover/takeover per byte and add a preceding newline if they
-take over from another context mid-line.
-
-For the ->write_atomic() callback, a new irq_work is used to defer
-modem control since it may be called from a context that does not
-allow waking up tasks.
-
-Note: A new __serial8250_clear_IER() is introduced for direct
-clearing of UART_IER. This will allow to restore the lockdep
-check to serial8250_clear_IER() in a follow-up commit.
-
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/8250/8250_core.c |  35 ++++++-
- drivers/tty/serial/8250/8250_port.c | 149 +++++++++++++++++++++-------
- include/linux/serial_8250.h         |   8 +-
- 3 files changed, 150 insertions(+), 42 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 2b70e82dffeb..3d5a2183ff13 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -388,12 +388,34 @@ void __init serial8250_register_ports(struct uart_driver *drv, struct device *de
- 
- #ifdef CONFIG_SERIAL_8250_CONSOLE
- 
--static void univ8250_console_write(struct console *co, const char *s,
--				   unsigned int count)
-+static void univ8250_console_write_atomic(struct console *co,
-+					  struct nbcon_write_context *wctxt)
- {
- 	struct uart_8250_port *up = &serial8250_ports[co->index];
- 
--	serial8250_console_write(up, s, count);
-+	serial8250_console_write(up, wctxt, true);
-+}
-+
-+static void univ8250_console_write_thread(struct console *co,
-+					  struct nbcon_write_context *wctxt)
-+{
-+	struct uart_8250_port *up = &serial8250_ports[co->index];
-+
-+	serial8250_console_write(up, wctxt, false);
-+}
-+
-+static void univ8250_console_device_lock(struct console *co, unsigned long *flags)
-+{
-+	struct uart_port *up = &serial8250_ports[co->index].port;
-+
-+	__uart_port_lock_irqsave(up, flags);
-+}
-+
-+static void univ8250_console_device_unlock(struct console *co, unsigned long flags)
-+{
-+	struct uart_port *up = &serial8250_ports[co->index].port;
-+
-+	__uart_port_unlock_irqrestore(up, flags);
- }
- 
- static int univ8250_console_setup(struct console *co, char *options)
-@@ -494,12 +516,15 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
- 
- static struct console univ8250_console = {
- 	.name		= "ttyS",
--	.write		= univ8250_console_write,
-+	.write_atomic	= univ8250_console_write_atomic,
-+	.write_thread	= univ8250_console_write_thread,
-+	.device_lock	= univ8250_console_device_lock,
-+	.device_unlock	= univ8250_console_device_unlock,
- 	.device		= uart_console_device,
- 	.setup		= univ8250_console_setup,
- 	.exit		= univ8250_console_exit,
- 	.match		= univ8250_console_match,
--	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
-+	.flags		= CON_PRINTBUFFER | CON_ANYTIME | CON_NBCON,
- 	.index		= -1,
- 	.data		= &serial8250_reg,
- };
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index e38271f477d1..fbba4746eccc 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -711,7 +711,12 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
- 	serial8250_rpm_put(p);
- }
- 
--static void serial8250_clear_IER(struct uart_8250_port *up)
-+/*
-+ * Only to be used directly by the callback helper serial8250_console_write(),
-+ * which may not require the port lock. Use serial8250_clear_IER() instead for
-+ * all other cases.
-+ */
-+static void __serial8250_clear_IER(struct uart_8250_port *up)
- {
- 	if (up->capabilities & UART_CAP_UUE)
- 		serial_out(up, UART_IER, UART_IER_UUE);
-@@ -719,6 +724,11 @@ static void serial8250_clear_IER(struct uart_8250_port *up)
- 		serial_out(up, UART_IER, 0);
- }
- 
-+static inline void serial8250_clear_IER(struct uart_8250_port *up)
-+{
-+	__serial8250_clear_IER(up);
-+}
-+
- #ifdef CONFIG_SERIAL_8250_RSA
- /*
-  * Attempts to turn on the RSA FIFO.  Returns zero on failure.
-@@ -1406,9 +1416,6 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p, bool toggle_ier)
- {
- 	unsigned char mcr = serial8250_in_MCR(p);
- 
--	/* Port locked to synchronize UART_IER access against the console. */
--	lockdep_assert_held_once(&p->port.lock);
--
- 	if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
- 		mcr |= UART_MCR_RTS;
- 	else
-@@ -1424,6 +1431,12 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p, bool toggle_ier)
- 		serial8250_clear_and_reinit_fifos(p);
- 
- 		if (toggle_ier) {
-+			/*
-+			 * Port locked to synchronize UART_IER access
-+			 * against the console
-+			 */
-+			lockdep_assert_held_once(&p->port.lock);
-+
- 			p->ier |= UART_IER_RLSI | UART_IER_RDI;
- 			serial_port_out(&p->port, UART_IER, p->ier);
- 		}
-@@ -3302,7 +3315,11 @@ EXPORT_SYMBOL_GPL(serial8250_set_defaults);
- 
- static void serial8250_console_putchar(struct uart_port *port, unsigned char ch)
- {
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+
- 	serial_port_out(port, UART_TX, ch);
-+
-+	up->console_line_ended = (ch == '\n');
- }
- 
- static void serial8250_console_wait_putchar(struct uart_port *port, unsigned char ch)
-@@ -3339,14 +3356,21 @@ static void serial8250_console_restore(struct uart_8250_port *up)
- 	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
- }
- 
--static void fifo_wait_for_lsr(struct uart_8250_port *up, unsigned int count)
-+static int fifo_wait_for_lsr(struct uart_8250_port *up,
-+			      struct nbcon_write_context *wctxt,
-+			      unsigned int count)
- {
- 	unsigned int i;
- 
- 	for (i = 0; i < count; i++) {
-+		if (!nbcon_can_proceed(wctxt))
-+			return -EPERM;
-+
- 		if (wait_for_lsr(up, UART_LSR_THRE))
--			return;
-+			return 0;
- 	}
-+
-+	return -ETIMEDOUT;
- }
- 
- /*
-@@ -3356,18 +3380,20 @@ static void fifo_wait_for_lsr(struct uart_8250_port *up, unsigned int count)
-  * to get empty.
-  */
- static void serial8250_console_fifo_write(struct uart_8250_port *up,
--					  const char *s, unsigned int count)
-+					  struct nbcon_write_context *wctxt)
- {
--	const char *end = s + count;
- 	unsigned int fifosize = up->tx_loadsz;
- 	struct uart_port *port = &up->port;
-+	const char *s = wctxt->outbuf;
-+	const char *end = s + wctxt->len;
- 	unsigned int tx_count = 0;
- 	bool cr_sent = false;
- 	unsigned int i;
- 
- 	while (s != end) {
- 		/* Allow timeout for each byte of a possibly full FIFO */
--		fifo_wait_for_lsr(up, fifosize);
-+		if (fifo_wait_for_lsr(up, wctxt, fifosize) == -EPERM)
-+			return;
- 
- 		for (i = 0; i < fifosize && s != end; ++i) {
- 			if (*s == '\n' && !cr_sent) {
-@@ -3385,39 +3411,51 @@ static void serial8250_console_fifo_write(struct uart_8250_port *up,
- 	 * Allow timeout for each byte written since the caller will only wait
- 	 * for UART_LSR_BOTH_EMPTY using the timeout of a single character
- 	 */
--	fifo_wait_for_lsr(up, tx_count);
-+	fifo_wait_for_lsr(up, wctxt, tx_count);
-+}
-+
-+static void serial8250_console_byte_write(struct uart_8250_port *up,
-+					  struct nbcon_write_context *wctxt)
-+{
-+	struct uart_port *port = &up->port;
-+	const char *s = wctxt->outbuf;
-+	const char *end = s + wctxt->len;
-+
-+	/*
-+	 * Write out the message. If a handover or takeover occurs, writing
-+	 * must be aborted since wctxt->outbuf and wctxt->len are no longer
-+	 * valid.
-+	 */
-+	while (s != end && nbcon_can_proceed(wctxt))
-+		uart_console_write(port, s++, 1, serial8250_console_wait_putchar);
- }
- 
- /*
-- *	Print a string to the serial port trying not to disturb
-- *	any possible real use of the port...
-+ * Print a string to the serial port trying not to disturb
-+ * any possible real use of the port...
-  *
-- *	The console_lock must be held when we get here.
-- *
-- *	Doing runtime PM is really a bad idea for the kernel console.
-- *	Thus, we assume the function is called when device is powered up.
-+ * Doing runtime PM is really a bad idea for the kernel console.
-+ * Thus, assume it is called when device is powered up.
-  */
--void serial8250_console_write(struct uart_8250_port *up, const char *s,
--			      unsigned int count)
-+void serial8250_console_write(struct uart_8250_port *up,
-+			      struct nbcon_write_context *wctxt,
-+			      bool is_atomic)
- {
- 	struct uart_8250_em485 *em485 = up->em485;
- 	struct uart_port *port = &up->port;
--	unsigned long flags;
--	unsigned int ier, use_fifo;
--	int locked = 1;
--
--	touch_nmi_watchdog();
-+	unsigned int ier;
-+	bool use_fifo;
- 
--	if (oops_in_progress)
--		locked = uart_port_trylock_irqsave(port, &flags);
--	else
--		uart_port_lock_irqsave(port, &flags);
-+	if (!nbcon_enter_unsafe(wctxt))
-+		return;
- 
- 	/*
--	 *	First save the IER then disable the interrupts
-+	 * First, save the IER, then disable the interrupts. The special
-+	 * variant to clear the IER is used because console printing may
-+	 * occur without holding the port lock.
- 	 */
- 	ier = serial_port_in(port, UART_IER);
--	serial8250_clear_IER(up);
-+	__serial8250_clear_IER(up);
- 
- 	/* check scratch reg to see if port powered off during system sleep */
- 	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
-@@ -3431,6 +3469,14 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		mdelay(port->rs485.delay_rts_before_send);
- 	}
- 
-+	/*
-+	 * If console printer did not fully output the previous line, it must
-+	 * have been handed or taken over. Insert a newline in order to
-+	 * maintain clean output.
-+	 */
-+	if (!up->console_line_ended && nbcon_can_proceed(wctxt))
-+		uart_console_write(port, "\n", 1, serial8250_console_wait_putchar);
-+
- 	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
- 		/*
- 		 * BCM283x requires to check the fifo
-@@ -3452,9 +3498,16 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		!(up->port.flags & UPF_CONS_FLOW);
- 
- 	if (likely(use_fifo))
--		serial8250_console_fifo_write(up, s, count);
-+		serial8250_console_fifo_write(up, wctxt);
- 	else
--		uart_console_write(port, s, count, serial8250_console_wait_putchar);
-+		serial8250_console_byte_write(up, wctxt);
-+
-+	/*
-+	 * If ownership was lost, this context must reacquire ownership in
-+	 * order to perform final actions (such as re-enabling interrupts).
-+	 */
-+	while (!nbcon_enter_unsafe(wctxt))
-+		nbcon_reacquire_nobuf(wctxt);
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
-@@ -3477,11 +3530,18 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	 *	call it if we have saved something in the saved flags
- 	 *	while processing with interrupts off.
- 	 */
--	if (up->msr_saved_flags)
--		serial8250_modem_status(up);
-+	if (up->msr_saved_flags) {
-+		/*
-+		 * For atomic, it must be deferred to irq_work because this
-+		 * may be a context that does not permit waking up tasks.
-+		 */
-+		if (is_atomic)
-+			irq_work_queue(&up->modem_status_work);
-+		else
-+			serial8250_modem_status(up);
-+	}
- 
--	if (locked)
--		uart_port_unlock_irqrestore(port, flags);
-+	nbcon_exit_unsafe(wctxt);
- }
- 
- static unsigned int probe_baud(struct uart_port *port)
-@@ -3499,8 +3559,24 @@ static unsigned int probe_baud(struct uart_port *port)
- 	return (port->uartclk / 16) / quot;
- }
- 
-+/*
-+ * irq_work handler to perform modem control. Only triggered via
-+ * ->write_atomic() callback because it may be in a scheduler or
-+ * NMI context, unable to wake tasks.
-+ */
-+static void modem_status_handler(struct irq_work *iwp)
-+{
-+	struct uart_8250_port *up = container_of(iwp, struct uart_8250_port, modem_status_work);
-+	struct uart_port *port = &up->port;
-+
-+	uart_port_lock(port);
-+	serial8250_modem_status(up);
-+	uart_port_unlock(port);
-+}
-+
- int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- {
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	int baud = 9600;
- 	int bits = 8;
- 	int parity = 'n';
-@@ -3510,6 +3586,9 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- 	if (!port->iobase && !port->membase)
- 		return -ENODEV;
- 
-+	up->console_line_ended = true;
-+	init_irq_work(&up->modem_status_work, modem_status_handler);
-+
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 	else if (probe)
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 144de7a7948d..5a804dc5e05e 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -150,8 +150,12 @@ struct uart_8250_port {
- #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
- 	u16			lsr_saved_flags;
- 	u16			lsr_save_mask;
-+
-+	bool			console_line_ended;	/* line fully output */
-+
- #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
- 	unsigned char		msr_saved_flags;
-+	struct irq_work		modem_status_work;
- 
- 	struct uart_8250_dma	*dma;
- 	const struct uart_8250_ops *ops;
-@@ -202,8 +206,8 @@ void serial8250_tx_chars(struct uart_8250_port *up);
- unsigned int serial8250_modem_status(struct uart_8250_port *up);
- void serial8250_init_port(struct uart_8250_port *up);
- void serial8250_set_defaults(struct uart_8250_port *up);
--void serial8250_console_write(struct uart_8250_port *up, const char *s,
--			      unsigned int count);
-+void serial8250_console_write(struct uart_8250_port *up,
-+			      struct nbcon_write_context *wctxt, bool in_atomic);
- int serial8250_console_setup(struct uart_port *port, char *options, bool probe);
- int serial8250_console_exit(struct uart_port *port);
- 
--- 
-2.39.5
 
