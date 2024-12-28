@@ -1,62 +1,62 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72AA814F70;
-	Sat, 28 Dec 2024 15:01:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 274A0C8DF;
+	Sat, 28 Dec 2024 15:01:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735398074; cv=none; b=fHqqNx3xTy0XrQboJ+wzoZs9Ofri1DmoMf53dh4utBi/fes9JxiaqMjziiNDZBiZCjHiLdV3EDhYkel56Yzr2MsSzmgZdH+uEk5d1ILNTVHKzYQgRYwU9oJ/eSkNRpECLljgqWO5Jp5Mn+BI1fXeYxRfxbhUViU2J2B2apjCRCc=
+	t=1735398074; cv=none; b=ggnboTPBaN8h3hWdYp+rcBsSpVwrTMdKGECNIAHIoKu5jCFSzRpQewTzl7DgYwQr4uzYjMcBFQFQqCdqvfSBKq+hGgX5GU1BInqFzJFRaGEtfaWIev3Vgh74DykWPVt+88dF32hlykNDZbZ4rWu3EbhKeWsQ3+I4hhqHO03hFlE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1735398074; c=relaxed/simple;
-	bh=maQK6SnknNFyzpbwfFuMMgBHRi4HuQKdh+kTfcosLe0=;
+	bh=EivJtJjg6TetCtMGVhAd9cqsZ3aaF7wh/bdqeGopHBY=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=u0+XJK478ugkLipzUM0D5O1OTHTstgQy1IbGMoFSB+q1271Nd+fu5fSfoBYyiGw9QSYhHxiMT/lrztLQ6gIZUzvrPq2LHTZdv4JObV/6V8q56pSZ5wQi/1Ay7nA+xDBThL7pFGutHnA3omwfjXhSNDTa9eTvfF9wR/wSuCD2BZ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ym0FTW3S; arc=none smtp.client-ip=209.85.221.49
+	 MIME-Version; b=OujgriSWCTaIkkE9RIppR14kbzB78SMxk5h8ms1IySQNoHX6eh08Pe3Ba4ViF4QlOp/XsmpPk2YgwDljofyhj4IC1b/HGsx6tTxb7CBIpOAAzqyAhs9UbLejQRqHFDeNJrufquQfCie+MBW6iJCSIwlFPYPd70H8feOdBTe4amE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GgWDjAEF; arc=none smtp.client-ip=209.85.221.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ym0FTW3S"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-3862a921123so5385059f8f.3;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GgWDjAEF"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-3862df95f92so3477839f8f.2;
         Sat, 28 Dec 2024 07:01:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20230601; t=1735398071; x=1736002871; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=T3r5rknlp8C6dPP/+6B/6WMRRP6X+7HtxASZ9hD6NMY=;
-        b=Ym0FTW3SByaLGe6ssrdjmZna0mvU59FY2DhYQ9GRgla0msmIz3RjbRXO4iKrD16ARO
-         k59tR5fTsdK3px4koS72SJRFtxHM7LEIvtmCJMGELK0sWCJU036ppMDrO8HUVIpt6Mb3
-         aHEp05b0v5tT7UEGwe3OUm7MosMgLYck5doshRqWV6vKTQIjeCSXlgJs4nebIHlATGk9
-         Uk0f7+uhLMhJl4qfcWD+E1a6idHAoNLSiTw5EKOAASMTmv/ERJs8qczkRVcf4UFmIfM7
-         DrBSrGphHvanzuIFAq5jfyplOv7LdloV50358NIoCnGynUVH1QV/Y4N9pEN2mbD732sE
-         zoPA==
+        bh=vkxTwm9fghaxkpIPqMsbbHmZHAbb9+mbREpcgRCMYzU=;
+        b=GgWDjAEFTIK8/IDDB9QePXoRn/V6zYmhC2vyHB69f+Y9RkxE/j8MYcj6vmdlKW0PtR
+         5zVIhy0DUpLvrbFk2wJKHHcFF0KZA+Saa0ZiG1CjC4p+M0b7d2Y4eu8WpzMIQvbLZLiW
+         YBv0wqywdxd0s1b9NGTuJlYK4P6Y4MMF6ssfnZeXl+I9BH9B3ZmPX1LhyZuSlwUfMB3K
+         Dl6osg0wkvTyGRZkFnixT21hnFbipVr2Fwgj0yDISpvopO5rjz6A4tv+6rteCjK97uwc
+         AAqDp7Ug5w/Id/5PqFcrLvVEWdYBCiaXSi8TXAGP4L5F9rdRadpKLTk1MaVxrzdmi3pF
+         rjig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20230601; t=1735398071; x=1736002871;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=T3r5rknlp8C6dPP/+6B/6WMRRP6X+7HtxASZ9hD6NMY=;
-        b=LpDTTRdST6gF88+trPfqoLFjBZ0E2b9w8N8AcPR65DPxLasdIzESdyfsWcPI/luvpM
-         Kr37VOdKtaLgiiZwClzXMabAUFn3rdSEq8YCkzpvAmDod8a/CEjEATzQE44lTchoIXH5
-         4mZV6GEJQYxPnVcVphe9AChLbK8BIUehNF8hfaVKjStSwApZ66CXKWmsR0FmC0dThuFz
-         AbQiQJFGh40SqNl/8270EOv5EK6vgLWyIk7RzDeTj818WJkFVxytjNR+K7XBMED7wCPc
-         qspFqZXTtuJdK0/iJ50YwHVqFRBHtV6yW7chUkyBWyE4VlCjUCkA0ZIMQxvktL7fVYd4
-         B4cw==
-X-Forwarded-Encrypted: i=1; AJvYcCUOMfO6D/Cx+h6Fbsj9Jno71evPuTmAl09NlfaR+Q599/uDhAu8uHXtzir3wqzbdzCxQ/ENhaN8LMeSG9CF@vger.kernel.org, AJvYcCWw+RbbNNBTETjgWZDuWdzprFLgk03ccge688la6XJHJBp+XC2glvjLMIIvifZViO4cUmAp+HmIRKs52cw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy8wsMzPGajAVdjlPlP0sIvh/rBArxdV//QP1FC2Rrh7vAIz0XX
-	usCdDy+tc6pDq6e//zcCVm6wehsaWUz/FANKp+F4kwfU+O50MTKY
-X-Gm-Gg: ASbGncvkJPh0ivrBso3S9R0+w0F6zrjZPUgK1xOm+aintdxqGa0vrkBx0DDO6TzcyHC
-	J4kYL1EjxjcZxmmwwF8Q7c7HfIW/FrXOx5iQhxjbI/SsnAPLSwKUKtl9AXKFxM2gy3M9gdhP5oK
-	tpO9imkxv9L/PifElbsx46PsNuojkUMjFWwVLz0bS8E9qzmPHf6vQnSbdqnbvkrK2rk6aHtr66b
-	ZO6rteDaYtv7qf7dvfQbW9LAi5ZD7d6MHecd6q2l++JsGt2tnrRYSZsOMiXJJmjfnxW6WN/6KcB
-	7dU=
-X-Google-Smtp-Source: AGHT+IFlnbxfSsudsAl6xNhEBdGe2gHTrJpzWg0GoGsV6wx9nJyGfR9DqyqCWhcgn1z+aIiSuiACWA==
-X-Received: by 2002:a05:6000:1863:b0:386:4312:53ec with SMTP id ffacd0b85a97d-38a221ea72bmr23221738f8f.17.1735398070552;
-        Sat, 28 Dec 2024 07:01:10 -0800 (PST)
+        bh=vkxTwm9fghaxkpIPqMsbbHmZHAbb9+mbREpcgRCMYzU=;
+        b=vCbRXhEcArl91P6dELj3xR3SjwnzfYrCqF2ZnzMZdvjiqXxJKzLTZvySrsBmE9Vzt7
+         QXyfOXCBUUZuHabz+0bd6rxTjUkhtkPv6ucpwRz9/aqxa/A1sx7Uy6l5JONAKvTV9MHV
+         LpYpAvyM+unUjQ7RtVoHQ7Dsf1fQrX039avcAeCyheaG0SDnFLxzlSAZrzFoO+KaEq8W
+         ku2ekjflShg23wvT/P02XqMS6C2/iX/yHQ5MUUsWRAQ439tqUnA7Udcg9/oVzdcxk3cw
+         lR2SRpoHL6PTwyJolLom8/w+Jl2l+rIY4St0BntPorNC9C8HAOEDdBh11gB5GPNpZVEp
+         eCUw==
+X-Forwarded-Encrypted: i=1; AJvYcCUdNLDO/ixQyJwGWndXmmJZjNNtS92jjxi8yJgltwAKU01qQhQLdiJybLkDLXhE/7Om4GubUYHbdKKmRA3A@vger.kernel.org, AJvYcCUoK89rG+dvtTwZ2PJMz0TEKo3mDwICKINpRTwNppADXo6GcMojiTCsCqX/Rx0K5NZ8oREkmO+VV0P2WMI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzj7ZcpLHHqLmxu2Rbjb1CL5aWgKN63aL7PHgAgj8icBMoJdnwZ
+	VeUl9qRqQwfnTfjpu0kXlsqNFD+dA9ejzZMyfgYIbAHOJd/YHDFy
+X-Gm-Gg: ASbGncsXjMhesBCqJ336BZdnnGpX8LJtiYDPb0As0QS9d0p/KceUwM6tqUlnMs0fANw
+	kbns5xNuPosevjw24yjSik6/tSSYLZSPsa3yHFqZ+bSamAXrdVGB2uZ5pgmExqMH/zjYkgfxYKH
+	8NQdugG1DuNkPLadjjc6VeFA0BMNDSoI41zvQDfqicn/zn6LdtCmrwBOsqtOn5tqAJD3Ko7lQZ9
+	X4hx89OXR7LsZgVQJkpDbg1vFLqwc0tvRMAkSPImyVuJFp+ESNhZY/dB71jN4Fmt2eNK0TCzm3a
+	ohs=
+X-Google-Smtp-Source: AGHT+IELtE/UJFR0lTmqWqz0ewdbiPVm01YMNQSh+QeeJw7KPmm9yKCxI0JLcjuWJV3v8tjapkAAMQ==
+X-Received: by 2002:a05:6000:188d:b0:385:f7d2:7e9b with SMTP id ffacd0b85a97d-38a221f3785mr24599418f8f.30.1735398071418;
+        Sat, 28 Dec 2024 07:01:11 -0800 (PST)
 Received: from localhost.localdomain ([95.43.220.235])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a1c832ec4sm24779584f8f.26.2024.12.28.07.01.09
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a1c832ec4sm24779584f8f.26.2024.12.28.07.01.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Dec 2024 07:01:10 -0800 (PST)
+        Sat, 28 Dec 2024 07:01:11 -0800 (PST)
 From: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -64,9 +64,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-serial@vger.kernel.org
 Cc: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>,
 	Tony Lindgren <tony@atomide.com>
-Subject: [PATCH 1/2] tty: n_gsm: wait until channel 0 is ready
-Date: Sat, 28 Dec 2024 17:00:59 +0200
-Message-Id: <20241228150100.100354-2-ivo.g.dimitrov.75@gmail.com>
+Subject: [PATCH 2/2] tty: n_gsm: Fix control dlci ADM mode processing
+Date: Sat, 28 Dec 2024 17:01:00 +0200
+Message-Id: <20241228150100.100354-3-ivo.g.dimitrov.75@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20241228150100.100354-1-ivo.g.dimitrov.75@gmail.com>
 References: <20241228150100.100354-1-ivo.g.dimitrov.75@gmail.com>
@@ -78,90 +78,61 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Currently code does not wait for channel 0 open sequence to complete before
-pushing data to the other channels. Also, if userland opens tty, it will
-receive EL2NSYNC. Both issues result in hard to predict initialization
-sequence and possible userland failures.
+Currently, code retries n2 times to open control dlci in ABM mode before
+switching to ADM mode, but only if DM has been received. This contradicts
+to the comment that dlci is switched to control mode unconditionally if
+DLCI_OPENING retries time out. Also, it does not make sense to continue
+trying once DM has received.
 
-Fix that by waiting channel 0 open sequence to complete before attempting
-opening of the other channels. Also, if tty open() is attempted while
-channel 0 is opening, wait until sequence is complete before returning to
-userland.
+Change the logic to switch to ADM mode upon DM received. That way control
+channel state will change to DLCI_OPEN way faster. Fix the misleading
+comment while at it.
 
 Signed-off-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
 Signed-off-by: Tony Lindgren <tony@atomide.com>
 ---
- drivers/tty/n_gsm.c | 31 +++++++++++++++++++++++--------
- 1 file changed, 23 insertions(+), 8 deletions(-)
+ drivers/tty/n_gsm.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index 252849910588..b92480051e3d 100644
+index b92480051e3d..363afe11974f 100644
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -2244,13 +2244,16 @@ static void gsm_dlci_t1(struct timer_list *t)
+@@ -2224,7 +2224,7 @@ static int gsm_dlci_negotiate(struct gsm_dlci *dlci)
+  *
+  *	Some control dlci can stay in ADM mode with other dlci working just
+  *	fine. In that case we can just keep the control dlci open after the
+- *	DLCI_OPENING retries time out.
++ *	DLCI_OPENING receives DM.
+  */
+ 
+ static void gsm_dlci_t1(struct timer_list *t)
+@@ -2243,7 +2243,12 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 		}
  		break;
  	case DLCI_OPENING:
- 		if (dlci->retries) {
--			dlci->retries--;
--			gsm_command(dlci->gsm, dlci->addr, SABM|PF);
-+			if (!dlci->addr || !gsm->dlci[0] ||
-+			    gsm->dlci[0]->state != DLCI_OPENING) {
-+				dlci->retries--;
-+				gsm_command(dlci->gsm, dlci->addr, SABM|PF);
-+			}
-+
- 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
- 		} else if (!dlci->addr && gsm->control == (DM | PF)) {
- 			if (debug & DBG_ERRORS)
--				pr_info("DLCI %d opening in ADM mode.\n",
--					dlci->addr);
+-		if (dlci->retries) {
++		if (!dlci->addr && gsm->control == (DM | PF)) {
++			if (debug & DBG_ERRORS)
 +				pr_info("DLCI 0 opening in ADM mode.\n");
- 			dlci->mode = DLCI_MODE_ADM;
- 			gsm_dlci_open(dlci);
++			dlci->mode = DLCI_MODE_ADM;
++			gsm_dlci_open(dlci);
++		} else if (dlci->retries) {
+ 			if (!dlci->addr || !gsm->dlci[0] ||
+ 			    gsm->dlci[0]->state != DLCI_OPENING) {
+ 				dlci->retries--;
+@@ -2251,11 +2256,6 @@ static void gsm_dlci_t1(struct timer_list *t)
+ 			}
+ 
+ 			mod_timer(&dlci->t1, jiffies + gsm->t1 * HZ / 100);
+-		} else if (!dlci->addr && gsm->control == (DM | PF)) {
+-			if (debug & DBG_ERRORS)
+-				pr_info("DLCI 0 opening in ADM mode.\n");
+-			dlci->mode = DLCI_MODE_ADM;
+-			gsm_dlci_open(dlci);
  		} else {
-@@ -2308,7 +2311,9 @@ static void gsm_dlci_begin_open(struct gsm_dlci *dlci)
- 		dlci->retries = gsm->n2;
- 		if (!need_pn) {
- 			dlci->state = DLCI_OPENING;
--			gsm_command(gsm, dlci->addr, SABM|PF);
-+			if (!dlci->addr || !gsm->dlci[0] ||
-+			    gsm->dlci[0]->state != DLCI_OPENING)
-+				gsm_command(gsm, dlci->addr, SABM|PF);
- 		} else {
- 			/* Configure DLCI before setup */
- 			dlci->state = DLCI_CONFIGURE;
-@@ -4251,7 +4256,7 @@ static const struct tty_port_operations gsm_port_ops = {
- static int gsmtty_install(struct tty_driver *driver, struct tty_struct *tty)
- {
- 	struct gsm_mux *gsm;
--	struct gsm_dlci *dlci;
-+	struct gsm_dlci *dlci, *dlci0;
- 	unsigned int line = tty->index;
- 	unsigned int mux = mux_line_to_num(line);
- 	bool alloc = false;
-@@ -4274,10 +4279,20 @@ static int gsmtty_install(struct tty_driver *driver, struct tty_struct *tty)
- 	perspective as we don't have to worry about this
- 	if DLCI0 is lost */
- 	mutex_lock(&gsm->mutex);
--	if (gsm->dlci[0] && gsm->dlci[0]->state != DLCI_OPEN) {
-+
-+	dlci0 = gsm->dlci[0];
-+	if (dlci0 && dlci0->state != DLCI_OPEN) {
- 		mutex_unlock(&gsm->mutex);
--		return -EL2NSYNC;
-+
-+		if (dlci0->state == DLCI_OPENING)
-+			wait_event(gsm->event, dlci0->state != DLCI_OPENING);
-+
-+		if (dlci0->state != DLCI_OPEN)
-+			return -EL2NSYNC;
-+
-+		mutex_lock(&gsm->mutex);
- 	}
-+
- 	dlci = gsm->dlci[line];
- 	if (dlci == NULL) {
- 		alloc = true;
+ 			gsm->open_error++;
+ 			gsm_dlci_begin_close(dlci); /* prevent half open link */
 -- 
 2.30.2
 
