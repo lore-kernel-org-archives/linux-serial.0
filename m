@@ -1,197 +1,287 @@
-Received: from mail-io1-f78.google.com (mail-io1-f78.google.com [209.85.166.78])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CEE2170A11
-	for <linux-serial@vger.kernel.org>; Tue, 31 Dec 2024 22:34:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD3831A8F83
+	for <linux-serial@vger.kernel.org>; Thu,  2 Jan 2025 10:48:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735684471; cv=none; b=U+VjLdOGHZwN6gUWJ3O/ApfmfX9SbdUOKXxPyMLfTtjsPN+P3jtRbBrrGxzKKNdNuZnkd/YtZQ8iwzItRGtmDHLNy8a7QJMWga+QmUB5ORtjqTYyyJCfRHOraAMDat0HtmEItPikdhrvTNNKG02gmeAzPy7VlADCubijmhTneJ8=
+	t=1735814911; cv=none; b=NuOmwFXD6EH5B70vvS/dDZNXPH4YUGwj+8OclhyKJpvg1Vzi9vwHkK9Jf1llzsY1g/6g83rbhXHeGkvXP2FwU/IzOHG8QYIo8fSLBLdMpxV8Cn/CdW5Clxzwe3qjUs56QjYFdsaPnEQA4xFrn9GJQ30v4hCsopeTOsZil4/J4Uo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735684471; c=relaxed/simple;
-	bh=ei9xXaRr5RkhTyFdXtKqKJ9SKj6iI6+1yunmKEHBLKs=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:
-	 Content-Type; b=PE4DagD9CFvih4aFt8sfNfn7IklY3pISFm+yw3hid7buVHFFNAQJymR6hp06FdK5cxIdTc1e1mu4eKIHPNxEhwSZj4Tup/XCtGhhrXb62ivC0akHgSVJdP34RpepQnPJpRXSGqO7wSVwwqLF9G9FkLj5jGfq08tvLcCPzMWlWxs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-io1-f78.google.com with SMTP id ca18e2360f4ac-844ec271431so827334039f.1
-        for <linux-serial@vger.kernel.org>; Tue, 31 Dec 2024 14:34:29 -0800 (PST)
+	s=arc-20240116; t=1735814911; c=relaxed/simple;
+	bh=y6DMHxOijDlusyoIi9vYkliRXs2zYFrnr7b+Plgl+yg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nMzNutWCdIXhhRoDdYkDx6iwBcaGGZZCZyPRd0ndUandixmRG8DGn6cGK+LvIpNEcsTTk83pe5oCYq9B//KNUdZ4bP2U84HdNvx9GQRH4SRJIFUE71FqZARz/bntwKFtofTUwZZWrQ/AbRw/+RSlMZtLoyalfFirwNMlb0ocVEY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=MsWnFG/w; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="MsWnFG/w"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-385de59c1a0so6822607f8f.2
+        for <linux-serial@vger.kernel.org>; Thu, 02 Jan 2025 02:48:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tuxon.dev; s=google; t=1735814908; x=1736419708; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GFIpwGB23LANAByW/n2mcZ10YJezzuFXcnQMI/Wk7QU=;
+        b=MsWnFG/wxs89buC/0w56O97Z43uMiqdJ2nZ7Il9HLRr/0TKX3dY3yJQyjiljX/YbAl
+         UypWI7TwvJITo9n8vhMH5cZXq1IVH++uS4kDwGH6HMLUvlUUTwosiRl9p52opu2FCahD
+         dFZ7to11qUrv6oOB4GzCy3yn3bWsvrEIUjZKI0vgHGzvRpXMJT7qgUiy2aI4YrPx2h1D
+         PMm0BU7EDAOmjNvn0aRNYmJtcmpda6rsjPpeSgHiUoocIsCM0oOVzfQKuElm0lsM9djT
+         bXWYFL0XUgrlRxs/0bbcU5bbiokFqW+BKRsHY06wlKdwJMQVvJX6nBYc4kJ1IQZP1V/h
+         7Avw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735684469; x=1736289269;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
+        d=1e100.net; s=20230601; t=1735814908; x=1736419708;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=J5NiYMTOlyzQSxiU/meqHd8T4ZA/yi4RKOdqy0lI988=;
-        b=E8eLKjppNriPKQwr+qiyrQ9/f2Ou6EdczaaA7XCZXQy4QUN5ddAFlLxCRyR17mPQ5n
-         0OtyeYbxsIeDFngOeX6fHZY1IreDEfxQjZqfcZnTKIhEK3tAPJmAlzzHqlyZXlrsM+hr
-         07jd8vO4SHJU03oKdOa3btwWsZ7E3/6NAYnQyNzm54ZY9BQmy/hJ0t2QedJJl4QTKjo8
-         3DMwgceTRl+8+zn7EP8+Zq1HS0VuR8NBDCgJB8n4RkrpnZOZI4UYZiDy20ExEiA30Wxg
-         GDGRk/A23+N9hfblpaU44jmMlHOZGoe4oM/Hn0mFstbmVCp/Ou+FyOuw3juWePJ1hKFv
-         kCuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXUnHrW8fqtjAeMTTXSLdA7YZkS+BspT1ak3YHF2z5qiWgI7X5FaB0Afe+jI1n5aMDV1Y1q7+/bZZvRWGA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwBJgwpR1Gqy8sKcHRi6ZuftHWjHYw65H4A6OUHM9mh0u5DpP8P
-	n3elIrjsfKwLDzJBQS5WkGJTGKeC2K877vCN43+8hMn8AJYbYKlei0MBc/MbaU0wGjf5OizsHBw
-	XSJh2nVa4xJBnk0uM5So5NsryOJVu+8XTcS87tHeROeRfZSMu4Xl2ySY=
-X-Google-Smtp-Source: AGHT+IER7/a2+B/Db8o8N1Mc5ETy4VvXXHurC5Xd8J7gx96xKKDmRoalACm3p8LaUbCMIfYx+/r+V9j5HVGsSn1Vptx7H8+ZBvOz
+        bh=GFIpwGB23LANAByW/n2mcZ10YJezzuFXcnQMI/Wk7QU=;
+        b=T/zaZ59owkgjIn3zbvz4jghbMPzQZnwbyEnBwUQDfE4DvPEr+P+zPArsWJMrq7nQXl
+         c99K57ipJwrSwDpu0NrmndzVnY+A1L8MU18lJV9JVfflm5jI5sqc5zamAHFGrTTcuqLT
+         oZebQl9yKL1C3fHm/3azgz5iXWdftphYNRhiFkBZxvZ4om/JW42N70q99QIK1nqnRWTB
+         8maf8GfukM/ljJjXj4ig5HmNdwPte5H95orVQaO9pxmg7prkQlDscZS9O9o/qWkgOw3m
+         RuSwZYjYH5AaJMnwvSR7aMQGCg0pRw/iLmdSz3gxVNKSpiza8vxMyBkrGfZB4kK93+oh
+         keZw==
+X-Forwarded-Encrypted: i=1; AJvYcCWQrye8sHJ9Y224Hhc88mRupdUobm0hPIdTLMqDXA4tRbORwjjY8jtLoPSig7ynAELrGdgqB6U6ogCTWIA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw2bMC4eH0fZ+Z68ctzfWprZ1Vynt8N+TG/AqKaU10+FfE5dtnI
+	j555meO6PwQETnT9f6kwEh1lE5+BjVpYUAay/l7EmeA8gCuf0QrRF5UWTN3n3aY=
+X-Gm-Gg: ASbGncuGMS2D62DG8hdXRsDmrw4qs1jytzLaDRby5PUij8DxDhZzJzl9ZfQVa/wjQ3X
+	XSPjcBZFsTWILiwHlVAtOJFHXvD/bZpirNc67L/H1oIKvdDL145zdVRPHrigZe3+FU5TcpbQ6cB
+	ZiHUQkZPiZSPppFnEJjh/JN8DfHq/vPuvyEvRcLbvASkDd+ay+2JPupXUwbbG5vYz+xe9DTOtbw
+	04HAhNI+vdR/vE+Vc+wrBT4I/Vwh2RWXbiiN4L1x2epTo7jInuuD2ndsRn0kdOxuw==
+X-Google-Smtp-Source: AGHT+IENVLtDm//0s4zoP3FVOCZty2tw9Mx4m7bERvCUo2OJSxiEnc/IIpjbgKoYlXyGt/2cKq0SdQ==
+X-Received: by 2002:adf:9b8a:0:b0:38a:4de1:ac6 with SMTP id ffacd0b85a97d-38a4de10f03mr11955498f8f.6.1735814907658;
+        Thu, 02 Jan 2025 02:48:27 -0800 (PST)
+Received: from [192.168.50.4] ([82.78.167.102])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a1c89e140sm38648430f8f.79.2025.01.02.02.48.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 02 Jan 2025 02:48:27 -0800 (PST)
+Message-ID: <8361a42d-0c70-4a8c-b0a0-7056ba21b508@tuxon.dev>
+Date: Thu, 2 Jan 2025 12:48:25 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:3891:b0:3a8:1195:f216 with SMTP id
- e9e14a558f8ab-3c2d25770a4mr337301155ab.10.1735684468801; Tue, 31 Dec 2024
- 14:34:28 -0800 (PST)
-Date: Tue, 31 Dec 2024 14:34:28 -0800
-In-Reply-To: <0000000000004228140621a87013@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <67747174.050a0220.25abdd.0954.GAE@google.com>
-Subject: Re: [syzbot] [serial?] possible deadlock in tty_buffer_flush (3)
-From: syzbot <syzbot+52cf91760dcb1dac6376@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 08/13] clk: at91: sama7d65: add sama7d65 pmc driver
+To: Ryan.Wanner@microchip.com, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, nicolas.ferre@microchip.com,
+ alexandre.belloni@bootlin.com, mturquette@baylibre.com, sboyd@kernel.org,
+ arnd@arndb.de
+Cc: dharma.b@microchip.com, mihai.sain@microchip.com,
+ romain.sioen@microchip.com, varshini.rajendran@microchip.com,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+References: <cover.1734723585.git.Ryan.Wanner@microchip.com>
+ <549fa8590fe9b4380e413f8eed87392f28754395.1734723585.git.Ryan.Wanner@microchip.com>
+From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Content-Language: en-US
+In-Reply-To: <549fa8590fe9b4380e413f8eed87392f28754395.1734723585.git.Ryan.Wanner@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-syzbot has found a reproducer for the following issue on:
+Hi, Ryan,
 
-HEAD commit:    ccb98ccef0e5 Merge tag 'platform-drivers-x86-v6.13-4' of g..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11615818580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=dc863cc90857c683
-dashboard link: https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
-compiler:       gcc (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10b9c8b0580000
+On 20.12.2024 23:07, Ryan.Wanner@microchip.com wrote:
+> From: Ryan Wanner <Ryan.Wanner@microchip.com>
+> 
+> Add clock support for SAMA7D65 SoC.
+> 
+> Increase maximum number of valid master clocks. The PMC for the SAMA7D65
+> requires 9 master clocks.
+> 
+> Increase maximum amount of PLLs to 9 to support SAMA7D65 SoC PLL
+> requirements.
+> 
+> Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
+> Reviewed-by: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+> ---
+>  drivers/clk/at91/Makefile          |    1 +
+>  drivers/clk/at91/clk-master.c      |    2 +-
+>  drivers/clk/at91/clk-sam9x60-pll.c |    2 +-
+>  drivers/clk/at91/pmc.c             |    1 +
+>  drivers/clk/at91/sama7d65.c        | 1375 ++++++++++++++++++++++++++++
+>  5 files changed, 1379 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/clk/at91/sama7d65.c
+> 
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/409ce1fd1fbc/disk-ccb98cce.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/3919529a8a5e/vmlinux-ccb98cce.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/f6a9eb51806d/bzImage-ccb98cce.xz
+[ ... ]
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+52cf91760dcb1dac6376@syzkaller.appspotmail.com
+> +
+> +	parent_hws[0] = md_slck_hw;
+> +	parent_hws[1] = td_slck_hw;
+> +	parent_hws[2] = sama7d65_pmc->chws[PMC_MAIN];
+> +	for (i = PCK_PARENT_HW_MCK1; i < ARRAY_SIZE(sama7d65_mckx); i++) {
+> +		u8 num_parents = 3 + sama7d65_mckx[i].ep_count;
+> +		struct clk_hw *tmp_parent_hws[8];
+> +		u32 *mux_table;
+> +
+> +		mux_table = kmalloc_array(num_parents, sizeof(*mux_table),
+> +					  GFP_KERNEL);
+> +		if (!mux_table)
+> +			goto err_free;
+> +
+> +		PMC_INIT_TABLE(mux_table, 3);
+> +		PMC_FILL_TABLE(&mux_table[3], sama7d65_mckx[i].ep_mux_table,
+> +			       sama7d65_mckx[i].ep_count);
+> +		for (j = 0; j < sama7d65_mckx[i].ep_count; j++) {
+> +			u8 pll_id = sama7d65_mckx[i].ep[j].pll_id;
+> +			u8 pll_compid = sama7d65_mckx[i].ep[j].pll_compid;
+> +
+> +			tmp_parent_hws[j] = sama7d65_plls[pll_id][pll_compid].hw;
+> +		}
+> +		PMC_FILL_TABLE(&parent_hws[3], tmp_parent_hws,
+> +			       sama7d65_mckx[i].ep_count);
+> +
+> +		hw = at91_clk_sama7g5_register_master(regmap, sama7d65_mckx[i].n,
+> +						      num_parents, NULL, parent_hws,
+> +						      mux_table, &pmc_mckX_lock,
+> +						      sama7d65_mckx[i].id,
+> +						      sama7d65_mckx[i].c,
+> +						      sama7d65_mckx[i].ep_chg_id);
+> +		alloc_mem[alloc_mem_size++] = mux_table;
+> +
+> +		if (IS_ERR(hw)) {
+> +			kfree(mux_table);
 
-input: HID 0926:3333 as /devices/platform/dummy_hcd.0/usb1/1-1/1-1:0.0/0003:0926:3333.0001/input/input5
-keytouch 0003:0926:3333.0001: input,hidraw0: USB HID v0.00 Keyboard [HID 0926:3333] on usb-dummy_hcd.0-1/input0
-======================================================
-WARNING: possible circular locking dependency detected
-6.13.0-rc5-syzkaller-00004-gccb98ccef0e5 #0 Not tainted
-------------------------------------------------------
-kworker/1:3/6008 is trying to acquire lock:
-ffff88801b0990b8 (&buf->lock){+.+.}-{4:4}, at: tty_buffer_flush+0x72/0x310 drivers/tty/tty_buffer.c:229
+Now mux_table is freed twice, once here, once in err_free section. Having
+mux_table added to alloc_mem[] is enough. I'll do the propoer adjustment
+while applying.
 
-but task is already holding lock:
-ffffffff8e1a9040 (console_lock){+.+.}-{0:0}, at: vc_SAK+0x13/0x310 drivers/tty/vt/vt_ioctl.c:983
+> +			goto err_free;
+> +		}
+> +
+> +		sama7d65_mckx[i].hw = hw;
+> +		if (sama7d65_mckx[i].eid)
+> +			sama7d65_pmc->chws[sama7d65_mckx[i].eid] = hw;
+> +	}
+> +
+> +	parent_names[0] = "syspll_divpmcck";
+> +	parent_names[1] = "usbpll_divpmcck";
+> +	parent_names[2] = "main_osc";
+> +	hw = sam9x60_clk_register_usb(regmap, "usbck", parent_names, 3);
+> +	if (IS_ERR(hw))
+> +		goto err_free;
+> +
+> +	parent_hws[0] = md_slck_hw;
+> +	parent_hws[1] = td_slck_hw;
+> +	parent_hws[2] = sama7d65_pmc->chws[PMC_MAIN];
+> +	parent_hws[3] = sama7d65_plls[PLL_ID_SYS][PLL_COMPID_DIV0].hw;
+> +	parent_hws[4] = sama7d65_plls[PLL_ID_DDR][PLL_COMPID_DIV0].hw;
+> +	parent_hws[5] = sama7d65_plls[PLL_ID_GPU][PLL_COMPID_DIV0].hw;
+> +	parent_hws[6] = sama7d65_plls[PLL_ID_BAUD][PLL_COMPID_DIV0].hw;
+> +	parent_hws[7] = sama7d65_plls[PLL_ID_AUDIO][PLL_COMPID_DIV0].hw;
+> +	parent_hws[8] = sama7d65_plls[PLL_ID_ETH][PLL_COMPID_DIV0].hw;
+> +
+> +	for (i = 0; i < 8; i++) {
+> +		char name[6];
+> +
+> +		snprintf(name, sizeof(name), "prog%d", i);
+> +
+> +		hw = at91_clk_register_programmable(regmap, name, NULL, parent_hws,
+> +						    9, i,
+> +						    &programmable_layout,
+> +						    sama7d65_prog_mux_table);
+> +		if (IS_ERR(hw))
+> +			goto err_free;
+> +
+> +		sama7d65_pmc->pchws[i] = hw;
+> +	}
+> +
+> +	for (i = 0; i < ARRAY_SIZE(sama7d65_systemck); i++) {
+> +		hw = at91_clk_register_system(regmap, sama7d65_systemck[i].n,
+> +					      sama7d65_systemck[i].p, NULL,
+> +					      sama7d65_systemck[i].id, 0);
+> +		if (IS_ERR(hw))
+> +			goto err_free;
+> +
+> +		sama7d65_pmc->shws[sama7d65_systemck[i].id] = hw;
+> +	}
+> +
+> +	for (i = 0; i < ARRAY_SIZE(sama7d65_periphck); i++) {
+> +		hw = at91_clk_register_sam9x5_peripheral(regmap, &pmc_pcr_lock,
+> +							 &sama7d65_pcr_layout,
+> +							 sama7d65_periphck[i].n,
+> +							 NULL,
+> +							 sama7d65_mckx[sama7d65_periphck[i].p].hw,
+> +							 sama7d65_periphck[i].id,
+> +							 &sama7d65_periphck[i].r,
+> +							 sama7d65_periphck[i].chgp ? 0 :
+> +							 INT_MIN, 0);
+> +		if (IS_ERR(hw))
+> +			goto err_free;
+> +
+> +		sama7d65_pmc->phws[sama7d65_periphck[i].id] = hw;
+> +	}
+> +
+> +	parent_hws[0] = md_slck_hw;
+> +	parent_hws[1] = td_slck_hw;
+> +	parent_hws[2] = sama7d65_pmc->chws[PMC_MAIN];
+> +	parent_hws[3] = sama7d65_pmc->chws[PMC_MCK1];
+> +	for (i = 0; i < ARRAY_SIZE(sama7d65_gck); i++) {
+> +		u8 num_parents = 4 + sama7d65_gck[i].pp_count;
+> +		struct clk_hw *tmp_parent_hws[8];
+> +		u32 *mux_table;
+> +
+> +		mux_table = kmalloc_array(num_parents, sizeof(*mux_table),
+> +					  GFP_KERNEL);
+> +		if (!mux_table)
+> +			goto err_free;
+> +
+> +		PMC_INIT_TABLE(mux_table, 4);
+> +		PMC_FILL_TABLE(&mux_table[4], sama7d65_gck[i].pp_mux_table,
+> +			       sama7d65_gck[i].pp_count);
+> +		for (j = 0; j < sama7d65_gck[i].pp_count; j++) {
+> +			u8 pll_id = sama7d65_gck[i].pp[j].pll_id;
+> +			u8 pll_compid = sama7d65_gck[i].pp[j].pll_compid;
+> +
+> +			tmp_parent_hws[j] = sama7d65_plls[pll_id][pll_compid].hw;
+> +		}
+> +		PMC_FILL_TABLE(&parent_hws[4], tmp_parent_hws,
+> +			       sama7d65_gck[i].pp_count);
+> +
+> +		hw = at91_clk_register_generated(regmap, &pmc_pcr_lock,
+> +						 &sama7d65_pcr_layout,
+> +						 sama7d65_gck[i].n, NULL,
+> +						 parent_hws, mux_table,
+> +						 num_parents,
+> +						 sama7d65_gck[i].id,
+> +						 &sama7d65_gck[i].r,
+> +						 sama7d65_gck[i].pp_chg_id);
+> +		if (IS_ERR(hw))
+> +			goto err_free;
+> +
+> +		sama7d65_pmc->ghws[sama7d65_gck[i].id] = hw;
+> +		alloc_mem[alloc_mem_size++] = mux_table;
 
-which lock already depends on the new lock.
+This should have been added just after:
 
+		if (!mux_table)
+			goto err_free;
 
-the existing dependency chain (in reverse order) is:
+I'll adjust it while applying.
 
--> #2 (console_lock){+.+.}-{0:0}:
-       console_lock+0x7a/0xa0 kernel/printk/printk.c:2833
-       con_flush_chars+0x5e/0x80 drivers/tty/vt/vt.c:3503
-       __receive_buf drivers/tty/n_tty.c:1644 [inline]
-       n_tty_receive_buf_common+0xa99/0x1980 drivers/tty/n_tty.c:1739
-       tty_ldisc_receive_buf+0xa2/0x190 drivers/tty/tty_buffer.c:387
-       tty_port_default_receive_buf+0x70/0xb0 drivers/tty/tty_port.c:37
-       receive_buf drivers/tty/tty_buffer.c:445 [inline]
-       flush_to_ldisc+0x264/0x780 drivers/tty/tty_buffer.c:495
-       process_one_work+0x9c5/0x1ba0 kernel/workqueue.c:3229
-       process_scheduled_works kernel/workqueue.c:3310 [inline]
-       worker_thread+0x6c8/0xf00 kernel/workqueue.c:3391
-       kthread+0x2c1/0x3a0 kernel/kthread.c:389
-       ret_from_fork+0x45/0x80 arch/x86/kernel/process.c:147
-       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
+> +	}
+> +
+> +	of_clk_add_hw_provider(np, of_clk_hw_pmc_get, sama7d65_pmc);
+> +	kfree(alloc_mem);
+> +
+> +	return;
+> +
+> +err_free:
+> +	if (alloc_mem) {
+> +		for (i = 0; i < alloc_mem_size; i++)
+> +			kfree(alloc_mem[i]);
+> +		kfree(alloc_mem);
+> +	}
+> +
+> +	kfree(sama7d65_pmc);
+> +}
+> +
+> +/* Some clks are used for a clocksource */
+> +CLK_OF_DECLARE(sama7d65_pmc, "microchip,sama7d65-pmc", sama7d65_pmc_setup);
 
--> #1 (&tty->termios_rwsem){++++}-{4:4}:
-       down_read+0x9a/0x330 kernel/locking/rwsem.c:1524
-       n_tty_receive_buf_common+0x85/0x1980 drivers/tty/n_tty.c:1702
-       tty_ldisc_receive_buf+0xa2/0x190 drivers/tty/tty_buffer.c:387
-       tty_port_default_receive_buf+0x70/0xb0 drivers/tty/tty_port.c:37
-       receive_buf drivers/tty/tty_buffer.c:445 [inline]
-       flush_to_ldisc+0x264/0x780 drivers/tty/tty_buffer.c:495
-       process_one_work+0x9c5/0x1ba0 kernel/workqueue.c:3229
-       process_scheduled_works kernel/workqueue.c:3310 [inline]
-       worker_thread+0x6c8/0xf00 kernel/workqueue.c:3391
-       kthread+0x2c1/0x3a0 kernel/kthread.c:389
-       ret_from_fork+0x45/0x80 arch/x86/kernel/process.c:147
-       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
-
--> #0 (&buf->lock){+.+.}-{4:4}:
-       check_prev_add kernel/locking/lockdep.c:3161 [inline]
-       check_prevs_add kernel/locking/lockdep.c:3280 [inline]
-       validate_chain kernel/locking/lockdep.c:3904 [inline]
-       __lock_acquire+0x249e/0x3c40 kernel/locking/lockdep.c:5226
-       lock_acquire.part.0+0x11b/0x380 kernel/locking/lockdep.c:5849
-       __mutex_lock_common kernel/locking/mutex.c:585 [inline]
-       __mutex_lock+0x19b/0xa60 kernel/locking/mutex.c:735
-       tty_buffer_flush+0x72/0x310 drivers/tty/tty_buffer.c:229
-       tty_ldisc_flush+0x64/0xe0 drivers/tty/tty_ldisc.c:388
-       __do_SAK+0x6a1/0x800 drivers/tty/tty_io.c:3038
-       vc_SAK+0x7f/0x310 drivers/tty/vt/vt_ioctl.c:993
-       process_one_work+0x9c5/0x1ba0 kernel/workqueue.c:3229
-       process_scheduled_works kernel/workqueue.c:3310 [inline]
-       worker_thread+0x6c8/0xf00 kernel/workqueue.c:3391
-       kthread+0x2c1/0x3a0 kernel/kthread.c:389
-       ret_from_fork+0x45/0x80 arch/x86/kernel/process.c:147
-       ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
-
-other info that might help us debug this:
-
-Chain exists of:
-  &buf->lock --> &tty->termios_rwsem --> console_lock
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(console_lock);
-                               lock(&tty->termios_rwsem);
-                               lock(console_lock);
-  lock(&buf->lock);
-
- *** DEADLOCK ***
-
-4 locks held by kworker/1:3/6008:
- #0: ffff88801b078948 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x1293/0x1ba0 kernel/workqueue.c:3204
- #1: ffffc90003cafd80 ((work_completion)(&vc_cons[currcons].SAK_work)){+.+.}-{0:0}, at: process_one_work+0x921/0x1ba0 kernel/workqueue.c:3205
- #2: ffffffff8e1a9040 (console_lock){+.+.}-{0:0}, at: vc_SAK+0x13/0x310 drivers/tty/vt/vt_ioctl.c:983
- #3: ffff8880798a40a0 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref drivers/tty/tty_ldisc.c:263 [inline]
- #3: ffff8880798a40a0 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_flush+0x1c/0xe0 drivers/tty/tty_ldisc.c:386
-
-stack backtrace:
-CPU: 1 UID: 0 PID: 6008 Comm: kworker/1:3 Not tainted 6.13.0-rc5-syzkaller-00004-gccb98ccef0e5 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 09/13/2024
-Workqueue: events vc_SAK
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:94 [inline]
- dump_stack_lvl+0x116/0x1f0 lib/dump_stack.c:120
- print_circular_bug+0x419/0x5d0 kernel/locking/lockdep.c:2074
- check_noncircular+0x31a/0x400 kernel/locking/lockdep.c:2206
- check_prev_add kernel/locking/lockdep.c:3161 [inline]
- check_prevs_add kernel/locking/lockdep.c:3280 [inline]
- validate_chain kernel/locking/lockdep.c:3904 [inline]
- __lock_acquire+0x249e/0x3c40 kernel/locking/lockdep.c:5226
- lock_acquire.part.0+0x11b/0x380 kernel/locking/lockdep.c:5849
- __mutex_lock_common kernel/locking/mutex.c:585 [inline]
- __mutex_lock+0x19b/0xa60 kernel/locking/mutex.c:735
- tty_buffer_flush+0x72/0x310 drivers/tty/tty_buffer.c:229
- tty_ldisc_flush+0x64/0xe0 drivers/tty/tty_ldisc.c:388
- __do_SAK+0x6a1/0x800 drivers/tty/tty_io.c:3038
- vc_SAK+0x7f/0x310 drivers/tty/vt/vt_ioctl.c:993
- process_one_work+0x9c5/0x1ba0 kernel/workqueue.c:3229
- process_scheduled_works kernel/workqueue.c:3310 [inline]
- worker_thread+0x6c8/0xf00 kernel/workqueue.c:3391
- kthread+0x2c1/0x3a0 kernel/kthread.c:389
- ret_from_fork+0x45/0x80 arch/x86/kernel/process.c:147
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
- </TASK>
-tty tty1: SAK: killed process 6013 (syz.0.16): by fd#3
-
-
----
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
