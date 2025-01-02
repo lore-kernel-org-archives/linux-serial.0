@@ -1,186 +1,148 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5360A1A4F21
-	for <linux-serial@vger.kernel.org>; Thu,  2 Jan 2025 17:57:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D721118CC08;
+	Thu,  2 Jan 2025 18:17:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735840680; cv=none; b=g6rayXgQCmpKVKKj/iGprMRnNK+URkt2/vLw2EZMUz//UEkJX/WjTQZybiVrwblFiByntY13bI7fr1OQ3+Ho18r23nrIbs06IS8nDbimMbSHB2wFydtzCxR4MbUBqfNgoP23FzxGFZGcMInzeSbGZlpXp8jgzAdQny/3CMhZrWk=
+	t=1735841849; cv=none; b=tejf8ANPDkODnX5qKAwxoddqRjmL+U/bBqgcE2WCLc9DKZ/h3cbUBTkUIBFkgAQiW1c8b7eZAVTZ9bEPJvoWBTGUs5Y6h5AfR+wCd+Zuhxk07WajdfzFPufNnUOaZPk5GEIHNDri20bLLgE0xo/6/GQ47SMezGdYKOBXVzsYNcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735840680; c=relaxed/simple;
-	bh=BIcJqQF1mo60m28noB9BsulTBQmAdlnN81edK4ZGNqA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=i59gmvTvQ3A2a8Uljj/nBNky+qUYw5JH67ZSp30x5ztee8X8HfMWq8aalPXd2/3pROSN+kQDSZQ1m0wy2VaAwG5w4dj0p8SBeKSNExwFrzWFkqq1IBhKoIn/fgtAb0kZk4Q3EfZNerpblVZwop70EnG5nOKZo/A5+VZfSLIqqmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=B5CKa+qF; arc=none smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1735841849; c=relaxed/simple;
+	bh=56KyMH36kkt8ZIoRmqH2Gmj+Cu5YZ7EcdIm5YbsdOdw=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=d2xT/nvuEADO0RvWJJH4j8WCy23wKR/GIRXzz781bHVD+P88COBUkjexiRsnV4QF6tqkM49m6h+ixhyDS4V3NjJD4WvLH7y9i06qpFzhxxaZ5zLE8Yln4hRQX+Oy1eGT6jj+j8VzkGJAXvcEVS9Vz+3Xrl61rZ9r2EdJ5XOFb4Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MICIcgJE; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="B5CKa+qF"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-5cecbddb574so20103170a12.1
-        for <linux-serial@vger.kernel.org>; Thu, 02 Jan 2025 09:57:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MICIcgJE"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-21619108a6bso147268015ad.3;
+        Thu, 02 Jan 2025 10:17:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1735840676; x=1736445476; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Vdwjwzzmzafgm42srJ5AurIcIbkmKFY6keundMQJSPE=;
-        b=B5CKa+qFvOJqGw7shn+NivIH3doaqjXy7hFCFjJ6wSkTlPGaMedM0BJoqYxFdELzrV
-         Z3H2JYbKmQ373JPs69OW2KvD1+oo46T5jL6dnBBMvd5ugsa34pIvlet0Htd28y2gLfK9
-         /1mV/K/ALKd+nbwnLFbfdyKoqswbe/8BTODbi60yeHW/JoqSua2kc+d+4IAwiEg2J9Zl
-         rIwNs6CajtBDhlGdWX3qEDoOpyXwBbxzj9LTahADhlKso53Fa9LQpEooYnkDepv9AEWU
-         furQbR4Z+N+bnnlDVS44Qszbccf4wZag/808hxh8BcPq7SrNPHoKjC2L89HTvg/vRHOg
-         7qEQ==
+        d=gmail.com; s=20230601; t=1735841846; x=1736446646; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=KcsYGT2jr/Cwk+E0bZ78S9/+2iE2NBGtFjNzzo30vdQ=;
+        b=MICIcgJEOZmP/BRp7qCOoAdpJq2JvRaMGK9YhSgx25d5Fz1yNQr0lePr4dUcAqtmoe
+         DnzwMvt+gZPenrtzo+yWWSQrcyeZiEBOwPGZ4+bcUs/FkUqh/d+3M3GgN7/IsPF3xbm1
+         5izJFNrVwAUrBomHVDRB8ezEwq3qcLWsRYU6oz+M5FNcGJInC/pUycCZu8HnF0lXTCNK
+         7Sz0okHfRD4rCPnt0BK3sGZdmwGqkgeS8+JibIQ5bxlsEcB8S93T4zIPWvyEvIGb4+qP
+         ztJxOQOJVnlYXMb6iBdK1JrFrDWSbRDdNHx8NSmnxTULHmZKUah1iHkvuVXzK4g0pTjg
+         R8Pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735840676; x=1736445476;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Vdwjwzzmzafgm42srJ5AurIcIbkmKFY6keundMQJSPE=;
-        b=RaCQfkrxeV0TtkO0/bj1KRzhvEsEqzoJt+OI29gIG80LnBAWlE85aYHr1kK0AwdkTq
-         ZOhRmDQJUmSlDdgPhizSIRDIK8GshySgKijAItvdFI3HYdL+85V/6930EMRnRLk0NzDh
-         n9o0dLfktHuoMKKo78TEZsMvhXdZuHr1fAr415kuuc+MpPyfIFOs07HT4g+MWIFHMnX9
-         XnwrAptw81rWqUMa7Aeitt24h2FKe1NTPAqurWczUehKdkPd+29enB5zx8vOO9Nkk+NW
-         k1VI8XcTYk26e/JliMdeR2U63THgsPK0mAYbeYZxq/Xf4C1o84gqSGrO0eoOjThXM2SP
-         DMqA==
-X-Forwarded-Encrypted: i=1; AJvYcCWy0xNvgGTpusf4QyVbofwPFpPZAI5L0rUrHJZ6h55stH8YNYdJue6fGgwwkTDUEILGoaEVUQ+ZhuUZMts=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxhbWlWsKkMTUP1+vndE26gK+eri9Y0TMhBR8vAnN29Xur/u+YT
-	B9uv+58nTHO1hrHA+Edo3yMK/iw9hnTLbytCZExz68dLQWH6OZUNhvuhL0xnEVc=
-X-Gm-Gg: ASbGncvQjqg6OHmJQ1cy9+IHaDpQeFmqj+QxgCftq0XflygsAvcQcim/hGkO+26R/y6
-	rN3zSw88hAjnOanLo5rYhh0Nrr/EHzZcurwHQy6hyf0Oe1C46SAn44F7uS6eO1pWSQl86VjWWr/
-	kACAakUqg/hG+iz0CwRnNaRewJCOsgZcmWT5KQo0SWAtGxrb5ivXY73VI6j5vbXpjvnmc9NBzoP
-	ukAcv11ccu0PyPPh3U8MJxKZNzYJ0wL+bkGO3V4tphW78TemsMZ8oJkh1fVS5/+Pw==
-X-Google-Smtp-Source: AGHT+IEclYxqDj/gw3ex0A5AseUgwI+61bsYn5H8911VEyjPwwC7u5j2r+gESJWRIInAMs7gLs2/gQ==
-X-Received: by 2002:a05:6402:2346:b0:5d3:bc1d:e56b with SMTP id 4fb4d7f45d1cf-5d81ddfdf76mr35136627a12.16.1735840676286;
-        Thu, 02 Jan 2025 09:57:56 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.102])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5d806fedbd0sm19114731a12.55.2025.01.02.09.57.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Jan 2025 09:57:55 -0800 (PST)
-Message-ID: <38fc5c6a-e4b5-46d6-89df-3aea9a33f79b@tuxon.dev>
-Date: Thu, 2 Jan 2025 19:57:54 +0200
+        d=1e100.net; s=20230601; t=1735841846; x=1736446646;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KcsYGT2jr/Cwk+E0bZ78S9/+2iE2NBGtFjNzzo30vdQ=;
+        b=eInCkkKDMgR921AAh66JotGpRnwnvUg6vkEHlZ2LUVO3s34qQb2pubweqVOLyccWh4
+         vlvBQifSpYnhUJE63d5snsDASS3MHaYVwHRvzrlEtl1ioVYC4SWb6eXBw9BgN4/WK2Ek
+         PE2imIe4GGyjvZnEWHHjLMtBhj5RpDu0HnB9LsvGOr7yi82q8piyubM+uZ7Gx8u1lOKZ
+         vvRxH0uQbCvVjTYzE9SI3hn++yW/2P+RQSj7D1Oxl9R0ARSILYBKDaoMY6BpOan/1/AB
+         J3LQnHePvBmK7xww6LW5wN6IUnXKfEnDs52Fo9eUjv17z5QuVu/NuNlPTSh12wq4BlF+
+         So8w==
+X-Forwarded-Encrypted: i=1; AJvYcCU+7DnxyDdnNRrLgP1uwUWjz7DbzFnKXttYC8+ZtRftIBu6TPamzCE2wqPMHXF5OXSorQKbF/P7h8AY@vger.kernel.org, AJvYcCU7T+A1o24m1ROEHUyARpwW/Y61mhNWvSH2OQdXDOwxnxXn/PQ7eKBf6snNQju/hffli74Dwikw5A==@vger.kernel.org, AJvYcCUK8hKIlL0DBPQRfZdVvmxWkzh78+jeHKE7blZH7ykl8llbbVVPWHkbqRw0eocB1tQQ1J9+HWW01A2xSg==@vger.kernel.org, AJvYcCUM5rODagHZnjEayEtNAOeO7HsEAqVxa4veY+UQARi1oKwBRxdbC//kKKajqefV4XS2lZQhylLLfApgQS/1/Un/Qw==@vger.kernel.org, AJvYcCUwE01hKDW0w05LoNMNRsTbnwHuadKTnlV8J4Tlf6os535/BkAzb+8TFUYnDzRXIZ7RvmR1le2EFxBYJhuj@vger.kernel.org, AJvYcCUzbiUpJqAHpF0ydPvklpRUhuP6o/ti1qc7m6Rn5xGRRCNZifiTN7B5esil/r9ErR7J3aMO9WLO6xEKsA2J@vger.kernel.org, AJvYcCV5ptXYlMNx11DGCIPpxQG0ewUhjSM3VkLOTeuFJV2n/IgtdsJQqDzLGMONr7CZI3xuSlW2AW1Q97uuS9E=@vger.kernel.org, AJvYcCVe0RhVbsTwk26oJ+WdqwcPCEzt2ez0uZ7vS4/Kq8ZoA12eJ3lHIvJLNtXMahXCIgdQN188X1/IF9mtrkE=@vger.kernel.org, AJvYcCW0SoZ9oYvZsy/wdDu3jEZxYOz4XRUcBDtTZxfrMKLRtW0ppO2tB3madZQkLvKPDpTG1Uk+oIuRCMASRqM=@vger.kernel.org, AJvYcCWB7W4X4GSh3t8/eTCGSjIwGN2D2TgAEwJpX7bT40z4cRMT01NCYriVjEhKX1+CCPQjMqHZuBNEwGmY@vger.kernel.org, AJvYcCWg8R9Fi9Fc6l7gV9YigTgovvV+MNb+ckzdNkmcZ6E7kDKkQWowlXt7l+dJA7iXDWzWsq2A8lAB6vfZgQw=@vger.kernel.org, AJvYcCWiWcIEv7SEhsqh6nU11fVOku+bmus81pvwdEweMA+IqHC7fmpjot8r6Vap5biuhm5hUnYx3HtqXJcOew==@vger.kernel.org, AJvYcCXMiMrq/r9TNkZvnqplrz7FP9EzDh/6rIluBINPPILGobc5SRWnPnUz9NDC6XK0jRvZUEM/Y+remTf6@vger.kernel.org, AJvYcCXo+/PkazWtQkFxb+tp/l5BuP5iRhETNdHBrG2/gbMbMjCi4SJXAmzjhOzffYAQoS7YV9FPaJ5i@vger.kernel.org, AJvYcCXtgfPuBAY+hhtHvmAFFq+FeXSxRhTFXxbuo/4GjgKQVhRnzCCnxVSs28t9G5ixMH/k2iBe1/SjarCg@vger.kernel.org, AJvYcCXzBZbs/h6iJ4wSCMvpaOCmWcAknkfX4ve87b9mJR9Kn/CpoH5nSYvaCfwQDV/EvrO3IZkEiZqy/gCFMw==@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw+zheiDoesdeAkJ7MZDUyl6Hqdh9mOdiZvJJXex6L/g4aewH12
+	V8cRuOuX6fKt2PqIBo61qo+iBbiIerdaLsLbO54Dj3q3nCGvMKnqMHJpRg==
+X-Gm-Gg: ASbGncsNx027htFcKzSVIknAx/B+CFdENdF9nT8Whw9tqCIuuZwYljbQREgZF3wce9/
+	yN8H8bYffR3CHAlVMQHRZAOserfvR2FScwKrGyzwBm6/GO5d0NmOgvuk/TXjDED/0FM8cAjuvaA
+	BvcLz5fmp+1FttDU85GMmJLOxBvG+17gqEeXPyhwWcnFsbXII72YdzR5GvplQ1KJAyA8cuj0URq
+	zcVkItEcZm8Rbd9OEL4IhEJdnajXc7B4D5LOlH7h8vePghFUS/izV3PBgog
+X-Google-Smtp-Source: AGHT+IGUftEvjzgeM5eRfZJQJDkV96dM36oyQ3FUyp6cKSKianTN7IVhYXtyu9gI0RnxWUv7Qt/Czg==
+X-Received: by 2002:a05:6a21:78a5:b0:1e1:a0b6:9882 with SMTP id adf61e73a8af0-1e5e046331fmr66924613637.17.1735841845904;
+        Thu, 02 Jan 2025 10:17:25 -0800 (PST)
+Received: from smc-140338-bm01 ([149.97.161.244])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72aad816305sm24535993b3a.31.2025.01.02.10.17.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 02 Jan 2025 10:17:25 -0800 (PST)
+From: Fan Ni <nifan.cxl@gmail.com>
+X-Google-Original-From: Fan Ni <fan.ni@samsung.com>
+Date: Thu, 2 Jan 2025 18:17:22 +0000
+To: Zijun Hu <zijun_hu@icloud.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	James Bottomley <James.Bottomley@hansenpartnership.com>,
+	Thomas =?iso-8859-1?Q?Wei=DFschuh?= <thomas@t-8ch.de>,
+	linux-kernel@vger.kernel.org, nvdimm@lists.linux.dev,
+	linux-sound@vger.kernel.org, sparclinux@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
+	linux1394-devel@lists.sourceforge.net, arm-scmi@vger.kernel.org,
+	linux-efi@vger.kernel.org, linux-gpio@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-mediatek@lists.infradead.org,
+	linux-hwmon@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+	linux-scsi@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-serial@vger.kernel.org, netdev@vger.kernel.org,
+	Zijun Hu <quic_zijuhu@quicinc.com>,
+	Alison Schofield <alison.schofield@intel.com>
+Subject: Re: [PATCH v4 01/11] libnvdimm: Replace namespace_match() with
+ device_find_child_by_name()
+Message-ID: <Z3bYMiOG0u3Jtv3h@smc-140338-bm01>
+References: <20241211-const_dfc_done-v4-0-583cc60329df@quicinc.com>
+ <20241211-const_dfc_done-v4-1-583cc60329df@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFT 6/6] serial: sh-sci: Increment the runtime usage
- counter for the earlycon device
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
- wsa+renesas@sang-engineering.com, prabhakar.mahadev-lad.rj@bp.renesas.com,
- lethal@linux-sh.org, g.liakhovetski@gmx.de, groeck@chromium.org,
- mka@chromium.org, ulrich.hecht+renesas@gmail.com,
- ysato@users.sourceforge.jp, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
- Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, stable@vger.kernel.org
-References: <20241204155806.3781200-1-claudiu.beznea.uj@bp.renesas.com>
- <20241204155806.3781200-7-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdWB2q7=gkHUsmVWwZMCWaj-htUpOQCr24y5HsbQvM+HMA@mail.gmail.com>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Content-Language: en-US
-In-Reply-To: <CAMuHMdWB2q7=gkHUsmVWwZMCWaj-htUpOQCr24y5HsbQvM+HMA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20241211-const_dfc_done-v4-1-583cc60329df@quicinc.com>
 
-Hi, Geert,
+On Wed, Dec 11, 2024 at 08:08:03AM +0800, Zijun Hu wrote:
+> From: Zijun Hu <quic_zijuhu@quicinc.com>
+> 
+> Simplify nd_namespace_store() implementation by
+> using device_find_child_by_name().
+> 
+> Reviewed-by: Alison Schofield <alison.schofield@intel.com>
+> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+> ---
+>  drivers/nvdimm/claim.c | 9 +--------
+>  1 file changed, 1 insertion(+), 8 deletions(-)
+> 
+> diff --git a/drivers/nvdimm/claim.c b/drivers/nvdimm/claim.c
+> index 030dbde6b0882050c90fb8db106ec15b1baef7ca..9e84ab411564f9d5e7ceb687c6491562564552e3 100644
+> --- a/drivers/nvdimm/claim.c
+> +++ b/drivers/nvdimm/claim.c
+> @@ -67,13 +67,6 @@ bool nd_attach_ndns(struct device *dev, struct nd_namespace_common *attach,
+>  	return claimed;
+>  }
+>  
+> -static int namespace_match(struct device *dev, void *data)
+> -{
+> -	char *name = data;
+> -
+> -	return strcmp(name, dev_name(dev)) == 0;
+> -}
+> -
+>  static bool is_idle(struct device *dev, struct nd_namespace_common *ndns)
+>  {
+>  	struct nd_region *nd_region = to_nd_region(dev->parent);
+> @@ -168,7 +161,7 @@ ssize_t nd_namespace_store(struct device *dev,
+>  		goto out;
+>  	}
+>  
+> -	found = device_find_child(dev->parent, name, namespace_match);
+> +	found = device_find_child_by_name(dev->parent, name);
 
-On 19.12.2024 16:30, Geert Uytterhoeven wrote:
-> Hi Claudiu,
-> 
-> On Wed, Dec 4, 2024 at 4:58 PM Claudiu <claudiu.beznea@tuxon.dev> wrote:
->> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>
->> In the sh-sci driver, serial ports are mapped to the sci_ports[] array,
->> with earlycon mapped at index zero.
->>
->> The uart_add_one_port() function eventually calls __device_attach(),
->> which, in turn, calls pm_request_idle(). The identified code path is as
->> follows:
->>
->> uart_add_one_port() ->
->>   serial_ctrl_register_port() ->
->>     serial_core_register_port() ->
->>       serial_core_port_device_add() ->
->>         serial_base_port_add() ->
->>           device_add() ->
->>             bus_probe_device() ->
->>               device_initial_probe() ->
->>                 __device_attach() ->
->>                   // ...
->>                   if (dev->p->dead) {
->>                     // ...
->>                   } else if (dev->driver) {
->>                     // ...
->>                   } else {
->>                     // ...
->>                     pm_request_idle(dev);
->>                     // ...
->>                   }
->>
->> The earlycon device clocks are enabled by the bootloader. However, the
->> pm_request_idle() call in __device_attach() disables the SCI port clocks
->> while earlycon is still active.
->>
->> The earlycon write function, serial_console_write(), calls
->> sci_poll_put_char() via serial_console_putchar(). If the SCI port clocks
->> are disabled, writing to earlycon may sometimes cause the SR.TDFE bit to
->> remain unset indefinitely, causing the while loop in sci_poll_put_char()
->> to never exit. On single-core SoCs, this can result in the system being
->> blocked during boot when this issue occurs.
->>
->> To resolve this, increment the runtime PM usage counter for the earlycon
->> SCI device before registering the UART port.
->>
->> Fixes: 0b0cced19ab1 ("serial: sh-sci: Add CONFIG_SERIAL_EARLYCON support")
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> 
-> Thanks for your patch!
-> 
->> --- a/drivers/tty/serial/sh-sci.c
->> +++ b/drivers/tty/serial/sh-sci.c
->> @@ -3435,7 +3435,24 @@ static int sci_probe_single(struct platform_device *dev,
->>                 sciport->port.flags |= UPF_HARD_FLOW;
->>         }
->>
->> +       /*
->> +        * In case:
->> +        * - this is the earlycon port (mapped on index 0 in sci_ports[]) and
->> +        * - it now maps to an alias other than zero and
->> +        * - the earlycon is still alive (e.g., "earlycon keep_bootcon" is
->> +        *   available in bootargs)
->> +        *
->> +        * we need to avoid disabling clocks and PM domains through the runtime
->> +        * PM APIs called in __device_attach(). For this, increment the runtime
->> +        * PM reference counter (the clocks and PM domains were already enabled
->> +        * by the bootloader). Otherwise the earlycon may access the HW when it
->> +        * has no clocks enabled leading to failures (infinite loop in
->> +        * sci_poll_put_char()).
->> +        */
->> +
->>         if (sci_ports[0].earlycon && sci_ports[0].port.mapbase == sci_res->start) {
-> 
-> Now there are two tests for mapbase: here and in sci_probe()...
+Looks good to me.
+Just one general question.
+The function device_find_child checks parent and parent->p, but
+device_find_child_by_name only checks parent although they share the
+code except the match function. Why that?
 
-I'm not sure how can we avoid it. We need to re-check it in this function
-as the sci_probe_single() is the one that enables the runtime PM. Would you
-prefer to move the devm_pm_runtime_enable() in sci_probe() and have the
-pm_runtime_get_noresume() in sci_probe() as well?
-
-Thank you,
-Claudiu
-
+Fan
+>  	if (!found) {
+>  		dev_dbg(dev, "'%s' not found under %s\n", name,
+>  				dev_name(dev->parent));
 > 
->> +               pm_runtime_get_noresume(&dev->dev);
->> +
->>                 /*
->>                  * Skip cleanup up the sci_port[0] in early_console_exit(), this
->>                  * port is the same as the earlycon one.
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
+> -- 
+> 2.34.1
 > 
 
+-- 
+Fan Ni (From gmail)
