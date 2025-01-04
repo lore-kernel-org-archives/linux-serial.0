@@ -1,238 +1,101 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B18169397
-	for <linux-serial@vger.kernel.org>; Fri,  3 Jan 2025 16:43:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 265362914;
+	Sat,  4 Jan 2025 02:23:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735922596; cv=none; b=TpgeFPpPWSovQYTq/h5Uhf2wm/xCsgwIDxTXv7WtGK4ithFb1q8D3XOk98uz7EnWI7xfIKRhYoMkh8p8HKAw4pPmv+KRydNOZsn7QMcjhrO7qBxZBDgb4U64NBodVvodudD6Kopbf0XIvPbLKSLSVYANMkSOcWEW7FqbE6D4tRM=
+	t=1735957410; cv=none; b=rleV6x0hZWmpBqDQNQImJz81j8NPOQG8pc5mXCS+x9FX432xBt1U+X0WzmPmkonMfr3baMuAGQ975US2SHJaaP0E+MNGvmKqDlZe0yszCvB42oGErkTm7GfEnixzdUD5JgCJHS1xaqWaHa3kZBXQ7jqsnMw3r0n8gKgNEew3f/E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735922596; c=relaxed/simple;
-	bh=j+lM82IXc03OTj1pOCxrS271SCC/nTHabCvEwboID6c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mf8WQSJGswKr0OLegkBGvmyoePBPQfEzMZR+hx7Dny5Mu2exzQq3eWUfPxgAK+mvzCvHyjzGAWfJCc1wGLe20m80em0zVDbkFMkKtGm7tmQJR/EiphHPUFcJ8BTMRV9OxdYeyION9NukpZXG10yW11ocYTihb7FJk1HVU9burnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=bmGlIKG2; arc=none smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="bmGlIKG2"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4361b0ec57aso123684735e9.0
-        for <linux-serial@vger.kernel.org>; Fri, 03 Jan 2025 08:43:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1735922591; x=1736527391; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+3c6A5/GJxIkPW+XDvsvsQ6BxdSGRZlVd6K6jUfZBLI=;
-        b=bmGlIKG2hcYlX/Pwrk8+JoIcfNThK3WQLmTJkq8RsTxOTAWbiqpl1sfwQFpP3Qbs25
-         DLFUMjp2Z/WF+3nxZBwWxmwMb94heqKLK5kxbNi+rOeMNAJ3OjSd/oAnCyGHn8kqi0sq
-         BX2y/uWF+iN8HUyw4vUsgALoZvzHxQgmaGNqbv5mbremsDIHfZRWamJvwU9OXt1EFYrn
-         53g1x7HK2G3kADCT6zyTd0Yc1bi6AimytoOp9oSnd69ao26xAFgP8+KLBRhx0TW+/XrX
-         lpGE6eKhnNBTbNZjLmpC8uFn+IhLwnwd/Ziet2OaisbSf8FoAPp5bsOj7bwtA+tfvByH
-         bnIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1735922591; x=1736527391;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+3c6A5/GJxIkPW+XDvsvsQ6BxdSGRZlVd6K6jUfZBLI=;
-        b=UIm5M1yja/q6ZMshkVvjhVVIQphZ2oQAG+8R/NMcWJ1ECLVUhX3EWVG++YALKsNSs+
-         XxI0vdYfF2z4gcjL7D+TY2CIucdyMoI2h2qAv63pvnVjy2MYfe3aHNnlPArtSvgrdYtv
-         Y4q2muIR7Lc6Nv9Lq2Bg7qI3A4rD2Vob07NFlFMUj4nsxbZJ3iPiM3j2/4aujdNCeMOl
-         QrmAJuUsTWzSl1V+MbeE8cSsF/JMkM/ZjF3ez5A7nERGFA9rH8EX9L2q3Sd4RJkHLvbp
-         rXEKB6Lp7sCk4IPGMucm/CQmxmhk2S2UDQZoWoY245XLXGwNqzIkKOhnVL7Sbg41jSsM
-         EE2A==
-X-Forwarded-Encrypted: i=1; AJvYcCUjWAN5yFTqEqzi6R+Pvisx3HW5bzVMRqnw/Xx6743gMgig9J/UOkWVtBkjBnXWblUwDalGfTnBpMcezzg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXNk3GIuywQzVPN+drTdOexzoeT803q+lU+rQhay9AT+DNYEsY
-	mbaPD9hTYqXBhEXrThDTmKNYxJOHoTC90lT6t/+JPPktK+ZSse0n254lDv7faYo=
-X-Gm-Gg: ASbGncsqmA3aCxsS7J0RCQ44w940mNbEo6eZ4lLLhyig431YWBhu250jSAzJy9JuJ09
-	zQK6ronb6V4eT9uYyGdJuaRti+UDvtrnHDPRldeXcxj6GP9JAUie6jv3W2zT2jD02tIdDOQGu4k
-	td9hJDYJ0RhBpMF4ribnnDrbXojdpWiX+QJ2Sj9/Q+Z0tDM7H+oMUfTBcFJ7UxyMhGUcCFWDtc6
-	PaSuTBSiOVsOvJaNn04tmL39G8SVOq+zCfK/yopzMUz7V+SUs1o5XZjmw==
-X-Google-Smtp-Source: AGHT+IEWAPlhknN52jFXYVq75FXJcCnoaBI7o3HRY8Zfa1Gl8wULwEHgc4lReKsw2kOsbSb6LwlxGg==
-X-Received: by 2002:a05:600c:3150:b0:436:17e4:ad4c with SMTP id 5b1f17b1804b1-4366835ebefmr397074715e9.6.1735922591046;
-        Fri, 03 Jan 2025 08:43:11 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4364a376846sm486981455e9.0.2025.01.03.08.43.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 Jan 2025 08:43:10 -0800 (PST)
-Date: Fri, 3 Jan 2025 17:43:06 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
+	s=arc-20240116; t=1735957410; c=relaxed/simple;
+	bh=5t9lTD+PK7eJ1CRWlJiu7KSdekhi5Rr/zeb84fARhi8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=hF/PR0GpZVc/d4UZg3qokLEQAemwaIeoEe9k3ZxqAhKP5qLlC61kvzjZn92pYqeil6+UKMYZu40juZrvcz7fmZQkzjgjR0mcH4VpUKIJxjAUvfky4KeIIxw8GgVOTJkelCxm0hmKVpB+2ua3b8UI48YsOL8TUzFdjwEYLb9RqJg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+From: Yixun Lan <dlan@gentoo.org>
+To: Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Yangyu Chen <cyy@cyyself.name>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
 	Thomas Gleixner <tglx@linutronix.de>,
-	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
+	Samuel Holland <samuel.holland@sifive.com>,
+	Anup Patel <anup@brainfault.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Lubomir Rintel <lkundrak@v3.sk>,
+	Yixun Lan <dlan@gentoo.org>
+Cc: devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Matt Turner <mattst88@gmail.com>, Tony Lindgren <tony@atomide.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH tty-next v4 5/6] serial: 8250: Switch to nbcon console
-Message-ID: <Z3gTmicJVLA1tFq5@pathway.suse.cz>
-References: <20241227224523.28131-1-john.ogness@linutronix.de>
- <20241227224523.28131-6-john.ogness@linutronix.de>
+	linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org,
+	Jesse Taube <jesse@rivosinc.com>,
+	Jisheng Zhang <jszhang@kernel.org>,
+	Inochi Amaoto <inochiama@outlook.com>,
+	Icenowy Zheng <uwu@icenowy.me>,
+	Meng Zhang <zhangmeng.kevin@spacemit.com>,
+	Meng Zhang <kevin.z.m@hotmail.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
+	Matthias Brugger <matthias.bgg@kernel.org>
+Subject: Re: (subset) [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
+Date: Sat,  4 Jan 2025 10:22:28 +0800
+Message-ID: <173012572072.187732.1098804586949759324.b4-ty@gentoo.org>
+X-Mailer: git-send-email 2.47.1
+In-Reply-To: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
+References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20241227224523.28131-6-john.ogness@linutronix.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Fri 2024-12-27 23:51:21, John Ogness wrote:
-> Implement the necessary callbacks to switch the 8250 console driver
-> to perform as an nbcon console.
+
+On Tue, 30 Jul 2024 00:28:03 +0000, Yixun Lan wrote:
+> SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
+> 1.0 and Zicond evaluation now. Add initial support for it to allow more
+> people to participate in building drivers to mainline for it.
 > 
-> Add implementations for the nbcon console callbacks:
+> This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
+> bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
+> Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
+> booted to busybox on initrd with this log[3].
 > 
->   ->write_atomic()
->   ->write_thread()
->   ->device_lock()
->   ->device_unlock()
-> 
-> and add CON_NBCON to the initial @flags.
-> 
-> All register access in the callbacks are within unsafe sections.
-> The ->write_atomic and ->write_therad() callbacks allow safe
-> handover/takeover per byte and add a preceding newline if they
-> take over from another context mid-line.
-> 
-> For the ->write_atomic() callback, a new irq_work is used to defer
-> modem control since it may be called from a context that does not
-> allow waking up tasks.
-> 
-> Note: A new __serial8250_clear_IER() is introduced for direct
-> clearing of UART_IER. This will allow to restore the lockdep
-> check to serial8250_clear_IER() in a follow-up commit.
-> 
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1406,9 +1416,6 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p, bool toggle_ier)
->  {
->  	unsigned char mcr = serial8250_in_MCR(p);
->  
-> -	/* Port locked to synchronize UART_IER access against the console. */
-> -	lockdep_assert_held_once(&p->port.lock);
+> [...]
 
-We should explain why it is OK to move the assert.
+Thanks, Applied to SpacemiT's SoC tree:
+ https://github.com/spacemit-com/linux/ (for-next)
 
-IMHO, most poeple would not understand the port lock is needed only
-for UART_IER manipulation and not for UART_MCR manipulation.
+[02/10] dt-bindings: riscv: Add SpacemiT X60 compatibles
+        commit: edc6b9c55460d978dd0225621b8e3a2892bd53b8
+[03/10] dt-bindings: riscv: add SpacemiT K1 bindings
+        commit: c3eb7abb15c24ddb3b7ffdc60ab5861901245e7f
+[04/10] dt-bindings: timer: Add SpacemiT K1 CLINT
+        commit: a924f3f93128b5d0b5f8022862a296752284841a
+[05/10] dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
+        commit: ea2190065a7d5cbf8a0f1e9296680e9f8f2fbcd2
+[06/10] dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
+        commit: 85d542534dd283ba61fb89a20fa0f88d1a415f6b
+[07/10] riscv: add SpacemiT SoC family Kconfig support
+        commit: c50358c6af12812a7c23f8cf581eea4a43b3c8f2
+[08/10] riscv: dts: add initial SpacemiT K1 SoC device tree
+        commit: 8f4b270c7819440c504d87a13806333555b38bd6
+[09/10] riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
+        commit: f68191069c0c3c56bb77ece28ff15c09e7a01dfa
+[10/10] riscv: defconfig: enable SpacemiT SoC
+        commit: 6be78731556d5686eac8e539b6acf0449280e389
 
-We should probably explain that even the UART_MCR manipulation
-is synchronized either by the port lock or by nbcon context
-ownership. Where the nbcon context owner ship actually provides
-synchronization against the port lock in all situations
-except for the final unsafe flush in panic().
+The for-next branch will be sent via a formal Pull Request to
+the Linux SoC maintainers for inclusion in next merge window.
 
-In the ideal world it would be nice to check the nbcon context
-ownership. But it would require passing struct nbcon_write_context
-which does not fit well in this low level API.
+Best regards,
+-- 
+Yixun Lan
 
-A comment might be enough.
-
-Or do I miss something?
-
-> -
->  	if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
->  		mcr |= UART_MCR_RTS;
->  	else
-> @@ -3339,14 +3356,21 @@ static void serial8250_console_restore(struct uart_8250_port *up)
->  	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
->  }
->  
-> -static void fifo_wait_for_lsr(struct uart_8250_port *up, unsigned int count)
-> +static int fifo_wait_for_lsr(struct uart_8250_port *up,
-> +			      struct nbcon_write_context *wctxt,
-> +			      unsigned int count)
->  {
->  	unsigned int i;
->  
->  	for (i = 0; i < count; i++) {
-
-This would deserve a comment. The following comes to my mind:
-
-		/*
-		 * Pass the ownership as quickly as possible to a higher
-		 * priority context. Otherwise, its attempt to take
-		 * over the ownership might timeout. The new owner
-		 * will wait for lsr before reusing the fifo.
-		 */
-
-> +		if (!nbcon_can_proceed(wctxt))
-> +			return -EPERM;
-> +
->  		if (wait_for_lsr(up, UART_LSR_THRE))
-> -			return;
-> +			return 0;
->  	}
-> +
-> +	return -ETIMEDOUT;
->  }
->  
->  /*
-> @@ -3356,18 +3380,20 @@ static void fifo_wait_for_lsr(struct uart_8250_port *up, unsigned int count)
->   * to get empty.
->   */
->  static void serial8250_console_fifo_write(struct uart_8250_port *up,
-> -					  const char *s, unsigned int count)
-> +					  struct nbcon_write_context *wctxt)
->  {
-> -	const char *end = s + count;
->  	unsigned int fifosize = up->tx_loadsz;
->  	struct uart_port *port = &up->port;
-> +	const char *s = wctxt->outbuf;
-> +	const char *end = s + wctxt->len;
->  	unsigned int tx_count = 0;
->  	bool cr_sent = false;
->  	unsigned int i;
->  
->  	while (s != end) {
->  		/* Allow timeout for each byte of a possibly full FIFO */
-> -		fifo_wait_for_lsr(up, fifosize);
-> +		if (fifo_wait_for_lsr(up, wctxt, fifosize) == -EPERM)
-> +			return;
->  
->  		for (i = 0; i < fifosize && s != end; ++i) {
->  			if (*s == '\n' && !cr_sent) {
-
-We might want to check nbcon_can_proceed() after each character.
-I think that you have already suggested this in the reply to Andy.
-
-But maybe, it is not that important because filling the FIFO buffer is
-probably fast.
-
-> --- a/include/linux/serial_8250.h
-> +++ b/include/linux/serial_8250.h
-> @@ -150,8 +150,12 @@ struct uart_8250_port {
->  #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
->  	u16			lsr_saved_flags;
->  	u16			lsr_save_mask;
-> +
-> +	bool			console_line_ended;	/* line fully output */
-
-I agree with Andy that the comment is confusing. I am sorry if it was
-my proposal ;-)
-
-I wonder if the following is better:
-
-	bool			console_line_ended;	/* finished writing full line */
-
-> +
->  #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
->  	unsigned char		msr_saved_flags;
-> +	struct irq_work		modem_status_work;
->  
->  	struct uart_8250_dma	*dma;
->  	const struct uart_8250_ops *ops;
-
-Otherwise, it looks good. Well, I might want to double check it
-on Monday morning.
-
-Best Regards,
-Petr
