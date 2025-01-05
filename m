@@ -1,101 +1,104 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 265362914;
-	Sat,  4 Jan 2025 02:23:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87424647;
+	Sun,  5 Jan 2025 00:26:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1735957410; cv=none; b=rleV6x0hZWmpBqDQNQImJz81j8NPOQG8pc5mXCS+x9FX432xBt1U+X0WzmPmkonMfr3baMuAGQ975US2SHJaaP0E+MNGvmKqDlZe0yszCvB42oGErkTm7GfEnixzdUD5JgCJHS1xaqWaHa3kZBXQ7jqsnMw3r0n8gKgNEew3f/E=
+	t=1736036771; cv=none; b=rozhTPsJKMYy+zSFZuMRCbOhXFMkgbWEqeGeLDK4qQh+Wqohe814D4FV+pjU6woLq0paYphIrx6ceDSDgsugkHNpzRdR1TIGU62m/umXU95bO2+bxecRHrt8IFvmnlaUAve4LOkjjon7x84/YLGlaNLCq978Q9X547TdruJI0YU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1735957410; c=relaxed/simple;
-	bh=5t9lTD+PK7eJ1CRWlJiu7KSdekhi5Rr/zeb84fARhi8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hF/PR0GpZVc/d4UZg3qokLEQAemwaIeoEe9k3ZxqAhKP5qLlC61kvzjZn92pYqeil6+UKMYZu40juZrvcz7fmZQkzjgjR0mcH4VpUKIJxjAUvfky4KeIIxw8GgVOTJkelCxm0hmKVpB+2ua3b8UI48YsOL8TUzFdjwEYLb9RqJg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-From: Yixun Lan <dlan@gentoo.org>
-To: Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Yangyu Chen <cyy@cyyself.name>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Lubomir Rintel <lkundrak@v3.sk>,
-	Yixun Lan <dlan@gentoo.org>
-Cc: devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-serial@vger.kernel.org,
-	Jesse Taube <jesse@rivosinc.com>,
-	Jisheng Zhang <jszhang@kernel.org>,
-	Inochi Amaoto <inochiama@outlook.com>,
-	Icenowy Zheng <uwu@icenowy.me>,
-	Meng Zhang <zhangmeng.kevin@spacemit.com>,
-	Meng Zhang <kevin.z.m@hotmail.com>,
-	Conor Dooley <conor.dooley@microchip.com>,
-	Matthias Brugger <matthias.bgg@kernel.org>
-Subject: Re: (subset) [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
-Date: Sat,  4 Jan 2025 10:22:28 +0800
-Message-ID: <173012572072.187732.1098804586949759324.b4-ty@gentoo.org>
-X-Mailer: git-send-email 2.47.1
-In-Reply-To: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
-References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
+	s=arc-20240116; t=1736036771; c=relaxed/simple;
+	bh=2+Y1rCVs4eO4ZyFtQWPQFkqL5hGE0PG7Yt+dpeENG2M=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=h+Bn51/FR/m/gJEsYZ7UWdIhBdkRKDLV2124R2vfYskGJdAL7TU+M8USKCNGUMNzF9A090NxkEuQ7cAdxew1TuNK5/uOJsbVzN3ddvL9gRmFtjOAHb1tka68NJImwsMKB6dgR0+FxBAClTCXojNPGQwUS25JuEj7bBrYF80gk/c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=wQgBhZnq; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=M1cv+Y0F; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="wQgBhZnq";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="M1cv+Y0F"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1736036761;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2+Y1rCVs4eO4ZyFtQWPQFkqL5hGE0PG7Yt+dpeENG2M=;
+	b=wQgBhZnqs+K+fV/HH3wGASh8EvPvFpRWkwkx7vKlvA1SZ1pr30rkvm2pLchxzOCe7PsBBR
+	G4SHcFPW2XMtLd/4retDIu79i5xQfRBn6VNoJlTlF22521OBWQY3HIykPSQH+L0wcINurE
+	VWDtyiiAeh29qpVksLZ4k8yjkkNkKYmdVmTDichrG7LMsWf6nd2F5tc7FS/rTyaWcbVMfW
+	Z8aSx6BLFWagdk9rg1SZmfrMJZHFfQ/fiVWQ4wzt7qw0tkDn4NYLUbFKnNg4HzFIz3aTsN
+	YziQb5HZZLkA6KWtFKI6UbnugQawdqWPk1b+gpQbYnS9Q2TJwL+CJ+KRs26Azw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1736036761;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2+Y1rCVs4eO4ZyFtQWPQFkqL5hGE0PG7Yt+dpeENG2M=;
+	b=M1cv+Y0F11QMDB9kPRcs0+LRZSWSDFjf/e6s5ZSRUALOmkjk+/NQGh3kuHD78SbuO+IhDe
+	RvATdDj64tfFDYDg==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner
+ <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Florian
+ Fainelli <florian.fainelli@broadcom.com>, Ray Jui <rjui@broadcom.com>,
+ Scott Branden <sbranden@broadcom.com>, Broadcom internal kernel review
+ list <bcm-kernel-feedback-list@broadcom.com>, Andy Shevchenko
+ <andriy.shevchenko@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, Sunil
+ V L <sunilvl@ventanamicro.com>, Matt Turner <mattst88@gmail.com>, Stefan
+ Wahren <wahrenst@gmx.net>, Uwe =?utf-8?Q?Kleine-K=C3=B6nig?=
+ <u.kleine-koenig@baylibre.com>, Kevin Hilman <khilman@baylibre.com>,
+ Markus Schneider-Pargmann <msp@baylibre.com>, Udit Kumar
+ <u-kumar1@ti.com>, Griffin Kroah-Hartman <griffin@kroah.com>, Niklas
+ Schnelle <schnelle@linux.ibm.com>, Serge Semin <fancer.lancer@gmail.com>,
+ linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH tty-next v4 4/6] serial: 8250: Provide flag for IER
+ toggling for RS485
+In-Reply-To: <Z3gCeP_P7VPpcOLA@pathway.suse.cz>
+References: <20241227224523.28131-1-john.ogness@linutronix.de>
+ <20241227224523.28131-5-john.ogness@linutronix.de>
+ <Z3gCeP_P7VPpcOLA@pathway.suse.cz>
+Date: Sun, 05 Jan 2025 01:32:00 +0106
+Message-ID: <84jzbaxg13.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
+On 2025-01-03, Petr Mladek <pmladek@suse.com> wrote:
+> My understanding is that the nested IER manipulation does not
+> harm.
 
-On Tue, 30 Jul 2024 00:28:03 +0000, Yixun Lan wrote:
-> SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
-> 1.0 and Zicond evaluation now. Add initial support for it to allow more
-> people to participate in building drivers to mainline for it.
-> 
-> This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
-> bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
-> Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
-> booted to busybox on initrd with this log[3].
-> 
-> [...]
+This statement implies that it is OK for UART_IER_RLSI|UART_IER_RDI bits
+to be set in UART_IER even though the console will write to UART_TX,
+because the _nesting_ contexts would set those bits rather than
+restoring the original value of 0x0.
 
-Thanks, Applied to SpacemiT's SoC tree:
- https://github.com/spacemit-com/linux/ (for-next)
+I ran some tests and leaving these bits set during Tx does not appear to
+cause an issue, but it is difficult to say because the context
+interrupted by a nesting context will only print at most 1
+character. Also, it is writing under spin_lock_irqsave() so that might
+be masking any effects. Perhaps UART_IER is temporarly cleared because
+of other bits that would cause problems during Tx?
 
-[02/10] dt-bindings: riscv: Add SpacemiT X60 compatibles
-        commit: edc6b9c55460d978dd0225621b8e3a2892bd53b8
-[03/10] dt-bindings: riscv: add SpacemiT K1 bindings
-        commit: c3eb7abb15c24ddb3b7ffdc60ab5861901245e7f
-[04/10] dt-bindings: timer: Add SpacemiT K1 CLINT
-        commit: a924f3f93128b5d0b5f8022862a296752284841a
-[05/10] dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
-        commit: ea2190065a7d5cbf8a0f1e9296680e9f8f2fbcd2
-[06/10] dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
-        commit: 85d542534dd283ba61fb89a20fa0f88d1a415f6b
-[07/10] riscv: add SpacemiT SoC family Kconfig support
-        commit: c50358c6af12812a7c23f8cf581eea4a43b3c8f2
-[08/10] riscv: dts: add initial SpacemiT K1 SoC device tree
-        commit: 8f4b270c7819440c504d87a13806333555b38bd6
-[09/10] riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
-        commit: f68191069c0c3c56bb77ece28ff15c09e7a01dfa
-[10/10] riscv: defconfig: enable SpacemiT SoC
-        commit: 6be78731556d5686eac8e539b6acf0449280e389
+I would need to create a specific test to investigate this
+further. Regardless, it still is a cosmetic ugliness that bits are not
+being properly restored, even if it turns out these particular bits are
+not problematic during Tx.
 
-The for-next branch will be sent via a formal Pull Request to
-the Linux SoC maintainers for inclusion in next merge window.
+As was with your LSR_DR comment, you are good at triggering fundamental
+investigations into the history of the 8250 driver. ;-)
 
-Best regards,
--- 
-Yixun Lan
+> All in all, the patch looks good to me.
+>
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
 
+Thanks for the review. I interpret it to mean that I do not need to make
+any changes to this patch for v5.
+
+John
