@@ -1,149 +1,62 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C0C381728
-	for <linux-serial@vger.kernel.org>; Mon,  6 Jan 2025 16:08:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6564878F36;
+	Tue,  7 Jan 2025 06:48:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736179700; cv=none; b=Im7hkC3nXR64suR3aT+75991hwQDsu5K20Lxs9wG1zxJd8mgiEkeIc+2JAGMS9a+Q/mpAN+6GHacWJ/IvH/bgRSpaFuy5aZxZ5u+Z79B0na1qwkN+x5Cdnhzm5n1WD82ssVhXNGUWHAshhB+4N76RygPlM4u3rf1gn+HJJ/jy9U=
+	t=1736232484; cv=none; b=ugMq16xDCeWtu4dqqEaMIe8g/Wa/a94sBCawZnybz27UMk76h6YXx7RbwWrybAFRHBT9AkCRkOLlI7r+wUOgs+mB7xnDNtysMjC7j15ppCAyQ1ePsurWGV53gXQwYGKhizNviTuteIGlcOvCO5FiD6DEjeXTWjWy8k6yAIiBhec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736179700; c=relaxed/simple;
-	bh=HzCwECKMPbPm3yZQ+TTA8/ZnxUJavEy/mJgVrOI9A2s=;
+	s=arc-20240116; t=1736232484; c=relaxed/simple;
+	bh=WogBa0Uo15bxPipqD5xvalVUQl6VK5qom9xkUazA0kU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GCW0BhO5YH9j6wSh3xBPdZ/X20QqhdxU+u3l2pR0FAf4jIUWodRzNM9GxHE9bbFYG8V3eni1W9iAxk3wqpQ/qFOmK1zgoPG2/AOe2bNvQkNF8mTPVFYcj2D5532u6hLHgm5LSmhR8s6VGaK9rtts80eIcvUsKv1Pzsa2AAi+WkE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=fQGc2QhU; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=TIeWKMa+wsEPzqHap+QHBil6FG7Er8KIMYcRPU79m1KKfl0kZiHNJMXEb9L1tnEDASx1xsEVxabez3FQJdHmibuouQOVTEz6t5lfVCmbVT0CVnn9GbfY6G43NcXRZ1fowKg2i5A807S5dzsGqjh6GtEmDPKtoB+QJShBRHK3GDE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XYtq4yTK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="fQGc2QhU"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4361f65ca01so144849775e9.1
-        for <linux-serial@vger.kernel.org>; Mon, 06 Jan 2025 08:08:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1736179696; x=1736784496; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kNx2YaBCkVTFXvj8GvoFFTeweWA/AsfbEa+1+l6TR2s=;
-        b=fQGc2QhUwcabe1dwyzh1/nWJkw1jnS/MbeFv7uh/+jCy589ku+xVAo7fZqLd54S9xZ
-         UVIiXKRoZk904awR5tlVD7+lubAbmUpkGxGq2VuSlcHG9IxTlraBHGBxIkmsmCaG9GF5
-         3sCtc0Txo4MOGeqr0Fh5rQn1CpOUorxo+nmdt+obep/uMeFdQg+RiFzMBN2knwZNyJbK
-         LRR5Qsa5nYqmWGMi2AcnALXjchV/ZIvtm0UTwtuJtoJ77pTMNJ8wyIERPQNVM2X4DXg0
-         B5G0jIHBxrmFPoYdvAWGCo2OIsFVhTElLm+ABiI1eWHDVQM3oTpdrvK+pYorpZEUq7dK
-         004g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736179696; x=1736784496;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kNx2YaBCkVTFXvj8GvoFFTeweWA/AsfbEa+1+l6TR2s=;
-        b=cFXgIpGphpWk09y4G+JD3ntQKq8qGVUOx2NPiwAgWPsQKDBIfV1sIdS5ZDsAE/o8+o
-         P/Op1TdGghdF92igaH1ik+ONLbtXVNnmbqOUJUS6iOMpdbAKS2pZ8E7IFoxqqiYD2cZ2
-         cySYy+V5YQZiOUvFTICUfJvQ6m0AndXqVRxBT/WTwNdrW0fTzPyUfqiTX8LnrY0024FN
-         IklHcxoVa6vuVut47UlDqOLOFQtc9kCqvuRtT9iRWpqBTPxywPCSNCTdwruC2xiAOkqy
-         /yln/c8ugb6amPceMutzFop8C5jhrx4gAC/3Kab8Uwjv5DwmwMvE4G16hRD7f4BOCDZl
-         1Fig==
-X-Forwarded-Encrypted: i=1; AJvYcCWBSFh2qgyPtWW2BF4e65qvUR4YvFsvfpPEmVmfod+lgV/UTry4pYf0wFAeqs92ApgmzRiR4K6d5RFRpxM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yymyr4yihoEB02dwjbSwtho6NNYOXZiiX1RL5tIZOWZVYGKk4my
-	4GGAvzcaSykaIjWPw82wDZuZrhxV4bIA/WglUWIFOj759WtSB4FI4q7R4NsN+qo=
-X-Gm-Gg: ASbGncvAUGJuAJ0YV5P/KOpfdny6BJOZDyRmJmVKOU4rz1wKnuyMSjHg+Yn94Rne95Z
-	hO6C4NKtioWZfQg5IIzjC2jP849KGEPV8tEejU4Ol8kRxotd3PBi3pnIwWCIEdKAOIDn/nIg8s3
-	edrw9Q22i9Znk2cFtr3RHPLwBTDbdHJ9SwsP+P5nwsxE0/tFwrUZmNTDz3Pg1k4rCRMb2sOPGw3
-	1UBF92J3FqUgG3ELsBNDXylLG/9y+uR92/qji2dCyrpxdyCU5c1FMkt1Q==
-X-Google-Smtp-Source: AGHT+IHIJLNV7U4yP8Zx4j4ON92Jhq2nTGr+leOp6meyU6yQ2fuUJjgEX2zs5siU/2wF61oWKK8bwQ==
-X-Received: by 2002:a05:600c:1d2a:b0:435:330d:de86 with SMTP id 5b1f17b1804b1-4366790d3c0mr554899015e9.0.1736179696410;
-        Mon, 06 Jan 2025 08:08:16 -0800 (PST)
-Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4364b053e91sm634449185e9.1.2025.01.06.08.08.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jan 2025 08:08:16 -0800 (PST)
-Date: Mon, 6 Jan 2025 17:08:13 +0100
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Matt Turner <mattst88@gmail.com>, Tony Lindgren <tony@atomide.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH tty-next v4 5/6] serial: 8250: Switch to nbcon console
-Message-ID: <Z3v_7f3Oc_A3rAnr@pathway.suse.cz>
-References: <20241227224523.28131-1-john.ogness@linutronix.de>
- <20241227224523.28131-6-john.ogness@linutronix.de>
- <Z3gTmicJVLA1tFq5@pathway.suse.cz>
- <84h66exeka.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XYtq4yTK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A7D2C4CED6;
+	Tue,  7 Jan 2025 06:48:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736232484;
+	bh=WogBa0Uo15bxPipqD5xvalVUQl6VK5qom9xkUazA0kU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XYtq4yTK0YPJAFyf9p8KdCW9I7q9lf/VWtOQxgpJLH7nX0CgEc93SWmpMGN+kZPIe
+	 UHvdwRJtoxzDPZ3C2RBXeFQBoMp8UPcz6kSaRyoIKrVzl7RM7mS7rTbsuegZuYRjex
+	 U5Ou3lxy7creSgJZlvxig65wcOcqW6O3dQ0yiQ08gALA+o9q10L4rrSgJEOa2R/zZF
+	 jw1HmRaJDGxlkVSwFYCzYxbKFWepaejbteaD8z2mp4B5kkVPt26y7h9/P8Zd0Ci2RJ
+	 nLIQsiBAiUhEVvuc2kDx+GsQmBAiFcSqByqGGkaKLwmV1sI5ujRPVAwwM01lqPCwkq
+	 uZ/vQz7gLvnZA==
+Date: Tue, 7 Jan 2025 07:48:00 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Andre Werner <andre.werner@systec-electronic.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	hvilleneuve@dimonoff.com, andy@kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, lech.perczak@camlingroup.com, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, robh@kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: serial: sc16is7xx: Add description
+ for polling mode
+Message-ID: <4pcgrt5zwtjxk3qa4twjzvmaxknu7sasmwrgphc364ril7aref@uurm62vwexr3>
+References: <20250106085051.50861-1-andre.werner@systec-electronic.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <84h66exeka.fsf@jogness.linutronix.de>
+In-Reply-To: <20250106085051.50861-1-andre.werner@systec-electronic.com>
 
-On Sun 2025-01-05 02:03:41, John Ogness wrote:
-> On 2025-01-03, Petr Mladek <pmladek@suse.com> wrote:
-> >> --- a/drivers/tty/serial/8250/8250_port.c
-> >> +++ b/drivers/tty/serial/8250/8250_port.c
-> >> @@ -1406,9 +1416,6 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p, bool toggle_ier)
-> >>  {
-> >>  	unsigned char mcr = serial8250_in_MCR(p);
-> >>  
-> >> -	/* Port locked to synchronize UART_IER access against the console. */
-> >> -	lockdep_assert_held_once(&p->port.lock);
-> >
-> > We should explain why it is OK to move the assert.
-> >
-> > IMHO, most poeple would not understand the port lock is needed only
-> > for UART_IER manipulation and not for UART_MCR manipulation.
-> >
-> > We should probably explain that even the UART_MCR manipulation
-> > is synchronized either by the port lock or by nbcon context
-> > ownership. Where the nbcon context owner ship actually provides
-> > synchronization against the port lock in all situations
-> > except for the final unsafe flush in panic().
-> 
-> Correct, although the "except for the final unsafe flush in panic()" is
-> the reason that even an nbcon context ownership assert could not be used
-> here.
+On Mon, Jan 06, 2025 at 09:50:50AM +0100, Andre Werner wrote:
+> Polling mode is enabled if the "interrupts" property is missing.
+> Thus, this commit deletes "interrupts" entry from "required" section
+> and adds a description for the fallback to polling mode at the
+> "interrupts" entry.
 
-Good point. Well, lockdep should be disabled by debug_locks_off()
-before nbcon_atomic_flush_unsafe() is called. I hope that we could
-keep the assert.
+Can the device actually operate with interrupt line disconnected? I
+skimmed through datasheet and they did not mention that as a valid
+setup.
 
-> > A comment might be enough.
-> 
-> OK. I will extend the comment at the new lockdep_assert site explaining
-> why the port lock is only guaranteed to be held for the toggle_ier==true
-> situation.
+Best regards,
+Krzysztof
 
-Thanks.
-
-> >> +	bool			console_line_ended;	/* line fully output */
-> >
-> > I wonder if the following is better:
-> >
-> > 	bool			console_line_ended;	/* finished writing full line */
-> 
-> I would prefer to make it more technically exact. It would require a
-> multi-line comment and this header uses 2 different styles for
-> multi-line field comments.
-> 
-> How about:
-> 
-> 	/*
-> 	 * Track when a console line has been fully written to the
-> 	 * hardware, i.e. true when the most recent byte written by
-> 	 * the console to UART_TX was '\n'.
-> 	 */
-> 	bool			console_line_ended;
-
-Looks good to me.
-
-Best Regards,
-Petr
