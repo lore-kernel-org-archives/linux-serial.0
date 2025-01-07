@@ -1,133 +1,125 @@
-Received: from m32-10.eu.mailgun.net (m32-10.eu.mailgun.net [141.193.32.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CB421E47DB
-	for <linux-serial@vger.kernel.org>; Tue,  7 Jan 2025 11:44:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.193.32.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 508303BBC1;
+	Tue,  7 Jan 2025 13:39:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736250285; cv=none; b=BcmAqAhHIP1n4tabRx6TfkeJ7hTFeoA8DdcE0TjTulP5gfcuCVs491S151YKvc5Id4c/nnWgGLUczY5qIPEd/m5MpXNpctVjMrlPuiFznSPpYR92JKhXIgOE3llgvjE8VCTRIvCItYcx5vFUrCuD6EQaTPL55LBfMIvYl+oE3Qk=
+	t=1736257165; cv=none; b=avL7gSVzRRd7NrVVwVA514qXBTe0E2Sjt3MadAP58A4rrmqjonTjCndRs52Vl0lI8fx04Nm9SC4tGPtYOczpcKQsh6SadlR0DUYVqZ6h7fd92lE5XjOcIqW8vQSt5q+o34XPFbTylJPwIRYW1vhzRjVqs7YM3J6Sc6JmcBUEYIs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736250285; c=relaxed/simple;
-	bh=NAbEQ7nfpfqhEjkHZ9qe8RbQ1lHrImgzCNn2YIKrOfo=;
-	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
-	 Message-Id:References:To; b=TQ1kFCAd5p7PjsO0ENETyf3Bz2l0opPMXoA2V7QbkdAqMCY948p3UIa+V+hlXWDuGiOetjUmTuweoJhKv6kkshyp4CB20fr6H3b/6bmVzbdbqTMvZiPZA/I7YdwcoI3+nYZEqlfJQ5Gfm/j1KbAt+jjEUCeu8wLJ0dIruYUYP5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=gpost.dk; spf=pass smtp.mailfrom=gpost.dk; dkim=pass (1024-bit key) header.d=gpost.dk header.i=@gpost.dk header.b=qvnWuKpI; arc=none smtp.client-ip=141.193.32.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=gpost.dk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gpost.dk
+	s=arc-20240116; t=1736257165; c=relaxed/simple;
+	bh=yWXzk9YT5b3b/vMKIRaJDEaoeh/x99GceqXZIQ/sYpw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pTvrWoqtvS60xChABhwH01l0d/oFQW0WX/AUmWb1nwuNsroxNq5UfZ1/Oln6yQDCNmcdhbSyieT2fHGDgeyFDfkOGxwRIDKIaKJg8Grmgc/MorcKLDSOx9Akaa53C4jpvPAN/P7PamMt63EYnmGTkVeaF3LQVbdeDNBbdTSomGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=szx3yrmM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=gpost.dk header.i=@gpost.dk header.b="qvnWuKpI"
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=gpost.dk; q=dns/txt; s=mta; t=1736250278; x=1736257478;
- h=To: To: References: Message-Id: Content-Transfer-Encoding: Cc: Date: In-Reply-To: From: From: Subject: Subject: Mime-Version: Content-Type: Sender: Sender;
- bh=NfoTWAIiPRbaqrzNsLlTYJTWXoq0YSfCnl7rW9eubLA=;
- b=qvnWuKpICrzkHADR4zIsoT91OdGMNoZF1HWQr/y58bffIvJdWswxtBUYN8IFaZGQ6FN+Mm5n+Xq4p7kv2Z3XM+M/O2q/8hAv3rx45hUe9hUyCtHx7IkZfSNCUIThcJj6JHuCWIr7tao51Jo/5Bkikq98A3BRPO5IJtgmGT3mVwI=
-X-Mailgun-Sending-Ip: 141.193.32.10
-X-Mailgun-Sending-Ip-Pool-Name: 
-X-Mailgun-Sending-Ip-Pool: 
-X-Mailgun-Sid: WyI1MmE4ZSIsImxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmciLCJmODkzZCJd
-Received: from smtpclient.apple (11.85.120.188.andels.net [188.120.85.11]) by
- 36fc70cb3394 with SMTP id 677d13a6f4e5dedc2cd8a8e7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 07 Jan 2025 11:44:38 GMT
-Sender: gpdev@gpost.dk
-Content-Type: text/plain;
-	charset=us-ascii
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="szx3yrmM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14196C4CED6;
+	Tue,  7 Jan 2025 13:39:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736257164;
+	bh=yWXzk9YT5b3b/vMKIRaJDEaoeh/x99GceqXZIQ/sYpw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=szx3yrmMjm6ZUYa16kT1DxqFzBA0XrfL8NQtygmU7RDYRm4iUoAijEXv3E2NIefyA
+	 pi7hkwkdXzfre/Q8EL50pkU8lWHCFBOBKgr+QlhtV+4UiTjxu59stdqQU8XTcsTGJg
+	 7UQT3pjaDm64H2/DLjzwpcpcYHp6sGnYLhuRIaRTCG3SlWQyB/uLAJlC6U6dU+TGLu
+	 juPGxNWKZUObf++I6BNJsuQ6UoRGV852v2AIN8v6bVpzlHdDAR/MAfHhaveOheJVsg
+	 MXKbGn8oMeC07afI3lZibYXGWyXkJ949itWpfP/1aAz7WbGhEnvop32Ctdu1FWX82B
+	 229t9s+TObJvA==
+Message-ID: <23f351a1-4959-4492-9848-940618fdbccf@kernel.org>
+Date: Tue, 7 Jan 2025 14:39:18 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
-Subject: Re: [PATCH 1/1] tty: respond to TIOCGWINSZ when hung
-From: Gil Pedersen <gpdev@gpost.dk>
-In-Reply-To: <2024122329-jockey-delouse-71a7@gregkh>
-Date: Tue, 7 Jan 2025 12:44:28 +0100
-Cc: linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org,
- Jiri Slaby <jirislaby@kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <110BE776-AA74-4DDC-87F1-453B164D25D2@gpost.dk>
-References: <20241121111506.4717-1-gpdev@gpost.dk>
- <20241121111506.4717-2-gpdev@gpost.dk>
- <2024122329-jockey-delouse-71a7@gregkh>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-X-Mailer: Apple Mail (2.3826.300.87.4.3)
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [External Email] Re: [PATCH v2 1/2] dt-bindings: serial:
+ sc16is7xx: Add description for polling mode
+To: Andre Werner <andre.werner@systec-electronic.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ hvilleneuve@dimonoff.com, andy@kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ lech.perczak@camlingroup.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+ robh@kernel.org
+References: <20250106085051.50861-1-andre.werner@systec-electronic.com>
+ <4pcgrt5zwtjxk3qa4twjzvmaxknu7sasmwrgphc364ril7aref@uurm62vwexr3>
+ <5582697e-bbf1-9a35-c5a4-52f09fdc6067@systec-electronic.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <5582697e-bbf1-9a35-c5a4-52f09fdc6067@systec-electronic.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-> On 23 Dec 2024, at 18.56, Greg Kroah-Hartman =
-<gregkh@linuxfoundation.org> wrote:
->=20
-> On Thu, Nov 21, 2024 at 12:12:54PM +0100, Gil Pedersen wrote:
->> Userspace libc implementations of the isatty() POSIX system interface
->> are currently unable to reliably determine if a fd is really a tty =
-when
->> it is hung.
->>=20
->> Specifically glibc libc returns the success status of a TCGETS ioctl.
->> This will return an incorrect result when the TTY is hung, since an =
-EIO
->> is unconditionally returned. Ie. an isatty() will return 0, wrongly
->> indicating that something that definitely is a TTY, is not a TTY.
->>=20
->> Userspace implementations could potentially remap EIO errors to a
->> success to work around this. This will likely work in 99.99% of =
-cases,
->> but there is no guarantee that a TCGETS ioctl on a non-TTY fd will =
-not
->> also return EIO, making the isatty() call return a false positive!
->>=20
->> This commit enables a specific non-driver, non-ldisc, ioctl to =
-continue
->> working after the TTY is hung. The TIOCGWINSZ ioctl was chosen since =
-it
->> is readonly, and only access tty_struct.winsize (and its mutex), and =
-is
->> already used for the isatty() implementation in musl. The glibc
->> implementation will need to be updated to use the TIOCGWINSZ ioctl,
->> either as a direct replacement, or more conservatively, as a fallback
->> test when the TCGETS ioctl fails with EIO.
->=20
-> This is a fun "hack", yes, but now you are encoding an odd "side =
-affect"
-> into the system that everyone is going to rely on, well, eventually =
-rely
-> on.  What code needs to be changed in userspace to determine this?
+On 07/01/2025 09:49, Andre Werner wrote:
+> Dear Krzysztof,
+> 
+> On Tue, 7 Jan 2025, Krzysztof Kozlowski wrote:
+> 
+>> On Mon, Jan 06, 2025 at 09:50:50AM +0100, Andre Werner wrote:
+>>> Polling mode is enabled if the "interrupts" property is missing.
+>>> Thus, this commit deletes "interrupts" entry from "required" section
+>>> and adds a description for the fallback to polling mode at the
+>>> "interrupts" entry.
+>>
+>> Can the device actually operate with interrupt line disconnected? I
+>> skimmed through datasheet and they did not mention that as a valid
+>> setup.
+> 
+> For polling mode the datasheet said:
+> 
+> In Polled mode (IER[3:0] = 0000) the status of the receiver and transmitter can be
+> checked by polling the Line Status Register (LSR). This mode is an alternative to the FIFO
+> Interrupt mode of operation where the status of the receiver and transmitter is
+> automatically known by means of interrupts sent to the CPU.
 
-The patch can definitely be considered a hack, but viewed with another
-lens: a bugfix.
+I guess this would mean that line can be physically disconnected.
 
-There is no specific reason that the call should return an EIO on hung
-terminals, so making it always return the current value could be
-considered more correct. POSIX tcgetwinsize(), which this ioctl maps
-to, does not consider hung terminals, and expects it to return suitable
-values whenever possible.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Userspace implementations will have to reconsider their handling of an
-EIO error, as the isatty() call could still return an EIO if calling
-into a non-TTY device. Unconditionally mapping it to a success, like
-isatty_safe() in systemd, would be an error. Supporting both versions
-would require a runtime check to determine which variant is used, where
-the legacy version would accept the risk of a "wrong" EIO, while the
-new version would treat it as a proper error.
-
-> Why not just have a new ioctl that tells you if the tty really is hung
-> or not?  Why does isatty() need to know this, does POSIX require it?
-> And if it does, what does it say the ioctl command should be?
-
-isatty() should not need to know if the TTY is hung, and besides cannot
-safely call any ioctl to check this before it knows that it is indeed a
-TTY. POSIX does not seem to include the concept of hung terminals.
-
-A case could be made for introducing a new ioctl though, but it would
-need a more generic approach, like the BSD FIODTYPE ioctl that exposes
-a d_type property on chardev & block driver interfaces. If implemented
-before calling into the VFS layer, it could make the isatty() call 100%
-safe (on kernels that support the ioctl). Additionally, this would mean
-that it can never return EIO, which makes userspace adaptions simpler,
-since it can know that any returned EIO means that it is running on an
-unpatched/legacy kernel and/or libc.
-
-/Gil
-
-Link: https://pubs.opengroup.org/onlinepubs/9799919799/
-Link: =
-https://github.com/systemd/systemd/blob/83c0b95f63417a36e67305fe9ad16a89ed=
-53ef52/src/basic/terminal-util.c#L63-L79
-
+Best regards,
+Krzysztof
