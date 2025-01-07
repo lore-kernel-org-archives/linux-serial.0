@@ -1,156 +1,133 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from m32-10.eu.mailgun.net (m32-10.eu.mailgun.net [141.193.32.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F0551EBFFD
-	for <linux-serial@vger.kernel.org>; Tue,  7 Jan 2025 11:25:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CB421E47DB
+	for <linux-serial@vger.kernel.org>; Tue,  7 Jan 2025 11:44:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.193.32.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736249123; cv=none; b=m6/FC6t7xP1MIeYug9PW+2XOipZtwVlD2m2BKVA75FZDnP6hCn0ejB1FxpE43Dbo+W6ruaZtTzfaWuFDDqPhD7gw6ivYsPLGvMZ5urFAAQSIHcNpuuogbV9o4C89pp9I/rduALEgrUsWqC2WQeXZj116l3Xrw8snz1R2s7O8h6Y=
+	t=1736250285; cv=none; b=BcmAqAhHIP1n4tabRx6TfkeJ7hTFeoA8DdcE0TjTulP5gfcuCVs491S151YKvc5Id4c/nnWgGLUczY5qIPEd/m5MpXNpctVjMrlPuiFznSPpYR92JKhXIgOE3llgvjE8VCTRIvCItYcx5vFUrCuD6EQaTPL55LBfMIvYl+oE3Qk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736249123; c=relaxed/simple;
-	bh=OfOEkScPJn2s6J2v3K85ULAVMG3MWr1RZT8sX5h4CTk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FADD3OgSE77XPx0XLEIFzh9On6tqWZ1qwfKgjjO3Fq3rPiSDO0c8wxcpxdQIPukKceP2rK6le9elwrltbbCkkDOzQc+SG1q7IeiUplVLvD3jQTEzHHibYSP2I1V4250Pl9bWY7fx+/g/AeQrARRBGU7+Y3xdAMyVqyNVfOBWHcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QF0olLCY; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1736250285; c=relaxed/simple;
+	bh=NAbEQ7nfpfqhEjkHZ9qe8RbQ1lHrImgzCNn2YIKrOfo=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=TQ1kFCAd5p7PjsO0ENETyf3Bz2l0opPMXoA2V7QbkdAqMCY948p3UIa+V+hlXWDuGiOetjUmTuweoJhKv6kkshyp4CB20fr6H3b/6bmVzbdbqTMvZiPZA/I7YdwcoI3+nYZEqlfJQ5Gfm/j1KbAt+jjEUCeu8wLJ0dIruYUYP5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=gpost.dk; spf=pass smtp.mailfrom=gpost.dk; dkim=pass (1024-bit key) header.d=gpost.dk header.i=@gpost.dk header.b=qvnWuKpI; arc=none smtp.client-ip=141.193.32.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=gpost.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gpost.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QF0olLCY"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-aaec111762bso2509291266b.2
-        for <linux-serial@vger.kernel.org>; Tue, 07 Jan 2025 03:25:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1736249119; x=1736853919; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7sn2BG5sdvDbcSzNStcu70GGFUnOPYuQtJHvkvNK9yg=;
-        b=QF0olLCYJJt+m6wTpwxV4PhaqOhVWSEn21fKNorrOjE+hY2f5z2+2EdVi3IfvuS9kI
-         LhvBq1fOaO+I1DuDdwBe/52d0twX9+2Sfn474wtfi15z5FHRT57HSALEJsKSP6VL8rP5
-         fkqdLimbA9yNHle0sJ35aLWWxoN5VVXsYyOooCnOQ2OErq8Q6xPPI9KEyjwgJ2Q9Z0jv
-         28oYf4vmcG6BqCuRDEnVE2ItlJ/Osul6bgyKPQvevSPgipd1+nEvNPWLtShE+sLQ34s2
-         iHchcQzp/GC/PP2+gBSy3iM9FU1sPiFST5OfcGnc3pQ/TEu/1KBE0SDWCc6B5UsV1fM/
-         0T1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736249119; x=1736853919;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7sn2BG5sdvDbcSzNStcu70GGFUnOPYuQtJHvkvNK9yg=;
-        b=uEAAPdDlcakLJJt6hKPIWslPQPCqGGSn6fhvnI6DCUEffldGspQ9c+oNqtxZaAhfeR
-         OSA9UaozbTBdXhBHcRZ59ed/8RuSM8IwARL9+ksabhLaHEq92gE6WnvW0KGeRjKHOrDd
-         eEjC5qCrL5atJj5mA7WNWf1vlQ3WAOOhxtQxyZr+gCPWzQEyaU93S44mWKkNgphXLPIg
-         4hHbrrrTbG9fkmYrp1cacg9djRHUJLAZVzKKxByugKk20NTn6DAxSBm5WjgEnTjy/puX
-         g3uUBdm3k4xelqVOFivxV9LL883QrW8B2D4b1tEw/+6zeNKvk+PDKy0UhkE7Isv/G5Ge
-         qXFw==
-X-Forwarded-Encrypted: i=1; AJvYcCVOSKvklQH1WtWIpSOfFXZ4PY2nw7/YJA0ZtTqOwWEbF1ZWCuNcRUzXjdwilMSiPWY9LPLN8tVk/dbpnrE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxmajfDfMq4HCLu+kblGWJf535B1A2yrAKSTDAnV6pLb4NfKnBc
-	IzCcY3aHOo3qCYey2Bg5Jl4sGf7FFlDPMSI+FgaKackFES7OARDfJzwwun14qjQ=
-X-Gm-Gg: ASbGncsMoX6S9otz0STkrKOGtqlfTEdUCsQ/6Lx4ukjn8IKWoETbRBQVvprwJI/cIAd
-	3/Qjlvz12jpftUglk/hhw/cDiwaBsB2D0j3VJB0EXh+vfttJ5zahppxHfb0Wd95czzxlTkpq069
-	hYEvDOPcwU90a+kPRMQaU/M3t+HQKyB61hRtVZYgT/yzocMv8JMIoJcVPcZ0OoLQSX+U649ezxQ
-	1ko/X4oq8Hac6lKX7d+yw4nOrUB3rlNHbZytVVIUnSvXRUZugKu5gCFtaBtYynzfir20z9NJIvs
-	DJwELWqyaS2k3R3eBTe+cydfu1Zrkv293iA/zAg=
-X-Google-Smtp-Source: AGHT+IGh9M3EnIPRVcMQNI989EcvZxMCNMXogDiQ3BV0jMzT1VyZYyESdCgc7jwCzo0D83CZJZ/lXg==
-X-Received: by 2002:a17:907:9722:b0:aa6:6fa5:65b3 with SMTP id a640c23a62f3a-aac3352c204mr5521668866b.47.1736249119218;
-        Tue, 07 Jan 2025 03:25:19 -0800 (PST)
-Received: from ?IPV6:2a02:8109:888d:ff00:ca7f:54ff:fe52:4519? ([2a02:8109:888d:ff00:ca7f:54ff:fe52:4519])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aac0e895502sm2397516066b.63.2025.01.07.03.25.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 07 Jan 2025 03:25:18 -0800 (PST)
-Message-ID: <66fb0c6d-472c-4131-bd25-83266cf497e4@linaro.org>
-Date: Tue, 7 Jan 2025 12:25:17 +0100
+	dkim=pass (1024-bit key) header.d=gpost.dk header.i=@gpost.dk header.b="qvnWuKpI"
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=gpost.dk; q=dns/txt; s=mta; t=1736250278; x=1736257478;
+ h=To: To: References: Message-Id: Content-Transfer-Encoding: Cc: Date: In-Reply-To: From: From: Subject: Subject: Mime-Version: Content-Type: Sender: Sender;
+ bh=NfoTWAIiPRbaqrzNsLlTYJTWXoq0YSfCnl7rW9eubLA=;
+ b=qvnWuKpICrzkHADR4zIsoT91OdGMNoZF1HWQr/y58bffIvJdWswxtBUYN8IFaZGQ6FN+Mm5n+Xq4p7kv2Z3XM+M/O2q/8hAv3rx45hUe9hUyCtHx7IkZfSNCUIThcJj6JHuCWIr7tao51Jo/5Bkikq98A3BRPO5IJtgmGT3mVwI=
+X-Mailgun-Sending-Ip: 141.193.32.10
+X-Mailgun-Sending-Ip-Pool-Name: 
+X-Mailgun-Sending-Ip-Pool: 
+X-Mailgun-Sid: WyI1MmE4ZSIsImxpbnV4LXNlcmlhbEB2Z2VyLmtlcm5lbC5vcmciLCJmODkzZCJd
+Received: from smtpclient.apple (11.85.120.188.andels.net [188.120.85.11]) by
+ 36fc70cb3394 with SMTP id 677d13a6f4e5dedc2cd8a8e7 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 07 Jan 2025 11:44:38 GMT
+Sender: gpdev@gpost.dk
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 0/7] Add support to load QUP SE firmware from
-Content-Language: en-US
-To: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
- andersson@kernel.org, konradybcio@kernel.org, johan+linaro@kernel.org,
- dianders@chromium.org, agross@kernel.org, linux-arm-msm@vger.kernel.org,
- linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-spi@vger.kernel.org
-Cc: =quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
-References: <20241204150326.1470749-1-quic_vdadhani@quicinc.com>
-From: Caleb Connolly <caleb.connolly@linaro.org>
-In-Reply-To: <20241204150326.1470749-1-quic_vdadhani@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.300.87.4.3\))
+Subject: Re: [PATCH 1/1] tty: respond to TIOCGWINSZ when hung
+From: Gil Pedersen <gpdev@gpost.dk>
+In-Reply-To: <2024122329-jockey-delouse-71a7@gregkh>
+Date: Tue, 7 Jan 2025 12:44:28 +0100
+Cc: linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org,
+ Jiri Slaby <jirislaby@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <110BE776-AA74-4DDC-87F1-453B164D25D2@gpost.dk>
+References: <20241121111506.4717-1-gpdev@gpost.dk>
+ <20241121111506.4717-2-gpdev@gpost.dk>
+ <2024122329-jockey-delouse-71a7@gregkh>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3826.300.87.4.3)
 
-Hi Viken,
+> On 23 Dec 2024, at 18.56, Greg Kroah-Hartman =
+<gregkh@linuxfoundation.org> wrote:
+>=20
+> On Thu, Nov 21, 2024 at 12:12:54PM +0100, Gil Pedersen wrote:
+>> Userspace libc implementations of the isatty() POSIX system interface
+>> are currently unable to reliably determine if a fd is really a tty =
+when
+>> it is hung.
+>>=20
+>> Specifically glibc libc returns the success status of a TCGETS ioctl.
+>> This will return an incorrect result when the TTY is hung, since an =
+EIO
+>> is unconditionally returned. Ie. an isatty() will return 0, wrongly
+>> indicating that something that definitely is a TTY, is not a TTY.
+>>=20
+>> Userspace implementations could potentially remap EIO errors to a
+>> success to work around this. This will likely work in 99.99% of =
+cases,
+>> but there is no guarantee that a TCGETS ioctl on a non-TTY fd will =
+not
+>> also return EIO, making the isatty() call return a false positive!
+>>=20
+>> This commit enables a specific non-driver, non-ldisc, ioctl to =
+continue
+>> working after the TTY is hung. The TIOCGWINSZ ioctl was chosen since =
+it
+>> is readonly, and only access tty_struct.winsize (and its mutex), and =
+is
+>> already used for the isatty() implementation in musl. The glibc
+>> implementation will need to be updated to use the TIOCGWINSZ ioctl,
+>> either as a direct replacement, or more conservatively, as a fallback
+>> test when the TCGETS ioctl fails with EIO.
+>=20
+> This is a fun "hack", yes, but now you are encoding an odd "side =
+affect"
+> into the system that everyone is going to rely on, well, eventually =
+rely
+> on.  What code needs to be changed in userspace to determine this?
 
-On 04/12/2024 16:03, Viken Dadhaniya wrote:
-> In Qualcomm SoCs, firmware loading for Serial Engines (SE) in the QUP
-> hardware has traditionally been managed by TrustZone (TZ). This setup
-> handled Serial Engines(SE) assignments and access control permissions,
-> ensuring a high level of security but limiting flexibility and
-> accessibility.
->  
-> This limitation poses a significant challenge for developers who need more
-> flexibility to enable any protocol on any of the SEs within the QUP
-> hardware.
->  
-> To address this, we are introducing a change that opens the firmware
-> loading mechanism to the Linux environment. This enhancement increases
-> flexibility and allows for more streamlined and efficient management. We
-> can now handle SE assignments and access control permissions directly
-> within Linux, eliminating the dependency on TZ.
->  
-> We propose an alternative method for firmware loading and SE
-> ownership/transfer mode configuration based on device tree configuration.
-> This method does not rely on other execution environments, making it
-> accessible to all developers.
->  
-> For SEs used prior to the kernel, their firmware will be loaded by the
-> respective image drivers (e.g., Debug UART, Secure or trusted SE).
-> Additionally, the GSI firmware, which is common to all SEs per QUPV3 core,
-> will not be loaded by Linux driver but TZ only. At the kernel level, only
-> the SE protocol driver should load the respective protocol firmware.
+The patch can definitely be considered a hack, but viewed with another
+lens: a bugfix.
 
-I gave this series a spin on the RB3 Gen 2 with U-Boot.
+There is no specific reason that the call should return an EIO on hung
+terminals, so making it always return the current value could be
+considered more correct. POSIX tcgetwinsize(), which this ioctl maps
+to, does not consider hung terminals, and expects it to return suitable
+values whenever possible.
 
-After fixing the compilation errors, it seems like there is a consistent
-hard crash (the board freezes and resets) at some point during i2c
-controller init with this series.
+Userspace implementations will have to reconsider their handling of an
+EIO error, as the isatty() call could still return an EIO if calling
+into a non-TTY device. Unconditionally mapping it to a success, like
+isatty_safe() in systemd, would be an error. Supporting both versions
+would require a runtime check to determine which variant is used, where
+the legacy version would accept the risk of a "wrong" EIO, while the
+new version would treat it as a proper error.
 
-I noticed a similar issue with this same logic implemented in U-Boot.
+> Why not just have a new ioctl that tells you if the tty really is hung
+> or not?  Why does isatty() need to know this, does POSIX require it?
+> And if it does, what does it say the ioctl command should be?
 
-Could you clarify which xfer mode is appropriate for the i2c controllers
-on the RB3 Gen 2 and maybe give this a try yourself, or let me know what
-other info you'd need to debug this.
+isatty() should not need to know if the TTY is hung, and besides cannot
+safely call any ioctl to check this before it knows that it is indeed a
+TTY. POSIX does not seem to include the concept of hung terminals.
 
-Thanks and kind regards,
-> 
-> Viken Dadhaniya (7):
->   dt-bindings: i2c: qcom,i2c-geni: Document DT properties for QUP
->     firmware loading
->   spi: dt-bindings: Document DT properties for QUP firmware loading
->   dt-bindings: serial: Document DT properties for QUP firmware loading
->   soc: qcom: geni-se:: Add support to load QUP SE Firmware via Linux
->     subsystem
->   i2c: qcom-geni: Load i2c qup Firmware from linux side
->   spi: geni-qcom: Load spi qup Firmware from linux side
->   serial: qcom-geni: Load UART qup Firmware from linux side
-> 
->  .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |  11 +
->  .../serial/qcom,serial-geni-qcom.yaml         |  12 +
->  .../bindings/spi/qcom,spi-geni-qcom.yaml      |  11 +
->  drivers/i2c/busses/i2c-qcom-geni.c            |  11 +-
->  drivers/soc/qcom/qcom-geni-se.c               | 445 ++++++++++++++++++
->  drivers/spi/spi-geni-qcom.c                   |   7 +-
->  drivers/tty/serial/qcom_geni_serial.c         |   7 +-
->  include/linux/soc/qcom/geni-se.h              |  17 +
->  include/linux/soc/qcom/qup-fw-load.h          | 179 +++++++
->  9 files changed, 692 insertions(+), 8 deletions(-)
->  create mode 100644 include/linux/soc/qcom/qup-fw-load.h
-> 
+A case could be made for introducing a new ioctl though, but it would
+need a more generic approach, like the BSD FIODTYPE ioctl that exposes
+a d_type property on chardev & block driver interfaces. If implemented
+before calling into the VFS layer, it could make the isatty() call 100%
+safe (on kernels that support the ioctl). Additionally, this would mean
+that it can never return EIO, which makes userspace adaptions simpler,
+since it can know that any returned EIO means that it is running on an
+unpatched/legacy kernel and/or libc.
 
--- 
-// Caleb (they/them)
+/Gil
+
+Link: https://pubs.opengroup.org/onlinepubs/9799919799/
+Link: =
+https://github.com/systemd/systemd/blob/83c0b95f63417a36e67305fe9ad16a89ed=
+53ef52/src/basic/terminal-util.c#L63-L79
 
