@@ -1,512 +1,181 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9DAC1F76C4;
-	Tue,  7 Jan 2025 21:27:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB1986330;
+	Tue,  7 Jan 2025 22:54:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736285231; cv=none; b=u2fquGTUkhPzLZ+b2Vr8BEP4NQswcASjYCkNMCc6axFmAG66Uqi0IpRiPVikBC9BQhy8Bg//UGtsVHJHtGjwdJjbPc+wQtV2kaMzvgXOeui6MfPvnY2S9ltIvP9f8MVF2+R6PgeeftHoSFEp8ymZWRwJjbJmJXWSHAKf+2A7pKI=
+	t=1736290473; cv=none; b=t7GcfOymDd8eXm8CenzXHW5jAjTMXiUEEEGVjX/FCaLqogOYO6ZCRGhX4opUMGX8cxNWt2vNNQ8L1GPFxERYgCIhfjBM+j1WxPfHIDrjwOi/jE2SYeqxZGHIFMZzvHLAxCi4+GVogBQSzJzmJM6c9g7o/MWreTamYTVCn2t4L0E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736285231; c=relaxed/simple;
-	bh=zWGShgMjg3bzxOVj+sxSWLyycy7WN0mLDd9lKPIdf1g=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Un5WgQcU3u/3x+n+TD1g0+QPGyIyryG3zjr0Pi/KByh+itKn49wOdOi0LYD85zxcDQheJ0ZtTKcPq//sTlu1XwJGX2s1o2uLskJM2cY3PJqNuqPFRx/M9tO5dnv51EZi4sUkWGmFyPyPLndHbcbDJ7TU9TgjJ6pjvtqF1v+8Ifg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=cfkBwSlR; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=OGtGFx0R; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1736290473; c=relaxed/simple;
+	bh=O9TJbmQGiBS3wg5CEtqr6UcvZN/r2lDkUlDh/A83J7o=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=lkwYaFWhZGSSHVzX446iD4GTs0w96pWpCZWsxuTVkGZtP13H1bzdAIkxuMtOqVPrshPrejZpZi5hFx0ENzz6BnCB0DfxzKGSggQ8zcKD7n+CROekxGtCh3nrvU+p+ClxlQn+8D0CCBiVWFJTxWT05pNo66WBvSEyLS8StxrxkK8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tbKyO1Q4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="cfkBwSlR";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="OGtGFx0R"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1736285226;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bNH0OgX5TNywdQ9m7FjwOAmcWOXxAahlrAKh1GjWcUo=;
-	b=cfkBwSlRu0pW3bLqQWnBTz9U6J+9DyxUZxRFtGErUsZktmIJoTIKO4hocx6dNPUQfBaYY6
-	FbMF09449eHLn/8DoNhCHhz/65tNCv49NYefPXQxgC+QiN03FK9ai9WjddpRzS5UwZnfZq
-	iqgkQzoUMXUgSEr4t8Zhn7ny7jtGUzPoRRCE6MLbOHlo9InpDVUpqxepFR+RIB7FVlFrHV
-	niEKn7KpnW6hKBk0HACQgcJsMXpPxAUsq1nLEZF4AM0KdSU0fwbiVSWmsyRekHolcUegRU
-	JlIwpQmnfhSlXIqc88+rjyfsKghYhMScZOCno1eEq991N28rP1JWgRANrPzFbg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1736285226;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bNH0OgX5TNywdQ9m7FjwOAmcWOXxAahlrAKh1GjWcUo=;
-	b=OGtGFx0RQoo1QFsWgoRUG3c0Ga8AZysy7OxDZu0G6ISVz6rCMTVTFJAGGOgdZ9aaoyJEuf
-	SQyKKKr/XxVTDIDQ==
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Petr Mladek <pmladek@suse.com>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Esben Haabendal <esben@geanix.com>,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Tony Lindgren <tony@atomide.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Serge Semin <fancer.lancer@gmail.com>
-Subject: [PATCH tty-next v5 5/6] serial: 8250: Switch to nbcon console
-Date: Tue,  7 Jan 2025 22:33:01 +0106
-Message-Id: <20250107212702.169493-6-john.ogness@linutronix.de>
-In-Reply-To: <20250107212702.169493-1-john.ogness@linutronix.de>
-References: <20250107212702.169493-1-john.ogness@linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tbKyO1Q4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D78DC4CED6;
+	Tue,  7 Jan 2025 22:54:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1736290472;
+	bh=O9TJbmQGiBS3wg5CEtqr6UcvZN/r2lDkUlDh/A83J7o=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=tbKyO1Q4VjERyhut+hU/vQIG+F7w69M3Vy6s9YBLMnD+LqHjuhmQedWM/wnD6PByi
+	 LNZpwHWbRs468sWPfU8ffysRsKa8+zR0VikgXG4yS/LhRB2h6OjX4lKq7AFdLY7hVh
+	 39oas5HW1nkTZa5EKBRDAztXXu9WUarhIoFYmVBVFpOuqDeb9gpZCdK+e4972sSnze
+	 NrYdVputvAgP4M/t5seLAR79ujHFWj5lgm2WFLex4HqJ2pG914plcnYx3+1YoRHqoB
+	 fi4EAwybIl7102DOFK/Xb6e9iSKpPJYbhp3IQKLvsMEWY1kU1FQooOZGlD+VwbHrvR
+	 0WLqcioHhz/Kg==
+Date: Tue, 07 Jan 2025 16:54:31 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: linux-clk@vger.kernel.org, dharma.b@microchip.com, 
+ alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, 
+ mturquette@baylibre.com, linux-serial@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org, 
+ devicetree@vger.kernel.org, conor+dt@kernel.org, mihai.sain@microchip.com, 
+ linux-kernel@vger.kernel.org, krzk+dt@kernel.org, 
+ varshini.rajendran@microchip.com, claudiu.beznea@tuxon.dev, 
+ romain.sioen@microchip.com, linux-spi@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, arnd@arndb.de, sboyd@kernel.org
+To: Ryan.Wanner@microchip.com
+In-Reply-To: <20250107160850.120537-1-Ryan.Wanner@microchip.com>
+References: <20250107160850.120537-1-Ryan.Wanner@microchip.com>
+Message-Id: <173629037004.1994496.1652835527993929123.robh@kernel.org>
+Subject: Re: [PATCH v5 0/5] Add support for SAMA7D65
 
-Implement the necessary callbacks to switch the 8250 console driver
-to perform as an nbcon console.
 
-Add implementations for the nbcon console callbacks:
+On Tue, 07 Jan 2025 09:07:22 -0700, Ryan.Wanner@microchip.com wrote:
+> From: Ryan Wanner <Ryan.Wanner@microchip.com>
+> 
+> This series adds support for the SAMA7D65 SoC.
+> 
+> V2 of this series [1].
+> V3 of this series [2].
+> V4 of this series [4].
+> 
+> For the pinctrl and pit64 timers those will have DTB warnings due to
+> those bindings not being in the .yaml format.
+> 
+> Changes v1->v2:
+> - V1 set was sent incorrectly as multiple seprate patches v2 took all
+>   those patches and put them in 1 thread.
+> 
+> Changes v2->v3:
+> - Correct the patch order to follow correct practice.
+> - Correct flexcom dt-binding commit messge to reflect the changes in the
+>   coding style.
+> - Add missing SoB tags to patches.
+> - Moved export clocks to DT patch to be included with the clock binding
+>   patch.
+> - Separate Kconfig changes and defconfig changes into different patches
+>   and removed unused Kconfig params.
+> - Correct confusing SoB and Co-developed chain.
+> - Removed unsued nodes in DTSI file and sorted includes
+>   alphanumerically.
+> - Fix incorrect dts formatting.
+> - Separate dts and pinmux changes into two patches.
+> - Combine PLL and MCK changes into core clock driver patch.
+> - Correct formatting in main clock driver.
+> - MMC dt-binding changes are applied for next so have been removed from
+>   the set [3].
+> 
+> Changes v3->v4:
+> - Collect all tags from maintainers.
+> - Correct compile error on 11/13 and correct location of vendor specific
+>   properties.
+> - Add USB and UTMI selections to 12/13 to prevent compile errors due to
+>   functions in the clock driver that use the USB clock system.
+> - Add "microchip,sama7g5-pinctrl" compatible string as a fall back in
+>   9/13.
+> - Add missing kfree() to 8/13 to correctly handle error case.
+> - Replace bad spacing with correct tab formatting on 7/13.
+> 
+> Changes from v4->v5:
+> - Remove patches that have been applied [5].
+> - Update pinctrl dt-binding to use fallback formatting.
+> 
+> Note:
+> - For the SDHCI DTB error that patch has been removed do to it being
+> applied see [3].
+> - There are DTB errors on microchip,sama7d65-pit64b and
+>   microchip,sama7d65-pinctrl, this is due to those bindings being .txt
+>   files.
+> 
+> 1) https://lore.kernel.org/linux-arm-kernel/cover.1732030972.git.Ryan.Wanner@microchip.com/T/#m9691b4d58b62f36f6cbac1d06883c985766c2c0d
+> 2) https://lore.kernel.org/linux-arm-kernel/cover.1733505542.git.Ryan.Wanner@microchip.com/T/#m3b52978236907198f727424e69ef21c8898e95c8
+> 3) https://lore.kernel.org/linux-arm-kernel/cover.1732030972.git.Ryan.Wanner@microchip.com/T/#mccf6521c07e74e1c7dc61b09ae0ebdbbdde73a28
+> 4) https://lore.kernel.org/linux-arm-kernel/70d429086fd8e858d79ca2824ad8cc4a09e3fe5d.1734723585.git.Ryan.Wanner@microchip.com/T/#m918b8db23c8d30981263846a02dafc085e17de14
+> 5) https://lore.kernel.org/linux-arm-kernel/70d429086fd8e858d79ca2824ad8cc4a09e3fe5d.1734723585.git.Ryan.Wanner@microchip.com/T/#m69b8f11536e3b0ca3d69d125d0670c90412d4317
+> 
+> 
+> 
+> Dharma Balasubiramani (2):
+>   dt-bindings: serial: atmel,at91-usart: add microchip,sama7d65-usart
+>   dt-bindings: pinctrl: at91-pio4: add microchip,sama7d65-pinctrl
+> 
+> Romain Sioen (2):
+>   dt-bindings: ARM: at91: Document Microchip SAMA7D65 Curiosity
+>   ARM: dts: microchip: add support for sama7d65_curiosity board
+> 
+> Ryan Wanner (1):
+>   ARM: dts: microchip: add sama7d65 SoC DT
+> 
+>  .../devicetree/bindings/arm/atmel-at91.yaml   |   7 +
+>  .../pinctrl/atmel,at91-pio4-pinctrl.txt       |   3 +-
+>  .../bindings/serial/atmel,at91-usart.yaml     |   1 +
+>  arch/arm/boot/dts/microchip/Makefile          |   3 +
+>  .../dts/microchip/at91-sama7d65_curiosity.dts |  89 +++++++++++
+>  arch/arm/boot/dts/microchip/sama7d65.dtsi     | 145 ++++++++++++++++++
+>  6 files changed, 247 insertions(+), 1 deletion(-)
+>  create mode 100644 arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts
+>  create mode 100644 arch/arm/boot/dts/microchip/sama7d65.dtsi
+> 
+> --
+> 2.43.0
+> 
+> 
+> 
 
-  ->write_atomic()
-  ->write_thread()
-  ->device_lock()
-  ->device_unlock()
 
-and add CON_NBCON to the initial @flags.
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
 
-All register access in the callbacks are within unsafe sections.
-The ->write_atomic() and ->write_thread() callbacks allow safe
-handover/takeover per byte and add a preceding newline if they
-take over from another context mid-line.
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
 
-For the ->write_atomic() callback, a new irq_work is used to defer
-modem control since it may be called from a context that does not
-allow waking up tasks.
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
 
-Note: A new __serial8250_clear_IER() is introduced for direct
-clearing of UART_IER. This will allow to restore the lockdep
-check to serial8250_clear_IER() in a follow-up commit.
+  pip3 install dtschema --upgrade
 
-Signed-off-by: John Ogness <john.ogness@linutronix.de>
----
- drivers/tty/serial/8250/8250_core.c |  35 +++++-
- drivers/tty/serial/8250/8250_port.c | 180 ++++++++++++++++++++++------
- include/linux/serial_8250.h         |  13 +-
- 3 files changed, 187 insertions(+), 41 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 2b70e82dffeb..3d5a2183ff13 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -388,12 +388,34 @@ void __init serial8250_register_ports(struct uart_driver *drv, struct device *de
- 
- #ifdef CONFIG_SERIAL_8250_CONSOLE
- 
--static void univ8250_console_write(struct console *co, const char *s,
--				   unsigned int count)
-+static void univ8250_console_write_atomic(struct console *co,
-+					  struct nbcon_write_context *wctxt)
- {
- 	struct uart_8250_port *up = &serial8250_ports[co->index];
- 
--	serial8250_console_write(up, s, count);
-+	serial8250_console_write(up, wctxt, true);
-+}
-+
-+static void univ8250_console_write_thread(struct console *co,
-+					  struct nbcon_write_context *wctxt)
-+{
-+	struct uart_8250_port *up = &serial8250_ports[co->index];
-+
-+	serial8250_console_write(up, wctxt, false);
-+}
-+
-+static void univ8250_console_device_lock(struct console *co, unsigned long *flags)
-+{
-+	struct uart_port *up = &serial8250_ports[co->index].port;
-+
-+	__uart_port_lock_irqsave(up, flags);
-+}
-+
-+static void univ8250_console_device_unlock(struct console *co, unsigned long flags)
-+{
-+	struct uart_port *up = &serial8250_ports[co->index].port;
-+
-+	__uart_port_unlock_irqrestore(up, flags);
- }
- 
- static int univ8250_console_setup(struct console *co, char *options)
-@@ -494,12 +516,15 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
- 
- static struct console univ8250_console = {
- 	.name		= "ttyS",
--	.write		= univ8250_console_write,
-+	.write_atomic	= univ8250_console_write_atomic,
-+	.write_thread	= univ8250_console_write_thread,
-+	.device_lock	= univ8250_console_device_lock,
-+	.device_unlock	= univ8250_console_device_unlock,
- 	.device		= uart_console_device,
- 	.setup		= univ8250_console_setup,
- 	.exit		= univ8250_console_exit,
- 	.match		= univ8250_console_match,
--	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
-+	.flags		= CON_PRINTBUFFER | CON_ANYTIME | CON_NBCON,
- 	.index		= -1,
- 	.data		= &serial8250_reg,
- };
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index d7976a21cca9..08466cf10d73 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -711,7 +711,12 @@ static void serial8250_set_sleep(struct uart_8250_port *p, int sleep)
- 	serial8250_rpm_put(p);
- }
- 
--static void serial8250_clear_IER(struct uart_8250_port *up)
-+/*
-+ * Only to be used directly by the callback helper serial8250_console_write(),
-+ * which may not require the port lock. Use serial8250_clear_IER() instead for
-+ * all other cases.
-+ */
-+static void __serial8250_clear_IER(struct uart_8250_port *up)
- {
- 	if (up->capabilities & UART_CAP_UUE)
- 		serial_out(up, UART_IER, UART_IER_UUE);
-@@ -719,6 +724,11 @@ static void serial8250_clear_IER(struct uart_8250_port *up)
- 		serial_out(up, UART_IER, 0);
- }
- 
-+static inline void serial8250_clear_IER(struct uart_8250_port *up)
-+{
-+	__serial8250_clear_IER(up);
-+}
-+
- #ifdef CONFIG_SERIAL_8250_RSA
- /*
-  * Attempts to turn on the RSA FIFO.  Returns zero on failure.
-@@ -1406,9 +1416,6 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p, bool toggle_ier)
- {
- 	unsigned char mcr = serial8250_in_MCR(p);
- 
--	/* Port locked to synchronize UART_IER access against the console. */
--	lockdep_assert_held_once(&p->port.lock);
--
- 	if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
- 		mcr |= UART_MCR_RTS;
- 	else
-@@ -1424,6 +1431,16 @@ void serial8250_em485_stop_tx(struct uart_8250_port *p, bool toggle_ier)
- 		serial8250_clear_and_reinit_fifos(p);
- 
- 		if (toggle_ier) {
-+			/*
-+			 * Port locked to synchronize UART_IER access against
-+			 * the console. The lockdep_assert must be restricted
-+			 * to this condition because only here is it
-+			 * guaranteed that the port lock is held. The other
-+			 * hardware access in this function is synchronized
-+			 * by console ownership.
-+			 */
-+			lockdep_assert_held_once(&p->port.lock);
-+
- 			p->ier |= UART_IER_RLSI | UART_IER_RDI;
- 			serial_port_out(&p->port, UART_IER, p->ier);
- 		}
-@@ -3303,7 +3320,11 @@ EXPORT_SYMBOL_GPL(serial8250_set_defaults);
- 
- static void serial8250_console_putchar(struct uart_port *port, unsigned char ch)
- {
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+
- 	serial_port_out(port, UART_TX, ch);
-+
-+	up->console_line_ended = (ch == '\n');
- }
- 
- static void serial8250_console_wait_putchar(struct uart_port *port, unsigned char ch)
-@@ -3340,11 +3361,22 @@ static void serial8250_console_restore(struct uart_8250_port *up)
- 	serial8250_out_MCR(up, up->mcr | UART_MCR_DTR | UART_MCR_RTS);
- }
- 
--static void fifo_wait_for_lsr(struct uart_8250_port *up, unsigned int count)
-+static void fifo_wait_for_lsr(struct uart_8250_port *up,
-+			      struct nbcon_write_context *wctxt,
-+			      unsigned int count)
- {
- 	unsigned int i;
- 
- 	for (i = 0; i < count; i++) {
-+		/*
-+		 * Pass the ownership as quickly as possible to a higher
-+		 * priority context. Otherwise, its attempt to take over
-+		 * the ownership might timeout. The new owner will wait
-+		 * for UART_LSR_THRE before reusing the fifo.
-+		 */
-+		if (!nbcon_can_proceed(wctxt))
-+			return;
-+
- 		if (wait_for_lsr(up, UART_LSR_THRE))
- 			return;
- 	}
-@@ -3357,20 +3389,29 @@ static void fifo_wait_for_lsr(struct uart_8250_port *up, unsigned int count)
-  * to get empty.
-  */
- static void serial8250_console_fifo_write(struct uart_8250_port *up,
--					  const char *s, unsigned int count)
-+					  struct nbcon_write_context *wctxt)
- {
--	const char *end = s + count;
- 	unsigned int fifosize = up->tx_loadsz;
- 	struct uart_port *port = &up->port;
-+	const char *s = wctxt->outbuf;
-+	const char *end = s + wctxt->len;
- 	unsigned int tx_count = 0;
- 	bool cr_sent = false;
- 	unsigned int i;
- 
- 	while (s != end) {
- 		/* Allow timeout for each byte of a possibly full FIFO */
--		fifo_wait_for_lsr(up, fifosize);
-+		fifo_wait_for_lsr(up, wctxt, fifosize);
- 
-+		/*
-+		 * Fill the FIFO. If a handover or takeover occurs, writing
-+		 * must be aborted since wctxt->outbuf and wctxt->len are no
-+		 * longer valid.
-+		 */
- 		for (i = 0; i < fifosize && s != end; ++i) {
-+			if (!nbcon_enter_unsafe(wctxt))
-+				return;
-+
- 			if (*s == '\n' && !cr_sent) {
- 				serial8250_console_putchar(port, '\r');
- 				cr_sent = true;
-@@ -3378,6 +3419,8 @@ static void serial8250_console_fifo_write(struct uart_8250_port *up,
- 				serial8250_console_putchar(port, *s++);
- 				cr_sent = false;
- 			}
-+
-+			nbcon_exit_unsafe(wctxt);
- 		}
- 		tx_count = i;
- 	}
-@@ -3386,39 +3429,57 @@ static void serial8250_console_fifo_write(struct uart_8250_port *up,
- 	 * Allow timeout for each byte written since the caller will only wait
- 	 * for UART_LSR_BOTH_EMPTY using the timeout of a single character
- 	 */
--	fifo_wait_for_lsr(up, tx_count);
-+	fifo_wait_for_lsr(up, wctxt, tx_count);
-+}
-+
-+static void serial8250_console_byte_write(struct uart_8250_port *up,
-+					  struct nbcon_write_context *wctxt)
-+{
-+	struct uart_port *port = &up->port;
-+	const char *s = wctxt->outbuf;
-+	const char *end = s + wctxt->len;
-+
-+	/*
-+	 * Write out the message. If a handover or takeover occurs, writing
-+	 * must be aborted since wctxt->outbuf and wctxt->len are no longer
-+	 * valid.
-+	 */
-+	while (s != end) {
-+		if (!nbcon_enter_unsafe(wctxt))
-+			return;
-+
-+		uart_console_write(port, s++, 1, serial8250_console_wait_putchar);
-+
-+		nbcon_exit_unsafe(wctxt);
-+	}
- }
- 
- /*
-- *	Print a string to the serial port trying not to disturb
-- *	any possible real use of the port...
-- *
-- *	The console_lock must be held when we get here.
-+ * Print a string to the serial port trying not to disturb
-+ * any possible real use of the port...
-  *
-- *	Doing runtime PM is really a bad idea for the kernel console.
-- *	Thus, we assume the function is called when device is powered up.
-+ * Doing runtime PM is really a bad idea for the kernel console.
-+ * Thus, assume it is called when device is powered up.
-  */
--void serial8250_console_write(struct uart_8250_port *up, const char *s,
--			      unsigned int count)
-+void serial8250_console_write(struct uart_8250_port *up,
-+			      struct nbcon_write_context *wctxt,
-+			      bool is_atomic)
- {
- 	struct uart_8250_em485 *em485 = up->em485;
- 	struct uart_port *port = &up->port;
--	unsigned long flags;
--	unsigned int ier, use_fifo;
--	int locked = 1;
--
--	touch_nmi_watchdog();
-+	unsigned int ier;
-+	bool use_fifo;
- 
--	if (oops_in_progress)
--		locked = uart_port_trylock_irqsave(port, &flags);
--	else
--		uart_port_lock_irqsave(port, &flags);
-+	if (!nbcon_enter_unsafe(wctxt))
-+		return;
- 
- 	/*
--	 *	First save the IER then disable the interrupts
-+	 * First, save the IER, then disable the interrupts. The special
-+	 * variant to clear the IER is used because console printing may
-+	 * occur without holding the port lock.
- 	 */
- 	ier = serial_port_in(port, UART_IER);
--	serial8250_clear_IER(up);
-+	__serial8250_clear_IER(up);
- 
- 	/* check scratch reg to see if port powered off during system sleep */
- 	if (up->canary && (up->canary != serial_port_in(port, UART_SCR))) {
-@@ -3432,6 +3493,18 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		mdelay(port->rs485.delay_rts_before_send);
- 	}
- 
-+	/* If ownership was lost, no writing is allowed */
-+	if (!nbcon_can_proceed(wctxt))
-+		goto skip_write;
-+
-+	/*
-+	 * If console printer did not fully output the previous line, it must
-+	 * have been handed or taken over. Insert a newline in order to
-+	 * maintain clean output.
-+	 */
-+	if (!up->console_line_ended)
-+		uart_console_write(port, "\n", 1, serial8250_console_wait_putchar);
-+
- 	use_fifo = (up->capabilities & UART_CAP_FIFO) &&
- 		/*
- 		 * BCM283x requires to check the fifo
-@@ -3452,10 +3525,23 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 		 */
- 		!(up->port.flags & UPF_CONS_FLOW);
- 
-+	nbcon_exit_unsafe(wctxt);
-+
- 	if (likely(use_fifo))
--		serial8250_console_fifo_write(up, s, count);
-+		serial8250_console_fifo_write(up, wctxt);
- 	else
--		uart_console_write(port, s, count, serial8250_console_wait_putchar);
-+		serial8250_console_byte_write(up, wctxt);
-+skip_write:
-+	/*
-+	 * If ownership was lost, this context must reacquire ownership and
-+	 * re-enter the unsafe section in order to perform final actions
-+	 * (such as re-enabling interrupts).
-+	 */
-+	if (!nbcon_can_proceed(wctxt)) {
-+		do {
-+			nbcon_reacquire_nobuf(wctxt);
-+		} while (!nbcon_enter_unsafe(wctxt));
-+	}
- 
- 	/*
- 	 *	Finally, wait for transmitter to become empty
-@@ -3478,11 +3564,18 @@ void serial8250_console_write(struct uart_8250_port *up, const char *s,
- 	 *	call it if we have saved something in the saved flags
- 	 *	while processing with interrupts off.
- 	 */
--	if (up->msr_saved_flags)
--		serial8250_modem_status(up);
-+	if (up->msr_saved_flags) {
-+		/*
-+		 * For atomic, it must be deferred to irq_work because this
-+		 * may be a context that does not permit waking up tasks.
-+		 */
-+		if (is_atomic)
-+			irq_work_queue(&up->modem_status_work);
-+		else
-+			serial8250_modem_status(up);
-+	}
- 
--	if (locked)
--		uart_port_unlock_irqrestore(port, flags);
-+	nbcon_exit_unsafe(wctxt);
- }
- 
- static unsigned int probe_baud(struct uart_port *port)
-@@ -3500,8 +3593,24 @@ static unsigned int probe_baud(struct uart_port *port)
- 	return (port->uartclk / 16) / quot;
- }
- 
-+/*
-+ * irq_work handler to perform modem control. Only triggered via
-+ * ->write_atomic() callback because it may be in a scheduler or
-+ * NMI context, unable to wake tasks.
-+ */
-+static void modem_status_handler(struct irq_work *iwp)
-+{
-+	struct uart_8250_port *up = container_of(iwp, struct uart_8250_port, modem_status_work);
-+	struct uart_port *port = &up->port;
-+
-+	uart_port_lock(port);
-+	serial8250_modem_status(up);
-+	uart_port_unlock(port);
-+}
-+
- int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- {
-+	struct uart_8250_port *up = up_to_u8250p(port);
- 	int baud = 9600;
- 	int bits = 8;
- 	int parity = 'n';
-@@ -3511,6 +3620,9 @@ int serial8250_console_setup(struct uart_port *port, char *options, bool probe)
- 	if (!port->iobase && !port->membase)
- 		return -ENODEV;
- 
-+	up->console_line_ended = true;
-+	init_irq_work(&up->modem_status_work, modem_status_handler);
-+
- 	if (options)
- 		uart_parse_options(options, &baud, &parity, &bits, &flow);
- 	else if (probe)
-diff --git a/include/linux/serial_8250.h b/include/linux/serial_8250.h
-index 144de7a7948d..57875c37023a 100644
---- a/include/linux/serial_8250.h
-+++ b/include/linux/serial_8250.h
-@@ -150,8 +150,17 @@ struct uart_8250_port {
- #define LSR_SAVE_FLAGS UART_LSR_BRK_ERROR_BITS
- 	u16			lsr_saved_flags;
- 	u16			lsr_save_mask;
-+
-+	/*
-+	 * Track when a console line has been fully written to the
-+	 * hardware, i.e. true when the most recent byte written to
-+	 * UART_TX by the console was '\n'.
-+	 */
-+	bool			console_line_ended;
-+
- #define MSR_SAVE_FLAGS UART_MSR_ANY_DELTA
- 	unsigned char		msr_saved_flags;
-+	struct irq_work		modem_status_work;
- 
- 	struct uart_8250_dma	*dma;
- 	const struct uart_8250_ops *ops;
-@@ -202,8 +211,8 @@ void serial8250_tx_chars(struct uart_8250_port *up);
- unsigned int serial8250_modem_status(struct uart_8250_port *up);
- void serial8250_init_port(struct uart_8250_port *up);
- void serial8250_set_defaults(struct uart_8250_port *up);
--void serial8250_console_write(struct uart_8250_port *up, const char *s,
--			      unsigned int count);
-+void serial8250_console_write(struct uart_8250_port *up,
-+			      struct nbcon_write_context *wctxt, bool in_atomic);
- int serial8250_console_setup(struct uart_port *port, char *options, bool probe);
- int serial8250_console_exit(struct uart_port *port);
- 
--- 
-2.39.5
+New warnings running 'make CHECK_DTBS=y microchip/at91-sama7d65_curiosity.dtb' for 20250107160850.120537-1-Ryan.Wanner@microchip.com:
+
+arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/pinctrl@e0014000: failed to match any schema with compatible: ['microchip,sama7d65-pinctrl', 'microchip,sama7g5-pinctrl']
+arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/pinctrl@e0014000: failed to match any schema with compatible: ['microchip,sama7d65-pinctrl', 'microchip,sama7g5-pinctrl']
+arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/timer@e1800000: failed to match any schema with compatible: ['microchip,sama7d65-pit64b', 'microchip,sam9x60-pit64b']
+arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/timer@e1800000: failed to match any schema with compatible: ['microchip,sama7d65-pit64b', 'microchip,sam9x60-pit64b']
+arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/timer@e1804000: failed to match any schema with compatible: ['microchip,sama7d65-pit64b', 'microchip,sam9x60-pit64b']
+arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/timer@e1804000: failed to match any schema with compatible: ['microchip,sama7d65-pit64b', 'microchip,sam9x60-pit64b']
+arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: flexcom@e2020000: compatible: 'oneOf' conditional failed, one must be fixed:
+	['microchip,sama7d65-flexcom', 'atmel,sama5d2-flexcom'] is too long
+	'atmel,sama5d2-flexcom' was expected
+	'microchip,sam9x7-flexcom' was expected
+	'microchip,sama7g5-flexcom' was expected
+	from schema $id: http://devicetree.org/schemas/mfd/atmel,sama5d2-flexcom.yaml#
+arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/flexcom@e2020000: failed to match any schema with compatible: ['microchip,sama7d65-flexcom', 'atmel,sama5d2-flexcom']
+
+
+
+
 
