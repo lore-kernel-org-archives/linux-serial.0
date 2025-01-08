@@ -1,181 +1,266 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from esa5.hc1455-7.c3s2.iphmx.com (esa5.hc1455-7.c3s2.iphmx.com [68.232.139.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDB1986330;
-	Tue,  7 Jan 2025 22:54:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA70C2594AF;
+	Wed,  8 Jan 2025 00:50:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.139.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736290473; cv=none; b=t7GcfOymDd8eXm8CenzXHW5jAjTMXiUEEEGVjX/FCaLqogOYO6ZCRGhX4opUMGX8cxNWt2vNNQ8L1GPFxERYgCIhfjBM+j1WxPfHIDrjwOi/jE2SYeqxZGHIFMZzvHLAxCi4+GVogBQSzJzmJM6c9g7o/MWreTamYTVCn2t4L0E=
+	t=1736297432; cv=none; b=ihqXwAnecjqAfpheB68E4w7UxP5Yq81CDOPHgMZzfxUNamLfc8ZTXiITasCPJ4mwwK2eiVoODuJWg8eC+FTUzcPq0LFarO18OI9wa5FgDLUVaRruCDNdZ5EGgrUpFUD4Aw8Tq6bRaDBQoEIFIOXucyzbpK1Iw1xsMkE7XVbKU2k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736290473; c=relaxed/simple;
-	bh=O9TJbmQGiBS3wg5CEtqr6UcvZN/r2lDkUlDh/A83J7o=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=lkwYaFWhZGSSHVzX446iD4GTs0w96pWpCZWsxuTVkGZtP13H1bzdAIkxuMtOqVPrshPrejZpZi5hFx0ENzz6BnCB0DfxzKGSggQ8zcKD7n+CROekxGtCh3nrvU+p+ClxlQn+8D0CCBiVWFJTxWT05pNo66WBvSEyLS8StxrxkK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tbKyO1Q4; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736297432; c=relaxed/simple;
+	bh=3pepWCQ/w0pYqD518g7xPAZwkgW7P/rUAva7kIPw9e8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=YC//bbznG/WG+M4RSXlnfcp5bpdYcBNkFOS3JRQJmF2Ml9N6z0URyl1slxSwqxW8WoWjjh+3eA9t74OPSF6YQgfGWc8RdAprQlc9VXYfKGXX8WkLOmJdJ/L9RiZAlOm20hvDkPzGOb/1r8tE994Q0KTfrIuz1c4ioNJb3b7s2nQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=aa.jp.fujitsu.com; spf=pass smtp.mailfrom=aa.jp.fujitsu.com; dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b=PudVFZ5n; arc=none smtp.client-ip=68.232.139.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=aa.jp.fujitsu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aa.jp.fujitsu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tbKyO1Q4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D78DC4CED6;
-	Tue,  7 Jan 2025 22:54:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736290472;
-	bh=O9TJbmQGiBS3wg5CEtqr6UcvZN/r2lDkUlDh/A83J7o=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=tbKyO1Q4VjERyhut+hU/vQIG+F7w69M3Vy6s9YBLMnD+LqHjuhmQedWM/wnD6PByi
-	 LNZpwHWbRs468sWPfU8ffysRsKa8+zR0VikgXG4yS/LhRB2h6OjX4lKq7AFdLY7hVh
-	 39oas5HW1nkTZa5EKBRDAztXXu9WUarhIoFYmVBVFpOuqDeb9gpZCdK+e4972sSnze
-	 NrYdVputvAgP4M/t5seLAR79ujHFWj5lgm2WFLex4HqJ2pG914plcnYx3+1YoRHqoB
-	 fi4EAwybIl7102DOFK/Xb6e9iSKpPJYbhp3IQKLvsMEWY1kU1FQooOZGlD+VwbHrvR
-	 0WLqcioHhz/Kg==
-Date: Tue, 07 Jan 2025 16:54:31 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b="PudVFZ5n"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj2;
+  t=1736297431; x=1767833431;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3pepWCQ/w0pYqD518g7xPAZwkgW7P/rUAva7kIPw9e8=;
+  b=PudVFZ5nvyGZbfjT2mCIHf4Af+BlGHfHdtb+CVdOg5rZlC/z9FvyaaW8
+   fJT4FxioJlWmETq4FBNZj/CnSytm6Op9iyEfpV5pI7eec5uuBIzQB0AEL
+   LYSlZMsmlVSMN/5ODn5tTYracxM/Kmok3/3ppQA0pXdKS9TgIVHsK8ie8
+   eT1P8HlOhZ+CU5CvHRgenpPp1ElniuleaLbOy8QFHoQ5rKcCt39Eyfccj
+   D3Bxuue5AnN6hDXn0VuX7o70BB3LI7at5LRifhWvevVatCea31yzOA0d+
+   WkGf8cGXx6NkgKKAHWGl94S65WljJAbNjTrmNRSPv8umOmKQgDeFMEmaV
+   g==;
+X-CSE-ConnectionGUID: 6UaIuO7nSamWYkCFjfKWQg==
+X-CSE-MsgGUID: Fc82oHRxRFyPNTJlHvV5qQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11308"; a="185053898"
+X-IronPort-AV: E=Sophos;i="6.12,296,1728918000"; 
+   d="scan'208";a="185053898"
+Received: from unknown (HELO oym-r4.gw.nic.fujitsu.com) ([210.162.30.92])
+  by esa5.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2025 09:50:27 +0900
+Received: from oym-m1.gw.nic.fujitsu.com (oym-nat-oym-m1.gw.nic.fujitsu.com [192.168.87.58])
+	by oym-r4.gw.nic.fujitsu.com (Postfix) with ESMTP id DF5B3DBBCB;
+	Wed,  8 Jan 2025 09:50:24 +0900 (JST)
+Received: from yto-om4.fujitsu.com (yto-om4.o.css.fujitsu.com [10.128.89.165])
+	by oym-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id B1B28D50B1;
+	Wed,  8 Jan 2025 09:50:24 +0900 (JST)
+Received: from sm-x86-mem01.ssoft.mng.com (sm-x86-stp01.soft.fujitsu.com [10.124.178.20])
+	by yto-om4.fujitsu.com (Postfix) with ESMTP id 6FCDC40054C45;
+	Wed,  8 Jan 2025 09:50:24 +0900 (JST)
+From: Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>
+To: Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	fj6611ie@aa.jp.fujitsu.com
+Subject: [PATCH] serial: amba-pl011: Implement nbcon console
+Date: Wed,  8 Jan 2025 00:47:30 +0000
+Message-Id: <20250108004730.2302996-1-fj6611ie@aa.jp.fujitsu.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: linux-clk@vger.kernel.org, dharma.b@microchip.com, 
- alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com, 
- mturquette@baylibre.com, linux-serial@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org, 
- devicetree@vger.kernel.org, conor+dt@kernel.org, mihai.sain@microchip.com, 
- linux-kernel@vger.kernel.org, krzk+dt@kernel.org, 
- varshini.rajendran@microchip.com, claudiu.beznea@tuxon.dev, 
- romain.sioen@microchip.com, linux-spi@vger.kernel.org, 
- linux-gpio@vger.kernel.org, arnd@arndb.de, sboyd@kernel.org
-To: Ryan.Wanner@microchip.com
-In-Reply-To: <20250107160850.120537-1-Ryan.Wanner@microchip.com>
-References: <20250107160850.120537-1-Ryan.Wanner@microchip.com>
-Message-Id: <173629037004.1994496.1652835527993929123.robh@kernel.org>
-Subject: Re: [PATCH v5 0/5] Add support for SAMA7D65
+Content-Transfer-Encoding: 8bit
 
+Implement the callbacks required for an NBCON console [0] on the 
+amba-pl011 console driver.
+The codes for legacy console are retained, and the module
+parameter (use_nbcon) allows switching between legacy and NBCON.
+The default is off (use legacy console) for now.
 
-On Tue, 07 Jan 2025 09:07:22 -0700, Ryan.Wanner@microchip.com wrote:
-> From: Ryan Wanner <Ryan.Wanner@microchip.com>
-> 
-> This series adds support for the SAMA7D65 SoC.
-> 
-> V2 of this series [1].
-> V3 of this series [2].
-> V4 of this series [4].
-> 
-> For the pinctrl and pit64 timers those will have DTB warnings due to
-> those bindings not being in the .yaml format.
-> 
-> Changes v1->v2:
-> - V1 set was sent incorrectly as multiple seprate patches v2 took all
->   those patches and put them in 1 thread.
-> 
-> Changes v2->v3:
-> - Correct the patch order to follow correct practice.
-> - Correct flexcom dt-binding commit messge to reflect the changes in the
->   coding style.
-> - Add missing SoB tags to patches.
-> - Moved export clocks to DT patch to be included with the clock binding
->   patch.
-> - Separate Kconfig changes and defconfig changes into different patches
->   and removed unused Kconfig params.
-> - Correct confusing SoB and Co-developed chain.
-> - Removed unsued nodes in DTSI file and sorted includes
->   alphanumerically.
-> - Fix incorrect dts formatting.
-> - Separate dts and pinmux changes into two patches.
-> - Combine PLL and MCK changes into core clock driver patch.
-> - Correct formatting in main clock driver.
-> - MMC dt-binding changes are applied for next so have been removed from
->   the set [3].
-> 
-> Changes v3->v4:
-> - Collect all tags from maintainers.
-> - Correct compile error on 11/13 and correct location of vendor specific
->   properties.
-> - Add USB and UTMI selections to 12/13 to prevent compile errors due to
->   functions in the clock driver that use the USB clock system.
-> - Add "microchip,sama7g5-pinctrl" compatible string as a fall back in
->   9/13.
-> - Add missing kfree() to 8/13 to correctly handle error case.
-> - Replace bad spacing with correct tab formatting on 7/13.
-> 
-> Changes from v4->v5:
-> - Remove patches that have been applied [5].
-> - Update pinctrl dt-binding to use fallback formatting.
-> 
-> Note:
-> - For the SDHCI DTB error that patch has been removed do to it being
-> applied see [3].
-> - There are DTB errors on microchip,sama7d65-pit64b and
->   microchip,sama7d65-pinctrl, this is due to those bindings being .txt
->   files.
-> 
-> 1) https://lore.kernel.org/linux-arm-kernel/cover.1732030972.git.Ryan.Wanner@microchip.com/T/#m9691b4d58b62f36f6cbac1d06883c985766c2c0d
-> 2) https://lore.kernel.org/linux-arm-kernel/cover.1733505542.git.Ryan.Wanner@microchip.com/T/#m3b52978236907198f727424e69ef21c8898e95c8
-> 3) https://lore.kernel.org/linux-arm-kernel/cover.1732030972.git.Ryan.Wanner@microchip.com/T/#mccf6521c07e74e1c7dc61b09ae0ebdbbdde73a28
-> 4) https://lore.kernel.org/linux-arm-kernel/70d429086fd8e858d79ca2824ad8cc4a09e3fe5d.1734723585.git.Ryan.Wanner@microchip.com/T/#m918b8db23c8d30981263846a02dafc085e17de14
-> 5) https://lore.kernel.org/linux-arm-kernel/70d429086fd8e858d79ca2824ad8cc4a09e3fe5d.1734723585.git.Ryan.Wanner@microchip.com/T/#m69b8f11536e3b0ca3d69d125d0670c90412d4317
-> 
-> 
-> 
-> Dharma Balasubiramani (2):
->   dt-bindings: serial: atmel,at91-usart: add microchip,sama7d65-usart
->   dt-bindings: pinctrl: at91-pio4: add microchip,sama7d65-pinctrl
-> 
-> Romain Sioen (2):
->   dt-bindings: ARM: at91: Document Microchip SAMA7D65 Curiosity
->   ARM: dts: microchip: add support for sama7d65_curiosity board
-> 
-> Ryan Wanner (1):
->   ARM: dts: microchip: add sama7d65 SoC DT
-> 
->  .../devicetree/bindings/arm/atmel-at91.yaml   |   7 +
->  .../pinctrl/atmel,at91-pio4-pinctrl.txt       |   3 +-
->  .../bindings/serial/atmel,at91-usart.yaml     |   1 +
->  arch/arm/boot/dts/microchip/Makefile          |   3 +
->  .../dts/microchip/at91-sama7d65_curiosity.dts |  89 +++++++++++
->  arch/arm/boot/dts/microchip/sama7d65.dtsi     | 145 ++++++++++++++++++
->  6 files changed, 247 insertions(+), 1 deletion(-)
->  create mode 100644 arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dts
->  create mode 100644 arch/arm/boot/dts/microchip/sama7d65.dtsi
-> 
-> --
-> 2.43.0
-> 
-> 
-> 
+Referred to the NBCON implementation work for 8250 [1] and imx [2].
 
+The normal-priority write_thread checks for console ownership
+each time a character is printed.
+write_atomic holds the console ownership until the entire string
+is printed.
 
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
+UART register operations are protected from other contexts by 
+uart_port_lock, except for a final flush(nbcon_atomic_flush_unsafe) 
+on panic.
 
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
+The patch has been verified to correctly handle the output and
+competition of messages with different priorities and flushing
+panic message to console after nmi panic using ARM64 QEMU and
+a physical machine(A64FX).
 
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
+[0] https://lore.kernel.org/all/ZuRRTbapH0DCj334@pathway.suse.cz/
+[1] https://lore.kernel.org/all/20240913140538.221708-1-john.ogness@linutronix.de/T/
+[2] https://lore.kernel.org/linux-arm-kernel/20240913-serial-imx-nbcon-v3-1-4c627302335b@geanix.com/T/
 
-  pip3 install dtschema --upgrade
+Signed-off-by: Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>
+---
+ drivers/tty/serial/amba-pl011.c | 113 ++++++++++++++++++++++++++++++++
+ 1 file changed, 113 insertions(+)
 
-
-New warnings running 'make CHECK_DTBS=y microchip/at91-sama7d65_curiosity.dtb' for 20250107160850.120537-1-Ryan.Wanner@microchip.com:
-
-arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/pinctrl@e0014000: failed to match any schema with compatible: ['microchip,sama7d65-pinctrl', 'microchip,sama7g5-pinctrl']
-arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/pinctrl@e0014000: failed to match any schema with compatible: ['microchip,sama7d65-pinctrl', 'microchip,sama7g5-pinctrl']
-arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/timer@e1800000: failed to match any schema with compatible: ['microchip,sama7d65-pit64b', 'microchip,sam9x60-pit64b']
-arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/timer@e1800000: failed to match any schema with compatible: ['microchip,sama7d65-pit64b', 'microchip,sam9x60-pit64b']
-arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/timer@e1804000: failed to match any schema with compatible: ['microchip,sama7d65-pit64b', 'microchip,sam9x60-pit64b']
-arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/timer@e1804000: failed to match any schema with compatible: ['microchip,sama7d65-pit64b', 'microchip,sam9x60-pit64b']
-arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: flexcom@e2020000: compatible: 'oneOf' conditional failed, one must be fixed:
-	['microchip,sama7d65-flexcom', 'atmel,sama5d2-flexcom'] is too long
-	'atmel,sama5d2-flexcom' was expected
-	'microchip,sam9x7-flexcom' was expected
-	'microchip,sama7g5-flexcom' was expected
-	from schema $id: http://devicetree.org/schemas/mfd/atmel,sama5d2-flexcom.yaml#
-arch/arm/boot/dts/microchip/at91-sama7d65_curiosity.dtb: /soc/flexcom@e2020000: failed to match any schema with compatible: ['microchip,sama7d65-flexcom', 'atmel,sama5d2-flexcom']
-
-
-
-
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 69b7a3e1e..52fab3170 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -41,6 +41,7 @@
+ #include <linux/sizes.h>
+ #include <linux/io.h>
+ #include <linux/acpi.h>
++#include <linux/moduleparam.h>
+ 
+ #define UART_NR			14
+ 
+@@ -263,6 +264,7 @@ struct uart_amba_port {
+ 	char			type[12];
+ 	bool			rs485_tx_started;
+ 	unsigned int		rs485_tx_drain_interval; /* usecs */
++	bool			console_line_ended;
+ #ifdef CONFIG_DMA_ENGINE
+ 	/* DMA stuff */
+ 	unsigned int		dmacr;		/* dma control reg */
+@@ -274,6 +276,10 @@ struct uart_amba_port {
+ #endif
+ };
+ 
++/* if non-zero, the console is nbcon. */
++static int use_nbcon;
++module_param(use_nbcon, int, 0444);
++
+ static unsigned int pl011_tx_empty(struct uart_port *port);
+ 
+ static unsigned int pl011_reg_to_offset(const struct uart_amba_port *uap,
+@@ -2305,6 +2311,7 @@ static void pl011_console_putchar(struct uart_port *port, unsigned char ch)
+ 	while (pl011_read(uap, REG_FR) & UART01x_FR_TXFF)
+ 		cpu_relax();
+ 	pl011_write(ch, uap, REG_DR);
++	uap->console_line_ended = (ch == '\n');
+ }
+ 
+ static void
+@@ -2411,6 +2418,8 @@ static int pl011_console_setup(struct console *co, char *options)
+ 	if (ret)
+ 		return ret;
+ 
++	uap->console_line_ended = true;
++
+ 	if (dev_get_platdata(uap->port.dev)) {
+ 		struct amba_pl011_data *plat;
+ 
+@@ -2494,6 +2503,106 @@ static int pl011_console_match(struct console *co, char *name, int idx,
+ 	return -ENODEV;
+ }
+ 
++static void
++pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt)
++{
++	struct uart_amba_port *uap = amba_ports[co->index];
++	unsigned int old_cr = 0;
++
++	if (!nbcon_enter_unsafe(wctxt))
++		return;
++
++	clk_enable(uap->clk);
++
++	if (!uap->vendor->always_enabled) {
++		old_cr = pl011_read(uap, REG_CR);
++		pl011_write((old_cr & ~UART011_CR_CTSEN) | (UART01x_CR_UARTEN | UART011_CR_TXE),
++				uap, REG_CR);
++	}
++
++	if (!uap->console_line_ended)
++		uart_console_write(&uap->port, "\n", 1, pl011_console_putchar);
++	uart_console_write(&uap->port, wctxt->outbuf, wctxt->len, pl011_console_putchar);
++
++	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr) & uap->vendor->fr_busy)
++		cpu_relax();
++
++	if (!uap->vendor->always_enabled)
++		pl011_write(old_cr, uap, REG_CR);
++
++	clk_disable(uap->clk);
++
++	nbcon_exit_unsafe(wctxt);
++}
++
++static void
++pl011_console_write_thread(struct console *co, struct nbcon_write_context *wctxt)
++{
++	struct uart_amba_port *uap = amba_ports[co->index];
++	unsigned int old_cr = 0;
++
++	if (!nbcon_enter_unsafe(wctxt))
++		return;
++
++	clk_enable(uap->clk);
++
++	if (!uap->vendor->always_enabled) {
++		old_cr = pl011_read(uap, REG_CR);
++		pl011_write((old_cr & ~UART011_CR_CTSEN) | (UART01x_CR_UARTEN | UART011_CR_TXE),
++				uap, REG_CR);
++	}
++
++	if (nbcon_exit_unsafe(wctxt)) {
++		int i;
++		unsigned int len = READ_ONCE(wctxt->len);
++
++		for (i = 0; i < len; i++) {
++			if (!nbcon_enter_unsafe(wctxt))
++				break;
++			uart_console_write(&uap->port, wctxt->outbuf + i, 1, pl011_console_putchar);
++			if (!nbcon_exit_unsafe(wctxt))
++				break;
++		}
++	}
++
++	while (!nbcon_enter_unsafe(wctxt))
++		nbcon_reacquire_nobuf(wctxt);
++
++	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr) & uap->vendor->fr_busy)
++		cpu_relax();
++
++	if (!uap->vendor->always_enabled)
++		pl011_write(old_cr, uap, REG_CR);
++
++	clk_disable(uap->clk);
++
++	nbcon_exit_unsafe(wctxt);
++}
++
++static void
++pl011_console_device_lock(struct console *co, unsigned long *flags)
++{
++	__uart_port_lock_irqsave(&amba_ports[co->index]->port, flags);
++}
++
++static void
++pl011_console_device_unlock(struct console *co, unsigned long flags)
++{
++	__uart_port_unlock_irqrestore(&amba_ports[co->index]->port, flags);
++}
++
++static void
++pl011_console_switch_to_nbcon(struct console *co)
++{
++	co->write = NULL;
++	co->write_atomic = pl011_console_write_atomic;
++	co->write_thread = pl011_console_write_thread;
++	co->device_lock = pl011_console_device_lock;
++	co->device_unlock = pl011_console_device_unlock;
++	co->flags = CON_PRINTBUFFER | CON_ANYTIME | CON_NBCON;
++	pr_info("Serial: switched to nbcon\n");
++}
++
+ static struct uart_driver amba_reg;
+ static struct console amba_console = {
+ 	.name		= "ttyAMA",
+@@ -2737,6 +2846,10 @@ static int pl011_register_port(struct uart_amba_port *uap)
+ 	pl011_write(0xffff, uap, REG_ICR);
+ 
+ 	if (!amba_reg.state) {
++		/* Replaces the console descriptor if NBCON is selected. */
++		if (amba_reg.cons && use_nbcon)
++			pl011_console_switch_to_nbcon(amba_reg.cons);
++
+ 		ret = uart_register_driver(&amba_reg);
+ 		if (ret < 0) {
+ 			dev_err(uap->port.dev,
+-- 
+2.34.1
 
