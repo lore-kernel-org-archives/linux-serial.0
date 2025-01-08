@@ -1,82 +1,59 @@
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD2CE1FC0E6
-	for <linux-serial@vger.kernel.org>; Wed,  8 Jan 2025 13:10:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 584341F2C50;
+	Wed,  8 Jan 2025 13:32:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736341860; cv=none; b=gfYrNsSxAaHpFMRwaN1SL2FlT/7AEyF3mSP5FNJ0PgZxSJ0wEcZe8uv+3aBVNJx+UfXyzq6hopOCh4ymiv33pP02fnhX3w/YcdyPMThmyzRWrg7K19KxGjrqLeqQ2nK4hMwEcpqlVeybS7oQA1xTWevI3jZT+pJE+QWUh3KbYNw=
+	t=1736343148; cv=none; b=qljk4/YTjql+DYKFloc9wS98ZqGqZowh8U/SEWNjcZL/gDWH7V2eWvagYN2SduBakPCjE0tDF6noi4lHjXPrAExjS+gZ28oECUMdzYGnLXRVheqjkXtsGcDIwc/GWbbinTQLbKxTbwZxM2wdYKb+wn9mHt44pL1s3cmAyNxAIKw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736341860; c=relaxed/simple;
-	bh=oIyraJtt6eJ8oH2IUTQP3/uGfilGWY1D+3vWNioqWzM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UUIkAE0AOb2DceHuDoYy/BvBPqahwrK/v1sXDKbmM7MtdE3QhFlAWczZ3m2Dx7xkCXUjOF2uvVf/a8VzlJ/I84VfL0ZPNzE9jWZ/2U0vFlglTF4Ss1XyEJ6yhYHZfKK9tCXZuvNxsXmL+nV40sdZLu3pKnpYDC2j8TUylCKdTNM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=UJ1KP9wQ; arc=none smtp.client-ip=209.85.218.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
+	s=arc-20240116; t=1736343148; c=relaxed/simple;
+	bh=dAxFgrzG1HoxwzIUMYTk3N5n2IDUrRKAA4lDY4FZYFY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QXzIdLHV1h1HGJH46SaNJTb05Qu97brxp9C3flY7AbH9AwiWyGtCs19vH0jVv/XdmC/1LPJxQa8YYEMyviCecOvjxrfkezt6lAvLmhmts6CvGxLDYt/m6IcBBHNh86I9ztksxmeLLe3IIq7qRX3rZ8BgECMAUOqa/JfXw/Tx1rA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=IOGZeUDG; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="UJ1KP9wQ"
-Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-aa67ac42819so2431377066b.0
-        for <linux-serial@vger.kernel.org>; Wed, 08 Jan 2025 05:10:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura; t=1736341857; x=1736946657; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BN0yPpMIVUvy5dvr2cl4F1PFjMYUc3POzI2oD6FyxFM=;
-        b=UJ1KP9wQWY3nYll2nnh5tJdfRAhrV3oY/55foufrg0NArm04Mp5hVwif3Louh8XmTE
-         PiM9NN51c2Uu5WVwnKow5dnjZmq3sLOPsStUuSApjuuxjBTVn3sE4w3IWy9y+NoB3E2E
-         m06b5e0xBlyD8aFi+H7Qu+xc/dJYbZaeEJvaheG3qQsb1B638s6X6Vscl44J46GaWQBp
-         vvBBoJXMEXES+WI92U2pLXBKxSffxf1GwY1UrAPWtJnl+6I5QrDKJrUQHR/7yJeR8S9m
-         WmPonyks83JLGW0iYo1CiGds3iqWEw8c07kriBEuyuicuQtTPH+WA9e4fbfo8n/Map1/
-         PiaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736341857; x=1736946657;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=BN0yPpMIVUvy5dvr2cl4F1PFjMYUc3POzI2oD6FyxFM=;
-        b=f3wRD4VN5YcfpCJkQcjmJMz/3GA6oXU1Q3W4fo/b0fR6W1kpE7tGscmC4R/6XQN3aB
-         mZpFE5ZYr1r+GrUF8qAqltzcASA7wXx4A0hF1XuftUG/E3S70lHuTHC6Q6KyEj1rtKZu
-         pwHA/D6kc2u8lpSWl7g9C5BwQ7LTttxJhwM3JOP5oWi+uMxryJW8Sw5a+S+V782whF/z
-         pof3EnT2Vsiu4zR+YlJoowo4CSxWhcWuDcdgc5S43UyhrGl1QteM5R5bM3MfF+b75aI9
-         DgyCOOhRrh1ZdBB/Man/GMoU/qGp4aT2/8SDyM8WrzlR5jDBrnA++CvWDLMAuSkIaxDr
-         V1Aw==
-X-Forwarded-Encrypted: i=1; AJvYcCXpu6cWLI/obLN72CaU1MbGxGIy9HFcvvfNeSsUJP4CwncEQbWYI9R8CufdNqWwXQnnZPE5hvaEpyKKvEU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz6pLSLATeAcnBpcJlMEXVcG6FEzKZ5euWn22BZGbSmnZH9FBbF
-	vamSVvILc0TR6JAqvFPBYcCoA/atvrXsPbjsLbTgBvS3ZjzGjXXfXvZMfkaK1eI=
-X-Gm-Gg: ASbGncs5eSajq4T4OqkT1PY4ef7AxKrI2z+Sc9Cby1yE/Cm/SPmC66e+Fythr1FtVwW
-	YwZhRu6UgBdzPc0bKwmJmTjPGeDm+hO3l2vn5w8iLSuTl5Es4lCyESTuu7Y5UEKjVRS+VFTMLZ9
-	z0aMv+UfxXJwgzkmk6aZ4XRgJmc5hQgu/7FpyDmtvxVpcKocWPyOdzB3I/Or70nDzOVHpa6e7du
-	npXDPv7uEzl/0NYR7h5nKsODT5tNj9MSkz6rCSQdLYiBnWGuT/Nnv8jcabh/Lc733hSLRTVLthW
-	Gg==
-X-Google-Smtp-Source: AGHT+IFJ8uCXGWMcgCcfG2AE5znWZEYmo36LP9wm7sevnVR4LMZzKP1YIGgXKdylu5CEr8OTPpTy2g==
-X-Received: by 2002:a17:906:6a26:b0:aa6:a9fe:46dd with SMTP id a640c23a62f3a-ab2abc6de7bmr196044966b.38.1736341856895;
-        Wed, 08 Jan 2025 05:10:56 -0800 (PST)
-Received: from fedora.. (d-zg2-023.globalnet.hr. [213.149.37.23])
-        by smtp.googlemail.com with ESMTPSA id 4fb4d7f45d1cf-5d806fedaebsm26159761a12.57.2025.01.08.05.10.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 08 Jan 2025 05:10:55 -0800 (PST)
-From: Robert Marko <robert.marko@sartura.hr>
-To: catalin.marinas@arm.com,
-	will@kernel.org,
-	lee@kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	arnd@kernel.org,
-	lars.povlsen@microchip.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: luka.perkov@sartura.hr,
-	daniel.machon@microchip.com,
-	Robert Marko <robert.marko@sartura.hr>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH v3 3/3] tty: serial: atmel: make it selectable for ARCH_LAN969X
-Date: Wed,  8 Jan 2025 14:09:28 +0100
-Message-ID: <20250108131045.40642-3-robert.marko@sartura.hr>
-X-Mailer: git-send-email 2.47.1
-In-Reply-To: <20250108131045.40642-1-robert.marko@sartura.hr>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="IOGZeUDG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1736343146; x=1767879146;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dAxFgrzG1HoxwzIUMYTk3N5n2IDUrRKAA4lDY4FZYFY=;
+  b=IOGZeUDGPE25PyWSeP+vvKl5nBtBMTX+rdJkSY8HpBsSGMg0vAKqXkwz
+   jVG3UDcu+2A+SyzXdlN3lfyuM51DcTIk6QKGcRItTiibjIcQZd4AI3u1a
+   tnFF2xb+cBLFKGkq4JHYuS6ddh5mbSihNWPtIh/DQLkvqID6VuU9z1yQ2
+   3Dtj5rkPQzHW++9jxLKpNDBrc7p2CiRWAMz1BoigWeQR7kXkfxNkngKL3
+   Mwe6jjsluL6sraHkt/AkRTAKlAhXeywpgPPTITdFyZGbTZ5bZxy3JVfKo
+   lBxwM+tS0eeNTpBc+4YDLMK6SfUiiCegklt6t6qmhegVzMXfhZAsgtE+U
+   w==;
+X-CSE-ConnectionGUID: 8yblzpFQSpy0mdJMe/argg==
+X-CSE-MsgGUID: 9tr49NP3TOGm+epbvodq0Q==
+X-IronPort-AV: E=Sophos;i="6.12,298,1728975600"; 
+   d="scan'208";a="267567432"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 08 Jan 2025 06:32:25 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Wed, 8 Jan 2025 06:32:22 -0700
+Received: from DEN-DL-M70577 (10.10.85.11) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.35 via Frontend
+ Transport; Wed, 8 Jan 2025 06:32:20 -0700
+Date: Wed, 8 Jan 2025 13:32:20 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Robert Marko <robert.marko@sartura.hr>
+CC: <catalin.marinas@arm.com>, <will@kernel.org>, <lee@kernel.org>,
+	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <arnd@kernel.org>,
+	<lars.povlsen@microchip.com>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<luka.perkov@sartura.hr>
+Subject: Re: [PATCH v3 1/3] arm64: lan969x: Add support for Microchip LAN969x
+ SoC
+Message-ID: <20250108133220.xysvfof4puzr3jgr@DEN-DL-M70577>
 References: <20250108131045.40642-1-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -84,33 +61,51 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250108131045.40642-1-robert.marko@sartura.hr>
 
-LAN969x uses the Atmel serial, so make it selectable for ARCH_LAN969X.
+> This adds support for the Microchip LAN969x ARMv8-based SoC switch family.
+> 
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> ---
+> Changes in v3:
+> * Rebase on top of next-20250107
+> 
+> Changes in v2:
+> * Add forgotten LAN969x architecture support itself
+> 
+>  arch/arm64/Kconfig.platforms | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+> 
+> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> index e2638e5118a7..cd29480be792 100644
+> --- a/arch/arm64/Kconfig.platforms
+> +++ b/arch/arm64/Kconfig.platforms
+> @@ -133,6 +133,20 @@ config ARCH_SPARX5
+>           security through TCAM-based frame processing using versatile
+>           content aware processor (VCAP).
+> 
+> +config ARCH_LAN969X
+> +       bool "Microchip LAN969X SoC family"
+> +       select PINCTRL
+> +       select DW_APB_TIMER_OF
+> +       help
+> +         This enables support for the Microchip LAN969X ARMv8-based
+> +         SoC family of TSN-capable gigabit switches.
+> +
+> +         The LAN969X Ethernet switch family provides a rich set of
+> +         switching features such as advanced TCAM-based VLAN and QoS
+> +         processing enabling delivery of differentiated services, and
+> +         security through TCAM-based frame processing using versatile
+> +         content aware processor (VCAP).
+> +
+>  config ARCH_K3
+>         bool "Texas Instruments Inc. K3 multicore SoC architecture"
+>         select PM_GENERIC_DOMAINS if PM
+> --
+> 2.47.1
+>
 
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
----
-Changes in v2:
-* Pickup Acked-by from Nicolas
-* Add whitespace before COMPILE_TEST
-
- drivers/tty/serial/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
-index 45f0f779fbf9..976dae3bb1bb 100644
---- a/drivers/tty/serial/Kconfig
-+++ b/drivers/tty/serial/Kconfig
-@@ -128,7 +128,7 @@ config SERIAL_SB1250_DUART_CONSOLE
- config SERIAL_ATMEL
- 	bool "AT91 on-chip serial port support"
- 	depends on COMMON_CLK
--	depends on ARCH_AT91 || COMPILE_TEST
-+	depends on ARCH_AT91 || ARCH_LAN969X || COMPILE_TEST
- 	select SERIAL_CORE
- 	select SERIAL_MCTRL_GPIO if GPIOLIB
- 	select MFD_AT91_USART
--- 
-2.47.1
-
+Acked-by: Daniel Machon <daniel.machon@microchip.com>
+ 
