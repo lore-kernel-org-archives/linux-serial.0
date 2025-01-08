@@ -1,116 +1,124 @@
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B83B1F942F
-	for <linux-serial@vger.kernel.org>; Wed,  8 Jan 2025 12:57:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.9.28.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B803C14A82
+	for <linux-serial@vger.kernel.org>; Wed,  8 Jan 2025 13:10:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736341027; cv=none; b=GdAvNq512aZmpMtt+tYzl8L/KEF2fxa3x/l791fsQG5vpEvHk7My1MAznvCg3nDQsX96vnDUQ8oaoh590b6V6uBC8Ib07w1G2wTaZVSEbhidgAhmqs+CFhV8XuGqB2+CK1aq7KbilgGEpDfpQScqGqh2GTOCSdUjAD29QpVqUjE=
+	t=1736341854; cv=none; b=jboyqFOF6bq0Bbhou5FPY+8gwpeIF6qZRzkxONAMDSPVggWdAIfOJYeaUUGGFVk2K4AAxamgdRELXR1A6xWmapFgXDyqkem69NBCgIJQqEebj35aCoQxLbSZwJIfAWHkgbBNPE9c1Ap5LkQeNg4LRNHgCmsGseuHGUMacIcY6Z0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736341027; c=relaxed/simple;
-	bh=5xBFvOUbvg90XgCy/S23s30dTHT7sn6DrY6FZbeRrLc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Qh3Ir/7fOz0xEGK+HygnLkC7bK0SOCxakIn1Xw2WkxSMhSFSXxgy8VGhq2HjZ5U0JpOnN0lZx45qYGHQ2aZUvz9pkVPkd5PEETl+mmUKLXFctlezPjtzAZV3I2P5ip9UqcNkwacMhjtvrJ7lFqJAAULhi64ZoEBFrWi/hGmSH/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu; spf=pass smtp.mailfrom=mit.edu; dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b=qUWAF5/D; arc=none smtp.client-ip=18.9.28.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=mit.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mit.edu
+	s=arc-20240116; t=1736341854; c=relaxed/simple;
+	bh=IMjiMKuDcoOKg7EhCgSKW4Eehfkeo0sfGrNn/NXI+Vk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=B2hKdwj1pDBMR2/IPii7avcZXEjudmrI1eQDD7HpFEFTMOzFS8YyTeTDqBLyLpsXWr4Giqdk/Gh/HCGgbnMTYHAf/XIZdetqUrHK65P4ssYk9A+Uj7sP5Y71VHbMpUua3SnJG/oNOstzd2NEGVWpYyuJ0VI5DVCI415bia8wlu0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=mLJhaO7y; arc=none smtp.client-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mit.edu header.i=@mit.edu header.b="qUWAF5/D"
-Received: from cwcc.thunk.org (pool-173-48-116-211.bstnma.fios.verizon.net [173.48.116.211])
-	(authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-	by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 508Cuvvn021852
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 8 Jan 2025 07:56:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-	t=1736341020; bh=KiepcNTyQYYcKT7PLsGajt3tOB/awNqBIyCYLcowh54=;
-	h=Date:From:Subject:Message-ID:MIME-Version:Content-Type;
-	b=qUWAF5/DJWEbt4Ca8z3v5JPqLhZELjABtWDRt/XlfdBdhjDqMBg6SOQTs6ydZ7TRV
-	 KVwLNR8iwPz2gV0NqSw8vMznfWqytev0pWxJ/NST3AC/f3hYt6tyFyvbOC9O9A/Sng
-	 JNw6ZmDVpZrqK/NG7GnldlSfBvxBnoXYyxrUFRq97AGLlO+NYdD6wBgT5zep2gSLuS
-	 GJTm3khg3AiwaB812sBGyK/FuGEpLQr/h3lyHYv/L/3yT+KtLhPM+RwE3heehlcCtE
-	 fdbJHQwMsdIWg+tZP2TaomXU6YupPYt3/ZMPRL//yhuVk0dqgg9Z+ouNTk5HgMEQ5Q
-	 ib2MrFAs3R50Q==
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-	id C5C9715C0108; Wed, 08 Jan 2025 07:56:57 -0500 (EST)
-Date: Wed, 8 Jan 2025 07:56:57 -0500
-From: "Theodore Ts'o" <tytso@mit.edu>
-To: =?utf-8?B?VG9tw6HFoSBNdWRydcWIa2E=?= <tomas.mudrunka@gmail.com>
-Cc: linux-serial@vger.kernel.org
-Subject: Re: Precise timing in ldisc? tty_put_char() in hrtimer context?
-Message-ID: <20250108125657.GK1284777@mit.edu>
-References: <CAH2-hcJVhxubEsRciMSrp2x4WyDrmmYNe0Db9-LzXkiRpBQ0iQ@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="mLJhaO7y"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5d414b8af7bso32990403a12.0
+        for <linux-serial@vger.kernel.org>; Wed, 08 Jan 2025 05:10:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura.hr; s=sartura; t=1736341850; x=1736946650; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=jTD4xCu+4feI3XGCQAs3L1ZGc+rHp5IadbyQhEAC64Y=;
+        b=mLJhaO7y/88FxTWfPfjy+o5IOxOBoynoKW84cK+ouwPZKTC2n8fIJeR7fC+udKdCM4
+         zSegtGrFVW97TvvEVvc76euaCmWc69s2D0Oj+dq4D5a4DpXDr0xSIg5y3dzsrdulkSER
+         pFzfJRGpoADvnITdAuf8zsZGJZ/kDLxk3kCE+MiHgw8Bv8iwbtHRkNtqeQaTAxH8q8rQ
+         AodnM9asbO2PYcpkR6HXuzRKcv6MaJmxEIShh+4bf+aQDpgt92qZDs3UzK54sZWmfzSJ
+         UDHEOVmiqjbHZtZhYGfZ8wGIiIVkfLR7Qgt9OtWU3d6GnTF0rGR4JIVFF+vnCoAlsHji
+         8PDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736341850; x=1736946650;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jTD4xCu+4feI3XGCQAs3L1ZGc+rHp5IadbyQhEAC64Y=;
+        b=lXiWtAldD/4xh+0EZEcIXfgi8LyyNL60ruuLsB1smDig/QU4NMgoZC8XJR3BOh45ns
+         AJINcKv85ZVzuodVxAPo44L7ZqZFZ6Nc6x6/9XrRC9S74M1I5Zl4NPfb/0BhCP3o5QDb
+         say2zvoTBYNbWtrHZxEasIH2ekX3K1bPut6Aznqq4hMBoKeld/7rWOHIqI6lrbbY62bJ
+         cWw4NkkBxAhv3jcyk/XvZRLv+cFkrs5vmkRdjO/r29/698HGgMzfkHnTlvfx9ytqjaC3
+         k3CS3YBKPrRDsqRlBp1YIQK3MJSylEgxpdOTgKdjjC91neWEEcyoEMYLFxXOVIPv5SRU
+         j1zQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWfjQxb5kdXTV+3p+8SC59KA8YBQkw8uNL/imzeO0zv2qrG6t52+umFqkKjLwV6DiBtSoNIBNSONzsN5jE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw8NopXP2NTZ3q4oYrlItkr2htJnEji0GKCTiCAOCHz4KcUQFTR
+	30HNsPGpQ/pMMLsewFLtfPfRasnYI4W2FL30QrFChObrYSxzyFEOnM26TJyyNVI=
+X-Gm-Gg: ASbGnctjY8iSymL6RKQxHUlujWOAuwPv0duljaHm3lQkhtomQ8eAOi3WoZEyH9qjJzi
+	TJxSX+LfeFtlWFzEjdATcEEFGIseWpQP4m12y0SrhvsF15DcuBlVv1KZg5awh94S+/CZM2dd7vw
+	dyziVDgie/Yc+X8rVLPQzbn6lP2MyxxBWfbOQH7J/xfY5SRPaZ3cBVqebVjD07+H8skeDqelUYP
+	g4qnkn6fKtzRTdiDGP0z7Np71ZxxRZ5Kj7StJsIXqqcCThLNa3BdqEUNXMA/flwLfcIJCcyT11N
+	5w==
+X-Google-Smtp-Source: AGHT+IHLwNyy4A70HAWpzRTfVcvclZt7HwGR3P3PBQ5fNfIfanYr2FOL00ctrneNCFGNPtK8PpM4xA==
+X-Received: by 2002:a05:6402:35d5:b0:5d1:2440:9ad3 with SMTP id 4fb4d7f45d1cf-5d972e703e5mr2225214a12.30.1736341850034;
+        Wed, 08 Jan 2025 05:10:50 -0800 (PST)
+Received: from fedora.. (d-zg2-023.globalnet.hr. [213.149.37.23])
+        by smtp.googlemail.com with ESMTPSA id 4fb4d7f45d1cf-5d806fedaebsm26159761a12.57.2025.01.08.05.10.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 08 Jan 2025 05:10:49 -0800 (PST)
+From: Robert Marko <robert.marko@sartura.hr>
+To: catalin.marinas@arm.com,
+	will@kernel.org,
+	lee@kernel.org,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	arnd@kernel.org,
+	lars.povlsen@microchip.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: luka.perkov@sartura.hr,
+	daniel.machon@microchip.com,
+	Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH v3 1/3] arm64: lan969x: Add support for Microchip LAN969x SoC
+Date: Wed,  8 Jan 2025 14:09:26 +0100
+Message-ID: <20250108131045.40642-1-robert.marko@sartura.hr>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAH2-hcJVhxubEsRciMSrp2x4WyDrmmYNe0Db9-LzXkiRpBQ0iQ@mail.gmail.com>
 
-On Tue, Jan 07, 2025 at 07:07:42PM +0100, Tomáš Mudruňka wrote:
-> i am implementing niche rs485-based serial protocol as a tty line
-> discipline linux module. Requirement is to hit transmission window
-> with precision in low hundreds of microseconds (eg. +-200 uS).
-> Transmit window starts 500 uS after message is received.
-> 
-> It seems that hardware driver calls tty_receive_buf2() with sufficient
-> latency, so my idea was to start hrtimer using hrtimer_start() inside
-> of tty_receive_buf2(). And then in hrtimer handler call
-> for(...){tty_put_char(tty,...)} or tty->ops->write(), but it seems not
-> to be a good practice according to my online research. They say it's
-> recommended to call tty_put_char() from workqueue, but documentation
-> also says that calling a workqueue might introduce latency of couple
-> milliseconds, since it's scheduled thread context.
+This adds support for the Microchip LAN969x ARMv8-based SoC switch family.
 
-It's going to depend on the hardware driver, but note that the 8250
-driver calls tty_receive_buf2() from a workqueue.  So you have one
-scheduler thread context hop already.
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+---
+Changes in v3:
+* Rebase on top of next-20250107
 
-One of the issues here is that serial port hardware is... interesting,
-and the original design goal of the serial and tty layers included
-supporting hardware with no FIFO's, so when receiving at 11,520
-characters per second, there would be an interrupt every 8 uS.  The
-goal was to make sure that we didn't lose any characters when running
-at that rate, as well as being able to support multiple 115k baud
-serial ports running at full speed on relatively 40 MHz 386
-processors.  So the whole system is designed to optimize for
-throughput at low oeverhead, and not latency.
+Changes in v2:
+* Add forgotten LAN969x architecture support itself
 
-If you only care about making it work on your specific serial port
-hardware, you might be able to make things work, but some serial ports
-have been known to drop transmit interrupts, so there are timeout
-mechanisms which will wait for a little bit more time than needed to
-empty the FIFO, and if we don't get an transmit interrupt and there
-are characters waiting to be transmitted, we'll check to see if the
-UART is ready to receive more characters and send the characters as a
-backup mechanism if the transmit interrupt gets lost --- which some
-hardware would be prone to do.  There is a lot of dodgy serial port
-hardware out there.
+ arch/arm64/Kconfig.platforms | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-So it's not just that Linux isn't a realtime OS.  It's that tty layer
-wasn't architected for your use case.  Ultimately, if you want the
-best latency, you might need to replace the driver which one that
-polls and burns a full CPU instead of depending on interrupts, and
-then bypass the tty layer altogether.  That would make your solution
-specific to a particular hardware back-end, but full generality isn't
-possible in any case, not if you are trying to hit tight latency
-guarantees.
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index e2638e5118a7..cd29480be792 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -133,6 +133,20 @@ config ARCH_SPARX5
+ 	  security through TCAM-based frame processing using versatile
+ 	  content aware processor (VCAP).
+ 
++config ARCH_LAN969X
++	bool "Microchip LAN969X SoC family"
++	select PINCTRL
++	select DW_APB_TIMER_OF
++	help
++	  This enables support for the Microchip LAN969X ARMv8-based
++	  SoC family of TSN-capable gigabit switches.
++
++	  The LAN969X Ethernet switch family provides a rich set of
++	  switching features such as advanced TCAM-based VLAN and QoS
++	  processing enabling delivery of differentiated services, and
++	  security through TCAM-based frame processing using versatile
++	  content aware processor (VCAP).
++
+ config ARCH_K3
+ 	bool "Texas Instruments Inc. K3 multicore SoC architecture"
+ 	select PM_GENERIC_DOMAINS if PM
+-- 
+2.47.1
 
-For example, there is one serial port hardware which would support up
-to 128 serial ports, and doesn't use interrupts at all, but instead
-has deep hardware buffers, and the driver runs interly off of timer
-callbacks.  That's one case where the *hardware* has been optimized
-for throughput and low CPU overhead for a very large number of active
-serial ports (think: modem banks), and for which latency is terrible,
-but that was explicitly designed by the hardware manufacturer for that
-use case and a very different set of design constraints than what you
-are trying to achieve.  So if you tried to run your rs485 protocol on
-that hardware, it would very likely be hopeless.
-
-Cheers,
-
-					- Ted
