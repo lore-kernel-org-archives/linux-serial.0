@@ -1,63 +1,63 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29D93219A76;
-	Thu,  9 Jan 2025 15:58:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6712206B7;
+	Thu,  9 Jan 2025 16:11:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736438302; cv=none; b=h02JFjCofQ62C4he+3KfDmMukzQYVulF+MHyJHGfQOTkFBYyXjm1G1W2k7GfzzLWo+nADnKj+2RK9jih+0Qi6BQFB92FmynTAv+FfG/JKa4LNg6nXjzQlgH6r1C7rS8yd9C+P68lx4bCmlm3NbTUz8AGN79K5OzZpTBDXjY6qjE=
+	t=1736439093; cv=none; b=rEX9JJrY2qLeDfG/IJHJHKqNwRjhqovJLiRHNF+rtxnA6D4QNbqB3qZJmTmpZDCt5qkTPRfW6Es+POsLoIe3m0fX5BCei6Hd8r1QoqrrUOm85buzMUlwqTj0iiafpWbRfQ7K9u7+rYRJbu7PpNVAsj3e2e6+xA8hZWd//R9TlSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736438302; c=relaxed/simple;
-	bh=u0Q3qMre0aMHaDk85LcQYX7xMhhq2kI0NBFqwqx45t8=;
+	s=arc-20240116; t=1736439093; c=relaxed/simple;
+	bh=Emqtas35W+tRsMR+yz4iHAA5AcQzA9KyA6DL+J/Iba0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G7dyyQvTVXGOf1nytlNbi6eY1t80VrAC/dcLUDwqyFoWtrsz1FsFCNBOfC2nC9oMTwcB9hjR1vdWIFZE58mNvNH1zqhc3lbbUavfcnI+PImfNNrIaC2aXASq7Tt2MXuQ5xRk72ErFBYuCc/1CB10cGSQCVwGGISKjUoqiKuogzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OoaPzjmd; arc=none smtp.client-ip=192.198.163.7
+	 Content-Type:Content-Disposition:In-Reply-To; b=dhCkE8pyiGvzeCVDiuFEcu7Nr7/XFQIFCJeDgMApEP4KjPhKMvZak/KqkK4Vbt7bzsONwDKlS0MVFXWhjgv+gYh+MfzJ0o6lKtCV+8ek0Imfx5Y63sejfjd8TBrX7bg1d+wSLR++JOU5czM27QnJgJtqL4hDwEoUVsZR6nsnHNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P57MYNCT; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OoaPzjmd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P57MYNCT"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736438301; x=1767974301;
+  t=1736439092; x=1767975092;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=u0Q3qMre0aMHaDk85LcQYX7xMhhq2kI0NBFqwqx45t8=;
-  b=OoaPzjmd2XD30JycM1srpN4H6ZtND3txLCSWo/qs/utDZ7gmko+TVR1M
-   B6okt3ty3FzjufytWsAZ4qMPTypYK55l1fjEZZe0eooVwCsY1Iwt5pHsZ
-   lLoNTbjNFHxEM7vgN7m/ikjW7uQ6ojaQleNi9I8H0Ei0KFSWgvwrwKZdk
-   n9ARVFH6tv+I5kwjne0Ge3+ROJcRSSJMnkWa1tIFfDIagIx2IUouVC+Dg
-   SyO9wQ+5t4LqQopEyA4twpSA9SxfJBxIbmX4BlKYYSnmmfKpU8PES1wdm
-   1FLiYR6mniAsJB71gyk4KozVrnfsHvFZ9r2aRyeb4t6yi39763ABGxJlm
-   A==;
-X-CSE-ConnectionGUID: feHcTCJITmC6HLU7O0IjZg==
-X-CSE-MsgGUID: EJkqkTyQRqqYYU0NfFjgQA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11310"; a="62084563"
+  bh=Emqtas35W+tRsMR+yz4iHAA5AcQzA9KyA6DL+J/Iba0=;
+  b=P57MYNCT0nJ/zTTiukr5+JMnSzp4yrjFDY/b2maum3RzCtjrHHQBTpnQ
+   C3nn26s+3yxDxXfsLMUq1LzCuiaKc4BgapHx1peKrpghem+yplRcnH0NX
+   j110dFJhfB/YGcaU0J3CIMYP/zhAjfIAvsbVAe1HQIB3Xwz7Pp8IRMHKr
+   YxAqvD2KB310aIjOp7cnQnrRN6nmCRvh7qw4Oz1OCz6To/MLzUEQx0H/r
+   Dkghqq6g26SBFXO+hdNHJhX83hlYQrukhGw0840REU9ffVUtN1Br/NONc
+   jNEdwf247h2nSDuDh6KxOKINEDjCA5hogwQim3swrS0kheb2/CvMcg6Ke
+   w==;
+X-CSE-ConnectionGUID: 7zwf9t+nShSk8OQ3a+JaJA==
+X-CSE-MsgGUID: SQ1quZ4USKmNUeZURnO8Jw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11310"; a="47286540"
 X-IronPort-AV: E=Sophos;i="6.12,301,1728975600"; 
-   d="scan'208";a="62084563"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2025 07:58:20 -0800
-X-CSE-ConnectionGUID: ejKYjoAETXOFREmHOzu4cw==
-X-CSE-MsgGUID: ITW0uxELTgG7RqmwdaaPGw==
+   d="scan'208";a="47286540"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2025 08:11:29 -0800
+X-CSE-ConnectionGUID: t7AQ2IhHQ4ifJgb5sRam5A==
+X-CSE-MsgGUID: 40E7aMoRT8+QB5GezzapYg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.12,301,1728975600"; 
-   d="scan'208";a="103414324"
+   d="scan'208";a="103257370"
 Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 09 Jan 2025 07:58:18 -0800
+  by orviesa009.jf.intel.com with ESMTP; 09 Jan 2025 08:11:27 -0800
 Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1tVuvI-000HmZ-24;
-	Thu, 09 Jan 2025 15:58:16 +0000
-Date: Thu, 9 Jan 2025 23:57:29 +0800
+	id 1tVv80-000Hnf-00;
+	Thu, 09 Jan 2025 16:11:24 +0000
+Date: Fri, 10 Jan 2025 00:10:25 +0800
 From: kernel test robot <lkp@intel.com>
 To: Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>,
 	Russell King <linux@armlinux.org.uk>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	fj6611ie@aa.jp.fujitsu.com
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, fj6611ie@aa.jp.fujitsu.com
 Subject: Re: [PATCH] serial: amba-pl011: Implement nbcon console
-Message-ID: <202501092346.Q71aj5kq-lkp@intel.com>
+Message-ID: <202501092316.bZPuAcFC-lkp@intel.com>
 References: <20250108004730.2302996-1-fj6611ie@aa.jp.fujitsu.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -84,21 +84,41 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Toshiyuki-Sato/serial-amb
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
 patch link:    https://lore.kernel.org/r/20250108004730.2302996-1-fj6611ie%40aa.jp.fujitsu.com
 patch subject: [PATCH] serial: amba-pl011: Implement nbcon console
-config: arm64-randconfig-003-20250109 (https://download.01.org/0day-ci/archive/20250109/202501092346.Q71aj5kq-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250109/202501092346.Q71aj5kq-lkp@intel.com/reproduce)
+config: arm64-randconfig-002-20250109 (https://download.01.org/0day-ci/archive/20250109/202501092316.bZPuAcFC-lkp@intel.com/config)
+compiler: clang version 20.0.0git (https://github.com/llvm/llvm-project f5cd181ffbb7cb61d582fe130d46580d5969d47a)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250109/202501092316.bZPuAcFC-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202501092346.Q71aj5kq-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202501092316.bZPuAcFC-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   drivers/tty/serial/amba-pl011.c: In function 'pl011_register_port':
->> drivers/tty/serial/amba-pl011.c:2851:25: error: implicit declaration of function 'pl011_console_switch_to_nbcon' [-Wimplicit-function-declaration]
+   In file included from drivers/tty/serial/amba-pl011.c:30:
+   In file included from include/linux/amba/bus.h:19:
+   In file included from include/linux/regulator/consumer.h:35:
+   In file included from include/linux/suspend.h:5:
+   In file included from include/linux/swap.h:9:
+   In file included from include/linux/memcontrol.h:21:
+   In file included from include/linux/mm.h:2223:
+   include/linux/vmstat.h:504:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
+     504 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
+         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
+     505 |                            item];
+         |                            ~~~~
+   include/linux/vmstat.h:511:43: warning: arithmetic between different enumeration types ('enum zone_stat_item' and 'enum numa_stat_item') [-Wenum-enum-conversion]
+     511 |         return vmstat_text[NR_VM_ZONE_STAT_ITEMS +
+         |                            ~~~~~~~~~~~~~~~~~~~~~ ^
+     512 |                            NR_VM_NUMA_EVENT_ITEMS +
+         |                            ~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/vmstat.h:518:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
+     518 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
+         |                               ~~~~~~~~~~~ ^ ~~~
+>> drivers/tty/serial/amba-pl011.c:2851:4: error: call to undeclared function 'pl011_console_switch_to_nbcon'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
     2851 |                         pl011_console_switch_to_nbcon(amba_reg.cons);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                         ^
+   3 warnings and 1 error generated.
 
 
 vim +/pl011_console_switch_to_nbcon +2851 drivers/tty/serial/amba-pl011.c
