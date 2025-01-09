@@ -1,62 +1,61 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBDBB21D5B0
-	for <linux-serial@vger.kernel.org>; Thu,  9 Jan 2025 16:13:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C41762206A4
+	for <linux-serial@vger.kernel.org>; Thu,  9 Jan 2025 16:13:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736439198; cv=none; b=EpJEuXiG6VynzQmwPyR/XsnHTr2aSoCLYkdSttoyHRxpKi3LncmjySdV7jmRk70vhoSyTMASj2hIsaivFYgqOHIZq0qEBBiX7SmIkCZbDOHjXHueKlKl4KkQyCSg8zaihStmIsZ8BNA/3ynCy8XWMc6BPP6TCPqvbHaX9KmEPrA=
+	t=1736439222; cv=none; b=pwdw60Wu4EMAYG/9VkkV3WvKKOTS38EvGR/UYi9RuN11IApRMa0s7mxPlMLMuJkcP3ga9mIsq/m2cusV1yKfNQHSxfaXzxQcHSss6T+JQ8abWa59cpOrNyYpx+QL8UDO7Md8TbMoqBHxV7v55A+3diGWuQt+DNhdb4vk9rpbMI8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736439198; c=relaxed/simple;
-	bh=hrHoS4vPlPfy16tkj356Uv+3+REsoEqobKAqrk9g0ls=;
+	s=arc-20240116; t=1736439222; c=relaxed/simple;
+	bh=u4gwTeyQ9T0CHmAvGkXl34cVq+1PeCUxNwHkPFcZSDA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ESaGbtUhN87UyNUkt6Z6JcN/rgi+hJhAlC7QyE65QaolsfHk2QFqCkptVfbmpGTeN+SB28AI5yv500rLSlKcD7uiDUCY2vqbm2ddVyMzFQCX4U31BmlSMBx7v9bfAU/CsZ9zFpHfCSO74FzBJoRR384Se9DbYzfkQwSoUlxIAQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QY7h4boy; arc=none smtp.client-ip=209.85.221.47
+	 Content-Type:Content-Disposition:In-Reply-To; b=TDPTZ9g/z0Qz9u6Ul9G8hG93YqZO0PHRV174fgiwizba/YjwOpeft/SgQCubrNMAO3UBhxxQ8L7wDJebNA2OjPA726bNfO6TyAqIxtiabPnpLJBcEeJnKRuWlNgPu/W5b21q8gTJWKqjWfD/9DJUFWrIGwq9LsVthti+YYGtbCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Dh0TTomN; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QY7h4boy"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-385e1fcb0e1so629658f8f.2
-        for <linux-serial@vger.kernel.org>; Thu, 09 Jan 2025 08:13:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Dh0TTomN"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-43621d27adeso8737625e9.2
+        for <linux-serial@vger.kernel.org>; Thu, 09 Jan 2025 08:13:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1736439193; x=1737043993; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1736439217; x=1737044017; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=kai5ZgxDf+EShyzs7bDwWO83K4Oce/nwpcJg76eHGM4=;
-        b=QY7h4boyJd/WdMU9zEM4zRsf+0I4wrNFPJ4g6z57OwQAXQ/APKVwPZ3O21hCL76asa
-         OKaEu6tslHqcnlVAjwIZVtgsjaCq0jaeahT4hmEWjORLjGOsTVH3ZZ5me0wTLKb3vrVm
-         orD5tsDQ/PKQ+aSdPz6CfL2Cr9wFrQEDfqK3ZebbWjnuBbcioJRPgYh54O6JXPjCF++8
-         hgMlGMiQPkeL9fAiPNzEYmTjwTNA5t1Ob6tEldZroGAuy1Kt/RCkZIiHtqNriC8SgH8s
-         ExHAHV7f5BN94rmPLmRSO+QZuE9whJ4T4i371VjmmP8wDss+WBrtjZw7m2bMun+V2ZHg
-         w1Sg==
+        bh=BcqQ7tD9vjXmsyMr1SyV31CA5HZOiqbPmLrITTQfbxM=;
+        b=Dh0TTomN1BxI7Faa4DpeFNKt1S9XJQhPEPwH9Z9TQFcPO0K3Wv5Ff9asCxfXHpuoWL
+         sLbXsKjqN0u+nqwaTbzFMM/dTpIFQy6ejYMwsgl9wQRiuDE0LkdILFRnydFr4tD4yYRL
+         /PC89DnzYMuaLC+5Frrj9GnKjEKsLfoFrHbEtp6AaCFxo42OWDk7LAH1vRiHm+dBDs6Q
+         ajgTocCVIwj2pT2IA6sJib2nmghoPAhYMuAl6KfFBgFDk6lm5uz4p3jlAEniqAWVLmCZ
+         6ZgTG/4f0FfFWurS1dYYjz5o30cOhl1TvL5hB/Cf47L09W4oWBLIhkKGAK0pnr342XkY
+         YS9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736439193; x=1737043993;
+        d=1e100.net; s=20230601; t=1736439217; x=1737044017;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kai5ZgxDf+EShyzs7bDwWO83K4Oce/nwpcJg76eHGM4=;
-        b=swTR8nbhIuP+ncE/yOLn1qIpuwsB+/VbHws4HQwuZ6Lbi2+YflUFkDVThmJYlbDa5D
-         /FkpnS5DpajZxoJKYL4YtdTlKh0WRN+eZPo9833RM3/J6QDz3Cn3W2Hxr4MHC88Lk/fJ
-         RBADXRp97AwAQyOxCwYocOUXertE4bmaS2XqMpNt8+MJf45+4ue5PiPc9ZYxYFHGV/AT
-         PUF9KM5sju6dyFLo/ZB8wXV2J8m4DPohfcBGDVzND0fEkLnY03DA9qaTrOJRJQ7RzE3U
-         POqtnQHA8odw3fIUdFGLbAtZcO2ljsInL1y9EtAoNRpOMBUGShinOLYP8FIS0PiPnJjz
-         JoEA==
-X-Forwarded-Encrypted: i=1; AJvYcCUSLUBxwU076xRqTHZt/A3v70ypGqSrhyuT9F1yCeuJ3wlIJ3sRYYEDrX2FWODm5MEFuaKbOTr+E+zQo9Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxgYzF+GHed9eeKxTlBLqQqW2HXJl9tIECw78aMGJ274z5uSu/p
-	4tdkaQ8Ux8Pbi3e+bPlEWp73X/Zot6xAgyLVzInAYcW8OemtFPm8JuF2+h5OM4ha3sCrDy4YkKF
-	c
-X-Gm-Gg: ASbGnculsj51Wuzpak23b0gFE9SlbxRtv6UcnQ18AkFtOU+NjnCyNFziIw99BzxBZhL
-	UHvmMr2vMUodeV37aTwFsv5FY0dQoBd6mb22GTaSAC7pu091Z7SnPi+5jf8v7L/zcLFthVbaJtw
-	BP6Ivcnn/28uwp2mpd+3ZU+InNMcXBiIpj/YKBo/YFw5iint5kovCATGCIGP0uODFAMj7gIgdSe
-	+JIHvPVGBOxNOGxA/QnUkFBtjLkuU4AjIFywj3+fD3bVQL3eKckYS+mfA==
-X-Google-Smtp-Source: AGHT+IEKi5W9KtWRj/RV+N8EK/6UrsGmYGe36NimQHrosYmeKEq1AxHaQOTx8OfeKcJcyKsFoedR1g==
-X-Received: by 2002:a05:6000:1847:b0:385:f060:b7fc with SMTP id ffacd0b85a97d-38a8730a60cmr6395814f8f.25.1736439193253;
-        Thu, 09 Jan 2025 08:13:13 -0800 (PST)
+        bh=BcqQ7tD9vjXmsyMr1SyV31CA5HZOiqbPmLrITTQfbxM=;
+        b=tvmDtO7zSHmjm77VZlUBXyl0NLrCinhoKcM9A9OiU2vbDy27hs3N9JH5JyACLQG5ty
+         EPTz9ZIHP5aU4k4mv05YkHBgXi+WKfnG6nWQmMaLZqVWL4u60Sbhg6ePZKi9RCCFnJ9k
+         SauO3mJlArzOZbheig3XI79iIlbhfCTUK82us7jRAh/ZlV4X4DftcT8+6z3yxFbTwUwl
+         q20xqRgB6sIULF3sU0aRuWyj0qEW8642KEKdQrmhccib/BaO+0jlKI6tBbk/uI8mQcT/
+         WBN1q02IISqOa7uoDf0Jen6n5gT96lCOtE5Jd/gcGgf6OqoboTaiY9pcPrU94xoEjqpv
+         Azow==
+X-Forwarded-Encrypted: i=1; AJvYcCVUFlIGHE4TFOMgZJZdS9H7eWK3Hq0q/RL2FcvY9gYP+lI6Gf34iDQoMiXEp9gu1SEVqIi4OJx5SlGSmGU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxBb/16VZoYmizvZWxXH+lp+BLzv1hDMagZxkw2m54NX7wcZ+Lw
+	CWg7w0IrIaUyv58MzDm8fMLEALI02L0hqzjXede61XbTEz3KFE/Y+gG78sRTZ5o=
+X-Gm-Gg: ASbGncvgx/opTIAgnSBO7oaaCeKiJ0SG17WZ9rTSHKX/o5aoJum2wp7g+MtKaJrrmB8
+	5G8AVZi+t82TZMhOCnzoZjNH7y6s8MsFAyZwgvhVN3ruRdTXT9rhY/9cFXCr8spogyfYwS1TASy
+	YSZOm0ikZEPHWvIhCLhn/Je8mDuLnwMc0X+ZLxYw10JqotdgkVbqjrmX+1/dyXaCltemD+1IGGP
+	6wl/GuBowIemnFDPpUG/nqV1YVXkJGt8Bb/LRWtA/ffpozyO3YY8LxbeQ==
+X-Google-Smtp-Source: AGHT+IEnVVveqlLA6iTuso7Xs72qhA6/eK/AWC+a46yTv3usIVfs9NopQaVFj+0xAEEoLlwItYqfww==
+X-Received: by 2002:a05:600c:5115:b0:434:feb1:adae with SMTP id 5b1f17b1804b1-436e266e823mr63705305e9.3.1736439217099;
+        Thu, 09 Jan 2025 08:13:37 -0800 (PST)
 Received: from pathway.suse.cz ([176.114.240.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e2e89fc3sm60501045e9.30.2025.01.09.08.13.11
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e2e8a326sm60294735e9.35.2025.01.09.08.13.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Jan 2025 08:13:12 -0800 (PST)
-Date: Thu, 9 Jan 2025 17:13:10 +0100
+        Thu, 09 Jan 2025 08:13:36 -0800 (PST)
+Date: Thu, 9 Jan 2025 17:13:34 +0100
 From: Petr Mladek <pmladek@suse.com>
 To: John Ogness <john.ogness@linutronix.de>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -67,13 +66,14 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>,
+	Arnd Bergmann <arnd@arndb.de>,
 	Niklas Schnelle <schnelle@linux.ibm.com>,
 	Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH tty-next v5 5/6] serial: 8250: Switch to nbcon console
-Message-ID: <Z3_1fZQ3BG4aggHx@pathway.suse.cz>
+Subject: Re: [PATCH tty-next v5 6/6] serial: 8250: Revert "drop lockdep
+ annotation from serial8250_clear_IER()"
+Message-ID: <Z3_1rr_lyaRB67dj@pathway.suse.cz>
 References: <20250107212702.169493-1-john.ogness@linutronix.de>
- <20250107212702.169493-6-john.ogness@linutronix.de>
+ <20250107212702.169493-7-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -82,40 +82,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250107212702.169493-6-john.ogness@linutronix.de>
+In-Reply-To: <20250107212702.169493-7-john.ogness@linutronix.de>
 
-On Tue 2025-01-07 22:33:01, John Ogness wrote:
-> Implement the necessary callbacks to switch the 8250 console driver
-> to perform as an nbcon console.
+On Tue 2025-01-07 22:33:02, John Ogness wrote:
+> The 8250 driver no longer depends on @oops_in_progress and
+> will no longer violate the port->lock locking constraints.
 > 
-> Add implementations for the nbcon console callbacks:
-> 
->   ->write_atomic()
->   ->write_thread()
->   ->device_lock()
->   ->device_unlock()
-> 
-> and add CON_NBCON to the initial @flags.
-> 
-> All register access in the callbacks are within unsafe sections.
-> The ->write_atomic() and ->write_thread() callbacks allow safe
-> handover/takeover per byte and add a preceding newline if they
-> take over from another context mid-line.
-> 
-> For the ->write_atomic() callback, a new irq_work is used to defer
-> modem control since it may be called from a context that does not
-> allow waking up tasks.
-> 
-> Note: A new __serial8250_clear_IER() is introduced for direct
-> clearing of UART_IER. This will allow to restore the lockdep
-> check to serial8250_clear_IER() in a follow-up commit.
+> This reverts commit 3d9e6f556e235ddcdc9f73600fdd46fe1736b090.
 > 
 > Signed-off-by: John Ogness <john.ogness@linutronix.de>
 
-It looks good and seems to work fine:
-
 Reviewed-by: Petr Mladek <pmladek@suse.com>
-Tested-by: Petr Mladek <pmladek@suse.com>
 
 Best Regards,
 Petr
