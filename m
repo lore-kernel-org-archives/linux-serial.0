@@ -1,170 +1,114 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mail.systec-electronic.com (mail.systec-electronic.com [77.220.239.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F11B92066D4;
-	Fri, 10 Jan 2025 06:56:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 082D614A08E;
+	Fri, 10 Jan 2025 07:31:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.220.239.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736492194; cv=none; b=P+EyskO+7odLPrfOf7cdGBUbCXmYlmwctnEpZKsUKTtQKtBxKO0zyPRmZO+f79tk0zg8FjsndjnpGBql8/iT0G2L3sxVquChrFaB0wroSXOU+VWZx1Y3VOY+MX8Mr5r+J0LFgHPV4IK5Jxr7MNLA4po/tqw9kHe8PBmVAB+umbs=
+	t=1736494280; cv=none; b=iJwcbjHKyMe/FDMFiOkOEME3nEoN9gztrJy4X7kaSUMjzDvNSwXs0N2Nm0H/25w31DTO0q4j7IkihDdUIhBabcUAr1m8rb5DBtcSBpkozjcaNySb/m2bvfjcmY6f3ratN4IyRxvaoMB1wnk25SseTqy6H0dQyBhQ8s+WfNkyhMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736492194; c=relaxed/simple;
-	bh=y1iLq6uFyAoWsUCQXZ1Fh3RHmgz/QPhSg+d0SKTY0m4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=QW4TqTm3DdFfdmF90aKGl6e81yLkNUa6VZQq1Rs/unmtlmTMyO3s9d58OMnD7+T/xaW8ZlHm9BAfh0fassU0Cm/KXRO+Jr+2cqD0iaHFCEzF3QAG+ntvXDQnhXJjYc09zvIeh5iwR3KYqopBnBXEgIUGhJYIYlffMJgX+cP2+Mw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=liutDd3P; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1736494280; c=relaxed/simple;
+	bh=GsWrk8VUb7xb8OCGs+0lJMhAJb9Cc+HpiQgwngrP7/c=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IT3WAoylN5tXtXfPuAkXh2RYp6SzS+S11MQaFLDTnTik1uc0n9tDuM9MdUonlAZHwYvM380THT39oB9obIt/V8Q7DnesO62k9wzspZxgPgFcJ+RYUZbTgxJAUhv8i0YllwTPJf8bSDdHaNeYiUoNV3Ma9gMRgRDS0KJxy/Ul9is=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=systec-electronic.com; spf=pass smtp.mailfrom=systec-electronic.com; dkim=pass (2048-bit key) header.d=systec-electronic.com header.i=@systec-electronic.com header.b=DQ4HKGuw; arc=none smtp.client-ip=77.220.239.22
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=systec-electronic.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=systec-electronic.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="liutDd3P"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50A3vbKO016268;
-	Fri, 10 Jan 2025 06:56:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	uqyHJVcLV0oHsBGN4ljVWxNiqdKoRDx6AXgDASkumaA=; b=liutDd3PzyLFpjRf
-	cYSBXwWvsix0ieyDaXRX0e6+2o+Q9ld7wcdj1DMLjvQLumo72i6d2b3ZvbxOfQI4
-	sn29HOF+zNCYXblZo44eCkTrqZ7tc+dOH/Ldv3ArchSXx1PFNuW/kvkFuCAqjNIi
-	AEvI5KDT6tRdpuy2Bbcy0Bio9R5NgTkPky02HS8DmiCyPmvk+S7IKaVtpO2tAtAi
-	RrbDEKXDJDjduQIv3ZOFQDXNvM6Gl81PR7mhxUrcKccWTp5EEXaQ9X3fIYPequ8u
-	dgmtbIXn9GdHozI69KqFyLP9yIsVx0TGEVg0ocxwnpLLBW7FXDjlEl5g7I4BvaJz
-	SVFFZQ==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 442v3rgbrm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Jan 2025 06:56:28 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 50A6uR9v019457
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 10 Jan 2025 06:56:27 GMT
-Received: from [10.216.39.150] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 9 Jan 2025
- 22:56:19 -0800
-Message-ID: <17138798-b72b-4e78-8fad-419e1a63fa5b@quicinc.com>
-Date: Fri, 10 Jan 2025 12:26:16 +0530
+	dkim=pass (2048-bit key) header.d=systec-electronic.com header.i=@systec-electronic.com header.b="DQ4HKGuw"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.systec-electronic.com (Postfix) with ESMTP id 319FA9400101;
+	Fri, 10 Jan 2025 08:31:14 +0100 (CET)
+Received: from mail.systec-electronic.com ([127.0.0.1])
+ by localhost (mail.systec-electronic.com [127.0.0.1]) (amavis, port 10032)
+ with ESMTP id YSxNbskgZ0PF; Fri, 10 Jan 2025 08:31:14 +0100 (CET)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.systec-electronic.com (Postfix) with ESMTP id 074F69400109;
+	Fri, 10 Jan 2025 08:31:14 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.systec-electronic.com 074F69400109
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=systec-electronic.com; s=B34D3B04-5DC7-11EE-83E3-4D8CAB78E8CD;
+	t=1736494274; bh=ornAsy/udXoisEAbv8buqv69PlNcgPEEYnmrCIK0TzM=;
+	h=From:To:Date:Message-ID:MIME-Version;
+	b=DQ4HKGuwRwFPdpV4/EK4eM8YoUWyJlhz8b45Sccid4ny5PujHmMfRm454fpP2sPhx
+	 fx0QNHec73p7ZeCv1DuHe6QmpAgbTzngtnmPfGhuWt+GBc4+wunRcd5LCARExQmSYK
+	 UZ82f+ophhWWUiBLC9prZeZtcLPRa8WbnjoBWl/H5Og2Ihw3D3/bS+9s2vq0v4DWBe
+	 7hILRgL5lNCWZwp022o4BjsE3LlhmGEWJXfMGb2wpmNuCU9vBsG14NVMF5qE3KxKvH
+	 wVRoih8Tp523x6E4GLh6YC7uA0l0bIL3HWbgZCz1ZRLLZZTe5Xs3ruA7MhS21Xww8g
+	 U1+mPZzB8JL9Q==
+X-Virus-Scanned: amavis at systec-electronic.com
+Received: from mail.systec-electronic.com ([127.0.0.1])
+ by localhost (mail.systec-electronic.com [127.0.0.1]) (amavis, port 10026)
+ with ESMTP id gSapMPUMXxyo; Fri, 10 Jan 2025 08:31:13 +0100 (CET)
+Received: from ws565760.. (unknown [212.185.67.148])
+	by mail.systec-electronic.com (Postfix) with ESMTPSA id 685E99400101;
+	Fri, 10 Jan 2025 08:31:13 +0100 (CET)
+From: Andre Werner <andre.werner@systec-electronic.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	hvilleneuve@dimonoff.com,
+	andy@kernel.org,
+	devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	lech.perczak@camlingroup.com,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	robh@kernel.org,
+	Andre Werner <andre.werner@systec-electronic.com>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v5 1/2] dt-bindings: serial: sc16is7xx: Add description for polling mode
+Date: Fri, 10 Jan 2025 08:31:03 +0100
+Message-ID: <20250110073104.1029633-1-andre.werner@systec-electronic.com>
+X-Mailer: git-send-email 2.47.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 0/7] Add support to load QUP SE firmware from
-To: Caleb Connolly <caleb.connolly@linaro.org>,
-        Viken Dadhaniya
-	<quic_vdadhani@quicinc.com>, <andi.shyti@kernel.org>,
-        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <broonie@kernel.or>, <andersson@kernel.org>, <konradybcio@kernel.org>,
-        <johan+linaro@kernel.org>, <dianders@chromium.org>,
-        <agross@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>
-CC: <=quic_msavaliy@quicinc.com>, <quic_anupkulk@quicinc.com>
-References: <20241204150326.1470749-1-quic_vdadhani@quicinc.com>
- <66fb0c6d-472c-4131-bd25-83266cf497e4@linaro.org>
-Content-Language: en-US
-From: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-In-Reply-To: <66fb0c6d-472c-4131-bd25-83266cf497e4@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: PhOnlJmPZlTu82dC93IHwQ_4FUIrtZ-W
-X-Proofpoint-ORIG-GUID: PhOnlJmPZlTu82dC93IHwQ_4FUIrtZ-W
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1039,Hydra:6.0.680,FMLib:17.12.60.29
- definitions=2024-09-06_09,2024-09-06_01,2024-09-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
- clxscore=1011 mlxscore=0 bulkscore=0 malwarescore=0 lowpriorityscore=0
- adultscore=0 suspectscore=0 phishscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2501100055
+Content-Transfer-Encoding: quoted-printable
 
-Thanks Caleb for your testing and sharing results. Since Viken is on 
-leave, i am following on this.
+Polling mode is enabled if the "interrupts" property is missing.
+Thus, this commit deletes "interrupts" entry from "required" section
+and adds a description for the fallback to polling mode at the
+"interrupts" entry.
 
-On 1/7/2025 4:55 PM, Caleb Connolly wrote:
-> Hi Viken,
-> 
-> On 04/12/2024 16:03, Viken Dadhaniya wrote:
->> In Qualcomm SoCs, firmware loading for Serial Engines (SE) in the QUP
->> hardware has traditionally been managed by TrustZone (TZ). This setup
->> handled Serial Engines(SE) assignments and access control permissions,
->> ensuring a high level of security but limiting flexibility and
->> accessibility.
->>   
->> This limitation poses a significant challenge for developers who need more
->> flexibility to enable any protocol on any of the SEs within the QUP
->> hardware.
->>   
->> To address this, we are introducing a change that opens the firmware
->> loading mechanism to the Linux environment. This enhancement increases
->> flexibility and allows for more streamlined and efficient management. We
->> can now handle SE assignments and access control permissions directly
->> within Linux, eliminating the dependency on TZ.
->>   
->> We propose an alternative method for firmware loading and SE
->> ownership/transfer mode configuration based on device tree configuration.
->> This method does not rely on other execution environments, making it
->> accessible to all developers.
->>   
->> For SEs used prior to the kernel, their firmware will be loaded by the
->> respective image drivers (e.g., Debug UART, Secure or trusted SE).
->> Additionally, the GSI firmware, which is common to all SEs per QUPV3 core,
->> will not be loaded by Linux driver but TZ only. At the kernel level, only
->> the SE protocol driver should load the respective protocol firmware.
-> 
-> I gave this series a spin on the RB3 Gen 2 with U-Boot.
-> 
-Is it possible to try on RB8 board ? Because that's where this support 
-is enabled. It also needs respective TZ configuration to allow FW 
-loading from Linux.
+Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+V3:
+- No changes on source.
+- Add Acked-By to commit message.
+V4:
+- No changes
+V5:
+- No changes
+---
+ Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-
-> After fixing the compilation errors, it seems like there is a consistent
-> hard crash (the board freezes and resets) at some point during i2c
-> controller init with this series.
-> 
-Can you please share exact repro steps ? We can try locally and check 
-what's wrong and also review in future how we make it working for U-boot 
-combination.
-> I noticed a similar issue with this same logic implemented in U-Boot.
-> 
-> Could you clarify which xfer mode is appropriate for the i2c controllers
-> on the RB3 Gen 2 and maybe give this a try yourself, or let me know what
-> other info you'd need to debug this.
-> 
-Yes, please share the procedure , we will try internally.
-is there any DTSI change done as part of your testing ?
-> Thanks and kind regards,
->>
->> Viken Dadhaniya (7):
->>    dt-bindings: i2c: qcom,i2c-geni: Document DT properties for QUP
->>      firmware loading
->>    spi: dt-bindings: Document DT properties for QUP firmware loading
->>    dt-bindings: serial: Document DT properties for QUP firmware loading
->>    soc: qcom: geni-se:: Add support to load QUP SE Firmware via Linux
->>      subsystem
->>    i2c: qcom-geni: Load i2c qup Firmware from linux side
->>    spi: geni-qcom: Load spi qup Firmware from linux side
->>    serial: qcom-geni: Load UART qup Firmware from linux side
->>
->>   .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |  11 +
->>   .../serial/qcom,serial-geni-qcom.yaml         |  12 +
->>   .../bindings/spi/qcom,spi-geni-qcom.yaml      |  11 +
->>   drivers/i2c/busses/i2c-qcom-geni.c            |  11 +-
->>   drivers/soc/qcom/qcom-geni-se.c               | 445 ++++++++++++++++++
->>   drivers/spi/spi-geni-qcom.c                   |   7 +-
->>   drivers/tty/serial/qcom_geni_serial.c         |   7 +-
->>   include/linux/soc/qcom/geni-se.h              |  17 +
->>   include/linux/soc/qcom/qup-fw-load.h          | 179 +++++++
->>   9 files changed, 692 insertions(+), 8 deletions(-)
->>   create mode 100644 include/linux/soc/qcom/qup-fw-load.h
->>
-> 
+diff --git a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml =
+b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+index 88871480018e..ab39b95dae40 100644
+--- a/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
++++ b/Documentation/devicetree/bindings/serial/nxp,sc16is7xx.yaml
+@@ -23,6 +23,8 @@ properties:
+     maxItems: 1
+=20
+   interrupts:
++    description:
++      When missing, device driver uses polling instead.
+     maxItems: 1
+=20
+   clocks:
+@@ -76,7 +78,6 @@ properties:
+ required:
+   - compatible
+   - reg
+-  - interrupts
+=20
+ allOf:
+   - $ref: /schemas/spi/spi-peripheral-props.yaml#
+--=20
+2.47.1
 
