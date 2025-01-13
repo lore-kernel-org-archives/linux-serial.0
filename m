@@ -1,121 +1,128 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from fout-a5-smtp.messagingengine.com (fout-a5-smtp.messagingengine.com [103.168.172.148])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F9502045A1;
-	Mon, 13 Jan 2025 09:59:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D91D1BE871;
+	Mon, 13 Jan 2025 10:36:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.148
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736762390; cv=none; b=UgGrKiydxePM1xyduTp3E6d9su7oDidPbwtc2zfzCGSVIObUzR8GOLNzlWH8Q9yhRxkBm85QF3G4+w5bTT84wgGUowOX9Knl5Og05tOWlHj6KHKgnniGShYP3e03AixW2lGIAg/oxKh6Jk8GxegCdMB/3BTQwNd4yYI6fyyEdUU=
+	t=1736764594; cv=none; b=QDoqQl0Y9wEPVfXJPvrmpXqdqHMBXas0tSZWOrGRXu8lkpNumOSpc8iQbYNWFl6eDuuXVBGaAlHvx8fmrPPXGRDiuzxMi/NDAV4KOjwp0QYGbE7mITLwhpObhcYXlIBUWUX+F/xX/kpuPnHNFWda9YQhl28rSNYuEQCAahK7UeU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736762390; c=relaxed/simple;
-	bh=ouxShzMm5u2j9IidKtK1k10IGg7ZY7t1ipBOjy62xYY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MKAPUWGySFH465cmyaQ6eYP7LPJEwGkYioLbh/jHHLUkQa3JumKXu0q9E4JdGEmbQEeqJeCDDnRg5woPCW6Sde3q3gbkb2CY5Am+mVdLjYhGoOTVofQQPVxwA2kFk7z6PDTql/LtkplwqeocySpXhnEdbtFdA5GQvu8zoJymOgE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ludXUZAO; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1736764594; c=relaxed/simple;
+	bh=eo8FPo9RBhcUGniqMahrR+68nV3B71BKhd6i9lB3e20=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=H8FBYycFmX60fYRljp4JLbfoyjaqlzqKVxxsmF4gBHotjfmRCh8tknHQOOn4hwtPzbfJyRW3wD+fujQ5C5T9tmNTPCHfWIaSuBZTr5Mv5f24ZXg6ajF2gb8zi2ysuFxTSmA3Oe12tYrkdUnE5qp/fXnhpaQEhMzaIRPEiloB3KQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=ma21ShSn; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=um8eX6pB; arc=none smtp.client-ip=103.168.172.148
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ludXUZAO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1736762389; x=1768298389;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=ouxShzMm5u2j9IidKtK1k10IGg7ZY7t1ipBOjy62xYY=;
-  b=ludXUZAOiQQOrlp1VHceYXMaRrK4LBGqWGwiFm1bXE07RrmSWqaW0sqo
-   GM+bhSWD5TC4PT6mdQDzwPsp1ySWauB9s8RLoWNkRbbXEG34nkNoQSF8x
-   72vH0LcYu6jZTwAA+lkwjNnIgWjgPM610zUuTt/2EK57FI6tjBn+WlU62
-   d9/ks1QLZZRWRbe/Qhgm9n5ADUQjL0XRsKEfSWMQ9VTeAY7fVojzSE3Dh
-   sa1sMCy0U7QcZaOZOLYHnZyCmW/aCF76B3J3KjWiOmMjQguz2PdNqdaUw
-   fTkq+GcqQLOzFA6rPHzzclfW5RQGFbg2ahO/Qm5DCHnCExJf7vNDh5I5h
-   A==;
-X-CSE-ConnectionGUID: jm+U/AX3SP+FXDzGXjqMpg==
-X-CSE-MsgGUID: u6Kk2YLDSVWUYhUQh0/TVw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11313"; a="47506318"
-X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
-   d="scan'208";a="47506318"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2025 01:59:49 -0800
-X-CSE-ConnectionGUID: wVVuQwqvTJ6HkTC6EtCPTA==
-X-CSE-MsgGUID: iYez5S/dT2SZ0vm+iLv5NQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="108487447"
-Received: from unknown (HELO smile.fi.intel.com) ([10.237.72.154])
-  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2025 01:59:45 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tXHEU-00000000PhB-1Izy;
-	Mon, 13 Jan 2025 11:59:42 +0200
-Date: Mon, 13 Jan 2025 11:59:42 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: WangYuli <wangyuli@uniontech.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-	Niklas Schnelle <schnelle@linux.ibm.com>, pnewman@connecttech.com,
-	Sunil V L <sunilvl@ventanamicro.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>, zhanjun@uniontech.com,
-	guanwentao@uniontech.com, Zhuozhen He <hezhuozhen@uniontech.com>,
-	Guowei Chen <chenguowei@uniontech.com>
-Subject: Re: [PATCH] serial: 8250_it8768e: Create iTE IT8768E specific 8250
- driver
-Message-ID: <Z4TkDgYSSm7nwUhY@smile.fi.intel.com>
-References: <41B1320691916DE6+20250109120808.559950-1-wangyuli@uniontech.com>
- <11805e8c-c97b-4297-9c04-462fa1932ce1@app.fastmail.com>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="ma21ShSn";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="um8eX6pB"
+Received: from phl-compute-10.internal (phl-compute-10.phl.internal [10.202.2.50])
+	by mailfout.phl.internal (Postfix) with ESMTP id 569E813801B9;
+	Mon, 13 Jan 2025 05:36:30 -0500 (EST)
+Received: from phl-imap-11 ([10.202.2.101])
+  by phl-compute-10.internal (MEProxy); Mon, 13 Jan 2025 05:36:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1736764590;
+	 x=1736850990; bh=88ddPCGbWB333bn6MExlpHbxtXxUP1vUCe0xR+QOpIs=; b=
+	ma21ShSnjGPsx+2D4wbrgGZAFXpa9iiO6II8OXxmxtM7qKNH5xFGHXk/t/+uqjTK
+	pNPRzFGe4DpdrpX1XFEtK5AInthS75rWwffL70R/rq7d5ttVPWyirQ7ebwVj1E5j
+	iMrNRajv8vk+FAJm2EGGXVUbA5n5/E1pzt9UNfgoxsAMt8B7jNnoc2Vkk286EMAj
+	YPNxnKuYNMSdnKeoZ8tVg+gPY0K5kwOxkmI0jWNk3BJhEcqmDE1lm6sFMuFp1VTw
+	1rL7+uxVYeQdGACiI+crP8ea5DERL2zOeej5GVrSxaiHrz2fPRt3UimxSgXEX81k
+	TBdZpk8Gc2ti33/mg13m3w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1736764590; x=
+	1736850990; bh=88ddPCGbWB333bn6MExlpHbxtXxUP1vUCe0xR+QOpIs=; b=u
+	m8eX6pBmZHJVnRp+q6TeRoa4MLIBHG76K1BoFPzlMkAuxpng77t0Z3iDjV2lcvPT
+	B43Mx2ykXeVNwfxRhNakBPEl4PV9PKzW0MC5ZAZCyRgcKbU15+AJaMRy1IUCpHfy
+	GNh7wRVBpBtZB9BhOcB6wlhg2qKKleGonr8y/hQBgvjsZ2pHm1UNQhVB5WWpyTii
+	h+TN4DMt0v9mEUm0BBpWwBQ+/fQkvh6zq1SOI611StEZcco3JnACFzOt3N2EIb2T
+	wUb8G6fBSL5XljKeNd/6Cb3zc50LuOZf8CEkpC4N6mc9dW+iaMjlcshlxZDbGdDN
+	SBLoF3SSoXXROX1odeZKw==
+X-ME-Sender: <xms:reyEZ7ti6EI1CAbHf8mM9f3xFEMUnUicJpwiDBP4iGbON7UERx2MXA>
+    <xme:reyEZ8cnALyjaLc35w8yU6Ixmr3nhevsY5f52BwJGjeos5kppDpgEKNIsQlT36RJK
+    Pzg1m1kiWAf1ijH5Dw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudehgedgudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggvpdfu
+    rfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnh
+    htshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertdertddt
+    necuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrd
+    guvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeetfefg
+    gfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohepudeh
+    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehpnhgvfihmrghnsegtohhnnhgvtg
+    htthgvtghhrdgtohhmpdhrtghpthhtoheprghrnhgusehkvghrnhgvlhdrohhrghdprhgt
+    phhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehprg
+    hulhhmtghksehkvghrnhgvlhdrohhrghdprhgtphhtthhopehstghhnhgvlhhlvgeslhhi
+    nhhugidrihgsmhdrtghomhdprhgtphhtthhopegrnhgurhhihidrshhhvghvtghhvghnkh
+    hosehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtohepghhrvghgkhhhsehlihhn
+    uhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtoheptghhvghnghhuohifvghise
+    hunhhiohhnthgvtghhrdgtohhmpdhrtghpthhtohepghhurghnfigvnhhtrghosehunhhi
+    ohhnthgvtghhrdgtohhm
+X-ME-Proxy: <xmx:reyEZ-wRomTbTT9R6928cGIMKVLK7-nkpmnG9Zf4VIUhZbuZfv3kEQ>
+    <xmx:reyEZ6MVj-fM929zF12iynHm0GgjzGPEE8fstqffmx8oZGWMZCMxhw>
+    <xmx:reyEZ79s5K1lGy_rVLcjsyc07_-Kun5w9ogCSeXv2WmpXqNQsvvGVw>
+    <xmx:reyEZ6WD8KZlIDb8QYcj8x2p1ZHGgoIBgARDLBqLpWKfql3BWWecdg>
+    <xmx:ruyEZyeTytjSUH4QAinFhyY2Jbzu6t-3ARm-kNs68r1zvYNyMwACocfu>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id A29AA2220073; Mon, 13 Jan 2025 05:36:29 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <11805e8c-c97b-4297-9c04-462fa1932ce1@app.fastmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Date: Mon, 13 Jan 2025 11:36:08 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Andy Shevchenko" <andriy.shevchenko@linux.intel.com>
+Cc: WangYuli <wangyuli@uniontech.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jiri Slaby" <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, "Arnd Bergmann" <arnd@kernel.org>,
+ "Niklas Schnelle" <schnelle@linux.ibm.com>, pnewman@connecttech.com,
+ "Sunil V L" <sunilvl@ventanamicro.com>,
+ "Paul E. McKenney" <paulmck@kernel.org>, zhanjun@uniontech.com,
+ guanwentao@uniontech.com, "Zhuozhen He" <hezhuozhen@uniontech.com>,
+ "Guowei Chen" <chenguowei@uniontech.com>
+Message-Id: <7dd87e6f-6a86-409f-9e1d-4a2d836e399d@app.fastmail.com>
+In-Reply-To: <Z4TkDgYSSm7nwUhY@smile.fi.intel.com>
+References: <41B1320691916DE6+20250109120808.559950-1-wangyuli@uniontech.com>
+ <11805e8c-c97b-4297-9c04-462fa1932ce1@app.fastmail.com>
+ <Z4TkDgYSSm7nwUhY@smile.fi.intel.com>
+Subject: Re: [PATCH] serial: 8250_it8768e: Create iTE IT8768E specific 8250 driver
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jan 09, 2025 at 01:40:14PM +0100, Arnd Bergmann wrote:
-> On Thu, Jan 9, 2025, at 13:08, WangYuli wrote:
-> > [ General description per its product manual: ]
-> >   The IT8768E-I is a highly integrated Super I/O using the Low Pin
-> >   Count Interface. The device’s LPC interface complies with Intel
-> >   "LPC Interface Specification Rev. 1.1”. The IT8768E-I is ACPI &
-> >   LANDesk compliant.
-> >
-> >   Integrated in the IT8768E-I are five logical devices, which can
-> >   be individually enabled or disabled via software configuration
-> >   registers, and four 16C550standard compatible enhanced UARTs
-> >   perofrmacing asynchronous communication. The devices also provide
-> >   GPIO port controlling up to 12 GPIO pins.
-> >
-> >   The IT8768E-I utilizes power-saving circuitry to reduce power
-> >   consumption, and once a logical device is disabled, the inputs
-> >   are inhibited with the clock disabled and the outputs are
-> >   tri-stated. The device requires a single 24/48 MHz clock input
-> >   and operates with +3.3V power supply. The IT8768E-I is available
-> >   in 48-pin LQFP.
-> >
-> > It has been determined that this chip is currently employed within
-> > YIHUA STS-320 intelligent teller terminals utilizing
-> > PCBA F21-2401 D2000 MB VerA LF motherboards.
-> 
-> Can you explain why this isn't done as part of
-> drivers/tty/serial/8250/8250_pnp.c?
+On Mon, Jan 13, 2025, at 10:59, Andy Shevchenko wrote:
+> On Thu, Jan 09, 2025 at 01:40:14PM +0100, Arnd Bergmann wrote:
+>> On Thu, Jan 9, 2025, at 13:08, WangYuli wrote:
+>> 
+>> Can you explain why this isn't done as part of
+>> drivers/tty/serial/8250/8250_pnp.c?
+>
+> I assume you meant 8250_platform.c. PNP is for devices went through legacy PNP
+> enumeration, most likely having IOPORT instead of IOMEM.
 
-I assume you meant 8250_platform.c. PNP is for devices went through legacy PNP
-enumeration, most likely having IOPORT instead of IOMEM.
+No, I meant the 8250_pnp.c file.
 
-Recently 8250_platform.c was expanded to cover ACPI IDs and it seems they have
-proper ID allocated for their device, so that's where it seems best to fit.
+> Recently 8250_platform.c was expanded to cover ACPI IDs and it seems they have
+> proper ID allocated for their device, so that's where it seems best to fit.
 
-> I see nothing unusual in here that requires a custom driver.
+I don't think we should expand the use of 8250_platform.c
+any more than it is already used for. The ACPI device ID stuff in
+there is really only for one specific platform and should probably
+get moved out as well, the rest is there for hardwired
+"plat_serial8250_port" devices on 25+ year old machines that
+predate any type of firmware (pnpbios, acpibios, of) or hardware
+(ispnp, pci, ...) autodetection for their uarts.
 
-+1.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+     Arnd
