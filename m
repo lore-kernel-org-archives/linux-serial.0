@@ -1,93 +1,70 @@
-Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
+Received: from out30-112.freemail.mail.aliyun.com (out30-112.freemail.mail.aliyun.com [115.124.30.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E862632;
-	Mon, 13 Jan 2025 03:21:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=222.66.158.135
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0358B1B87E9;
+	Mon, 13 Jan 2025 06:08:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.112
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736738518; cv=none; b=G9zRNU/H7QCn3FiOle1x4Zy3vMg+gPK640HUN+SSV2hu+NBt43idr3qONYUwW87PNDb/7D42Oy/7J57nRYiOyDUmw7IblDL2Ohien2wtIMwDbCJBWTfDcO29wXsLXgnwbsOan9/EWkeb8AUDOoQFzKnnKLyaSDvmLKmLfIt2bEs=
+	t=1736748492; cv=none; b=SP+TG16jCzM3nCzxqtCsZNZjvx8Yd+nzuL1/QDsCAE0vvRF56S7OsGRkVhXN/f24YO90N1ROJ5/jZEvbPXKKege639QwBpIbj5I+wHQZevT5hqJC89jYJsm5Xqy3tpHchQnrWCiSxkurlAuGA5urYhDaiSqhJ0TqSdt43kB579E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736738518; c=relaxed/simple;
-	bh=Y3nE2lzDIpMp5PBFKP/A9qmSHTy0qU3sj01um7Vbing=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FAqZYHFv+vyLr0rR5oURj8ckohm8gKE5SwGISSOc6BJoJrFaNNptAP8DXzl9+PjhctJO3dSjJtByCdDRrpac+4UFgzAvYwrxE+9ga9Mnt2fAtp7bCLo4Ug0lYpyqR+Pg/pjJLFV3GzfK2yhGs12mrJopWX6jotv0m6eZO1xT9Jc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com; spf=pass smtp.mailfrom=unisoc.com; arc=none smtp.client-ip=222.66.158.135
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
-Received: from dlp.unisoc.com ([10.29.3.86])
-	by SHSQR01.spreadtrum.com with ESMTP id 50D3JPbH015683;
-	Mon, 13 Jan 2025 11:19:25 +0800 (+08)
-	(envelope-from Wenhua.Lin@unisoc.com)
-Received: from SHDLP.spreadtrum.com (shmbx06.spreadtrum.com [10.0.1.11])
-	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4YWcq56gzgz2PgVtk;
-	Mon, 13 Jan 2025 11:16:17 +0800 (CST)
-Received: from zeshkernups01.spreadtrum.com (10.29.55.99) by
- shmbx06.spreadtrum.com (10.0.1.11) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Mon, 13 Jan 2025 11:19:23 +0800
-From: Wenhua Lin <Wenhua.Lin@unisoc.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>
-CC: Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang
-	<baolin.wang@linux.alibaba.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>, Cixi
- Geng <cixi.geng@linux.dev>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, wenhua lin
-	<wenhua.lin1994@gmail.com>,
-        Wenhua Lin <Wenhua.Lin@unisoc.com>,
-        Xiongpeng Wu
-	<xiongpeng.wu@unisoc.com>,
-        Zhaochen Su <Zhaochen.Su@unisoc.com>,
-        Zhirong Qiu
-	<Zhirong.Qiu@unisoc.com>
-Subject: [PATCH V2 1/2] dt-bindings: serial: Add a new compatible string for UMS9632
-Date: Mon, 13 Jan 2025 11:19:16 +0800
-Message-ID: <20250113031917.3354988-2-Wenhua.Lin@unisoc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250113031917.3354988-1-Wenhua.Lin@unisoc.com>
-References: <20250113031917.3354988-1-Wenhua.Lin@unisoc.com>
+	s=arc-20240116; t=1736748492; c=relaxed/simple;
+	bh=5CXr9VSrRJai84JtzB6YQRuzzC4LX+KQtjyLUOftu6g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PG2wJc0fxOIPc8+9LrxIQ45tJKngjq4KO7NE4u3z7OOTmRKr/PhDgd6ecOzJafhedqZ229MITVzBEUktwywT9gx8ixHQMGKr2TW1cQ6gqSx6XeioRbcf6rr5mFWkLzbJ2CodFiF1D/eV6nUuL5IyFYq6XB5LfcB44XcNIDC4Kn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=kGBvZTvV; arc=none smtp.client-ip=115.124.30.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="kGBvZTvV"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1736748481; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=g8PZYPGxtZWEWPyskmL9rNhNAFnWFEGdiprKLlNU5ls=;
+	b=kGBvZTvV970I0X1uTx7EEd8fmhUmh1z6OmW74C8MZKWxMITaEAcjOQFbGr62nxxAwh4R1MjD8Q1a2IkNHWtGag0ULlWVWtuHCIPpJeSo3Eeu4Y5VcpO025OfLq2Siw2Jnr4872d4luUHe2TPj+IZJ0/ZZiZBH639V3taIigWORI=
+Received: from 30.74.144.122(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0WNTcKEI_1736748479 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Mon, 13 Jan 2025 14:08:00 +0800
+Message-ID: <7385b093-378a-499d-ae1f-4c85001f088c@linux.alibaba.com>
+Date: Mon, 13 Jan 2025 14:07:59 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
- shmbx06.spreadtrum.com (10.0.1.11)
-X-MAIL:SHSQR01.spreadtrum.com 50D3JPbH015683
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V2 2/2] serial: sprd: Add support for sc9632
+To: Wenhua Lin <Wenhua.Lin@unisoc.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
+ Cixi Geng <cixi.geng@linux.dev>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ wenhua lin <wenhua.lin1994@gmail.com>, Xiongpeng Wu
+ <xiongpeng.wu@unisoc.com>, Zhaochen Su <Zhaochen.Su@unisoc.com>,
+ Zhirong Qiu <Zhirong.Qiu@unisoc.com>
+References: <20250113031917.3354988-1-Wenhua.Lin@unisoc.com>
+ <20250113031917.3354988-3-Wenhua.Lin@unisoc.com>
+From: Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20250113031917.3354988-3-Wenhua.Lin@unisoc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The UMS9632 uses the SC9632 serial device.
 
-Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
----
- Documentation/devicetree/bindings/serial/sprd-uart.yaml | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.yaml b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-index f4dbb6dc2b6e..83582aa6c750 100644
---- a/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-@@ -23,6 +23,11 @@ properties:
-               - sprd,ums9620-uart
-           - const: sprd,sc9836-uart
-       - const: sprd,sc9836-uart
-+      - items:
-+          - enum:
-+              - sprd,ums9632-uart
-+          - const: sprd,sc9632-uart
-+      - const: sprd,sc9632-uart
- 
-   reg:
-     maxItems: 1
--- 
-2.34.1
+On 2025/1/13 11:19, Wenhua Lin wrote:
+> Due to the platform's new project uart ip upgrade,
+> the new project's timeout interrupt needs to use bit17
+> while other projects' timeout interrupt needs to use
+> bit13, using private data to adapt and be compatible
+> with all projects.
+> 
+> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
 
+People have already given you reviewed or acked tags[1], if you did not 
+change the code, please keep them in the next version.
+
+[1] 
+https://lore.kernel.org/lkml/20241113110516.2166328-2-Wenhua.Lin@unisoc.com/
