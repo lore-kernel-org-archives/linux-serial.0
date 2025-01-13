@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEBEF231CA3;
-	Mon, 13 Jan 2025 07:42:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48C3D232369;
+	Mon, 13 Jan 2025 07:53:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736754133; cv=none; b=ebF7RmQQ4Tn7RoLGpku7KHhuLBU8VicH2qbxzQpXGUfw/KIxQHfXXbRulYGbMILAcNhz1bGXNaEGoLZjDO/dgk7VVLYru11bnhiX1vsE8i4tPLbPYxfQ3gvYgUlFmQwvjvkZN2wNn2e4CwDFYDhLOD1NG5MThs0vbifdaXNCP5I=
+	t=1736754834; cv=none; b=pf3cq1ijzYWxYgBU7sQzBIoMB39Icn+3ybtqg0sgvpWml6nuQKZ/Hp8uP5RQSNgARAGrhf0W7iQdWFYpJ2GRO9XOyk/AE+myz/i9ZHwAAAVhChes0rvBRGVmE2Hkjc7oIJ5MZq7ND+LQZ7fIqT6RqzrfZ48b0+Q2OWVt/31lQzY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736754133; c=relaxed/simple;
-	bh=P0UjRQ/hGunWLonrV0Kdt3gfD3d/N1TG43eLYqhW888=;
+	s=arc-20240116; t=1736754834; c=relaxed/simple;
+	bh=Zs9Hfdk6wN0gEXN01PQt4vgyI9WBHwDSf7Ulpdocb+E=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Xb4Ty8xM/bTvA+mhv5X9OyWqaL9eR/pmlEK+0ujLh5lJR2YCMetPG80mzWyY3XuqjrDf4X35rB2qLEYagG+tTkRGeOXsUPZEf4WkZHc0t+kLzq3aFmZ3OsDYc7mIUB4xKWPM0rqdy2mAGxPl2wObSP59PQQRz2F1UE4YGJNeo/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lQMnxZB9; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=kaPSWQ77waGxCwgR8YEFhgKzN0hKc2SdFSEiRlnBhUz2fJk7CdllI6gzJ638tfH5koTrUXSDffj9KGbr0euheitn7OI3K4kxasrteGyoy/3KNYDtcGtSixu66fzGKVnGKPf5ZviDdLKCdUVwPXwW7P9x9Vo/xxddfNCJbqMzKKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jNiJ7XTP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lQMnxZB9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A777C4CEE2;
-	Mon, 13 Jan 2025 07:42:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jNiJ7XTP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ED93C4CED6;
+	Mon, 13 Jan 2025 07:53:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736754132;
-	bh=P0UjRQ/hGunWLonrV0Kdt3gfD3d/N1TG43eLYqhW888=;
+	s=k20201202; t=1736754833;
+	bh=Zs9Hfdk6wN0gEXN01PQt4vgyI9WBHwDSf7Ulpdocb+E=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=lQMnxZB9hIk4JqSFCd9Bx8OwlUPj6amJxaxbMr3DaDe0/KvkoNHVjP9GbfFmBCWj+
-	 oVrrlVkzWEhH9MheF9VUFNyg+HesvgmCHtwpySEqCdEwxuaSZUE4Aq6mu657q/cAgH
-	 93X/af2ZJfVyy2xW/ww+K4CayiawDbvQ+0imF4klfqrBgpnXoTfxE5cMwx+csd7V8Z
-	 R4b+d3VIT6l6gJltwQ0ul8Qcxpm/+vQAAmaFnaYsj/7gz1B+XYD3aT5AP1TK9vxfZx
-	 lwVUfVe6W1zaalFSVXQSfYhTVck231no64FKc9ZZFThG6zWF+XfK9O93o2/yQG6BhV
-	 tzSFMDy5ZiS5w==
-Message-ID: <3d2504b7-a566-4921-b04c-0eb272c93bae@kernel.org>
-Date: Mon, 13 Jan 2025 08:42:04 +0100
+	b=jNiJ7XTPNMaoaO4NUGXt7xXtEb5r90mtwZcOLSZgg6CjanYFpY2WrILA8ZZy0/bYk
+	 emYheGInqjcE4qr2To6h0A38zGt4EFR+GfSzgOTxuixut8yB6+TSE0E32vH+j6ZMz6
+	 Dcoz798pSxYmH1sqXUcG9sfojnldxQ1H3TzKRAqIxHZyTSAAqoxdKirfvkZgm3NzFN
+	 CUDFOuS87HwvrDY+oizJ8EKsNLDTTjEcFIn+Hmne4rbdLbpxn2fpkXWlqcrK1qfsus
+	 vPKdcKxhpsxCUcMOz5YxWTqMzU0F/RlL24+fZgvywl8kigYHLrKOGdCyEQObw0xR7H
+	 7Vb937VGQxRjA==
+Message-ID: <987b764e-17a6-4280-95e2-858d4c74a8d5@kernel.org>
+Date: Mon, 13 Jan 2025 08:53:46 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,21 +35,24 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] dt-bindings: serial: Add a new compatible string for
- ums9632
-To: wenhua lin <wenhua.lin1994@gmail.com>
-Cc: Stanislav Jakubek <stano.jakubek@gmail.com>, wenhua.lin@unisoc.com,
- Zhaochen.Su@unisoc.com, Zhirong.Qiu@unisoc.com,
- baolin.wang@linux.alibaba.com, brgl@bgdev.pl, cixi.geng@linux.dev,
- conor+dt@kernel.org, devicetree@vger.kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, krzk+dt@kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, orsonzhai@gmail.com, robh@kernel.org,
- xiongpeng.wu@unisoc.com, zhang.lyra@gmail.com
-References: <Zz8m8PqHX_7VzgoP@standask-GA-A55M-S2HP>
- <0b9495e8-b89e-4fff-b7a0-060d7631522a@kernel.org>
- <CAB9BWhdAQS5f2OpH8-PZXCWtWWybPJ+UaLvQNu4UacPF_sCg2A@mail.gmail.com>
-Content-Language: en-US
+Subject: Re: [PATCH V2 1/2] dt-bindings: serial: Add a new compatible string
+ for UMS9632
+To: Wenhua Lin <Wenhua.Lin@unisoc.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>
+Cc: Orson Zhai <orsonzhai@gmail.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>, Cixi Geng <cixi.geng@linux.dev>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, wenhua lin <wenhua.lin1994@gmail.com>,
+ Xiongpeng Wu <xiongpeng.wu@unisoc.com>, Zhaochen Su
+ <Zhaochen.Su@unisoc.com>, Zhirong Qiu <Zhirong.Qiu@unisoc.com>
+References: <20250113031917.3354988-1-Wenhua.Lin@unisoc.com>
+ <20250113031917.3354988-2-Wenhua.Lin@unisoc.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
  cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
@@ -93,34 +96,36 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
  7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
  5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <CAB9BWhdAQS5f2OpH8-PZXCWtWWybPJ+UaLvQNu4UacPF_sCg2A@mail.gmail.com>
+In-Reply-To: <20250113031917.3354988-2-Wenhua.Lin@unisoc.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 13/01/2025 03:29, wenhua lin wrote:
-> On Thu, Nov 21, 2024 at 9:34 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>
->> On 21/11/2024 13:26, Stanislav Jakubek wrote:
->>> Correct me if I'm wrong, but this patch seems incorrect to me.
->>> The 1st patch suggets that the sc9632-uart is incompatible with sc9836-uart,
->>> but here you make it fallback to it anyway.
->>>
->>> Also, both of the patches seem to have made it to linux-next without the
->>> reviews/Acks from maintainers. Maybe Greg was a bit too fast here :)
->>
->> Yeah, this looks odd and considering totally empty commit msg (nothing
->> useful there), it looks like wrong choice.
->>
->> Please explain the compatibility aspects. In the future: you have entire
->> commit msg to describe the hardware, instead of repeating the obvious -
->> what is visible from the diff.
->>
->> Best regards,
->> Krzysztof
+On 13/01/2025 04:19, Wenhua Lin wrote:
+> The UMS9632 uses the SC9632 serial device.
+
+Why are you sending accepted patches?
+
 > 
-> Hi Krzysztof:
->    Thank you very much for your review, we will correct it in patch v2.
-I wrote - commit msg, not changelog. Sigh...
+> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+> ---
+>  Documentation/devicetree/bindings/serial/sprd-uart.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.yaml b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
+> index f4dbb6dc2b6e..83582aa6c750 100644
+> --- a/Documentation/devicetree/bindings/serial/sprd-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
+> @@ -23,6 +23,11 @@ properties:
+>                - sprd,ums9620-uart
+>            - const: sprd,sc9836-uart
+>        - const: sprd,sc9836-uart
+> +      - items:
+> +          - enum:
+> +              - sprd,ums9632-uart
+> +          - const: sprd,sc9632-uart
+> +      - const: sprd,sc9632-uart
+
+NAK, you are duplicating entries.
 
 Best regards,
 Krzysztof
