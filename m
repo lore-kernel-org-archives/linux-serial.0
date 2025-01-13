@@ -1,131 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48C3D232369;
-	Mon, 13 Jan 2025 07:53:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 326E81BEF7E;
+	Mon, 13 Jan 2025 09:54:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736754834; cv=none; b=pf3cq1ijzYWxYgBU7sQzBIoMB39Icn+3ybtqg0sgvpWml6nuQKZ/Hp8uP5RQSNgARAGrhf0W7iQdWFYpJ2GRO9XOyk/AE+myz/i9ZHwAAAVhChes0rvBRGVmE2Hkjc7oIJ5MZq7ND+LQZ7fIqT6RqzrfZ48b0+Q2OWVt/31lQzY=
+	t=1736762084; cv=none; b=draR+49aiKcTQp5+BpmbqY+P/di4aZ5bAKMgWYPYdi3ZiGsz3m0Q1haFQXxHifEGCPmsqRjekRpHVPsO2X/9Uii9yRns8ApSHOb6SWM7UKJUo1ewJp4svsEffXu+tMQ3dsQcQXla6yzZtriLoOsaTY+Am/4/vjDzJbqLQRS/eRo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736754834; c=relaxed/simple;
-	bh=Zs9Hfdk6wN0gEXN01PQt4vgyI9WBHwDSf7Ulpdocb+E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kaPSWQ77waGxCwgR8YEFhgKzN0hKc2SdFSEiRlnBhUz2fJk7CdllI6gzJ638tfH5koTrUXSDffj9KGbr0euheitn7OI3K4kxasrteGyoy/3KNYDtcGtSixu66fzGKVnGKPf5ZviDdLKCdUVwPXwW7P9x9Vo/xxddfNCJbqMzKKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jNiJ7XTP; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736762084; c=relaxed/simple;
+	bh=qigp+U4WstapoVqkIFX/CR6qidy2Lhh81loiEa2sM1E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YXfh/BZKagh1gnnSaxqP8HIIWl6Oym1XN357Y1mfI6xZ4zMZsIzvGjKske6ay7YOogrv4zzUW7yy1ZK6Jaqw46j6LLS02rfLpwFfN/aUDXfRgpQL/xalZgl5BEMrprtvuyfETQMnx8DY3nAK+w4SnVInFb88HHYf9PAHDbGPOpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QmlQHexr; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jNiJ7XTP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ED93C4CED6;
-	Mon, 13 Jan 2025 07:53:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736754833;
-	bh=Zs9Hfdk6wN0gEXN01PQt4vgyI9WBHwDSf7Ulpdocb+E=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=jNiJ7XTPNMaoaO4NUGXt7xXtEb5r90mtwZcOLSZgg6CjanYFpY2WrILA8ZZy0/bYk
-	 emYheGInqjcE4qr2To6h0A38zGt4EFR+GfSzgOTxuixut8yB6+TSE0E32vH+j6ZMz6
-	 Dcoz798pSxYmH1sqXUcG9sfojnldxQ1H3TzKRAqIxHZyTSAAqoxdKirfvkZgm3NzFN
-	 CUDFOuS87HwvrDY+oizJ8EKsNLDTTjEcFIn+Hmne4rbdLbpxn2fpkXWlqcrK1qfsus
-	 vPKdcKxhpsxCUcMOz5YxWTqMzU0F/RlL24+fZgvywl8kigYHLrKOGdCyEQObw0xR7H
-	 7Vb937VGQxRjA==
-Message-ID: <987b764e-17a6-4280-95e2-858d4c74a8d5@kernel.org>
-Date: Mon, 13 Jan 2025 08:53:46 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QmlQHexr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1736762084; x=1768298084;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qigp+U4WstapoVqkIFX/CR6qidy2Lhh81loiEa2sM1E=;
+  b=QmlQHexrtt+8a4mgZbvXaecwzqxXVYVfdcoc7NFrBAydoVExIFnkqc/M
+   qDDZG/eIZ2W3/bdzdYm+u1wydBaVcxV6sa7eBD+nxM/jQ2CgPT0VeusuA
+   6lqHVE/jz1mcprQnVOwVm9/4rBKBYtkWVaDqklg40jVXBcF0PPuNHz80t
+   lyT1Tw6GFShCxV9CtCLrFzqw5rVyfoSKOeKm5rMV4+L9eevmaENBUZywo
+   wWlDY7ejZjK1jyugozlzdwT5y8DUeZwHPuaZBew52PkZySv3B/v7P4Nsj
+   TUtByomf7ksLz87QnDNh67oyzPb0bu1ftXP6wqPJMwFkNJRGd6iLa5DFs
+   A==;
+X-CSE-ConnectionGUID: SEsY72gRRQ+LHW+Rc+ndMg==
+X-CSE-MsgGUID: aX3sTt8aTkCvmpe2i1jZ6A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11313"; a="37033880"
+X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
+   d="scan'208";a="37033880"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2025 01:54:42 -0800
+X-CSE-ConnectionGUID: 2lJeD4zqRYegMDEzgeqI3A==
+X-CSE-MsgGUID: Tcc7hzsmTXKnS0XMmd0dJw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,310,1728975600"; 
+   d="scan'208";a="104986144"
+Received: from unknown (HELO smile.fi.intel.com) ([10.237.72.154])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2025 01:54:39 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1tXH9X-00000000Pcv-2Bjg;
+	Mon, 13 Jan 2025 11:54:35 +0200
+Date: Mon, 13 Jan 2025 11:54:35 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>
+Subject: Re: [PATCH tty-next v5 2/6] serial: 8250: Use frame time to
+ determine timeout
+Message-ID: <Z4Ti24Sw4zo5-wqe@smile.fi.intel.com>
+References: <20250107212702.169493-1-john.ogness@linutronix.de>
+ <20250107212702.169493-3-john.ogness@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2 1/2] dt-bindings: serial: Add a new compatible string
- for UMS9632
-To: Wenhua Lin <Wenhua.Lin@unisoc.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>
-Cc: Orson Zhai <orsonzhai@gmail.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>, Cixi Geng <cixi.geng@linux.dev>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, wenhua lin <wenhua.lin1994@gmail.com>,
- Xiongpeng Wu <xiongpeng.wu@unisoc.com>, Zhaochen Su
- <Zhaochen.Su@unisoc.com>, Zhirong Qiu <Zhirong.Qiu@unisoc.com>
-References: <20250113031917.3354988-1-Wenhua.Lin@unisoc.com>
- <20250113031917.3354988-2-Wenhua.Lin@unisoc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20250113031917.3354988-2-Wenhua.Lin@unisoc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250107212702.169493-3-john.ogness@linutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On 13/01/2025 04:19, Wenhua Lin wrote:
-> The UMS9632 uses the SC9632 serial device.
-
-Why are you sending accepted patches?
-
+On Tue, Jan 07, 2025 at 10:32:58PM +0106, John Ogness wrote:
+> Rather than using a hard-coded per-character Tx-timeout of 10ms,
+> use the frame time to determine a timeout value. The value is
+> doubled to ensure that a timeout is only hit during unexpected
+> circumstances.
 > 
-> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
-> ---
->  Documentation/devicetree/bindings/serial/sprd-uart.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.yaml b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-> index f4dbb6dc2b6e..83582aa6c750 100644
-> --- a/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-> @@ -23,6 +23,11 @@ properties:
->                - sprd,ums9620-uart
->            - const: sprd,sc9836-uart
->        - const: sprd,sc9836-uart
-> +      - items:
-> +          - enum:
-> +              - sprd,ums9632-uart
-> +          - const: sprd,sc9632-uart
-> +      - const: sprd,sc9632-uart
+> Since the frame time may not be available during early printing,
+> the previous 10ms value is kept as a fallback.
 
-NAK, you are duplicating entries.
+...
 
-Best regards,
-Krzysztof
+> +	/*
+> +	 * Wait for a character to be sent. Fallback to a safe default
+> +	 * timeout value if @frame_time is not available.
+> +	 */
+> +	if (up->port.frame_time)
+> +		tmout = up->port.frame_time * 2 / NSEC_PER_USEC;
+> +	else
+> +		tmout = 10000;
+
+I would use it in a form of
+
+		tmout = 10 * USEC_PER_MSEC;
+
+This will give a hint of the real unit (10 ms in us).
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
