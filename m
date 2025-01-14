@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ACDD23278D;
-	Tue, 14 Jan 2025 07:32:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC6EE1BD9E5;
+	Tue, 14 Jan 2025 07:36:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736839924; cv=none; b=FaWtjYvRVEkisX8G2xmnTNFSaAXTFNDMy4iQanUQHF8XUsMNKL7rPFlVWMQVFAHEXnVF7qckHbGvCAHeFmAHVdQK8WcdF3rq8r16RUe1/wTepFLszJDAFtbfUIwJMDqaUo8Xfsb6raDte4hsBmO8egD5gJQFJD4OApuA1klXL4M=
+	t=1736840161; cv=none; b=ShWP+14q4q4SgEf8XNLeF0EG3aX19Vr2uFR4UxObFh/5GzKWcfsXhbGiXpe73TCJ96L6bDyu3xn/NoN1Gg9ldZFA5n5P3+f/h/IxjmkQlvisBdLBoPBjZw+zyRdoDSTA5GWB4/HpGC/iP6n+GcmxXvl+JQrYOrqkKN4KJe+nvjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736839924; c=relaxed/simple;
-	bh=6ZWmsJ98LtqBrmv5kenGU63vKf2MG1uFnfOYZD2zNO0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=R+jjwqQE1ug/aXdNbT4Nx7C62nFKxkNTomIlm8NcCa2vLqX9PfVQmvhiKAZGsTvKLW2ZWM4/4uSfH/cGQUQFZvt2GTOy9YQOvFP3AE9dKxkNj814/KKmVacxYFQ0DwYT8Dck2MEDiYkLZ/NE+E3DnwObsSrm5m+5B3nEt9W87sY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RpHZeMeX; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1736840161; c=relaxed/simple;
+	bh=KspM6dv9z9XFnDUwS55HawmUBfVDvs0MugL5RUYODF8=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=CzIWNQMZaT+piYpZq47PaA/g/liUBgVm3sCSpWQnEO3ClVvsl/uaW3KGznVEpmqEvtqJv9PEusZLqt3z30Fw7ONtGUZzAE8QZ6Ei99pJam/n2px0rPybcO3BCBAcXhtOahqLYpsOX4qbcc6VjZbMvMSExg9NBshuCrfM3T0Snko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kP4mpjGo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RpHZeMeX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 051B9C4CEDD;
-	Tue, 14 Jan 2025 07:32:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kP4mpjGo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DFFCC4CEDD;
+	Tue, 14 Jan 2025 07:35:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1736839924;
-	bh=6ZWmsJ98LtqBrmv5kenGU63vKf2MG1uFnfOYZD2zNO0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=RpHZeMeXxr4DhZpwEMuJceut6Au1JIrlqNV6kj/scPxpsTMPePNK1f7WPjziYfnUC
-	 DhlgOTwqAapp9vQd4lPPa4E3KQKsDE5HtdJNu+CyaBw83L45brgV49YEYxf9PwAWh8
-	 wW6TCZNpchdrbeRFFJq0qMyxBxR6Uma9fYy+aKPnTpgFSDvJlHIJVdJNSxk0Qlsz5g
-	 rSHTi9sbaflsUAryRoNIbT49SRhEXKZrs9P3in3bQYp5y7TP0r99UmUlveZ0paTDD6
-	 uWQB7vYSAz17YVldKigAP+H7tfCszV6gqDSd/vBP8WteByh8vGUqAy4SsHZPGb0Oet
-	 DbDshwRciyExQ==
-Message-ID: <79ad2e41-3d27-4dfd-9136-cb0867cb1a36@kernel.org>
-Date: Tue, 14 Jan 2025 08:31:58 +0100
+	s=k20201202; t=1736840161;
+	bh=KspM6dv9z9XFnDUwS55HawmUBfVDvs0MugL5RUYODF8=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+	b=kP4mpjGo5ADR/B1wGK4kgCaT3kxBAz+dnGpJf0IIIh2uUwvE/8+5jDkmqBBqmhALF
+	 6PT48ch4+UZD40duV0zUz5ix0x8ZCEObB7ud/XLfIaVdFBEkPhhwF3D0hUDlA19kjF
+	 n7MMUUTIp915o4XoHSKoms1S8sVrhkkoicziiLCrBNS6nCfVGyajc1p0PyN6NYroZY
+	 h8lrZ2n1JwI8YnwPSgtHw4UoMkp6IbWPkBJxpXoVbS6/y6a9USlXTEo3HHyij2sVmg
+	 hf3I9gXhk1Gs15fdNee42jFYi9kFZIwkcSVS3qe93zecUxuMHTlMEDY8qI245nNOHY
+	 ITJPOhj1JP7MA==
+Message-ID: <ac3f0efe-c197-4279-9b73-5d7dd3f300fc@kernel.org>
+Date: Tue, 14 Jan 2025 08:35:56 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,6 +36,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH] serial: 8250_mtk: Add ACPI support
+From: Jiri Slaby <jirislaby@kernel.org>
 To: Yenchia Chen <yenchia.chen@mediatek.com>, gregkh@linuxfoundation.org,
  matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com
 Cc: yj.chiang@mediatek.com, tbergstrom@nvidia.com, yujiaoliang@vivo.com,
@@ -43,8 +44,8 @@ Cc: yj.chiang@mediatek.com, tbergstrom@nvidia.com, yujiaoliang@vivo.com,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org
 References: <20250114033324.3533292-1-yenchia.chen@mediatek.com>
+ <79ad2e41-3d27-4dfd-9136-cb0867cb1a36@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -87,127 +88,22 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250114033324.3533292-1-yenchia.chen@mediatek.com>
+In-Reply-To: <79ad2e41-3d27-4dfd-9136-cb0867cb1a36@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 14. 01. 25, 4:33, Yenchia Chen wrote:
-> Add ACPI support to 8250_mtk driver. This makes it possible to
-> use uart with edk2 UEFI firmware.
+On 14. 01. 25, 8:31, Jiri Slaby wrote:
+>> @@ -560,16 +566,22 @@ static int mtk8250_probe(struct platform_device 
+>> *pdev)
+>>       uart.port.private_data = data;
+>>       uart.port.shutdown = mtk8250_shutdown;
+>>       uart.port.startup = mtk8250_startup;
+>> -    uart.port.set_termios = mtk8250_set_termios;
 
-Could you mention what hardware this is in particular?
+Wait, ::set_termios() is NOT optional.
 
-> Signed-off-by: Yenchia Chen <yenchia.chen@mediatek.com>
-> ---
->   drivers/tty/serial/8250/8250_mtk.c | 31 ++++++++++++++++++++++++------
->   1 file changed, 25 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-> index b44de2ed7413..a4f1c30f77b0 100644
-> --- a/drivers/tty/serial/8250/8250_mtk.c
-> +++ b/drivers/tty/serial/8250/8250_mtk.c
-> @@ -19,6 +19,7 @@
->   #include <linux/dma-mapping.h>
->   #include <linux/tty.h>
->   #include <linux/tty_flip.h>
-> +#include <linux/acpi.h>
 
-Sort this properly.
-
->   #include "8250.h"
->   
-> @@ -519,6 +520,7 @@ static int mtk8250_probe(struct platform_device *pdev)
->   	struct mtk8250_data *data;
->   	struct resource *regs;
->   	int irq, err;
-> +	acpi_handle hdl = ACPI_HANDLE(&pdev->dev);
-
-'hdl' sounds very weird and is not used in the tree for acpi_handles. 
-I'd use 'acpi_handle' or 'acpi_dev_handle' in this case.
-
->   	irq = platform_get_irq(pdev, 0);
->   	if (irq < 0)
-> @@ -545,8 +547,12 @@ static int mtk8250_probe(struct platform_device *pdev)
->   		err = mtk8250_probe_of(pdev, &uart.port, data);
->   		if (err)
->   			return err;
-> -	} else
-> -		return -ENODEV;
-> +	} else {
-> +		if (!hdl) {
-
-so this should be:
-   } else if () {
-
-> +			dev_err(&pdev->dev, "no device\n");
-
-Why this?
-
-> +			return -ENODEV;
-
-As this is self explanatory already, right?
-
-> +		}
-> +	}
->   
->   	spin_lock_init(&uart.port.lock);
->   	uart.port.mapbase = regs->start;
-> @@ -560,16 +566,22 @@ static int mtk8250_probe(struct platform_device *pdev)
->   	uart.port.private_data = data;
->   	uart.port.shutdown = mtk8250_shutdown;
->   	uart.port.startup = mtk8250_startup;
-> -	uart.port.set_termios = mtk8250_set_termios;
-> -	uart.port.uartclk = clk_get_rate(data->uart_clk);
-> +	if (hdl) {
-> +		uart.port.uartclk = 26000000;
-
-This is a magic constant. Define a macro for this. Hint: 26 * HZ_PER_MHZ.
-
-Is it not/cannot it be part of the acpi table? What does MTKI0511 look like?
-
-> +	} else {
-> +		uart.port.set_termios = mtk8250_set_termios;
-> +		uart.port.uartclk = clk_get_rate(data->uart_clk);
-> +	}
->   #ifdef CONFIG_SERIAL_8250_DMA
->   	if (data->dma)
->   		uart.dma = data->dma;
->   #endif
->   
-> -	/* Disable Rate Fix function */
-> -	writel(0x0, uart.port.membase +
-> +	if (!hdl) {
-> +		/* Disable Rate Fix function */
-
-Why is this only for non-ACPI devices?
-
-> +		writel(0x0, uart.port.membase +
->   			(MTK_UART_RATE_FIX << uart.port.regshift));
-> +	}
->   
->   	platform_set_drvdata(pdev, data);
->   
-> @@ -647,11 +659,18 @@ static const struct of_device_id mtk8250_of_match[] = {
->   };
->   MODULE_DEVICE_TABLE(of, mtk8250_of_match);
->   
-> +static const struct acpi_device_id mtk8250_acpi_match[] = {
-> +	{ "MTKI0511", 0 },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(acpi, mtk8250_acpi_match);
-> +
->   static struct platform_driver mtk8250_platform_driver = {
->   	.driver = {
->   		.name		= "mt6577-uart",
->   		.pm		= &mtk8250_pm_ops,
->   		.of_match_table	= mtk8250_of_match,
-> +		.acpi_match_table = ACPI_PTR(mtk8250_acpi_match),
->   	},
->   	.probe			= mtk8250_probe,
->   	.remove			= mtk8250_remove,
-
-thanks,
 -- 
 js
 suse labs
+
