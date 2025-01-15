@@ -1,115 +1,293 @@
-Received: from mail.systec-electronic.com (mail.systec-electronic.com [77.220.239.22])
+Received: from esa1.hc1455-7.c3s2.iphmx.com (esa1.hc1455-7.c3s2.iphmx.com [207.54.90.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E92F4C6C;
-	Wed, 15 Jan 2025 05:23:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.220.239.22
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76BA422F397;
+	Wed, 15 Jan 2025 05:29:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=207.54.90.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736918601; cv=none; b=Q4Hv8J7rOiOtuK33CSCaBl5Y5x3aa3Ub+pFjnwCVoxJPobpMnCEGAaeCVF5DSsy9ZW5mj/GzUu/1OThQYJjwMr7qau4Q4yRo1mGzNf89FkmDJNlLk3CSyCu0v6stLM5YXLr20vzSgr+hNDXnHtcae7h2779cyZNWMuyyUiKC0gI=
+	t=1736918961; cv=none; b=TeXriFO0jtEkkRjC0EN6+4rgEG9rjnuCkx/oHcU6yLHV8ctnwvANFYvMP2BKlh/bzoE0GdMb55iSDSyA2wUpcAZUxPKwBxHEriyBfWtLLQ/XxZRK8RuxFONpNQX8rQS/KcS3voIh31YgJyKu7+sf9+Kgj4hm1c2XlFI7/m9FaN4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736918601; c=relaxed/simple;
-	bh=u8gf+tS1sfBUBJkKf1JwsZyRLyFxuXOaSSEg2APwr0o=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=SnGbEqxXCkbiddiQQzfCXYjxJ55EIxMp6ZWRl0+rTbbQgOXQsNaPFKoUdUAhPdN7eI4ef0kLvyH2yPfKvlnE1yiCJow1E7rTe5bn6OolY7gPIrF3wTTdynER2Hp8Sait+Ye0W4lR1xdrlgg2V5+Tl+ZbvCvp1O1Hd/MoiE+Jm/g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=systec-electronic.com; spf=pass smtp.mailfrom=systec-electronic.com; dkim=pass (2048-bit key) header.d=systec-electronic.com header.i=@systec-electronic.com header.b=Z/nDIK7U; arc=none smtp.client-ip=77.220.239.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=systec-electronic.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=systec-electronic.com
+	s=arc-20240116; t=1736918961; c=relaxed/simple;
+	bh=15vISLEFmhZT5eZz3ZWj8X7kjiMs2WR2CnqANRurGpQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uD894DE6BsXrG664Ne1V0RPekfHvUvPbwi24rvvr8xqwpyJ1JEz0N6X075uKRDZGd11VD6HhyZILMd7mH14Os49JT6KheHLBSAkHwGW3tNK8D69uQSuu3LOeo4Im/j6WNJBu80xid/CPtYfy03qPT3qwPs/FufAE3aRUsWUZxCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=aa.jp.fujitsu.com; spf=pass smtp.mailfrom=aa.jp.fujitsu.com; dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b=azKe+7aO; arc=none smtp.client-ip=207.54.90.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=aa.jp.fujitsu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aa.jp.fujitsu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=systec-electronic.com header.i=@systec-electronic.com header.b="Z/nDIK7U"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.systec-electronic.com (Postfix) with ESMTP id 9771C941A5C2;
-	Wed, 15 Jan 2025 06:23:09 +0100 (CET)
-Received: from mail.systec-electronic.com ([127.0.0.1])
- by localhost (mail.systec-electronic.com [127.0.0.1]) (amavis, port 10032)
- with ESMTP id 0PQdk0Wy8DRR; Wed, 15 Jan 2025 06:23:09 +0100 (CET)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.systec-electronic.com (Postfix) with ESMTP id 67867941A5C4;
-	Wed, 15 Jan 2025 06:23:09 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.systec-electronic.com 67867941A5C4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=systec-electronic.com; s=B34D3B04-5DC7-11EE-83E3-4D8CAB78E8CD;
-	t=1736918589; bh=TycTRDQsyHf0xmSmtDI1Y1rMY6gr4hDNBqKqb1dPLCE=;
-	h=Date:From:To:Message-ID:MIME-Version;
-	b=Z/nDIK7UcgmO7pPXTLOfUc354N3uNhTSTdvRObrSzZXDvvCllBx/SymkHU/cw4ZQ0
-	 8mLaxE/nUB5GTT1u/JqG3meZTmp79JxSRZ25tykiUEaOamCwWUlafeOgxuzDqz64fa
-	 i6vRhZXV4xWs3Q1aFgWQPSjOhsugTQJzzHGrpEQ9Lt8ScI7nAfrPnUkdRqIQ/+vnGI
-	 a00ssyt7StIumSZKKqZUUTVenQLEZWIR0PBEc6tOP1nnphbtkRkyjrRrzGkN8QOkJV
-	 uMUev9y73fDTAUDo2IdDD6YAmN/joRkvQaq+xqBEa2sqHT7oTz+iUvk9Kt7yp+SwGt
-	 wrP8K+7XhhrOA==
-X-Virus-Scanned: amavis at systec-electronic.com
-Received: from mail.systec-electronic.com ([127.0.0.1])
- by localhost (mail.systec-electronic.com [127.0.0.1]) (amavis, port 10026)
- with ESMTP id m6eD9M80UKQN; Wed, 15 Jan 2025 06:23:09 +0100 (CET)
-Received: from lt-278851.systec.local (unknown [212.185.67.148])
-	by mail.systec-electronic.com (Postfix) with ESMTPSA id EE672941A5C2;
-	Wed, 15 Jan 2025 06:23:08 +0100 (CET)
-Date: Wed, 15 Jan 2025 06:23:08 +0100 (CET)
-From: Andre Werner <andre.werner@systec-electronic.com>
-Reply-To: Andre Werner <andre.werner@systec-electronic.com>
-To: Andy Shevchenko <andy@kernel.org>
-cc: Andre Werner <andre.werner@systec-electronic.com>, 
-    gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com, 
-    devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-    linux-serial@vger.kernel.org, lech.perczak@camlingroup.com, 
-    krzk+dt@kernel.org, conor+dt@kernel.org, robh@kernel.org
-Subject: Re: [External Email] Re: [PATCH v7 2/2] serial: sc16is7xx: Add
- polling mode if no IRQ pin is available
-In-Reply-To: <Z4Z7JUP2vMEX9JsW@smile.fi.intel.com>
-Message-ID: <bc6aafdc-4b86-956b-afa0-ecf5b3ef393c@systec-electronic.com>
-References: <20250114070449.34226-1-andre.werner@systec-electronic.com> <20250114070449.34226-2-andre.werner@systec-electronic.com> <Z4Z7JUP2vMEX9JsW@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b="azKe+7aO"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj2;
+  t=1736918959; x=1768454959;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=15vISLEFmhZT5eZz3ZWj8X7kjiMs2WR2CnqANRurGpQ=;
+  b=azKe+7aOZfXN3y/4H7FWH6FlD2ToCfTAiu69x845RCLNphfUaVyzc2bS
+   RXW/XpHcJHpyxrL1/7dKRTCeM/OnNSphu9sRMIEvygcNkQ43MuR6bIDQ/
+   nw+ncNyQxQ8nJ7utL3Tn2bDTAJzU8SDYZ9agFTqmr6GwNloaNtPnGqGCU
+   3aJjETW1b3DNB5jXGGnsf8/uBJXnjKgbFuId98iJzRQfUcIQBaIuCdipE
+   fs6yacNNkvHqrCDNmjwS45Uf8BhUt/pKC32M1ncrdMxk+4YQOkM63YgY2
+   vaChfxzsAkcAZSMqr54o5hLJBXkuYBHL/OyG7G2yFXfEG3W71Z6fKAQ6b
+   w==;
+X-CSE-ConnectionGUID: GMqX8c9CQ7iLalE5bYSPwQ==
+X-CSE-MsgGUID: iYjvzsNDQu6/c7ziBPpfnQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11315"; a="186614636"
+X-IronPort-AV: E=Sophos;i="6.12,316,1728918000"; 
+   d="scan'208";a="186614636"
+Received: from unknown (HELO oym-r3.gw.nic.fujitsu.com) ([210.162.30.91])
+  by esa1.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2025 14:29:10 +0900
+Received: from oym-m3.gw.nic.fujitsu.com (oym-nat-oym-m3.gw.nic.fujitsu.com [192.168.87.60])
+	by oym-r3.gw.nic.fujitsu.com (Postfix) with ESMTP id 7DCE1C2260;
+	Wed, 15 Jan 2025 14:29:08 +0900 (JST)
+Received: from yto-om1.fujitsu.com (yto-om1.o.css.fujitsu.com [10.128.89.162])
+	by oym-m3.gw.nic.fujitsu.com (Postfix) with ESMTP id 5099BD7291;
+	Wed, 15 Jan 2025 14:29:08 +0900 (JST)
+Received: from sm-x86-mem01.ssoft.mng.com (sm-x86-stp01.soft.fujitsu.com [10.124.178.20])
+	by yto-om1.fujitsu.com (Postfix) with ESMTP id D5E794005AA38;
+	Wed, 15 Jan 2025 14:29:07 +0900 (JST)
+From: Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>
+To: Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	fj6611ie@aa.jp.fujitsu.com
+Subject: [PATCH v2] serial: amba-pl011: Implement nbcon console
+Date: Wed, 15 Jan 2025 05:27:48 +0000
+Message-Id: <20250115052749.3205675-1-fj6611ie@aa.jp.fujitsu.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="-1463794929-641841564-1736918589=:17662"
+Content-Transfer-Encoding: 8bit
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Implement the callbacks required for an NBCON console [0] on the 
+amba-pl011 console driver.
 
----1463794929-641841564-1736918589=:17662
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: quoted-printable
+Referred to the NBCON implementation work for 8250 [1] and imx [2].
 
+The normal-priority write_thread checks for console ownership
+each time a character is printed.
+write_atomic holds the console ownership until the entire string
+is printed.
 
-Dear Andy,
+UART register operations are protected from other contexts by 
+uart_port_lock, except for a final flush(nbcon_atomic_flush_unsafe) 
+on panic.
 
-On Tue, 14 Jan 2025, Andy Shevchenko wrote:
+The patch has been verified to correctly handle the output and
+competition of messages with different priorities and flushing
+panic message to console after nmi panic using ARM64 QEMU and
+a physical machine(A64FX).
 
-> On Tue, Jan 14, 2025 at 08:04:49AM +0100, Andre Werner wrote:
-> > Fall back to polling mode if no interrupt is configured because there
-> > is no possibility to connect the interrupt pin.
-> >
-> > If no interrupt pin is available the driver uses a delayed worker to
-> > poll the state of interrupt status registers (IIR).
->
-> ...
->
-> > V6:
-> > - Use polling mode for IRQ numbers <=3D 0 which encounter no valid IR=
-Q
-> >   were found/defined.
-> > V7:
-> > - Try to improve and unify comments as requested.
-> > - Fix typo in commit message: pull -> poll
->
-> Please, rebase your series on top of the recent Linux Next.
+[0] https://lore.kernel.org/all/ZuRRTbapH0DCj334@pathway.suse.cz/
+[1] https://lore.kernel.org/all/20240913140538.221708-1-john.ogness@linutronix.de/T/
+[2] https://lore.kernel.org/linux-arm-kernel/20240913-serial-imx-nbcon-v3-1-4c627302335b@geanix.com/T/
 
-I performed the rebase and get a single new commit to fix the merge
-conflicts. How do you expect the submission? Is it a new commit or
-should I mark it as a fixup? Shall it have new version number v8 or
-is it a full new commit series?
+Signed-off-by: Toshiyuki Sato <fj6611ie@aa.jp.fujitsu.com>
+---
+This patch removes the legacy console code.
+Please comment if you have any concerns.
 
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
->
+I plan to try a stress test, referencing the work for 8250.
+https://lore.kernel.org/lkml/ZsdoD6PomBRsB-ow@debarbos-thinkpadt14sgen2i.remote.csb/#t
 
-Thanks and best regards,
+Changes in v2:
+- Remove the module parameter used to switch between legacy and nbcon.
+- Remove codes for legacy console.
+- Fix build errors detected by the test robot.
+- based on 6.13-rc7
+v1: https://lore.kernel.org/all/20250108004730.2302996-1-fj6611ie@aa.jp.fujitsu.com/
 
-Andr=E9
----1463794929-641841564-1736918589=:17662--
+Thanks Greg for the advice & comment.
+---
+ drivers/tty/serial/amba-pl011.c | 143 ++++++++++++++++++++++----------
+ 1 file changed, 97 insertions(+), 46 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 69b7a3e1e..577fd3258 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -263,6 +263,7 @@ struct uart_amba_port {
+ 	char			type[12];
+ 	bool			rs485_tx_started;
+ 	unsigned int		rs485_tx_drain_interval; /* usecs */
++	bool			console_line_ended;
+ #ifdef CONFIG_DMA_ENGINE
+ 	/* DMA stuff */
+ 	unsigned int		dmacr;		/* dma control reg */
+@@ -2305,50 +2306,7 @@ static void pl011_console_putchar(struct uart_port *port, unsigned char ch)
+ 	while (pl011_read(uap, REG_FR) & UART01x_FR_TXFF)
+ 		cpu_relax();
+ 	pl011_write(ch, uap, REG_DR);
+-}
+-
+-static void
+-pl011_console_write(struct console *co, const char *s, unsigned int count)
+-{
+-	struct uart_amba_port *uap = amba_ports[co->index];
+-	unsigned int old_cr = 0, new_cr;
+-	unsigned long flags;
+-	int locked = 1;
+-
+-	clk_enable(uap->clk);
+-
+-	if (oops_in_progress)
+-		locked = uart_port_trylock_irqsave(&uap->port, &flags);
+-	else
+-		uart_port_lock_irqsave(&uap->port, &flags);
+-
+-	/*
+-	 *	First save the CR then disable the interrupts
+-	 */
+-	if (!uap->vendor->always_enabled) {
+-		old_cr = pl011_read(uap, REG_CR);
+-		new_cr = old_cr & ~UART011_CR_CTSEN;
+-		new_cr |= UART01x_CR_UARTEN | UART011_CR_TXE;
+-		pl011_write(new_cr, uap, REG_CR);
+-	}
+-
+-	uart_console_write(&uap->port, s, count, pl011_console_putchar);
+-
+-	/*
+-	 *	Finally, wait for transmitter to become empty and restore the
+-	 *	TCR. Allow feature register bits to be inverted to work around
+-	 *	errata.
+-	 */
+-	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr)
+-						& uap->vendor->fr_busy)
+-		cpu_relax();
+-	if (!uap->vendor->always_enabled)
+-		pl011_write(old_cr, uap, REG_CR);
+-
+-	if (locked)
+-		uart_port_unlock_irqrestore(&uap->port, flags);
+-
+-	clk_disable(uap->clk);
++	uap->console_line_ended = (ch == '\n');
+ }
+ 
+ static void pl011_console_get_options(struct uart_amba_port *uap, int *baud,
+@@ -2411,6 +2369,8 @@ static int pl011_console_setup(struct console *co, char *options)
+ 	if (ret)
+ 		return ret;
+ 
++	uap->console_line_ended = true;
++
+ 	if (dev_get_platdata(uap->port.dev)) {
+ 		struct amba_pl011_data *plat;
+ 
+@@ -2494,14 +2454,105 @@ static int pl011_console_match(struct console *co, char *name, int idx,
+ 	return -ENODEV;
+ }
+ 
++static void
++pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt)
++{
++	struct uart_amba_port *uap = amba_ports[co->index];
++	unsigned int old_cr = 0;
++
++	if (!nbcon_enter_unsafe(wctxt))
++		return;
++
++	clk_enable(uap->clk);
++
++	if (!uap->vendor->always_enabled) {
++		old_cr = pl011_read(uap, REG_CR);
++		pl011_write((old_cr & ~UART011_CR_CTSEN) | (UART01x_CR_UARTEN | UART011_CR_TXE),
++				uap, REG_CR);
++	}
++
++	if (!uap->console_line_ended)
++		uart_console_write(&uap->port, "\n", 1, pl011_console_putchar);
++	uart_console_write(&uap->port, wctxt->outbuf, wctxt->len, pl011_console_putchar);
++
++	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr) & uap->vendor->fr_busy)
++		cpu_relax();
++
++	if (!uap->vendor->always_enabled)
++		pl011_write(old_cr, uap, REG_CR);
++
++	clk_disable(uap->clk);
++
++	nbcon_exit_unsafe(wctxt);
++}
++
++static void
++pl011_console_write_thread(struct console *co, struct nbcon_write_context *wctxt)
++{
++	struct uart_amba_port *uap = amba_ports[co->index];
++	unsigned int old_cr = 0;
++
++	if (!nbcon_enter_unsafe(wctxt))
++		return;
++
++	clk_enable(uap->clk);
++
++	if (!uap->vendor->always_enabled) {
++		old_cr = pl011_read(uap, REG_CR);
++		pl011_write((old_cr & ~UART011_CR_CTSEN) | (UART01x_CR_UARTEN | UART011_CR_TXE),
++				uap, REG_CR);
++	}
++
++	if (nbcon_exit_unsafe(wctxt)) {
++		int i;
++		unsigned int len = READ_ONCE(wctxt->len);
++
++		for (i = 0; i < len; i++) {
++			if (!nbcon_enter_unsafe(wctxt))
++				break;
++			uart_console_write(&uap->port, wctxt->outbuf + i, 1, pl011_console_putchar);
++			if (!nbcon_exit_unsafe(wctxt))
++				break;
++		}
++	}
++
++	while (!nbcon_enter_unsafe(wctxt))
++		nbcon_reacquire_nobuf(wctxt);
++
++	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr) & uap->vendor->fr_busy)
++		cpu_relax();
++
++	if (!uap->vendor->always_enabled)
++		pl011_write(old_cr, uap, REG_CR);
++
++	clk_disable(uap->clk);
++
++	nbcon_exit_unsafe(wctxt);
++}
++
++static void
++pl011_console_device_lock(struct console *co, unsigned long *flags)
++{
++	__uart_port_lock_irqsave(&amba_ports[co->index]->port, flags);
++}
++
++static void
++pl011_console_device_unlock(struct console *co, unsigned long flags)
++{
++	__uart_port_unlock_irqrestore(&amba_ports[co->index]->port, flags);
++}
++
+ static struct uart_driver amba_reg;
+ static struct console amba_console = {
+ 	.name		= "ttyAMA",
+-	.write		= pl011_console_write,
+ 	.device		= uart_console_device,
+ 	.setup		= pl011_console_setup,
+ 	.match		= pl011_console_match,
+-	.flags		= CON_PRINTBUFFER | CON_ANYTIME,
++	.write_atomic	= pl011_console_write_atomic,
++	.write_thread	= pl011_console_write_thread,
++	.device_lock	= pl011_console_device_lock,
++	.device_unlock	= pl011_console_device_unlock,
++	.flags		= CON_PRINTBUFFER | CON_ANYTIME | CON_NBCON,
+ 	.index		= -1,
+ 	.data		= &amba_reg,
+ };
+-- 
+2.34.1
+
