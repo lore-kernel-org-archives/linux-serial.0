@@ -1,177 +1,109 @@
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A0FD2459A8;
-	Wed, 15 Jan 2025 13:13:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FB91156872;
+	Wed, 15 Jan 2025 15:09:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736946804; cv=none; b=cZ+lPvCIPsRb/Mw5Q2oHsAewOVwt/b6keRRCSGyNQBDpzSWAFbGMQ9Ft7ZVL1o/V/JTgeVWYM62tNFuIbc8bruKs0ljw9tfiDxo2ZTSHUJbL907Xkp17ZVI59hAro2fVmLXGViuwYaVFE078q2XlMf+rGT/deQIaAoBQk3iY2cE=
+	t=1736953762; cv=none; b=XopDWtTZyUJMqcz59/ivRFTVLctxVFRStNmWlZYrBbIoleY+qJ0ElLEGRwAlvMn/shS/tqDJA1aUy5Po3M29XgTwLKLtLxFqI57OYl2MKSvBDeTuzVg6+FR8CE+8f6o5qFJKGuR90B3PEPPDUi5FvZIIOYGGC3MTsEo0z2wKc28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736946804; c=relaxed/simple;
-	bh=ITMq/WFn+XXw/gmRSnpcR1okxP3am/IRL0bBQEpXKxc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RAKEhp0lhyn6glYxhvIeUiQ08HdRx/YR7xnofd4fpuZSeAbbC40g7tPYs/kLkG3Ee/8lBSIeewiChbaZlck/oqotRo4WSPStYTAqSV5iAvglpVTkClbE0+xuw2bz7DQlRKGynKjy8hmYaRrLKS8NJ6yooluHHJpH1NxPIqvC1jA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org; spf=pass smtp.mailfrom=clip-os.org; dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b=ThGHAjeZ; arc=none smtp.client-ip=217.70.183.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=clip-os.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=clip-os.org
+	s=arc-20240116; t=1736953762; c=relaxed/simple;
+	bh=9rZ4pxhEV6U39XA0V6eXP/hZQ/fFefihJFDYK9VajvY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jvVDu4R1u8uOkKyhwM4IF3th0GlT2ZEmC8ruKek5w5LCkeAeoktBQQD9hPxtyI+piBLHYvuKnB990BFlVw4hxFqj/XtnjdMatuMdIKCOISZAVug/wxXtDcn2gRq3ZnoRQOczKvXUu6jqJY/NfVL9EeVtwGHqoisQs6+FLX7m+Zg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MyGqtP6M; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=clip-os.org header.i=@clip-os.org header.b="ThGHAjeZ"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id E140E2000F;
-	Wed, 15 Jan 2025 13:13:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=clip-os.org; s=gm1;
-	t=1736946793;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Oi1+f9JJ1Q/PrcOFWJNIFlSVEAkDNgeD327FuM3wz5c=;
-	b=ThGHAjeZpVJojhgp5X1TSwJCAdVf2FoOkye8n5MEZcmpaYi8jl/DHhiGOzuIdVZ/UGSZQN
-	unftFUchZfpAxTLQxiHMKLjB5UMAD43tqyWp+79Y/hy9ECC1SmkgWWehHYeuzYGLBvw/Df
-	svIvAd5BsbbTxJVcVRDFK0/RSgZDCZjeWaIZ6eddLtTxmhKwjR2NynmuvFuGIZKN6cqmeg
-	nrXpzZr0GeQjWGi+wEVGl2WlMJ44gVvM2ZCyXjHPjsuD5KhVVkQMmsxfhhzNB0bVuhsqzo
-	XaJLo+hK9zYGR14hCzurGl2K0+OvQjkf1EwgnAYUVkoIG5nQ17vQCDJ7Ch7mnQ==
-Message-ID: <da2b6a5c-72d6-4e65-a5ad-2cb27fedec29@clip-os.org>
-Date: Wed, 15 Jan 2025 14:13:10 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MyGqtP6M"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-aa684b6d9c7so1213850366b.2;
+        Wed, 15 Jan 2025 07:09:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1736953758; x=1737558558; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jzYu3qJ8QgTzfQt709xDN3GWHbP81C9WCUW/N0FwAvY=;
+        b=MyGqtP6MAIjIjx+QZ0+SvDJgo4tvpv0Lf4WlbbeheU2NYp6ZJCGbw9tH54QHGQFlrl
+         O3PRi0TA7vmQZWRjNlI424jhBq7QzHYmgneR6XbxOrc639fmbkogWMMpXq9p/nr8kSDu
+         dZFSPHVklTgXjAUwfR9CtUKUi2Q9y2hQihPweD6eZVUCPdMhq4GC+TefZnRdVpSFo6pq
+         Yu2WC2vSyVi4j/dFJyruXdouwesew/xpu2+V3daTHSqDdyBZDfKw4uyd13hpy0FLh7Hn
+         9acwCMVqiNshZ92r8TdMWSfxyXWUKzNCzMbFk1ejXZmT/Ob8edI7MoCJULXMKFHuiygJ
+         X7IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736953758; x=1737558558;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jzYu3qJ8QgTzfQt709xDN3GWHbP81C9WCUW/N0FwAvY=;
+        b=ifD46bJ1ovYB0kfhCS/1CP+wU/+SxNUHtaoAZQt3CebnpzorMIobFItZXVCTRVceNq
+         wdaO1F4MV7S3SevbFLyhLK86tsjPeQYxpdvRfv+uEhzV2yRWfuKVAagcgZ95R+dwbvwp
+         +4uNOdhBi02rh1Sy1kFOITlEmgeK6Gjjxm+kB9HKKMAMcvPWjJ67Y0Y5drCZTAV1XAQd
+         ILz5EOyvMDXQv59PUYKI6hEs+KB0MmLalpt6+iQYTLAUISSkgKH6cqDPEgjkVarkUySX
+         +sxuYn+VuRYla/lhe8jFWc5Qf4UO8HVekVlwDT8IRvNNYlu3vwAQi6Cp/9RVssX6NNHn
+         3TWg==
+X-Forwarded-Encrypted: i=1; AJvYcCUkFzKaF+M/aCDE9t+t16u+E3smWCSsjEYc3+Xg2sOozV+vxT5spNU3G/vDJLciIUEFYZT3FZth5rq2@vger.kernel.org, AJvYcCVBquOpeLfMukG5+5amx0101SI3qZPPB3/6NPAvdHHDC4mbn05Uxq+tvMGHVJzl5tZWrFk6V0qOtUvr0RLF@vger.kernel.org, AJvYcCVKnoELcXUNW6mhvca/5r7UfODrASM+FOFWloYggmQcDIFqMoXmP6XdrvTHL+PvtySG0sbzELFNfLfrdkc6@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx35N4UThwrYZWSsidKTHPcM1sMUPjfm2sFutEL//qKZP2a/nYg
+	AarYKG1x+bphrUrad2JoyNeLWt+ouvzFzlqfXzbLOTBwCHnl1srZbnvA7iDdAl25V5EBzGQTnXW
+	EQhTUq0ju2EwOX1cZJ3ZrDc/w39Y=
+X-Gm-Gg: ASbGncsBuAJaHT5bJY7B6ISGWStJJLNYaLZYyNpjWqbmAgO7c0gPpIbFCGnmF3MJDxd
+	I2uHxgfw5W7QcYIIW+Ir63ve7Wn49GovECTejcQNr
+X-Google-Smtp-Source: AGHT+IGVv0kRG4CV80SchQtOvpA6+JA9Z5WM6SCZ833us1IVEIwXNWIt3iZ7cuA3okit6yxwZMyU6RI0v6ILvR3aPtg=
+X-Received: by 2002:a17:907:97d6:b0:aa6:6c6b:15fd with SMTP id
+ a640c23a62f3a-ab2ab6b52b8mr2731889666b.20.1736953757754; Wed, 15 Jan 2025
+ 07:09:17 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/3] sysctl: Fix underflow value setting risk in
- vm_table
-To: Joel Granados <joel.granados@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-fsdevel@vger.kernel.org,
- Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Alexander Viro <viro@zeniv.linux.org.uk>,
- Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
- Luis Chamberlain <mcgrof@kernel.org>, Kees Cook <kees@kernel.org>,
- Joel Granados <j.granados@samsung.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Neil Horman <nhorman@tuxdriver.com>, Lin Feng <linf@wangsu.com>,
- Theodore Ts'o <tytso@mit.edu>
-References: <20241114162638.57392-1-nicolas.bouchinet@clip-os.org>
- <20241114162638.57392-3-nicolas.bouchinet@clip-os.org>
- <4ietaibtqwl4xfqluvy6ua6cr3nkymmyzzmoo3a62lf65wtltq@s6imawclrht6>
- <2d5447b7-c185-4ce9-852e-b56a28b0306a@clip-os.org>
- <lfdhvbnqhzrnu4efozlr3qydmrzbykvya3cb4lfpkdyacfkvac@j7eij7pvqhlu>
-Content-Language: en-US
-From: Nicolas Bouchinet <nicolas.bouchinet@clip-os.org>
-In-Reply-To: <lfdhvbnqhzrnu4efozlr3qydmrzbykvya3cb4lfpkdyacfkvac@j7eij7pvqhlu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-GND-Sasl: nicolas.bouchinet@clip-os.org
+References: <20250114070449.34226-1-andre.werner@systec-electronic.com>
+ <20250114070449.34226-2-andre.werner@systec-electronic.com>
+ <Z4Z7JUP2vMEX9JsW@smile.fi.intel.com> <bc6aafdc-4b86-956b-afa0-ecf5b3ef393c@systec-electronic.com>
+In-Reply-To: <bc6aafdc-4b86-956b-afa0-ecf5b3ef393c@systec-electronic.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 15 Jan 2025 17:08:41 +0200
+X-Gm-Features: AbW1kvZFg7gXIxSLY3gVv93jG0XlZjmggBL3SuFU-6b6wqB2q3WoY8deujsiRyc
+Message-ID: <CAHp75Vc==m3mE1TtxjHnpwL-d8W4rFnKreu7XB7MWspJKCCOGA@mail.gmail.com>
+Subject: Re: [External Email] Re: [PATCH v7 2/2] serial: sc16is7xx: Add
+ polling mode if no IRQ pin is available
+To: Andre Werner <andre.werner@systec-electronic.com>
+Cc: Andy Shevchenko <andy@kernel.org>, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	hvilleneuve@dimonoff.com, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	lech.perczak@camlingroup.com, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	robh@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Wed, Jan 15, 2025 at 7:23=E2=80=AFAM Andre Werner
+<andre.werner@systec-electronic.com> wrote:
+> On Tue, 14 Jan 2025, Andy Shevchenko wrote:
+> > On Tue, Jan 14, 2025 at 08:04:49AM +0100, Andre Werner wrote:
 
-On 12/18/24 14:21, Joel Granados wrote:
-> On Tue, Dec 10, 2024 at 03:58:41PM +0100, Nicolas Bouchinet wrote:
->> Hi Joel,
->>
->>
->> Thank's for your reply.
->>
->> I apologize for the reply delay, I wasn't available late weeks.
->>
->> On 11/20/24 1:53 PM, Joel Granados wrote:
->>> On Thu, Nov 14, 2024 at 05:25:51PM +0100, nicolas.bouchinet@clip-os.org wrote:
->>>> From: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
->>>>
->>>> Commit 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in
->>>> vm_table") fixes underflow value setting risk in vm_table but misses
->>>> vdso_enabled sysctl.
->>>>
->>>> vdso_enabled sysctl is initialized with .extra1 value as SYSCTL_ZERO to
->>>> avoid negative value writes but the proc_handler is proc_dointvec and not
->>>> proc_dointvec_minmax and thus do not uses .extra1 and .extra2.
->>>>
->>>> The following command thus works :
->>>>
->>>> `# echo -1 > /proc/sys/vm/vdso_enabled`
->>> It would be interesting to know what happens when you do a
->>> # echo (INT_MAX + 1) > /proc/sys/vm/vdso_enabled
->> Great question, I'll check that.
->>
->>> This is the reasons why I'm interested in such a test:
->>>
->>> 1. Both proc_dointvec and proc_dointvec_minmax (calls proc_dointvec) have a
->>>      overflow check where they will return -EINVAL if what is given by the user is
->>>      greater than (unsiged long)INT_MAX; this will evaluate can evaluate to true
->>>      or false depending on the architecture where we are running.
->> Indeed, I'll run tests to avouch behaviors of proc handlers bound checks
->> with
->> different architectures.
->>
->>> 2. I noticed that vdso_enabled is an unsigned long. And so the expectation is
->>>      that the range is 0 to ULONG_MAX, which in some cases (depending on the arch)
->>>      would not be the case.
->> Yep, it is. As I've tried to explain in the cover letter
->> (https://lore.kernel.org/all/20241112131357.49582-1-nicolas.bouchinet@clip-os.org/),
->> there are numerous places where sysctl data type differs from the proc
->> handler
->> return type.
->>
->> AFAIK, for proc_dointvec there is more than 10 different sysctl where it
->> happens. The three I've patched represents three common mistakes using
->> proc_handlers.
-> It would be useful to analyze the others. Do you have more outstanding
-> patches for these?
+...
 
-I've started to analyze them more in depth it this monday, will send a 
-patchset when
-it seems ok.
-I'm focusing on proc_dointvec for now.
+> > > V6:
+> > > - Use polling mode for IRQ numbers <=3D 0 which encounter no valid IR=
+Q
+> > >   were found/defined.
+> > > V7:
+> > > - Try to improve and unify comments as requested.
+> > > - Fix typo in commit message: pull -> poll
+> >
+> > Please, rebase your series on top of the recent Linux Next.
+>
+> I performed the rebase and get a single new commit to fix the merge
+> conflicts. How do you expect the submission? Is it a new commit or
+> should I mark it as a fixup? Shall it have new version number v8 or
+> is it a full new commit series?
 
->
->>> So my question is: What is the expected range for this value? Because you might
->>> not be getting the whole range in the cases where int is 32 bit and long is 64
->>> bit.
->>>
->>>> This patch properly sets the proc_handler to proc_dointvec_minmax.
->>>>
->>>> Fixes: 3b3376f222e3 ("sysctl.c: fix underflow value setting risk in vm_table")
->>>> Signed-off-by: Nicolas Bouchinet <nicolas.bouchinet@ssi.gouv.fr>
->>>> ---
->>>>    kernel/sysctl.c | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
->>>> index 79e6cb1d5c48f..37b1c1a760985 100644
->>>> --- a/kernel/sysctl.c
->>>> +++ b/kernel/sysctl.c
->>>> @@ -2194,7 +2194,7 @@ static struct ctl_table vm_table[] = {
->>>>    		.maxlen		= sizeof(vdso_enabled),
->>>>    #endif
->>>>    		.mode		= 0644,
->>>> -		.proc_handler	= proc_dointvec,
->>>> +		.proc_handler	= proc_dointvec_minmax,
->>>>    		.extra1		= SYSCTL_ZERO,
->>> Any reason why extra2 is not defined. I know that it was not defined before, but
->>> this does not mean that it will not have an upper limit. The way that I read the
->>> situation is that this will be bounded by the overflow check done in
->>> proc_dointvec and will have an upper limit of INT_MAX.
->> Yes, it is bounded by the overflow checks done in proc_dointvec, I've not
->> changed the current sysctl behavior but we should bound it between 0
->> and 1 since it seems vdso compat is not supported anymore since
->> Commit b0b49f2673f011cad ("x86, vdso: Remove compat vdso support").
-> I think you have already done this in your V3
->
->> This is the behavior of vdso32_enabled exposed under the abi sysctl
->> node.
->>
->>> Please correct me if I have read the situation incorrectly.
->> You perfectly understood the problematic of it, thanks a lot for your
->> review.
->>
->> I'll reply to above questions after I've run more tests.
->>
->> I saw GKH already merged the third commit of this patchset and
->> backported it to stable branches.
->> Should I evict it from future version of this patchset ?
-> Yes. You should remove what has already been merged into main
-> line. thx.
->
-> Best
->
+When you rebase you should not get _merge_ conflicts.
+What is expected is that the first (DT binding) commit will be gone
+from your local branch, followed by the shrunken / conflicting second
+one.
+
+--=20
+With Best Regards,
+Andy Shevchenko
