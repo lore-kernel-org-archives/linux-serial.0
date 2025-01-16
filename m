@@ -1,140 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BEC51DE3B6;
-	Thu, 16 Jan 2025 12:26:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5F9714F9E7;
+	Thu, 16 Jan 2025 17:14:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737030403; cv=none; b=hRhhisBk7xYzQGtPyKOnkUQAs+STxQTH85qcUNyz8bHkFIQnAm+2bfPab3TdYT4R0kNsAagIvx5EeUbS9IiL4HfID+SLLYpHsXoAVykhaNHk0GY2ThciCuvMntm4Mfq88ofSkYQpYMWDFcbV1SA44p9GbHVsXqbYlAoNAWkSiTM=
+	t=1737047667; cv=none; b=bsICiqFw7+BEw9x58YwaNnvTFUB2/5U3wen77I2+aaU8USm2cigEuem4ybxxZtpirV+Q/C6X+CZP3ch007QsKgxw4bX5Y+wRd7eepYmKIU5zkHkTajAxwoeRQTKo1zEpHkgxMbyYVd803+G3cY7pT5OF5CSdMR9uT7PZa3ekNeM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737030403; c=relaxed/simple;
-	bh=F2ZVEXZ7JZHgWfiaydY+HrCORK5YO8uKcZcJMC1o4JM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e8ShdZ8r7L4os3WwNhYaeph/CgDSW5TbpoX9cwgjwCmtGPraGbkBLwXgdNXmTs+uo39yckv7v2svFlssJviAx/xzSUdddKp++l/jiU0eKxNkjll1YV/S94iRuq60rEFqtDWfEhQ+1TVtiml6J34w7dmthYaDlynpv3Jz3PQVF7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Xb0fIbMH; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1737047667; c=relaxed/simple;
+	bh=368rv5UrHh14KNEsa+F5OP+FALIJ9EvCMgKrFaIGojQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IueS72f1G6hHSvzIlpPKpaZMSwRGgqCliVmpFzgihEJg6Y6PolCGt5zTwesKAto57Om7A5EO4TLY0ZysL6h3Y4TJNZSSjzite2u+cOOWqlPCNXjnFAM9D7zEqDny7c5m9h+cRAv1qMH3UEm+JjQMYSS2vB1D4d8KzwfoT4u8KSY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=buaWGgKg; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Xb0fIbMH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1737030402; x=1768566402;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=F2ZVEXZ7JZHgWfiaydY+HrCORK5YO8uKcZcJMC1o4JM=;
-  b=Xb0fIbMH+9jNHbh50NC7qwNsWXqy3HrP/IQbi3QI+fxu0d2Jx7ADr7rq
-   y6+iAJcOZuPMH0WFxKG8fueFV6HdatJBQUH8UywNf6hLlz/ZlJvLhEPLE
-   sLbRSw+xQpDEAUfSKR5EEKbxqAQETcaiPEzJAZuQWerstrNQtaiGX9sa2
-   oyMWqhBccKU4fu6tB8ZiGIMjkQU8EA5j0nKllWty0wQbLHWmU1XOYczci
-   HYxiutp1UAg4eWBoGjfx6+40yjfqVj2Wa1fZugIwEqnxUOeANPxbB/PYg
-   VotE+VrC+3+jA6TatrVHKqGFwcGfANnT7WV6AzwRqtAq0mDMjbMMpSzla
-   A==;
-X-CSE-ConnectionGUID: DJ9WmytVTGKLd7M0ds39uQ==
-X-CSE-MsgGUID: j0W2sUBuSS+FV9canOvRyw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11316"; a="54827009"
-X-IronPort-AV: E=Sophos;i="6.13,209,1732608000"; 
-   d="scan'208";a="54827009"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2025 04:26:42 -0800
-X-CSE-ConnectionGUID: 0e15t8+TQQqRgWNVRs3fMQ==
-X-CSE-MsgGUID: ybzbBef6RVqcTS4lIZOLZg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="128735713"
-Received: from unknown (HELO smile.fi.intel.com) ([10.237.72.154])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2025 04:26:38 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tYOxI-00000001fGO-00uI;
-	Thu, 16 Jan 2025 14:26:36 +0200
-Date: Thu, 16 Jan 2025 14:26:35 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Guenter Roeck <linux@roeck-us.net>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	linux-serial@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-	linux-kernel@vger.kernel.org,
-	Yang Yingliang <yangyingliang@huawei.com>
-Subject: Re: [PATCH 1/1] tty: serial: handle HAS_IOPORT dependencies
-Message-ID: <Z4j6-ysRfyThWq6R@smile.fi.intel.com>
-References: <744920ba-551c-466b-ac5c-2607b81261a0@app.fastmail.com>
- <Z0QtZky8Sr7qUW7v@smile.fi.intel.com>
- <00f5e842-3ee9-4d83-8836-0ff4f703fa3c@app.fastmail.com>
- <Z0RSZ-YD_BozMs1n@smile.fi.intel.com>
- <be43108e-4135-4927-ba58-141836fde6af@app.fastmail.com>
- <30a38025-afae-4bdf-a468-21ae2cd5a7b3@app.fastmail.com>
- <4446d7dc-efb0-4395-8fcb-7177d9e07b5c@roeck-us.net>
- <acdab483-05a4-4fa8-ae1c-70ed53402aa2@app.fastmail.com>
- <Z1Mb15vOY4fJjsKt@smile.fi.intel.com>
- <e855900a-28d2-424b-8b3e-63c3c10c2848@app.fastmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="buaWGgKg"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-aa689a37dd4so249873966b.3;
+        Thu, 16 Jan 2025 09:14:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1737047664; x=1737652464; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=368rv5UrHh14KNEsa+F5OP+FALIJ9EvCMgKrFaIGojQ=;
+        b=buaWGgKgE1kwvt66+kqKL2c+wFJTsZ1jhPyDMK4H+Fu2QurmVNJaZ85EMFPC3hM7Am
+         2vJIsfkRAoCEgAqIoFYxXDLBNBzesLzllqCqq6F0oeZMw0N0dSalIGiOMm5eiRqY43nh
+         oGsMJdJFvu147VFnlz9TPiC1uv3BnxWcJGSn/m/Ig2x0NbnANe6y1/RIfG8tWF9ZbFEB
+         sgaLMv+0ENoeoyK3YuRZMZXu9Et0Wo698pE1J6dNLS9sEx8VGCMTQiQYDpcVUez5vXtL
+         Bmn+11Dm2neUfFe2z8Ut4Bsnu8Bh4vI1Q4IaFu/XZh9/jpAhQhsN/ppx/Va0VB32KlRl
+         4btw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737047664; x=1737652464;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=368rv5UrHh14KNEsa+F5OP+FALIJ9EvCMgKrFaIGojQ=;
+        b=JFpK75gHWttRJj1AXA5Pub1OBkStCfRvkBU/xBWsn0dRWt4Xvkd2nsv5X2l2JkqK9U
+         uxw7v4IN14+dW8dJwCZV2/irW7NxCss8XbTE/VySKrNDQhRxc+ClPH3jk3q/T3FjesEf
+         aWYfd2INm8/xdf0dMaBDtxNTE+o1sL1K3YqXEGbPU7qXE4ZkkvEE3gzCIshGbiEDO4SZ
+         vhVvX2bZtzQLwcM9DIJj7uwBWEad5c5GHF5yvQvLlfLHTwzDPvnASex8H5HEu6kd5aHq
+         r6vLeiUEu4iil6cMyfPi2BZbIwL5fPndOiB9Ov95FNtT8i/FtDjBAxr4EfsnxuVhdmkO
+         ZSxw==
+X-Forwarded-Encrypted: i=1; AJvYcCVcBBjGOpFWMB/cEjHi4/tG4OWxLekUc51KlxBIMSQGIPyQWPCqBLacjIH27tkCe78vOblP0F1DaDmiNnfy@vger.kernel.org, AJvYcCWDJa8DapprzcKn/3Hj1CiqSHspiprSuUK56T+LxAsW7kN7bGfquCtG83IX52+mvOzJFEu8HTYW/XcJECU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynyNJXl/T8laS6gXYJy6XqliCtHxovsRvsKcP9Y+FLSgs4wO+p
+	7Y1tAco63d+CZojRYHRPgz+XF+8ikznCWjmTXGmP/qeFnJZXmTDIPCxLKZVxuewdhkElGBZ1mx1
+	5e1T5rKaAGpcfK30a1u475QD9uKo=
+X-Gm-Gg: ASbGncuqWyb/UxLaRyud+HIE+89ldPGWFz7xNrxYwI4oEHbFIMryeUhuq2lNfrlVnQM
+	g574+RdGwOpvP8ElOnmi0Rv1OZP1JuLJb6wPuNnbv
+X-Google-Smtp-Source: AGHT+IFmpu9D5PwB4xpvE5Hz6iPNqZaoqTD2s07bqglD4lKPZWCCzoylOo1+DWvTnZc7180DCKptlA17bI1qE+Ck+JQ=
+X-Received: by 2002:a17:907:c03:b0:aa6:84c3:70e2 with SMTP id
+ a640c23a62f3a-ab2ab6fe0d9mr3026777566b.20.1737047663998; Thu, 16 Jan 2025
+ 09:14:23 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e855900a-28d2-424b-8b3e-63c3c10c2848@app.fastmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <Z4jLU75SU53VGsRU@smile.fi.intel.com> <20250116093203.460215-1-andre.werner@systec-electronic.com>
+ <be1bc254-da95-47c2-b81c-e630c0f924b2@kernel.org> <Z4jW_TUQ8RNr1FWX@smile.fi.intel.com>
+ <834d7b6e-27a4-41e9-b36b-2bcbd0504bd5@kernel.org>
+In-Reply-To: <834d7b6e-27a4-41e9-b36b-2bcbd0504bd5@kernel.org>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Thu, 16 Jan 2025 19:13:47 +0200
+X-Gm-Features: AbW1kvYiJenLQ0QEkWD9c27njPAMj_E3BXY5dAC-Ov9MLRT4UCTEMvy5iBavw8E
+Message-ID: <CAHp75VfFyOChqNEtdot0_Pzb+E2EFjGPuJPjvpL-UW0_FsB1Kg@mail.gmail.com>
+Subject: Re: [PATCH v1] serial: sc16is7xx: Extend IRQ check for negative valus
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Andy Shevchenko <andy@kernel.org>, Andre Werner <andre.werner@systec-electronic.com>, 
+	gregkh@linuxfoundation.org, hvilleneuve@dimonoff.com, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	lech.perczak@camlingroup.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Dec 06, 2024 at 05:02:04PM +0100, Arnd Bergmann wrote:
-> On Fri, Dec 6, 2024, at 16:44, Andy Shevchenko wrote:
-> > On Wed, Dec 04, 2024 at 11:17:56PM +0100, Arnd Bergmann wrote:
-> >> On Wed, Dec 4, 2024, at 22:09, Guenter Roeck wrote:
+On Thu, Jan 16, 2025 at 12:02=E2=80=AFPM Jiri Slaby <jirislaby@kernel.org> =
+wrote:
+> On 16. 01. 25, 10:53, Andy Shevchenko wrote:
+> > On Thu, Jan 16, 2025 at 10:42:14AM +0100, Jiri Slaby wrote:
+> >> This is threaded weirdly.
 > >
-> >> I got stuck in this rabbit hole of running into more issues
-> >> with the 8250 driver. Any time you touch something, it breaks
-> >> elsewhere.
-> >> 
-> >> I've uploaded what I have here now:
+> > Yeah, new patch (version) =E2=80=94 new email thread.
 > >
-> > FWIW, I have briefly looked at it, some patches I appreciate very much, some of
-> > them I think need more testing and one thing I don't really like is putting
-> > code back to 8250_core. Thinking about that, perhaps we need to restore 8250.c
-> > (or alike) for collecting non-library / non-_particular_-driver-leaf?
-> 
-> Thanks for taking a look!
-> 
-> I thought you might have different ideas on where some of the
-> code needs to go,  as you were the one who moved it out
-> previously.
-> 
-> However, I think the two bits that I ended up moving back
-> really belong in the core:
-> 
-> - serial8250_setup_ports() is needed to get the
->   serial8250_ports[] into a sane state. Ideally this
->   array would just be statically initialized, but I don't
->   think we can actually express that in C code.
-> 
-> - serial8250_init()/serial8250_exit() are required for
->   registering the driver itself (serial8250_reg) Having
->   that part in the ISA driver made no sense to me.
-> 
-> The bit that is definitely ugly is how serial8250_isa_init()
-> gets called from serial8250_init() and univ8250_console_init(),
-> and I would prefer to remove that, but any attempt to do
-> that made it worse.
-> 
-> The problem here is that we can't just rely on link order:
-> For the console initcall and  serial8250_isa_init_ports(),
-> we have to call this before the core driver initialization,
-> but the serial8250-isa platform device has to be registered
-> after the core driver does. If we link both files into
-> a loadable module, there is an additional problem of
-> not being able to have more than one module_init() call.
+> >> On 16. 01. 25, 10:32, Andre Werner wrote:
+> >>> Fix the IRQ check to treat the negative values as No IRQ.
+> >>
+> >> Care to describe on what HW that can happen?
+> >
+> > But how does this relevant? The whole idea is that neither I=C2=B2C nor=
+ SPI
+> > frameworks do not guarantee the IRQ field never be negative. This is
+> > the fix to the previously submitted patch.
+>
+> They do AFAICS. Could you be more specific?
 
-So, that's what I meant under resurrecting 8250.c or so, we can leave platform
-driver to be still platform driver and call the respective init and exit
-routines from the (newly) created module that will have the main
-module_init/module_exit calls along with non-library common code.
+Hmm... I have looked into the SPI core and this behaviour seems quite
+new. Documentation still says the same as before where it's not
+guaranteed.
 
--- 
+
+--=20
 With Best Regards,
 Andy Shevchenko
-
-
