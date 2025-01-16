@@ -1,60 +1,62 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87C9D1DE4E7
-	for <linux-serial@vger.kernel.org>; Thu, 16 Jan 2025 18:23:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8766522CA1C
+	for <linux-serial@vger.kernel.org>; Thu, 16 Jan 2025 18:23:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737051785; cv=none; b=eIVNpcOgRSGyhEq0X6CA2s9DXGAtP7uPHl4gKTvzxb61t76kmMSOeXFdCiWFIK39AnuXvaxuA1iklTlgCcyx+w3Nz7YHXpOJlrZOHC3KiUyfbZQdLc0qd0DC9nDcJfqlrwek6/Djs08ZQTAdFV6SUGzA8zsCGp9fdudVwE9qkog=
+	t=1737051786; cv=none; b=msDqtKPj3RpQeKQ4gcVCopYh+hJtY1DkRkPOBSQa5XoVNgXqxTdFEPQjXY0xCsIiW5As0vPETQnKINT5YjA320NIWzPgl9xDBo66b2kyWYaAXft01awFFRF57BUtRE0WdCV6x8CHnBHSl7Jvjh1TVaBnIjZ1THIlpZWqH7uvit8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737051785; c=relaxed/simple;
-	bh=OwX0MEmBGHpg5bhCw6tUfaBb3F/xkJXnfYSkUVfbveM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qWh+DwgHLH0opaEV2OXv+EVU/Cjt/C0ndkm6XtNQ60bl4WsfTu6a+c8NTCdfYqbwvj7GYcuA8ryyrhW/CIl9FUIq9VBPSXdT9yxFeeoYZTLKyrI2I6+kuiTh7GkXU4UM4mqDTQRbohgdlmiVUCGVw0/ngOUEsqBMLQt6ew/LVfo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=Z0Rz5TdH; arc=none smtp.client-ip=209.85.221.54
+	s=arc-20240116; t=1737051786; c=relaxed/simple;
+	bh=uqq3kMHadr9kGhubJ6WWGg0WLHId0kU6QtAtpj50k6Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Dzfw9YoD6hJmH/LD2wUgrxn9UUw2AFa8mKz7uVWYaAe9oSUVONks5LbYA6aUae9jkRwPxz+lJftgP9ejmUVyyRnwE/AW0W+VMoFR4O466Ri0tQM2ALIClODwyoVf8QV5uP+4qmH4er7GmSe9AgEBLYCY2zgpfAIjnswZHBQKE2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=oXQAN/Hi; arc=none smtp.client-ip=209.85.221.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="Z0Rz5TdH"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-3862d6d5765so778348f8f.3
-        for <linux-serial@vger.kernel.org>; Thu, 16 Jan 2025 10:23:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="oXQAN/Hi"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-385de59c1a0so760216f8f.2
+        for <linux-serial@vger.kernel.org>; Thu, 16 Jan 2025 10:23:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1737051782; x=1737656582; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=aAPRbHfyxaeTRN6at4Eq4c1feMoRRI7T6P9QuC4/ttU=;
-        b=Z0Rz5TdHRKGhTLOAJxn/42V3gN1gcLgEwff+vtouyV68DqVH0k5w/grIT5dY2QiU1H
-         DZf/iqghLqhvuIJhpQhvqX34Fln2AnJUdVLHo4LDyojTtFiQZk2eoSKL7PnDNbcVB9si
-         FvtUzuKfh37fvnoxl0XL3kc/qgG1fPovr8Md32JlOFGassSwt1yhyPKZEZ4XenqcqlbQ
-         JRlz7c4lInolx5uJ9xgNtmK8ozr3dgJy3uXsxCvoaOjrvjAoG2M7ckJfgEmDObepDWLB
-         3jupFTK4khVlHoS5imaSZrsZhZSG3tm9hdEcie/ihpKJyBaSvDGJ9OUccgM5jWPz0X+I
-         71Tw==
+        d=tuxon.dev; s=google; t=1737051783; x=1737656583; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cgs3q9e5gTha9jyWfeK+tF0kxlh9ork4Uz9d4Avy4Eo=;
+        b=oXQAN/HiP3T7T48S7pEaFc6swfLRNJupBmnpvXcEW8e6CGWfOCaIrx7X27oGt3Ji9L
+         rfEHNs2s885ta972h4JR0FYnG5tQ/gtTNhul1WgPXx4xnPz/hWMDXlL3NUAZLVoxOUOb
+         M0OPxz+0L6nALArwvEKeAe7ILRoRzcE1Du6PC4h/BGfmUbFyG4kuIAPCQMg5CEP4oQmi
+         we7I1W35Zt2eP41G+NwHC0tY+yh8fyhyhR+EuPnac11pHsGxq9kaxnQzWMkQ9C8DP/CQ
+         2T8+oHHVWOcCRZDtJTdQGzu76OIMO/zB/v1QrrNkbsQO2jFi5cdktx9zuABfaYVIH+BS
+         UWHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737051782; x=1737656582;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aAPRbHfyxaeTRN6at4Eq4c1feMoRRI7T6P9QuC4/ttU=;
-        b=He9mokNptDoQeGMOV8vYIr35sJ+W2ichACQyTL0NRwayHt0sSIrPQyv+R6QPwRaBnp
-         zkvWCiKwxBqQGotVlk+x/nFWvtIenqQU4zApNONYIZAgyQoKkNBF3MG0KQymX0Irn4Fu
-         QK7mLHSm964jVY8nUHA9UMcUnhEgHTeUnAGh5ZaCp8wsaI+t8lv16sjQs2LQFxeQwsg3
-         P4pqVK6HoKS9TvixXHWk/gFwoOfM7QrAWJJ2fv5+CufzQcNpPTcHqFXrPMtqGUw9LjYX
-         N3xEIvym22/KLQCRIcc6WL7k47+wdF5lyUb8IkxVp6gasrirvS1OdO0gPPdrV/gb6IPN
-         pxkw==
-X-Forwarded-Encrypted: i=1; AJvYcCUcLnaF9ugYxiWvn7KoHIAa4mvLzo2w/ob3Kpy2UGzSDcINgkwCUT3e6UkLQ2LYhgnCWMlD4VfDN9A3jCg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwnzhzRRsDHdmprhw6gWwwWsAW9ylqfUKrgm+QPodLxiD86Sji0
-	aMeVeIQNwkfSUKGlbh38H0hFf12CPJniA+TLlTdDOhMERoFhUuNmlyTudNyYJos=
-X-Gm-Gg: ASbGncsCJCFoSuk4i5Nyym5qYJsKlLa1Q72tL4Nsz3++lOxtB0WCdB/fGkBsHGLDAkR
-	/QEB5IrfOyMhsPqzV0o82PExEJyHoVSGOu6jT/CnrGH1m+rP89ryNk+vYPk11dupSSe1Mu7YSpD
-	iYtH9L6pL3EAYAGZc5aq8b48CNVbIu30HCMnEL3t0B0pZqFEIWc1OEKoJ0MVIgeTvSYpSlQupTp
-	xZNc+tglLRwUltDEglShfllGuhI0lZN6oZbUh8w9xeEej6hrRZLT3WbbMW3INZDnO4gl5ZGcMDE
-	F0/d1t4bEg8=
-X-Google-Smtp-Source: AGHT+IEbbWS+5FcmutXAoXuYh25F/7EUf2rywm4G8Zg7Ww6kMySq2k45dMXvPOz2eIXImkYcoRwoOA==
-X-Received: by 2002:a5d:6489:0:b0:38b:da32:4f40 with SMTP id ffacd0b85a97d-38bda325049mr15381555f8f.2.1737051781547;
-        Thu, 16 Jan 2025 10:23:01 -0800 (PST)
+        d=1e100.net; s=20230601; t=1737051783; x=1737656583;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cgs3q9e5gTha9jyWfeK+tF0kxlh9ork4Uz9d4Avy4Eo=;
+        b=Yjy1ES42OP0KcA50/iJVfMRo6fBppwbDE4fnXQanAcLOuaslQysqtMQX94YIg4A3rZ
+         gMUg3BVdpDzuPJi9sYUjblAhyC0GD3p1H/HTjYD54rvlwW3Mjvz0KyzbAVRjmb7NbO4K
+         C6rhk7/Uu61xYjGkDMqLxA3dq04a6uGuZM0CF7GUEL2KExEExsRSWqGz8l+CYO6cac66
+         yWRkxRSSajNnqeKgYtT1VZPyFJ4NKy8ksnF1q38N6HBO+kddGCgMi8brRbeZ41buPSIT
+         Jy3KDP03LbM/P+/NYcNBGVfGpjeY6xQmRFg0JIBl7WJm/KPnshTOHn0rAh7gh9b9LT22
+         AB+g==
+X-Forwarded-Encrypted: i=1; AJvYcCVXsJy9Ai/fuqH6XW0p8XLXkpGuGYvdkASI9dyz8+o3rM7jlcgcr63Dv6OC86XL6hLD9U6pK5DPAgVR2H8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyAX/ufykNam0+5BsMSR7Ay1eePiKwcghjebatfraaM0WquYL0l
+	xbWkJKtyTQl5jcNQ1CWK0e3bQsT/+sSul8wDzOdxgwUxQnlWJ3L5pP+jgSHyijc=
+X-Gm-Gg: ASbGnctOF+J1iF7ClQWTsx2dRFRGDBS+lh0CRs42X/jL1icsL1s9QNqANK58ua/X+0n
+	80z898V0HklhoVOlIZu0k7zuoPdDWyvcPWhktIEt3LAXW8F5MkQrOvmiyMLpwV801xj3OPs06VE
+	gbdYVHMiLpT9Tqv4KoDF02Iv5H+CFUEXZGyHyjrtG7ECz61PbTkSpbEYErtmaEqhhCVP5t/rbxi
+	MzFZlkVbxaNR0VxzeANRqIoIJIGlgnuTELyMAiGymwPrkGau1uro6HOI5WBnftmSgs5rNmi5FZF
+	afVcpDFdEdg=
+X-Google-Smtp-Source: AGHT+IFCaynXpEJsQvwRloE6R//x5qfnNbfyNt6NHSxk6VGriZcxNiyTgPIAAL7cLGpfePzKNuczyw==
+X-Received: by 2002:a05:6000:1847:b0:386:3825:2c3b with SMTP id ffacd0b85a97d-38a87304672mr28732966f8f.18.1737051782923;
+        Thu, 16 Jan 2025 10:23:02 -0800 (PST)
 Received: from claudiu-X670E-Pro-RS.. ([82.78.167.165])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38bf322a838sm495942f8f.48.2025.01.16.10.23.00
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38bf322a838sm495942f8f.48.2025.01.16.10.23.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jan 2025 10:23:01 -0800 (PST)
+        Thu, 16 Jan 2025 10:23:02 -0800 (PST)
 From: Claudiu <claudiu.beznea@tuxon.dev>
 X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
 To: gregkh@linuxfoundation.org,
@@ -68,11 +70,14 @@ Cc: claudiu.beznea@tuxon.dev,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	linux-renesas-soc@vger.kernel.org,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH 0/5] serial: sh-sci: Fixes for earlycon and keep_bootcon
-Date: Thu, 16 Jan 2025 20:22:44 +0200
-Message-ID: <20250116182249.3828577-1-claudiu.beznea.uj@bp.renesas.com>
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/5] serial: sh-sci: Drop __initdata macro for port_cfg
+Date: Thu, 16 Jan 2025 20:22:45 +0200
+Message-ID: <20250116182249.3828577-2-claudiu.beznea.uj@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250116182249.3828577-1-claudiu.beznea.uj@bp.renesas.com>
+References: <20250116182249.3828577-1-claudiu.beznea.uj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -83,63 +88,38 @@ Content-Transfer-Encoding: 8bit
 
 From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Hi,
+The port_cfg object is used by serial_console_write(), which serves as
+the write function for the earlycon device. Marking port_cfg as __initdata
+causes it to be freed after kernel initialization, resulting in earlycon
+becoming unavailable thereafter. Remove the __initdata macro from port_cfg
+to resolve this issue.
 
-This series adds fixes for earlycon and keep_bootcon on sh-sci driver.
-All these fixes are prerequisites for the Renesas RZ/G3S SCI support.
-
-Series was tested on the boards with the following device trees binaries:
-- r8a7742-iwg21d-q7.dtb
-- r8a7743-iwg20d-q7.dtb
-- r8a7745-iwg22d-sodimm.dtb
-- r8a77470-iwg23s-sbc.dtb
-- r8a774a1-hihope-rzg2m-ex.dtb
-- r8a774b1-hihope-rzg2n-ex.dtb
-- r8a774e1-hihope-rzg2h-ex.dtb
-- r9a07g043u11-smarc.dtb
-- r9a07g044c2-smarc.dtb
-- r9a07g044l2-smarc.dtb
-- r9a07g054l2-smarc.dtb
-- r9a08g045s33-smarc.dtb
-- r9a08g045s33-smarc-pmod.dtb (not integrated in the latest kernel tree,
-  but the device tree was posted at [1])
-
-in the following scenarios:
-
-1/ "earlycon keep_bootcon" were present in bootargs
-2/ only "earlycon" was present in bootargs
-3/ none of the "earlycon" or "earlycon keep_bootcon" were present in
-   bootargs
-
-1, 2, 3 were tested also with renesas_defconfig on
-r9a08g045s33-smarc-pmod.dtb.
-
-Thank you,
-Claudiu Beznea
-
-[1] https://lore.kernel.org/all/20241115134401.3893008-9-claudiu.beznea.uj@bp.renesas.com/
+Fixes: 0b0cced19ab1 ("serial: sh-sci: Add CONFIG_SERIAL_EARLYCON support")
+Cc: stable@vger.kernel.org
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+---
 
 Changes since RFT:
-- dropped patch 1/6 as it was applied
-- dropped RFT tag
-- updated cover letter
 - collected tags
-- addressed review comments
-- the changelog for each patch is detailed within the individual
-  patches
+- used proper fixes commit
 
-Claudiu Beznea (5):
-  serial: sh-sci: Drop __initdata macro for port_cfg
-  serial: sh-sci: Move runtime PM enable to sci_probe_single()
-  serial: sh-sci: Do not probe the serial port if its slot in
-    sci_ports[] is in use
-  serial: sh-sci: Clean sci_ports[0] after at earlycon exit
-  serial: sh-sci: Increment the runtime usage counter for the earlycon
-    device
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/tty/serial/sh-sci.c | 93 +++++++++++++++++++++++++++++--------
- 1 file changed, 74 insertions(+), 19 deletions(-)
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index e0c56c328d10..09e69cb7d798 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -3562,7 +3562,7 @@ sh_early_platform_init_buffer("earlyprintk", &sci_driver,
+ 			   early_serial_buf, ARRAY_SIZE(early_serial_buf));
+ #endif
+ #ifdef CONFIG_SERIAL_SH_SCI_EARLYCON
+-static struct plat_sci_port port_cfg __initdata;
++static struct plat_sci_port port_cfg;
+ 
+ static int __init early_console_setup(struct earlycon_device *device,
+ 				      int type)
 -- 
 2.43.0
 
