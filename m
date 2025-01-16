@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9F621DDA14;
-	Thu, 16 Jan 2025 10:01:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E35C1ACED3;
+	Thu, 16 Jan 2025 10:02:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737021693; cv=none; b=RlojSK6KMOZfUaAwRnmv0jUQQTFP1NUCocZ4SoZgqNqP1OBPyRRSQJI30War0qn/JyMIqkwWhjEa7/EYk7djq9zWlKpTrgjjDe327764O9IVsfntGIdC1kLJwnfRIBaqh6LZIjBjp3NxAqVMHjf/S9nAhGgK87JB74MKyaAwMfo=
+	t=1737021749; cv=none; b=k0WHz164nlFc3Sz0EDBotU46irD5SbwTMYDB4eMdQBB2xLTU6kVrap3emKC9XHBNkOzR/qwQR0ZuAW5czyx9UjIhP37fWckFLilAAbtvLzjsLB4bsWElFVs97nPy/nxMNi2xPcmGFAlC/vnxdyyeNyblncEpClLHzXGRcOAxVFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737021693; c=relaxed/simple;
-	bh=vKrd1S5kPjokp3ALFbH6dwkiWO9sqacDoKnr3ujGd30=;
+	s=arc-20240116; t=1737021749; c=relaxed/simple;
+	bh=Uyu8CDucHjtJkU7/3hGL9KAt9/SEf3u5kC7COMTkcwo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c0pNJH/SK/0SG5pRJc4JnGbJLv83ippl250OmuY9v/+v8vh4m2OCJt6yLjHqwjz+1HjWondi5Dg0v3h3LYqAMUt5tjiZBOiP+HSDOPMv1JlED2vlSY/rvA+TI/ItBt+w2lqyNVZvn5dmMjiP5SmChn9AeSxw+6YqX6CMZTI7S3Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NsOJr54/; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=ngcYxq/G0rM8PcgF3yQXQyf4AxYEOkR8e5eIHFRnOgeJFJ/MrMTKXij41tBlVBrChBsRXqMzwfTvn2lYRz2KCYHoUCDJz1peJTXushII20amygpbdRCY2848nbxiOth8sdbY24jWcR8ayLSH26O+gxVwq1cZYbYFIJY70uNdzVE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L4BFL55p; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NsOJr54/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2C25C4CEE3;
-	Thu, 16 Jan 2025 10:01:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L4BFL55p"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13CE4C4CED6;
+	Thu, 16 Jan 2025 10:02:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737021693;
-	bh=vKrd1S5kPjokp3ALFbH6dwkiWO9sqacDoKnr3ujGd30=;
+	s=k20201202; t=1737021747;
+	bh=Uyu8CDucHjtJkU7/3hGL9KAt9/SEf3u5kC7COMTkcwo=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=NsOJr54/fKLOTQfFy/l9FfFoFmd+rgSIZm7N+l/ypzGvrf7JXjCWWssBTYSS4UMol
-	 3o2rjnyvx1tyhKA8ACnhi5FY+87N8soVwk7ACg3ArzXenhW6p8fjQoyPgX+tVDs2Lg
-	 uXzpwl6Wn3q7lEeyolFcyPY98xAzh5pkUcy5pYTzJvaIJjQ8pGhoOrUaeFdcOELf4e
-	 PPcLuOh7nPQSTA5kvOZREU1r77l/HI+hIvajDnUkEVVKxOYZ5xXnU1G2yEESiDguut
-	 ukZyd1whNRi27NZZaqom6Bi5/Uk4Ya7o4F5Q5xosVlDTHJcT/oJxfS527TOxV+arnl
-	 1nQ9UV63/XVSA==
-Message-ID: <516509cc-23d9-41b3-a3a2-f0c66d8c2af2@kernel.org>
-Date: Thu, 16 Jan 2025 11:01:30 +0100
+	b=L4BFL55plhDl9DV4zOjsZy0sGJ12soeTi1gsv95v0VGTQejP9Gn8dJrkcpzp0/ETB
+	 Y9Ftu6Vnqrn2dAwk/dIksSHmJuYvnFyz3zTAwR8LjDAN/xMCWTCcExl4BlnZ9WWkaA
+	 c0wJKqM/LgWlrIeIxJui7ktGomO5N3moOmazW2ExN44lKgTkU5+NmXqIlJm7JM+rHO
+	 N+9hv3ydUy7qBEvWbckIzra9C10hPUBMCvcKZvl4yVZjEwA4iPhL2cClsbvqPMNZp7
+	 3EgziXT/p348+17i3cMdXlVog4oKhj9UbbqJD+VFNnL8PFsGDeIo2YNhzvDr/mlFBu
+	 neJ/6I+oiP2VQ==
+Message-ID: <834d7b6e-27a4-41e9-b36b-2bcbd0504bd5@kernel.org>
+Date: Thu, 16 Jan 2025 11:02:23 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,16 +35,16 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [External Email] Re: [PATCH v1] serial: sc16is7xx: Extend IRQ
- check for negative valus
-To: Andre Werner <andre.werner@systec-electronic.com>
-Cc: gregkh@linuxfoundation.org, hvilleneuve@dimonoff.com, andy@kernel.org,
+Subject: Re: [PATCH v1] serial: sc16is7xx: Extend IRQ check for negative valus
+To: Andy Shevchenko <andy@kernel.org>
+Cc: Andre Werner <andre.werner@systec-electronic.com>,
+ gregkh@linuxfoundation.org, hvilleneuve@dimonoff.com,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  lech.perczak@camlingroup.com
 References: <Z4jLU75SU53VGsRU@smile.fi.intel.com>
  <20250116093203.460215-1-andre.werner@systec-electronic.com>
  <be1bc254-da95-47c2-b81c-e630c0f924b2@kernel.org>
- <5556e4f7-79b1-af02-7456-fac9800a173f@systec-electronic.com>
+ <Z4jW_TUQ8RNr1FWX@smile.fi.intel.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -89,67 +89,26 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <5556e4f7-79b1-af02-7456-fac9800a173f@systec-electronic.com>
+In-Reply-To: <Z4jW_TUQ8RNr1FWX@smile.fi.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 16. 01. 25, 10:52, Andre Werner wrote:
-> On Thu, 16 Jan 2025, Jiri Slaby wrote:
-> 
+On 16. 01. 25, 10:53, Andy Shevchenko wrote:
+> On Thu, Jan 16, 2025 at 10:42:14AM +0100, Jiri Slaby wrote:
 >> This is threaded weirdly.
 > 
-> Sorry for that.
+> Yeah, new patch (version) — new email thread.
 > 
->>
 >> On 16. 01. 25, 10:32, Andre Werner wrote:
 >>> Fix the IRQ check to treat the negative values as No IRQ.
 >>
 >> Care to describe on what HW that can happen?
 > 
-> I have no example on that. In the previous thread it was mentioned that
-> it is not absolutely sure that the API is not called with negative values. Thus,
-> negative values shall also be treated as no IRQ.
+> But how does this relevant? The whole idea is that neither I²C nor SPI
+> frameworks do not guarantee the IRQ field never be negative. This is
+> the fix to the previously submitted patch.
 
-SPI:
-         if (spi->irq < 0)
-                 spi->irq = 0;
-
-I2C:
-                 if (irq < 0)
-                         irq = 0;
-
-So unlikely :).
-
->>> Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
->>> ---
->>>    drivers/tty/serial/sc16is7xx.c | 2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
->>> index 7b51cdc274fd..560f45ed19ae 100644
->>> --- a/drivers/tty/serial/sc16is7xx.c
->>> +++ b/drivers/tty/serial/sc16is7xx.c
->>> @@ -1561,7 +1561,7 @@ int sc16is7xx_probe(struct device *dev, const struct
->>> sc16is7xx_devtype *devtype,
->>>     /* Always ask for fixed clock rate from a property. */
->>>     device_property_read_u32(dev, "clock-frequency", &uartclk);
->>>    -	s->polling = !!irq;
->>> +	s->polling = (irq <= 0);
->>>     if (s->polling)
->>>      dev_dbg(dev,
->>>       "No interrupt pin definition, falling back to polling mode\n");
->>
->>
->> --
->> js
->> suse labs
->>
->>
-> 
-> Regards,
-> 
-> André
-
+They do AFAICS. Could you be more specific?
 
 -- 
 js
