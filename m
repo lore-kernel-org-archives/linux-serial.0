@@ -1,97 +1,63 @@
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B6851FCFF3
-	for <linux-serial@vger.kernel.org>; Fri, 17 Jan 2025 10:36:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE0B325A658;
+	Fri, 17 Jan 2025 11:50:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737110189; cv=none; b=YMEtAYn6q8kXbpG+9m9Rg4YUC4vD2jtt2M529l0WFXe4nPJXwQ3KsaXSsSADFIZXrFyuDx4efHmHOUly5e6OiXC0vmL2R9Xx7961t0QamO6NCej6OO7mTdSeldE5K6TQm+npppu7wW4Zl0oNIc4iHPv3oLGM7jNvwEuaDYiYj1c=
+	t=1737114614; cv=none; b=QHt/aHy+iXkc9YoNWyf6Xciu5sGrQCwrvU9AzMCdNSxBGxs8W1+LxRMZcqplEArjgc3ZM5g9cP1ODbaSuT8QPowQ0MzOCqpeMnalvd+13MO1hMmUY/mHQLRhruiW0NztULdUggY2pYdiXrzypoYqtq0ubuwqacZQ0r4QpiQIxhs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737110189; c=relaxed/simple;
-	bh=mvMhenXHN4nEV6Ty+NwSTgQe3ZYepoE2i1mmLiDGrbg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=UcvtZse4GVq70nLzWZq5qAonkvhw4gkyT2eMkZKfU70BdsYQ59mT0sS6kJeU7t3LktfHLyze8j+7nNFgZ0MWX2FJu8+ATD5M6kGDHDGq7jU+He6rQjqD8Iv5lA3XmORm1wljYvq/ANEvJP9QO1Doo05FTcTsPfqP1FWPUCpgybw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-3ce7e5d651aso16527285ab.2
-        for <linux-serial@vger.kernel.org>; Fri, 17 Jan 2025 02:36:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737110186; x=1737714986;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=L6tr4e9Nggu8MROBd2DNUjngNQWaL6TBjiVhWS+iWEI=;
-        b=iG5ImEuTnvbv0IeAJ54L3Krn9XMU40Prrwd0Et8gTaM1DXXxbW2KT3fqw2l1q+f9ij
-         AUSo3jWOlStcUoJN3y44K3mFELvrEAMdbZNcRYLLza4ll115T0t5etUCt+9Uo0+RP96g
-         /U1uxgdGkJalDaAi9V2SP1HMBfyDLF1G+kSn9AouAgqIZIdYnynNdu4hYFf/dkP420V2
-         B/Bqx2VBzcKqp2ktfWTKGnDFGbJz4QI1NXMI8huIE5UR2WmbaNJXRGQyweqqq+l+9jQ3
-         1bOYRPSBVP6Z6+g3EjbnXGuiw36aA2Fyya5p0PGy4A7HgH5hbCEpFBFsV1AVor7zot/0
-         NqpQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUwKSAQR6KslW3xXHRKcpZ0Iuo6A92MAdMgpySx4jBKBssMZX1LZB7OFhswHD0tONzPgBQa699EWInrfx0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzTG3W1jPPP8Wqe2K/w/Wx3HOdNCptNfR/LKXX0BSMjZUXtg1Ps
-	vNJus2YyJWmBK/+gBv6/b0ztgKeVWkgPX4t7P53BvuVc6SF3HSGhddH2YBI9rHGLm6WeI921TKV
-	h43JKpUh2cdUGnVyRFwtrQIMlVzK39d70GaWUL8h16ZSyBSwD9fksngE=
-X-Google-Smtp-Source: AGHT+IFUxno0jtvXzbH9cAeYa2FHIUa65wZRdbJ6OYUhpgYtD8OAKEZjZlkF/zhDEwvUMPFJAb71J8s2CZHdTOieaCUeewWEjDBn
+	s=arc-20240116; t=1737114614; c=relaxed/simple;
+	bh=uw0oxL/cdncbSTR7q7slu4yt628ZynwzCFOggcCb/70=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=E5fyprzeoefScHZ1H498u24Kz9leQ/5dB4DoISEWRcnRsJvXaTkG5982PdeqhKfNzefdPSJ8CHPZ6/wimzr3U/cWZAV13Tq+iqCivbwBIiLM7ZPFFNOOw2P5hBAbxWKL1dOOACFOdHAWnHDdlwDFg+U9zKWtJGickrrjSpez76k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=ebPl3v2d; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="ebPl3v2d"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC977C4CEDD;
+	Fri, 17 Jan 2025 11:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1737114614;
+	bh=uw0oxL/cdncbSTR7q7slu4yt628ZynwzCFOggcCb/70=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ebPl3v2dBh6b/ucMYVZEZyvEqi41Rq1UmYBnZwc7O58d3ihXMq2LsW5NNVruv++EC
+	 6FnFCGfafuPJ/baboHEzKr+CWOwh7idMFwCcDqSwvrjV79XHKNCmqIQvvbmGazs7Hb
+	 9YhjgbThfchPr8ALX7t9oWt0sAdNv2avtdxPyHNU=
+Date: Fri, 17 Jan 2025 12:50:11 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Andre Werner <andre.werner@systec-electronic.com>
+Cc: jirislaby@kernel.org, hvilleneuve@dimonoff.com, andy@kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, lech.perczak@camlingroup.com,
+	krzk+dt@kernel.org, conor+dt@kernel.org, robh@kernel.org
+Subject: Re: [PATCH v7] serial: sc16is7xx: Add polling mode if no IRQ pin is
+ available
+Message-ID: <2025011739-tavern-carpenter-86c3@gregkh>
+References: <CAHp75Vc==m3mE1TtxjHnpwL-d8W4rFnKreu7XB7MWspJKCCOGA@mail.gmail.com>
+ <20250116083447.453615-1-andre.werner@systec-electronic.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:2161:b0:3ce:7d8f:3d75 with SMTP id
- e9e14a558f8ab-3cf743c9a02mr15724915ab.1.1737110186246; Fri, 17 Jan 2025
- 02:36:26 -0800 (PST)
-Date: Fri, 17 Jan 2025 02:36:26 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <678a32aa.050a0220.20d369.005b.GAE@google.com>
-Subject: [syzbot] Monthly serial report (Jan 2025)
-From: syzbot <syzbot+listd50f3c6120445dc61e8f@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250116083447.453615-1-andre.werner@systec-electronic.com>
 
-Hello serial maintainers/developers,
+On Thu, Jan 16, 2025 at 09:34:47AM +0100, Andre Werner wrote:
+> Fall back to polling mode if no interrupt is configured because there
+> is no possibility to connect the interrupt pin.
+> 
+> If no interrupt pin is available the driver uses a delayed worker to
+> poll the state of interrupt status registers (IIR).
+> 
+> Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
+> Link: https://lore.kernel.org/r/20250110073104.1029633-2-andre.werner@systec-electronic.com
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+This whole commit is already in my tree, why is it submitted again?
 
-During the period, 0 new issues were detected and 0 were fixed.
-In total, 18 issues are still open and 44 have already been fixed.
+confused,
 
-Some of the still happening issues:
-
-Ref  Crashes Repro Title
-<1>  704     Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
-                   https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-<2>  469     No    INFO: task hung in console_callback (5)
-                   https://syzkaller.appspot.com/bug?extid=1fb20cf68d15e7c2388d
-<3>  172     Yes   INFO: task can't die in show_free_areas
-                   https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-<4>  86      Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
-                   https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
-<5>  77      Yes   BUG: soft lockup in tx
-                   https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
-<6>  55      Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
-                   https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
-<7>  31      Yes   possible deadlock in tty_buffer_flush (3)
-                   https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
-<8>  14      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
-                   https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
-<9>  12      No    general protection fault in n_tty_receive_buf_common (2)
-                   https://syzkaller.appspot.com/bug?extid=2dda672e146ff12ccb02
-<10> 6       Yes   INFO: task hung in paste_selection (2)
-                   https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
-
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
-
-You may send multiple commands in a single email message.
+greg k-h
