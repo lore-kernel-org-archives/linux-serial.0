@@ -1,190 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mail.systec-electronic.com (mail.systec-electronic.com [77.220.239.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54149A95C
-	for <linux-serial@vger.kernel.org>; Sat, 18 Jan 2025 13:10:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA4ABA92F;
+	Sat, 18 Jan 2025 17:20:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.220.239.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737205813; cv=none; b=fX+34YJgsw8tva7xLnym12N1SsGUQE6VE2aURBbZlNnrg6XiLc0S8d2KTJe8pJQ7LkFI1VINtzQ2gSSdj4o8Xy+rn3yyNhArS8fgGr8oiIGtdEIoblkmk47XRDjTMEpyroVRfIJ56J95TUZuAyEHyect1TGWtL+0tPv+1fNVDxA=
+	t=1737220829; cv=none; b=tI+i2M2A8xQN/JHREiHd+2eQmvj9o6sjpK02eg2E0FEAVnVog4zstZHb4218gup0tQ/j8gQ9jCVqJqR88kXUaljLEcSE2fww184Lw7W3SEx1uWoNIcm6mUXzXOX+LoUyByLarwHlKf3cy2AKMrPjWIg2GGCHFfNw1HRykh3KORA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737205813; c=relaxed/simple;
-	bh=qKceH3cY89NAn74SaM9BJh0PgmDCHr5baVuSswD+LvE=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=mErrriMR2HuGVUm15w9LhatknaXVHbpHw6yMWUqzG3Aop+Nx5ulLiXx8qkkVw/OfMWQWoOksMGmu1IjN5slBOZZiwbmVoMAWZpizYnNOa1llan2dw0hfhFrYbi267y69hpjAeBL0ykRxGpFqUUkobLREMNKQSH/6r99pUHkbbxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XCqnzKoI; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1737220829; c=relaxed/simple;
+	bh=ALrs/33NZ1esk7EZALqGOzi1tTuds98n+0tIZdYBnPQ=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=AL94lIFg9JznD8RX0KTDCwW1OWjE3yktR9hf4GSWN+k5aYPbEkSy4MsuLszBPthJISleYw24pdkx7ZmW3/wOGYW6aWXqyVxDpdpnjObLxREUxyMPgHmP5nSBuq0Pn6QNkziKUjFeYoygrrZdPjO7iXWTVQbvfo11iVdmlQNJb4Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=systec-electronic.com; spf=pass smtp.mailfrom=systec-electronic.com; dkim=pass (2048-bit key) header.d=systec-electronic.com header.i=@systec-electronic.com header.b=RhGssfAp; arc=none smtp.client-ip=77.220.239.22
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=systec-electronic.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=systec-electronic.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XCqnzKoI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1737205812; x=1768741812;
-  h=date:from:to:cc:subject:message-id;
-  bh=qKceH3cY89NAn74SaM9BJh0PgmDCHr5baVuSswD+LvE=;
-  b=XCqnzKoIE8sWYAgY9bK0nuF+2xAi2kCgiuF1sy2nwsCwYrGQEx7HYFNy
-   pgp2Wqf9T7ZpOXs9NDYi0tdzOt8gMI1wQXu9H9dYk701GbpLwQIJPoeyv
-   76Fe1Ac7wtodXx8uUfb48NglziQcsRSI1r2dXXeIq5ZHNw4cAINUbrYfc
-   ixIZKIndZHejvmTdi4wtqnxp+tT60cz1rJQbJwBWGoUqT5NefZ/4RIxSc
-   GwuGG68Ry7rtJbcewbeciBJ8i6UmTJ77ys9275h9lXr1lhmC/hnd6HSMS
-   Tpg6nPUOYVL8X4oqm2r71vAecFQbL2/1JNDExClzNI2r0C4fA4KRVAk6y
-   A==;
-X-CSE-ConnectionGUID: vDqlde5qQaGYroO9lXNREA==
-X-CSE-MsgGUID: 34uJ2YQQQSa+fFiOCcgesQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11319"; a="37868448"
-X-IronPort-AV: E=Sophos;i="6.13,215,1732608000"; 
-   d="scan'208";a="37868448"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2025 05:10:12 -0800
-X-CSE-ConnectionGUID: QtnYEMjNQ3yB00dAoomygw==
-X-CSE-MsgGUID: sUfPJ1SYQhua6yCo5CJyhw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="136959895"
-Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 18 Jan 2025 05:10:11 -0800
-Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tZ8aW-000USK-2y;
-	Sat, 18 Jan 2025 13:10:08 +0000
-Date: Sat, 18 Jan 2025 21:09:30 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 651dee03696e1dfde6d9a7e8664bbdcd9a10ea7f
-Message-ID: <202501182123.rtlzLpz8-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=systec-electronic.com header.i=@systec-electronic.com header.b="RhGssfAp"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.systec-electronic.com (Postfix) with ESMTP id 1AB19941A5C4;
+	Sat, 18 Jan 2025 18:20:17 +0100 (CET)
+Received: from mail.systec-electronic.com ([127.0.0.1])
+ by localhost (mail.systec-electronic.com [127.0.0.1]) (amavis, port 10032)
+ with ESMTP id 5--W_L56DrhN; Sat, 18 Jan 2025 18:20:17 +0100 (CET)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.systec-electronic.com (Postfix) with ESMTP id E21F1941A5C5;
+	Sat, 18 Jan 2025 18:20:16 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.systec-electronic.com E21F1941A5C5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=systec-electronic.com; s=B34D3B04-5DC7-11EE-83E3-4D8CAB78E8CD;
+	t=1737220816; bh=X/ZRCjtxOshx5LHw495N3TIxAHJhRR74amrE4dNPSv8=;
+	h=Date:From:To:Message-ID:MIME-Version;
+	b=RhGssfAp4DOCP+nPYRAQNPFR3g9aVNJYxDndxkKa1RCP5hIl0wK0pEi8odwKuvDH3
+	 rCvoQ2/5YHEgoZlChpePoKbW48C4tcHJUstoYiI98Lx8aGEcRH+cXyJlX2I6WHmu3j
+	 cGvTEQ3qI1MsjbmEvAT5fm+MMFT0JbaRodf7KJp+Xvh6npTudipWOXbJM6seVY9hHU
+	 3mTF9D3SWbZHg2MF2Ec6aKz1ljh/ynXpy4YH6CxvuSz8t9fZ5uiGgMM8ro7hNVhPoe
+	 rx/Z9mYwPsNvc9mpEFQ5r8eqK5pH/FMWMvSq2iHXMKY8XzFMWvtc8HjTpM9LjmwLB4
+	 Pc2kTfkcdqh3Q==
+X-Virus-Scanned: amavis at systec-electronic.com
+Received: from mail.systec-electronic.com ([127.0.0.1])
+ by localhost (mail.systec-electronic.com [127.0.0.1]) (amavis, port 10026)
+ with ESMTP id ooe-U8vHWxoJ; Sat, 18 Jan 2025 18:20:16 +0100 (CET)
+Received: from lt-278851.systec.local (unknown [212.185.67.148])
+	by mail.systec-electronic.com (Postfix) with ESMTPSA id 8E8F4941A5C4;
+	Sat, 18 Jan 2025 18:20:16 +0100 (CET)
+Date: Sat, 18 Jan 2025 18:20:16 +0100 (CET)
+From: Andre Werner <andre.werner@systec-electronic.com>
+Reply-To: Andre Werner <andre.werner@systec-electronic.com>
+To: Maarten Brock <Maarten.Brock@sttls.nl>
+cc: Andre Werner <andre.werner@systec-electronic.com>, 
+    "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, 
+    "jirislaby@kernel.org" <jirislaby@kernel.org>, 
+    "hvilleneuve@dimonoff.com" <hvilleneuve@dimonoff.com>, 
+    "andy@kernel.org" <andy@kernel.org>, 
+    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+    "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
+    "lech.perczak@camlingroup.com" <lech.perczak@camlingroup.com>
+Subject: Re: [External Email] RE: [PATCH v2] serial: sc16is7xx: Extend IRQ
+ check for negative values
+In-Reply-To: <AS8PR05MB9810FA4CE091AD28EEE9B73683E52@AS8PR05MB9810.eurprd05.prod.outlook.com>
+Message-ID: <23799bf9-c61b-f528-e0e5-03a96d232ecc@systec-electronic.com>
+References: <20250117171822.775876-1-andre.werner@systec-electronic.com> <AS8PR05MB9810FA4CE091AD28EEE9B73683E52@AS8PR05MB9810.eurprd05.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="-1463794929-674452180-1737220816=:774377"
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 651dee03696e1dfde6d9a7e8664bbdcd9a10ea7f  serial: sh-sci: Increment the runtime usage counter for the earlycon device
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-elapsed time: 1449m
+---1463794929-674452180-1737220816=:774377
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-configs tested: 113
-configs skipped: 4
+Dear Maarten,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+> > -----Original Message-----
+> > Fix the IRQ check to treat the negative values as No IRQ.
+>
+> It seems to me that this is a real fix and needs a Fixes tag.
+> See below.
+>
+> > Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
+> > ---
+> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16=
+is7xx.c
+> > index 7b51cdc274fd..560f45ed19ae 100644
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> > @@ -1561,7 +1561,7 @@ int sc16is7xx_probe(struct device *dev, const s=
+truct
+> > sc16is7xx_devtype *devtype,
+> >  	/* Always ask for fixed clock rate from a property. */
+> >  	device_property_read_u32(dev, "clock-frequency", &uartclk);
+> >
+> > -	s->polling =3D !!irq;
+> > +	s->polling =3D (irq <=3D 0);
+>
+> When irq>=3D0 these two lines above have a different outcome!
+> irq=3D=3D0   =3D>   !!irq=3D=3Dfalse   <=3D>   (irq<=3D0)=3D=3Dtrue
+> irq=3D=3D1   =3D>   !!irq=3D=3Dtrue   <=3D>   (irq<=3D0)=3D=3Dfalse
 
-tested configs:
-alpha                             allnoconfig    gcc-14.2.0
-alpha                            allyesconfig    gcc-14.2.0
-arc                              allmodconfig    gcc-13.2.0
-arc                               allnoconfig    gcc-13.2.0
-arc                              allyesconfig    gcc-13.2.0
-arc                        nsimosci_defconfig    gcc-13.2.0
-arc                   randconfig-001-20250117    gcc-13.2.0
-arc                   randconfig-002-20250117    gcc-13.2.0
-arm                               allnoconfig    clang-17
-arm                              allyesconfig    gcc-14.2.0
-arm                         lpc32xx_defconfig    clang-20
-arm                          moxart_defconfig    gcc-14.2.0
-arm                   randconfig-001-20250117    clang-18
-arm                   randconfig-002-20250117    gcc-14.2.0
-arm                   randconfig-003-20250117    gcc-14.2.0
-arm                   randconfig-004-20250117    clang-16
-arm                          sp7021_defconfig    gcc-14.2.0
-arm64                            allmodconfig    clang-18
-arm64                             allnoconfig    gcc-14.2.0
-arm64                 randconfig-001-20250117    gcc-14.2.0
-arm64                 randconfig-002-20250117    clang-18
-arm64                 randconfig-003-20250117    clang-20
-arm64                 randconfig-004-20250117    gcc-14.2.0
-csky                              allnoconfig    gcc-14.2.0
-csky                  randconfig-001-20250117    gcc-14.2.0
-csky                  randconfig-002-20250117    gcc-14.2.0
-hexagon                          allmodconfig    clang-20
-hexagon                           allnoconfig    clang-20
-hexagon                          allyesconfig    clang-18
-hexagon               randconfig-001-20250117    clang-20
-hexagon               randconfig-002-20250117    clang-20
-i386                             allmodconfig    gcc-12
-i386                              allnoconfig    gcc-12
-i386                             allyesconfig    gcc-12
-i386        buildonly-randconfig-001-20250117    clang-19
-i386        buildonly-randconfig-002-20250117    clang-19
-i386        buildonly-randconfig-003-20250117    gcc-12
-i386        buildonly-randconfig-004-20250117    gcc-12
-i386        buildonly-randconfig-005-20250117    clang-19
-i386        buildonly-randconfig-006-20250117    gcc-11
-i386                                defconfig    clang-19
-loongarch                        allmodconfig    gcc-14.2.0
-loongarch                         allnoconfig    gcc-14.2.0
-loongarch             randconfig-001-20250117    gcc-14.2.0
-loongarch             randconfig-002-20250117    gcc-14.2.0
-m68k                             allmodconfig    gcc-14.2.0
-m68k                              allnoconfig    gcc-14.2.0
-m68k                             allyesconfig    gcc-14.2.0
-m68k                       m5208evb_defconfig    gcc-14.2.0
-microblaze                        allnoconfig    gcc-14.2.0
-mips                              allnoconfig    gcc-14.2.0
-mips                        vocore2_defconfig    clang-15
-nios2                             allnoconfig    gcc-14.2.0
-nios2                 randconfig-001-20250117    gcc-14.2.0
-nios2                 randconfig-002-20250117    gcc-14.2.0
-openrisc                          allnoconfig    gcc-14.2.0
-openrisc                         allyesconfig    gcc-14.2.0
-parisc                           allmodconfig    gcc-14.2.0
-parisc                            allnoconfig    gcc-14.2.0
-parisc                           allyesconfig    gcc-14.2.0
-parisc                randconfig-001-20250117    gcc-14.2.0
-parisc                randconfig-002-20250117    gcc-14.2.0
-powerpc                          allmodconfig    gcc-14.2.0
-powerpc                           allnoconfig    gcc-14.2.0
-powerpc                       eiger_defconfig    clang-17
-powerpc                        fsp2_defconfig    gcc-14.2.0
-powerpc                         ps3_defconfig    gcc-14.2.0
-powerpc               randconfig-001-20250117    gcc-14.2.0
-powerpc               randconfig-002-20250117    gcc-14.2.0
-powerpc               randconfig-003-20250117    gcc-14.2.0
-powerpc                     stx_gp3_defconfig    gcc-14.2.0
-powerpc64             randconfig-001-20250117    clang-16
-powerpc64             randconfig-002-20250117    clang-20
-powerpc64             randconfig-003-20250117    gcc-14.2.0
-riscv                             allnoconfig    gcc-14.2.0
-riscv                 randconfig-001-20250117    gcc-14.2.0
-riscv                 randconfig-002-20250117    gcc-14.2.0
-s390                             allmodconfig    clang-19
-s390                              allnoconfig    clang-20
-s390                             allyesconfig    gcc-14.2.0
-s390                  randconfig-001-20250117    gcc-14.2.0
-s390                  randconfig-002-20250117    clang-20
-sh                               allmodconfig    gcc-14.2.0
-sh                                allnoconfig    gcc-14.2.0
-sh                               allyesconfig    gcc-14.2.0
-sh                ecovec24-romimage_defconfig    gcc-14.2.0
-sh                        edosk7705_defconfig    gcc-14.2.0
-sh                    randconfig-001-20250117    gcc-14.2.0
-sh                    randconfig-002-20250117    gcc-14.2.0
-sh                          rsk7264_defconfig    gcc-14.2.0
-sparc                            allmodconfig    gcc-14.2.0
-sparc                             allnoconfig    gcc-14.2.0
-sparc                 randconfig-001-20250117    gcc-14.2.0
-sparc                 randconfig-002-20250117    gcc-14.2.0
-sparc64               randconfig-001-20250117    gcc-14.2.0
-sparc64               randconfig-002-20250117    gcc-14.2.0
-um                               allmodconfig    clang-20
-um                                allnoconfig    clang-18
-um                               allyesconfig    gcc-12
-um                    randconfig-001-20250117    clang-20
-um                    randconfig-002-20250117    gcc-12
-x86_64                            allnoconfig    clang-19
-x86_64                           allyesconfig    clang-19
-x86_64      buildonly-randconfig-001-20250117    gcc-12
-x86_64      buildonly-randconfig-002-20250117    gcc-12
-x86_64      buildonly-randconfig-003-20250117    gcc-12
-x86_64      buildonly-randconfig-004-20250117    gcc-12
-x86_64      buildonly-randconfig-005-20250117    gcc-12
-x86_64      buildonly-randconfig-006-20250117    clang-19
-x86_64                              defconfig    gcc-11
-xtensa                            allnoconfig    gcc-14.2.0
-xtensa                randconfig-001-20250117    gcc-14.2.0
-xtensa                randconfig-002-20250117    gcc-14.2.0
+Thanks for the advice. I have not seen this all the time I looked at the
+code. I accidentally forget to delete the second '!' as I did with the co=
+de
+tested at the embedded device. Thanks for the advice.
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Should I need to submit this patch again with a Fixup prefix or what need=
+s
+to be done?
+
+>
+> >  	if (s->polling)
+> >  		dev_dbg(dev,
+> >  			"No interrupt pin definition, falling back to polling mode\n");
+>
+> Kind regards,
+> Maarten
+>
+
+Regards,
+Andr=C3=A9
+---1463794929-674452180-1737220816=:774377--
