@@ -1,137 +1,129 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D2611E0DCD;
-	Mon, 20 Jan 2025 15:03:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49D6C1E8841;
+	Mon, 20 Jan 2025 15:39:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737385394; cv=none; b=Yfv74shlVw1TnoeXJ6hQA8s7Dx84xeH4vme0bUv8PGlw2gnXS5j4SqT6mt5Xjbh+CkESrD4iIcHfnk7CVJzzuAk9KPyZ9o8vFSG1RcI3qY/HtvlBkBC/YFabZg/VpeEnCwRDlZBkbpnIGrBForQV165hcXPd1zKHArMdDfFKj2M=
+	t=1737387552; cv=none; b=LDQ99KzrvSDvQbunGbfxTUyoUI0r8geGADoBxjR7y4E4qm39gvxLpPlS0KmxNOVoQUlTYMUfM4ZswJn2I3jG8H/IHKRLrOX8eSDCt+VvI9xfEUR0Wh5xObX5P0fEJEGoJ2AwtZEyqmrWK10zUzU+naPvdMOzSgPFrPGX7Tv/Q8o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737385394; c=relaxed/simple;
-	bh=2wZu4p18HC8UKQ4BJpywQRKQc1d1p4kTvKu760cmxEQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AxkN6f/sLmaLtHZK/4B/NMZumR7IPK9nvAiHR30cDp9jx+61b0SDM6ZVPTQXQCSjaSG+HWF1gx6QK8IA1v/PdK/K/vmalsr2UajSDoaBvYQUAd13fBrxaB2CckMibV+HnMzH1tshGkQEI56APE2cVq4c0oCXkvsXnKM8/PGA+og=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a6Hu6b82; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737387552; c=relaxed/simple;
+	bh=NWX2ulKh7Warh77LBEu3HXadIlBBPy9zYKWQXPw5QEY=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=UYEUnCTcM1lVcEXGX7M8UYw9J3H+i6WxSq6sZL+CaEajlUKM20pBKAFyVK/bRW61wmpAAOD2yoej5Ih07bKkiN2/oqZfex51HDfpeW1XJQrNlaJmIDirJ0T/8Ue28x2hXaN1inEH2kbQrjuA/97PY90ewoRwv1HyKjJPZHLx9GI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=JumNLEMV; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a6Hu6b82"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E7EC4CEDD;
-	Mon, 20 Jan 2025 15:03:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737385393;
-	bh=2wZu4p18HC8UKQ4BJpywQRKQc1d1p4kTvKu760cmxEQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=a6Hu6b8281gqS8uLXLUx0hTLsxt3kns2LM3HU6kHP5egokBW0tweruCs5JfQxdRS+
-	 7I1NdKqDtL6NoLOxHmLgaoATPeBI8RADApAUzklr8S6H3CKiNCmEIev/J0Bo86VZ09
-	 9J/Cvb2ysh5ummQJ39GKjuSAIoY+cAOiGnWn5ZQErMo6wKiFngv1YlHrhwaoOaoMrS
-	 Tq/ZAFynDj2r5aJfRjWF9wOsDQErB5GqP5E9XPzr1PG/8z76kSuuHK7LO4OP07Wkfe
-	 TX65jc0weayLoHAmvx2iyVvPQiqQeXgWCP/4qRU5bL2PT28JWUjqX45ZMRonX77O6s
-	 4Ki2ruTXPRCOA==
-Message-ID: <b3dd5f39-357e-4714-80af-f5c6b5e8ba68@kernel.org>
-Date: Mon, 20 Jan 2025 16:03:10 +0100
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="JumNLEMV"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=w9n47EuUFUUx/rHh8ptS1gXUTnO2VIsHVQSacXkdXSE=; b=JumNLEMV3J3gJwUe6el/UYXF36
+	22ZZNAR8bzCKJKR6BC1EOUPmze92u0GmVhiltuhoQvADHRQkN1/IJ/Vx9z0B94P+XfuzHiaO/ksFt
+	izl2VChF6EPQ9qUHT/LgAbxOEsp7hMocH1vXQhxcke5vwgUsIAfh/ZF0uURsgTvlaRmw=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:47156 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1tZtrY-0007ux-5x; Mon, 20 Jan 2025 10:38:53 -0500
+Date: Mon, 20 Jan 2025 10:38:51 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Andre Werner <andre.werner@systec-electronic.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ hvilleneuve@dimonoff.com, andy@kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, lech.perczak@camlingroup.com
+Message-Id: <20250120103851.6518f01800ed946d02bfb81b@hugovil.com>
+In-Reply-To: <20250120073234.790315-1-andre.werner@systec-electronic.com>
+References: <20250120073234.790315-1-andre.werner@systec-electronic.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: serial: 8250: Add Airoha compatibles
-To: Benjamin Larsson <benjamin.larsson@genexis.eu>
-Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- ansuelsmth@gmail.com, lorenzo@kernel.org, krzk+dt@kernel.org,
- gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
-References: <20250119130105.2833517-1-benjamin.larsson@genexis.eu>
- <20250119130105.2833517-2-benjamin.larsson@genexis.eu>
- <20250120-flashy-nice-tody-afa2ae@krzk-bin>
- <ba4b0ad4-e8ad-4420-be10-520efeba0c84@genexis.eu>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJgPO8PBQkUX63hAAoJEBuTQ307
- QWKbBn8P+QFxwl7pDsAKR1InemMAmuykCHl+XgC0LDqrsWhAH5TYeTVXGSyDsuZjHvj+FRP+
- gZaEIYSw2Yf0e91U9HXo3RYhEwSmxUQ4Fjhc9qAwGKVPQf6YuQ5yy6pzI8brcKmHHOGrB3tP
- /MODPt81M1zpograAC2WTDzkICfHKj8LpXp45PylD99J9q0Y+gb04CG5/wXs+1hJy/dz0tYy
- iua4nCuSRbxnSHKBS5vvjosWWjWQXsRKd+zzXp6kfRHHpzJkhRwF6ArXi4XnQ+REnoTfM5Fk
- VmVmSQ3yFKKePEzoIriT1b2sXO0g5QXOAvFqB65LZjXG9jGJoVG6ZJrUV1MVK8vamKoVbUEe
- 0NlLl/tX96HLowHHoKhxEsbFzGzKiFLh7hyboTpy2whdonkDxpnv/H8wE9M3VW/fPgnL2nPe
- xaBLqyHxy9hA9JrZvxg3IQ61x7rtBWBUQPmEaK0azW+l3ysiNpBhISkZrsW3ZUdknWu87nh6
- eTB7mR7xBcVxnomxWwJI4B0wuMwCPdgbV6YDUKCuSgRMUEiVry10xd9KLypR9Vfyn1AhROrq
- AubRPVeJBf9zR5UW1trJNfwVt3XmbHX50HCcHdEdCKiT9O+FiEcahIaWh9lihvO0ci0TtVGZ
- MCEtaCE80Q3Ma9RdHYB3uVF930jwquplFLNF+IBCn5JRzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmA872oFCRRflLYACgkQG5NDfTtBYpvScw/9GrqBrVLuJoJ52qBBKUBDo4E+5fU1bjt0
- Gv0nh/hNJuecuRY6aemU6HOPNc2t8QHMSvwbSF+Vp9ZkOvrM36yUOufctoqON+wXrliEY0J4
- ksR89ZILRRAold9Mh0YDqEJc1HmuxYLJ7lnbLYH1oui8bLbMBM8S2Uo9RKqV2GROLi44enVt
- vdrDvo+CxKj2K+d4cleCNiz5qbTxPUW/cgkwG0lJc4I4sso7l4XMDKn95c7JtNsuzqKvhEVS
- oic5by3fbUnuI0cemeizF4QdtX2uQxrP7RwHFBd+YUia7zCcz0//rv6FZmAxWZGy5arNl6Vm
- lQqNo7/Poh8WWfRS+xegBxc6hBXahpyUKphAKYkah+m+I0QToCfnGKnPqyYIMDEHCS/RfqA5
- t8F+O56+oyLBAeWX7XcmyM6TGeVfb+OZVMJnZzK0s2VYAuI0Rl87FBFYgULdgqKV7R7WHzwD
- uZwJCLykjad45hsWcOGk3OcaAGQS6NDlfhM6O9aYNwGL6tGt/6BkRikNOs7VDEa4/HlbaSJo
- 7FgndGw1kWmkeL6oQh7wBvYll2buKod4qYntmNKEicoHGU+x91Gcan8mCoqhJkbqrL7+nXG2
- 5Q/GS5M9RFWS+nYyJh+c3OcfKqVcZQNANItt7+ULzdNJuhvTRRdC3g9hmCEuNSr+CLMdnRBY fv0=
-In-Reply-To: <ba4b0ad4-e8ad-4420-be10-520efeba0c84@genexis.eu>
-Content-Type: text/plain; charset=UTF-8
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -2.2 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH v3] serial: sc16is7xx: Fix IRQ number check behavior
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On 20/01/2025 13:59, Benjamin Larsson wrote:
-> On 2025-01-20 08:57, Krzysztof Kozlowski wrote:
->> On Sun, Jan 19, 2025 at 02:01:04PM +0100, Benjamin Larsson wrote:
->>> The Airoha SoC family have a mostly 16550-compatible UART
->>> and High-Speed UART hardware with the exception of custom
->>> baud rate settings register.
->>>
->>> Signed-off-by: Benjamin Larsson <benjamin.larsson@genexis.eu>
->>> ---
->>>   Documentation/devicetree/bindings/serial/8250.yaml | 2 ++
->>>   1 file changed, 2 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
->>> index 692aa05500fd..2fbb972e5460 100644
->>> --- a/Documentation/devicetree/bindings/serial/8250.yaml
->>> +++ b/Documentation/devicetree/bindings/serial/8250.yaml
->>> @@ -63,6 +63,8 @@ properties:
->>>         - const: mrvl,pxa-uart
->>>         - const: nuvoton,wpcm450-uart
->>>         - const: nuvoton,npcm750-uart
->>> +      - const: airoha,airoha-uart
->>> +      - const: airoha,airoha-hsuart
->> I assume you placed it matching existing order (kind of alphabetical for
->> compatibles with vendors)?
->>
->> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>
->> Best regards,
->> Krzysztof
->>
-> Hi, I placed it after nuvoton that was the most recent addition to the 
-> serial8250_config uart_config[] table that was also added to the 
+On Mon, 20 Jan 2025 08:32:34 +0100
+Andre Werner <andre.werner@systec-electronic.com> wrote:
 
-But wasn't nuvoton placed in specific, ordered place?
+Hi,
 
-> 8250.yaml binding. IIRC I noted that there was no clear order in the 
-> binding list. So the placement could be considered as random. If another 
-> place is better I can move it for the next version of the patch.
-Entries with vendor look to me fully ordered by name.
+> The logical meaning of the previous version is wrong due to a typo.
 
-Best regards,
-Krzysztof
+Ok.
+
+> The rest of the patch expects polling = true for irq = 0;
+> 
+> The behaviour is fixed for irq = 0 as well as extended to negative
+
+What do you mean by "is fixed"? and also isnt it the same explanation
+as above for the "=0" case ("The rest of the patch..."?
+
+> values because the irq parameter is an integer such that negative values
+> are not completely impossible. So negative values will also be treated as
+> a fallback to polling mode.
+
+Please try to rephrase the whole commit message so that it is
+more concise and clearer to understand, and takes into account the
+previous comments from Andy/Jiri/Marteen?
+
+If I understood these comments correctly, maybe something like:
+
+------
+When IRQ = 0, this means that no interrupt is used, and activate
+polling mode.
+
+And since documentation still says that negative IRQ values cannot be
+absolutely ruled-out, add a check for negative IRQ values to
+increase robustness.
+------
+
+
+Hugo
+
+
+> 
+> Fixes: 104c1b9dde9d859dd01bd2d ("serial: sc16is7xx: Add polling mode if no IRQ pin is available")
+> 
+> Signed-off-by: Andre Werner <andre.werner@systec-electronic.com>
+> ---
+> V2:
+> There are no changes to the patch itself. The previous patch submission
+> had a very weird structure within the discussion thread:
+> https://lore.kernel.org/all/20250116093203.460215-1-andre.werner@systec-electronic.com/
+> This is simply a new thread opened for better handling.
+> V3:
+> Add Fixes tag and update commit message description.
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 7b51cdc274fd..560f45ed19ae 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -1561,7 +1561,7 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+>  	/* Always ask for fixed clock rate from a property. */
+>  	device_property_read_u32(dev, "clock-frequency", &uartclk);
+>  
+> -	s->polling = !!irq;
+> +	s->polling = (irq <= 0);
+>  	if (s->polling)
+>  		dev_dbg(dev,
+>  			"No interrupt pin definition, falling back to polling mode\n");
+> -- 
+> 2.48.0
+> 
+> 
+> 
