@@ -1,60 +1,62 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D11AF1E0E08
-	for <linux-serial@vger.kernel.org>; Mon, 20 Jan 2025 13:09:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 740801E0E01
+	for <linux-serial@vger.kernel.org>; Mon, 20 Jan 2025 13:09:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737378584; cv=none; b=CR4SfHRlVmy4dmsM8O8PaFlzWTuJJsK0qkklJ8Q1wmJ9BNYdbmkk0Pj3kXjvxohHcUEOXuCcIbdb5hcwMd40rkujYiBFja1xLYBuiRWctHihOQ1FBiG5l7VUiCDGzSfzA/R5UeuMeY6X0O4clugeeKQijrMhFg0Mck+LQK9HG8k=
+	t=1737378585; cv=none; b=ctliSkHQPF5pk3tAeGCspgOQoHD52oQ0UmOEZwNnIw6w1muNOzq+DxKbKzC8d/i2884E3jWk/DvAAgennpdlhlhKeZ0hSS9sRXZIGLzh09PM2E2QskTig34ShMNVsWRBdXZsnDMAV2JKIVzY3N/MD38736+E9vWnOVZpdNC42ak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737378584; c=relaxed/simple;
-	bh=RCB/8QFJLXN/Bvnu7MJq6UWEKwNseTf4j7qbhIfJFtA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=e4Mdw3jiWCK8TgkQzIvfNXQHrbSBF3T/IO46jsMG6KWSFZIrJI5q7xUUQnmU9jbUPQObm1lqRF7+VW9xWudwusTgT9ZY9vMecgohQb3x1A6yJtIQQgmbjV5E0Ion+Rbka/VlMAlCxYUO1QbnxkTWXhVvYN4yz+5D2iIOf8fk0yM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=b6eP8YCc; arc=none smtp.client-ip=209.85.128.42
+	s=arc-20240116; t=1737378585; c=relaxed/simple;
+	bh=uct9U7IhGmLGks2dzIuQgZHdXFiBAwtQzHFSaHGw5ao=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=QyB1w7/SRNg1LgYkFtLM1COPDi43s21WBXRvAKNeXcQBrgG8JsJ4erauGgk8Jm8GyzxUIH+0aipbbuFjGHMZmYP5fhTJDGG2vYde7A1fXxsKfF9jPuvGMPKn1xsxBL4zUIeeDfLBEIG1qyUgcp/I3x2nzbKWHTWQpiDUmyZaIyg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=A5rclq2a; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="b6eP8YCc"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-43624b2d453so48636205e9.2
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jan 2025 05:09:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="A5rclq2a"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-438a39e659cso11130625e9.2
+        for <linux-serial@vger.kernel.org>; Mon, 20 Jan 2025 05:09:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1737378580; x=1737983380; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=a416PcI8wZ9gcBX9UsQxmuZkXXjRlkA6cjWw4TTO1wY=;
-        b=b6eP8YCcm+E/m5NmyXAq/bJdRxdEDY/ny6C/9EuBT5l4phSgK1cUexDvQB4H4ApucI
-         Y4S/r56LMCPAfg0pzOUkxLjQwcxoPspVk93D1wrCAN8+Gk8WKaq8D2Mh7yE8DMwCpRx2
-         L1JcOFActUqN08bquuq8WfiFz5VLXLRtmyRdnl0fscd/A0zs8KkecsqQfxXc7dET7OYB
-         xrF2HzPGkGG4VI/OyjQqX39Le0Zh7ZWMX5YA8/fFbdeiAMfUzhT/qtPxn3r7drzgao82
-         wfRsllbvMMxgSEbj5Afx2mzQbXUwmXCWNc5fvx51Pe2gKZAciCtMdtGpVRebZHWYDyVk
-         CyeA==
+        d=tuxon.dev; s=google; t=1737378582; x=1737983382; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f6x24vOEL5/TJ8vXf0hNcJSgsC5eLh36a2PxWG5XS3Q=;
+        b=A5rclq2aAaPsgiQLdXDrjLZ5tbiqvYLg+ba9RHu9YPDBrUuryNzfrqiqImCrFBbyGb
+         nSwQh04H8o7XaWrH9kRR/ef0Q2HGyy23qolknvFih6eAHJhmNkuAj589GQcL/QXyZGyc
+         95uAabMEgP7rV95nxZM4l18VSlhg3OndDuHFYXoDVZ8JelwvL49x8/JmoXyUu3GL1KSl
+         un2BIpyX33MkzWBoL39J7bd6PHKNg1wAFLX0ldl9CqK3YWGlzHqQwaz/JC2+eFxTH2W5
+         kXIysTatgOGkrlJVzuggTxSCjs7Z8VI4J/eczgerBw9UYQhD+f0Jo9Ua/7xqTIkH6z19
+         xFuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737378580; x=1737983380;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=a416PcI8wZ9gcBX9UsQxmuZkXXjRlkA6cjWw4TTO1wY=;
-        b=YBSOq8eK/ARC5SqpPN0nYtfW2VQGxJe3EPRzV6lS9UK4s7LcSmVsHRjZN6/GoyxPbT
-         PQwySjhlqxe+aMoRZOctC9bS1AXq6E9hMoMuflIga7q1DkL/NCgk7aUJW4j+2tTmdtYS
-         PbXWLxW4qVS7KE5+YXRmaPoXza7XnKJvIIUq5BSMEBuRNCgnCs6PXYll6gNP3f7RNB76
-         K3uVHoqXUwtLzqu+zHXA5+ZSPYPG+EYVyrwuSDQbaTAQAHBYiyv6OL4Dg6i/0Sila9TE
-         aiHP+XdCZGscSiWCXpVW69gxB9ejBDKsNQjEKMugHoY03wQklakuHd26yIfXeIgP6oUp
-         6mXw==
-X-Forwarded-Encrypted: i=1; AJvYcCWLIslgxqMi6iGg3Zeju/9vrAVtNLTz+RF7hCcMtl6Jpv7G/9K0+o3rcY5n3B+m1LMi+42BWHAtpux/vMs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwYOAHNUxXp03kOWFkKoN5iplfiii+xCo4+6NktybCIYWn4Ft4g
-	W73mW8R8+JRyzdIAhDdyZUyUhlpaXq6OtDcUtoUbSZ6gC1CiuI3JgqkVEwZEZWA=
-X-Gm-Gg: ASbGncu0RFCI2olJKkEGuTq9SL7zx2leegHibYbaUqlrTJV1TurgPOIuZ5Z75Uc5nsM
-	UAk+FFAlSWWJDTufKmrgszUmEAIKWG+tLRLAwA3YAe3gGPxYphJptiLMVEwknUU+nrGtNXGMCmS
-	OlxH/t+M70mIwNCuQoVWSUNXMbzXCa7jh4XnPAJY7DKOb5z0+9kNrCi+rGSQdP9Qu2RBQ1Ccctw
-	nAWMbYkHQjHRL8vo5zhM338vAr5sBad0ylae6XAnYjV6BTQQT9Uifpds/OZmRCA+o4QLZW59eva
-	bMdPI/AUFam7qbHDHIjmyyY=
-X-Google-Smtp-Source: AGHT+IEPjik3VZUJ6CmE0J98JO4vcQ2ybXVpIlvV3ZU8Ro+DH8D2RI1e7TjwF4W1DTgLYD6sVjRPxA==
-X-Received: by 2002:a05:600c:4f47:b0:430:57e8:3c7e with SMTP id 5b1f17b1804b1-43891453ab8mr109138045e9.28.1737378579928;
-        Mon, 20 Jan 2025 05:09:39 -0800 (PST)
+        d=1e100.net; s=20230601; t=1737378582; x=1737983382;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=f6x24vOEL5/TJ8vXf0hNcJSgsC5eLh36a2PxWG5XS3Q=;
+        b=UwsaW4seK0hFqBkaJ6BJJzuBCd8lE5iBrrukv3t6BwwmOsFR+/roG9UKZomAKBmPKa
+         CcKmg9EpbLWP9yc/Ja+pqppjNn+XImQcP+0GuodSp0iEKn7MQLs0CGcgZLoSbLSKOOTD
+         0d1hPYhWuMJCy0nZx3K7aAnXBbHZUcElTzrsj2HSbG7OtSe2f9nM+7NqI3JcThpDuHOP
+         pvhmDM7lH9YyqQ8ZiIMflGNy+xewgLwPOwi0Juih7lUOR8EFN4TqEYCXb4RF/rQZg4mm
+         X+AcG2B8Vhnai2VF3R1MYFmpJ1LgNfI+IlZmm6J5OsGYTFmNPRwkAlNb0QxO6pmTpfys
+         sqbw==
+X-Forwarded-Encrypted: i=1; AJvYcCVNCDBoegg5EpzRUCbNnK8ze/BDLk8Pz82YHMiApDsVs0AZ5izvhEyObcJeu59whUG/WzZBr69GAl72J3I=@vger.kernel.org
+X-Gm-Message-State: AOJu0YylwyB3CN3P1n3znFFxks/DCl6NTzLET3t2Xm8K/2HCP2/CppB9
+	OleL4BBGTkIC/7OFONZPW7YlkvZ55HLshVMNDoeUQ0SZBjwzL/gUNn8cIBzchOA=
+X-Gm-Gg: ASbGnctoNRqLz1CuoyX8ll2dHQgsQMyHcMabdxhMnS3Ni2WH2G2gpbZuCP0pkhqKf+g
+	jEklDMo+V+7De4hXkrtq7bfnzah2+IB3AJHprpoHTY0VaPPbj4NKfTE/V7AixCLVKXFK4qzPSwK
+	k14TxzCg4GoBNADaOFyiI3OzxaqCFkAICNbxgQPNmygVzm3rohszG4WN2YsG6miRCGDXYxgdzDB
+	xP4fkYD0O24lDDw+pT8BWXNX94uBtknP6lCnFpnMTNub6XqPnnpKK/AVd0YU0Pnj57mvuF2rrla
+	xQX+e3IYYd7iTr+JTg75GQg=
+X-Google-Smtp-Source: AGHT+IGxlb5HA5FYguAsz6eUdlluzgj3rUbYoqrhqAKMsNvCOU1DkxKaDcLmK42gJnvVftsGSFzeeQ==
+X-Received: by 2002:a05:600c:3844:b0:434:ff08:202b with SMTP id 5b1f17b1804b1-438913dbc09mr122718855e9.12.1737378581607;
+        Mon, 20 Jan 2025 05:09:41 -0800 (PST)
 Received: from claudiu-X670E-Pro-RS.. ([82.78.167.35])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4389041f61bsm138001955e9.17.2025.01.20.05.09.38
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4389041f61bsm138001955e9.17.2025.01.20.05.09.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2025 05:09:39 -0800 (PST)
+        Mon, 20 Jan 2025 05:09:41 -0800 (PST)
 From: Claudiu <claudiu.beznea@tuxon.dev>
 X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
 To: geert+renesas@glider.be,
@@ -73,10 +75,12 @@ Cc: claudiu.beznea@tuxon.dev,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH v4 0/4] Add support for the rest of Renesas RZ/G3S serial interfaces
-Date: Mon, 20 Jan 2025 15:09:32 +0200
-Message-ID: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
+Subject: [PATCH v4 1/4] serial: sh-sci: Update the suspend/resume support
+Date: Mon, 20 Jan 2025 15:09:33 +0200
+Message-ID: <20250120130936.1080069-2-claudiu.beznea.uj@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
+References: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -87,59 +91,161 @@ Content-Transfer-Encoding: 8bit
 
 From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Hi,
+The Renesas RZ/G3S supports a power saving mode where power to most of the
+SoC components is turned off. When returning from this power saving mode,
+SoC components need to be re-configured.
 
-The Renesas RZ/G3S SoC has 6 serial interfaces. One of them is used
-as debug console (and it is already enabled in the current code base).
-Series adds support for the remaining ones.
+The SCIFs on the Renesas RZ/G3S need to be re-configured as well when
+returning from this power saving mode. The sh-sci code already configures
+the SCIF clocks, power domain and registers by calling uart_resume_port()
+in sci_resume(). On suspend path the SCIF UART ports are suspended
+accordingly (by calling uart_suspend_port() in sci_suspend()). The only
+missing setting is the reset signal. For this assert/de-assert the reset
+signal on driver suspend/resume.
 
-Patches:
--    01/04 - extends suspend to RAM support on the serial driver for
-             the RZ/G3S SoC
-- 02-04/04 - add device tree support
+In case the no_console_suspend is specified by the user, the registers need
+to be saved on suspend path and restore on resume path. To do this the
+sci_console_setup() function was added. There is no need to cache/restore
+the status or FIFO registers. Only the control registers. To differentiate
+b/w these, the struct sci_port_params::regs was updated with a new member
+that specifies if the register needs to be chached on suspend. Only the
+RZ_SCIFA instances were updated with this new support as the hardware for
+the rest of variants was missing for testing.
 
-Merge strategy, if any:
-- patch 01/04 can go through the serial tree
-- patches 02-04/04 can go through the Renesas tree
-
-Thank you,
-Claudiu Beznea
+Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+---
 
 Changes in v4:
-- dropped fixes and clock patches as they were applied independently
-- dropped DT patches that were already applied
-- addressed review comments
+- none
 
 Changes in v3:
-- in patch "serial: sh-sci: Check if TX data was written to device in
-  .tx_empty()":
--- check the status of the DMA transaction in tx_empty()
--- changed the variable name that tracks if TX occurred
+- none
 
 Changes in v2:
-- drop patch "serial: sh-sci: Clean sci_ports[0] after at earlycon exit"
-  from v1 as it was already applied
-- used bool instead of atomic_t in patch
-  "serial: sh-sci: Check if TX data was written to device in .tx_empty()"
+- rebased on top of the update version of patch 2/8 from
+  this series
 
+ drivers/tty/serial/sh-sci.c | 53 ++++++++++++++++++++++++++++++-------
+ 1 file changed, 44 insertions(+), 9 deletions(-)
 
-Claudiu Beznea (4):
-  serial: sh-sci: Update the suspend/resume support
-  arm64: dts: renesas: rzg3s-smarc-switches: Add a header to describe
-    different switches
-  arm64: dts: renesas: rzg3s-smarc: Enable SCIF3
-  arm64: dts: renesas: r9a08g045s33-smarc-pmod: Add overlay for SCIF1
-
- arch/arm64/boot/dts/renesas/Makefile          |  3 ++
- .../r9a08g045s33-smarc-pmod1-type-3a.dtso     | 48 +++++++++++++++++
- .../boot/dts/renesas/rzg3s-smarc-som.dtsi     | 20 +------
- .../boot/dts/renesas/rzg3s-smarc-switches.h   | 40 ++++++++++++++
- arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi  | 13 +++++
- drivers/tty/serial/sh-sci.c                   | 53 +++++++++++++++----
- 6 files changed, 149 insertions(+), 28 deletions(-)
- create mode 100644 arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod1-type-3a.dtso
- create mode 100644 arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index b1ea48f38248..ae43237dd684 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -101,7 +101,7 @@ enum SCI_CLKS {
+ 		if ((_port)->sampling_rate_mask & SCI_SR((_sr)))
+ 
+ struct plat_sci_reg {
+-	u8 offset, size;
++	u8 offset, size, suspend_cacheable;
+ };
+ 
+ struct sci_port_params {
+@@ -134,6 +134,8 @@ struct sci_port {
+ 	struct dma_chan			*chan_tx;
+ 	struct dma_chan			*chan_rx;
+ 
++	struct reset_control		*rstc;
++
+ #ifdef CONFIG_SERIAL_SH_SCI_DMA
+ 	struct dma_chan			*chan_tx_saved;
+ 	struct dma_chan			*chan_rx_saved;
+@@ -153,6 +155,7 @@ struct sci_port {
+ 	int				rx_trigger;
+ 	struct timer_list		rx_fifo_timer;
+ 	int				rx_fifo_timeout;
++	unsigned int			console_cached_regs[SCIx_NR_REGS];
+ 	u16				hscif_tot;
+ 
+ 	bool has_rtscts;
+@@ -300,17 +303,17 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 	 */
+ 	[SCIx_RZ_SCIFA_REGTYPE] = {
+ 		.regs = {
+-			[SCSMR]		= { 0x00, 16 },
+-			[SCBRR]		= { 0x02,  8 },
+-			[SCSCR]		= { 0x04, 16 },
++			[SCSMR]		= { 0x00, 16, 1 },
++			[SCBRR]		= { 0x02,  8, 1 },
++			[SCSCR]		= { 0x04, 16, 1 },
+ 			[SCxTDR]	= { 0x06,  8 },
+ 			[SCxSR]		= { 0x08, 16 },
+ 			[SCxRDR]	= { 0x0A,  8 },
+-			[SCFCR]		= { 0x0C, 16 },
++			[SCFCR]		= { 0x0C, 16, 1 },
+ 			[SCFDR]		= { 0x0E, 16 },
+-			[SCSPTR]	= { 0x10, 16 },
++			[SCSPTR]	= { 0x10, 16, 1 },
+ 			[SCLSR]		= { 0x12, 16 },
+-			[SEMR]		= { 0x14, 8 },
++			[SEMR]		= { 0x14, 8, 1 },
+ 		},
+ 		.fifosize = 16,
+ 		.overrun_reg = SCLSR,
+@@ -3374,6 +3377,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
+ 	}
+ 
+ 	sp = &sci_ports[id];
++	sp->rstc = rstc;
+ 	*dev_id = id;
+ 
+ 	p->type = SCI_OF_TYPE(data);
+@@ -3546,13 +3550,34 @@ static int sci_probe(struct platform_device *dev)
+ 	return 0;
+ }
+ 
++static void sci_console_setup(struct sci_port *s, bool save)
++{
++	for (u16 i = 0; i < SCIx_NR_REGS; i++) {
++		struct uart_port *port = &s->port;
++
++		if (!s->params->regs[i].suspend_cacheable)
++			continue;
++
++		if (save)
++			s->console_cached_regs[i] = sci_serial_in(port, i);
++		else
++			sci_serial_out(port, i, s->console_cached_regs[i]);
++	}
++}
++
+ static __maybe_unused int sci_suspend(struct device *dev)
+ {
+ 	struct sci_port *sport = dev_get_drvdata(dev);
+ 
+-	if (sport)
++	if (sport) {
+ 		uart_suspend_port(&sci_uart_driver, &sport->port);
+ 
++		if (!console_suspend_enabled && uart_console(&sport->port))
++			sci_console_setup(sport, true);
++		else
++			return reset_control_assert(sport->rstc);
++	}
++
+ 	return 0;
+ }
+ 
+@@ -3560,8 +3585,18 @@ static __maybe_unused int sci_resume(struct device *dev)
+ {
+ 	struct sci_port *sport = dev_get_drvdata(dev);
+ 
+-	if (sport)
++	if (sport) {
++		if (!console_suspend_enabled && uart_console(&sport->port)) {
++			sci_console_setup(sport, false);
++		} else {
++			int ret = reset_control_deassert(sport->rstc);
++
++			if (ret)
++				return ret;
++		}
++
+ 		uart_resume_port(&sci_uart_driver, &sport->port);
++	}
+ 
+ 	return 0;
+ }
 -- 
 2.43.0
 
