@@ -1,220 +1,137 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 477841E22FD
-	for <linux-serial@vger.kernel.org>; Mon, 20 Jan 2025 13:09:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D2611E0DCD;
+	Mon, 20 Jan 2025 15:03:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737378590; cv=none; b=P6I2sOBXfE20lfoo0K6Y14nMBIpcXNJBmql/oc+iQCHE7G9tY1Zz15T4hLYz2zvRHVfxVnfWPJvf5AC15V51IEbg6U7Dr2IDMpsfUGrjyeDiP+iMv1k61POIVnsst5Q0OwbYuUSVdr3PRk/qPUz6jh/z4gZCKZhSIxeIZqfWY9I=
+	t=1737385394; cv=none; b=Yfv74shlVw1TnoeXJ6hQA8s7Dx84xeH4vme0bUv8PGlw2gnXS5j4SqT6mt5Xjbh+CkESrD4iIcHfnk7CVJzzuAk9KPyZ9o8vFSG1RcI3qY/HtvlBkBC/YFabZg/VpeEnCwRDlZBkbpnIGrBForQV165hcXPd1zKHArMdDfFKj2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737378590; c=relaxed/simple;
-	bh=qzL/yPlM4qaEVTfC35APhrTxhShJXYpDIh1eAz4tDV0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Vi2kXbC1SNlf4aWSutDiqT4/YSA/UHYFf8EYeLpIBAWQ4PhOrJgci2KpeuyyOAaCLmLY8uzappqZzsW7kFFgVd+/FTjo95Dc0CLOBX/DuLtN3DgGeT5g/jr6KjGcY1e3rdPVFfzFFgoM3Sq6CRo9ZYi++5zo1iOhAELKU5B6w1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=Pz41wpbO; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1737385394; c=relaxed/simple;
+	bh=2wZu4p18HC8UKQ4BJpywQRKQc1d1p4kTvKu760cmxEQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=AxkN6f/sLmaLtHZK/4B/NMZumR7IPK9nvAiHR30cDp9jx+61b0SDM6ZVPTQXQCSjaSG+HWF1gx6QK8IA1v/PdK/K/vmalsr2UajSDoaBvYQUAd13fBrxaB2CckMibV+HnMzH1tshGkQEI56APE2cVq4c0oCXkvsXnKM8/PGA+og=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a6Hu6b82; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="Pz41wpbO"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4361815b96cso30569815e9.1
-        for <linux-serial@vger.kernel.org>; Mon, 20 Jan 2025 05:09:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1737378586; x=1737983386; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=fpM+C9xuZuqoM99Roe4nwWX6mJzuLBPzipIWISPswDw=;
-        b=Pz41wpbOssOIrZlDsobIGZA/PdWeEkBCnpsAjyYNXUEKu1x9AHCSsTqIpGftIeEvkT
-         E4NHa/UdWf39GqAf4dGWezacaxt5smU8pAQ2O7h+wNl9Y4i/OYpcl8IrFq9dpXy7EFr+
-         sap69N3Z3+lSbdW6t2lBRBp2cLvlyj48Tum/4xDpnnmVqsa+ybndkShFU+PElsHctHa5
-         HQksG+fKk9XuMpAZzap37srupQjoPdFTeIdzNEl5g8o8f/DA1//QRB+CCnGtTGE77Jvn
-         LmUOTXv2gDusxWNEwyY9RtRtBZxjuOCfKdc4eafbeqjGPvD4x/hM/JsCMkC8j0LpGBx7
-         afWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737378586; x=1737983386;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fpM+C9xuZuqoM99Roe4nwWX6mJzuLBPzipIWISPswDw=;
-        b=mghvhLCJiOWKJg1/SCmkfXocXDNVIrI13fbDCCaAKGtLCUDb3Q3N7GkQxCrIlt/vQA
-         /fo/epkPobyC6jDciWqu68mb8aMYbsgsoaukO/El83yxhcPQ1aJByUadiZfZWY+ox5LW
-         jm6+liRtglFPIjEaymKVTBkSuS4OdbzIADwr9/aZSzG8s2QZ59y1B0KQMbT6cojySZz4
-         VF0wHBjfwoyS0LyqcHTc/CfiH+wWzuEEdW7AiwVar+riIZrf5fFOHHSobq8CPCMzBDa4
-         dIoZRdXLozB371HeaR6+P4aRfLKcw794g8wpY2EojQL5QcS6eu+rdJlMiL+OeOX4Top8
-         fiHA==
-X-Forwarded-Encrypted: i=1; AJvYcCVV8TIRMdgkl2CGxp8t6+kAeSTjqzRPiBhwr+9QwiVO8RP910WE77Kbi/zYE9N8jewSAtA/bNgxHH8O8Ow=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxpdisqrcrL9G7f6t0PPDLM4LLvPoR2wj3g4r/YEmk54jXko04D
-	HCVdcXzLdMN3eLVJRa/mHbzOnHRJjo4i2gnLCWusAnGGOIC3T9F1e9AzXm+qTFk=
-X-Gm-Gg: ASbGncukNQHL9LsgCQIR94WOjNiJHMOc++hktfqbi3ylpZVbv6Bclp3p+bHsd/t/PXO
-	D0WlrR5zNPjvH0hmRQJvlWqoeaaU1VbIERbHVcolTm4RP0Ppz9R1OPD5GvpeWXA+bWH8jnPYQbk
-	sXASZNlD6Ip/mwA5e54W5J/anA3V3yl4SUMrp3IrxQjpLfsBVlMT+4RVXFFy1A+Q8gYP+FIyQh0
-	tpNRow4WHmGiwSQkQyMTur2W4039DOYfzLxEfkJGfmTV0vfXflDpT9WntjBnVUcsoKPJT5r071H
-	Z8BAw3TAyl9xXoxRRRStUwYqaHSG74pFew==
-X-Google-Smtp-Source: AGHT+IFZ/Y3vJcfkQ+QI4bPVUXbmxlLYggt+xsKAqK2r7ijvSF53ZjfGaghnmp+AoXwnifqlzL2bgw==
-X-Received: by 2002:a05:600c:3149:b0:434:f270:a513 with SMTP id 5b1f17b1804b1-4389144e70fmr125594245e9.29.1737378586472;
-        Mon, 20 Jan 2025 05:09:46 -0800 (PST)
-Received: from claudiu-X670E-Pro-RS.. ([82.78.167.35])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4389041f61bsm138001955e9.17.2025.01.20.05.09.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2025 05:09:46 -0800 (PST)
-From: Claudiu <claudiu.beznea@tuxon.dev>
-X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
-To: geert+renesas@glider.be,
-	magnus.damm@gmail.com,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	p.zabel@pengutronix.de,
-	claudiu.beznea.uj@bp.renesas.com,
-	wsa+renesas@sang-engineering.com,
-	prabhakar.mahadev-lad.rj@bp.renesas.com
-Cc: claudiu.beznea@tuxon.dev,
-	linux-renesas-soc@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v4 4/4] arm64: dts: renesas: r9a08g045s33-smarc-pmod: Add overlay for SCIF1
-Date: Mon, 20 Jan 2025 15:09:36 +0200
-Message-ID: <20250120130936.1080069-5-claudiu.beznea.uj@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
-References: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a6Hu6b82"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E7EC4CEDD;
+	Mon, 20 Jan 2025 15:03:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1737385393;
+	bh=2wZu4p18HC8UKQ4BJpywQRKQc1d1p4kTvKu760cmxEQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=a6Hu6b8281gqS8uLXLUx0hTLsxt3kns2LM3HU6kHP5egokBW0tweruCs5JfQxdRS+
+	 7I1NdKqDtL6NoLOxHmLgaoATPeBI8RADApAUzklr8S6H3CKiNCmEIev/J0Bo86VZ09
+	 9J/Cvb2ysh5ummQJ39GKjuSAIoY+cAOiGnWn5ZQErMo6wKiFngv1YlHrhwaoOaoMrS
+	 Tq/ZAFynDj2r5aJfRjWF9wOsDQErB5GqP5E9XPzr1PG/8z76kSuuHK7LO4OP07Wkfe
+	 TX65jc0weayLoHAmvx2iyVvPQiqQeXgWCP/4qRU5bL2PT28JWUjqX45ZMRonX77O6s
+	 4Ki2ruTXPRCOA==
+Message-ID: <b3dd5f39-357e-4714-80af-f5c6b5e8ba68@kernel.org>
+Date: Mon, 20 Jan 2025 16:03:10 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: serial: 8250: Add Airoha compatibles
+To: Benjamin Larsson <benjamin.larsson@genexis.eu>
+Cc: linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+ ansuelsmth@gmail.com, lorenzo@kernel.org, krzk+dt@kernel.org,
+ gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
+References: <20250119130105.2833517-1-benjamin.larsson@genexis.eu>
+ <20250119130105.2833517-2-benjamin.larsson@genexis.eu>
+ <20250120-flashy-nice-tody-afa2ae@krzk-bin>
+ <ba4b0ad4-e8ad-4420-be10-520efeba0c84@genexis.eu>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <ba4b0ad4-e8ad-4420-be10-520efeba0c84@genexis.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+On 20/01/2025 13:59, Benjamin Larsson wrote:
+> On 2025-01-20 08:57, Krzysztof Kozlowski wrote:
+>> On Sun, Jan 19, 2025 at 02:01:04PM +0100, Benjamin Larsson wrote:
+>>> The Airoha SoC family have a mostly 16550-compatible UART
+>>> and High-Speed UART hardware with the exception of custom
+>>> baud rate settings register.
+>>>
+>>> Signed-off-by: Benjamin Larsson <benjamin.larsson@genexis.eu>
+>>> ---
+>>>   Documentation/devicetree/bindings/serial/8250.yaml | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+>>> index 692aa05500fd..2fbb972e5460 100644
+>>> --- a/Documentation/devicetree/bindings/serial/8250.yaml
+>>> +++ b/Documentation/devicetree/bindings/serial/8250.yaml
+>>> @@ -63,6 +63,8 @@ properties:
+>>>         - const: mrvl,pxa-uart
+>>>         - const: nuvoton,wpcm450-uart
+>>>         - const: nuvoton,npcm750-uart
+>>> +      - const: airoha,airoha-uart
+>>> +      - const: airoha,airoha-hsuart
+>> I assume you placed it matching existing order (kind of alphabetical for
+>> compatibles with vendors)?
+>>
+>> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>
+>> Best regards,
+>> Krzysztof
+>>
+> Hi, I placed it after nuvoton that was the most recent addition to the 
+> serial8250_config uart_config[] table that was also added to the 
 
-Add DT overlay for SCIF1 (of the Renesas RZ/G3S SoC) routed through the
-PMOD1_3A interface available on the Renesas RZ SMARC Carrier II board.
+But wasn't nuvoton placed in specific, ordered place?
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
----
+> 8250.yaml binding. IIRC I noted that there was no clear order in the 
+> binding list. So the placement could be considered as random. If another 
+> place is better I can move it for the next version of the patch.
+Entries with vendor look to me fully ordered by name.
 
-Changes in v4:
-- rename overlay name to r9a08g045s33-smarc-pmod1-type-3a
-- add note about the needed switches for SCIF1
-- guard the scif1 node with #if SW_CONFIG3 == SW_ON && SW_OPT_MUX4 == SW_ON
-- dropped the alias section from the overlay file and move it
-  the board file
-- document SW_OPT_MUX4 switch
-
-Changes in v3:
-- none
-
-Changes in v2:
-- none
-
- arch/arm64/boot/dts/renesas/Makefile          |  3 ++
- .../r9a08g045s33-smarc-pmod1-type-3a.dtso     | 48 +++++++++++++++++++
- .../boot/dts/renesas/rzg3s-smarc-switches.h   |  8 ++++
- arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi  |  1 +
- 4 files changed, 60 insertions(+)
- create mode 100644 arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod1-type-3a.dtso
-
-diff --git a/arch/arm64/boot/dts/renesas/Makefile b/arch/arm64/boot/dts/renesas/Makefile
-index 928635f2e76b..ef7f7b55145d 100644
---- a/arch/arm64/boot/dts/renesas/Makefile
-+++ b/arch/arm64/boot/dts/renesas/Makefile
-@@ -143,6 +143,9 @@ r9a07g054l2-smarc-cru-csi-ov5645-dtbs := r9a07g054l2-smarc.dtb r9a07g054l2-smarc
- dtb-$(CONFIG_ARCH_R9A07G054) += r9a07g054l2-smarc-cru-csi-ov5645.dtb
- 
- dtb-$(CONFIG_ARCH_R9A08G045) += r9a08g045s33-smarc.dtb
-+dtb-$(CONFIG_ARCH_R9A07G043) += r9a08g045s33-smarc-pmod1-type-3a.dtbo
-+r9a08g045s33-smarc-pmod1-type-3a-dtbs := r9a08g045s33-smarc.dtb r9a08g045s33-smarc-pmod1-type-3a.dtbo
-+dtb-$(CONFIG_ARCH_R9A07G043) += r9a08g045s33-smarc-pmod1-type-3a.dtb
- 
- dtb-$(CONFIG_ARCH_R9A09G011) += r9a09g011-v2mevk2.dtb
- 
-diff --git a/arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod1-type-3a.dtso b/arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod1-type-3a.dtso
-new file mode 100644
-index 000000000000..e4cb4449f190
---- /dev/null
-+++ b/arch/arm64/boot/dts/renesas/r9a08g045s33-smarc-pmod1-type-3a.dtso
-@@ -0,0 +1,48 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Device Tree Source for the RZ/G3S SMARC Carrier II EVK PMOD parts
-+ *
-+ * Copyright (C) 2024 Renesas Electronics Corp.
-+ *
-+ *
-+ * [Connection]
-+ *
-+ * SMARC Carrier II EVK
-+ * +--------------------------------------------+
-+ * |PMOD1_3A (PMOD1 PIN HEADER)			|
-+ * |	SCIF1_CTS# (pin1)  (pin7)  PMOD1_GPIO10	|
-+ * |	SCIF1_TXD  (pin2)  (pin8)  PMOD1_GPIO11	|
-+ * |	SCIF1_RXD  (pin3)  (pin9)  PMOD1_GPIO12	|
-+ * |	SCIF1_RTS# (pin4)  (pin10) PMOD1_GPIO13	|
-+ * |	GND	   (pin5)  (pin11) GND		|
-+ * |	PWR_PMOD1  (pin6)  (pin12) GND		|
-+ * +--------------------------------------------+
-+ *
-+ * The following switches should be set as follows for SCIF1:
-+ * - SW_CONFIG2:  ON
-+ * - SW_OPT_MUX4: ON
-+ */
-+
-+/dts-v1/;
-+/plugin/;
-+
-+#include <dt-bindings/pinctrl/rzg2l-pinctrl.h>
-+#include "rzg3s-smarc-switches.h"
-+
-+&pinctrl {
-+	scif1_pins: scif1-pins {
-+		pinmux = <RZG2L_PORT_PINMUX(14, 0, 1)>, /* TXD */
-+			 <RZG2L_PORT_PINMUX(14, 1, 1)>, /* RXD */
-+			 <RZG2L_PORT_PINMUX(16, 0, 1)>, /* CTS */
-+			 <RZG2L_PORT_PINMUX(16, 1, 1)>; /* RTS */
-+	};
-+};
-+
-+#if SW_CONFIG3 == SW_ON && SW_OPT_MUX4 == SW_ON
-+&scif1 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&scif1_pins>;
-+	uart-has-rtscts;
-+	status = "okay";
-+};
-+#endif
-diff --git a/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h b/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-index 514a8a6dc013..9766cea55dc6 100644
---- a/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-+++ b/arch/arm64/boot/dts/renesas/rzg3s-smarc-switches.h
-@@ -29,4 +29,12 @@
- #define SW_CONFIG2	SW_OFF
- #define SW_CONFIG3	SW_ON
- 
-+/*
-+ * SW_OPT_MUX[x] switches' states:
-+ * @SW_OPT_MUX4:
-+ *	SW_OFF - The SMARC SER0 signals are routed to M.2 Key E UART
-+ *	SW_ON  - The SMARC SER0 signals are routed to PMOD1
-+ */
-+#define SW_OPT_MUX4	SW_ON
-+
- #endif /* __RZG3S_SMARC_SWITCHES__ */
-diff --git a/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi b/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
-index 0851e0b7ed40..5e044a4d0234 100644
---- a/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
-+++ b/arch/arm64/boot/dts/renesas/rzg3s-smarc.dtsi
-@@ -12,6 +12,7 @@
- / {
- 	aliases {
- 		i2c0 = &i2c0;
-+		serial0 = &scif1;
- 		serial1 = &scif3;
- 		serial3 = &scif0;
- 		mmc1 = &sdhi1;
--- 
-2.43.0
-
+Best regards,
+Krzysztof
