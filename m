@@ -1,73 +1,75 @@
-Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com [209.85.214.194])
+Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com [209.85.214.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B288913D297;
-	Mon, 20 Jan 2025 03:27:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21E4163D;
+	Mon, 20 Jan 2025 03:34:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737343669; cv=none; b=Vz/dCWNwT7Xscw0v1/OZf1B++6vvTrkxPofEv7WQMw4ffZzwOovTVeXj9yHTED1nPWegG4sIR8fb7AEq4egZ670daj7q0DHmR2s7jVhjvIC13waf7vwAUC4O7ZBfKNsE/+ffYx6f6GEs2uIPXwLAVbFbX5uRxPZsHtTW7YrnGzc=
+	t=1737344064; cv=none; b=rIEp69YzL5uG9wz2coiNlHK+2AbTKbCAcoZnTB1q4wDJHSDHDuNVhNzLbPKIACo/KrehMaxd1sJnR+qXraM6C8Myg3+aqJztwmnnBVwtUFNuX7HrUuIsB5EDR3cnQEEesZUfzgAJ8gx/NJdcgl6OR2gg/VwHEWWGV77xQnqEX0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737343669; c=relaxed/simple;
-	bh=QH4aOzm+M3jy2QU88DMAN2bhDn2SN0xgQ4DO6lF6wPU=;
+	s=arc-20240116; t=1737344064; c=relaxed/simple;
+	bh=rE3eRWu8oQ1IWF3sO0CNbeQUpAQL4jSUUgUWpOIVt7g=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pyMoGVD13zLnRW75Zhec26SrrY2XF1yBfmNvGSBrUj0W7TNHBYMyQmTJKUWddRkan5ST+II2NdPxl3AlmZ0MBn3MCX0VNgJkCkz+mROxrjEPl5cHiKOJluTR6Ou7Q07aIOT3QgPQnxHET/pnZJKf46wzIdn4xI9LKwz8Sexifdo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fZQ5lv+v; arc=none smtp.client-ip=209.85.214.194
+	 To:Cc:Content-Type; b=lzlIGe4q5KaOu/ZfPtiZwGpOdJMPdN7q2GFrTVpZITBBuRShaJUpsipxzMf/BqQNOz0Z0pxhMeM25VT+D36yBQ/wNWHKi2CTD0m0xidZ5oj2GEtXDT9+/jbME2ja/K8ABSqcKoL49Pj31Er4dpV4/xLgn97ARiQtM/UWZNC/Qzc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S142CehG; arc=none smtp.client-ip=209.85.214.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fZQ5lv+v"
-Received: by mail-pl1-f194.google.com with SMTP id d9443c01a7336-215770613dbso50724335ad.2;
-        Sun, 19 Jan 2025 19:27:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S142CehG"
+Received: by mail-pl1-f195.google.com with SMTP id d9443c01a7336-2164b662090so72450065ad.1;
+        Sun, 19 Jan 2025 19:34:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1737343667; x=1737948467; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1737344062; x=1737948862; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=39LZt66gLjcc6BWmXFdzefZoO4Uv1Ynguyimqonosp0=;
-        b=fZQ5lv+v6T05c/xM8c6B66WxcEBfv9LNtt4XutNAWdMUVwmWHH6A7K4E/ToHCsmOXq
-         vhcQIq5jfBiuiuTkdByGJ4NIpod2P+pJXkJegbfDyw3/vEDan70E6S1R0CzzPCwKnfo3
-         K1ItmUe0K48NFvbuoZ5jHVvRfcovP/FpHTv/wXoGN2x5+k2Q/xGOCoyhRJ7iLVK3iMpO
-         BLRn5z4fj5nRtmVpoZmZFFsoWu+3Iv5Ts/jRNZYxZLAqnLYc/c/hWbBj+hoSq/5whP23
-         xxTcWUj0oFORHiQV8lSTAX5RVhnbCU5WWWDqjMCsk+x/9+IZOpr/NK97vDUUAY95BFzY
-         QrKg==
+        bh=35P6qa6qPeWzyfLSHSb8M7/bdcuaFGBT8KSNFxJl9gI=;
+        b=S142CehGlh/LAgbPwQ0nPNH9MW1OsfQp7DTeQcyqn+ZerHdOZLlBvDJQLECawFtci0
+         HZGEpOvbACh/MOJ8pv1gbMS5JFamUwXRtt/t3c7gigPqL5OZT8sPIdP3NocY+IwDoJKj
+         NM6U0+utg9UEhBOUcSHlhchIyN4/Tu2LBSRnw6bPKjxFA7KzGJ+2q3F4kNvMvzjujfmC
+         4O6Z4XkpGL2Dvv9BY+/7oNDP/oXC58HSad1Hp4HA96Vm9wKQsFOwhgJnBd6DnDbbpsgB
+         F0GjuI1fX3rLMK/NMAyiOBrmsDYm7GEEoNFWdI57yreGjNJOBKu1UJ4QMRxvWl2zBOxZ
+         tEuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737343667; x=1737948467;
+        d=1e100.net; s=20230601; t=1737344062; x=1737948862;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=39LZt66gLjcc6BWmXFdzefZoO4Uv1Ynguyimqonosp0=;
-        b=n0tOe5bN7GhyzDOZNEZxMdERiWIqGMJaNgYKu2tN9dbwWDUkj1tpC4JTOcWEXSNQjg
-         ZIUs7b46ZrNQ7ATbWKiCVRkSftUbFAR5QEuoN2Ous1aeTdHQrlZv+PCtKqUz/FpvioUT
-         9zvt3kU8bf2QJyZqyfcBi6pm4U8gpiPxHISsWGiuPQuASFUUccH+O25F0GYMIhUTkpF2
-         C3902TAgVa3YlNZnZgytXjLl8y2Bk0olQzRTl75gChz7ohGgejUs2m8A8KeA8UR+QQLc
-         Pwd79q/KgESB8WtlKjfa+pTUWza95zkyRnhlN8QDwdroruMhmrbiCc4DXfVntGMHEBLu
-         SAzA==
-X-Forwarded-Encrypted: i=1; AJvYcCUpyoSJ9BsuyJRABkm5xzF1ahBk7worYlRjggIMyK2/k4+qdeOA8UrgXtYEzYa7cxPXaKBeI/kTrI4J@vger.kernel.org, AJvYcCW1PRQUsVBBxv7KxiqrIKljZPiv+8aarrMOGFoSSD3uWivt+4PLiYfWKhNbNMAJFApJG+DgZEH1JFFtWLvD@vger.kernel.org, AJvYcCWHpg/faxMQbCs8x+uvDG9669XSqKPhudSLEHOa8qFl4g2DlvdjoKZY7Pau86tGa7lD1wE2qW1mG3eq5oEv@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzmzu51B0HqdtYSH48JDnTg+lD2kzdof+pbms1UXUWx9iPj8yYQ
-	X8CsNrOg5N9cis1EePpHR7Xr0w4yFXfspgxunZ6puiFlPEQWUhZlgV+gdZZJj16tV2WE2Ly5/n4
-	sShBkUnH/7S6lK1hu7uRQ+svrCBI=
-X-Gm-Gg: ASbGncsJPPoNoFrAfoCxlKevkiZZB/Kt7fABvI9Fcw4/OSdr97F4niQdA++dMJrRmqe
-	LZVN27f928jIyZAL+tyuqeptyrXnlm6IhrO5nMZwHW5XoVXI6m/0H
-X-Google-Smtp-Source: AGHT+IGZJJTz3rBi8IQSmJd8tnXJujsweYbKmKFIsAfOnBJvWd8pe/bRBVVQhAqD5CVy7QBf8x7Ct4aW6/6Nr0JgTVg=
-X-Received: by 2002:a05:6a00:ad8a:b0:725:322a:9438 with SMTP id
- d2e1a72fcca58-72daf9bcf2amr15953112b3a.1.1737343666880; Sun, 19 Jan 2025
- 19:27:46 -0800 (PST)
+        bh=35P6qa6qPeWzyfLSHSb8M7/bdcuaFGBT8KSNFxJl9gI=;
+        b=WA9HX1wZk4cKgWZT4eeJ6fO6myTqGy0yMKRri7hU50XuXQMcmfgjGJzT3/IGfevdmb
+         jJO7vVlUi3DBWEK/fcsA9BfqXbSzqa4YXcH7/DDNiMtwQeFiym+JRzcqaIKkMvP5bPPQ
+         uwwJRQLUSOzgIQmlNkU9mHrpIjLzL0SfcZs/2nNCin2SMDDhbfImruFhOW+1UIWycv4J
+         4FFrhLw1YYIsSzFpe0guvmXlykfu02r8yl5Pul6vJLIBjjc+WDra/Q486asT2eZj8nNq
+         f085Dk5PoZxvAsIhD5RpVlOosVQsNM4bdTbP5VOyQiucaWNOPgg3iI2mjQbDt9QO1sUP
+         3mvQ==
+X-Forwarded-Encrypted: i=1; AJvYcCULH3S4547FTg6VUAq2WNCN9iyIZjew7BiDKGoMKT8srhr8TUy4/AR0/XlsQYSC8MDp4LafBt8zkX/wZgBf@vger.kernel.org, AJvYcCVnP8GTiIq7UhxrNzsowRqf9ZhV/KfScI1qKd+1ZPwjUB0/fAlC25SkmUvKDC8KbSDsjZb0zjzHuOa9ad7m@vger.kernel.org, AJvYcCXMfrHiF4zPfid4z4f1GzU310Mf2C8AGgRjPun8W11vdR3S1nBi1yMNfrrDsYbhwPGqJXA2V3dm7383@vger.kernel.org
+X-Gm-Message-State: AOJu0YzB/dcKWTujq5WneU+IZOaFmRL6u6u9XisT/lM+OVjTrP0JVnmL
+	PxQipOZKd83f0WoSN6wx7wJ4Y/+2p3voXNK/ttr7cIkFr+iXsJm/n1dBvUipU8NGydtwKhscBFo
+	L+MW3nvz9oUI0jNO+LdRPFxSch98=
+X-Gm-Gg: ASbGncsvzBjOFPPmpTbGZvFc93WT+62IST875QcwVvlufnH0Ar8QBMMgkcnNbOVlmwI
+	/y6gVPY+kg77eLQDn/Gn/EVyfwOYOW9/TY/XEe/exgRPpN9wGblOd
+X-Google-Smtp-Source: AGHT+IHjDhSIxrS5cApTojuGyCn+bQ2a7O5GF0rEQdoousI36pvazPb5tyVBHXSxzPYN65HI2ppfwc+TbVjicE1fR8o=
+X-Received: by 2002:a05:6a20:6a0b:b0:1e1:aa10:5491 with SMTP id
+ adf61e73a8af0-1eb214b3e10mr20010034637.24.1737344062289; Sun, 19 Jan 2025
+ 19:34:22 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250120032212.3579184-1-Wenhua.Lin@unisoc.com>
-In-Reply-To: <20250120032212.3579184-1-Wenhua.Lin@unisoc.com>
+References: <20250114054553.3376837-1-Wenhua.Lin@unisoc.com>
+ <4591ac0a-80fc-4922-b463-79395c9f41d1@kernel.org> <32151d45-2f9f-4f94-82f0-ac0a0b45a290@kernel.org>
+In-Reply-To: <32151d45-2f9f-4f94-82f0-ac0a0b45a290@kernel.org>
 From: wenhua lin <wenhua.lin1994@gmail.com>
-Date: Mon, 20 Jan 2025 11:27:35 +0800
-X-Gm-Features: AbW1kvZVcxBtrN_BrkoFb9rYrAea1msIsNao1_pgmwpVIlPTiRhWLJ8T2kVIW-M
-Message-ID: <CAB9BWhc9rf9Egn=4qnquPN2vasXpT20ATXD-=LZr3mkjLWoO6A@mail.gmail.com>
-Subject: Re: [PATCH V2] dt-bindings: serial: Add a new compatible string for UMS9632
-To: Wenhua Lin <Wenhua.Lin@unisoc.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+Date: Mon, 20 Jan 2025 11:34:10 +0800
+X-Gm-Features: AbW1kvZjVtbABbOmcJ-0IKTlAmi5hdPi_wEkxs13y1_lTS_N1jdJV4Dp1vzdpjc
+Message-ID: <CAB9BWheNnHD7OANqYXtV1oBd6N95B+BCuLPkrqQ=XmXLhTSUsw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: Add a new compatible string for UMS9632
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Wenhua Lin <Wenhua.Lin@unisoc.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
 	Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
 	Chunyan Zhang <zhang.lyra@gmail.com>, Cixi Geng <cixi.geng@linux.dev>, linux-kernel@vger.kernel.org, 
 	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -76,84 +78,33 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kerne
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 20, 2025 at 11:23=E2=80=AFAM Wenhua Lin <Wenhua.Lin@unisoc.com>=
- wrote:
+On Tue, Jan 14, 2025 at 3:40=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
+g> wrote:
 >
-> The sc9632-uart is incompatible
-> with sc9836-uart, Add sc9632-uart dedicated compatible
-> for representing uart of the new project UMS9632 SoC.
+> On 14/01/2025 08:38, Krzysztof Kozlowski wrote:
+> >
+> >>                - sprd,sc9860-uart
+> >>                - sprd,sc9863a-uart
+> >>                - sprd,ums512-uart
+> >>                - sprd,ums9620-uart
+> >>            - const: sprd,sc9836-uart
+> >>        - const: sprd,sc9836-uart
+> >> +      - items:
+> >> +          - enum:
+> >> +              - sprd,sc9632-uart
+> >> +          - const: sprd,sc9632-uart
+> >
+> > This means nothing. Device cannot be compatible with itself.
 >
-> Change in V2:
-> -Change commit message in PATCH 2/2.
-> -Modify the compatible string of enum in PATCH 2/2.
+> And probably will fail testing, so please respond here with pasted
+> results of dt_binding_check and dtbs_check as proof that you actually
+> run them.
 >
-> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
-> ---
->  Documentation/devicetree/bindings/serial/sprd-uart.yaml | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
 >
-> diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.yaml b/Do=
-cumentation/devicetree/bindings/serial/sprd-uart.yaml
-> index a2a5056eba04..83582aa6c750 100644
-> --- a/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
-> @@ -17,13 +17,17 @@ properties:
->      oneOf:
->        - items:
->            - enum:
-> -              - sprd,sc9632-uart
->                - sprd,sc9860-uart
->                - sprd,sc9863a-uart
->                - sprd,ums512-uart
->                - sprd,ums9620-uart
->            - const: sprd,sc9836-uart
->        - const: sprd,sc9836-uart
-> +      - items:
-> +          - enum:
-> +              - sprd,ums9632-uart
-> +          - const: sprd,sc9632-uart
-> +      - const: sprd,sc9632-uart
->
->    reg:
->      maxItems: 1
-> --
-> 2.34.1
->
-
 Hi Krzysztof:
-PATCH V2 dt_binding_check test result:
-cixi.geng1@tj10039pcu:~/p/sprdikt/kernel$ make DT_CHECKER_FLAGS=3D-m
-dt_binding_check W=3D1 O=3D$OUT/dt-out
-DT_SCHEMA_FILES=3DDocumentation/devicetree/bindings/serial/sprd-uart.yaml
-make[1]: Entering directory '/home/cixi.geng1/p/sprdikt/out/dt-out'
-  SCHEMA  Documentation/devicetree/bindings/processed-schema.json
-/home/cixi.geng1/p/sprdikt/kernel/Documentation/devicetree/bindings/iio/adc=
-/adi,ad7606.yaml:
-io-backends: missing type definition
-/home/cixi.geng1/p/sprdikt/kernel/Documentation/devicetree/bindings/sound/r=
-enesas,rsnd.yaml:
-post-init-providers: missing type definition
-  HOSTCC  scripts/basic/fixdep
-  HOSTCC  scripts/dtc/dtc.o
-  HOSTCC  scripts/dtc/flattree.o
-  HOSTCC  scripts/dtc/fstree.o
-  HOSTCC  scripts/dtc/data.o
-  HOSTCC  scripts/dtc/livetree.o
-  HOSTCC  scripts/dtc/treesource.o
-  HOSTCC  scripts/dtc/srcpos.o
-  HOSTCC  scripts/dtc/checks.o
-  HOSTCC  scripts/dtc/util.o
-  LEX     scripts/dtc/dtc-lexer.lex.c
-  YACC    scripts/dtc/dtc-parser.tab.[ch]
-  HOSTCC  scripts/dtc/dtc-lexer.lex.o
-  HOSTCC  scripts/dtc/dtc-parser.tab.o
-  HOSTLD  scripts/dtc/dtc
-  CHKDT   /home/cixi.geng1/p/sprdikt/kernel/Documentation/devicetree/bindin=
-gs
-  LINT    /home/cixi.geng1/p/sprdikt/kernel/Documentation/devicetree/bindin=
-gs
-  DTEX    Documentation/devicetree/bindings/serial/sprd-uart.example.dts
-  DTC [C] Documentation/devicetree/bindings/serial/sprd-uart.example.dtb
-make[1]: Leaving directory '/home/cixi.geng1/p/sprdikt/out/dt-out'
-
+   We made a very elementary mistake. Thank you for your reminder.
+   We will modify it on PATCH V2 and provide dt_binding_check results.
 Thanks
+
+> Best regards,
+> Krzysztof
