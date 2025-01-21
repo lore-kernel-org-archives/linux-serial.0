@@ -1,83 +1,129 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 773341F37CA;
-	Tue, 21 Jan 2025 14:24:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FB031F4273
+	for <linux-serial@vger.kernel.org>; Tue, 21 Jan 2025 18:29:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737469460; cv=none; b=SRzq5PlgWxRaWjLljHeFD0FhRYlARCq2yM8EkwDvXT6aZEMrhhasapwFHlHDiK02kIr6JXp+c+7k1BtRMqE70bcp/C1cZitZG0pQcLa7Ny23BRJNfxYBqhO+sikG2F2aZ8IJVjGuSWtNHfIcVYu7HSarLYGTEbdH9gAjDXe4/rk=
+	t=1737484194; cv=none; b=F5docpBu1ethBsdMDA2N8mlmpVETgz95OsmE8TKJWh+rgmsYKPniWbS4DTebb8HrsZJ1vaOlHaM3p/wxaxumsw6oCy25j4fnE3GMbhW4867lpsGkp6w9tSPJQSQAOMCtUO9UFYoqeSvyukFvlEkAlSLqdSAj+OLNHf/qxp4vwiY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737469460; c=relaxed/simple;
-	bh=eSofiXp23hDvxs2HmbJyu4VKlhtuC3KzBBb7EsSMxgo=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=HpzTqQ0HochpzSmgGfpuJ6+5ekYxXHcn++MUmGxGQXnXDnq5eIAu7qGeGNeWFbMUDfmLBempA6hkR80Y2/39iGcoh0BezQcuYeJriWkuGOOlEh1WWt7zWLPpX/XD3I+jkwjpnwyMvexW3tWGGQP/g5+muk86oOcG5YFTtrl3yzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=tBieK/dc; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1737484194; c=relaxed/simple;
+	bh=jqDzj+eTPBIMLC2SCvL3JbqmPEgXso2MiJ7GoqGTJng=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Wdmk0mKskk2JUOVw/TLV/Qa+C72GQEMxA7ulBXlXpeK0iw5fHu8PtWYw0l41qdQo3t8YOi/oXfMk07xztaPHSmi9x5AdbFMLeSwziqZrBc4Y9zVlkrsppErbOQ/lkj1988xer7Jwyc5r6Xw6nmSVNsd3cyAf+VPB5lncqSn6e5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=CBVjj374; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="tBieK/dc"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=qcEGGUGvqCmp0ajekXB1ILxWVwjTPQQ4Uo2m2PGsMF4=; b=tBieK/dcnitY2WEOzkNQx2YZ7S
-	HTtZRnFjUqBVLqKlq7DpkTqjaY9DdrTWvDv8XyApqHRXctL5qAAHmxODBk/9cLQGkcINlGKe3efwc
-	aAe4eV22clRUMB5s13kRqNG4XB7pTCRWeu42qR0kJufWoMy2tNshDGVcdtfQi+iMmXyQ=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:43806 helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1taFAo-0002kw-Ko; Tue, 21 Jan 2025 09:24:11 -0500
-Date: Tue, 21 Jan 2025 09:24:08 -0500
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Andre Werner <andre.werner@systec-electronic.com>,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- lech.perczak@camlingroup.com, Maarten.Brock@sttls.nl
-Message-Id: <20250121092408.eb0c58293ef0d8907056c816@hugovil.com>
-In-Reply-To: <Z4-iKkPHmrwD5ZBc@smile.fi.intel.com>
-References: <20250121071819.1346672-1-andre.werner@systec-electronic.com>
-	<Z4-iKkPHmrwD5ZBc@smile.fi.intel.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="CBVjj374"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-437a92d7b96so59413655e9.2
+        for <linux-serial@vger.kernel.org>; Tue, 21 Jan 2025 10:29:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1737484190; x=1738088990; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xkAKeDcaoc8aic3fG+NCS5mGcWlbtV39f2bpcRLuxIs=;
+        b=CBVjj374ySgZoWRqkz/ZOjaeJC02SUgJTl3e5wOoWNU4ivRFj6CtucAn/Eun3JucxH
+         FQ+FKYQ6uK7khIZhR14Nw+5pJs/VzBdsbL9EXArk7eQGBALQ7nw+g7BnOhvTluVhD/E6
+         kHX63P1iDAXceWcKVtKMJ9sqHFLsOYa+8b/skB9njTq53rClIVnqZQBrH/VJC9WDuKb/
+         bXCPPVoajZGv92bDycH2b9RAJL0cEIdeDPnhLCbCtk8sAxbBVmJdHA1IP1JKVi42gJMB
+         6v9navO29kRkaeLf0+a9NpT5s+gS8wVxsctQEkidvjqSKc7hu3KR/tm1iealqp+Ik6ct
+         vuJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737484190; x=1738088990;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xkAKeDcaoc8aic3fG+NCS5mGcWlbtV39f2bpcRLuxIs=;
+        b=TM34fvJ3s6RKB0bPL2TBQAvTHHZuVqpzB61PH1VAir5okxypZsqjLmku03j17TqbRy
+         BRYv2aw4i+vxfKoF8LDmBcfbN57KlCgubUn6gS4Z4UG9BIUhZm1pojYJp2UDx2a5XG78
+         vcPKKb2H2SG4ITLqkCWLWqF9tEYZbW7C1ZVjgnLFN0Mxnrsi9cio6NSG4nZoOy7KdOaq
+         7ZFhNd4nBK+uZCPGNyxcw5XBnvx7Aoz3Ena0gRUxlhLmv9CxsqYcBISdIsP32Frq1IOC
+         mq8ohufasdzX7zbLHvBI09pZg7gq+OKhY3P1M7U2OfWzRsNGF+2vHknGMbbIQbizC3lv
+         9ngQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWwSAZKmtorKHeJXMqi4w9SiGAegmS89Btz+/+4HZeh67DvQ+E/D0zpwmXGeN8fW0UIPOg9HPGCPZbvEaw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwW6sOTaIBaR7EdiFF2UGw1iK33+96qRZKiGO+dQifSAw7Jn07t
+	+TWm+KSDaET+oa0JWXkYI2JPBDPI61J+f75cN7AJEydUFiUzlsHI8yWlUxl69PI=
+X-Gm-Gg: ASbGncvUu3QF1neYgjDBx6a30PokpY7mnOm/VL8aZLexfjLrCaVRJQTpl85LG0QWeYw
+	SPntSMe4RSwhghopSmsAgetFitUkpmgxZ2B1ePCCbXnRHBMvsONB6LBUpNYE9miX3D9dAYqomJk
+	b0EZpyW3avic/4PVYiS+ZjQdix0P60LPzCTSbChHYDKJj1IvnIehmCz/LaJtx9w8L0Z6eyovgEw
+	rRCnc8bOOpdhS53TOIyEeTx/zpeeIHtj9xPgWivkQiBKqh+AqTVgv+SKTh69chvdb+9PnZX
+X-Google-Smtp-Source: AGHT+IHfUrUKD19ckbGWZSAxbod4Fwp6AvvMqNG6Dkq6zkY1uEsGnMGxwAgZfueRaa6lpWJgnlQp+Q==
+X-Received: by 2002:a05:600c:350b:b0:431:58cd:b259 with SMTP id 5b1f17b1804b1-438914671fdmr193243775e9.31.1737484190523;
+        Tue, 21 Jan 2025 10:29:50 -0800 (PST)
+Received: from blackdock.suse.cz ([193.86.92.181])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-438904621cdsm187778135e9.27.2025.01.21.10.29.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 21 Jan 2025 10:29:50 -0800 (PST)
+Date: Tue, 21 Jan 2025 19:29:48 +0100
+From: Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>
+To: syzbot <syzbot+622acb507894a48b2ce9@syzkaller.appspotmail.com>
+Cc: andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org, 
+	cgroups@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net, elic@nvidia.com, 
+	gregkh@linuxfoundation.org, hannes@cmpxchg.org, hawk@kernel.org, jasowang@redhat.com, 
+	jirislaby@kernel.org, john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org, 
+	kuba@kernel.org, len.brown@intel.com, linux-kernel@vger.kernel.org, 
+	linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, mingo@redhat.com, mst@redhat.com, 
+	netdev@vger.kernel.org, parav@nvidia.com, pavel@ucw.cz, rafael@kernel.org, 
+	rostedt@goodmis.org, songliubraving@fb.com, syzkaller-bugs@googlegroups.com, 
+	tj@kernel.org, yhs@fb.com
+Subject: Re: [syzbot] [cgroups?] possible deadlock in
+ console_lock_spinning_enable (5)
+Message-ID: <6pdxz7oqr6442cczbec7n3cqtldrrpfsdk7ynqjguiqp6d5ucv@sibkx2lfldvu>
+References: <0000000000001e66f5061fe3b883@google.com>
+ <678a4e3b.050a0220.303755.0005.GAE@google.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -0.1 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v4] serial: sc16is7xx: Fix IRQ number check behavior
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="flx2psaakqlkzlmd"
+Content-Disposition: inline
+In-Reply-To: <678a4e3b.050a0220.303755.0005.GAE@google.com>
 
-On Tue, 21 Jan 2025 15:33:30 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> On Tue, Jan 21, 2025 at 08:18:19AM +0100, Andre Werner wrote:
-> > The logical meaning of the previous version is wrong due to a typo.
-> > 
-> > If the IRQ equals 0, no interrupt pin is available and polling mode
-> > shall be used.
-> > 
-> > Additionally, this fix adds a check for IRQ < 0 to increase robustness,
-> > because documentation still says that negative IRQ values cannot be
-> > absolutely ruled-out.
-> > 
-> > Fixes: 104c1b9dde9d859dd01bd2d ("serial: sc16is7xx: Add polling mode if no IRQ pin is available")
-> 
-> > 
-> 
-> This blank line is redundant (should not exists in the tag block).
-> Otherwise LGTM, thanks for pursuing this!
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+--flx2psaakqlkzlmd
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [syzbot] [cgroups?] possible deadlock in
+ console_lock_spinning_enable (5)
+MIME-Version: 1.0
 
-Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Fri, Jan 17, 2025 at 04:34:03AM -0800, syzbot <syzbot+622acb507894a48b2c=
+e9@syzkaller.appspotmail.com> wrote:
+> syzbot has bisected this issue to:
+>=20
+> commit bc0d90ee021f1baecd6aaa010d787eb373aa74dd
+> Author: Parav Pandit <parav@nvidia.com>
+> Date:   Tue Jan 5 10:32:02 2021 +0000
+>=20
+>     vdpa: Enable user to query vdpa device info
+>=20
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=3D1440c2b058=
+0000
 
--- 
-Hugo Villeneuve
+syzbot got this somehow wrong, it started with the lockdep bug but then
+switched to a different
+| crash: BUG: unable to handle kernel paging request in bpf_trace_run3
+so the bisecting session yielded (I believe) random commit, didn't it?
+
+(The lockdep appears valid, with PSI enabled and the fault injection at
+unfortunate place (with BPF'd tracepoint).)
+
+Michal
+
+--flx2psaakqlkzlmd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTd6mfF2PbEZnpdoAkt3Wney77BSQUCZ4/nmgAKCRAt3Wney77B
+SfWDAQD9atuzOG3FHcpa9TZop/UV7vy3rJ7Nt2Jbeo9pTOreKgEAoQlnyi+4Metp
+9vIjKtqdXgf9fmKryAgGyrYpKRkNAws=
+=bsM8
+-----END PGP SIGNATURE-----
+
+--flx2psaakqlkzlmd--
