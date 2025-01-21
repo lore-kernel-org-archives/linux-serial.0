@@ -1,99 +1,83 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C5671BCA0E;
-	Tue, 21 Jan 2025 13:44:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 773341F37CA;
+	Tue, 21 Jan 2025 14:24:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737467066; cv=none; b=mfTVzjgZU1XNtgBDve82JyUo6pkK4HD6mgq8ZAp86jUOb0Hw+C6Zy4iT0SHCgCna1Vtm/urc8oeAABBNCDepotqkkVHAE+4h4C5131NNzhheAnC0tX3JeJ19sDDwoi/HSZJSM7GldsKvbpJC8rOVcTy6lD+UJvqtpGW5z4osqt8=
+	t=1737469460; cv=none; b=SRzq5PlgWxRaWjLljHeFD0FhRYlARCq2yM8EkwDvXT6aZEMrhhasapwFHlHDiK02kIr6JXp+c+7k1BtRMqE70bcp/C1cZitZG0pQcLa7Ny23BRJNfxYBqhO+sikG2F2aZ8IJVjGuSWtNHfIcVYu7HSarLYGTEbdH9gAjDXe4/rk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737467066; c=relaxed/simple;
-	bh=ZNHKTzbc1qE2RVmc+TGDtrXgWkU8kMRka/zQs1fCEpQ=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=jJlZQVzkVZQZyQW5LOV2wqZJ/ITOQrguguPd8pFF8lrVDl0TE1p6T8+Qp3Y4kHyY60Wf6JlvUHYnadknD5y0aTHk4mRdUaqu4RSZ5Tq60vOGQZ2+Rdq9plnWHwM9jgpil9usOjncOs0YivXnIsqWR7Ba+0PvBzjjyP+5tWNGvKE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hcV7Yu1W; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737469460; c=relaxed/simple;
+	bh=eSofiXp23hDvxs2HmbJyu4VKlhtuC3KzBBb7EsSMxgo=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=HpzTqQ0HochpzSmgGfpuJ6+5ekYxXHcn++MUmGxGQXnXDnq5eIAu7qGeGNeWFbMUDfmLBempA6hkR80Y2/39iGcoh0BezQcuYeJriWkuGOOlEh1WWt7zWLPpX/XD3I+jkwjpnwyMvexW3tWGGQP/g5+muk86oOcG5YFTtrl3yzY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=tBieK/dc; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hcV7Yu1W"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F329C4CEDF;
-	Tue, 21 Jan 2025 13:44:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737467065;
-	bh=ZNHKTzbc1qE2RVmc+TGDtrXgWkU8kMRka/zQs1fCEpQ=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=hcV7Yu1WK4hL71lRucisEPi1ndG+9QDxeTfjfs2vqMqItkZfQ4nQJ7NzHw8ARaeuh
-	 hq/MNo5nJJ1uKDXWgtCKk/59jjaT6t8LyY+jOc34f5MknU8tXpH1CbmiooctUJB+Vj
-	 nE9OIYNWRZkpEKAtA6ho2+tPtwylWi2aG9eRrGxtoEmPknHfhg9KFeaLX0G/a4Smmi
-	 jGL5lLx19/LCzy2M5nxzb7F6OWdMMSB2G034mngDsPT2qWKV7hcoQWyiVrkifpemhJ
-	 V4Y3fekQtX2eAcu2M8jIvwzQsGTgkeTdt8xh1xISP4urRvuwfY3W7XePeg7tiTJOgh
-	 z+mBk2XvCSeqw==
-Date: Tue, 21 Jan 2025 07:44:24 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="tBieK/dc"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=qcEGGUGvqCmp0ajekXB1ILxWVwjTPQQ4Uo2m2PGsMF4=; b=tBieK/dcnitY2WEOzkNQx2YZ7S
+	HTtZRnFjUqBVLqKlq7DpkTqjaY9DdrTWvDv8XyApqHRXctL5qAAHmxODBk/9cLQGkcINlGKe3efwc
+	aAe4eV22clRUMB5s13kRqNG4XB7pTCRWeu42qR0kJufWoMy2tNshDGVcdtfQi+iMmXyQ=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:43806 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1taFAo-0002kw-Ko; Tue, 21 Jan 2025 09:24:11 -0500
+Date: Tue, 21 Jan 2025 09:24:08 -0500
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Andre Werner <andre.werner@systec-electronic.com>,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, hvilleneuve@dimonoff.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ lech.perczak@camlingroup.com, Maarten.Brock@sttls.nl
+Message-Id: <20250121092408.eb0c58293ef0d8907056c816@hugovil.com>
+In-Reply-To: <Z4-iKkPHmrwD5ZBc@smile.fi.intel.com>
+References: <20250121071819.1346672-1-andre.werner@systec-electronic.com>
+	<Z4-iKkPHmrwD5ZBc@smile.fi.intel.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: linux-kernel@vger.kernel.org, Xiongpeng Wu <xiongpeng.wu@unisoc.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
- Cixi Geng <cixi.geng@linux.dev>, devicetree@vger.kernel.org, 
- wenhua lin <wenhua.lin1994@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>, 
- Zhirong Qiu <Zhirong.Qiu@unisoc.com>, Zhaochen Su <Zhaochen.Su@unisoc.com>, 
- Orson Zhai <orsonzhai@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Baolin Wang <baolin.wang@linux.alibaba.com>, linux-serial@vger.kernel.org
-To: Wenhua Lin <Wenhua.Lin@unisoc.com>
-In-Reply-To: <20250121115404.3612588-1-Wenhua.Lin@unisoc.com>
-References: <20250121115404.3612588-1-Wenhua.Lin@unisoc.com>
-Message-Id: <173746706432.2493664.199542333902610683.robh@kernel.org>
-Subject: Re: [PATCH V3] dt-bindings: serial: Add a new compatible string
- for UMS9632
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -0.1 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH v4] serial: sc16is7xx: Fix IRQ number check behavior
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
+On Tue, 21 Jan 2025 15:33:30 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-On Tue, 21 Jan 2025 19:54:04 +0800, Wenhua Lin wrote:
-> The UART IP version of the ums9632 SoC project has been upgraded.
-> UART controller registers have added valid bits to support new features.
-> In order to distinguish different UART IP versions, we use sc9632-uart
-> to represent upgraded IP and sc9836-uart to represent old IP.
+> On Tue, Jan 21, 2025 at 08:18:19AM +0100, Andre Werner wrote:
+> > The logical meaning of the previous version is wrong due to a typo.
+> > 
+> > If the IRQ equals 0, no interrupt pin is available and polling mode
+> > shall be used.
+> > 
+> > Additionally, this fix adds a check for IRQ < 0 to increase robustness,
+> > because documentation still says that negative IRQ values cannot be
+> > absolutely ruled-out.
+> > 
+> > Fixes: 104c1b9dde9d859dd01bd2d ("serial: sc16is7xx: Add polling mode if no IRQ pin is available")
 > 
-> Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
-> ---
-> V2->V3 changes:
-> * Lists are ordered by fallback.
-> * Combine two const items into enum.
-> * Change commit message.
+> > 
 > 
-> V1->V2 changes:
-> * Modify the compatible string of enum.
-> * Change commit message.
-> ---
->  Documentation/devicetree/bindings/serial/sprd-uart.yaml | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
+> This blank line is redundant (should not exists in the tag block).
+> Otherwise LGTM, thanks for pursuing this!
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-My bot found errors running 'make dt_binding_check' on your patch:
+Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/serial/sprd-uart.yaml:30:10: [warning] wrong indentation: expected 10 but found 9 (indentation)
-
-dtschema/dtc warnings/errors:
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20250121115404.3612588-1-Wenhua.Lin@unisoc.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+-- 
+Hugo Villeneuve
