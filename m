@@ -1,131 +1,203 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0BE2212D62;
-	Wed, 22 Jan 2025 12:41:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F07D2144BB
+	for <linux-serial@vger.kernel.org>; Wed, 22 Jan 2025 15:23:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737549709; cv=none; b=CcUdhbSAictj+RAcMhoxRKDLbrqp1Wx+6oq9TE84CfkL2vElgSMA5hJK6pw41lWqSsP17Zq3ai49TooqJbbANd3YfQquTGMurPNZIq9ohXbPN1/GemYy4qwX04VXbv2GOdEXaSsS3SCHQmSPDio3xrwZ3+3Lz0p3VKcHJB3ihp4=
+	t=1737559399; cv=none; b=bJQIHKxIscrpxVQdR0aG7E0Vh+00ByU2007ahh3TvaSNEl6977vra7Vj3PYeyVBiY2aAvjo+GHIWkrFNseP3nnGdwrC83upZ3jBr4fgBKr7T4qpkdgfGYZs06LSQBYo5sDtUpd31dePpYxzRRbJ0WZImZjmlxlQXzhE98AHqbfM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737549709; c=relaxed/simple;
-	bh=/nRt7/FOVju0HHPP7y/y/GmcikIqd0uun9LCjQjrq7E=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hEKvKRUCNpQEjWg9J3CZIkOHFaOFNphESlsysqIkrRoV+spWQ15rab1Ri90RFd2UMcvkamCt/LbCr7LRqdjk8PiWyMPl6lEvEtXxfUwV4Ss2+uKtp47xjJG5VYfNhLY2aJkjPeq1qBrGmX8Ns4+9ECsGzNICft0wj6n+DsTjguM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VoyrM/KR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737559399; c=relaxed/simple;
+	bh=wAP83diBEz+AA2qcf51inkom2/geCIiYSbIDyd0Q4WY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=L3rumujdUJJkKlDFiORida8jCAPR0jKpjoxhNJjSllaHtZWuwmRHff9elPdvYZu6b7h4pKfQOPii0cyUIVfn73DBnJhEy9zFG5zJT5laLgg59iWeifhR33yKKdV2FhgJj/FpL2v9ddeko74BACo9DTsuViR7UtuppZ7g2ij4zAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=rxER/s7r; arc=none smtp.client-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VoyrM/KR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75C04C4CEEC;
-	Wed, 22 Jan 2025 12:41:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737549708;
-	bh=/nRt7/FOVju0HHPP7y/y/GmcikIqd0uun9LCjQjrq7E=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=VoyrM/KR3y6SyzXqcrUXIeXUzSXAukF1jTugO3Tp/XeZbDQsZz0btjWFVZexImUyA
-	 GNv9Ye0JlCb6LXyPS9Jx9MVxR+Wdtkk0Ms+qZSrA1Lr8Xe+0i9vU/ISeGtF/6vb7Vs
-	 1Uj3RovlFmNzqVfmuzQ82cCacT+Fx0ki2YqsVx1IY92F3iqqKCafCCMLWLqphwdRxg
-	 srLeLPCzyALTJw1qCRW7tcb44xO01Rx4zDtdApARN9p2pthq2z1LppbizS751cMHo9
-	 cZn++ylUYdHjeWMHwboi8qRzV/CerfY2kd1XCsOqWLze560AIlYM8svAXpyzid0N54
-	 v69z43CGgr7bQ==
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-30738a717ffso40026971fa.0;
-        Wed, 22 Jan 2025 04:41:48 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUKqVG4UQOQTScLlnCjBrFmMKDZi12BERoup2VyZXTeujoY6Rg6J9s/glWmZ6JY1dfvi0Vi7hXCtDobASohYA==@vger.kernel.org, AJvYcCURoO/ywDw5Pl8qBwi9p4pyVnljK/iYiPao3+ko2R8pPSFF1JIyN4LpC6te/C4MLv1+hgdaPnoWpTBxWr/o8TfP@vger.kernel.org, AJvYcCUTzmcDIA3LpW9fUZlK213aRAmcpVoGuMm296zP0GKAOe0NceNLxF2DYZ0tP/oGKWDugZEOnlaSFYXoZBnGSsY7mtMI@vger.kernel.org, AJvYcCUXzMJs1EOc1S0Qfg7EvOLAIApE4a/Y01VQBzxNp0og+HHLddfXMrw2KCphcFcF1WG3f2vJw83Lsqs=@vger.kernel.org, AJvYcCUhrq7e6oE/j62WaesbAWQmSfgJKLUXs1F88xv0gqtCO9kadmounQWzCQvQ7ZrRBigrI0/1oK/ZEciT@vger.kernel.org, AJvYcCUtRZqq47x2MjR02ePwLTpxZQLDkXyg/PHk+FZ8rZ+e4jxy+KayMaFFoVHxYhLTujFI7XMj4M4o6me3@vger.kernel.org, AJvYcCUuD2rnEggiuXhFoo6SplY8eJbBjh0pqNoMZdLE1hekIhiG0Ij9Y4afZbyV+YeqyoSMzs72XcvxxiGVxGcy@vger.kernel.org, AJvYcCV1VcHnEi+XdJFXMd1QxDJsFt2GCvBBAc75PN/wtRaE20o0A7isaXNNZZqLSJ1i0nRd2Z9jgbCpwJIw96CjRCZWD2W1ng6h@vger.kernel.org, AJvYcCV4Fsa6oEwxkMarKgqsZ6LoPr+ywTkrol7pMfdV3JSxKpa2FddWU9Y1puunmgLG9C0W61Q=@vger.kernel.org, AJvYcCVUPAGRczk8MJssFfG6JzcgUi9NPmpZKxRpM69x9n6JongrYB4eyJJLAyiWx8HpPaGREmh5oRi5tGrUIA==@vger.kernel.org, AJvYcCVgt+IpKx1UwT3+h1GuwjNZI/xRLxaDq/ZuYde41XNGnMAWJmK0+A8I2arP2jYw6ySDDq7/BPVXpwY=@vger.kernel.org, AJvYcCW/rKaRjtwO20eckWhl1Hd8U9gU+6ax1NJVt/117zOm71lz4h9GUtkLqJE0gjU+nP1ZBTtevM6yJEcghA==@vger.kernel.org, AJvYcCWiYi76bcwqzm4drHmtyFI8rXphj1bZjD3LNNwVHESxKi9QXLC8GbYQG+3AUwRqDEuZJWV/E2Ve6zDVmg==@vger.kernel.org, AJvYcCWuucLsMUN+VWJyuwold4yhiALa8XQEilEKuazbig7+clgdbUySTm+e1nyMoJ0Uor99skfEKMwL0ed2+PKp@vger.kernel.org, AJvYcCXbjfRokKyYYMMdauSChuYQz7JLeQBw9YepWJbjHajMabmLKIQTbJVpXJ/Yf5PHCjVyIqyOLE+mNo2ZcA==@vger.kernel.org, AJvYcCXbm8imEMFZodtt9XomgfNMoxBGcBQM2ej0FUGytzDD1kI/zLMJ4CUa2SCLjpculQTPHvRDMvyQarRIodvS@vger.kernel.org, AJvYcCXf7G7N0M2NQhVlh4bbdQurA9xZiwLMbx660NU9zjJ0xVw4M61lJ2lynsjwjzr6RjczKQdOxGNqhQXl3A/3@vger.kernel.org
-X-Gm-Message-State: AOJu0YygbY2mkegbAEPzTnpWkQfZ34u45Z9jzLKtcYI8HoXQWad1kKlU
-	ZnNH8dnDCR8kew/TVhwdFxohdV1pSkU9K0dxh7lkNitB+SHJE69YrW51RLmcyAbcMtQMpCwjkIg
-	ZNItjjIDVm3D3jzjgZ14bvWmyn5M=
-X-Google-Smtp-Source: AGHT+IFcRSReB7hah7mapcirnp1PWu31SswN3BbR4HjBYPEG79Tzl030J0TjqkE7fYQS4xaDIi2/KgOUqh2J3fswv1A=
-X-Received: by 2002:a05:651c:2228:b0:302:4130:e19c with SMTP id
- 38308e7fff4ca-3072caa15c1mr71017091fa.19.1737549706586; Wed, 22 Jan 2025
- 04:41:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rxER/s7r"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5d647d5df90so11845299a12.2
+        for <linux-serial@vger.kernel.org>; Wed, 22 Jan 2025 07:23:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1737559395; x=1738164195; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dsyK8TLyexE3P/C1c9h6HEl+LHjkyAQXdUwejp4Smrg=;
+        b=rxER/s7rSstOtNeLuOuxz7ALG2NHOZ/Tw8wtYfDym7HIxG2GyaidqW72yDB6uLRHG9
+         OioCO2Qr0DtFhRouhNM1Rv/lkbcQsB4CQFWjBOtXhacQrGn2Jl5CQ0By6jVwfV1oQ+0u
+         Ckkcf8vBb58OiU9XRAjusc2N+ezb22taq80ykBn4Vps/oinN5RmClTwBHqSjP3v+1l9y
+         cMMXCoGcWfkEKHTV2iNcjB73la5qcMJ4TR5ma8RO65qnJ4d6DKwhX4NBnbDfd7xV3a2P
+         zaA8A1S6xN+CmD1CPmlzBSJI3wuWg1dUhVAmpeOlM9W/W0MuEZlEZiFgWjFl7u6/GHfZ
+         AG5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737559395; x=1738164195;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dsyK8TLyexE3P/C1c9h6HEl+LHjkyAQXdUwejp4Smrg=;
+        b=nuPXbcLbjIYkUH86vjObbq+3ub3BNsB12aRbm6b/7HxE6XPT4EJASmRdCCDQJzgwKm
+         nO4ZV3yelcQpNTFd0+Yfttm2j+aLSAF+9OE6tmIXWsDjHWhSqfJwCUmCghzIAB/FOmX1
+         YfuuryEi0Ke1xTcJ9nSxojHgZR5SyoKCUKWR6YMKxku8QUOGYEYmM5vNIotW1EA55+XG
+         0s/CX8WrdHTkP4cw0FMsNR01ejN73OrMjlH3a5ArOwxQe+F/rdWr3HXAPkXr0gHXqoeg
+         dKnwOFKHjJlS/yRSUf9iuYi+S/mgw+UzyfJ2F0Fi+YB0zkrEpH0VgxKL2KcB19TYpjsP
+         oo6A==
+X-Forwarded-Encrypted: i=1; AJvYcCXRl2BG+dDnbI4R/4qQv/Nd9k2Oi1YTKYci4sCyfhGk0PfRGKCtmqlZLKbHFigFLZoluxL42oYqxx7rM/I=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz3CYUlBUfo2ETzBplo+5llWkPHpMdnANxK6orhbbs1VUAqxCGW
+	g/8Kyuk7D3z1Hv61pSonSVQ3Z5aKuH6GVBU4pKPwG3lonGCRtI9mAR9ZHyFKAoM=
+X-Gm-Gg: ASbGncvgdDYl+psuqdudc2LfDxC01GeaI5di5y8H6mXep5jBIoJyiaIt77CV8EDMxOG
+	It+yx2++J6hK8UsXOTp+xQXsX7cIocBmWJUdbOziW129McVkXAm9EKXIRtPsBYJ4NxR8SqGo+Na
+	r8xKsH2KDqcdF4DRPGXx0f9Pw9P5CFAHZSvNCKdeOvrtd/ulblQH9oQ0k2AZq4MINJeW6VxHXs6
+	FFhJHtJONUA+m6UYgNmbL1QxG9t4twc+j8sa4fhmsBu2hJUp+AEhdwy2idQCY6SDaWK/B9sZoI9
+	l2xYLXwhfQ4S/uIJMZMVtcf/uXb/1tax3Rr0ScJFXGLMI7/40vdF
+X-Google-Smtp-Source: AGHT+IF2GekVFn2VaCplK+AEro1Vcp1qYSzsLme/+8HyYjLIiatYxywySBSc4FZMck0y/zR6BsjrSQ==
+X-Received: by 2002:a05:6402:1d53:b0:5d1:3da:e6c with SMTP id 4fb4d7f45d1cf-5db7d2f87admr18744153a12.10.1737559395412;
+        Wed, 22 Jan 2025 07:23:15 -0800 (PST)
+Received: from ?IPV6:2a02:8109:888d:ff00:ca7f:54ff:fe52:4519? ([2a02:8109:888d:ff00:ca7f:54ff:fe52:4519])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5db73edc8b7sm8484554a12.76.2025.01.22.07.23.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Jan 2025 07:23:13 -0800 (PST)
+Message-ID: <56ef1276-9d58-4a94-ae89-5faf5870c10c@linaro.org>
+Date: Wed, 22 Jan 2025 16:23:11 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250110-jag-ctl_table_const-v2-1-0000e1663144@kernel.org>
- <Z4+jwDBrZNRgu85S@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com> <nslqrapp4v3rknjgtfk4cg64ha7rewrrg24aslo2e5jmxfwce5@t4chrpuk632k>
-In-Reply-To: <nslqrapp4v3rknjgtfk4cg64ha7rewrrg24aslo2e5jmxfwce5@t4chrpuk632k>
-From: Ard Biesheuvel <ardb@kernel.org>
-Date: Wed, 22 Jan 2025 13:41:35 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXEZPe8zk7s67SADK9wVH3cfBup-sAZSC6_pJyng9QT7aw@mail.gmail.com>
-X-Gm-Features: AbW1kvaDj3u8bGVj1m4rnYAkpiRSTpmPAB3bThAH-GyuG2Tmgw9okzkp1e58uCc
-Message-ID: <CAMj1kXEZPe8zk7s67SADK9wVH3cfBup-sAZSC6_pJyng9QT7aw@mail.gmail.com>
-Subject: Re: Re: [PATCH v2] treewide: const qualify ctl_tables where applicable
-To: Joel Granados <joel.granados@kernel.org>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>, =?UTF-8?Q?Thomas_Wei=C3=9Fschuh?= <linux@weissschuh.net>, 
-	Kees Cook <kees@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	openipmi-developer@lists.sourceforge.net, intel-gfx@lists.freedesktop.org, 
-	dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org, 
-	linux-hyperv@vger.kernel.org, linux-rdma@vger.kernel.org, 
-	linux-raid@vger.kernel.org, linux-scsi@vger.kernel.org, 
-	linux-serial@vger.kernel.org, xen-devel@lists.xenproject.org, 
-	linux-aio@kvack.org, linux-fsdevel@vger.kernel.org, netfs@lists.linux.dev, 
-	codalist@coda.cs.cmu.edu, linux-mm@kvack.org, linux-nfs@vger.kernel.org, 
-	ocfs2-devel@lists.linux.dev, fsverity@lists.linux.dev, 
-	linux-xfs@vger.kernel.org, io-uring@vger.kernel.org, bpf@vger.kernel.org, 
-	kexec@lists.infradead.org, linux-trace-kernel@vger.kernel.org, 
-	linux-hardening@vger.kernel.org, apparmor@lists.ubuntu.com, 
-	linux-security-module@vger.kernel.org, keyrings@vger.kernel.org, 
-	Song Liu <song@kernel.org>, "Steven Rostedt (Google)" <rostedt@goodmis.org>, 
-	"Martin K. Petersen" <martin.petersen@oracle.com>, "Darrick J. Wong" <djwong@kernel.org>, 
-	Jani Nikula <jani.nikula@intel.com>, Corey Minyard <cminyard@mvista.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 0/7] Add support to load QUP SE firmware from
+Content-Language: en-US
+To: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>,
+ Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
+ andersson@kernel.org, konradybcio@kernel.org, johan+linaro@kernel.org,
+ dianders@chromium.org, agross@kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-spi@vger.kernel.org
+Cc: quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
+References: <20241204150326.1470749-1-quic_vdadhani@quicinc.com>
+ <66fb0c6d-472c-4131-bd25-83266cf497e4@linaro.org>
+ <17138798-b72b-4e78-8fad-419e1a63fa5b@quicinc.com>
+From: Caleb Connolly <caleb.connolly@linaro.org>
+In-Reply-To: <17138798-b72b-4e78-8fad-419e1a63fa5b@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, 22 Jan 2025 at 13:25, Joel Granados <joel.granados@kernel.org> wrote:
->
-> On Tue, Jan 21, 2025 at 02:40:16PM +0100, Alexander Gordeev wrote:
-> > On Fri, Jan 10, 2025 at 03:16:08PM +0100, Joel Granados wrote:
-> >
-> > Hi Joel,
-> >
-> > > Add the const qualifier to all the ctl_tables in the tree except for
-> > > watchdog_hardlockup_sysctl, memory_allocation_profiling_sysctls,
-> > > loadpin_sysctl_table and the ones calling register_net_sysctl (./net,
-> > > drivers/inifiniband dirs). These are special cases as they use a
-> > > registration function with a non-const qualified ctl_table argument or
-> > > modify the arrays before passing them on to the registration function.
-> > >
-> > > Constifying ctl_table structs will prevent the modification of
-> > > proc_handler function pointers as the arrays would reside in .rodata.
-> > > This is made possible after commit 78eb4ea25cd5 ("sysctl: treewide:
-> > > constify the ctl_table argument of proc_handlers") constified all the
-> > > proc_handlers.
-> >
-> > I could identify at least these occurences in s390 code as well:
-> Hey Alexander
->
-> Thx for bringing these to my attention. I had completely missed them as
-> the spatch only deals with ctl_tables outside functions.
->
-> Short answer:
-> These should not be included in the current patch because they are a
-> different pattern from how sysctl tables are usually used. So I will not
-> include them.
->
-> With that said, I think it might be interesting to look closer at them
-> as they seem to be complicating the proc_handler (I have to look at them
-> closer).
->
-> I see that they are defining a ctl_table struct within the functions and
-> just using the data (from the incoming ctl_table) to forward things down
-> to proc_do{u,}intvec_* functions. This is very odd and I have only seen
-> it done in order to change the incoming ctl_table (which is not what is
-> being done here).
->
-> I will take a closer look after the merge window and circle back with
-> more info. Might take me a while as I'm not very familiar with s390
-> code; any additional information on why those are being used inside the
-> functions would be helpfull.
->
+Hi Mukesh,
 
-Using const data on the stack is not as useful, because the stack is
-always mapped writable.
+On 10/01/2025 07:56, Mukesh Kumar Savaliya wrote:
+> Thanks Caleb for your testing and sharing results. Since Viken is on
+> leave, i am following on this.
+> 
+> On 1/7/2025 4:55 PM, Caleb Connolly wrote:
+>> Hi Viken,
+>>
+>> On 04/12/2024 16:03, Viken Dadhaniya wrote:
+>>> In Qualcomm SoCs, firmware loading for Serial Engines (SE) in the QUP
+>>> hardware has traditionally been managed by TrustZone (TZ). This setup
+>>> handled Serial Engines(SE) assignments and access control permissions,
+>>> ensuring a high level of security but limiting flexibility and
+>>> accessibility.
+>>>   This limitation poses a significant challenge for developers who
+>>> need more
+>>> flexibility to enable any protocol on any of the SEs within the QUP
+>>> hardware.
+>>>   To address this, we are introducing a change that opens the firmware
+>>> loading mechanism to the Linux environment. This enhancement increases
+>>> flexibility and allows for more streamlined and efficient management. We
+>>> can now handle SE assignments and access control permissions directly
+>>> within Linux, eliminating the dependency on TZ.
+>>>   We propose an alternative method for firmware loading and SE
+>>> ownership/transfer mode configuration based on device tree
+>>> configuration.
+>>> This method does not rely on other execution environments, making it
+>>> accessible to all developers.
+>>>   For SEs used prior to the kernel, their firmware will be loaded by the
+>>> respective image drivers (e.g., Debug UART, Secure or trusted SE).
+>>> Additionally, the GSI firmware, which is common to all SEs per QUPV3
+>>> core,
+>>> will not be loaded by Linux driver but TZ only. At the kernel level,
+>>> only
+>>> the SE protocol driver should load the respective protocol firmware.
+>>
+>> I gave this series a spin on the RB3 Gen 2 with U-Boot.
+>>
+> Is it possible to try on RB8 board ? Because that's where this support
+> is enabled. It also needs respective TZ configuration to allow FW
+> loading from Linux.
 
-Global data structures marked 'const' will be moved into an ELF
-section that is typically mapped read-only in its entirely, and so the
-data cannot be modified by writing to it directly. No such protection
-is possible for the stack, and so the constness there is only enforced
-at compile time.
+I don't have access to RB8, so no... This support will also be useful on
+RB3 Gen 2 for U-Boot support, can the next tz release for this platform
+include the necessary changes?
+> 
+> 
+>> After fixing the compilation errors, it seems like there is a consistent
+>> hard crash (the board freezes and resets) at some point during i2c
+>> controller init with this series.
+>>
+> Can you please share exact repro steps ? We can try locally and check
+> what's wrong and also review in future how we make it working for U-boot
+> combination.
+
+If it's true that tz changes are needed that would certainly explain the
+crash.
+
+Unfortunately it isn't currently possible to boot QC Linux via U-Boot
+since the ESP uses a 512 byte sector size on 4k block size UFS which is
+not supported.
+
+If you build an image with a correct ESP (mkfs.vfat -S 4096) then you
+can boot U-Boot from upstream by following the RB3 Gen 2 documentation
+
+https://docs.u-boot.org/en/latest/board/qualcomm/rb3gen2.html
+
+You'll also need to apply this patch to fix a boot regression
+https://lore.kernel.org/u-boot/20250122-qcom-parse-memory-updates-v2-0-98dfcac821d7@samcday.com/
+
+On the Linux/DTS side, apply this series, add the appropriate properties
+to enable fw loading as-per the dt-bindings added by this series and
+place the qupv3fw.elf file.
+
+Kind regards,
+>> I noticed a similar issue with this same logic implemented in U-Boot.
+>>
+>> Could you clarify which xfer mode is appropriate for the i2c controllers
+>> on the RB3 Gen 2 and maybe give this a try yourself, or let me know what
+>> other info you'd need to debug this.
+>>
+> Yes, please share the procedure , we will try internally.
+> is there any DTSI change done as part of your testing ?
+>> Thanks and kind regards,
+>>>
+>>> Viken Dadhaniya (7):
+>>>    dt-bindings: i2c: qcom,i2c-geni: Document DT properties for QUP
+>>>      firmware loading
+>>>    spi: dt-bindings: Document DT properties for QUP firmware loading
+>>>    dt-bindings: serial: Document DT properties for QUP firmware loading
+>>>    soc: qcom: geni-se:: Add support to load QUP SE Firmware via Linux
+>>>      subsystem
+>>>    i2c: qcom-geni: Load i2c qup Firmware from linux side
+>>>    spi: geni-qcom: Load spi qup Firmware from linux side
+>>>    serial: qcom-geni: Load UART qup Firmware from linux side
+>>>
+>>>   .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |  11 +
+>>>   .../serial/qcom,serial-geni-qcom.yaml         |  12 +
+>>>   .../bindings/spi/qcom,spi-geni-qcom.yaml      |  11 +
+>>>   drivers/i2c/busses/i2c-qcom-geni.c            |  11 +-
+>>>   drivers/soc/qcom/qcom-geni-se.c               | 445 ++++++++++++++++++
+>>>   drivers/spi/spi-geni-qcom.c                   |   7 +-
+>>>   drivers/tty/serial/qcom_geni_serial.c         |   7 +-
+>>>   include/linux/soc/qcom/geni-se.h              |  17 +
+>>>   include/linux/soc/qcom/qup-fw-load.h          | 179 +++++++
+>>>   9 files changed, 692 insertions(+), 8 deletions(-)
+>>>   create mode 100644 include/linux/soc/qcom/qup-fw-load.h
+>>>
+>>
+> 
+
+-- 
+// Caleb (they/them)
+
