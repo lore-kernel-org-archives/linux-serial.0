@@ -1,107 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A930170826;
-	Wed, 22 Jan 2025 06:17:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5668126AF5;
+	Wed, 22 Jan 2025 07:26:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=222.66.158.135
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737526639; cv=none; b=kRwLfB19uCggoC/GUsYpio254nHYeUcvL0TZeTJ6dyUYdaCuG8UOaHDUuIduizE/j4RYau3IxNszudbz+IUjcl6WyC9Xi5SSLZBjYJBP7bNU2Q9gdTd0C3dtG9aZTvz9XpB4sMrCTOeArokZ+9pM7c7EZ85NAnd+PBIiT+zMonM=
+	t=1737530774; cv=none; b=TIlqj/dDSc9XoSn4ocUGwuhkaIPgNSVofX3t8nCBRtIPpH0h0eJRTP5eR1m9k7+NPK8mKfhSq5PVH9FqjLUoatd6hSZ/04U33r+XqnHIzNr5lveZF1lwj6G68LUl7DbRUbn7ZsMwm169wteOMKu1J3pI3HxnL41CmRTuDEK3Rxg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737526639; c=relaxed/simple;
-	bh=tD5okNdrZGvSCg5z8j2MI64iX/wqxiiNzBdDjZhDhQs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=laiO1E3zOakJIqvN8dUmWbzQiWhYY75ngjeqzT0G/Q+Mou/Yt7DIMoE1rnlKmyOF2KaT3oF+MiNLDtYX9FvLrFT/q7aQoNqj28FiEZpStQwAreA0OaC6/HF3bRbDxBMQTjflSer8Ypvtc15+LLyEffloOeHtx1RHd361bgM11+k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qhrz5cYw; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qhrz5cYw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F0FC4CED6;
-	Wed, 22 Jan 2025 06:17:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737526638;
-	bh=tD5okNdrZGvSCg5z8j2MI64iX/wqxiiNzBdDjZhDhQs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=qhrz5cYwU/Lm3DV709BJqsSCTS6yiq4ZSI5Eh1rjAh48OXIFKQLB3Kg36lJhQPCHq
-	 /v6e3MXLOydX753LbwvfJeUq5HYJ9ic7bESqN7CFcw9F98CSwalkueBzChqHa3JzUE
-	 6+DE1JMCXuHC/YJISZnadIAudN73SNHYRCgy7Wi9uMuMzFlG1WYrmcqBXsvtHy3NYf
-	 x9JrEMP3ntfNxMtg2te1zR8+MqI95SmA/X1Q32cQpO8Zd8uMcaul+fbsLlN9WTdjHu
-	 S+8hYaNrbkqhum22c7bWuP1BuHad+ape3AvKVYD+5GgU/6GhdSBPW7L83r55j+Mluq
-	 Ju2veiQM3noGA==
-Message-ID: <19d34aba-2ded-4aa3-b76f-5120ad669720@kernel.org>
-Date: Wed, 22 Jan 2025 07:17:15 +0100
+	s=arc-20240116; t=1737530774; c=relaxed/simple;
+	bh=hfcNAiD9g/aP7gdeEuIhgjBBOWOVP5DQrr2POSIZT3Y=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=DL2imSVgsVpcNAn2AsSLCAnYS5I4Cc8Ua1ZiyftvCxmJQRggwNbXhaJEVOotB7Fj21USocN4ulEGlMHg8y+G1wRbiha9lQNF4bW4SbiArxuV2EAMD+SfmlCb/81oaEIMTkklitCoFJGsUCq40Ifq/meloGWS9mKze1RssTguqyk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com; spf=pass smtp.mailfrom=unisoc.com; arc=none smtp.client-ip=222.66.158.135
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=unisoc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=unisoc.com
+Received: from dlp.unisoc.com ([10.29.3.86])
+	by SHSQR01.spreadtrum.com with ESMTP id 50M7NtiS031161;
+	Wed, 22 Jan 2025 15:23:55 +0800 (+08)
+	(envelope-from Wenhua.Lin@unisoc.com)
+Received: from SHDLP.spreadtrum.com (shmbx06.spreadtrum.com [10.0.1.11])
+	by dlp.unisoc.com (SkyGuard) with ESMTPS id 4YdFpk0BR1z2PKC2R;
+	Wed, 22 Jan 2025 15:20:30 +0800 (CST)
+Received: from zeshkernups01.spreadtrum.com (10.29.55.99) by
+ shmbx06.spreadtrum.com (10.0.1.11) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Wed, 22 Jan 2025 15:23:53 +0800
+From: Wenhua Lin <Wenhua.Lin@unisoc.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>
+CC: Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang
+	<baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, Cixi
+ Geng <cixi.geng@linux.dev>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, wenhua lin
+	<wenhua.lin1994@gmail.com>,
+        Wenhua Lin <Wenhua.Lin@unisoc.com>,
+        Xiongpeng Wu
+	<xiongpeng.wu@unisoc.com>,
+        Zhaochen Su <Zhaochen.Su@unisoc.com>,
+        Zhirong Qiu
+	<Zhirong.Qiu@unisoc.com>
+Subject: [PATCH V4] dt-bindings: serial: Add a new compatible string for UMS9632
+Date: Wed, 22 Jan 2025 15:23:52 +0800
+Message-ID: <20250122072352.3663653-1-Wenhua.Lin@unisoc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty/ldsem: Remove unused ldsem_down_write_trylock
-To: linux@treblig.org, gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20250122012559.441006-1-linux@treblig.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20250122012559.441006-1-linux@treblig.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
+ shmbx06.spreadtrum.com (10.0.1.11)
+X-MAIL:SHSQR01.spreadtrum.com 50M7NtiS031161
 
-On 22. 01. 25, 2:25, linux@treblig.org wrote:
-> From: "Dr. David Alan Gilbert" <linux@treblig.org>
-> 
-> ldsem_down_write_trylock() was added in 2013 by
-> commit 4898e640caf0 ("tty: Add timed, writer-prioritized rw semaphore")
-> but hasn't been used.
-> 
-> Remove it.
+The UART IP version of the ums9632 SoC project has been upgraded.
+UART controller registers have added valid bits to support new features.
+In order to distinguish different UART IP versions, we use sc9632-uart
+to represent upgraded IP and sc9836-uart to represent old IP.
 
-Right, it was likely added for symmetry. However having untested+unused 
-code is indeed wrong.
+Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+---
+V3->V4 changes:
+* Modify the indentation format.
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+V2->V3 changes:
+* Lists are ordered by fallback.
+* Combine two const items into enum.
+* Change commit message.
 
-thanks,
+V1->V2 changes:
+* Modify the compatible string of enum.
+* Change commit message.
+---
+ Documentation/devicetree/bindings/serial/sprd-uart.yaml | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/serial/sprd-uart.yaml b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
+index a2a5056eba04..5bf2656afcfd 100644
+--- a/Documentation/devicetree/bindings/serial/sprd-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/sprd-uart.yaml
+@@ -17,13 +17,18 @@ properties:
+     oneOf:
+       - items:
+           - enum:
+-              - sprd,sc9632-uart
++              - sprd,ums9632-uart
++          - const: sprd,sc9632-uart
++      - items:
++          - enum:
+               - sprd,sc9860-uart
+               - sprd,sc9863a-uart
+               - sprd,ums512-uart
+               - sprd,ums9620-uart
+           - const: sprd,sc9836-uart
+-      - const: sprd,sc9836-uart
++      - enum:
++          - sprd,sc9632-uart
++          - sprd,sc9836-uart
+ 
+   reg:
+     maxItems: 1
 -- 
-js
-suse labs
+2.34.1
+
