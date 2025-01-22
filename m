@@ -1,135 +1,117 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+Received: from mail-pj1-f66.google.com (mail-pj1-f66.google.com [209.85.216.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA7016BE3A
-	for <linux-serial@vger.kernel.org>; Wed, 22 Jan 2025 10:09:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACFEC20F987;
+	Wed, 22 Jan 2025 10:39:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737540564; cv=none; b=jsnzhC0Vle4zd2LzeOEoTe/q3ZLdfMo484pSJMVF+xwwUvZLuJIlWg8lhaP6NzH/xZzV6xQj2N1ecV7wDxNkyDQMSQ3tu8Vx2rJFMXs6fISZQE6Nbk++NYAnyxoNG7qrKj8327ffTozS5bzKQk+EL/s9Wi6gW98kmIeVcmgvyZk=
+	t=1737542388; cv=none; b=jRwyAGkath1TDx31n3fcxfnSTl3L2nmU5Rd8zki9VZ5r2Rs7w4NBN5dQsTSqAs07Q5H4tGcOsUcTpGb9K29zkbEljy/CLzYxp6NfiaTeE1MQ8hOM9aLpkgZwUr/DF+AVMAhaIP4JnbMVbvg0LsZJUR8MIXs9hoMcWg7sc99XWJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737540564; c=relaxed/simple;
-	bh=yPq21HhdpDlsS14IAW4zQa5skvQJ+MdKpDAy9He2FlU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=flmDYJbxD7xUQeliYospe0pVcAR+VVRPKD1A83zXkw4uE2d7p19ATcs+U8LFRqxVK7RgUvnKE8wwuHwowVsjfFGj2abkK9hp3rbGBfKCi6sVaNr4JiD9znv0oeC/8ApH+CdG/uSYVEJ3rr1m7ZcUJx3IHnw6Wth14gqkZ1ZPMiY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=KFzA9LSz; arc=none smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1737542388; c=relaxed/simple;
+	bh=S82Hh/PoUZ4xr3ipl1ugTkMC4wtzF8X0OSDfaqtzaXk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JizeXm7/uNlyh0pi9lPjwaaBGbjsgzgO7n0fHnvJxM8NgJ/u741ARJOtGwqiP7xedH9XiJ+8VdVHeNPaUCF+gy2WdYNhpQRE/yYH9InSpQeI6tm6CupdB8thymthcuS13Kz2k31XkCrOSu+8VIwmLg3ebF8xysohShhaNKHizcU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FseXreVw; arc=none smtp.client-ip=209.85.216.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="KFzA9LSz"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-ab322ecd75dso142131266b.0
-        for <linux-serial@vger.kernel.org>; Wed, 22 Jan 2025 02:09:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FseXreVw"
+Received: by mail-pj1-f66.google.com with SMTP id 98e67ed59e1d1-2ef72924e53so11505051a91.3;
+        Wed, 22 Jan 2025 02:39:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1737540560; x=1738145360; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wEJEd8faAZ8pH7yQQA5pi8eTwG/AqywjNq66uj965H8=;
-        b=KFzA9LSzGHuyRlka6fwEMjxvVr3860d2TvLHD90/5cziuFiBS3V4zt60ktvNZBH6w6
-         5CR8OsOR2D8FKMfWQYTsNgmNjUDaqUmbnQooxqXCsDS6dreovqO8xx9eLxwYdpIEQxdv
-         26EfRSIjj5EfghdyxOV1ZfUgNgWrtOkuyocInLGEaHP4802Iw6SuUoxqMnfVbMwr6ol1
-         cjd96EjmGUu0n3TXrczLwWmzaHlbHouFSUjjLAEE12BRXv3PLU9oE6sfdfDVsquJTpmX
-         fbRgp36E8aDXedMkE/kkNjigbNzLV0hI7Qo6X1T+mPhOfklnROmQvDWpnmfBaJKcdDC7
-         VzwQ==
+        d=gmail.com; s=20230601; t=1737542386; x=1738147186; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NvLYgMwDxY2WEEVF7WFI/etMRdKHJYI8085JwQmePuI=;
+        b=FseXreVwpTy/ocBXNbIu9pMBTQiur/y7iYv19NF3jgHKospOdtFt8r8rZgU2MCPONo
+         PnZV1eHrT+Hh6T2TXx+qIivbej0CTcctj7gayjzs8qmGkbCz1Wvswc6i7b7BO+49CE2Z
+         Zs/0l8o9A2MLU6p4uQ1B3F47cNSfi13T0FeuL+3ZVGR2TYKCnG/LUBIpt4Pv0r3Etr9m
+         C0aww5SEwrLuxjRJb6Q+ESaSq0DkPL6zsTF0d+TI7tR16PD/XqMSNJVTumX2Q8B5Df0l
+         Yo1DIyiaanF+uLdQPbBTyFSF02sNY98IleGHCHQ2thtMXnnZ2jpgY7JnpUfbl3XJcW3N
+         XDtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737540560; x=1738145360;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wEJEd8faAZ8pH7yQQA5pi8eTwG/AqywjNq66uj965H8=;
-        b=ojzCyDUf808RCnJXKkalZMUQFf2T1FJXv1SkYnr5bIs02uwjd5gjerpKq4gNjKUODp
-         rJ5l1olwalBgDrMyAPaO5vVCnksV4qScpyKc4l4ynr5Cte8Y3nkF8pk1kUwD3qr0AjbT
-         M4ZCNg1ZPpvrVJUm79rz8Cp1hN/pYZGAPhDiM3nzBFYUT8r2Q+TcI11kFKOYvYu4q9hJ
-         KlmZTUcKdxR+o0gjsFYronjWE9SOgcnNKF8l5JUMLVTI/RzvlzL5fJ+9tvWzzmC/XEVs
-         C03XfV1OEwXDBPoEU50tjswJhjg47Kmsrk3D8Fj6OdVEfR5LhFUDkgdXecUKI0R1UteU
-         FRQA==
-X-Forwarded-Encrypted: i=1; AJvYcCWN1Bsqf4Watds92+TW+YwgU1Qjppfv0b0tN5rv+qfkPc3GAC6XHJxdMq3IQFUKH5mutB9Qiq0BeNB3KBo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyOeSdumjpetC5UXAbXYf22o2qQkt5pYLhjICqT3JP7qo1tOXAp
-	S8tsEz2q/5Pr0sEIwJOJ31njUfEbCx+7oQnrnqRu1kiC2O3rW0LNOMeCqyrIvf4=
-X-Gm-Gg: ASbGnctai8iEE6WOJTs65GhPqqJH/ZN+jZ7c/Az2wSOSBb4LM6TU9iq8N7Q/4o62Ovd
-	pfvdlFNAZzL9ZPlzX4nQFJtS9tZnATzAPJDQsng5j/zmwJQrg8Iy7VcaEgZ2TSBeXhaXdBe4qKP
-	bEZB4jdHEY2NaRxOFyIYWaWk0J6YHGrvGxMSD/mYJE0Mz8obHhrhM6ilsta6YgvuYkLHeedNp9z
-	9iOiL+NuJX7rJViOQg9NkLLH9+IQleo4Jm6v906g4dxBnqbQBoii2j2XbO/SzyZL/A2Lmiuhwfv
-	iQ==
-X-Google-Smtp-Source: AGHT+IFVRPmudokZEYxl+UG1fyhtE2C6e0Eu/TY6D7Z3irDR1ZjFtdV9zGTdFMCb5huVLQghs03L8g==
-X-Received: by 2002:a17:906:f596:b0:ab3:47cb:5327 with SMTP id a640c23a62f3a-ab36e19cff2mr2054334566b.5.1737540559995;
-        Wed, 22 Jan 2025 02:09:19 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.35])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab384ce1f71sm893158566b.61.2025.01.22.02.09.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jan 2025 02:09:19 -0800 (PST)
-Message-ID: <c7e34ef0-b094-456a-ba68-2709ff7cec13@tuxon.dev>
-Date: Wed, 22 Jan 2025 12:09:17 +0200
+        d=1e100.net; s=20230601; t=1737542386; x=1738147186;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=NvLYgMwDxY2WEEVF7WFI/etMRdKHJYI8085JwQmePuI=;
+        b=giEx2nBOSp0YphDbxOuY6n+s4WXzkgmy92jv5Ecpi/DdXr07BKF0SMcmHOYQEBXN2+
+         w0xBfCjZWG5ieIAnP0m41KW/GAaqZSMvLeM9UaKPPSHDvGAw6XERPTx/VRF4ne4BtueM
+         uNUQNQlO1NqZoUaNP9KdnkA4Dl/6ls4mqJNtPoj83aQjjwgyyPor+7Zffv4VBVEsslMh
+         Ob8KbdPe92YgS+FXywjY9O+7ucTO28dnKW+6xop2FgxLDTLd5H2FJEOoZJGiaXhkAlCW
+         6PwWAD2HKThzVlkLccCd2ZtteMVD0Tr4O/+mSBmcbrNZeSgkjtX5CZiGmOhFYqRGjZEi
+         VVeQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU9aFPzMBs245kzO42zOAnWl6V1UjQYr8fwIVN56JfNeMUxBhMxa2FAAFq3Mm0uBY9KeKJ14lnC8roX6jOg@vger.kernel.org, AJvYcCUPkkqHHyFOZGc7LESDZm9AjeceEnQpAlCHIuXM3wOCYwrQEWIvXKG/LLpQSS4j36oR8KwupGRDWE8W@vger.kernel.org, AJvYcCXSVZ4LixCf99TUtu6N8xC6CgcEVjNWbhzuF5PRSt5Y9usb245BwnfazeD2m/ZAX8DiZoo9ssYwz1lcp4wb@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy+yfxi/BXdrmdf37y3wEQAdERL9HrIa17RYZLuEIpnxlgPpTfL
+	72n3vwkUP4sqr7aln1doqSQe5igGZRzluoEwgSQu/AEny+1HaqRzacd7KNJ1sbmwG85B9GE61XQ
+	om+dGJPPqNHSQGj1N8tuurMSsfYN3k2N+t3o=
+X-Gm-Gg: ASbGncu9l+wG636GNDJcNpv7pkYG2WT2o5GolPSa0RH7vn5j2a1D5p2QasAGXC4ohZi
+	c2PHLVnRJEG7LPYnP0l1dy+xxrk2hW38KQ3Tq1ERf2brFls0G6q0h
+X-Google-Smtp-Source: AGHT+IGcYynYmFuonWhqFvCeF7SY2NReu8OGG99mZBylJLggI0PgO/S8Ebj+AEeIC5CuLFGJxM858QgQZXgo9beF6yM=
+X-Received: by 2002:a05:6a00:340c:b0:728:e906:e446 with SMTP id
+ d2e1a72fcca58-72dafbda6ddmr33732526b3a.24.1737542385813; Wed, 22 Jan 2025
+ 02:39:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/4] serial: sh-sci: Update the suspend/resume support
-To: Krzysztof Kozlowski <krzk@kernel.org>, geert+renesas@glider.be,
- magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
- p.zabel@pengutronix.de, claudiu.beznea.uj@bp.renesas.com,
- wsa+renesas@sang-engineering.com, prabhakar.mahadev-lad.rj@bp.renesas.com
-Cc: linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
- <20250120130936.1080069-2-claudiu.beznea.uj@bp.renesas.com>
- <04fde244-006f-4bda-9d65-7957be74f049@kernel.org>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Content-Language: en-US
-In-Reply-To: <04fde244-006f-4bda-9d65-7957be74f049@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20250122072352.3663653-1-Wenhua.Lin@unisoc.com> <482f89f5-3989-4bd6-b11e-2df0833117d7@kernel.org>
+In-Reply-To: <482f89f5-3989-4bd6-b11e-2df0833117d7@kernel.org>
+From: wenhua lin <wenhua.lin1994@gmail.com>
+Date: Wed, 22 Jan 2025 18:39:34 +0800
+X-Gm-Features: AbW1kvZXqjHLfG3LIT6duYoXkTfbS_dWuwVKpjQ-ZZ8cz4S_3nwmxNyhpPR2L8k
+Message-ID: <CAB9BWhc5NVARd83C2m9gTMjL1rngCSLUcTZkyK=6z4G3sf86ww@mail.gmail.com>
+Subject: Re: [PATCH V4] dt-bindings: serial: Add a new compatible string for UMS9632
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Wenhua Lin <Wenhua.Lin@unisoc.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Orson Zhai <orsonzhai@gmail.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Chunyan Zhang <zhang.lyra@gmail.com>, Cixi Geng <cixi.geng@linux.dev>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	Xiongpeng Wu <xiongpeng.wu@unisoc.com>, Zhaochen Su <Zhaochen.Su@unisoc.com>, 
+	Zhirong Qiu <Zhirong.Qiu@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
-
-On 21.01.2025 10:54, Krzysztof Kozlowski wrote:
-> On 20/01/2025 14:09, Claudiu wrote:
->> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>
->> The Renesas RZ/G3S supports a power saving mode where power to most of the
->> SoC components is turned off. When returning from this power saving mode,
->> SoC components need to be re-configured.
->>
->> The SCIFs on the Renesas RZ/G3S need to be re-configured as well when
->> returning from this power saving mode. The sh-sci code already configures
->> the SCIF clocks, power domain and registers by calling uart_resume_port()
->> in sci_resume(). On suspend path the SCIF UART ports are suspended
->> accordingly (by calling uart_suspend_port() in sci_suspend()). The only
->> missing setting is the reset signal. For this assert/de-assert the reset
->> signal on driver suspend/resume.
->>
->> In case the no_console_suspend is specified by the user, the registers need
->> to be saved on suspend path and restore on resume path. To do this the
->> sci_console_setup() function was added. There is no need to cache/restore
->> the status or FIFO registers. Only the control registers. To differentiate
->> b/w these, the struct sci_port_params::regs was updated with a new member
->> that specifies if the register needs to be chached on suspend. Only the
->> RZ_SCIFA instances were updated with this new support as the hardware for
->> the rest of variants was missing for testing.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->> ---
->>
->> Changes in v4:
->> - none
-> 
-> 
-> Why are you combining serial patches with DTS? Greg applies entire set
-> thus you *cannot* send him DTS.
-
-It's v4. The initial set contained fixes for serial, support for RZ/G3S
-(including clocks and dtsi), all that was needed for the enabled RZ/G3S
-serial IPs. Fixes were posted separately (as requested), the other bringup
-patches were integrated and this is what remained. I chose it like this for
-version continuity.
-
-Thank you,
-Claudiu
-
-> 
+On Wed, Jan 22, 2025 at 3:53=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
+g> wrote:
+>
+> On 22/01/2025 08:23, Wenhua Lin wrote:
+> > The UART IP version of the ums9632 SoC project has been upgraded.
+> > UART controller registers have added valid bits to support new features=
+.
+> > In order to distinguish different UART IP versions, we use sc9632-uart
+> > to represent upgraded IP and sc9836-uart to represent old IP.
+> >
+> > Signed-off-by: Wenhua Lin <Wenhua.Lin@unisoc.com>
+> > ---
+> > V3->V4 changes:
+> > * Modify the indentation format.
+>
+> Did you test your patch before sending this time?
+>
 > Best regards,
 > Krzysztof
 
+hi Krzysztof:
+   PATCH V4 dt_binding_check test result:
+
+  wenhua.lin@f7fdd53ce35c:~/code/linux_update/linux$ make
+DT_CHECKER_FLAGS=3D-m dt_binding_check W=3D1
+O=3D/home/wenhua.lin/p/sprdikt/out/dt-out
+DT_SCHEMA_FILES=3DDocumentation/devicetree/bindings/serial/sprd-uart.yaml
+  make[1]: Entering directory '/home/wenhua.lin/p/sprdikt/out/dt-out'
+  SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+  CHKDT   /home2/wenhua.lin/code/linux_update/linux/Documentation/devicetre=
+e/bindings
+  LINT    /home2/wenhua.lin/code/linux_update/linux/Documentation/devicetre=
+e/bindings
+  DTEX    Documentation/devicetree/bindings/serial/sprd-uart.example.dts
+  DTC [C] Documentation/devicetree/bindings/serial/sprd-uart.example.dtb
+  make[1]: Leaving directory '/home/wenhua.lin/p/sprdikt/out/dt-out'
+
+Thanks
