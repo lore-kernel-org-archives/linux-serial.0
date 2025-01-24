@@ -1,171 +1,185 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE97155325;
-	Fri, 24 Jan 2025 15:09:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 772C5111AD;
+	Fri, 24 Jan 2025 15:16:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737731359; cv=none; b=BBO8h+ZAhjH6P4gT7H83Ybo+s2/u8Qj0833rcjQrhQkGw9ZiEHDPt0Bqv4Lm8z6yJozkRgG0wDiFN32YLZZRdNBU3hiEK1ItsR9NvT7R1PPHRT+zmBjM0zuuCquJGygz5mMfCfQhK2x82CH8eSSDlK9cF/zjlgo6n9rXXLd2688=
+	t=1737731818; cv=none; b=hMuI8lWngIJoQabD1Mqy+8qiu6ea3PdSDM5HnBsAyF+r1AJ6nB8Z6aVbQLx3PcBNd8dC3pYfNQXCHvprtWqVUef9KzVPNCbJ1rfX1AXoIpm26pxKVWNm0zxVamAOslp8WCGWLO0+aNGt4cYzUhjqggoqASbQeQ40KC3JqqMd0rM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737731359; c=relaxed/simple;
-	bh=nu5L0oHkKO/XvEtpmpggRMODnIIoAWZ2OPQcpyBS/x8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ATI7JtQfThl0V3LNkeCNzitcJbfqD3yvawGwEb9woNJ/KqpMydDszb1Th+yqe0kI4CRLyOy4CLeuLVmTgtHYm88AGMW3WYyVfe9DaYnJ2aLHD4dvAyx/DMKQHZXm791sLQHqPAF5mlTynaU0PJCs3+OvNmtlC0gHcEm15LE4SyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QiM0s3nZ; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1737731818; c=relaxed/simple;
+	bh=bZa0JBKVM651IGQdRqG75JoHWi9RvMkvN1mwkbxdU5U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=NyT0CXWBhFnFUN2VvCuBxgMp2RLNZ8GYn3zIcBTqC/vKqHT/nJw5RYyBR2H+bY8mHC6clCbxxYc32/1kJ+3r9n8DihUGshxLryrqHW7ncjoTLNebUbvOsFE4QHvAbH4DGCF5XOQhMkpq1loCbIgpR9oqCzpDwR5OyOFvuWrl87c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=gcqxak1S; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QiM0s3nZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1737731358; x=1769267358;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nu5L0oHkKO/XvEtpmpggRMODnIIoAWZ2OPQcpyBS/x8=;
-  b=QiM0s3nZzI6Gbt6BrPIVA/ui1O4o3Lxuvmqu05M3sVzPZ7pLYGDnBjy9
-   +V07nknvMxrdvGOHSUlV8hmyUsuLZpIdbcwODVfBMITJH2oCLAqCdOElT
-   8URFiaHsr/qA748hS/17Em4Q3IhEFdC/DC1vUIk4pBQnfi7TaRD2pmPUo
-   Q3hZik5l6mcgQqB3xJhSWHsLuLbXDOYlujpTwpKOdxDgjsScDR3XOieyj
-   vsLZElFyz1/ln86/VxYWQdIN+J9GVLEu3c0zR87oX3ccKQnh+RGhm1cPM
-   cVqvXXZmJ/ytk+Amn3RDjNGAdmtFz7F83fRPwCAcPm2yIDl0pZGhz/QKS
-   Q==;
-X-CSE-ConnectionGUID: 245y7rFlQiCmhFQzI9fXsg==
-X-CSE-MsgGUID: YH+BQRhvQIO0N07xPDZ/pw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11325"; a="48773113"
-X-IronPort-AV: E=Sophos;i="6.13,231,1732608000"; 
-   d="scan'208";a="48773113"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2025 07:09:17 -0800
-X-CSE-ConnectionGUID: FGtdc2FbRdObUS8rE2/eYQ==
-X-CSE-MsgGUID: QpmEVMWQQXS0uR6y2gE0SQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="131087548"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2025 07:09:14 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tbLJ0-00000004qdD-3BFn;
-	Fri, 24 Jan 2025 17:09:10 +0200
-Date: Fri, 24 Jan 2025 17:09:10 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Yenchia Chen <yenchia.chen@mediatek.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
-	yj.chiang@mediatek.com, tbergstrom@nvidia.com,
-	treapking@chromium.org, u.kleine-koenig@baylibre.com,
-	yujiaoliang@vivo.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2] serial: 8250_mtk: Add ACPI support
-Message-ID: <Z5OtFqtf4dpvvc9v@smile.fi.intel.com>
-References: <20250124031835.1788995-1-yenchia.chen@mediatek.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="gcqxak1S"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50OA5WUb010886;
+	Fri, 24 Jan 2025 15:16:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	cmeoqnaFxJsTh1LZ03PpBIVK0MlUiYz60nF4SK8Elas=; b=gcqxak1SieJDhXGF
+	tX6efMmg396MmnKz9GfLN8kzxDWwGh1kQAEPD3qV0QufpGz1bzMSF0yZgVUYZIzc
+	iLS9eJ67G5lp/N8qdNiuFMHZMcxC4txokyhuweNh42bwyOhg/Al3dTwnwovXDbtZ
+	dCWBK8ed20aggmD7aq9SS6PyW8IUrAH41CUIIUgiKdencNe9jfwbGWQjy6oqTqlf
+	5YBJkVwIDayRzIibsj4/imidLujbllaGX+Ga2VTe1VMSsmumhYTPcaZGIRFEWia5
+	t+UtbqSWgPFGPx4DqAkjW8tAmzQxFqPrM3iGtJeYHnv/MfZiGb5/29HMqL7pXCzk
+	+8288g==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44c8ta8u2g-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 24 Jan 2025 15:16:51 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 50OFGont022814
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 24 Jan 2025 15:16:50 GMT
+Received: from [10.216.19.102] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 24 Jan
+ 2025 07:16:43 -0800
+Message-ID: <38d24c6b-369e-4254-ae50-5387e2b6063e@quicinc.com>
+Date: Fri, 24 Jan 2025 20:46:39 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250124031835.1788995-1-yenchia.chen@mediatek.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/8] dt-bindings: i2c: qcom,i2c-geni: Add support for
+ selecting data transfer mode
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+CC: <andi.shyti@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+        <conor+dt@kernel.org>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <broonie@kernel.or>, <andersson@kernel.org>,
+        <konradybcio@kernel.org>, <johan+linaro@kernel.org>,
+        <dianders@chromium.org>, <agross@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        <quic_msavaliy@quicinc.com>, <quic_anupkulk@quicinc.com>
+References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
+ <20250124105309.295769-3-quic_vdadhani@quicinc.com>
+ <r4zfoaub3dwkirdbsolbl56xxa7ax5eusb2256c7ezlyl2s3vh@hit4g5cpzijw>
+ <da7b9678-76cc-4e45-89e9-4e8d9c9a2005@quicinc.com>
+ <ewwk5tvwlhu7cbev7su75ysooboq7ivloydvd3unwic2e6p7ap@bpyoqsrgvf6f>
+Content-Language: en-US
+From: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+In-Reply-To: <ewwk5tvwlhu7cbev7su75ysooboq7ivloydvd3unwic2e6p7ap@bpyoqsrgvf6f>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: iwOu5ujyqbdForr4zsUKTO1U-DuGlfTm
+X-Proofpoint-ORIG-GUID: iwOu5ujyqbdForr4zsUKTO1U-DuGlfTm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-24_06,2025-01-23_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ lowpriorityscore=0 phishscore=0 mlxscore=0 priorityscore=1501
+ malwarescore=0 adultscore=0 mlxlogscore=999 bulkscore=0 spamscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501240108
 
-On Fri, Jan 24, 2025 at 11:18:32AM +0800, Yenchia Chen wrote:
-> Add ACPI support to 8250_mtk driver. This makes it possible to
-> use UART on ARM-based desktops with EDK2 UEFI firmware.
 
-...
 
-> +#include <linux/acpi.h>
+On 1/24/2025 8:33 PM, Dmitry Baryshkov wrote:
+> On Fri, Jan 24, 2025 at 05:52:24PM +0530, Viken Dadhaniya wrote:
+>>
+>>
+>> On 1/24/2025 4:48 PM, Dmitry Baryshkov wrote:
+>>> On Fri, Jan 24, 2025 at 04:23:03PM +0530, Viken Dadhaniya wrote:
+>>>> Data transfer mode is fixed by TrustZone (TZ), which currently restricts
+>>>> developers from modifying the transfer mode from the APPS side.
+>>>>
+>>>> Document the 'qcom,xfer-mode' properties to select the data transfer mode,
+>>>> either GPI DMA (Generic Packet Interface) or non-GPI mode (PIO/CPU DMA).
+>>>>
+>>>> I2C controller can operate in one of two modes based on the
+>>>> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
+>>>
+>>> Is it possible to load the firmware after it being loaded by TZ? Is it
+>>> possible to change the mode at runtime too?
+>>
+>> No, firmware can be loaded either from the TZ side or APPS side.
+> 
+> You answer actually reads as "No, yes" (excuse me, non-native here).
+> Most likely you mean that it can not be reloaded once either TZ or APPS
+> has loaded it.
 
-This will not be needed (see below)
+Yes correct. it can not be reloaded once either TZ or APPS has loaded it.
 
->  #include <linux/clk.h>
->  #include <linux/io.h>
->  #include <linux/module.h>
-> @@ -15,6 +16,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/serial_8250.h>
->  #include <linux/serial_reg.h>
+> 
+>> In non-GPI mode, the transfer mode will change runtime between PIO and CPU
+>> DMA based on the data length.
+>>
+>> We need to update the device tree property(qcom,xfer-mode) to change the
+>> mode between non-GPI and GPI.
+> 
+> So, is it actually possible to change the mode? E.g. if the TZ has
+> loaded the firmware and configured SE for PIO/SE DMA, is it possible to
+> change it to GPI DMA?
 
-> +#include <linux/units.h>
+No, if the TZ has loaded the firmware, it is not possible to switch from 
+non-GPI (PIO/SE DMA) to GPI DMA mode.
 
-This might not be needed either (see below)
+> 
+>>
+>>>
+>>>>
+>>>> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+>>>> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+>>>> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+>>>> ---
+>>>>
+>>>> v1 -> v2:
+>>>>
+>>>> - Drop 'qcom,load-firmware' property and add 'firmware-name' property in
+>>>>     qup common driver.
+>>>> - Update commit log.
+>>>>
+>>>> v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-2-quic_vdadhani@quicinc.com/
+>>>> ---
+>>>> ---
+>>>>    .../devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml        | 7 +++++++
+>>>>    1 file changed, 7 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+>>>> index 9f66a3bb1f80..68e4bf0c84d1 100644
+>>>> --- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+>>>> +++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+>>>> @@ -66,6 +66,12 @@ properties:
+>>>>      required-opps:
+>>>>        maxItems: 1
+>>>> +  qcom,xfer-mode:
+>>>> +    description: Set the value to 1 for non-GPI (FIFO/CPU DMA) mode and 3 for GPI DMA mode.
+>>>> +      The default mode is FIFO.
+>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>>> +    enum: [1, 3]
+>>>> +
+>>>>    required:
+>>>>      - compatible
+>>>>      - interrupts
+>>>> @@ -142,5 +148,6 @@ examples:
+>>>>            interconnect-names = "qup-core", "qup-config", "qup-memory";
+>>>>            power-domains = <&rpmhpd SC7180_CX>;
+>>>>            required-opps = <&rpmhpd_opp_low_svs>;
+>>>> +        qcom,xfer-mode = <1>;
+>>>
+>>> What does <1> mean? Please provide corresponding defines.
+>>
+>> Do we need to add a string instead of a number, like
+>> include/dt-bindings/dma/qcom-gpi.h?
+> 
+> You need to '#define FOO_BAR 1', then another one for 3. String is a
+> "string", it's not required here (in my opinion).
+> 
 
->  #include <linux/console.h>
->  #include <linux/dma-mapping.h>
->  #include <linux/tty.h>
-
-You probably want to sort header inclusions first for easier maintenance and
-feature additions like this one.
-
-Can you add that one?
-
-...
-
-> +	} else if (!acpi_dev_handle) {
-
-> +	}
-
-This should look like
-
-	struct fwnode_handle *fwnode = dev_fwnode(&pdev->dev);
-	...
-	if (is_of_node(fwnode)) {
-		...parse OF...
-	} else if (!fwnode) {
-		return -ENODEV;
-	}
-
-...
-
->  	uart.port.uartclk = clk_get_rate(data->uart_clk);
-> +	if (!uart.port.uartclk)
-> +		uart.port.uartclk = 26 * HZ_PER_MHZ;
-
-Why doesn't your table provide the clock-frequency property?
-
-What I expect to see is the use of uart_read_port_properties().
-
-...
-
->  #ifdef CONFIG_SERIAL_8250_DMA
->  	if (data->dma)
->  		uart.dma = data->dma;
->  #endif
-
-Btw, how do you handle DMA in ACPI case?
-
-...
-
-> -	/* Disable Rate Fix function */
-> -	writel(0x0, uart.port.membase +
-> +	if (!acpi_dev_handle) {
-> +		/* Disable Rate Fix function */
-> +		writel(0x0, uart.port.membase +
->  			(MTK_UART_RATE_FIX << uart.port.regshift));
-> +	}
-
-	if (is_of_node()) {
-		...
-	}
-
-...
-
-> +static const struct acpi_device_id mtk8250_acpi_match[] = {
-> +	{ "MTKI0511", 0 },
-
-No ', 0' part, please.
-
-> +	{},
-
-No comma in the terminator line.
-
-> +};
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Sure, I will update it in the next patch.
 
