@@ -1,49 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA401156649;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18EE6157472;
 	Fri, 24 Jan 2025 16:15:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737735342; cv=none; b=puL/UHZhNXp9pAIaundeeEh47K/09DdWa+aQXr648v1g1BCv5ihgRdkdPKcbtToq7nCJs7tTSv/nqgl57umggdvaja2DVSeeVnRdQQ4pXCk5fhqT/NOIYKjAxxn0kywR/ZcezBw9V39R5BPIIT5zF2oVTecYKWWIhbDRbqX31cg=
+	t=1737735342; cv=none; b=eyklUROreVZWGaI5o1mxHG8agz/rxeGK0UfHvbzx/0ZwylrBl237r+AvvdrNf3S88yM6tnIUTMB4DWxCMywHVvEZOo+Fq5ioRmyMOZsVo5PPF4f2ZTUPRheup/a2oNMqVExf8z/VgOpxXDxFQCbJ9pgrnZDkO7Hzk+aFfjg3tpU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1737735342; c=relaxed/simple;
-	bh=TH7L4mKRjhmX6jD3uQeFxt0u43d3bbDHQ6dNoerFiWM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TMa4f7dBcqkn7xtbi4ZXryt81MNfU5/On9CWNaEz4ZWObvaHUUr0xtia9UGR2x5I2Xz5XOyW5hlCCIT2XbqrsfCmjWy/8seXbpr5cc1rSO2iho0VC81wRSJNNWgJRSIEmJ9dzCNjaBAxozpbkgV1agEhi3cFm2ynALxkootKEY4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k1NMyrke; arc=none smtp.client-ip=192.198.163.11
+	bh=RQHdOWZpVVUAK76uP+B5HKCTA/jWwwg+ROmi9FK2Bag=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=hadFZ+v5mORohhUi8dcZxoirVNeV8o0y3QMQfyhfsaK0WYOtAmBzaSejNkClIVVz5TA7+JJs4BUZcUmheQp8ljzHOMRs+sqWCnnP7bDs7Jc4+tG2fKOFjPn30FBjk1qrNKOFq5jdFUHoIW9mCOzBQorDbsjOSo0Iwwrrcd+/FQg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LcrdrW6l; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k1NMyrke"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LcrdrW6l"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1737735341; x=1769271341;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=TH7L4mKRjhmX6jD3uQeFxt0u43d3bbDHQ6dNoerFiWM=;
-  b=k1NMyrkerxxYOZtep9s+dsKPRE3u19PNhF4a3psJJgaQ9HBjMzrmwOFU
-   FacHz2yp6bGfcGEKzuKzao/F3NAnZqvCv5BgHEyPp1bU15B9ea4zCLgDN
-   +6vyUkO1XCszzi4vpPXPUe+cuQXN4m5zcF+pBFEx7dPNtrw0wQglG+RyI
-   2we4uuvKzGNuMYSSqZEcE+g1J4cxQ0LIdDgjLAcw4fNjlXWIaDbSH4yyc
-   nI8SV9zFPf0QFPpnZpTbVMNIGt71bdDh3/vWLaNxkQJjwRCMyAkxMgKFZ
-   Qyvw5djY6WFBWCIHkjnn47vZcDk0cjKPo22fSe9lxLHJigpiW1/9lgTOg
-   Q==;
-X-CSE-ConnectionGUID: KZ/pcS5GRmakjwqEV7h1ug==
-X-CSE-MsgGUID: RyZ95C4SR3u3M4MU8KOhwg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11325"; a="48858229"
+  t=1737735342; x=1769271342;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RQHdOWZpVVUAK76uP+B5HKCTA/jWwwg+ROmi9FK2Bag=;
+  b=LcrdrW6lGMF/bXFRSsD4gi7HYc1o/u5i15MaylIxTTT6ijvT/O5IceKy
+   kAEjED5bwkZ+yEl9PUeCrDfKOMp8fdiSRgSVkkzrsM2Q/dA20R4l+C3ng
+   kbwqu6FBUlU5FHrkWlfPikvWdNz6Bkiny8XVDm1D5lQT31fEnALXBjLxg
+   McTWkLHvzI6hdjXER/oJEBwzjwgBid9/fw6K0jCb1X7E6vSXxohugwT2Q
+   hUpOtd+x1VcjjRDFwoMDpSGc6YsMdyXjACpFOWPLOizUfImv5cubTq6VC
+   7O6O4LQw/roVTABRkDaRxc7jAUriejFnT9sym3qjoalRUgSk+TUmGiG5q
+   w==;
+X-CSE-ConnectionGUID: D/FiWiy+TFCdhP+SFUWcng==
+X-CSE-MsgGUID: xO1bOSoKShWQn8YpwaahcA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11325"; a="38152883"
 X-IronPort-AV: E=Sophos;i="6.13,231,1732608000"; 
-   d="scan'208";a="48858229"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2025 08:15:40 -0800
-X-CSE-ConnectionGUID: 5K407B0+QRO3ih/WMTZ6tg==
-X-CSE-MsgGUID: m+yXepOoTSyaQu7aabkHqg==
+   d="scan'208";a="38152883"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2025 08:15:41 -0800
+X-CSE-ConnectionGUID: gvQ3NBD2SxC0q2uC+uxTlA==
+X-CSE-MsgGUID: CShOXT7dQQWI80wkpy3+cQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="107659122"
+X-IronPort-AV: E=Sophos;i="6.13,231,1732608000"; 
+   d="scan'208";a="107612353"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa010.jf.intel.com with ESMTP; 24 Jan 2025 08:15:39 -0800
+  by fmviesa006.fm.intel.com with ESMTP; 24 Jan 2025 08:15:39 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 9AEC5197; Fri, 24 Jan 2025 18:15:37 +0200 (EET)
+	id C64AF2D4; Fri, 24 Jan 2025 18:15:37 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -51,10 +52,12 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
 Cc: Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 0/6] serial: port: Fix UPIO_PORT iotype handling
-Date: Fri, 24 Jan 2025 18:10:45 +0200
-Message-ID: <20250124161530.398361-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 4/6] serial: 8250_of: Remove unneeded ->iotype assignment
+Date: Fri, 24 Jan 2025 18:10:49 +0200
+Message-ID: <20250124161530.398361-5-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
+In-Reply-To: <20250124161530.398361-1-andriy.shevchenko@linux.intel.com>
+References: <20250124161530.398361-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -63,38 +66,27 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-It appears that the conversion to use uart_read_and_validate_port_properties()
-broke 8250_of driver for the cases when UPIO_PORT is required.
+If ->iobase is set the default will be UPIO_PORT for ->iotype after
+the uart_read_and_validate_port_properties() call. Hence no need
+to assign that explicitly.
 
-Looking at the code there is an opportunity to clean up it a bit as well,
-hence this mini-series.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_of.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Patches 1 and 2 (and 1 is most important) are the fixes to the helper function
-followed by patch 3 that makes code robust against possible future changes in
-the same area.
-
-The top three patches are post-fix cleanups.
-
-This is done in a series, but can be split to fix-series + cleanup-series for
-the routing to the current and next Linux kernel releases. It's also possible
-to route all of them as fixes as they are toughly linked to each other and have
-not much code changes overall.
-
-Andy Shevchenko (6):
-  serial: port: Assign ->iotype correctly when ->iobase is set
-  serial: port: Always update ->iotype in __uart_read_properties()
-  serial: port: Make ->iotype validation global in
-    __uart_read_properties()
-  serial: 8250_of: Remove unneeded ->iotype assignment
-  serial: 8250_platform: Remove unneeded ->iotype assignment
-  serial: 8250_pnp: Remove unneeded ->iotype assignment
-
- drivers/tty/serial/8250/8250_of.c       |  1 -
- drivers/tty/serial/8250/8250_platform.c |  9 ---------
- drivers/tty/serial/8250/8250_pnp.c      | 10 ----------
- drivers/tty/serial/serial_port.c        | 12 +++++++-----
- 4 files changed, 7 insertions(+), 25 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 64aed7efc569..11c860ea80f6 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -110,7 +110,6 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+ 	spin_lock_init(&port->lock);
+ 
+ 	if (resource_type(&resource) == IORESOURCE_IO) {
+-		port->iotype = UPIO_PORT;
+ 		port->iobase = resource.start;
+ 	} else {
+ 		port->mapbase = resource.start;
 -- 
 2.43.0.rc1.1336.g36b5255a03ac
 
