@@ -1,148 +1,126 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A9981CDFC1
-	for <linux-serial@vger.kernel.org>; Fri, 24 Jan 2025 11:18:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B782A1E495;
+	Fri, 24 Jan 2025 11:34:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737717488; cv=none; b=MREXhoDdPI9O9XGQcoWc49lhAr+InMqkY3oUZRCS667dHrTi9gHVMDQ/qjWCNNzSvTmZc5RjDdP6S8DkOl5MR/jtj9/b7WSAl6se4dFTrGLb/jrZHllppeRCjrHpjOPs97JZdLEYjSuA6Z9Ja0bHGbBIpQ9vwOJ9CyA1n5Qz0SA=
+	t=1737718446; cv=none; b=RxiWvIDtefmm0CGRE8B8yIz1WC3MwU2fdSn3mDYlsVmTuJ4YlyEZ9WSKehTe4FyEcggJg+AuQnqnAmrcMFYBfg0EZUaVathWpb8c3YTF8PEE96MMMzjUyUXQD3cd60UES7/UbDkKif03veCQPvq3FoEpnfOymhzO2MjRCJQ5/1c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737717488; c=relaxed/simple;
-	bh=T77o10XTx9CxIgLZenUyPw8caNMGGg9q3IEtg0qKC1g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WjqUy++xu+j1E/rwFYAhLwOzP6pIZnE8Fqjx90F/afUhRJln2mJTO320zwHu3NXA82503wgEkR7ueTPArStsXlbGzWT46Jb3M0ie4UKYwwpr1OAgBHbbt3tcWcYtz8XwC5CNb633/BJgSIvqx1TlWJS/TFlxnidU+NiKR0Rfr/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=U7FmWY+L; arc=none smtp.client-ip=209.85.208.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1737718446; c=relaxed/simple;
+	bh=3MyUNDpr3koth/P8JNvvsL7HHPSxoQMcEhW8HW0ilQY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=flnaJWUfdPvVP51jDySfEtJmpv4VybD93mfNH3LyRGsd2VVerp6nR8oXMMHxj1fSPl5zvrjfblnhy1kUQXb5vaMbDVbbK4AWVs+vEQ0gecZGWFU0R512DCEqCXtcp0TibNZztF/YQeAmfnCdFjtIswQ2DiI/gMa3xFLfQ4RtjH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=paktOevl; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="U7FmWY+L"
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-3002c324e7eso17728581fa.3
-        for <linux-serial@vger.kernel.org>; Fri, 24 Jan 2025 03:18:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1737717484; x=1738322284; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=T0llOVDAU4gsmmjbiErKgwKuDgcLmaYcrMGcHc3GCiQ=;
-        b=U7FmWY+LEqln8D9bLw0ileicGt18EuqnljDOQAYwV12tf8kCltWIzteOl6xL07XocY
-         uCHjo7uDE17te39xLhcveBaFL+ccG3OG8v+ILwssoA7//x0OwUNmTkBpW+xW0bcVSc/V
-         bm5kIZ0A/FKwjzu/6aPg9vIyI1Raes4vG/mAAIEH0/0CP/Xqrr4OTViS/FhdpJeVeplx
-         L2SMfPvRVfrba2akLmz4UZ35N8il7pC0AmecCuOLnsqsPWPrU3jUplP2PADRP1YuaNsI
-         DWtChRkOIu/AvxnhbJo0pdkh6an1ln+0RY9StPiSs5pxM2L1TkIXk9hUBnEvooir0FxY
-         Y2Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737717484; x=1738322284;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T0llOVDAU4gsmmjbiErKgwKuDgcLmaYcrMGcHc3GCiQ=;
-        b=AO/Eo0VCiRS9fp/7QnS7XMwsoSQdPVLqSkrbMbvjufpVF0eQHygSbN/hT7UyTZnqjh
-         KvjhgvnuZeDcxCwC4pobmaihx6ydsFPEGSpWOREoOo+JW2wx8hdB0nL5cp7rK60U5ffT
-         oakG6kNtFpDFWmmqm87+FgntON7RZQDOm/eS8rXolujDA4RfON0vGlcvrBZci/8GR67B
-         ojoyF381BmfyaCxTQQozfFqFwnrjcn7/41sYsMA3rz6Lgbph3PQdzIwLHMFAj3NU73N1
-         Z0hH0hgBMVGQ3vU5PlK/8XQazK72j0P53OVDp5ZKwdA5pRr8Tomtq6vXDcTmLXi+GhxV
-         NJvQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVs5koC/uMvznqf5l08WHCX4wysjhfWDnbFQYTCQSxZCQ+BWJKFLFWFYBdZnkg3/txh0QOqidxyNwPkVA8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywy17pVM7XveactuLGz/TQQL8CTFc4TeappMErn/9/ue0rtrAVQ
-	0XoAEKp0/b9+1/7N64FrKN19eTroHxCQWnmQGP9F+JCkMKrpB+Z3L07IeRwqIs0=
-X-Gm-Gg: ASbGncu2jSRNXbID1wqZxXpJhcDczxoVDCFGJaShRq9c0TsoVnMDs/r64EbN0roPqy1
-	3ZE3Gbjzznw4NPBYSSkcBIR+c6dl8lGPYk5W4mCeVrDuS2vnCneBPPU9yMyfFaWeu8FVY8i0CAQ
-	6uxJv8yDYUkpltgDBqWwg8uWjbF21PCeBz+86MiGILcKT580KMtcN/xYCUS2bg9JXQcIWCvZpt+
-	tYGhQx2PA9MWMQPWEsewD3HjTj5nnc5EkLoNxJiA35DMThGA97VdQaG1NTUWzatHkar0lfUQNQL
-	4noBXW62/3ZW6y3QpOsuB8yI4kFRWtX25gWW0WSA/cunHk/eiRqZJbWyK/W7
-X-Google-Smtp-Source: AGHT+IEvnA4WjUqgAID/Sz4S55WqtF4SuOXbwQGAlWGJct+SYEIXS3XgIZ7BKsiqifM+MoW/qS4z4g==
-X-Received: by 2002:ac2:4e0e:0:b0:53e:2f9d:6a73 with SMTP id 2adb3069b0e04-5439c1c60e7mr11960921e87.0.1737717484311;
-        Fri, 24 Jan 2025 03:18:04 -0800 (PST)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--b8c.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::b8c])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-543c836845fsm257580e87.141.2025.01.24.03.18.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jan 2025 03:18:03 -0800 (PST)
-Date: Fri, 24 Jan 2025 13:18:00 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-Cc: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	broonie@kernel.or, andersson@kernel.org, konradybcio@kernel.org, 
-	johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, 
-	quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
-Subject: Re: [PATCH v2 2/8] dt-bindings: i2c: qcom,i2c-geni: Add support for
- selecting data transfer mode
-Message-ID: <r4zfoaub3dwkirdbsolbl56xxa7ax5eusb2256c7ezlyl2s3vh@hit4g5cpzijw>
-References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
- <20250124105309.295769-3-quic_vdadhani@quicinc.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="paktOevl"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50O8bk1s031357;
+	Fri, 24 Jan 2025 11:34:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	kT6AY6AU9dpDSLY7gkRI/8i4kr9v+2p4rKBxbqIzUDA=; b=paktOevlOkKWn5fM
+	8w715QqA4mmR3fmZHPzvcTX5TTMMpTVUifLN3P5T950wjPAzN7kFWdmQ6BMSdO9x
+	qGXhdA6WIwbMCri7Obf00rt7e53xF4J2nfsSyex4SuVXH1nSoCbYPO94vunsa0p6
+	gccEJKh7bGalwG7nKIjFoHl26irl5BbLtUDy5UHWxgS6bjSaIqiqSFB5ApNIWMVK
+	0yiHTh3KS8XaHvkGmIzaphw1eeL1SK/dgAUxVUehNm56Ew4R3QhPsR34WWu1bw8b
+	k/z1MRznBV/yJEtxRyUta0Y2lrKDhFUVZkPvWmwG9dxVP71Fm4aAxrcwO57Rgo19
+	r/0jJA==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44c7h50hx9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 24 Jan 2025 11:34:00 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 50OBXxbA018064
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 24 Jan 2025 11:33:59 GMT
+Received: from [10.216.19.102] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 24 Jan
+ 2025 03:33:52 -0800
+Message-ID: <6f701744-6a63-498e-9300-6458639be336@quicinc.com>
+Date: Fri, 24 Jan 2025 17:03:30 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250124105309.295769-3-quic_vdadhani@quicinc.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/8] dt-bindings: qcom: geni-se: Add 'firmware-name'
+ property for firmware loading
+To: Krzysztof Kozlowski <krzk@kernel.org>, <andi.shyti@kernel.org>,
+        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <broonie@kernel.or>, <andersson@kernel.org>, <konradybcio@kernel.org>,
+        <johan+linaro@kernel.org>, <dianders@chromium.org>,
+        <agross@kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>
+CC: <quic_msavaliy@quicinc.com>, <quic_anupkulk@quicinc.com>
+References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
+ <20250124105309.295769-2-quic_vdadhani@quicinc.com>
+ <df91c8f8-d6b2-4406-8a61-9e9db959fc59@kernel.org>
+Content-Language: en-US
+From: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+In-Reply-To: <df91c8f8-d6b2-4406-8a61-9e9db959fc59@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 709IaQK_5Hpil_u6nP-_xXsFhKXxctif
+X-Proofpoint-GUID: 709IaQK_5Hpil_u6nP-_xXsFhKXxctif
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-01-24_04,2025-01-23_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 malwarescore=0 impostorscore=0 clxscore=1015 adultscore=0
+ suspectscore=0 lowpriorityscore=0 mlxscore=0 mlxlogscore=999 phishscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2411120000 definitions=main-2501240084
 
-On Fri, Jan 24, 2025 at 04:23:03PM +0530, Viken Dadhaniya wrote:
-> Data transfer mode is fixed by TrustZone (TZ), which currently restricts
-> developers from modifying the transfer mode from the APPS side.
-> 
-> Document the 'qcom,xfer-mode' properties to select the data transfer mode,
-> either GPI DMA (Generic Packet Interface) or non-GPI mode (PIO/CPU DMA).
-> 
-> I2C controller can operate in one of two modes based on the
-> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
 
-Is it possible to load the firmware after it being loaded by TZ? Is it
-possible to change the mode at runtime too?
 
+On 1/24/2025 4:30 PM, Krzysztof Kozlowski wrote:
+> On 24/01/2025 11:53, Viken Dadhaniya wrote:
+>> Document the 'firmware-name' property in the device tree bindings to
+>> support loading SE (Serial Engine) firmware from the protocol driver,
+>> allowing for more flexible firmware management.
+>>
+>> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+>> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+>> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+>> ---
+>>   Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
+>> index 7b031ef09669..3e029d4d6f58 100644
+>> --- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
+>> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
+>> @@ -54,6 +54,10 @@ properties:
+>>   
+>>     dma-coherent: true
+>>   
+>> +  firmware-name:
+>> +    $ref: /schemas/types.yaml#/definitions/string
 > 
-> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-> ---
 > 
-> v1 -> v2:
+> You work on outdated tree. Just look how other bindings are doing this.
+> maxItems instead.
 > 
-> - Drop 'qcom,load-firmware' property and add 'firmware-name' property in
->   qup common driver.
-> - Update commit log.
 > 
-> v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-2-quic_vdadhani@quicinc.com/
-> ---
-> ---
->  .../devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml        | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
-> index 9f66a3bb1f80..68e4bf0c84d1 100644
-> --- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
-> @@ -66,6 +66,12 @@ properties:
->    required-opps:
->      maxItems: 1
->  
-> +  qcom,xfer-mode:
-> +    description: Set the value to 1 for non-GPI (FIFO/CPU DMA) mode and 3 for GPI DMA mode.
-> +      The default mode is FIFO.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 3]
-> +
->  required:
->    - compatible
->    - interrupts
-> @@ -142,5 +148,6 @@ examples:
->          interconnect-names = "qup-core", "qup-config", "qup-memory";
->          power-domains = <&rpmhpd SC7180_CX>;
->          required-opps = <&rpmhpd_opp_low_svs>;
-> +        qcom,xfer-mode = <1>;
-
-What does <1> mean? Please provide corresponding defines.
-
->      };
->  ...
-> -- 
-> 2.34.1
+> Best regards,
+> Krzysztof
 > 
 
--- 
-With best wishes
-Dmitry
+Sure, Will update in next patch.
+
+Thanks
+Viken
