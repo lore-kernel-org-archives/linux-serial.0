@@ -1,113 +1,123 @@
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74C63CA64;
-	Fri, 24 Jan 2025 19:16:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FE471DB146
+	for <linux-serial@vger.kernel.org>; Fri, 24 Jan 2025 22:55:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737746173; cv=none; b=QaDf5r5ndCKi4q5ORnw17qE/CL6SAmRBX3e3Dl46+2Wusq7SKB93HluJmO0ZrZLf2uUcDGMPD3LJXN7TpQY+JHrYhuKTj4zFCxpQfUhQ6X3EAp6WGnN+Uj9KquKTVmxe+rWagG2wDt2ZS0jmwlqejQu7cKtMTFJbsgQsBEPONLQ=
+	t=1737759355; cv=none; b=RWwmhgYTdBXYYSr4rg/eRPWjkC2yP70q70LEvYVnMNX+eDAPxPpdX9JIksygTS2ot64eJDW4+lweYWdC9gY3bj2+DpeKWvQZyzZMpesBj+q9ImUV0+4JTuYCa7kR2IavxtPEx3g9A+EpuxNGY5JavtyYU51CFYK9b0GD8agbiAU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737746173; c=relaxed/simple;
-	bh=B1TY+gWfw5kSsTv05I5LRy3PXH7u3mxBGlY9hpCbAow=;
+	s=arc-20240116; t=1737759355; c=relaxed/simple;
+	bh=kCyOKPx9Vs1i6LLFZaKNlUjqggHdygxNLEDk5y3a6RU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ed7f4W4zJY571p+7c9XSz08RsYyN4I+b1cSr1eKfEvL4LwVwU5f9+PK8iYm020WMxasmSvcpNgHsqfIt8izFgjbisCEfkKE2Y0ntxbjktJTlblId+Lsmwd3pxRk76UlS8NK7qy4T7WAIgasDVtRUTRsrCZI9cLhb1R7QJx94ENg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f42.google.com with SMTP id ada2fe7eead31-4afe6a8d2e1so1293668137.1;
-        Fri, 24 Jan 2025 11:16:11 -0800 (PST)
+	 To:Cc:Content-Type; b=n2RXILGscxmJxqK4KcchUccy8dXZ+LP88/TEbM1kj/HbFBUDlJTt88wTDX8QOY1ss3clYystxRfmG97Bkk6LzgnIiie3jf5jSEi7ACxDlj7wu3ITCsTEwLtlikbTJ7WzJNdbGMtJfaF5/TQhPGP2L53XKOqL1hnjiPWCyqAfUzA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=Y1LFYlFI; arc=none smtp.client-ip=209.85.167.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Y1LFYlFI"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-53f22fd6832so2794372e87.1
+        for <linux-serial@vger.kernel.org>; Fri, 24 Jan 2025 14:55:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1737759349; x=1738364149; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sDzAUQkLK+ll9FT+a7j+7HPNHM41+1WxQWQh7x0Fr48=;
+        b=Y1LFYlFICUTwd+5L6pZJ9J5lQy8R8TiIvklFIpnDhq8ZZM9kczB1NhDPRbCwWpoxEG
+         SsUK8utHY5oGMO8+sD3teugStBgG7+yfV6wn+1mzY3IqaftQDXBQX0JJdZy71V3VyKhX
+         D1vlPFChJprXdbpTX4K07b287SrPlM+4M6/YA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737746169; x=1738350969;
+        d=1e100.net; s=20230601; t=1737759349; x=1738364149;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=sUiAggrw836WY8haHSpcFLw3hnkVmLvRNNQSCCN4ANQ=;
-        b=F3UO53gPppp+5SP7QN1veXXAF7pbKnrGajrr+SR4iErAh1cG5EZ5yvJiYnhNDQgIxR
-         LFTxxfRe2NhAnK0PYXa7+7RUsOG5v+dQB0F3+Gm/i7XIjOh3jyShPs8+d27ONglz8tNa
-         0bqfN58K8PUZIQPuLSABGAwMEqbQA7m1ivq0M/ZYfRek1dQTmJDMlWV40f5pEEZV1qXJ
-         /WibncZiwQcfv1ebFRKDsXUgMwaQB/prl3pmArVRfUgnDX9Z16p/7SwOa08MgSJh2uNg
-         +GUmyDBmA7Gbn0Fm60AEizdwSZsgiso7t7bCZUvt7tt6T9wr9Y7HRLMG9EGbWztrg26q
-         d6fw==
-X-Forwarded-Encrypted: i=1; AJvYcCV0J/PiowvGIgPkENmII3DBhlcSgIITc1/NeVYfzdt4aEXjdFnkdQEN8YCC93t49XevtVfZbZN+2E2n4q3vYEhF2dE=@vger.kernel.org, AJvYcCXc7/1roRqprocvOdhKSz7iRbtRW9BHKYo3Zaq/Ac/hnvRdUEmi/BgLLZqsicO9b3c+m2f+rlZTwU8ludI3@vger.kernel.org, AJvYcCXeQwBn9YYxgFoXCbWhqHcIK7msFkg2ZCt2ltYzBo8wJYkn+qybioS3+YaaLLaziGZB6bPkTshlsTgw32hQ@vger.kernel.org, AJvYcCXwHj7h5ykf4viTp3qDeopqCfmXFs3ldTiYXvvBi5q5/1C/9A8GpH6aV7IJzJ62okr3iXDZ1yn1A3D1@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz7bJwk/lOb0RHkoAm/mY0iEgpvML8yqa5CbupHGFWbBt3BG8x5
-	APFBw7KDVGX8IisvMTZ/C+6REIxRA9ifTDJS4+lLWjQ/zir+yAI/rcSLlbYn
-X-Gm-Gg: ASbGncuecu3dlPV6RBJfzTX/CZwHCHjEDyuCmsdRJKEF3HTfwOF61pB43Y7tM6Ex9Iy
-	rfhpvmPc6v7LEhHmdSduAQDYTVRHgVCDKGrSxxSPBLvaeV8uWIysokh4Pcf/prTlCeZ8KyR5N2g
-	42L5boJ5lX9GKH/vKbnQ7SzNPn5fDuJEKJM3dzOma5BFSIwwpZF7yMeNPtYI+vYOpBJKbjI9oG2
-	PZvmzJsjmyenySin/kxiQtiogMju3xcoZbF089WkJ/E+MoHNhPXNk8J/Zhn/wGGUqwlm/MQ7i8Q
-	g2QYAymUDJMAbpImMfKaaKCRcVyNPVslyad6o+5GArg=
-X-Google-Smtp-Source: AGHT+IEL2nNKaU1SqWY6jSQ4d6IHw3BfXoc1f1P7cdIjuAiHGr7IaKkHt+fWdte5TMR2tdvMw0+QFg==
-X-Received: by 2002:a05:6102:3596:b0:4b2:cdf4:81f7 with SMTP id ada2fe7eead31-4b6f7a1ea2bmr9696507137.5.1737746168935;
-        Fri, 24 Jan 2025 11:16:08 -0800 (PST)
-Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com. [209.85.222.42])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4b7097cc426sm548553137.13.2025.01.24.11.16.08
+        bh=sDzAUQkLK+ll9FT+a7j+7HPNHM41+1WxQWQh7x0Fr48=;
+        b=TO6c9WRhhMbthyb3o5wsVIDFR0DMUyWXxCySENChexKHnksTfGIcKuGv7S4REvJp9T
+         hMA3VtyFTyzCkd+84S3cXzsKjTqQqKt8oGZObAIzd7B/WuvJrGBq2YX2MS+gOMHXinQP
+         xkjLgqSh2YsvKPJaywr8sdaNCn5MvQN/8lYKv4ASvIhQjuQ+8vEMH0rQYEAhHQhnS++O
+         SQdnxTpiEB2CgFDOqXD6EQTdf8EmRNiGnIpBZC3PEiSEkghduNi0wfX4MyDggQKy9pXR
+         KmE/kJOl52e3R8dsHroS0aRvwbrshQKaD/ibZ1YIBQ/Ggot8nFzVsukVDSeRfAnFvMIp
+         AJcw==
+X-Forwarded-Encrypted: i=1; AJvYcCXb9oG8+DyRh0IC2sCP1fPCsKT0/B2jVW9eqwVrfd0/lpIOZmBb6SAt/AeIy3p47uGVlDtaS2iFW0bOvO8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywq3RcQSoMut/x19iQHJIVvwcF57Rtk6PAmeXC18VOy03vp+8Ea
+	wmt5wA3QxveOocIugE01/R6TOPb6HlOfWHQuWYOydTDTjmB2MbsM8hKh/gTw4gsaBoz5RuODP2M
+	9yg==
+X-Gm-Gg: ASbGncvhATjsWoUKFwQN4AiPHMPMWX9CIoj+7s9Uj+oxuUmU0nod85N64t8hLMizDC6
+	vmf35Snv3gW6fKUMPVnw21N0GqytdbkjaoCy/WCObHlvLFcg29K5B5g7bXMcogqT722Wtmd7hf+
+	9xaIlFTiccIHhUkafx7ul6C8duvUSnLZ6JrmATaKqaFxypTssEUC/PfJ8nl4YjeKA0FY68XmlC3
+	f0FVFeuqjrb3PSfVzP9LjijusIVIVnILTK3e3m3ZAz3IGJz/6PG+jCgMFgehRKGJETGhJ31/5vl
+	33Fs2T38M4nnEC+vL+pCGCkzv2cJrNd+dG/KBBIn00rE
+X-Google-Smtp-Source: AGHT+IGgGw4atrKDSKBrYdErDkrOVrT0X9+SwMpz2gIvWq+79pwTd2xD74gJlRTd2uMtBqlyHIBkuw==
+X-Received: by 2002:ac2:59c8:0:b0:541:1c5f:bf85 with SMTP id 2adb3069b0e04-5439c287510mr10441666e87.50.1737759348809;
+        Fri, 24 Jan 2025 14:55:48 -0800 (PST)
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com. [209.85.167.44])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-543c83683a5sm428159e87.154.2025.01.24.14.55.47
+        for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jan 2025 11:16:08 -0800 (PST)
-Received: by mail-ua1-f42.google.com with SMTP id a1e0cc1a2514c-85ba8b1c7b9so1353500241.1;
-        Fri, 24 Jan 2025 11:16:08 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUHBbQhiULRc0jrUYNf+zjjBllj6GT5ZJV9pVf6jucLRZChKHImT2cCTypNcBU9OWXtjnvtLq85OjSsRatj@vger.kernel.org, AJvYcCUJtQO8D91aCsYVdvRSYs/Plh7839QXWE3cnHvCduFI/ZFNJ7sZT1/GmAIbOGRtttNe5kHrz1SOCVxk@vger.kernel.org, AJvYcCVQjT7u1P0c7m0UOoaR0OL7kJ9N1C8HvWONe5Eg6UvTyWb5DHCZjx4VVOzdKdb8Eg92poxHiJIeZD14Z/Hco28rJM4=@vger.kernel.org, AJvYcCWrJoepeWTLZ3HyS6AbJS0d/+Fn1q/f202BApDKNYqUe7m+aVwYArlSFYlGSxUE3L9DShTmbl8N+psNn+Xt@vger.kernel.org
-X-Received: by 2002:a05:6122:3b8b:b0:518:8915:89ec with SMTP id
- 71dfb90a1353d-51e4fb65a5emr4782858e0c.1.1737746168139; Fri, 24 Jan 2025
- 11:16:08 -0800 (PST)
+        Fri, 24 Jan 2025 14:55:47 -0800 (PST)
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-53f22fd6832so2794331e87.1
+        for <linux-serial@vger.kernel.org>; Fri, 24 Jan 2025 14:55:47 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVEQD2Ba1BcyJCgMj80gfPH9AqmdkGgmlT/vwGcpMJ82QZTHG+CEJpxiFzATRoSXXyXv3mxcVxUwX/LnKg=@vger.kernel.org
+X-Received: by 2002:ac2:4c24:0:b0:542:6507:9778 with SMTP id
+ 2adb3069b0e04-5439c22cb95mr8643147e87.11.1737759347161; Fri, 24 Jan 2025
+ 14:55:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com> <20250120130936.1080069-5-claudiu.beznea.uj@bp.renesas.com>
-In-Reply-To: <20250120130936.1080069-5-claudiu.beznea.uj@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 24 Jan 2025 20:15:56 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVjvKmR-0ZiYGiAwXf6dfx9O9HtG2JXht9iDwV7oKdwDQ@mail.gmail.com>
-X-Gm-Features: AWEUYZk4daPJyNEFJ3tb9_WILi26dZhW6oaUjWo8962k_8YMza8zSBNUc9xrvAI
-Message-ID: <CAMuHMdVjvKmR-0ZiYGiAwXf6dfx9O9HtG2JXht9iDwV7oKdwDQ@mail.gmail.com>
-Subject: Re: [PATCH v4 4/4] arm64: dts: renesas: r9a08g045s33-smarc-pmod: Add
- overlay for SCIF1
-To: Claudiu <claudiu.beznea@tuxon.dev>
-Cc: magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	p.zabel@pengutronix.de, claudiu.beznea.uj@bp.renesas.com, 
-	wsa+renesas@sang-engineering.com, prabhakar.mahadev-lad.rj@bp.renesas.com, 
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20250113172936.1434532-1-tjarlama@gmail.com> <20250113172936.1434532-4-tjarlama@gmail.com>
+In-Reply-To: <20250113172936.1434532-4-tjarlama@gmail.com>
+From: Doug Anderson <dianders@chromium.org>
+Date: Fri, 24 Jan 2025 14:55:35 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=UnGvwk7EVjDrqQdwUGX43Ep_BaLTbYy6SPNY26=QoLvg@mail.gmail.com>
+X-Gm-Features: AWEUYZl5QQEDOJe9pjO5xpM1fvE182XEZ7q11PrSp6eM-M1_YsoDAPLI4evlW54
+Message-ID: <CAD=FV=UnGvwk7EVjDrqQdwUGX43Ep_BaLTbYy6SPNY26=QoLvg@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] serial: Move LF -> CRLF replacement from serial
+ console to kdb
+To: Amal Raj T <tjarlama@gmail.com>
+Cc: danielt@kernel.org, jason.wessel@windriver.com, 
+	stephen.s.brennan@oracle.com, amalrajt@meta.com, osandov@osandov.com, 
+	linux-debuggers@vger.kernel.org, linux-serial@vger.kernel.org, 
+	kgdb-bugreport@lists.sourceforge.net
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 20, 2025 at 2:09=E2=80=AFPM Claudiu <claudiu.beznea@tuxon.dev> =
-wrote:
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Hi,
+
+On Mon, Jan 13, 2025 at 9:29=E2=80=AFAM Amal Raj T <tjarlama@gmail.com> wro=
+te:
 >
-> Add DT overlay for SCIF1 (of the Renesas RZ/G3S SoC) routed through the
-> PMOD1_3A interface available on the Renesas RZ SMARC Carrier II board.
+> From: Amal Raj T <amalrajt@meta.com>
 >
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-
-> --- a/arch/arm64/boot/dts/renesas/Makefile
-> +++ b/arch/arm64/boot/dts/renesas/Makefile
-> @@ -143,6 +143,9 @@ r9a07g054l2-smarc-cru-csi-ov5645-dtbs :=3D r9a07g054l=
-2-smarc.dtb r9a07g054l2-smarc
->  dtb-$(CONFIG_ARCH_R9A07G054) +=3D r9a07g054l2-smarc-cru-csi-ov5645.dtb
+> The current implementation of `poll_put_char` in the serial console drive=
+r
+> performs LF -> CRLF replacement, which can corrupt binary data. Since kdb
+> is the only user of `poll_put_char`, this patch moves the LF -> CRLF
+> replacement logic to kdb.
 >
->  dtb-$(CONFIG_ARCH_R9A08G045) +=3D r9a08g045s33-smarc.dtb
-> +dtb-$(CONFIG_ARCH_R9A07G043) +=3D r9a08g045s33-smarc-pmod1-type-3a.dtbo
-> +r9a08g045s33-smarc-pmod1-type-3a-dtbs :=3D r9a08g045s33-smarc.dtb r9a08g=
-045s33-smarc-pmod1-type-3a.dtbo
-> +dtb-$(CONFIG_ARCH_R9A07G043) +=3D r9a08g045s33-smarc-pmod1-type-3a.dtb
+> Link: https://lore.kernel.org/linux-debuggers/Zy093jVKPs9gSVx2@telecaster=
+/
+> ---
+>  drivers/tty/serial/serial_core.c | 2 --
+>  kernel/debug/kdb/kdb_io.c        | 2 ++
+>  2 files changed, 2 insertions(+), 2 deletions(-)
 
-s/7G043/8G045/ while applying...
+You seem to have dropped your Signed-off-by? It was there on V2 [1].
+...and speaking of V2, I provided my Reviewed-by there. You should
+have carried it forward since there are no differences in the code
+between V2 and V3. I can give it again, but it would be nice not to
+need to repeat when you send the V4.
 
+Once you've added back your own Signed-off-by, you can also add:
 
-Gr{oetje,eeting}s,
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-                        Geert
+...also speaking of V2, I did ask if you could maybe add something to
+the commit message pointing at the previous discussion. If you really
+have a reason not to do this I won't insist, but it would be nice to
+include it...
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+[1] https://lore.kernel.org/all/20241211153955.33518-3-tjarlama@gmail.com/
