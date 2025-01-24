@@ -1,129 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F76070815;
-	Fri, 24 Jan 2025 11:01:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A9981CDFC1
+	for <linux-serial@vger.kernel.org>; Fri, 24 Jan 2025 11:18:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737716463; cv=none; b=SE/nbY8GbBBgoEmyv48FjKA3A3kpfvodrx5J8KxHLfRUUvLyXaq6Au7brVH16RjObTt9swIg+fY/XMPrFkrYzN6p25QaP02+x4YYKntX0gqsQlH2dl5sHuvTSCrwEdL17cAb3A0pRLlyRBJ42N7YW91bs6z0+sR82ldak2RWIpE=
+	t=1737717488; cv=none; b=MREXhoDdPI9O9XGQcoWc49lhAr+InMqkY3oUZRCS667dHrTi9gHVMDQ/qjWCNNzSvTmZc5RjDdP6S8DkOl5MR/jtj9/b7WSAl6se4dFTrGLb/jrZHllppeRCjrHpjOPs97JZdLEYjSuA6Z9Ja0bHGbBIpQ9vwOJ9CyA1n5Qz0SA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737716463; c=relaxed/simple;
-	bh=Djk1hNdaJWyXUrCMixAx0smon8EPBDaS7ufbRWm/AIc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Z3Q6JY2It8XVxzk2zP09nUV9YfIJcfGjvYLhWOq0Q0DWgiGPSO6rTffwvYanmHWXwh/DV4Tm1KyD6TVgvEYjfjA9fo38yzZvm8Ig/0K8Dsu4Zd5legQY0FntC0Jkj2GyvbZTibrzRyNhnN9BAZeyQAO77N4ESl4kbqc5BtQK68I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z0fKZ3Pw; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1737717488; c=relaxed/simple;
+	bh=T77o10XTx9CxIgLZenUyPw8caNMGGg9q3IEtg0qKC1g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WjqUy++xu+j1E/rwFYAhLwOzP6pIZnE8Fqjx90F/afUhRJln2mJTO320zwHu3NXA82503wgEkR7ueTPArStsXlbGzWT46Jb3M0ie4UKYwwpr1OAgBHbbt3tcWcYtz8XwC5CNb633/BJgSIvqx1TlWJS/TFlxnidU+NiKR0Rfr/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=U7FmWY+L; arc=none smtp.client-ip=209.85.208.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z0fKZ3Pw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AE3DC4CED2;
-	Fri, 24 Jan 2025 11:00:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737716462;
-	bh=Djk1hNdaJWyXUrCMixAx0smon8EPBDaS7ufbRWm/AIc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Z0fKZ3PwjnCx1wvJpCn04/KO67EjGi2gbbuWHE2qJibvkX41EFPpWmUaY0BAiMJbs
-	 cDJt1orJTnjDyQFSTcP1rBomCEqd/CTrvlbVwVqI/etcr4ShGVacuS5jftmElKUgHo
-	 4rWiUUEzn3jVJV6XrsHkduCTwuUdXAefhdpTAvFule+hAVAZjhMs0GM5W4teWc+hkh
-	 CCAUPSkNfJY+RWyXjlECBT0jXzQQCX9zNDY6CAyNev03v/swcq6KbeygUTOZU7cZPl
-	 dkEXTnShRDO02QHQoMGDwqlTjV3jpcnDzD74p/XrpMYr4Bge9x/n9+g0vxCn3/lHPe
-	 CwU4iDTKR8Sjw==
-Message-ID: <df91c8f8-d6b2-4406-8a61-9e9db959fc59@kernel.org>
-Date: Fri, 24 Jan 2025 12:00:54 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="U7FmWY+L"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-3002c324e7eso17728581fa.3
+        for <linux-serial@vger.kernel.org>; Fri, 24 Jan 2025 03:18:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1737717484; x=1738322284; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=T0llOVDAU4gsmmjbiErKgwKuDgcLmaYcrMGcHc3GCiQ=;
+        b=U7FmWY+LEqln8D9bLw0ileicGt18EuqnljDOQAYwV12tf8kCltWIzteOl6xL07XocY
+         uCHjo7uDE17te39xLhcveBaFL+ccG3OG8v+ILwssoA7//x0OwUNmTkBpW+xW0bcVSc/V
+         bm5kIZ0A/FKwjzu/6aPg9vIyI1Raes4vG/mAAIEH0/0CP/Xqrr4OTViS/FhdpJeVeplx
+         L2SMfPvRVfrba2akLmz4UZ35N8il7pC0AmecCuOLnsqsPWPrU3jUplP2PADRP1YuaNsI
+         DWtChRkOIu/AvxnhbJo0pdkh6an1ln+0RY9StPiSs5pxM2L1TkIXk9hUBnEvooir0FxY
+         Y2Vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737717484; x=1738322284;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T0llOVDAU4gsmmjbiErKgwKuDgcLmaYcrMGcHc3GCiQ=;
+        b=AO/Eo0VCiRS9fp/7QnS7XMwsoSQdPVLqSkrbMbvjufpVF0eQHygSbN/hT7UyTZnqjh
+         KvjhgvnuZeDcxCwC4pobmaihx6ydsFPEGSpWOREoOo+JW2wx8hdB0nL5cp7rK60U5ffT
+         oakG6kNtFpDFWmmqm87+FgntON7RZQDOm/eS8rXolujDA4RfON0vGlcvrBZci/8GR67B
+         ojoyF381BmfyaCxTQQozfFqFwnrjcn7/41sYsMA3rz6Lgbph3PQdzIwLHMFAj3NU73N1
+         Z0hH0hgBMVGQ3vU5PlK/8XQazK72j0P53OVDp5ZKwdA5pRr8Tomtq6vXDcTmLXi+GhxV
+         NJvQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVs5koC/uMvznqf5l08WHCX4wysjhfWDnbFQYTCQSxZCQ+BWJKFLFWFYBdZnkg3/txh0QOqidxyNwPkVA8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywy17pVM7XveactuLGz/TQQL8CTFc4TeappMErn/9/ue0rtrAVQ
+	0XoAEKp0/b9+1/7N64FrKN19eTroHxCQWnmQGP9F+JCkMKrpB+Z3L07IeRwqIs0=
+X-Gm-Gg: ASbGncu2jSRNXbID1wqZxXpJhcDczxoVDCFGJaShRq9c0TsoVnMDs/r64EbN0roPqy1
+	3ZE3Gbjzznw4NPBYSSkcBIR+c6dl8lGPYk5W4mCeVrDuS2vnCneBPPU9yMyfFaWeu8FVY8i0CAQ
+	6uxJv8yDYUkpltgDBqWwg8uWjbF21PCeBz+86MiGILcKT580KMtcN/xYCUS2bg9JXQcIWCvZpt+
+	tYGhQx2PA9MWMQPWEsewD3HjTj5nnc5EkLoNxJiA35DMThGA97VdQaG1NTUWzatHkar0lfUQNQL
+	4noBXW62/3ZW6y3QpOsuB8yI4kFRWtX25gWW0WSA/cunHk/eiRqZJbWyK/W7
+X-Google-Smtp-Source: AGHT+IEvnA4WjUqgAID/Sz4S55WqtF4SuOXbwQGAlWGJct+SYEIXS3XgIZ7BKsiqifM+MoW/qS4z4g==
+X-Received: by 2002:ac2:4e0e:0:b0:53e:2f9d:6a73 with SMTP id 2adb3069b0e04-5439c1c60e7mr11960921e87.0.1737717484311;
+        Fri, 24 Jan 2025 03:18:04 -0800 (PST)
+Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--b8c.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::b8c])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-543c836845fsm257580e87.141.2025.01.24.03.18.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jan 2025 03:18:03 -0800 (PST)
+Date: Fri, 24 Jan 2025 13:18:00 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+Cc: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	broonie@kernel.or, andersson@kernel.org, konradybcio@kernel.org, 
+	johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org, 
+	linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, linux-spi@vger.kernel.org, 
+	quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
+Subject: Re: [PATCH v2 2/8] dt-bindings: i2c: qcom,i2c-geni: Add support for
+ selecting data transfer mode
+Message-ID: <r4zfoaub3dwkirdbsolbl56xxa7ax5eusb2256c7ezlyl2s3vh@hit4g5cpzijw>
+References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
+ <20250124105309.295769-3-quic_vdadhani@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/8] dt-bindings: qcom: geni-se: Add 'firmware-name'
- property for firmware loading
-To: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
- andersson@kernel.org, konradybcio@kernel.org, johan+linaro@kernel.org,
- dianders@chromium.org, agross@kernel.org, linux-arm-msm@vger.kernel.org,
- linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-spi@vger.kernel.org
-Cc: quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
-References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
- <20250124105309.295769-2-quic_vdadhani@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20250124105309.295769-2-quic_vdadhani@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250124105309.295769-3-quic_vdadhani@quicinc.com>
 
-On 24/01/2025 11:53, Viken Dadhaniya wrote:
-> Document the 'firmware-name' property in the device tree bindings to
-> support loading SE (Serial Engine) firmware from the protocol driver,
-> allowing for more flexible firmware management.
+On Fri, Jan 24, 2025 at 04:23:03PM +0530, Viken Dadhaniya wrote:
+> Data transfer mode is fixed by TrustZone (TZ), which currently restricts
+> developers from modifying the transfer mode from the APPS side.
+> 
+> Document the 'qcom,xfer-mode' properties to select the data transfer mode,
+> either GPI DMA (Generic Packet Interface) or non-GPI mode (PIO/CPU DMA).
+> 
+> I2C controller can operate in one of two modes based on the
+> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
+
+Is it possible to load the firmware after it being loaded by TZ? Is it
+possible to change the mode at runtime too?
+
 > 
 > Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
 > Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
 > Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
 > ---
->  Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-> index 7b031ef09669..3e029d4d6f58 100644
-> --- a/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-> +++ b/Documentation/devicetree/bindings/soc/qcom/qcom,geni-se.yaml
-> @@ -54,6 +54,10 @@ properties:
+> v1 -> v2:
+> 
+> - Drop 'qcom,load-firmware' property and add 'firmware-name' property in
+>   qup common driver.
+> - Update commit log.
+> 
+> v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-2-quic_vdadhani@quicinc.com/
+> ---
+> ---
+>  .../devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml        | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> index 9f66a3bb1f80..68e4bf0c84d1 100644
+> --- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> +++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+> @@ -66,6 +66,12 @@ properties:
+>    required-opps:
+>      maxItems: 1
 >  
->    dma-coherent: true
->  
-> +  firmware-name:
-> +    $ref: /schemas/types.yaml#/definitions/string
+> +  qcom,xfer-mode:
+> +    description: Set the value to 1 for non-GPI (FIFO/CPU DMA) mode and 3 for GPI DMA mode.
+> +      The default mode is FIFO.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [1, 3]
+> +
+>  required:
+>    - compatible
+>    - interrupts
+> @@ -142,5 +148,6 @@ examples:
+>          interconnect-names = "qup-core", "qup-config", "qup-memory";
+>          power-domains = <&rpmhpd SC7180_CX>;
+>          required-opps = <&rpmhpd_opp_low_svs>;
+> +        qcom,xfer-mode = <1>;
 
+What does <1> mean? Please provide corresponding defines.
 
-You work on outdated tree. Just look how other bindings are doing this.
-maxItems instead.
+>      };
+>  ...
+> -- 
+> 2.34.1
+> 
 
-
-Best regards,
-Krzysztof
+-- 
+With best wishes
+Dmitry
