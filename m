@@ -1,163 +1,178 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4BE015D5C4;
-	Mon, 27 Jan 2025 16:24:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE371662EF;
+	Mon, 27 Jan 2025 16:45:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737995070; cv=none; b=gs48wn4hKxbV/xOxZfGEQLdA0jp44jVAm7lsLfuIaMP+qX9H8Ki0flKYa5sCKt0X/v35U5S5/WyyBgzwiRJLRI9AzgzXsk0GlGWsE/8GSK0Ua+34+MdFsz981lTf4B80C+rJIpcwXSfZyF1gmLMtry20U+BzGJtvT9GZ/8/Ns20=
+	t=1737996304; cv=none; b=Ol1GfEtErC2IRawIRwIKkEEhMdnJ9p3okMYYq9JvnM7glJlLvAb2s79pzuvt4CSh+ps/YMsMbvnj+IgY3TMgZU0BOs/DFf8eS67U5Jr297/1ShaUW1gyahcriJNMRq6ofDqjao2cT+A1EK3r7Yo/skZX6q9cZlG544CSLCQF4Ys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737995070; c=relaxed/simple;
-	bh=3GQ89bXnzyIgOnNfecZVS7byL1hgPnkSj2dfqs+Bric=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=E1bbG7wenGuqEj5tkX5smAlqT6zj0y2X+FBRqUFo+6F3WDOBC6XLnyY7ZGSyNJ7ECefbRCtNWY0wnsH2njptJNgfE/9Go9q++vqh1lbuNg6Fugvm+eJRN/BxdQMm4A0iLbfVoV/MLPVIIbbhEkn/yByTSkSfpS5BNtPuVtG9kko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JAOvx+Wq; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JAOvx+Wq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3CDC4CED2;
-	Mon, 27 Jan 2025 16:24:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1737995070;
-	bh=3GQ89bXnzyIgOnNfecZVS7byL1hgPnkSj2dfqs+Bric=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=JAOvx+WqLE4ze7rDZuoMQpn8FNgRD8wV5gEa7R+ZxYbTF8miCC0kTfv/MZMbNg+ap
-	 ofIFCbji8FdHTY+8krlxbo5n2IFXHJP0tCh17rzQI/Fmck4YT4OlvmZbGJ5TwB9xfx
-	 W4iJEd45aIJdRJy5YBAeOI2e8RvmmKkQo+nqQDYhEQg0G+eHG9tir9LFFMZ66mHKgC
-	 C0FXxfMKKIYTrC8NbrdeshVmFR4GVPK1E9h1CYC5I9f/aqiAF6CwgzsPtPIi/b6Wum
-	 JPKFIBH7vx/7lzAJHY8TUYJ9LpoEvCppEvcB3k4CKzdAAotPJwWMyrqojmaJAiYqLP
-	 WyjVXWIG7DiqA==
-Message-ID: <374e16d6-46aa-4bdf-85e9-bc2e33c38057@kernel.org>
-Date: Mon, 27 Jan 2025 17:24:21 +0100
+	s=arc-20240116; t=1737996304; c=relaxed/simple;
+	bh=xT8jgs3XxgF6Kwj3K/AFuNv1qnw3sqdQpdUa0VQmBE4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=h5U61nEavtCvVZsrwxoMu2n9uWWCuoZoOrCjoVa/j7jVbYr9oo5k2HugXbqMLPaLS7E8i0vDLSdSVphrMHJQXWg880yI8avO/JwPaHQUsXfQ+jJdMQAybysTrFyFTj6LjXLemQCbFpQlnpNn5sObQJzdbc/ur6kf2N7cSFg+TIs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-4afe7429d37so1181444137.2;
+        Mon, 27 Jan 2025 08:45:02 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1737996301; x=1738601101;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=a/L/oLqfgKXgEIy2iOSOinRjrktgwWC6e04LbtOQjJs=;
+        b=BdJoNf2Z2gqFHet5dlwe6p6at+dmkva6LTXcjCFIhABbDMmvIitIS7dZlfy7d6FN/7
+         N2NmTKTLHUyu4bUSfzR9lJgGDoGNPrHuobsuuoQ9p1oy0ynKrmxxpOQ4R5sCESW6L7Bt
+         zEPlHZY8LukmEMUam86Wyu8Iv6RfZSCXxOtrceTkc00br5Z/ky9Y7UY8k4rAvDgA8c3T
+         hA5gQ+rt9GsKygAOcpkw6wlDKFeisMa1FZ2uz/vMEU8hHmJZW3FSEjCsRlsdh9QrtcPy
+         +OttyYKXa6NSPMT3OXKYloJaiafHoE9vsAyks5z1sx4pHoimQkgE6ePREPfisS+hNaZb
+         LDOg==
+X-Forwarded-Encrypted: i=1; AJvYcCV79R/DfohVtQHYx3fj90BRBMMQS1xY/NRnPlt4lI73h6xzLoRRpAyrdpGKtH2wOXt50rpWmOP6sdiNSFomfQgb7zo=@vger.kernel.org, AJvYcCV7p2VtERvc+np2DQsQyRewQzBjbVaALbudvo8rb93XZyC1MHO4Md3MzCsitD17tA2mlV7iSvNO5tg1@vger.kernel.org, AJvYcCVG71cXNnPDx8+bzbZAOcb4QuFusIw3CSVVyszQ/FaKZ49vqzO89VewBZBYr1zF3QaW3xHErexBXFBWS78W@vger.kernel.org, AJvYcCVX+4MZdWWHpBdMJXpIBGscto/yLl25i3hnTvlf7C2N2FUShjAmj9HNfilS3qgIwliHHEGC90/Ini57Olhg@vger.kernel.org
+X-Gm-Message-State: AOJu0YzsEz91fnTMjD9q6jgRLp12IaSOWonZ9ZpDjHV32rgMkuJGvqAm
+	NHnedATbeBf7j25f4Xo3BeFTYtKVXbh8s1XZ1PRNtzl6LtPDLG1ywKNeMlruFnk=
+X-Gm-Gg: ASbGncsaoIX1BEbJdQNeMXQ+rlHicgmbVNFNtw+Q7q3SZRxNzTTOvwZERLdRZe8CwF6
+	uRE3qx/Mc7L+4QgOPsjq+g8tO3Vnmr4a/DF3u9rEcboCdeKKiL61Hi53x9juaJr8ImjPGG9HCUE
+	yIAAmylBQgOAGAV6B5rd4w3CjoagWVUTe2GhMSYPPV0vLmzJoA7NQXEHgvyXGmD0eMThkesQKyS
+	EwmqaTd53R5pVnCBB2IrRuw3X1bAl4jxgnxBcij/M/7cLzXferUxlSnx+6/lKKxF4aS5IDorGnB
+	Jufn0EK63mG0Zm/54IIsfkYlNNGzngNCw3aQ+Bg6XnzgGCU=
+X-Google-Smtp-Source: AGHT+IHhfnqC3Gbsb8+8mVMHgMdrycP2Le4XdyjD2YuDCWlmYbErAK8S3bDRbV80ShrERZOQnLmKsw==
+X-Received: by 2002:a05:6102:162c:b0:4b2:5d10:58f1 with SMTP id ada2fe7eead31-4b690be8604mr37038079137.11.1737996300714;
+        Mon, 27 Jan 2025 08:45:00 -0800 (PST)
+Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com. [209.85.221.181])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-864a9b1b694sm1924237241.17.2025.01.27.08.45.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Jan 2025 08:45:00 -0800 (PST)
+Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-51c7b5f3b8bso1489657e0c.2;
+        Mon, 27 Jan 2025 08:45:00 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCW1KMEZj+KCCtZpwoKA+F1gbBmquvmDFquGWe48xQ+I8JF0lgCiDSeqBfBrdO4cCKkuv4Lx4RxBIhdQ392t@vger.kernel.org, AJvYcCWhjCgy8B00Okm1b2MYkemAfM2/CSrM1Ng0emqQlJ+7uJNI7f4EbLLDn+VcfFg9B6Pm4BAgyR68qE5AF6Dw@vger.kernel.org, AJvYcCXAxNxRxGhDwSo27V/+Y1i7Wi1q6GgTb7j8ONdwlgKPgLvbkN3DThe9VpujiDznuB0Djbn0jVdDCA/9@vger.kernel.org, AJvYcCXoN700l949W49fYo/PJ42lObOPhO4bePJU51GLAwmyyCbmVP0BAo+0ZrIyFB9u2QOXbm5gGkdWsN2qXhSPMI05uNQ=@vger.kernel.org
+X-Received: by 2002:a05:6122:6610:b0:51c:aa1a:2b5b with SMTP id
+ 71dfb90a1353d-51d5b2641e4mr38109370e0c.4.1737996300109; Mon, 27 Jan 2025
+ 08:45:00 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/8] dt-bindings: serial: Add support for selecting
- data transfer mode
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
- andersson@kernel.org, konradybcio@kernel.org, johan+linaro@kernel.org,
- dianders@chromium.org, agross@kernel.org, linux-arm-msm@vger.kernel.org,
- linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-spi@vger.kernel.org, quic_msavaliy@quicinc.com,
- quic_anupkulk@quicinc.com
-References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
- <20250124105309.295769-5-quic_vdadhani@quicinc.com>
- <10060d39-87a4-4565-a2a6-80c93ac2266a@kernel.org>
- <dudqd2y42wy6iq2k73aphd5ol4mtq7z4c54zhd27rl745rrw5x@p3oummf2jke7>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <dudqd2y42wy6iq2k73aphd5ol4mtq7z4c54zhd27rl745rrw5x@p3oummf2jke7>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
+ <20250120130936.1080069-2-claudiu.beznea.uj@bp.renesas.com>
+ <CAMuHMdWYNs2vQTn07Xfx1Misk3Ry5y3PSYPrGbycZdt5LnU_vQ@mail.gmail.com>
+ <c8cbb0ca-f85c-47d7-a581-fbaf2147c807@tuxon.dev> <CAMuHMdWs=Q2sZj+P+1a1m-4fb4oizjdO2=u=Oqz162kpbTDtFw@mail.gmail.com>
+ <b409fd8d-4c5e-4f1d-94fa-b37ab25095c9@tuxon.dev>
+In-Reply-To: <b409fd8d-4c5e-4f1d-94fa-b37ab25095c9@tuxon.dev>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 27 Jan 2025 17:44:48 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVTpffbK8Nv_b45o=b76ageQtfH693CW=ob4hF28NBsBw@mail.gmail.com>
+X-Gm-Features: AWEUYZmZEr5KFcPLbLwC_2NR6Ke3dFxN2fu-jTcuk49ndz0_IeJiwkObetKJKeQ
+Message-ID: <CAMuHMdVTpffbK8Nv_b45o=b76ageQtfH693CW=ob4hF28NBsBw@mail.gmail.com>
+Subject: Re: [PATCH v4 1/4] serial: sh-sci: Update the suspend/resume support
+To: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Cc: magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	p.zabel@pengutronix.de, claudiu.beznea.uj@bp.renesas.com, 
+	wsa+renesas@sang-engineering.com, prabhakar.mahadev-lad.rj@bp.renesas.com, 
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 27/01/2025 15:27, Dmitry Baryshkov wrote:
-> On Mon, Jan 27, 2025 at 08:02:12AM +0100, Krzysztof Kozlowski wrote:
->> On 24/01/2025 11:53, Viken Dadhaniya wrote:
->>> Data transfer mode is fixed by TrustZone (TZ), which currently restricts
->>> developers from modifying the transfer mode from the APPS side.
->>>
->>> Document the 'qcom,xfer-mode' properties to select the data transfer mode,
->>> either GPI DMA (Generic Packet Interface) or non-GPI mode (PIO/CPU DMA).
->>>
->>> UART controller can operate in one of two modes based on the
->>> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
->>>
->>> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
->>> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
->>> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
->>> ---
->>>
->>> v1 -> v2:
->>>
->>> - Drop 'qcom,load-firmware' property and add 'firmware-name' property in
->>>   qup common driver.
->>> - Update commit log.
->>>
->>> v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-4-quic_vdadhani@quicinc.com/
->>> ---
->>> ---
->>>  .../devicetree/bindings/serial/qcom,serial-geni-qcom.yaml | 8 ++++++++
->>>  1 file changed, 8 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>> index dd33794b3534..383773b32e47 100644
->>> --- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>> +++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>> @@ -56,6 +56,13 @@ properties:
->>>    reg:
->>>      maxItems: 1
->>>  
->>> +  qcom,xfer-mode:
->>> +    description: Set the value to 1 for non-GPI (FIFO/CPU DMA) mode and 3 for GPI DMA mode.
->>> +      The default mode is FIFO.
->>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>> +    enum: [1, 3]
->>> +
->>> +
->>
->> Just one blank line, but anyway, this property should not be in three
->> places. Do you really expect that each of serial engines within one
->> GeniQUP will be configured differently by TZ?
-> 
-> Yes, each SE is configured separately and it's quite frequent when
-> different SEs have different DMA configuration.
+Hi Claudiu,
 
-Well, I checked at sm8550 and sm8650 and each pair of SE - which shares
-resources - has the same DMAs, so I would not call it frequent. Care to
-bring an example where same serial engines have different DMAs and
-different TZ? We do not talk about single QUP.
+On Mon, 27 Jan 2025 at 13:23, Claudiu Beznea <claudiu.beznea@tuxon.dev> wro=
+te:
+> On 27.01.2025 11:19, Geert Uytterhoeven wrote:
+> > On Mon, 27 Jan 2025 at 09:44, Claudiu Beznea <claudiu.beznea@tuxon.dev>=
+ wrote:
+> >> On 24.01.2025 12:53, Geert Uytterhoeven wrote:
+> >>> On Mon, Jan 20, 2025 at 2:09=E2=80=AFPM Claudiu <claudiu.beznea@tuxon=
+.dev> wrote:
+> >>>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> >>>>
+> >>>> The Renesas RZ/G3S supports a power saving mode where power to most =
+of the
+> >>>> SoC components is turned off. When returning from this power saving =
+mode,
+> >>>> SoC components need to be re-configured.
+> >>>>
+> >>>> The SCIFs on the Renesas RZ/G3S need to be re-configured as well whe=
+n
+> >>>> returning from this power saving mode. The sh-sci code already confi=
+gures
+> >>>> the SCIF clocks, power domain and registers by calling uart_resume_p=
+ort()
+> >>>> in sci_resume(). On suspend path the SCIF UART ports are suspended
+> >>>> accordingly (by calling uart_suspend_port() in sci_suspend()). The o=
+nly
+> >>>> missing setting is the reset signal. For this assert/de-assert the r=
+eset
+> >>>> signal on driver suspend/resume.
+> >>>>
+> >>>> In case the no_console_suspend is specified by the user, the registe=
+rs need
+> >>>> to be saved on suspend path and restore on resume path. To do this t=
+he
+> >>>> sci_console_setup() function was added. There is no need to cache/re=
+store
+> >>>> the status or FIFO registers. Only the control registers. To differe=
+ntiate
+> >>>> b/w these, the struct sci_port_params::regs was updated with a new m=
+ember
+> >>>> that specifies if the register needs to be chached on suspend. Only =
+the
+> >>>
+> >>> cached
+> >>>
+> >>>> RZ_SCIFA instances were updated with this new support as the hardwar=
+e for
+> >>>> the rest of variants was missing for testing.
+> >>>>
+> >>>> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Anyway, if you need property per node, this has to be shared schema.
+> > While storing the suspend_cacheable flag wouldn't cost any storage
+> > space anymore using bitfields, I am wondering if it would be worthwhile
+> > to have explicit code to save/restore registers, instead of looping
+> > over all of them and checking the flag. I.e.
+> >
+> >     u16 saved_scmsr;
+> >     u16 saved_scscr;
+> >     u8 saved_scbrr;
+> >     ...
+> >     u8 saved_semr;
+> >
+> >     /* Save omnipresent registers */
+> >     s->saved_scmsr =3D sci_serial_in(port, SCSMR);
+> >     ...
+> >     /* Save optional registers */
+> >     if (sci_getreg(port, SEMR)->size)
+> >             s->saved_semr =3D sci_serial_in(port, SEMR);
+> >
+> > That would make it apply to all SCI variants, not just for SCIFA,
+> > while increasing sci_port by only 10 bytes/port. And 10 bytes/port is
+> > probably not worth to be protected by an #ifdef...
+>
+> That was the other approach I thought about when working on this patch. I
+> chose the one proposed in this patch as it looked to me simpler to extend
+> to other registers, if needed (just enable proper flag in
+> sci_port_params[]). And needed less changes for the code saving/restoring
+> the registers.
+>
+> If you prefer your version let me know and I'll switch to it.
 
-Best regards,
-Krzysztof
+As this driver is also used on smaller systems (e.g. SH), I'd go for
+the solution that leads to the smallest increase of code size and
+memory consumption.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
