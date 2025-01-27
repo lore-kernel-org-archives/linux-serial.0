@@ -1,82 +1,87 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A516EAD0;
-	Mon, 27 Jan 2025 15:21:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F368A19BBA;
+	Mon, 27 Jan 2025 15:42:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737991272; cv=none; b=ecMt37YX4jLU9ejuz3wmqHQsAaQqmDKBmVx+Wr7L8LXT/xlVVvr2Exi+fZVgW3si/hoy0F5p36+6dWuRtt2qhWSbQZp4dJsKORDy02+GICTEvFBHZhgmO06GZaURAC7JnnD6ONx500W24wvENgKL5gSl6MEClIzB10Q8v11qns4=
+	t=1737992581; cv=none; b=hlKJ084b+wIEqZXyGUKaz7+c0w8WaWn5o0hoAaeubRTleSjf1mswjJTKsK59jZOs2Vz3B0rrY+AlvAbz449SGJkZ/003U2pbuza3vd4wk/cmUUvDjhUAXv8nqfyaARgsKu+LYmanLs4LbwRrC0GtHk4l/nVs0yDkh941/nwwHR0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737991272; c=relaxed/simple;
-	bh=Kwxh+tvKhoGiX5MfKzglyS08lo+go/vfdIXn/twcFTg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Ak1+uNnRUPFEPhTJ5SEFhjrDpxSj2KfyIUYQow6bT/PuuKLT8tvaGp3bNP14qh7flhnE+mL+bEc/jOnDDrT4FG10GT5yvrZdqauI333FFPitHd18qEXq7jUvJR0wUTGXnTV6dEkkVmo7ogX8N/zUPJq5NfMqXwTYz9KTJCFEYyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=i+9xkLCp; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=HJBCfIjq; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1737992581; c=relaxed/simple;
+	bh=754tTQ0Xv0FV1pAPiQ7XMzOqvV5Ru3eT2/4MtIxHkKc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pcxjjWPHVuwrYIY3AW5zCkXqNuIvI2fQQ0VJx0xLK3WwbCAoyoO1pu4yLS/kX6gczLJqYNs4V2wyhB3ULJzgKjwL/IDvffeq1CbImkTFPDwGY7ajdNyjpUetqcdWx+dtSyOqy04rVVlQvjLsKbrQIrM+Zsrco896Xe2Q6pjCfmY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=Pyozw0ts; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="i+9xkLCp";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="HJBCfIjq"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1737991267;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Kwxh+tvKhoGiX5MfKzglyS08lo+go/vfdIXn/twcFTg=;
-	b=i+9xkLCpupo5mdgiroEJZillQ0kqjuRDdVDpXvliTtLtyLwy9h0KjAcHPCEfNW2heJhi++
-	TRD7fUcVdWQU0cVCUi0sAyPcdHxlqHmD4VayhL61MyVLpMFU0CqfduRxzf5MQsHm23eqEu
-	VNkC9t/gbogA608Ejg5iXlDC+9tHuMiqDSjOFFMifkqRSbQhA7/n4IJFMJojgzlJWVcJeL
-	CRWTbnwtmNVXr7wTQqDeHJ7V8OaBmPEfG9TfCHOJvCWyVgHGV8URvH7baI2vJ2WK77WBhJ
-	LMKbv/VY3REs+HHqy5wt0D8l41NJPUrHdE132HzSUZC2pfUn9baQcsz9J8cwkQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1737991267;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Kwxh+tvKhoGiX5MfKzglyS08lo+go/vfdIXn/twcFTg=;
-	b=HJBCfIjqPoEQ4q++Wd3un7AZm4gBDPvvw7LXJAikDR75lOkB9bzEI7ZbdtU06SFBOGjF5T
-	nMw9peknLHDMk3CQ==
-To: Jon Hunter <jonathanh@nvidia.com>, Thierry Reding
- <thierry.reding@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas
- Gleixner <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy
- Shevchenko <andriy.shevchenko@linux.intel.com>, Arnd Bergmann
- <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>, Niklas Schnelle
- <schnelle@linux.ibm.com>, Serge Semin <fancer.lancer@gmail.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH tty-next v5 5/6] serial: 8250: Switch to nbcon console
-In-Reply-To: <3e93c665-7603-4b64-a64c-a29079d8d11f@nvidia.com>
-References: <20250107212702.169493-1-john.ogness@linutronix.de>
- <20250107212702.169493-6-john.ogness@linutronix.de>
- <80b020fc-c18a-4da4-b222-16da1cab2f4c@nvidia.com>
- <84ldvcyq41.fsf@jogness.linutronix.de>
- <96b02b20-a51e-480f-a0ce-3a1457650ca9@nvidia.com>
- <84y0zbyrf0.fsf@jogness.linutronix.de>
- <bee7de35-e767-4c69-94ad-d09c92a3577a@nvidia.com>
- <sx4nrwuzs3vafnbrkgag4dkapll3itvece4k3ylvobvid2vlpk@oncxz3eq33zk>
- <lrpcbufgu7jnvepqkd3sz2qap2th45ndzv4c4vxh7v4zyhep6k@t635s7vbhkgz>
- <3e93c665-7603-4b64-a64c-a29079d8d11f@nvidia.com>
-Date: Mon, 27 Jan 2025 16:27:06 +0106
-Message-ID: <841pwo7065.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Pyozw0ts"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=754tTQ0Xv0FV1pAPiQ7XMzOqvV5Ru3eT2/4MtIxHkKc=; b=Pyozw0tsKLD9gp97o+N6ZbHkTo
+	Il8/2Vpa4F0aqTQ5eLNtncdojFavxqC+3hOoMyt2pPZYgpxoa7oSXp+1z19h2FwdJ9ksectEr6L5y
+	pdndzuM9IJbuYbMGyY8OnttTeia0ZsfUEQN3vE3Kvu3ywzVzVm7PiaoVN1j+XGx7cGtNMyIWcHM2K
+	IHU9EJmiTnsw2atKedPjlIYgnndG3plYffG/psV0clxoDlPsLg9vBJ8MCt7RCyZQNR2Rl4uIk2hOI
+	SGpvgckCCBw+KC2Pto4K/lzMPYNt+Lyqoqjs99RL8H5P/AQH7nlJDuMDpJ1IZ/IMsyAIp8YsG+ytq
+	PlpOQ/eA==;
+Received: from willy by casper.infradead.org with local (Exim 4.98 #2 (Red Hat Linux))
+	id 1tcRG3-00000009b8r-2Zcd;
+	Mon, 27 Jan 2025 15:42:39 +0000
+Date: Mon, 27 Jan 2025 15:42:39 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: Jani Nikula <jani.nikula@intel.com>
+Cc: Joel Granados <joel.granados@kernel.org>,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Thomas =?iso-8859-1?Q?Wei=DFschuh?= <linux@weissschuh.net>,
+	Kees Cook <kees@kernel.org>, Luis Chamberlain <mcgrof@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+	linux-s390@vger.kernel.org, linux-crypto@vger.kernel.org,
+	openipmi-developer@lists.sourceforge.net,
+	intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org, linux-hyperv@vger.kernel.org,
+	linux-rdma@vger.kernel.org, linux-raid@vger.kernel.org,
+	linux-scsi@vger.kernel.org, linux-serial@vger.kernel.org,
+	xen-devel@lists.xenproject.org, linux-aio@kvack.org,
+	linux-fsdevel@vger.kernel.org, netfs@lists.linux.dev,
+	codalist@coda.cs.cmu.edu, linux-mm@kvack.org,
+	linux-nfs@vger.kernel.org, ocfs2-devel@lists.linux.dev,
+	fsverity@lists.linux.dev, linux-xfs@vger.kernel.org,
+	io-uring@vger.kernel.org, bpf@vger.kernel.org,
+	kexec@lists.infradead.org, linux-trace-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org, apparmor@lists.ubuntu.com,
+	linux-security-module@vger.kernel.org, keyrings@vger.kernel.org,
+	Song Liu <song@kernel.org>,
+	"Steven Rostedt (Google)" <rostedt@goodmis.org>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"Darrick J. Wong" <djwong@kernel.org>,
+	Corey Minyard <cminyard@mvista.com>
+Subject: Re: Re: Re: [PATCH v2] treewide: const qualify ctl_tables where
+ applicable
+Message-ID: <Z5epb86xkHQ3BLhp@casper.infradead.org>
+References: <20250110-jag-ctl_table_const-v2-1-0000e1663144@kernel.org>
+ <Z4+jwDBrZNRgu85S@li-008a6a4c-3549-11b2-a85c-c5cc2836eea2.ibm.com>
+ <nslqrapp4v3rknjgtfk4cg64ha7rewrrg24aslo2e5jmxfwce5@t4chrpuk632k>
+ <CAMj1kXEZPe8zk7s67SADK9wVH3cfBup-sAZSC6_pJyng9QT7aw@mail.gmail.com>
+ <f4lfo2fb7ajogucsvisfd5sg2avykavmkizr6ycsllcrco4mo3@qt2zx4zp57zh>
+ <87jzag9ugx.fsf@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87jzag9ugx.fsf@intel.com>
 
-Hi Jon,
+On Mon, Jan 27, 2025 at 04:55:58PM +0200, Jani Nikula wrote:
+> You could have static const within functions too. You get the rodata
+> protection and function local scope, best of both worlds?
 
-On 2025-01-27, Jon Hunter <jonathanh@nvidia.com> wrote:
-> Any feedback on this? Our boards are still broken with this change.
+timer_active is on the stack, so it can't be static const.
 
-I have not yet been able to reproduce it (mostly battling brokenness in
-am335x pm dependencies). For now the change has been reverted in
-linux-next. I will send you a patch once I have something to send.
-
-John
+Does this really need to be cc'd to such a wide distribution list?
