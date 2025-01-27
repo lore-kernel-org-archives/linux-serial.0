@@ -1,125 +1,95 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F161F1FCD0C
-	for <linux-serial@vger.kernel.org>; Mon, 27 Jan 2025 08:45:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B17C126BEE;
+	Mon, 27 Jan 2025 09:13:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737967507; cv=none; b=T7Hox5du1V0A2Wf5ZSmY/Lbo0lbxs9zr79sBC8rKbEoXlIxnD+khLkt6SuZDA4tXIWLxILLkCGeVEtg0M46CIAbGw/UTJRZ/ruK/EV2zVnmKtqE5BkIW8y73QTtU6gLFOuERhvuy8EzLJUSB63ox8Dqc/vCtGP4DpV29d+ozFcg=
+	t=1737969226; cv=none; b=bVaMQtDEkYHARDt9J70ciYqF3K8QQ+eKFkMWSV4guPO3jfkGhtpDtgkrnTl6wHBnnNkTNNRsyR+SHjSaTVQV0uIHvktaXdoZl5KxLjr1FqyAZIel5n93lDVYuUpbHku9TvXupBg1+cUrFgnznRFE0cl1LquUyeJJue8wyx91EHI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737967507; c=relaxed/simple;
-	bh=DRgRHg2H9HZndRrP19dAAUkF/GOcikF2Dd4jfd5iTPk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=l38iZShPeugvnTApmh48l5czJDjoNAnt5qhpi21zltwdrQR+mG7pLKFuJuZXu1R4AIZuvcuXVrUb/w7I1RT7kjr5nbI04EY2lXeeSrZ7Fu777XW1dnv26n1NibjE3n5I/ckaOlLyTBi9IkOPLPidobFjIjJCBnSTRe4Fm/NJjOM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=pdj5lU+D; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1737969226; c=relaxed/simple;
+	bh=R0KvIRk4IHpGeBWAw6p6jfbW8+tx2JcHL5Fq4wcuTZI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yw3u2eC0lraw8StM4dIgoR71hzgz90QZ5eV0Jxo/aCGuhFoZAY9rGlkOcqcQ5izdfB0BOIpVrg1Ad7DtxORjzSNmMeaDAP4bPwqjHTO7dtQHOn6qMmaWmVyJTiyW4hBHvkvZaz2OjaQC97VPd1cRCCIjPFmAtFMWfiHrdLJLka4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Oax4Lrf0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="pdj5lU+D"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-385e0e224cbso2326231f8f.2
-        for <linux-serial@vger.kernel.org>; Mon, 27 Jan 2025 00:45:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1737967504; x=1738572304; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=bz2kSYLl3e38VCG/b+eXaZea6pK/eL1ZVqCIQrW1rHw=;
-        b=pdj5lU+DvNs15tLNvzWQp3FHPJNjXDjVDe2GnZ7On2VpyXlGi94/xA5UGKaq2JF9Ru
-         wsRJZawYHzhwInDGtpodNfD1gOdY58gWSL7egw4DhN/8aedkXx+bb3SnrJVnRokoFwSK
-         XKegrU/qbEN8nalAZYwhgqPQZ0YQ3FhZ2USQoVdhr12lgxbPt1Svvv9riynDRoO4cJ7V
-         ckL/TKTRF2yW8/2U4a8Gy3mSgOxUrHFN4tdApSL5CvbJHVG2nwK1jg3v4affA7vRiioj
-         Gh+EQH5mpCJP5+i6stSeyO/jLg42MYLZjepLSoxc3W8L33j7eD0PmzlpU9Rx9jH08BtJ
-         FsMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737967504; x=1738572304;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bz2kSYLl3e38VCG/b+eXaZea6pK/eL1ZVqCIQrW1rHw=;
-        b=q+wZrt517umyXOT5qck6geYGr/9PxoiBxRHj/WqgexIFb/eUimj8uozJTIIVD+isFs
-         UhpyCH3AK010Ax5jjLvNyh5sMGfGBZUTY6Wu5nsQz3ZU3/LSzVG+eoCA6oRX1rNN3OFY
-         2yRwvZIHPDMbPK0L9U62XTeHr9cxglHgXNNwexpLpRLbW+2WtLoK6moSLWtPi1n5Pao+
-         hdsIZd+h9QT8BaDoCQc7ornbGdieNQ2XF8CVsVLV0EC5X5Zf6MFmLS/Gx93j/66w9jIV
-         amiykAgQiSiGWBusQIa0mzaTOILLgyzyONiWN7VxhqNzB5cJZPdHE225QvqhC0gRd6ba
-         cPXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV1Zr72RCnZnugGs6twlO2DL/9j0NjYOtBIpI4iUm+sd41pZS62Nw1YRiAdiSv7TU5UXgMF1GSVh8v+a5w=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzTeM8Dukzmpeq1TmYgLwMaR+30v8/fiVYrLfVBxmXKkpYWxomx
-	B83BhHFA7/U4xsxZs0EuUr7Q3e4KcNbcxvCawuVVRQbrH4OkLufur+8T43Z/juWSU6xDA2jltWQ
-	U
-X-Gm-Gg: ASbGncu6ZKluAlPZQzxxCOs4qGnPCN+fplZuEIB+gnHPImKbkDWvxmjn0/0tWGPuJvj
-	2O+91/YhLm8WJQ3mGi+Td412zvhtF9uWh4zEKLePf2a5OGJwgmdd94fru805/5ONJizHqd6/7EY
-	p0dDf8qpKNe0kalGc/f3yF2hm827OjVoj5yArgQoUCs3pd+4wrrf+FBn7sH3wRMinCgu6zKgSCW
-	IkHeNx7sl9ieJwpN60if7giBKGKXdKoShVWlzZFc6C5bYLnvosXRJBeW8xAYxiJxmDDjrJVSNws
-	0rLb1LQhtLgj
-X-Google-Smtp-Source: AGHT+IGWqfhgnm7mqqj6MlWyyva4ixlrWco+wQr8HSdWnEWxXD9z+L+c1tqnICNsQrM+oKfyIH0FqQ==
-X-Received: by 2002:a05:6000:18ab:b0:37e:d2b7:acd5 with SMTP id ffacd0b85a97d-38bf5655900mr33401129f8f.8.1737967504213;
-        Mon, 27 Jan 2025 00:45:04 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.35])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38c2a17d6b2sm10635095f8f.34.2025.01.27.00.45.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jan 2025 00:45:03 -0800 (PST)
-Message-ID: <4074b42d-fb49-45ee-9f38-31a105ce6a67@tuxon.dev>
-Date: Mon, 27 Jan 2025 10:45:02 +0200
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Oax4Lrf0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03860C4CED2;
+	Mon, 27 Jan 2025 09:13:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1737969225;
+	bh=R0KvIRk4IHpGeBWAw6p6jfbW8+tx2JcHL5Fq4wcuTZI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Oax4Lrf06zTTG38EAz6Ee98HuQfGW5UAQdl39QICOXS/JdOrqoKsWxfvhPtKmOA+B
+	 ZxYWJBOycrHYrhe1p5ETutXJAJLRgMfcEebAA9YZ/knNwGNz3PAxKGsuGTaV2zej2Z
+	 dfzsMBOWcjTZIYRcYxdj3rxtUgOYRNu5IKFsFIKU=
+Date: Mon, 27 Jan 2025 10:12:47 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Yu-Chun Lin <eleanor15x@gmail.com>
+Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+	visitorckw@gmail.com, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] serial: pic32: Fix build warning when CONFIG_OF is
+ disabled
+Message-ID: <2025012726-macaroni-unbiased-e6c3@gregkh>
+References: <20250126163115.3200308-1-eleanor15x@gmail.com>
+ <2025012604-undamaged-earring-d16c@gregkh>
+ <Z5dD5Fz2vf-nnjvg@eleanor-wkdl>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 4/4] arm64: dts: renesas: r9a08g045s33-smarc-pmod: Add
- overlay for SCIF1
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
- p.zabel@pengutronix.de, claudiu.beznea.uj@bp.renesas.com,
- wsa+renesas@sang-engineering.com, prabhakar.mahadev-lad.rj@bp.renesas.com,
- linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
- <20250120130936.1080069-5-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdVjvKmR-0ZiYGiAwXf6dfx9O9HtG2JXht9iDwV7oKdwDQ@mail.gmail.com>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Content-Language: en-US
-In-Reply-To: <CAMuHMdVjvKmR-0ZiYGiAwXf6dfx9O9HtG2JXht9iDwV7oKdwDQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z5dD5Fz2vf-nnjvg@eleanor-wkdl>
 
+On Mon, Jan 27, 2025 at 04:29:24PM +0800, Yu-Chun Lin wrote:
+> On Sun, Jan 26, 2025 at 08:30:33PM +0100, Greg KH wrote:
+> > On Mon, Jan 27, 2025 at 12:31:15AM +0800, Yu-Chun Lin wrote:
+> > > As reported by the kernel test robot, the following warning occurs:
+> > > 
+> > > >> drivers/tty/serial/pic32_uart.c:904:34: warning: 'pic32_serial_dt_ids' defined but not used [-Wunused-const-variable=]
+> > >      904 | static const struct of_device_id pic32_serial_dt_ids[] = {
+> > >          |                                  ^~~~~~~~~~~~~~~~~~~
+> > > 
+> > > The 'pic32_serial_dt_ids' array is only used when CONFIG_OF is enabled.
+> > > Wrapping its definition and 'MODULE_DEVICE_TABLE' in '#ifdef CONFIG_OF'
+> > > prevents a compiler warning when OF is disabled.
+> > > 
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Closes: https://lore.kernel.org/oe-kbuild-all/202501260006.ecUsBidz-lkp@intel.com/
+> > > Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> > > ---
+> > >  drivers/tty/serial/pic32_uart.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > > 
+> > > diff --git a/drivers/tty/serial/pic32_uart.c b/drivers/tty/serial/pic32_uart.c
+> > > index 14d50bd7f1bd..a228a55102c6 100644
+> > > --- a/drivers/tty/serial/pic32_uart.c
+> > > +++ b/drivers/tty/serial/pic32_uart.c
+> > > @@ -948,11 +948,13 @@ static void pic32_uart_remove(struct platform_device *pdev)
+> > >  	pic32_sports[sport->idx] = NULL;
+> > >  }
+> > >  
+> > > +#ifdef CONFIG_OF
+> > >  static const struct of_device_id pic32_serial_dt_ids[] = {
+> > >  	{ .compatible = "microchip,pic32mzda-uart" },
+> > >  	{ /* sentinel */ }
+> > >  };
+> > >  MODULE_DEVICE_TABLE(of, pic32_serial_dt_ids);
+> > > +#endif
+> > 
+> > That should not be needed, no other bus requires this, please fix up the
+> > use of the OF macros instead.
+> 
+> So I should remove of_match_ptr and add the CONFIG_OF as a dependency
+> for the configuration. Correct?
 
+I don't know, but putting #ifdef in .c files is not the correct solution
+at all.
 
-On 24.01.2025 21:15, Geert Uytterhoeven wrote:
-> On Mon, Jan 20, 2025 at 2:09 PM Claudiu <claudiu.beznea@tuxon.dev> wrote:
->> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>
->> Add DT overlay for SCIF1 (of the Renesas RZ/G3S SoC) routed through the
->> PMOD1_3A interface available on the Renesas RZ SMARC Carrier II board.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-> 
->> --- a/arch/arm64/boot/dts/renesas/Makefile
->> +++ b/arch/arm64/boot/dts/renesas/Makefile
->> @@ -143,6 +143,9 @@ r9a07g054l2-smarc-cru-csi-ov5645-dtbs := r9a07g054l2-smarc.dtb r9a07g054l2-smarc
->>  dtb-$(CONFIG_ARCH_R9A07G054) += r9a07g054l2-smarc-cru-csi-ov5645.dtb
->>
->>  dtb-$(CONFIG_ARCH_R9A08G045) += r9a08g045s33-smarc.dtb
->> +dtb-$(CONFIG_ARCH_R9A07G043) += r9a08g045s33-smarc-pmod1-type-3a.dtbo
->> +r9a08g045s33-smarc-pmod1-type-3a-dtbs := r9a08g045s33-smarc.dtb r9a08g045s33-smarc-pmod1-type-3a.dtbo
->> +dtb-$(CONFIG_ARCH_R9A07G043) += r9a08g045s33-smarc-pmod1-type-3a.dtb
-> 
-> s/7G043/8G045/ while applying...
+thanks,
 
-Sorry about that! Thank you for handling it.
-
-> 
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
-
+greg k-h
