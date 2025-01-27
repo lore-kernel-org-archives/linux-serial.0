@@ -1,106 +1,163 @@
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A22315EFA1
-	for <linux-serial@vger.kernel.org>; Mon, 27 Jan 2025 16:24:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4BE015D5C4;
+	Mon, 27 Jan 2025 16:24:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737995068; cv=none; b=PypqaYO6a2G14u5FSBnDWjVvYrskSewftNSjS0j/9RXPHUXcdpe6a+UDfchzvUNS819JNn4aGYqyobaZUqrmJNDMmy7he/kJjiSlmFz4MRfZWcXmr4Je9xC90OWd1d8FBtNzZQp6QF0SQjP99muzgQh1IJ1dwFZCqAA7ciV+IYo=
+	t=1737995070; cv=none; b=gs48wn4hKxbV/xOxZfGEQLdA0jp44jVAm7lsLfuIaMP+qX9H8Ki0flKYa5sCKt0X/v35U5S5/WyyBgzwiRJLRI9AzgzXsk0GlGWsE/8GSK0Ua+34+MdFsz981lTf4B80C+rJIpcwXSfZyF1gmLMtry20U+BzGJtvT9GZ/8/Ns20=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737995068; c=relaxed/simple;
-	bh=2VSdF3SoVzS+CZe0tPuaFYN1p5DVzjycpcTzKsXd5Pg=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=vC65swPidcFzjK8adIrZ0Tw7+pdEL/9blGPXdwY8sk8ddw7i7ft+BmJR081bSpD3Kfra2Qds8UM8zTi+MKJL2tEUFMXu3Bt6BYzOxnw+1fwWzPP1VEbexnN/5sRs9WpPET1XVnPSwF0hC8AAtA8UWcffQnOIQ5saQvnbK8xYOKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geotab.com; spf=pass smtp.mailfrom=geotab.com; dkim=pass (2048-bit key) header.d=geotab.com header.i=@geotab.com header.b=oEs+RczT; arc=none smtp.client-ip=209.85.219.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geotab.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geotab.com
+	s=arc-20240116; t=1737995070; c=relaxed/simple;
+	bh=3GQ89bXnzyIgOnNfecZVS7byL1hgPnkSj2dfqs+Bric=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=E1bbG7wenGuqEj5tkX5smAlqT6zj0y2X+FBRqUFo+6F3WDOBC6XLnyY7ZGSyNJ7ECefbRCtNWY0wnsH2njptJNgfE/9Go9q++vqh1lbuNg6Fugvm+eJRN/BxdQMm4A0iLbfVoV/MLPVIIbbhEkn/yByTSkSfpS5BNtPuVtG9kko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JAOvx+Wq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geotab.com header.i=@geotab.com header.b="oEs+RczT"
-Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-e3a26de697fso6822238276.3
-        for <linux-serial@vger.kernel.org>; Mon, 27 Jan 2025 08:24:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=geotab.com; s=google; t=1737995065; x=1738599865; darn=vger.kernel.org;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=2VSdF3SoVzS+CZe0tPuaFYN1p5DVzjycpcTzKsXd5Pg=;
-        b=oEs+RczTm+xekwg6nJfzRQ6nRYg07JIW/xwqzgAbaml5Jf0JVNSOh/rjUd17EhED8L
-         9hgH92cJm8BLUFh8njklLxybtgaPyQxphPkl65M/10+Am3eIPuKvbY04M8hzcOJsgrwk
-         KbAARgcd+Hg1ompWCqIm4s5FlJsNB0tOuBaSuhk9YA9RyivFb03Jyg5PXyGtgJMYpsFd
-         jECwQ76dflvqzeNyGF+PFrJL8GBh/55sHiI1RWFEE9KABpBdbFGjryHRTOvKo3s/Ysmk
-         JaWqGv9/TfnuXT7F3tX61MNCBphtM0a+OUurmteGv+lxjp0MT+dLaK1O4Jr9iZH6xSci
-         MClg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737995065; x=1738599865;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2VSdF3SoVzS+CZe0tPuaFYN1p5DVzjycpcTzKsXd5Pg=;
-        b=LHIEpX6qpxAS3H0vo+R5YkBKTP7zU01eiE12DPBHTsrU6/h5Xg5RSRtB59uApaWNdO
-         nWuTTdE/KNm4V/qU7hQVDGBxGylCeYyPbsBulxZKmGcGRyzli3yVZrdgNkN23rjIDLm/
-         Hn6As0c4ECEnmJthRJb44arEvlBo25IORHVZr0wlFBKRgP5OgkV0ugx23u5ULhZKRFo4
-         wNjnjjILfe3SIeBydZCu1+yM72BRgtJHDiyhgvIC2ZgcTBl3BQuHBFD6TSjHzevsxHWd
-         GBsRk7BWuYvFg3jCcJNG0xUHK4tEVi9QN57XIl2+jRzRz7Bb8RVTU+r/iVUiAqf/M8sv
-         Ux7A==
-X-Gm-Message-State: AOJu0YxZmTZaxCBXaITQJ4L1iT8DY7ne736NJj6kQVg7pClV8YVEWf0i
-	NqEhkJFkahgwy0Z6BNX/3ftQhkA4XKAJcPqxptv1shHCffxeonoHbdbivVIR+1ah1rKVwUm0334
-	7bcZ1A+nk+r6G7d2ubk9kCndgKwVTXPU0GpZy/9pdEa+/zewDyoUDmg==
-X-Gm-Gg: ASbGncvxnZDyU75zOddvEGTPh/fsdI23c2C4A5Uulh1kdoXShnYZb3H7lmFPexEBu0K
-	91xBMBPZgfz1EM6laDzzmKklLjq6zaNfVsmVNDM1+YkdHqsFo3isEuEI9oZxOISc=
-X-Google-Smtp-Source: AGHT+IE8KLgbvC0n7biYMOuN4k8R0h674oo7EEs6l7IeSQjfKMUbe4EHJB+vYFocjPzC+RiiSShD2m+KVhQJgqL9N/0=
-X-Received: by 2002:a05:6902:124e:b0:e54:a0b3:fb40 with SMTP id
- 3f1490d57ef6-e57b10642b1mr33184046276.20.1737995064783; Mon, 27 Jan 2025
- 08:24:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JAOvx+Wq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3CDC4CED2;
+	Mon, 27 Jan 2025 16:24:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1737995070;
+	bh=3GQ89bXnzyIgOnNfecZVS7byL1hgPnkSj2dfqs+Bric=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=JAOvx+WqLE4ze7rDZuoMQpn8FNgRD8wV5gEa7R+ZxYbTF8miCC0kTfv/MZMbNg+ap
+	 ofIFCbji8FdHTY+8krlxbo5n2IFXHJP0tCh17rzQI/Fmck4YT4OlvmZbGJ5TwB9xfx
+	 W4iJEd45aIJdRJy5YBAeOI2e8RvmmKkQo+nqQDYhEQg0G+eHG9tir9LFFMZ66mHKgC
+	 C0FXxfMKKIYTrC8NbrdeshVmFR4GVPK1E9h1CYC5I9f/aqiAF6CwgzsPtPIi/b6Wum
+	 JPKFIBH7vx/7lzAJHY8TUYJ9LpoEvCppEvcB3k4CKzdAAotPJwWMyrqojmaJAiYqLP
+	 WyjVXWIG7DiqA==
+Message-ID: <374e16d6-46aa-4bdf-85e9-bc2e33c38057@kernel.org>
+Date: Mon, 27 Jan 2025 17:24:21 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Daniel Lizewski <daniellizewski@geotab.com>
-Date: Mon, 27 Jan 2025 11:23:49 -0500
-X-Gm-Features: AWEUYZkcEbm5OorGZkrfv-rUwHCSaXy09z0f2cRjAtBznso7p0BgEea2Vzzhs3s
-Message-ID: <CANYnu5-4Vzsp7jbOZ-ZeQx_0uwnP5RUMLO72DOGqrsFbLO0zOQ@mail.gmail.com>
-Subject: BUG: n_gsm.c: Deadlock in gsm_modem_upd_via_msc
-To: linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/8] dt-bindings: serial: Add support for selecting
+ data transfer mode
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
+ andersson@kernel.org, konradybcio@kernel.org, johan+linaro@kernel.org,
+ dianders@chromium.org, agross@kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-spi@vger.kernel.org, quic_msavaliy@quicinc.com,
+ quic_anupkulk@quicinc.com
+References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
+ <20250124105309.295769-5-quic_vdadhani@quicinc.com>
+ <10060d39-87a4-4565-a2a6-80c93ac2266a@kernel.org>
+ <dudqd2y42wy6iq2k73aphd5ol4mtq7z4c54zhd27rl745rrw5x@p3oummf2jke7>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <dudqd2y42wy6iq2k73aphd5ol4mtq7z4c54zhd27rl745rrw5x@p3oummf2jke7>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hello,
-I have found a deadlock in the n_gsm line discipline.
+On 27/01/2025 15:27, Dmitry Baryshkov wrote:
+> On Mon, Jan 27, 2025 at 08:02:12AM +0100, Krzysztof Kozlowski wrote:
+>> On 24/01/2025 11:53, Viken Dadhaniya wrote:
+>>> Data transfer mode is fixed by TrustZone (TZ), which currently restricts
+>>> developers from modifying the transfer mode from the APPS side.
+>>>
+>>> Document the 'qcom,xfer-mode' properties to select the data transfer mode,
+>>> either GPI DMA (Generic Packet Interface) or non-GPI mode (PIO/CPU DMA).
+>>>
+>>> UART controller can operate in one of two modes based on the
+>>> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
+>>>
+>>> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+>>> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+>>> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+>>> ---
+>>>
+>>> v1 -> v2:
+>>>
+>>> - Drop 'qcom,load-firmware' property and add 'firmware-name' property in
+>>>   qup common driver.
+>>> - Update commit log.
+>>>
+>>> v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-4-quic_vdadhani@quicinc.com/
+>>> ---
+>>> ---
+>>>  .../devicetree/bindings/serial/qcom,serial-geni-qcom.yaml | 8 ++++++++
+>>>  1 file changed, 8 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+>>> index dd33794b3534..383773b32e47 100644
+>>> --- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+>>> +++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+>>> @@ -56,6 +56,13 @@ properties:
+>>>    reg:
+>>>      maxItems: 1
+>>>  
+>>> +  qcom,xfer-mode:
+>>> +    description: Set the value to 1 for non-GPI (FIFO/CPU DMA) mode and 3 for GPI DMA mode.
+>>> +      The default mode is FIFO.
+>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>> +    enum: [1, 3]
+>>> +
+>>> +
+>>
+>> Just one blank line, but anyway, this property should not be in three
+>> places. Do you really expect that each of serial engines within one
+>> GeniQUP will be configured differently by TZ?
+> 
+> Yes, each SE is configured separately and it's quite frequent when
+> different SEs have different DMA configuration.
 
-In the function gsm_modem_upd_via_msc, it sends a gsm control message and
-does a blocking wait (gsm_control_wait) until either a response or timeout.
+Well, I checked at sm8550 and sm8650 and each pair of SE - which shares
+resources - has the same DMAs, so I would not call it frequent. Care to
+bring an example where same serial engines have different DMAs and
+different TZ? We do not talk about single QUP.
 
-The problem happens when a modem update is triggered inside the
-callback for incoming data "gsmld_receive_buf"
-gsmld_receive_buf -> gsm0_receive -> gsm_queue -> gsm_dlci_open ->
-gsm_modem_update -> gsm_modem_upd_via_msc after a "UA" response in
-gsm_queue.
+Anyway, if you need property per node, this has to be shared schema.
 
-When line disciplines are flushed in flush_to_ldisc,
-there is a lock making this section of code including all of the GSM command
-processing single threaded.
-The blocking call in gsm_modem_upd_via_msc (gsm_control_wait) can only be
-satisfied if a new GSM response is received and processed in another callback
-to gsmld_receive_buf, which cannot happen because we are blocking in that
-locked function.
-
-The code eventually does recover after all of the T1 timeouts and retries.
-At that point, all the responses which were queued up but could not be
-processed come in, but the state machine had already closed the connection
-and is no longer waiting for the response.
-
-I believe this is the only situation that causes the deadlock because
-all other calls to gsm_modem_upd_via_msc are initiated through a different
-tty_ldisc_ops callback.
-This deadlock only happens when encoding==GSM_BASIC_OPT, adaption ==
-1, and initiator == 1.
-
-This call was added in 2022 with commit 4847380.
-I believe to satisfy:
-"5.4.6.3.7 Modem Status Command (MSC)"
-"This command shall be sent prior to any user data after a creation of a DLC"
-of "3GPP TS 07.10".
-
-The code doesn't actually do anything with the response,
-since the response is just an echo of the data we sent,
-so we could simply just not wait for the response in this case.
-Or we could make it a new opening state and process the response async similar
-to how CMD_PN is done currently.
+Best regards,
+Krzysztof
