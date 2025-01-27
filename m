@@ -1,291 +1,179 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4E881FCFC1
-	for <linux-serial@vger.kernel.org>; Mon, 27 Jan 2025 12:23:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCDFA1FF7B4;
+	Mon, 27 Jan 2025 13:25:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1737980624; cv=none; b=jfYouolSHKZqPPhZdSssAm+YyOk4arRKxslnSob5Tq11PoQbbkacsZgtqCbSGNs9XfwnrvimKwZPrlC2tWNTnXCDCXkoL4100CNbpgCPnz6QqPBUWQIOvrrYOmT72OAzEqgb0RoGr5yXh24JmIzzsk3ngdpgWHy6G3dVM1yPMsY=
+	t=1737984332; cv=none; b=odp24p0j+3utK+dhrDZp54Fqr5Vng5pVzNhMZP+6uWvNhaM5NdV3jnReXtHuLUHJ9+p6rObv2tN+KeceJ6ciDNuxculzSKgTCu3dOcTJhiFY4oV+ZkCrZ4Fo+Q3u7JVQz7ZaYMsyzG5qXlOrxlbJbWiuFkVQ7s7emVdSVz3ikUY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1737980624; c=relaxed/simple;
-	bh=0k/Q/AG2Fx7zsieGpgW7606mFmZV5w/LyELkVwkAr64=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sV01sqwrCnQaGLoZLDmSkcec1+dSom//GtE8IOZidQGrlaJlFhWeolf/+Gjte2d6+tproxsm0mEsNxLuSn1o2lZPBnrYU+4yCYTJORSIJ/r52HbCAGOunulaWmGMSOSXXgP29G+8SUUwaUjP6+2cd6rgy9nssGUo/ySfb+POBnY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=kLRs7sZx; arc=none smtp.client-ip=209.85.218.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1737984332; c=relaxed/simple;
+	bh=RjFj+btLOrA1I0c/0XDEPot6dd9rNyckywxmgkJzq3o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=aEfhAR3RlQYiSsb42lAOvxkw+nUntoz6q6DHAY0pQYX9yAkuDsIcFi/ef/RPnfCGfMo6aaLv5F7HtRLQF2WK23ejmtY2BNY7EEaLm0JP2UncX78LDNu5Z20MP1wE0lxRljio5NohTrvoN6ZN1daJdMi5M+IsFEMnMgznBw9oovI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QSGUOvEZ; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="kLRs7sZx"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-ab651f1dd36so871180166b.0
-        for <linux-serial@vger.kernel.org>; Mon, 27 Jan 2025 04:23:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1737980620; x=1738585420; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7lpbbHDT76VBzFxBNiWxDXX1CkSEi1FJETRNxA6omGI=;
-        b=kLRs7sZxpeuNuaK/JXdCcPoRumAjr2P1ea5L1umVh7/nd+O5nWkC1xcngnYP+Q3fnP
-         0pFKeSS3cyMFXxWMYbpRc2iweJ/ZO32WRpY67P9uGaObO7E3OVYNzBZMv1Nfi/Mxn9c5
-         URhE63XIAebKutC1e3qTKdNKhvDB8hsbunlaf0h0OxwWA3CHT/2mY5zFXb04Ix9kLmjc
-         8VnJ5hDW1CdepxhLKS3sjfdlw2bnQlBjCKclT5JqMRkF5pzjnKQdVtar3NxBodmPdJ9F
-         LgBv6pGyXM58qEyk4IHG+QLW1Nd5clx7OocxLUjuDxMkXtRCnRMF2kYXAPB8mRhFs9Z5
-         XjSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1737980620; x=1738585420;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7lpbbHDT76VBzFxBNiWxDXX1CkSEi1FJETRNxA6omGI=;
-        b=bRjuGoUfnMiJW1Kp2PTU9wXlJeW15P1bRKBCK65vM06ygaJDCh6/lx5MPG/wr6QgXX
-         esdMwOBRgbm4dUq5dbuwuTFR+aClIlOFGTxvOYqsqwsM+laqCZb/j32Ri7GJEAHZ6Dwn
-         1WUhGK/0eoFWzSW854dGUSFMtdPtwi0N5/8SebGYxx65pVFmqxkXWBafp6qV3xIWmn8q
-         BwAzBBkdD8B6MQi6XOKGwHcXojAEhO0UX052ZfA6hS4FoP7XxT4RHUHMV+kq3B7cKqmU
-         M1NN3cfQE6/paTQwerzVR/Q2GFY8YC/Hyv3p62fUTc3ryvAFMpZ8h0d4lzmAP3Oicayj
-         SvEw==
-X-Forwarded-Encrypted: i=1; AJvYcCXDBfhezFEyNmErt89iznNaFN3mMMd6xFQi8z8qYPvfvXYPgR8VhBKieFX1c7dTRk6knJN9EMRK2vtmA34=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxi5viAe6ztV5L6QCr2zgqdQspFEVANqTgLzBJ8An1ieUy04ZAc
-	zNM18rkt4XIguJMPr062jdYUXcrQEwLBFjKFANAoXyHqZerNxhqsOERHABIKyvwuYf0h158wqyG
-	9
-X-Gm-Gg: ASbGncu8GaQ0O7DMwqrjxCcPr945Jn8IxTzW5JRSQtKYTuc0tTBWF92DuF10YCV1M7r
-	EfL6GFifLI5sMR+b5HiNC+fSjIpk+evjG3I1V69hJqI5v8BQzpHt5sCLHHC3Lx6GspA/IcQFUBi
-	s7oTGNaoC+O/7CLS41T2fz/a63//h43xQe0aHRnJNW/WNc/3YlVgShg8VZINYHSjnsjo8bc8CvX
-	hjp1/oXRzSSMCGRscSwbrdgp/UGElaqFrXNV0b9fl4YhlL2zRJ8jAT4qNwCN+PWUSIyRqKIPYgW
-	7gqaxqN+qb7pSQpnsz9nP+s=
-X-Google-Smtp-Source: AGHT+IFqrZa3kun8ERX/A5eGnh5u4rIMwCMA+O1TLWqdSEWxCm+WOm8B8sGzYnqWB8lG8ZHGANIZ7g==
-X-Received: by 2002:a17:907:9617:b0:ab2:b72e:cf44 with SMTP id a640c23a62f3a-ab38b1b1b94mr4119339466b.2.1737980619877;
-        Mon, 27 Jan 2025 04:23:39 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.35])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab675e5ca68sm578879066b.38.2025.01.27.04.23.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 27 Jan 2025 04:23:39 -0800 (PST)
-Message-ID: <b409fd8d-4c5e-4f1d-94fa-b37ab25095c9@tuxon.dev>
-Date: Mon, 27 Jan 2025 14:23:37 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QSGUOvEZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1737984330; x=1769520330;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RjFj+btLOrA1I0c/0XDEPot6dd9rNyckywxmgkJzq3o=;
+  b=QSGUOvEZzlCLg52m+Lkyf/+kcHVE68FvAFk33+V3UhwIx/K/THbEuyid
+   qJ438VnvterjDhGelKR5fP6BxrrxRkqifOI54cau6t1t8osjTRna9hBxM
+   No2vFYIs3XvcsO1WP4e5Biv+WmJTB68gdx3/u0mrAfgwMTVAD015W4iZ3
+   /IS6Kq3c9DS8MxtJuSPO9pAimIX5JPT9iSW8d4LmXW3YyQJxw6TCZ90TZ
+   /GjxSPzYFVZHfh4LDTMcdRhtiKIjHF1pelA8u+BGatnQUd04z2t7ouweY
+   lN5ljcLdmzwZ6ey8werqdArXQ+hfBfCOql1cBQHnUxfs2OPHqKl0LQjSz
+   w==;
+X-CSE-ConnectionGUID: WXPLNx9wSDWvyiA2ZoPUwA==
+X-CSE-MsgGUID: Ov3TekHxTxuVTp8Y/oIV5g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11328"; a="42105354"
+X-IronPort-AV: E=Sophos;i="6.13,238,1732608000"; 
+   d="scan'208";a="42105354"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2025 05:25:22 -0800
+X-CSE-ConnectionGUID: oOw//HyuRH2sXbDiVD3/cA==
+X-CSE-MsgGUID: F7vXYkyrSx2N1gt4t3xT9A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="131730368"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2025 05:25:02 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1tcP6l-00000005jpm-3fIe;
+	Mon, 27 Jan 2025 15:24:55 +0200
+Date: Mon, 27 Jan 2025 15:24:55 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Damien Le Moal <dlemoal@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Corey Minyard <minyard@acm.org>, Peter Huewe <peterhuewe@gmx.de>,
+	Jarkko Sakkinen <jarkko@kernel.org>,
+	Tero Kristo <kristo@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+	Ian Abbott <abbotti@mev.co.uk>,
+	H Hartley Sweeten <hsweeten@visionengravers.com>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	Len Brown <lenb@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	John Allen <john.allen@amd.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Vinod Koul <vkoul@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Moritz Fischer <mdf@kernel.org>, Liviu Dudau <liviu.dudau@arm.com>,
+	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Peter Rosin <peda@axentia.se>, Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Markuss Broks <markuss.broks@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Lee Jones <lee@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+	Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+	Iyappan Subramanian <iyappan@os.amperecomputing.com>,
+	Yisen Zhuang <yisen.zhuang@huawei.com>,
+	Stanislaw Gruszka <stf_xl@wp.pl>, Kalle Valo <kvalo@kernel.org>,
+	Sebastian Reichel <sre@kernel.org>,
+	Tony Lindgren <tony@atomide.com>, Mark Brown <broonie@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Xiang Chen <chenxiang66@hisilicon.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	Vaibhav Hiremath <hvaibhav.linux@gmail.com>,
+	Alex Elder <elder@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	Jacky Huang <ychuang3@nuvoton.com>, Helge Deller <deller@gmx.de>,
+	Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Kees Cook <keescook@chromium.org>,
+	Trond Myklebust <trond.myklebust@hammerspace.com>,
+	Anna Schumaker <anna@kernel.org>,
+	Masahiro Yamada <masahiroy@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Takashi Iwai <tiwai@suse.com>, linuxppc-dev@lists.ozlabs.org,
+	linux-ide@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+	linux-integrity@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-clk@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-efi@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-fpga@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-input@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+	linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+	linux-leds@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-amlogic@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, greybus-dev@lists.linaro.org,
+	linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+	linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+	iommu@lists.linux.dev, linux-trace-kernel@vger.kernel.org,
+	kasan-dev@googlegroups.com, linux-hardening@vger.kernel.org,
+	linux-nfs@vger.kernel.org, linux-kbuild@vger.kernel.org,
+	alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
+Subject: Re: [PATCH 00/34] address all -Wunused-const warnings
+Message-ID: <Z5eJJ199QwL0HVJT@smile.fi.intel.com>
+References: <20240403080702.3509288-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/4] serial: sh-sci: Update the suspend/resume support
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: magnus.damm@gmail.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
- p.zabel@pengutronix.de, claudiu.beznea.uj@bp.renesas.com,
- wsa+renesas@sang-engineering.com, prabhakar.mahadev-lad.rj@bp.renesas.com,
- linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com>
- <20250120130936.1080069-2-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdWYNs2vQTn07Xfx1Misk3Ry5y3PSYPrGbycZdt5LnU_vQ@mail.gmail.com>
- <c8cbb0ca-f85c-47d7-a581-fbaf2147c807@tuxon.dev>
- <CAMuHMdWs=Q2sZj+P+1a1m-4fb4oizjdO2=u=Oqz162kpbTDtFw@mail.gmail.com>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Content-Language: en-US
-In-Reply-To: <CAMuHMdWs=Q2sZj+P+1a1m-4fb4oizjdO2=u=Oqz162kpbTDtFw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240403080702.3509288-1-arnd@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Hi, Geert,
+On Wed, Apr 03, 2024 at 10:06:18AM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> Compilers traditionally warn for unused 'static' variables, but not
+> if they are constant. The reason here is a custom for C++ programmers
+> to define named constants as 'static const' variables in header files
+> instead of using macros or enums.
+> 
+> In W=1 builds, we get warnings only static const variables in C
+> files, but not in headers, which is a good compromise, but this still
+> produces warning output in at least 30 files. These warnings are
+> almost all harmless, but also trivial to fix, and there is no
+> good reason to warn only about the non-const variables being unused.
+> 
+> I've gone through all the files that I found using randconfig and
+> allmodconfig builds and created patches to avoid these warnings,
+> with the goal of retaining a clean build once the option is enabled
+> by default.
+> 
+> Unfortunately, there is one fairly large patch ("drivers: remove
+> incorrect of_match_ptr/ACPI_PTR annotations") that touches
+> 34 individual drivers that all need the same one-line change.
+> If necessary, I can split it up by driver or by subsystem,
+> but at least for reviewing I would keep it as one piece for
+> the moment.
+> 
+> Please merge the individual patches through subsystem trees.
+> I expect that some of these will have to go through multiple
+> revisions before they are picked up, so anything that gets
+> applied early saves me from resending.
 
-On 27.01.2025 11:19, Geert Uytterhoeven wrote:
-> Hi Claudiu,
-> 
-> On Mon, 27 Jan 2025 at 09:44, Claudiu Beznea <claudiu.beznea@tuxon.dev> wrote:
->> On 24.01.2025 12:53, Geert Uytterhoeven wrote:
->>> On Mon, Jan 20, 2025 at 2:09 PM Claudiu <claudiu.beznea@tuxon.dev> wrote:
->>>> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>>>
->>>> The Renesas RZ/G3S supports a power saving mode where power to most of the
->>>> SoC components is turned off. When returning from this power saving mode,
->>>> SoC components need to be re-configured.
->>>>
->>>> The SCIFs on the Renesas RZ/G3S need to be re-configured as well when
->>>> returning from this power saving mode. The sh-sci code already configures
->>>> the SCIF clocks, power domain and registers by calling uart_resume_port()
->>>> in sci_resume(). On suspend path the SCIF UART ports are suspended
->>>> accordingly (by calling uart_suspend_port() in sci_suspend()). The only
->>>> missing setting is the reset signal. For this assert/de-assert the reset
->>>> signal on driver suspend/resume.
->>>>
->>>> In case the no_console_suspend is specified by the user, the registers need
->>>> to be saved on suspend path and restore on resume path. To do this the
->>>> sci_console_setup() function was added. There is no need to cache/restore
->>>> the status or FIFO registers. Only the control registers. To differentiate
->>>> b/w these, the struct sci_port_params::regs was updated with a new member
->>>> that specifies if the register needs to be chached on suspend. Only the
->>>
->>> cached
->>>
->>>> RZ_SCIFA instances were updated with this new support as the hardware for
->>>> the rest of variants was missing for testing.
->>>>
->>>> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>>
->>>> --- a/drivers/tty/serial/sh-sci.c
->>>> +++ b/drivers/tty/serial/sh-sci.c
->>>> @@ -101,7 +101,7 @@ enum SCI_CLKS {
->>>>                 if ((_port)->sampling_rate_mask & SCI_SR((_sr)))
->>>>
->>>>  struct plat_sci_reg {
->>>> -       u8 offset, size;
->>>> +       u8 offset, size, suspend_cacheable;
->>>
->>> This increases the size of sci_port_params[] by 300 bytes.
->>> Using bitfields would mitigate that:
->>>
->>>     struct plat_sci_reg {
->>>             u16 offset:8;
->>>             u16 size:5;
->>>             u16 suspend_cacheable:1;
->>>     };
->>>
->>> (if we ever need more bits, the size member can store an enum value
->>>  instead of the actual size (8 or 16 bits) of the register).
->>>
->>>>  };
->>
->> OK
->>
->>>>
->>>>  struct sci_port_params {
->>>> @@ -134,6 +134,8 @@ struct sci_port {
->>>>         struct dma_chan                 *chan_tx;
->>>>         struct dma_chan                 *chan_rx;
->>>>
->>>> +       struct reset_control            *rstc;
->>>> +
->>>>  #ifdef CONFIG_SERIAL_SH_SCI_DMA
->>>>         struct dma_chan                 *chan_tx_saved;
->>>>         struct dma_chan                 *chan_rx_saved;
->>>> @@ -153,6 +155,7 @@ struct sci_port {
->>>>         int                             rx_trigger;
->>>>         struct timer_list               rx_fifo_timer;
->>>>         int                             rx_fifo_timeout;
->>>> +       unsigned int                    console_cached_regs[SCIx_NR_REGS];
->>>
->>> u16, as all registers are 8 or 16 bit wide.
->>
->> OK.
->>
->>>
->>> We reserve space for 20 registers, but at most 6 will be used.
->>> This has a rather big impact on the size of sci_ports[], as
->>> CONFIG_SERIAL_SH_SCI_NR_UARTS defaults to 18.
->>
->> I agree, but this should keep the suspend/resume code sane in case
->> extensions will be added to the code. In general people forget about
->> suspend/resume code when extending. Please let me know if you prefer to
->> limit it (although, doing like this will complicate the code, I think).
->>
->>>
->>> Also, this space is used/needed only if:
->>>   - CONFIG_PM_SLEEP=y,
->>>   - CONFIG_SERIAL_CORE_CONSOLE=y (see uart_console()),
->>>   - The port is actually used as a console (unfortunately the user
->>>     can specify multiple console=ttySC<N> command line parameters, in
->>>     addition to chosen/stdout-path).
->>
->> Would you prefer to guard the suspend/resume code with these flags?
-> 
-> I was also thinking about console_cached_regs[].
+Arnd, can you refresh this one? It seems some misses still...
+I have got 3+ 0-day reports against one of the mux drivers.
 
-Agree.
+https://lore.kernel.org/all/?q=adg792a.c
 
-> But if you would
-> protect that by #ifdef, you also have to protect the code that uses it,
-> meaning less compile coverage.
-> 
-> If you just add a static inline helper function to check for
-> CONFIG_PM_SLEEP, !console_suspend_enabled, and
-> uart_console(&sport->port):
-> 
->     static bool sci_console_keep_alive(struct sci_port *sport)
->     {
->             return IS_ENABLED(CONFIG_PM_SLEEP) &&
->                    !console_suspend_enabled && uart_console(&sport->port);
->     }
-> 
-> then most of the code will be validated but optimized away when unused.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-I wasn't aware of this approach. I'll give it a try, if any.
-
-> 
->>>>         u16                             hscif_tot;
->>>>
->>>>         bool has_rtscts;
->>>> @@ -300,17 +303,17 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
->>>>          */
->>>>         [SCIx_RZ_SCIFA_REGTYPE] = {
->>>>                 .regs = {
->>>> -                       [SCSMR]         = { 0x00, 16 },
->>>> -                       [SCBRR]         = { 0x02,  8 },
->>>> -                       [SCSCR]         = { 0x04, 16 },
->>>> +                       [SCSMR]         = { 0x00, 16, 1 },
->>>> +                       [SCBRR]         = { 0x02,  8, 1 },
->>>> +                       [SCSCR]         = { 0x04, 16, 1 },
->>>>                         [SCxTDR]        = { 0x06,  8 },
->>>>                         [SCxSR]         = { 0x08, 16 },
->>>>                         [SCxRDR]        = { 0x0A,  8 },
->>>> -                       [SCFCR]         = { 0x0C, 16 },
->>>> +                       [SCFCR]         = { 0x0C, 16, 1 },
->>>>                         [SCFDR]         = { 0x0E, 16 },
->>>> -                       [SCSPTR]        = { 0x10, 16 },
->>>> +                       [SCSPTR]        = { 0x10, 16, 1 },
->>>>                         [SCLSR]         = { 0x12, 16 },
->>>> -                       [SEMR]          = { 0x14, 8 },
->>>> +                       [SEMR]          = { 0x14, 8, 1 },
->>>
->>> Note that the driver always writes zero to SEMR.
->>
->> In case the IP is used on SoCs with sleep states where the resume is done
->> with the help of bootloader, the bootloader code might interact with
->> registers that the Linux code writes with zero.
->>
->> Keeping it for registers where driver writes zero should also help if the
->> serial IPs power will be off during suspend, thus registers restored to non
->> zero default values (by HW) after resume.
-> 
-> Sure, the driver would have to write zero to the register anyway.
-> 
-> While storing the suspend_cacheable flag wouldn't cost any storage
-> space anymore using bitfields, I am wondering if it would be worthwhile
-> to have explicit code to save/restore registers, instead of looping
-> over all of them and checking the flag. I.e.
-> 
->     u16 saved_scmsr;
->     u16 saved_scscr;
->     u8 saved_scbrr;
->     ...
->     u8 saved_semr;
-> 
->     /* Save omnipresent registers */
->     s->saved_scmsr = sci_serial_in(port, SCSMR);
->     ...
->     /* Save optional registers */
->     if (sci_getreg(port, SEMR)->size)
->             s->saved_semr = sci_serial_in(port, SEMR);
-> 
-> That would make it apply to all SCI variants, not just for SCIFA,
-> while increasing sci_port by only 10 bytes/port. And 10 bytes/port is
-> probably not worth to be protected by an #ifdef...
-
-That was the other approach I thought about when working on this patch. I
-chose the one proposed in this patch as it looked to me simpler to extend
-to other registers, if needed (just enable proper flag in
-sci_port_params[]). And needed less changes for the code saving/restoring
-the registers.
-
-If you prefer your version let me know and I'll switch to it.
-
-Thank you,
-Claudiu
-
-> 
-> Thoughts?
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
 
