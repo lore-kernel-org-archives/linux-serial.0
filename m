@@ -1,181 +1,191 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9E9019F416
-	for <linux-serial@vger.kernel.org>; Tue, 28 Jan 2025 11:41:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB05BBE40;
+	Tue, 28 Jan 2025 14:21:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738064463; cv=none; b=Ll4xBsYBzpwTbW9oofUR4qy53c/p2xGdJs7ABx9YcF/W+3J/QrIGZ3zwDwPgKOH/IH5/KjoGUBW9S8T0rrswAy0TYcJ5bJSngvd8J9f6qWnTbzXdreotNmQB4VcplLtgUKHmGFZZ82pE6jyU/NEDEl5tcDfH0qFnqBJ4lGy07GI=
+	t=1738074087; cv=none; b=bgFcKIm7FYqLYcSSokbt4BXp4h8XYhoNTaJENwuFT+NZ53Id8V5WggjsC0YHKvCFin/j0XO4yzG8kTjxPsgso6k647YRuHQmn4JCIxHmdu3l7z35v38QvnskvhUpS057hC/u8sUWg8tvLG18YY224piTjxs9MPNTCW1bm9OpQ/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738064463; c=relaxed/simple;
-	bh=0iFCwS6n5V7IzcqYwsDRIIklZJjISlLC21qyBkhEvZk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Mj1rhgKCfkx2z4sAblQfXvke7iHYwBDupfoT6mf7kmrHfxrILayNZIuaWYIfaI2fcd/ba+XQkS3iBvtoqaS91KJEdxim8AZLeg02z3bcRNst0lXJat7RlVLk9lyUaukvyJLwA6KnnXUCsSlOVBySCSduWnQalApLoOJjjmCL+nw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=hG/u7FyW; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1738074087; c=relaxed/simple;
+	bh=fxw41tcVhdqYR06ThXCAz4/Ju4HXjWw4W2ozlqWi3sc=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=gXlN4CMQOFOmGGd34pjVQHo9WmY8aEWxl0isSwuoY9qHexPGw8x4F0gj8nvEl3SCHSJmXIv8HATkrqR9usEvsVlZuc35hHslUCPxsVYlz28mSLPTM5PbAlEDmzwYfPg2cZmwVdwEe3IMwRZxCK+kPW6rchL1F5sHv//htz1qQWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=h0k3DIz1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="hG/u7FyW"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 50S3j7xk019314
-	for <linux-serial@vger.kernel.org>; Tue, 28 Jan 2025 11:41:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	qJQJVddmQT/TZOOgF6MQNyU12sRZZbRBhEd91lNoK9U=; b=hG/u7FyWx2CFBvlQ
-	Ca6zkPK6sq448AYrrvx2jeph76JXeMWpRyJLJRJhwu96L2skyWMTbwQ0mBbz/ekE
-	+i5hiSKTnoMxEudoNOQeYy88XvKy4BVnkbv/MhHF9dRh86SuOZ8VEBf7dcA317EO
-	P45Nu5XIlkRN0kadwcKX0AWL79YB1l/GsESFU4+fwEphDQ2aK6B5js7kUMHlghid
-	YbHdCZyhLhUq1oxb3dCGFkZGH2B+R6BGRZ/XocDirDU5qCiMIzrsii0gcWdLFxtS
-	cgyGrSZ80fUH9a4IODU94Su6FO4GgXHLICGTteB4kSee5WQDMuiX0oyaoXUoGqqU
-	HmCBag==
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44emgts7uj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Tue, 28 Jan 2025 11:40:59 +0000 (GMT)
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-4679af4d6b7so9937821cf.0
-        for <linux-serial@vger.kernel.org>; Tue, 28 Jan 2025 03:40:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738064458; x=1738669258;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qJQJVddmQT/TZOOgF6MQNyU12sRZZbRBhEd91lNoK9U=;
-        b=oUKiE3nwPjjFQDZOETdJTvGyrFC3KhNSs4zXBgF/fwx1zu6HZtZCa13qW8ftR4m5g8
-         EW6fBvPw2KwG4f0TJ4XXFrPNOLjHVM8Xe5gLdat7e93SRVekLc6LBj+vDEpvdIUFiVJ2
-         6nbRMgbQKcpqBvKzbQtnWovZhPzprNGIYqWLXTnDQNJBjGLlWnFWB4jJVxTwtI1oX113
-         6c9p0LDZo9yjoL3ZQUpiGvI0cc2M45ROak65SIh3YDQMJxMmBVVQhvsx9uMdhJrnldEu
-         tOxrZ+l4vB5i1n6O2gq8WU8gkWxVIaN1+7/UtfPNriXED21T56jqUFyqjpQ9MmxfdZyy
-         L1aw==
-X-Forwarded-Encrypted: i=1; AJvYcCWeLfjjSE+pNb9H9RctP7PSd2Zod3WFXddYBc2bZBtet2OKhhaCOtZP3NUfUcnw48bSgh7ipAw+Tgfi4gI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxD+rdG5QJwYT9FtGPMcA0isA9DSKl3wx3oE0VYas8Cdz4dXSNL
-	M/LkDDA0INf5dl+gs3Fj0i9oq2POFI1NK9vQQC05SxsOheN5mpNhuqQd3JPTAMDj1sZJAiAljvH
-	i66x/O96oRA0AA87NhHhc7Qtv9sDnJkXwv8SgPVvipHimTI5zes2QM+CT7XXVucQ=
-X-Gm-Gg: ASbGncsiFqZlSXI0wjKs2qWQhgXKbgmOlVlubKZda9zotVrLVgNLGt55YrV0l0UNoFX
-	Zhnh92fvmShca3vP3lNBNYbuf177V7bHzn9OqRNxbk3aosfZK8yoAW7W2x5IOAJs+AEpBD+LiZo
-	TDfYqRpDnm5fWFM0azVM9qIoIcGM2hmn5b3zruQJSJDY3fOeiOkYzrC0K5WVw+4zmn+wDdTHXiU
-	/k9QYIh8mGPEZBMkLw8wHXl9it61mUOnhCMS0liabRfeLVevIRTY8rBsIvqWPiqWbnIW098NIsM
-	OMmEshIioBplNqQBtJ6ObO4GPLly6jHrGme3B7Z0qsKrccJfOx0VMbakow8=
-X-Received: by 2002:a05:622a:453:b0:467:95c2:d8a3 with SMTP id d75a77b69052e-46e12a55c9cmr230730561cf.6.1738064458485;
-        Tue, 28 Jan 2025 03:40:58 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IGR5VS1dWzO4khznGgpsO/jMCtdkvK6pJci/0akamEvgGIS4WWmuYIykOhh6oJd4q5RY4Go+Q==
-X-Received: by 2002:a05:622a:453:b0:467:95c2:d8a3 with SMTP id d75a77b69052e-46e12a55c9cmr230730351cf.6.1738064458131;
-        Tue, 28 Jan 2025 03:40:58 -0800 (PST)
-Received: from [192.168.65.90] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab6c4b0af38sm84689166b.149.2025.01.28.03.40.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 Jan 2025 03:40:57 -0800 (PST)
-Message-ID: <23a9b13c-0bb8-4145-8e1b-4624d13538c4@oss.qualcomm.com>
-Date: Tue, 28 Jan 2025 12:40:54 +0100
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="h0k3DIz1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2965C4CED3;
+	Tue, 28 Jan 2025 14:21:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1738074087;
+	bh=fxw41tcVhdqYR06ThXCAz4/Ju4HXjWw4W2ozlqWi3sc=;
+	h=Date:From:To:Cc:Subject:From;
+	b=h0k3DIz1M1nefV5c/NTjpenWXgaUsxZjHJB4iQF25sYyattcJTzWDXwNiC+EyTwpr
+	 DwReadRdrtqOlvyPkj+zfLatfd6zsWR++ec1OMaS6Y9QX8LCtG74+IUi2wmjta6P0E
+	 Yww0xmI+tH5ip6OZ/CzCwf0ff90/+U42d8iHKE4o=
+Date: Tue, 28 Jan 2025 15:21:24 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY / Serial driver updates for 6.14-rc1
+Message-ID: <Z5jn5M5bdV5u21GB@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/8] dt-bindings: serial: Add support for selecting
- data transfer mode
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
-        robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
-        andersson@kernel.org, konradybcio@kernel.org, johan+linaro@kernel.org,
-        dianders@chromium.org, agross@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
-        quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
-References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
- <20250124105309.295769-5-quic_vdadhani@quicinc.com>
- <10060d39-87a4-4565-a2a6-80c93ac2266a@kernel.org>
- <dudqd2y42wy6iq2k73aphd5ol4mtq7z4c54zhd27rl745rrw5x@p3oummf2jke7>
- <374e16d6-46aa-4bdf-85e9-bc2e33c38057@kernel.org>
- <65a880ba-f721-4720-81f7-6891c335f7aa@oss.qualcomm.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <65a880ba-f721-4720-81f7-6891c335f7aa@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: Ysv6Tr4O8OkDPd-PWNv8KjRL9eNhbI94
-X-Proofpoint-GUID: Ysv6Tr4O8OkDPd-PWNv8KjRL9eNhbI94
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-01-28_04,2025-01-27_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
- suspectscore=0 adultscore=0 malwarescore=0 mlxlogscore=999 mlxscore=0
- phishscore=0 impostorscore=0 priorityscore=1501 lowpriorityscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2501280090
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On 27.01.2025 6:50 PM, Konrad Dybcio wrote:
-> On 27.01.2025 5:24 PM, Krzysztof Kozlowski wrote:
->> On 27/01/2025 15:27, Dmitry Baryshkov wrote:
->>> On Mon, Jan 27, 2025 at 08:02:12AM +0100, Krzysztof Kozlowski wrote:
->>>> On 24/01/2025 11:53, Viken Dadhaniya wrote:
->>>>> Data transfer mode is fixed by TrustZone (TZ), which currently restricts
->>>>> developers from modifying the transfer mode from the APPS side.
->>>>>
->>>>> Document the 'qcom,xfer-mode' properties to select the data transfer mode,
->>>>> either GPI DMA (Generic Packet Interface) or non-GPI mode (PIO/CPU DMA).
->>>>>
->>>>> UART controller can operate in one of two modes based on the
->>>>> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
->>>>>
->>>>> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
->>>>> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
->>>>> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
->>>>> ---
->>>>>
->>>>> v1 -> v2:
->>>>>
->>>>> - Drop 'qcom,load-firmware' property and add 'firmware-name' property in
->>>>>   qup common driver.
->>>>> - Update commit log.
->>>>>
->>>>> v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-4-quic_vdadhani@quicinc.com/
->>>>> ---
->>>>> ---
->>>>>  .../devicetree/bindings/serial/qcom,serial-geni-qcom.yaml | 8 ++++++++
->>>>>  1 file changed, 8 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>>>> index dd33794b3534..383773b32e47 100644
->>>>> --- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>>>> +++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->>>>> @@ -56,6 +56,13 @@ properties:
->>>>>    reg:
->>>>>      maxItems: 1
->>>>>  
->>>>> +  qcom,xfer-mode:
->>>>> +    description: Set the value to 1 for non-GPI (FIFO/CPU DMA) mode and 3 for GPI DMA mode.
->>>>> +      The default mode is FIFO.
->>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
->>>>> +    enum: [1, 3]
->>>>> +
->>>>> +
->>>>
->>>> Just one blank line, but anyway, this property should not be in three
->>>> places. Do you really expect that each of serial engines within one
->>>> GeniQUP will be configured differently by TZ?
->>>
->>> Yes, each SE is configured separately and it's quite frequent when
->>> different SEs have different DMA configuration.
->>
->> Well, I checked at sm8550 and sm8650 and each pair of SE - which shares
->> resources - has the same DMAs, so I would not call it frequent. Care to
->> bring an example where same serial engines have different DMAs and
->> different TZ? We do not talk about single QUP.
->>
->> Anyway, if you need property per node, this has to be shared schema.
-> 
-> I'd rather ask a different question.. Is there *any* reason to not use
-> DMA for protocols that support it?
+The following changes since commit 5bc55a333a2f7316b58edc7573e8e893f7acb532:
 
-If not, we can simplify this to:
+  Linux 6.13-rc7 (2025-01-12 14:37:56 -0800)
 
-xfer_mode = protocol == PROTOCOL_UART ? XFER_FIFO : XFER_DMA
+are available in the Git repository at:
 
-Konrad
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.14-rc1
+
+for you to fetch changes up to f79b163c42314a1f46f4bcc40a19c8a75cf1e7a3:
+
+  Revert "serial: 8250: Switch to nbcon console" (2025-01-22 10:35:56 +0100)
+
+----------------------------------------------------------------
+TTY / Serial driver updates for 6.14-rc1
+
+Here is the tty/serial driver set of changes for 6.14-rc1.  Nothing
+major in here, it was delayed a bit due to a regression found in
+linux-next which has now been reverted and verified that it is fixed.
+Other than the reverts, highlights include:
+  - 8250 work to get the nbcon mode working (partially reverted)
+  - altera_jtaguart minor fixes
+  - fsl_lpuart minor updates
+  - sh-sci driver minor updatesa
+  - other tiny driver updates and cleanups
+
+All of these have been in linux-next for a while, and now with no
+reports of problems (thanks to the reverts.)
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Andre Werner (2):
+      dt-bindings: serial: sc16is7xx: Add description for polling mode
+      serial: sc16is7xx: Add polling mode if no IRQ pin is available
+
+Andy Shevchenko (3):
+      serial: 8250_port: Assign UPIO_UNKNOWN instead of its direct value
+      serial: 8250_pci: Resolve WCH vendor ID ambiguity
+      serial: 8250_pci: Share WCH IDs with parport_serial driver
+
+Biju Das (1):
+      dt-bindings: serial: renesas: Document RZ/G3E (r9a09g047) scif
+
+Claudiu Beznea (5):
+      serial: sh-sci: Drop __initdata macro for port_cfg
+      serial: sh-sci: Move runtime PM enable to sci_probe_single()
+      serial: sh-sci: Do not probe the serial port if its slot in sci_ports[] is in use
+      serial: sh-sci: Clean sci_ports[0] after at earlycon exit
+      serial: sh-sci: Increment the runtime usage counter for the earlycon device
+
+Dr. David Alan Gilbert (1):
+      serial: kgdb_nmi: Remove unused knock code
+
+Geert Uytterhoeven (1):
+      serial: sh-sci: Use plain struct copy in early_console_setup()
+
+Greg Kroah-Hartman (4):
+      Merge 6.13-rc3 into tty-next
+      Merge 6.13-rc7 into tty-next
+      Revert "serial: 8250: Revert "drop lockdep annotation from serial8250_clear_IER()""
+      Revert "serial: 8250: Switch to nbcon console"
+
+Günther Noack (1):
+      tty: Permit some TIOCL_SETSEL modes without CAP_SYS_ADMIN
+
+Ivaylo Dimitrov (2):
+      tty: n_gsm: wait until channel 0 is ready
+      tty: n_gsm: Fix control dlci ADM mode processing
+
+Jiri Slaby (SUSE) (4):
+      tty: serial_core: use more guard(mutex)
+      tty: serial: get rid of exit label from uart_set_info()
+      tty: serial: extract uart_change_port() from uart_set_info()
+      tty: mips_ejtag_fdc: fix one more u8 warning
+
+John Ogness (10):
+      serial: 8250: Use @ier bits to determine if Rx is stopped
+      serial: 8250: Do not set UART_LSR_THRE in @read_status_mask
+      serial: 8250: Never adjust UART_LSR_DR in @read_status_mask
+      serial: 8250: Explain the role of @read_status_mask
+      serial: 8250: Adjust the timeout for FIFO mode
+      serial: 8250: Use frame time to determine timeout
+      serial: 8250: Use high-level writing function for FIFO
+      serial: 8250: Provide flag for IER toggling for RS485
+      serial: 8250: Switch to nbcon console
+      serial: 8250: Revert "drop lockdep annotation from serial8250_clear_IER()"
+
+Miroslav Ondra (1):
+      serial: amba-pl011: Fix RTS handling in RS485 mode
+
+Rengarajan S (1):
+      8250: microchip: pci1xxxx: Add workaround for RTS bit toggle
+
+Ricardo B. Marliere (1):
+      tty: Make sysctl table const
+
+Rob Herring (Arm) (1):
+      tty: atmel_serial: Use of_property_present() for non-boolean properties
+
+Robert Marko (1):
+      tty: serial: atmel: make it selectable for ARCH_LAN969X
+
+Sean Anderson (1):
+      tty: xilinx_uartps: split sysrq handling
+
+Sherry Sun (2):
+      tty: serial: fsl_lpuart: increase maximum uart_nr to 12
+      tty: serial: fsl_lpuart: flush RX and TX FIFO when lpuart shutdown
+
+Tobias Klauser (3):
+      serial: altera_jtaguart: Use device name when requesting IRQ
+      serial: altera_jtaguart: Use KBUILD_MODNAME
+      serial: altera_uart: Use KBUILD_MODNAME
+
+Zhu Jun (1):
+      serial: mpc52xx: Fix typo in mpc52xx_uart.c
+
+ .../devicetree/bindings/serial/nxp,sc16is7xx.yaml  |   3 +-
+ .../devicetree/bindings/serial/renesas,scif.yaml   |   5 +
+ drivers/parport/parport_serial.c                   |  12 +-
+ drivers/tty/mips_ejtag_fdc.c                       |   4 +-
+ drivers/tty/n_gsm.c                                |  39 ++-
+ drivers/tty/serial/8250/8250.h                     |   4 +-
+ drivers/tty/serial/8250/8250_bcm2835aux.c          |   4 +-
+ drivers/tty/serial/8250/8250_core.c                |   1 -
+ drivers/tty/serial/8250/8250_omap.c                |  11 +-
+ drivers/tty/serial/8250/8250_pci.c                 |  76 +++---
+ drivers/tty/serial/8250/8250_pci1xxxx.c            |  60 ++++-
+ drivers/tty/serial/8250/8250_port.c                |  97 +++++---
+ drivers/tty/serial/Kconfig                         |   2 +-
+ drivers/tty/serial/altera_jtaguart.c               |  10 +-
+ drivers/tty/serial/altera_uart.c                   |   7 +-
+ drivers/tty/serial/amba-pl011.c                    | 126 +++++++---
+ drivers/tty/serial/atmel_serial.c                  |  18 +-
+ drivers/tty/serial/fsl_lpuart.c                    |   7 +-
+ drivers/tty/serial/kgdb_nmi.c                      | 101 --------
+ drivers/tty/serial/mpc52xx_uart.c                  |   2 +-
+ drivers/tty/serial/sc16is7xx.c                     |  37 +++
+ drivers/tty/serial/serial_core.c                   | 263 +++++++++------------
+ drivers/tty/serial/sh-sci.c                        |  95 ++++++--
+ drivers/tty/serial/xilinx_uartps.c                 |   8 +-
+ drivers/tty/tty_io.c                               |   2 +-
+ drivers/tty/vt/selection.c                         |  14 ++
+ drivers/tty/vt/vt.c                                |   2 -
+ include/linux/kgdb.h                               |   2 -
+ include/linux/pci_ids.h                            |  11 +
+ include/linux/serial_8250.h                        |   4 +-
+ 30 files changed, 593 insertions(+), 434 deletions(-)
