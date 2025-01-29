@@ -1,80 +1,67 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCED62AE7C
-	for <linux-serial@vger.kernel.org>; Wed, 29 Jan 2025 02:21:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF89018C31;
+	Wed, 29 Jan 2025 07:14:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738117298; cv=none; b=P30gEwUYZDHp5YsgmV8vTr8ggHhA/62W79liwfWPx7zkWqIOyzrRF/kgMJ98UL1RJVwf6cgu3hgoiuFJa3hFryjkQP/+FTK9BsrWwjrTdP8bS/BszlJ+wNAzVl8hXvhdFw0QCqYynX1QBRbHxrPVht84D0ZEWm0CYg1y2G/+c0w=
+	t=1738134861; cv=none; b=lQrpJ+mR3tZPoId8tUZBdz9G5xNuVQtG3pfVk5RU7Py/bIiLthcCUpYM2rHr+XdLsd5XZViItXWdZ7Pxsq3gIHHZMJDxNMCJJYHPlQ7Uf6GooI8fES8w5Baw0nKe8uilxZxkC/HidTyB3SHeSXcaQNVLe5enPYpLEylvpgPgdnA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738117298; c=relaxed/simple;
-	bh=ClyITuF8gOnzs/F3NZb6ENAP9stJFnJgE1LAv9csGYs=;
+	s=arc-20240116; t=1738134861; c=relaxed/simple;
+	bh=q2fZTrf+p76HbbhOg0Lfy3JFC8YSrP6AIb0gvUBhDPQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nDe9EZ7sS9TUBAt+4P99BHqBKCu6Utl5utIusUomggveP9gkWeZeiahLKUjeKLFFE9yKcxODf7XvnIr4KzAuFUVIoNn5cjOaXd0J/FETJISh5qzf/YDhkdD641MHxlWiHictbjF3dz+Mo3ux86Sg7HYx9zcL7jm/rlirXSxoj3g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=PJYHdyCI; arc=none smtp.client-ip=209.85.167.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=XF99jmEba0+IDPLCg4R5OZv+VJ1qxy1WzX/oU4w3sUlsP2V9VvFTcuOHtTSL5QRD7PoGjUGZ5LC1A6c5XjS2Dkmbd7RpOFlLfAe51wQd+aGK2/I4dRz6UrRDkRNlfqjvcpvteVFL/fv1t1oYXlTFjmM//RzTB/TB3AbeHVFDoso=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Fxj2WebV; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PJYHdyCI"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5401e6efffcso6832465e87.3
-        for <linux-serial@vger.kernel.org>; Tue, 28 Jan 2025 18:21:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1738117293; x=1738722093; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lhVC/jY9oSkBWKgGztp81ZX5vLd9ni6/ghgnT90rp+w=;
-        b=PJYHdyCIm9xZGeITClzrO6WHqyVJEVh7jpVEqtysZvOXALjGF4rSZ9uhEfIXlmaHDr
-         SoLCkZPjer9NBDwv7YJ1rjqLmmAU2KUQsnacAP7G/SRs1TJd4UszHR5RHy6RQzkfwgXc
-         CRHQPthNtcQVvpEpIHchSFYQ4AsmrxHJkZDbr9Xqh2kKUawpb6dREjHSUPhwTFDREyar
-         mCCc4i3DofWGY3vZUo3gUkKfUD7y9bqDeYXgjDVraqTnpdcx/Pjwqossjv4uMWKbqTpW
-         fcvFwsc8NECy4dkudNIdaHkOfH09CR1BgJz76ar5M0JEJnf2PLQ8Tp+F1LG7Mo7CbmMt
-         bY0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738117293; x=1738722093;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lhVC/jY9oSkBWKgGztp81ZX5vLd9ni6/ghgnT90rp+w=;
-        b=SG1/fjReLPt4EPSqcZT27XcK/DbOprTtVWl2DLkgcBVEJEUfYDmfjBEJOTTwzQ1Bh4
-         rbf48L///5se+JD26pN9IP2WiBy9sT8f5WScaINef+md79m/fHNDbvwj8HtVUscLr6Qj
-         cy9LVff5VuHH2ZeGb2d1cOly9i3Ippzub9iHoXgT6YaKy2JqEbXYzigBylNPbNmGiiN4
-         xaVetBQb6Z4ZpFBDYKGQLoqhFrRLIQX4Dtru1JcVVqPU/SyBadIj+QF2MWISmu43UIQR
-         eCbLtNU6qD2R48R/EHf9KKI/kLknkTzQ6dt8ztNX09fNK8lKbHcmylm1e7U+EbiOWjaa
-         FKrg==
-X-Forwarded-Encrypted: i=1; AJvYcCVTFVpTVGPHwyX0DKzpXpQ3eeB8shNOG+D2R4NULnmg4Lr+5vZk117ywyaEI4446SL2xdviTZVSDn3ie7I=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyiDou27tedCMdi31bc6I0lPMC3Z3ey82kc/Str7jPxXckzVNag
-	+IE0BgGXjgYC7nqc8yl722S1wcJPXTN/ZtfYQG9s41nJeXp2y7mWsKl8J9IOLeg=
-X-Gm-Gg: ASbGncv3XrjqCSqcbdEbku8lKMvIdEJPeHN6jAyg4E7m0BiICjtOSVyY57yXpBNxTcz
-	TIbHWrY5zdQgVEIINVPgIj11Z9qtcmrI68AqSmFYogitSDt3lX220hGgs20EFECf5VhEO5K856h
-	mFQ/jwTdlnOKxOnqQxFNjpW80GppsKlbiunf828McZSOemvDa/4Hv+zWkkQvluAdY3EmVpp/yCM
-	YSsbWCdTUIUNCdQGgKolw3xiIRd5jFi7HqTs3KGNLJG+zKFEtm+hUIWCY/90dxZyGuKC/7WUx1M
-	CFuZrbiAF2ru8kCOJxO4CpxpBJ9Al54uhxMwGrmF+wvTCS411MyBkBT9oG09Sb57hDklDzRnySq
-	emS9PHQ==
-X-Google-Smtp-Source: AGHT+IFCsKhtG6nSDsI742TadJTivtvw91Ucb98NwdkXhuO5uH0m74kP7qa7ILD4yusdJNvna23Ihw==
-X-Received: by 2002:a05:6512:3081:b0:542:2999:2e43 with SMTP id 2adb3069b0e04-543e4c011acmr409942e87.24.1738117292885;
-        Tue, 28 Jan 2025 18:21:32 -0800 (PST)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--b8c.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::b8c])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-543c836846asm1808863e87.116.2025.01.28.18.21.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jan 2025 18:21:31 -0800 (PST)
-Date: Wed, 29 Jan 2025 04:21:29 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or, andersson@kernel.org, 
-	konradybcio@kernel.org, johan+linaro@kernel.org, dianders@chromium.org, 
-	agross@kernel.org, linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-spi@vger.kernel.org, quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
-Subject: Re: [PATCH v2 4/8] dt-bindings: serial: Add support for selecting
- data transfer mode
-Message-ID: <v5n7wn3saiymi2ncgi35drzdjfeaa4ng2ftia6ggex6oh74ocg@7vuskxosh726>
-References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
- <20250124105309.295769-5-quic_vdadhani@quicinc.com>
- <10060d39-87a4-4565-a2a6-80c93ac2266a@kernel.org>
- <dudqd2y42wy6iq2k73aphd5ol4mtq7z4c54zhd27rl745rrw5x@p3oummf2jke7>
- <374e16d6-46aa-4bdf-85e9-bc2e33c38057@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Fxj2WebV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1738134860; x=1769670860;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=q2fZTrf+p76HbbhOg0Lfy3JFC8YSrP6AIb0gvUBhDPQ=;
+  b=Fxj2WebVqeWkOW3do1gu+bfOQwukF6A9GczR7vNejYgsdI/QLhgaOUD3
+   0n9AbGSucB/johW0j7KqNOJcm09Y3Jep/Uzh3LcMPtETep/cVTMsA7JS0
+   RueobO4ioG8aAA48n0EJuXLl8kQIGKR4BCVDGz8jT7oXa5SOo66p2GmOy
+   +2S8Hvu5JF2dnuIYy+YmEWn0Jtq8vzRnFG3ab3X/5ja2We25H4ryAL4H+
+   itWKPw5UsyDJ2eJbvGMN+mTdlh759eZupOM89zeEMKmWi7IhAGWcadRrB
+   k/A3f7UYoGpEJs1ZP7VKPL/HXhXuYK7GlaLGxQ5+ZnHuGSY6Ke69MMXQk
+   Q==;
+X-CSE-ConnectionGUID: XY5HcmqCRbisI0nSHmAz1w==
+X-CSE-MsgGUID: u/W8PCqqRCqaaq/Kz71UVA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11329"; a="56063559"
+X-IronPort-AV: E=Sophos;i="6.13,242,1732608000"; 
+   d="scan'208";a="56063559"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2025 23:07:18 -0800
+X-CSE-ConnectionGUID: lQJssghITJeIx0dTqI9b3A==
+X-CSE-MsgGUID: yczFgM7ISj2LG9DDHeTbMw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,242,1732608000"; 
+   d="scan'208";a="109530878"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2025 23:07:10 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1td2AF-00000006Irk-1ebN;
+	Wed, 29 Jan 2025 09:07:07 +0200
+Date: Wed, 29 Jan 2025 09:07:07 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Kartik Rajput <kkartik@nvidia.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, thierry.reding@gmail.com,
+	jonathanh@nvidia.com, hvilleneuve@dimonoff.com, arnd@kernel.org,
+	geert+renesas@glider.be, robert.marko@sartura.hr,
+	schnelle@linux.ibm.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH 2/2] serial: tegra-utc: Add driver for Tegra UART Trace
+ Controller (UTC)
+Message-ID: <Z5nTm9UniwCgGNOY@smile.fi.intel.com>
+References: <20250128064633.12381-1-kkartik@nvidia.com>
+ <20250128064633.12381-3-kkartik@nvidia.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -83,78 +70,106 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <374e16d6-46aa-4bdf-85e9-bc2e33c38057@kernel.org>
+In-Reply-To: <20250128064633.12381-3-kkartik@nvidia.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Mon, Jan 27, 2025 at 05:24:21PM +0100, Krzysztof Kozlowski wrote:
-> On 27/01/2025 15:27, Dmitry Baryshkov wrote:
-> > On Mon, Jan 27, 2025 at 08:02:12AM +0100, Krzysztof Kozlowski wrote:
-> >> On 24/01/2025 11:53, Viken Dadhaniya wrote:
-> >>> Data transfer mode is fixed by TrustZone (TZ), which currently restricts
-> >>> developers from modifying the transfer mode from the APPS side.
-> >>>
-> >>> Document the 'qcom,xfer-mode' properties to select the data transfer mode,
-> >>> either GPI DMA (Generic Packet Interface) or non-GPI mode (PIO/CPU DMA).
-> >>>
-> >>> UART controller can operate in one of two modes based on the
-> >>> 'qcom,xfer-mode' property, and the firmware is loaded accordingly.
-> >>>
-> >>> Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-> >>> Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
-> >>> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-> >>> ---
-> >>>
-> >>> v1 -> v2:
-> >>>
-> >>> - Drop 'qcom,load-firmware' property and add 'firmware-name' property in
-> >>>   qup common driver.
-> >>> - Update commit log.
-> >>>
-> >>> v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-4-quic_vdadhani@quicinc.com/
-> >>> ---
-> >>> ---
-> >>>  .../devicetree/bindings/serial/qcom,serial-geni-qcom.yaml | 8 ++++++++
-> >>>  1 file changed, 8 insertions(+)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-> >>> index dd33794b3534..383773b32e47 100644
-> >>> --- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-> >>> +++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
-> >>> @@ -56,6 +56,13 @@ properties:
-> >>>    reg:
-> >>>      maxItems: 1
-> >>>  
-> >>> +  qcom,xfer-mode:
-> >>> +    description: Set the value to 1 for non-GPI (FIFO/CPU DMA) mode and 3 for GPI DMA mode.
-> >>> +      The default mode is FIFO.
-> >>> +    $ref: /schemas/types.yaml#/definitions/uint32
-> >>> +    enum: [1, 3]
-> >>> +
-> >>> +
-> >>
-> >> Just one blank line, but anyway, this property should not be in three
-> >> places. Do you really expect that each of serial engines within one
-> >> GeniQUP will be configured differently by TZ?
-> > 
-> > Yes, each SE is configured separately and it's quite frequent when
-> > different SEs have different DMA configuration.
+On Tue, Jan 28, 2025 at 12:16:33PM +0530, Kartik Rajput wrote:
+> The Tegra264 SoC supports the UART Trace Controller (UTC), which allows
+> multiple firmware clients (up to 16) to share a single physical UART.
+> Each client is provided with its own interrupt and has access to a
+> 128-character wide FIFO for both transmit (TX) and receive (RX)
+> operations.
 > 
-> Well, I checked at sm8550 and sm8650 and each pair of SE - which shares
-> resources - has the same DMAs, so I would not call it frequent. Care to
-> bring an example where same serial engines have different DMAs and
-> different TZ? We do not talk about single QUP.
+> Add tegra-utc driver to support Tegra UART Trace Controller (UTC)
+> client.
 
-Well, I don't have access to the latest sm8550 / sm8650 devcfg sources.
-I checked the RB5 ones. As far as I understand out of 14 enabled SEs
-only two are configured for the GSI DMA, others should use FIFO / SE
-DMA. Same applies to the SM8250 MTP devices. Checking the RB1 / RB2
-setup also shows 3 out of 6 SEs being set for GSI.
+...
 
-> 
-> Anyway, if you need property per node, this has to be shared schema.
-> 
-> Best regards,
-> Krzysztof
+> +static int tegra_utc_probe(struct platform_device *pdev)
+> +{
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct tegra_utc_port *tup;
+> +	int index;
+> +	int ret;
+> +
+> +	index = of_alias_get_id(np, "serial");
+> +	if (index < 0) {
+> +		dev_err(&pdev->dev, "failed to get alias id, err %d\n", index);
+> +		return index;
+> +	}
+
+Can we please use uart_read_port_properties() instead of open-coding everything
+again and again?
+
+> +	tup = devm_kzalloc(&pdev->dev, sizeof(struct tegra_utc_port), GFP_KERNEL);
+> +	if (!tup)
+> +		return -ENOMEM;
+> +
+> +	ret = of_property_read_u32(np, "current-speed", &tup->baudrate);
+
+Why not clock-frequency? But if needed, add this to the above mentioned API as
+I know more than one driver may utilise this.
+
+
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "missing current-speed device-tree property\n");
+
+With
+
+	struct device *dev = &pdev-dev;
+
+this and other lines will be neater.
+
+> +		return ret;
+
+		return dev_err_probe(...);
+
+> +	}
+> +
+> +	ret = of_property_read_u32(np, "nvidia,utc-fifo-threshold", &tup->fifo_threshold);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "missing nvidia,fifo-threshold device-tree property\n");
+> +		return ret;
+> +	}
+> +
+> +	tup->irq = platform_get_irq(pdev, 0);
+> +	if (tup->irq < 0) {
+
+> +		dev_err(&pdev->dev, "failed to get interrupt\n");
+
+Dup. This error report is done by the above API.
+
+> +		return tup->irq;
+> +	}
+
+> +	tup->soc = of_device_get_match_data(&pdev->dev);
+
+> +	tup->tx_base = devm_platform_ioremap_resource_byname(pdev, "tx");
+> +	if (IS_ERR(tup->tx_base))
+> +		return PTR_ERR(tup->tx_base);
+> +
+> +	tup->rx_base = devm_platform_ioremap_resource_byname(pdev, "rx");
+> +	if (IS_ERR(tup->rx_base))
+> +		return PTR_ERR(tup->rx_base);
+> +
+> +	tegra_utc_setup_port(&pdev->dev, tup, index);
+> +	platform_set_drvdata(pdev, tup);
+> +
+> +	return tegra_utc_register_port(tup);
+> +}
+
+...
+
+> +static const struct of_device_id tegra_utc_of_match[] = {
+> +	{ .compatible = "nvidia,tegra264-utc", .data = &tegra264_utc_soc },
+> +	{},
+
+No comma for the terminator line.
+
+> +};
 
 -- 
-With best wishes
-Dmitry
+With Best Regards,
+Andy Shevchenko
+
+
