@@ -1,159 +1,128 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2070.outbound.protection.outlook.com [40.107.243.70])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A369919DF4C;
-	Wed, 29 Jan 2025 09:50:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.70
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738144232; cv=fail; b=Xr8hQFezKKwVj/jm9JEquXuEFhDIeNs1rRAjBJr495ORqDvpBxxWxWH0vtveZrJ/JpZc3mNqcCLe6hEosEHapq2S+5RXGEJRGYu9xJHMYg/yb2YEPaMe+jTDP8Db45k3URpra20gAxmDbhN51DFcCdu/f2NSclOyVnShbaefBYM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738144232; c=relaxed/simple;
-	bh=uXZ3/Mh3RMu2Qrz3rHnNn+vYCB8F2DojmijAa3og4lQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=l3ng02uUYMvwg3Ue/k5sVoGm0ahod0EpSlLDsWVhiFW8pmQp90gu9OsvRB2MoO43bv55SsnkYVJxel4aj+alS/enEGm3MAe7/7qUqYlhKbU/Ao0Dk7EekuyM8oMNxXHSrPGV+gBUCQe5ti1wYot6KimuBiQU2lI8vvKbJE5z1nU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=g5xBcLY6; arc=fail smtp.client-ip=40.107.243.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F4BC1AF0B7;
+	Wed, 29 Jan 2025 10:12:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738145527; cv=none; b=shnPFBJv1rRNvx+jdza7KvbHUHbLjoNnzPypXgnfcitjmQfrwaau0IPOaTgRFPeKZ/5jwGiZJaKk2xyatFPkovweMZeHLI2hsxF1brWvDVQiNVV57i9aYGfwE6+muIMUzfVvtVhXlzwLEUD0biHCF9dcD7qtm4BkVQLJGYZpGsE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738145527; c=relaxed/simple;
+	bh=lwpO7PNCaMK4XSaIdcUENjOc29JySu1q3MC0ZNh/nD8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tS0hflieKj8I165OcYNqpHLWuVbVpqBM2L02PwjE3WAF+kz5DfG6BFFJPmCYRcRJbhPOgihG0HD22Oxv8Rz7QOrCoRD1RA6A3GeG+ZHEbp+S9kcYfzZRseWWUyvBTeXBf4/2jBFuE0Nesb01TuaoU1bD+Lm52PKRs36bIJUPWcQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gd0sseaZ; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="g5xBcLY6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=iOqJhlq3Tp4tDHtX9ZXwKQK3Lnu9ayCFA8qUdCLKVQtO0/BEfinKNVJGCdBExRISfZjOciMX0vJHODci0mBAkkyghODBC2k7Uc/wqhUcs/tUDdZDsk4S/aq+tEHzgPfzZFHA+eB31sE9nRugsvmAVldQw4prOlf5cIaGyXtqNcl71pN18sns4Bqwy0AMMz/WJ2VF+cspsRlNSamzdLRFyJc/JOt/XBx6oSLJaJV1S8diYcfQ8fq259gV7wks1Y3LrnRWCGTE5D4X0jT4XiV8fTpp+vhhd2WBWNdw6/dSwPFqnGWatCJcCuYLKggWAtCDNETUZYWZjXvKElYwKQHJTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X+h6sq8oagyMPHRJWPe29Neb7fsmN1PyX8tRhvCmHgw=;
- b=hxe5F+uSCBzmLf7gBb4d0Zv/B8Ir2ZERWu+CxpfE32zpfM/BheiF8CEmlDm6BpKMWPRUFhC4cfHu/mQHRSMMlT+Dh6PijC5g42vzX9swuku/LAPEbCVwrWqDcaYsHyeD4fCrR9Av3bh8xKPL38whaZm1vnV2n8novKUUSwyFD/WDh7wZ8xS+S+7wMsoorVeKbtuGi2QtFF0CHH9mJfrCqPTX1KxQP1qLwW8z8u3u0kUlmhn88N/OB66aYnXAk+NJMFznz4YBJcSSLmgaDzGDFYcAoISRDWCzL/PEPpBhAvxkSb6nNewNoZs1Ee8X1884XaU6q9DuSmw4/VrQSYyfEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X+h6sq8oagyMPHRJWPe29Neb7fsmN1PyX8tRhvCmHgw=;
- b=g5xBcLY6LWLn5p6nYMa8cOq9X7nU/TvQliE94X0D0YUA37VeUahtLsR9WnOVf+0+v5wYYkarB4dd5YsyOAKYjT6kunOL3mURXskMdvhIaCwREXApHP54h8GZItO43+wqWtPfYb5nzR7hfM2o3yQ18BnkGhO4qJKqCNNlVwz2mR4=
-Received: from CH3P220CA0024.NAMP220.PROD.OUTLOOK.COM (2603:10b6:610:1e8::30)
- by BN5PR12MB9485.namprd12.prod.outlook.com (2603:10b6:408:2a8::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8398.17; Wed, 29 Jan
- 2025 09:50:27 +0000
-Received: from CH2PEPF0000013E.namprd02.prod.outlook.com
- (2603:10b6:610:1e8:cafe::53) by CH3P220CA0024.outlook.office365.com
- (2603:10b6:610:1e8::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8398.18 via Frontend Transport; Wed,
- 29 Jan 2025 09:50:26 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com; pr=C
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- CH2PEPF0000013E.mail.protection.outlook.com (10.167.244.70) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8398.14 via Frontend Transport; Wed, 29 Jan 2025 09:50:26 +0000
-Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 29 Jan
- 2025 03:50:26 -0600
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB05.amd.com
- (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 29 Jan
- 2025 03:50:25 -0600
-Received: from xhdsneeli40.xilinx.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2507.39 via Frontend
- Transport; Wed, 29 Jan 2025 03:50:21 -0600
-From: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
-To: <git@amd.com>, <michal.simek@amd.com>, <gregkh@linuxfoundation.org>,
-	<jirislaby@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-	<conor+dt@kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: <radhey.shyam.pandey@amd.com>, <srinivas.goud@amd.com>,
-	<shubhrajyoti.datta@amd.com>, <manikantaguntupalli09@gmail.com>, "Manikanta
- Guntupalli" <manikanta.guntupalli@amd.com>
-Subject: [PATCH] dt-bindings: serial: pl011: Add optional power-domains property
-Date: Wed, 29 Jan 2025 15:20:13 +0530
-Message-ID: <20250129095013.2145580-1-manikanta.guntupalli@amd.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gd0sseaZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1738145526; x=1769681526;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=lwpO7PNCaMK4XSaIdcUENjOc29JySu1q3MC0ZNh/nD8=;
+  b=gd0sseaZyuFHpQTMnjgphQHuGt5xDjl5Md9PWlTwpHGexfxK7gryShxb
+   h/UaRCyK8vhbGS9+cZZKCZ80heOm+94RTKyKtA3F+LHdRZFavhf03LICc
+   AKwuqWuIlbjPH0i+mpMNBxeneel7Gfyv8wx+hFk0BsOsk/luf/ETvnPa5
+   hq5NOSv18BjPzP0A66rHZtLvdXLVHbn+Ydx7syC6+d96ivYKPdRjv4CEQ
+   FnemLwcoTO7s+7DMC39gCph8bXGfiXwhqz7d+JA8sbdcXhqr+3tuA2v6v
+   Z0nJ2aBjTvobzrCXKWhKGYYmAMjNY8w9ZqJaSVqNqliD1x413fS0ns0gN
+   A==;
+X-CSE-ConnectionGUID: Bzt5D8ZrRQKOod3vOeUcxQ==
+X-CSE-MsgGUID: 8X00qrU7SdeVA4ecuuG9gw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11329"; a="38559410"
+X-IronPort-AV: E=Sophos;i="6.13,243,1732608000"; 
+   d="scan'208";a="38559410"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2025 02:12:05 -0800
+X-CSE-ConnectionGUID: irVLMjNnSriAwxDXwVV8cw==
+X-CSE-MsgGUID: q/vBOH0pRrOMhulNU5EtPw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,243,1732608000"; 
+   d="scan'208";a="114018129"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2025 02:11:59 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1td535-00000006LKG-2oWb;
+	Wed, 29 Jan 2025 12:11:55 +0200
+Date: Wed, 29 Jan 2025 12:11:55 +0200
+From: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
+To: Kartik Rajput <kkartik@nvidia.com>
+Cc: Jon Hunter <jonathanh@nvidia.com>, "robh@kernel.org" <robh@kernel.org>,
+	"robert.marko@sartura.hr" <robert.marko@sartura.hr>,
+	"arnd@kernel.org" <arnd@kernel.org>,
+	"thierry.reding@gmail.com" <thierry.reding@gmail.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"conor+dt@kernel.org" <conor+dt@kernel.org>,
+	"geert+renesas@glider.be" <geert+renesas@glider.be>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>,
+	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+	"hvilleneuve@dimonoff.com" <hvilleneuve@dimonoff.com>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"schnelle@linux.ibm.com" <schnelle@linux.ibm.com>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH 2/2] serial: tegra-utc: Add driver for Tegra UART Trace
+ Controller (UTC)
+Message-ID: <Z5n-6z6SOSZy-BMW@smile.fi.intel.com>
+References: <20250128064633.12381-1-kkartik@nvidia.com>
+ <20250128064633.12381-3-kkartik@nvidia.com>
+ <Z5nTm9UniwCgGNOY@smile.fi.intel.com>
+ <101d68c9789ef774c242d038a51b35113e6fbcc0.camel@nvidia.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-Received-SPF: None (SATLEXMB05.amd.com: manikanta.guntupalli@amd.com does not
- designate permitted sender hosts)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF0000013E:EE_|BN5PR12MB9485:EE_
-X-MS-Office365-Filtering-Correlation-Id: d32c91a7-abf4-41f9-7be9-08dd404a5bd9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|376014|1800799024|82310400026|921020;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?CRD0E8jJk6Ha6qYAayaD5ArrRUq+6O/aYkjxTLiJ865GqwBje1xBp8w4bm0l?=
- =?us-ascii?Q?/2m9BWHO2epR9mnfMr8/1abSYaWJgfw5mx72aTDOkjmDR1FlmE/Ekq/t256v?=
- =?us-ascii?Q?NKquu9ejzDFnu/PY5CGhU3YBv2Qlg507Pq++/hWEh5h6qEhBWl4OqmvnyfUI?=
- =?us-ascii?Q?CDkNTgaNxc/a6eKIKkq5LcDoxgjdgjQEaIp7vnY71FDyBRzm0PHcn2El1kYS?=
- =?us-ascii?Q?F3i4vObBCuJevzNtkynKHdzEM/Y569pILKImvjuBWe20cWMzRMkEp7ffYNa9?=
- =?us-ascii?Q?8p4bE+5sm3GUcVt+Zjxs3M8UQ6NCyjkGZUbdF6gXG7uiTT413V7vIlJWsvYH?=
- =?us-ascii?Q?saYvgyF5PPDHgEwP37i4benwPyKcenn0DHM5eqw6Y7A7l06CXHh4XzHmZe7o?=
- =?us-ascii?Q?n2ud25nDSqlX1zAgWGsmzwk/ORj9jkKKvmx73VxGyxOVPLvrQdo9DOGb9UhN?=
- =?us-ascii?Q?zckUrUZi8TEXlxCfrZRMeJz6up7UJFDajo+zc5vmGdtt0PXkk+38x+kmYbMr?=
- =?us-ascii?Q?XeCPSaC4puSlOQkD2nBRdttlFtA9hxUM1T5473Hx4ECDy4rXO8ZOg8cbA0AD?=
- =?us-ascii?Q?KnvP5OsHPqL1n715xKZKCFF2sL7j+2irjD7tfWIAcfMrHSt4UVK7HaHEQkXi?=
- =?us-ascii?Q?v2CKSwJbwnwbYPs0x1mebe9d4TnY46qwDjsfjmbfj85Dczc/sXJowv2+JrcJ?=
- =?us-ascii?Q?dp+YL8OAC+7UbbgNhXPtOzVPW3/Nv64j+yqb9YIH0svU513asKkeK0wwtf27?=
- =?us-ascii?Q?kI6XkBWuVRce/Z3W6oHZ3xrq2DKEpnJYo2LGXuiflcG/tRZIzM6dn3N8UUTm?=
- =?us-ascii?Q?aQ+khiHOfqMMnoS6MjjZR8JXHhEYCa27LjJzCYIihgHlpHKdC8yTj1EFwmqq?=
- =?us-ascii?Q?Vkq7Y9fLANq/9CBNF1U1fVYsnQx4ctllHqo+lJvgjUf/Sh1gM0blCTfYP9tj?=
- =?us-ascii?Q?vebBMSboy5X6xuRPIW8XbMsz8zlSaoMYkS9FWnyRheLZ42NnyIXo5qE3iO/t?=
- =?us-ascii?Q?Nu3r1BD2dwVogs9L2sIhPY2M4fV4ZLNBk8+ngPBDVDKIM0otEXbu6LIdszWg?=
- =?us-ascii?Q?1A0LV4Uw6puUT7q3+xH5soOGARJmVOaKBViSliPVk3BeqS2ADRfTZV5+oozA?=
- =?us-ascii?Q?c33rjQpIsKDZto1FK2yhibUWN3KyvtT2gHPl2a0dyb1mZ/IF8sa7qASGpgCH?=
- =?us-ascii?Q?S/nPDJjsEHRJQB0NHXVAwqMS8+2RNwAn6zqZCu9lknG4GdG3nWIQMy9Yttq/?=
- =?us-ascii?Q?2JfzJ/aLJiYcprfVL0JsB+E1kkSwPgQWCfhsqCAlS6y2Mufoy8dSAxHwlVOj?=
- =?us-ascii?Q?vBcRdicHlezFx6kRq8MH8ZR9tm+DCr4rFHm5OCoiV3p+8KT7hn+TUCjYWwSg?=
- =?us-ascii?Q?Akb5Yp+P/RJccDrWPMc4bPd6TjlBnzFpM9zIIWnSOhOqBcM1EBqJ1UB4xrzx?=
- =?us-ascii?Q?8XsRrzMBydCgpZuuew5qF50mDoOQc3wjNRRKH5lvGsgAhQFW7bnS3M0aDslC?=
- =?us-ascii?Q?hgv06qnfIftxjBB28GJHne/mcV0KkcdPka57?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(376014)(1800799024)(82310400026)(921020);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2025 09:50:26.8434
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d32c91a7-abf4-41f9-7be9-08dd404a5bd9
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF0000013E.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN5PR12MB9485
+In-Reply-To: <101d68c9789ef774c242d038a51b35113e6fbcc0.camel@nvidia.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-AMD/Xilinx Versal device serial IP has its own power domain,
-so add an optional property to describe it.
+On Wed, Jan 29, 2025 at 08:04:27AM +0000, Kartik Rajput wrote:
+> On Wed, 2025-01-29 at 09:07 +0200, Andy Shevchenko wrote:
+> > On Tue, Jan 28, 2025 at 12:16:33PM +0530, Kartik Rajput wrote:
 
-Signed-off-by: Manikanta Guntupalli <manikanta.guntupalli@amd.com>
----
- Documentation/devicetree/bindings/serial/pl011.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+...
 
-diff --git a/Documentation/devicetree/bindings/serial/pl011.yaml b/Documentation/devicetree/bindings/serial/pl011.yaml
-index 9571041030b7..3fcf2d042372 100644
---- a/Documentation/devicetree/bindings/serial/pl011.yaml
-+++ b/Documentation/devicetree/bindings/serial/pl011.yaml
-@@ -92,6 +92,9 @@ properties:
-       3000ms.
-     default: 3000
- 
-+  power-domains:
-+    maxItems: 1
-+
-   resets:
-     maxItems: 1
- 
+> > > +     ret = of_property_read_u32(np, "current-speed", &tup-
+> > > >baudrate);
+> > 
+> > Why not clock-frequency? But if needed, add this to the above
+> > mentioned API as
+> > I know more than one driver may utilise this.
+> 
+> "current-speed" is to specify the baudrate at which the UTC is
+> operating. Not sure if "clock-frequency" is the ideal property for this
+> as we are not configuring any clocks in the driver.
+
+I didn't say anything about configuring clocks. The clock-frequency property is
+standard way to provide a functional frequency of the UART (usually some MHz
+crystal) which you can divide by the known HW coefficients and get the baud rate
+(but yes, I agree that this is HW-dependent and needs to be thought through).
+
+> Also, to add this in uart_read_port_properties() would require updating
+> uart_port stucture to store the baudrate value. Would this be fine?
+
+Sure, it requires some members to be defined beforehand.
+
+> Asking because I do not see termios related configurations stored in
+> uart_port structure.
+
+Yeah, the only one is uartclk. But again, if you need current-speed to be
+parsed, consider doing this in the uart_read_port_properties() and saving
+as uartclk in the known way.
+Technically it's possible to add a new member to uart_port, but it has
+a lot of downsides as I can see: additional memory, added ambiguity to
+how parse uartclk and current speed if they both are defined.
+
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
