@@ -1,47 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EA011DE2B3;
-	Wed, 29 Jan 2025 14:02:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A9581922F5;
+	Wed, 29 Jan 2025 14:03:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738159373; cv=none; b=FGZpY4jk/Qet6hzKP9rVkseRNyXfqPUxmovdmhbB0b0z9RPulwmRBwaByfrer44BKtY9hPitaa+ETGYO7R8AywKsLxX57iNffqLLGs2C6/UcqMpQXy+GBtS1khZzly09aMey0mFSUWAKVebJACM49LEBfnJGognUvDim6Js4Yiw=
+	t=1738159392; cv=none; b=XwvwtK9ysF7WVkOuruMYigmXMBxEAwjVG24AP1Xx8xTVBtLNO5M5q0XdxFUfqOWvSdWmcMa3NY2nAnWVyU29oGopecUZFjubMulRtSHAJ24zq+3oVk18wcdzFRSKovWfV+zfhDEvIR2PeAKRzALoew9WXZL79IEVpifyDxprFow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738159373; c=relaxed/simple;
-	bh=out4sNV4p7FuezvhKpzGlQqf0u9UQfZGf2rVM2S9yA4=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=KgoePFIerP3nFEZ1ve9OK1wP03Stz9Or7YaDVQuym54ncXN/p+sOsa200wBTTyo+gKwOrBo/0fDEIOzJ9t4xmEV/3PCKWe+cmD5dk0iOS0Gt+Rl8pblPPGX9/SHtGdr/zChb8KDopMrk6HGKdRyc8c0hHoDm3ClzcfbrNF7HeWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o0kIVobi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1738159392; c=relaxed/simple;
+	bh=ejmx90QDrdlnGXjSHEzRHCyNdzPysUK94aN4rehrB4c=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=a8tldop8ANuKZ36FGNQSfCN6LT5vpAvL3wr+WRjHIfiuPAYokSYpa2hfOmDN8bkhlxhnYT6qlqE/nKPmRP+PiD0d5F4ctDqTiw/C5vz88li1fhUVd60sbFWr36ON6FXPk8EW5hdTnxM9q5vbAIEWcBwIDtuYo/g6fUXgXjw9P2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PNyli/nq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o0kIVobi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFE0DC4CED1;
-	Wed, 29 Jan 2025 14:02:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PNyli/nq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3CC7C4CED1;
+	Wed, 29 Jan 2025 14:03:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738159373;
-	bh=out4sNV4p7FuezvhKpzGlQqf0u9UQfZGf2rVM2S9yA4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=o0kIVobi6LuP9SaosL4Ow7uT8zD+CZi73zQuNBbfRn8v6hkgviAGtJki7Hf2hB7H8
-	 ddqbylTnoawS9yRykyedyNfwTQtF9A5F6GP5HImRXLvQGDTtPRg5Zw/sdr4K+J/Wfl
-	 mXcr3dPxHuFQ0tFMmYe+KlOTL0WZlRvbyqOpFYo6aHuSyCUcO50U/Wl+GhBVGpP0Ha
-	 Mm0yhKYyTm2b3/YHDG7jBXOi3GPHrOMfodLanSAnsZgTmu5Y/ZTQ5LD2wZBsBq/K5N
-	 /XfBewjr5p34vrcUY1BOMR4Di8iwJYMsh22RvVsxXyx3OIKIcJlB5fB4hovjJm14R+
-	 rC9yuISZQe6gg==
+	s=k20201202; t=1738159392;
+	bh=ejmx90QDrdlnGXjSHEzRHCyNdzPysUK94aN4rehrB4c=;
+	h=From:To:Cc:Subject:Date:From;
+	b=PNyli/nqU3cFq++y26Pq24VQvTGrYSSmNybIkOJq8UvmFfudrQnpRFaJvlWawDM6H
+	 fba2KJ/hdeUfDyUWkgVwhkzUo60r6p/KHL1Fy8zQU0BPbbniU1YNg3N/12PostKw8s
+	 7jdV3qac72bWIyVMju9dPCt/shexG8tvc1jTAQfvdqdKyk3lzYuT/cgYGUOawUV5o8
+	 001WVYOiYZryrgnAaRpHpi2QVwz/h6hgijFPki15U87fnigeTYpWjBEKQf7n36oTOX
+	 64XYIyoI9A5Fw/5bgTWFQknyTX8lOlBnPEEaHXL6qU/uPvCmBNHRwtJIZ5iVOD83B4
+	 wf3n8dWbN7Kyw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Rengarajan S <rengarajan.s@microchip.com>,
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Sasha Levin <sashal@kernel.org>,
-	kumaravel.thiagarajan@microchip.com,
-	tharunkumar.pasumarthi@microchip.com,
 	jirislaby@kernel.org,
+	arnd@kernel.org,
+	crescentcy.hsieh@moxa.com,
+	peterz@infradead.org,
+	dlemoal@kernel.org,
+	schnelle@linux.ibm.com,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.13 3/8] 8250: microchip: pci1xxxx: Add workaround for RTS bit toggle
-Date: Wed, 29 Jan 2025 07:58:56 -0500
-Message-Id: <20250129125904.1272926-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.12 1/8] serial: 8250_pci: Resolve WCH vendor ID ambiguity
+Date: Wed, 29 Jan 2025 07:59:21 -0500
+Message-Id: <20250129125930.1273051-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250129125904.1272926-1-sashal@kernel.org>
-References: <20250129125904.1272926-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,129 +50,218 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.13
+X-stable-base: Linux 6.12.11
 Content-Transfer-Encoding: 8bit
 
-From: Rengarajan S <rengarajan.s@microchip.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit e95cb63e57381f00d9274533ea7fd0ac3bf4e5b0 ]
+[ Upstream commit 16076ca3a1565491bcb28689e555d569a39391c7 ]
 
-In the B0 revision, the RTS pin remains high due to incorrect hardware
-mapping. To address this issue, enable auto-direction control with the
-RTS bit in ADCL_CFG_REG. This configuration ensures that the RTS pin
-goes low when the terminal is opened and high when the terminal is
-closed. Additionally, we reset the step counter for Rx and Tx engines
-by writing into FRAC_DIV_CFG_REG.
+There are two sites of the same brand: wch.cn and wch-ic.com.
+They are property of the same company, but it appears that they
+managed to get two different PCI vendor IDs. Rename them accordingly
+using standard pattern, i.e. PCI_VENDOR_ID_...
 
-Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
-Link: https://lore.kernel.org/r/20241218094017.18290-1-rengarajan.s@microchip.com
+While at it, move to PCI_VDEVICE() in the ID tables.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20241204031114.1029882-2-andriy.shevchenko@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_pci1xxxx.c | 60 ++++++++++++++++++++++++-
- 1 file changed, 59 insertions(+), 1 deletion(-)
+ drivers/tty/serial/8250/8250_pci.c | 82 +++++++++++++++---------------
+ 1 file changed, 41 insertions(+), 41 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-index 838f181f929bf..e9c51d4e447dd 100644
---- a/drivers/tty/serial/8250/8250_pci1xxxx.c
-+++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-@@ -78,6 +78,12 @@
- #define UART_TX_BYTE_FIFO			0x00
- #define UART_FIFO_CTL				0x02
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 6709b6a5f3011..82fba431a95cf 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -64,23 +64,23 @@
+ #define PCIE_DEVICE_ID_NEO_2_OX_IBM	0x00F6
+ #define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
+ #define PCI_DEVICE_ID_INTEL_PATSBURG_KT 0x1d3d
+-#define PCI_VENDOR_ID_WCH		0x4348
+-#define PCI_DEVICE_ID_WCH_CH352_2S	0x3253
+-#define PCI_DEVICE_ID_WCH_CH353_4S	0x3453
+-#define PCI_DEVICE_ID_WCH_CH353_2S1PF	0x5046
+-#define PCI_DEVICE_ID_WCH_CH353_1S1P	0x5053
+-#define PCI_DEVICE_ID_WCH_CH353_2S1P	0x7053
+-#define PCI_DEVICE_ID_WCH_CH355_4S	0x7173
++#define PCI_VENDOR_ID_WCHCN		0x4348
++#define PCI_DEVICE_ID_WCHCN_CH352_2S	0x3253
++#define PCI_DEVICE_ID_WCHCN_CH353_4S	0x3453
++#define PCI_DEVICE_ID_WCHCN_CH353_2S1PF	0x5046
++#define PCI_DEVICE_ID_WCHCN_CH353_1S1P	0x5053
++#define PCI_DEVICE_ID_WCHCN_CH353_2S1P	0x7053
++#define PCI_DEVICE_ID_WCHCN_CH355_4S	0x7173
+ #define PCI_VENDOR_ID_AGESTAR		0x5372
+ #define PCI_DEVICE_ID_AGESTAR_9375	0x6872
+ #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
+ #define PCI_DEVICE_ID_AMCC_ADDIDATA_APCI7800 0x818e
  
-+#define UART_MODEM_CTL_REG			0x04
-+#define UART_MODEM_CTL_RTS_SET			BIT(1)
-+
-+#define UART_LINE_STAT_REG			0x05
-+#define UART_LINE_XMIT_CHECK_MASK		GENMASK(6, 5)
-+
- #define UART_ACTV_REG				0x11
- #define UART_BLOCK_SET_ACTIVE			BIT(0)
+-#define PCIE_VENDOR_ID_WCH		0x1c00
+-#define PCIE_DEVICE_ID_WCH_CH382_2S1P	0x3250
+-#define PCIE_DEVICE_ID_WCH_CH384_4S	0x3470
+-#define PCIE_DEVICE_ID_WCH_CH384_8S	0x3853
+-#define PCIE_DEVICE_ID_WCH_CH382_2S	0x3253
++#define PCI_VENDOR_ID_WCHIC		0x1c00
++#define PCI_DEVICE_ID_WCHIC_CH382_2S1P	0x3250
++#define PCI_DEVICE_ID_WCHIC_CH384_4S	0x3470
++#define PCI_DEVICE_ID_WCHIC_CH384_8S	0x3853
++#define PCI_DEVICE_ID_WCHIC_CH382_2S	0x3253
  
-@@ -94,6 +100,7 @@
- #define UART_BIT_SAMPLE_CNT_16			16
- #define BAUD_CLOCK_DIV_INT_MSK			GENMASK(31, 8)
- #define ADCL_CFG_RTS_DELAY_MASK			GENMASK(11, 8)
-+#define FRAC_DIV_TX_END_POINT_MASK		GENMASK(23, 20)
+ #define PCI_DEVICE_ID_MOXA_CP102E	0x1024
+ #define PCI_DEVICE_ID_MOXA_CP102EL	0x1025
+@@ -2777,80 +2777,80 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 	},
+ 	/* WCH CH353 1S1P card (16550 clone) */
+ 	{
+-		.vendor         = PCI_VENDOR_ID_WCH,
+-		.device         = PCI_DEVICE_ID_WCH_CH353_1S1P,
++		.vendor         = PCI_VENDOR_ID_WCHCN,
++		.device         = PCI_DEVICE_ID_WCHCN_CH353_1S1P,
+ 		.subvendor      = PCI_ANY_ID,
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch353_setup,
+ 	},
+ 	/* WCH CH353 2S1P card (16550 clone) */
+ 	{
+-		.vendor         = PCI_VENDOR_ID_WCH,
+-		.device         = PCI_DEVICE_ID_WCH_CH353_2S1P,
++		.vendor         = PCI_VENDOR_ID_WCHCN,
++		.device         = PCI_DEVICE_ID_WCHCN_CH353_2S1P,
+ 		.subvendor      = PCI_ANY_ID,
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch353_setup,
+ 	},
+ 	/* WCH CH353 4S card (16550 clone) */
+ 	{
+-		.vendor         = PCI_VENDOR_ID_WCH,
+-		.device         = PCI_DEVICE_ID_WCH_CH353_4S,
++		.vendor         = PCI_VENDOR_ID_WCHCN,
++		.device         = PCI_DEVICE_ID_WCHCN_CH353_4S,
+ 		.subvendor      = PCI_ANY_ID,
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch353_setup,
+ 	},
+ 	/* WCH CH353 2S1PF card (16550 clone) */
+ 	{
+-		.vendor         = PCI_VENDOR_ID_WCH,
+-		.device         = PCI_DEVICE_ID_WCH_CH353_2S1PF,
++		.vendor         = PCI_VENDOR_ID_WCHCN,
++		.device         = PCI_DEVICE_ID_WCHCN_CH353_2S1PF,
+ 		.subvendor      = PCI_ANY_ID,
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch353_setup,
+ 	},
+ 	/* WCH CH352 2S card (16550 clone) */
+ 	{
+-		.vendor		= PCI_VENDOR_ID_WCH,
+-		.device		= PCI_DEVICE_ID_WCH_CH352_2S,
++		.vendor		= PCI_VENDOR_ID_WCHCN,
++		.device		= PCI_DEVICE_ID_WCHCN_CH352_2S,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_wch_ch353_setup,
+ 	},
+ 	/* WCH CH355 4S card (16550 clone) */
+ 	{
+-		.vendor		= PCI_VENDOR_ID_WCH,
+-		.device		= PCI_DEVICE_ID_WCH_CH355_4S,
++		.vendor		= PCI_VENDOR_ID_WCHCN,
++		.device		= PCI_DEVICE_ID_WCHCN_CH355_4S,
+ 		.subvendor	= PCI_ANY_ID,
+ 		.subdevice	= PCI_ANY_ID,
+ 		.setup		= pci_wch_ch355_setup,
+ 	},
+ 	/* WCH CH382 2S card (16850 clone) */
+ 	{
+-		.vendor         = PCIE_VENDOR_ID_WCH,
+-		.device         = PCIE_DEVICE_ID_WCH_CH382_2S,
++		.vendor         = PCI_VENDOR_ID_WCHIC,
++		.device         = PCI_DEVICE_ID_WCHIC_CH382_2S,
+ 		.subvendor      = PCI_ANY_ID,
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch38x_setup,
+ 	},
+ 	/* WCH CH382 2S1P card (16850 clone) */
+ 	{
+-		.vendor         = PCIE_VENDOR_ID_WCH,
+-		.device         = PCIE_DEVICE_ID_WCH_CH382_2S1P,
++		.vendor         = PCI_VENDOR_ID_WCHIC,
++		.device         = PCI_DEVICE_ID_WCHIC_CH382_2S1P,
+ 		.subvendor      = PCI_ANY_ID,
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch38x_setup,
+ 	},
+ 	/* WCH CH384 4S card (16850 clone) */
+ 	{
+-		.vendor         = PCIE_VENDOR_ID_WCH,
+-		.device         = PCIE_DEVICE_ID_WCH_CH384_4S,
++		.vendor         = PCI_VENDOR_ID_WCHIC,
++		.device         = PCI_DEVICE_ID_WCHIC_CH384_4S,
+ 		.subvendor      = PCI_ANY_ID,
+ 		.subdevice      = PCI_ANY_ID,
+ 		.setup          = pci_wch_ch38x_setup,
+ 	},
+ 	/* WCH CH384 8S card (16850 clone) */
+ 	{
+-		.vendor         = PCIE_VENDOR_ID_WCH,
+-		.device         = PCIE_DEVICE_ID_WCH_CH384_8S,
++		.vendor         = PCI_VENDOR_ID_WCHIC,
++		.device         = PCI_DEVICE_ID_WCHIC_CH384_8S,
+ 		.subvendor      = PCI_ANY_ID,
+ 		.subdevice      = PCI_ANY_ID,
+ 		.init           = pci_wch_ch38x_init,
+@@ -3927,11 +3927,11 @@ static const struct pci_device_id blacklist[] = {
  
- #define UART_WAKE_REG				0x8C
- #define UART_WAKE_MASK_REG			0x90
-@@ -134,6 +141,11 @@
- #define UART_BST_STAT_LSR_FRAME_ERR		0x8000000
- #define UART_BST_STAT_LSR_THRE			0x20000000
+ 	/* multi-io cards handled by parport_serial */
+ 	/* WCH CH353 2S1P */
+-	{ PCI_DEVICE(0x4348, 0x7053), 0, 0, REPORT_CONFIG(PARPORT_SERIAL), },
++	{ PCI_VDEVICE(WCHCN, 0x7053), REPORT_CONFIG(PARPORT_SERIAL), },
+ 	/* WCH CH353 1S1P */
+-	{ PCI_DEVICE(0x4348, 0x5053), 0, 0, REPORT_CONFIG(PARPORT_SERIAL), },
++	{ PCI_VDEVICE(WCHCN, 0x5053), REPORT_CONFIG(PARPORT_SERIAL), },
+ 	/* WCH CH382 2S1P */
+-	{ PCI_DEVICE(0x1c00, 0x3250), 0, 0, REPORT_CONFIG(PARPORT_SERIAL), },
++	{ PCI_VDEVICE(WCHIC, 0x3250), REPORT_CONFIG(PARPORT_SERIAL), },
  
-+#define GET_MODEM_CTL_RTS_STATUS(reg)		((reg) & UART_MODEM_CTL_RTS_SET)
-+#define GET_RTS_PIN_STATUS(val)			(((val) & TIOCM_RTS) >> 1)
-+#define RTS_TOGGLE_STATUS_MASK(val, reg)	(GET_MODEM_CTL_RTS_STATUS(reg) \
-+						 != GET_RTS_PIN_STATUS(val))
-+
- struct pci1xxxx_8250 {
- 	unsigned int nr;
- 	u8 dev_rev;
-@@ -254,6 +266,47 @@ static void pci1xxxx_set_divisor(struct uart_port *port, unsigned int baud,
- 	       port->membase + UART_BAUD_CLK_DIVISOR_REG);
- }
+ 	/* Intel platforms with MID UART */
+ 	{ PCI_VDEVICE(INTEL, 0x081b), REPORT_8250_CONFIG(MID), },
+@@ -6004,27 +6004,27 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 	 * WCH CH353 series devices: The 2S1P is handled by parport_serial
+ 	 * so not listed here.
+ 	 */
+-	{	PCI_VENDOR_ID_WCH, PCI_DEVICE_ID_WCH_CH353_4S,
++	{	PCI_VENDOR_ID_WCHCN, PCI_DEVICE_ID_WCHCN_CH353_4S,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0, pbn_b0_bt_4_115200 },
  
-+static void pci1xxxx_set_mctrl(struct uart_port *port, unsigned int mctrl)
-+{
-+	u32 fract_div_cfg_reg;
-+	u32 line_stat_reg;
-+	u32 modem_ctl_reg;
-+	u32 adcl_cfg_reg;
-+
-+	adcl_cfg_reg = readl(port->membase + ADCL_CFG_REG);
-+
-+	/* HW is responsible in ADCL_EN case */
-+	if ((adcl_cfg_reg & (ADCL_CFG_EN | ADCL_CFG_PIN_SEL)))
-+		return;
-+
-+	modem_ctl_reg = readl(port->membase + UART_MODEM_CTL_REG);
-+
-+	serial8250_do_set_mctrl(port, mctrl);
-+
-+	if (RTS_TOGGLE_STATUS_MASK(mctrl, modem_ctl_reg)) {
-+		line_stat_reg = readl(port->membase + UART_LINE_STAT_REG);
-+		if (line_stat_reg & UART_LINE_XMIT_CHECK_MASK) {
-+			fract_div_cfg_reg = readl(port->membase +
-+						  FRAC_DIV_CFG_REG);
-+
-+			writel((fract_div_cfg_reg &
-+			       ~(FRAC_DIV_TX_END_POINT_MASK)),
-+			       port->membase + FRAC_DIV_CFG_REG);
-+
-+			/* Enable ADC and set the nRTS pin */
-+			writel((adcl_cfg_reg | (ADCL_CFG_EN |
-+			       ADCL_CFG_PIN_SEL)),
-+			       port->membase + ADCL_CFG_REG);
-+
-+			/* Revert to the original settings */
-+			writel(adcl_cfg_reg, port->membase + ADCL_CFG_REG);
-+
-+			writel(fract_div_cfg_reg, port->membase +
-+			       FRAC_DIV_CFG_REG);
-+		}
-+	}
-+}
-+
- static int pci1xxxx_rs485_config(struct uart_port *port,
- 				 struct ktermios *termios,
- 				 struct serial_rs485 *rs485)
-@@ -631,9 +684,14 @@ static int pci1xxxx_setup(struct pci_dev *pdev,
- 	port->port.rs485_config = pci1xxxx_rs485_config;
- 	port->port.rs485_supported = pci1xxxx_rs485_supported;
+-	{	PCI_VENDOR_ID_WCH, PCI_DEVICE_ID_WCH_CH353_2S1PF,
++	{	PCI_VENDOR_ID_WCHCN, PCI_DEVICE_ID_WCHCN_CH353_2S1PF,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0, pbn_b0_bt_2_115200 },
  
--	/* From C0 rev Burst operation is supported */
-+	/*
-+	 * C0 and later revisions support Burst operation.
-+	 * RTS workaround in mctrl is applicable only to B0.
-+	 */
- 	if (rev >= 0xC0)
- 		port->port.handle_irq = pci1xxxx_handle_irq;
-+	else if (rev == 0xB0)
-+		port->port.set_mctrl = pci1xxxx_set_mctrl;
+-	{	PCI_VENDOR_ID_WCH, PCI_DEVICE_ID_WCH_CH355_4S,
++	{	PCI_VENDOR_ID_WCHCN, PCI_DEVICE_ID_WCHCN_CH355_4S,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0, pbn_b0_bt_4_115200 },
  
- 	ret = serial8250_pci_setup_port(pdev, port, 0, PORT_OFFSET * port_idx, 0);
- 	if (ret < 0)
+-	{	PCIE_VENDOR_ID_WCH, PCIE_DEVICE_ID_WCH_CH382_2S,
++	{	PCI_VENDOR_ID_WCHIC, PCI_DEVICE_ID_WCHIC_CH382_2S,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0, pbn_wch382_2 },
+ 
+-	{	PCIE_VENDOR_ID_WCH, PCIE_DEVICE_ID_WCH_CH384_4S,
++	{	PCI_VENDOR_ID_WCHIC, PCI_DEVICE_ID_WCHIC_CH384_4S,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0, pbn_wch384_4 },
+ 
+-	{	PCIE_VENDOR_ID_WCH, PCIE_DEVICE_ID_WCH_CH384_8S,
++	{	PCI_VENDOR_ID_WCHIC, PCI_DEVICE_ID_WCHIC_CH384_8S,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0, pbn_wch384_8 },
+ 	/*
 -- 
 2.39.5
 
