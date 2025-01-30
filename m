@@ -1,264 +1,108 @@
-Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34DD61B0415;
-	Thu, 30 Jan 2025 08:39:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D74A61EEA4B;
+	Thu, 30 Jan 2025 16:31:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738226388; cv=none; b=Lmd9BrC0GOsXTPPKcm4PSUsRpTGrqraiJmrNAj+zJr8yoctCoMBiEexhH9oYDj1oS0IMzgoGdyMcS1sjtSNh/FZWzF776PWMrWEfmnZT/XtJNTHmdn1xc3xpASX0Q6YCuyN8twiy0mIW5oAgkCv1qoek4gDLhLo8iUxsTUSaCAQ=
+	t=1738254704; cv=none; b=W7hiPIaMrEp3yZiTmPE1F84hT88ZuoR4NV4W6getiU69CaFfFX5V6biIfOY0yoaE7Bh7fPtGbaolLtgRvAQnoKxIQWLWLGsD5SsneBRLYUHpxVmHm2gY60pM2pQziUua7C4QFtFgnb4DX032aj7+OvUNxonOzdR1buC/oVeTeIY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738226388; c=relaxed/simple;
-	bh=hEU3o0VHdE4gvNTVBSXXNoknR0x/IOoLOJaNOWiJVG8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cFi4gerkKupk9aJM3JpJNhYV7RZgCNZbR6VMk2OUQL+8hdFa8S4GlE4bMHlqd+wmSoLtQMp3c6nXsF29f/+XNdUZTG9py6VaUmg8R1ZjissKEy0KG3+7Ao3683yNvqPeeT2/1LyBXIWsy1QHdXP0wrK9doNjYEdC764XfETXqDo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-51878cf85a7so168436e0c.0;
-        Thu, 30 Jan 2025 00:39:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738226384; x=1738831184;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SbxArew7idoCnWrfmn0lEUjbJUOklyP0/MoH1REd+Rk=;
-        b=olakqq//VPv6hypAE0UxXz0f4RGOACls0NZfJ1v8jQPiI4X3p14IqNeFs//jFPONRK
-         IE0M9m9JTPsdLrmSe/UhVnXrLYvmpz0jvLaq0GROO7sk1wcegLd0momkpULl1NVVK9q/
-         AiIgSYupBGleQK3FIfFkypzzPl7bgCKU1mX8mHyrA5jNZNMs36VIaD298UvnbDGyxbuq
-         JeQN0MjICkAl6Ir895hSw0L0fe/48xrNO4fUwKXLiBiLZZTprpnR5JAfc0Wu+9PyLMxi
-         /O2xs7xm9Ld9atL132+x5n31l+KDZy9QqduSCPYjHMg+8F+I6+N5VPfQQ4AymagNGNFS
-         bDjw==
-X-Forwarded-Encrypted: i=1; AJvYcCW2tdOGX8R7ZYtdRJDLhUPT3R6bqSCDlPWUc4toEKwNrql8YNZPLHzt7opWgdJqIUZfOImNhjROUnpkIUA=@vger.kernel.org, AJvYcCX6ayFRhaK6wWJi8oaV7THhYpo/TBWbgs6kOBqntacFVxAV7NddatMJiI1XAPAjFfn36zxZWxzy0eLgkGrf@vger.kernel.org, AJvYcCXPc1Auwme5Cg3/QO78cbk6NYKRdqFCHGJe6e98GoBwoATVMvpeOazLEROaBBmcZM3GLWdQS9oDA2vBHiV6pmNrrH8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx63EMR2kYHzqfFWrdSXEEbmgBebJ+L5cbKiJ7okWTHtlN2G9N+
-	HigmXgrD4S5+K4kCPwGjr4fao2EMjVhZEEf1l3gHDcUfY97vYfTol6tvrT1o
-X-Gm-Gg: ASbGncvA4QvA9CyBiFMHqdKyjhuklY2TBQkg54tDiCxHlod+WdG90LIlVex4RiLdOcK
-	SLBrgOO+de6mQZpG6EuliPIGHiC/UdD7rj00nY4J6cbuzACRZ1XclAMkkaCSLTj4pDmHaXy7B2W
-	7/WxtUkYix2TvhcuesmNbPlbZcLkJAG978114lNvehfbKNwxzD5oMTPKENA/kcmh1sJ59MbfxWH
-	IVARxnSTUZXdeobEJQcJpe/rqNC2swMjl2SaJCuLn3eCMw/Qr0eosbodsaE5MElH5TgYh80MYDf
-	hlFJWvhTq9KLQsjp3KLfuRyHiwEpZn6yDDNwb0hBNttUlVHridP/6g==
-X-Google-Smtp-Source: AGHT+IGc0f4OaZnrvelbXW0SlzpQrKsIwxl2NOnb/we+cxxCAd5n2uPhgZ9LG0duZZ2UUNRf28gKDQ==
-X-Received: by 2002:a05:6122:240c:b0:518:859e:87c3 with SMTP id 71dfb90a1353d-51e9e3edb13mr6880767e0c.7.1738226384042;
-        Thu, 30 Jan 2025 00:39:44 -0800 (PST)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-51eb1c3d224sm143308e0c.26.2025.01.30.00.39.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 30 Jan 2025 00:39:43 -0800 (PST)
-Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-85b83479f45so130782241.0;
-        Thu, 30 Jan 2025 00:39:43 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUM9k8foFpzGANxSZsFjMhtobMTK1ZYUybeRlXSnNEPYn0RXHnZUgwpaHMzHMGcBf5XhF822k55If5gbqPA@vger.kernel.org, AJvYcCUTeWYnE8256aS0eq3H1QTrRzYmeo2KAYKm8NinBgfdrrhPyHcZXS9AxtcnozZ8FiwXta5Fv9FYJ1CaRQDF13BEUJA=@vger.kernel.org, AJvYcCXKFnUq86RtAXjHS/cf7KkI/pcIWCbxZg3G3Cys2d5wz6FI0utMbHqhDabCuMDkWMa3k5xIr5gyvmNVqdo=@vger.kernel.org
-X-Received: by 2002:a05:6102:d94:b0:4b6:18b3:a4db with SMTP id
- ada2fe7eead31-4b9a4f10949mr5799048137.8.1738226383366; Thu, 30 Jan 2025
- 00:39:43 -0800 (PST)
+	s=arc-20240116; t=1738254704; c=relaxed/simple;
+	bh=33qiW3dWmI8bHxHCG3SW5kkf5Qn+guEvPG4As5/sGno=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NTosDhM6ptwLMMnSEDakAAzVRf0Ls35TipuDQ6u3vRAsUKCF9gQfGgOS+x++Ufb2jiPmso83Ae+YrtjeMU4Nb3qiofURvprGN/X978Ezs2eGldrYppPjdyfEPxWc7DxG7wtiKmgNnc1RAjSC1+gvbsfm9vW3tmws+SM2taWiHiU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c2sQi5qV; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c2sQi5qV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1738254703; x=1769790703;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=33qiW3dWmI8bHxHCG3SW5kkf5Qn+guEvPG4As5/sGno=;
+  b=c2sQi5qVQ88r5+dgy7cQG9G4oQdgdg8mdQMB6m4KGX6IymhCj38OlUY/
+   eJNZbDu3Z7aH0xC47JAoCaCu6eEbATQ8lRejTKl1XdR+pNvAqTWnWjoUT
+   muR6xZ3i6YwYUDP3u8P10cOuiF0rNRXqvZ3TUUMZoxOSfEU57xCOldxKR
+   b01zRGQL3l2PaYNXYIMuAkmnh5TlruTNGP7Z9JQZsWoTinUC6eNBzksk9
+   sbLhc2VO8P8f1nv/0N5xArYFp1kf/w36co0no4a0L8E/MOtYcIqOds5FQ
+   uf5F1x4q5Nc/w7KV6Y8vzh0ND2Rwlt8lC4/2Dy8+BPXZQ3Ewt9b6HZjnt
+   Q==;
+X-CSE-ConnectionGUID: T3TV64EETxC5NPr8hGap0Q==
+X-CSE-MsgGUID: 3ZbUukYERwaEMKv6xMuT/Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11331"; a="38514479"
+X-IronPort-AV: E=Sophos;i="6.13,245,1732608000"; 
+   d="scan'208";a="38514479"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2025 08:31:42 -0800
+X-CSE-ConnectionGUID: Aq4BY09mR/+UcK4yGKgjJg==
+X-CSE-MsgGUID: qSUJ8LpvTMCHNOdKh5Y06w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,245,1732608000"; 
+   d="scan'208";a="109944324"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2025 08:31:38 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1tdXS3-00000006ixE-0s7S;
+	Thu, 30 Jan 2025 18:31:35 +0200
+Date: Thu, 30 Jan 2025 18:31:34 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Douglas Anderson <dianders@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Daniel Thompson <danielt@kernel.org>,
+	"Dr . David Alan Gilbert" <linux@treblig.org>,
+	kgdb-bugreport@lists.sourceforge.net,
+	Anton Vorontsov <anton.vorontsov@linaro.org>,
+	Sumit Garg <sumit.garg@linaro.org>, linux-serial@vger.kernel.org,
+	Arnd Bergmann <arnd@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Robert Marko <robert.marko@sartura.hr>,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] Revert "tty/serial: Add kgdb_nmi driver"
+Message-ID: <Z5upZhPz_LIbwrzx@smile.fi.intel.com>
+References: <20250129162700.848018-1-dianders@chromium.org>
+ <20250129082535.1.Ia095eac1ae357f87d23e7af2206741f5d40788f1@changeid>
+ <Z5s38S7sJ2mka3-1@smile.fi.intel.com>
+ <Z5s5IThpnMNdY62v@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250129165122.2980-1-thierry.bultel.yh@bp.renesas.com> <20250129165122.2980-11-thierry.bultel.yh@bp.renesas.com>
-In-Reply-To: <20250129165122.2980-11-thierry.bultel.yh@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 30 Jan 2025 09:39:31 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVa2Msd=h15vQyJ_OmT18w_qpYacVQjNwRBbLYtc+j41g@mail.gmail.com>
-X-Gm-Features: AWEUYZnhP0Uy0tLjT6-o6e8xKWfli_TtvP2yCgnPu03_XShJ62odRQ9EYMMgy1E
-Message-ID: <CAMuHMdVa2Msd=h15vQyJ_OmT18w_qpYacVQjNwRBbLYtc+j41g@mail.gmail.com>
-Subject: Re: [PATCH 10/14] serial: sh-sci: Introduced sci_of_data
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z5s5IThpnMNdY62v@smile.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-CC linux-renesas-soc
+On Thu, Jan 30, 2025 at 10:32:33AM +0200, Andy Shevchenko wrote:
+> On Thu, Jan 30, 2025 at 10:27:29AM +0200, Andy Shevchenko wrote:
+> > On Wed, Jan 29, 2025 at 08:25:50AM -0800, Douglas Anderson wrote:
 
-On Wed, 29 Jan 2025 at 17:56, Thierry Bultel
-<thierry.bultel.yh@bp.renesas.com> wrote:
-> The aim here is to provide an easier support to more different SCI
-> controllers, like the RZ/T2H one.
->
-> The existing .data field of_sci_match is changed to a structure containing
-> all what that can be statically initialized, and avoid a call to
-> 'sci_probe_regmap', in both 'sci_init_single', and 'early_console_setup'.
->
-> 'sci_probe_regmap' is now assumed to be called in the only case where the
-> device description is from a board file instead of a dts.
->
-> In this way, there is no need to patch 'sci_probe_regmap' for adding new
-> SCI type, and also, the specific sci_port_params for a new SCI type can be
-> provided by an external file.
->
-> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> ---
->  drivers/tty/serial/sh-sci.c        | 64 +++++++++++++++++++-----------
->  drivers/tty/serial/sh-sci_common.h |  3 +-
->  2 files changed, 43 insertions(+), 24 deletions(-)
->
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 1b83a246c7ed..c58c0793c521 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -2968,9 +2968,7 @@ static int sci_init_single(struct platform_device *dev,
->         int ret;
->
->         sci_port->cfg   = p;
-> -       sci_port->ops   = &sci_port_ops;
->
-> -       port->ops       = &sci_uart_ops;
->         port->iotype    = UPIO_MEM;
->         port->line      = index;
->         port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_SH_SCI_CONSOLE);
-> @@ -3010,7 +3008,16 @@ static int sci_init_single(struct platform_device *dev,
->                 for (i = 1; i < ARRAY_SIZE(sci_port->irqs); i++)
->                         sci_port->irqs[i] = sci_port->irqs[0];
->
-> -       sci_port->params = sci_probe_regmap(p);
-> +       /*
-> +        * sci_port->params params can be NULL when using a board file instead
-> +        * of a dts.
-> +        */
-> +       if (sci_port->params == NULL) {
-> +               sci_port->params = sci_probe_regmap(p);
-> +               if (unlikely(sci_port->params == NULL))
-> +                       return -EINVAL;
-> +       }
-> +
->         if (unlikely(sci_port->params == NULL))
->                 return -EINVAL;
->
-> @@ -3266,9 +3273,14 @@ static void sci_remove(struct platform_device *dev)
->                 device_remove_file(&dev->dev, &dev_attr_rx_fifo_timeout);
->  }
->
-> -#define SCI_OF_DATA(type, regtype)     (void *)((type) << 16 | (regtype))
-> -#define SCI_OF_TYPE(data)              ((unsigned long)(data) >> 16)
-> -#define SCI_OF_REGTYPE(data)           ((unsigned long)(data) & 0xffff)
-> +#define SCI_OF_DATA(_type, _regtype) (\
-> +&(struct sci_of_data) {\
-> +       .type = (_type), \
-> +       .regtype = (_regtype),\
-> +       .ops = &sci_port_ops,\
-> +       .uart_ops = &sci_uart_ops,\
-> +       .params = &sci_port_params[_regtype],\
-> +})
->
->  static const struct of_device_id of_sci_match[] __maybe_unused = {
->         /* SoC-specific types */
-> @@ -3336,7 +3348,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
->         struct reset_control *rstc;
->         struct plat_sci_port *p;
->         struct sci_port *sp;
-> -       const void *data;
-> +       const struct sci_of_data *data;
->         int id, ret;
->
->         if (!IS_ENABLED(CONFIG_OF) || !np)
-> @@ -3382,8 +3394,12 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
->         sp = &sci_ports[id];
->         *dev_id = id;
->
-> -       p->type = SCI_OF_TYPE(data);
-> -       p->regtype = SCI_OF_REGTYPE(data);
-> +       p->type = data->type;
-> +       p->regtype = data->regtype;
-> +
-> +       sp->ops = data->ops;
-> +       sp->port.ops = data->uart_ops;
-> +       sp->params = data->params;
->
->         sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
->
-> @@ -3562,19 +3578,23 @@ sh_early_platform_init_buffer("earlyprintk", &sci_driver,
->  static struct plat_sci_port port_cfg __initdata;
->
->  int __init early_console_setup(struct earlycon_device *device,
-> -                                     int type)
-> +                              const struct sci_of_data *data)
->  {
->         const struct sci_common_regs *regs;
->
->         if (!device->port.membase)
->                 return -ENODEV;
->
-> -       device->port.type = type;
-> +       device->port.type = data->type;
->         memcpy(&sci_ports[0].port, &device->port, sizeof(struct uart_port));
-> -       port_cfg.type = type;
-> +
-> +       port_cfg.type = data->type;
-> +       port_cfg.regtype = data->regtype;
-> +
->         sci_ports[0].cfg = &port_cfg;
-> -       sci_ports[0].ops = &sci_port_ops;
-> -       sci_ports[0].params = sci_probe_regmap(&port_cfg);
-> +       sci_ports[0].params = data->params;
-> +       sci_ports[0].ops = data->ops;
-> +       sci_ports[0].port.ops = data->uart_ops;
->         regs = sci_ports[0].params->common_regs;
->
->         port_cfg.scscr = sci_ports[0].ops->read_reg(&sci_ports[0].port, regs->control);
-> @@ -3588,41 +3608,39 @@ int __init early_console_setup(struct earlycon_device *device,
->  static int __init sci_early_console_setup(struct earlycon_device *device,
->                                           const char *opt)
->  {
-> -       return early_console_setup(device, PORT_SCI);
-> +       return early_console_setup(device, SCI_OF_DATA(PORT_SCI, SCIx_SCI_REGTYPE));
->  }
->  static int __init scif_early_console_setup(struct earlycon_device *device,
->                                           const char *opt)
->  {
-> -       return early_console_setup(device, PORT_SCIF);
-> +       return early_console_setup(device, SCI_OF_DATA(PORT_SCIF, SCIx_SH4_SCIF_REGTYPE));
->  }
->  static int __init rzscifa_early_console_setup(struct earlycon_device *device,
->                                           const char *opt)
->  {
-> -       port_cfg.regtype = SCIx_RZ_SCIFA_REGTYPE;
-> -       return early_console_setup(device, PORT_SCIF);
-> +       return early_console_setup(device, SCI_OF_DATA(PORT_SCIF, SCIx_RZ_SCIFA_REGTYPE));
->  }
->
->  static int __init rzv2hscif_early_console_setup(struct earlycon_device *device,
->                                                 const char *opt)
->  {
-> -       port_cfg.regtype = SCIx_RZV2H_SCIF_REGTYPE;
-> -       return early_console_setup(device, PORT_SCIF);
-> +       return early_console_setup(device, SCI_OF_DATA(PORT_SCIF, SCIx_RZV2H_SCIF_REGTYPE));
->  }
->
->  static int __init scifa_early_console_setup(struct earlycon_device *device,
->                                           const char *opt)
->  {
-> -       return early_console_setup(device, PORT_SCIFA);
-> +       return early_console_setup(device, SCI_OF_DATA(PORT_SCIFA, SCIx_SCIFA_REGTYPE));
->  }
->  static int __init scifb_early_console_setup(struct earlycon_device *device,
->                                           const char *opt)
->  {
-> -       return early_console_setup(device, PORT_SCIFB);
-> +       return early_console_setup(device, SCI_OF_DATA(PORT_SCIFB, SCIx_SCIFB_REGTYPE));
->  }
->  static int __init hscif_early_console_setup(struct earlycon_device *device,
->                                           const char *opt)
->  {
-> -       return early_console_setup(device, PORT_HSCIF);
-> +       return early_console_setup(device, SCI_OF_DATA(PORT_HSCIF, SCIx_HSCIF_REGTYPE));
->  }
->
->  OF_EARLYCON_DECLARE(sci, "renesas,sci", sci_early_console_setup);
-> diff --git a/drivers/tty/serial/sh-sci_common.h b/drivers/tty/serial/sh-sci_common.h
-> index cbfacdc1a836..f75c185079dd 100644
-> --- a/drivers/tty/serial/sh-sci_common.h
-> +++ b/drivers/tty/serial/sh-sci_common.h
-> @@ -172,7 +172,8 @@ extern void sci_flush_buffer(struct uart_port *port);
->  #define max_sr(_port)          fls((_port)->sampling_rate_mask)
->
->  #ifdef CONFIG_SERIAL_SH_SCI_EARLYCON
-> -extern int __init early_console_setup(struct earlycon_device *device, int);
-> +extern int __init early_console_setup(struct earlycon_device *device,
-> +                                     const struct sci_of_data *data);
->  #endif
->
->  #endif /* __SH_SCI_COMMON_H__ */
-> --
-> 2.43.0
-\
+...
+
+> > > [1] https://lore.kernel.org/lkml/1348522080-32629-9-git-send-email-anton.vorontsov@linaro.org/
+> > 
+> > It might be possible to use Link tag here in a form
+> > 
+> > Link: URL [1]
+> 
+> Hmm... I'm not sure what this Link is supposed to mean. You might be forgotten
+> to update an URL to point out to the cover letter? (This is the link to patch 9
+> in the series and looks a bit unrelated).
+
+I reread and I think now understand what you meant. The are several patches
+starting from this one that are not landed in the upstream.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
