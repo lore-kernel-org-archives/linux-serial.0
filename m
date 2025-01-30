@@ -1,103 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04240148832;
-	Thu, 30 Jan 2025 08:32:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26A7D18F2DD;
+	Thu, 30 Jan 2025 08:33:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=130.133.4.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738225963; cv=none; b=T0Zv1aJuUC8fswJICekvObFs7MC1KxPTaDQEvHF7CoFxkKt0DVWl4ndXuM2BYTCq91pzhy2FN84q4FqPRPgKHV3EjBe/lixABEuuz06RxeT0wpIDGfKetOhYLrfpKSJLmvnFNqFNN2F7Ro/gt9SAoh1DRvhzjSaeKWw9kEPG7Z4=
+	t=1738225987; cv=none; b=WAlYAXhP7B6rePv0aMDnOEav3w5u9zMmLDux8nEt3+h9kyVdUDD3gsRtmw1qXV1eIR4RNLxQ9KTuQda5tBmzOGQsfC4YimfBUKaF0vULVqExDqqRsD7cdeHQ2pht1HXYajVgaeRbTnKu3SRfAnEclWbt20CqZE9ApL9S+SPAbUo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738225963; c=relaxed/simple;
-	bh=KGZn6Xt9v0IKvMBO/XZlgfWkSXISMGsYFaHeuoOmrSM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XEdpVEXYJCN1CYCQpZWhvdH9o0ZNm/u213H1rUOuA+xYY+vm7ibptLrDV9bJwuOX8SdKIyYPsKytjGZ3FaNc5PcKinn0Dz2AmdFgTLebQG9ozQJi1f/9gt8HMHbXUracfQB+WrEZqkG3GRvE8hR375ZlNeLIPplWkdAeOaEvi58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Tdz1WU4N; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1738225987; c=relaxed/simple;
+	bh=hnQ1v+oMPKp2PMWU6ncam0hpEyuQ7qcl1v7r8Gvx9Zo=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=KLQm66v9BAUwj8z/n1+LkxWK4g3HK7KHabNzk4y7907q9UWVSz150f7JusHvfVXLLFoF9nmHP3WE7bQk/oKuYBZE+YHSzAk5i0RoCEZTKCXnJ80IsZHFX0iXjBn/VJHNa6c1fCFAoE1gZFcq7RDemFb/eX+IxVEvXcuyKTD2X8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de; spf=pass smtp.mailfrom=zedat.fu-berlin.de; dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b=pqLr2AS6; arc=none smtp.client-ip=130.133.4.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=physik.fu-berlin.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zedat.fu-berlin.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Tdz1WU4N"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1738225963; x=1769761963;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KGZn6Xt9v0IKvMBO/XZlgfWkSXISMGsYFaHeuoOmrSM=;
-  b=Tdz1WU4N+/N3pymK5rHLunob92AHSw1jTGuflUkggBMyQQDldpyrw+Pt
-   17D76t5T9Ld8ki613y++FrfzS5LE+27XDqzS4OF44PMj8lrWAUqs5VtS5
-   X5V09txXM07XJx64tdlsKu0kCLx0kPZzcXU1iTVSgAMJdGS5HK5SNJ7rL
-   PazlB9ANOsJk+aCPqjfEE7Sy6K0znIeW33UGS2MwS2AOMUZLdgmqLJbIb
-   4f5FFyAXSAaqwuRFTvNkcuMJoGCx4DqXGsOXu9jG5zv6xeza0aY0w2Yfy
-   36CHEdaN7wOlLdU31hrOf8pRfs2n4sSHMYSNdkfkRGKIfHJE4YU0hT73K
-   g==;
-X-CSE-ConnectionGUID: dMRdtSosRDiW4JLc0Pipsw==
-X-CSE-MsgGUID: eC/NbXjGTpyGInoLc4qr1w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11330"; a="56186019"
-X-IronPort-AV: E=Sophos;i="6.13,244,1732608000"; 
-   d="scan'208";a="56186019"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2025 00:32:42 -0800
-X-CSE-ConnectionGUID: MsL1juu8Rza5VqiPNSHU4A==
-X-CSE-MsgGUID: IFKHj+vcReOFJ/dMDX0nAw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,244,1732608000"; 
-   d="scan'208";a="109066052"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2025 00:32:38 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tdPyT-00000006cxf-3VBL;
-	Thu, 30 Jan 2025 10:32:33 +0200
-Date: Thu, 30 Jan 2025 10:32:33 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Douglas Anderson <dianders@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Daniel Thompson <danielt@kernel.org>,
-	"Dr . David Alan Gilbert" <linux@treblig.org>,
-	kgdb-bugreport@lists.sourceforge.net,
-	Anton Vorontsov <anton.vorontsov@linaro.org>,
-	Sumit Garg <sumit.garg@linaro.org>, linux-serial@vger.kernel.org,
-	Arnd Bergmann <arnd@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Nicolas Ferre <nicolas.ferre@microchip.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Robert Marko <robert.marko@sartura.hr>,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] Revert "tty/serial: Add kgdb_nmi driver"
-Message-ID: <Z5s5IThpnMNdY62v@smile.fi.intel.com>
-References: <20250129162700.848018-1-dianders@chromium.org>
- <20250129082535.1.Ia095eac1ae357f87d23e7af2206741f5d40788f1@changeid>
- <Z5s38S7sJ2mka3-1@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=fu-berlin.de header.i=@fu-berlin.de header.b="pqLr2AS6"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=fu-berlin.de; s=fub01; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=N4dgd52Of6FcUlgl8rSDcpg7TYKOfzb/xbujhysv99w=; t=1738225986; x=1738830786; 
+	b=pqLr2AS6tvDpUJDC2l0Wih5hTpWYJvdUE3saHvy0pj3RC1GB7hzQ4ynNZEbmtyoRBoiuNpUKhzW
+	0FJ5DT/wtO9SIMynC1xH+RnYcX2z58HZ7pnRvyFGH4pWTCDLp8BCphBsB+KdfkEfOMuFY2AiX2iaH
+	Ele3idaZ23NPU1IIgVjNkxFpVXHcOtyOBC4u0NhNWVvVRBTthImvRY+wfmshtjOqcCQRX9UNNDXuB
+	2OkJTk4w222uvsX6+01E0PlmOdZYz60fMTHUcyjyPl4N3pCvnXKu/W4gY1Rl59UREx4e/lvhVGYTx
+	mnzD+/KZ0dOwsTPC9WywZTnNkVFGu9Z2VUmg==;
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.98)
+          with esmtps (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1tdPyw-00000000CVs-2047; Thu, 30 Jan 2025 09:33:02 +0100
+Received: from p5dc55198.dip0.t-ipconnect.de ([93.197.81.152] helo=[192.168.178.61])
+          by inpost2.zedat.fu-berlin.de (Exim 4.98)
+          with esmtpsa (TLS1.3)
+          tls TLS_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1tdPyw-00000001jpa-0wX4; Thu, 30 Jan 2025 09:33:02 +0100
+Message-ID: <79f5c04056398aac4cb6b4d7eb68c20c69c419a4.camel@physik.fu-berlin.de>
+Subject: Re: [PATCH] serial: sh-sci: Use plain struct copy in
+ early_console_setup()
+From: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Greg Kroah-Hartman	
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Wolfram
+ Sang	 <wsa+renesas@sang-engineering.com>, Claudiu Beznea	
+ <claudiu.beznea.uj@bp.renesas.com>, Lad Prabhakar	
+ <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc: linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	linux-sh@vger.kernel.org
+Date: Thu, 30 Jan 2025 09:33:01 +0100
+In-Reply-To: <e097e5c11afe5bd4c01135779c9a40e707ef6374.1733243287.git.geert+renesas@glider.be>
+References: 
+	<e097e5c11afe5bd4c01135779c9a40e707ef6374.1733243287.git.geert+renesas@glider.be>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z5s38S7sJ2mka3-1@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-ZEDAT-Hint: PO
 
-On Thu, Jan 30, 2025 at 10:27:29AM +0200, Andy Shevchenko wrote:
-> On Wed, Jan 29, 2025 at 08:25:50AM -0800, Douglas Anderson wrote:
+On Tue, 2024-12-03 at 17:30 +0100, Geert Uytterhoeven wrote:
+> Using memcpy() prevents the compiler from doing any checking on the
+> types of the passed pointer parameters.  Copy the structure using struct
+> assignment instead, to increase type-safety.
+>=20
+> No change in generated code on all relevant architectures
+> (arm/arm64/riscv/sh).
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/tty/serial/sh-sci.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+> index df523c7444230836..1ed13ce2c2952547 100644
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -3542,7 +3542,7 @@ static int __init early_console_setup(struct earlyc=
+on_device *device,
+>  		return -ENODEV;
+> =20
+>  	device->port.type =3D type;
+> -	memcpy(&sci_ports[0].port, &device->port, sizeof(struct uart_port));
+> +	sci_ports[0].port =3D device->port;
+>  	port_cfg.type =3D type;
+>  	sci_ports[0].cfg =3D &port_cfg;
+>  	sci_ports[0].params =3D sci_probe_regmap(&port_cfg);
 
-...
+Reviewed-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
 
-> > [1] https://lore.kernel.org/lkml/1348522080-32629-9-git-send-email-anton.vorontsov@linaro.org/
-> 
-> It might be possible to use Link tag here in a form
-> 
-> Link: URL [1]
+Thanks,
+Adrian
 
-Hmm... I'm not sure what this Link is supposed to mean. You might be forgotten
-to update an URL to point out to the cover letter? (This is the link to patch 9
-in the series and looks a bit unrelated).
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+--=20
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer
+`. `'   Physicist
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
