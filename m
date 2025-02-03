@@ -1,102 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9050D1DB377;
-	Mon,  3 Feb 2025 19:15:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 647D020E6F7;
+	Mon,  3 Feb 2025 20:39:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738610109; cv=none; b=XwFL1xL2wqnAVdQL66eRWsKOcIHj5LqJXieGIp9Qy3STR+F6WXgtAZCq5135QmY8l2UW1OEY1M73P/X7JdbDLa6irZ5m9b+/TtHjfFQEdKHmCgC2cXWK6rJfHwVTw3VX00FM/HSs4H+vhMEgHOwfBrYrmw0WfT8UhNc6grxCGXA=
+	t=1738615146; cv=none; b=TJLncsK3XR9SGPdk8u3I1ccHA87LW+XBatt6Fu+bpsuv1IhA/wX2v/pkQG1FajJMRBCR7cMvo9RkEoAHOCFvhB9/NgFjCGrvIvdFvg80gsV+FIP/rZcnZHZ3fS50G6ipTtnxb6ILQTrbpAnHO/cMEjxLjaKHno3zBaLRFcy1xbM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738610109; c=relaxed/simple;
-	bh=CbxsuWIv8VDWrnmls2vfuqVQB78ke4z+CYI65G16m2s=;
-	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
-	 In-Reply-To:To:Cc; b=uRbw3Jx82difO7LGoFgvUlwDnOvbUSSRc2b6VUlvqDzn3zRu1W40IZqizIitfrsZkbGAA09+BCqKrElk9gaOTxtSZD/vlblqxtY7ONbkgmxkHpYbMDihh7Jp0N8Ohs0E8ZQq9kwWSIPYZM+vZc4QkR2rBOmoqgTU7Eubra/A0Ok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ErK7o7xO; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1738615146; c=relaxed/simple;
+	bh=xwtOKTUBcQC4jWTBtIrOtPINitVO/oGKezfgJlBjumg=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=btumCfyVZtVWjiwVNhRXI6g8bjTSCpIrF2E/aOH6KCx25RVmkciCNet/R5ITz/AAOLzb9kmbE4+/KGnaElENQwjE8ya3J1kSJZHbkrjrfLE1FEDGfsW+8tkeaZy4bzQuN4D/G13tEXzxpKtu2Zyhas77UHJ1LdxHnN2FKF661JA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=WwX+eU7L; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ErK7o7xO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFDDEC4CED2;
-	Mon,  3 Feb 2025 19:15:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738610108;
-	bh=CbxsuWIv8VDWrnmls2vfuqVQB78ke4z+CYI65G16m2s=;
-	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-	b=ErK7o7xObNb9MWkMXICLbCujWlewHxytKj49aMyDvOiDTHB+hH/lMulpTdFf/OWid
-	 XeJuHRoSzzcNVTeLkaJyZJH3oKLDsc9OXUmc+Yvnuvi6fd68awZo5JwGh1hxoXoXmD
-	 ZqfR3f7odxlyI02lIRG8HsqFm78f8VWRnusRPhm0KX/GRQ0daYRKHWCSanq0uj3DQy
-	 k+T/SyQ0+r6UxdZJsDwo1asgeM8VZMB1z5ECsBwJCNEPhdUpnBjteMDEk4i7bnfxbl
-	 AvdwvdD0flje15IGuCF4aRBBVQukQO7HiH6Gw/kQVQaoDypBEWXUF8Azq6AHdL1aBe
-	 CTyzC/UHBRWuw==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 33ECA380AA67;
-	Mon,  3 Feb 2025 19:15:37 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="WwX+eU7L"
+Received: from mail01.disroot.lan (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id D9D5625A84;
+	Mon,  3 Feb 2025 21:39:03 +0100 (CET)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from layka.disroot.org ([127.0.0.1])
+ by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
+ id nnfpxlxpcAtI; Mon,  3 Feb 2025 21:39:02 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1738615142; bh=xwtOKTUBcQC4jWTBtIrOtPINitVO/oGKezfgJlBjumg=;
+	h=From:Subject:Date:To:Cc;
+	b=WwX+eU7LzjIdxW8NZm1GvF/p6BdvTzUTYlFmdaqWIPOaqSWdt8TAOU0wi35fi30Z4
+	 CjNEnCbcuTPcm2Vb/PGdtZ2uaNAhIdOwgyyUbeZnNhPuEQQtl2OjEYcbWwQjqPuoL6
+	 n5Zjts93nSWE4C7OiUztnWW5NyrMGTY6YpmZK4P5bCy4yJunnI9qXIU+rALUiS3TvX
+	 z9eQ+GbaWKnG2+XZieoCHfPeKMvpqcE7oZxiRArBr4fnNfvT/LDay5fjLU+0oDOE/8
+	 Lq1o414YESIq0gqjO0n4LgC5S1qkinCV6G3ZNMxFBj4wGAJXap+u3WLL/CmJXUlHcV
+	 SmSg9zIN7nsLg==
+From: Kaustabh Chakraborty <kauschluss@disroot.org>
+Subject: [PATCH 0/2] Introduce UART support for Exynos7870 SoC
+Date: Tue, 04 Feb 2025 02:08:44 +0530
+Message-Id: <20250204-exynos7870-uart-v1-0-06be6aa96284@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
-From: patchwork-bot+linux-riscv@kernel.org
-Message-Id: 
- <173861013603.3409359.4773072632762735715.git-patchwork-notify@kernel.org>
-Date: Mon, 03 Feb 2025 19:15:36 +0000
-References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
-In-Reply-To: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
-To: Yixun Lan <dlan@gentoo.org>
-Cc: linux-riscv@lists.infradead.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
- aou@eecs.berkeley.edu, cyy@cyyself.name, daniel.lezcano@linaro.org,
- tglx@linutronix.de, samuel.holland@sifive.com, anup@brainfault.org,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, lkundrak@v3.sk,
- devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, jesse@rivosinc.com, conor.dooley@microchip.com,
- inochiama@outlook.com, zhangmeng.kevin@spacemit.com, jszhang@kernel.org,
- matthias.bgg@kernel.org, kevin.z.m@hotmail.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAFQpoWcC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDI1MDIwNj3dSKyrz8YnMLcwPd0sSiEl0zozQzk+TURCMTC0sloK6CotS0zAq
+ widGxtbUAR5S8w2EAAAA=
+X-Change-ID: 20250203-exynos7870-uart-62f64cea2489
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk@kernel.org>, Conor Dooley <conor@kernel.org>, 
+ Alim Akhtar <alim.akhtar@samsung.com>
+Cc: Sergey Lisov <sleirsgoevy@gmail.com>, linux-kernel@vger.kernel.org, 
+ linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+ Kaustabh Chakraborty <kauschluss@disroot.org>
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1738615135; l=722;
+ i=kauschluss@disroot.org; s=20250202; h=from:subject:message-id;
+ bh=xwtOKTUBcQC4jWTBtIrOtPINitVO/oGKezfgJlBjumg=;
+ b=vzu/LdC3pxEnkiUAtVWL36omc+KNCQgDuSraq8ILeDY5lO4KG3w/LvzL5zDzq7tSal5tH20+u
+ 899Cg6H81zfAZUzdRBg0VS0hzJD7Svh5e19SYGRaaGKjHmF5ZWB9L16
+X-Developer-Key: i=kauschluss@disroot.org; a=ed25519;
+ pk=h2xeR+V2I1+GrfDPAhZa3M+NWA0Cnbdkkq1bH3ct1hE=
 
-Hello:
+Add support for Exynos7870 UART. FIFO size is expected to be present in
+DT.
 
-This series was applied to riscv/linux.git (fixes)
-by Yixun Lan <dlan@gentoo.org>:
+This patch series is a part of Exynos7870 upstreaming.
 
-On Tue, 30 Jul 2024 00:28:03 +0000 you wrote:
-> SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
-> 1.0 and Zicond evaluation now. Add initial support for it to allow more
-> people to participate in building drivers to mainline for it.
-> 
-> This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
-> bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
-> Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
-> booted to busybox on initrd with this log[3].
-> 
-> [...]
+Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
+---
+Kaustabh Chakraborty (2):
+      dt-bindings: serial: samsung: add exynos7870-uart compatible
+      tty: serial: samsung: add support for exynos7870
 
-Here is the summary with links:
-  - [v5,01/10] dt-bindings: vendor-prefixes: add spacemit
-    (no matching commit)
-  - [v5,02/10] dt-bindings: riscv: Add SpacemiT X60 compatibles
-    https://git.kernel.org/riscv/c/16c9147e6a6c
-  - [v5,03/10] dt-bindings: riscv: add SpacemiT K1 bindings
-    https://git.kernel.org/riscv/c/244fe889b950
-  - [v5,04/10] dt-bindings: timer: Add SpacemiT K1 CLINT
-    https://git.kernel.org/riscv/c/e5164af2a2fe
-  - [v5,05/10] dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
-    https://git.kernel.org/riscv/c/562272a287d5
-  - [v5,06/10] dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
-    https://git.kernel.org/riscv/c/dfe6d083edff
-  - [v5,07/10] riscv: add SpacemiT SoC family Kconfig support
-    https://git.kernel.org/riscv/c/8814aa123adb
-  - [v5,08/10] riscv: dts: add initial SpacemiT K1 SoC device tree
-    https://git.kernel.org/riscv/c/d8fe64691955
-  - [v5,09/10] riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
-    https://git.kernel.org/riscv/c/d60d57ab6b2a
-  - [v5,10/10] riscv: defconfig: enable SpacemiT SoC
-    https://git.kernel.org/riscv/c/21bef40ad121
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml |  2 ++
+ drivers/tty/serial/samsung_tty.c                           | 13 +++++++++++++
+ 2 files changed, 15 insertions(+)
+---
+base-commit: df4b2bbff898227db0c14264ac7edd634e79f755
+change-id: 20250203-exynos7870-uart-62f64cea2489
 
-You are awesome, thank you!
+Best regards,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Kaustabh Chakraborty <kauschluss@disroot.org>
 
