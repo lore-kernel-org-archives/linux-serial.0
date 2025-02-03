@@ -1,153 +1,102 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 982C3205E11;
-	Mon,  3 Feb 2025 14:01:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9050D1DB377;
+	Mon,  3 Feb 2025 19:15:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738591297; cv=none; b=Hzl/acI3eI1Nz3s5M1ClZ3h1UJ0tP/NCNhw/myoKJE+IP6+Agw2mQnEf1ANX7PXGfFg/Q9sOZG0URdbTGD6SKNNq308koDgoalfV5lmP0nJfr6/NL6xkXJcGLBbF5EtucraPJLwJs023wjp2Dmx4JwcnsDC0Zoys+QjWzP/3Sao=
+	t=1738610109; cv=none; b=XwFL1xL2wqnAVdQL66eRWsKOcIHj5LqJXieGIp9Qy3STR+F6WXgtAZCq5135QmY8l2UW1OEY1M73P/X7JdbDLa6irZ5m9b+/TtHjfFQEdKHmCgC2cXWK6rJfHwVTw3VX00FM/HSs4H+vhMEgHOwfBrYrmw0WfT8UhNc6grxCGXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738591297; c=relaxed/simple;
-	bh=FUGVfpQsBsQZDnW8/29ndy6ufToxH4fLIZhk0OSH+vk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PWJnpIQnCcw3Z4NRiEFoorB/w8iMP32SiN53w1b31k6F5Pw7JxrhgJsMXPOGjz26mB0yQg4luk8+sfI1aenKAjSWwNw9Jzw4k9Ip/wkMAg7F3K3rcY72wl2txrwAS1XJKqsfrocFLGv84RaC+Xzgt3ujFGzsazGp4WnvIAe7y0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dxJQFzlt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1738610109; c=relaxed/simple;
+	bh=CbxsuWIv8VDWrnmls2vfuqVQB78ke4z+CYI65G16m2s=;
+	h=Content-Type:MIME-Version:Subject:From:Message-Id:Date:References:
+	 In-Reply-To:To:Cc; b=uRbw3Jx82difO7LGoFgvUlwDnOvbUSSRc2b6VUlvqDzn3zRu1W40IZqizIitfrsZkbGAA09+BCqKrElk9gaOTxtSZD/vlblqxtY7ONbkgmxkHpYbMDihh7Jp0N8Ohs0E8ZQq9kwWSIPYZM+vZc4QkR2rBOmoqgTU7Eubra/A0Ok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ErK7o7xO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dxJQFzlt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 664D6C4CED2;
-	Mon,  3 Feb 2025 14:01:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ErK7o7xO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFDDEC4CED2;
+	Mon,  3 Feb 2025 19:15:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738591297;
-	bh=FUGVfpQsBsQZDnW8/29ndy6ufToxH4fLIZhk0OSH+vk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=dxJQFzlt4BVNOgSQuojXmA9wuzm4juDMiaj0xfMOAE5qPk5Vzb1dY6VgLM/hLrYRI
-	 Zd9+pCEzYYVOR46Td4Mo1YEY21wDNc78e4E/NQu4MLG+yWelOi7uSJDHAR94Gq2Io2
-	 S/5g5li5Jhvv/wwVRI4ApfEeYqSP9+TuKxkXCOjaMGuMZGFoJXBSs7yJ/o4dYajCqM
-	 7sMqSFURdJ7oxQpQ7ZoOdRq4XLWiWKj1QXmNEhRzyyuYLgf26P1NSFzawTAN1FRBJ4
-	 ckEJtWX4+/sU6ftXPOVdiNouwo41UZKZrbT/T99jACiBEflDshR6f2c2lZ7XLI/b7z
-	 DPRk7DkWm7p3g==
-Message-ID: <9c8a9dee-92ba-47e4-b16b-ab47727d8057@kernel.org>
-Date: Mon, 3 Feb 2025 15:01:22 +0100
+	s=k20201202; t=1738610108;
+	bh=CbxsuWIv8VDWrnmls2vfuqVQB78ke4z+CYI65G16m2s=;
+	h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+	b=ErK7o7xObNb9MWkMXICLbCujWlewHxytKj49aMyDvOiDTHB+hH/lMulpTdFf/OWid
+	 XeJuHRoSzzcNVTeLkaJyZJH3oKLDsc9OXUmc+Yvnuvi6fd68awZo5JwGh1hxoXoXmD
+	 ZqfR3f7odxlyI02lIRG8HsqFm78f8VWRnusRPhm0KX/GRQ0daYRKHWCSanq0uj3DQy
+	 k+T/SyQ0+r6UxdZJsDwo1asgeM8VZMB1z5ECsBwJCNEPhdUpnBjteMDEk4i7bnfxbl
+	 AvdwvdD0flje15IGuCF4aRBBVQukQO7HiH6Gw/kQVQaoDypBEWXUF8Azq6AHdL1aBe
+	 CTyzC/UHBRWuw==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 33ECA380AA67;
+	Mon,  3 Feb 2025 19:15:37 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 02/33] dt-bindings: clock: add clock definitions for
- exynos7870 CMU
-To: Kaustabh Chakraborty <kauschluss@disroot.org>
-Cc: Rob Herring <robh@kernel.org>, Conor Dooley <conor@kernel.org>,
- Alim Akhtar <alim.akhtar@samsung.com>,
- Sylwester Nawrocki <s.nawrocki@samsung.com>,
- Chanwoo Choi <cw00.choi@samsung.com>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Tomasz Figa <tomasz.figa@gmail.com>,
- Linus Walleij <linus.walleij@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Lee Jones <lee@kernel.org>,
- Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
- Vinod Koul <vkoul@kernel.org>, Kishon Vijay Abraham I <kishon@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, David Airlie
- <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Andi Shyti <andi.shyti@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>,
- Jaehoon Chung <jh80.chung@samsung.com>,
- Vivek Gautam <gautam.vivek@samsung.com>,
- Thinh Nguyen <Thinh.Nguyen@synopsys.com>, Kees Cook <kees@kernel.org>,
- Tony Luck <tony.luck@intel.com>, "Guilherme G . Piccoli"
- <gpiccoli@igalia.com>, Sergey Lisov <sleirsgoevy@gmail.com>,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-phy@lists.infradead.org,
- linux-usb@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-i2c@vger.kernel.org, linux-mmc@vger.kernel.org,
- linux-hardening@vger.kernel.org
-References: <20250203-exynos7870-v1-0-2b6df476a3f0@disroot.org>
- <20250202190758.14986-1-kauschluss@disroot.org>
- <20250203-enigmatic-remarkable-beagle-709955@krzk-bin>
- <c1249f2f6ac8a2f5a1dcb3bbbba647f9@disroot.org>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <c1249f2f6ac8a2f5a1dcb3bbbba647f9@disroot.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 00/10] riscv: add initial support for SpacemiT K1
+From: patchwork-bot+linux-riscv@kernel.org
+Message-Id: 
+ <173861013603.3409359.4773072632762735715.git-patchwork-notify@kernel.org>
+Date: Mon, 03 Feb 2025 19:15:36 +0000
+References: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
+In-Reply-To: <20240730-k1-01-basic-dt-v5-0-98263aae83be@gentoo.org>
+To: Yixun Lan <dlan@gentoo.org>
+Cc: linux-riscv@lists.infradead.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
+ aou@eecs.berkeley.edu, cyy@cyyself.name, daniel.lezcano@linaro.org,
+ tglx@linutronix.de, samuel.holland@sifive.com, anup@brainfault.org,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, lkundrak@v3.sk,
+ devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, jesse@rivosinc.com, conor.dooley@microchip.com,
+ inochiama@outlook.com, zhangmeng.kevin@spacemit.com, jszhang@kernel.org,
+ matthias.bgg@kernel.org, kevin.z.m@hotmail.com
 
-On 03/02/2025 13:40, Kaustabh Chakraborty wrote:
-> On 2025-02-03 07:54, Krzysztof Kozlowski wrote:
->> On Mon, Feb 03, 2025 at 12:37:58AM +0530, Kaustabh Chakraborty wrote:
->>> From: Sergey Lisov <sleirsgoevy@gmail.com>
->>>
->>> Add unique identifiers for exynos7870 clocks for every bank. It adds all
->>> clocks of CMU_MIF, CMU_DISPAUD, CMU_G3D, CMU_ISP, CMU_MFCMSCL, and
->>> CMU_PERI.
->>>
->>> Signed-off-by: Sergey Lisov <sleirsgoevy@gmail.com>
->>> Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
->>> ---
->>>  include/dt-bindings/clock/exynos7870.h | 324 +++++++++++++++++++++++++
->>>  1 file changed, 324 insertions(+)
->>
->> Look at git log - that's never a separate commit.
-> 
-> Hmm, I see past examples which are mixed.
-> 
-> 2ae5c2c3f8d586b709cf67efe94488be397d7544
-> Exynos850 CMU (c. 2021). CMU definitions are in a separate commit.
-> 
-> 591020a516720e9eba1c4b1748cb73b6748e445f
-> Exynos7885 CMU (c. 2021). CMU definitions are in a separate commit.
-> 
-Huh, indeed, my mistake.
+Hello:
 
-Let's avoid that pattern, so binding headers are always part of bindings
-commit.
+This series was applied to riscv/linux.git (fixes)
+by Yixun Lan <dlan@gentoo.org>:
 
-Best regards,
-Krzysztof
+On Tue, 30 Jul 2024 00:28:03 +0000 you wrote:
+> SpacemiT K1 is an ideal chip for some new extension such as RISC-V Vector
+> 1.0 and Zicond evaluation now. Add initial support for it to allow more
+> people to participate in building drivers to mainline for it.
+> 
+> This kernel has been tested upon Banana Pi BPI-F3 board on vendor U-Boot
+> bootflow generated by Armbian SDK[1] and patched OpenSBI[2] to enable
+> Zicboz, which does not in the vendor dts on its U-Boot. Then successfully
+> booted to busybox on initrd with this log[3].
+> 
+> [...]
+
+Here is the summary with links:
+  - [v5,01/10] dt-bindings: vendor-prefixes: add spacemit
+    (no matching commit)
+  - [v5,02/10] dt-bindings: riscv: Add SpacemiT X60 compatibles
+    https://git.kernel.org/riscv/c/16c9147e6a6c
+  - [v5,03/10] dt-bindings: riscv: add SpacemiT K1 bindings
+    https://git.kernel.org/riscv/c/244fe889b950
+  - [v5,04/10] dt-bindings: timer: Add SpacemiT K1 CLINT
+    https://git.kernel.org/riscv/c/e5164af2a2fe
+  - [v5,05/10] dt-bindings: interrupt-controller: Add SpacemiT K1 PLIC
+    https://git.kernel.org/riscv/c/562272a287d5
+  - [v5,06/10] dt-bindings: serial: 8250: Add SpacemiT K1 uart compatible
+    https://git.kernel.org/riscv/c/dfe6d083edff
+  - [v5,07/10] riscv: add SpacemiT SoC family Kconfig support
+    https://git.kernel.org/riscv/c/8814aa123adb
+  - [v5,08/10] riscv: dts: add initial SpacemiT K1 SoC device tree
+    https://git.kernel.org/riscv/c/d8fe64691955
+  - [v5,09/10] riscv: dts: spacemit: add Banana Pi BPI-F3 board device tree
+    https://git.kernel.org/riscv/c/d60d57ab6b2a
+  - [v5,10/10] riscv: defconfig: enable SpacemiT SoC
+    https://git.kernel.org/riscv/c/21bef40ad121
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
