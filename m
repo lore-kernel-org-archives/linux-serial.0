@@ -1,40 +1,41 @@
 Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 647D020E6F7;
-	Mon,  3 Feb 2025 20:39:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E27EA20E6F7;
+	Mon,  3 Feb 2025 20:39:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738615146; cv=none; b=TJLncsK3XR9SGPdk8u3I1ccHA87LW+XBatt6Fu+bpsuv1IhA/wX2v/pkQG1FajJMRBCR7cMvo9RkEoAHOCFvhB9/NgFjCGrvIvdFvg80gsV+FIP/rZcnZHZ3fS50G6ipTtnxb6ILQTrbpAnHO/cMEjxLjaKHno3zBaLRFcy1xbM=
+	t=1738615157; cv=none; b=PAujb+9EsBYi0qdMSh3++EDckgf6SDtYfaU3bPptedwQQs1mWxfEm1KOhP+kpbaNVVCqM1/uooiM6lbOBtK5/qmO7TY+J/YchUkCkG4h1bltimAoDDC4LZUFmMk48qvHnRxrVj40OF1mkR/UCLtSESLSg9U/+eneLzvSvp0vUS4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738615146; c=relaxed/simple;
-	bh=xwtOKTUBcQC4jWTBtIrOtPINitVO/oGKezfgJlBjumg=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=btumCfyVZtVWjiwVNhRXI6g8bjTSCpIrF2E/aOH6KCx25RVmkciCNet/R5ITz/AAOLzb9kmbE4+/KGnaElENQwjE8ya3J1kSJZHbkrjrfLE1FEDGfsW+8tkeaZy4bzQuN4D/G13tEXzxpKtu2Zyhas77UHJ1LdxHnN2FKF661JA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=WwX+eU7L; arc=none smtp.client-ip=178.21.23.139
+	s=arc-20240116; t=1738615157; c=relaxed/simple;
+	bh=EzyYoUZps3zDjCcM6n577kaxIQx3hsLmnb8iBzOF4mg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=OJb5mLdr/M0x69QkIoSvB/jczfmZi06aUgNCz3C/DesW1kJZitf8PY+R1edi193jd925AEXZoe8X2bViWBkUExKkOg7pFb6n0A7FMIKef9lzphhM0SxK6CVTZ98vpij8IxQf98wJfSqAnQuxARXHRK1VvsMPVoeVL3X3+qpIXLE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=XsDdfqFu; arc=none smtp.client-ip=178.21.23.139
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="WwX+eU7L"
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="XsDdfqFu"
 Received: from mail01.disroot.lan (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id D9D5625A84;
-	Mon,  3 Feb 2025 21:39:03 +0100 (CET)
+	by disroot.org (Postfix) with ESMTP id A5BF925BE3;
+	Mon,  3 Feb 2025 21:39:14 +0100 (CET)
 X-Virus-Scanned: SPAM Filter at disroot.org
 Received: from layka.disroot.org ([127.0.0.1])
  by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
- id nnfpxlxpcAtI; Mon,  3 Feb 2025 21:39:02 +0100 (CET)
+ id IP7yUFp_xi-K; Mon,  3 Feb 2025 21:39:13 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1738615142; bh=xwtOKTUBcQC4jWTBtIrOtPINitVO/oGKezfgJlBjumg=;
-	h=From:Subject:Date:To:Cc;
-	b=WwX+eU7LzjIdxW8NZm1GvF/p6BdvTzUTYlFmdaqWIPOaqSWdt8TAOU0wi35fi30Z4
-	 CjNEnCbcuTPcm2Vb/PGdtZ2uaNAhIdOwgyyUbeZnNhPuEQQtl2OjEYcbWwQjqPuoL6
-	 n5Zjts93nSWE4C7OiUztnWW5NyrMGTY6YpmZK4P5bCy4yJunnI9qXIU+rALUiS3TvX
-	 z9eQ+GbaWKnG2+XZieoCHfPeKMvpqcE7oZxiRArBr4fnNfvT/LDay5fjLU+0oDOE/8
-	 Lq1o414YESIq0gqjO0n4LgC5S1qkinCV6G3ZNMxFBj4wGAJXap+u3WLL/CmJXUlHcV
-	 SmSg9zIN7nsLg==
+	t=1738615153; bh=EzyYoUZps3zDjCcM6n577kaxIQx3hsLmnb8iBzOF4mg=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc;
+	b=XsDdfqFulOHI6M/PHcABgbYQ3SwrwoGhTshDD5stfM3SdzNfJbgl/3G0eo+SLh0Av
+	 rFMs9amYmUbKR+0+RgV0WIdVYN+A3cNLNdIF0w9QR2jNYvjo0uIC+EZ4qXjXs2JKHv
+	 Zbh+6RhWNL4D2Bw1661OR/g1wRHix0p4DUdjSxaeDAaJdPBDb8FE0/PVrBkUlMxUVC
+	 /ByKRg8eI9XM5xFlbg4r6M+cSsDTXfSt1qlNaMSoapt9EsczkZ95qlmekPI7D/wlsi
+	 ywPJ38FaDHlvd3B8KZn7d78f9XKdMLzcfwkTyDd1aetLpUebhNuVKJVO2hehensIkR
+	 xyKeHQ8DeR/hg==
 From: Kaustabh Chakraborty <kauschluss@disroot.org>
-Subject: [PATCH 0/2] Introduce UART support for Exynos7870 SoC
-Date: Tue, 04 Feb 2025 02:08:44 +0530
-Message-Id: <20250204-exynos7870-uart-v1-0-06be6aa96284@disroot.org>
+Date: Tue, 04 Feb 2025 02:08:45 +0530
+Subject: [PATCH 1/2] dt-bindings: serial: samsung: add exynos7870-uart
+ compatible
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,10 +44,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAFQpoWcC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDI1MDIwNj3dSKyrz8YnMLcwPd0sSiEl0zozQzk+TURCMTC0sloK6CotS0zAq
- widGxtbUAR5S8w2EAAAA=
-X-Change-ID: 20250203-exynos7870-uart-62f64cea2489
+Message-Id: <20250204-exynos7870-uart-v1-1-06be6aa96284@disroot.org>
+References: <20250204-exynos7870-uart-v1-0-06be6aa96284@disroot.org>
+In-Reply-To: <20250204-exynos7870-uart-v1-0-06be6aa96284@disroot.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
  Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk@kernel.org>, Conor Dooley <conor@kernel.org>, 
@@ -55,33 +55,44 @@ Cc: Sergey Lisov <sleirsgoevy@gmail.com>, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
  Kaustabh Chakraborty <kauschluss@disroot.org>
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1738615135; l=722;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1738615135; l=1217;
  i=kauschluss@disroot.org; s=20250202; h=from:subject:message-id;
- bh=xwtOKTUBcQC4jWTBtIrOtPINitVO/oGKezfgJlBjumg=;
- b=vzu/LdC3pxEnkiUAtVWL36omc+KNCQgDuSraq8ILeDY5lO4KG3w/LvzL5zDzq7tSal5tH20+u
- 899Cg6H81zfAZUzdRBg0VS0hzJD7Svh5e19SYGRaaGKjHmF5ZWB9L16
+ bh=EzyYoUZps3zDjCcM6n577kaxIQx3hsLmnb8iBzOF4mg=;
+ b=P9dF4R9Ip6IzJ0/AQCOHBV+sLHek/IaozMBORHpLkVhVYEa3MDZTC5084SwGH7gcBEZqwQNYx
+ eEtFShn/p4fC40WE8S/qJVbJdqtXEHaWaa5gIlPjTlKSwn41ObfhTr0
 X-Developer-Key: i=kauschluss@disroot.org; a=ed25519;
  pk=h2xeR+V2I1+GrfDPAhZa3M+NWA0Cnbdkkq1bH3ct1hE=
 
-Add support for Exynos7870 UART. FIFO size is expected to be present in
-DT.
-
-This patch series is a part of Exynos7870 upstreaming.
+Document the compatible string for Exynos7870's UART driver. The devicetree
+property samsung,uart-fifosize must be mandatory, as the driver enquires about
+the FIFO sizes.
 
 Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
 ---
-Kaustabh Chakraborty (2):
-      dt-bindings: serial: samsung: add exynos7870-uart compatible
-      tty: serial: samsung: add support for exynos7870
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
- Documentation/devicetree/bindings/serial/samsung_uart.yaml |  2 ++
- drivers/tty/serial/samsung_tty.c                           | 13 +++++++++++++
- 2 files changed, 15 insertions(+)
----
-base-commit: df4b2bbff898227db0c14264ac7edd634e79f755
-change-id: 20250203-exynos7870-uart-62f64cea2489
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 070eba9f19d3e039090c58a82f93d02eed58ab84..e4387d504407778ffddabeb674c51c984a1179b7 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -26,6 +26,7 @@ properties:
+           - samsung,s5pv210-uart
+           - samsung,exynos4210-uart
+           - samsung,exynos5433-uart
++          - samsung,exynos7870-uart
+           - samsung,exynos850-uart
+           - samsung,exynos8895-uart
+       - items:
+@@ -161,6 +162,7 @@ allOf:
+           contains:
+             enum:
+               - google,gs101-uart
++              - samsung,exynos7870-uart
+               - samsung,exynos8895-uart
+     then:
+       required:
 
-Best regards,
 -- 
-Kaustabh Chakraborty <kauschluss@disroot.org>
+2.48.1
 
