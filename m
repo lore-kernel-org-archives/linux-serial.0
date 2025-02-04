@@ -1,26 +1,26 @@
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 88D132153EA;
-	Tue,  4 Feb 2025 16:52:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA6EA153598;
+	Tue,  4 Feb 2025 18:05:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738687929; cv=none; b=daWZ87w85SRPyKUt6V/uUJVww4hmunlJ1kSYcfDxZIcWonKu34GwVal3QHiBS3KQkG1XrnWidbgWMYyewNgNxbzgmFIPq5Z/9PdH3b1r5AtZZ7B1pYPZP2O5qVaQkUNN5pTbhMLgUP3RWzhcFa02uxJIm397o8VskS01IlQA+FE=
+	t=1738692308; cv=none; b=WcBlM1XrDRexDsiUDwawNv3jV9mYAO8DqeP14KDR01VbKoXmvmAPlaqtsWLUC0SyzAoyX3Yg1c1U7/KehsnwSPw05DtHS/6md0IOtDBXm0wfkyKRVfUeqUVuosjnwkCd4CAjXhJWJl7yOYXizjvEEmSqVR/I31fwGg4kld0OLyY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738687929; c=relaxed/simple;
-	bh=hNLYzuKlw/dfuhtTCG0vFtuuay/O5OFK6TxVKaAhhlk=;
+	s=arc-20240116; t=1738692308; c=relaxed/simple;
+	bh=rPWErur0muffrrd68Q+PJ4Le9SEMJHK5eMUGEmuJyec=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ko1xCZiuEhP3OG5aEYw9xadUoJc1yL8ShTyayuCXN0OkkChKW8jnYCm03HXNzOTCh3JiF4rMNU1fObRm3nmN/AY/UhnGgvrBiazTPVgo526MO1SnrvYk3PwfgnDjZ7A052QcG+wfCMf0KXoGixMdO+7B5RTzNgZJqsrrrOJzVrM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.172
+	 In-Reply-To:Content-Type; b=H+sfqkYbjgkFAOU/OTB4P3nKA9nqRYeLIe8k+jcU/K3vZpgKdiuom3EWp/0aeAH6ds33utjVIxIwdo/fqeBX42AOj9dMGCCENOseT8H/A9p2ZygV3hCiEFjqBWGp3vgSX827ckON/FDWrnrSE7cYlHDLLRFa7fvaX0PhsgaLIE4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
-X-CSE-ConnectionGUID: EmbyQgIMS1OWmFrxMcY8RA==
-X-CSE-MsgGUID: uUEINQaUQh6nspVIzi5KhA==
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 05 Feb 2025 01:51:59 +0900
+X-CSE-ConnectionGUID: /W14jKo9SnqoXZ6UVIw52w==
+X-CSE-MsgGUID: s/VAe+AHSGC6FtnWNa5NPQ==
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 05 Feb 2025 03:05:03 +0900
 Received: from [10.24.1.103] (unknown [10.24.1.103])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8856E403141A;
-	Wed,  5 Feb 2025 01:51:46 +0900 (JST)
-Message-ID: <44797c30-5211-4aed-b57e-4420204bd063@bp.renesas.com>
-Date: Tue, 4 Feb 2025 16:51:44 +0000
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id C83A540065D0;
+	Wed,  5 Feb 2025 03:04:58 +0900 (JST)
+Message-ID: <46ae969b-f24a-42cc-8477-70d9e8f8c057@bp.renesas.com>
+Date: Tue, 4 Feb 2025 18:04:57 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -28,84 +28,214 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 08/14] serial: sh-sci: Fix a comment about SCIFA
+Subject: Re: [PATCH 09/14] serial: sh-sci: Introduced function pointers
 Content-Language: en-GB
 To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <20250129165122.2980-1-thierry.bultel.yh@bp.renesas.com>
- <20250129165122.2980-9-thierry.bultel.yh@bp.renesas.com>
+ <20250129165122.2980-10-thierry.bultel.yh@bp.renesas.com>
 From: Paul Barker <paul.barker.ct@bp.renesas.com>
-In-Reply-To: <20250129165122.2980-9-thierry.bultel.yh@bp.renesas.com>
+In-Reply-To: <20250129165122.2980-10-thierry.bultel.yh@bp.renesas.com>
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="------------qp1cyeHHKrUxFoPpCrWN1yoF"
+ boundary="------------x0NxAdUVowxnEZRev3B96Dkd"
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------qp1cyeHHKrUxFoPpCrWN1yoF
-Content-Type: multipart/mixed; boundary="------------SBvZUIQRD1DMsWDG9kDedHQr";
+--------------x0NxAdUVowxnEZRev3B96Dkd
+Content-Type: multipart/mixed; boundary="------------eioP0Hm1VW2OG9xKJGS5LRub";
  protected-headers="v1"
 From: Paul Barker <paul.barker.ct@bp.renesas.com>
 To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Message-ID: <44797c30-5211-4aed-b57e-4420204bd063@bp.renesas.com>
-Subject: Re: [PATCH 08/14] serial: sh-sci: Fix a comment about SCIFA
+Message-ID: <46ae969b-f24a-42cc-8477-70d9e8f8c057@bp.renesas.com>
+Subject: Re: [PATCH 09/14] serial: sh-sci: Introduced function pointers
 References: <20250129165122.2980-1-thierry.bultel.yh@bp.renesas.com>
- <20250129165122.2980-9-thierry.bultel.yh@bp.renesas.com>
-In-Reply-To: <20250129165122.2980-9-thierry.bultel.yh@bp.renesas.com>
+ <20250129165122.2980-10-thierry.bultel.yh@bp.renesas.com>
+In-Reply-To: <20250129165122.2980-10-thierry.bultel.yh@bp.renesas.com>
 
---------------SBvZUIQRD1DMsWDG9kDedHQr
-Content-Type: multipart/mixed; boundary="------------0q93RxT83wXhIKv0S02DW5Zp"
+--------------eioP0Hm1VW2OG9xKJGS5LRub
+Content-Type: multipart/mixed; boundary="------------cRVittwlHBbNPvmnaF1dlDuM"
 
---------------0q93RxT83wXhIKv0S02DW5Zp
+--------------cRVittwlHBbNPvmnaF1dlDuM
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
+Hi Thierry,
+
+I've just had time to review the header file changes in this patch
+today.
+
 On 29/01/2025 16:37, Thierry Bultel wrote:
-> RZ/T1 has SCIFA, 'T' is not relevant.
+> The aim here is to prepare support for new sci controllers like
+> the T2H/RSCI whose registers are too much different for being
+> handled in common code.
+>=20
+> This named serial controller also has 32 bits register,
+> so some return types had to be changed.
+>=20
+> The needed generic functions are no longer static, with prototypes
+> defined in sh-sci-common.h so that they can be used from specific
+> implementation in a separate file, to keep this driver as little
+> changed as possible.
+>=20
+> For doing so, a set of 'ops' is added to struct sci_port.
 >=20
 > Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-
-It'd be good to explain this better in the commit message, something like=
-:
-
-    The comment was correct when it was added, at that time RZ/T1 was
-    the only SoC in the RZ/T line. Since then, further SoCs have been
-    added with RZ/T names which do not use the same SCIFA register
-    layout and so the comment is now misleading.
-
-    So we update the comment to explicitly reference only RZ/T1 SoCs.
-
 > ---
->  drivers/tty/serial/sh-sci.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 924b803af440..5ba25a6a5432 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -291,7 +291,7 @@ static const struct sci_port_params sci_port_params=
-[SCIx_NR_REGTYPES] =3D {
->  	},
-> =20
->  	/*
-> -	 * The "SCIFA" that is in RZ/A2, RZ/G2L and RZ/T.
-> +	 * The "SCIFA" that is in RZ/A2, RZ/G2L and RZ/T1
+>  drivers/tty/serial/sh-sci.c        | 339 +++++++++++++++--------------=
 
-Please keep the full stop at the end of the sentence for consistency.
+>  drivers/tty/serial/sh-sci_common.h | 178 +++++++++++++++
+>  2 files changed, 349 insertions(+), 168 deletions(-)
+>  create mode 100644 drivers/tty/serial/sh-sci_common.h
 
->  	 * It looks like a normal SCIF with FIFO data, but with a
->  	 * compressed address space. Also, the break out of interrupts
->  	 * are different: ERI/BRI, RXI, TXI, TEI, DRI.
+[snip]
+
+> diff --git a/drivers/tty/serial/sh-sci_common.h b/drivers/tty/serial/sh=
+-sci_common.h
+> new file mode 100644
+> index 000000000000..cbfacdc1a836
+> --- /dev/null
+> +++ b/drivers/tty/serial/sh-sci_common.h
+> @@ -0,0 +1,178 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +
+> +#ifndef __SH_SCI_COMMON_H__
+> +#define __SH_SCI_COMMON_H__
+> +
+> +#define SCI_MAJOR	204
+> +#define SCI_MINOR_START	8
+> +
+> +#include <linux/serial_core.h>
+> +
+> +enum SCI_CLKS {
+> +	SCI_FCK,		/* Functional Clock */
+> +	SCI_SCK,		/* Optional External Clock */
+> +	SCI_BRG_INT,		/* Optional BRG Internal Clock Source */
+> +	SCI_SCIF_CLK,		/* Optional BRG External Clock Source */
+> +	SCI_NUM_CLKS
+> +};
+> +
+> +/* Offsets into the sci_port->irqs array */
+> +enum {
+> +	SCIx_ERI_IRQ,
+> +	SCIx_RXI_IRQ,
+> +	SCIx_TXI_IRQ,
+> +	SCIx_BRI_IRQ,
+> +	SCIx_DRI_IRQ,
+> +	SCIx_TEI_IRQ,
+> +	SCIx_NR_IRQS,
+> +
+> +	SCIx_MUX_IRQ =3D SCIx_NR_IRQS,	/* special case */
+> +};
+> +
+> +/* Bit x set means sampling rate x + 1 is supported */
+> +#define SCI_SR(x)		BIT((x) - 1)
+> +
+> +extern void sci_release_port(struct uart_port *port);
+> +extern int sci_request_port(struct uart_port *port);
+> +extern void sci_config_port(struct uart_port *port, int flags);
+> +extern int sci_verify_port(struct uart_port *port, struct serial_struc=
+t *ser);
+> +extern void sci_pm(struct uart_port *port, unsigned int state,
+> +		   unsigned int oldstate);
+> +extern void sci_enable_ms(struct uart_port *port);
+> +
+> +#ifdef CONFIG_CONSOLE_POLL
+> +extern int sci_poll_get_char(struct uart_port *port);
+> +extern void sci_poll_put_char(struct uart_port *port, unsigned char c)=
+;
+
+The extern keyword isn't needed for function definitions in header
+files.
+
+> +#endif /* CONFIG_CONSOLE_POLL */
+> +
+> +struct plat_sci_reg {
+> +	u8 offset, size;
+
+Please define struct members on separate lines.
+
+> +};
+> +
+> +/* The actual number of needed registers depends on the sci controller=
+;
+> + * using this value as a max covers both sci and rsci cases
+> + */
+> +#define SCI_NR_REGS 20
+> +
+> +struct sci_port_params_bits {
+> +	unsigned int rxtx_enable;
+> +	unsigned int te_clear;
+> +	unsigned int poll_sent_bits;
+> +};
+> +
+> +struct sci_common_regs {
+> +	unsigned int status;
+> +	unsigned int control;
+> +};
+> +
+> +struct sci_port_params {
+> +	const struct plat_sci_reg regs[SCI_NR_REGS];
+
+I don't see any usage of the regs field of this struct - is it needed?
+If not, can we also get rid of SCI_NR_REGS?
+
+> +	const struct sci_common_regs *common_regs;
+> +	unsigned int fifosize;
+> +	unsigned int overrun_reg;
+> +	unsigned int overrun_mask;
+> +	unsigned int sampling_rate_mask;
+> +	unsigned int error_mask;
+> +	unsigned int error_clear;
+> +	struct sci_port_params_bits param_bits;
+
+It looks like we always initialise param_bits via a `static const struct
+sci_port_params_bits` instance. Is there any reason we copy the contents
+of this into the sci_port_params instance instead of using a pointer?
+
+> +};
+> +
+> +struct sci_port_ops {
+> +	u32 (*read_reg)(struct uart_port *port, int reg);
+> +	void (*write_reg)(struct uart_port *port, int reg, int value);
+> +	void (*clear_SCxSR)(struct uart_port *port, unsigned int mask);
+> +
+> +	void (*transmit_chars)(struct uart_port *port);
+> +	void (*receive_chars)(struct uart_port *port);
+> +
+> +	void (*poll_put_char)(struct uart_port *port, unsigned char c);
+> +
+> +	int (*set_rtrg)(struct uart_port *port, int rx_trig);
+> +	int (*rtrg_enabled)(struct uart_port *port);
+> +
+> +	void (*shutdown_complete)(struct uart_port *port);
+> +
+> +	unsigned int (*get_ctrl_temp)(struct uart_port *port, unsigned int ct=
+rl);
+
+I think we need a better name for this one. ctrl_temp is just the name
+of the value we want to write to the control register in the
+serial_console_write function, the name doesn't give any clue as to its
+intended function.
+
+Perhaps it would be better to define a prepare_console_write operation
+which modifies the control register state and returns the old control
+register state (so that it can later be restored). That would result in
+a little more code duplication but it'd be easier to understand.
+
+> +};
+
+[snipped the rest]
 
 Thanks,
 
 --=20
 Paul Barker
---------------0q93RxT83wXhIKv0S02DW5Zp
+--------------cRVittwlHBbNPvmnaF1dlDuM
 Content-Type: application/pgp-keys; name="OpenPGP_0x27F4B3459F002257.asc"
 Content-Disposition: attachment; filename="OpenPGP_0x27F4B3459F002257.asc"
 Content-Description: OpenPGP public key
@@ -169,21 +299,21 @@ ZyZGVsEsOuGCLkekUMF/5dwOhEDXrY42VR/ZxdDTY99dznQkwTt4o7FOmkY=3D
 =3DsIIN
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------0q93RxT83wXhIKv0S02DW5Zp--
+--------------cRVittwlHBbNPvmnaF1dlDuM--
 
---------------SBvZUIQRD1DMsWDG9kDedHQr--
+--------------eioP0Hm1VW2OG9xKJGS5LRub--
 
---------------qp1cyeHHKrUxFoPpCrWN1yoF
+--------------x0NxAdUVowxnEZRev3B96Dkd
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-wnsEABYIACMWIQSiu8gv1Xr0fIw/aoLbaV4Vf/JGvQUCZ6JFoQUDAAAAAAAKCRDbaV4Vf/JGvVki
-AQCmHXY4SYGL4xbDDVm7RC645kF9/dAHCAh8K7ara2yMoQD/SRlUOcYC/AubiyMz685fqAmRP/Vz
-z9nGFPk/0qACLwc=
-=OzBB
+wnsEABYIACMWIQSiu8gv1Xr0fIw/aoLbaV4Vf/JGvQUCZ6JWyQUDAAAAAAAKCRDbaV4Vf/JGvfeB
+AP97VmLRTev40THQumFlvJDrpXZMjoO2FwHLQ/u8M2tjnQEAnwocJDdjqM1zsGyZXSP47a3N6+B7
+FDDNxnarHgU4kAw=
+=al0R
 -----END PGP SIGNATURE-----
 
---------------qp1cyeHHKrUxFoPpCrWN1yoF--
+--------------x0NxAdUVowxnEZRev3B96Dkd--
