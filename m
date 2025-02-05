@@ -1,41 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D494B2770B;
-	Wed,  5 Feb 2025 05:21:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 530F721D5A3;
+	Wed,  5 Feb 2025 05:28:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738732904; cv=none; b=id3P4wwv9EzdFiLUDMwaggAlMlzxtLrTqTeTWAPBDLOv2VPenqTcws3jChGCQdpGoxsSDRsCgqU2jTfDlRZFK3puZAtpU3ODdIoThr20wgyWYLoj4zsAIC6Tp4nAxPZ7riEiC8hmYQLoLqjlrPWohJyX3AYf529BtT6maVPEA/o=
+	t=1738733308; cv=none; b=ZKuhVbRmvn4Ejz0IuKTV4p82nqR+hFOGHAy6WIbzu9FgALbxaZgmDciNguIJQK6JmTKDKH6X0ppiOVm9zQ7cJIoXZGEYdc5jEX8gGrL8MbXViQSt/2UBuMPjnFmzwltNeDS3GzyWcDVHzaZDGVcuKVoLUVB41DvVJGpLFtM0xzY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738732904; c=relaxed/simple;
-	bh=09NqadQ03is0WWFn8/nGxcD921BY37Q99Gp3kueAsrI=;
+	s=arc-20240116; t=1738733308; c=relaxed/simple;
+	bh=0n+4YgEc9u3YaQhLk0UdMuWq7cV5Fe8zlFg0KUvaA4I=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=PY31lbnWa7hEdfGZim2r60/CQxw/iF2S3kY73QQui9i5Y5nhJ3hgtysuoKtrQno8BipZa2UGRJr85apOmKgj8/vzJCOAoSbzF/dt31gPv8MEh7BwA5UwREXtXY+0aWFVEZHiYYVxzq66IKlXONa2eqBmKfgPs2X1POw0NphyWQw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HQ9uZzfv; arc=none smtp.client-ip=10.30.226.201
+	 Content-Disposition; b=WkvLdmwD0B+wvo3m0tR4tMRox9nrbeEj4Jjt6A31R7scO4Rn/5yKwSr0iuqqDDV+JBJkOsFIZkN4SG8NlZCNhjlJWQlr0u4Q0LidA+VCn4I9o87FlH9NNoqO2omfx7UI2UpRJxaFHTc5yyVUukahiBg4euvOw9x5QhcWPaa+odY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f5Bh+uS4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HQ9uZzfv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31E99C4CED1;
-	Wed,  5 Feb 2025 05:21:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f5Bh+uS4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AD27C4CED1;
+	Wed,  5 Feb 2025 05:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738732903;
-	bh=09NqadQ03is0WWFn8/nGxcD921BY37Q99Gp3kueAsrI=;
+	s=k20201202; t=1738733307;
+	bh=0n+4YgEc9u3YaQhLk0UdMuWq7cV5Fe8zlFg0KUvaA4I=;
 	h=Date:From:To:Cc:Subject:From;
-	b=HQ9uZzfvEba6Oem+5SLrLX6z/vohbJKJMpSGwxNCST6nk+mFG5X/wtss/q2JUTO3Z
-	 DWtIm8OXAnJijKJNrbq92wDcWZ1Ca1ESuPtwEEDoQaA/e+a93n51Oxq0uic7qDgf5v
-	 c8sfu5rinvC9Ev3yBUUf3JF0Ti2WvTRN1QHjy1jtL1MMJZYDRjH7FGeROhYReP1fW9
-	 MNwr3O7TCvBjiTCwz0j8GEamCvHXjcGxyr8DKdY94XdjpvBF9sLzEYNrF5PtYv8SEM
-	 qQ7M0AWj5Bb6Zi2qqOG1YspM75vfC/4zOd59gpm4eZwo043PDs6hAGPIr+xm9idy3A
-	 pmjt6CidCjw/w==
-Date: Wed, 5 Feb 2025 15:51:35 +1030
+	b=f5Bh+uS4dJEhVj/7NyJmxrXd7mw9JXj4cXwudsvxJv5c48g+nl7jRl/NzxfzKaNJx
+	 O6iZysMj8PfBg4O8p65ODY2MzXzlh0IBjVY1ey44kAui4ZuaqjbTpB3twchaVPSrxK
+	 gm4XPTLnFtr/OGYILg3fFMKPpY9Lp8FrEyvYqApZNxHY80ibJ4iBFP4NX73ia6RR5Z
+	 Wn72LzrPRNFMpwtzK1jfOGcf0fIWx+x4m+o20jhjRKeSubxkmF5qzJ4iERYSXjCH5s
+	 nhSGFind4rwhmbwK5nIYDb1ypnuAaeIHxh+fsOnL8CjfOIfg2Zgl/8bnQLtWSlFb45
+	 1ypSvlpr9zYMQ==
+Date: Wed, 5 Feb 2025 15:58:20 +1030
 From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
 	linux-hardening@vger.kernel.org
-Subject: [PATCH][next] tty: tty_buffer: Avoid hundreds of
+Subject: [PATCH v2][next] tty: tty_buffer: Avoid hundreds of
  -Wflex-array-member-not-at-end warnings
-Message-ID: <Z6L1XwE-WEzcGFwv@kspp>
+Message-ID: <Z6L29DXeGWl-6OnK@kspp>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -79,6 +79,13 @@ include/linux/tty_buffer.h:40:27: warning: structure containing a flexible array
 
 Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
+Changes in v2:
+ - Fix a space at the beginning of the line issue, and adjust the
+   identation of a code coment.
+
+v1:
+ -  Link: https://lore.kernel.org/linux-hardening/Z6L1XwE-WEzcGFwv@kspp/
+
  drivers/tty/tty_buffer.c   | 18 ++++++++++------
  include/linux/tty_buffer.h | 43 +++++++++++++++++++++-----------------
  2 files changed, 36 insertions(+), 25 deletions(-)
@@ -134,7 +141,7 @@ index 79f0ff94ce00..f4e7520df7b1 100644
  	atomic_set(&buf->mem_used, 0);
  	atomic_set(&buf->priority, 0);
 diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
-index 31125e3be3c5..4f705045d175 100644
+index 31125e3be3c5..5f1221a7eb6c 100644
 --- a/include/linux/tty_buffer.h
 +++ b/include/linux/tty_buffer.h
 @@ -8,19 +8,24 @@
@@ -160,7 +167,7 @@ index 31125e3be3c5..4f705045d175 100644
 +		unsigned int used;
 +		unsigned int size;
 +		unsigned int commit;
-+		unsigned int lookahead;		/* Lazy update on recv, can become less than "read" */
++		unsigned int lookahead;	/* Lazy update on recv, can become less than "read" */
 +		unsigned int read;
 +		bool flags;
 +	);
@@ -168,7 +175,7 @@ index 31125e3be3c5..4f705045d175 100644
  	u8 data[] __aligned(sizeof(unsigned long));
  };
 +static_assert(offsetof(struct tty_buffer, data) == sizeof(struct tty_buffer_hdr),
-+              "struct member likely outside of struct_group_tagged()");
++	      "struct member likely outside of struct_group_tagged()");
  
  static inline u8 *char_buf_ptr(struct tty_buffer *b, unsigned int ofs)
  {
