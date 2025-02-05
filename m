@@ -1,245 +1,155 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010050.outbound.protection.outlook.com [52.101.69.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5700229B36
-	for <linux-serial@vger.kernel.org>; Wed,  5 Feb 2025 09:31:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738747875; cv=none; b=Q1Zdp99TtFhlUDi9a26XyztH7ErFNvNpnF9F4j6Xs1RSYd0PIqb3Lc3SjgRse84xp8DhV8S6+ZjPf2dIVFWn3A/m07KrN5d/LkXaMc/vOZQ8Fpbp640s0xtO5/7qGo+HqDtwVE05znvDcCNoqylqAXUwahuV+E5LI+vDXOYRwHA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738747875; c=relaxed/simple;
-	bh=jHDBXjhSUq4kXJGyHh7NJ4ZakuUpx9kWVj+0VeYsqfk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=U5U6/RBB8x4gT+1EJmX6jcx0ncimcmeTkoIZGfiKzvi4zwuZ2dmRNXRqGKPS5zkrKkkjw3A015DG3dsHML21GGHOJHnCwrvChNAHvMovIcefVihyzFYMIr0ndLoXy9azCBnD2t21anSgd3njOvZ5lNVmmC5emlkTzZYiY7AbvVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=Waus9W0N; arc=none smtp.client-ip=209.85.218.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F6F32063D8
+	for <linux-serial@vger.kernel.org>; Wed,  5 Feb 2025 10:24:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738751088; cv=fail; b=rumkUyZx/nJ/zFzoIQ0VAAm3OkFJptyYowySI7YhTsOLkfz41QFRYypl2Gv8BVN/aTp/2rUYey0FP4xZwJLr324TFuHOg7KpK1GgVlVvO8WIPGF1AFvfuNIGKrJSObjBx9Aj2eBw3Zyn6NS7A61xMbZgHOPC/MWZAcgMJoDdD0E=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738751088; c=relaxed/simple;
+	bh=ydv253HfBFzKBdJNbBovDSBMN8E0Jm6aPBfGHgKNgDg=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=AKm17eYVql300Bji7yFH4HYutOTHH8UDxXt9KzL3EhxCIwEWSXu+MicHGIviWeP6Fu0qDhGmFJOExcNbRBVNhMbyZPBwBCsVzPq7eerpFWWwR/xrE9tqlMPcz7sjX+OUx1UGFsRci8ImVVuLz/o68gn9SChiqjHIMGBkIfnkntM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=XS/kxVVz; arc=fail smtp.client-ip=52.101.69.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="Waus9W0N"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-ab698eae2d9so35021966b.0
-        for <linux-serial@vger.kernel.org>; Wed, 05 Feb 2025 01:31:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1738747872; x=1739352672; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=MHCjb4U4W5peYjGqhen8R1FyjB8spPyGmDAL2pxi76Q=;
-        b=Waus9W0N0eHDhaNK5e2LELJXTsY8hcVAZJWvwQOewbKTAQhir8Vz9o6Jgb08oJADAn
-         KMnwAMTsHc7SKWtN57SOJG03UCt19Okr92ew5lHwSkxPLZogMN3eMOajnLTSShhMf3/A
-         AMyrBldd4zzT6Q3ugAMEHqFYdwVjVe2i7DEnm1kV0gxbYmgBepBtkvyIvljtIyRsllVL
-         VyTp0U/6zF96t/rRVp45RR+N3SYBM6x6lPl/0TvH6Ly4oT8KN8N7k5LjXu17Z7UDZFHZ
-         HZJcn/4UydawZG1iF4o1bZSE58JQrLWgoihylttzp1Hfb31L5+uIp6YjjDnR47Kp+QLz
-         n88w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738747872; x=1739352672;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MHCjb4U4W5peYjGqhen8R1FyjB8spPyGmDAL2pxi76Q=;
-        b=mD2Z1lmA9EViL9Ueodea16Eez1p5pOw84yeJIYu6J3KLomHwQ1yh/lbwFg568Z7Pxo
-         k2N9Fh8aOHu72FtuDOQ0e65e3oAKoZyOGGPBmKgwXAB1UQkL8A+imAyltjTFUvGNpgd3
-         bHkb/x647K9gd5Nonv1gtBmrJeae3+rjkCGzCv0mJ6gxBcq++AnXpIoIp8H4ZJYfyduX
-         LeWgQ95QyQKE+mtvaVQLAsFMytLh0UvoxoobvYNhgfPIqzswKws6NRtHnhAFlXI9X77e
-         4ebXWmBYv9qUcPi0hRoyXmMj2uWgRbroLnUVRb44fzC3xKoFtX2oOhOyuq2zAaATeYjy
-         TliA==
-X-Forwarded-Encrypted: i=1; AJvYcCULW7lDfIn7NTMqdjhVqYahjOFdL2Aqt0nuz+zCyWznHRQ/bxnUZdvuM4/jMwKD8SUmBn1rxUeJZKmg4Ik=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz6s6ioV2m2oKm5i7NkI2EAmZXBdraXEoU+k2j/Ttx3BP48jP6O
-	M24btarbThLb6uIloKGRrvuydHCNxDIhHq6HgIrvuhskR1Jp+X6BygoDRNHGNrI=
-X-Gm-Gg: ASbGncsNM39iUmJWuH9kF8T9FBeQEdaLIhkEPMdMw8a5yVhJzn771UZZMPlE5J5D0rB
-	l+Xcs4z0my+mzrQ9F3q0VbokU4GMiEz0OUdujg7pk2HnYxHPZ2b0TFGk9o8vkCzjlq+Qoq9jOu2
-	VkmH5yEPqlZZXlUv2+cXBlQ1uE1URMZUR5X5xlcyut85vSwNbFCF589vM1+nm6NZ22TryNakdYM
-	0p8NzQNy5Ddsezgi1Muhie0po4uVL8q1Z6r6RInd/ynFCXiVl5DaRzG01XiKmn3/qPR1/oLDX7S
-	k9CjacpeOgU6neSDebejCZ/AE22S4oe5Dcerqp7UPNelFw==
-X-Google-Smtp-Source: AGHT+IHoZk2JpL5pPjKQA/glfhGs8GDupmQhGbkNANdUDiV5QxwDF1wHrCEdf0uYNcQG28ZL6K41qA==
-X-Received: by 2002:a17:907:3da8:b0:aaf:74dc:5dbc with SMTP id a640c23a62f3a-ab75e262823mr203421466b.29.1738747871692;
-        Wed, 05 Feb 2025 01:31:11 -0800 (PST)
-Received: from claudiu-X670E-Pro-RS.. ([82.78.167.173])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab6e47d06casm1080968766b.58.2025.02.05.01.31.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Feb 2025 01:31:11 -0800 (PST)
-From: Claudiu <claudiu.beznea@tuxon.dev>
-X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	p.zabel@pengutronix.de,
-	geert+renesas@glider.be,
-	wsa+renesas@sang-engineering.com,
-	prabhakar.mahadev-lad.rj@bp.renesas.com
-Cc: claudiu.beznea@tuxon.dev,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH v5] serial: sh-sci: Update the suspend/resume support
-Date: Wed,  5 Feb 2025 11:31:08 +0200
-Message-ID: <20250205093108.2027894-1-claudiu.beznea.uj@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="XS/kxVVz"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=TCgQ0EvWcQvhra3H0QVxu/vSv1xYzJZdXhCSaxYaetW/l42VucMfsqTR5YQbV2N0y9ss7cg9vDzyHPQePBTlPeguAwdW2q8zPme89iH7rhSkaDOqB5gxKVKvo6rCmBgBEgskkz4lZVIq5GKufCVptHm2OVrozwHpiXvdyMmUaICQNf6FT3pqTgWE0F3FxRk+KkgEMDRiqfaxxzKazxvr8zmISeYpwAxF8G4gvoxA1umQ++iosMT3Qd2zMQ5FE87hUwApgfFMV5mkE5l3M/kUZGVCh7j+kKt3krYoYwi11jJHWGw1EPI1AlhsN67C7Fds8PtxCe4Cj4L6WJ3UFRoIcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ydv253HfBFzKBdJNbBovDSBMN8E0Jm6aPBfGHgKNgDg=;
+ b=HQ/lXdOjll65KAR6BoytEGBD4cvwx0c3KKJVN94FWE4QAkMjlB8X6VyUkwB3635rjoy+2CPC90ZCYPr30VDv33uMnRtvggRcK9eXznTmSOlamEK+NH1Mv0T0opyI6Xn5r60IZVcGeerVADaxCceAzKAvvxcJNGIH3+7puyxjUClvY8Z9T3aaNrrsyd9ddQ+Zi6uyykCQYD3DiGrrWYL5CGsm6UD/WvUXXUBN5ml17RTiwYtou1MilMCDi3DY/FXAyZGvwmYIQKyybv4KBCsKToJG7tmRrTbtZk5Rr4sJJbOEm7KmPi8l3QfJwbyrSQ80l9tLSFZ4mf34Y43yHh2xEA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ydv253HfBFzKBdJNbBovDSBMN8E0Jm6aPBfGHgKNgDg=;
+ b=XS/kxVVztwW2ZsRQ0uUZ7bxdtSpe5/qIyqrJ7LKep0IMZ2nMoVwLrFZict1g0Dga+/ISCaG7vjcKeFr0xzQL0MMtNPgQ/oiXDLU0LJuSnWuDEAqjwZHYFScc5OcYfPJEC5i9BNHkr2B34/OgyWXpxfugqahVWB0lNED8wUNPvVqJ5i9Pgj3r9hkGI7C6hE65Kcl2Kf7zkpFB2Gh4SSlnbq9miN1XgppGI75af87zmH4jvZYLXO8M9RNcoUkG83dDWclfur0dIyYyF+SK6NS2VHNP0mr94/suLRYxf6Z3WeTjIoj/ScFkb3YBoM+3ObuMoJ0oxR42hxxXOypHs7oq6A==
+Received: from PAXPR04MB8459.eurprd04.prod.outlook.com (2603:10a6:102:1da::15)
+ by PAWPR04MB9720.eurprd04.prod.outlook.com (2603:10a6:102:38d::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8398.20; Wed, 5 Feb
+ 2025 10:24:42 +0000
+Received: from PAXPR04MB8459.eurprd04.prod.outlook.com
+ ([fe80::165a:30a2:5835:9630]) by PAXPR04MB8459.eurprd04.prod.outlook.com
+ ([fe80::165a:30a2:5835:9630%3]) with mapi id 15.20.8398.025; Wed, 5 Feb 2025
+ 10:24:42 +0000
+From: Peng Fan <peng.fan@nxp.com>
+To: Stefan Wahren <wahrenst@gmx.net>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Sherry Sun
+	<sherry.sun@nxp.com>
+CC: Luke Wang <ziniu.wang_1@nxp.com>, "linux-serial@vger.kernel.org"
+	<linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
+Subject: RE: [PATCH] tty: serial: fsl_lpuart: Make interrupt name distinct
+Thread-Topic: [PATCH] tty: serial: fsl_lpuart: Make interrupt name distinct
+Thread-Index: AQHbd63Hgkl+K/Q8dUKjYBxmzYysTbM4gM1g
+Date: Wed, 5 Feb 2025 10:24:42 +0000
+Message-ID:
+ <PAXPR04MB8459391B8BBA618090EF82BC88F72@PAXPR04MB8459.eurprd04.prod.outlook.com>
+References: <20250205091007.4528-1-wahrenst@gmx.net>
+In-Reply-To: <20250205091007.4528-1-wahrenst@gmx.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PAXPR04MB8459:EE_|PAWPR04MB9720:EE_
+x-ms-office365-filtering-correlation-id: 958738e2-a047-4c79-ed61-08dd45cf4e11
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700018;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?cjV0zL8Rma+X4nED3gKA1X1JxSgR1ISUdOxT+kbq+c8whJjCIpA9ZEja6Ek4?=
+ =?us-ascii?Q?4UjRus2SpgdQRmxWBTq1ax8N0400mW9ATJLLUZMi398NJx1dnqUEJXm/KOe6?=
+ =?us-ascii?Q?SgBymAIWduzAn52kxNNSbL4Uz4lQ2egUUDpzSXUKTTS5VMY14o7fecoou9c7?=
+ =?us-ascii?Q?K8/ZzOnC0C7JR+Y3bUE1JD6CH7mUxRoYd01shR0UXJe63n0KKKXKUZeiXjOB?=
+ =?us-ascii?Q?IsI+lWZf+R7PHj5ULG+khrstw1U/fcFCKkmZfJnDWGSZx/TaWNdFVSMDZW1/?=
+ =?us-ascii?Q?Hcibh6hEkqyMAx921iZxiDBPk9zWIndpmlzvsRsQCCsykYk8M1Wv0WVwf3gM?=
+ =?us-ascii?Q?8LTPRnwCPq3tpa9YCESCDPBRIFP1Wmxh4ul6rjXwQ9QTrdSKOg8gj0Jn4AGZ?=
+ =?us-ascii?Q?OWYrtsnvzg1n/I1na+6yNu/TtTmxAuQx6r+kW+MNYEgtT30o5SkxTrsRH1Gr?=
+ =?us-ascii?Q?aFxTdR7bn1AqYb9MnJwMwa9OSvLbuh2+u6a5pEx1ZyWIgE5flkxnCA5X+ukz?=
+ =?us-ascii?Q?m0EIOFEUqgDfNnaER0sIi0Xc6DGsTakuCsO8D+09K/STZDHxt/0JBrkuFiCs?=
+ =?us-ascii?Q?MMUO+H21z78eqaDXMB26u0/VpRFyHn/Nz6eBN+v0qzyXT/ADaMx5Z8ldFtqN?=
+ =?us-ascii?Q?hBH2YZzFgJC8IkozmFlAj52E41Wah3wYBGssaZ7PuwIruSIhU7+N31xuzAup?=
+ =?us-ascii?Q?T90u5MQBw1yNGWUY6Gh30ReBSdYU4j2VX2zfWKQwE0YjSU4OEur6mkWb4NXH?=
+ =?us-ascii?Q?I5BRTiXVbHc8kL14iBZ+A1YADO8dkwBiC5FHftiKNJd6q5BVK4EKF8ANl2L5?=
+ =?us-ascii?Q?ovjonJWOwV+SNSN4Ktc9j90kZATgVHiWGInnAOa1VNElGgIYMNTdUzxcCz1Z?=
+ =?us-ascii?Q?wui5YV+4Ol1AQil2k5/JN+uoieXP9ExvkNmB9meRXwLJ0KMihh5r0FCcIibQ?=
+ =?us-ascii?Q?QwrLYNjVceiWYPP+g4zF9RWoIamPUW8Rs8iSqipsZoZm+m2q9HR3E7kMqaQ4?=
+ =?us-ascii?Q?2nCfuRICoSP7bd7QH7Fs0nz5tQffp30pScZW+3gzO0Z+R5nrnsI61q30lSe+?=
+ =?us-ascii?Q?WoCvib0/RpFfOzoozr+avkBRASaXK7lRoFexJeJ4zbIP4D/ot7A6NarED3Y0?=
+ =?us-ascii?Q?qiAFBZRMo6p/nWV3Mf+IEbwzokchlTgqwdBHJg2meq2aV8n27voda0YIofhS?=
+ =?us-ascii?Q?/AYr7vo8BUc+InS2s48RueElbQQwCf3onF5bFTjkJKEjcYgJSqXxukpZcPr2?=
+ =?us-ascii?Q?6uBEuSMqOn0dt3uHIeIJ4RG17XvLXY+OnCDdpS8UzSl6fsXpBR4TPC9GDlDd?=
+ =?us-ascii?Q?LEjqvLi/2pPjtPPXwGUGmOXCY0JCo99eUK5IKJcSxcKLis6QtO5IQE74hfb+?=
+ =?us-ascii?Q?KkWBYfhYUmRj5x0xvp67ZqPgx76w7vBdTfHc7hz+//bRCrbse5eBpNJ9JXKs?=
+ =?us-ascii?Q?nkvf39aOGkuzznDGFvT+oK6gC2FiXMn7?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB8459.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?mshEO/1Uugt6eGtIJySOSXmUlhcRSyN7Ij691+rDL40ofdxqWkvBoEwGBxwO?=
+ =?us-ascii?Q?2eCmQFl7ZX6qKJdy4jfJEy3ccWKJ/BQodGLjVy+NWJ87nxbty934VNiAcP0d?=
+ =?us-ascii?Q?DxXEVLgLJgKNs1rEaydac2Dq0dGDQ2iyLwl7k4YPXBNk2PdEQMxXNUv0hID3?=
+ =?us-ascii?Q?yd7ITyqgLGMBHiVJBCelLG7oGoBPUdRHjnmW9Pd/qKMpndPc+Njr/I+1wgVo?=
+ =?us-ascii?Q?jqxRIHvyrUAx08W0R1fmSdVkSqI0hKfNR4TAF8hqBhOfIztHctsfeSU0jOFg?=
+ =?us-ascii?Q?iIZkhoDSHoQ9dL0Ken5W4ZZj5IJZao/xQQt5445XXyqcidfZUmr6AhhPtSFY?=
+ =?us-ascii?Q?SqoGCYZqub4IzOndnDoqVxWLpqZgfz0Pa9BOvRQe1a7/iY3cxwvDL6G2BQNI?=
+ =?us-ascii?Q?pzonCeyUDhW7pCnZwdPFe+KbA0L0770OfioasDgDP+jwFbEIBYMLZmwKr/Kj?=
+ =?us-ascii?Q?Q0Ym7QDDiWJdat7q0dRTrvkGRyWCI6oP5DZzFuewFvrvFeW7p/jG9PkBQMz4?=
+ =?us-ascii?Q?o4j5MOlpX6B0Pgv90U76FL5XCL9x9bQu7AqNadn1KT02Ubc0dV4dfISKc645?=
+ =?us-ascii?Q?j6DNPeu3Fxs40qc2xKW3iGHZsWbZIqBne8RPKMu037+kGmiimeWxamsDZgfz?=
+ =?us-ascii?Q?tnLqq5KUUjA32ZQmSwPQu463kZf7RLE+EbIqDHaBzgp8MEBtbybR1IoOiCWb?=
+ =?us-ascii?Q?h72cPQGTRjmXSxC+wt4EpTG8fGoqQSgbzsEdYg5TfuZx0WbssI/FTo+x+ar1?=
+ =?us-ascii?Q?3paOB0TY8XBNYpQJqCOY/KpYlZJIiXgx02cFB3luNP+zEeYh9W2iY5vnn/Mp?=
+ =?us-ascii?Q?ADzHwfH1zgQdClf/3m6f3FDItTm9Om2cY1hP/7kzGEH1/SLkWdCIb0SnhVw0?=
+ =?us-ascii?Q?jvFfOPfnUSi6YP3FxtWggzKLoSRqSM10J6WiL+ebptEwj3UJ1v5fprkWS9JJ?=
+ =?us-ascii?Q?f5joIjlaTRKVObVSQBY7cNPxPSI4E1tC+NoS2bgLLhvJfaVGVWMhCS6hkDCp?=
+ =?us-ascii?Q?QV3RbNi2JrO+RFr1JDFUHuJThBZH97QVD2bJbOAwYpQmZ51AiJXR/PJpiqZO?=
+ =?us-ascii?Q?GcM9wQ48syn76NxYQU9QjF7q0uAW7PkZtuhZJ/VQbiE0AsHCoEBTQnfb8keB?=
+ =?us-ascii?Q?zus+v49u6HHi/feInN/Ozcz9im3Bf1meZC4xowwazOdrjxpMb+vttsSCW6Gc?=
+ =?us-ascii?Q?EYx+0H1J/Ou7iVHISvTQDZcY0QfuE77+kR0QkwfbCR+6yJQWzCSWtzp9BkF3?=
+ =?us-ascii?Q?570DV0R+EQpKtJ6m6Gk3pZssn1o6OgUzchNCNIWsCh3xbxAxW+FYnqiWEmC5?=
+ =?us-ascii?Q?RXd00VoRSUJ0z1/SDbNZYoUAuv0qqtHNUOK19F3kP743yvxzcz1xKXx5iHe7?=
+ =?us-ascii?Q?DIQnfUd5SdYo5Qj2d3c8BOhbhcoAuMqXgFQBCThdedQf4R2eElXJUEleRzYB?=
+ =?us-ascii?Q?KOwISy388S5U8uprHWNMaFmyvXVcXXdqTHJFBHKlmeatuzf6rCWnH9Rs8Puy?=
+ =?us-ascii?Q?s+QmQW5WFdv0HC+pJo4ucw1RGu0CwWtsLuBqLC7XbhSjKp9v1bCGT+AXKeaV?=
+ =?us-ascii?Q?jc+ZbcmmIqG+QYqTzjA=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB8459.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 958738e2-a047-4c79-ed61-08dd45cf4e11
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Feb 2025 10:24:42.6463
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: M3Sd/vlwJ/l/8xSLg1EYULU7QyO0IUQUGAPpOEReqzGAmSpAqeZX3K6DmV1ajm8SSlV4qTyVw7noFhSslZcyqw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9720
 
-From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> Subject: [PATCH] tty: serial: fsl_lpuart: Make interrupt name distinct
+>=20
+> SoCs like the i.MX93 have several lpuart interfaces, but fsl_lpuart uses
+> the driver name to request the IRQ. This makes it hard to identify
+> interfaces from outputs like /proc/interrupts .
+> So use the dev_name() for requesting instead.
+>=20
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 
-The Renesas RZ/G3S supports a power saving mode where power to most of the
-SoC components is turned off. When returning from this power saving mode,
-SoC components need to be re-configured.
-
-The SCIFs on the Renesas RZ/G3S need to be re-configured as well when
-returning from this power saving mode. The sh-sci code already configures
-the SCIF clocks, power domain and registers by calling uart_resume_port()
-in sci_resume(). On suspend path the SCIF UART ports are suspended
-accordingly (by calling uart_suspend_port() in sci_suspend()). The only
-missing setting is the reset signal. For this assert/de-assert the reset
-signal on driver suspend/resume.
-
-In case the no_console_suspend is specified by the user, the registers need
-to be saved on suspend path and restore on resume path. To do this the
-sci_console_save_restore() function was added. There is no need to
-cache/restore the status or FIFO registers. Only the control registers.
-The registers that will be saved/restored on suspend/resume are
-specified by the struct sci_suspend_regs data structure.
-
-Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
----
-
-The v4 of this patch was part of a series with 4 patches. As the rest of
-the patches were applied I dropped the cover letter. The v4 cover letter
-is located here:
-https://lore.kernel.org/all/20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com
-
-Changes in v5:
-- fixed typo in patch description
-- adjusted the patch description to reflect the new patch content
-- added struct sci_suspend_regs and dropped the suspend_cacheable
-  flag introduced previously in struct plat_sci_reg; along with it
-  the updates in sci_port_params[] were also dropped;
-  also, the function (now sci_console_save_restore()) that saves
-  and restores the registers content was adjusted accordingly
-- s/sci_console_setup/sci_console_save_restore/g
-
-Changes in v4:
-- none
-
-Changes in v3:
-- none
-
-Changes in v2:
-- rebased on top of the update version of patch 2/8 from
-  this series
-
- drivers/tty/serial/sh-sci.c | 55 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 53 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index b1ea48f38248..03349bc31080 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -104,6 +104,15 @@ struct plat_sci_reg {
- 	u8 offset, size;
- };
- 
-+struct sci_suspend_regs {
-+	u16 scsmr;
-+	u16 scscr;
-+	u16 scfcr;
-+	u16 scsptr;
-+	u8 scbrr;
-+	u8 semr;
-+};
-+
- struct sci_port_params {
- 	const struct plat_sci_reg regs[SCIx_NR_REGS];
- 	unsigned int fifosize;
-@@ -134,6 +143,8 @@ struct sci_port {
- 	struct dma_chan			*chan_tx;
- 	struct dma_chan			*chan_rx;
- 
-+	struct reset_control		*rstc;
-+
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
- 	struct dma_chan			*chan_tx_saved;
- 	struct dma_chan			*chan_rx_saved;
-@@ -153,6 +164,7 @@ struct sci_port {
- 	int				rx_trigger;
- 	struct timer_list		rx_fifo_timer;
- 	int				rx_fifo_timeout;
-+	struct sci_suspend_regs		suspend_regs;
- 	u16				hscif_tot;
- 
- 	bool has_rtscts;
-@@ -3374,6 +3386,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
- 	}
- 
- 	sp = &sci_ports[id];
-+	sp->rstc = rstc;
- 	*dev_id = id;
- 
- 	p->type = SCI_OF_TYPE(data);
-@@ -3546,13 +3559,41 @@ static int sci_probe(struct platform_device *dev)
- 	return 0;
- }
- 
-+static void sci_console_save_restore(struct sci_port *s, bool save)
-+{
-+	struct sci_suspend_regs *regs = &s->suspend_regs;
-+	struct uart_port *port = &s->port;
-+
-+	if (save) {
-+		regs->scsmr = sci_serial_in(port, SCSMR);
-+		regs->scscr = sci_serial_in(port, SCSCR);
-+		regs->scfcr = sci_serial_in(port, SCFCR);
-+		regs->scsptr = sci_serial_in(port, SCSPTR);
-+		regs->scbrr = sci_serial_in(port, SCBRR);
-+		regs->semr = sci_serial_in(port, SEMR);
-+	} else {
-+		sci_serial_out(port, SCSMR, regs->scsmr);
-+		sci_serial_out(port, SCSCR, regs->scscr);
-+		sci_serial_out(port, SCFCR, regs->scfcr);
-+		sci_serial_out(port, SCSPTR, regs->scsptr);
-+		sci_serial_out(port, SCBRR, regs->scbrr);
-+		sci_serial_out(port, SEMR, regs->semr);
-+	}
-+}
-+
- static __maybe_unused int sci_suspend(struct device *dev)
- {
- 	struct sci_port *sport = dev_get_drvdata(dev);
- 
--	if (sport)
-+	if (sport) {
- 		uart_suspend_port(&sci_uart_driver, &sport->port);
- 
-+		if (!console_suspend_enabled && uart_console(&sport->port))
-+			sci_console_save_restore(sport, true);
-+		else
-+			return reset_control_assert(sport->rstc);
-+	}
-+
- 	return 0;
- }
- 
-@@ -3560,8 +3601,18 @@ static __maybe_unused int sci_resume(struct device *dev)
- {
- 	struct sci_port *sport = dev_get_drvdata(dev);
- 
--	if (sport)
-+	if (sport) {
-+		if (!console_suspend_enabled && uart_console(&sport->port)) {
-+			sci_console_save_restore(sport, false);
-+		} else {
-+			int ret = reset_control_deassert(sport->rstc);
-+
-+			if (ret)
-+				return ret;
-+		}
-+
- 		uart_resume_port(&sci_uart_driver, &sport->port);
-+	}
- 
- 	return 0;
- }
--- 
-2.43.0
-
+Reviewed-by: Peng Fan <peng.fan@nxp.com>
