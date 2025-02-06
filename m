@@ -1,155 +1,461 @@
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010050.outbound.protection.outlook.com [52.101.69.50])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F6F32063D8
-	for <linux-serial@vger.kernel.org>; Wed,  5 Feb 2025 10:24:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738751088; cv=fail; b=rumkUyZx/nJ/zFzoIQ0VAAm3OkFJptyYowySI7YhTsOLkfz41QFRYypl2Gv8BVN/aTp/2rUYey0FP4xZwJLr324TFuHOg7KpK1GgVlVvO8WIPGF1AFvfuNIGKrJSObjBx9Aj2eBw3Zyn6NS7A61xMbZgHOPC/MWZAcgMJoDdD0E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738751088; c=relaxed/simple;
-	bh=ydv253HfBFzKBdJNbBovDSBMN8E0Jm6aPBfGHgKNgDg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=AKm17eYVql300Bji7yFH4HYutOTHH8UDxXt9KzL3EhxCIwEWSXu+MicHGIviWeP6Fu0qDhGmFJOExcNbRBVNhMbyZPBwBCsVzPq7eerpFWWwR/xrE9tqlMPcz7sjX+OUx1UGFsRci8ImVVuLz/o68gn9SChiqjHIMGBkIfnkntM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=XS/kxVVz; arc=fail smtp.client-ip=52.101.69.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A815146BF;
+	Thu,  6 Feb 2025 03:39:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738813193; cv=none; b=kBOaJ3c3MBhoR5qFEve0vx198IEf4DljY0WOVgnYH2Lf4+OTQ+rZ9d/Li3wepS+NkJ0hr9A+dvq+faKVtjpJlj5SChGa0hlFFqWs0LMIosPXN9BStYXyV8ozlc2gqiVd44M6eXV+EobCpLpxFUZ4l6GC2PKas9mFixQEeI9cn9s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738813193; c=relaxed/simple;
+	bh=u+KIz+0ekM8kKBmnoSW/Z79RFvrLdFsyi8HjKjHTJMs=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=Tup2G/DMx1hVgViKFb0I4H3So0qUjbOO9r8/9RKLkut/O1cUOUf4+X8hZTlsaT7p9j9PNjS1LIztmThhaI3ooC2TmJkWmY/6cGLwfYMN/yylkGu6Og85elH+AvKl9vtROE6Wn/qcOLiuBjmc8Cd4/jTnrnwXGXT4KdpSOrgy5e4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Nzs33vJJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="XS/kxVVz"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TCgQ0EvWcQvhra3H0QVxu/vSv1xYzJZdXhCSaxYaetW/l42VucMfsqTR5YQbV2N0y9ss7cg9vDzyHPQePBTlPeguAwdW2q8zPme89iH7rhSkaDOqB5gxKVKvo6rCmBgBEgskkz4lZVIq5GKufCVptHm2OVrozwHpiXvdyMmUaICQNf6FT3pqTgWE0F3FxRk+KkgEMDRiqfaxxzKazxvr8zmISeYpwAxF8G4gvoxA1umQ++iosMT3Qd2zMQ5FE87hUwApgfFMV5mkE5l3M/kUZGVCh7j+kKt3krYoYwi11jJHWGw1EPI1AlhsN67C7Fds8PtxCe4Cj4L6WJ3UFRoIcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ydv253HfBFzKBdJNbBovDSBMN8E0Jm6aPBfGHgKNgDg=;
- b=HQ/lXdOjll65KAR6BoytEGBD4cvwx0c3KKJVN94FWE4QAkMjlB8X6VyUkwB3635rjoy+2CPC90ZCYPr30VDv33uMnRtvggRcK9eXznTmSOlamEK+NH1Mv0T0opyI6Xn5r60IZVcGeerVADaxCceAzKAvvxcJNGIH3+7puyxjUClvY8Z9T3aaNrrsyd9ddQ+Zi6uyykCQYD3DiGrrWYL5CGsm6UD/WvUXXUBN5ml17RTiwYtou1MilMCDi3DY/FXAyZGvwmYIQKyybv4KBCsKToJG7tmRrTbtZk5Rr4sJJbOEm7KmPi8l3QfJwbyrSQ80l9tLSFZ4mf34Y43yHh2xEA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ydv253HfBFzKBdJNbBovDSBMN8E0Jm6aPBfGHgKNgDg=;
- b=XS/kxVVztwW2ZsRQ0uUZ7bxdtSpe5/qIyqrJ7LKep0IMZ2nMoVwLrFZict1g0Dga+/ISCaG7vjcKeFr0xzQL0MMtNPgQ/oiXDLU0LJuSnWuDEAqjwZHYFScc5OcYfPJEC5i9BNHkr2B34/OgyWXpxfugqahVWB0lNED8wUNPvVqJ5i9Pgj3r9hkGI7C6hE65Kcl2Kf7zkpFB2Gh4SSlnbq9miN1XgppGI75af87zmH4jvZYLXO8M9RNcoUkG83dDWclfur0dIyYyF+SK6NS2VHNP0mr94/suLRYxf6Z3WeTjIoj/ScFkb3YBoM+3ObuMoJ0oxR42hxxXOypHs7oq6A==
-Received: from PAXPR04MB8459.eurprd04.prod.outlook.com (2603:10a6:102:1da::15)
- by PAWPR04MB9720.eurprd04.prod.outlook.com (2603:10a6:102:38d::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8398.20; Wed, 5 Feb
- 2025 10:24:42 +0000
-Received: from PAXPR04MB8459.eurprd04.prod.outlook.com
- ([fe80::165a:30a2:5835:9630]) by PAXPR04MB8459.eurprd04.prod.outlook.com
- ([fe80::165a:30a2:5835:9630%3]) with mapi id 15.20.8398.025; Wed, 5 Feb 2025
- 10:24:42 +0000
-From: Peng Fan <peng.fan@nxp.com>
-To: Stefan Wahren <wahrenst@gmx.net>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Sherry Sun
-	<sherry.sun@nxp.com>
-CC: Luke Wang <ziniu.wang_1@nxp.com>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
-Subject: RE: [PATCH] tty: serial: fsl_lpuart: Make interrupt name distinct
-Thread-Topic: [PATCH] tty: serial: fsl_lpuart: Make interrupt name distinct
-Thread-Index: AQHbd63Hgkl+K/Q8dUKjYBxmzYysTbM4gM1g
-Date: Wed, 5 Feb 2025 10:24:42 +0000
-Message-ID:
- <PAXPR04MB8459391B8BBA618090EF82BC88F72@PAXPR04MB8459.eurprd04.prod.outlook.com>
-References: <20250205091007.4528-1-wahrenst@gmx.net>
-In-Reply-To: <20250205091007.4528-1-wahrenst@gmx.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PAXPR04MB8459:EE_|PAWPR04MB9720:EE_
-x-ms-office365-filtering-correlation-id: 958738e2-a047-4c79-ed61-08dd45cf4e11
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700018;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?cjV0zL8Rma+X4nED3gKA1X1JxSgR1ISUdOxT+kbq+c8whJjCIpA9ZEja6Ek4?=
- =?us-ascii?Q?4UjRus2SpgdQRmxWBTq1ax8N0400mW9ATJLLUZMi398NJx1dnqUEJXm/KOe6?=
- =?us-ascii?Q?SgBymAIWduzAn52kxNNSbL4Uz4lQ2egUUDpzSXUKTTS5VMY14o7fecoou9c7?=
- =?us-ascii?Q?K8/ZzOnC0C7JR+Y3bUE1JD6CH7mUxRoYd01shR0UXJe63n0KKKXKUZeiXjOB?=
- =?us-ascii?Q?IsI+lWZf+R7PHj5ULG+khrstw1U/fcFCKkmZfJnDWGSZx/TaWNdFVSMDZW1/?=
- =?us-ascii?Q?Hcibh6hEkqyMAx921iZxiDBPk9zWIndpmlzvsRsQCCsykYk8M1Wv0WVwf3gM?=
- =?us-ascii?Q?8LTPRnwCPq3tpa9YCESCDPBRIFP1Wmxh4ul6rjXwQ9QTrdSKOg8gj0Jn4AGZ?=
- =?us-ascii?Q?OWYrtsnvzg1n/I1na+6yNu/TtTmxAuQx6r+kW+MNYEgtT30o5SkxTrsRH1Gr?=
- =?us-ascii?Q?aFxTdR7bn1AqYb9MnJwMwa9OSvLbuh2+u6a5pEx1ZyWIgE5flkxnCA5X+ukz?=
- =?us-ascii?Q?m0EIOFEUqgDfNnaER0sIi0Xc6DGsTakuCsO8D+09K/STZDHxt/0JBrkuFiCs?=
- =?us-ascii?Q?MMUO+H21z78eqaDXMB26u0/VpRFyHn/Nz6eBN+v0qzyXT/ADaMx5Z8ldFtqN?=
- =?us-ascii?Q?hBH2YZzFgJC8IkozmFlAj52E41Wah3wYBGssaZ7PuwIruSIhU7+N31xuzAup?=
- =?us-ascii?Q?T90u5MQBw1yNGWUY6Gh30ReBSdYU4j2VX2zfWKQwE0YjSU4OEur6mkWb4NXH?=
- =?us-ascii?Q?I5BRTiXVbHc8kL14iBZ+A1YADO8dkwBiC5FHftiKNJd6q5BVK4EKF8ANl2L5?=
- =?us-ascii?Q?ovjonJWOwV+SNSN4Ktc9j90kZATgVHiWGInnAOa1VNElGgIYMNTdUzxcCz1Z?=
- =?us-ascii?Q?wui5YV+4Ol1AQil2k5/JN+uoieXP9ExvkNmB9meRXwLJ0KMihh5r0FCcIibQ?=
- =?us-ascii?Q?QwrLYNjVceiWYPP+g4zF9RWoIamPUW8Rs8iSqipsZoZm+m2q9HR3E7kMqaQ4?=
- =?us-ascii?Q?2nCfuRICoSP7bd7QH7Fs0nz5tQffp30pScZW+3gzO0Z+R5nrnsI61q30lSe+?=
- =?us-ascii?Q?WoCvib0/RpFfOzoozr+avkBRASaXK7lRoFexJeJ4zbIP4D/ot7A6NarED3Y0?=
- =?us-ascii?Q?qiAFBZRMo6p/nWV3Mf+IEbwzokchlTgqwdBHJg2meq2aV8n27voda0YIofhS?=
- =?us-ascii?Q?/AYr7vo8BUc+InS2s48RueElbQQwCf3onF5bFTjkJKEjcYgJSqXxukpZcPr2?=
- =?us-ascii?Q?6uBEuSMqOn0dt3uHIeIJ4RG17XvLXY+OnCDdpS8UzSl6fsXpBR4TPC9GDlDd?=
- =?us-ascii?Q?LEjqvLi/2pPjtPPXwGUGmOXCY0JCo99eUK5IKJcSxcKLis6QtO5IQE74hfb+?=
- =?us-ascii?Q?KkWBYfhYUmRj5x0xvp67ZqPgx76w7vBdTfHc7hz+//bRCrbse5eBpNJ9JXKs?=
- =?us-ascii?Q?nkvf39aOGkuzznDGFvT+oK6gC2FiXMn7?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB8459.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?mshEO/1Uugt6eGtIJySOSXmUlhcRSyN7Ij691+rDL40ofdxqWkvBoEwGBxwO?=
- =?us-ascii?Q?2eCmQFl7ZX6qKJdy4jfJEy3ccWKJ/BQodGLjVy+NWJ87nxbty934VNiAcP0d?=
- =?us-ascii?Q?DxXEVLgLJgKNs1rEaydac2Dq0dGDQ2iyLwl7k4YPXBNk2PdEQMxXNUv0hID3?=
- =?us-ascii?Q?yd7ITyqgLGMBHiVJBCelLG7oGoBPUdRHjnmW9Pd/qKMpndPc+Njr/I+1wgVo?=
- =?us-ascii?Q?jqxRIHvyrUAx08W0R1fmSdVkSqI0hKfNR4TAF8hqBhOfIztHctsfeSU0jOFg?=
- =?us-ascii?Q?iIZkhoDSHoQ9dL0Ken5W4ZZj5IJZao/xQQt5445XXyqcidfZUmr6AhhPtSFY?=
- =?us-ascii?Q?SqoGCYZqub4IzOndnDoqVxWLpqZgfz0Pa9BOvRQe1a7/iY3cxwvDL6G2BQNI?=
- =?us-ascii?Q?pzonCeyUDhW7pCnZwdPFe+KbA0L0770OfioasDgDP+jwFbEIBYMLZmwKr/Kj?=
- =?us-ascii?Q?Q0Ym7QDDiWJdat7q0dRTrvkGRyWCI6oP5DZzFuewFvrvFeW7p/jG9PkBQMz4?=
- =?us-ascii?Q?o4j5MOlpX6B0Pgv90U76FL5XCL9x9bQu7AqNadn1KT02Ubc0dV4dfISKc645?=
- =?us-ascii?Q?j6DNPeu3Fxs40qc2xKW3iGHZsWbZIqBne8RPKMu037+kGmiimeWxamsDZgfz?=
- =?us-ascii?Q?tnLqq5KUUjA32ZQmSwPQu463kZf7RLE+EbIqDHaBzgp8MEBtbybR1IoOiCWb?=
- =?us-ascii?Q?h72cPQGTRjmXSxC+wt4EpTG8fGoqQSgbzsEdYg5TfuZx0WbssI/FTo+x+ar1?=
- =?us-ascii?Q?3paOB0TY8XBNYpQJqCOY/KpYlZJIiXgx02cFB3luNP+zEeYh9W2iY5vnn/Mp?=
- =?us-ascii?Q?ADzHwfH1zgQdClf/3m6f3FDItTm9Om2cY1hP/7kzGEH1/SLkWdCIb0SnhVw0?=
- =?us-ascii?Q?jvFfOPfnUSi6YP3FxtWggzKLoSRqSM10J6WiL+ebptEwj3UJ1v5fprkWS9JJ?=
- =?us-ascii?Q?f5joIjlaTRKVObVSQBY7cNPxPSI4E1tC+NoS2bgLLhvJfaVGVWMhCS6hkDCp?=
- =?us-ascii?Q?QV3RbNi2JrO+RFr1JDFUHuJThBZH97QVD2bJbOAwYpQmZ51AiJXR/PJpiqZO?=
- =?us-ascii?Q?GcM9wQ48syn76NxYQU9QjF7q0uAW7PkZtuhZJ/VQbiE0AsHCoEBTQnfb8keB?=
- =?us-ascii?Q?zus+v49u6HHi/feInN/Ozcz9im3Bf1meZC4xowwazOdrjxpMb+vttsSCW6Gc?=
- =?us-ascii?Q?EYx+0H1J/Ou7iVHISvTQDZcY0QfuE77+kR0QkwfbCR+6yJQWzCSWtzp9BkF3?=
- =?us-ascii?Q?570DV0R+EQpKtJ6m6Gk3pZssn1o6OgUzchNCNIWsCh3xbxAxW+FYnqiWEmC5?=
- =?us-ascii?Q?RXd00VoRSUJ0z1/SDbNZYoUAuv0qqtHNUOK19F3kP743yvxzcz1xKXx5iHe7?=
- =?us-ascii?Q?DIQnfUd5SdYo5Qj2d3c8BOhbhcoAuMqXgFQBCThdedQf4R2eElXJUEleRzYB?=
- =?us-ascii?Q?KOwISy388S5U8uprHWNMaFmyvXVcXXdqTHJFBHKlmeatuzf6rCWnH9Rs8Puy?=
- =?us-ascii?Q?s+QmQW5WFdv0HC+pJo4ucw1RGu0CwWtsLuBqLC7XbhSjKp9v1bCGT+AXKeaV?=
- =?us-ascii?Q?jc+ZbcmmIqG+QYqTzjA=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nzs33vJJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 774D3C4CEDD;
+	Thu,  6 Feb 2025 03:39:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1738813193;
+	bh=u+KIz+0ekM8kKBmnoSW/Z79RFvrLdFsyi8HjKjHTJMs=;
+	h=Date:From:To:Cc:Subject:From;
+	b=Nzs33vJJH8jhCPsjbGraDBKMYDzg9vhFUp8nd5upsZmh8FGuJuXW2qk3xWQ7IyHkB
+	 pwb4XvV70lZiXFHtord6mtTkSelGI5QaiXEEvI7uC+z5rzZSfDhM62Vu7WCxyyx/FW
+	 vIjhidsGy7BgylnlUA52kGENqtmp5j91mC9gzHPUSJJTBBuQUTMRrsRZJHbQUe0nqQ
+	 s+s+Cg6R1XkCPmncVJlWfjPHmd+Xldtals9xsrbC+zHXZIbPAHOPLTmgcchaRIa23l
+	 jW27wokHsOSTFLAmmwGIVN43JznVe+Wb/0jL1B13vuWG5OamcAAwWTxf0M76xieuo3
+	 48n+06bBxXPaQ==
+Date: Thu, 6 Feb 2025 14:09:45 +1030
+From: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	linux-hardening@vger.kernel.org
+Subject: [PATCH v3][next] tty: tty_buffer: Avoid hundreds of
+ -Wflex-array-member-not-at-end warnings
+Message-ID: <Z6QvAZxiQusdaDkH@kspp>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB8459.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 958738e2-a047-4c79-ed61-08dd45cf4e11
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Feb 2025 10:24:42.6463
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: M3Sd/vlwJ/l/8xSLg1EYULU7QyO0IUQUGAPpOEReqzGAmSpAqeZX3K6DmV1ajm8SSlV4qTyVw7noFhSslZcyqw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR04MB9720
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> Subject: [PATCH] tty: serial: fsl_lpuart: Make interrupt name distinct
->=20
-> SoCs like the i.MX93 have several lpuart interfaces, but fsl_lpuart uses
-> the driver name to request the IRQ. This makes it hard to identify
-> interfaces from outputs like /proc/interrupts .
-> So use the dev_name() for requesting instead.
->=20
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+-Wflex-array-member-not-at-end was introduced in GCC-14, and we are
+getting ready to enable it, globally.
 
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
+Currently, member `sentinel` in `struct tty_bufhead` is causing trouble
+becase its type is `struct tty_buffer`, which is a flexible structure
+--meaning it contains a flexible-array member. This combined with the
+fact that `sentinel` is positioned in the middle of `struct tty_bufhead`,
+triggers hundreds of -Wflex-array-member-not-at-end warnings because
+flex-array members in the middle of structures are deprecated, and all
+code involving them should be fixed/refactored/adjusted --flex-array
+members are only allowed at the very end of any number of nested
+structures. Enabling -Wflex-array-member-not-at-end globally will
+enforce this behavior.
+
+So, in this particular case, we create a new `struct tty_buffer_hdr`
+to enclose the header part of flexible structure `struct tty_buffer`
+This is all the members except the flexible array `data[]`. We then
+replace that header part with `struct tty_buffer_hdr hdr;` in
+`struct tty_buffer`, and change the type of `sentinel` from `struct
+tty_buffer` to `struct tty_buffer_hdr` --this bit gets rid of the
+flex-array-in-the-middle part.
+
+The next step is to refactor the rest of the related code, accordingly.
+Which means, adding a bunch of `hdr.` wherever it's needed.
+
+Lastly, we use `container_of()` whenever we need to retrieve a pointer
+to the flexible structure `struct tty_buffer`.
+
+So, with these changes, fix 384 of the following warnings:
+include/linux/tty_buffer.h:40:27: warning: structure containing a flexible array member is not at the end of another structure [-Wflex-array-member-not-at-end]
+
+Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+Changes in v3:
+ - Implement `struct tty_buffer_hdr` as a separate struct and embed it
+   into `struct tty_buffer`. Refactor the rest of the code, accordingly.
+
+Changes in v2:
+ - Fix a space at the beginning of the line issue, and adjust the
+   identation of a code coment.
+ - Link: https://lore.kernel.org/linux-hardening/Z6L29DXeGWl-6OnK@kspp/
+
+v1:
+ -  Link: https://lore.kernel.org/linux-hardening/Z6L1XwE-WEzcGFwv@kspp/
+
+ drivers/tty/tty_buffer.c   | 114 +++++++++++++++++++------------------
+ include/linux/tty_buffer.h |  12 ++--
+ include/linux/tty_flip.h   |  10 ++--
+ 3 files changed, 73 insertions(+), 63 deletions(-)
+
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 79f0ff94ce00..cd04a6567a33 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -70,7 +70,7 @@ EXPORT_SYMBOL_GPL(tty_buffer_lock_exclusive);
+ void tty_buffer_unlock_exclusive(struct tty_port *port)
+ {
+ 	struct tty_bufhead *buf = &port->buf;
+-	bool restart = buf->head->commit != buf->head->read;
++	bool restart = buf->head->hdr.commit != buf->head->hdr.read;
+ 
+ 	atomic_dec(&buf->priority);
+ 	mutex_unlock(&buf->lock);
+@@ -101,13 +101,13 @@ EXPORT_SYMBOL_GPL(tty_buffer_space_avail);
+ 
+ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
+ {
+-	p->used = 0;
+-	p->size = size;
+-	p->next = NULL;
+-	p->commit = 0;
+-	p->lookahead = 0;
+-	p->read = 0;
+-	p->flags = true;
++	p->hdr.used = 0;
++	p->hdr.size = size;
++	p->hdr.next = NULL;
++	p->hdr.commit = 0;
++	p->hdr.lookahead = 0;
++	p->hdr.read = 0;
++	p->hdr.flags = true;
+ }
+ 
+ /**
+@@ -120,24 +120,27 @@ static void tty_buffer_reset(struct tty_buffer *p, size_t size)
+ void tty_buffer_free_all(struct tty_port *port)
+ {
+ 	struct tty_bufhead *buf = &port->buf;
++	struct tty_buffer *buf_sentinel;
+ 	struct tty_buffer *p, *next;
+ 	struct llist_node *llist;
+ 	unsigned int freed = 0;
+ 	int still_used;
+ 
++	buf_sentinel = container_of(&buf->sentinel, struct tty_buffer, hdr);
++
+ 	while ((p = buf->head) != NULL) {
+-		buf->head = p->next;
+-		freed += p->size;
+-		if (p->size > 0)
++		buf->head = p->hdr.next;
++		freed += p->hdr.size;
++		if (p->hdr.size > 0)
+ 			kfree(p);
+ 	}
+ 	llist = llist_del_all(&buf->free);
+-	llist_for_each_entry_safe(p, next, llist, free)
++	llist_for_each_entry_safe(p, next, llist, hdr.free)
+ 		kfree(p);
+ 
+-	tty_buffer_reset(&buf->sentinel, 0);
+-	buf->head = &buf->sentinel;
+-	buf->tail = &buf->sentinel;
++	tty_buffer_reset(buf_sentinel, 0);
++	buf->head = buf_sentinel;
++	buf->tail = buf_sentinel;
+ 
+ 	still_used = atomic_xchg(&buf->mem_used, 0);
+ 	WARN(still_used != freed, "we still have not freed %d bytes!",
+@@ -167,7 +170,7 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
+ 	if (size <= MIN_TTYB_SIZE) {
+ 		free = llist_del_first(&port->buf.free);
+ 		if (free) {
+-			p = llist_entry(free, struct tty_buffer, free);
++			p = llist_entry(free, struct tty_buffer, hdr.free);
+ 			goto found;
+ 		}
+ 	}
+@@ -200,12 +203,12 @@ static void tty_buffer_free(struct tty_port *port, struct tty_buffer *b)
+ 	struct tty_bufhead *buf = &port->buf;
+ 
+ 	/* Dumb strategy for now - should keep some stats */
+-	WARN_ON(atomic_sub_return(b->size, &buf->mem_used) < 0);
++	WARN_ON(atomic_sub_return(b->hdr.size, &buf->mem_used) < 0);
+ 
+-	if (b->size > MIN_TTYB_SIZE)
++	if (b->hdr.size > MIN_TTYB_SIZE)
+ 		kfree(b);
+-	else if (b->size > 0)
+-		llist_add(&b->free, &buf->free);
++	else if (b->hdr.size > 0)
++		llist_add(&b->hdr.free, &buf->free);
+ }
+ 
+ /**
+@@ -230,12 +233,12 @@ void tty_buffer_flush(struct tty_struct *tty, struct tty_ldisc *ld)
+ 	/* paired w/ release in __tty_buffer_request_room; ensures there are
+ 	 * no pending memory accesses to the freed buffer
+ 	 */
+-	while ((next = smp_load_acquire(&buf->head->next)) != NULL) {
++	while ((next = smp_load_acquire(&buf->head->hdr.next)) != NULL) {
+ 		tty_buffer_free(port, buf->head);
+ 		buf->head = next;
+ 	}
+-	buf->head->read = buf->head->commit;
+-	buf->head->lookahead = buf->head->read;
++	buf->head->hdr.read = buf->head->hdr.commit;
++	buf->head->hdr.lookahead = buf->head->hdr.read;
+ 
+ 	if (ld && ld->ops->flush_buffer)
+ 		ld->ops->flush_buffer(tty);
+@@ -263,8 +266,8 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
+ {
+ 	struct tty_bufhead *buf = &port->buf;
+ 	struct tty_buffer *n, *b = buf->tail;
+-	size_t left = (b->flags ? 1 : 2) * b->size - b->used;
+-	bool change = !b->flags && flags;
++	size_t left = (b->hdr.flags ? 1 : 2) * b->hdr.size - b->hdr.used;
++	bool change = !b->hdr.flags && flags;
+ 
+ 	if (!change && left >= size)
+ 		return size;
+@@ -274,19 +277,19 @@ static int __tty_buffer_request_room(struct tty_port *port, size_t size,
+ 	if (n == NULL)
+ 		return change ? 0 : left;
+ 
+-	n->flags = flags;
++	n->hdr.flags = flags;
+ 	buf->tail = n;
+ 	/*
+ 	 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
+ 	 * ensures they see all buffer data.
+ 	 */
+-	smp_store_release(&b->commit, b->used);
++	smp_store_release(&b->hdr.commit, b->hdr.used);
+ 	/*
+ 	 * Paired w/ acquire in flush_to_ldisc() and lookahead_bufs()
+ 	 * ensures the latest commit value can be read before the head
+ 	 * is advanced to the next buffer.
+ 	 */
+-	smp_store_release(&b->next, n);
++	smp_store_release(&b->hdr.next, n);
+ 
+ 	return size;
+ }
+@@ -312,19 +315,19 @@ size_t __tty_insert_flip_string_flags(struct tty_port *port, const u8 *chars,
+ 		if (unlikely(space == 0))
+ 			break;
+ 
+-		memcpy(char_buf_ptr(tb, tb->used), chars, space);
++		memcpy(char_buf_ptr(tb, tb->hdr.used), chars, space);
+ 
+ 		if (mutable_flags) {
+-			memcpy(flag_buf_ptr(tb, tb->used), flags, space);
++			memcpy(flag_buf_ptr(tb, tb->hdr.used), flags, space);
+ 			flags += space;
+-		} else if (tb->flags) {
+-			memset(flag_buf_ptr(tb, tb->used), flags[0], space);
++		} else if (tb->hdr.flags) {
++			memset(flag_buf_ptr(tb, tb->hdr.used), flags[0], space);
+ 		} else {
+ 			/* tb->flags should be available once requested */
+ 			WARN_ON_ONCE(need_flags);
+ 		}
+ 
+-		tb->used += space;
++		tb->hdr.used += space;
+ 		copied += space;
+ 		chars += space;
+ 
+@@ -358,10 +361,10 @@ size_t tty_prepare_flip_string(struct tty_port *port, u8 **chars, size_t size)
+ 	if (likely(space)) {
+ 		struct tty_buffer *tb = port->buf.tail;
+ 
+-		*chars = char_buf_ptr(tb, tb->used);
+-		if (tb->flags)
+-			memset(flag_buf_ptr(tb, tb->used), TTY_NORMAL, space);
+-		tb->used += space;
++		*chars = char_buf_ptr(tb, tb->hdr.used);
++		if (tb->hdr.flags)
++			memset(flag_buf_ptr(tb, tb->hdr.used), TTY_NORMAL, space);
++		tb->hdr.used += space;
+ 	}
+ 
+ 	return space;
+@@ -396,7 +399,7 @@ EXPORT_SYMBOL_GPL(tty_ldisc_receive_buf);
+ 
+ static void lookahead_bufs(struct tty_port *port, struct tty_buffer *head)
+ {
+-	head->lookahead = max(head->lookahead, head->read);
++	head->hdr.lookahead = max(head->hdr.lookahead, head->hdr.read);
+ 
+ 	while (head) {
+ 		struct tty_buffer *next;
+@@ -407,12 +410,12 @@ static void lookahead_bufs(struct tty_port *port, struct tty_buffer *head)
+ 		 * ensures commit value read is not stale if the head
+ 		 * is advancing to the next buffer.
+ 		 */
+-		next = smp_load_acquire(&head->next);
++		next = smp_load_acquire(&head->hdr.next);
+ 		/*
+ 		 * Paired w/ release in __tty_buffer_request_room() or in
+ 		 * tty_buffer_flush(); ensures we see the committed buffer data.
+ 		 */
+-		count = smp_load_acquire(&head->commit) - head->lookahead;
++		count = smp_load_acquire(&head->hdr.commit) - head->hdr.lookahead;
+ 		if (!count) {
+ 			head = next;
+ 			continue;
+@@ -421,26 +424,26 @@ static void lookahead_bufs(struct tty_port *port, struct tty_buffer *head)
+ 		if (port->client_ops->lookahead_buf) {
+ 			u8 *p, *f = NULL;
+ 
+-			p = char_buf_ptr(head, head->lookahead);
+-			if (head->flags)
+-				f = flag_buf_ptr(head, head->lookahead);
++			p = char_buf_ptr(head, head->hdr.lookahead);
++			if (head->hdr.flags)
++				f = flag_buf_ptr(head, head->hdr.lookahead);
+ 
+ 			port->client_ops->lookahead_buf(port, p, f, count);
+ 		}
+ 
+-		head->lookahead += count;
++		head->hdr.lookahead += count;
+ 	}
+ }
+ 
+ static size_t
+ receive_buf(struct tty_port *port, struct tty_buffer *head, size_t count)
+ {
+-	u8 *p = char_buf_ptr(head, head->read);
++	u8 *p = char_buf_ptr(head, head->hdr.read);
+ 	const u8 *f = NULL;
+ 	size_t n;
+ 
+-	if (head->flags)
+-		f = flag_buf_ptr(head, head->read);
++	if (head->hdr.flags)
++		f = flag_buf_ptr(head, head->hdr.read);
+ 
+ 	n = port->client_ops->receive_buf(port, p, f, count);
+ 	if (n > 0)
+@@ -479,11 +482,11 @@ static void flush_to_ldisc(struct work_struct *work)
+ 		 * ensures commit value read is not stale if the head
+ 		 * is advancing to the next buffer
+ 		 */
+-		next = smp_load_acquire(&head->next);
++		next = smp_load_acquire(&head->hdr.next);
+ 		/* paired w/ release in __tty_buffer_request_room() or in
+ 		 * tty_buffer_flush(); ensures we see the committed buffer data
+ 		 */
+-		count = smp_load_acquire(&head->commit) - head->read;
++		count = smp_load_acquire(&head->hdr.commit) - head->hdr.read;
+ 		if (!count) {
+ 			if (next == NULL)
+ 				break;
+@@ -493,7 +496,7 @@ static void flush_to_ldisc(struct work_struct *work)
+ 		}
+ 
+ 		rcvd = receive_buf(port, head, count);
+-		head->read += rcvd;
++		head->hdr.read += rcvd;
+ 		if (rcvd < count)
+ 			lookahead_bufs(port, head);
+ 		if (!rcvd)
+@@ -513,7 +516,7 @@ static inline void tty_flip_buffer_commit(struct tty_buffer *tail)
+ 	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
+ 	 * buffer data.
+ 	 */
+-	smp_store_release(&tail->commit, tail->used);
++	smp_store_release(&tail->hdr.commit, tail->hdr.used);
+ }
+ 
+ /**
+@@ -576,11 +579,14 @@ int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
+ void tty_buffer_init(struct tty_port *port)
+ {
+ 	struct tty_bufhead *buf = &port->buf;
++	struct tty_buffer *buf_sentinel;
++
++	buf_sentinel = container_of(&buf->sentinel, struct tty_buffer, hdr);
+ 
+ 	mutex_init(&buf->lock);
+-	tty_buffer_reset(&buf->sentinel, 0);
+-	buf->head = &buf->sentinel;
+-	buf->tail = &buf->sentinel;
++	tty_buffer_reset(buf_sentinel, 0);
++	buf->head = buf_sentinel;
++	buf->tail = buf_sentinel;
+ 	init_llist_head(&buf->free);
+ 	atomic_set(&buf->mem_used, 0);
+ 	atomic_set(&buf->priority, 0);
+diff --git a/include/linux/tty_buffer.h b/include/linux/tty_buffer.h
+index 31125e3be3c5..80a9d7832c97 100644
+--- a/include/linux/tty_buffer.h
++++ b/include/linux/tty_buffer.h
+@@ -7,7 +7,7 @@
+ #include <linux/mutex.h>
+ #include <linux/workqueue.h>
+ 
+-struct tty_buffer {
++struct tty_buffer_hdr {
+ 	union {
+ 		struct tty_buffer *next;
+ 		struct llist_node free;
+@@ -15,9 +15,13 @@ struct tty_buffer {
+ 	unsigned int used;
+ 	unsigned int size;
+ 	unsigned int commit;
+-	unsigned int lookahead;		/* Lazy update on recv, can become less than "read" */
++	unsigned int lookahead; /* Lazy update on recv, can become less than "read" */
+ 	unsigned int read;
+ 	bool flags;
++};
++
++struct tty_buffer {
++	struct tty_buffer_hdr hdr;
+ 	/* Data points here */
+ 	u8 data[] __aligned(sizeof(unsigned long));
+ };
+@@ -29,7 +33,7 @@ static inline u8 *char_buf_ptr(struct tty_buffer *b, unsigned int ofs)
+ 
+ static inline u8 *flag_buf_ptr(struct tty_buffer *b, unsigned int ofs)
+ {
+-	return char_buf_ptr(b, ofs) + b->size;
++	return char_buf_ptr(b, ofs) + b->hdr.size;
+ }
+ 
+ struct tty_bufhead {
+@@ -37,7 +41,7 @@ struct tty_bufhead {
+ 	struct work_struct work;
+ 	struct mutex	   lock;
+ 	atomic_t	   priority;
+-	struct tty_buffer sentinel;
++	struct tty_buffer_hdr sentinel;
+ 	struct llist_head free;		/* Free queue head */
+ 	atomic_t	   mem_used;    /* In-use buffers excluding free list */
+ 	int		   mem_limit;
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index af4fce98f64e..1874b0059e97 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -67,11 +67,11 @@ static inline size_t tty_insert_flip_char(struct tty_port *port, u8 ch, u8 flag)
+ 	struct tty_buffer *tb = port->buf.tail;
+ 	int change;
+ 
+-	change = !tb->flags && (flag != TTY_NORMAL);
+-	if (!change && tb->used < tb->size) {
+-		if (tb->flags)
+-			*flag_buf_ptr(tb, tb->used) = flag;
+-		*char_buf_ptr(tb, tb->used++) = ch;
++	change = !tb->hdr.flags && (flag != TTY_NORMAL);
++	if (!change && tb->hdr.used < tb->hdr.size) {
++		if (tb->hdr.flags)
++			*flag_buf_ptr(tb, tb->hdr.used) = flag;
++		*char_buf_ptr(tb, tb->hdr.used++) = ch;
+ 		return 1;
+ 	}
+ 	return __tty_insert_flip_string_flags(port, &ch, &flag, false, 1);
+-- 
+2.43.0
+
