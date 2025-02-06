@@ -1,33 +1,52 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from omta040.useast.a.cloudfilter.net (omta040.useast.a.cloudfilter.net [44.202.169.39])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628CC15B10D;
-	Thu,  6 Feb 2025 09:12:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F375C1FCCE4
+	for <linux-serial@vger.kernel.org>; Thu,  6 Feb 2025 09:23:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.202.169.39
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738833144; cv=none; b=tbjCnZ596b55eP8q4aTpbsUYgGzurm/ITHlN7RMtF0jWA30djaiuFX6JIhqBNrDB0IrUR623X4xB6OnNoq6mNAhzF7q2+uNwCsrntvUALlBeMUmzDdJZcS9R6TczMhWKu0l/2uQflxyQn/kNnrYnVpbPJxtke3I+9mbBlGt4Mjw=
+	t=1738833812; cv=none; b=ssVo+z1y0qSUdLI5Tq6Ra6w9bYZXf2sISFmRURuCmuEcJuEKRrfnjODK9cDO/+OH6r76Cw9zH6yC0CvwJZVBjZZZL3aw6oQNvai2kyxBaOw9XFAmjzLnT/VU10n2tAYzpNt7CeES1KPgaFYwilw0j+eGFarTLoCmMYX1JFQ0rJk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738833144; c=relaxed/simple;
-	bh=YMokR+qy7feXtTT7P1mLW6jI3+kd5kyy3YSx0hlrotk=;
+	s=arc-20240116; t=1738833812; c=relaxed/simple;
+	bh=Eb2tRU6/YVjaUsYLNRs1tRCxlDHWdhAUNvBHCA2Bqew=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=d97NskdCQBlmw9rpihuT+McxcuElFxklIBgSPt14WojwGPoqPVOCTCQKhXGhxK9xgxiDGd3cGleBFcqnPbQ3bsiVOACDVqE0SyRXuM0/J4ZBrRlTOK9mNFJo42Y+6ojxxrTX3fX379urYEdpeeXQPvD3EdVOc+7NFt6Rab+hhSA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZciL9nxb; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=PXwKSj6xjU+bzK8KC8qUG2k5mcCje3hZaEPoMRKLz9BA60YyKxMlkfxnUT/A0jMJEmRHQcFu6RUKNolG5AGX7m4lyn3kXOKpxgzKdbPLS3yowhjMp1xnd48NVn4CH96/Q1gcazO0d0U/Ghv0RJ70n4WfW0xl17HKsUsxnpt9U18=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=fMOAm8hb; arc=none smtp.client-ip=44.202.169.39
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZciL9nxb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21669C4CEDD;
-	Thu,  6 Feb 2025 09:12:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1738833144;
-	bh=YMokR+qy7feXtTT7P1mLW6jI3+kd5kyy3YSx0hlrotk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ZciL9nxbNtJKUWTHi71y10BV3HwmC2BBfYxd2s7LOQiLKS0jKvMpkwb4XVSTM85mo
-	 4HNH9ruB2C2NJNeYCfmMZbvEF28vumPq/o18xYkD2EGfOk263Ej0wS9Td1NSxdAdr8
-	 /2Kmx3xQkaslinyzVj6UQUMsC1/2lh00RECcSGwcgp8TZ/m93fbSWF7EV0hLjfshF8
-	 tt0j72FRWLOA3tFT9qmtBE3fMpgb2fTqaMeNDbc3uLYb8ZSVQMKXWR2jIaT1mv5U1k
-	 GenniY8+GY5Y5hzVyqL8zUQmExr7dFEeQzkgKPfhKTk9mOWyE9D1u+KNqAYqISSShA
-	 iJebW1+jomVdQ==
-Message-ID: <daea13b0-137c-4ab5-8388-1d46919b8609@kernel.org>
-Date: Thu, 6 Feb 2025 10:12:21 +0100
+	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="fMOAm8hb"
+Received: from eig-obgw-5007a.ext.cloudfilter.net ([10.0.29.141])
+	by cmsmtp with ESMTPS
+	id fr1mtFrnB1T3hfy6btNhVv; Thu, 06 Feb 2025 09:23:29 +0000
+Received: from gator4166.hostgator.com ([108.167.133.22])
+	by cmsmtp with ESMTPS
+	id fy6atz0WyWkhGfy6at9Pwz; Thu, 06 Feb 2025 09:23:28 +0000
+X-Authority-Analysis: v=2.4 cv=WL15XGsR c=1 sm=1 tr=0 ts=67a47f90
+ a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=6Vi/Wpy7sgpXGMLew8oZcg==:17
+ a=IkcTkHD0fZMA:10 a=T2h4t0Lz3GQA:10 a=7T7KSl7uo7wA:10
+ a=PX_z9cZZlryqIJpxFbEA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=Xt_RvD8W3m28Mn_h3AK8:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=PbrGCb5a5pQD3TxB7+lFg4Sxj2+E+oZPhiQNGM0TNkQ=; b=fMOAm8hb8idy4TF6zXMXwn0L+G
+	tZRKMARV6rG6Fpau2CG0FQGrNTdzygIgchyof9+g4JAIkzkkKPBxQHLdZoD6JTPNU2WsSdcCFFhig
+	eGdp5faY8vo8rMnf5DrQVNgwTIsUM3yz/fCFJ2X4g+W+LiNHYf6laKCANxAhY/HFVq8+x6HApgxNE
+	mNhgRHoe9Xu38SjPtXW12tdKvjq+q6m+DS9MQUO6ZdfMTcGbZpK+qeaxX1Gn9m55dgBvbObgJJkv7
+	mqxwm6YP5ZC0w1FPtnbkZoOFYKNNf95ei5HLXpWuz730wxJTvtACKjZcN4U6Sz46r/I8efUN/O/mF
+	nR8qDtfg==;
+Received: from [45.124.203.140] (port=54891 helo=[192.168.0.152])
+	by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.96.2)
+	(envelope-from <gustavo@embeddedor.com>)
+	id 1tfy6Z-000xca-0C;
+	Thu, 06 Feb 2025 03:23:28 -0600
+Message-ID: <37d755b9-5d08-4b8f-a178-312d22651803@embeddedor.com>
+Date: Thu, 6 Feb 2025 19:53:12 +1030
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,117 +56,52 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v3][next] tty: tty_buffer: Avoid hundreds of
  -Wflex-array-member-not-at-end warnings
-To: "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+To: Jiri Slaby <jirislaby@kernel.org>,
+ "Gustavo A. R. Silva" <gustavoars@kernel.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  linux-hardening@vger.kernel.org
 References: <Z6QvAZxiQusdaDkH@kspp>
+ <daea13b0-137c-4ab5-8388-1d46919b8609@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <Z6QvAZxiQusdaDkH@kspp>
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+In-Reply-To: <daea13b0-137c-4ab5-8388-1d46919b8609@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 45.124.203.140
+X-Source-L: No
+X-Exim-ID: 1tfy6Z-000xca-0C
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.0.152]) [45.124.203.140]:54891
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 2
+X-Org: HG=hgshared;ORG=hostgator;
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfP0E5aZ19UCRbKBpvOljc/Q2O0AtvqxpII5ILoV/Ku71YXK467CufOikjVmS+YF+I6n7bHZVQyYLqqWlc5LhUCjXOz2cd0IZTP+biSUu5mFsqkyTsxTS
+ +o5P4AfFtZbldKTR48nWDvz3lulCHcrqLA8iFVC02isxILONaEWWRx8S5OLUstMBLRwWrrpqqFBZi7B6/YYzF91HHfpMYUTJDDjTIDt1eZvJakbbzUhn+HyG
 
-On 06. 02. 25, 4:39, Gustavo A. R. Silva wrote:
-> Currently, member `sentinel` in `struct tty_bufhead` is causing trouble
-> becase its type is `struct tty_buffer`, which is a flexible structure
-> --meaning it contains a flexible-array member. This combined with the
-> fact that `sentinel` is positioned in the middle of `struct tty_bufhead`,
 
-THUMBS_UP
+> 
+>> @@ -576,11 +579,14 @@ int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
+>>   void tty_buffer_init(struct tty_port *port)
+>>   {
+>>       struct tty_bufhead *buf = &port->buf;
+>> +    struct tty_buffer *buf_sentinel;
+>> +
+>> +    buf_sentinel = container_of(&buf->sentinel, struct tty_buffer, hdr);
+> 
+> Bah, so this is ugly and even dangerous if someone adds a member to tty_buffer outside _hdr.
 
-> Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> ---
-> Changes in v3:
->   - Implement `struct tty_buffer_hdr` as a separate struct and embed it
->     into `struct tty_buffer`. Refactor the rest of the code, accordingly.
+Precisely. :) This is one (more) of the reasons why of the struct_group()/static_assert()
+proposed changes.
 
-Better, but:
-
-> diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-> index 79f0ff94ce00..cd04a6567a33 100644
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-
-...
-
-> @@ -576,11 +579,14 @@ int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
->   void tty_buffer_init(struct tty_port *port)
->   {
->   	struct tty_bufhead *buf = &port->buf;
-> +	struct tty_buffer *buf_sentinel;
-> +
-> +	buf_sentinel = container_of(&buf->sentinel, struct tty_buffer, hdr);
-
-Bah, so this is ugly and even dangerous if someone adds a member to 
-tty_buffer outside _hdr.
-
-We should link headers in the list, it appears.
-
-> --- a/include/linux/tty_buffer.h
-> +++ b/include/linux/tty_buffer.h
-> @@ -7,7 +7,7 @@
->   #include <linux/mutex.h>
->   #include <linux/workqueue.h>
->   
-> -struct tty_buffer {
-> +struct tty_buffer_hdr {
->   	union {
->   		struct tty_buffer *next;
->   		struct llist_node free;
-> @@ -15,9 +15,13 @@ struct tty_buffer {
->   	unsigned int used;
->   	unsigned int size;
->   	unsigned int commit;
-> -	unsigned int lookahead;		/* Lazy update on recv, can become less than "read" */
-> +	unsigned int lookahead; /* Lazy update on recv, can become less than "read" */
-
-This is an unrelated/unwanted change.
-
-thanks,
--- 
-js
-suse labs
+-Gustavo
