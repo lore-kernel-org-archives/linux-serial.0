@@ -1,135 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from omta036.useast.a.cloudfilter.net (omta036.useast.a.cloudfilter.net [44.202.169.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6E6319F436;
-	Thu,  6 Feb 2025 18:55:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C714C2417E2
+	for <linux-serial@vger.kernel.org>; Thu,  6 Feb 2025 23:23:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.202.169.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738868119; cv=none; b=g2F8Az/7xe2F/h8rKGjMgjplKFPQUxpMlsbqWlFXLoycTGLvHOzVle/PA6PUkzK8KJYwKUGtfUL9HnG+Q888zoQ0q3D/83MVt0inhhoKhxOgtURUeSjfImbc+iBY2YuAYBuPkcK9G1iQquUsyo+8Qi2BKpvtkh37NIqG9GpsPk0=
+	t=1738884226; cv=none; b=AZNzAOsDHxrXVruwWI4Snk+2Wd+ff7DMohtnNl7QvrfQJyfc+Jz5EbqhzfR6bqBwl/J4PwPqH4UaHz+znJorgZhQ4iUPqm+EGCNl6608yFhMZBAHKMAvESK0M/niosOMZWWDq9RRgg7K9JOpqaeBzC9tck0b8kri617II5iRREE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738868119; c=relaxed/simple;
-	bh=FDulyMc4DCvOKU1fXSh1zkUDb8SmMV8MlfmV2AL7ke4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P5CGu4N45n/Juaa+QuSBAsso2fgayUye2i/ynhZTwPhfoqob/wnBgamPuuRrrRdl12EcrXsjbmQ7y0vHUcFHVcfY7XKjavKgSORkO0xH7Maa5JdWXMyGAMjBZbeovunezbYeVVePIhkax2Jxek2Hxjm92FYmn6tKjYZlPBXODv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RY/nRYaF; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1738884226; c=relaxed/simple;
+	bh=V2hDQVZfXi10myODsQHJDr1PrZbrGGSvhhbd4aHROEI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OMJbadq3Cpsmx1Uo2X1p9Zb96sFWCIfuNlQbApAq9vnYuIgksFVa02r/UOiN4XTq3N72Wetn0H/KNBuTZWeIBMKnRC/Pa/5HCWDSTIDsPcuA8JXhiOd4RTGB9RDSRikKiPo+Pw2Y/ebmOdCewTj4tes7lvFzmK5BAB/hicp3Di0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=oUlCs0qD; arc=none smtp.client-ip=44.202.169.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RY/nRYaF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1738868117; x=1770404117;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FDulyMc4DCvOKU1fXSh1zkUDb8SmMV8MlfmV2AL7ke4=;
-  b=RY/nRYaFza3h9ty51bL6741um+7hXkHI81ClZSJIg7utV/gWOfuo3tBu
-   knRIHlHZwa6UUC18zh7Q4OZVFOzt5ehomCzhx6nSBf5KS9j/mhK8oNk6T
-   JYk0m99/m/RXleLbCPKkpqQmQbywlyZc8mXak2YLrmS2tCkbTBL1Lpk8O
-   1OuewmU1pWXXP0rVR4kCUPYgwh3RzdaiaXxsQ7acI2VJNJHzKvVvzizlh
-   RrpD9YGkPUIAJhWoW12lDqDJU47sYEMcHyehw3Sk4a2Q+ZKJjc+X8glXj
-   gjLkHeKv/DrnjgtRB0ILX78DSSGG/7hMLI6AhhGeeLvhPqh+tkLqaBQi9
-   A==;
-X-CSE-ConnectionGUID: Y4/4/xUJRKmSbVBgZZvwOQ==
-X-CSE-MsgGUID: ebDmQEsnSDyQCxKAHdBtDw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11336"; a="50476681"
-X-IronPort-AV: E=Sophos;i="6.13,265,1732608000"; 
-   d="scan'208";a="50476681"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2025 10:55:16 -0800
-X-CSE-ConnectionGUID: /4dxL3d6QrCZNh4vVdfnGA==
-X-CSE-MsgGUID: gzRIt9cRQ+qYEIxJj+zX3g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,265,1732608000"; 
-   d="scan'208";a="116326951"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by fmviesa004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2025 10:55:12 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tg71p-00000008oxX-2XmB;
-	Thu, 06 Feb 2025 20:55:09 +0200
-Date: Thu, 6 Feb 2025 20:55:09 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: John Keeping <jkeeping@inmusicbrands.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Matt Turner <mattst88@gmail.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Ferry Toth <ftoth@exalondelft.nl>, Petr Mladek <pmladek@suse.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Serge Semin <fancer.lancer@gmail.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250: Fix fifo underflow on flush
-Message-ID: <Z6UFjU9SM4laZRyW@smile.fi.intel.com>
-References: <20250206155555.85093-1-jkeeping@inmusicbrands.com>
+	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="oUlCs0qD"
+Received: from eig-obgw-6006a.ext.cloudfilter.net ([10.0.30.182])
+	by cmsmtp with ESMTPS
+	id g4IPt9q5nzZPagBDjt6HXI; Thu, 06 Feb 2025 23:23:43 +0000
+Received: from gator4166.hostgator.com ([108.167.133.22])
+	by cmsmtp with ESMTPS
+	id gBDitXftxCvIegBDitV35Y; Thu, 06 Feb 2025 23:23:42 +0000
+X-Authority-Analysis: v=2.4 cv=fK8/34ae c=1 sm=1 tr=0 ts=67a5447e
+ a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=6Vi/Wpy7sgpXGMLew8oZcg==:17
+ a=IkcTkHD0fZMA:10 a=T2h4t0Lz3GQA:10 a=7T7KSl7uo7wA:10
+ a=KZ9MsSxUvLdQbKA6SOoA:9 a=QEXdDO2ut3YA:10 a=Xt_RvD8W3m28Mn_h3AK8:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=mfsvnhoslxgxndnAvhSW95+TCDLQ1GuITfG+HDlgT28=; b=oUlCs0qDbMdKAYj2+6uqMqJRrx
+	MsZZvofjojXYWNPk8Z9owrj4Z14wf5sSw7Qkb7NTbyTQkcGkiIJB7o/f8MoSaoJcPVRUkF4qf0ayz
+	EFlEHL9GgxMa+g6NQQlRFlEcgv771zEKpm1Ec3LerlutSiy3FhhR0SNtxY5TlMB4aJUwrcNBZqH5S
+	XM/unbiol57DAa9ErB4zxTiA8rBEV+WvffsFtnrg11k1GbHmrTGVMvKeoXSyEYv0EHrp+NOQnimQH
+	FTXrnEi42x9+5lxm6g52j5Dhf9S5R6jFnXxmfqiq2e67gDhZLU099ELKkF/TdUs1rErgH0lQ8bUso
+	z3eaR1GA==;
+Received: from [45.124.203.140] (port=54722 helo=[192.168.0.152])
+	by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+	(Exim 4.96.2)
+	(envelope-from <gustavo@embeddedor.com>)
+	id 1tgBDg-0025YQ-2y;
+	Thu, 06 Feb 2025 17:23:41 -0600
+Message-ID: <7c396d56-a2ea-4cb5-8a10-a2b78cebfaeb@embeddedor.com>
+Date: Fri, 7 Feb 2025 09:53:30 +1030
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250206155555.85093-1-jkeeping@inmusicbrands.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3][next] tty: tty_buffer: Avoid hundreds of
+ -Wflex-array-member-not-at-end warnings
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <Z6QvAZxiQusdaDkH@kspp>
+ <2025020633-irritate-boogieman-4c35@gregkh>
+Content-Language: en-US
+From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+In-Reply-To: <2025020633-irritate-boogieman-4c35@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 45.124.203.140
+X-Source-L: No
+X-Exim-ID: 1tgBDg-0025YQ-2y
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.0.152]) [45.124.203.140]:54722
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 8
+X-Org: HG=hgshared;ORG=hostgator;
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
+X-CMAE-Envelope: MS4xfALE6pQGIGPVmHG2U98ucMLePu+Ap00I9bMa9O+0SgMMFVEt2OPpSTexFNPS0dC+BffVlDwWHnBmZKgX6DRltDF4RrYx5B4V9FhOaouWFIbvWbTfCGxS
+ huydVsxAaqZP38zIl1JXLT9eov3JSDNBdhAYbQV+DkC3mFYIXvobxPSu/j00sirdBGWg2bfU/UsBIJBprFZaeXGushL6qA3aYQUHHrR9gLeH4DJ38TjIbDGw
 
-On Thu, Feb 06, 2025 at 03:55:51PM +0000, John Keeping wrote:
-> When flushing the serial port's buffer, uart_flush_buffer() calls
-> kfifo_reset() but if there is an outstanding DMA transfer then the
-> completion function will consume data from the kfifo via
-> uart_xmit_advance(), underflowing and leading to ongoing DMA as the
-> driver tries to transmit another 2^32 bytes.
+
+>>   	unsigned int used;
+>>   	unsigned int size;
+>>   	unsigned int commit;
+>> -	unsigned int lookahead;		/* Lazy update on recv, can become less than "read" */
+>> +	unsigned int lookahead; /* Lazy update on recv, can become less than "read" */
 > 
-> This is readily reproduced with serial-generic and amidi sending even
-> short messages as closing the device on exit will wait for the fifo to
-> drain and in the underflow case amidi hangs for 30 seconds on exit in
-> tty_wait_until_sent().
+> Coding style change?
 
-Sounds not good user experience...
+(Whaa? for some reason your response didn't reach my inbox until today)
 
-> A trace of that gives:
-> 
->      kworker/1:1-84    [001]    51.769423: bprint:               serial8250_tx_dma: tx_size=3 fifo_len=3
->            amidi-763   [001]    51.769460: bprint:               uart_flush_buffer: resetting fifo
->  irq/21-fe530000-76    [000]    51.769474: bprint:               __dma_tx_complete: tx_size=3
->  irq/21-fe530000-76    [000]    51.769479: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294967293
->  irq/21-fe530000-76    [000]    51.781295: bprint:               __dma_tx_complete: tx_size=4096
->  irq/21-fe530000-76    [000]    51.781301: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294963197
->  irq/21-fe530000-76    [000]    51.793131: bprint:               __dma_tx_complete: tx_size=4096
->  irq/21-fe530000-76    [000]    51.793135: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294959101
->  irq/21-fe530000-76    [000]    51.804949: bprint:               __dma_tx_complete: tx_size=4096
-> 
-> Since the port lock is held in when the kfifo is reset in
-> uart_flush_buffer() and in __dma_tx_complete(), adding a flush_buffer
-> hook to adjust the outstanding DMA byte count is sufficient to avoid the
-> kfifo underflow.
+It seems I got a bit too proactive.
 
-Shouldn't this have a Fixes tag?
+What do you think about the rest of the patch?
 
-...
-
-> +void serial8250_tx_dma_flush(struct uart_8250_port *p)
-> +{
-> +	struct uart_8250_dma *dma = p->dma;
-
-> +	if (dma->tx_running) {
-
-	if (!dma->tx_running)
-		return;
-
-> +		/*
-> +		 * kfifo_reset() has been called by the serial core, avoid
-> +		 * advancing and underflowing in __dma_tx_complete().
-> +		 */
-> +		dma->tx_size = 0;
-> +
-> +		dmaengine_terminate_async(dma->rxchan);
-> +	}
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Thanks!
+-Gustavo
 
