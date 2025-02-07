@@ -1,186 +1,244 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f80.google.com (mail-io1-f80.google.com [209.85.166.80])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BADF2417C7;
-	Fri,  7 Feb 2025 12:08:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628B41E98F4
+	for <linux-serial@vger.kernel.org>; Fri,  7 Feb 2025 13:31:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.80
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738930114; cv=none; b=vE0nYm2PT+c2b/tWEgPFXPRevkridzqP9MEqA8QHuin41YFuNLJbJ/Qkjflp3iXa8X9mU23DUUJDq/WxgrucqfkMDxt7eZBb1AXI+f0BOQ+SImbSc+Rz9t0EVsSTxYvdVbZ0A0nyvEfyUKgWvclkaUtgEKQ8qg4n/SaNlYFmNUM=
+	t=1738935086; cv=none; b=mPPBAx77j0O3ba+yMlDhu9vGG2ukKKZSIGRRxnWCdlW4SyvRaBWhwuzIYDk2GQKmf+6qDFHLjTeiwHbLsZPPrb6o0U1PHxJRNcGSgYdgPc+MjDnTLJUcSHWspFyxR0pZB+ugHlwRMWq4mVfxjM7f1UjTNHlAw0wT7CngA+RD7bE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738930114; c=relaxed/simple;
-	bh=da95x+iEjKk4AnIyzWr4OF402Q3KQTuVcmxNR1uChYw=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=oRvznNmFDLNXTVr3mjjDppuEb/FjxaXlF8keGKpyof3f8t0ETBlqBcblehtgwRhOV2gkBtXFsfKCtwQEA3tf6i9+NfsvRVyYu7T6HMDEsiaSIoQOn5Xot+4CTHkQyroRl8BW7cE5cQXIhVKfnzbuh802k/UfVNoCBrfopqOvywU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fkWAUpNM; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fkWAUpNM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1738930112; x=1770466112;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=da95x+iEjKk4AnIyzWr4OF402Q3KQTuVcmxNR1uChYw=;
-  b=fkWAUpNMkplCVLfA4+fZ8z+l9eR7Aydu+5dbGMEnt+I61OY3ZkZpdHjn
-   mtx9fpemQxaDmYkPg0QN9CD9eeEFW53M5WkF3CGWl8xP9h17CUWswl9Ph
-   JohCdRr0s9hPBHVw9DB7Q77no2T0ytag0s0eTkSmjv1VZtjG6CSv4LNFB
-   lbHiJ1ZL9t+1+t9k8nOk8u1AQdNczG4U5rzSpbJbZGi7uyU4eeCDH9TJt
-   RXGSWgtff9vY4/Knxc+d5lVWpo42f/k4bhyJhqkz/cr+B3gAR/l62k3rK
-   owIDlh9dXRUWPXRiD9avUxMOMghuai7zGrgFcp+jRWiUoWcfuPe5YFt2r
-   Q==;
-X-CSE-ConnectionGUID: J4Qfq6TbQDael52MmodE7g==
-X-CSE-MsgGUID: UWOS7vlRRLK8P7pN02/qSQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11336"; a="50207779"
-X-IronPort-AV: E=Sophos;i="6.13,267,1732608000"; 
-   d="scan'208";a="50207779"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2025 04:08:31 -0800
-X-CSE-ConnectionGUID: /25sh4qZTMmGnYayCZPUMQ==
-X-CSE-MsgGUID: ZWLVXRUIQgmxLG1TxorF9A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.11,199,1725346800"; 
-   d="scan'208";a="116452167"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.116])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2025 04:08:26 -0800
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Fri, 7 Feb 2025 14:08:22 +0200 (EET)
-To: John Keeping <jkeeping@inmusicbrands.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, stable@vger.kernel.org, 
-    Jiri Slaby <jirislaby@kernel.org>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Sunil V L <sunilvl@ventanamicro.com>, Petr Mladek <pmladek@suse.com>, 
-    Arnd Bergmann <arnd@arndb.de>, John Ogness <john.ogness@linutronix.de>, 
-    Ferry Toth <ftoth@exalondelft.nl>, 
-    Niklas Schnelle <schnelle@linux.ibm.com>, 
-    Serge Semin <fancer.lancer@gmail.com>, 
-    Heikki Krogerus <heikki.krogerus@linux.intel.com>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v2] serial: 8250: Fix fifo underflow on flush
-In-Reply-To: <20250207112608.693947-1-jkeeping@inmusicbrands.com>
-Message-ID: <f41ac9f6-9796-5405-df66-a38d7bec06b6@linux.intel.com>
-References: <20250207112608.693947-1-jkeeping@inmusicbrands.com>
+	s=arc-20240116; t=1738935086; c=relaxed/simple;
+	bh=vMcFW5uLYu9Bjax4H/eU7A7kVbErCjcL/Kg6ta/d9Y0=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=kfJaqadbvVfG8vS8sj5aR3DFgauiku0T7mQrwx0oXM/5NpJfGyv2nG/m9ogBi4BSoaVVxBorxfiTlobUPm0i2AQLm2sznHTK/oN2shzQIekAB1XNOPg0bx4SWnsXO++XeQhZTTsF3yNdxI5pdVl2rOVqUog8dX5Mu1kfm+3mpG0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.80
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-io1-f80.google.com with SMTP id ca18e2360f4ac-844ec271431so140411339f.1
+        for <linux-serial@vger.kernel.org>; Fri, 07 Feb 2025 05:31:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1738935083; x=1739539883;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=L5ratDbDIKLcXA7D/cHZRuyd7MISV+DrRFRat5RqUrI=;
+        b=Y1W/wPHKeCEHE46SaUbvfBMCtTOsB7UsJh+LS7GO8Dv414SsAb9fD1Vz8vDbPZPOxq
+         pg6nSV9Fei2A5UKdkBh6BEvAsaHbMgLUof42pN/Bv1GyoQMJZVd/ROPyoBpY2A5nbTHB
+         uWWDsa6DfmMypOlvbTrFeuxIl0U0DNHTHsgHrPWGUSXnvK3FCYoXDMXZiAR8P5VwYiFT
+         fQtogP2sLUhQ4V5d8mId2lt8fqyRKRpEpa4OF7q1l9YbTYUoFTfcXNHqtUxs4TffRckV
+         PM0AwvdFN6I8c75wRjemjwyuxVMjou7Wt8ce7gcmYA9gGSHU6V4F2zDSmCvXVN+TvC1d
+         QTgQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUB4WSBo7mGhIguPKHIvrRPTqv2dBq5wJvfdl9kezpg+TrWPdRYXW5y1iIn2HVlSKgyxl55AJmN0hn8CVg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzQhjOKOV2XfjrZiF0R1W2KEYLV4rH1azWUydGcWqZWbau9D0fc
+	rpnIwoNsWrI2YcZEr+TqM3eO2aE9+oC9z1L8yBGzDrGmhOGpfFj7yKblDqKvZ2XYCfI4NrzzYTy
+	mInrA+OmePbLBlZdcHcm68eiPDT6XYqzaTFulPBkOE0ljn4milyUClgQ=
+X-Google-Smtp-Source: AGHT+IFSMrniJ5k5OyJZEDzeehheJ7faz1/PCCmtpapsrMn6FNErsyF5nvsYQXMNkz8QxLRaHw5Ka48e73ipAel4rs6TICrISr1i
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+X-Received: by 2002:a05:6e02:1fe2:b0:3d0:4b0d:b225 with SMTP id
+ e9e14a558f8ab-3d13dd4d8b7mr19744335ab.13.1738935083408; Fri, 07 Feb 2025
+ 05:31:23 -0800 (PST)
+Date: Fri, 07 Feb 2025 05:31:23 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <67a60b2b.050a0220.2b1e6.0025.GAE@google.com>
+Subject: [syzbot] [serial?] KASAN: slab-out-of-bounds Write in do_con_write
+From: syzbot <syzbot+8da8533727fc2b735c3e@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 7 Feb 2025, John Keeping wrote:
+Hello,
 
-> When flushing the serial port's buffer, uart_flush_buffer() calls
-> kfifo_reset() but if there is an outstanding DMA transfer then the
-> completion function will consume data from the kfifo via
-> uart_xmit_advance(), underflowing and leading to ongoing DMA as the
-> driver tries to transmit another 2^32 bytes.
-> 
-> This is readily reproduced with serial-generic and amidi sending even
-> short messages as closing the device on exit will wait for the fifo to
-> drain and in the underflow case amidi hangs for 30 seconds on exit in
-> tty_wait_until_sent().  A trace of that gives:
-> 
->      kworker/1:1-84    [001]    51.769423: bprint:               serial8250_tx_dma: tx_size=3 fifo_len=3
->            amidi-763   [001]    51.769460: bprint:               uart_flush_buffer: resetting fifo
->  irq/21-fe530000-76    [000]    51.769474: bprint:               __dma_tx_complete: tx_size=3
->  irq/21-fe530000-76    [000]    51.769479: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294967293
->  irq/21-fe530000-76    [000]    51.781295: bprint:               __dma_tx_complete: tx_size=4096
->  irq/21-fe530000-76    [000]    51.781301: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294963197
->  irq/21-fe530000-76    [000]    51.793131: bprint:               __dma_tx_complete: tx_size=4096
->  irq/21-fe530000-76    [000]    51.793135: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294959101
->  irq/21-fe530000-76    [000]    51.804949: bprint:               __dma_tx_complete: tx_size=4096
-> 
-> Since the port lock is held in when the kfifo is reset in
-> uart_flush_buffer() and in __dma_tx_complete(), adding a flush_buffer
-> hook to adjust the outstanding DMA byte count is sufficient to avoid the
-> kfifo underflow.
-> 
-> Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: John Keeping <jkeeping@inmusicbrands.com>
-> ---
-> Changes in v2:
-> - Add Fixes: tag
-> - Return early to reduce indentation in serial8250_tx_dma_flush()
-> 
->  drivers/tty/serial/8250/8250.h      |  1 +
->  drivers/tty/serial/8250/8250_dma.c  | 16 ++++++++++++++++
->  drivers/tty/serial/8250/8250_port.c |  9 +++++++++
->  3 files changed, 26 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
-> index 11e05aa014e54..8ef45622e4363 100644
-> --- a/drivers/tty/serial/8250/8250.h
-> +++ b/drivers/tty/serial/8250/8250.h
-> @@ -374,6 +374,7 @@ static inline int is_omap1510_8250(struct uart_8250_port *pt)
->  
->  #ifdef CONFIG_SERIAL_8250_DMA
->  extern int serial8250_tx_dma(struct uart_8250_port *);
-> +extern void serial8250_tx_dma_flush(struct uart_8250_port *);
->  extern int serial8250_rx_dma(struct uart_8250_port *);
->  extern void serial8250_rx_dma_flush(struct uart_8250_port *);
->  extern int serial8250_request_dma(struct uart_8250_port *);
+syzbot found the following issue on:
 
-Will build fail if !CONFIG_SERIAL_8250_DMA ?
+HEAD commit:    2014c95afece Linux 6.14-rc1
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13dd5724580000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=90331d51f9d6fa1c
+dashboard link: https://syzkaller.appspot.com/bug?extid=8da8533727fc2b735c3e
+compiler:       gcc (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
 
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
-> index d215c494ee24c..f245a84f4a508 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
-> @@ -149,6 +149,22 @@ int serial8250_tx_dma(struct uart_8250_port *p)
->  	return ret;
->  }
->  
-> +void serial8250_tx_dma_flush(struct uart_8250_port *p)
-> +{
-> +	struct uart_8250_dma *dma = p->dma;
-> +
-> +	if (!dma->tx_running)
-> +		return;
-> +
-> +	/*
-> +	 * kfifo_reset() has been called by the serial core, avoid
-> +	 * advancing and underflowing in __dma_tx_complete().
-> +	 */
-> +	dma->tx_size = 0;
-> +
-> +	dmaengine_terminate_async(dma->rxchan);
-> +}
-> +
->  int serial8250_rx_dma(struct uart_8250_port *p)
->  {
->  	struct uart_8250_dma		*dma = p->dma;
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index d7976a21cca9c..442967a6cd52d 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2555,6 +2555,14 @@ static void serial8250_shutdown(struct uart_port *port)
->  		serial8250_do_shutdown(port);
->  }
->  
-> +static void serial8250_flush_buffer(struct uart_port *port)
-> +{
-> +	struct uart_8250_port *up = up_to_u8250p(port);
-> +
-> +	if (up->dma)
-> +		serial8250_tx_dma_flush(up);
-> +}
-> +
->  static unsigned int serial8250_do_get_divisor(struct uart_port *port,
->  					      unsigned int baud,
->  					      unsigned int *frac)
-> @@ -3244,6 +3252,7 @@ static const struct uart_ops serial8250_pops = {
->  	.break_ctl	= serial8250_break_ctl,
->  	.startup	= serial8250_startup,
->  	.shutdown	= serial8250_shutdown,
-> +	.flush_buffer	= serial8250_flush_buffer,
->  	.set_termios	= serial8250_set_termios,
->  	.set_ldisc	= serial8250_set_ldisc,
->  	.pm		= serial8250_pm,
-> 
+Unfortunately, I don't have any reproducer for this issue yet.
 
--- 
- i.
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/e059c9dab7dc/disk-2014c95a.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/0bce0f9fa4d8/vmlinux-2014c95a.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/6576d9f586f6/bzImage-2014c95a.xz
 
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+8da8533727fc2b735c3e@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: slab-out-of-bounds in vc_con_write_normal drivers/tty/vt/vt.c:3010 [inline]
+BUG: KASAN: slab-out-of-bounds in do_con_write+0x33f8/0x7d00 drivers/tty/vt/vt.c:3096
+Write of size 2 at addr ffff88807b055fc2 by task syz.3.678/8391
+
+CPU: 1 UID: 0 PID: 8391 Comm: syz.3.678 Not tainted 6.14.0-rc1-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 12/27/2024
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:94 [inline]
+ dump_stack_lvl+0x116/0x1f0 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xc3/0x620 mm/kasan/report.c:489
+ kasan_report+0xd9/0x110 mm/kasan/report.c:602
+ vc_con_write_normal drivers/tty/vt/vt.c:3010 [inline]
+ do_con_write+0x33f8/0x7d00 drivers/tty/vt/vt.c:3096
+ con_write+0x23/0xb0 drivers/tty/vt/vt.c:3432
+ process_output_block drivers/tty/n_tty.c:574 [inline]
+ n_tty_write+0x419/0x1140 drivers/tty/n_tty.c:2389
+ iterate_tty_write drivers/tty/tty_io.c:1015 [inline]
+ file_tty_write.constprop.0+0x506/0x9a0 drivers/tty/tty_io.c:1090
+ tty_write drivers/tty/tty_io.c:1111 [inline]
+ redirected_tty_write drivers/tty/tty_io.c:1134 [inline]
+ redirected_tty_write+0xcc/0x140 drivers/tty/tty_io.c:1114
+ new_sync_write fs/read_write.c:586 [inline]
+ vfs_write+0x5ae/0x1150 fs/read_write.c:679
+ ksys_write+0x12b/0x250 fs/read_write.c:731
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xcd/0x250 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f452738cda9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f45251f6038 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 00007f45275a5fa0 RCX: 00007f452738cda9
+RDX: 000000000000002b RSI: 0000000020000840 RDI: 0000000000000002
+RBP: 00007f452740e2a0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 0000000000000000 R14: 00007f45275a5fa0 R15: 00007ffda091f458
+ </TASK>
+
+Allocated by task 6754:
+ kasan_save_stack+0x33/0x60 mm/kasan/common.c:47
+ kasan_save_track+0x14/0x30 mm/kasan/common.c:68
+ poison_kmalloc_redzone mm/kasan/common.c:377 [inline]
+ __kasan_kmalloc+0xaa/0xb0 mm/kasan/common.c:394
+ kasan_kmalloc include/linux/kasan.h:260 [inline]
+ __do_kmalloc_node mm/slub.c:4294 [inline]
+ __kmalloc_noprof+0x21a/0x4f0 mm/slub.c:4306
+ kmalloc_noprof include/linux/slab.h:905 [inline]
+ kzalloc_noprof include/linux/slab.h:1037 [inline]
+ vc_do_resize+0x1da/0x10f0 drivers/tty/vt/vt.c:1174
+ vc_resize include/linux/vt_kern.h:49 [inline]
+ vgacon_init+0x37c/0x440 drivers/video/console/vgacon.c:392
+ visual_init+0x31d/0x620 drivers/tty/vt/vt.c:1011
+ do_bind_con_driver.isra.0+0x57a/0xbf0 drivers/tty/vt/vt.c:3831
+ do_unbind_con_driver+0x571/0x6d0 drivers/tty/vt/vt.c:3940
+ vt_unbind drivers/tty/vt/vt.c:4026 [inline]
+ store_bind+0x421/0x760 drivers/tty/vt/vt.c:4061
+ dev_attr_store+0x55/0x80 drivers/base/core.c:2439
+ sysfs_kf_write+0x117/0x170 fs/sysfs/file.c:139
+ kernfs_fop_write_iter+0x33d/0x500 fs/kernfs/file.c:334
+ new_sync_write fs/read_write.c:586 [inline]
+ vfs_write+0x5ae/0x1150 fs/read_write.c:679
+ ksys_write+0x12b/0x250 fs/read_write.c:731
+ do_syscall_x64 arch/x86/entry/common.c:52 [inline]
+ do_syscall_64+0xcd/0x250 arch/x86/entry/common.c:83
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+The buggy address belongs to the object at ffff88807b054000
+ which belongs to the cache kmalloc-4k of size 4096
+The buggy address is located 4130 bytes to the right of
+ allocated 4000-byte region [ffff88807b054000, ffff88807b054fa0)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x7b050
+head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+anon flags: 0xfff00000000040(head|node=0|zone=1|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 00fff00000000040 ffff88801b042140 0000000000000000 0000000000000001
+raw: 0000000000000000 0000000000040004 00000000f5000000 0000000000000000
+head: 00fff00000000040 ffff88801b042140 0000000000000000 0000000000000001
+head: 0000000000000000 0000000000040004 00000000f5000000 0000000000000000
+head: 00fff00000000003 ffffea0001ec1401 ffffffffffffffff 0000000000000000
+head: 0000000000000008 0000000000000000 00000000ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 3, migratetype Unmovable, gfp_mask 0xd2820(GFP_ATOMIC|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 12, tgid 12 (kworker/u8:1), ts 161558148619, free_ts 161445411154
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x181/0x1b0 mm/page_alloc.c:1551
+ prep_new_page mm/page_alloc.c:1559 [inline]
+ get_page_from_freelist+0xfce/0x2f80 mm/page_alloc.c:3477
+ __alloc_frozen_pages_noprof+0x221/0x2470 mm/page_alloc.c:4739
+ alloc_pages_mpol+0x1fc/0x540 mm/mempolicy.c:2270
+ alloc_slab_page mm/slub.c:2423 [inline]
+ allocate_slab mm/slub.c:2587 [inline]
+ new_slab+0x23d/0x330 mm/slub.c:2640
+ ___slab_alloc+0xbfa/0x1600 mm/slub.c:3826
+ __slab_alloc.constprop.0+0x56/0xb0 mm/slub.c:3916
+ __slab_alloc_node mm/slub.c:3991 [inline]
+ slab_alloc_node mm/slub.c:4152 [inline]
+ __do_kmalloc_node mm/slub.c:4293 [inline]
+ __kmalloc_node_track_caller_noprof+0x2ee/0x520 mm/slub.c:4313
+ kmalloc_reserve+0xef/0x2c0 net/core/skbuff.c:609
+ __alloc_skb+0x164/0x380 net/core/skbuff.c:678
+ alloc_skb include/linux/skbuff.h:1331 [inline]
+ nsim_dev_trap_skb_build drivers/net/netdevsim/dev.c:748 [inline]
+ nsim_dev_trap_report drivers/net/netdevsim/dev.c:805 [inline]
+ nsim_dev_trap_report_work+0x2af/0xd20 drivers/net/netdevsim/dev.c:851
+ process_one_work+0x958/0x1b30 kernel/workqueue.c:3236
+ process_scheduled_works kernel/workqueue.c:3317 [inline]
+ worker_thread+0x6c8/0xf00 kernel/workqueue.c:3398
+ kthread+0x3af/0x750 kernel/kthread.c:464
+ ret_from_fork+0x45/0x80 arch/x86/kernel/process.c:148
+ ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:244
+page last free pid 6547 tgid 6539 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ free_pages_prepare mm/page_alloc.c:1127 [inline]
+ free_frozen_pages+0x6db/0xfb0 mm/page_alloc.c:2660
+ __put_partials+0x14c/0x170 mm/slub.c:3153
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x4e/0x120 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x195/0x1e0 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x69/0x90 mm/kasan/common.c:329
+ kasan_slab_alloc include/linux/kasan.h:250 [inline]
+ slab_post_alloc_hook mm/slub.c:4115 [inline]
+ slab_alloc_node mm/slub.c:4164 [inline]
+ __kmalloc_cache_noprof+0x202/0x420 mm/slub.c:4320
+ kmalloc_noprof include/linux/slab.h:901 [inline]
+ kzalloc_noprof include/linux/slab.h:1037 [inline]
+ rxrpc_service_prealloc+0xda/0x1a0 net/rxrpc/call_accept.c:166
+ rxrpc_listen+0x227/0x330 net/rxrpc/af_rxrpc.c:236
+ afs_open_socket+0x24e/0x350 fs/afs/rxrpc.c:90
+ afs_net_init+0x95d/0xc60 fs/afs/main.c:123
+ ops_init+0x1df/0x5f0 net/core/net_namespace.c:138
+ setup_net+0x21f/0x860 net/core/net_namespace.c:362
+ copy_net_ns+0x2b4/0x6c0 net/core/net_namespace.c:516
+ create_new_namespaces+0x3ea/0xad0 kernel/nsproxy.c:110
+ unshare_nsproxy_namespaces+0xc0/0x1f0 kernel/nsproxy.c:228
+ ksys_unshare+0x45d/0xa40 kernel/fork.c:3342
+
+Memory state around the buggy address:
+ ffff88807b055e80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88807b055f00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88807b055f80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                           ^
+ ffff88807b056000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff88807b056080: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
