@@ -1,269 +1,260 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2118.outbound.protection.outlook.com [40.107.93.118])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40B7E2417F7
-	for <linux-serial@vger.kernel.org>; Fri,  7 Feb 2025 11:33:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738928003; cv=none; b=BgPtr+pxx9FqXi4ku42bsnQIjOA2S0VriuT6aT23ryASMA7p5Bc/3Q4CQltxwWOYwbm5bLb5yCiZBgYZW2mD6oFvcB5LPFX2xIs+clQkBvQXFcmb1cd2qPeUWxlB+pQulRnu23aqbefotyIlKEbgISFz5SHUjjb68Sa1ED3Dlcg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738928003; c=relaxed/simple;
-	bh=gXyzOqKS3D1cnSlPVTDsO6qfKTWoz+fkXi1nkJCtkxE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=QweVkHAvhoxlm5WiYA8z1+UdMGXW8w77onSicFdkVbgtkB07i3pVQFP78KEOzw2UjLrNLpIu4m5c8CG6wJ50sNCfuOlF9cAMW2wHzVS2Ht1QrqYfsWDq9nxmp+z/gzK5dhip1fFPFl1UW3QXST4kT8ZWdqH1g6GWUOn/ql6d+ak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=Uy6s2/L/; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 775F61DEFF7;
+	Fri,  7 Feb 2025 11:34:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.118
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1738928063; cv=fail; b=BkHEn2JNbu485hxUAkeifQtd+Zntqg5k1vvZpEFqos3MX/n4HMC5dBmbrvZpmFVI67LdH2XpGa65eX4w2DQsmdGHka1BcNKEDarhpUA/Sesu8ERyO7yaml3ukQMHc9tTU9wUACf4u/F7EAO1GSxrcNxdJJ0/NfwNAn+YDiTaTSM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1738928063; c=relaxed/simple;
+	bh=m9ZbU5cxFzY0iY0eSOLeEeI3YMAohgntyfHlzgSfVtw=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=EVwwqwZWkM7TNQQt0BOSid+AOkPvJsPnJrSULoutH5fS56GNZ24w2vulgpfiaUtNpVwZ8jMIQq1LErLgcpBvVq0IumweJjAqEVmX3qw+E8IsbY9426aoQWvSEw1mgM8/5k1j9ERu1X92JX7EWMYrASbGtlVPEe/P3p1VyPwymZI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inmusicbrands.com; spf=pass smtp.mailfrom=inmusicbrands.com; dkim=pass (1024-bit key) header.d=inmusicbrands.com header.i=@inmusicbrands.com header.b=oJbX1CvT; arc=fail smtp.client-ip=40.107.93.118
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inmusicbrands.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inmusicbrands.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="Uy6s2/L/"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-43635796b48so11687935e9.0
-        for <linux-serial@vger.kernel.org>; Fri, 07 Feb 2025 03:33:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1738927998; x=1739532798; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7L9kaIgPcRrnD7ClKXqIY9Z6L5Ed7fzm7AoWEXWMxcw=;
-        b=Uy6s2/L/nSxVgpPkKYFBImLW//HCC/hQQ6E+x1bgSrQexqZ1uXtTOmm7FEojjiVKXo
-         +YS3Uqjd4EDPA7Uny2axrfVcFVXX06e65XWW7udR8pq04R58ZdkX3hVlyV8lbA0GzNzB
-         awWHIV2cIV0nBk0YQPWdmh6AV4EYja51NYy7R12Zk6beZNbuo75iugpKsUK0d1egszwK
-         6Io1pdmvomGH23lvLPGzJbJc2WHuvi+v+ZLAS82YyE7q9T/MN/VaFz+CA5Pq8ulsXZuf
-         yi+/waqOfL189LKnHnkhgUI2RFiVXMlDs/qtz4c9ptQ1Zt7Zz7cA76CnF70SJds2SUbz
-         zGvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1738927998; x=1739532798;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7L9kaIgPcRrnD7ClKXqIY9Z6L5Ed7fzm7AoWEXWMxcw=;
-        b=LCDqpXjW8SKZ6MU72ZNvZxGWDHeruQejaPrDpnja+8tETB+3OujBA2a4Aq7GzH6RfK
-         YKwbjhOy7lzhKgLZVlvSsgB6Qg5mo3b0Fg9fdbJ+ifGspohEwHAZ5eR72kLh2otIX7iI
-         Te3bpOc7QtwiUM7MGtn8NPg1Dfwees0w7YcDJSL5g0DTUXd1waPcP3ogq+IybZ9nRRZy
-         gUM2DTCWES1l1+C34k0mgx5oZjb4ZeGynjOtw5a2nWm4wquxvY1aUBx2pGmZ/x0A+zIk
-         r3yfuhDKGeP1uJLHRlOmyCIk4RGR9TZc6956rWthOPUOjRhh9cqFb9VODRXfKPIYmBna
-         c9QA==
-X-Forwarded-Encrypted: i=1; AJvYcCWyGrA7ePBbi0BDylM2qx5CPXf588LZZ5edluHIvYt2h1xp5sZwxVCkv1sIsbPZaPkYfvnkP3mpoHFGC/k=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxVsqYYumq4KdhcVkYlyc2g268AdCy0+6zPe7T6ZPhJ0S6Y8BGv
-	/i3GSAVzahylteT2BBxdQEMOg+8WKpwyKRz2+VD1VKdJN9fSgaj+cPkEPQWVJnk=
-X-Gm-Gg: ASbGncstU76m4/UuUeAGhIAVUCAPUjHmPgKDPII/kQDKtUrxVsblcj8knXdmN69LvXb
-	vStcm8FJ2IF+gJ9C/tQX6fO5AQ8bi5GXemHimd1DxwvvEoSAgd1ODMEtLJPTElUHfYp8Zp6+1hx
-	c1zoK/GoJ1f9SB7//kezglZe5qAIuyipWhp/HwWWVYe4sMJZqSjfvhD+hdqTDpvBjYnJupKoxx9
-	afNr5PYQyTBa4c7LhnNHppcOYEqHTAZGlnzpDUtHeP13vVaQBK+2lUsVEXvg7YC3udzHqh/klwF
-	my46FaGy7ARKZ4U8DAZhErQtFalP9DAXJVz4/0f6yyvl1g==
-X-Google-Smtp-Source: AGHT+IEpT1fcvjRNyGuoEMQnn+pd9SfSFbknjg4AyM95JLUBXYpKrN5/zp/sY02Lf0mr6SYgTsy5ng==
-X-Received: by 2002:a05:600c:4f50:b0:438:a313:cda9 with SMTP id 5b1f17b1804b1-43912d3ef66mr51882415e9.10.1738927997504;
-        Fri, 07 Feb 2025 03:33:17 -0800 (PST)
-Received: from claudiu-X670E-Pro-RS.. ([82.78.167.173])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38dbdd53a6esm4207208f8f.43.2025.02.07.03.33.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Feb 2025 03:33:17 -0800 (PST)
-From: Claudiu <claudiu.beznea@tuxon.dev>
-X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	p.zabel@pengutronix.de,
-	geert+renesas@glider.be,
-	wsa+renesas@sang-engineering.com,
-	prabhakar.mahadev-lad.rj@bp.renesas.com
-Cc: claudiu.beznea@tuxon.dev,
+	dkim=pass (1024-bit key) header.d=inmusicbrands.com header.i=@inmusicbrands.com header.b="oJbX1CvT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=e/pkX6yPzfStyFo7bcTqJy2fo1/5gO/3q+XlTB6xs4rYu+pUTircpIqnC6rgKSajQXQrfhc8CAUJSQd/8Aq10mq/EoYcWA99ECbpdyXPcrlFKoVFkwOISpECIuu+uOaID/ICFTJDbuzPneCVwKhmiSqY+HzN7SPnhjxoGc7HL4Fpi94c89XBggekf0Iv6YleiAFEVrRR6nQhMG+xHN/bz9sZszfBliYXRId82cVXgewsVdn1fHM61hzhjCjOq95x0bTwgmV05VBpN/h7nPJCuz5qZfuRlB9qfbBNCmsvXw41jxJuqod86/rciIoDo8RVO4hME/qQ525ZGDfbUKWEng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Y2loUqnZZ1jDKSUlz6AUKddMN2STNvOYtwwnT/DtKzw=;
+ b=GXEBuCVV4pAwhwnU2Ku0GO3dbafnJevl1lEsn9SCftA5V2ylMdnY69TkLPu1ZNCbtU0FN/fcp4MwFz8R/gHn4VRLQfdRd2rExrC3cZZKdcSY7hWorigXkcV3B9+dTK1rs756Rg2SMWc7Lc8JQ7hoz2FrOKzPV8O+NSVU7r2+7CmCqH1CDhZxaJdCETKTX0ljWq88wcoCv6fg8w5af5PTwXAvv7BUkbCtLgY/BmwbZAT9hPRewQQdApUMBXEhpiWsDajCyUxZ0WbiyWTcyHH/KP/znzv87SdNL169W2/rY+cnvpVDaTx+NOLSlfutjITlNvVlne7gOaDwTR0FnMKTQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=inmusicbrands.com; dmarc=pass action=none
+ header.from=inmusicbrands.com; dkim=pass header.d=inmusicbrands.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=inmusicbrands.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y2loUqnZZ1jDKSUlz6AUKddMN2STNvOYtwwnT/DtKzw=;
+ b=oJbX1CvTZIQxVnadqFjUIti0/RQboAAfwOK7QxR3aLRvm8UJCZqAUzPHc0i1sfKjnq2x8avykB7qBUb9Z9nSaMIPBYXaGUo4NvzHWKC7IbCPfqmjm8VTK+UwUm9brcBxFLizV10f16u64s4V9tGK16C7XiZuuqO0uu6UYLmRAnI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=inmusicbrands.com;
+Received: from MW4PR08MB8282.namprd08.prod.outlook.com (2603:10b6:303:1bd::18)
+ by SJ0PR08MB8409.namprd08.prod.outlook.com (2603:10b6:a03:4e4::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8398.25; Fri, 7 Feb
+ 2025 11:34:18 +0000
+Received: from MW4PR08MB8282.namprd08.prod.outlook.com
+ ([fe80::55b3:31f1:11c0:4401]) by MW4PR08MB8282.namprd08.prod.outlook.com
+ ([fe80::55b3:31f1:11c0:4401%3]) with mapi id 15.20.8422.010; Fri, 7 Feb 2025
+ 11:34:18 +0000
+From: John Keeping <jkeeping@inmusicbrands.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: John Keeping <jkeeping@inmusicbrands.com>,
+	stable@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Sunil V L <sunilvl@ventanamicro.com>,
+	Petr Mladek <pmladek@suse.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	John Ogness <john.ogness@linutronix.de>,
+	Ferry Toth <ftoth@exalondelft.nl>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Heikki Krogerus <heikki.krogerus@linux.intel.com>,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH v6] serial: sh-sci: Update the suspend/resume support
-Date: Fri,  7 Feb 2025 13:33:13 +0200
-Message-ID: <20250207113313.545432-1-claudiu.beznea.uj@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
+	linux-serial@vger.kernel.org
+Subject: [PATCH v2] serial: 8250: Fix fifo underflow on flush
+Date: Fri,  7 Feb 2025 11:26:05 +0000
+Message-ID: <20250207112608.693947-1-jkeeping@inmusicbrands.com>
+X-Mailer: git-send-email 2.48.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: LO3P123CA0003.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:ba::8) To MW4PR08MB8282.namprd08.prod.outlook.com
+ (2603:10b6:303:1bd::18)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MW4PR08MB8282:EE_|SJ0PR08MB8409:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8c5914eb-dfcd-4e05-db18-08dd476b5b82
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|52116014|366016|376014|1800799024|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?AP2bE4ssYBhz5zUw6/QJ59XaL+wjw9IXkuVoPZwF/8I+wi8B0u6RmqbwmJnE?=
+ =?us-ascii?Q?tNS4ej66BXCaYeM/uZx2cRLCh/7PPgHW2sPYubpIko4R3Y+X8uzgYGrSd33+?=
+ =?us-ascii?Q?vwD0+EK32psYQsvpzCmkBp5THRuSTHR5AmWMEMjrCMxzeK8g3Z/568NtDeN8?=
+ =?us-ascii?Q?O2h6cM6Yf7h8NhereQUhmJiyindHAKOFLme4UXALkrRhvKRZmOBS4Ma2qhmy?=
+ =?us-ascii?Q?yHjTixwGoSQnhsZkRh6n+cV6wl6VOYgAiBJKLbaIXPHa6TuGR18aEvl3dpgg?=
+ =?us-ascii?Q?qiURgAgHgVa42YxanphyR9InlZZzgzFZFaYKUQup81k8AE9BauEiz9mLfWZT?=
+ =?us-ascii?Q?+on+DT2GyNqGAfnrqsp41xWG78g2FG7VGhb4btqAn0804HP9wgk7YCbjC9yC?=
+ =?us-ascii?Q?lclRYIJvIZBmjN4Vw1y/jZVaiAcUTa2wBmXqgW8QlT6q9itnXw5tR0b0zGQj?=
+ =?us-ascii?Q?91/dxIfALKmL2HF2f8yZkLXwmmwIquqN8FQYeLJ8L+5vqJHo3BCIGAqeFh59?=
+ =?us-ascii?Q?RaXCy7m4zFii/j/ht30mUlIBxctNv+5D7RYPTXXftQTc10kG8o+fz9btMIHN?=
+ =?us-ascii?Q?+2ebb+z4flzhl2PI93TlyU3dX3q90jihHAsKbNIjRNyseCtQcJXNffyAQx56?=
+ =?us-ascii?Q?KFZzr0pBoMKVnf97G++lZgSooQq8Ci+UAQDxeX/34SS6u7OZJkWJiXo3Vj2y?=
+ =?us-ascii?Q?5UEHnFt7abWyojUtaaGZ6CJ7XAvpOrAalp6Kp0qpNxQjOGUgyX+W7ze3+Rcd?=
+ =?us-ascii?Q?owvAXzNjlwbw2br3AeKwqLek441BKp2SvuB/y9w3bIs8GjzkGv0CsX+u2a8k?=
+ =?us-ascii?Q?fZh+IywA9JYiGW8uLVxcVO/XSFA/e+voxSwEL8dtEEuwqd6WObACGBXauyLt?=
+ =?us-ascii?Q?eEo+Ljsf2B6jrxJFERAoQBYVDEYMH/9lwrvwHzZsz3YclKq8yNc5ak0Yw920?=
+ =?us-ascii?Q?YQUyCmyWQ5AB6rpba5V9WMhRzEKKLXMPlOLscZPMUBOTAJfsb7oZsmiKOOwM?=
+ =?us-ascii?Q?gZuOE/lS7Pt9BdIsDmdYxFp+h/6JWeJW3a3rDvQ2nwKpBa7jsURpBvABWOEh?=
+ =?us-ascii?Q?ojA830XQXOptTlzOWXMWOrYWBz1XgK5dLmfspNmNgpY5koYCCqyjM84y2PaP?=
+ =?us-ascii?Q?Zj+OjimNDzaZWs7ZPfMjfAQE17Wdkaj+bRifS8/lynAeMEs4HvOk46fo4DDR?=
+ =?us-ascii?Q?4BgR0FsJMbmGlrflYA0ydPLkwjrnLJC8823sKmAcwVjw8Hy0VI2RDapasuQD?=
+ =?us-ascii?Q?33QZJvNe+FTj7kmeToi73XQ5yYd31dKgDV7rBFxjfacgO5BeLZ+9KA7nFC/K?=
+ =?us-ascii?Q?mGXIR7EjqkQpLewn5HeeNyrZcK16wEVpvC2Kv1C3+b7YXA6//NADUX9wOAcr?=
+ =?us-ascii?Q?OBxIRBOOwr+IJPC54ub9eDUfsBLn2BvYst06qHdXHtrkqRhRl+DUEYnH9e1P?=
+ =?us-ascii?Q?bYyOjb+2u8YWKGC7LaNxpG1gJOlDXf9g?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR08MB8282.namprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(52116014)(366016)(376014)(1800799024)(38350700014);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?0B8sofLVbvYJVdEtpvRr86SrHt5G8uhXwaIskoRF7uKORld2YC54fgGlTS3E?=
+ =?us-ascii?Q?Cf/ilngIjynPXsGwPb/SYMtnZPrtTurdt7b/aqa0xrFiZFF6Okf0Zi1VfOy8?=
+ =?us-ascii?Q?fdYjfC7gG4BCjO3sSLEn6xC5u5EAze5sc9wp5RVaNobwqx/ut+s50ll1UIfB?=
+ =?us-ascii?Q?JAkMNF4Gm2zOYliQLB+bd1hiCYTKDxPsHMf+dnDGL3waGeZ7CcsL2cnL0//n?=
+ =?us-ascii?Q?X9syXIVO5CIDlK4WE6aFCSc4BA4I+GWiLKV2HnVNqbQ7HlXGaiYdCm+wREkm?=
+ =?us-ascii?Q?ULDEg2En0QLln+ukam/oJfnrSnuIuYCguv2GI57S2sha10W8PSOvuB2jPxep?=
+ =?us-ascii?Q?z5p13wKb/Qr7NuuneFgUrDSGfr8BuWpD/ZvVdK+I1LLSjjAu0FYsENH7YwHK?=
+ =?us-ascii?Q?v8s7CyWIY/K2SPE1NtGcBkXWjNtTW2bb3xqorYoSF8fTF12fineFjwGfTJ7W?=
+ =?us-ascii?Q?eIrlrsEp40ecocE4Nsx+uwQ18pIiVkRdn2FdrI708kUteCq7hvjYk/KMMNol?=
+ =?us-ascii?Q?8Lq3v39givsXKT5iGidJ1F+zUFepPE+upZSPt4usiGYou4bDh312yJv3IIhr?=
+ =?us-ascii?Q?PEa7t2UBEdd/mSQ3Btm7PQQ9/gE4JmP/F+IXqB+wdeELvbLOvVIrPVIL3Jzs?=
+ =?us-ascii?Q?83UetlKf3jXlTs0C7gf3aU1RQvGoi2SegQsq08VsgqGUhXIwGc17qsiCWWGs?=
+ =?us-ascii?Q?tTrlSMtsexy2Gj/1jOrcU7QDXwxnfjQhPSblGpVUmyRlmL8gXaXwRRe2Gee9?=
+ =?us-ascii?Q?jHPlVCDzPhjrkIQjysvJTkM2sD8jDkGI84HQyMQN6bSbvhV6GiTJQ0YAtHSp?=
+ =?us-ascii?Q?q5YlG7UWaUuExkX8BxEIW49HHH/E7PSuWrzAb/imp6DO0c+gg3efYJ66iDiV?=
+ =?us-ascii?Q?Sko7qWEhm5LudEZveEeCXel8FQwMElpt+zHiOlZN5DeJvr6dgYvto48VMMf9?=
+ =?us-ascii?Q?J0YLdegyuwWs6zvekutqWkOJYDbPwuqmAiZDnCO7xgn2wtB/WfnxbvqIC6Vu?=
+ =?us-ascii?Q?JlrQaffgzyOpTbFvvx+LPFAxSAjMs9oS47F19HEbgMb3dLpWxktDRMVVPGCG?=
+ =?us-ascii?Q?iOuBHcnTHrDIYGQ85YbZIegONBXq3Kx9qpTh+QzB/sMVjzUt26xFkp/0esog?=
+ =?us-ascii?Q?Vun40DotCaOE7M0Ld0JNc2d2G+easiSaJmHxEANVwp29QYkZ3TfW7cL2iPNf?=
+ =?us-ascii?Q?+EKzRLXZo7V/Ghp3PHzedRUJiRw2wW/Y5u/nAURbmhadCpMjeo8wvBEg65S5?=
+ =?us-ascii?Q?Qf2QmDAMYiw4KNX4ZiuNlApp3CSUen1QVLZJTVkykTC1xcr7ZrY3ZP5oV+ef?=
+ =?us-ascii?Q?+jjTWIGTw/Xq3QIOMirmU1D3VsMxjYpn19NphCSFpJ7LcKOiJdQ0l5zAbZRy?=
+ =?us-ascii?Q?aKIyQq5gT/XtKpqeunnMpIRO54NoFXhHPwNRE/jBa0al0SE9OKYHgFPrg3zn?=
+ =?us-ascii?Q?0GdNL/c3IURBPHrOqPaTnreZLPc340g5hNAxpT7MgqBR6/JtllQoX3/u/cIe?=
+ =?us-ascii?Q?PtpFfpo2HlVm36mlmHa0b/KJM3oO4hOp3hME/QwUuBgiWhyE4tJRVI1tmavc?=
+ =?us-ascii?Q?ygzmAql6NouMdXKLE/vaKUqCf3aYwrNHS6/4w5xnLDg9Ytb/nDI+YYvpPRis?=
+ =?us-ascii?Q?Rw=3D=3D?=
+X-OriginatorOrg: inmusicbrands.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c5914eb-dfcd-4e05-db18-08dd476b5b82
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR08MB8282.namprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2025 11:34:18.0033
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 24507e43-fb7c-4b60-ab03-f78fafaf0a65
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +O8oFtPHKX5PpxPZHcEPz9XbhdqvZBmyaBpPxIB4xiQ9vqzJ439F9dCVWUVjlc2KwTjOv49+oq6ooy16EkDvwr0TqZ/fgnkV6dDyXvMTUDk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR08MB8409
 
-From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+When flushing the serial port's buffer, uart_flush_buffer() calls
+kfifo_reset() but if there is an outstanding DMA transfer then the
+completion function will consume data from the kfifo via
+uart_xmit_advance(), underflowing and leading to ongoing DMA as the
+driver tries to transmit another 2^32 bytes.
 
-The Renesas RZ/G3S supports a power saving mode where power to most of the
-SoC components is turned off. When returning from this power saving mode,
-SoC components need to be re-configured.
+This is readily reproduced with serial-generic and amidi sending even
+short messages as closing the device on exit will wait for the fifo to
+drain and in the underflow case amidi hangs for 30 seconds on exit in
+tty_wait_until_sent().  A trace of that gives:
 
-The SCIFs on the Renesas RZ/G3S need to be re-configured as well when
-returning from this power saving mode. The sh-sci code already configures
-the SCIF clocks, power domain and registers by calling uart_resume_port()
-in sci_resume(). On suspend path the SCIF UART ports are suspended
-accordingly (by calling uart_suspend_port() in sci_suspend()). The only
-missing setting is the reset signal. For this assert/de-assert the reset
-signal on driver suspend/resume.
+     kworker/1:1-84    [001]    51.769423: bprint:               serial8250_tx_dma: tx_size=3 fifo_len=3
+           amidi-763   [001]    51.769460: bprint:               uart_flush_buffer: resetting fifo
+ irq/21-fe530000-76    [000]    51.769474: bprint:               __dma_tx_complete: tx_size=3
+ irq/21-fe530000-76    [000]    51.769479: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294967293
+ irq/21-fe530000-76    [000]    51.781295: bprint:               __dma_tx_complete: tx_size=4096
+ irq/21-fe530000-76    [000]    51.781301: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294963197
+ irq/21-fe530000-76    [000]    51.793131: bprint:               __dma_tx_complete: tx_size=4096
+ irq/21-fe530000-76    [000]    51.793135: bprint:               serial8250_tx_dma: tx_size=4096 fifo_len=4294959101
+ irq/21-fe530000-76    [000]    51.804949: bprint:               __dma_tx_complete: tx_size=4096
 
-In case the no_console_suspend is specified by the user, the registers need
-to be saved on suspend path and restore on resume path. To do this the
-sci_console_save()/sci_console_restore() functions were added. There is no
-need to cache/restore the status or FIFO registers. Only the control
-registers. The registers that will be saved/restored on suspend/resume are
-specified by the struct sci_suspend_regs data structure.
+Since the port lock is held in when the kfifo is reset in
+uart_flush_buffer() and in __dma_tx_complete(), adding a flush_buffer
+hook to adjust the outstanding DMA byte count is sufficient to avoid the
+kfifo underflow.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Fixes: 9ee4b83e51f74 ("serial: 8250: Add support for dmaengine")
+Cc: stable@vger.kernel.org
+Signed-off-by: John Keeping <jkeeping@inmusicbrands.com>
 ---
-
-The v4 of this patch was part of a series with 4 patches. As the rest of
-the patches were applied I dropped the cover letter. The v4 cover letter
-is located here:
-https://lore.kernel.org/all/20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com
-
-Changes in v6:
-- used sci_getreg() before saving/restoring registers to avoid
-  WARN() on sci_serial_in()/sci_serial_out()
-- splitted sci_console_save_restore() in 2 functions:
-  sci_console_save()/sci_console_restore() as requested in the
-  review process
-- adjusted the patch description to reflect these changes
-
-Changes in v5:
-- fixed typo in patch description
-- adjusted the patch description to reflect the new patch content
-- added struct sci_suspend_regs and dropped the suspend_cacheable
-  flag introduced previously in struct plat_sci_reg; along with it
-  the updates in sci_port_params[] were also dropped;
-  also, the function (now sci_console_save_restore()) that saves
-  and restores the registers content was adjusted accordingly
-- s/sci_console_setup/sci_console_save_restore/g
-
-Changes in v4:
-- none
-
-Changes in v3:
-- none
-
 Changes in v2:
-- rebased on top of the update version of patch 2/8 from
-  this series
+- Add Fixes: tag
+- Return early to reduce indentation in serial8250_tx_dma_flush()
 
- drivers/tty/serial/sh-sci.c | 71 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 69 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250.h      |  1 +
+ drivers/tty/serial/8250/8250_dma.c  | 16 ++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c |  9 +++++++++
+ 3 files changed, 26 insertions(+)
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index b1ea48f38248..4bc637f9d649 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -104,6 +104,15 @@ struct plat_sci_reg {
- 	u8 offset, size;
- };
+diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/8250.h
+index 11e05aa014e54..8ef45622e4363 100644
+--- a/drivers/tty/serial/8250/8250.h
++++ b/drivers/tty/serial/8250/8250.h
+@@ -374,6 +374,7 @@ static inline int is_omap1510_8250(struct uart_8250_port *pt)
  
-+struct sci_suspend_regs {
-+	u16 scsmr;
-+	u16 scscr;
-+	u16 scfcr;
-+	u16 scsptr;
-+	u8 scbrr;
-+	u8 semr;
-+};
-+
- struct sci_port_params {
- 	const struct plat_sci_reg regs[SCIx_NR_REGS];
- 	unsigned int fifosize;
-@@ -134,6 +143,8 @@ struct sci_port {
- 	struct dma_chan			*chan_tx;
- 	struct dma_chan			*chan_rx;
- 
-+	struct reset_control		*rstc;
-+
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
- 	struct dma_chan			*chan_tx_saved;
- 	struct dma_chan			*chan_rx_saved;
-@@ -153,6 +164,7 @@ struct sci_port {
- 	int				rx_trigger;
- 	struct timer_list		rx_fifo_timer;
- 	int				rx_fifo_timeout;
-+	struct sci_suspend_regs		suspend_regs;
- 	u16				hscif_tot;
- 
- 	bool has_rtscts;
-@@ -3374,6 +3386,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
- 	}
- 
- 	sp = &sci_ports[id];
-+	sp->rstc = rstc;
- 	*dev_id = id;
- 
- 	p->type = SCI_OF_TYPE(data);
-@@ -3546,13 +3559,57 @@ static int sci_probe(struct platform_device *dev)
- 	return 0;
+ #ifdef CONFIG_SERIAL_8250_DMA
+ extern int serial8250_tx_dma(struct uart_8250_port *);
++extern void serial8250_tx_dma_flush(struct uart_8250_port *);
+ extern int serial8250_rx_dma(struct uart_8250_port *);
+ extern void serial8250_rx_dma_flush(struct uart_8250_port *);
+ extern int serial8250_request_dma(struct uart_8250_port *);
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index d215c494ee24c..f245a84f4a508 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -149,6 +149,22 @@ int serial8250_tx_dma(struct uart_8250_port *p)
+ 	return ret;
  }
  
-+static void sci_console_save(struct sci_port *s)
++void serial8250_tx_dma_flush(struct uart_8250_port *p)
 +{
-+	struct sci_suspend_regs *regs = &s->suspend_regs;
-+	struct uart_port *port = &s->port;
++	struct uart_8250_dma *dma = p->dma;
 +
-+	if (sci_getreg(port, SCSMR)->size)
-+		regs->scsmr = sci_serial_in(port, SCSMR);
-+	if (sci_getreg(port, SCSCR)->size)
-+		regs->scscr = sci_serial_in(port, SCSCR);
-+	if (sci_getreg(port, SCFCR)->size)
-+		regs->scfcr = sci_serial_in(port, SCFCR);
-+	if (sci_getreg(port, SCSPTR)->size)
-+		regs->scsptr = sci_serial_in(port, SCSPTR);
-+	if (sci_getreg(port, SCBRR)->size)
-+		regs->scbrr = sci_serial_in(port, SCBRR);
-+	if (sci_getreg(port, SEMR)->size)
-+		regs->semr = sci_serial_in(port, SEMR);
++	if (!dma->tx_running)
++		return;
++
++	/*
++	 * kfifo_reset() has been called by the serial core, avoid
++	 * advancing and underflowing in __dma_tx_complete().
++	 */
++	dma->tx_size = 0;
++
++	dmaengine_terminate_async(dma->rxchan);
 +}
 +
-+static void sci_console_restore(struct sci_port *s)
+ int serial8250_rx_dma(struct uart_8250_port *p)
+ {
+ 	struct uart_8250_dma		*dma = p->dma;
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index d7976a21cca9c..442967a6cd52d 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2555,6 +2555,14 @@ static void serial8250_shutdown(struct uart_port *port)
+ 		serial8250_do_shutdown(port);
+ }
+ 
++static void serial8250_flush_buffer(struct uart_port *port)
 +{
-+	struct sci_suspend_regs *regs = &s->suspend_regs;
-+	struct uart_port *port = &s->port;
++	struct uart_8250_port *up = up_to_u8250p(port);
 +
-+	if (sci_getreg(port, SCSMR)->size)
-+		sci_serial_out(port, SCSMR, regs->scsmr);
-+	if (sci_getreg(port, SCSCR)->size)
-+		sci_serial_out(port, SCSCR, regs->scscr);
-+	if (sci_getreg(port, SCFCR)->size)
-+		sci_serial_out(port, SCFCR, regs->scfcr);
-+	if (sci_getreg(port, SCSPTR)->size)
-+		sci_serial_out(port, SCSPTR, regs->scsptr);
-+	if (sci_getreg(port, SCBRR)->size)
-+		sci_serial_out(port, SCBRR, regs->scbrr);
-+	if (sci_getreg(port, SEMR)->size)
-+		sci_serial_out(port, SEMR, regs->semr);
++	if (up->dma)
++		serial8250_tx_dma_flush(up);
 +}
 +
- static __maybe_unused int sci_suspend(struct device *dev)
- {
- 	struct sci_port *sport = dev_get_drvdata(dev);
- 
--	if (sport)
-+	if (sport) {
- 		uart_suspend_port(&sci_uart_driver, &sport->port);
- 
-+		if (!console_suspend_enabled && uart_console(&sport->port))
-+			sci_console_save(sport);
-+		else
-+			return reset_control_assert(sport->rstc);
-+	}
-+
- 	return 0;
- }
- 
-@@ -3560,8 +3617,18 @@ static __maybe_unused int sci_resume(struct device *dev)
- {
- 	struct sci_port *sport = dev_get_drvdata(dev);
- 
--	if (sport)
-+	if (sport) {
-+		if (!console_suspend_enabled && uart_console(&sport->port)) {
-+			sci_console_restore(sport);
-+		} else {
-+			int ret = reset_control_deassert(sport->rstc);
-+
-+			if (ret)
-+				return ret;
-+		}
-+
- 		uart_resume_port(&sci_uart_driver, &sport->port);
-+	}
- 
- 	return 0;
- }
+ static unsigned int serial8250_do_get_divisor(struct uart_port *port,
+ 					      unsigned int baud,
+ 					      unsigned int *frac)
+@@ -3244,6 +3252,7 @@ static const struct uart_ops serial8250_pops = {
+ 	.break_ctl	= serial8250_break_ctl,
+ 	.startup	= serial8250_startup,
+ 	.shutdown	= serial8250_shutdown,
++	.flush_buffer	= serial8250_flush_buffer,
+ 	.set_termios	= serial8250_set_termios,
+ 	.set_ldisc	= serial8250_set_ldisc,
+ 	.pm		= serial8250_pm,
 -- 
-2.43.0
+2.48.1
 
