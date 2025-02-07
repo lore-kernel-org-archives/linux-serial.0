@@ -1,30 +1,31 @@
-Received: from mail-gw01.astralinux.ru (mail-gw01.astralinux.ru [37.230.196.243])
+Received: from mail-gw02.astralinux.ru (mail-gw02.astralinux.ru [195.16.41.108])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C40631EB19B;
-	Fri,  7 Feb 2025 15:37:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.230.196.243
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A00B23C8BA;
+	Fri,  7 Feb 2025 16:04:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.16.41.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738942676; cv=none; b=fhWZhEzNgdPOzEGsoVV0HyNI78BhZtHgHsqbanJPQ8r93OkUMAMuGQYAVVSz1nr4M39YeDbe+g/vsLOy21tUXqdxibQIN9qar2+DwRwU8elcRdI+fQcNroWI7bCdExOYibEjHZ70k1ehV/Zd900KWOp2IBe3I+IWqm42uACfCgM=
+	t=1738944282; cv=none; b=DkMZO+dGe5b1g89DK5mPhhGuxpf+18pwzeIVtWmg9/Ts53t9M273qq6RNCrEfTnb0gUNzTHUtc9n3ZneVI/YqHty3vhSYAzaw8eF2+QPeB1YYYa9IvJ/Te1SDHo4UVr2IwZ58cYA0XjVDVPzk1U3LdoH1IQB0uJgoZYD/Ur09BA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738942676; c=relaxed/simple;
-	bh=VOepS3saF6lXyvNja4h23kQbudvfHAFdAOjA8Ph7kJY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=fC/w6rbhZeMdL+WEyLBPf1OUIm+l7e+OG+4izEntAyrTqT3r4R00BzfkzTn1q0MQdNOuEv5KnkP0IJ/8r7WKlsgGMJypGBIvBLFH5CC5vSX26ljh+bWuuSjgL6baWLdFY6WhmhavIOV+iiET3gxN/i4rP5nn/2qhHLf2PfF5A1I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=astralinux.ru; spf=pass smtp.mailfrom=astralinux.ru; arc=none smtp.client-ip=37.230.196.243
+	s=arc-20240116; t=1738944282; c=relaxed/simple;
+	bh=Pv8A6iEtT1eR45rzq+djtWH/jruBfbbOZ+gmhFwJyyA=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=WMCxo0UG2CzdDcWR6sH1w8RZawNk/8qZdRDxZEhw1iyq7g9bXodlq5DmiWnIULdTketAlRvqkhxm7CNO/yYEv06s3cF6no6ChSmivN3o+FQrP6YcjamXPIx9Zs+qDlgLGYBAM+nWIlaXa6PbF1I8P/xkiXs9XXCk71kGFER7RJQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=astralinux.ru; spf=pass smtp.mailfrom=astralinux.ru; arc=none smtp.client-ip=195.16.41.108
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=astralinux.ru
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=astralinux.ru
-Received: from gca-sc-a-srv-ksmg01.astralinux.ru (localhost [127.0.0.1])
-	by mail-gw01.astralinux.ru (Postfix) with ESMTP id 3BA2824CC6;
-	Fri,  7 Feb 2025 18:37:40 +0300 (MSK)
+Received: from gca-msk-a-srv-ksmg01.astralinux.ru (localhost [127.0.0.1])
+	by mail-gw02.astralinux.ru (Postfix) with ESMTP id 8A8361F9C8;
+	Fri,  7 Feb 2025 19:04:29 +0300 (MSK)
 Received: from new-mail.astralinux.ru (gca-yc-ruca-srv-mail03.astralinux.ru [10.177.185.108])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail-gw01.astralinux.ru (Postfix) with ESMTPS;
-	Fri,  7 Feb 2025 18:37:39 +0300 (MSK)
+	by mail-gw02.astralinux.ru (Postfix) with ESMTPS;
+	Fri,  7 Feb 2025 19:04:27 +0300 (MSK)
 Received: from rbta-msk-lt-156703.astralinux.ru (unknown [10.177.20.117])
-	by new-mail.astralinux.ru (Postfix) with ESMTPA id 4YqJ4x4phBz1gyXY;
-	Fri,  7 Feb 2025 18:37:37 +0300 (MSK)
+	by new-mail.astralinux.ru (Postfix) with ESMTPA id 4YqJgt2BpGz1gyXY;
+	Fri,  7 Feb 2025 19:04:26 +0300 (MSK)
 From: Alexey Panov <apanov@astralinux.ru>
 To: stable@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -35,10 +36,12 @@ Cc: Alexey Panov <apanov@astralinux.ru>,
 	lvc-project@linuxtesting.org,
 	Longlong Xia <xialonglong@kylinos.cn>,
 	stable <stable@kernel.org>
-Subject: [PATCH 5.10/5.15] tty: n_gsm: Fix use-after-free in gsm_cleanup_mux
-Date: Fri,  7 Feb 2025 18:36:51 +0300
-Message-Id: <20250207153651.7115-1-apanov@astralinux.ru>
+Subject: [PATCH v2 5.10/5.15] tty: n_gsm: Fix use-after-free in gsm_cleanup_mux
+Date: Fri,  7 Feb 2025 19:03:37 +0300
+Message-Id: <20250207160337.13479-1-apanov@astralinux.ru>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20250207153651.7115-1-apanov@astralinux.ru>
+References: 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,9 +52,9 @@ Content-Transfer-Encoding: 8bit
 X-KSMG-AntiPhishing: NotDetected, bases: 2025/02/07 14:10:00
 X-KSMG-AntiSpam-Auth: dkim=none
 X-KSMG-AntiSpam-Envelope-From: apanov@astralinux.ru
-X-KSMG-AntiSpam-Info: LuaCore: 50 0.3.50 df4aeb250ed63fd3baa80a493fa6caee5dd9e10f, {Tracking_uf_ne_domains}, {Tracking_internal2}, {Tracking_from_domain_doesnt_match_to}, astralinux.ru:7.1.1;lore.kernel.org:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;new-mail.astralinux.ru:7.1.1, FromAlignment: s
+X-KSMG-AntiSpam-Info: LuaCore: 50 0.3.50 df4aeb250ed63fd3baa80a493fa6caee5dd9e10f, {Tracking_uf_ne_domains}, {Tracking_internal2}, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;astralinux.ru:7.1.1;127.0.0.199:7.1.2;lore.kernel.org:7.1.1;new-mail.astralinux.ru:7.1.1, FromAlignment: s
 X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiSpam-Lua-Profiles: 190874 [Feb 07 2025]
+X-KSMG-AntiSpam-Lua-Profiles: 190876 [Feb 07 2025]
 X-KSMG-AntiSpam-Method: none
 X-KSMG-AntiSpam-Rate: 0
 X-KSMG-AntiSpam-Status: not_detected
@@ -61,6 +64,8 @@ X-KSMG-AntiVirus-Status: NotDetected, skipped
 X-KSMG-LinksScanning: NotDetected, bases: 2025/02/07 14:13:00
 X-KSMG-Message-Action: skipped
 X-KSMG-Rule-ID: 1
+
+From: Longlong Xia <xialonglong@kylinos.cn>
 
 commit 9462f4ca56e7d2430fdb6dcc8498244acbfc4489 upstream.
 
@@ -122,7 +127,7 @@ in pre-6.1 kernels. Based on a v1 patch from Longlong Xia [1]. ]
 Link: https://lore.kernel.org/all/20240924093519.767036-1-xialonglong@kylinos.cn/ [1]
 Signed-off-by: Alexey Panov <apanov@astralinux.ru>
 ---
-Backport fix for CVE-2024-50073
+v1->v2: update patch author information
  drivers/tty/n_gsm.c | 4 ++++
  1 file changed, 4 insertions(+)
 
