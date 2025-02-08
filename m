@@ -1,161 +1,88 @@
-Received: from mail-gw02.astralinux.ru (mail-gw02.astralinux.ru [195.16.41.108])
+Received: from server-598995.kolorio.com (server-598995.kolorio.com [162.241.152.247])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A00B23C8BA;
-	Fri,  7 Feb 2025 16:04:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.16.41.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58079194096
+	for <linux-serial@vger.kernel.org>; Sat,  8 Feb 2025 06:21:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.241.152.247
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738944282; cv=none; b=DkMZO+dGe5b1g89DK5mPhhGuxpf+18pwzeIVtWmg9/Ts53t9M273qq6RNCrEfTnb0gUNzTHUtc9n3ZneVI/YqHty3vhSYAzaw8eF2+QPeB1YYYa9IvJ/Te1SDHo4UVr2IwZ58cYA0XjVDVPzk1U3LdoH1IQB0uJgoZYD/Ur09BA=
+	t=1738995679; cv=none; b=KQxfIQC6d+U3Rx6LVjPSP7o6tu3JOJWu2rpFtpwIpShcN0lnu9vU3R5MzZMeTp0erw3X3KJ9sa8XQWsR9GOqBcrCOSQ999LG1UJCPWsA8HWZ42QmUb/8hG4CSNUlnJgO9oByjcrKoWKWWLd4h8b/JwHy4kOTsikU5uXEAsqm2o0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738944282; c=relaxed/simple;
-	bh=Pv8A6iEtT1eR45rzq+djtWH/jruBfbbOZ+gmhFwJyyA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=WMCxo0UG2CzdDcWR6sH1w8RZawNk/8qZdRDxZEhw1iyq7g9bXodlq5DmiWnIULdTketAlRvqkhxm7CNO/yYEv06s3cF6no6ChSmivN3o+FQrP6YcjamXPIx9Zs+qDlgLGYBAM+nWIlaXa6PbF1I8P/xkiXs9XXCk71kGFER7RJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=astralinux.ru; spf=pass smtp.mailfrom=astralinux.ru; arc=none smtp.client-ip=195.16.41.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=astralinux.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=astralinux.ru
-Received: from gca-msk-a-srv-ksmg01.astralinux.ru (localhost [127.0.0.1])
-	by mail-gw02.astralinux.ru (Postfix) with ESMTP id 8A8361F9C8;
-	Fri,  7 Feb 2025 19:04:29 +0300 (MSK)
-Received: from new-mail.astralinux.ru (gca-yc-ruca-srv-mail03.astralinux.ru [10.177.185.108])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail-gw02.astralinux.ru (Postfix) with ESMTPS;
-	Fri,  7 Feb 2025 19:04:27 +0300 (MSK)
-Received: from rbta-msk-lt-156703.astralinux.ru (unknown [10.177.20.117])
-	by new-mail.astralinux.ru (Postfix) with ESMTPA id 4YqJgt2BpGz1gyXY;
-	Fri,  7 Feb 2025 19:04:26 +0300 (MSK)
-From: Alexey Panov <apanov@astralinux.ru>
-To: stable@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Alexey Panov <apanov@astralinux.ru>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	lvc-project@linuxtesting.org,
-	Longlong Xia <xialonglong@kylinos.cn>,
-	stable <stable@kernel.org>
-Subject: [PATCH v2 5.10/5.15] tty: n_gsm: Fix use-after-free in gsm_cleanup_mux
-Date: Fri,  7 Feb 2025 19:03:37 +0300
-Message-Id: <20250207160337.13479-1-apanov@astralinux.ru>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20250207153651.7115-1-apanov@astralinux.ru>
-References: 
+	s=arc-20240116; t=1738995679; c=relaxed/simple;
+	bh=gl4+7vNxgV9+JzZtw7EthQ6aGDgi0WVn3wQV/lnKiyo=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=m2KqQVz6zJEsd9StWfaXnfsjyMSdDOpoSv2E9cl11VlfTOVwjZw9EbZdTIki+tdMrYmWK9ndmSGMu8oUwoBPc1BkFp3ePWvAyN68Xoold4jGrwqjaClaMTT2xCgXGgLB00ATf0y/Ewl71qlWgLgjiGuyqR7Cc6MZZsnyUoT/JDA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=truemaisha.co.tz; spf=pass smtp.mailfrom=truemaisha.co.tz; dkim=pass (2048-bit key) header.d=truemaisha.co.tz header.i=@truemaisha.co.tz header.b=Unt0gRpK; arc=none smtp.client-ip=162.241.152.247
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=truemaisha.co.tz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=truemaisha.co.tz
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=truemaisha.co.tz header.i=@truemaisha.co.tz header.b="Unt0gRpK"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=truemaisha.co.tz; s=default; h=Content-Transfer-Encoding:Content-Type:
+	MIME-Version:Message-ID:Date:Subject:To:From:Reply-To:Sender:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=gl4+7vNxgV9+JzZtw7EthQ6aGDgi0WVn3wQV/lnKiyo=; b=Unt0gRpKfJVBQFaBH4jFtqvI2p
+	ti4xl+CRkeScqsuRarrRpz40cAx0oIXcEywYFJZC8aBX3Ys75CmMMWySMPH803k1/U4qedWXp5osb
+	DAAJQDcV8BWrIFUsX9Z8h/e/jnGfcKEQKo8GLgW5YBNX1gDS9z/Rl5D8LHuXl3K596bq4IvP+HspK
+	eWtR3iSWZbobCWci3StC4Vl5da8ItSImlq6j5GRTqtnsPLTVMXAfPX3Nf3ED14fD98+Ny29/y7EOi
+	5AILsZWL/F4ebF6rQEjN434fg7iyBwbIrI1vQBkiM7huAfIg6S5Ggx+Wbejx6ta78POsATXI4nJwG
+	gEStzulw==;
+Received: from [74.208.124.33] (port=54039 helo=truemaisha.co.tz)
+	by server-598995.kolorio.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <chrispinerick@truemaisha.co.tz>)
+	id 1tgeDK-0003OZ-1Z
+	for linux-serial@vger.kernel.org;
+	Sat, 08 Feb 2025 00:21:15 -0600
+Reply-To: dsong@aa4financialservice.com
+From: David Song <chrispinerick@truemaisha.co.tz>
+To: linux-serial@vger.kernel.org
+Subject: Re: The business loan- 
+Date: 08 Feb 2025 06:21:16 +0000
+Message-ID: <20250208015436.2DBD9E0E074C2219@truemaisha.co.tz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-KSMG-AntiPhishing: NotDetected, bases: 2025/02/07 14:10:00
-X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Envelope-From: apanov@astralinux.ru
-X-KSMG-AntiSpam-Info: LuaCore: 50 0.3.50 df4aeb250ed63fd3baa80a493fa6caee5dd9e10f, {Tracking_uf_ne_domains}, {Tracking_internal2}, {Tracking_from_domain_doesnt_match_to}, d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;astralinux.ru:7.1.1;127.0.0.199:7.1.2;lore.kernel.org:7.1.1;new-mail.astralinux.ru:7.1.1, FromAlignment: s
-X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiSpam-Lua-Profiles: 190876 [Feb 07 2025]
-X-KSMG-AntiSpam-Method: none
-X-KSMG-AntiSpam-Rate: 0
-X-KSMG-AntiSpam-Status: not_detected
-X-KSMG-AntiSpam-Version: 6.1.1.7
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.1.0.7854, bases: 2025/02/07 12:24:00 #27143140
-X-KSMG-AntiVirus-Status: NotDetected, skipped
-X-KSMG-LinksScanning: NotDetected, bases: 2025/02/07 14:13:00
-X-KSMG-Message-Action: skipped
-X-KSMG-Rule-ID: 1
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - server-598995.kolorio.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - truemaisha.co.tz
+X-Get-Message-Sender-Via: server-598995.kolorio.com: authenticated_id: chrispinerick@truemaisha.co.tz
+X-Authenticated-Sender: server-598995.kolorio.com: chrispinerick@truemaisha.co.tz
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-From: Longlong Xia <xialonglong@kylinos.cn>
+Hello,
 
-commit 9462f4ca56e7d2430fdb6dcc8498244acbfc4489 upstream.
+My name is David Song, at AA4 FS, we are a consultancy and
+brokerage Firm specializing in Growth Financial Loan and joint
+partnership venture. We specialize in investments in all Private
+and public sectors in a broad range of areas within our Financial
+Investment Services.
 
-BUG: KASAN: slab-use-after-free in gsm_cleanup_mux+0x77b/0x7b0
-drivers/tty/n_gsm.c:3160 [n_gsm]
-Read of size 8 at addr ffff88815fe99c00 by task poc/3379
-CPU: 0 UID: 0 PID: 3379 Comm: poc Not tainted 6.11.0+ #56
-Hardware name: VMware, Inc. VMware Virtual Platform/440BX
-Desktop Reference Platform, BIOS 6.00 11/12/2020
-Call Trace:
- <TASK>
- gsm_cleanup_mux+0x77b/0x7b0 drivers/tty/n_gsm.c:3160 [n_gsm]
- __pfx_gsm_cleanup_mux+0x10/0x10 drivers/tty/n_gsm.c:3124 [n_gsm]
- __pfx_sched_clock_cpu+0x10/0x10 kernel/sched/clock.c:389
- update_load_avg+0x1c1/0x27b0 kernel/sched/fair.c:4500
- __pfx_min_vruntime_cb_rotate+0x10/0x10 kernel/sched/fair.c:846
- __rb_insert_augmented+0x492/0xbf0 lib/rbtree.c:161
- gsmld_ioctl+0x395/0x1450 drivers/tty/n_gsm.c:3408 [n_gsm]
- _raw_spin_lock_irqsave+0x92/0xf0 arch/x86/include/asm/atomic.h:107
- __pfx_gsmld_ioctl+0x10/0x10 drivers/tty/n_gsm.c:3822 [n_gsm]
- ktime_get+0x5e/0x140 kernel/time/timekeeping.c:195
- ldsem_down_read+0x94/0x4e0 arch/x86/include/asm/atomic64_64.h:79
- __pfx_ldsem_down_read+0x10/0x10 drivers/tty/tty_ldsem.c:338
- __pfx_do_vfs_ioctl+0x10/0x10 fs/ioctl.c:805
- tty_ioctl+0x643/0x1100 drivers/tty/tty_io.c:2818
+ We are experts in financial and operational management, due
+diligence and capital planning in all markets and industries. Our
+Investors wish to invest in any viable Project presented by your
+Management after reviews on your Business Project Presentation
+Plan.
 
-Allocated by task 65:
- gsm_data_alloc.constprop.0+0x27/0x190 drivers/tty/n_gsm.c:926 [n_gsm]
- gsm_send+0x2c/0x580 drivers/tty/n_gsm.c:819 [n_gsm]
- gsm1_receive+0x547/0xad0 drivers/tty/n_gsm.c:3038 [n_gsm]
- gsmld_receive_buf+0x176/0x280 drivers/tty/n_gsm.c:3609 [n_gsm]
- tty_ldisc_receive_buf+0x101/0x1e0 drivers/tty/tty_buffer.c:391
- tty_port_default_receive_buf+0x61/0xa0 drivers/tty/tty_port.c:39
- flush_to_ldisc+0x1b0/0x750 drivers/tty/tty_buffer.c:445
- process_scheduled_works+0x2b0/0x10d0 kernel/workqueue.c:3229
- worker_thread+0x3dc/0x950 kernel/workqueue.c:3391
- kthread+0x2a3/0x370 kernel/kthread.c:389
- ret_from_fork+0x2d/0x70 arch/x86/kernel/process.c:147
- ret_from_fork_asm+0x1a/0x30 arch/x86/entry/entry_64.S:257
+ We look forward to your Swift response. We also offer commission
+to consultants and brokers for any partnership referrals.
 
-Freed by task 3367:
- kfree+0x126/0x420 mm/slub.c:4580
- gsm_cleanup_mux+0x36c/0x7b0 drivers/tty/n_gsm.c:3160 [n_gsm]
- gsmld_ioctl+0x395/0x1450 drivers/tty/n_gsm.c:3408 [n_gsm]
- tty_ioctl+0x643/0x1100 drivers/tty/tty_io.c:2818
+ Regards,
+David Song
+Senior Broker
 
-[Analysis]
-gsm_msg on the tx_ctrl_list or tx_data_list of gsm_mux
-can be freed by multi threads through ioctl,which leads
-to the occurrence of uaf. Protect it by gsm tx lock.
-
-Signed-off-by: Longlong Xia <xialonglong@kylinos.cn>
-Cc: stable <stable@kernel.org>
-Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-Link: https://lore.kernel.org/r/20240926130213.531959-1-xialonglong@kylinos.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-[ Alexey: Replace guard macro with spin_lock_irqsave due to its unavailability
-in pre-6.1 kernels. Based on a v1 patch from Longlong Xia [1]. ]
-Link: https://lore.kernel.org/all/20240924093519.767036-1-xialonglong@kylinos.cn/ [1]
-Signed-off-by: Alexey Panov <apanov@astralinux.ru>
----
-v1->v2: update patch author information
- drivers/tty/n_gsm.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index aae9f73585bd..1becbdf7c470 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -2443,6 +2443,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 	int i;
- 	struct gsm_dlci *dlci;
- 	struct gsm_msg *txq, *ntxq;
-+	unsigned long flags;
- 
- 	gsm->dead = true;
- 	mutex_lock(&gsm->mutex);
-@@ -2471,9 +2472,12 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 	mutex_unlock(&gsm->mutex);
- 	/* Now wipe the queues */
- 	tty_ldisc_flush(gsm->tty);
-+
-+	spin_lock_irqsave(&gsm->tx_lock, flags);
- 	list_for_each_entry_safe(txq, ntxq, &gsm->tx_list, list)
- 		kfree(txq);
- 	INIT_LIST_HEAD(&gsm->tx_list);
-+	spin_unlock_irqrestore(&gsm->tx_lock, flags);
- }
- 
- /**
--- 
-2.30.2
+AA4 Financial Services
+13 Wonersh Way, Cheam,
+Sutton, Surrey, SM2 7LX
+Email: dsong@aa4financialservice.com
 
