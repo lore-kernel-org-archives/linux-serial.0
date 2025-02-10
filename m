@@ -1,158 +1,165 @@
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88E9E252906;
-	Mon, 10 Feb 2025 14:48:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CC53230D07;
+	Mon, 10 Feb 2025 15:30:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739198939; cv=none; b=CJ3TyqTwoCgHvw0et+k08XBqU4SaxO+RkcQkCEQR/VRpFqi5uKd0A2NsRSzOLptubkBzXw3V9dunPgGYOiaizzCkpxpiv9BcghclEWypfQsrZlRLskn5ZuSik0nmowyEGZL4g6hxTmhWSAQ2IQ0F3I8RQUUBrqMtpE/sD6EAKh0=
+	t=1739201445; cv=none; b=e4sBi/BCM/wiv4R5VBDdf3H5rjm4xFPXeXM3map/DfYie5bJ3EKsed0OKyJfuKu4opbQ1nNasFV/4fsEzHHzF2pwZf6itr2SsfscO38xfsNRPjQWwNn1uQOKp7IlIw2Sbv+jFKGBUlThqkeqm5/tAQeI3pmRWdjwggFPi/NNSx0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739198939; c=relaxed/simple;
-	bh=9COVxLzKZseAYxARFBFeHUP0vM+MnKZUuXUAmWDEp/g=;
+	s=arc-20240116; t=1739201445; c=relaxed/simple;
+	bh=qNm4CHzPjwDB5eWSB53GtIOEq3by+g5myRHe3AOL4cU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tWsNG0HGl74NYHrLYC/SBybuX87IlCwscCKTq1FsFTbOlbU5gfv43/pnznKemgU2QDIyALeX3GkQfxQ4NDr85MGw4W0QV2s7GsI8lKtCOilK7K1TaJey4W8PWhZOhEc8zWcpMpWWdZ+gXkBGKN8EyzdJ6BJ1+X9HRSOdKrEtl34=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.176
+	 To:Cc:Content-Type; b=hvzi6aREGIIawPPWT9d/EvlaKqPrM+badv1i/+3XCJ7QcdScA+NckXhB6nJKtUNP3YX63bXGiOpM4EnMMhkw0jSBW2Vj8Xfedc69FdOqax3x+Gk6cj6tLOj+M1qGjPS+ybn57Hj9p+MvG9DG0jvZJZxSmreqFr31nWc8XtJa4DA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-52031ffca74so565827e0c.2;
-        Mon, 10 Feb 2025 06:48:57 -0800 (PST)
+Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-4ba88eaff7cso627040137.2;
+        Mon, 10 Feb 2025 07:30:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739198935; x=1739803735;
+        d=1e100.net; s=20230601; t=1739201440; x=1739806240;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=KwcSF59IzY/sbaPR253H2gim/DkadBRpCCKdYSENeIk=;
-        b=jZkAAIELKHtN+bLeQhKV9gg3dIAovDu3aHlWOZFf2E3okbfojCOvJ3ti4OD+zYJyvD
-         lSFBxIFIOCzkGxN57SpD90L6/wRKw+TgsDGcOhZ95zKDMLTSdaVhjfTzvicpAhKzv/9d
-         jYcjHMhOVNv7MIYTaw5V7gOMow9POnoy7BXQXIMewdE6XRWUy5D9h4F1J8zAClj8cN5r
-         Hni1JdoDG7+DhIFjc3juIoMiQmJ6q/5lVAOyHJbpBkMVI7O8VxFCFrOTF2C1oP5844RY
-         Hu9plRWRptJg0P3SQ8epjiiNSRr/JE3D4BhmvJoGYeXe6H2ChiN2tf1ZRU+xecPWWPCp
-         ZuPQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUUUjLsNPhX3z70sxGgGXsySUUfNxHS1VJUN3umipKZGz+ctkwTugoxXOO6aEaBT1QQUfHWG2/WVHiV@vger.kernel.org, AJvYcCUzd22oDpRJczyZtqovOWmLGmu4XgRgeP3qz5dvRWurcnunJVIy9F2BlyGUrnDKvM1m6uXftuXcX6+ujmjK@vger.kernel.org, AJvYcCX2yWRjw+LgeVeba4OTsW/aCHESKAw8YxAbQz9sIWfVouORooJE5VkI4eSbj34kWQ4B5hF0BiBq8ZxRSPbr@vger.kernel.org, AJvYcCXySPKhRBJgGAQGjbGiymnoISxFuLXOVZ5ynNRDT3Cu/iifSdjdnTcWKbhlrH+LR1rxRGGyB+CXxU1KcI7PXC23y14=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxsPpsKfbk+T1I3VYM1tvVazXXPmzbndI/VlgRgMdvlRLkUu4aT
-	T3GEMM+xMGxfOem+QTeWeAxNYH8uut9hu79LRMCzNUjFxkvfmLuo4aqvpdW3
-X-Gm-Gg: ASbGnctD33lsi5K/ibiEpGcBw5ze6og8Tm5W7Hd2KECcqxeto2jY+mnOTwU6VoPqAbU
-	w9mpbcEuc82smJxyBwjVkQf9OXn/xmkNZ3cgxsWrKZTl2q1Af70yzmH/bGDEMl6kiKN9tfrhrtR
-	aODQ8wOLYjoSoDliQaePrMQMyIv368fO2qxpxMjRfjjZiC7QJ8Z2r2hy5Ji7nf6Ybpiq6YHe0ZU
-	fROkfSNc583yvM9vLs2/WLsFtOi0P/HYv3CNbpS6H+d73qVUkdblGXWX9AcOeOJ8Ngm9a2AGt5w
-	f/YdeK7hnT+buLXY7h1g7LT7nn1ucbNA4f3AkeLh30wbU4fZyrrqNw==
-X-Google-Smtp-Source: AGHT+IGCWFMlyHEGblA5hGdod5/D90LAoajlMOpsRNPvd100BZyQ5PoVfZOr4+yx/nHhH9dF4bdfYg==
-X-Received: by 2002:a05:6122:251d:b0:519:fcf2:ef51 with SMTP id 71dfb90a1353d-51f2e12026dmr8479550e0c.5.1739198935011;
-        Mon, 10 Feb 2025 06:48:55 -0800 (PST)
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-52044da707fsm278307e0c.24.2025.02.10.06.48.54
+        bh=5xuumStvJ4XzJICP2XWv3Fwsgtfc9wkYm0UoJ1gEMC8=;
+        b=Du6kz9Mzx8hAEMdyDLxSMbPbtIZTgNGXh0VtU/3lxRaydLrLV/w+c48L7bKLev0dA7
+         DB36UsiHWpGiwra4ZE00N6jwBERmCmsitrmWnOYKAvR83V23btgNRl6pgli9V7MeKOrS
+         YlgZ8MYB5dHOP+psYL3D/YqvjEEhPbMVrV7q4gopq2+FIbMGCkR8uj7vLKolz9UX/hfI
+         20DqPh8u57OdrAjwP7d37WzbMW1WU2d+3iV4F/J5rY9gKuo9aPKkLthMJKBvbzBj+hs/
+         WCB5YPzVtMttXbsTSi4wsQatQlmKyfQQmAOqxmH3QpfZ83qB8rynQ3QRINIgS1eFzNde
+         aA2g==
+X-Forwarded-Encrypted: i=1; AJvYcCUs28ew3PDzvsQ2kUJl7P6vxJZUv3G0LaNa0ymTwdHARfnVneW4gXNeQEQmyMau2bRcvG7TzD8rKhyDBWk=@vger.kernel.org, AJvYcCVYJN7rYA+uYXvJfWbztL6l+wPB3CGD7RXIIRT/pkuftlz/Ap24w+xPPTuCs+YylA3BYq6f9s+WmnCrt2ez@vger.kernel.org, AJvYcCXN3tkDKFUBvYUOH0Wf9f7p1XJbLU1X43A6gewKWUbc6A8FHJX2FXd8KJGXhZ0iapNXW4fVp4fqj8dUDb7FWB3nWoM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxnQk7cCrjdjz4PQCAftPuukTnDn6VrTOMg4/HZQ5SXIeO7yt5I
+	QWVCDmxkog9hYoV4Vtq88vRRqmd5MTfjmwaWbOZ2hum7Nu4D6VY8AZavMqmx
+X-Gm-Gg: ASbGncud00zAvHmYY+a58k1Q0r27zEQNt3zM9Q/w2LYHeLoENL6idwJ0LWMSEEyuqLC
+	AYI04Yb1pHJUpb4XD1+f3u0eamPNQAlue/5ckGA0MWXtQpORo4PaFY/1IxWFzNCNItNKyTREtSJ
+	HC6V8sKu99xiLlFzKTF5EodmS6dIYlwpd4r0Ib/EfWZq2K9DNDoOtcGZjpEP2lBKH3Tw/32MNnf
+	G88sX83raYV0s9lD2LQt1sC2dnoHzWeol5AQoK2zSDiW24Kzpi/68I1o0C8mw9y6VJaXTVeyPhM
+	AZ1D8yiKjzSrDZKKg8b1XTfgy+KSNsxIDzwe6Np/8vWJsVH3cQqMoA==
+X-Google-Smtp-Source: AGHT+IHGoz7pACpArraGdBcDAU/HeSRLEMiDlzNc+rS/oGQSSVEPZvyHEHEVGjcRNZdv8z+GvTwOTg==
+X-Received: by 2002:a05:6102:4b13:b0:4af:c519:4e86 with SMTP id ada2fe7eead31-4ba85da77a8mr9392194137.1.1739201439678;
+        Mon, 10 Feb 2025 07:30:39 -0800 (PST)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4bbb7547263sm807332137.4.2025.02.10.07.30.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Feb 2025 06:48:54 -0800 (PST)
-Received: by mail-ua1-f43.google.com with SMTP id a1e0cc1a2514c-864e4f5b253so1189335241.1;
-        Mon, 10 Feb 2025 06:48:54 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCU2sDsjEmAVr1qDRVN6lE5OCAilIVCebniOdONgPbDiku6f9YrxL6tirilKySY7rkLXEbUQup7sOeTCuV5D@vger.kernel.org, AJvYcCVwMEpMoP5VHEnm2XebJnj6GzgQiRNZjYO+0xCPyXXWa4kzbKfRKwI2jtCI2lDsXgHAV4xh7G5XvENQInqE@vger.kernel.org, AJvYcCWK+uFSbIWGL3JG39934V6AhtGm33waSqko9qh6h8L2dVMyriWy+VzP4My5POj6X161UWGGpeGDbyHNKEMaspb8rco=@vger.kernel.org, AJvYcCX3K+2sd/alcfDFjaLHlI7rzBUvkpnf+wJmtOMOsqB/xdgOmGZnb6dkhy8VvG0/+tG2nIFOsX2NYyJl@vger.kernel.org
-X-Received: by 2002:a05:6102:41a7:b0:4bb:9b46:3f93 with SMTP id
- ada2fe7eead31-4bb9b4679f8mr4371410137.8.1739198934075; Mon, 10 Feb 2025
- 06:48:54 -0800 (PST)
+        Mon, 10 Feb 2025 07:30:39 -0800 (PST)
+Received: by mail-ua1-f49.google.com with SMTP id a1e0cc1a2514c-866de72bb82so1300243241.1;
+        Mon, 10 Feb 2025 07:30:39 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVGksSd50TxLX9l+wEVngJ18Lk3uDgKl52v8RXx0eNHec1ylO72B9J6H4VN9SJcv2kKk0xTY1NR82dCcb8=@vger.kernel.org, AJvYcCWAJOeBhtcGuMYmnzimdCnwJZpemGfyPbZhGKDgMQRxUhkGV4+sk7ht2DI9+bLmmbdZo7nv180mD/FW/XI4@vger.kernel.org, AJvYcCXe+aoKIKiPWn8TjlO7Vp4acHSGn/7/7V+8+pazsUNaCEwVpBMaYeNRZlXpxL0NLTi9UJ40hV9oXR+8TIWpFn9mKhM=@vger.kernel.org
+X-Received: by 2002:a05:6102:1481:b0:4b9:ba60:ec85 with SMTP id
+ ada2fe7eead31-4ba85eb6452mr10266211137.15.1739201439257; Mon, 10 Feb 2025
+ 07:30:39 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250129165122.2980-1-thierry.bultel.yh@bp.renesas.com>
- <20250129165122.2980-3-thierry.bultel.yh@bp.renesas.com> <CAMuHMdVB2W6R+xYeTUKSv_dMGruECSft-P19m6nZD61=ROngXw@mail.gmail.com>
- <TY3PR01MB11346D5D895C190EBE8C8A84B86F22@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <CAMuHMdUpaV71Svyenq=hXMk3GfjgZvHn-0APkv_LKSzyytKzag@mail.gmail.com>
- <TY3PR01MB11346D0C3FA9E451ADD3F5BB386F22@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <CAMuHMdWDd4MawW_cybPTy+3Sc6-9t1-ZF9_V+mPQHTHNnmEg2A@mail.gmail.com>
- <TY3PR01MB113461CABD5E18F03B7BE9B8486F22@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <TY3PR01MB11346287906F19FDFF7ACA52886F22@TY3PR01MB11346.jpnprd01.prod.outlook.com>
-In-Reply-To: <TY3PR01MB11346287906F19FDFF7ACA52886F22@TY3PR01MB11346.jpnprd01.prod.outlook.com>
+References: <20250129165122.2980-1-thierry.bultel.yh@bp.renesas.com> <20250129165122.2980-12-thierry.bultel.yh@bp.renesas.com>
+In-Reply-To: <20250129165122.2980-12-thierry.bultel.yh@bp.renesas.com>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 10 Feb 2025 15:48:42 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXVLyY10AgqR8J9FHB5mKiPXSWZ04EkW5ykE6bDj6EGPA@mail.gmail.com>
-X-Gm-Features: AWEUYZksMNriPrElI1r872-idh3W1qkzqfDu8Ca9WoDMxgWJZlnyPhBwWI8ZnOM
-Message-ID: <CAMuHMdXVLyY10AgqR8J9FHB5mKiPXSWZ04EkW5ykE6bDj6EGPA@mail.gmail.com>
-Subject: Re: [PATCH 02/14] dt-bindings: serial: Document sci bindings for the
- Renesas RZ/T2H (a.k.a r9a09g077) SoC
-To: Biju Das <biju.das.jz@bp.renesas.com>
-Cc: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, 
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
+Date: Mon, 10 Feb 2025 16:30:27 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXrocuwBBQpq4XxZXVAF1=cpYQggwBviivQ53TJ2uz-ag@mail.gmail.com>
+X-Gm-Features: AWEUYZn9XCeqkAASv1mhRHy1-YU5QCzjiDp1zusBjLxkk_Uez7Lc1630Z8Y3aJg
+Message-ID: <CAMuHMdXrocuwBBQpq4XxZXVAF1=cpYQggwBviivQ53TJ2uz-ag@mail.gmail.com>
+Subject: Re: [PATCH 11/14] serial: sh-sci: Add support for RZ/T2H SCI
+To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Hi Biju,
+Hi Thierry,
 
-On Mon, 10 Feb 2025 at 15:46, Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > From: Biju Das <biju.das.jz@bp.renesas.com>
-> > > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > On Mon, 10 Feb 2025 at 15:26, Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > > > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > > On Mon, 10 Feb 2025 at 14:19, Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> > > > > > > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > > > > > > On Wed, 29 Jan 2025 at 17:52, Thierry Bultel <thierry.bultel.yh@bp.renesas.com> wrote:
-> > > > > > > > Document RZ/T2H (a.k.a r9a09g077) in SCI binding.
-> > > > > > > >
-> > > > > > > > Signed-off-by: Thierry Bultel
-> > > > > > > > <thierry.bultel.yh@bp.renesas.com>
-> > > > > > >
-> > > > > > > Thanks for your patch!
-> > > > > > >
-> > > > > > > > --- /dev/null
-> > > > > > > > +++ b/Documentation/devicetree/bindings/serial/renesas,rzsci
-> > > > > > > > +++ .y
-> > > > > > > > +++ aml
-> > > > > > > > @@ -0,0 +1,100 @@
-> > > > > > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > > > > > > +%YAML
-> > > > > > > > +1.2
-> > > > > > > > +---
-> > > > > > > > +$id:
-> > > > > > > > +http://devicetree.org/schemas/serial/renesas,rzsci.yaml#
-> > > > > > >
-> > > > > > > "rzsci" is IMHO a bad name, as SCI on RZ/T2 differs from the
-> > > > > > > similar-named "SCI" (sometimes called "RSCI" or "SCIg") on
-> > > > > > > RZ/A1H, RZ/A2M, RZ/G2L, RZ/V2L, and
-> > > > > RZ/G3S (and most old SuperH SoCs).
-> > > > > > >
-> > > > > > > BTW, I believe the variant on RZ/T2 is also used on RZ/N2, RZ/V2H, and RZ/G3E?
-> > > > > > >
-> > > > > > > However, binding-wise, they all seem to be very similar.
-> > > > > > > So perhaps you can just add this to the existing
-> > > > > > > Documentation/devicetree/bindings/serial/renesas,sci.yaml?
-> > > > > >
-> > > > > > It is present in RZ/G3E as well.
-> > > > > > RSCI supports sci, scif, i2c and spi that is the reason renesas,rzsci.yaml introduced.
-> > > > >
-> > > > > If you plan to add support for I2C and SPI, you will need
-> > > > > different bindings under Documentation/devicetree/bindings/{i2c,spi}/.
-> > > >
-> > > > OK, I thought since it is a single IP, we need to use a single
-> > > > compatible and instantiate appropriate device based on the device
-> > > > property rather than separate SCI,
-> > > i2c and spi compatible.
-> > > >
-> > > > Yes, I agree having different device compatible for same IP make
-> > > > life easier, no need to add specific vendor property.
-> > >
-> > > I said "different bindings", not "different compatible values"!
-> > >
-> > > Cfr. "renesas,tpu" having bindings in both
-> > > Documentation/devicetree/bindings/timer/renesas,tpu.yaml
-> > > and Documentation/devicetree/bindings/pwm/renesas,tpu-pwm.yaml.
-> >
-> > Thanks for clarification. This is simple solution.
+On Wed, 29 Jan 2025 at 17:52, Thierry Bultel
+<thierry.bultel.yh@bp.renesas.com> wrote:
+> Define a new RZSCI port type, and the RSCI 32 bits registers set.
+> The RZ/T2H SCI has a a fifo, and a quite different set of registers
+> from the orginal SH SCI ones.
+> DMA is not supported yet.
 >
-> But, here we need to decide, which channels to be used in SCI, I2C and SPI
-> in SoC dtsi
->
-> or
->
-> Maybe define all the channels as sci as default and override it in board dts for
-> I2c and spi based on customer use case??
+> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
 
-The latter, please.
+Thanks for your patch!
+
+> --- /dev/null
+> +++ b/drivers/tty/serial/rzsci.c
+> @@ -0,0 +1,484 @@
+
+> +/* RDR (Receive Data Register) */
+> +#define RDR_FER                        BIT(28) /* Framing Error */
+> +#define RDR_PER                        BIT(27) /* Parity Error */
+> +#define RDR_ORER               BIT(24) /* Overrun Error */
+> +#define RDR_FFER               BIT(12) /* FIFO Framing Error */
+> +#define RDR_FPER               BIT(11) /* FIFO Parity Error */
+> +#define RDR_DR                 BIT(10) /* Incoming Data Ready */
+> +#define RDR_MPB                        BIT(9)  /* Multiprocessor Bit */
+
+None of the above are used...
+
+> +#define        RDR_RDAT_MSK            GENMASK(8, 0)
+
+...
+
+> +static void rzsci_receive_chars(struct uart_port *port)
+> +{
+> +       struct tty_port *tport = &port->state->port;
+> +       int i, count, copied = 0;
+> +       u32 status, frsr_status = 0;
+> +       unsigned char flag;
+> +
+> +       status = rzsci_serial_in(port, CSR);
+> +       frsr_status = rzsci_serial_in(port, FRSR);
+> +
+> +       if (!(status & CSR_RDRF) && !(frsr_status & FRSR_DR))
+> +               return;
+> +
+> +       while (1) {
+> +               /* Don't copy more bytes than there is room for in the buffer */
+> +               count = tty_buffer_request_room(tport, rzsci_rxfill(port));
+> +
+> +               /* If for any reason we can't copy more data, we're done! */
+> +               if (count == 0)
+> +                       break;
+> +
+> +               for (i = 0; i < count; i++) {
+> +                       char c;
+> +
+> +                       status = rzsci_serial_in(port, CSR);
+
+Isn't the point of the RDR_* status bits in the top part of the RDR
+register that you don't need to read the CSR register anymore?
+
+> +                       c = rzsci_serial_in(port, RDR) & RDR_RDAT_MSK;
+
+Note that this drops bit 8.
+
+> +
+> +                       if (uart_handle_sysrq_char(port, c)) {
+> +                               count--;
+> +                               i--;
+> +                               continue;
+> +                       }
+> +
+> +                       /* Store data and status */
+> +                       if (status & CSR_FER) {
+> +                               flag = TTY_FRAME;
+> +                               port->icount.frame++;
+> +                       } else if (status & CSR_PER) {
+> +                               flag = TTY_PARITY;
+> +                               port->icount.parity++;
+> +                       } else
+> +                               flag = TTY_NORMAL;
+> +
+> +                       tty_insert_flip_char(tport, c, flag);
+> +               }
+> +
+> +               rzsci_serial_in(port, CSR); /* dummy read */
+> +               rzsci_clear_DRxC(port);
+> +
+> +               copied += count;
+> +               port->icount.rx += count;
+> +       }
 
 Gr{oetje,eeting}s,
 
