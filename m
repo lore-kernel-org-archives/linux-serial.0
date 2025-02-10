@@ -1,172 +1,113 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54B171B6CF5;
-	Mon, 10 Feb 2025 07:01:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A938C1F76A8;
+	Mon, 10 Feb 2025 13:14:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739170910; cv=none; b=gJ/6Zpy1mQE98tiv2uHx81t25kcWKkKqXQN8h0bJofKDfBB6AfXchr7nGrmbejzhT1WftgJjS7C9GKytyr4hJ+wosrKK0iFccL6Jw05f1LlprdV/0B0bcW3CRyYezdX2ZX4LflTzrrgmnzOTflIl/mZH97pDv4YbqfCadKiZY6M=
+	t=1739193298; cv=none; b=pFhjszf2Z3cuWMPP5MVuoRSXMmDIp5a1/J9bzRPvzBQAlriTygMWoVu4PgJgmg0UlfrtS9th7nbQbn9YUrE5oo39rRT7lHzUEL+9BT36eVPh2yf9lRqL0J+slPwwH2AMR1X911CaosyUagRUfzwQtMb+Eyimk8a3r244XMiQlIk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739170910; c=relaxed/simple;
-	bh=97DBVZP6nZ1RKRthfd5Ef9bF1oc0ozFTh/YcAwjtOEM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=I04ba+V9z9kwsQuw6evNohZniDrNZ65WVNFoh4rOkMnMDwJvifab/dyz9pQ2zgohuIDoCaNOfWqWpiMWzYf4vj2Pt+jQuz6/NkW+0G/8tMAdgywLTvJqFfAbAHXwFeYaHcoY9un7+c4mRY88HyRZZxbVBtlEEsg2N9GGBSaEa5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Smp4c61J; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Smp4c61J"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 519MJIIW026858;
-	Mon, 10 Feb 2025 07:01:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	G2+5TsYHXFyoURscn4Apm5joBU+pUBcMjOrp94dzm1o=; b=Smp4c61Jt8O8OH00
-	mPZh9Q/lNVdeoBmX8oeIFrg+ubu3FprmgRXx6fp4fpvV3++oP1EzMCTmRvufqsSq
-	WW60WXo3rUQBkjkYF8vnJw7Ix4XQCmmn9OuSNYZwSGZ7hYebv6ojddyCnFUdB6C8
-	10sMozzCN4lT7uQ63tzNlpWZ6vdSWicNvRoj+cL5kOwqalaLjQlFq6+MrEQEPrH5
-	9Gvj9+8zrRebUFvR/5uOGkU53QiBzWj5yprQ8AgNPg/rRaoacLw0IXjIC3F0Y0+C
-	0xL7dNs2cdKIzDcMUQp9SkIHmXNpWRQDwOIB8WjDJNCjK2T2K19Nx4tdfaa9Swsu
-	ZJU5Gg==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 44p0g8ubqh-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 10 Feb 2025 07:01:44 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 51A71hR3001541
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 10 Feb 2025 07:01:43 GMT
-Received: from [10.216.62.9] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Sun, 9 Feb 2025
- 23:01:35 -0800
-Message-ID: <d54d1fd3-6b94-454c-aaca-3d4e43d6c178@quicinc.com>
-Date: Mon, 10 Feb 2025 12:31:25 +0530
+	s=arc-20240116; t=1739193298; c=relaxed/simple;
+	bh=oe9YqlWHMEuQqzNAsLC/ymWcVw5v450bMingEO5+o/8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=PsHV54UAX3Vo1GzBFg6AiS6tu0fsa+WKuCD0Snk2RXo8Lr5yKR2VAUz2F10yUhbOvtH8rrl/RQLKgXZPwIsy2ccS9/ve3uaTJDMfq9cz6/3AMUmrqaBVwQREAnWkCRJ/1e/zpeIqcjZd8v8gTzSX+bqx4zEJPRNFf7/LAQCHUqQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-4ba830cd6b8so1100373137.3;
+        Mon, 10 Feb 2025 05:14:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739193295; x=1739798095;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CGW9ojU7zn9GGWFOqqtTTDOtvjIst3sLIBkQ7z5/xo0=;
+        b=L3lT3Q1aPKt5pL51Abw2Ejusb7GyG8s++qnUyf7eFLD2YUiZS1k793/huq+OUX5g05
+         eCkSB1ALeE8dv0evar+G+fnC3Mod1BsA2VIXOXaBBgwFYiVi6S5YojTdXArbpLgVRRdm
+         Z+gwzvrXE25PgwcUUoa/OJJyD4/Zj5ciTsO7orIMjEaqj74MH/OEWynr9OyBRqKBAZ8M
+         zrCUBr+ZXUwT98Y7KJjWlixI2+w8rVXMlvPDCBXXLA2OLH0C0BozYhJfKfhXHdQ8Za+M
+         40XmW9Y2ye7jWPvsJ5NeIyYhraogRMncyXKnT1LdRPvRYulsXZXaTw9rmIxX1PQk7Ry4
+         WjNQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU+yCwvHXyUTirm5WczBTwJ5niAs2501rak/+P88ZdN5uK9iV21Z2L4MeRZg+nIpzV1nOuYPXSNXA1hng1x@vger.kernel.org, AJvYcCWctV/b8QPg4xPR0/vAK1Fp+2RoNJpv8EZ3tiT23cj4Z5Ihrx1f7yJTDeKsy7FM40va6qhfGAlUiqyIUbs8@vger.kernel.org, AJvYcCXMA/wJTX4hm4lAxoDBh0OKN2ItXKvMGxvsvP9uw3U9sOICUBq4iTVQuzs2Q/n1paYmlRojwgr/m69LMcNmLFi1u6Y=@vger.kernel.org, AJvYcCXYnvimHneZB3bp1AGx/ycjaAMLciyLG8K3TdM2gRoAEde4NjI7KFM70wycLjHbg0Pr57fG4XIgmMDK@vger.kernel.org
+X-Gm-Message-State: AOJu0YyCfQvEbLAKLmBK/CXS3w5/CNgT4hWxATSpu+ugNsWf5rMfmPPd
+	y8ieXJB8qQikWYS9RJGKpa7ij40120QQ7tj+OI+TG1er+SBNQKHiJzFtpWMr
+X-Gm-Gg: ASbGncseS4T6AZ3QVnYwFAzFF0NW+KSRETjr0HIp+o4W50G5AJXsO+gxqDr2ydXrxFF
+	oBrItrYZvRzVwMaK9z7IF6bEH3+oD+q0plNEf/ajBJ/jYezyQY+sfQUEcuGwYFawtluSARYDR6T
+	z/mb2paH77KyPIo0hkCH6fur7CGFe+IBn5qatAJFKRJwutTsZmZPD4TzwSR0zme/Z2yJrfeSEoP
+	KHjPavTDhbRlVQl20s01jwr1Ukzs1cuHLgUDmHT1yjKUh+vFFCBirr9NJEOf7m3tPDsvzsbjj6i
+	ZdDP9IOytgh8uynG10YeW0kBFbJ65x+dFYWVjP3GnNsCv5LiEUK86g==
+X-Google-Smtp-Source: AGHT+IE/MTI003KZAzFEzT5D6R9YpB5TnCmJjKtw6Jr9BOv+i9SG00BX1RDpdIcUNUOA5wxu6Ei3Xw==
+X-Received: by 2002:a05:6102:31b3:b0:4ba:9689:8705 with SMTP id ada2fe7eead31-4ba968988famr4772692137.10.1739193294706;
+        Mon, 10 Feb 2025 05:14:54 -0800 (PST)
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com. [209.85.217.53])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-866f96361d0sm1614988241.1.2025.02.10.05.14.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Feb 2025 05:14:54 -0800 (PST)
+Received: by mail-vs1-f53.google.com with SMTP id ada2fe7eead31-4bbbaef28a5so402848137.0;
+        Mon, 10 Feb 2025 05:14:54 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVIIzFIqh+sbsX678kayUVzbCvZAGwALDQRqhqxkXcIIM0vSFe4iqHdBSM62hBCDgf0CTrbQq/r04dIE3orCB+r7Nk=@vger.kernel.org, AJvYcCVooTA2QKM2j4TV1xRxZg1sM2oiz4wcLFxtX6yXK3OcY3cFm6CVotTNzOsEN0W4VGZn7SD7FU+k0B0PkJnR@vger.kernel.org, AJvYcCWzqMf1xaLdpVuSvkGw6JVcgbCItkFTWjF90CSnk7hysJOXr070TReUKStkbx6gU2YzmrGirR9t9Fbs@vger.kernel.org, AJvYcCX0sRJ2n6DeRhDD+E/e9bf8ocA1wbCzHBADcQfArFshFvc8pC85/ha6aNEKMlAk2VWL6bEtZGQpeZ2kI/JB@vger.kernel.org
+X-Received: by 2002:a05:6102:f0f:b0:4af:c58f:4550 with SMTP id
+ ada2fe7eead31-4ba85de9d5fmr7943296137.7.1739193294128; Mon, 10 Feb 2025
+ 05:14:54 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/8] dt-bindings: serial: Add support for selecting
- data transfer mode
-To: Krzysztof Kozlowski <krzk@kernel.org>, <neil.armstrong@linaro.org>,
-        "Dmitry Baryshkov" <dmitry.baryshkov@linaro.org>
-CC: <andi.shyti@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <gregkh@linuxfoundation.org>,
-        <jirislaby@kernel.org>, <broonie@kernel.or>, <andersson@kernel.org>,
-        <konradybcio@kernel.org>, <johan+linaro@kernel.org>,
-        <dianders@chromium.org>, <agross@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <quic_msavaliy@quicinc.com>, <quic_anupkulk@quicinc.com>
-References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
- <20250124105309.295769-5-quic_vdadhani@quicinc.com>
- <10060d39-87a4-4565-a2a6-80c93ac2266a@kernel.org>
- <dudqd2y42wy6iq2k73aphd5ol4mtq7z4c54zhd27rl745rrw5x@p3oummf2jke7>
- <374e16d6-46aa-4bdf-85e9-bc2e33c38057@kernel.org>
- <v5n7wn3saiymi2ncgi35drzdjfeaa4ng2ftia6ggex6oh74ocg@7vuskxosh726>
- <5f710113-08b0-468e-940a-2c65e8b42486@linaro.org>
- <01362821-ac7f-41d7-a4c1-b1f675e9f644@quicinc.com>
- <0efa70c3-dee4-4d0d-b106-d7083b5e68c3@kernel.org>
-Content-Language: en-US
-From: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-In-Reply-To: <0efa70c3-dee4-4d0d-b106-d7083b5e68c3@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: OwxZ3Ah_HU0nlOAsANqQhGzydYYEqlXp
-X-Proofpoint-ORIG-GUID: OwxZ3Ah_HU0nlOAsANqQhGzydYYEqlXp
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1057,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-02-10_03,2025-02-10_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- adultscore=0 lowpriorityscore=0 phishscore=0 mlxscore=0 suspectscore=0
- bulkscore=0 priorityscore=1501 spamscore=0 impostorscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2501170000
- definitions=main-2502100057
+References: <20250129165122.2980-1-thierry.bultel.yh@bp.renesas.com> <20250129165122.2980-3-thierry.bultel.yh@bp.renesas.com>
+In-Reply-To: <20250129165122.2980-3-thierry.bultel.yh@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 10 Feb 2025 14:14:41 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVB2W6R+xYeTUKSv_dMGruECSft-P19m6nZD61=ROngXw@mail.gmail.com>
+X-Gm-Features: AWEUYZmV5A_tAWdzmeYWijF-JgTDqcElC5Rp8P-Tj2Jva5zv0N3bQ2AGf8RZsUA
+Message-ID: <CAMuHMdVB2W6R+xYeTUKSv_dMGruECSft-P19m6nZD61=ROngXw@mail.gmail.com>
+Subject: Re: [PATCH 02/14] dt-bindings: serial: Document sci bindings for the
+ Renesas RZ/T2H (a.k.a r9a09g077) SoC
+To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
+Hi Thierry,
 
+On Wed, 29 Jan 2025 at 17:52, Thierry Bultel
+<thierry.bultel.yh@bp.renesas.com> wrote:
+> Document RZ/T2H (a.k.a r9a09g077) in SCI binding.
+>
+> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
 
-On 2/9/2025 3:49 PM, Krzysztof Kozlowski wrote:
-> On 09/02/2025 11:11, Viken Dadhaniya wrote:
->>>>>>>
->>>>>>> Just one blank line, but anyway, this property should not be in three
->>>>>>> places. Do you really expect that each of serial engines within one
->>>>>>> GeniQUP will be configured differently by TZ?
->>>>>>
->>>>>> Yes, each SE is configured separately and it's quite frequent when
->>>>>> different SEs have different DMA configuration.
->>>>>
->>>>> Well, I checked at sm8550 and sm8650 and each pair of SE - which shares
->>>>> resources - has the same DMAs, so I would not call it frequent. Care to
->>>>> bring an example where same serial engines have different DMAs and
->>>>> different TZ? We do not talk about single QUP.
->>>>
->>>> Well, I don't have access to the latest sm8550 / sm8650 devcfg sources.
->>>> I checked the RB5 ones. As far as I understand out of 14 enabled SEs
->>>> only two are configured for the GSI DMA, others should use FIFO / SE
->>>> DMA. Same applies to the SM8250 MTP devices. Checking the RB1 / RB2
->>>> setup also shows 3 out of 6 SEs being set for GSI.
->>>
->>> I think selecting GSI DMA is only for devices needs high speed streaming
->>> to the
->>> device, like the touch screen, using GSI DMA for random small access is
->>> a non-sense.
->>>
->>> But the thing is, in the TZ world the configuration was static so we had
->>> no choice
->>> of using GSI DMA when configured, but now we have the choice so we could
->>> totally
->>> reconfigure the SE with the transfer type (FIFO, SE DMA or GSI DMA) as
->>> runtime and
->>> drop this attribute.
->>>
->>> So instead of hardcoding this, add a way to dynamically select either of
->>> the 3
->>> transfer types when firmware can be loaded from HLOS.
->>>
->>> Neil
->>>
->>
-To exactly summarize:
-GSI DMA and CPU DMA are mostly same performance unless we have
-multiprocessor systems queuing the transfers
-together.
+Thanks for your patch!
 
-GSI DMA to be used when multiprocessor systems (Application 
-processor/TZ/modem/ADSP subsystems) has use cases together.
-If only single subsystem or processor is using CPU DMA mode should be used.
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/serial/renesas,rzsci.yaml
+> @@ -0,0 +1,100 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/serial/renesas,rzsci.yaml#
 
-Hardware guidance and configuration suggest that CPU DMA and FIFO can be 
-switched but GSI DMA.
+"rzsci" is IMHO a bad name, as SCI on RZ/T2 differs from the
+similar-named "SCI" (sometimes called "RSCI" or "SCIg") on RZ/A1H,
+RZ/A2M, RZ/G2L, RZ/V2L, and RZ/G3S (and most old SuperH SoCs).
 
-CPI DMA : Doesn't work with multiple subsystems.
-FIFO : same as CPU DMA but < 64 bytes (FIFO_SIZE)
-GSI_DMA: Work with multiple subsystems
+BTW, I believe the variant on RZ/T2 is also used on RZ/N2, RZ/V2H,
+and RZ/G3E?
 
-Overall, there will be GSI and non-GSI modes. Dynamic switching is only 
-required in PIO mode (FIFO and CPU DMA).
+However, binding-wise, they all seem to be very similar.
+So perhaps you can just add this to the existing
+Documentation/devicetree/bindings/serial/renesas,sci.yaml?
 
->> Yes, GSI DMA mode is required for specific use cases only.
->>
->> Dynamically switching from GSI mode to non-GSI mode is neither possible
->> nor useful. For each SE, the use case is fixed, and based on the use
->> case, the developer can choose the mode via the device tree property.
-> 
-> No, it cannot. Do not describe downstream as something set in stone.
+Gr{oetje,eeting}s,
 
-Sorry, I am not referring to downstream but rather to the general 
-process of mode selection.
+                        Geert
 
-Please let us know if you need more clarity.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-> 
-> Best regards,
-> Krzysztof
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
