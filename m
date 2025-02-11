@@ -1,64 +1,35 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E605E1F3B8A
-	for <linux-serial@vger.kernel.org>; Tue, 11 Feb 2025 10:51:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC5FC1E47A8
+	for <linux-serial@vger.kernel.org>; Tue, 11 Feb 2025 18:09:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739271112; cv=none; b=CT/49V3UOmLdIhKKXPcYVJGi+lL9aAYJ3PdLdhoJjnBRrcWl8qUSRh7lTeR9Tuea2nnVn2lWSFLiCdMthH1IzXW9GtdJRkPYHvdr0lu5Cn7cqZoibQo4uk7YCeyOEIWHdd5sklMZkQoX97OLJtRs+M1NoeRq2WdepbZT5sOokeM=
+	t=1739297394; cv=none; b=Dr2ZQfiq9vE8NjIrD5dKAQK/L4CublBsg1+6V5v0dwEXUMMr3u1fsJDe4qYR38mYprvjy0iLsFcU0sKNp5qey5nR+OfBXcZaDlhI0Z84MBijuYl+9KKK61MMR3bRLGejKpKuigdPnlrlBMwZ04iJ+VjOJ4xZSJoJgx69Xwz9gcs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739271112; c=relaxed/simple;
-	bh=ARtF4OvwMld7TDHIHm/xgk9/+u1COpK4K0CUMaX3KTU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=W57e6zAxvjCaG01VrLiLMfLlcHDcmxHN3xtKzlJMswiICq2XsuWQFuP+0j71qh7qZQMRVPMWAhFIweooHY1+M2IesTTmG6MGQOoJnUchz9NnX7Ax1qSyQqoF0e5WSbD9gzrqhSqc681WS0eyagdB+rnVG9vmlkdzRECD5n/00YM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=picrD+3u; arc=none smtp.client-ip=209.85.208.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1739297394; c=relaxed/simple;
+	bh=vTTPbcm3hPWQGAXc8lS7kKozh9I5JK5VxBG03C5YoQc=;
+	h=Message-ID:Date:MIME-Version:From:To:Subject:Cc:Content-Type; b=GKi7jTFNQSCKcDhqXURSdsP/V+Vagfp5kqkSySaM5kep34fyimepra56JLc+ttMcTMzAolbaQOe7FIkj/oe/4AJZAyWYJWL9sEZ3ztXd94ik2FBLUUx2qH0SDAVVZyw+Gz1Jv8kbAMZ5Dcbxzbm1y++dUR195Essh64CTp4vvUQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=FRsIxHWm; arc=none smtp.client-ip=217.70.183.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="picrD+3u"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-5de47cf9329so6662009a12.3
-        for <linux-serial@vger.kernel.org>; Tue, 11 Feb 2025 02:51:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1739271108; x=1739875908; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=mSL6/7KbkCyWike0T72jibPU31Fl6EDKbQdc+JSt7yA=;
-        b=picrD+3uUQ7eSIQ9Nj2d3RLIrBVVmOyePFfvhT/pUFWxulUDK/GnpRFsxXZO8YFnAW
-         k97J6mRts3C2Syu9orXebhG/FGdOa/XGckdZoNvRztsw7jsNV4t5k2GvH0fSaIkJlzmc
-         1emTrdkNGe+MgoW8xmnpGHxW20ca0yxeaq0QZ27A89ajd/ku/dFkze/Op0jqJP3cPara
-         YmCURwyLd29FEfrzvRhGwTrhCUvLEmEzLCXqGVOtmAWr9p4UHahSgawknkxFUTmRWNc+
-         Qco4QruPVB4QZz82OQoQB5vFAmcgZ7hP1AkYYrKV04c67ztQN+0klXLVYxPsvRQjMX37
-         V/bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739271108; x=1739875908;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=mSL6/7KbkCyWike0T72jibPU31Fl6EDKbQdc+JSt7yA=;
-        b=srl0XyJaHkE5we60RCVJRfoA5SegYGqlWmQVyJJ+EWWwrYZA4uc5bjybLq+Fjx9QEM
-         jpREyilo6YNp0cMFLDMvDQBXmtJ64yOEINIUmr1XUgZIB6+1oYf0Xey+9C06bRxgVRLu
-         5ozVGmQOELe/BF1UmXDxKVS/H3EWdDfcRUkcAgCCPOJda7UpVTWuvkUDzlKoWzfhk/ml
-         HgHEy1CrocDT0yyPDxoR2I3xtREqFIYIWPfDsRTdHf+hpen3jPUE9TEGoCpfltESWI4/
-         Xw+KOSyV6WlGGFUdS+S5amcevEJuJ/SUZxtBBizMJ6jOPtkMQeSDT0UfLQJfo5/Xm/y/
-         jUhg==
-X-Forwarded-Encrypted: i=1; AJvYcCU5U8Cw7W5CqBM83WeAoeMhhmXIheQ/9tP2ZDRyqpFLJiZU5SZd6iB4OVGHXV79FJa+DTeyHr51LQCM2FQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzz2pkBJLwz3FEUGdz9mLnVgxzNGSk4LS8U6ac8dJQdkm8tdhhr
-	AIun5+7dMGIIJiWs8sPU/PcwrgKYq8LlQbRC0iU6n/pSVlo5WB0LNrIHjb1PdJk=
-X-Gm-Gg: ASbGncvtFVEqj8Nly9tPVsmQgMFA5sPsbbgv68u5o2kGcJdVQ4c2ejvhqFtDhcxUq+T
-	BE+YwpHkX/Ngw589w7mpHUzJFN30GUwRV9ecdNnxwVAOr05pUehprIXLAt/9YzeV1ojLH0yhgKW
-	jiWvc56Sy8VrhZOuPs+5K2C4c/kwDZFKSXJHHvVEUIHQVuXg7kjtA6hwoycUDQX+G8NuGH4XkEK
-	AW369uIMi6RIriJlMcvwLQcsBdgOv8WNQwYc06okR8m4cHw7J9fu+oTSb261NckfSGJQ54HbKE3
-	RW2456Ugq7WpKLATHtduWrB2
-X-Google-Smtp-Source: AGHT+IFOlRSXmPpMqNX1Hj05f5snUNJfrKfwz8DXHeQeL+jYNzKx2LjKje3P7Gnm5KJFqEO6VeZy/w==
-X-Received: by 2002:a17:907:2ce5:b0:ab7:c115:68fd with SMTP id a640c23a62f3a-ab7da4fb5cbmr276750566b.53.1739271108039;
-        Tue, 11 Feb 2025 02:51:48 -0800 (PST)
-Received: from [192.168.50.4] ([82.78.167.173])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ab7ecb3bc1asm3454766b.66.2025.02.11.02.51.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Feb 2025 02:51:47 -0800 (PST)
-Message-ID: <01f30b36-2f8e-4209-bc73-b955916977d8@tuxon.dev>
-Date: Tue, 11 Feb 2025 12:51:46 +0200
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="FRsIxHWm"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id D206A41C15;
+	Tue, 11 Feb 2025 18:09:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+	t=1739297390;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=9utK34bGiMkrLUFlE/zHrqGypJA3CK/m81WMH15xmSc=;
+	b=FRsIxHWmhVB2h4hAVLdxj6ikwyQaUbEGKJwuVJKclFrOJ2lmbTZ/KqDYcy+25zRpj723XA
+	25lS6JNU7gSNCtalLNa6GwxqthLIrl+lHS087GPD/LdeUpDOnM2NI/GXi+wN+25e4Zi32N
+	xOajh7tWV+ilMzZjroNnhV0Z+Qpkv3Znz/qtbZ60e2iLM9TD22K1aq9ZjLhONGcqSokTiV
+	U3/S/i7Y1K/X8wBFi2gZN4Sm9Ex7pez5RlN3moto5FM2hBNjTPTBw1inbATFa5RKm15OKy
+	36kotOEVcJPn5fUMAredGm+fezPG9fLaPk0ZuZ18jV2lxVL6HK47/CDCRIjrKA==
+Message-ID: <3d227ebe-1ee6-4d57-b1ec-78be59af7244@bootlin.com>
+Date: Tue, 11 Feb 2025 19:09:49 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,117 +37,82 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6] serial: sh-sci: Update the suspend/resume support
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, p.zabel@pengutronix.de,
- geert+renesas@glider.be, wsa+renesas@sang-engineering.com,
- prabhakar.mahadev-lad.rj@bp.renesas.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
- Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-References: <20250207113313.545432-1-claudiu.beznea.uj@bp.renesas.com>
- <CAMuHMdXis9-PjpKXP7eDGzdgox_jp8Gop6zgJBrnGrATdFTBTA@mail.gmail.com>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
 Content-Language: en-US
-In-Reply-To: <CAMuHMdXis9-PjpKXP7eDGzdgox_jp8Gop6zgJBrnGrATdFTBTA@mail.gmail.com>
+From: =?UTF-8?Q?Alexis_Lothor=C3=A9?= <alexis.lothore@bootlin.com>
+To: linux-serial@vger.kernel.org
+Subject: Splat: sleep in atomic section in atmel_serial
+Cc: Richard Genoud <richard.genoud@bootlin.com>,
+ Nicolas Ferre <Nicolas.Ferre@microchip.com>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdegudeikecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfhffvufevtgfgsehtkeertddtvdejnecuhfhrohhmpeetlhgvgihishcunfhothhhohhrrocuoegrlhgvgihishdrlhhothhhohhrvgessghoohhtlhhinhdrtghomheqnecuggftrfgrthhtvghrnhepffeuledvheejhfdtteevfeevheeuheduffetffdvfefhuddtkeeuueevfedtteelnecuffhomhgrihhnpegsohhothhlihhnrdgtohhmnecukfhppedvrgdtvdemkeegvdekmehfleegtgemvgdttdemmehfkeehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddvmeekgedvkeemfhelgegtmegvtddtmeemfhekhedphhgvlhhopeglkffrggeimedvrgdtvdemkeegvdekmehfleegtgemvgdttdemmehfkeehngdpmhgrihhlfhhrohhmpegrlhgvgihishdrlhhothhhohhrvgessghoohhtlhhinhdrtghomhdpnhgspghrtghpthhtohephedprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehrihgthhgrrhgurdhgvghnohhuugessghoohhtlhhinhdrtghomhdprhgtphhtthhopefpihgtohhlrghsrdfhvghrr
+ hgvsehmihgtrhhotghhihhprdgtohhmpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorhhg
+X-GND-Sasl: alexis.lothore@bootlin.com
 
-Hi, Geert,
+Hello,
 
-On 11.02.2025 10:16, Geert Uytterhoeven wrote:
-> Hi Claudiu,
-> 
-> On Fri, 7 Feb 2025 at 12:33, Claudiu <claudiu.beznea@tuxon.dev> wrote:
->> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->>
->> The Renesas RZ/G3S supports a power saving mode where power to most of the
->> SoC components is turned off. When returning from this power saving mode,
->> SoC components need to be re-configured.
->>
->> The SCIFs on the Renesas RZ/G3S need to be re-configured as well when
->> returning from this power saving mode. The sh-sci code already configures
->> the SCIF clocks, power domain and registers by calling uart_resume_port()
->> in sci_resume(). On suspend path the SCIF UART ports are suspended
->> accordingly (by calling uart_suspend_port() in sci_suspend()). The only
->> missing setting is the reset signal. For this assert/de-assert the reset
->> signal on driver suspend/resume.
->>
->> In case the no_console_suspend is specified by the user, the registers need
->> to be saved on suspend path and restore on resume path. To do this the
->> sci_console_save()/sci_console_restore() functions were added. There is no
->> need to cache/restore the status or FIFO registers. Only the control
->> registers. The registers that will be saved/restored on suspend/resume are
->> specified by the struct sci_suspend_regs data structure.
->>
->> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->> ---
->>
->> The v4 of this patch was part of a series with 4 patches. As the rest of
->> the patches were applied I dropped the cover letter. The v4 cover letter
->> is located here:
->> https://lore.kernel.org/all/20250120130936.1080069-1-claudiu.beznea.uj@bp.renesas.com
->>
->> Changes in v6:
->> - used sci_getreg() before saving/restoring registers to avoid
->>   WARN() on sci_serial_in()/sci_serial_out()
->> - splitted sci_console_save_restore() in 2 functions:
->>   sci_console_save()/sci_console_restore() as requested in the
->>   review process
->> - adjusted the patch description to reflect these changes
-> 
-> Thanks for the update!
-> 
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> 
-> One philosophical comment below...
-> 
->> --- a/drivers/tty/serial/sh-sci.c
->> +++ b/drivers/tty/serial/sh-sci.c
->> @@ -3546,13 +3559,57 @@ static int sci_probe(struct platform_device *dev)
->>         return 0;
->>  }
->>
->> +static void sci_console_save(struct sci_port *s)
->> +{
->> +       struct sci_suspend_regs *regs = &s->suspend_regs;
->> +       struct uart_port *port = &s->port;
->> +
->> +       if (sci_getreg(port, SCSMR)->size)
->> +               regs->scsmr = sci_serial_in(port, SCSMR);
->> +       if (sci_getreg(port, SCSCR)->size)
->> +               regs->scscr = sci_serial_in(port, SCSCR);
->> +       if (sci_getreg(port, SCFCR)->size)
->> +               regs->scfcr = sci_serial_in(port, SCFCR);
->> +       if (sci_getreg(port, SCSPTR)->size)
->> +               regs->scsptr = sci_serial_in(port, SCSPTR);
->> +       if (sci_getreg(port, SCBRR)->size)
->> +               regs->scbrr = sci_serial_in(port, SCBRR);
->> +       if (sci_getreg(port, SEMR)->size)
->> +               regs->semr = sci_serial_in(port, SEMR);
-> 
-> IMHO, it does not make much sense to check for the presence of the
-> SCSMR, SCSCR, and SCBRR registers, as they exist on all variants,
-> and are always accessed unconditionally in the rest of the code.
+I am currently working on a device driver for a serial device, on a setup
+involving one of the standard UART from SAMA5D27 (not the flexcom one), as well
+as two additional gpios for flow control (CTS/RTS). I can reliably reproduce a
+splat when trying to enable/disable flow control on the target uart (through
+serdev_device_set_flow_control). I am basing my work on top of the current
+wireless-next tree:
 
-I kept it like this thinking that it may help keeping this common for
-RZ/T2H (though I confess I haven't checked it) and avoid future WARN() on
-other possible platforms. If you prefer, I can drop the checks you pointed.
+BUG: sleeping function called from invalid context at kernel/irq/manage.c:738
+in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 27, name: kworker/u5:0
+preempt_count: 1, expected: 0
+INFO: lockdep is turned off.
+irq event stamp: 0
+hardirqs last  enabled at (0): [<00000000>] 0x0
+hardirqs last disabled at (0): [<c01588f0>] copy_process+0x1c4c/0x7bec
+softirqs last  enabled at (0): [<c0158944>] copy_process+0x1ca0/0x7bec
+softirqs last disabled at (0): [<00000000>] 0x0
+CPU: 0 UID: 0 PID: 27 Comm: kworker/u5:0 Not tainted 6.13.0-rc7+ #74
+Hardware name: Atmel SAMA5
+Workqueue: hci0 hci_power_on [bluetooth]
+Call trace:
+ unwind_backtrace from show_stack+0x18/0x1c
+ show_stack from dump_stack_lvl+0x44/0x70
+ dump_stack_lvl from __might_resched+0x38c/0x598
+ __might_resched from disable_irq+0x1c/0x48
+ disable_irq from mctrl_gpio_disable_ms+0x74/0xc0
+ mctrl_gpio_disable_ms from atmel_disable_ms.part.0+0x80/0x1f4
+ atmel_disable_ms.part.0 from atmel_set_termios+0x764/0x11e8
+ atmel_set_termios from uart_change_line_settings+0x15c/0x994
+ uart_change_line_settings from uart_set_termios+0x2b0/0x668
+ uart_set_termios from tty_set_termios+0x600/0x8ec
+ tty_set_termios from ttyport_set_flow_control+0x188/0x1e0
+ ttyport_set_flow_control from wilc_setup+0xd0/0x524 [hci_wilc]
+ wilc_setup [hci_wilc] from hci_dev_open_sync+0x330/0x203c [bluetooth]
+ hci_dev_open_sync [bluetooth] from hci_dev_do_open+0x40/0xb0 [bluetooth]
+ hci_dev_do_open [bluetooth] from hci_power_on+0x12c/0x664 [bluetooth]
+ hci_power_on [bluetooth] from process_one_work+0x998/0x1a38
+ process_one_work from worker_thread+0x6e0/0xfb4
+ worker_thread from kthread+0x3d4/0x484
+ kthread from ret_from_fork+0x14/0x28
+Exception stack(0xd095bfb0 to 0xd095bff8)
+bfa0:                                     00000000 00000000 00000000 00000000
+bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
 
-Thank you,
-Claudiu
+My current understanding is that the issue is around atmel_set_termios which
+disables interrupts (through uart_port_lock_irqsave), but then calls
+mctrl_gpio_disable_ms, which in turn calls disable_irq, which can not be called
+in atomic context. It looks like the issue may have been around for quite some
+time, but it may have started to appear because of disable_irq having been
+marked with might_sleep: see commit 17549b0f184d ("genirq: Add might_sleep() to
+disable_irq()") ?
 
-> 
-> Same for sci_console_restore().
-> 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
-> 
-> 
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> 
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+Thanks,
+
+Alexis
+
+-- 
+Alexis Lothoré, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
 
