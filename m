@@ -1,112 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBAB52AD21;
-	Thu, 13 Feb 2025 07:41:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1900E20B209;
+	Thu, 13 Feb 2025 08:09:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739432516; cv=none; b=mPBwymb0Xm7EL4B85X4iOaCAxNq1cBnsJWBkhw8lURlDzF+bMjdgHxuhtnRbENDosHRVTRuoGiVybfzB9wBR/LutUEIMfknIgLxVtkEXfIzZhKBvouomGrg8ZqbtE0AoCZpm/gUmceMl7Lx0nhclgR8WRSUj4fR/0RLLcGp0sBU=
+	t=1739434168; cv=none; b=ARlbKRBPX7O0dt2Ym5jlaRYvCXhUTpsFc0NmGswNkGSh0RWNw4BhOg3v7bELHyKuYmS6aqsVqmB+09TaickUGDqW7vUAcE7FvUSV7dyhdXv+SWT+oQrKCpt3rPGx1Uj8yXd0n/mK3mtWjH3OmHXxVIUr3juyjL3uRIxEJBieCCc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739432516; c=relaxed/simple;
-	bh=e/3JNcqQMxvz3itjS8WwyLDjbYO0p7j+scWMAkOJjck=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=jDu7PYDi0OTSdZZj29UOYsHA5GPGQNphlbgnykIxsRObpvqd5ObW8FXR3WTSD+eKN4LnYMTM6OK4kEMEK8TrXLJ7bK4icbh9iCNvreGsvhf+Q0t/4Rf/6qbvxvwOS+6W6xQyJe6EBkDU7MB9qFFDILj2ULb34Xr7ZKUvIR3CwOg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OXYQJROW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739434168; c=relaxed/simple;
+	bh=W9slmLEgwfMI1MJeemIMaWcXhgHgot5xKS72Ii/ulmU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Uh7ehd16h1w5j/fwF5HmE2wr9rv0t2vP8gkZ4/wI2aCOqPlHXQRkOsVe9s795gq4Dv5xtaByPgixU8RADghgYwMFk8dyf3914/tIARtiuonDIGjl47dW4Ot8qYXdTG5WOMseCJtBtx7a/sJZtkO0Iw4DroWp6jnvPh8pSD9AVrc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MXcuYDKA; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OXYQJROW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B15F1C4CED1;
-	Thu, 13 Feb 2025 07:41:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739432515;
-	bh=e/3JNcqQMxvz3itjS8WwyLDjbYO0p7j+scWMAkOJjck=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=OXYQJROWARCU8Je+ozQ1L/zk6Dp3qK9w8BPxfceaFIF6Y3fBgtrOWVAE9EezVco0m
-	 BFFrUZwIRr4Mub8g5ZsIi6AL54iAewAxr7RqQRSOpKDhjw3GBwYq2CFaIPRqeaIM6S
-	 l2oDzLRaFs4L29micsjjQV+AUM5xbk/ZCG53G15ewHWvvISlKdn+om9bYwH5H55myA
-	 icxLxbcfo27A5b2avPvTbqUkJ2LRoZZuewlyDHjoT9gaYe8yvKOoECZ8C6AXhRRb4U
-	 vdtH3G9CxmzHdY1fK6xHzb0V6fFGedRBGrzcx2O41Lez806E5/2dsxWoWHDkleq9Oj
-	 /Tqjhn2y1/cYA==
-Message-ID: <d2912853-82eb-4dae-97e7-dbe51ef7175c@kernel.org>
-Date: Thu, 13 Feb 2025 08:41:47 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MXcuYDKA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739434167; x=1770970167;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=W9slmLEgwfMI1MJeemIMaWcXhgHgot5xKS72Ii/ulmU=;
+  b=MXcuYDKAg8Rwhds6gS+fsX/amMmSKQvJuLjgdeEDLUQyN7BkR1F1P81n
+   2VkSxslmMxWBGebgpk/gTXnqniQWA51V5RI4Jf3A+9wxrFUoXIG5Fi369
+   q+IxnCWzorQ+Inb2w9K+Y3di5Oxdo2f8tbiwuUOfBLy4841FfHwQuqjvk
+   L/9+y2+4mp/PDT7XKUvTU80xYxtj+YrFDJJJr22BOmS/iqsj6GdIZUdu7
+   ZRxesQoSZkvWfSljOzq9VGldDUi/UIGDx0fWaKr/3CLMr7eWzA60lD45c
+   1zaDQpNl0CmWZotvKm6RKNj6Sxc5MThhlB0rE05RlhNSx2sdpk86NGs4f
+   Q==;
+X-CSE-ConnectionGUID: 5SW3goOhR7epPZHOnj9lBA==
+X-CSE-MsgGUID: qAjLNwPRSoeq4eupKmhrmA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11343"; a="39310948"
+X-IronPort-AV: E=Sophos;i="6.13,282,1732608000"; 
+   d="scan'208";a="39310948"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 00:09:26 -0800
+X-CSE-ConnectionGUID: P3lpblIAQcefB4B+R52lfA==
+X-CSE-MsgGUID: sx1hI1lLQkqqOvfWD3cbBw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="113968316"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 00:09:21 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1tiUHe-0000000B6H9-0ZfZ;
+	Thu, 13 Feb 2025 10:09:18 +0200
+Date: Thu, 13 Feb 2025 10:09:17 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Kartik Rajput <kkartik@nvidia.com>, gregkh@linuxfoundation.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	thierry.reding@gmail.com, jonathanh@nvidia.com,
+	hvilleneuve@dimonoff.com, arnd@kernel.org, geert+renesas@glider.be,
+	robert.marko@sartura.hr, schnelle@linux.ibm.com,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] serial: tegra-utc: Add driver for Tegra UART
+ Trace Controller (UTC)
+Message-ID: <Z62orWpDF5obQZLy@smile.fi.intel.com>
+References: <20250212104132.61060-1-kkartik@nvidia.com>
+ <20250212104132.61060-3-kkartik@nvidia.com>
+ <Z6y5vRGyouZsQWyj@smile.fi.intel.com>
+ <6f3e6958-25eb-4835-88e1-2d531c892dbe@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/2] dt-bindings: serial: Add bindings for
- nvidia,tegra264-utc
-To: Kartik Rajput <kkartik@nvidia.com>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
- hvilleneuve@dimonoff.com, arnd@kernel.org, geert+renesas@glider.be,
- robert.marko@sartura.hr, schnelle@linux.ibm.com,
- andriy.shevchenko@linux.intel.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-tegra@vger.kernel.org
-References: <20250212104132.61060-1-kkartik@nvidia.com>
- <20250212104132.61060-2-kkartik@nvidia.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20250212104132.61060-2-kkartik@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6f3e6958-25eb-4835-88e1-2d531c892dbe@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On 12/02/2025 11:41, Kartik Rajput wrote:
-> The Tegra UTC (UART Trace Controller) allows multiple clients within
-> the Tegra SoC to share a physical UART interface. It supports up to 16
-> clients. Each client operates as an independent UART endpoint with a
-> dedicated interrupt and 128-character TX/RX FIFOs.
+On Thu, Feb 13, 2025 at 08:38:15AM +0100, Jiri Slaby wrote:
+> On 12. 02. 25, 16:09, Andy Shevchenko wrote:
+
+...
+
+> > > +	pending = uart_port_tx(port, c,
+> > > +		     !(tegra_utc_tx_readl(tup, TEGRA_UTC_FIFO_STATUS) & TEGRA_UTC_FIFO_FULL),
+> > > +		     tegra_utc_tx_writel(tup, c, TEGRA_UTC_DATA));
+> > 
+> > Make the last two to reside in temporary variables with self-explanatory names.
 > 
-> Add device tree binding documentation for the Tegra UTC client.
-> 
-> Signed-off-by: Kartik Rajput <kkartik@nvidia.com>
+> Not sure what you mean here? They are needed to be evaluated (read/written)
+> in every loop.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Ah, uart_port_tx() is a macro!
 
-Best regards,
-Krzysztof
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
