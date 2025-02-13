@@ -1,137 +1,193 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78E3621325A;
-	Thu, 13 Feb 2025 10:57:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF409267B1C;
+	Thu, 13 Feb 2025 11:05:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739444264; cv=none; b=a95eu/oCenK0QcxH9Y50CzDc+Zq0CBNCBlVurdNny5bmss+ahHGd9j4YACmTS9ZZTBaWkQbDN1bs4J7qXgWRQo7WkNIYZ17Tnvnc0lNqeZ4mbu/ecLImCktJQkex1C07MQcmIsh1xob8a3Xpwv1I3Hx3WXNIUmZ60xRjC8UfOPU=
+	t=1739444746; cv=none; b=fGyJhKFcYpfY+/UHUta9LDRRRjglCle6gim8+8K08lK0+9n9baigg4sMmw01nZXZ+7eREcE89VMRXnbKQSswVYpCUvUFhkd19bIvSuJd9Z0TsD2kC4XclOFOmHl+BF6B++yZjbDgBElmhhn5hlSE0LrPGsNBRFGvteZiL3C8k3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739444264; c=relaxed/simple;
-	bh=pyF2QmNloyMOS+ooiXdEaWxfi2Vx+bDKuVx6p+SkU6c=;
+	s=arc-20240116; t=1739444746; c=relaxed/simple;
+	bh=u3jhAvzTfEh3CdzEn3BAjSF63/UVzzb34kvFb3VtIos=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hYrqCLStKJteLbicCnhD1hWeahrb9TlxDGKMvvN/Oge1nNGF3bPAXtkWywqpw1LvmgoIcbtRHh4K+OnNZHSMh40Oe0GOrWC0tcLuJWzZY9Zt3gSsUZx9NqsFGCJaQIFspB+BKAU0gSSdGJaU/p0jFHNNe7OvoBV62o5yK266yXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ewD05as5; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=XRmTE2B26lgundaXJ4UJlmFeHMyaw0/FoFDEpL13idm0zAr6nVl184ta78uNiBAuH0UgMObJa8NJxxw2cIc52g9xbfhHjZywTY8J+SQX+tvc/paYIFKtN+nv90ExQVa/VPSMh2YDafFKq7rAiwZM7AZyQy7adtcg+qzpcqJgkGc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eyW+u0qL; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ewD05as5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eyW+u0qL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739444262; x=1770980262;
+  t=1739444745; x=1770980745;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=pyF2QmNloyMOS+ooiXdEaWxfi2Vx+bDKuVx6p+SkU6c=;
-  b=ewD05as5swo7iwL2SqdBFwse7ftzTOb6b7CaO1cXbgNSyeEfkhwfnj1D
-   Gy0pqBRwaSpTIOmWmcTgVDAwDG6ahj0lRPnOqdu6NPSzxg/rNnOA/hD92
-   lPRYX1FAZx9+hPHbBi5dUTFS2L3+YKsOLdi8YdnxsYSE0mSEt/+b/VdHv
-   6w83KXAMUMU4vLgu3l/TTu51bW+z571cOt42RxnlQbFI959u8PPTolpzH
-   6EYUPB2Vh/LiGV69uFnrlGPCApNevTfpX9vWJki/+O4xkd4VZHkXWaLZd
-   M6cvRAuwobBbiwYgqHeb8iGApwVvTedST6b/fG8pCLDYBVqLi/xrb7RXx
+   mime-version:in-reply-to;
+  bh=u3jhAvzTfEh3CdzEn3BAjSF63/UVzzb34kvFb3VtIos=;
+  b=eyW+u0qLewW4A6bDhLLh4JFhmGzofLoGdrs4UA2msi9UeFhfXB4rWceh
+   V3e39QizHbvXVn7gh6Qd3sAC6DmEWWE6mGqRti32PYZ8gfZZl4mAQbCgb
+   BRMlec5YvL3muZeMRwqLsnjycbWHmFLtNOnXiCgkx7m6rOsQhgkj8HBHN
+   zXWRjdtQZDsBrq7/hK+LNWOI6jLUxL+o8PRBvVB4o7jKqaAPq9gsD9vFI
+   5dYHrgprK9H8An+WmCH7td+OpISG5eEFG/f1+mTXh0MwWe253DYMG7uwT
+   z9iaRmiUMV2lYOZstMXdMw/yizpJSH4ixOrrC7MSlZM1US1+SNT/zid6a
    Q==;
-X-CSE-ConnectionGUID: lnH5xp24T1KyGOKkpRfm7w==
-X-CSE-MsgGUID: qVNyYJJ8Sr+QUKYke6/7YA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11343"; a="57673742"
+X-CSE-ConnectionGUID: ZsTqD4jCS+2WBWZOQv6Iiw==
+X-CSE-MsgGUID: 1U4e5sFnREeHx9nm8qrt6Q==
+X-IronPort-AV: E=McAfee;i="6700,10204,11343"; a="42976571"
 X-IronPort-AV: E=Sophos;i="6.13,282,1732608000"; 
-   d="scan'208";a="57673742"
+   d="scan'208";a="42976571"
 Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 02:57:41 -0800
-X-CSE-ConnectionGUID: P9Bh1cBQShitd1WRAq7ksg==
-X-CSE-MsgGUID: R1RQoslhSjeSCVtbJOXViQ==
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 03:05:44 -0800
+X-CSE-ConnectionGUID: P128WeynQ/WkMPJRXWsfcw==
+X-CSE-MsgGUID: ETfIGN2oS7CuNCAvKhDUjA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,282,1732608000"; 
-   d="scan'208";a="112974706"
+   d="scan'208";a="112978940"
 Received: from smile.fi.intel.com ([10.237.72.58])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 02:57:38 -0800
+  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2025 03:05:40 -0800
 Received: from andy by smile.fi.intel.com with local (Exim 4.98)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tiWuV-0000000B8kk-0Vn6;
-	Thu, 13 Feb 2025 12:57:35 +0200
-Date: Thu, 13 Feb 2025 12:57:34 +0200
-From: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
+	id 1tiX2G-0000000B8rH-2sEK;
+	Thu, 13 Feb 2025 13:05:36 +0200
+Date: Thu, 13 Feb 2025 13:05:36 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Kartik Rajput <kkartik@nvidia.com>
-Cc: Jon Hunter <jonathanh@nvidia.com>, "robh@kernel.org" <robh@kernel.org>,
-	"robert.marko@sartura.hr" <robert.marko@sartura.hr>,
-	"arnd@kernel.org" <arnd@kernel.org>,
-	"thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>,
-	"geert+renesas@glider.be" <geert+renesas@glider.be>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"jirislaby@kernel.org" <jirislaby@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-	"hvilleneuve@dimonoff.com" <hvilleneuve@dimonoff.com>,
-	"schnelle@linux.ibm.com" <schnelle@linux.ibm.com>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] serial: tegra-utc: Add driver for Tegra UART
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, thierry.reding@gmail.com,
+	jonathanh@nvidia.com, hvilleneuve@dimonoff.com, arnd@kernel.org,
+	geert+renesas@glider.be, robert.marko@sartura.hr,
+	schnelle@linux.ibm.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] serial: tegra-utc: Add driver for Tegra UART
  Trace Controller (UTC)
-Message-ID: <Z63QHvayYRS0U8Ln@smile.fi.intel.com>
-References: <20250212104132.61060-1-kkartik@nvidia.com>
- <20250212104132.61060-3-kkartik@nvidia.com>
- <Z6y5vRGyouZsQWyj@smile.fi.intel.com>
- <ec06322386adbf4404e2fbc5d7656e3465eb4320.camel@nvidia.com>
- <Z63Bk6sgQryG1pFK@smile.fi.intel.com>
- <88a54c9bf88dac0a3316224b08d0e2378e8fc6f0.camel@nvidia.com>
+Message-ID: <Z63SAPtHXR6KN9qa@smile.fi.intel.com>
+References: <20250213100442.45773-1-kkartik@nvidia.com>
+ <20250213100442.45773-3-kkartik@nvidia.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <88a54c9bf88dac0a3316224b08d0e2378e8fc6f0.camel@nvidia.com>
+In-Reply-To: <20250213100442.45773-3-kkartik@nvidia.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Feb 13, 2025 at 10:11:36AM +0000, Kartik Rajput wrote:
-> On Thu, 2025-02-13 at 11:55 +0200, andriy.shevchenko@linux.intel.com
-> wrote:
-> > On Thu, Feb 13, 2025 at 09:05:36AM +0000, Kartik Rajput wrote:
-> > > On Wed, 2025-02-12 at 17:09 +0200, Andy Shevchenko wrote:
-> > > > On Wed, Feb 12, 2025 at 04:11:32PM +0530, Kartik Rajput wrote:
+On Thu, Feb 13, 2025 at 03:34:42PM +0530, Kartik Rajput wrote:
+> The Tegra264 SoC supports the UART Trace Controller (UTC), which allows
+> multiple firmware clients (up to 16) to share a single physical UART.
+> Each client is provided with its own interrupt and has access to a
+> 128-character wide FIFO for both transmit (TX) and receive (RX)
+> operations.
+> 
+> Add tegra-utc driver to support Tegra UART Trace Controller (UTC)
+> client.
+
+Btw, neither the commit message nor cover letter explain why the new driver
+is needed. There are some serial Tegra drivers already. Is this one completely
+different from the existing drivers?
 
 ...
 
-> > > > > +     for (i = 0; i < len; i++) {
-> > > > > +             if (!nbcon_enter_unsafe(wctxt))
-> > > > > +                     break;
-> > > > > +
-> > > > > +             read_poll_timeout_atomic(tegra_utc_tx_readl, val,
-> > > > > !(val & TEGRA_UTC_FIFO_FULL),
-> > > > > +                                      0, USEC_PER_SEC, false,
-> > > > > tup,
-> > > > > TEGRA_UTC_FIFO_STATUS);
-> > > > 
-> > > > No error check?
-> > > 
-> > > I'm not sure about this. The case where the TX FIFO doesn't clear
-> > > up,
-> > > even after polling for 1 second, is highly unlikely, especially
-> > > since
-> > > there's no flow control involved here. Even if that did happen,
-> > > writing
-> > > to the TX FIFO should just result in an overflow, which is probably
-> > > acceptable in this scenario.
-> > 
-> > Perhaps a warning (debug?) message in such a case?
-> 
-> I would prefer avoiding any prints in this function, as we are writing
-> debug messages to the UART HW here.
+> +#define TEGRA_UTC_ENABLE			0x0
 
-Not every printf() goes to UART, but to your point the NBCON should solve that
-issue to some extent. Of course, if the HW in a broken (unrecoverable) state,
-nothing won't help.
+It would be nice to use fixed width values for the register offsets,
+e.g., 0x000 here.
 
-> > > > > +             uart_console_write(&tup->port, wctxt->outbuf + i,
-> > > > > 1,
-> > > > > tegra_utc_console_putchar);
-> > > > > +
-> > > > > +             if (!nbcon_exit_unsafe(wctxt))
-> > > > > +                     break;
-> > > > > +     }
+> +#define TEGRA_UTC_ENABLE_CLIENT_ENABLE		BIT(0)
+> +
+> +#define TEGRA_UTC_FIFO_THRESHOLD		0x8
+> +
+> +#define TEGRA_UTC_COMMAND			0xc
+
+Ditto.
+
+> +#define TEGRA_UTC_COMMAND_RESET			BIT(0)
+> +#define TEGRA_UTC_COMMAND_FLUSH			BIT(1)
+
+> +#define TEGRA_UTC_DATA				0x20
+
+Ditto.
+
+> +#define TEGRA_UTC_FIFO_STATUS			0x100
+> +#define TEGRA_UTC_FIFO_EMPTY			BIT(0)
+> +#define TEGRA_UTC_FIFO_FULL			BIT(1)
+> +#define TEGRA_UTC_FIFO_REQ			BIT(2)
+> +#define TEGRA_UTC_FIFO_OVERFLOW			BIT(3)
+> +#define TEGRA_UTC_FIFO_TIMEOUT			BIT(4)
+> +
+> +#define TEGRA_UTC_FIFO_OCCUPANCY		0x104
+> +
+> +#define TEGRA_UTC_INTR_STATUS			0x108
+> +#define TEGRA_UTC_INTR_SET			0x10c
+> +#define TEGRA_UTC_INTR_MASK			0x110
+> +#define TEGRA_UTC_INTR_CLEAR			0x114
+> +#define TEGRA_UTC_INTR_EMPTY			BIT(0)
+> +#define TEGRA_UTC_INTR_FULL			BIT(1)
+> +#define TEGRA_UTC_INTR_REQ			BIT(2)
+> +#define TEGRA_UTC_INTR_OVERFLOW			BIT(3)
+> +#define TEGRA_UTC_INTR_TIMEOUT			BIT(4)
+
+...
+
+> +#if IS_ENABLED(CONFIG_SERIAL_TEGRA_UTC_CONSOLE)
+> +#define TEGRA_UTC_DEFAULT_FIFO_THRESHOLD	0x4
+
+Hmm... Is this a register offset? If not, why it's in a hexadecimal format?
+
+> +#define TEGRA_UTC_EARLYCON_MAX_BURST_SIZE	128
+
+...
+
+> +static int tegra_utc_probe(struct platform_device *pdev)
+> +{
+> +	const unsigned int *soc_fifosize;
+> +	struct device *dev = &pdev->dev;
+> +	struct tegra_utc_port *tup;
+> +	int ret;
+> +
+> +	tup = devm_kzalloc(&pdev->dev, sizeof(*tup), GFP_KERNEL);
+
+Use dev?
+
+> +	if (!tup)
+> +		return -ENOMEM;
+> +
+> +	ret = device_property_read_u32(dev, "tx-threshold", &tup->tx_threshold);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "missing %s property\n", "tx-threshold");
+> +
+> +	ret = device_property_read_u32(dev, "rx-threshold", &tup->rx_threshold);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "missing %s property\n", "rx-threshold");
+> +
+> +	soc_fifosize = device_get_match_data(&pdev->dev);
+> +	tup->fifosize = *soc_fifosize;
+> +
+> +	tup->tx_base = devm_platform_ioremap_resource_byname(pdev, "tx");
+> +	if (IS_ERR(tup->tx_base))
+> +		return PTR_ERR(tup->tx_base);
+> +
+> +	tup->rx_base = devm_platform_ioremap_resource_byname(pdev, "rx");
+> +	if (IS_ERR(tup->rx_base))
+> +		return PTR_ERR(tup->rx_base);
+
+> +	ret = tegra_utc_setup_port(&pdev->dev, tup);
+
+Ditto.
+
+> +	if (ret)
+> +		dev_err_probe(dev, ret, "failed to setup uart port\n");
+> +
+> +	platform_set_drvdata(pdev, tup);
+> +
+> +	return tegra_utc_register_port(tup);
+> +}
+
+...
+
+With the above being addressed, FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
 -- 
 With Best Regards,
