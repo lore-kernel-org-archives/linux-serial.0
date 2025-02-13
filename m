@@ -1,33 +1,64 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C9C920A5DA;
-	Thu, 13 Feb 2025 07:38:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E43F208984
+	for <linux-serial@vger.kernel.org>; Thu, 13 Feb 2025 07:38:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739432301; cv=none; b=aNpBuyie6me3ZNO3rOhdQ++klkSKZ2gn+Ne/zhWwswzvJPKbwKI70vb5lg+3z/JtDS+HNSRyzGF7XqwQlHyW2F54/S6cvA8eU1I7bBbgb2AmH7eciqVe+QRHOaSPHWjmlk/ZEtsvc3rDFV+8/mM9iyUfCs0rVHdXmM75qM2CtpE=
+	t=1739432321; cv=none; b=OxjoeONSIwmDs6DgnNGzoqeoU36OASOr8b7V7Iej7lpQpeRp7zh8C06EzMPA9k7KQzxzsTxjQwPN7kmqg8wd0drQ7BeHGHwbyHstW7xYe5xrqFQphY/r7JaUJsWDjBEtbeHGGge5S4dX+t2oOIpA91OTXCioYDs+/zRP7pJB8bQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739432301; c=relaxed/simple;
-	bh=ycqh/+ptlPhGnt0C6FkxCQZVCVx2KwVJ8PkH3Nq90Zo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=j4dnBaRWfszDCHHbtTHSweT8MYowjgE/deDjOo7ZoIQsH2ggZAGI/nkEtIy4MTcNXTK8G82sacizZy0aYPD36E2OZW3EL8aoBw3+NEMTfphDoWIufjAL59liak3JCSuI5KuoY/OmRAReHO95KkNI8qTtdtrx9cu0j3K3Ouk9jT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZjaxdWRu; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739432321; c=relaxed/simple;
+	bh=8jHSN2t8uUr6bZE59ZIgxIuRdzhSTrE+DV+sY0qnFvI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Syc7ITA6g55HhbGW4Rx3R4icsi5LfihNtQQO9bLNnyP5ncReUOZ6hyx/DC/hBgVWR9MrOsRXfzVwcZXlmPgd7NWNi9IBTc+7W3rGCpQYrTskcBt4QZ8/Dc+kZkgRKBR4h2uvAjhs6tC8CcY0Rk58Qttp9PgO69MAKl0RFG3KONA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=I8ix8+h5; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZjaxdWRu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D521C4CED1;
-	Thu, 13 Feb 2025 07:38:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739432300;
-	bh=ycqh/+ptlPhGnt0C6FkxCQZVCVx2KwVJ8PkH3Nq90Zo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ZjaxdWRuwaXxhyrqiIO2jip6dHbfVfQOMySqgwcFc0ncvGkackvRLy6P1g6C0zIfL
-	 cl9Yopny1ami7wEsBQyTeVZ7a9QTnhr9FJ8tUC5UEa7i89097AFkGglrIJ89SPIO21
-	 zee2iBfBiRsm5T6+yw+7en+3KJfXUC3OGCt3VoEAZPap79WBFdJEFZvsyBmGblOyYe
-	 bw7coEqqTekDdMC2bKt2P+G4rCooDtgzXYUYJftEo8A+OpP3Ig1crBBfxPqewbc9MV
-	 mEBasa/+fVslEEOOakjZ6cDIz8wL6s2NwkW4m4kbBzuATFWvSZHHFAHn4dXUOAh/xF
-	 se3uAgZp0tFJg==
-Message-ID: <6f3e6958-25eb-4835-88e1-2d531c892dbe@kernel.org>
-Date: Thu, 13 Feb 2025 08:38:15 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="I8ix8+h5"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-aaee2c5ee6eso93477566b.1
+        for <linux-serial@vger.kernel.org>; Wed, 12 Feb 2025 23:38:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1739432318; x=1740037118; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=vizM0Sdo+SZTTaKpC/1DIJWgscYtW1gDxvN+iGD1EdQ=;
+        b=I8ix8+h5HXOpyihMVRUKJsDe3uarftXe8rpi/HxrHsqd0ty9rT6EJTAuH37ihdvqv0
+         ecPxyOotLIJjY80eaYTkMR1q2QiSOhi6eYKuQJdhSsXCBb70o5mVUi0vFD57BKsokLhR
+         4GR5TenRGEtIqLdU0HOYNIhdCnzlgQ9A6Kc+7lm3r82ig263n70k2h29O/EyuGqzHj/J
+         UBbQE/ZAkgyKSuBx87BpPRv/0C8C63ArB8a4FM7lyf7rkVaSnktj7yRi+KgYe4/w6fEn
+         oYWLev248td5hbl6OqUZ6L2/aNVOryDt6D9b07dSmVKStnOMEL7dpAW22isBoogtkRTp
+         inyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1739432318; x=1740037118;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vizM0Sdo+SZTTaKpC/1DIJWgscYtW1gDxvN+iGD1EdQ=;
+        b=UDjyWqGa6gr6Vf0m0r7akXruWwQCvMQlrdmV8UeFcEV60mOjb+ri7B6W4evkNgZ3i7
+         Ey+eHFtNT31GddERCeQgZ1MdLQDTPezJ6TFI2jddOqXEguLVYuwV3qRzViLwayov8D5X
+         nhxVsV03TJPrlREYgwUVLCPjUSwXkDkBBDKJvH9ngwXkDT6JitMIhhFFi5zJ87VwkJdG
+         JZXDSPg21L0EV91Df0cQgoeIpDm8C7g9v4CpIPDirwx7WkKE+beYVpi08aofPbb7eHIn
+         78aHXZMGlMmqljVdU14IqgyW1bVznZCv+BBANU7dgD7ZwreBZcLW3HBmXefnHwS5GvXf
+         f1sQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXQuu0cQY4Ixl7lVXeNWKmxVrum00XIbo5MuAcE6Om3u1M+/5VWgFiP1VLmkOyHtgTehyGAz/SrGVrqmEo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx3rFHYjn0oskoUIQvTptrgOcZMXmlNYZeUz55X1QFXc30ycDtv
+	IsxdxoD5CxVXOR+YsA1vWDdveV6K5Si19Xdb4AkLBzQn9PCmuFZidKIv84yVs5c=
+X-Gm-Gg: ASbGncvJGzT3PrwElPEh7xD0LUXoePEMVHATTf/5LsBXNEPXYctaNL16zHp/49BGhOj
+	4sUv5xMt8yBcFIR31IY2C9Q29AyIn5xglZzJD+0vJtR89JkxsoouUcBvQyeTD7rH0cfuB4JOk+r
+	MLV1H24Lt/QAzf05W7IgxEEld8GKB6YeRgYjjDhEcuWpjWYUx8fdeUgcHQstbAiOLFaTH4ODlh5
+	HSe2A24/NPSaGDrePX4mu4D6e+Y8viV3EOsCgtAdxxSNF3MEgwZSVYj2P/I2YVYive1k5mST++T
+	b3ocqKW5Efed7bjXlzVwP1IK
+X-Google-Smtp-Source: AGHT+IHDPN30IeTPgZSQ6r4lGFgS4tkcB9qst37osdGIW9i7ciqPaXGYBjTXuWeMR8vFNohAyFOWCQ==
+X-Received: by 2002:a17:907:1909:b0:aa6:ac9b:6822 with SMTP id a640c23a62f3a-ab7f3344473mr607557566b.12.1739432317767;
+        Wed, 12 Feb 2025 23:38:37 -0800 (PST)
+Received: from [192.168.0.14] ([79.115.63.124])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aba53259517sm75356766b.65.2025.02.12.23.38.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Feb 2025 23:38:37 -0800 (PST)
+Message-ID: <40370a0e-775b-42e3-bb6c-8cacaa0482cf@linaro.org>
+Date: Thu, 13 Feb 2025 07:38:35 +0000
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,83 +66,160 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/2] serial: tegra-utc: Add driver for Tegra UART Trace
- Controller (UTC)
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Kartik Rajput <kkartik@nvidia.com>
-Cc: gregkh@linuxfoundation.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, thierry.reding@gmail.com, jonathanh@nvidia.com,
- hvilleneuve@dimonoff.com, arnd@kernel.org, geert+renesas@glider.be,
- robert.marko@sartura.hr, schnelle@linux.ibm.com,
+Subject: Re: [PATCH v1 3/3] arm64: dts: exynos990: define all PERIC USI nodes
+To: Denzeel Oliva <wachiturroxd150@gmail.com>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, alim.akhtar@samsung.com, semen.protsenko@linaro.org,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, linux-tegra@vger.kernel.org
-References: <20250212104132.61060-1-kkartik@nvidia.com>
- <20250212104132.61060-3-kkartik@nvidia.com>
- <Z6y5vRGyouZsQWyj@smile.fi.intel.com>
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org
+References: <20250212234034.284-1-wachiturroxd150@gmail.com>
+ <20250212234034.284-4-wachiturroxd150@gmail.com>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <Z6y5vRGyouZsQWyj@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Tudor Ambarus <tudor.ambarus@linaro.org>
+In-Reply-To: <20250212234034.284-4-wachiturroxd150@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 12. 02. 25, 16:09, Andy Shevchenko wrote:
->> +static bool tegra_utc_tx_chars(struct tegra_utc_port *tup)
->> +{
->> +	struct uart_port *port = &tup->port;
->> +	unsigned int pending;
->> +	u8 c;
->> +
->> +	pending = uart_port_tx(port, c,
->> +		     !(tegra_utc_tx_readl(tup, TEGRA_UTC_FIFO_STATUS) & TEGRA_UTC_FIFO_FULL),
->> +		     tegra_utc_tx_writel(tup, c, TEGRA_UTC_DATA));
+
+
+On 2/12/25 11:40 PM, Denzeel Oliva wrote:
+> Universal Serial Interface (USI) supports three types of serial interface
+> such as Universal Asynchronous Receiver and Transmitter (UART), Serial
+> Peripheral Interface (SPI), and Inter-Integrated Circuit (I2C).
+> Each protocols can be working independently and configured as one of
+> those using external configuration inputs.
 > 
-> Make the last two to reside in temporary variables with self-explanatory names.
+> Exynos990 SoC defines 18 USI nodes in PERIC0/1 blocks.
+> Nodes have different depths from 64-256 bytes.
 
-Not sure what you mean here? They are needed to be evaluated 
-(read/written) in every loop.
+for the reviewer's peace of mind you shall specify whether you tested at
+least an i2c, uart and spi node.
 
--- 
-js
-suse labs
+> 
+> Signed-off-by: Denzeel Oliva <wachiturroxd150@gmail.com>
+> ---
+>  arch/arm64/boot/dts/exynos/exynos990.dtsi | 1693 +++++++++++++++++++++
+>  1 file changed, 1693 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/exynos/exynos990.dtsi b/arch/arm64/boot/dts/exynos/exynos990.dtsi
+> index aa056fdae..22ec92a45 100644
+> --- a/arch/arm64/boot/dts/exynos/exynos990.dtsi
+> +++ b/arch/arm64/boot/dts/exynos/exynos990.dtsi
+> @@ -7,6 +7,7 @@
+>  
+>  #include <dt-bindings/clock/samsung,exynos990.h>
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +#include <dt-bindings/soc/samsung,exynos-usi.h>
+>  
+>  / {
+>  	compatible = "samsung,exynos990";
+> @@ -248,6 +249,808 @@ sysreg_peric0: syscon@10420000 {
+>  			clocks = <&cmu_peric0 CLK_GOUT_PERIC0_SYSREG_PCLK>;
+>  		};
+>  
+> +		usi_uart: usi@105400c0 {
+> +			compatible = "samsung,exynos990-usi", "samsung,exynos850-usi";
+> +			reg = <0x105400c0 0x20>;
+> +			samsung,sysreg = <&sysreg_peric0 0x1000>;
+> +			samsung,mode = <USI_V2_UART>;
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +			ranges;
+> +			clocks = <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_PCLK_4>,
+> +				 <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_4>;
+> +			clock-names = "pclk", "ipclk";
+> +			status = "disabled";
+> +
+> +			serial_0: serial@10540000 {
+> +				compatible = "samsung,exynos990-uart",
+> +					     "samsung,exynos8895-uart";
+> +				reg = <0x10540000 0xc0>;
+> +				interrupts = <GIC_SPI 391 IRQ_TYPE_LEVEL_HIGH>;
+> +				pinctrl-names = "default";
+> +				pinctrl-0 = <&uart0_bus>;
+> +				clocks = <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_PCLK_4>,
+> +					 <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_4>;
+> +				clock-names = "uart", "clk_uart_baud0";
+> +				samsung,uart-fifosize = <256>;
+> +				status = "disabled";
+
+node properties shall be specified in a specific order. Follow similar
+nodes that are already accepted, gs101 is one.
+
+> +			};
+> +		};
+> +
+> +		usi0: usi@105500c0 {
+
+cut
+
+> +
+> +			hsi2c_0: i2c@10550000 {
+
+cut
+
+> +
+> +			spi_0: spi@10550000 {
+
+cut
+
+> +			serial_2: serial@10550000 {
+
+why not serial_0 since you're in USI0.
+
+> +		};
+> +
+> +		usi_i2c_0: usi@105600c0 {
+> +			compatible = "samsung,exynos990-usi", "samsung,exynos850-usi";
+> +			reg = <0x105600c0 0x20>;
+> +			samsung,sysreg = <&sysreg_peric0 0x1008>;
+> +			samsung,mode = <USI_V2_I2C>;
+> +			#address-cells = <1>;
+> +			#size-cells = <1>;
+> +			ranges;
+> +			clocks = <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_PCLK_6>,
+> +				 <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_6>;
+> +			clock-names = "pclk", "ipclk";
+> +			status = "disabled";
+> +
+> +			hsi2c_1: i2c@10560000 {
+> +				compatible = "samsung,exynos990-hsi2c",
+> +					     "samsung,exynosautov9-hsi2c";
+> +				reg = <0x10560000 0xc0>;
+> +				interrupts = <GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>;
+> +				pinctrl-names = "default";
+> +				pinctrl-0 = <&hsi2c1_bus>;
+> +				clocks = <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_6>,
+> +					 <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_PCLK_6>;
+> +				clock-names = "hsi2c", "hsi2c_pclk";
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				status = "disabled";
+> +			};
+
+shouldn't you define serial and SPI too?
+
+> +		};
+> +
+
+cut
+
+> +			spi_8: spi@108e0000 {
+> +				compatible = "samsung,exynos990-spi";
+> +				reg = <0x108e0000 0x30>;
+> +				interrupts = <GIC_SPI 423 IRQ_TYPE_LEVEL_HIGH>;
+> +				pinctrl-names = "default";
+> +				pinctrl-0 = <&spi8_bus>;
+> +				clocks = <&cmu_peric1 CLK_GOUT_PERIC1_TOP0_PCLK_14>,
+> +					 <&cmu_peric1 CLK_GOUT_PERIC1_TOP0_IPCLK_14>;
+> +				clock-names = "spi", "spi_busclk0";
+> +				#address-cells = <1>;
+> +				#size-cells = <0>;
+> +				fifo-depth = <256>;
+
+that's a first. Does downstream define any SPI node with 256 bytes
+FIFOs? Would you please point me to the downstream sources?
+
+Cheers,
+ta
