@@ -1,183 +1,162 @@
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63D13266EE4
-	for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2025 15:40:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FAB2267AE8
+	for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2025 17:14:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739547606; cv=none; b=G6c5ZGg9Zdvmr5tMI40C1xm7LMYfLOe5G2ajpMAAqvg8nt8MOLiSIpeAkZJ4bZM7EDd6M72+ouFnpTH4oF6c1JSugm7x/FW6em49moe/0QfbIT+tu3wSsR9M8pPN1vo5NHGnoCCbdbLQpL0/dwWF8BHHVQ2n4HrQcqLw66mkFyo=
+	t=1739553259; cv=none; b=qfYYF3Suds4myXWCbfQTLDIgfxl0umkcH4dPVpCkXP7HPGBhIdBKyi1UHztaJpEA8qsAWLgtSxeY4nGLWabOIRHdGkh37bPAJMlSMg/Aqi6jCS/2NCq8ffAO2ySyF790G60vSLta3wdBY+vrnTJpzYyp4EIDQ0xTsBHhzaeQNnM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739547606; c=relaxed/simple;
-	bh=Ur1csxx5e9sT2v6HE7Bvi1Gidx/ecW+iVa1/b716UdY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Ah1+e82jBcv4BxP19uh3eH1skqMfYySv1QUuEsAWJlxyXaRhJSoUg31eR/1S/nUV92eAPJa0BWXMbyyrPm5VVVMtDstBhATyiDwsxX180WDVzXcO86Y5eWwCqNgiqwA0YXqmWREb4fo9l0d9faWAKGTjOjPT0Ffgtu3PCof2YE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=bLW0E1nM; arc=none smtp.client-ip=209.85.219.171
+	s=arc-20240116; t=1739553259; c=relaxed/simple;
+	bh=GCT3tjmLaUYH2vmBJeZHXbttCdIkYNXzAdwNeEZ+HwI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=h/2doAfMltKp4b4yQrUuK4TPdWgGAWsEJt0VXSao4aUj8+wjn5B2WL85lkqC6CACoiAvdWomH8CvVZynwUKeErXnIDSMsuBseNNPGXN4sBfwNAZeB/M8cmqRLMHmtKWf37OY4UWmqBYT0FuAd5MDUWyyi5HaWxvteMkuL9+VRio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ZKUaBru4; arc=none smtp.client-ip=209.85.216.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bLW0E1nM"
-Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-e461015fbd4so1679016276.2
-        for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2025 07:40:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ZKUaBru4"
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-2fc0026eb79so4285922a91.0
+        for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2025 09:14:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1739547603; x=1740152403; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GDlfNVO3NueDu0Qi3f7HcF0fEdO1uHUOCWWSlLIIhqA=;
-        b=bLW0E1nMAvMJv7DVSgBs/pbO0Eo91IPzwo+XP6qFqlKS7sDRfHesMHtHo4w4KRuCAV
-         qH3nr8wsBMDTS/Fm7xeL7SgCMz4gAq539W8EIbXJvMaKpJ7eynb+3kx+PLr3QOVVR5Hs
-         rNZCQ7wioP9rzyB4OstwAh/ECXNgsosdm8i2VbHrGG2O2ockuQkSL0wf7byDfmgGZax8
-         7Pc/vykyOHvOX4qYN3zqZQM6Tj4N967NqD+mvHGSVldkTfG317ksIv8bzJW6DGBaK8dh
-         57IG1vYnKGWQ01QtJQPsDuhBqGBvveXO6ObSlLtMr2XsUf9luNHHIVl5EfP+jHIVMJE6
-         HAQw==
+        d=linaro.org; s=google; t=1739553256; x=1740158056; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=73h6zgdjYwKV/mV0oFHEsq1W810FrZfJYhYEewVFptA=;
+        b=ZKUaBru44S9sCHWC+mMzy7pfykjEvSR1+6AKvetGONum7hQyEdJnbIn0Wy6RUJmc9e
+         jZvJh29g0hn2JYku5RS+w3KVwtqQkgoMXYXsMaEmf5g29V/wf481ScU6B99bj2f3sVNW
+         XkXo4qtNgPQVQOtfhVf7te/gGbBlFBYJITOM3n/lFkKMs1SY9TT/hjt2yFlfQya8jhg3
+         IOzC4YG5f5UGQyEJuQdbE5BM2Jinlpu9GEbjz8A0CrnRx3ez0ogoa5j05tQpi2RhjtlR
+         mXqu/ofXiaLoHv+Rn8QGAcOut+lxR53eM00l2JFgk5eezsvbdUTMQLJecvocAkrwBsUD
+         EqbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739547603; x=1740152403;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GDlfNVO3NueDu0Qi3f7HcF0fEdO1uHUOCWWSlLIIhqA=;
-        b=HwebjBqygbUucADXTFY5i/RzGNmxMm6x8Xg86w3vtyPyle3xgdMf9MflZ0VB+t2xbl
-         QR92gXyqsQ0qAH3xDvNvJNxlJl7191i/iXYyxglW6uIVtQQEfycQfHNEkoT4Y+3egve2
-         8kyqQ9EjJ8QF7SpA9Uf/jSwtWLU2i84BRamE7m6g/N/CImYcyMbTFtIoAy1IoQWVM3bT
-         4dpezfmPutULHdvI9rTCD61P2CT/WIKIUKxsFiEpBjz94S0v/lPoTgPacJlG7xnF1MUH
-         fnXiIpwK63MnNWr4u4JQLBqmk2uwGmWTtgcMgdiyqLuuzRMOvSz476cDle4cUkrw15Re
-         xf+g==
-X-Forwarded-Encrypted: i=1; AJvYcCXk9o+RFC9QReI8qHKN3utA6yRagYWXaH+px+NGtCXcLfaJ6CpRnzRirm7oCLsSFZUzW2q5pn2DQIarNDc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyIP/D9BEpR5V497oihMEeatM+otcoY2N6X3SSk7kInFVt7MMwb
-	9Bj8jhwD+F1fDCB2JngnvwjdgW4LMsAubToieoxLn41lD+HJpKxEnTARNJt2t7WCONWcfvg9lBn
-	MUjje0h04iLDljrCg7ptTAT97IACjwRjNzIquHA==
-X-Gm-Gg: ASbGncsOCGkPaRVc9U/A1j5BDoU43YKHqKUElzGX4GhrUTK0JJ0RWaKfPgMDRvvi1mv
-	wqI74yHGK5qmZLyHgfwCTVYTBuw0rhqgAUXq5BjdUUSHYpbIZHY0uCM9w13V+Yu5Fs9NKYivRI4
-	gqh8WOMgiwUnRTlmbg1DwZPTHS1oNYSMI=
-X-Google-Smtp-Source: AGHT+IH8EDa+4ekuWWbXXBr/riLIN3JlPX6Dn3pM/FPKZAsai8Udd4H0wlop9vjoHOYPmZSk7PdvYO6YAK4exwTSyGU=
-X-Received: by 2002:a05:6902:188e:b0:e58:173e:abcc with SMTP id
- 3f1490d57ef6-e5da8102d3fmr8204636276.8.1739547603265; Fri, 14 Feb 2025
- 07:40:03 -0800 (PST)
+        d=1e100.net; s=20230601; t=1739553256; x=1740158056;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=73h6zgdjYwKV/mV0oFHEsq1W810FrZfJYhYEewVFptA=;
+        b=r4dwmJ8YiWhgDu1PqXod8xaG4B7T5Tjzmvs+hStKhFzxMJAxAdZ2s3uCVlr7+w53RM
+         FEf5QjRvSDHUWIY0tXRGSGx/QsgaLtW32sHVl9QRuutsXjY4jIVOM2d3GZZahHD/cav1
+         XM4cpkmvIEJG0dMXq6Zr4O3ue7kvG8VVBvzcKvIJTapBcfr4dT/Cs4rrBxHeNioGyz2U
+         Oull7o5u9+BrgtVkBX8fJLlJY5/sav/MUfJensv1meUXyeY0zGZcrw9L0g8D0i4eK9tz
+         CjBAtcrdJy5fdGAFZI05v3N3/j9FmNZhQ+bcEwyPqibY8/hnW0pxoLUCg4vvG9qWV+ZW
+         q6NQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUrflFNOZSIjgItlHCdTJezx4tLwnz9rrQiooYUCVY+tYzemv6Be4ktQE5YNW3I4rnSPUlNQxLHS3rOoyU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy+XjBa6RDQmEQ8oIPNVd2aIfHpCvmQWMpSuCbcwdxLnzg4zAVb
+	i97p8QNoE342WWc80dDFERbRcmouc+jFQgg/hHCFLZuyUjoaFzyUmTGyjpkT0g==
+X-Gm-Gg: ASbGncsrzUPdbo9X9Bo+ikY6WBwvQ0TRJLDb/pAgrt4Y9LVKuXojtnA8p3suoeqPxt3
+	D0npsTgIIRRuWhSHEm7RmcUWXejuVK+SNKE7L2ULgO+Iug9MWkHgQaGqSFG/YCH+ShSdsR6NzLF
+	W2/PqHXAt0gFLxoEsUdGoa4YHP/s4p98XsDoXUNuMZxQZ/WtqwRF7ci9yjVFJEKmpycPASgDX1g
+	51zpKL+15D+NG1KjjGb41MIMWcgLKMVYxVMd91cgZXdnudtMesnYagnXWItFRGnsyIKarc82AHr
+	mwHgzHmDLFL5T9A5nCeoGFxz7oA=
+X-Google-Smtp-Source: AGHT+IGEjW1+nSnm03Sb/7JjOqd2fLGFWNtn2pSYwsh2yOQR3S+BitUF4p8rbuVp0ACw3TNqwyLoRw==
+X-Received: by 2002:a05:6a00:4fd2:b0:732:1f45:fcca with SMTP id d2e1a72fcca58-732618fa57dmr185138b3a.21.1739553256278;
+        Fri, 14 Feb 2025 09:14:16 -0800 (PST)
+Received: from thinkpad ([120.60.134.139])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73249fe96b4sm2520712b3a.75.2025.02.14.09.14.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Feb 2025 09:14:15 -0800 (PST)
+Date: Fri, 14 Feb 2025 22:44:05 +0530
+From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To: Vitalii Mordan <mordan@ispras.ru>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andreas =?utf-8?Q?F=C3=A4rber?= <afaerber@suse.de>,
+	Jeff Johnson <quic_jjohnson@quicinc.com>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+	Amit Singh Tomar <amittomer25@gmail.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-actions@lists.infradead.org,
+	Fedor Pchelkin <pchelkin@ispras.ru>,
+	Alexey Khoroshilov <khoroshilov@ispras.ru>,
+	Vadim Mutilin <mutilin@ispras.ru>, lvc-project@linuxtesting.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] tty: owl-uart: fix call balance of owl_port->clk
+ handling routines
+Message-ID: <20250214171405.kvyyespxtfqxhapc@thinkpad>
+References: <20250213112416.1610678-1-mordan@ispras.ru>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250212234034.284-1-wachiturroxd150@gmail.com>
- <20250212234034.284-4-wachiturroxd150@gmail.com> <40370a0e-775b-42e3-bb6c-8cacaa0482cf@linaro.org>
- <Z67f+lDxISVubiJJ@droid-r8s> <2ed6c5d8-b559-4ffc-b08e-412bab1f7917@linaro.org>
-In-Reply-To: <2ed6c5d8-b559-4ffc-b08e-412bab1f7917@linaro.org>
-From: Sam Protsenko <semen.protsenko@linaro.org>
-Date: Fri, 14 Feb 2025 09:39:52 -0600
-X-Gm-Features: AWEUYZlElBm9hQ_fT18iHek-VpX4yHKDlxdz_rBItX0Tc5O4FlTpOcx5z1N4lMA
-Message-ID: <CAPLW+4mbJoLHJ7TDcn9z8-WOEAFSiH7wBMt4Rk3fsw0h1wSSMA@mail.gmail.com>
-Subject: Re: [PATCH v1 3/3] arm64: dts: exynos990: define all PERIC USI nodes
-To: Tudor Ambarus <tudor.ambarus@linaro.org>
-Cc: Denzeel Oliva <wachiturroxd150@gmail.com>, alim.akhtar@samsung.com, conor+dt@kernel.org, 
-	devicetree@vger.kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	krzk+dt@kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-samsung-soc@vger.kernel.org, 
-	linux-serial@vger.kernel.org, robh@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250213112416.1610678-1-mordan@ispras.ru>
 
-On Fri, Feb 14, 2025 at 12:49=E2=80=AFAM Tudor Ambarus <tudor.ambarus@linar=
-o.org> wrote:
->
->
->
-> On 2/14/25 6:17 AM, Denzeel Oliva wrote:
-> > On Thu, Feb 13, 2025 at 07:38:35AM +0000, Tudor Ambarus wrote:
->
-> >> node properties shall be specified in a specific order. Follow similar
-> >> nodes that are already accepted, gs101 is one.
-> >
-> > Not all Exynos SoCs will follow the same order
->
-> you an fix them then. Please follow
-> https://docs.kernel.org/devicetree/bindings/dts-coding-style.html#order-o=
-f-properties-in-device-node
->
-> >
-> >> <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_4>;
-> >
-> > Is
-> >
-> > GATE(CLK_GOUT_PERIC0_TOP0_IPCLK_4, "gout_peric0_top0_ipclk_4",
-> >      "dout_peric0_uart_dbg",
-> >      CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_4,
-> >      21, 0, 0), [Mainline CLK]
->
-> I don't get this reasoning, sorry.
-> >
-> > You can find it in the cmucal-node.c driver downstream of the kernel. [=
-0]
-> >
-> >>> +                   };
-> >>> +           };
-> >>> +
-> >>> +           usi0: usi@105500c0 {
->
-> cut
->
-> >>> +                   serial_2: serial@10550000 {
-> >>
-> >> why not serial_0 since you're in USI0.
-> >
-> > Because it is simply displayed in the exynos9830-usi.dtsi [1]
->
-> I don't think it matters what downstream specifies for labels. Use what
-> common sense says.
->
+On Thu, Feb 13, 2025 at 02:24:16PM +0300, Vitalii Mordan wrote:
+> If owl_port->clk was enabled in owl_uart_probe(), it must be disabled in
+> all error paths to ensure proper cleanup. However, if uart_add_one_port()
+> returns an error in owl_uart_probe(), the owl_port->clk clock will not be
+> disabled.
+> 
+> Use the devm_clk_get_enabled() helper function to ensure proper call
+> balance for owl_port->clk.
+> 
 
-Yeah, in upstream we don't care about downstream at all. Downstream
-code is very often is quite low-quality and doesn't follow mainline
-kernel conventions and best practices. Mentioning the downstream code
-as an answer to questions like "why it was done this way?" would often
-trigger people. In this case I think it should be consecutive
-ordering, if there are no very good explanation why it shouldn't be
-so. Then aliases can be used in the board dts if you need to keep a
-fixed order in the system.
+Do not use newly introduced APIs to fix old bugs. The bug should be fixed
+separately to allow backporting and the conversion should be done on top.
 
-> >
-> >>> +           };
-> >>> +
-> >>> +           usi_i2c_0: usi@105600c0 {
-> >>> +                   compatible =3D "samsung,exynos990-usi", "samsung,=
-exynos850-usi";
-> >>> +                   reg =3D <0x105600c0 0x20>;
-> >>> +                   samsung,sysreg =3D <&sysreg_peric0 0x1008>;
-> >>> +                   samsung,mode =3D <USI_V2_I2C>;
-> >>> +                   #address-cells =3D <1>;
-> >>> +                   #size-cells =3D <1>;
-> >>> +                   ranges;
-> >>> +                   clocks =3D <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_PCLK=
-_6>,
-> >>> +                            <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_=
-6>;
-> >>> +                   clock-names =3D "pclk", "ipclk";
-> >>> +                   status =3D "disabled";
-> >>> +
-> >>> +                   hsi2c_1: i2c@10560000 {
-> >>> +                           compatible =3D "samsung,exynos990-hsi2c",
-> >>> +                                        "samsung,exynosautov9-hsi2c"=
-;
-> >>> +                           reg =3D <0x10560000 0xc0>;
-> >>> +                           interrupts =3D <GIC_SPI 398 IRQ_TYPE_LEVE=
-L_HIGH>;
-> >>> +                           pinctrl-names =3D "default";
-> >>> +                           pinctrl-0 =3D <&hsi2c1_bus>;
-> >>> +                           clocks =3D <&cmu_peric0 CLK_GOUT_PERIC0_T=
-OP0_IPCLK_6>,
-> >>> +                                    <&cmu_peric0 CLK_GOUT_PERIC0_TOP=
-0_PCLK_6>;
-> >>> +                           clock-names =3D "hsi2c", "hsi2c_pclk";
-> >>> +                           #address-cells =3D <1>;
-> >>> +                           #size-cells =3D <0>;
-> >>> +                           status =3D "disabled";
-> >>> +                   };
-> >>
-> >> shouldn't you define serial and SPI too?
-> >
-> > As shown in the node it only uses i2c which
-> > corresponds to the exynos9830-usi.dts. [2]
->
-> If you can't specify all the protocol modes for all the USI nodes, then
-> make it clear in the commit message.
->
+- Mani
+
+> Found by Linux Verification Center (linuxtesting.org) with Klever.
+> 
+> Fixes: abf42d2f333b ("tty: serial: owl: add "much needed" clk_prepare_enable()")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Vitalii Mordan <mordan@ispras.ru>
+> ---
+>  drivers/tty/serial/owl-uart.c | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/owl-uart.c b/drivers/tty/serial/owl-uart.c
+> index 0542882cfbbe..64446820437c 100644
+> --- a/drivers/tty/serial/owl-uart.c
+> +++ b/drivers/tty/serial/owl-uart.c
+> @@ -680,18 +680,12 @@ static int owl_uart_probe(struct platform_device *pdev)
+>  	if (!owl_port)
+>  		return -ENOMEM;
+>  
+> -	owl_port->clk = devm_clk_get(&pdev->dev, NULL);
+> +	owl_port->clk = devm_clk_get_enabled(&pdev->dev, NULL);
+>  	if (IS_ERR(owl_port->clk)) {
+> -		dev_err(&pdev->dev, "could not get clk\n");
+> +		dev_err(&pdev->dev, "could not get and enable clk\n");
+>  		return PTR_ERR(owl_port->clk);
+>  	}
+>  
+> -	ret = clk_prepare_enable(owl_port->clk);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "could not enable clk\n");
+> -		return ret;
+> -	}
+> -
+>  	owl_port->port.dev = &pdev->dev;
+>  	owl_port->port.line = pdev->id;
+>  	owl_port->port.type = PORT_OWL;
+> @@ -701,7 +695,6 @@ static int owl_uart_probe(struct platform_device *pdev)
+>  	owl_port->port.uartclk = clk_get_rate(owl_port->clk);
+>  	if (owl_port->port.uartclk == 0) {
+>  		dev_err(&pdev->dev, "clock rate is zero\n");
+> -		clk_disable_unprepare(owl_port->clk);
+>  		return -EINVAL;
+>  	}
+>  	owl_port->port.flags = UPF_BOOT_AUTOCONF | UPF_IOREMAP | UPF_LOW_LATENCY;
+> @@ -725,7 +718,6 @@ static void owl_uart_remove(struct platform_device *pdev)
+>  
+>  	uart_remove_one_port(&owl_uart_driver, &owl_port->port);
+>  	owl_uart_ports[pdev->id] = NULL;
+> -	clk_disable_unprepare(owl_port->clk);
+>  }
+>  
+>  static struct platform_driver owl_uart_platform_driver = {
+> -- 
+> 2.25.1
+> 
+
+-- 
+மணிவண்ணன் சதாசிவம்
