@@ -1,64 +1,33 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77A6A15199D
-	for <linux-serial@vger.kernel.org>; Fri, 14 Feb 2025 06:49:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C9A021D596;
+	Fri, 14 Feb 2025 08:20:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739515788; cv=none; b=Ai+Er8RL8yjVgJuD5nvcAbywG8nrtOXcvbbuGzSU4VpFkjZUNpYbJxUALt8tnrgUI4n5RKMK9e/VHDd1rAFkwQBXNFqjNRC/8shwS4FXhlqFGPEECQ8dV7xQWK+9QGFZNRhCjCN0voun2jSsuyVTYkPZd5jAoT5HzmH6Y7mIoY0=
+	t=1739521211; cv=none; b=TAzDkpPdaxzqQFUT44NxQmeaLESgFKQ6Ye20z0XQZ8QHNthSazxCtmf31LOYAljFuq3/WZAeSNGJQutMg/1Neg397U3Mu7lGHtTlNSgrE/5MO2caiPqv197AZt/wbGphwjnGwPEZ8mFNidWOk/IzZQM4uA9wm+UdVQ23S37lI4U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739515788; c=relaxed/simple;
-	bh=Xs5or6MPmdNngz9M/73X/9SEiBgnuHt1Tu1I11/i0G0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=b4TtqrT/Xaz5UPyQD6y5teQmRT1DweRj9NCG9K80EdUBDl1fXgBYifmFQOSVRgeuAo4Ex8WZS6HM2nCpUq2bJfeVEYFhPpyT6ujdeSoWreG68G4IemZ+NCo+jcCZCsPueDYBMrOrB3MdiMiNX6MHK9z0Z+oRxFvZkUmkhDaDRd0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=vs7K4ElC; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1739521211; c=relaxed/simple;
+	bh=l3d7+f9am+xBLGmJCl5j/Fb6FENfVLplkXQBhd0J6OE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=eOkFwhHkWWBPye9e3smewrgu67BSrxlJ0a58xSNF3gOZsESzoC8vh8oiuUBJ0mRsq7cxaZIPvr49yQLn6y3M7i1Hh0NTHnS5S0CPeYYQzNE3sCDmXIrOJPx28d3qzSC6Yvg9qkW1tB0GPrOvH57kpk9tZeA3DAz9Ri3q+eAvdHw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rICpngcC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vs7K4ElC"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-5de5e3729ecso3426924a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 13 Feb 2025 22:49:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1739515785; x=1740120585; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Gawkt9In8aJG8h+rAcH7YnbMFtyCA6IgsBVkBeTJrC8=;
-        b=vs7K4ElCka9yq4vnbriN9nknHdak8yUnNbebAZITCT30Ha8yFOwL660MHmTzLvfSz/
-         lhJlnqR8T/JCjhao58BmeT0iqFFYiOiwTtKJg7dUBTDhDGb/3w7ClCXG9IKVVaU6Nhul
-         ntL5vlcBW6tuXFLSnRVuFqxfhUs5JqUEr2QF1f+yQedh7jL3wUVmIJZmsGx4kUegVEM2
-         srVs+ncOSsaaMRY4vOTRS5T7tfIgi86bLa6cY607BSwgwA7O1PfeYkXgNyT6Bd6ajTb+
-         V5V9lua9e3Cip9k+yUo1tD9VdO0Zymb8i6ZXlveTbT/vrxfDNvR3U7Ace9o3cZ1bD/iv
-         GWag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739515785; x=1740120585;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Gawkt9In8aJG8h+rAcH7YnbMFtyCA6IgsBVkBeTJrC8=;
-        b=ixa9kwoxLlh4vEufuXe1jB/SG2EQCMqw2BIm2jjADRBJ/zqvw/cFbBLAMoPGbEZ0NJ
-         V+6N2u+DRV/cWjBCicCnYpte6KBleKWPvXvC7msA74nQGOEztuJjNC3mb8Ez+I1QNfCC
-         usVur6Wb3kygNZGUh/nvU2q73n3JlN1kvVwb64hrBUxS9XZL+ReXOoIe+oRZDPy1u0Xm
-         wu22oX59ofiKGcit+Kn/s8yepf28O/wnwl5/DGFkP8wWSGdVtw58ApUs2mhJAncfHjeP
-         M0D+e7Jc2SGjcPlvUX5bM+VRdGv+fkCO8IHhO4Oo/3a/W2gyYpRgPBhY6H4LtcqMt1JO
-         LE+g==
-X-Forwarded-Encrypted: i=1; AJvYcCVz6xzSNWayAGCZzX+y1z1MESjvKYtdXdr1yQ5g/5ePuVKGqmrSc4dQvHer3cRMvTqh8Bh1be4Oir4KTzA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzmcyUnhVc8a/Mm5F2qhqmY4w1mhi4V4dXroDpg3RU3S/xcYO5x
-	JWE22eOWuNLzOSB7tjPEJ+eLO/iAwANKG/EMy6BcjyVZRUvDVnYzJ1BuF2s+To4=
-X-Gm-Gg: ASbGncu/XXt/ylyz6tfDenwsD+TpUBEp0bec7iQWCndANVpnbf6iHfT2Zx5KOiJl+AM
-	VMs4ysOBMmM0w4480tDBWcHvSH3mNyRNTPl9G7SlQRY75fW2FN2SD3KfBmwqDwJBQUqxX71XH1Z
-	Hnr9RfJYC96KG8of+VKgdv+R9azLpjOfYl3uIZzsqfElICn8nIXhUmSgIcu8QklnLkFT/L8BQTR
-	kVqhUsgjBduY+savdnKGmgI+alOtBjDB1e5WnLphLfef1aSrJV+vce9SmZoTm11qGtkV3UfiGvk
-	pLnDJS5kOrDk2BuV83SOs0LW
-X-Google-Smtp-Source: AGHT+IFxiW3VpQW8qQ1jo57FdhoTZVGZoXp1u38iJkHijnUvtqdcxoOB5BNSokQAT/jC+GtZYlbZyQ==
-X-Received: by 2002:a05:6402:274d:b0:5de:5263:ae79 with SMTP id 4fb4d7f45d1cf-5deb08813d5mr8694445a12.12.1739515784670;
-        Thu, 13 Feb 2025 22:49:44 -0800 (PST)
-Received: from [192.168.0.14] ([79.115.63.124])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5dece287cebsm2386431a12.74.2025.02.13.22.49.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Feb 2025 22:49:43 -0800 (PST)
-Message-ID: <2ed6c5d8-b559-4ffc-b08e-412bab1f7917@linaro.org>
-Date: Fri, 14 Feb 2025 06:49:41 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rICpngcC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB4A0C4CEDF;
+	Fri, 14 Feb 2025 08:20:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1739521211;
+	bh=l3d7+f9am+xBLGmJCl5j/Fb6FENfVLplkXQBhd0J6OE=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=rICpngcCqbZ81bPMy9k3RcRogSt1rEuaAiUlIksVfIGUmYhXLantm8kyjRIBwI3Io
+	 2syYbM0NUWZFHxCmMVsL3oUwq3gH+tCtwrAuTMw4JNP7YOpjol+N0QRgaQjdWLs5BW
+	 2BlEYz+Qmm8a3KfymCSb8OmDgnomY3qyxAs5Bybh8+qVihYYVDOyRZrFgsUSx+x3Mi
+	 wh+jALi49uZd1bqOkOAD82pdkcmvYSxSOzAhE3dEqVeq78W8FWc39GkEGRqLFNlAUA
+	 KLasxDiPJMqvZxBp6qQ2jXL/tZdrqsI/gn/fFhX3Uh1DiNR1MnmEMPcEB5e9ugba88
+	 VmsSqPEty8brg==
+Message-ID: <11b9864c-56a7-48c2-9dc9-9567ca24d975@kernel.org>
+Date: Fri, 14 Feb 2025 09:20:06 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,102 +35,89 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 3/3] arm64: dts: exynos990: define all PERIC USI nodes
-To: Denzeel Oliva <wachiturroxd150@gmail.com>
-Cc: alim.akhtar@samsung.com, conor+dt@kernel.org, devicetree@vger.kernel.org,
- gregkh@linuxfoundation.org, jirislaby@kernel.org, krzk+dt@kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
- robh@kernel.org, semen.protsenko@linaro.org
+Subject: Re: [PATCH v1 0/3] arm64: dts: exynos990: define all PERIC0/1 USI
+ nodes
+To: Denzeel Oliva <wachiturroxd150@gmail.com>, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, alim.akhtar@samsung.com, semen.protsenko@linaro.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org
 References: <20250212234034.284-1-wachiturroxd150@gmail.com>
- <20250212234034.284-4-wachiturroxd150@gmail.com>
- <40370a0e-775b-42e3-bb6c-8cacaa0482cf@linaro.org>
- <Z67f+lDxISVubiJJ@droid-r8s>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-From: Tudor Ambarus <tudor.ambarus@linaro.org>
-In-Reply-To: <Z67f+lDxISVubiJJ@droid-r8s>
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 fv0=
+In-Reply-To: <20250212234034.284-1-wachiturroxd150@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-
-
-On 2/14/25 6:17 AM, Denzeel Oliva wrote:
-> On Thu, Feb 13, 2025 at 07:38:35AM +0000, Tudor Ambarus wrote:
-
->> node properties shall be specified in a specific order. Follow similar
->> nodes that are already accepted, gs101 is one.
+On 13/02/2025 00:40, Denzeel Oliva wrote:
+> This series adds device tree bindings and nodes for the
+> Universal Serial Interface (USI) and UART controllers on
+> Samsung Exynos990 SoC.
 > 
-> Not all Exynos SoCs will follow the same order
-
-you an fix them then. Please follow
-https://docs.kernel.org/devicetree/bindings/dts-coding-style.html#order-of-properties-in-device-node
-
+> The Exynos990 USI block supports multiple protocols (UART, SPI, I2C)
+> through shared hardware resources.
 > 
->> <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_4>;
+> And also add dt-schema for USI and UART compatibility.
 > 
-> Is
-> 
-> GATE(CLK_GOUT_PERIC0_TOP0_IPCLK_4, "gout_peric0_top0_ipclk_4",
->      "dout_peric0_uart_dbg",
->      CLK_CON_GAT_GOUT_BLK_PERIC0_UID_PERIC0_TOP0_IPCLKPORT_IPCLK_4,
->      21, 0, 0), [Mainline CLK]
+> Denzeel Oliva (3):
+>   dt-bindings: samsung: usi: add exynos990-usi compatible
+>   dt-bindings: serial: samsung: add Exynos990 compatible
+>   arm64: dts: exynos990: define all PERIC USI nodes
 
-I don't get this reasoning, sorry.
-> 
-> You can find it in the cmucal-node.c driver downstream of the kernel. [0]
-> 
->>> +			};
->>> +		};
->>> +
->>> +		usi0: usi@105500c0 {
+Within  few days you sent more than one patchset targeting soc, but this
+one also targets serial.
 
-cut
+1. Split your patchsets per subsystem.
+2. Don't send one DTS patch each day, but collect them and send one
+patchset with all of them. At least within some time frame.
 
->>> +			serial_2: serial@10550000 {
->>
->> why not serial_0 since you're in USI0.
-> 
-> Because it is simply displayed in the exynos9830-usi.dtsi [1]
+You also got comment on your previous v1 (and this is v2? any
+changelog?) that all this looks unmergeable, but nothing in commit msg
+explained that. I don't know how to treat the rest of your submissions.
 
-I don't think it matters what downstream specifies for labels. Use what
-common sense says.
-
-> 
->>> +		};
->>> +
->>> +		usi_i2c_0: usi@105600c0 {
->>> +			compatible = "samsung,exynos990-usi", "samsung,exynos850-usi";
->>> +			reg = <0x105600c0 0x20>;
->>> +			samsung,sysreg = <&sysreg_peric0 0x1008>;
->>> +			samsung,mode = <USI_V2_I2C>;
->>> +			#address-cells = <1>;
->>> +			#size-cells = <1>;
->>> +			ranges;
->>> +			clocks = <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_PCLK_6>,
->>> +				 <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_6>;
->>> +			clock-names = "pclk", "ipclk";
->>> +			status = "disabled";
->>> +
->>> +			hsi2c_1: i2c@10560000 {
->>> +				compatible = "samsung,exynos990-hsi2c",
->>> +					     "samsung,exynosautov9-hsi2c";
->>> +				reg = <0x10560000 0xc0>;
->>> +				interrupts = <GIC_SPI 398 IRQ_TYPE_LEVEL_HIGH>;
->>> +				pinctrl-names = "default";
->>> +				pinctrl-0 = <&hsi2c1_bus>;
->>> +				clocks = <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_IPCLK_6>,
->>> +					 <&cmu_peric0 CLK_GOUT_PERIC0_TOP0_PCLK_6>;
->>> +				clock-names = "hsi2c", "hsi2c_pclk";
->>> +				#address-cells = <1>;
->>> +				#size-cells = <0>;
->>> +				status = "disabled";
->>> +			};
->>
->> shouldn't you define serial and SPI too?
-> 
-> As shown in the node it only uses i2c which
-> corresponds to the exynos9830-usi.dts. [2]
-
-If you can't specify all the protocol modes for all the USI nodes, then
-make it clear in the commit message.
-
+Best regards,
+Krzysztof
