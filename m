@@ -1,57 +1,57 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D61919C55E
-	for <linux-serial@vger.kernel.org>; Sat, 15 Feb 2025 09:21:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71002802
+	for <linux-serial@vger.kernel.org>; Sat, 15 Feb 2025 09:22:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739611287; cv=none; b=H67WtD5/Li1IdnnTcLmjC8E22jjF5BN2HEjLCC7HVM6r6f5F8UH8nh8umoG87Wtigwn9RqIAqzXcZ+zf7iLdx/nvaljuwA6gYfUDyR2rDs4Wqh4sTUYcQT1yBSGrFa1oNkreKBDZ/cxAnavrhUd8rURWD1BHt861cryzkbMbMx4=
+	t=1739611347; cv=none; b=XGbU9v/0hlHHxbzXCYX9IlG2ZKgdTkNeBUNL2gKQrn9zHphcejx7h99XAuL4D9WavRlITPeEEdJJzm3MAiweHrq4E1pU/+9dI4PThb5yElfnUX1Qg/gnDCj6LbazuqZdlXuXjG3+kJClmiqsTNUmWnnotr5ueur9z8gNgmMEuoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739611287; c=relaxed/simple;
-	bh=bZLyXazWyjaVVZYW+XS2kWpQhNWeare/Bu6MqaBh6ZQ=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=Vt+p2z14VZG92gJs3qdApE8yMOdhVAzm8cz65xSA3KoLirron2+YsWmHxgUS+LVEcaxnL6YAw/IZQ1PZ1K2haXhRn0N9oi67/FVdUOr0u0oO0zkB1GwjEps4qPRID+4jKTjUpV6VNaRVC4L6UrTxghyZjrlAjoK7RBb8Y60VPEU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ne9k5UY5; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1739611347; c=relaxed/simple;
+	bh=iP29iJ4sx23z4MhjbipiVeHsoFYRHKZ9PO1nLmmb2MI=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=tbJDfNWT+ulA7+ZE+z9572peqZpGJh9drVTxwgfBmozl35JQkxdkfQoQ5eceonPdR+eO/p2TLePs0sibRDXYqMjYzhXhN14at/nc+Ub5oD3taNl1X7wNqZaLLwy/NGYKSitFCynmWe/WQUTXTSutRSWYYl0ftZFVHlEOjDMZRf8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=E6CHJWnb; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ne9k5UY5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="E6CHJWnb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1739611286; x=1771147286;
+  t=1739611345; x=1771147345;
   h=date:from:to:cc:subject:message-id;
-  bh=bZLyXazWyjaVVZYW+XS2kWpQhNWeare/Bu6MqaBh6ZQ=;
-  b=Ne9k5UY5epcscHnvX6bIQHV9jo3PwUZfk03FyobdcDUpKgOglFKDDh9b
-   9URgNi3UteOht6JI4Sa9Q19/LVTQF/WzydWqsn8Whm2/3nmfhgrp89fy1
-   5dyJXo7v2rberKB7wZ/gMdc8kQspJoWi1HPXh9H7CEVYQ9A/URtUh+Urp
-   W0Tnc6hzzdOKuxNVY+6+4Fl0ZnRnVTVbp7mvcBOpUy87f4cfBQIJXm6ka
-   BqoZcNhiuOJZV5w4Jmr/hjz7EiBSe8F5eKNGtlYt+CPjvgx/Jw2AokeZ5
-   m20SHC4+9X7QEzO0kcBdsIvZr3wOaG3CFnBTQY573jQvmy0hO88NFBC7i
-   g==;
-X-CSE-ConnectionGUID: lemxqBRpRn6Ytq0sOIXowA==
-X-CSE-MsgGUID: xzQjTWlJQem+yf1+IaL1jg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11345"; a="57886295"
+  bh=iP29iJ4sx23z4MhjbipiVeHsoFYRHKZ9PO1nLmmb2MI=;
+  b=E6CHJWnbg9YdcQHLHB6f5O3DgYADkmMCzyhZBtekNpY9hrpJfZ2BItak
+   YknEVnn3LWyc5fFN7zkpFo0Qg0PXHu9OvFZM/Tu2zTiITRMAHlMNK35nh
+   76jnIXSnbyeBA0JdTCzjc8BGeRrtgMvrDYQ+snrbwM6/CT0l8B8c+9wHL
+   4to6jrOebwpIPwzW4EVU94etVcGcqh3JiXSiHZwWpqFKEx5l99dJshemL
+   FcHO9VqpSaTlM5CqfGHaXVv91zACU+B+k12NlCWG0wIL3fl5bwMlELmYE
+   rqMqwt+s7kOGfNN49lz7nj+qwcpVmxQksUTGSLQ/vWt+P3+r/z4B/qRm/
+   Q==;
+X-CSE-ConnectionGUID: tjW2DrnoTGSajclDB/3Cbg==
+X-CSE-MsgGUID: YxvbAeU4SqGyonmkvGNKMg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11345"; a="57886318"
 X-IronPort-AV: E=Sophos;i="6.13,288,1732608000"; 
-   d="scan'208";a="57886295"
+   d="scan'208";a="57886318"
 Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2025 01:21:23 -0800
-X-CSE-ConnectionGUID: teUJB5+nR5Cq2mT3jFaEVg==
-X-CSE-MsgGUID: RyaUjIExSXaqrJyPc4LmtA==
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2025 01:22:25 -0800
+X-CSE-ConnectionGUID: dUi5tXIIS1OE7Ug9zmAzPg==
+X-CSE-MsgGUID: 6FKFSG+4RgG9iKA6J+sffw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.13,288,1732608000"; 
-   d="scan'208";a="113648497"
+   d="scan'208";a="113648577"
 Received: from lkp-server01.sh.intel.com (HELO d63d4d77d921) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 15 Feb 2025 01:21:22 -0800
+  by fmviesa007.fm.intel.com with ESMTP; 15 Feb 2025 01:22:23 -0800
 Received: from kbuild by d63d4d77d921 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1tjEMS-001Afw-1I;
-	Sat, 15 Feb 2025 09:21:20 +0000
-Date: Sat, 15 Feb 2025 17:20:50 +0800
+	id 1tjENQ-001AgD-2W;
+	Sat, 15 Feb 2025 09:22:20 +0000
+Date: Sat, 15 Feb 2025 17:21:28 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- eb07e3a946796b682b12897e080d856bc6d63c3d
-Message-ID: <202502151744.3PnzmM8u-lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 9e512eaaf8f4008c44ede3dfc0fbc9d9c5118583
+Message-ID: <202502151722.A4K9VLSY-lkp@intel.com>
 User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,12 +59,12 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: eb07e3a946796b682b12897e080d856bc6d63c3d  serial: tegra-utc: Add driver for Tegra UART Trace Controller (UTC)
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 9e512eaaf8f4008c44ede3dfc0fbc9d9c5118583  serial: 8250: Fix fifo underflow on flush
 
-elapsed time: 1448m
+elapsed time: 1449m
 
-configs tested: 101
+configs tested: 90
 configs skipped: 1
 
 The following configs have been built successfully.
@@ -78,12 +78,10 @@ arc                   randconfig-001-20250214    gcc-13.2.0
 arc                   randconfig-002-20250214    gcc-13.2.0
 arm                              allmodconfig    gcc-14.2.0
 arm                              allyesconfig    gcc-14.2.0
-arm                   milbeaut_m10v_defconfig    clang-21
 arm                   randconfig-001-20250214    clang-16
 arm                   randconfig-002-20250214    gcc-14.2.0
 arm                   randconfig-003-20250214    clang-21
 arm                   randconfig-004-20250214    gcc-14.2.0
-arm                         s3c6400_defconfig    gcc-14.2.0
 arm64                            allmodconfig    clang-18
 arm64                 randconfig-001-20250214    gcc-14.2.0
 arm64                 randconfig-002-20250214    gcc-14.2.0
@@ -105,15 +103,11 @@ i386        buildonly-randconfig-004-20250214    gcc-12
 i386        buildonly-randconfig-005-20250214    gcc-12
 i386        buildonly-randconfig-006-20250214    gcc-12
 i386                                defconfig    clang-19
-loongarch                        allmodconfig    gcc-14.2.0
 loongarch             randconfig-001-20250214    gcc-14.2.0
 loongarch             randconfig-002-20250214    gcc-14.2.0
-m68k                             allmodconfig    gcc-14.2.0
 m68k                              allnoconfig    gcc-14.2.0
-m68k                             allyesconfig    gcc-14.2.0
 microblaze                        allnoconfig    gcc-14.2.0
 mips                              allnoconfig    gcc-14.2.0
-nios2                            alldefconfig    gcc-14.2.0
 nios2                             allnoconfig    gcc-14.2.0
 nios2                 randconfig-001-20250214    gcc-14.2.0
 nios2                 randconfig-002-20250214    gcc-14.2.0
@@ -124,19 +118,14 @@ parisc                            allnoconfig    gcc-14.2.0
 parisc                           allyesconfig    gcc-14.2.0
 parisc                randconfig-001-20250214    gcc-14.2.0
 parisc                randconfig-002-20250214    gcc-14.2.0
-powerpc                          allmodconfig    gcc-14.2.0
 powerpc                           allnoconfig    gcc-14.2.0
-powerpc                          allyesconfig    clang-16
-powerpc                      arches_defconfig    gcc-14.2.0
 powerpc               randconfig-001-20250214    gcc-14.2.0
 powerpc               randconfig-002-20250214    clang-18
 powerpc               randconfig-003-20250214    clang-21
 powerpc64             randconfig-001-20250214    clang-18
 powerpc64             randconfig-002-20250214    gcc-14.2.0
 powerpc64             randconfig-003-20250214    gcc-14.2.0
-riscv                            allmodconfig    clang-21
 riscv                             allnoconfig    gcc-14.2.0
-riscv                            allyesconfig    clang-21
 riscv                 randconfig-001-20250214    clang-18
 riscv                 randconfig-002-20250214    gcc-14.2.0
 s390                             allmodconfig    clang-19
