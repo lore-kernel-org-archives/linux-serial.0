@@ -1,92 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A5A192589;
-	Sun, 16 Feb 2025 15:12:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58CDA9454
+	for <linux-serial@vger.kernel.org>; Sun, 16 Feb 2025 20:13:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739718765; cv=none; b=O0O73LzIbKhGazY3SoLz9/O4OLcwxn3laxzXTNbYwM2OzummkPkTTsIn/4ynSXhKLPaGBqLjpeSg3Cg37krJwHpOUNvzhrlsRjSjumv0FknoaodkoYqO24+wRcBVTC/+OjwqbPvz2szOdHlq1ZwHaKpYxcQ2j/OZ6YH2ZGSQ7iY=
+	t=1739736799; cv=none; b=sTpcBEfe1DBGtOxrJRD2sfxKAu7Ny9Q3qlaAFr4k1f+xStjzdwIzgt9jvu6Ge1a+Dk+y+z8Kq34uflhE/z5MKNLiX1LtIdDqdxSfcVQNkC3qlKIPhzRo9QLJo1qnV+FthDg8cnNYVnHT1rItQtpXV9JppwlSBfuQpjILR+2gXNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739718765; c=relaxed/simple;
-	bh=xnxUTScNc+hOToT5nb5v5E0I5xkJ1Sn1mdocFQWWYuw=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=LT0BuPQh8HbBi2BPGv8ZGrzNmwyK+WpqjU2bkxVWxk1+7V/DcRZNUAKcbr5knOPpWtbuvSQLANxS335g0XrHLRCC8PjF7nqt1uCSd/5IsSgyo2ICUb60WAZLmgefRlGBsMcmg/68Bt3bwkCDJoAnxLeMEBoJuX0t1NYyML0aVWY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=NmjxKegH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739736799; c=relaxed/simple;
+	bh=/3goS/B/0TuHOpIkgJCW7Ile8lPR4M0Pq2wcji6Mp9I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pX4cx5bzIfafSAvYQrf+KXaLz3TobFwU07zeGAVp4toY/7bl0Xil4OrAUEKENOiio114lpE8nKslcsYBj3704Ipu4jkrQ8aZ6F3muw4ZeGvVORY/8xObKeQBX1Fq5J/CYeFI5ruNzhE7GUcxVUaJGQbu3xn+o16iERc+RQScPvM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RnTP4Dfi; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NmjxKegH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D95C4CEDD;
-	Sun, 16 Feb 2025 15:12:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1739718764;
-	bh=xnxUTScNc+hOToT5nb5v5E0I5xkJ1Sn1mdocFQWWYuw=;
-	h=Date:From:To:Cc:Subject:From;
-	b=NmjxKegHxbyBD2RQqHUsf0meLKDr02/v0fcTT6iq7xsP2fMb/lYI9t2xy6t44stOj
-	 lHZMgaoA76r7AXRTmLW4GrVebPpMFzYuWkSpGH59kuHs7ZFMYk7iCOlNIiwKGqWhi/
-	 6TkzBL7yv87DKnsHBjcq0h6YC2+h41/eC6ejlJXI=
-Date: Sun, 16 Feb 2025 16:12:41 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY / Serial driver fixes for 6.14-rc3
-Message-ID: <Z7IAaY1o908PmAmC@kroah.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RnTP4Dfi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739736798; x=1771272798;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=/3goS/B/0TuHOpIkgJCW7Ile8lPR4M0Pq2wcji6Mp9I=;
+  b=RnTP4DfiB4OSBVYV2FkNo4qcYvyLQv2WeLmPFFtKj9mesozMKjtlHX9L
+   dqRfOM+yt/GnUP6zrDWJlAnBmhfEoqhWCD4T2y0rJhSpJbJRjK03cjEjP
+   HEErouEhu7e0HGgYbomGxK5q5G9Sm2TvlhT9wb3IUCgvkTTueCcl40JBd
+   b3iUzuOjKuACMkLQsEFD6elU4DP/xEtbGdPQZUEa1OyjcRNdZ451M0kPt
+   eKokbeqg4Exs6Km1Np0UZgPOQ0Win5B9hDWUemjfWc8QTaO9/W1sQI10R
+   EZvhtHK8qcF69ZwZlLZE8Un3FEpQTM+QtL7IJf2lcfNvPokUwmm/R5eOe
+   w==;
+X-CSE-ConnectionGUID: IeDycitPSTiC7EMvl6cX9g==
+X-CSE-MsgGUID: V/d4WT0oQX+xE/8OGV6MzQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11347"; a="40557481"
+X-IronPort-AV: E=Sophos;i="6.13,291,1732608000"; 
+   d="scan'208";a="40557481"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2025 12:13:17 -0800
+X-CSE-ConnectionGUID: yjMVYenURReTGD/qT+6iVQ==
+X-CSE-MsgGUID: fjBnY6UJQka6YMu6LpWoSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
+   d="scan'208";a="144859915"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by fmviesa001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2025 12:13:15 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.98)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1tjl0r-0000000CCkJ-06EO;
+	Sun, 16 Feb 2025 22:13:13 +0200
+Date: Sun, 16 Feb 2025 22:13:12 +0200
+From: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
+To: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
+Cc: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>,
+	"Kurmi, Suresh Kumar" <suresh.kumar.kurmi@intel.com>,
+	"Saarinen, Jani" <jani.saarinen@intel.com>
+Subject: Re: Regression on linux-next (next-20250210)
+Message-ID: <Z7JG2BAR0taUWHAU@smile.fi.intel.com>
+References: <SJ1PR11MB6129D6C5644D4A6C858A4F04B9F92@SJ1PR11MB6129.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <SJ1PR11MB6129D6C5644D4A6C858A4F04B9F92@SJ1PR11MB6129.namprd11.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-The following changes since commit 2014c95afecee3e76ca4a56956a936e23283f05b:
 
-  Linux 6.14-rc1 (2025-02-02 15:39:26 -0800)
+The fix landed upstream, will be in next Linux Next.
 
-are available in the Git repository at:
+c213375e3283 ("serial: 8250_dw: Call dw8250_quirks() conditionally")
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.14-rc3
 
-for you to fetch changes up to 9e512eaaf8f4008c44ede3dfc0fbc9d9c5118583:
+On Sat, Feb 15, 2025 at 04:16:58PM +0000, Borah, Chaitanya Kumar wrote:
+> Hello Andy,
+> 
+> Hope you are doing well. I am Chaitanya from the linux graphics team in Intel.
+> 
+> This mail is regarding a regression we are seeing in our CI runs[1] on linux-next repository.
+> 
+> Since the version next-20250210 [2], many machines in our CI are unable to boot.
+> 
+> Unfortunately, we have  not been able to collect any logs (even from pstore).
+> 
+> However after bisecting the tree, the following patch [3] seems to be the first "bad"
+> commit
+> 
+> `````````````````````````````````````````````````````````````````````````````````````````````````````````
+> commit bfd3d4a40f3905ec70b17dbfa9b78764e59e4b4f
+> Author: Andy Shevchenko mailto:andriy.shevchenko@linux.intel.com
+> Date:   Mon Feb 3 14:14:56 2025 +0200
+> 
+>     serial: 8250_dw: Drop unneeded NULL checks in dw8250_quirks()
+> 
+>     Since platform data is being provided for all supported hardware,
+>     no need to NULL check for it. Drop unneeded checks.
+> 
+> `````````````````````````````````````````````````````````````````````````````````````````````````````````
+> 
+> We also verified that if we revert the patch the issue is not seen.
+> 
+> Could you please check why the patch causes this regression and provide a fix if necessary?
+> 
+> Thank you.
+> 
+> Regards
+> 
+> Chaitanya
+> 
+> [1] https://intel-gfx-ci.01.org/tree/linux-next/combined-alt.html?
+> [2] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20250210
+> [3] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=next-20250210&id=bfd3d4a40f3905ec70b17dbfa9b78764e59e4b4f 
+> 
+> 
 
-  serial: 8250: Fix fifo underflow on flush (2025-02-14 09:50:55 +0100)
+-- 
+With Best Regards,
+Andy Shevchenko
 
-----------------------------------------------------------------
-Serial driver fixes for 6.14-rc3
 
-Here are some small serial driver fixes for some reported problems for
-6.14-rc3.  Nothing major, just:
-  - sc16is7xx irq check fix
-  - 8250 fifo underflow fix
-  - serial_port and 8250 iotype fixes
-
-Most of these have been in linux-next already, and all have passed 0-day
-testing.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Andre Werner (1):
-      serial: sc16is7xx: Fix IRQ number check behavior
-
-Andy Shevchenko (6):
-      serial: port: Assign ->iotype correctly when ->iobase is set
-      serial: port: Always update ->iotype in __uart_read_properties()
-      serial: port: Make ->iotype validation global in __uart_read_properties()
-      serial: 8250_of: Remove unneeded ->iotype assignment
-      serial: 8250_platform: Remove unneeded ->iotype assignment
-      serial: 8250_pnp: Remove unneeded ->iotype assignment
-
-John Keeping (1):
-      serial: 8250: Fix fifo underflow on flush
-
- drivers/tty/serial/8250/8250.h          |  2 ++
- drivers/tty/serial/8250/8250_dma.c      | 16 ++++++++++++++++
- drivers/tty/serial/8250/8250_of.c       |  1 -
- drivers/tty/serial/8250/8250_platform.c |  9 ---------
- drivers/tty/serial/8250/8250_pnp.c      | 10 ----------
- drivers/tty/serial/8250/8250_port.c     |  9 +++++++++
- drivers/tty/serial/sc16is7xx.c          |  2 +-
- drivers/tty/serial/serial_port.c        | 12 +++++++-----
- 8 files changed, 35 insertions(+), 26 deletions(-)
