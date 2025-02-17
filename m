@@ -1,319 +1,268 @@
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE2A0185B67;
-	Mon, 17 Feb 2025 06:22:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.199
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739773334; cv=none; b=D6LGA886Ndxdp1bWvowP4wINa5bkF4Yxxmqwv0uOTVuT7O3BPPkLdp5y1KnVPu5dXZeojJD7ddr+cvC/QMrZSRaTKVT01ayJLXEaSWccn9jDcnGlw36RkpAfNKbMB4Z8ht4JSy7O8PjwvfQXJjz+6XRC4wFkSo4h/BjcpJ3HFK4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739773334; c=relaxed/simple;
-	bh=F45dYoyahVCvXQ6cDZ3N9UOSOH7ET76tSleR2VT2DnE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ST60NZyMnpv7u6wa4xup9EFPml7MJYe6XdYVGeLJ5FRbblCfbJauKMtLSp/JiZNi0Jme/QXGh7Iy0LoaquCSoL154eNfBwilTRjszN8z9jts+SGsTbFtsBTp5zRGfN3CjlEFxtVLXriV4oyJV4496kp3UCxAOUFxGAU0wf28Jo4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=OZnssWDw; arc=none smtp.client-ip=217.70.183.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CCE3192B63
+	for <linux-serial@vger.kernel.org>; Mon, 17 Feb 2025 08:25:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1739780708; cv=fail; b=hAHNespXXDbbiJWGC4Y2wpPsCavMJWN2PvqAsgAO5EGq950FOzjsRix9jw+7/EICAUwozHjqIIgcMBPGCo6IkEsaLKQzLnwZXXFK7/Z8FRZaku1bznTpbP+GaXtPdxyHfg7iMRpUmg1vJoUtmiHTYTyVe3mgK+5YvtyurgGU9U0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1739780708; c=relaxed/simple;
+	bh=5c2yRCrH+uWCZfV3YnxdzlXW5TY6sCQUZ2WTVQlIqYo=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=EAk5kSIeqvEOcy6nnHHTEdhqd5TXhLhliHrwDaYm5qL+lyOdNbubX+2cI8yv07MRjGMJVs20lSuDTMQiahqyfwUuLKzX98H2rl52PAFpcKVk9DiMEmb88yb1sbesDUM82txlIOMemeAwCSaWrHMqjbQcdiOTsNzyVxhmAibLl6c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ESRrisEA; arc=fail smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="OZnssWDw"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id AB343442C1;
-	Mon, 17 Feb 2025 06:22:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-	t=1739773323;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=QRbBTXSP9/cv98UB/EMjgylwqIzJpyL5vp0HJjcaCgI=;
-	b=OZnssWDw6582kM8YSUrz1hVubVno88dvt5iw5K38NeQ0P2goVCrY9i41/PnjUSBlSEoAEi
-	GoziZPqfmy/S3yvb8c4iFQg8Q2Myxr/pBEKE65lsaB1+oY4oYYmGgxJqeqoE/IThaPYJFA
-	mSKMNHOh44zsfhUd4z3I/IspMDZtLz4BSolQQz/xIVu9ZwDE1G2l5L+8T/C3flBvyc43KF
-	bC/AXNc+m4G0qtQEDOiuSqGCsCZz2Cwmu4DOIKKEHSUvXnk2Ph74/Jt4kAfVFBw1mKeSVN
-	cJBpRBDzEK1R75Fqc63+muDCqA5K8XRJqWFiEcorFfG9I+2Ii0C6uleckvbtSg==
-From: =?utf-8?q?Alexis_Lothor=C3=A9?= <alexis.lothore@bootlin.com>
-Date: Mon, 17 Feb 2025 07:21:53 +0100
-Subject: [PATCH v3] serial: mctrl_gpio: split disable_ms into sync and
- no_sync APIs
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ESRrisEA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1739780706; x=1771316706;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=5c2yRCrH+uWCZfV3YnxdzlXW5TY6sCQUZ2WTVQlIqYo=;
+  b=ESRrisEAXY+iA4hvF4G2Bvmg1SaAdLIM0zSxTfsDg6rm+h+mA3mvn5GT
+   iznzfkKr+IJbt4fwTjLqzuV5GhhKz80TAvQfOV1bHMuu8HjXc2QrNd5sT
+   hP4G06VFCNuj5xEgCAgUb0Ssi8gUQ1O9Fn5n19CyEkMcLfBZrGp5suVHp
+   RMefWjY64tVorb8QLWdmqUsOUcowloHhbACXCtgnWGlrheiEvI03aoOPF
+   OR9PiqNlZ+KLJyU1kR14ANR2BMdNskZPkj4cUaNP3FkZBOl6w/tV93VNe
+   Eg7b39lc1+6026sSjAvM1FoA+KTbru6lbxjvrV51fsdMSb09bsnSi6C+u
+   Q==;
+X-CSE-ConnectionGUID: OjlyJ4atQrS3QpmUFp7i3w==
+X-CSE-MsgGUID: tqZ9/lUTSp+1tY6p/AYARw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11347"; a="50669831"
+X-IronPort-AV: E=Sophos;i="6.13,292,1732608000"; 
+   d="scan'208";a="50669831"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2025 00:25:05 -0800
+X-CSE-ConnectionGUID: qSb2GMHqRk6Sflry9qG19w==
+X-CSE-MsgGUID: TGQlITzzQy6M5x07UqRQyA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,292,1732608000"; 
+   d="scan'208";a="114571737"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Feb 2025 00:25:05 -0800
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Mon, 17 Feb 2025 00:25:04 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Mon, 17 Feb 2025 00:25:04 -0800
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.41) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Mon, 17 Feb 2025 00:25:04 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=HpLEThS15UhuY2pow777Lev64QFMB1c4Hedytx8AcURKv/UgCJtjvgkMPE/FdpT18uKNaqk8sVpYtUigzbg/ppkes90nZri4Vuh06oCHvF4i9CJCA+g94Uld0FRrJm8sHnlz5YJGRlqWdKAjqoPu/OFEX6R0LKcj28IPbplxqbdreCwvhZnP8SXUaQ7Du04y8HC516tng2TjZswaghnWZ7hASkNSlbPmWhOZwdIiUoCKAg+qtRg2AKtZnJK0IbFx/UyLuylg8PzqsfAJe0448qHm0o27obcnmWKsXIwILTclfsagDS9en8VZIqpXhcfPq3t2OsVcX9cjASFnubJwdA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v6PfaNCiFTSY504+yowrCpTJJEvOvNbAbZV2jNrzIEQ=;
+ b=Xr6QygV4g4+RjLOalBY2Gk072uJXBgmQkTwAwZJtghBM9yY6OhBvRlKLbFGDhunhDHLmgLrXUQqhfT65g184wpBsAeYNHmnEGFTcGdGlFxrf+rz5kNab6gg/0XGFxBNMueMxSnGB/x/GXNiR74p7MTN/YppqE6sV7KPQv6POn42uduY3wYOWm5G471qQJO54ZFeyPLMuUxLxnkK7Chn4bFQqfymIzw2UQZYfaWcsQ4+SXthZouTS9Zly69/oaFnVpiGN83YTzZqZPgX19eGRxqOy5/ptAFbKxweiNnpMWJPXFmmv3le7y2JOBYYdSPE3OihX9fw3VcwxKa3asGgkeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from SJ1PR11MB6129.namprd11.prod.outlook.com (2603:10b6:a03:488::12)
+ by CH3PR11MB7723.namprd11.prod.outlook.com (2603:10b6:610:127::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8445.18; Mon, 17 Feb
+ 2025 08:24:59 +0000
+Received: from SJ1PR11MB6129.namprd11.prod.outlook.com
+ ([fe80::21c3:4b36:8cc5:b525]) by SJ1PR11MB6129.namprd11.prod.outlook.com
+ ([fe80::21c3:4b36:8cc5:b525%5]) with mapi id 15.20.8445.017; Mon, 17 Feb 2025
+ 08:24:59 +0000
+From: "Borah, Chaitanya Kumar" <chaitanya.kumar.borah@intel.com>
+To: "andriy.shevchenko@linux.intel.com" <andriy.shevchenko@linux.intel.com>
+CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+	"intel-xe@lists.freedesktop.org" <intel-xe@lists.freedesktop.org>, "Kurmi,
+ Suresh Kumar" <suresh.kumar.kurmi@intel.com>, "Saarinen, Jani"
+	<jani.saarinen@intel.com>
+Subject: RE: Regression on linux-next (next-20250210)
+Thread-Topic: Regression on linux-next (next-20250210)
+Thread-Index: Adt/w6jEykrzTRy2T0i5mvGBU6SHFwA64tgAABmBwJA=
+Date: Mon, 17 Feb 2025 08:24:59 +0000
+Message-ID: <SJ1PR11MB612943E187D762AA1DE41F93B9FB2@SJ1PR11MB6129.namprd11.prod.outlook.com>
+References: <SJ1PR11MB6129D6C5644D4A6C858A4F04B9F92@SJ1PR11MB6129.namprd11.prod.outlook.com>
+ <Z7JG2BAR0taUWHAU@smile.fi.intel.com>
+In-Reply-To: <Z7JG2BAR0taUWHAU@smile.fi.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SJ1PR11MB6129:EE_|CH3PR11MB7723:EE_
+x-ms-office365-filtering-correlation-id: b87b7915-19cd-4b72-fb80-08dd4f2c9196
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|1800799024|376014|38070700018|7053199007|13003099007;
+x-microsoft-antispam-message-info: =?iso-8859-1?Q?2rcfGQywFbjOTrmLKlpokZHWzIbEZ5n2+qnLQCFCkIWgYybdJ57SqdxHY2?=
+ =?iso-8859-1?Q?i+ljw4Mv+T2teApqvNhK3X7akK1GLCX9SiNKtGgEhFYjfjIYId1lvlutXA?=
+ =?iso-8859-1?Q?QwJvW5fIasDvDtPtATgsMTpEfFdvB4n9tGliiRfm52njhz79uHTCysPUuf?=
+ =?iso-8859-1?Q?4q0RR/MkZE7sh3fYK/povBkiQBjD9OLwOr0kw/t2bsGUFMBSMH1nhPi3W1?=
+ =?iso-8859-1?Q?7htEXxL0YtI1/BCboPc5KDxHbkBb2ItmYqU/08XEQa+Z1ip7CS/dj+wtgo?=
+ =?iso-8859-1?Q?cf7snx1YDIkdZCA8SSJ9CMAaTO5HbRKcwIAQEffP8/mFQRNHxCInYm+2Xs?=
+ =?iso-8859-1?Q?/onPJJTh4kNXK+bMpjxVfszTWd3Ah+P9iC6XQhLJpwrY9GbX0TCCcIv24z?=
+ =?iso-8859-1?Q?Jlwi0wka5/J6sX4k8gTC0bQU2L6rDfIpEbf0bEvtdrZnPtWmnZmVbEK/ga?=
+ =?iso-8859-1?Q?41Yh9bZrEqRY03VWyrVsm6MAh6i52tOYQeEMUpihLL2CFbINtjKr5Jbhk6?=
+ =?iso-8859-1?Q?on0JBBsSL0+y49VoZoxdjMnYws8bhGd+WA9WDEV3zatzivysUTM7p8BsrL?=
+ =?iso-8859-1?Q?k7ml1ZKBZVg/aQu70Uw89esn7M8YmnSl6dfbNr9mqUKaAH06eGsztX9H0H?=
+ =?iso-8859-1?Q?YGHoMiH18+Bz+SwcQRwKc0Ai3I++kuG7yDP8hh3PxlP38l2lYjm4pVpinZ?=
+ =?iso-8859-1?Q?NZ33sax2qzpsgjkFIirCkBStRnO8UqO85Mu9/DTBkrWTqFsnuGB5g8epl/?=
+ =?iso-8859-1?Q?LBo/u37ICw/lVIeJVgOxv2m9tSulZJ3/IRXZjx6/3NMslIieEseZ2VA0CN?=
+ =?iso-8859-1?Q?ICuVkIBGatHwoKCysnLENNCG8ec9TQFVeXzGRtxU3R71i8/JIOoLrVoR+W?=
+ =?iso-8859-1?Q?pvjLjRYuqG7MDHgkja9XeacPx+EhXxpSngqrici/Su4KuY2TC2DQQ5EmlP?=
+ =?iso-8859-1?Q?6vbBBzoDj7IsQdyO892k9c40wvs2jz9x+KkzxS6liAa2bD51JjXnr8aaLM?=
+ =?iso-8859-1?Q?4LXK1/EARIbDXyBi6xwZ4SWAVsjva13RlysGgRx6wuFCACP2fYO3wxz7Sa?=
+ =?iso-8859-1?Q?wfbSAp/1PI2McbfB1Ph/rvn1U1cUXRJ0y7E0sqtLad+NqZ5qVAgMVmjowi?=
+ =?iso-8859-1?Q?uFfx3R+mqsXucXagxKCWWjRkdFADTKjQcoWiXMTBDuZ2hnraeUF/7p3Vqz?=
+ =?iso-8859-1?Q?Zn62dq0rTUVAbZdh3CE26lzoJgLMj767JHzYBW2/+OHoZaFq8UZy9D+lQ3?=
+ =?iso-8859-1?Q?EpCtMTv1BRv2sviWCPC78cnhZNUiYgXV12EENSA3bl/BdKIPLapUD8Z4nI?=
+ =?iso-8859-1?Q?bBmvXilQpFg3SlQTaaJlNotsyLmId6mrJnkS7R497IJCOhYspUvkx/1Fwo?=
+ =?iso-8859-1?Q?hu8yvq97Uj9pOBej0hFi2NkBroBMfJCTZ6pGGad2VBpkEsn377++koUPUu?=
+ =?iso-8859-1?Q?wNx31Z7IkrhRvgqea0WArpgLok4NniCzcEdi4A=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ1PR11MB6129.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(38070700018)(7053199007)(13003099007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?Efd0wjF7pCSeGWM11FNeuJyywMOIot3WghjpzzniL6SVy/tdRRdWvIGsyW?=
+ =?iso-8859-1?Q?rTLFH4Q8RsYniw2es6/a8BAy+nSWhRWKZa/Pbp5Q1b6o/c8zmwLW4FgxYA?=
+ =?iso-8859-1?Q?SuVUKnlFTC7NUoDj582IepWZ55ToIx6HFT++aLboto4kuyYH5UfFgWJ5ys?=
+ =?iso-8859-1?Q?8STdYsbOy/3jw7kRVlAkSWO5fPclIQ06GPcxT/MNXYp615NXYvSW3vI44h?=
+ =?iso-8859-1?Q?ooZA316sqevyAUD0wdoFPfjt/F1IKKBZHIfc7JDjyrG1LMGkG1I9FH0ZpI?=
+ =?iso-8859-1?Q?Lj+mhMy6T/Lq066QRW0qTKuf3u6+3SNnJin81NfgkJiwLpRcUS1q41mJHo?=
+ =?iso-8859-1?Q?LANrxXMn/GSFr8YbxTUslHkA4U2Vh6jwptgLEdc1s18zADCR2CIEagJ9Jc?=
+ =?iso-8859-1?Q?psVipXDvLEJEoavoqenYoexuYbb1qaGA16uC9/fr7hxunXmwbLoAqoDeMs?=
+ =?iso-8859-1?Q?c4RIMXb2OBEe4ywpEWgvDcbFCG5gzNoUX6zZAuTSRdOp3VMotFCKPKOPK1?=
+ =?iso-8859-1?Q?CvULnX2faIUPK2vQC8m4ZYGv9TOwdq20HhI8/BvRQ5CbC2tR6v7kmfesgy?=
+ =?iso-8859-1?Q?NFXibniW0xIsp2bnG6RWlNCVZihzXObZktg0Joui8bFM9CFOJFj0Pn5gPG?=
+ =?iso-8859-1?Q?igkS3IZZxt7B+cPJIFfNu/wm8dCcP0MOLjr/IgKkWuKv9nfxgPPk1vJr0i?=
+ =?iso-8859-1?Q?4wpr8oz4wSvdWxTKtdNB5lJna448+paHB6W/igP0L8vn4NV60hkESTTSlh?=
+ =?iso-8859-1?Q?8fiOCZPpbcJDQxgCf7hyxDVEzqMuArzlhTvsNw+qEN+hLqUIXwyWN6wepG?=
+ =?iso-8859-1?Q?SERe4fL1uBCo8OHAR47gZk4dpjTSbku3FczLxr8dys/A7YSSnoaI/jrObZ?=
+ =?iso-8859-1?Q?A2rlSzwNyOVLg5CZqXCo50/pFKBPHNfNNwQT2ztayJga6otb0JkMQbxiTE?=
+ =?iso-8859-1?Q?dO0H+cyjOIkywZfntHIrjxCBGzY1P+z/W9f6QiifpZplnUhGRBDVwEocZ1?=
+ =?iso-8859-1?Q?O2AVRBcvdNvf4v+m7j4UyT5e7zZLEgNFG00L1gQMxXoZVirKoJpLv81Son?=
+ =?iso-8859-1?Q?W7H+dnQXIJ9URZuBso1QYozht+qtXFBQdQZGll7sCtDtoaKKhuw9WYqSLM?=
+ =?iso-8859-1?Q?JWTFoNYn4wqtLQ+AgiVY826sPhikLAY5AjC6Cfl8e6Lr5ql4OFNUBN+PhH?=
+ =?iso-8859-1?Q?E0RpZuedexYKMCAfW5yLdq5a8XiKyK6SLryubojFZiyeWc7ntNp7nPpuqg?=
+ =?iso-8859-1?Q?HxTDWeGGrTM8qOLqRSwBBbnMIGBkKewnTsHJPbAQnOhVNfI8HBo4s1dQps?=
+ =?iso-8859-1?Q?w6YlL4SPWUJkQQglZuz97O5Q7SpalMW0uHCMe8fbECqgmMWmdq6+0LIhuc?=
+ =?iso-8859-1?Q?MvkDrqRazFqOwu4lfEi8+I9pSTvLhNcncwmsOAxcwZjs96LfAp9Mg+rmXF?=
+ =?iso-8859-1?Q?Ht83ykYuNH7VV/ugQnDswJKrl9I9EjwchQlA7O+HGSn5ph/zXlGva7Y1gt?=
+ =?iso-8859-1?Q?8b/hnjRG+v/tfz1UTc+YQ0I1PgnTZmnVOVM/lsxDxoqU1fgT2XNz8HqTOb?=
+ =?iso-8859-1?Q?y2aX0+65QG5vScEndmQd/j528mQ4XmutKJRyOeATqhv3ag6Jg7d3gnNXIu?=
+ =?iso-8859-1?Q?01mpXFeL9e+vxIxrFh7zJVitAfTfyf83i+3VIQiA/oV3q5ETGBmKwK5A?=
+ =?iso-8859-1?Q?=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20250217-atomic_sleep_mctrl_serial_gpio-v3-1-59324b313eef@bootlin.com>
-X-B4-Tracking: v=1; b=H4sIAIDVsmcC/43NQQ+CIBjG8a/SOEcDFLNOfY/WGOKLvpuKA8Zqz
- u8eeqpTHf/P4fcsJIBHCOR6WIiHhAHdlKM4Hojp9dQBxTY3EUxIJnhBdXQjGhUGgFmNJvpBbYQ
- eVDejo3UtbWWhkbVsSEZmDxaf+8H9kbvHEJ1/7X+Jb+vfdOKUU8E4QKV5Wev21jgXB5xOxo1kw
- 5P4BMufoMggh4qZcyFse2Hf4Lqub7zRqbUfAQAA
-X-Change-ID: 20250213-atomic_sleep_mctrl_serial_gpio-885f6feb585b
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, 
- Richard Genoud <richard.genoud@bootlin.com>, 
- Nicolas Ferre <nicolas.ferre@microchip.com>, 
- Alexandre Belloni <alexandre.belloni@bootlin.com>, 
- Claudiu Beznea <claudiu.beznea@tuxon.dev>, Shawn Guo <shawnguo@kernel.org>, 
- Sascha Hauer <s.hauer@pengutronix.de>, 
- Pengutronix Kernel Team <kernel@pengutronix.de>, 
- Fabio Estevam <festevam@gmail.com>, 
- Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
- Alexandre Torgue <alexandre.torgue@foss.st.com>, 
- Jonathan Corbet <corbet@lwn.net>
-Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev, 
- linux-stm32@st-md-mailman.stormreply.com, linux-doc@vger.kernel.org, 
- =?utf-8?q?Alexis_Lothor=C3=A9?= <alexis.lothore@bootlin.com>
-X-Mailer: b4 0.14.2
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdehjeeigecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephfffufggtgfgkffvvefosehtkeertdertdejnecuhfhrohhmpeetlhgvgihishcunfhothhhohhrrocuoegrlhgvgihishdrlhhothhhohhrvgessghoohhtlhhinhdrtghomheqnecuggftrfgrthhtvghrnhepudekveeftdeifedvfefgvdfgjeduieevudeltdeulefhhefgiedvhfethffgffegnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghdpsghoohhtlhhinhdrtghomhenucfkphepvdgrtddvmeekgedvkeemfhelgegtmegvtddtmeemfhekheenucevlhhushhtvghrufhiiigvpedunecurfgrrhgrmhepihhnvghtpedvrgdtvdemkeegvdekmehfleegtgemvgdttdemmehfkeehpdhhvghloheplgduledvrdduieekrddurdduleejngdpmhgrihhlfhhrohhmpegrlhgvgihishdrlhhothhhohhrvgessghoohhtlhhinhdrtghomhdpnhgspghrtghpthhtohepvddupdhrtghpthhtohepmhgtohhquhgvlhhinhdrshhtmhefvdesghhmrghilhdrtghomhdprhgtphhtthhopehsrdhhrghuvghrsehpvghnghhuthhrohhnihigrdguvgdprhgtphhtthhopehlihhnuhigqdgrrhhmqdhkvghrnhgvlheslhhishhts
- hdrihhnfhhrrgguvggrugdrohhrghdprhgtphhtthhopehnihgtohhlrghsrdhfvghrrhgvsehmihgtrhhotghhihhprdgtohhmpdhrtghpthhtohepkhgvrhhnvghlsehpvghnghhuthhrohhnihigrdguvgdprhgtphhtthhopehlihhnuhigqdhsthhmfedvsehsthdqmhguqdhmrghilhhmrghnrdhsthhorhhmrhgvphhlhidrtghomhdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphhtthhopegtlhgruhguihhurdgsvgiinhgvrgesthhugihonhdruggvvh
-X-GND-Sasl: alexis.lothore@bootlin.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ1PR11MB6129.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b87b7915-19cd-4b72-fb80-08dd4f2c9196
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Feb 2025 08:24:59.5912
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sClUOO0KS0topSTOEIGr1EraI7jJ8Wwd+oKpy2Nm1r2+u9BR7j5Pj5p0tJ1knKWDo2lMlFb4Gvs3QOhNzcZgFFkHIkmZmfFuFAk7mwHLneE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7723
+X-OriginatorOrg: intel.com
 
-The following splat has been observed on a SAMA5D27 platform using
-atmel_serial:
 
-BUG: sleeping function called from invalid context at kernel/irq/manage.c:738
-in_atomic(): 1, irqs_disabled(): 128, non_block: 0, pid: 27, name: kworker/u5:0
-preempt_count: 1, expected: 0
-INFO: lockdep is turned off.
-irq event stamp: 0
-hardirqs last  enabled at (0): [<00000000>] 0x0
-hardirqs last disabled at (0): [<c01588f0>] copy_process+0x1c4c/0x7bec
-softirqs last  enabled at (0): [<c0158944>] copy_process+0x1ca0/0x7bec
-softirqs last disabled at (0): [<00000000>] 0x0
-CPU: 0 UID: 0 PID: 27 Comm: kworker/u5:0 Not tainted 6.13.0-rc7+ #74
-Hardware name: Atmel SAMA5
-Workqueue: hci0 hci_power_on [bluetooth]
-Call trace:
-  unwind_backtrace from show_stack+0x18/0x1c
-  show_stack from dump_stack_lvl+0x44/0x70
-  dump_stack_lvl from __might_resched+0x38c/0x598
-  __might_resched from disable_irq+0x1c/0x48
-  disable_irq from mctrl_gpio_disable_ms+0x74/0xc0
-  mctrl_gpio_disable_ms from atmel_disable_ms.part.0+0x80/0x1f4
-  atmel_disable_ms.part.0 from atmel_set_termios+0x764/0x11e8
-  atmel_set_termios from uart_change_line_settings+0x15c/0x994
-  uart_change_line_settings from uart_set_termios+0x2b0/0x668
-  uart_set_termios from tty_set_termios+0x600/0x8ec
-  tty_set_termios from ttyport_set_flow_control+0x188/0x1e0
-  ttyport_set_flow_control from wilc_setup+0xd0/0x524 [hci_wilc]
-  wilc_setup [hci_wilc] from hci_dev_open_sync+0x330/0x203c [bluetooth]
-  hci_dev_open_sync [bluetooth] from hci_dev_do_open+0x40/0xb0 [bluetooth]
-  hci_dev_do_open [bluetooth] from hci_power_on+0x12c/0x664 [bluetooth]
-  hci_power_on [bluetooth] from process_one_work+0x998/0x1a38
-  process_one_work from worker_thread+0x6e0/0xfb4
-  worker_thread from kthread+0x3d4/0x484
-  kthread from ret_from_fork+0x14/0x28
 
-This warning is emitted when trying to toggle, at the highest level,
-some flow control (with serdev_device_set_flow_control) in a device
-driver. At the lowest level, the atmel_serial driver is using
-serial_mctrl_gpio lib to enable/disable the corresponding IRQs
-accordingly.  The warning emitted by CONFIG_DEBUG_ATOMIC_SLEEP is due to
-disable_irq (called in mctrl_gpio_disable_ms) being possibly called in
-some atomic context (some tty drivers perform modem lines configuration
-in regions protected by port lock).
+> -----Original Message-----
+> From: andriy.shevchenko@linux.intel.com
+> <andriy.shevchenko@linux.intel.com>
+> Sent: Monday, February 17, 2025 1:43 AM
+> To: Borah, Chaitanya Kumar <chaitanya.kumar.borah@intel.com>
+> Cc: linux-serial@vger.kernel.org; intel-gfx@lists.freedesktop.org; intel-
+> xe@lists.freedesktop.org; Kurmi, Suresh Kumar
+> <suresh.kumar.kurmi@intel.com>; Saarinen, Jani <jani.saarinen@intel.com>
+> Subject: Re: Regression on linux-next (next-20250210)
+>=20
+>=20
+> The fix landed upstream, will be in next Linux Next.
+>=20
+> c213375e3283 ("serial: 8250_dw: Call dw8250_quirks() conditionally")
 
-Split mctrl_gpio_disable_ms into two differents APIs, a non-blocking one
-and a blocking one. Replace mctrl_gpio_disable_ms calls with the
-relevant version depending on whether the call is protected by some port
-lock.
+Thank you for the response. We will wait for it to land in linux-next.
 
-Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Alexis Lothoré <alexis.lothore@bootlin.com>
----
-Changes in v3:
-- Fix commit message
-- Link to v2: https://lore.kernel.org/r/20250214-atomic_sleep_mctrl_serial_gpio-v2-1-1e60c732fd90@bootlin.com
+Regards
 
-Changes in v2:
-- create dedicated APIs instead of using custom flag
-- Link to v1: https://lore.kernel.org/r/20250213-atomic_sleep_mctrl_serial_gpio-v1-1-201ee6a148ad@bootlin.com
----
- Documentation/driver-api/serial/driver.rst |  2 +-
- drivers/tty/serial/8250/8250_port.c        |  2 +-
- drivers/tty/serial/atmel_serial.c          |  2 +-
- drivers/tty/serial/imx.c                   |  2 +-
- drivers/tty/serial/serial_mctrl_gpio.c     | 34 ++++++++++++++++++++++++------
- drivers/tty/serial/serial_mctrl_gpio.h     | 17 ++++++++++++---
- drivers/tty/serial/sh-sci.c                |  2 +-
- drivers/tty/serial/stm32-usart.c           |  2 +-
- 8 files changed, 47 insertions(+), 16 deletions(-)
+Chaitanya
 
-diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-index 84b43061c11be2d6b4e3cd29fb8e6ecbdebe646d..60434f2b0286373d64b7aa8ae309454d7bd8859e 100644
---- a/Documentation/driver-api/serial/driver.rst
-+++ b/Documentation/driver-api/serial/driver.rst
-@@ -103,4 +103,4 @@ Some helpers are provided in order to set/get modem control lines via GPIO.
- .. kernel-doc:: drivers/tty/serial/serial_mctrl_gpio.c
-    :identifiers: mctrl_gpio_init mctrl_gpio_free mctrl_gpio_to_gpiod
-            mctrl_gpio_set mctrl_gpio_get mctrl_gpio_enable_ms
--           mctrl_gpio_disable_ms
-+           mctrl_gpio_disable_ms_sync mctrl_gpio_disable_ms_no_sync
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index d7976a21cca9ce50557ca5f13bb01448ced0728b..218a1d98f1ed3e2697624444be33243050df3a85 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -1680,7 +1680,7 @@ static void serial8250_disable_ms(struct uart_port *port)
- 	if (up->bugs & UART_BUG_NOMSR)
- 		return;
- 
--	mctrl_gpio_disable_ms(up->gpios);
-+	mctrl_gpio_disable_ms_no_sync(up->gpios);
- 
- 	up->ier &= ~UART_IER_MSI;
- 	serial_port_out(port, UART_IER, up->ier);
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index f44f9d20a97440c9aea41e9ebe34c34d4dfa0a1c..8918fbd4bddd5dfe7705a75d4132dda59fe9e5e6 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -700,7 +700,7 @@ static void atmel_disable_ms(struct uart_port *port)
- 
- 	atmel_port->ms_irq_enabled = false;
- 
--	mctrl_gpio_disable_ms(atmel_port->gpios);
-+	mctrl_gpio_disable_ms_no_sync(atmel_port->gpios);
- 
- 	if (!mctrl_gpio_to_gpiod(atmel_port->gpios, UART_GPIO_CTS))
- 		idr |= ATMEL_US_CTSIC;
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 9c59ec128bb4fc0ff54cb9a1a66eabbc9e391a9a..cfeb3f8cf45eaeea8afaa767a4ad849bb8d19f69 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -1608,7 +1608,7 @@ static void imx_uart_shutdown(struct uart_port *port)
- 		imx_uart_dma_exit(sport);
- 	}
- 
--	mctrl_gpio_disable_ms(sport->gpios);
-+	mctrl_gpio_disable_ms_sync(sport->gpios);
- 
- 	uart_port_lock_irqsave(&sport->port, &flags);
- 	ucr2 = imx_uart_readl(sport, UCR2);
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.c b/drivers/tty/serial/serial_mctrl_gpio.c
-index 8855688a5b6c09f073349bd144586f54331d891f..ca55bcc0b61119d0b76e6943e0f223a4a9e25c02 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.c
-+++ b/drivers/tty/serial/serial_mctrl_gpio.c
-@@ -322,11 +322,7 @@ void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios)
- }
- EXPORT_SYMBOL_GPL(mctrl_gpio_enable_ms);
- 
--/**
-- * mctrl_gpio_disable_ms - disable irqs and handling of changes to the ms lines
-- * @gpios: gpios to disable
-- */
--void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
-+static void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios, bool sync)
- {
- 	enum mctrl_gpio_idx i;
- 
-@@ -342,10 +338,34 @@ void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
- 		if (!gpios->irq[i])
- 			continue;
- 
--		disable_irq(gpios->irq[i]);
-+		if (sync)
-+			disable_irq(gpios->irq[i]);
-+		else
-+			disable_irq_nosync(gpios->irq[i]);
- 	}
- }
--EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms);
-+
-+/**
-+ * mctrl_gpio_disable_ms_sync - disable irqs and handling of changes to the ms
-+ * lines, and wait for any pending IRQ to be processed
-+ * @gpios: gpios to disable
-+ */
-+void mctrl_gpio_disable_ms_sync(struct mctrl_gpios *gpios)
-+{
-+	mctrl_gpio_disable_ms(gpios, true);
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms_sync);
-+
-+/**
-+ * mctrl_gpio_disable_ms_no_sync - disable irqs and handling of changes to the
-+ * ms lines, and return immediately
-+ * @gpios: gpios to disable
-+ */
-+void mctrl_gpio_disable_ms_no_sync(struct mctrl_gpios *gpios)
-+{
-+	mctrl_gpio_disable_ms(gpios, false);
-+}
-+EXPORT_SYMBOL_GPL(mctrl_gpio_disable_ms_no_sync);
- 
- void mctrl_gpio_enable_irq_wake(struct mctrl_gpios *gpios)
- {
-diff --git a/drivers/tty/serial/serial_mctrl_gpio.h b/drivers/tty/serial/serial_mctrl_gpio.h
-index fc76910fb105a3d560e824baa43e9515576e895a..79e97838ebe5672a1b00ef848dcda1e8c1b9568e 100644
---- a/drivers/tty/serial/serial_mctrl_gpio.h
-+++ b/drivers/tty/serial/serial_mctrl_gpio.h
-@@ -87,9 +87,16 @@ void mctrl_gpio_free(struct device *dev, struct mctrl_gpios *gpios);
- void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios);
- 
- /*
-- * Disable gpio interrupts to report status line changes.
-+ * Disable gpio interrupts to report status line changes, and block until
-+ * any corresponding IRQ is processed
-  */
--void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios);
-+void mctrl_gpio_disable_ms_sync(struct mctrl_gpios *gpios);
-+
-+/*
-+ * Disable gpio interrupts to report status line changes, and return
-+ * immediately
-+ */
-+void mctrl_gpio_disable_ms_no_sync(struct mctrl_gpios *gpios);
- 
- /*
-  * Enable gpio wakeup interrupts to enable wake up source.
-@@ -148,7 +155,11 @@ static inline void mctrl_gpio_enable_ms(struct mctrl_gpios *gpios)
- {
- }
- 
--static inline void mctrl_gpio_disable_ms(struct mctrl_gpios *gpios)
-+static inline void mctrl_gpio_disable_ms_sync(struct mctrl_gpios *gpios)
-+{
-+}
-+
-+static inline void mctrl_gpio_disable_ms_no_sync(struct mctrl_gpios *gpios)
- {
- }
- 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index b1ea48f38248eb42d98353daa289bbe67191d201..41f987632bce82c9d041d9ab1f5162d2af1a78e4 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2298,7 +2298,7 @@ static void sci_shutdown(struct uart_port *port)
- 	dev_dbg(port->dev, "%s(%d)\n", __func__, port->line);
- 
- 	s->autorts = false;
--	mctrl_gpio_disable_ms(to_sci_port(port)->gpios);
-+	mctrl_gpio_disable_ms_sync(to_sci_port(port)->gpios);
- 
- 	uart_port_lock_irqsave(port, &flags);
- 	sci_stop_rx(port);
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 1ec5d8c3aef8ddbca615a149c2fe81c90c83a22b..4c97965ec43b30113a255661e6a64a6b476d7a9c 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -944,7 +944,7 @@ static void stm32_usart_enable_ms(struct uart_port *port)
- 
- static void stm32_usart_disable_ms(struct uart_port *port)
- {
--	mctrl_gpio_disable_ms(to_stm32_port(port)->gpios);
-+	mctrl_gpio_disable_ms_sync(to_stm32_port(port)->gpios);
- }
- 
- /* Transmit stop */
-
----
-base-commit: 2014c95afecee3e76ca4a56956a936e23283f05b
-change-id: 20250213-atomic_sleep_mctrl_serial_gpio-885f6feb585b
-
-Best regards,
--- 
-Alexis Lothoré, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+>=20
+>=20
+> On Sat, Feb 15, 2025 at 04:16:58PM +0000, Borah, Chaitanya Kumar wrote:
+> > Hello Andy,
+> >
+> > Hope you are doing well. I am Chaitanya from the linux graphics team in
+> Intel.
+> >
+> > This mail is regarding a regression we are seeing in our CI runs[1] on =
+linux-
+> next repository.
+> >
+> > Since the version next-20250210 [2], many machines in our CI are unable=
+ to
+> boot.
+> >
+> > Unfortunately, we have  not been able to collect any logs (even from ps=
+tore).
+> >
+> > However after bisecting the tree, the following patch [3] seems to be t=
+he first
+> "bad"
+> > commit
+> >
+> > ``````````````````````````````````````````````````````````````````````
+> > ```````````````````````````````````
+> > commit bfd3d4a40f3905ec70b17dbfa9b78764e59e4b4f
+> > Author: Andy Shevchenko mailto:andriy.shevchenko@linux.intel.com
+> > Date:=A0=A0 Mon Feb 3 14:14:56 2025 +0200
+> >
+> > =A0=A0=A0 serial: 8250_dw: Drop unneeded NULL checks in dw8250_quirks()
+> >
+> > =A0=A0=A0 Since platform data is being provided for all supported hardw=
+are,
+> > =A0=A0=A0 no need to NULL check for it. Drop unneeded checks.
+> >
+> > ``````````````````````````````````````````````````````````````````````
+> > ```````````````````````````````````
+> >
+> > We also verified that if we revert the patch the issue is not seen.
+> >
+> > Could you please check why the patch causes this regression and provide=
+ a
+> fix if necessary?
+> >
+> > Thank you.
+> >
+> > Regards
+> >
+> > Chaitanya
+> >
+> > [1] https://intel-gfx-ci.01.org/tree/linux-next/combined-alt.html?
+> > [2]
+> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/co
+> > mmit/?h=3Dnext-20250210 [3]
+> > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/co
+> > mmit/?h=3Dnext-
+> 20250210&id=3Dbfd3d4a40f3905ec70b17dbfa9b78764e59e4b4f
+> >
+> >
+>=20
+> --
+> With Best Regards,
+> Andy Shevchenko
+>=20
 
