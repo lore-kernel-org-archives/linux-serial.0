@@ -1,116 +1,97 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BA6C21ADA4;
-	Mon, 17 Feb 2025 12:30:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CAF7218842
+	for <linux-serial@vger.kernel.org>; Mon, 17 Feb 2025 12:44:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739795406; cv=none; b=AWilwrOSGYj/0aTsko/XrwAVV4hB/N181dv7pRpIn+PmP1UbKjUumzcTjDilQn1b32HKfG7Ua3N8XkFHhdtAlVgVi51O/J69wf+ppEkqMy5VrZuIYC8148xz391Ni7SDcmJTATT+q8bFpt05qmjvZYkTfb52sZNLdtE1GfJ0F10=
+	t=1739796259; cv=none; b=iz2dn+b8JKGiNiofChjbdrNFPbzF2LSSS/C1DsvMCCtO+eQFXSRD+9dWV8C1cF8ve1tIfx5RWX8lTR2NSlJz3OmZYWeKemdRON5/RARLjxlOZepjx4gPcOxr99zzSVn/kugGXiKg/AzehHm7scKcxm5SMEeX8NgI+MCHGwGdNtg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739795406; c=relaxed/simple;
-	bh=J3SFBAZDXUNNlAhhsULZrSD2zJqCg4VZ25hYd8Ta7G8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=M8IAoyuw5wvTkpZgAzAT4PuCiEhU4LoKzFCFXLt8yzOJXp/bJQ0VaOug6/q/xG2qyzhYhDVWAFxW4byC1av9QYEmzNKWPJIkCe2l/qB551FgKoa8eINga4MO5NJKukgC4bOJ3mH3kKbkU3qEbq4BlMe0JLqZzYHH3dyLBhsCDIY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-abb7aecd39fso305505466b.0;
-        Mon, 17 Feb 2025 04:30:04 -0800 (PST)
+	s=arc-20240116; t=1739796259; c=relaxed/simple;
+	bh=aejBspab98kEMu3idWjPVw2s5cEoKFhrIZKkhW31lLo=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=tohJKwkn2yvGdUy45HIWA6xcFyRP5hsm/XAvz23RbCVfsEzwt0v7Ly3FP8mq24OF+jesrM4ueOcXlPv+ZcTmgEVucKOaVdsY4H0BqJdoRyeerVy55YtFbU44upxORKIKSAkhc5mdHxp81XShmnWJ086+4LigdwjcVqxhLuKaAO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f197.google.com with SMTP id e9e14a558f8ab-3d18f21d202so31445305ab.1
+        for <linux-serial@vger.kernel.org>; Mon, 17 Feb 2025 04:44:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739795402; x=1740400202;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=I1TIWEZalxxCgY45eBOSHh9u1O+DAvz4HdaYIIkamHg=;
-        b=jQaylfzax9r15NJ8ROFIxyrT7hoe8CShkT6eh1i2qnMLXe7cM3QHSDHizd0fgqNx5e
-         /qrep1w2+xpGBS7fdne2yLb/1I/xjTc6yWRE7U8rRANh2JhgPNka+MxqybBNC9lcGCXw
-         OyDhBPulaaie8F4IEG4LGjHcv47Xz1VKEMDWwRUb22BYhsGHS7HRh4EvCw4/DVAa3IHk
-         /HZGCH/ixb1D3c1oYY7SBeuFBeRLQmFoLspiAxcxjnDMVIVJyNsbFscweM7H2qRKhlZT
-         A7ytx7qSdz63FTQaUFhStjFAEykD4Dcz4ls/1IYb6MhsV1qbWiJC1KLLPvB09c+TfNO9
-         QURQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUb87Ex/bNZ9DXzLxm5BD4Ryrli2sbe1QI026GcUy3OkzmdmBzXZi7DrcNHKosS6K6uE6jkun3B21FgZRBbXFMvKig=@vger.kernel.org, AJvYcCV2hFe1VU8ZCwC1zasUObtzi5ENIISLkxdXtW0NQDJnk4DVrI1ocRLRj88k+BsoUjjF6Ojkae5oWvMayQLh@vger.kernel.org, AJvYcCWjWYglyfwvVU10+7J67usVux/sIb+iemG7NOJ0NONRap1zHLmpLVYRrhIqyOXG3k1/mkoGDCSVQIavmAuN@vger.kernel.org, AJvYcCXnq0te/RH2kmpCI6T8PK/GFP34JOH98dmKEkqSuGZeICsA1/lRQ6lC1XAnDWQZMoPlfxPpsAXL+LwL@vger.kernel.org
-X-Gm-Message-State: AOJu0YwD/FvH8QMSP/pd7PM5M8fhd4cjEHPYnwq3nIHeLbNaooX94bq/
-	022nKt6zkWUw4Fs9WV2efIb2zEprPSmRMHlDZZkAsK4rZpsq44IsngrPxWuCIFg=
-X-Gm-Gg: ASbGnct5qat9p2xedn6xZmU1nIu+78nfsf+by1bEwLJfm9hdfk5POk897PQmxGrzEGA
-	Z7PFCxLFRLZzl14+qL3AqJ0eKkQvOIJHklfgxqFNJh5yP4a/sQDx2CocII6K35zdRhxzX229LdV
-	+nBBOnCfVmBTP3iUyt9teBdArD4zZgWydi1NDHXaA8dubEC65bYra+MSoGAp8W3fuNwSAEA7s85
-	l5bnvU85jSPoUpAeE2jzWbQtjIGaiVLJqzWeaVEs0Gnj+dfGUpirnKFA/Vyh7qzz0VOt0R2Xt7m
-	EFS5ERLZJuvKptIe+6Wpuc6WzvlHAacH2vgHIaZCXC2muz/Zjh8kYQ==
-X-Google-Smtp-Source: AGHT+IFyU5wJtXXUs4IqnPMunIdCvLam5pfngNR55xHL/oCfHQ5msYgeLsv1nO/TBmFAHxED+IvCzg==
-X-Received: by 2002:a17:907:7706:b0:ab7:b9b5:6104 with SMTP id a640c23a62f3a-abb706ffef2mr756802466b.5.1739795401768;
-        Mon, 17 Feb 2025 04:30:01 -0800 (PST)
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com. [209.85.218.51])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aba53398364sm876166466b.128.2025.02.17.04.30.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Feb 2025 04:30:01 -0800 (PST)
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-ab771575040so1048512166b.1;
-        Mon, 17 Feb 2025 04:30:01 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCU1fxaxIpxea+rNPLIr8I9nkxEiMMJZ6Zv/fGwvrPzSmGJdmwhuhWG1+6zRntBKCgeSDgvahYW06fVvMrCt@vger.kernel.org, AJvYcCUGMFVr8EHfljmLPz+1ILvPR5ku+SMJCYTBUpF76eo27L6lI4PrdFqAIuSrv1/bMCcaug0ubJoskeyVmrAq@vger.kernel.org, AJvYcCUL3wdtm/QS3gsOnootuDb1uTIEstChA7gvU73fIOwobcTO/B4rBVxXVEUpiyDgMmj7Ybp+pgWXpjXr@vger.kernel.org, AJvYcCVwDBOZHPDj816E0Cmp4QFcoo2L3maJ0qL5fZnv2VQ0p0Ax7J30IVKyVlsFKIRbQ7lWh5Byc7LV6V835I5PoidMViE=@vger.kernel.org
-X-Received: by 2002:a17:907:3d9e:b0:abb:5b02:9e7 with SMTP id
- a640c23a62f3a-abb708f2d26mr963945066b.12.1739795401012; Mon, 17 Feb 2025
- 04:30:01 -0800 (PST)
+        d=1e100.net; s=20230601; t=1739796257; x=1740401057;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KKIOjDj7Gj5x+iyQAQD3IBIaAOD34KuOpgNlpMmspaY=;
+        b=rY2ImPj5/elyeNS2H2HUHXdXZbwTwtizPlvdoQaUt+GeFXlK+DKZbZ3HQPmjrqVNET
+         UZE3PsJpcSKCrEilRkfiJzxBdEPscDrGXQfIMfmv9S7/LJM+pN0Xt1Pxb6gFkoAjmOBL
+         iigajEWFd8MWzq/Gea9gDD+ajfemeDVOLd5X871Q38EWTKDamcAFU5touQosPFtC5PPJ
+         NZK0aAUeM7R7cjpK0OcqD+kHUQxGvnEkWzBGSLqu32IE/Ve08BDsgNaojxxhg/a5Agzz
+         v/PvJu46XHSHcO9OULiii5CC+zKi9Yq/JcLDN+epmQsIgr0Yf/8/O6sQbJiejn/zorTY
+         dLdw==
+X-Forwarded-Encrypted: i=1; AJvYcCUlJvnIR+P82BGk8BQJuIl0QOC277B0xOM7y4ZtFN+hsyF/Px2DtlLPgA79Jv6YrHswHimGK1KttPU2VXI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyiNepijPh1HgJAdn59/pdnziNrn/mb8vQpvWMxttGgQCDyhm57
+	vByDG6Ve/QZfmrznT4buMEtfCtPrXQYD99YinxCljQZhZnZUlEXPbNbp7IRswqC1/zSheWR97Ex
+	KxU9k7V6lhw0cxnQNpqKjkAjLoXEFyaed44gZcUSPw2vM8CSnP5SSFh4=
+X-Google-Smtp-Source: AGHT+IEhwCub75T21RkKxTH2EPpAzGzMTmnjrPf2VUr+FPlZpsEHrImG3Tns7WMllPdPHD6sg4u/jRxUWEiYKutCdCb+1u10EG0E
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250217105354.551788-1-thierry.bultel.yh@bp.renesas.com>
- <20250217105354.551788-4-thierry.bultel.yh@bp.renesas.com> <CAMuHMdWfTsocOwuqDQZOBN7-wGMrrSc=cfJau+U1tx3Pwe+VHA@mail.gmail.com>
-In-Reply-To: <CAMuHMdWfTsocOwuqDQZOBN7-wGMrrSc=cfJau+U1tx3Pwe+VHA@mail.gmail.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 17 Feb 2025 13:29:47 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUs3uv-yhJxVTot7t3BjXcMDm=sWu-MTRv=-D5PrqX_zg@mail.gmail.com>
-X-Gm-Features: AWEUYZk8HXdwA6QdcVV6UVVVAVy0o-P-gKkZGawCKYB8YbY4M9JB3uv5mL3juaM
-Message-ID: <CAMuHMdUs3uv-yhJxVTot7t3BjXcMDm=sWu-MTRv=-D5PrqX_zg@mail.gmail.com>
-Subject: Re: [PATCH v2 03/13] dt-bindings: serial: Add compatible for Renesas
- RZ/T2H SoC in sci
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-renesas-soc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org
+X-Received: by 2002:a92:c24d:0:b0:3cf:c8ec:d390 with SMTP id
+ e9e14a558f8ab-3d2807707b2mr87834055ab.4.1739796257588; Mon, 17 Feb 2025
+ 04:44:17 -0800 (PST)
+Date: Mon, 17 Feb 2025 04:44:17 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <67b32f21.050a0220.173698.0033.GAE@google.com>
+Subject: [syzbot] Monthly serial report (Feb 2025)
+From: syzbot <syzbot+list67224c95d908c00ce68e@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 
-Hi Thierry,
+Hello serial maintainers/developers,
 
-On Mon, 17 Feb 2025 at 13:20, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Mon, 17 Feb 2025 at 11:54, Thierry Bultel
-> <thierry.bultel.yh@bp.renesas.com> wrote:
-> > Document RZ/T2H (a.k.a r9a09g077) in SCI binding.
-> >
-> > Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
->
-> Thanks for your patch!
->
-> > --- a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-> > @@ -20,6 +20,7 @@ properties:
-> >                - renesas,r9a07g043-sci     # RZ/G2UL and RZ/Five
-> >                - renesas,r9a07g044-sci     # RZ/G2{L,LC}
-> >                - renesas,r9a07g054-sci     # RZ/V2L
-> > +              - renesas,r9a09g077-sci     # RZ/T2H
->
-> As the RZ/T2H SCI does not work with a generic SCI driver, it cannot
-> use renesas,sci as a fallback, but needs its own section.
->
-> >            - const: renesas,sci            # generic SCI compatible UART
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-As the RZ/T2H SCI does support RTS/CTS, the line
+During the period, 2 new issues were detected and 0 were fixed.
+In total, 19 issues are still open and 44 have already been fixed.
 
-  uart-has-rtscts: false
+Some of the still happening issues:
 
-needs to become conditional.
+Ref  Crashes Repro Title
+<1>  758     Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
+                   https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
+<2>  570     No    INFO: task hung in console_callback (5)
+                   https://syzkaller.appspot.com/bug?extid=1fb20cf68d15e7c2388d
+<3>  177     Yes   INFO: task can't die in show_free_areas
+                   https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<4>  164     Yes   KASAN: stack-out-of-bounds Read in sched_show_task
+                   https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
+<5>  104     Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
+                   https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
+<6>  66      Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
+                   https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
+<7>  44      Yes   possible deadlock in tty_buffer_flush (3)
+                   https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
+<8>  19      No    KMSAN: uninit-value in gsmld_receive_buf
+                   https://syzkaller.appspot.com/bug?extid=2f64914d6a3a8ce91bdd
+<9>  15      No    general protection fault in n_tty_receive_buf_common (2)
+                   https://syzkaller.appspot.com/bug?extid=2dda672e146ff12ccb02
+<10> 6       Yes   INFO: task hung in paste_selection (2)
+                   https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
 
-Gr{oetje,eeting}s,
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-                        Geert
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+You may send multiple commands in a single email message.
