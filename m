@@ -1,91 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [195.130.132.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A881E1F4282;
-	Wed, 19 Feb 2025 14:03:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9CD71EDA3B
+	for <linux-serial@vger.kernel.org>; Wed, 19 Feb 2025 14:25:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.132.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739973791; cv=none; b=JlxXI0dlJR0KXOaOcdODGwKWSH8NC59nqjv6VN02mHx8KnKPBpsQIR5Lmes0k5LWmQKv46EspIGPlrHzMG0R0pxEAd9nvdNx7T+6hK/KQ7teX3q8WkZy6KlOEEdyjHOamtaBoTw8slMEhMa65676CjpVPpbZ1i4jDg4bKf14oLw=
+	t=1739975109; cv=none; b=KwL/tTVv3Yd+Iss3i7bN3F+cqCECHG4AQ8QY+1mV/dNBfmwQOUAA5w5IxDTbSdpMlTLSsbS74rI5UGA6cAxTXOLhjF6wnPQ8yoNc4WsyZaXTBxduPwGdkzgem/Kin+q4PowghUYfjhR/qzThcUGXMI7l5seysPZoRZjPqQJUJ4U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739973791; c=relaxed/simple;
-	bh=SfAIfh9gg1gimR0KP+9aUQefudfdjJawcYirIdCagfU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ep5eTPn5S26qdLrBviWXtOaeGLN1vaFosNgQYk3btPoEv7AaNT5ITdw7fxkJYunzPEKLh50u9M6TD4ubGD1QpxyutfsTuAj6TM2SbfgsDUFTQcrd+wmH5r/a8se765HhgOS8hllgVJVQgN8NWBwv80VKtWU5yf7AxRh0GK8VrVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=TZuXacvM; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="TZuXacvM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4546C4CEFE;
-	Wed, 19 Feb 2025 14:03:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1739973791;
-	bh=SfAIfh9gg1gimR0KP+9aUQefudfdjJawcYirIdCagfU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TZuXacvMi2IS2MDJ0/dZ1oJtrC9Bmnneh1sd54LILUI5ZVUJas+KmW31MQQsveqZj
-	 IA7aa/UKS2di8up/HoK43468WEtHW3ybVIryeD2tTP00DdWbS/zMhRg2DsUHPk1rAh
-	 tyGaFlVGRytiW4Wk50LkVVjIL4HQL8YmUs3TzQVQ=
-Date: Wed, 19 Feb 2025 15:03:08 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: adamsimonelli@gmail.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>
-Subject: Re: [PATCH v2 2/2] tty: Change order of ttynull to be loaded sooner.
-Message-ID: <2025021957-babble-delivery-3035@gregkh>
-References: <20250217040748.2017975-1-adamsimonelli@gmail.com>
- <20250217040748.2017975-3-adamsimonelli@gmail.com>
+	s=arc-20240116; t=1739975109; c=relaxed/simple;
+	bh=ltI4g7nPmJeeGqiwBzK/MJgSPoL3ykRP0wBimvKDGws=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nVBkwXg8n5uqyDTAZFlofQFDXkpfdxWb1BkJL5PTz5OS0pQJvoyRJBmF7pvvcqW45qZbASBoPaBLycld4xbD2ihGeYO1fyktNDRET0YTcmK2UXUZm4kU/t2bI9I6wMsXGNp7mWoVbcTsNmPjrXQ4d1E8hmTOj7iT0O7dPO93tSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.132.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:47f6:a1ad:ad8e:b945])
+	by baptiste.telenet-ops.be with cmsmtp
+	id FSQw2E00557WCNj01SQwj5; Wed, 19 Feb 2025 15:24:58 +0100
+Received: from rox.of.borg ([192.168.97.57])
+	by ramsan.of.borg with esmtp (Exim 4.97)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1tkl09-0000000B3Sy-2RlP;
+	Wed, 19 Feb 2025 15:24:56 +0100
+Received: from geert by rox.of.borg with local (Exim 4.97)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1tkl0S-0000000BaPR-105W;
+	Wed, 19 Feb 2025 15:24:56 +0100
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: linux-serial@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] serial: sh-sci: Save and restore SCDL and SCCKS
+Date: Wed, 19 Feb 2025 15:24:54 +0100
+Message-ID: <20250219142454.2761556-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250217040748.2017975-3-adamsimonelli@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Sun, Feb 16, 2025 at 11:07:48PM -0500, adamsimonelli@gmail.com wrote:
-> From: Adam Simonelli <adamsimonelli@gmail.com>
-> 
-> If CONFIG_NULL_TTY_CONSOLE is enabled, and CONFIG_VT is disabled, ttynull
-> will become the default primary console device, based on the load order.
+On (H)SCIF with a Baud Rate Generator for External Clock (BRG), there
+are multiple ways to configure the requested serial speed.  If firmware
+uses a different method than Linux, and if any debug info is printed
+after the Bit Rate Register (SCBRR) is restored, but before termios is
+reconfigured (which configures the alternative method), the system may
+lock-up during resume.
 
-You mean "link order" right?
+Fix this by saving and restoring the contents of the Frequency Division
+(DL) and Clock Select (CKS) registers as well.
 
-> Users and distributions that are migrating away from CONFIG_VT will
-> benefit from this as /dev/console would not suddenly become /dev/ttyS0
-> which could otherwise cause some user space behavior changes, namely the
-> TCGETS ioctl failing, which causes libc's isatty() to incorrectly return
-> false when /dev/ttyS0 is disabled, and will prevent a device that is
-> connected to a user's /dev/ttyS0 to suddenly start getting kernel log
-> messages.
+Fixes: 22a6984c5b5df8ea ("serial: sh-sci: Update the suspend/resume support")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+This can be reproduced on e.g. Salvator-X(S) by enabling the debug
+print in sci_brg_calc(), and using s2ram with no_console_suspend.
+---
+ drivers/tty/serial/sh-sci.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-I'm sorry, but I can not parse that very long sentance.  If CONFIG_VT is
-not enabled, this isn't going to change anything with ttynull, it will
-just happen to have this console loaded before all others, right?
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index df6512c9c0ff28db..70f34b8a93888eb9 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -109,6 +109,8 @@ struct sci_suspend_regs {
+ 	u16 scscr;
+ 	u16 scfcr;
+ 	u16 scsptr;
++	u16 scdl;
++	u16 sccks;
+ 	u8 scbrr;
+ 	u8 semr;
+ };
+@@ -3571,6 +3573,10 @@ static void sci_console_save(struct sci_port *s)
+ 		regs->scfcr = sci_serial_in(port, SCFCR);
+ 	if (sci_getreg(port, SCSPTR)->size)
+ 		regs->scsptr = sci_serial_in(port, SCSPTR);
++	if (sci_getreg(port, SCDL)->size)
++		regs->scdl = sci_serial_in(port, SCDL);
++	if (sci_getreg(port, SCCKS)->size)
++		regs->sccks = sci_serial_in(port, SCCKS);
+ 	if (sci_getreg(port, SCBRR)->size)
+ 		regs->scbrr = sci_serial_in(port, SCBRR);
+ 	if (sci_getreg(port, SEMR)->size)
+@@ -3590,6 +3596,10 @@ static void sci_console_restore(struct sci_port *s)
+ 		sci_serial_out(port, SCFCR, regs->scfcr);
+ 	if (sci_getreg(port, SCSPTR)->size)
+ 		sci_serial_out(port, SCSPTR, regs->scsptr);
++	if (sci_getreg(port, SCDL)->size)
++		sci_serial_out(port, SCDL, regs->scdl);
++	if (sci_getreg(port, SCCKS)->size)
++		sci_serial_out(port, SCCKS, regs->sccks);
+ 	if (sci_getreg(port, SCBRR)->size)
+ 		sci_serial_out(port, SCBRR, regs->scbrr);
+ 	if (sci_getreg(port, SEMR)->size)
+-- 
+2.43.0
 
-Which implies that this might break existing systems when this loads
-before the expected platform-specific drivers.  Was this tested on those
-systems?
-
-> 
-> Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
-> ---
->  drivers/tty/Makefile | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/Makefile b/drivers/tty/Makefile
-> index 07aca5184a55..03bb47e11e1c 100644
-> --- a/drivers/tty/Makefile
-> +++ b/drivers/tty/Makefile
-> @@ -11,6 +11,8 @@ obj-$(CONFIG_N_HDLC)		+= n_hdlc.o
->  obj-$(CONFIG_N_GSM)		+= n_gsm.o
->  
->  obj-y				+= vt/
-> +obj-$(CONFIG_NULL_TTY)		+= ttynull.o
-
-If you are going to rely on link order here, and HAVE to have this above
-all other consoles, please document it as such so that people have a
-hint as to why you are doing this in the file so it dosn't change again.
-
-thanks,
-
-greg k-h
