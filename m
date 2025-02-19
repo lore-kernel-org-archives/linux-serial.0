@@ -1,104 +1,121 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 886BD17BB21;
-	Wed, 19 Feb 2025 06:26:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BEC31B85EC;
+	Wed, 19 Feb 2025 09:23:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739946378; cv=none; b=ccj7fF6549MzA6WjIgMJ2KtBLgPysQmrD+7sPpDVYN1cfwUlLQMA9qke2KUrity81t8SeA5po5e/5I2h6U6Lakl3ynUij/DdsJChol4doth8PzGZXiOpsheRqr7m+G12hVCqJa8gwHRRiVGgO/B7sTwsuwFSQYQQOjbK4FWak64=
+	t=1739956997; cv=none; b=V9fYF9Dm9XCS3CH54m0XTzN8pStu+VAoBfVEMKZb5Y+dhoIVKCYe4e3DC7nRBlK0thpTzQ60d1ALDn1Rm4R6cxLWUdhRXb2ubL2pj1XixRWkKef8Aun8yuqEpsgcnsL9gZUKwuNs18OabosWi1BL3HE1tkzvGC5UxulS901Bz6o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739946378; c=relaxed/simple;
-	bh=gs8Atg05EuB92ani/mTzwjxh1rZsnVOwZpA1oIUYdO8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QsgS7h2pfFau7BrZfozQWsTKG/u6Ld3X/5lSSUQaCLnIUVK+L+LBhVQkiWxEP4EfJkRpjHva7JdDx4I7228ToYYgJSjrGzoT5ChsNsG4x1W7lw8mcr2F0XHNtzXllNlVWiJSWKXMeNzgOucVO7dIDX4IoNWWsMXYqE7n4j6Tj3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SmPRWQ0b; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1739956997; c=relaxed/simple;
+	bh=edDYdJ1koOY5vO64/PjG+7myObUD05yXqicg12hNyTA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CiS0ABXmVvDHzz3WSigKwe6tmI8SE2tAvSmNr6VaDsMNn8DLAuTMpwi9pSeUauCPGInkCgiBaAZskBj1FvxhoWRMNygnhhC6RfJj71V/DNt470q/4vwzlj7/4baOeSJA/S+Pso7RtCClNOl+qgaBlVfNgk7pJXxv6hFYE5XGHos=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f27tE3nY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SmPRWQ0b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2579AC4CEE6;
-	Wed, 19 Feb 2025 06:26:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f27tE3nY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0C53C4CED1;
+	Wed, 19 Feb 2025 09:23:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1739946378;
-	bh=gs8Atg05EuB92ani/mTzwjxh1rZsnVOwZpA1oIUYdO8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=SmPRWQ0bmA8r6JDNq4EQiZtBOZyVsOxTjzVaOEV2ISiy5eUfCjSB1DfbVPDihvLv4
-	 rigP2iikysJ3QL7ln1Ll/HKk/8bprzAgDn5XeHheKtplFQ0rx9YnfzVpOlh5L8PYaM
-	 8RQpTF2U0wNX6WqjkyKh4ANqSE1we9bWm64Jf9aF783B0uDvYZeUG+gCcxMkWHSrzQ
-	 pHu1uUeMXdGk/i7vhskBB44omPDnLMmq/v2BBwNQkC557xkuDn5Btwdo/X3WRzXQ+s
-	 qhoBXy0/nLt7cJlCfbe4D7e86v5gIySR3A7cWFSCBYMPezP1X7dbhS1BGaEuFPxEPs
-	 TWgO97Yev6g/g==
-Message-ID: <54cb52eb-9429-40d9-8b16-368c517746fd@kernel.org>
-Date: Wed, 19 Feb 2025 07:26:15 +0100
+	s=k20201202; t=1739956996;
+	bh=edDYdJ1koOY5vO64/PjG+7myObUD05yXqicg12hNyTA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=f27tE3nYzA0v/r8V4+mbWwUAUaUd+unL7IsUt089+1o9U8gVeGVx1XjYgsAxx9UQy
+	 CarEWcnY+QDulSLTY9yxPUlOp+neTD4m1zuwQsfAfjY8iQ2yHGo2N9AyRnkC9Tsr8s
+	 vA76eQXCcMbFdBk0TDh/nyj5AU4j9eCajorEXiMdUlcQrVOrZgAr2brr49iOjSYgNu
+	 5CAzgneHUbJ2Ft2LhV3n/lXAu1wBkMBZKSZmaK6Zf29xqZMmsQLxw0Xb3N7rpHv1eH
+	 hr72zqmqoBYcmUJc7MxUmBNpIzsaT2b6bZK6ZanQnitwtaB4ICruHY9RvYtxOdfEOk
+	 FyEGtQRZci8cg==
+Date: Wed, 19 Feb 2025 10:23:12 +0100
+From: Alexey Gladkov <legion@kernel.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] tty/vt: Use KVAL instead of use bit operation
+Message-ID: <Z7WjABCTLE4CisKY@example.org>
+References: <cover.1739881707.git.legion@kernel.org>
+ <01ee8849ef8dc49c93a77bc4961ad56b9d435b8a.1739881707.git.legion@kernel.org>
+ <3d96896d-5bb7-4ae5-a6c9-b586337eaa3f@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 2/2] tty/vt: Gather the code that outputs char with
- utf8 in mind
-To: Alexey Gladkov <legion@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: LKML <linux-kernel@vger.kernel.org>, linux-serial@vger.kernel.org
-References: <cover.1739881707.git.legion@kernel.org>
- <35c2ae96b68b64ee71b636df0e0c1907e0766a24.1739881707.git.legion@kernel.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <35c2ae96b68b64ee71b636df0e0c1907e0766a24.1739881707.git.legion@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3d96896d-5bb7-4ae5-a6c9-b586337eaa3f@kernel.org>
 
-On 18. 02. 25, 13:29, Alexey Gladkov wrote:
-> When we putting character to the tty, we take into account the keyboard
-> mode to properly handle utf8. This code is duplicated few times.
+On Wed, Feb 19, 2025 at 07:24:52AM +0100, Jiri Slaby wrote:
+> On 18. 02. 25, 13:29, Alexey Gladkov wrote:
+> > The K_HANDLERS always gets KVAL as an argument. It is better to use the
+> > KVAL macro itself instead of bit operation.
+> > 
+> > Signed-off-by: Alexey Gladkov <legion@kernel.org>
+> > ---
+> >   drivers/tty/vt/keyboard.c | 4 ++--
+> >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+> > index 804355da46f5..7df041ac4d5c 100644
+> > --- a/drivers/tty/vt/keyboard.c
+> > +++ b/drivers/tty/vt/keyboard.c
+> > @@ -885,7 +885,7 @@ static void k_shift(struct vc_data *vc, unsigned char value, char up_flag)
+> >   		if (kbd->kbdmode == VC_UNICODE)
+> >   			to_utf8(vc, npadch_value);
+> >   		else
+> > -			put_queue(vc, npadch_value & 0xff);
+> > +			put_queue(vc, KVAL(npadch_value));
 > 
-> Signed-off-by: Alexey Gladkov <legion@kernel.org>
+> While the mask is the same, this is not a kval, right?
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+I'm pretty sure it's KVAL, but to be honest I don't understand why it is
+not done for to_utf8() as well. All values passed to to_utf8() must be
+kval.
 
-thanks,
+We call to_utf8() in k_unicode, fn_enter (through k_spec), handle_diacr
+(through k_deadunicode or k_unicode). All K_HANDLERS take KVAL as value.
+
+If I understand this code correctly, it is more correct to write it like
+this:
+
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -882,10 +882,11 @@ static void k_shift(struct vc_data *vc, unsigned char value, char up_flag)
+
+        /* kludge */
+        if (up_flag && shift_state != old_state && npadch_active) {
++               u32 kval = KVAL(npadch_value);
+                if (kbd->kbdmode == VC_UNICODE)
+-                       to_utf8(vc, npadch_value);
++                       to_utf8(vc, kval);
+                else
+-                       put_queue(vc, npadch_value & 0xff);
++                       put_queue(vc, kval);
+                npadch_active = false;
+        }
+ }
+
+But I may be wrong because the code about npadch_value is very old and I
+may be missing something.
+
+> >   		npadch_active = false;
+> >   	}
+> >   }
+> > @@ -1519,7 +1519,7 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
+> >   	if ((raw_mode || kbd->kbdmode == VC_OFF) && type != KT_SPEC && type != KT_SHIFT)
+> >   		return;
+> >   
+> > -	(*k_handler[type])(vc, keysym & 0xff, !down);
+> > +	(*k_handler[type])(vc, KVAL(keysym), !down);
+> 
+> This makes sense.
+> 
+> -- 
+> js
+> suse labs
+> 
+
 -- 
-js
-suse labs
+Rgrds, legion
+
