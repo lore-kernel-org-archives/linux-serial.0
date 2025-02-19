@@ -1,216 +1,132 @@
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB1951F5826;
-	Wed, 19 Feb 2025 13:53:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 789171EDA3C;
+	Wed, 19 Feb 2025 14:00:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739973241; cv=none; b=REM5AfyRL0p3cFES0LXmyj0lDvjLbwR8O0zghx36Vs1mmHVtdWGfaiHUhIB6gG+gmlg9v3vw/g7S2LPJO9xoV/TnfXgTJbhaXeISwE5WprHrieLQlIAiq6pn1unTyXa0V+CchCFwMYk36BJDXw9E56f4igwLiX20t2OtcPLAqP0=
+	t=1739973611; cv=none; b=j1gsY6cWejYJ0ky94blXMReXnZX6d2nbktbkDlogxTumKF7Dt1jE2XrlezTBNSUereYDQo72Y3Bp6+m6qMzIUSMo+v+rdUH/jHprjinMqBJKstxnZMG+rkr1pIf2Z8lCBuLeP4EfTTw5wBshMLHRk/au2LHmlz9ii7/ZLk0DMOU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739973241; c=relaxed/simple;
-	bh=DeOM5Df75GHcS0Y0GEoM4mWgDbiEGb7EsgOY7riDYLM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tLbN1WkFSuXxtFAGFhW0qfUgTUrfT1g9K85Mj0vKZ5G9CCnt98yPG3th0ormhxW51qfzoHKPOq8lE7QE4wgOZmbUittM1/bKVFZ9+MRnFGMNS+V+2jNfYhvbi5XgtUsyVL012W28UkVXLvezqnqadwaaHucCTNMp1CySYqgbtKw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-51eb181331bso2150801e0c.0;
-        Wed, 19 Feb 2025 05:53:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739973238; x=1740578038;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=MUq3A1UUbsdcNtzCPSmxTLUPZ2kU+mhmD/anFDh6E6M=;
-        b=PobW5Wnn3C7iL5wbMALxXEKC/eBsaSSch4YOjQY5GqqYXjvdDURMSODAV/SJvuuuyc
-         VyGx01poetlcroStHytwQpqdph+jOLoe7JSNgyHDwdFArjj18tTnVRjA9FOvnv84Vk8H
-         xX0vYBnYxTXt7ZWB0TvSMfXtxKIJ9xc18i+VLH+sC7Jxn5p5NAtLU3ctPp29I2MH4AWD
-         LzggXDGmTmpCtzbCA9Yh/3b1VQ/aI7+Yn4xktMXMWJTa7pd5Ni2n9dHLQZ6mwdyE6q1U
-         a1n8R8rSiVx7/46WoV7Emd6YJ1pczEmU321WGPMgBI1vMCClGHqyMa+vKxBygDQTyxbS
-         v3fQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVcow0zkL3utM+/0WzfCdOKy1Mese+weCoUObJzDBCwPK+Iw8kL2BGieP4dbBe7l2pzmzsmjpJm3DWV3XE=@vger.kernel.org, AJvYcCWBlOoFUz2enkF+MO7IRpuB37kMn/WJo73tpeUlsi0URxEebDDjhBmyJEteuJCyGQsuiSTDPcgy51GfvkWMItp11LU=@vger.kernel.org, AJvYcCWzEcSwefVU6SqyFR1rlrSjsCj9PikVfIawjRSj9fI9Jt/UB+dBNqCgV2UKXUHKQTG8PEbdLKEzZ829fo9j@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx3Q6wM6wD2zXW/BFr21cvlpUvx1iooR84/90yBj32ShgT1lBgX
-	ocoF2NgBe8pgdb+jU8idakROPmifDBeTpUdKU0z85OeUlDpiEZ2b/oDgDV47
-X-Gm-Gg: ASbGnct/IiseQ1faLHhEVNiTWy4SrJPFuQin0JvoPAe197yYSNA4ycWfGAHmNjcCrY4
-	BqeHd5i4WQM7BhkC3dPDF0or3J5rRcq0gAhdPPVljuyCgESd94MOtk/uKlKvjxS9jPxG9Fw6xJQ
-	FrSpf4IypdOrI/WT8OiJr6BHaXHX9i5qOreMazbUmPvZRz+ehoIFizdrNrqeMU1v0CYO3ArdF26
-	tx8lL8neUCwW5/yM6kHd3nNIIgvEOkwljnLOWr9EMTe2OovaWEp53Df6cwQqlgt97GNe5KlGPtV
-	aXV+IR1cma9VFXWHIjQznBP6DbYHmOwMZzwQZGMtRRX4fHe70O6YKQ==
-X-Google-Smtp-Source: AGHT+IH2/DOziPeSOrx9DFGbCIRJIP1XV7UIX47ILp59xz26B+risO2EnZs5ORpYVN1OKZ+4WdKa5w==
-X-Received: by 2002:a05:6122:2807:b0:520:3465:7302 with SMTP id 71dfb90a1353d-5209dae23b9mr9340216e0c.5.1739973237634;
-        Wed, 19 Feb 2025 05:53:57 -0800 (PST)
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-52099016353sm2566809e0c.31.2025.02.19.05.53.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Feb 2025 05:53:57 -0800 (PST)
-Received: by mail-ua1-f46.google.com with SMTP id a1e0cc1a2514c-867120d67baso2251169241.0;
-        Wed, 19 Feb 2025 05:53:57 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVGDR2oWM4XOcQUP1YKwwzhQ+7OU2Iy/g6qMHO76wr/QRyd0GOPgPt7PdD3ScMxe7I6uqomf64Qq8Ix82HknyPi7cs=@vger.kernel.org, AJvYcCWHHrwxJH/JJm4kOohAXqgLxXiBdzJ/6GwFa06IIEzgItNgBCIyrT8uuhs+KeiGiOmGnZiWw947MueyqTY=@vger.kernel.org, AJvYcCXs5xZ6EDpY70WpPTFYNu5JmsaFKqsBba4ChlyJfIylWmMYBmR/+6LjfQP+JHwFPHcF8n8tWTI2z71Hy43g@vger.kernel.org
-X-Received: by 2002:a05:6102:1486:b0:4af:ba51:a25f with SMTP id
- ada2fe7eead31-4bd3fe03a8emr10763151137.20.1739973237124; Wed, 19 Feb 2025
- 05:53:57 -0800 (PST)
+	s=arc-20240116; t=1739973611; c=relaxed/simple;
+	bh=EY09SFdHtRPeZXAlbD6hFzotyh8FFxTZ+cq5uNKGjmU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jMMcfHdkiZBGq+I/W+rjCGbrqKNne8u+tJKGEo1HkHHpaPgrQPuEAOreRR/8zfU+3hTSRzdmpEu35qOh9xov/EWOuae6R5ORH2Nl3KL8j/95SvirXhZVwJu9bVWg8d8A1jgRrQglM1ZbXOLzVknJd3qQWdcsw8xg6f5fhTydcAs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=f7vKqKd9; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="f7vKqKd9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 810B6C4CED1;
+	Wed, 19 Feb 2025 14:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1739973609;
+	bh=EY09SFdHtRPeZXAlbD6hFzotyh8FFxTZ+cq5uNKGjmU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=f7vKqKd9crmk6J/X1lgZNe9GrTEwfUdDsSd+YEISVB3HlKRbmwWWmm6uJmYXdSWZK
+	 CTBvqoNYHBhQSWhFQW2uWqiHc904G50ret2XU742tpzFVY+9sl02fLMMPJNj2aFrPP
+	 8W+clV9WLQQV3Jfqd/8LLEr9aPAXiiSPH9sYptA4=
+Date: Wed, 19 Feb 2025 15:00:07 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: adamsimonelli@gmail.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 1/2] ttynull: Add an option to allow ttynull to be
+ used as a console device
+Message-ID: <2025021920-uproot-antsy-e2c7@gregkh>
+References: <20250217040748.2017975-1-adamsimonelli@gmail.com>
+ <20250217040748.2017975-2-adamsimonelli@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250217105354.551788-1-thierry.bultel.yh@bp.renesas.com> <20250217105354.551788-10-thierry.bultel.yh@bp.renesas.com>
-In-Reply-To: <20250217105354.551788-10-thierry.bultel.yh@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 19 Feb 2025 14:53:45 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVptwisoHJq9683r92XS-sgO8Uk52zxnEQUn6DTd3DeEw@mail.gmail.com>
-X-Gm-Features: AWEUYZlPWgTUBbSUFTlt0CkgO_l4QftcwNhYeYkw57XRyKWMyk7h1RhnU_p-Cnk
-Message-ID: <CAMuHMdVptwisoHJq9683r92XS-sgO8Uk52zxnEQUn6DTd3DeEw@mail.gmail.com>
-Subject: Re: [PATCH v2 09/13] serial: sh-sci: Introduced sci_of_data
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250217040748.2017975-2-adamsimonelli@gmail.com>
 
-Hi Thierry,
-
-On Mon, 17 Feb 2025 at 12:04, Thierry Bultel
-<thierry.bultel.yh@bp.renesas.com> wrote:
-> The aim here is to provide an easier support to more different SCI
-> controllers, like the RZ/T2H one.
->
-> The existing .data field of_sci_match is changed to a structure containing
-> all what that can be statically initialized, and avoid a call to
-> 'sci_probe_regmap', in both 'sci_init_single', and 'early_console_setup'.
->
-> 'sci_probe_regmap' is now assumed to be called in the only case where the
-> device description is from a board file instead of a dts.
->
-> In this way, there is no need to patch 'sci_probe_regmap' for adding new
-> SCI type, and also, the specific sci_port_params for a new SCI type can be
-> provided by an external file.
->
-> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-
-Thanks for your patch!
-
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -3009,7 +3010,6 @@ static int sci_init_single(struct platform_device *dev,
->                 for (i = 1; i < ARRAY_SIZE(sci_port->irqs); i++)
->                         sci_port->irqs[i] = sci_port->irqs[0];
->
-> -       sci_port->params = sci_probe_regmap(p);
->         if (unlikely(sci_port->params == NULL))
->                 return -EINVAL;
-
-Ideally, this check can be removed here... (see below)
-
->
-> @@ -3264,9 +3264,14 @@ static void sci_remove(struct platform_device *dev)
->                 device_remove_file(&dev->dev, &dev_attr_rx_fifo_timeout);
->  }
->
-> -#define SCI_OF_DATA(type, regtype)     (void *)((type) << 16 | (regtype))
-> -#define SCI_OF_TYPE(data)              ((unsigned long)(data) >> 16)
-> -#define SCI_OF_REGTYPE(data)           ((unsigned long)(data) & 0xffff)
-> +#define SCI_OF_DATA(_type, _regtype) (\
-> +&(struct sci_of_data) {\
-> +       .type = (_type), \
-> +       .regtype = (_regtype),\
-> +       .ops = &sci_port_ops,\
-> +       .uart_ops = &sci_uart_ops,\
-> +       .params = &sci_port_params[_regtype],\
-> +})
-
-Doing it this way means each and every entry in of_sci_match[] has its
-own copy of struct sci_of_data, even if it is identical to one of the
-others. Unfortunately s/struct sci_of_data/const struct sci_of_data/
-doesn't help, so I'm afraid you have to deduplicate them explicitly.
-
->
->  static const struct of_device_id of_sci_match[] __maybe_unused = {
->         /* SoC-specific types */
-> @@ -3334,7 +3339,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
->         struct reset_control *rstc;
->         struct plat_sci_port *p;
->         struct sci_port *sp;
-> -       const void *data;
-> +       const struct sci_of_data *data;
->         int id, ret;
->
->         if (!IS_ENABLED(CONFIG_OF) || !np)
-> @@ -3380,8 +3385,12 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
->         sp = &sci_ports[id];
->         *dev_id = id;
->
-> -       p->type = SCI_OF_TYPE(data);
-> -       p->regtype = SCI_OF_REGTYPE(data);
-> +       p->type = data->type;
-> +       p->regtype = data->regtype;
+On Sun, Feb 16, 2025 at 11:07:47PM -0500, adamsimonelli@gmail.com wrote:
+> From: Adam Simonelli <adamsimonelli@gmail.com>
+> 
+> Add a config option CONFIG_NULL_TTY_CONSOLE that will have ttynull be
+> initialized by console_initcall() and selected as a possible console
+> device.
+> 
+> Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
+> ---
+>  drivers/tty/Kconfig   | 18 +++++++++++++++++-
+>  drivers/tty/ttynull.c | 16 +++++++++++++++-
+>  2 files changed, 32 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
+> index 63a494d36a1f..afe4e7722d4c 100644
+> --- a/drivers/tty/Kconfig
+> +++ b/drivers/tty/Kconfig
+> @@ -383,7 +383,23 @@ config NULL_TTY
+>  	  available or desired.
+>  
+>  	  In order to use this driver, you should redirect the console to this
+> -	  TTY, or boot the kernel with console=ttynull.
+> +	  TTY, boot the kernel with console=ttynull, or enable
+> +	  CONFIG_NULL_TTY_CONSOLE.
 > +
-> +       sp->ops = data->ops;
-> +       sp->port.ops = data->uart_ops;
-> +       sp->params = data->params;
->
->         sp->has_rtscts = of_property_read_bool(np, "uart-has-rtscts");
->
-> @@ -3471,6 +3480,7 @@ static int sci_probe(struct platform_device *dev)
->                 }
->
->                 dev_id = dev->id;
-> +               sp->params = sci_probe_regmap(p, &sci_ports[dev_id]);
-
-sp is still uninitialized here, so it crashes on SuperH.
-
-In adition
-
-if (!sp->params)
-        return -ENODEV;
-
->         }
->
->         sp = &sci_ports[dev_id];
-> @@ -3560,19 +3570,23 @@ sh_early_platform_init_buffer("earlyprintk", &sci_driver,
->  static struct plat_sci_port port_cfg __initdata;
->
->  int __init early_console_setup(struct earlycon_device *device,
-> -                                     int type)
-> +                              const struct sci_of_data *data)
->  {
->         const struct sci_common_regs *regs;
->
->         if (!device->port.membase)
->                 return -ENODEV;
->
-> -       device->port.type = type;
-> +       device->port.type = data->type;
->         memcpy(&sci_ports[0].port, &device->port, sizeof(struct uart_port));
-> -       port_cfg.type = type;
+> +	  If unsure, say N.
 > +
-> +       port_cfg.type = data->type;
-> +       port_cfg.regtype = data->regtype;
+> +config NULL_TTY_CONSOLE
+> +        bool "Supports /dev/ttynull as a console automatically"
+> +        depends on NULL_TTY=y && !VT_CONSOLE
+> +	help
+> +	  Say Y here if you want the NULL TTY to be used as a /dev/console
+> +	  device.
 > +
->         sci_ports[0].cfg = &port_cfg;
-> -       sci_ports[0].ops = &sci_port_ops;
-> -       sci_ports[0].params = sci_probe_regmap(&port_cfg);
-> +       sci_ports[0].params = data->params;
-> +       sci_ports[0].ops = data->ops;
-> +       sci_ports[0].port.ops = data->uart_ops;
->         regs = sci_ports[0].params->common_regs;
->
->         port_cfg.scscr = sci_ports[0].ops->read_reg(&sci_ports[0].port, regs->control);
+> +	  This is useful for userspace applications that expect a working
+> +	  console device, without changing the kernel boot options, such as a
+> +	  distribuition or environment that historically had CONFIG_VT_CONSOLE
+> +	  enabled, and have now disabled it, but still need /dev/console to be
+> +	  working for userspace applications.
+>  
+>  	  If unsure, say N.
+>  
+> diff --git a/drivers/tty/ttynull.c b/drivers/tty/ttynull.c
+> index 6b2f7208b564..8ba629ae426b 100644
+> --- a/drivers/tty/ttynull.c
+> +++ b/drivers/tty/ttynull.c
+> @@ -57,6 +57,10 @@ static struct tty_driver *ttynull_device(struct console *c, int *index)
+>  static struct console ttynull_console = {
+>  	.name = "ttynull",
+>  	.device = ttynull_device,
+> +#ifdef CONFIG_NULL_TTY_CONSOLE
+> +	.index = -1,
+> +	.flags = CON_PRINTBUFFER,
+> +#endif
 
-I think you have to do some extra setup in sci_probe_earlyprintk(), too.
-That function contains the second caller of sci_init_single(), and
-thus relied on sci_init_single() calling sci_probe_regmap() before.
-I haven't tested that case on actual hardware yet.
+There's no way to do this without #ifdef in the .c files?
 
-Gr{oetje,eeting}s,
+>  };
+>  
+>  static int __init ttynull_init(void)
+> @@ -90,10 +94,20 @@ static int __init ttynull_init(void)
+>  	}
+>  
+>  	ttynull_driver = driver;
+> -	register_console(&ttynull_console);
+> +	if (!console_is_registered(&ttynull_console))
+> +		register_console(&ttynull_console);
+> +
 
-                        Geert
+Why do you register this twice?
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+> +	return 0;
+> +}
+>  
+> +#ifdef CONFIG_NULL_TTY_CONSOLE
+> +static int __init ttynull_register(void)
+> +{
+> +	register_console(&ttynull_console);
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Here, why is this registered again?
+
+You should only have to do this once, and not need to check before
+trying again, right?
+
+thanks,
+
+greg k-h
