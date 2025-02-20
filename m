@@ -1,155 +1,180 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2ACC1F2BB5;
-	Thu, 20 Feb 2025 11:16:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FFCB1F2BA4;
+	Thu, 20 Feb 2025 11:16:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740050173; cv=none; b=PBqd53Ntl9Dc5cJTPE606V+PtWbmjwOkzWpQ/55KGWyhOJYVrtGjgXwU0Y/ghk02oq22m3KGi1dzpLA5RVu3zreg4QoJFqzIIQ8UDbZFWCatH+YELQTrxfhPJDxTZWoT74ohrSGKaVc7e0S4RAk8OkyOsez2HxnlfcnHTE+G6gQ=
+	t=1740050175; cv=none; b=q/AUrOGlPdzBIYOjMzLi8pZioz1hY+aIleGjOKAsKHxVl0WDGnqRLPpotLolx8r4Qdf25XwrJHUvZ7/a7UU8ziVRSlkobRlwEPmQEyLPfR/CaTeX++Byjbafj/zC19gREDzlFQG99uswwfZngKYRYImzbD7MaSpbzoCUmSdQxP8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740050173; c=relaxed/simple;
-	bh=Iqri3H4l7MINuskI1RcHgMhBsNlYFaxp53yd+z2TvQE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=sVD5qzt4AM4to0yTZe2rxktXGiBI/DtNaYE3uI8dnfY6WGYUPp7kOgBtk/aNHhSmnUOMzk0pH0tRtGnGPyvpgN7CtiDZt4Ah65gyMv0a+05J4FOx1kscCIBk4W+HSzdG9zFZHrVgVCqN46tRqsU4KUQjJ0bSj0Qm5LSB//eZJPM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b12PjNii; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1740050175; c=relaxed/simple;
+	bh=UGUcZhh2uN5m2e5STrQhOWzZBbObdTYU/HLYBpoIjf0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Hs+QKrifHMRJbEPXy8w28z4z9GxMypjFLmXfL1tMPCqsJC4rVdyuS0EVcoJlrVYUT/z4/0L/xKp7/nKSKo6mpdRRZu63rBMFDGNo64tchVIEodWEQIzAFN2Tog0EHqyXNXuEz5teN5HCRSVWnqvy5iD5Mgqgt0VvRrYO5NchgQk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CkxsvloC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b12PjNii"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A03C7C4CED1;
-	Thu, 20 Feb 2025 11:16:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CkxsvloC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84209C4CEDD;
+	Thu, 20 Feb 2025 11:16:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740050173;
-	bh=Iqri3H4l7MINuskI1RcHgMhBsNlYFaxp53yd+z2TvQE=;
-	h=From:To:Cc:Subject:Date:From;
-	b=b12PjNiiGqku601OHJrDa/9YCDx0fJyQ7Bdp/ajH184yil9nFzdUdcDe5/ZyRh5m4
-	 gLzO1tSw8M34I0X9YAkX4dhc1vCz1nrdAgNhIe1DfvgV6tMcBNDCCvRobcS7IJ8oCf
-	 xPSDPzpE9ULLVTIqAFS3ItO8Dl3mn37LJ661h4LPDOBbJgCuS3qjUGJkbV3+SlCQXc
-	 Wn5OMkQryz1tLQUJHbJuI72OkPI2qc58tTceZiTUlwAAboJsgJAMlz2p7QHI8ZlV/Z
-	 sHQIak/D/jc2CZZWmMl5XCwrQ7mzhT3fKX5LFSRzky0lfYQAPQsieBjjPLv0FP4X7x
-	 gqLF2shVX1i9g==
+	s=k20201202; t=1740050174;
+	bh=UGUcZhh2uN5m2e5STrQhOWzZBbObdTYU/HLYBpoIjf0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=CkxsvloCLVEYCIdzMrcDLCc0pZu8PABLUaTOu6+J5rpGkZvViFEcvQKpj7FadD8If
+	 A9dV1ZYQkNT34jjCS4uqeDZM7LKAurWwkoHD5TM3CqoKPkdtpuzrquDz1DlbmsBx8w
+	 735cFSqL1hlgWOzTI2e4bpNY5X1gve8YlCkOGfw3j+TFOLa94bQJBU4wUeVcyEIvOO
+	 htgU85v6t7aoeaL8Vhf9Q9af3lIVnB8ieTdfF09TL8rdoGeFEdlUgEIOlE4qR7WyOA
+	 qm2hfkcN/g1+thcefn2sWIZbQoK3vjddXfRsOd18Ect9qxA4Od28jV9YidfmdIVCRW
+	 iWLxTDogCp1wg==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Alex Elder <elder@kernel.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	David Lin <dtwlin@gmail.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	greybus-dev@lists.linaro.org,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Johan Hovold <johan@kernel.org>,
-	linux-alpha@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	Matt Turner <mattst88@gmail.com>,
-	netdev@vger.kernel.org,
-	Paolo Abeni <pabeni@redhat.com>,
-	Richard Henderson <richard.henderson@linaro.org>,
-	Rob Herring <robh@kernel.org>,
-	sparclinux@vger.kernel.org
-Subject: [PATCH 00/29] tty: cleanup no. 99
-Date: Thu, 20 Feb 2025 12:15:37 +0100
-Message-ID: <20250220111606.138045-1-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 01/29] tty: convert "TTY Struct Flags" to an enum
+Date: Thu, 20 Feb 2025 12:15:38 +0100
+Message-ID: <20250220111606.138045-2-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.48.1
+In-Reply-To: <20250220111606.138045-1-jirislaby@kernel.org>
+References: <20250220111606.138045-1-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Hi,
+Convert TTY_* macros (flags) to an enum. This allows for easier
+kernel-doc (the comment needed fine tuning), grouping of these nicely,
+and proper checking.
 
-this is (again) a series of cleanup in tty. I am trying to rework
-tty+serial to avoid limitations of devices (so called NR_UART or
-tty_alloc_driver()'s first parameter). And the below popped up while
-crawling through the code. So this is only a prep cleanup.
+Note that these are bit positions. So they are used such as
+test_bit(TTY_THROTTLED, ...). Given these are not the user API (only
+in-kernel API/ABI), the bit positions are NOT preserved in this patch.
+All are renumbered naturally using the enum-auto-numbering.
 
-* many tty flags are now enums
-* many functions were improved for readability
-* quite a few unused or old code dropped
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ Documentation/driver-api/tty/tty_struct.rst |  2 +-
+ include/linux/tty.h                         | 52 +++++++++++----------
+ 2 files changed, 28 insertions(+), 26 deletions(-)
 
-In particular, the runtime behaviour of the kernel before and after the
-changes is supposed to be bug to bug compatible (except moxa's ioctl
-and ISA evils dropped). That is, noone should notice.
-
-Cc: Alex Elder <elder@kernel.org>
-Cc: Andrew Lunn <andrew+netdev@lunn.ch>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: David Lin <dtwlin@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: greybus-dev@lists.linaro.org
-Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: linux-alpha@vger.kernel.org
-Cc: linux-staging@lists.linux.dev
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Richard Henderson <richard.henderson@linaro.org>
-Cc: Rob Herring <robh@kernel.org>
-Cc: sparclinux@vger.kernel.org
-
-Jiri Slaby (SUSE) (29):
-  tty: convert "TTY Struct Flags" to an enum
-  tty: audit: do not use N_TTY_BUF_SIZE
-  tty: caif: do not use N_TTY_BUF_SIZE
-  tty: move N_TTY_BUF_SIZE to n_tty
-  tty: n_tty: use uint for space returned by tty_write_room()
-  tty: n_tty: simplify process_output()
-  tty: n_tty: clean up process_output_block()
-  tty: n_tty: drop n_tty_trace()
-  tty: n_tty: extract n_tty_continue_cookie() from n_tty_read()
-  tty: n_tty: extract n_tty_wait_for_input()
-  tty: n_tty: move more_to_be_read to the end of n_tty_read()
-  tty: tty_driver: move TTY macros to the top
-  tty: tty_driver: convert "TTY Driver Flags" to an enum
-  tty: tty_driver: document both {,__}tty_alloc_driver() properly
-  tty: tty_driver: introduce TTY driver sub/types enums
-  tty: serdev: drop serdev_controller_ops::write_room()
-  tty: moxa: drop version dump to logs
-  tty: moxa: drop ISA support
-  tty: moxa: carve out special ioctls and extra tty_port
-  tty: srmcons: fix retval from srmcons_init()
-  tty: staging/greybus: pass tty_driver flags to tty_alloc_driver()
-  tty: sunsu: drop serial_{in,out}p()
-  tty: sunsu: remove unused serial_icr_read()
-  serial: remove redundant tty_port_link_device()
-  serial: pass struct uart_state to uart_line_info()
-  serial: 8250: use serial_in/out() helpers
-  serial: 8250_rsa: simplify rsa8250_{request/release}_resource()
-  serial: 8250_port: do not use goto for UPQ_NO_TXEN_TEST code flow
-  serial: 8250_port: simplify serial8250_request_std_resource()
-
- Documentation/driver-api/tty/tty_driver.rst |   4 +-
- Documentation/driver-api/tty/tty_struct.rst |   2 +-
- arch/alpha/kernel/srmcons.c                 |  62 ++---
- drivers/net/caif/caif_serial.c              |   2 +-
- drivers/staging/greybus/uart.c              |   4 +-
- drivers/tty/Kconfig                         |   2 +-
- drivers/tty/moxa.c                          | 251 +-------------------
- drivers/tty/n_tty.c                         | 212 ++++++++---------
- drivers/tty/serdev/core.c                   |  11 -
- drivers/tty/serdev/serdev-ttyport.c         |   9 -
- drivers/tty/serial/8250/8250_dw.c           |  17 +-
- drivers/tty/serial/8250/8250_fsl.c          |   8 +-
- drivers/tty/serial/8250/8250_omap.c         |   2 +-
- drivers/tty/serial/8250/8250_port.c         |  59 ++---
- drivers/tty/serial/8250/8250_rsa.c          |  21 +-
- drivers/tty/serial/serial_core.c            |   6 +-
- drivers/tty/serial/sunsu.c                  | 178 ++++++--------
- drivers/tty/tty_audit.c                     |  10 +-
- drivers/tty/tty_io.c                        |   8 +-
- include/linux/serdev.h                      |   6 -
- include/linux/tty.h                         |  53 +++--
- include/linux/tty_driver.h                  | 180 +++++++-------
- 22 files changed, 410 insertions(+), 697 deletions(-)
-
+diff --git a/Documentation/driver-api/tty/tty_struct.rst b/Documentation/driver-api/tty/tty_struct.rst
+index c72f5a4293b2..29caf1c1ca5f 100644
+--- a/Documentation/driver-api/tty/tty_struct.rst
++++ b/Documentation/driver-api/tty/tty_struct.rst
+@@ -72,7 +72,7 @@ TTY Struct Flags
+ ================
+ 
+ .. kernel-doc:: include/linux/tty.h
+-   :doc: TTY Struct Flags
++   :identifiers: tty_struct_flags
+ 
+ TTY Struct Reference
+ ====================
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 2372f9357240..6bb4fb3845f0 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -251,7 +251,7 @@ struct tty_file_private {
+ };
+ 
+ /**
+- * DOC: TTY Struct Flags
++ * enum tty_struct_flags - TTY Struct Flags
+  *
+  * These bits are used in the :c:member:`tty_struct.flags` field.
+  *
+@@ -260,62 +260,64 @@ struct tty_file_private {
+  * tty->write.  Thus, you must use the inline functions set_bit() and
+  * clear_bit() to make things atomic.
+  *
+- * TTY_THROTTLED
++ * @TTY_THROTTLED:
+  *	Driver input is throttled. The ldisc should call
+  *	:c:member:`tty_driver.unthrottle()` in order to resume reception when
+  *	it is ready to process more data (at threshold min).
+  *
+- * TTY_IO_ERROR
++ * @TTY_IO_ERROR:
+  *	If set, causes all subsequent userspace read/write calls on the tty to
+  *	fail, returning -%EIO. (May be no ldisc too.)
+  *
+- * TTY_OTHER_CLOSED
++ * @TTY_OTHER_CLOSED:
+  *	Device is a pty and the other side has closed.
+  *
+- * TTY_EXCLUSIVE
++ * @TTY_EXCLUSIVE:
+  *	Exclusive open mode (a single opener).
+  *
+- * TTY_DO_WRITE_WAKEUP
++ * @TTY_DO_WRITE_WAKEUP:
+  *	If set, causes the driver to call the
+  *	:c:member:`tty_ldisc_ops.write_wakeup()` method in order to resume
+  *	transmission when it can accept more data to transmit.
+  *
+- * TTY_LDISC_OPEN
++ * @TTY_LDISC_OPEN:
+  *	Indicates that a line discipline is open. For debugging purposes only.
+  *
+- * TTY_PTY_LOCK
++ * @TTY_PTY_LOCK:
+  *	A flag private to pty code to implement %TIOCSPTLCK/%TIOCGPTLCK logic.
+  *
+- * TTY_NO_WRITE_SPLIT
++ * @TTY_NO_WRITE_SPLIT:
+  *	Prevent driver from splitting up writes into smaller chunks (preserve
+  *	write boundaries to driver).
+  *
+- * TTY_HUPPED
++ * @TTY_HUPPED:
+  *	The TTY was hung up. This is set post :c:member:`tty_driver.hangup()`.
+  *
+- * TTY_HUPPING
++ * @TTY_HUPPING:
+  *	The TTY is in the process of hanging up to abort potential readers.
+  *
+- * TTY_LDISC_CHANGING
++ * @TTY_LDISC_CHANGING:
+  *	Line discipline for this TTY is being changed. I/O should not block
+  *	when this is set. Use tty_io_nonblock() to check.
+  *
+- * TTY_LDISC_HALTED
++ * @TTY_LDISC_HALTED:
+  *	Line discipline for this TTY was stopped. No work should be queued to
+  *	this ldisc.
+  */
+-#define TTY_THROTTLED		0
+-#define TTY_IO_ERROR		1
+-#define TTY_OTHER_CLOSED	2
+-#define TTY_EXCLUSIVE		3
+-#define TTY_DO_WRITE_WAKEUP	5
+-#define TTY_LDISC_OPEN		11
+-#define TTY_PTY_LOCK		16
+-#define TTY_NO_WRITE_SPLIT	17
+-#define TTY_HUPPED		18
+-#define TTY_HUPPING		19
+-#define TTY_LDISC_CHANGING	20
+-#define TTY_LDISC_HALTED	22
++enum tty_struct_flags {
++	TTY_THROTTLED,
++	TTY_IO_ERROR,
++	TTY_OTHER_CLOSED,
++	TTY_EXCLUSIVE,
++	TTY_DO_WRITE_WAKEUP,
++	TTY_LDISC_OPEN,
++	TTY_PTY_LOCK,
++	TTY_NO_WRITE_SPLIT,
++	TTY_HUPPED,
++	TTY_HUPPING,
++	TTY_LDISC_CHANGING,
++	TTY_LDISC_HALTED,
++};
+ 
+ static inline bool tty_io_nonblock(struct tty_struct *tty, struct file *file)
+ {
 -- 
 2.48.1
 
