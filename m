@@ -1,39 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 709341F3B8A;
-	Thu, 20 Feb 2025 11:16:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81F3020CCD7;
+	Thu, 20 Feb 2025 11:16:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740050203; cv=none; b=DUR4eNa46qIW/9Ra8xI0WMCLwJobFetHpstowa9ThVu8QLk9eqzVgMP3BKePEsBdDxgXHI9031vY7KMn+daBbh5eM3dy6dOxUhfsaNCXFhHCFEIB4ytCl9y28BSHyI6EzCTntC4wEoaW7HTzgge8J50stV2PQHJZghRzlgm1I7A=
+	t=1740050205; cv=none; b=vCtIabA0HoFwpJHOgVTn/Gj/vutWTGtVhXGeGIGuv1jKLClp4Bbz1iU2LR3SjAHpQ7xBcZz2KTUZOpZEPZ8qhcbh03X0iAYYe6TcCEKkBiWXevjvrvCirWCVAHBICKD87l2l6wmqaELWK8gLSiULkfX4OC6X6gKEjVOvyMTDh34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740050203; c=relaxed/simple;
-	bh=Nzn39Gj0zDV8oO5kv9Dt85bKRYqHcU7BvP/2szVpfw8=;
+	s=arc-20240116; t=1740050205; c=relaxed/simple;
+	bh=tPBF9LP8wAH3H57CScf2FsBy11Kw5FRN6WCAO0fbggk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=YU7E9kEWWzhovbccETFCXpFxtU0ekKj1UdNblNxWmhHHLm3du0AzZaMMP4gwuGRjfS1trZ1tsuCJRYlaG52m2WlsEPn5ucWSnJDrB2RI+1ejrOw7THK5pi8clJF5bU/b8tN1JSpBdP+So9c/yrPwHN4uzer/dZkVbY89BoPPdK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VTUW7V4F; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=FAqT5/fDI91ljJ7duA/2tocNIj91tJ+Lrbpnso9Jl8opw/oagGyIy7Pl7YTxIV4xAZxg8wlhJmTgxRipJ8y/o+iUVh80EK6bLDtmDRMYnolhKqHEpoKbepXSNy72eRCZUNCWC3Gcau8/c+6Zw309QOiZ/FEVF3USOZfh7Oi9ep0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lRohVHA0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VTUW7V4F"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41A5AC4CEE4;
-	Thu, 20 Feb 2025 11:16:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lRohVHA0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C21C6C4CED1;
+	Thu, 20 Feb 2025 11:16:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740050203;
-	bh=Nzn39Gj0zDV8oO5kv9Dt85bKRYqHcU7BvP/2szVpfw8=;
+	s=k20201202; t=1740050205;
+	bh=tPBF9LP8wAH3H57CScf2FsBy11Kw5FRN6WCAO0fbggk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=VTUW7V4F02DLH1GSJEnrerkTin2mCYVLJykjPHpW9UVOvJHtAc24pCQdUnYZb0MOc
-	 a+SwTuRo2B/mpZNh8XJedi+GsfrK3zSMx/m/vx7Le3qnxDIwpnY1P7WH3aKQQXxi+J
-	 hDYEAAVfGxCbN82yBKN16oG1hYVBkn5FMmMIQIvPyBs9An8w+BwuqIeVELzTNH+jGK
-	 6XStAuxaHfcDKkv2xCrIB3SwcMZG7Hi1dlu1FRZz+DK5oS5CfFgQUpQFsbxF7B6EOy
-	 gp4QqJUOvjEoPPlVCTupyBwWfJnPN/CEnvmX3OmbSmJ3ll2TFODWmN5WSpFSadIlia
-	 02ONDp9LjERRA==
+	b=lRohVHA0aA4Ema3KugqZoT7KSj2Hw/mvfiLf7yl+6nnDvhpBHjD4kWkkwRFmIBxbp
+	 6vpS6JgCoyo/XzMZUnwAoErbN08kaO/9qRe0bZ6veWute3WwuHpkCzLEQMzLnj3dI4
+	 Eq6L+Agy7Psg3GMy/Jb1Cq5J/YNIVm+CcyUmKA0DPUPCOfyKcuFOCvFuXSXEIqz0ok
+	 t1LflpFIjNgPdnsLb0JYIoR5JY/Fq5H056Oblbt99t9oTg8R3y6Il1JYGN8rd0gH7T
+	 TNop/1Bqy0zkK6rQ3ysLnjj63htPtYdvp3NQDvLxhgdM7bMPCT+Y2abIOuEb6bj96K
+	 3v5CrVmN0OO3A==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 19/29] tty: moxa: carve out special ioctls and extra tty_port
-Date: Thu, 20 Feb 2025 12:15:56 +0100
-Message-ID: <20250220111606.138045-20-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	Matt Turner <mattst88@gmail.com>,
+	linux-alpha@vger.kernel.org
+Subject: [PATCH 20/29] tty: srmcons: fix retval from srmcons_init()
+Date: Thu, 20 Feb 2025 12:15:57 +0100
+Message-ID: <20250220111606.138045-21-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.48.1
 In-Reply-To: <20250220111606.138045-1-jirislaby@kernel.org>
 References: <20250220111606.138045-1-jirislaby@kernel.org>
@@ -45,269 +48,103 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-These ioctls are undocumented and not exposed -- they are defined
-locally. Given they need a special tty_port just for them, this is very
-ugly. So drop this whole functionality. It is barely used for something
-real. (And if it is, we'd need a common functionality to all drivers.)
+The value returned from srmcons_init() was -ENODEV for over 2 decades.
+But it does not matter, given device_initcall() ignores retvals.
+
+But to be honest, return 0 in case the tty driver was registered
+properly.
+
+To do that, the condition is inverted and a short path taken in case of
+error.
+
+err_free_drv is introduced as it will be used from more places later.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Cc: Richard Henderson <richard.henderson@linaro.org>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: linux-alpha@vger.kernel.org
 ---
- drivers/tty/moxa.c | 146 +--------------------------------------------
- 1 file changed, 1 insertion(+), 145 deletions(-)
+ arch/alpha/kernel/srmcons.c | 62 ++++++++++++++++++++-----------------
+ 1 file changed, 33 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
-index a753afcb53b5..1348e2214b81 100644
---- a/drivers/tty/moxa.c
-+++ b/drivers/tty/moxa.c
-@@ -43,15 +43,6 @@
- #include <linux/ratelimit.h>
- 
- #include <asm/io.h>
--#include <linux/uaccess.h>
+diff --git a/arch/alpha/kernel/srmcons.c b/arch/alpha/kernel/srmcons.c
+index 3e61073f4b30..b9cd364e814e 100644
+--- a/arch/alpha/kernel/srmcons.c
++++ b/arch/alpha/kernel/srmcons.c
+@@ -196,40 +196,44 @@ static const struct tty_operations srmcons_ops = {
+ static int __init
+ srmcons_init(void)
+ {
++	struct tty_driver *driver;
++	int err;
++
+ 	timer_setup(&srmcons_singleton.timer, srmcons_receive_chars, 0);
+-	if (srm_is_registered_console) {
+-		struct tty_driver *driver;
+-		int err;
 -
--#define	MOXA			0x400
--#define MOXA_GET_IQUEUE		(MOXA + 1)	/* get input buffered count */
--#define MOXA_GET_OQUEUE		(MOXA + 2)	/* get output buffered count */
--#define MOXA_GETDATACOUNT       (MOXA + 23)
--#define MOXA_GET_IOQUEUE	(MOXA + 27)
--#define MOXA_FLUSH_QUEUE	(MOXA + 28)
--#define MOXA_GETMSTATUS         (MOXA + 65)
+-		driver = tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
+-		if (IS_ERR(driver))
+-			return PTR_ERR(driver);
+-
+-		tty_port_init(&srmcons_singleton.port);
+-
+-		driver->driver_name = "srm";
+-		driver->name = "srm";
+-		driver->major = 0; 	/* dynamic */
+-		driver->minor_start = 0;
+-		driver->type = TTY_DRIVER_TYPE_SYSTEM;
+-		driver->subtype = SYSTEM_TYPE_SYSCONS;
+-		driver->init_termios = tty_std_termios;
+-		tty_set_operations(driver, &srmcons_ops);
+-		tty_port_link_device(&srmcons_singleton.port, driver, 0);
+-		err = tty_register_driver(driver);
+-		if (err) {
+-			tty_driver_kref_put(driver);
+-			tty_port_destroy(&srmcons_singleton.port);
+-			return err;
+-		}
+-		srmcons_driver = driver;
+-	}
  
+-	return -ENODEV;
++	if (!srm_is_registered_console)
++		return -ENODEV;
++
++	driver = tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
++	if (IS_ERR(driver))
++		return PTR_ERR(driver);
++
++	tty_port_init(&srmcons_singleton.port);
++
++	driver->driver_name = "srm";
++	driver->name = "srm";
++	driver->major = 0;	/* dynamic */
++	driver->minor_start = 0;
++	driver->type = TTY_DRIVER_TYPE_SYSTEM;
++	driver->subtype = SYSTEM_TYPE_SYSCONS;
++	driver->init_termios = tty_std_termios;
++	tty_set_operations(driver, &srmcons_ops);
++	tty_port_link_device(&srmcons_singleton.port, driver, 0);
++	err = tty_register_driver(driver);
++	if (err)
++		goto err_free_drv;
++
++	srmcons_driver = driver;
++
++	return 0;
++err_free_drv:
++	tty_driver_kref_put(driver);
++	tty_port_destroy(&srmcons_singleton.port);
++
++	return err;
+ }
+ device_initcall(srmcons_init);
+ 
+-
  /*
-  *    System Configuration
-@@ -397,19 +388,6 @@ static struct moxa_board_conf {
- 	void __iomem *intTable;
- } moxa_boards[MAX_BOARDS];
- 
--struct mxser_mstatus {
--	tcflag_t cflag;
--	int cts;
--	int dsr;
--	int ri;
--	int dcd;
--};
--
--struct moxaq_str {
--	int inq;
--	int outq;
--};
--
- struct moxa_port {
- 	struct tty_port port;
- 	struct moxa_board_conf *board;
-@@ -424,12 +402,6 @@ struct moxa_port {
- 	u8 lowChkFlag;
- };
- 
--struct mon_str {
--	int tick;
--	int rxcnt[MAX_PORTS];
--	int txcnt[MAX_PORTS];
--};
--
- /* statusflags */
- #define TXSTOPPED	1
- #define LOWWAIT 	2
-@@ -439,14 +411,11 @@ struct mon_str {
- #define WAKEUP_CHARS		256
- 
- static int ttymajor = MOXAMAJOR;
--static struct mon_str moxaLog;
- static unsigned int moxaFuncTout = HZ / 2;
- static unsigned int moxaLowWaterChk;
- static DEFINE_MUTEX(moxa_openlock);
- static DEFINE_SPINLOCK(moxa_lock);
- 
--static struct tty_port moxa_service_port;
--
- MODULE_AUTHOR("William Chen");
- MODULE_DESCRIPTION("MOXA Intellio Family Multiport Board Device Driver");
- MODULE_LICENSE("GPL");
-@@ -557,104 +526,6 @@ static void moxa_low_water_check(void __iomem *ofsAddr)
-  * TTY operations
+  * The console driver
   */
- 
--static int moxa_ioctl(struct tty_struct *tty,
--		      unsigned int cmd, unsigned long arg)
--{
--	struct moxa_port *ch = tty->driver_data;
--	void __user *argp = (void __user *)arg;
--	int status, ret = 0;
--
--	if (tty->index == MAX_PORTS) {
--		if (cmd != MOXA_GETDATACOUNT && cmd != MOXA_GET_IOQUEUE &&
--				cmd != MOXA_GETMSTATUS)
--			return -EINVAL;
--	} else if (!ch)
--		return -ENODEV;
--
--	switch (cmd) {
--	case MOXA_GETDATACOUNT:
--		moxaLog.tick = jiffies;
--		if (copy_to_user(argp, &moxaLog, sizeof(moxaLog)))
--			ret = -EFAULT;
--		break;
--	case MOXA_FLUSH_QUEUE:
--		MoxaPortFlushData(ch, arg);
--		break;
--	case MOXA_GET_IOQUEUE: {
--		struct moxaq_str __user *argm = argp;
--		struct moxaq_str tmp;
--		struct moxa_port *p;
--		unsigned int i, j;
--
--		for (i = 0; i < MAX_BOARDS; i++) {
--			p = moxa_boards[i].ports;
--			for (j = 0; j < MAX_PORTS_PER_BOARD; j++, p++, argm++) {
--				memset(&tmp, 0, sizeof(tmp));
--				spin_lock_bh(&moxa_lock);
--				if (moxa_boards[i].ready) {
--					tmp.inq = MoxaPortRxQueue(p);
--					tmp.outq = MoxaPortTxQueue(p);
--				}
--				spin_unlock_bh(&moxa_lock);
--				if (copy_to_user(argm, &tmp, sizeof(tmp)))
--					return -EFAULT;
--			}
--		}
--		break;
--	} case MOXA_GET_OQUEUE:
--		status = MoxaPortTxQueue(ch);
--		ret = put_user(status, (unsigned long __user *)argp);
--		break;
--	case MOXA_GET_IQUEUE:
--		status = MoxaPortRxQueue(ch);
--		ret = put_user(status, (unsigned long __user *)argp);
--		break;
--	case MOXA_GETMSTATUS: {
--		struct mxser_mstatus __user *argm = argp;
--		struct mxser_mstatus tmp;
--		struct moxa_port *p;
--		unsigned int i, j;
--
--		for (i = 0; i < MAX_BOARDS; i++) {
--			p = moxa_boards[i].ports;
--			for (j = 0; j < MAX_PORTS_PER_BOARD; j++, p++, argm++) {
--				struct tty_struct *ttyp;
--				memset(&tmp, 0, sizeof(tmp));
--				spin_lock_bh(&moxa_lock);
--				if (!moxa_boards[i].ready) {
--				        spin_unlock_bh(&moxa_lock);
--					goto copy;
--                                }
--
--				status = MoxaPortLineStatus(p);
--				spin_unlock_bh(&moxa_lock);
--
--				if (status & 1)
--					tmp.cts = 1;
--				if (status & 2)
--					tmp.dsr = 1;
--				if (status & 4)
--					tmp.dcd = 1;
--
--				ttyp = tty_port_tty_get(&p->port);
--				if (!ttyp)
--					tmp.cflag = p->cflag;
--				else
--					tmp.cflag = ttyp->termios.c_cflag;
--				tty_kref_put(ttyp);
--copy:
--				if (copy_to_user(argm, &tmp, sizeof(tmp)))
--					return -EFAULT;
--			}
--		}
--		break;
--	}
--	default:
--		ret = -ENOIOCTLCMD;
--	}
--	return ret;
--}
--
- static int moxa_break_ctl(struct tty_struct *tty, int state)
- {
- 	struct moxa_port *port = tty->driver_data;
-@@ -671,7 +542,6 @@ static const struct tty_operations moxa_ops = {
- 	.write_room = moxa_write_room,
- 	.flush_buffer = moxa_flush_buffer,
- 	.chars_in_buffer = moxa_chars_in_buffer,
--	.ioctl = moxa_ioctl,
- 	.set_termios = moxa_set_termios,
- 	.stop = moxa_stop,
- 	.start = moxa_start,
-@@ -1283,9 +1153,7 @@ static int __init moxa_init(void)
- {
- 	int retval = 0;
- 
--	tty_port_init(&moxa_service_port);
--
--	moxaDriver = tty_alloc_driver(MAX_PORTS + 1,
-+	moxaDriver = tty_alloc_driver(MAX_PORTS,
- 			TTY_DRIVER_REAL_RAW |
- 			TTY_DRIVER_DYNAMIC_DEV);
- 	if (IS_ERR(moxaDriver))
-@@ -1301,8 +1169,6 @@ static int __init moxa_init(void)
- 	moxaDriver->init_termios.c_ispeed = 9600;
- 	moxaDriver->init_termios.c_ospeed = 9600;
- 	tty_set_operations(moxaDriver, &moxa_ops);
--	/* Having one more port only for ioctls is ugly */
--	tty_port_link_device(&moxa_service_port, moxaDriver, MAX_PORTS);
- 
- 	if (tty_register_driver(moxaDriver)) {
- 		printk(KERN_ERR "can't register MOXA Smartio tty driver!\n");
-@@ -1362,9 +1228,6 @@ static int moxa_open(struct tty_struct *tty, struct file *filp)
- 	int port;
- 
- 	port = tty->index;
--	if (port == MAX_PORTS) {
--		return capable(CAP_SYS_ADMIN) ? 0 : -EPERM;
--	}
- 	if (mutex_lock_interruptible(&moxa_openlock))
- 		return -ERESTARTSYS;
- 	brd = &moxa_boards[port / MAX_PORTS_PER_BOARD];
-@@ -2087,7 +1950,6 @@ static ssize_t MoxaPortWriteData(struct tty_struct *tty, const u8 *buffer,
- 	c = (head > tail) ? (head - tail - 1) : (head - tail + tx_mask);
- 	if (c > len)
- 		c = len;
--	moxaLog.txcnt[port->port.tty->index] += c;
- 	total = c;
- 	if (spage == epage) {
- 		bufhead = readw(ofsAddr + Ofs_txb);
-@@ -2129,7 +1991,6 @@ static ssize_t MoxaPortWriteData(struct tty_struct *tty, const u8 *buffer,
- 
- static int MoxaPortReadData(struct moxa_port *port)
- {
--	struct tty_struct *tty = port->port.tty;
- 	void __iomem *baseAddr, *ofsAddr, *ofs;
- 	u8 *dst;
- 	unsigned int count, len, total;
-@@ -2148,7 +2009,6 @@ static int MoxaPortReadData(struct moxa_port *port)
- 		return 0;
- 
- 	total = count;
--	moxaLog.rxcnt[tty->index] += total;
- 	if (spage == epage) {
- 		bufhead = readw(ofsAddr + Ofs_rxb);
- 		writew(spage, baseAddr + Control_reg);
-@@ -2236,8 +2096,6 @@ static int moxa_get_serial_info(struct tty_struct *tty,
- {
- 	struct moxa_port *info = tty->driver_data;
- 
--	if (tty->index == MAX_PORTS)
--		return -EINVAL;
- 	if (!info)
- 		return -ENODEV;
- 	mutex_lock(&info->port.mutex);
-@@ -2257,8 +2115,6 @@ static int moxa_set_serial_info(struct tty_struct *tty,
- 	struct moxa_port *info = tty->driver_data;
- 	unsigned int close_delay;
- 
--	if (tty->index == MAX_PORTS)
--		return -EINVAL;
- 	if (!info)
- 		return -ENODEV;
- 
 -- 
 2.48.1
 
