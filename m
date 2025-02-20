@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1957E1F9406;
-	Thu, 20 Feb 2025 11:16:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E64FC1FA272;
+	Thu, 20 Feb 2025 11:16:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740050185; cv=none; b=WIBR5pEDH7aPQpreX72e1d6g6etrEIrxxTSHlB5p3KpOR4USq51BRhxlzbeownsKZAboYcXsvPiJoPbtv5veTOaLTwzuhDDLpu127heRsIaRqH45pLFjlSTOvpJT7LMp7saXL2Wk1t2vvascT524Wjc82NZ1i1VK2izTsvQxqoE=
+	t=1740050187; cv=none; b=A3Py4MikxNi8U62wG28Wt21+9Mbr1/bmoBgJfZShCPAmuhD2/Fke9Fv+c/xd5PqupkYXsTlOXqnhJEh3YZ9COaqSR9+a1VGotQJt805RdCZo4Y357OE42FVOVRViufFnuZKh18wxogUo/PnJwMYA+VkrOQ1xP4V5NKA1Zfcr4Ms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740050185; c=relaxed/simple;
-	bh=9R/axZV7gpmcyf96eMWRUh493VM9wPytpd/Af5AfIDg=;
+	s=arc-20240116; t=1740050187; c=relaxed/simple;
+	bh=AR0ChXBcbm1rSLBLYpCqwfLIevhh7gPejHqqQr6M9Tw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=b0RuWsxiICLvced/28jyLfsgIOkthENVCAPcJ693PzyG3zACU+w94+7fT0MPMQhjpNzRaA2Z3DvfBpWsHbyjYGwfKpjsj/2B8VOTlRTJ6bTpp291OpP0kWj+wlLgrffNGFRWQOEvVGNT0FK3Y62CHNf2MUipsaW5viWfutmlg2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fluI+Scy; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=mdrgMEoKQdjcDcaxVkcJu6ghvk7KiSyTtAzZOOGNZIs80tiqYZqHk9Krk/nyH98U2JKfRvGh/pBA57N6eIV7K/cY0XEOCKvgMkYfXtY6z3LZVwxwAHMHXyp1HszQNtKm+lJvCRjmumtFSQEAUR8u2aiEzgbY6pM3UITI8qqiBH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lAadFfb7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fluI+Scy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3EE0C4CEDD;
-	Thu, 20 Feb 2025 11:16:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lAadFfb7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F778C4CEDD;
+	Thu, 20 Feb 2025 11:16:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740050184;
-	bh=9R/axZV7gpmcyf96eMWRUh493VM9wPytpd/Af5AfIDg=;
+	s=k20201202; t=1740050186;
+	bh=AR0ChXBcbm1rSLBLYpCqwfLIevhh7gPejHqqQr6M9Tw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=fluI+ScyyM2JROMH6Flyi2SllHZ4MQOJq/Ra0mHGuohHf0ISCUCwybxUkvWtbXVgB
-	 JF/+I/L40BPcTx0bVMM0qTCCD292f3vd84YyvoJEBQyMNbwcw4t4xqKz600EeDEC/4
-	 DyqePSDnP2jMkgjexb3l9p/dwCn2aZei8LHp6vQDQo166r9fw19+3PTu6nm4a3ujuq
-	 dTXlTfVx8o1ByJ2ZwhLPtuFUTZ8zqr93XJnD2SZEE/RHF9rrRhGq5BR4HFn5aG2e0C
-	 B6x8akhXbklqGL5nXObEAIVzDimhMfot+uzBPOqpI7/NX5yoW7lKay2f5VZRA69aKA
-	 /4U7jOvhempFw==
+	b=lAadFfb7i+4FbrIClURZQiXrHSeAx6cAQKuXpmfs1X+YsPFIgSH6s+sWsdhh84ntg
+	 5+8f8HmeTwIKnQ9V7vylNmsKRugbO9bxw1SpBUvI1rSXQ7FU0k+aY7WP78dZbmRfnt
+	 OIRH+8A/VFL1NUg2z9tjveS6zj6/CXcNPKm7maZcAcbl5kVd8h2zl8n45aRzhnnTKF
+	 I/0fJhEqThJuAnzkNQyFLh+TLa+Ger/iuiTdMVCD6XJ+1ZYEVhHdNzPKnotBvvuncR
+	 0JjFz7g4rtzhfKwm+DcFjCGORtEHv4vd8geROXm3kh7PPWFCx3J2G7YNPVOmKqEv43
+	 erbbCWU8sRpiw==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 07/29] tty: n_tty: clean up process_output_block()
-Date: Thu, 20 Feb 2025 12:15:44 +0100
-Message-ID: <20250220111606.138045-8-jirislaby@kernel.org>
+Subject: [PATCH 08/29] tty: n_tty: drop n_tty_trace()
+Date: Thu, 20 Feb 2025 12:15:45 +0100
+Message-ID: <20250220111606.138045-9-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.48.1
 In-Reply-To: <20250220111606.138045-1-jirislaby@kernel.org>
 References: <20250220111606.138045-1-jirislaby@kernel.org>
@@ -45,90 +45,56 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-* Use guard(mutex), which results in:
-  - the function can return directly when "space == 0".
-  - "i" can now be "unsigned" as it is no longer abused to hold a retval
-    from tty->ops->write(). Note the compared-to "nr" is already
-    "unsigned".
-* The end label is now dubbed "do_write" as that is what happens there.
-  Unlike the uncertain "break_out" name.
+This n_tty_trace() is an always disabled debugging macro. It comes from
+commit 32f13521ca68 ("n_tty: Line copy to user buffer in canonical
+mode").
+
+Drop it as it is dead for over a decade.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 27 +++++++++++----------------
- 1 file changed, 11 insertions(+), 16 deletions(-)
+ drivers/tty/n_tty.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index df52aae5f71a..5d172edbb03c 100644
+index 5d172edbb03c..43ba740792d9 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -519,17 +519,15 @@ static ssize_t process_output_block(struct tty_struct *tty,
- 				    const u8 *buf, unsigned int nr)
- {
- 	struct n_tty_data *ldata = tty->disc_data;
--	unsigned int space;
--	int i;
-+	unsigned int space, i;
- 	const u8 *cp;
+@@ -81,14 +81,6 @@
+ #define ECHO_BLOCK		256
+ #define ECHO_DISCARD_WATERMARK	N_TTY_BUF_SIZE - (ECHO_BLOCK + 32)
  
--	mutex_lock(&ldata->output_lock);
-+	guard(mutex)(&ldata->output_lock);
- 
- 	space = tty_write_room(tty);
--	if (space == 0) {
--		mutex_unlock(&ldata->output_lock);
-+	if (space == 0)
- 		return 0;
--	}
-+
- 	if (nr > space)
- 		nr = space;
- 
-@@ -541,18 +539,18 @@ static ssize_t process_output_block(struct tty_struct *tty,
- 			if (O_ONLRET(tty))
- 				ldata->column = 0;
- 			if (O_ONLCR(tty))
--				goto break_out;
-+				goto do_write;
- 			ldata->canon_column = ldata->column;
- 			break;
- 		case '\r':
- 			if (O_ONOCR(tty) && ldata->column == 0)
--				goto break_out;
-+				goto do_write;
- 			if (O_OCRNL(tty))
--				goto break_out;
-+				goto do_write;
- 			ldata->canon_column = ldata->column = 0;
- 			break;
- 		case '\t':
--			goto break_out;
-+			goto do_write;
- 		case '\b':
- 			if (ldata->column > 0)
- 				ldata->column--;
-@@ -560,18 +558,15 @@ static ssize_t process_output_block(struct tty_struct *tty,
- 		default:
- 			if (!iscntrl(c)) {
- 				if (O_OLCUC(tty))
--					goto break_out;
-+					goto do_write;
- 				if (!is_continuation(c, tty))
- 					ldata->column++;
- 			}
- 			break;
- 		}
- 	}
--break_out:
--	i = tty->ops->write(tty, buf, i);
 -
--	mutex_unlock(&ldata->output_lock);
--	return i;
-+do_write:
-+	return tty->ops->write(tty, buf, i);
- }
+-#undef N_TTY_TRACE
+-#ifdef N_TTY_TRACE
+-# define n_tty_trace(f, args...)	trace_printk(f, ##args)
+-#else
+-# define n_tty_trace(f, args...)	no_printk(f, ##args)
+-#endif
+-
+ struct n_tty_data {
+ 	/* producer-published */
+ 	size_t read_head;
+@@ -2026,9 +2018,6 @@ static bool canon_copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
+ 	tail = MASK(ldata->read_tail);
+ 	size = min_t(size_t, tail + n, N_TTY_BUF_SIZE);
  
- static int n_tty_process_echo_ops(struct tty_struct *tty, size_t *tail,
+-	n_tty_trace("%s: nr:%zu tail:%zu n:%zu size:%zu\n",
+-		    __func__, *nr, tail, n, size);
+-
+ 	eol = find_next_bit(ldata->read_flags, size, tail);
+ 	more = n - (size - tail);
+ 	if (eol == N_TTY_BUF_SIZE && more) {
+@@ -2046,9 +2035,6 @@ static bool canon_copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
+ 	if (!found || read_buf(ldata, eol) != __DISABLED_CHAR)
+ 		n = c;
+ 
+-	n_tty_trace("%s: eol:%zu found:%d n:%zu c:%zu tail:%zu more:%zu\n",
+-		    __func__, eol, found, n, c, tail, more);
+-
+ 	tty_copy(tty, *kbp, tail, n);
+ 	*kbp += n;
+ 	*nr -= n;
 -- 
 2.48.1
 
