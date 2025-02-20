@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5319A204873;
-	Thu, 20 Feb 2025 11:16:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 709341F3B8A;
+	Thu, 20 Feb 2025 11:16:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740050202; cv=none; b=svSq2OsY70o/aXOvi903j++Cy1zR7YQd+k1kkvOwxgKSjTQylfHBzCf0NWSbvIuxZL/7f6MC+yJgxkCDm2aRQDwUWGgu6XKp2lodtqzYGteJyAnqCIY/wMHoQgW5F9w2rKDp19KLyuswc/9Yh9J9zkvyncFmeuVhTzidMeQuYAE=
+	t=1740050203; cv=none; b=DUR4eNa46qIW/9Ra8xI0WMCLwJobFetHpstowa9ThVu8QLk9eqzVgMP3BKePEsBdDxgXHI9031vY7KMn+daBbh5eM3dy6dOxUhfsaNCXFhHCFEIB4ytCl9y28BSHyI6EzCTntC4wEoaW7HTzgge8J50stV2PQHJZghRzlgm1I7A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740050202; c=relaxed/simple;
-	bh=lIBBhNedCjS1DTo0sSionEJkaNLa/iBdIM0pbzS3DXY=;
+	s=arc-20240116; t=1740050203; c=relaxed/simple;
+	bh=Nzn39Gj0zDV8oO5kv9Dt85bKRYqHcU7BvP/2szVpfw8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KEsJwpJWHKMNmkdFxNou28dJVsbPEMdOotRyUObAQgtps3D9IYeDkJrgTJlvgDgdUkJ/cGBx1jdYKnxtDDNWYRPfHY5yRj6V4//Wz0ORHB6fTy6Rx92JIw76wRRqF/nQn04uCpk/hj0M689cuKdTnbx4FF5GRP10k6c5rdwNHt8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LkigBexw; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=YU7E9kEWWzhovbccETFCXpFxtU0ekKj1UdNblNxWmhHHLm3du0AzZaMMP4gwuGRjfS1trZ1tsuCJRYlaG52m2WlsEPn5ucWSnJDrB2RI+1ejrOw7THK5pi8clJF5bU/b8tN1JSpBdP+So9c/yrPwHN4uzer/dZkVbY89BoPPdK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VTUW7V4F; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LkigBexw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6563C4CEE3;
-	Thu, 20 Feb 2025 11:16:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VTUW7V4F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41A5AC4CEE4;
+	Thu, 20 Feb 2025 11:16:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740050201;
-	bh=lIBBhNedCjS1DTo0sSionEJkaNLa/iBdIM0pbzS3DXY=;
+	s=k20201202; t=1740050203;
+	bh=Nzn39Gj0zDV8oO5kv9Dt85bKRYqHcU7BvP/2szVpfw8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LkigBexwDIBFlUWr5Nk2WW60RGG3q6cQ3myM36RzmRfdYhZbSbvYTdz+L3/a8MB4P
-	 95cst0OLDfn6l8GLNKCizEBuv/QsaSbzXz0XBd2dDCbYaOHn5Ocf6kOjnrjtevaZ4t
-	 1vTVFC1eFBMNvtyRcoHPKwTX8/NmguiJEMvmG/qkw60WJScP9yHFdcoxJDNGYnotkz
-	 3ECJSsE/zVFcXWCLT2j6363rhijRc1TryYRCtvSomGVpuXj9kT/nO2VhZjN2cLOayw
-	 /RGllz4VsLIhJ0PVygfU3VJEe5YZXvQW/Y5AodwAL7vcJc3w/plAg4oJf17z7sIkfX
-	 wIruBgg1WqSOQ==
+	b=VTUW7V4F02DLH1GSJEnrerkTin2mCYVLJykjPHpW9UVOvJHtAc24pCQdUnYZb0MOc
+	 a+SwTuRo2B/mpZNh8XJedi+GsfrK3zSMx/m/vx7Le3qnxDIwpnY1P7WH3aKQQXxi+J
+	 hDYEAAVfGxCbN82yBKN16oG1hYVBkn5FMmMIQIvPyBs9An8w+BwuqIeVELzTNH+jGK
+	 6XStAuxaHfcDKkv2xCrIB3SwcMZG7Hi1dlu1FRZz+DK5oS5CfFgQUpQFsbxF7B6EOy
+	 gp4QqJUOvjEoPPlVCTupyBwWfJnPN/CEnvmX3OmbSmJ3ll2TFODWmN5WSpFSadIlia
+	 02ONDp9LjERRA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 18/29] tty: moxa: drop ISA support
-Date: Thu, 20 Feb 2025 12:15:55 +0100
-Message-ID: <20250220111606.138045-19-jirislaby@kernel.org>
+Subject: [PATCH 19/29] tty: moxa: carve out special ioctls and extra tty_port
+Date: Thu, 20 Feb 2025 12:15:56 +0100
+Message-ID: <20250220111606.138045-20-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.48.1
 In-Reply-To: <20250220111606.138045-1-jirislaby@kernel.org>
 References: <20250220111606.138045-1-jirislaby@kernel.org>
@@ -45,273 +45,268 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-I doubt anyone actually uses this driver (unlike mxser.c and serial
-moxa driven devices). Even less there is anyone with a moxa ISA card.
-The newer mxser dropped the support for ISA in 2021. Let this moxa
-follow now.
-
-Good diet.
+These ioctls are undocumented and not exposed -- they are defined
+locally. Given they need a special tty_port just for them, this is very
+ugly. So drop this whole functionality. It is barely used for something
+real. (And if it is, we'd need a common functionality to all drivers.)
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/Kconfig |   2 +-
- drivers/tty/moxa.c  | 100 +++-----------------------------------------
- 2 files changed, 6 insertions(+), 96 deletions(-)
+ drivers/tty/moxa.c | 146 +--------------------------------------------
+ 1 file changed, 1 insertion(+), 145 deletions(-)
 
-diff --git a/drivers/tty/Kconfig b/drivers/tty/Kconfig
-index 63a494d36a1f..0f3f55372c11 100644
---- a/drivers/tty/Kconfig
-+++ b/drivers/tty/Kconfig
-@@ -210,7 +210,7 @@ config SERIAL_NONSTANDARD
- 
- config MOXA_INTELLIO
- 	tristate "Moxa Intellio support"
--	depends on SERIAL_NONSTANDARD && (ISA || EISA || PCI)
-+	depends on SERIAL_NONSTANDARD && PCI
- 	select FW_LOADER
- 	help
- 	  Say Y here if you have a Moxa Intellio multiport serial card.
 diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
-index 2b75ca12cbc9..a753afcb53b5 100644
+index a753afcb53b5..1348e2214b81 100644
 --- a/drivers/tty/moxa.c
 +++ b/drivers/tty/moxa.c
-@@ -355,33 +355,21 @@
- #define MAX_PORTS_PER_BOARD	32	/* Don't change this value */
- #define MAX_PORTS		(MAX_BOARDS * MAX_PORTS_PER_BOARD)
+@@ -43,15 +43,6 @@
+ #include <linux/ratelimit.h>
  
--#define MOXA_IS_320(brd) ((brd)->boardType == MOXA_BOARD_C320_ISA || \
--		(brd)->boardType == MOXA_BOARD_C320_PCI)
+ #include <asm/io.h>
+-#include <linux/uaccess.h>
 -
--/*
-- *    Define the Moxa PCI vendor and device IDs.
-- */
--#define MOXA_BUS_TYPE_ISA	0
--#define MOXA_BUS_TYPE_PCI	1
-+#define MOXA_IS_320(brd)	((brd)->boardType == MOXA_BOARD_C320_PCI)
+-#define	MOXA			0x400
+-#define MOXA_GET_IQUEUE		(MOXA + 1)	/* get input buffered count */
+-#define MOXA_GET_OQUEUE		(MOXA + 2)	/* get output buffered count */
+-#define MOXA_GETDATACOUNT       (MOXA + 23)
+-#define MOXA_GET_IOQUEUE	(MOXA + 27)
+-#define MOXA_FLUSH_QUEUE	(MOXA + 28)
+-#define MOXA_GETMSTATUS         (MOXA + 65)
  
- enum {
- 	MOXA_BOARD_C218_PCI = 1,
--	MOXA_BOARD_C218_ISA,
- 	MOXA_BOARD_C320_PCI,
--	MOXA_BOARD_C320_ISA,
- 	MOXA_BOARD_CP204J,
+ /*
+  *    System Configuration
+@@ -397,19 +388,6 @@ static struct moxa_board_conf {
+ 	void __iomem *intTable;
+ } moxa_boards[MAX_BOARDS];
+ 
+-struct mxser_mstatus {
+-	tcflag_t cflag;
+-	int cts;
+-	int dsr;
+-	int ri;
+-	int dcd;
+-};
+-
+-struct moxaq_str {
+-	int inq;
+-	int outq;
+-};
+-
+ struct moxa_port {
+ 	struct tty_port port;
+ 	struct moxa_board_conf *board;
+@@ -424,12 +402,6 @@ struct moxa_port {
+ 	u8 lowChkFlag;
  };
  
- static char *moxa_brdname[] =
- {
- 	"C218 Turbo PCI series",
--	"C218 Turbo ISA series",
- 	"C320 Turbo PCI series",
--	"C320 Turbo ISA series",
- 	"CP-204J series",
- };
+-struct mon_str {
+-	int tick;
+-	int rxcnt[MAX_PORTS];
+-	int txcnt[MAX_PORTS];
+-};
+-
+ /* statusflags */
+ #define TXSTOPPED	1
+ #define LOWWAIT 	2
+@@ -439,14 +411,11 @@ struct mon_str {
+ #define WAKEUP_CHARS		256
  
--#ifdef CONFIG_PCI
- static const struct pci_device_id moxa_pcibrds[] = {
- 	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_C218),
- 		.driver_data = MOXA_BOARD_C218_PCI },
-@@ -392,14 +380,12 @@ static const struct pci_device_id moxa_pcibrds[] = {
- 	{ 0 }
- };
- MODULE_DEVICE_TABLE(pci, moxa_pcibrds);
--#endif /* CONFIG_PCI */
- 
- struct moxa_port;
- 
- static struct moxa_board_conf {
- 	int boardType;
- 	int numPorts;
--	int busType;
- 
- 	unsigned int ready;
- 
-@@ -459,9 +445,6 @@ static unsigned int moxaLowWaterChk;
+ static int ttymajor = MOXAMAJOR;
+-static struct mon_str moxaLog;
+ static unsigned int moxaFuncTout = HZ / 2;
+ static unsigned int moxaLowWaterChk;
  static DEFINE_MUTEX(moxa_openlock);
  static DEFINE_SPINLOCK(moxa_lock);
  
--static unsigned long baseaddr[MAX_BOARDS];
--static unsigned int type[MAX_BOARDS];
--static unsigned int numports[MAX_BOARDS];
- static struct tty_port moxa_service_port;
- 
+-static struct tty_port moxa_service_port;
+-
  MODULE_AUTHOR("William Chen");
-@@ -471,13 +454,6 @@ MODULE_FIRMWARE("c218tunx.cod");
- MODULE_FIRMWARE("cp204unx.cod");
- MODULE_FIRMWARE("c320tunx.cod");
+ MODULE_DESCRIPTION("MOXA Intellio Family Multiport Board Device Driver");
+ MODULE_LICENSE("GPL");
+@@ -557,104 +526,6 @@ static void moxa_low_water_check(void __iomem *ofsAddr)
+  * TTY operations
+  */
  
--module_param_array(type, uint, NULL, 0);
--MODULE_PARM_DESC(type, "card type: C218=2, C320=4");
--module_param_hw_array(baseaddr, ulong, ioport, NULL, 0);
--MODULE_PARM_DESC(baseaddr, "base address");
--module_param_array(numports, uint, NULL, 0);
--MODULE_PARM_DESC(numports, "numports (ignored for C218)");
+-static int moxa_ioctl(struct tty_struct *tty,
+-		      unsigned int cmd, unsigned long arg)
+-{
+-	struct moxa_port *ch = tty->driver_data;
+-	void __user *argp = (void __user *)arg;
+-	int status, ret = 0;
 -
- module_param(ttymajor, int, 0);
- 
- /*
-@@ -723,7 +699,6 @@ static DEFINE_TIMER(moxaTimer, moxa_poll);
- static int moxa_check_fw_model(struct moxa_board_conf *brd, u8 model)
- {
- 	switch (brd->boardType) {
--	case MOXA_BOARD_C218_ISA:
- 	case MOXA_BOARD_C218_PCI:
- 		if (model != 1)
- 			goto err;
-@@ -767,7 +742,6 @@ static int moxa_load_bios(struct moxa_board_conf *brd, const u8 *buf,
- 	msleep(2000);
- 
- 	switch (brd->boardType) {
--	case MOXA_BOARD_C218_ISA:
- 	case MOXA_BOARD_C218_PCI:
- 		tmp = readw(baseAddr + C218_key);
- 		if (tmp != C218_KeyCode)
-@@ -831,7 +805,6 @@ static int moxa_real_load_code(struct moxa_board_conf *brd, const void *ptr,
- 
- 	switch (brd->boardType) {
- 	case MOXA_BOARD_CP204J:
--	case MOXA_BOARD_C218_ISA:
- 	case MOXA_BOARD_C218_PCI:
- 		key = C218_key;
- 		loadbuf = C218_LoadBuf;
-@@ -896,15 +869,9 @@ static int moxa_real_load_code(struct moxa_board_conf *brd, const void *ptr,
- 		return -EIO;
- 
- 	if (MOXA_IS_320(brd)) {
--		if (brd->busType == MOXA_BUS_TYPE_PCI) {	/* ASIC board */
--			writew(0x3800, baseAddr + TMS320_PORT1);
--			writew(0x3900, baseAddr + TMS320_PORT2);
--			writew(28499, baseAddr + TMS320_CLOCK);
--		} else {
--			writew(0x3200, baseAddr + TMS320_PORT1);
--			writew(0x3400, baseAddr + TMS320_PORT2);
--			writew(19999, baseAddr + TMS320_CLOCK);
+-	if (tty->index == MAX_PORTS) {
+-		if (cmd != MOXA_GETDATACOUNT && cmd != MOXA_GET_IOQUEUE &&
+-				cmd != MOXA_GETMSTATUS)
+-			return -EINVAL;
+-	} else if (!ch)
+-		return -ENODEV;
+-
+-	switch (cmd) {
+-	case MOXA_GETDATACOUNT:
+-		moxaLog.tick = jiffies;
+-		if (copy_to_user(argp, &moxaLog, sizeof(moxaLog)))
+-			ret = -EFAULT;
+-		break;
+-	case MOXA_FLUSH_QUEUE:
+-		MoxaPortFlushData(ch, arg);
+-		break;
+-	case MOXA_GET_IOQUEUE: {
+-		struct moxaq_str __user *argm = argp;
+-		struct moxaq_str tmp;
+-		struct moxa_port *p;
+-		unsigned int i, j;
+-
+-		for (i = 0; i < MAX_BOARDS; i++) {
+-			p = moxa_boards[i].ports;
+-			for (j = 0; j < MAX_PORTS_PER_BOARD; j++, p++, argm++) {
+-				memset(&tmp, 0, sizeof(tmp));
+-				spin_lock_bh(&moxa_lock);
+-				if (moxa_boards[i].ready) {
+-					tmp.inq = MoxaPortRxQueue(p);
+-					tmp.outq = MoxaPortTxQueue(p);
+-				}
+-				spin_unlock_bh(&moxa_lock);
+-				if (copy_to_user(argm, &tmp, sizeof(tmp)))
+-					return -EFAULT;
+-			}
 -		}
-+		writew(0x3800, baseAddr + TMS320_PORT1);
-+		writew(0x3900, baseAddr + TMS320_PORT2);
-+		writew(28499, baseAddr + TMS320_CLOCK);
- 	}
- 	writew(1, baseAddr + Disable_IRQ);
- 	writew(0, baseAddr + Magic_no);
-@@ -955,7 +922,6 @@ static int moxa_load_code(struct moxa_board_conf *brd, const void *ptr,
- 		return retval;
- 
- 	switch (brd->boardType) {
--	case MOXA_BOARD_C218_ISA:
- 	case MOXA_BOARD_C218_PCI:
- 	case MOXA_BOARD_CP204J:
- 		port = brd->ports;
-@@ -1139,7 +1105,6 @@ static int moxa_init_board(struct moxa_board_conf *brd, struct device *dev)
- 	}
- 
- 	switch (brd->boardType) {
--	case MOXA_BOARD_C218_ISA:
- 	case MOXA_BOARD_C218_PCI:
- 		file = "c218tunx.cod";
- 		break;
-@@ -1225,7 +1190,6 @@ static void moxa_board_deinit(struct moxa_board_conf *brd)
- 	kfree(brd->ports);
- }
- 
--#ifdef CONFIG_PCI
- static int moxa_pci_probe(struct pci_dev *pdev,
- 		const struct pci_device_id *ent)
+-		break;
+-	} case MOXA_GET_OQUEUE:
+-		status = MoxaPortTxQueue(ch);
+-		ret = put_user(status, (unsigned long __user *)argp);
+-		break;
+-	case MOXA_GET_IQUEUE:
+-		status = MoxaPortRxQueue(ch);
+-		ret = put_user(status, (unsigned long __user *)argp);
+-		break;
+-	case MOXA_GETMSTATUS: {
+-		struct mxser_mstatus __user *argm = argp;
+-		struct mxser_mstatus tmp;
+-		struct moxa_port *p;
+-		unsigned int i, j;
+-
+-		for (i = 0; i < MAX_BOARDS; i++) {
+-			p = moxa_boards[i].ports;
+-			for (j = 0; j < MAX_PORTS_PER_BOARD; j++, p++, argm++) {
+-				struct tty_struct *ttyp;
+-				memset(&tmp, 0, sizeof(tmp));
+-				spin_lock_bh(&moxa_lock);
+-				if (!moxa_boards[i].ready) {
+-				        spin_unlock_bh(&moxa_lock);
+-					goto copy;
+-                                }
+-
+-				status = MoxaPortLineStatus(p);
+-				spin_unlock_bh(&moxa_lock);
+-
+-				if (status & 1)
+-					tmp.cts = 1;
+-				if (status & 2)
+-					tmp.dsr = 1;
+-				if (status & 4)
+-					tmp.dcd = 1;
+-
+-				ttyp = tty_port_tty_get(&p->port);
+-				if (!ttyp)
+-					tmp.cflag = p->cflag;
+-				else
+-					tmp.cflag = ttyp->termios.c_cflag;
+-				tty_kref_put(ttyp);
+-copy:
+-				if (copy_to_user(argm, &tmp, sizeof(tmp)))
+-					return -EFAULT;
+-			}
+-		}
+-		break;
+-	}
+-	default:
+-		ret = -ENOIOCTLCMD;
+-	}
+-	return ret;
+-}
+-
+ static int moxa_break_ctl(struct tty_struct *tty, int state)
  {
-@@ -1268,7 +1232,6 @@ static int moxa_pci_probe(struct pci_dev *pdev,
- 
- 	board->boardType = board_type;
- 	switch (board_type) {
--	case MOXA_BOARD_C218_ISA:
- 	case MOXA_BOARD_C218_PCI:
- 		board->numPorts = 8;
- 		break;
-@@ -1280,7 +1243,6 @@ static int moxa_pci_probe(struct pci_dev *pdev,
- 		board->numPorts = 0;
- 		break;
- 	}
--	board->busType = MOXA_BUS_TYPE_PCI;
- 
- 	retval = moxa_init_board(board, &pdev->dev);
- 	if (retval)
-@@ -1316,14 +1278,10 @@ static struct pci_driver moxa_pci_driver = {
- 	.probe = moxa_pci_probe,
- 	.remove = moxa_pci_remove
- };
--#endif /* CONFIG_PCI */
- 
- static int __init moxa_init(void)
+ 	struct moxa_port *port = tty->driver_data;
+@@ -671,7 +542,6 @@ static const struct tty_operations moxa_ops = {
+ 	.write_room = moxa_write_room,
+ 	.flush_buffer = moxa_flush_buffer,
+ 	.chars_in_buffer = moxa_chars_in_buffer,
+-	.ioctl = moxa_ioctl,
+ 	.set_termios = moxa_set_termios,
+ 	.stop = moxa_stop,
+ 	.start = moxa_start,
+@@ -1283,9 +1153,7 @@ static int __init moxa_init(void)
  {
--	unsigned int isabrds = 0;
  	int retval = 0;
--	struct moxa_board_conf *brd = moxa_boards;
--	unsigned int i;
  
- 	tty_port_init(&moxa_service_port);
+-	tty_port_init(&moxa_service_port);
+-
+-	moxaDriver = tty_alloc_driver(MAX_PORTS + 1,
++	moxaDriver = tty_alloc_driver(MAX_PORTS,
+ 			TTY_DRIVER_REAL_RAW |
+ 			TTY_DRIVER_DYNAMIC_DEV);
+ 	if (IS_ERR(moxaDriver))
+@@ -1301,8 +1169,6 @@ static int __init moxa_init(void)
+ 	moxaDriver->init_termios.c_ispeed = 9600;
+ 	moxaDriver->init_termios.c_ospeed = 9600;
+ 	tty_set_operations(moxaDriver, &moxa_ops);
+-	/* Having one more port only for ioctls is ugly */
+-	tty_port_link_device(&moxa_service_port, moxaDriver, MAX_PORTS);
  
-@@ -1352,64 +1310,16 @@ static int __init moxa_init(void)
- 		return -1;
- 	}
+ 	if (tty_register_driver(moxaDriver)) {
+ 		printk(KERN_ERR "can't register MOXA Smartio tty driver!\n");
+@@ -1362,9 +1228,6 @@ static int moxa_open(struct tty_struct *tty, struct file *filp)
+ 	int port;
  
--	/* Find the boards defined from module args. */
--
--	for (i = 0; i < MAX_BOARDS; i++) {
--		if (!baseaddr[i])
--			break;
--		if (type[i] == MOXA_BOARD_C218_ISA ||
--				type[i] == MOXA_BOARD_C320_ISA) {
--			pr_debug("Moxa board %2d: %s board(baseAddr=%lx)\n",
--					isabrds + 1, moxa_brdname[type[i] - 1],
--					baseaddr[i]);
--			brd->boardType = type[i];
--			brd->numPorts = type[i] == MOXA_BOARD_C218_ISA ? 8 :
--					numports[i];
--			brd->busType = MOXA_BUS_TYPE_ISA;
--			brd->basemem = ioremap(baseaddr[i], 0x4000);
--			if (!brd->basemem) {
--				printk(KERN_ERR "MOXA: can't remap %lx\n",
--						baseaddr[i]);
--				continue;
--			}
--			if (moxa_init_board(brd, NULL)) {
--				iounmap(brd->basemem);
--				brd->basemem = NULL;
--				continue;
--			}
--
--			printk(KERN_INFO "MOXA isa board found at 0x%.8lx and "
--					"ready (%u ports, firmware loaded)\n",
--					baseaddr[i], brd->numPorts);
--
--			brd++;
--			isabrds++;
--		}
+ 	port = tty->index;
+-	if (port == MAX_PORTS) {
+-		return capable(CAP_SYS_ADMIN) ? 0 : -EPERM;
 -	}
--
--#ifdef CONFIG_PCI
- 	retval = pci_register_driver(&moxa_pci_driver);
--	if (retval) {
-+	if (retval)
- 		printk(KERN_ERR "Can't register MOXA pci driver!\n");
--		if (isabrds)
--			retval = 0;
--	}
--#endif
+ 	if (mutex_lock_interruptible(&moxa_openlock))
+ 		return -ERESTARTSYS;
+ 	brd = &moxa_boards[port / MAX_PORTS_PER_BOARD];
+@@ -2087,7 +1950,6 @@ static ssize_t MoxaPortWriteData(struct tty_struct *tty, const u8 *buffer,
+ 	c = (head > tail) ? (head - tail - 1) : (head - tail + tx_mask);
+ 	if (c > len)
+ 		c = len;
+-	moxaLog.txcnt[port->port.tty->index] += c;
+ 	total = c;
+ 	if (spage == epage) {
+ 		bufhead = readw(ofsAddr + Ofs_txb);
+@@ -2129,7 +1991,6 @@ static ssize_t MoxaPortWriteData(struct tty_struct *tty, const u8 *buffer,
  
- 	return retval;
- }
- 
- static void __exit moxa_exit(void)
+ static int MoxaPortReadData(struct moxa_port *port)
  {
--	unsigned int i;
--
--#ifdef CONFIG_PCI
- 	pci_unregister_driver(&moxa_pci_driver);
--#endif
--
--	for (i = 0; i < MAX_BOARDS; i++) /* ISA boards */
--		if (moxa_boards[i].ready)
--			moxa_board_deinit(&moxa_boards[i]);
+-	struct tty_struct *tty = port->port.tty;
+ 	void __iomem *baseAddr, *ofsAddr, *ofs;
+ 	u8 *dst;
+ 	unsigned int count, len, total;
+@@ -2148,7 +2009,6 @@ static int MoxaPortReadData(struct moxa_port *port)
+ 		return 0;
  
- 	del_timer_sync(&moxaTimer);
+ 	total = count;
+-	moxaLog.rxcnt[tty->index] += total;
+ 	if (spage == epage) {
+ 		bufhead = readw(ofsAddr + Ofs_rxb);
+ 		writew(spage, baseAddr + Control_reg);
+@@ -2236,8 +2096,6 @@ static int moxa_get_serial_info(struct tty_struct *tty,
+ {
+ 	struct moxa_port *info = tty->driver_data;
+ 
+-	if (tty->index == MAX_PORTS)
+-		return -EINVAL;
+ 	if (!info)
+ 		return -ENODEV;
+ 	mutex_lock(&info->port.mutex);
+@@ -2257,8 +2115,6 @@ static int moxa_set_serial_info(struct tty_struct *tty,
+ 	struct moxa_port *info = tty->driver_data;
+ 	unsigned int close_delay;
+ 
+-	if (tty->index == MAX_PORTS)
+-		return -EINVAL;
+ 	if (!info)
+ 		return -ENODEV;
  
 -- 
 2.48.1
