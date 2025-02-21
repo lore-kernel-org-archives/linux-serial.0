@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA05E1FF610;
-	Fri, 21 Feb 2025 07:53:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32DD81F4299;
+	Fri, 21 Feb 2025 10:07:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740124418; cv=none; b=BzUfv99M6Hkm4j1HqY18svgCejdHBPQm4WhPYVFjDYQRaxKJexdPcKWyMZp+hWPj94EeIiBzHfTum8O6iq2rV9P5dKtmCVHPswRQBA3XbVndXhnwb1CpZ2w4p7leb1OQ0jfnIQ0/ssW6t4Or7BSkO/K5sJT+8/g2nNHfGzr/DeM=
+	t=1740132459; cv=none; b=k8kkxWYGcFHBor6pZHjULvSpAsyZxGH38AedndJIvXNqGPuorhqWRrKzLwLkZARoxe1jid2t97q6+WeIxzBSDiuH9JpeDBxqKt252TCy8Znh0lS/2jwmCMbI+asPF9iAjurZE5nPbxK49HUA2zdwHkk/ZfDiYzmBLf+jUd37tPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740124418; c=relaxed/simple;
-	bh=bsl7AI4Fk69oe0KM3mv99Vgbb8n+nmX6nQ7QyQ3T9X8=;
+	s=arc-20240116; t=1740132459; c=relaxed/simple;
+	bh=3B8Trq7/5ikSYghZ98OHIYUKhBXpU+j0nzGnNqZEuMs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QuOrJd+n78OUtOn1P7RCghhVpKehob+EMvKrQW8wic37EqBljULjNdi4MUie1bvzz5cOZvd22oqfTK1Q7+LHZSD8FGMZlXdCkHJBgssWpUm/TLkK/OkJDic5VcLNeXg8akJiio9GVk6lZxHOilCR6Psj1/WaC3bQYnuV0F+fTMg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=poXd0/F9; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=uEX0sQffjDl/felNbSmXYiFajDhCcQV2HgygV9czQweww4RXXmFIGej8zHVPCVs2c1Db+j4O7xKBn7LUl54CPnKOCvxpLv8fN5cbvuj5+KZtDVVXkGFb4iDUpG2Y/LPO+arvstHLhFI16xRTXNMeZvKiumcnGvXRS9htxT/C+j8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bdKVUfGN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="poXd0/F9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E78C4CED6;
-	Fri, 21 Feb 2025 07:53:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bdKVUfGN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99D4EC4CED6;
+	Fri, 21 Feb 2025 10:07:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740124418;
-	bh=bsl7AI4Fk69oe0KM3mv99Vgbb8n+nmX6nQ7QyQ3T9X8=;
+	s=k20201202; t=1740132458;
+	bh=3B8Trq7/5ikSYghZ98OHIYUKhBXpU+j0nzGnNqZEuMs=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=poXd0/F9tnQ8uQhBMXN59k88wJLDz+u6OCgcdsJ87flM06XJWDuk1j7LxXI/OZAyx
-	 ejQyH+zco0JM9nlkend+hVJKhfwQBkjUb8Qu0OzqXLi1OjatX/QI8CE3zanpmK7s2j
-	 ZDRWFFISZLXStK4j2Ik3/us/Z/UEBrCHEv8caobaifa4PazC9VCPaZNZq5uODiNhB9
-	 WPa4t0BtQBCvPbYGnzIZbocvEZVPIfnkn8n7rzCRQoREd+sn6bPZzUmx+1r95N66+r
-	 oVGZ2lZIk0X2BRi1hgVcvxmRkXD1vnh+isSgKTwW5NVVOJr+oe1O6qKvClNOoxI9JS
-	 hXsSDU6uOhghQ==
-Message-ID: <6e5ee9a3-f3fa-413e-b8cc-2fdfa8537590@kernel.org>
-Date: Fri, 21 Feb 2025 08:53:34 +0100
+	b=bdKVUfGNy+FohT/Frm4e3xZ1fy/HvbmLTzw1vtPd+x/9o0UPUJ5pFIBCyOzjLq7dH
+	 IwFXjRkI+2z80Kl6UKBZDf+UgQbyAyUuhXAc5QEe8wcjATee3D9P/+GBfhqHDYVsdw
+	 sVvpxKbLpwxfaKxAYqjPXU0sBcaHM5BJ3WAyj/nbVbHapbYYs1kJpObCzraTaVCK7/
+	 FVWq5g3XqZFN5OOIlj47pFUYQ1/ZvNUpQqKmKn1FBzbJPp5IS3Ax84JY1gtfkIgoDF
+	 0JzVe9u+JxWMG2Yj/JMVpGxup8LIPy/35ka2wvmKhbIgRoKY7aJh6U4BJuDnYoOxcH
+	 r/Ob1/db3B3mw==
+Message-ID: <1818c904-3958-4f97-a194-e6a768ebcd38@kernel.org>
+Date: Fri, 21 Feb 2025 11:07:35 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,15 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 20/29] tty: srmcons: fix retval from srmcons_init()
-To: Magnus Lindholm <linmag7@gmail.com>
+Subject: Re: [PATCH 26/29] serial: 8250: use serial_in/out() helpers
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- Richard Henderson <richard.henderson@linaro.org>,
- Matt Turner <mattst88@gmail.com>, linux-alpha@vger.kernel.org
+ linux-kernel@vger.kernel.org, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>
 References: <20250220111606.138045-1-jirislaby@kernel.org>
- <20250220111606.138045-21-jirislaby@kernel.org>
- <CA+=Fv5RadC05i29h_geUq3Moyn3hGydoRu335T-q9vnfcwZqew@mail.gmail.com>
+ <20250220111606.138045-27-jirislaby@kernel.org>
+ <Z7dI9-mTl820lyY-@smile.fi.intel.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -88,58 +87,28 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <CA+=Fv5RadC05i29h_geUq3Moyn3hGydoRu335T-q9vnfcwZqew@mail.gmail.com>
+In-Reply-To: <Z7dI9-mTl820lyY-@smile.fi.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 20. 02. 25, 22:48, Magnus Lindholm wrote:
-> I've applied and verified this patch on an Alphaserver ES40 with
-> serial console.
+On 20. 02. 25, 16:23, Andy Shevchenko wrote:
+> On Thu, Feb 20, 2025 at 12:16:03PM +0100, Jiri Slaby (SUSE) wrote:
+>> There are serial_in/out() helpers to be used instead of direct
+>> p->serial_in/out(). Use them in various 8250 drivers.
 > 
-> Regarding the future use of label err_free_drv, is the intention to
-> use it to break out early if tty_alloc_driver() fails?
+> Okay, I have checked all calls, and I think to avoid possible issues
+> we need to add a few comments here and there, see below.
+> 
+> But first of all, can we actually use serial_port_in()/serial_port_out()
+> in the cases where we have already a pointer to uart_port?
 
-...
+Yes, this makes sense -- that'd be real 1:1 change.
 
->> +       if (!srm_is_registered_console)
->> +               return -ENODEV;
->> +
->> +       driver = tty_alloc_driver(MAX_SRM_CONSOLE_DEVICES, 0);
->> +       if (IS_ERR(driver))
->> +               return PTR_ERR(driver);
->> +
->> +       tty_port_init(&srmcons_singleton.port);
->> +
->> +       driver->driver_name = "srm";
->> +       driver->name = "srm";
->> +       driver->major = 0;      /* dynamic */
->> +       driver->minor_start = 0;
->> +       driver->type = TTY_DRIVER_TYPE_SYSTEM;
->> +       driver->subtype = SYSTEM_TYPE_SYSCONS;
->> +       driver->init_termios = tty_std_termios;
->> +       tty_set_operations(driver, &srmcons_ops);
->> +       tty_port_link_device(&srmcons_singleton.port, driver, 0);
+PS: omap8250_irq() is funny. It uses all serial_port_in(), serial_in(), 
+and port->serial_in() :D.
 
-I plan on removing tty_port_link_device() as it was a temporary aid. 
-Yay, for 13 years! (commit 2cb4ca0208722).
-
->> +       err = tty_register_driver(driver);
->> +       if (err)
->> +               goto err_free_drv;
-
-Instead, the idea is to properly tty_port_register_device() after 
-tty_register_driver() instead. And that can fail. So is fail path reuses 
-err_free_drv (and adds tty_unregister_driver() on top).
-
->> +
->> +       srmcons_driver = driver;
->> +
->> +       return 0;
->> +err_free_drv:
->> +       tty_driver_kref_put(driver);
->> +       tty_port_destroy(&srmcons_singleton.port);
->> +
->> +       return err;
+PS2: the naming of serial_in/out() is unfortunate. I'd expect 
+serial8250_in/out().
 
 thanks,
 -- 
