@@ -1,47 +1,59 @@
-Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
+Received: from smtpbg150.qq.com (smtpbg150.qq.com [18.132.163.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8DC71B2182;
-	Sat, 22 Feb 2025 13:13:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.169.211.239
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4D612CCDB;
+	Sat, 22 Feb 2025 13:27:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.132.163.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740230036; cv=none; b=Sno9OZzqh4TG+W/Vl4pI+H+1OCV8VEiXX45oS2C/v+c6uGR4u3QPTmDT28gqdBdcjNxPG55M3rViGOvQIYHcKF4+33AVFmxX2eQ2x/ndVbD4uCMssTosMaQjz19C45bvYR01x9UG1ij63Ef1nNk87qylOpBd+uIRdFjzOZztJNk=
+	t=1740230834; cv=none; b=Zxm/nD87phJ/kEQBQHOSFMSjDtNGW1u+kD5qRjtasJ8mzUkLiTBQbKJbt1Y88skHjFHGDMvw2YhKExsfSb5VUNXZhO1dc8zewwVOo3O/fQsBIvYxA5KhCzfdBYqeGebYUjkjPbu605yJD4a9sculuwX+oVx2+nXRhW1EN11b3lU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740230036; c=relaxed/simple;
-	bh=mXH3JYuC1B4cV90eQ7b4EH0JW2bZwrAnvkXGzrs39eQ=;
+	s=arc-20240116; t=1740230834; c=relaxed/simple;
+	bh=0xS6Cu9zY503FYzv4hIWBT5pesLymuUmjYwkhhRzpwA=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=TDcvVZlbnftBofWM7iN7h73iwa0McvyfdaNFtPkpV5BOe+GdGI63HwP5o+HMVzvbghPbZSuSiKQ6ylO7/ezRFn22dYCGVX31rUYrhzmVVhuVd2pgQgaQllv2z5sZCJdGnabUDNSCIL5zEJIf6+T+oaGIhUjCNSb8mrnTRcHGJw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=HzxCS20N; arc=none smtp.client-ip=18.169.211.239
+	 MIME-Version; b=Nn1EFeoOMhK5IufDOsKK6KLeMr0OIE1zHqnA+dTQIi2ua4sMWOGgvM8yeicQvBBIgk75q4p8NacCIUHVdBK+5lHv/o3oMjOijqxhKaT0gC2uaGzC3SYJ7DKRrwHZnFQ/C8fMhL2MIhtI4d++uISRC1jxdEgwKJ06b9osbLFdrNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=dqjxE5Pf; arc=none smtp.client-ip=18.132.163.193
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="HzxCS20N"
+	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="dqjxE5Pf"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1740230004;
-	bh=mXH3JYuC1B4cV90eQ7b4EH0JW2bZwrAnvkXGzrs39eQ=;
+	s=onoh2408; t=1740230794;
+	bh=0xS6Cu9zY503FYzv4hIWBT5pesLymuUmjYwkhhRzpwA=;
 	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=HzxCS20Nz2HupagQrpVeD5TAFNicRRwGXk/TZbhWos/6iPNWM3T8rmkrfEw6jMUbO
-	 bOIpgiyHmoKaGC8SPE2mwdMFchRXSRSMkvYYg7DHX4LtiPqcII7zxyCsvi/HlhHYSY
-	 Ade9DvRZbSDRoQM/WEO/FnK+ky+N9sk18huwGPLg=
-X-QQ-mid: bizesmtp91t1740229998t3nkubr3
-X-QQ-Originating-IP: eZmeH4T0oGceHFRLLdVjuh3gSKIayh57qi3KGFtbWB8=
+	b=dqjxE5PfR+mf4cOGCjm8ecW1kbq1HY6m30vfICXUue+h8dNDqpUefr2Ob4lcG/Pt3
+	 8q1RkUGPgNpT6pV810AfhbWYftu/R8qS5AwKCkm8QuSmZCsz6w/KVcOKBHGMSL+k/s
+	 /YOio8BmOsmxmJj75VOpUg9rtl5/J/z4qDUgidxE=
+X-QQ-mid: bizesmtpsz13t1740230790t96rlp
+X-QQ-Originating-IP: td5RAHcEPQCqD7LgFggxdM/IlPGOPxUh3iz7gt13nOE=
 Received: from localhost.localdomain ( [113.57.152.160])
 	by bizesmtp.qq.com (ESMTP) with 
-	id ; Sat, 22 Feb 2025 21:13:17 +0800 (CST)
+	id ; Sat, 22 Feb 2025 21:26:28 +0800 (CST)
 X-QQ-SSF: 0000000000000000000000000000000
 X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 12607526295032000996
+X-BIZMAIL-ID: 7706801830270063389
 From: Wentao Guan <guanwentao@uniontech.com>
 To: jkeeping@inmusicbrands.com
-Cc: gregkh@linuxfoundation.org,
+Cc: andriy.shevchenko@linux.intel.com,
+	arnd@arndb.de,
+	fancer.lancer@gmail.com,
+	ftoth@exalondelft.nl,
+	gregkh@linuxfoundation.org,
+	heikki.krogerus@linux.intel.com,
+	ilpo.jarvinen@linux.intel.com,
+	jirislaby@kernel.org,
+	john.ogness@linutronix.de,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
+	linux-serial@vger.kernel.org,
+	pmladek@suse.com,
+	schnelle@linux.ibm.com,
+	stable@vger.kernel.org,
+	sunilvl@ventanamicro.com
 Subject: Re: [PATCH v3] serial: 8250: Fix fifo underflow on flush
-Date: Sat, 22 Feb 2025 21:13:16 +0800
-Message-Id: <20250222131316.23214-1-guanwentao@uniontech.com>
+Date: Sat, 22 Feb 2025 21:26:27 +0800
+Message-Id: <20250222132627.25818-1-guanwentao@uniontech.com>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <2025021859-renewal-onto-1877@gregkh>
-References: <2025021859-renewal-onto-1877@gregkh>
+In-Reply-To: <20250208124148.1189191-1-jkeeping@inmusicbrands.com>
+References: <20250208124148.1189191-1-jkeeping@inmusicbrands.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -50,24 +62,27 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:uniontech.com:qybglogicsvrgz:qybglogicsvrgz5a-0
-X-QQ-XMAILINFO: NQDSFSrlZSaixcUw1G7qoCDKItoIY5PwNMmfTR69Ms3B6Wnj2rpgDaxH
-	ja0jLbQexEBRMWT8IddfotcJwdmZ6inwYrwuuDoHbOYs+8RU1bDyyRoNAzXojdP4MkQ4nAZ
-	H5ax++KxBjVPawdIjWgG5sFi3cJsAcjhmH1rJFN112LE0xrwNLSR+wp1YXO867A8oCAP8ZI
-	ezma7AzX62XzfeVB12mL4DOCs6hODHxZYahCPtoGYu8DstnWrLFWczOsaI94yn1OACthIyx
-	e6ZFfTPirYhFiTZD50/RlNWjCgibhLCZQsX6lX3AAm+ZAROKiJEFgO1X/LTRrQ+Ue4autMS
-	qu1zfVc4bqdWJJJ37vJXxE0FQspnVZeaf+nYLSTU1cCrJ3adC4VMHTIAn9H+C/R9AHT9Kvr
-	9DcoSkCyfmJPhTPczkDt+vwa9RAiNS0dFBQ5BwTfRBpQXrO2qVVgiD19ocQnqYqRDsXtEzq
-	CnfZ483VNAJGBf0qdd7wqKd5hj91jDzXwF/HcwFoNSFqKdpA6RYZFGt2nGqM+lU0Wwb/yLX
-	TDg6grJRCCavWVgc8x+5RPUcov4XmqrLPpzIoVU/egFD9Aijl5JOO0dv2BJlW1kMNXYZMGP
-	0pMX3uM0OpVoV+K1MJ3qPob8foRg6jTpSj3Uv6mIxP2cChnv9+QmccIhuipaGG4Y0hjVGqK
-	30D6nDF3ngGvULOAHoh66srrYvid5Y6it+SBmPxifyCtXq49409g7aToKL6b3qtUTmoZ+Vg
-	InqwMAlz2WdVGr0srePqFBvc3ayXaJ/gO1kTfLCxXnz1fRHVvXG4T+TIBTP4/iTfkvOORwh
-	45IEuuUKlpL9hFbMQ3mLmTj+dfO5Y26G/o6GoHmByf1ZUf2O/mR9s9ID5ozfbmtD5AlRU6X
-	Zhc5gAa1Fhqn2MWIZ+xb1+95Xg8mqYy5LYcSBgyO1ApZIdJOC8JpCLeUXI3nYDVoMZ2OQYa
-	SUDHPYY1pwqivnzdNgFxU4xW6kxWJBWR8tS8nQ0adobHDCH01UsyCQJD5
-X-QQ-XMRINFO: OD9hHCdaPRBwq3WW+NvGbIU=
+Feedback-ID: bizesmtpsz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz5a-0
+X-QQ-XMAILINFO: OA8qd4daQrT+gspbIHyjZJSCZe0mGuFJEUOJnUJIUtlW3kdWKIWjXUoX
+	uNcndV34u/vwofXTZXKFXifsW450JWsBelge09EWmusHmT31Az/GJeQocV626GgNUykG/nf
+	Fjd9Xp9VY1dv2y0Sqxzhl6AJM4/TJXW4ppQS7x/ThESEEJraGCXeckW1yxinn9T8BilCYMi
+	WAbz68mWXMg51TM2x0H9Y79m1r4CVDQTGmBjU5rC5mnz+DO04dVHcf01wxZX5rnUprFe1/M
+	oMoHkACePkkFgxklL3krlF4/vPYSDQHwVQJ7GcRsnEmnKkTXmIoWg7nXckdHG+3n5hECMQB
+	edNFbpNm/pXRSs/Obu4fX8sbrm894FXOVqw1bgvBMffFyT1AjePR0WS2L/peAjJF9Q7NpkU
+	xBuER+i0JxiW71bfwH3EinFXB6fg4ZnMAgsrQR7nE72TgIT5/imUKp8WgZE/Bh5OyZbsm65
+	SNZF1XiQNYlSpeXbUbRBBzDLWxYE3qjCXTmeKdpqzW+3llp7DXO5I19kjeltIoOdHCesToU
+	BZxC9mMDY9c3p/UIw0XdN38rC5arUI5ai1lEVuZBsEj6XqeOrBMxAsMLEdOrj3hnuCK9eK1
+	QwX2NQHaUIGtEcJPIWREWbATsniOm54lrjnc0JBN9Ru8O+aP+FnSLVbOcTKRQ1lyU36Jyzv
+	MoLxygoA++rmOmnOBjfk/lhOBCDU05uhEAzWAUoWPhpY800IO32LFXQxF7qSpfsqolnF9iG
+	CQjaZMMFOYlgMZ9attqVPskeszk6pxqJVVm93yf+AAFjoNJrFGJAgaNDUJ+5D3I+T4uN1xH
+	rokc91Ujx1ZmrstB4rpDuxMVehqDYHcqU6Cf0F4zTVLhhcFP0EYaQKsdTWY5E5FmsPWuL3+
+	0/m8zlyRNSqtXUnVrqW+DBkpJQstG0JI5wAeLVAzytS1Y4q13CnxxKDTrkkM2GpVTiPgJb1
+	anekp8gHd7Saoh1ayA/K42EURZHYZmVsWcIneuBK3J66IGuLqZpCwXWOEzp9nYp3MUUR4tk
+	mwTwIJIbhy4S+mnbKEeCMYplJ0zh05leMrot28tTs+DNTKo9gZ/98Dk2xH5zQ=
+X-QQ-XMRINFO: Mp0Kj//9VHAxr69bL5MkOOs=
 X-QQ-RECHKSPAM: 0
+
+Hello John,
 
 It seems strange that call 'dmaengine_terminate_async( **dma->rxchan** );' in
 'serial8250_ **tx** _dma_flush' during code review.
