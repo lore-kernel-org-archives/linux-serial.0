@@ -1,71 +1,77 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtpbg151.qq.com (smtpbg151.qq.com [18.169.211.239])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E4BA1EDA17;
-	Sat, 22 Feb 2025 08:49:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8DC71B2182;
+	Sat, 22 Feb 2025 13:13:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.169.211.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740214181; cv=none; b=n98nJWnW7CGfDXSv10ylWcBpCzQCPYfPKJbR2dDKDQoZ6HXM98jT50cpSsYLUqVhATsyU87o7+26T8Eg83Ztukcxwtn1e42MVepAJEFWsnG5WE4B9E1W0UND285OnuiLFPxjqGEuB5iWQD/7ResD4wI3ISUVXjaqf/JTN5tEVOs=
+	t=1740230036; cv=none; b=Sno9OZzqh4TG+W/Vl4pI+H+1OCV8VEiXX45oS2C/v+c6uGR4u3QPTmDT28gqdBdcjNxPG55M3rViGOvQIYHcKF4+33AVFmxX2eQ2x/ndVbD4uCMssTosMaQjz19C45bvYR01x9UG1ij63Ef1nNk87qylOpBd+uIRdFjzOZztJNk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740214181; c=relaxed/simple;
-	bh=Wr2gkU2kZuNRF8CX7SKqGx0mUpASHHIDSMYrxK7yWhs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rUx1pfqGe+G0+0+mo4fAqw9WYiPCL9XeSoP8a0dIXe319EiyRZNTQf970BJmT4YS6JUR+MH8Y2VAtDSGBa1PpWwQITOefEu7wVh+hwjhSHY4vqraMyMWRdAWPS20tmkuINi8YIEHJsiY2XhtJD/xxsgI7tFfVJyN2ncB/8PUymY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=jbd6GYSo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1740230036; c=relaxed/simple;
+	bh=mXH3JYuC1B4cV90eQ7b4EH0JW2bZwrAnvkXGzrs39eQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=TDcvVZlbnftBofWM7iN7h73iwa0McvyfdaNFtPkpV5BOe+GdGI63HwP5o+HMVzvbghPbZSuSiKQ6ylO7/ezRFn22dYCGVX31rUYrhzmVVhuVd2pgQgaQllv2z5sZCJdGnabUDNSCIL5zEJIf6+T+oaGIhUjCNSb8mrnTRcHGJw8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=HzxCS20N; arc=none smtp.client-ip=18.169.211.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="jbd6GYSo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAB8EC4CED1;
-	Sat, 22 Feb 2025 08:49:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1740214180;
-	bh=Wr2gkU2kZuNRF8CX7SKqGx0mUpASHHIDSMYrxK7yWhs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jbd6GYSoGwe7w/CwHgkPPLibVGUhhGeIlFGz21FlTwVNOHSOKxaaY/9EYNg0v7xiZ
-	 jlk78cv0kseJFl/JYznoSk1BPrsxX9Tl74HD4wgpVW6VIsZTFKmDUnJNoNwIhyZ3lK
-	 A10jvkZnhd/aTXP3zKxGGkwDfIvkPicDICpF28hM=
-Date: Sat, 22 Feb 2025 09:48:32 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Alan Mackenzie <acm@muc.de>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: More than 256/512 glyphs on the Liinux console
-Message-ID: <2025022243-street-joylessly-6dfa@gregkh>
-References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
+	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="HzxCS20N"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
+	s=onoh2408; t=1740230004;
+	bh=mXH3JYuC1B4cV90eQ7b4EH0JW2bZwrAnvkXGzrs39eQ=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version;
+	b=HzxCS20Nz2HupagQrpVeD5TAFNicRRwGXk/TZbhWos/6iPNWM3T8rmkrfEw6jMUbO
+	 bOIpgiyHmoKaGC8SPE2mwdMFchRXSRSMkvYYg7DHX4LtiPqcII7zxyCsvi/HlhHYSY
+	 Ade9DvRZbSDRoQM/WEO/FnK+ky+N9sk18huwGPLg=
+X-QQ-mid: bizesmtp91t1740229998t3nkubr3
+X-QQ-Originating-IP: eZmeH4T0oGceHFRLLdVjuh3gSKIayh57qi3KGFtbWB8=
+Received: from localhost.localdomain ( [113.57.152.160])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Sat, 22 Feb 2025 21:13:17 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 12607526295032000996
+From: Wentao Guan <guanwentao@uniontech.com>
+To: jkeeping@inmusicbrands.com
+Cc: gregkh@linuxfoundation.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3] serial: 8250: Fix fifo underflow on flush
+Date: Sat, 22 Feb 2025 21:13:16 +0800
+Message-Id: <20250222131316.23214-1-guanwentao@uniontech.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <2025021859-renewal-onto-1877@gregkh>
+References: <2025021859-renewal-onto-1877@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:uniontech.com:qybglogicsvrgz:qybglogicsvrgz5a-0
+X-QQ-XMAILINFO: NQDSFSrlZSaixcUw1G7qoCDKItoIY5PwNMmfTR69Ms3B6Wnj2rpgDaxH
+	ja0jLbQexEBRMWT8IddfotcJwdmZ6inwYrwuuDoHbOYs+8RU1bDyyRoNAzXojdP4MkQ4nAZ
+	H5ax++KxBjVPawdIjWgG5sFi3cJsAcjhmH1rJFN112LE0xrwNLSR+wp1YXO867A8oCAP8ZI
+	ezma7AzX62XzfeVB12mL4DOCs6hODHxZYahCPtoGYu8DstnWrLFWczOsaI94yn1OACthIyx
+	e6ZFfTPirYhFiTZD50/RlNWjCgibhLCZQsX6lX3AAm+ZAROKiJEFgO1X/LTRrQ+Ue4autMS
+	qu1zfVc4bqdWJJJ37vJXxE0FQspnVZeaf+nYLSTU1cCrJ3adC4VMHTIAn9H+C/R9AHT9Kvr
+	9DcoSkCyfmJPhTPczkDt+vwa9RAiNS0dFBQ5BwTfRBpQXrO2qVVgiD19ocQnqYqRDsXtEzq
+	CnfZ483VNAJGBf0qdd7wqKd5hj91jDzXwF/HcwFoNSFqKdpA6RYZFGt2nGqM+lU0Wwb/yLX
+	TDg6grJRCCavWVgc8x+5RPUcov4XmqrLPpzIoVU/egFD9Aijl5JOO0dv2BJlW1kMNXYZMGP
+	0pMX3uM0OpVoV+K1MJ3qPob8foRg6jTpSj3Uv6mIxP2cChnv9+QmccIhuipaGG4Y0hjVGqK
+	30D6nDF3ngGvULOAHoh66srrYvid5Y6it+SBmPxifyCtXq49409g7aToKL6b3qtUTmoZ+Vg
+	InqwMAlz2WdVGr0srePqFBvc3ayXaJ/gO1kTfLCxXnz1fRHVvXG4T+TIBTP4/iTfkvOORwh
+	45IEuuUKlpL9hFbMQ3mLmTj+dfO5Y26G/o6GoHmByf1ZUf2O/mR9s9ID5ozfbmtD5AlRU6X
+	Zhc5gAa1Fhqn2MWIZ+xb1+95Xg8mqYy5LYcSBgyO1ApZIdJOC8JpCLeUXI3nYDVoMZ2OQYa
+	SUDHPYY1pwqivnzdNgFxU4xW6kxWJBWR8tS8nQ0adobHDCH01UsyCQJD5
+X-QQ-XMRINFO: OD9hHCdaPRBwq3WW+NvGbIU=
+X-QQ-RECHKSPAM: 0
 
-On Fri, Feb 21, 2025 at 03:35:59PM +0000, Alan Mackenzie wrote:
-> 
-> Dear Linux Maintainers,
-> 
-> The Linux console is currently restricted to 256/512 glyphs, the VGA
-> standard from the 1980s.  I would like that restriction to be lifted, and
-> believe that many other console users would agree.
+It seems strange that call 'dmaengine_terminate_async( **dma->rxchan** );' in
+'serial8250_ **tx** _dma_flush' during code review.
+I am not a professional reviewer in this module, could you explaim the change?
 
-First off, why?  What about the move to get rid of the vt code entirely,
-if you do that, can't you get proper glyphs with the drm subsystem?
-
-Doing huge changes for a subsystem that almost everyone agrees should
-only be kept around for legacy reasons is a rough undertaking.
-
-<snip>
-
-> I would very much like further to develop and to refine this code to the
-> point where it is suitable for inclusion in the mainline kernel.  What do
-> you say?
-
-Only you can decide what you want to work on.  If you have working
-patches, and submit them so that they can be reviewed, we'll be glad to
-do so.  But again, you are going to have to answer the reason "why"
-first.
-
-thanks,
-
-greg k-h
+BRs
+Wentao Guan
