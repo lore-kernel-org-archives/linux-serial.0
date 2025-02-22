@@ -1,92 +1,149 @@
-Received: from smtpbg150.qq.com (smtpbg150.qq.com [18.132.163.193])
+Received: from mail.muc.de (mail.muc.de [193.149.48.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4D612CCDB;
-	Sat, 22 Feb 2025 13:27:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=18.132.163.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 659DE3224
+	for <linux-serial@vger.kernel.org>; Sat, 22 Feb 2025 15:36:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740230834; cv=none; b=Zxm/nD87phJ/kEQBQHOSFMSjDtNGW1u+kD5qRjtasJ8mzUkLiTBQbKJbt1Y88skHjFHGDMvw2YhKExsfSb5VUNXZhO1dc8zewwVOo3O/fQsBIvYxA5KhCzfdBYqeGebYUjkjPbu605yJD4a9sculuwX+oVx2+nXRhW1EN11b3lU=
+	t=1740238585; cv=none; b=FnieifngDBubVX21R433K5XfN9NrfOWSiUobbevXarjTidvAlM4ZObyZSCbhM/QsbLkpijGTbbv1tyvMRyQeXOqWDm+eexsoDfqgyzCvbXlpGJVkQsJ/KhHGGHhHmOVzeqzZBpJGBSb6/BkNO2DwthPFn3D5uJzhf/EQGe9hTKI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740230834; c=relaxed/simple;
-	bh=0xS6Cu9zY503FYzv4hIWBT5pesLymuUmjYwkhhRzpwA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Nn1EFeoOMhK5IufDOsKK6KLeMr0OIE1zHqnA+dTQIi2ua4sMWOGgvM8yeicQvBBIgk75q4p8NacCIUHVdBK+5lHv/o3oMjOijqxhKaT0gC2uaGzC3SYJ7DKRrwHZnFQ/C8fMhL2MIhtI4d++uISRC1jxdEgwKJ06b9osbLFdrNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=dqjxE5Pf; arc=none smtp.client-ip=18.132.163.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="dqjxE5Pf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1740230794;
-	bh=0xS6Cu9zY503FYzv4hIWBT5pesLymuUmjYwkhhRzpwA=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=dqjxE5PfR+mf4cOGCjm8ecW1kbq1HY6m30vfICXUue+h8dNDqpUefr2Ob4lcG/Pt3
-	 8q1RkUGPgNpT6pV810AfhbWYftu/R8qS5AwKCkm8QuSmZCsz6w/KVcOKBHGMSL+k/s
-	 /YOio8BmOsmxmJj75VOpUg9rtl5/J/z4qDUgidxE=
-X-QQ-mid: bizesmtpsz13t1740230790t96rlp
-X-QQ-Originating-IP: td5RAHcEPQCqD7LgFggxdM/IlPGOPxUh3iz7gt13nOE=
-Received: from localhost.localdomain ( [113.57.152.160])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Sat, 22 Feb 2025 21:26:28 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 1
-X-BIZMAIL-ID: 7706801830270063389
-From: Wentao Guan <guanwentao@uniontech.com>
-To: jkeeping@inmusicbrands.com
-Cc: andriy.shevchenko@linux.intel.com,
-	arnd@arndb.de,
-	fancer.lancer@gmail.com,
-	ftoth@exalondelft.nl,
-	gregkh@linuxfoundation.org,
-	heikki.krogerus@linux.intel.com,
-	ilpo.jarvinen@linux.intel.com,
-	jirislaby@kernel.org,
-	john.ogness@linutronix.de,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	pmladek@suse.com,
-	schnelle@linux.ibm.com,
-	stable@vger.kernel.org,
-	sunilvl@ventanamicro.com
-Subject: Re: [PATCH v3] serial: 8250: Fix fifo underflow on flush
-Date: Sat, 22 Feb 2025 21:26:27 +0800
-Message-Id: <20250222132627.25818-1-guanwentao@uniontech.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20250208124148.1189191-1-jkeeping@inmusicbrands.com>
-References: <20250208124148.1189191-1-jkeeping@inmusicbrands.com>
+	s=arc-20240116; t=1740238585; c=relaxed/simple;
+	bh=q0sYhvG6QRBlTbAt5UtgA6djZsVa50a/93MMrD9O110=;
+	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To:From; b=e/r0oK7YzFJQM0yaJtFrUg6H+eHTAygJt2FvNCsxuf1ctRlR5nw9KdMLtyjaWL7ChSGI87eO19G6jX4x5jFsTRPklpXOcOhv7AeCR/q6mMOHGALhaB5pbj1ZMsZ7nEZayjAKKP2B/Ufai+WequJvl/7llTlQwNbUliRxWp//Qfc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
+Received: (qmail 28440 invoked by uid 3782); 22 Feb 2025 16:36:13 +0100
+Received: from muc.de (pd953a520.dip0.t-ipconnect.de [217.83.165.32]) (using
+ STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
+ Sat, 22 Feb 2025 16:36:12 +0100
+Received: (qmail 10943 invoked by uid 1000); 22 Feb 2025 15:36:12 -0000
+Date: Sat, 22 Feb 2025 15:36:12 +0000
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
+  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: More than 256/512 glyphs on the Liinux console
+Message-ID: <Z7nu7HqKn4o2rMd5@MAC.fritz.box>
+References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
+ <2025022243-street-joylessly-6dfa@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtpsz:uniontech.com:qybglogicsvrgz:qybglogicsvrgz5a-0
-X-QQ-XMAILINFO: OA8qd4daQrT+gspbIHyjZJSCZe0mGuFJEUOJnUJIUtlW3kdWKIWjXUoX
-	uNcndV34u/vwofXTZXKFXifsW450JWsBelge09EWmusHmT31Az/GJeQocV626GgNUykG/nf
-	Fjd9Xp9VY1dv2y0Sqxzhl6AJM4/TJXW4ppQS7x/ThESEEJraGCXeckW1yxinn9T8BilCYMi
-	WAbz68mWXMg51TM2x0H9Y79m1r4CVDQTGmBjU5rC5mnz+DO04dVHcf01wxZX5rnUprFe1/M
-	oMoHkACePkkFgxklL3krlF4/vPYSDQHwVQJ7GcRsnEmnKkTXmIoWg7nXckdHG+3n5hECMQB
-	edNFbpNm/pXRSs/Obu4fX8sbrm894FXOVqw1bgvBMffFyT1AjePR0WS2L/peAjJF9Q7NpkU
-	xBuER+i0JxiW71bfwH3EinFXB6fg4ZnMAgsrQR7nE72TgIT5/imUKp8WgZE/Bh5OyZbsm65
-	SNZF1XiQNYlSpeXbUbRBBzDLWxYE3qjCXTmeKdpqzW+3llp7DXO5I19kjeltIoOdHCesToU
-	BZxC9mMDY9c3p/UIw0XdN38rC5arUI5ai1lEVuZBsEj6XqeOrBMxAsMLEdOrj3hnuCK9eK1
-	QwX2NQHaUIGtEcJPIWREWbATsniOm54lrjnc0JBN9Ru8O+aP+FnSLVbOcTKRQ1lyU36Jyzv
-	MoLxygoA++rmOmnOBjfk/lhOBCDU05uhEAzWAUoWPhpY800IO32LFXQxF7qSpfsqolnF9iG
-	CQjaZMMFOYlgMZ9attqVPskeszk6pxqJVVm93yf+AAFjoNJrFGJAgaNDUJ+5D3I+T4uN1xH
-	rokc91Ujx1ZmrstB4rpDuxMVehqDYHcqU6Cf0F4zTVLhhcFP0EYaQKsdTWY5E5FmsPWuL3+
-	0/m8zlyRNSqtXUnVrqW+DBkpJQstG0JI5wAeLVAzytS1Y4q13CnxxKDTrkkM2GpVTiPgJb1
-	anekp8gHd7Saoh1ayA/K42EURZHYZmVsWcIneuBK3J66IGuLqZpCwXWOEzp9nYp3MUUR4tk
-	mwTwIJIbhy4S+mnbKEeCMYplJ0zh05leMrot28tTs+DNTKo9gZ/98Dk2xH5zQ=
-X-QQ-XMRINFO: Mp0Kj//9VHAxr69bL5MkOOs=
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2025022243-street-joylessly-6dfa@gregkh>
+X-Submission-Agent: TMDA/1.3.x (Ph3nix)
+From: Alan Mackenzie <acm@muc.de>
+X-Primary-Address: acm@muc.de
 
-Hello John,
+Hello, Greg.
 
-It seems strange that call 'dmaengine_terminate_async( **dma->rxchan** );' in
-'serial8250_ **tx** _dma_flush' during code review.
-I am not a professional reviewer in this module, could you explaim the change?
+Thanks for the reply.
 
-BRs
-Wentao Guan
+On Sat, Feb 22, 2025 at 09:48:32 +0100, Greg Kroah-Hartman wrote:
+> On Fri, Feb 21, 2025 at 03:35:59PM +0000, Alan Mackenzie wrote:
+
+> > Dear Linux Maintainers,
+
+> > The Linux console is currently restricted to 256/512 glyphs, the VGA
+> > standard from the 1980s.  I would like that restriction to be lifted, and
+> > believe that many other console users would agree.
+
+> First off, why?
+
+I use the console as my primary means of interacting with my PC, and in
+recent years have become increasingly irritated by the appearance of
+Ufffd in place of, for example, eastern European characters in people's
+names.  I've often wished "somebody" would fix this.  In the end, that
+somebody had to be me.
+
+But I think you are also asking why I use the console at all.  That's a
+fair question which I'll try to answer.
+
+For pure text work (such as hacking code, reading emails), the main
+alternative is a GUI such as X-Windows (or Wayland).  These insert
+several layers of "fat" between the user and the "muscle" of the kernel.
+
+Like many drivers of modern cars, who would dearly love to get rid of
+electronic this and that, electric mirror adjustment, electric window
+opening and so on, I need a simple uncluttered environment.  I want to
+drive a speedboat, not a luxury yacht.
+
+All the features of GUI systems take up space on the screen, thus
+reducing the space available for the user's work.  All these systems
+"steal" key sequences from application programs, making them less
+useful.  For example <alt>-<tab> is a useful key sequence in Emacs,
+provided it is running on the console.  In text work, I have absolutely
+no use for scroll bars, menus, window decorations, and the like - they
+just get in the way.
+
+The console is a stable interface.  My use of it has barely changed in
+around 25 years.  By contrast, GUI environments are continually
+changing, forcing users to spend time learning new features and
+(arbitrarily) changed existing features.  I don't like this.
+
+The console is also rock-solid reliable - just as other parts of the
+kernel are.  X-Windows, for example is not so reliable.  Back in
+December, the root partition on my new Gentoo system became full.  This
+prevented X from even starting.  With the console (and a rescue CD) I
+was able to recover the situation.
+
+> What about the move to get rid of the vt code entirely, ....
+
+Getting rid of the vt code would be a Bad Thing.  People depend on it.
+What is the alternative?
+
+> .... if you do that, can't you get proper glyphs with the drm
+> subsystem?
+
+I don't know.  I've looked briefly at fbterm, a terminal which uses drm.
+It steals key sequences too, some of which are needed in Emacs.
+Although not as bad as GUIs, it puts awkward layers between the user and
+Linux too.
+
+I think using drm in place of fbterm.c and bitblit.c would need a lot of
+design and implementation work.  The change I'm proposing barely changes
+the design at all.
+
+> Doing huge changes for a subsystem that almost everyone agrees should
+> only be kept around for legacy reasons is a rough undertaking.
+
+Isn't there a principle in Linux that preserving existing user
+interfaces is of utmost importance?
+
+> <snip>
+
+> > I would very much like further to develop and to refine this code to the
+> > point where it is suitable for inclusion in the mainline kernel.  What do
+> > you say?
+
+> Only you can decide what you want to work on.  If you have working
+> patches, and submit them so that they can be reviewed, we'll be glad to
+> do so.
+
+As I've already written, I've got working code, but it needs refinement
+before I submit it.  Otherwise reviewers would likely reject it for
+"inessential" reasons like code formatting.  This will likely take me
+several days.
+
+What is the best way of submitting such a large patch (~3,500 lines)?  I
+committed it to my own local git repository in three main stages (around
+equal size), and have applied corrections after rebasing and the odd bug
+fix.
+
+> But again, you are going to have to answer the reason "why" first.
+
+I hope this email goes some way towards this.
+
+> thanks,
+
+> greg k-h
+
+Thank you too!
+
+-- 
+Alan Mackenzie (Nuremberg, Germany).
