@@ -1,146 +1,151 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2079B1DC99C;
-	Sun, 23 Feb 2025 05:15:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 911111C84C8;
+	Sun, 23 Feb 2025 07:49:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740287706; cv=none; b=XoKG1IXELN3gCh/W51L03tUPNRa8QcU0rm3iBKHA9oxoDldZBpP0dK8aLAThzBCJLjsAfp+7jABUg2stpYZH0878h7bG4g+n4hU8+RmayE6g+v5nKTxpcyPkW8+VnX0ZFSKQWNge9wOgOZGHno//cGxv9xeLm2HznS3EZOZoUn4=
+	t=1740296941; cv=none; b=EycQd+IF6+NH2su+3NZFiMLekR61bgDFERCwBvLUMhTxBeWaXyvMf6TLiO5CxIFk1E7mmn33PLn3tHDZS9c+SQgE7OBetjGXKBFrQulbI4ceK4kO0jQDRjHLVxsbtFGp6SbgXcigpTirEo8TrB+X8Ct9Z0rfRjVROVAOPZtC3ws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740287706; c=relaxed/simple;
-	bh=BNM5ii68EENqtMZC3EcZR7Hqtlk/UcgKmWx49cXZGYg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jDQWWnITVxJ3AUCHpf88gFplFuxar7//Hi6fwDzJG6JRec71lVqawJgXF+B4qyjpXdU7IDrYcK7GTPn25V/Pb3rQNIPAoSYd0J8mMhU1/rYizrIxfREGGPk/OhofIIo7cJ3BePyx11VhIoMpc3Gd6c+UJsNcxqe6URAhC7z8UJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E5zUpp+G; arc=none smtp.client-ip=209.85.160.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1740296941; c=relaxed/simple;
+	bh=oh6jgBwwtm4YNGGIi9b84EMsEmefhagDFlrCVogIp4s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=johvT78xR8njw6mG+jvdTSBm2PBcxjK+UIUhRBw+KZVVqaQ3iqa8hz+YdTIXS6Nl/bIYthh+k/uI3ds0angBf/MH1HR83546B6vc9wmaUt0P5UJTAAfqXXaiRJgwiXmYPNb6yIScJF5krWoVrifmoa8feQzA20bukhZLa0YYmfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=gLNHyCsU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E5zUpp+G"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-471fe5e0a80so29448291cf.1;
-        Sat, 22 Feb 2025 21:15:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740287704; x=1740892504; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yOEt6QZskOkWnzsAtQRMjy5DMtIL4TXxTfDJML0AUCI=;
-        b=E5zUpp+GjU7chk8MKxdfmX+KvXwWk2rvW8pqJ43PyIof401p0VO/Qmi50t+pLWu/3+
-         PAYYwyvqwvMb0oDBR+yxsnRqIOgGnlRQ9BSiNX1BSQ9FA/A0RoW2tT2rjiG7qa2mhVTv
-         N9dyQvLJV40fXArAPt9RIYkmFXKta6PnUfqck3tUy6Dv59HzqutAmXJ735kewu+KzSL2
-         ao5lvieKHxn7Bwy32rq2BY82HAEEc28/dda+s05+Tw99DbBPyRyNfIhY08/yuPRDM5iP
-         xMIhEKqnC5kLXD3pBzbYKI98yc7hdvgolEK828PEj3VJI9u/4+eDqoLmarabDTGeiQI8
-         Ezng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740287704; x=1740892504;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yOEt6QZskOkWnzsAtQRMjy5DMtIL4TXxTfDJML0AUCI=;
-        b=eUR6kL7Wv6sMQnhZBK1vHs4iHGWV82mfkwMx7Eb0v7ck78RKNMaW/C6hnFdxiQFk/Z
-         3mCeX9BBtuWLzXKxx1yd2kX3Yn4CCgLbOveEhXuWtqOcU6AxTWZAlWXNBDxGDNpIg46H
-         bNvGrd1PA9FP2kx82OpeKHBMSs49sm/FbJVPa0fMTFEKKvPtXh0OuRQ59eK0gxNhLK0e
-         zXhN76xNCKpDtSj4r6RgH+BCMki42ajSc9Hrsk6ISsjE4ixnxLXGzMn2xXQ+bMyRgis/
-         Vy28R4LZzytyBJ3kFb8YsXCdbamgFS5rACqtg4UAV9LvvB4LMOHipoZDkJpCRYmyBfLu
-         thDw==
-X-Forwarded-Encrypted: i=1; AJvYcCWhY27one7Ld0ubcNFx3LqG6r3Wx1IyPav/MMqHytE+E+FKKlCo5tPoyfrzHLGqax8q9V2gx+yQXs51CpQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwdOHpgcUbPcJd7US/1uoCdEqEy3Vj3R/NKb/Qn7b9aC8oDEJ24
-	cYn1H4XpQaQZCYKEbTEvSXvV4k8OtWCKBr6HbpXHUqe7X6anoRdW1W7nSFJ1
-X-Gm-Gg: ASbGncsj6X5Odp2MD3X5f6Khfvmq3G3t0OvMTWa+VJYAMuoyG3QxjUoDLUPI47SSl6H
-	gjQGVMMJJXeRTtm8I0qjv3WUSvTbDE1EkB9+nMxxmoueRy35AusANxIulbxGIp4jdzs4Kv2/ccY
-	pKwAS5gfRlzkbSach0pku24AleZIeS8DrNhvhjrQsaGo5N1zhgRWXOKXROY4fXWQdHnAkF9B2gU
-	GgAHr2wooKn36vOeOyK50e2DiLr22IJPv4L0yQ73Arx3S5pq0CDNpGUavZqHISTzLrJcMZguWhE
-	c//lWdzMr0qRCc28rE0A9PnhVxkzhb1fDW1/LUiJvQC9AYgJWYCGTlFOEdPssg7/
-X-Google-Smtp-Source: AGHT+IFSgzxVEIKH51qETsyKXMx5jVGe8cyHVu2Zll8/c6M65UGMoj61TchBOfxsy3iarPKzMWQcBQ==
-X-Received: by 2002:a05:622a:306:b0:472:996:3bf with SMTP id d75a77b69052e-4722491fb99mr91136891cf.48.1740287703657;
-        Sat, 22 Feb 2025 21:15:03 -0800 (PST)
-Received: from nerdopolis2.mynetworksettings.com ([2600:4040:5e66:a800:104d:377c:5733:f5b0])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e65d784e99sm118544836d6.28.2025.02.22.21.15.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Feb 2025 21:15:02 -0800 (PST)
-From: adamsimonelli@gmail.com
-To: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Adam Simonelli <adamsimonelli@gmail.com>
-Subject: [PATCH v3 2/2] tty: Change order of ttynull to be linked sooner if enabled as a console.
-Date: Sun, 23 Feb 2025 00:14:41 -0500
-Message-ID: <20250223051441.1861603-3-adamsimonelli@gmail.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20250223051441.1861603-1-adamsimonelli@gmail.com>
-References: <20250223051441.1861603-1-adamsimonelli@gmail.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="gLNHyCsU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A942AC4CEDD;
+	Sun, 23 Feb 2025 07:49:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1740296941;
+	bh=oh6jgBwwtm4YNGGIi9b84EMsEmefhagDFlrCVogIp4s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gLNHyCsUWY87YRpgIEN81f28kFXfexrhYNerBiIMs/oR9vXhX1kY88aHAwnaXrRmX
+	 0fatG+Ij5o88hkkgyu5qNx7cB53W2p7gid1Tk6L98Q8AWqUlgHUbjAuewL8bhdZGmN
+	 7JoPPJyKVEkt5iE1pC8Ba7kQtO3Z2lludTvt66Xc=
+Date: Sun, 23 Feb 2025 08:47:53 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Alan Mackenzie <acm@muc.de>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: More than 256/512 glyphs on the Liinux console
+Message-ID: <2025022355-peroxide-defacing-4fa4@gregkh>
+References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
+ <2025022243-street-joylessly-6dfa@gregkh>
+ <Z7nu7HqKn4o2rMd5@MAC.fritz.box>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z7nu7HqKn4o2rMd5@MAC.fritz.box>
 
-From: Adam Simonelli <adamsimonelli@gmail.com>
+On Sat, Feb 22, 2025 at 03:36:12PM +0000, Alan Mackenzie wrote:
+> On Sat, Feb 22, 2025 at 09:48:32 +0100, Greg Kroah-Hartman wrote:
+> > On Fri, Feb 21, 2025 at 03:35:59PM +0000, Alan Mackenzie wrote:
+> > > The Linux console is currently restricted to 256/512 glyphs, the VGA
+> > > standard from the 1980s.  I would like that restriction to be lifted, and
+> > > believe that many other console users would agree.
+> 
+> > First off, why?
+> 
+> I use the console as my primary means of interacting with my PC, and in
+> recent years have become increasingly irritated by the appearance of
+> Ufffd in place of, for example, eastern European characters in people's
+> names.  I've often wished "somebody" would fix this.  In the end, that
+> somebody had to be me.
+> 
+> But I think you are also asking why I use the console at all.  That's a
+> fair question which I'll try to answer.
 
-If CONFIG_NULL_TTY_CONSOLE is enabled, and CONFIG_VT is disabled, ttynull
-will become the default primary console device, based on the link order.
+I'm not disputing using the console, it's the vt layer that I'm talking
+about.  The DRM developers have the long-term goal of getting rid of
+CONFIG_VT which will remove a ton of mess that we have overall.
+DRM-based consoles should provide the same functionality that a vt
+console does today.  If not, please let them know so that the remaining
+corner cases can be resolved.
 
-Many distributions ship with CONFIG_VT enabled. On tested desktop hardware
-if CONFIG_VT is disabled, the default console device falls back to
-/dev/ttyS0 instead of /dev/tty.
+> For pure text work (such as hacking code, reading emails), the main
+> alternative is a GUI such as X-Windows (or Wayland).  These insert
+> several layers of "fat" between the user and the "muscle" of the kernel.
 
-This could cause issues in user space, and hardware problems:
+No, no need for x or wayland there from what I recall.
 
-1. The user space issues include the case where  /dev/ttyS0 is
-disconnected, and the TCGETS ioctl, which some user space libraries use
-as a probe to determine if a file is a tty, is called on /dev/console and
-fails. Programs that call isatty() on /dev/console and get an incorrect
-false value may skip expected logging to /dev/console
+And there is not really any "fat" there, sorry, it's a way to give you
+all of those glyph and input systems and functionality that you need.
+That wasn't added for no good reason.
 
-2. The hardware issues include the case if a user has a science instrument
-or other device connected to the /dev/ttyS0 port, and they were to upgrade
-to a kernel that is disabling the CONFIG_VT option, kernel logs will then be
-sent to the device connected to /dev/ttyS0 unless they edit their kernel
-command line manually.
+> > What about the move to get rid of the vt code entirely, ....
+> 
+> Getting rid of the vt code would be a Bad Thing.  People depend on it.
+> What is the alternative?
 
-The new CONFIG_NULL_TTY_CONSOLE option will give users and distribution
-maintainers an option to avoid this. Disabling CONFIG_VT and enabling
-CONFIG_NULL_TTY_CONSOLE will ensure the default kernel console behavior
-is not dependant on hardware configuration by default, and avoid
-unexpected new behavior on devices connected to the /dev/ttyS0 serial
-port.
+The drm console layer.
 
-Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
----
- drivers/tty/Makefile | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+> > .... if you do that, can't you get proper glyphs with the drm
+> > subsystem?
+> 
+> I don't know.  I've looked briefly at fbterm, a terminal which uses drm.
+> It steals key sequences too, some of which are needed in Emacs.
+> Although not as bad as GUIs, it puts awkward layers between the user and
+> Linux too.
 
-diff --git a/drivers/tty/Makefile b/drivers/tty/Makefile
-index 07aca5184a55..1a1051ecb1af 100644
---- a/drivers/tty/Makefile
-+++ b/drivers/tty/Makefile
-@@ -11,6 +11,10 @@ obj-$(CONFIG_N_HDLC)		+= n_hdlc.o
- obj-$(CONFIG_N_GSM)		+= n_gsm.o
- 
- obj-y				+= vt/
-+#If ttynull is configured to be a console by default, ensure that it is linked
-+#earlier before a real one is selected.
-+obj-$(CONFIG_NULL_TTY_CONSOLE)	+= ttynull.o
-+
- obj-$(CONFIG_HVC_DRIVER)	+= hvc/
- obj-y				+= serial/
- obj-$(CONFIG_SERIAL_DEV_BUS)	+= serdev/
-@@ -20,7 +24,13 @@ obj-$(CONFIG_AMIGA_BUILTIN_SERIAL) += amiserial.o
- obj-$(CONFIG_MOXA_INTELLIO)	+= moxa.o
- obj-$(CONFIG_MOXA_SMARTIO)	+= mxser.o
- obj-$(CONFIG_NOZOMI)		+= nozomi.o
-+
-+#If ttynull is enabled, but not as a boot console, it is linked and used later
-+#after the real ones.
-+ifneq ($(CONFIG_NULL_TTY_CONSOLE),y)
- obj-$(CONFIG_NULL_TTY)	        += ttynull.o
-+endif
-+
- obj-$(CONFIG_SYNCLINK_GT)	+= synclink_gt.o
- obj-$(CONFIG_PPC_EPAPR_HV_BYTECHAN) += ehv_bytechan.o
- obj-$(CONFIG_GOLDFISH_TTY)	+= goldfish.o
--- 
-2.45.2
+I don't know what fbterm is, sorry.
 
+> I think using drm in place of fbterm.c and bitblit.c would need a lot of
+> design and implementation work.  The change I'm proposing barely changes
+> the design at all.
+
+Ok, but we haven't seen the patches to know this :)
+
+> > Doing huge changes for a subsystem that almost everyone agrees should
+> > only be kept around for legacy reasons is a rough undertaking.
+> 
+> Isn't there a principle in Linux that preserving existing user
+> interfaces is of utmost importance?
+
+I agree, keeping the existing ones is key.  You are talking about
+extending the existing ones in a way that adds additional complexity
+when there might already be a solution for this for you.  That's why I
+brought that up.
+
+> As I've already written, I've got working code, but it needs refinement
+> before I submit it.  Otherwise reviewers would likely reject it for
+> "inessential" reasons like code formatting.  This will likely take me
+> several days.
+
+code formatting is NOT "inessential", please never think that.  Our
+brains run on patterns and common code formatting allows us to see the
+real issues here.  To not follow those formatting rules means we just
+can't review your code properly.
+
+Reviewing is harder than writing code, so you have to write the code to
+make reviewing easier if you wish to have anything accepted as you have
+to convince everyone else that your changes are correct.
+
+> What is the best way of submitting such a large patch (~3,500 lines)?  I
+> committed it to my own local git repository in three main stages (around
+> equal size), and have applied corrections after rebasing and the odd bug
+> fix.
+
+Break down the changes into "one logical change per patch" to make them
+easy to review.  It's an art form, think about how you want to get to
+your end result and then take us on a path that is "obvious" to get
+there over a series of changes.
+
+Think of it as "showing your work" when solving a math or physics
+problem that your teacher told you to follow.  No one wants to just see
+the end result, they have to see all the steps along the way to even
+begin to understand if the end result is correct or not.
+
+But again, before doing that work, see how using the drm console works
+for you, or not.  If not, let us and the drm developers know so that we
+can work toward solving those issues, as that might actually be easier
+to do.
+
+thanks,
+
+greg k-h
