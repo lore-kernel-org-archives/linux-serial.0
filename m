@@ -1,149 +1,137 @@
-Received: from mail.muc.de (mail.muc.de [193.149.48.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 659DE3224
-	for <linux-serial@vger.kernel.org>; Sat, 22 Feb 2025 15:36:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12ECA2111;
+	Sun, 23 Feb 2025 04:56:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740238585; cv=none; b=FnieifngDBubVX21R433K5XfN9NrfOWSiUobbevXarjTidvAlM4ZObyZSCbhM/QsbLkpijGTbbv1tyvMRyQeXOqWDm+eexsoDfqgyzCvbXlpGJVkQsJ/KhHGGHhHmOVzeqzZBpJGBSb6/BkNO2DwthPFn3D5uJzhf/EQGe9hTKI=
+	t=1740286613; cv=none; b=mAevNnKnX8bjJcgCfboSRup5IG8xqqqPBCbF13SqLwKrjfZMEcauFMd+XB3QgntvGymYt9FDBMUQKmuMXafaP085G5G+K1mPlVpaA3XwYaAInWURCroK80BPaL9tSoUOg4aBfBF4ID2C08t+iRP0683pP8bqPAcdqtSknHQlv4s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740238585; c=relaxed/simple;
-	bh=q0sYhvG6QRBlTbAt5UtgA6djZsVa50a/93MMrD9O110=;
-	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To:From; b=e/r0oK7YzFJQM0yaJtFrUg6H+eHTAygJt2FvNCsxuf1ctRlR5nw9KdMLtyjaWL7ChSGI87eO19G6jX4x5jFsTRPklpXOcOhv7AeCR/q6mMOHGALhaB5pbj1ZMsZ7nEZayjAKKP2B/Ufai+WequJvl/7llTlQwNbUliRxWp//Qfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
-Received: (qmail 28440 invoked by uid 3782); 22 Feb 2025 16:36:13 +0100
-Received: from muc.de (pd953a520.dip0.t-ipconnect.de [217.83.165.32]) (using
- STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
- Sat, 22 Feb 2025 16:36:12 +0100
-Received: (qmail 10943 invoked by uid 1000); 22 Feb 2025 15:36:12 -0000
-Date: Sat, 22 Feb 2025 15:36:12 +0000
+	s=arc-20240116; t=1740286613; c=relaxed/simple;
+	bh=qOtmpq6Kn/bx68wjyPlHMVkHYUO4AaaQVZr5vaOzrJY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=SBZZkQutFcrgyjEzwvKXs9q1Wc8oMC2PTnmkVVVuo0ajxulZRhCo40rV3FvDVDQIKTWgqzWJ2YPPaZlg4N1vzVeU8hCq5rY3aG+JP/erMZ9ZBOeV6tnGzvLB2VRdu7lBdjfjOjds2GLLwYy6GkNrKXBqULMNODYoce3Ld/c9m8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VdeojEYG; arc=none smtp.client-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VdeojEYG"
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7c08f9d0ef3so215371985a.2;
+        Sat, 22 Feb 2025 20:56:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740286611; x=1740891411; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7DVe9AIae0UBiMWAPJhlgjyvPeRD+ylP6Mta15Skotg=;
+        b=VdeojEYGv/CFcZ6pfOjbcTm1xSfTbqdjK4ANLjMwtd3zaHPTlkVoFJZHHWb/bHT+/S
+         8Pd4nlTvCOoGwaZXmQEH3+BsT2BSpGRtMc0Gr3Zq0eJllqyLNhLRtoRQW6mbD+2vgepG
+         ZClEA0HznZftglLGWEqilYvBX3xOzBpj6Ui4ByTStozeS5ujHv+WPNmBNpv1ST9QPTR3
+         /+9QfLLf/XiNs3vUvGd14iMjJ37YOcqwhuCJZ1NEv+OysGkL/DDWpXR6CLcWdldrkedB
+         6v8NcD4OUqydr1FnnL6Y6vijOA0NhvM+CXcPbxephwuk/Lqp9wMTCQ+iONJ17J2Vksbq
+         Vz6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740286611; x=1740891411;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7DVe9AIae0UBiMWAPJhlgjyvPeRD+ylP6Mta15Skotg=;
+        b=PhNCw2MZk64Ku2pIyCdFjyFVhtz3ldkD981AKHboM9Bk+6h9Xq4pJ8KOBvSY4HoU5f
+         pSqG8GyzcqviTPiUcLq6YrEjK7l/d5iStNJk213WEhQ3sBZrcZPPnevUsjUnZ7yI6Kgn
+         gx1twmlzXCCu+RayNBdcR3HmEjNct+KiwIjNlMhXIaosB8b6r3wSTa35WDyDHe0nbh1Y
+         RAt/vPVDcM7EGVI2P3Q5Ls8Nf5Pjl0W7pTZiUAwXVmYo7a9ItIK1XjbgMD5FlEZ072da
+         24jHYnYKi8L7ebzT9bGAaKAMqFMeHK4t04vs761/rk2/7lihgaUFbmN60f3hcfeYJ4xA
+         OzSw==
+X-Forwarded-Encrypted: i=1; AJvYcCVS05E1xLkgelltBSb7qXGZ8XgqXSgjXRj/WlNr3V6v+y60buOKhK8R27vtP1uKhZKoql6Rxv1QQjnSb40=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw3E1ybYBhE9ArpVpZ3PfQbkqYs0+HKeQd91oee6UiThhLXgDFg
+	2C47OxIzzm3FkBud7CXWBjSP4A6wPG7DzQmP6/ApQEYfjNrtiP5d
+X-Gm-Gg: ASbGncs859HvF6vhXZbP3T8Fh/C+UJ0/DHHDpig3RKfWUsjfAc4DltA1shmE1Al0BeX
+	I6JJFnQ2Z+gGr8MyD3Q1xOJP37Hf/7Tp57QidMccDFTFNTVr9rH46JFJtHO4wppNUd//kt6GJ+f
+	rnArKxsWtIMfc5SkpGSHBDMYAkiTiDC5Q6cOPHATGZC6t3qN1d3DOj0f7Oy4ZVBKVw8KSWu7+YP
+	aZEOO838mx1zeZvUFmtxJC+lbCTOHQRI9HRpRQO3JqyyT0xsba0RWCj7dVAov0bpXQLNbGKm0cO
+	6mrTvIVsywkjdECXnZFx33ymLOSzdSkIJE2EYXjybCVpQ4s=
+X-Google-Smtp-Source: AGHT+IGbd646ykaMg1S0WZNg+V+zr5Lv3mEvm4mIw5xeadGijDjJjMn247ac93CQKG451CQiCGoO6g==
+X-Received: by 2002:ad4:5bae:0:b0:6d8:8a60:ef2c with SMTP id 6a1803df08f44-6e6ae7cae9fmr120114636d6.2.1740286610890;
+        Sat, 22 Feb 2025 20:56:50 -0800 (PST)
+Received: from nerdopolis2.localnet ([2600:4040:5e66:a800:104d:377c:5733:f5b0])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e65d7791cdsm117409616d6.9.2025.02.22.20.56.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 22 Feb 2025 20:56:49 -0800 (PST)
+From: Adam Simonelli <adamsimonelli@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
-  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: More than 256/512 glyphs on the Liinux console
-Message-ID: <Z7nu7HqKn4o2rMd5@MAC.fritz.box>
-References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
- <2025022243-street-joylessly-6dfa@gregkh>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2 2/2] tty: Change order of ttynull to be loaded sooner.
+Date: Sat, 22 Feb 2025 23:56:47 -0500
+Message-ID: <8413152.MhkbZ0Pkbq@nerdopolis2>
+In-Reply-To: <2025021957-babble-delivery-3035@gregkh>
+References:
+ <20250217040748.2017975-1-adamsimonelli@gmail.com>
+ <20250217040748.2017975-3-adamsimonelli@gmail.com>
+ <2025021957-babble-delivery-3035@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2025022243-street-joylessly-6dfa@gregkh>
-X-Submission-Agent: TMDA/1.3.x (Ph3nix)
-From: Alan Mackenzie <acm@muc.de>
-X-Primary-Address: acm@muc.de
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-Hello, Greg.
-
-Thanks for the reply.
-
-On Sat, Feb 22, 2025 at 09:48:32 +0100, Greg Kroah-Hartman wrote:
-> On Fri, Feb 21, 2025 at 03:35:59PM +0000, Alan Mackenzie wrote:
-
-> > Dear Linux Maintainers,
-
-> > The Linux console is currently restricted to 256/512 glyphs, the VGA
-> > standard from the 1980s.  I would like that restriction to be lifted, and
-> > believe that many other console users would agree.
-
-> First off, why?
-
-I use the console as my primary means of interacting with my PC, and in
-recent years have become increasingly irritated by the appearance of
-Ufffd in place of, for example, eastern European characters in people's
-names.  I've often wished "somebody" would fix this.  In the end, that
-somebody had to be me.
-
-But I think you are also asking why I use the console at all.  That's a
-fair question which I'll try to answer.
-
-For pure text work (such as hacking code, reading emails), the main
-alternative is a GUI such as X-Windows (or Wayland).  These insert
-several layers of "fat" between the user and the "muscle" of the kernel.
-
-Like many drivers of modern cars, who would dearly love to get rid of
-electronic this and that, electric mirror adjustment, electric window
-opening and so on, I need a simple uncluttered environment.  I want to
-drive a speedboat, not a luxury yacht.
-
-All the features of GUI systems take up space on the screen, thus
-reducing the space available for the user's work.  All these systems
-"steal" key sequences from application programs, making them less
-useful.  For example <alt>-<tab> is a useful key sequence in Emacs,
-provided it is running on the console.  In text work, I have absolutely
-no use for scroll bars, menus, window decorations, and the like - they
-just get in the way.
-
-The console is a stable interface.  My use of it has barely changed in
-around 25 years.  By contrast, GUI environments are continually
-changing, forcing users to spend time learning new features and
-(arbitrarily) changed existing features.  I don't like this.
-
-The console is also rock-solid reliable - just as other parts of the
-kernel are.  X-Windows, for example is not so reliable.  Back in
-December, the root partition on my new Gentoo system became full.  This
-prevented X from even starting.  With the console (and a rescue CD) I
-was able to recover the situation.
-
-> What about the move to get rid of the vt code entirely, ....
-
-Getting rid of the vt code would be a Bad Thing.  People depend on it.
-What is the alternative?
-
-> .... if you do that, can't you get proper glyphs with the drm
-> subsystem?
-
-I don't know.  I've looked briefly at fbterm, a terminal which uses drm.
-It steals key sequences too, some of which are needed in Emacs.
-Although not as bad as GUIs, it puts awkward layers between the user and
-Linux too.
-
-I think using drm in place of fbterm.c and bitblit.c would need a lot of
-design and implementation work.  The change I'm proposing barely changes
-the design at all.
-
-> Doing huge changes for a subsystem that almost everyone agrees should
-> only be kept around for legacy reasons is a rough undertaking.
-
-Isn't there a principle in Linux that preserving existing user
-interfaces is of utmost importance?
-
-> <snip>
-
-> > I would very much like further to develop and to refine this code to the
-> > point where it is suitable for inclusion in the mainline kernel.  What do
-> > you say?
-
-> Only you can decide what you want to work on.  If you have working
-> patches, and submit them so that they can be reviewed, we'll be glad to
-> do so.
-
-As I've already written, I've got working code, but it needs refinement
-before I submit it.  Otherwise reviewers would likely reject it for
-"inessential" reasons like code formatting.  This will likely take me
-several days.
-
-What is the best way of submitting such a large patch (~3,500 lines)?  I
-committed it to my own local git repository in three main stages (around
-equal size), and have applied corrections after rebasing and the odd bug
-fix.
-
-> But again, you are going to have to answer the reason "why" first.
-
-I hope this email goes some way towards this.
-
+On Wednesday, February 19, 2025 9:03:08 AM EST Greg Kroah-Hartman wrote:
+> On Sun, Feb 16, 2025 at 11:07:48PM -0500, adamsimonelli@gmail.com wrote:
+> > From: Adam Simonelli <adamsimonelli@gmail.com>
+> > 
+> > If CONFIG_NULL_TTY_CONSOLE is enabled, and CONFIG_VT is disabled, ttynull
+> > will become the default primary console device, based on the load order.
+> 
+> You mean "link order" right?
+Yeah, I'm sorry, I will change that.
+> 
+> > Users and distributions that are migrating away from CONFIG_VT will
+> > benefit from this as /dev/console would not suddenly become /dev/ttyS0
+> > which could otherwise cause some user space behavior changes, namely the
+> > TCGETS ioctl failing, which causes libc's isatty() to incorrectly return
+> > false when /dev/ttyS0 is disabled, and will prevent a device that is
+> > connected to a user's /dev/ttyS0 to suddenly start getting kernel log
+> > messages.
+> 
+> I'm sorry, but I can not parse that very long sentance.  If CONFIG_VT is
+> not enabled, this isn't going to change anything with ttynull, it will
+> just happen to have this console loaded before all others, right?
+> 
+> Which implies that this might break existing systems when this loads
+> before the expected platform-specific drivers.  Was this tested on those
+> systems?
+> 
+OK, next version of the patch, I think the commit message should be more more
+clear I hope.
+> > 
+> > Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
+> > ---
+> >  drivers/tty/Makefile | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/tty/Makefile b/drivers/tty/Makefile
+> > index 07aca5184a55..03bb47e11e1c 100644
+> > --- a/drivers/tty/Makefile
+> > +++ b/drivers/tty/Makefile
+> > @@ -11,6 +11,8 @@ obj-$(CONFIG_N_HDLC)		+= n_hdlc.o
+> >  obj-$(CONFIG_N_GSM)		+= n_gsm.o
+> >  
+> >  obj-y				+= vt/
+> > +obj-$(CONFIG_NULL_TTY)		+= ttynull.o
+> 
+> If you are going to rely on link order here, and HAVE to have this above
+> all other consoles, please document it as such so that people have a
+> hint as to why you are doing this in the file so it dosn't change again.
+> 
 > thanks,
-
+> 
+OK. I will add some comments
 > greg k-h
+> 
 
-Thank you too!
 
--- 
-Alan Mackenzie (Nuremberg, Germany).
+
+
