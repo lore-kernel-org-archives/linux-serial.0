@@ -1,95 +1,34 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.muc.de (mail.muc.de [193.149.48.3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10711266599;
-	Mon, 24 Feb 2025 16:56:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CE56198A38
+	for <linux-serial@vger.kernel.org>; Mon, 24 Feb 2025 18:22:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740416204; cv=none; b=DoUmvSGWWM3iYnbYAR9/EO1jLSJ0DIYvvQ9O9o7y4LpTo6mN05cMH5n86ufTjtTsFo73p53FKIeiRHmkQqHVg7uuPW+RS5ZGHao9uJqm1mrMoLYhJefKvCIqlJpWebd7n4oCfa2RaB+7Yuct/h679HdPR1O1KDL2dB69SJQG+L4=
+	t=1740421333; cv=none; b=d+79mb6KvCIADwyE2C0ViMjbIuwOHVK6qoqFtVCfgmrjN8L0scsQzDfceOSJp9mWORHqHah7CqnHHrUnQOyrlGUNSRvxcC8bljYjvunzwHqvnmb5L9mu6+Pzj+2PX9EabGB75vtX1btCZGmyNojncmY1iDRfWDjhAWN1/82WLcI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740416204; c=relaxed/simple;
-	bh=5G5oGYh1CaRHc2d1pU1YAOARWQsm2s7Z+o+/b8xWRQE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cQbbtxpCnUwiFym8551S2GhQX4biMNstcQhnTeiQNkcLMDjOzhop9eZR8wupPaxtkz2/slpu8ZvKbZ9dMQqpuT1CcUF1neb/q47RL4WmHM1MpCRA8aG27TWLr7a7eujWPRuyYCqwMQGaEqAYAM4MSly4SUibo0iAXMfDBMXqEr0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cEZhAAqz; arc=none smtp.client-ip=209.85.214.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cEZhAAqz"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-221057b6ac4so89038365ad.2;
-        Mon, 24 Feb 2025 08:56:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740416202; x=1741021002; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uiOFRZn2H6lerxDkJoj1wxqiGhkAtJgTGIELTuQhums=;
-        b=cEZhAAqzCsAWehsy2m8SvMlKBj6e4Rf3fkqkxHM+Euy8xATo2R35GQ0bt9RwE/fcFh
-         y1uvBeeGvg0ujDplELvufLpbMYQwU/6n3mhQ8zPfGkDewFXyaD0l5IcoSZ1C2tfgLFk+
-         d5CRXcmqVXitlh58Fn7FOwh2agJ10BJiSH9Qb2ZyO/cM9I6Hy/KuVAA0i0Wt9hNLixf5
-         iZ4FjI8LjgsxGExu5FP5ZBJg9agTe0SElmgqHcM+rPKaYuEkfTyREygd4cMQ6CjO8dm6
-         v4kKEz/L1B2mgK0vivaUclcfl5nqBBmNc110t13DKAB1O0TCJyY+bWT3n+VJkh80zm6k
-         90vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740416202; x=1741021002;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uiOFRZn2H6lerxDkJoj1wxqiGhkAtJgTGIELTuQhums=;
-        b=l8f/NsfAuAR3PReXRRsuYVzQOHEv4/3KaZ5VT/jkV4SxrwPxHGcZpZyJRDV3kMHhZE
-         kbhNUvrPGziCrWQKRPvLsVOVbONTyAULPWmZmXxxtu2JRzOqOJFv45nj3xAkV+SV6uDX
-         TIJ3A5N63E219Q/djhRPDiugxyPbNMDMw6Kfx2uZIpY1ax6PxT04NnT2/IEJJZNIZyC4
-         T4TxHmiCKSabZqQXDRUSFGf28DtOEq8v75FltwjAh6PFqTyVpOi9QjfN9xBM/b5HB+Ko
-         gJP/O3xe7EZwjtPm71yQWTFka6+dJueoSX2fI/mWEeVv4SyyFXhBcgxrAruXxNWI3DN5
-         paMQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUCgCbaBzq9fKe6FKJEYKAcFFTrnZx2udHzb0F0vYdJVmp1XYzhiuNM24084X/zy+rNSCKkmX8ywoe4lcU7@vger.kernel.org, AJvYcCUOVpPu6Lh3dBC5DqE79mqP3AhLLqDHhWoG/wcytDKp62p1pTpkIFHzHIn4hw6vfmuPw2L3vbR8MxkgK4IXIpQ=@vger.kernel.org, AJvYcCV6eaHqzGSYhiIyN9ZMKon+gXyFH/SV4278oVJcwgrEBHk38hhTaEQWWqJAb7DNAtb9545OWAKYkLIJ9LSi@vger.kernel.org, AJvYcCVIyEQUQD1rTXw+I4IgViyWIs0Wb0LLRTymfULJ13/d6lJsO6oWynO2v0CGiSEe0IEaaxM=@vger.kernel.org, AJvYcCVyt57IAKQv77uOT39maNHKVXX3xc34itm7bFrRG/zYsxVWoUfrI7nhoDdKBv43Qq7aQ7vmwDit38pVw+o=@vger.kernel.org, AJvYcCXeOGlUtvEujBwq+2eLJo6hRE396LATNA+O+tx4lN7LoJ8JEjV09KjJT55dqFjnCDOO1YcH/Mpf@vger.kernel.org, AJvYcCXfSi1yw1ly9s5TovwmcdXKdmtRSs+zzFvwOde9jNRkPd1UzflW8iBBDFMT9xu1cCD04HiF/gI7klADCLE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyK+XKClVqyfk/K9SEIcrKr77+7160Fj2D6o7Ap6NM3e1bASkue
-	aHFVkF+dC7ukofjnyCpCBHUQfvfLcEl+w7RWF5CDE2ja3IzsJaWl
-X-Gm-Gg: ASbGncsFufCa1KHv59coqIT4kIwy10FUKS6ZmnCe908AO0EJ37yK9zyRuEgAyySdz2T
-	h6Xt2mOn/5JulXy7WVF7CqJoatb9DLvgjyRp1zWko2TV0IWNakC2r3gjgDglk+vhJaiLlrUylVA
-	pRMhj1CSShhmtKyLG9zIZP+Xy+kaVyKukxZgSPvFRq+pkToykR2VaEResVv/JkyCLtSIV8+O4kB
-	LFP61iGnavhcC9Go/Iy4OiWV/btY/HY5eOl1UnwQxirKwmq8qKKl//0y7k18Nqd0Yv6E84s0c9o
-	IR4CmWWihJzkFYyd0n3bLBeabqw3
-X-Google-Smtp-Source: AGHT+IFVgQBLmZYFNL+ZV4HrxXg4lZgXZnXGnGr0U7DF5esCoQcIST0NuWk3m7oQnTUJjc9HIW9Ozw==
-X-Received: by 2002:a17:902:d492:b0:220:c63b:d93c with SMTP id d9443c01a7336-221a11b9493mr230835105ad.44.1740416201946;
-        Mon, 24 Feb 2025 08:56:41 -0800 (PST)
-Received: from eleanor-wkdl ([140.116.96.203])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-220d534afadsm185140065ad.26.2025.02.24.08.56.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2025 08:56:41 -0800 (PST)
-Date: Tue, 25 Feb 2025 00:56:29 +0800
-From: Yu-Chun Lin <eleanor15x@gmail.com>
-To: David Laight <david.laight.linux@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Kuan-Wei Chiu <visitorckw@gmail.com>,
-	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, x86@kernel.org, jk@ozlabs.org,
-	joel@jms.id.au, eajames@linux.ibm.com, andrzej.hajda@intel.com,
-	neil.armstrong@linaro.org, rfoss@kernel.org,
-	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
-	dmitry.torokhov@gmail.com, mchehab@kernel.org,
-	awalls@md.metrocast.net, hverkuil@xs4all.nl,
-	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-	louis.peens@corigine.com, andrew+netdev@lunn.ch,
-	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
-	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
-	yury.norov@gmail.com, akpm@linux-foundation.org, hpa@zytor.com,
-	alistair@popple.id.au, linux@rasmusvillemoes.dk,
-	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-	jernej.skrabec@gmail.com, kuba@kernel.org,
-	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
-	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
-	oss-drivers@corigine.com, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
-	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
-	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw
-Subject: Re: [PATCH 02/17] bitops: Add generic parity calculation for u64
-Message-ID: <Z7ykvf1g03XDLXKc@eleanor-wkdl>
-References: <20250223164217.2139331-1-visitorckw@gmail.com>
- <20250223164217.2139331-3-visitorckw@gmail.com>
- <bde62fee-4617-4db7-b92c-59fb958c4ca6@kernel.org>
- <20250224133431.2c38213f@pumpkin>
+	s=arc-20240116; t=1740421333; c=relaxed/simple;
+	bh=LapUr4uhDE8WT47s1iRnSBv3OPnVfs++Nynyc7QEa20=;
+	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To:From; b=IRcpz+HMIbGb2juAwwfHJT5IgKZ0vGrBRG6dqMOo6xbn3qjIeAjY+IDH6Of8rlRfMG85H40tm0n8zy4lmHA4kSgqdEr4lgcJGFVpwOrog4noZ9WyCYJOjaSSb462RHMMY94Hy+0O3P9mATDrt3NWDNRd0HFc4iOAQRS0If8er1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
+Received: (qmail 76695 invoked by uid 3782); 24 Feb 2025 19:22:01 +0100
+Received: from muc.de (p4fe15466.dip0.t-ipconnect.de [79.225.84.102]) (using
+ STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
+ Mon, 24 Feb 2025 19:22:00 +0100
+Received: (qmail 19105 invoked by uid 1000); 24 Feb 2025 18:22:00 -0000
+Date: Mon, 24 Feb 2025 18:22:00 +0000
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
+  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: More than 256/512 glyphs on the Liinux console
+Message-ID: <Z7y4yHT0fNYYiPI8@MAC.fritz.box>
+References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
+ <2025022243-street-joylessly-6dfa@gregkh>
+ <Z7nu7HqKn4o2rMd5@MAC.fritz.box>
+ <2025022355-peroxide-defacing-4fa4@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -98,93 +37,125 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250224133431.2c38213f@pumpkin>
+In-Reply-To: <2025022355-peroxide-defacing-4fa4@gregkh>
+X-Submission-Agent: TMDA/1.3.x (Ph3nix)
+From: Alan Mackenzie <acm@muc.de>
+X-Primary-Address: acm@muc.de
 
-On Mon, Feb 24, 2025 at 01:34:31PM +0000, David Laight wrote:
-> On Mon, 24 Feb 2025 08:09:43 +0100
-> Jiri Slaby <jirislaby@kernel.org> wrote:
-> 
-> > On 23. 02. 25, 17:42, Kuan-Wei Chiu wrote:
-> > > Several parts of the kernel open-code parity calculations using
-> > > different methods. Add a generic parity64() helper implemented with the
-> > > same efficient approach as parity8().
-> > > 
-> > > Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
-> > > Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
-> > > Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
-> > > ---
-> > >   include/linux/bitops.h | 22 ++++++++++++++++++++++
-> > >   1 file changed, 22 insertions(+)
-> > > 
-> > > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-> > > index fb13dedad7aa..67677057f5e2 100644
-> > > --- a/include/linux/bitops.h
-> > > +++ b/include/linux/bitops.h
-> > > @@ -281,6 +281,28 @@ static inline int parity32(u32 val)
-> > >   	return (0x6996 >> (val & 0xf)) & 1;
-> > >   }
-> > >   
-> > > +/**
-> > > + * parity64 - get the parity of an u64 value
-> > > + * @value: the value to be examined
-> > > + *
-> > > + * Determine the parity of the u64 argument.
-> > > + *
-> > > + * Returns:
-> > > + * 0 for even parity, 1 for odd parity
-> > > + */
-> > > +static inline int parity64(u64 val)
-> > > +{
-> > > +	/*
-> > > +	 * One explanation of this algorithm:
-> > > +	 * https://funloop.org/codex/problem/parity/README.html
-> > > +	 */
-> > > +	val ^= val >> 32;  
-> > 
-> > Do we need all these implementations? Can't we simply use parity64() for 
-> > any 8, 16 and 32-bit values too? I.e. have one parity().
-> 
-> I'm not sure you can guarantee that the compiler will optimise away
-> the unnecessary operations.
+Hello, Greg.
 
-Hi Jiri and David,
+On Sun, Feb 23, 2025 at 08:47:53 +0100, Greg Kroah-Hartman wrote:
+> On Sat, Feb 22, 2025 at 03:36:12PM +0000, Alan Mackenzie wrote:
+> > On Sat, Feb 22, 2025 at 09:48:32 +0100, Greg Kroah-Hartman wrote:
 
-Unless we can be certain about the compiler's optimization behavior, we
-prefer to follow an approach similar to hweight, distinguishing
-implementations based on different bit sizes.
+[ .... ]
 
-> 
-> But:
-> static inline int parity64(u64 val)
-> {
-> 	return parity32(val ^ (val >> 32))
-> }
-> 
-> should be ok.
+> > But I think you are also asking why I use the console at all.  That's
+> > a fair question which I'll try to answer.
 
-We will adopt this approach, as it is indeed more concise.
+> I'm not disputing using the console, it's the vt layer that I'm talking
+> about.  The DRM developers have the long-term goal of getting rid of
+> CONFIG_VT which will remove a ton of mess that we have overall.
+> DRM-based consoles should provide the same functionality that a vt
+> console does today.  If not, please let them know so that the remaining
+> corner cases can be resolved.
 
-Thank you all for your feedback.
+Does a DRM based console exist at the moment?  I spent quite some time
+looking for it yesterday, but found nothing.
 
-Best regards,
+[ .... ]
 
-Yu-Chun Lin
+> > > What about the move to get rid of the vt code entirely, ....
 
-> It will also work on x86-32 where parity32() can just check the parity flag.
-> Although you are unlikely to manage to use the the PF the xor sets.
-> 
-> 	David
-> 
-> > 
-> > > +	val ^= val >> 16;
-> > > +	val ^= val >> 8;
-> > > +	val ^= val >> 4;
-> > > +	return (0x6996 >> (val & 0xf)) & 1;
-> > > +}
-> > > +
-> > >   /**
-> > >    * __ffs64 - find first set bit in a 64 bit word
-> > >    * @word: The 64 bit word  
-> > 
-> > 
-> 
+> > Getting rid of the vt code would be a Bad Thing.  People depend on it.
+> > What is the alternative?
+
+> The drm console layer.
+
+Again, does it exist yet, or alternatively are there plans to introduce
+it into the kernel in the near future?
+
+> > > .... if you do that, can't you get proper glyphs with the drm
+> > > subsystem?
+
+> > I don't know.  I've looked briefly at fbterm, a terminal which uses drm.
+> > It steals key sequences too, some of which are needed in Emacs.
+> > Although not as bad as GUIs, it puts awkward layers between the user and
+> > Linux too.
+
+> I don't know what fbterm is, sorry.
+
+It's a user level terminal emulator for the framebuffer.  It's not
+important.
+
+> > I think using drm in place of fbterm.c and bitblit.c would need a lot of
+> > design and implementation work.  The change I'm proposing barely changes
+> > the design at all.
+
+> Ok, but we haven't seen the patches to know this :)
+
+> > > Doing huge changes for a subsystem that almost everyone agrees should
+> > > only be kept around for legacy reasons is a rough undertaking.
+
+> > Isn't there a principle in Linux that preserving existing user
+> > interfaces is of utmost importance?
+
+> I agree, keeping the existing ones is key.  You are talking about
+> extending the existing ones in a way that adds additional complexity
+> when there might already be a solution for this for you.  That's why I
+> brought that up.
+
+Where/how can I find the DRM console?
+
+> > As I've already written, I've got working code, but it needs refinement
+> > before I submit it.  Otherwise reviewers would likely reject it for
+> > "inessential" reasons like code formatting.  This will likely take me
+> > several days.
+
+> code formatting is NOT "inessential", please never think that.
+
+However necessary code formatting is (and it is necessary), it doesn't
+form part of the essence of the changes.  I'm sure we're agreed that
+proposed changes are best judged by that essence.  That was all I meant.
+
+> Our brains run on patterns and common code formatting allows us to see
+> the real issues here.  To not follow those formatting rules means we
+> just can't review your code properly.
+
+I understand.
+
+[ .... ]
+
+> > What is the best way of submitting such a large patch (~3,500 lines)?
+> > I committed it to my own local git repository in three main stages
+> > (around equal size), and have applied corrections after rebasing and
+> > the odd bug fix.
+
+> Break down the changes into "one logical change per patch" to make them
+> easy to review.  It's an art form, think about how you want to get to
+> your end result and then take us on a path that is "obvious" to get
+> there over a series of changes.
+
+> Think of it as "showing your work" when solving a math or physics
+> problem that your teacher told you to follow.  No one wants to just see
+> the end result, they have to see all the steps along the way to even
+> begin to understand if the end result is correct or not.
+
+Thanks.  I have a fair amount of work to do to achieve this.
+
+> But again, before doing that work, see how using the drm console works
+> for you, or not.  If not, let us and the drm developers know so that we
+> can work toward solving those issues, as that might actually be easier
+> to do.
+
+I would actually appreciate the work I've done being superfluous.  ;-)
+But where can I find the drm console?
+
+> thanks,
+
+> greg k-h
+
+And thank you, too.
+
+-- 
+Alan Mackenzie (Nuremberg, Germany).
