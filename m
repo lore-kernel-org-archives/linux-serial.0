@@ -1,33 +1,39 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 260BC2571A8;
-	Mon, 24 Feb 2025 20:08:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3302D204C2A;
+	Mon, 24 Feb 2025 21:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740427734; cv=none; b=jfgroYXg7/hZPTu2JSuO5vnDD/7Cyh4JdLlJr73L//WTU/yeG530K+/a14lIMgQEa3FIQX3vFtP9B4H4/NDvUSou15H4NgVvOIJYPevStsIPcewdzlTa3TebQe7y+1mqfJtMItH6X0IX0rlSDVHCIjONVodlXR9pkMd1ux9f3qk=
+	t=1740434378; cv=none; b=cpw2UqT+76NBoR6gIJic6j7/4GP7cXdD6g/WjgjeBi0GzL8ZnOubbK4q4jmyLMd87ZJR0qk2F3DU5G5NOA3/nCp4+JBhmId7TeXUWDVvJB4QufgmH4IjC3iZoO5+bc1ikA9fPzn3JlKIv1ENgObBwJ2xnPc+iF/C71nPxuCGZ5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740427734; c=relaxed/simple;
-	bh=Tgn7peBqN2VM1Ze2bisvsGu7LNFyMbwIrns9GBl0ZSo=;
+	s=arc-20240116; t=1740434378; c=relaxed/simple;
+	bh=mFJLihJkpwqErHdcMQlJt8XTyKO3+wsCZ2aq4cXwkPs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=j3mgEw/phHMRIfrU6feMa/Rk0DOfpUF6vVfN0AjHIeWvVJf8zn81QvOSybUnenUWoAj7ydU64l/lb1iuawUJr1Xp1bg3RNQ5lkvYnWT+6u3xS5ER7OQ2s1M2P1iccY+7lpN/4Nsa90rNaMzgvmfmcEwhJtvLO75Q3z3nDZB55gM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=stjZ3gTO; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=nhXhlKNdFApjio9YgtHlPxQTUpN8nvXLfS3JHrn47u3NHk7b7w+HgLuHaqmgE88+5CJZ1txqNDMd9OA4wfmBxkmK035BlGoLShwcUEmWxI+N1qXxGth+eei8GmZuwCLX49BwEECBxy0ITsaEjxFmv/rSa51ljPcbnePViQxJFdc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=oSgE83Ez; arc=none smtp.client-ip=198.137.202.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="stjZ3gTO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C4EAC4CED6;
-	Mon, 24 Feb 2025 20:08:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740427733;
-	bh=Tgn7peBqN2VM1Ze2bisvsGu7LNFyMbwIrns9GBl0ZSo=;
+	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="oSgE83Ez"
+Received: from [172.27.1.176] ([76.133.66.138])
+	(authenticated bits=0)
+	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 51OLtSud926291
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+	Mon, 24 Feb 2025 13:55:29 -0800
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 51OLtSud926291
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
+	s=2025021701; t=1740434140;
+	bh=mGxMwUsqCeYXbcs8sKTNgKdO9jufW4HfcjmafwUUTPQ=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=stjZ3gTOe+EWOC/JzdLx0KlFB9zJrfhPGJIdd8rPBTJKC7okUkzYL/O35M8yZozkQ
-	 w5aFxmwKD1wdXpFNC1Tjpu9c8rRIvLu2XBvZi8qtskCc7sPsPOj2yZDaUyndwRXz8P
-	 vyXTq/TCVvTylPZXgM0bxKtxUUyxF+ICklPYvg1nYLqyhN7yg0563bMMGPSKq38vCz
-	 DLwR3UWnHxMXdiOnEX3FNv3b34vufwZgzUeTTNzKNnAV+BBL6g6BqNiaLqTIOpqNQJ
-	 5EfO1lqOgiMmBzCSdS9OmJ4W8haMpzvfTNJ3DuZkz73ORzaN4VhGiXWQlNolUk7Q3l
-	 3zrKpy3HGUUdw==
-Message-ID: <d5e05c61-d796-4e5c-9538-a1e068631bba@kernel.org>
-Date: Mon, 24 Feb 2025 21:08:50 +0100
+	b=oSgE83EzgtMz21WmUEJQchEwyeT2+esZ+KWZmZbpMnIxmjSCdKOx7GMtZxtUeuMOb
+	 fgxnAP0u+Y7y7qHCRMk2WcPKmHLTS78FSVtYi1r9YtWWKWmJMaiWD3YBVh2jDp2mLE
+	 b4BwNub50V8/SEH4tYhg05YnoQDCB66CtxEkgQaSBfQ7RVrhMZ+1NyaFvNQPX6ebJZ
+	 edcSTvvAUxlRBSvSoOL6AdT8ofMrNm5Y9/gATbzcdh9cEMD7Xwc6nw3oGlJ+LZeFzO
+	 M1iDUz4IaabvYD7h6G8g48ODoiaZf6CPS3zzYla0PFymyTZ7CDau1zbDFk0AveyIiH
+	 IGBE0vCJdvVzg==
+Message-ID: <e0b1c299-7f19-4453-a1ce-676068601213@zytor.com>
+Date: Mon, 24 Feb 2025 13:55:28 -0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,86 +41,116 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: More than 256/512 glyphs on the Liinux console
-To: Alan Mackenzie <acm@muc.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Simona Vetter <simona@ffwll.ch>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
- <2025022243-street-joylessly-6dfa@gregkh> <Z7nu7HqKn4o2rMd5@MAC.fritz.box>
- <2025022355-peroxide-defacing-4fa4@gregkh> <Z7y4yHT0fNYYiPI8@MAC.fritz.box>
+Subject: Re: [PATCH 03/17] x86: Replace open-coded parity calculation with
+ parity8()
+To: Uros Bizjak <ubizjak@gmail.com>, Kuan-Wei Chiu <visitorckw@gmail.com>,
+        tglx@linutronix.de, Ingo Molnar <mingo@redhat.com>, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, jk@ozlabs.org,
+        joel@jms.id.au, eajames@linux.ibm.com, andrzej.hajda@intel.com,
+        neil.armstrong@linaro.org, rfoss@kernel.org,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+        dmitry.torokhov@gmail.com, mchehab@kernel.org, awalls@md.metrocast.net,
+        hverkuil@xs4all.nl, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, louis.peens@corigine.com, andrew+netdev@lunn.ch,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+        johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org, yury.norov@gmail.com, akpm@linux-foundation.org,
+        mingo@kernel.org
+Cc: alistair@popple.id.au, linux@rasmusvillemoes.dk,
+        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+        jernej.skrabec@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+        dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+        oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+        brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+        bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+        Yu-Chun Lin <eleanor15x@gmail.com>
+References: <20250223164217.2139331-1-visitorckw@gmail.com>
+ <20250223164217.2139331-4-visitorckw@gmail.com>
+ <d080a2d6-9ec7-1c86-4cf4-536400221f68@gmail.com>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <Z7y4yHT0fNYYiPI8@MAC.fritz.box>
+From: "H. Peter Anvin" <hpa@zytor.com>
+In-Reply-To: <d080a2d6-9ec7-1c86-4cf4-536400221f68@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 24. 02. 25, 19:22, Alan Mackenzie wrote:
-> Hello, Greg.
+On 2/24/25 07:24, Uros Bizjak wrote:
 > 
-> On Sun, Feb 23, 2025 at 08:47:53 +0100, Greg Kroah-Hartman wrote:
->> On Sat, Feb 22, 2025 at 03:36:12PM +0000, Alan Mackenzie wrote:
->>> On Sat, Feb 22, 2025 at 09:48:32 +0100, Greg Kroah-Hartman wrote:
 > 
-> [ .... ]
+> On 23. 02. 25 17:42, Kuan-Wei Chiu wrote:
+>> Refactor parity calculations to use the standard parity8() helper. This
+>> change eliminates redundant implementations and improves code
+>> efficiency.
 > 
->>> But I think you are also asking why I use the console at all.  That's
->>> a fair question which I'll try to answer.
+> The patch improves parity assembly code in bootflag.o from:
 > 
->> I'm not disputing using the console, it's the vt layer that I'm talking
->> about.  The DRM developers have the long-term goal of getting rid of
->> CONFIG_VT which will remove a ton of mess that we have overall.
->> DRM-based consoles should provide the same functionality that a vt
->> console does today.  If not, please let them know so that the remaining
->> corner cases can be resolved.
+>    58:    89 de                    mov    %ebx,%esi
+>    5a:    b9 08 00 00 00           mov    $0x8,%ecx
+>    5f:    31 d2                    xor    %edx,%edx
+>    61:    89 f0                    mov    %esi,%eax
+>    63:    89 d7                    mov    %edx,%edi
+>    65:    40 d0 ee                 shr    %sil
+>    68:    83 e0 01                 and    $0x1,%eax
+>    6b:    31 c2                    xor    %eax,%edx
+>    6d:    83 e9 01                 sub    $0x1,%ecx
+>    70:    75 ef                    jne    61 <sbf_init+0x51>
+>    72:    39 c7                    cmp    %eax,%edi
+>    74:    74 7f                    je     f5 <sbf_init+0xe5>
+>    76:
 > 
-> Does a DRM based console exist at the moment?  I spent quite some time
-> looking for it yesterday, but found nothing.
+> to:
+> 
+>    54:    89 d8                    mov    %ebx,%eax
+>    56:    ba 96 69 00 00           mov    $0x6996,%edx
+>    5b:    c0 e8 04                 shr    $0x4,%al
+>    5e:    31 d8                    xor    %ebx,%eax
+>    60:    83 e0 0f                 and    $0xf,%eax
+>    63:    0f a3 c2                 bt     %eax,%edx
+>    66:    73 64                    jae    cc <sbf_init+0xbc>
+>    68:
+> 
+> which is faster and smaller (-10 bytes) code.
+> 
 
-I didn't read the thread, but are you looking e.g. for kmscon?
+Of course, on x86, parity8() and parity16() can be implemented very simply:
 
--- 
-js
-suse labs
+(Also, the parity functions really ought to return bool, and be flagged 
+__attribute_const__.)
+
+static inline __attribute_const__ bool _arch_parity8(u8 val)
+{
+	bool parity;
+	asm("and %0,%0" : "=@ccnp" (parity) : "q" (val));
+	return parity;
+}
+
+static inline __attribute_const__ bool _arch_parity16(u16 val)
+{
+	bool parity;
+	asm("xor %h0,%b0" : "=@ccnp" (parity), "+Q" (val));
+	return parity;
+}
+
+In the generic algorithm, you probably should implement parity16() in 
+terms of parity8(), parity32() in terms of parity16() and so on:
+
+static inline __attribute_const__ bool parity16(u16 val)
+{
+#ifdef ARCH_HAS_PARITY16
+	if (!__builtin_const_p(val))
+		return _arch_parity16(val);
+#endif
+	return parity8(val ^ (val >> 8));
+}
+
+This picks up the architectural versions when available.
+
+Furthermore, if a popcnt instruction is known to exist, then the parity 
+is simply popcnt(x) & 1.
+
+	-hpa
+
