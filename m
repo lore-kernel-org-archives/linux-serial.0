@@ -1,164 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C21B1DF963;
-	Mon, 24 Feb 2025 07:09:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC9BB1624D2;
+	Mon, 24 Feb 2025 07:20:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740380997; cv=none; b=OTISCSAYBlcavBnIiqFAE1BBitL0hfotO8UxlUC0LOOTXq/m5kKxd5aSmaXjOSkl9sabv3jjRsd4B6cy82EQhmdHfFjzKSESMHsy8U52jZX2gmNKwTkLYDMh/XV1jaXlfvndY/g5Blo3vyw298kNGxtUzPfScLgtWgGkI/bncHY=
+	t=1740381609; cv=none; b=KXxQILe9uFiGxwDTezDKQUgzTBovISBg+kDsL0OaVoWZMg1aW3JsL1JNdcZj8bNP4X1dVm2MxP3f4Qdz1ZxcbtJXDbN/W2ZQ2GxjM2+BbBxA3Ma/OuUEVuOa0rNg/ypTQJ547wEkoRmB6byYCLG+EQ74ALmwWEtiR3gVstC5URQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740380997; c=relaxed/simple;
-	bh=fkASXmTFBo3Vl/klcz2dL1xKweKD4YSi26z5tvTK/J4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=vAFy4pOywzmnZCemICpHZIglVjKx/rcOjhnxAxq6d4JXNC4L5qYuhyVuZkmsXN0EuePfx7TBPGUuEI3W/Ox6o1KLlOUajXP8K9v0qxfo+HoovaviHZDnz9tTpiXalcOpWABSa9EghVfvb81iTRxEtaWe5VjggFPTqLcJwVu3PIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FFicEGbS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1740381609; c=relaxed/simple;
+	bh=Oafipzm6XGCDRBycB+ux6+bj8zA6/+6fWk2vvae9lW0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=SJYuPr69qYEtNUwUx4lFrXlZfItig0nqr5pUw0CSlcuNc/EtbXtLjuVENz+vDBS5vE3gFiLrgXf3LtSA2eLRV4RHIvKf7rGqDUvj+4BvD9W0PrwhyA7m2oBEfJ06ER3UAAbC+X1IT6cEqv7mVKDZUiCeLk994lsFleyKVpk+Gbk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kioX8eGa; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FFicEGbS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03944C4CED6;
-	Mon, 24 Feb 2025 07:09:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740380996;
-	bh=fkASXmTFBo3Vl/klcz2dL1xKweKD4YSi26z5tvTK/J4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=FFicEGbSi56eSM0TXBdNGJZR6fyVj+36fd8Gmxf4LjhTEySCctA9GqzxpCjUDpfSL
-	 08Dx0KXfpmwPYGDHCDryGnRcCWDrE/aZF5kNI8zw1N4i9gU8E2AhbeTcQjT1TJqMNA
-	 7ykt4xwW+uATbSuqvLn2zrI+hZSeC+1/RAttYQTvRzkwbCUVR++Xv8GzLBF7nbG80w
-	 JZblYfa/c4q/ZdVDmLtzW/ix78wFgASzmTk9H/f+Z51ByZZhEvlKT9bGXwtBj1WjDq
-	 Pww4k4uxAbknRXPdJkgCEAFJpaVEcCST592dPPd9SJ3YLnKwsyg2B+yILZVl8zJg7A
-	 8hY8zjq85rorg==
-Message-ID: <bde62fee-4617-4db7-b92c-59fb958c4ca6@kernel.org>
-Date: Mon, 24 Feb 2025 08:09:43 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kioX8eGa"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-abb7a6ee2deso623216366b.0;
+        Sun, 23 Feb 2025 23:20:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740381606; x=1740986406; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Oafipzm6XGCDRBycB+ux6+bj8zA6/+6fWk2vvae9lW0=;
+        b=kioX8eGaOcAG47IwjPY8ABuvzVQQhJjzvYOukEoNP86bAddV/5FUyCvW37hVTt88sK
+         Ia1fsaGL8vJXDflrj2NwtQYKauuqwY1nf/Wi6iYj9d4CCyniX5kKSAfu3H6nQm1AaFNM
+         jhfay+NXquHWAG3z8RtKH2V+b38fsIKcncNO3Y2kQk7O2XtbJAOGW6uQy7VCqURDo/d2
+         CfUEblMd+l+AkomEYE30DU7mFVMO0m3AJ/NtP8OI+jozJeX5oy3f0Iniyf2n8nEsPsNH
+         MDAimYdpcyC7W7iRdud6b0JySpdeKBnAMHz7MfamIjhr+qrFG/5ANeFgx66yhplNYMu7
+         yv0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740381606; x=1740986406;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Oafipzm6XGCDRBycB+ux6+bj8zA6/+6fWk2vvae9lW0=;
+        b=gXbJF46lyC2/sdxnZYaoXSVD90HTJjb2DelDM+vCPnV+2zyNwO3gPsljM8TSayga0V
+         1V2cepFvBo099Sydmytg2n/aTQSFN5A3fyrIlE8pphDV1D1sUIYSy2sGLidjCD+4DNNy
+         mcllxIuAhHqz71U4+TKl5Zy6T1HjrbWfvKozCVlcr/g/y8xxkKhuGJrNcJM0lrQOMxKC
+         TetFtw/DuL2BIyzXPfTbItCgu8McpiJG407xOP88ot2bDqCNw2p2pfXlupNIxzYKg7gT
+         FYRP8S0PJIsQH+TMhjVbgf5h/Ymdl+ZBLtJfNS1wmSfuKUMwrvWQ3fVo68XF+sx2A7Zv
+         VysA==
+X-Forwarded-Encrypted: i=1; AJvYcCUZsn7QZnvukOzTgRtxocvmG3Fc37+tQrmD/0szeTVSqc7p3G2nVVIgkIVOFfNRbeirPCRlmM3//ocFYX3y@vger.kernel.org, AJvYcCVX4GNuKvsNEH4iC9gctlQs+Onysp2kbBG3tmIBvhlLJX2evz1GnTH6SkpulYJ4zEDvPoT1HKrcq2einpU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxCpDlRlR6G/yTuEDN0zQ94a6Alunix7OxR9BTuBxi1krCbbevS
+	H5bwIXmBvdAePf6jhRmcxANLqEiZiw0GrmM0s+hRgE3R1WVmuL1lDFAU8gMpUqF0Y1RRZpBo5Ji
+	9/7UbbiWWADDpuE6j2wvZX7Dnsyg=
+X-Gm-Gg: ASbGnctF+2LntMiUR5IgQYNZMMKn1/5eQHP5C027AKXiQlmfEedGzJSeTbus5fZPNos
+	LbJyQUIZlcMSMGx+rQIxugch2FYwF2EGVp/YN4AHC6poVCi1l7D2Bp1a7BQ31tlblrN5gGCYjir
+	KDC/HlkgVSVg==
+X-Google-Smtp-Source: AGHT+IGRr20D+nYlL7vLzLB1mN9NJEZQKWhzH6eB03dSlbA2B6mRnsJbOsX8KS7nvKXyl15DlDt2/6foE0xae6kMc3E=
+X-Received: by 2002:a17:906:6a11:b0:abb:d349:73b3 with SMTP id
+ a640c23a62f3a-abc096e0044mr1164920966b.0.1740381605564; Sun, 23 Feb 2025
+ 23:20:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 02/17] bitops: Add generic parity calculation for u64
-To: Kuan-Wei Chiu <visitorckw@gmail.com>, tglx@linutronix.de,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
- jk@ozlabs.org, joel@jms.id.au, eajames@linux.ibm.com,
- andrzej.hajda@intel.com, neil.armstrong@linaro.org, rfoss@kernel.org,
- maarten.lankhorst@linux.intel.com, mripard@kernel.org, tzimmermann@suse.de,
- airlied@gmail.com, simona@ffwll.ch, dmitry.torokhov@gmail.com,
- mchehab@kernel.org, awalls@md.metrocast.net, hverkuil@xs4all.nl,
- miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
- louis.peens@corigine.com, andrew+netdev@lunn.ch, davem@davemloft.net,
- edumazet@google.com, pabeni@redhat.com, parthiban.veerasooran@microchip.com,
- arend.vanspriel@broadcom.com, johannes@sipsolutions.net,
- gregkh@linuxfoundation.org, yury.norov@gmail.com, akpm@linux-foundation.org
-Cc: hpa@zytor.com, alistair@popple.id.au, linux@rasmusvillemoes.dk,
- Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
- jernej.skrabec@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
- linux-fsi@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
- linux-input@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mtd@lists.infradead.org, oss-drivers@corigine.com,
- netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
- brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
- linux-serial@vger.kernel.org, bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
- Yu-Chun Lin <eleanor15x@gmail.com>
-References: <20250223164217.2139331-1-visitorckw@gmail.com>
- <20250223164217.2139331-3-visitorckw@gmail.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20250223164217.2139331-3-visitorckw@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20250223204456.1913392-1-adamsimonelli@gmail.com>
+ <Z7uOsqky4Tw9J6QR@surfacebook.localdomain> <7410687.31r3eYUQgx@nerdopolis2>
+In-Reply-To: <7410687.31r3eYUQgx@nerdopolis2>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 24 Feb 2025 09:19:29 +0200
+X-Gm-Features: AWEUYZmKNiXteHDqx_3jgRszbpgunyLPcTNFa2QeZzxEJN-VFRbaGn5lZevgluo
+Message-ID: <CAHp75VeBaetiQBykfLk_weBHdzZF1nWp=k8BJu+OKNp6iYRRTg@mail.gmail.com>
+Subject: Re: [PATCH v4 0/2] Optionally allow ttynull to be selected as a
+ default console
+To: Adam Simonelli <adamsimonelli@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, John Ogness <john.ogness@linutronix.de>, 
+	Sergey Senozhatsky <sergey.senozhatsky@gmail.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Jiri Slaby <jirislaby@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 23. 02. 25, 17:42, Kuan-Wei Chiu wrote:
-> Several parts of the kernel open-code parity calculations using
-> different methods. Add a generic parity64() helper implemented with the
-> same efficient approach as parity8().
-> 
-> Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
-> Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
-> Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
-> ---
->   include/linux/bitops.h | 22 ++++++++++++++++++++++
->   1 file changed, 22 insertions(+)
-> 
-> diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-> index fb13dedad7aa..67677057f5e2 100644
-> --- a/include/linux/bitops.h
-> +++ b/include/linux/bitops.h
-> @@ -281,6 +281,28 @@ static inline int parity32(u32 val)
->   	return (0x6996 >> (val & 0xf)) & 1;
->   }
->   
-> +/**
-> + * parity64 - get the parity of an u64 value
-> + * @value: the value to be examined
-> + *
-> + * Determine the parity of the u64 argument.
-> + *
-> + * Returns:
-> + * 0 for even parity, 1 for odd parity
-> + */
-> +static inline int parity64(u64 val)
-> +{
-> +	/*
-> +	 * One explanation of this algorithm:
-> +	 * https://funloop.org/codex/problem/parity/README.html
-> +	 */
-> +	val ^= val >> 32;
+On Mon, Feb 24, 2025 at 2:23=E2=80=AFAM Adam Simonelli <adamsimonelli@gmail=
+.com> wrote:
+> On Sunday, February 23, 2025 4:10:10 PM EST Andy Shevchenko wrote:
+> > Sun, Feb 23, 2025 at 03:44:54PM -0500, adamsimonelli@gmail.com kirjoitt=
+i:
+> > > From: Adam Simonelli <adamsimonelli@gmail.com>
+> > >
+> > > When switching to a CONFIG_VT=3Dn world, at least on x86 systems,
+> > > /dev/console becomes /dev/ttyS0. This can cause some undesired effect=
+s.
+> > > /dev/console's behavior is now tied to the physical /dev/ttyS0, which=
+ when
+> > > disconnected can cause isatty() to fail when /dev/ttyS0 is disconnect=
+ed,
+> > > and users who upgrade to a theoretical vt-less kernel from their
+> > > distribution who have a device such as a science instrument connected=
+ to
+> > > their /dev/ttyS0 port will suddenly see it receive kernel log message=
+s.
+> > >
+> > > When the new CONFIG_NULL_TTY_CONSOLE option is turned on, this will a=
+llow
+> > > the ttynull device to be leveraged as the default console. Distributi=
+ons
+> > > that had CONFIG_VT turned on before will be able to leverage this opt=
+ion
+> > > to where /dev/console is still backed by a psuedo device, avoiding th=
+ese
+> > > issues, without needing to enable the entire VT subsystem.
+> >
+> > This rings a bell of the following
+> >
+> > https://lore.kernel.org/all/20201111135450.11214-1-pmladek@suse.com/
+> > https://lore.kernel.org/all/20210107164400.17904-1-pmladek@suse.com/
+> > https://lore.kernel.org/all/20210108114847.23469-1-pmladek@suse.com/
+> >
+> > I don't see any mention in the commit message about these, have you stu=
+died the
+> > cases? Will your change anyhow affect the described there?
+> >
+> I did see that sifting through commits, it looks kind of different though=
+, as
+> that was to make ttynull more always on, and if I am understanding it cor=
+rectly
+> it looks more of a last resort? I could be wrong, but I see it was attemp=
+ted
+> and reverted because of conflicts on some hardware platforms?
+>
+> The scope with this new patch set is much different, as it has to be manu=
+ally
+> enabled on top of CONFIG_NULL_TTY, rather than assuming CONFIG_NULL_TTY i=
+s
+> enabled, and adding it to the list of preferred consoles. It is more for
+> Desktop configs that are looking to disable CONFIG_VT, but still want
+> /dev/console to not be a physical device by default.
 
-Do we need all these implementations? Can't we simply use parity64() for 
-any 8, 16 and 32-bit values too? I.e. have one parity().
+Thank you for elaboration. Even if this may be a different case, I
+think it would be nice to have the PRINTK maintainers (who are also
+involved in the console code) blessing before going in.
 
-> +	val ^= val >> 16;
-> +	val ^= val >> 8;
-> +	val ^= val >> 4;
-> +	return (0x6996 >> (val & 0xf)) & 1;
-> +}
-> +
->   /**
->    * __ffs64 - find first set bit in a 64 bit word
->    * @word: The 64 bit word
+In case of a new version, please summarize above in the commit message.
 
-
--- 
-js
-suse labs
+--=20
+With Best Regards,
+Andy Shevchenko
