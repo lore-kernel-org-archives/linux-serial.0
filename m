@@ -1,119 +1,190 @@
-Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [67.231.154.164])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D729A157465
-	for <linux-serial@vger.kernel.org>; Mon, 24 Feb 2025 16:51:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.154.164
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10711266599;
+	Mon, 24 Feb 2025 16:56:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740415891; cv=none; b=qdag/cu4Pl0dTP3WOfsXxb80aC8H31q+nHHmY4vq4KjWc8C/PxXI8tYYjSJpaebqAfnGGQLyR1BFomVfK+IHnO04ItxeetZirJ4pvgn8P9hMewgTTlKcQ8NiNWSe7F8oT0J78lTcQzqAdwXQm29VtjxnEO+fEVIkkYdnfohhjpw=
+	t=1740416204; cv=none; b=DoUmvSGWWM3iYnbYAR9/EO1jLSJ0DIYvvQ9O9o7y4LpTo6mN05cMH5n86ufTjtTsFo73p53FKIeiRHmkQqHVg7uuPW+RS5ZGHao9uJqm1mrMoLYhJefKvCIqlJpWebd7n4oCfa2RaB+7Yuct/h679HdPR1O1KDL2dB69SJQG+L4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740415891; c=relaxed/simple;
-	bh=K28/z7QwIeobQDU/vrm+DEec3wrz9qnljeycGV8KQZ0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hQH3levpkPf5d54317mri5RyBGZYShkuMzYBN4xD6Zv9p/QJhiJHiR4NhZedicEh2oeIeiL23XFT85HzEon13mSSEODbBXRpuG2Eeedv0wbKPIZillQ+PdHQTg+Gm2HTYnQm3QV5oACxAOWXBO9XmDMD8F2rgoSk7QEZWj0hZN4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sladewatkins.net; spf=pass smtp.mailfrom=sladewatkins.com; dkim=pass (2048-bit key) header.d=sladewatkins.com header.i=@sladewatkins.com header.b=Q7TD/HW8; dkim=pass (2048-bit key) header.d=sladewatkins.net header.i=@sladewatkins.net header.b=t+YaG54F; arc=none smtp.client-ip=67.231.154.164
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sladewatkins.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sladewatkins.com
+	s=arc-20240116; t=1740416204; c=relaxed/simple;
+	bh=5G5oGYh1CaRHc2d1pU1YAOARWQsm2s7Z+o+/b8xWRQE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cQbbtxpCnUwiFym8551S2GhQX4biMNstcQhnTeiQNkcLMDjOzhop9eZR8wupPaxtkz2/slpu8ZvKbZ9dMQqpuT1CcUF1neb/q47RL4WmHM1MpCRA8aG27TWLr7a7eujWPRuyYCqwMQGaEqAYAM4MSly4SUibo0iAXMfDBMXqEr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cEZhAAqz; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sladewatkins.com header.i=@sladewatkins.com header.b="Q7TD/HW8";
-	dkim=pass (2048-bit key) header.d=sladewatkins.net header.i=@sladewatkins.net header.b="t+YaG54F"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sladewatkins.com;
- h=cc:cc:content-transfer-encoding:content-transfer-encoding:content-type:content-type:date:date:from:from:in-reply-to:in-reply-to:message-id:message-id:mime-version:mime-version:references:references:subject:subject:to:to;
- s=selector-1739986532; bh=Jyt0wxZCqrJX4sJ0pBWunQCrP16mlcdWeo8PdzECLyE=;
- b=Q7TD/HW8uG4Pk31shNysm4oOEbJyoZ/eHkxNHe0+VavQpzKRIRv78Seb2qKse3HekXUWkm8i3QpAXk9bLDcYvZW5UYbh5D8GLzKbcyjwpXfyp2Y5O0l/5D5yLOFhrM+1RM3+JmEcqS+vi0ipnyvimQHQT+Gt27mRdHZe2AagMzTx6FdqY1Uotyh37ykgP61JHzHFVjXwVFCR3cQGn797CKsA9LAnK4PeKD4pjChXqGb+uXxAzE6VVAAkIWuls5zW8NztZgD3Cuo3sDeY76UVEg6TZmOmuuloBKSHsu3xcYBE36a1ZCqczgi6VSiO7sKtSNnoqXxejDcUo7sSqRUF4A==
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 4720F24009B
-	for <linux-serial@vger.kernel.org>; Mon, 24 Feb 2025 16:51:21 +0000 (UTC)
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-7c0c1025a6cso371290685a.0
-        for <linux-serial@vger.kernel.org>; Mon, 24 Feb 2025 08:51:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cEZhAAqz"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-221057b6ac4so89038365ad.2;
+        Mon, 24 Feb 2025 08:56:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sladewatkins.net; s=google; t=1740415880; x=1741020680; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Jyt0wxZCqrJX4sJ0pBWunQCrP16mlcdWeo8PdzECLyE=;
-        b=t+YaG54FqTEsNQo4rca0STCmSCAEfvjezbUwMFCj1Wdme5a6P8RkpdtDNpeFV46+XS
-         lKJxTjaagQzD9EEiaocqxkmUOeVnRNvoP0Wqs4bEywH1BXFGgjnr212iLgXaOFOoE5Ro
-         t/LeusVXFaJ10Y61XDOqcWwwFm9qkc2GP4kInkPe2H/eqyEs4NUDANeeL8N0tCmyQ3Qn
-         pCY4mewAADuCa/Z1QqU+AZciU7DxuIc9cJLaSf/7y4nKOHpKthIYcspJWysTSucrocpp
-         4bxeIN/4TrxSOKydDDHayMmScfhJT+u+uFMl4V5kMv92cSOdCva2ShYbM1ZmHQmpYAYw
-         twjA==
+        d=gmail.com; s=20230601; t=1740416202; x=1741021002; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=uiOFRZn2H6lerxDkJoj1wxqiGhkAtJgTGIELTuQhums=;
+        b=cEZhAAqzCsAWehsy2m8SvMlKBj6e4Rf3fkqkxHM+Euy8xATo2R35GQ0bt9RwE/fcFh
+         y1uvBeeGvg0ujDplELvufLpbMYQwU/6n3mhQ8zPfGkDewFXyaD0l5IcoSZ1C2tfgLFk+
+         d5CRXcmqVXitlh58Fn7FOwh2agJ10BJiSH9Qb2ZyO/cM9I6Hy/KuVAA0i0Wt9hNLixf5
+         iZ4FjI8LjgsxGExu5FP5ZBJg9agTe0SElmgqHcM+rPKaYuEkfTyREygd4cMQ6CjO8dm6
+         v4kKEz/L1B2mgK0vivaUclcfl5nqBBmNc110t13DKAB1O0TCJyY+bWT3n+VJkh80zm6k
+         90vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740415880; x=1741020680;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jyt0wxZCqrJX4sJ0pBWunQCrP16mlcdWeo8PdzECLyE=;
-        b=fvjS4eHF6vukK6jrX5Uz+jnzMTvdCtObv6XChUkDer9veUVlmdBhB/uzjCE7iwVOxY
-         P3dP9uo5lBom9FYa2/ipP96wbRXNfwBX8jJDjKB0ChAjrh6JtbAUQzr7cCpB/HvLrfGi
-         be9S1Wrkzpw/0P6abbBwW+T3nj0URJGMFkyPOh6t7yKncvILGCRaqeBLUEqi4eatcQ0H
-         ihevaaPFxOIZQFH0hk7JwWwBnJ1Rsmic0a5m3uW10AWi1ir4PjXsgp0ydEg/WEYIGA7N
-         B5YuixOcCoo7/uYU1XIf9mzRkZ/mEcrDb2twXxnbLtMpYZkzVxc/JkhNl8Mzcreha4Gh
-         9B6A==
-X-Forwarded-Encrypted: i=1; AJvYcCV+rOjFgHJM7uk2iTVufskg1YAfjq+hZvOsEUBOX5gXOLPODr8gYtK6oTCfNGNLqnU9bexRDCVKXUEj0bc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyC3iG0HHQm0KPIQAk1DLWZKZMa2z3TiyYp3QVL1I4yu0OrHakR
-	z1TegzOCfA23oNW6v6JWiMp2I64yOe64ES621yRowgIDHVJ2gzvD78FhlLdbganS1sRY7x5x9x8
-	+t+cbWB2a8dbuBivUWNvnnDd7BY2egMhFbcxc3GZmiFOZ9o3N4WtQ+XrnJdgw37aFGkzOeFtqkt
-	G4EbQhO8gj2ZhNY0g=
-X-Gm-Gg: ASbGncu6Zi/YtbtNqGZpHy4fsrIuR3nEmFzf06hFNyn2eJ4EJBaO/zIlJyvfRwHQaXm
-	60Rj8DHFJ6tN0qHz+QUDXhnb38+Z1gOsA882bhjlBw1O4ZwlXhnYqGAT6W5MnFt6NA9IOgnWJoy
-	ITHx4dOo3cbIpzNWjI6XRK49q4xGgw+dyHXrL8kYJJG5c0RBA4ddNNubAbDBrw/OWp119hh8H99
-	AoU1Ic5GgCF3oiD9s8OiFIL55NkYOR7ljpliYakaiKFbufdr+v/pFfL5NWzZZIxN3m+HfLIlD9u
-	T1rJPrJnUbXtMSu3vImDj5lv3LVg3ZU4wXCyhj6M5x7Md76+/3kQUPzxd2WklO9oIft36nRrMXs
-	DDz5i3IzPnZXIFkudsVQebzfAkWrV1p5ZbChE
-X-Received: by 2002:a05:620a:2985:b0:7c0:b685:1bb0 with SMTP id af79cd13be357-7c0ceef77f4mr1723519885a.17.1740415880333;
-        Mon, 24 Feb 2025 08:51:20 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IE+l9174nk3i6VHzzdNLPRKcdildnJV0MBhHekW79kq7PRniYea04k3F6dvly7pRsJDJAeTJQ==
-X-Received: by 2002:a05:620a:2985:b0:7c0:b685:1bb0 with SMTP id af79cd13be357-7c0ceef77f4mr1723516885a.17.1740415880028;
-        Mon, 24 Feb 2025 08:51:20 -0800 (PST)
-Received: from ghostleviathan.computer.sladewatkins.net (syn-076-037-141-128.res.spectrum.com. [76.37.141.128])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c0bde74158sm686422185a.28.2025.02.24.08.51.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Feb 2025 08:51:19 -0800 (PST)
-Message-ID: <2faa8912-a699-47d9-b9d6-dc2fb22fe7c8@sladewatkins.net>
-Date: Mon, 24 Feb 2025 11:51:18 -0500
+        d=1e100.net; s=20230601; t=1740416202; x=1741021002;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uiOFRZn2H6lerxDkJoj1wxqiGhkAtJgTGIELTuQhums=;
+        b=l8f/NsfAuAR3PReXRRsuYVzQOHEv4/3KaZ5VT/jkV4SxrwPxHGcZpZyJRDV3kMHhZE
+         kbhNUvrPGziCrWQKRPvLsVOVbONTyAULPWmZmXxxtu2JRzOqOJFv45nj3xAkV+SV6uDX
+         TIJ3A5N63E219Q/djhRPDiugxyPbNMDMw6Kfx2uZIpY1ax6PxT04NnT2/IEJJZNIZyC4
+         T4TxHmiCKSabZqQXDRUSFGf28DtOEq8v75FltwjAh6PFqTyVpOi9QjfN9xBM/b5HB+Ko
+         gJP/O3xe7EZwjtPm71yQWTFka6+dJueoSX2fI/mWEeVv4SyyFXhBcgxrAruXxNWI3DN5
+         paMQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUCgCbaBzq9fKe6FKJEYKAcFFTrnZx2udHzb0F0vYdJVmp1XYzhiuNM24084X/zy+rNSCKkmX8ywoe4lcU7@vger.kernel.org, AJvYcCUOVpPu6Lh3dBC5DqE79mqP3AhLLqDHhWoG/wcytDKp62p1pTpkIFHzHIn4hw6vfmuPw2L3vbR8MxkgK4IXIpQ=@vger.kernel.org, AJvYcCV6eaHqzGSYhiIyN9ZMKon+gXyFH/SV4278oVJcwgrEBHk38hhTaEQWWqJAb7DNAtb9545OWAKYkLIJ9LSi@vger.kernel.org, AJvYcCVIyEQUQD1rTXw+I4IgViyWIs0Wb0LLRTymfULJ13/d6lJsO6oWynO2v0CGiSEe0IEaaxM=@vger.kernel.org, AJvYcCVyt57IAKQv77uOT39maNHKVXX3xc34itm7bFrRG/zYsxVWoUfrI7nhoDdKBv43Qq7aQ7vmwDit38pVw+o=@vger.kernel.org, AJvYcCXeOGlUtvEujBwq+2eLJo6hRE396LATNA+O+tx4lN7LoJ8JEjV09KjJT55dqFjnCDOO1YcH/Mpf@vger.kernel.org, AJvYcCXfSi1yw1ly9s5TovwmcdXKdmtRSs+zzFvwOde9jNRkPd1UzflW8iBBDFMT9xu1cCD04HiF/gI7klADCLE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyK+XKClVqyfk/K9SEIcrKr77+7160Fj2D6o7Ap6NM3e1bASkue
+	aHFVkF+dC7ukofjnyCpCBHUQfvfLcEl+w7RWF5CDE2ja3IzsJaWl
+X-Gm-Gg: ASbGncsFufCa1KHv59coqIT4kIwy10FUKS6ZmnCe908AO0EJ37yK9zyRuEgAyySdz2T
+	h6Xt2mOn/5JulXy7WVF7CqJoatb9DLvgjyRp1zWko2TV0IWNakC2r3gjgDglk+vhJaiLlrUylVA
+	pRMhj1CSShhmtKyLG9zIZP+Xy+kaVyKukxZgSPvFRq+pkToykR2VaEResVv/JkyCLtSIV8+O4kB
+	LFP61iGnavhcC9Go/Iy4OiWV/btY/HY5eOl1UnwQxirKwmq8qKKl//0y7k18Nqd0Yv6E84s0c9o
+	IR4CmWWihJzkFYyd0n3bLBeabqw3
+X-Google-Smtp-Source: AGHT+IFVgQBLmZYFNL+ZV4HrxXg4lZgXZnXGnGr0U7DF5esCoQcIST0NuWk3m7oQnTUJjc9HIW9Ozw==
+X-Received: by 2002:a17:902:d492:b0:220:c63b:d93c with SMTP id d9443c01a7336-221a11b9493mr230835105ad.44.1740416201946;
+        Mon, 24 Feb 2025 08:56:41 -0800 (PST)
+Received: from eleanor-wkdl ([140.116.96.203])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-220d534afadsm185140065ad.26.2025.02.24.08.56.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Feb 2025 08:56:41 -0800 (PST)
+Date: Tue, 25 Feb 2025 00:56:29 +0800
+From: Yu-Chun Lin <eleanor15x@gmail.com>
+To: David Laight <david.laight.linux@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Kuan-Wei Chiu <visitorckw@gmail.com>,
+	tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, jk@ozlabs.org,
+	joel@jms.id.au, eajames@linux.ibm.com, andrzej.hajda@intel.com,
+	neil.armstrong@linaro.org, rfoss@kernel.org,
+	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+	dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	yury.norov@gmail.com, akpm@linux-foundation.org, hpa@zytor.com,
+	alistair@popple.id.au, linux@rasmusvillemoes.dk,
+	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+	jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw
+Subject: Re: [PATCH 02/17] bitops: Add generic parity calculation for u64
+Message-ID: <Z7ykvf1g03XDLXKc@eleanor-wkdl>
+References: <20250223164217.2139331-1-visitorckw@gmail.com>
+ <20250223164217.2139331-3-visitorckw@gmail.com>
+ <bde62fee-4617-4db7-b92c-59fb958c4ca6@kernel.org>
+ <20250224133431.2c38213f@pumpkin>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_dma: terminate correct DMA in tx_dma_flush()
-To: Wentao Guan <guanwentao@uniontech.com>,
- Greg KH <gregkh@linuxfoundation.org>
-Cc: John Keeping <jkeeping@inmusicbrands.com>,
- Jiri Slaby <jirislaby@kernel.org>, Ferry Toth <ftoth@exalondelft.nl>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- linux-serial <linux-serial@vger.kernel.org>, stable <stable@vger.kernel.org>
-References: <20250224121831.1429323-1-jkeeping@inmusicbrands.com>
- <tencent_09E5A20410369ED253A21788@qq.com>
- <2025022434-subsiding-esquire-1de2@gregkh>
- <tencent_013690E01596D03C0362D092@qq.com>
-Content-Language: en-US
-From: Slade Watkins <srw@sladewatkins.net>
-In-Reply-To: <tencent_013690E01596D03C0362D092@qq.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-MDID: 1740415881-ACKQHHUfjdH5
-X-MDID-O:
- us5;at1;1740415881;ACKQHHUfjdH5;<slade@sladewatkins.com>;e351ccb998625a5b6fbcb8b8ff80ea34
-X-PPE-TRUSTED: V=1;DIR=OUT;
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250224133431.2c38213f@pumpkin>
 
+On Mon, Feb 24, 2025 at 01:34:31PM +0000, David Laight wrote:
+> On Mon, 24 Feb 2025 08:09:43 +0100
+> Jiri Slaby <jirislaby@kernel.org> wrote:
+> 
+> > On 23. 02. 25, 17:42, Kuan-Wei Chiu wrote:
+> > > Several parts of the kernel open-code parity calculations using
+> > > different methods. Add a generic parity64() helper implemented with the
+> > > same efficient approach as parity8().
+> > > 
+> > > Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> > > Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> > > Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
+> > > ---
+> > >   include/linux/bitops.h | 22 ++++++++++++++++++++++
+> > >   1 file changed, 22 insertions(+)
+> > > 
+> > > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> > > index fb13dedad7aa..67677057f5e2 100644
+> > > --- a/include/linux/bitops.h
+> > > +++ b/include/linux/bitops.h
+> > > @@ -281,6 +281,28 @@ static inline int parity32(u32 val)
+> > >   	return (0x6996 >> (val & 0xf)) & 1;
+> > >   }
+> > >   
+> > > +/**
+> > > + * parity64 - get the parity of an u64 value
+> > > + * @value: the value to be examined
+> > > + *
+> > > + * Determine the parity of the u64 argument.
+> > > + *
+> > > + * Returns:
+> > > + * 0 for even parity, 1 for odd parity
+> > > + */
+> > > +static inline int parity64(u64 val)
+> > > +{
+> > > +	/*
+> > > +	 * One explanation of this algorithm:
+> > > +	 * https://funloop.org/codex/problem/parity/README.html
+> > > +	 */
+> > > +	val ^= val >> 32;  
+> > 
+> > Do we need all these implementations? Can't we simply use parity64() for 
+> > any 8, 16 and 32-bit values too? I.e. have one parity().
+> 
+> I'm not sure you can guarantee that the compiler will optimise away
+> the unnecessary operations.
 
-On 2/24/2025 8:13 AM, Wentao Guan wrote:
-> It is means that 'Fixes xxxxxx' tag point commit will auto be backport 
-> to those stable tree with xxxxxx commit without cc stable, correct ?
+Hi Jiri and David,
 
-If you mean that it will be "automatically backported to stable," then 
-no. Ask for it to be backported, or submit it as a patch the proper way: 
-https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+Unless we can be certain about the compiler's optimization behavior, we
+prefer to follow an approach similar to hweight, distinguishing
+implementations based on different bit sizes.
 
-Otherwise, I have no idea what you're talking about either. :-/
+> 
+> But:
+> static inline int parity64(u64 val)
+> {
+> 	return parity32(val ^ (val >> 32))
+> }
+> 
+> should be ok.
 
--slade
+We will adopt this approach, as it is indeed more concise.
+
+Thank you all for your feedback.
+
+Best regards,
+
+Yu-Chun Lin
+
+> It will also work on x86-32 where parity32() can just check the parity flag.
+> Although you are unlikely to manage to use the the PF the xor sets.
+> 
+> 	David
+> 
+> > 
+> > > +	val ^= val >> 16;
+> > > +	val ^= val >> 8;
+> > > +	val ^= val >> 4;
+> > > +	return (0x6996 >> (val & 0xf)) & 1;
+> > > +}
+> > > +
+> > >   /**
+> > >    * __ffs64 - find first set bit in a 64 bit word
+> > >    * @word: The 64 bit word  
+> > 
+> > 
+> 
