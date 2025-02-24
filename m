@@ -1,67 +1,63 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2093.outbound.protection.outlook.com [40.107.212.93])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2133.outbound.protection.outlook.com [40.107.223.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4023219318;
-	Mon, 24 Feb 2025 12:18:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.93
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D80221F08;
+	Mon, 24 Feb 2025 12:18:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.133
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740399513; cv=fail; b=BRJYqO44Q9LX/qEStFhqF5boNIIgovMGyuFU3CY068/aC43BQpVe647Pr6jp68xcZRTW7UXWp2POT+NL+FNQgK1ejrqf8MEvyk0O/1yiGYBCjhmIcr56dkHxThCwlvVy8d3EfyJgnHDJcc5mIuCL6PtShOLhemVrTjxiQnRgbUA=
+	t=1740399538; cv=fail; b=g8063Ogp6xQUDZxB6eZzK5Xga5Et2Y6dqZRbobs2KYKp9APOPLFsE7pxZI21VlDKncMktpZt3YW41QQ5GS0eHG9jJVO8P/v7kJVmwTQ2fN0GLbv+h6zqrddPtS7dI/R4Y1GdF8XEu0Xa/My5LYRwa9Kz4jidLdflwqFhNFlTJuE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740399513; c=relaxed/simple;
-	bh=1M3bwCscoLrKJPKH8WjO0JybTL4DtHnffzJHTTJkRV0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=sxMPxCTKvhwM+RlAiIubXkxVOeGnPPDGm6Ggi0sRK5gxGAhR6yY0ACC3UN6MsCcIwcFBOqpJNJoNFFdW6+f1I/pV6PnAqPOhugfYQceeO6Zto57C1wnpcIu6UqISnBH22vWHNMnvim4qg9NZmsWPz8tjatigQh+RImUFTcssUnw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inmusicbrands.com; spf=pass smtp.mailfrom=inmusicbrands.com; dkim=pass (1024-bit key) header.d=inmusicbrands.com header.i=@inmusicbrands.com header.b=KXozoVLx; arc=fail smtp.client-ip=40.107.212.93
+	s=arc-20240116; t=1740399538; c=relaxed/simple;
+	bh=u9Tc1jGj5kyCGELwywHPn9U1/Wlq9JKql9LmWsWIluA=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=q/eq5Z4iysmYxhYaPdOL7FNZ2XSm2H3G0fEAJb4RjCEi8jRpN05bHFjFLAugNLs9FzdprGvbO2Xt0Qh+SF/Ns2jdu5+S+slRZBEJLaTQEF/Ad7m7KEXpgg+VHFu6sOAQP5za3EFpjDtnC51z8qBs98UexGlMIT9OZbnnPLCoYiw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inmusicbrands.com; spf=pass smtp.mailfrom=inmusicbrands.com; dkim=pass (1024-bit key) header.d=inmusicbrands.com header.i=@inmusicbrands.com header.b=pl87yleP; arc=fail smtp.client-ip=40.107.223.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=inmusicbrands.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=inmusicbrands.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=inmusicbrands.com header.i=@inmusicbrands.com header.b="KXozoVLx"
+	dkim=pass (1024-bit key) header.d=inmusicbrands.com header.i=@inmusicbrands.com header.b="pl87yleP"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ppk1AStqfnPz5b8leiHo3+5qH845F1E5yEQfru/WqSPNOGwXFeUPYj8T+1I6O6fJXxjnW1udlYk1KH1j1NF0RIMfq4PrdCp4uQxFAmrAQnR1V6qo/cvLWMfbdn7+z3HYtaLOF9dCMCksXoV7U/8rctdvq3V2V1rLtgKx2FFsHHUOuJ5/TBB38eNZ0WjiKNvcVlNCCYTOJSr18kLZxxDyJgxigVnpEWuUy47gh4DwB/2sAJO4HOx0a+8cx6lG/taj9IJEQvQIgIMFVdC5URPyVGQpAZeLbDLjMy/bQMCgEh0T57nal4775TltSGEsSgvRhso9didQ/JX6QSlr63Bi/w==
+ b=ipXtg/goA3KUzkr7+IMSsSIwpef2ptG4JIq6po1ZajSmhk7ObbDuMG1k0J/yHxDQm+Wa9qb3Yr8jLgUADW/PkB6V4bnYXQHbw2/mSJP9+/zhIDOAIrRJ85Nkd2u9sZFS0j9CRVBXKjArB4JN8NyEzzVMwDC1+nAGnifcQNSlNj4iMtufvIbaqRWuOsa+d9F2KCbKrxx5vwA7ESJPkGtfVeq9aKdfUf4ujd3sn9Iec0dDbRlBgC1O4+nfFu32DzzjsHIuxVGCX8cPjplwXcOFq9Z3G00GFryFhVWVWhTN4azc5y/42slhW7RzU/El/ZPuiwd9XBCO4Qj47aZdL/BJxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ces/Va6U5fgRFrzO4oEqBG/woZa9NwmtXDUvb0jODOA=;
- b=XDjV/sgw0KQcFCvzw9HS9+4Qmy5Iwa6RdpoOY11Dc1M0kl67xiDuTK6+0fTRpGtoJvQoxWGEOSxfGCTafCIg69PiGgjMrJuzJaRjIs/ozDcvy95Sorr3JBUvI3dZId6QlRYDuy1TnTCpM2T8y4SXgfehqf+AEyhqrVkiyZYSncgsd41O6JUtWk4UYI/xA0Pl/mu2EoQ+S9/FvM5Nai3xhedO1e7+U0wS9WZx73rhGfkjb9nNz6kODbgWd1U2AWO+QaQxWZ65LZI/1EyrHLb2rHRx05pb7Bj0qFSgmwzVRWWjbNcbeSa2Qs4orrP/jW5zeENFuHdZMKvN48Ra27m2qw==
+ bh=LoFxtZmdW4CR7OuBfFWNiF5coB0FIU2w0C1B6r98viI=;
+ b=UopGuEDO4NXrkEWz/bd+5JkmIabAqoCnx/iy5uc5nLAWmVcDTYpy5FNzLTx+geoZF10Clv9GOiUbx/GkSxh+rwmb19pKwgS5kQ2loqjz8C+Zy5ltmT+QaPJ7YqiVvzV9rhlZt2KD1kzkCD4X8+UADlD+TnUbcpmDsRWSdHBJZDTq0nh2rJFC/xA40ve+Cssz8nkMAhLQhfAapFXzKOdMUwlATJlMk7Iw3fUELali5tOzLHdl8Iu2eVGwCyR/JeDSXtYnS/AnEl2oaPCMDJ4bXbP0QnTqON4l31X3La6JKXqlEujMJ0BHtyQNQDyyxpp2yQrn8sl9v6MLRgdktFKHtA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=inmusicbrands.com; dmarc=pass action=none
  header.from=inmusicbrands.com; dkim=pass header.d=inmusicbrands.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=inmusicbrands.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ces/Va6U5fgRFrzO4oEqBG/woZa9NwmtXDUvb0jODOA=;
- b=KXozoVLxUrKWscbs9QCjXmV2Ke40BHPtc1udQvqCuiH3eRDDs5wf0MKMsgWX9s8WnJpC1/Sn+F+lDONBgzLSzf/eaMrlq/kkoQwNqDb7lhPmMtDP5V7040SYHJEefnNmm5RSBp/C8NMUUapMsT6CLVxP5tRpYp1SJwYBlcvrVgQ=
+ bh=LoFxtZmdW4CR7OuBfFWNiF5coB0FIU2w0C1B6r98viI=;
+ b=pl87ylePmss3/E7XgccwhqZEz9If36Ztr4PKxhsaqExfb7yJaHosFu/IxdQCgzKNN74deoOCgjCcWDpdVl+6qmHgGb0bpx3VHdRoW6fBD6PZo+kdJZyoz4F5iAvOs0L6tgQ7psuuvDFZuhvoMEfETqrnMiZsGkwiFMDf1SuiOyo=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=inmusicbrands.com;
 Received: from MW4PR08MB8282.namprd08.prod.outlook.com (2603:10b6:303:1bd::18)
- by LV8PR08MB9629.namprd08.prod.outlook.com (2603:10b6:408:20a::22) with
+ by SN7PR08MB8592.namprd08.prod.outlook.com (2603:10b6:806:2ef::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.18; Mon, 24 Feb
- 2025 12:18:24 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8466.19; Mon, 24 Feb
+ 2025 12:18:49 +0000
 Received: from MW4PR08MB8282.namprd08.prod.outlook.com
  ([fe80::55b3:31f1:11c0:4401]) by MW4PR08MB8282.namprd08.prod.outlook.com
  ([fe80::55b3:31f1:11c0:4401%7]) with mapi id 15.20.8466.016; Mon, 24 Feb 2025
- 12:18:24 +0000
-Date: Mon, 24 Feb 2025 12:18:16 +0000
+ 12:18:49 +0000
 From: John Keeping <jkeeping@inmusicbrands.com>
-To: Wentao Guan <guanwentao@uniontech.com>
-Cc: andriy.shevchenko@linux.intel.com, arnd@arndb.de,
-	fancer.lancer@gmail.com, ftoth@exalondelft.nl,
-	gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
-	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org,
-	john.ogness@linutronix.de, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, pmladek@suse.com,
-	schnelle@linux.ibm.com, stable@vger.kernel.org,
-	sunilvl@ventanamicro.com
-Subject: Re: [PATCH v3] serial: 8250: Fix fifo underflow on flush
-Message-ID: <Z7xjiPA7nziASvC7-jkeeping@inmusicbrands.com>
-References: <20250208124148.1189191-1-jkeeping@inmusicbrands.com>
- <20250222132627.25818-1-guanwentao@uniontech.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250222132627.25818-1-guanwentao@uniontech.com>
-X-ClientProxiedBy: LNXP123CA0023.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:d2::35) To MW4PR08MB8282.namprd08.prod.outlook.com
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: John Keeping <jkeeping@inmusicbrands.com>,
+	Wentao Guan <guanwentao@uniontech.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Ferry Toth <ftoth@exalondelft.nl>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] serial: 8250_dma: terminate correct DMA in tx_dma_flush()
+Date: Mon, 24 Feb 2025 12:18:30 +0000
+Message-ID: <20250224121831.1429323-1-jkeeping@inmusicbrands.com>
+X-Mailer: git-send-email 2.48.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: LO4P123CA0313.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:197::12) To MW4PR08MB8282.namprd08.prod.outlook.com
  (2603:10b6:303:1bd::18)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -70,89 +66,105 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW4PR08MB8282:EE_|LV8PR08MB9629:EE_
-X-MS-Office365-Filtering-Correlation-Id: 22d926a7-f758-4188-ac68-08dd54cd55dc
+X-MS-TrafficTypeDiagnostic: MW4PR08MB8282:EE_|SN7PR08MB8592:EE_
+X-MS-Office365-Filtering-Correlation-Id: b52b84e7-56aa-495d-da4c-08dd54cd64ec
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|7416014|52116014|1800799024|376014|38350700014;
+	BCL:0;ARA:13230040|366016|376014|52116014|1800799024|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?BLegwHq5vWqrRtOg3xZZt6eXee9pdGKH6RZbnclN9uY65ASh86hQfqYbGNUO?=
- =?us-ascii?Q?Ft/inzfGr77qGXSjYINWvdgF94AzTfZ7BkRBvrX98j0VHs6LQVpSYW0wW2vU?=
- =?us-ascii?Q?lKapaN1M1BamR8AcIOzF/2P6CeSLCuEtTN/WEFqHrGIqL0ojI7y/GOZpct2E?=
- =?us-ascii?Q?wmAHHg956r93svBoIzt+dsOBIasmzMDkEB5I4UDugi0by5GvHfBWJKAEdtWq?=
- =?us-ascii?Q?b/A8njvkLSouZdgZHBJ1E+5St/mlqsFc1OX3jfsCbAfJ7Zwu+ZLn7vuaDH5M?=
- =?us-ascii?Q?6yfyRdMlYl03jUY6OMze3p/sG8neNbGsZhKIoxbU+Sn2UcnNQNy9je8NsVZN?=
- =?us-ascii?Q?Tlic7YkTkaJRDGSJRMZVqOhJ6Woe46SKvgCtXkVkx9A9i2/BSAzsfWC9wH0z?=
- =?us-ascii?Q?iZ36aTUsGeA8RDhM0CBXyGwCYGqVewGGu3031oRKsUqBTEDDUcGGZoeJ78iu?=
- =?us-ascii?Q?G9ARNO696EKfs7NxE9B2OD+dqTgk+D52HSnY8Du999Rwg5bGinbj9Ke8JL2g?=
- =?us-ascii?Q?fjnysiUKgOFlELTDFLtS/1tK/xUVc13KpCvR9h5czQGAM8m6aCqhGjf2pI24?=
- =?us-ascii?Q?Tjq4qYEV+OmFuB7Ux+MAPLBffHb2MxIJLwdeduk971Mj3x/l/Zxd//4m+BlT?=
- =?us-ascii?Q?8T0CYuZvBOFAPSjJmUMR5dYu6DvspDQhFm+c4Qmjv30e1hsrhMElUpeS0KpN?=
- =?us-ascii?Q?1SZ0WNTodf9q527ptva2fAmnLwFaUMVvbvVCGmOyEfiaXRTJIEYk4A+OMu7F?=
- =?us-ascii?Q?eI13EWZmBPL1QsIcMdmcZsrUoPsXwJFfXYs4rBObcT6oz/jLpfUbOXM68xH9?=
- =?us-ascii?Q?W5MsPfnoQKmGKd8qx9+3Gpl+fcMQz20W+vg/6LPbF3gA8q3gVkjbIjQb3vqR?=
- =?us-ascii?Q?oHNfQvFnF2xaHLu2qYD8jjiUNUGPIhfq19f3NokGg+ml7V3CCymynKVI2z8g?=
- =?us-ascii?Q?aKshss+OPDh62L4YCW3/lzimRmQcXaXid0+2xHR9JyFn+CeX9uEOmWDTYmMi?=
- =?us-ascii?Q?dONrnw0+YpE1TQwxvUoJkT8PmPiqvBXZZOBWBDft2dYZKaI1ikQp7xl1zxDK?=
- =?us-ascii?Q?jAiFmHut125z6JEa7LP8roPnMbm0FzCYBG5yG9CZl2Is7HiQQE4AZov/fUmQ?=
- =?us-ascii?Q?eJ0vtLTtx0ViCpoGdx+zf+CeOCEm+xfT2gxYhpm1tTPnisGYP+WyrUItC2oj?=
- =?us-ascii?Q?xLFqvQXBC82jLNMJ6KvWH+CL0xwmACTfViqi8X5PF74mQ0xhN9A0r62FZGOK?=
- =?us-ascii?Q?CnYCO8M+nxtii15LK9wh8+fLXlhSRxsmPguMRtM3OvCIbTgGzTqNZm8UBege?=
- =?us-ascii?Q?1fMuCWW0wiyGCbZ7u/XVGYyq1hiBjmMvplCHJAyvqO2+zBmdRy7bOIMSW+YA?=
- =?us-ascii?Q?4x0lF6bnLISWtCCoesDz0bulTGVDh2AG0svVo/5yZHEtvIQpcpSnZGcfya7l?=
- =?us-ascii?Q?82pVQdHKlUGLxVb803EOwOZo5KaZGwsF?=
+	=?us-ascii?Q?a8yeu7evvtBGbV43JlOg6jTOPrXhTtzdLfJUDA8yErsFEZPg9kFpbF9TBy4B?=
+ =?us-ascii?Q?otMJ1P6S2cQONYrZs9gBmFBhJktl4nnvtGhPrXV6AKcucab366++fgUXVXgW?=
+ =?us-ascii?Q?xX4tmPuNRr8Xqt5zwSFk6l2W+t+T2f9ch0p+8AUcGZfPzut8D+TRh0DNqkeu?=
+ =?us-ascii?Q?/Wbuf7yd+T1hU9kzsKAyRNfSoqmtbIxpWJzc1/zLQ/0t+uayUWJ51bB5/7MQ?=
+ =?us-ascii?Q?Qs4X2ytXdpM22r5XnzWZMxp3EG2r9WB1WtYyLHZeAdwNArNMrjH7iDSvp3Ow?=
+ =?us-ascii?Q?rO1/Dj7Sdq7kgPsSHBmszdnBfMHN1IUmkWUCVvjdBRO+bBF/lySrgqMgWFJN?=
+ =?us-ascii?Q?zxATGndl4uvuiME9y4RC3KMlcT4PNoPZmVq5u6a9PJ7uqo1x8AeWGIN2CIPI?=
+ =?us-ascii?Q?W1BAz9PoW/B6gMUr9JQrbvxiVIwvpmy+fr2i/Y5/C63S6dK7iAuxFAp/l7b3?=
+ =?us-ascii?Q?5WI+lxIyc06Ir1dozG3Yq3rXOxjfZ8xR3KM9SeWFmGO7++KVOaJGQPnf+kSJ?=
+ =?us-ascii?Q?PKwY3StOdMhyHMYZOD5ZquvbwDIxRn+s0FMkjlqOnIti4xSTMUl5yTMbpJ5z?=
+ =?us-ascii?Q?vCDjfMEp+PdytxqaQQ0/jtQqMEtjN9F14hg1R8PQxbyJjXPwjBqeGaseUq67?=
+ =?us-ascii?Q?FUyvBhrEEmhWwznpEot/aJl3h6qhGaFNHHJc6bUPOydLALvC1aib2Z+76Bil?=
+ =?us-ascii?Q?OKoiYWfUlSNna2WVtKhBt+AyoibzxZeYAodZjX6tuPF3Fnus24G2u9euJukV?=
+ =?us-ascii?Q?Ni2/hDmnMV5ipD80kc6cG+P/YB96G27bnYoG2wr+IzXir65ipaWdm2RwDUMs?=
+ =?us-ascii?Q?tZ2LeltoGlsVggQ1IKRTressey+5BMKWbzhLHykPsy0trBx8bcdjYwNyjYuv?=
+ =?us-ascii?Q?g+l6Ge/clVsyOn2gJP6RcSWnLelNjyJBjkDmI8ce027ZvaJMKb4dyTrSBSop?=
+ =?us-ascii?Q?OFd3ioEbm7Fu9tjXfmvW8c22ymrpZwzf1OxAX0DeQCWtwZE9iiQv2uIaR0t7?=
+ =?us-ascii?Q?Cdp+N4VFLjirQpFujbPrEcayfDDiVMJz8vZntzsRv49iN4fcq6haSq81NvW2?=
+ =?us-ascii?Q?q1dhvgkbAamHR8SgnH9K5hZetu5HPE5J7eEfiyTaIujuLaAb8SaZWH51iHXM?=
+ =?us-ascii?Q?V5bjGXrohCqZSkY6F00CFKNzd3ld8BzfgoO6qxgQMPwC1HObInw5GmZ4B7YV?=
+ =?us-ascii?Q?Cp+YZBvsKu2yn92VMuFubUn6r2MKSFG/kpt7gFPMbKm5DWYCaLAjnALqKyKw?=
+ =?us-ascii?Q?SCmJl0FyicKSW2OIs196iTij6xJfrIQczPR+BKkxTErOjV5c/URNvzs5JAWf?=
+ =?us-ascii?Q?w7lyRf6BA0PwFTJpXPvY4yYmCx5M0ejoENj3HJnxqtnt1eoGcTHfUBx4vKD3?=
+ =?us-ascii?Q?hsRJPJdvHE5BybsQMJD+bx3BJxfHjsmpq5HA6KXJlZhGCmkOwVxN1Waf5LAe?=
+ =?us-ascii?Q?YnHalEv0i5xbSwGYQWLoO3P+OiRGOQ7B?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR08MB8282.namprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(52116014)(1800799024)(376014)(38350700014);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR08MB8282.namprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(52116014)(1800799024)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Bqo1fwxaa5/9E/+usB0rAOcA4ui6VWdjBd/2iySszlU8wZuFZaIAOvTaN/PV?=
- =?us-ascii?Q?ZyStBCfBmkeLoELv14LpQvGvpR4SCthqaDtjFieqlwKNUylykxbobOHrn9kN?=
- =?us-ascii?Q?nE0R8s8HysrlTKxTqkuNeFLblngeDYg1VYKpVE0Hda1p6jI/53xP9O/rrd5c?=
- =?us-ascii?Q?NhWXNzOph12cL2wHeVpCuH04X6R7tGmgkOJYgL8TokHom6Ki3deBq7vWdBll?=
- =?us-ascii?Q?HwU8pb2I8UPfY6UO6p0kw8EkyA9X408x+IupkBMdO5PKo6E4eG1f1zf6lqyt?=
- =?us-ascii?Q?hWLe9acWvDqVWrFbao06Z49E+Kqepd5sI5l2t4JX+Zd07s7/Ptzrr/kNjxlU?=
- =?us-ascii?Q?dAXQtClfPHKm6JRvel/Zuth4rlSPgJt4QHh5ZuyuFSZ73uh4mDZ50jR9XKPi?=
- =?us-ascii?Q?/DTAsTa9c1MCWOfHq4QLeUW1qWrl2KHd2Qk6bjKD00nopXUDcwDu1Qj6rhaq?=
- =?us-ascii?Q?t5mJF0MAKGnkkZSwJAmCxbDqRZmvB+UdEUxKWf+9no32hAP524IJWG2UfYcg?=
- =?us-ascii?Q?eVJ7TbhL7dV1VHiBLy+KxHzPkoNBsgU0P3EzG379zeBhi5F8qS1F4eSLEKE5?=
- =?us-ascii?Q?KgBvLmrQe7QWbog7K+msvMiMeT4Az+XjzJIK4zvRhF+FryrKZkLorvi2Mxtg?=
- =?us-ascii?Q?w7PZVlC+I/MSjE7v1E5P6v0dBpYV9zZiC/bGZ2h6bghgw7B6bvIJBmerE8ol?=
- =?us-ascii?Q?p1xT+cgE0ugk0F7PXoaISVLybZTPUccqiXHSbuov0A7+QW3AeoyVBAm543fr?=
- =?us-ascii?Q?ZaVgpgQ01nTGE2XJYYZ5ps/FyoIOgwZRpOf4bXjxo3CeNiD5IgpZPo7yn2qZ?=
- =?us-ascii?Q?HrQgMUtMMlUHENdDVNlfo+6Q7zxCE69p2hHzqMDTmxK2KXx5NH7eeqC66MMa?=
- =?us-ascii?Q?lKzwmJ84Ud0D1QEHNCkeCUw4NScL1RdBmiJF+RArVViI+7dhuGXI3sSnnWAu?=
- =?us-ascii?Q?s5tW2t+XTenp7w3+48tYlqkz9MxVnhc4SBUeg14i+EYMwNubXAL8IihtXVh4?=
- =?us-ascii?Q?HS71wAmxWad4c53VgqbpXVOd0Su+LwsrUunQjA1B026oCaC1pzR41Aapa/Sb?=
- =?us-ascii?Q?QXrEWVQceRfu5aTQ2NSS/rvggRcaSI62zcmM7fu5auWl4KThIKVo9M2qvVuI?=
- =?us-ascii?Q?3UBWFrGBNMOT1KFlFg4vG3Ix6w7fLlHxRgE3MYU41Vr1BfM+t+mwUePg5FDX?=
- =?us-ascii?Q?Wccbu0B4Lwu2evxkDXG40EezK5hRddLN7+RJeEz3WutGWRffffS2Vxin9ED1?=
- =?us-ascii?Q?zVBdVxCB1ioshcnU1MmKUhZBWEL1YoUYZAjepm+fHpMjSPVHGoC8aTzeppWO?=
- =?us-ascii?Q?wolMXG2bDoWCfwKciy04PN/iB7braAfUN7KPH0w+qzz/O/Wcx57f3N4tY7KL?=
- =?us-ascii?Q?UsTVYhJ/hSBz8Diy9TBpSW1F7mn6/1XFNOaFRTu+3OlkZQuYat0ya1ByCtpj?=
- =?us-ascii?Q?miiNi5yN2BGEwyKi3oO+2yL51+munkGJSFtSju1zW7df83I01sF72TpbbnnG?=
- =?us-ascii?Q?vd1mUPakWD0UM0gNP3/H+x2DXbS2O1GZMuv4cVxae69MjrMG9Hv14FHK7wXM?=
- =?us-ascii?Q?3wcBM+/yGg/G/ocshJmZtYIhwVsQ9ISg7kz91XQHSmJ82iHposbJB4IZ0kd0?=
- =?us-ascii?Q?Gw=3D=3D?=
+	=?us-ascii?Q?FbTCEcfaAV9BqgJD3eH5xfUcVJdp9hvM2jc6bwCUUxkTgx+JQlsiurNDYjAl?=
+ =?us-ascii?Q?55z8PuXL/GYaZd0ol1v3WQcfc74MJkxuesYdDv3JT44J9uMBoCyt/NIa8hys?=
+ =?us-ascii?Q?bab5vbAxdVqJrhgFcibcV3eYYnuWWo/qWnAeSZrm4f8gZ/CZ0BPsL+7pxN9h?=
+ =?us-ascii?Q?p7ffTvdFrQnAQguzZIfRCHYkgE1jBhDZuvogl0zaEHChOc/zERUUugf6x80u?=
+ =?us-ascii?Q?4svpWfuxTFO8wxavFRUkTPfISXMMzfWRYuKNYyFS9wKTJDOlaDw8dCHXIxjI?=
+ =?us-ascii?Q?5WvyvdtYjJHzgdenw3luNrOM4LUGLVQ18txGIehuiM8EdIPdYQmno8LlFat9?=
+ =?us-ascii?Q?nGVSDpS7IRlS91Dg6Etdp77D7h+60pSo0kvoamGJyCWJyLxatyPqEX9N7BSH?=
+ =?us-ascii?Q?OAtNkhU8pDskNCYdKD6bZ3GQy652wVHLBgzmX0tFNlt9BoI2dmDcb5cAw7n+?=
+ =?us-ascii?Q?TG19uTC5xRMXdGKQScnWE5rk+6GXJg1S/uuiqXJuFIHnen0yBVF6xtzWevIu?=
+ =?us-ascii?Q?589DQlbHDkB0xadqP4kKqMaHbUS45J06h3h26VEerhexGOfF+7lQCmDQ72rg?=
+ =?us-ascii?Q?iufFF7Ev2emHFZRxbhRL8En4EGB0lxInypZjSjtaEcZL+LisI826UwvV9hhS?=
+ =?us-ascii?Q?USnRAhnLkbHTo8GSgD0pvtKG5QoR80TInDIKChPazWR9PMivkdFuGfdVJHuU?=
+ =?us-ascii?Q?BzkGTm1qBrVlFde78n7go5oTiwLMHqY9ujYDOt+TnEnqToukIgM7lS5taE79?=
+ =?us-ascii?Q?VshGd28uUR6PbgGEQZbtgi0C/omvv1xNp7TYgS3NJ3jL3DPQu9lhA8QTW1th?=
+ =?us-ascii?Q?pd72xKEdvOr3eHJi2dOLDoE0Xe5o9I7JlKd032JcT5qHkhiS9S5mDTkc5k6u?=
+ =?us-ascii?Q?0kqPohS//h+O8Ugk5XoMMV6gbqHFvtMfye1GJzB7bopvaXuU+0l5+roPHsKb?=
+ =?us-ascii?Q?hXBmqRfB5SgMlxit0VH1bwivOeTenD5KVrjdHBz/Gxfk/Dno4hTqCtNa17KQ?=
+ =?us-ascii?Q?igV03cF8GTurffpqeyH7OGNGxvLJHGhVmzOy1YWbgHaKT8OO8x5fob+WMDwG?=
+ =?us-ascii?Q?LUQJaImqfO601ZqXKVl4fgo4QePILgh1bpdxBsXjkF0qoZ0e9Old2ZOWC/9E?=
+ =?us-ascii?Q?8JetWWC8F1PyCraSugtVXSRrvKktPvvOdhnmTaG8LgxFn6PU/Dhrc3wbJVxk?=
+ =?us-ascii?Q?aplA2HDcLQhh4C22fPtLm0cdIVpzv9AXTRNLgoloEfcQ0bau5sWliEb+Jwr4?=
+ =?us-ascii?Q?N+5hKoMBT6hjqlF0JkDxZf4VhWQFT0wrh2X3KdNKgrdJAATR7u9k0g7Nn0zd?=
+ =?us-ascii?Q?NpwxB0ArdyDf48dvqxXgB0lYMWQdVr/RDrLzc+vkAWuhmQpRR9bU4I8k9Z3u?=
+ =?us-ascii?Q?RKvqpavEGAIoHPXQj2Lip4bvBLlo63AbEw+/G/13ye+UKBWNj4q2ergz0cLa?=
+ =?us-ascii?Q?kg/97CZjZsmxRjjcswsEzpxm71ILWeL95DL7h51Xywfv1oPUrXgChtxO4Ene?=
+ =?us-ascii?Q?lY3J3qWys7KBr1Ips6D7xQcsCQfN871BCbHE3g1ICW/0hlOf61NGlgoKHRqm?=
+ =?us-ascii?Q?In9rP80BfH8J7p4PxC3gaHjjQXuTnQFeUHBRbHUixbJ94gEPi62cvThiwBwn?=
+ =?us-ascii?Q?xw=3D=3D?=
 X-OriginatorOrg: inmusicbrands.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 22d926a7-f758-4188-ac68-08dd54cd55dc
+X-MS-Exchange-CrossTenant-Network-Message-Id: b52b84e7-56aa-495d-da4c-08dd54cd64ec
 X-MS-Exchange-CrossTenant-AuthSource: MW4PR08MB8282.namprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2025 12:18:24.3522
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2025 12:18:49.7735
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 24507e43-fb7c-4b60-ab03-f78fafaf0a65
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QHnCXufeWEGNuVZ+wN6BKIQe5/ndlp7B23yomaPgprWVhRGJPJR9npJO9fTe5ff4ttMbzx/Z8uLd5MQHKJBev84ZIdKggWpIlRD6h9XThTk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR08MB9629
+X-MS-Exchange-CrossTenant-UserPrincipalName: N/O22Y/PjR953/aAOVzXD86Jwwpx5Y+BZbZoHCFOC+BFbhVKs+/Sx5QNBsGc7f4Lb9rB+9xtT2J9YY2YK2bhT2LYKZrpB8Ebk+2lYBSDFVQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR08MB8592
 
-On Sat, Feb 22, 2025 at 09:26:27PM +0800, Wentao Guan wrote:
-> It seems strange that call 'dmaengine_terminate_async( **dma->rxchan** );' in
-> 'serial8250_ **tx** _dma_flush' during code review.
-> I am not a professional reviewer in this module, could you explaim the change?
+When flushing transmit side DMA, it is the transmit channel that should
+be terminated, not the receive channel.
 
-It's a typo!  Nice catch, I will send a patch to fix this.
+Fixes: 9e512eaaf8f40 ("serial: 8250: Fix fifo underflow on flush")
+Reported-by: Wentao Guan <guanwentao@uniontech.com>
+Signed-off-by: John Keeping <jkeeping@inmusicbrands.com>
+---
+ drivers/tty/serial/8250/8250_dma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250/8250_dma.c
+index f245a84f4a508..bdd26c9f34bdf 100644
+--- a/drivers/tty/serial/8250/8250_dma.c
++++ b/drivers/tty/serial/8250/8250_dma.c
+@@ -162,7 +162,7 @@ void serial8250_tx_dma_flush(struct uart_8250_port *p)
+ 	 */
+ 	dma->tx_size = 0;
+ 
+-	dmaengine_terminate_async(dma->rxchan);
++	dmaengine_terminate_async(dma->txchan);
+ }
+ 
+ int serial8250_rx_dma(struct uart_8250_port *p)
+-- 
+2.48.1
 
-Regards,
-John
