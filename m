@@ -1,86 +1,332 @@
-Received: from smtpbgsg1.qq.com (smtpbgsg1.qq.com [54.254.200.92])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B28974C80;
-	Tue, 25 Feb 2025 11:38:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.254.200.92
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D09F1C8600;
+	Tue, 25 Feb 2025 13:29:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740483528; cv=none; b=kyZ0b8T8fOYCNWhVB2N3NlnKwOMSRTFcmGuVcx4p6oiQbY+0cW/IBZ65XTkWFNkRQ8DxE4ng2JRjzoNAhz7tpdnBpcBeInP0TT/9BhMqG86MRs7Aoc7s9sc2oMpWOrIaKDm022QCz4810oDnb2NPUXfJHdLlnaGRuWZD0zlk9v0=
+	t=1740490194; cv=none; b=MAfvpF00drrCdtGEwTD5VrJj4BhCjEwzfVtX5c0Yo05OyNBba09W0Wq3GZTFgkvMONOfX8XjhlaQh3PDdTDsczj+Knl0MBEUudmpQHWro+UigJkosTqaq3TMJmSFnV6MZzuEfo2TwUj0syguzv4+WQqzwm5fqm/+o09Dr8/FAeI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740483528; c=relaxed/simple;
-	bh=7o1LhwlAcsJgqFTK4J681khp+AvnA4zXAdW/ZK8fgcY=;
-	h=From:To:Cc:Subject:Mime-Version:Content-Type:Date:Message-ID:
-	 References:In-Reply-To; b=cqALK0FjI1FTDIVOabHs0Y2T2wARYNGaVAclDlGqg5Y4GghsOfToPY83tyvw8msMPVb4U10bcrbrz1IVjggSm1oap2CcqC5Y5Gbm3JEUu4V58x+r9Y8swN4HybFEmYouR5n+XygWUvYv5ORzImdkcmCvnJaEar725UB5XVkX8rE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=Fx8DmUwN; arc=none smtp.client-ip=54.254.200.92
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	s=arc-20240116; t=1740490194; c=relaxed/simple;
+	bh=IV9pRGxFK2DrtjZkiJyzjsjNw8Mw0JCY+k9J5CdGxZk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mmRDlMgaMi4zqfuEEz/6r2u4Xi3HEi7OvaNF2TbsFKjhMxb0E6Eb1NY4bTn55B6IbyT6z37I4yiW81z42wLLX765HGDqyI5nF+IRQ6X6jKIXP5GxYwHEOcYPF4Mmis8DS/SKZ2NOY+ys/pz1UNJtIM9IkI0qPuFjxXbtw/7mHXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TQPxoo+w; arc=none smtp.client-ip=209.85.216.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="Fx8DmUwN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1740483461;
-	bh=7o1LhwlAcsJgqFTK4J681khp+AvnA4zXAdW/ZK8fgcY=;
-	h=From:To:Subject:Mime-Version:Date:Message-ID;
-	b=Fx8DmUwNZJewxD15LNTJ5vMNr/YQUsIpa6YNjUaamLHwwREp5btz+eurbZ1nHB4Cj
-	 +68/+D+/+9PuWQ4s4rf1GSyKtGfScO1zkgdZia3BxEZtylhuL2UfgEItxvv/q13d/o
-	 2pzYSNqO29PCoNmypHUZINnrOA1qE0UEIk503a8I=
-X-QQ-GoodBg: 1
-X-QQ-SSF: 00400000000000F0
-X-QQ-FEAT: D4aqtcRDiqT6iyfUez+DXx4B7ybItHVbSxkDlA8/kMI=
-X-QQ-BUSINESS-ORIGIN: 2
-X-QQ-Originating-IP: Xptfm9en8kSztH5x5sLIfL3u/YSEDpg5TCpVOgsGmtg=
-X-QQ-STYLE: 
-X-QQ-mid: v3sz3a-6t1740483459t397160
-From: "=?utf-8?B?V2VudGFvIEd1YW4=?=" <guanwentao@uniontech.com>
-To: "=?utf-8?B?U2xhZGUgV2F0a2lucw==?=" <srw@sladewatkins.net>, "=?utf-8?B?R3JlZyBLSA==?=" <gregkh@linuxfoundation.org>
-Cc: "=?utf-8?B?Sm9obiBLZWVwaW5n?=" <jkeeping@inmusicbrands.com>, "=?utf-8?B?SmlyaSBTbGFieQ==?=" <jirislaby@kernel.org>, "=?utf-8?B?RmVycnkgVG90aA==?=" <ftoth@exalondelft.nl>, "=?utf-8?B?SWxwbyBKw6RydmluZW4=?=" <ilpo.jarvinen@linux.intel.com>, "=?utf-8?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>, "=?utf-8?B?bGludXgtc2VyaWFs?=" <linux-serial@vger.kernel.org>, "=?utf-8?B?c3RhYmxl?=" <stable@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250_dma: terminate correct DMA in tx_dma_flush()
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TQPxoo+w"
+Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-2fce3b01efcso7239205a91.3;
+        Tue, 25 Feb 2025 05:29:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740490192; x=1741094992; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=g+KT3KVpGLuA4u2NJNwnGzORc7aygCrbdYn7UVwmV+4=;
+        b=TQPxoo+wdE2rqVazCzm+HUMS+R4vvlOtYbRCs6f82uFhavM25oFu26oBcS9Jlm9BIy
+         ladBYUeHrU5JxF+6sYG/boW8gHeZB62pKArrebgHZ+68ECfKdkR+nrQGzL2BhD0BkLor
+         XBB9h1ogWRn+/KEM9uu2nBhdaCqbf4piJzmDz4zEBFxpvJbJOTQ5dDfpYJMQ2AS5ytJe
+         cYyQecVc83NWO6pUIhl2j2CKfRQT5jv03DeB7Bh8F4v/r2aUnusZIuWtZYE3eGDNffWX
+         s2SagQW6Nmno5boIXRXhL/EbJ5INliJm3DwACpK3Ue8s8pJ2YIbDiSrQZVYLv0lvLAlF
+         mFcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740490192; x=1741094992;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=g+KT3KVpGLuA4u2NJNwnGzORc7aygCrbdYn7UVwmV+4=;
+        b=uoIFYixrW30dLS6uu9BKyM7SUH1hIADHIj0WsioUIf67G+rLMEnRAH6PfF1L2K6Vc7
+         xnPfGft0mPcgZ26rIJXODvAiwa8GT7Tlo3MaWpqgiEnJMbhsXb/D+Ci25T/iUIa7QN/9
+         33SPE5KNUa0HmYgN6/3ntyCGt6Ld1T4xl/Sd28hyxj/fIHAJ5K5X40bJKuC359ZqXmy7
+         IWYU4Aoc9nnVOx2AchA/UhOHZ4ktuT5nQ1Ay7vDEpTrMgDPJlIab6osjfsym9jncq4g3
+         5WW6cfwVoQfK/f1YobtJBPX+NQ9OlZ0N0qq/Xaa/MO+GaUi4T6+O2vn4PjpOHA4xSG+K
+         6rTg==
+X-Forwarded-Encrypted: i=1; AJvYcCUC59F+KKgFCo1AhUAIf+Bd5ymk65dgXTFNM2r/TPfWyzT5aOLS6ObEzzZlKaYUL3ByiN3V+ukr@vger.kernel.org, AJvYcCV+zDlcekj01JKYEkL+XmG0XLmA5GoJt+V6S1bVq1vnAsw0s9i4g66eVV75sJMcI4TNeMDc35WhinFhM1Oj@vger.kernel.org, AJvYcCWApCTOOLjnIWZI0RtlXXTZTPhGJ66H5gHVsgSpEyuqxzvT9AUXhytzL9wGGAvCiz6ghTXpzmxnxwBEVMM=@vger.kernel.org, AJvYcCWQQRm+RL45vpgzsfUFFoZD/mW8x1QEWif3JRg2dYplCYplt4LffTl+2COv6GIO6L+Bq+zShTTRmCFT3WIn@vger.kernel.org, AJvYcCWaWiKXZKUjKdVhGaNEBkNsg2funj1gCbsBY93tb2d0lbbTrxp9cPkuD1fuxKWolnYxzpNlXsTjKQQo99PUKXw=@vger.kernel.org, AJvYcCWfs5ePypY2AU54Iof69rIi1VUHd+33XxtAkXkgVG92r1le0hJYcSz+U4Y/JbFdUwfSNP8=@vger.kernel.org, AJvYcCXrErbDyztFnEYm7YZO0dkDUygAfiofrBBxqmQwGNfemtUU0wxaVoyolZM41EnoU+ceLYCoVuegK52fBEU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzFNNrzzAC7h5MnoekXNbVCEAvhbMtfzqKLtAy9g+0tTd3kVcri
+	G7WZrNQ3Kgu41n98cWTmZhH8kS+1t2T19HiS8wZRsGCGa7UQ4Evw
+X-Gm-Gg: ASbGncuRGqjPFfXnVC2y7/PXltHg3IGvE1pdN4N5GAB6jTn4syTPFHCQCOWKBN7Gl0F
+	yjpeNvd9YcMzFfYdIolxVJnZxtLx8sIuZCklJ6AeVe1CO1cmnWsmB0pgCiHn8R9H5ZgGdBrH8Ve
+	6xvYyxH9Mlmr3d2CKHaGEbj3zBQ0b20taUX3Su+O2iT0jq8k48LI1Xt1JVLTl2P6tg6p77Xh9DH
+	mopKlwdQpbR/AOev6bkg+m1TQtljj6alp56JfdH4HCauJVEjbQsnzF8Lbd1ozCyfZonAeVt9pov
+	xB36EVSvjQ/q0D19jRkeP3wyHoQu++IsIPyT5DBsfXFVaiNCNO4T7w==
+X-Google-Smtp-Source: AGHT+IHJCYV1yTKSOK6eGDyBnxKUrcQWKWx/K+mHz5nLdmHbZ4ukNdWQzUzjXs+WMIoPjs0tLGemNA==
+X-Received: by 2002:a17:90b:3941:b0:2fa:e9b:33ab with SMTP id 98e67ed59e1d1-2fce78acd26mr32192478a91.16.1740490191556;
+        Tue, 25 Feb 2025 05:29:51 -0800 (PST)
+Received: from visitorckw-System-Product-Name ([140.113.216.168])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2fceb02d51fsm8424850a91.2.2025.02.25.05.29.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Feb 2025 05:29:50 -0800 (PST)
+Date: Tue, 25 Feb 2025 21:29:40 +0800
+From: Kuan-Wei Chiu <visitorckw@gmail.com>
+To: Yury Norov <yury.norov@gmail.com>
+Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, jk@ozlabs.org,
+	joel@jms.id.au, eajames@linux.ibm.com, andrzej.hajda@intel.com,
+	neil.armstrong@linaro.org, rfoss@kernel.org,
+	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+	dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, akpm@linux-foundation.org, hpa@zytor.com,
+	alistair@popple.id.au, linux@rasmusvillemoes.dk,
+	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+	jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+	Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH 02/17] bitops: Add generic parity calculation for u64
+Message-ID: <Z73FxIv353lbXO3A@visitorckw-System-Product-Name>
+References: <20250223164217.2139331-1-visitorckw@gmail.com>
+ <20250223164217.2139331-3-visitorckw@gmail.com>
+ <Z7zIBwH4aUA7G9MY@thinkpad>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Tue, 25 Feb 2025 19:37:38 +0800
-X-Priority: 3
-Message-ID: <tencent_729B631A3339DFCB4BFA873E@qq.com>
-X-QQ-MIME: TCMime 1.0 by Tencent
-X-Mailer: QQMail 2.x
-X-QQ-Mailer: QQMail 2.x
-References: <20250224121831.1429323-1-jkeeping@inmusicbrands.com>
-	<tencent_09E5A20410369ED253A21788@qq.com>
-	<2025022434-subsiding-esquire-1de2@gregkh>
-	<tencent_013690E01596D03C0362D092@qq.com>
-	<2faa8912-a699-47d9-b9d6-dc2fb22fe7c8@sladewatkins.net>
-In-Reply-To: <2faa8912-a699-47d9-b9d6-dc2fb22fe7c8@sladewatkins.net>
-X-QQ-ReplyHash: 829435416
-X-BIZMAIL-ID: 9039354056843283055
-X-QQ-SENDSIZE: 520
-Received: from qq.com (unknown [127.0.0.1])
-	by smtp.qq.com (ESMTP) with SMTP
-	id ; Tue, 25 Feb 2025 19:37:40 +0800 (CST)
-Feedback-ID: v:uniontech.com:qybglogicsvrgz:qybglogicsvrgz8a-1
-X-QQ-XMAILINFO: MgQY1K25Ph0m1naNLl6PTlAFYKFI+WJ3bVu4EThSbzozVxcMfEWbbzRW
-	4N7uMs+393LogP+FLkIofNR0nsWjS2BN6UF1YAIr/gACxhPL2xyPJ9lf5T0R+mh5kPbkdgc
-	NaE7RdGocNgBAOkmmuN+6ecjMuw7H4StlEk/OS8pEB+xyCdV3MWoQeb3p/nQye6ICleV7sn
-	uGtDZneJklQ/Jn//jJ1C7KgTx5jr8SzbnL4NeBkETJvf2OH5AFmCRDq49FP90vWZXLM4qF2
-	oFyzo2eJ2sCi+PlvNTPB/EpCubrqGfYnrPgT0d54yVbcToQHM92t2UR35bazj2KJ4vugHB+
-	MlmmaHQYldK5smP0g+w6C8X40XwldoB5c8ReLbb0e0s3R0ifUDonYzdrdW3i6EpjpvelwzQ
-	U6tikRNjBAkrPLGsIUPVYAVCwzqRMpHfWAcpBHUzsfRz8ZSf7K8dFAo8bsgqIR5EBZuH5nM
-	XdpWFvBfoiw35y4TI4da/ZDShTOagmckk7mEKgPV194vLHjy5zkJGKY66o3weON0iRmEvkF
-	15g5/WgprvwVRKZfbN8N/wtjINikYh3QvnTUcAlxPe4vpYdrbGuxNWYv4I2X75QvSqY/8sQ
-	1NVOL8ZTWNSrnVd3QjXAylK6tCb5kGE9/UQqKzqfwyGCPCFpaDJiC9ahGjw7hzXOtz+7lmk
-	7MB3zOIDDpd74SkE1un7X141YvA+2lWmjtsokUt+Q0/oPypW3yUBYCOc358Ys04b0rR2VTR
-	viJypw/uawzgxsA0/PsTL6Lzwhm/Wox883so+s0o49/m25FGeG1xy4TDiFg88DjDa/sJBrV
-	ev/O8HnxoyJZ4CpoqfkiCJVJ4TQPU2Y4274+n75Y6wkgSb6cYN7gt9b6SVWTAqrW8PTOeAl
-	jg5i3xpDasIAKUKtBjIlwT/iv7RcX6fe6aIb9kC9/n5vjvYUCH7m83QvQADt9xxAuwWLvkw
-	0xJ7ErqmVSdDY309erRfxQ6MLgLkRTPl2eDDdzLwpB6uivlLK8/hZ0PmrMvRV2CCAJMZEF/
-	GrZOZAQA==
-X-QQ-XMRINFO: NI4Ajvh11aEj8Xl/2s1/T8w=
-X-QQ-RECHKSPAM: 0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z7zIBwH4aUA7G9MY@thinkpad>
 
-SGVsbG8gU2xhZGUsDQoNClRoYW5rcyBmb3IgcmVwbHkgbXkgcXVlc3Rpb24uDQoNCkJScw0K
-V2VudGFvIEd1YW4=
+Hi Yury,
 
+On Mon, Feb 24, 2025 at 02:27:03PM -0500, Yury Norov wrote:
+> On Mon, Feb 24, 2025 at 12:42:02AM +0800, Kuan-Wei Chiu wrote:
+> > Several parts of the kernel open-code parity calculations using
+> > different methods. Add a generic parity64() helper implemented with the
+> > same efficient approach as parity8().
+> 
+> No reason to add parity32() and parity64() in separate patches
+
+Ack.
+
+>  
+> > Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> > Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> > Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
+> > ---
+> >  include/linux/bitops.h | 22 ++++++++++++++++++++++
+> >  1 file changed, 22 insertions(+)
+> > 
+> > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> > index fb13dedad7aa..67677057f5e2 100644
+> > --- a/include/linux/bitops.h
+> > +++ b/include/linux/bitops.h
+> > @@ -281,6 +281,28 @@ static inline int parity32(u32 val)
+> >  	return (0x6996 >> (val & 0xf)) & 1;
+> >  }
+> >  
+> > +/**
+> > + * parity64 - get the parity of an u64 value
+> > + * @value: the value to be examined
+> > + *
+> > + * Determine the parity of the u64 argument.
+> > + *
+> > + * Returns:
+> > + * 0 for even parity, 1 for odd parity
+> > + */
+> > +static inline int parity64(u64 val)
+> > +{
+> > +	/*
+> > +	 * One explanation of this algorithm:
+> > +	 * https://funloop.org/codex/problem/parity/README.html
+> 
+> This is already referenced in sources. No need to spread it for more.
+
+Ack.
+
+> 
+> > +	 */
+> > +	val ^= val >> 32;
+> > +	val ^= val >> 16;
+> > +	val ^= val >> 8;
+> > +	val ^= val >> 4;
+> > +	return (0x6996 >> (val & 0xf)) & 1;
+> 
+> It's better to avoid duplicating the same logic again and again.
+
+Ack.
+
+> 
+> > +}
+> > +
+> 
+> So maybe make it a macro?
+> 
+> 
+> From f17a28ae3429f49825d65ebc0f7717c6a191a3e2 Mon Sep 17 00:00:00 2001
+> From: Yury Norov <yury.norov@gmail.com>
+> Date: Mon, 24 Feb 2025 14:14:27 -0500
+> Subject: [PATCH] bitops: generalize parity8()
+> 
+> The generic parity calculation approach may be easily generalized for
+> other standard types. Do that and drop sub-optimal implementation of
+> parity calculation in x86 code.
+> 
+> Signed-off-by: Yury Norov [NVIDIA] <yury.norov@gmail.com>
+> ---
+>  arch/x86/kernel/bootflag.c | 14 +-----------
+>  include/linux/bitops.h     | 47 +++++++++++++++++++++++++++-----------
+>  2 files changed, 35 insertions(+), 26 deletions(-)
+> 
+> diff --git a/arch/x86/kernel/bootflag.c b/arch/x86/kernel/bootflag.c
+> index 3fed7ae58b60..4a85c69a28f8 100644
+> --- a/arch/x86/kernel/bootflag.c
+> +++ b/arch/x86/kernel/bootflag.c
+> @@ -2,6 +2,7 @@
+>  /*
+>   *	Implement 'Simple Boot Flag Specification 2.0'
+>   */
+> +#include <linux/bitops.h>
+>  #include <linux/types.h>
+>  #include <linux/kernel.h>
+>  #include <linux/init.h>
+> @@ -20,19 +21,6 @@
+>  
+>  int sbf_port __initdata = -1;	/* set via acpi_boot_init() */
+>  
+> -static int __init parity(u8 v)
+> -{
+> -	int x = 0;
+> -	int i;
+> -
+> -	for (i = 0; i < 8; i++) {
+> -		x ^= (v & 1);
+> -		v >>= 1;
+> -	}
+> -
+> -	return x;
+> -}
+> -
+>  static void __init sbf_write(u8 v)
+>  {
+>  	unsigned long flags;
+> diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> index c1cb53cf2f0f..29601434f5f4 100644
+> --- a/include/linux/bitops.h
+> +++ b/include/linux/bitops.h
+> @@ -230,10 +230,10 @@ static inline int get_count_order_long(unsigned long l)
+>  }
+>  
+>  /**
+> - * parity8 - get the parity of an u8 value
+> + * parity - get the parity of a value
+>   * @value: the value to be examined
+>   *
+> - * Determine the parity of the u8 argument.
+> + * Determine parity of the argument.
+>   *
+>   * Returns:
+>   * 0 for even parity, 1 for odd parity
+> @@ -241,24 +241,45 @@ static inline int get_count_order_long(unsigned long l)
+>   * Note: This function informs you about the current parity. Example to bail
+>   * out when parity is odd:
+>   *
+> - *	if (parity8(val) == 1)
+> + *	if (parity(val) == 1)
+>   *		return -EBADMSG;
+>   *
+>   * If you need to calculate a parity bit, you need to draw the conclusion from
+>   * this result yourself. Example to enforce odd parity, parity bit is bit 7:
+>   *
+> - *	if (parity8(val) == 0)
+> + *	if (parity(val) == 0)
+>   *		val ^= BIT(7);
+> + *
+> + * One explanation of this algorithm:
+> + * https://funloop.org/codex/problem/parity/README.html
+>   */
+> -static inline int parity8(u8 val)
+> -{
+> -	/*
+> -	 * One explanation of this algorithm:
+> -	 * https://funloop.org/codex/problem/parity/README.html
+> -	 */
+> -	val ^= val >> 4;
+> -	return (0x6996 >> (val & 0xf)) & 1;
+> -}
+> +#define parity(val)					\
+> +({							\
+> +	u64 __v = (val);				\
+> +	int __ret;					\
+> +	switch (BITS_PER_TYPE(val)) {			\
+> +	case 64:					\
+> +		__v ^= __v >> 32;			\
+> +		fallthrough;				\
+> +	case 32:					\
+> +		__v ^= __v >> 16;			\
+> +		fallthrough;				\
+> +	case 16:					\
+> +		__v ^= __v >> 8;			\
+> +		fallthrough;				\
+> +	case 8:						\
+> +		__v ^= __v >> 4;			\
+> +		__ret =  (0x6996 >> (__v & 0xf)) & 1;	\
+> +		break;					\
+> +	default:					\
+> +		BUILD_BUG();				\
+> +	}						\
+> +	__ret;						\
+> +})
+> +
+> +#define parity8(val)	parity((u8)(val))
+> +#define parity32(val)	parity((u32)(val))
+> +#define parity64(val)	parity((u64)(val))
+>  
+What do you think about using these inline functions instead of macros?
+Except for parity8(), each function is a single line and follows the
+same logic. I find inline functions more readable, and coding-style.rst
+also recommends them over macros.
+
+Regards,
+Kuan-Wei
+
+diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+index c1cb53cf2f0f..d518a382f1fe 100644
+--- a/include/linux/bitops.h
++++ b/include/linux/bitops.h
+@@ -260,6 +260,26 @@ static inline int parity8(u8 val)
+ 	return (0x6996 >> (val & 0xf)) & 1;
+ }
+ 
++static inline parity16(u16 val)
++{
++	return parity8(val ^ (val >> 8));
++}
++
++static inline parity16(u16 val)
++{
++	return parity8(val ^ (val >> 8));
++}
++
++static inline parity32(u32)
++{
++	return parity16(val ^ (val >> 16));
++}
++
++static inline parity64(u64)
++{
++	return parity32(val ^ (val >> 32));
++}
++
+ /**
+  * __ffs64 - find first set bit in a 64 bit word
+  * @word: The 64 bit word
+
+
+>  /**
+>   * __ffs64 - find first set bit in a 64 bit word
+> -- 
+> 2.43.0
+> 
