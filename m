@@ -1,164 +1,140 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 628D121CC53;
-	Wed, 26 Feb 2025 18:33:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F19D522540A;
+	Wed, 26 Feb 2025 19:22:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740594803; cv=none; b=S4QcQLqenvCMIsGbD88oYeeQkQIxjX5ynvei6QvwPoTvQSQ28ZQkfucZzkwzjmwBd9lnUV/ByRsLqKsChpMghrEXiCDce8ZFEoHYE0/wmmd2zY/AAyRejm2i4ObQP7qH4oIaZ6/f1TTco1Zjfl/1NZuZYbTDocuW7o7xGimGtSU=
+	t=1740597780; cv=none; b=I14PnW5qwjdUH5/cSB/N/WOCHnPejEvuETMGdW+3Re8kHWTI9K0mSnXc5a4OYDHtLxSmY84l4q5ulbXhF68P3ie/QBMqqLrkOMkCFb1jWM3sS2Hv+ULJUMfjeawJHSmi/WboqpTdM30yoFxULSAy6Ib/PcV5Ebu73lOfOItHm8o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740594803; c=relaxed/simple;
-	bh=06Bx46w4WKqnLcEDcMImX2Rgvc4s7Az8+qGa2ZiH2i0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K38H0bpA7GUHZm+YgoSnrBVQWzcsdFAMJkRgQKd4lJWwfLmRhqQnh6Vmr8wZ8hBN7GLT/yirWstq6yPjd9m16u78NyvG6TG0X9XA+mcDlxQoJ9zdcn/BszewItxfDTlk1OZiu1O+eKHf9GYNSkGJ7gW+gfbTPs4LHb8/UKz1kXY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EpawnAZq; arc=none smtp.client-ip=209.85.214.169
+	s=arc-20240116; t=1740597780; c=relaxed/simple;
+	bh=V/mmqmDUXBV/WNhpZpAYGI7TJI5eQO/qS6T/SI0kdMU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=lL66zvnclH8D1q93KOBFIlNEsN7DwpjGnWoyFMCl1rqgjgm4WQX8KwT2gk+TTyrdbrgwuvroF0hj70og1UQ0CZTVvzxymqCSBowkHlYxLsWrfpXu4nL+lSlFYqL1bm6OfWa54AwXuifqtAwkZHcgBAI1BKPPKW8Zu3Yj30epaAc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=U6iAvy2p; arc=none smtp.client-ip=209.85.208.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EpawnAZq"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-22114b800f7so1069885ad.2;
-        Wed, 26 Feb 2025 10:33:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U6iAvy2p"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5e04f2b1685so85483a12.0;
+        Wed, 26 Feb 2025 11:22:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740594801; x=1741199601; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8NV8NW5Mq8hnlsfnK7VYLX7Lb9iIPf134td0bPOEzZY=;
-        b=EpawnAZq/kdSM+6C3tHt1DTf10h9jzDh+WY2mSN4+gpboVFRDEHryGA/0t+fFgfAta
-         yReRXzJB3JR+0vbRVUObb2ma49Z8CYIZmE2vyOlM6zlCAHObPMls0CzJCQwnOwy9//6h
-         QbTqMa9Lww7VGBAtrnZHZX5PGwvL7Ray5MwuuOxeGYPVmSLn8fzJJY3Td9KdkomhHoaZ
-         sZMpdDqgfL92HWT+a+Gs3UofhtamlGm/aglfBOjfC80zOLnfvqhX+wIVySV9I3IeZjkS
-         8QlHXRuEG1vzmkuNqgvtH8kONxqCOvxHHd07TjqBHF8Ebur2rNX+cbn9bq50R+IZ2Ztw
-         xEjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740594801; x=1741199601;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1740597777; x=1741202577; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8NV8NW5Mq8hnlsfnK7VYLX7Lb9iIPf134td0bPOEzZY=;
-        b=fa9Ky0jHC9BUNbJBYy171n8rC65LzlHvMMvK+s1wX+V0DsDyWjfepLwBptn1GNHtBw
-         3LeCEuDSlB4jnkAJqPJk3Q02Y9duQvHUQEI0JVgp1KlG7J9H+Ef8FRFc4dlWv32Ro/ib
-         6N3BIQDIZIfRkMrTIMAcuR20CUtp2cikehLg6jrKaDxA74im74uozY0l8L3MIIksR30m
-         nzdoBeeIK220QqUmZXiT3JtpbHpqtgh/sq2kpFGN+Ozd+UGTUYs2Z1ul4UNc+WB32NyO
-         kXdOY5pBkRNi3rLliJt9fNMDcAebPzIRqox3MTJMEN2J35ynTGf3LSDNd7Lrghe5PHzY
-         aBgw==
-X-Forwarded-Encrypted: i=1; AJvYcCU0HR1bgjQ8Jyr5IP3uaBHLHzWwGs5PgG2kstM3RITbLhLMOXa1IHoAuoY34JBTDGx4nx0=@vger.kernel.org, AJvYcCUOyJVXqU2p58b+PlLtWzqCm9M7IcWbxOpxxS07h8hn3hATQabj7vsVsjcIXNr2pUoNQYXMDAaEwB9+AkWm@vger.kernel.org, AJvYcCV0zPjq/B65QolHTSI3DwKfyUBJSbz6joMd8o0Iuol4krTiPHUYaL4JXGubdsJzGVB0GdLLuiXb9PT4Ix0=@vger.kernel.org, AJvYcCVwO1LPwYgrSVboCtdkOXZRiQgrk8Pv5snhpd7jc4VCwoZX5wiAFRLFEaCL87KbPnsADApvFYNoevjxgFGQ@vger.kernel.org, AJvYcCWIvHtg+wax6vXltb+6Q+st1agfA7oVs6RCnYIBLCKhxUpaf/NUkYYbkG0tsYQZ5UKoAZZKk2bDiCuRbys=@vger.kernel.org, AJvYcCXRB0QfiC7YSWTWesOIGgv6oEQccDVfW54p8ZnfHg5lMbQStWn1TT5Hk7YC5w0LI7vc8aVx9bntTqPhHeyu+qE=@vger.kernel.org, AJvYcCXUWnioz6RMKjH4TKMAUMuaBajfGMnSxoyPdfsQQXMGFqak9N5dFqHnZOWT2u3GwoJkN7H7M4HU@vger.kernel.org
-X-Gm-Message-State: AOJu0YwydCMtNCDxOgNk6fUwcbNc/2Rc3Y/wqwRCgZxrAlUOh3VqtBUp
-	kF+p/lUZM8X61dBCgpNOtOuMkU9RQ142YXQgxbuVqno25YYr3+YV
-X-Gm-Gg: ASbGnct5PvI/yq/DSrzSRNbuHzzfjZhdj6VpJYHouEWBeROBIar8BxS1E7W17sAUfS6
-	McZvsNqC5MZVA4LckJwjsQWNAESpux4P2dGYd3n6TPIyuB594JyIQaPgo/hTbnf4rLXYwmKg1ap
-	bvLFLUg/bgxEYjdyMh4ZbsURp+xqoZlqaeEY66Me03JdiSL5bJJsRMCg39JlR8Lf09ECx2u/y1N
-	FJBSXBp7ohcQz/aLyc8aEO8ybQbxoa1Oawv5rPCAGj0LDsnfWWTxykUZoXCSaSRDJmnur01iksG
-	az2dMhbM4tSeMhdDPt1rAa2ejDEvE0kKQ8EFaeWAKAZxfZpFMw==
-X-Google-Smtp-Source: AGHT+IEhO/8zynHAj/XQ8CfYcqOsDet7/XXIGYhA3zqO2mHTqzuioBsUax6Pz3NWu+JgRkwDnM6ajg==
-X-Received: by 2002:a17:90b:2d88:b0:2ee:c918:cd60 with SMTP id 98e67ed59e1d1-2fe7e33d442mr6780868a91.20.1740594801403;
-        Wed, 26 Feb 2025 10:33:21 -0800 (PST)
-Received: from localhost (maglev-oncall.nvidia.com. [216.228.125.128])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-2fe825eb82fsm1917776a91.32.2025.02.26.10.33.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 26 Feb 2025 10:33:20 -0800 (PST)
-Date: Wed, 26 Feb 2025 13:33:18 -0500
-From: Yury Norov <yury.norov@gmail.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Kuan-Wei Chiu <visitorckw@gmail.com>, tglx@linutronix.de,
-	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-	x86@kernel.org, jk@ozlabs.org, joel@jms.id.au,
-	eajames@linux.ibm.com, andrzej.hajda@intel.com,
-	neil.armstrong@linaro.org, rfoss@kernel.org,
-	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
-	dmitry.torokhov@gmail.com, mchehab@kernel.org,
-	awalls@md.metrocast.net, hverkuil@xs4all.nl,
-	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-	louis.peens@corigine.com, andrew+netdev@lunn.ch,
-	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
-	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
-	akpm@linux-foundation.org, hpa@zytor.com, alistair@popple.id.au,
-	linux@rasmusvillemoes.dk, Laurent.pinchart@ideasonboard.com,
-	jonas@kwiboo.se, jernej.skrabec@gmail.com, kuba@kernel.org,
-	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
-	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
-	oss-drivers@corigine.com, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
-	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
-	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
-	Yu-Chun Lin <eleanor15x@gmail.com>
-Subject: Re: [PATCH 02/17] bitops: Add generic parity calculation for u64
-Message-ID: <Z79ebv630yuNOJKV@thinkpad>
-References: <20250223164217.2139331-1-visitorckw@gmail.com>
- <20250223164217.2139331-3-visitorckw@gmail.com>
- <Z7zIBwH4aUA7G9MY@thinkpad>
- <Z73FxIv353lbXO3A@visitorckw-System-Product-Name>
- <b5236ae4-7ebe-4a88-bbc9-3b9b3374de53@kernel.org>
+        bh=9RsHlNSqS5MkkVEupmlknbkQ54jFXc5YczNH1s4hNAU=;
+        b=U6iAvy2pJIL/0hIfB4YBuZXzNa0proSRzSI6Xl4q3pcjp2liQI8uASXGQZklPk7ALM
+         CVWuUMJ1Wxc7WGZcOz5q4brCAKOaLNFZpXUTilqp/8xFfKZ9SyDgIfxmpBRS6wm1ak6Q
+         k9YFU1C/NPqa5+J3tYmihya1zP4w9no1IH7q4OigNX+bxY2l2TlS8Eff7fwQmX5nl46p
+         E57Q5k2tn7ZXcSarrh/IrIgXduDtJ06zYVLz7KAk+nm4BN98fXMoN4io8aeT6yMUH6qP
+         a3p6bSG7UC9cBxpNLQ+YNOrPxkr3I6L08P2pgC1QUEA8MgRMsYJPLcHxaTsL3ji7iHNc
+         Kfww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740597777; x=1741202577;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9RsHlNSqS5MkkVEupmlknbkQ54jFXc5YczNH1s4hNAU=;
+        b=ErELgsS6DJG7CGMyB0kCbXXGtyAvwGVH8fU+5GnRGkA2732tl7Kciaq+FXNs0C4IkF
+         k/Ac2G7TJFKAAJkFe/AvwIXi7yGC7AXJmK76PUW1pFpvQjK0mDzxfcfGjDtYDcY4gFCr
+         FX1zkGNTGrktuILGW82ofcGPVt5d2BruNZDzZK7Abatb9ac/4NdizeoB+O+3Uvc+7LYv
+         NSsQGRuSYx/jxA0rKdB0saSu2fe1TBPIoi0xNdzDWEXcIGC80jVUSXm0mt0ogcJ8NBCd
+         E+6KyMBjoe6Yeoih4Xk0dqLonLV2wOWR7ffKvw2a3BZgClIpo+mrilVpnFQ7DDkqvj/P
+         knfA==
+X-Forwarded-Encrypted: i=1; AJvYcCV+gQtsu0O1tNGhVOY+tVIMfciGKsDWAEdc2Z+LU+Cwm4cjThd3NiaWDlVgggm+4jOudmnZ3QEkweKmZoU=@vger.kernel.org, AJvYcCVjAtkccSojfbgC45K2BfdfqBcraILl5z/5UJ8snsmHGxLEYES1KGC6U5a85lKKFfw9LWyLItaBU+X7jUvI@vger.kernel.org
+X-Gm-Message-State: AOJu0YzWndVK1tm8zK0ZaHDTNko2VXLfMp6mywenW0zDAEDM1+N4eKYa
+	8d8y2BX3i7cwQat2ElbhMrt4v1odcCF9Zcxagu+f1zxHWNThPAIxkQFqLuMlCAmyHVDLUHsD5wz
+	a0Rq1rsZTlFZM50ieel/gd/PAfSY=
+X-Gm-Gg: ASbGncsZFh5J49G6NR0m3q3tCWEUiCwv2WVYcIo/VhwMR7n0rMhJjgQ7ESHGgMgrcbH
+	Q6L3a4ik9YLQosrecGS0F+fLPqUUMp3qXQ+cDkR0T+P9H5LDtA2e7lb4lLYupRxYC3oKozsDpJa
+	1rMJ4SpUdwDA==
+X-Google-Smtp-Source: AGHT+IHQ8ZFD5JfXR2fesrEAGair6UTQZEjsQtjsJB1JeIUqbAEuXpCUSdJpZP4Rve5rO8yUb0/8Kisq7HPOXEizwSA=
+X-Received: by 2002:a05:6402:2113:b0:5dc:80ba:dda1 with SMTP id
+ 4fb4d7f45d1cf-5e4457abb93mr20924895a12.9.1740597777056; Wed, 26 Feb 2025
+ 11:22:57 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b5236ae4-7ebe-4a88-bbc9-3b9b3374de53@kernel.org>
+References: <20250224123915.2859682-1-adamsimonelli@gmail.com>
+ <20250224123915.2859682-2-adamsimonelli@gmail.com> <Z73teICMWNx7BiHT@pathway.suse.cz>
+ <10194425.EvYhyI6sBW@nerdopolis2>
+In-Reply-To: <10194425.EvYhyI6sBW@nerdopolis2>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 26 Feb 2025 21:22:20 +0200
+X-Gm-Features: AQ5f1JqE-10IPSQGRUnH7pmW7kd9wzDQqE0a8tBy_gw2DMMkxsKIiWqLf3i_qsM
+Message-ID: <CAHp75Vdr1yNamVMP12X2bZs5=PL=R+Lsio5b+ba_NaPOsvzobA@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] ttynull: Add an option to allow ttynull to be used
+ as a console device
+To: Adam Simonelli <adamsimonelli@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, 
+	John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 26, 2025 at 08:14:14AM +0100, Jiri Slaby wrote:
-> On 25. 02. 25, 14:29, Kuan-Wei Chiu wrote:
-> > > +#define parity(val)					\
-> > > +({							\
-> > > +	u64 __v = (val);				\
-> > > +	int __ret;					\
-> > > +	switch (BITS_PER_TYPE(val)) {			\
-> > > +	case 64:					\
-> > > +		__v ^= __v >> 32;			\
-> > > +		fallthrough;				\
-> > > +	case 32:					\
-> > > +		__v ^= __v >> 16;			\
-> > > +		fallthrough;				\
-> > > +	case 16:					\
-> > > +		__v ^= __v >> 8;			\
-> > > +		fallthrough;				\
-> > > +	case 8:						\
-> > > +		__v ^= __v >> 4;			\
-> > > +		__ret =  (0x6996 >> (__v & 0xf)) & 1;	\
-> > > +		break;					\
-> > > +	default:					\
-> > > +		BUILD_BUG();				\
-> > > +	}						\
-> > > +	__ret;						\
-> > > +})
-> > > +
-> > > +#define parity8(val)	parity((u8)(val))
-> > > +#define parity32(val)	parity((u32)(val))
-> > > +#define parity64(val)	parity((u64)(val))
-> > What do you think about using these inline functions instead of macros?
-> > Except for parity8(), each function is a single line and follows the
-> > same logic. I find inline functions more readable, and coding-style.rst
-> > also recommends them over macros.
+On Wed, Feb 26, 2025 at 3:39=E2=80=AFPM Adam Simonelli <adamsimonelli@gmail=
+.com> wrote:
+> On Tuesday, February 25, 2025 11:19:04 AM EST Petr Mladek wrote:
+
+...
+
+> > My proposal is to call:
+> >
+> > #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
+> >       add_preferred_console("ttynull", 0, NULL);
+> > #endif
+> >
+> > somewhere in the kernel code. The question is where.
+> > I wonder if the following would work:
+> >
 >
-> Not in cases where macros are inevitable. I mean, do we need parityXX() for
-> XX in (8, 16, 32, 64) at all? Isn't the parity() above enough for everybody?
+> > #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
+> > static int __init ttynull_default_console(void)
+> > {
+> >       add_preferred_console("ttynull", 0, NULL);
+> >       return 0;
+> > }
+> > console_initcall(ttynull_register);
+> > #endif
+> >
+> OK, actually in earlier revisions locally, I did actually have
+>
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index dddb15f48d59..c1554a789de8 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3712,6 +3712,11 @@ void __init console_init(void)
+>         initcall_t call;
+>         initcall_entry_t *ce;
+>
+> +#ifdef CONFIG_NULL_TTY_CONSOLE
+> +       if (!strstr(boot_command_line, "console=3D"))
 
-The existing codebase has something like:
+Just a side note: strstr() is fragile as theoretically "console=3D" can
+be part of an argument unrelated to the console, like
+foo=3D"bar,baz,console=3D10,key=3Dvalue". Although I haven't checked if thi=
+s
+is allowed by cmdline parser (lib/cmdline.c).
 
-        int ret;
+> +               add_preferred_console("ttynull", 0, NULL);
+> +#endif
+> +
+>         /* Setup the default TTY line discipline. */
+>         n_tty_init();
+>
+>
+>
+> Which worked as far as I could tell, at least on x86. Not sure if that wa=
+s the
+> right place, and yeah, I was trying to better copy how CONFIG_VT_CONSOLE =
+worked
+> because I thought that was more correct.
 
-        ret = i3c_master_get_free_addr(m, last_addr + 1);
-        ret |= parity8(ret) ? 0 : BIT(7)
-
-So if we'll switch it to a macro like one above, it will become a
-32-bit parity. It wouldn't be an error because i3c_master_get_free_addr()
-returns an u8 or -ENOMEM, and the error code is checked explicitly. 
-
-But if we decide to go with parity() only, some users will have to
-call it like parity((u8)val) explicitly. Which is not bad actually.
-
-> And if not, you can have all those parityXX() as inlines as you suggest, but
-> also provide a macro such as the above to call (optimized) parityXX() as per
-> datatype len.
-
-Yes, if we need fixed-type parity's, they should all be one-liners
-calling the same macro. Macros or inline functions - no preference for
-me.
-
-Thanks,
-Yury
+--=20
+With Best Regards,
+Andy Shevchenko
