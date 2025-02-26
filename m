@@ -1,37 +1,35 @@
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A929D43166;
-	Wed, 26 Feb 2025 13:09:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 846F221CC44;
+	Wed, 26 Feb 2025 13:10:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740575401; cv=none; b=MQhfe2bKM/qaK5Lvt5dC8IdFcASJt55Es8xsg4HWo9gURZzzmejaaQkHUhKULZoMfkAbywl/M6B3LKTJx0EQdd7gOeRtWmbdlX/U+kfhAcVHyPbfnOE4a4QQBnb6ik2EOVtRRDY1ICfg937rD0G6PgzIuJExiVJHL64bhXkWn2w=
+	t=1740575422; cv=none; b=BLi43JkPlKAUvDHrbNizFipJiKRauB++up8WftWz+e4jIufFd56siA7uC7gmqqKuw/l8Wpff+2Xwj3fwmSeuqWzYOkDlqse3OYHAR2XPCxhbQhNMnz6Yt0FZxtugjDhRXBaWrkFYMSquZmtC6JWWG0JD3cxeKHIRm9KM/ZsvFhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740575401; c=relaxed/simple;
-	bh=o5t4cFV3wxJpaiMJDORlGOpPXAIWAbjsTHYamNCaKMA=;
+	s=arc-20240116; t=1740575422; c=relaxed/simple;
+	bh=PdJeLcB9mgyOQ4P10TzzJBJHeDPSE4ezJpyYRBUp/I4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FWXdJruz4IK9e7qLwTnNFDINVTn+G9TAFuAC0GgXR11Vkv7pe0oEGWMFyEvEp6tfRvVyeYJpSTonumsA4ZB9IQnS0BhRm+IJOJh6HgA/e8ZyOJwJPd6UXDcFW5gL4xxPGFeGDHahNzPZ5mcMZNVNw3p8SNliTBSbAMOpmk7qdVM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.172
+	 MIME-Version; b=Il1HYwWRdEpdlHLErMO6ircBXnn7pW3GuPfpTt9fz7cofTuTIRR+J16Hhs0ceTFnvZauRvUh3dKJ+Y+aOjjxi1LKDmgAUMgAxF79P4Ec5I3fCWyFMZtW5U+v/7uhjvNsfONYnWDwXq+XIpPwW7Pm3s5m2uYO93lwqio5He2swOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
-X-CSE-ConnectionGUID: e8ftspgiRJy/k+TgACujnw==
-X-CSE-MsgGUID: 1/UN7JG1SLK9VJqhFwUVbA==
+X-CSE-ConnectionGUID: G4X1QRSDQeKQWNtoyqNA1A==
+X-CSE-MsgGUID: TaTWpoQsRw+aOZQB7M7KSA==
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie6.idc.renesas.com with ESMTP; 26 Feb 2025 22:09:57 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 26 Feb 2025 22:10:19 +0900
 Received: from superbuilder.administration.lan (unknown [10.226.92.221])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 4DF1E406960A;
-	Wed, 26 Feb 2025 22:09:53 +0900 (JST)
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 810664069606;
+	Wed, 26 Feb 2025 22:10:15 +0900 (JST)
 From: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
 To: thierry.bultel@linatsea.fr
 Cc: linux-renesas-soc@vger.kernel.org,
 	geert@linux-m68k.org,
 	paul.barker.ct@bp.renesas.com,
 	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
 	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH v3 03/13] dt-bindings: serial: Add compatible for Renesas RZ/T2H SoC in sci
-Date: Wed, 26 Feb 2025 14:09:22 +0100
-Message-ID: <20250226130935.3029927-4-thierry.bultel.yh@bp.renesas.com>
+	linux-serial@vger.kernel.org
+Subject: [PATCH v3 07/13] serial: sh-sci: Fix a comment about SCIFA
+Date: Wed, 26 Feb 2025 14:09:26 +0100
+Message-ID: <20250226130935.3029927-8-thierry.bultel.yh@bp.renesas.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250226130935.3029927-1-thierry.bultel.yh@bp.renesas.com>
 References: <20250226130935.3029927-1-thierry.bultel.yh@bp.renesas.com>
@@ -43,110 +41,32 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Document RZ/T2H (a.k.a r9a09g077) in SCI binding.
+The comment was correct when it was added, at that time RZ/T1 was
+the only SoC in the RZ/T line. Since then, further SoCs have been
+added with RZ/T names which do not use the same SCIFA register
+layout and so the comment is now misleading.
+
+So we update the comment to explicitly reference only RZ/T1 SoCs.
 
 Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
 Reviewed-by: Paul Barker <paul.barker.ct@bp.renesas.com>
 ---
- .../bindings/serial/renesas,sci.yaml          | 64 ++++++++++++-------
- 1 file changed, 40 insertions(+), 24 deletions(-)
+ drivers/tty/serial/sh-sci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,sci.yaml b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-index 64d3db6e54e5..2c4080283963 100644
---- a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-@@ -9,9 +9,6 @@ title: Renesas Serial Communication Interface
- maintainers:
-   - Geert Uytterhoeven <geert+renesas@glider.be>
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 4bc637f9d649..b591f3573337 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -305,7 +305,7 @@ static const struct sci_port_params sci_port_params[SCIx_NR_REGTYPES] = {
+ 	},
  
--allOf:
--  - $ref: serial.yaml#
--
- properties:
-   compatible:
-     oneOf:
-@@ -22,6 +19,8 @@ properties:
-               - renesas,r9a07g054-sci     # RZ/V2L
-           - const: renesas,sci            # generic SCI compatible UART
- 
-+      - const: renesas,r9a09g077-sci      # RZ/T2H
-+
-       - items:
-           - const: renesas,sci            # generic SCI compatible UART
- 
-@@ -54,8 +53,6 @@ properties:
-         - fck # UART functional clock
-         - sck # optional external clock input
- 
--  uart-has-rtscts: false
--
- required:
-   - compatible
-   - reg
-@@ -63,25 +60,44 @@ required:
-   - clocks
-   - clock-names
- 
--if:
--  properties:
--    compatible:
--      contains:
--        enum:
--          - renesas,r9a07g043-sci
--          - renesas,r9a07g044-sci
--          - renesas,r9a07g054-sci
--then:
--  properties:
--    resets:
--      maxItems: 1
--
--    power-domains:
--      maxItems: 1
--
--  required:
--    - resets
--    - power-domains
-+allOf:
-+  - $ref: serial.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: renesas,r9a09g077-sci
-+    then:
-+      properties:
-+        uart-has-rtscts: true
-+        power-domains:
-+          maxItems: 1
-+      required:
-+        - power-domains
-+
-+    else:
-+      properties:
-+        uart-has-rtscts: false
-+
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - renesas,r9a07g043-sci
-+              - renesas,r9a07g044-sci
-+              - renesas,r9a07g054-sci
-+    then:
-+      properties:
-+        resets:
-+          maxItems: 1
-+
-+        power-domains:
-+          maxItems: 1
-+
-+      required:
-+        - resets
-+        - power-domains
- 
- unevaluatedProperties: false
- 
+ 	/*
+-	 * The "SCIFA" that is in RZ/A2, RZ/G2L and RZ/T.
++	 * The "SCIFA" that is in RZ/A2, RZ/G2L and RZ/T1.
+ 	 * It looks like a normal SCIF with FIFO data, but with a
+ 	 * compressed address space. Also, the break out of interrupts
+ 	 * are different: ERI/BRI, RXI, TXI, TEI, DRI.
 -- 
 2.43.0
 
