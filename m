@@ -1,61 +1,61 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D143256C8B
-	for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2025 19:59:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4001256C9A
+	for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2025 19:59:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740599958; cv=none; b=VHaY67liVQ3Wkjs/qUeF1gef0YkdFeitmIj5oN0Cu9RPPulb9VnlBznMbvZeE8WNMkslSd61J2nq00OGTiHMNM+7M5bTiGto5FYvA1dQOLeKJb3OSeQ+mOkEP708EQML2AXQGK7cbP9CJUBEEBzt4ycsQ3kfy2LT9UPvvZ7UIZY=
+	t=1740599964; cv=none; b=bgw/j3XLDlX3V3UU08NLvuIDZimWY8f7xBzFrtVKJbU70NKeWAF3PNhpBb6nqOtzRX/B9IY8HFfPimQPWYIZKyBALcRejE05B+MGWrD7JKe4jrGikJLxQdTbMTFVrxgqXFu9rdHxg2K/drQ80kbnB0hGFGkanHwP2eOpJantxzM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740599958; c=relaxed/simple;
-	bh=yBYQ10xYqvupj3cLB6Z51JIzDI6B7P/SvNMp935zzWg=;
+	s=arc-20240116; t=1740599964; c=relaxed/simple;
+	bh=3mnkmbgrg6fvlcvRcHnS6RS4+e5nVoMg1rbp3WZ9G7k=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ZPxVmGaIl1LB3b/Bgj7mGA0KgfkmxnMEplvLqy7YIM6ZwFlM9Zo7y8kNzHS5haGwJ2KE7SgHJR+N/1R2upHkiey9jGt0MOlPrD6IbcZ4HDvI/FTubFBB0ttc7X5De4XYKR85BtRLASJhbQQKsMoLgZ5AcbXKAslfXU+WsxPvF1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=MGCvkUf9; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=MGCvkUf9; arc=none smtp.client-ip=195.135.223.131
+	 In-Reply-To:To:Cc; b=orR3cjdVPNZJ6Mr2xYYbq4SHIDIhdjVYO4X9wtqI5w3qtPJHa4rVmPdRMgGKIfvErRh5YNgIsY6+EcTIqZRxvCISNoyMDh1grwB2WJdjIl7uc7Qfw3kOfWUVrWYV6VN2ULLdvR5/yeiCBmsu58KXH1/QAlDc8k1Y0OKEw0BwkfU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=gHJfNanN; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=gHJfNanN; arc=none smtp.client-ip=195.135.223.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="MGCvkUf9";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="MGCvkUf9"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="gHJfNanN";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="gHJfNanN"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 719DF1F387;
-	Wed, 26 Feb 2025 19:59:14 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 3A6DF2119E;
+	Wed, 26 Feb 2025 19:59:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1740599954; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1740599961; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=JwO0/gaDg8J0sH8a6P82P5z42V5b4mLRLuPZ7KLgpvQ=;
-	b=MGCvkUf9Qbsw/U7pv72/zu6zjQDtt5Ydf+v64PyGsUy4fEmghMNtDsMJQwg6b+4nyA6bv0
-	oBXE6LMomLoHFX1OAXgseXXOQHIAQ2a34zi5dHYSanwd7Ux6WINkuWgpuKvnGdLS0ZeoHy
-	cW25UDmxIhq0NzLwu7mTJjbuFK//W9Y=
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.com header.s=susede1 header.b=MGCvkUf9
+	bh=Hztst8rCope3yPsUAByJQrdEWrA738Z2BNiSTBEfhvg=;
+	b=gHJfNanNPJP3h+Lf3chmY0WpPbVmRWlcpFMZbByp4s0josKGNeawbMeniIkTaRpaadAFKZ
+	N/iXUQRKgKWzjFMzru4EH1xyrpO0/ARopQ7uFffY2P+MlsasDdBBZp7jbpjFpm+aokkG1F
+	ITUeQsj0lhHqyH4SXnd7PZxrAok0ZS0=
+Authentication-Results: smtp-out1.suse.de;
+	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1740599954; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1740599961; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=JwO0/gaDg8J0sH8a6P82P5z42V5b4mLRLuPZ7KLgpvQ=;
-	b=MGCvkUf9Qbsw/U7pv72/zu6zjQDtt5Ydf+v64PyGsUy4fEmghMNtDsMJQwg6b+4nyA6bv0
-	oBXE6LMomLoHFX1OAXgseXXOQHIAQ2a34zi5dHYSanwd7Ux6WINkuWgpuKvnGdLS0ZeoHy
-	cW25UDmxIhq0NzLwu7mTJjbuFK//W9Y=
+	bh=Hztst8rCope3yPsUAByJQrdEWrA738Z2BNiSTBEfhvg=;
+	b=gHJfNanNPJP3h+Lf3chmY0WpPbVmRWlcpFMZbByp4s0josKGNeawbMeniIkTaRpaadAFKZ
+	N/iXUQRKgKWzjFMzru4EH1xyrpO0/ARopQ7uFffY2P+MlsasDdBBZp7jbpjFpm+aokkG1F
+	ITUeQsj0lhHqyH4SXnd7PZxrAok0ZS0=
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id F0EAB13A53;
-	Wed, 26 Feb 2025 19:59:13 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id B996113A53;
+	Wed, 26 Feb 2025 19:59:20 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id bW2ELZFyv2dLMgAAD6G6ig
-	(envelope-from <mpdesouza@suse.com>); Wed, 26 Feb 2025 19:59:13 +0000
+	id Rjn+H5hyv2dUMgAAD6G6ig
+	(envelope-from <mpdesouza@suse.com>); Wed, 26 Feb 2025 19:59:20 +0000
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Wed, 26 Feb 2025 16:59:01 -0300
-Subject: [PATCH 1/5] printk: Rename suspend_console to console_suspend_all
+Date: Wed, 26 Feb 2025 16:59:03 -0300
+Subject: [PATCH 3/5] printk: Rename console_stop to console_suspend
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -64,7 +64,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250226-printk-renaming-v1-1-0b878577f2e6@suse.com>
+Message-Id: <20250226-printk-renaming-v1-3-0b878577f2e6@suse.com>
 References: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
 In-Reply-To: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -80,183 +80,103 @@ Cc: linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
  linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
  Marcos Paulo de Souza <mpdesouza@suse.com>
 X-Mailer: b4 0.14-dev
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1740599947; l=4788;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1740599947; l=2479;
  i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=yBYQ10xYqvupj3cLB6Z51JIzDI6B7P/SvNMp935zzWg=;
- b=zrnT3yx0F2MoLtIJp2AhyC1iNzfy4fhxdeGTi2s5QJTPVqhMhNXC2FD35987w1tZZZQsH6OsE
- RHljdJwQpf5AJ/+2nwp0001WVLBTm8OYWbiGe1dbrE8QPqeFbnzoTQU
+ bh=3mnkmbgrg6fvlcvRcHnS6RS4+e5nVoMg1rbp3WZ9G7k=;
+ b=H/7BdSR/6yQobDX4aZH1XWsHy0Ldvwt4jJC4N5C8ZP9FzPgppEFsl9KC/P/8XwMv2JcTOCFVE
+ 44S9dI7kSk0DDjWP0Vza6VKVEAwh+2it5qfL1vHgeziHcGBCKAnIOwF
 X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
  pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
-X-Rspamd-Queue-Id: 719DF1F387
-X-Spam-Score: -4.51
-X-Rspamd-Action: no action
-X-Spamd-Result: default: False [-4.51 / 50.00];
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.30 / 50.00];
 	BAYES_HAM(-3.00)[100.00%];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-0.999];
 	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
 	ARC_NA(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	RCPT_COUNT_TWELVE(0.00)[16];
 	MIME_TRACE(0.00)[0:+];
-	RCVD_TLS_ALL(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[16];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	TO_DN_SOME(0.00)[];
 	MID_RHS_MATCH_FROM(0.00)[];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
 	FROM_EQ_ENVFROM(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	R_RATELIMIT(0.00)[to_ip_from(RL95jnbcaqr857snmuoeu7oxeq)];
+	R_RATELIMIT(0.00)[to_ip_from(RLsew83exbyfiapi7twtunf83p)];
 	RCVD_COUNT_TWO(0.00)[2];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
 	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim,suse.com:mid,suse.com:email,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo];
-	DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	DKIM_TRACE(0.00)[suse.com:+]
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.com:email,suse.com:mid]
+X-Spam-Score: -4.30
 X-Spam-Flag: NO
-X-Spam-Level: 
 
-The function suspend_console has a misleading name, since it suspends all
-consoles, so rename it accordly.
+The intent of console_stop was in fact to suspend it, so rename the
+function accordly.
 
 Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 ---
- include/linux/console.h                                   | 2 +-
- kernel/kexec_core.c                                       | 2 +-
- kernel/power/hibernate.c                                  | 8 ++++----
- kernel/power/suspend.c                                    | 2 +-
- kernel/printk/printk.c                                    | 4 ++--
- tools/power/pm-graph/config/custom-timeline-functions.cfg | 2 +-
- tools/power/pm-graph/sleepgraph.py                        | 2 +-
- 7 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/tty/serial/serial_core.c | 4 ++--
+ include/linux/console.h          | 2 +-
+ kernel/printk/printk.c           | 6 +++---
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/console.h b/include/linux/console.h
-index eba367bf605d..fa5941f4f9c5 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -648,7 +648,7 @@ static inline void console_sysfs_notify(void)
- extern bool console_suspend_enabled;
- 
- /* Suspend and resume console messages over PM events */
--extern void suspend_console(void);
-+extern void console_suspend_all(void);
- extern void resume_console(void);
- 
- int mda_console_init(void);
-diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
-index c0caa14880c3..8f95870030a3 100644
---- a/kernel/kexec_core.c
-+++ b/kernel/kexec_core.c
-@@ -1007,7 +1007,7 @@ int kernel_kexec(void)
- 			error = -EBUSY;
- 			goto Restore_console;
- 		}
--		suspend_console();
-+		console_suspend_all();
- 		error = dpm_suspend_start(PMSG_FREEZE);
- 		if (error)
- 			goto Resume_console;
-diff --git a/kernel/power/hibernate.c b/kernel/power/hibernate.c
-index 1f87aa01ba44..a18f6016ce6c 100644
---- a/kernel/power/hibernate.c
-+++ b/kernel/power/hibernate.c
-@@ -411,7 +411,7 @@ int hibernation_snapshot(int platform_mode)
- 		goto Thaw;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 74fa02b23772..ff2499dbbb82 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2442,10 +2442,10 @@ int uart_suspend_port(struct uart_driver *drv, struct uart_port *uport)
  	}
  
--	suspend_console();
-+	console_suspend_all();
- 	pm_restrict_gfp_mask();
+ 	/*
+-	 * Disable the console device before suspending.
++	 * Suspend the console device before suspending the port.
+ 	 */
+ 	if (uart_console(uport))
+-		console_stop(uport->cons);
++		console_suspend(uport->cons);
  
- 	error = dpm_suspend(PMSG_FREEZE);
-@@ -547,7 +547,7 @@ int hibernation_restore(int platform_mode)
- 	int error;
+ 	uart_change_pm(state, UART_PM_STATE_OFF);
  
- 	pm_prepare_console();
--	suspend_console();
-+	console_suspend_all();
- 	pm_restrict_gfp_mask();
- 	error = dpm_suspend_start(PMSG_QUIESCE);
- 	if (!error) {
-@@ -586,7 +586,7 @@ int hibernation_platform_enter(void)
- 		goto Close;
- 
- 	entering_platform_hibernation = true;
--	suspend_console();
-+	console_suspend_all();
- 	error = dpm_suspend_start(PMSG_HIBERNATE);
- 	if (error) {
- 		if (hibernation_ops->recover)
-@@ -896,7 +896,7 @@ int hibernate_quiet_exec(int (*func)(void *data), void *data)
- 	if (error)
- 		goto dpm_complete;
- 
--	suspend_console();
-+	console_suspend_all();
- 
- 	error = dpm_suspend(PMSG_FREEZE);
- 	if (error)
-diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-index 09f8397bae15..f296dd0a1a18 100644
---- a/kernel/power/suspend.c
-+++ b/kernel/power/suspend.c
-@@ -502,7 +502,7 @@ int suspend_devices_and_enter(suspend_state_t state)
- 	if (error)
- 		goto Close;
- 
--	suspend_console();
-+	console_suspend_all();
- 	suspend_test_start();
- 	error = dpm_suspend_start(PMSG_SUSPEND);
- 	if (error) {
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 0d48e0deb213..74587eeea3c7 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -633,7 +633,7 @@ extern void console_conditional_schedule(void);
+ extern void console_unblank(void);
+ extern void console_flush_on_panic(enum con_flush_mode mode);
+ extern struct tty_driver *console_device(int *);
+-extern void console_stop(struct console *);
++extern void console_suspend(struct console *);
+ extern void console_start(struct console *);
+ extern int is_console_locked(void);
+ extern int braille_register_console(struct console *, int index,
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 80910bc3470c..6cfb1e6d3613 100644
+index ef259660563a..c40b841c191b 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -2733,11 +2733,11 @@ module_param_named(console_no_auto_verbose, printk_console_no_auto_verbose, bool
- MODULE_PARM_DESC(console_no_auto_verbose, "Disable console loglevel raise to highest on oops/panic/etc");
+@@ -3497,10 +3497,10 @@ struct tty_driver *console_device(int *index)
  
- /**
-- * suspend_console - suspend the console subsystem
-+ * console_suspend_all - suspend the console subsystem
-  *
-  * This disables printk() while we go into suspend states
+ /*
+  * Prevent further output on the passed console device so that (for example)
+- * serial drivers can disable console output before suspending a port, and can
++ * serial drivers can suspend console output before suspending a port, and can
+  * re-enable output afterwards.
   */
--void suspend_console(void)
-+void console_suspend_all(void)
+-void console_stop(struct console *console)
++void console_suspend(struct console *console)
  {
- 	struct console *con;
+ 	__pr_flush(console, 1000, true);
+ 	console_list_lock();
+@@ -3515,7 +3515,7 @@ void console_stop(struct console *console)
+ 	 */
+ 	synchronize_srcu(&console_srcu);
+ }
+-EXPORT_SYMBOL(console_stop);
++EXPORT_SYMBOL(console_suspend);
  
-diff --git a/tools/power/pm-graph/config/custom-timeline-functions.cfg b/tools/power/pm-graph/config/custom-timeline-functions.cfg
-index 4f80ad7d7275..80ba55250163 100644
---- a/tools/power/pm-graph/config/custom-timeline-functions.cfg
-+++ b/tools/power/pm-graph/config/custom-timeline-functions.cfg
-@@ -122,7 +122,7 @@ freeze_processes:
- freeze_kernel_threads:
- pm_restrict_gfp_mask:
- acpi_suspend_begin:
--suspend_console:
-+console_suspend_all:
- acpi_pm_prepare:
- syscore_suspend:
- arch_enable_nonboot_cpus_end:
-diff --git a/tools/power/pm-graph/sleepgraph.py b/tools/power/pm-graph/sleepgraph.py
-index 918eae58b0b4..114c3d0c6619 100755
---- a/tools/power/pm-graph/sleepgraph.py
-+++ b/tools/power/pm-graph/sleepgraph.py
-@@ -210,7 +210,7 @@ class SystemValues:
- 		'hibernate_preallocate_memory': {},
- 		'create_basic_memory_bitmaps': {},
- 		'swsusp_write': {},
--		'suspend_console': {},
-+		'console_suspend_all': {},
- 		'acpi_pm_prepare': {},
- 		'syscore_suspend': {},
- 		'arch_enable_nonboot_cpus_end': {},
+ void console_start(struct console *console)
+ {
 
 -- 
 2.48.1
