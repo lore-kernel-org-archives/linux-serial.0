@@ -1,140 +1,157 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F19D522540A;
-	Wed, 26 Feb 2025 19:22:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 248CE256C7C
+	for <linux-serial@vger.kernel.org>; Wed, 26 Feb 2025 19:59:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740597780; cv=none; b=I14PnW5qwjdUH5/cSB/N/WOCHnPejEvuETMGdW+3Re8kHWTI9K0mSnXc5a4OYDHtLxSmY84l4q5ulbXhF68P3ie/QBMqqLrkOMkCFb1jWM3sS2Hv+ULJUMfjeawJHSmi/WboqpTdM30yoFxULSAy6Ib/PcV5Ebu73lOfOItHm8o=
+	t=1740599955; cv=none; b=Wv4ZXBbPBgxC/L1LjvsOzvz894StYD3QS/DzMbafB2RlOkVmzkvAsoelAUbTeMLQfz7wi7jBctf+2hgbBuLl8rZN4SnWMhsg7cyYaEgXO82ko5IT1x/dKU/onsfZLjOw0EvMSgVturNOB5F2dHg38B7s/fpHxvUmb7Bundy2bK8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740597780; c=relaxed/simple;
-	bh=V/mmqmDUXBV/WNhpZpAYGI7TJI5eQO/qS6T/SI0kdMU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lL66zvnclH8D1q93KOBFIlNEsN7DwpjGnWoyFMCl1rqgjgm4WQX8KwT2gk+TTyrdbrgwuvroF0hj70og1UQ0CZTVvzxymqCSBowkHlYxLsWrfpXu4nL+lSlFYqL1bm6OfWa54AwXuifqtAwkZHcgBAI1BKPPKW8Zu3Yj30epaAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=U6iAvy2p; arc=none smtp.client-ip=209.85.208.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1740599955; c=relaxed/simple;
+	bh=g10VNxu+J+WpDkUkbQm/mJqITFnxcJsd5sZ1tSpU5sM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=cqArop9izedkIr0h9BY9MQyxs7hKo+brXR/A/w7dAuWaNKA/F5PkpGr7v/VhG6wu1d/AmmyWUBtMG5PoJx1juOXhWgsBKgjRCoadvthymVaetQWUTfkuRfDTWN/icFq4eA3TGTdUOlwzNJhznjrtIVjGJIvEt8UkAQ6CFNBc+uU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=exazJCv4; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=exazJCv4; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U6iAvy2p"
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5e04f2b1685so85483a12.0;
-        Wed, 26 Feb 2025 11:22:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1740597777; x=1741202577; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9RsHlNSqS5MkkVEupmlknbkQ54jFXc5YczNH1s4hNAU=;
-        b=U6iAvy2pJIL/0hIfB4YBuZXzNa0proSRzSI6Xl4q3pcjp2liQI8uASXGQZklPk7ALM
-         CVWuUMJ1Wxc7WGZcOz5q4brCAKOaLNFZpXUTilqp/8xFfKZ9SyDgIfxmpBRS6wm1ak6Q
-         k9YFU1C/NPqa5+J3tYmihya1zP4w9no1IH7q4OigNX+bxY2l2TlS8Eff7fwQmX5nl46p
-         E57Q5k2tn7ZXcSarrh/IrIgXduDtJ06zYVLz7KAk+nm4BN98fXMoN4io8aeT6yMUH6qP
-         a3p6bSG7UC9cBxpNLQ+YNOrPxkr3I6L08P2pgC1QUEA8MgRMsYJPLcHxaTsL3ji7iHNc
-         Kfww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1740597777; x=1741202577;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=9RsHlNSqS5MkkVEupmlknbkQ54jFXc5YczNH1s4hNAU=;
-        b=ErELgsS6DJG7CGMyB0kCbXXGtyAvwGVH8fU+5GnRGkA2732tl7Kciaq+FXNs0C4IkF
-         k/Ac2G7TJFKAAJkFe/AvwIXi7yGC7AXJmK76PUW1pFpvQjK0mDzxfcfGjDtYDcY4gFCr
-         FX1zkGNTGrktuILGW82ofcGPVt5d2BruNZDzZK7Abatb9ac/4NdizeoB+O+3Uvc+7LYv
-         NSsQGRuSYx/jxA0rKdB0saSu2fe1TBPIoi0xNdzDWEXcIGC80jVUSXm0mt0ogcJ8NBCd
-         E+6KyMBjoe6Yeoih4Xk0dqLonLV2wOWR7ffKvw2a3BZgClIpo+mrilVpnFQ7DDkqvj/P
-         knfA==
-X-Forwarded-Encrypted: i=1; AJvYcCV+gQtsu0O1tNGhVOY+tVIMfciGKsDWAEdc2Z+LU+Cwm4cjThd3NiaWDlVgggm+4jOudmnZ3QEkweKmZoU=@vger.kernel.org, AJvYcCVjAtkccSojfbgC45K2BfdfqBcraILl5z/5UJ8snsmHGxLEYES1KGC6U5a85lKKFfw9LWyLItaBU+X7jUvI@vger.kernel.org
-X-Gm-Message-State: AOJu0YzWndVK1tm8zK0ZaHDTNko2VXLfMp6mywenW0zDAEDM1+N4eKYa
-	8d8y2BX3i7cwQat2ElbhMrt4v1odcCF9Zcxagu+f1zxHWNThPAIxkQFqLuMlCAmyHVDLUHsD5wz
-	a0Rq1rsZTlFZM50ieel/gd/PAfSY=
-X-Gm-Gg: ASbGncsZFh5J49G6NR0m3q3tCWEUiCwv2WVYcIo/VhwMR7n0rMhJjgQ7ESHGgMgrcbH
-	Q6L3a4ik9YLQosrecGS0F+fLPqUUMp3qXQ+cDkR0T+P9H5LDtA2e7lb4lLYupRxYC3oKozsDpJa
-	1rMJ4SpUdwDA==
-X-Google-Smtp-Source: AGHT+IHQ8ZFD5JfXR2fesrEAGair6UTQZEjsQtjsJB1JeIUqbAEuXpCUSdJpZP4Rve5rO8yUb0/8Kisq7HPOXEizwSA=
-X-Received: by 2002:a05:6402:2113:b0:5dc:80ba:dda1 with SMTP id
- 4fb4d7f45d1cf-5e4457abb93mr20924895a12.9.1740597777056; Wed, 26 Feb 2025
- 11:22:57 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="exazJCv4";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="exazJCv4"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 1C4452119B;
+	Wed, 26 Feb 2025 19:59:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1740599951; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=iRBPg6dcRG/frt2aeGEkFVcsNiGZUVEbU71z9ho3GW8=;
+	b=exazJCv4CCpSOv+6z3lE6sioVYMw5udqsKf6GPDwIi8dbvReIAYuXfTrQgPfe8b4LWW3bH
+	sYxcpi6th/VtY5VZRvmjY4/5z24waOjFbXlOO79ya67zOwR4Caz5fkiAf7pXAw6oyoirZX
+	7DJ28eE9b0xOu4lCOkkj3vYl9BdX7NI=
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=exazJCv4
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1740599951; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=iRBPg6dcRG/frt2aeGEkFVcsNiGZUVEbU71z9ho3GW8=;
+	b=exazJCv4CCpSOv+6z3lE6sioVYMw5udqsKf6GPDwIi8dbvReIAYuXfTrQgPfe8b4LWW3bH
+	sYxcpi6th/VtY5VZRvmjY4/5z24waOjFbXlOO79ya67zOwR4Caz5fkiAf7pXAw6oyoirZX
+	7DJ28eE9b0xOu4lCOkkj3vYl9BdX7NI=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 8DF1E13A53;
+	Wed, 26 Feb 2025 19:59:10 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id mdxnFY5yv2c/MgAAD6G6ig
+	(envelope-from <mpdesouza@suse.com>); Wed, 26 Feb 2025 19:59:10 +0000
+From: Marcos Paulo de Souza <mpdesouza@suse.com>
+Subject: [PATCH 0/5] printk: renaming some suspend/resume functions and one
+ fix for unblanking
+Date: Wed, 26 Feb 2025 16:59:00 -0300
+Message-Id: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250224123915.2859682-1-adamsimonelli@gmail.com>
- <20250224123915.2859682-2-adamsimonelli@gmail.com> <Z73teICMWNx7BiHT@pathway.suse.cz>
- <10194425.EvYhyI6sBW@nerdopolis2>
-In-Reply-To: <10194425.EvYhyI6sBW@nerdopolis2>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 26 Feb 2025 21:22:20 +0200
-X-Gm-Features: AQ5f1JqE-10IPSQGRUnH7pmW7kd9wzDQqE0a8tBy_gw2DMMkxsKIiWqLf3i_qsM
-Message-ID: <CAHp75Vdr1yNamVMP12X2bZs5=PL=R+Lsio5b+ba_NaPOsvzobA@mail.gmail.com>
-Subject: Re: [PATCH v5 1/2] ttynull: Add an option to allow ttynull to be used
- as a console device
-To: Adam Simonelli <adamsimonelli@gmail.com>
-Cc: Petr Mladek <pmladek@suse.com>, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAIVyv2cC/x3MwQpAQBCA4VfRnG2ZKZRXkcNkB5MMzUpK3t3m+
+ B3+/4EkrpKgKx5wuTTpbhlYFjAubLMEjdlAFdUVUR0OVzvX4GK8qc0BqRmRETm2DLk6XCa9/2M
+ /vO8H9BTQImEAAAA=
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Eric Biederman <ebiederm@xmission.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <len.brown@intel.com>, 
+ Pavel Machek <pavel@ucw.cz>, Petr Mladek <pmladek@suse.com>, 
+ Steven Rostedt <rostedt@goodmis.org>, 
+ John Ogness <john.ogness@linutronix.de>, 
+ Sergey Senozhatsky <senozhatsky@chromium.org>, 
+ Todd E Brandt <todd.e.brandt@linux.intel.com>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, kexec@lists.infradead.org, 
+ linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Marcos Paulo de Souza <mpdesouza@suse.com>
+X-Mailer: b4 0.14-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1740599947; l=1675;
+ i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
+ bh=g10VNxu+J+WpDkUkbQm/mJqITFnxcJsd5sZ1tSpU5sM=;
+ b=QNm2ZQ2aUdO0uJpHRox2rnWzw+hwkQdsqRU9EXSRQeDPxZXkfT6tNb98fsSiJ+tXAdlHyQ2Yr
+ vdTFP8Of308CSXcTnV03u7iq6vWGJcJ/6i6gPtVLowOL2VJ/zyDIMyJ
+X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
+ pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
+X-Rspamd-Queue-Id: 1C4452119B
+X-Spam-Level: 
+X-Spamd-Result: default: False [-4.51 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.com:email,suse.com:dkim,suse.com:mid];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	ARC_NA(0.00)[];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	RCPT_COUNT_TWELVE(0.00)[16];
+	MIME_TRACE(0.00)[0:+];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.com:+];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MID_RHS_MATCH_FROM(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from]
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Score: -4.51
+X-Spam-Flag: NO
 
-On Wed, Feb 26, 2025 at 3:39=E2=80=AFPM Adam Simonelli <adamsimonelli@gmail=
-.com> wrote:
-> On Tuesday, February 25, 2025 11:19:04 AM EST Petr Mladek wrote:
+Hello, I've being working on some patches that help to clarify the suspend/resume
+of printk machinery. The last patch on this patchset address one issue regarding
+suspended consoles and blanking.
 
-...
+This is a part one patchset that I would like to see merged before I send more patches
+that will rework the suspend flag (a global suspend flag istead of per console) and
+the removal of CON_ENABLED flag later on (I've created a function that will forcibly)
+register the console instead of using this flag.
 
-> > My proposal is to call:
-> >
-> > #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
-> >       add_preferred_console("ttynull", 0, NULL);
-> > #endif
-> >
-> > somewhere in the kernel code. The question is where.
-> > I wonder if the following would work:
-> >
->
-> > #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
-> > static int __init ttynull_default_console(void)
-> > {
-> >       add_preferred_console("ttynull", 0, NULL);
-> >       return 0;
-> > }
-> > console_initcall(ttynull_register);
-> > #endif
-> >
-> OK, actually in earlier revisions locally, I did actually have
->
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index dddb15f48d59..c1554a789de8 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3712,6 +3712,11 @@ void __init console_init(void)
->         initcall_t call;
->         initcall_entry_t *ce;
->
-> +#ifdef CONFIG_NULL_TTY_CONSOLE
-> +       if (!strstr(boot_command_line, "console=3D"))
+Please review!
 
-Just a side note: strstr() is fragile as theoretically "console=3D" can
-be part of an argument unrelated to the console, like
-foo=3D"bar,baz,console=3D10,key=3Dvalue". Although I haven't checked if thi=
-s
-is allowed by cmdline parser (lib/cmdline.c).
+Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+---
+Marcos Paulo de Souza (5):
+      printk: Rename suspend_console to console_suspend_all
+      printk: Rename resume_console to console_resume_all
+      printk: Rename console_stop to console_suspend
+      printk: Rename console_start to console_resume
+      printk: Check CON_SUSPEND when unblanking a console
 
-> +               add_preferred_console("ttynull", 0, NULL);
-> +#endif
-> +
->         /* Setup the default TTY line discipline. */
->         n_tty_init();
->
->
->
-> Which worked as far as I could tell, at least on x86. Not sure if that wa=
-s the
-> right place, and yeah, I was trying to better copy how CONFIG_VT_CONSOLE =
-worked
-> because I thought that was more correct.
+ drivers/tty/serial/serial_core.c                   |  6 ++---
+ include/linux/console.h                            |  8 +++---
+ kernel/kexec_core.c                                |  4 +--
+ kernel/power/hibernate.c                           | 16 ++++++------
+ kernel/power/suspend.c                             |  8 +++---
+ kernel/printk/printk.c                             | 30 ++++++++++++++--------
+ .../pm-graph/config/custom-timeline-functions.cfg  |  4 +--
+ tools/power/pm-graph/sleepgraph.py                 |  6 ++---
+ 8 files changed, 46 insertions(+), 36 deletions(-)
+---
+base-commit: ffd294d346d185b70e28b1a28abe367bbfe53c04
+change-id: 20250225-printk-renaming-126c1a11ad7a
 
---=20
-With Best Regards,
-Andy Shevchenko
+Best regards,
+-- 
+Marcos Paulo de Souza <mpdesouza@suse.com>
+
