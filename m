@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A17E1BE65;
-	Thu, 27 Feb 2025 06:30:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60A6117A2FB;
+	Thu, 27 Feb 2025 06:39:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740637846; cv=none; b=gSC9JvFDoV579VyGZBXU6qwCmPkoz411WNfRJAJbiYydrkYQAEqFwXsurJrbV6oPRZUFMLi4iZ2GOnw6WgMwacY1xRdAqxerPXGp/54z1v6fIVr9HczTCF3nTeXF9V9innabIc8eNmxr5rFLr9pXWrLBZBlYag1jQyI2QxPZNGg=
+	t=1740638351; cv=none; b=O7xEsrw7u0fxZDSjJLpouZ3T96gBQoBrgIqb4HO1WKj5BAXMnjJKrKlAK9fqNJncpEY93XAvVgNY49gTSqzKyVAvnq1ZNXMNNfQldoWEleb9ZH2cjlT13e0hhT33UCiaJiC7XrjetprJ9SPobmE/3kxG5mXXcGFOqJ5L+O2aJzI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740637846; c=relaxed/simple;
-	bh=ps9/B83qtBWijfCtUNRpgDe9XFUk00fiiz5pYBvH//I=;
+	s=arc-20240116; t=1740638351; c=relaxed/simple;
+	bh=2VpGmHtpvddjKHb3CzB9R1qKMNlVQ7QPUa53zp9viUI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uQKlyH1b76qeABF5jVVk8vOWVNBM++72B/tTbsB3hKz20D520AMuLU+PtX3q9XAWk1pjMQYq2KYnZuwCpblKSs8V7Ydf4KawBVVOOXY2ISviRAehZqFlFqwySo7EgKYDF11Cdplf6XW7Jy92dwRj7T+Way/UKxjBV3VfZU6Xt/k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KoV2yQYV; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=VVkznrKH22bcF5M6Mnea4iG9uv+w1OtItcA/QOx+eB+z4xni3fgHkhC5HbxgjkB8RmE3NYsLUlvkiqbkMFUxHWJGlQrLRQQdRVLsWZcB5J9VSjIBh3asS5itwVX7XxK4Dj/zRnAQv8ebsfIsBLyqt15tvsaDqNSKxkOleWN9FDk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ttZ2TVNB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KoV2yQYV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 143A0C4CEE4;
-	Thu, 27 Feb 2025 06:30:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ttZ2TVNB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 067D1C4CEDD;
+	Thu, 27 Feb 2025 06:38:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740637846;
-	bh=ps9/B83qtBWijfCtUNRpgDe9XFUk00fiiz5pYBvH//I=;
+	s=k20201202; t=1740638350;
+	bh=2VpGmHtpvddjKHb3CzB9R1qKMNlVQ7QPUa53zp9viUI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=KoV2yQYVQu1Qs41zUv8dEyuWbzxymE6GGOJ5EXwAf9cFAIHCjEQYTq8v6+JURiMzv
-	 DZKBchWeG3FxC/HjmoSwHBRDuTIGyRHyJJ2eeU6ruC43xjM7hDoq3IeRzWb3CL6Gmp
-	 jariueANcbMnRpoS4oeDJD+8qucrh5h7Ny8mnWfM03FXQV+H5yBSmVrnauMiEv6owy
-	 4BGkPboEQccIXlhryxIRLDxKxF4xDMMnJK9s4HSL9x/tg3rxASV3oYk0M7i1QR4SSD
-	 rzewJihLzjerIkv5Y0Kk4OnZcDeABqybuhtTWSY7O+AWbS3s5XT3tNmKYASgK8AVQ6
-	 8QdHo8aO35toQ==
-Message-ID: <1ae23c8f-75a3-4bb6-93a2-04a8ab54db60@kernel.org>
-Date: Thu, 27 Feb 2025 07:30:35 +0100
+	b=ttZ2TVNBJZYxZ+s5GNHb10pG79Z9pg35Hdd7j1MxYovJup4of3OlLXb5fn0ZRRwvO
+	 qkngDZV6QH0DB1oGCeC69PjXudGdVZPnxilq3VbBx8Ea46vpHwTVFLglnRGaLrWOI8
+	 Hv44ss5oa5uF9n7VdfssWKsjkgrsavMRbuG6Fextdtwzfsn9CxhZOpwigNBYTDJEz7
+	 jmlYqRLIPpkClEhVg16s6NWuvVyF+IV8txsvtpW/JbX4SiBtzeluBOvoOq00TnIuqi
+	 ef90a72XayOByLY3mBcKOB/yw/RFDiEo/WpWtPKtvQ6/iGpyGLrB90+ZiF2vev0TC8
+	 ODi1vvSIejB4A==
+Message-ID: <a8c29dec-6178-4f8f-80f5-aece636c410b@kernel.org>
+Date: Thu, 27 Feb 2025 07:38:58 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,19 +35,34 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/5] printk: Rename console_start to console_resume
-To: Marcos Paulo de Souza <mpdesouza@suse.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Eric Biederman <ebiederm@xmission.com>, "Rafael J. Wysocki"
- <rafael@kernel.org>, Len Brown <len.brown@intel.com>,
- Pavel Machek <pavel@ucw.cz>, Petr Mladek <pmladek@suse.com>,
- Steven Rostedt <rostedt@goodmis.org>, John Ogness
- <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>,
- Todd E Brandt <todd.e.brandt@linux.intel.com>
-Cc: linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
- linux-pm@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
- <20250226-printk-renaming-v1-4-0b878577f2e6@suse.com>
+Subject: Re: [PATCH 02/17] bitops: Add generic parity calculation for u64
+To: Yury Norov <yury.norov@gmail.com>
+Cc: Kuan-Wei Chiu <visitorckw@gmail.com>, tglx@linutronix.de,
+ mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+ jk@ozlabs.org, joel@jms.id.au, eajames@linux.ibm.com,
+ andrzej.hajda@intel.com, neil.armstrong@linaro.org, rfoss@kernel.org,
+ maarten.lankhorst@linux.intel.com, mripard@kernel.org, tzimmermann@suse.de,
+ airlied@gmail.com, simona@ffwll.ch, dmitry.torokhov@gmail.com,
+ mchehab@kernel.org, awalls@md.metrocast.net, hverkuil@xs4all.nl,
+ miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+ louis.peens@corigine.com, andrew+netdev@lunn.ch, davem@davemloft.net,
+ edumazet@google.com, pabeni@redhat.com, parthiban.veerasooran@microchip.com,
+ arend.vanspriel@broadcom.com, johannes@sipsolutions.net,
+ gregkh@linuxfoundation.org, akpm@linux-foundation.org, hpa@zytor.com,
+ alistair@popple.id.au, linux@rasmusvillemoes.dk,
+ Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+ jernej.skrabec@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+ linux-fsi@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
+ linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mtd@lists.infradead.org, oss-drivers@corigine.com,
+ netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+ brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+ linux-serial@vger.kernel.org, bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+ Yu-Chun Lin <eleanor15x@gmail.com>
+References: <20250223164217.2139331-1-visitorckw@gmail.com>
+ <20250223164217.2139331-3-visitorckw@gmail.com> <Z7zIBwH4aUA7G9MY@thinkpad>
+ <Z73FxIv353lbXO3A@visitorckw-System-Product-Name>
+ <b5236ae4-7ebe-4a88-bbc9-3b9b3374de53@kernel.org> <Z79ebv630yuNOJKV@thinkpad>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -92,18 +107,40 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250226-printk-renaming-v1-4-0b878577f2e6@suse.com>
+In-Reply-To: <Z79ebv630yuNOJKV@thinkpad>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 26. 02. 25, 20:59, Marcos Paulo de Souza wrote:
-> The intent of console_start was to resume a previosly suspended console,
-> so rename it accordly.
+On 26. 02. 25, 19:33, Yury Norov wrote:
+>> Not in cases where macros are inevitable. I mean, do we need parityXX() for
+>> XX in (8, 16, 32, 64) at all? Isn't the parity() above enough for everybody?
+> 
+> The existing codebase has something like:
+> 
+>          int ret;
+> 
+>          ret = i3c_master_get_free_addr(m, last_addr + 1);
+>          ret |= parity8(ret) ? 0 : BIT(7)
+> 
+> So if we'll switch it to a macro like one above, it will become a
+> 32-bit parity. It wouldn't be an error because i3c_master_get_free_addr()
+> returns an u8 or -ENOMEM, and the error code is checked explicitly.
+> 
+> But if we decide to go with parity() only, some users will have to
+> call it like parity((u8)val) explicitly. Which is not bad actually.
 
-FWIW no objections re code change. Except "previosly" here and 
-"accordly" in 1-4 :D. (In case you resend.)
+That cast looks ugly -- we apparently need parityXX(). (In this 
+particular case we could do parity8(last_addr), but I assume there are 
+more cases like this.) Thanks for looking up the case for this.
 
-thanks,
+>> And if not, you can have all those parityXX() as inlines as you suggest, but
+>> also provide a macro such as the above to call (optimized) parityXX() as per
+>> datatype len.
+> 
+> Yes, if we need fixed-type parity's, they should all be one-liners
+> calling the same macro. Macros or inline functions - no preference for
+> me.
+
 -- 
 js
 suse labs
