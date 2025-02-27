@@ -1,124 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A15642AA1;
-	Thu, 27 Feb 2025 14:16:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C90A8140E30;
+	Thu, 27 Feb 2025 15:30:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740665808; cv=none; b=XAzUHLE1VoB1TsY/irVesJu1o5gRLLfInDms19Pl1lbBUqeYgSmnvv9bWbVshg5vL9QauayetomzIan2jwWMfp35yCGcymDcT3m32b4iV38tcKNaU+YFP1wTfOlQRY0v1C8FVQSLNfiO1psIQ4oYV3ezZahUAFqXvDOyL28Uvis=
+	t=1740670232; cv=none; b=P5aXbWmACZpah3ADt7tHKJFADC88NKN/42RQ/x8epJYI8zvb9ndiT2qBUuyF36ChMpgIFmd8Q8c8pyX1HrjPqntn4DNwDsOZjmxC0i5wKwFO9paXHdUs9yX+AIUujRSLcj+OyOly4F3r+xRi7q91u7+Vw6+UPPdkFSmVKP9TAh8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740665808; c=relaxed/simple;
-	bh=Zli1w6J+6GpdC1pqueDXgdtrSsQiukUHIGExKKQ9BMg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TCL5HJHHrnSx9evhlR7vcOP+9QtLDaFA+V1MtPhVIwT73fc/wTFjtVua4lxWFMVoJdD4ghd7ZGVZINvB5gkbBqvGwrn+2kXIP3Dmfw3LDbAkrRRcKz3aVC7PzKeRaj7Lk5qXsAg/O+n/GRIG0CfdOWEuTXsdh3ojJXE+wpKGPg8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BlwsU0LP; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1740670232; c=relaxed/simple;
+	bh=IFFmvepbAHGIi4eE+7E83mJ3vWJaaygsrq8wQ5ZcdZA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=SjxESOUR3wWetGrg3K54GpUAsHHwOZtVvboE/zYmaSMppiSQmH+JbYLrYjz8arbuz/3Zh3EqaOXz+RsbP6PC5/dz8bUUDdaR6woB47GCx10hU9vUS0qBagOF1OaLiHt9/eroHtxnvBSyrAotpV+9xlzefI7qtDct/v4bi+lI6iY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=e5l6V4qm; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=m18xiogJ; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BlwsU0LP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1740665806; x=1772201806;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Zli1w6J+6GpdC1pqueDXgdtrSsQiukUHIGExKKQ9BMg=;
-  b=BlwsU0LPGQe4L3pgyVu3MRk848HN/gOavasAYUIxtOVZKjCtf7bqsV83
-   lvYvd25GKZQr7o3+eWUGMRvNXO7RCIPlejyqKSJ09rmD6HopDJ+ep6BjP
-   McLo4qk6M6z+en7rA66pRaqn9GcY+kCnY+jTVVG6ae0cGUqF1MgJusM35
-   2OUiRqrANcH3mFBHJNP9vRo782uknuxmc317fmIHJtUceFj1Yp9Lg7nYk
-   v7qmaIS5UswatSe07pGXxAAhGcqW5IVE6hQaznMaVeQqSsgjla7W+ZCrj
-   IU3DmR4dzL8/9xw7XLcrhTLv1aRk2EqqA8N/VGWOnPDDrj5E7se7wOw5m
-   Q==;
-X-CSE-ConnectionGUID: c9EAsjjmRVe54dkdxpL7ug==
-X-CSE-MsgGUID: VEKWu1PMQdG9rDbyBUypcg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11358"; a="40794896"
-X-IronPort-AV: E=Sophos;i="6.13,319,1732608000"; 
-   d="scan'208";a="40794896"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2025 06:16:46 -0800
-X-CSE-ConnectionGUID: /S01jM+pSKi6UbhfsOlUwQ==
-X-CSE-MsgGUID: 7e72FeMgSSSMsWC3AOxD6A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.13,319,1732608000"; 
-   d="scan'208";a="121980716"
-Received: from lkp-server02.sh.intel.com (HELO 76cde6cc1f07) ([10.239.97.151])
-  by orviesa003.jf.intel.com with ESMTP; 27 Feb 2025 06:16:44 -0800
-Received: from kbuild by 76cde6cc1f07 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tnegq-000DT6-2r;
-	Thu, 27 Feb 2025 14:16:40 +0000
-Date: Thu, 27 Feb 2025 22:15:55 +0800
-From: kernel test robot <lkp@intel.com>
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
-	thierry.bultel@linatsea.fr
-Cc: oe-kbuild-all@lists.linux.dev, linux-renesas-soc@vger.kernel.org,
-	geert@linux-m68k.org, paul.barker.ct@bp.renesas.com,
-	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3 08/13] serial: sh-sci: Introduced function pointers
-Message-ID: <202502272135.CkFShaQV-lkp@intel.com>
-References: <20250226130935.3029927-9-thierry.bultel.yh@bp.renesas.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="e5l6V4qm";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="m18xiogJ"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1740670227;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IFFmvepbAHGIi4eE+7E83mJ3vWJaaygsrq8wQ5ZcdZA=;
+	b=e5l6V4qmYG4H0zM87CUzcBa5SIGuUCm2KMFYJn+AjPhI5lG+zuTBV1dqlvDj66MuqLj7Xj
+	ycSdw2YXLtaxpaqPNsxIupGBOAig8PexZbOhmtktwOpcuwOdqKnOZp5Mcl3onjvz4LJ2bk
+	gX5zlTb77PuYbmzzbEAFKPScY53Axe5M7NTSnvFq3wRXivj4BxFGG2lKvg7vATHNz4NShI
+	uxZ20GcDKBuESiUWhf3tkvzra9iJvT0OE0BZxAPBIvHyiPnqfKJxTDpS3chEj9/IRZUycL
+	3h8Y3eSlgoJQFnShHQkC45oqsm6C5RdSFeA+ZHDDNQAltVfptK49Ka9BcOi9qQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1740670227;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IFFmvepbAHGIi4eE+7E83mJ3vWJaaygsrq8wQ5ZcdZA=;
+	b=m18xiogJlgB17Q9YWLFgqD0iKxg/sqwt/cdC+kwED0mwXbfxesRAYhUqN4K6DI1O/F2d8v
+	qC/Z5h/HYN0TOFAg==
+To: Marcos Paulo de Souza <mpdesouza@suse.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Eric Biederman <ebiederm@xmission.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <len.brown@intel.com>,
+ Pavel Machek <pavel@ucw.cz>, Petr Mladek <pmladek@suse.com>, Steven
+ Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Todd E Brandt <todd.e.brandt@linux.intel.com>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
+ linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Marcos Paulo de
+ Souza <mpdesouza@suse.com>
+Subject: Re: [PATCH 0/5] printk: renaming some suspend/resume functions and
+ one fix for unblanking
+In-Reply-To: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
+References: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
+Date: Thu, 27 Feb 2025 16:36:26 +0106
+Message-ID: <84cyf376ct.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250226130935.3029927-9-thierry.bultel.yh@bp.renesas.com>
+Content-Type: text/plain
 
-Hi Thierry,
+On 2025-02-26, Marcos Paulo de Souza <mpdesouza@suse.com> wrote:
+> Hello, I've being working on some patches that help to clarify the suspend/resume
+> of printk machinery. The last patch on this patchset address one issue regarding
+> suspended consoles and blanking.
+>
+> This is a part one patchset that I would like to see merged before I send more patches
+> that will rework the suspend flag (a global suspend flag istead of per console) and
+> the removal of CON_ENABLED flag later on (I've created a function that will forcibly)
+> register the console instead of using this flag.
+>
+> Please review!
+>
+> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 
-kernel test robot noticed the following build errors:
+The series looks good (adding the spellchecking that Jiri
+mentioned). Thanks!
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on tty/tty-next next-20250227]
-[cannot apply to geert-renesas-drivers/renesas-clk tty/tty-linus geert-renesas-devel/next linus/master v6.14-rc4]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Thierry-Bultel/dt-bindings-clock-Add-cpg-for-the-Renesas-RZ-T2H-SoC/20250226-221033
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20250226130935.3029927-9-thierry.bultel.yh%40bp.renesas.com
-patch subject: [PATCH v3 08/13] serial: sh-sci: Introduced function pointers
-config: sh-randconfig-001-20250227 (https://download.01.org/0day-ci/archive/20250227/202502272135.CkFShaQV-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250227/202502272135.CkFShaQV-lkp@intel.com/reproduce)
+I think it is worth mentioning that the series was motivated by this [0]
+discussion. And since I just mentioned it, that is probably mention
+enough. ;-)
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202502272135.CkFShaQV-lkp@intel.com/
+John Ogness
 
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/sh-sci.c:2918:35: error: 'sci_poll_put_char' undeclared here (not in a function)
-    2918 |         .poll_put_char          = sci_poll_put_char,
-         |                                   ^~~~~~~~~~~~~~~~~
-
-
-vim +/sci_poll_put_char +2918 drivers/tty/serial/sh-sci.c
-
-  2911	
-  2912	static const struct sci_port_ops sci_port_ops = {
-  2913		.read_reg		= sci_serial_in,
-  2914		.write_reg		= sci_serial_out,
-  2915		.clear_SCxSR		= sci_clear_SCxSR,
-  2916		.transmit_chars		= sci_transmit_chars,
-  2917		.receive_chars		= sci_receive_chars,
-> 2918		.poll_put_char		= sci_poll_put_char,
-  2919		.set_rtrg		= scif_set_rtrg,
-  2920		.rtrg_enabled		= scif_rtrg_enabled,
-  2921		.shutdown_complete	= sci_shutdown_complete,
-  2922		.prepare_console_write	= sci_prepare_console_write,
-  2923		.console_save		= sci_console_save,
-  2924		.console_restore	= sci_console_restore,
-  2925		.suspend_regs_size	= sci_suspend_regs_size,
-  2926	};
-  2927	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+[0] https://lore.kernel.org/lkml/ZyoNZfLT6tlVAWjO@pathway.suse.cz
