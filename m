@@ -1,82 +1,109 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30D7270042;
-	Thu, 27 Feb 2025 00:50:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A17E1BE65;
+	Thu, 27 Feb 2025 06:30:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740617454; cv=none; b=SzHgXAx/1VyqffoWOupHQ8Pyru9E7Rdl/su6gH5v3WzkYqncG31aOx9FFJCJENCgLY3Nl+3x/MLa5iQ43VBIQ41W2sb35hHegxZVJ8zMRSmF+IU7nF58ltdLTlimZmg3RNFw58dy9irovsieRWd/+BDkExxCxcyXnMxAwdS7aiU=
+	t=1740637846; cv=none; b=gSC9JvFDoV579VyGZBXU6qwCmPkoz411WNfRJAJbiYydrkYQAEqFwXsurJrbV6oPRZUFMLi4iZ2GOnw6WgMwacY1xRdAqxerPXGp/54z1v6fIVr9HczTCF3nTeXF9V9innabIc8eNmxr5rFLr9pXWrLBZBlYag1jQyI2QxPZNGg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740617454; c=relaxed/simple;
-	bh=wvfRR8PjV+qegkfR0ZtNP9Xy3R7GdHmzfT0wtK2n0LI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G8GtaAn2ueZfC+3DaSamoXSPGSR76ev+QbvLwlccpcvEGSZLf33I7sl4WQox49XwdIkBj9lrgl7P4NVimSQJfS1oTOblO0RWFRuD5DXsN5P6gLebn6nzm0f5iptZ5HCh/ohxABPC51+u1qoPpOhP/Or4cPNvRUCnp8qhZvt6JKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=BxQfiApQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1740637846; c=relaxed/simple;
+	bh=ps9/B83qtBWijfCtUNRpgDe9XFUk00fiiz5pYBvH//I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uQKlyH1b76qeABF5jVVk8vOWVNBM++72B/tTbsB3hKz20D520AMuLU+PtX3q9XAWk1pjMQYq2KYnZuwCpblKSs8V7Ydf4KawBVVOOXY2ISviRAehZqFlFqwySo7EgKYDF11Cdplf6XW7Jy92dwRj7T+Way/UKxjBV3VfZU6Xt/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KoV2yQYV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="BxQfiApQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07C43C4CED6;
-	Thu, 27 Feb 2025 00:50:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1740617454;
-	bh=wvfRR8PjV+qegkfR0ZtNP9Xy3R7GdHmzfT0wtK2n0LI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BxQfiApQecs90DsGHqplK4jUHSWc+4vW32Z8Sujco8sC4U4f5f/Kd9/Y4+LYkLSUh
-	 V6Z17lHiyYRGfZymymSBR4WwqFiidBrTMsrrygFrgPAokH0H1RiZpzdFqXfVM4mW28
-	 dYgwix0iMiriTxLYtu8JhG1miClt0dS7DlUgVJLk=
-Date: Wed, 26 Feb 2025 16:49:45 -0800
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Valentin Vidic <vvidic@valentin-vidic.from.hr>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: pty: remove redundant local variable
-Message-ID: <2025022632-syrup-regretful-79df@gregkh>
-References: <20250226204707.1941274-1-vvidic@valentin-vidic.from.hr>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KoV2yQYV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 143A0C4CEE4;
+	Thu, 27 Feb 2025 06:30:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1740637846;
+	bh=ps9/B83qtBWijfCtUNRpgDe9XFUk00fiiz5pYBvH//I=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=KoV2yQYVQu1Qs41zUv8dEyuWbzxymE6GGOJ5EXwAf9cFAIHCjEQYTq8v6+JURiMzv
+	 DZKBchWeG3FxC/HjmoSwHBRDuTIGyRHyJJ2eeU6ruC43xjM7hDoq3IeRzWb3CL6Gmp
+	 jariueANcbMnRpoS4oeDJD+8qucrh5h7Ny8mnWfM03FXQV+H5yBSmVrnauMiEv6owy
+	 4BGkPboEQccIXlhryxIRLDxKxF4xDMMnJK9s4HSL9x/tg3rxASV3oYk0M7i1QR4SSD
+	 rzewJihLzjerIkv5Y0Kk4OnZcDeABqybuhtTWSY7O+AWbS3s5XT3tNmKYASgK8AVQ6
+	 8QdHo8aO35toQ==
+Message-ID: <1ae23c8f-75a3-4bb6-93a2-04a8ab54db60@kernel.org>
+Date: Thu, 27 Feb 2025 07:30:35 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250226204707.1941274-1-vvidic@valentin-vidic.from.hr>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 4/5] printk: Rename console_start to console_resume
+To: Marcos Paulo de Souza <mpdesouza@suse.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Eric Biederman <ebiederm@xmission.com>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, Len Brown <len.brown@intel.com>,
+ Pavel Machek <pavel@ucw.cz>, Petr Mladek <pmladek@suse.com>,
+ Steven Rostedt <rostedt@goodmis.org>, John Ogness
+ <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>,
+ Todd E Brandt <todd.e.brandt@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
+ linux-pm@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
+ <20250226-printk-renaming-v1-4-0b878577f2e6@suse.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
+ rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
+ rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
+ i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
+ wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
+ ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
+ cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
+ 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
+ w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
+ YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABzSFKaXJpIFNsYWJ5
+ IDxqaXJpc2xhYnlAa2VybmVsLm9yZz7CwXcEEwEIACEFAlW3RUwCGwMFCwkIBwIGFQgJCgsC
+ BBYCAwECHgECF4AACgkQvSWxBAa0cEnVTg//TQpdIAr8Tn0VAeUjdVIH9XCFw+cPSU+zMSCH
+ eCZoA/N6gitEcnvHoFVVM7b3hK2HgoFUNbmYC0RdcSc80pOF5gCnACSP9XWHGWzeKCARRcQR
+ 4s5YD8I4VV5hqXcKo2DFAtIOVbHDW+0okOzcecdasCakUTr7s2fXz97uuoc2gIBB7bmHUGAH
+ XQXHvdnCLjDjR+eJN+zrtbqZKYSfj89s/ZHn5Slug6w8qOPT1sVNGG+eWPlc5s7XYhT9z66E
+ l5C0rG35JE4PhC+tl7BaE5IwjJlBMHf/cMJxNHAYoQ1hWQCKOfMDQ6bsEr++kGUCbHkrEFwD
+ UVA72iLnnnlZCMevwE4hc0zVhseWhPc/KMYObU1sDGqaCesRLkE3tiE7X2cikmj/qH0CoMWe
+ gjnwnQ2qVJcaPSzJ4QITvchEQ+tbuVAyvn9H+9MkdT7b7b2OaqYsUP8rn/2k1Td5zknUz7iF
+ oJ0Z9wPTl6tDfF8phaMIPISYrhceVOIoL+rWfaikhBulZTIT5ihieY9nQOw6vhOfWkYvv0Dl
+ o4GRnb2ybPQpfEs7WtetOsUgiUbfljTgILFw3CsPW8JESOGQc0Pv8ieznIighqPPFz9g+zSu
+ Ss/rpcsqag5n9rQp/H3WW5zKUpeYcKGaPDp/vSUovMcjp8USIhzBBrmI7UWAtuedG9prjqfO
+ wU0ETpLnhgEQAM+cDWLL+Wvc9cLhA2OXZ/gMmu7NbYKjfth1UyOuBd5emIO+d4RfFM02XFTI
+ t4MxwhAryhsKQQcA4iQNldkbyeviYrPKWjLTjRXT5cD2lpWzr+Jx7mX7InV5JOz1Qq+P+nJW
+ YIBjUKhI03ux89p58CYil24Zpyn2F5cX7U+inY8lJIBwLPBnc9Z0An/DVnUOD+0wIcYVnZAK
+ DiIXODkGqTg3fhZwbbi+KAhtHPFM2fGw2VTUf62IHzV+eBSnamzPOBc1XsJYKRo3FHNeLuS8
+ f4wUe7bWb9O66PPFK/RkeqNX6akkFBf9VfrZ1rTEKAyJ2uqf1EI1olYnENk4+00IBa+BavGQ
+ 8UW9dGW3nbPrfuOV5UUvbnsSQwj67pSdrBQqilr5N/5H9z7VCDQ0dhuJNtvDSlTf2iUFBqgk
+ 3smln31PUYiVPrMP0V4ja0i9qtO/TB01rTfTyXTRtqz53qO5dGsYiliJO5aUmh8swVpotgK4
+ /57h3zGsaXO9PGgnnAdqeKVITaFTLY1ISg+Ptb4KoliiOjrBMmQUSJVtkUXMrCMCeuPDGHo7
+ 39Xc75lcHlGuM3yEB//htKjyprbLeLf1y4xPyTeeF5zg/0ztRZNKZicgEmxyUNBHHnBKHQxz
+ 1j+mzH0HjZZtXjGu2KLJ18G07q0fpz2ZPk2D53Ww39VNI/J9ABEBAAHCwV8EGAECAAkFAk6S
+ 54YCGwwACgkQvSWxBAa0cEk3tRAAgO+DFpbyIa4RlnfpcW17AfnpZi9VR5+zr496n2jH/1ld
+ wRO/S+QNSA8qdABqMb9WI4BNaoANgcg0AS429Mq0taaWKkAjkkGAT7mD1Q5PiLr06Y/+Kzdr
+ 90eUVneqM2TUQQbK+Kh7JwmGVrRGNqQrDk+gRNvKnGwFNeTkTKtJ0P8jYd7P1gZb9Fwj9YLx
+ jhn/sVIhNmEBLBoI7PL+9fbILqJPHgAwW35rpnq4f/EYTykbk1sa13Tav6btJ+4QOgbcezWI
+ wZ5w/JVfEJW9JXp3BFAVzRQ5nVrrLDAJZ8Y5ioWcm99JtSIIxXxt9FJaGc1Bgsi5K/+dyTKL
+ wLMJgiBzbVx8G+fCJJ9YtlNOPWhbKPlrQ8+AY52Aagi9WNhe6XfJdh5g6ptiOILm330mkR4g
+ W6nEgZVyIyTq3ekOuruftWL99qpP5zi+eNrMmLRQx9iecDNgFr342R9bTDlb1TLuRb+/tJ98
+ f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
+ DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
+ S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
+In-Reply-To: <20250226-printk-renaming-v1-4-0b878577f2e6@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 26, 2025 at 09:47:07PM +0100, Valentin Vidic wrote:
-> The value of to is only used once, so no need to store it in a
-> variable.
-> 
-> Signed-off-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>
-> ---
->  drivers/tty/pty.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
-> index df08f13052ff..c6eb711500b6 100644
-> --- a/drivers/tty/pty.c
-> +++ b/drivers/tty/pty.c
-> @@ -110,12 +110,10 @@ static void pty_unthrottle(struct tty_struct *tty)
->  
->  static ssize_t pty_write(struct tty_struct *tty, const u8 *buf, size_t c)
->  {
-> -	struct tty_struct *to = tty->link;
-> -
->  	if (tty->flow.stopped || !c)
->  		return 0;
->  
-> -	return tty_insert_flip_string_and_push_buffer(to->port, buf, c);
-> +	return tty_insert_flip_string_and_push_buffer(tty->link->port, buf, c);
+On 26. 02. 25, 20:59, Marcos Paulo de Souza wrote:
+> The intent of console_start was to resume a previosly suspended console,
+> so rename it accordly.
 
-does this actually change the resulting code any?
-
-"to" actually means something here, the tty is the "from" and the link
-is the "to" where the data is going, so having it be "to" makes the code
-easier to understand by humans, which is the first goal of code.
-Maintaining it for long periods of time is key.
-
-Otherwise your change "tty->link->port" doesn't make it all that obvious
-that the this is being written not to the tty device itself, but to
-somewhere else, right?
+FWIW no objections re code change. Except "previosly" here and 
+"accordly" in 1-4 :D. (In case you resend.)
 
 thanks,
-
-greg k-h
+-- 
+js
+suse labs
