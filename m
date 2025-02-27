@@ -1,89 +1,137 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C90A8140E30;
-	Thu, 27 Feb 2025 15:30:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5B5C1DDC29;
+	Thu, 27 Feb 2025 17:37:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740670232; cv=none; b=P5aXbWmACZpah3ADt7tHKJFADC88NKN/42RQ/x8epJYI8zvb9ndiT2qBUuyF36ChMpgIFmd8Q8c8pyX1HrjPqntn4DNwDsOZjmxC0i5wKwFO9paXHdUs9yX+AIUujRSLcj+OyOly4F3r+xRi7q91u7+Vw6+UPPdkFSmVKP9TAh8=
+	t=1740677828; cv=none; b=AR7wnk5c7f5o3Bjl2LIZjcz9dZUsLwuhSv1GPJbV6vNm5abTB0epkSduUZhg7ofTw936rF1Z7lLqxUxBlfhYbbcDK4yN9BbdpIvHBRjOg7Vzw16pdplOytspWD0GZYDsbmnfZIfoK8pQzK+dazbtRvVZczNRiM+Knlfq9xsUEh0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740670232; c=relaxed/simple;
-	bh=IFFmvepbAHGIi4eE+7E83mJ3vWJaaygsrq8wQ5ZcdZA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=SjxESOUR3wWetGrg3K54GpUAsHHwOZtVvboE/zYmaSMppiSQmH+JbYLrYjz8arbuz/3Zh3EqaOXz+RsbP6PC5/dz8bUUDdaR6woB47GCx10hU9vUS0qBagOF1OaLiHt9/eroHtxnvBSyrAotpV+9xlzefI7qtDct/v4bi+lI6iY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=e5l6V4qm; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=m18xiogJ; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1740677828; c=relaxed/simple;
+	bh=3VhhTqGt87a5LXVZ8xAbJKCD+r0MSBo9AvP4EXdhZvc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ezwsb0trh6xyZeC+AoW6+B+ljnMChTreoH31oFLGPbRllrsMUlUjfhGqF33Ol1UH0l2W94vCQxc6AW+5+flmKmwHXo2VWkYwpm8GeT0u4ZqoF2IVVKy4ZqlYyE+00iA9tSHrrIPMbw0iejaa7+kzwWEDMDSwR68BAlLu+ShxVzc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k2CPtnoX; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="e5l6V4qm";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="m18xiogJ"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1740670227;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IFFmvepbAHGIi4eE+7E83mJ3vWJaaygsrq8wQ5ZcdZA=;
-	b=e5l6V4qmYG4H0zM87CUzcBa5SIGuUCm2KMFYJn+AjPhI5lG+zuTBV1dqlvDj66MuqLj7Xj
-	ycSdw2YXLtaxpaqPNsxIupGBOAig8PexZbOhmtktwOpcuwOdqKnOZp5Mcl3onjvz4LJ2bk
-	gX5zlTb77PuYbmzzbEAFKPScY53Axe5M7NTSnvFq3wRXivj4BxFGG2lKvg7vATHNz4NShI
-	uxZ20GcDKBuESiUWhf3tkvzra9iJvT0OE0BZxAPBIvHyiPnqfKJxTDpS3chEj9/IRZUycL
-	3h8Y3eSlgoJQFnShHQkC45oqsm6C5RdSFeA+ZHDDNQAltVfptK49Ka9BcOi9qQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1740670227;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IFFmvepbAHGIi4eE+7E83mJ3vWJaaygsrq8wQ5ZcdZA=;
-	b=m18xiogJlgB17Q9YWLFgqD0iKxg/sqwt/cdC+kwED0mwXbfxesRAYhUqN4K6DI1O/F2d8v
-	qC/Z5h/HYN0TOFAg==
-To: Marcos Paulo de Souza <mpdesouza@suse.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Eric Biederman <ebiederm@xmission.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <len.brown@intel.com>,
- Pavel Machek <pavel@ucw.cz>, Petr Mladek <pmladek@suse.com>, Steven
- Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Todd E Brandt <todd.e.brandt@linux.intel.com>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
- linux-pm@vger.kernel.org, linux-serial@vger.kernel.org, Marcos Paulo de
- Souza <mpdesouza@suse.com>
-Subject: Re: [PATCH 0/5] printk: renaming some suspend/resume functions and
- one fix for unblanking
-In-Reply-To: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
-References: <20250226-printk-renaming-v1-0-0b878577f2e6@suse.com>
-Date: Thu, 27 Feb 2025 16:36:26 +0106
-Message-ID: <84cyf376ct.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k2CPtnoX"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-223378e2b0dso20452605ad.0;
+        Thu, 27 Feb 2025 09:37:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740677826; x=1741282626; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VUAFuA6WyxlqIwMao9P+DyP+C2TxjteBYJ1MyyDLQfw=;
+        b=k2CPtnoXP+Nu/D9591DpLIaKIB63ulgvz8LnuAS0Gvpy9tT7B2X8uSVT7amvEwHYN5
+         xVS9I4r+3RVO5D94QO85PqOFY6Zp3qgx98bOkOWLt4Wiu4tiG3UvwEUzcWqicEPZg3wW
+         DrpkJcct3mPAd/teLAglXvpBIOZv2OhEqbg7BVLvTD4piL1wskgOYWI2OFLey43KQVwz
+         JujPkxDVtkSPoC9Y01eeNxNLX06GizP3MKRHs/aT0whflsBfOXPBPxHEMdx10HKEdUdm
+         nHuxJQeCsYqKcBCUaLS1TSAkaUoK/66c657XNZ7MzdvTOdCV8F7+j+hc7+9LtJ8CFncw
+         YQlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740677826; x=1741282626;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VUAFuA6WyxlqIwMao9P+DyP+C2TxjteBYJ1MyyDLQfw=;
+        b=CBW51xVRP/LaIIU1A6CZ4OkqZgrUu7nfhjFZxIgfGDo1MHeLTMhoBk9ls9aSHnsDEJ
+         Hq+I/rEhi3ZvI+LTdwCfGZPul2qRFflSFwVypc9sxMGK/73EaXD81gNmJRO0ZxnRshjC
+         7byUXeIDC5XhpRRdk/keR4/Vqaj2Sj0ftemu+0NRgC7BFGizWLQ1wt1UjWNHW1fnLBHZ
+         hBc+KIaV2cj5yQ7MPhgs3lgClVUJC0CF+Nfh7gwYi28ihhiy7Ar+Vi5sw+vXQ/R8/cB4
+         vZNw/Bb2hoblNmV89dDBLZrPAHpgzRpiI9+tsCit7EyEDhQ7BOiCMi9O+FIj2ZOp5UCx
+         nSBQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU9j0q98O9kyB9dWy5+b/tCfcMULttjt2DdRUxvfMxTLipKIVPbXk36nnKn8ofIZXzKtnv5o5EW8XCJzfM2@vger.kernel.org, AJvYcCUU6DzcBdtZZlq0E1+Y65cMvM5A/vA56hExKka8pqUJSXol/OIszuzTLD7LRf8m3msgoow=@vger.kernel.org, AJvYcCUWoy5TgbRAMHlO22hv3NOK7IdgC4Dqz/uXeEKAGFFb9bQuPI97kIfvolb6QfhpcjBc5CtbcUB/iRGVdqj1Gf0=@vger.kernel.org, AJvYcCVYyDkiB2aBGstAzk7mXzYSeUUTbes3GGJGZGd7CCnrhDl1n3r5rSSQJf5eVYm6EFMZ+GdoGX19igFjUuk=@vger.kernel.org, AJvYcCVlFQZSDXAlsbdAdSwO1zAj04bh4oPZ6xPbwX22YjTub52352CSEKLD7CiQJjZrQp2E8tAUgrr4@vger.kernel.org, AJvYcCWOtFmG0JEQTKrqkgsWR/0Jav2B60EvClk8mWib2+01meIMohoVedGCHepPH//u4qoj5PIzSpZ0IxR9GjhB@vger.kernel.org, AJvYcCX1xVA7bQ90BxTYRQOzgeZ8GmLaqz5Ju20K54lixDEkIlByWx1apZHF9TG2jT8v5/Uayny7RHf4pqeUhPc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzKRHiQFsKxRA/aOoRfrGExObZRfbhIy6eAK1GbCUQvo3xvzOUH
+	3M6UBSB0EaoN1bNAwSbbAuGw2bfeZfCy/gR4LMK0dymuk5b6Uu7C
+X-Gm-Gg: ASbGncs53cL6ikyZG4g3aeg9EySDog3pal+DI2I48LU8w6YCk+ekeaiHRf1K53mh2y3
+	+BhxobvZ76YBn+DXHMq12bFe97eX0jQCyuuMCYylHw/Yl/UWSsJL7WF44n/xXJwCHvhQO3q69oK
+	PQEoouzvrFevT7/yAsIhAfYkD4XLbcRjcDMf9yazm7xeSU+LjSo/YWFwTqWWODEmrdwY+0WHVjl
+	kowOZGonIYgf+9GfkpJfBDRu880K4DuM4v/Di256mKI0+MTK6v6SiD+1ohubIjOVNmk3ePSNKRL
+	mggknlz/2No67vWDjkJj+nM45VuFkp/IJl9vmpaBeLYcQM2g9w==
+X-Google-Smtp-Source: AGHT+IGK2yvXxMwGzFuS4qAPXT9dc4oLUeTze+y8wAtciDVfBiItiQouqHwlR4imml9fxjD4qYJfDg==
+X-Received: by 2002:a05:6a20:9146:b0:1ee:d6da:b651 with SMTP id adf61e73a8af0-1f0fc993ffdmr22305716637.35.1740677825727;
+        Thu, 27 Feb 2025 09:37:05 -0800 (PST)
+Received: from localhost (maglev-oncall.nvidia.com. [216.228.125.128])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-aee7de19d3fsm1745501a12.18.2025.02.27.09.37.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Feb 2025 09:37:05 -0800 (PST)
+Date: Thu, 27 Feb 2025 12:37:02 -0500
+From: Yury Norov <yury.norov@gmail.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Kuan-Wei Chiu <visitorckw@gmail.com>, tglx@linutronix.de,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	x86@kernel.org, jk@ozlabs.org, joel@jms.id.au,
+	eajames@linux.ibm.com, andrzej.hajda@intel.com,
+	neil.armstrong@linaro.org, rfoss@kernel.org,
+	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+	dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	akpm@linux-foundation.org, hpa@zytor.com, alistair@popple.id.au,
+	linux@rasmusvillemoes.dk, Laurent.pinchart@ideasonboard.com,
+	jonas@kwiboo.se, jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+	Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH 02/17] bitops: Add generic parity calculation for u64
+Message-ID: <Z8Civv0QaBzmFPTq@thinkpad>
+References: <20250223164217.2139331-1-visitorckw@gmail.com>
+ <20250223164217.2139331-3-visitorckw@gmail.com>
+ <Z7zIBwH4aUA7G9MY@thinkpad>
+ <Z73FxIv353lbXO3A@visitorckw-System-Product-Name>
+ <b5236ae4-7ebe-4a88-bbc9-3b9b3374de53@kernel.org>
+ <Z79ebv630yuNOJKV@thinkpad>
+ <a8c29dec-6178-4f8f-80f5-aece636c410b@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a8c29dec-6178-4f8f-80f5-aece636c410b@kernel.org>
 
-On 2025-02-26, Marcos Paulo de Souza <mpdesouza@suse.com> wrote:
-> Hello, I've being working on some patches that help to clarify the suspend/resume
-> of printk machinery. The last patch on this patchset address one issue regarding
-> suspended consoles and blanking.
->
-> This is a part one patchset that I would like to see merged before I send more patches
-> that will rework the suspend flag (a global suspend flag istead of per console) and
-> the removal of CON_ENABLED flag later on (I've created a function that will forcibly)
-> register the console instead of using this flag.
->
-> Please review!
->
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+On Thu, Feb 27, 2025 at 07:38:58AM +0100, Jiri Slaby wrote:
+> On 26. 02. 25, 19:33, Yury Norov wrote:
+> > > Not in cases where macros are inevitable. I mean, do we need parityXX() for
+> > > XX in (8, 16, 32, 64) at all? Isn't the parity() above enough for everybody?
+> > 
+> > The existing codebase has something like:
+> > 
+> >          int ret;
+> > 
+> >          ret = i3c_master_get_free_addr(m, last_addr + 1);
+> >          ret |= parity8(ret) ? 0 : BIT(7)
+> > 
+> > So if we'll switch it to a macro like one above, it will become a
+> > 32-bit parity. It wouldn't be an error because i3c_master_get_free_addr()
+> > returns an u8 or -ENOMEM, and the error code is checked explicitly.
+> > 
+> > But if we decide to go with parity() only, some users will have to
+> > call it like parity((u8)val) explicitly. Which is not bad actually.
+> 
+> That cast looks ugly -- we apparently need parityXX(). (In this particular
+> case we could do parity8(last_addr), but I assume there are more cases like
+> this.) Thanks for looking up the case for this.
 
-The series looks good (adding the spellchecking that Jiri
-mentioned). Thanks!
+This parity8() is used in just 2 drivers - i3c and hwmon/spd5118. The hwmon
+driver looks good. I3C, yeah, makes this implied typecast, which is nasty
+regardless.
 
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
+This is the new code, and I think if we all agree that generic parity()
+would be a better API, it's a good time to convert existing users now.
 
-I think it is worth mentioning that the series was motivated by this [0]
-discussion. And since I just mentioned it, that is probably mention
-enough. ;-)
-
-John Ogness
-
-[0] https://lore.kernel.org/lkml/ZyoNZfLT6tlVAWjO@pathway.suse.cz
+Thanks,
+Yury
