@@ -1,195 +1,160 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C3C33596A;
-	Fri, 28 Feb 2025 01:54:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2892157A55;
+	Fri, 28 Feb 2025 04:39:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740707694; cv=none; b=MVcY+OUHKRQoVYGJ4Iuw/Li+wYHu5Pn93ey6V1Dbw8PN20fwPSsL+yYcNATTdFxA53VDYGLV8nmKU0hKZI5+yFHeeueUewSqIdX3KFhyc6WzLnN7JzY/YiuIseQuJS/EyHv65p8TY4wFUWUJqQ1oPRlAf+VGHJiMhe7rfomnao0=
+	t=1740717582; cv=none; b=Nht/t4ADQGGPdX7fB4mSsgGFUbrKGpVVEYR1i6CkWMpmQO7xRQiFYvq5ln46e6lmI/4/XSiOTq7//YIah2vYWmHFLE6K4eS2sR6WoKto5Xfl9xqlq5DYlmum+gkcU8pc1xRHaTD2s6grtTckMj/ohwgGvFYpmj6x9CMqgLp/4BE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740707694; c=relaxed/simple;
-	bh=Lp1jbP3VtIoZJb7DDjRQCPnuT/WqIWZRzxbJAQE3YnA=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=sUhwxFtUg5sQeFToy9qKPq/jAjjiANiSkNnECv0FVDxh0NPznBVx4EMQS1swHyYlkcYKmef1Mt+RTowM2DbKTpS6KCGYGbZbHyBy6o5vMpZHTpspSVQwTI58XBQsxIGnLVXdVPD9aSQN+UsTBCo1PdGkmnEYx65O7YoqTCNweeQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=hc1Wnley; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	s=arc-20240116; t=1740717582; c=relaxed/simple;
+	bh=8aZ49bvuDjKomHLXgnAinIV22zHwW7rGZjJkxM4aF6E=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=dXpPhPy+NBmls4pcICkKAZ3IE1V4z3LDbqogzA6UQv+I7Ee8duEeMR349mXKNKU6IwJXUdupJi+VbJ7RGHfJCQIVIAnCOEc6dad5DCpaLdGo+00Mp4/BBUfUQvkHDYJDt8wiRsUFr9Pxiyh9QzsQtKU7RcetKqWM1wg3NHrPAg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lQJMXive; arc=none smtp.client-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="hc1Wnley"
-Received: from [127.0.0.1] ([76.133.66.138])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 51S1ouig2394050
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Thu, 27 Feb 2025 17:50:57 -0800
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 51S1ouig2394050
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025021701; t=1740707463;
-	bh=zdxlCZN7qRmiM8/WMWaSChORmP5U1+mg9Dd2GNfsbGA=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=hc1WnleyPiNvmeMgkj0Fbb3sTWrGCmnnaxiRXiZvVvO6Is3ZJKu6mp+YJv2Dbs05X
-	 aVxT1zsm98Egcx7g7dDapGUM1ppk6QkyAa2wZSKXLVi8I4OeDG/xzxwpW4dEA2MBFx
-	 T1ntM64Z768sGTrScS8Wa6oiWHo2Bu8akRlkAIPTgcwVRV0sgRtvWguE9SobXFYNdw
-	 ClhsdUIvwPyfzfAd+XeT/JQ5MtCRtjegffTL4YeiMAwTwSfCb9k77v5gFOVLmhUpKy
-	 VYHzzZXLAdv9xzXZj/lrKYrLB5diO6XmkXYCixEjE5jI7GVtxQxUpXMNKybtxiJAEr
-	 DXDmmmDy5eD+w==
-Date: Thu, 27 Feb 2025 17:50:55 -0800
-From: "H. Peter Anvin" <hpa@zytor.com>
-To: David Laight <david.laight.linux@gmail.com>,
-        Yury Norov <yury.norov@gmail.com>
-CC: Kuan-Wei Chiu <visitorckw@gmail.com>, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        jk@ozlabs.org, joel@jms.id.au, eajames@linux.ibm.com,
-        andrzej.hajda@intel.com, neil.armstrong@linaro.org, rfoss@kernel.org,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
-        dmitry.torokhov@gmail.com, mchehab@kernel.org, awalls@md.metrocast.net,
-        hverkuil@xs4all.nl, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, louis.peens@corigine.com, andrew+netdev@lunn.ch,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
-        johannes@sipsolutions.net, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, akpm@linux-foundation.org, alistair@popple.id.au,
-        linux@rasmusvillemoes.dk, Laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
-        dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
-        oss-drivers@corigine.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
-        brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
-        bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
-        Yu-Chun Lin <eleanor15x@gmail.com>
-Subject: Re: [PATCH 02/17] bitops: Add generic parity calculation for u64
-User-Agent: K-9 Mail for Android
-In-Reply-To: <20250227215741.1c2e382f@pumpkin>
-References: <20250223164217.2139331-1-visitorckw@gmail.com> <20250223164217.2139331-3-visitorckw@gmail.com> <Z7zIBwH4aUA7G9MY@thinkpad> <20250226222911.22cb0c18@pumpkin> <Z8CpaaHv0ahHFVuK@thinkpad> <20250227215741.1c2e382f@pumpkin>
-Message-ID: <EF874FA4-2719-44EA-B0DB-93A0980142BE@zytor.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lQJMXive"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7c0ba9825e9so116194185a.0;
+        Thu, 27 Feb 2025 20:39:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1740717579; x=1741322379; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9smtCjYcxndzyuV/cVbRKleBRB09EObWKV/3vjpHQ1g=;
+        b=lQJMXive/ZdwDpWPLc8K9r4gdh+HlkLwTmvYTy4+9RpNbmPGNVvCinYH3R6SDk5qzs
+         dpzwRisbALVsiEwmv4zkX5FoP9FWQpdmfS7do/DPO4U+8Py8yfDXISCI3yVgCnoqf/+w
+         PoL47bn9fIDLxoYGu/OSufRau6JKsAdj8LbpmEDpIxavriLBV8VAkuaDZUlcXwNWzza3
+         hyMym8VJtohDv3dPzW98NpGoY2hy7zL16XBn+sOUZGijqo1SF3rNxCop0tvDO4aySyu0
+         rdEWgaO602H5w2/D3RkL+lTJU14ABq2dAA7K2vcfwXXinDaKCfqQhpity4RxLGC1M9Ej
+         gLaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1740717579; x=1741322379;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9smtCjYcxndzyuV/cVbRKleBRB09EObWKV/3vjpHQ1g=;
+        b=nonWlFPa3u6aUJlJAJQMg/XYOTk2TkPk0MMeXirOW4tv87Yzgz9tJ/RBFWZLQliz2E
+         pu59WqFKARfKTF/h0fITgtTTE3R7gyhnqlJJsB3vzxo/1fkAlFO8DRqlMMOoUJXZ7jTc
+         3CIBEiFxVyyS6os2Dolc3LzSvApCCm8DOH/Uieo89LOro3mR0d2/R8XfY0wUxnnti6Q8
+         nMays+Zl/0RIP5CjLjbVlFVezQuJn05zrFpdQBpQK6Cd0H7hPegfZfbfYcmYZtprQcO6
+         FkWH7cj5cO1Du96HfnMuWUBXFgOBMlq9cfSFzzOOVNAZ4g8cJj7AoqPvQN2bGyRcqWov
+         M+aw==
+X-Forwarded-Encrypted: i=1; AJvYcCV2JGbtrIb2Qmgi7cCpG//tgttICrsjk/hfNTzvknvDL/UuSf/uP6wlQzJJvzr1DYp0jKBJYdzp8aHxkGal@vger.kernel.org, AJvYcCXkJpuKp6LA/Nwvy15NcL2Wl6CTAzmWX97KA1NoRwgNFfsWXeTjTpzH8IbJe/ZSmPv9HDPl0KHSSER7e9s=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyiwyfcU8pTEhSMzJKMs3LAfyt89o2Gu5LimRy9XbKNV+zJuH1E
+	vhSeKZngmPcXZPQtno5L5Zz9WGutO+PwyxEqnqPh4sQcHJQdbKVx
+X-Gm-Gg: ASbGncuLgd9zdVUZXLsmOyPVfnJyYrZACvqw9gHnUQr3Wlc8uYWqdD8aDhzkh5LoGkk
+	GezLa/FQsx0yPT4lFo/MmoVtxDBcIzp/e5sEGobAl8OmEzXWAMy+0aHhF4TVZh96ZFlY/OpiUfu
+	j/VkbzTT7nrj8aC9VBnOPJkCKDPwPUTHTAOAufooZqslp04bpqGhyTuG9LdT1nkp/B5/x7Qp3+W
+	emwwuBSIHfSxVyXL4CIS0t7WdCVVO4X9NDoVCCEOcpC9e+iSIRIzYF3WTim09Ku5rvzfEmchlbw
+	4YiJixAK5Ti3p04uvdCIom9Pq/OOiSr524Lyeo8Ip8ftfjw=
+X-Google-Smtp-Source: AGHT+IGg3xj8a/rl8KC65AhaGGrHyAEQ1UUGT9knkuDeL97ZFJI6SYvvRE+VeaebdQysoYooaCB1Xg==
+X-Received: by 2002:a05:620a:f04:b0:7c0:a5f4:4df with SMTP id af79cd13be357-7c39c4cd3e9mr304731185a.34.1740717579497;
+        Thu, 27 Feb 2025 20:39:39 -0800 (PST)
+Received: from nerdopolis2.localnet ([2600:4040:5e66:a800:5bd2:dbc7:4aba:299e])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c378d9fe97sm199383585a.73.2025.02.27.20.39.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Feb 2025 20:39:38 -0800 (PST)
+From: Adam Simonelli <adamsimonelli@gmail.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Petr Mladek <pmladek@suse.com>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ John Ogness <john.ogness@linutronix.de>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject:
+ Re: [PATCH v5 1/2] ttynull: Add an option to allow ttynull to be used as a
+ console device
+Date: Thu, 27 Feb 2025 23:39:30 -0500
+Message-ID: <10956921.NyiUUSuA9g@nerdopolis2>
+In-Reply-To:
+ <CAHp75Vdr1yNamVMP12X2bZs5=PL=R+Lsio5b+ba_NaPOsvzobA@mail.gmail.com>
+References:
+ <20250224123915.2859682-1-adamsimonelli@gmail.com>
+ <10194425.EvYhyI6sBW@nerdopolis2>
+ <CAHp75Vdr1yNamVMP12X2bZs5=PL=R+Lsio5b+ba_NaPOsvzobA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 
-On February 27, 2025 1:57:41 PM PST, David Laight <david=2Elaight=2Elinux@g=
-mail=2Ecom> wrote:
->On Thu, 27 Feb 2025 13:05:29 -0500
->Yury Norov <yury=2Enorov@gmail=2Ecom> wrote:
->
->> On Wed, Feb 26, 2025 at 10:29:11PM +0000, David Laight wrote:
->> > On Mon, 24 Feb 2025 14:27:03 -0500
->> > Yury Norov <yury=2Enorov@gmail=2Ecom> wrote:
->> > =2E=2E=2E=2E =20
->> > > +#define parity(val)					\
->> > > +({							\
->> > > +	u64 __v =3D (val);				\
->> > > +	int __ret;					\
->> > > +	switch (BITS_PER_TYPE(val)) {			\
->> > > +	case 64:					\
->> > > +		__v ^=3D __v >> 32;			\
->> > > +		fallthrough;				\
->> > > +	case 32:					\
->> > > +		__v ^=3D __v >> 16;			\
->> > > +		fallthrough;				\
->> > > +	case 16:					\
->> > > +		__v ^=3D __v >> 8;			\
->> > > +		fallthrough;				\
->> > > +	case 8:						\
->> > > +		__v ^=3D __v >> 4;			\
->> > > +		__ret =3D  (0x6996 >> (__v & 0xf)) & 1;	\
->> > > +		break;					\
->> > > +	default:					\
->> > > +		BUILD_BUG();				\
->> > > +	}						\
->> > > +	__ret;						\
->> > > +})
->> > > + =20
->> >=20
->> > You really don't want to do that!
->> > gcc makes a right hash of it for x86 (32bit)=2E
->> > See https://www=2Egodbolt=2Eorg/z/jG8dv3cvs =20
->>=20
->> GCC fails to even understand this=2E Of course, the __v should be an
->> __auto_type=2E But that way GCC fails to understand that case 64 is
->> a dead code for all smaller type and throws a false-positive=20
->> Wshift-count-overflow=2E This is a known issue, unfixed for 25 years!
->
->Just do __v ^=3D __v >> 16 >> 16
->
->>=20
->> https://gcc=2Egnu=2Eorg/bugzilla/show_bug=2Ecgi?id=3D4210
->> =20
->> > You do better using a __v32 after the 64bit xor=2E =20
->>=20
->> It should be an __auto_type=2E I already mentioned=2E So because of tha=
-t,
->> we can either do something like this:
->>=20
->>   #define parity(val)					\
->>   ({							\
->>   #ifdef CLANG                                          \
->>   	__auto_type __v =3D (val);			\
->>   #else /* GCC; because of this and that */             \
->>   	u64 __v =3D (val);			        \
->>   #endif                                                \
->>   	int __ret;					\
->>=20
->> Or simply disable Wshift-count-overflow for GCC=2E
->
->For 64bit values on 32bit it is probably better to do:
->int p32(unsigned long long x)
->{
->    unsigned int lo =3D x;
->    lo ^=3D x >> 32;
->    lo ^=3D lo >> 16;
->    lo ^=3D lo >> 8;
->    lo ^=3D lo >> 4;
->    return (0x6996 >> (lo & 0xf)) & 1;
->}
->That stops the compiler doing 64bit shifts (ok on x86, but probably not e=
-lsewhere)=2E
->It is likely to be reasonably optimal for most 64bit cpu as well=2E
->(For x86-64 it probably removes a load of REX prefix=2E)
->(It adds an extra instruction to arm because if its barrel shifter=2E)
->
->
->>=20
->> > Even the 64bit version is probably sub-optimal (both gcc and clang)=
-=2E
->> > The whole lot ends up being a bit single register dependency chain=2E
->> > You want to do: =20
->>=20
->> No, I don't=2E I want to have a sane compiler that does it for me=2E
->>=20
->> > 	mov %eax, %edx
->> > 	shrl $n, %eax
->> > 	xor %edx, %eax
->> > so that the 'mov' and 'shrl' can happen in the same clock
->> > (without relying on the register-register move being optimised out)=
-=2E
->> >=20
->> > I dropped in the arm64 for an example of where the magic shift of 699=
-6
->> > just adds an extra instruction=2E =20
->>=20
->> It's still unclear to me that this parity thing is used in hot paths=2E
->> If that holds, it's unclear that your hand-made version is better than
->> what's generated by GCC=2E
->
->I wasn't seriously considering doing that optimisation=2E
->Perhaps just hoping is might make a compiler person think :-)
->
->	David
->
->>=20
->> Do you have any perf test?
->>=20
->> Thanks,
->> Yury
->
+On Wednesday, February 26, 2025 2:22:20 PM EST Andy Shevchenko wrote:
+> On Wed, Feb 26, 2025 at 3:39=E2=80=AFPM Adam Simonelli <adamsimonelli@gma=
+il.com> wrote:
+> > On Tuesday, February 25, 2025 11:19:04 AM EST Petr Mladek wrote:
+>=20
+> ...
+>=20
+> > > My proposal is to call:
+> > >
+> > > #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
+> > >       add_preferred_console("ttynull", 0, NULL);
+> > > #endif
+> > >
+> > > somewhere in the kernel code. The question is where.
+> > > I wonder if the following would work:
+> > >
+> >
+> > > #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
+> > > static int __init ttynull_default_console(void)
+> > > {
+> > >       add_preferred_console("ttynull", 0, NULL);
+> > >       return 0;
+> > > }
+> > > console_initcall(ttynull_register);
+> > > #endif
+> > >
+> > OK, actually in earlier revisions locally, I did actually have
+> >
+> > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> > index dddb15f48d59..c1554a789de8 100644
+> > --- a/kernel/printk/printk.c
+> > +++ b/kernel/printk/printk.c
+> > @@ -3712,6 +3712,11 @@ void __init console_init(void)
+> >         initcall_t call;
+> >         initcall_entry_t *ce;
+> >
+> > +#ifdef CONFIG_NULL_TTY_CONSOLE
+> > +       if (!strstr(boot_command_line, "console=3D"))
+>=20
+> Just a side note: strstr() is fragile as theoretically "console=3D" can
+> be part of an argument unrelated to the console, like
+> foo=3D"bar,baz,console=3D10,key=3Dvalue". Although I haven't checked if t=
+his
+> is allowed by cmdline parser (lib/cmdline.c).
+>=20
+Dang, good call. As a crude test, console=3Dttynull=3D results in a panic, =
+so it
+does look like it allows =3D's in parameter values, as it looks like it is
+handling the =3D...
 
-What the compiler people need to do is to not make __builtin_parity*() gen=
-erate crap=2E
+Gotta find a better way to parse it if I'm to do the `add_preferred_console`
+route, Maybe I can try get_option...
+
+What do you think of the placement of it too?
+> > +               add_preferred_console("ttynull", 0, NULL);
+> > +#endif
+> > +
+> >         /* Setup the default TTY line discipline. */
+> >         n_tty_init();
+> >
+> >
+> >
+> > Which worked as far as I could tell, at least on x86. Not sure if that =
+was the
+> > right place, and yeah, I was trying to better copy how CONFIG_VT_CONSOL=
+E worked
+> > because I thought that was more correct.
+>=20
+>=20
+
+
+
+
