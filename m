@@ -1,112 +1,449 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from relay01a.gzo.com (relay01a.gzo.com [96.31.72.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F42D28F5;
-	Sat,  1 Mar 2025 07:49:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E4092FC23;
+	Sat,  1 Mar 2025 13:49:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=96.31.72.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740815381; cv=none; b=CctJAaMYsL3WFZAEMYZ+DcNcGEbcWVQXvlouR3Of8aPh6ZbY0/0rpLG7EfAv0YVl9T509KjIhu2D1vdrrLF2PwHhuqBjUAjUTUKpiMq6agqdSsZOaemkthFYKMxGBsSZ/cQjkcFWvIBMYxFJt7C1tVGixim75gbGOV2DBlphQAw=
+	t=1740836942; cv=none; b=cZ60umC3Yj/3pugMdGCz3ENPiGHj/3a8ZjF+7BgURyfPFro6p/ZWclrSlfN3s3a56qBOteIEt0EkIhMA+QfuFuBVKsuyCfMXS8/TJSj8a0kK4q7u5JPUCpcmkJ9d356lCrgH4T2U27puUBaIPdFMKuiJvF8iamV+9yixBly0w0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740815381; c=relaxed/simple;
-	bh=SZI4oem7AV2imCWP1ydcfi/UNJr/qkLcL4nFKrpPpJ8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XTsLBvEHjrbSz7J25S+zrvyO5skkxdMslwXy7sR4+FJlU6NrKOsX33tJ04/nt6b0K5jCxXzJflIh85gcAKec7OYDPPwvYTifkbtbk9qkcyrH5KK1O+mMOu13dGY9rnWfy+21kU6TKOX/S5rF00Gy3VbMzx6L2/QPrfir5rMYqdg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bdKShtPE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1740836942; c=relaxed/simple;
+	bh=Zs/AFWptXOzxWlBfFZNpkm5I8HF+h59Uj0M4WsxYcVM=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=ep5qMKPyVD+JPKAOnZibiBWFLB+0AQweadsJ4WRswaLWHm23MkhmZ46+WcukmML6zA7o3NhBUpr9KbsdbNzMLXqsLKT1K76qFxhK4JHruMBQf6vvy3n0H91AWS+uh5jzmehmXbawiLPi64rBp0hxhjJxOZn8bsxO4ldgxDj6VTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=shurup.com; spf=pass smtp.mailfrom=shurup.com; dkim=pass (2048-bit key) header.d=shurup.com header.i=@shurup.com header.b=2fzsmgFS; arc=none smtp.client-ip=96.31.72.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=shurup.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shurup.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bdKShtPE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260A3C4CEDD;
-	Sat,  1 Mar 2025 07:49:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1740815380;
-	bh=SZI4oem7AV2imCWP1ydcfi/UNJr/qkLcL4nFKrpPpJ8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=bdKShtPE2kJejDOMbzCUE9D48X79oVOMwZs5vhzY8RIQT3tinBGE+Yf3HqMa/ZOwu
-	 x23ZfxLuboNbV05ar3AaswlHoKvdozOju/56Kci9uiynSAqtkM4dv6iF2HNSY/Ke3b
-	 kzXHVSLPdMY0Y8erMsLYfnES4Wn+HPCwk/maf/NxjRJ/VLD8d3GEtSYJqOT/ystNH3
-	 Q/J1oZn1yO2YLw7Bgi/H2fQQURouaVChb1i/iOERKe16tedHOB7pT5EUPmkulccBTG
-	 ORSykebBCiBAaZnce4iB6m+nljFNQOm29Oew1S4F1AsUsGRF1t2URLG5BEdCN6ZIx+
-	 LcAUrozZvbfEQ==
-Message-ID: <02bbcbca-429b-4c89-88f6-54387bf7c1de@kernel.org>
-Date: Sat, 1 Mar 2025 08:49:36 +0100
+	dkim=pass (2048-bit key) header.d=shurup.com header.i=@shurup.com header.b="2fzsmgFS"
+Received: from cpanel84.gzo.com ([96.31.72.74]:51318)
+	by relay02.gzo.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.98)
+	(envelope-from <yury@shurup.com>)
+	id 1toMn6-00000009CNb-3FCm;
+	Sat, 01 Mar 2025 07:22:04 -0600
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=shurup.com;
+	s=default; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+	Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=M/4D0No8fihiA50vilcn45zrDftRqEY7ccNRk+bpV00=; b=2fzsmgFSszO7yjFONRLB1kCdTt
+	P/wMcbysrb/Nns7fEw8zhnIQ6qwYBiO74BUW/sfZiRvVzk1WS7KQiP6yypq798hKir4x5csymiZCY
+	K7p3pJuWFuC2YmTAe6tYxjW0BbqC9dKALiNxAwTshfI7p3WTjASNwrDTb9UOnQuljwPOYZFFggkWv
+	rHmrcG8HGufiYFdffvYrkOD6riWfGV0TA/a102coVQKqd9Fr5WQ+K1OgMA3lllGCvpuXMI8X1MrpM
+	iNZ8tiXv9a6XAHr0uypYCkkIZZSj4m/Irm1O8Gudwkhhd82oy4+HSuOWUSUDW+uY1eAhTv/2BqEj7
+	dg/brjYw==;
+Received: from [178.202.191.231] (port=16048 helo=localhost.localdomain)
+	by cpanel84.gzo.com with esmtpsa  (TLS1.3) tls TLS_CHACHA20_POLY1305_SHA256
+	(Exim 4.98.1)
+	(envelope-from <yury@shurup.com>)
+	id 1toMn6-0000000HO05-0HmH;
+	Sat, 01 Mar 2025 07:22:04 -0600
+From: "Yury V. Zaytsev" <yury@shurup.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: "Yury V. Zaytsev" <yury@shurup.com>
+Subject: [PATCH RESEND] tty: vt: make defkeymap for shifted F-keys consistent with kbd
+Date: Sat,  1 Mar 2025 14:21:08 +0100
+Message-Id: <20250301132108.62761-1-yury@shurup.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+In-Reply-To: <20250119184733.9468-1-yury@shurup.com>
+References: <20250119184733.9468-1-yury@shurup.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: More than 256/512 glyphs on the Liinux console
-To: Alan Mackenzie <acm@muc.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Simona Vetter <simona@ffwll.ch>, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
- <2025022243-street-joylessly-6dfa@gregkh> <Z7nu7HqKn4o2rMd5@MAC.fritz.box>
- <2025022355-peroxide-defacing-4fa4@gregkh> <Z7y4yHT0fNYYiPI8@MAC.fritz.box>
- <d5e05c61-d796-4e5c-9538-a1e068631bba@kernel.org>
- <Z73sqvjlbJ54FCtH@MAC.fritz.box> <2025022652-uptown-cheating-5df8@gregkh>
- <Z8BjC_TzuDVaFC_3@MAC.fritz.box>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <Z8BjC_TzuDVaFC_3@MAC.fritz.box>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - cpanel84.gzo.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - shurup.com
+X-Get-Message-Sender-Via: cpanel84.gzo.com: authenticated_id: yury@shurup.com
+X-Authenticated-Sender: cpanel84.gzo.com: yury@shurup.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-GZO-MailScanner-Information: Please contact the ISP for more information
+X-GZO-MailScanner-ID: 1toMn6-00000009CNb-3FCm
+X-GZO-MailScanner: Found to be clean
+X-GZO-MailScanner-SpamCheck: not spam, SpamAssassin (not cached,
+	score=-2.099, required 6, autolearn=not spam, BAYES_00 -1.90,
+	DKIM_SIGNED 0.10, DKIM_VALID -0.10, DKIM_VALID_AU -0.10,
+	DKIM_VALID_EF -0.10, RCVD_IN_VALIDITY_RPBL_BLOCKED 0.00,
+	RCVD_IN_VALIDITY_SAFE_BLOCKED 0.00, SPF_HELO_PASS -0.00,
+	SPF_PASS -0.00, URIBL_BLOCKED 0.00)
+X-GZO-MailScanner-From: yury@shurup.com
 
-On 27. 02. 25, 14:05, Alan Mackenzie wrote:
->> I don't know why distros seem to not be using it anymore, maybe there's
->> something else?
-> 
-> Jiri pointed to some problems yesterday from his point of view as a SuSE
-> maintainer.  Perhaps kmscon just needs bringing back into maintenance.  I
-> haven't actually looked at it yet.
+The default kernel keymap is modeled after VT220, which had F-keys from
+F1 to F20. However, IBM Model F keyboards only had F-keys from F1 to
+F10, so a mapping convention was established where F11 to F20 mapped to
+Shift-F1 to Shift-F10. This convention is still used in the kernel
+today.
 
-It was a bug and it works again with kmscon's git snapshot. This commit 
-in particular:
-https://github.com/Aetf/kmscon/commit/1de5e30ea4c8b9fc21623e5520b409c8e27a31d8
+Newer IBM Model M keyboards, introduced in the 90s, had F keys from F1
+to F12. As these keyboards became more common, a new mapping convention
+emerged where F13 would be Shift-F1. This new mapping convention has
+been implemented in kbd for at least the last 20 years:
 
-thanks,
+https://github.com/legionus/kbd/blame/master/data/keymaps/i386/include/linux-keys-bare.inc#L17
+
+Unfortunately, the kernel keymap has never been updated accordingly. As
+a result, depending on whether kbd or the kernel keymap is used, console
+software sees an "off-by-two" where Shift-F3 acts as Shift-F1.
+
+This patch synchronizes the kernel keymap with the kbd keymap, which
+uses the Model M layout. The escape sequences that were previously
+emitted by both F11 and Shift-F1 (`\033[23~`) & F12 and Shift-F2
+(`\033[24~`) are now emitted only by F11 and F12, and the sequences for
+F13 (`\033[25~`), F14 (`\033[26~`), etc. are emitted for Shift-F1,
+Shift-F2, etc. instead.
+
+The sequences for the additional F-keys from F21 to F24 are defined
+consistently with the rest of the sequences and are used for Shift-F9 to
+Shift-F12.
+
+The C file (defkeymap.c_shipped) has been re-generated from the new map
+by loadkeys from kbd 2.6.4.
+
+This patch was motivated by work on Midnight Commander.
+
+Signed-off-by: Yury V. Zaytsev <yury@shurup.com>
+---
+ drivers/tty/vt/defkeymap.c_shipped | 151 ++++++++++++++++++++++++++---
+ drivers/tty/vt/defkeymap.map       |  28 +++---
+ 2 files changed, 151 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/tty/vt/defkeymap.c_shipped b/drivers/tty/vt/defkeymap.c_shipped
+index 0c043e4f292e..6e8a8035ebbd 100644
+--- a/drivers/tty/vt/defkeymap.c_shipped
++++ b/drivers/tty/vt/defkeymap.c_shipped
+@@ -2,7 +2,6 @@
+ /* Do not edit this file! It was automatically generated by     */
+ /*    loadkeys --mktable --unicode defkeymap.map > defkeymap.c  */
+ 
+-#include <linux/types.h>
+ #include <linux/keyboard.h>
+ #include <linux/kd.h>
+ 
+@@ -23,6 +22,22 @@ unsigned short plain_map[NR_KEYS] = {
+ 	0xf118,	0xf601,	0xf602,	0xf117,	0xf600,	0xf119,	0xf115,	0xf116,
+ 	0xf11a,	0xf10c,	0xf10d,	0xf11b,	0xf11c,	0xf110,	0xf311,	0xf11d,
+ 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+ };
+ 
+ static unsigned short shift_map[NR_KEYS] = {
+@@ -33,15 +48,31 @@ static unsigned short shift_map[NR_KEYS] = {
+ 	0xfb44,	0xfb46,	0xfb47,	0xfb48,	0xfb4a,	0xfb4b,	0xfb4c,	0xf03a,
+ 	0xf022,	0xf07e,	0xf700,	0xf07c,	0xfb5a,	0xfb58,	0xfb43,	0xfb56,
+ 	0xfb42,	0xfb4e,	0xfb4d,	0xf03c,	0xf03e,	0xf03f,	0xf700,	0xf30c,
+-	0xf703,	0xf020,	0xf207,	0xf10a,	0xf10b,	0xf10c,	0xf10d,	0xf10e,
+-	0xf10f,	0xf110,	0xf111,	0xf112,	0xf113,	0xf213,	0xf203,	0xf307,
++	0xf703,	0xf020,	0xf207,	0xf10c,	0xf10d,	0xf10e,	0xf10f,	0xf110,
++	0xf111,	0xf112,	0xf113,	0xf11e,	0xf11f,	0xf213,	0xf203,	0xf307,
+ 	0xf308,	0xf309,	0xf30b,	0xf304,	0xf305,	0xf306,	0xf30a,	0xf301,
+-	0xf302,	0xf303,	0xf300,	0xf310,	0xf206,	0xf200,	0xf03e,	0xf10a,
+-	0xf10b,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+-	0xf30e,	0xf702,	0xf30d,	0xf200,	0xf701,	0xf205,	0xf114,	0xf603,
++	0xf302,	0xf303,	0xf300,	0xf310,	0xf206,	0xf200,	0xf03e,	0xf120,
++	0xf121,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf30e,	0xf702,	0xf30d,	0xf01c,	0xf701,	0xf205,	0xf114,	0xf603,
+ 	0xf20b,	0xf601,	0xf602,	0xf117,	0xf600,	0xf20a,	0xf115,	0xf116,
+ 	0xf11a,	0xf10c,	0xf10d,	0xf11b,	0xf11c,	0xf110,	0xf311,	0xf11d,
+ 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+ };
+ 
+ static unsigned short altgr_map[NR_KEYS] = {
+@@ -57,10 +88,26 @@ static unsigned short altgr_map[NR_KEYS] = {
+ 	0xf912,	0xf913,	0xf30b,	0xf90e,	0xf90f,	0xf910,	0xf30a,	0xf90b,
+ 	0xf90c,	0xf90d,	0xf90a,	0xf310,	0xf206,	0xf200,	0xf07c,	0xf516,
+ 	0xf517,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+-	0xf30e,	0xf702,	0xf30d,	0xf200,	0xf701,	0xf205,	0xf114,	0xf603,
++	0xf30e,	0xf702,	0xf30d,	0xf01c,	0xf701,	0xf205,	0xf114,	0xf603,
+ 	0xf118,	0xf601,	0xf602,	0xf117,	0xf600,	0xf119,	0xf115,	0xf116,
+ 	0xf11a,	0xf10c,	0xf10d,	0xf11b,	0xf11c,	0xf110,	0xf311,	0xf11d,
+ 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+ };
+ 
+ static unsigned short ctrl_map[NR_KEYS] = {
+@@ -80,6 +127,22 @@ static unsigned short ctrl_map[NR_KEYS] = {
+ 	0xf118,	0xf601,	0xf602,	0xf117,	0xf600,	0xf119,	0xf115,	0xf116,
+ 	0xf11a,	0xf10c,	0xf10d,	0xf11b,	0xf11c,	0xf110,	0xf311,	0xf11d,
+ 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+ };
+ 
+ static unsigned short shift_ctrl_map[NR_KEYS] = {
+@@ -95,10 +158,26 @@ static unsigned short shift_ctrl_map[NR_KEYS] = {
+ 	0xf308,	0xf309,	0xf30b,	0xf304,	0xf305,	0xf306,	0xf30a,	0xf301,
+ 	0xf302,	0xf303,	0xf300,	0xf310,	0xf206,	0xf200,	0xf200,	0xf200,
+ 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+-	0xf30e,	0xf702,	0xf30d,	0xf200,	0xf701,	0xf205,	0xf114,	0xf603,
++	0xf30e,	0xf702,	0xf30d,	0xf01c,	0xf701,	0xf205,	0xf114,	0xf603,
+ 	0xf118,	0xf601,	0xf602,	0xf117,	0xf600,	0xf119,	0xf115,	0xf116,
+ 	0xf11a,	0xf10c,	0xf10d,	0xf11b,	0xf11c,	0xf110,	0xf311,	0xf11d,
+ 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+ };
+ 
+ static unsigned short alt_map[NR_KEYS] = {
+@@ -118,6 +197,22 @@ static unsigned short alt_map[NR_KEYS] = {
+ 	0xf118,	0xf210,	0xf211,	0xf117,	0xf600,	0xf119,	0xf115,	0xf116,
+ 	0xf11a,	0xf10c,	0xf10d,	0xf11b,	0xf11c,	0xf110,	0xf311,	0xf11d,
+ 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+ };
+ 
+ static unsigned short ctrl_alt_map[NR_KEYS] = {
+@@ -133,17 +228,33 @@ static unsigned short ctrl_alt_map[NR_KEYS] = {
+ 	0xf308,	0xf309,	0xf30b,	0xf304,	0xf305,	0xf306,	0xf30a,	0xf301,
+ 	0xf302,	0xf303,	0xf300,	0xf20c,	0xf206,	0xf200,	0xf200,	0xf50a,
+ 	0xf50b,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+-	0xf30e,	0xf702,	0xf30d,	0xf200,	0xf701,	0xf205,	0xf114,	0xf603,
++	0xf30e,	0xf702,	0xf30d,	0xf01c,	0xf701,	0xf205,	0xf114,	0xf603,
+ 	0xf118,	0xf601,	0xf602,	0xf117,	0xf600,	0xf119,	0xf115,	0xf20c,
+ 	0xf11a,	0xf10c,	0xf10d,	0xf11b,	0xf11c,	0xf110,	0xf311,	0xf11d,
+ 	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
++	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,	0xf200,
+ };
+ 
+ unsigned short *key_maps[MAX_NR_KEYMAPS] = {
+-	plain_map, shift_map, altgr_map, NULL,
+-	ctrl_map, shift_ctrl_map, NULL, NULL,
+-	alt_map, NULL, NULL, NULL,
+-	ctrl_alt_map, NULL
++	plain_map, shift_map, altgr_map, 0,
++	ctrl_map, shift_ctrl_map, 0, 0,
++	alt_map, 0, 0, 0,
++	ctrl_alt_map,	0
+ };
+ 
+ unsigned int keymap_count = 7;
+@@ -183,6 +294,10 @@ char func_buf[] = {
+ 	'\033', '[', '6', '~', 0, 
+ 	'\033', '[', 'M', 0, 
+ 	'\033', '[', 'P', 0, 
++	'\033', '[', '3', '5', '~', 0, 
++	'\033', '[', '3', '6', '~', 0, 
++	'\033', '[', '3', '7', '~', 0, 
++	'\033', '[', '3', '8', '~', 0, 
+ };
+ 
+ char *funcbufptr = func_buf;
+@@ -217,10 +332,14 @@ char *func_table[MAX_NR_FUNC] = {
+ 	func_buf + 135,
+ 	func_buf + 140,
+ 	func_buf + 145,
+-	NULL,
+-	NULL,
++	0,
++	0,
+ 	func_buf + 149,
+-	NULL,
++	func_buf + 153,
++	func_buf + 159,
++	func_buf + 165,
++	func_buf + 171,
++	0,
+ };
+ 
+ struct kbdiacruc accent_table[MAX_DIACR] = {
+diff --git a/drivers/tty/vt/defkeymap.map b/drivers/tty/vt/defkeymap.map
+index 37f1ac6ddfb9..0afd0ea64493 100644
+--- a/drivers/tty/vt/defkeymap.map
++++ b/drivers/tty/vt/defkeymap.map
+@@ -121,43 +121,43 @@ keycode  57 = space            space
+ 	control keycode  57 = nul             
+ 	alt     keycode  57 = Meta_space      
+ keycode  58 = Caps_Lock       
+-keycode  59 = F1               F11              Console_13      
++keycode  59 = F1               F13              Console_13      
+ 	control keycode  59 = F1              
+ 	alt     keycode  59 = Console_1       
+ 	control alt     keycode  59 = Console_1       
+-keycode  60 = F2               F12              Console_14      
++keycode  60 = F2               F14              Console_14      
+ 	control keycode  60 = F2              
+ 	alt     keycode  60 = Console_2       
+ 	control alt     keycode  60 = Console_2       
+-keycode  61 = F3               F13              Console_15      
++keycode  61 = F3               F15              Console_15      
+ 	control keycode  61 = F3              
+ 	alt     keycode  61 = Console_3       
+ 	control alt     keycode  61 = Console_3       
+-keycode  62 = F4               F14              Console_16      
++keycode  62 = F4               F16              Console_16      
+ 	control keycode  62 = F4              
+ 	alt     keycode  62 = Console_4       
+ 	control alt     keycode  62 = Console_4       
+-keycode  63 = F5               F15              Console_17      
++keycode  63 = F5               F17              Console_17      
+ 	control keycode  63 = F5              
+ 	alt     keycode  63 = Console_5       
+ 	control alt     keycode  63 = Console_5       
+-keycode  64 = F6               F16              Console_18      
++keycode  64 = F6               F18              Console_18      
+ 	control keycode  64 = F6              
+ 	alt     keycode  64 = Console_6       
+ 	control alt     keycode  64 = Console_6       
+-keycode  65 = F7               F17              Console_19      
++keycode  65 = F7               F19              Console_19      
+ 	control keycode  65 = F7              
+ 	alt     keycode  65 = Console_7       
+ 	control alt     keycode  65 = Console_7       
+-keycode  66 = F8               F18              Console_20      
++keycode  66 = F8               F20              Console_20      
+ 	control keycode  66 = F8              
+ 	alt     keycode  66 = Console_8       
+ 	control alt     keycode  66 = Console_8       
+-keycode  67 = F9               F19              Console_21      
++keycode  67 = F9               F21              Console_21      
+ 	control keycode  67 = F9              
+ 	alt     keycode  67 = Console_9       
+ 	control alt     keycode  67 = Console_9       
+-keycode  68 = F10              F20              Console_22      
++keycode  68 = F10              F22              Console_22      
+ 	control keycode  68 = F10             
+ 	alt     keycode  68 = Console_10      
+ 	control alt     keycode  68 = Console_10      
+@@ -205,11 +205,11 @@ keycode  84 = Last_Console
+ keycode  85 =
+ keycode  86 = less             greater          bar             
+ 	alt     keycode  86 = Meta_less       
+-keycode  87 = F11              F11              Console_23      
++keycode  87 = F11              F23              Console_23      
+ 	control keycode  87 = F11             
+ 	alt     keycode  87 = Console_11      
+ 	control alt     keycode  87 = Console_11      
+-keycode  88 = F12              F12              Console_24      
++keycode  88 = F12              F24              Console_24      
+ 	control keycode  88 = F12             
+ 	alt     keycode  88 = Console_12      
+ 	control alt     keycode  88 = Console_12      
+@@ -280,6 +280,10 @@ string F17 = "\033[31~"
+ string F18 = "\033[32~"
+ string F19 = "\033[33~"
+ string F20 = "\033[34~"
++string F21 = "\033[35~"
++string F22 = "\033[36~"
++string F23 = "\033[37~"
++string F24 = "\033[38~"
+ string Find = "\033[1~"
+ string Insert = "\033[2~"
+ string Remove = "\033[3~"
 -- 
-js
-suse labs
+2.39.5 (Apple Git-154)
+
