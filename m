@@ -1,214 +1,309 @@
-Received: from TYVP286CU001.outbound.protection.outlook.com (mail-japaneastazon11011005.outbound.protection.outlook.com [52.101.125.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBA5C212D63;
-	Mon,  3 Mar 2025 15:10:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.125.5
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741014634; cv=fail; b=kCGQn2oQM+8PdFXO+OdaKkHoPGCnklpEGApb8Y02Pnau5axdbwH8R6NdP0ovk/gFCv+hMNzB600/iJJYt2Rk4ZImScr1DdZd544Yn36hIU8y6X76dqhvxFprA9F06OQj5K2Wq0EvDgOl70/epqz5PZBbilYPFx+nw1R0QsVGXVY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741014634; c=relaxed/simple;
-	bh=FMzZxvRwbNn+UvR+aoWn5EjEmKDz7YJkZPMK6Dr7sTY=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=Ef2VE4wqefYWNgPrLRftMgPBjHnVld+R6rghtYzLtm6OQsok3khBCbBwTOp+k6dzHJfT6kwp9rP8HzVWbk2MEkIY0FIhGCWLgV9eII/PC6fuVTHfPUz0waNNFL9v1tWhJOLZY2qr768fRquZ4YFhFh37U5qXLmhWvn8Idr0+Iv8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=kiJ0ZDnx; arc=fail smtp.client-ip=52.101.125.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191A8215063;
+	Mon,  3 Mar 2025 15:15:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741014945; cv=none; b=JIWqRf8SmmCSoYWtb+eAmA56lFlWDHmQ+PmIgfb2fIDzWj6lm4jVVyaWSNHBc0SCEYGXm1N0FUqeGRJPTjTKZ/F2qq9YUuZ5DtH0FDInKo8cOl/qxvc8yfeUMGjQylYUPpTLySEr46/6XFADZqjVyKNqqOihjfsmRkYlewElqEg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741014945; c=relaxed/simple;
+	bh=J/6FAEzfZUmcf3YQqpKE3PWJQodoKKL5y/1lxELhgyk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i/8f2vq2KLoWiNx1qltstirHZuu55vYt2b0tV8mBHVp442pGmP+SsuM8f+IMB+YEr3J41qhbNnmuuz2nHeVELBcf+kEAW10klF7J8KkB0yDoQ87kd0GNPf7KiCFulxND2sssy77zPgJ8u1eE+UqSqqtsGEMo/lYoWvZynggLc/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UKrJoowe; arc=none smtp.client-ip=209.85.128.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="kiJ0ZDnx"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=njtt7VoeSgYCDQ7v21XC5+n4tVrOfEeRhh4yvmt2TEUtb7uI+xLzguEpU+XhwfvO3QjoVptxDRnJ7gJLMAucMZbnpvvb/S4u1fVE3rlNWhRns69zQDZFex41Dily49LQ/C//+TIbdVOKtOM/6e7cttViYkIsizZUKYfy4A1FwbJOLAX812qdU9FJXWQK/p8Qv17AhmKyac8BidtAAZ6773J2RH5mDjJPKih07dr7eXJHPk300itaklq5yTIWvIirefpq8JFlH0gAN+4KkvOozhrmJIB5+SOGuWKCs8znBO4sz/6+7EcPHewUITPx3/H1LKeXbBTcxOsFrfXghxWuaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/CrnVGBKDQ37zFGJIwRphcbtotnGDC0KIrXf4B32jGM=;
- b=bV8wx3tcKgUfTRXkWiSYV0WFLZiTwkfSJAVTY/RSRFySeFuMwSthob9mQgsdN0fBCVJG4EEDhRsS0qSlIcewT6x/Vf9aZc3YTlp3Q7XAg2KdasruJoIpXFDTBRpTo5jSEiKV6YXkPXEQ/AfqGIuW/o4iyDJhbVVVTtsVBPFrYcUGGvTZ7v/fQ6ShgtqLLMOkpv3B85IIQDsNJeKlq7bEubDOE5DY91YoUYSS0O7f+DRkH2ysC5LC8cr13N/xA29w+OIpdcDSWD3niE+l2ALjHrcngsFehBycMwtnJDcHoBgcpQ4oGPJI75XnKyQ+mL8om9apssiX2V+CGIvibJThZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/CrnVGBKDQ37zFGJIwRphcbtotnGDC0KIrXf4B32jGM=;
- b=kiJ0ZDnx5VpJmnNA0VeO9CNKy0jZJ6Tnz53spht9q3+Uard9NvAvWdPOaWSu4eMlAlAAodoSt8WVe/oPitq1DyZTkozqAyDVrFkl+wUl8C6+48siVsyA4z3l48cEL0/2k+Mwf97luQOibntbNedYSis89fAtcjwCQc/cR6KUuYE=
-Received: from TYCPR01MB11492.jpnprd01.prod.outlook.com (2603:1096:400:37e::7)
- by TY4PR01MB15163.jpnprd01.prod.outlook.com (2603:1096:405:27f::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8489.28; Mon, 3 Mar
- 2025 15:10:26 +0000
-Received: from TYCPR01MB11492.jpnprd01.prod.outlook.com
- ([fe80::4a09:638d:4f7f:51ce]) by TYCPR01MB11492.jpnprd01.prod.outlook.com
- ([fe80::4a09:638d:4f7f:51ce%4]) with mapi id 15.20.8489.025; Mon, 3 Mar 2025
- 15:10:26 +0000
-From: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-To: Rob Herring <robh@kernel.org>
-CC: "thierry.bultel@linatsea.fr" <thierry.bultel@linatsea.fr>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"geert@linux-m68k.org" <geert@linux-m68k.org>, Paul Barker
-	<paul.barker.ct@bp.renesas.com>, Geert Uytterhoeven
-	<geert+renesas@glider.be>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>
-Subject: RE: [PATCH v3 03/13] dt-bindings: serial: Add compatible for Renesas
- RZ/T2H SoC in sci
-Thread-Topic: [PATCH v3 03/13] dt-bindings: serial: Add compatible for Renesas
- RZ/T2H SoC in sci
-Thread-Index: AQHbiE+9xahEIxgc80WhwZlQr+1p0rNhca8AgAAZtXA=
-Date: Mon, 3 Mar 2025 15:10:25 +0000
-Message-ID:
- <TYCPR01MB1149261DFCD83872B2F94435F8AC92@TYCPR01MB11492.jpnprd01.prod.outlook.com>
-References: <20250226130935.3029927-1-thierry.bultel.yh@bp.renesas.com>
- <20250226130935.3029927-4-thierry.bultel.yh@bp.renesas.com>
- <20250303133540.GA1681980-robh@kernel.org>
-In-Reply-To: <20250303133540.GA1681980-robh@kernel.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYCPR01MB11492:EE_|TY4PR01MB15163:EE_
-x-ms-office365-filtering-correlation-id: 385e54f0-3d86-4cb4-e7bf-08dd5a65870e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|38070700018;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?cMmetqsUQ6TfqNBOQjc3NqXA9gZF1KdIVG9BAwtX4n2Y+1LFHdOZTHm8aHTj?=
- =?us-ascii?Q?rJGLsBybtcdRp+IgG3oiYK1iiWnzldw6sap79U/Zp5VKc2ybnXZlJ6AnA3uz?=
- =?us-ascii?Q?r+Heqwct3L8a4KS5M4nvvTzkWe65ehnnrqCWt3U26T/Jylc9ssCmQOvagWyy?=
- =?us-ascii?Q?M8QCgLcTtcM8EANCNJQmfDBdbQBnJ1m/3HeiLx5uPwCKV4jBJdIto18chQ19?=
- =?us-ascii?Q?k3/hOcZi5zVsV4uQmr+r+mDpH7vyilSJ2v7JOyS3xJfJ+4hGXWRYBfF0UvQn?=
- =?us-ascii?Q?e9fLcT/tHAHK0gXE8IjQA2CZ2a60HKIqIAWpPuWkw6CcBFW4fSFwwC8Pj0mF?=
- =?us-ascii?Q?LpKZj6UH3LIfDai3YxMeEi8ueZi2MVAz5kcJ4g2v4b8Ya6TJuRyby7hAmaCI?=
- =?us-ascii?Q?7R226LzSRYkrY0vL1A60gIRXWcCHb4QzAH1/qIRaYtCKoApM+gZPIeA9L5VA?=
- =?us-ascii?Q?7dBdLJHHdFTx63Frs/iZSKjbe3ggNu9dQR0aZAEJk2WXcNjNkhFi/HHAI+4u?=
- =?us-ascii?Q?POELikuuNiegFUU7K3cK+2lgNtUARt33ckytqb+KpB8zHmy+rI6pAGyueYwJ?=
- =?us-ascii?Q?eFvPg0z6OBBosflofW3nQ1J8cdnIuiRUXw3+eL2Twr4SYb4GBg4/JKW+YCSa?=
- =?us-ascii?Q?xATcjybTeArr5hAK7sor52EZXwJSI+2YWuO3MwWu7Genri+1EdvXAZSdH6Vu?=
- =?us-ascii?Q?2PM9IGmp63NtqpUy94avPz2tAlDDnJrKOe9WDe12UvVlLhhttgdFdR/xJEo9?=
- =?us-ascii?Q?qDfJ4UZ8e1Co7/nK7JVtdvisMvbKF/rVCrIbLwxlGdtDlC1UAMQCrFn6rb+Q?=
- =?us-ascii?Q?T7jfv8wtJHHyrXrfW4cyyBxfyhAXPBsyKKmYeNWYvprHlEeAL1GozsVc7luJ?=
- =?us-ascii?Q?pptX77GXkj/1aAyJN2Ej06ccxTTVtchX527y8mRB01Or5Ipt30rGfXnJXG/G?=
- =?us-ascii?Q?xvBBGV2+dBm+owlhi7se7WWWGXehx8QjBVUr5ABSo+IdygpbSVxQMyqykH2+?=
- =?us-ascii?Q?I421xZHxFKd6XRf6ZgdAMMjHDr2TarLNBKvQRH4MCeCTIXAlLvy6KtK0v+AD?=
- =?us-ascii?Q?AETP67BykNAmle2SR5CtMuaBwXB/F3XTC0O2HQSZ692UKAyT47GyepW71dN2?=
- =?us-ascii?Q?z4bEep1+8BJbxcjwkrjGeuuEPI7om1WnZGZ73N03MUoT22wYRB8TTG4126JV?=
- =?us-ascii?Q?bktzTaPYnHiEad6VHlpikqwWNXCrfihN9o7o7QRKVwTraaFLo42AmobAFIxv?=
- =?us-ascii?Q?sTIhlxdFMCUwGkCgfUURFHx0DRtrpycCPZacTObYwCIaxfdZuMUtYw4ToFgp?=
- =?us-ascii?Q?0fbmsKCvCyI4j0MI5J4y7mBhWFULTGddHfmIuLduwAQjliJ0WbH1KeWj8uEi?=
- =?us-ascii?Q?jmetFUdu+YBeXcDff3JdMTwNbv064QXk2vv7fS0YHiFihSeM79MRsbv2FVtG?=
- =?us-ascii?Q?5PXzBePe+1+10rR6qdMn7DgZm7sF5OjF?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB11492.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?BbIeEts7q8XDZEimVXmTepQcDxVmQOKeGxqif8JUaic2m/1P1aCih+a5WHfT?=
- =?us-ascii?Q?6C90Mh0FAQjCHYsMiVs37vgj1HRcsM2q8CDfNsfCLCLuDW+UraLB/OlreluI?=
- =?us-ascii?Q?K1NFxM8FMliwChNgHUVTS10XHwJnWQ4wmvhh/X7u37n8j435zJNO4+Ag4CR6?=
- =?us-ascii?Q?EP9N+P/RPAUZL+8rsVrPKSzE6hep175t+kAvBuPa9eCzVxLnZpMRknoPubYm?=
- =?us-ascii?Q?Zix+OUO7lBovJ+R1Vers6mh9DeMiIIJXp9L5d19mRe7lbnwkyJ2ESNe093M9?=
- =?us-ascii?Q?V9bcTMfFTlrfzOyARH+Fd0FpyZUTt2rse8qtS1NXXkX7kmEe7eAt+u4+J/UR?=
- =?us-ascii?Q?RSPj3UihCRURm8WUBkSOyEQzLedtDUN/6P2cfHYXcZVJjxPjocoW98/WAibv?=
- =?us-ascii?Q?vTG0WOl1xvoxYZksQY4aCDvirpwexy+qJoe7165IK2dqzoxZt/UZooGLSzJ1?=
- =?us-ascii?Q?Wd/FcqLGqSHkfObOs6xy0Ve0Pe8Gpu2hCv52smb9HT8cQ2sRL1KRK2b/m6L+?=
- =?us-ascii?Q?kj2JX3DSQ7dL1K+z2o0rI2t3Ush4A8M2wR1ryELhwzPFg5QwoUpH5bwPKnLp?=
- =?us-ascii?Q?hufcB53hLT68DkzAVATD89o8iynsKsO8/P2FFMtY5f9CbBgKGztZ9AhMFMSA?=
- =?us-ascii?Q?AhQ8Dv6tmG22GfXVa013YqlQDgtJTO7dY+7L7CfHppZKxB0Blbcf1QA/S+sk?=
- =?us-ascii?Q?q6Q0EsUfMs41R5U6TdAdJrEixgg3/P2nM5/HpNJRWRYrjQzF4l19zaarANpn?=
- =?us-ascii?Q?YyGW94KXwCX0avQlYYqvyGFcoRY3hM95FOH5z3azTXbEqlGAGIWF7fgiBjrB?=
- =?us-ascii?Q?8xn4k6wYS8vlHmgTxEDg1xYJWIx3oI6Us43HF8q4Ri9LxT+1AUq+jCaNKdNQ?=
- =?us-ascii?Q?/ZipASnKgOakeaQNOcwvvmGUk5FwIuZwgVLgjh5/ye3YbJhrGHExLRssno9k?=
- =?us-ascii?Q?VP/o4U9cxfroJj8zKPEuNZ7Flgl/qVE09yjfmCL2vMItfCVuXT6p8Gb27nI7?=
- =?us-ascii?Q?py5Dx2LXmqV23RBsqjPrPvQvtOmNVoc+D3H/hW7kkXX1Z7iKHbOeJOsSvcP5?=
- =?us-ascii?Q?os3KGk2RTS/i9eGF0FfGcdmeoWkt4//tpnWOBMMKLtML1siwSTBaDLzeI0Ds?=
- =?us-ascii?Q?hTw9R0vik/oUIpFNlWnOwxfBjEPxGhdLoU7qL7X9mspBP/qkG63ey3ogrASa?=
- =?us-ascii?Q?8COZXp+0z9KWPb7R3UgqBG2bEQ2rDOoh1wOzlfODAFKRf7SaLFsbZ3VWN2jP?=
- =?us-ascii?Q?OZQy1VLY0spfAQNGB1sFcx5WYyS1ceMv3GVnrJhpXV6K9Vvct27xlo5NWIqi?=
- =?us-ascii?Q?49YsavPXMLfIrkGyxWp9SB3DPYo6L21Ni0atsyjyxa2wavoOD691yTyBV7qt?=
- =?us-ascii?Q?+ONJhkna7SilqcApa8sA+PObag7b5PcwLY9U1Sw2tNazBlaE7/e/CJoEJUSt?=
- =?us-ascii?Q?eCttAMTqtXwv9kiDVlER9t5SMYCsq69JYGwf2wkuM5AY4VgzIM5ufrVtMlxH?=
- =?us-ascii?Q?3mY7t/Bg6wLeHkVFhPhlk2UOQRDtURFb+kJ7zSRg5aE0uCPB4rRBPhBy9p5y?=
- =?us-ascii?Q?BabOpLrU+poGZ8qV8T9aqQwRL0ZoQytsZto52YoOASsnnwRsAGPpIbApqLpL?=
- =?us-ascii?Q?Zg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UKrJoowe"
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-6fd719f9e0dso10331647b3.1;
+        Mon, 03 Mar 2025 07:15:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741014943; x=1741619743; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=vnZYfHRjSrDXnbFHbwXoqUV2Rvz3Z3oSLKKN3IWdcq0=;
+        b=UKrJoowevG+eTp3pCUdb+v9q9D26V9QZxC7kbrnvqu5tPVySUr6KR/iQ9ALerKzIkE
+         1CYrkiDzO9oLEJDVFQgGiHtTm9LMXn77L2yxMm1gVMOHPkZW5V5PDFuH+fvuaJA18Jf4
+         PdNRlEqaiOljwKy4PFUlTvWjkRMahCJTne1g6kfaxiBmoyhWK5vjfyT8VI6+XqaQ5zob
+         CEPsk9MxgnfeCNgEae/xMsNoWrpCdSNLMjuyuayClekduCalAr4cMMHeFHZDZRYfnIs4
+         NJy9v/DAFA7ORJFVm/6jdbl8BTxqh5obePTCpmO+dggVBpyVqrzExqLsO5EdQzdwEMKn
+         zfeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741014943; x=1741619743;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vnZYfHRjSrDXnbFHbwXoqUV2Rvz3Z3oSLKKN3IWdcq0=;
+        b=G9dLQc3OrMUT3dJ5VoqgCbWJqwmqZkmM8BLQLgD4w5/AmoPo07D5tK3D2zcCTVIs45
+         Rp8jV0Ist8Ee82Zjgr+yVd02JPAEVFY3RyQymTRECAZfFtqEWLvFU3GHj9vUBCBC+w8w
+         9FBNlQ236l2U9ilPv7RP2zd9RJu0HbseXTB+4HxWYkEbMUvRvhqHLdVRO4v04SPoazej
+         5opGhFZROWsWER80WF/9Xictuok+rPkaCJ44i9RvRlGHo+4IDVir0C2pdGfneM5wmxAR
+         laiceDnnrXTzemD+IpPX42VHRuAiDn3PoG9yDysyCuJA5JRYMRfyptYMjXNKa9LEDL06
+         4MoQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV2aCJZKGNPcImcwWvjH1VxsH1KtdZxmeSXJCWEiAxrrVhbDN4XtMo/jxNO+5zD5lwDce7DLCjL8wEjaRk=@vger.kernel.org, AJvYcCVMeekGvNq+w07nEukudyRXUrysBOaEqfPxHuu3YfeXMUJFYPZhESp78J58AgO+OphX1AQ0LqdgYXUB4J31@vger.kernel.org, AJvYcCVxd6e4BzPIO7AeToIbH3XKJ5Jz87sTCKrdIKcDG9gOgVnooifT9NpGfVTXDp7iA1cbVBM57RGFooumOqcjDCE=@vger.kernel.org, AJvYcCWev/JnMy81b76OYvOQfwFdn+iGNLjKyO5i+6QfbCMHVF7OOlqxlQ6u2UCMYbcsTpsoeXY=@vger.kernel.org, AJvYcCWqJwQ6+IPOugF5kTsfZslWTJAiB5tn5NBBwVaz0TqUy/PsDBeA6KgDWL8Ke9gtNgEhjilIRHeo@vger.kernel.org, AJvYcCWtnmXd2aQwEKD5z9EkcbWMpX30ByNEUFtkOfX0Dho8KfxuKcDGEhxansCaBn7N6+Gd3MOi9BtgziftuTg=@vger.kernel.org, AJvYcCXeOGNB6pKCToM/fvxwKSRSit9NUZjsbXSU1Hbl5YY7ltIsatu+x3aRUUhjzbEu9S2ctNlb4DQbv8SQwo77@vger.kernel.org
+X-Gm-Message-State: AOJu0YyBnYia1bGu91ch4/mFyXvU5M9TrttXjHy0PMkpF1ynmAuT/7fQ
+	Tjm4Q2d7Obga6aNLhesREj6vRG7/h2IgW1RYxSA8vNTk/1g3RNNf
+X-Gm-Gg: ASbGncu4Rh8d+4bJEBZwX4+80cV01ArBVKwIZKw2irGQgQJZ7iQEpBnU2BczZ1cU+SJ
+	qY0KzA7n7/3djof8ljDg9ViU3YeHW8r+7+zdyIkKk5IVOh/QOUToHwhb5DQ78831UJOuxwsYef8
+	TXPR/8E8wYhXFVCjxZmqxbmQJ8POMbp/oSr3F2wJktp5/zHAWoPGzlk79mm/hjEyE3BzFzbkvxd
+	tJAKbazuozJC2JWd3lFFVdLNnIMtDp9kC7P3GRC4dDTv3u6XmMUXrHGnn8KyoJQmIudRc4LdglC
+	o9HKRHOyVbT5ksh9jZkLOmvqIVF0zZtsan5yZ2wvmzwl/xZEV521l0qtYkcmnd/fpWR44ouGNE8
+	b52oh
+X-Google-Smtp-Source: AGHT+IEY4hJ4+y0MnSwcin/X5yMbfMX2rlPGrxXj2stWp9C4NMGoZplIcoPGEYKHHfJxM+PTRJ4GqA==
+X-Received: by 2002:a05:690c:3686:b0:6f9:ad48:a3c7 with SMTP id 00721157ae682-6fd4a0acc71mr190341807b3.21.1741014942895;
+        Mon, 03 Mar 2025 07:15:42 -0800 (PST)
+Received: from localhost (c-73-224-175-84.hsd1.fl.comcast.net. [73.224.175.84])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-6fd6b9619c5sm9708167b3.75.2025.03.03.07.15.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Mar 2025 07:15:42 -0800 (PST)
+Date: Mon, 3 Mar 2025 10:15:41 -0500
+From: Yury Norov <yury.norov@gmail.com>
+To: Kuan-Wei Chiu <visitorckw@gmail.com>
+Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, jk@ozlabs.org,
+	joel@jms.id.au, eajames@linux.ibm.com, andrzej.hajda@intel.com,
+	neil.armstrong@linaro.org, rfoss@kernel.org,
+	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+	dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, akpm@linux-foundation.org, hpa@zytor.com,
+	alistair@popple.id.au, linux@rasmusvillemoes.dk,
+	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+	jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+	david.laight.linux@gmail.com, andrew.cooper3@citrix.com,
+	Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH v2 01/18] lib/parity: Add __builtin_parity() fallback
+ implementations
+Message-ID: <Z8XHnToOV03hiQKu@thinkpad>
+References: <20250301142409.2513835-1-visitorckw@gmail.com>
+ <20250301142409.2513835-2-visitorckw@gmail.com>
+ <Z8PMHLYHOkCZJpOh@thinkpad>
+ <Z8QUsgpCB0m2qKJR@visitorckw-System-Product-Name>
+ <Z8SBBM_81wyHfvC0@thinkpad>
+ <Z8SVb4xD4tTiMEpL@visitorckw-System-Product-Name>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYCPR01MB11492.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 385e54f0-3d86-4cb4-e7bf-08dd5a65870e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Mar 2025 15:10:26.0254
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mp+s9tY6rc/+iy4tcvuB1UYPWHw4kbKd1rjom4QiZU01Ei/q5qKCmLWa9lmMqmgE7Hig7nXbBxWeeDgnP4YMthBMqoF3swBOOP5SER8ANEniL92DmMYy85hPhLxy6YM4
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4PR01MB15163
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z8SVb4xD4tTiMEpL@visitorckw-System-Product-Name>
 
-Hi Rob,
-thanks for you review
-
-> -----Original Message-----
-> From: Rob Herring <robh@kernel.org>
-> Sent: lundi 3 mars 2025 14:36
-> To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> Cc: thierry.bultel@linatsea.fr; linux-renesas-soc@vger.kernel.org;
-> geert@linux-m68k.org; Paul Barker <paul.barker.ct@bp.renesas.com>; Geert
-> Uytterhoeven <geert+renesas@glider.be>; linux-kernel@vger.kernel.org;
-> linux-serial@vger.kernel.org; devicetree@vger.kernel.org
-> Subject: Re: [PATCH v3 03/13] dt-bindings: serial: Add compatible for
-> Renesas RZ/T2H SoC in sci
->=20
-> On Wed, Feb 26, 2025 at 02:09:22PM +0100, Thierry Bultel wrote:
-> > Document RZ/T2H (a.k.a r9a09g077) in SCI binding.
+On Mon, Mar 03, 2025 at 01:29:19AM +0800, Kuan-Wei Chiu wrote:
+> Hi Yury,
+> 
+> On Sun, Mar 02, 2025 at 11:02:12AM -0500, Yury Norov wrote:
+> > On Sun, Mar 02, 2025 at 04:20:02PM +0800, Kuan-Wei Chiu wrote:
+> > > Hi Yury,
+> > > 
+> > > On Sat, Mar 01, 2025 at 10:10:20PM -0500, Yury Norov wrote:
+> > > > On Sat, Mar 01, 2025 at 10:23:52PM +0800, Kuan-Wei Chiu wrote:
+> > > > > Add generic C implementations of __paritysi2(), __paritydi2(), and
+> > > > > __parityti2() as fallback functions in lib/parity.c. These functions
+> > > > > compute the parity of a given integer using a bitwise approach and are
+> > > > > marked with __weak, allowing architecture-specific implementations to
+> > > > > override them.
+> > > > > 
+> > > > > This patch serves as preparation for using __builtin_parity() by
+> > > > > ensuring a fallback mechanism is available when the compiler does not
+> > > > > inline the __builtin_parity().
+> > > > > 
+> > > > > Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> > > > > Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> > > > > Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
+> > > > > ---
+> > > > >  lib/Makefile |  2 +-
+> > > > >  lib/parity.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+> > > > >  2 files changed, 49 insertions(+), 1 deletion(-)
+> > > > >  create mode 100644 lib/parity.c
+> > > > > 
+> > > > > diff --git a/lib/Makefile b/lib/Makefile
+> > > > > index 7bab71e59019..45affad85ee4 100644
+> > > > > --- a/lib/Makefile
+> > > > > +++ b/lib/Makefile
+> > > > > @@ -51,7 +51,7 @@ obj-y += bcd.o sort.o parser.o debug_locks.o random32.o \
+> > > > >  	 bsearch.o find_bit.o llist.o lwq.o memweight.o kfifo.o \
+> > > > >  	 percpu-refcount.o rhashtable.o base64.o \
+> > > > >  	 once.o refcount.o rcuref.o usercopy.o errseq.o bucket_locks.o \
+> > > > > -	 generic-radix-tree.o bitmap-str.o
+> > > > > +	 generic-radix-tree.o bitmap-str.o parity.o
+> > > > >  obj-y += string_helpers.o
+> > > > >  obj-y += hexdump.o
+> > > > >  obj-$(CONFIG_TEST_HEXDUMP) += test_hexdump.o
+> > > > > diff --git a/lib/parity.c b/lib/parity.c
+> > > > > new file mode 100644
+> > > > > index 000000000000..a83ff8d96778
+> > > > > --- /dev/null
+> > > > > +++ b/lib/parity.c
+> > > > > @@ -0,0 +1,48 @@
+> > > > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > > > +/*
+> > > > > + * lib/parity.c
+> > > > > + *
+> > > > > + * Copyright (C) 2025 Kuan-Wei Chiu <visitorckw@gmail.com>
+> > > > > + * Copyright (C) 2025 Yu-Chun Lin <eleanor15x@gmail.com>
+> > > > > + *
+> > > > > + * __parity[sdt]i2 can be overridden by linking arch-specific versions.
+> > > > > + */
+> > > > > +
+> > > > > +#include <linux/export.h>
+> > > > > +#include <linux/kernel.h>
+> > > > > +
+> > > > > +/*
+> > > > > + * One explanation of this algorithm:
+> > > > > + * https://funloop.org/codex/problem/parity/README.html
+> > > > 
+> > > > I already asked you not to spread this link. Is there any reason to
+> > > > ignore it?
+> > > > 
+> > > In v2, this algorithm was removed from bitops.h, so I moved the link
+> > > here instead. I'm sorry if it seemed like I ignored your comment.
+> > 
+> > Yes, it is.
+> >  
+> > > In v1, I used the same approach as parity8() because I couldn't justify
+> > > the performance impact in a specific driver or subsystem. However,
+> > > multiple people commented on using __builtin_parity or an x86 assembly
+> > > implementation. I'm not ignoring their feedback-I want to address these
+> > 
+> > Please ask those multiple people: are they ready to maintain all that
+> > zoo of macros, weak implementations, arch implementations and stubs
+> > for no clear benefit? Performance is always worth it, but again I see
+> > not even a hint that the drivers care about performance. You don't
+> > measure it, so don't care as well. Right?
+> > 
+> > > comments. Before submitting, I sent an email explaining my current
+> > > approach: using David's suggested method along with __builtin_parity,
+> > > but no one responded. So, I decided to submit v2 for discussion
+> > > instead.
+> > 
+> > For discussion use tag RFC.
+> > 
+> > > 
+> > > To avoid mistakes in v3, I want to confirm the following changes before
+> > > sending it:
+> > > 
+> > > (a) Change the return type from int to bool.
+> > > (b) Avoid __builtin_parity and use the same approach as parity8().
+> > > (c) Implement parity16/32/64() as single-line inline functions that
+> > >     call the next smaller variant after xor.
+> > > (d) Add a parity() macro that selects the appropriate parityXX() based
+> > >     on type size.
+> > > (e) Update users to use this parity() macro.
+> > > 
+> > > However, (d) may require a patch affecting multiple subsystems at once
+> > > since some places that already include bitops.h have functions named
+> > > parity(), causing conflicts. Unless we decide not to add this macro in
+> > > the end.
+> > > 
+> > > As for checkpatch.pl warnings, they are mostly pre-existing coding
+> > > style issues in this series. I've kept them as-is, but if preferred,
+> > > I'm fine with fixing them.
+> > 
+> > Checkpatch only complains on new lines. Particularly this patch should
+> > trigger checkpatch warning because it adds a new file but doesn't touch
+> > MAINTAINERS. 
+> > 
+> For example, the following warning:
+> 
+> ERROR: space required after that ',' (ctx:VxV)
+> #84: FILE: drivers/input/joystick/sidewinder.c:368:
+> +                       if (!parity64(GB(0,33)))
+>                                           ^
+> 
+> This issue already existed before this series, and I'm keeping its
+> style unchanged for now.
+> 
+> > > If anything is incorrect or if there are concerns, please let me know.
+> > > 
+> > > Regards,
+> > > Kuan-Wei
+> > > 
+> > > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> > > index c1cb53cf2f0f..47b7eca8d3b7 100644
+> > > --- a/include/linux/bitops.h
+> > > +++ b/include/linux/bitops.h
+> > > @@ -260,6 +260,43 @@ static inline int parity8(u8 val)
+> > >  	return (0x6996 >> (val & 0xf)) & 1;
+> > >  }
+> > > 
+> > > +static inline bool parity16(u16 val)
+> > > +{
+> > > +	return parity8(val ^ (val >> 8));
+> > > +}
+> > > +
+> > > +static inline bool parity32(u32 val)
+> > > +{
+> > > +	return parity16(val ^ (val >> 16));
+> > > +}
+> > > +
+> > > +static inline bool parity64(u64 val)
+> > > +{
+> > > +	return parity32(val ^ (val >> 32));
+> > > +}
+> > 
+> > That was discussed between Jiri and me in v2. Fixed types functions
+> > are needed only in a few very specific cases. With the exception of
+> > I3C driver (which doesn't look good for both Jiri and me), all the
+> > drivers have the type of variable passed to the parityXX() matching 
+> > the actual variable length. It means that fixed-type versions of the
+> > parity() are simply not needed. So if we don't need them, please don't
+> > introduce it.
 > >
-> > Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> > Reviewed-by: Paul Barker <paul.barker.ct@bp.renesas.com>
-> > ---
-> >  .../bindings/serial/renesas,sci.yaml          | 64 ++++++++++++-------
-> >  1 file changed, 40 insertions(+), 24 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-> > b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-> > index 64d3db6e54e5..2c4080283963 100644
-> > --- a/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/renesas,sci.yaml
-> > @@ -9,9 +9,6 @@ title: Renesas Serial Communication Interface
-> >  maintainers:
-> >    - Geert Uytterhoeven <geert+renesas@glider.be>
-> >
-> > -allOf:
-> > -  - $ref: serial.yaml#
-> > -
-> >  properties:
-> >    compatible:
-> >      oneOf:
-> > @@ -22,6 +19,8 @@ properties:
-> >                - renesas,r9a07g054-sci     # RZ/V2L
-> >            - const: renesas,sci            # generic SCI compatible UAR=
-T
-> >
-> > +      - const: renesas,r9a09g077-sci      # RZ/T2H
-> > +
->=20
-> Perhaps explain in the commit msg why the 'renesas,sci' is not applicable
-> for this chip.
+> So, I should add the following parity() macro in v3, remove parity8(),
+> and update all current parity8() users to use this macro, right?
 
+If you go with macro, please apply my patch and modify it in-place
+with this __auto_type thing and GCC hack. Feel free to add your
+co-developed-by, or tested, or whatever.
 
-Would something like that be explicit enough ?=20
+> I changed u64 to __auto_type and applied David's suggestion to replace
+> the >> 32 with >> 16 >> 16 to avoid compiler warnings.
+> 
+> Regards,
+> Kuan-Wei
+> 
+> #define parity(val)					\
+> ({							\
+> 	__auto_type __v = (val);			\
+> 	bool __ret;					\
+> 	switch (BITS_PER_TYPE(val)) {			\
+> 	case 64:					\
+> 		__v ^= __v >> 16 >> 16;			\
+> 		fallthrough;				\
 
-"The SCI of RZ/T2H SoC (a.k.a r9a09g077), as a lot
-of similarities with other Renesas SoCs like G2L, G3S and V2L,
-but a different set of registers, that moreover are 32 bits instead
-of 16 bits.=20
-This is why the 'renesas,sci' fallback does not apply for it".
+This hack should be GCC-only, and well documented.
+For clang it should be 
+ 		__v ^= __v >> 32;			\
 
-Thanks !
-Thierry
+> 	case 32:					\
+> 		__v ^= __v >> 16;			\
+> 		fallthrough;				\
+> 	case 16:					\
+> 		__v ^= __v >> 8;			\
+> 		fallthrough;				\
+> 	case 8:						\
+> 		__v ^= __v >> 4;			\
+> 		__ret =  (0x6996 >> (__v & 0xf)) & 1;	\
+> 		break;					\
+> 	default:					\
+> 		BUILD_BUG();				\
+> 	}						\
+> 	__ret;						\
+> })
