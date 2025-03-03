@@ -1,284 +1,215 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16C137D07D;
-	Mon,  3 Mar 2025 12:47:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9784212FBC
+	for <linux-serial@vger.kernel.org>; Mon,  3 Mar 2025 13:20:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741006046; cv=none; b=WKuB/fsPZwBN1FofX6EtmsLNjiiMu+2/BVH3T9txQGlsafNeUR3vYlqadnW63NkeKdidWzYR6RwGiEYbpyu7I2QAL3ynMijJ3ktFNG4Bboo+gOBOoE/FpI48GwlIB/8jMuaheCcy+szRSLwwjsNZsFuH3wiRofBAbPn6SQyISpQ=
+	t=1741008018; cv=none; b=t6MG8RVxZjn0fHjXm/LbbvrAV6Pkvih/ndoISYU65w4ns8WTaynC4Ge1PCPQBtb6XdUYwBfV4AHvAFPDnfWqswBgDkjNzuxLcPdVC8l3CZsQy5KmxJJDompI9jT502dcB2LLOPrn71uUXtOIbMa6UW/REwwzbDkDEF+UMAhr694=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741006046; c=relaxed/simple;
-	bh=oqjzi/zAhOsterMeAfvhd2Lrly5BuIHrXEyDJXM1IIY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=NkO2DKa2XDcVRkNUMTHBOHrbW5b03u5VVXDOMwSJeoUiiPf3q9H8RGdI4dBf2+kP/z4s2la5ACAkNmsljcsPoTJ8ptBeUapn3eS3ZqXVItkT7qpNWJheIUg4DC4tWvAEls5vIa4dv2t74UlhKlJBFZBqC9CleL2LTzVMFud0jFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Qy4Y32JG; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1741008018; c=relaxed/simple;
+	bh=g1Mk7++lMzi5BhWhRQ0mI4VU7qIIoTtTzWPyu4ewP/g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EJnZFZUJnSlLrYoxhnkbBm1g5HQ8ccqTwR+cOUGRqojxKS28H3GC0GjjeV/Z8xH95DYkbyqcolACiD168lZWv7VABNQlCBLNSmcV1BLQ9NmEHqNTLVCQcpvTfanbsRnsaAgdp1ZMs32HiUY3eOmmm8SX4xP4nt0FaC+CknUft2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Vs2sYrjl; arc=none smtp.client-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Qy4Y32JG"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 523B8kNN025661;
-	Mon, 3 Mar 2025 12:47:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	rN2bGVg8ZzYNF7l4VQygrAQDDlBNhEOeiHkgxlotQ7E=; b=Qy4Y32JGSiSmCU/w
-	RE3acnnO3HQsFwnkJGjzGvjL7RFItt6du1G+NBV0npjsxGKsXPVTL9Tre8fApAx2
-	r3WB+xgmZIGaYkFOFymYCW5bu6o+/s74NAqo4WSLD41CAtBdSK7C/lekbDPd5SsD
-	+zsIfx7d/q66yF/ncMI3yX+Rzq0nN4bW6tfhbJKvxZnoNB3gS7KwSDXp8a5FT2YZ
-	66nrFf/b6T3q8HK7CJoBniL/H4wbCy1OcRGIMyoTrkF8EUkLI+Iy4ddXMQVaz1pH
-	6yY8HKb3i9po4eU9IUVBesSvsuv0Ip4SX09ev/kbJLrWttHkH3T7Gs9cp5P0UaDu
-	feAdyg==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 453t6k4rft-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 03 Mar 2025 12:47:19 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 523ClI1M030976
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 3 Mar 2025 12:47:18 GMT
-Received: from [10.216.31.193] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 3 Mar 2025
- 04:47:12 -0800
-Message-ID: <f20b98fb-1cbc-4211-b616-5421bf43301f@quicinc.com>
-Date: Mon, 3 Mar 2025 18:17:09 +0530
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Vs2sYrjl"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5e095d47a25so7918156a12.0
+        for <linux-serial@vger.kernel.org>; Mon, 03 Mar 2025 05:20:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1741008014; x=1741612814; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=buy3wk70royQ8307to+vzbeizq6mjCuF24A5cvto0gc=;
+        b=Vs2sYrjlJawxQd4FvBDK6XiKs/VaRPhdFokmVKi24zo85FkMpZ+55S3oiNZk/EbsYy
+         44o+omfNUuipkN4wktChXO6ztaDC2b3ypVHSXSXzcbKlRk/NyHoaxARgSlaHvz9b8QvQ
+         6+++8lifEucHC48y3lOOHkgp9dBaoqFA98xWSAaIXPprKuTlTgTd+i7OlxdxY2YiEiF1
+         6tjFO7bP85P0ClJtCypsJKy0Ke0+3eRY/9yUfvEun6hoAgFVR+Zf6qG7yBLoP+v7lWQo
+         1ugumPdouAZknS3cCIePiOX7Zo+pOKVsf133wB687IsaFLxgpknXd94PoyB1Ieala0Dm
+         EGAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741008014; x=1741612814;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=buy3wk70royQ8307to+vzbeizq6mjCuF24A5cvto0gc=;
+        b=Df7MxALH1OkrN49m+AnVN3aGIZxy1XiylyoNmyqLRTO+YahKlWITN3d8Rb7PZhTXJM
+         4WeanKX8yv2DE6uEJJWCJcHv3LGBgw5pfnlc2gNhOhuTFEJRh4DlLDYXJEHY30L1TmYQ
+         ucTbjbUnunD37fs4qhR1+WDRQfSFxAd9FmF+PuNnDY7xFstoWOSOUPyLrjc3kBjYAcID
+         2OARdoJkT7aFB56pHi/Cmy6wknaRn5OWnsGMhBEsV5igfro2gO8hXG6AGg3wdhlI2Z/q
+         rjCQlde9W5EwNlXFDFaL8hQWKBiY6aaNvj/Iwkv/QZ1ulNyX6882q7ljZ0NjRsQMMv7/
+         aD0A==
+X-Gm-Message-State: AOJu0YwefQM1YrTze67TMoMc3ZmloImb9ZQ5JXbaNP9C4wIf6mTE4Bco
+	Bf0RWEsNUnLOtNRJuOGfCD6SXcn14fq2hfg+Z7pawWO0w9WBJjqJ0GtLPyKDMtI=
+X-Gm-Gg: ASbGnctqWxQ/Y/rp3yzzs7gQzLCuoGvi+jAMHd9CZo59QneVz4uJh926VWmUUgUtchh
+	P9LnWtVF9GWuZGJ9a02lcthLszVHKvAgsdidvPFyyJrPu9eBta4gKd9pPvqstIZL4BBEjgxiE57
+	2zAu8C4furhcK7/CgcOVBLXKtN6IWTsDxnynf7AEhgKzToJE7jwzZm5/KgS2dtflI7OyRxWwm0s
+	L/n5/xbLKt+x2kWtBk6cFZFOPy4ck0zL/FDqQRKnmA+M5AUM4IudhDLlNQegnWFdXCkAVSCb94Z
+	RD6ICZ+zKKp69CXO0BIqjdDA0VFVEGp+99PHegWPuyLwI4U=
+X-Google-Smtp-Source: AGHT+IH5n8bI3ZS3M5y3W5N3e3xxt6uVhe0uizHPAWP+Q1afwPQdKMYyQt3RYC/9kGpiqtndOCo8Zw==
+X-Received: by 2002:a17:907:c2a:b0:abf:6b30:7a94 with SMTP id a640c23a62f3a-abf6b58f60cmr708647066b.45.1741008013748;
+        Mon, 03 Mar 2025 05:20:13 -0800 (PST)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-abf5d0bcb77sm381986366b.49.2025.03.03.05.20.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 03 Mar 2025 05:20:13 -0800 (PST)
+Date: Mon, 3 Mar 2025 14:20:11 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Adam Simonelli <adamsimonelli@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject: Re: [PATCH v5 1/2] ttynull: Add an option to allow ttynull to be
+ used as a console device
+Message-ID: <Z8Wsi7_rvk346Snr@pathway.suse.cz>
+References: <20250224123915.2859682-1-adamsimonelli@gmail.com>
+ <20250224123915.2859682-2-adamsimonelli@gmail.com>
+ <Z73teICMWNx7BiHT@pathway.suse.cz>
+ <10194425.EvYhyI6sBW@nerdopolis2>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/8] soc: qcom: geni-se: Add support to load QUP SE
- Firmware via Linux subsystem
-To: Krzysztof Kozlowski <krzk@kernel.org>, <andi.shyti@kernel.org>,
-        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
-        <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <broonie@kernel.or>, <andersson@kernel.org>, <konradybcio@kernel.org>,
-        <johan+linaro@kernel.org>, <dianders@chromium.org>,
-        <agross@kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>
-CC: <quic_msavaliy@quicinc.com>, <quic_anupkulk@quicinc.com>
-References: <20250124105309.295769-1-quic_vdadhani@quicinc.com>
- <20250124105309.295769-6-quic_vdadhani@quicinc.com>
- <af27ae90-99d7-497f-b8f5-b8ca0b039753@kernel.org>
-Content-Language: en-US
-From: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-In-Reply-To: <af27ae90-99d7-497f-b8f5-b8ca0b039753@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: M1Rln0lZesj2TR50AXa1YgGCXMKjmv9Q
-X-Proofpoint-ORIG-GUID: M1Rln0lZesj2TR50AXa1YgGCXMKjmv9Q
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-03_07,2025-03-03_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- impostorscore=0 priorityscore=1501 bulkscore=0 mlxlogscore=999 mlxscore=0
- lowpriorityscore=0 clxscore=1015 spamscore=0 malwarescore=0 adultscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502100000 definitions=main-2503030098
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <10194425.EvYhyI6sBW@nerdopolis2>
 
+On Wed 2025-02-26 08:39:23, Adam Simonelli wrote:
+> On Tuesday, February 25, 2025 11:19:04 AM EST Petr Mladek wrote:
+> > On Mon 2025-02-24 07:39:14, adamsimonelli@gmail.com wrote:
+> > > From: Adam Simonelli <adamsimonelli@gmail.com>
+> > > 
+> > > The new config option, CONFIG_NULL_TTY_CONSOLE will allow ttynull to be
+> > > initialized by console_initcall() and selected as a possible console
+> > > device.
+> > > 
+> > > diff --git a/drivers/tty/ttynull.c b/drivers/tty/ttynull.c
+> > > index 6b2f7208b564..ec3dd3fd41c0 100644
+> > > --- a/drivers/tty/ttynull.c
+> > > +++ b/drivers/tty/ttynull.c
+> > > @@ -57,6 +57,13 @@ static struct tty_driver *ttynull_device(struct console *c, int *index)
+> > >  static struct console ttynull_console = {
+> > >  	.name = "ttynull",
+> > >  	.device = ttynull_device,
+> > > +
+> > > +	/*
+> > > +	 * Match the index and flags from other boot consoles when CONFIG_NULL_TTY_CONSOLE is
+> > > +	 * enabled, otherwise, use the default values for the index and flags.
+> > > +	*/
+> > > +	.index = IS_ENABLED(CONFIG_NULL_TTY_CONSOLE) ? -1 : 0,
+> > 
+> > This should not be needed. "con->index" is always initialized to "0"
+> > for the default console, see:
+> > 
+> OK, I had this in an #ifdef before, it was the cleanest way to set it to -1
+> that I could think of, other than the ifdef... If I still need this, I will try
+> to think of something else to set it to -1 when the option is enabled
 
+Ah, I was not clear enough. It should be perfectly fine to always
+statically initialize the value to -1. We should not need any
+#ifdef or IS_ENABLED.
 
-On 1/27/2025 12:36 PM, Krzysztof Kozlowski wrote:
-> On 24/01/2025 11:53, Viken Dadhaniya wrote:
->>   /* Common SE registers */
->> @@ -891,6 +896,445 @@ int geni_icc_disable(struct geni_se *se)
->>   }
->>   EXPORT_SYMBOL_GPL(geni_icc_disable);
->>   
->> +/**
->> + * elf_phdr_valid: Function to validate elf header.
->> + * @phdr: A pointer to a elf header.
->> + *
->> + * This function validates elf header by comparing fields
+I mean to do:
+
+static struct console ttynull_console = {
+	.name = "ttynull",
+	.device = ttynull_device,
+	.index = -1,
+};
+
+We might even do this in a separate patch. IMHO, it should have
+been done this way since the beginning.
+
+> > static void try_enable_default_console(struct console *newcon)
+> > {
+> > 	if (newcon->index < 0)
+> > 		newcon->index = 0;
+> > [...]
+> > }
+> > 
+> > > +	.flags = IS_ENABLED(CONFIG_NULL_TTY_CONSOLE) ? CON_PRINTBUFFER : 0,
+> > 
+> > This does not make much sense to me.
+> > 
+> > CON_PRINTBUFFER prevents duplicated output when the same device has
+> > already been registered as a boot console. But ttynull does not have
+> > a boot console variant. Also it is a "null" device. It never prints
+> > anything. The output could never be duplicated by definition.
+> > 
+> OK, I was duplicating what I saw in other consoles. I can try to remove it
+
+Again, I was not clear enough. My primary concern was that it did not make
+much sense to use the IS_ENABLED() check and initialize the value
+different way.
+
+Anyway, I would omit the flag. It is a NULL device. It does not matter
+whether it prints existing (old) messages during registration or not.
+
+> > >  };
+> > >  
+> > My proposal is to call:
+> > 
+> > #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
+> > static int __init ttynull_default_console(void)
+> > {
+> > 	add_preferred_console("ttynull", 0, NULL);
+> > 	return 0;
+> > }
+> > console_initcall(ttynull_register);
+> > #endif
+> > 
+> OK, actually in earlier revisions locally, I did actually have
 > 
-> Drop "This function" and use imperative. It's redundant and you keep
-> using it everywherre here
+> 
+> 
+> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> index dddb15f48d59..c1554a789de8 100644
+> --- a/kernel/printk/printk.c
+> +++ b/kernel/printk/printk.c
+> @@ -3712,6 +3712,11 @@ void __init console_init(void)
+>  	initcall_t call;
+>  	initcall_entry_t *ce;
 >  
+> +#ifdef CONFIG_NULL_TTY_CONSOLE
+> +       if (!strstr(boot_command_line, "console="))
+> +               add_preferred_console("ttynull", 0, NULL);
 
-Updated in V3.
+Good point! We should call add_preferred_console() only when
+the is no console= command line parameter. Otherwise, it could
+not get overridden by the command line.
 
-> ...
-> 
->> +static int qup_fw_load(struct qup_se_rsc *rsc, const char *fw_name)
->> +{
->> +	int ret;
->> +	const struct firmware *fw;
->> +	struct device *dev = rsc->se->dev;
->> +
->> +	ret = request_firmware(&fw, fw_name, dev);
->> +	if (ret) {
->> +		dev_err(dev, "request_firmware failed for %d: %d\n", rsc->protocol, ret);
->> +		return ret;
->> +	}
->> +
->> +	ret = (rsc->protocol != GENI_SE_NONE) ? geni_load_se_fw(rsc, fw) : -EINVAL;
-> 
-> Drop ternary operator. Not easy to read
-Updated in V3.
+We could check "console_set_on_cmdline", similar to
+xenfb_make_preferred_console().
 
+> +#endif
+> +
+>  	/* Setup the default TTY line discipline. */
+>  	n_tty_init();
 > 
->> +
->> +	release_firmware(fw);
->> +
->> +	return ret;
->> +}
-> 
->> +
->> +/**
->> + * geni_load_se_firmware: Function to initiate firmware loading.
->> + * @se: Serial engine details.
->> + * @protocol: protocol from spi, i2c or uart for which firmware to
->> + * be loaded
->> + *
->> + * This function is called from the probe function of protocol driver.
->> + * if dtsi properties are configured to load QUP firmware and firmware
->> + * is already not loaded, it will start firmware loading. if dtsi
->> + * properties are not defined,it will skip loading firmware assuming
->> + * it is already loaded by TZ.
->> + *
->> + * return: Return 0 if no error, else return error value.
->> + */
->> +int geni_load_se_firmware(struct geni_se *se,
->> +			  enum geni_se_protocol_type protocol)
->> +{
->> +	struct qup_se_rsc rsc;
->> +	const char *fw_name;
->> +	int ret;
->> +
->> +	ret = device_property_read_string(se->wrapper->dev, "firmware-name", &fw_name);
->> +	if (ret)
->> +		return  -EINVAL;
->> +
->> +	rsc.se = se;
->> +	rsc.protocol = protocol;
->> +
->> +	/* Set default xfer mode to FIFO*/
->> +	rsc.mode = GENI_SE_FIFO;
->> +	of_property_read_u32(se->dev->of_node, "qcom,xfer-mode", &rsc.mode);
->> +	switch (rsc.mode) {
->> +	case GENI_SE_FIFO:
->> +	case GENI_SE_DMA:
-> 
-> How value of 2 is acceptable? Your bindings said it is not.
+> Which worked as far as I could tell, at least on x86. Not sure if that was the
+> right place,
 
-Corrected in V3.
+I would prefer to keep it in drivers/tty/ttynull.c when possible.
+The following might do the trick:
 
-> 
-> 
->> +	case GENI_GPI_DMA:
->> +		break;
->> +	default:
->> +		dev_err(se->dev, "Invalid xfer mode specified: %d\n", rsc.mode);
->> +		return -EINVAL;
->> +	}
->> +
->> +	ret = qup_fw_load(&rsc, fw_name);
->> +	if (ret) {
->> +		dev_err(se->dev,  "Firmware Loading failed for proto: %s Error: %d\n",
->> +			protocol_name[rsc.protocol], ret);
-> 
-> Aren't you printing same error multiple times?
+#ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
+static int __init ttynull_default_console(void)
+{
+	if (!console_set_on_cmdline)
+		add_preferred_console("ttynull", 0, NULL);
 
-Removed in V3.
+	return 0;
+}
+console_initcall(ttynull_register);
+#endif
 
-> 
->> +		return ret;
->> +	}
->> +
->> +	dev_dbg(se->dev, "Firmware load for %s protocol is Success for xfer mode %d\n",
->> +		protocol_name[rsc.protocol], rsc.mode);
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL_GPL(geni_load_se_firmware);
->> +
->>   static int geni_se_probe(struct platform_device *pdev)
->>   {
->>   	struct device *dev = &pdev->dev;
->> diff --git a/include/linux/soc/qcom/geni-se.h b/include/linux/soc/qcom/geni-se.h
->> index 2996a3c28ef3..289fa6675d2b 100644
->> --- a/include/linux/soc/qcom/geni-se.h
->> +++ b/include/linux/soc/qcom/geni-se.h
->> @@ -1,6 +1,7 @@
->>   /* SPDX-License-Identifier: GPL-2.0 */
->>   /*
->>    * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
->> + * Copyright (c) 2023-2025 Qualcomm Innovation Center, Inc. All rights reserved.
->>    */
->>   
->>   #ifndef _LINUX_QCOM_GENI_SE
->> @@ -72,6 +73,19 @@ struct geni_se {
->>   	struct geni_icc_path icc_paths[3];
->>   };
->>   
->> +/**
->> + * struct qup_se_rsc - Structure containing se details protocol and xfer mode
->> + *
->> + * @mode: transfer mode se fifo, dma or gsi.
->> + * @protocol: Protocol spi or i2c or serial.
->> + * @se: Pointer to the concerned serial engine.
->> + */
->> +struct qup_se_rsc {
->> +	struct geni_se *se;
->> +	enum geni_se_xfer_mode mode;
->> +	enum geni_se_protocol_type protocol;
->> +};
->> +
->>   /* Common SE registers */
->>   #define GENI_FORCE_DEFAULT_REG		0x20
->>   #define GENI_OUTPUT_CTRL		0x24
->> @@ -531,5 +545,8 @@ void geni_icc_set_tag(struct geni_se *se, u32 tag);
->>   int geni_icc_enable(struct geni_se *se);
->>   
->>   int geni_icc_disable(struct geni_se *se);
->> +
->> +int geni_load_se_firmware(struct geni_se *se,
->> +			  enum geni_se_protocol_type protocol);
->>   #endif
->>   #endif
->> diff --git a/include/linux/soc/qcom/qup-fw-load.h b/include/linux/soc/qcom/qup-fw-load.h
->> new file mode 100644
->> index 000000000000..b9b58e81f5cb
->> --- /dev/null
->> +++ b/include/linux/soc/qcom/qup-fw-load.h
->> @@ -0,0 +1,179 @@
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/*
->> + * Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
->> + */
->> +#ifndef _LINUX_QCOM_QUP_FW_LOAD
->> +#define _LINUX_QCOM_QUP_FW_LOAD
->> +
->> +#include <linux/device.h>
->> +#include <linux/elf.h>
->> +#include <linux/firmware.h>
->> +#include <linux/kernel.h>
->> +
->> +/*Magic numbers*/
->> +#define MAGIC_NUM_SE			0x57464553
->> +
->> +/* Common SE registers*/
->> +#define GENI_INIT_CFG_REVISION		0x0
->> +#define GENI_S_INIT_CFG_REVISION	0x4
->> +#define GENI_FORCE_DEFAULT_REG		0x20
->> +#define GENI_CGC_CTRL			0x28
->> +#define GENI_CFG_REG0			0x100
->> +
->> +#define	QUPV3_SE_HW_PARAM_1		0xE28
-> 
-> Drop indentation after 'define'
-
-Updated in V3.
-
-> 
-> 
-> Best regards,
-> Krzysztof
+Best Regards,
+Petr
