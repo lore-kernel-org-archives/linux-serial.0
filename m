@@ -1,225 +1,141 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7174165F1A;
-	Tue,  4 Mar 2025 03:52:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D39C141987;
+	Tue,  4 Mar 2025 03:54:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741060355; cv=none; b=UkrB3fhy+4K04pBQ5vCiVAMTgXN7qnbkK4k+sKX+8f3YK6RMawibkGX6I+xCelfaoGuqrCQVgWBqCyPIFRbW3EzuLY2LmjbSt6/JnjHe2UXqrgsgMXfqAay9aiUElTfw0yF51vHnj7Gx19Qb+tq0pMFQhJpXQroGWuB3RFp8Ryk=
+	t=1741060498; cv=none; b=eWXmayv2yxMK+BfnvdeFBzOsRy1u9T+U6MUIka1WXbS/Mr88vI8j3+TNxnitPMmCbxxj0lNYpEnnYFgojGCTB8F0SCjd/xoX0bGBCuwjS37LUPl56i+j/UjRngHVCZcsb5BWBVgTGmOB5YCKIQqm87DImzlxUTRVakyibtVmEUQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741060355; c=relaxed/simple;
-	bh=f2NZwAfovmlmr+FYK23G+2UKFQo41AzBEeiyZFVgCPg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YypQIX4dTQLk49PSd9M0J7be4mT9n1YH5usY3TavHTeJau4cBBOYpMzAiF6eGPE41w36HoYXxRKNww7QVVt2ywbSiWj6TN0nSAH0g+ZEmmBDLC9ePtlhSyKUkrNQIHi745pGhPjHd2V3ttLyUCr4WnZDaY0/159g3e3qykB0axM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dkfnL5qr; arc=none smtp.client-ip=209.85.219.50
+	s=arc-20240116; t=1741060498; c=relaxed/simple;
+	bh=qc8hg5FVp5/hApF+SpKM8LFfb9pXcXaTEgaWsibCqs4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=j5pGhc76B34vwSv0ZF1kBs7kn7GNYRaTtRNIgRk1siAbhChJknUIxCyXhnwbiO6IOjYq2bzixeZFKLzjNGXbI+mDOfQIG1itct+cLTAa9OW1HoUcDclXzJbNADNiJkmf/tqzMaGnlgVnj8WuN3AXi+Jcw8BqnF8nG3+jMKZnx6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ldNP5Wy4; arc=none smtp.client-ip=209.85.160.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dkfnL5qr"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-6e89ccbbaa9so35654816d6.2;
-        Mon, 03 Mar 2025 19:52:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ldNP5Wy4"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-47210ab1283so78160381cf.1;
+        Mon, 03 Mar 2025 19:54:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741060352; x=1741665152; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tE860M7wHaUDq0Jcbf2ninl7lZPjd4TL9wH24dx53eU=;
-        b=dkfnL5qrtK15yVA+HOqBcMxd1q+pNaT2EndsrMt5O0kO6hjTCXG2aS2XjZF1lTmv5h
-         8een1Xvq6mXdilYpAW0wK8VAkD5U44hk/lLadiH1f6M0+UpQvDZ9bG8FfHNYuFDncWxI
-         I3M2ROdE3LGRKbfXvE0m0uKAK32sfTrd72YQETHVwEDYMFkg+orA7OO+DkMFv578Ghie
-         ftcn06zDdDEhTPEeacNa7il22HUD7eaUT+fAdFRqMj0WAnv0/fl6WwI3wp4sdheveLDD
-         PotArZeRo/d3kG0SRUY6amguemqKx2JHr9kjQRLzBa4dq7pJDTOFVtzvEJEfVuBgmlWi
-         d5vQ==
+        d=gmail.com; s=20230601; t=1741060495; x=1741665295; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=/d9zCbu/LYhy5rp6SGakOf1cMhZl+zNjAJhVyQeX4VY=;
+        b=ldNP5Wy48XJEidTkfACTmq1Gj/zCBtRAi4W2Dei5kSM84C+ETnoEd2W31UhjYADBGT
+         jlUQ69X5LfVJnXFLXrQQzHsfEM+FrH7NNK4CqXhQCW0t0MrKQeHUkQl4PRRVhJy8o+Ig
+         ABGczdVfKRCOc5me+ejEdBUdT7K4Metu8tbttzLcLeCSR6HragXTK8wXMAmxl0OVVayn
+         fmu0f/3Qw05V7CjuwJw9lLECQCb42mkl2ZXPitZWjfwc3Zyt/YKtbh5sCbIPuso0R6ih
+         uIt0dxuXO9t/Ck7tfUhGlkpqb7zGatlaOwHP1IyYzPImj/cSYfKpVzEQzmdcc11fi1aO
+         pONQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741060352; x=1741665152;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tE860M7wHaUDq0Jcbf2ninl7lZPjd4TL9wH24dx53eU=;
-        b=pKX2fA4JMyMBjCWrZkXheCYhEH3BQjdAxeRp7JpQt4CqF7TyD43HZXZqQm+b+bszLg
-         DrML9LaDYpPbqAqFNeVcv3+WG/XpC8utRf+raaLK3zOJZ/gWCDMVGWTdFzbS4MR/2VQh
-         JqhWmsvp4SLUZbI1m5JJA8F8c31yUkRP5y6oj6ttCRiDO+NHsX11UG5MsMIYJT8sRfCj
-         F92MWleRgXavQYuw/ydvtwjBBTrmgj79g8igyysK+hB4keGhFESY/BmGnjZOhYD/rqAt
-         z9vCzka44xUcyp3EYSmS149KMNqIZxyeSLGDOV0qf5CQrbZwmk7sxMWk1xvbmk9l01Up
-         HaVA==
-X-Forwarded-Encrypted: i=1; AJvYcCX0TziO/MvKczGoIw7GU5SnNeXaoE0EBjlBM9OofqGj9fbAn+vKBDcDEk4Oi9OOw1CbNA7hwt1k9ELSt+k=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzry+IRlx+n2fPHASyVoJoiG/SjR8yrMUy+mNwnwBB0KIpC+gdh
-	nlfFr3vGvCl58BoQYj3kz5yrsi/NAy2UJE8sjQbN/vtoD5gIwAyI
-X-Gm-Gg: ASbGncvqawcOENccHzD1z4FuiM9H797zkcX/26VRRMBbNh5Q8pnpCC3BuE4ArxfJYM/
-	LnY3t7MZ7bMgSvvIfttUpA+IpyDTac7wl2ljVeQP6NqN+VAd+Z5/tz5Cm18owjPZfG1PHwvtPra
-	yM0Ze8r1F6N4QptZkexywTq+uoV7cuMuSq7mOInEOeH1vuko8z2JVeBhKbbbHCbFDUQwOWr9M7j
-	6neTiKHPQJeMdDxjm1WFEdRnmSkH9TWnHXidVaVjDaJHzUm1Y9/vPzIxTqnqwsIot9YZm/EhAg+
-	qNUwFIAFkmKzIlNnpoCKHTRAasR1HLFB+rezcet/M5pptkZ8mfDio9sUWGkc0aHyDA==
-X-Google-Smtp-Source: AGHT+IHWT1hfGKX56Kt4db3ezUP403uEPEpr02m0jZsUqWw6e8S71Qk+wlIO9UKis0MZO7kIJg3R/A==
-X-Received: by 2002:a05:6214:21e7:b0:6e6:6252:ad1d with SMTP id 6a1803df08f44-6e8a0d2ab91mr217122886d6.20.1741060352322;
-        Mon, 03 Mar 2025 19:52:32 -0800 (PST)
-Received: from nerdopolis2.localnet ([2600:4040:5e66:a800:745f:1ed4:1113:4077])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e897653722sm61498246d6.36.2025.03.03.19.52.30
+        d=1e100.net; s=20230601; t=1741060495; x=1741665295;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=/d9zCbu/LYhy5rp6SGakOf1cMhZl+zNjAJhVyQeX4VY=;
+        b=rX+GVCsdly1C7Sy/ULLAAzR5l/rCdhswHaXiWKbOyC3DXOekf4RtRJBAagN62eMeyA
+         178LLTXY/izPH+/17PA6m3A2+yG0hBX0r1zLhW29043A7KG6ckj2O62lHa92WWgIDkmz
+         8Zyf2l6hOh8x0VTwrklew1XyXrNx1o48P0NNP5lSWeZeSE+gOxHU4MM0H7TKiWRNVwpF
+         I0OoAN4HBf5JwGoRokpVsh/7WUBhu4HKEz9Zrur83dDDsiioolPKF7XKmN+UsQektjrc
+         j6p5NcxrbQUCoJLGgI+VFk+HVgHj1OgOY16Hw2b/m1IGqpxqLFXR7jIUqhNVlAUcxaW0
+         lDQQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWmZa2pTuoCUJPLcSkxSenyd6HF3vrPXtNzNndAj5SozH5pnAwCiRhIfAMF7tNTXrrZwUMxJPWPxB6Ux+U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxGk8ba1BcxHOuYiG9iKHUEeBIyS3fXGEzGr4JBUux3Mo1zFuYD
+	IhEzgmIrW8/XaRLuYmAxANrOWOlBGJ8XT2zdxWiJHhXCLyV+ug5A5Lk+Ggdc
+X-Gm-Gg: ASbGncsOrhUY00H4pOsbhHEIzgJY12f0WX5P5etyRVvm2OfXxIii+NKvAW4A/HcvYzn
+	zyk3/J9Hj0JYiH6MQm/CyPKbZEo3Qb+XrvGALggELLbTkdcgzNKwua9qHVUb/WCpo4yHSdZBD02
+	IhefP8JQ2ZYwUZEEyxAGggdIqvJWdNImYAo1WSaopCMJGlLbiawVzfI9IDjDIjzuRfoZnrzSb85
+	8L9Q1Cbt3MAXs/EDWgU1eARMpxhv+IIjZU23PnTLOyAqWdF2oYsTyNqKVjocQIokWQB+gW+dxmt
+	pUSrENdVjLUnYBSphN5gO4mNX+FCPb0hsQEaCg3TGTLk1RUn0SAtI882nGiizSjcJsezho5QJ16
+	J/TkUAK4=
+X-Google-Smtp-Source: AGHT+IFMmnHFglN249NZAz52n1oJHNWGnWYied/qPAwrKZwsU8hr4B4Ll4F9yn7Nbyh6ZtYhTKAIkQ==
+X-Received: by 2002:ac8:5dc9:0:b0:472:17b5:dc43 with SMTP id d75a77b69052e-474bc0e14cbmr206862361cf.37.1741060494957;
+        Mon, 03 Mar 2025 19:54:54 -0800 (PST)
+Received: from nerdopolis2.mynetworksettings.com ([2600:4040:5e66:a800:745f:1ed4:1113:4077])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-474691a1f2csm67567041cf.13.2025.03.03.19.54.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Mar 2025 19:52:31 -0800 (PST)
-From: Adam Simonelli <adamsimonelli@gmail.com>
-To: Petr Mladek <pmladek@suse.com>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Jiri Slaby <jirislaby@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Andy Shevchenko <andy.shevchenko@gmail.com>,
- Steven Rostedt <rostedt@goodmis.org>,
- John Ogness <john.ogness@linutronix.de>,
- Sergey Senozhatsky <senozhatsky@chromium.org>
-Subject:
- Re: [PATCH v5 1/2] ttynull: Add an option to allow ttynull to be used as a
- console device
-Date: Mon, 03 Mar 2025 22:52:29 -0500
-Message-ID: <4647568.Icojqenx9y@nerdopolis2>
-In-Reply-To: <Z8Wsi7_rvk346Snr@pathway.suse.cz>
-References:
- <20250224123915.2859682-1-adamsimonelli@gmail.com>
- <10194425.EvYhyI6sBW@nerdopolis2> <Z8Wsi7_rvk346Snr@pathway.suse.cz>
+        Mon, 03 Mar 2025 19:54:53 -0800 (PST)
+From: adamsimonelli@gmail.com
+To: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Petr Mladek <pmladek@suse.com>
+Cc: Adam Simonelli <adamsimonelli@gmail.com>
+Subject: [PATCH v6 0/3] Optionally allow ttynull to be selected as a default console
+Date: Mon,  3 Mar 2025 22:54:44 -0500
+Message-ID: <20250304035447.3138221-1-adamsimonelli@gmail.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 
-On Monday, March 3, 2025 8:20:11 AM EST Petr Mladek wrote:
-> On Wed 2025-02-26 08:39:23, Adam Simonelli wrote:
-> > On Tuesday, February 25, 2025 11:19:04 AM EST Petr Mladek wrote:
-> > > On Mon 2025-02-24 07:39:14, adamsimonelli@gmail.com wrote:
-> > > > From: Adam Simonelli <adamsimonelli@gmail.com>
-> > > > 
-> > > > The new config option, CONFIG_NULL_TTY_CONSOLE will allow ttynull to be
-> > > > initialized by console_initcall() and selected as a possible console
-> > > > device.
-> > > > 
-> > > > diff --git a/drivers/tty/ttynull.c b/drivers/tty/ttynull.c
-> > > > index 6b2f7208b564..ec3dd3fd41c0 100644
-> > > > --- a/drivers/tty/ttynull.c
-> > > > +++ b/drivers/tty/ttynull.c
-> > > > @@ -57,6 +57,13 @@ static struct tty_driver *ttynull_device(struct console *c, int *index)
-> > > >  static struct console ttynull_console = {
-> > > >  	.name = "ttynull",
-> > > >  	.device = ttynull_device,
-> > > > +
-> > > > +	/*
-> > > > +	 * Match the index and flags from other boot consoles when CONFIG_NULL_TTY_CONSOLE is
-> > > > +	 * enabled, otherwise, use the default values for the index and flags.
-> > > > +	*/
-> > > > +	.index = IS_ENABLED(CONFIG_NULL_TTY_CONSOLE) ? -1 : 0,
-> > > 
-> > > This should not be needed. "con->index" is always initialized to "0"
-> > > for the default console, see:
-> > > 
-> > OK, I had this in an #ifdef before, it was the cleanest way to set it to -1
-> > that I could think of, other than the ifdef... If I still need this, I will try
-> > to think of something else to set it to -1 when the option is enabled
-> 
-> Ah, I was not clear enough. It should be perfectly fine to always
-> statically initialize the value to -1. We should not need any
-> #ifdef or IS_ENABLED.
-> 
-> I mean to do:
-> 
-> static struct console ttynull_console = {
-> 	.name = "ttynull",
-> 	.device = ttynull_device,
-> 	.index = -1,
-> };
-> 
-> We might even do this in a separate patch. IMHO, it should have
-> been done this way since the beginning.
-> 
-OK, will do. This makes sense.
-> > > static void try_enable_default_console(struct console *newcon)
-> > > {
-> > > 	if (newcon->index < 0)
-> > > 		newcon->index = 0;
-> > > [...]
-> > > }
-> > > 
-> > > > +	.flags = IS_ENABLED(CONFIG_NULL_TTY_CONSOLE) ? CON_PRINTBUFFER : 0,
-> > > 
-> > > This does not make much sense to me.
-> > > 
-> > > CON_PRINTBUFFER prevents duplicated output when the same device has
-> > > already been registered as a boot console. But ttynull does not have
-> > > a boot console variant. Also it is a "null" device. It never prints
-> > > anything. The output could never be duplicated by definition.
-> > > 
-> > OK, I was duplicating what I saw in other consoles. I can try to remove it
-> 
-> Again, I was not clear enough. My primary concern was that it did not make
-> much sense to use the IS_ENABLED() check and initialize the value
-> different way.
-> 
-> Anyway, I would omit the flag. It is a NULL device. It does not matter
-> whether it prints existing (old) messages during registration or not.
-> 
-Understood, this makes sense.
-> > > >  };
-> > > >  
-> > > My proposal is to call:
-> > > 
-> > > #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
-> > > static int __init ttynull_default_console(void)
-> > > {
-> > > 	add_preferred_console("ttynull", 0, NULL);
-> > > 	return 0;
-> > > }
-> > > console_initcall(ttynull_register);
-> > > #endif
-> > > 
-> > OK, actually in earlier revisions locally, I did actually have
-> > 
-> > 
-> > 
-> > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> > index dddb15f48d59..c1554a789de8 100644
-> > --- a/kernel/printk/printk.c
-> > +++ b/kernel/printk/printk.c
-> > @@ -3712,6 +3712,11 @@ void __init console_init(void)
-> >  	initcall_t call;
-> >  	initcall_entry_t *ce;
-> >  
-> > +#ifdef CONFIG_NULL_TTY_CONSOLE
-> > +       if (!strstr(boot_command_line, "console="))
-> > +               add_preferred_console("ttynull", 0, NULL);
-> 
-> Good point! We should call add_preferred_console() only when
-> the is no console= command line parameter. Otherwise, it could
-> not get overridden by the command line.
-> 
-> We could check "console_set_on_cmdline", similar to
-> xenfb_make_preferred_console().
-> 
-> > +#endif
-> > +
-> >  	/* Setup the default TTY line discipline. */
-> >  	n_tty_init();
-> > 
-> > Which worked as far as I could tell, at least on x86. Not sure if that was the
-> > right place,
-> 
-> I would prefer to keep it in drivers/tty/ttynull.c when possible.
-> The following might do the trick:
-> 
-> #ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
-> static int __init ttynull_default_console(void)
-> {
-> 	if (!console_set_on_cmdline)
-> 		add_preferred_console("ttynull", 0, NULL);
-> 
-> 	return 0;
-> }
-> console_initcall(ttynull_register);
-> #endif
-> 
-> Best Regards,
-> Petr
-> 
-Thanks for that, that works.
+From: Adam Simonelli <adamsimonelli@gmail.com>
 
+When switching to a CONFIG_VT=n world, at least on x86 systems,
+/dev/console becomes /dev/ttyS0. This can cause some undesired effects.
+/dev/console's behavior is now tied to the physical /dev/ttyS0, which when
+disconnected can cause isatty() to fail when /dev/ttyS0 is disconnected,
+and users who upgrade to a theoretical vt-less kernel from their
+distribution who have a device such as a science instrument connected to
+their /dev/ttyS0 port will suddenly see it receive kernel log messages.
 
+When the new CONFIG_NULL_TTY_DEFAULT_CONSOLE option is turned on, this will
+allow the ttynull device to be leveraged as the default console. Distributions
+that had CONFIG_VT turned on before will be able to leverage this option
+to where /dev/console is still backed by a psuedo device, avoiding these
+issues, without needing to enable the entire VT subsystem.
+
+v2:
+    rebase
+
+v3:
+    Clarify commit messages.
+
+    Guard the all the register_console()s in ttynull to prevent it from being
+    registered twice.
+
+    Only change the link order if CONFIG_NULL_TTY_CONSOLE is enabled, otherwise
+    use the existing order for ttynull if only CONFIG_NULL_TTY is enabled.
+
+    Document why the link order changes in the drivers/tty/Makefile file.
+
+    Replace #ifdefs
+
+v4:
+    Remember to actually include the changes to v3 in the cover letter.
+
+v5:
+    Correct code formatting in Makefile comment.
+
+v6:
+    Change to CONFIG_NULL_TTY_DEFAULT_CONSOLE
+
+    Set the index to -1, and don't set the flags
+
+    Use add_preferred_console() instead of register_console() in ttynull's
+    console_initcall when CONFIG_NULL_TTY_DEFAULT_CONSOLE is enabled
+
+Adam Simonelli (3):
+  ttynull: Always initialize console index to -1
+  ttynull: Add an option to allow ttynull to be used as a console device
+  tty: Change order of ttynull to be linked sooner if enabled as a
+    console.
+
+ drivers/tty/Kconfig   | 15 ++++++++++++++-
+ drivers/tty/Makefile  | 11 +++++++++++
+ drivers/tty/ttynull.c | 12 ++++++++++++
+ 3 files changed, 37 insertions(+), 1 deletion(-)
+
+-- 
+2.45.2
 
