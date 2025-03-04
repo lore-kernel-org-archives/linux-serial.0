@@ -1,74 +1,63 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBF0B18CBF2;
-	Tue,  4 Mar 2025 07:02:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B49B1FBCAD;
+	Tue,  4 Mar 2025 07:14:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741071764; cv=none; b=MNKdSHKbFOW/KwAqV0jfWAYY/2NP/ZhYSLZaQXriuqxWELXvpjsTs9jn5xmlzNZLSsmBb1+SEqovkdvox+Mc/SLgeBtAlW7ZvxkAq+P0M8b/bD7/wMRXz0WgMHN3TVT7F28xVmE+JO0HbqbE8C72qqGbJ9uAf7UvxKR6kNA3lFM=
+	t=1741072476; cv=none; b=e+NJVl0rnrEym8yQKgz2NqvsucjlVY1Hogb3mes3cLuiQ8Wn54YsiwnoweoQsnaRMjE7vxbWG2NOX9f/jUWYA8PVqLjbekkSsXo99VikspxZ4fQVVYNF3M+wqToypOH6LiNcrs5pbHpfkfIN2Q+4q1IqZGlelUP8Q5qJSSOtNaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741071764; c=relaxed/simple;
-	bh=bys9O0VcWA/Cebo+b4M8fexbIivFWzepcQOhdvMlll0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=W1Eng3QjOpDB1nX17LFpefnG8W9MPEJ9Se+LX87gY6WT+O8YrV5oIG3u11HIxvzvaRdMbDJxdBCRHP5q3syr/648aMJEBuIgtBFn6v3ueaJ2yWgOXr6bB2xm/sPhtmKUZegbgcG3wuwW7DmUAT7DK0a2SpUnxIiWKXGFvQWwcMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vw2edoNH; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741072476; c=relaxed/simple;
+	bh=vGt0uLWAkcR3HonXGBsTZgj5Y/WTltyn2FU5GJandcM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=gvypqOKIMbkTyNtxEvHGqDf+/xxYEeieUlyh9bnONQRVNrTB/E9QhX6GJkIUETv8Bc5+pZ8Q/HSBq5EjP5EVtsTE00DiihqG9u5+CtH5VmpNqQlWxn8diWoue8Sj3fYmO9/SEca8bam5R/3KlaH8sYQJB3qam2U328aK9jCYGwA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=KkVk3gNu; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vw2edoNH"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7c0818add57so565700385a.3;
-        Mon, 03 Mar 2025 23:02:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741071761; x=1741676561; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=zbTcNkNHFzitY1YfkyytQj+zLC+mpMRQYQZjO6RgWnw=;
-        b=Vw2edoNH5joaUfeKUNsP8sZN6k5pen7EpOq7LxL0SHFSVDcizec1MDDYcBUa4C/Xbg
-         ohCf8WLJ0qvgPu/wXWaxTVhT3/3v/vxH8kYiw6Mm8BIffiLS6VBYO+F2rH3nGCUoKd+i
-         lk7yH5hRu7ypzkqUyE5LwB4Pt1W3Z0+qaxGQVWclXGeTPpGX5cVU92rEZVutAQXTFdCv
-         gr7ukd8QVytFRTAEIAFjZn5ZP9mJJ6ocZ5PQXT1OyyvKWF3CaWArnKHsZHKj2OeY2uk8
-         oTkSDf0rpr+Nf6Yepy1K59/bx6ppzzPWiuzFYcE1NYY4qeFcPVOx2q+pnu72TfeszVF0
-         N5Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741071761; x=1741676561;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zbTcNkNHFzitY1YfkyytQj+zLC+mpMRQYQZjO6RgWnw=;
-        b=EPbWC0FKHIC0tk10UZeqqifXTr5/ralKEixll0AqAh+D9r5E8EV6h5e24uDbE0nLLp
-         CpoHGCfbNQBnsy5mSiTOtw5NNtPwIrtuf9wbfs8Ly3sKJUGpGBApbz3pMKvuhJ6VJaNh
-         pFh5S8U1XRFC2tSUKB7Xj50xVbsxdq40t2fq5obb3bPXLTVnz1Dgw0MILN42qRiwNqWn
-         HEDtG9YBzWMwfcZ1P1KMb+hVrV34+zr0Aaor3Pt0kw6u297ju6lBDZq1+jMYC8khWopb
-         UHKFSglDzWTOT+rvw952HS3KGJEN9T43e/ri3o6OdPq4cUoF+opSdD7iif2+z+TRv1qB
-         5/jA==
-X-Forwarded-Encrypted: i=1; AJvYcCV8aoezgdtU0YkR5nuBSnxGD4RhFM6KK6LA9iQhE0ZgsDesaTT5BWvhkL0iMDcQylPRbUBlxjgxfsb1VAY=@vger.kernel.org, AJvYcCXxc5vLPa3neaNtymdM2RHsMEVzC7ZMeAzXLfzcAZOcGwNPaWpEnUK3uMprMiAWeXRcK2JCvhCcmK1diSp5@vger.kernel.org
-X-Gm-Message-State: AOJu0YxwVY3z/Q5P30mdN155iQF0EwAnlR1hbWwJonDAQ5NSj0mY4E05
-	C7M0fp4jtTGZqknKnnxWq5Ew4ysjD4dwYTTSG66FyDoa8y80iKWQ
-X-Gm-Gg: ASbGncuP//MR5nL2kDtTn21aJs5OeQJSMNrFsUmImeRq16/DKDM4MGv9BZwWfjVgqNJ
-	NDj8uZygCtLc6dRA+Fm6rYMo96rKwtqsT7s5Jrk1J5Lz7QYy2WzyS8fIF2+U3WcFEMZ7MXMCCz5
-	tviBvOWN7yjQk0nOHInnt7ofvZOIdsVa6uOjnXBv/tbaIRo7bpeZTEunyTZz+HgCgdbfPNnRj3H
-	NlF8B11z+JiLAl9+27GBdzbUtkAK6PrrR7MK9ew6Moppw/C3CtNCnrGGf6RrwSpiybL76WnahgT
-	8DAEtgpS8FC08nS4AqX0
-X-Google-Smtp-Source: AGHT+IE09fMY4omeejvfEyxnEULpk+om4jmV6tCwrtaHykdqplRbip0TOEPcAVW+dipju2pX2FiV0A==
-X-Received: by 2002:ad4:5f08:0:b0:6e6:6699:7e58 with SMTP id 6a1803df08f44-6e8a0c88f49mr216896046d6.1.1741071761619;
-        Mon, 03 Mar 2025 23:02:41 -0800 (PST)
-Received: from localhost ([2001:da8:7001:11::cb])
-        by smtp.gmail.com with UTF8SMTPSA id 6a1803df08f44-6e8976cc819sm63177146d6.86.2025.03.03.23.02.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Mar 2025 23:02:41 -0800 (PST)
-From: Inochi Amaoto <inochiama@gmail.com>
-To: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Inochi Amaoto <inochiama@gmail.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Yixun Lan <dlan@gentoo.org>,
-	Longbin Li <looong.bin@gmail.com>
-Subject: [PATCH] serial: 8250_dw: Add ACPI ID for Sophgo SG2044 UART
-Date: Tue,  4 Mar 2025 15:02:09 +0800
-Message-ID: <20250304070212.350155-1-inochiama@gmail.com>
-X-Mailer: git-send-email 2.48.1
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="KkVk3gNu"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 523NWwVF012576;
+	Tue, 4 Mar 2025 07:14:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=Nbgu7pShJvE4dbkB60zZxlUCUUmKYXMg2UV
+	w1ayvXh4=; b=KkVk3gNup5VDq8Ssk38X4vsKGHv7KOao3QDheaM4cu9enq88FH4
+	fmiBxoR6vimBh0lgZY+jUnR5hbJDGjx9GSXNMCaJ0HVDTKurxuTMp5xEU8lQQvGL
+	zmnRn7pQhKWdYpKZKxtrY80kL1vbVtbDRtiGGXIpWwpvHc+yZuCJloaF3M12w1Y/
+	xoaeU1M+vH0Z/XLDbbuzqEk51bzReNbjOpA2iOu1Rr54wfl7pEJMxPt3nAq/fqxR
+	JrN4ktlqfSxfxb6QAssQ0fxU8QhV36T+VHRWsloqZyPoj6GjCbPIE+RxTyb0eC2n
+	t9IpnwotCLqOoQIn8591jCXnbfeH0ELEp5g==
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 455p6t10c0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 04 Mar 2025 07:14:29 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 5247EPcN001886;
+	Tue, 4 Mar 2025 07:14:25 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 453uakrn81-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 04 Mar 2025 07:14:25 +0000
+Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 5247EP21001881;
+	Tue, 4 Mar 2025 07:14:25 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com ([10.213.97.252])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 5247EP1O001879
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 04 Mar 2025 07:14:25 +0000
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4047106)
+	id BECB456A; Tue,  4 Mar 2025 12:44:24 +0530 (+0530)
+From: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, johan+linaro@kernel.org,
+        dianders@chromium.org, konradybcio@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Cc: quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com,
+        Viken Dadhaniya <quic_vdadhani@quicinc.com>
+Subject: [PATCH v1] serial: qcom-geni: Remove alias dependency from qcom serial driver
+Date: Tue,  4 Mar 2025 12:44:23 +0530
+Message-Id: <20250304071423.4033565-1-quic_vdadhani@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -76,27 +65,98 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: hD16FvSaAabWw0Fmn9Sybqt8WEdNQeXJ
+X-Authority-Analysis: v=2.4 cv=P5XAhjAu c=1 sm=1 tr=0 ts=67c6a855 cx=c_pps a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17 a=Vs1iUdzkB0EA:10 a=COk6AnOGAAAA:8 a=ci-9EGO1i53FkUXoZCwA:9 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-GUID: hD16FvSaAabWw0Fmn9Sybqt8WEdNQeXJ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-03-04_03,2025-03-03_04,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 impostorscore=0
+ bulkscore=0 priorityscore=1501 suspectscore=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 phishscore=0 adultscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam authscore=0 adjust=0 reason=mlx
+ scancount=1 engine=8.19.0-2502100000 definitions=main-2503040059
 
-The UART on Sophgo SG2044 can be enumerated via ACPI.
-Add ACPI ID for it.
+Remove the dependency on aliases in the device tree configuration for the
+qcom serial driver. Currently, the absence of an alias results in an
+invalid line number, causing the driver probe to fail for geni serial.
 
-Signed-off-by: Inochi Amaoto <inochiama@gmail.com>
+To prevent probe failures, implement logic to dynamically assign line
+numbers if an alias is not present in the device tree for non-console
+ports.
+
+Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
 ---
- drivers/tty/serial/8250/8250_dw.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/qcom_geni_serial.c | 26 +++++++++++++++++++++++---
+ 1 file changed, 23 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 6afcf27db3b8..031ca1a7155b 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -785,6 +785,7 @@ static const struct acpi_device_id dw8250_acpi_match[] = {
- 	{ "INT3434", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "INT3435", (kernel_ulong_t)&dw8250_dw_apb },
- 	{ "INTC10EE", (kernel_ulong_t)&dw8250_dw_apb },
-+	{ "SOPH0002", (kernel_ulong_t)&dw8250_skip_set_rate_data },
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, dw8250_acpi_match);
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index a80ce7aaf309..2457f39dfc84 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -98,6 +98,8 @@
+ 
+ #define DMA_RX_BUF_SIZE		2048
+ 
++static DEFINE_IDR(port_idr);
++
+ struct qcom_geni_device_data {
+ 	bool console;
+ 	enum geni_se_xfer_mode mode;
+@@ -253,10 +255,25 @@ static struct qcom_geni_serial_port *get_port_from_line(int line, bool console)
+ 	struct qcom_geni_serial_port *port;
+ 	int nr_ports = console ? GENI_UART_CONS_PORTS : GENI_UART_PORTS;
+ 
+-	if (line < 0 || line >= nr_ports)
+-		return ERR_PTR(-ENXIO);
++	if (console) {
++		if (line < 0 || line >= nr_ports)
++			return ERR_PTR(-ENXIO);
++
++		port = &qcom_geni_console_port;
++	} else {
++		int max_alias_num = of_alias_get_highest_id("serial");
++
++		if (line < 0 || line >= nr_ports)
++			line = idr_alloc(&port_idr, (void *)port, max_alias_num + 1, nr_ports,
++					 GFP_KERNEL);
++		else
++			line = idr_alloc(&port_idr, (void *)port, line, nr_ports, GFP_KERNEL);
++
++		if (line < 0)
++			return ERR_PTR(-ENXIO);
+ 
+-	port = console ? &qcom_geni_console_port : &qcom_geni_uart_ports[line];
++		port = &qcom_geni_uart_ports[line];
++	}
+ 	return port;
+ }
+ 
+@@ -1761,6 +1778,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ 						port->wakeup_irq);
+ 		if (ret) {
+ 			device_init_wakeup(&pdev->dev, false);
++			idr_remove(&port_idr, uport->line);
+ 			uart_remove_one_port(drv, uport);
+ 			return ret;
+ 		}
+@@ -1772,10 +1790,12 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+ static void qcom_geni_serial_remove(struct platform_device *pdev)
+ {
+ 	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
++	struct uart_port *uport = &port->uport;
+ 	struct uart_driver *drv = port->private_data.drv;
+ 
+ 	dev_pm_clear_wake_irq(&pdev->dev);
+ 	device_init_wakeup(&pdev->dev, false);
++	idr_remove(&port_idr, uport->line);
+ 	uart_remove_one_port(drv, &port->uport);
+ }
+ 
 -- 
-2.48.1
+2.34.1
 
