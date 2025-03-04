@@ -1,317 +1,331 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 265DE1C8604;
-	Mon,  3 Mar 2025 19:37:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ECE0165F1A;
+	Tue,  4 Mar 2025 03:46:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741030668; cv=none; b=pehBhgYXA4lUe4DQBsVXgb62l2bZovaHz7r6ajFTuvPCwNgdVOF/S4Izz5SzNeT2l1fRiMGO7RDV3EUI/Z0OjtCygHnHYy1M+EElS4CiQe1DBlqmJT3C+vQlngGTg3XAdJew/wcgs+aEmMi0FkJirGAPkwSu41Ff8sSXuwMM62U=
+	t=1741059991; cv=none; b=Y6bHFW3ajZqfgri2h7phi8pK0OsqDEcttTWINn/lqW2XDI1cA/dfkIfjIoME9u8WWB9Y5qsWkVdM5TjogYi+/jyhjIfTaYDLjmO9A2ht2kfeE2acnavux9C99S7iBMzm5JtL7VOwM6XBHp3LbDuUi9hbQTL51bK2i5Gbuld7yio=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741030668; c=relaxed/simple;
-	bh=1sKM3HmGmZ4XNV0R3wDe7YhC6/n+JJn0dGFKTpsVn9M=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=i1Z5AXP/wPjjWBNzOADLHpbZOpGX7jeqQT6Z4muYooehwII88bsoDrR3etUE7sB4wbfZ+HgjjbZC5jbjjjRPtREpiiEDyLmZmxHXW4BqRQBkec56znWqhuK1NiZVhxBC0WRXAv9H/C2l7tS9x13z6barhR+xp5NzaJ1ZxHDKO1E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ffQO1ly4; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741059991; c=relaxed/simple;
+	bh=/0M1+eq6BwinwoNP8fsnYGIUNIVIlGYP9vwLA7kdWQ4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qy4pm12l6n/lJwdPg4ey+hPBijCbMLlHQCYjjnxoLRNkexiCfABzjc+op2Al356UU321kSTRNV9vWlRpYPmWW5hvVCWDU2Cdr+IkW6Kes2ivI6f9pceVNxNNC0jBqqynhxECE2jfWPX+1DT8Y9brIlqvjQOPiRdVq6y0BUekGSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aMM6BozC; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ffQO1ly4"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-43bc31227ecso8529525e9.1;
-        Mon, 03 Mar 2025 11:37:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741030662; x=1741635462; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=LVBrsQeXraVCp2D/HwIHQkHOOS8UoeEI0fbbAugf/mo=;
-        b=ffQO1ly43exgN9SDz4qmffmr29hTGvWd5bY448F/maMRvI/VaDwiwoGfWgAWyFwnak
-         GM5RdO10zyqqj71DlIGhJ3bv34ka9inKiyOBcD108E3ZcbI0vyoE887cvP+Uu6nUeyh1
-         VHN3MA5StaOT2mQTBpsplrBuH8csKFtsCH79HGRoL4oTjQmStMK5XYVEJ3obuVUoKS0U
-         6af9S+Uc40xgCJj+cwpPPk9oq7JwH/jBBFhDHsI881mv6Xp458B6kU2wPCojkDBbQNXN
-         wthQ8aU/j/fIUm7Jx3+kVqqeyJ+X5V+f7P2w3MfN4xH30AlUY4tvVzwLJX+r+jdNGr6Q
-         STpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741030662; x=1741635462;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LVBrsQeXraVCp2D/HwIHQkHOOS8UoeEI0fbbAugf/mo=;
-        b=RPqDuRV8CuI07C9eUi/j4Cel/GjSuzie9byR48m63N39/WEZTA2Wv9yg5LNlP5egko
-         RFYVS4Z9C/RkxPG4Lw0OjDuomix6yBqU91MPR0u08nRONzzWCQW9Fpv6B0ZRUo6UFp+J
-         sVis8/7YCuuh/sW3Msa+l5dXu8OQ5lDA+4q7GJnYOaiGjaYU7f5bKiAE/arcNgRs0Ah/
-         0mrPfaF9kMVajBaYw4sqMoDDZ52GrJ9TBG0thSlhX571boi+SGd0wJ4LfKqpcksLm1n9
-         D6w5mDo/XVRGFX+KI4nOGa3igcDZBxN7MiDdoFB+mytfTINKvqtuylgryYFFDQhn8K7I
-         Qt4g==
-X-Forwarded-Encrypted: i=1; AJvYcCUfkWjWrS69QxH8gmkIswi6Gt+FO4rHgzf+hX1Gbryloz5oajVSWqXLoiT05Us6DnRRMhFlnerb@vger.kernel.org, AJvYcCUrQPrQgkSc3H76tPl8I3K5ULZe8jrmcYJKvFMBStPx5fZHT/HYAxaOWOf2TMONXbulLYI=@vger.kernel.org, AJvYcCUrojQdevuCIr2s/Ggmjq6D98+Yswvewp5hdHHQifXP21Z8KkXkH7v86zvs+J/9UeIZHZfvQpiOo5HI2u1t@vger.kernel.org, AJvYcCWMHq2W1gRHGlcZ2tvq5kdTy9VPFNH6GKx8ufp2F9nLB7d9u8KXsX+vsfsDrKYxbjvwtAme2wAd/nAKzI4=@vger.kernel.org, AJvYcCXD6FOIRZ5vrY1NJDX8GeoJF15ytyWg0uRPY5BeYo6OtJgmF2i97JVDK9XA9giHz7CapYev7wCjCEbVy9ujAps=@vger.kernel.org, AJvYcCXPKseUdbVuWyGVGGbVQ6Aqgd2LToWjyt49Ufa/zG4qLxBnTS7K5Hiz6z4K2B7Np3rbzRfghz3NyUWMyXk=@vger.kernel.org, AJvYcCXo2uecsV2Xkq2Ey2MOnkcRxAGayT7P2lVSsNpPoPeDyOqxFKBgXbEsw7dP8NBR40KvkVjkz1PZ8KbtXw0w@vger.kernel.org
-X-Gm-Message-State: AOJu0YwR/P/6/+1YsXjiBPpAYIfIo32JUPy6g7yVaLplrtwezx6uAUnc
-	O5T49efZjGEjacJMNnmscWyiNa2qnqYTRueMoblrCwp92yMhLH4z
-X-Gm-Gg: ASbGncs1ZqwvTUgpB+1r3IVOAdd2QOrbLdNdjMAVpWEhiLJxmtIdWubtP97BM9eX0zI
-	XgnehtYYNuT0Q2ahXgC6P6G1GeV+wc3ioQqOydZY0NuLH9bpQYcwUVaHQ59XT9FhZ+jIA4I8Ytv
-	mWkByv1v2XOcWjWnm33Hd2kIrKz7LXSd0nEMffxV6rGkalqFh9Ng9ERlubb1RQf7CJ3ThNfjdOk
-	j79Szw+fTp4tCVP5jnCdS+isPee5yO0Fb4EasmPjPSHANyxfO9L76GBgLKtx66iBeyZAT77+/+z
-	G/9nCBmFSF75YLfi4fsJPWmzbw11+j5tsRUpsCUrOlbrw9IAjx6CWbt3E5fy8XREJOmdOhgjc3C
-	ys2Nuy6w=
-X-Google-Smtp-Source: AGHT+IE5SsMAFxGhtu6mLXRY5Pge6T5PIIN9j46P3NC9S6x1AuYKxmDUwUSvWRO/DaRfnfW/d1a6Iw==
-X-Received: by 2002:a05:600c:1548:b0:439:685e:d4c8 with SMTP id 5b1f17b1804b1-43ba66fec18mr136187305e9.15.1741030662069;
-        Mon, 03 Mar 2025 11:37:42 -0800 (PST)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-390e47b7a73sm15704508f8f.50.2025.03.03.11.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Mar 2025 11:37:41 -0800 (PST)
-Date: Mon, 3 Mar 2025 19:37:39 +0000
-From: David Laight <david.laight.linux@gmail.com>
-To: Yury Norov <yury.norov@gmail.com>
-Cc: Kuan-Wei Chiu <visitorckw@gmail.com>, tglx@linutronix.de,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
- x86@kernel.org, jk@ozlabs.org, joel@jms.id.au, eajames@linux.ibm.com,
- andrzej.hajda@intel.com, neil.armstrong@linaro.org, rfoss@kernel.org,
- maarten.lankhorst@linux.intel.com, mripard@kernel.org, tzimmermann@suse.de,
- airlied@gmail.com, simona@ffwll.ch, dmitry.torokhov@gmail.com,
- mchehab@kernel.org, awalls@md.metrocast.net, hverkuil@xs4all.nl,
- miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
- louis.peens@corigine.com, andrew+netdev@lunn.ch, davem@davemloft.net,
- edumazet@google.com, pabeni@redhat.com,
- parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
- johannes@sipsolutions.net, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, akpm@linux-foundation.org, hpa@zytor.com,
- alistair@popple.id.au, linux@rasmusvillemoes.dk,
- Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
- jernej.skrabec@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
- linux-fsi@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
- linux-input@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mtd@lists.infradead.org, oss-drivers@corigine.com,
- netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
- brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
- linux-serial@vger.kernel.org, bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
- andrew.cooper3@citrix.com, Yu-Chun Lin <eleanor15x@gmail.com>
-Subject: Re: [PATCH v2 01/18] lib/parity: Add __builtin_parity() fallback
- implementations
-Message-ID: <20250303193739.2a9cdc42@pumpkin>
-In-Reply-To: <Z8XHnToOV03hiQKu@thinkpad>
-References: <20250301142409.2513835-1-visitorckw@gmail.com>
-	<20250301142409.2513835-2-visitorckw@gmail.com>
-	<Z8PMHLYHOkCZJpOh@thinkpad>
-	<Z8QUsgpCB0m2qKJR@visitorckw-System-Product-Name>
-	<Z8SBBM_81wyHfvC0@thinkpad>
-	<Z8SVb4xD4tTiMEpL@visitorckw-System-Product-Name>
-	<Z8XHnToOV03hiQKu@thinkpad>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aMM6BozC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1741059990; x=1772595990;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/0M1+eq6BwinwoNP8fsnYGIUNIVIlGYP9vwLA7kdWQ4=;
+  b=aMM6BozC+R4XTscYyk6n0Lx08Z81/DTPVD+1ig53pn2z9ffM5WRFeXhX
+   p2NdM4nYTyykvJVfZmpDVrN4o8XAIiJrzDZLzIxxAZ1Y4DwiGZ8DmeYJ2
+   9bH7FVF8U0ianPfAaqGuCx2Noauc7OIxVaTzWztvTCT3G8aFgZEH+kvVk
+   iMmMvqWQjrsi6P23yGG46L2FJqeH4VqjrwK8mlF36q3pZrWZpoFsIgsKI
+   AKJ8GXyWtuHSmNWMNgcDef305bvot1TDTZUYEZIfbJgHEuG+xUGb5V5fb
+   Yti6QXzETXGvjUz+nxJp8NPa3xAuvLy/PqIvl67Ua3yG3HYshRlsBGsQP
+   g==;
+X-CSE-ConnectionGUID: gDXf1lR9Sw67mrUGZ8GFPQ==
+X-CSE-MsgGUID: 2V5P3R0SQTamyi/gtaFpCA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11362"; a="41205070"
+X-IronPort-AV: E=Sophos;i="6.13,331,1732608000"; 
+   d="scan'208";a="41205070"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2025 19:46:29 -0800
+X-CSE-ConnectionGUID: 6QCd+HrMRvKZOhlrSbn+2w==
+X-CSE-MsgGUID: xgOsL+4uRX+OBjbNPymTzw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.13,331,1732608000"; 
+   d="scan'208";a="118728131"
+Received: from lkp-server02.sh.intel.com (HELO 76cde6cc1f07) ([10.239.97.151])
+  by fmviesa010.fm.intel.com with ESMTP; 03 Mar 2025 19:46:24 -0800
+Received: from kbuild by 76cde6cc1f07 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tpJEb-000JEg-2Z;
+	Tue, 04 Mar 2025 03:46:21 +0000
+Date: Tue, 4 Mar 2025 11:46:03 +0800
+From: kernel test robot <lkp@intel.com>
+To: Viken Dadhaniya <quic_vdadhani@quicinc.com>, andi.shyti@kernel.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, broonie@kernel.or,
+	andersson@kernel.org, konradybcio@kernel.org,
+	johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, quic_msavaliy@quicinc.com,
+	quic_anupkulk@quicinc.com,
+	Viken Dadhaniya <quic_vdadhani@quicinc.com>
+Subject: Re: [PATCH v3 6/9] soc: qcom: geni-se: Add support to load QUP SE
+ Firmware via Linux subsystem
+Message-ID: <202503041123.JpkvIp44-lkp@intel.com>
+References: <20250303124349.3474185-7-quic_vdadhani@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250303124349.3474185-7-quic_vdadhani@quicinc.com>
 
-On Mon, 3 Mar 2025 10:15:41 -0500
-Yury Norov <yury.norov@gmail.com> wrote:
+Hi Viken,
 
-> On Mon, Mar 03, 2025 at 01:29:19AM +0800, Kuan-Wei Chiu wrote:
-> > Hi Yury,
-> > 
-> > On Sun, Mar 02, 2025 at 11:02:12AM -0500, Yury Norov wrote:  
-> > > On Sun, Mar 02, 2025 at 04:20:02PM +0800, Kuan-Wei Chiu wrote:  
-> > > > Hi Yury,
-> > > > 
-> > > > On Sat, Mar 01, 2025 at 10:10:20PM -0500, Yury Norov wrote:  
-> > > > > On Sat, Mar 01, 2025 at 10:23:52PM +0800, Kuan-Wei Chiu wrote:  
-> > > > > > Add generic C implementations of __paritysi2(), __paritydi2(), and
-> > > > > > __parityti2() as fallback functions in lib/parity.c. These functions
-> > > > > > compute the parity of a given integer using a bitwise approach and are
-> > > > > > marked with __weak, allowing architecture-specific implementations to
-> > > > > > override them.
-> > > > > > 
-> > > > > > This patch serves as preparation for using __builtin_parity() by
-> > > > > > ensuring a fallback mechanism is available when the compiler does not
-> > > > > > inline the __builtin_parity().
-> > > > > > 
-> > > > > > Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
-> > > > > > Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
-> > > > > > Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
-> > > > > > ---
-> > > > > >  lib/Makefile |  2 +-
-> > > > > >  lib/parity.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
-> > > > > >  2 files changed, 49 insertions(+), 1 deletion(-)
-> > > > > >  create mode 100644 lib/parity.c
-> > > > > > 
-> > > > > > diff --git a/lib/Makefile b/lib/Makefile
-> > > > > > index 7bab71e59019..45affad85ee4 100644
-> > > > > > --- a/lib/Makefile
-> > > > > > +++ b/lib/Makefile
-> > > > > > @@ -51,7 +51,7 @@ obj-y += bcd.o sort.o parser.o debug_locks.o random32.o \
-> > > > > >  	 bsearch.o find_bit.o llist.o lwq.o memweight.o kfifo.o \
-> > > > > >  	 percpu-refcount.o rhashtable.o base64.o \
-> > > > > >  	 once.o refcount.o rcuref.o usercopy.o errseq.o bucket_locks.o \
-> > > > > > -	 generic-radix-tree.o bitmap-str.o
-> > > > > > +	 generic-radix-tree.o bitmap-str.o parity.o
-> > > > > >  obj-y += string_helpers.o
-> > > > > >  obj-y += hexdump.o
-> > > > > >  obj-$(CONFIG_TEST_HEXDUMP) += test_hexdump.o
-> > > > > > diff --git a/lib/parity.c b/lib/parity.c
-> > > > > > new file mode 100644
-> > > > > > index 000000000000..a83ff8d96778
-> > > > > > --- /dev/null
-> > > > > > +++ b/lib/parity.c
-> > > > > > @@ -0,0 +1,48 @@
-> > > > > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > > > > +/*
-> > > > > > + * lib/parity.c
-> > > > > > + *
-> > > > > > + * Copyright (C) 2025 Kuan-Wei Chiu <visitorckw@gmail.com>
-> > > > > > + * Copyright (C) 2025 Yu-Chun Lin <eleanor15x@gmail.com>
-> > > > > > + *
-> > > > > > + * __parity[sdt]i2 can be overridden by linking arch-specific versions.
-> > > > > > + */
-> > > > > > +
-> > > > > > +#include <linux/export.h>
-> > > > > > +#include <linux/kernel.h>
-> > > > > > +
-> > > > > > +/*
-> > > > > > + * One explanation of this algorithm:
-> > > > > > + * https://funloop.org/codex/problem/parity/README.html  
-> > > > > 
-> > > > > I already asked you not to spread this link. Is there any reason to
-> > > > > ignore it?
-> > > > >   
-> > > > In v2, this algorithm was removed from bitops.h, so I moved the link
-> > > > here instead. I'm sorry if it seemed like I ignored your comment.  
-> > > 
-> > > Yes, it is.
-> > >    
-> > > > In v1, I used the same approach as parity8() because I couldn't justify
-> > > > the performance impact in a specific driver or subsystem. However,
-> > > > multiple people commented on using __builtin_parity or an x86 assembly
-> > > > implementation. I'm not ignoring their feedback-I want to address these  
-> > > 
-> > > Please ask those multiple people: are they ready to maintain all that
-> > > zoo of macros, weak implementations, arch implementations and stubs
-> > > for no clear benefit? Performance is always worth it, but again I see
-> > > not even a hint that the drivers care about performance. You don't
-> > > measure it, so don't care as well. Right?
-> > >   
-> > > > comments. Before submitting, I sent an email explaining my current
-> > > > approach: using David's suggested method along with __builtin_parity,
-> > > > but no one responded. So, I decided to submit v2 for discussion
-> > > > instead.  
-> > > 
-> > > For discussion use tag RFC.
-> > >   
-> > > > 
-> > > > To avoid mistakes in v3, I want to confirm the following changes before
-> > > > sending it:
-> > > > 
-> > > > (a) Change the return type from int to bool.
-> > > > (b) Avoid __builtin_parity and use the same approach as parity8().
-> > > > (c) Implement parity16/32/64() as single-line inline functions that
-> > > >     call the next smaller variant after xor.
-> > > > (d) Add a parity() macro that selects the appropriate parityXX() based
-> > > >     on type size.
-> > > > (e) Update users to use this parity() macro.
-> > > > 
-> > > > However, (d) may require a patch affecting multiple subsystems at once
-> > > > since some places that already include bitops.h have functions named
-> > > > parity(), causing conflicts. Unless we decide not to add this macro in
-> > > > the end.
-> > > > 
-> > > > As for checkpatch.pl warnings, they are mostly pre-existing coding
-> > > > style issues in this series. I've kept them as-is, but if preferred,
-> > > > I'm fine with fixing them.  
-> > > 
-> > > Checkpatch only complains on new lines. Particularly this patch should
-> > > trigger checkpatch warning because it adds a new file but doesn't touch
-> > > MAINTAINERS. 
-> > >   
-> > For example, the following warning:
-> > 
-> > ERROR: space required after that ',' (ctx:VxV)
-> > #84: FILE: drivers/input/joystick/sidewinder.c:368:
-> > +                       if (!parity64(GB(0,33)))
-> >                                           ^
-> > 
-> > This issue already existed before this series, and I'm keeping its
-> > style unchanged for now.
-> >   
-> > > > If anything is incorrect or if there are concerns, please let me know.
-> > > > 
-> > > > Regards,
-> > > > Kuan-Wei
-> > > > 
-> > > > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-> > > > index c1cb53cf2f0f..47b7eca8d3b7 100644
-> > > > --- a/include/linux/bitops.h
-> > > > +++ b/include/linux/bitops.h
-> > > > @@ -260,6 +260,43 @@ static inline int parity8(u8 val)
-> > > >  	return (0x6996 >> (val & 0xf)) & 1;
-> > > >  }
-> > > > 
-> > > > +static inline bool parity16(u16 val)
-> > > > +{
-> > > > +	return parity8(val ^ (val >> 8));
-> > > > +}
-> > > > +
-> > > > +static inline bool parity32(u32 val)
-> > > > +{
-> > > > +	return parity16(val ^ (val >> 16));
-> > > > +}
-> > > > +
-> > > > +static inline bool parity64(u64 val)
-> > > > +{
-> > > > +	return parity32(val ^ (val >> 32));
-> > > > +}  
-> > > 
-> > > That was discussed between Jiri and me in v2. Fixed types functions
-> > > are needed only in a few very specific cases. With the exception of
-> > > I3C driver (which doesn't look good for both Jiri and me), all the
-> > > drivers have the type of variable passed to the parityXX() matching 
-> > > the actual variable length. It means that fixed-type versions of the
-> > > parity() are simply not needed. So if we don't need them, please don't
-> > > introduce it.
-> > >  
-> > So, I should add the following parity() macro in v3, remove parity8(),
-> > and update all current parity8() users to use this macro, right?  
-> 
-> If you go with macro, please apply my patch and modify it in-place
-> with this __auto_type thing and GCC hack. Feel free to add your
-> co-developed-by, or tested, or whatever.
-> 
-> > I changed u64 to __auto_type and applied David's suggestion to replace
-> > the >> 32 with >> 16 >> 16 to avoid compiler warnings.
-> > 
-> > Regards,
-> > Kuan-Wei
-> > 
-> > #define parity(val)					\
-> > ({							\
-> > 	__auto_type __v = (val);			\
-> > 	bool __ret;					\
-> > 	switch (BITS_PER_TYPE(val)) {			\
-> > 	case 64:					\
-> > 		__v ^= __v >> 16 >> 16;			\
-> > 		fallthrough;				\  
-> 
-> This hack should be GCC-only, and well documented.
-> For clang it should be 
->  		__v ^= __v >> 32;			\
+kernel test robot noticed the following build warnings:
 
-There is no point doing a conditional - it just obscures things.
+[auto build test WARNING on andi-shyti/i2c/i2c-host]
+[also build test WARNING on robh/for-next tty/tty-testing tty/tty-next tty/tty-linus linus/master v6.14-rc5 next-20250303]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Viken-Dadhaniya/dt-bindings-qcom-geni-se-Add-firmware-name-property-for-firmware-loading/20250303-204936
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/andi.shyti/linux.git i2c/i2c-host
+patch link:    https://lore.kernel.org/r/20250303124349.3474185-7-quic_vdadhani%40quicinc.com
+patch subject: [PATCH v3 6/9] soc: qcom: geni-se: Add support to load QUP SE Firmware via Linux subsystem
+config: x86_64-buildonly-randconfig-002-20250304 (https://download.01.org/0day-ci/archive/20250304/202503041123.JpkvIp44-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250304/202503041123.JpkvIp44-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202503041123.JpkvIp44-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/soc/qcom/qcom-geni-se.c:1056: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * geni_enable_interrupts() Enable interrupts.
+>> drivers/soc/qcom/qcom-geni-se.c:1255: warning: Function parameter or struct member 'fw_name' not described in 'qup_fw_load'
 
 
-> 
-> > 	case 32:					\
-> > 		__v ^= __v >> 16;			\
-> > 		fallthrough;				\
-> > 	case 16:					\
-> > 		__v ^= __v >> 8;			\
-> > 		fallthrough;				\
-> > 	case 8:						\
-> > 		__v ^= __v >> 4;			\
-> > 		__ret =  (0x6996 >> (__v & 0xf)) & 1;	\
-> > 		break;					\
-> > 	default:					\
-> > 		BUILD_BUG();				\
-> > 	}						\
-> > 	__ret;						\
-> > })  
+vim +1056 drivers/soc/qcom/qcom-geni-se.c
 
+  1054	
+  1055	/**
+> 1056	 * geni_enable_interrupts() Enable interrupts.
+  1057	 * @rsc: Pointer to a structure representing SE-related resources.
+  1058	 *
+  1059	 * Enable the required interrupts during the firmware load process.
+  1060	 *
+  1061	 * Return: None.
+  1062	 */
+  1063	static void geni_enable_interrupts(struct qup_se_rsc *rsc)
+  1064	{
+  1065		u32 reg_value;
+  1066	
+  1067		/* Enable required interrupts. */
+  1068		writel_relaxed(M_COMMON_GENI_M_IRQ_EN, rsc->se->base + GENI_M_IRQ_ENABLE);
+  1069	
+  1070		reg_value = S_CMD_OVERRUN_EN | S_ILLEGAL_CMD_EN |
+  1071					S_CMD_CANCEL_EN | S_CMD_ABORT_EN |
+  1072					S_GP_IRQ_0_EN | S_GP_IRQ_1_EN |
+  1073					S_GP_IRQ_2_EN | S_GP_IRQ_3_EN |
+  1074					S_RX_FIFO_WR_ERR_EN | S_RX_FIFO_RD_ERR_EN;
+  1075		writel_relaxed(reg_value, rsc->se->base + GENI_S_IRQ_ENABLE);
+  1076	
+  1077		/* DMA mode configuration. */
+  1078		reg_value = DMA_TX_IRQ_EN_SET_RESET_DONE_EN_SET_BMSK |
+  1079			    DMA_TX_IRQ_EN_SET_SBE_EN_SET_BMSK |
+  1080			    DMA_TX_IRQ_EN_SET_DMA_DONE_EN_SET_BMSK;
+  1081		writel_relaxed(reg_value, rsc->se->base + DMA_TX_IRQ_EN_SET);
+  1082		reg_value = DMA_RX_IRQ_EN_SET_FLUSH_DONE_EN_SET_BMSK |
+  1083			    DMA_RX_IRQ_EN_SET_RESET_DONE_EN_SET_BMSK |
+  1084			    DMA_RX_IRQ_EN_SET_SBE_EN_SET_BMSK |
+  1085			    DMA_RX_IRQ_EN_SET_DMA_DONE_EN_SET_BMSK;
+  1086		writel_relaxed(reg_value, rsc->se->base + DMA_RX_IRQ_EN_SET);
+  1087	}
+  1088	
+  1089	/**
+  1090	 * geni_flash_fw_revision() - Flash the firmware revision.
+  1091	 * @rsc: Pointer to a structure representing SE-related resources.
+  1092	 * @hdr: Pointer to the ELF header of the Serial Engine.
+  1093	 *
+  1094	 * Flash the firmware revision and protocol into the respective register.
+  1095	 *
+  1096	 * Return: None.
+  1097	 */
+  1098	static void geni_flash_fw_revision(struct qup_se_rsc *rsc, struct elf_se_hdr *hdr)
+  1099	{
+  1100		u32 reg_value;
+  1101	
+  1102		/* Flash firmware revision register. */
+  1103		reg_value = (hdr->serial_protocol << FW_REV_PROTOCOL_SHFT) |
+  1104			    (hdr->fw_version & 0xFF << FW_REV_VERSION_SHFT);
+  1105		writel_relaxed(reg_value, rsc->se->base + SE_GENI_FW_REVISION);
+  1106	
+  1107		reg_value = (hdr->serial_protocol << FW_REV_PROTOCOL_SHFT) |
+  1108			    (hdr->fw_version & 0xFF << FW_REV_VERSION_SHFT);
+  1109	
+  1110		writel_relaxed(reg_value, rsc->se->base + SE_S_FW_REVISION);
+  1111	}
+  1112	
+  1113	/**
+  1114	 * geni_load_se_fw() - Load Serial Engine specific firmware.
+  1115	 * @rsc: Pointer to a structure representing SE-related resources.
+  1116	 * @fw: Pointer to the firmware structure.
+  1117	 *
+  1118	 * Load the protocol firmware into the IRAM of the Serial Engine.
+  1119	 *
+  1120	 * Return: 0 if successful, otherwise return an error value.
+  1121	 */
+  1122	static int geni_load_se_fw(struct qup_se_rsc *rsc, const struct firmware *fw)
+  1123	{
+  1124		const u32 *fw_val_arr, *cfg_val_arr;
+  1125		const u8 *cfg_idx_arr;
+  1126		u32 i, reg_value, mask, ramn_cnt;
+  1127		int ret;
+  1128		struct elf_se_hdr *hdr;
+  1129		struct elf32_phdr *phdr;
+  1130	
+  1131		ret = geni_icc_set_bw(rsc->se);
+  1132		if (ret) {
+  1133			dev_err(rsc->se->dev, "%s: Failed to set ICC BW %d\n", __func__, ret);
+  1134			return ret;
+  1135		}
+  1136	
+  1137		ret = geni_icc_enable(rsc->se);
+  1138		if (ret) {
+  1139			dev_err(rsc->se->dev, "%s: Failed to enable ICC %d\n", __func__, ret);
+  1140			return ret;
+  1141		}
+  1142	
+  1143		ret = geni_se_resources_on(rsc->se);
+  1144		if (ret) {
+  1145			dev_err(rsc->se->dev, "%s: Failed to enable common clocks %d\n", __func__, ret);
+  1146			goto err;
+  1147		}
+  1148	
+  1149		ret = read_elf(rsc, fw, &hdr, &phdr);
+  1150		if (ret) {
+  1151			dev_err(rsc->se->dev, "%s: ELF parsing failed ret: %d\n", __func__, ret);
+  1152			goto err;
+  1153		}
+  1154	
+  1155		fw_val_arr = (const u32 *)((u8 *)hdr + hdr->fw_offset);
+  1156		cfg_idx_arr = (const u8 *)hdr + hdr->cfg_idx_offset;
+  1157		cfg_val_arr = (const u32 *)((u8 *)hdr + hdr->cfg_val_offset);
+  1158	
+  1159		geni_config_common_control(rsc);
+  1160	
+  1161		/* Allows to drive corresponding data according to hardware value. */
+  1162		writel_relaxed(0x0, rsc->se->base + GENI_OUTPUT_CTRL);
+  1163	
+  1164		/* Set SCLK and HCLK to program RAM */
+  1165		setbits32(rsc->se->base + GENI_CGC_CTRL, GENI_CGC_CTRL_PROG_RAM_SCLK_OFF_BMSK |
+  1166				GENI_CGC_CTRL_PROG_RAM_HCLK_OFF_BMSK);
+  1167		writel_relaxed(0x0, rsc->se->base + SE_GENI_CLK_CTRL);
+  1168		clrbits32(rsc->se->base + GENI_CGC_CTRL, GENI_CGC_CTRL_PROG_RAM_SCLK_OFF_BMSK |
+  1169				GENI_CGC_CTRL_PROG_RAM_HCLK_OFF_BMSK);
+  1170	
+  1171		/* Enable required clocks for DMA CSR, TX and RX. */
+  1172		reg_value = DMA_GENERAL_CFG_AHB_SEC_SLV_CLK_CGC_ON_BMSK |
+  1173			DMA_GENERAL_CFG_DMA_AHB_SLV_CLK_CGC_ON_BMSK |
+  1174			DMA_GENERAL_CFG_DMA_TX_CLK_CGC_ON_BMSK |
+  1175			DMA_GENERAL_CFG_DMA_RX_CLK_CGC_ON_BMSK;
+  1176	
+  1177		setbits32(rsc->se->base + DMA_GENERAL_CFG, reg_value);
+  1178	
+  1179		/* Let hardware control CGC by default. */
+  1180		writel_relaxed(DEFAULT_CGC_EN, rsc->se->base + GENI_CGC_CTRL);
+  1181	
+  1182		/* Set version of the configuration register part of firmware. */
+  1183		writel_relaxed(hdr->cfg_version, rsc->se->base + GENI_INIT_CFG_REVISION);
+  1184		writel_relaxed(hdr->cfg_version, rsc->se->base + GENI_S_INIT_CFG_REVISION);
+  1185	
+  1186		/* Configure GENI primitive table. */
+  1187		for (i = 0; i < hdr->cfg_size_in_items; i++)
+  1188			writel_relaxed(cfg_val_arr[i],
+  1189				       rsc->se->base + GENI_CFG_REG0 + (cfg_idx_arr[i] * sizeof(u32)));
+  1190	
+  1191		/* Configure condition for assertion of RX_RFR_WATERMARK condition. */
+  1192		reg_value = readl_relaxed(rsc->se->base + QUPV3_SE_HW_PARAM_1);
+  1193		mask = (reg_value >> RX_FIFO_WIDTH_BIT) & RX_FIFO_WIDTH_MASK;
+  1194		writel_relaxed(mask - 2, rsc->se->base + GENI_RX_RFR_WATERMARK_REG);
+  1195	
+  1196		/* Let hardware control CGC */
+  1197		setbits32(rsc->se->base + GENI_OUTPUT_CTRL, DEFAULT_IO_OUTPUT_CTRL_MSK);
+  1198	
+  1199		ret = geni_configure_xfer_mode(rsc);
+  1200		if (ret)
+  1201			goto err_resource;
+  1202	
+  1203		geni_enable_interrupts(rsc);
+  1204	
+  1205		geni_flash_fw_revision(rsc, hdr);
+  1206	
+  1207		ramn_cnt = hdr->fw_size_in_items;
+  1208		if (hdr->fw_size_in_items % 2 != 0)
+  1209			ramn_cnt++;
+  1210	
+  1211		if (ramn_cnt >= MAX_GENI_CFG_RAMn_CNT)
+  1212			goto err_resource;
+  1213	
+  1214		/* Program RAM address space. */
+  1215		memcpy((void *)(rsc->se->base + SE_GENI_CFG_RAMN), fw_val_arr, ramn_cnt * sizeof(u32));
+  1216	
+  1217		/* Put default values on GENI's output pads. */
+  1218		writel_relaxed(0x1, rsc->se->base + GENI_FORCE_DEFAULT_REG);
+  1219	
+  1220		/* High to low SCLK and HCLK to finish RAM. */
+  1221		setbits32(rsc->se->base + GENI_CGC_CTRL, GENI_CGC_CTRL_PROG_RAM_SCLK_OFF_BMSK |
+  1222				GENI_CGC_CTRL_PROG_RAM_HCLK_OFF_BMSK);
+  1223		setbits32(rsc->se->base + SE_GENI_CLK_CTRL, GENI_CLK_CTRL_SER_CLK_SEL_BMSK);
+  1224		clrbits32(rsc->se->base + GENI_CGC_CTRL, GENI_CGC_CTRL_PROG_RAM_SCLK_OFF_BMSK |
+  1225				GENI_CGC_CTRL_PROG_RAM_HCLK_OFF_BMSK);
+  1226	
+  1227		/* Serial engine DMA interface is enabled. */
+  1228		setbits32(rsc->se->base + SE_DMA_IF_EN, DMA_IF_EN_DMA_IF_EN_BMSK);
+  1229	
+  1230		/* Enable or disable FIFO interface of the serial engine. */
+  1231		if (rsc->mode == GENI_SE_FIFO)
+  1232			clrbits32(rsc->se->base + SE_FIFO_IF_DISABLE, FIFO_IF_DISABLE);
+  1233		else
+  1234			setbits32(rsc->se->base + SE_FIFO_IF_DISABLE, FIFO_IF_DISABLE);
+  1235	
+  1236	err_resource:
+  1237		geni_se_resources_off(rsc->se);
+  1238	err:
+  1239		geni_icc_disable(rsc->se);
+  1240		return ret;
+  1241	}
+  1242	
+  1243	/**
+  1244	 * qup_fw_load() - Initiate firmware load.
+  1245	 * @rsc: Pointer to a structure representing SE-related resources.
+  1246	 *
+  1247	 * Load the firmware into a specific SE. Read the associated ELF file,
+  1248	 * copy the data into a buffer in kernel space using the request_firmware API, write the
+  1249	 * data into the SE's IRAM register, and then free the buffers. Handle firmware loading
+  1250	 * and parsing for a specific protocol.
+  1251	 *
+  1252	 * Return: 0 if successful, otherwise return an error value.
+  1253	 */
+  1254	static int qup_fw_load(struct qup_se_rsc *rsc, const char *fw_name)
+> 1255	{
+  1256		int ret;
+  1257		const struct firmware *fw;
+  1258		struct device *dev = rsc->se->dev;
+  1259	
+  1260		ret = request_firmware(&fw, fw_name, dev);
+  1261		if (ret) {
+  1262			dev_err(dev, "request_firmware failed for %d: %d\n", rsc->protocol, ret);
+  1263			return ret;
+  1264		}
+  1265	
+  1266		ret = geni_load_se_fw(rsc, fw);
+  1267	
+  1268		release_firmware(fw);
+  1269	
+  1270		return ret;
+  1271	}
+  1272	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
