@@ -1,55 +1,55 @@
-Received: from mail-ed1-f74.google.com (mail-ed1-f74.google.com [209.85.208.74])
+Received: from mail-ej1-f74.google.com (mail-ej1-f74.google.com [209.85.218.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02CA6205E1B
-	for <linux-serial@vger.kernel.org>; Tue,  4 Mar 2025 09:26:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC7122063D9
+	for <linux-serial@vger.kernel.org>; Tue,  4 Mar 2025 09:26:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741080394; cv=none; b=AAFWeurLrnkat1/0warz5mGW4WA9LW3SrlKr7ay0bPPZitvBQrdCJnqDqqI6wRRWMnj1VYOZtrcwu5ZdR/WqBwDSaujh6FSUoCKdG0fR6aOMG+MaOQ5Y4Ibcg25DxnQaiUyZ5qhYysaA9dIogzBWvB17khNrjDEaNsN127Udrg8=
+	t=1741080398; cv=none; b=E1MfbnySC6OtZprK+uvPaegaIlwFjpFUELZ6GgyoY2lQ+rDYA2KZ7KehFrvUdzsKjGGDO6qPImBTGtvQLpkAjW3cJukMd2BcHBcstKY95Ii9vWWgi0nvq2O50HS1Z+b0XEP+IUzpJ4cJG3PZsKddxQvN2c8N8BtSaGIun863dtw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741080394; c=relaxed/simple;
-	bh=KT6MN7tzMPolkJ3RDT2fCUl9mndACbg8ns1Ks1oaR0I=;
+	s=arc-20240116; t=1741080398; c=relaxed/simple;
+	bh=b0CdiKYI8plcUd/5o7nrlhwn2YMDkb9s4S0Fm28UjnM=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=iMtD6y+wSDTsSGG4nClXWSInvWyQizogzETzt7PQeVp5AopjJRtL30Pq8A9pZYjV04ESYM7EsQOLSljDUlMB/kB1/RRDyRm2ba4ZiFxa4Nha/Sf3KYNrvQjH5dyU2JjHTZ2axA0At1w64q0pxpHfHIfhrrx49IOWiw4SH9K85ys=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--elver.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Y42Ex3nU; arc=none smtp.client-ip=209.85.208.74
+	 To:Cc:Content-Type; b=mE2MbuY5TyhAxWmO6Du5e3ErUSFJyyDnBsT9c2jNe0Z04AB5rOvYGnqThDu6Hva3X3VLUNyTbivuv5YKaCU2zUzboWk1mWJ0a0WBtrbYFaj0W8yJG1bOGMQywHbT+sDOCzVmNbuVNZv0hdwDMz/BoHNIpkwaU1lGqwyx9/dGsOE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--elver.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=heQ5cuwt; arc=none smtp.client-ip=209.85.218.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--elver.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Y42Ex3nU"
-Received: by mail-ed1-f74.google.com with SMTP id 4fb4d7f45d1cf-5e4becb4582so7134422a12.3
-        for <linux-serial@vger.kernel.org>; Tue, 04 Mar 2025 01:26:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="heQ5cuwt"
+Received: by mail-ej1-f74.google.com with SMTP id a640c23a62f3a-abf7171eaf2so230972866b.1
+        for <linux-serial@vger.kernel.org>; Tue, 04 Mar 2025 01:26:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1741080390; x=1741685190; darn=vger.kernel.org;
+        d=google.com; s=20230601; t=1741080393; x=1741685193; darn=vger.kernel.org;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KzDuuuaiZX8v73IeozPshNFzU/FhGyeu9jS8KRsuYgk=;
-        b=Y42Ex3nU0+QIXsSYWbd1ite56QAtrWpegRON8bJ9kK5QOGDKMxzVAUSN2PqjRiIrKD
-         H/LMOxFM1kFUyFir4GtzVHxddqSHzf9y+5OugZrYl1FLXuV4S0QXO1A9qYIaio0m1WtW
-         1rjU3iNdV8GFme6mirZBxD+4stJrn56sIFNX1HBqmd66jDqI13Tpox2g+UA98wCqqfZx
-         lgXvHzPb9JMKYtv3iNrl6+78E72fgGYvq28Qs5yh2X88rXH/Qd6nPWcDvZLZ9VELnmdw
-         r79SqMeOqpqvdM15QHRw/ug7fzj7VhNset4ChezHaKeGpTQroAHudhsZ6fWc+gp1OA9s
-         rBBw==
+        bh=iDk2VwqwOTTMZfSkXTf6seWDq1RAdZgqLjXPZ94M0QA=;
+        b=heQ5cuwtqNsaCbDQI3Bp69jGS6Sl55DcabORQxz3IFOlgNbGqROyexhO8EQYA6K11k
+         ByLsbsNm10ys7wRMTWvw8EV3M42znUbPpMAwZB1Jl8dYOlPAeMuQaWTWgCGO+XLMYg+t
+         Oe1KoOF39wGt1B3tX8ZDxuFaTjb35wDIAUtxRmS4e5PPRZJKluZHrjOD3zoWKcVQWTUo
+         u0pMtXLUkww+kGiD3jc0aAMpZ95CkRYZWFpqoeKaLihqEXHKO1XFNXnWUV9bjbLW+Wcq
+         yRf+AiE4MIcps+cPgek24bj3HfOtRbICnBdU9uMy/x8Uss+gz3S+Z4B3ellw6JB9U/Jg
+         ZvMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741080390; x=1741685190;
+        d=1e100.net; s=20230601; t=1741080393; x=1741685193;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KzDuuuaiZX8v73IeozPshNFzU/FhGyeu9jS8KRsuYgk=;
-        b=u/WTMnJibpoMkcSggqQl4IHQboaJf+/Gbw69kDvJoBgGVxNHgrCGGUH4xlGD20gx8m
-         TPdTvqAlWC/o37IHyiaPOywWdQ4T/pkjGhTUfmMjIVUn/2P+w5nwlgS10CF/GEEBD8Jy
-         b5ZrKpaOcv9vpOhS47h8gJRrz1TK/yFUfkLLbhP5m/oiNu+y3KHBoeffEvUbqu3PyaEP
-         zLmzEc17ojZd2V4gEjYue495PP5nVs/+UaudgZ8g9IxWNUdeT0zYVIHDQSLgc2jT8tm7
-         8LnAfbVNi/Zfw3OtYdKraHzS345TLaNpnuc5vK7Jn2RV+ZfnJwdVja/8mb12xblbQ8Mr
-         N9Eg==
-X-Forwarded-Encrypted: i=1; AJvYcCWgjuc5vsPius8vSzAoTPKUGTfo4FeFO3lIZPovI6kCmSqtJ0blmMScwo2FL8Fa97GJyB/Io7E27+R0ak8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxkwf04vvCNz+tgqMqLI3vZxkA474CouxT/rX9DvX2cNDtSYU45
-	MIpiGHhNRbZx3TvLY4WI2RJu64jAptoGnq9C322td3cGDbOv89gAoPrwMBFjY+oLCt3miov+Og=
+        bh=iDk2VwqwOTTMZfSkXTf6seWDq1RAdZgqLjXPZ94M0QA=;
+        b=F+Z9kHHkN7dNMQtTdmJ4uhSlSwt7WdNXOrYyqz+WQFR7MMB0PwRUZcUpGUJsxsKftr
+         BYUAVROu/Th1OLPCtoMuLGdNp+4JzKannuhYDcj75uc2evUcKFqa7VS6NGybhk7fRCAi
+         a/sQOvzoW5DRY9HbYMB/bASu6cOKwKVtipLtLn2eTRa5A/TlevvVp7sHuLxPRu9Jp85S
+         7P0+MjSFhDEPNKG0tTLq6jAo1KtG3v5okLLjaueZtd+qDhb/QMk3MadIIV3StAp5tCoU
+         RosQvniEHKVzHNwUtZa+/1gjxo8ljAYLq2WD8UcRs+/QTRTiwAs6SjOuJuG6myyd8TlF
+         fciA==
+X-Forwarded-Encrypted: i=1; AJvYcCXC2QhS2ZqVlcdSP1bBCI9tD/OjvFyovQKQ8RwXn0iKuDYkeRxuQYwoL4fR6ixMxqd5AwExWZnuzFCS02Q=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yweh8A8JxnUcsw25bEvgM8uYqJ6DcbK5QwiqujnWDL0MOlkh0eb
+	N41VzunsFk3Szf1n0nn2w023AO2k9zpd2u8fqYUG61FB6goikxrceim8r0uSlctNmnyeCyDKZg=
 	=
-X-Google-Smtp-Source: AGHT+IH5l4jKYamySNyxcMXL4HKAIJ9GmtnPKrLPWykOQYXwmzxoLHo5g+W6i+hA1eMCWubxfVXujxm01Q==
-X-Received: from edbev11.prod.google.com ([2002:a05:6402:540b:b0:5e5:cbc:4d2c])
- (user=elver job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6402:541b:b0:5de:4b81:d3fd
- with SMTP id 4fb4d7f45d1cf-5e4d6afa126mr17250877a12.13.1741080390194; Tue, 04
- Mar 2025 01:26:30 -0800 (PST)
-Date: Tue,  4 Mar 2025 10:21:29 +0100
+X-Google-Smtp-Source: AGHT+IF8v9zLKhdVdDKTCEZYG8DbcGXKqxfAOcuUpH2RTtDLQJOOCxvLbiKCCrE4y5yhtpae3MqEZYbpjQ==
+X-Received: from ejcsn10.prod.google.com ([2002:a17:906:628a:b0:ac1:fb2a:4a65])
+ (user=elver job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:3e0f:b0:abf:718f:ef27
+ with SMTP id a640c23a62f3a-abf718ff14amr868693766b.1.1741080393090; Tue, 04
+ Mar 2025 01:26:33 -0800 (PST)
+Date: Tue,  4 Mar 2025 10:21:30 +0100
 In-Reply-To: <20250304092417.2873893-1-elver@google.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 Mime-Version: 1.0
 References: <20250304092417.2873893-1-elver@google.com>
 X-Mailer: git-send-email 2.48.1.711.g2feabab25a-goog
-Message-ID: <20250304092417.2873893-31-elver@google.com>
-Subject: [PATCH v2 30/34] printk: Move locking annotation to printk.c
+Message-ID: <20250304092417.2873893-32-elver@google.com>
+Subject: [PATCH v2 31/34] drivers/tty: Enable capability analysis for core files
 From: Marco Elver <elver@google.com>
 To: elver@google.com
 Cc: "David S. Miller" <davem@davemloft.net>, Luc Van Oostenryck <luc.vanoostenryck@gmail.com>, 
@@ -83,62 +83,587 @@ Cc: "David S. Miller" <davem@davemloft.net>, Luc Van Oostenryck <luc.vanoostenry
 	linux-serial@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-With Sparse support gone, Clang is a bit more strict and warns:
+Enable capability analysis for drivers/tty/*.
 
-./include/linux/console.h:492:50: error: use of undeclared identifier 'console_mutex'
-  492 | extern void console_list_unlock(void) __releases(console_mutex);
-
-Since it does not make sense to make console_mutex itself global, move
-the annotation to printk.c. Capability analysis remains disabled for
-printk.c.
-
-This is needed to enable capability analysis for modules that include
-<linux/console.h>.
+This demonstrates a larger conversion to use Clang's capability
+analysis. The benefit is additional static checking of locking rules,
+along with better documentation.
 
 Signed-off-by: Marco Elver <elver@google.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
 ---
 v2:
 * New patch.
 ---
- include/linux/console.h | 4 ++--
- kernel/printk/printk.c  | 2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/tty/Makefile      |  3 +++
+ drivers/tty/n_tty.c       | 16 ++++++++++++++++
+ drivers/tty/pty.c         |  1 +
+ drivers/tty/sysrq.c       |  1 +
+ drivers/tty/tty.h         |  8 ++++----
+ drivers/tty/tty_buffer.c  |  8 +++-----
+ drivers/tty/tty_io.c      | 12 +++++++++---
+ drivers/tty/tty_ioctl.c   |  2 +-
+ drivers/tty/tty_ldisc.c   | 35 ++++++++++++++++++++++++++++++++---
+ drivers/tty/tty_ldsem.c   |  2 ++
+ drivers/tty/tty_mutex.c   |  4 ++++
+ drivers/tty/tty_port.c    |  2 ++
+ include/linux/tty.h       | 14 +++++++-------
+ include/linux/tty_flip.h  |  4 ++--
+ include/linux/tty_ldisc.h | 19 ++++++++++---------
+ 15 files changed, 97 insertions(+), 34 deletions(-)
 
-diff --git a/include/linux/console.h b/include/linux/console.h
-index eba367bf605d..51d2be96514a 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -488,8 +488,8 @@ static inline bool console_srcu_read_lock_is_held(void)
- extern int console_srcu_read_lock(void);
- extern void console_srcu_read_unlock(int cookie);
- 
--extern void console_list_lock(void) __acquires(console_mutex);
--extern void console_list_unlock(void) __releases(console_mutex);
-+extern void console_list_lock(void);
-+extern void console_list_unlock(void);
- 
- extern struct hlist_head console_list;
- 
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 07668433644b..377f21fd9bb4 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -244,6 +244,7 @@ int devkmsg_sysctl_set_loglvl(const struct ctl_table *table, int write,
-  * For console list or console->flags updates
+diff --git a/drivers/tty/Makefile b/drivers/tty/Makefile
+index 07aca5184a55..35e1a62cbe16 100644
+--- a/drivers/tty/Makefile
++++ b/drivers/tty/Makefile
+@@ -1,4 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
++
++CAPABILITY_ANALYSIS := y
++
+ obj-$(CONFIG_TTY)		+= tty_io.o n_tty.o tty_ioctl.o tty_ldisc.o \
+ 				   tty_buffer.o tty_port.o tty_mutex.o \
+ 				   tty_ldsem.o tty_baudrate.o tty_jobctrl.o \
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 5e9ca4376d68..45925fc5a8fd 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -1088,6 +1088,7 @@ static void __isig(int sig, struct tty_struct *tty)
+  * Locking: %ctrl.lock
   */
- void console_list_lock(void)
-+	__acquires(&console_mutex)
+ static void isig(int sig, struct tty_struct *tty)
++	__must_hold_shared(&tty->termios_rwsem)
  {
- 	/*
- 	 * In unregister_console() and console_force_preferred_locked(),
-@@ -268,6 +269,7 @@ EXPORT_SYMBOL(console_list_lock);
-  * Counterpart to console_list_lock()
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+@@ -1135,6 +1136,7 @@ static void isig(int sig, struct tty_struct *tty)
+  * Note: may get exclusive %termios_rwsem if flushing input buffer
   */
- void console_list_unlock(void)
-+	__releases(&console_mutex)
+ static void n_tty_receive_break(struct tty_struct *tty)
++	__must_hold_shared(&tty->termios_rwsem)
  {
- 	mutex_unlock(&console_mutex);
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+@@ -1204,6 +1206,7 @@ static void n_tty_receive_parity_error(const struct tty_struct *tty,
+ 
+ static void
+ n_tty_receive_signal_char(struct tty_struct *tty, int signal, u8 c)
++	__must_hold_shared(&tty->termios_rwsem)
+ {
+ 	isig(signal, tty);
+ 	if (I_IXON(tty))
+@@ -1353,6 +1356,7 @@ static bool n_tty_receive_char_canon(struct tty_struct *tty, u8 c)
+ 
+ static void n_tty_receive_char_special(struct tty_struct *tty, u8 c,
+ 				       bool lookahead_done)
++	__must_hold_shared(&tty->termios_rwsem)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+@@ -1463,6 +1467,7 @@ static void n_tty_receive_char_closing(struct tty_struct *tty, u8 c,
+ 
+ static void
+ n_tty_receive_char_flagged(struct tty_struct *tty, u8 c, u8 flag)
++	__must_hold_shared(&tty->termios_rwsem)
+ {
+ 	switch (flag) {
+ 	case TTY_BREAK:
+@@ -1483,6 +1488,7 @@ n_tty_receive_char_flagged(struct tty_struct *tty, u8 c, u8 flag)
+ 
+ static void
+ n_tty_receive_char_lnext(struct tty_struct *tty, u8 c, u8 flag)
++	__must_hold_shared(&tty->termios_rwsem)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 
+@@ -1540,6 +1546,7 @@ n_tty_receive_buf_real_raw(const struct tty_struct *tty, const u8 *cp,
+ static void
+ n_tty_receive_buf_raw(struct tty_struct *tty, const u8 *cp, const u8 *fp,
+ 		      size_t count)
++	__must_hold_shared(&tty->termios_rwsem)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	u8 flag = TTY_NORMAL;
+@@ -1571,6 +1578,7 @@ n_tty_receive_buf_closing(struct tty_struct *tty, const u8 *cp, const u8 *fp,
+ static void n_tty_receive_buf_standard(struct tty_struct *tty, const u8 *cp,
+ 				       const u8 *fp, size_t count,
+ 				       bool lookahead_done)
++	__must_hold_shared(&tty->termios_rwsem)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	u8 flag = TTY_NORMAL;
+@@ -1609,6 +1617,7 @@ static void n_tty_receive_buf_standard(struct tty_struct *tty, const u8 *cp,
+ 
+ static void __receive_buf(struct tty_struct *tty, const u8 *cp, const u8 *fp,
+ 			  size_t count)
++	__must_hold_shared(&tty->termios_rwsem)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+ 	bool preops = I_ISTRIP(tty) || (I_IUCLC(tty) && L_IEXTEN(tty));
+@@ -2188,6 +2197,10 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file, u8 *kbuf,
+ 				return kb - kbuf;
+ 		}
+ 
++		/* Adopted locks from prior call. */
++		__acquire(&ldata->atomic_read_lock);
++		__acquire_shared(&tty->termios_rwsem);
++
+ 		/* No more data - release locks and stop retries */
+ 		n_tty_kick_worker(tty);
+ 		n_tty_check_unthrottle(tty);
+@@ -2305,6 +2318,9 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file, u8 *kbuf,
+ more_to_be_read:
+ 				remove_wait_queue(&tty->read_wait, &wait);
+ 				*cookie = cookie;
++				/* Hand-off locks to retry with cookie set. */
++				__release_shared(&tty->termios_rwsem);
++				__release(&ldata->atomic_read_lock);
+ 				return kb - kbuf;
+ 			}
+ 		}
+diff --git a/drivers/tty/pty.c b/drivers/tty/pty.c
+index 8bb1a01fef2a..8d4eb0f4c84c 100644
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -824,6 +824,7 @@ static int ptmx_open(struct inode *inode, struct file *filp)
+ 	tty = tty_init_dev(ptm_driver, index);
+ 	/* The tty returned here is locked so we can safely
+ 	   drop the mutex */
++	lockdep_assert_held(&tty->legacy_mutex);
+ 	mutex_unlock(&tty_mutex);
+ 
+ 	retval = PTR_ERR(tty);
+diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
+index f85ce02e4725..82dfa964c965 100644
+--- a/drivers/tty/sysrq.c
++++ b/drivers/tty/sysrq.c
+@@ -149,6 +149,7 @@ static const struct sysrq_key_op sysrq_unraw_op = {
+ static void sysrq_handle_crash(u8 key)
+ {
+ 	/* release the RCU read lock before crashing */
++	lockdep_assert_in_rcu_read_lock();
+ 	rcu_read_unlock();
+ 
+ 	panic("sysrq triggered crash\n");
+diff --git a/drivers/tty/tty.h b/drivers/tty/tty.h
+index 93cf5ef1e857..1a3c2f663b28 100644
+--- a/drivers/tty/tty.h
++++ b/drivers/tty/tty.h
+@@ -60,15 +60,15 @@ static inline void tty_set_flow_change(struct tty_struct *tty,
+ 	smp_mb();
  }
+ 
+-int tty_ldisc_lock(struct tty_struct *tty, unsigned long timeout);
+-void tty_ldisc_unlock(struct tty_struct *tty);
++int tty_ldisc_lock(struct tty_struct *tty, unsigned long timeout) __cond_acquires(0, &tty->ldisc_sem);
++void tty_ldisc_unlock(struct tty_struct *tty) __releases(&tty->ldisc_sem);
+ 
+ int __tty_check_change(struct tty_struct *tty, int sig);
+ int tty_check_change(struct tty_struct *tty);
+ void __stop_tty(struct tty_struct *tty);
+ void __start_tty(struct tty_struct *tty);
+-void tty_write_unlock(struct tty_struct *tty);
+-int tty_write_lock(struct tty_struct *tty, bool ndelay);
++void tty_write_unlock(struct tty_struct *tty) __releases(&tty->atomic_write_lock);
++int tty_write_lock(struct tty_struct *tty, bool ndelay) __cond_acquires(0, &tty->atomic_write_lock);
+ void tty_vhangup_session(struct tty_struct *tty);
+ void tty_open_proc_set_tty(struct file *filp, struct tty_struct *tty);
+ int tty_signal_session_leader(struct tty_struct *tty, int exit_session);
+diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
+index 79f0ff94ce00..dcc56537290f 100644
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -52,10 +52,8 @@
+  */
+ void tty_buffer_lock_exclusive(struct tty_port *port)
+ {
+-	struct tty_bufhead *buf = &port->buf;
+-
+-	atomic_inc(&buf->priority);
+-	mutex_lock(&buf->lock);
++	atomic_inc(&port->buf.priority);
++	mutex_lock(&port->buf.lock);
+ }
+ EXPORT_SYMBOL_GPL(tty_buffer_lock_exclusive);
+ 
+@@ -73,7 +71,7 @@ void tty_buffer_unlock_exclusive(struct tty_port *port)
+ 	bool restart = buf->head->commit != buf->head->read;
+ 
+ 	atomic_dec(&buf->priority);
+-	mutex_unlock(&buf->lock);
++	mutex_unlock(&port->buf.lock);
+ 
+ 	if (restart)
+ 		queue_work(system_unbound_wq, &buf->work);
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 449dbd216460..1eb3794fde4b 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -167,6 +167,7 @@ static void release_tty(struct tty_struct *tty, int idx);
+  * Locking: none. Must be called after tty is definitely unused
+  */
+ static void free_tty_struct(struct tty_struct *tty)
++	__capability_unsafe(/* destructor */)
+ {
+ 	tty_ldisc_deinit(tty);
+ 	put_device(tty->dev);
+@@ -965,7 +966,7 @@ static ssize_t iterate_tty_write(struct tty_ldisc *ld, struct tty_struct *tty,
+ 	ssize_t ret, written = 0;
+ 
+ 	ret = tty_write_lock(tty, file->f_flags & O_NDELAY);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	/*
+@@ -1154,7 +1155,7 @@ int tty_send_xchar(struct tty_struct *tty, u8 ch)
+ 		return 0;
+ 	}
+ 
+-	if (tty_write_lock(tty, false) < 0)
++	if (tty_write_lock(tty, false))
+ 		return -ERESTARTSYS;
+ 
+ 	down_read(&tty->termios_rwsem);
+@@ -1391,6 +1392,7 @@ static int tty_reopen(struct tty_struct *tty)
+  * Return: new tty structure
+  */
+ struct tty_struct *tty_init_dev(struct tty_driver *driver, int idx)
++	__capability_unsafe(/* returns with locked tty */)
+ {
+ 	struct tty_struct *tty;
+ 	int retval;
+@@ -1874,6 +1876,7 @@ int tty_release(struct inode *inode, struct file *filp)
+  * will not work then. It expects inodes to be from devpts FS.
+  */
+ static struct tty_struct *tty_open_current_tty(dev_t device, struct file *filp)
++	__capability_unsafe(/* returns with locked tty */)
+ {
+ 	struct tty_struct *tty;
+ 	int retval;
+@@ -2037,6 +2040,7 @@ EXPORT_SYMBOL_GPL(tty_kopen_shared);
+  */
+ static struct tty_struct *tty_open_by_driver(dev_t device,
+ 					     struct file *filp)
++	__capability_unsafe(/* returns with locked tty */)
+ {
+ 	struct tty_struct *tty;
+ 	struct tty_driver *driver = NULL;
+@@ -2137,6 +2141,8 @@ static int tty_open(struct inode *inode, struct file *filp)
+ 		goto retry_open;
+ 	}
+ 
++	lockdep_assert_held(&tty->legacy_mutex);
++
+ 	tty_add_file(tty, filp);
+ 
+ 	check_tty_count(tty, __func__);
+@@ -2486,7 +2492,7 @@ static int send_break(struct tty_struct *tty, unsigned int duration)
+ 		return tty->ops->break_ctl(tty, duration);
+ 
+ 	/* Do the work ourselves */
+-	if (tty_write_lock(tty, false) < 0)
++	if (tty_write_lock(tty, false))
+ 		return -EINTR;
+ 
+ 	retval = tty->ops->break_ctl(tty, -1);
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 85de90eebc7b..a7ae6cbf3450 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -489,7 +489,7 @@ static int set_termios(struct tty_struct *tty, void __user *arg, int opt)
+ 		if (retval < 0)
+ 			return retval;
+ 
+-		if (tty_write_lock(tty, false) < 0)
++		if (tty_write_lock(tty, false))
+ 			goto retry_write_wait;
+ 
+ 		/* Racing writer? */
+diff --git a/drivers/tty/tty_ldisc.c b/drivers/tty/tty_ldisc.c
+index d80e9d4c974b..e07a5980604e 100644
+--- a/drivers/tty/tty_ldisc.c
++++ b/drivers/tty/tty_ldisc.c
+@@ -237,6 +237,7 @@ const struct seq_operations tty_ldiscs_seq_ops = {
+  * to wait for any ldisc lifetime events to finish.
+  */
+ struct tty_ldisc *tty_ldisc_ref_wait(struct tty_struct *tty)
++	__cond_acquires_shared(nonnull, &tty->ldisc_sem)
+ {
+ 	struct tty_ldisc *ld;
+ 
+@@ -257,6 +258,7 @@ EXPORT_SYMBOL_GPL(tty_ldisc_ref_wait);
+  * and timer functions.
+  */
+ struct tty_ldisc *tty_ldisc_ref(struct tty_struct *tty)
++	__cond_acquires_shared(nonnull, &tty->ldisc_sem)
+ {
+ 	struct tty_ldisc *ld = NULL;
+ 
+@@ -277,26 +279,43 @@ EXPORT_SYMBOL_GPL(tty_ldisc_ref);
+  * in IRQ context.
+  */
+ void tty_ldisc_deref(struct tty_ldisc *ld)
++	__releases_shared(&ld->tty->ldisc_sem)
+ {
+ 	ldsem_up_read(&ld->tty->ldisc_sem);
+ }
+ EXPORT_SYMBOL_GPL(tty_ldisc_deref);
+ 
++/*
++ * Note: Capability analysis does not like asymmetric interfaces (above types
++ * for ref and deref are tty_struct and tty_ldisc respectively -- which are
++ * dependent, but the compiler cannot figure that out); in this case, work
++ * around that with this helper which takes an unused @tty argument but tells
++ * the analysis which lock is released.
++ */
++static inline void __tty_ldisc_deref(struct tty_struct *tty, struct tty_ldisc *ld)
++	__releases_shared(&tty->ldisc_sem)
++	__capability_unsafe(/* matches released with tty_ldisc_ref() */)
++{
++	tty_ldisc_deref(ld);
++}
+ 
+ static inline int
+ __tty_ldisc_lock(struct tty_struct *tty, unsigned long timeout)
++	__cond_acquires(true, &tty->ldisc_sem)
+ {
+ 	return ldsem_down_write(&tty->ldisc_sem, timeout);
+ }
+ 
+ static inline int
+ __tty_ldisc_lock_nested(struct tty_struct *tty, unsigned long timeout)
++	__cond_acquires(true, &tty->ldisc_sem)
+ {
+ 	return ldsem_down_write_nested(&tty->ldisc_sem,
+ 				       LDISC_SEM_OTHER, timeout);
+ }
+ 
+ static inline void __tty_ldisc_unlock(struct tty_struct *tty)
++	__releases(&tty->ldisc_sem)
+ {
+ 	ldsem_up_write(&tty->ldisc_sem);
+ }
+@@ -328,6 +347,8 @@ void tty_ldisc_unlock(struct tty_struct *tty)
+ static int
+ tty_ldisc_lock_pair_timeout(struct tty_struct *tty, struct tty_struct *tty2,
+ 			    unsigned long timeout)
++	__cond_acquires(0, &tty->ldisc_sem)
++	__cond_acquires(0, &tty2->ldisc_sem)
+ {
+ 	int ret;
+ 
+@@ -362,16 +383,23 @@ tty_ldisc_lock_pair_timeout(struct tty_struct *tty, struct tty_struct *tty2,
+ }
+ 
+ static void tty_ldisc_lock_pair(struct tty_struct *tty, struct tty_struct *tty2)
++	__acquires(&tty->ldisc_sem)
++	__acquires(&tty2->ldisc_sem)
++	__capability_unsafe(/* MAX_SCHEDULE_TIMEOUT ensures acquisition */)
+ {
+ 	tty_ldisc_lock_pair_timeout(tty, tty2, MAX_SCHEDULE_TIMEOUT);
+ }
+ 
+ static void tty_ldisc_unlock_pair(struct tty_struct *tty,
+ 				  struct tty_struct *tty2)
++	__releases(&tty->ldisc_sem)
++	__releases(&tty2->ldisc_sem)
+ {
+ 	__tty_ldisc_unlock(tty);
+ 	if (tty2)
+ 		__tty_ldisc_unlock(tty2);
++	else
++		__release(&tty2->ldisc_sem);
+ }
+ 
+ /**
+@@ -387,7 +415,7 @@ void tty_ldisc_flush(struct tty_struct *tty)
+ 
+ 	tty_buffer_flush(tty, ld);
+ 	if (ld)
+-		tty_ldisc_deref(ld);
++		__tty_ldisc_deref(tty, ld);
+ }
+ EXPORT_SYMBOL_GPL(tty_ldisc_flush);
+ 
+@@ -694,7 +722,7 @@ void tty_ldisc_hangup(struct tty_struct *tty, bool reinit)
+ 	tty_ldisc_debug(tty, "%p: hangup\n", tty->ldisc);
+ 
+ 	ld = tty_ldisc_ref(tty);
+-	if (ld != NULL) {
++	if (ld) {
+ 		if (ld->ops->flush_buffer)
+ 			ld->ops->flush_buffer(tty);
+ 		tty_driver_flush_buffer(tty);
+@@ -703,7 +731,7 @@ void tty_ldisc_hangup(struct tty_struct *tty, bool reinit)
+ 			ld->ops->write_wakeup(tty);
+ 		if (ld->ops->hangup)
+ 			ld->ops->hangup(tty);
+-		tty_ldisc_deref(ld);
++		__tty_ldisc_deref(tty, ld);
+ 	}
+ 
+ 	wake_up_interruptible_poll(&tty->write_wait, EPOLLOUT);
+@@ -716,6 +744,7 @@ void tty_ldisc_hangup(struct tty_struct *tty, bool reinit)
+ 	 * Avoid racing set_ldisc or tty_ldisc_release
+ 	 */
+ 	tty_ldisc_lock(tty, MAX_SCHEDULE_TIMEOUT);
++	lockdep_assert_held_write(&tty->ldisc_sem);
+ 
+ 	if (tty->driver->flags & TTY_DRIVER_RESET_TERMIOS)
+ 		tty_reset_termios(tty);
+diff --git a/drivers/tty/tty_ldsem.c b/drivers/tty/tty_ldsem.c
+index 3be428c16260..26d924bb5a46 100644
+--- a/drivers/tty/tty_ldsem.c
++++ b/drivers/tty/tty_ldsem.c
+@@ -390,6 +390,7 @@ void ldsem_up_read(struct ld_semaphore *sem)
+ {
+ 	long count;
+ 
++	__release_shared(sem);
+ 	rwsem_release(&sem->dep_map, _RET_IP_);
+ 
+ 	count = atomic_long_add_return(-LDSEM_READ_BIAS, &sem->count);
+@@ -404,6 +405,7 @@ void ldsem_up_write(struct ld_semaphore *sem)
+ {
+ 	long count;
+ 
++	__release(sem);
+ 	rwsem_release(&sem->dep_map, _RET_IP_);
+ 
+ 	count = atomic_long_add_return(-LDSEM_WRITE_BIAS, &sem->count);
+diff --git a/drivers/tty/tty_mutex.c b/drivers/tty/tty_mutex.c
+index 784e46a0a3b1..e5576fd6f5a4 100644
+--- a/drivers/tty/tty_mutex.c
++++ b/drivers/tty/tty_mutex.c
+@@ -41,12 +41,16 @@ void tty_lock_slave(struct tty_struct *tty)
+ {
+ 	if (tty && tty != tty->link)
+ 		tty_lock(tty);
++	else
++		__acquire(&tty->legacy_mutex);
+ }
+ 
+ void tty_unlock_slave(struct tty_struct *tty)
+ {
+ 	if (tty && tty != tty->link)
+ 		tty_unlock(tty);
++	else
++		__release(&tty->legacy_mutex);
+ }
+ 
+ void tty_set_lock_subclass(struct tty_struct *tty)
+diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
+index 14cca33d2269..bcb65a26a6bf 100644
+--- a/drivers/tty/tty_port.c
++++ b/drivers/tty/tty_port.c
+@@ -509,6 +509,7 @@ EXPORT_SYMBOL(tty_port_lower_dtr_rts);
+  */
+ int tty_port_block_til_ready(struct tty_port *port,
+ 				struct tty_struct *tty, struct file *filp)
++	__must_hold(&tty->legacy_mutex)
+ {
+ 	int do_clocal = 0, retval;
+ 	unsigned long flags;
+@@ -764,6 +765,7 @@ EXPORT_SYMBOL_GPL(tty_port_install);
+  */
+ int tty_port_open(struct tty_port *port, struct tty_struct *tty,
+ 							struct file *filp)
++	__must_hold(&tty->legacy_mutex)
+ {
+ 	spin_lock_irq(&port->lock);
+ 	++port->count;
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 2372f9357240..ee1ba62fc398 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -234,8 +234,8 @@ struct tty_struct {
+ 	void *disc_data;
+ 	void *driver_data;
+ 	spinlock_t files_lock;
+-	int write_cnt;
+-	u8 *write_buf;
++	int write_cnt __guarded_by(&atomic_write_lock);
++	u8 *write_buf __guarded_by(&atomic_write_lock);
+ 
+ 	struct list_head tty_files;
+ 
+@@ -500,11 +500,11 @@ long vt_compat_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 
+ /* tty_mutex.c */
+ /* functions for preparation of BKL removal */
+-void tty_lock(struct tty_struct *tty);
+-int  tty_lock_interruptible(struct tty_struct *tty);
+-void tty_unlock(struct tty_struct *tty);
+-void tty_lock_slave(struct tty_struct *tty);
+-void tty_unlock_slave(struct tty_struct *tty);
++void tty_lock(struct tty_struct *tty) __acquires(&tty->legacy_mutex);
++int  tty_lock_interruptible(struct tty_struct *tty) __cond_acquires(0, &tty->legacy_mutex);
++void tty_unlock(struct tty_struct *tty) __releases(&tty->legacy_mutex);
++void tty_lock_slave(struct tty_struct *tty) __acquires(&tty->legacy_mutex);
++void tty_unlock_slave(struct tty_struct *tty) __releases(&tty->legacy_mutex);
+ void tty_set_lock_subclass(struct tty_struct *tty);
+ 
+ #endif
+diff --git a/include/linux/tty_flip.h b/include/linux/tty_flip.h
+index af4fce98f64e..2214714059f8 100644
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -86,7 +86,7 @@ static inline size_t tty_insert_flip_string(struct tty_port *port,
+ size_t tty_ldisc_receive_buf(struct tty_ldisc *ld, const u8 *p, const u8 *f,
+ 			     size_t count);
+ 
+-void tty_buffer_lock_exclusive(struct tty_port *port);
+-void tty_buffer_unlock_exclusive(struct tty_port *port);
++void tty_buffer_lock_exclusive(struct tty_port *port) __acquires(&port->buf.lock);
++void tty_buffer_unlock_exclusive(struct tty_port *port) __releases(&port->buf.lock);
+ 
+ #endif /* _LINUX_TTY_FLIP_H */
+diff --git a/include/linux/tty_ldisc.h b/include/linux/tty_ldisc.h
+index af01e89074b2..d834cf115d52 100644
+--- a/include/linux/tty_ldisc.h
++++ b/include/linux/tty_ldisc.h
+@@ -14,7 +14,7 @@ struct tty_struct;
+ /*
+  * the semaphore definition
+  */
+-struct ld_semaphore {
++struct_with_capability(ld_semaphore) {
+ 	atomic_long_t		count;
+ 	raw_spinlock_t		wait_lock;
+ 	unsigned int		wait_readers;
+@@ -33,21 +33,22 @@ do {								\
+ 	static struct lock_class_key __key;			\
+ 								\
+ 	__init_ldsem((sem), #sem, &__key);			\
++	__assert_cap(sem);					\
+ } while (0)
+ 
+ 
+-int ldsem_down_read(struct ld_semaphore *sem, long timeout);
+-int ldsem_down_read_trylock(struct ld_semaphore *sem);
+-int ldsem_down_write(struct ld_semaphore *sem, long timeout);
+-int ldsem_down_write_trylock(struct ld_semaphore *sem);
+-void ldsem_up_read(struct ld_semaphore *sem);
+-void ldsem_up_write(struct ld_semaphore *sem);
++int ldsem_down_read(struct ld_semaphore *sem, long timeout) __cond_acquires_shared(true, sem);
++int ldsem_down_read_trylock(struct ld_semaphore *sem) __cond_acquires_shared(true, sem);
++int ldsem_down_write(struct ld_semaphore *sem, long timeout) __cond_acquires(true, sem);
++int ldsem_down_write_trylock(struct ld_semaphore *sem) __cond_acquires(true, sem);
++void ldsem_up_read(struct ld_semaphore *sem) __releases_shared(sem);
++void ldsem_up_write(struct ld_semaphore *sem) __releases(sem);
+ 
+ #ifdef CONFIG_DEBUG_LOCK_ALLOC
+ int ldsem_down_read_nested(struct ld_semaphore *sem, int subclass,
+-		long timeout);
++		long timeout) __cond_acquires_shared(true, sem);
+ int ldsem_down_write_nested(struct ld_semaphore *sem, int subclass,
+-		long timeout);
++		long timeout) __cond_acquires(true, sem);
+ #else
+ # define ldsem_down_read_nested(sem, subclass, timeout)		\
+ 		ldsem_down_read(sem, timeout)
 -- 
 2.48.1.711.g2feabab25a-goog
 
