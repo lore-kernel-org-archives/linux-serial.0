@@ -1,165 +1,95 @@
-Received: from weierstrass.telenet-ops.be (weierstrass.telenet-ops.be [195.130.137.81])
+Received: from mail.muc.de (mail.muc.de [193.149.48.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F0C158524
-	for <linux-serial@vger.kernel.org>; Tue,  4 Mar 2025 19:06:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.137.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECD6A1F8BCC
+	for <linux-serial@vger.kernel.org>; Tue,  4 Mar 2025 20:31:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.149.48.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741115189; cv=none; b=dtiIr1V1CMq02KQ4+nm3jQmi1Xt4nzBW3qHQflUHp3mNKULamo/aU/3PC61kWUNZmJHRViL8YPKB2gIuhejtq9gU7HW4nXWWUU5MEXhoDbKC+rpjMMtVTVJ35Aynxn6+QrfUAtpbtpNbEpBx8L1U28CY9Gnye2EE57rCx6fGx3U=
+	t=1741120268; cv=none; b=i3RzWSKspxdTfftZPqw5ITZLcule6v6Ctj0vTbSIlJW0cks/lADMh0Pgsd9qn4BMGOw4ba4a90Mqk0tNCyXkkE+IwcphS9cQGw+GRSBZslYuJBGsSGoNHYv7DCOyAXEzyPnNxQteH3mxlDa12fm3jlfj/U0IbruxnpVBJhbeTU8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741115189; c=relaxed/simple;
-	bh=4tbOFPia/wKzXKQO2yU4Pnp1OaSxgVoeOL4F0Nofol0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Q2zzMOwd+r+Ucf+JgQnwxlhcYIjVnY8Yl4LvH+W9S9fclxHV3fEVVX1Ott1Jn4IeauyKVo32lYt2dcaIpEdKGOOrN38gtX+CvqI2KS25CviLpqjnSOV0J2IP1FBxUiqQE7KWEDAdXUDdDYuDxY8XpOZuU5eYdWXac4z6sOemU0Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.137.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
-Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
-	by weierstrass.telenet-ops.be (Postfix) with ESMTPS id 4Z6lXJ30Nhz4wwt3
-	for <linux-serial@vger.kernel.org>; Tue, 04 Mar 2025 20:06:24 +0100 (CET)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:4b47:cefc:1a47:3e05])
-	by baptiste.telenet-ops.be with cmsmtp
-	id Lj6G2E00A2Gsk2z01j6Gq2; Tue, 04 Mar 2025 20:06:17 +0100
-Received: from rox.of.borg ([192.168.97.57])
-	by ramsan.of.borg with esmtp (Exim 4.97)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1tpXaV-0000000CpmF-1dSc;
-	Tue, 04 Mar 2025 20:06:16 +0100
-Received: from geert by rox.of.borg with local (Exim 4.97)
-	(envelope-from <geert@linux-m68k.org>)
-	id 1tpXaq-00000008ckx-1yKz;
-	Tue, 04 Mar 2025 20:06:16 +0100
-From: Geert Uytterhoeven <geert+renesas@glider.be>
-To: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: linux-serial@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2] serial: sh-sci: Save and restore more registers
-Date: Tue,  4 Mar 2025 20:06:11 +0100
-Message-ID: <11c2eab45d48211e75d8b8202cce60400880fe55.1741114989.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.43.0
+	s=arc-20240116; t=1741120268; c=relaxed/simple;
+	bh=mzdC7fkkCvMgbcc9+AFuPPSV2MdSt3HX1JwBHsD4cP8=;
+	h=Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To:From; b=mlpweQLYewufRkBwTVwf4NacDznECQvzNwoCh7V2ABzzh88XX/upBTqNOo83S8IAzPaLxNwesYaiV3fXc3hejTS2HxjsxjW1HxWtU/7YYITof8I8LTi66kzgdgRFIZejNqbelbbhXB9CsL1GrGMu/wJ5n0XyEpLlZ5geRXRZZVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de; spf=pass smtp.mailfrom=muc.de; arc=none smtp.client-ip=193.149.48.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=muc.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=muc.de
+Received: (qmail 5333 invoked by uid 3782); 4 Mar 2025 21:30:57 +0100
+Received: from muc.de (pd953a22b.dip0.t-ipconnect.de [217.83.162.43]) (using
+ STARTTLS) by colin.muc.de (tmda-ofmipd) with ESMTP;
+ Tue, 04 Mar 2025 21:30:56 +0100
+Received: (qmail 12384 invoked by uid 1000); 4 Mar 2025 20:30:56 -0000
+Date: Tue, 4 Mar 2025 20:30:56 +0000
+To: dri-devel@lists.freedesktop.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+  Jiri Slaby <jirislaby@kernel.org>, Simona Vetter <simona@ffwll.ch>,
+  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: More than 256/512 glyphs on the Liinux console
+Message-ID: <Z8djAD5WgpyPTnpa@MAC.fritz.box>
+References: <Z7idXzMcDhe_E5oN@MAC.fritz.box>
+ <2025022243-street-joylessly-6dfa@gregkh>
+ <Z7nu7HqKn4o2rMd5@MAC.fritz.box>
+ <2025022355-peroxide-defacing-4fa4@gregkh>
+ <Z7y4yHT0fNYYiPI8@MAC.fritz.box>
+ <d5e05c61-d796-4e5c-9538-a1e068631bba@kernel.org>
+ <Z73sqvjlbJ54FCtH@MAC.fritz.box>
+ <2025022652-uptown-cheating-5df8@gregkh>
+ <Z8BjC_TzuDVaFC_3@MAC.fritz.box>
+ <2025022802-monitor-moneyless-0f84@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2025022802-monitor-moneyless-0f84@gregkh>
+X-Submission-Agent: TMDA/1.3.x (Ph3nix)
+From: Alan Mackenzie <acm@muc.de>
+X-Primary-Address: acm@muc.de
 
-On (H)SCIF with a Baud Rate Generator for External Clock (BRG), there
-are multiple ways to configure the requested serial speed.  If firmware
-uses a different method than Linux, and if any debug info is printed
-after the Bit Rate Register (SCBRR) is restored, but before termios is
-reconfigured (which configures the alternative method), the system may
-lock-up during resume.
+Hello, dri-devel.
 
-Fix this by saving and restoring the contents of the BRG Frequency
-Division (SCDL) and Clock Select (SCCKS) registers as well.
+The context of the following post is a thread on Linux kernel lists where
+I am proposing to extend the Linux console to handle more than 256/512
+distinct glyphs.
 
-Also save and restore the HSCIF's Sampling Rate Register (HSSRR), which
-configures the sampling point, and the SCIFA/SCIFB's Serial Port Control
-and Data Registers (SCPCR/SCPDR), which configure the optional control
-flow signals.
+On Fri, Feb 28, 2025 at 20:24:33 -0800, Greg Kroah-Hartman wrote:
+> On Thu, Feb 27, 2025 at 01:05:15PM +0000, Alan Mackenzie wrote:
+> > Hello, Greg.
 
-After this, all registers that are not saved/restored are either:
-  - read-only,
-  - write-only,
-  - status registers containing flags with clear-after-set semantics,
-  - FIFO Data Count Trigger registers, which do not matter much for
-    the serial console.
+> > On Wed, Feb 26, 2025 at 11:09:57 +0100, Greg Kroah-Hartman wrote:
+> > > On Tue, Feb 25, 2025 at 04:15:38PM +0000, Alan Mackenzie wrote:
+> > > > On Mon, Feb 24, 2025 at 21:08:50 +0100, Jiri Slaby wrote:
 
-Fixes: 22a6984c5b5df8ea ("serial: sh-sci: Update the suspend/resume support")
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Tested-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
----
-This can be reproduced on e.g. Salvator-X(S) by enabling the debug
-prints in sci_brg_calc(), and using s2ram with no_console_suspend.
+> > > > > I didn't read the thread, but are you looking e.g. for kmscon?
 
-Tested on systems using SCIF (Salvator-XS), HSCIF (Gray Hawk Single) and
-SCIFA (KZM-A9-GT) as the serial console.
+> > > > No, I wasn't.  I was looking for a drm replacement for the
+> > > > drivers/tty/vt code inside the kernel.  I may have misunderstood
+> > > > Greg when he referred to a replacement which uses drm.
 
-v2:
-  - Add Tested-by, Reviewed-by.
-  - Move restoring the External Baud Rate Generator (BRG) registers up,
-    to better match the initialization order in sci_set_termios(),
-  - Also save/restore HSSRR, SCPCR, and SCPDR.
----
- drivers/tty/serial/sh-sci.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+> > > No, this is what I was referring to.  Also maybe we should be
+> > > asking on the drm list?  The developers there were working to get
+> > > rid of CONFIG_VT so I know they have plans for what they see
+> > > replacing it.
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 2db2d85003f70138..1c8480d0338ef850 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -105,10 +105,15 @@ struct plat_sci_reg {
- };
- 
- struct sci_suspend_regs {
-+	u16 scdl;
-+	u16 sccks;
- 	u16 scsmr;
- 	u16 scscr;
- 	u16 scfcr;
- 	u16 scsptr;
-+	u16 hssrr;
-+	u16 scpcr;
-+	u16 scpdr;
- 	u8 scbrr;
- 	u8 semr;
- };
-@@ -3563,6 +3568,10 @@ static void sci_console_save(struct sci_port *s)
- 	struct sci_suspend_regs *regs = &s->suspend_regs;
- 	struct uart_port *port = &s->port;
- 
-+	if (sci_getreg(port, SCDL)->size)
-+		regs->scdl = sci_serial_in(port, SCDL);
-+	if (sci_getreg(port, SCCKS)->size)
-+		regs->sccks = sci_serial_in(port, SCCKS);
- 	if (sci_getreg(port, SCSMR)->size)
- 		regs->scsmr = sci_serial_in(port, SCSMR);
- 	if (sci_getreg(port, SCSCR)->size)
-@@ -3573,6 +3582,12 @@ static void sci_console_save(struct sci_port *s)
- 		regs->scsptr = sci_serial_in(port, SCSPTR);
- 	if (sci_getreg(port, SCBRR)->size)
- 		regs->scbrr = sci_serial_in(port, SCBRR);
-+	if (sci_getreg(port, HSSRR)->size)
-+		regs->hssrr = sci_serial_in(port, HSSRR);
-+	if (sci_getreg(port, SCPCR)->size)
-+		regs->scpcr = sci_serial_in(port, SCPCR);
-+	if (sci_getreg(port, SCPDR)->size)
-+		regs->scpdr = sci_serial_in(port, SCPDR);
- 	if (sci_getreg(port, SEMR)->size)
- 		regs->semr = sci_serial_in(port, SEMR);
- }
-@@ -3582,6 +3597,10 @@ static void sci_console_restore(struct sci_port *s)
- 	struct sci_suspend_regs *regs = &s->suspend_regs;
- 	struct uart_port *port = &s->port;
- 
-+	if (sci_getreg(port, SCDL)->size)
-+		sci_serial_out(port, SCDL, regs->scdl);
-+	if (sci_getreg(port, SCCKS)->size)
-+		sci_serial_out(port, SCCKS, regs->sccks);
- 	if (sci_getreg(port, SCSMR)->size)
- 		sci_serial_out(port, SCSMR, regs->scsmr);
- 	if (sci_getreg(port, SCSCR)->size)
-@@ -3592,6 +3611,12 @@ static void sci_console_restore(struct sci_port *s)
- 		sci_serial_out(port, SCSPTR, regs->scsptr);
- 	if (sci_getreg(port, SCBRR)->size)
- 		sci_serial_out(port, SCBRR, regs->scbrr);
-+	if (sci_getreg(port, HSSRR)->size)
-+		sci_serial_out(port, HSSRR, regs->hssrr);
-+	if (sci_getreg(port, SCPCR)->size)
-+		sci_serial_out(port, SCPCR, regs->scpcr);
-+	if (sci_getreg(port, SCPDR)->size)
-+		sci_serial_out(port, SCPDR, regs->scpdr);
- 	if (sci_getreg(port, SEMR)->size)
- 		sci_serial_out(port, SEMR, regs->semr);
- }
+Is this (still) the case?  Have people on dri-devel developed a Linux
+console which supersedes the code in drivers/tty/vt, or are they in the
+midst of doing so?
+
+Where can I best inform myself about this, and (possibly) install this
+replacement console on my system for my own use?
+
+Thanks for any information!
+
+[ .... ]
+
+> dri-devel@lists.freedesktop.org is the list.
+
+> thanks,
+
+> greg k-h
+
 -- 
-2.43.0
-
+Alan Mackenzie (Nuremberg, Germany).
