@@ -1,158 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from weierstrass.telenet-ops.be (weierstrass.telenet-ops.be [195.130.137.81])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2837B259C8E;
-	Tue,  4 Mar 2025 17:45:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70F0C158524
+	for <linux-serial@vger.kernel.org>; Tue,  4 Mar 2025 19:06:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.137.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741110356; cv=none; b=OxLOtseK7W/y6Cl44mR+0RpvBzDSUwNVsXppCJfSwejKR3ppY43FQKnbspWCLF59e8toiJQyFsBpQy/AuMD5qd5ZTweGkwJuLJWJL8p5Bb+elJo0BV+4kJY+RUOjHfrpRHDKSAEau/l8bVlqRhTVCzSn0ceQ0EybQEiM5irU5q0=
+	t=1741115189; cv=none; b=dtiIr1V1CMq02KQ4+nm3jQmi1Xt4nzBW3qHQflUHp3mNKULamo/aU/3PC61kWUNZmJHRViL8YPKB2gIuhejtq9gU7HW4nXWWUU5MEXhoDbKC+rpjMMtVTVJ35Aynxn6+QrfUAtpbtpNbEpBx8L1U28CY9Gnye2EE57rCx6fGx3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741110356; c=relaxed/simple;
-	bh=dMmbRSw5Wygxzqtk7yBIvmykz+bSqg8Tu3586uZGrOQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oKF+hc0djwqCg1gCBiDBTLxu/HQrrrIUdKBdgCvUpWycxogo2UjLmCxg+bKhkRp5HoVO3qUPTbH7rvrl3onhutevdrxaIIbiWF4v9grJUgC3zrqiETs1vD5+M1bTcABqmqi7Gzi8hhYN2Chpj4CBFfE0ooW++pVAaM4TPPzqAqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZVMooXPe; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZVMooXPe"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B78E5C4CEE5;
-	Tue,  4 Mar 2025 17:45:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741110355;
-	bh=dMmbRSw5Wygxzqtk7yBIvmykz+bSqg8Tu3586uZGrOQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZVMooXPefi4t97hpLHFZ9BqCzhlFsGejQJ8vuBGwLmnbj3WDSqs/hao5H4qxtIr5v
-	 YQ+13QUGc6uyyK7BXaHQRUmtlFgJtUc75VY0hNt9f3vJ6ynhTPk787G7SnKGcL5+Lk
-	 LR/9k4lGu0QXs798Pq+RsYCMmtN80BZWba33noIfbc2ls1FwWebU7r4ha8NMG24ZOb
-	 kdQfMpaHzRVbF2u3JASSNHz1h8WuqCV8mPnogVjP1cuWcbccPgexA2fDEd7iJXPuCS
-	 9JBKj1P9vFKfyEPnCevx/MXGCAvLFNLSPEAElatTnjPHdMSwHmZTmQcv8a/n8plNOF
-	 8pSGwEgkfUCyg==
-Date: Tue, 4 Mar 2025 11:45:53 -0600
-From: Bjorn Andersson <andersson@kernel.org>
-To: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	johan+linaro@kernel.org, dianders@chromium.org, konradybcio@kernel.org, 
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com
-Subject: Re: [PATCH v1] serial: qcom-geni: Remove alias dependency from qcom
- serial driver
-Message-ID: <tn6czifetdf2mg5gl3mhfpwcb6q7dkn5r4kgqln6evm4qdsjvi@ehpl3qj3axvw>
-References: <20250304071423.4033565-1-quic_vdadhani@quicinc.com>
+	s=arc-20240116; t=1741115189; c=relaxed/simple;
+	bh=4tbOFPia/wKzXKQO2yU4Pnp1OaSxgVoeOL4F0Nofol0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Q2zzMOwd+r+Ucf+JgQnwxlhcYIjVnY8Yl4LvH+W9S9fclxHV3fEVVX1Ott1Jn4IeauyKVo32lYt2dcaIpEdKGOOrN38gtX+CvqI2KS25CviLpqjnSOV0J2IP1FBxUiqQE7KWEDAdXUDdDYuDxY8XpOZuU5eYdWXac4z6sOemU0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.137.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+	by weierstrass.telenet-ops.be (Postfix) with ESMTPS id 4Z6lXJ30Nhz4wwt3
+	for <linux-serial@vger.kernel.org>; Tue, 04 Mar 2025 20:06:24 +0100 (CET)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:4b47:cefc:1a47:3e05])
+	by baptiste.telenet-ops.be with cmsmtp
+	id Lj6G2E00A2Gsk2z01j6Gq2; Tue, 04 Mar 2025 20:06:17 +0100
+Received: from rox.of.borg ([192.168.97.57])
+	by ramsan.of.borg with esmtp (Exim 4.97)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1tpXaV-0000000CpmF-1dSc;
+	Tue, 04 Mar 2025 20:06:16 +0100
+Received: from geert by rox.of.borg with local (Exim 4.97)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1tpXaq-00000008ckx-1yKz;
+	Tue, 04 Mar 2025 20:06:16 +0100
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+Cc: linux-serial@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH v2] serial: sh-sci: Save and restore more registers
+Date: Tue,  4 Mar 2025 20:06:11 +0100
+Message-ID: <11c2eab45d48211e75d8b8202cce60400880fe55.1741114989.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250304071423.4033565-1-quic_vdadhani@quicinc.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Mar 04, 2025 at 12:44:23PM +0530, Viken Dadhaniya wrote:
-> Remove the dependency on aliases in the device tree configuration for the
-> qcom serial driver. Currently, the absence of an alias results in an
-> invalid line number, causing the driver probe to fail for geni serial.
-> 
-> To prevent probe failures, implement logic to dynamically assign line
-> numbers if an alias is not present in the device tree for non-console
-> ports.
-> 
+On (H)SCIF with a Baud Rate Generator for External Clock (BRG), there
+are multiple ways to configure the requested serial speed.  If firmware
+uses a different method than Linux, and if any debug info is printed
+after the Bit Rate Register (SCBRR) is restored, but before termios is
+reconfigured (which configures the alternative method), the system may
+lock-up during resume.
 
-Please read and follow https://docs.kernel.org/process/submitting-patches.html#describe-your-changes
+Fix this by saving and restoring the contents of the BRG Frequency
+Division (SCDL) and Clock Select (SCCKS) registers as well.
 
-Start with your problem description, then a description of your proposed
-solution.
+Also save and restore the HSCIF's Sampling Rate Register (HSSRR), which
+configures the sampling point, and the SCIFA/SCIFB's Serial Port Control
+and Data Registers (SCPCR/SCPDR), which configure the optional control
+flow signals.
 
-> Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 26 +++++++++++++++++++++++---
->  1 file changed, 23 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index a80ce7aaf309..2457f39dfc84 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -98,6 +98,8 @@
->  
->  #define DMA_RX_BUF_SIZE		2048
->  
-> +static DEFINE_IDR(port_idr);
+After this, all registers that are not saved/restored are either:
+  - read-only,
+  - write-only,
+  - status registers containing flags with clear-after-set semantics,
+  - FIFO Data Count Trigger registers, which do not matter much for
+    the serial console.
 
-You're just looking for a index allocator, so DEFINE_IDA() is probably
-what you want to use.
+Fixes: 22a6984c5b5df8ea ("serial: sh-sci: Update the suspend/resume support")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Tested-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+---
+This can be reproduced on e.g. Salvator-X(S) by enabling the debug
+prints in sci_brg_calc(), and using s2ram with no_console_suspend.
 
+Tested on systems using SCIF (Salvator-XS), HSCIF (Gray Hawk Single) and
+SCIFA (KZM-A9-GT) as the serial console.
 
-That said, theoretically I think we could get 24 GENI serial instances
-in a system. Making this a huge waste of memory and CPU cycles.
+v2:
+  - Add Tested-by, Reviewed-by.
+  - Move restoring the External Baud Rate Generator (BRG) registers up,
+    to better match the initialization order in sci_set_termios(),
+  - Also save/restore HSSRR, SCPCR, and SCPDR.
+---
+ drivers/tty/serial/sh-sci.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-An empty idr takes 88 bytes, if you then allocate 1 entry it grows with
-at least one xa_array node which is 576 bytes.
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 2db2d85003f70138..1c8480d0338ef850 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -105,10 +105,15 @@ struct plat_sci_reg {
+ };
+ 
+ struct sci_suspend_regs {
++	u16 scdl;
++	u16 sccks;
+ 	u16 scsmr;
+ 	u16 scscr;
+ 	u16 scfcr;
+ 	u16 scsptr;
++	u16 hssrr;
++	u16 scpcr;
++	u16 scpdr;
+ 	u8 scbrr;
+ 	u8 semr;
+ };
+@@ -3563,6 +3568,10 @@ static void sci_console_save(struct sci_port *s)
+ 	struct sci_suspend_regs *regs = &s->suspend_regs;
+ 	struct uart_port *port = &s->port;
+ 
++	if (sci_getreg(port, SCDL)->size)
++		regs->scdl = sci_serial_in(port, SCDL);
++	if (sci_getreg(port, SCCKS)->size)
++		regs->sccks = sci_serial_in(port, SCCKS);
+ 	if (sci_getreg(port, SCSMR)->size)
+ 		regs->scsmr = sci_serial_in(port, SCSMR);
+ 	if (sci_getreg(port, SCSCR)->size)
+@@ -3573,6 +3582,12 @@ static void sci_console_save(struct sci_port *s)
+ 		regs->scsptr = sci_serial_in(port, SCSPTR);
+ 	if (sci_getreg(port, SCBRR)->size)
+ 		regs->scbrr = sci_serial_in(port, SCBRR);
++	if (sci_getreg(port, HSSRR)->size)
++		regs->hssrr = sci_serial_in(port, HSSRR);
++	if (sci_getreg(port, SCPCR)->size)
++		regs->scpcr = sci_serial_in(port, SCPCR);
++	if (sci_getreg(port, SCPDR)->size)
++		regs->scpdr = sci_serial_in(port, SCPDR);
+ 	if (sci_getreg(port, SEMR)->size)
+ 		regs->semr = sci_serial_in(port, SEMR);
+ }
+@@ -3582,6 +3597,10 @@ static void sci_console_restore(struct sci_port *s)
+ 	struct sci_suspend_regs *regs = &s->suspend_regs;
+ 	struct uart_port *port = &s->port;
+ 
++	if (sci_getreg(port, SCDL)->size)
++		sci_serial_out(port, SCDL, regs->scdl);
++	if (sci_getreg(port, SCCKS)->size)
++		sci_serial_out(port, SCCKS, regs->sccks);
+ 	if (sci_getreg(port, SCSMR)->size)
+ 		sci_serial_out(port, SCSMR, regs->scsmr);
+ 	if (sci_getreg(port, SCSCR)->size)
+@@ -3592,6 +3611,12 @@ static void sci_console_restore(struct sci_port *s)
+ 		sci_serial_out(port, SCSPTR, regs->scsptr);
+ 	if (sci_getreg(port, SCBRR)->size)
+ 		sci_serial_out(port, SCBRR, regs->scbrr);
++	if (sci_getreg(port, HSSRR)->size)
++		sci_serial_out(port, HSSRR, regs->hssrr);
++	if (sci_getreg(port, SCPCR)->size)
++		sci_serial_out(port, SCPCR, regs->scpcr);
++	if (sci_getreg(port, SCPDR)->size)
++		sci_serial_out(port, SCPDR, regs->scpdr);
+ 	if (sci_getreg(port, SEMR)->size)
+ 		sci_serial_out(port, SEMR, regs->semr);
+ }
+-- 
+2.43.0
 
-> +
->  struct qcom_geni_device_data {
->  	bool console;
->  	enum geni_se_xfer_mode mode;
-> @@ -253,10 +255,25 @@ static struct qcom_geni_serial_port *get_port_from_line(int line, bool console)
->  	struct qcom_geni_serial_port *port;
->  	int nr_ports = console ? GENI_UART_CONS_PORTS : GENI_UART_PORTS;
->  
-> -	if (line < 0 || line >= nr_ports)
-> -		return ERR_PTR(-ENXIO);
-> +	if (console) {
-> +		if (line < 0 || line >= nr_ports)
-> +			return ERR_PTR(-ENXIO);
-> +
-> +		port = &qcom_geni_console_port;
-> +	} else {
-> +		int max_alias_num = of_alias_get_highest_id("serial");
-> +
-> +		if (line < 0 || line >= nr_ports)
-> +			line = idr_alloc(&port_idr, (void *)port, max_alias_num + 1, nr_ports,
-> +					 GFP_KERNEL);
-> +		else
-> +			line = idr_alloc(&port_idr, (void *)port, line, nr_ports, GFP_KERNEL);
-> +
-> +		if (line < 0)
-> +			return ERR_PTR(-ENXIO);
->  
-> -	port = console ? &qcom_geni_console_port : &qcom_geni_uart_ports[line];
-> +		port = &qcom_geni_uart_ports[line];
-
-Plus qcom_geni_uart_ports[] is GENI_UART_PORTS long. So you will
-actually only have a maximum of 3 ports.
-
-
-I like the change, but please replace port_idr with a u32 and use
-linux/bitmap.h to implement the port allocation scheme.
-
-Regards,
-Bjorn
-
-> +	}
->  	return port;
->  }
->  
-> @@ -1761,6 +1778,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
->  						port->wakeup_irq);
->  		if (ret) {
->  			device_init_wakeup(&pdev->dev, false);
-> +			idr_remove(&port_idr, uport->line);
->  			uart_remove_one_port(drv, uport);
->  			return ret;
->  		}
-> @@ -1772,10 +1790,12 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
->  static void qcom_geni_serial_remove(struct platform_device *pdev)
->  {
->  	struct qcom_geni_serial_port *port = platform_get_drvdata(pdev);
-> +	struct uart_port *uport = &port->uport;
->  	struct uart_driver *drv = port->private_data.drv;
->  
->  	dev_pm_clear_wake_irq(&pdev->dev);
->  	device_init_wakeup(&pdev->dev, false);
-> +	idr_remove(&port_idr, uport->line);
->  	uart_remove_one_port(drv, &port->uport);
->  }
->  
-> -- 
-> 2.34.1
-> 
-> 
