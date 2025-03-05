@@ -1,155 +1,131 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76DC51D63C3;
-	Wed,  5 Mar 2025 04:30:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDDF01C6FE1
+	for <linux-serial@vger.kernel.org>; Wed,  5 Mar 2025 08:36:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741149027; cv=none; b=PaRXkJfRzbUWluR32k5YC5BcpVVBzl/WE9uVJEXKQ8W7J//Y2kLVJ35khIIBwynMKRhvbuJ0AUohl1/yAxi10HdZKBAyfINVaWvCDh6FwFx9MrUvXAY6aX0gnUfhtMBD0gygE5D4k7tZJ3xTmVm1xRBm27MlUlrV2UYGd1qfCPQ=
+	t=1741163777; cv=none; b=lrDEUy+LoA8MjAEaVm1aJ7SRY7zuz5WqxRCTPYMgW5FvdI46ZnWe72s9aiKWGWQnmSsoDY7p4eI6b0N0jykCnY4CpBcNgLLppemzO6ToWYeKz689IB0AOUwaOiBUbGXvSVsbiRO2IEX/MkGzjTBhSpcxOtsHsNH/ebwd5yOnrmY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741149027; c=relaxed/simple;
-	bh=/rtDbi7uSjBFCc9+l01/GCl/ObmCJylChTnhbJQIO7M=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Uslsw6rCOjPyYuhbTx0cyADelWQnAmT5w+Yhj7v0VuxTnLIvmSCH514roVwJn+0fdMLYslmFtE0RFXuFYpuZVkIefY1rp8jrUdMTV9Vrz5Hr2crll29Yb1igvAsWxrrBys4h/hadVmrOT7QyNqeNP7l5Vx2niYgcePiiypm/Hxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tmyiaj2/; arc=none smtp.client-ip=209.85.222.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1741163777; c=relaxed/simple;
+	bh=tclfnaQ+78uJUqE4m2J8GwrNwDst3SKOWGjXQTac2LE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C6ITxUPma2Wo6XpGatgrQawAJulbaCyRjMzqLUF6D+dIgLDpHqW5VubWf0BFd0KZNUjQVHN2XhhRGw/TepMoF7PVtePVdGLNgqnDt91taLAVQ0pm7afQ8lWXZY95w3OJBwSW/pTJP+keUmHH1nhy1yUS2CydAjohHjfG6a1HeT0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=mRucgZbg; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tmyiaj2/"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-7be49f6b331so620466785a.1;
-        Tue, 04 Mar 2025 20:30:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mRucgZbg"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-390eb7c1024so3767524f8f.0
+        for <linux-serial@vger.kernel.org>; Wed, 05 Mar 2025 00:36:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741149024; x=1741753824; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rjB9uUIaqtE9vOEIpWwNSuqq5SDBhNaUIjyLRrZ2+yo=;
-        b=Tmyiaj2/mhLpZxRsAMjLBcoO5YuNxUrxg9lyn/K1yVLxk/DGqfqU2UvVXfeYtTKWDh
-         BQoJxaTw+J84JrwxfKyXWP8KPOVaPmXjVDPngbNuGUwHtQ9nC1Dgz5bEsZ5shhChxQT8
-         BoIYXO9/2Srzjbcljfj/NM2uNqPMoLnBZzrXwVBtiHW3AvlMNmqwCT1SGW0Tal1rPX1x
-         UbXGdlhMmTVWO1JeXrRG0FW2FHaXoM/PK9kydouxqKEalNgGeY+XdOk0XOzXLfG7onvF
-         Feh73XekPVR5NpvQwwtONVH4q+XUX+nmiIkZrazwHD+3EWFr9wxRKVwvspec0HhaiV7k
-         1jQw==
+        d=linaro.org; s=google; t=1741163774; x=1741768574; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZfQXwUL3Ydz7mR+cjRUeO/xqWRGS7uJqxxJMkaNfgT0=;
+        b=mRucgZbgodwpnJ/LEwx6AquTZQHVsPy5Wt7PkYj3/3iuVXlzlfYtpsV5C2wYRBmbjw
+         3EoNk2BCWG1GAhSntBmEettOHYWTw2qcwjQFFgUL1MBd4YosDoTysLdpXDjaGw4dS5/N
+         Afz6ZJnF3JarVvhJSD/cRh7RFuYL7ulENxsauISFdD0pBKnaBVNiVDZ1LdAb5/NKn++B
+         5iWGnQFlmfBbr4Dr/jZayWeKdN15hWB7yQvny/iE3hdmhtMSsRKqZKIQU6aD7hHmimWU
+         5BgNaV21Aa7Kck9JS9G6E/zL3yh/A8g5Gr1dvG6j87h9dCZniNs542brkWusvVD9JHQo
+         W0fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741149024; x=1741753824;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rjB9uUIaqtE9vOEIpWwNSuqq5SDBhNaUIjyLRrZ2+yo=;
-        b=QoUjGHElj7pNpxU9KoHf/B0pcff+rdc5MRchmSB63/gaRlNWiOx5UmPNPtnhz9hbUK
-         4KA1HSBwu9bBlaqDFmxFtl1Q/tooN+o3DJDYWuhgRl8p/89cbQqvieAfxL12lkRhoNuI
-         Com3fyC9y5C1daiaYCzqaz1HVX6KNz85xes1mvCUJtlPpLbMq6OoHEKo5QO9Kik/WfaC
-         pWdr29eT9Bm9yzg7sNjMXXd2o2ILfy+3Be4CiHqmDWOAvcWLRKKua1CZqbw2Eqe1h4T9
-         MOQt8PZULvWq6m3BZJ9MMhMZKy2JHbT6Zc1BJzMmuIlGJTcUnoeaPDqqHVFHPdCg8nlQ
-         fdTg==
-X-Forwarded-Encrypted: i=1; AJvYcCX6GMx6ICk3h4emNmbnZynGCz5pSret22whjMf9e5gYgtSuzOd3ClomLIHmPKVxci4YbBQqmyUcQQPpgDY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxYcLlBSZEXi61UFxDbeHfok57wseyhWSzYms5XrGGlipn+n3JW
-	D9fMCeNYQ6SZlJEXutSAJRN6v+IM6XawqYwAfDred9bXulPKCgNGeHDky19u
-X-Gm-Gg: ASbGncsBlbXWpJJp2fDVeDgCJLVcu4edLaMEiHGHjIMUTi+uR8c6zEQfAovcqk6rP/s
-	fhsOyivYjvbMvqRYWL0QfvTmwsj0LP1e8UjYrleQsw8EzOFwOYT5miSDPNNKVXGPPpaiKVlwH2L
-	l1wrsXLhnedIdhQFRqD70GYpCcJSsntmsW5yQbr0JdBZNxs1u23LTn3E9+n3EqFtoelQHgrqppq
-	Bmi1Ru25RMY7LKFhsAaa3CaJ9LMWRSYRrQESdA4WPSTVWGRS7AX7i2RZATpSUGzuoSf5A+W2+cc
-	hCAwCKBacIqV7G1VE5+upuwqz5V05s+V5GYKPoucsRvU4HEAak4s8PBnuDhBjLZXMBa3k8e5D8v
-	+I6lmPbI=
-X-Google-Smtp-Source: AGHT+IGWDx0RkZd6Nu9XMl3P81+xGGY29EFnXdhoJHvCCiaa+rmUCdY6b51hp0aq9gPRkLbOBpWKyw==
-X-Received: by 2002:a05:620a:8908:b0:7c3:d45b:c0bc with SMTP id af79cd13be357-7c3d8ee1838mr399822985a.36.1741149023860;
-        Tue, 04 Mar 2025 20:30:23 -0800 (PST)
-Received: from nerdopolis2.mynetworksettings.com ([2600:4040:5e66:a800:a5b9:4b66:4113:9357])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c36fee8b4dsm834060785a.15.2025.03.04.20.30.21
+        d=1e100.net; s=20230601; t=1741163774; x=1741768574;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZfQXwUL3Ydz7mR+cjRUeO/xqWRGS7uJqxxJMkaNfgT0=;
+        b=DJmvZxSAKHTtSWbrsmf/Wc48P/uKAAdCUU96rUpCHRMLMsgKBb0KqfDC+qf17yQzuW
+         Z6ViTngXqe0lf88ayFCno+DBTPGQAFimhoOfenbNIWHJxSTG8bklqexq1FPyIz33Q+bI
+         N6HTu1fj2YyeYqOewv7qHO9lsGeTpOuDKsnR9jq3g3DDuMG77P+Y8tH43kofWfWTIzLm
+         o4Czzswn3s398kfpL9TQbmKfTGfZ4KNScR+sJ6Zt+WnmecghW6ZTedpV3LQT8nxTxqM+
+         jl2V14URtEexab/gpg7Fe6vsWBBKvjZ5bPIHTO4QczfhDEVBmeQNXspTwzMDhX7kICoi
+         A+qA==
+X-Forwarded-Encrypted: i=1; AJvYcCVFzEVn/2nFblKQttuAr2cwxiLIInqsWKVd5/JvWSHL839IuHS1q1svccqt+APM0F70OzKQIrUuZID+5Jk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwJmgnGg/ubvyJTd6A6iU/HMD/EQRZfL3vLgq4zaRfFo87oX0SZ
+	eee1Y5Tl6A0UHlYjiY978WBsVmSkEDaMNEPaUwXN1ZOQNqJmXhejJc6cY2i4gss=
+X-Gm-Gg: ASbGncsi463pO+FB3eZjwO9UwnDvJdH21livNYCfiSxFFe343MFwp4c8ayM8d6wL3k/
+	wbZrKtnbE6HGu+LPlNi0taOrEjQF95LTiVcATftDTr6ixkmweDbHpJ3lSfTjQ6w/pPYsUg/sUbx
+	AK+phxMj4NLXE/i//uzrpu9OfloNtEZeIa4TDlZECYdi9XYRIpzB+2tkQ4YeSk/g9Xlz6RM7RsX
+	5iFG4bjMvmK0o/Q/sM+AFFPs1RNrvnny7BMi5t2cnzISRulxFnkp0d9m10Nf27SsPgiSZZbplYk
+	PAk/+OLxsb9JzyLMBAGGikejEw5sP49J9b4c6aDLo+xSsrn4qg==
+X-Google-Smtp-Source: AGHT+IG1TdRy5Kvu8p1cmT5U4TYJbrUoCcVGa1tX1dkQIqW9WiR2lgUQPgvjP/3zB9IzHIHCvQwYww==
+X-Received: by 2002:a05:6000:184c:b0:391:23de:b1b4 with SMTP id ffacd0b85a97d-39123deb51dmr497486f8f.45.1741163774150;
+        Wed, 05 Mar 2025 00:36:14 -0800 (PST)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-390e479608fsm20564933f8f.14.2025.03.05.00.36.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 04 Mar 2025 20:30:22 -0800 (PST)
-From: adamsimonelli@gmail.com
-To: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>,
+        Wed, 05 Mar 2025 00:36:13 -0800 (PST)
+Date: Wed, 5 Mar 2025 11:36:10 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Marco Elver <elver@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Alexander Potapenko <glider@google.com>,
+	Arnd Bergmann <arnd@arndb.de>, Bart Van Assche <bvanassche@acm.org>,
+	Bill Wendling <morbo@google.com>, Boqun Feng <boqun.feng@gmail.com>,
+	Dmitry Vyukov <dvyukov@google.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Frederic Weisbecker <frederic@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ingo Molnar <mingo@kernel.org>, Jann Horn <jannh@google.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Joel Fernandes <joel@joelfernandes.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Josh Triplett <josh@joshtriplett.org>,
+	Justin Stitt <justinstitt@google.com>, Kees Cook <kees@kernel.org>,
+	Kentaro Takeda <takedakn@nttdata.co.jp>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
 	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Petr Mladek <pmladek@suse.com>
-Cc: Adam Simonelli <adamsimonelli@gmail.com>
-Subject: [PATCH v7 3/3] tty: Change order of ttynull to be linked sooner if enabled as a console.
-Date: Tue,  4 Mar 2025 23:29:30 -0500
-Message-ID: <20250305042930.3453265-4-adamsimonelli@gmail.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20250305042930.3453265-1-adamsimonelli@gmail.com>
-References: <20250305042930.3453265-1-adamsimonelli@gmail.com>
+	Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Waiman Long <longman@redhat.com>, Will Deacon <will@kernel.org>,
+	kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+	llvm@lists.linux.dev, rcu@vger.kernel.org,
+	linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 01/34] compiler_types: Move lock checking attributes
+ to compiler-capability-analysis.h
+Message-ID: <f76a48fe-09da-41e0-be2e-e7f1b939b7e3@stanley.mountain>
+References: <20250304092417.2873893-1-elver@google.com>
+ <20250304092417.2873893-2-elver@google.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250304092417.2873893-2-elver@google.com>
 
-From: Adam Simonelli <adamsimonelli@gmail.com>
+On Tue, Mar 04, 2025 at 10:21:00AM +0100, Marco Elver wrote:
+> +#ifndef _LINUX_COMPILER_CAPABILITY_ANALYSIS_H
+> +#define _LINUX_COMPILER_CAPABILITY_ANALYSIS_H
+> +
+> +#ifdef __CHECKER__
+> +
+> +/* Sparse context/lock checking support. */
+> +# define __must_hold(x)		__attribute__((context(x,1,1)))
+> +# define __acquires(x)		__attribute__((context(x,0,1)))
+> +# define __cond_acquires(x)	__attribute__((context(x,0,-1)))
+> +# define __releases(x)		__attribute__((context(x,1,0)))
+> +# define __acquire(x)		__context__(x,1)
+> +# define __release(x)		__context__(x,-1)
+> +# define __cond_lock(x, c)	((c) ? ({ __acquire(x); 1; }) : 0)
+> +
 
-If CONFIG_NULL_TTY_DEFAULT_CONSOLE is enabled, and CONFIG_VT is disabled,
-ttynull will become the default primary console device, based on the link
-order.
+The other thing you might want to annotate is ww_mutex_destroy().
 
-Many distributions ship with CONFIG_VT enabled. On tested desktop hardware
-if CONFIG_VT is disabled, the default console device falls back to
-/dev/ttyS0 instead of /dev/tty.
+I'm happy about the new __guarded_by annotation.
 
-This could cause issues in user space, and hardware problems:
-
-1. The user space issues include the case where  /dev/ttyS0 is
-disconnected, and the TCGETS ioctl, which some user space libraries use
-as a probe to determine if a file is a tty, is called on /dev/console and
-fails. Programs that call isatty() on /dev/console and get an incorrect
-false value may skip expected logging to /dev/console.
-
-2. The hardware issues include the case if a user has a science instrument
-or other device connected to the /dev/ttyS0 port, and they were to upgrade
-to a kernel that is disabling the CONFIG_VT option, kernel logs will then be
-sent to the device connected to /dev/ttyS0 unless they edit their kernel
-command line manually.
-
-The new CONFIG_NULL_TTY_CONSOLE option will give users and distribution
-maintainers an option to avoid this. Disabling CONFIG_VT and enabling
-CONFIG_NULL_TTY_CONSOLE will ensure the default kernel console behavior
-is not dependant on hardware configuration by default, and avoid
-unexpected new behavior on devices connected to the /dev/ttyS0 serial
-port.
-
-Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
----
- drivers/tty/Makefile | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/tty/Makefile b/drivers/tty/Makefile
-index 07aca5184a55..7d0414dc31ed 100644
---- a/drivers/tty/Makefile
-+++ b/drivers/tty/Makefile
-@@ -11,6 +11,12 @@ obj-$(CONFIG_N_HDLC)		+= n_hdlc.o
- obj-$(CONFIG_N_GSM)		+= n_gsm.o
- 
- obj-y				+= vt/
-+
-+# If ttynull is configured to be a console by default, ensure that it is linked
-+# earlier before a real one is selected.
-+obj-$(CONFIG_NULL_TTY_DEFAULT_CONSOLE) \
-+				+= ttynull.o
-+
- obj-$(CONFIG_HVC_DRIVER)	+= hvc/
- obj-y				+= serial/
- obj-$(CONFIG_SERIAL_DEV_BUS)	+= serdev/
-@@ -20,7 +26,13 @@ obj-$(CONFIG_AMIGA_BUILTIN_SERIAL) += amiserial.o
- obj-$(CONFIG_MOXA_INTELLIO)	+= moxa.o
- obj-$(CONFIG_MOXA_SMARTIO)	+= mxser.o
- obj-$(CONFIG_NOZOMI)		+= nozomi.o
-+
-+# If ttynull is enabled, but not as a boot console, it is linked and used later
-+# after the real ones.
-+ifneq ($(CONFIG_NULL_TTY_DEFAULT_CONSOLE),y)
- obj-$(CONFIG_NULL_TTY)	        += ttynull.o
-+endif
-+
- obj-$(CONFIG_SYNCLINK_GT)	+= synclink_gt.o
- obj-$(CONFIG_PPC_EPAPR_HV_BYTECHAN) += ehv_bytechan.o
- obj-$(CONFIG_GOLDFISH_TTY)	+= goldfish.o
--- 
-2.45.2
+regards,
+dan carpenter
 
