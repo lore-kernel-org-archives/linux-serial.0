@@ -1,202 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0875202F92;
-	Wed,  5 Mar 2025 09:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8CD02045AC
+	for <linux-serial@vger.kernel.org>; Wed,  5 Mar 2025 09:27:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741166116; cv=none; b=B5s0oNYsgImbzp+zEqm7hnC9GscBSmLirJZCdLi36uH466BtQJ59/0SkIeRUsklyICRwcqysLVMo+Thyi2Sx3UfC4BLVCS033vsprpasA/3SXHIyWQuiFFT0ieljfkW+d2FeF4OuL2GeiwAoY/e3zL/4R4Di+HJ0Tdh0Tlf+2YE=
+	t=1741166834; cv=none; b=HyRI+jiZWWykiLpOPjez7WCcgh+MHiAhLAiO12CBEr38sGzcmTz+gdq4aXcw3wx19WCAAux4VAWWSi8HYYKp+qoRQNg384HseVy4z+zcwVspX6Htn6TzvHhpdrk+w1Y9Bg9HjIVaz2/ifxul3VnqDYVQayB489YSHbrVGJ3wceU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741166116; c=relaxed/simple;
-	bh=fPXp34JCGg4Bgx0SAp1TyOTkZRGY1FXEf4fNxAoo5DE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CwuIC+gDGw5P0DQiwmTiuoCc/JrWmohYFdEWMTeEVilBHqjJSdlI+x6FWkCd1/4koGAsXyPrM1acMCquf2QRYyCbCMfnoV7GubctlMZOqxGZlhjGZq2hnpi+3d2RH56gmcPXGFReDcunlgA4ANvjNfQUo+4MB1VMqG76gJFRTLA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O9QNY17g; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1741166834; c=relaxed/simple;
+	bh=3mDFeB3Bpj3IOfRwlQRf3Grj75HR3nrndwXyWmM3Ob4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=owz2NcIo5T9/lQxzN53apIWESTSeyHf87QPFwhb/WarrRRldbqXw+5bS/HbabHNoGTkoykvtIhM/wrtCzpfaT0ok21BM70DRbHAFUhrab0TO/T88o9mUoLFa9IybRoeHRSj/qoM+wQtbhZPEs+A+QAKoJfy4xGfyGzzg6AyRe4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=awQ2WJus; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O9QNY17g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 830DDC4CEE2;
-	Wed,  5 Mar 2025 09:15:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741166116;
-	bh=fPXp34JCGg4Bgx0SAp1TyOTkZRGY1FXEf4fNxAoo5DE=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=O9QNY17gBmSuXZHMsQCKWltYjBmeFmJ+gYw8u4+WwMkqMzUjWFluCRHo93JXnjtvk
-	 gdN61IKcFzhxT5H8p0qJuUMS1R+BanKMm36haW+DJYBz+TJqGstUzPnDEiu4aj1a5G
-	 3maTucZ96koXQJO0hocB6+9zpbiQGvvepfQQDc8VF5sBZbEtaQNNJ2JphwGH9TFPzF
-	 imfPOiHf9cUiXRSujWH3yGHi3JTzLbyvnmClZRfIsIvhnyyFsn+FMPZdKkzLJfnNl7
-	 u46/Pdk7GK55LDJFe4JimxZ5lxQjLYMMfrweH6aLIb20PrgV6pu3Ynwh9hpGTTnp4X
-	 hFw3YNfpXF7ZA==
-Message-ID: <569186c5-8663-43df-a01c-d543f57ce5ca@kernel.org>
-Date: Wed, 5 Mar 2025 10:15:05 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="awQ2WJus"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43bc4b1603fso19208345e9.0
+        for <linux-serial@vger.kernel.org>; Wed, 05 Mar 2025 01:27:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1741166829; x=1741771629; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VaMa3tOr/8WS8V6AnlLw/eUNgZqrJVmxSDme9KtSQnA=;
+        b=awQ2WJusxW6Ge0kv9C7Zju2JITr5EXSeephgcSpgRUB67uiBC2wUReZa/SrihqlmBV
+         zMms2er4oICT6Quz/tBnkW/bMaNIjXMdxymm2mdhR9xfSuxVKM9ONClD/eluuDgTAG9Z
+         cSTRS5qBoAatCwOyBW6idxIRVSxCnO+pKzcmP7MQ0TPj3qdmkaBJ8Q/LWpx+Y/szwxxZ
+         LJpMWsH3PAH+QZGkJAJa1GPJ2b+1Y75T/DTdOUHiHu9jDRkjLhakyxdJWPiRbV2Wn6jw
+         PqJzVJnpSRn6f7FKJcb4MvkK/ygd88eqJXzL8DmZTvV5KzE9q14qcQvpm1uWSxpYfF86
+         iw7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741166829; x=1741771629;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VaMa3tOr/8WS8V6AnlLw/eUNgZqrJVmxSDme9KtSQnA=;
+        b=elvFJmMRPaxE8kq8DRtSHgO87NNs9EW/lS3L0fUY1fW6BvbZ5Ngn6/+EhFtlFVeEIe
+         82qgyCycojpJlAJiJE4smESELBwhfYPsdfg3PIPWz1yDRyDMlMp+fbFoIt9PdhBA5Nt4
+         TVibOqhhvcfYyJw3VZ+Wd01On4YiRhSHDFEIdy1i7jvS+iq9/cLqeS/DXVUsLZZNXYx6
+         l5PvPneyu0SeXGISEoBuZq7jcnfOKotIkidi9h0Sk2n3gBwKTdMmDUHTCvQg8p3xhX6x
+         ZC2h3urHHlouwQlleMZqgBDJ63ghbHMzKJBSm4l3D/qIf1NKWJh1rG0OffVJbMix6e/Q
+         Dhiw==
+X-Forwarded-Encrypted: i=1; AJvYcCXAoiNCbQzAHHGox1hF909cL0imPVD+I7LhjcuqKYGIocvC/XhCP8JCF/dY8+dKUVjhzJdi37Yi4txXoK4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzDu56u84vkxh55ftggrcfT3YB8UrgKjevBnM+74w9sdWJeiO4J
+	2oK+Ddp3+UczKhE3wP8Y/p00FwMeYW7I3jlb629+66jmwTcGPySlB1jZ/32l/qo=
+X-Gm-Gg: ASbGncuwCWeAaFLAf0//9Xpu5RHN0Rma0cLrmhFeEEA2q/GS0lx/027j/HmjkSfDTiz
+	96SkZUkLXFfZwKl8YMmixHef9LJAG/VXBK9B+f1VbZwRWSMBGFE8CxjgiLW9geQARZmVnhLxbm3
+	+fHgl2UpdwmHMyQWxx/Nukzgr7R2WOgBXEmpPQR8NwK5oxgpunLgwKQPankKaqq7wTTO7lVAqS9
+	nV36ilHnyD20urvlfPhFRWTwpXHCFeHyafKDZzTQMEAV7Oiq/99fof0nIYhNAqND5mrel/xuy0Y
+	qvHtpuXBtEFMGxRVYQOP3VnDu/S7d9dZ8WLlRhOeARGpyDXwDw==
+X-Google-Smtp-Source: AGHT+IE3mizAOsnSuTtcbkO82OvTIYaM5IjOsyfCaEaBUlwqBcpm21mf2Z2/NNT65xir9k5CCr442Q==
+X-Received: by 2002:a05:600c:4750:b0:439:9e8b:228e with SMTP id 5b1f17b1804b1-43bd29c42c8mr13412085e9.20.1741166829098;
+        Wed, 05 Mar 2025 01:27:09 -0800 (PST)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-43bd426d069sm11942015e9.3.2025.03.05.01.27.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Mar 2025 01:27:08 -0800 (PST)
+Date: Wed, 5 Mar 2025 12:27:04 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Marco Elver <elver@google.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Alexander Potapenko <glider@google.com>,
+	Arnd Bergmann <arnd@arndb.de>, Bart Van Assche <bvanassche@acm.org>,
+	Bill Wendling <morbo@google.com>, Boqun Feng <boqun.feng@gmail.com>,
+	Dmitry Vyukov <dvyukov@google.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Ingo Molnar <mingo@kernel.org>, Jann Horn <jannh@google.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Joel Fernandes <joel@joelfernandes.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Josh Triplett <josh@joshtriplett.org>,
+	Justin Stitt <justinstitt@google.com>, Kees Cook <kees@kernel.org>,
+	Kentaro Takeda <takedakn@nttdata.co.jp>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Waiman Long <longman@redhat.com>, Will Deacon <will@kernel.org>,
+	kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
+	llvm@lists.linux.dev, rcu@vger.kernel.org,
+	linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2 01/34] compiler_types: Move lock checking attributes
+ to compiler-capability-analysis.h
+Message-ID: <b6af185f-0109-4f98-a2d7-ab8f716e21a5@stanley.mountain>
+References: <20250304092417.2873893-1-elver@google.com>
+ <20250304092417.2873893-2-elver@google.com>
+ <f76a48fe-09da-41e0-be2e-e7f1b939b7e3@stanley.mountain>
+ <Z8gVyLIU71Fg1QWK@elver.google.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 31/34] drivers/tty: Enable capability analysis for core
- files
-To: Marco Elver <elver@google.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
- Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- Alexander Potapenko <glider@google.com>, Arnd Bergmann <arnd@arndb.de>,
- Bart Van Assche <bvanassche@acm.org>, Bill Wendling <morbo@google.com>,
- Boqun Feng <boqun.feng@gmail.com>, Dmitry Vyukov <dvyukov@google.com>,
- Eric Dumazet <edumazet@google.com>, Frederic Weisbecker
- <frederic@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Herbert Xu <herbert@gondor.apana.org.au>, Ingo Molnar <mingo@kernel.org>,
- Jann Horn <jannh@google.com>, Joel Fernandes <joel@joelfernandes.org>,
- Jonathan Corbet <corbet@lwn.net>, Josh Triplett <josh@joshtriplett.org>,
- Justin Stitt <justinstitt@google.com>, Kees Cook <kees@kernel.org>,
- Kentaro Takeda <takedakn@nttdata.co.jp>, Mark Rutland
- <mark.rutland@arm.com>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Miguel Ojeda <ojeda@kernel.org>, Nathan Chancellor <nathan@kernel.org>,
- Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, Steven Rostedt <rostedt@goodmis.org>,
- Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
- Thomas Gleixner <tglx@linutronix.de>, Uladzislau Rezki <urezki@gmail.com>,
- Waiman Long <longman@redhat.com>, Will Deacon <will@kernel.org>,
- kasan-dev@googlegroups.com, linux-kernel@vger.kernel.org,
- llvm@lists.linux.dev, rcu@vger.kernel.org, linux-crypto@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20250304092417.2873893-1-elver@google.com>
- <20250304092417.2873893-32-elver@google.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20250304092417.2873893-32-elver@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z8gVyLIU71Fg1QWK@elver.google.com>
 
-On 04. 03. 25, 10:21, Marco Elver wrote:
-> Enable capability analysis for drivers/tty/*.
+On Wed, Mar 05, 2025 at 10:13:44AM +0100, Marco Elver wrote:
+> On Wed, Mar 05, 2025 at 11:36AM +0300, Dan Carpenter wrote:
+> > On Tue, Mar 04, 2025 at 10:21:00AM +0100, Marco Elver wrote:
+> > > +#ifndef _LINUX_COMPILER_CAPABILITY_ANALYSIS_H
+> > > +#define _LINUX_COMPILER_CAPABILITY_ANALYSIS_H
+> > > +
+> > > +#ifdef __CHECKER__
+> > > +
+> > > +/* Sparse context/lock checking support. */
+> > > +# define __must_hold(x)		__attribute__((context(x,1,1)))
+> > > +# define __acquires(x)		__attribute__((context(x,0,1)))
+> > > +# define __cond_acquires(x)	__attribute__((context(x,0,-1)))
+> > > +# define __releases(x)		__attribute__((context(x,1,0)))
+> > > +# define __acquire(x)		__context__(x,1)
+> > > +# define __release(x)		__context__(x,-1)
+> > > +# define __cond_lock(x, c)	((c) ? ({ __acquire(x); 1; }) : 0)
+> > > +
+> > 
+> > The other thing you might want to annotate is ww_mutex_destroy().
 > 
-> This demonstrates a larger conversion to use Clang's capability
-> analysis. The benefit is additional static checking of locking rules,
-> along with better documentation.
+> We can add an annotation to check the lock is not held:
 > 
-> Signed-off-by: Marco Elver <elver@google.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Jiri Slaby <jirislaby@kernel.org>
-...
-> --- a/drivers/tty/tty_buffer.c
-> +++ b/drivers/tty/tty_buffer.c
-> @@ -52,10 +52,8 @@
->    */
->   void tty_buffer_lock_exclusive(struct tty_port *port)
->   {
-> -	struct tty_bufhead *buf = &port->buf;
-> -
-> -	atomic_inc(&buf->priority);
-> -	mutex_lock(&buf->lock);
-> +	atomic_inc(&port->buf.priority);
-> +	mutex_lock(&port->buf.lock);
 
-Here and:
+Sorry, my email was bad.
 
-> @@ -73,7 +71,7 @@ void tty_buffer_unlock_exclusive(struct tty_port *port)
->   	bool restart = buf->head->commit != buf->head->read;
->   
->   	atomic_dec(&buf->priority);
-> -	mutex_unlock(&buf->lock);
-> +	mutex_unlock(&port->buf.lock);
+I haven't actually tried your patch at all.  I have locking check in
+Smatch so I'm just basing this on the things that I did...
+https://github.com/error27/smatch/blob/master/smatch_locking.c
+This isn't a mandatory thing.  Whatever happens we're going to end up
+doing dozens of patches all over the kernel later.
 
-here, this appears excessive. You are changing code to adapt to one kind 
-of static analysis. Adding function annotations is mostly fine, but 
-changing code is too much. We don't do that. Fix the analyzer instead.
+I thought you could destroy a mutex regardless or whether it was held
+or not.  I was getting false positives which said that we should drop
+the lock on error but actually the mutex is destroyed on that path so it
+doesn't matter.
 
-> --- a/drivers/tty/tty_io.c
-> +++ b/drivers/tty/tty_io.c
-> @@ -167,6 +167,7 @@ static void release_tty(struct tty_struct *tty, int idx);
->    * Locking: none. Must be called after tty is definitely unused
->    */
->   static void free_tty_struct(struct tty_struct *tty)
-> +	__capability_unsafe(/* destructor */)
->   {
->   	tty_ldisc_deinit(tty);
->   	put_device(tty->dev);
-> @@ -965,7 +966,7 @@ static ssize_t iterate_tty_write(struct tty_ldisc *ld, struct tty_struct *tty,
->   	ssize_t ret, written = 0;
->   
->   	ret = tty_write_lock(tty, file->f_flags & O_NDELAY);
-> -	if (ret < 0)
-> +	if (ret)
+regards,
+dan carpenter
 
-This change is not documented.
-
-> @@ -1154,7 +1155,7 @@ int tty_send_xchar(struct tty_struct *tty, u8 ch)
->   		return 0;
->   	}
->   
-> -	if (tty_write_lock(tty, false) < 0)
-> +	if (tty_write_lock(tty, false))
-
-And this one. And more times later.
-
-> --- a/drivers/tty/tty_ldisc.c
-> +++ b/drivers/tty/tty_ldisc.c
-...
-> +/*
-> + * Note: Capability analysis does not like asymmetric interfaces (above types
-> + * for ref and deref are tty_struct and tty_ldisc respectively -- which are
-> + * dependent, but the compiler cannot figure that out); in this case, work
-> + * around that with this helper which takes an unused @tty argument but tells
-> + * the analysis which lock is released.
-> + */
-> +static inline void __tty_ldisc_deref(struct tty_struct *tty, struct tty_ldisc *ld)
-> +	__releases_shared(&tty->ldisc_sem)
-> +	__capability_unsafe(/* matches released with tty_ldisc_ref() */)
-> +{
-> +	tty_ldisc_deref(ld);
-> +}
-
-You want to invert the __ prefix for these two. tty_ldisc_deref() should 
-be kept as the one to be called by everybody.
-
-thanks,
--- 
-js
-suse labs
