@@ -1,115 +1,132 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFB6118DB04;
-	Thu,  6 Mar 2025 07:20:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEC7C184E;
+	Thu,  6 Mar 2025 10:17:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741245659; cv=none; b=tlDULXnv9hpvTl9UtUiC/neMBRcaqC5EPF3x5fqpuGx9wt65jcZMyGdzBNjnH3WNT6B2bWbM1Mu8YOrGDeoEiP+Xi0L1nA/kW8C2jnyD5fQXAqmYeR1w74aQo8tk/6WhhUxKG/6r3VQsnUrBSOA21RjCMsBUwMPy4PrcrsR5PYc=
+	t=1741256245; cv=none; b=Bry/XYgprn7c/3GlyFU522sQ7JnTb8E2Pw1w1/XLBQszjtRIG4qkyKN6JhjJk/gzVaHmMemGll8XbTfMpDkYDtWvss55mY0J/vAsy4yDFTheIFbg/cCGPaN/RgMz33pYsJYi7i2/iMtpQXO2mOCMFcFLt1yGq6yerM2hXwXBe+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741245659; c=relaxed/simple;
-	bh=viywW8Wo5al4JNCgIcpW82I98bhli2aFf+i7vZPMZ5I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sin4W/rJ7G0CjiXVCem+ex2z6awuIPFtxuhqGcbQAdViEwT911D9r6gQY6oOsCnsrC7kBpzyE8FkDekXyU2+1TILlYQLRCnmmLu6vrlcwKcwiAJQzN4fKdt+4vEFz6ZZdCZ3O1JHSc5XL7Xt4pN3UmvcY/gxzEgAJNFBf5tXUEU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HHHhlJVe; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HHHhlJVe"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1741245658; x=1772781658;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=viywW8Wo5al4JNCgIcpW82I98bhli2aFf+i7vZPMZ5I=;
-  b=HHHhlJVeMR8a408kLrhdFp6Xv12qKDEaUiBjF6vBwSA7bR+oG2ikPsjX
-   cirQClsA+eWTs5p/fkVFaEtGFiek+9NRcwJEdQOKcCSAEJ/MzEOiD1NK7
-   Sm5+zaOf1Wawn3PmOVMlQ0OeoANvaYKtW3DGhc+RCKvexI0KMAe4RAEMx
-   BJAdC/IbYYAKTEuiSRblZYPcmaayaANuTdXmLox/1y8U3w9rArDUKJTdt
-   Sqrcyf9wV18Jy1sjUXFO053w0aiIGk2wrC1V9N7J6n3ew6lg0jSfxJujn
-   SkjLgbH0ICd1hvErZh5EWna49hKnz1HlElaU5zeh0398/FfCO8PfD1Bfe
-   g==;
-X-CSE-ConnectionGUID: JU6rAyPQQOWDtL1viji0dQ==
-X-CSE-MsgGUID: BEAXTlkjR2qr8LE0YFm/2A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11363"; a="53226056"
-X-IronPort-AV: E=Sophos;i="6.14,225,1736841600"; 
-   d="scan'208";a="53226056"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2025 23:20:58 -0800
-X-CSE-ConnectionGUID: kE678XV/QHOHGv7r6C2NgQ==
-X-CSE-MsgGUID: fpWHKwkfRHiwo2nVkBnzvg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.12,224,1728975600"; 
-   d="scan'208";a="123089173"
-Received: from lkp-server02.sh.intel.com (HELO 76cde6cc1f07) ([10.239.97.151])
-  by fmviesa003.fm.intel.com with ESMTP; 05 Mar 2025 23:20:42 -0800
-Received: from kbuild by 76cde6cc1f07 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1tq5X6-000MhW-16;
-	Thu, 06 Mar 2025 07:20:40 +0000
-Date: Thu, 6 Mar 2025 15:20:39 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Yury V. Zaytsev" <yury@shurup.com>, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, "Yury V. Zaytsev" <yury@shurup.com>
-Subject: Re: [PATCH RESEND] tty: vt: make defkeymap for shifted F-keys
- consistent with kbd
-Message-ID: <202503061554.ZQPrGM8H-lkp@intel.com>
-References: <20250301132108.62761-1-yury@shurup.com>
+	s=arc-20240116; t=1741256245; c=relaxed/simple;
+	bh=M4NQD7fKonPOadpqponUO/eOxoe35epmgZqcnhpbox4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VfXG+s66B+cFTaKEzzHicm0QrpU3wH7023kc4qNYC8qx5ZitXofDXw2Bcv2seEMxIhnrTuipKjk6MDUhVbSKPupLlhTfgjHAUO8hLf7d7R9ZKk55emat/wFiyGOIMrMo0Up+YV5k15vPS85A5Qb+ZKURx1v88iW5US6FsOdSwn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-523cbce3fecso466400e0c.0;
+        Thu, 06 Mar 2025 02:17:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741256242; x=1741861042;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=qcEz2LyBncALLQ4u6Y5IbzKtdzlkgMXNLDU3Z8nhKrM=;
+        b=pbJwfJcisxev4Q83E3U6BrszIewEVzg68dj196Shf4YWrGxdaaUVDMl7SwXsSFCy/Z
+         oos/bM+ePhSG2yK0DyWAUUb0FqZT6f5ixbU8/D4Od/2ILXdAB2OJcMSULYrUhpzZAjN8
+         +MDYL8/7dz3yGtwoU5qneRn8hLKYUjdbXy8w6ARFwMAYzMp8yICWnrLJwSqdrkuAYFBU
+         LHLZeubPsbsnnS7X5HIU05traTRgXp22G1PJzF4Db7s//ZjHuKOPB7rshQxeQnWeyJpD
+         Q9kLGr2bZK5re2bSRLh2ke7HekpSUkMb4lMrkfA8SxBNepVhR1o2v8kMTiSfil1J8HrH
+         T+cA==
+X-Forwarded-Encrypted: i=1; AJvYcCUDSOnygtNbBWzzPDhbM+Lahj/N6lxsd5M9GyflTiC9zQWRxad7XQXiqTLXFopbgx43sfWDmEsKEqruUuQl@vger.kernel.org, AJvYcCUe3IYx4vpSJYiOLbAfeIhzKQgtrJvwpHp4A0cb9Y9SZyGMYhDAV6sMLBVAQOJM/V1eDbQNTKs9H6XjdAWS3Ttbld4=@vger.kernel.org, AJvYcCW8uXxCIf5iFDcCyOu8/AQj0cib4KZR57uPDL/6zrm5ZHm+gejSntU5zqdBX9RWf5gFaWTZO10muqVCQfA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YypaDJs8VdXRKsOOWyX/UdWHT04HKZRJ0zoKJCytks3S2I01TR+
+	uC/J5YPnhYQ9jgHMyHB2k7U0mbZyuvpVCzmeqERYbBXpojpq/Tm1JroXSfDw
+X-Gm-Gg: ASbGncsblJENYGfo/bf8Kv2Ns7JQ+sqA5ao5QGLFZ/zam7jKnJQtQjVwgNE4rkWlPdE
+	Pra5c3O5919PomSO/Sqw87iLbR4GCY2lQV4AlCCtL0HmsT9skq6eJ+RZKExjJxhvO8az9EEvMX4
+	4tUuEVbyaNxgNbiFry0K2IEyv6xkZXgjLfhYLZrf7RoWc0lxn3LJ2AzQtn1SMx/Th5wu3rKXaKY
+	93PN/AhF+zCzSKwk2lbsPGTjahqcGrCGUcdPLX/SqPt+NuS44/2SggDWpj2Ol00rUCTr0svhrN1
+	IYjF0u+i4AXNI7c7DG75o15EvUbh8s7E3fO+JDdMd8Euau96Yutm+X3lJj1AaObmKpfir+Wv7Hu
+	Qu6dVZ5Y=
+X-Google-Smtp-Source: AGHT+IHAt1f4QoDAXQwnMH0ATPb1Lds2D7R5NpT5LiXUaQfisOeKv+Ice1sImuQOdj3xSULoPP/xaA==
+X-Received: by 2002:a05:6122:3208:b0:520:9688:d1bb with SMTP id 71dfb90a1353d-523c611e546mr4434454e0c.2.1741256242216;
+        Thu, 06 Mar 2025 02:17:22 -0800 (PST)
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-523d8afbd23sm134665e0c.25.2025.03.06.02.17.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Mar 2025 02:17:22 -0800 (PST)
+Received: by mail-ua1-f45.google.com with SMTP id a1e0cc1a2514c-867129fdb0aso443895241.1;
+        Thu, 06 Mar 2025 02:17:21 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCU7NQgLzrQEqLSCU6TGjokuNlTwkLbdJpKCO+0UiNyWTpmm8u0FpEvbtF3v5TvARuNG0hoRmCM2Buu/dgtF@vger.kernel.org, AJvYcCVyDEA9/OggdSfo82rl8brwmUUVVaIOIBbnZVdiU5OUXnfj4rQOVBtgiOBqD4/4bz5KEKQ79b2PRLRdaKx/xVIi9No=@vger.kernel.org, AJvYcCWAMNf4CwHTXWlhVInlpI3GaTaNOuYxED2jvYY3yEfLGiXA1fnhjFgJ/J8K7LmnwUt79zGYHJGxX/JWnN8=@vger.kernel.org
+X-Received: by 2002:a05:6102:2914:b0:4c1:b2c2:61a with SMTP id
+ ada2fe7eead31-4c2e29aee24mr3252939137.25.1741256241769; Thu, 06 Mar 2025
+ 02:17:21 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250301132108.62761-1-yury@shurup.com>
+References: <20250226130935.3029927-1-thierry.bultel.yh@bp.renesas.com> <20250226130935.3029927-10-thierry.bultel.yh@bp.renesas.com>
+In-Reply-To: <20250226130935.3029927-10-thierry.bultel.yh@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 6 Mar 2025 11:17:10 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWEQue1eqX7AE+WQ1OrdpMNVU7PXfprYaSGHQV0ofpB4A@mail.gmail.com>
+X-Gm-Features: AQ5f1JoJvgWlKwwGYmoeowmZpOBO1Rl0odlx56brJYK22pPVHXovdCly3eNimAg
+Message-ID: <CAMuHMdWEQue1eqX7AE+WQ1OrdpMNVU7PXfprYaSGHQV0ofpB4A@mail.gmail.com>
+Subject: Re: [PATCH v3 09/13] serial: sh-sci: Introduced sci_of_data
+To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org, 
+	paul.barker.ct@bp.renesas.com, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Yury,
+Hi Thierry,
 
-kernel test robot noticed the following build warnings:
+On Wed, 26 Feb 2025 at 14:10, Thierry Bultel
+<thierry.bultel.yh@bp.renesas.com> wrote:
+> The aim here is to provide an easier support to more different SCI
+> controllers, like the RZ/T2H one.
+>
+> The existing .data field of_sci_match is changed to a structure containing
+> all what that can be statically initialized, and avoid a call to
+> 'sci_probe_regmap', in both 'sci_init_single', and 'early_console_setup'.
+>
+> 'sci_probe_regmap' is now assumed to be called in the only case where the
+> device description is from a board file instead of a dts.
+>
+> In this way, there is no need to patch 'sci_probe_regmap' for adding new
+> SCI type, and also, the specific sci_port_params for a new SCI type can be
+> provided by an external file.
+>
+> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+> Reviewed-by: Paul Barker <paul.barker.ct@bp.renesas.com>
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on linus/master v6.14-rc5 next-20250305]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Thanks for your patch!
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Yury-V-Zaytsev/tty-vt-make-defkeymap-for-shifted-F-keys-consistent-with-kbd/20250301-214942
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20250301132108.62761-1-yury%40shurup.com
-patch subject: [PATCH RESEND] tty: vt: make defkeymap for shifted F-keys consistent with kbd
-config: csky-randconfig-r111-20250305 (https://download.01.org/0day-ci/archive/20250306/202503061554.ZQPrGM8H-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 14.2.0
-reproduce: (https://download.01.org/0day-ci/archive/20250306/202503061554.ZQPrGM8H-lkp@intel.com/reproduce)
+> --- a/drivers/tty/serial/sh-sci.c
+> +++ b/drivers/tty/serial/sh-sci.c
+> @@ -3250,12 +3247,17 @@ static struct console early_serial_console = {
+>  static int sci_probe_earlyprintk(struct platform_device *pdev)
+>  {
+>         const struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
+> +       struct sci_port *sp = pdev->id;
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202503061554.ZQPrGM8H-lkp@intel.com/
+"sp = &sci_ports[pdev->id]" makes it going again on QEMU RTS7751R2D.
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/tty/vt/defkeymap.c:254:42: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:255:35: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:255:38: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:256:18: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:256:21: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:256:24: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:257:25: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:260:14: sparse: sparse: symbol 'keymap_count' was not declared. Should it be static?
-   drivers/tty/vt/defkeymap.c:268:6: sparse: sparse: symbol 'func_buf' was not declared. Should it be static?
-   drivers/tty/vt/defkeymap.c:303:6: sparse: sparse: symbol 'funcbufptr' was not declared. Should it be static?
-   drivers/tty/vt/defkeymap.c:304:5: sparse: sparse: symbol 'funcbufsize' was not declared. Should it be static?
-   drivers/tty/vt/defkeymap.c:305:5: sparse: sparse: symbol 'funcbufleft' was not declared. Should it be static?
-   drivers/tty/vt/defkeymap.c:335:9: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:336:9: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:342:9: sparse: sparse: Using plain integer as NULL pointer
-   drivers/tty/vt/defkeymap.c:307:6: sparse: sparse: symbol 'func_table' was not declared. Should it be static?
-   drivers/tty/vt/defkeymap.c:345:18: sparse: sparse: symbol 'accent_table' was not declared. Should it be static?
-   drivers/tty/vt/defkeymap.c:382:14: sparse: sparse: symbol 'accent_table_size' was not declared. Should it be static?
+>
+>         if (early_serial_console.data)
+>                 return -EEXIST;
+>
+>         early_serial_console.index = pdev->id;
+>
+> +       sp->params = sci_probe_regmap(cfg, sp);
+> +       if (!sp->params)
+> +               return -ENODEV;
+> +
+>         sci_init_single(pdev, &sci_ports[pdev->id], pdev->id, cfg, true);
+
+Here you can reuse sp.
+
+>
+>         if (!strstr(early_serial_buf, "keep"))
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
