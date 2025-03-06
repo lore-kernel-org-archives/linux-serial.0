@@ -1,140 +1,193 @@
-Received: from out203-205-221-164.mail.qq.com (out203-205-221-164.mail.qq.com [203.205.221.164])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB2EC18DB38;
-	Thu,  6 Mar 2025 03:05:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.164
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B32E9192D9A;
+	Thu,  6 Mar 2025 04:22:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741230350; cv=none; b=sxPIqXb53ePYzprXbbkYKDQMBzomtdm64M9yCeJIYkeJi46oqCr7ixTt/RCeAh16+BUEWr6cFXNATJm96T3RK3IqkEd/pTwyQyf0srffBayn1iDdj2jhfoKvxThiD/N5CQoSdBdLRbjCjgKze4k5Pkizm4EKNQweI757bwUzmpU=
+	t=1741234961; cv=none; b=gwEvyugTl+F3Tz98uY4+3J22ZTekKVgQQ71YUgWy0Kc5otbl8cNx+iRCQ0olusqtiZn+PZaJneBmgBDvCMPiYOcE6T1q+PyfDk7JUbAR0DO89Hj44LDgE9TYIRwT+EuQYlX27836VYjDiKIDEfGXWjHfQFTcJNJdXHwysm2IPDQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741230350; c=relaxed/simple;
-	bh=zdz7CkwVMBgcI2xIj/cd2ivjhVBpl28n6YxsxS4KtvY=;
-	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=HfjdbZ7DOJIJQUObxQRCSwh8t8v4WUPyq18T7/fTTZ89fz/KdQBULS+nFchaRt2HzsyGGMVlrOicoTngRZH3SpZr/tZXuGNI9WQ3felIqrymetY8xb4a5xLgsppVWDGye+QcDP9nXsyQFbge2HFYOgK07dnHoFTlNOwMpJgOc9w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=BdVl2gnK; arc=none smtp.client-ip=203.205.221.164
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
+	s=arc-20240116; t=1741234961; c=relaxed/simple;
+	bh=H2OVW5hp+pECfwQ8sOJWNwxdv2gjfOiIOLFnUzzbq6k=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=F8lP/gKD9T+2CCk8kHmOA5M/AJPnkUD96DNAJTTLnibys29z04+Q3fFY4H9yMOCVuPAeC7mymNof0wDrPJNertgfGEXqfn8QmKAlYldeRhs/M6ltbfdmzHOIHnKC9o+VmPpXWLDvhszX7TxjctaLpgPPLug9Kkyq8HE0Pghs/Qo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BDsImsiX; arc=none smtp.client-ip=209.85.222.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="BdVl2gnK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-	s=s201512; t=1741230035;
-	bh=HQ3ghFNl67yGrzRUhW9MQoloHh9uEC1vinm/88yQjuo=;
-	h=From:To:Cc:Subject:Date;
-	b=BdVl2gnKMIOsYPOSUa0txCwK2wRvytX2jGLkEB5VXj/XMfBW0hHsDV9M8FBeqIiH5
-	 RMei5lkVdrksWlIBX+JE/DbH+a2Q5z4Bt6upTH25+wUZwCC3URX8GccHN013Z41avR
-	 APtesodlOV3WfSm8VrknQmybhN+KD0RnLIZEho/E=
-Received: from localhost.localdomain ([116.128.244.169])
-	by newxmesmtplogicsvrszc16-0.qq.com (NewEsmtp) with SMTP
-	id 21A765B; Thu, 06 Mar 2025 11:00:33 +0800
-X-QQ-mid: xmsmtpt1741230033ti8xc8w0a
-Message-ID: <tencent_50535E8627177335AEA311C5DC0A54609008@qq.com>
-X-QQ-XMAILINFO: M8dwXi9nz8r0IVG23OGWrpfeR0qVYDKA3l9fCa2JPvSwR9cUlM905h6e0fL82B
-	 oWILoKdPTx+ALisOhm4RjEJ7vwmFyDZ3uQGXnNvj2r/hIXvf3pPrB0Z5gyCEz6bSxiYDMoVRt9yH
-	 xXBjO2wklX0avFIOoW28PBb8trLXdYlFheJ01GJeqh8TSmZRuqSVX0wwRSWaQe6SwcCd2Gux1MMh
-	 8dwlMJfLLtOdYSXJJ7yJFHqaeNfbLDB46oddpdN0xPwWxfTEKiAWJ5zLKxrDizArsWlB7opx05Nj
-	 xvqTCXHmrzigmFpNVW8zCZaWvexZgAPaqvZV/URMjsvsQFXLGGj5A48CBMIE+pZYXOs7kmzjSkwD
-	 00WgnUZouY7N0X79bQvkYkWiB78N7gSmLUiVu8k724bO80TPUMgogyfYvGpHL3KSYBGntvkaEt/C
-	 LM2EGLmFFNaiXj/tu7RvZrZI/RObovqw/JeVV48TjeSBlwutLjkoQaxgJmGzKvNdv/lMkBo586cV
-	 3tCuthExUYDE97EdeiDwyFQ63Iv9XWPwQSpVSWGqo21BbI/PXlYfHqXu2IPY+xg+6mB9HPTv9u4+
-	 JxlgFB11Nvfe3vJDgGw6T3knhXR2+ggSs6YlIC99bhIQnhDl4ZVQtgGRpb6OXTKY6fvC8/rXbSzI
-	 Ee+sPa7G2vZTeaWqVxaJ1zKG1v9dtIWIA26M4+Umv2vzhhKDiIr/D4B5tAAFHkV8tG/5HnLMAJQK
-	 jVOw4m1EDiEiAtAQ/JiAJXOsnEszwCJv9UsinCFxuZ5htSLa8MYaMSCJADc0YK1qRgGbIXK97cns
-	 dNG7EBu5Nv48IAtegD049TGP1V6uU75VRp+nwp9Dfw8Jl21KfxWoY6tTP2Go84Jud3L6qxHetUZZ
-	 DCDu4e0JK5IlnLmmnAHYP/ZIzPgQN2lsdl579CdGBWzbSpUNGitNxcPs1+/7EZuiq8DihBLUHQeL
-	 n0iYJ83gv8h3slJ2ocssfKJd9iW9rf
-X-QQ-XMRINFO: NyFYKkN4Ny6FSmKK/uo/jdU=
-From: xiaopeitux@foxmail.com
-To: gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Cc: xiaopei01 <xiaopei01@kylinos.cn>
-Subject: [PATCH] serial: 8250: Optimize port function assignment with generic macro
-Date: Thu,  6 Mar 2025 11:00:32 +0800
-X-OQ-MSGID: <20250306030032.85359-1-xiaopeitux@foxmail.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BDsImsiX"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7c3b4c4b409so37497585a.3;
+        Wed, 05 Mar 2025 20:22:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741234958; x=1741839758; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Q/KN0xY9MIh51cXx4wjb4mSWDZdUL41avdYzHlA6zDA=;
+        b=BDsImsiXLht7VBHzBRU8XqOsaOhI+hne/Ob6TvS/PMlMjMXHZ4Pij88OeFCokReTjE
+         46NuP9nEZYXwd6L07SLfJq3di80y7c1gSGnzWUctSq06CSLWjw00FOJxU79Kfo24wj3v
+         KSgM5FAp7Y2W/5AZuPK5ooODmhpObQatnh+58TgxP6DOl1ap590TVdN5Z2a525jYOhPx
+         Nv2d+Qwli8m19r/pSmYOb3UV9VE2wII58UzTo4YqvXbN1uIQohD6oMGrYVpLuoXMyZzV
+         zLs7t7MR2BKL6+hALzJpPJHLUmiBlb4dbrw7NOnFhonL/Ww5v+j2vRCH0CszoZA5oDE2
+         lpEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741234958; x=1741839758;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Q/KN0xY9MIh51cXx4wjb4mSWDZdUL41avdYzHlA6zDA=;
+        b=S0pNaPvKiE2Z1OKAJFLBDmy/ixII4T8ifAcO/ldOiviRc53ebUKzUDvD+uO8LspWv5
+         RKMMio/ZOPRutjrbLS0HyALlW1NmHpIAMqft6vnL3MITJ+igpm5oGQhWamyCAW1eVpG4
+         DJxid9S7njTXWVbgGVKAWHXs70/ntsc9ykslo+GkUN3yagjgeL4tZ8UNUiLJNsdTulg+
+         u7JN4S3W5szDZWCBEQC93TEy4cbUgJRhlzbmLrk3ngO0fmzIg8UPtOPNK6BqQ/9ENElP
+         9nPI68nkaJVv7raEymBdpookcuWVTwudoW1u3I65dIo+tK5uRxn4Mu0BX4sOOjfR8bTb
+         Kksw==
+X-Forwarded-Encrypted: i=1; AJvYcCWm+DkZ4GDYmEnJNuGFyloz7NX/JmFQSeR7zmVsE1+qcbhgb+dqe4STzCi8VVJYhns0BOD53NiVs+MkuRA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwtQi4B9hBR0oYo9lMVwML3NYJusyFw0W0qoGcA4vA6cLwBx6BB
+	wtKphvPbDhb7dgutAHNUfIXdCix+w3LfJcJtxzlfRKhIvio5+kB9
+X-Gm-Gg: ASbGncvsBsOV/Zq8Jzplx8WeNYw7AkxBjPCurzlTr7V8pf4ld5/vHW0zPqzHYhiZ4zJ
+	SIYdHj4MqJs1tmFT0QG/gzg5UNH29iqI6ZM/cLlHJ/TFAs4EwndsSgTLEKMdo0U4Qt+9xZN8ndB
+	ze2rKP99dIQTvgMgkziCwdnoBHng3sHFL2p6ZfoLDfj+4JohBINN75Ss762+oMoPONdkSd9uKhX
+	XlzvOF/uM+JNhHNM62DYiqv1mYS0tajtAP3HOlxiQbmH9gPOCh0shl8CrlmHutRV00XSZ6JeLDP
+	u5sgAMUgCGTUXa5zPJobHz8h8rwuW0QXVc/lkWCjFkp+Gi2Ajm0zyn2wfme0d7oYZQ==
+X-Google-Smtp-Source: AGHT+IH6apQoKwM/9SjFk1i/87DiWodBnnoPXC51KenGbllayxgk7R6It54iIQhW6KT0cb19RfRQxQ==
+X-Received: by 2002:a05:620a:2606:b0:7c0:a236:7183 with SMTP id af79cd13be357-7c3d8eb185dmr800727385a.37.1741234958474;
+        Wed, 05 Mar 2025 20:22:38 -0800 (PST)
+Received: from nerdopolis2.localnet ([2600:4040:5e66:a800:2726:6286:a126:9027])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c3e551102csm36784785a.101.2025.03.05.20.22.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Mar 2025 20:22:37 -0800 (PST)
+From: Adam Simonelli <adamsimonelli@gmail.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ John Ogness <john.ogness@linutronix.de>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>, Petr Mladek <pmladek@suse.com>
+Subject:
+ Re: [PATCH v6 3/3] tty: Change order of ttynull to be linked sooner if
+ enabled as a console.
+Date: Wed, 05 Mar 2025 23:22:35 -0500
+Message-ID: <4451040.8hb0ThOEGa@nerdopolis2>
+In-Reply-To:
+ <CAHp75VfadXS8Z2G6U_DcOOZFFmaOSn_9uQN_N7Psse3kiSGj0g@mail.gmail.com>
+References:
+ <20250304035447.3138221-1-adamsimonelli@gmail.com>
+ <7969025.Sb9uPGUboI@nerdopolis2>
+ <CAHp75VfadXS8Z2G6U_DcOOZFFmaOSn_9uQN_N7Psse3kiSGj0g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 
-From: xiaopei01 <xiaopei01@kylinos.cn>
+On Wednesday, March 5, 2025 1:52:00 PM EST Andy Shevchenko wrote:
+> On Wed, Mar 5, 2025 at 4:06=E2=80=AFAM Adam Simonelli <adamsimonelli@gmai=
+l.com> wrote:
+> > On Tuesday, March 4, 2025 1:51:52 AM EST Andy Shevchenko wrote:
+> > > On Tue, Mar 4, 2025 at 5:55=E2=80=AFAM <adamsimonelli@gmail.com> wrot=
+e:
+>=20
+> ...
+>=20
+> > > >  obj-y                          +=3D vt/
+> > >
+> > > + blank line.
+> > >
+> > > > +# If ttynull is configured to be a console by default, ensure that=
+ it is linked
+> > > > +# earlier before a real one is selected.
+> > > > +obj-$(CONFIG_NULL_TTY_DEFAULT_CONSOLE) \
+> > > > +                               +=3D ttynull.o
+> > >
+> > > Here is the question: are you sure that all console drivers that exist
+> > > in the kernel happen to be here? Have you grepped the source tree for
+> > > checking this?
+> > >
+> > Grepping for console_initcall, the only other places I see outside of
+> > drivers/tty/ is
+> >
+> > arch/mips/fw/arc/arc_con.c
+> > arch/mips/sibyte/common/cfe_console.c
+> > arch/powerpc/kernel/legacy_serial.c
+> > arch/powerpc/kernel/udbg.c
+> > arch/powerpc/platforms/powermac/setup.c
+> > arch/um/drivers/stderr_console.c
+> > arch/xtensa/platforms/iss/console.c
+> > drivers/s390/char/con3215.c
+> > drivers/s390/char/con3270.c
+> > drivers/s390/char/sclp_con.c
+> > drivers/s390/char/sclp_vt220.c
+>=20
+> Which means you need to test your stuff on those cases, to see how the
+> linker order is done there. It might be that your change wouldn't work
+> there as expected (quick workaround is to mark the new option as
+> depends on !S390 && !PPC and so on.
+>=20
+>=20
+It will be difficult to test other arches, I mean I guess it is possible wi=
+th
+QEMU, and cross-building, though I did do an experimental test on x86:
 
-Refactor repetitive conditional function pointer assignments using a
-generic macro ASSIGN_IF_EXIST. This consolidates 15+ conditional
-checks into a consistent pattern while maintaining type safety.
-
-Signed-off-by: xiaopei01 <xiaopei01@kylinos.cn>
----
- drivers/tty/serial/8250/8250_core.c | 52 ++++++++++++++++---------------------
- 1 file changed, 22 insertions(+), 30 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
-index 6f676bb..6f305e9 100644
---- a/drivers/tty/serial/8250/8250_core.c
-+++ b/drivers/tty/serial/8250/8250_core.c
-@@ -777,38 +777,30 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
- 
- 		serial8250_set_defaults(uart);
- 
-+		#define ASSIGN_IF_EXIST(dest, src, member) \
-+			do { \
-+				if ((src)->member) \
-+					(dest)->member = (src)->member; \
-+			} while (0)
+Making it temporarily adding an architecture specific console like
+powerpc/some mips/s390/arches with Xen enabled.
+=2D------------------------------------------------------------------------=
+=2D-----
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 05c5aa951da7..bcd248c44fc8 100644
+=2D-- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -1159,6 +1159,8 @@ void __init setup_arch(char **cmdline_p)
+=20
+        e820__setup_pci_gap();
+=20
++       add_preferred_console("ttyS", 0, NULL);
 +
- 		/* Possibly override default I/O functions.  */
--		if (up->port.serial_in)
--			uart->port.serial_in = up->port.serial_in;
--		if (up->port.serial_out)
--			uart->port.serial_out = up->port.serial_out;
--		if (up->port.handle_irq)
--			uart->port.handle_irq = up->port.handle_irq;
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, serial_in);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, serial_out);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, handle_irq);
- 		/*  Possibly override set_termios call */
--		if (up->port.set_termios)
--			uart->port.set_termios = up->port.set_termios;
--		if (up->port.set_ldisc)
--			uart->port.set_ldisc = up->port.set_ldisc;
--		if (up->port.get_mctrl)
--			uart->port.get_mctrl = up->port.get_mctrl;
--		if (up->port.set_mctrl)
--			uart->port.set_mctrl = up->port.set_mctrl;
--		if (up->port.get_divisor)
--			uart->port.get_divisor = up->port.get_divisor;
--		if (up->port.set_divisor)
--			uart->port.set_divisor = up->port.set_divisor;
--		if (up->port.startup)
--			uart->port.startup = up->port.startup;
--		if (up->port.shutdown)
--			uart->port.shutdown = up->port.shutdown;
--		if (up->port.pm)
--			uart->port.pm = up->port.pm;
--		if (up->port.handle_break)
--			uart->port.handle_break = up->port.handle_break;
--		if (up->dl_read)
--			uart->dl_read = up->dl_read;
--		if (up->dl_write)
--			uart->dl_write = up->dl_write;
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, set_termios);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, set_ldisc);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, get_mctrl);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, set_mctrl);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, get_divisor);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, set_divisor);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, startup);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, shutdown);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, pm);
-+		ASSIGN_IF_EXIST(&uart->port, &up->port, handle_break);
-+
-+		ASSIGN_IF_EXIST(uart, up, dl_read);
-+		ASSIGN_IF_EXIST(uart, up, dl_write);
- 
- 		if (uart->port.type != PORT_8250_CIR) {
- 			if (uart_console_registered(&uart->port))
--- 
-2.7.4
+ #ifdef CONFIG_VT
+ #if defined(CONFIG_VGA_CONSOLE)
+        if (!efi_enabled(EFI_BOOT) || (efi_mem_type(0xa0000) !=3D EFI_CONVE=
+NTIONAL_MEMORY))
+=2D------------------------------------------------------------------------=
+=2D-----
+=20
+to see what /proc/consoles will look like, to pretend that x86 is an arch t=
+hat
+sets a console somewhere, and I get:
+
+ttynull0             --- (EC    )  242:0
+ttyS0                -W- (E  p a)    4:64
+
+and I got console messages to ttyS0 with no issue.
+
+which in my mind is acceptable I would think. ttynull is first in the list,
+which is desired effect of CONFIG_NULL_TTY_DEFAULT_CONSOLE, it doesn't have=
+ to
+be _exclusive_ AFAIK, especially if there are long-time default consoles th=
+at.
+users or the hardware expects.
+
+
+The only arch that seems to _unconditionally_ add a console without some ot=
+her
+circumstance, like boot loader env var, and command line option, or firmware
+flag, or suboption (like CONFIG_SERIAL_PMACZILOG_CONSOLE) is Jazz.=20
+
+Like platforms/powernv adds it if CONFIG_HVC_OPAL is disabled, or the firmw=
+are
+is missing "FW_FEATURE_OPAL". I would assume that a user of this situation
+turning on CONFIG_NULL_TTY_DEFAULT_CONSOLE in addition, will just get ttynu=
+ll
+and hvc in /proc/consoles instead of just hvc. Could that cause something to
+break?
+
+
+
+Correct me if I am wrong, I could very very very well be wrong.
+
+
+
 
