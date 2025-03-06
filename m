@@ -1,132 +1,144 @@
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEC7C184E;
-	Thu,  6 Mar 2025 10:17:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9620120F078;
+	Thu,  6 Mar 2025 13:41:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741256245; cv=none; b=Bry/XYgprn7c/3GlyFU522sQ7JnTb8E2Pw1w1/XLBQszjtRIG4qkyKN6JhjJk/gzVaHmMemGll8XbTfMpDkYDtWvss55mY0J/vAsy4yDFTheIFbg/cCGPaN/RgMz33pYsJYi7i2/iMtpQXO2mOCMFcFLt1yGq6yerM2hXwXBe+k=
+	t=1741268477; cv=none; b=rDiOKm5l0PTctfH/KcA4bu7SxenVPjWJAggx9X9GEMuodDERQpq0CoGo6vfECzZQTbd5VmUqDY4N0Sxul6cMQsbD3Tljw63uCmWNfrllBKy1hLV/FWz1RTVsZMeivCqO5cDLbtZsElOilPUcaE9KLYtWuuo1gVwzh2PhfOS8pqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741256245; c=relaxed/simple;
-	bh=M4NQD7fKonPOadpqponUO/eOxoe35epmgZqcnhpbox4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VfXG+s66B+cFTaKEzzHicm0QrpU3wH7023kc4qNYC8qx5ZitXofDXw2Bcv2seEMxIhnrTuipKjk6MDUhVbSKPupLlhTfgjHAUO8hLf7d7R9ZKk55emat/wFiyGOIMrMo0Up+YV5k15vPS85A5Qb+ZKURx1v88iW5US6FsOdSwn0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	s=arc-20240116; t=1741268477; c=relaxed/simple;
+	bh=kso5cP7xwJNe5Ka/g82nAcrWB6XOwpD33ie4Y1C+CZk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=h82bSRxpS+spOqEDHQL21fze+KyJpFcVfWg+d/mauvB8SjEF7g7hJqQACz4eeEQJKUgsHwS3U69OYrVPiMmNbycdeoPieU5E4VkDmYhqbqvDIMN/uGDnLXA3lPJPO7p4MMB0SxFf1jxmSYVu7rlzL6trWQiIxGo3eNhThsTNsfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NGsu4Pv9; arc=none smtp.client-ip=209.85.219.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-523cbce3fecso466400e0c.0;
-        Thu, 06 Mar 2025 02:17:23 -0800 (PST)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NGsu4Pv9"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6e8f254b875so5090386d6.1;
+        Thu, 06 Mar 2025 05:41:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741268473; x=1741873273; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5eSiHtDnCwoaAQVNN2+HAR2Vap6CN8XdHaNLvoyT/HA=;
+        b=NGsu4Pv9iNrnDJ6XYsjsJWpBKcUvAP1i5V1MgyV8or2nyAL5VfeTCZE8kUClN7Duyn
+         aCgsFDLqeI/Cnt0rf7I4xFgJObp+hOIWto9+3vXFlHsyzkY9nxzqyGbE0KT6kN4go7Ag
+         1KAYw2s1KkNZ6gt8bP6kNWGrCwgLQuQxKXK6FJzolBhUg/PizDTPIdnapIWLdJAtrgQ/
+         ogSGkas0JrTS9lQ1NlCQy52d9jftVy7GOCrPHCOoBHJQ4qhbaBp+QrmhwGDEPcur7DGz
+         mzRvGscdAv/ObjzEyXMpniKPbObsqq3MsMF6WYIxfMvBk1RiY6YT6QsJvZYCS+glr5sa
+         qJBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741256242; x=1741861042;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=qcEz2LyBncALLQ4u6Y5IbzKtdzlkgMXNLDU3Z8nhKrM=;
-        b=pbJwfJcisxev4Q83E3U6BrszIewEVzg68dj196Shf4YWrGxdaaUVDMl7SwXsSFCy/Z
-         oos/bM+ePhSG2yK0DyWAUUb0FqZT6f5ixbU8/D4Od/2ILXdAB2OJcMSULYrUhpzZAjN8
-         +MDYL8/7dz3yGtwoU5qneRn8hLKYUjdbXy8w6ARFwMAYzMp8yICWnrLJwSqdrkuAYFBU
-         LHLZeubPsbsnnS7X5HIU05traTRgXp22G1PJzF4Db7s//ZjHuKOPB7rshQxeQnWeyJpD
-         Q9kLGr2bZK5re2bSRLh2ke7HekpSUkMb4lMrkfA8SxBNepVhR1o2v8kMTiSfil1J8HrH
-         T+cA==
-X-Forwarded-Encrypted: i=1; AJvYcCUDSOnygtNbBWzzPDhbM+Lahj/N6lxsd5M9GyflTiC9zQWRxad7XQXiqTLXFopbgx43sfWDmEsKEqruUuQl@vger.kernel.org, AJvYcCUe3IYx4vpSJYiOLbAfeIhzKQgtrJvwpHp4A0cb9Y9SZyGMYhDAV6sMLBVAQOJM/V1eDbQNTKs9H6XjdAWS3Ttbld4=@vger.kernel.org, AJvYcCW8uXxCIf5iFDcCyOu8/AQj0cib4KZR57uPDL/6zrm5ZHm+gejSntU5zqdBX9RWf5gFaWTZO10muqVCQfA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YypaDJs8VdXRKsOOWyX/UdWHT04HKZRJ0zoKJCytks3S2I01TR+
-	uC/J5YPnhYQ9jgHMyHB2k7U0mbZyuvpVCzmeqERYbBXpojpq/Tm1JroXSfDw
-X-Gm-Gg: ASbGncsblJENYGfo/bf8Kv2Ns7JQ+sqA5ao5QGLFZ/zam7jKnJQtQjVwgNE4rkWlPdE
-	Pra5c3O5919PomSO/Sqw87iLbR4GCY2lQV4AlCCtL0HmsT9skq6eJ+RZKExjJxhvO8az9EEvMX4
-	4tUuEVbyaNxgNbiFry0K2IEyv6xkZXgjLfhYLZrf7RoWc0lxn3LJ2AzQtn1SMx/Th5wu3rKXaKY
-	93PN/AhF+zCzSKwk2lbsPGTjahqcGrCGUcdPLX/SqPt+NuS44/2SggDWpj2Ol00rUCTr0svhrN1
-	IYjF0u+i4AXNI7c7DG75o15EvUbh8s7E3fO+JDdMd8Euau96Yutm+X3lJj1AaObmKpfir+Wv7Hu
-	Qu6dVZ5Y=
-X-Google-Smtp-Source: AGHT+IHAt1f4QoDAXQwnMH0ATPb1Lds2D7R5NpT5LiXUaQfisOeKv+Ice1sImuQOdj3xSULoPP/xaA==
-X-Received: by 2002:a05:6122:3208:b0:520:9688:d1bb with SMTP id 71dfb90a1353d-523c611e546mr4434454e0c.2.1741256242216;
-        Thu, 06 Mar 2025 02:17:22 -0800 (PST)
-Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-523d8afbd23sm134665e0c.25.2025.03.06.02.17.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Mar 2025 02:17:22 -0800 (PST)
-Received: by mail-ua1-f45.google.com with SMTP id a1e0cc1a2514c-867129fdb0aso443895241.1;
-        Thu, 06 Mar 2025 02:17:21 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCU7NQgLzrQEqLSCU6TGjokuNlTwkLbdJpKCO+0UiNyWTpmm8u0FpEvbtF3v5TvARuNG0hoRmCM2Buu/dgtF@vger.kernel.org, AJvYcCVyDEA9/OggdSfo82rl8brwmUUVVaIOIBbnZVdiU5OUXnfj4rQOVBtgiOBqD4/4bz5KEKQ79b2PRLRdaKx/xVIi9No=@vger.kernel.org, AJvYcCWAMNf4CwHTXWlhVInlpI3GaTaNOuYxED2jvYY3yEfLGiXA1fnhjFgJ/J8K7LmnwUt79zGYHJGxX/JWnN8=@vger.kernel.org
-X-Received: by 2002:a05:6102:2914:b0:4c1:b2c2:61a with SMTP id
- ada2fe7eead31-4c2e29aee24mr3252939137.25.1741256241769; Thu, 06 Mar 2025
- 02:17:21 -0800 (PST)
+        d=1e100.net; s=20230601; t=1741268473; x=1741873273;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5eSiHtDnCwoaAQVNN2+HAR2Vap6CN8XdHaNLvoyT/HA=;
+        b=K8S7BcVpgZRQaZEEHOGG+qvaGS0pXZTqifiBRfWnWkcFpwdgTT2phjQ697ETpPkUtY
+         fmmVvwNuP4tYn9Jhh0XJbFjnGuNduU8bx0D2ltXKpFjMAfkgjxyavxvHhBnme7RgCT5t
+         SBo7m833aFmd+AKZKIj79HKVu7icisnTxm+68L1/CJFEOmABhDFg4Vc347RxbJjnuxxy
+         fKl1Z6qkiGw30GksID4sL3JBZm1w0YzKPTbagyuXNar7rPFodwCTNO0IObpjxbHYeMTo
+         2HjoN49/MwB9RItmqMkA2ME6iMg6Y1JRlOpVW6oRpUuaVhmSEquB1gwQlYMWtiCVgTeD
+         1v9Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXIjdNkcGSWvXnWUyfEugmZiG0fTtuwHFKXNm+ScZGlMQtkL2XMhtjg38sdN/dHKQlhELC32SCJIq6XOFw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzl5Fm82QKgMDKXrg55qXMYF++WZvCgsd7AE+eGf6IF1kxn5NGN
+	RZNMtFuQgY/aaKY4DyihieJ4I3B0qyCOm1e4g8mpRX0jVssGRU/a
+X-Gm-Gg: ASbGncuzyvR034xlwYfmh2ZZ9EVUrBCvrkiM7XS4Zx4KjRevparVAB2q9k9I+zOrId4
+	odZy1uDP/x+a4fgcnuZ6qdbBrIH9YsXkWfN7M2bsMTw3rHCOuTAufShv/hOuz+FZY8TpTDgSdM0
+	V8EbAJUX5iWznWCk5jK+ZbAVWr5WLJRZmDLitzWDM0jVDL9F6fGh3qPeEFd0VIxoB9NdUR0Jf7x
+	x8yA9PHcysS2p1txy9Bqsuv2vqbYGrGahSrSkLe52s2tU+CRVewpNehBJZX+/Pq4pYdKZ7sgyjv
+	XsWId/WRiWzK6LIwz0JRAIYh/71FnfwpnrnytJZzMlmisQivSUAhRxk7T1bjkVng8w==
+X-Google-Smtp-Source: AGHT+IEJUIoDYStRwVBSqk/ZUotn5eGZ4etjhWSLpQ+IX0DyXLXEHDjYvduu1Jp5lVa61HBRTfsPTQ==
+X-Received: by 2002:a05:6214:1d28:b0:6e8:97d2:9999 with SMTP id 6a1803df08f44-6e8e6dc82bcmr113786126d6.28.1741268470941;
+        Thu, 06 Mar 2025 05:41:10 -0800 (PST)
+Received: from nerdopolis2.localnet ([2600:4040:5e66:a800:65b0:b1a1:de51:e0d4])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6e8f708ffc6sm7273346d6.27.2025.03.06.05.41.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Mar 2025 05:41:10 -0800 (PST)
+From: Adam Simonelli <adamsimonelli@gmail.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ John Ogness <john.ogness@linutronix.de>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>, Petr Mladek <pmladek@suse.com>
+Subject:
+ Re: [PATCH v7 2/3] ttynull: Add an option to allow ttynull to be used as a
+ console device
+Date: Thu, 06 Mar 2025 08:41:09 -0500
+Message-ID: <4217265.X513TT2pbd@nerdopolis2>
+In-Reply-To:
+ <CAHp75Ve9RDSLwsEt4a7ugtYNQokiRjyO6BR_rJXvf7r41C2hmw@mail.gmail.com>
+References:
+ <20250305042930.3453265-1-adamsimonelli@gmail.com>
+ <4264609.3VsfAaAtOV@nerdopolis2>
+ <CAHp75Ve9RDSLwsEt4a7ugtYNQokiRjyO6BR_rJXvf7r41C2hmw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250226130935.3029927-1-thierry.bultel.yh@bp.renesas.com> <20250226130935.3029927-10-thierry.bultel.yh@bp.renesas.com>
-In-Reply-To: <20250226130935.3029927-10-thierry.bultel.yh@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 6 Mar 2025 11:17:10 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWEQue1eqX7AE+WQ1OrdpMNVU7PXfprYaSGHQV0ofpB4A@mail.gmail.com>
-X-Gm-Features: AQ5f1JoJvgWlKwwGYmoeowmZpOBO1Rl0odlx56brJYK22pPVHXovdCly3eNimAg
-Message-ID: <CAMuHMdWEQue1eqX7AE+WQ1OrdpMNVU7PXfprYaSGHQV0ofpB4A@mail.gmail.com>
-Subject: Re: [PATCH v3 09/13] serial: sh-sci: Introduced sci_of_data
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org, 
-	paul.barker.ct@bp.renesas.com, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="UTF-8"
 
-Hi Thierry,
+On Thursday, March 6, 2025 2:06:14 AM EST Andy Shevchenko wrote:
+> On Thu, Mar 6, 2025 at 3:30=E2=80=AFAM Adam Simonelli <adamsimonelli@gmai=
+l.com> wrote:
+> > On Wednesday, March 5, 2025 2:18:39 PM EST Andy Shevchenko wrote:
+> > > On Wed, Mar 5, 2025 at 6:30=E2=80=AFAM <adamsimonelli@gmail.com> wrot=
+e:
+>=20
+> ...
+>=20
+> > > >           In order to use this driver, you should redirect the cons=
+ole to this
+> > > > -         TTY, or boot the kernel with console=3Dttynull.
+> > > > +         TTY, boot the kernel with console=3Dttynull, or enable
+> > > > +         CONFIG_NULL_TTY_DEFAULT_CONSOLE.
+> > >
+> > > I haven't checked what it looks like in menuconfig / nconfig / etc,
+> > > but I think that CONFIG_ is redundant here.
+> > >
+> > OK, I didn't know what one is more typical. Doing a loose grep for
+> > "^<tab><space><space>" and "[A-Z]_[A-Z]" (excluding CONFIG_) seems like=
+ there
+> > are more help text lines that mention other config options (~622) than =
+include
+> > the CONFIG (174). I will change it
+>=20
+> Thanks, it's better to follow the common practices.
+>=20
+> > > > +         If unsure, say N.
+> > > > +
+> > > > +config NULL_TTY_DEFAULT_CONSOLE
+> > > > +       bool "Support for console on ttynull"
+> > > > +       depends on NULL_TTY=3Dy && !VT_CONSOLE
+> > > > +       help
+> > > > +         Say Y here if you want the NULL TTY to be used as a /dev/=
+console
+> > > > +         device.
+> > > > +
+> > > > +         This is similar to CONFIG_VT_CONSOLE, but without the dep=
+endency on
+> > > > +         CONFIG_VT. It uses the ttynull driver as the system conso=
+le.
+> > >
+> > > Btw, do those `make nconfig` and friends render the options?
+> > Seems like `make nconfig` works, as well as `make xconfig` I will attem=
+pt to
+> > attach a png screenshot.
+>=20
+> Thanks. Have you checked the search? I believe it should work with and
+> without CONFIG_ in the same way.
+>=20
+> > > >           If unsure, say N.
+>=20
+>=20
+Yeah, it shows up if I search NULL_TTY_DEFAULT_CONSOLE
 
-On Wed, 26 Feb 2025 at 14:10, Thierry Bultel
-<thierry.bultel.yh@bp.renesas.com> wrote:
-> The aim here is to provide an easier support to more different SCI
-> controllers, like the RZ/T2H one.
->
-> The existing .data field of_sci_match is changed to a structure containing
-> all what that can be statically initialized, and avoid a call to
-> 'sci_probe_regmap', in both 'sci_init_single', and 'early_console_setup'.
->
-> 'sci_probe_regmap' is now assumed to be called in the only case where the
-> device description is from a board file instead of a dts.
->
-> In this way, there is no need to patch 'sci_probe_regmap' for adding new
-> SCI type, and also, the specific sci_port_params for a new SCI type can be
-> provided by an external file.
->
-> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> Reviewed-by: Paul Barker <paul.barker.ct@bp.renesas.com>
 
-Thanks for your patch!
 
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -3250,12 +3247,17 @@ static struct console early_serial_console = {
->  static int sci_probe_earlyprintk(struct platform_device *pdev)
->  {
->         const struct plat_sci_port *cfg = dev_get_platdata(&pdev->dev);
-> +       struct sci_port *sp = pdev->id;
-
-"sp = &sci_ports[pdev->id]" makes it going again on QEMU RTS7751R2D.
-
->
->         if (early_serial_console.data)
->                 return -EEXIST;
->
->         early_serial_console.index = pdev->id;
->
-> +       sp->params = sci_probe_regmap(cfg, sp);
-> +       if (!sp->params)
-> +               return -ENODEV;
-> +
->         sci_init_single(pdev, &sci_ports[pdev->id], pdev->id, cfg, true);
-
-Here you can reuse sp.
-
->
->         if (!strstr(early_serial_buf, "keep"))
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
