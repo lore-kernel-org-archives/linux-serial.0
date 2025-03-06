@@ -1,168 +1,158 @@
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2040.outbound.protection.outlook.com [40.107.247.40])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5474B204C27;
-	Thu,  6 Mar 2025 17:11:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.247.40
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741281069; cv=fail; b=iRRSyriDal1vvD+uKjRUsc2bypReebcD14iaRSUmLqDKIU8Iu52kUsup+0hZR2YS6JyM95KLUXp9rJcq2TF8lmPU0BefRZd2dKgaSoSKNRn5vU1tUJDyzZ34oIsHR0+EfEfHHWhP4YmKjD/G2e9QgHqFD7SHi7PRE4iCS72hytE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741281069; c=relaxed/simple;
-	bh=Sm4DdcIfK2oQqLkrQ93cpmuvAe9D0m319LH4XsCCaSg=;
-	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=Y+2vCE4GNj11wpshN4VzUMCMYMTJdLyhefZs6NO4MRpoatd1wrCjfXzFUdEx9WsXA/ZuZIaHFspJObz1vLZ/p3iPcMi0uOFdE1jasl4y7h6Ie5MnPKLbQzVyDgZhkKY8JjCjl7yqezTdD+7/7fCBWqQnbKtkZxaG7zaZ2pKFC7U=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=AmMKu9K2; arc=fail smtp.client-ip=40.107.247.40
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76D521A23BD;
+	Thu,  6 Mar 2025 20:45:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741293950; cv=none; b=gBpufuVS7owY7AJpKyHGEiChOHs5GjxdhQ/GvxD+OB/y0gmFRRgDkrzXfPX/VcL6RXzeipxQh3wJ8h8LzePDDBy23PhxeKEFK7UCdurfP9k3WEun2plUEyQw53ZO8NIrG1Xtdm8sURa0A7mCMifAI1vkCI+2N476C9GofsHisZw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741293950; c=relaxed/simple;
+	bh=YRiEklZgyKif9YQuFPeDNCuPRKOpVl4Sp4NBuCatdYk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=EqdfaPhY605s4c6GqFcl/zo0MjHxNNOqB426UKNjTnw9V2K9ivq5XtcBYGh7xcW5b53IoBsy7jESaXPkT9am8zzlxDZi+32fsNKMqt8MpVrrpuRf6y1jQGxvO8kqLTAn/WxeBm8NR3n3ybrVonMpMz+B3mue2lvNJKMlffuRzB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yo8GMXYQ; arc=none smtp.client-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="AmMKu9K2"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Qk2JWui93hvRfqgUY82dhgnsVVvh3x+vORN1AE6+nD0CGx6dndzlelNcdmAatv8YJBjBKSP/bdmWaTtQ16FWVR4z1fT0RYO86ezNJcIj1lSodB/dlhy+PjiqIOKmcfXRulFNFWjph9tyZZv2eCbnK/46ry/6hjuCpTfdo0HDWI8xepj1a8pl//xjMmFFqWiSkd/Oe2OBo+VTWqi1LZNMB1LJVvLeEZqdO0HiID1ccuOxJi7NA5WkUToImy/nTuqHkkTs2jPa0DisApHKAHrIfv2fstjTQBbeB1W6ZXMFQR9x69ahwsReolVFSRskZlYv/1rqmHt8aA3U2SGf7UV3Iw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vXdg1E7VgmQ7lFdaN6Jztu1y+tJBSHUpDBIOgZQ1qJs=;
- b=ivoXFKYAyPqS0p6kZspGpcmCQe5zb7tRI35pyDeDnuE7TxF+bZ/qc3XGwPtEa/hujbpUET41ytyDJIERCbn0q1TMlsKre4xAeRUl2N1vNNDV2qWNa2BrFu2dirsvyjlEaB/UMZYQEZQK+isFl8wSmXWemKcyIc0rQZ9uwSJLTj3zzoHs5KrKfEzVC7+Npyt4Wa0DPMLFG3gPgboCdrQLKDAqwvDgXH2xCyeU4mabTwJ4hx8w8UOx3RBOmGUz4/B273xn4KDz3CdTnZjHixB+kWC2tqrQMNbdUBpdqXhaPU0APsiJ1vO69wa6fyQAmqo3VRgN5RIjJkcjYGIipDaBDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vXdg1E7VgmQ7lFdaN6Jztu1y+tJBSHUpDBIOgZQ1qJs=;
- b=AmMKu9K2x/I+zwY6p+kAZjz0+F+oCHlWYQJ+oLYUfWzG60/KtXaeV1qq983igSUS42XAuJzcsChPpaoOZUp8w8QEg9wIHj7Ou/6Vp7h6jVa8IQPTJcnZCRwFLeK/cnG6NyWu3m9rnKYgsng92dEX0rDPx5dnQO5J7FgGXIzLpa7rEiTl2GOef1wfi+CgwrxlH6nj8n1Tq4Ev0hRDzGFndKVIhyKTme6gAQUYW81342amvUH5YA0aKa6VDhMJ2u4BCvvs7/q14Za+kpwlwrqtLG+vi3kR4UsyCVgFx0bvg/mCDnGxH0P8F4+YKoLVYsVpVBygnpB8eQdgoaV4AD+Aaw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from PAXPR04MB9642.eurprd04.prod.outlook.com (2603:10a6:102:240::14)
- by PR3PR04MB7306.eurprd04.prod.outlook.com (2603:10a6:102:81::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.18; Thu, 6 Mar
- 2025 17:11:04 +0000
-Received: from PAXPR04MB9642.eurprd04.prod.outlook.com
- ([fe80::9126:a61e:341d:4b06]) by PAXPR04MB9642.eurprd04.prod.outlook.com
- ([fe80::9126:a61e:341d:4b06%6]) with mapi id 15.20.8511.017; Thu, 6 Mar 2025
- 17:11:04 +0000
-From: Frank Li <Frank.Li@nxp.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Fugang Duan <fugang.duan@nxp.com>,
-	linux-kernel@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS),
-	linux-serial@vger.kernel.org (open list:TTY LAYER AND SERIAL DRIVERS),
-	devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS)
-Cc: imx@lists.linux.dev
-Subject: [PATCH] dt-bindings: serial: fsl-lpuart: support i.MX94
-Date: Thu,  6 Mar 2025 12:10:51 -0500
-Message-Id: <20250306171052.244548-1-Frank.Li@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BY5PR16CA0004.namprd16.prod.outlook.com
- (2603:10b6:a03:1a0::17) To PAXPR04MB9642.eurprd04.prod.outlook.com
- (2603:10a6:102:240::14)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yo8GMXYQ"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-390d98ae34dso876605f8f.3;
+        Thu, 06 Mar 2025 12:45:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741293947; x=1741898747; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=U/2AW/XQ+C1Dkr/bifBKVXkd3UKdww00iQvvrQ69JSo=;
+        b=Yo8GMXYQY66Qke/AigSX3nfeldGlI4YA8pihoQyOws62kK/g2lLRepvjNAgN+XL6cR
+         ZBqg5LkSaU3JXTpUBUFJheGjOmvViwCbwV2t/v6AxJegDBfljJCkazn2KioQou8rgkJ1
+         VqMHqOwujeGuYyx6dYQubWKWZVgG150yAvNIRLSf5MfxerDbgCLcnu3aoEjy+be4FppB
+         Xie6o5bIcKevKXUWUmPgHbrrvDche+/zHf3uh1oXVEUxPK9BuNgCttNmi3QWQLZDIj0E
+         mrABgL4PTwo5Hy25mk4gYqaa94/c4x61pnMQSy4fwItFJdFhJHNzoYy5euy+blTnPiAA
+         3wmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741293947; x=1741898747;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=U/2AW/XQ+C1Dkr/bifBKVXkd3UKdww00iQvvrQ69JSo=;
+        b=dGk4qQnr5wTn0Qt6k6QAu/0Eq5sBYTc3fiB1xeSxjUtuXuScwx1F9Ls7+pQeMQaL5h
+         cbgaWMd2Ue89OBod/8v50SpZmKwQDcUkd6ID1wZnoUz824WONUe5K9BZP05/Kvg9Hdk/
+         Vja/7tw0VTkPXBY/pudXc1edRllvOQKRLThBG3G1UzTZLYiyq6W8WXAWVd+K+EOLVutR
+         pa/V/3TLkCNdjbg6BWL23g4SLT5hSP2FAOZnfy8sMpAOxeWIzmG3e42AuL+GsJxmvJ0P
+         GZ9qXJJ5GZZUJeaG9Bjm0tT839FvCJXeO0lPWNO3ZASr84Wfnn8vSwEaRgExibSGzvkb
+         Ua5A==
+X-Forwarded-Encrypted: i=1; AJvYcCUAA6Y2WGbWYU+CfGFBVpNZp27DAMP5AXS6Yi603QwE/qdsMqn6klEBZ8Q3vyPMR7RwjCILOT7e@vger.kernel.org, AJvYcCVLpF6g/9OucMzsFrmUNI6Zep3ugGq6WrIlzXGlSoqd9u8es1OlPFuMyL5eSWTC4Pcerz5xoJYrIS4Mpvo=@vger.kernel.org, AJvYcCVb/K+WKCPbEriErmdbYMpqC4JhbsmKk1Ko+aDksTb+dFHszy1l/EtwwZlsYqkPOy/R4+liiXoneZm1glFv@vger.kernel.org, AJvYcCWMUC6Xz/HI0Fs5x2itxY03lT3gnHWLPu/zdqb3KOZ30Nd1Qv7D+ET1s1qJYCgBMU3WCA1gohZwYLbWyEoA@vger.kernel.org, AJvYcCWRBwtOHCvnkEG52PyJyybFHECALqeRSUKIkKhePFHMjJPfFB50341yxdMdGhyihwbALtkfNxbjLfItXx/hzuE=@vger.kernel.org, AJvYcCXHqXLyitFhoJGpm+nGHxoOKXslNU6p16OgAtpgod9J2qpeZoygAIRmRWaTRt1tJTSAgD0=@vger.kernel.org, AJvYcCXhZ6RBFFDE6j/t5bUBHV6e7fdLCXeQB/LGXJxdN/BQpBjSx2tu7cUKBbz5xpbztTGjd/pN141sOomb9RQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyv1tkDo+b+EAxhTsNHEFESwkWTPtgZEXGF+ZbhaSzuSC0M5WyU
+	t/kPBAG/wX+QebzoUo5aBWmHJ06RyMmbqgKXipm51sNI/Ar6xF5x
+X-Gm-Gg: ASbGncsQoFz0KdJ5miS5ff6gASWPNKOWRLiMzEQXLHirJgIwJzw5cGb1NcuxBwr7w9X
+	gD3ERHVQsRamYkJakm9mbiynZN0cCVG5AxOAnCBq/fG0B+geRsf/xsVnlkAf1xwhM5G3MEznnlB
+	NPfOVGK7kjapW6Qk+1cPV0U26V4Xg72ZdGAS/51PTBDb8mBskqARsIrhWcA19M9mUUHjTOoavfK
+	pwVkWr92bbSizQ6c441xIvsG4wqxG/qgu6xPiRflAeb2dphewEjNdpcoQNwLqku6v/g+JUM+zx6
+	iV1F51T7UQRoVK/+JnPo1ItDxIxwCjvT1ycXYpfK5Cn3jhuSM6JEmxuYHH7X9lkLNmC1ROQ4Tsd
+	moGlN3Rk=
+X-Google-Smtp-Source: AGHT+IGypB/6b6ARKmDBu94pyV9a8VQg2efcRX5KU7nOp2iuQaxkdpIq9rBXtaXWDKzDk6KRW6vJqA==
+X-Received: by 2002:a05:6000:4112:b0:391:b87:37ad with SMTP id ffacd0b85a97d-39132dad239mr349795f8f.42.1741293946634;
+        Thu, 06 Mar 2025 12:45:46 -0800 (PST)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3912c01de21sm3140996f8f.59.2025.03.06.12.45.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Mar 2025 12:45:46 -0800 (PST)
+Date: Thu, 6 Mar 2025 20:45:44 +0000
+From: David Laight <david.laight.linux@gmail.com>
+To: Kuan-Wei Chiu <visitorckw@gmail.com>
+Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ dave.hansen@linux.intel.com, x86@kernel.org, jk@ozlabs.org, joel@jms.id.au,
+ eajames@linux.ibm.com, andrzej.hajda@intel.com, neil.armstrong@linaro.org,
+ rfoss@kernel.org, maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+ tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+ dmitry.torokhov@gmail.com, mchehab@kernel.org, awalls@md.metrocast.net,
+ hverkuil@xs4all.nl, miquel.raynal@bootlin.com, richard@nod.at,
+ vigneshr@ti.com, louis.peens@corigine.com, andrew+netdev@lunn.ch,
+ davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+ parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+ johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, yury.norov@gmail.com, akpm@linux-foundation.org,
+ hpa@zytor.com, alistair@popple.id.au, linux@rasmusvillemoes.dk,
+ Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+ jernej.skrabec@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+ linux-fsi@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
+ linux-input@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mtd@lists.infradead.org, oss-drivers@corigine.com,
+ netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+ brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+ linux-serial@vger.kernel.org, bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+ Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH v3 01/16] bitops: Change parity8() return type to bool
+Message-ID: <20250306204544.35086b52@pumpkin>
+In-Reply-To: <20250306162541.2633025-2-visitorckw@gmail.com>
+References: <20250306162541.2633025-1-visitorckw@gmail.com>
+	<20250306162541.2633025-2-visitorckw@gmail.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB9642:EE_|PR3PR04MB7306:EE_
-X-MS-Office365-Filtering-Correlation-Id: 88880318-8ffd-44c8-96d9-08dd5cd1e0c7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|52116014|366016|1800799024|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?ZHJ+h+0O2jWc4Oqghsk4VpsgbPKQQ59F55jW9EjqFlHKfCD/VQ9B2F+hV8uB?=
- =?us-ascii?Q?H6NDr0LaKPORq20EsIitIE8P0jFxKESdVV8a2qs/4an/7UkmJEH26DQVMyy5?=
- =?us-ascii?Q?MAOL46cuIvCnCBuRij4MYlM1AARFWy3XJceH7jRuE/icr9GwWg/+u5GDVgwV?=
- =?us-ascii?Q?ETxZ/CHq9ucAETEGQRUf20naO8skvwIL6T9mgGsYNPyeRP+nkQkVUo1B/+m4?=
- =?us-ascii?Q?KtZgHn+lxBWsFKNK6K7DrjVS0VYur0QRFWdX2rwNRhKSe3YpaZovwHOAwtXM?=
- =?us-ascii?Q?rclMwVs3863Cy2m3vG5Hm7tMI1eEFWwCDBGvu7k3tf+rm5SR8LJVF+pG/2pb?=
- =?us-ascii?Q?qyK/WMlRUp7bBNDihYPjH7C3fW2lcS2dmyIOoxlygvvSobrMkyJi5en/opSg?=
- =?us-ascii?Q?cPoFGg8unwdkgziT02goBAp9OAJclyDOE/0Wv3zRA7kzNr9OHcAX5SY1rRio?=
- =?us-ascii?Q?rNOYx3j891sEZtKLjrP9/D9ItnlHUhlEvASC043P33MYLD+JUM4B2Aq3aHlz?=
- =?us-ascii?Q?4PARkvhA5sd8IV8Di6K/dS9fjTfGRZzwvOt26JRFf1WZhbZ2ScKGVVLfd1nD?=
- =?us-ascii?Q?XPPm2dKKuld650mHtTVFVrfrIh4PjZA0diJRiCWdwmkOhH/lTgjHOlzUiYW+?=
- =?us-ascii?Q?F57DZB+zDD9Km4PtBU6G82qMgVHS+9Dpd0IHBQDQIGMfQdda9lCRr/bJ6GO+?=
- =?us-ascii?Q?aSB0ugN1PPL2uBkD3PxWXvQkh/t8xLxWRMioWLbBGVC3xj/COh2XwhuKjd1L?=
- =?us-ascii?Q?SLyIy8+DHpvNvUSMpKGSuwBrMN2S5LPz/EhAHS5mJQ2L7Tajl7g+Ls3UxB/C?=
- =?us-ascii?Q?B6VKwOUsgSe3GrLThHpUw4MSUmaf+u6m5pnUNgO6m7qZr0mZlhJ1amRX1kcy?=
- =?us-ascii?Q?qk98UfXUc8wriYaPqF0S4rINSYlmweYNwdFGDxRHjHRMHHEGbOkDwPcqso+C?=
- =?us-ascii?Q?yIeormVGxwSCmZM5ObTEFDAqunDq6zpFbsmfB6nmGPVEkCWX5SyH89NNi3Qx?=
- =?us-ascii?Q?NwRbjRU+PuT2ZvgP7zdU7fs00fxXaC+fy3cbrv0Os4y9sHWEwBiBC1krT/Jd?=
- =?us-ascii?Q?Km2+E7nIV8aqOWpwzVo5Tf6rV1OlNReGuivQWTBGvuhr9ip5fOM6vP32adRp?=
- =?us-ascii?Q?EPtJU8vWflPLbIj+RfjBboBkdfCSaBDEZ1m1cTdEmYJgEpgO17QqnKnrM89y?=
- =?us-ascii?Q?GPa70g+F5R01eU3WM5KEu7DQVAX4l8trgIU4WYE+lXjE77a3f2/eitrTCu7o?=
- =?us-ascii?Q?xZ+TytpZWmqBwAWu2K0DlwegklRlCx4TkFDiR6VRImqvMSOdX1xiFQKAy2+v?=
- =?us-ascii?Q?uceeeopB8zUbpcxbp5PQjto2r4n9keAWjnbl8WBCSyfeOhTVPOCvswEnk4J9?=
- =?us-ascii?Q?C/phHw9pslAFhdOZ4FMmABBxfG5zKYgsd2bXmBCwtjcCG6fmRrXYJn/BJ+/T?=
- =?us-ascii?Q?HkXfHeK7FB185byoQZ7paLCbpYkPywu6?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9642.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(52116014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?4ggN2npV22hE2wiFDSIVANoxf6FFwmk2RAwjaXOsKhPfCigkEmiPSa+h7Kbo?=
- =?us-ascii?Q?c780GZuFZ2ZbTw6bdhNAhX+yIsgXoD1d7lMvDCMcqv+nYO/hDw0dmlPg6CMB?=
- =?us-ascii?Q?eBMw4L1vn8higHM5fnUjfhY9npZAPY28TV9UqHJCP+ptS8n8El+o0mHa1vBl?=
- =?us-ascii?Q?sP2AgVhs+M/eoa1GPt1U02dOXxiyEgTjojYpvKd2RvbERP05qrgZFJ1YSPE3?=
- =?us-ascii?Q?9rC2J8q9dUQg6B9Ymstdg3si5xbQOj8/GqJKs6HlVXIzNTcPLR9lSHhwksbf?=
- =?us-ascii?Q?Z50unJtdmuF5Gp4LLVjC88vuPSyT52ZhLPZYwxhlhqnMDLihx2vrbeObEevl?=
- =?us-ascii?Q?SfHyKr/zJbc2TPSiKpp3K87QEHbprIRCyC1G4SHdP1gi//SCaQgV12KQbQlG?=
- =?us-ascii?Q?x0JXOA3OXw1gbQuaVNQfavzzhhoycp6FD50kXphzOSDVa2sKTbTOwNHEBIdv?=
- =?us-ascii?Q?ugGxh/Q8QvQm0t73A4huqQF9hK9gpBL/LJ0ps/8mh7IQAp27P6yBlGkGFaw7?=
- =?us-ascii?Q?vBV7L3kwL44ieeEYCRxrDTCONzg30hd3GKHqpkhIohVgqTjPCLZfuuqWjWAz?=
- =?us-ascii?Q?EHtZsh4KNofDcKIO2oNuFoIaA5wNnH11LMu2ByA2RVoEyrnCI/mViH1yBfZQ?=
- =?us-ascii?Q?/xAQArdas+TqjClbtY+0XtRwnoJgw3MgisCiChhKMAZdv4+z0KiZLihijILf?=
- =?us-ascii?Q?tRorpt5nE/yko7QMg8UtfI+OoYTOthtTqflvXEIKdWnGxe00ucDwd77vAIFc?=
- =?us-ascii?Q?45PNLeBZTXSzfksSo+4OT5R3ChG1qDcN1J3jX3DYabIeYUYSRavHx4K8Gnst?=
- =?us-ascii?Q?dIimu+VS2qodZqJf0JoniWstLT+herUp0BCeJOC/Zs/KhSOcwYk1W7mu2eCC?=
- =?us-ascii?Q?AwZa1apz1EgVoYffpGlOFBWWfjJn/DscxwLKEDuvBzfqHauzVLXyHcGX1fBC?=
- =?us-ascii?Q?i84mDvEaCpLIz5KFM0O5GXErYTsDLyP5OLfTueg2eY+Zpln5QPfpNEbjqLyo?=
- =?us-ascii?Q?GLY5xZl6PS3qRpx6RHam/mMbZRQwt4OaGIuB661FgWRmhSHbAJBdOOWjO0Bo?=
- =?us-ascii?Q?XyFT6JPWnxZGY0r1NG+5du801WobT03mFBe8d2SFKcJztqO7X0etdZ/VFX+T?=
- =?us-ascii?Q?L68mR6xMAYtkFUjTvEqJyGDEfxUp4liztYBN3wv3YRGQtzhTFlqQLf3yRmyL?=
- =?us-ascii?Q?Jjo7GX8b07PfHa+tcukg5sb3SzE8lIxZoWr1Kajxkx5lJ8sCIKwMBtjcuvRa?=
- =?us-ascii?Q?lRpNdQRjSvhP1+971lHavh9h2scyHClUjH4KE3G2Vxxpl2s+KEQcVoDpNrmU?=
- =?us-ascii?Q?gd9Hzl9HPNJK46fs1OaNJfmmiAFHaKPVUgcjXrqSJMK3WPpIq+H+KuxtLRSu?=
- =?us-ascii?Q?n8Z69I9SrIIDVx/PIS4nXGkHBGgawYmqFeY6HhRYL1rVKLPo829jqZRKwO5v?=
- =?us-ascii?Q?EPnJ2y8gLlcmpENJ9fsO5TWJsKDZ/+YwJM69+rcsvcM8u/Hx9QeinQqbDekL?=
- =?us-ascii?Q?+aauGLief8XJAqjEPD8ha7Xx6rIPsZjJJrGxP8a4hrJ3Ot07ngTCB1A3WKCm?=
- =?us-ascii?Q?BKWukPD0UqSIQPqD+GpsRN6sp4TpGvkrRBlFctKZ?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88880318-8ffd-44c8-96d9-08dd5cd1e0c7
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9642.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2025 17:11:04.8499
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TZnIWzMHXCF95k+zBs0NrK2qh7taCPlgB/qokalzIvh6ZVHVocB0jSZ/YmjtXbGwi+zIUrn5g/kUdgSJcihhfQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7306
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Add compatible string "fsl,imx94-lpuart" for the i.MX94 chip, which is
-backward compatible with i.MX8ULP. Set it to fall back to
-"fsl,imx8ulp-lpuart".
+On Fri,  7 Mar 2025 00:25:26 +0800
+Kuan-Wei Chiu <visitorckw@gmail.com> wrote:
 
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
----
- Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 1 +
- 1 file changed, 1 insertion(+)
+> Change return type to bool for better clarity. Update the kernel doc
+> comment accordingly, including fixing "@value" to "@val" and adjusting
+> examples. Also mark the function with __attribute_const__ to allow
+> potential compiler optimizations.
 
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-index 3f9ace89dee90..c42261b5a80a8 100644
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-@@ -30,6 +30,7 @@ properties:
-       - items:
-           - enum:
-               - fsl,imx93-lpuart
-+              - fsl,imx94-lpuart
-               - fsl,imx95-lpuart
-           - const: fsl,imx8ulp-lpuart
-           - const: fsl,imx7ulp-lpuart
--- 
-2.34.1
+If the result type is 'bool' you should just check it.
+Not compare against true/false.
+
+	David
+
+> 
+> Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
+> ---
+>  include/linux/bitops.h | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> index c1cb53cf2f0f..44e5765b8bec 100644
+> --- a/include/linux/bitops.h
+> +++ b/include/linux/bitops.h
+> @@ -231,26 +231,26 @@ static inline int get_count_order_long(unsigned long l)
+>  
+>  /**
+>   * parity8 - get the parity of an u8 value
+> - * @value: the value to be examined
+> + * @val: the value to be examined
+>   *
+>   * Determine the parity of the u8 argument.
+>   *
+>   * Returns:
+> - * 0 for even parity, 1 for odd parity
+> + * false for even parity, true for odd parity
+>   *
+>   * Note: This function informs you about the current parity. Example to bail
+>   * out when parity is odd:
+>   *
+> - *	if (parity8(val) == 1)
+> + *	if (parity8(val) == true)
+>   *		return -EBADMSG;
+>   *
+>   * If you need to calculate a parity bit, you need to draw the conclusion from
+>   * this result yourself. Example to enforce odd parity, parity bit is bit 7:
+>   *
+> - *	if (parity8(val) == 0)
+> + *	if (parity8(val) == false)
+>   *		val ^= BIT(7);
+>   */
+> -static inline int parity8(u8 val)
+> +static inline __attribute_const__ bool parity8(u8 val)
+>  {
+>  	/*
+>  	 * One explanation of this algorithm:
 
