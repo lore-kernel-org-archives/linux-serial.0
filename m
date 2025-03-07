@@ -1,227 +1,183 @@
-Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02on2069.outbound.protection.outlook.com [40.107.249.69])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 195D921A45A;
-	Fri,  7 Mar 2025 19:19:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.249.69
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741375196; cv=fail; b=aExc3YMhK2kVu87YlEEguOS8nWSCsb3tQLwLLVOPSLUQ2gHRuTtuNRqyLGQD13v5uukdN4meA8lWSvorzvCJNn9fKsQzRWynrXY3nLBIBLb5/qLDYiocvetHT8DNU5zb2IGdbLnzLeXY91yd9Fle6UoNRKPCSC+WDRn2eBpynnE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741375196; c=relaxed/simple;
-	bh=OTrotL7llf1ioHpxlkZ/mTDFk4HjnHo7c48m8MhAi6k=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=VM2xDDIk/4qleFyXiFjNEnwm5TFnVkZwm28rSvN6Bx4xW225Pob5YuocEpG0KBQ9q+D7Kl2x0G1SXDr6Zzg5AdJDluK58vpBaqg8ykKEbu9DT46jeGAOjVwSGQN6mPLEoxtL7XsX4qtulIG8TKjp+GEuh8oLPevUa20cjpNg4Z8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=aIBxtp2Y; arc=fail smtp.client-ip=40.107.249.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C48253331;
+	Fri,  7 Mar 2025 19:30:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741375813; cv=none; b=mO7ugUfuy0f5yoFxZ7qe9ca2NJ1UPGU1jRoMRr1yffvPXJ0v/Hr4gQptakrhfRHwEP+Ya+zxNabzpHZ7QQHahNa+zPMELzcWJSb3ycHiJJsv27Fb2GAyvRZwYX1xRNzwLHAj/qIfmhok5j4/HnFNAT3gk2rNK+eCwEaOMuiy67A=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741375813; c=relaxed/simple;
+	bh=ES8fce8TYJh0CUhG3aOJvKwa0LbilzpFk3jZFOZFALk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tJSXmsZFgSJhKGxw7rSoS35pZtYdjs+TWyguzsokybCmtRj5C2YGaBlejMCoNqSSPbaRCPE3y9PrPTtd8SU7h3z6CKmnqWbVi5fYsiJjU6PVSCu4CFY0Dl+1/CPsHKHtmwz9rDgwKy8efrNBKVXyVmJiXCKPh7juPlrHd5T6B9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k795jQfJ; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="aIBxtp2Y"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UDGIyhf9p4Xjnt7YWi8yaNUr9mRGbpYs7Or3BiNNT7CGOX43XvcqoKlUgJQ4x+7YPeIrc8rQvWei7Chr+FuQZEYvmPzBf+tj1RQAyXWbspj1kdxvTYdq31IeE9kdW6bJFzoz1B5dmyp2hkjhsQrMVGIBeUh6U3D0rapqd6JyJ6GGfLIlb/zj6GFCWxLGotQ6D2zk7+euSek3URvaSIje+KXzsN6xITgegdFa+CMurV1SD7a3eWxXUV1ocxVMIXSbaKaWnqxjdp0gCaRyNVly5TGLZBURF1G4xgUeZDVlCcbjunn1jvq3QLzLMUR3FfM6I3+uT79oygMNhl1+3UuRIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sprhuhyy2bS9kSsqy4uiktgbvl0OrVigMNh95iF5RyY=;
- b=jeDN7wEPBbRnQrCRbZpFHtWNNhmvY0glBsj6C484kL4dnTIzDWvHlWfdMrAKWq9O7MCctyMZ6lRFcs1o2P9NfsjgZYHC7VwGbB8H80N0rR2LP4gLjVVXsCcGOypdzJspIyQs5eUnQMLHx0e48eS7qO5SbqDA2vtJlzGh6kQRPv11HWIpAnTyupSioCEAhwPwEG2KHo76BjVz+Qhcciu8fqh25Ahk7DzXFMXZJzthjRC30MPMZFymv+PxtB78VHFfW4q93KJ7a0rAPejJUJVgPpH0WBRgO9yk2Rg2jPAIQp9D6fPlzxhdOPvG0e/4+9SFYmzjUgq3zLEfe3dyLdfx+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sprhuhyy2bS9kSsqy4uiktgbvl0OrVigMNh95iF5RyY=;
- b=aIBxtp2Y34bkHiJWUqy+5iWTNwGH6V/SJInU9eBsXFLlIgOVYXSxV76sNdzWdz8JkZc8+qc2Eg3xf9u1dh52XiBCXsmAi08Z3kbQ+jfKZggcPbCzB3FsLX8/IEF5P1p5PKBW1qKwQZVK6O9KMoMCBo/S8SlqdORgEAZB6gtnjndxR6qub6m9GXuakoMp7v8PUdsAMGSjQvpFeunA4Ich6uhIKz69gWq2IMtiaERNikg8xnVNnHNhYHWExfSMx01r936A5bHW/0Ydpu5G7zmoxP9aSX1fLFWMuCqpp/DIswoJsLmUwT6svJsiu4d/6rH1zCoTydD8snK55gMHEt2xxQ==
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com (2603:10a6:102:231::11)
- by GV1PR04MB10918.eurprd04.prod.outlook.com (2603:10a6:150:207::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.24; Fri, 7 Mar
- 2025 19:19:48 +0000
-Received: from PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::21bf:975e:f24d:1612]) by PAXPR04MB9185.eurprd04.prod.outlook.com
- ([fe80::21bf:975e:f24d:1612%5]) with mapi id 15.20.8511.017; Fri, 7 Mar 2025
- 19:19:48 +0000
-From: Shenwei Wang <shenwei.wang@nxp.com>
-To: Sherry Sun <sherry.sun@nxp.com>, "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>, "jirislaby@kernel.org" <jirislaby@kernel.org>
-CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"imx@lists.linux.dev" <imx@lists.linux.dev>
-Subject: RE: [PATCH] tty: serial: fsl_lpuart: disable transmitter before
- changing RS485 related registers
-Thread-Topic: [PATCH] tty: serial: fsl_lpuart: disable transmitter before
- changing RS485 related registers
-Thread-Index: AQHbjwdrI17dbdYUjEGgjdmD4rfiRLNoB41A
-Date: Fri, 7 Mar 2025 19:19:48 +0000
-Message-ID:
- <PAXPR04MB91855AF296383041F5FD502389D52@PAXPR04MB9185.eurprd04.prod.outlook.com>
-References: <20250307021950.1000221-1-sherry.sun@nxp.com>
-In-Reply-To: <20250307021950.1000221-1-sherry.sun@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PAXPR04MB9185:EE_|GV1PR04MB10918:EE_
-x-ms-office365-filtering-correlation-id: e0ae5159-ab6f-4c65-dfad-08dd5dad06fa
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|366016|1800799024|7053199007|38070700018;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?lsDl6z7smejErYYawNJCeFyoUxfo9pksIh2N7eC4+upZFuhiMg/eM7XyOiy4?=
- =?us-ascii?Q?28Mw2mZXQDyyAlL2AL5jn3TB/0NgTyISQcznvSwnhJhHoE45xw7ubmqdto3W?=
- =?us-ascii?Q?HuuSIoK2gZxacAAjGy2Yo4XlRccMmyLpRfzDifJ5wD5Qb0IkzBpG8tbret2k?=
- =?us-ascii?Q?JB1M6OVQfSrsUrxvkPhFWXpLNRjcVUhfcluawNZ8pQKgOma6YRe//0xsDU1v?=
- =?us-ascii?Q?jOCKe8tESaBaIXsXaxdRw0qwYTtdqHeH/nQpdwH3pWshfb/BhXE/PS2leXJh?=
- =?us-ascii?Q?zVvw4u9FsM+j6uTO2hR8lT88V/omZ5WI7bDm1dsw93sTykpxRWKMNqQOD5ER?=
- =?us-ascii?Q?mmpWsceqodoaTjV21bo1dpNc4hH0dW/Zw50z8iDua+u/6g8HS101muK/W6RG?=
- =?us-ascii?Q?JPyUgqxj7MI79bY5axWkHqwNqpJeFNWQWuut0WTP6j3jQyL410ehNl1AS4u2?=
- =?us-ascii?Q?6G1v4dwUtU3NGqAahbMLZCpw88Tl565eK5MoG+zkXVgpYgZWnxhfqSsP1sTa?=
- =?us-ascii?Q?224A5Vqi5ui2iRaaQBYlcrLhSDMWLpM/So6GcwkSyxWO2187gX4TVQQ5tpGI?=
- =?us-ascii?Q?VcYRVFMd68QlZDHJZl1LCdLc9jvinLDG8nH3zx1ApFWKlZ6n3/lTq4VAYfHB?=
- =?us-ascii?Q?SO0bcDX3r5me7rqRdyxhEj04iqIAX/MJwceqZ7G5MYhoiuzSll3H1UHaEdry?=
- =?us-ascii?Q?UDTxvviWr8V1hUhTstyxKPz8Ip7WsnflMY2uiBNmFtloZGHNpIoCCUxISXwg?=
- =?us-ascii?Q?hYgcZGMoQ6ar40Gr4FcGAP+83c2pIOEb44QmfAeMloYA/Ljy7zlcp4bonfwa?=
- =?us-ascii?Q?tkevcr3vXvhTHL44DevGOBeAAooz73xVkM+Mz6s3SVcBUPvaROXwSBhrAtnR?=
- =?us-ascii?Q?9KMsro/O8XpdXO+c1DcY+rfLXaWoGRLJHz6KV5Ja3im2ALRy2q/Cx4+sjsW1?=
- =?us-ascii?Q?7oJwV+64rNgbfunkUpgUdnVozrM4BQbOf98oULwHxaXDhHrxddqEEPgregJ5?=
- =?us-ascii?Q?EEDCq37ovPu8Fkehx31vg9ypi7Uix1QOCAgXkVynI6yR1LW/FtY3rz+VaW9c?=
- =?us-ascii?Q?Ix602+YzQqvAsJY2gvDJHOVk96BBrWui91U6aYWkMeMvnKQwSyjfwgOo/gP5?=
- =?us-ascii?Q?YwIYOZ9vD/2f0tlaiX7i7I2kT1I79xv/aj/ukydT2+R2jQf3iZ4o7u6Wt5vZ?=
- =?us-ascii?Q?qMXVtmUyEjNodT6qhZW3fylkTyhB36ORwWv30jnIs0j6PevVff/Ml5mG+817?=
- =?us-ascii?Q?mC2BOhS08nHiKfRO6XFtZoY15jo1gH9+lyCxe9TexJth4sdpPGlDGwzTiHTL?=
- =?us-ascii?Q?VK9cG1uALJJKFSlHschIPH1ihkWYkNGvTYR7DTau+KQfO1JKkfvXzVC+acl2?=
- =?us-ascii?Q?JRJML5IbcrNpZKYhjvcthGBh1NidpUNM1THjIfHnjDDQnmmAAalaBbVdNnvJ?=
- =?us-ascii?Q?qvxP7IV5RALLbePMC4gsQtdICqf9rg2B?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB9185.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(7053199007)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?C4JxTaYf2oPuloyAw+3731JzPeLbGDDHtau0bBVG8uE0YKDCsUJq6k5uxSWG?=
- =?us-ascii?Q?4WVJ1pM9K2HnBeCFmz2XTzi4FAL7G06XVjPvUO3rp4ysTwlrNCJPCQnuLqN8?=
- =?us-ascii?Q?46Z8nWikOYUJ3nNj2k9RtiAJxbsv890tYo78lAuqZFtEDAQsreMSITCK1Yih?=
- =?us-ascii?Q?h2jXKqUMDBu+F5iRt4aPq7OW1Odh97zvb7E3hN4Fzx6TYpuojBa6mr2V+Egn?=
- =?us-ascii?Q?9NYTDXUCmUStqhqX/ypiEtIzCXnAlCkJjlLz1B27n3AL9CXbNd10S6iYvGO8?=
- =?us-ascii?Q?ljJ0mO5TW8hqS0OmTrkiE4ycqdNyvYE7qJDEb9lAIyzjcnkrC/yNi7P4aVAo?=
- =?us-ascii?Q?RQ4QLZUcZ9K09IIgIlLrFJWNttsPzjqaDHv3B7NHCq1L9PPf+mGVFDKJzBIS?=
- =?us-ascii?Q?FjbWmqV857XNeuKEF5NBAOkuDMsceGF4Cwo9a5JI1g7HxS3///vXBPsgm8Hu?=
- =?us-ascii?Q?Y+NaT+34ruOba72EORMJsg2wsTJDaqe2tTExOdx7Y3wEB3zG+CLrxAQDeA+1?=
- =?us-ascii?Q?OV/hH7LMkHGmFIZDXLerIT6fTJdQXKJkoQRBHOIRUtNnbcJ5/Wt2S3lIVHFl?=
- =?us-ascii?Q?g87w4M7lTRxRDZU/ItBnDhmxWmPwlZBNaTzATJI09C+jeW0CvMLmJEH79eV9?=
- =?us-ascii?Q?4dH7wng1p6NSOfi6fKEpCz6CdPMt/S0IK+jzKn7fT63iYpBMnGttU4U1bQaT?=
- =?us-ascii?Q?SyEOG25u7mbc0ay2XCh3KVROZEc6GzReYcw3ff3JPZk4xJan30WIwWlbPkbI?=
- =?us-ascii?Q?jeVv6eddPGAy0RFqx9gwdhZMUidFpfhygM7WGHfb7rqFLwaMRnrKaPOGgin+?=
- =?us-ascii?Q?M34VoQrAi5jcD0xVcyZB3Hzrq2IwOMnjoF0K83ZZFm/90QjcIHmc8udU/m2D?=
- =?us-ascii?Q?z5p3YbYoX7RLpjHfe2yCoQ1T7znRXQk9sp8Oh0ZthNlFFob6kQhrg51Fy76L?=
- =?us-ascii?Q?IC2TB8An2SwQ8oLGw6Tucx8sH1lqZFoaCbYinOd7wBs865ncYY8uO4oaaikL?=
- =?us-ascii?Q?0V0CAahinXyhLp49sDeQv8BwPCsIbZzlYCe3J9iWjzDFaR1y6d4eZUbleARN?=
- =?us-ascii?Q?eanuTC4HCHFYF4g9j0S7Z6OSpycvjmk1jK+wI/9oS9AXS0BJTurMG6l7H8rw?=
- =?us-ascii?Q?jqckoCfzHH46OLeLfjfKLER7oYUCu99WAHC9sxU4t8x4uBOW4Ugctq19N11r?=
- =?us-ascii?Q?mdF9SOVYdtYZuilGBMAEDogczEfAtZUoK5QJcRi6IBBQRgd2Etpy7z0pynB2?=
- =?us-ascii?Q?Wdse0be1YT/db7qe/c2uII6Ii8Kjlj/P4yN6WDmITdQ4RKnSxff3Krk/c93o?=
- =?us-ascii?Q?fHDpgnLbtkB5thd43EJ4PocZkK5dnc4Y+S3OZtBPs9gjekFtCWeDoh7ibokJ?=
- =?us-ascii?Q?2K3mnm7aNpG+KZEdH5utGzGfGI5yh1cvBpe7n1pXNqQve3hPV3XAdHmNyjS4?=
- =?us-ascii?Q?rGdJ9iIpWqdanWDq7lZp91s9UUPLrnSczbAMr0bbqLKIqpJc/2Qq2HOwOUTu?=
- =?us-ascii?Q?f/GriV0ueXIvnCmYDGls+eaipdLNviA7O+QrfDmsM3EXPvN+Xy98XYqUgD0N?=
- =?us-ascii?Q?HRI7V2wLOC1phXdTjeFjn0jZH2C+BUch+weID5nW?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k795jQfJ"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-22337bc9ac3so47928205ad.1;
+        Fri, 07 Mar 2025 11:30:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741375811; x=1741980611; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ujnt93n2ZnNyLSMeIXg1bvl3lYCF/JQ06NeoxLK/MdQ=;
+        b=k795jQfJ/zzlzUwEZr/oHdEIvecaTikfrnbUCZVRPMd4a9W7lW7eRwLkflGNgCy7xT
+         u8CzIFJtkWKhRbI4Tnlou2is5wquE3QC+TvYDyZoAVKdOLBvuE+N9CLjUAcZFnoMvPA7
+         G1d5VNP1NfETUpSr5IvNJ02vEeo3s/gyFcL4sTGiv7GqncD6OkyXc4qMIhCqXxhM8Rq8
+         zK9+LixthdUsqqOLN/C4PIvObYVKf/S133sG0DJcLUSEMkoetYaxtv68km5rFgI81mE9
+         zlP36AaqebkgQcDR2yN9W+jatsFWnAKbkrsabjP7uJFaI757EBotJknHsFvXWHEGuWQS
+         r5Zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741375811; x=1741980611;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Ujnt93n2ZnNyLSMeIXg1bvl3lYCF/JQ06NeoxLK/MdQ=;
+        b=mZiocy50tlG+Lwd8q6cPxbAWfv2uJ0nFZiyCUhVOSvD70Cb+Z7rAznSm9Pz6pLmS5f
+         XRkXhFWd2DU/BOtQTw9/TvciEwhz3GNU929aSmg9Tz9qygzOET6XSSMzFdgDHUwBB1DM
+         mF9VFBVqyO1sx7cesgyZQd0G9zvjoPamfgCWe3pDnV4kOu+FlouBcsKT6P5RYvBhw0qQ
+         WVUjkImylLsTpTlOwDv3GU39+MxjtSX9icC7RuY4YyVsEoClqR2TlW91tT1iqlUBr+is
+         Xf2xLM8PBz8wncHvocY4X03uW1JNdSCBGaTFJDfYzRuENwbdFkXqwCTlZUq/S5XEZk6f
+         5OTQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVXklk6DS1feOVDHJpfOyp/fYlqTEdXVnCAVkV0H3rAr6/323Fln7v+te8UWU0wKIJ6Uck=@vger.kernel.org, AJvYcCVzRgHGEt0uaiPsbLpBh2nRx7+5vWvHnjeYzYDLw8gJjNgC4gyC2vG7UXFn8CxSoTJVbm2Ye47ys6INsHs=@vger.kernel.org, AJvYcCWT1efVcmO5uGKIOATaqA6ydovsoz+goQB2t+tRYbocEp6B5zleT12bORdFNFBZH+fqj/l2VmzR@vger.kernel.org, AJvYcCWYOBCr1t/Afhdb9Fh3kzQRqtFRSQcElr484q8NWKoKf8fOH0/oNhenR32XV+M+JXReu91mg2Q/HyIbBESU@vger.kernel.org, AJvYcCWmfynWcFz0WNHNNUlKYFVop562SMPos+IODr6KxMi0texGrlXE3Kk/gJh7qpr/jFJeQgRHktkGlVJj2Bc1@vger.kernel.org, AJvYcCX12v54ypJj2ZN+wkBgK9kn/A3WEePP6bgrt+fmyDAd+0VHwXSmphkKr5JSEYq63FuPdu3mY7gg7Tbjv5E=@vger.kernel.org, AJvYcCXTVphQ5SlBe4i+WLC0OreG8dTQqUIWjX1OVSkuFcnIX3PDVrvTcDtw56a7BfaqR2PZ1Bu2bNIH3EqKSSzDsH0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyS0yN0Q3tnqZdLzBtQiZMcBgyPsY8fjNxaNu80+KUYj/0vQyd/
+	4R51NJX7BwNgZJeF/lE3HrUQxFcNy5Xhbvvo9WxfjjEe5U2r2bg2
+X-Gm-Gg: ASbGnctZFA5GP1FgYj2/6mvz5v34R4ghj5YedoU9qbVOZl5pHd04cYubg+YOUtNkmt9
+	aHpoN0jpRxgnuLUgXeXLyAkCdNSLlDjrjD+HTqy8nGCWlKPv5dksIPkghJUuX9SSZszqPv68WVT
+	msgl/1Bxt4JKlxTQ83id3DjXl/DmQUUqQEIraMjUIENgdTTockwLRfo5YYAq4tuFSGSVO+oXp/G
+	6QIs5pnNJptIiLzOgC6WEJx47oOFlXDwKbJEgxVer5VEYPaI8DhPTa5eEYsCQiiK7Px4QI0AwsJ
+	22AfMb0m9RAmmOtKAt4m3z1TivOEFW2qufrBIdiTQ+qU
+X-Google-Smtp-Source: AGHT+IEmnovg8SODODeYbL7InF2WSqC9McWE/UoY4IWxbTzIc1jrQMfyhDSc++tBv5NrR3IGNpr8rQ==
+X-Received: by 2002:a17:902:f645:b0:21f:4c8b:c4de with SMTP id d9443c01a7336-22428ac90a6mr73028235ad.42.1741375810720;
+        Fri, 07 Mar 2025 11:30:10 -0800 (PST)
+Received: from localhost ([216.228.125.130])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-224109ddffesm34081415ad.40.2025.03.07.11.30.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Mar 2025 11:30:10 -0800 (PST)
+Date: Fri, 7 Mar 2025 14:30:08 -0500
+From: Yury Norov <yury.norov@gmail.com>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Ingo Molnar <mingo@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
+	Kuan-Wei Chiu <visitorckw@gmail.com>, tglx@linutronix.de,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	x86@kernel.org, jk@ozlabs.org, joel@jms.id.au,
+	eajames@linux.ibm.com, andrzej.hajda@intel.com,
+	neil.armstrong@linaro.org, rfoss@kernel.org,
+	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+	dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	akpm@linux-foundation.org, alistair@popple.id.au,
+	linux@rasmusvillemoes.dk, Laurent.pinchart@ideasonboard.com,
+	jonas@kwiboo.se, jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+	Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH v3 01/16] bitops: Change parity8() return type to bool
+Message-ID: <Z8tJNt83uVBca0cj@thinkpad>
+References: <20250306162541.2633025-1-visitorckw@gmail.com>
+ <20250306162541.2633025-2-visitorckw@gmail.com>
+ <9d4b77da-18c5-4551-ae94-a2b9fe78489a@kernel.org>
+ <Z8ra0s9uRoS35brb@gmail.com>
+ <a4040c78-8765-425e-a44e-c374dfc02a9c@kernel.org>
+ <Z8ri5h-nvNXNp6NB@gmail.com>
+ <04AA7852-2D68-4B3F-9AA7-51AA57E3D23D@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB9185.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e0ae5159-ab6f-4c65-dfad-08dd5dad06fa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2025 19:19:48.4268
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +rJxi+WrqmN2IEw/ACrpJtybDIIcjKoxr9MGi6d1Y3F6RWrActtEd7JCH1jkIVbFmgfmH4hDJyA9XNl3cZZdDg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB10918
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <04AA7852-2D68-4B3F-9AA7-51AA57E3D23D@zytor.com>
 
+On Fri, Mar 07, 2025 at 04:14:34AM -0800, H. Peter Anvin wrote:
+> On March 7, 2025 4:13:26 AM PST, Ingo Molnar <mingo@kernel.org> wrote:
+> >
+> >* Jiri Slaby <jirislaby@kernel.org> wrote:
+> >
+> >> On 07. 03. 25, 12:38, Ingo Molnar wrote:
+> >> > 
+> >> > * Jiri Slaby <jirislaby@kernel.org> wrote:
+> >> > 
+> >> > > On 06. 03. 25, 17:25, Kuan-Wei Chiu wrote:
+> >> > > > Change return type to bool for better clarity. Update the kernel doc
+> >> > > > comment accordingly, including fixing "@value" to "@val" and adjusting
+> >> > > > examples. Also mark the function with __attribute_const__ to allow
+> >> > > > potential compiler optimizations.
+> >> > > > 
+> >> > > > Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> >> > > > Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
+> >> > > > Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
+> >> > > > ---
+> >> > > >    include/linux/bitops.h | 10 +++++-----
+> >> > > >    1 file changed, 5 insertions(+), 5 deletions(-)
+> >> > > > 
+> >> > > > diff --git a/include/linux/bitops.h b/include/linux/bitops.h
+> >> > > > index c1cb53cf2f0f..44e5765b8bec 100644
+> >> > > > --- a/include/linux/bitops.h
+> >> > > > +++ b/include/linux/bitops.h
+> >> > > > @@ -231,26 +231,26 @@ static inline int get_count_order_long(unsigned long l)
+> >> > > >    /**
+> >> > > >     * parity8 - get the parity of an u8 value
+> >> > > > - * @value: the value to be examined
+> >> > > > + * @val: the value to be examined
+> >> > > >     *
+> >> > > >     * Determine the parity of the u8 argument.
+> >> > > >     *
+> >> > > >     * Returns:
+> >> > > > - * 0 for even parity, 1 for odd parity
+> >> > > > + * false for even parity, true for odd parity
+> >> > > 
+> >> > > This occurs somehow inverted to me. When something is in parity means that
+> >> > > it has equal number of 1s and 0s. I.e. return true for even distribution.
+> >> > > Dunno what others think? Or perhaps this should be dubbed odd_parity() when
+> >> > > bool is returned? Then you'd return true for odd.
+> >> > 
+> >> > OTOH:
+> >> > 
+> >> >   - '0' is an even number and is returned for even parity,
+> >> >   - '1' is an odd  number and is returned for odd  parity.
+> >> 
+> >> Yes, that used to make sense for me. For bool/true/false, it no longer does.
+> >> But as I wrote, it might be only me...
+> >
+> >No strong opinion on this from me either, I'd guess existing practice 
+> >with other parity functions should probably control. (If a coherent 
+> >praxis exists.).
+> >
+> >Thanks,
+> >
+> >	Ingo
+> 
+> Instead of "bool" think of it as "bit" and it makes more sense
 
+So, to help people thinking that way we can introduce a corresponding
+type:
+        typedef unsigned _BitInt(1) u1;
 
-> -----Original Message-----
-> From: Sherry Sun <sherry.sun@nxp.com>
-> Sent: Thursday, March 6, 2025 8:20 PM
-> To: gregkh@linuxfoundation.org; jirislaby@kernel.org
-> Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org;
-> imx@lists.linux.dev; Shenwei Wang <shenwei.wang@nxp.com>
-> Subject: [PATCH] tty: serial: fsl_lpuart: disable transmitter before chan=
-ging RS485
-> related registers
->=20
-> According to the LPUART reference manual, TXRTSE and TXRTSPOL of MODIR
-> register only can be changed when the transmitter is disabled.
-> So disable the transmitter before changing RS485 related registers and re=
--enable
-> it after the change is done.
->=20
-> Fixes: 67b01837861c ("tty: serial: lpuart: Add RS485 support for 32-bit u=
-art
-> flavour")
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
->=20
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpu=
-art.c index
-> 91d02c55c470..4dc2f3e2b8e0 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -1484,6 +1484,16 @@ static int lpuart32_config_rs485(struct uart_port
-> *port, struct ktermios *termio
->=20
->  	unsigned long modem =3D lpuart32_read(&sport->port, UARTMODIR)
->  				& ~(UARTMODIR_TXRTSPOL |
-> UARTMODIR_TXRTSE);
-> +	u32 ctrl;
-> +
-> +	/* TXRTSE and TXRTSPOL only can be changed when transmitter is
-> disabled. */
-> +	ctrl =3D lpuart32_read(&sport->port, UARTCTRL);
-> +	if (ctrl & UARTCTRL_TE) {
-> +		/* wait transmit engin complete */
-> +		lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
-> +		lpuart32_write(&sport->port, ctrl & ~UARTCTRL_TE,
-> UARTCTRL);
+It already works for clang, and GCC is going to adopt it with std=c23.
+We can make u1 an alias to bool for GCC for a while. If you guys like
+it, I can send a patch.
 
-Since there may be a delay between writing to the register and the UARTCTRL=
-_TE bit actually=20
-changing to 0, we should poll the UARTCTRL register and verify that UARTCTR=
-L_TE has really=20
-become 0 before proceeding. Otherwise, subsequent operations would still ex=
-ecute while the
-UARTCTRL_TE bit remains in the status of 1, which is not the intention of t=
-his patch.
+For clang it prints quite a nice overflow warning:
+
+tst.c:59:9: warning: implicit conversion from 'int' to 'u1' (aka 'unsigned _BitInt(1)') changes value from 2 to 0 [-Wconstant-conversion]
+   59 |         u1 r = 2;
+      |            ~   ^
 
 Thanks,
-Shenwei
-
-> +	}
-> +
->  	lpuart32_write(&sport->port, modem, UARTMODIR);
->=20
->  	if (rs485->flags & SER_RS485_ENABLED) { @@ -1503,6 +1513,10 @@
-> static int lpuart32_config_rs485(struct uart_port *port, struct ktermios =
-*termio
->  	}
->=20
->  	lpuart32_write(&sport->port, modem, UARTMODIR);
-> +
-> +	if (ctrl & UARTCTRL_TE)
-> +		lpuart32_write(&sport->port, ctrl, UARTCTRL);
-> +
->  	return 0;
->  }
->=20
-> --
-> 2.34.1
-
+Yury
