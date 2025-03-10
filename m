@@ -1,284 +1,182 @@
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11011055.outbound.protection.outlook.com [52.101.65.55])
+Received: from EUR02-DB5-obe.outbound.protection.outlook.com (mail-db5eur02olkn2104.outbound.protection.outlook.com [40.92.50.104])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3C1B2F28;
-	Mon, 10 Mar 2025 15:43:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A02BD1DF24A;
+	Mon, 10 Mar 2025 22:27:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.50.104
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741621442; cv=fail; b=Py25+UeiPwjlOLoxjDarYyVKQQXJiq8wllNyuGylUiMwid9eC9UsJ9n+AQwUry8hkjA26dZl8CYGA+4x32opD2soDauLC/eTKumdCdN87UP50ulVvzsb5Ml2y65T2++ftF4xEMhyPr390AT60BsA568c0RMmUicQbWZ7BGKaWrw=
+	t=1741645639; cv=fail; b=Y4MIMr/EnSGsRDBtgF7RrljP+aoB26jwUT7od92WgYg/X1hZK5Pac2GWhIpUqj4xIsnll8Qp51Lr37c+j3MQevg0HDcTTb8VEn2bqOMC79dGLG/tUH7cRJHd/1083cQtQaWfuC1pgIybi+6G83mZ11sNWSGnKKC3X/lMVD1oOcY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741621442; c=relaxed/simple;
-	bh=+jQmYrU9Fa4zjaH5hM6YDJWPL5bfMV2Cphd0Gfr6mz8=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=WVMYBa6kOPtIRdnKZPrb98QvwpPMLulv7RoipFmRdknxnneQF9A63+JN5fXBJkXzVqUg9EEbP1Jni4n6yirW1zRq71dP4LhAJrT/n+S1MeY3NUUYv0j2IJXAHSxXGvKHU1GZa1nTTzOPfmiZsBS1He9RuIRiyrVX+SbofKjGMVM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=GQmbnO67; arc=fail smtp.client-ip=52.101.65.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	s=arc-20240116; t=1741645639; c=relaxed/simple;
+	bh=MoXp8xna9SQiTo7cxRumdehFudca/kmcwAvwlSj3qk4=;
+	h=Date:From:To:Subject:Message-ID:Content-Type:Content-Disposition:
+	 MIME-Version; b=pE22mh6hhVxjotL9RneCPYQAH2Ps+COQYUiuMvOyukSQYvnCNIp49/QcQ358O/03M/EjYiCy6/mjy6OgSq8zHsmaRDqkiAmnO7NRJCb4EvgGsVrHBfCLVE90RJvAwAhnpcGsNtBTA9+7jpXmUc2nkrMY2g1DjeDZBm4o96Pj9Ig=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=live.co.uk; spf=pass smtp.mailfrom=live.co.uk; dkim=pass (2048-bit key) header.d=LIVE.CO.UK header.i=@LIVE.CO.UK header.b=pscu8baT; arc=fail smtp.client-ip=40.92.50.104
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=live.co.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=live.co.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="GQmbnO67"
+	dkim=pass (2048-bit key) header.d=LIVE.CO.UK header.i=@LIVE.CO.UK header.b="pscu8baT"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CS4n3cH/47OEWXn+823peTiBZARjtuhpLW2BFVGHZezFMVHtRZna0ARramjIqZtyfV/ZLbg08BSZV3/Xejp8zUowvjfXW/5SFbCMzUoAmb4XSsYwrmtAUHkb9FVYYZTxQhR2hfTLTlTXlKTmXCuT0HJiWzpXXXbUXCbSW9f9IYyuuyhGApwK13KwZRk55r3jCa0pES1i6zEAmQTxChWL2zZ903tyLx6CiwZm7Bx7zKoPfI1KaqeD3dG9kBBdFDRmwZRjqF1epbcvQyaJra+55202IzXrWFrmpnmFbYCr38gtytE1b80FIzBGC4FiYg/Y0C6Yw9n/01TNSzGifmxiMw==
+ b=KufaLQlfDFYUMobKQw+EMIAwoexqoIIRpe3EOg1Shg+g80TmnjX+bKaaK9Uqhj5WTwEmiLcd8w779sHZTiqfEAsD2No3qECaD7RN7kc1x3DkdjZ74KbY9FiRmwuSoQ6yOWJ/WYangcYJY2IDQYxMfu7aQZxiRbrsXmPlPh6vAzicoa2ppkiEStPcH3KcQwW+iK0vuG5yKZw1K4XuFtfR2AYgBQMwZaV6HukFFlzUIJ0yAu8EAMSrVdnJPHf9O9WmCIladn1pzYU1Uzm7QI/vAEBb7UfGLAsyfVXgkizky0tuErsjX/rDaepKpTDUNOWc5ttdFwGEC8Vho0APC5ZqCQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nkWMZTBpjGqIy62JngdH0iZ8pD9OAMB0wXcfMkeUzZQ=;
- b=sbE6lhOwCopDl2LjXBtesbWfF+t2JhAZltAeQGR0clF0qFnOqSRZrINa4MBu+5kt7qV+9nLRTxq4Jzr/ULXWKYcLqaVx6ciQpcHPYflME49oRzBJ9LVXMj5AHxgK6Z1YcWB14nJwLvDEbQz2QU8280l5UxY6FJumI3q39Rx95o3XxdiPIlT8w7mu+C3f9d6YbietcItEAQCidb/yTKxx1S7jwPuN3y0GCjjoU02gvIpp/U/AmvHIewv8d5/I7ZgDpZ+bfaiHvZ39/OjmJ5NTEk3sRqcqPECC6WKIefUOpD8k+nwqscRvktN8+X5IUt6XiEEttDenFMX+C3Q9WcBYjA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ bh=NOpwvqXYsRHui8MHFp8cUTTj/YU4qAwBfLo1Blc3IFs=;
+ b=hoL+8Shdc+RrSpPYTWUOdn1Ri7TpgwpFxBn5RvLllpw8mII5WXNfP/pMAz12Bgmb2NjxVoDY5i98uNe2iFAyNrSIvh+XA6qYG38MHCZNUKzNYZxQjEkyOzR9iELZZnVcTSzheLj+cvzolOkm58eHA0eKeGmeT7T2nBJsB5qcXegvcHDBZKlLsq6h2oHUJHHb/GCN7rZxE19OnprIkfWkUK58VzMkc2yH1OeWLMFMAkXTtBnm8BPkGaRp+5QvDUA7crImphomUz1YsUtsfobRRgl4z/5xyjz7iSbc+7LR3mbpdH+0tDY7p9ZKDzjTGyXNlt4RXtEo8QlVW2G76L6eAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=LIVE.CO.UK;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nkWMZTBpjGqIy62JngdH0iZ8pD9OAMB0wXcfMkeUzZQ=;
- b=GQmbnO67n23yRZW9ig+8R1LtfqxmOxVRrUQkAS780GiEe4XJ7YKpoA4u6vLw+06atgXGoDuAAAXg0KsxXgpOzn8ir/5GKLV9ejrLFZ+hW1NB2abjVV8bwFgkLJRkTyQ9PLdRXwMsfGfZViA8eTOQlyPe7QqBZ9UwNZWxuDrFentrr/ZXRNzkmWGw30awUVItpVVLBEc68z9ZZdOf3sqz+HbgWM4ipmBswr8G9rVw8wvB0Al5BK0OyIJ+7qSUujYjmwL8UcD/rvDwD/rJmHvaZ+57FKsuP/mlxiyW1rtdqVRVx+pCoCKYzAsR+8M+UDr7Hjc6+eGYItqn9IEQMLJK+w==
-Received: from AS8PR04MB9176.eurprd04.prod.outlook.com (2603:10a6:20b:44b::7)
- by VI2PR04MB11217.eurprd04.prod.outlook.com (2603:10a6:800:29a::11) with
+ bh=NOpwvqXYsRHui8MHFp8cUTTj/YU4qAwBfLo1Blc3IFs=;
+ b=pscu8baTCan7s0GQj4lGWVcN9EVPFxNCA48yyZ85cRf/3Rgbf0h3D2uouWOTtJXKKXcmGLmBX86dJaaYKAxeam+HO8BA7tkkK1It3/63XXICVPThxHHFv+ykboupBsteqpI0iNtTIYrhGRGzLfNczo0hpGqAh+ddWWsKQ1dw90/7ExfkJI4F9ELE6UhqijxSwxT7ZtZJLZc9hW4YXMTeFVH8F4TH/PM1/LPiVuGQKfavtaGSC/yrPF+bol6ei1azWiyUAAEAce32fKpoMLVGcvPkqY7Ucafls5Sdml43MFPzJT2w5OOtmCI/imYNBV9OSIt886xKm6S2W6zGH7ye8A==
+Received: from DB7PR02MB3802.eurprd02.prod.outlook.com (2603:10a6:5:3::15) by
+ AS8PR02MB9091.eurprd02.prod.outlook.com (2603:10a6:20b:5b7::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.27; Mon, 10 Mar
- 2025 15:43:52 +0000
-Received: from AS8PR04MB9176.eurprd04.prod.outlook.com
- ([fe80::4fa4:48:95fd:4fb0]) by AS8PR04MB9176.eurprd04.prod.outlook.com
- ([fe80::4fa4:48:95fd:4fb0%7]) with mapi id 15.20.8511.026; Mon, 10 Mar 2025
- 15:43:52 +0000
-From: Shenwei Wang <shenwei.wang@nxp.com>
-To: Sherry Sun <sherry.sun@nxp.com>, "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>, "jirislaby@kernel.org" <jirislaby@kernel.org>
-CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"imx@lists.linux.dev" <imx@lists.linux.dev>
-Subject: RE: [PATCH] tty: serial: fsl_lpuart: disable transmitter before
- changing RS485 related registers
-Thread-Topic: [PATCH] tty: serial: fsl_lpuart: disable transmitter before
- changing RS485 related registers
-Thread-Index: AQHbjwdrI17dbdYUjEGgjdmD4rfiRLNoB41AgAOYg4CAAOfx0A==
-Date: Mon, 10 Mar 2025 15:43:51 +0000
+ 2025 22:27:14 +0000
+Received: from DB7PR02MB3802.eurprd02.prod.outlook.com
+ ([fe80::879f:859:ac4c:9963]) by DB7PR02MB3802.eurprd02.prod.outlook.com
+ ([fe80::879f:859:ac4c:9963%5]) with mapi id 15.20.8511.025; Mon, 10 Mar 2025
+ 22:27:14 +0000
+Date: Mon, 10 Mar 2025 22:27:10 +0000
+From: Cameron Williams <cang1@live.co.uk>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: serial: 8250: Add Brainboxes XC devices
 Message-ID:
- <AS8PR04MB917638F081F9D6C1F046694C89D62@AS8PR04MB9176.eurprd04.prod.outlook.com>
-References: <20250307021950.1000221-1-sherry.sun@nxp.com>
- <PAXPR04MB91855AF296383041F5FD502389D52@PAXPR04MB9185.eurprd04.prod.outlook.com>
- <DB9PR04MB84290B4889DDD2A9E0F0B47292D62@DB9PR04MB8429.eurprd04.prod.outlook.com>
-In-Reply-To:
- <DB9PR04MB84290B4889DDD2A9E0F0B47292D62@DB9PR04MB8429.eurprd04.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS8PR04MB9176:EE_|VI2PR04MB11217:EE_
-x-ms-office365-filtering-correlation-id: c169839b-b214-4dd2-627b-08dd5fea5b91
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|1800799024|366016|7053199007|38070700018;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?CuVccclZXm1l7LSYOyQNXUuJXjUQJg2Hkhq5NGw6mibMH62UZlmILbd/O4ZG?=
- =?us-ascii?Q?poUfq7R7C7i+1gyGCdMBBmmTcSjKfFHFsy4tTFVT1keWCo8T0vB2+C6X3PP/?=
- =?us-ascii?Q?qOWQ/rkOuDEuwslO4ityfmppUH6xXKVXO9iSZGOSaS0m/SJ+SlAvxlGCjQ7h?=
- =?us-ascii?Q?vWxntczO3/QXkxqu1N8gQku8fUOQfkBjwhuh4z9yr7YHTUxQqDlfmyrPSOb2?=
- =?us-ascii?Q?dbVRRtQwjruHltTlYU4Q+0y/QbwIQncV5kOa9Ux8jms3nuTd9crceqtA5Leg?=
- =?us-ascii?Q?/BLHeils102NHIcF4Os9rfU5pSiJUN2WdHqs6wrN0NYGocNJAi+JUUqF3nHA?=
- =?us-ascii?Q?/zSI6eytPHva8OXCQOfHndvsiGi9rGluoBSU4OckTaXh0EeMaJxt9mt58Oe9?=
- =?us-ascii?Q?6NUY46XRpB8Mv41u01C24PEOyPumGpdONqZI4uh3GDS0bkA1+VM10IDOQgDK?=
- =?us-ascii?Q?gf0FnRLYqzEPXelM2SNEfcMQR7izNtQxKjGOBwJcFaHoSYQiId5PbLqIuycJ?=
- =?us-ascii?Q?+58re4XNjnxAe+w1IlVctmeBKKh7WI2+lNAWdS3UGW611MhXSOtqY2vFqq6K?=
- =?us-ascii?Q?/M22OPZa6DWHDrEx+u9e69t3tqglOsPufc3JxJHGdrM3Ykp++iYveeE72iB+?=
- =?us-ascii?Q?tmDY3ECOrAKmP82D88EUwhUXvykNceEZNJIHdbY+LPIWevNqBUVziwab+iuI?=
- =?us-ascii?Q?NkNHuYQ7UqOnxaWtHDt7CPUs2moM/anE36Lx+qF0s8zAwrsi5XD0mQTU1os1?=
- =?us-ascii?Q?4VMPs6jOzlcWYIm8JJFHvzE5cnD4s3uIwEEWPGekVGYXhZitCL5hw+5EuYtA?=
- =?us-ascii?Q?0UiIZIpMcxJ9lKsygoKdGR4ggtNCSsQvilmtTN7T5JvNW3abq9RK1e6A8l3m?=
- =?us-ascii?Q?8XXYv+qvL2q8NPBSHHBNmAUg+q257jzoT7JQlmvf8W7KtFDnwc4fIQLxtSAO?=
- =?us-ascii?Q?n0E1V7iTt9w92/F9FZ/CrS/JKeh+hfz4nS810BoAQYO1a6qw0ugCCcoNvhGa?=
- =?us-ascii?Q?/ZCOF4/52BiDHXLqmm8v9miuN+ZknOetdz5+5Su/DM7Z2yofS2JrrrD9bGIs?=
- =?us-ascii?Q?1ZB7VzP5uOg96H6VvUrwismrmIW1i7njFjRh3P8rlfX+JeL+VGi/NUKYMzsn?=
- =?us-ascii?Q?vovwbkCvshr/aJjX7wglnaf8/S73/0u3m5edM6pn0GlJEK5FuWXbkzeUP7/j?=
- =?us-ascii?Q?ez6QZmr7frpODRXEocvULcvNeo/F3l3wGIjWHf3KGuY9QrglwCJKc/muN7b3?=
- =?us-ascii?Q?T+UsR0OObYH8ilR2bkQcUkstphwNhmT6sccja0H+eYYlMYMWZz2LqyGFv8Fi?=
- =?us-ascii?Q?UjzQ02pw1Z79NCO9vPDg6wytYQYYjNpd5KF7eWYZO4y8rSME27geUyWv2dHr?=
- =?us-ascii?Q?IB35iWmj2g9bnh3zCcMw0ihbrr0nVWiC1ox0n4H3CoYDfOYZeeeauhyzu+ao?=
- =?us-ascii?Q?QegC3rYwySOWWjMnr2Evbyyc+YTwxgKL?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB9176.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(7053199007)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?G+ZerlhKIq9vxlwYRkfkDNdvoHVhqWRYnSdpwswgN4sRRnfXBs6ThDtQQ2+s?=
- =?us-ascii?Q?NiyFBiWd5Ub/WIZEsMisMbqCovwZuHmD2P8ch1xEwKda2raM+6iDipsukRMN?=
- =?us-ascii?Q?Vaiqh9wy5AYj+Bq5UCS+tD35FEf067VhxhWwFKfcZgHr+2PdIdhpptlfgKuA?=
- =?us-ascii?Q?jRSyJzrJtM4bxpbuMIWMImVaR1YWQFBV7FM9xeZQWcBFGpvMV4ZJGBQm3mIX?=
- =?us-ascii?Q?sWpOosB4zEXMEIntkChvUGFsj5q0rICsxW4xJdglI8lw27YCN+41mTHuvsjP?=
- =?us-ascii?Q?kt2Y7tulgL6JD1n30rsVQ0NzvIZMRmQGAVyM10Mnpgk9hGnIzEmbvjuS8rEV?=
- =?us-ascii?Q?5J6whZMOMzDrc7utqLBiwSpSpU3/b5gelpm0j4hiMuren8Prj29ZYhCAbGHU?=
- =?us-ascii?Q?3zDG1Ggf7KB9BQi8Xtz+g6BJZPj0ZzwkI9KESUK9XrhAbV/3bpDppI45YXAr?=
- =?us-ascii?Q?T5KZ0o1RZTxJdfpn86MFZVJZFqMyAfgLrjFDGJi3NH3LXzkPxDXOrJH5X4xY?=
- =?us-ascii?Q?MlJnW0kvXZvFLUEu3jX83F365rw0ZjYmBCd3fPVJyKMFLn17986TL2v4fzE8?=
- =?us-ascii?Q?dOZv7fm93gN72E4zH8ih1+8O8FlypyLZ8OSaD/iVIVq2aSMYn0sSzm2s2xXN?=
- =?us-ascii?Q?wPHKjp/IHE4dYTbEd9atqYbgT29zD24ro0pirhibhPJKek5NQxSCxybmCSzM?=
- =?us-ascii?Q?Mn2pqwHEmVAGrQGzR0V1UEpX7QprKKqtINtuqsOfu4yD3iLgU1Iqi++iUuoI?=
- =?us-ascii?Q?S1WLi186pSUnujIPhylfb2qcxc1bZrmPn4w85UDE2NCW9VnqTGCU10AxHYaF?=
- =?us-ascii?Q?L4LW1wcdMZzz+ElzlAGUoi2e+soeohmrsLljPkC07uNmuNSdqMaLGo6fGi9r?=
- =?us-ascii?Q?xCpTSHcDFz+yIIJ69iLX9Q78TvApb7aK4KjNCd/I/PZv4vQ1j6Up07u3NYTr?=
- =?us-ascii?Q?8v8B0mlAB+SnvKwZFcCZ5R06VjNhzWeMEHIKbTe/pHth2rR4DXHHToH8vRGJ?=
- =?us-ascii?Q?kv6quQywpJ87b6dGwgYuCGeVrfAdtdsxyk8QHhZGYzdNmrHVtmW/6ic9SOd5?=
- =?us-ascii?Q?M9LLy0xm2Ygff9cJVaSxyzeeMFYupoHUoDAT/HwmVjussnuyH2z2qf/099KO?=
- =?us-ascii?Q?BesACsb75GVvUjLSe7tGezxI7+uMPeTvcUM2XqjG3WSYfdhUIdbJhOdteULv?=
- =?us-ascii?Q?09DYbW202N4sdMA2gKpyc5hUpBmDivb16Fkp5CjH2A4dAn6TfdP8lDlxPCQv?=
- =?us-ascii?Q?Ng6WFPlpUIW4MoTrR1WTsbQL22rijWXAPgN5KuhedioJdEQs+GfW1JBvaglu?=
- =?us-ascii?Q?VumgEChUZN5ozMyO8yzRdQV8I04R1VTAAqrIUSuSbyRFt97R0VtdlzaIg7uu?=
- =?us-ascii?Q?k1G1Q8jHFQfLemfMLMgRmpe9gCnwBEPZdJ2wZJE6Qdh3uCg1C3MS1TvxAbL3?=
- =?us-ascii?Q?QA9l4pI1XJ9vJ+F6Zug+PvFhFYdUtkQkvAZEjzQhcn7kIjK3LUegqvZICPd2?=
- =?us-ascii?Q?j4Ez7YECasathqy9FshuN6UNZt/6pGbuqDQ7addHfSgSH3DjMtYaNYbrlBLZ?=
- =?us-ascii?Q?yTkPUjabSGsYrz19vyuqMdh1AMtlW53Sf/lDa0b1?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <DB7PR02MB3802907A9360F27F6CD67AAFC4D62@DB7PR02MB3802.eurprd02.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-ClientProxiedBy: LO3P265CA0022.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:387::13) To DB7PR02MB3802.eurprd02.prod.outlook.com
+ (2603:10a6:5:3::15)
+X-Microsoft-Original-Message-ID: <Z89nPiABC77Vm4Vn@CHIHIRO>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB7PR02MB3802:EE_|AS8PR02MB9091:EE_
+X-MS-Office365-Filtering-Correlation-Id: 50339682-e8a7-4194-575a-08dd6022b3f7
+X-Microsoft-Antispam:
+	BCL:0;ARA:14566002|19110799003|6090799003|15080799006|461199028|5062599005|7092599003|5072599009|8060799006|3412199025|440099028;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?E5Nvzc9+9E2bnUtJStRZzSpeE7XU5GNhOuDK65eqLXoRrw4k++GbX1eYea37?=
+ =?us-ascii?Q?HW7Jg64wWM1Wxsg6yLtAvxGTNVSQVWdko2x5asXFOpvHwViCouAKZiB57xy8?=
+ =?us-ascii?Q?et1G/wuz20gMg/YV7JAUptyIT/jlrBmPBoKejP9+DWvPGb3D0raTclp2BTB6?=
+ =?us-ascii?Q?/Qy8QU0crJAL+SJP86bdBsZYTaF0KOHMWuwBookuWT2MWKOxXDWTtnBv85hS?=
+ =?us-ascii?Q?jlrPKEiOQaveiDIogVJJ7y5SbKn4dXsOdAgmYl9+dZB9WE1drV9PJ0GfQ+Mh?=
+ =?us-ascii?Q?Uw9fSPrmiqsho36N7GxvMen/ipCa6M+mhNOiBC4MqGidG6O+vZup3a6i4csH?=
+ =?us-ascii?Q?vxU82TaInmgyGiXt7AV7wvHbwTfQd/vzuYhSMwFKyULq4SMqaoRu8ljwUC5O?=
+ =?us-ascii?Q?3LYK2m1bsgev4o3Qv7BNYOMj//uDmGLpOyYLuMbNksr4pQSyNU8vr/HK15DF?=
+ =?us-ascii?Q?ieSMLFdRhZ2vR0VjRt8sNoHwISPiBiWGJSLpUR/sScnfz2ZPhyT2kut/zYlo?=
+ =?us-ascii?Q?d9CMm5y0Y4eUuNNco7VCRMYsZmR1d+/vQEo2BocDUV+WhkRKRP3ozAPZq+Qx?=
+ =?us-ascii?Q?z6AYlKIv5kKvMrjQolrYYfnS4mhEbqnSmFxvS4+DCOyMFJQK5voOgyvDxv9Z?=
+ =?us-ascii?Q?E4lmsadrcAYsLQpdw7pksRrLbDGgKe0RshUdt72/0g2g60Votn4nIlRcCfYK?=
+ =?us-ascii?Q?JqGXf0lRFfQwJ83SmbU4aUu7rI54s5BzkjMzfMBpWS7jlUJC0MKD3I6op/uV?=
+ =?us-ascii?Q?JQrM0z6Y21VV8CmNlD75BqzM/LTY0Y6cy6qI5nxrGfcZ89L9sRkjbgu8s/OM?=
+ =?us-ascii?Q?dxVR2CwoTUMMeZtoeq9Usf1ykx7JiHu0k7WIeYfo+9yPl0xqguqnAyqE9w1G?=
+ =?us-ascii?Q?pkp8eSPzBSKHC+8ZLGsOkCrh2z5UpGa54QglE8wC6IbBGojjXIQ1tiB7h6gs?=
+ =?us-ascii?Q?kQVqUYgk3YkBWhZP63F5e++n6NQsADuL/0rRAZnSHuuAkKz7e26kaKFjP9s1?=
+ =?us-ascii?Q?HAMyrisKAxY9G80eBaTvY4YN22+nwUadIZoKigjW9IY0GDzXQelX/i8HhbCM?=
+ =?us-ascii?Q?0QF9vvC4ib2TvBl0DTYYCraMGUiz6EI6tPlKKkdGEVBRtofeEjCKzzyFah2X?=
+ =?us-ascii?Q?He2Z7foO+Byo9xL+M9Z+9VqZzzH5zfTkkg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?vuN6r8KYa070wKZN27oOzA+A6CyBFysq/RfeTwWiPQL658OWuXsCuGcy9dx7?=
+ =?us-ascii?Q?d/pL+D2aGcl3tqcyfNV0+LceQoDaczJXlQNJgc5DKjZ47iYSUGVlWoEH4xsS?=
+ =?us-ascii?Q?/5nAxNhmycYuRDeykY8vYW19In6Oym6pyJoZbtsOZV8q5Ud7I6DA/B4HnoFH?=
+ =?us-ascii?Q?PohNkoeNvOhi2vEKBcSNT04m8LuEDnDEcSn/hmVwNyYE2f+rUe2Qz79dEEZU?=
+ =?us-ascii?Q?ilvTjihr6LbALNokJlgulNOlb6MaUnyOKDSkwyqkt9eojioCHYXZoo4iFFUU?=
+ =?us-ascii?Q?bmoaGQN68FnEloC4TIsZLzWsR+y9rnfN8OgnDILsjaWr+zCwInkUJCfEjMML?=
+ =?us-ascii?Q?kYgOJM5OF/p9mV9Z6/GYhSKevdVkjiHjy8xua5eU0eYsxX7yEQnh/6TDVtYA?=
+ =?us-ascii?Q?SrpkWSs9Q19Sq1d0nB3jzXwmnVW9qfgSAaBbLdIdJO4E7fq8lFdqafKNUb1e?=
+ =?us-ascii?Q?ATnCUaAKOQH9JEqsw1zhmNwy/2mtbI65Ce8w1/DC+kwZCU/Wmt3abRoiEOce?=
+ =?us-ascii?Q?h6GtLWf9/7V8Yh4aBsghV//sVmLrNXG67/wDqnXhk6IFWo3x+W15BuUJj02m?=
+ =?us-ascii?Q?aJi4JrwQlT4uiZnQ0mD5HK4C8DDDp/jd6Xh37lw/zSx02X/jhTi68orevMLW?=
+ =?us-ascii?Q?EfG2eeKIXvb0l3hAwtaZHUHwxdmgTWvBRm/nID53NRKpcxg2sp/niAXsyw4e?=
+ =?us-ascii?Q?/ckKdG/GOQAyg3UdpfqzMIARnc/qJtMdXEigHXquDYEDUZfCy8n/1Uu0FVt+?=
+ =?us-ascii?Q?q6/clMVi87O5iKIW+1mVfMfbZzoFdSCuQBA6yaMhiAx0azcC0AvYXNdAYz2X?=
+ =?us-ascii?Q?Em9wCeygw1k6OmPqwR+x3cBb2uLPBo5XQB8zyeRgxpLDs6qVYom5zNXN3bMv?=
+ =?us-ascii?Q?GAO/pznqJSwxektqpi2RSuvSxchhIADzuYdHej7jaES6Icd4EE1F5jzbFoXt?=
+ =?us-ascii?Q?HoV7PWSJHqToVF6oHe0EKbzZHLPAVpQ7nhIv++Tl6q5926mR3J0gAlAr9Uao?=
+ =?us-ascii?Q?qW0MTsiAfH9Q41grJuUXZCvbh1W8xQi5GcDBPHXvqWKXFZG+SYx8FRD13yIZ?=
+ =?us-ascii?Q?4yUeDnjNf/PWc/gXSM+1hRQvCVZ56Ui+S15w6jWzB1tAiTKRyj2blwWQHLeV?=
+ =?us-ascii?Q?TuGhd48keBwBioqtg/bXCfNtbkJKcgj7v6FRn1hOp828xJzK5x19dl2NsTXP?=
+ =?us-ascii?Q?ITBiKWnrp79u3ogAJOIXwYnRfunnr4sExUU84BytQlCdwuQ+aBIR6ys+2eM?=
+ =?us-ascii?Q?=3D?=
+X-OriginatorOrg: sct-15-20-7828-19-msonline-outlook-12d23.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 50339682-e8a7-4194-575a-08dd6022b3f7
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR02MB3802.eurprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB9176.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c169839b-b214-4dd2-627b-08dd5fea5b91
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2025 15:43:51.9204
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2025 22:27:12.3249
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vdqAfGUwyaHAesewXrUImcvti/NxYLT53iHRFXWIFkS/p5skRv0Mhalcy9lQ7+twWaHeiYKzzOx7QXkbVszZsw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI2PR04MB11217
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR02MB9091
 
+These ExpressCard devices use the OxPCIE chip and can be used with
+this driver.
 
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
+---
+ drivers/tty/serial/8250/8250_pci.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-> -----Original Message-----
-> From: Sherry Sun <sherry.sun@nxp.com>
-> Sent: Sunday, March 9, 2025 8:52 PM
-> To: Shenwei Wang <shenwei.wang@nxp.com>; gregkh@linuxfoundation.org;
-> jirislaby@kernel.org
-> Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org;
-> imx@lists.linux.dev
-> Subject: RE: [PATCH] tty: serial: fsl_lpuart: disable transmitter before =
-changing
-> RS485 related registers
->=20
->=20
->=20
-> > -----Original Message-----
-> > From: Shenwei Wang <shenwei.wang@nxp.com>
-> > Sent: Saturday, March 8, 2025 3:20 AM
-> > To: Sherry Sun <sherry.sun@nxp.com>; gregkh@linuxfoundation.org;
-> > jirislaby@kernel.org
-> > Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > imx@lists.linux.dev
-> > Subject: RE: [PATCH] tty: serial: fsl_lpuart: disable transmitter
-> > before changing
-> > RS485 related registers
-> >
-> >
-> >
-> > > -----Original Message-----
-> > > From: Sherry Sun <sherry.sun@nxp.com>
-> > > Sent: Thursday, March 6, 2025 8:20 PM
-> > > To: gregkh@linuxfoundation.org; jirislaby@kernel.org
-> > > Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > > imx@lists.linux.dev; Shenwei Wang <shenwei.wang@nxp.com>
-> > > Subject: [PATCH] tty: serial: fsl_lpuart: disable transmitter before
-> > > changing RS485 related registers
-> > >
-> > > According to the LPUART reference manual, TXRTSE and TXRTSPOL of
-> > MODIR
-> > > register only can be changed when the transmitter is disabled.
-> > > So disable the transmitter before changing RS485 related registers
-> > > and re-enable it after the change is done.
-> > >
-> > > Fixes: 67b01837861c ("tty: serial: lpuart: Add RS485 support for
-> > > 32-bit uart
-> > > flavour")
-> > > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> > > ---
-> > >  drivers/tty/serial/fsl_lpuart.c | 14 ++++++++++++++
-> > >  1 file changed, 14 insertions(+)
-> > >
-> > > diff --git a/drivers/tty/serial/fsl_lpuart.c
-> > > b/drivers/tty/serial/fsl_lpuart.c index
-> > > 91d02c55c470..4dc2f3e2b8e0 100644
-> > > --- a/drivers/tty/serial/fsl_lpuart.c
-> > > +++ b/drivers/tty/serial/fsl_lpuart.c
-> > > @@ -1484,6 +1484,16 @@ static int lpuart32_config_rs485(struct
-> > > uart_port *port, struct ktermios *termio
-> > >
-> > >  	unsigned long modem =3D lpuart32_read(&sport->port, UARTMODIR)
-> > >  				& ~(UARTMODIR_TXRTSPOL |
-> > > UARTMODIR_TXRTSE);
-> > > +	u32 ctrl;
-> > > +
-> > > +	/* TXRTSE and TXRTSPOL only can be changed when transmitter is
-> > > disabled. */
-> > > +	ctrl =3D lpuart32_read(&sport->port, UARTCTRL);
-> > > +	if (ctrl & UARTCTRL_TE) {
-> > > +		/* wait transmit engin complete */
-> > > +		lpuart32_wait_bit_set(&sport->port, UARTSTAT,
-> > UARTSTAT_TC);
-> > > +		lpuart32_write(&sport->port, ctrl & ~UARTCTRL_TE,
-> > > UARTCTRL);
-> >
-> > Since there may be a delay between writing to the register and the
-> > UARTCTRL_TE bit actually changing to 0, we should poll the UARTCTRL
-> > register and verify that UARTCTRL_TE has really become 0 before proceed=
-ing.
-> > Otherwise, subsequent operations would still execute while the
-> > UARTCTRL_TE bit remains in the status of 1, which is not the intention =
-of this
-> patch.
-> >
->=20
-> Hi Shenwei,
->=20
-> Description of TE bit in LPUART RM: "After this field becomes 0, the fiel=
-d reads 1
-> until the transmitter has completed the current character and the TXD pin=
- is
-> tristated".
-> I added the UARTSTAT_TC status check to make sure the transmitter has
-> completed, not sure if it is reasonable to add the TE bit poll read, sinc=
-e usually we
-> poll read the status register bits instead of the control bits.
->=20
-
-Sorry, had a typo in the last mail. Fixed below.=20
-
-I am not sure if the condition "TE=3D=3D0" is equivalent to "TC=3D=3D1" in =
-this context. =20
-If you confirm it, I am fine with the patch.
-
-Thanks,
-Shenwei
-
-> Best Regards
-> Sherry
->=20
->=20
-> > Thanks,
-> > Shenwei
-> >
-> > > +	}
-> > > +
-> > >  	lpuart32_write(&sport->port, modem, UARTMODIR);
-> > >
-> > >  	if (rs485->flags & SER_RS485_ENABLED) { @@ -1503,6 +1513,10 @@
-> > > static int lpuart32_config_rs485(struct uart_port *port, struct
-> > > ktermios
-> > *termio
-> > >  	}
-> > >
-> > >  	lpuart32_write(&sport->port, modem, UARTMODIR);
-> > > +
-> > > +	if (ctrl & UARTCTRL_TE)
-> > > +		lpuart32_write(&sport->port, ctrl, UARTCTRL);
-> > > +
-> > >  	return 0;
-> > >  }
-> > >
-> > > --
-> > > 2.34.1
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index df4d0d832..911774fb8 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -2727,6 +2727,22 @@ static struct pci_serial_quirk pci_serial_quirks[] = {
+ 		.init		= pci_oxsemi_tornado_init,
+ 		.setup		= pci_oxsemi_tornado_setup,
+ 	},
++	{
++		.vendor		= PCI_VENDOR_ID_INTASHIELD,
++		.device		= 0x4026,
++		.subvendor	= PCI_ANY_ID,
++		.subdevice	= PCI_ANY_ID,
++		.init		= pci_oxsemi_tornado_init,
++		.setup		= pci_oxsemi_tornado_setup,
++	},
++	{
++		.vendor		= PCI_VENDOR_ID_INTASHIELD,
++		.device		= 0x4021,
++		.subvendor	= PCI_ANY_ID,
++		.subdevice	= PCI_ANY_ID,
++		.init		= pci_oxsemi_tornado_init,
++		.setup		= pci_oxsemi_tornado_setup,
++	},
+ 	{
+ 		.vendor         = PCI_VENDOR_ID_INTEL,
+ 		.device         = 0x8811,
+@@ -5599,6 +5615,20 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 		PCI_ANY_ID, PCI_ANY_ID,
+ 		0, 0,
+ 		pbn_oxsemi_1_15625000 },
++	/*
++	 * Brainboxes XC-235
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4026,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_1_15625000 },
++	/*
++	 * Brainboxes XC-475
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x4021,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_oxsemi_1_15625000 },
+ 
+ 	/*
+ 	 * Perle PCI-RAS cards
+-- 
+2.48.1
 
