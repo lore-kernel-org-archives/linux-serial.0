@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6234019007D;
-	Tue, 11 Mar 2025 03:44:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 482C6259C;
+	Tue, 11 Mar 2025 03:50:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741664678; cv=none; b=JGvstN8u2JHi15XQs4vYUOFixJC811ThakCBjS5FMJUIQZ/jGuqdUmQO6Eltg+0uLgLEYJ1k67/5Bq+5xjUGCTHdWabxDZ/2nipaFQXA9hTG15bt5ssUObpGy7ZzdnXp8/QdH+z8aYGFtI7P8/x8oeUAAdtz+6N4OM5zm159QuY=
+	t=1741665045; cv=none; b=tXuz775Ct51ji8N09AQJV8nPu+TmewbXjpNDy8i/008el9SIW2H8gn+zCY277I01Xj+mh4hez99Y49f6d7tyn98u3NmUvT1Uf2vjqMYopsRDstKvpWltpMwoyt7w06c0Giip/ukBZwL+udojLMeO59HzDz83Yc3isR2OB85CoPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741664678; c=relaxed/simple;
-	bh=Gr1weptT628Ct95wEtdi6qW2k8b3nY1kEXSz/3UDyqQ=;
+	s=arc-20240116; t=1741665045; c=relaxed/simple;
+	bh=g38SPJz6l7CQ6ZyZLTsOe0KvKxHvh1gz8m1lvtYzsVs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YO6q3dO5b8g1LtD5ElZcqaCk6lsxyeX/PD/HBgkq6Qw+DCpPit7ulhVpdxG8cpu3ezi9GGRenrbinNJ/m3C5qVaEAHpBVgOwuEkO8tRJJvlmzWmydsaKIrM7Cn050dVuE6lNJZDldU0vkSfMXPmo1ME9vSS+VHzSQypiL23GmQ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HyrkWsO7; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=DmNnHBvaRInLYhpn+bdh+JC2HG1UGQDBvxFSrj9wXXgTbG2LUbZ0EMpygHFhoJa8jJl2SQBzgZ/fjaUhIu4ai/CQKiP7wS/2jiKYcs1mP/zM9U57BUgtYEB9jR+1z2M8GdmoaN5oLn+iQxaLxRx6rH50W/r3gNOoA4n+YOWc07I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cdjv7F9Q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HyrkWsO7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 688AAC4CEEF;
-	Tue, 11 Mar 2025 03:44:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cdjv7F9Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FE63C4CEE9;
+	Tue, 11 Mar 2025 03:50:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741664677;
-	bh=Gr1weptT628Ct95wEtdi6qW2k8b3nY1kEXSz/3UDyqQ=;
+	s=k20201202; t=1741665044;
+	bh=g38SPJz6l7CQ6ZyZLTsOe0KvKxHvh1gz8m1lvtYzsVs=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=HyrkWsO7MGkLeO7FZCpuIMuITSvoWYyKL+2Xu8PcpJyfbgvHpMGJmwaBTC7T/Jvmp
-	 JhqLW6dgZT5jLCXGcl/Qe+m/A3gpeTL9E5I6MSR3YvIvJGcB1cnUavXwTGMR3nUKph
-	 yjlJ0RYQlXOve6C50rZ9tqwpimsB405m7aF0AMFdC7rEfIqodln4aKfirT9pGRjGyU
-	 414h8VjF7DU5KKHRfvxwqZrTSS6Mwsnl5tyrEPU6E5eFvTtVZIBC/JPGGu4jF37XHj
-	 W6uX+Zh+t61qooi2h098Jvf8XNZnN1YvtlIfyjRfBhWLDYxzJZgJDDi3tUCHu8GYm2
-	 mJbDuJ6CRvs4Q==
-Message-ID: <be728f1f-b9bd-4d42-8ecb-9505d558543c@kernel.org>
-Date: Tue, 11 Mar 2025 04:44:34 +0100
+	b=Cdjv7F9QzVO8k0fza4YBIM1B6mrJfixT6RDaBAWNtL6Ra4uTPHH+2L/PusS1I5ioQ
+	 t6m6uqWTT7dlsYPlO/Zf6TcjR6ytHWFebAavoe2jyJMsI3FWESzT4LFlIbT60LED4a
+	 vkIhylwqp8Mg/LfuYzP7SDWKu3b3G82B2gG6BnHmhJ5NjHCjMKEVNsgc4PHriD3ddz
+	 TsIL44JybnTaHYbzw2ErqCenkyoLgpj6CFKg+wT2OzqAf0TcUiRiefKdMFjc5qWkml
+	 IVKR3fo7RpEk1oSQHPVBOlHLdw+wjljMl2A/1+lqbiPMhqLMC6BVROFWLQ5YE4mXCm
+	 tJeUAKIhXACMw==
+Message-ID: <7b0bfff1-7398-4236-9579-7fc2cd450c44@kernel.org>
+Date: Tue, 11 Mar 2025 04:50:41 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,12 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V2] tty: serial: fsl_lpuart: disable transmitter before
- changing RS485 related registers
+Subject: Re: [PATCH V2 3/3] tty: serial: lpuart: rename register variables
+ more specifically
 To: Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- imx@lists.linux.dev, shenwei.wang@nxp.com, frank.li@nxp.com
-References: <20250311025550.1243569-1-sherry.sun@nxp.com>
+ imx@lists.linux.dev, shenwei.wang@nxp.com
+References: <20250311033336.1254842-1-sherry.sun@nxp.com>
+ <20250311033336.1254842-4-sherry.sun@nxp.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -85,65 +86,33 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250311025550.1243569-1-sherry.sun@nxp.com>
+In-Reply-To: <20250311033336.1254842-4-sherry.sun@nxp.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 11. 03. 25, 3:55, Sherry Sun wrote:
-> According to the LPUART reference manual, TXRTSE and TXRTSPOL of MODIR
-> register only can be changed when the transmitter is disabled.
-> So disable the transmitter before changing RS485 related registers and
-> re-enable it after the change is done.
+On 11. 03. 25, 4:33, Sherry Sun wrote:
+> There are many fuzzy register variables in the lpuart driver, such as
+> temp, tmp, val, reg. Let's give these register variables more specific
+> names.
 > 
-> Fixes: 67b01837861c ("tty: serial: lpuart: Add RS485 support for 32-bit uart flavour")
 > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
 > ---
-> Changes in V2:
-> 1. Add TE bit polling read to ensure TE is really become 0 before proceeding.
-> 2. Add Reviewed-by tag.
-> ---
->   drivers/tty/serial/fsl_lpuart.c | 17 +++++++++++++++++
->   1 file changed, 17 insertions(+)
+>   drivers/tty/serial/fsl_lpuart.c | 220 ++++++++++++++++----------------
+>   1 file changed, 110 insertions(+), 110 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index 91d02c55c470..6b2f3a73a367 100644
+> index f830b5a3ba8e..901c83461bfc 100644
 > --- a/drivers/tty/serial/fsl_lpuart.c
 > +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -1484,6 +1484,19 @@ static int lpuart32_config_rs485(struct uart_port *port, struct ktermios *termio
+> @@ -441,36 +441,36 @@ static unsigned int lpuart_get_baud_clk_rate(struct lpuart_port *sport)
 >   
->   	unsigned long modem = lpuart32_read(&sport->port, UARTMODIR)
->   				& ~(UARTMODIR_TXRTSPOL | UARTMODIR_TXRTSE);
+>   static void lpuart_stop_tx(struct uart_port *port)
+>   {
+> -	unsigned char temp;
+> +	unsigned char cr2;
 
-This is unrelated, but why is the above ulong?
-
-> +	u32 ctrl;
-> +
-> +	/* TXRTSE and TXRTSPOL only can be changed when transmitter is disabled. */
-> +	ctrl = lpuart32_read(&sport->port, UARTCTRL);
-> +	if (ctrl & UARTCTRL_TE) {
-> +		/* wait transmit engin complete */
-
-wait for the transmit engine to complete
-
-> +		lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
-
-Both this ^^ and:
-
-> +		lpuart32_write(&sport->port, ctrl & ~UARTCTRL_TE, UARTCTRL);
-> +
-> +		while (lpuart32_read(&sport->port, UARTCTRL) & UARTCTRL_TE)
-> +			cpu_relax();
-
-this ^^ are unbound loops in case the hardware gets mad :(.
-
-Anyway, IIUC, after the TE clear from CTRL by the above write, the TE 
-bit is really cleared by the HW from CTRL only after it is really 
-disabled, so has to be checked?
-
-> +	}
-> +
-
+Overall looks good. In cases like these (there are many), you should 
+have switched this to u8 in patch 1/3 too ;).
 
 thanks,
 -- 
