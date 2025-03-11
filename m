@@ -1,61 +1,63 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D0A6191;
-	Tue, 11 Mar 2025 03:31:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8BCC1EA7DE;
+	Tue, 11 Mar 2025 03:31:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741663904; cv=none; b=Uf5+qK4BLHpbPOuqAZ/PsYYqz5bKyN5hg5d7lhe/gzalaT2jHENv83abl32gk1qVX3vc9fVrbXQT+8hy4PEk9erd/Mn08dQ6IbwwEEUhPkv66eWTNTDyCY6HICpfWLWxZKcKZ8EXvELVy3B++IHQMvi7UmMrJwDv3o48xjA97rA=
+	t=1741663908; cv=none; b=Aucl36LTSHqEY1Fl7xPh5LShtHlbXuOKtp5zqZiovuqfbLkpr2Az8qtsqqhcHd99r95XShw3QqsATTT519MTiMXxp63aOU7vE/wPLkLURVAym/3uGrE+9ckq3piV1awU4mtAbC2aRR5x+tP9D+TiEwMkShWf9lDsKxZlbSCoxpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741663904; c=relaxed/simple;
-	bh=9HmfOd1FyJaO19Mcn0B/422ZGBzz52as/dTIHWOK3w0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iUqaf5qaZQyePCLuerF5E7s9Ow8DQhAdOvwky2G7DUCjVPHHvK/jMfy9SzTv3jWwW5fb+69IRDH3zCmA7vj6lgHdJd50bAAQmm1bRGZpL04ZfwklgSkswkqyJVXtL0TWsg23gz1iSf5fWS9bVQLZIWNIEGvTEI9vmIFHB4XE2fw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=clFk3RCo; arc=none smtp.client-ip=209.85.222.178
+	s=arc-20240116; t=1741663908; c=relaxed/simple;
+	bh=gRv7CV35Y+wxD8+twcYg9frzBTRq/XFnU65egWn7k6c=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=N+8ulKgIfzho4oGEqVV86HTi9PiFvza/4fHfYN7D/FjQUMMAD+Di6PeAorW3Cx8z+kgQvRjK4Qa/3KezH3rlbAZ7ejWLVtMGsUPGGOI1dTGm+LmwLOOKyP1eCdRz4/Zov6iVIovBRN9HiFuUjbzyqJdIxklo9tRX1PnJl80S9R0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mk5/APvl; arc=none smtp.client-ip=209.85.222.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="clFk3RCo"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7c560c55bc1so31452585a.1;
-        Mon, 10 Mar 2025 20:31:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mk5/APvl"
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7c089b2e239so448279285a.0;
+        Mon, 10 Mar 2025 20:31:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741663900; x=1742268700; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SlQZvj1ghWnYS6At7Y8U9KhExQGuUdgo5sBVSUfxZb0=;
-        b=clFk3RCo/+IyXMs/EYZ95R3Dd9CFH/HT77NFPu4V6NtbGYClPPdGls1sbKtDdG6atl
-         vbrEYc6rGYm6C0shIlO1qy9F1+KSWIbdU6ObuUG2MufsOT0xbMZUTixChgj9NP+OmnEq
-         CZHnziqRTXU8eYIvdqPCf3gMBHSRsKsVticrn7oQQ16IQDBGyJX4uAiHoCxLMmlryB+W
-         C1eAZG4Lo49WKw9Upsq5zgbmstk0sixfUZBZj8q3qg/6HbziSeniTsTgAf7pMWc0RuR8
-         Eb0RMwxUiKiH6lE7WqUWVCk8FmqYj3uJpbkCWShythRGDbDNmwdR3ftRLhaen6a8ezZy
-         Gtdw==
+        d=gmail.com; s=20230601; t=1741663905; x=1742268705; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lcg5+dUnqHObtyvwEawYvLNi2iYwLJnPZJ0YScHoNmg=;
+        b=mk5/APvlGv9pWw0JnzoXlCTmbPJKOn2jSB71JNgpuyI1wCMpUsiLtDxKyQTHrQ0vaf
+         +hAQTI/AYUznjZUAzooR58DyaLn351ly62l8qIvPgiCSS6wEMoobHxmJ5x3AWKZJY6eW
+         IkUdum7pxSpctmhCbGuOX5S5oVD9eNOa39OmCkyu9hNA/ATWFy0t7uT1L1oIK/8RStTE
+         Pq7QCdzFCV8x+Ako9PFCsqfaFNB0D/DFJqhBkxcg5t3gEmC3aDDniOSO3b9sf/P9duer
+         wl2z+PjFRTQrmVkVcarYFHYx7X6yL28GHlrAbMc2eh4UG9FODR0PepdttLJoIArljI+2
+         qUkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741663900; x=1742268700;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SlQZvj1ghWnYS6At7Y8U9KhExQGuUdgo5sBVSUfxZb0=;
-        b=GN2vnOILSBWNtmBPz+KRQqat04vgfqehtnVvIyiGlW8964mqGG1U8Xu2WzGK0EdD3P
-         jZdnmO4YlyPUaOMZdW8m32S+gZN1hAzB4ILEmeFeZc95D/OONDv9nkGki/4IxQ4lqSRH
-         PfjEljLIFQe0s59tRTP1TiYrL6ha+2IvZOfIsZCWDyeAdY3ih9Xyval2z3d40lal0SQq
-         FuHk2iBYBAI+h9a9lb5c/A6Erhah8Jyq2BDqWIKpTs2Ng4FGDaIo0oX7pyko9VnUIRiU
-         TbRwBlfy7XJzIXkLqFSHpAc/ntXiqY56p9ksckGKGQC/PlzbuzRGjcu09v64sRZdgxDF
-         CtiA==
-X-Forwarded-Encrypted: i=1; AJvYcCU5GHRfVavAVNfNjcDFgn500a4E0Cf7EvxLdv0mQFGzHsqQS4Zt0A/amxWV/DmxLMmwYQaKHmIYoaKQjDc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzR6ViPNdxyzlR8MGw2d162ZzJc52/5XmGn/XbtSueo3UhmcidQ
-	9xsOraAWXsGxyYf9TFKOXsJrG15KeTAdCrsKl68/guWKebmbnA6v4X+dwPj3
-X-Gm-Gg: ASbGncveJM9IjgL/8FFnFiLSAIIgjxpBcT946Yqkds5VDI0pk0pmqdPiRpvuk+lXpju
-	wU1YTUzL/0fLRc44thJXCI8CDh7a32ghc8DyEJCb96dvk1JCFVAJmdVD7pGukIGP2l4lKPUJPTQ
-	JexqI3EbKW5RFKnPdtJ03N5WVw76gz85iEvSMHW0VEYOGp+e/QbOgZ4jPZP80ViYcbAsrKEP9mn
-	JKPs8JfaO0qZNbRmDN08CWHymW2rPz4HZUZnaFXBy+5Og/83fCvNq3urezZaYeluROO9a7GxjGn
-	+TxPXJdyWtfczrd2LRgCl6WCHhsyod03TZ2yjgyEF6znYifMiDt1fLiuJAlVxAyhmRH48IJGpKb
-	JMNsSVlo=
-X-Google-Smtp-Source: AGHT+IFb3fuc6KbiLPYdmEfN4504pg3NxfsLmi5pNEXHuk9I3GzfezHAuUQdcrP8HN/HMsO7xMdu4Q==
-X-Received: by 2002:a05:620a:2782:b0:7c5:4738:8a0e with SMTP id af79cd13be357-7c55e910d4fmr378040785a.44.1741663900523;
-        Mon, 10 Mar 2025 20:31:40 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1741663905; x=1742268705;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lcg5+dUnqHObtyvwEawYvLNi2iYwLJnPZJ0YScHoNmg=;
+        b=xQvQQGQLXy32/aySED1myCkOa8D6Kv3HjdCQyMGQK0oKwrylqL7RUGvHgaCF0UYwmL
+         rk7FA2JAHtlheUuzMME11q3EAFXcl587/eZesv30g+70jiGuan9BisO48p5/RqbZg/4b
+         B8kQOTDgAsEmAMhu37QLf7gilQs8ClowmUYiXc2tF3CmZaOgeV9Qbx4lGCY+XpsAdyQK
+         Af6hZcpr9JNfA6aVSnfcHzy26z9II3oaz1UhAnDBkdim0jkYr/tVduBnrGRKtO73yZWP
+         1hPueK2rqVbcX5tmhs2VYfVLQ7S6HmTVQio7WhncWjQrtqfAadDHOUXxLAwdT20uqiv6
+         nWpQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWLFQ7ZKGYgFTXG0wTFT3UotvyKY4GSvAWvb66uChT7K86qVFG4vONO5lLCg50H559XJDqBzIZyQjbsdo4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz2y1DHHbahqpY7ixMgnqkNGOycHdkGER1Q1vnCx5iKo3u5t2DL
+	1v5SrP04a+/AS3Z+iTz7HAKlvuU0SAPssglRiPSGuO4s015d86wmFpfPm/eL
+X-Gm-Gg: ASbGnct+i76MFjaQ8eLjJlIAcM7sZaF9whguAfyeSqpyeoLt84avUGkvT6x0DyXpsfV
+	JxiBQVOP6FG4j0SZLp4trQwst6ka6SC9H1Ju6cepyZgXUjLauYrjpcS0jAhwpy8Z+K4qaxo2bZl
+	sZdL6vCSnV60DYropT8WH1E4iu8y1T+qBnwrMZ88pSAPpJAppZqTdF+htT7Kn7H7CDpWFGC0kZ+
+	GVf1MG9igtU0DcEMQo0eKdpvb65FLfKvE30BlO0/LlN9xmV/XxpBSAV+wgQs6YxpxAIV17bwBNq
+	UQRb3v3+sZPUaDwMDzetbTtND2QSUH7DW0ABJvIKyxHIacqxCD/VEGAidCsWWAOM69a8QEUmDc0
+	vxkmmTBQ=
+X-Google-Smtp-Source: AGHT+IGDuWOGj9LjvCtGYcIQ2LrciEoR/Kq2YNbvqL+OAo+OzyfUQf89uUjw/59JlAdVVmhzK7MqJw==
+X-Received: by 2002:a05:620a:3d11:b0:7c0:b490:2c26 with SMTP id af79cd13be357-7c55eed3cbbmr223480685a.12.1741663904895;
+        Mon, 10 Mar 2025 20:31:44 -0700 (PDT)
 Received: from nerdopolis2.mynetworksettings.com ([2600:4040:5e66:a800:aa39:bd07:6207:ac0d])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c54c204e36sm342772385a.40.2025.03.10.20.31.38
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c54c204e36sm342772385a.40.2025.03.10.20.31.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Mar 2025 20:31:39 -0700 (PDT)
+        Mon, 10 Mar 2025 20:31:43 -0700 (PDT)
 From: adamsimonelli@gmail.com
 To: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
@@ -67,10 +69,12 @@ To: linux-serial@vger.kernel.org,
 	Sergey Senozhatsky <senozhatsky@chromium.org>,
 	Petr Mladek <pmladek@suse.com>
 Cc: Adam Simonelli <adamsimonelli@gmail.com>
-Subject: [PATCH v8 0/4] Optionally allow ttynull to be selected as a default console
-Date: Mon, 10 Mar 2025 23:31:29 -0400
-Message-ID: <20250311033133.1859963-1-adamsimonelli@gmail.com>
+Subject: [PATCH v8 1/4] ttynull: Always initialize console index to -1
+Date: Mon, 10 Mar 2025 23:31:30 -0400
+Message-ID: <20250311033133.1859963-2-adamsimonelli@gmail.com>
 X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20250311033133.1859963-1-adamsimonelli@gmail.com>
+References: <20250311033133.1859963-1-adamsimonelli@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -81,79 +85,26 @@ Content-Transfer-Encoding: 8bit
 
 From: Adam Simonelli <adamsimonelli@gmail.com>
 
-When switching to a CONFIG_VT=n world, at least on x86 systems,
-/dev/console becomes /dev/ttyS0. This can cause some undesired effects.
-/dev/console's behavior is now tied to the physical /dev/ttyS0, which when
-disconnected can cause isatty() to fail when /dev/ttyS0 is disconnected,
-and users who upgrade to a theoretical vt-less kernel from their
-distribution who have a device such as a science instrument connected to
-their /dev/ttyS0 port will suddenly see it receive kernel log messages.
+This allows ttynull to be considered in console selection.
 
-When the new CONFIG_NULL_TTY_DEFAULT_CONSOLE option is turned on, this will
-allow the ttynull device to be leveraged as the default console. Distributions
-that had CONFIG_VT turned on before will be able to leverage this option
-to where /dev/console is still backed by a psuedo device, avoiding these
-issues, without needing to enable the entire VT subsystem.
+Suggested-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
+---
+ drivers/tty/ttynull.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-v2:
-    rebase
-
-v3:
-    Clarify commit messages.
-
-    Guard the all the register_console()s in ttynull to prevent it from being
-    registered twice.
-
-    Only change the link order if CONFIG_NULL_TTY_CONSOLE is enabled, otherwise
-    use the existing order for ttynull if only CONFIG_NULL_TTY is enabled.
-
-    Document why the link order changes in the drivers/tty/Makefile file.
-
-    Replace #ifdefs
-
-v4:
-    Remember to actually include the changes to v3 in the cover letter.
-
-v5:
-    Correct code formatting in Makefile comment.
-
-v6:
-    Change to CONFIG_NULL_TTY_DEFAULT_CONSOLE
-
-    Set the index to -1, and don't set the flags
-
-    Use add_preferred_console() instead of register_console() in ttynull's
-    console_initcall when CONFIG_NULL_TTY_DEFAULT_CONSOLE is enabled
-
-v7
-    Add a commit message to the first commit, and the Suggested-by
-
-    Correct Kconfig tabs/spaces formatting
-
-    Invert the console_set_on_cmdline check
-
-v8
-    Update Documentation.
-
-    Remove the "CONFIG_" in the help text when mentioning other configuration
-    options.
-
-    Update commit message
-
-Adam Simonelli (4):
-  ttynull: Always initialize console index to -1
-  ttynull: Add an option to allow ttynull to be used as a console device
-  tty: Change order of ttynull to be linked sooner if enabled as a
-    console.
-  Documentation/serial-console: Document
-    CONFIG_NULL_TTY_DEFAULT_CONSOLE.
-
- Documentation/admin-guide/serial-console.rst |  4 +++-
- drivers/tty/Kconfig                          | 15 ++++++++++++++-
- drivers/tty/Makefile                         | 12 ++++++++++++
- drivers/tty/ttynull.c                        | 14 ++++++++++++++
- 4 files changed, 43 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/tty/ttynull.c b/drivers/tty/ttynull.c
+index 6b2f7208b564..d8b51edde628 100644
+--- a/drivers/tty/ttynull.c
++++ b/drivers/tty/ttynull.c
+@@ -57,6 +57,7 @@ static struct tty_driver *ttynull_device(struct console *c, int *index)
+ static struct console ttynull_console = {
+ 	.name = "ttynull",
+ 	.device = ttynull_device,
++	.index = -1,
+ };
+ 
+ static int __init ttynull_init(void)
 -- 
 2.45.2
 
