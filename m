@@ -1,260 +1,195 @@
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2061.outbound.protection.outlook.com [40.107.22.61])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2073.outbound.protection.outlook.com [40.107.20.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A833D1E0E13;
-	Tue, 11 Mar 2025 01:58:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.22.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BACAD1DF25C;
+	Tue, 11 Mar 2025 02:56:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.73
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741658337; cv=fail; b=jMRFsFoRSxZVaSSXrKFzTKhCNCXRaIma98ZrNOEfwaqiLyrmwbIJjh23icnM4xGDQDRH3JkB3QiCQPE0jGNRlbCcy6EGQDsc67poyExOaXqrZwV3PcIm5lUBTWGIcDnu+9G1AxKYlqQtXoffLBIi+kn/GlR8zdLy0EhYYM0N6C0=
+	t=1741661767; cv=fail; b=QKP6wYtMbSocsBpkhjfYpXouxpSUHxPryBtuOtpGpJdLM7ye3d9wEarSwuSuq+57lGlgAxUG7wh6u9oWGmQVIG20QSG/2O9+0UVFMwlmPY+n34V0GW6BsUBLEe6C877PiRalIirxoeS39D0174K2pVrWkHwFJo8sI/EkozYuYwU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741658337; c=relaxed/simple;
-	bh=c2FXPRQs3Ku85FvMHROh4mI4QoKzT5iA5fiQcQfbif4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=neyvJK+1lPyJJR7JaVUYsFjivOURpuS+/ufHrGt7dW/2SG6tOLdJ9TnOpu0PiR+IojeXZuFYYIs47YT0T6VVsPyPN4XBAA/OWPmw6yaAbMDbgZXbAioA3s+gc1auPVzmVJtCnYsur2iS+Y4kVjTvDpr48LgwkjybrSD2wk+n4rE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=QaZWDdnv; arc=fail smtp.client-ip=40.107.22.61
+	s=arc-20240116; t=1741661767; c=relaxed/simple;
+	bh=KOc2/Lemt/6xW1IQNl13FuEK6j5I4JnZuGh22LyqEjg=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=CT2IDHQnIC/+eOyCs0y0+v+EIO7AiBZjXvjqkTQnNZb4ODdZf1RCvb4rKENVhupj5+ARkNedlhs4k/sabmXaA+QwA+PgKTdR6gjC+7e+2hwFet1FLZWhgFICHrnjwdaZA3psTFRKre2buuVwFnkAbaQOwHzWBv4RqLwZ8DdvQmc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=MSMScBYw; arc=fail smtp.client-ip=40.107.20.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="QaZWDdnv"
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="MSMScBYw"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tcZGxW0l1K8phasxJrR10IaKEi8dNYsm80zyL/IUSg7eZYopcXKFmrTFOIEQ3+Nz4RBaRGM+qncWOAspHJdWs77DeqNXLxHVuIFO1eO/TG3IesrQ+JX4regOhiKDXH5TjbQY3A2PypCmc+z+oXzZIQ3S8odps/z07MA4O9C4Lw1lGkUZIenpFivugElu7SW7vMo92ZK4JlJctRoff9eo9AlydLBu0Dp+iS6ISvONPAoAordahyLHD8E7ehs7EKHpgK2N4v8Z5nlUqT+bYuwvbMYHoIMYEN+CFitIg6ipGzkY37HtFScmEVtUgmX9lFGEI1FjjR/x9LcYAS/FWdHitQ==
+ b=oPj7vrmU+osNzX+U0uBuR/OnKWODl7hy2D6hNjYkq5ZMDJOx6YGzwBcbWeK4Aa7ksG5hpPyyuEgIllxD6qF2Ubeg2UR/Ol//0jIG9otzf+1oGvHZKU4RoKm7nsLiQIRut07mhgi/bbc7uBG+FkwLdkYqh38rScMQTLiw+UWhKDps5tNj4t8PByXPUy2PIF1SHgJ0Bq0sEV1n7wlD5wvDFLAwmBlXjcHRbWCoaPs4zB049ZxbBSR632bzU0FwVGSskVhn4dCQFb6GfHhAJVD0oUZXOb/CNpmbkbS63Tkrv2WDOBvwPuMBbqk0z8i/rK6RmizQiRFGxvW5C7k2hKIZSw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FmAAc7/LniRu98ykfufXMrQ40H3R/XHsKniws6fFmUU=;
- b=Egn+2XyRDW5qN5htpbxgkxOccPsKD7Hm9DT5g30+eCdBKx+4JBVQeUZI88MtjPuJ9uCVdTMQ/ehF4UPbaR96L+Q8IztpilMkZIShqzWMo7d1KFTZyCI6WVCv9+B1BmNJx0LIeSt0kwFutoiXnAVlZ0SQAf2AM3j0DVG+LZEjjGNsI8hPAQPfi05OaGVIJEyXcYeBF+CfRF1awAt4evn1jq4B6yPRct21QDl2B8Rpw0n3yO3/BGXfcAy0FpnkM9Goo4Bb1R+l99cQjVkeCo4fkmIljFiDWTibEKyhsKTgaN56sS46JB7x2RCcmS40bIDl49KOekOy5WYccLwPnte48w==
+ bh=E1Dxq5OFSN7FfF8y0sbGRpJARnUbDtlCKbpXg1QZtYY=;
+ b=DVHvxa7V7PzuSvcS5F320xxmPo1he907ey2+/fGFD+QboU9BUKpH7g7Dd/A5MavHdsdeB5iFleZa3mROLPaNzU/s65cxZp/aYL8b+avEruo3odoRh8j/kroo3PLCLzF4REeoQn2q11XlnqyEMTw2NEqBCOxXxUJke28VaFYP5h62jcvAf4ZTfVIGzJvzvXvUYBXpn0JryS+tbWr792tBtblobSgEsWA48UlkVDNwqO3rxHELUQqn7P3cxt3bbe8QUjO2KGUzCDMlQNpfu9jNX2byxXjiIKASxrY6ztFqdrPciHbU7M/jzU4KW5mSd0n0NJn8HezvA9JR1yj4MWzirg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FmAAc7/LniRu98ykfufXMrQ40H3R/XHsKniws6fFmUU=;
- b=QaZWDdnvZSPavbR7ncOvLwTolG+4H1Rg/hOU91NA3lqHFNpZuO4Tnwzmu6xBmCLc0SijHwcgLLQp63gd3ffOXfDcztk0x4X9PY85FhutDv7y9z3eui5Qzc8g2SQhIPyVnLIBOjxE+ZCcfU7oUv8V/BUXEsirrpJw+z12iZqvs65TD5j52KHYMpd0aIPnAlvpLBsZ1eW0pOIb3rIaTYtH72akWXGOwRi+WIo7CgC1nxjZTCEoa1jdq/wk5s9x1AFo0QW4BWf6ejh+W3H+cMW2WNXjORn9gI9NpK+M8eJy0pMWyaF1DLf8SqhblDOC4cU4kaJkTUEYhoYP7dKzn4vMPQ==
+ bh=E1Dxq5OFSN7FfF8y0sbGRpJARnUbDtlCKbpXg1QZtYY=;
+ b=MSMScBYwxU3UsDDQL8Xs8g48S7I9VFgnJA0vSguL69Wst/CLuStWc47s0ZSDeMJStgVJsL7pk32D20vwT1AoTmxWoGtEAKQ3TcN2ABYPf4Iw6E7lIB/FIuew3PyccG192HKr3Lvojdqt6fmnryWermJKcwbkWs4vKI6sbC+JHNZmrXG/kmMRl7fLgolXf2mb1hPq7LS4whO8Bd4IvtVLNk/KBIrOOOUNKpdA0QN8kZmp57rxuzsw2YsJ57L1VJ5eZvWb+r0UbO1gmiCxFycIBpLgyR4rh5mEqMsLoGqyxZoUICJ3j/EO9KIyMYV03Dr1J2qZsVjTZVZ+at8qxENC2Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from DB9PR04MB8429.eurprd04.prod.outlook.com (2603:10a6:10:242::19)
- by PA1PR04MB10527.eurprd04.prod.outlook.com (2603:10a6:102:442::21) with
+ by VI2PR04MB11098.eurprd04.prod.outlook.com (2603:10a6:800:293::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.27; Tue, 11 Mar
- 2025 01:58:53 +0000
+ 2025 02:56:03 +0000
 Received: from DB9PR04MB8429.eurprd04.prod.outlook.com
  ([fe80::2edf:edc4:794f:4e37]) by DB9PR04MB8429.eurprd04.prod.outlook.com
  ([fe80::2edf:edc4:794f:4e37%6]) with mapi id 15.20.8511.026; Tue, 11 Mar 2025
- 01:58:52 +0000
+ 02:56:02 +0000
 From: Sherry Sun <sherry.sun@nxp.com>
-To: Shenwei Wang <shenwei.wang@nxp.com>, "gregkh@linuxfoundation.org"
-	<gregkh@linuxfoundation.org>, "jirislaby@kernel.org" <jirislaby@kernel.org>
-CC: "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"imx@lists.linux.dev" <imx@lists.linux.dev>
-Subject: RE: [PATCH] tty: serial: fsl_lpuart: disable transmitter before
- changing RS485 related registers
-Thread-Topic: [PATCH] tty: serial: fsl_lpuart: disable transmitter before
- changing RS485 related registers
-Thread-Index: AQHbjwdqf9K736A92k2uTZmo98/wPLNoDbkAgAOOJ5CAAOyCgIAAqu3g
-Date: Tue, 11 Mar 2025 01:58:52 +0000
-Message-ID:
- <DB9PR04MB84290573E5B49798799E028C92D12@DB9PR04MB8429.eurprd04.prod.outlook.com>
-References: <20250307021950.1000221-1-sherry.sun@nxp.com>
- <PAXPR04MB91855AF296383041F5FD502389D52@PAXPR04MB9185.eurprd04.prod.outlook.com>
- <DB9PR04MB84290B4889DDD2A9E0F0B47292D62@DB9PR04MB8429.eurprd04.prod.outlook.com>
- <AS8PR04MB917638F081F9D6C1F046694C89D62@AS8PR04MB9176.eurprd04.prod.outlook.com>
-In-Reply-To:
- <AS8PR04MB917638F081F9D6C1F046694C89D62@AS8PR04MB9176.eurprd04.prod.outlook.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DB9PR04MB8429:EE_|PA1PR04MB10527:EE_
-x-ms-office365-filtering-correlation-id: e24b1dc9-32f9-48af-988a-08dd6040463d
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|376014|38070700018|7053199007;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?YdayJwhJTQl0Cwe14yQHsxoNMErrMES7Ai9S8NYFBOf/AY8MwO8/USfCOpO6?=
- =?us-ascii?Q?S7ZjP7n6dmLBieRlJjbpCiDiINcbwsZ62kFgt3FudAuiVyZNRDQI5I9N9ts5?=
- =?us-ascii?Q?PCHR7ZW7PRVfAY2716Mw/4t7uHyoMiDrqFPDssypUA6efs8jSneprg6umjup?=
- =?us-ascii?Q?9Ytg2YujIaBOiH5/5KDzQkTl4/RELO0qJMMcHBpN+ePV6rD+32pRZmwnc72u?=
- =?us-ascii?Q?mREbAX21WNrEsF1abtlq+X2my+/ctK7HGyHgV2VDevOQ1MxojgZTPfrDIIio?=
- =?us-ascii?Q?AYa+pId73AdWQwnLb5yRDv7/A8rvxwzdaEQ/IMvRubi236wihmYZBMgp5dMM?=
- =?us-ascii?Q?fQpusMYqxlU9h4z6UO+Sz25EA2CO38Tia7DEaMfKTZpwz3F8vEjPakypDJ32?=
- =?us-ascii?Q?Yb8joXi0R+CacAjxIa5zyiRK/pN21LSmU3Tl0xxoQRpQecugMMJtYadNui5O?=
- =?us-ascii?Q?GKzJLtm0oiyOSzidCx7RN9miv7BEEKgr1loL/aEuFlhJbmk4/4Wuu8TbpUse?=
- =?us-ascii?Q?ExfV+AsuwbMySrXqEdP9DP7y4Mxs43B/SoTM7tDV8gJiTTLQuZ72fdHMtzw4?=
- =?us-ascii?Q?QDfan03PpQN5UOtJ1AfFpLL8DjX+prSqo9VvKXAvCRvbYw7wRQ/q72Nl9Hb9?=
- =?us-ascii?Q?N3igWjN79jsvlNj+kpyp4iS6UshtwVtoMTk75lM5+M5ahtRyrdOorAcwIXfo?=
- =?us-ascii?Q?SXkYKPoeqiBA3Y5ZTOPR+7SkyvLfE4ez8+23ZygJJ4rvj7mF4v6IjFOs1Any?=
- =?us-ascii?Q?ru+V7Yc4QcuCNzR3YT0MiSMA7Kaockeq3XaRac+iiXQYze9MGcIhOFx8P38B?=
- =?us-ascii?Q?eqwG7SlJJktDfhyeBlXAJU4ZfobYWaUbL+bWjvHrJdRHT8kTfqVTBvnOZCan?=
- =?us-ascii?Q?wQmUscKT8Oaq/4p9CtgiAYkfg+1WIxsui/NZ3qpkI0xH63njZZPXu7ay3n4i?=
- =?us-ascii?Q?AGvWppoX5nm9CFrHniE+/sWgOdl/IBgc9wv7JsGbNzD842cyW5F3fIBhlUZ5?=
- =?us-ascii?Q?/U5aZo3eZ/Umtz+ublJoVgOgOwTLOdBwne8v56zGR86y95DD+bFHwLT1NHLR?=
- =?us-ascii?Q?cyzFln1/a7uffRt33xuziwzvfYk1eHPrG07td5mWCltEP8oQMhtu6t/P/yq8?=
- =?us-ascii?Q?zLvhfa/lUbqjRna0IxGLwgHp+Iya6O6Z16aaDbpsJMZtwJy5i58OPkPFAxCr?=
- =?us-ascii?Q?btYOeVgNbGFsAhRv3/w1400WNxxtHEAmbjynEw1i7uow90slK7ytzR+jQvKe?=
- =?us-ascii?Q?2JAzaEX5RFebkzVN+uJHIzEuiLuT6SgqQr1fOCw7ewJIOoCaA+ilDaUriezR?=
- =?us-ascii?Q?0L2MLlGuGgqwu3WzqWC+2DgD6wa6m7Un2tgHeSP01sADHpcRHuuekpJQ4mzb?=
- =?us-ascii?Q?v6aqExnPYjKNdrwlTssoLFBULExyxzTrxuCZkZCrvx93aBUIf2C+UbjTJeaT?=
- =?us-ascii?Q?y7NYOkfGciq3ykUugJpw9lRIon5KXCl1?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8429.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(38070700018)(7053199007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?e4kuAxokXv6IX8im13AgpW/CooCiFg3LFwflIsJDzu5i/1s+lkQdtoit/QWy?=
- =?us-ascii?Q?qIhLpWa/t25hQF1jr4DGfHhhD+ZSDyAW5RV1CYR2L342LgyAkNv5iwFcyJD5?=
- =?us-ascii?Q?FjFbxSnXgzJZtG6D6eUhAj5ny2fkEZxzYb0xA4T1U0ui/hCi8YYdIHeP60F3?=
- =?us-ascii?Q?Vm8Kj8BppjZ1GRNq0D/oEYqXn2GwXr5lt93OtlHZBHm16JQDoRcm3qqryuOG?=
- =?us-ascii?Q?UiMmyeZ0Dx28mUlKXTEFzaCt4fMXHUQJDOLbqWiHfccdNUiUgQ+B8YWC2sPF?=
- =?us-ascii?Q?mN2UabasjDVA08keSP5+3Yw9ipaXUwu111+zfDXgsoKmiPV+/ETEI0ItUKp3?=
- =?us-ascii?Q?V88/sDJLa5syyOTfaIIZ/WDz3KNByalph58l6tHohofZ5PumAy1d2AoM28md?=
- =?us-ascii?Q?yCB2CNyNGsYKL2J7tN9Eo72xcLZykP9KeGwBWjiFPdXxD1Tcf7UactcJNfs2?=
- =?us-ascii?Q?P3v+UGOKijvGwHYJwL0UpZkVoDIMw+3WWc2S0tWygLxzhXTJ8PgfG7DDCrOa?=
- =?us-ascii?Q?038gl/pkwlshP7kK9HfnE/0HTfNYD0rhTA1KMldhSlQwQFKQcqYGgHI5PmQG?=
- =?us-ascii?Q?qK0qTaWstb9DoRYfffYUVgEE7vGTZYvs4EG1ACZSpF0sBSUAniQUvSMROK+g?=
- =?us-ascii?Q?6kF43Dq7P+3yV46ik7vQrYJFm99cDPQ30FWkFANRzsev586XdAg4osC0lPhv?=
- =?us-ascii?Q?3tmEt3hU7k8FQmRklKxx/42m1cNuSvXslQf1pkD7Xs2Ly4Bmt5HHz62wBpu5?=
- =?us-ascii?Q?9EnMotXTuRz/91mvibv4T8o+bn1tsssUi6hQciT5g+s1JthkoFc4KrfZjiRX?=
- =?us-ascii?Q?q20/MY/6Kq0jBLZmEmTYvvdxM+nLvLoUNX/4QgsvEQ5WQUr1cwEtx0HD8e/k?=
- =?us-ascii?Q?FKWmVgA5FQ4n3pm+uttEK2u8kr1ufZw9YLAMsymtMBm2CWqP8rsHW62I5Opl?=
- =?us-ascii?Q?E1zbnIZFjfZp+5rMd5ncDk09ZQFl7JCECRaSqYlAMKmN6oG4jdYiTXx4EAg1?=
- =?us-ascii?Q?oGfH/pGK+RFlhJOy6fv/LlnMwdMbhTQvTNxVlE+lyR8dH8w4aHgbBW80AcTd?=
- =?us-ascii?Q?r2/Yu17XoEJ9jjucORE6ge3SI3+6DoEKcxPjPi/85kcjsV6hlp4iJyy+OPqW?=
- =?us-ascii?Q?mNCUeO55uI7UJv6j8cBLrSUOprnHfPzt+yUFysIfmHFnvzcrwwXdPeTIq40p?=
- =?us-ascii?Q?kSON7y0bngStpPIOq3DDohBFVIDt6D+4VnMFePJpivIBV2oSbuK47E5brQqK?=
- =?us-ascii?Q?RmoB7Q7cCwvp6olPy5UP3rPqUyjpHomm/XdOW+KwpvSYjZEE5p1Nki6HyUyc?=
- =?us-ascii?Q?+uGnonZzBF6xkioTICntwtPYzK7PmE6ZMVbGbapJ9CD9yB0R+MR4oy61i5Dq?=
- =?us-ascii?Q?4EFeEjztibXhBENRlDrttBgoF0zxfdra1BYTigx0TbSoZaWjKBpHL6r0yPOJ?=
- =?us-ascii?Q?iPDcGmqBKTPLqpONivmDE5Jhtlp75+c2xsZrWV8Krr/THNnxaXrkyo0h9WxF?=
- =?us-ascii?Q?6gYRunWAMwKOB5eH2teTLD+zaTNjygo+DTaJmux18GlAwSQstveg8ex5UwL6?=
- =?us-ascii?Q?XhlPXtBSNNw2O+rxSDM=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	imx@lists.linux.dev,
+	shenwei.wang@nxp.com,
+	frank.li@nxp.com
+Subject: [PATCH V2] tty: serial: fsl_lpuart: disable transmitter before changing RS485 related registers
+Date: Tue, 11 Mar 2025 10:55:50 +0800
+Message-Id: <20250311025550.1243569-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR01CA0166.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:28::22) To DB9PR04MB8429.eurprd04.prod.outlook.com
+ (2603:10a6:10:242::19)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB8429:EE_|VI2PR04MB11098:EE_
+X-MS-Office365-Filtering-Correlation-Id: aacc7262-4070-4468-d7e2-08dd6048427a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|52116014|366016|1800799024|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?nMoXzzJmaqKSD6x8YJz6tM1oOcLnvdOCXaba+8xbLrOFngs1ZiYGHlcHMapL?=
+ =?us-ascii?Q?3tNvKExIkRO4KTp0RUvkJzLAIiMDWysCR7UHusgOP1FcK2hgyDBJrMI8BLM6?=
+ =?us-ascii?Q?AaezSEfMO3arH7tnDai5bHku3czlC749e7xY4Y5HbZmk0CIrKOIjrkhNdQRT?=
+ =?us-ascii?Q?Mcbyj52wRqN4viXRvvwwIOo4zInm6hH1WOFmXh3rN2yVDQf891u3TCry9LtT?=
+ =?us-ascii?Q?8jVYOR8HQYX/ac1JsABYnrpjuiXOKg2IvEWu3gDnwFZPetDqKcipwyK3IWQv?=
+ =?us-ascii?Q?gtk7Z0EJe2o0U5ZBddPtr8P7LnQVT51UsahXMzAHx+3pYLmEOljW2Vmsk7z7?=
+ =?us-ascii?Q?FLtGB9NIM2dOJ3+USyHuW4QwUMwu7481WHHBAXdmZosgRoNWCckS5Dm3YomW?=
+ =?us-ascii?Q?tsYY96K/9ZdeK1Zp+PRGMiDZtfWShkYlYZlKFLQV2o0GVt4U4HIL5GV5f3xm?=
+ =?us-ascii?Q?GGmLotG5Y2tLd6p168KwGmbVFaeYPbWuWgsvSjJHR1IABJiwAODjSw56DLCG?=
+ =?us-ascii?Q?ahfNn1Dm4ZqdfxSJytzgi0oAQ0rOVclGYH1jF2HfGiZKj381PzMVCgWYaAL/?=
+ =?us-ascii?Q?gDySlw80FI5WJnfV3diNlGOFl9oTFmXKFh6doD15liRc7Jcrt13UbQhMsD0A?=
+ =?us-ascii?Q?NK3w2S3JzjjVOGkjKLNSgnNp8m6hNp5PtWhAFxx6brsUlkBjV+z2Qn1OaDQJ?=
+ =?us-ascii?Q?naPrjR9mrz7+s9y0QuNGZWlZL1nVc9bpvOhV1y2BN1ejLLaUd71aBNKscoNX?=
+ =?us-ascii?Q?kPjwcyneV0kycafA0mTjDMpKdwNM72T9efhaP9D50KnsNlfuQMM/v8dpxR9t?=
+ =?us-ascii?Q?+WiNdjkP5bBWeuSfJ/JmCjQQ5vSCm0VYG7BVEH7N9TY+Z/rb6MBoFU6zIcDh?=
+ =?us-ascii?Q?Y6mNmPyBAn3EEsg7641lHlJGgSyUma/O1V6V1RyEcLvQ3UEI/sSCD5yOl/MP?=
+ =?us-ascii?Q?MjyMxl7hB3IWgQHzHcROvXvO1iCfyy5JlW8Hhkd+vy7razgz/AcfJAdYS1RT?=
+ =?us-ascii?Q?Gert5dTenJotXVBv9FpW9Yk7pxVIztrQseu1tLcoRrdFygtchEtunCgxD8bs?=
+ =?us-ascii?Q?SUwlfuh+dURGqQzbhEmbP6nE2afPdlYwwRvwTWzKefyC4xD/XEcksdMTvX2/?=
+ =?us-ascii?Q?ETpu0K9JFFd0ZUv9wJIkvhTAJU+b5CCiDqzzj9NufS0DwXSvuIj12jBEp73o?=
+ =?us-ascii?Q?LvV+NrvnFEjBHaztGhk4eCyrVnzWk2yZwBKgj/M2zBiBpbojheog1JJvZI0n?=
+ =?us-ascii?Q?y9KWG8WrIRzv8KRKSlb/oqPUn0gAPccfgJr2hTHUiKzrjmLqCd+TNDWUsb1J?=
+ =?us-ascii?Q?5bzfglXwVlxINNtEMrgYGryNnBwySPim7WOrH0jdbnAKKAnSq57MbBQWJMLC?=
+ =?us-ascii?Q?ggjT19eJ4DYatmBCzvcPVX5/uHGrXUOaa/hai3DBV7ccIdXanjjRvw0OHPXl?=
+ =?us-ascii?Q?tED6zhflnbbJxFSXHPvbyd01UZBVYdBs?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8429.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(52116014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?r9iGKq3UiFHFnOQCV/NiMDY1FT5D5JkVQaBubRbkpbcK9A3LYNiZvfet1XIA?=
+ =?us-ascii?Q?7VESoHUelDE0/8oZfve4ZasfeUtL0bpvVBK8MP+dSNJ23dB4SMB75WHHIWQH?=
+ =?us-ascii?Q?4LTWyQk+/rOMkXHdqjU+8F1cG+q29gJ1fm7N1XH//ovIXCL2vMvb0kM4nZjx?=
+ =?us-ascii?Q?LgCUyLvw+xpeNLUmugnmSFPbEFlTlJO0i7HijiXwUxyhWhZAditXwccluwn0?=
+ =?us-ascii?Q?MOKtCMcfE8TrrQ7POVdl+EuUQXUQo1E5JoKov9uWlpy2IBJ6ydU+fb4THV+D?=
+ =?us-ascii?Q?I/1IDF2aj67srnapBbZKRy1qkBE97hYUj864dlih04hGRSYY6X+5o/4tFzPQ?=
+ =?us-ascii?Q?bdOaoCjH4MYWgxRCtlWBmEum0era8zarcMYjpwxMEEfSfVd5qmsRphugpZX2?=
+ =?us-ascii?Q?4W53mKdcSur+vJumIMUKt1QlxWPVM9ItSMKkHDUxCNh1BW4yg+ABCdPOc4pm?=
+ =?us-ascii?Q?4/1l6QG7hbUeWuv+E3wv5YVt7zUJuPGSlp/g74qlcs8Gp/J485+iyj4RUaU/?=
+ =?us-ascii?Q?fk3uMGvJ2SFFuUjL3EgZqu5UqlT6h/xfo7n/05dCyt+zZgQrcGCjJfqFT0IN?=
+ =?us-ascii?Q?DrgaHQZUNbExRPqqK0bUwMVNS8q2xvfpvItXRg3A4GXt5U74xZ5NDmgWYD60?=
+ =?us-ascii?Q?LsnYPMizTJzMYgnch18nfCw9mVM850ZLnmeXMsNN3kV0jfS9lNTmIZwEBVQs?=
+ =?us-ascii?Q?pVWCqp7mTrPh9OWnyWwF5JMNZp2NhKlqNwHhJgIlF/fZF3EoumWXS0BG5Hhm?=
+ =?us-ascii?Q?i+6AJRKK17SO1Q7ZeZe+CrqfSZbpmaUxeLdIq0zpb1h8vnsRWnsqAfQCdx2l?=
+ =?us-ascii?Q?OvU/aSf7SADb8m7vOKKZlzBNCsI9f9bbqcU3hDG8FVKClSWuAkShqT1ytT8y?=
+ =?us-ascii?Q?YJ9ijaSaPUkfYPBlsCyC92mKlBGZjHFopIl47ZpsIc7Coqrb2IJNDHHWTWvu?=
+ =?us-ascii?Q?o/N9PayKlb0cbQ5ZXrl5YC+LEtaZML5h98RTye4uIAecJxDm7Qd67guW7QTG?=
+ =?us-ascii?Q?SY1UaqmsMmDXaw+j8H4jqicCnskzR8bdTGX2+GOctg+EL/U1D7qMvceW/eg+?=
+ =?us-ascii?Q?/1SyNcsObJWHEF5TovDiC0DhOWeXjdkXNEKjQUGIF0iw1sgFiyPqriwxiRT5?=
+ =?us-ascii?Q?V20WfoS27xHS2AcrRIxSgMKKlQ2H1dc5nyLlkVOufao1Vfr5pmSqbX/wHpy7?=
+ =?us-ascii?Q?wXPXroYh+/zd87JVluOoKHGadh+/0WPbQ9kFtwtiiclgx2RF636dsSoZX84E?=
+ =?us-ascii?Q?YUEayIblOj5KK2NNTPH4GBMTTLLInF3Jc35mqn+eL0yuHcPoLRGW0peRvZc1?=
+ =?us-ascii?Q?RdnliEbzkii9+PDaDnjemOPnN4X43cwA6bKupajSiuaRw+JvHhtl3kKpTnWn?=
+ =?us-ascii?Q?ZZW3YGHEF6jRoMDJFo+4OTBJNBgUfzDBalb4RLNXVMHl2aakSS1rJ0H9ETm1?=
+ =?us-ascii?Q?lLHed8JD/7ZakrwJMjaTWRDtx+Y2h+Dqyb+JLbDZBuU1l3wsDoYlhXM+MOgU?=
+ =?us-ascii?Q?1LSlQ7UiAHT9weVKPIrROtgaN9VWEImzAP1S3uZDoZb60JbtObGwKGijXDjf?=
+ =?us-ascii?Q?XqStPpUnSDvUyBOYHF4T18e0pVZsPhE03QXCDADf?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-Network-Message-Id: aacc7262-4070-4468-d7e2-08dd6048427a
 X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8429.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e24b1dc9-32f9-48af-988a-08dd6040463d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Mar 2025 01:58:52.9029
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2025 02:56:02.7871
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YtM/QlXaJiGFRgPG9vIKIj3ExY8LB0RxMqsc1l8SSCeD1+LIP9TjXXdURg4elvX5GbsFIvhGA6Cg0il81OQ5tw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PR04MB10527
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9xYm03mqVgnHgsVbxgkFTHeaZcYmxQB+pP/ASBijYR7EcC2RC8rArGRHAT4xFTBr6dH2oyKgCqtNUPGWWlUV/g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI2PR04MB11098
 
+According to the LPUART reference manual, TXRTSE and TXRTSPOL of MODIR
+register only can be changed when the transmitter is disabled.
+So disable the transmitter before changing RS485 related registers and
+re-enable it after the change is done.
 
+Fixes: 67b01837861c ("tty: serial: lpuart: Add RS485 support for 32-bit uart flavour")
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Reviewed-by: Frank Li <Frank.Li@nxp.com>
+---
+Changes in V2:
+1. Add TE bit polling read to ensure TE is really become 0 before proceeding.
+2. Add Reviewed-by tag.
+---
+ drivers/tty/serial/fsl_lpuart.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-> > >
-> > > > -----Original Message-----
-> > > > From: Sherry Sun <sherry.sun@nxp.com>
-> > > > Sent: Thursday, March 6, 2025 8:20 PM
-> > > > To: gregkh@linuxfoundation.org; jirislaby@kernel.org
-> > > > Cc: linux-serial@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > > > imx@lists.linux.dev; Shenwei Wang <shenwei.wang@nxp.com>
-> > > > Subject: [PATCH] tty: serial: fsl_lpuart: disable transmitter
-> > > > before changing RS485 related registers
-> > > >
-> > > > According to the LPUART reference manual, TXRTSE and TXRTSPOL of
-> > > MODIR
-> > > > register only can be changed when the transmitter is disabled.
-> > > > So disable the transmitter before changing RS485 related registers
-> > > > and re-enable it after the change is done.
-> > > >
-> > > > Fixes: 67b01837861c ("tty: serial: lpuart: Add RS485 support for
-> > > > 32-bit uart
-> > > > flavour")
-> > > > Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> > > > ---
-> > > >  drivers/tty/serial/fsl_lpuart.c | 14 ++++++++++++++
-> > > >  1 file changed, 14 insertions(+)
-> > > >
-> > > > diff --git a/drivers/tty/serial/fsl_lpuart.c
-> > > > b/drivers/tty/serial/fsl_lpuart.c index
-> > > > 91d02c55c470..4dc2f3e2b8e0 100644
-> > > > --- a/drivers/tty/serial/fsl_lpuart.c
-> > > > +++ b/drivers/tty/serial/fsl_lpuart.c
-> > > > @@ -1484,6 +1484,16 @@ static int lpuart32_config_rs485(struct
-> > > > uart_port *port, struct ktermios *termio
-> > > >
-> > > >  	unsigned long modem =3D lpuart32_read(&sport->port, UARTMODIR)
-> > > >  				& ~(UARTMODIR_TXRTSPOL |
-> > > > UARTMODIR_TXRTSE);
-> > > > +	u32 ctrl;
-> > > > +
-> > > > +	/* TXRTSE and TXRTSPOL only can be changed when transmitter is
-> > > > disabled. */
-> > > > +	ctrl =3D lpuart32_read(&sport->port, UARTCTRL);
-> > > > +	if (ctrl & UARTCTRL_TE) {
-> > > > +		/* wait transmit engin complete */
-> > > > +		lpuart32_wait_bit_set(&sport->port, UARTSTAT,
-> > > UARTSTAT_TC);
-> > > > +		lpuart32_write(&sport->port, ctrl & ~UARTCTRL_TE,
-> > > > UARTCTRL);
-> > >
-> > > Since there may be a delay between writing to the register and the
-> > > UARTCTRL_TE bit actually changing to 0, we should poll the UARTCTRL
-> > > register and verify that UARTCTRL_TE has really become 0 before
-> proceeding.
-> > > Otherwise, subsequent operations would still execute while the
-> > > UARTCTRL_TE bit remains in the status of 1, which is not the
-> > > intention of this
-> > patch.
-> > >
-> >
-> > Hi Shenwei,
-> >
-> > Description of TE bit in LPUART RM: "After this field becomes 0, the
-> > field reads 1 until the transmitter has completed the current
-> > character and the TXD pin is tristated".
-> > I added the UARTSTAT_TC status check to make sure the transmitter has
-> > completed, not sure if it is reasonable to add the TE bit poll read,
-> > since usually we poll read the status register bits instead of the cont=
-rol bits.
-> >
->=20
-> Sorry, had a typo in the last mail. Fixed below.
->=20
-> I am not sure if the condition "TE=3D=3D0" is equivalent to "TC=3D=3D1" i=
-n this context.
-> If you confirm it, I am fine with the patch.
-
-
-Hi Shenwei,
-It seems that "TE=3D=3D0" is not completely equivalent to "TC=3D=3D1", I wi=
-ll add the TE polling read check in V2, thanks for the comment.
-
-Best Regards
-Sherry
-
-> >
-> > > Thanks,
-> > > Shenwei
-> > >
-> > > > +	}
-> > > > +
-> > > >  	lpuart32_write(&sport->port, modem, UARTMODIR);
-> > > >
-> > > >  	if (rs485->flags & SER_RS485_ENABLED) { @@ -1503,6 +1513,10 @@
-> > > > static int lpuart32_config_rs485(struct uart_port *port, struct
-> > > > ktermios
-> > > *termio
-> > > >  	}
-> > > >
-> > > >  	lpuart32_write(&sport->port, modem, UARTMODIR);
-> > > > +
-> > > > +	if (ctrl & UARTCTRL_TE)
-> > > > +		lpuart32_write(&sport->port, ctrl, UARTCTRL);
-> > > > +
-> > > >  	return 0;
-> > > >  }
-> > > >
-> > > > --
-> > > > 2.34.1
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 91d02c55c470..6b2f3a73a367 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -1484,6 +1484,19 @@ static int lpuart32_config_rs485(struct uart_port *port, struct ktermios *termio
+ 
+ 	unsigned long modem = lpuart32_read(&sport->port, UARTMODIR)
+ 				& ~(UARTMODIR_TXRTSPOL | UARTMODIR_TXRTSE);
++	u32 ctrl;
++
++	/* TXRTSE and TXRTSPOL only can be changed when transmitter is disabled. */
++	ctrl = lpuart32_read(&sport->port, UARTCTRL);
++	if (ctrl & UARTCTRL_TE) {
++		/* wait transmit engin complete */
++		lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
++		lpuart32_write(&sport->port, ctrl & ~UARTCTRL_TE, UARTCTRL);
++
++		while (lpuart32_read(&sport->port, UARTCTRL) & UARTCTRL_TE)
++			cpu_relax();
++	}
++
+ 	lpuart32_write(&sport->port, modem, UARTMODIR);
+ 
+ 	if (rs485->flags & SER_RS485_ENABLED) {
+@@ -1503,6 +1516,10 @@ static int lpuart32_config_rs485(struct uart_port *port, struct ktermios *termio
+ 	}
+ 
+ 	lpuart32_write(&sport->port, modem, UARTMODIR);
++
++	if (ctrl & UARTCTRL_TE)
++		lpuart32_write(&sport->port, ctrl, UARTCTRL);
++
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
 
