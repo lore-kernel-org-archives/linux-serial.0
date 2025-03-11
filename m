@@ -1,45 +1,46 @@
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013068.outbound.protection.outlook.com [40.107.162.68])
+Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11011061.outbound.protection.outlook.com [52.101.65.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B51271991CA;
-	Tue, 11 Mar 2025 03:36:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DA401991CA;
+	Tue, 11 Mar 2025 03:36:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.61
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741664209; cv=fail; b=gbnJOvetU6l11Kw3eQIVk4wtk1YrV+jAOPiYcJvvzDRuqUJtHXdMYjRRoLBojlgA28l4OTrdu9VsURu+EwdDOf2v1sHdLB50D23z9E792vg9dp2dr2AYK52UhZ9Bu/m8U3EigsrEMhok736/NZ3tnF2VTjm1PygFgP9Y7IKBCxM=
+	t=1741664216; cv=fail; b=oc1nc4HHqHuhySFkbFTVONk9HCfNCUQJx7XS5nwxGS4C56KIH1NHu7lGWiFYq5Su+LlmsRJVsk0AnjU/0nryYWJ6MVDtpuACoPb6fFz9jENJiWgFEdMnLcnCuTJISjaiMc50/mzd6v9hkmIUQn1tul0PwSBPMS0tBKQ/ba+RcqM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741664209; c=relaxed/simple;
-	bh=lvt1D6czqwTbc7gALC4AvGBAw+JmnlGug934ufBlmBU=;
-	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=ks5aFaSDX6G0r8i3iGUHs7Obq6WhtgtGHpaVgF1/dYrlHRdwOdEk9NlaHJp77nP62o/GTGWSnml0GWHXy9BGKVOF+IxQIt3PGkA8H0Z3ulDV67cm/dHWD9orCyyuLDGgNh5x5GXBmeuTvRys/yhdRIcn0kr0NlculHjD8+NQoaU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=jDcuYOzG; arc=fail smtp.client-ip=40.107.162.68
+	s=arc-20240116; t=1741664216; c=relaxed/simple;
+	bh=JisxMN9Zb7FAFGcQ/4J6XLhq1SD6orPrO1vLrTMfXoU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=MpjfCxRd4cv+56r/yYw447xD4OscU59EdsJ4+YvkBsDDnuj/QsgsL7Cxw0UpDmLEGmlApK6JkKhO4VnKULfjirU/YoFV0t+fIkpPeGENVTed86ZTrZF6TsniFweSJtnlSZ0/oS/akmkhp4KGchsD6QcNCRfJgtcnNaA7QO01ykY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=kXuaK7Mk; arc=fail smtp.client-ip=52.101.65.61
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="jDcuYOzG"
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="kXuaK7Mk"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cgqbHXSBJw4uakecDrJz3s+hJL+dFk+RFYxboflbqT257yhTe8Vt6xez6zeKWc+Cm4+Bhts4n5PQys0UEjht2xUQfkhIItkNFeSdJ8Bo2VevxSkVo0C9pqvq14Zu8LUU+kuQ1u7bTAK/b+ng0klQj4H9J0btecj+jreZAHbaHKaORMEE1vFfULprQRVt2VB60NeFlFj0T/58jmhmure5Pz56Ahsvnisks3xYSBqyjx3RdQ7IdaIfhRU6htkbwrbbxBbxAkg6lauwte9K6gH4wlTXpA8xyLJAxn/oB8TZitNYZbcSe9JHgEfh9PQHS1tryEoC670PYeDDI4F0i7cDlg==
+ b=kKSe/4y3oWIrPW1HbHOd8jHbpok2WamolIl1qduto3KL/5IlZ1TCdnHSHrUt9vHeXvW9v2UJrvZ2aMZw6W4UOUE9LNS2AM/l7Q3i2VLRJqYKF7PaMbuip0CCOskzh6LwDc0OcMbEPEdZBYtzIQ5PbTrTERDO9gs37oqxAlSxNOGZZRiRXH2qXtsXk+BgFe3nUgeArxZixYSDrOAtbPUlYWGhKnibo+nxoWLh9zulWS7mIFdO9t+L/LAKBS83tpefyvrmVFVZGy+2aWmx1ljQvBokYhCyeOFiGCXicQEWrN7Me0MkBoJ7LMqYrKFTjLqJh8PdS2wt5wuTf4iYNMqnnQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T4iI2DGU3oaO6quEmx7+w7+teTDKWTjOXM6RDbssWns=;
- b=yrkENrrPlZt6tTGejCeNagj5pQvsAx+vLZHLp/LJ9g+u5GQn2SVDj15hKqqZwECIMo+AdUnHDj+76ArwvuMSy1raYedJqG6TctF463W9DqsfREin1PBO+rkm1TvXwn2EPlUw9q9Tqb9LQMjmgnoOUa0E8WXu36kLOq4jJqInGUWoiRztqunsAgnOm4j0Vp9vSy/lzJJaRy3jU22ZnZ/m03gAGPgHfuRtlCUuwechyrM0/qOzsXX6hlNk0H4xMVocsk5kLsgySuvhhgL4HkXWgCOp7sxCuWJH7CSu75Xt+ZzD4mXym3PQlqUoY17ONlol/S7M9bH7KCeG1mLjaYdABw==
+ bh=wiej7i9634pkPg0VRODoO2s31a/t9mAEBo65axHF9+Q=;
+ b=FGv9T5kGFkQC32EvE38E3Xo7CpwChCmskFJNOjzxyLB01zkvmVDd4aVbF5PGw7GLgM6+Zm0ycNf4S4+YmgNGV0XYEXmzwSCj4R3xoGyIgfibzweFn2mp9+I/womuNjKZ94VLvJID9F+15N91J5BCvVOBztrPJI95IFxnGhPNu37kAQ7u7Ji4BqhSmlX6VR/tt6Bgnxj46oSW3n1ykBDIx0b6nYa7mXrbTALTTVR9WfmwjpBXab4Xk8wsKz+vOtmTeHZjECFdcHuhhFf7haojiVDd7cmYPbu977BCoMR5lEhW6g82Lsu4PrpybaIZHj/obXIQhaPsd/LuemMHFXutOg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T4iI2DGU3oaO6quEmx7+w7+teTDKWTjOXM6RDbssWns=;
- b=jDcuYOzGsQSePc1MsAIHuWiV6csxNr5fGC7ehdqBWVsg131h5qtK09O+5EguySpPBByGheW4hqQrJh5Nek2WaLRGEwSM/ij17ZFJSCLP4xCY8DBb/GZIyS8T/0Ep+eXTa4YDIyAEpha5GNinvoSBCbFtuCLb2cucO8z1jNg212kxQ3MqKS0SQh/5tyIaseBkmqresr0Z1nUXx1rnrZcnOfjpXSMXypnNkJQLRgT6rLj/OOSdtL3uvC/hTiR57bojsUBECWOMpNroryyEF/QsORqA2xrnMqlU2hSPxFz+ZRQUQ6FjeUwqj5ZUi/c6tHXkL2LUtZDLfEpUiHY8DhT+VQ==
+ bh=wiej7i9634pkPg0VRODoO2s31a/t9mAEBo65axHF9+Q=;
+ b=kXuaK7MkVSZPtaKG4v8wsXzv+2KaDruRGK3Bw9llxjxrRdt7GEYB2ycgomfKIjyKl8yDppDC60jyUVFKLnyd1UeHoHKVsG4tOOpOuM7YBVpW8cplGQmUTVctOnG/iCLMRL4aAIH8E1kbtuq8EAHeqvdDn5rpqmfHL/jZSOWJEDEnqyRS77tL4fIQifT8QvfBXbd8Z36QeA3dVouF+rJlEW7ymSHXYj3XQyiSMJC6LfI0N2pRhDD3S6US+fkTGZcDxLSm1XsykxwJwHQofnmQdRgzQ2APafCOMgZhY3X6S8bw8DGS9arbz9K7EcL17TowTjwP0suvrDQWWgKe+3Z1NA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from DB9PR04MB8429.eurprd04.prod.outlook.com (2603:10a6:10:242::19)
  by AS1PR04MB9480.eurprd04.prod.outlook.com (2603:10a6:20b:4d6::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.27; Tue, 11 Mar
- 2025 03:36:45 +0000
+ 2025 03:36:51 +0000
 Received: from DB9PR04MB8429.eurprd04.prod.outlook.com
  ([fe80::2edf:edc4:794f:4e37]) by DB9PR04MB8429.eurprd04.prod.outlook.com
  ([fe80::2edf:edc4:794f:4e37%6]) with mapi id 15.20.8511.026; Tue, 11 Mar 2025
- 03:36:45 +0000
+ 03:36:50 +0000
 From: Sherry Sun <sherry.sun@nxp.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
@@ -47,10 +48,12 @@ Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	imx@lists.linux.dev,
 	shenwei.wang@nxp.com
-Subject: [PATCH V2 0/3] tty: serial: fsl_lpuart: cleanup lpuart driver
-Date: Tue, 11 Mar 2025 11:33:33 +0800
-Message-Id: <20250311033336.1254842-1-sherry.sun@nxp.com>
+Subject: [PATCH V2 1/3] tty: serial: fsl_lpuart: Use u32 for register variables
+Date: Tue, 11 Mar 2025 11:33:34 +0800
+Message-Id: <20250311033336.1254842-2-sherry.sun@nxp.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250311033336.1254842-1-sherry.sun@nxp.com>
+References: <20250311033336.1254842-1-sherry.sun@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: SI2PR02CA0019.apcprd02.prod.outlook.com
@@ -64,93 +67,311 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: DB9PR04MB8429:EE_|AS1PR04MB9480:EE_
-X-MS-Office365-Filtering-Correlation-Id: c765d30b-40b0-45a7-1928-08dd604df21d
+X-MS-Office365-Filtering-Correlation-Id: f907207a-5d04-4a74-da62-08dd604df52c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|52116014|376014|1800799024|366016|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?pQIbNQ+SZ4pi2K2xxYVwyYeC6NzwzTS2yXB7xKvrb30E9e2p122MOVl76fzO?=
- =?us-ascii?Q?6RDwm+YniPj4MKbZuDfsgaXBlJ0B6PeAGvYXL+Cs3geaS1JagleTsCIQfpkh?=
- =?us-ascii?Q?rwYCJZG8eQkKmSak3VGUaBJHTHho/77meFU5pU5PHM32Gy8TqiZwObFzjsnz?=
- =?us-ascii?Q?/s4PkQuYaO7QINGCquFSndQS2wAMIBjuJ+Au5KdVMwy2TZYrDbDkigMzqhER?=
- =?us-ascii?Q?UbBFdSv36Oz/MBB6ywLZTqZCM+mHngJUke3HhPCwFnFLhTAAZUqh4BPHLu7t?=
- =?us-ascii?Q?kH3Fp4KgzB0lGogynDDjQp426ciXAOl9uwGmac89pQ/xd9+9UUX2M77oA04X?=
- =?us-ascii?Q?HxYx5/Q9CaJceqCHeIY1Oc/Bv1TkHXXuLW/4aHB4YT+itRfzC80J/hVYpU11?=
- =?us-ascii?Q?NO6EnvjYKXjfNB+mDeGH2gpORZZpWV0C2mV679R/tRDJAK68G1oRFvLYieB7?=
- =?us-ascii?Q?+dtOS6ILC+aIe/heyOregSy1J/NbDXlg4NsXrjj7U9chdEHgy1Vcw6d/ZReD?=
- =?us-ascii?Q?g6+PpkdVwpJZYtVIBmZbub3JYuKkOgSqpzSuhOZdtl4RnwpEwG+Y5pS/mGia?=
- =?us-ascii?Q?VvUr0PgJH4XDEs3aJXFIS2Lj69Rydls64lEig6FFOcf8HE5HACzw/olNBwGd?=
- =?us-ascii?Q?yux+VXLjPiwUZQejP5aPXbonjLl/SLaIpEWZ2WRSZFE3Z66amHgaRg9iQw5k?=
- =?us-ascii?Q?CUpmEE4CBsOyZxoJZslZPlnuY0ifA6aaojk+odUlwv+pvmmNv/Xc8462X3UK?=
- =?us-ascii?Q?HOyP2wlsl0OfOa44Pca30DS/j4xR+KBMR7S6LMlqh4szpT+IQQcOsq1czuPh?=
- =?us-ascii?Q?dr4o7Dk61zYKUmiJKZr3vUH9vtn/W5PPTJYieoXxpqBPQGVpS2fJw9l4ZF2Q?=
- =?us-ascii?Q?lGdlKHba6I0hMnLv9y4ICEwoMcA2KMleqtpHgBX0zEESc4jVH9+CJcrRlixD?=
- =?us-ascii?Q?p8hzZBHIcsxxmacA2fSz0X+iheci0z0h7gOzw+yY080Luqmc0bMnO/SEnRC3?=
- =?us-ascii?Q?pO+pdM120edOjUKsAY/mltBUNZm20L3xerZZ3axe94KGs8Gsf+iN7QrikBB/?=
- =?us-ascii?Q?tzl1GqeEo1OT8BwB1tCQjMp8NBu7L0ukuEeJ9fu/ZuT87WbbAYpRCbCXYG4N?=
- =?us-ascii?Q?RYx0DHtcV0c0m6dL/usPw+nPVRwPj+9YwgccQOQxjjOAtvYUhL1mE35FY7Xb?=
- =?us-ascii?Q?DZNw/cBePy0CgIJEi0+t0j7F4uGygi5bhq0k8D1BiKHuhdo/dRyyLJvU/lAa?=
- =?us-ascii?Q?6Phm7rwIPc3ixPb8qgEy71IRoR8pIQ6vHcIxSUX+zguv2+dqXco9qYceWHMb?=
- =?us-ascii?Q?+gQvK/WBbrHGWy44K72iumOBmGE/kIR1pOQ8C5kIBl845yFrGu1FupYGgg9o?=
- =?us-ascii?Q?NlXKTpv6uK3ojXtTNIlKjB3/4zbBmfY+glKA0eiVwwXgNKwkF0gsKubvJ7SE?=
- =?us-ascii?Q?mEVO5n1ks0N1f6QomADX7XNq28eUUblk?=
+	=?us-ascii?Q?ISjcwTwwYE6B9m18bKhZ2MVZlXuzm0obLpwExgCdykB4tFB972dGRVAcjuiE?=
+ =?us-ascii?Q?nx/wd4ANOHJiwq0CPuo657P9XjTa0YfI70WH2EAbacC7s4mgKJ40qYpuXfhw?=
+ =?us-ascii?Q?G3F/T865TvJJjRh8pVhOrQ/7Y/wWr/U/6dl+XalicsQExVBHwcNDI2J5ZjZd?=
+ =?us-ascii?Q?DuAjz9l6Id5zWKXDlQSy/vr6xxtgMgX1sTVw5CkS1BjK/10kMUQ8r38IYbzl?=
+ =?us-ascii?Q?9IOrbuGkbMFpnwgGCaiuopuRdLktaPqnYH62WBeah+gqUlEsH+AnOvhIwUk+?=
+ =?us-ascii?Q?0bZRSnMPq0aCfW66CZ8+tBc9UvaLknNw8X9PmfKIzfQWaaSGAHOFVFWkT2ON?=
+ =?us-ascii?Q?hjvgwstZq3W74ixonW7pd3FG9kcecgC8v2pR63wWc4ocw+c4sO3r7TEeFvkF?=
+ =?us-ascii?Q?/hRxNqWIrfhxdvYKztb1j6KeWc1zimDSPC0N2O3tEgjecI/s+H70t8vf3gAd?=
+ =?us-ascii?Q?zVTahk/Sk/K/TCGTKrA0mpUoQ7pNHKQw614rAu4C6SFXtFm1ytp9aTJGlYwJ?=
+ =?us-ascii?Q?7V0dnurnfic26a7fb8M7M1Dp64+WyEVf/CkhI2jHYEKDlmy2Uahr/KFn2ZE0?=
+ =?us-ascii?Q?tFtKRYfErQrKyYY+gYM1yZuEFGNq9b+BiIjJygkP74NMPq0ZxwL70ofZFPQr?=
+ =?us-ascii?Q?odhO2VSCwa6BV+U3/6o3PArVR9veJB8cCs2bsEjThbcq+RdsGYCAyH/7ROd5?=
+ =?us-ascii?Q?OFZ6QOpIydxyI5t3ALXGD0fMkIGz6pndiMidjY4epqs02HyTu9q6QRm/bxjk?=
+ =?us-ascii?Q?fXxLPGcOxie64DteClqOoNPNVG9gR2eOGSGluokZL4D9AasN5O4J/ZVbEXiL?=
+ =?us-ascii?Q?NvYp5yJv5lyRp2dOCOJGar4juIXroBgFC+Nl6TiQc2zn7f7QHgzY1Nmcmjr3?=
+ =?us-ascii?Q?iT6jbXGjwmPhrkmj2X3iSE/77mN1WryOenhkV08E7SrW/CvIXeqo6J9EIL8Z?=
+ =?us-ascii?Q?a43y72t1AiLTWnOCFrYxIALL3SIDvWBOucgsKA8uIUK5ni+gLpgaAqRnwhUx?=
+ =?us-ascii?Q?PWoHLTTb3vDnNT/1IznEeLDipNWEtrthk+B5gmbSLm3fZygoO8yXod2V3MlL?=
+ =?us-ascii?Q?UkDE+B+GUfOAHAi4djIS46qp2xtYQ86fGz7fy4p99WL/Qs+ToT6n7j7Q02IO?=
+ =?us-ascii?Q?lNyDrJ87FpmB9bTXdkcwOM5u86c1Y4n2roNVMev0oiQ7EL949sShj6TgeenF?=
+ =?us-ascii?Q?pF8jVHE/CV87gJ4iMBBkGr+3haDJb1Y1RQg0eaU3VctNk7JteecTptiaMY97?=
+ =?us-ascii?Q?bRWaulMAsVqb7+d3yTji7YjzR2myncvjyQT2hgmV/i5mVDfAOpRfJnnQwaFm?=
+ =?us-ascii?Q?jV/pPenNg/mKai2Ya3zV36KSG+arfqvKTn0cJq9VgBRLHnO+lRsR5DgOP1MY?=
+ =?us-ascii?Q?t6Oo63HWW2cWapi2zSWTltHPKX+g/qPZtzpBB3j5yYfyQdEY6h/liA59MJ5x?=
+ =?us-ascii?Q?JUFjzWFJyF1QlgBrr8565vZMN/mv/rOZ?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8429.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(376014)(1800799024)(366016)(38350700014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?efuivUUeW59uV4IY0uTOup5twKPzcDLuHQNuRpTWJjFgu5CwYoP6scpZ+lmT?=
- =?us-ascii?Q?OCj0Mcv1osWAp+MK2G9Xt482otWizyNVoHBN8tSLEsvEMXSszMohjQ2UIaFB?=
- =?us-ascii?Q?trj09u+nNV60oZba4TC83YHKyrcEySHLF2gGHS/IQvGOz9R48Lt/xefhZ5vf?=
- =?us-ascii?Q?knJScwi5qkjHrW0Rn3IRcSgkn5BYiuvh1vitHT1+qV6RVOmRLYlbgovYGxuH?=
- =?us-ascii?Q?bVKMgAiqI+26aAWOlRqPX1xnVkfzseKR6SONWe6AvKhN6362lOhkcWYctOA0?=
- =?us-ascii?Q?Cn+IEOIGCRJQNqLoxqh8NElkiqBWGmtwKDc/blUZAknq80Q34cIwzeZESnPB?=
- =?us-ascii?Q?IKdz1Ix961TUuhQOgz7S/yLdAipVwEqM856gvTQhz5fSCWYn28Cb5oHDRAeK?=
- =?us-ascii?Q?Kk4abBsRSBInLznpLS01OMY7OQRhoF3ml5zPz8oDIvPPRi70AKsXYAi6GJL9?=
- =?us-ascii?Q?zbWZLhuqSzujfsDNouox9Ee7cXKYINSS6Mj1KRrqSxx2s49gPNCqIHABu9cQ?=
- =?us-ascii?Q?87h4Zth6E3f6UuRCAXZ/1XanCobcFd3e9vYt2KtpgBOXWVqr5YrCqSH7wA6L?=
- =?us-ascii?Q?UNY0RU+x7ScYQRCakGdqqKYycV2otuMtv6MupP2VkMg6cvLMyVeuyyofoaKM?=
- =?us-ascii?Q?zXm6jXFiETeHAAEqy7SsoSnfiNnL/UWfxzqrMyDfAiJ+zY6UeRRQLtgLY9e8?=
- =?us-ascii?Q?k2QVF9WB+NsWRlM8zzinGlachMMSfNLTIiFvSSfBIQxUOiywPdPB/BoOdzfY?=
- =?us-ascii?Q?uK0yvrYJHbYgHMRQV6oex8U5trk3w3vMRMKoAXmuMfJsot0r0sIstPVlKpaA?=
- =?us-ascii?Q?Fu8BBVKHEUgMdDDAZrC1Z3zum2TtDiMIrbanCskDBG30kYqs3voss2AZQjRU?=
- =?us-ascii?Q?qmCrHHnI51kATwshTRF8wez7f6KT3cAGM2oYfBiqTqtQI4bBu82CdfHDBmjB?=
- =?us-ascii?Q?b6QE2AcX1ZhUvlFz7v+QA44iCpgp0mRbzOUgPSy85/Xr/PWi/fGMnKjCf5a7?=
- =?us-ascii?Q?rgh5lloUPxNf1UcsjiTzQl3sJacBXmQf65vtl56ix6iJlfaxE4Ot+fScEb+p?=
- =?us-ascii?Q?rtY3+kT2JyuMZwpkpEH74OD4uiezWCh8vg6Xfi5M731vCcdyXzBcEq5P3E6U?=
- =?us-ascii?Q?PKkgRqbGgf69ddZvDWlRXSpqCyUTpILVJvTRC6ERhHC0VCkUbgoAUnKIRwUC?=
- =?us-ascii?Q?7GrIoV6U7OLhqCZ5enfa/dbqp+tLuscAHAV6xxat2oK1xpHVwhZG+u7HbKRD?=
- =?us-ascii?Q?P/B+YtXF5cP2yDYCzMMKi6yeaNj7oPTZ/aVxNPHAcZ2SmLaXxRgHhCCJjRR3?=
- =?us-ascii?Q?1lqbL0V9+uB9wT/+gTUy64PEa63LFZED7JV9b6A7uH81itMPuHfIyivUW/TK?=
- =?us-ascii?Q?SW9siDIib7xwZquf68nS/SKxqVruHz6lbK5bcVNAi8dgQ0YXip/TPlFH1Yh6?=
- =?us-ascii?Q?EbQ52Fu9K+lYkxWdJmcKglOSSFKb13Ac1IHHLy3YeWTIHjM/w6JJma+R0JZq?=
- =?us-ascii?Q?bMAdQm4NXgEGlEyExcrL49b5UVIMkvJfrLQojspiP9bKl2uWvxQKjmaIzkLR?=
- =?us-ascii?Q?WAHHirdtCCalDkAWOu5kP2fuRODSAqj1to45qgF9?=
+	=?us-ascii?Q?A8IJdhUD4AKVp9YiarfkSGFBkTI+qmFMoRtM7AStrNCXONEwDT2X7mAeSKdt?=
+ =?us-ascii?Q?xH+dNiaQzfhSrUq7YF+08UoxwAAgbyhIMzWCKG7bY66RnhbdTJjo8tYyg6iw?=
+ =?us-ascii?Q?VY/DhJEHgC8RK0177wI4mL81rkeNuwiozpiBzFqOkNctoCtxSebd14PXcUkE?=
+ =?us-ascii?Q?kC+Ga1lv+WBT9Otubb5+iBdMKfxRG/fFt3g4Q0SrRQ38W7C/2N4IrveTGoyn?=
+ =?us-ascii?Q?9Hf0bn5YUJ3iNL7/Nb+pouu+g7DJQZwLahWeCuorrkmfV5qCGLwm9f1UURZq?=
+ =?us-ascii?Q?UWUHWyJ12oP3zhhYgOIUsKQQcWk+Rs/oH6gxjf6l8JAVlsiHNa78Cp0iebOo?=
+ =?us-ascii?Q?8cSZsctv5h2vEOCqd2kqlHsuYUQ4tG8cb2fAWB1T0i+dvQXi9EiXOOynNbjn?=
+ =?us-ascii?Q?/K91VvouBTX+q319+jfYK+Ri9oJOS/VgiWrjfYTq3HNYkinD718PREgAgG5y?=
+ =?us-ascii?Q?DQIZ5blVjNI0MpNZ1cF4kLwsslO9VSwV/cClWjcFdKGXZhw92ZjbInU+VDB3?=
+ =?us-ascii?Q?AvHch+6100+1gqhrF4dRakrjZv8zAISLm8PGjJ5VyGKyoAuf9YbR4Ci5oYyB?=
+ =?us-ascii?Q?2ZLH7Us1upr1EyugauZ8Km1LNs1oB9wahhRnGbd7ysjYu6Xb1wEbN0Gv/oHN?=
+ =?us-ascii?Q?fpf5UPgx08Ae1Vm2sGmdUkv1ev7Jfyh97gsPwqnNhXXa1NY+K7edp+K/fOxl?=
+ =?us-ascii?Q?tpEj5CSqywQTMsLLHeL1P8F2Rp9ljPt60MXPV0ynkuCqAL5QYJ5f5/rHB3k+?=
+ =?us-ascii?Q?TjBupLiVEiHXlr9svTCY+J1y57sEp1aF4U3Qp1Aw7ZjKPqV68qGTlhonb+dz?=
+ =?us-ascii?Q?i5GwUGpJ5adEfk0ZQ24VGc1AxpjCloUGUaoIkPdNcYp3eEQV/nJiNUSWQyLT?=
+ =?us-ascii?Q?JNkhTvorQFR1skcvmpQh/O6m/oI0TXfrWZ5aQ46Mbjgm8fKQXT2qOWYr9ebW?=
+ =?us-ascii?Q?cEMkX7VLQ7Y0s0sEM9qqFuY31NSaNg6a2cA2RPMazF+lJTT3ZSuGR5uVlB/y?=
+ =?us-ascii?Q?SrkBVl+SbpUi84ASNpxh61fEFJFkdCyTJokwqnHPbvVKIa541xJ2WD0Gk5qi?=
+ =?us-ascii?Q?yXZMHb1QelRefUBLUoiXKWdIBjJ9c7X9KaDtIrxftdHKWIbDKS7FOsTr2xj/?=
+ =?us-ascii?Q?3mC/5SJwm2dkJdzFy5VkBS8uFvCkHxtM/e66B1z3Xn9RA0pVOZXJH/3Jwqtf?=
+ =?us-ascii?Q?v51Ks2KhtP102KO5VeqJJFeIof6QEhLR0Mf6PiBwTQrsgUOH0kCh84J8l4ik?=
+ =?us-ascii?Q?t5bfHPlTSOpIogA56066i+hJjhyoag9GU9TP0NYjFi9ZkXoemd/qjMd45xQl?=
+ =?us-ascii?Q?WgqpC66Ifwjn4YYE53RPem/lWUj4E9fzDOx6Pja0xDqUks0fShAphovVPwJP?=
+ =?us-ascii?Q?nyvUOpciaE0Sy3i2I+Lw99pWdsDCJ1/NmQGI4oU8jgp4Jjc4WsiIO08jUEWv?=
+ =?us-ascii?Q?6dSfKz54DohDwZJczYdLTswnbYX6Qk2vLQEZ+sgb3ouALJi7vHmWx+yMPrb1?=
+ =?us-ascii?Q?DhEGmHy4FHm+AXKDbOh/7mk6UAhXZIxwVA9AhsiYWliU880zHnKCD55rFeLI?=
+ =?us-ascii?Q?sr3s0x9cbZuuqSrK1/LrvJhPyHpWOi3zAuJ0VSNi?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c765d30b-40b0-45a7-1928-08dd604df21d
+X-MS-Exchange-CrossTenant-Network-Message-Id: f907207a-5d04-4a74-da62-08dd604df52c
 X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8429.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2025 03:36:45.0360
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2025 03:36:50.0604
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: G8Ji9E2F/6ySYntYSO69WEI1qdCMJuPAGoitE3hOecwoyCzS2oC/GEigm18Fe2vUs0DV1h92k1HlNfPNLY9CvQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: POESk0j99M1jiPZKEf/XNCiQ86WafLmVqQeqrJo+re9RzWOAhFnF1L4lUGbhj4PBRnmumKe0hxfjgS1vA8TOtA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9480
 
-Do some cleanup for lpuart driver, no functionality change.
+Use u32 rather than unsigned long for register variables for clarity and
+consistency.
 
-Changes in V2:
-1. Add the third patch to rename the register variables as Jiri suggested.
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 54 ++++++++++++++++-----------------
+ 1 file changed, 27 insertions(+), 27 deletions(-)
 
-Sherry Sun (3):
-  tty: serial: fsl_lpuart: Use u32 for register variables
-  tty: serial: fsl_lpuart: use port struct directly to simply code
-  tty: serial: lpuart: rename register variables more specifically
-
- drivers/tty/serial/fsl_lpuart.c | 446 ++++++++++++++++----------------
- 1 file changed, 220 insertions(+), 226 deletions(-)
-
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 6b2f3a73a367..29ce9b25b796 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -450,7 +450,7 @@ static void lpuart_stop_tx(struct uart_port *port)
+ 
+ static void lpuart32_stop_tx(struct uart_port *port)
+ {
+-	unsigned long temp;
++	u32 temp;
+ 
+ 	temp = lpuart32_read(port, UARTCTRL);
+ 	temp &= ~(UARTCTRL_TIE | UARTCTRL_TCIE);
+@@ -467,7 +467,7 @@ static void lpuart_stop_rx(struct uart_port *port)
+ 
+ static void lpuart32_stop_rx(struct uart_port *port)
+ {
+-	unsigned long temp;
++	u32 temp;
+ 
+ 	temp = lpuart32_read(port, UARTCTRL);
+ 	lpuart32_write(port, temp & ~UARTCTRL_RE, UARTCTRL);
+@@ -752,7 +752,7 @@ static inline void lpuart_transmit_buffer(struct lpuart_port *sport)
+ static inline void lpuart32_transmit_buffer(struct lpuart_port *sport)
+ {
+ 	struct tty_port *tport = &sport->port.state->port;
+-	unsigned long txcnt;
++	u32 txcnt;
+ 	unsigned char c;
+ 
+ 	if (sport->port.x_char) {
+@@ -806,7 +806,7 @@ static void lpuart_start_tx(struct uart_port *port)
+ static void lpuart32_start_tx(struct uart_port *port)
+ {
+ 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+-	unsigned long temp;
++	u32 temp;
+ 
+ 	if (sport->lpuart_dma_tx_use) {
+ 		if (!lpuart_stopped_or_empty(port))
+@@ -855,9 +855,9 @@ static unsigned int lpuart32_tx_empty(struct uart_port *port)
+ {
+ 	struct lpuart_port *sport = container_of(port,
+ 			struct lpuart_port, port);
+-	unsigned long stat = lpuart32_read(port, UARTSTAT);
+-	unsigned long sfifo = lpuart32_read(port, UARTFIFO);
+-	unsigned long ctrl = lpuart32_read(port, UARTCTRL);
++	u32 stat = lpuart32_read(port, UARTSTAT);
++	u32 sfifo = lpuart32_read(port, UARTFIFO);
++	u32 ctrl = lpuart32_read(port, UARTCTRL);
+ 
+ 	if (sport->dma_tx_in_progress)
+ 		return 0;
+@@ -961,7 +961,7 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+ {
+ 	unsigned int flg, ignored = 0;
+ 	struct tty_port *port = &sport->port.state->port;
+-	unsigned long rx, sr;
++	u32 rx, sr;
+ 	bool is_break;
+ 
+ 	uart_port_lock(&sport->port);
+@@ -1113,7 +1113,7 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ 	int count, copied;
+ 
+ 	if (lpuart_is_32(sport)) {
+-		unsigned long sr = lpuart32_read(&sport->port, UARTSTAT);
++		u32 sr = lpuart32_read(&sport->port, UARTSTAT);
+ 
+ 		if (sr & (UARTSTAT_PE | UARTSTAT_FE)) {
+ 			/* Clear the error flags */
+@@ -1279,7 +1279,7 @@ static void lpuart32_dma_idleint(struct lpuart_port *sport)
+ static irqreturn_t lpuart32_int(int irq, void *dev_id)
+ {
+ 	struct lpuart_port *sport = dev_id;
+-	unsigned long sts, rxcount;
++	u32 sts, rxcount;
+ 
+ 	sts = lpuart32_read(&sport->port, UARTSTAT);
+ 	rxcount = lpuart32_read(&sport->port, UARTWATER);
+@@ -1411,12 +1411,12 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
+ 	dma_async_issue_pending(chan);
+ 
+ 	if (lpuart_is_32(sport)) {
+-		unsigned long temp = lpuart32_read(&sport->port, UARTBAUD);
++		u32 temp = lpuart32_read(&sport->port, UARTBAUD);
+ 
+ 		lpuart32_write(&sport->port, temp | UARTBAUD_RDMAE, UARTBAUD);
+ 
+ 		if (sport->dma_idle_int) {
+-			unsigned long ctrl = lpuart32_read(&sport->port, UARTCTRL);
++			u32 ctrl = lpuart32_read(&sport->port, UARTCTRL);
+ 
+ 			lpuart32_write(&sport->port, ctrl | UARTCTRL_ILIE, UARTCTRL);
+ 		}
+@@ -1482,7 +1482,7 @@ static int lpuart32_config_rs485(struct uart_port *port, struct ktermios *termio
+ 	struct lpuart_port *sport = container_of(port,
+ 			struct lpuart_port, port);
+ 
+-	unsigned long modem = lpuart32_read(&sport->port, UARTMODIR)
++	u32 modem = lpuart32_read(&sport->port, UARTMODIR)
+ 				& ~(UARTMODIR_TXRTSPOL | UARTMODIR_TXRTSE);
+ 	u32 ctrl;
+ 
+@@ -1589,7 +1589,7 @@ static void lpuart_break_ctl(struct uart_port *port, int break_state)
+ 
+ static void lpuart32_break_ctl(struct uart_port *port, int break_state)
+ {
+-	unsigned long temp;
++	u32 temp;
+ 
+ 	temp = lpuart32_read(port, UARTCTRL);
+ 
+@@ -1668,8 +1668,7 @@ static void lpuart_setup_watermark_enable(struct lpuart_port *sport)
+ 
+ static void lpuart32_setup_watermark(struct lpuart_port *sport)
+ {
+-	unsigned long val, ctrl;
+-	unsigned long ctrl_saved;
++	u32 val, ctrl, ctrl_saved;
+ 
+ 	ctrl = lpuart32_read(&sport->port, UARTCTRL);
+ 	ctrl_saved = ctrl;
+@@ -1848,7 +1847,7 @@ static int lpuart_startup(struct uart_port *port)
+ 
+ static void lpuart32_hw_disable(struct lpuart_port *sport)
+ {
+-	unsigned long temp;
++	u32 temp;
+ 
+ 	temp = lpuart32_read(&sport->port, UARTCTRL);
+ 	temp &= ~(UARTCTRL_RIE | UARTCTRL_ILIE | UARTCTRL_RE |
+@@ -1858,7 +1857,7 @@ static void lpuart32_hw_disable(struct lpuart_port *sport)
+ 
+ static void lpuart32_configure(struct lpuart_port *sport)
+ {
+-	unsigned long temp;
++	u32 temp;
+ 
+ 	temp = lpuart32_read(&sport->port, UARTCTRL);
+ 	if (!sport->lpuart_dma_rx_use)
+@@ -1888,7 +1887,7 @@ static void lpuart32_hw_setup(struct lpuart_port *sport)
+ static int lpuart32_startup(struct uart_port *port)
+ {
+ 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+-	unsigned long temp;
++	u32 temp;
+ 
+ 	/* determine FIFO size */
+ 	temp = lpuart32_read(&sport->port, UARTFIFO);
+@@ -1962,7 +1961,7 @@ static void lpuart32_shutdown(struct uart_port *port)
+ {
+ 	struct lpuart_port *sport =
+ 		container_of(port, struct lpuart_port, port);
+-	unsigned long temp;
++	u32 temp;
+ 	unsigned long flags;
+ 
+ 	uart_port_lock_irqsave(port, &flags);
+@@ -2236,7 +2235,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
+ {
+ 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+ 	unsigned long flags;
+-	unsigned long ctrl, old_ctrl, bd, modem;
++	u32 ctrl, old_ctrl, bd, modem;
+ 	unsigned int  baud;
+ 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
+ 
+@@ -2533,7 +2532,7 @@ static void
+ lpuart32_console_write(struct console *co, const char *s, unsigned int count)
+ {
+ 	struct lpuart_port *sport = lpuart_ports[co->index];
+-	unsigned long  old_cr, cr;
++	u32 old_cr, cr;
+ 	unsigned long flags;
+ 	int locked = 1;
+ 
+@@ -2616,7 +2615,7 @@ static void __init
+ lpuart32_console_get_options(struct lpuart_port *sport, int *baud,
+ 			   int *parity, int *bits)
+ {
+-	unsigned long cr, bd;
++	u32 cr, bd;
+ 	unsigned int sbr, uartclk, baud_raw;
+ 
+ 	cr = lpuart32_read(&sport->port, UARTCTRL);
+@@ -2822,7 +2821,7 @@ static int lpuart_global_reset(struct lpuart_port *sport)
+ {
+ 	struct uart_port *port = &sport->port;
+ 	void __iomem *global_addr;
+-	unsigned long ctrl, bd;
++	u32 ctrl, bd;
+ 	unsigned int val = 0;
+ 	int ret;
+ 
+@@ -3028,7 +3027,7 @@ static int lpuart_runtime_resume(struct device *dev)
+ 
+ static void serial_lpuart_enable_wakeup(struct lpuart_port *sport, bool on)
+ {
+-	unsigned int val, baud;
++	u32 val, baud;
+ 
+ 	if (lpuart_is_32(sport)) {
+ 		val = lpuart32_read(&sport->port, UARTCTRL);
+@@ -3093,7 +3092,7 @@ static int lpuart_suspend_noirq(struct device *dev)
+ static int lpuart_resume_noirq(struct device *dev)
+ {
+ 	struct lpuart_port *sport = dev_get_drvdata(dev);
+-	unsigned int val;
++	u32 val;
+ 
+ 	pinctrl_pm_select_default_state(dev);
+ 
+@@ -3113,7 +3112,8 @@ static int lpuart_resume_noirq(struct device *dev)
+ static int lpuart_suspend(struct device *dev)
+ {
+ 	struct lpuart_port *sport = dev_get_drvdata(dev);
+-	unsigned long temp, flags;
++	u32 temp;
++	unsigned long flags;
+ 
+ 	uart_suspend_port(&lpuart_reg, &sport->port);
+ 
 -- 
 2.34.1
 
