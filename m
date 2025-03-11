@@ -1,112 +1,156 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013068.outbound.protection.outlook.com [40.107.162.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9F4B1EDA03;
-	Tue, 11 Mar 2025 03:31:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741663918; cv=none; b=Uosz5CH0tgHogUEQ7MvskRMf+CH6NNffMneo+dateZScTYRFm/O/nicGyZ3u1jTIJ6sD/+Uoli4O8ShxvVMBrzSpK/SAGYd8fp9lEO/6/NDm1AuNqcY2VvylKQvDyWa1mDBZhTIVA5e7jEyVuGdGw0qHNwQ5LWd02X3fZ09bniE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741663918; c=relaxed/simple;
-	bh=/TKgmRcpR6FwG+QP75QeweLLHLthLmIsWG6RxmlgQmg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Hyml4lORjsW45ZiFaZJyzusoH7NtPzTpJ0HHmWxDICMnvrICDVNP693l5uz824y7X1uGGBdMcoWAZtyGL3keHaBexLeT0eSR/3FJeivbly6XPnyJiYyPMulkIJBsmwGA7Rci0sUhnFdAxF9ssZS9DDqA0okmnTN8PIbracB7LoE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RkeYEAl+; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B51271991CA;
+	Tue, 11 Mar 2025 03:36:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741664209; cv=fail; b=gbnJOvetU6l11Kw3eQIVk4wtk1YrV+jAOPiYcJvvzDRuqUJtHXdMYjRRoLBojlgA28l4OTrdu9VsURu+EwdDOf2v1sHdLB50D23z9E792vg9dp2dr2AYK52UhZ9Bu/m8U3EigsrEMhok736/NZ3tnF2VTjm1PygFgP9Y7IKBCxM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741664209; c=relaxed/simple;
+	bh=lvt1D6czqwTbc7gALC4AvGBAw+JmnlGug934ufBlmBU=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=ks5aFaSDX6G0r8i3iGUHs7Obq6WhtgtGHpaVgF1/dYrlHRdwOdEk9NlaHJp77nP62o/GTGWSnml0GWHXy9BGKVOF+IxQIt3PGkA8H0Z3ulDV67cm/dHWD9orCyyuLDGgNh5x5GXBmeuTvRys/yhdRIcn0kr0NlculHjD8+NQoaU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=jDcuYOzG; arc=fail smtp.client-ip=40.107.162.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RkeYEAl+"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7c04df48a5bso438173285a.2;
-        Mon, 10 Mar 2025 20:31:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741663914; x=1742268714; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tEOdYvwBabq4hLr7eGLZh7Wd260T/gAnmabJNmIq24s=;
-        b=RkeYEAl+wC0znmtUydZvF81b6zA6maDdvgFxVzfKhsn9iaMF58l7nCicf6jKzGOLka
-         Jnu6/DaSbKdSivnU3uwSCatjdXnemjZ/T41cECe997e/f+gPF9UgyE4qdgZgGH5UJpjF
-         fNVR0M4KurScNPX5cpYe2XsQv8ymXF0nYcacNhLo8q1RsVSzqBu1JehBXlqzUB4XkLJN
-         +8Lky4/O2aO3vEbXRceSQNQaqQdiHvaOznSXBqvFl9Yle2IEXq9/VY3Ws5Z0HQ6zvZxC
-         bTlHZX3kjW4GYZhVA1XjQlkwTBcESSLyar6NdRjj+Sg9E3TQlmAPdahwD14K3eQvlVko
-         XAxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741663914; x=1742268714;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tEOdYvwBabq4hLr7eGLZh7Wd260T/gAnmabJNmIq24s=;
-        b=mz2SXg3UdcpWWomO/Isg7fx8EUDSD528c29fvd/eAW69YCMMYCrzX28nI2GyIgqfeK
-         3CNKu4Gcm9yyoN+iejPGQU2UqadvrMkj30SkYUDEISCV9YHSUZ57p5xkVQEsFagNuGy5
-         RfjN43sHR1iQhH8eHte97KDhxxcbdCbX8gmDgIc+uuTAhBql7Ei27hUxudCnbq/Vp2in
-         4drVqOc/sigmyYkOs6mqQ8ZmYteB4Hreinc3pRx/0RHD9Zh187vI8JTr21FwR5gfc1/K
-         2DdfkNpaa7/G3LykjoQbu8Ca/Sf9xvb7fe7oJlLvZS0s+G9+bt1j0RQ6iT0m3s3mtc9p
-         PMbQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV+ybUS/JLyu0Ed5QSX/fNzwEkWs3hRAGDT9WpQOlRBHffjEaEJoVP1NrForzOLY5z0GcNFu8cVi9WAKwk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyOp3T92kgchvxuDvgmXY/0gO45r7NbKHXH4CTvz9ybiwJW5Uwl
-	3y0NnY7ctQMXXY+XM59CQkOy/CCIi0RyuvvwzSv/Cdjafk3kTXqzqsiBlcdR
-X-Gm-Gg: ASbGncscR44+c0S3TCpDJNIluRPzd/6YuEHGqTeY50QhMagwOcWd4p16qPhD4WQF6Hw
-	lF/Ozj9lrllFIyc9JP6In2nX+5HHJAuinvcKp7Bn4+b6JIbXseMW4EPqdQgQfj6CATLO+oksHwK
-	GrUBBrDBhfJpcKJSjJQXClNu52+sRWpYsVAMwe7uEyLa0RCvrdUiBWF0ziF2umr6tPdzlbuwahF
-	+LEWZeAFFpE5XzMokKlbrB1dAAt8sh0oIDeTQq7dYH1J9rJ4KGvIgMTJDC1NBdAH433afwukq8A
-	9giMwY45WgKxIKkP+B7BzxL2ll0GDIYPOMPrsBxrOto8uCGPkHf44hg2ADTVyWBNAYnIQ/m8uqG
-	irhiJJPpA5k3AFWxBOA==
-X-Google-Smtp-Source: AGHT+IHIAyzXVA/iU++8gfxQ63RCGP5YFcZSH8DC2qBAqSfVfKP1LwdcEzYiabOBoLCtcoyEq3huvg==
-X-Received: by 2002:a05:620a:6407:b0:7c5:565a:2177 with SMTP id af79cd13be357-7c5565a2b71mr687815285a.33.1741663913931;
-        Mon, 10 Mar 2025 20:31:53 -0700 (PDT)
-Received: from nerdopolis2.mynetworksettings.com ([2600:4040:5e66:a800:aa39:bd07:6207:ac0d])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c54c204e36sm342772385a.40.2025.03.10.20.31.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Mar 2025 20:31:52 -0700 (PDT)
-From: adamsimonelli@gmail.com
-To: linux-serial@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="jDcuYOzG"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cgqbHXSBJw4uakecDrJz3s+hJL+dFk+RFYxboflbqT257yhTe8Vt6xez6zeKWc+Cm4+Bhts4n5PQys0UEjht2xUQfkhIItkNFeSdJ8Bo2VevxSkVo0C9pqvq14Zu8LUU+kuQ1u7bTAK/b+ng0klQj4H9J0btecj+jreZAHbaHKaORMEE1vFfULprQRVt2VB60NeFlFj0T/58jmhmure5Pz56Ahsvnisks3xYSBqyjx3RdQ7IdaIfhRU6htkbwrbbxBbxAkg6lauwte9K6gH4wlTXpA8xyLJAxn/oB8TZitNYZbcSe9JHgEfh9PQHS1tryEoC670PYeDDI4F0i7cDlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=T4iI2DGU3oaO6quEmx7+w7+teTDKWTjOXM6RDbssWns=;
+ b=yrkENrrPlZt6tTGejCeNagj5pQvsAx+vLZHLp/LJ9g+u5GQn2SVDj15hKqqZwECIMo+AdUnHDj+76ArwvuMSy1raYedJqG6TctF463W9DqsfREin1PBO+rkm1TvXwn2EPlUw9q9Tqb9LQMjmgnoOUa0E8WXu36kLOq4jJqInGUWoiRztqunsAgnOm4j0Vp9vSy/lzJJaRy3jU22ZnZ/m03gAGPgHfuRtlCUuwechyrM0/qOzsXX6hlNk0H4xMVocsk5kLsgySuvhhgL4HkXWgCOp7sxCuWJH7CSu75Xt+ZzD4mXym3PQlqUoY17ONlol/S7M9bH7KCeG1mLjaYdABw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T4iI2DGU3oaO6quEmx7+w7+teTDKWTjOXM6RDbssWns=;
+ b=jDcuYOzGsQSePc1MsAIHuWiV6csxNr5fGC7ehdqBWVsg131h5qtK09O+5EguySpPBByGheW4hqQrJh5Nek2WaLRGEwSM/ij17ZFJSCLP4xCY8DBb/GZIyS8T/0Ep+eXTa4YDIyAEpha5GNinvoSBCbFtuCLb2cucO8z1jNg212kxQ3MqKS0SQh/5tyIaseBkmqresr0Z1nUXx1rnrZcnOfjpXSMXypnNkJQLRgT6rLj/OOSdtL3uvC/hTiR57bojsUBECWOMpNroryyEF/QsORqA2xrnMqlU2hSPxFz+ZRQUQ6FjeUwqj5ZUi/c6tHXkL2LUtZDLfEpUiHY8DhT+VQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8429.eurprd04.prod.outlook.com (2603:10a6:10:242::19)
+ by AS1PR04MB9480.eurprd04.prod.outlook.com (2603:10a6:20b:4d6::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.27; Tue, 11 Mar
+ 2025 03:36:45 +0000
+Received: from DB9PR04MB8429.eurprd04.prod.outlook.com
+ ([fe80::2edf:edc4:794f:4e37]) by DB9PR04MB8429.eurprd04.prod.outlook.com
+ ([fe80::2edf:edc4:794f:4e37%6]) with mapi id 15.20.8511.026; Tue, 11 Mar 2025
+ 03:36:45 +0000
+From: Sherry Sun <sherry.sun@nxp.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Petr Mladek <pmladek@suse.com>
-Cc: Adam Simonelli <adamsimonelli@gmail.com>
-Subject: [PATCH v8 4/4] Documentation/serial-console: Document CONFIG_NULL_TTY_DEFAULT_CONSOLE.
-Date: Mon, 10 Mar 2025 23:31:33 -0400
-Message-ID: <20250311033133.1859963-5-adamsimonelli@gmail.com>
-X-Mailer: git-send-email 2.45.2
-In-Reply-To: <20250311033133.1859963-1-adamsimonelli@gmail.com>
-References: <20250311033133.1859963-1-adamsimonelli@gmail.com>
+	imx@lists.linux.dev,
+	shenwei.wang@nxp.com
+Subject: [PATCH V2 0/3] tty: serial: fsl_lpuart: cleanup lpuart driver
+Date: Tue, 11 Mar 2025 11:33:33 +0800
+Message-Id: <20250311033336.1254842-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0019.apcprd02.prod.outlook.com
+ (2603:1096:4:195::13) To DB9PR04MB8429.eurprd04.prod.outlook.com
+ (2603:10a6:10:242::19)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB8429:EE_|AS1PR04MB9480:EE_
+X-MS-Office365-Filtering-Correlation-Id: c765d30b-40b0-45a7-1928-08dd604df21d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|52116014|376014|1800799024|366016|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?pQIbNQ+SZ4pi2K2xxYVwyYeC6NzwzTS2yXB7xKvrb30E9e2p122MOVl76fzO?=
+ =?us-ascii?Q?6RDwm+YniPj4MKbZuDfsgaXBlJ0B6PeAGvYXL+Cs3geaS1JagleTsCIQfpkh?=
+ =?us-ascii?Q?rwYCJZG8eQkKmSak3VGUaBJHTHho/77meFU5pU5PHM32Gy8TqiZwObFzjsnz?=
+ =?us-ascii?Q?/s4PkQuYaO7QINGCquFSndQS2wAMIBjuJ+Au5KdVMwy2TZYrDbDkigMzqhER?=
+ =?us-ascii?Q?UbBFdSv36Oz/MBB6ywLZTqZCM+mHngJUke3HhPCwFnFLhTAAZUqh4BPHLu7t?=
+ =?us-ascii?Q?kH3Fp4KgzB0lGogynDDjQp426ciXAOl9uwGmac89pQ/xd9+9UUX2M77oA04X?=
+ =?us-ascii?Q?HxYx5/Q9CaJceqCHeIY1Oc/Bv1TkHXXuLW/4aHB4YT+itRfzC80J/hVYpU11?=
+ =?us-ascii?Q?NO6EnvjYKXjfNB+mDeGH2gpORZZpWV0C2mV679R/tRDJAK68G1oRFvLYieB7?=
+ =?us-ascii?Q?+dtOS6ILC+aIe/heyOregSy1J/NbDXlg4NsXrjj7U9chdEHgy1Vcw6d/ZReD?=
+ =?us-ascii?Q?g6+PpkdVwpJZYtVIBmZbub3JYuKkOgSqpzSuhOZdtl4RnwpEwG+Y5pS/mGia?=
+ =?us-ascii?Q?VvUr0PgJH4XDEs3aJXFIS2Lj69Rydls64lEig6FFOcf8HE5HACzw/olNBwGd?=
+ =?us-ascii?Q?yux+VXLjPiwUZQejP5aPXbonjLl/SLaIpEWZ2WRSZFE3Z66amHgaRg9iQw5k?=
+ =?us-ascii?Q?CUpmEE4CBsOyZxoJZslZPlnuY0ifA6aaojk+odUlwv+pvmmNv/Xc8462X3UK?=
+ =?us-ascii?Q?HOyP2wlsl0OfOa44Pca30DS/j4xR+KBMR7S6LMlqh4szpT+IQQcOsq1czuPh?=
+ =?us-ascii?Q?dr4o7Dk61zYKUmiJKZr3vUH9vtn/W5PPTJYieoXxpqBPQGVpS2fJw9l4ZF2Q?=
+ =?us-ascii?Q?lGdlKHba6I0hMnLv9y4ICEwoMcA2KMleqtpHgBX0zEESc4jVH9+CJcrRlixD?=
+ =?us-ascii?Q?p8hzZBHIcsxxmacA2fSz0X+iheci0z0h7gOzw+yY080Luqmc0bMnO/SEnRC3?=
+ =?us-ascii?Q?pO+pdM120edOjUKsAY/mltBUNZm20L3xerZZ3axe94KGs8Gsf+iN7QrikBB/?=
+ =?us-ascii?Q?tzl1GqeEo1OT8BwB1tCQjMp8NBu7L0ukuEeJ9fu/ZuT87WbbAYpRCbCXYG4N?=
+ =?us-ascii?Q?RYx0DHtcV0c0m6dL/usPw+nPVRwPj+9YwgccQOQxjjOAtvYUhL1mE35FY7Xb?=
+ =?us-ascii?Q?DZNw/cBePy0CgIJEi0+t0j7F4uGygi5bhq0k8D1BiKHuhdo/dRyyLJvU/lAa?=
+ =?us-ascii?Q?6Phm7rwIPc3ixPb8qgEy71IRoR8pIQ6vHcIxSUX+zguv2+dqXco9qYceWHMb?=
+ =?us-ascii?Q?+gQvK/WBbrHGWy44K72iumOBmGE/kIR1pOQ8C5kIBl845yFrGu1FupYGgg9o?=
+ =?us-ascii?Q?NlXKTpv6uK3ojXtTNIlKjB3/4zbBmfY+glKA0eiVwwXgNKwkF0gsKubvJ7SE?=
+ =?us-ascii?Q?mEVO5n1ks0N1f6QomADX7XNq28eUUblk?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8429.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(376014)(1800799024)(366016)(38350700014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?efuivUUeW59uV4IY0uTOup5twKPzcDLuHQNuRpTWJjFgu5CwYoP6scpZ+lmT?=
+ =?us-ascii?Q?OCj0Mcv1osWAp+MK2G9Xt482otWizyNVoHBN8tSLEsvEMXSszMohjQ2UIaFB?=
+ =?us-ascii?Q?trj09u+nNV60oZba4TC83YHKyrcEySHLF2gGHS/IQvGOz9R48Lt/xefhZ5vf?=
+ =?us-ascii?Q?knJScwi5qkjHrW0Rn3IRcSgkn5BYiuvh1vitHT1+qV6RVOmRLYlbgovYGxuH?=
+ =?us-ascii?Q?bVKMgAiqI+26aAWOlRqPX1xnVkfzseKR6SONWe6AvKhN6362lOhkcWYctOA0?=
+ =?us-ascii?Q?Cn+IEOIGCRJQNqLoxqh8NElkiqBWGmtwKDc/blUZAknq80Q34cIwzeZESnPB?=
+ =?us-ascii?Q?IKdz1Ix961TUuhQOgz7S/yLdAipVwEqM856gvTQhz5fSCWYn28Cb5oHDRAeK?=
+ =?us-ascii?Q?Kk4abBsRSBInLznpLS01OMY7OQRhoF3ml5zPz8oDIvPPRi70AKsXYAi6GJL9?=
+ =?us-ascii?Q?zbWZLhuqSzujfsDNouox9Ee7cXKYINSS6Mj1KRrqSxx2s49gPNCqIHABu9cQ?=
+ =?us-ascii?Q?87h4Zth6E3f6UuRCAXZ/1XanCobcFd3e9vYt2KtpgBOXWVqr5YrCqSH7wA6L?=
+ =?us-ascii?Q?UNY0RU+x7ScYQRCakGdqqKYycV2otuMtv6MupP2VkMg6cvLMyVeuyyofoaKM?=
+ =?us-ascii?Q?zXm6jXFiETeHAAEqy7SsoSnfiNnL/UWfxzqrMyDfAiJ+zY6UeRRQLtgLY9e8?=
+ =?us-ascii?Q?k2QVF9WB+NsWRlM8zzinGlachMMSfNLTIiFvSSfBIQxUOiywPdPB/BoOdzfY?=
+ =?us-ascii?Q?uK0yvrYJHbYgHMRQV6oex8U5trk3w3vMRMKoAXmuMfJsot0r0sIstPVlKpaA?=
+ =?us-ascii?Q?Fu8BBVKHEUgMdDDAZrC1Z3zum2TtDiMIrbanCskDBG30kYqs3voss2AZQjRU?=
+ =?us-ascii?Q?qmCrHHnI51kATwshTRF8wez7f6KT3cAGM2oYfBiqTqtQI4bBu82CdfHDBmjB?=
+ =?us-ascii?Q?b6QE2AcX1ZhUvlFz7v+QA44iCpgp0mRbzOUgPSy85/Xr/PWi/fGMnKjCf5a7?=
+ =?us-ascii?Q?rgh5lloUPxNf1UcsjiTzQl3sJacBXmQf65vtl56ix6iJlfaxE4Ot+fScEb+p?=
+ =?us-ascii?Q?rtY3+kT2JyuMZwpkpEH74OD4uiezWCh8vg6Xfi5M731vCcdyXzBcEq5P3E6U?=
+ =?us-ascii?Q?PKkgRqbGgf69ddZvDWlRXSpqCyUTpILVJvTRC6ERhHC0VCkUbgoAUnKIRwUC?=
+ =?us-ascii?Q?7GrIoV6U7OLhqCZ5enfa/dbqp+tLuscAHAV6xxat2oK1xpHVwhZG+u7HbKRD?=
+ =?us-ascii?Q?P/B+YtXF5cP2yDYCzMMKi6yeaNj7oPTZ/aVxNPHAcZ2SmLaXxRgHhCCJjRR3?=
+ =?us-ascii?Q?1lqbL0V9+uB9wT/+gTUy64PEa63LFZED7JV9b6A7uH81itMPuHfIyivUW/TK?=
+ =?us-ascii?Q?SW9siDIib7xwZquf68nS/SKxqVruHz6lbK5bcVNAi8dgQ0YXip/TPlFH1Yh6?=
+ =?us-ascii?Q?EbQ52Fu9K+lYkxWdJmcKglOSSFKb13Ac1IHHLy3YeWTIHjM/w6JJma+R0JZq?=
+ =?us-ascii?Q?bMAdQm4NXgEGlEyExcrL49b5UVIMkvJfrLQojspiP9bKl2uWvxQKjmaIzkLR?=
+ =?us-ascii?Q?WAHHirdtCCalDkAWOu5kP2fuRODSAqj1to45qgF9?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c765d30b-40b0-45a7-1928-08dd604df21d
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8429.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2025 03:36:45.0360
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: G8Ji9E2F/6ySYntYSO69WEI1qdCMJuPAGoitE3hOecwoyCzS2oC/GEigm18Fe2vUs0DV1h92k1HlNfPNLY9CvQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR04MB9480
 
-From: Adam Simonelli <adamsimonelli@gmail.com>
+Do some cleanup for lpuart driver, no functionality change.
 
-When the kernel is compiled with CONFIG_NULL_TTY_DEFAULT_CONSOLE and
-no console= options are selected, it defaults to using the ttynull
-device.
----
- Documentation/admin-guide/serial-console.rst | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Changes in V2:
+1. Add the third patch to rename the register variables as Jiri suggested.
 
-diff --git a/Documentation/admin-guide/serial-console.rst b/Documentation/admin-guide/serial-console.rst
-index a3dfc2c66e01..1609e7479249 100644
---- a/Documentation/admin-guide/serial-console.rst
-+++ b/Documentation/admin-guide/serial-console.rst
-@@ -78,7 +78,9 @@ If no console device is specified, the first device found capable of
- acting as a system console will be used. At this time, the system
- first looks for a VGA card and then for a serial port. So if you don't
- have a VGA card in your system the first serial port will automatically
--become the console.
-+become the console, unless the kernel is configured with the
-+CONFIG_NULL_TTY_DEFAULT_CONSOLE option, then it will default to using the
-+ttynull device.
- 
- You will need to create a new device to use ``/dev/console``. The official
- ``/dev/console`` is now character device 5,1.
+Sherry Sun (3):
+  tty: serial: fsl_lpuart: Use u32 for register variables
+  tty: serial: fsl_lpuart: use port struct directly to simply code
+  tty: serial: lpuart: rename register variables more specifically
+
+ drivers/tty/serial/fsl_lpuart.c | 446 ++++++++++++++++----------------
+ 1 file changed, 220 insertions(+), 226 deletions(-)
+
 -- 
-2.45.2
+2.34.1
 
