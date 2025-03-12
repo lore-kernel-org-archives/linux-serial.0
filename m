@@ -1,655 +1,261 @@
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11011013.outbound.protection.outlook.com [52.101.65.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003C11BC09A;
-	Wed, 12 Mar 2025 02:39:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741747171; cv=fail; b=qSzjgnYRTBV3nWIG4x4dKiHM0pEcouGOjpSjgt3qCvHzUL8xNXgqrs03yi8sE0Ar0uviIlsQ61X+xWEdKyR4NV0o6gTjgbY975kdOicAV2xv/IaDNmVxBSH/bd1i5IpCpkYYnYaVtBdL65fze9WUewdmKzx8Sn0LvfVe6qappVo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741747171; c=relaxed/simple;
-	bh=RX5luVQX7PioQBP9NgmHL0s0qwmxYwdeQAwJtSpYPak=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=cb53scs7NvhAIUDqm295V2ecGpmfXNfFhf2p+enLUwmEKPXE0HHC/f7GwCTgEojCSe84hAY1X5nsH4K3GiaHgIcFnwjZafR8ylgqNeurxQa/jaBHLsy0CL/89HE6MXe7f2iEX91eCkIvSoZQhGxWNQ3RgzP+g+tk2OncgqTKyLo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=WFbvsZDb; arc=fail smtp.client-ip=52.101.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39F34238D34
+	for <linux-serial@vger.kernel.org>; Wed, 12 Mar 2025 13:42:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1741786971; cv=none; b=JXOpBYc0M5oQpZGXBRamKi3egPERBwvrTeY6BXH666T82LsdJM9kDqta+AGNSEMbbRu7zVWSLOP99f+whqx/+TIzD97g0AcxEUQRGntYKmQ15lqcW2retA9W8KlO/uIpf2BqB18cJLI17qFgO2WbjXk/wwOP6+t6mYXOV93jpyg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1741786971; c=relaxed/simple;
+	bh=mTQmbOpwPB9pHwv2w8Sm4aaZLhSRhEt1a/8lwIIgvZE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rLcCBgArP5C4is8PAD7ykdE+H8BWKU/MS9R6JcWAiKr1Gk4ub+IwZ0yyG6vGD5lwam5W+jnQqcFk/52zsQuUQpFLfOvOLutaOWrpIcpk3GjziSMUyou39BT4mO8oQq87KSYbPO3MW39XgMXysLaqNdbw84EA/9/yNauNeszdDFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QSvyL0lB; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="WFbvsZDb"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gZTU0fbWWKCKANx0YPU34yRvoUiaB5xZD3PJRoNYBS/C4LImu4tqBhsvsQYtArVfFm+zW4MwRnjY8ONwtk98wSU77GlqeKY4B7DSGdu8Be+gtCRgvMa/WiQn0pQZ470ivuhumAs83+GkFKSNG64y3GmnogX1DpF+1f7K0J2SUxAJXTLRXFJMuQkYLD8Xb7rWKmLwDoHgVEu5MZJV7N/IqFClV1AhcKFH6hMH/XByytswXbCOX0Tvf+y6HtguIV46S8rQ4hEdPB4heoeclHO55kozks39PgsSUpst6zlB3scFh5MSt+W55fNP15kkpLprweQS0jtDlncmDhTRSp0UMQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RP93JZ2ZYF6QC1CS8utO383oqlJXbtpQ4vB8lrJ1Hig=;
- b=ldmSC3mSWwNikLTKCOuesqYc5h/ihdQE7nvg/NCZavModHW5+gd2bEMeHxvK0moHVKnvJch4Qo7NHa31jj+DsTPwVRoJJbwpYEX2C+RnGpbCoNSx8mehLZUOz8+NRbxPfRiySe5Ldrj/8HKxYIYjJutKwYh933HSqyRrHe5id4/y2sx2lIVcebZyXu4aS1sdcEZ+N1QKEigtWJd9eFQcV3FJvwVFalgeCfHG62YnNHdlionpPgpXWJ+Yu84B/mTLAew7J4twjglZg1t46fjTMrMBJYp3EFHqVXHEvi69f05an4p1lElAO/PF42U8wPCVg0VgfXEZyslYO1RteDzmAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RP93JZ2ZYF6QC1CS8utO383oqlJXbtpQ4vB8lrJ1Hig=;
- b=WFbvsZDbWuUAlxpWr1b/8fjbSxjAfjwf+ZxI7Z0g527dcY5rDnpDB+TlMQrdTY5nYA3jjvfDNXpBJVO0ujxNeqxYOruKMhD/g37k3ZR7tpwukWdfcyDewkHfcYQYsVEN37eWD4VqoyTRIK4XnCRPvXyEADbejlrtrBY3m4bTeOHHXFYhGINYOGCPvB0Sbpp9kji0jbnTYkrY3WfdQVchtdqz/3v7vf2HyW4g4joZjl9LToHzrQECYaOmhDUv8eEHk5kDAnz7UuYdfDQL2PwQCBxiawiKjr0UeceAuDE5s42I92QxiLcP6mjHZo8N2mSazTKOB9hVXvrdVKwU36DlpQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB8429.eurprd04.prod.outlook.com (2603:10a6:10:242::19)
- by DUZPR04MB9794.eurprd04.prod.outlook.com (2603:10a6:10:4e0::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8511.27; Wed, 12 Mar
- 2025 02:39:26 +0000
-Received: from DB9PR04MB8429.eurprd04.prod.outlook.com
- ([fe80::2edf:edc4:794f:4e37]) by DB9PR04MB8429.eurprd04.prod.outlook.com
- ([fe80::2edf:edc4:794f:4e37%6]) with mapi id 15.20.8511.026; Wed, 12 Mar 2025
- 02:39:26 +0000
-From: Sherry Sun <sherry.sun@nxp.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	imx@lists.linux.dev,
-	shenwei.wang@nxp.com
-Subject: [PATCH V3 3/3] tty: serial: fsl_lpuart: rename register variables more specifically
-Date: Wed, 12 Mar 2025 10:39:04 +0800
-Message-Id: <20250312023904.1343351-4-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250312023904.1343351-1-sherry.sun@nxp.com>
-References: <20250312023904.1343351-1-sherry.sun@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0037.apcprd02.prod.outlook.com
- (2603:1096:4:196::8) To DB9PR04MB8429.eurprd04.prod.outlook.com
- (2603:10a6:10:242::19)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QSvyL0lB"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-3913d45a148so2946883f8f.3
+        for <linux-serial@vger.kernel.org>; Wed, 12 Mar 2025 06:42:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1741786967; x=1742391767; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=TRL+XzLRP8H1n4f8VQBF9LgIUiEPLdcwsw8vod0mrbw=;
+        b=QSvyL0lBI/hJ72R7Bs5cC9zFX3wIKA8NCb3xsUMqyt36yxByx7bcjjbeorv7GbgBXv
+         6qBPgpDi33Sif5Gha00t4FDzAoXwW9eCbQfWjgqDubP3TMq89U5XIlL7n3dlc1yMvmAl
+         ldVJmNccUMmhmKz2ec/JNKvA3FZslAIzhc0TCC9f/ZAB+vitK6AmIegSJMjdXMMaK5hc
+         eVA0/OM/cQDYswmoCHjx9SJ9K7emqRcUgUPmEuyBjZqsAD06DKchOMDg/c/o9DcVXHM4
+         zoNYWYWmMv+jR+PARHYp4+rJMPLjwZMLI5VSxM5ylz+hpEsBG3qg2IYO7KgZoBdXeUOG
+         GuCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741786967; x=1742391767;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TRL+XzLRP8H1n4f8VQBF9LgIUiEPLdcwsw8vod0mrbw=;
+        b=CdB5uhpGNoev4o8fWwX1zYkgmeNL3w2lqIQ4fp9UoG7YPs+SqDVX12VlWtPY9C6sny
+         xgZIPxmz0qkvKzhNCO9QzkszoLJFCgg9G7aX9yXMmvI0Z90lj5zazshtfXVvBK8Lph3a
+         gSxJYJ40Z5cA8Tc0ttVsWrl1E/RbtbaWu9y2OXIIGzsQCJOzFLVXEwjnyeM4or8ImXVk
+         9vQzfzV70VAkCUnV+z4iHoEZ96huzk4SbfGHsVkqX6CSwcy80dmAe5xkAjKRvYl6cUac
+         /dvZp35dcxR2ZfpEPgsEiJuiEnB/4QmI/e4/3qlzGbheQq1YPT/v1cTaLeG0WCodyjLw
+         fbsg==
+X-Forwarded-Encrypted: i=1; AJvYcCUXzsx1AOK9R+TkF7Et41yVmZfcH6p7bfv7lE0n9xpEKob5KqkRqGVQMPKLVHowtnInlA1ThZbnGCQcQWc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxwNG7SeEkp6HPeaHJZNlAcwLFQtyy33dYLuRxQplA925/QOVSJ
+	S0jYg/NtbgLnglaLXOqC2jcz6NjIrOc5xFnuw/D4/9Q1eH3vSxQSoQJfEoVsqxU=
+X-Gm-Gg: ASbGncvT65voOkHulzaj+0vmL1spkfhwxXNdOz9uV3+bOPphKdMXzOtl4QdWTh/5UYA
+	mAESJGOSRjdBefuwbxgKjYbX5z9nOQtj1cxHyzm0gtkr2F3AuOSLjMDluxS83xjHh5dbXTuIBjk
+	IWjJoGNM7qGxjJEAf9qgHcXD1l1A4uMojM6bB2rwRmiQiff/QY3BKN6icYIaDReCn9ETrfwl07p
+	AeCZZ02NVxbrBMFPH6tZuhRHAz3xP3BE/uCQjSU+wtMwJ7IOBDvf/sQ+kauKaTbnw5UxW/xYUNE
+	eoYgCqi18zcyrK6vWW6lvHxAYFbWo5hhVzxlKmn+fGXtYEs=
+X-Google-Smtp-Source: AGHT+IHFQzTn4zPksAQ8B6QTY+mXcs727bLPbUIT+fCCiNEek6fqMg+/r97172WN0N8oMR4cP0dBRA==
+X-Received: by 2002:a05:6000:144d:b0:391:139f:61af with SMTP id ffacd0b85a97d-39132d8c768mr15352561f8f.32.1741786967439;
+        Wed, 12 Mar 2025 06:42:47 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43d0a7a455dsm21742895e9.40.2025.03.12.06.42.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Mar 2025 06:42:47 -0700 (PDT)
+Date: Wed, 12 Mar 2025 14:42:45 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Adam Simonelli <adamsimonelli@gmail.com>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject: Re: [PATCH v6 3/3] tty: Change order of ttynull to be linked sooner
+ if enabled as a console.
+Message-ID: <Z9GPVVTnngGbmbuv@pathway.suse.cz>
+References: <20250304035447.3138221-1-adamsimonelli@gmail.com>
+ <7969025.Sb9uPGUboI@nerdopolis2>
+ <CAHp75VfadXS8Z2G6U_DcOOZFFmaOSn_9uQN_N7Psse3kiSGj0g@mail.gmail.com>
+ <4451040.8hb0ThOEGa@nerdopolis2>
+ <CAHp75VdogqwA2qJBp5Sp-tuJbKvmj9mLuop8GZP+vLVeJNg2DQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DB9PR04MB8429:EE_|DUZPR04MB9794:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4cfa2e3c-50f9-44f8-0fd0-08dd610f1aed
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|52116014|376014|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?BLKWW5cJ42AmDz8FRY5z9uukH0jqeidMN7+HlxncQw5BSfqqwYtRLYsWTETM?=
- =?us-ascii?Q?BwgY1X0qWOe5MmOg8/x9praaYL76oFxEbtGg5k8xhrNEVa0DVzVT6ApKlurh?=
- =?us-ascii?Q?zpjrV//Xxl1omY6UDuHQJquSHPuoey0TSJiaKeKo69yxkGb9HRTdZ+1nKUJ8?=
- =?us-ascii?Q?zu8DV41UwGVY2J6a9BjRAE7VwydDFnlegi6wX7u/5xosZ01WpPP24knG25iE?=
- =?us-ascii?Q?ky5ASVONWPAKWkVolMvcZO83xfcpLwbo+JwLt2PCBjzBGQGMWzRRI1FzeYNg?=
- =?us-ascii?Q?/9Ij7pYeH6yYINUml5FbyUXnyV3aDpa5E3fcms+CTXIqmo+cBLIT7P2WySVh?=
- =?us-ascii?Q?liug07jREaqroNIea4pUnQEOl0b+IDWtwKzlfmVe+ChAAQdELsvIzZ1WYvO/?=
- =?us-ascii?Q?XGv62eIeUrPA4+OAXXOoe6zh2Dh4BUk4VLYGrtYgUx93LqE/ZtQsG+UuxLsD?=
- =?us-ascii?Q?iPxuPgiDjNV8TYq5c1/5HQVKfjjf9drbfpMm5tJNmoyokFM9/VFUa93vKEKh?=
- =?us-ascii?Q?3xZPbE5WqKibDMurzeoPWMnDtNBYlx6z4PBMn7y8lomO1YET8OEKw6v0EXzY?=
- =?us-ascii?Q?7j4emLPgJQt9o6hHYdPlOm5/pnHT0j5v6Xwm3hPiWDEyhiNkJcgiXuHeKnvB?=
- =?us-ascii?Q?cCiMiDduJi2mCbUKWeRAp3Jxc9ziO2Ut98H1JtgFB4+/+Pk5aNpcw6pNo3RF?=
- =?us-ascii?Q?t3IpLPRYo8ZHyEWbGxvd/YQd8h3/PKD6EJR7MUpHWkKySfCSD9v1N/n5fPk7?=
- =?us-ascii?Q?OQHar+gl6i62dxV5N2stxGe82Jhmoy7WJSlezsFrwHLkx0Kf6jZ6tNhXTmm8?=
- =?us-ascii?Q?je5XdWicikDoyefrr+51sIiwP9Jq3Na+OtL2kdo6j79OWriUnQka/FSwRPLy?=
- =?us-ascii?Q?cQLo/Xr7olGvXToHQA/UvMUzhsch3hyE7d8LC8/CG8BdI7jgx0QHdJ+RlMVa?=
- =?us-ascii?Q?YJm1Y4bCzobD7IDs9TDochMsmLIYINfgm2jSfpseYctkLXlW9cMYjGRY24Sa?=
- =?us-ascii?Q?q5q0mge4e5e/iFk/iuJGKvz6aFF/UkESeSagLfn37fxYqsiUW7QCLeFDaV46?=
- =?us-ascii?Q?SlcCY05y35FVbNLoSVY6v+wxEJQjxAeQQvahXIuzwhMpX/Osa9KAxHhvGfX9?=
- =?us-ascii?Q?EqFuqf0AVwLDViJTKy2tpAeZIUsajB8Wq95DFgRNKre6DtRzgolxTriQeBgx?=
- =?us-ascii?Q?8TKqC64HFrlHgY1Lk5XxJqm91sdTySEB1J+FiBDsduYp04rJFwqEiBNeGK/J?=
- =?us-ascii?Q?kfSlWATcbE6FtBk5WvTqm7xmD9gug4StcWzqBxJiCNeSs912PxWcfOqqEgYb?=
- =?us-ascii?Q?MUNY9sRZZ1twlJrj4aWDKgOVaW66yZSISm7vhbj08ty49pRFuXIac5f1GB7H?=
- =?us-ascii?Q?j6pQ+Yg6/cxw4yy6UblkvDVA39C5F7fQglE+wA0F3j6OR37PLd5OBUGRa+fp?=
- =?us-ascii?Q?2RMamTDbQqEdo16xP070aMJAIR4nENSN?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8429.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(52116014)(376014)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?5TL5+FUDul0TMyWze7kvUSlg5npvsNI6i6rHfppUk0pkand11N2n7tPqhloA?=
- =?us-ascii?Q?zDmUscdzi5o6FHYVzvi8/I2r3nDyFDx9IKpa07tIzSACBIBCWHbNnp5p++Q1?=
- =?us-ascii?Q?z+W97WojLmsP160jLHzJFnjGkjej85szfyXxqS4GiKCpk4KIVDAXEvBWKyNO?=
- =?us-ascii?Q?VQ7JmrFNM2fcFgjzYWmbo9nowwhADzzj93kd+sJeqimSlYWDZmGeeauUQFho?=
- =?us-ascii?Q?JGtq4cN2oR548szRW3jM8lyRwAAjDbTWQC19HrmizBPsXIUVRr810NJKCtX2?=
- =?us-ascii?Q?WJgfwkBLli8YB1acxPf6k4dTEXcRytYd7T1lkZVAA8q+a1GfpUEQ2iQ1qSEB?=
- =?us-ascii?Q?FpoboKwLgP/akwmwRFnGHNWXyl4ygCYsP8/AU0Mo+8Lj1KDivGIrU+IGk3gc?=
- =?us-ascii?Q?hHWtqccrzxlBgg+HAW34/05sbKYltmv6LavpW3onC0rfJ+0wLRH9uNNb1Ym5?=
- =?us-ascii?Q?NmGXmDMbW0ZgDzLW7q3DE/uWRq+33n636+Lky+/5VkH/BPjTPCbXU6jee0CZ?=
- =?us-ascii?Q?9ZT1PKsdJfZISy4CICVdEiuVmtVt5clJaZLUtanrI+LIK7AcUekyJndGGJzZ?=
- =?us-ascii?Q?QzzSXchresovXZhX2x5k9ZASvKWdYOkd9QfQ8jJGLfPQ/29PpgjaVw3N/4uG?=
- =?us-ascii?Q?6Yh97Nd2YpOhOtrxllpDzAvw3FrtId03UhkMbNaCsLYOvi7lejjbloQFxoq1?=
- =?us-ascii?Q?OrY1z8Ag9HPVZeplML3lITSeo6GVl4R+u/sjv1lT2VQlKenpV+hzFwkulW/8?=
- =?us-ascii?Q?bW4sVc9/5TyRPAotiHA0ye/F2MROo55wM1chV3Bzzlj+za/cCDzG1sc9m9Js?=
- =?us-ascii?Q?DeXWOITiaeBbtWSR4Y8Rf41MtWImSYuQjX5BOTTK+cnM8gjWDlKvtPGFJjtG?=
- =?us-ascii?Q?AysEyGoUBWb1ksjmJJvtzJ+FVRP9WuToRYXPiGLAnwmqU7PHvRo1Zhe7ledY?=
- =?us-ascii?Q?iKIzFMAz9zds/8ERUqs5nB9c7vcdWhEHvPWL8xKTV/QmhaTYlIjJsJzjl8fX?=
- =?us-ascii?Q?qjIfM2Sh3EBEtqtHXV2WYESH+Og18VuLW4tKBdhrWEJQrseEta345ovLuLWU?=
- =?us-ascii?Q?WiSz5adEuBPGx530bjuCB0ApHhHkpMro7GoP6kHIEX44mMDsk+h3PaivOAx8?=
- =?us-ascii?Q?3WcKo5DKL2TWjY7qUUFTJxnMV3AYprK4D2h4SkDLoyFwd8gX7CDjgbcHeaCc?=
- =?us-ascii?Q?td83kzHTYXFZet/NypyMxddcsfNiqF3+yW5kY01Fr+hM0SbJdITHcwAeLdu7?=
- =?us-ascii?Q?SzStArZszsQCgu5wiJMbCdoQrDwATVmgr/EXh3jBzhlUzWtiC0NM4M3GEpep?=
- =?us-ascii?Q?NYVXGqpXKYhs2HtsWbUwfCPCtqyKAnbMV3rFE3WjUJ2NjiNnC5FG+cEHIHi9?=
- =?us-ascii?Q?wU5ZxhPYwdsZ++A9OT1fdzDgVcYjAFb17JQNySf1sIzocZrpP/xeyvvNKIr/?=
- =?us-ascii?Q?ABIOi8v492AJglDlyvAfwJSyWrQxhYXg97C5FVQK1v3+W4GYDxxRzIJxPiEd?=
- =?us-ascii?Q?sofqMydrVUPtaFZG9vI8krmFmbsuVGY44KdMkvw8xo7rNe6djupJr479FYhD?=
- =?us-ascii?Q?OB1WeXPXrjrlDn1LAvSj1eGLY34O3D4/rCw4sdMf?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cfa2e3c-50f9-44f8-0fd0-08dd610f1aed
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8429.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2025 02:39:26.3909
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HwHtViqGUyCgmkvwkKW5MibOrJPvOAnugXWyaWuXorQATjSr4dUAvbkukZKbx9H134/ryXgGZ9SVydk7rPHCSg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DUZPR04MB9794
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VdogqwA2qJBp5Sp-tuJbKvmj9mLuop8GZP+vLVeJNg2DQ@mail.gmail.com>
 
-There are many fuzzy register variables in the lpuart driver, such as
-temp, tmp, val, reg. Let's give these register variables more specific
-names.
+On Thu 2025-03-06 09:10:29, Andy Shevchenko wrote:
+> On Thu, Mar 6, 2025 at 6:22 AM Adam Simonelli <adamsimonelli@gmail.com> wrote:
+> >
+> > On Wednesday, March 5, 2025 1:52:00 PM EST Andy Shevchenko wrote:
+> > > On Wed, Mar 5, 2025 at 4:06 AM Adam Simonelli <adamsimonelli@gmail.com> wrote:
+> > > > On Tuesday, March 4, 2025 1:51:52 AM EST Andy Shevchenko wrote:
+> > > > > On Tue, Mar 4, 2025 at 5:55 AM <adamsimonelli@gmail.com> wrote:
+> 
+> ...
+> 
+> > > > > >  obj-y                          += vt/
+> > > > >
+> > > > > + blank line.
+> > > > >
+> > > > > > +# If ttynull is configured to be a console by default, ensure that it is linked
+> > > > > > +# earlier before a real one is selected.
+> > > > > > +obj-$(CONFIG_NULL_TTY_DEFAULT_CONSOLE) \
+> > > > > > +                               += ttynull.o
+> > > > >
+> > > > > Here is the question: are you sure that all console drivers that exist
+> > > > > in the kernel happen to be here? Have you grepped the source tree for
+> > > > > checking this?
+> > > > >
+> > > > Grepping for console_initcall, the only other places I see outside of
+> > > > drivers/tty/ is
+> > > >
+> > > > arch/mips/fw/arc/arc_con.c
+> > > > arch/mips/sibyte/common/cfe_console.c
+> > > > arch/powerpc/kernel/legacy_serial.c
+> > > > arch/powerpc/kernel/udbg.c
+> > > > arch/powerpc/platforms/powermac/setup.c
+> > > > arch/um/drivers/stderr_console.c
+> > > > arch/xtensa/platforms/iss/console.c
+> > > > drivers/s390/char/con3215.c
+> > > > drivers/s390/char/con3270.c
+> > > > drivers/s390/char/sclp_con.c
+> > > > drivers/s390/char/sclp_vt220.c
+> > >
+> > > Which means you need to test your stuff on those cases, to see how the
+> > > linker order is done there. It might be that your change wouldn't work
+> > > there as expected (quick workaround is to mark the new option as
+> > > depends on !S390 && !PPC and so on.
+> 
+> > It will be difficult to test other arches, I mean I guess it is possible with
+> > QEMU, and cross-building, though I did do an experimental test on x86:
+> >
+> > Making it temporarily adding an architecture specific console like
+> > powerpc/some mips/s390/arches with Xen enabled.
+> 
+> Thanks. Make sure the summary of this gets into the commit message.
+> Also consider updating the relevant documentation under
+> Documentation/, if any.
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
----
- drivers/tty/serial/fsl_lpuart.c | 220 ++++++++++++++++----------------
- 1 file changed, 110 insertions(+), 110 deletions(-)
+Honestly, I am not sure what is the preferred behavior here. I am not
+familiar with the arch-specific consoles.
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index 3b48e320e7f4..c8cc0a241fba 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -441,36 +441,36 @@ static unsigned int lpuart_get_baud_clk_rate(struct lpuart_port *sport)
- 
- static void lpuart_stop_tx(struct uart_port *port)
- {
--	u8 temp;
-+	u8 cr2;
- 
--	temp = readb(port->membase + UARTCR2);
--	temp &= ~(UARTCR2_TIE | UARTCR2_TCIE);
--	writeb(temp, port->membase + UARTCR2);
-+	cr2 = readb(port->membase + UARTCR2);
-+	cr2 &= ~(UARTCR2_TIE | UARTCR2_TCIE);
-+	writeb(cr2, port->membase + UARTCR2);
- }
- 
- static void lpuart32_stop_tx(struct uart_port *port)
- {
--	u32 temp;
-+	u32 ctrl;
- 
--	temp = lpuart32_read(port, UARTCTRL);
--	temp &= ~(UARTCTRL_TIE | UARTCTRL_TCIE);
--	lpuart32_write(port, temp, UARTCTRL);
-+	ctrl = lpuart32_read(port, UARTCTRL);
-+	ctrl &= ~(UARTCTRL_TIE | UARTCTRL_TCIE);
-+	lpuart32_write(port, ctrl, UARTCTRL);
- }
- 
- static void lpuart_stop_rx(struct uart_port *port)
- {
--	u8 temp;
-+	u8 cr2;
- 
--	temp = readb(port->membase + UARTCR2);
--	writeb(temp & ~UARTCR2_RE, port->membase + UARTCR2);
-+	cr2 = readb(port->membase + UARTCR2);
-+	writeb(cr2 & ~UARTCR2_RE, port->membase + UARTCR2);
- }
- 
- static void lpuart32_stop_rx(struct uart_port *port)
- {
--	u32 temp;
-+	u32 ctrl;
- 
--	temp = lpuart32_read(port, UARTCTRL);
--	lpuart32_write(port, temp & ~UARTCTRL_RE, UARTCTRL);
-+	ctrl = lpuart32_read(port, UARTCTRL);
-+	lpuart32_write(port, ctrl & ~UARTCTRL_RE, UARTCTRL);
- }
- 
- static void lpuart_dma_tx(struct lpuart_port *sport)
-@@ -599,7 +599,7 @@ static void lpuart_flush_buffer(struct uart_port *port)
- {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
- 	struct dma_chan *chan = sport->dma_tx_chan;
--	u32 val;
-+	u32 fifo;
- 
- 	if (sport->lpuart_dma_tx_use) {
- 		if (sport->dma_tx_in_progress) {
-@@ -611,13 +611,13 @@ static void lpuart_flush_buffer(struct uart_port *port)
- 	}
- 
- 	if (lpuart_is_32(sport)) {
--		val = lpuart32_read(port, UARTFIFO);
--		val |= UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH;
--		lpuart32_write(port, val, UARTFIFO);
-+		fifo = lpuart32_read(port, UARTFIFO);
-+		fifo |= UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH;
-+		lpuart32_write(port, fifo, UARTFIFO);
- 	} else {
--		val = readb(port->membase + UARTCFIFO);
--		val |= UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH;
--		writeb(val, port->membase + UARTCFIFO);
-+		fifo = readb(port->membase + UARTCFIFO);
-+		fifo |= UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH;
-+		writeb(fifo, port->membase + UARTCFIFO);
- 	}
- }
- 
-@@ -642,7 +642,7 @@ static int lpuart_poll_init(struct uart_port *port)
- 	struct lpuart_port *sport = container_of(port,
- 					struct lpuart_port, port);
- 	unsigned long flags;
--	u8 temp;
-+	u8 fifo;
- 
- 	port->fifosize = 0;
- 
-@@ -650,9 +650,9 @@ static int lpuart_poll_init(struct uart_port *port)
- 	/* Disable Rx & Tx */
- 	writeb(0, port->membase + UARTCR2);
- 
--	temp = readb(port->membase + UARTPFIFO);
-+	fifo = readb(port->membase + UARTPFIFO);
- 	/* Enable Rx and Tx FIFO */
--	writeb(temp | UARTPFIFO_RXFE | UARTPFIFO_TXFE,
-+	writeb(fifo | UARTPFIFO_RXFE | UARTPFIFO_TXFE,
- 			port->membase + UARTPFIFO);
- 
- 	/* flush Tx and Rx FIFO */
-@@ -694,7 +694,7 @@ static int lpuart32_poll_init(struct uart_port *port)
- {
- 	unsigned long flags;
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
--	u32 temp;
-+	u32 fifo;
- 
- 	port->fifosize = 0;
- 
-@@ -703,10 +703,10 @@ static int lpuart32_poll_init(struct uart_port *port)
- 	/* Disable Rx & Tx */
- 	lpuart32_write(port, 0, UARTCTRL);
- 
--	temp = lpuart32_read(port, UARTFIFO);
-+	fifo = lpuart32_read(port, UARTFIFO);
- 
- 	/* Enable Rx and Tx FIFO */
--	lpuart32_write(port, temp | UARTFIFO_RXFE | UARTFIFO_TXFE, UARTFIFO);
-+	lpuart32_write(port, fifo | UARTFIFO_RXFE | UARTFIFO_TXFE, UARTFIFO);
- 
- 	/* flush Tx and Rx FIFO */
- 	lpuart32_write(port, UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH, UARTFIFO);
-@@ -789,10 +789,10 @@ static void lpuart_start_tx(struct uart_port *port)
- {
- 	struct lpuart_port *sport = container_of(port,
- 			struct lpuart_port, port);
--	u8 temp;
-+	u8 cr2;
- 
--	temp = readb(port->membase + UARTCR2);
--	writeb(temp | UARTCR2_TIE, port->membase + UARTCR2);
-+	cr2 = readb(port->membase + UARTCR2);
-+	writeb(cr2 | UARTCR2_TIE, port->membase + UARTCR2);
- 
- 	if (sport->lpuart_dma_tx_use) {
- 		if (!lpuart_stopped_or_empty(port))
-@@ -806,14 +806,14 @@ static void lpuart_start_tx(struct uart_port *port)
- static void lpuart32_start_tx(struct uart_port *port)
- {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
--	u32 temp;
-+	u32 ctrl;
- 
- 	if (sport->lpuart_dma_tx_use) {
- 		if (!lpuart_stopped_or_empty(port))
- 			lpuart_dma_tx(sport);
- 	} else {
--		temp = lpuart32_read(port, UARTCTRL);
--		lpuart32_write(port, temp | UARTCTRL_TIE, UARTCTRL);
-+		ctrl = lpuart32_read(port, UARTCTRL);
-+		lpuart32_write(port, ctrl | UARTCTRL_TIE, UARTCTRL);
- 
- 		if (lpuart32_read(port, UARTSTAT) & UARTSTAT_TDRE)
- 			lpuart32_transmit_buffer(sport);
-@@ -1411,9 +1411,9 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
- 	dma_async_issue_pending(chan);
- 
- 	if (lpuart_is_32(sport)) {
--		u32 temp = lpuart32_read(&sport->port, UARTBAUD);
-+		u32 baud = lpuart32_read(&sport->port, UARTBAUD);
- 
--		lpuart32_write(&sport->port, temp | UARTBAUD_RDMAE, UARTBAUD);
-+		lpuart32_write(&sport->port, baud | UARTBAUD_RDMAE, UARTBAUD);
- 
- 		if (sport->dma_idle_int) {
- 			u32 ctrl = lpuart32_read(&sport->port, UARTCTRL);
-@@ -1520,10 +1520,10 @@ static int lpuart32_config_rs485(struct uart_port *port, struct ktermios *termio
- static unsigned int lpuart_get_mctrl(struct uart_port *port)
- {
- 	unsigned int mctrl = 0;
--	u8 reg;
-+	u8 cr1;
- 
--	reg = readb(port->membase + UARTCR1);
--	if (reg & UARTCR1_LOOPS)
-+	cr1 = readb(port->membase + UARTCR1);
-+	if (cr1 & UARTCR1_LOOPS)
- 		mctrl |= TIOCM_LOOP;
- 
- 	return mctrl;
-@@ -1532,10 +1532,10 @@ static unsigned int lpuart_get_mctrl(struct uart_port *port)
- static unsigned int lpuart32_get_mctrl(struct uart_port *port)
- {
- 	unsigned int mctrl = TIOCM_CAR | TIOCM_DSR | TIOCM_CTS;
--	u32 reg;
-+	u32 ctrl;
- 
--	reg = lpuart32_read(port, UARTCTRL);
--	if (reg & UARTCTRL_LOOPS)
-+	ctrl = lpuart32_read(port, UARTCTRL);
-+	if (ctrl & UARTCTRL_LOOPS)
- 		mctrl |= TIOCM_LOOP;
- 
- 	return mctrl;
-@@ -1543,49 +1543,49 @@ static unsigned int lpuart32_get_mctrl(struct uart_port *port)
- 
- static void lpuart_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	u8 reg;
-+	u8 cr1;
- 
--	reg = readb(port->membase + UARTCR1);
-+	cr1 = readb(port->membase + UARTCR1);
- 
- 	/* for internal loopback we need LOOPS=1 and RSRC=0 */
--	reg &= ~(UARTCR1_LOOPS | UARTCR1_RSRC);
-+	cr1 &= ~(UARTCR1_LOOPS | UARTCR1_RSRC);
- 	if (mctrl & TIOCM_LOOP)
--		reg |= UARTCR1_LOOPS;
-+		cr1 |= UARTCR1_LOOPS;
- 
--	writeb(reg, port->membase + UARTCR1);
-+	writeb(cr1, port->membase + UARTCR1);
- }
- 
- static void lpuart32_set_mctrl(struct uart_port *port, unsigned int mctrl)
- {
--	u32 reg;
-+	u32 ctrl;
- 
--	reg = lpuart32_read(port, UARTCTRL);
-+	ctrl = lpuart32_read(port, UARTCTRL);
- 
- 	/* for internal loopback we need LOOPS=1 and RSRC=0 */
--	reg &= ~(UARTCTRL_LOOPS | UARTCTRL_RSRC);
-+	ctrl &= ~(UARTCTRL_LOOPS | UARTCTRL_RSRC);
- 	if (mctrl & TIOCM_LOOP)
--		reg |= UARTCTRL_LOOPS;
-+		ctrl |= UARTCTRL_LOOPS;
- 
--	lpuart32_write(port, reg, UARTCTRL);
-+	lpuart32_write(port, ctrl, UARTCTRL);
- }
- 
- static void lpuart_break_ctl(struct uart_port *port, int break_state)
- {
--	u8 temp;
-+	u8 cr2;
- 
--	temp = readb(port->membase + UARTCR2) & ~UARTCR2_SBK;
-+	cr2 = readb(port->membase + UARTCR2) & ~UARTCR2_SBK;
- 
- 	if (break_state != 0)
--		temp |= UARTCR2_SBK;
-+		cr2 |= UARTCR2_SBK;
- 
--	writeb(temp, port->membase + UARTCR2);
-+	writeb(cr2, port->membase + UARTCR2);
- }
- 
- static void lpuart32_break_ctl(struct uart_port *port, int break_state)
- {
--	u32 temp;
-+	u32 ctrl;
- 
--	temp = lpuart32_read(port, UARTCTRL);
-+	ctrl = lpuart32_read(port, UARTCTRL);
- 
- 	/*
- 	 * LPUART IP now has two known bugs, one is CTS has higher priority than the
-@@ -1602,22 +1602,22 @@ static void lpuart32_break_ctl(struct uart_port *port, int break_state)
- 		 * Disable the transmitter to prevent any data from being sent out
- 		 * during break, then invert the TX line to send break.
- 		 */
--		temp &= ~UARTCTRL_TE;
--		lpuart32_write(port, temp, UARTCTRL);
--		temp |= UARTCTRL_TXINV;
--		lpuart32_write(port, temp, UARTCTRL);
-+		ctrl &= ~UARTCTRL_TE;
-+		lpuart32_write(port, ctrl, UARTCTRL);
-+		ctrl |= UARTCTRL_TXINV;
-+		lpuart32_write(port, ctrl, UARTCTRL);
- 	} else {
- 		/* Disable the TXINV to turn off break and re-enable transmitter. */
--		temp &= ~UARTCTRL_TXINV;
--		lpuart32_write(port, temp, UARTCTRL);
--		temp |= UARTCTRL_TE;
--		lpuart32_write(port, temp, UARTCTRL);
-+		ctrl &= ~UARTCTRL_TXINV;
-+		lpuart32_write(port, ctrl, UARTCTRL);
-+		ctrl |= UARTCTRL_TE;
-+		lpuart32_write(port, ctrl, UARTCTRL);
- 	}
- }
- 
- static void lpuart_setup_watermark(struct lpuart_port *sport)
- {
--	u8 val, cr2, cr2_saved;
-+	u8 fifo, cr2, cr2_saved;
- 
- 	cr2 = readb(sport->port.membase + UARTCR2);
- 	cr2_saved = cr2;
-@@ -1625,8 +1625,8 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
- 			UARTCR2_RIE | UARTCR2_RE);
- 	writeb(cr2, sport->port.membase + UARTCR2);
- 
--	val = readb(sport->port.membase + UARTPFIFO);
--	writeb(val | UARTPFIFO_TXFE | UARTPFIFO_RXFE,
-+	fifo = readb(sport->port.membase + UARTPFIFO);
-+	writeb(fifo | UARTPFIFO_TXFE | UARTPFIFO_RXFE,
- 			sport->port.membase + UARTPFIFO);
- 
- 	/* flush Tx and Rx FIFO */
-@@ -1696,14 +1696,14 @@ static void lpuart32_setup_watermark(struct lpuart_port *sport)
- 
- static void lpuart32_setup_watermark_enable(struct lpuart_port *sport)
- {
--	u32 temp;
-+	u32 ctrl;
- 
- 	lpuart32_setup_watermark(sport);
- 
--	temp = lpuart32_read(&sport->port, UARTCTRL);
--	temp |= UARTCTRL_RE | UARTCTRL_TE;
--	temp |= FIELD_PREP(UARTCTRL_IDLECFG, 0x7);
--	lpuart32_write(&sport->port, temp, UARTCTRL);
-+	ctrl = lpuart32_read(&sport->port, UARTCTRL);
-+	ctrl |= UARTCTRL_RE | UARTCTRL_TE;
-+	ctrl |= FIELD_PREP(UARTCTRL_IDLECFG, 0x7);
-+	lpuart32_write(&sport->port, ctrl, UARTCTRL);
- }
- 
- static void rx_dma_timer_init(struct lpuart_port *sport)
-@@ -1820,16 +1820,16 @@ static void lpuart_hw_setup(struct lpuart_port *sport)
- static int lpuart_startup(struct uart_port *port)
- {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
--	u8 temp;
-+	u8 fifo;
- 
- 	/* determine FIFO size and enable FIFO mode */
--	temp = readb(port->membase + UARTPFIFO);
-+	fifo = readb(port->membase + UARTPFIFO);
- 
--	sport->txfifo_size = UARTFIFO_DEPTH((temp >> UARTPFIFO_TXSIZE_OFF) &
-+	sport->txfifo_size = UARTFIFO_DEPTH((fifo >> UARTPFIFO_TXSIZE_OFF) &
- 					    UARTPFIFO_FIFOSIZE_MASK);
- 	port->fifosize = sport->txfifo_size;
- 
--	sport->rxfifo_size = UARTFIFO_DEPTH((temp >> UARTPFIFO_RXSIZE_OFF) &
-+	sport->rxfifo_size = UARTFIFO_DEPTH((fifo >> UARTPFIFO_RXSIZE_OFF) &
- 					    UARTPFIFO_FIFOSIZE_MASK);
- 
- 	lpuart_request_dma(sport);
-@@ -1840,24 +1840,24 @@ static int lpuart_startup(struct uart_port *port)
- 
- static void lpuart32_hw_disable(struct lpuart_port *sport)
- {
--	u32 temp;
-+	u32 ctrl;
- 
--	temp = lpuart32_read(&sport->port, UARTCTRL);
--	temp &= ~(UARTCTRL_RIE | UARTCTRL_ILIE | UARTCTRL_RE |
-+	ctrl = lpuart32_read(&sport->port, UARTCTRL);
-+	ctrl &= ~(UARTCTRL_RIE | UARTCTRL_ILIE | UARTCTRL_RE |
- 		  UARTCTRL_TIE | UARTCTRL_TE);
--	lpuart32_write(&sport->port, temp, UARTCTRL);
-+	lpuart32_write(&sport->port, ctrl, UARTCTRL);
- }
- 
- static void lpuart32_configure(struct lpuart_port *sport)
- {
--	u32 temp;
-+	u32 ctrl;
- 
--	temp = lpuart32_read(&sport->port, UARTCTRL);
-+	ctrl = lpuart32_read(&sport->port, UARTCTRL);
- 	if (!sport->lpuart_dma_rx_use)
--		temp |= UARTCTRL_RIE | UARTCTRL_ILIE;
-+		ctrl |= UARTCTRL_RIE | UARTCTRL_ILIE;
- 	if (!sport->lpuart_dma_tx_use)
--		temp |= UARTCTRL_TIE;
--	lpuart32_write(&sport->port, temp, UARTCTRL);
-+		ctrl |= UARTCTRL_TIE;
-+	lpuart32_write(&sport->port, ctrl, UARTCTRL);
- }
- 
- static void lpuart32_hw_setup(struct lpuart_port *sport)
-@@ -1880,16 +1880,16 @@ static void lpuart32_hw_setup(struct lpuart_port *sport)
- static int lpuart32_startup(struct uart_port *port)
- {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
--	u32 temp;
-+	u32 fifo;
- 
- 	/* determine FIFO size */
--	temp = lpuart32_read(port, UARTFIFO);
-+	fifo = lpuart32_read(port, UARTFIFO);
- 
--	sport->txfifo_size = UARTFIFO_DEPTH((temp >> UARTFIFO_TXSIZE_OFF) &
-+	sport->txfifo_size = UARTFIFO_DEPTH((fifo >> UARTFIFO_TXSIZE_OFF) &
- 					    UARTFIFO_FIFOSIZE_MASK);
- 	port->fifosize = sport->txfifo_size;
- 
--	sport->rxfifo_size = UARTFIFO_DEPTH((temp >> UARTFIFO_RXSIZE_OFF) &
-+	sport->rxfifo_size = UARTFIFO_DEPTH((fifo >> UARTFIFO_RXSIZE_OFF) &
- 					    UARTFIFO_FIFOSIZE_MASK);
- 
- 	/*
-@@ -1934,16 +1934,16 @@ static void lpuart_dma_shutdown(struct lpuart_port *sport)
- static void lpuart_shutdown(struct uart_port *port)
- {
- 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
--	u8 temp;
-+	u8 cr2;
- 	unsigned long flags;
- 
- 	uart_port_lock_irqsave(port, &flags);
- 
- 	/* disable Rx/Tx and interrupts */
--	temp = readb(port->membase + UARTCR2);
--	temp &= ~(UARTCR2_TE | UARTCR2_RE |
-+	cr2 = readb(port->membase + UARTCR2);
-+	cr2 &= ~(UARTCR2_TE | UARTCR2_RE |
- 			UARTCR2_TIE | UARTCR2_TCIE | UARTCR2_RIE);
--	writeb(temp, port->membase + UARTCR2);
-+	writeb(cr2, port->membase + UARTCR2);
- 
- 	uart_port_unlock_irqrestore(port, flags);
- 
-@@ -2141,7 +2141,7 @@ static void __lpuart32_serial_setbrg(struct uart_port *port,
- 				     unsigned int baudrate, bool use_rx_dma,
- 				     bool use_tx_dma)
- {
--	u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, tmp;
-+	u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, baud;
- 	u32 clk = port->uartclk;
- 
- 	/*
-@@ -2170,9 +2170,9 @@ static void __lpuart32_serial_setbrg(struct uart_port *port,
- 		tmp_diff = clk / (tmp_osr * tmp_sbr) - baudrate;
- 
- 		/* select best values between sbr and sbr+1 */
--		tmp = clk / (tmp_osr * (tmp_sbr + 1));
--		if (tmp_diff > (baudrate - tmp)) {
--			tmp_diff = baudrate - tmp;
-+		baud = clk / (tmp_osr * (tmp_sbr + 1));
-+		if (tmp_diff > (baudrate - baud)) {
-+			tmp_diff = baudrate - baud;
- 			tmp_sbr++;
- 		}
- 
-@@ -2194,23 +2194,23 @@ static void __lpuart32_serial_setbrg(struct uart_port *port,
- 		dev_warn(port->dev,
- 			 "unacceptable baud rate difference of more than 3%%\n");
- 
--	tmp = lpuart32_read(port, UARTBAUD);
-+	baud = lpuart32_read(port, UARTBAUD);
- 
- 	if ((osr > 3) && (osr < 8))
--		tmp |= UARTBAUD_BOTHEDGE;
-+		baud |= UARTBAUD_BOTHEDGE;
- 
--	tmp &= ~(UARTBAUD_OSR_MASK << UARTBAUD_OSR_SHIFT);
--	tmp |= ((osr-1) & UARTBAUD_OSR_MASK) << UARTBAUD_OSR_SHIFT;
-+	baud &= ~(UARTBAUD_OSR_MASK << UARTBAUD_OSR_SHIFT);
-+	baud |= ((osr-1) & UARTBAUD_OSR_MASK) << UARTBAUD_OSR_SHIFT;
- 
--	tmp &= ~UARTBAUD_SBR_MASK;
--	tmp |= sbr & UARTBAUD_SBR_MASK;
-+	baud &= ~UARTBAUD_SBR_MASK;
-+	baud |= sbr & UARTBAUD_SBR_MASK;
- 
- 	if (!use_rx_dma)
--		tmp &= ~UARTBAUD_RDMAE;
-+		baud &= ~UARTBAUD_RDMAE;
- 	if (!use_tx_dma)
--		tmp &= ~UARTBAUD_TDMAE;
-+		baud &= ~UARTBAUD_TDMAE;
- 
--	lpuart32_write(port, tmp, UARTBAUD);
-+	lpuart32_write(port, baud, UARTBAUD);
- }
- 
- static void lpuart32_serial_setbrg(struct lpuart_port *sport,
-@@ -3085,7 +3085,7 @@ static int lpuart_suspend_noirq(struct device *dev)
- static int lpuart_resume_noirq(struct device *dev)
- {
- 	struct lpuart_port *sport = dev_get_drvdata(dev);
--	u32 val;
-+	u32 stat;
- 
- 	pinctrl_pm_select_default_state(dev);
- 
-@@ -3094,8 +3094,8 @@ static int lpuart_resume_noirq(struct device *dev)
- 
- 		/* clear the wakeup flags */
- 		if (lpuart_is_32(sport)) {
--			val = lpuart32_read(&sport->port, UARTSTAT);
--			lpuart32_write(&sport->port, val, UARTSTAT);
-+			stat = lpuart32_read(&sport->port, UARTSTAT);
-+			lpuart32_write(&sport->port, stat, UARTSTAT);
- 		}
- 	}
- 
--- 
-2.34.1
+But it made me think and investigate the various console drivers.
+It is a kind of a mess and I am not sure that I understand it correctly.
 
+Anyway, I suggested to use "add_preferred_console()" in console_initcall()
+in the v5 review, see https://lore.kernel.org/r/Z73teICMWNx7BiHT@pathway.suse.cz
+
+And I expected that it would be enough and the hack with linking order
+won't be needed anymore.
+
+Now, I see that I was wrong. The problem is that many console drivers
+call register_console() in console_initcall(). Such consoles would be
+registered by default when their register_console() is called before
+the ttynull.c calls add_preferred_console().
+
+By other words, the hack with the linking order is still needed to
+call add_preferred_console() in time.
+
+Resume: From my POV, the solution with add_preferred_console() in
+	console_initcall() still relies on the linking order.
+	So, v6 is not better than v5.
+
+	IMHO, v6 is actually be worse, see below.
+
+> > -------------------------------------------------------------------------------
+> > diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+> > index 05c5aa951da7..bcd248c44fc8 100644
+> > --- a/arch/x86/kernel/setup.c
+> > +++ b/arch/x86/kernel/setup.c
+> > @@ -1159,6 +1159,8 @@ void __init setup_arch(char **cmdline_p)
+> >
+> >         e820__setup_pci_gap();
+> >
+> > +       add_preferred_console("ttyS", 0, NULL);
+> > +
+> >  #ifdef CONFIG_VT
+> >  #if defined(CONFIG_VGA_CONSOLE)
+> >         if (!efi_enabled(EFI_BOOT) || (efi_mem_type(0xa0000) != EFI_CONVENTIONAL_MEMORY))
+> > -------------------------------------------------------------------------------
+> >
+> > to see what /proc/consoles will look like, to pretend that x86 is an arch that
+> > sets a console somewhere, and I get:
+> >
+> > ttynull0             --- (EC    )  242:0
+> > ttyS0                -W- (E  p a)    4:64
+> >
+> > and I got console messages to ttyS0 with no issue.
+> >
+> > which in my mind is acceptable I would think. ttynull is first in the list,
+> > which is desired effect of CONFIG_NULL_TTY_DEFAULT_CONSOLE, it doesn't have to
+> > be _exclusive_ AFAIK, especially if there are long-time default consoles that.
+> > users or the hardware expects.
+> >
+> >
+> > The only arch that seems to _unconditionally_ add a console without some other
+> > circumstance, like boot loader env var, and command line option, or firmware
+> > flag, or suboption (like CONFIG_SERIAL_PMACZILOG_CONSOLE) is Jazz.
+> >
+> > Like platforms/powernv adds it if CONFIG_HVC_OPAL is disabled, or the firmware
+> > is missing "FW_FEATURE_OPAL". I would assume that a user of this situation
+> > turning on CONFIG_NULL_TTY_DEFAULT_CONSOLE in addition, will just get ttynull
+> > and hvc in /proc/consoles instead of just hvc. Could that cause something to
+> > break?
+> 
+> > Correct me if I am wrong, I could very very very well be wrong.
+> 
+> I leave this to Petr to comment as I'm not that expert in the area.
+
+It depends on the expectations. I see two possibilities:
+
+1. view:
+
+   CONFIG_NULL_TTY_DEFAULT_CONSOLE is disabled by default.
+   We could assume that people would enable it only when they really
+   want to use ttynull for /dev/console. And they do not mind when
+   some other platform-specific console is enabled as well.
+
+   Note that we do not need the hack with the linking order for this.
+   A solution is to call add_preferred_console() directly in
+   console_init(). It has already been used in an earlier version, see
+   https://lore.kernel.org/all/10194425.EvYhyI6sBW@nerdopolis2/
+
+   To make it clear. I consider this as a cleaner and more reliable
+   solution than using the linking order hack.
+
+
+2. view:
+
+   The new config option wants to prefer "ttynull" when CONFIG_CONSOLE_VT
+   is disabled. So, it is an alternative for "ttyX" from "vt".
+
+   A conservative approach would be to enable it by default in the same
+   situations where "ttyX" from "vt" is enabled by default.
+
+   To make "ttynull" behave the same as "vt" would require using:
+
+     + register_console() in console_initcall().
+     + the same console_initcall() ordering => move ttynull.o
+	    linking order
+
+   => going back to v5 approach.
+
+
+I would normally prefer the conservative approach. But I hate the
+dependency on the linking order. It is so non-intuitive and
+fragile.
+
+So, I personally prefer to call add_preffed_console() directly in
+console_init() in the end. I guess that
+CONFIG_NULL_TTY_DEFAULT_CONSOLE won't be used on architectures
+with a better native console. So, it will be good enough
+in practice.
+
+Best Regards,
+Petr
+
+PS: I am sorry that you have already sent two more versions
+    in the meantime. But I was not able to answer this quickly.
+    I needed to find time and understand the various aspects.
