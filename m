@@ -1,72 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC397126C1E;
-	Thu, 13 Mar 2025 14:53:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D4C2690E6;
+	Thu, 13 Mar 2025 16:24:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741877592; cv=none; b=EgdmLkew8yPkINVLAPKfI8XXrglktUXBKBjGqxVjTKr4XpDzyOJRn/XfH5pk6J78MYtU2Zav1ZPNLTCUmessy+JT0TFk8dTxve6oSckPPD8knEfmKqvcsO9MHI2/m7iNBHnWtYrdqbW4BX2hAmPP6YUCwtv3/R6eESbLcR5oNKc=
+	t=1741883084; cv=none; b=FRM+q+ANf7FThtbcNNXSVJtJ01fyahCaQaXyd1Bo47SyFJQVDhFS946yqoAYT9Ybr673UPYLG2jkMgqDv/TXFTjxU298mwlFnYnhqT6EISTgWCijgwll0Ipgch6U9LEdyiIhqUruXQDEUP8u5SooA9oF0dzf1kyX7fSmzM3nbB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741877592; c=relaxed/simple;
-	bh=w52BMGEb/zNW6DRdLAa5vip7+Q6bfilfvxV8/qdG/Ak=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=Mb3E5Mt2Zi0arT7cWVva/w6YOThhNxFwb8Hn4MQuJWFMVnlT3sm99ylNpsAeSbBK7LzCoasD3UwnC59ee/xIDHQlWoHYK/gR1dgMTmvtpkHkaxGxDVVz4quWnskvfOXsaQvhD3RpjI+n9DdH04ewuSH3GXVbUejwHGAhJutL3XI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dlk75RX4; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1741883084; c=relaxed/simple;
+	bh=qRKmvdz41Z9reFxLxCZQ5RSEmJTdaZd8ctgs5m87/cU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T8QrlLM1alUUg/I8SBoygQwS5VkcNC5IITPGcDNppFscESx3muC15P4A8zzUzd5f+uWOrUyo5s1vW/SYQAZS8dKaM2mfoG2MtkC/EX16LOLlcX6o0Zi2i9uGmTAMZiZnrcw8jD8MX6GSZqLe51Occo1shzjGVMd7UUi1TUBviZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Bfgra5tU; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dlk75RX4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4519BC4CEDD;
-	Thu, 13 Mar 2025 14:53:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1741877591;
-	bh=w52BMGEb/zNW6DRdLAa5vip7+Q6bfilfvxV8/qdG/Ak=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=dlk75RX4BJJymKAK8ib8Bfq9GxVJVC5iw3D4UtFdjm3m2z8Pg2Q0X5iVmpCQ0sOnh
-	 uCT6cH49pKZGgqc62hABR3U7O1RQ5siUeNePNUP6Rq0fBAdTqYIriSK/ZoNx4Ai4ea
-	 pXhb/F+3VhgbaATFUYtUDKS6Ma968EHvM7riUwkHra5//pnsNNS/3akhiVw7GGCOIi
-	 aL+xpG5U+UgWe8c3YYiaykJg8kZhQDlU6Mxg501HsmyBYhfpBOeQaJSNZEc+Bxt5a7
-	 tAzNeP3CJQrOG15HT62bQh47ak3koZanZsE9XgkKjU7/pDnDSC8NiiVpSAsfhq1/B3
-	 EOlmQNs44gKaw==
-From: Lee Jones <lee@kernel.org>
-To: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
- nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com, 
- claudiu.beznea@tuxon.dev, mturquette@baylibre.com, sboyd@kernel.org, 
- arnd@arndb.de, Ryan.Wanner@microchip.com
-Cc: dharma.b@microchip.com, mihai.sain@microchip.com, 
- romain.sioen@microchip.com, varshini.rajendran@microchip.com, 
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, 
- linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, 
- linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <9656d46ee0255b9aba404d77d2d204376a9cb248.1736522006.git.Ryan.Wanner@microchip.com>
-References: <cover.1736522006.git.Ryan.Wanner@microchip.com>
- <9656d46ee0255b9aba404d77d2d204376a9cb248.1736522006.git.Ryan.Wanner@microchip.com>
-Subject: Re: (subset) [PATCH v6 3/3] dt-bindings: mfd:
- atmel,sama5d2-flexcom: add microchip,sama7d65-flexcom
-Message-Id: <174187758697.3701280.18234838828113464973.b4-ty@kernel.org>
-Date: Thu, 13 Mar 2025 14:53:06 +0000
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bfgra5tU"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-22337bc9ac3so24733415ad.1;
+        Thu, 13 Mar 2025 09:24:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1741883082; x=1742487882; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=gfjeDfcFtBUkNo/zS3F1TWi9ohbnRv2k3DpKMTE74P8=;
+        b=Bfgra5tUYaxBQx2HPm502vUBmU7+dQuyCk/r0b2QoKLZNGYc7uqoVBLUJkcQDnykDm
+         4gAAW7gkKEnTWK3KSPZ5j8lRDH/eg+hYOBd+wovTXyI4ttOyUg1hqg298pehyKIpB3+2
+         Ld3NKA4DX0P252IZbXFIRBkoqa2xOAaakKXW0HrxFsGaOQX94kjpNDXbIvVS7OVURaNN
+         6y5yv82rjwZ2yaFzkQR4nCkvVHoaHbPllj04xnK7Njfq1zKhSYpQgYsr/QDp6yZlIQR2
+         L6tUhxGaHTVZQYWrt/IEmMVCdp+rYnZUye02wHx5O3Ev83bm7frolthpmeco/t4k7Tpg
+         ezQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1741883082; x=1742487882;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gfjeDfcFtBUkNo/zS3F1TWi9ohbnRv2k3DpKMTE74P8=;
+        b=P6BTkGekvAp6UHjUez47VmZ6MKEpiJnW05QstSM4O7TbBzpjc65xHLF6xj+WFr1e6S
+         c0SzRgu46HI5VXLi9TJKw3u5Yy7ycAYlmcduQ48QoFOQBiFMELU/K6ppL8rkXfYjCVES
+         /q8i5QPfQttux0Y5dl+ydkswf+HykZ3HrBg32IXX0jrzxeM/1ZlGyHuWvNPd5vbyUnWr
+         MMoKb8dUZwpO5Ss6IKs9jOFGD1vk+wmeF3AOwuxASl6hGEwSM9Q+prg1PVL0oiwXyDEt
+         bHDRowq41Icuzr7vmnTqi4a+g3vUkXlcPj1QMxGg9kX4LKz6BiESX8OoKfaZXZ5JB6uK
+         3KjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVIypO6g9Xjot2MA4TGFHP2lcXACBMjtgY065dtLk2H5TWNm6Hw15FxWO74hgrDMvf+tkJZEUg5Sma8K3cT@vger.kernel.org, AJvYcCVguatFknKpHaQ98RQZGZ23PiIb3R0W21ldgnqUX8Os2k5Oqosx7GyYMwE+agBI5d+64MgB2EYG@vger.kernel.org, AJvYcCVuxK/jzeR9cGqYGJ8iE0nv8syAGwi48qrnMwr3iuRQezblEIgJXiNfswl+D0JNOFs7gWWN66WNI8BTOpEw@vger.kernel.org, AJvYcCWZzDvT/xItXfL+IntLocj/2iacIqLa5N1PR4Qw3F/aqpdyblIlt/uXl2QXHwoxyNutDDF8iDVao/lsPa3ieBU=@vger.kernel.org, AJvYcCX08Z+A7o1VEEUw1w4sOBgfBkcRGn6KCVEP1hj9dNgnXnuun3UFkCITCfer0av5rpRdnS4=@vger.kernel.org, AJvYcCXAXy7F3M6EbHyVwETvOwzQepHXX0HT9WyO3Q7NeNctlbL/UGjxvPb4wSpwb1ilGyVWsj6/JMp6jjB3Ofc=@vger.kernel.org, AJvYcCXCzPWCd0cDCj+PHQdZbFhCgjhWE/nxI/Wr8fd4CsQKYY7kI3Ot/PH3RmCmIlv+Fns5Ahc2kymNPg/1jgk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz5R8FJFARqP1rqOx/CdZ3czOKdTiuvPdq8T6yNMFeJK7fkyPgb
+	210Uepht7Ia0o4U9byDyAsCNq7pCAEwDAc8zZEZHxAEEy5NzE7YH
+X-Gm-Gg: ASbGncs3yPmPEOogCuMN0UwGF58b2+UIpeO76YXNsTOMuT65oiMvosmJ5Koau6vcfi/
+	6ZOcQivqV4g+MPiR1M2RWwKkG+WcMBQ/Z1rtiG8zyMrFhF3FWU/0Cz5IHuc4sVN6QQ2nW6dmqTg
+	oqHDgkpHa4Au76oX19z6VhtR2Wd0Pzt1FQNc8GX9submCxsJmqNZ3J3Fn2Jg/k8Bz5z1biuaTgw
+	M3XZLB3aF7XVq4de1AYaDSqN/fJyexS6o1IgTw+HO214FXKpTYJJh0xUrpV7ZRDKZoCnUpchPDK
+	y/5/bRo0PKXxlPk3XUrje7T8LeLw19fiJFQT5DWvR/BZQjKbhO3h14I=
+X-Google-Smtp-Source: AGHT+IEhm2UlrxnESPtEwBvMI/fgf4613dWJojNHjH0dA0YyQIoHXBBX22mwSMAlbcl6B7SrptBmaw==
+X-Received: by 2002:a17:902:f552:b0:224:216e:332f with SMTP id d9443c01a7336-225931ad2bemr163943215ad.48.1741883081419;
+        Thu, 13 Mar 2025 09:24:41 -0700 (PDT)
+Received: from localhost ([216.228.125.129])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-225c6bbcba7sm15241975ad.173.2025.03.13.09.24.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Mar 2025 09:24:40 -0700 (PDT)
+Date: Thu, 13 Mar 2025 12:24:38 -0400
+From: Yury Norov <yury.norov@gmail.com>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Jacob Keller <jacob.e.keller@intel.com>,
+	David Laight <david.laight.linux@gmail.com>,
+	Jiri Slaby <jirislaby@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+	Kuan-Wei Chiu <visitorckw@gmail.com>, tglx@linutronix.de,
+	mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+	x86@kernel.org, jk@ozlabs.org, joel@jms.id.au,
+	eajames@linux.ibm.com, andrzej.hajda@intel.com,
+	neil.armstrong@linaro.org, rfoss@kernel.org,
+	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+	dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	akpm@linux-foundation.org, alistair@popple.id.au,
+	linux@rasmusvillemoes.dk, Laurent.pinchart@ideasonboard.com,
+	jonas@kwiboo.se, jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw,
+	Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH v3 01/16] bitops: Change parity8() return type to bool
+Message-ID: <Z9MGxknjluvbX19w@thinkpad>
+References: <20250306162541.2633025-1-visitorckw@gmail.com>
+ <20250306162541.2633025-2-visitorckw@gmail.com>
+ <9d4b77da-18c5-4551-ae94-a2b9fe78489a@kernel.org>
+ <Z8ra0s9uRoS35brb@gmail.com>
+ <a4040c78-8765-425e-a44e-c374dfc02a9c@kernel.org>
+ <20250307193643.28065d2d@pumpkin>
+ <cbb26a91-807b-4227-be81-8114e9ea72cb@intel.com>
+ <0F794C6F-32A9-4F34-9516-CEE24EA4BC49@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.15-dev-510f9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0F794C6F-32A9-4F34-9516-CEE24EA4BC49@zytor.com>
 
-On Fri, 10 Jan 2025 08:25:42 -0700, Ryan.Wanner@microchip.com wrote:
-> Add flexcom binding documentation for sama7d65.
+On Wed, Mar 12, 2025 at 05:09:16PM -0700, H. Peter Anvin wrote:
+> On March 12, 2025 4:56:31 PM PDT, Jacob Keller <jacob.e.keller@intel.com> wrote:
+
+[...]
+
+> >This is really a question of whether you expect odd or even parity as
+> >the "true" value. I think that would depend on context, and we may not
+> >reach a good consensus.
+> >
+> >I do agree that my brain would jump to "true is even, false is odd".
+> >However, I also agree returning the value as 0 for even and 1 for odd
+> >kind of made sense before, and updating this to be a bool and then
+> >requiring to switch all the callers is a bit obnoxious...
 > 
-> Consolidated entries into one enum to match proper coding style.
-> 
-> 
+> Odd = 1 = true is the only same definition. It is a bitwise XOR, or sum mod 1.
 
-Applied, thanks!
+The x86 implementation will be "popcnt(val) & 1", right? So if we
+choose to go with odd == false, we'll have to add an extra negation.
+So because it's a purely conventional thing, let's just pick a simpler
+one?
 
-[3/3] dt-bindings: mfd: atmel,sama5d2-flexcom: add microchip,sama7d65-flexcom
-      commit: c37ee2ed38391eef476fea6af8eccd0d31f5ed98
+Compiler's builtin parity() returns 1 for odd.
 
---
-Lee Jones [李琼斯]
-
+Thanks,
+Yury
