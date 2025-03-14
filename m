@@ -1,132 +1,180 @@
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A1E11EB3E;
-	Fri, 14 Mar 2025 13:55:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92CF91EE03D;
+	Fri, 14 Mar 2025 16:05:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741960547; cv=none; b=hU1tDZPsCYwGaSFVcxNFteHxKaGKkPOziHS0MMNR0dw8bHMs08iabLU16PTuNHWJpmMudlGWqrCv+xXAnNiFkzJRp28TebhS2n1ASPF4o2e8HFAcsEZ0PHHUI/inccCjxTpmwWNj97wHBwiQkC5CDF/m4kQe+ILcYwq6bSF0CYM=
+	t=1741968351; cv=none; b=rTmGt4W/q8GbJPcnx99ZNqO8ro1ElwTMUDKe/Tny9lNtZIbWVOCySxOdT1mtuuCTUgzkNDvzFFFDu/WsBgioyLXgqcYSH724ApoNIdanSbU+LP+lM+0bdQ/jcMv0nWsZVvA/GlLfTp+ACMT2I7h2zKPYE1C5KPKVa+p4QkpFj0w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741960547; c=relaxed/simple;
-	bh=CGaulF+UNq/UkfDb8/gi2jAvYZbz2RC3gaALMdwvzBI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cqjzyjGtPV5Ss+UaQHczzYrE6De30icBMBVevxmexn/tLpUax83vpVSU9kya7aElQkvP0MiDQcMMMJz3tGWdqadpBJJYFC6ir9tYYYGNlCXoF2A+KwycrqS7p49dkXKLPZQKPD2vKxr3JPN4Oy9hmf/x4+x23OSk5gL2eAC8LJI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JZ8nTXI+; arc=none smtp.client-ip=209.85.218.49
+	s=arc-20240116; t=1741968351; c=relaxed/simple;
+	bh=y5iLS0qAR/Fw4lPHpyN8WwukffN+ADvp20CdBHRHImg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=hw8RnpKFfMSQHjIwdPPT5xX6lEA1Yy7x11s45X6wCSAaMRtPUtYIDUUZ6MglojKLVIuRIycVNY6tDkOFsPllq4re75C08kDqgbv1hxkVBY+3ndZoMdB/ZsLYGw8pi84XHI4tEWRrnB0q3NIEPUQ9xxp2dXyhd88yU/Xbm1j3Q/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iDXRQqit; arc=none smtp.client-ip=209.85.219.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JZ8nTXI+"
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-ac25313ea37so423446366b.1;
-        Fri, 14 Mar 2025 06:55:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iDXRQqit"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6eaf1b6ce9aso4214296d6.2;
+        Fri, 14 Mar 2025 09:05:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1741960544; x=1742565344; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1741968348; x=1742573148; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DEnFpGM/wdzS+VVXhShlJt1TkX2vM3Hth/UdwF3fpV0=;
-        b=JZ8nTXI+jMCPL5OKFg6fG5EV06XAsmozv1/bl8gzTKqwA5qDb2Uzhy8u2cUikZGxfU
-         DHkREwc4DmL2JtHGoD6T7uU70FW86Al9Uf9QvX33G/4ba6pw8FoUlr3JjCSByMfcM2HF
-         5uwTlWrORBHaoIc86fmLbRfooljZfjQoQdR/dh2dD0jFk3JNmSd6jePnRcDFCcn8xYKQ
-         iXgbOJaDIJxs5Y7OnN9lCLbKatxXcST20dyA4TANsWznkx/rjSNQNAyBHHsUjD2nHsIY
-         LuoVL+lf+95yY7EZKOGvYV3mNjiXsGRDEtmr701a5azCScLoeEmgqBhA/QvGd1kYwXe0
-         cOfA==
+        bh=kGmHPsluvU5tP9Cbeh0pEBn1lLXR4ROUfQFDzD/Nc2w=;
+        b=iDXRQqitqg4PARHCs0U4snXTmmFW5WP9jg9iDmkzah4NsZhzLBcCJI+TY2o90vvytb
+         SNNFvQFKPmE32QP3yKrAluJFQcI5cd7CNEilGy314QQZVTB8SbP5RvSewdT2F4tWUq89
+         m+TR0rDMlCbMTLCosn6ICjmBJvZGCp2tiDJLD6R9VC5Ts9IXlNFhvLrkSoqb++Mfwtz8
+         m0xzrA/hGsmsmJOvvuq2OEn1Jq75b4SFSC5MhYHtdeWj4ev/2ZtKfE5K+F+jc/jS64cl
+         1lIa0M9JHd63IZj4KYuMA5Q6EwcdDxp1xyxkRuwX4B13smGMHxeed/FbsrvyhoSpBS4d
+         DuFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1741960544; x=1742565344;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1741968348; x=1742573148;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=DEnFpGM/wdzS+VVXhShlJt1TkX2vM3Hth/UdwF3fpV0=;
-        b=Rz3U48SLWrHXUCGdyCc/PUL+WtaTejPKaBm/G44NdK3rbpkrl3tiDaEt+EF8kzstUQ
-         NXVqqrL8meRTq9cHhnKCrWL8B9mT+tbcJlQrybYGL3EHdmcxaySvnC6qgghX1laiq0Un
-         UO9ObtVF/5y0yoFxiNub6A9ZsKctpuLmui4y4wBdXoDsNG+qnPoDA+6UPTSCvC+F9H3Y
-         k0j9UxvBQcPRKy/DNFy+9tsMyw8fHa7SrzvaDdfHI4ZZfInrlfwR1dSuDy7u9OVQRAjU
-         D0DtGPostwv5BZudY7pqrHmcmxFQOSRCpjQilTuYDnv7Ll8UZ+pSwjkT6ueDfZcPDBGV
-         WeGg==
-X-Forwarded-Encrypted: i=1; AJvYcCWZFql+6LmSeCRtCOipvlf4i2yz+WWcdlJ6KjoLPwyyWOVnKvH2FpiNcoS36jUQQJzRVdYCQqzx8OZjCSs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwGVb5MSQS+szYb0tl8BUqK+Mh+3D1OEn6d/48R84JtphxI9amC
-	E3Sqqyi6gtskBPEqHZUZLR2plj9pwyZvQj5RVpwh4dYphGsHi3em/APbK4I+NMGjVvrAC5+qooO
-	H26YcoXPTDvISZEMffpxcxOjC3ZY=
-X-Gm-Gg: ASbGncv5gVbmphjbGTBbWxu6NiH+7x1cCmF/+1WfYu9Wduy1a6Vj3H1WpLAxBMXfldB
-	7Pusebh+d5ivtRJ6LcaQsvtOZ9Ht2ckwNEfrU4IlnmtDx0cFdAhvdFsLBRLc+onVTtAL4Bk0qLi
-	Pc2m0oR8PBsheDo5UndVkHVoUWFE8e
-X-Google-Smtp-Source: AGHT+IHdwlSCytzicDp8ttI013vOivNNvzskW2SaRoEZIL3BQOo2nH1sG1pGrPPerD8oKcQ6RlJrx+EqJyrJFetsRgk=
-X-Received: by 2002:a17:907:3d8d:b0:abf:614a:3e48 with SMTP id
- a640c23a62f3a-ac3304042e6mr371696466b.50.1741960544227; Fri, 14 Mar 2025
- 06:55:44 -0700 (PDT)
+        bh=kGmHPsluvU5tP9Cbeh0pEBn1lLXR4ROUfQFDzD/Nc2w=;
+        b=nOhH9DNws9VVrnHoAPLRnU8esIbFyuGDuq4W7eTgR/cvVdUSX9vXYkgWs+FTb6sRv0
+         p1H2g7Hdy680XYEiLQrLNRU5ujmjmJn1t4WX+Kj5Zb2Ml+CalX8NWuvOkKC3AwohK2XR
+         IJ1WBmZWSEgHrwlmcwPchshkd083uiAAedc9LlxozoBgnwe5OW2P/PZK9I0PYPUjlqop
+         5w1K9/587wMKB9CN1DaLp1U+LlwHCPXEBdAAM+xrCfF0jg/NkUGOvg/yQ98/PJ/60+36
+         1KoGwjHE+xZKEP1ZMsLj0zBn6ox+45o2HcqTduoWW4WxMdvsPq/7cAKuip2phJJ6/TtG
+         Fa8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXnMKAwI21sZW2jkiQ1p/NvHLO3DsuaUqy6cv8fr4eP753YuWYlq4gBeGUtCr2puSqFqzUoU0nIhh7Mqc8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzSU9dTilCP1DaS5OOzvasBvvEhz+ivvfXT0IAuxtebkj+5j0Zq
+	DtRR/lxo1O4PDGwLIezTJGnzgog5Qe1vsUasDHp4DEDvzg5HOc8R
+X-Gm-Gg: ASbGncuHrFckyCCu25wiDqz5RI8/eIVLUSQa39n+jyu3XHFK3IfhGUzvBfyA44GT187
+	9qM6LXq7QRBGTswl8D+iZHmuOSFvqnBjKV/AKk0F8HBJCi931wNcWpCzs1uw3Sy3L7F+OGtanMU
+	Ty5B1f9VJRI/9PFuk9mzBEw87u/U8ZRrwFvu7SkVW+Uw+xTObSHv1Oj3N0Aeb8imJiqObijvFrP
+	BcfDWSL3cIT3BW86nJ5a/7ftu4yDsYVv+/D8xI51DP6cmC9+iuxcuXokGiAciWgN9WKoQJu6blA
+	KC9T7ZdTGig0JO6gtZq1OP+Exe8Pqit63xuiTV6W5lXxGa/1bDQ1s3xB1BmpTYNopg==
+X-Google-Smtp-Source: AGHT+IHcB+IAzxI0mIV6Mj5N9hZoIKvZ4KpP2wVXOdNcCWpePYZlGUTQYghkqGrd5jjjr9WvpCN2CA==
+X-Received: by 2002:ad4:5cca:0:b0:6e8:f65a:67bd with SMTP id 6a1803df08f44-6eaeaa1c6e7mr41295056d6.11.1741968348166;
+        Fri, 14 Mar 2025 09:05:48 -0700 (PDT)
+Received: from nerdopolis2.localnet ([2600:4040:5e66:a800:d731:b11a:3691:3fd7])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6eade3501ebsm25528146d6.116.2025.03.14.09.05.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Mar 2025 09:05:47 -0700 (PDT)
+From: Adam Simonelli <adamsimonelli@gmail.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ John Ogness <john.ogness@linutronix.de>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject:
+ Re: [PATCH v10 1/1] printk: Add an option to allow ttynull to be a default
+ console device
+Date: Fri, 14 Mar 2025 12:05:46 -0400
+Message-ID: <5391570.SvYEEZNnvj@nerdopolis2>
+In-Reply-To: <Z9P6i1Caw9SWEO6t@pathway.suse.cz>
+References:
+ <20250314004104.3103656-1-adamsimonelli@gmail.com>
+ <20250314004104.3103656-2-adamsimonelli@gmail.com>
+ <Z9P6i1Caw9SWEO6t@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250314125244.3202791-1-adamsimonelli@gmail.com> <20250314125244.3202791-2-adamsimonelli@gmail.com>
-In-Reply-To: <20250314125244.3202791-2-adamsimonelli@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 14 Mar 2025 15:55:07 +0200
-X-Gm-Features: AQ5f1Jp0MccMsvrLa3GEqzTCm2sbhOoSasPVMaeJBLsToKhCQaFmPTrA1CQHVDM
-Message-ID: <CAHp75VdaDyyNEKi=S4Y9wKR-Dqb0M30c+rHVs6FiWc3L0vc=Uw@mail.gmail.com>
-Subject: Re: [PATCH v11 1/1] printk: Add an option to allow ttynull to be a
- default console device
-To: adamsimonelli@gmail.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Jiri Slaby <jirislaby@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Steven Rostedt <rostedt@goodmis.org>, John Ogness <john.ogness@linutronix.de>, 
-	Sergey Senozhatsky <senozhatsky@chromium.org>, Petr Mladek <pmladek@suse.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On Fri, Mar 14, 2025 at 2:52=E2=80=AFPM <adamsimonelli@gmail.com> wrote:
->
-> From: Adam Simonelli <adamsimonelli@gmail.com>
->
-> The new option is CONFIG_NULL_TTY_DEFAULT_CONSOLE.
->
-> if enabled, and CONFIG_VT is disabled, ttynull will become the default
-> primary console device.
->
-> ttynull will be the only console device usually with this option enabled.
-> Some architectures do call add_preferred_console() which may add another
-> console though.
->
+On Friday, March 14, 2025 5:44:43 AM EDT Petr Mladek wrote:
+> On Thu 2025-03-13 20:41:04, adamsimonelli@gmail.com wrote:
+> > From: Adam Simonelli <adamsimonelli@gmail.com>
+> > 
+> > The new option is CONFIG_NULL_TTY_DEFAULT_CONSOLE.
+> > 
+> > if enabled, and CONFIG_VT is disabled, ttynull will become the default
+> > primary console device, based on the link order.
+> 
+> The result is not longer based on the link order.
+> 
+> The linking order affected the ordering the console initcalls.
+> But this patch calls add_preferred_console() directly in console_init()
+> before processing the init calls...
+> 
+> I would just remove the ", based on the link order".
+> 
+> > ttynull will be the only console device usually with this option enabled.
+> > Some architectures do call add_preferred_console() which may add another
+> > console though.
+> 
+> I would add here the following line:
+> 
 > Motivation:
->
-> Many distributions ship with CONFIG_VT enabled. On tested desktop hardwar=
-e
-> if CONFIG_VT is disabled, the default console device falls back to
-> /dev/ttyS0 instead of /dev/tty.
->
-> This could cause issues in user space, and hardware problems:
->
-> 1. The user space issues include the case where  /dev/ttyS0 is
-> disconnected, and the TCGETS ioctl, which some user space libraries use
-> as a probe to determine if a file is a tty, is called on /dev/console and
-> fails. Programs that call isatty() on /dev/console and get an incorrect
-> false value may skip expected logging to /dev/console.
->
-> 2. The hardware issues include the case if a user has a science instrumen=
-t
-> or other device connected to the /dev/ttyS0 port, and they were to upgrad=
-e
-> to a kernel that is disabling the CONFIG_VT option, kernel logs will then=
- be
-> sent to the device connected to /dev/ttyS0 unless they edit their kernel
-> command line manually.
->
-> The new CONFIG_NULL_TTY_DEFAULT_CONSOLE option will give users and
-> distribution maintainers an option to avoid this. Disabling CONFIG_VT and
-> enabling CONFIG_NULL_TTY_DEFAULT_CONSOLE will ensure the default kernel
-> console behavior is not dependent on hardware configuration by default, a=
-nd
-> avoid unexpected new behavior on devices connected to the /dev/ttyS0 seri=
-al
-> port.
+> 
+> to clearly separate the description of the new behavior from the motivation.
+> 
+> > Many distributions ship with CONFIG_VT enabled. On tested desktop hardware
+> > if CONFIG_VT is disabled, the default console device falls back to
+> > /dev/ttyS0 instead of /dev/tty.
+> > 
+> > This could cause issues in user space, and hardware problems:
+> > 
+> > 1. The user space issues include the case where  /dev/ttyS0 is
+> > disconnected, and the TCGETS ioctl, which some user space libraries use
+> > as a probe to determine if a file is a tty, is called on /dev/console and
+> > fails. Programs that call isatty() on /dev/console and get an incorrect
+> > false value may skip expected logging to /dev/console.
+> > 
+> > 2. The hardware issues include the case if a user has a science instrument
+> > or other device connected to the /dev/ttyS0 port, and they were to upgrade
+> > to a kernel that is disabling the CONFIG_VT option, kernel logs will then be
+> > sent to the device connected to /dev/ttyS0 unless they edit their kernel
+> > command line manually.
+> > 
+> > The new CONFIG_NULL_TTY_DEFAULT_CONSOLE option will give users and
+> > distribution maintainers an option to avoid this. Disabling CONFIG_VT and
+> > enabling CONFIG_NULL_TTY_DEFAULT_CONSOLE will ensure the default kernel
+> > console behavior is not dependant on hardware configuration by default, and
+> 
+> s/dependant/dependent/
+> 
+> > avoid unexpected new behavior on devices connected to the /dev/ttyS0 serial
+> > port.
+> > 
+> > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> > index 07668433644b..9dd807717cd4 100644
+> > --- a/kernel/printk/printk.c
+> > +++ b/kernel/printk/printk.c
+> > @@ -4277,6 +4277,11 @@ void __init console_init(void)
+> >  	initcall_t call;
+> >  	initcall_entry_t *ce;
+> >  
+> > +#ifdef CONFIG_NULL_TTY_DEFAULT_CONSOLE
+> > +       if (!console_set_on_cmdline)
+> > +               add_preferred_console("ttynull", 0, NULL);
+> 
+> checkpatch.pl reports that there are used spaces instead of
+> tabs in the two lines above. I suggest to use some editor which takes
+> care of proper indentation, e.g. emacs or vim and run
+> ./scripts/checkpatch.pl before sending pathes ;-)
+> 
+> > +#endif
+> > +
+> >  	/* Setup the default TTY line discipline. */
+> >  	n_tty_init();
+> 
+> With the above changes:
+> 
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Tested-by: Petr Mladek <pmladek@suse.com>
+> 
+> There is no need to resend this patch unless there are other comments.
+> I could make the changes when committing the patch.
+> 
+> Best Regards,
+> Petr
+> 
+Ah, I didn't know if I was allowed to include that myself in the commit message.
+Thanks
 
-> Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
 
-You forgot to collect Petr's tags. Use `b4` (should be available in
-your distro) to gather them from the mailing list (as of the previous
-round of the review).
 
---=20
-With Best Regards,
-Andy Shevchenko
