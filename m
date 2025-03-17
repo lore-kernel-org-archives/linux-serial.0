@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D69DB21C9F3;
-	Mon, 17 Mar 2025 07:01:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F6821CA13;
+	Mon, 17 Mar 2025 07:01:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194864; cv=none; b=ZX1fLgQH2FZTHmmegm4zsEZWhx4ujPgnrIvBFXCfr54RAd17b7VQeXC+UXy+4B5QSaBi/HY2Rx02Jy+UUChmLnHQXN+LV2w6RX4H3MUu33m9WV53qPa51TVs6Ayh0pwqcwd5jkDIJGYH3qeMxWyNcixBgVHL6y+rZNu0ZmmJK5g=
+	t=1742194866; cv=none; b=L5Eux1PrCFrB2DcYoRVM2QkFqbWT+dyS+667Ozq0T7rSOnWfzcQACCE0/oiIKlAPVErI518Ax9/NZejYSYYl2krpYj6tW9nyLJjSwwpSwQnMI3KIi//5WaToSTpdps/VO8NprM27zE6NSgTehbHrUT/EEQDKCNoOIqtXw6gWLJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194864; c=relaxed/simple;
-	bh=q78Y+Vzll7F5ggoZ4T8kmkLDhTPdIC9TLxncg6aCgSI=;
+	s=arc-20240116; t=1742194866; c=relaxed/simple;
+	bh=KtXCMXaczl+E79GCAttWES8YpJxjKFSJ1NhubZhJFVM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PMAmFp3ENn080vi5vVHVXn6MtchpQHDbuHL/fE4faTNokq+hQSFQ568h1bcxMw0wchHV8xM61oCJARGybZGvirphjoUixaDgo4M8cupGwUDx0Tu/M3RiCA5gLyMlqObHVYNz/AHPZOwOnC/y0yq5w0v/ZivIu+3LZxZNlYxmBXE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e0mJwRJ6; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=lQIzdwuEasWPyYfiQisvKvTPB+KyNaPsCsMWl42qby6hSSZPSPCzlmEGQPL0t+hgZf+9o4xG1UvEIbNqJzfXycshclXrcXZLhFSsOouNlefGxbDg3WM+RGK8HxB3cGmNvGf39x4uRvi3zrSgLcGsWdx5ui634cqiEEPgwmZLqt4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mNIdubXG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e0mJwRJ6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41D13C4CEE3;
-	Mon, 17 Mar 2025 07:01:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mNIdubXG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF0AAC4CEF0;
+	Mon, 17 Mar 2025 07:01:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194864;
-	bh=q78Y+Vzll7F5ggoZ4T8kmkLDhTPdIC9TLxncg6aCgSI=;
+	s=k20201202; t=1742194865;
+	bh=KtXCMXaczl+E79GCAttWES8YpJxjKFSJ1NhubZhJFVM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=e0mJwRJ6tvV6RJDF7vozw2nFkv+JzyoXPbUnC0f3BiDVmhg570pXEXEHNC5ujvWqC
-	 1h1v8nxYv9MAF7Ctjf4GrPBe9OC4WE2WAw2Ch2PnoIDWhx2d2wNPgXo7wiXeDJo8km
-	 BlLkbZ1BYv5TDjVQI8LA5TQN1w9F2O8EibUrLVhDNQg8UzxQCLrPC/4UA9LDcHl7ZA
-	 SokTVss6NVvo/DlyPb5hqx2dMThjClbkIpsOU3u/SAF+cxsf8eoThT5wJH2LBKD7+h
-	 cCHggq8WWEtWZzDXx+JpxeualZkIi8H7vJRwf9wYX/xBUUAYySm/TItyiBF0CulPGd
-	 WskuAtSysLWVw==
+	b=mNIdubXGnt2oPQVpmUU6XwMKsOKaPBLqU7f9asvtV1B1/Gq3MVzsQWSzRTdJ7+cTS
+	 OhXbyGh9gkMD2w2FcSwrIBdb4ukY9D0a3hr+xzdA/H7A6XZkboZhxSqfSuBNoYxAMp
+	 8EJgMSz/dQbv8ScimjWgRGiWXQo1fPuBlg0b8/U06m5oTCFgcsiwPtofucMfeSS6tk
+	 oSL73g2ZWeUOfIGHjmAb62GKw5Ug2tLyHHoHFIvod1VSJP8y2I9VvtAq5rXdkagJwG
+	 i0MpgkZwGKGIAPH5xxijFfhYWcGCH0PDK60zQSmUdXHCiyJb47ltP5AtMe+1fvG2TA
+	 W1LH5AcWvvapA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 09/31] tty: n_tty: extract n_tty_continue_cookie() from n_tty_read()
-Date: Mon, 17 Mar 2025 08:00:24 +0100
-Message-ID: <20250317070046.24386-10-jirislaby@kernel.org>
+Subject: [PATCH v2 10/31] tty: n_tty: extract n_tty_wait_for_input()
+Date: Mon, 17 Mar 2025 08:00:25 +0100
+Message-ID: <20250317070046.24386-11-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -46,98 +46,92 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 n_tty_read() is a very long function doing too much of different stuff.
-Extract the "cookie" (continuation read) handling to a separate
-function: n_tty_continue_cookie().
+Extract the "wait for input" to a separate function:
+n_tty_wait_for_input(). It returns an error (< 0), no input (0), or has
+potential input (1).
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 66 ++++++++++++++++++++++++---------------------
- 1 file changed, 36 insertions(+), 30 deletions(-)
+ drivers/tty/n_tty.c | 57 ++++++++++++++++++++++++---------------------
+ 1 file changed, 31 insertions(+), 26 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 43ba740792d9..88aa5f9cbe5e 100644
+index 88aa5f9cbe5e..0e3eb18490f0 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -2111,6 +2111,39 @@ static int job_control(struct tty_struct *tty, struct file *file)
- 	return __tty_check_change(tty, SIGTTIN);
+@@ -2145,6 +2145,33 @@ static ssize_t n_tty_continue_cookie(struct tty_struct *tty, u8 *kbuf,
+ 	return kb - kbuf;
  }
  
-+/*
-+ * We still hold the atomic_read_lock and the termios_rwsem, and can just
-+ * continue to copy data.
-+ */
-+static ssize_t n_tty_continue_cookie(struct tty_struct *tty, u8 *kbuf,
-+				   size_t nr, void **cookie)
++static int n_tty_wait_for_input(struct tty_struct *tty, struct file *file,
++				struct wait_queue_entry *wait, long *timeout)
 +{
-+	struct n_tty_data *ldata = tty->disc_data;
-+	u8 *kb = kbuf;
++	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
++		return -EIO;
++	if (tty_hung_up_p(file))
++		return 0;
++	/*
++	 * Abort readers for ttys which never actually get hung up.
++	 * See __tty_hangup().
++	 */
++	if (test_bit(TTY_HUPPING, &tty->flags))
++		return 0;
++	if (!*timeout)
++		return 0;
++	if (tty_io_nonblock(tty, file))
++		return -EAGAIN;
++	if (signal_pending(current))
++		return -ERESTARTSYS;
 +
-+	if (ldata->icanon && !L_EXTPROC(tty)) {
-+		/*
-+		 * If we have filled the user buffer, see if we should skip an
-+		 * EOF character before releasing the lock and returning done.
-+		 */
-+		if (!nr)
-+			canon_skip_eof(ldata);
-+		else if (canon_copy_from_read_buf(tty, &kb, &nr))
-+			return kb - kbuf;
-+	} else {
-+		if (copy_from_read_buf(tty, &kb, &nr))
-+			return kb - kbuf;
-+	}
-+
-+	/* No more data - release locks and stop retries */
-+	n_tty_kick_worker(tty);
-+	n_tty_check_unthrottle(tty);
 +	up_read(&tty->termios_rwsem);
-+	mutex_unlock(&ldata->atomic_read_lock);
-+	*cookie = NULL;
++	*timeout = wait_woken(wait, TASK_INTERRUPTIBLE, *timeout);
++	down_read(&tty->termios_rwsem);
 +
-+	return kb - kbuf;
++	return 1;
 +}
- 
++
  /**
   * n_tty_read		-	read function for tty
-@@ -2144,36 +2177,9 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file, u8 *kbuf,
- 	bool packet;
- 	size_t old_tail;
- 
--	/*
--	 * Is this a continuation of a read started earler?
--	 *
--	 * If so, we still hold the atomic_read_lock and the
--	 * termios_rwsem, and can just continue to copy data.
--	 */
--	if (*cookie) {
--		if (ldata->icanon && !L_EXTPROC(tty)) {
--			/*
--			 * If we have filled the user buffer, see
--			 * if we should skip an EOF character before
--			 * releasing the lock and returning done.
--			 */
--			if (!nr)
--				canon_skip_eof(ldata);
--			else if (canon_copy_from_read_buf(tty, &kb, &nr))
--				return kb - kbuf;
--		} else {
--			if (copy_from_read_buf(tty, &kb, &nr))
--				return kb - kbuf;
--		}
+  * @tty: tty device
+@@ -2234,34 +2261,12 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file, u8 *kbuf,
+ 			tty_buffer_flush_work(tty->port);
+ 			down_read(&tty->termios_rwsem);
+ 			if (!input_available_p(tty, 0)) {
+-				if (test_bit(TTY_OTHER_CLOSED, &tty->flags)) {
+-					retval = -EIO;
++				int ret = n_tty_wait_for_input(tty, file, &wait,
++							       &timeout);
++				if (ret <= 0) {
++					retval = ret;
+ 					break;
+ 				}
+-				if (tty_hung_up_p(file))
+-					break;
+-				/*
+-				 * Abort readers for ttys which never actually
+-				 * get hung up.  See __tty_hangup().
+-				 */
+-				if (test_bit(TTY_HUPPING, &tty->flags))
+-					break;
+-				if (!timeout)
+-					break;
+-				if (tty_io_nonblock(tty, file)) {
+-					retval = -EAGAIN;
+-					break;
+-				}
+-				if (signal_pending(current)) {
+-					retval = -ERESTARTSYS;
+-					break;
+-				}
+-				up_read(&tty->termios_rwsem);
 -
--		/* No more data - release locks and stop retries */
--		n_tty_kick_worker(tty);
--		n_tty_check_unthrottle(tty);
--		up_read(&tty->termios_rwsem);
--		mutex_unlock(&ldata->atomic_read_lock);
--		*cookie = NULL;
--		return kb - kbuf;
--	}
-+	/* Is this a continuation of a read started earlier? */
-+	if (*cookie)
-+		return n_tty_continue_cookie(tty, kbuf, nr, cookie);
- 
- 	retval = job_control(tty, file);
- 	if (retval < 0)
+-				timeout = wait_woken(&wait, TASK_INTERRUPTIBLE,
+-						timeout);
+-
+-				down_read(&tty->termios_rwsem);
+ 				continue;
+ 			}
+ 		}
 -- 
 2.49.0
 
