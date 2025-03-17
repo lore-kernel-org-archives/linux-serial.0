@@ -1,41 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C37322D4F6;
-	Mon, 17 Mar 2025 07:01:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD80322F397;
+	Mon, 17 Mar 2025 07:01:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194890; cv=none; b=QvGU8X0oTqWM2sCeH3OKNancm2ASZYb61uFf5Zz/c16qHGiD0B9VwgLBvdIX9K/V5lQEL6LTAhvTwhDGUdwo6YYGAfly/HlY7iXiD7RJLtkoZai5rlWah8D9jB1pq8boBnCaZKysc3N/pC6vvaBXzaxqz7Vn2DHuILVf/8U68VA=
+	t=1742194891; cv=none; b=cyYHMgztMnMA1pSdejDRdo8ysx97zEzBUYt7ijVxcspB0tSvhoTtL8Xv/VJx3a6kAUUE9yZ0GPZc+cvF9ZsZe02Nde23rA3X+6KCzmOQap226KUWaFphqu6JOftaLRL1s2/2YwDfsij06lDdMzX2/+Edgmxk9uwXdrBlKVtmwqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194890; c=relaxed/simple;
-	bh=HrxMMX96ZRTa4wo+i3IcrhvmJQTlSR2eUo1YODDfeN0=;
+	s=arc-20240116; t=1742194891; c=relaxed/simple;
+	bh=1rdXQyJej8ITir/cAQWBTR5R0h/xen+2KFDCxqV7Gjw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fn01DtvBatquCGcfwq1cRUmbZ4KJYYIy5VlFgWHdnIdvRUowhI62OXArxOs8d1hIWT/P6Z3z9OhgT1TaoxxOpiBrSJ/jsK40NNp3U1xIWc+9oHFicSV/VRxENqn9G4knTGyZ/26EcgnyeYtlipS+C/SVHHpVCoSw/xDBCMC7SK8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LOSDBXFZ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=BZn+yLbebuXYhj25o2PvZYt0PgZnnyuc8hwLeo+57y6vUO+F1xgJxgBUysN6BLGynMxF+5Kp51UMHkTYXuW15zGYnIwS9KCsdzYQXpRufjy51ANVdei2UncKofi5XSXoKQcNBqzRvByqgNZgdqvrEoMVg2H3MpiReT2Y1xEkoVI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rln0cIwM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LOSDBXFZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 952E6C4CEF2;
-	Mon, 17 Mar 2025 07:01:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rln0cIwM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BDD0C4CEEC;
+	Mon, 17 Mar 2025 07:01:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194890;
-	bh=HrxMMX96ZRTa4wo+i3IcrhvmJQTlSR2eUo1YODDfeN0=;
+	s=k20201202; t=1742194891;
+	bh=1rdXQyJej8ITir/cAQWBTR5R0h/xen+2KFDCxqV7Gjw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LOSDBXFZ76MVEVMrv7QouOG/Y7ClG8+4SNTregw5s694lmt8JvJQcy48GL69UtKeH
-	 DyGEImpxorygeTyKUpGdmLJLaA7ax4qqeXz0tlRuprTYX06v5+b7bnShnolbJIlL9g
-	 bvFWOokoNLshk4bC2nRAj7gWGRS45RNTZ26/9qVhk5IiAOcuMNBHmzUXCeXzJRrdep
-	 rii7qFz+RFMlOypYq+YkXN04VyzD+aOSUvRwH1IAstDflNKI87ZTjKYTvqjTrFuSWc
-	 edX3I+UL6oGmxm4OgVLFve25yqkS4vLaXDLiV9hpq0q0rdRyG1MZluOPv5BWWTQmqM
-	 37x2BRvnRH5ag==
+	b=rln0cIwMCYJI4ui2N9Hjz3l9cLCdyrVeu9tqVFfUG4dda5oSKIadm1f7xRzun6iA7
+	 MegjKWhXW6UEyRbdX+hcCYhohUh5R7P39SnleRzcHTetTUjcY62KOEb1WrGHtCdEm6
+	 3awqMzBoNIrx4VPeGzV8A5fLd6ne8b9CF+qbYO8PtYFIUIRquOE3w/sO6Xd4siCj1g
+	 G1JDd4NrBOMUJHc1ta9nUlqxEox0EB9maTeQYe2iTQxLLJngUt07U46Md3SqbN+sEu
+	 XmcNIS4jYCd0FtkQ9dYcvW1p4w0zkSQy+EtLdw3BUoV25LKigPYH3HbERtMU1FQ9Vw
+	 IyzsX4qs3idkw==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	"David S. Miller" <davem@davemloft.net>,
-	sparclinux@vger.kernel.org
-Subject: [PATCH v2 24/31] tty: sunsu: remove unused serial_icr_read()
-Date: Mon, 17 Mar 2025 08:00:39 +0100
-Message-ID: <20250317070046.24386-25-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH v2 25/31] serial: remove redundant tty_port_link_device()
+Date: Mon, 17 Mar 2025 08:00:40 +0100
+Message-ID: <20250317070046.24386-26-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -47,40 +45,26 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-It is commented and never used.
+The linking is done implicitly by tty_port_register_device_attr_serdev()
+few lines below. So drop this explicit tty_port_link_device().
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: sparclinux@vger.kernel.org
 ---
- drivers/tty/serial/sunsu.c | 14 --------------
- 1 file changed, 14 deletions(-)
+ drivers/tty/serial/serial_core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/tty/serial/sunsu.c b/drivers/tty/serial/sunsu.c
-index 2dc68b3201a4..383141fe7ba0 100644
---- a/drivers/tty/serial/sunsu.c
-+++ b/drivers/tty/serial/sunsu.c
-@@ -159,20 +159,6 @@ static void serial_icr_write(struct uart_sunsu_port *up, int offset, int value)
- 	serial_out(up, UART_ICR, value);
- }
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index d46650e578e5..6fafb1bd6860 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -3156,7 +3156,6 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
+ 	if (uport->cons && uport->dev)
+ 		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
  
--#if 0 /* Unused currently */
--static unsigned int serial_icr_read(struct uart_sunsu_port *up, int offset)
--{
--	unsigned int value;
--
--	serial_icr_write(up, UART_ACR, up->acr | UART_ACR_ICRRD);
--	serial_out(up, UART_SCR, offset);
--	value = serial_in(up, UART_ICR);
--	serial_icr_write(up, UART_ACR, up->acr);
--
--	return value;
--}
--#endif
--
- #ifdef CONFIG_SERIAL_8250_RSA
- /*
-  * Attempts to turn on the RSA FIFO.  Returns zero on failure.
+-	tty_port_link_device(port, drv->tty_driver, uport->line);
+ 	uart_configure_port(drv, state, uport);
+ 
+ 	port->console = uart_console(uport);
 -- 
 2.49.0
 
