@@ -1,181 +1,130 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 816F2243364
-	for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 14:42:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73815176AC5
+	for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 15:42:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742222551; cv=none; b=gfchizpuRt0dVt3NO+oR6pciv9qubwBSRqqi6BpGKLC9XCjpcxYv2o9VX0AWVuZxUN/+0Ly+VXVzEpEQkFCxIYN1fDyHW8GkOzW1T9mVaBrxHNaDdkXiqasPA2eRYB289QBVZEMpVhfoTStgXQKe0D/dJcDig8av1XS+I9QOFMY=
+	t=1742226151; cv=none; b=GR576zXT8ipXI1u6FnWpZt1cb8Wykbkl9xMioXpmXl7Taw6ggo3CJcqvCIdcjy5S+NuR/i4eyRXQ6jCau5mMcs+zfFcENeq1sWNKlpUp3dBN++22mryx6hE8mW1pQvjgvv1c3qUCRRx0TxMarUODPv9cB1YmRmXD5IHNUgRHnx4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742222551; c=relaxed/simple;
-	bh=Q1a6ifPK0PRS3rvFIO8fvE8J6Ojm9mTh/EDT/GpZlYA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=T28wzdspNpf3rQzXXAHG1CUcF9uVGgJhcAuBrbgipewhB4C5uce0scTDaJBombpypLMpSKyk/PCgOHm3icjnuLiM1FGjfYZPzK1PRDVO9gsr2vCzB7UwgLHVYC9Xz8un9ZSOg+wHVm7EV/jzdDjBGXg9zARHVZqUC7OvhVWBCgg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jVM86U+Y; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1742226151; c=relaxed/simple;
+	bh=95C0iFKPFCJdqxunet5Y22/0vzP095YVnCIPv+/g1Jc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TCGWUzrn+kmCqnH0TN85XNzvr2xX2zE9/JvPwgtxJ4T0vgFA2CaRRKnODmN1AOcO3GnZ6+ghSfi7oXAVVtreg2mUeU7ep5CKvxodT2Su95isEsFuCCtnsNhjiBYNQVMPFGaA94ZLCCmJqHiSyOCqaNFUJFfeKgElm9LAHRIEvsY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=D9CivxON; arc=none smtp.client-ip=209.85.221.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jVM86U+Y"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2239c066347so90530585ad.2
-        for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 07:42:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="D9CivxON"
+Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-39133f709f5so2784663f8f.0
+        for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 08:42:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1742222549; x=1742827349; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mo34dNzTDqY+kho3xTyDIEKizwiLIjHQzb4U8w2qOx8=;
-        b=jVM86U+YznG6TW85bryKD2KdWh/aTVrAiNj9tyIS12ycH9iPE8xHOsiHLwgBEGjEf6
-         XWZpT9rtLX3Xhp31z6dLBjUMmtINJN6yIf53t1No3CTU8dfv6Bmbc8etDPRJCll3oiT7
-         tXrUpVsU+2PEo+wOel4hdRu9IVKfPyK77v9EI5zAPXckSS3Roz65R9dvulSGLtHUHvXP
-         7RXd4vJAbYare0yXktw+B20xDSMYykQ8XhRGbNC8p+03kwppeHECNNhKFtlk1/4mB249
-         Vb759fi9RgCqQU6DlKEazjlb9Ma28up9gLCNm24pwbmRATSW1aQQV7IDIyqyagQiYkHu
-         sL1w==
+        d=suse.com; s=google; t=1742226148; x=1742830948; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5Sl6TiBLO8N25M9MJl5F5cWXO3GkD985i4DUNgdnIpM=;
+        b=D9CivxONF6M+3Nw3yUJKy0MVXwRHhUPDywMHgNFXXumfc10MGj+IUlaQg6vD8lAv+2
+         PZBhyeBUQr7oGXHSCA1r1sX8lPHP8cU5tx/w+90RK3vvw/4Vp5nw3yDwmo9z7INSF+4X
+         4w1OAUsoO3XWF6L7NL2DMU2NxDxj1EtVmMjwhdrGMF7pAS7Fj+GQ/9NbTlHuSL1shojp
+         Zvh72QUj+mzs7BM+0FFFGuN6w9zA1nCu2N8/X0IxfkpmTpr//y71FHgIiN+D8Nz8+gqO
+         O1yxojFfqyhyfcgidRBvYo5LMoNEle2L/8BcH+8S5SwqqUaGFyN5e2tQpFok+Kh10tTS
+         vY2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742222549; x=1742827349;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mo34dNzTDqY+kho3xTyDIEKizwiLIjHQzb4U8w2qOx8=;
-        b=lRVPkMY+xY2VzMIUElGzMXQyQbZbAuSb4EtzmqiN7jZqZUPDKgljA/gOa1niSJpsXt
-         XgpFDyjjinv1KyjUNnlFShbIR0Xkr0RqOIZ1EhKJBwIdx8QZ9xHb5sksq2Aeulo63USg
-         mWOn4Q/GcJIRQmJcCdyQ9qD05/FCz4n7YIpqMuHz5Qa8mkgSrcsu2wkpG/DCoNDmpkzy
-         twvuIVnY6NOXPVDPBvy8vvZTvhJCPAFbcSt55ayrNnXnglzXBGTGX+8GnAkZ2jFyu1Pc
-         VHkpXaIThSB4w59VIQNxs6CvfKJ3NP2EK/8QlzOwLm5jRO4hlNKxefXOnWHn8oEUc60k
-         3nmQ==
-X-Forwarded-Encrypted: i=1; AJvYcCULwkZPJtXikxed0Ni9BtQlPwGyexiwRNn0gf2A8nAIYtO/VUA8C4CuvRz+AJgdRjgnD5rz2A03QaSeKjE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyyA4mZXLDcP3NpRUud686tLkYEB+7fbfnx0NXYHP5cCPHOVEA7
-	ANgKsYiMDSz+wDVEpYbjEApwh8miCuRKFv5DjPawYynIKWmdMApdXrpxGg==
-X-Gm-Gg: ASbGnctlW1iIUs7/nrHlXrvY10K5gVOB6T8ztq6LuWT8K2NTLz/9rzabb8TwQPYP1UW
-	7wEO3XF54Ffen7Isy+qigYPP9GVIwvALjjLa7LoRIxdJzkCrGWO2086XTV+V1qqJAqQokt1gK8j
-	URE9uckh2YR/wGXZu/MSzCQD7DmZQE+d5lksgigTD1JNW8U47mtEnshbc7VFMdcQoxX8FG3xKT3
-	IC8MYnXKJXGIGDrMEwlrluNM+xMCA2Y1ZrYADFHnq59MzwhcLyyR6Dz7ueyGI34E/x1SdXREo2J
-	8Nn3TkP1Sj+wmXX/I56oZF8IpJqKDMt4Nd2XXyYBijobVcW8oIXWcVj56xoGey1lEWKhpRKjDA0
-	0k41h3lSd6Xuiw7cKbTrCOiAxKuZCKzw50KU2ZYCyOQ==
-X-Google-Smtp-Source: AGHT+IFJuuaswRcjPjh2sxYceH6LcyJNRZt9OgTh9fUEx+QGKF9VIDgzba6msfZ4UrRc/xoUXNrPIw==
-X-Received: by 2002:a05:6a00:1397:b0:736:a682:deb8 with SMTP id d2e1a72fcca58-737223951d2mr17365260b3a.8.1742222548622;
-        Mon, 17 Mar 2025 07:42:28 -0700 (PDT)
-Received: from DESKTOP-NBGHJ1C.flets-east.jp (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73711695493sm7870028b3a.137.2025.03.17.07.42.25
+        d=1e100.net; s=20230601; t=1742226148; x=1742830948;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5Sl6TiBLO8N25M9MJl5F5cWXO3GkD985i4DUNgdnIpM=;
+        b=edFMKP4CnqJpApCX0H3ggFFD9kpaWUxVBTPwOk5OG9MbcEBB1nGDJ8MvIa0ehwdnZH
+         4QiJHfJJWzWTLH9oaAHjf16pPyVxEtqv/SEVm/eONABebw9xr0R+Lm7OSGUIGFi5l6l9
+         UGVhRtqO2UT6Y1hxM6fGH+x+YJ2dfX2DB3511B+b0OxyEjBL7KnaFJsckrdF8UX7UjEg
+         N3juEwgCx0j9CiXODjsPPmns1418ZAmgmKc0tsindJdtTBoW0iuqQ2L3myo4Ty16N2BF
+         TdHntouH7eETB7sUOe6Mz7NlWJzHfcfwmC42t0rzuTiN+38E7zgYPGYZdOguwOxB/VWC
+         3GDQ==
+X-Gm-Message-State: AOJu0Yywg60OlsIw12S7Nz606QLdzc47OBI+DckhoeVYHE5vi6fwvBRe
+	5n5VyCIOPN1VvWnPZ5pL42PbMPQWBwy5XNhtaT+lSj/eZhefQ48Wqqb4mGN+9cc=
+X-Gm-Gg: ASbGncuKb3qhEomEN/nJHZhWjhC9CLQDu1RW8NNw/qfk+Qqg10q4ilJZPwhfx0hzPaJ
+	iBHxInRf0GsEW5SFuimhbNIckeg1cdfAioDioX4DyEeOfqJNYn3YgHicKXc1Atdz6vp+r1VTzf9
+	t5fuH2PupeM3/UBLVExROeg52OglT0Ny+8lyKJNN5T50oukxd1pVL6ECqgLMPl1sxc6KpHJ8Snr
+	ePMV+x8YvpFIrXSMwFlM3HhtTaDINXyPOVqaCnPqgKUQqDHPIC5/PIIw/PDWnRAtlfHWvHETlbL
+	d+MSF0ZV8lgKoWtd5U2vrLV0/BD5Q2xqrP+NwaVpyW9qi5AIPRPyK95igQ==
+X-Google-Smtp-Source: AGHT+IGFI7QGKei4yncWB619h0fAg9aDp6rT7ZSJlbo42qbdkjEdJIdxaXEtj/PmkeZ0XXSLhW6X3A==
+X-Received: by 2002:a05:6000:470a:b0:391:9b2:f48d with SMTP id ffacd0b85a97d-3971e686fdcmr15861208f8f.33.1742226147727;
+        Mon, 17 Mar 2025 08:42:27 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-395c8975b90sm15623852f8f.53.2025.03.17.08.42.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Mar 2025 07:42:28 -0700 (PDT)
-From: Ryo Takakura <ryotkkr98@gmail.com>
-To: john.ogness@linutronix.de
-Cc: Jason@zx2c4.com,
-	gregkh@linuxfoundation.org,
-	linux-serial@vger.kernel.org,
-	lkp@intel.com,
-	oe-lkp@lists.linux.dev,
-	oliver.sang@intel.com,
-	pmladek@suse.com,
-	ryotkkr98@gmail.com
-Subject: Re: [linux-next:master] [serial]  b63e6f60ea: BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
-Date: Mon, 17 Mar 2025 23:42:21 +0900
-Message-Id: <20250317144221.8231-1-ryotkkr98@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <84a59krqo5.fsf@jogness.linutronix.de>
-References: <84a59krqo5.fsf@jogness.linutronix.de>
+        Mon, 17 Mar 2025 08:42:27 -0700 (PDT)
+Date: Mon, 17 Mar 2025 16:42:25 +0100
+From: Petr Mladek <pmladek@suse.com>
+To: adamsimonelli@gmail.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject: Re: [PATCH v12 1/1] printk: Add an option to allow ttynull to be a
+ default console device
+Message-ID: <Z9hC4Ri39FsyOF0T@pathway.suse.cz>
+References: <20250314160749.3286153-1-adamsimonelli@gmail.com>
+ <20250314160749.3286153-2-adamsimonelli@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250314160749.3286153-2-adamsimonelli@gmail.com>
 
-Hi John!
+On Fri 2025-03-14 12:07:49, adamsimonelli@gmail.com wrote:
+> From: Adam Simonelli <adamsimonelli@gmail.com>
+> 
+> The new option is CONFIG_NULL_TTY_DEFAULT_CONSOLE.
+> 
+> if enabled, and CONFIG_VT is disabled, ttynull will become the default
+> primary console device.
+> 
+> ttynull will be the only console device usually with this option enabled.
+> Some architectures do call add_preferred_console() which may add another
+> console though.
+> 
+> Motivation:
+> 
+> Many distributions ship with CONFIG_VT enabled. On tested desktop hardware
+> if CONFIG_VT is disabled, the default console device falls back to
+> /dev/ttyS0 instead of /dev/tty.
+> 
+> This could cause issues in user space, and hardware problems:
+> 
+> 1. The user space issues include the case where  /dev/ttyS0 is
+> disconnected, and the TCGETS ioctl, which some user space libraries use
+> as a probe to determine if a file is a tty, is called on /dev/console and
+> fails. Programs that call isatty() on /dev/console and get an incorrect
+> false value may skip expected logging to /dev/console.
+> 
+> 2. The hardware issues include the case if a user has a science instrument
+> or other device connected to the /dev/ttyS0 port, and they were to upgrade
+> to a kernel that is disabling the CONFIG_VT option, kernel logs will then be
+> sent to the device connected to /dev/ttyS0 unless they edit their kernel
+> command line manually.
+> 
+> The new CONFIG_NULL_TTY_DEFAULT_CONSOLE option will give users and
+> distribution maintainers an option to avoid this. Disabling CONFIG_VT and
+> enabling CONFIG_NULL_TTY_DEFAULT_CONSOLE will ensure the default kernel
+> console behavior is not dependent on hardware configuration by default, and
+> avoid unexpected new behavior on devices connected to the /dev/ttyS0 serial
+> port.
+> 
+> Reviewed-by: Petr Mladek <pmladek@suse.com>
+> Tested-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
 
-On Mon, 17 Mar 2025 09:51:46 +0106, John Ogness wrote:
->On 2025-03-15, Ryo Takakura <ryotkkr98@gmail.com> wrote:
->> I got the same softlockup during the test regardless of the presence
->> of the commits.
->>
->> [   60.222013] watchdog: BUG: soft lockup - CPU#2 stuck for 22s! [swapper/0:1]
->> [   60.222023] Modules linked in:
->> [   60.222032] CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Tainted: G             L     6.14.0-rc6-v14-rc6-voluntary+ #4
->> [   60.222047] Tainted: [L]=SOFTLOCKUP
->> [   60.222051] Hardware name: Raspberry Pi 4 Model B Rev 1.5 (DT)
->> [   60.222055] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->> [   60.222066] pc : get_random_u32+0xac/0x118
->> [   60.222081] lr : __get_random_u32_below+0x20/0x78
->> [   60.222094] sp : ffffffc08002bb80
->> [   60.222098] x29: ffffffc08002bb80 x28: 0000000000000003 x27: 0000000000000001
->> [   60.222114] x26: ffffff804112e6a4 x25: ffffffd33ed21820 x24: ffffff804112e69c
->> [   60.222128] x23: 0000000000000000 x22: ffffff804112e64e x21: 0000000000000000
->> [   60.222142] x20: 000000000000000d x19: ffffff80fb7aebb8 x18: 0000000000000002
->> [   60.222156] x17: 0000000000000004 x16: ffffff804112e584 x15: ffffff8041126796
->> [   60.222169] x14: ffffff80411267c0 x13: 0000000000000006 x12: ffffff804112e5c0
->> [   60.222183] x11: ffffff804112e64c x10: 0000000000000007 x9 : ffffffd33dccdd10
->> [   60.222196] x8 : ffffff804112e6a8 x7 : 0000000000000000 x6 : 0005000400060005
->> [   60.222210] x5 : ffffff804112e65a x4 : 0000000000000000 x3 : 0000000000000010
->> [   60.222223] x2 : 0000000000000014 x1 : 000000002c7d0b7a x0 : 0000000000000013
->> [   60.222237] Call trace:
->> [   60.222241]  get_random_u32+0xac/0x118 (P)
->> [   60.222256]  __get_random_u32_below+0x20/0x78
->> [   60.222268]  get_rcw_we+0x180/0x208
->> [   60.222278]  test_rslib_init+0x2c8/0xba0
->> [   60.222292]  do_one_initcall+0x4c/0x210
->> [   60.222303]  kernel_init_freeable+0x1fc/0x3a0
->> [   60.222317]  kernel_init+0x28/0x1f8
->> [   60.222327]  ret_from_fork+0x10/0x20
->>
->>> I wonder if a cond_resched() in some loop would help. Or using a
->>
->> I wasn't sure which loop would be the appropriate one but adding
->> cond_resched() as below worked as suggested.
->>
->> ----- BEGIN -----
->> diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
->> index 75cb1adac..322d7b0a8 100644
->> --- a/lib/reed_solomon/test_rslib.c
->> +++ b/lib/reed_solomon/test_rslib.c
->> @@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
->>
->>                 if (memcmp(r, c, len * sizeof(*r)))
->>                         stat->dwrong++;
->> +
->> +               cond_resched();
->>         }
->>         stat->nwords += trials;
->>  }
->> @@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
->>                 } else {
->>                         stat->rfail++;
->>                 }
->> +
->> +               cond_resched();
->>         }
->>         stat->nwords += trials;
->>  }
->> ----- END -----
->>
->>> pseudorandom generator. I remember the problems related to much
->>> slower random generator, for example, see the commit
->>> f900fde28883602b6 ("crypto: testmgr - fix RNG performance in fuzz
->>> tests").
->>
->> I haven't tested this but I'll look into it!
->>
->>> That said, I did not dig deep into the code. And I did not try to
->>> reproduce the softlockup. I am pretty busy at the moment with some
->>> other stuff. I just wanted to give it a look and share my opinion.
->>
->> I think the softlockup is rather a problem of test itself, 
->> not the two commits.
->
->Thanks Ryo for looking into this! I think we need to have a technical
->explanation/understanding of the problem so that it is clear how my
->series triggers or exaggerates the issue.
+JFYI, the patch have been comitted into printk/linux.git,
+branch for-6.15.
 
-I see. I can't yet say anything but still not sure if your series has
-anything to do with the softlockup... I found that there was similar 
-report in the past [0].
-
-Anyways, I will look into the rslib test itself more carefully to see 
-if I can give the needed technical explanation for the problem!
-
-Sincerely,
-Ryo Takakura
-
-[0] https://lore.kernel.org/linux-kernel//a309f09e07374e62a77bb84c70e6715efd288448.1583122776.git.planteen@gmail.com/
-
->John
+Best Regards,
+Petr
