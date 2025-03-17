@@ -1,108 +1,82 @@
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71F33233702
-	for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 10:51:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34407219A7D
+	for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 12:04:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742208698; cv=none; b=MrHR1nuaPnpJYFm4gaTMjVDJExzQcRWZIMyyvfyM/czvNYwtj/le8ukRRNdRW1Hksv3ECV+fDbEAhoDJ4Kg6AlzNM5su6/A+5gXVABXMZLFLRnFWVfckSnyYF8Kv853PPL02gF3+EXUiUFmAdbOq9HylbVzkJb4z4wG6xmC9ycg=
+	t=1742213088; cv=none; b=VcPzYQ1270MzzxzGTpA28msdi/5cp0h0gASGUc1ios2wRtkoPCi7QBlErxwCQ16UV5y6cOChb6aGzS25cq2z6S8MTQQJGeRxbh8Dsh7k2iLfp91eqG3uWCUggyzQvWqlRbuK8iFXby7lAyFUrrdZn3luGlhJI/nNv1XoL8u9+dU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742208698; c=relaxed/simple;
-	bh=G9bGpVVumkh4EkeQ8f+423AnFKXvZJS9Sk4lm4BBydc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DgUt2h65osm0NxDMkvAtQuhZSRlasEginEyyE8xrkm5nOzZNzR++zkCjqAfNSMP/RwRiNk8V7a27Nis1O0A/oMdwiaSRA+HISaLSyllSnlTcr+/FTggw0G2ZWykiwptKgqiFF9A9fl3w67VWVeiYEv2VOFy57BGe4gfe+y5+pF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=JFkbfuaE; arc=none smtp.client-ip=209.85.128.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1742213088; c=relaxed/simple;
+	bh=1UoTWFts0bGtzzjOQFFJBt56Df+MynMz3+ye0XxEul0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SG6vNZctgrvBZXuKVVUcdKBzG4SxhEu+1CqgXH02UDEdJcoM8slyLBa14/7GT0UKecF1xykaCZj+zDXFhtNmvU9IQ80N+I0PG4Hj7grAoq0ouYkWre/RJXp6uqh2M/cQZmy6vkc9BFZGDjTXGzve6sXMoTib816OV3a2y+0NM88=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=HN2PDw0J; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JFkbfuaE"
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-6f47ed1f40dso33243627b3.1
-        for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 03:51:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1742208695; x=1742813495; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=XfVnG4HkUsVDQ5d3JfJrfe7r2SoolZoIbYsONCWi4uo=;
-        b=JFkbfuaEHPPFPnEVdlGF7mLpnEi2v0/MwVP90rSOewDXxHN1fIuV2oev9W8p8CcRFQ
-         2pLeOf0EmooRC8O0aThuUdl9HNG4YtUCCJL3x4ORe85+gVJ6N//Ne4pv3zEznbPZBksR
-         F/61d79m+O07U6asq8eQmhZ2OFlBaHtXzemdAhRiyOMvBGtT6G5SUST5g8CEhoAROEbg
-         RGIxMjhXcRhibDQ4GkZpdZs1PTRctaDeqWf43knlnK+PDCn7LaqFZRsrjRpdx5yGpRUR
-         8MLCsO3vxdVl2nXFU6P831tYrnmnODgpPcmTfBYjj2ce/pc0pt8nlo3kkpqXHL6niq4B
-         8wUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742208695; x=1742813495;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XfVnG4HkUsVDQ5d3JfJrfe7r2SoolZoIbYsONCWi4uo=;
-        b=d/tMo598D5CutBQ2W4Gjmp6dxc6488hQ8uBoZvnHo733oYyq7sFIaHkrgJgmM98796
-         GQezrkMh/NeQ+J2Xybe/LiNhskYDcva5nL5QXCTgmA6Zkax1YMsuGgAnBo/YSPN8CmOJ
-         2wvnEfNgFlXdqeznlGhCqarzaZ3XdxQs2BjOGdXXXftuEtnOCqgeRnCvGto4pA38yCeG
-         eT35EoY0Dad0Os7HrFzewtA0qFriWKlm3hUELat6hBeenVnbC67ENDeGLpzvFex0/nwA
-         uaghI0HzSDkchYbnWdykBP3GbdJrZPW3NNZ0cxCUu3+SXtNBWfjTGOoV3QuBosHT9S+0
-         AyzQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXsd4I6LfQUpVf/4znD7KsoP5PjoR8HIoroHUhJSVMiHnAD2jA4wN29MVCaB/A0r5klflGJKa0alMUSO8M=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx4GnodmcGz6TubBy8XBPUv9t6X1WJ+T5nrZeNmIsyww3a07ghK
-	30gXJde9//7qDM8pRcxyjZzVeNbiyEBkBRkn6au3WDYJBrkHf3Uqg947+80JtbAhtNlXfbIKCDE
-	r18duMkRVk7dsCzD2h+Ye/oTT2jc2lU3HWhCCfyRYN6IIUcCg
-X-Gm-Gg: ASbGncsL3tVFbZjleyxSDU9FLCRh1XyIJbg84260yDABFZP6HZWISGuZjuieHl+9YWO
-	hv0F48yymzjYylsuuN8A0/UsaJzZvj3KoQWDGl4976lvbLUVwc8iKcKiE+NxTyxarI8yT66eVof
-	u3fhzG1mYpnA0cafZjQqE/76FP3HBILdVkpHji8w==
-X-Google-Smtp-Source: AGHT+IHG+hqqY7z4YWoNHFwken+n5F9fRUkOdKWXpn1zIzLsSXAtBJ1qYKxYTQkl9v5HsBxDmf6GRlQfnrNNQji4duU=
-X-Received: by 2002:a05:690c:740a:b0:6fb:b2de:a2c3 with SMTP id
- 00721157ae682-6ff45f615d8mr143741577b3.9.1742208695401; Mon, 17 Mar 2025
- 03:51:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="HN2PDw0J"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=from:to:cc:subject:date:message-id
+	:mime-version:content-transfer-encoding; s=k1; bh=dX49vKBE+MSNuQ
+	E/lhGd+fyN6Zu2+fc64xPUSy2tMC4=; b=HN2PDw0JpFmW44L6kbSQHcStTr+bLX
+	z1Doc1/24yGN9QAEzToLmPbeG9HH00mFx1SD9j/p36NDu810wmtgNkh6UQqE5vR9
+	ad15J7nExePJkJ0dC/ybW9IubhCTP5yCphW9k30QXjo5zBwmOHAxkcKn+htLVlEz
+	12HhV/QfSomV0WfFDo39o6jdvfFhsMZcLqcxxs7mxd+eiaE0qIywIH3oN/iPBgm2
+	iW8Hx5uq3fqZwy2e55xsvb6DhSq0x/pgLwFi9wQN3zlHUa73FibMOUEKvumAkqus
+	WpAKafe1sEDinTksvhCb7RllotWV9EtYDabCOBeUqMng6/wBM/+5Ivyw==
+Received: (qmail 3133718 invoked from network); 17 Mar 2025 13:04:43 +0100
+Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 17 Mar 2025 13:04:43 +0100
+X-UD-Smtp-Session: l3s3148p1@P+33l4gwiLAgAwDPXyTHAJp038nK7dx+
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-renesas-soc@vger.kernel.org
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH] dt-bindings: serial: snps-dw-apb-uart: document RZ/N1 binding without DMA
+Date: Mon, 17 Mar 2025 13:04:37 +0100
+Message-ID: <20250317120437.67683-2-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.47.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250317070046.24386-1-jirislaby@kernel.org> <20250317070046.24386-18-jirislaby@kernel.org>
-In-Reply-To: <20250317070046.24386-18-jirislaby@kernel.org>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Mon, 17 Mar 2025 11:50:59 +0100
-X-Gm-Features: AQ5f1JozYMb7s-WMdJg9CTQSW8y02swNli38bn-VGUEE_cdcqwI1tkZFu3cBTsg
-Message-ID: <CAPDyKFrwNfd3F5EvXvTJHM4dd+mUuy6jQXxVpq4FtCzPN0X2Qg@mail.gmail.com>
-Subject: Re: [PATCH v2 17/31] tty: mmc: sdio: use bool for cts and remove parentheses
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Mon, 17 Mar 2025 at 08:01, Jiri Slaby (SUSE) <jirislaby@kernel.org> wrote:
->
-> 'cts' in sdio_uart_check_modem_status() is considered a 'bool', but
-> typed as signed 'int'. Make it 'bool' so it is clear the code does not
-> care about the masked value, but true/false.
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: linux-mmc@vger.kernel.org
+Renesas RZ/N1D has this UART with and without DMA support. Currently,
+only the binding with DMA support is described. Add the missing one
+without DMA support which can fallback even more.
 
-Applied for next, thanks!
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ .../devicetree/bindings/serial/snps-dw-apb-uart.yaml        | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Kind regards
-Uffe
+diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+index 1c163cb5dff1..5b5799c21243 100644
+--- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+@@ -30,6 +30,12 @@ allOf:
+ properties:
+   compatible:
+     oneOf:
++      - items:
++          - enum:
++              - renesas,r9a06g032-uart
++              - renesas,r9a06g033-uart
++          - const: renesas,rzn1-uart
++          - const: snps,dw-apb-uart
+       - items:
+           - enum:
+               - renesas,r9a06g032-uart
+-- 
+2.47.2
 
-
-> ---
->  drivers/mmc/core/sdio_uart.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/mmc/core/sdio_uart.c b/drivers/mmc/core/sdio_uart.c
-> index 6b7471dba3bf..7423a601e1e5 100644
-> --- a/drivers/mmc/core/sdio_uart.c
-> +++ b/drivers/mmc/core/sdio_uart.c
-> @@ -471,7 +471,7 @@ static void sdio_uart_check_modem_status(struct sdio_uart_port *port)
->                 port->icount.cts++;
->                 tty = tty_port_tty_get(&port->port);
->                 if (tty && C_CRTSCTS(tty)) {
-> -                       int cts = (status & UART_MSR_CTS);
-> +                       bool cts = status & UART_MSR_CTS;
->                         if (tty->hw_stopped) {
->                                 if (cts) {
->                                         tty->hw_stopped = false;
-> --
-> 2.49.0
->
