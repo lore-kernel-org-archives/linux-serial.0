@@ -1,39 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC0AB220680;
-	Mon, 17 Mar 2025 07:01:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3421B21ABCD;
+	Mon, 17 Mar 2025 07:01:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194873; cv=none; b=kcVGWvwuw2PfFGHqkdZaf1tXjyyJJhOjrEHGmYZXHkCYCz1Wv09paHMnVWu3ZWI5KdI8cxXRSHLC2WNOJxA6UUNh9H84ZQTHTAr1OSjhGfo18HeGCezsg4OizSEK06aWbMj5QZ+PclYHNNv/Js6X9ts9JLeyMSJVmd4JIsTsWhQ=
+	t=1742194875; cv=none; b=HGxL9bAYBKUWjyp8B2jaW8af5ZcLVMB514JGXSi4vep1Sbz/J+c4uQMQ4/nFTrQMqz+xJvEMBBRLUlYAFksNZ5NneJZUiYPj9DUMF7HrWh7gGgNid+6W+o7bRPbDLFsNF5sQ6M08UMTl02U3OqdkZ8jiE2SqV2JYakUNOvOtrcM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194873; c=relaxed/simple;
-	bh=BwMqY4GhVZC/Tg+ai7GbA+iNWvaoAB6mjbKe0KEA5tc=;
+	s=arc-20240116; t=1742194875; c=relaxed/simple;
+	bh=oqmCinDwG4nsNPhnUAmEMB1q3PmaAl9+aZ6ithpsXHE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LCfUxMJ8fvVq6skZJViphQTG5higcC0Ddv3zomCjybTR3Lp3yYo1EbXH/8usE+zUTqfzMcAhKgKqDN7qss0rTFifkm6lEY/y2dP8VDDsS51f8SGPh96WJ9GA41cT9gHpqSm+oh+sIwD/6fgoZD4OGNwpXq05WdbvRaBjD+kOomE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BJgJ2aij; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=JH03l5rnNWIIiSJ3vnVnZj8e8hSRPLZ8ngDNOTfVZxaCjoDXoKRnKoemXv1AqL7ftRD9eOD1zTazT2g1tYYBY8HA+yhDMHJQrh69/U46LhaVjSiJVEfhLD8finCR63P7WYGokXknrcnkBE6DuRUoXdFA/U3bCsIQruV6e0FmWTU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l/E1JZv7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BJgJ2aij"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5385FC4CEEE;
-	Mon, 17 Mar 2025 07:01:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l/E1JZv7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B52C4CEE3;
+	Mon, 17 Mar 2025 07:01:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194873;
-	bh=BwMqY4GhVZC/Tg+ai7GbA+iNWvaoAB6mjbKe0KEA5tc=;
+	s=k20201202; t=1742194875;
+	bh=oqmCinDwG4nsNPhnUAmEMB1q3PmaAl9+aZ6ithpsXHE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=BJgJ2aijIZ4aRlCL/pSg/mGKtfqIjjl7LbUNEi1CHDW3JqKUMxXy1TgOvSs1bn1qS
-	 d3IYMs1+Q7M2Hvg1C+gDEL8hirAOetlk1RhbHjXBmfdeyhNZTL+rby/uFdZjQ66UHv
-	 Dldi1W6qEfVWjmgolI5Ip8CmrJ+CIoUUFdTy78N9GoBugU0TU9C4Od/5zKcsv8bcQs
-	 mxMkRE7X7XsKtXkwnXadwxdAsAGi6c/8hwkJKoPyKKNSGU/xZRsqy+iKaddLB+fBUK
-	 OSecr4XZ1nhuQz+y6D16FUt6sITU3u4R+fcihjueMqpWBtpjBN0B4s5idngccTaWBV
-	 EkJqCw0h1EWrA==
+	b=l/E1JZv753Gtwfph/GTpuXqNcGAyAO/j8q5grjPxMR4RcY/7v4ONU/Cg37COHzbU2
+	 lMKLKHiRvcAlLa1Q/3RaNeVSWqY1bigLtopKrluR/c+2akbPvpU0VicSD0hDkolmPR
+	 iOrMcx/TMVBaVIf2krNbIeYe+NqCHZShGDdBNL0SQHmcSSQOZTzbp4LotD6AA6ZHq5
+	 DlI6Ym4acO/lunJXdKMJWx12gptji++KtlfBNFzFPYgshxOvDfSHHVA7tBaU0XC3sZ
+	 wC77lC3gq2S86l0jm0iwd8+Ho7vavYJ4CTqXUJuLThJjxq2c46uz4oTSR3e1G/wLFV
+	 csa2jubrwNyMQ==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 15/31] tty: tty_driver: introduce TTY driver sub/types enums
-Date: Mon, 17 Mar 2025 08:00:30 +0100
-Message-ID: <20250317070046.24386-16-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 16/31] tty: serdev: drop serdev_controller_ops::write_room()
+Date: Mon, 17 Mar 2025 08:00:31 +0100
+Message-ID: <20250317070046.24386-17-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -45,88 +46,97 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Convert TTY_DRIVER_TYPE_*, and subtype macros to two enums:
-tty_driver_type and tty_driver_subtype. This allows for easier
-kernel-doc (later), grouping of these nicely, and proper checking.
-
-The tty_driver's ::type and ::subtype now use these enums instead of
-bare "short".
+In particular, serdev_device_write_room() is not called, so the whole
+serdev's write_room() can go.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Cc: Rob Herring <robh@kernel.org>
 ---
- include/linux/tty_driver.h | 42 +++++++++++++++++++-------------------
- 1 file changed, 21 insertions(+), 21 deletions(-)
+ drivers/tty/serdev/core.c           | 11 -----------
+ drivers/tty/serdev/serdev-ttyport.c |  9 ---------
+ include/linux/serdev.h              |  6 ------
+ 3 files changed, 26 deletions(-)
 
-diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
-index 0fe38befa1b8..188ee9b768eb 100644
---- a/include/linux/tty_driver.h
-+++ b/include/linux/tty_driver.h
-@@ -81,26 +81,26 @@ enum tty_driver_flag {
- 	TTY_DRIVER_UNNUMBERED_NODE	= BIT(7),
- };
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index ebf0bbc2cff2..eb2a2e58fe78 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -316,17 +316,6 @@ void serdev_device_write_flush(struct serdev_device *serdev)
+ }
+ EXPORT_SYMBOL_GPL(serdev_device_write_flush);
  
--/* tty driver types */
--#define TTY_DRIVER_TYPE_SYSTEM		0x0001
--#define TTY_DRIVER_TYPE_CONSOLE		0x0002
--#define TTY_DRIVER_TYPE_SERIAL		0x0003
--#define TTY_DRIVER_TYPE_PTY		0x0004
--#define TTY_DRIVER_TYPE_SCC		0x0005	/* scc driver */
--#define TTY_DRIVER_TYPE_SYSCONS		0x0006
-+enum tty_driver_type {
-+	TTY_DRIVER_TYPE_SYSTEM,
-+	TTY_DRIVER_TYPE_CONSOLE,
-+	TTY_DRIVER_TYPE_SERIAL,
-+	TTY_DRIVER_TYPE_PTY,
-+	TTY_DRIVER_TYPE_SCC,
-+	TTY_DRIVER_TYPE_SYSCONS,
-+};
+-int serdev_device_write_room(struct serdev_device *serdev)
+-{
+-	struct serdev_controller *ctrl = serdev->ctrl;
+-
+-	if (!ctrl || !ctrl->ops->write_room)
+-		return 0;
+-
+-	return serdev->ctrl->ops->write_room(ctrl);
+-}
+-EXPORT_SYMBOL_GPL(serdev_device_write_room);
+-
+ unsigned int serdev_device_set_baudrate(struct serdev_device *serdev, unsigned int speed)
+ {
+ 	struct serdev_controller *ctrl = serdev->ctrl;
+diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
+index 3d7ae7fa5018..bab1b143b8a6 100644
+--- a/drivers/tty/serdev/serdev-ttyport.c
++++ b/drivers/tty/serdev/serdev-ttyport.c
+@@ -92,14 +92,6 @@ static void ttyport_write_flush(struct serdev_controller *ctrl)
+ 	tty_driver_flush_buffer(tty);
+ }
  
--/* system subtypes (magic, used by tty_io.c) */
--#define SYSTEM_TYPE_TTY			0x0001
--#define SYSTEM_TYPE_CONSOLE		0x0002
--#define SYSTEM_TYPE_SYSCONS		0x0003
--#define SYSTEM_TYPE_SYSPTMX		0x0004
-+enum tty_driver_subtype {
-+	SYSTEM_TYPE_TTY = 1,
-+	SYSTEM_TYPE_CONSOLE,
-+	SYSTEM_TYPE_SYSCONS,
-+	SYSTEM_TYPE_SYSPTMX,
+-static int ttyport_write_room(struct serdev_controller *ctrl)
+-{
+-	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+-	struct tty_struct *tty = serport->tty;
+-
+-	return tty_write_room(tty);
+-}
+-
+ static int ttyport_open(struct serdev_controller *ctrl)
+ {
+ 	struct serport *serport = serdev_controller_get_drvdata(ctrl);
+@@ -259,7 +251,6 @@ static int ttyport_break_ctl(struct serdev_controller *ctrl, unsigned int break_
+ static const struct serdev_controller_ops ctrl_ops = {
+ 	.write_buf = ttyport_write_buf,
+ 	.write_flush = ttyport_write_flush,
+-	.write_room = ttyport_write_room,
+ 	.open = ttyport_open,
+ 	.close = ttyport_close,
+ 	.set_flow_control = ttyport_set_flow_control,
+diff --git a/include/linux/serdev.h b/include/linux/serdev.h
+index ff78efc1f60d..34562eb99931 100644
+--- a/include/linux/serdev.h
++++ b/include/linux/serdev.h
+@@ -84,7 +84,6 @@ enum serdev_parity {
+ struct serdev_controller_ops {
+ 	ssize_t (*write_buf)(struct serdev_controller *, const u8 *, size_t);
+ 	void (*write_flush)(struct serdev_controller *);
+-	int (*write_room)(struct serdev_controller *);
+ 	int (*open)(struct serdev_controller *);
+ 	void (*close)(struct serdev_controller *);
+ 	void (*set_flow_control)(struct serdev_controller *, bool);
+@@ -212,7 +211,6 @@ int serdev_device_break_ctl(struct serdev_device *serdev, int break_state);
+ void serdev_device_write_wakeup(struct serdev_device *);
+ ssize_t serdev_device_write(struct serdev_device *, const u8 *, size_t, long);
+ void serdev_device_write_flush(struct serdev_device *);
+-int serdev_device_write_room(struct serdev_device *);
  
--/* pty subtypes (magic, used by tty_io.c) */
--#define PTY_TYPE_MASTER			0x0001
--#define PTY_TYPE_SLAVE			0x0002
-+	PTY_TYPE_MASTER = 1,
-+	PTY_TYPE_SLAVE,
+ /*
+  * serdev device driver functions
+@@ -273,10 +271,6 @@ static inline ssize_t serdev_device_write(struct serdev_device *sdev,
+ 	return -ENODEV;
+ }
+ static inline void serdev_device_write_flush(struct serdev_device *sdev) {}
+-static inline int serdev_device_write_room(struct serdev_device *sdev)
+-{
+-	return 0;
+-}
  
--/* serial subtype definitions */
--#define SERIAL_TYPE_NORMAL	1
-+	SERIAL_TYPE_NORMAL = 1,
-+};
- 
- /**
-  * struct tty_operations -- interface between driver and tty
-@@ -500,8 +500,8 @@ struct tty_operations {
-  * @major: major /dev device number (zero for autoassignment)
-  * @minor_start: the first minor /dev device number
-  * @num: number of devices allocated
-- * @type: type of tty driver (%TTY_DRIVER_TYPE_)
-- * @subtype: subtype of tty driver (%SYSTEM_TYPE_, %PTY_TYPE_, %SERIAL_TYPE_)
-+ * @type: type of tty driver (enum tty_driver_type)
-+ * @subtype: subtype of tty driver (enum tty_driver_subtype)
-  * @init_termios: termios to set to each tty initially (e.g. %tty_std_termios)
-  * @flags: tty driver flags (%TTY_DRIVER_)
-  * @proc_entry: proc fs entry, used internally
-@@ -533,8 +533,8 @@ struct tty_driver {
- 	int	major;
- 	int	minor_start;
- 	unsigned int	num;
--	short	type;
--	short	subtype;
-+	enum tty_driver_type type;
-+	enum tty_driver_subtype subtype;
- 	struct ktermios init_termios;
- 	unsigned long	flags;
- 	struct proc_dir_entry *proc_entry;
+ #define serdev_device_driver_register(x)
+ #define serdev_device_driver_unregister(x)
 -- 
 2.49.0
 
