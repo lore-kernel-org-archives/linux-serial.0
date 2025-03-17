@@ -1,145 +1,118 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 550801552E3
-	for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 08:45:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B257191499;
+	Mon, 17 Mar 2025 09:40:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742201149; cv=none; b=OAH2Cv28Gls1T6rcTl9zpFQ6pkhk++gmMz7gugmDSghHX8yMxSv+55K1TidbkyKiFha4SlawbPAeTm5gSV3ZVfe6EeETqugMkVukSt2CBRcESNsEL0uEnL8njT1f0ixZcbs8KtMs8dvXIUKxNjwseA1CjAFZbOqED8n5PAlCylQ=
+	t=1742204427; cv=none; b=jRHhKVLrgGRHLwUrLjCny1xWzPgASp52RUx0zyBRkEOriYJOJCoHbBd1zs7zaposvbJ8dNLr2TLCij795NtBKo/YUkPdRmn6yFrh1GduVJTxlUfAtlHs4wKX4PU4YaKqyOEdve8PRA4DWqiW6Ce8y5e7wJ3yWG1A2JGAg4zSYpM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742201149; c=relaxed/simple;
-	bh=4LOKw2XP6Sc5zMXIJTEWj3ay9lIQYp6tzSsbgXbxtgA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=CrqzLsU1OVVuQed5cVNLdtSnHrTLdkP3n6iv/wA3tb0lH4x9mklqdSOXAW0LJP9wMIdDE+TXswuVj2pJ807fh+Nyo54jc/jb3Mrw8Jidt57NGR71yziTyb2Om40d8aG3alqQwVZO8Le+rqzO06+RggobTkP4jPOMK0Sm92/rfQk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Kn6wkoX3; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=YL6QCwr0; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1742204427; c=relaxed/simple;
+	bh=a8FAVZT93WNJIUosFmPxF4OM0ULsyXrBe3/5i39RRq0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=uI35avQnM2Z/lUo5ZGI4Nj1FJQb1qR1Kt+t8fMlyFLIvUiIPjgrvuHhj2ZukJzuUFk2zavrN/+rUT337QSqGJC6q452kodqU2WeVXltMxfyttypI5rlE3XvXejKoYntHyUtKMgr4yst8ZhUDj0APEEx6BIeio05gGbuDwnBk4Xo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HcuzQPna; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Kn6wkoX3";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="YL6QCwr0"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1742201146;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=2DgpvcFOii6jkCBKulDmVcboanfWIZmUeNPfyCP5Iro=;
-	b=Kn6wkoX3WgJH24kL/eZ3aYIz9nanq2vKVGiGkunnOgP+1S2RY1EezddSGAuABVF4giJ8It
-	jPNeWSPxsSpig/4CX6EZfYzThh9T9pmpB0EwZJeFgzUraxtVGCu0IvfUInyOdWLeWkE/hF
-	37gjNRMuPz2HgZrvKwq4CJfAVAKMRj4n5sTngQrg+lrFJCsqjPHsqgTcxX65GwYNiM6JvQ
-	hCjL8qAz8bp+jKZBtwh+CvsA62tCK7L1TxidvU2jzsNioJ5bN4sjxDxuh5eecXVNXi5fRe
-	LlVJg5fwzc3XRiUuMxmB75DYUF47r+fY6O+1izkjJkxmeZMD5zBHQ/bn31Ou2w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1742201146;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=2DgpvcFOii6jkCBKulDmVcboanfWIZmUeNPfyCP5Iro=;
-	b=YL6QCwr0+bzx4ohxvI+cXAmWQFjWs+vBsQmPM7Bu4y+6EgurQitzFaYqF0JYtN+X9667UX
-	Xx7A8guMkeoNWvAA==
-To: Ryo Takakura <ryotkkr98@gmail.com>, pmladek@suse.com
-Cc: Jason@zx2c4.com, gregkh@linuxfoundation.org,
- linux-serial@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
- oliver.sang@intel.com
-Subject: Re: [linux-next:master] [serial]  b63e6f60ea:
- BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
-In-Reply-To: <20250315033844.130505-1-ryotkkr98@gmail.com>
-References: <Z5O7Y_tdtvOahjRs@pathway.suse.cz>
- <20250315033844.130505-1-ryotkkr98@gmail.com>
-Date: Mon, 17 Mar 2025 09:51:46 +0106
-Message-ID: <84a59krqo5.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HcuzQPna"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1742204426; x=1773740426;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=a8FAVZT93WNJIUosFmPxF4OM0ULsyXrBe3/5i39RRq0=;
+  b=HcuzQPnanxahYA6Y1wp/wsp+/HClFlht5+MUYZDleJYMQMU6L1J3Rzcc
+   /zd1Y2WWEroD1J26lhNU0FkDCm4fzchHswSHOzh7Gp7QlVFyOO/1FUS4d
+   0mkgicCBH2wA2uEOTfum55hxqM9QkPqH4yi/ZXfNoryHQX3eR+b+lqN9a
+   3/IUwMzEbJB/bVXq9auM3J8BcaqzWra6E7YWZydCg/KdYcrrWLcwusvfI
+   rOFd+UK8qMt/NGoTtrbtnAEJQ1/Z9qFtfVbhEQ9EoDZN/EuEoKnzDzc2R
+   4p7Na6AGWUrgVvC4831ChKsuQpYjYkIT9T7XQ5mJJYxhSARG5aOawrlDt
+   Q==;
+X-CSE-ConnectionGUID: FPgCKXKzQHmKwX2s9iGQZQ==
+X-CSE-MsgGUID: VO4DiUfzQa6VWlQ/T3JpVw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11375"; a="43157978"
+X-IronPort-AV: E=Sophos;i="6.14,253,1736841600"; 
+   d="scan'208";a="43157978"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2025 02:40:25 -0700
+X-CSE-ConnectionGUID: rA26HYXrSleqsZMdQPCq2g==
+X-CSE-MsgGUID: oqBPdKD0TAyDoQC9gLuXFQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,253,1736841600"; 
+   d="scan'208";a="126747205"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orviesa003.jf.intel.com with ESMTP; 17 Mar 2025 02:40:24 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 02A861D8; Mon, 17 Mar 2025 11:40:22 +0200 (EET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: [PATCH v1 1/1] serial: 8250_dw: Comment possible corner cases in serial_out() implementation
+Date: Mon, 17 Mar 2025 11:40:21 +0200
+Message-ID: <20250317094021.1201512-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.47.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-On 2025-03-15, Ryo Takakura <ryotkkr98@gmail.com> wrote:
-> Is the thread still active?
+8250 DesignWare driver uses a few custom implementations of the serial_out().
+These implementations are carefully made to avoid infinite loops. But this is
+not obvious from looking at the code. Comment the possible corner cases in
+the respective functions.
 
-Yes. It is one of the open issues that needs to be resolved before I
-repost the 8250 atomic console series.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/8250_dw.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-> I got the same softlockup during the test regardless of the presence
-> of the commits.
->
-> [   60.222013] watchdog: BUG: soft lockup - CPU#2 stuck for 22s! [swapper/0:1]
-> [   60.222023] Modules linked in:
-> [   60.222032] CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Tainted: G             L     6.14.0-rc6-v14-rc6-voluntary+ #4
-> [   60.222047] Tainted: [L]=SOFTLOCKUP
-> [   60.222051] Hardware name: Raspberry Pi 4 Model B Rev 1.5 (DT)
-> [   60.222055] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [   60.222066] pc : get_random_u32+0xac/0x118
-> [   60.222081] lr : __get_random_u32_below+0x20/0x78
-> [   60.222094] sp : ffffffc08002bb80
-> [   60.222098] x29: ffffffc08002bb80 x28: 0000000000000003 x27: 0000000000000001
-> [   60.222114] x26: ffffff804112e6a4 x25: ffffffd33ed21820 x24: ffffff804112e69c
-> [   60.222128] x23: 0000000000000000 x22: ffffff804112e64e x21: 0000000000000000
-> [   60.222142] x20: 000000000000000d x19: ffffff80fb7aebb8 x18: 0000000000000002
-> [   60.222156] x17: 0000000000000004 x16: ffffff804112e584 x15: ffffff8041126796
-> [   60.222169] x14: ffffff80411267c0 x13: 0000000000000006 x12: ffffff804112e5c0
-> [   60.222183] x11: ffffff804112e64c x10: 0000000000000007 x9 : ffffffd33dccdd10
-> [   60.222196] x8 : ffffff804112e6a8 x7 : 0000000000000000 x6 : 0005000400060005
-> [   60.222210] x5 : ffffff804112e65a x4 : 0000000000000000 x3 : 0000000000000010
-> [   60.222223] x2 : 0000000000000014 x1 : 000000002c7d0b7a x0 : 0000000000000013
-> [   60.222237] Call trace:
-> [   60.222241]  get_random_u32+0xac/0x118 (P)
-> [   60.222256]  __get_random_u32_below+0x20/0x78
-> [   60.222268]  get_rcw_we+0x180/0x208
-> [   60.222278]  test_rslib_init+0x2c8/0xba0
-> [   60.222292]  do_one_initcall+0x4c/0x210
-> [   60.222303]  kernel_init_freeable+0x1fc/0x3a0
-> [   60.222317]  kernel_init+0x28/0x1f8
-> [   60.222327]  ret_from_fork+0x10/0x20
->
->> I wonder if a cond_resched() in some loop would help. Or using a
->
-> I wasn't sure which loop would be the appropriate one but adding
-> cond_resched() as below worked as suggested.
->
-> ----- BEGIN -----
-> diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
-> index 75cb1adac..322d7b0a8 100644
-> --- a/lib/reed_solomon/test_rslib.c
-> +++ b/lib/reed_solomon/test_rslib.c
-> @@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
->
->                 if (memcmp(r, c, len * sizeof(*r)))
->                         stat->dwrong++;
-> +
-> +               cond_resched();
->         }
->         stat->nwords += trials;
->  }
-> @@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
->                 } else {
->                         stat->rfail++;
->                 }
-> +
-> +               cond_resched();
->         }
->         stat->nwords += trials;
->  }
-> ----- END -----
->
->> pseudorandom generator. I remember the problems related to much
->> slower random generator, for example, see the commit
->> f900fde28883602b6 ("crypto: testmgr - fix RNG performance in fuzz
->> tests").
->
-> I haven't tested this but I'll look into it!
->
->> That said, I did not dig deep into the code. And I did not try to
->> reproduce the softlockup. I am pretty busy at the moment with some
->> other stuff. I just wanted to give it a look and share my opinion.
->
-> I think the softlockup is rather a problem of test itself, 
-> not the two commits.
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index af24ec25d976..49eda7f1fd0e 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -107,11 +107,23 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
+ 	return value;
+ }
+ 
++/*
++ * This function is being called as part of the uart_port::serial_out()
++ * routine. Hence, it must not call serial_port_out() or serial_out()
++ * against the modified registers here, i.e. LCR.
++ */
+ static void dw8250_force_idle(struct uart_port *p)
+ {
+ 	struct uart_8250_port *up = up_to_u8250p(p);
+ 	unsigned int lsr;
+ 
++	/*
++	 * The following call currently performs serial_out()
++	 * against the FCR register. Because it differs to LCR
++	 * there will be no infinite loop, but if it ever gets
++	 * modified, we might need a new custom version of it
++	 * that avoids infinite recursion.
++	 */
+ 	serial8250_clear_and_reinit_fifos(up);
+ 
+ 	/*
+@@ -128,6 +140,11 @@ static void dw8250_force_idle(struct uart_port *p)
+ 	(void)p->serial_in(p, UART_RX);
+ }
+ 
++/*
++ * This function is being called as part of the uart_port::serial_out()
++ * routine. Hence, it must not call serial_port_out() or serial_out()
++ * against the modified registers here, i.e. LCR.
++ */
+ static void dw8250_check_lcr(struct uart_port *p, int offset, int value)
+ {
+ 	struct dw8250_data *d = to_dw8250_data(p->private_data);
+-- 
+2.47.2
 
-Thanks Ryo for looking into this! I think we need to have a technical
-explanation/understanding of the problem so that it is clear how my
-series triggers or exaggerates the issue.
-
-John
