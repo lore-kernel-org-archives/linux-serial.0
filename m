@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4629821B195;
-	Mon, 17 Mar 2025 07:00:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD6B321A458;
+	Mon, 17 Mar 2025 07:00:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194857; cv=none; b=lLyMrpNh5heSxY+KuXecfKkCW2EOVLJYll+zYb0HCG6iNGkk1bwqkOVqV01aHOVYuMNL9hEGKXRqZzqJ7P9k74ih2ECHagYg/xene83enFQtBS0bjMaJPwzfLoqNPqEt0zBxwBMrt3rME5xmwu8jzpBHorSrGLGkUYqhBeoGIkI=
+	t=1742194858; cv=none; b=G3ZnOMH9O5I7eGHpUqb5XzXunFb5xvnoYSb3aOrXl/hUJti+H5nK8rrAf8Cm131UcPfQvwz4jsNlMBQmClZBCF640++YHYsUNPLK9nDSMFiNiLKhikF6HYWcmZji3dGMMbJfsaGEUj33kSsa87foDcCL5wELmof5Au+zEGkRjWs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194857; c=relaxed/simple;
-	bh=ExrbFzyWjpREuCHAXalh4ZjQecemvlF9HftqJVK5gFI=;
+	s=arc-20240116; t=1742194858; c=relaxed/simple;
+	bh=heoyOrgbbFmz7nxxRN+z8nbd3qdiXGzHhNH5YXrgRyY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WpgMok6wqsY/oSH87cT5XHBzqtR40lups/0SES5rooEHGXbT3Df3ciaTld5UTUI2Dw3PGWVrJHRgFw8Kr2DoHTppL5ZyNKUEAUv+qsqK3AtQ7Cr5vWqnzhqGkGcAVHXNUv0p9gdru114FTonvrBEIVA/ZboKKTdSBRSOwZvstW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rhqEEzlL; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=IXnb9Mx+fR0LtjqOhC4lbGM3u1JC6wKGUcrUTrxw35h2W6sUIll0KeguGgYD904Wy4jsOfmsqNEQZI+8SFhUKVmChBTWKTrVp0x+dzXmsS1j1ry6CwJmjLbcEml0ITMCoiud+Ov3IhmmXUqi28cHkMU8K2+0flhS2TLciNYujYc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eE0thvIf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rhqEEzlL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71F0C4CEE3;
-	Mon, 17 Mar 2025 07:00:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eE0thvIf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30676C4CEF2;
+	Mon, 17 Mar 2025 07:00:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194856;
-	bh=ExrbFzyWjpREuCHAXalh4ZjQecemvlF9HftqJVK5gFI=;
+	s=k20201202; t=1742194858;
+	bh=heoyOrgbbFmz7nxxRN+z8nbd3qdiXGzHhNH5YXrgRyY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rhqEEzlLWdYzZqLxMXvpceAu8PysyUY8dmQShzWJOiSJOV0uI8oDr/hspLqF5u3Bo
-	 NwLuuplOjZlbvUshUeMT+Jcng8MhHdc/fFfwi/RHDjF2ZVXOdT03Pv2RdRIsH+Q7l1
-	 Gmh/NlBJ9nO63274U5psivykXDZH3ST4UxjM3DXtvDSkdbiJmEsoL6qMNdQptv+6/x
-	 YDdJjTJcc9BRktl9DDNmuSp1n331NCFbcKpYFch8CkXXUcfbNz7yBvnOk0K0BAQpX8
-	 ApAsAFlnCI4myabJZs3m2UeuZ1fdK+0u+Ufs6Klm4j3V/AImn9iVrpLZ+9qpEiZFmy
-	 cO8gVqNpgOSQQ==
+	b=eE0thvIfMROO0DH0N+yXkOIQeRWPWSXmtYGC4Iio3VcN3nAQ2lPw9EcsLN8l4fGDX
+	 8ZiGstGFHG+Hfpc4CqN5RSc0s0an5OrahZo2z2Pw5kh1r9N4MheIISG0TCZBguOlvI
+	 0vti60ezltCh8d1luu5vdlLcGZ1bvBUku0hMS+ojmAXHyySxLPLiHjvQ9Z5UzQXA5T
+	 AmitiXTmK1shk3jAX7FRh/vrbPycLhjIbXKaqC5fcw/Cf+Mb3jBXKmD3+OWfSauozt
+	 ruvt1HOZ3Al4Wv6cAdFgojSHxxbijeUR96LlDJto9WtZBcow7fg0jJEDAE99Cbshvo
+	 6nM6d6u+GvyDw==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 04/31] tty: move N_TTY_BUF_SIZE to n_tty
-Date: Mon, 17 Mar 2025 08:00:19 +0100
-Message-ID: <20250317070046.24386-5-jirislaby@kernel.org>
+Subject: [PATCH v2 05/31] tty: n_tty: use uint for space returned by tty_write_room()
+Date: Mon, 17 Mar 2025 08:00:20 +0100
+Message-ID: <20250317070046.24386-6-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -45,44 +45,75 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-"N_TTY_BUF_SIZE" is private to n_tty and shall not be exposed to the
-world. Definitely not in tty.h somewhere in the middle of "struct
-tty_struct".
+tty_write_room() returns an "unsigned int". So in case some insane
+driver (like my tty test driver) returns (legitimate) UINT_MAX from its
+tty_operations::write_room(), n_tty is confused on several places.
 
-This is a remnant of moving "read_flags" to "struct n_tty_data" in
-commit 3fe780b379fa ("TTY: move ldisc data from tty_struct: bitmaps").
-But some cleanup was needed first (in previous patches).
+For example, in process_output_block(), the result of tty_write_room()
+is stored into (signed) "int". So this UINT_MAX suddenly becomes -1. And
+that is extended to ssize_t and returned from process_output_block().
+This causes a write() to such a node to receive -EPERM (which is -1).
+
+Fix that by using proper "unsigned int" and proper "== 0" test. And
+return 0 constant directly in that "if", so that it is immediately clear
+what is returned ("space" equals to 0 at that point).
+
+Similarly for process_output() and __process_echoes().
+
+Note this does not fix any in-tree driver as of now.
+
+If you want "Fixes: something", it would be commit 03b3b1a2405c ("tty:
+make tty_operations::write_room return uint"). I intentionally do not
+mark this patch by a real tag below.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 2 ++
- include/linux/tty.h | 1 -
- 2 files changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/n_tty.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 5e9ca4376d68..2c5995019dd1 100644
+index 2c5995019dd1..765d24268d75 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -56,6 +56,8 @@
-  */
- #define WAKEUP_CHARS 256
+@@ -488,7 +488,8 @@ static int do_output_char(u8 c, struct tty_struct *tty, int space)
+ static int process_output(u8 c, struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+-	int	space, retval;
++	unsigned int space;
++	int retval;
  
-+#define N_TTY_BUF_SIZE 4096
-+
- /*
-  * This defines the low- and high-watermarks for throttling and
-  * unthrottling the TTY driver.  These watermarks are used for
-diff --git a/include/linux/tty.h b/include/linux/tty.h
-index 6bb4fb3845f0..0a46e4054dec 100644
---- a/include/linux/tty.h
-+++ b/include/linux/tty.h
-@@ -239,7 +239,6 @@ struct tty_struct {
+ 	mutex_lock(&ldata->output_lock);
  
- 	struct list_head tty_files;
+@@ -524,16 +525,16 @@ static ssize_t process_output_block(struct tty_struct *tty,
+ 				    const u8 *buf, unsigned int nr)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+-	int	space;
+-	int	i;
++	unsigned int space;
++	int i;
+ 	const u8 *cp;
  
--#define N_TTY_BUF_SIZE 4096
- 	struct work_struct SAK_work;
- } __randomize_layout;
+ 	mutex_lock(&ldata->output_lock);
+ 
+ 	space = tty_write_room(tty);
+-	if (space <= 0) {
++	if (space == 0) {
+ 		mutex_unlock(&ldata->output_lock);
+-		return space;
++		return 0;
+ 	}
+ 	if (nr > space)
+ 		nr = space;
+@@ -698,7 +699,7 @@ static int n_tty_process_echo_ops(struct tty_struct *tty, size_t *tail,
+ static size_t __process_echoes(struct tty_struct *tty)
+ {
+ 	struct n_tty_data *ldata = tty->disc_data;
+-	int	space, old_space;
++	unsigned int space, old_space;
+ 	size_t tail;
+ 	u8 c;
  
 -- 
 2.49.0
