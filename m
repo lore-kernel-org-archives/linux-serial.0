@@ -1,127 +1,142 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFC5D42C0B;
-	Mon, 17 Mar 2025 20:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ACDA204C31;
+	Mon, 17 Mar 2025 23:26:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742242516; cv=none; b=RH8nZaoYnGmxAN42tgOVkuHzH7WrnU/HhWGd2y7uLtT+S9u5dykkNFDaDS02wq3x4Pq9iKa1OanIxM5Vk8T+4oVM5jHF1m7liZmlM51nW8Jtbw6SKjQWxulhtuU5rKxlZow01nEJu+DiQhWLmEVY4bMIyyOD13Hf00jzk9aV0RI=
+	t=1742253974; cv=none; b=gvpzBSLUfqbBMy9QlbIJ+LXtXnIS6/SSWo6GMqtLcGqIyn8ciOoK93Q8DSxqOzgUxugtK1csHjjHfI8L6KshVTZLoMLmGyJ0+ZcJprufgdyMuNywaHnD7RrmTtq/MhQZWTUDu1Mg7miAzfvpeDn6RcyrV64Rr9eMzwYb0UEkAoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742242516; c=relaxed/simple;
-	bh=ZGpyLj1jkls0SoosLhcIHbWXKCVXYJixZIMjVgkLkBw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=khljW+Qr1q7ZuwAdrZhTpEFGScFDQlfZ5jqxvcfW4aeuCNBX1lZtS+CYIkFFvXUKqTb0FziuJJ0ro51pZwkpzKXKJ6TZHxcDwkb4+7Cyaiyi93HnlsstsnkrAeUvjdc7A41aDlwJegsIQngUiP2rqmDOyiAHpRSe2tCyomt3yvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=osifnA1c; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1742253974; c=relaxed/simple;
+	bh=RWEsdX6wdBbxQwhqTn65Mu4phSo3+GqqCZj8NtfaC2Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=AO1KDFJ34p7GCl6uPPk/KxT0lFwguEq6WniJsKSO94ea5FFwkd/T/iIO47FFx37ou2PMWZqu+tjkPWcgaf/InmkH+7qufdp3axQw+QWTFg858W7wliT8BTvspyzx3mmO0W+2HNMXRpZ2QsjfmI2yjuphwkYcDJpyi5mRKpfQFRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ffOzYxEz; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="osifnA1c"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0F3C4CEE3;
-	Mon, 17 Mar 2025 20:15:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742242516;
-	bh=ZGpyLj1jkls0SoosLhcIHbWXKCVXYJixZIMjVgkLkBw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=osifnA1cZCD8MBp58aKXElJ59DzyIv0F/VAZ+IRg2ouAffV2hGYFx9IsmYYc8qPPm
-	 clqlr4YwrGQrT+9F8+rRnrCyXU2ia0tCgtZ0wI/Ow10hdVXqg9XJg4XbccDQuQriJ9
-	 dpaRp//FvZtMDmB5P5da73pa/Hk88FxrURCy3sJlVXN8S1mpUe2/fd9eXcqnBJb76/
-	 2dvwxlpJNZHaLdDGEvjddJIoPYL6SXk5rJmf2xeuwNIhm1Fbzya516Y343zknfwv79
-	 p17tBaNUXgjoorg2eOP4SN35hoqXuAKZVhhn3FskevYh6sBP+RzmocC2eaahuvKs8E
-	 fpUobcpFrMs0Q==
-Message-ID: <ed314a01-75c3-4d87-a7a1-034e5dff02a5@kernel.org>
-Date: Mon, 17 Mar 2025 21:15:10 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ffOzYxEz"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7c2303a56d6so574116085a.3;
+        Mon, 17 Mar 2025 16:26:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1742253971; x=1742858771; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LnM9OF/UJ3vtp/v3zGtmLtQKA8pRcDzu+K7ktZwRW8k=;
+        b=ffOzYxEzWVFMF1kq3n27N3r+PNlNRetguEACqfChxEVma7rGOBhBmREpbf206Faary
+         KtAkaKpoz/NEG67fPJFQoJJW810MEFl4Lzozg/6w452ws1QjN+g82T0KOGiMaCPOaGzr
+         2g1PAbauM3L+7tbtiaJf7rChfkajydhSgTY76EoPHT/lgqIaEt5XUZZns3xJvnNDYwPf
+         Ho3ZLYJcgbEc4ccPXUEthv+BWR4KBGjEY+T+G+oNs7iuvns2O3VsUq1muADzh+TXBMCD
+         QaWKi7Ksg2OPBSiIhZ3mHfqU8vMWR31UOCm9qqVSQoqo1LmtY9PK7MQBpCyV1fs+pJYF
+         CINQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742253971; x=1742858771;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LnM9OF/UJ3vtp/v3zGtmLtQKA8pRcDzu+K7ktZwRW8k=;
+        b=P40tB/zP8aTO+kdLgXEQuMZ9sqQbpI2OTfvPaVLzsG+TgzgVDckd/c9FQLTo4kUBLA
+         huYBj5ktMLG2bY/a/UlijKsO4bkAAvMUXbGXM/UuijSFbWynR+6cdhm2ID+ImLzpRA75
+         U/0sfcuIZAOP3uY4/a5c5rya1qNg/JiDTZ8r4YhVfv2/FfmGoQlenAME1XTEcsN3xAyC
+         drnqjHy7uubzup6TkD376LfX6uQYYpvmdIUE5F3ZrJwDgzweet/N2SBdJ7MhMbzeOZS7
+         IIkL1h3gWSK+ZVQ6xiZ+1cCBhfHvWurAtJqQtekEyikc+aY4ghzy2ft9kBN9dZS7rBmt
+         abhw==
+X-Forwarded-Encrypted: i=1; AJvYcCVVZnoa93FjbiiCdLKQwi7Wi7waY+IXhyyKcOr03D4DUWyURQfWDEHTmJELG1DZHLVZuP2naigzKm0Jo7o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyxxSRsUNUpD4Xm6usxZN6irintUueZpLM5RQSTD3Q1txeSqswZ
+	4Y9mwVkXck8Eih06T6NPh8cs9Wv3XPnMRxqOoxG3Csde3woVGGDB
+X-Gm-Gg: ASbGnctEtvNd9TlyWAiJYiZNNiwgeSjDXbUIL6439HxJccxCoVtDWnqc4wWb7me4vam
+	cPOD2IXdPjEadZCzkr4qbde6mH+zeUvS/ksIFqPPTuKdFFrAJKYigR5Gipf+EGsGys5wPka9XcQ
+	u0RnSHL7yRDA2Pkxj+oHsZ3JnDgSTylxKkIBFfXIL5Y82qoF4qiTx0MqCb3AH41WeNstmunco9w
+	Fw3QDN6BfZrgmjOwLxMBMkKffiGxLts8DdqYJIOzAh4/p5yI3hFbCMYIr3fqpzJdE1a4SNNqVpT
+	NnaKCYkqFfbR6evbC/i2fm1dZyuSGCns+ZhfQSV9kaniy2w5pGRYbrM2LW38BnbCepi1H2x2X+4
+	K
+X-Google-Smtp-Source: AGHT+IHQVBU2VBGGZNQYT49PslVSslozZ7Jcc4/v398qPS5vnwAtP0kkN3aEaVBONGvFvZcboF3L9g==
+X-Received: by 2002:a05:620a:8389:b0:7c5:4d22:2147 with SMTP id af79cd13be357-7c59b2c496amr255523385a.55.1742253971205;
+        Mon, 17 Mar 2025 16:26:11 -0700 (PDT)
+Received: from nerdopolis2.localnet ([2600:4040:5e66:a800:2c79:27d5:fd48:ab84])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c573c4f53csm643095685a.22.2025.03.17.16.26.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Mar 2025 16:26:10 -0700 (PDT)
+From: Adam Simonelli <adamsimonelli@gmail.com>
+To: Petr Mladek <pmladek@suse.com>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Andy Shevchenko <andy.shevchenko@gmail.com>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ John Ogness <john.ogness@linutronix.de>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject:
+ Re: [PATCH v12 1/1] printk: Add an option to allow ttynull to be a default
+ console device
+Date: Mon, 17 Mar 2025 19:26:08 -0400
+Message-ID: <5112655.tIAgqjz4sF@nerdopolis2>
+In-Reply-To: <Z9hC4Ri39FsyOF0T@pathway.suse.cz>
+References:
+ <20250314160749.3286153-1-adamsimonelli@gmail.com>
+ <20250314160749.3286153-2-adamsimonelli@gmail.com>
+ <Z9hC4Ri39FsyOF0T@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RESEND v2] dt-bindings: serial: samsung: add
- exynos7870-uart compatible
-To: Kaustabh Chakraborty <kauschluss@disroot.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20250318-exynos7870-uart-v2-1-b9dcf145ae87@disroot.org>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20250318-exynos7870-uart-v2-1-b9dcf145ae87@disroot.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On 17/03/2025 20:21, Kaustabh Chakraborty wrote:
-> Document the compatible string for Exynos7870's UART driver. The
-> devicetree property samsung,uart-fifosize must be mandatory, as the
-> driver enquires about the FIFO sizes. This feature makes it compatible
-> with Exynos8895's UART.
+On Monday, March 17, 2025 11:42:25 AM EDT Petr Mladek wrote:
+> On Fri 2025-03-14 12:07:49, adamsimonelli@gmail.com wrote:
+> > From: Adam Simonelli <adamsimonelli@gmail.com>
+> > 
+> > The new option is CONFIG_NULL_TTY_DEFAULT_CONSOLE.
+> > 
+> > if enabled, and CONFIG_VT is disabled, ttynull will become the default
+> > primary console device.
+> > 
+> > ttynull will be the only console device usually with this option enabled.
+> > Some architectures do call add_preferred_console() which may add another
+> > console though.
+> > 
+> > Motivation:
+> > 
+> > Many distributions ship with CONFIG_VT enabled. On tested desktop hardware
+> > if CONFIG_VT is disabled, the default console device falls back to
+> > /dev/ttyS0 instead of /dev/tty.
+> > 
+> > This could cause issues in user space, and hardware problems:
+> > 
+> > 1. The user space issues include the case where  /dev/ttyS0 is
+> > disconnected, and the TCGETS ioctl, which some user space libraries use
+> > as a probe to determine if a file is a tty, is called on /dev/console and
+> > fails. Programs that call isatty() on /dev/console and get an incorrect
+> > false value may skip expected logging to /dev/console.
+> > 
+> > 2. The hardware issues include the case if a user has a science instrument
+> > or other device connected to the /dev/ttyS0 port, and they were to upgrade
+> > to a kernel that is disabling the CONFIG_VT option, kernel logs will then be
+> > sent to the device connected to /dev/ttyS0 unless they edit their kernel
+> > command line manually.
+> > 
+> > The new CONFIG_NULL_TTY_DEFAULT_CONSOLE option will give users and
+> > distribution maintainers an option to avoid this. Disabling CONFIG_VT and
+> > enabling CONFIG_NULL_TTY_DEFAULT_CONSOLE will ensure the default kernel
+> > console behavior is not dependent on hardware configuration by default, and
+> > avoid unexpected new behavior on devices connected to the /dev/ttyS0 serial
+> > port.
+> > 
+> > Reviewed-by: Petr Mladek <pmladek@suse.com>
+> > Tested-by: Petr Mladek <pmladek@suse.com>
+> > Signed-off-by: Adam Simonelli <adamsimonelli@gmail.com>
 > 
-> Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
-> ---
-So you just ignored the tags and ask us to do the work twice? So all
-reviews are wasted and we need to duplicate the effort?
+> JFYI, the patch have been comitted into printk/linux.git,
+> branch for-6.15.
+> 
+> Best Regards,
+> Petr
+> 
+Oh wow! Thank you so much!
 
-My time on upstream is very limited, thus I find it very disrespectful.
-
-<form letter>
-It looks like you received a tag and forgot to add it.
-
-If you do not know the process, here is a short explanation:
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new versions
-of patchset, under or above your Signed-off-by tag, unless patch changed
-significantly (e.g. new properties added to the DT bindings). Tag is
-"received", when provided in a message replied to you on the mailing
-list. Tools like b4 can help here. However, there's no need to repost
-patches *only* to add the tags. The upstream maintainer will do that for
-tags received on the version they apply.
-
-Please read:
-https://elixir.bootlin.com/linux/v6.12-rc3/source/Documentation/process/submitting-patches.rst#L577
-
-If a tag was not added on purpose, please state why and what changed.
-</form letter>
 
 
