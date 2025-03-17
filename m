@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD80322F397;
-	Mon, 17 Mar 2025 07:01:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D041230BCC;
+	Mon, 17 Mar 2025 07:01:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194891; cv=none; b=cyYHMgztMnMA1pSdejDRdo8ysx97zEzBUYt7ijVxcspB0tSvhoTtL8Xv/VJx3a6kAUUE9yZ0GPZc+cvF9ZsZe02Nde23rA3X+6KCzmOQap226KUWaFphqu6JOftaLRL1s2/2YwDfsij06lDdMzX2/+Edgmxk9uwXdrBlKVtmwqM=
+	t=1742194893; cv=none; b=PZ4OHAeqH10Jox13UL3oUYLghJr3A7eFA02dPv8v4VYo4S/3QcV/Z0m4X31GUvMIG1ZFqtp2eAPajwz6kwLY54tcjFGFBUR+BLRmEJMT9PVrExHhyUB9319SDuuWmJuJYSOzf92p0zQBJGwE2uouOfE0PSGvvbVG5cpS5WpTazc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194891; c=relaxed/simple;
-	bh=1rdXQyJej8ITir/cAQWBTR5R0h/xen+2KFDCxqV7Gjw=;
+	s=arc-20240116; t=1742194893; c=relaxed/simple;
+	bh=alsk6lQTdxl1hqqV3gqF9jWzzecxLAozrApyEDbGWoM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BZn+yLbebuXYhj25o2PvZYt0PgZnnyuc8hwLeo+57y6vUO+F1xgJxgBUysN6BLGynMxF+5Kp51UMHkTYXuW15zGYnIwS9KCsdzYQXpRufjy51ANVdei2UncKofi5XSXoKQcNBqzRvByqgNZgdqvrEoMVg2H3MpiReT2Y1xEkoVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rln0cIwM; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=HS+Y6tOC93cd6gpmtG5BW1n0lt3NiD/KVY5wIpIDY/kAVvPw5xIPV7aghG9yNVL+RiHcFNdsJAY1OhIGqFAyva+/HNRUtqultkhNi5PFkAX7CUVvHylP9yuZC7JCs6HnKp6xFQKj0uZoPCY5znUAdmYwJiv/YgzibanyMEQ+fmk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EriGr61W; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rln0cIwM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BDD0C4CEEC;
-	Mon, 17 Mar 2025 07:01:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EriGr61W"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D404C4CEEC;
+	Mon, 17 Mar 2025 07:01:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194891;
-	bh=1rdXQyJej8ITir/cAQWBTR5R0h/xen+2KFDCxqV7Gjw=;
+	s=k20201202; t=1742194893;
+	bh=alsk6lQTdxl1hqqV3gqF9jWzzecxLAozrApyEDbGWoM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rln0cIwMCYJI4ui2N9Hjz3l9cLCdyrVeu9tqVFfUG4dda5oSKIadm1f7xRzun6iA7
-	 MegjKWhXW6UEyRbdX+hcCYhohUh5R7P39SnleRzcHTetTUjcY62KOEb1WrGHtCdEm6
-	 3awqMzBoNIrx4VPeGzV8A5fLd6ne8b9CF+qbYO8PtYFIUIRquOE3w/sO6Xd4siCj1g
-	 G1JDd4NrBOMUJHc1ta9nUlqxEox0EB9maTeQYe2iTQxLLJngUt07U46Md3SqbN+sEu
-	 XmcNIS4jYCd0FtkQ9dYcvW1p4w0zkSQy+EtLdw3BUoV25LKigPYH3HbERtMU1FQ9Vw
-	 IyzsX4qs3idkw==
+	b=EriGr61W9gNPOWf8ap7iY3tlUUrapDNF8FrrWuylhZbRDWEGfkHBYqqT9RZIwT/gL
+	 2TRO+YyhKsutmDnXxocqgDJ8sPlii+ZEwSR2RpAsUjYEqMTqzqXl0LB9ZNDyhyREzu
+	 1QsdmxcrDIDw0CGbma1cVOqz+yiZC2bWRpZph7753BBRhhDttgj2yJWV93DIGuX5kB
+	 8sqGEFhmTGCPiGo47upSbc81YE7GkVXjURy75Ii0WGHiOmmeJCUtRNrFgPYLYeqLJH
+	 si2SAUTvv6HDR32vjAyAFSzZwuRfhbYsEFbujED2yKJ7dhwTkiwpMqU0/qKtRrIEdy
+	 hd3Om0jIPGbsA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 25/31] serial: remove redundant tty_port_link_device()
-Date: Mon, 17 Mar 2025 08:00:40 +0100
-Message-ID: <20250317070046.24386-26-jirislaby@kernel.org>
+Subject: [PATCH v2 26/31] serial: pass struct uart_state to uart_line_info()
+Date: Mon, 17 Mar 2025 08:00:41 +0100
+Message-ID: <20250317070046.24386-27-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -45,26 +45,38 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The linking is done implicitly by tty_port_register_device_attr_serdev()
-few lines below. So drop this explicit tty_port_link_device().
+uart_line_info() wants to work with struct uart_state. Do not pass a
+driver and an index. Pass the precomputed struct directly.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/serial_core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index d46650e578e5..6fafb1bd6860 100644
+index 6fafb1bd6860..0dbf75b25ff6 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -3156,7 +3156,6 @@ static int serial_core_add_one_port(struct uart_driver *drv, struct uart_port *u
- 	if (uport->cons && uport->dev)
- 		of_console_check(uport->dev->of_node, uport->cons->name, uport->line);
+@@ -2013,9 +2013,8 @@ static const char *uart_type(struct uart_port *port)
  
--	tty_port_link_device(port, drv->tty_driver, uport->line);
- 	uart_configure_port(drv, state, uport);
+ #ifdef CONFIG_PROC_FS
  
- 	port->console = uart_console(uport);
+-static void uart_line_info(struct seq_file *m, struct uart_driver *drv, int i)
++static void uart_line_info(struct seq_file *m, struct uart_state *state)
+ {
+-	struct uart_state *state = drv->state + i;
+ 	struct tty_port *port = &state->port;
+ 	enum uart_pm_state pm_state;
+ 	struct uart_port *uport;
+@@ -2100,7 +2099,7 @@ static int uart_proc_show(struct seq_file *m, void *v)
+ 
+ 	seq_printf(m, "serinfo:1.0 driver%s%s revision:%s\n", "", "", "");
+ 	for (i = 0; i < drv->nr; i++)
+-		uart_line_info(m, drv, i);
++		uart_line_info(m, drv->state + i);
+ 	return 0;
+ }
+ #endif
 -- 
 2.49.0
 
