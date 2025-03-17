@@ -1,112 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6132E21ADC9;
-	Mon, 17 Mar 2025 07:42:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 550801552E3
+	for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 08:45:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742197377; cv=none; b=hWxFJ55m2lmpaPmVgEKSDAyYNLy6+r9G/+9/nwaV+7YWYvj03DHcuSpR7RQbZBNQYyINJszMdwk0lcSPz30y28HTwUZBiArIEG+jVlvhAWarlNEcp8HgEk5J2EaAKTaejChsUjr9ExWn1TTfa2M+bK+fIm3cLn1MLfcQbO/ejho=
+	t=1742201149; cv=none; b=OAH2Cv28Gls1T6rcTl9zpFQ6pkhk++gmMz7gugmDSghHX8yMxSv+55K1TidbkyKiFha4SlawbPAeTm5gSV3ZVfe6EeETqugMkVukSt2CBRcESNsEL0uEnL8njT1f0ixZcbs8KtMs8dvXIUKxNjwseA1CjAFZbOqED8n5PAlCylQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742197377; c=relaxed/simple;
-	bh=FBFCWi+mEezYmWiwvS/yjolzouwyxz7yBiehG+xONoo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=m+Za0GA4mebZIXHQOXN3jbFPRgYCkJ8CmcDcPd30jbTe08UbpRtwau5jIu68rvDd+31JaKbH1UAPjWsdMefD2fHbqV3m1YRxzBpUru/BFgbiOs4SGXZzDOqx6V7evNgw8f1jfpVh75Yb91+4bXwxaY007BxJl2sR1WURHuKUry8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mD1ukE5x; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1742201149; c=relaxed/simple;
+	bh=4LOKw2XP6Sc5zMXIJTEWj3ay9lIQYp6tzSsbgXbxtgA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=CrqzLsU1OVVuQed5cVNLdtSnHrTLdkP3n6iv/wA3tb0lH4x9mklqdSOXAW0LJP9wMIdDE+TXswuVj2pJ807fh+Nyo54jc/jb3Mrw8Jidt57NGR71yziTyb2Om40d8aG3alqQwVZO8Le+rqzO06+RggobTkP4jPOMK0Sm92/rfQk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Kn6wkoX3; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=YL6QCwr0; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mD1ukE5x"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F37C4CEE3;
-	Mon, 17 Mar 2025 07:42:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742197376;
-	bh=FBFCWi+mEezYmWiwvS/yjolzouwyxz7yBiehG+xONoo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=mD1ukE5xWO7UrUwAYqrDsvnbiZL/WL2TjEGMS3Dg/y+IDOFw6qEs76gG3ftyaKD1N
-	 rbo8+UVjA0jEtupiT6u8Z0LCRHqPeGVw7Gu7yyARN+Jl+p1i/JExKM6OWCNaFmSi+T
-	 rRnRbmtGpHG0iaAQdlXSbxGYO6a7w2mN7xSlZF+t72XGAATWkcejEqaCkDvdGv+evE
-	 8MwQUk2FWphcwqI3qCj6LB2uIZINcrTW5Bog+0bt9g0q6S9RjV27fIO1kNwC1f8dn7
-	 n5d1TW9yAyrDkNLy41DAcwmiLbhlQ/r76+FbQbocN0CjrB6LENhn3cfEoC/Mx2HC3s
-	 PZVmkag4imcZQ==
-Message-ID: <c6427801-11e9-481c-9931-f7c95a6fb559@kernel.org>
-Date: Mon, 17 Mar 2025 08:42:54 +0100
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Kn6wkoX3";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="YL6QCwr0"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1742201146;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2DgpvcFOii6jkCBKulDmVcboanfWIZmUeNPfyCP5Iro=;
+	b=Kn6wkoX3WgJH24kL/eZ3aYIz9nanq2vKVGiGkunnOgP+1S2RY1EezddSGAuABVF4giJ8It
+	jPNeWSPxsSpig/4CX6EZfYzThh9T9pmpB0EwZJeFgzUraxtVGCu0IvfUInyOdWLeWkE/hF
+	37gjNRMuPz2HgZrvKwq4CJfAVAKMRj4n5sTngQrg+lrFJCsqjPHsqgTcxX65GwYNiM6JvQ
+	hCjL8qAz8bp+jKZBtwh+CvsA62tCK7L1TxidvU2jzsNioJ5bN4sjxDxuh5eecXVNXi5fRe
+	LlVJg5fwzc3XRiUuMxmB75DYUF47r+fY6O+1izkjJkxmeZMD5zBHQ/bn31Ou2w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1742201146;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2DgpvcFOii6jkCBKulDmVcboanfWIZmUeNPfyCP5Iro=;
+	b=YL6QCwr0+bzx4ohxvI+cXAmWQFjWs+vBsQmPM7Bu4y+6EgurQitzFaYqF0JYtN+X9667UX
+	Xx7A8guMkeoNWvAA==
+To: Ryo Takakura <ryotkkr98@gmail.com>, pmladek@suse.com
+Cc: Jason@zx2c4.com, gregkh@linuxfoundation.org,
+ linux-serial@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
+ oliver.sang@intel.com
+Subject: Re: [linux-next:master] [serial]  b63e6f60ea:
+ BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
+In-Reply-To: <20250315033844.130505-1-ryotkkr98@gmail.com>
+References: <Z5O7Y_tdtvOahjRs@pathway.suse.cz>
+ <20250315033844.130505-1-ryotkkr98@gmail.com>
+Date: Mon, 17 Mar 2025 09:51:46 +0106
+Message-ID: <84a59krqo5.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 27/31] serial: 8250: use serial_port_in/out() helpers
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
- <ilpo.jarvinen@linux.intel.com>
-References: <20250317070046.24386-1-jirislaby@kernel.org>
- <20250317070046.24386-28-jirislaby@kernel.org>
- <Z9fOW2eZ4bEdlOzu@smile.fi.intel.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <Z9fOW2eZ4bEdlOzu@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 17. 03. 25, 8:25, Andy Shevchenko wrote:
-> On Mon, Mar 17, 2025 at 08:00:42AM +0100, Jiri Slaby (SUSE) wrote:
->> There are serial_port_in/out() helpers to be used instead of direct
->> p->serial_in/out(). Use them in various 8250 drivers.
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com> # 8250_dw
-> 
-> We also discussed adding some comments. Would you like to send an additional
-> patch or do you rely on me adding them?
+On 2025-03-15, Ryo Takakura <ryotkkr98@gmail.com> wrote:
+> Is the thread still active?
 
-Ah, I considered them irrelevant when not using serial_in(), but 
-serial_port_in() et al.
+Yes. It is one of the open issues that needs to be resolved before I
+repost the 8250 atomic console series.
 
-Please send them, it's your (good) work anyway.
+> I got the same softlockup during the test regardless of the presence
+> of the commits.
+>
+> [   60.222013] watchdog: BUG: soft lockup - CPU#2 stuck for 22s! [swapper/0:1]
+> [   60.222023] Modules linked in:
+> [   60.222032] CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Tainted: G             L     6.14.0-rc6-v14-rc6-voluntary+ #4
+> [   60.222047] Tainted: [L]=SOFTLOCKUP
+> [   60.222051] Hardware name: Raspberry Pi 4 Model B Rev 1.5 (DT)
+> [   60.222055] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [   60.222066] pc : get_random_u32+0xac/0x118
+> [   60.222081] lr : __get_random_u32_below+0x20/0x78
+> [   60.222094] sp : ffffffc08002bb80
+> [   60.222098] x29: ffffffc08002bb80 x28: 0000000000000003 x27: 0000000000000001
+> [   60.222114] x26: ffffff804112e6a4 x25: ffffffd33ed21820 x24: ffffff804112e69c
+> [   60.222128] x23: 0000000000000000 x22: ffffff804112e64e x21: 0000000000000000
+> [   60.222142] x20: 000000000000000d x19: ffffff80fb7aebb8 x18: 0000000000000002
+> [   60.222156] x17: 0000000000000004 x16: ffffff804112e584 x15: ffffff8041126796
+> [   60.222169] x14: ffffff80411267c0 x13: 0000000000000006 x12: ffffff804112e5c0
+> [   60.222183] x11: ffffff804112e64c x10: 0000000000000007 x9 : ffffffd33dccdd10
+> [   60.222196] x8 : ffffff804112e6a8 x7 : 0000000000000000 x6 : 0005000400060005
+> [   60.222210] x5 : ffffff804112e65a x4 : 0000000000000000 x3 : 0000000000000010
+> [   60.222223] x2 : 0000000000000014 x1 : 000000002c7d0b7a x0 : 0000000000000013
+> [   60.222237] Call trace:
+> [   60.222241]  get_random_u32+0xac/0x118 (P)
+> [   60.222256]  __get_random_u32_below+0x20/0x78
+> [   60.222268]  get_rcw_we+0x180/0x208
+> [   60.222278]  test_rslib_init+0x2c8/0xba0
+> [   60.222292]  do_one_initcall+0x4c/0x210
+> [   60.222303]  kernel_init_freeable+0x1fc/0x3a0
+> [   60.222317]  kernel_init+0x28/0x1f8
+> [   60.222327]  ret_from_fork+0x10/0x20
+>
+>> I wonder if a cond_resched() in some loop would help. Or using a
+>
+> I wasn't sure which loop would be the appropriate one but adding
+> cond_resched() as below worked as suggested.
+>
+> ----- BEGIN -----
+> diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
+> index 75cb1adac..322d7b0a8 100644
+> --- a/lib/reed_solomon/test_rslib.c
+> +++ b/lib/reed_solomon/test_rslib.c
+> @@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
+>
+>                 if (memcmp(r, c, len * sizeof(*r)))
+>                         stat->dwrong++;
+> +
+> +               cond_resched();
+>         }
+>         stat->nwords += trials;
+>  }
+> @@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
+>                 } else {
+>                         stat->rfail++;
+>                 }
+> +
+> +               cond_resched();
+>         }
+>         stat->nwords += trials;
+>  }
+> ----- END -----
+>
+>> pseudorandom generator. I remember the problems related to much
+>> slower random generator, for example, see the commit
+>> f900fde28883602b6 ("crypto: testmgr - fix RNG performance in fuzz
+>> tests").
+>
+> I haven't tested this but I'll look into it!
+>
+>> That said, I did not dig deep into the code. And I did not try to
+>> reproduce the softlockup. I am pretty busy at the moment with some
+>> other stuff. I just wanted to give it a look and share my opinion.
+>
+> I think the softlockup is rather a problem of test itself, 
+> not the two commits.
 
-thanks,
--- 
-js
-suse labs
+Thanks Ryo for looking into this! I think we need to have a technical
+explanation/understanding of the problem so that it is clear how my
+series triggers or exaggerates the issue.
+
+John
