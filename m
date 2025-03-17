@@ -1,45 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5455121ADB5;
-	Mon, 17 Mar 2025 07:00:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4629821B195;
+	Mon, 17 Mar 2025 07:00:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194855; cv=none; b=VoK+Ka5UMhDXnBoSYmOjOqFlG/Ywgf3cN4Eq68QS1MJDBows/9/voVjSHYPkG8YoULt1EXXwdVPj2OBwq8TWz6qId2UwLBgUYso30DpHC4YLCaARWnobxfDLMdGirVwodvBlsm51kU76JAGOtqeGc+TpYEHZjTZxqoYCFDLz7T8=
+	t=1742194857; cv=none; b=lLyMrpNh5heSxY+KuXecfKkCW2EOVLJYll+zYb0HCG6iNGkk1bwqkOVqV01aHOVYuMNL9hEGKXRqZzqJ7P9k74ih2ECHagYg/xene83enFQtBS0bjMaJPwzfLoqNPqEt0zBxwBMrt3rME5xmwu8jzpBHorSrGLGkUYqhBeoGIkI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194855; c=relaxed/simple;
-	bh=yigraz6gtl0qy6j2K57A2C+zse8kZCtw33CRv7cnvHU=;
+	s=arc-20240116; t=1742194857; c=relaxed/simple;
+	bh=ExrbFzyWjpREuCHAXalh4ZjQecemvlF9HftqJVK5gFI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=HmGqHUODL4T40+4MzpylUgTsAD96KjPz/ak0ZXSkJzylDekcAWP09y6uBkMDYk8+jnq3349hzWZ4YA2akNVS6PvVHWdS7BMVdJzN6dvFhuGiV4juN7KjP6xEyITcmR/dKjJ6Grz/BkxgRgSVKJmzhXxkyWu6NLzCreejynDAZu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fEELfaAE; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=WpgMok6wqsY/oSH87cT5XHBzqtR40lups/0SES5rooEHGXbT3Df3ciaTld5UTUI2Dw3PGWVrJHRgFw8Kr2DoHTppL5ZyNKUEAUv+qsqK3AtQ7Cr5vWqnzhqGkGcAVHXNUv0p9gdru114FTonvrBEIVA/ZboKKTdSBRSOwZvstW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rhqEEzlL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fEELfaAE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 106CAC4CEEF;
-	Mon, 17 Mar 2025 07:00:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rhqEEzlL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A71F0C4CEE3;
+	Mon, 17 Mar 2025 07:00:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194855;
-	bh=yigraz6gtl0qy6j2K57A2C+zse8kZCtw33CRv7cnvHU=;
+	s=k20201202; t=1742194856;
+	bh=ExrbFzyWjpREuCHAXalh4ZjQecemvlF9HftqJVK5gFI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=fEELfaAEZyx4zAeonEc7yuW8832rUeOgP7L8ySAY96F4wYOA6tG+O+8lRBun4T4cN
-	 lMcndyT5Y7pXW7mbi93x2x5wBhK68r21gwTdwpuJXAUGR0ujbLZFGJFORJiZXdWeoI
-	 vSbon5VkhcJYMqBMUScT3Lblhuz8oefXVWEmAKs7OZycgSzHZ6NNGAU47p8Pd7kUrs
-	 dtuwJ3AG/9K0z3V+LEfBqLY1s21BaxQNRqEz2JIBR2IpG0kXEJ6ROP5FwgxTU+twsi
-	 qfg6U1QqmrI5cbqI080Jm1rZTGI64oSQ8UtvBXUyTxwaojFwGNGBrY9ZmzFQKaCoRt
-	 0WsMLRvDNOgLw==
+	b=rhqEEzlLWdYzZqLxMXvpceAu8PysyUY8dmQShzWJOiSJOV0uI8oDr/hspLqF5u3Bo
+	 NwLuuplOjZlbvUshUeMT+Jcng8MhHdc/fFfwi/RHDjF2ZVXOdT03Pv2RdRIsH+Q7l1
+	 Gmh/NlBJ9nO63274U5psivykXDZH3ST4UxjM3DXtvDSkdbiJmEsoL6qMNdQptv+6/x
+	 YDdJjTJcc9BRktl9DDNmuSp1n331NCFbcKpYFch8CkXXUcfbNz7yBvnOk0K0BAQpX8
+	 ApAsAFlnCI4myabJZs3m2UeuZ1fdK+0u+Ufs6Klm4j3V/AImn9iVrpLZ+9qpEiZFmy
+	 cO8gVqNpgOSQQ==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org
-Subject: [PATCH v2 03/31] tty: caif: do not use N_TTY_BUF_SIZE
-Date: Mon, 17 Mar 2025 08:00:18 +0100
-Message-ID: <20250317070046.24386-4-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH v2 04/31] tty: move N_TTY_BUF_SIZE to n_tty
+Date: Mon, 17 Mar 2025 08:00:19 +0100
+Message-ID: <20250317070046.24386-5-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -51,37 +45,45 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-N_TTY_BUF_SIZE -- as the name suggests -- is the N_TTY's buffer size.
-There is no reason to couple that to caif's tty->receive_room. Use 4096
-directly -- even though, it should be some sort of "SKB_MAX_ALLOC" or
-alike. But definitely not N_TTY_BUF_SIZE.
+"N_TTY_BUF_SIZE" is private to n_tty and shall not be exposed to the
+world. Definitely not in tty.h somewhere in the middle of "struct
+tty_struct".
 
-N_TTY_BUF_SIZE is private and will be moved to n_tty.c later.
+This is a remnant of moving "read_flags" to "struct n_tty_data" in
+commit 3fe780b379fa ("TTY: move ldisc data from tty_struct: bitmaps").
+But some cleanup was needed first (in previous patches).
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
-Cc: Andrew Lunn <andrew+netdev@lunn.ch>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
 ---
- drivers/net/caif/caif_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_tty.c | 2 ++
+ include/linux/tty.h | 1 -
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
-index ed3a589def6b..e7d1b9301fde 100644
---- a/drivers/net/caif/caif_serial.c
-+++ b/drivers/net/caif/caif_serial.c
-@@ -344,7 +344,7 @@ static int ldisc_open(struct tty_struct *tty)
- 	ser->tty = tty_kref_get(tty);
- 	ser->dev = dev;
- 	debugfs_init(ser, tty);
--	tty->receive_room = N_TTY_BUF_SIZE;
-+	tty->receive_room = 4096;
- 	tty->disc_data = ser;
- 	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
- 	rtnl_lock();
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 5e9ca4376d68..2c5995019dd1 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -56,6 +56,8 @@
+  */
+ #define WAKEUP_CHARS 256
+ 
++#define N_TTY_BUF_SIZE 4096
++
+ /*
+  * This defines the low- and high-watermarks for throttling and
+  * unthrottling the TTY driver.  These watermarks are used for
+diff --git a/include/linux/tty.h b/include/linux/tty.h
+index 6bb4fb3845f0..0a46e4054dec 100644
+--- a/include/linux/tty.h
++++ b/include/linux/tty.h
+@@ -239,7 +239,6 @@ struct tty_struct {
+ 
+ 	struct list_head tty_files;
+ 
+-#define N_TTY_BUF_SIZE 4096
+ 	struct work_struct SAK_work;
+ } __randomize_layout;
+ 
 -- 
 2.49.0
 
