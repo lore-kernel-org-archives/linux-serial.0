@@ -1,105 +1,69 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76FA7192B81
-	for <linux-serial@vger.kernel.org>; Mon, 17 Mar 2025 16:01:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3601219EEBD;
+	Mon, 17 Mar 2025 16:28:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742227291; cv=none; b=lxITSYHOa6+2t5g89Rth6P8Wa9BTWrxoK34QF5wvHX5eZOSxnEXfl4CTauJ6dqEERMVmI9OgXq/Z+6XD72LSXAyP8dKlJzmq+X2U6GgRRdNNjQs6ZV8q0uVUcjwsdWdyvgtgekt0+D3mzFc/FKpBoJfMm1AnODy8cxQpj0cnt+A=
+	t=1742228887; cv=none; b=cVpe3grGOSVAe6Vke4aFc0VZO7J6aB8mX0p1FzeRehmjvRJ1aB7P+GFYJqnwHjgbLu7rXY6NEC/0QWQiGWO1+h+FeAJmp8HcKSmKnVV6U4qhsHn1IAmQoQk+qWcTGRNrnGvfTI8wPMoBXvqBXZRpmTNgeVoq/iuBHe77LBNgL9c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742227291; c=relaxed/simple;
-	bh=Hzw/JXdoovQ9Or8mxoBy1TDLHZr0uuxXg4wHcznQOmg=;
+	s=arc-20240116; t=1742228887; c=relaxed/simple;
+	bh=ZVZb4jCcDrvXrs/O5aeyNMWmVf2cKnbebKhQIZUZXQc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gVOCY4FaGPYD7fHNpbgcnAoO/p78YusPep5P1m2GV5tcdtG2WX1GBFkFCeRGQFlv86SaESWXouk07KP6lGuv+nXCgzPKLPecQaxWHxkYj89JRj4UII+yayFevkC3IDG6n/i1h+TjxLqUliekrNKrikHn73H8YHGT5rbAgGaQx6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=R1SUDx+G; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=GCc02bxtiA2EWDKe3bVpsO8d5odztNdB2RajcMweki1aIIDPvCMMvAUMaobXdFtorFCkW5TW+PSrrGL8e1N7+GQq512K/n27MjkWh7OyRKVdb+wMh7NMZd2m9K7pZELYwlR5GcAeFyG98IYbXyk70Z5kZCvqHRjL0XZGTb6Xf3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=epaRQui2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="R1SUDx+G"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=Hzw/
-	JXdoovQ9Or8mxoBy1TDLHZr0uuxXg4wHcznQOmg=; b=R1SUDx+GYYzmLPrd6yCh
-	VPR6b9btqfehrNpf4lDj4CvrKcin6c20Va4/RhN8jNsNcma8UI6kvVk+9Qia6URY
-	Og4D1zD8HHozQuaudr3u2pm4HjB89BTxfDotCgx1YZ4ydSRUeVXGCzM4Uf0FGGW+
-	swgFpOSKjEVxfOj6IQ7en71q6PaC2toboIpa3vD+y1LTUYyEkKCOmcU5cBuxTlQl
-	A8W9D3dzfvNcOx3N6y4SL2QNbFU5QFen5vEl6WphRw/cMqZ5Um0gAoMo5W48ZXRW
-	MwcE30YvbxpGlJzxbum32RUcB3Ioa6Lovne8NIzAgKunV/sVPxOdluGiI8u447UT
-	Ig==
-Received: (qmail 3246407 invoked from network); 17 Mar 2025 17:01:27 +0100
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 17 Mar 2025 17:01:27 +0100
-X-UD-Smtp-Session: l3s3148p1@7uqR5osw+KgujnuL
-Date: Mon, 17 Mar 2025 17:01:27 +0100
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: linux-renesas-soc@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="epaRQui2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F584C4CEEC;
+	Mon, 17 Mar 2025 16:28:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742228886;
+	bh=ZVZb4jCcDrvXrs/O5aeyNMWmVf2cKnbebKhQIZUZXQc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=epaRQui2CqqpUPQ4zQJyNTEAPsH0wAdW1pYN0GnfYnKZGms/3cwuiLtsc1E7H1fgo
+	 XUBGTi6HbHJsokqR0MzUjhN3ScQ2xtgIkR1Q8Haq7nt1HRr0CLUf2ogpLjR90Xiwqw
+	 hXQ/sgf1kg5WvgXAEXdBEjEqWoduwZNT/0j6G9/RYUT5k4ib/bWaYex6lCsEoNijq6
+	 HzpEp5xwShv99Df2AQKQi/PZ07a/bjkOYtfI8PcAFQv3SJVijxqyToxiByIVv800WT
+	 uPHaAKKdND/E0AZaczrE5QV5QKuWShx7ac3P2NqdJmje18UfwF7FCE4iOJLN6MlKUV
+	 1OqeDE6qyCEAg==
+Date: Mon, 17 Mar 2025 11:28:05 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Xianwei Zhao <xianwei.zhao@amlogic.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Jerome Brunet <jbrunet@baylibre.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: document RZ/N1
- binding without DMA
-Message-ID: <Z9hHVwHpSKSKzIb3@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
-	linux-renesas-soc@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-References: <20250317120437.67683-2-wsa+renesas@sang-engineering.com>
- <CAMuHMdUzjOGVCG=rrsnwDkaN5aRsBiWP7DhgUAHeEfUCz1_Y7A@mail.gmail.com>
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-serial@vger.kernel.org, linux-amlogic@lists.infradead.org,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+	Kevin Hilman <khilman@baylibre.com>, linux-kernel@vger.kernel.org,
+	Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH 1/7] dt-bindings: arm: amlogic: add S6 support
+Message-ID: <174222888470.174842.6381740588460152313.robh@kernel.org>
+References: <20250317-s6-s7-basic-v1-0-d653384e41f3@amlogic.com>
+ <20250317-s6-s7-basic-v1-1-d653384e41f3@amlogic.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ZcgvY64rqkWLws4R"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUzjOGVCG=rrsnwDkaN5aRsBiWP7DhgUAHeEfUCz1_Y7A@mail.gmail.com>
-
-
---ZcgvY64rqkWLws4R
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20250317-s6-s7-basic-v1-1-d653384e41f3@amlogic.com>
 
 
-> This is the alternative I suggested, which Miquel likes more than [1],
-> and which I was just about to formalize into a real patch ;-)
-> I think it would be wiese to add extra logic to prohibit the dmas
-> property when both renesas,rzn1-uart and snps,dw-apb-uart are present.
+On Mon, 17 Mar 2025 15:16:52 +0800, Xianwei Zhao wrote:
+> Document the new S6 SoC/board device tree bindings.
+> 
+> Amlogic S6 is an advanced application processor designed for
+> hybrid OTT/IP Set Top Box and high-end media box applications.
+> 
+> Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
+> ---
+>  Documentation/devicetree/bindings/arm/amlogic.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
 
-I'll think about it.
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
-Sorry for overlooking your patch series :(
-
-
---ZcgvY64rqkWLws4R
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmfYR1YACgkQFA3kzBSg
-KbbbohAAlCS75poiDgj2JgHJUjsC09h4RreE3QJ2OFZNDc1c8gI9YrBRg6uEfKXC
-aRrBr8/VkuOQihGHacEY+sS9rT5F2QgbzQxtXaCFaxnsFp9NAOTZtjjPccP3ihxz
-Ws19z8jWvQB3394Z2oFwoN5klwsaKxtVCKOzCGnABGTt6GCDCyGBuOAH0WTlJuBp
-lSviVN9zHIh04ONEqojdtN7zhoIQwDuS9EAlw+VgcsLyqy3t6KMzpOxrwgqdoIIK
-iieovigIteRBdcQ8S1xPzdeYEG4ZH2r+9J7AKIsip8SXxn8nBsFqCDYx3HdhTuE/
-OoCgt+DYlVOL9gAalRqTnH4ck+F4hVKbEzJ/zIsvqvTJbPWIsePKQv0yTgsEMpkh
-y9/T1FgmfzT6OKsmKnqON1i2612Hho6PNolKs4fHv5lxaEmmkC236wgEWAowU8/H
-/mjoAeku58NWDGIv1x3krNCO/zQazpwCMSaeBdzcL8UOEa9hfGg+koioISEfaqsT
-HeOfwu8QjUtSPxzxO5VWy10JO3RF8xkveoKnjlmjfIe/Ph9y8QjsL+XHH0yvGtv4
-8wP5mKELaA2Xk13UxjdcmdqkhymPk51x0HxfNvksqs3BoZzgkKYdOLPGnRgYk1hH
-+dqz6Gac7EP2+q4WZ9MxwEmyRo3VAyAJWFLaatU9VJ1dVOAdJQQ=
-=8l8b
------END PGP SIGNATURE-----
-
---ZcgvY64rqkWLws4R--
