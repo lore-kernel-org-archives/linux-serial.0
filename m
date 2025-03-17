@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B85D21ABC0;
-	Mon, 17 Mar 2025 07:01:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FCB321D590;
+	Mon, 17 Mar 2025 07:01:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194870; cv=none; b=mbT9wP2PI0RpAy/nX8m+WrIDWXRhhsk8E96juk8TwBIUqmZeOjV8Y6ZHH2yL+m9d9s5Kd8N9KnPjS3meu6chdWulVUo8G5TW4epHtogQulCvAOhvZxsLy/BY6jT82St6StA4nupt19FK6PtBy05NelHVmJh0QEXzf7AuZvNqOQs=
+	t=1742194872; cv=none; b=QPrcaJsNTblWvV59R/Q1n5V4vIxUg7TIJuuDYHrZdqu5t9qAoKr4WA76+4mjORwazYnsC+UxctHS1ivGhcLA2ECN4T2hvYxWbb2HLvd/Zmor9qfK5UHnUSwCXCm4ntpWEJpakGqGAH9tmYjV2KjaLaL5xkcV62HHrV3Y12/zpDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194870; c=relaxed/simple;
-	bh=EBjqzOq3n1z3GifvOiI5e4JuRJnKD7yT2pW4+DHsZHw=;
+	s=arc-20240116; t=1742194872; c=relaxed/simple;
+	bh=2OUdKeoS1PZwCLWjaedD25YBR9wFEyiGne6/TIX6YJ8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=kLyNO2bFe8+oHFpeyxJGbEMPaARX53bdgavYX1Q5iKvr3bZT+c3z1ZEQdjIW8ypOOR0iW6N1DXFM5xhG1StgyYNGNZdhXDsJZ7NJePp7iYymrDZZMXlopuLWPtYRuMp10djFUeFcK6Fxzvu6GD29++28ag5xu4sD9PXn9zd6bA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qg/rzaOL; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=fPh/uK7HrWBI4m843CjSz9cQrkmSd7js44Myu/lIsnLRKBqznLq5mfYNwx2U/ehigAgKujAXIShUDjhOi/Uuv7XJb5U/82O5CCQyCet3v74qKmMgFPmBNHTnEOWW3KcZ7MdURm+vEzKAlvZpo/ng17Fns4hAkI5JYAcTfHQ5YdM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnZ8MXuE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qg/rzaOL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D522C4CEE3;
-	Mon, 17 Mar 2025 07:01:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnZ8MXuE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA8B0C4CEE3;
+	Mon, 17 Mar 2025 07:01:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194870;
-	bh=EBjqzOq3n1z3GifvOiI5e4JuRJnKD7yT2pW4+DHsZHw=;
+	s=k20201202; t=1742194871;
+	bh=2OUdKeoS1PZwCLWjaedD25YBR9wFEyiGne6/TIX6YJ8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Qg/rzaOLWPFmPV1hUBeHJkPn8oVqdl3r8IDA3RpIwBk+qRbB1vjkZDVGMgIzSw+Zg
-	 LzsfspGg5UT/u00KzKYO3eVl0pK3czu7sWlN+FFt6FRhtck5C0A7dG7M9pLdjB0CuZ
-	 vZKtvWolDV9ZWEh4fbR6BZ6nm7aVdLO55TW8zHN1nUKLAjqrnGml0LHQt3hG6rYBTl
-	 /o4HIQMmeLb0WxxNU8AkFbfjPSC4OExZANFtTXOQZhOJyKmulvGXOrd8xk7fKqzymS
-	 Me7uuF1Ujag+jbIdSUo3LWlkbE5UB+geBrOWpx3bUe09LF1km/5ljepmqbHNQ42tK8
-	 8B5y5nfAOepNQ==
+	b=dnZ8MXuElHzhTKquQN5wHu05FQfzoR05W5IAGCJcugoniXS1bN0xhb1uAzK7YovAf
+	 h3fQ5Dn+ou7chZP0gB3IxZBexchcRvSxmuhHAsAE20ZWsanqqPVfJ1O8yhbD/o/imh
+	 9mkass7GKoKs8XCvWwfkyxrHSXOZU9O7CX0moQlw9qD58EpsiZ/3+/+mwb65OpbpFJ
+	 3bCv/+Dh7UnXN5CZZF7sFs2COcb55rdG16W2PqtqL3D127Ge+h04UVtNXOcEisImWQ
+	 i3SK0O5EleFTYDlsioJBB/w7Zzfbqs/3CFhOTr93oTIFgD62q2gN4T7tjqVqhV29WW
+	 C0heEiDGfzS7Q==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 13/31] tty: tty_driver: convert "TTY Driver Flags" to an enum
-Date: Mon, 17 Mar 2025 08:00:28 +0100
-Message-ID: <20250317070046.24386-14-jirislaby@kernel.org>
+Subject: [PATCH v2 14/31] tty: tty_driver: document both {,__}tty_alloc_driver() properly
+Date: Mon, 17 Mar 2025 08:00:29 +0100
+Message-ID: <20250317070046.24386-15-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -45,119 +45,73 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Convert TTY_DRIVER_* macros (flags) to an enum. This allows for easier
-kernel-doc (the comment needed fine tuning), grouping of these nicely,
-and proper checking.
+__tty_alloc_driver()'s kernel-doc needed some care: describe the return
+value using the standard "Returns:", and use the new enum tty_driver_flag
+for @flags.
 
-Given these are flags, define them using modern BIT() instead of hex
-constants.
-
-It turns out (thanks, kernel-doc checker) that internal
-TTY_DRIVER_INSTALLED was undocumented. Fix that too.
+Then, the tty_alloc_driver() macro was undocumented, but referenced many
+times in the docs. Copy the docs from the above (except the @owner
+parameter, obviously).
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- Documentation/driver-api/tty/tty_driver.rst |  2 +-
- include/linux/tty_driver.h                  | 40 ++++++++++++---------
- 2 files changed, 25 insertions(+), 17 deletions(-)
+ Documentation/driver-api/tty/tty_driver.rst | 2 ++
+ drivers/tty/tty_io.c                        | 8 +++++---
+ include/linux/tty_driver.h                  | 8 +++++++-
+ 3 files changed, 14 insertions(+), 4 deletions(-)
 
 diff --git a/Documentation/driver-api/tty/tty_driver.rst b/Documentation/driver-api/tty/tty_driver.rst
-index cc529f863406..f6cbffdb6e01 100644
+index f6cbffdb6e01..7138222a70f2 100644
 --- a/Documentation/driver-api/tty/tty_driver.rst
 +++ b/Documentation/driver-api/tty/tty_driver.rst
-@@ -35,7 +35,7 @@ Here comes the documentation of flags accepted by tty_alloc_driver() (or
- __tty_alloc_driver()):
+@@ -25,6 +25,8 @@ freed.
+ For reference, both allocation and deallocation functions are explained here in
+ detail:
  
- .. kernel-doc:: include/linux/tty_driver.h
--   :doc: TTY Driver Flags
-+   :identifiers: tty_driver_flag
++.. kernel-doc:: include/linux/tty_driver.h
++   :identifiers: tty_alloc_driver
+ .. kernel-doc:: drivers/tty/tty_io.c
+    :identifiers: __tty_alloc_driver tty_driver_kref_put
  
- ----
- 
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index 449dbd216460..ca9b7d7bad2b 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3329,10 +3329,12 @@ EXPORT_SYMBOL(tty_unregister_device);
+  * __tty_alloc_driver - allocate tty driver
+  * @lines: count of lines this driver can handle at most
+  * @owner: module which is responsible for this driver
+- * @flags: some of %TTY_DRIVER_ flags, will be set in driver->flags
++ * @flags: some of enum tty_driver_flag, will be set in driver->flags
+  *
+- * This should not be called directly, some of the provided macros should be
+- * used instead. Use IS_ERR() and friends on @retval.
++ * This should not be called directly, tty_alloc_driver() should be used
++ * instead.
++ *
++ * Returns: struct tty_driver or a PTR-encoded error (use IS_ERR() and friends).
+  */
+ struct tty_driver *__tty_alloc_driver(unsigned int lines, struct module *owner,
+ 		unsigned long flags)
 diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
-index f3be6d56e9e5..d0d940236580 100644
+index d0d940236580..0fe38befa1b8 100644
 --- a/include/linux/tty_driver.h
 +++ b/include/linux/tty_driver.h
-@@ -17,13 +17,19 @@ struct serial_icounter_struct;
- struct serial_struct;
+@@ -564,7 +564,13 @@ struct tty_driver *tty_find_polling_driver(char *name, int *line);
  
- /**
-- * DOC: TTY Driver Flags
-+ * enum tty_driver_flag -- TTY Driver Flags
-  *
-- * TTY_DRIVER_RESET_TERMIOS
-+ * These are flags passed to tty_alloc_driver().
-+ *
-+ * @TTY_DRIVER_INSTALLED:
-+ *	Whether this driver was succesfully installed. This is a tty internal
-+ *	flag. Do not touch.
-+ *
-+ * @TTY_DRIVER_RESET_TERMIOS:
-  *	Requests the tty layer to reset the termios setting when the last
-  *	process has closed the device. Used for PTYs, in particular.
-  *
-- * TTY_DRIVER_REAL_RAW
-+ * @TTY_DRIVER_REAL_RAW:
-  *	Indicates that the driver will guarantee not to set any special
-  *	character handling flags if this is set for the tty:
-  *
-@@ -35,7 +41,7 @@ struct serial_struct;
-  *	this case if this flag is set.  (Note that there is also a promise, if
-  *	the above case is true, not to signal overruns, either.)
-  *
-- * TTY_DRIVER_DYNAMIC_DEV
-+ * @TTY_DRIVER_DYNAMIC_DEV:
-  *	The individual tty devices need to be registered with a call to
-  *	tty_register_device() when the device is found in the system and
-  *	unregistered with a call to tty_unregister_device() so the devices will
-@@ -45,33 +51,35 @@ struct serial_struct;
-  *	appear and disappear while the main tty driver is registered with the
-  *	tty core.
-  *
-- * TTY_DRIVER_DEVPTS_MEM
-+ * @TTY_DRIVER_DEVPTS_MEM:
-  *	Don't use the standard arrays (&tty_driver.ttys and
-  *	&tty_driver.termios), instead use dynamic memory keyed through the
-  *	devpts filesystem. This is only applicable to the PTY driver.
-  *
-- * TTY_DRIVER_HARDWARE_BREAK
-+ * @TTY_DRIVER_HARDWARE_BREAK:
-  *	Hardware handles break signals. Pass the requested timeout to the
-  *	&tty_operations.break_ctl instead of using a simple on/off interface.
-  *
-- * TTY_DRIVER_DYNAMIC_ALLOC
-+ * @TTY_DRIVER_DYNAMIC_ALLOC:
-  *	Do not allocate structures which are needed per line for this driver
-  *	(&tty_driver.ports) as it would waste memory. The driver will take
-  *	care. This is only applicable to the PTY driver.
-  *
-- * TTY_DRIVER_UNNUMBERED_NODE
-+ * @TTY_DRIVER_UNNUMBERED_NODE:
-  *	Do not create numbered ``/dev`` nodes. For example, create
-  *	``/dev/ttyprintk`` and not ``/dev/ttyprintk0``. Applicable only when a
-  *	driver for a single tty device is being allocated.
-  */
--#define TTY_DRIVER_INSTALLED		0x0001
--#define TTY_DRIVER_RESET_TERMIOS	0x0002
--#define TTY_DRIVER_REAL_RAW		0x0004
--#define TTY_DRIVER_DYNAMIC_DEV		0x0008
--#define TTY_DRIVER_DEVPTS_MEM		0x0010
--#define TTY_DRIVER_HARDWARE_BREAK	0x0020
--#define TTY_DRIVER_DYNAMIC_ALLOC	0x0040
--#define TTY_DRIVER_UNNUMBERED_NODE	0x0080
-+enum tty_driver_flag {
-+	TTY_DRIVER_INSTALLED		= BIT(0),
-+	TTY_DRIVER_RESET_TERMIOS	= BIT(1),
-+	TTY_DRIVER_REAL_RAW		= BIT(2),
-+	TTY_DRIVER_DYNAMIC_DEV		= BIT(3),
-+	TTY_DRIVER_DEVPTS_MEM		= BIT(4),
-+	TTY_DRIVER_HARDWARE_BREAK	= BIT(5),
-+	TTY_DRIVER_DYNAMIC_ALLOC	= BIT(6),
-+	TTY_DRIVER_UNNUMBERED_NODE	= BIT(7),
-+};
+ void tty_driver_kref_put(struct tty_driver *driver);
  
- /* tty driver types */
- #define TTY_DRIVER_TYPE_SYSTEM		0x0001
+-/* Use TTY_DRIVER_* flags below */
++/**
++ * tty_alloc_driver - allocate tty driver
++ * @lines: count of lines this driver can handle at most
++ * @flags: some of enum tty_driver_flag, will be set in driver->flags
++ *
++ * Returns: struct tty_driver or a PTR-encoded error (use IS_ERR() and friends).
++ */
+ #define tty_alloc_driver(lines, flags) \
+ 		__tty_alloc_driver(lines, THIS_MODULE, flags)
+ 
 -- 
 2.49.0
 
