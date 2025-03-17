@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21AF221B8F2;
-	Mon, 17 Mar 2025 07:01:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D69DB21C9F3;
+	Mon, 17 Mar 2025 07:01:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194863; cv=none; b=mnhAu+lBDYqS4mcJ/uhcVl59lCCsZl1A9C+zeR/i7zouom1za2pEecFMCLxM/sKXTuYlXtxJWNnFVJwCc5QAsY4m6OTzW9Ksucv7iDQnJShvlfIwtW6VyuQBh3JQ570tf2Eo8jepC5rNSkTXVmPp59FcnjpGkp8Y72bc7hH6MS0=
+	t=1742194864; cv=none; b=ZX1fLgQH2FZTHmmegm4zsEZWhx4ujPgnrIvBFXCfr54RAd17b7VQeXC+UXy+4B5QSaBi/HY2Rx02Jy+UUChmLnHQXN+LV2w6RX4H3MUu33m9WV53qPa51TVs6Ayh0pwqcwd5jkDIJGYH3qeMxWyNcixBgVHL6y+rZNu0ZmmJK5g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194863; c=relaxed/simple;
-	bh=xo2wzApT4f3g3LzK5ghtUL4J3vTwfxNmaE8vc3xfEFI=;
+	s=arc-20240116; t=1742194864; c=relaxed/simple;
+	bh=q78Y+Vzll7F5ggoZ4T8kmkLDhTPdIC9TLxncg6aCgSI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NHdasw9tWxF5ftQlPi+NgdPjoAUbPuAPpOhtQjlWAXpK8QcVZvtwUbJf2B3d+QHB40IBsrJej2t8LHQyVK1z2DJGaBb9mgk7KeKJvoOLzVdUp24+IYkorCeCkmvvaqgxwTe85qXaL0TYUaIPmxaA0ZPDWlBENJDHh0670aTepsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hqTl+ami; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=PMAmFp3ENn080vi5vVHVXn6MtchpQHDbuHL/fE4faTNokq+hQSFQ568h1bcxMw0wchHV8xM61oCJARGybZGvirphjoUixaDgo4M8cupGwUDx0Tu/M3RiCA5gLyMlqObHVYNz/AHPZOwOnC/y0yq5w0v/ZivIu+3LZxZNlYxmBXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e0mJwRJ6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hqTl+ami"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E91C4CEEE;
-	Mon, 17 Mar 2025 07:01:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e0mJwRJ6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41D13C4CEE3;
+	Mon, 17 Mar 2025 07:01:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194862;
-	bh=xo2wzApT4f3g3LzK5ghtUL4J3vTwfxNmaE8vc3xfEFI=;
+	s=k20201202; t=1742194864;
+	bh=q78Y+Vzll7F5ggoZ4T8kmkLDhTPdIC9TLxncg6aCgSI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=hqTl+amiZOiGgcodN2pDz+OcgY6Ao+U2tHSEonSbjdL0h4H8LKjxj9rzeRLdeNaL9
-	 zPj/GPqwaWVnp41HCS4jiMr2t/ql7PQfc0Mu+U1g0PcuXmx7BehoRO8JmyoAzU0nsW
-	 d7Be27+uS4vmGNnt3FtqxhSDq0sdVkfxpt80t9/U5EaxfEEPIXcICxA+f2gd2MP+kU
-	 c5L4NbYHdBccLGX0gjK3pmUDSZ+vdsNrAlcap59A9XKog0vRaeeqtHQBVmaD/9+GmQ
-	 6fiZfs3dynxVJn9b+vKxt/Uiz6Q9Y0V5ahCej54etfFdDMcub4g1tWoXQci9nY68xF
-	 4fqsAC47Tu27g==
+	b=e0mJwRJ6tvV6RJDF7vozw2nFkv+JzyoXPbUnC0f3BiDVmhg570pXEXEHNC5ujvWqC
+	 1h1v8nxYv9MAF7Ctjf4GrPBe9OC4WE2WAw2Ch2PnoIDWhx2d2wNPgXo7wiXeDJo8km
+	 BlLkbZ1BYv5TDjVQI8LA5TQN1w9F2O8EibUrLVhDNQg8UzxQCLrPC/4UA9LDcHl7ZA
+	 SokTVss6NVvo/DlyPb5hqx2dMThjClbkIpsOU3u/SAF+cxsf8eoThT5wJH2LBKD7+h
+	 cCHggq8WWEtWZzDXx+JpxeualZkIi8H7vJRwf9wYX/xBUUAYySm/TItyiBF0CulPGd
+	 WskuAtSysLWVw==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 08/31] tty: n_tty: drop n_tty_trace()
-Date: Mon, 17 Mar 2025 08:00:23 +0100
-Message-ID: <20250317070046.24386-9-jirislaby@kernel.org>
+Subject: [PATCH v2 09/31] tty: n_tty: extract n_tty_continue_cookie() from n_tty_read()
+Date: Mon, 17 Mar 2025 08:00:24 +0100
+Message-ID: <20250317070046.24386-10-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -45,56 +45,99 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This n_tty_trace() is an always disabled debugging macro. It comes from
-commit 32f13521ca68 ("n_tty: Line copy to user buffer in canonical
-mode").
-
-Drop it as it is dead for over a decade.
+n_tty_read() is a very long function doing too much of different stuff.
+Extract the "cookie" (continuation read) handling to a separate
+function: n_tty_continue_cookie().
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/n_tty.c | 14 --------------
- 1 file changed, 14 deletions(-)
+ drivers/tty/n_tty.c | 66 ++++++++++++++++++++++++---------------------
+ 1 file changed, 36 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
-index 5d172edbb03c..43ba740792d9 100644
+index 43ba740792d9..88aa5f9cbe5e 100644
 --- a/drivers/tty/n_tty.c
 +++ b/drivers/tty/n_tty.c
-@@ -81,14 +81,6 @@
- #define ECHO_BLOCK		256
- #define ECHO_DISCARD_WATERMARK	N_TTY_BUF_SIZE - (ECHO_BLOCK + 32)
+@@ -2111,6 +2111,39 @@ static int job_control(struct tty_struct *tty, struct file *file)
+ 	return __tty_check_change(tty, SIGTTIN);
+ }
  
--
--#undef N_TTY_TRACE
--#ifdef N_TTY_TRACE
--# define n_tty_trace(f, args...)	trace_printk(f, ##args)
--#else
--# define n_tty_trace(f, args...)	no_printk(f, ##args)
--#endif
--
- struct n_tty_data {
- 	/* producer-published */
- 	size_t read_head;
-@@ -2026,9 +2018,6 @@ static bool canon_copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
- 	tail = MASK(ldata->read_tail);
- 	size = min_t(size_t, tail + n, N_TTY_BUF_SIZE);
++/*
++ * We still hold the atomic_read_lock and the termios_rwsem, and can just
++ * continue to copy data.
++ */
++static ssize_t n_tty_continue_cookie(struct tty_struct *tty, u8 *kbuf,
++				   size_t nr, void **cookie)
++{
++	struct n_tty_data *ldata = tty->disc_data;
++	u8 *kb = kbuf;
++
++	if (ldata->icanon && !L_EXTPROC(tty)) {
++		/*
++		 * If we have filled the user buffer, see if we should skip an
++		 * EOF character before releasing the lock and returning done.
++		 */
++		if (!nr)
++			canon_skip_eof(ldata);
++		else if (canon_copy_from_read_buf(tty, &kb, &nr))
++			return kb - kbuf;
++	} else {
++		if (copy_from_read_buf(tty, &kb, &nr))
++			return kb - kbuf;
++	}
++
++	/* No more data - release locks and stop retries */
++	n_tty_kick_worker(tty);
++	n_tty_check_unthrottle(tty);
++	up_read(&tty->termios_rwsem);
++	mutex_unlock(&ldata->atomic_read_lock);
++	*cookie = NULL;
++
++	return kb - kbuf;
++}
  
--	n_tty_trace("%s: nr:%zu tail:%zu n:%zu size:%zu\n",
--		    __func__, *nr, tail, n, size);
--
- 	eol = find_next_bit(ldata->read_flags, size, tail);
- 	more = n - (size - tail);
- 	if (eol == N_TTY_BUF_SIZE && more) {
-@@ -2046,9 +2035,6 @@ static bool canon_copy_from_read_buf(const struct tty_struct *tty, u8 **kbp,
- 	if (!found || read_buf(ldata, eol) != __DISABLED_CHAR)
- 		n = c;
+ /**
+  * n_tty_read		-	read function for tty
+@@ -2144,36 +2177,9 @@ static ssize_t n_tty_read(struct tty_struct *tty, struct file *file, u8 *kbuf,
+ 	bool packet;
+ 	size_t old_tail;
  
--	n_tty_trace("%s: eol:%zu found:%d n:%zu c:%zu tail:%zu more:%zu\n",
--		    __func__, eol, found, n, c, tail, more);
+-	/*
+-	 * Is this a continuation of a read started earler?
+-	 *
+-	 * If so, we still hold the atomic_read_lock and the
+-	 * termios_rwsem, and can just continue to copy data.
+-	 */
+-	if (*cookie) {
+-		if (ldata->icanon && !L_EXTPROC(tty)) {
+-			/*
+-			 * If we have filled the user buffer, see
+-			 * if we should skip an EOF character before
+-			 * releasing the lock and returning done.
+-			 */
+-			if (!nr)
+-				canon_skip_eof(ldata);
+-			else if (canon_copy_from_read_buf(tty, &kb, &nr))
+-				return kb - kbuf;
+-		} else {
+-			if (copy_from_read_buf(tty, &kb, &nr))
+-				return kb - kbuf;
+-		}
 -
- 	tty_copy(tty, *kbp, tail, n);
- 	*kbp += n;
- 	*nr -= n;
+-		/* No more data - release locks and stop retries */
+-		n_tty_kick_worker(tty);
+-		n_tty_check_unthrottle(tty);
+-		up_read(&tty->termios_rwsem);
+-		mutex_unlock(&ldata->atomic_read_lock);
+-		*cookie = NULL;
+-		return kb - kbuf;
+-	}
++	/* Is this a continuation of a read started earlier? */
++	if (*cookie)
++		return n_tty_continue_cookie(tty, kbuf, nr, cookie);
+ 
+ 	retval = job_control(tty, file);
+ 	if (retval < 0)
 -- 
 2.49.0
 
