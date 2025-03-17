@@ -1,84 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E95D215046;
-	Mon, 17 Mar 2025 07:25:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6132E21ADC9;
+	Mon, 17 Mar 2025 07:42:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742196321; cv=none; b=A65C3k8eeM79EoHfyAh2/DCxdIu8IIbV+/j7lLoVVgVIP1E9XNvrptbYCPNWiyplb55ARN7eyvhqclG5LYUzm8owH++AoGD1Q2ZOrXqTD9OmHDcAEYK8NG7GNfaeII3Hk7dIVACWDhcE6rOsF0eNyQXYRbn54t8KdX5u8YbH8mg=
+	t=1742197377; cv=none; b=hWxFJ55m2lmpaPmVgEKSDAyYNLy6+r9G/+9/nwaV+7YWYvj03DHcuSpR7RQbZBNQYyINJszMdwk0lcSPz30y28HTwUZBiArIEG+jVlvhAWarlNEcp8HgEk5J2EaAKTaejChsUjr9ExWn1TTfa2M+bK+fIm3cLn1MLfcQbO/ejho=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742196321; c=relaxed/simple;
-	bh=SQ3aQHK/R5aXylk6u6ADSjtXUE05/8nCsoOT8V+akm4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VVN5DESLgOqzMozAQIO7fnr+KT8c1Ngo6lumzbWotnyi4LH8LZdQJQbmE7mjRIl64+DP06QRjyg4X8eZQz8lH4Ogfr5unIa1EWgk/IbHxBz3KLNuPNXLzgACg2s1AVhH7VsBDyp5TmCtH/V68es+NI8ShTV4UsIiMNrwHskg5c8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ck7xdoP+; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1742197377; c=relaxed/simple;
+	bh=FBFCWi+mEezYmWiwvS/yjolzouwyxz7yBiehG+xONoo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=m+Za0GA4mebZIXHQOXN3jbFPRgYCkJ8CmcDcPd30jbTe08UbpRtwau5jIu68rvDd+31JaKbH1UAPjWsdMefD2fHbqV3m1YRxzBpUru/BFgbiOs4SGXZzDOqx6V7evNgw8f1jfpVh75Yb91+4bXwxaY007BxJl2sR1WURHuKUry8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mD1ukE5x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ck7xdoP+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742196321; x=1773732321;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SQ3aQHK/R5aXylk6u6ADSjtXUE05/8nCsoOT8V+akm4=;
-  b=ck7xdoP+QVzBp3364q6IaQoYpYHsI/MV8wbGwpi9GHAQ8tafUpuOd04G
-   huOzsn2jwSNtLsKRm9vQyz5aOL8a/xiMeH9PMWQswV4uGs0fsNrc5Q43u
-   R9CqjeSUFJo3ugn/klLNvCS9/KqZGedeUkWCZkeXQi1M4cGERpl2CRvNM
-   74q1EhFpYs6e7R4P1HE33Ej6Jfltgyee9g0D9+NxlzSx1FBmAwOYuJ/u0
-   jX/dc+kteOf32jqhJmUqv1oh0YheOpAu0KfkpOJkmsaTTlgHeDK8Qv8Tp
-   YT6akpqdTeI+72BlcdcQjJPN3ZdPOq1fC2pAbRh4RiL4tqIoCABVAu5DU
-   Q==;
-X-CSE-ConnectionGUID: Cno9N1Q+Ta2hsdNzZ7caBQ==
-X-CSE-MsgGUID: uaN2QaytRGa5Uy8E733n4A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11375"; a="43188043"
-X-IronPort-AV: E=Sophos;i="6.14,253,1736841600"; 
-   d="scan'208";a="43188043"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2025 00:25:20 -0700
-X-CSE-ConnectionGUID: i//2C4NgRiiadOgXf6NCKg==
-X-CSE-MsgGUID: vw7g2Wb0Q/KEQCPvdmooOQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,253,1736841600"; 
-   d="scan'208";a="152783901"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by fmviesa001.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2025 00:25:18 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1tu4qZ-00000003Em6-3ZjI;
-	Mon, 17 Mar 2025 09:25:15 +0200
-Date: Mon, 17 Mar 2025 09:25:15 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Ilpo =?iso-8859-1?Q?J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: Re: [PATCH v2 27/31] serial: 8250: use serial_port_in/out() helpers
-Message-ID: <Z9fOW2eZ4bEdlOzu@smile.fi.intel.com>
-References: <20250317070046.24386-1-jirislaby@kernel.org>
- <20250317070046.24386-28-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mD1ukE5x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F37C4CEE3;
+	Mon, 17 Mar 2025 07:42:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742197376;
+	bh=FBFCWi+mEezYmWiwvS/yjolzouwyxz7yBiehG+xONoo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=mD1ukE5xWO7UrUwAYqrDsvnbiZL/WL2TjEGMS3Dg/y+IDOFw6qEs76gG3ftyaKD1N
+	 rbo8+UVjA0jEtupiT6u8Z0LCRHqPeGVw7Gu7yyARN+Jl+p1i/JExKM6OWCNaFmSi+T
+	 rRnRbmtGpHG0iaAQdlXSbxGYO6a7w2mN7xSlZF+t72XGAATWkcejEqaCkDvdGv+evE
+	 8MwQUk2FWphcwqI3qCj6LB2uIZINcrTW5Bog+0bt9g0q6S9RjV27fIO1kNwC1f8dn7
+	 n5d1TW9yAyrDkNLy41DAcwmiLbhlQ/r76+FbQbocN0CjrB6LENhn3cfEoC/Mx2HC3s
+	 PZVmkag4imcZQ==
+Message-ID: <c6427801-11e9-481c-9931-f7c95a6fb559@kernel.org>
+Date: Mon, 17 Mar 2025 08:42:54 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250317070046.24386-28-jirislaby@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 27/31] serial: 8250: use serial_port_in/out() helpers
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>
+References: <20250317070046.24386-1-jirislaby@kernel.org>
+ <20250317070046.24386-28-jirislaby@kernel.org>
+ <Z9fOW2eZ4bEdlOzu@smile.fi.intel.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <Z9fOW2eZ4bEdlOzu@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Mar 17, 2025 at 08:00:42AM +0100, Jiri Slaby (SUSE) wrote:
-> There are serial_port_in/out() helpers to be used instead of direct
-> p->serial_in/out(). Use them in various 8250 drivers.
+On 17. 03. 25, 8:25, Andy Shevchenko wrote:
+> On Mon, Mar 17, 2025 at 08:00:42AM +0100, Jiri Slaby (SUSE) wrote:
+>> There are serial_port_in/out() helpers to be used instead of direct
+>> p->serial_in/out(). Use them in various 8250 drivers.
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com> # 8250_dw
+> 
+> We also discussed adding some comments. Would you like to send an additional
+> patch or do you rely on me adding them?
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com> # 8250_dw
+Ah, I considered them irrelevant when not using serial_in(), but 
+serial_port_in() et al.
 
-We also discussed adding some comments. Would you like to send an additional
-patch or do you rely on me adding them?
+Please send them, it's your (good) work anyway.
 
+thanks,
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+js
+suse labs
