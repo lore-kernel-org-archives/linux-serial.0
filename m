@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FCB321D590;
-	Mon, 17 Mar 2025 07:01:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC0AB220680;
+	Mon, 17 Mar 2025 07:01:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742194872; cv=none; b=QPrcaJsNTblWvV59R/Q1n5V4vIxUg7TIJuuDYHrZdqu5t9qAoKr4WA76+4mjORwazYnsC+UxctHS1ivGhcLA2ECN4T2hvYxWbb2HLvd/Zmor9qfK5UHnUSwCXCm4ntpWEJpakGqGAH9tmYjV2KjaLaL5xkcV62HHrV3Y12/zpDE=
+	t=1742194873; cv=none; b=kcVGWvwuw2PfFGHqkdZaf1tXjyyJJhOjrEHGmYZXHkCYCz1Wv09paHMnVWu3ZWI5KdI8cxXRSHLC2WNOJxA6UUNh9H84ZQTHTAr1OSjhGfo18HeGCezsg4OizSEK06aWbMj5QZ+PclYHNNv/Js6X9ts9JLeyMSJVmd4JIsTsWhQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742194872; c=relaxed/simple;
-	bh=2OUdKeoS1PZwCLWjaedD25YBR9wFEyiGne6/TIX6YJ8=;
+	s=arc-20240116; t=1742194873; c=relaxed/simple;
+	bh=BwMqY4GhVZC/Tg+ai7GbA+iNWvaoAB6mjbKe0KEA5tc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fPh/uK7HrWBI4m843CjSz9cQrkmSd7js44Myu/lIsnLRKBqznLq5mfYNwx2U/ehigAgKujAXIShUDjhOi/Uuv7XJb5U/82O5CCQyCet3v74qKmMgFPmBNHTnEOWW3KcZ7MdURm+vEzKAlvZpo/ng17Fns4hAkI5JYAcTfHQ5YdM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnZ8MXuE; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=LCfUxMJ8fvVq6skZJViphQTG5higcC0Ddv3zomCjybTR3Lp3yYo1EbXH/8usE+zUTqfzMcAhKgKqDN7qss0rTFifkm6lEY/y2dP8VDDsS51f8SGPh96WJ9GA41cT9gHpqSm+oh+sIwD/6fgoZD4OGNwpXq05WdbvRaBjD+kOomE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BJgJ2aij; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnZ8MXuE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA8B0C4CEE3;
-	Mon, 17 Mar 2025 07:01:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BJgJ2aij"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5385FC4CEEE;
+	Mon, 17 Mar 2025 07:01:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742194871;
-	bh=2OUdKeoS1PZwCLWjaedD25YBR9wFEyiGne6/TIX6YJ8=;
+	s=k20201202; t=1742194873;
+	bh=BwMqY4GhVZC/Tg+ai7GbA+iNWvaoAB6mjbKe0KEA5tc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=dnZ8MXuElHzhTKquQN5wHu05FQfzoR05W5IAGCJcugoniXS1bN0xhb1uAzK7YovAf
-	 h3fQ5Dn+ou7chZP0gB3IxZBexchcRvSxmuhHAsAE20ZWsanqqPVfJ1O8yhbD/o/imh
-	 9mkass7GKoKs8XCvWwfkyxrHSXOZU9O7CX0moQlw9qD58EpsiZ/3+/+mwb65OpbpFJ
-	 3bCv/+Dh7UnXN5CZZF7sFs2COcb55rdG16W2PqtqL3D127Ge+h04UVtNXOcEisImWQ
-	 i3SK0O5EleFTYDlsioJBB/w7Zzfbqs/3CFhOTr93oTIFgD62q2gN4T7tjqVqhV29WW
-	 C0heEiDGfzS7Q==
+	b=BJgJ2aijIZ4aRlCL/pSg/mGKtfqIjjl7LbUNEi1CHDW3JqKUMxXy1TgOvSs1bn1qS
+	 d3IYMs1+Q7M2Hvg1C+gDEL8hirAOetlk1RhbHjXBmfdeyhNZTL+rby/uFdZjQ66UHv
+	 Dldi1W6qEfVWjmgolI5Ip8CmrJ+CIoUUFdTy78N9GoBugU0TU9C4Od/5zKcsv8bcQs
+	 mxMkRE7X7XsKtXkwnXadwxdAsAGi6c/8hwkJKoPyKKNSGU/xZRsqy+iKaddLB+fBUK
+	 OSecr4XZ1nhuQz+y6D16FUt6sITU3u4R+fcihjueMqpWBtpjBN0B4s5idngccTaWBV
+	 EkJqCw0h1EWrA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 14/31] tty: tty_driver: document both {,__}tty_alloc_driver() properly
-Date: Mon, 17 Mar 2025 08:00:29 +0100
-Message-ID: <20250317070046.24386-15-jirislaby@kernel.org>
+Subject: [PATCH v2 15/31] tty: tty_driver: introduce TTY driver sub/types enums
+Date: Mon, 17 Mar 2025 08:00:30 +0100
+Message-ID: <20250317070046.24386-16-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250317070046.24386-1-jirislaby@kernel.org>
 References: <20250317070046.24386-1-jirislaby@kernel.org>
@@ -45,73 +45,88 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-__tty_alloc_driver()'s kernel-doc needed some care: describe the return
-value using the standard "Returns:", and use the new enum tty_driver_flag
-for @flags.
+Convert TTY_DRIVER_TYPE_*, and subtype macros to two enums:
+tty_driver_type and tty_driver_subtype. This allows for easier
+kernel-doc (later), grouping of these nicely, and proper checking.
 
-Then, the tty_alloc_driver() macro was undocumented, but referenced many
-times in the docs. Copy the docs from the above (except the @owner
-parameter, obviously).
+The tty_driver's ::type and ::subtype now use these enums instead of
+bare "short".
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- Documentation/driver-api/tty/tty_driver.rst | 2 ++
- drivers/tty/tty_io.c                        | 8 +++++---
- include/linux/tty_driver.h                  | 8 +++++++-
- 3 files changed, 14 insertions(+), 4 deletions(-)
+ include/linux/tty_driver.h | 42 +++++++++++++++++++-------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
 
-diff --git a/Documentation/driver-api/tty/tty_driver.rst b/Documentation/driver-api/tty/tty_driver.rst
-index f6cbffdb6e01..7138222a70f2 100644
---- a/Documentation/driver-api/tty/tty_driver.rst
-+++ b/Documentation/driver-api/tty/tty_driver.rst
-@@ -25,6 +25,8 @@ freed.
- For reference, both allocation and deallocation functions are explained here in
- detail:
- 
-+.. kernel-doc:: include/linux/tty_driver.h
-+   :identifiers: tty_alloc_driver
- .. kernel-doc:: drivers/tty/tty_io.c
-    :identifiers: __tty_alloc_driver tty_driver_kref_put
- 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index 449dbd216460..ca9b7d7bad2b 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -3329,10 +3329,12 @@ EXPORT_SYMBOL(tty_unregister_device);
-  * __tty_alloc_driver - allocate tty driver
-  * @lines: count of lines this driver can handle at most
-  * @owner: module which is responsible for this driver
-- * @flags: some of %TTY_DRIVER_ flags, will be set in driver->flags
-+ * @flags: some of enum tty_driver_flag, will be set in driver->flags
-  *
-- * This should not be called directly, some of the provided macros should be
-- * used instead. Use IS_ERR() and friends on @retval.
-+ * This should not be called directly, tty_alloc_driver() should be used
-+ * instead.
-+ *
-+ * Returns: struct tty_driver or a PTR-encoded error (use IS_ERR() and friends).
-  */
- struct tty_driver *__tty_alloc_driver(unsigned int lines, struct module *owner,
- 		unsigned long flags)
 diff --git a/include/linux/tty_driver.h b/include/linux/tty_driver.h
-index d0d940236580..0fe38befa1b8 100644
+index 0fe38befa1b8..188ee9b768eb 100644
 --- a/include/linux/tty_driver.h
 +++ b/include/linux/tty_driver.h
-@@ -564,7 +564,13 @@ struct tty_driver *tty_find_polling_driver(char *name, int *line);
+@@ -81,26 +81,26 @@ enum tty_driver_flag {
+ 	TTY_DRIVER_UNNUMBERED_NODE	= BIT(7),
+ };
  
- void tty_driver_kref_put(struct tty_driver *driver);
+-/* tty driver types */
+-#define TTY_DRIVER_TYPE_SYSTEM		0x0001
+-#define TTY_DRIVER_TYPE_CONSOLE		0x0002
+-#define TTY_DRIVER_TYPE_SERIAL		0x0003
+-#define TTY_DRIVER_TYPE_PTY		0x0004
+-#define TTY_DRIVER_TYPE_SCC		0x0005	/* scc driver */
+-#define TTY_DRIVER_TYPE_SYSCONS		0x0006
++enum tty_driver_type {
++	TTY_DRIVER_TYPE_SYSTEM,
++	TTY_DRIVER_TYPE_CONSOLE,
++	TTY_DRIVER_TYPE_SERIAL,
++	TTY_DRIVER_TYPE_PTY,
++	TTY_DRIVER_TYPE_SCC,
++	TTY_DRIVER_TYPE_SYSCONS,
++};
  
--/* Use TTY_DRIVER_* flags below */
-+/**
-+ * tty_alloc_driver - allocate tty driver
-+ * @lines: count of lines this driver can handle at most
-+ * @flags: some of enum tty_driver_flag, will be set in driver->flags
-+ *
-+ * Returns: struct tty_driver or a PTR-encoded error (use IS_ERR() and friends).
-+ */
- #define tty_alloc_driver(lines, flags) \
- 		__tty_alloc_driver(lines, THIS_MODULE, flags)
+-/* system subtypes (magic, used by tty_io.c) */
+-#define SYSTEM_TYPE_TTY			0x0001
+-#define SYSTEM_TYPE_CONSOLE		0x0002
+-#define SYSTEM_TYPE_SYSCONS		0x0003
+-#define SYSTEM_TYPE_SYSPTMX		0x0004
++enum tty_driver_subtype {
++	SYSTEM_TYPE_TTY = 1,
++	SYSTEM_TYPE_CONSOLE,
++	SYSTEM_TYPE_SYSCONS,
++	SYSTEM_TYPE_SYSPTMX,
  
+-/* pty subtypes (magic, used by tty_io.c) */
+-#define PTY_TYPE_MASTER			0x0001
+-#define PTY_TYPE_SLAVE			0x0002
++	PTY_TYPE_MASTER = 1,
++	PTY_TYPE_SLAVE,
+ 
+-/* serial subtype definitions */
+-#define SERIAL_TYPE_NORMAL	1
++	SERIAL_TYPE_NORMAL = 1,
++};
+ 
+ /**
+  * struct tty_operations -- interface between driver and tty
+@@ -500,8 +500,8 @@ struct tty_operations {
+  * @major: major /dev device number (zero for autoassignment)
+  * @minor_start: the first minor /dev device number
+  * @num: number of devices allocated
+- * @type: type of tty driver (%TTY_DRIVER_TYPE_)
+- * @subtype: subtype of tty driver (%SYSTEM_TYPE_, %PTY_TYPE_, %SERIAL_TYPE_)
++ * @type: type of tty driver (enum tty_driver_type)
++ * @subtype: subtype of tty driver (enum tty_driver_subtype)
+  * @init_termios: termios to set to each tty initially (e.g. %tty_std_termios)
+  * @flags: tty driver flags (%TTY_DRIVER_)
+  * @proc_entry: proc fs entry, used internally
+@@ -533,8 +533,8 @@ struct tty_driver {
+ 	int	major;
+ 	int	minor_start;
+ 	unsigned int	num;
+-	short	type;
+-	short	subtype;
++	enum tty_driver_type type;
++	enum tty_driver_subtype subtype;
+ 	struct ktermios init_termios;
+ 	unsigned long	flags;
+ 	struct proc_dir_entry *proc_entry;
 -- 
 2.49.0
 
