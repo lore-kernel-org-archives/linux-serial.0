@@ -1,104 +1,129 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13C4C1EF36D
-	for <linux-serial@vger.kernel.org>; Tue, 18 Mar 2025 08:54:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A3321F5842;
+	Tue, 18 Mar 2025 09:06:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742288059; cv=none; b=d2qzwvVJJ5MuWLNJErPFOzbwmQR+tVRVGF0e4Yvx6gtljLZq7fAHFBeLY8jrmJk+Cs1EDdBx+O0ZPZxQ2VjVxFd0FPRLc0Hr6Lt4bPqvSqxUH4ON7CW303h4jfxLIF6YePSjZuC8X9+m+kRLKftZNX0yxUktkCFuUd19u0ngZBc=
+	t=1742288768; cv=none; b=HsSKbueUcQOwDSITSO02TvLehFk2IPiG2QLTzloK+9dDaQJzDDNW8ai2g7l9RBguXX8y3xajgfLdvEw0VdCHD+DSg+UeQwgbghVAeMYCubhsy8NkyrzwbirYR5jBu6hvw8/eJclahAt84o+rely03skwD33lyKkdo2YV4g6Ug9E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742288059; c=relaxed/simple;
-	bh=Js9/nS+MIPxyikfrAQwlchDX6ZwWrhrB5CNrGfZ+bo8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cewA2OQN5p87oeoxebO5V0fjiWc23SbEfTYLXrjJcMWan+biuZqhfUmKSUHT/5Mg74kNFfDsUaCmDEin9XnzT+tbzcv6+OhbWtRFjbMFC3d3pLiJ2z8iNKjXeyDA3EaW5zzgExs3d7Tha4hO6ZTd2x74xDfbsiR7rP65hZRsRVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=hjs+AQXy; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="hjs+AQXy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=from:to:cc:subject:date:message-id
-	:mime-version:content-transfer-encoding; s=k1; bh=2ayO8Klm1vIIw2
-	4IPuB7XQ4nODfqD+hrTlr7Ibbi9e8=; b=hjs+AQXy1ZWv1t3r++oPCwtEhGKvzW
-	2g8sEqKy8vHUWkw/hyir3kQ9XJ3KfK3MatMiz9W5Uo4PnZMPQthJGCkPA4g1o+8A
-	GVBxDoRI57WC/1zCGqsi8yzqNsO/dfWzrY9xSZePY/G/pRIfwyIVOgCGpuDUj7uH
-	1vhd906h9TXu2Nu2NKpcrLr2gpAJpcsbiHlSQ0xfun16p0xYxQaHgSnh8h+LqlXG
-	LCC8HoWfqMJtg+D6uRjxTxhkX4xk5ElErsI4S+MDw5GQzvZaU/27o8fqvsJrUv61
-	5ZTcr9VroDBUI+kWmcGvzceHV4t5MTAloa1c4rULhgJC9YfEvfbuyi3A==
-Received: (qmail 3650562 invoked from network); 18 Mar 2025 09:54:13 +0100
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Mar 2025 09:54:13 +0100
-X-UD-Smtp-Session: l3s3148p1@/tp6DJowMNggAwDPXyTHAJp038nK7dx+
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: linux-renesas-soc@vger.kernel.org
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: [PATCH] dt-bindings: serial: snps-dw-apb-uart: document RZ/N1 binding without DMA
-Date: Tue, 18 Mar 2025 09:53:53 +0100
-Message-ID: <20250318085353.18990-2-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.47.2
+	s=arc-20240116; t=1742288768; c=relaxed/simple;
+	bh=PTagmbpU3XF5H/sYqjJomzzmYuqGWjWIZvOG/uueeIQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=dq1c6fc7K8Hnvb1eHqfx9Ezordksb20saUOFbfj5ZLvb1TUf4TVYOhNAyEoFsRBf3MCW7K12ytYAk8ZjYNtLshfY3vCe0ju1mP5H4tNT5anTqkfKaN8yYGfe7tQUWv8GIkbF6JfBQYTK0vEJjhnnEPo0/bBLe2/XVa7bKtpGXMA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-86dde90e7a3so221211241.1;
+        Tue, 18 Mar 2025 02:06:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742288763; x=1742893563;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9lblAmMwxT4LQJ7oZOS5x8MeQfBd3ciA47yMs9M9n8E=;
+        b=Y27a2+T/jleNUHPKRXRC3hc90IRXVsOuhc+RvHyCQKze4i1tcfVbIflR/VVH8/KfgQ
+         ehtCcriKA+uq/uCwGsM9GD5XnU9czRYY6pOWVIx82go79AIIVDlFiYqNZfDnGhNkXVrA
+         ic7vUFb7PuYhNyxSKiJKOcJ/obATE0U40fdBPpOBkM2vjjZ+GXzTvl+hrKeWwANnTKIU
+         gITt7kS9viH9nZiv75jrPT8yQcCIQNXL00RR7mFzW7u/SZQt7lz79EfHTxU236l4HjlF
+         +ho8KevD6rzv/Fu9DcHUEHRhXGOOJ/a1S8jz0TkIdQo7JZ0G2w1QuL0JPWEX9P2HdSS5
+         Bo1Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVFZg83BgsPfy5zSgC4q80QLUrQmsM3DpcfpWoY1C4VDoE8X6GZEUOy/hs+g7VQJ66ilswfYot5uIpkfj8F@vger.kernel.org, AJvYcCXWKCucCMRwdUpNXIdFU0TN2OvOOKa6djeOMQc7c3mowORRpseMn60liX0Lwe7V9h/jSM5oUQDA42wJ@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz5QeA74z3lEntr2H0lfxz46Mett5MWk0PjeJmvVRmIdgbDsozI
+	gUctHJHlODEhuo/ytg8ZFIqT/g2rpetFwJgnt31PBfGq6GcYpsaOr2b2DeQ3
+X-Gm-Gg: ASbGncsSEJFwMz1HnUl+poFqFDSWn0hKgXbgINaZQ5OUkNvJU4IFMfOsUntYHcOEP2u
+	6o9oEi+hbvygKiRzZsnNp9nJ/l4RcyhqDgw/ISUlN8Ul0JMor4TTf71bkTdFU+9yaMeuz5RNLy6
+	PKLK8fG/2gw4XfxSKi+njJFtIyCp7/o1ofYlKQWslMIaGrwYohm+rCZsPSTatVtWqhLNT22iIkD
+	QEQwipuOyJIFiKQwhvQHSF45cTv0qx6rtDBB9l0uabgKQkoTxwgR4AEvyEKNtC25ElqpW0/gqs0
+	tFjdNY2gmlvPGH93t9vbVJe2wwkflavRgGHS7cbI2ZKW+B7VNiZPrcHfXwCk/cBzFNDUAzfNRRY
+	E2GhoWq7QccI=
+X-Google-Smtp-Source: AGHT+IGlhLH6aKfdEVTCF1JqUHlH5ZDsggfkMDFJfahuYVcGI+ed3icY0UP02FNHiciSybMvAO1RDg==
+X-Received: by 2002:a05:6102:3908:b0:4bb:e2a1:183e with SMTP id ada2fe7eead31-4c4d915ecc3mr2639910137.18.1742288763488;
+        Tue, 18 Mar 2025 02:06:03 -0700 (PDT)
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com. [209.85.221.182])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4c37513df2dsm1811746137.23.2025.03.18.02.06.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Mar 2025 02:06:03 -0700 (PDT)
+Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-523dc366e42so2067106e0c.2;
+        Tue, 18 Mar 2025 02:06:03 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCV6FL2mb4V6smD7lMzqtlzKFv9DfZN1gyIio4u+jsraOtS8wWZyB+ERatSBdpTsmdA97ECUt8/0K/aF@vger.kernel.org, AJvYcCXZ99ZznbTfdcMnoBzhIByMMNBegx6GF1zcb7j0jVvICuOlBjCfo9LdqK4X1L69vM/UonksRzzDR5QsJzKv@vger.kernel.org
+X-Received: by 2002:a05:6102:5492:b0:4bb:dba6:99cd with SMTP id
+ ada2fe7eead31-4c4d9032809mr2176944137.8.1742288762977; Tue, 18 Mar 2025
+ 02:06:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20250318085353.18990-2-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20250318085353.18990-2-wsa+renesas@sang-engineering.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 18 Mar 2025 10:05:51 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWP8a5eR_1sk2oUe02KdiDaibHnqAHbn2mSyBHzP1FNJA@mail.gmail.com>
+X-Gm-Features: AQ5f1JpyJMk16UbgbB5Lcp9JQK_N1tLC5wrggwzoADVVJsQawPIxoC1UstSz0Nk
+Message-ID: <CAMuHMdWP8a5eR_1sk2oUe02KdiDaibHnqAHbn2mSyBHzP1FNJA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: document RZ/N1
+ binding without DMA
+To: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: linux-renesas-soc@vger.kernel.org, 
+	Miquel Raynal <miquel.raynal@bootlin.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Renesas RZ/N1D has this UART with and without DMA support. Currently,
-only the binding with DMA support is described. Add the missing one
-without DMA support which can fallback even more.
+Hi Wolfram,
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- .../bindings/serial/snps-dw-apb-uart.yaml     | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+On Tue, 18 Mar 2025 at 09:54, Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+> Renesas RZ/N1D has this UART with and without DMA support. Currently,
+> only the binding with DMA support is described. Add the missing one
+> without DMA support which can fallback even more.
+>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-diff --git a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-index 1c163cb5dff1..645b14ffde90 100644
---- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-+++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
-@@ -13,6 +13,20 @@ allOf:
-   - $ref: serial.yaml#
-   - $ref: rs485.yaml#
- 
-+  - if:
-+      properties:
-+        compatible:
-+          items:
-+            - enum:
-+                - renesas,r9a06g032-uart
-+                - renesas,r9a06g033-uart
-+            - const: renesas,rzn1-uart
-+            - const: snps,dw-apb-uart
-+    then:
-+      properties:
-+        dmas: false
-+        dma-names: false
-+
-   - if:
-       properties:
-         compatible:
-@@ -30,6 +44,12 @@ allOf:
- properties:
-   compatible:
-     oneOf:
-+      - items:
-+          - enum:
-+              - renesas,r9a06g032-uart
-+              - renesas,r9a06g033-uart
-+          - const: renesas,rzn1-uart
-+          - const: snps,dw-apb-uart
-       - items:
-           - enum:
-               - renesas,r9a06g032-uart
+Thanks for your patch!
+
+> --- a/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> +++ b/Documentation/devicetree/bindings/serial/snps-dw-apb-uart.yaml
+> @@ -13,6 +13,20 @@ allOf:
+>    - $ref: serial.yaml#
+>    - $ref: rs485.yaml#
+>
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          items:
+> +            - enum:
+> +                - renesas,r9a06g032-uart
+> +                - renesas,r9a06g033-uart
+
+I think you can simplify by replacing the enum by
+
+    - pattern: "^renesas,.*$"
+
+> +            - const: renesas,rzn1-uart
+> +            - const: snps,dw-apb-uart
+> +    then:
+> +      properties:
+> +        dmas: false
+> +        dma-names: false
+> +
+>    - if:
+>        properties:
+>          compatible:
+
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.47.2
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
