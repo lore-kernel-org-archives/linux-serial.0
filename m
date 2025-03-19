@@ -1,102 +1,109 @@
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A7B6372;
-	Wed, 19 Mar 2025 12:16:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.204.34.129
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B7E82528E2;
+	Wed, 19 Mar 2025 12:21:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742386569; cv=none; b=Y9vMwwwxgglfFwsoKJGyptCLwvRgJ35zVeisGY4ustU+7fjTMFWbE/rwwBEG1f2Ni8QAzVdkvzlSRwloWU7Rx2q/Uax3plob+MJaZ2f3HRLZX889HALsNUo+UmTROueegJwaK6xRm80sicH7j/jPX9gN06LRCRt93MxCK+YE/70=
+	t=1742386907; cv=none; b=QcM7z6P7QhUQ4dKf97O77xO46xcMK2JmAR2XhgHvnwoeR7q4QqpXDrUjRXTutF9AGHEj1s85iBXVlykx6Wbq8tg0doM3bmW2gyhcpkhR73V+jdfkMCyLQaNN/+jddmkNZXqTYXz8rQuCrAc7M9uhw3BfklMhZJmceLn6jC+HfB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742386569; c=relaxed/simple;
-	bh=hoFKpOFzyzUs5Tf+F0zgQXoNmD8Y2fp616I9iAWieZg=;
-	h=From:To:Cc:Subject:Mime-Version:Content-Type:Date:Message-ID:
-	 References:In-Reply-To; b=iCmTZszDhuLjkC209Dr/XxpAQNLGfggrRFgtmI3I5qnco3pdb6JKWEf+a7HdD+KrLxoLpBdeSzL1q43ZKGzimBsCLWTvhq81r7APRf9YaJ1Def2RGkCntUByn0t8hMUXj0OQs4sy3ODE39HSzq2bzXNULXaBU1ZkSlAUZ/EbM3g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=hyP6YvE9; arc=none smtp.client-ip=54.204.34.129
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
+	s=arc-20240116; t=1742386907; c=relaxed/simple;
+	bh=JQXniEsEfztX8j6ooBAgw8s5V/yk+VanNbPf+6bCEt4=;
+	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=Jb4NkURxmbBpAJZqld5ttxkAlSr7QHd4c1KKRuSCroYHg3qNSkHk3lGCJ2087RmlZTXhU58+pdLscZfQ6uhHfGkl02sO0OOFD3iIlU0ekLn1eRShgEX3gSE67jzctCrZDMzDlMWGGurkOnKhT+OmhFP0nUA7lzoHGrn10TEu8Sg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IkCjWBe3; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="hyP6YvE9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
-	s=onoh2408; t=1742386527;
-	bh=hoFKpOFzyzUs5Tf+F0zgQXoNmD8Y2fp616I9iAWieZg=;
-	h=From:To:Subject:Mime-Version:Date:Message-ID;
-	b=hyP6YvE9U8Sa5B9E7YTi/Gq9AuiEy3sDGMo0CYWYhYnuYWSOH7IhMXuUeIJatVs/C
-	 MHdOAqetmf9dKZPrdbH3GNNRuN654lscxOvTAYMQCmwoNr+i9WKHc0044x/cqeUzxV
-	 E9iv0u55IgsFiH+14Ir8+icxwkf/qksNS3VefoME=
-X-QQ-GoodBg: 1
-X-QQ-SSF: 00400000000000F0
-X-QQ-FEAT: D4aqtcRDiqTaNE5G7a0fa7M/rEhb0o4JjCHUE1mhqHo=
-X-QQ-BUSINESS-ORIGIN: 2
-X-QQ-Originating-IP: qoIzFjdllbkWJf7JCxb3nbZihj4PhY5B52skllgoaD0=
-X-QQ-STYLE: 
-X-QQ-mid: v3sz3a-6t1742386520t8481319
-From: "=?utf-8?B?V2VudGFvIEd1YW4=?=" <guanwentao@uniontech.com>
-To: "=?utf-8?B?R3JlZyBLSA==?=" <gregkh@linuxfoundation.org>
-Cc: "=?utf-8?B?Sm9obiBLZWVwaW5n?=" <jkeeping@inmusicbrands.com>, "=?utf-8?B?SmlyaSBTbGFieQ==?=" <jirislaby@kernel.org>, "=?utf-8?B?RmVycnkgVG90aA==?=" <ftoth@exalondelft.nl>, "=?utf-8?B?SWxwbyBKw6RydmluZW4=?=" <ilpo.jarvinen@linux.intel.com>, "=?utf-8?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>, "=?utf-8?B?bGludXgtc2VyaWFs?=" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250_dma: terminate correct DMA in tx_dma_flush()
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IkCjWBe3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1742386907; x=1773922907;
+  h=from:date:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=JQXniEsEfztX8j6ooBAgw8s5V/yk+VanNbPf+6bCEt4=;
+  b=IkCjWBe3792G93aRG4B2+oRddR9m5afquHD7E1kDM9U3OPqCs7aJt7VO
+   os5ZNcBv2B726qwqsrRrVgwLxGjHamgHevJnDQ3KM+HdZfTqtfDRGNsvR
+   7o0LAvnkDgMG/CGrhyUAkNSOG+/SYyU7Aa9yGKSLnRVDkbSjnkJERgh0c
+   eZk2pDmM0hLPTRihXEGCVoM2MOXPdPsddS7yD0RfXBstcOZB797irVViG
+   ILtCy/U/QXDqEtezM1mKtK/33ZKCtMtQCwxPw1BGbxs48+WAp7DBJbCu/
+   D4Rf9bjV+cOmnwvAQS44vjppVhAFhUK0EyO+aBt+lgg58+E9EdUgsw0vC
+   g==;
+X-CSE-ConnectionGUID: Q4cZnDxQQE2o1C+1sd4UMg==
+X-CSE-MsgGUID: JNO0Us5KQqGk7U0tXNKRIg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11377"; a="53786659"
+X-IronPort-AV: E=Sophos;i="6.14,259,1736841600"; 
+   d="scan'208";a="53786659"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 05:21:46 -0700
+X-CSE-ConnectionGUID: kqE71n+dSXyrXrmgmXeazw==
+X-CSE-MsgGUID: U71Xncg0SdStD2XvBMNnCQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,259,1736841600"; 
+   d="scan'208";a="123092094"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.21])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 05:21:42 -0700
+From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Date: Wed, 19 Mar 2025 14:21:39 +0200 (EET)
+To: John Keeping <jkeeping@inmusicbrands.com>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Wentao Guan <guanwentao@uniontech.com>, Jiri Slaby <jirislaby@kernel.org>, 
+    Ferry Toth <ftoth@exalondelft.nl>, 
+    =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+    LKML <linux-kernel@vger.kernel.org>, 
+    linux-serial <linux-serial@vger.kernel.org>
+Subject: Re: [PATCH] serial: 8250_dma: terminate correct DMA in
+ tx_dma_flush()
+In-Reply-To: <20250224121831.1429323-1-jkeeping@inmusicbrands.com>
+Message-ID: <c452c05a-b6ad-144a-2738-ba52d57e7eef@linux.intel.com>
+References: <20250224121831.1429323-1-jkeeping@inmusicbrands.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Wed, 19 Mar 2025 20:15:19 +0800
-X-Priority: 3
-Message-ID: <tencent_2C47E37E3DFC481229FF3C45@qq.com>
-X-QQ-MIME: TCMime 1.0 by Tencent
-X-Mailer: QQMail 2.x
-X-QQ-Mailer: QQMail 2.x
-References: <20250224121831.1429323-1-jkeeping@inmusicbrands.com>
-	<tencent_7FB378712CE341FE55666DAD@qq.com>
-	<2025031900-junkyard-crane-4c93@gregkh>
-In-Reply-To: <2025031900-junkyard-crane-4c93@gregkh>
-X-QQ-ReplyHash: 1527423396
-X-BIZMAIL-ID: 9774899562864434385
-X-QQ-SENDSIZE: 520
-Received: from qq.com (unknown [127.0.0.1])
-	by smtp.qq.com (ESMTP) with SMTP
-	id ; Wed, 19 Mar 2025 20:15:21 +0800 (CST)
-Feedback-ID: v:uniontech.com:qybglogicsvrgz:qybglogicsvrgz8a-1
-X-QQ-XMAILINFO: MzaZbajgbPzxtnuxDeLhi9EiLQMaOZ/9CMXbEXbyF1R47Yqhh2csIZXv
-	98K/6urs3LIf+eeSTYGAWSM3Abl0kNgQbbPitQGOO4YlwrmsKtzbpiyDMNZ1vcVkp3l2JI/
-	qhNztxRWCeE3wiXDULc3yk8x0VZBhTLxdqJOUUIYqIrHTTp61m7G+WzdKQTY2iXLxbCDra6
-	7bxcvvDIVDmfUaZtJu9e5Eg++/lB6Zp6UopfoNMo9tJFlEzvBFyTLmGzKcQajMrS5BbF6go
-	wpxY+K2dbocMFD7jkS+udKvlLMG1L1kbFmvvFelN78QVhMx8fKk+kLcqF+tiipIyQloph6z
-	QiR0rG4gio5go9oMZlZ8wxj9XkcZ1uFzdPMD2ZNHms6Fa8rnPGCbp6wv2ed9zHjbqLyBDGy
-	8TVADRIJvXXwl+ZINzHioqL4qIzgHfL2nA/XiVBZ9gzfH7OxFnIi1OXkoHrYu/PM/9PrSgv
-	5M9QBEGHSMS/w9cNIY7SJaN+mmLroqzztnBbiDYPSAa0ONQ65TMZML4fWPLnWLq2V469/KF
-	pxfBjzYHyqrqpWKrglNHDI8bgsu+KH16lXBIMyfxnhrAa8DPjLf/OX7tnIlNOhCfZzzQn+D
-	/SOx7qXm9Vs7TF8GY5bxTu0r5zk/BgPsNnv9orbLTrAkVkeMX01q6LtqusRw+SxjBTQEWGe
-	c2rSciTzV791YT+6wFHKACfB7MSdcf8rGEwP8IiUEzAbyUN/IeA5WN4B7wt9Oe32N/bkXJo
-	77nURDgUOZUzNKhW86FpVoJafOzK0BBO8SWoWkGKy6CnjyoZtM603aXeb66NsWUrq1bnCK4
-	8M+g7gY/wVcqZYb6doQh/dPCe1Vt2Y/iT/fLV2TsW54IjM1fQwwDEo8Iw1db1leKO5Lej21
-	hRZhSH/ObR6IztMPztinuhkMaYebdfssN63coaT8/Ttr2nmGmwT6kvnj7hZvVotCLWmUypx
-	EDezPoNLdu7pNht6L7bpOwVcDleIB2IxjXBKtcSNKTqZl4c03G1tPIvH9uBMloEjkdzaot0
-	u/q40nqi+OoglOMa+Aq7BwipMQUxaqtYm2NV3RzYMKmf9GSC8Nz+f2jsLT2TlBiKtRatvrA
-	Q==
-X-QQ-XMRINFO: M/715EihBoGSf6IYSX1iLFg=
-X-QQ-RECHKSPAM: 0
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="8323328-601448847-1742386899=:10063"
 
-SGVsbG8sDQoNClRoZSBwaW5nIHF1ZXJ5IHRoZSBwYXRjaCBzdGF0ZToNCg0KW1BBVENIXSBz
-ZXJpYWw6IDgyNTBfZG1hOiB0ZXJtaW5hdGUgY29ycmVjdCBETUEgaW4gdHhfZG1hX2ZsdXNo
-KCkNCg0KV2hlbiBmbHVzaGluZyB0cmFuc21pdCBzaWRlIERNQSwgaXQgaXMgdGhlIHRyYW5z
-bWl0IGNoYW5uZWwgdGhhdCBzaG91bGQNCmJlIHRlcm1pbmF0ZWQsIG5vdCB0aGUgcmVjZWl2
-ZSBjaGFubmVsLg0KDQpGaXhlczogOWU1MTJlYWFmOGY0MCAoInNlcmlhbDogODI1MDogRml4
-IGZpZm8gdW5kZXJmbG93IG9uIGZsdXNoIikNClJlcG9ydGVkLWJ5OiBXZW50YW8gR3VhbiA8
-Z3VhbndlbnRhb0B1bmlvbnRlY2guY29tPg0KU2lnbmVkLW9mZi1ieTogSm9obiBLZWVwaW5n
-IDxqa2VlcGluZ0Bpbm11c2ljYnJhbmRzLmNvbT4NCi0tLQ0KIGRyaXZlcnMvdHR5L3Nlcmlh
-bC84MjUwLzgyNTBfZG1hLmMgfCAyICstDQogMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9u
-KCspLCAxIGRlbGV0aW9uKC0pDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL3R0eS9zZXJpYWwv
-ODI1MC84MjUwX2RtYS5jIGIvZHJpdmVycy90dHkvc2VyaWFsLzgyNTAvODI1MF9kbWEuYw0K
-aW5kZXggZjI0NWE4NGY0YTUwOC4uYmRkMjZjOWYzNGJkZiAxMDA2NDQNCi0tLSBhL2RyaXZl
-cnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZG1hLmMNCisrKyBiL2RyaXZlcnMvdHR5L3Nlcmlh
-bC84MjUwLzgyNTBfZG1hLmMNCkBAIC0xNjIsNyArMTYyLDcgQEAgdm9pZCBzZXJpYWw4MjUw
-X3R4X2RtYV9mbHVzaChzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnApDQogICAqLw0KICBkbWEt
-PnR4X3NpemUgPSAwOw0KIA0KLSBkbWFlbmdpbmVfdGVybWluYXRlX2FzeW5jKGRtYS0+cnhj
-aGFuKTsNCisgZG1hZW5naW5lX3Rlcm1pbmF0ZV9hc3luYyhkbWEtPnR4Y2hhbik7DQogfQ0K
-IA0KIGludCBzZXJpYWw4MjUwX3J4X2RtYShzdHJ1Y3QgdWFydF84MjUwX3BvcnQgKnApDQot
-LSANCjIuNDguMQ==
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
+--8323328-601448847-1742386899=:10063
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+
+On Mon, 24 Feb 2025, John Keeping wrote:
+
+> When flushing transmit side DMA, it is the transmit channel that should
+> be terminated, not the receive channel.
+>=20
+> Fixes: 9e512eaaf8f40 ("serial: 8250: Fix fifo underflow on flush")
+> Reported-by: Wentao Guan <guanwentao@uniontech.com>
+> Signed-off-by: John Keeping <jkeeping@inmusicbrands.com>
+> ---
+>  drivers/tty/serial/8250/8250_dma.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250=
+/8250_dma.c
+> index f245a84f4a508..bdd26c9f34bdf 100644
+> --- a/drivers/tty/serial/8250/8250_dma.c
+> +++ b/drivers/tty/serial/8250/8250_dma.c
+> @@ -162,7 +162,7 @@ void serial8250_tx_dma_flush(struct uart_8250_port *p=
+)
+>  =09 */
+>  =09dma->tx_size =3D 0;
+> =20
+> -=09dmaengine_terminate_async(dma->rxchan);
+> +=09dmaengine_terminate_async(dma->txchan);
+>  }
+> =20
+>  int serial8250_rx_dma(struct uart_8250_port *p)
+>=20
+
+Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+
+--=20
+ i.
+
+--8323328-601448847-1742386899=:10063--
