@@ -1,93 +1,98 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29B2B27701;
-	Thu, 20 Mar 2025 11:17:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A37AB21CC5C;
+	Thu, 20 Mar 2025 11:19:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742469426; cv=none; b=qQZvRvZalFOmj24arciQZsq0dDa7o9Vgz36G9lXbevSB3r+ukQ9AUCHjPySapMBPO84pHs/jFre1z5hQSuU+aIEGrfwEWh26/oc2MAXD/HjDJKEhBCuhNqnQxPkVJcCSVrTqWBOYX2/46RfBLUvX+1BYcQpVAULIfyIg6SqXIgg=
+	t=1742469565; cv=none; b=XgTWfeXgrsWwWenJPh2dIfJxxgUJsGPCSnPX7ALt/wlJIhYsI5az2bJGhTr2uyUe9MuBjMLVak/YvaERcw3YS0nRBws8NohcG/Sz6amw2+2b+heKqTxwpwK9EhlH6NBY+Y4J6yufW7aySFCizAs+rc2ZVK+brVHXCZwjiOuzpVk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742469426; c=relaxed/simple;
-	bh=/7u+gDUcP5o2rJ8pXOfKWcA25Zzww9gy+RHc9UH0fxs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a9HP9uzloWihw3DcGaFfyheNgEY4LSv3AAUVz1odi+v2YmJvTFoY6ptUZXY341qaT8NR6vA6T1qDojXLJORAl+va4q7ythW9RAMrYE06q4TF/q7e8eljDCL4BJoDLpetpuDSDaG+tH+qobWCaipVbIG5CSkahnGmyZleE0uA7ro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cYyj9p6g; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1742469565; c=relaxed/simple;
+	bh=6PezswnH6Ezxp8GX6d3CdH+Rb46Wqcad1GKr2MVjZIM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=JiTgPDEt3GRIbKxCkBQNzEryccZM7jGr3wBlDQR4hRDq8NVhiIDpBTGyN/C42i0fT6w3pUAVddWgocqZIpNy4zfNwmxBg6JnHd/LvASQucipF1HvbLYPqqM2XbxdHwM9y2bucd9c0HeAEY365VGf+G2+sJA/yJ+NbUnvhRyg79Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=InC7p+BQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cYyj9p6g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E27C4CEDD;
-	Thu, 20 Mar 2025 11:17:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="InC7p+BQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BB66C4CEEE;
+	Thu, 20 Mar 2025 11:19:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1742469425;
-	bh=/7u+gDUcP5o2rJ8pXOfKWcA25Zzww9gy+RHc9UH0fxs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cYyj9p6g/zjks6iCfVzP7tHULnFlR+z8bMqS9F9Pe7E0YR4AHw5a6tkVLOj0eIR9a
-	 wAl7LduM9Hm2hX2t0LKcHc9mT+95kUFupQ07vUs1ZW/fHczkO95AgVfiLGtCIWNyPM
-	 wmoPOvU1kMrZcUyeXD0ASyQkaUbSxLwuIuxLGKMZD0jPUSWm8xZEgiWmWqEv7L2HlK
-	 k0vCLJfKaeXIABIuf8NDg+4WHlIYeXKjPqCci70sSu4lsTtYlsSLfxEn0x7r6PqBgx
-	 jkRSDki1RktIvTlCCh9Hfpe6mRJ4wBGD+guKhwM+awGTBDGAQirdYtarQmBMkovzvF
-	 YMoMh0Fl3FPoQ==
-Date: Thu, 20 Mar 2025 11:17:01 +0000
+	s=k20201202; t=1742469565;
+	bh=6PezswnH6Ezxp8GX6d3CdH+Rb46Wqcad1GKr2MVjZIM=;
+	h=From:Date:Subject:To:Cc:From;
+	b=InC7p+BQJvb/USbErKP9BUJh5E3LENw1oBVv4I5bnuMnqVytuCGvJIWGGreYqQqlv
+	 rM0767Xy8xBHeg+f75F+4PjcMcqWTHF0aVal7iX10dap7bY0TbY2UjeqnWNUGGMqIE
+	 Ibrcl0vLjUrOXwI7xnFdkpcprghgGQ7A9yHQzZQZkqq4uZjsTYAXlAKuLJ+lzFLABI
+	 0qLWu4g2yscLcqQ695KonawwBi4g1b2dH/ipiak0Sxlhlykrfw/fOs18NzC5aeJqwB
+	 0L7PN4H10WaLEVc09vsOYeWCljQfDts4v6yMgZCtfpiFh+8WmL/i0rWab+T2krFp1f
+	 YU7ZK0d+iF1Jg==
 From: Simon Horman <horms@kernel.org>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-	Andrew Lunn <andrew+netdev@lunn.ch>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-	netdev@vger.kernel.org
-Subject: Re: [PATCH v2 03/31] tty: caif: do not use N_TTY_BUF_SIZE
-Message-ID: <20250320111701.GI280585@kernel.org>
-References: <20250317070046.24386-1-jirislaby@kernel.org>
- <20250317070046.24386-4-jirislaby@kernel.org>
+Date: Thu, 20 Mar 2025 11:19:20 +0000
+Subject: [PATCH] tty: caif: removed unused function debugfs_tx()
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250317070046.24386-4-jirislaby@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250320-caif-debugfs-tx-v1-1-be5654770088@kernel.org>
+X-B4-Tracking: v=1; b=H4sIALf522cC/x3MTQqAIBBA4avIrBswRfq5SrQwHWs2FVohSHdPW
+ n6L9wokikwJRlEg0sOJj72ibQS4ze4rIftqUFIZqZVEZzmgp+VeQ8IrozVDION70+keanVGCpz
+ /4zS/7wfy1dMMYQAAAA==
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: Andrew Lunn <andrew+netdev@lunn.ch>, 
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, 
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+ Nathan Chancellor <nathan@kernel.org>, 
+ Nick Desaulniers <ndesaulniers@google.com>, 
+ Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+ linux-serial@vger.kernel.org, netdev@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+X-Mailer: b4 0.14.0
 
-On Mon, Mar 17, 2025 at 08:00:18AM +0100, Jiri Slaby (SUSE) wrote:
-> N_TTY_BUF_SIZE -- as the name suggests -- is the N_TTY's buffer size.
-> There is no reason to couple that to caif's tty->receive_room. Use 4096
-> directly -- even though, it should be some sort of "SKB_MAX_ALLOC" or
-> alike. But definitely not N_TTY_BUF_SIZE.
+Remove debugfs_tx() which was added when the caif driver was added in
+commit 9b27105b4a44 ("net-caif-driver: add CAIF serial driver (ldisc)")
+but it has never been used.
 
-Hi Jiri,
+Flagged by LLVM 19.1.7 W=1 builds.
 
-My 2c worth is that 4096 seems like an arbitrary value.
-Which is fine, but perhaps a comment is warranted.
+Signed-off-by: Simon Horman <horms@kernel.org>
+---
+ drivers/net/caif/caif_serial.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
-> 
-> N_TTY_BUF_SIZE is private and will be moved to n_tty.c later.
-> 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
-> Cc: Andrew Lunn <andrew+netdev@lunn.ch>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: netdev@vger.kernel.org
-> ---
->  drivers/net/caif/caif_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
-> index ed3a589def6b..e7d1b9301fde 100644
-> --- a/drivers/net/caif/caif_serial.c
-> +++ b/drivers/net/caif/caif_serial.c
-> @@ -344,7 +344,7 @@ static int ldisc_open(struct tty_struct *tty)
->  	ser->tty = tty_kref_get(tty);
->  	ser->dev = dev;
->  	debugfs_init(ser, tty);
-> -	tty->receive_room = N_TTY_BUF_SIZE;
-> +	tty->receive_room = 4096;
->  	tty->disc_data = ser;
->  	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
->  	rtnl_lock();
-> -- 
-> 2.49.0
-> 
-> 
+diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+index ed3a589def6b..90ea3dc0fb10 100644
+--- a/drivers/net/caif/caif_serial.c
++++ b/drivers/net/caif/caif_serial.c
+@@ -126,15 +126,6 @@ static inline void debugfs_rx(struct ser_device *ser, const u8 *data, int size)
+ 	ser->rx_blob.data = ser->rx_data;
+ 	ser->rx_blob.size = size;
+ }
+-
+-static inline void debugfs_tx(struct ser_device *ser, const u8 *data, int size)
+-{
+-	if (size > sizeof(ser->tx_data))
+-		size = sizeof(ser->tx_data);
+-	memcpy(ser->tx_data, data, size);
+-	ser->tx_blob.data = ser->tx_data;
+-	ser->tx_blob.size = size;
+-}
+ #else
+ static inline void debugfs_init(struct ser_device *ser, struct tty_struct *tty)
+ {
+@@ -151,11 +142,6 @@ static inline void update_tty_status(struct ser_device *ser)
+ static inline void debugfs_rx(struct ser_device *ser, const u8 *data, int size)
+ {
+ }
+-
+-static inline void debugfs_tx(struct ser_device *ser, const u8 *data, int size)
+-{
+-}
+-
+ #endif
+ 
+ static void ldisc_receive(struct tty_struct *tty, const u8 *data,
+
