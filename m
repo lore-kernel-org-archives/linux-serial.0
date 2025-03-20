@@ -1,109 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B7E82528E2;
-	Wed, 19 Mar 2025 12:21:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29B2B27701;
+	Thu, 20 Mar 2025 11:17:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742386907; cv=none; b=QcM7z6P7QhUQ4dKf97O77xO46xcMK2JmAR2XhgHvnwoeR7q4QqpXDrUjRXTutF9AGHEj1s85iBXVlykx6Wbq8tg0doM3bmW2gyhcpkhR73V+jdfkMCyLQaNN/+jddmkNZXqTYXz8rQuCrAc7M9uhw3BfklMhZJmceLn6jC+HfB8=
+	t=1742469426; cv=none; b=qQZvRvZalFOmj24arciQZsq0dDa7o9Vgz36G9lXbevSB3r+ukQ9AUCHjPySapMBPO84pHs/jFre1z5hQSuU+aIEGrfwEWh26/oc2MAXD/HjDJKEhBCuhNqnQxPkVJcCSVrTqWBOYX2/46RfBLUvX+1BYcQpVAULIfyIg6SqXIgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742386907; c=relaxed/simple;
-	bh=JQXniEsEfztX8j6ooBAgw8s5V/yk+VanNbPf+6bCEt4=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=Jb4NkURxmbBpAJZqld5ttxkAlSr7QHd4c1KKRuSCroYHg3qNSkHk3lGCJ2087RmlZTXhU58+pdLscZfQ6uhHfGkl02sO0OOFD3iIlU0ekLn1eRShgEX3gSE67jzctCrZDMzDlMWGGurkOnKhT+OmhFP0nUA7lzoHGrn10TEu8Sg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IkCjWBe3; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1742469426; c=relaxed/simple;
+	bh=/7u+gDUcP5o2rJ8pXOfKWcA25Zzww9gy+RHc9UH0fxs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=a9HP9uzloWihw3DcGaFfyheNgEY4LSv3AAUVz1odi+v2YmJvTFoY6ptUZXY341qaT8NR6vA6T1qDojXLJORAl+va4q7ythW9RAMrYE06q4TF/q7e8eljDCL4BJoDLpetpuDSDaG+tH+qobWCaipVbIG5CSkahnGmyZleE0uA7ro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cYyj9p6g; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IkCjWBe3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1742386907; x=1773922907;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=JQXniEsEfztX8j6ooBAgw8s5V/yk+VanNbPf+6bCEt4=;
-  b=IkCjWBe3792G93aRG4B2+oRddR9m5afquHD7E1kDM9U3OPqCs7aJt7VO
-   os5ZNcBv2B726qwqsrRrVgwLxGjHamgHevJnDQ3KM+HdZfTqtfDRGNsvR
-   7o0LAvnkDgMG/CGrhyUAkNSOG+/SYyU7Aa9yGKSLnRVDkbSjnkJERgh0c
-   eZk2pDmM0hLPTRihXEGCVoM2MOXPdPsddS7yD0RfXBstcOZB797irVViG
-   ILtCy/U/QXDqEtezM1mKtK/33ZKCtMtQCwxPw1BGbxs48+WAp7DBJbCu/
-   D4Rf9bjV+cOmnwvAQS44vjppVhAFhUK0EyO+aBt+lgg58+E9EdUgsw0vC
-   g==;
-X-CSE-ConnectionGUID: Q4cZnDxQQE2o1C+1sd4UMg==
-X-CSE-MsgGUID: JNO0Us5KQqGk7U0tXNKRIg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11377"; a="53786659"
-X-IronPort-AV: E=Sophos;i="6.14,259,1736841600"; 
-   d="scan'208";a="53786659"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 05:21:46 -0700
-X-CSE-ConnectionGUID: kqE71n+dSXyrXrmgmXeazw==
-X-CSE-MsgGUID: U71Xncg0SdStD2XvBMNnCQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.14,259,1736841600"; 
-   d="scan'208";a="123092094"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.21])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2025 05:21:42 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 19 Mar 2025 14:21:39 +0200 (EET)
-To: John Keeping <jkeeping@inmusicbrands.com>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Wentao Guan <guanwentao@uniontech.com>, Jiri Slaby <jirislaby@kernel.org>, 
-    Ferry Toth <ftoth@exalondelft.nl>, 
-    =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH] serial: 8250_dma: terminate correct DMA in
- tx_dma_flush()
-In-Reply-To: <20250224121831.1429323-1-jkeeping@inmusicbrands.com>
-Message-ID: <c452c05a-b6ad-144a-2738-ba52d57e7eef@linux.intel.com>
-References: <20250224121831.1429323-1-jkeeping@inmusicbrands.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cYyj9p6g"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E27C4CEDD;
+	Thu, 20 Mar 2025 11:17:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1742469425;
+	bh=/7u+gDUcP5o2rJ8pXOfKWcA25Zzww9gy+RHc9UH0fxs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=cYyj9p6g/zjks6iCfVzP7tHULnFlR+z8bMqS9F9Pe7E0YR4AHw5a6tkVLOj0eIR9a
+	 wAl7LduM9Hm2hX2t0LKcHc9mT+95kUFupQ07vUs1ZW/fHczkO95AgVfiLGtCIWNyPM
+	 wmoPOvU1kMrZcUyeXD0ASyQkaUbSxLwuIuxLGKMZD0jPUSWm8xZEgiWmWqEv7L2HlK
+	 k0vCLJfKaeXIABIuf8NDg+4WHlIYeXKjPqCci70sSu4lsTtYlsSLfxEn0x7r6PqBgx
+	 jkRSDki1RktIvTlCCh9Hfpe6mRJ4wBGD+guKhwM+awGTBDGAQirdYtarQmBMkovzvF
+	 YMoMh0Fl3FPoQ==
+Date: Thu, 20 Mar 2025 11:17:01 +0000
+From: Simon Horman <horms@kernel.org>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+	Andrew Lunn <andrew+netdev@lunn.ch>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+	netdev@vger.kernel.org
+Subject: Re: [PATCH v2 03/31] tty: caif: do not use N_TTY_BUF_SIZE
+Message-ID: <20250320111701.GI280585@kernel.org>
+References: <20250317070046.24386-1-jirislaby@kernel.org>
+ <20250317070046.24386-4-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-601448847-1742386899=:10063"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250317070046.24386-4-jirislaby@kernel.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Mon, Mar 17, 2025 at 08:00:18AM +0100, Jiri Slaby (SUSE) wrote:
+> N_TTY_BUF_SIZE -- as the name suggests -- is the N_TTY's buffer size.
+> There is no reason to couple that to caif's tty->receive_room. Use 4096
+> directly -- even though, it should be some sort of "SKB_MAX_ALLOC" or
+> alike. But definitely not N_TTY_BUF_SIZE.
 
---8323328-601448847-1742386899=:10063
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Hi Jiri,
 
-On Mon, 24 Feb 2025, John Keeping wrote:
+My 2c worth is that 4096 seems like an arbitrary value.
+Which is fine, but perhaps a comment is warranted.
 
-> When flushing transmit side DMA, it is the transmit channel that should
-> be terminated, not the receive channel.
->=20
-> Fixes: 9e512eaaf8f40 ("serial: 8250: Fix fifo underflow on flush")
-> Reported-by: Wentao Guan <guanwentao@uniontech.com>
-> Signed-off-by: John Keeping <jkeeping@inmusicbrands.com>
+> 
+> N_TTY_BUF_SIZE is private and will be moved to n_tty.c later.
+> 
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Acked-by: Jakub Kicinski <kuba@kernel.org>
+> Cc: Andrew Lunn <andrew+netdev@lunn.ch>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: netdev@vger.kernel.org
 > ---
->  drivers/tty/serial/8250/8250_dma.c | 2 +-
+>  drivers/net/caif/caif_serial.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_dma.c b/drivers/tty/serial/8250=
-/8250_dma.c
-> index f245a84f4a508..bdd26c9f34bdf 100644
-> --- a/drivers/tty/serial/8250/8250_dma.c
-> +++ b/drivers/tty/serial/8250/8250_dma.c
-> @@ -162,7 +162,7 @@ void serial8250_tx_dma_flush(struct uart_8250_port *p=
-)
->  =09 */
->  =09dma->tx_size =3D 0;
-> =20
-> -=09dmaengine_terminate_async(dma->rxchan);
-> +=09dmaengine_terminate_async(dma->txchan);
->  }
-> =20
->  int serial8250_rx_dma(struct uart_8250_port *p)
->=20
-
-Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-
---=20
- i.
-
---8323328-601448847-1742386899=:10063--
+> 
+> diff --git a/drivers/net/caif/caif_serial.c b/drivers/net/caif/caif_serial.c
+> index ed3a589def6b..e7d1b9301fde 100644
+> --- a/drivers/net/caif/caif_serial.c
+> +++ b/drivers/net/caif/caif_serial.c
+> @@ -344,7 +344,7 @@ static int ldisc_open(struct tty_struct *tty)
+>  	ser->tty = tty_kref_get(tty);
+>  	ser->dev = dev;
+>  	debugfs_init(ser, tty);
+> -	tty->receive_room = N_TTY_BUF_SIZE;
+> +	tty->receive_room = 4096;
+>  	tty->disc_data = ser;
+>  	set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+>  	rtnl_lock();
+> -- 
+> 2.49.0
+> 
+> 
