@@ -1,99 +1,140 @@
-Received: from mx08-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD2671E47CC;
-	Thu, 20 Mar 2025 15:29:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.207.212.93
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D1331F7076
+	for <linux-serial@vger.kernel.org>; Thu, 20 Mar 2025 23:09:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742484597; cv=none; b=QL0fOWIXyrIipFYWTL/FO7WSSER0JwsEyK2IfzMvmOEddG/xzt6Mr3EIxejb2hYv0fFV1pwKMkBMLv+UTbPF+I3lBYqxKSXh+8ItKTyTx1IObIvZXsqXiIu+FvembzuBOpcZG/d94MV0I2W4YRVY2gb8jLI5ikS85e7DrA6+uuM=
+	t=1742512168; cv=none; b=MYA4N2uSVWRHlw65clPbZPVBFK3/dlFkfO6v/6ninoYplJ/QQQsH1Ma8/K7HecxBe+rthWQ2jYXuVMvy3arrngz/BDVDCkjGr/NtrxtSUlXBmBrBt58nqLi+FJ60CuY59htaiDBj8c45eELDSUYTJCOh9JLcsF1cCX+5SCJMUzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742484597; c=relaxed/simple;
-	bh=nhlsebc47vjyAXYRWdQscnBm/MLer3fNbBO3/NN6CEQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=l50ecAATCXCgvnqmJX26P1RQCQJe+xk9KL2VDNGjI2l+a0XvSw+Dk023CHuHCozK6Z/KbuOf27abzBlYIJSBFKKxdnA6820bIDLkCXc4rtsOWGlxj/jCnfczrt8QfWqLGSpoJyvX216GLKI+DGp4vfvciJ2/0SITG9ie1wu3iTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=qBSWxkQR; arc=none smtp.client-ip=91.207.212.93
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
+	s=arc-20240116; t=1742512168; c=relaxed/simple;
+	bh=rKZ/0GBEY72soB28V0yhs5liOwKSqYq4oTYpMCnZtGU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=FksmGZ3vL/S/19Oj7Agj/sEVo4/9LxIm7wrNXK/K5enuZ8MWpfrVZvEtgSQ4Z+fJTtQhRQmQT8uzByfLF7NVIqOzliKikjPRoq9ggqoAfaEW8CT9A4iuefYj94PXiqkakaasU0Nehjx5h194NukYGconSHF+F7a15F39G1D2+Rw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GUaLR5R6; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="qBSWxkQR"
-Received: from pps.filterd (m0369457.ppops.net [127.0.0.1])
-	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 52KEDdFE025715;
-	Thu, 20 Mar 2025 16:29:30 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=selector1; bh=N9t+AghIDu3YhdnKtuwb/m
-	1eiGg+UJ8M9f9LIHIvdYg=; b=qBSWxkQRxYg0v28ApSjg+eMdESIOTCLCqgoPg/
-	qUxjEA2xY9jPtKUpF7CM4yJSbxjyzDAA0/2Rl4nAeGVsi+kzLGmm3z/FVL7/IwjJ
-	8Yq5I00kcf2c5xGxSQsgYl/x8Gg6CucpPi/JkcJTqoKbGLPNN+1VqVyrZObBTOuA
-	+usEAhCY5yHqt0lK9aOaRLom94NLoszPhzXKhXtuaPGIA3FpiNW/MPNSlX2ldT6c
-	Rrd504BJ1vkTY53rsxrP5LkXtHMqswFJa6SdS75fCKckTTn2DJ1pQsvTcxpGPo+Q
-	DZm++goN/JSoTdj86vHuJ0NsgzFbw/JrBJB6xKy47sFaAVlg==
-Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
-	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 45fuc8pg4x-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 20 Mar 2025 16:29:30 +0100 (CET)
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id AE1F3400A7;
-	Thu, 20 Mar 2025 16:28:29 +0100 (CET)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3FCDD8140B1;
-	Thu, 20 Mar 2025 16:26:11 +0100 (CET)
-Received: from localhost (10.48.81.58) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Thu, 20 Mar
- 2025 16:26:10 +0100
-From: Cheick Traore <cheick.traore@foss.st.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>, Marek Vasut <marex@denx.de>
-CC: Cheick Traore <cheick.traore@foss.st.com>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH] serial: stm32: do not deassert RS485 RTS GPIO prematurely
-Date: Thu, 20 Mar 2025 16:25:40 +0100
-Message-ID: <20250320152540.709091-1-cheick.traore@foss.st.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GUaLR5R6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1742512167; x=1774048167;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rKZ/0GBEY72soB28V0yhs5liOwKSqYq4oTYpMCnZtGU=;
+  b=GUaLR5R6EgfpQj6wgrwpdwbfi1sIwT8wQtZi4nx70Rk5Jldl1LGos5d3
+   q68jEvS7M+vh2ydNzmh49MSgKsfviqzBOby2cXXiDD3338OF64GdGRfrl
+   UCUm5dgz6Jk/RXIPghlUZ6wqj9ghmSrZ7VVig480+RDgen79oYItia2JK
+   mat9JQzH8UBlCqVomF7gvyP5XNCBIEQlI+ttWAGVGAB+9APrDYfDXetA1
+   I7iR/1XdFifdt/sXfTBDmN8wp8C0N+tSNuHb1R5EULmjfl035RxnABMQe
+   ND5eESHWR206Rac/ilFEEQxrrDnhG+3gCeQh//iFB2PZYodE41mPt4LY+
+   w==;
+X-CSE-ConnectionGUID: +Qltcm3gRMaHwPNBKdcFOA==
+X-CSE-MsgGUID: uX7lk48fQRmvkBbAHbZJbg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11379"; a="43779644"
+X-IronPort-AV: E=Sophos;i="6.14,262,1736841600"; 
+   d="scan'208";a="43779644"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2025 16:09:26 -0700
+X-CSE-ConnectionGUID: 2dBgRgqySuC0z/FpndqpSg==
+X-CSE-MsgGUID: KV3FdsFfTXyJgtNjkrnXVg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,262,1736841600"; 
+   d="scan'208";a="123224106"
+Received: from lkp-server02.sh.intel.com (HELO e98e3655d6d2) ([10.239.97.151])
+  by fmviesa007.fm.intel.com with ESMTP; 20 Mar 2025 16:09:25 -0700
+Received: from kbuild by e98e3655d6d2 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tvP0s-0000rX-32;
+	Thu, 20 Mar 2025 23:09:22 +0000
+Date: Fri, 21 Mar 2025 07:09:07 +0800
+From: kernel test robot <lkp@intel.com>
+To: Sherry Sun <sherry.sun@nxp.com>
+Cc: oe-kbuild-all@lists.linux.dev, linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [tty:tty-testing 47/58] drivers/tty/serial/fsl_lpuart.c:642:29:
+ warning: unused variable 'sport'
+Message-ID: <202503210614.2qGlnbIq-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EQNCAS1NODE3.st.com (10.75.129.80) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1093,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-03-20_04,2025-03-20_01,2024-11-22_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-If stm32_usart_start_tx is called with an empty xmit buffer, RTS GPIO
-could be deasserted prematurely, as bytes in TX FIFO are still
-transmitting.
-So this patch remove rts disable when xmit buffer is empty.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+head:   2790ce23951f0c497810c44ad60a126a59c8d84c
+commit: 3cc16ae096f164ae0c6b98416c25a01db5f3a529 [47/58] tty: serial: fsl_lpuart: use port struct directly to simply code
+config: x86_64-buildonly-randconfig-003-20250321 (https://download.01.org/0day-ci/archive/20250321/202503210614.2qGlnbIq-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250321/202503210614.2qGlnbIq-lkp@intel.com/reproduce)
 
-Fixes: d7c76716169d ("serial: stm32: Use TC interrupt to deassert GPIO RTS in RS485 mode")
-Signed-off-by: Cheick Traore <cheick.traore@foss.st.com>
----
- drivers/tty/serial/stm32-usart.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202503210614.2qGlnbIq-lkp@intel.com/
 
-diff --git a/drivers/tty/serial/stm32-usart.c b/drivers/tty/serial/stm32-usart.c
-index 4c97965ec43b..ad06b760cfca 100644
---- a/drivers/tty/serial/stm32-usart.c
-+++ b/drivers/tty/serial/stm32-usart.c
-@@ -965,10 +965,8 @@ static void stm32_usart_start_tx(struct uart_port *port)
- {
- 	struct tty_port *tport = &port->state->port;
- 
--	if (kfifo_is_empty(&tport->xmit_fifo) && !port->x_char) {
--		stm32_usart_rs485_rts_disable(port);
-+	if (kfifo_is_empty(&tport->xmit_fifo) && !port->x_char)
- 		return;
--	}
- 
- 	stm32_usart_rs485_rts_enable(port);
- 
+All warnings (new ones prefixed by >>):
+
+   drivers/tty/serial/fsl_lpuart.c: In function 'lpuart_poll_init':
+>> drivers/tty/serial/fsl_lpuart.c:642:29: warning: unused variable 'sport' [-Wunused-variable]
+     642 |         struct lpuart_port *sport = container_of(port,
+         |                             ^~~~~
+   drivers/tty/serial/fsl_lpuart.c: In function 'lpuart32_poll_init':
+   drivers/tty/serial/fsl_lpuart.c:696:29: warning: unused variable 'sport' [-Wunused-variable]
+     696 |         struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+         |                             ^~~~~
+
+
+vim +/sport +642 drivers/tty/serial/fsl_lpuart.c
+
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  639  
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  640  static int lpuart_poll_init(struct uart_port *port)
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  641  {
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04 @642  	struct lpuart_port *sport = container_of(port,
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  643  					struct lpuart_port, port);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  644  	unsigned long flags;
+b6a8f6ab2c53e5 Sherry Sun    2025-03-12  645  	u8 temp;
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  646  
+3cc16ae096f164 Sherry Sun    2025-03-12  647  	port->fifosize = 0;
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  648  
+3cc16ae096f164 Sherry Sun    2025-03-12  649  	uart_port_lock_irqsave(port, &flags);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  650  	/* Disable Rx & Tx */
+3cc16ae096f164 Sherry Sun    2025-03-12  651  	writeb(0, port->membase + UARTCR2);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  652  
+3cc16ae096f164 Sherry Sun    2025-03-12  653  	temp = readb(port->membase + UARTPFIFO);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  654  	/* Enable Rx and Tx FIFO */
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  655  	writeb(temp | UARTPFIFO_RXFE | UARTPFIFO_TXFE,
+3cc16ae096f164 Sherry Sun    2025-03-12  656  			port->membase + UARTPFIFO);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  657  
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  658  	/* flush Tx and Rx FIFO */
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  659  	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
+3cc16ae096f164 Sherry Sun    2025-03-12  660  			port->membase + UARTCFIFO);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  661  
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  662  	/* explicitly clear RDRF */
+3cc16ae096f164 Sherry Sun    2025-03-12  663  	if (readb(port->membase + UARTSR1) & UARTSR1_RDRF) {
+3cc16ae096f164 Sherry Sun    2025-03-12  664  		readb(port->membase + UARTDR);
+3cc16ae096f164 Sherry Sun    2025-03-12  665  		writeb(UARTSFIFO_RXUF, port->membase + UARTSFIFO);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  666  	}
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  667  
+3cc16ae096f164 Sherry Sun    2025-03-12  668  	writeb(0, port->membase + UARTTWFIFO);
+3cc16ae096f164 Sherry Sun    2025-03-12  669  	writeb(1, port->membase + UARTRWFIFO);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  670  
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  671  	/* Enable Rx and Tx */
+3cc16ae096f164 Sherry Sun    2025-03-12  672  	writeb(UARTCR2_RE | UARTCR2_TE, port->membase + UARTCR2);
+3cc16ae096f164 Sherry Sun    2025-03-12  673  	uart_port_unlock_irqrestore(port, flags);
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  674  
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  675  	return 0;
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  676  }
+2a41bc2a2b0533 Nicolae Rosia 2016-10-04  677  
+
+:::::: The code at line 642 was first introduced by commit
+:::::: 2a41bc2a2b0533afca11335ed7e636c62623d7c6 tty: serial: fsl_lpuart: add polled console functions
+
+:::::: TO: Nicolae Rosia <nicolae_rosia@mentor.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
