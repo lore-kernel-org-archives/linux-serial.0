@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACC7522FE19;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B33922FF4D;
 	Fri, 21 Mar 2025 18:21:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742581293; cv=none; b=rPYgkItTQ22cCGFLoQFJZWPiabWmVcpIkPZbqhobLuEixx64gzmtb6axRLNXkGuxpI70LFO84M2hEp8GjBaIeefL+7mpci11bA0ouje/J8AwIJPBcF+w8qMbeO2GVzfqmDhVxW1wuoNOfUQd7QkgZaHIZOIplHKQsGFrCET1U10=
+	t=1742581293; cv=none; b=UQylimB6CZfTzdcx/VaSWkNvAhs+KJ0ithetx7KS0uCNjHEf94TfOKxvCOEixSKdf55Ji1OTPseWBKCzpZwRdkLu2Xqx6LVoKy+rciYmjpCJDtfEx7pAG+RGY/FFnJt6Svyn63jc1yzpS5Pqz3yIFckWC5ySS50JsuFQCC1npkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1742581293; c=relaxed/simple;
-	bh=w2DUIoPyngyX/6SZoDWhQE3sTJrL9S/LPtukMHudnw4=;
+	bh=fkjFFznByDQk57yAw7swZKyh1oSTDF5oWpguUFliF8Q=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=l7xNxbs0TJ2BTiaHfHVNCnuJNbUv2Fy2ZGtXPE25SVZeZg8DltzRM32N8UtjfXbNC97wvZLijhS740DPB9bjIWph5NkhApqU3En7pXh78TNObyhnEoWiY93bkHGCQDMPEGCpS9AuUyocATeoB4u1gzW5PR0SpbW/gOSHwLWqN+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y2ruMTJZ; arc=none smtp.client-ip=192.198.163.7
+	 MIME-Version; b=nkLi2iwY4+1Vxu02J5fJnV0gs0zZmK5/vD0rYaeCNCEzkDNnzykQcMcW2DAfJy4eZ5v78N9FxoVr+c/gQAUUmDUVyRcdj8v93KLUg9ul2fYTkTZnwdVKjPo531DH42fKIc9YJL4v/YxHS4tmxEKKemKhilcJB0wOgtvU27DBDAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YGxmoQYl; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y2ruMTJZ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YGxmoQYl"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1742581292; x=1774117292;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=w2DUIoPyngyX/6SZoDWhQE3sTJrL9S/LPtukMHudnw4=;
-  b=Y2ruMTJZDCvkalFUsS8NH/IO0DAkQnhHydKWPnwhwUxBVz8NNTL1xQ98
-   xC3JpNjicas8f1Jq/7yP3APOQFanB3MKlkB+ZBlKxL0nKv2PgfND1qX5m
-   24HTnnNzR3P3y3LzLh1tVvSHjskXqFO757j6Lv+LLHdxPK/OIEd4uj7aw
-   CE+gi0ycSoPC5TM/yvykZJFNlodn1Ej+f2+9S/dlZq/hCZDPsYGQKopej
-   mXxiM8zh0igJ1Pai0+BSMscd118YSYKFpzoWZzGhK75Rq3qsSrA3DOU8q
-   e0/6Z9RPg4RfaJGdEDLvV8FcFYKGB7y3t+U0XNVZhzrTT77cz/ZuZhJVj
+  bh=fkjFFznByDQk57yAw7swZKyh1oSTDF5oWpguUFliF8Q=;
+  b=YGxmoQYlSnU1Nqn/HSaMESeGGgwDLaYp1NlrE/uZhSMSofaw510BRk8h
+   7LsWCtQ18CwikUXKkr3PhkE//xBvjCVWieNiT0StKDXRgN+zP0tuK0ASy
+   bme4jMpjYR5wTqwC4E7MdBPKtq9EyNLTuEq7oxbwVjKXTvnMluly2YsPi
+   Dqxvyp/iysPfDBEFvRSUQJ+hI/yJa7un3QGW+QbFxG6X/nLMI9nFiI1GQ
+   FPM909cCuA7dP4vjsLsk7xV57ORW4yIBoZ+usK6662qtbSInnw1iP9FAP
+   B2jLGMT8FzrnyKiWrmFjuVpedbTQF4OypibV6X9E116vE8lHh3Ba2uaOI
    g==;
-X-CSE-ConnectionGUID: /bJnXnNSQ7WJEczFOwhERQ==
-X-CSE-MsgGUID: U8sb3A0dTs2gWx/KFjjjWg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11380"; a="69212015"
+X-CSE-ConnectionGUID: saiQK/H+SDCg9lFCP7laNw==
+X-CSE-MsgGUID: 7XTGZkJEQ62VTiIpLZxqsQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11380"; a="69212019"
 X-IronPort-AV: E=Sophos;i="6.14,265,1736841600"; 
-   d="scan'208";a="69212015"
+   d="scan'208";a="69212019"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
   by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2025 11:21:30 -0700
-X-CSE-ConnectionGUID: au3BhlRXQomwcJVkdC5igw==
-X-CSE-MsgGUID: uVf9PoQVQjuE7DAYDosxJA==
+X-CSE-ConnectionGUID: ozzziGvsQfK3iT6AWnwjxQ==
+X-CSE-MsgGUID: clLm38LWTUS8mKEJS4ahEg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.14,265,1736841600"; 
-   d="scan'208";a="124423524"
+   d="scan'208";a="124423525"
 Received: from black.fi.intel.com ([10.237.72.28])
   by orviesa008.jf.intel.com with ESMTP; 21 Mar 2025 11:21:29 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id EEBD2708; Fri, 21 Mar 2025 20:21:24 +0200 (EET)
+	id 0ACB1296; Fri, 21 Mar 2025 20:21:24 +0200 (EET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Chaitanya Vadrevu <chaitanya.vadrevu@emerson.com>,
@@ -52,9 +52,9 @@ To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-kernel@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
-Subject: [PATCH v1 6/7] serial: 8250_ni: Switch to use dev_err_probe()
-Date: Fri, 21 Mar 2025 20:20:17 +0200
-Message-ID: <20250321182119.454507-7-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 7/7] serial: 8250_ni: Tidy up ACPI ID table
+Date: Fri, 21 Mar 2025 20:20:18 +0200
+Message-ID: <20250321182119.454507-8-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.47.2
 In-Reply-To: <20250321182119.454507-1-andriy.shevchenko@linux.intel.com>
 References: <20250321182119.454507-1-andriy.shevchenko@linux.intel.com>
@@ -66,48 +66,88 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Switch to use dev_err_probe() to simplify the error path and
-unify a message template.
+Tidy up ACPI ID table:
+- drop ACPI_PTR() and hence replace acpi.h with mod_devicetable.h et al.
+- drop comma in the terminator entry
+
+With that done, extend compile test coverage.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/tty/serial/8250/8250_ni.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/tty/serial/8250/8250_ni.c | 15 +++++++++------
+ drivers/tty/serial/8250/Kconfig   |  2 +-
+ 2 files changed, 10 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_ni.c b/drivers/tty/serial/8250/8250_ni.c
-index 15bee1b7dc2a..c66bfc56838e 100644
+index c66bfc56838e..b0e44fb00b3a 100644
 --- a/drivers/tty/serial/8250/8250_ni.c
 +++ b/drivers/tty/serial/8250/8250_ni.c
-@@ -333,11 +333,8 @@ static int ni16550_probe(struct platform_device *pdev)
- 			uart.port.uartclk = clk_get_rate(data->clk);
- 	}
+@@ -10,14 +10,18 @@
+  * Copyright 2012-2023 National Instruments Corporation
+  */
  
--	if (!uart.port.uartclk) {
--		dev_err(dev, "unable to determine clock frequency!\n");
--		ret = -ENODEV;
--		goto err;
--	}
-+	if (!uart.port.uartclk)
-+		return dev_err_probe(dev, -ENODEV, "unable to determine clock frequency!\n");
+-#include <linux/acpi.h>
+ #include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/clk.h>
+ #include <linux/device.h>
+ #include <linux/io.h>
+ #include <linux/init.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
++#include <linux/platform_device.h>
+ #include <linux/property.h>
+-#include <linux/clk.h>
++#include <linux/serial_core.h>
++#include <linux/types.h>
  
- 	prescaler = info->prescaler;
- 	device_property_read_u32(dev, "clock-prescaler", &prescaler);
-@@ -381,14 +378,11 @@ static int ni16550_probe(struct platform_device *pdev)
+ #include "8250.h"
  
- 	ret = serial8250_register_8250_port(&uart);
- 	if (ret < 0)
--		goto err;
-+		return ret;
- 	data->line = ret;
- 
- 	platform_set_drvdata(pdev, data);
- 	return 0;
--
--err:
--	return ret;
+@@ -392,7 +396,6 @@ static void ni16550_remove(struct platform_device *pdev)
+ 	serial8250_unregister_port(data->line);
  }
  
- static void ni16550_remove(struct platform_device *pdev)
+-#ifdef CONFIG_ACPI
+ /* NI 16550 RS-485 Interface */
+ static const struct ni16550_device_info nic7750 = {
+ 	.uartclk = 33333333,
+@@ -417,20 +420,20 @@ static const struct ni16550_device_info nic7a69 = {
+ 	.uartclk = 29629629,
+ 	.prescaler = 0x09,
+ };
++
+ static const struct acpi_device_id ni16550_acpi_match[] = {
+ 	{ "NIC7750",	(kernel_ulong_t)&nic7750 },
+ 	{ "NIC7772",	(kernel_ulong_t)&nic7772 },
+ 	{ "NIC792B",	(kernel_ulong_t)&nic792b },
+ 	{ "NIC7A69",	(kernel_ulong_t)&nic7a69 },
+-	{ },
++	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, ni16550_acpi_match);
+-#endif
+ 
+ static struct platform_driver ni16550_driver = {
+ 	.driver = {
+ 		.name = "ni16550",
+-		.acpi_match_table = ACPI_PTR(ni16550_acpi_match),
++		.acpi_match_table = ni16550_acpi_match,
+ 	},
+ 	.probe = ni16550_probe,
+ 	.remove = ni16550_remove,
+diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
+index 9be9760886dc..63fedac1bbae 100644
+--- a/drivers/tty/serial/8250/Kconfig
++++ b/drivers/tty/serial/8250/Kconfig
+@@ -565,7 +565,7 @@ config SERIAL_8250_BCM7271
+ config SERIAL_8250_NI
+ 	tristate "NI 16550 based serial port"
+ 	depends on SERIAL_8250
+-	depends on (X86 && ACPI) || COMPILE_TEST
++	depends on X86 || COMPILE_TEST
+ 	help
+ 	  This driver supports the integrated serial ports on National
+ 	  Instruments (NI) controller hardware. This is required for all NI
 -- 
 2.47.2
 
