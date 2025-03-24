@@ -1,289 +1,172 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2061.outbound.protection.outlook.com [40.107.241.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC0CDBA53;
-	Sun, 23 Mar 2025 22:45:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742769903; cv=none; b=EXQx/mtzicbN0ZghknNutBiLy8FVlBmTE/XEVT5137UaZKQ1fRH3GjNNGzJ7VNlHe1Alnh2cDj6VxeARYkpzZTWq9G5W5340NZrvs3GGb1J8M01KFdprSVuMTPS3lIcErqnyeuNBM0qcmFzG33xFPH0kceBFvHWHVBU067+YINI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742769903; c=relaxed/simple;
-	bh=xCqn5FiTDlk8VfRuuwEImn8dGmxcyVuO1Zhr3g0tNGI=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=e8wi+EwgAHPs2NSVtg4tAi5ws9ZdNv8lBxzcWwLmIhZvrgeV7swU95Crq5nj2CZBXbJ2HlM5LHHiOisvl2cHT9OANsW9yjTPML+7qqtTRkJSx+fBx6nDScLx9uWx6NFe1Tfl/sZI3m2OqFNE075ZPuE/lH08SpcCFjShtL3Pwdc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=gpzvbk1/; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B490E481C4;
+	Mon, 24 Mar 2025 02:10:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.241.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742782241; cv=fail; b=l/PrXdSLktYSqNqhgpbjFp4z6VF2kkQ0NIuc1G4I5THlnvM2ESMyr2JDTHZ2e0FBJgj/6sZaJEnNiYex5xXL2rk8LxfpVkQ08tl0Q8iU/IzSzpsDbguYwPRTX0DGOKNIButdUf9AiCS837R6qgwsPS9kaIqj5OxFrXMOcLtK71U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742782241; c=relaxed/simple;
+	bh=gPlYSh9Qk64eBKwnkA8qIYyJ5KhC97tyg+sdu+wkuNk=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=u2qItu9/nZY7eJMyC1D83Qlk2HhMPe8GVFtaRAySP2jwmp067aztGvcSj91/GFhCcf7Gse4cz2Cvbk4JNDTJOiImhwK47NBYkiL8iV2ywZ/8hGgmRn/+1tqN4APQpk6ySWunQancyMDLSpYuqvrX9IVPil2aatPo6yNcQH8ZKeQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=H5iLyCqo; arc=fail smtp.client-ip=40.107.241.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="gpzvbk1/"
-Received: from [127.0.0.1] ([76.133.66.138])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 52NMeKdo3968387
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Sun, 23 Mar 2025 15:40:20 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 52NMeKdo3968387
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025032001; t=1742769629;
-	bh=jX8qvOcg5sHOYMzS8O1ZeFoLDzr4b9fAXnawD1sDsAQ=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=gpzvbk1/xbueYaRDkNUQItniaCPabNWQpBYkbzyWYtmr70CkFDr1QjiA+EEsvKZvw
-	 x+NlI2wYpRq9XIxDM3W6qyI4muMLrm74m6hk9SQZhj6u/678GeAxC2aHNwRAd8Fz02
-	 eaUD2juyAsarROcyXcOXSBJeY7WSazHhunwmvS0uaYtHesKXlr5cVrOSTOXia+d9ur
-	 x0GW78E2/YRSCfLq+CgCW5Ss3gdvaEyZxBcb+3QJlbHUizJ8HRUBm+f0VKsMTTNTOb
-	 biBm8UgyfdkV3Cldwh9ks4o9ztz33Hpie/nEjLEaxfg2nLmHMgLWNzA/75tuDFoxiX
-	 JvvTdqoR1VRZA==
-Date: Sun, 23 Mar 2025 15:40:20 -0700
-From: "H. Peter Anvin" <hpa@zytor.com>
-To: Kuan-Wei Chiu <visitorckw@gmail.com>, Yury Norov <yury.norov@gmail.com>
-CC: David Laight <david.laight.linux@gmail.com>,
-        Andrew Cooper <andrew.cooper3@citrix.com>,
-        Laurent.pinchart@ideasonboard.com, airlied@gmail.com,
-        akpm@linux-foundation.org, alistair@popple.id.au,
-        andrew+netdev@lunn.ch, andrzej.hajda@intel.com,
-        arend.vanspriel@broadcom.com, awalls@md.metrocast.net, bp@alien8.de,
-        bpf@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211@lists.linux.dev, dave.hansen@linux.intel.com,
-        davem@davemloft.net, dmitry.torokhov@gmail.com,
-        dri-devel@lists.freedesktop.org, eajames@linux.ibm.com,
-        edumazet@google.com, eleanor15x@gmail.com, gregkh@linuxfoundation.org,
-        hverkuil@xs4all.nl, jernej.skrabec@gmail.com, jirislaby@kernel.org,
-        jk@ozlabs.org, joel@jms.id.au, johannes@sipsolutions.net,
-        jonas@kwiboo.se, jserv@ccns.ncku.edu.tw, kuba@kernel.org,
-        linux-fsi@lists.ozlabs.org, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux@rasmusvillemoes.dk,
-        louis.peens@corigine.com, maarten.lankhorst@linux.intel.com,
-        mchehab@kernel.org, mingo@redhat.com, miquel.raynal@bootlin.com,
-        mripard@kernel.org, neil.armstrong@linaro.org, netdev@vger.kernel.org,
-        oss-drivers@corigine.com, pabeni@redhat.com,
-        parthiban.veerasooran@microchip.com, rfoss@kernel.org, richard@nod.at,
-        simona@ffwll.ch, tglx@linutronix.de, tzimmermann@suse.de,
-        vigneshr@ti.com, x86@kernel.org
-Subject: Re: [PATCH v3 00/16] Introduce and use generic parity16/32/64 helper
-User-Agent: K-9 Mail for Android
-In-Reply-To: <Z+AlyB461xwMxMtG@visitorckw-System-Product-Name>
-References: <efc2ee9d-5382-457f-b471-f3c44b81a190@citrix.com> <5A790652-1B22-4D13-AAC5-5D9931E90903@zytor.com> <20250307195310.58abff8c@pumpkin> <EB85C3C1-8A0D-4CB9-B501-BFEABDF3E977@zytor.com> <Z824SgB9Dt5zdWYc@visitorckw-System-Product-Name> <Z9CyuowYsZyez36c@thinkpad> <80771542-476C-493E-858A-D2AF6A355CC1@zytor.com> <Z9GtcNJie8TRKywZ@thinkpad> <Z9G2Tyypb3iLoBjn@visitorckw-System-Product-Name> <Z9KMKwnZXA2mkD2s@visitorckw-System-Product-Name> <Z+AlyB461xwMxMtG@visitorckw-System-Product-Name>
-Message-ID: <05F7AC70-E8E7-4D14-A4EB-880D92A96534@zytor.com>
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="H5iLyCqo"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xwdeaxSdua9LhpS91b2QLcZlKE2RavCqn02zjIuiS17XtOw0seswdGKhhiuF4rpq0Hkjdqa9wqySkmSpID2sKZ0WSJjxXTcmM5c0SjY6E+4iZV70WAHaaBMByYHpr52GaVTo5lSKgQWwmeLIryrbUvedSzRjXAUYXZp3ifiNkC/etL4B5Z3917H24ckJF6Dmg9c65glimw2ZfFoKps4TBlDSst9gzulBUCoDjQVV6PoaXTToOOGOXET4/x7HVuDHamSfK5MngRKThumPIsMNsdB4Q8uBXRNP3PJTMCC9y6tvRKX+ODNxt+9wagWYHfx/2gDOto+P67lEReoTJHwBhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9awYSsp1OcS+FqeAy8JBkrIuuSBzMPPvD8ygkce//XU=;
+ b=F9E1drvWYcCCxvm0OZMJ8tuoV72ox9NIggzvvI1t/k7ljj7K8eEg3xsi6Onp2zaRJmYtVKVHGPZu6KeNNXZfih7BKpw68EnPOcIif1kgA8ekWR2z/Pzh3hwsUp1zMQVdJ5e3dldw+0qVY7fxxLn6ViddklnrFXue8wLXE1wu/hIao4JLjX4U548g15t0D+1Dn1z+0LQqHcXrqNsFngC7G8rcge+JUXdLZFvg6BcbBW4pCU9An06LmWGTRZF4QrA/SRSgzX10rAzPn+9dL1roLFn1QFE55ZP8pXSuLruc44xAxVwHhmFbbH7aQNPxbdNGHWrzvpHV6conquPoNwbuSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9awYSsp1OcS+FqeAy8JBkrIuuSBzMPPvD8ygkce//XU=;
+ b=H5iLyCqovMvdhxKrviyes/9KlKmPMVFeBi+q+j9wW0BdeLOAj0oDiWk0VAZQ5T2Av7hRjAswKnxQ+oylKVB6oauPPIEjLpxPfEZUjHz9abDqqB1pd2rla1aLubRGgmgnYKeKWmL+Po/k3ePiacO//9I4jW2dmTkHpVCOfIeSfdVpR+lINes1Pu03KeNQ0Of3qzDI136jUlFeus1lbLkDS+S7Bc9gJo8Ru7rpRAtQIHEnSbZNj0C30z1fLNdur218+UP3gIYGg6K9+OJj2kSNcRAvFCL3327tACfFytqy7M07rE247UohU6LDyb1vfRq1EOwRY6TdFRkGDs9/+NkMAg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8429.eurprd04.prod.outlook.com (2603:10a6:10:242::19)
+ by DU4PR04MB10813.eurprd04.prod.outlook.com (2603:10a6:10:586::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.42; Mon, 24 Mar
+ 2025 02:10:37 +0000
+Received: from DB9PR04MB8429.eurprd04.prod.outlook.com
+ ([fe80::2edf:edc4:794f:4e37]) by DB9PR04MB8429.eurprd04.prod.outlook.com
+ ([fe80::2edf:edc4:794f:4e37%6]) with mapi id 15.20.8534.034; Mon, 24 Mar 2025
+ 02:10:37 +0000
+From: Sherry Sun <sherry.sun@nxp.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	imx@lists.linux.dev
+Subject: [PATCH] tty: serial: fsl_lpuart: Fix unused variable 'sport' build warning
+Date: Mon, 24 Mar 2025 10:10:51 +0800
+Message-Id: <20250324021051.162676-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG3P274CA0011.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::23)
+ To DB9PR04MB8429.eurprd04.prod.outlook.com (2603:10a6:10:242::19)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DB9PR04MB8429:EE_|DU4PR04MB10813:EE_
+X-MS-Office365-Filtering-Correlation-Id: 98b1a1ee-c47a-426c-c769-08dd6a791105
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|52116014|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?9yeOF0lB6F+8pwBZdQZi1OCwQIRBGuOTJ9CjI0kBpsHAEXJ2jLxKfKlOJMBF?=
+ =?us-ascii?Q?FNEbkYy8jX0Hpw9895ASOGKJG1K79q3X9k/MOpV9v1Yr6bjkIXWDQuMzOH+X?=
+ =?us-ascii?Q?qtUDrBR3VNlmY5NMUL9/x638wRYbCrymdX2ADgiXi1/rdevhIVlmnQldCwYc?=
+ =?us-ascii?Q?6o2fPohun87i+b0aenYl2c2UXF+dQL7TqohU1mbnMN8ztcGclYwqT2JXwBzL?=
+ =?us-ascii?Q?9JgV7NW/IX9S0sFb/b2yG3uaeJNYEgs0Fyrvy8mzJ9YmSzR0H7nicx1xEJ14?=
+ =?us-ascii?Q?q3ikfkkaSINltnLRi7hjQF8EvLPeE+B/Mtv9VnfYKX34GMVqIH16nPCKCJx2?=
+ =?us-ascii?Q?Pfh2ppaQKUjNGxFsQF2+HXBo8fv//AMMERyS/+mnk4NpmGWhhj+saANUFeZD?=
+ =?us-ascii?Q?TSX3uDrYBbTjBe2S2SCB+aHBptcsD423/jIEueSZf8Kj+wmmwg8qkgbAiQCX?=
+ =?us-ascii?Q?WyvzzPNAHWZCZnbryN5xzu4XkDcllqy9KwOdfGQN/j59GxdHkSLWB2tDdAOI?=
+ =?us-ascii?Q?RhyPv5M1wLbdCbvl+Vy2I/7+WAnFwH4zEh0fAPyV4PVLGNoxAHBncUfNz5Zs?=
+ =?us-ascii?Q?AZJHNkpZ/o57k9F3rprsH/Vud9ezsXX7O6/AzbZsVf06tU87bio9FJibrK02?=
+ =?us-ascii?Q?YgTZRojuw1w3ueDHLXJZ6q2C9a+pGLKmurcgYfDrywnxZ0JPbnBeMltu1sTK?=
+ =?us-ascii?Q?itGfBuuZANPIQNHXhFCVvempQXqZARy39d9zTWhQ9ECuvtTp3e3FVqEr9biT?=
+ =?us-ascii?Q?lXm1sEsTdj4OhtdacxHy/k9+Lu3nCaDxPfk+BKS0kLRZdcsBICxWRoBdft3Y?=
+ =?us-ascii?Q?9r1RlYz7milk0tkPLmLvz/0MzQedsWJosnnk+/pVLq2VJXHRybU5OGBqRW3k?=
+ =?us-ascii?Q?UcuhyqQu3pFDoymKXWa8HAw2SGGY8+BFXpYkt6rLEKyH6lNoC4t0wgvpjjjH?=
+ =?us-ascii?Q?eBz2Bur14sTSosgjw9oIZWH/OABcXC7YunUDJHMo/nOo76fuXIwWVZT5q0jD?=
+ =?us-ascii?Q?s1tkAQjQbqeL079FviuEvw4AbxOi7n6iEkrl9TP5AL4RMxv4/NSDUptanA6N?=
+ =?us-ascii?Q?+Fj7Wt+Gixp5UX3bSmsh/lN44RWlBZ/JK/ZzmlN49soGnG0L3h8CfbUQoxXS?=
+ =?us-ascii?Q?VHsKZf5Tj+rFx6n6PS/AsarvlEvDnKxeTC7951nJcFQix0Joo7XXhT5AW3At?=
+ =?us-ascii?Q?uTCV9eGHqgewpaDd6KuPdGKCdaRs/sm5645W6Lan+3746kp3kuEXYY5qvibU?=
+ =?us-ascii?Q?5KLvR/a9JVQaZaxcO35fxUiHxBYeAcZJBjYSfW+6EuPH8xh1A0YbmVHaEhRh?=
+ =?us-ascii?Q?UTJPMJAebX9x0Ndzpfl2WB+np9fKq/2MF/OrprDaAcCv23bDNTz3qKhyewsI?=
+ =?us-ascii?Q?58b4opQAS/F3M1KWx0V+s/z7yIOZOayGX/XW+/agVlTB2QhDfc1FcXKjiyaP?=
+ =?us-ascii?Q?2t8WGJJIHPIOoYnmYvSt2lGFo1P24nL7?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8429.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(52116014)(38350700014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Ec9Qjnh6ZZoTPkYr9QcQ7VHu/ULVBgP2x8o3KdUFVXCRP5M4yUV2T+6UyGU3?=
+ =?us-ascii?Q?L0Yz0uXvNWaiThtfvc9BiguDkbqIUyCioD4opJsNU1Wvv4nw0xvoHf+gzV8u?=
+ =?us-ascii?Q?tbI3Gebab5RxYrPUxfMK5QDut1oG1lHoPf73DkAD4zTv/DU83VQ9M8VeSh5E?=
+ =?us-ascii?Q?M90en1V/TX4kgjwQbGQolqr6YK2CJXeiAH/0gAbU9KIIrREr9ukXQkqJ5bdG?=
+ =?us-ascii?Q?3KIx1S1Pys2cnhjvmAByku9lQXI5MUWt8VGDOr9//lvjmFiFLF3ZEFX1cXqU?=
+ =?us-ascii?Q?aakvRubcGzJIl6JXkUbskP+GQUc7zpC6B/EH6nP0OMwK7Xco/+6QEQqu4RAP?=
+ =?us-ascii?Q?LtS6FyAhUfzbh+B1+CyUEYdBciZin8bz4u8pvXeXGmGB7Z+dlmnw3IfXgfEu?=
+ =?us-ascii?Q?RAJyAFboMYroSBztAKxjYK/U8cjx+KKFV8T4FkAdmsr/BowefIztYc7mgqnT?=
+ =?us-ascii?Q?hEDny5ETdw6LElaQk4yu6O8BrSqorU0pKE4LJU5vhx5G3S6qO1SPwsx49Wtq?=
+ =?us-ascii?Q?2w3S+Fn1zS3Ul2ADnssPiAs7DAp37Z3XS4irvQc7BemJt1vDvZDF66h6YFhD?=
+ =?us-ascii?Q?9AXTdX0eWxq+tsYgIHcF5Ygjo6GkyH9pgQ9NN85N0hpIkwBw7soD5g7SEKIP?=
+ =?us-ascii?Q?bXwxPT3d4M3Px6xQLiF3R81GL8pISDFv1LuB2axqnBJ+TgGrWXVq82ui4Xx+?=
+ =?us-ascii?Q?xKIPwdOeyT4EPKGMfQ8A+hP/F8S9PY/23QmY6w005rrlLYUOCCsQOUWCDSp+?=
+ =?us-ascii?Q?poTTWtKrCxj6j4R3CczyO5x+fl5751/imFrnBnIERPNnw/lE6wtZVLJGf/0u?=
+ =?us-ascii?Q?pyp3mLa2Ei9+vbnUW6UQMN3SvAlQ+J9aIu8+IHti3wQTb28U2/IvrqUkKdgW?=
+ =?us-ascii?Q?b3hVzauYu88Iz0uvyDcwLJNwpHMciwRV3Cy6aPs7VXqzDRXJ9BwBFJI84nL2?=
+ =?us-ascii?Q?UxV7YirZ0MloftIFWV/Sy8wPQrDr6AIFbcB6nlBm2KD3TcH5Rfg1QccVIUG4?=
+ =?us-ascii?Q?MxDbbNt+7l6AVEsiB1oeFGjyRp5uLJCPzHwbcWbnME9fyfKmGvrKjP7wVIrl?=
+ =?us-ascii?Q?wnsHNlmjaHt8U2UQvebrLI1hcoh222vYJWE7DJfLFyi6ArRp8Pu6m3/Ctabp?=
+ =?us-ascii?Q?wV8HK2M/pYS5rVceeNFmmJ+nNunw+BCaDYWiuDiLMfwXlKcE41BhKt+68CVK?=
+ =?us-ascii?Q?usThC2GMlNZpvlyjOC45teOY86eDpkAbM+J1cyC4uXTIqH0YQoArHC1l3oZ6?=
+ =?us-ascii?Q?qGPDJZgoylzBSPVAl2G9UWHoY+UXvXbYPKF4CbIn3UdMCG6AuuCAuXyRydFy?=
+ =?us-ascii?Q?A5cApQDvBD2KL+NcIUG0QF3sx9LOBQ9fZcZpobmLbbfv41Zbu8Njg3djDxAS?=
+ =?us-ascii?Q?WLjk6WA5GnEgGWOI/Xle0huTYQ62EK9q2epmTLvBjoAnpVJ1+le5AyC1+MlT?=
+ =?us-ascii?Q?eDLYewc1Mr6xG/R36fTgcp/AKxOQtWpom5dbvtDwOa4LUMwBgOErH4/CEKKz?=
+ =?us-ascii?Q?EBIgP3xVa99jp1febufdZ5zz3yA954i1xT3u8qdl2o/FkDSJ3g/K0zkFp8cO?=
+ =?us-ascii?Q?KDxhVD6TGuHtE03vSaoqkdw9oTjnpf9jIYScWsQ0?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 98b1a1ee-c47a-426c-c769-08dd6a791105
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8429.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2025 02:10:36.9051
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: j+EHkwTqX7DdhUB8YJVHemZbdJlybf3gLRZ9IlZEEL9BfM5v8Sp4A+fZpATn1n+MylYVx9WSs81R6Ra2WAkHrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR04MB10813
 
-On March 23, 2025 8:16:24 AM PDT, Kuan-Wei Chiu <visitorckw@gmail=2Ecom> wr=
-ote:
->On Thu, Mar 13, 2025 at 03:41:49PM +0800, Kuan-Wei Chiu wrote:
->> On Thu, Mar 13, 2025 at 12:29:13AM +0800, Kuan-Wei Chiu wrote:
->> > On Wed, Mar 12, 2025 at 11:51:12AM -0400, Yury Norov wrote:
->> > > On Tue, Mar 11, 2025 at 03:24:14PM -0700, H=2E Peter Anvin wrote:
->> > > > On March 11, 2025 3:01:30 PM PDT, Yury Norov <yury=2Enorov@gmail=
-=2Ecom> wrote:
->> > > > >On Sun, Mar 09, 2025 at 11:48:26PM +0800, Kuan-Wei Chiu wrote:
->> > > > >> On Fri, Mar 07, 2025 at 12:07:02PM -0800, H=2E Peter Anvin wro=
-te:
->> > > > >> > On March 7, 2025 11:53:10 AM PST, David Laight <david=2Elaig=
-ht=2Elinux@gmail=2Ecom> wrote:
->> > > > >> > >On Fri, 07 Mar 2025 11:30:35 -0800
->> > > > >> > >"H=2E Peter Anvin" <hpa@zytor=2Ecom> wrote:
->> > > > >> > >
->> > > > >> > >> On March 7, 2025 10:49:56 AM PST, Andrew Cooper <andrew=
-=2Ecooper3@citrix=2Ecom> wrote:
->> > > > >> > >> >> (int)true most definitely is guaranteed to be 1=2E =20
->> > > > >> > >> >
->> > > > >> > >> >That's not technically correct any more=2E
->> > > > >> > >> >
->> > > > >> > >> >GCC has introduced hardened bools that intentionally hav=
-e bit patterns
->> > > > >> > >> >other than 0 and 1=2E
->> > > > >> > >> >
->> > > > >> > >> >https://gcc=2Egnu=2Eorg/gcc-14/changes=2Ehtml
->> > > > >> > >> >
->> > > > >> > >> >~Andrew =20
->> > > > >> > >>=20
->> > > > >> > >> Bit patterns in memory maybe (not that I can see the Linu=
-x kernel using them) but
->> > > > >> > >> for compiler-generated conversations that's still a given=
-, or the manager isn't C
->> > > > >> > >> or anything even remotely like it=2E
->> > > > >> > >>=20
->> > > > >> > >
->> > > > >> > >The whole idea of 'bool' is pretty much broken by design=2E
->> > > > >> > >The underlying problem is that values other than 'true' and=
- 'false' can
->> > > > >> > >always get into 'bool' variables=2E
->> > > > >> > >
->> > > > >> > >Once that has happened it is all fubar=2E
->> > > > >> > >
->> > > > >> > >Trying to sanitise a value with (say):
->> > > > >> > >int f(bool v)
->> > > > >> > >{
->> > > > >> > >	return (int)v & 1;
->> > > > >> > >}   =20
->> > > > >> > >just doesn't work (see https://www=2Egodbolt=2Eorg/z/MEndP3=
-q9j)
->> > > > >> > >
->> > > > >> > >I really don't see how using (say) 0xaa and 0x55 helps=2E
->> > > > >> > >What happens if the value is wrong? a trap or exception?, g=
-ood luck recovering
->> > > > >> > >from that=2E
->> > > > >> > >
->> > > > >> > >	David
->> > > > >> >=20
->> > > > >> > Did you just discover GIGO?
->> > > > >>=20
->> > > > >> Thanks for all the suggestions=2E
->> > > > >>=20
->> > > > >> I don't have a strong opinion on the naming or return type=2E =
-I'm still a
->> > > > >> bit confused about whether I can assume that casting bool to i=
-nt always
->> > > > >> results in 0 or 1=2E
->> > > > >>=20
->> > > > >> If that's the case, since most people prefer bool over int as =
-the
->> > > > >> return type and some are against introducing u1, my current pl=
-an is to
->> > > > >> use the following in the next version:
->> > > > >>=20
->> > > > >> bool parity_odd(u64 val);
->> > > > >>=20
->> > > > >> This keeps the bool return type, renames the function for bett=
-er
->> > > > >> clarity, and avoids extra maintenance burden by having just on=
-e
->> > > > >> function=2E
->> > > > >>=20
->> > > > >> If I can't assume that casting bool to int always results in 0=
- or 1,
->> > > > >> would it be acceptable to keep the return type as int?
->> > > > >>=20
->> > > > >> Would this work for everyone?
->> > > > >
->> > > > >Alright, it's clearly a split opinion=2E So what I would do myse=
-lf in
->> > > > >such case is to look at existing code and see what people who re=
-ally
->> > > > >need parity invent in their drivers:
->> > > > >
->> > > > >                                     bool      parity_odd
->> > > > >static inline int parity8(u8 val)       -               -
->> > > > >static u8 calc_parity(u8 val)           -               -
->> > > > >static int odd_parity(u8 c)             -               +
->> > > > >static int saa711x_odd_parity           -               +
->> > > > >static int max3100_do_parity            -               -
->> > > > >static inline int parity(unsigned x)    -               -
->> > > > >static int bit_parity(u32 pkt)          -               -
->> > > > >static int oa_tc6_get_parity(u32 p)     -               -
->> > > > >static u32 parity32(__le32 data)        -               -
->> > > > >static u32 parity(u32 sample)           -               -
->> > > > >static int get_parity(int number,       -               -
->> > > > >                      int size)
->> > > > >static bool i2cr_check_parity32(u32 v,  +               -
->> > > > >                        bool parity)
->> > > > >static bool i2cr_check_parity64(u64 v)  +               -
->> > > > >static int sw_parity(__u64 t)           -               -
->> > > > >static bool parity(u64 value)           +               -
->> > > > >
->> > > > >Now you can refer to that table say that int parity(uXX) is what
->> > > > >people want to see in their drivers=2E
->> > > > >
->> > > > >Whichever interface you choose, please discuss it's pros and con=
-s=2E
->> > > > >What bloat-o-meter says for each option? What's maintenance burd=
-en?
->> > > > >Perf test? Look at generated code?
->> > > > >
->> > > > >I personally for a macro returning boolean, something like I
->> > > > >proposed at the very beginning=2E
->> > > > >
->> > > > >Thanks,
->> > > > >Yury
->> > > >=20
->> > > > Also, please at least provide a way for an arch to opt in to usin=
-g the builtins, which seem to produce as good results or better at least on=
- some architectures like x86 and probably with CPU options that imply fast =
-popcnt is available=2E
->> > >=20
->> > > Yeah=2E And because linux/bitops=2Eh already includes asm/bitops=2E=
-h
->> > > the simplest way would be wrapping generic implementation with
->> > > the #ifndef parity, similarly to how we handle find_next_bit case=
-=2E
->> > >=20
->> > > So:
->> > > 1=2E Kuan-Wei, please don't invent something like ARCH_HAS_PARITY;
->> > > 2=2E This may, and probably should, be a separate follow-up series,
->> > >    likely created by corresponding arch experts=2E
->> > >=20
->> > I saw discussions in the previous email thread about both
->> > __builtin_parity and x86-specific implementations=2E However, from th=
-e
->> > discussion, I learned that before considering any optimization, we
->> > should first ask: which driver or subsystem actually cares about pari=
-ty
->> > efficiency? If someone does, I can help with a micro-benchmark to
->> > provide performance numbers, but I don't have enough domain knowledge
->> > to identify hot paths where parity efficiency matters=2E
->> >=20
->> IMHO,
->>=20
->> If parity is never used in any hot path and we don't care about parity:
->>=20
->> Then benchmarking its performance seems meaningless=2E In this case, a
->> function with a u64 argument would suffice, and we might not even need
->> a macro to optimize for different types=E2=80=94especially since the ma=
-cro
->> requires special hacks to avoid compiler warnings=2E Also, I don't thin=
-k
->> code size matters here=2E If it does, we should first consider making
->> parity a non-inline function in a =2Ec file rather than an inline
->> function/macro in a header=2E
->>=20
->> If parity is used in a hot path:
->>=20
->> We need different handling for different type sizes=2E As previously
->> discussed, x86 assembly might use different instructions for u8 and
->> u16=2E This may sound stubborn, but I want to ask again: should we
->> consider using parity8/16/32/64 interfaces? Like in the i3c driver
->> example, if we only have a single parity macro that selects an
->> implementation based on type size, users must explicitly cast types=2E
->> If future users also need parity in a hot path, they might not be aware
->> of this requirement and end up generating suboptimal code=2E Since we
->> care about efficiency and generated code, why not follow hweight() and
->> provide separate implementations for different sizes?
->>=20
->It seems no one will reply to my two emails=2E So, I have summarized
->different interface approaches=2E If there is a next version, I will send
->it after the merge window closes=2E
->
->Interface 1: Single Function
->Description: bool parity_odd(u64)
->Pros: Minimal maintenance cost
->Cons: Difficult to integrate with architecture-specific implementations
->      due to the inability to optimize for different argument sizes
->Opinions: Jiri supports this approach
->
->Interface 2: Single Macro
->Description: parity_odd() macro
->Pros: Allows type-specific implementation
->Cons: Requires hacks to avoid warnings; users may need explicit
->      casting; potential sub-optimal code on 32-bit x86
->Opinions: Yury supports this approach
->
->Interface 3: Multiple Functions
->Description: bool parity_odd8/16/32/64()
->Pros: No need for explicit casting; easy to integrate
->      architecture-specific optimizations; except for parity8(), all
->      functions are one-liners with no significant code duplication
->Cons: More functions may increase maintenance burden
->Opinions: Only I support this approach
->
->Regards,
->Kuan-Wei
+Remove the unused variable 'sport' to avoid the kernel build warning.
 
-You can add me to the final option=2E I think it makes most sense 
+Fixes: 3cc16ae096f1 ("tty: serial: fsl_lpuart: use port struct directly to simply code")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202503210614.2qGlnbIq-lkp@intel.com/
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+---
+ drivers/tty/serial/fsl_lpuart.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 33eeefa6fa8f..4470966b826c 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -639,8 +639,6 @@ static void lpuart32_wait_bit_set(struct uart_port *port, unsigned int offset,
+ 
+ static int lpuart_poll_init(struct uart_port *port)
+ {
+-	struct lpuart_port *sport = container_of(port,
+-					struct lpuart_port, port);
+ 	unsigned long flags;
+ 	u8 fifo;
+ 
+@@ -693,7 +691,6 @@ static int lpuart_poll_get_char(struct uart_port *port)
+ static int lpuart32_poll_init(struct uart_port *port)
+ {
+ 	unsigned long flags;
+-	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
+ 	u32 fifo;
+ 
+ 	port->fifosize = 0;
+-- 
+2.34.1
+
