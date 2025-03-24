@@ -1,131 +1,328 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003B42627F5;
-	Mon, 24 Mar 2025 15:24:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2DFF143736;
+	Mon, 24 Mar 2025 15:53:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742829870; cv=none; b=WTVXlbX5dCjuwj8c/6BCHSXvc3iu47GKzgAY2gfxy5yqAmIfUCSOkBg395/2GIlw9ldD0WdUoezcHnWU+ejjqMn/WarwhDY4yA6crMYKyGGub99TxyR/6qvlYn3G/RvJ5iY24cZY/VorZ6E24kGB0o0rcBy4qAj1KJ2+6ylcHmo=
+	t=1742831620; cv=none; b=XvzpPK35lE0sluQSc5+exwAUdZ9+t5a0oIbAzMHONVbWJsqE47cU5Jo3a+Y46XopWNiuLo4ZO5UFODkv5h0zV8GkjcvzbhHAvk0iOpAVptYHKYdLH511nYvi+Qw0Wi4Jhy5RyALQFZausAOtEJWas6SD6kC9CdJs5qZR82FWmNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742829870; c=relaxed/simple;
-	bh=7q+nKUbKNhyhktIiTR7GrBfCuyLAr0XwfMKzvmg511o=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=a39nG3ZKLHtgPIIMh7uR2LDblc1xl5NrvhY3Q3GrDSxJsxvgCK5GFV/ne8T/btgNgIq13tGrSarO/xbYLyZESh2/NTM2d/LxUuAJTa1LAFyzOztO20hq9GF/ye57Sk7WeulxeWXsa16taOkjZgBtTTVFwdbER1ffjPGvWVMPu0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=TGeVw+8p; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XaiCGOxd; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1742831620; c=relaxed/simple;
+	bh=4jXCcTm30AJQi4N1CnuKV/ZoTyk5Joxp7KbG+aaJZ/E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N0w52R9rRhonp7RZYrx7BMJNYZoWjbNcf7whb36GQYbBzNxxCxoJhsQ+RfA2VH/qXELtix1SE6vrp+X7DDGLfMs5Xpwp5oft5+bXbdIgCDBDtWG5WmcDfRarTMjGyPzEOH9+iGeuWX4dH0HG9DPow0jDdeQ4Os6QAIf2SKub1v8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jha6qwoE; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="TGeVw+8p";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XaiCGOxd"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1742829861;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jRrIB+zDteaSXRYqxWriyHX454y+VkB0De55x4GzBvk=;
-	b=TGeVw+8pkcSvBNuPmnAf0Ivc1s2XnHagca3sg7spp526UKUSrce30RG8h0aA88YDXbrEiw
-	pwJXg7R757B3Z0GaVLwDZONvnybOJ30Vnac4qpOXTwk34oF+ePSAKU3+ILln/rnVNUXOHS
-	Pi3ukfmp0r0PD2WHvCPpttRugUa/g33TQPmMYMn1RSR8Iew3TcRY5Rkv004jpyA/O4bySF
-	falp5ShQ64bFtNURR2teuoqVys2o1Ky21zqM0tzc2EjWeYJdyFwGWbWuRkayEh+yMdeBX0
-	jyLdwqyHPv7BZyRc+Bh/zUKykF4aNwllVOs/IUI+0+domX7em/hsbhmOnlG/gQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1742829861;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jRrIB+zDteaSXRYqxWriyHX454y+VkB0De55x4GzBvk=;
-	b=XaiCGOxdtLXu/JxZ/a6rU1g0WPB1Doy+6lzB272lBaC+rGkX/RkUvaXyXKRfofNCOieFw+
-	NvtPGMEA2YDS9BCg==
-To: Ryo Takakura <ryotkkr98@gmail.com>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, paul.walmsley@sifive.com, samuel.holland@sifive.com,
- palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, pmladek@suse.com
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-riscv@lists.infradead.org, Ryo Takakura <ryotkkr98@gmail.com>
-Subject: Re: [PATCH] serial: sifive: Switch to nbcon console
-In-Reply-To: <20250323060603.388621-1-ryotkkr98@gmail.com>
-References: <20250323060603.388621-1-ryotkkr98@gmail.com>
-Date: Mon, 24 Mar 2025 16:30:20 +0106
-Message-ID: <84sen2fo4b.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jha6qwoE"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2239c066347so103043735ad.2;
+        Mon, 24 Mar 2025 08:53:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1742831618; x=1743436418; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=lnK90d9tJkBMNCcbTrjmAdHYPBfyopuTDuiHWu7djtw=;
+        b=jha6qwoEuOpOpN7nTl4pfYoeNPLPm2nfW6OdM5p1OspX62EFwSNb8uSoDNPsOwtys9
+         kx5dCL1A+I/XPo1ONKx9JnEIAESsPSqQJQ4B/easnxjXRkgx/VRkIpUhcDLyxgQccQLW
+         8tZqejAuD+5Kd3+5Dc6sPKUhdI7R4fKm5hrDZGDKfxoltscxhj9y8xF26sxazUxmQCS4
+         4E0TM2LTKMUdiog/vtospJeVH7/K5BOlzrpeBKtJLQ8evYNntC2EmV86WVsLu3De6NUZ
+         EbKzHHHnveWHphzKlRQh4qrg9IRqBT+yObQmNidKQ3CfG4OH9rWMx3V11XqRW2TFwSYq
+         AfZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742831618; x=1743436418;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lnK90d9tJkBMNCcbTrjmAdHYPBfyopuTDuiHWu7djtw=;
+        b=g/gh7wBToSDfZoDosp32BsmD26MnEOcYGwHPxTv5VowRdUV0NjZgMNZtL6tDN9A6aA
+         YsKVjAn0ILGyn6REIvN8JWMqFn9o+wyPFBrZdJBWfjVo5iNs7mZoYKRokIEOivdlUf4L
+         FIvOgnIUrGcviT6hg4IO2h2eMgbzYcXpvnnxdkvTTwacRVSOmU4p/n+3R7f6e1a5zgam
+         /fPfGjtY07dbDu3TUstL0q/adtFKpUVlCqBJ9LVdYfZn4/kP5RFOt8vteszqqJkezuFs
+         mo3jkvMJTtdf9OtsGPqKJc5JMoflipw1CdXqY+27B7AN2+0YB17Yi9OLClXvB7ZrZVcz
+         hckQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUD9XBoxXdsx7zUVw3GVew1xFjhPNHeOVYUhgKi0o4rfLQl7FreeU3Y9IXbKTYWx0GCJMYXMCQJ@vger.kernel.org, AJvYcCUqIs3sGFmx7KcglgVKiLkUfCEz+WX2D7WEAkB+XWooxC29qJiL76kshEDTwHY/0Ttf8aI8m825vixrbno=@vger.kernel.org, AJvYcCVdwKeQc8NVP6LSlpQzFWYOb71lx/MTe65/nw/XW9GtY7NB33+nDA7/k/3q5b/7af5kO8ep9WtCyMCDSm6E@vger.kernel.org, AJvYcCWCy2ya6DZms0NOuHIt7KI5M6VIiuzAtRRwaTxDoed+BWMX/zXyA73uBS514SwaL8vXrj1T9C5mgIF3u5Y4ozQ=@vger.kernel.org, AJvYcCWiZsjbelWRZ52rXcTV9nDZKme4wu+wrYLq8WCUqn3TCZadUMbTA+ZxzABsJvdXyr46bIWPIUHNaUKhMyEa@vger.kernel.org, AJvYcCXTwZkKG2qsYbnd/L2N6UwojqFJEHraGYvL770Pc3b9sJz3Aq+9NAYgtEW6I9IeYH6YerC/90rJ9bHsPQo=@vger.kernel.org, AJvYcCXxN3lia1h5R/XFzyrDTQapIsxiHBBODSNYdoTc6XRmWhMQaEsf9F25FicnzOIKk1gCO+U=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy9/4ufDbSY+qA43M1ZPTX+/oe4pxWypYubuNdrobWFj2QDgyKT
+	CgbqXTMXJKBrEby242fSHYE9+Or04JcNzjp/R49ciKHk57EYJvr1
+X-Gm-Gg: ASbGncuwXHUGmfm0xCK9PSq/LsrnoRiOU7/R48vlezetWZQWhFkspYVpFQGwfmSq0+c
+	D0B4i3tpm+3epafEv+sHWMbyhQFI4rZZopRijA8LuM1yHSe7V/sw4FM/UkvEibzzaEiABzDD2G6
+	rRCiDXBT1d7jZf7/FHVoyC5tYQXn0waivZTjDOWs+JMxJUmeT7rGaK03EDE+FsWZZt+S7GHYMyu
+	t3w5LYWH9yxQ8fvaN+bs0MB2igKoI97pn3gSCcuOzdguE/yfWXS17hgs45I5s38gH5u8Eb07NVb
+	8t+Pf8EVtbYO+qvxElRON0jXBu8VHwVchnuLsbUvgFJ2+BsUSbeWuyvzztvwthhz8vE+4yjmeOF
+	1jrk=
+X-Google-Smtp-Source: AGHT+IF0G/P2idoIFxvn1IOSBSyy+/lpGPgy71fA+n6lIv43FiatMDA7/IWCIIb00BiyzdXZ3fQN0Q==
+X-Received: by 2002:aa7:9317:0:b0:736:a682:deb8 with SMTP id d2e1a72fcca58-7390596685bmr25612682b3a.8.1742831617683;
+        Mon, 24 Mar 2025 08:53:37 -0700 (PDT)
+Received: from localhost (maglev-oncall.nvidia.com. [216.228.125.128])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7390600a5f6sm8119083b3a.82.2025.03.24.08.53.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Mar 2025 08:53:36 -0700 (PDT)
+Date: Mon, 24 Mar 2025 11:53:35 -0400
+From: Yury Norov <yury.norov@gmail.com>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Kuan-Wei Chiu <visitorckw@gmail.com>,
+	David Laight <david.laight.linux@gmail.com>,
+	Andrew Cooper <andrew.cooper3@citrix.com>,
+	Laurent.pinchart@ideasonboard.com, airlied@gmail.com,
+	akpm@linux-foundation.org, alistair@popple.id.au,
+	andrew+netdev@lunn.ch, andrzej.hajda@intel.com,
+	arend.vanspriel@broadcom.com, awalls@md.metrocast.net, bp@alien8.de,
+	bpf@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+	brcm80211@lists.linux.dev, dave.hansen@linux.intel.com,
+	davem@davemloft.net, dmitry.torokhov@gmail.com,
+	dri-devel@lists.freedesktop.org, eajames@linux.ibm.com,
+	edumazet@google.com, eleanor15x@gmail.com,
+	gregkh@linuxfoundation.org, hverkuil@xs4all.nl,
+	jernej.skrabec@gmail.com, jirislaby@kernel.org, jk@ozlabs.org,
+	joel@jms.id.au, johannes@sipsolutions.net, jonas@kwiboo.se,
+	jserv@ccns.ncku.edu.tw, kuba@kernel.org, linux-fsi@lists.ozlabs.org,
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	linux-serial@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linux@rasmusvillemoes.dk, louis.peens@corigine.com,
+	maarten.lankhorst@linux.intel.com, mchehab@kernel.org,
+	mingo@redhat.com, miquel.raynal@bootlin.com, mripard@kernel.org,
+	neil.armstrong@linaro.org, netdev@vger.kernel.org,
+	oss-drivers@corigine.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, rfoss@kernel.org,
+	richard@nod.at, simona@ffwll.ch, tglx@linutronix.de,
+	tzimmermann@suse.de, vigneshr@ti.com, x86@kernel.org
+Subject: Re: [PATCH v3 00/16] Introduce and use generic parity16/32/64 helper
+Message-ID: <Z-F_96AECHpsCXsL@thinkpad>
+References: <20250307195310.58abff8c@pumpkin>
+ <EB85C3C1-8A0D-4CB9-B501-BFEABDF3E977@zytor.com>
+ <Z824SgB9Dt5zdWYc@visitorckw-System-Product-Name>
+ <Z9CyuowYsZyez36c@thinkpad>
+ <80771542-476C-493E-858A-D2AF6A355CC1@zytor.com>
+ <Z9GtcNJie8TRKywZ@thinkpad>
+ <Z9G2Tyypb3iLoBjn@visitorckw-System-Product-Name>
+ <Z9KMKwnZXA2mkD2s@visitorckw-System-Product-Name>
+ <Z+AlyB461xwMxMtG@visitorckw-System-Product-Name>
+ <05F7AC70-E8E7-4D14-A4EB-880D92A96534@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <05F7AC70-E8E7-4D14-A4EB-880D92A96534@zytor.com>
 
-Hi Ryo,
+On Sun, Mar 23, 2025 at 03:40:20PM -0700, H. Peter Anvin wrote:
+> On March 23, 2025 8:16:24 AM PDT, Kuan-Wei Chiu <visitorckw@gmail.com> wrote:
+> >On Thu, Mar 13, 2025 at 03:41:49PM +0800, Kuan-Wei Chiu wrote:
+> >> On Thu, Mar 13, 2025 at 12:29:13AM +0800, Kuan-Wei Chiu wrote:
+> >> > On Wed, Mar 12, 2025 at 11:51:12AM -0400, Yury Norov wrote:
+> >> > > On Tue, Mar 11, 2025 at 03:24:14PM -0700, H. Peter Anvin wrote:
+> >> > > > On March 11, 2025 3:01:30 PM PDT, Yury Norov <yury.norov@gmail.com> wrote:
+> >> > > > >On Sun, Mar 09, 2025 at 11:48:26PM +0800, Kuan-Wei Chiu wrote:
+> >> > > > >> On Fri, Mar 07, 2025 at 12:07:02PM -0800, H. Peter Anvin wrote:
+> >> > > > >> > On March 7, 2025 11:53:10 AM PST, David Laight <david.laight.linux@gmail.com> wrote:
+> >> > > > >> > >On Fri, 07 Mar 2025 11:30:35 -0800
+> >> > > > >> > >"H. Peter Anvin" <hpa@zytor.com> wrote:
+> >> > > > >> > >
+> >> > > > >> > >> On March 7, 2025 10:49:56 AM PST, Andrew Cooper <andrew.cooper3@citrix.com> wrote:
+> >> > > > >> > >> >> (int)true most definitely is guaranteed to be 1.  
+> >> > > > >> > >> >
+> >> > > > >> > >> >That's not technically correct any more.
+> >> > > > >> > >> >
+> >> > > > >> > >> >GCC has introduced hardened bools that intentionally have bit patterns
+> >> > > > >> > >> >other than 0 and 1.
+> >> > > > >> > >> >
+> >> > > > >> > >> >https://gcc.gnu.org/gcc-14/changes.html
+> >> > > > >> > >> >
+> >> > > > >> > >> >~Andrew  
+> >> > > > >> > >> 
+> >> > > > >> > >> Bit patterns in memory maybe (not that I can see the Linux kernel using them) but
+> >> > > > >> > >> for compiler-generated conversations that's still a given, or the manager isn't C
+> >> > > > >> > >> or anything even remotely like it.
+> >> > > > >> > >> 
+> >> > > > >> > >
+> >> > > > >> > >The whole idea of 'bool' is pretty much broken by design.
+> >> > > > >> > >The underlying problem is that values other than 'true' and 'false' can
+> >> > > > >> > >always get into 'bool' variables.
+> >> > > > >> > >
+> >> > > > >> > >Once that has happened it is all fubar.
+> >> > > > >> > >
+> >> > > > >> > >Trying to sanitise a value with (say):
+> >> > > > >> > >int f(bool v)
+> >> > > > >> > >{
+> >> > > > >> > >	return (int)v & 1;
+> >> > > > >> > >}    
+> >> > > > >> > >just doesn't work (see https://www.godbolt.org/z/MEndP3q9j)
+> >> > > > >> > >
+> >> > > > >> > >I really don't see how using (say) 0xaa and 0x55 helps.
+> >> > > > >> > >What happens if the value is wrong? a trap or exception?, good luck recovering
+> >> > > > >> > >from that.
+> >> > > > >> > >
+> >> > > > >> > >	David
+> >> > > > >> > 
+> >> > > > >> > Did you just discover GIGO?
+> >> > > > >> 
+> >> > > > >> Thanks for all the suggestions.
+> >> > > > >> 
+> >> > > > >> I don't have a strong opinion on the naming or return type. I'm still a
+> >> > > > >> bit confused about whether I can assume that casting bool to int always
+> >> > > > >> results in 0 or 1.
+> >> > > > >> 
+> >> > > > >> If that's the case, since most people prefer bool over int as the
+> >> > > > >> return type and some are against introducing u1, my current plan is to
+> >> > > > >> use the following in the next version:
+> >> > > > >> 
+> >> > > > >> bool parity_odd(u64 val);
+> >> > > > >> 
+> >> > > > >> This keeps the bool return type, renames the function for better
+> >> > > > >> clarity, and avoids extra maintenance burden by having just one
+> >> > > > >> function.
+> >> > > > >> 
+> >> > > > >> If I can't assume that casting bool to int always results in 0 or 1,
+> >> > > > >> would it be acceptable to keep the return type as int?
+> >> > > > >> 
+> >> > > > >> Would this work for everyone?
+> >> > > > >
+> >> > > > >Alright, it's clearly a split opinion. So what I would do myself in
+> >> > > > >such case is to look at existing code and see what people who really
+> >> > > > >need parity invent in their drivers:
+> >> > > > >
+> >> > > > >                                     bool      parity_odd
+> >> > > > >static inline int parity8(u8 val)       -               -
+> >> > > > >static u8 calc_parity(u8 val)           -               -
+> >> > > > >static int odd_parity(u8 c)             -               +
+> >> > > > >static int saa711x_odd_parity           -               +
+> >> > > > >static int max3100_do_parity            -               -
+> >> > > > >static inline int parity(unsigned x)    -               -
+> >> > > > >static int bit_parity(u32 pkt)          -               -
+> >> > > > >static int oa_tc6_get_parity(u32 p)     -               -
+> >> > > > >static u32 parity32(__le32 data)        -               -
+> >> > > > >static u32 parity(u32 sample)           -               -
+> >> > > > >static int get_parity(int number,       -               -
+> >> > > > >                      int size)
+> >> > > > >static bool i2cr_check_parity32(u32 v,  +               -
+> >> > > > >                        bool parity)
+> >> > > > >static bool i2cr_check_parity64(u64 v)  +               -
+> >> > > > >static int sw_parity(__u64 t)           -               -
+> >> > > > >static bool parity(u64 value)           +               -
+> >> > > > >
+> >> > > > >Now you can refer to that table say that int parity(uXX) is what
+> >> > > > >people want to see in their drivers.
+> >> > > > >
+> >> > > > >Whichever interface you choose, please discuss it's pros and cons.
+> >> > > > >What bloat-o-meter says for each option? What's maintenance burden?
+> >> > > > >Perf test? Look at generated code?
+> >> > > > >
+> >> > > > >I personally for a macro returning boolean, something like I
+> >> > > > >proposed at the very beginning.
+> >> > > > >
+> >> > > > >Thanks,
+> >> > > > >Yury
+> >> > > > 
+> >> > > > Also, please at least provide a way for an arch to opt in to using the builtins, which seem to produce as good results or better at least on some architectures like x86 and probably with CPU options that imply fast popcnt is available.
+> >> > > 
+> >> > > Yeah. And because linux/bitops.h already includes asm/bitops.h
+> >> > > the simplest way would be wrapping generic implementation with
+> >> > > the #ifndef parity, similarly to how we handle find_next_bit case.
+> >> > > 
+> >> > > So:
+> >> > > 1. Kuan-Wei, please don't invent something like ARCH_HAS_PARITY;
+> >> > > 2. This may, and probably should, be a separate follow-up series,
+> >> > >    likely created by corresponding arch experts.
+> >> > > 
+> >> > I saw discussions in the previous email thread about both
+> >> > __builtin_parity and x86-specific implementations. However, from the
+> >> > discussion, I learned that before considering any optimization, we
+> >> > should first ask: which driver or subsystem actually cares about parity
+> >> > efficiency? If someone does, I can help with a micro-benchmark to
+> >> > provide performance numbers, but I don't have enough domain knowledge
+> >> > to identify hot paths where parity efficiency matters.
+> >> > 
+> >> IMHO,
+> >> 
+> >> If parity is never used in any hot path and we don't care about parity:
+> >> 
+> >> Then benchmarking its performance seems meaningless. In this case, a
+> >> function with a u64 argument would suffice, and we might not even need
+> >> a macro to optimize for different types—especially since the macro
+> >> requires special hacks to avoid compiler warnings. Also, I don't think
+> >> code size matters here. If it does, we should first consider making
+> >> parity a non-inline function in a .c file rather than an inline
+> >> function/macro in a header.
+> >> 
+> >> If parity is used in a hot path:
+> >> 
+> >> We need different handling for different type sizes. As previously
+> >> discussed, x86 assembly might use different instructions for u8 and
+> >> u16. This may sound stubborn, but I want to ask again: should we
+> >> consider using parity8/16/32/64 interfaces? Like in the i3c driver
+> >> example, if we only have a single parity macro that selects an
+> >> implementation based on type size, users must explicitly cast types.
+> >> If future users also need parity in a hot path, they might not be aware
+> >> of this requirement and end up generating suboptimal code. Since we
+> >> care about efficiency and generated code, why not follow hweight() and
+> >> provide separate implementations for different sizes?
+> >> 
+> >It seems no one will reply to my two emails. So, I have summarized
+> >different interface approaches. If there is a next version, I will send
+> >it after the merge window closes.
+> >
+> >Interface 1: Single Function
+> >Description: bool parity_odd(u64)
+> >Pros: Minimal maintenance cost
+> >Cons: Difficult to integrate with architecture-specific implementations
+> >      due to the inability to optimize for different argument sizes
 
-On 2025-03-23, Ryo Takakura <ryotkkr98@gmail.com> wrote:
-> Add the necessary callbacks(write_atomic, write_thread, device_lock
-> and device_unlock) and CON_NBCON flag to switch the sifive console
-> driver to perform as nbcon console.
->
-> Both ->write_atomic() and ->write_thread() will check for console
-> ownership whenever they are accessing registers.
->
-> The ->device_lock()/unlock() will provide the additional serilization
-> necessary for ->write_thread() which is called from dedicated printing
-> thread.
->
-> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
+How difficult? It's just as simple as find_next_bit(). I already
+pointed that.
 
-This driver has the same issue that the 8250 previously had. The
-->startup() and ->shutdown() callbacks are called without the port
-lock. However, the sifive driver is accessing SIFIVE_SERIAL_IE_OFFS in
-these callbacks and this register is also accessed by the ->write()
-callback. This needs to be synchronized.
+> >Opinions: Jiri supports this approach
+> >
+> >Interface 2: Single Macro
+> >Description: parity_odd() macro
+> >Pros: Allows type-specific implementation
+> >Cons: Requires hacks to avoid warnings; users may need explicit
 
-The related 8250 patches fixing this are startup [0] and shutdown [1]. I
-am assuming the following change would be sufficient:
+So if the hack is documented, it's OK. I don't know the other way to
+motivate compilers to get better other than pointing them to their
+bugs.
 
-diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
-index d032de6199af..1de1b2a5833d 100644
---- a/drivers/tty/serial/sifive.c
-+++ b/drivers/tty/serial/sifive.c
-@@ -564,8 +564,11 @@ static void sifive_serial_break_ctl(struct uart_port *port, int break_state)
- static int sifive_serial_startup(struct uart_port *port)
- {
- 	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-+	unsigned long flags;
- 
-+	uart_port_lock_irqsave(&ssp->port, &flags);
- 	__ssp_enable_rxwm(ssp);
-+	uart_port_unlock_irqrestore(&ssp->port, flags);
- 
- 	return 0;
- }
-@@ -573,9 +576,12 @@ static int sifive_serial_startup(struct uart_port *port)
- static void sifive_serial_shutdown(struct uart_port *port)
- {
- 	struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
-+	unsigned long flags;
- 
-+	uart_port_lock_irqsave(&ssp->port, &flags);
- 	__ssp_disable_rxwm(ssp);
- 	__ssp_disable_txwm(ssp);
-+	uart_port_unlock_irqrestore(&ssp->port, flags);
- }
- 
- /**
+> >      casting; potential sub-optimal code on 32-bit x86
 
-The fix should be applied first (and likely Cc stable) since it is
-fixing an existing mainline problem.
+Any asm listings? Any real impact?
 
-Your patch also needs the synchronization. The ->write_atomic() callback
-does not use the port lock. However, the uart_port_*() functions also
-take the nbcon console ownership, so they synchronize against
-->write_atomic() callbacks.
+> >Opinions: Yury supports this approach
+> >
+> >Interface 3: Multiple Functions
+> >Description: bool parity_odd8/16/32/64()
+> >Pros: No need for explicit casting; easy to integrate
 
-Otherwise, this patch looks good. If the ->startup() and ->shutdown()
-callbacks are fixed in a previous patch, feel free to add:
+Explicit castings are sometimes better than implicit ones.
 
-Reviewed-by: John Ogness <john.ogness@linutronix.de>
+> >      architecture-specific optimizations; except for parity8(), all
+> >      functions are one-liners with no significant code duplication
+> >Cons: More functions may increase maintenance burden
 
-to this patch.
+s/may/will/
 
-John Ogness
+> >Opinions: Only I support this approach
+> >
+> >Regards,
+> >Kuan-Wei
+> 
+> You can add me to the final option. I think it makes most sense
 
-[0] https://lore.kernel.org/lkml/20230525093159.223817-2-john.ogness@linutronix.de
-[1] https://lore.kernel.org/lkml/20230525093159.223817-9-john.ogness@linutronix.de
+This is not a democracy, and we are not voting here. We are engineers.
+We share our expert opinions and choose the best one. I'll be happy to
+go with any solution, if we all make sure it's the best.
+
+I'm for #2 because it 
+ - generates better code than #1;
+ - easier to use than #3; and
+ - has less maintenance burden than #3.
+
+Why exactly #3 makes the most sense to you? Most variables are ints
+and longs. How are you going to handle those with fixed-types parity()s?
+
+Thanks,
+Yury
