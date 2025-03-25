@@ -1,194 +1,221 @@
-Received: from flow-b2-smtp.messagingengine.com (flow-b2-smtp.messagingengine.com [202.12.124.137])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4124255E30;
-	Tue, 25 Mar 2025 13:18:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.137
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AC452561A2
+	for <linux-serial@vger.kernel.org>; Tue, 25 Mar 2025 13:51:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742908715; cv=none; b=OV+1a+U0blzJP2PP4eTRXfJoZpEH9j6pdlAMoNuSf59C81XafWKZUS6gSVGb0xHzsGcRozZDOT/SSLS5Ggm+7YDIlTHhgyh3Rt34Rj7NsTdVPb7N9f6RKz66we2EVukSyIce+kViQhmsflfdH9H+E5fuUvACopN6rc1vvZaWlkk=
+	t=1742910690; cv=none; b=rWwbvKcIeTKRa9Azy9yEoksRPSwRzRI7n50G8P3mXzrRWUtp2gGqhCP7SzhUiSLR0FI8NP7shvHUOsUu9sntz2nmFFw3haH5rprZocyI93UaG0vqvI4cLfHhBZr8XC965G8ozZ39sdCy0/HopEDFoxNM8Fqrvvj81TseMOQEVNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742908715; c=relaxed/simple;
-	bh=C5mrfP7F3Jg/lt8fV5RKe+diz2c9+8VrzuXO+lZEKsk=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=ucXm544baYho5mQ9Sf7OzrqWrpDva+0+aS/QQ/vnRT+bvsQPMB4gtIhGwvq3/9ExszTdSWCScWJziH0SqAE9b/ftR1wVYgYxOH52lD7vogrD+3XZf9T51lPbqM57E6DyBZ3aW9Es7LoHpI0du1iVOXuCokmybN0yEcBoSrdkV4M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=ImDeFIUl; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=AJbcpvEt; arc=none smtp.client-ip=202.12.124.137
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1742910690; c=relaxed/simple;
+	bh=fhUqi2MbhwQOJx/sI4hxxvkRtMcE9MHgzb1GkV3RsFw=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=OQl1yHvsDE4F332r7vEID279wevXaj8VgvI9sk7Xwf3vMkoOAawscd3VMhV9XyBCEIsLcvhTWRfORtzVmDcfqfzGnrbRgwVU+n0fl1FJ1Gh01jCcTnI2rVbIy19C3wjJnKm91wO0zajS6bKlvsEsLYj32W0Bq6JnJzVpLb1rfrk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m1UoYFIh; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="ImDeFIUl";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="AJbcpvEt"
-Received: from phl-compute-07.internal (phl-compute-07.phl.internal [10.202.2.47])
-	by mailflow.stl.internal (Postfix) with ESMTP id 145781D41618;
-	Tue, 25 Mar 2025 09:18:31 -0400 (EDT)
-Received: from phl-imap-11 ([10.202.2.101])
-  by phl-compute-07.internal (MEProxy); Tue, 25 Mar 2025 09:18:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1742908710;
-	 x=1742915910; bh=7uJCsElQFNSpp9yzC8ZbXV0umGMGK1SA9vUHShT/4EA=; b=
-	ImDeFIUlaPDd5ArnPxULaKFYin+F0C7Ltwhhbiw4k7YJ41vuGpa4S0yQgq9xPsTe
-	uJRvlxGtCeN8CpZuIT8pDsErIP9+bN/T8wL1tp/ARdfFsLcv8Sc8Rcm2AAGU22J+
-	QDfsMB27MlJ7Fh/RgFUJCVCjIT3YZoGmX8veA4VhtWah8Pa2dOJDZNENO5efOhCF
-	m3Aj/gZEic8zK7xg5Ge5VcUq9SwT677DKgbhu4s+jchHqDCVBX26EBF+Jyr1L5C7
-	63jXD83O9CYKFI6eG//84unPYNTVnG6PBAwgNm0MSU3dz67bgY73jNJFOhGYl0LB
-	s8TJP3x2kc2XfX0NxWNPbA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1742908710; x=
-	1742915910; bh=7uJCsElQFNSpp9yzC8ZbXV0umGMGK1SA9vUHShT/4EA=; b=A
-	JbcpvEtDY5GIbS4yWE3NXqHeL6XvezyIp78DhI5UvjpRspYi/G9CdSAwYSUCtNWb
-	yZCSTBsfwYT3pBmPHiX1MLdzsCwNGdqTg8pOqvQ1H2TQErjO20YnrvBIqr/9DMiS
-	N/aEn/bfBhxGa3yoge377x6x7UBRw+o2D2Qg6mmJ3KKWHRDwG4n8FjXRe5ziwEm/
-	wUGvAXF0t7FBZIYI28jJqmK/q7kzLry7J34szfZlVS+GOBQDtwkcol+hbMPCqvOl
-	aXXG9vwK4i1gpOxa8dIUlIDZzNMjb3dauDasxJL1NU5UvnvM0wrjeuV397H1C8sF
-	5R0FPcBeip3Dcp0RsoYDg==
-X-ME-Sender: <xms:Jq3iZ2T8JTz-jbX0ypdu8XvymSl6Ha60DCRSyE3kfaeDEsEdhgXRHQ>
-    <xme:Jq3iZ7xqFGmiYIgqeQgAYIE6NT795DUlcZ5oRdxvyZLcCtNjxwf5apWHvH69UlzU0
-    90ZNR5B4xx83SxrA2s>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdduiedvjeehucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertder
-    tddtnecuhfhrohhmpedftehrnhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnug
-    gsrdguvgeqnecuggftrfgrthhtvghrnhephfdthfdvtdefhedukeetgefggffhjeeggeet
-    fefggfevudegudevledvkefhvdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
-    hmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghpthhtohep
-    vddupdhmohguvgepshhmthhpohhuthdprhgtphhtthhopeihohhnghiguhgrnhdrfigrnh
-    hgsehsihhfihhvvgdrtghomhdprhgtphhtthhopehqihhnghhfrghnghdruggvnhhgsehs
-    ihhflhhofigvrhdrtghomhdrtghnpdhrtghpthhtohepughsthgvrhgsrgesshhushgvrd
-    gtohhmpdhrtghpthhtohepjhhoshgvfhesthhogihitghprghnuggrrdgtohhmpdhrtghp
-    thhtohepsghpfhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehkvhhmse
-    hvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqrghrtghhsehv
-    ghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqsghtrhhfshesvh
-    hgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdgtrhihphhtohes
-    vhhgvghrrdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:Jq3iZz2yRnqhHEw1IF85xMNxg4AIr2suK_Z7V6TXceVVmAzSa6K9mA>
-    <xmx:Jq3iZyAeXA8oa-5WGTCdkkC63QtF5vTYRHuh5qi7ccyHz9ZFy6uGWQ>
-    <xmx:Jq3iZ_hXDQ-VIXP0Zn7YnVUgAq0b19IaMLt4GaWKi3jJzguZr_HdUA>
-    <xmx:Jq3iZ-rgPQ_c8apCNrICWaw237kvlBRA58SynDoqVL6QMmwWVWyA2Q>
-    <xmx:Jq3iZ-U7_q_MN5COfgfdsTStOp5gWRt0SJfrgmunU_hcwDOxH-bYhAym>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id DF35E2220071; Tue, 25 Mar 2025 09:18:29 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m1UoYFIh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1742910689; x=1774446689;
+  h=date:from:to:cc:subject:message-id;
+  bh=fhUqi2MbhwQOJx/sI4hxxvkRtMcE9MHgzb1GkV3RsFw=;
+  b=m1UoYFIh5p6hYq6SxJ5ZV4Tbfw66xcg4t+bhCOXMJuY/1trG81fUETbT
+   0wefqKgJLb7Oj/M0gmCD9Aew+PvNN2qqPDEhRsSZuLOCBgSqJQwq8tpsJ
+   QbeR8gihhLhEveOjksIwo8RwLpJqCDv/328uxqULM9rOdZ0b5s2AGe4Dq
+   ZbQwsJUdoayMq5bbZz5U182ahiYPJKVVeFUuPIkLjZwdEq06U0LhG+Phc
+   6Lqe6V/kuf3S5SmcBkpD1QsGC6Us2meZL67BROK7hhQ2wa4y3qUiUWXD9
+   3pqKPbP6YeV4rZOd0akD09kuhm+fF+eSSNfyDIKWQwOut0+EH0JLKl9QX
+   A==;
+X-CSE-ConnectionGUID: d/ff5le+Qo2UPgWNslx5Ow==
+X-CSE-MsgGUID: V6yO03BoTmqEYbSNwq5FmQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11384"; a="43314392"
+X-IronPort-AV: E=Sophos;i="6.14,275,1736841600"; 
+   d="scan'208";a="43314392"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2025 06:51:28 -0700
+X-CSE-ConnectionGUID: cZXYbCfRT0u49vMecLYhJg==
+X-CSE-MsgGUID: UJS6x+QwQ/G+m1bUN3iRhg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.14,275,1736841600"; 
+   d="scan'208";a="124098376"
+Received: from lkp-server02.sh.intel.com (HELO e98e3655d6d2) ([10.239.97.151])
+  by orviesa009.jf.intel.com with ESMTP; 25 Mar 2025 06:51:27 -0700
+Received: from kbuild by e98e3655d6d2 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1tx4ga-0004vV-2S;
+	Tue, 25 Mar 2025 13:51:22 +0000
+Date: Tue, 25 Mar 2025 21:50:58 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ 9f8fe348ac9544f6855f82565e754bf085d81f88
+Message-ID: <202503252149.YSROiA4n-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-X-ThreadId: T218a0d8b70d1a53d
-Date: Tue, 25 Mar 2025 14:17:44 +0100
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Peter Zijlstra" <peterz@infradead.org>, guoren <guoren@kernel.org>
-Cc: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Linus Torvalds" <torvalds@linux-foundation.org>,
- "Paul Walmsley" <paul.walmsley@sifive.com>,
- "Palmer Dabbelt" <palmer@dabbelt.com>,
- "Anup Patel" <anup@brainfault.org>,
- "Atish Patra" <atishp@atishpatra.org>, "Oleg Nesterov" <oleg@redhat.com>,
- "Kees Cook" <kees@kernel.org>, "Thomas Gleixner" <tglx@linutronix.de>,
- "Will Deacon" <will@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>,
- "Christian Brauner" <brauner@kernel.org>,
- "Andrew Morton" <akpm@linux-foundation.org>,
- "Steven Rostedt" <rostedt@goodmis.org>,
- "Eric Dumazet" <edumazet@google.com>,
- "Chen Wang" <unicorn_wang@outlook.com>,
- "Inochi Amaoto" <inochiama@outlook.com>, gaohan@iscas.ac.cn,
- shihua@iscas.ac.cn, jiawei@iscas.ac.cn, wuwei2016@iscas.ac.cn,
- "Drew Fustini" <drew@pdp7.com>, "Lad,
- Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
- ctsai390@andestech.com, wefu@redhat.com,
- "Jakub Kicinski" <kuba@kernel.org>, "Paolo Abeni" <pabeni@redhat.com>,
- "Josef Bacik" <josef@toxicpanda.com>, "David Sterba" <dsterba@suse.com>,
- "Ingo Molnar" <mingo@redhat.com>, "Boqun Feng" <boqun.feng@gmail.com>,
- "Xiao W Wang" <xiao.w.wang@intel.com>, qingfang.deng@siflower.com.cn,
- "Leonardo Bras" <leobras@redhat.com>,
- "Jisheng Zhang" <jszhang@kernel.org>,
- "Conor.Dooley" <conor.dooley@microchip.com>,
- "Samuel Holland" <samuel.holland@sifive.com>, yongxuan.wang@sifive.com,
- "Xu Lu" <luxu.kernel@bytedance.com>,
- "David Hildenbrand" <david@redhat.com>,
- "Ruan Jinjie" <ruanjinjie@huawei.com>,
- "Yunhui Cui" <cuiyunhui@bytedance.com>,
- "Kefeng Wang" <wangkefeng.wang@huawei.com>, qiaozhe@iscas.ac.cn,
- "Ard Biesheuvel" <ardb@kernel.org>,
- "Alexei Starovoitov" <ast@kernel.org>, linux-kernel@vger.kernel.org,
- linux-riscv@lists.infradead.org, kvm@vger.kernel.org,
- kvm-riscv@lists.infradead.org, linux-mm@kvack.org,
- linux-crypto@vger.kernel.org, bpf@vger.kernel.org,
- linux-input@vger.kernel.org, linux-perf-users@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- Linux-Arch <linux-arch@vger.kernel.org>, maple-tree@lists.infradead.org,
- linux-trace-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
- linux-atm-general@lists.sourceforge.net, linux-btrfs@vger.kernel.org,
- netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
- linux-nfs@vger.kernel.org, linux-sctp@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-media@vger.kernel.org
-Message-Id: <db3c9923-8800-4ed3-a352-4ee9ef79c0b7@app.fastmail.com>
-In-Reply-To: <20250325122640.GK36322@noisy.programming.kicks-ass.net>
-References: <20250325121624.523258-1-guoren@kernel.org>
- <20250325122640.GK36322@noisy.programming.kicks-ass.net>
-Subject: Re: [RFC PATCH V3 00/43] rv64ilp32_abi: Build CONFIG_64BIT kernel-self with
- ILP32 ABI
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
 
-On Tue, Mar 25, 2025, at 13:26, Peter Zijlstra wrote:
-> On Tue, Mar 25, 2025 at 08:15:41AM -0400, guoren@kernel.org wrote:
->> From: "Guo Ren (Alibaba DAMO Academy)" <guoren@kernel.org>
->> 
->> Since 2001, the CONFIG_64BIT kernel has been built with the LP64 ABI,
->> but this patchset allows the CONFIG_64BIT kernel to use an ILP32 ABI
->
-> Please, don't do this. This adds a significant maintenance burden on all
-> of us.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: 9f8fe348ac9544f6855f82565e754bf085d81f88  tty: serial: fsl_lpuart: Fix unused variable 'sport' build warning
 
-It would be easier to this with CONFIG_64BIT disabled and continue
-treating CONFIG_64BIT to be the same as BITS_PER_LONG=64, but I still
-think it's fundamentally a bad idea to support this in mainline
-kernels in any variation, other than supporting regular 32-bit
-compat mode tasks on a regular 64-bit kernel.
+elapsed time: 1452m
 
->> The patchset targets RISC-V and is built on the RV64ILP32 ABI, which
->> was introduced into RISC-V's psABI in January 2025 [1]. This patchset
->> equips an rv64ilp32-abi kernel with all the functionalities of a
->> traditional lp64-abi kernel, yet restricts the address space to 2GiB.
->> Hence, the rv64ilp32-abi kernel simultaneously supports lp64-abi
->> userspace and ilp32-abi (compat) userspace, the same as the
->> traditional lp64-abi kernel.
+configs tested: 144
+configs skipped: 4
 
-You declare the syscall ABI to be the native 64-bit ABI, but this
-is fundamentally not true because a many uapi structures are
-defined in terms of 'long' or pointer values, in particular in
-the ioctl call. This might work for an rv64ilp32 userspace that
-uses the same headers and the same types, but you explicitly
-say that the goal is to run native rv64 or compat rv32 tasks,
-not rv64ilp32 (thanks!).
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-As far as I can tell, there is no way to rectify this design flaw
-other than to drop support for 64-bit userspace and only support
-regular rv32 userspace. I'm also skeptical that supporting rv64
-userspace helps in practice other than for testing, since
-generally most memory overhead is in userspace rather than the
-kernel, and there is much more to gain from shrinking the larger
-userspace by running rv32 compat mode binaries on a 64-bit kernel
-than the other way round.
+tested configs:
+alpha                             allnoconfig    gcc-14.2.0
+alpha                            allyesconfig    gcc-14.2.0
+arc                              allmodconfig    gcc-14.2.0
+arc                               allnoconfig    gcc-14.2.0
+arc                              allyesconfig    gcc-14.2.0
+arc                   randconfig-001-20250324    gcc-12.4.0
+arc                   randconfig-002-20250324    gcc-14.2.0
+arm                              allmodconfig    gcc-14.2.0
+arm                               allnoconfig    clang-21
+arm                              allyesconfig    gcc-14.2.0
+arm                       imx_v4_v5_defconfig    clang-15
+arm                            mmp2_defconfig    gcc-14.2.0
+arm                        multi_v7_defconfig    gcc-14.2.0
+arm                        mvebu_v5_defconfig    gcc-14.2.0
+arm                   randconfig-001-20250324    gcc-8.5.0
+arm                   randconfig-002-20250324    gcc-7.5.0
+arm                   randconfig-003-20250324    clang-21
+arm                   randconfig-004-20250324    clang-21
+arm                           sama7_defconfig    clang-21
+arm                          sp7021_defconfig    gcc-14.2.0
+arm                           spitz_defconfig    gcc-14.2.0
+arm                    vt8500_v6_v7_defconfig    gcc-14.2.0
+arm64                            allmodconfig    clang-19
+arm64                             allnoconfig    gcc-14.2.0
+arm64                 randconfig-001-20250324    gcc-8.5.0
+arm64                 randconfig-002-20250324    clang-14
+arm64                 randconfig-003-20250324    clang-21
+arm64                 randconfig-004-20250324    gcc-6.5.0
+csky                              allnoconfig    gcc-14.2.0
+csky                                defconfig    gcc-14.2.0
+csky                  randconfig-001-20250324    gcc-14.2.0
+csky                  randconfig-002-20250324    gcc-14.2.0
+hexagon                          alldefconfig    clang-21
+hexagon                          allmodconfig    clang-17
+hexagon                           allnoconfig    clang-21
+hexagon                          allyesconfig    clang-21
+hexagon               randconfig-001-20250324    clang-21
+hexagon               randconfig-002-20250324    clang-21
+i386                             allmodconfig    gcc-12
+i386                              allnoconfig    gcc-12
+i386                             allyesconfig    gcc-12
+i386        buildonly-randconfig-001-20250324    clang-20
+i386        buildonly-randconfig-002-20250324    clang-20
+i386        buildonly-randconfig-003-20250324    gcc-12
+i386        buildonly-randconfig-004-20250324    clang-20
+i386        buildonly-randconfig-005-20250324    gcc-12
+i386        buildonly-randconfig-006-20250324    gcc-12
+i386                                defconfig    clang-20
+loongarch                        allmodconfig    gcc-14.2.0
+loongarch                         allnoconfig    gcc-14.2.0
+loongarch             randconfig-001-20250324    gcc-14.2.0
+loongarch             randconfig-002-20250324    gcc-14.2.0
+m68k                             allmodconfig    gcc-14.2.0
+m68k                              allnoconfig    gcc-14.2.0
+m68k                             allyesconfig    gcc-14.2.0
+m68k                          atari_defconfig    gcc-14.2.0
+m68k                       bvme6000_defconfig    gcc-14.2.0
+m68k                            mac_defconfig    gcc-14.2.0
+microblaze                       allmodconfig    gcc-14.2.0
+microblaze                        allnoconfig    gcc-14.2.0
+microblaze                       allyesconfig    gcc-14.2.0
+mips                              allnoconfig    gcc-14.2.0
+mips                        qi_lb60_defconfig    clang-21
+mips                   sb1250_swarm_defconfig    gcc-14.2.0
+nios2                             allnoconfig    gcc-14.2.0
+nios2                 randconfig-001-20250324    gcc-8.5.0
+nios2                 randconfig-002-20250324    gcc-10.5.0
+openrisc                          allnoconfig    gcc-14.2.0
+openrisc                         allyesconfig    gcc-14.2.0
+openrisc                            defconfig    gcc-14.2.0
+openrisc                  or1klitex_defconfig    gcc-14.2.0
+parisc                           allmodconfig    gcc-14.2.0
+parisc                            allnoconfig    gcc-14.2.0
+parisc                           allyesconfig    gcc-14.2.0
+parisc                              defconfig    gcc-14.2.0
+parisc                generic-64bit_defconfig    gcc-14.2.0
+parisc                randconfig-001-20250324    gcc-13.3.0
+parisc                randconfig-002-20250324    gcc-5.5.0
+powerpc                    adder875_defconfig    gcc-14.2.0
+powerpc                          allmodconfig    gcc-14.2.0
+powerpc                           allnoconfig    gcc-14.2.0
+powerpc                          allyesconfig    clang-21
+powerpc                      cm5200_defconfig    clang-21
+powerpc                        fsp2_defconfig    gcc-14.2.0
+powerpc                      pmac32_defconfig    clang-21
+powerpc                      ppc44x_defconfig    clang-21
+powerpc               randconfig-001-20250324    gcc-6.5.0
+powerpc               randconfig-002-20250324    clang-19
+powerpc               randconfig-003-20250324    clang-21
+powerpc                     redwood_defconfig    clang-21
+powerpc                  storcenter_defconfig    gcc-14.2.0
+powerpc                 xes_mpc85xx_defconfig    gcc-14.2.0
+powerpc64             randconfig-001-20250324    gcc-6.5.0
+powerpc64             randconfig-002-20250324    clang-15
+powerpc64             randconfig-003-20250324    gcc-6.5.0
+riscv                            allmodconfig    clang-21
+riscv                             allnoconfig    gcc-14.2.0
+riscv                            allyesconfig    clang-16
+riscv                               defconfig    clang-21
+riscv                 randconfig-001-20250324    clang-21
+riscv                 randconfig-002-20250324    clang-21
+s390                             allmodconfig    clang-18
+s390                              allnoconfig    clang-15
+s390                             allyesconfig    gcc-14.2.0
+s390                                defconfig    clang-15
+s390                  randconfig-001-20250324    clang-15
+s390                  randconfig-002-20250324    clang-15
+sh                               allmodconfig    gcc-14.2.0
+sh                                allnoconfig    gcc-14.2.0
+sh                               allyesconfig    gcc-14.2.0
+sh                                  defconfig    gcc-14.2.0
+sh                    randconfig-001-20250324    gcc-12.4.0
+sh                    randconfig-002-20250324    gcc-12.4.0
+sh                           se7206_defconfig    gcc-14.2.0
+sh                           se7722_defconfig    gcc-14.2.0
+sh                            shmin_defconfig    gcc-14.2.0
+sparc                            allmodconfig    gcc-14.2.0
+sparc                             allnoconfig    gcc-14.2.0
+sparc                 randconfig-001-20250324    gcc-5.5.0
+sparc                 randconfig-002-20250324    gcc-11.5.0
+sparc64                          alldefconfig    gcc-14.2.0
+sparc64                             defconfig    gcc-14.2.0
+sparc64               randconfig-001-20250324    gcc-13.3.0
+sparc64               randconfig-002-20250324    gcc-5.5.0
+um                               allmodconfig    clang-19
+um                                allnoconfig    clang-21
+um                               allyesconfig    gcc-12
+um                                  defconfig    clang-21
+um                             i386_defconfig    gcc-12
+um                    randconfig-001-20250324    clang-21
+um                    randconfig-002-20250324    clang-21
+um                           x86_64_defconfig    clang-15
+x86_64                            allnoconfig    clang-20
+x86_64                           allyesconfig    clang-20
+x86_64      buildonly-randconfig-001-20250324    clang-20
+x86_64      buildonly-randconfig-002-20250324    gcc-12
+x86_64      buildonly-randconfig-003-20250324    clang-20
+x86_64      buildonly-randconfig-004-20250324    clang-20
+x86_64      buildonly-randconfig-005-20250324    clang-20
+x86_64      buildonly-randconfig-006-20250324    clang-20
+x86_64                              defconfig    gcc-11
+xtensa                            allnoconfig    gcc-14.2.0
+xtensa                randconfig-001-20250324    gcc-13.3.0
+xtensa                randconfig-002-20250324    gcc-9.3.0
 
-If you remove the CONFIG_64BIT changes that Peter mentioned and
-the support for ilp64 userland from your series, you end up
-with a kernel that is very similar to a native rv32 kernel
-but executes as rv64ilp32 and runs rv32 userspace. I don't have
-any objections to that approach, and the same thing has come
-up on arm64 as a possible idea as well, but I don't know if
-that actually brings any notable advantage over an rv32 kernel.
-
-Are there CPUs that can run rv64 kernels and rv32 userspace
-but not rv32 kernels, similar to what we have on Arm Cortex-A76
-and Cortex-A510?
-
-       Arnd
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
