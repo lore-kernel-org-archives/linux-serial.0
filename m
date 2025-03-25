@@ -1,209 +1,176 @@
-Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011004.outbound.protection.outlook.com [40.107.74.4])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C433F149E13;
-	Tue, 25 Mar 2025 10:49:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.4
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742899780; cv=fail; b=CxheBzPR7qAIqnlbaUkeT0ttmhNlrPe0hRFh8y08WWnZBdFSJkbuHv9KgHRY9xACB7/uv8+cvdCogC3AkdxBUQt0nXhjDEwJgRURZRFY6ixsAjtl3J3P3RLY930DFbiHQUcWe8P8KlxWb6oHg67ozBsJF6zTx8Owk0nKaHGsL1o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742899780; c=relaxed/simple;
-	bh=5xF2dz6kMPGT1ojP45bwiMIvBdfxH4ghYjULYZxWQPY=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=njCCWllcugtpcGVNgDdqODlS6Sgt3DZL/vpCWGNtJe/NdUm4kFKEWxZ5aLItH0H7qBRTvFz9El3n5xVr+SZE5eI6uGRATSEx4hgH+tqh0wgDu+LXaPMJY7u36Xs0KbruvNEO0BPSxTeq/pBxov+txLpyIbPfyWgsLypTrYv3y3Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=MhRy0drw; arc=fail smtp.client-ip=40.107.74.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDE9C1C84A6;
+	Tue, 25 Mar 2025 11:01:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742900474; cv=none; b=Py1l7McjmjwbmblJ6FBuEc/MX2qk5dLyEOTMPWrPiSnwGQNp1NaGGP/lHWcJWTYO0umjK3eFy9mTWEezcaxKOJyH5jzGvemJJm09iUKcJVFRnandslQV1Fy6RBdUpl7SkbSsK4ocRlrv0KZ5zzKNi550BThZHYLHo910tUsvd2w=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742900474; c=relaxed/simple;
+	bh=JuaCPk3ExOlK9zmbI7EVpJxzROVhN5sSw+lzcIaED0g=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=pnjD/j8Ma3zxExRfgrb5QHS6HNcrxOu6TkPM5vtzZcch3h9G9el8xEiL2EYGuVxYsMVIue1aOmfCJuU0ne6Bmuuk/6vyU9CCNJbvM4s4jR68xEJVvzEoik2yCWXqdv1O1KxsYnrWz1bjdusY5yfQhN0ecNIKKf3CaDZkI5N22SA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A10xKCKd; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="MhRy0drw"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Zoi2M0r2xRS+lLCwtmSxZCYoFJ8XlHl+hNxj7HAuBzidpJQN8xGpv0MJRMxqkCjY6Sxo93ZLj0a8mzLkXg6GP/9vQY9556IjKwxUIVmGWm1afT4pY8mclAJgV/fKAzQh1FWURQXH3DIPxhGEoq5+5fakb4Kj3DXbhHSmLSwB/pUoD0Z4u00oS5Ko6tq0e2TS63n5izEoJDbjIfisBnfC/m0Q83Cy/s4+wMFUjbXOiRz1LSbQRPUkoAtmKnDSt/c1vVuXbdNbh+qKJLuKHxmYpy5nSH6QkH+08599VqcbFk7RgFPPb11oErNAvmujwGJOMvAx5RjiwTW4tV5qR0xU5w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5xF2dz6kMPGT1ojP45bwiMIvBdfxH4ghYjULYZxWQPY=;
- b=g+k4wf1aamd/VMuNYpkD9EuSHTdc0rEu+AqmaqzdJodpb4e9cM3K/S3Gtz8K9Hp0mpoj9syGl6JEecnVJ19Wwguumwu76LjhC5y98Tm5gwXE+57b0x9tVenA8BnNFo/CHT5CgDyR+U1V6C8zoyHSlYedkMkPCx+jZ/TXITATsZ6VSnrEEy+6LBRgF/N3oIir8LBZOUWfc7PaeUk2CRpU4NnnKMZCWsiOkAfP0FO5zXHXs8Mnayc0R/u1e/rIkDA7yJpA1t+SmiVuYtHYXmdljtI84JGWl9YvjS5LvRqtWyuD56jijwplMqri753EU9/t1rq7HUyW/wTMPlAKl7WICA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5xF2dz6kMPGT1ojP45bwiMIvBdfxH4ghYjULYZxWQPY=;
- b=MhRy0drwEKuo5Cc33UIs8ROLUN/YKvAqF3JgrG/8/X51ZESR181qgXjmi2qXuRtLmczcDDufU9sVpBdRDNR0nGMgiFpgbDtRB26sZkkJM2i6lSbfliW+GT9Yq4wGcdIfpLKpvTCcdXaPSVpgrWuDQ1IVJls0xuP70y3c1E1adfI=
-Received: from TYCPR01MB11492.jpnprd01.prod.outlook.com (2603:1096:400:37e::7)
- by TYRPR01MB12937.jpnprd01.prod.outlook.com (2603:1096:405:1b7::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.42; Tue, 25 Mar
- 2025 10:49:34 +0000
-Received: from TYCPR01MB11492.jpnprd01.prod.outlook.com
- ([fe80::4a09:638d:4f7f:51ce]) by TYCPR01MB11492.jpnprd01.prod.outlook.com
- ([fe80::4a09:638d:4f7f:51ce%3]) with mapi id 15.20.8534.040; Tue, 25 Mar 2025
- 10:49:34 +0000
-From: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>, Biju Das
-	<biju.das.jz@bp.renesas.com>
-CC: "thierry.bultel@linatsea.fr" <thierry.bultel@linatsea.fr>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"geert@linux-m68k.org" <geert@linux-m68k.org>, Paul Barker
-	<paul.barker.ct@bp.renesas.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>
-Subject: RE: [PATCH v4 10/13] serial: sh-sci: Add support for RZ/T2H SCI
-Thread-Topic: [PATCH v4 10/13] serial: sh-sci: Add support for RZ/T2H SCI
-Thread-Index:
- AQHbjqwtIlj0xPSkpkSXsbf2tXVwdbOCJQYAgAAJ6tCAAMLrgIAAj2OAgAAWywCAAC8GYA==
-Date: Tue, 25 Mar 2025 10:49:33 +0000
-Message-ID:
- <TYCPR01MB11492F2D6D73B2EC18E46D6B98AA72@TYCPR01MB11492.jpnprd01.prod.outlook.com>
-References: <20250306152451.2356762-1-thierry.bultel.yh@bp.renesas.com>
- <20250306152451.2356762-11-thierry.bultel.yh@bp.renesas.com>
- <Z-EpPL3tn54E8KG5@shikoro>
- <TYCPR01MB114922CBDC2911E2F644BDADC8AA42@TYCPR01MB11492.jpnprd01.prod.outlook.com>
- <Z-HVD6w6ivYR6pt5@shikoro>
- <TY3PR01MB1134602E988AD8428422E820086A72@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <Z-Jgdi5_SizHzcO0@shikoro>
-In-Reply-To: <Z-Jgdi5_SizHzcO0@shikoro>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYCPR01MB11492:EE_|TYRPR01MB12937:EE_
-x-ms-office365-filtering-correlation-id: e3c317b7-3dd7-4c08-d20c-08dd6b8abaca
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|376014|1800799024|366016|38070700018;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?UCX9XWxhb8P4SnML5MPktjcJ3si0SCQ7rcku0BD+iviJ3mPjpEhfvqYg23QS?=
- =?us-ascii?Q?+DMVObY/c31NwUrfTQOcQBLI9fokOMblpMQb4EcbQQM9omf3HTyE/5D4Hrwp?=
- =?us-ascii?Q?7ZvJKbD+ZjxaIMAEPR9pHEL+k+tEzWER7vmyAqLCMYdCACnxX+lZLje5yDIy?=
- =?us-ascii?Q?kgmIsdY1BzxYdVszdO43QkNipt4V4jCBIvKnfgGLuTZInQSGVlWppBPrM9x1?=
- =?us-ascii?Q?cm5IxrH+1uqUYcq4m9bZYvSSMCeoAyNsb9nywf5JPfQtzzE3OjCASqPx9wgF?=
- =?us-ascii?Q?B9OLaylwTHJkOcCR9VS9DUvcQnGSU4sqJ17b7/rYLbDHjzpgOAVB7VtkwVhp?=
- =?us-ascii?Q?Jznr0fnBbdb7Ih6LWpUV9tMsy6oT+A5/LzlnhhJECuqqkL0xwffvz1U7F5QR?=
- =?us-ascii?Q?OpnZFPaTvlNVTUhRqHhmCWb8MHZPHFl6aTh4CIy6xOCNsmERvTJEgJ46/5GI?=
- =?us-ascii?Q?NSHiUcgV7jX1EwmCmJ0R0A1nZLtQlVjJOa2GodHdRT9SJoYYzta0VoGbMXyf?=
- =?us-ascii?Q?KdyGiRjKx3jczRGfjb5mdCpxgp2D+agC8CWqCX4G3+3YMAoW85SnLmi0DMzB?=
- =?us-ascii?Q?M2Pe67Tj5aZXvyslbT/161hQ95cHpsFwibCu2yfMKjGG3mxs8QXOmnV/lAph?=
- =?us-ascii?Q?hyV4//GLq7ZXtTkmFAKJEeK4zmpZtkut3hqgoam4kVHOAJ2ix5XoypOaB+B6?=
- =?us-ascii?Q?NJ9IwSGYf3VZogfNdqWmSHQuR+PEAhtP+iXZihIQFkZiig0yCh6UMkQPX+Fv?=
- =?us-ascii?Q?1iiJm7mP4/sjv9098tyJk+/ay706jXUfqoaE+n2++LBfRsaseUe8ZJSdsfyX?=
- =?us-ascii?Q?/FYY67TXiCD0/ALqYlh2ShHesp7VLc0ZU48Z9VGdsib959KCb6uxlKIP1ANU?=
- =?us-ascii?Q?cyA3wlO5swQNWoN3qpRxrTM3TXreuWBhZ0NQbs4Mzx1o+UBMBV138+KLiYBM?=
- =?us-ascii?Q?BaasqdzR6fWqsMMaW6cwZ9f++qO0KWT78YwVYddWQZD8nW3HkSBrw+q9RR+t?=
- =?us-ascii?Q?BS1c3AY9z5oo36fe+U+haBRdqGrsLXhIW3huwkz9fXkFwvhXRLi15ZSS7COO?=
- =?us-ascii?Q?FDCWlVtRbL7Zxo37HseNYAqjpLeMS0ud8cgy6JDpw2KZafdvQh8JC8NAgh7E?=
- =?us-ascii?Q?w930wTHZ/Yc3CvaOZzEbBbvFKbyrApUUB4Vq2ArC/q/gVFYw3RCozOr1qdLi?=
- =?us-ascii?Q?AL2GfNprI0YH/3TiwoAj7yUJNWjyNQi0t9sPI0lhZy+fGIjuaTzdBLk9L2km?=
- =?us-ascii?Q?9nGrVDzYGfJmtw3j8r7JNpev69kDGIWQrIHvKou+JHDTYTOmA4GKqQvNLtsr?=
- =?us-ascii?Q?r7H2aeBXejuPy7imJYHbWD6rmxPO8RDUaM54KJhKxpCXkmkAAwKVBRbSyqzA?=
- =?us-ascii?Q?rQLMD41j9ue//uJ9TyOzjaL6HZTyajDYfp6A5ad0ZAVNF7Hp2XKsd3EzvAHy?=
- =?us-ascii?Q?UNrjN9+yH7BuqsYFkrJJF5xBYDta5hIg?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYCPR01MB11492.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?i0r3AUhBNf6u1Jc2GVzK3LSXYZN8a7Acu+VfM6QybWwB3ric6mK1pbRw2TO8?=
- =?us-ascii?Q?Elf2lTmTFEA9jQ33ZKjms6tllAelv2Y9wjyJD9dTgR4wJmqNNBwfdANTNdUv?=
- =?us-ascii?Q?K3JyDnLkdJ2iH01micYwrHyVxiaXEa2mAnzHJPU5IUZDIiCQgHKgqKkQA3Ji?=
- =?us-ascii?Q?gjeL1m2ujQYQ9xsda6EhJ5yseG2rsDjRMdamxwqlnfYMk/wA2DwtvMBnnkT3?=
- =?us-ascii?Q?qTf5KhGAfZfcIAmixuSzhy5PlAHJWDQqn0HQdf2BRZUw9IjXb/nWrs3wC2A2?=
- =?us-ascii?Q?iofWb8bkepDwPcK5KloxFCwEACRw+dwEPSvoSdA7B2LN4xfCY7oghbCtlj9d?=
- =?us-ascii?Q?gg6Q2g2XvlOx2jiBflSTrov3QFwMzVrHnUN3/PKXtf0eGvyuA99k490k/C/q?=
- =?us-ascii?Q?PzTXSEehh7fZ73G+pXQGFxTRIYQctMZCH9fInUTadAOpxmjIpiIa6ZoCwzLQ?=
- =?us-ascii?Q?SSMhRT47t/Pzt6ie9IrCYV5mISsaSjq9qu8hkIRqILYl+7bxENMsSlshfIOa?=
- =?us-ascii?Q?dOw4Ui4S+KrNSZeNNqSUy+TsvAeczRfqUrCnxtEJb1GRTTAjAtZ9/kd0f+6/?=
- =?us-ascii?Q?U07Lk0nTQtTUCwvGADkHhhovssxGPFBOquM1C6c53DhCOy8p9bYMg3W8GW+1?=
- =?us-ascii?Q?dKWkjO1tmkyAMmpw8ja6uvGN+LP/qiy1ff0oT8vwSLovm2ttvzm7VIxmRz0O?=
- =?us-ascii?Q?SaYlopHV+YeyMqodGW3lM/pXdhiboANXBHoORoSCPOHbhsNHnioz81RoaDDn?=
- =?us-ascii?Q?5vzoN5/Pn5BSKDkYxOuyvXh5J0poBp1zyc+Mrzt9VbhHMNStj9G5dg+ITG6a?=
- =?us-ascii?Q?xuelbARU4T5PIKShzZjGNb55DT6DT8NOnkBBKjTstgEK/9xAwOGmk6JB9CGn?=
- =?us-ascii?Q?X9nX6wUM0iFmyiL1X0r+68KpSOVTHtqLLQQzve7iS1I+GOmqiYSKb0nYb7o/?=
- =?us-ascii?Q?iOiKQK9fIH142azydmz6QCd7/npfA+uX2PRxkmGK1H/D/iALqIfsl+I5hs1k?=
- =?us-ascii?Q?68KKjDQYYsuxfux6BK9gUHTsoAyyHcerH9EORVq7J0xUwS8ORr6VIBD4YEUk?=
- =?us-ascii?Q?KGDXGu/uOd0qXpcW3Yr3YwLbhQmOaKa7spA+XNo4WpxNjzU/bIc0s7WtBfsm?=
- =?us-ascii?Q?qmOZ11LV0e6G3ojuvDpIwe2lfu6qv02/pj+3WbMzjpgwjv5UwfQQyWH1KGSi?=
- =?us-ascii?Q?k0lbSbowLjbKJJ9JJSTeuomLCJf4yWhk+h3AxbrfRmuCMqjCkZtyenxVVSKO?=
- =?us-ascii?Q?p2h2w8Occ2CQuCHA9M+AcgvejVPdszhoFVFbNmVl/+1rIXo65kDWhJ4+4y6n?=
- =?us-ascii?Q?Q8Niafe7vlm0qiNba2E8Z9M2eH648+RRYAszhaVCQ4cZ6W6V1P4jo1QfVdDb?=
- =?us-ascii?Q?vC5nzl1Al7BqbbbeEl4x0AAaIBHNnE/6RIrn47DQO0Evzo760KglJpsuS++e?=
- =?us-ascii?Q?uI51OADXbFn0u8lQVIbTN0IDveLXkrBPoLzqK3XowRTPamHty+O6uLTx4sNN?=
- =?us-ascii?Q?hggWS7qRXP0dWBmlqQmTCk2j0d/rnN7DTATdqMDY71/R1OcXtXTeBjNmmnwa?=
- =?us-ascii?Q?pPAtXpfN4dcKw3f2ePUtFQe8P9xZJW9wzeZNSImKfvj25fblTOkXuUzO1Tv8?=
- =?us-ascii?Q?BQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A10xKCKd"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2255003f4c6so102950855ad.0;
+        Tue, 25 Mar 2025 04:01:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1742900472; x=1743505272; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AFQjpijP51sT2xR77PHLhJDe/bbbSDnZKMZrsva8hbs=;
+        b=A10xKCKdjessy1wXQjLc64esrVidFJjGozCZ3CQhcf4feOCY67u+6SET6G7sI/zVY+
+         UOWV3EhP1PYi+TNdj+K++aNr5ZvVGtBGKEhT7Ko7cniqW3ZDUFxQr04ClS09FptpGxEF
+         G85vmszaK1IuSW22neeaqc54jX+1VygroNntfwqYhL5fNANg/9VSmVg/GypRrhGYl3HY
+         cngd8gO+H7cFxSsmzwDcw7g/nCWVVlR6vVdu8xXsmaa1of87BN5A85mKPhG2KkUctTg1
+         9lDxoSgGDy+96atsRlA0lBJVcajMrsNgO/QwCsGuoAECeKgl6PLNIhY6vNkd3p6UelSv
+         zAeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1742900472; x=1743505272;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AFQjpijP51sT2xR77PHLhJDe/bbbSDnZKMZrsva8hbs=;
+        b=fdrkgqPhsTpuid0D8n/FfOql+MuLZou9J6qqDNn7XeS5PvRtCzFVBgFkQe2mTqFPF1
+         /8TgR/EL61tixvIcnj60F1x+T52t1Z5Dq89ujj0CeS81P5Tp5GFRiZpHfT5CfWrLIMPI
+         8ilYWajmafhZ9ApFVUC7nQMKjW5KFLx1s3a6xW8SyIFXP6/3uwfAo9kIeZV62D2UFwtj
+         Gyjg9m67FFr/b17I6lD9M3Xx3t2mM3eB/H424INuBzSVlvWTda+Rba8YJhrKxjJMyLNQ
+         44uHryhhfDLlHSuvy5wLeDT/zn26az4M4ftuDDgfSEccrqUy57QUNKkNjFz9v92dxPqF
+         v/6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVz+7OFFREpast537KCFDjHJmGV6pS0M9a4EH0Wv3O5Ll+qqoxIpU4/guZdhW+qPVusg4BZ3ZtlW/xTLcw=@vger.kernel.org, AJvYcCWMBF7nHZItDDzd4qkdnQdClKb0zDeQC6WfGrxSXcJBGlt+biZEuyqp4aYMY2Etp85ZsWeYud4h8eMnmZb3@vger.kernel.org
+X-Gm-Message-State: AOJu0YzHdGjILCeeReKvafBEoAIt9MoPCks9iqTxvEGpstec3ziL54eV
+	5g1Q6xexfTMgjv4z+2n3qQgy2oN6ER90/qbI4gNPvAoB6A/wf9BC
+X-Gm-Gg: ASbGncvLAiolICybwvVMNontMpdAEMsvgxMZUpTjbaefn0Dr+PFfMr8aehM9xD/qw3g
+	sZA68pxDlde79TjtDRn2lm6QIiKMOJz1k2pgWPvl8hCeef+hgLfB72rxioKwhZFFgqzsLnR6V+z
+	L+95Yrma9Av6iJ3eWllNCkqQxoRkydn/6TWcT8K15YcnUvBLPeR7WYzD7AWDWaZufaaeUJ7/9cx
+	SETmbzMNEjC9xzPwpnCEcsPvHTJ7GBe3G1iyu1Eb9znxRiqxLQWKvIZEZOeBFhy0V8KoJBoizGw
+	1dlVyUQGikWFS5ZQVJRClUYD1wx35hgqJbkiauZuvE9/6Mzb0HlKPZc0HAj8IucVtEXabqNEsf3
+	BFpkgc+MzpnChUBFxt7ssVaH2gQ==
+X-Google-Smtp-Source: AGHT+IE/9aU5DXDSbNLr6CpVc3OhmADZ8TZGgoBnPhuMD9l4jDbW2fGVkGfWJrE5J2PwPPFItN+9FQ==
+X-Received: by 2002:a05:6a20:2585:b0:1f5:7eb5:72c7 with SMTP id adf61e73a8af0-1fe4300f7d1mr26494791637.29.1742900471815;
+        Tue, 25 Mar 2025 04:01:11 -0700 (PDT)
+Received: from DESKTOP-NBGHJ1C.local.valinux.co.jp (vagw.valinux.co.jp. [210.128.90.14])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-af8a27d9a13sm8842971a12.6.2025.03.25.04.01.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 25 Mar 2025 04:01:11 -0700 (PDT)
+From: Ryo Takakura <ryotkkr98@gmail.com>
+To: john.ogness@linutronix.de
+Cc: alex@ghiti.fr,
+	aou@eecs.berkeley.edu,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org,
+	palmer@dabbelt.com,
+	paul.walmsley@sifive.com,
+	pmladek@suse.com,
+	ryotkkr98@gmail.com,
+	samuel.holland@sifive.com
+Subject: Re: [PATCH] serial: sifive: Switch to nbcon console
+Date: Tue, 25 Mar 2025 20:01:07 +0900
+Message-Id: <20250325110107.28570-1-ryotkkr98@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <84sen2fo4b.fsf@jogness.linutronix.de>
+References: <84sen2fo4b.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYCPR01MB11492.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3c317b7-3dd7-4c08-d20c-08dd6b8abaca
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Mar 2025 10:49:33.9463
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eBsU0JBWhqQW7I8IhbO3Rx72UJEBp4/zV5PsEBJdt5FhN2wBFs5Qbm68cvyarDpbl55OdwZHOyz0izgONrVnu42ezizP7RXToczX75zl1SrHMN95SjhTf3qZSfSKdE8Z
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYRPR01MB12937
+Content-Transfer-Encoding: 8bit
 
-Hi Wolfram,
+Hi John,
 
-> -----Original Message-----
-> From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> Sent: mardi 25 mars 2025 08:51
-> To: Biju Das <biju.das.jz@bp.renesas.com>
-> Cc: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>;
-> thierry.bultel@linatsea.fr; linux-renesas-soc@vger.kernel.org;
-> geert@linux-m68k.org; Paul Barker <paul.barker.ct@bp.renesas.com>; linux-
-> kernel@vger.kernel.org; linux-serial@vger.kernel.org
-> Subject: Re: [PATCH v4 10/13] serial: sh-sci: Add support for RZ/T2H SCI
->=20
->=20
-> > > > > > +config SERIAL_RZ_SCI
-> > > > >
-> > > > > I think this name is too generic. Most RZ-variants so far do not
-> > > > > have this SoC. Would 'RZT2H' work or is it too narrow then?
-> > > >
-> > > > This is too narrow, because for instance the RZ/N2H , which is
-> > > > very similar, has the same SCI
-> > >
-> > > You know the differences better, what could be a suitable name?
-> >
-> > Please consider RZ/G3E and RZ/V2H SCI as well as it is almost similar
-> IP.
->=20
-> So, I am thinking to not use a name based on SoC but based on feature lik=
-e
-> SERIAL_SCI_32BIT or something. But I don't know the HW details enough to
-> make the best possible name or maybe this is a bogus idea.
+On Mon, 24 Mar 2025 16:30:20 +0106, John Ogness wrote:
+>On 2025-03-23, Ryo Takakura <ryotkkr98@gmail.com> wrote:
+>> Add the necessary callbacks(write_atomic, write_thread, device_lock
+>> and device_unlock) and CON_NBCON flag to switch the sifive console
+>> driver to perform as nbcon console.
+>>
+>> Both ->write_atomic() and ->write_thread() will check for console
+>> ownership whenever they are accessing registers.
+>>
+>> The ->device_lock()/unlock() will provide the additional serilization
+>> necessary for ->write_thread() which is called from dedicated printing
+>> thread.
+>>
+>> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
+>
+>This driver has the same issue that the 8250 previously had. The
+>->startup() and ->shutdown() callbacks are called without the port
+>lock. However, the sifive driver is accessing SIFIVE_SERIAL_IE_OFFS in
+>these callbacks and this register is also accessed by the ->write()
+>callback. This needs to be synchronized.
 
-This seems a little bit confusing, and like said in former discussions,
-the 32 bits registers are not the main difference.
+I see. Thanks for pointing out.
+(I didn't know about console_on_rootfs() and what it does. Interesting!)
 
-Here are the known SoCs that have this IP, up to now:
+>The related 8250 patches fixing this are startup [0] and shutdown [1]. I
+>am assuming the following change would be sufficient:
+>
+>diff --git a/drivers/tty/serial/sifive.c b/drivers/tty/serial/sifive.c
+>index d032de6199af..1de1b2a5833d 100644
+>--- a/drivers/tty/serial/sifive.c
+>+++ b/drivers/tty/serial/sifive.c
+>@@ -564,8 +564,11 @@ static void sifive_serial_break_ctl(struct uart_port *port, int break_state)
+> static int sifive_serial_startup(struct uart_port *port)
+> {
+>       struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
+>+      unsigned long flags;
+>
+>+      uart_port_lock_irqsave(&ssp->port, &flags);
+>       __ssp_enable_rxwm(ssp);
+>+      uart_port_unlock_irqrestore(&ssp->port, flags);
+>
+>       return 0;
+> }
+>@@ -573,9 +576,12 @@ static int sifive_serial_startup(struct uart_port *port)
+> static void sifive_serial_shutdown(struct uart_port *port)
+> {
+>       struct sifive_serial_port *ssp = port_to_sifive_serial_port(port);
+>+      unsigned long flags;
+>
+>+      uart_port_lock_irqsave(&ssp->port, &flags);
+>       __ssp_disable_rxwm(ssp);
+>       __ssp_disable_txwm(ssp);
+>+      uart_port_unlock_irqrestore(&ssp->port, flags);
+> }
+>
+> /**
+>
+>The fix should be applied first (and likely Cc stable) since it is
+>fixing an existing mainline problem.
 
-RZ/T2H
-RZ/N2H
-RZ/G3E
-RZ/V2H
+Ok, I will add a patch in the next version and cc stable.
 
-So that seems reasonable to keep RZ in the name, even there are other RZ So=
-Cs that
-do not have it.
+>Your patch also needs the synchronization. The ->write_atomic() callback
+>does not use the port lock. However, the uart_port_*() functions also
+>take the nbcon console ownership, so they synchronize against
+>->write_atomic() callbacks.
 
-The HW documentation does not mention a better name, or revision,
-so, the suggestion is to arbitrarily consider it as a new 'T2' type.
+I see, nice!
 
-Would SERIAL_RZ_SCI_T2 (and rz-sci-t2 for the driver) be specific enough ?
+>Otherwise, this patch looks good. If the ->startup() and ->shutdown()
+>callbacks are fixed in a previous patch, feel free to add:
+>
+>Reviewed-by: John Ogness <john.ogness@linutronix.de>
+>
+>to this patch.
 
-Thanks !
-Thierry
+I'll add in the next verison.
+Thanks for reviewing!
 
+Sincerely,
+Ryo Takakura
+
+>John Ogness
+>
+>[0] https://lore.kernel.org/lkml/20230525093159.223817-2-john.ogness@linutronix.de
+>[1] https://lore.kernel.org/lkml/20230525093159.223817-9-john.ogness@linutronix.de
