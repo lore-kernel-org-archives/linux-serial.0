@@ -1,155 +1,136 @@
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E24478F24;
-	Tue, 25 Mar 2025 16:24:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1896313633F;
+	Tue, 25 Mar 2025 17:19:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.154.21.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742919897; cv=none; b=HD9LOydpT7kzgMGkPG5YNbtFk5Y6i93RFFcK1nBaFWYzsl7XLbdq9LxJTXmQ5KEbI2iwvhP9LSyExpsibFXNVjsb/hQaT6SMlzJ3Z7Znd6FDAWhOPFdbe+tOMmbyPqO0KoNFyahnu6jxepg6/l8O0IrYOI5YgGzOYSFV+na96ww=
+	t=1742923195; cv=none; b=JVnlwqVX6P2mPQEyZ+/VCGqJ4P18sGpLohEiLA42NvMdcuwFnvm6Gts6MotbeIPjngeCkr7IXavTEdHtxZ54NYjKzjnieHJbw52OYu20xq+NTnzQV8+qEdFr9x29mvagLSgEdt93kTrsER3utBA5TBu0NaZouBObCpg2MWJ/vlo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742919897; c=relaxed/simple;
-	bh=C7fBDqjXv2CVmINJYOBkk5XGIiofXHQLfQocU+kGCtk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hzfHbnoK2lldlaSAuVj/Peb2af5Kxn9DlRCFlkZn7r5SjeDI285xKFHQwe4ktMZ4IJz1fYWEY8idEN5j0pMdPX4sDpZ2PxWtn41n7uo86qn7Y5XJASr07OB6AoPyCRaYEjDjGIBaxiENtd/rDCwgSgWAkY7mwIWT51RfvKeTzSw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-86d69774081so2511530241.0;
-        Tue, 25 Mar 2025 09:24:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742919895; x=1743524695;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=l3iUGf60hSD8kCkzesJGsUCW6fH2x3e5r2ngVLOx6QY=;
-        b=hqPAHYvPFqCQk+PVzAwDQW+sJrq9BHbjs9HmyAjDXTO0dP10bcgTj2Sc+dSpbSre+z
-         aOTdBVBE1/kbJKkb/EuvO4BXIbUX6LmHssbIpnymCo6ihZqIu8FVVz/T8ZsEDRfIVKqJ
-         7fmUlZdi/i7jEw0KVwujGY0CbcIL3rA9TpB5V7YdR6uRaO1eAOzN8H19AHFnKqjNLWPY
-         LF57MP4xJQaVGLuin5+EMHF0QvrGeQBOWQoBNRCbJVoc5P8vhmVq/t28JJUgntdKEUsD
-         Aw92tgNqp3SSX6qAmpLYyl+3ait1iVyvw0Bh4OdihcPDFsQPIODz18egeTSOP3yqyubx
-         rX+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVTVR1Ag5J7D1+GUdWPtr4ZS/S4C2aYzonObmHDMNfMMZAcA1pXgPgycIs2e5Zortn5ecTp8v9lo0UHqXc=@vger.kernel.org, AJvYcCVgHshMf36r38RU3LeS6eKiGYx44iF2uvPf0D+lBpq2Q5JnI82ZWY6WnRortpBbJb7HUjlrrylU1YbLuX83JiG4JC4=@vger.kernel.org, AJvYcCVw5tQCWEkqqWr2HZngDvRtvHXc8P+NJozqcFB6QB8GzHIcoRi5shdm0PUu6fm5cyR6J5T1+d4eypMF9O8S@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy0cBafIfM9Ee0/MrUfWEq2VoJsFN4WTolz8KDeVEUHmQy6YglM
-	782FXGhecHZObiFsj9X6L6vco9UQFC6P6H3Wd0U5/hguElxiFXOXJxooQVUKdDk=
-X-Gm-Gg: ASbGncsqmxfyr4/5FEItrRYN1zFX2cH0192C5BeGX71j1eUmfzSEbkxOHJOa2TJLrt4
-	Mr+erQEj6vfoelj1++p4TiGGGyerjnRWyy/yVu8XGl+kQJ9ajKmr/EN2+P5BLhqPpHm9qe8xuwO
-	pmW+aI5RwACod6Y7z6Im+LJcyBxLlwebrbE+BETM/CDeOyXjVaccdgSHBK5BDIcpQ6cnI7KPHTt
-	KINDaNEDOPKSbhWaH8XQAChsQXnAjXMMgacPe6kI5LvJTMzaW/QmChbhtG7f2VkLp65BGmGl9oh
-	VygerUxe8l7EPpuIP/8OPaF702NKNFKZY6lmCMHXLryF7XF2xPRAdCykrtsZuZs43Z5KHAJUby+
-	2KvxvV2Y=
-X-Google-Smtp-Source: AGHT+IFto9b5UOUPtnV1wp1D8cIG5F0mOE1Sx7UffouZOawKSn+ZDssypAWeSNwzC+SmvX5A56nDTg==
-X-Received: by 2002:a05:6102:dd2:b0:4bb:b809:36c6 with SMTP id ada2fe7eead31-4c50d4fb6admr14454091137.11.1742919894530;
-        Tue, 25 Mar 2025 09:24:54 -0700 (PDT)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4c50bbb3affsm2061070137.4.2025.03.25.09.24.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 25 Mar 2025 09:24:54 -0700 (PDT)
-Received: by mail-ua1-f41.google.com with SMTP id a1e0cc1a2514c-86d69774081so2511508241.0;
-        Tue, 25 Mar 2025 09:24:54 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCURJ19LYYbNOK7lgKgTs3QHoG1MJyIPQqd9k88FMl9STr3iG1nbI0TnPiGrvbEtUF74Q3vNyG1C4+QZdXGtuu6kNnY=@vger.kernel.org, AJvYcCUcbxHQvM6qFaNYC4NsRTIfKyxQyODePwGGAOC4PgAwHPF/9EjuBQcdPchJShNQeGeYOEpnob0bkltJcQQ=@vger.kernel.org, AJvYcCVTqJ55g22rByenzIFf/x+j2RVMTAjqqkV31Hr7HO5DcmP9yinGv59m9upGklMlxtYuaaYm5t0Fqe3jsFoK@vger.kernel.org
-X-Received: by 2002:a05:6102:3589:b0:4c2:2beb:b726 with SMTP id
- ada2fe7eead31-4c50d4f1cd2mr11387064137.10.1742919893845; Tue, 25 Mar 2025
- 09:24:53 -0700 (PDT)
+	s=arc-20240116; t=1742923195; c=relaxed/simple;
+	bh=XhmLROfnnL3FtaOH27gIOe9sbljr3QNEJt4khOaoGEw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=thXfkLpcysvlslOLNwAsjXCeCS6JfK6KctSbO2VGPV3RuKnyk0b5C13uS18qMml/OaXFTQll1YJumJb0xtEBlz6OVXMzXwT+u0OP1YIXmFUMXF7N6mj6jdKsM0A+dPbTQIyLF0c2blFZmvdsLhtgQIwwYgh2AD86/cle9R4yFAI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=omp.ru; spf=pass smtp.mailfrom=omp.ru; arc=none smtp.client-ip=90.154.21.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=omp.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=omp.ru
+Received: from [192.168.2.102] (213.87.136.199) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1258.12; Tue, 25 Mar
+ 2025 20:19:41 +0300
+Message-ID: <05fec753-cdaa-45a5-a029-b6435c30eb07@omp.ru>
+Date: Tue, 25 Mar 2025 20:19:39 +0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250306152451.2356762-1-thierry.bultel.yh@bp.renesas.com>
- <20250306152451.2356762-11-thierry.bultel.yh@bp.renesas.com>
- <Z-EpPL3tn54E8KG5@shikoro> <TYCPR01MB114922CBDC2911E2F644BDADC8AA42@TYCPR01MB11492.jpnprd01.prod.outlook.com>
- <Z-HVD6w6ivYR6pt5@shikoro> <TY3PR01MB1134602E988AD8428422E820086A72@TY3PR01MB11346.jpnprd01.prod.outlook.com>
- <Z-Jgdi5_SizHzcO0@shikoro> <TYCPR01MB11492F2D6D73B2EC18E46D6B98AA72@TYCPR01MB11492.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYCPR01MB11492F2D6D73B2EC18E46D6B98AA72@TYCPR01MB11492.jpnprd01.prod.outlook.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 25 Mar 2025 17:24:41 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdU8VSD1Z4ing_NLXyo4x4ErzqkqzeM_n4nXX3h_GYCLnA@mail.gmail.com>
-X-Gm-Features: AQ5f1JrPdMUtwfzLYkd4tA2p5ykjTStKxFm2BOrBAk4-uGOWcV4_ArQkaw_jT80
-Message-ID: <CAMuHMdU8VSD1Z4ing_NLXyo4x4ErzqkqzeM_n4nXX3h_GYCLnA@mail.gmail.com>
-Subject: Re: [PATCH v4 10/13] serial: sh-sci: Add support for RZ/T2H SCI
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, Biju Das <biju.das.jz@bp.renesas.com>, 
-	"thierry.bultel@linatsea.fr" <thierry.bultel@linatsea.fr>, 
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, 
-	Paul Barker <paul.barker.ct@bp.renesas.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH V3 25/43] rv64ilp32_abi: exec: Adapt 64lp64 env and
+ argv
+To: <guoren@kernel.org>, <arnd@arndb.de>, <gregkh@linuxfoundation.org>,
+	<torvalds@linux-foundation.org>, <paul.walmsley@sifive.com>,
+	<palmer@dabbelt.com>, <anup@brainfault.org>, <atishp@atishpatra.org>,
+	<oleg@redhat.com>, <kees@kernel.org>, <tglx@linutronix.de>,
+	<will@kernel.org>, <mark.rutland@arm.com>, <brauner@kernel.org>,
+	<akpm@linux-foundation.org>, <rostedt@goodmis.org>, <edumazet@google.com>,
+	<unicorn_wang@outlook.com>, <inochiama@outlook.com>, <gaohan@iscas.ac.cn>,
+	<shihua@iscas.ac.cn>, <jiawei@iscas.ac.cn>, <wuwei2016@iscas.ac.cn>,
+	<drew@pdp7.com>, <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+	<ctsai390@andestech.com>, <wefu@redhat.com>, <kuba@kernel.org>,
+	<pabeni@redhat.com>, <josef@toxicpanda.com>, <dsterba@suse.com>,
+	<mingo@redhat.com>, <peterz@infradead.org>, <boqun.feng@gmail.com>,
+	<xiao.w.wang@intel.com>, <qingfang.deng@siflower.com.cn>,
+	<leobras@redhat.com>, <jszhang@kernel.org>, <conor.dooley@microchip.com>,
+	<samuel.holland@sifive.com>, <yongxuan.wang@sifive.com>,
+	<luxu.kernel@bytedance.com>, <david@redhat.com>, <ruanjinjie@huawei.com>,
+	<cuiyunhui@bytedance.com>, <wangkefeng.wang@huawei.com>,
+	<qiaozhe@iscas.ac.cn>
+CC: <ardb@kernel.org>, <ast@kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-riscv@lists.infradead.org>, <kvm@vger.kernel.org>,
+	<kvm-riscv@lists.infradead.org>, <linux-mm@kvack.org>,
+	<linux-crypto@vger.kernel.org>, <bpf@vger.kernel.org>,
+	<linux-input@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+	<linux-arch@vger.kernel.org>, <maple-tree@lists.infradead.org>,
+	<linux-trace-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+	<linux-atm-general@lists.sourceforge.net>, <linux-btrfs@vger.kernel.org>,
+	<netfilter-devel@vger.kernel.org>, <coreteam@netfilter.org>,
+	<linux-nfs@vger.kernel.org>, <linux-sctp@vger.kernel.org>,
+	<linux-usb@vger.kernel.org>, <linux-media@vger.kernel.org>
+References: <20250325121624.523258-1-guoren@kernel.org>
+ <20250325121624.523258-26-guoren@kernel.org>
+Content-Language: en-US
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+In-Reply-To: <20250325121624.523258-26-guoren@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 6.1.1, Database issued on: 03/25/2025 16:50:54
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 0
+X-KSE-AntiSpam-Info: Lua profiles 192097 [Mar 25 2025]
+X-KSE-AntiSpam-Info: Version: 6.1.1.11
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 51 0.3.51
+ 68896fb0083a027476849bf400a331a2d5d94398
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info:
+	omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: {Tracking_ip_hunter}
+X-KSE-AntiSpam-Info: FromAlignment: s
+X-KSE-AntiSpam-Info: ApMailHostAddress: 213.87.136.199
+X-KSE-AntiSpam-Info: Rate: 0
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 03/25/2025 16:52:00
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 3/25/2025 3:18:00 PM
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 
-Hi Thierry,
+On 3/25/25 3:16 PM, guoren@kernel.org wrote:
 
-On Tue, 25 Mar 2025 at 11:49, Thierry Bultel
-<thierry.bultel.yh@bp.renesas.com> wrote:
-> > From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> > > > > > > +config SERIAL_RZ_SCI
-> > > > > >
-> > > > > > I think this name is too generic. Most RZ-variants so far do not
-> > > > > > have this SoC. Would 'RZT2H' work or is it too narrow then?
-> > > > >
-> > > > > This is too narrow, because for instance the RZ/N2H , which is
-> > > > > very similar, has the same SCI
-> > > >
-> > > > You know the differences better, what could be a suitable name?
-> > >
-> > > Please consider RZ/G3E and RZ/V2H SCI as well as it is almost similar
-> > IP.
-> >
-> > So, I am thinking to not use a name based on SoC but based on feature like
-> > SERIAL_SCI_32BIT or something. But I don't know the HW details enough to
-> > make the best possible name or maybe this is a bogus idea.
->
-> This seems a little bit confusing, and like said in former discussions,
-> the 32 bits registers are not the main difference.
->
-> Here are the known SoCs that have this IP, up to now:
->
-> RZ/T2H
-> RZ/N2H
-> RZ/G3E
-> RZ/V2H
+> From: "Guo Ren (Alibaba DAMO Academy)" <guoren@kernel.org>
+> 
+> The rv64ilp32 abi reuses the env and argv memory layout of the
+> lp64 abi, so leave the space to fit the lp64 struct layout.
+> 
+> Signed-off-by: Guo Ren (Alibaba DAMO Academy) <guoren@kernel.org>
+> ---
+>  fs/exec.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/fs/exec.c b/fs/exec.c
+> index 506cd411f4ac..548d18b7ae92 100644
+> --- a/fs/exec.c
+> +++ b/fs/exec.c
+> @@ -424,6 +424,10 @@ static const char __user *get_user_arg_ptr(struct user_arg_ptr argv, int nr)
+>  	}
+>  #endif
+>  
+> +#if defined(CONFIG_64BIT) && (BITS_PER_LONG == 32)
 
-+ RZ/V2N
+   Parens don't seem necessary...
 
-> So that seems reasonable to keep RZ in the name, even there are other RZ SoCs that
-> do not have it.
->
-> The HW documentation does not mention a better name, or revision,
+> +	nr = nr * 2;
 
-While the RZ/T2H and RZ/N2H documentation just call it "SCI" ("SCIE"
-for a reduced-functionality variant), the RZ/G3E, RZV2H, and RZ/V2N
-documentation calls it "RSCI". More below...
+   Why not nr *= 2?
 
-> so, the suggestion is to arbitrarily consider it as a new 'T2' type.
->
-> Would SERIAL_RZ_SCI_T2 (and rz-sci-t2 for the driver) be specific enough ?
+[...]
 
-Please don't put the "SCI" in the middle of the part name
-=> SERIAL_RZT2_SCI.
+MBR, Sergey
 
-"RSCI" does not seem to be present on any Linux-capable Renesas SH,
-ARM or RISC-V SoC I have documentation for.  However it seems to
-originate from the RX series of microcontrollers:
-  - RX Family Application Note: Comparison of the Differences Between
-    the RSCI Module and the SCI Module[1],
-  - The RX26T documentation[2] shows RSCI on RX26T is very similar
-    to RSCI on the five RZ SoCs listed above, but not identical.
-    The RZ variant seems to be a reduced version with 16 instead of 32
-    FIFO entries, and less "special" (non-UART) modes.
-
-So I'm in favor of calling it "RSCI" (CONFIG_SERIAL_RSCI).
-
-[1] https://www.renesas.com/en/document/apn/comparison-differences-between-rsci-module-and-sci-module-rev100
-[2] https://www.renesas.com/en/products/microcontrollers-microprocessors/rx-32-bit-performance-efficiency-mcus/rx26t-32-bit-microcontroller-optimized-dual-motor-and-pfc-control
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
