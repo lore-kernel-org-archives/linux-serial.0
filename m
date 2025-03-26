@@ -1,99 +1,240 @@
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2073.outbound.protection.outlook.com [40.107.105.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87D05189919;
-	Wed, 26 Mar 2025 09:50:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742982602; cv=none; b=E+Lpo7vIwfhDs793/NRRc8LQdVa7sNGPt2ibDVbfWN3Zr/y+BclJZWVuCG55bi+YIzgyNH2VUCvJSNEKkH5e9g9G2lViNCmSnpM9rvDzfGQmgt0S4RjMUCb78L3s0FtJF7qAQjkwoXVscZdZzXM4/vXKSGkmZUIUrbICtl2Lask=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742982602; c=relaxed/simple;
-	bh=SmXL+JiIJjhi5GvCwXWqvq1ZakYPzIcHbkmSh7WHMLw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JKo3h38TsQA96ucclLZowTDT1GcSN8pq+zrBVvFOMh8loqp879nEuj0RtruVRizVD0BOaowwJ+2TToWZk4VPi2UmNVcVJefnqw5jpIcN1CWiOVQSN8+11JmItmRw6D88VBk+pv/w9TAajj9JDprAb1B98O5NKG440e7XeGifROc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-86feb84877aso513510241.3;
-        Wed, 26 Mar 2025 02:50:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1742982599; x=1743587399;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jKQO23Cx9d0LvjJBqoaXpMi995oqQPpXgcgXRWzNSKQ=;
-        b=ADLWTlo8YZDaSS948sCm8e+MlWzfP4pFPNqeIVYV60krTcufcL1KM6HOy8AAWqQqkI
-         XqAKp9b1EYuLeLyVvopLrxZlyaC+EWdNi7tV0zM5XxX7rPuGf9p54OxZ6lQPwvnBPpeE
-         nPIz25FZys2liBljn1Jxymkc6NhK/MnA1nwPns8Eoa6NfbxvnCcqNJgHlqfYbRrF4uUA
-         Z9IHve25bSbf2mUoc7YEjxItQK1QzC/NPEGnrt4fTSjdU/padKmFvjGllRfqeHWKg7iX
-         MqX0dquWfSn7ZLmpE7g9Z87N2skPnd9fEBoMOOgQ3RKGPGPgUlUrPSH0Q/eQvQJlUd0t
-         6w6A==
-X-Forwarded-Encrypted: i=1; AJvYcCWiUf7bhsymNEHP9g6b3STyv1Kl5IzrWa/FIe8dm8sxOPWKj1XH4RjHeg7n2gbxgy+vee6OEgGmhITyEfPEqEn0DJE=@vger.kernel.org, AJvYcCX0DULBs0c9Fzkvceu/fdDamMu9McCnm78FZZuFJ//DnQZgQ8TwJdEpiz5cWjZzhglR7SXqoyhQSXjW1KU=@vger.kernel.org, AJvYcCXmHQ3SLgenj6UhU45vygkaibwV7/hY1CusF71wya5oEPKWK0HzA5geik4ievXwVbrr7Z90HdTGtFYXAgb0@vger.kernel.org
-X-Gm-Message-State: AOJu0YzJy9znsgjGTLxCOPWvapx0Q93vMlDSRgHMQ2el2OjivB/n6vfS
-	V4L3W3+vQgXCiL5c14gjI6Or3/hqVtezB0RAnn4ioV27+AIWXOI9625ITd/YgPE=
-X-Gm-Gg: ASbGnctFAorLFlGFJI8sZEArxPNDL/UVVjjHHp/jqUBtEr4h43sDC6AaH6dr/L63iCW
-	Z6pBhEK+JG/ALV/rorp8vk4UioVdM6TYYwHAR35fZouzSv93QaAikCdZedDtfM+FB+bA7OdOlmO
-	eVYadurGAhRMo56/7nw+dCUkf7e+em3QFC5ukdBhcVVs62GTw1b4AW0nNYvhISc3K0ZsFb4eDVj
-	UjJsYIDBfv2Wuy4okgUsNfKHX92nbrA3b5OtPMVGHrtaIGzxpS5G4VFaf6aa0yJlgmkJ4GWfy+9
-	6HkpXUYIhI3U+uKaKt7ic5pejVpei6abrV8vwc5mPNyeIW6uL+kYIrst25op3+GViCK8mRSimrp
-	RoaeRgSHxGYz1yVuxwg==
-X-Google-Smtp-Source: AGHT+IGSIQIrLPlJ1yxx0QKt6Drz5lBprJ8+ZBSCsuZtGJ/IGUo9ksb8HCdhUOdXwD3vkDSjKrcy/Q==
-X-Received: by 2002:a05:6102:5091:b0:4bb:e8c5:b172 with SMTP id ada2fe7eead31-4c50d4d117emr14592193137.8.1742982599060;
-        Wed, 26 Mar 2025 02:49:59 -0700 (PDT)
-Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com. [209.85.222.42])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-86f9f3c2d01sm2469491241.16.2025.03.26.02.49.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 26 Mar 2025 02:49:58 -0700 (PDT)
-Received: by mail-ua1-f42.google.com with SMTP id a1e0cc1a2514c-86feb84877aso513501241.3;
-        Wed, 26 Mar 2025 02:49:58 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUBtWlt2/NfzxGNjZxm/7Xcte/2jUpc8s32AqEwHqn6i74YKW/psMz5VTuiBB59QMcnbiHtbcablLmfybT6AQmELzk=@vger.kernel.org, AJvYcCV/eYUv9K9r88Xcje1N5dqjIw81frbfYqK4gkkIKxxFHtKXmb5kZxO2dfdZMPMDj9EJnfYTq7ndOHvK+Tc5@vger.kernel.org, AJvYcCWabhW8L4xXG++WNszBgtMDLIwFuXffa83ZKb63oJokPsxWKBfLEAr8GH00zivBSxuT/rYLTRyUpkcZbDY=@vger.kernel.org
-X-Received: by 2002:a05:6102:a51:b0:4c4:e018:326f with SMTP id
- ada2fe7eead31-4c50d513aa4mr14555149137.10.1742982598730; Wed, 26 Mar 2025
- 02:49:58 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5FCE8C1F;
+	Wed, 26 Mar 2025 10:06:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.105.73
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1742983577; cv=fail; b=ZSsJzYumZllX2N5SqfjEHspYRH300PcOCnx4sXcZ+rryndm9AzZZt8mUXrw4XAezNwAUlP8z8FgNZd46SKAsa+Rq6e+SBR1XcPcLcfqRDD5WpXCSfRBJJBDGLAMrJy1f4RkT718/MiMkBGFwkfmexryAeqWqCSDmKJfVb+c7Yaw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1742983577; c=relaxed/simple;
+	bh=UnZByTWjgis0OxNdA7EHW09DE5OhDcz6o4ugIc1peH4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=RGUtIZuKNVFupt3OmOZrsZGGJPxshk33oItwRsdMjKOHcjmIKMhlftrNWm+RXx5Ja6u+iBCuw9h3P0qYxZl4cK90BH0FyhISlsMpBlyEH37orQnLBc5nV8BWQyuAWsxrXNdo3zD49Yfja5NRU9xr0X9X1loSVzWVmbAoaB1mYRI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nokia.com; spf=fail smtp.mailfrom=nokia.com; dkim=pass (2048-bit key) header.d=nokia.com header.i=@nokia.com header.b=BQ6YdrPE; arc=fail smtp.client-ip=40.107.105.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nokia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nokia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=nokia.com header.i=@nokia.com header.b="BQ6YdrPE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=N0iywftITlhfyVWQG1Zx8IR3e408RlOtuMtBEcY1yn23RVjwckHUWLvBldjuvC1GnFiGuXlEudo5TYNJk7b/hTadh1AQ4cI0xr4coeLnIiiC7bS61JvXZPaugl/ICHgucB4C0mco+u7JriYAzHK0CW0p7blpBv67vEeE3/vtTRDakfVP6Iez4ofUFdge21CqcacSgeszwrtFheJjBTd4IUk/+x3P8DyUBscXgqmhlS0XfT77/vrGufsOPSYeFAA85xGgUbSafnqdRe5To3xB5p41PzqlOCz6Q5rCB/msv5RsI2t+oBuNx/gZCBE0PCdka2GA+jQc8Ji/uRcZu315YQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MpTqr+de0QR6b0ihc0lZo+0FaQO/L0ydNP8pl/IdvE4=;
+ b=I+No6uPALol94ZyA0bnDB9cwQSKceQEwyqj3KakCClHQmZJX26Hc9JTdhiW+eJCjtbF4Q8JtGv2yfpLjLnjsVL8WN0YSkQ9NE+LKu4xDaUDd7eqDR0AjomMPqKEyFQMt5S6KicrLPbEI+2vm6vOXjYvSyHKXzSUiHzmEXKSx/l88aQFEG2sTGIZfmvnxgPx1CTvnusj46rZK7Hrbzgw09rlqZExA9kKJyKT3gga2KPnjvpuV57CLB6z+Z8rqDEnLwehhw3AlPAXohBGmlInLxrdhD/zEZIxWcVkJDipKiC7O8elKwStphKCN6t0xOwvY7GdKP9kr5eBLybL/+hbCNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MpTqr+de0QR6b0ihc0lZo+0FaQO/L0ydNP8pl/IdvE4=;
+ b=BQ6YdrPEV4QUzQ5s9VKFCgnpa80Bh8B/3+aigJzOdEgZzMBmoIPiZnGILprrhq94PhT++3sBb+Aedz+S3T+xUBmmR+/26sXXn+nkDYRo8A/MqLEwx57lGK/J9/Vc8aR38ZtCYIBuDN7TgOyFutSiFivcbWIY7oM/z06zRbXk5iMGzGL1dhiC5m9hbvnbOE7pyEePP1qPMEbDX5JT3rd63T6kNMYacGDGtOlrD5vIo6rc9zar7sFQQzVWDgFVCXwJy2yMJ30Tp8evFM5Oahn+PkXbc8UiuUQpMMJ6S3Od13AuounIn1SgAfFPQ7zKdHDXwS6uvg4YuPliaX3RghJhow==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nokia.com;
+Received: from GV1PR07MB9047.eurprd07.prod.outlook.com (2603:10a6:150:a5::17)
+ by DB9PR07MB8451.eurprd07.prod.outlook.com (2603:10a6:10:36d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.42; Wed, 26 Mar
+ 2025 10:06:12 +0000
+Received: from GV1PR07MB9047.eurprd07.prod.outlook.com
+ ([fe80::9d20:3826:e457:8415]) by GV1PR07MB9047.eurprd07.prod.outlook.com
+ ([fe80::9d20:3826:e457:8415%4]) with mapi id 15.20.8534.040; Wed, 26 Mar 2025
+ 10:06:12 +0000
+From: Elodie Decerle <elodie.decerle@nokia.com>
+To: jacmet@sunsite.dk,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	jakub.lewalski@nokia.com,
+	elodie.decerle@nokia.com
+Subject: [PATCH v2] tty: serial: uartlite: register uart driver in init
+Date: Wed, 26 Mar 2025 11:04:57 +0100
+Message-ID: <20250326100504.1246-1-elodie.decerle@nokia.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250313205852.2870-1-elodie.decerle@nokia.com>
+References: <20250313205852.2870-1-elodie.decerle@nokia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MR1P264CA0201.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:57::15) To GV1PR07MB9047.eurprd07.prod.outlook.com
+ (2603:10a6:150:a5::17)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250325160904.2688858-1-thierry.bultel.yh@bp.renesas.com> <20250325160904.2688858-8-thierry.bultel.yh@bp.renesas.com>
-In-Reply-To: <20250325160904.2688858-8-thierry.bultel.yh@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 26 Mar 2025 10:49:46 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUsdk+qDDwE_4vJrLRqK9Dhb8Mc_tDEXMHeLL9P_u3XuQ@mail.gmail.com>
-X-Gm-Features: AQ5f1JrSAYUiq-6TpwJ18nNff1QGHnNZxD4aPKNO7SMpE-lLvCcSuM5mkMeIRhQ
-Message-ID: <CAMuHMdUsdk+qDDwE_4vJrLRqK9Dhb8Mc_tDEXMHeLL9P_u3XuQ@mail.gmail.com>
-Subject: Re: [PATCH v5 07/13] serial: sh-sci: Fix a comment about SCIFA
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org, 
-	paul.barker.ct@bp.renesas.com, 
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV1PR07MB9047:EE_|DB9PR07MB8451:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1a7d9e5a-1aa5-4a47-21a5-08dd6c4dd62f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?8hLyHz8nDGu7Yf5Xt8KCDFBjzqjgX8EARD0L/L+RDiFkDKdXYidPLtZ/gHk2?=
+ =?us-ascii?Q?nd+6Z5MpfL1kDZSSpg9i9NZZf5wyrrZcWtfZXYZ8bsDWVmLvL/SWaJCknHF8?=
+ =?us-ascii?Q?pwNVSJF4YBCUIbsSYePsQl8/7k0EBAGpVyFKhBKWd6oZ9iKYydM8iy6+2QYr?=
+ =?us-ascii?Q?UeABUmWVzW2xVlqXlpdi0U5KCpKOPjCrF1kLGaLIv0O7m24A7cfUBtIMsPqB?=
+ =?us-ascii?Q?b/r8g9/IGfs3dzIUScqN7XcFJyF1yiJGBVdRkWVw43iY4+DJx+IhEZWKNikC?=
+ =?us-ascii?Q?MSuMLwFjU/ci0jM8mIm5DrFOK5vnMyt6GmaOkg/bwZWaZfdcAgkFwhmgsKMJ?=
+ =?us-ascii?Q?cKapyqgtfbqJWlwzJIIRIgRobxQ48V6INq5f+zfYa9j1mBV+7Q8QhGeYG1xr?=
+ =?us-ascii?Q?vkRRtiCZDfTJB8uBfwmNki2eb1yk+acMF5fNS8B0rhGmMPXSfBOM1EgjXZkg?=
+ =?us-ascii?Q?lNCATZ2wGbD/wyd1KuOM/3+2rrZNhpPKXAFc993u9rL8WY3bPIqJCg4WyEGu?=
+ =?us-ascii?Q?lfFXReBsdLQVztu+oNUHRZfmlZkQEZETuRxSuxhM9/5xWp8TTT2GoBuQBsG1?=
+ =?us-ascii?Q?We06gsexXsuBw8uoDugJvJJwObFaL9d7GjHH9aw+gMzgbYiw7h7tdd47ktx3?=
+ =?us-ascii?Q?mp1ttW4UbDqmqv6j6Bkq3eOjjfiDMEKboGyIQdyn6DnYfoDtKqLEvRHzWIN3?=
+ =?us-ascii?Q?ZqwSeM0oWlj2x8yLYilOk1NLBcxjupDc1WZaUGMjMFKcjeF0bqGzNCgZ+0pn?=
+ =?us-ascii?Q?66bx876Zl4S+WJl/N/UNb9hQ8+2ZVI9A71HQLPvCyvfZjxAOQFu2LqUGke5q?=
+ =?us-ascii?Q?TKxpOdrYHWaHFHUcCVad/N0QUOgJWmp4v09e4k2SIt5WQjV0hhcXUBMuJdjK?=
+ =?us-ascii?Q?iuGa8tbGzC49++A++RR0yS4+RbbkGACDEQt+j5gwbK3y1AZwvCJ72o0C71ba?=
+ =?us-ascii?Q?+KtZddGorvq7PQHhZ8MkehEbyviD849G/3XHzYS0JlHO9Fi+FO5RXA+aaIv9?=
+ =?us-ascii?Q?Z71lE2jZ5eKZWnBKaDr+UVVuw4LZBGo25sh6tXfRlAaHkLkMUiOjlhwHnWqG?=
+ =?us-ascii?Q?nOCpC2nirjZ3QBh4oenUZcNUJjglH1LYIhAOZbVVEIs91lqIpIxi9EmKgV0k?=
+ =?us-ascii?Q?K8y41TL9jGNOiesQBMPETe5CjjtOoB6eAKyflszMJjdj9tn/d+0YqG/XQ9hx?=
+ =?us-ascii?Q?lmyjnGlz/E772655kopBGtsDPttpDoa8bKJVlXnZQkkjvA5EGEjloEztNRlx?=
+ =?us-ascii?Q?x+ex3lntc/xvcjyB7I/NKb1lLIgWOz3IdwA5y5j1Ci+j+8BbT0TvPF4nhhLi?=
+ =?us-ascii?Q?uNoc4uDRz+UtxOdpSJ3w7xmA4B30YWZsRTey3DHZOQQ5QOHs4gSugV/+w4Pk?=
+ =?us-ascii?Q?XXZBgRVLAG/znODIH6H6GxSn7bL1ZYx/rx4K8JlkQMFbHzKlrGl1bv7uYTh9?=
+ =?us-ascii?Q?VhqgmtBiy1c=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1PR07MB9047.eurprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?2qqmW6RrNblYp1kwqTCv8d1L0EnecmiGQ43CeniibsTdLo+gkfltQjUNXQbk?=
+ =?us-ascii?Q?NEyX5na/lTzjwu5+O1AIw9WTPEMnacSu6N21GEIidsVDTtFMM9MH6yKfd/jU?=
+ =?us-ascii?Q?Xrg8/Uk/4H3Se1NlUvrFscwpsMXYlkTbdEgEaD0QO2GFCdtVtXABPz47IYBL?=
+ =?us-ascii?Q?8x6L1LSbCOiiDWeBP0cvrDIkRecrdJo4A6xqD7BLeh42aLMsqzLszcNRGRFq?=
+ =?us-ascii?Q?96Dj/yjEdNlCp1mI5sFR5S4NcgUSDd+8nJqRRBSGEHcIIKTQw/ANfhXOpCUC?=
+ =?us-ascii?Q?YHDCCXI+RDyc1/GAapMjBc/HZ7ORqU6IMJTE7/PV4UyRtzK4VKcAhDn02xrW?=
+ =?us-ascii?Q?G+Ezd3LwCIRWrh8IeEz4iUFO90o+Hm5lLVwlhRYBXwPb+CtVZqWRbl8h9jr0?=
+ =?us-ascii?Q?p3nqLr6tUtnHf1KXyAc82Vnz8Gzs3rH7guBErYLqm+ASVW8hxBNcvWmk/VAI?=
+ =?us-ascii?Q?IHIK5Guerqmdyu73djz2eUeNBvZaiO6dg4zcLM0xfqj+oNtr0KCkQncAR18X?=
+ =?us-ascii?Q?RdhtRLZQWE7NBSqxWWsv0kJjioKb5AjQmorQwcN2UMyZa2htYIRjaQYPWn0F?=
+ =?us-ascii?Q?S8kuPs3WZjpm898lmKlc3SPjQ/93CrYeEJeXB9JpoF3bPj4OsUsMO85nduZ5?=
+ =?us-ascii?Q?yBW2cg6RmQ97/2iN5IeIAtQyiDRBjhcSIeKQZK0827GjkLdnzykMURmOuP9V?=
+ =?us-ascii?Q?NJ/6Wz+xb/Z7Bw7xzGSFtYp+pEL4coewPBWFcPwM9uejTwMQhB0v8d7qrZ4+?=
+ =?us-ascii?Q?Aq1fBviW5CWcd0OyBtPY/1ziMFJiM8G+lm2Ch/ZTqRp+gzrsbEeVqyyx5fVN?=
+ =?us-ascii?Q?Vu9OZDI9jCwXKavFDrvkVn3/KiJGVNMSyxNTGDFo9xZ0CgUNO1vfQSL2L90r?=
+ =?us-ascii?Q?DrakAFlRRq9cvCdJVWO2LVIeD6Mlz0IUoZ/MyZFa9FtXVQsQfZWfwJUaciFE?=
+ =?us-ascii?Q?xzadu4IpLg0cDKH9AaaxZLpqI4kdrYOmyNpKSUFPg4VrprljfmmWq3ZYnM2I?=
+ =?us-ascii?Q?FFButjWaiDTnPVdjlbQk2rB7jRkrfEVlL0NYCZrr5ZgF7PdDEX5yLhizPiFS?=
+ =?us-ascii?Q?f5egpTZlevoAzdk2vt64UrwJ9QHwGg6vjZlvQJiDMLZ0tgIa4JWL/N+WLQuy?=
+ =?us-ascii?Q?dPS4GoPvZhgn0BUgzSJSzEFf/vul1IQfhyCvegwUz0APkLpEPk+gxMq1OCzB?=
+ =?us-ascii?Q?9ZmZipVBe+1IQvEqUdxX4uOLVPq0TR8nVanu6rSVFbrm5hHrlPqA4LftXp88?=
+ =?us-ascii?Q?B/lwecWBxOUC4llEplWBylEUzapMvjK8OwAX5vUXYBrWcpHvrLlXD8wGoFov?=
+ =?us-ascii?Q?tVlJtlPq0Q7z/Uv78HwqXOGVd3JdYb4SwU3lBFTBVSzVp1+GA8BnKYBsM1Mx?=
+ =?us-ascii?Q?h5/DgRFUpPH6v5IoWTE1SkHbehMGV80gG6wq18T31oLXKMMV/FNoC+ngKhss?=
+ =?us-ascii?Q?tZFIXHzMFH47xSLWog+Im12D0Um1FyoWAUNzKThH1++JTltlGJtnV0iuqiek?=
+ =?us-ascii?Q?PXCqe4byEIge3vQGbUIhEQXhrKHxYP0MEyduMrOdRTjXNsw0h8AUPv37oCfU?=
+ =?us-ascii?Q?Rs+W5tOTgvBcy5YsGJ8SmZi/nHzLy9XYI1cJH7cu6MZk01fb6n6Pw+lA9jUC?=
+ =?us-ascii?Q?UA=3D=3D?=
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a7d9e5a-1aa5-4a47-21a5-08dd6c4dd62f
+X-MS-Exchange-CrossTenant-AuthSource: GV1PR07MB9047.eurprd07.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2025 10:06:12.0716
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eRglhCtZO6vpZFR6nI8IrYhFYXrZks1Xe1nxKOWW7oES32N9F9w0LSQuRJwRybvGjPGqDPyLi8WzAXV3nh5gC710Dn4FHJ1i6ux3tFDXLTk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR07MB8451
 
-On Tue, 25 Mar 2025 at 17:09, Thierry Bultel
-<thierry.bultel.yh@bp.renesas.com> wrote:
-> The comment was correct when it was added, at that time RZ/T1 was
-> the only SoC in the RZ/T line. Since then, further SoCs have been
-> added with RZ/T names which do not use the same SCIFA register
-> layout and so the comment is now misleading.
->
-> So we update the comment to explicitly reference only RZ/T1 SoCs.
->
-> Reviewed-by: Paul Barker <paul.barker.ct@bp.renesas.com>
-> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+From: Jakub Lewalski <jakub.lewalski@nokia.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+When two instances of uart devices are probing, a concurrency race can
+occur. If one thread calls uart_register_driver function, which first
+allocates and assigns memory to 'uart_state' member of uart_driver
+structure, the other instance can bypass uart driver registration and
+call ulite_assign. This calls uart_add_one_port, which expects the uart
+driver to be fully initialized. This leads to a kernel panic due to a
+null pointer dereference:
 
-Gr{oetje,eeting}s,
+[    8.143581] BUG: kernel NULL pointer dereference, address: 00000000000002b8
+[    8.156982] #PF: supervisor write access in kernel mode
+[    8.156984] #PF: error_code(0x0002) - not-present page
+[    8.156986] PGD 0 P4D 0
+...
+[    8.180668] RIP: 0010:mutex_lock+0x19/0x30
+[    8.188624] Call Trace:
+[    8.188629]  ? __die_body.cold+0x1a/0x1f
+[    8.195260]  ? page_fault_oops+0x15c/0x290
+[    8.209183]  ? __irq_resolve_mapping+0x47/0x80
+[    8.209187]  ? exc_page_fault+0x64/0x140
+[    8.209190]  ? asm_exc_page_fault+0x22/0x30
+[    8.209196]  ? mutex_lock+0x19/0x30
+[    8.223116]  uart_add_one_port+0x60/0x440
+[    8.223122]  ? proc_tty_register_driver+0x43/0x50
+[    8.223126]  ? tty_register_driver+0x1ca/0x1e0
+[    8.246250]  ulite_probe+0x357/0x4b0 [uartlite]
 
-                        Geert
+To prevent it, move uart driver registration in to init function. This
+will ensure that uart_driver is always registered when probe function
+is called.
 
+Signed-off-by: Jakub Lewalski <jakub.lewalski@nokia.com>
+Tested-by: Elodie Decerle <elodie.decerle@nokia.com>
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Changes since v1:
+- Remove mutex lock in uart_register_driver
+- Move uart driver registration to init function (Greg's feedback)
+---
+ drivers/tty/serial/uartlite.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index a41e7fc373b7..39c1fd1ff9ce 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -880,16 +880,6 @@ static int ulite_probe(struct platform_device *pdev)
+ 	pm_runtime_set_active(&pdev->dev);
+ 	pm_runtime_enable(&pdev->dev);
+ 
+-	if (!ulite_uart_driver.state) {
+-		dev_dbg(&pdev->dev, "uartlite: calling uart_register_driver()\n");
+-		ret = uart_register_driver(&ulite_uart_driver);
+-		if (ret < 0) {
+-			dev_err(&pdev->dev, "Failed to register driver\n");
+-			clk_disable_unprepare(pdata->clk);
+-			return ret;
+-		}
+-	}
+-
+ 	ret = ulite_assign(&pdev->dev, id, res->start, irq, pdata);
+ 
+ 	pm_runtime_mark_last_busy(&pdev->dev);
+@@ -929,16 +919,25 @@ static struct platform_driver ulite_platform_driver = {
+ 
+ static int __init ulite_init(void)
+ {
++	int ret;
++
++	pr_debug("uartlite: calling uart_register_driver()\n");
++	ret = uart_register_driver(&ulite_uart_driver);
++	if (ret)
++		return ret;
+ 
+ 	pr_debug("uartlite: calling platform_driver_register()\n");
+-	return platform_driver_register(&ulite_platform_driver);
++	ret = platform_driver_register(&ulite_platform_driver);
++	if (ret)
++		uart_unregister_driver(&ulite_uart_driver);
++
++	return ret;
+ }
+ 
+ static void __exit ulite_exit(void)
+ {
+ 	platform_driver_unregister(&ulite_platform_driver);
+-	if (ulite_uart_driver.state)
+-		uart_unregister_driver(&ulite_uart_driver);
++	uart_unregister_driver(&ulite_uart_driver);
+ }
+ 
+ module_init(ulite_init);
+-- 
+2.43.0
+
