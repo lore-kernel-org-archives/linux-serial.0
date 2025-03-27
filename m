@@ -1,136 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com [209.85.222.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3A3D2BAF8;
-	Thu, 27 Mar 2025 07:48:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EE8E5A79B;
+	Thu, 27 Mar 2025 08:55:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743061713; cv=none; b=KS67w2qSk3qgJMq6WupdiG+GyRc4ITgJsQUjxBTlrP4B7MUVsqMOAElwcZECfb8htriLFoJVLIkXAFZDEe4opFvpOdUWMVNJX8iuYkjsHnsO4MMqNAqulXhrRlKCxYDouHECZkXqM9Jeq7r6HpquE9Hxeo1BLW6m9S8BHq3K/hk=
+	t=1743065737; cv=none; b=hRvMj6vCeCVsrVm5gDiFvsMc72IyGspTR9xqWpxQwTFq5ejSUgcbXd/K2jHxDeUvSZsQ3mlHEqgt0Ex7yp1wrJTyB2fdbgDGnzdTiwPeuf/oaCDd6yMH94vB4/Wwgi5HCG/zB7rQ0uF0LfJadsHnhcmBE7yl4b2SFqngWkSXz9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743061713; c=relaxed/simple;
-	bh=qqI5Zw8XhX5HfkSAsrvFKk8Fvy8YvdFkG6C2QodO7aQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pH0uKXkjDkpn/fXFY2orBLyfwVbs0bjXD6qPUtXw52XE0EdBxM3b21WiwFN8yQZrLP6J7tAmU8aTw6ZfAZfY4uzNyEGvUOcmSAyeD5VqFOHFXz2lZiKXfHDDbxdVf40o/afpPiVz5O49dWCM5MdIAY3eEh/4EI0LVSIpidU+IXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C+RkPguD; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C+RkPguD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2C99C4CEDD;
-	Thu, 27 Mar 2025 07:48:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743061713;
-	bh=qqI5Zw8XhX5HfkSAsrvFKk8Fvy8YvdFkG6C2QodO7aQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=C+RkPguDoj1M92d+kO+gfE5mwL+J7YatTlZQJlxkHk3GQbSrlnDOHIJBo6N/3CEQv
-	 lfPkZtCaY5rPsEOLLCgaerEyrWUHxZVVqU/yRkUfmpyoCEa95lD5881XqhC1ctt/Pd
-	 VtY+Xyb2TqHPKR0sw4HWRryfXj2Ji2d6gbDFm1cgVtIip1N+rV1EN7LfD/mV5LFGdc
-	 vfviqJDYFHg7v0O5bvHhxQjwOPe1vXTHo/zTS73UqeUPTkduknSCK/vP99XaIl0YeB
-	 /A9WCwhj+3r04cCi2MFuTGtHlcY1GXuWQVeejz6cs5aSMR9Juo56mwI+j1RYK1N3H5
-	 xcj4KpuNY+iLg==
-Message-ID: <3d88eee6-1401-4ffc-85bb-3ea91f28d186@kernel.org>
-Date: Thu, 27 Mar 2025 08:48:22 +0100
+	s=arc-20240116; t=1743065737; c=relaxed/simple;
+	bh=wvP8K5jCDRc2bxGl9NjMTxlO/EqRfqfDWOCnH7CiRSc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=PJEUyrKbYcrq7Z2RW1DBMcDvL0oCMzt4WxwqE0hxC0lSmiOtkE0KRVy1UpLyLcBgs5nbrs+sgSS/2/P3AsQt5d87QBjag/C3lD02wJKUOQ8RIABCXFfdbF+e1HCeGmhrkJuaNfj2ZVpivpEL/6b2rh8Vpt+VO09EhrdnfsLKXEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-86715793b1fso330781241.0;
+        Thu, 27 Mar 2025 01:55:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743065733; x=1743670533;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wK9lKk51F8Ig4IUd/YTVgiulwDpAR89rwMrTX7A/kVQ=;
+        b=hka/0wOydXRExKl0IaJ/Fvix/LnUTmlLWn5gfqs2U3t0D9u24U4CJGPYgWZVUgEGpv
+         bHgYnxFL5p3TS+8mfbDvBi6yz+jf9U8EbQ27CIRerI/SRotIrSl8GiHNQdYNVV0agp8y
+         IgwbSerQrQGNTR5z7cHPLQnTUOxoWtgeDq1mVHzUAmgLSzFpyyQA/gZHKleynwYTsscG
+         3zQxz7gn/z/29oJSK5NoxqlLRM13Xy5nrABOsu8dxIOfXPUXxXOW08hWt9057n1Z0FtH
+         /oEwpnFPa4yaq4u5XohNThfyh+ZFpS+6Tk4zb0429fPBwVxCtlrUzdsFFlIhEMobcCJf
+         7FSQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUUM8NWH6R1lOFgd1L+rOS5Vt8B53tba3xW3DztwAznChxF2PXPQ54CdDxUYvPeANG5MZZtMFQkG3hmUglC@vger.kernel.org, AJvYcCUv9w2Kz6gZdWNg8J6cdfLY/RNP+wPDMKNmpRA8F+NXWjDWIuD2N8SUqhssczX7vASj4yojRiyFgzmc@vger.kernel.org, AJvYcCV8uNsFB3DIKdyYVxiH7BKpSXGLrEIAG1wxcTjR9Wv/5vfjh1O5Cq7Ft9DRYVG06SexYKz7EzJhLmbJ1g==@vger.kernel.org, AJvYcCV9IBU+q0/NFZAlmTQKMcJ++qr6wzQtKfsbT6FihdT00ZxvKIbbsvxkVMV2xF6sg+uByIBAOu/RN77olT4n@vger.kernel.org, AJvYcCWjjd2pi2H3VW1GbC7mdn/Hn/edP4qTPzyT0KJW37a2KOeAiCMb/oSVOE3bDEWY+srYO3DxGMrPO4pS@vger.kernel.org, AJvYcCWkW4wYU/RnzEbyjAMIERJR67cSwc4UJVqqVgHVhWz7Qj25drUhFfIZRQOU/vH2MBaqtk8tCTS4QczQ@vger.kernel.org, AJvYcCXBQv6aELkSFmtpMu9P/d2jxLYeoyqC2TOmlgOoSe9TZCbmYnMh3JZTRE3HLNzUMFUtsRTWN6ARZ2KVO3pXpOx8ZyA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxUat5BP9mV1o8OMihgN0es+CSJsMp+u0x8HiH3nr7HYE0DHT/r
+	Gcz07VHtFAwvIp5dxB4XXNT3ul0k1/FPIgqV2eLUeJxI4s5/vQfk3lQxBNtv2ik=
+X-Gm-Gg: ASbGnctl7XYluZmZ0vnYJXnSZd1aQPQlwrbbkWbru+FHav0YsuMP0lpXGVInCRBQBLe
+	CUS7sdyy+d8eI6vpsEO5oqPpmYML++dUeQ3uQIJSEDnY80+is9KK8V28M7xpQutUFVuwN7jjBJK
+	TJ3ze0qx4qDEU6zmNfLxgBbCyzm/iyZhrfwmvGn7geyITbiUyTsYnMSve0v5ILTLU+fXPHSUFXE
+	WNSQ0QqtWAwO5WaOudyZw29aaVzZI6ztJsVn3ohx64Wbr5w0CH9oQnoLYxxt7mhsNFv2O5LvJr8
+	R4wcEZclvdz/7rrNsnx6yy53lCj+YvH9nFiuqWCuTYFVF1iwhBHSzotXZH/eDAj1mtHbnDt4x4E
+	jOLj9HoY=
+X-Google-Smtp-Source: AGHT+IEIGZkAkfBiG5Ncpc2NKTQbIdtxmpakKbyQefAVcKv5OwG0DYQ8p0OcMmD0J0t+DXrL8xhiBw==
+X-Received: by 2002:a05:6102:162c:b0:4c2:d9d3:2aae with SMTP id ada2fe7eead31-4c5870aefdbmr2195083137.21.1743065732597;
+        Thu, 27 Mar 2025 01:55:32 -0700 (PDT)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4c50bc55ad1sm2734817137.18.2025.03.27.01.55.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 27 Mar 2025 01:55:30 -0700 (PDT)
+Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-86b9ea43955so300916241.2;
+        Thu, 27 Mar 2025 01:55:29 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCU5r1xHpXGn5TS3L+RAFQdsT+yFi8tf4WNwY6PM341IIKcQieV8xi0eAGTY+e0EWRv5pw+JRmb1il7K@vger.kernel.org, AJvYcCUiUqJhMWkoL6fjrarxlLYZa5y31jr34z6YZE1gd9kAzirqGlpxLrwqaeqEVta+DY6mN3vWD8it0kZHYc74@vger.kernel.org, AJvYcCVFNFnkK1KakRrDi5Jh0Vc+VG0DMLibmcom2P47acf8IBlikUXQm7pP8cLwPpfZ6X666DAURdq1gk3T@vger.kernel.org, AJvYcCVgA0qHBYp2IbSYti3Jm9i1ItBMx45ypqtSrHo2LMj3lahztzASTQj5na49bLUBEa+KKvnEnAh+kZ0Fm6gEoDLNc1Q=@vger.kernel.org, AJvYcCWqJ9WpvGUa6uduKI8nFUZica+3WDZ0F3fvBB9pwjR14pnfnVsH98JR0f9RyLXR5QwQ91WtkXHXLiNJC0Jt@vger.kernel.org, AJvYcCX2palGYjuidhqxgraiRNG0WUZisYOA+flLRMC7NF0DVVXWZPgx2qllh2w3+czwxRoHHfXvjCij4k0B@vger.kernel.org, AJvYcCXjpI/gj9BghIP4YkfWcp0+osOpe9/croDa46dJ3YemH/xH+7m4UfJCRsXota+k3fVjQaB9QSo29U0zwQ==@vger.kernel.org
+X-Received: by 2002:a05:6102:50a5:b0:4ba:971a:41fd with SMTP id
+ ada2fe7eead31-4c587074bf4mr2444666137.19.1743065729369; Thu, 27 Mar 2025
+ 01:55:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/15] dt-bindings: pinctrl: renesas: Document RZ/V2N SoC
-To: Prabhakar <prabhakar.csengg@gmail.com>,
- Geert Uytterhoeven <geert+renesas@glider.be>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>,
- Linus Walleij <linus.walleij@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- Biju Das <biju.das.jz@bp.renesas.com>,
- Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
- Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <20250326143945.82142-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20250326143945.82142-12-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 fv0=
-In-Reply-To: <20250326143945.82142-12-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <20250326143945.82142-16-prabhakar.mahadev-lad.rj@bp.renesas.com> <41c6f512-47a5-4723-bbdc-64ed85ae8391@kernel.org>
+In-Reply-To: <41c6f512-47a5-4723-bbdc-64ed85ae8391@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 27 Mar 2025 09:55:17 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVKfL-FRhDaFfOACV8R=ziqXdhmeW7Xd4WYXqHnSbR0ZA@mail.gmail.com>
+X-Gm-Features: AQ5f1Jp1SYp8iWPpWJ6Tj5rp6ScglN-F4PfZy1-_zatQI8UsxeHgk8YvFPlKy5w
+Message-ID: <CAMuHMdVKfL-FRhDaFfOACV8R=ziqXdhmeW7Xd4WYXqHnSbR0ZA@mail.gmail.com>
+Subject: Re: [PATCH 15/15] arm64: defconfig: Enable Renesas RZ/V2N SoC
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Prabhakar <prabhakar.csengg@gmail.com>, Michael Turquette <mturquette@baylibre.com>, 
+	Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Ulf Hansson <ulf.hansson@linaro.org>, Linus Walleij <linus.walleij@linaro.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Wolfram Sang <wsa+renesas@sang-engineering.com>, 
+	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 26/03/2025 15:39, Prabhakar wrote:
-> +#define RZV2N_P3	3
-> +#define RZV2N_P4	4
-> +#define RZV2N_P5	5
-> +#define RZV2N_P6	6
-> +#define RZV2N_P7	7
-> +#define RZV2N_P8	8
-> +#define RZV2N_P9	9
-> +#define RZV2N_PA	10
-> +#define RZV2N_PB	11
+Hi Krzysztof,
 
-Same comments as before - not useful to repeat the name.
+On Thu, 27 Mar 2025 at 08:43, Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> On 26/03/2025 15:39, Prabhakar wrote:
+> > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> >
+> > Enable support for the Renesas RZ/V2N (R9A09G056) SoC in the ARM64
+> > defconfig.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > ---
+> >  arch/arm64/configs/defconfig | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+> > index 11e7d0ad8656..c7b41f86c128 100644
+> > --- a/arch/arm64/configs/defconfig
+> > +++ b/arch/arm64/configs/defconfig
+> > @@ -1483,6 +1483,7 @@ CONFIG_ARCH_R9A07G054=y
+> >  CONFIG_ARCH_R9A08G045=y
+> >  CONFIG_ARCH_R9A09G011=y
+> >  CONFIG_ARCH_R9A09G047=y
+> > +CONFIG_ARCH_R9A09G056=y
+>
+> So the pattern will keep growing and none of you will ever bother to fix
+> it, because you have your patchset to throw over the wall.
 
-It is the third patch in this patchset, which receives exactly the same
-comments as given before.
+Yes, the pattern will keep on growing.
+Just like the minimum kernel size will keep on growing, especially if
+you can no longer compile a kernel without support for SoCs you do not
+intend to run the kernel on.  Not everyone has GiBs of RAM to spare...
 
-I expect that given feedback somehow stays within group of contributions
-or company in form of internal knowledge. Or just read other people's
-patchset to learn from them and do not make the same mistakes.
+Gr{oetje,eeting}s,
 
-> +
-> +#define RZV2N_PORT_PINMUX(b, p, f)	RZG2L_PORT_PINMUX(RZV2N_P##b, p, f)
-> +#define RZV2N_GPIO(port, pin)		RZG2L_GPIO(RZV2N_P##port, pin)
+                        Geert
 
-Not a binding. If you claim otherwise, point me to the line of driver
-code using this binding.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Best regards,
-Krzysztof
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
