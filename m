@@ -1,82 +1,110 @@
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26A091DED72;
-	Tue,  1 Apr 2025 08:04:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 595A41EA7E6;
+	Tue,  1 Apr 2025 08:50:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743494677; cv=none; b=ow/sHMKYVlxFPNr9angb+o/GbQ32nJIBRvNdFHanhqOJwNL6xbpYcQicj9qpLhCycOLalsvHlcOyNoGys+lAlNmhVRk9JuUj6AOXeroNioB5EcIK9lbFEt8+3fK1hkV9GGVk0K58ahmEUsd54m/CeI+EHKtAR+tU65jRy9/bUPs=
+	t=1743497457; cv=none; b=c8E2DlsZsyMik3ZTWeoWGbwCo1WAWy/5pfOYEolteakRBJxYT+QfStgaui7o9HOnLlwJ8WhkRdnXUztx9xYgbnijmiqXmkxeT90qBR1aXcS2eHxFHliCMpdkb5gz+GSTBGDCSmPoGPdKtock+vjbbW6Bk869rTQEYWJFecjdarM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743494677; c=relaxed/simple;
-	bh=DVLlLbfeotFU8qB5CxtUAkVjIGiFbSUTgWIjBFU/ias=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PcORg7ckVEXmTXdEYf9sLu7lO3L1bbVL8rJNqi9Ii+N/OQq+vMJcXwc5bYexyy5Z5S88HdWgZEiCzgVopgswcSiFvKmGQPD7rz+UFQErLyA+/0gp8veCR6KMJBqF27r+fCpaIwAYyxtwf+aoVCsrKozx2N+HIU+iGx8em/NKFg8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from localhost (unknown [124.16.138.129])
-	by APP-01 (Coremail) with SMTP id qwCowAB3IAEEnutn9MenBA--.60S2;
-	Tue, 01 Apr 2025 16:04:20 +0800 (CST)
-From: Chen Ni <nichen@iscas.ac.cn>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	u.kleine-koenig@baylibre.com
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Chen Ni <nichen@iscas.ac.cn>
-Subject: [PATCH] serial: lantiq: Remove unnecessary print function dev_err()
-Date: Tue,  1 Apr 2025 16:03:37 +0800
-Message-Id: <20250401080337.2187400-1-nichen@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+	s=arc-20240116; t=1743497457; c=relaxed/simple;
+	bh=Db1bHZtzv4KjEARyOqrFkHQPVMXwtN1hjwMiMRt+b6w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=rxYS4rVDSYLIa8Tt8cKIKOKpALtXSXQRc5cvcqnMLTeHqmPgIse+QzVjru9rbs8lXgvfi9bstN3S1CzWEIo3S+jJZEOFGwPeArqbKXAje/dBacC8nfADmXayorE13N1Pf57gPl6SO6mEeDzqme18FgBlRtPu7EIhL+vb4gPqkHw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=gjQn697a; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="gjQn697a"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5318KxN0008580;
+	Tue, 1 Apr 2025 08:50:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	vatynH2ityQ3qOXKNGXwXruNv0fPqV72MsyUx0aezyA=; b=gjQn697axmrqrtNK
+	Gqu9kFbL0whgnXzr3qxZQzBEJmZSUTjJX2ZTBss8Dfb2HtAFFt6B2lKzvrKdz+8N
+	6s8O0nKCz0BBtfAC+3b3gVr1V1w5hXEAZQUcikOeNpQcoCorSV5kcXjEDQlZrpbs
+	jaB2EzG2GXANbXoOmcRBtSKg651VuMZ4qHurZRE2Xo9RppVSEFtmyw8bpTGtQNsI
+	IEC7e6w9ALbScpqEpkkTIR80oltJ9zQuxA/jDltepHH5b93PusTGf6sNaKID9A7F
+	9Bqzcv30TADWwJ+/iqfFF+qxZCTKMqmDNx0mOTxNWHcDqL1mNdW4f6bdtSaXLgeE
+	271fog==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45r1xnhr08-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 01 Apr 2025 08:50:47 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5318oeuD032043
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 1 Apr 2025 08:50:40 GMT
+Received: from [10.218.13.83] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 1 Apr 2025
+ 01:50:38 -0700
+Message-ID: <d5166661-3e51-46c9-b675-e0ec973ea5a7@quicinc.com>
+Date: Tue, 1 Apr 2025 14:20:35 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qwCowAB3IAEEnutn9MenBA--.60S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZrWrWF43Xw48tF18AF18Xwb_yoW3XwcEk3
-	WkCasFgr4rCrs5tw1Ut3y3uFy2v3WDZF4ruF1vqa93X34UAFWkXryqvFnrXw4kW3yUAry3
-	Grnrur1akF4SkjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUbskFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-	Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
-	1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
-	cI8IcVAFwI0_JF0_Jw1lYx0Ex4A2jsIE14v26r4UJVWxJr1lOx8S6xCaFVCjc4AY6r1j6r
-	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AKxVWU
-	AVWUtwCY02Avz4vE14v_GFyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
-	1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
-	14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
-	IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E
-	87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73Uj
-	IFyTuYvjfU00eHDUUUU
-X-CM-SenderInfo: xqlfxv3q6l2u1dvotugofq/
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: lantiq: Remove unnecessary print function
+ dev_err()
+To: Chen Ni <nichen@iscas.ac.cn>, <gregkh@linuxfoundation.org>,
+        <jirislaby@kernel.org>, <u.kleine-koenig@baylibre.com>
+CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+References: <20250401080337.2187400-1-nichen@iscas.ac.cn>
+Content-Language: en-US
+From: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+In-Reply-To: <20250401080337.2187400-1-nichen@iscas.ac.cn>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: NT9D7_tplwphbgiKOkGaXEElMJYElMdx
+X-Proofpoint-ORIG-GUID: NT9D7_tplwphbgiKOkGaXEElMJYElMdx
+X-Authority-Analysis: v=2.4 cv=Qv1e3Uyd c=1 sm=1 tr=0 ts=67eba8e8 cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=COk6AnOGAAAA:8 a=Xs6LVA4tq6cmMylQgHQA:9 a=QEXdDO2ut3YA:10
+ a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-01_03,2025-03-27_02,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ mlxscore=0 impostorscore=0 adultscore=0 priorityscore=1501 bulkscore=0
+ phishscore=0 malwarescore=0 mlxlogscore=999 lowpriorityscore=0
+ clxscore=1011 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504010057
 
-Function dev_err() is redundant because platform_get_irq()
-already prints an error.
 
-Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
----
- drivers/tty/serial/lantiq.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
-index 58a3ab030d67..62cd9e0bb377 100644
---- a/drivers/tty/serial/lantiq.c
-+++ b/drivers/tty/serial/lantiq.c
-@@ -773,10 +773,8 @@ static int fetch_irq_intel(struct device *dev, struct ltq_uart_port *ltq_port)
- 	int ret;
- 
- 	ret = platform_get_irq(to_platform_device(dev), 0);
--	if (ret < 0) {
--		dev_err(dev, "failed to fetch IRQ for serial port\n");
-+	if (ret < 0)
- 		return ret;
--	}
- 	ltq_port->common_irq = ret;
- 	port->irq = ret;
- 
--- 
-2.25.1
+On 4/1/2025 1:33 PM, Chen Ni wrote:
+> Function dev_err() is redundant because platform_get_irq()
+> already prints an error.
+> 
+> Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
+Acked-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+> ---
+>   drivers/tty/serial/lantiq.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/lantiq.c b/drivers/tty/serial/lantiq.c
+> index 58a3ab030d67..62cd9e0bb377 100644
+> --- a/drivers/tty/serial/lantiq.c
+> +++ b/drivers/tty/serial/lantiq.c
+> @@ -773,10 +773,8 @@ static int fetch_irq_intel(struct device *dev, struct ltq_uart_port *ltq_port)
+>   	int ret;
+>   
+>   	ret = platform_get_irq(to_platform_device(dev), 0);
+> -	if (ret < 0) {
+> -		dev_err(dev, "failed to fetch IRQ for serial port\n");
+> +	if (ret < 0)
+>   		return ret;
+> -	}
+>   	ltq_port->common_irq = ret;
+>   	port->irq = ret;
+>   
 
