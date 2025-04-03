@@ -1,63 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com [209.85.216.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE1261448E0;
-	Thu,  3 Apr 2025 01:28:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9CDF28FF;
+	Thu,  3 Apr 2025 06:28:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743643724; cv=none; b=bHvjlzfP3n6YfWht8cGmxSfqm1Ue0i7zT6FqMW4t9EaZB3M2nBI9nEuCrMvXfHqr8St4oOUOdEOpRrB4gUCP8ufCO02kaFzjjtRznM05ZsdDMoGDmVGz/AtuPAsxhSluFcbWjw/6/jc/WAzu01I1OpVVmijCOjwqW7DDmItXtrQ=
+	t=1743661700; cv=none; b=pCSmje+h0F2KXzDpacJNM/YPfZYTP9NsJKQU8M/nvUjRaMDH3Bng7Vx5eiBiNSirGcrLTY9qm9GgUbfGzG8tkck2Y8zbmuOt6HGdpuNWrtwYllilGISGUV70ArbWKv9i4InCD9+F7Ehv/CRWM0QfRIp5wZprFOBQyYodFjpIzcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743643724; c=relaxed/simple;
-	bh=oLqC5fath1ZrEqaF0LjhE3KORxBA6Cvvb72vvPsS9uo=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=W3O0P2y07zCy+0AmMuI3uPPvVd0jRhPU+6CF9aa9IGUiAr2Aupq/mvrOcSAhB6VVt2nRtMQ/06gBv19jz/Yv9QffP93Izzsn1p13bsN6AJv9qeE1QURJkttLszbEY7k8zL7MU4RJx6bNO/MsV+l20xdZehNJUkOkKTKbc5w/Wxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mIZoVMmg; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1743661700; c=relaxed/simple;
+	bh=x8cKCl7UMMbwrccfbeSRllIxdCYB9+ViYGvLRKmaVAA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=lVOxYtbvYlZDmh9dJ7Uax7NDS5g6IrdpZhMdJ6kHONG5GnQileEu8eb/fVDSdwphofGU0ahOe99+vScFr/PPLZrL3Y47WSkSyMMHN6EMkSGrwB2KgFBCjmEQ4ETO1/DyQV5CkvTHtNtcKUUqvHsQsjSk9KHMmfmV8/LBYSx3oEM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SMnQTYgx; arc=none smtp.client-ip=209.85.216.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mIZoVMmg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4966CC4CEDD;
-	Thu,  3 Apr 2025 01:28:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1743643724;
-	bh=oLqC5fath1ZrEqaF0LjhE3KORxBA6Cvvb72vvPsS9uo=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=mIZoVMmgfjZV/p/K+l/e/qBbghQgkoWe1lQBmdBmBbGSOz3oj9FxZ2XqBioyRCAuR
-	 BmJ2rd9l4/4cCFSCcI+r6ro1R+4bIYc7ApV1aXWlYxamua6R/n0YyZdCEMA8bO8AXM
-	 DmO5Gc83SbXT6YkqmC6itDZiXXE4MFg0lMCEme8YdTyuCPC2bc78ukEePDyHneCD5z
-	 JfD/+W2UfTaiEnUBJWzzEAzowWeHG88nktmr9oemIR7MWbTjyHgx7L/RzQI05gFikw
-	 KDhxC+4JMRzUj0g2UelFFc88kNtTxPBp3FaL43KctpM9YN5a0mY6jMI2ZgY4KYR7Dl
-	 VLt3Ogxxh5O+g==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 70EC4380CEF1;
-	Thu,  3 Apr 2025 01:29:22 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY / Serial driver updates for 6.15-rc1
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Z-2YhB7c0rxT5ldr@kroah.com>
-References: <Z-2YhB7c0rxT5ldr@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Z-2YhB7c0rxT5ldr@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.15-rc1
-X-PR-Tracked-Commit-Id: 9f8fe348ac9544f6855f82565e754bf085d81f88
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ddd0172f182e3e869a3a960e433578aeedcb37c9
-Message-Id: <174364376110.1744561.8618250493326881643.pr-tracker-bot@kernel.org>
-Date: Thu, 03 Apr 2025 01:29:21 +0000
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SMnQTYgx"
+Received: by mail-pj1-f67.google.com with SMTP id 98e67ed59e1d1-301918a4e3bso512254a91.3;
+        Wed, 02 Apr 2025 23:28:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1743661697; x=1744266497; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=zv2Eim6EJxK+6ui7lY93m7UU37Cs8RrVaOWKjl9KmMc=;
+        b=SMnQTYgxz+BZ8jEv3v0sBuR9qT2AJGvYazfW70/pHreJ8hBPrRTKgxEujA7441E0T9
+         16WMu7ea4kw69ckQh1yNhJ22sRyj7JPQM1sWc6bFan959fPAKL00wHRsrK1P7lLbYs2k
+         b6Etzq1pPUvAUSopyWA+jUSz2lYv/F1CfNmIzvJhKjGmwGu6dvhnRvk6mZWVmuEbsWRE
+         vMXjslq5wrmq+3HXa/BIdkQpqqtO6pewbpgEl/GBMXFISoO16S0kjv6cQz7UzvhIV+w7
+         CInBeuIF2e4ql07NfvI2wp95MEfdGB2bnaJrn60PizgRqer/O+LjkTCqktoYwhi+FxSB
+         JElQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743661697; x=1744266497;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zv2Eim6EJxK+6ui7lY93m7UU37Cs8RrVaOWKjl9KmMc=;
+        b=gog6pzrHB4kiPb1Sh0PTu2RiqRnSJRbJepNho3zvJhy9rcTb+W7+Rlr6RQB3d7zbYW
+         bMWs5fr1v4wShOYqAl2g8Ab0i8cRWtppaSbyK3mlywOzQg0BWL0CFQ1aDcx7/WZ7TQl0
+         vm5A/xEMQW/akkYNjRqm769ZbffZy3bKNpSqvN1Kj5YsDGhR7t4gYmjd/SDJrySs3nru
+         SV8tIwKw84wCnYEm8P3PbvD57t/jFzImEh7m6a6Pi9OPJDDsjmCYmLte1YVWaiNm4fDY
+         7RSjNGsIoZmD0FMRf0KecgYPKXIY1xuGPiWbpv/fhnOkTcE/POpxfmFhNXAqQFhZ59tR
+         5WYA==
+X-Forwarded-Encrypted: i=1; AJvYcCXYlZq4AdiGXIehl6JQAcB8hN9SIV/Fv8Z/UW8y7oSG0P8YDN6uZk39Vke3sU7tvDSoOcmhoBBmg9qHGNY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz8C1Pi/CVwBXFfqpFhKRc3JmuGzPFmFz5hzmqffXXRLirPEH73
+	+Q2rsu+Ovd+uuvaHIRGpQAOL6+ICwUxybCq2fRizo1NKZC2SAzov
+X-Gm-Gg: ASbGncsjJF2S428Wp1fEe+Q20uSCtZDB4zsquJLl0Ry6889rcjjt5mHWc05U00Sgrvv
+	1GvHhDI2qVBxepwRb/8PRp1WWDGImsozO4k4AyB1CqO1b1wcfVjuTalAMp6hJaEp0HsivfUKIcK
+	XtrZNZsahf0EEg48pGq80WPX12h1LqFxS1/cs/U0BIikkRHJfQGtqo4jSeuR9XUDHr82LPmi+MZ
+	yQJZXDu0/b5aeWt9ybor5bSDlM7W9fkU6zBCwwo+s1pU0FOgaENki/pRNurA58BbQwOJC5lofDv
+	dZ8QZxi06AP4e9ZK/JHet5v2kQooL4jpZAMjHOPfgrmdQfn71mRhnV9sgx+T/2SurCyRtsA=
+X-Google-Smtp-Source: AGHT+IH3/7oQDppEuWcYDFvnSNSVp2KWqayWvGz4NpuF6q5e1fxmt66vYC1luZBtdcGvzxbf+Tt5KA==
+X-Received: by 2002:a17:90a:c88f:b0:2ff:5016:7fd2 with SMTP id 98e67ed59e1d1-3053215e085mr32933013a91.24.1743661696860;
+        Wed, 02 Apr 2025 23:28:16 -0700 (PDT)
+Received: from henry.localdomain ([111.202.148.167])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3057ca5163fsm926950a91.19.2025.04.02.23.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Apr 2025 23:28:16 -0700 (PDT)
+From: Henry Martin <bsdhenrymartin@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	sugaya.taichi@socionext.com,
+	orito.takao@socionext.com,
+	u.kleine-koenig@baylibre.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Henry Martin <bsdhenrymartin@gmail.com>
+Subject: [PATCH v1] serial: Fix null-ptr-deref in mlb_usio_probe()
+Date: Thu,  3 Apr 2025 14:28:08 +0800
+Message-Id: <20250403062808.63428-1-bsdhenrymartin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-The pull request you sent on Wed, 2 Apr 2025 21:05:24 +0100:
+devm_ioremap() returns NULL on error. Currently, mlb_usio_probe() does
+not check for this case, which results in a NULL pointer dereference.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.15-rc1
+Add NULL check after devm_ioremap() to prevent this issue.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ddd0172f182e3e869a3a960e433578aeedcb37c9
+Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
+Signed-off-by: Henry Martin <bsdhenrymartin@gmail.com>
+---
+ drivers/tty/serial/milbeaut_usio.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Thank you!
-
+diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
+index 059bea18dbab..4e47dca2c4ed 100644
+--- a/drivers/tty/serial/milbeaut_usio.c
++++ b/drivers/tty/serial/milbeaut_usio.c
+@@ -523,7 +523,10 @@ static int mlb_usio_probe(struct platform_device *pdev)
+ 	}
+ 	port->membase = devm_ioremap(&pdev->dev, res->start,
+ 				resource_size(res));
+-
++	if (!port->membase) {
++		ret = -ENOMEM;
++		goto failed;
++	}
+ 	ret = platform_get_irq_byname(pdev, "rx");
+ 	mlb_usio_irq[index][RX] = ret;
+ 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.34.1
+
