@@ -1,212 +1,183 @@
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44F5413AA2D
-	for <linux-serial@vger.kernel.org>; Thu,  3 Apr 2025 14:14:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E06762E3386;
+	Thu,  3 Apr 2025 14:39:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743689660; cv=none; b=bikhs/juCAziYKorPWtgvrsmTzKSgeHvK5tdBPbdRTwSoPv9NuDWgFGI8xoFYxRU1NfaTHIxo/KMJCKJcptaZwnZ5+hgeBcEGv5zu+/84M/mBzvbGZppAyjricpqoh1dXYbXNaQ3UC345tpCxBufKSDWjvUfLkEBVu+IdY57IXs=
+	t=1743691157; cv=none; b=RjsbccIMbHhFIYGyZcdWroTK/wEdR9BbmKygPb4lSTQ8Ql4HGkR50w/jQw11Qi8bqFnMDiKHkZsZxFCD78uN2ej5elYJWh/A15s4VeegdxczJoz6UJnmg6QpDZOjcwQ6YM50uer7CUXFSN1s434VWEq2a6NGivDNC/mnUUnafqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743689660; c=relaxed/simple;
-	bh=Dwzx87w8EtvbAkXcWgx2YvgPMNEUBDqrUT38s8IWuSo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rBXwtan7TmOr/XIbkIlUScEc8+tb9VnFxWMEQirA/VlDBtrUjDwCGj4DnZTI0ye6M0rGP1uv+Fo285BYw9B0sXmIWyPZnezCf0hoNhsSCI9St3JHvtAkQ/74O9p37xD2NGQYZhJo1g50TLmb8OCWQBg7SqIt3OQX74xN+FC0UU8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=WFmPq58Z; arc=none smtp.client-ip=209.85.161.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1743691157; c=relaxed/simple;
+	bh=dmX8ClR6s2gT1VOXeNIIzH890lXaEbUlMlb3oILAje8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IBwfeOS4YfngygK02SN5AACj7zftNNAQval20PsfpjWo/0fc5KH/p/zqY0yDFuS24gnGHEuLnJLNzwww/bk/f9WBDWLFxyzCz1VWGy3nmvxRejO/gqjvU6QJ8bLao143GSaitXSU7lcQNA/bQLGu0EUyoXP88pLmITwH4CbdTlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eAskKQkl; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="WFmPq58Z"
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-60208b7a6d6so243148eaf.1
-        for <linux-serial@vger.kernel.org>; Thu, 03 Apr 2025 07:14:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eAskKQkl"
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-736b98acaadso1027972b3a.1;
+        Thu, 03 Apr 2025 07:39:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1743689657; x=1744294457; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kck1Cl+HJBYNvP9X5x5v2o9+GYId7MzkAZKah4xkyC8=;
-        b=WFmPq58ZZKu112AlldP+mOWdcETto2xYwqkFEFlZG+Hl2FnQ1UgUxFzGe8B33u0nO3
-         GyOK5tqtUhtN/YJrbAmt4u1dkKR3TEsAANvs7CxeTODau9suSo00B2UtHAXVhgSLvTok
-         n1q4v28v3M76Ci4SJtSXGElrSh0awAtTrCefOTQaXNq6nEqem9jmtalMXNMEp7dPZfka
-         Brnt4GBuxocQEGmemMTL69z+xPnE3GgrZrKa37dZY4tnRuQO3hZ7wWMEvhySn6kpZVwc
-         UWDmB54MvZBFPC3CslRScAMgcfxUanLEMJGTkeCeb7qdvb6HufpckN0MPtF7jwtoWvRx
-         1m0g==
+        d=gmail.com; s=20230601; t=1743691155; x=1744295955; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Rvr0XxDHh05/lDdFnQkqZ5aBAiK03CfkHR41QzNZGHs=;
+        b=eAskKQklC12e/ry9l7cH1ctbUMIvWFD4TYd+Df4dYRw2MC0E39OFsWe5QTt/E3G8GJ
+         r1EWWiYTzJxHSZlI68BwRgwZ+46IkTs3uT4tcRHLY1j/z3zNwjzKXprH36WBLbMTvHnf
+         ULTyq8ufdIImCpA9cL8e3XGNqKwM3VCAldYVJlcYP3+BUbS2e0TdM1A5KI/Tyv1UzYg3
+         JvytZZaGh4Tf9RChBwXBGw/RINa4IV5SnSOvFXopClfhiHY47PwifbYgot1tB9KuYJmI
+         cDnULyHfKNVTfXN2XYwujI4dtEieH0toB5EB20D0Obc+6IRFsH8H0n2jFu8R9XdtV+Tz
+         okxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743689657; x=1744294457;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kck1Cl+HJBYNvP9X5x5v2o9+GYId7MzkAZKah4xkyC8=;
-        b=ZL/Cirw+gwJLhO7R5fvJq1liBR6tTZCfWKYUVpjnfKUZT4Kn+YDZBrlcSf/8I198ue
-         emR03r/xJHkVXsX/ULuVsRlNcwmoDilSxm0+L4BxmBQlZkCKALXeCyA4ktJGnsiJBs8H
-         OFmHoohznbxHxKzPdyJykUzey3JZBXcexTsc1H4zD5nj0t9SfFvhY5ETnuihVRwZ04cu
-         tr33ZLqeB77kEIDNYjTW9OU6ZwELNFIF2OM/4CbHpDu5/DwqrGww9xFLX1e6yE+8nWSi
-         O9yspvgsBEIownql/H26IZmJIijlVCc9xMaMj7VVwcxUfha+kHPiovmOqv9/WprvAAtu
-         ZSUQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUYONjO0cT9tO1BsbDg6q02IRi71G4Vq+0Rl8VIcVBatnsaUf/7R9Qb8qY+P4FlvmEA23c2tiydRV9MVBg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz4fV4Yb2prSWqEQUYkBHkFFP2wS1/CtmaXkhVFLkA3EPUNfZXe
-	5vC6Hgu9zMVht/Yqt5HaP8yeqwYqnWVI4j9BTj69QCbliGGLQvG5PkCjhTPBY9C7FpWBXtOVWnQ
-	2zrkDzEI9F+BDWop9kuqWpWGKs607RMqtK/wyCg==
-X-Gm-Gg: ASbGncuvNtZsz0cZy7dodhQDCGRUZo186G7tUqSUuJoN535LWudcE/Z08SEDGcbrO/i
-	XffkxxKHHjcPGrpk6nlFyDthX/mAoGsDJjTyeceKzWO4JjjV3V5pZnbKUaXcPzf9mXpDuqqbRBr
-	aZh5jkwl7w5jcBxlmQaGKAAkI37aXk
-X-Google-Smtp-Source: AGHT+IGX5KdsVkdyCcGAAVIGt94/fElHG9XoZOO7zDHLRiXppj/8z3JsXluRyGAYsTNTxSjatXvhKZhwGYzPgahAa3k=
-X-Received: by 2002:a05:6820:160b:b0:603:ff71:aef9 with SMTP id
- 006d021491bc7-60400227113mr2706914eaf.4.1743689657251; Thu, 03 Apr 2025
- 07:14:17 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1743691155; x=1744295955;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rvr0XxDHh05/lDdFnQkqZ5aBAiK03CfkHR41QzNZGHs=;
+        b=QZpcmZ6rlls4IJSFgVD+R/YZrrxb9La8xo+Zzyjrwb/yjhOslL1irjMdXFHd1+Areq
+         f49god6HTJ+j3PnViha9kzO+aj7F6pCjcATWGhuUrbu2EAmQ9eZ4kVosVzEZrqD+di6r
+         36gPo3kLhVhFWxfc4TO0YuoHqZ9OlRN9Ti1S2WtoKowm+dyED4KDt+ukNsjkDmBQlZZL
+         /yjoNIkeBd9Sh3QuJMVUC2iO4N9WjS9IZWlbmbe/ZQCuD6KpvH/eT54a8H14Yrp1qIYg
+         Ae3+i4Nyg/bW+yYvb/qSe6d3aONoMRVCoQhl6nA1oi4Vqsv2d7e7bKHkRKS5z8yglDrB
+         YGVg==
+X-Forwarded-Encrypted: i=1; AJvYcCULsmrXYjV3MR8aKW5NGpQGcjvtbX4F4BBKNHzlpS3bMN3Hn6MX06LgrZjP3KwPc/Tr3E+YEOVZL3aANxct@vger.kernel.org, AJvYcCVVyDCqKTv/BVOXJ+ZAog2oZ8DwAeCrnDqvUViBOMJaaHqezE9WY7TkpB72h0SahbJ9hCU=@vger.kernel.org, AJvYcCVkj66LdSHEy530I8aZeqamjYlHjOAQC0YOorcQzb5uzQYa0hPxm17gqf+YcOsJXsZNCnNMgm9jnHqlgyBk6LA=@vger.kernel.org, AJvYcCWNpRm+bZ2OfwF03+IQzwg5IPkmBMz3VUk+ElB9szPqxtmAMMy1YF060H+0+NbJUVF0CyEH4PgoGrTBD88=@vger.kernel.org, AJvYcCXdFDrfQinB7VgtZUO6m4N68JX3qqA8SI8JjIbcMKbrh467BX2yrvUm/d/6RwIl7Rs/oR7zV4eQpdM79WY=@vger.kernel.org, AJvYcCXdosafBjnlO4vBbMVNH6aeN5rve+E5sStyeJq+/u+phIkm+A6YkNmzKNoPe7HayAk3Y7H8SZufmfz4E3Zy@vger.kernel.org, AJvYcCXffW0RFwDS2KuMuQKhgIBFeephHrqFyhlUmUubFc3LOdV0KP1WBvC7NvMwuWP02tVU/Gzo85t5@vger.kernel.org
+X-Gm-Message-State: AOJu0YxOSBzuInOu5hDkoYPKwMEZHPRLnl3GpMhl95fXRinQggvK4oDD
+	bWho26PoaldQOtHBbg4gPY26A88xr/h6C4VlDQMNVhyWj81yFoOT
+X-Gm-Gg: ASbGncuNQ0yG1NE8l6aaInEn9HvjEMCM5LffqR7KdGxE8ggeLV+9Oxhd+x9MxpUTUTo
+	7nNp4gktau9DA5l1rFId/phnTNKKFy3kuDa0CoJXPv5bUXQzllV4OEisf7YUNALiyRHPkAFeGxk
+	4z28sK3bSpMRRQ5CG3X+FFlFcJ2V6OTKLjSVC5EL9vMMqVcQk/fem9tZJcuvqi8iEw0iMG9kxBU
+	pnzkNh5Hsqc1D2OmGLD07lKcZZGDWr8bUHoTlS9uo/V8nu7Z4WSoub9K0rb+to5DPprljtQMQnl
+	UacM/tsauEhwUr33g0qoEFSlwtuuhT7fcTV3glcZrZPW8tl7jvrUrt1LsvWvIDWmW1w0cFD2
+X-Google-Smtp-Source: AGHT+IEBLhxF2I4CcVDE0Ip1aaBG/9qxfajK2d8loqdQY51JgxIHQayN0kr/iRs9O5E0K4MztoDo5g==
+X-Received: by 2002:a05:6a20:6f04:b0:1fd:e9c8:cf3b with SMTP id adf61e73a8af0-200e4cc69c1mr11499641637.30.1743691154910;
+        Thu, 03 Apr 2025 07:39:14 -0700 (PDT)
+Received: from visitorckw-System-Product-Name ([140.113.216.168])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-af9bc2d331csm1285435a12.12.2025.04.03.07.39.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Apr 2025 07:39:13 -0700 (PDT)
+Date: Thu, 3 Apr 2025 22:39:03 +0800
+From: Kuan-Wei Chiu <visitorckw@gmail.com>
+To: "H. Peter Anvin" <hpa@zytor.com>, Yury Norov <yury.norov@gmail.com>
+Cc: Yury Norov <yury.norov@gmail.com>,
+	David Laight <david.laight.linux@gmail.com>,
+	Andrew Cooper <andrew.cooper3@citrix.com>,
+	Laurent.pinchart@ideasonboard.com, airlied@gmail.com,
+	akpm@linux-foundation.org, alistair@popple.id.au,
+	andrew+netdev@lunn.ch, andrzej.hajda@intel.com,
+	arend.vanspriel@broadcom.com, awalls@md.metrocast.net, bp@alien8.de,
+	bpf@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+	brcm80211@lists.linux.dev, dave.hansen@linux.intel.com,
+	davem@davemloft.net, dmitry.torokhov@gmail.com,
+	dri-devel@lists.freedesktop.org, eajames@linux.ibm.com,
+	edumazet@google.com, eleanor15x@gmail.com,
+	gregkh@linuxfoundation.org, hverkuil@xs4all.nl,
+	jernej.skrabec@gmail.com, jirislaby@kernel.org, jk@ozlabs.org,
+	joel@jms.id.au, johannes@sipsolutions.net, jonas@kwiboo.se,
+	jserv@ccns.ncku.edu.tw, kuba@kernel.org, linux-fsi@lists.ozlabs.org,
+	linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	linux-serial@vger.kernel.org, linux-wireless@vger.kernel.org,
+	linux@rasmusvillemoes.dk, louis.peens@corigine.com,
+	maarten.lankhorst@linux.intel.com, mchehab@kernel.org,
+	mingo@redhat.com, miquel.raynal@bootlin.com, mripard@kernel.org,
+	neil.armstrong@linaro.org, netdev@vger.kernel.org,
+	oss-drivers@corigine.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, rfoss@kernel.org,
+	richard@nod.at, simona@ffwll.ch, tglx@linutronix.de,
+	tzimmermann@suse.de, vigneshr@ti.com, x86@kernel.org
+Subject: Re: [PATCH v3 00/16] Introduce and use generic parity16/32/64 helper
+Message-ID: <Z+6dh1ZVIKWWOKaP@visitorckw-System-Product-Name>
+References: <20250307195310.58abff8c@pumpkin>
+ <EB85C3C1-8A0D-4CB9-B501-BFEABDF3E977@zytor.com>
+ <Z824SgB9Dt5zdWYc@visitorckw-System-Product-Name>
+ <Z9CyuowYsZyez36c@thinkpad>
+ <80771542-476C-493E-858A-D2AF6A355CC1@zytor.com>
+ <Z9GtcNJie8TRKywZ@thinkpad>
+ <Z9G2Tyypb3iLoBjn@visitorckw-System-Product-Name>
+ <Z9KMKwnZXA2mkD2s@visitorckw-System-Product-Name>
+ <Z+AlyB461xwMxMtG@visitorckw-System-Product-Name>
+ <eec0dfd7-5e4f-4a08-928c-b7714dbc4a17@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250403090336.16643-1-cuiyunhui@bytedance.com>
- <84iknl5uex.fsf@jogness.linutronix.de> <CAEEQ3wkOQUh03Ggpf=mBWzNt1_Qtcv53gNXm7JH5Nban3tOtvQ@mail.gmail.com>
- <84cydt5peu.fsf@jogness.linutronix.de>
-In-Reply-To: <84cydt5peu.fsf@jogness.linutronix.de>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Thu, 3 Apr 2025 22:14:05 +0800
-X-Gm-Features: AQ5f1Jq2zgr86N_n3aGrsrAxWOISOU-dCYKO2Zmrl-cxu0OJKD3hOBpTrrWnfO4
-Message-ID: <CAEEQ3w=GnSF2Ka+nVM+HNZOmFxzcomPf9uDqOJZV=RU17OZijQ@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] serial: 8250: fix panic due to PSLVERR
-To: John Ogness <john.ogness@linutronix.de>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, pmladek@suse.com, 
-	arnd@arndb.de, andriy.shevchenko@linux.intel.com, namcao@linutronix.de, 
-	benjamin.larsson@genexis.eu, schnelle@linux.ibm.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <eec0dfd7-5e4f-4a08-928c-b7714dbc4a17@zytor.com>
 
-Hi John,
+On Tue, Mar 25, 2025 at 12:43:25PM -0700, H. Peter Anvin wrote:
+> On 3/23/25 08:16, Kuan-Wei Chiu wrote:
+> > 
+> > Interface 3: Multiple Functions
+> > Description: bool parity_odd8/16/32/64()
+> > Pros: No need for explicit casting; easy to integrate
+> >        architecture-specific optimizations; except for parity8(), all
+> >        functions are one-liners with no significant code duplication
+> > Cons: More functions may increase maintenance burden
+> > Opinions: Only I support this approach
+> > 
+> 
+> OK, so I responded to this but I can't find my reply or any of the
+> followups, so let me go again:
+> 
+> I prefer this option, because:
+> 
+> a. Virtually all uses of parity is done in contexts where the sizes of the
+> items for which parity is to be taken are well-defined, but it is *really*
+> easy for integer promotion to cause a value to be extended to 32 bits
+> unnecessarily (sign or zero extend, although for parity it doesn't make any
+> difference -- if the compiler realizes it.)
+> 
+> b. It makes it easier to add arch-specific implementations, notably using
+> __builtin_parity on architectures where that is known to generate good code.
+> 
+> c. For architectures where only *some* parity implementations are
+> fast/practical, the generic fallbacks will either naturally synthesize them
+> from components via shift-xor, or they can be defined to use a larger
+> version; the function prototype acts like a cast.
+> 
+> d. If there is a reason in the future to add a generic version, it is really
+> easy to do using the size-specific functions as components; this is
+> something we do literally all over the place, using a pattern so common that
+> it, itself, probably should be macroized:
+> 
+> #define parity(x) 				\
+> ({						\
+> 	typeof(x) __x = (x);			\
+> 	bool __y;				\
+> 	switch (sizeof(__x)) {			\
+> 		case 1:				\
+> 			__y = parity8(__x);	\
+> 			break;			\
+> 		case 2:				\
+> 			__y = parity16(__x);	\
+> 			break;			\
+> 		case 4:				\
+> 			__y = parity32(__x);	\
+> 			break;			\
+> 		case 8:				\
+> 			__y = parity64(__x);	\
+> 			break;			\
+> 		default:			\
+> 			BUILD_BUG();		\
+> 			break;			\
+> 	}					\
+> 	__y;					\
+> })
+>
+Thank you for your detailed response and for explaining the rationale
+behind your preference. The points you outlined in (a)–(d) all seem
+quite reasonable to me.
 
-On Thu, Apr 3, 2025 at 9:46=E2=80=AFPM John Ogness <john.ogness@linutronix.=
-de> wrote:
->
-> On 2025-04-03, yunhui cui <cuiyunhui@bytedance.com> wrote:
-> >>> When the PSLVERR_RESP_EN parameter is set to 1, the device generates
-> >>> an error response if an attempt is made to read an empty RBR (Receive
-> >>> Buffer Register) while the FIFO is enabled.
-> >>>
-> >>> In serial8250_do_startup, calling serial_port_out(port, UART_LCR,
-> >>> UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
-> >>> dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latt=
-er
-> >>> function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
-> >>> Execution proceeds to the dont_test_tx_en label:
-> >>> ...
-> >>> serial_port_in(port, UART_RX);
-> >>> This satisfies the PSLVERR trigger condition.
-> >>>
-> >>> Because another CPU(e.g., using printk) is accessing the UART (UART
-> >>> is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) =
-=3D=3D
-> >>> (lcr & ~UART_LCR_SPAR), causing it to enter dw8250_force_idle().
-> >>
-> >> Didn't this[0] patch resolve this exact issue?
-> >>
-> >> John Ogness
-> >>
-> >> [0] https://lore.kernel.org/lkml/20220713131722.2316829-1-vamshigajjel=
-a@google.com
-> >
-> > No, these are two separate issues. This[0] patch is necessary, as
-> > expressed in this comment:
-> >
-> > /*
-> > * With PSLVERR_RESP_EN parameter set to 1, the device generates an
-> > * error response when an attempt to read an empty RBR with FIFO
-> > * enabled.
-> > */
-> >
-> > The current patch addresses the following scenario:
-> >
-> > cpuA is accessing the UART via printk(), causing the UART to be busy.
-> > cpuB follows the CallTrace path:
-> > -serial8250_do_startup()
-> > --serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
-> > ---dw8250_serial_out32
-> > ----dw8250_check_lcr
-> > -----dw8250_force_idle (triggered by UART busy)
-> > ------serial8250_clear_and_reinit_fifos
-> > -------serial_out(p, UART_FCR, p->fcr); (enables FIFO here)
-> > cpuB proceeds to the dont_test_tx_en label:
-> >    ...
-> >    serial_port_in(port, UART_RX); //FIFO is enabled, and the UART has
-> > no data to read, causing the device to generate a PSLVERR error and
-> > panic.
-> >
-> > Our solution:
-> > Relevant serial_port_out operations should be placed in a critical sect=
-ion.
-> > Before reading UART_RX, check if data is available (e.g., by verifying
-> > the UART_LSR DR bit is set).
->
-> OK, now I see. The problem is the explicit reads of UART_RX near the end
-> of serial8250_do_startup().
->
-> >> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/=
-8250/8250_port.c
-> >> index 3f256e96c722..6909c81109db 100644
-> >> --- a/drivers/tty/serial/8250/8250_port.c
-> >> +++ b/drivers/tty/serial/8250/8250_port.c
-> >> @@ -2264,13 +2264,16 @@ int serial8250_do_startup(struct uart_port *po=
-rt)
-> >>       * Clear the FIFO buffers and disable them.
-> >>       * (they will be reenabled in set_termios())
-> >>       */
-> >> +    uart_port_lock_irqsave(port, &flags);
-> >>      serial8250_clear_fifos(up);
-> >> +    uart_port_unlock_irqrestore(port, flags);
->
-> Can you clarify why serial8250_clear_fifos() needs to be in a critical
-> section?
+Yury,
+do you have any feedback on this?
+Thank you.
 
-There are two aspects. Firstly, if the lock is not held, the following
-situation may also occur when serial8250_clear_fifos() is called:
----dw8250_serial_out32
-----dw8250_check_lcr
------dw8250_force_idle (triggered by UART busy)
-------serial8250_clear_and_reinit_fifos
--------serial_out(p, UART_FCR, p->fcr); (enables FIFO here)
-This in itself goes against the semantics of clear_fifo.
+Regards,
+Kuan-Wei
 
-Secondly, if a CPU is accessing the UART normally and the current CPU
-suddenly clears the FIFO, it may cause problems.
-
->
-> serial8250_do_shutdown() and do_set_rxtrig() also call
-> serial8250_clear_fifos() without holding the port lock.
->
-> >>>     /*
-> >>>      * Clear the interrupt registers.
-> >>>      */
-> >>> -   serial_port_in(port, UART_LSR);
-> >>> -   serial_port_in(port, UART_RX);
-> >>> +   lsr =3D serial_port_in(port, UART_LSR);
-> >>> +   if (lsr & UART_LSR_DR)
-> >>> +           serial_port_in(port, UART_RX);
->
-> Do we care about the unchecked UART_RX in serial8250_do_shutdown()?
-
-I understand that it is required.
-
->
->         /*
->          * Read data port to reset things, and then unlink from
->          * the IRQ chain.
->          */
->         serial_port_in(port, UART_RX);
->         serial8250_rpm_put(up);
->
->         up->ops->release_irq(up);
-> }
->
-> Otherwise all other UART_RX reads are either checking UART_LSR_DR first
-> or are under the port lock.
-
-Agree
-
->
-> John
-
-Thanks,
-Yunhui
