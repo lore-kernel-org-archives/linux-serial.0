@@ -1,140 +1,160 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B333E2E3385
-	for <linux-serial@vger.kernel.org>; Thu,  3 Apr 2025 12:49:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B713EAFA;
+	Thu,  3 Apr 2025 13:46:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743684574; cv=none; b=mnpRX2OjTfKuWSzOExHZU1yeE4qUyLK94s7eTrYqTLeZGhsauEifF6hrJW+YIxP1qZ0Dd/v2keFD9ZDUzJHMxfCg8P+9+NuYC2kwltHvvQFUzHTm5HtksP7jvsX9MmYEFDjKJCaniyh8JRCtQV7FxfS8/EkE6YWyikqeIq1mrv4=
+	t=1743687966; cv=none; b=gGw5Aj3DKVLl164da2WJdJ8gowmkfVqTUDbN+mlE05FN6Pf0n395gzS/qXSpRp3PWMusUpzE2QsFXlnOQYq0x+Wlp0wqxjlL1+gkL8uF7O+TPaXyypSkG5DUM9WeVBThKy0qXMIb52jmlqTrMTF1oIL154s+rqw75MU6cumMrHo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743684574; c=relaxed/simple;
-	bh=Qk5d8xbhxNwjUd64AgFuXiKUrSyH4a2/vsRsybz6QzM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nfTtgPHWmRkLUq9Vn1oiHQVg2DlzPFcjCct9/rTR+NxMue/CIQH1+CpfcMG2OGStxJkCdz5161jYpRgPYSfDSx4gR6H9xpMappTJ2NAXkIYlKQL6YM6yjTprktMPm/RvBacFSBumRMpKu+O7MPaf6JzE3ROBxz4KBJhkENXHHNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=B1eA6UdH; arc=none smtp.client-ip=209.85.161.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1743687966; c=relaxed/simple;
+	bh=8T3oj5qftOc5yR7rZEJRVCAEG1OT0Bw8oj7KVkE+K+Q=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=YOM+vPgtF6Eif9RwC+36/fazSagljUOi7Z8aLWS6FBmElfj4tIhpZe3i/jMXi4Wf3+/RmZL0Hw0WKu0b7a077//PagYB+5Nefx5+Om2JCHvRio4g8pgzUWzbwGJqcz3Mc6fQ2DIOAgM/8gssIdrEgeeWXscDDi1QMAUaaJxLV6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=gKdMUrRk; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=6if7d3ON; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="B1eA6UdH"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-603ff8e915aso211773eaf.3
-        for <linux-serial@vger.kernel.org>; Thu, 03 Apr 2025 05:49:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1743684571; x=1744289371; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=51Q3WOkegbyCBnKA5QrZibFPvAKsNArPzBsm1Qz0W+g=;
-        b=B1eA6UdHhEXX9igZV9sXFUUVZ5hxgccTScez7ClCM0P+JOQXFZGx352Y/z+3a6F3PG
-         Hmoi6zFWq8Y4lEeqOmLucJkfLfAZBjh+DKZBw00tetI5ikssNaM0G4Kba2cekfeXgoIH
-         HqyCebbrp7oAE5PwiHpc+lp3imeNkIbdoG1wu4uW0XZKjfPoPx+3KNHSd2U/rCiogPnX
-         uq3iEukOwQV2E/Qf21uTOshn5SHxg8DeLdcldi4f4PjFy9GsmAO58jeZ/jbxJE3BeARe
-         QxBsirwITavKKn16KKPbuKdJxce78cjyg1vI/ANfvtxuz+J4x7kmuoTD53jxBGHu276R
-         sB6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743684571; x=1744289371;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=51Q3WOkegbyCBnKA5QrZibFPvAKsNArPzBsm1Qz0W+g=;
-        b=XFMv+LuJTqNvkmM8a4d0PwTBIZY3zw25c0bERoj44w/nQ7QhR/gObGplMO9Yc+7SZY
-         tQRkKXSsyef2n1YYsijfRrwjGXPa01qRkDula5LFAOJU/3B9GGJVQudy/GT6SHisPFm7
-         oj0jHma0MKFcR129CL0C9aRbt+C5fZ+YHVvQVzF6raG6TdGrHBzxTqxxNI0xpJ4SdY9K
-         gClhoaMHdLz4ZuxutS43Om1U2ZzttehGy3ZgHFL0NVNzrnD8+cAbJgVePQ0EKGuO+7Av
-         S3v3zBMMy2zZTTf31f89HAt1zeMMgGT1CCsB9WMku546EVlosktbaJYaHr80EPJpxjeQ
-         +F+w==
-X-Forwarded-Encrypted: i=1; AJvYcCX74b7RkFhNJxaYuSwU0vaEeWJPKqZ7qS06Kzoxam0VnnhRaZBrGIpKdDjPNlMg1+l03i5S6HMFrcj03qc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxiGJxAN3+iWe88n424mqdprO887V1/5kC5ub/V3ONfKHNxX0qk
-	3SnJkkHefys+vINYytoU3+ecNpmY404k9vNMvb9JW8CLKmoP2hKDuWY2zDJkq+Q9JOqf1eSKWeQ
-	tyqEWWezZi1gNNOBOx8Nvi3rOsdsrNtt4XI0Q4w==
-X-Gm-Gg: ASbGncvqggXjm963cT+IzIcVH59pVd+cSNLASRPZfkvqf+D6JsxMdYecy81omVqEayc
-	9lqfONEkzAbJjMj3VIHeIatEp4VLUle+98J3dHG0dcLmivtBD9OPm2ax+tjK+mJVpvF8+2knqKz
-	ake3lAEqAbbFAwTvDZrKRd3xrTSoxj
-X-Google-Smtp-Source: AGHT+IHHKd105pMUM7hpNrdHw+DbdrnqZ5EC6cx99kZCwpvRgGxoGb+A1fhqNQ5wFNuzoFZcndivxdAsgOXkV0/lbpk=
-X-Received: by 2002:a05:6808:2f16:b0:3f4:bc5:d478 with SMTP id
- 5614622812f47-400363134a7mr3524712b6e.25.1743684571646; Thu, 03 Apr 2025
- 05:49:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="gKdMUrRk";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="6if7d3ON"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1743687962;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=joUQlRuw5q09H6+Otx+UiPvsgPa/pX5Q7pVi0WnRdDk=;
+	b=gKdMUrRkqHXAFdkRKI8q1u2BG1r2Rs5YxixPMt0iKtMA3Gj6oZifS6z7GWWtoKwxMmgr3B
+	oDTlw3qZ209yyCCkwUn7Xs7MWq0H5YpdK3pwdfBboWayzCh6hFDX/saGkMKMlQAveEpUiw
+	ALgKafyrkIyKnlYvmSUq804dqLTv907LrWExwq0l52akmaMSyrboVlxZ9UgKaX+C/Ob78e
+	cRxmANi+2CVlebI2TRsD/5PAvd/led1l9g7QRyWq/tVz/ZvGd1gdWbBmjQEHRsPh4EWWA+
+	21EvN6xc9Dg/1k0x5bc/xUWutgClVrpj/FFOnMQlx5fcvGgF3sHzw/4mIynq5Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1743687962;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=joUQlRuw5q09H6+Otx+UiPvsgPa/pX5Q7pVi0WnRdDk=;
+	b=6if7d3ONoxO5Xob6z2GTuX/hT6U9pfieuK1Sn2ac84VShOkHq9FKt7mSgndmzyu027qsjx
+	u1TgzllqMaqAR2CA==
+To: yunhui cui <cuiyunhui@bytedance.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, pmladek@suse.com,
+ arnd@arndb.de, andriy.shevchenko@linux.intel.com, namcao@linutronix.de,
+ benjamin.larsson@genexis.eu, schnelle@linux.ibm.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [External] Re: [PATCH] serial: 8250: fix panic due to PSLVERR
+In-Reply-To: <CAEEQ3wkOQUh03Ggpf=mBWzNt1_Qtcv53gNXm7JH5Nban3tOtvQ@mail.gmail.com>
+References: <20250403090336.16643-1-cuiyunhui@bytedance.com>
+ <84iknl5uex.fsf@jogness.linutronix.de>
+ <CAEEQ3wkOQUh03Ggpf=mBWzNt1_Qtcv53gNXm7JH5Nban3tOtvQ@mail.gmail.com>
+Date: Thu, 03 Apr 2025 15:52:01 +0206
+Message-ID: <84cydt5peu.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250403090336.16643-1-cuiyunhui@bytedance.com> <84iknl5uex.fsf@jogness.linutronix.de>
-In-Reply-To: <84iknl5uex.fsf@jogness.linutronix.de>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Thu, 3 Apr 2025 20:49:20 +0800
-X-Gm-Features: AQ5f1JpnMmubUJfEadYVURd58tuRsHjz_7_L8SWcbm5caDG690SroX2z58Xym34
-Message-ID: <CAEEQ3wkOQUh03Ggpf=mBWzNt1_Qtcv53gNXm7JH5Nban3tOtvQ@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] serial: 8250: fix panic due to PSLVERR
-To: John Ogness <john.ogness@linutronix.de>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, pmladek@suse.com, 
-	arnd@arndb.de, andriy.shevchenko@linux.intel.com, namcao@linutronix.de, 
-	benjamin.larsson@genexis.eu, schnelle@linux.ibm.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
-Hi John,
-
-On Thu, Apr 3, 2025 at 7:58=E2=80=AFPM John Ogness <john.ogness@linutronix.=
-de> wrote:
+On 2025-04-03, yunhui cui <cuiyunhui@bytedance.com> wrote:
+>>> When the PSLVERR_RESP_EN parameter is set to 1, the device generates
+>>> an error response if an attempt is made to read an empty RBR (Receive
+>>> Buffer Register) while the FIFO is enabled.
+>>>
+>>> In serial8250_do_startup, calling serial_port_out(port, UART_LCR,
+>>> UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
+>>> dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
+>>> function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
+>>> Execution proceeds to the dont_test_tx_en label:
+>>> ...
+>>> serial_port_in(port, UART_RX);
+>>> This satisfies the PSLVERR trigger condition.
+>>>
+>>> Because another CPU(e.g., using printk) is accessing the UART (UART
+>>> is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) ==
+>>> (lcr & ~UART_LCR_SPAR), causing it to enter dw8250_force_idle().
+>>
+>> Didn't this[0] patch resolve this exact issue?
+>>
+>> John Ogness
+>>
+>> [0] https://lore.kernel.org/lkml/20220713131722.2316829-1-vamshigajjela@google.com
 >
-> On 2025-04-03, Yunhui Cui <cuiyunhui@bytedance.com> wrote:
-> > When the PSLVERR_RESP_EN parameter is set to 1, the device generates
-> > an error response if an attempt is made to read an empty RBR (Receive
-> > Buffer Register) while the FIFO is enabled.
-> >
-> > In serial8250_do_startup, calling serial_port_out(port, UART_LCR,
-> > UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
-> > dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
-> > function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
-> > Execution proceeds to the dont_test_tx_en label:
-> > ...
-> > serial_port_in(port, UART_RX);
-> > This satisfies the PSLVERR trigger condition.
-> >
-> > Because another CPU(e.g., using printk) is accessing the UART (UART
-> > is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) =3D=
-=3D
-> > (lcr & ~UART_LCR_SPAR), causing it to enter dw8250_force_idle().
+> No, these are two separate issues. This[0] patch is necessary, as
+> expressed in this comment:
 >
-> Didn't this[0] patch resolve this exact issue?
+> /*
+> * With PSLVERR_RESP_EN parameter set to 1, the device generates an
+> * error response when an attempt to read an empty RBR with FIFO
+> * enabled.
+> */
 >
-> John Ogness
+> The current patch addresses the following scenario:
 >
-> [0] https://lore.kernel.org/lkml/20220713131722.2316829-1-vamshigajjela@g=
-oogle.com
+> cpuA is accessing the UART via printk(), causing the UART to be busy.
+> cpuB follows the CallTrace path:
+> -serial8250_do_startup()
+> --serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+> ---dw8250_serial_out32
+> ----dw8250_check_lcr
+> -----dw8250_force_idle (triggered by UART busy)
+> ------serial8250_clear_and_reinit_fifos
+> -------serial_out(p, UART_FCR, p->fcr); (enables FIFO here)
+> cpuB proceeds to the dont_test_tx_en label:
+>    ...
+>    serial_port_in(port, UART_RX); //FIFO is enabled, and the UART has
+> no data to read, causing the device to generate a PSLVERR error and
+> panic.
+>
+> Our solution:
+> Relevant serial_port_out operations should be placed in a critical section.
+> Before reading UART_RX, check if data is available (e.g., by verifying
+> the UART_LSR DR bit is set).
 
-No, these are two separate issues. This[0] patch is necessary, as
-expressed in this comment:
+OK, now I see. The problem is the explicit reads of UART_RX near the end
+of serial8250_do_startup().
 
-/*
-* With PSLVERR_RESP_EN parameter set to 1, the device generates an
-* error response when an attempt to read an empty RBR with FIFO
-* enabled.
-*/
+>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+>> index 3f256e96c722..6909c81109db 100644
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -2264,13 +2264,16 @@ int serial8250_do_startup(struct uart_port *port)
+>>  	 * Clear the FIFO buffers and disable them.
+>>  	 * (they will be reenabled in set_termios())
+>>  	 */
+>> +	uart_port_lock_irqsave(port, &flags);
+>>  	serial8250_clear_fifos(up);
+>> +	uart_port_unlock_irqrestore(port, flags);
 
-The current patch addresses the following scenario:
+Can you clarify why serial8250_clear_fifos() needs to be in a critical
+section?
 
-cpuA is accessing the UART via printk(), causing the UART to be busy.
-cpuB follows the CallTrace path:
--serial8250_do_startup()
---serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
----dw8250_serial_out32
-----dw8250_check_lcr
------dw8250_force_idle (triggered by UART busy)
-------serial8250_clear_and_reinit_fifos
--------serial_out(p, UART_FCR, p->fcr); (enables FIFO here)
-cpuB proceeds to the dont_test_tx_en label:
-   ...
-   serial_port_in(port, UART_RX); //FIFO is enabled, and the UART has
-no data to read, causing the device to generate a PSLVERR error and
-panic.
+serial8250_do_shutdown() and do_set_rxtrig() also call
+serial8250_clear_fifos() without holding the port lock.
 
-Our solution:
-Relevant serial_port_out operations should be placed in a critical section.
-Before reading UART_RX, check if data is available (e.g., by verifying
-the UART_LSR DR bit is set).
+>>>  	/*
+>>>  	 * Clear the interrupt registers.
+>>>  	 */
+>>> -	serial_port_in(port, UART_LSR);
+>>> -	serial_port_in(port, UART_RX);
+>>> +	lsr = serial_port_in(port, UART_LSR);
+>>> +	if (lsr & UART_LSR_DR)
+>>> +		serial_port_in(port, UART_RX);
 
-Thanks,
-Yunhui
+Do we care about the unchecked UART_RX in serial8250_do_shutdown()?
+
+	/*
+	 * Read data port to reset things, and then unlink from
+	 * the IRQ chain.
+	 */
+	serial_port_in(port, UART_RX);
+	serial8250_rpm_put(up);
+
+	up->ops->release_irq(up);
+}
+
+Otherwise all other UART_RX reads are either checking UART_LSR_DR first
+or are under the port lock.
+
+John
