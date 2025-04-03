@@ -1,76 +1,84 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F4191F5825;
-	Thu,  3 Apr 2025 12:10:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B333E2E3385
+	for <linux-serial@vger.kernel.org>; Thu,  3 Apr 2025 12:49:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743682250; cv=none; b=HEhYdkUYQvNT9ItNOCzhDLPm3gcEt9AWJYu7li0wt975oeFcdyt1O27jkZQOfgJLafckG6MBWXmf6qyYihkjfTd52ahZLRF/FQRemjDvFIIHPBF/6SF0wJTqRaDU7pOyVVSVhhp25re3jmiSAqPZ5+fPw7N2TOSMWbiPTFuN9XY=
+	t=1743684574; cv=none; b=mnpRX2OjTfKuWSzOExHZU1yeE4qUyLK94s7eTrYqTLeZGhsauEifF6hrJW+YIxP1qZ0Dd/v2keFD9ZDUzJHMxfCg8P+9+NuYC2kwltHvvQFUzHTm5HtksP7jvsX9MmYEFDjKJCaniyh8JRCtQV7FxfS8/EkE6YWyikqeIq1mrv4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743682250; c=relaxed/simple;
-	bh=eZLA8gurWW5QhHfAshLNQAxe+9JyzGLbwEv+PdeHV20=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BmxBp6xwS+z884VP0PKl6T3JOOgaK0TSHGEPQ+ONoBKGRksNyCfs7Dxq++NTtdZ5s7eMB2ql4OPLY7XgJEgd2RuD/UbIlWzfRomBZUVCcM6lCMObiqxlOQc9ZAikYahQWLe08fOuvfCXCZpTJ1BgithVTLPXxAEUBQf9XkXF9Vo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=O0w2JJom; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1743684574; c=relaxed/simple;
+	bh=Qk5d8xbhxNwjUd64AgFuXiKUrSyH4a2/vsRsybz6QzM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nfTtgPHWmRkLUq9Vn1oiHQVg2DlzPFcjCct9/rTR+NxMue/CIQH1+CpfcMG2OGStxJkCdz5161jYpRgPYSfDSx4gR6H9xpMappTJ2NAXkIYlKQL6YM6yjTprktMPm/RvBacFSBumRMpKu+O7MPaf6JzE3ROBxz4KBJhkENXHHNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=B1eA6UdH; arc=none smtp.client-ip=209.85.161.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="O0w2JJom"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1743682250; x=1775218250;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eZLA8gurWW5QhHfAshLNQAxe+9JyzGLbwEv+PdeHV20=;
-  b=O0w2JJomZ7d5togwmILAGoK4GDPBZQRrafkyLnPR3JM0UEUN2mOPXvrJ
-   32dF5KIQDmVbpiSlqd3JWSJNlhS1Hoag9+Sx8WDdWq/3mLPXFNyy+cKqF
-   UAUWCJNQIwknJJx/lNB6C9nt1j0pdQX825LPx4iJRf2Y+zEzMpHmH72lL
-   g418hKy5Hf4EB6n3daA6qbGuJyrZeX4begqmjoR/IT7P9rhmRExaJgr2T
-   5OuwKY0u73Bh/qiJMk/IsQEjgjHO1FAyQXsFXcrxELWgNNWHAFneMiwsO
-   l+U6fOrA/KSnZa2vygc7SSf0xj6vLUJ/qSfpJ63Ex2ZxD7n//AEsB+KO/
-   g==;
-X-CSE-ConnectionGUID: 3CEdJYWwQOW/c6MePtdwyA==
-X-CSE-MsgGUID: SUpytyk1Qnitqv2gVBtYdg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11392"; a="48745742"
-X-IronPort-AV: E=Sophos;i="6.15,184,1739865600"; 
-   d="scan'208";a="48745742"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2025 05:10:49 -0700
-X-CSE-ConnectionGUID: isvUFOscRjKsW5BrpWUmsg==
-X-CSE-MsgGUID: FQRvObTFTDGe62O8Kp0rvQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,184,1739865600"; 
-   d="scan'208";a="150189112"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2025 05:10:45 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1u0JP8-00000008neC-2y2Z;
-	Thu, 03 Apr 2025 15:10:42 +0300
-Date: Thu, 3 Apr 2025 15:10:42 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Yunhui Cui <cuiyunhui@bytedance.com>, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, pmladek@suse.com, arnd@arndb.de,
-	namcao@linutronix.de, benjamin.larsson@genexis.eu,
-	schnelle@linux.ibm.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250: fix panic due to PSLVERR
-Message-ID: <Z-56wshiZz_1wU__@smile.fi.intel.com>
-References: <20250403090336.16643-1-cuiyunhui@bytedance.com>
- <84iknl5uex.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="B1eA6UdH"
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-603ff8e915aso211773eaf.3
+        for <linux-serial@vger.kernel.org>; Thu, 03 Apr 2025 05:49:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1743684571; x=1744289371; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=51Q3WOkegbyCBnKA5QrZibFPvAKsNArPzBsm1Qz0W+g=;
+        b=B1eA6UdHhEXX9igZV9sXFUUVZ5hxgccTScez7ClCM0P+JOQXFZGx352Y/z+3a6F3PG
+         Hmoi6zFWq8Y4lEeqOmLucJkfLfAZBjh+DKZBw00tetI5ikssNaM0G4Kba2cekfeXgoIH
+         HqyCebbrp7oAE5PwiHpc+lp3imeNkIbdoG1wu4uW0XZKjfPoPx+3KNHSd2U/rCiogPnX
+         uq3iEukOwQV2E/Qf21uTOshn5SHxg8DeLdcldi4f4PjFy9GsmAO58jeZ/jbxJE3BeARe
+         QxBsirwITavKKn16KKPbuKdJxce78cjyg1vI/ANfvtxuz+J4x7kmuoTD53jxBGHu276R
+         sB6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743684571; x=1744289371;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=51Q3WOkegbyCBnKA5QrZibFPvAKsNArPzBsm1Qz0W+g=;
+        b=XFMv+LuJTqNvkmM8a4d0PwTBIZY3zw25c0bERoj44w/nQ7QhR/gObGplMO9Yc+7SZY
+         tQRkKXSsyef2n1YYsijfRrwjGXPa01qRkDula5LFAOJU/3B9GGJVQudy/GT6SHisPFm7
+         oj0jHma0MKFcR129CL0C9aRbt+C5fZ+YHVvQVzF6raG6TdGrHBzxTqxxNI0xpJ4SdY9K
+         gClhoaMHdLz4ZuxutS43Om1U2ZzttehGy3ZgHFL0NVNzrnD8+cAbJgVePQ0EKGuO+7Av
+         S3v3zBMMy2zZTTf31f89HAt1zeMMgGT1CCsB9WMku546EVlosktbaJYaHr80EPJpxjeQ
+         +F+w==
+X-Forwarded-Encrypted: i=1; AJvYcCX74b7RkFhNJxaYuSwU0vaEeWJPKqZ7qS06Kzoxam0VnnhRaZBrGIpKdDjPNlMg1+l03i5S6HMFrcj03qc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxiGJxAN3+iWe88n424mqdprO887V1/5kC5ub/V3ONfKHNxX0qk
+	3SnJkkHefys+vINYytoU3+ecNpmY404k9vNMvb9JW8CLKmoP2hKDuWY2zDJkq+Q9JOqf1eSKWeQ
+	tyqEWWezZi1gNNOBOx8Nvi3rOsdsrNtt4XI0Q4w==
+X-Gm-Gg: ASbGncvqggXjm963cT+IzIcVH59pVd+cSNLASRPZfkvqf+D6JsxMdYecy81omVqEayc
+	9lqfONEkzAbJjMj3VIHeIatEp4VLUle+98J3dHG0dcLmivtBD9OPm2ax+tjK+mJVpvF8+2knqKz
+	ake3lAEqAbbFAwTvDZrKRd3xrTSoxj
+X-Google-Smtp-Source: AGHT+IHHKd105pMUM7hpNrdHw+DbdrnqZ5EC6cx99kZCwpvRgGxoGb+A1fhqNQ5wFNuzoFZcndivxdAsgOXkV0/lbpk=
+X-Received: by 2002:a05:6808:2f16:b0:3f4:bc5:d478 with SMTP id
+ 5614622812f47-400363134a7mr3524712b6e.25.1743684571646; Thu, 03 Apr 2025
+ 05:49:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20250403090336.16643-1-cuiyunhui@bytedance.com> <84iknl5uex.fsf@jogness.linutronix.de>
 In-Reply-To: <84iknl5uex.fsf@jogness.linutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+From: yunhui cui <cuiyunhui@bytedance.com>
+Date: Thu, 3 Apr 2025 20:49:20 +0800
+X-Gm-Features: AQ5f1JpnMmubUJfEadYVURd58tuRsHjz_7_L8SWcbm5caDG690SroX2z58Xym34
+Message-ID: <CAEEQ3wkOQUh03Ggpf=mBWzNt1_Qtcv53gNXm7JH5Nban3tOtvQ@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH] serial: 8250: fix panic due to PSLVERR
+To: John Ogness <john.ogness@linutronix.de>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, pmladek@suse.com, 
+	arnd@arndb.de, andriy.shevchenko@linux.intel.com, namcao@linutronix.de, 
+	benjamin.larsson@genexis.eu, schnelle@linux.ibm.com, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 03, 2025 at 02:03:58PM +0206, John Ogness wrote:
+Hi John,
+
+On Thu, Apr 3, 2025 at 7:58=E2=80=AFPM John Ogness <john.ogness@linutronix.=
+de> wrote:
+>
 > On 2025-04-03, Yunhui Cui <cuiyunhui@bytedance.com> wrote:
 > > When the PSLVERR_RESP_EN parameter is set to 1, the device generates
 > > an error response if an attempt is made to read an empty RBR (Receive
@@ -86,18 +94,47 @@ On Thu, Apr 03, 2025 at 02:03:58PM +0206, John Ogness wrote:
 > > This satisfies the PSLVERR trigger condition.
 > >
 > > Because another CPU(e.g., using printk) is accessing the UART (UART
-> > is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) ==
+> > is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) =3D=
+=3D
 > > (lcr & ~UART_LCR_SPAR), causing it to enter dw8250_force_idle().
-> 
+>
 > Didn't this[0] patch resolve this exact issue?
+>
+> John Ogness
+>
+> [0] https://lore.kernel.org/lkml/20220713131722.2316829-1-vamshigajjela@g=
+oogle.com
 
-I see it applied (in v6.0), but version in the traceback seems from v6.12.
-I think this is about race condition so only locking parts should suffice.
+No, these are two separate issues. This[0] patch is necessary, as
+expressed in this comment:
 
-> [0] https://lore.kernel.org/lkml/20220713131722.2316829-1-vamshigajjela@google.com
+/*
+* With PSLVERR_RESP_EN parameter set to 1, the device generates an
+* error response when an attempt to read an empty RBR with FIFO
+* enabled.
+*/
 
--- 
-With Best Regards,
-Andy Shevchenko
+The current patch addresses the following scenario:
 
+cpuA is accessing the UART via printk(), causing the UART to be busy.
+cpuB follows the CallTrace path:
+-serial8250_do_startup()
+--serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+---dw8250_serial_out32
+----dw8250_check_lcr
+-----dw8250_force_idle (triggered by UART busy)
+------serial8250_clear_and_reinit_fifos
+-------serial_out(p, UART_FCR, p->fcr); (enables FIFO here)
+cpuB proceeds to the dont_test_tx_en label:
+   ...
+   serial_port_in(port, UART_RX); //FIFO is enabled, and the UART has
+no data to read, causing the device to generate a PSLVERR error and
+panic.
 
+Our solution:
+Relevant serial_port_out operations should be placed in a critical section.
+Before reading UART_RX, check if data is available (e.g., by verifying
+the UART_LSR DR bit is set).
+
+Thanks,
+Yunhui
