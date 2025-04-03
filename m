@@ -1,66 +1,66 @@
-Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E06762E3386;
-	Thu,  3 Apr 2025 14:39:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42BB924BC06;
+	Thu,  3 Apr 2025 16:14:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743691157; cv=none; b=RjsbccIMbHhFIYGyZcdWroTK/wEdR9BbmKygPb4lSTQ8Ql4HGkR50w/jQw11Qi8bqFnMDiKHkZsZxFCD78uN2ej5elYJWh/A15s4VeegdxczJoz6UJnmg6QpDZOjcwQ6YM50uer7CUXFSN1s434VWEq2a6NGivDNC/mnUUnafqU=
+	t=1743696849; cv=none; b=iEJAQa1sN0IDZeUF3QEu0ya+nDFxt9H7Wfbx0MDZwJYwnCZY6cMGRMisAPUmqB+BnQDKWyTTaN+/M57Nw7JgBDRjl/IjrRvz2AAsa4OU5yyMw/yTYEulsk9W3JEr2OScj5nMynYpgj/8qJOPaUH27mVIBFsE1+1PVzjcKiCnZfQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743691157; c=relaxed/simple;
-	bh=dmX8ClR6s2gT1VOXeNIIzH890lXaEbUlMlb3oILAje8=;
+	s=arc-20240116; t=1743696849; c=relaxed/simple;
+	bh=g4yIIhJXJS+2HpRtFLQZWDfTqppjtp/hIdH2G/MZEpY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IBwfeOS4YfngygK02SN5AACj7zftNNAQval20PsfpjWo/0fc5KH/p/zqY0yDFuS24gnGHEuLnJLNzwww/bk/f9WBDWLFxyzCz1VWGy3nmvxRejO/gqjvU6QJ8bLao143GSaitXSU7lcQNA/bQLGu0EUyoXP88pLmITwH4CbdTlM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eAskKQkl; arc=none smtp.client-ip=209.85.210.171
+	 Content-Type:Content-Disposition:In-Reply-To; b=LAUn17NXigHs4Tr6bbQZ8TO4yBH10u+K7BSUCJescHHgPb5jWgw3rNR1S/2P9dAI33+yz3u5D+9ZKGvnkQZ1wr4/COTuDprgykfLb1yb106dBD+F2cU27q8rtUkLqSJ+Flezu8rQaCzFE2wLBQekkHktaT/MRJ0+xdDHtvT+3no=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=brNiMAKg; arc=none smtp.client-ip=209.85.210.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eAskKQkl"
-Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-736b98acaadso1027972b3a.1;
-        Thu, 03 Apr 2025 07:39:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="brNiMAKg"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-736dd9c4b40so1263891b3a.0;
+        Thu, 03 Apr 2025 09:14:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1743691155; x=1744295955; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1743696847; x=1744301647; darn=vger.kernel.org;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=Rvr0XxDHh05/lDdFnQkqZ5aBAiK03CfkHR41QzNZGHs=;
-        b=eAskKQklC12e/ry9l7cH1ctbUMIvWFD4TYd+Df4dYRw2MC0E39OFsWe5QTt/E3G8GJ
-         r1EWWiYTzJxHSZlI68BwRgwZ+46IkTs3uT4tcRHLY1j/z3zNwjzKXprH36WBLbMTvHnf
-         ULTyq8ufdIImCpA9cL8e3XGNqKwM3VCAldYVJlcYP3+BUbS2e0TdM1A5KI/Tyv1UzYg3
-         JvytZZaGh4Tf9RChBwXBGw/RINa4IV5SnSOvFXopClfhiHY47PwifbYgot1tB9KuYJmI
-         cDnULyHfKNVTfXN2XYwujI4dtEieH0toB5EB20D0Obc+6IRFsH8H0n2jFu8R9XdtV+Tz
-         okxA==
+        bh=NsvCi3xr0wqbxukv6gNk2KWJs6cd/sHgcwpQSSqpQSc=;
+        b=brNiMAKgQ5lYjAZkAYVtcNERGXdLqBOX+G5GqlptHN+NtWr2A9+2pgwWcZmYt9uVQ5
+         tTI5LDRiGRKUXzg3fKgL7A7rFW2a8VNuJ1fI39JaNuz1OAwTy4umz2X42OkPkw+6kDR/
+         CsNOSVR6n82KCKOU8D7yhUtocKIZxz9FoSRzKLlVxVuvlhockGwYc0BrrR3TM/lPHIWc
+         3EEQ2xgtyv7Zt5lqwSYezOMCEC3q5cPv7sbORbkWjvCI+GAZv3uqpoC3Ox642/1MxDdv
+         YOn0XQBSR0lnKqZ+AUjdkvNkHJJRV46yaP8BNWF3RbAkro+qNMaJnwOPxqtCsjaPHxx0
+         Jo2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1743691155; x=1744295955;
+        d=1e100.net; s=20230601; t=1743696847; x=1744301647;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Rvr0XxDHh05/lDdFnQkqZ5aBAiK03CfkHR41QzNZGHs=;
-        b=QZpcmZ6rlls4IJSFgVD+R/YZrrxb9La8xo+Zzyjrwb/yjhOslL1irjMdXFHd1+Areq
-         f49god6HTJ+j3PnViha9kzO+aj7F6pCjcATWGhuUrbu2EAmQ9eZ4kVosVzEZrqD+di6r
-         36gPo3kLhVhFWxfc4TO0YuoHqZ9OlRN9Ti1S2WtoKowm+dyED4KDt+ukNsjkDmBQlZZL
-         /yjoNIkeBd9Sh3QuJMVUC2iO4N9WjS9IZWlbmbe/ZQCuD6KpvH/eT54a8H14Yrp1qIYg
-         Ae3+i4Nyg/bW+yYvb/qSe6d3aONoMRVCoQhl6nA1oi4Vqsv2d7e7bKHkRKS5z8yglDrB
-         YGVg==
-X-Forwarded-Encrypted: i=1; AJvYcCULsmrXYjV3MR8aKW5NGpQGcjvtbX4F4BBKNHzlpS3bMN3Hn6MX06LgrZjP3KwPc/Tr3E+YEOVZL3aANxct@vger.kernel.org, AJvYcCVVyDCqKTv/BVOXJ+ZAog2oZ8DwAeCrnDqvUViBOMJaaHqezE9WY7TkpB72h0SahbJ9hCU=@vger.kernel.org, AJvYcCVkj66LdSHEy530I8aZeqamjYlHjOAQC0YOorcQzb5uzQYa0hPxm17gqf+YcOsJXsZNCnNMgm9jnHqlgyBk6LA=@vger.kernel.org, AJvYcCWNpRm+bZ2OfwF03+IQzwg5IPkmBMz3VUk+ElB9szPqxtmAMMy1YF060H+0+NbJUVF0CyEH4PgoGrTBD88=@vger.kernel.org, AJvYcCXdFDrfQinB7VgtZUO6m4N68JX3qqA8SI8JjIbcMKbrh467BX2yrvUm/d/6RwIl7Rs/oR7zV4eQpdM79WY=@vger.kernel.org, AJvYcCXdosafBjnlO4vBbMVNH6aeN5rve+E5sStyeJq+/u+phIkm+A6YkNmzKNoPe7HayAk3Y7H8SZufmfz4E3Zy@vger.kernel.org, AJvYcCXffW0RFwDS2KuMuQKhgIBFeephHrqFyhlUmUubFc3LOdV0KP1WBvC7NvMwuWP02tVU/Gzo85t5@vger.kernel.org
-X-Gm-Message-State: AOJu0YxOSBzuInOu5hDkoYPKwMEZHPRLnl3GpMhl95fXRinQggvK4oDD
-	bWho26PoaldQOtHBbg4gPY26A88xr/h6C4VlDQMNVhyWj81yFoOT
-X-Gm-Gg: ASbGncuNQ0yG1NE8l6aaInEn9HvjEMCM5LffqR7KdGxE8ggeLV+9Oxhd+x9MxpUTUTo
-	7nNp4gktau9DA5l1rFId/phnTNKKFy3kuDa0CoJXPv5bUXQzllV4OEisf7YUNALiyRHPkAFeGxk
-	4z28sK3bSpMRRQ5CG3X+FFlFcJ2V6OTKLjSVC5EL9vMMqVcQk/fem9tZJcuvqi8iEw0iMG9kxBU
-	pnzkNh5Hsqc1D2OmGLD07lKcZZGDWr8bUHoTlS9uo/V8nu7Z4WSoub9K0rb+to5DPprljtQMQnl
-	UacM/tsauEhwUr33g0qoEFSlwtuuhT7fcTV3glcZrZPW8tl7jvrUrt1LsvWvIDWmW1w0cFD2
-X-Google-Smtp-Source: AGHT+IEBLhxF2I4CcVDE0Ip1aaBG/9qxfajK2d8loqdQY51JgxIHQayN0kr/iRs9O5E0K4MztoDo5g==
-X-Received: by 2002:a05:6a20:6f04:b0:1fd:e9c8:cf3b with SMTP id adf61e73a8af0-200e4cc69c1mr11499641637.30.1743691154910;
-        Thu, 03 Apr 2025 07:39:14 -0700 (PDT)
-Received: from visitorckw-System-Product-Name ([140.113.216.168])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-af9bc2d331csm1285435a12.12.2025.04.03.07.39.05
+        bh=NsvCi3xr0wqbxukv6gNk2KWJs6cd/sHgcwpQSSqpQSc=;
+        b=finE4JZ6/YTDs3xq32zJNAiWJZdy72r8IS26MYxdiyMzsANnnr62T4eBbyJUt0d1Qh
+         VEFLmhDgXXyGffVeJrE8KAOLy9ybBAI2ILoYPxV09yCXWOaIdpHtXV1nwOGuKpAZTH8w
+         ue2pGjbRk5hVx+/j1y/7aMdn8Iy+SGWhItXHOQAolS+SebmrfKu9X722gFJMleUH3Qpa
+         DxU0CANnZImndiyLYiCSTARenp92cLCrlBpuYouMOWJgswu9Z6pTsMrdfvLcUy0iewLE
+         ZoD5HkNijrLtD1pSBVS3z+9LG+DT/PFtScA18veeulDK4PxneRe6zfp2NScoL6G/fQHv
+         qGGw==
+X-Forwarded-Encrypted: i=1; AJvYcCUMjLt6Lj+ERjWzezq6iS6+JPMrN2O5lyAxNGrV02TGfjQTlun9EKQEEI0YyXnVDbh8/A90nf0wQUGpgY4=@vger.kernel.org, AJvYcCUukxQ/WBEbsub/WfyUUjq3BbnyVcGLFuCEdUA/oug9j8GyX8RH9c4/+3rKg959EKeHtwYNgbGIb2XMh5Sm@vger.kernel.org, AJvYcCUzx8wFxPpmr4+OPhdEBVf+XhMkjRgBtVHzateiPZRypb1YP000uiXOmLoJt4RmWwX/Rq9DcAqx8hgsgyBD+i0=@vger.kernel.org, AJvYcCV+9FI+GQoyuZJ7iDKB9LI5v6M3ZGKL7EHjO6XwPa/aSinFxAeNR3n9cM9/Y5Q3jW4UROBthB+3vYa5MDJI@vger.kernel.org, AJvYcCWoyKQdZ2r3cA0hOtSry3DUsd7w2ZUp0Ah7l+Lr9RULrFcRehfP3eR24krDe9xGLPBFiTujXG0V@vger.kernel.org, AJvYcCWzuNPaQIsKxSx+tK+ucExPWy97ZDupiPjbTQdAKxor1/+/qJungRam7E5Kc8Z/CxHGxaY=@vger.kernel.org, AJvYcCXCB3hR1/XxvrRWL830rH+De7r7l9F2ewuKL9m4QQ7sifPvtjFsFkoI84ZTxUy9V2D+GZk+5jEuMjvsQus=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxhMJchLPNdKptWD56607MUA7M2lUHH6sq7pobwNHwjE/7lqkHi
+	Tpma00taXC9E0gDgH3tYeiUkugzZQSBERR+XVReDEMEOhSACssr4
+X-Gm-Gg: ASbGncsUFk13MZukUHAP2PUbnrEaCgI7DGbtGCiP3vpKDG5zunQDgISHshmCZxyz1AY
+	WU+tXwFF+7fsFPc0+6aKSsjc5nTrLs3nsggyzKTykSh0rzcc9+S6sPQII5PqAV51fchhWfwA3RU
+	1u3n2xp6zUF+bY0XjK8lskvUyVTpgdZKFeIdX+qRvasuMellp7WpFcOOZylxMPNvEJWiNZH6Yk+
+	kb6Pk8sWSlq0Q6GyiUuS4ynw6v1kuzRfL0ge5u2WYC3vI4tvJ5mVSLJL3GLA27ssKSfyYbYk36k
+	1QWFW2yRyNoAWKswgb9LAieFFlY85lNmQgXeCnvljwnQ
+X-Google-Smtp-Source: AGHT+IGVU2+2TkhGwc9XcrbXTU+jprAkGrGQEy4B9m6YI+h73paRxRK7YqS+QjyFE8ZrGike3yIkRw==
+X-Received: by 2002:a05:6a20:c886:b0:1ee:47e7:7e00 with SMTP id adf61e73a8af0-200f55ecf4dmr5333762637.13.1743696847264;
+        Thu, 03 Apr 2025 09:14:07 -0700 (PDT)
+Received: from localhost ([216.228.125.129])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-af9bc3fd41dsm1416486a12.50.2025.04.03.09.14.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Apr 2025 07:39:13 -0700 (PDT)
-Date: Thu, 3 Apr 2025 22:39:03 +0800
-From: Kuan-Wei Chiu <visitorckw@gmail.com>
-To: "H. Peter Anvin" <hpa@zytor.com>, Yury Norov <yury.norov@gmail.com>
-Cc: Yury Norov <yury.norov@gmail.com>,
+        Thu, 03 Apr 2025 09:14:06 -0700 (PDT)
+Date: Thu, 3 Apr 2025 12:14:04 -0400
+From: Yury Norov <yury.norov@gmail.com>
+To: Kuan-Wei Chiu <visitorckw@gmail.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>,
 	David Laight <david.laight.linux@gmail.com>,
 	Andrew Cooper <andrew.cooper3@citrix.com>,
 	Laurent.pinchart@ideasonboard.com, airlied@gmail.com,
@@ -88,9 +88,8 @@ Cc: Yury Norov <yury.norov@gmail.com>,
 	richard@nod.at, simona@ffwll.ch, tglx@linutronix.de,
 	tzimmermann@suse.de, vigneshr@ti.com, x86@kernel.org
 Subject: Re: [PATCH v3 00/16] Introduce and use generic parity16/32/64 helper
-Message-ID: <Z+6dh1ZVIKWWOKaP@visitorckw-System-Product-Name>
-References: <20250307195310.58abff8c@pumpkin>
- <EB85C3C1-8A0D-4CB9-B501-BFEABDF3E977@zytor.com>
+Message-ID: <Z-6zzP2O-Q7zvTLt@thinkpad>
+References: <EB85C3C1-8A0D-4CB9-B501-BFEABDF3E977@zytor.com>
  <Z824SgB9Dt5zdWYc@visitorckw-System-Product-Name>
  <Z9CyuowYsZyez36c@thinkpad>
  <80771542-476C-493E-858A-D2AF6A355CC1@zytor.com>
@@ -99,6 +98,7 @@ References: <20250307195310.58abff8c@pumpkin>
  <Z9KMKwnZXA2mkD2s@visitorckw-System-Product-Name>
  <Z+AlyB461xwMxMtG@visitorckw-System-Product-Name>
  <eec0dfd7-5e4f-4a08-928c-b7714dbc4a17@zytor.com>
+ <Z+6dh1ZVIKWWOKaP@visitorckw-System-Product-Name>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -108,76 +108,104 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <eec0dfd7-5e4f-4a08-928c-b7714dbc4a17@zytor.com>
+In-Reply-To: <Z+6dh1ZVIKWWOKaP@visitorckw-System-Product-Name>
 
-On Tue, Mar 25, 2025 at 12:43:25PM -0700, H. Peter Anvin wrote:
-> On 3/23/25 08:16, Kuan-Wei Chiu wrote:
+On Thu, Apr 03, 2025 at 10:39:03PM +0800, Kuan-Wei Chiu wrote:
+> On Tue, Mar 25, 2025 at 12:43:25PM -0700, H. Peter Anvin wrote:
+> > On 3/23/25 08:16, Kuan-Wei Chiu wrote:
+> > > 
+> > > Interface 3: Multiple Functions
+> > > Description: bool parity_odd8/16/32/64()
+> > > Pros: No need for explicit casting; easy to integrate
+> > >        architecture-specific optimizations; except for parity8(), all
+> > >        functions are one-liners with no significant code duplication
+> > > Cons: More functions may increase maintenance burden
+> > > Opinions: Only I support this approach
+> > > 
 > > 
-> > Interface 3: Multiple Functions
-> > Description: bool parity_odd8/16/32/64()
-> > Pros: No need for explicit casting; easy to integrate
-> >        architecture-specific optimizations; except for parity8(), all
-> >        functions are one-liners with no significant code duplication
-> > Cons: More functions may increase maintenance burden
-> > Opinions: Only I support this approach
+> > OK, so I responded to this but I can't find my reply or any of the
+> > followups, so let me go again:
 > > 
+> > I prefer this option, because:
+> > 
+> > a. Virtually all uses of parity is done in contexts where the sizes of the
+> > items for which parity is to be taken are well-defined, but it is *really*
+> > easy for integer promotion to cause a value to be extended to 32 bits
+> > unnecessarily (sign or zero extend, although for parity it doesn't make any
+> > difference -- if the compiler realizes it.)
+> > 
+> > b. It makes it easier to add arch-specific implementations, notably using
+> > __builtin_parity on architectures where that is known to generate good code.
+> > 
+> > c. For architectures where only *some* parity implementations are
+> > fast/practical, the generic fallbacks will either naturally synthesize them
+> > from components via shift-xor, or they can be defined to use a larger
+> > version; the function prototype acts like a cast.
+> > 
+> > d. If there is a reason in the future to add a generic version, it is really
+> > easy to do using the size-specific functions as components; this is
+> > something we do literally all over the place, using a pattern so common that
+> > it, itself, probably should be macroized:
+> > 
+> > #define parity(x) 				\
+> > ({						\
+> > 	typeof(x) __x = (x);			\
+> > 	bool __y;				\
+> > 	switch (sizeof(__x)) {			\
+> > 		case 1:				\
+> > 			__y = parity8(__x);	\
+> > 			break;			\
+> > 		case 2:				\
+> > 			__y = parity16(__x);	\
+> > 			break;			\
+> > 		case 4:				\
+> > 			__y = parity32(__x);	\
+> > 			break;			\
+> > 		case 8:				\
+> > 			__y = parity64(__x);	\
+> > 			break;			\
+> > 		default:			\
+> > 			BUILD_BUG();		\
+> > 			break;			\
+> > 	}					\
+> > 	__y;					\
+> > })
+> >
+> Thank you for your detailed response and for explaining the rationale
+> behind your preference. The points you outlined in (a)–(d) all seem
+> quite reasonable to me.
 > 
-> OK, so I responded to this but I can't find my reply or any of the
-> followups, so let me go again:
-> 
-> I prefer this option, because:
-> 
-> a. Virtually all uses of parity is done in contexts where the sizes of the
-> items for which parity is to be taken are well-defined, but it is *really*
-> easy for integer promotion to cause a value to be extended to 32 bits
-> unnecessarily (sign or zero extend, although for parity it doesn't make any
-> difference -- if the compiler realizes it.)
-> 
-> b. It makes it easier to add arch-specific implementations, notably using
-> __builtin_parity on architectures where that is known to generate good code.
-> 
-> c. For architectures where only *some* parity implementations are
-> fast/practical, the generic fallbacks will either naturally synthesize them
-> from components via shift-xor, or they can be defined to use a larger
-> version; the function prototype acts like a cast.
-> 
-> d. If there is a reason in the future to add a generic version, it is really
-> easy to do using the size-specific functions as components; this is
-> something we do literally all over the place, using a pattern so common that
-> it, itself, probably should be macroized:
-> 
-> #define parity(x) 				\
-> ({						\
-> 	typeof(x) __x = (x);			\
-> 	bool __y;				\
-> 	switch (sizeof(__x)) {			\
-> 		case 1:				\
-> 			__y = parity8(__x);	\
-> 			break;			\
-> 		case 2:				\
-> 			__y = parity16(__x);	\
-> 			break;			\
-> 		case 4:				\
-> 			__y = parity32(__x);	\
-> 			break;			\
-> 		case 8:				\
-> 			__y = parity64(__x);	\
-> 			break;			\
-> 		default:			\
-> 			BUILD_BUG();		\
-> 			break;			\
-> 	}					\
-> 	__y;					\
-> })
->
-Thank you for your detailed response and for explaining the rationale
-behind your preference. The points you outlined in (a)–(d) all seem
-quite reasonable to me.
+> Yury,
+> do you have any feedback on this?
+> Thank you.
 
-Yury,
-do you have any feedback on this?
-Thank you.
+My feedback to you:
 
-Regards,
-Kuan-Wei
+I asked you to share any numbers about each approach. Asm listings,
+performance tests, bloat-o-meter. But you did nothing or very little
+in that department. You move this series, and it means you should be
+very well aware of alternative solutions, their pros and cons.
 
+Instead, you started a poll to pick the best solution. This is not
+what I expected, and this is not how the best solution can be found.
+
+To H. Peter and everyone:
+
+Thank you for sharing your opinion on this fixed parity(). Your
+arguments may or may not be important, depending on what existing
+users actually need. Unfortunately, Kuan-Wei didn't collect
+performance numbers and opinions from those proposed users.
+
+I already told that, and I will say again: with the lack of any
+evidence that performance and/or code generation is important here,
+the best solution is one that minimizes maintainers' (my!) burden.
+
+In other words, bool parity(unsigned long long). I'm OK to maintain
+a macro, as well. I understand that more complicated solutions may be
+more effective. I will take them only if they will be well advocated.
+
+I hope this will help us to stop moving this discussion back and forth
+and save our time, guys.
+
+Thanks,
+Yury
