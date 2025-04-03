@@ -1,97 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mout.web.de (mout.web.de [217.72.192.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D908513A244;
-	Thu,  3 Apr 2025 08:46:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A894A13A244;
+	Thu,  3 Apr 2025 08:50:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.72.192.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743669991; cv=none; b=Ze5nuIozU5qtTqsqs/1CnbjUL3te00Q+4+2gci/ND/FXULs483IF5610X1vOE22fbrTeZ5u16eJ+SsYZcMGK4k+WkaBbv2kujv+sTGh7DztwhreyYHK1g8g+qGWD5DoD56NxXC5acaNv9lLOClV3ukWbLDQbKsk2mQmUQk6+Xb4=
+	t=1743670251; cv=none; b=EjithZlaWR99TtOwgLV8BbXhVsSK7yP3Sk1B1yeNtFudeUdFZxv51m80EJrNBCMmypys7VXLYSGMxAYT2Aved4qUHIxDOgiY47Vx01AS81MMet577FcTVcpE7McCY3QHW8E2UNWr493Sha4I9miLJbf4izq9OfKGy544dWW8WUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743669991; c=relaxed/simple;
-	bh=OAUpskNDlEMdIjdcsmy2MVzHDre7qQyW3PzLtSWjU8Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HgPja0sGUzwoEyB5LlYFyGw9qEcWvwGZr6nd2i6/hEAeU+eWM0IcmjlAadCj769jMqyfZd0L5IJbLLWDEE7U3xo37qsF6RUCshdBZFOcE31YZnAPRpjMRZL7m4VbkVv66YemYMXn7tgmbVsWU2bIiOtxGXwnJV3iMmCTvwXQXGo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=csEhzXPp; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1743670251; c=relaxed/simple;
+	bh=hsm1NzR4usjbx6eO/EwG40atDxqPYD52GuN4cBVAfg0=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
+	 In-Reply-To:Content-Type; b=TLIigdMpJSvQabasfKIFGv2joYlpOITbxQu4vr6gMSXwyPUqAI74c/+vQgq6B2M/n0lCAfRK15D6Z0zYO+HvJFMq/kY/R1YDcdoYVEsJLt5wyZeDTz0fXOWYl9dNLVu/3LGtfsqdNHkiHl1QIkNjDQnJsjfJgjpBw5CtGuYzJAQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=T0YmZK2/; arc=none smtp.client-ip=217.72.192.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="csEhzXPp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7AE9C4CEE3;
-	Thu,  3 Apr 2025 08:46:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1743669990;
-	bh=OAUpskNDlEMdIjdcsmy2MVzHDre7qQyW3PzLtSWjU8Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=csEhzXPpHgKuamGzB2VOK4eFwOKB2HCIk7PEtqRLg8RzqL7lJpfrwwX92gf9tjW9Y
-	 GDM9OaGF8XeeX0wTe8A13UpY8BwPNGycNIP+IWDE2qOMJ/WmzP56gvNf1NootvsSNj
-	 5PbyQAicGYCN3rZ4GMDpCf9gFfESy6vq+0dilt/M=
-Date: Thu, 3 Apr 2025 09:45:02 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: xiaopeitux@foxmail.com
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Pei Xiao <xiaopei01@kylinos.cn>
-Subject: Re: [PATCH] tty/sysrq: make sysrq_replay_logs_op const
-Message-ID: <2025040349-antiques-reflex-30c5@gregkh>
-References: <tencent_E7CD9DB87A448073E350F9400678ED9F9C0A@qq.com>
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="T0YmZK2/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1743670239; x=1744275039; i=markus.elfring@web.de;
+	bh=hsm1NzR4usjbx6eO/EwG40atDxqPYD52GuN4cBVAfg0=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
+	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=T0YmZK2/pL9+WbMqmOXhvUo7+aEJ9PPrMuag5ZnelfrIFHE0Qne3yt30CZCJfTvV
+	 BvoNlcsUkWLUY9B55A9t20il17ol7L3ssLqSY2xaxnuylioYofYXwz2IisKsaZL5f
+	 gqhbybaQOHG/hZzZaqgqYHVfwY8PzkpBMtigzn8NkIw0g8ZTvOSKIVaGZHkvEQ4wk
+	 zahvddiKFphUty4Ub4vpG1NWTmLCK9fGON7abJnuuuBkxKGN7XeqjFn17KJzf10Xr
+	 QIABN0jQGu9QpA95VY3A2npeKxcWQsbk2DHYEYItSXm3vo9Mo2YBcF5RJClyCp3JC
+	 jxN2GxFJENsiJXz1Kg==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.29] ([94.31.70.50]) by smtp.web.de (mrweb106
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MsrhK-1t7KB53E2i-012IHI; Thu, 03
+ Apr 2025 10:50:39 +0200
+Message-ID: <970e78d3-e3bc-4a34-9ba8-40df4823726f@web.de>
+Date: Thu, 3 Apr 2025 10:50:36 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <tencent_E7CD9DB87A448073E350F9400678ED9F9C0A@qq.com>
+User-Agent: Mozilla Thunderbird
+To: Henry Martin <bsdhenrymartin@gmail.com>, linux-serial@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+Cc: stable@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>,
+ Taichi Sugaya <sugaya.taichi@socionext.com>,
+ Takao Orito <orito.takao@socionext.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+References: <20250403070339.64990-1-bsdhenrymartin@gmail.com>
+Subject: Re: [PATCH v2] serial: Fix null-ptr-deref in mlb_usio_probe()
+Content-Language: en-GB
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20250403070339.64990-1-bsdhenrymartin@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:IyQRX81AoN2cTzefdi5EWIMxrAugxODoW9dQT5OAekcqd4WPkI9
+ uAyGDMmtnVkQ+CGHwwmJEXvyk1lBr9sH1oGVSm3DkpcAv8mxPmgcr4mo6NhNv6gei7+AoeW
+ xf1Dqy8Yn5/hldCS48DlmFr1Rd9cEUIquUONktOrroU/YUmPyDIskNzGnifPQyXEpY/h86q
+ VZ5MxN/WcRGJS6JK/VPUQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:qn9RJRcmBMM=;K0Ku9YlURmKXZNnats0w/CadTYA
+ vKAGlXpX1XsvOST4O8RjRWBFf7l42TmbhCD2myyNEdyPcu+IKJmWXKZzH89b8KSZqHofU76Bl
+ b9kEYPKXRuS55dusEtsbExqAgjmKyKFFQyME3lkKyAGME7SBX1jWfNC08HerO6YoAG5W+Xyor
+ 5/4stNSZo8QqyvvvCII8J+l8EQu72vFSfXguWNis0Q3R3Udl+9efliVaX0APrg3tPt3pidno1
+ NBymGxEIT0AZOPDFiiVI5zynCmbacGqGE52Zi5N0iyvsd+p55+ku4U+m/CIx19MBz0p5ue3Of
+ DQYUAmxxmEflrziNvYOz0TgUjqb7ylTxVGhwKsgxsLPY15eXu9ePxtl7NX3iHmeipbODQnCcI
+ CLS66Sk3Hw8FpiAQIlbRvJmhyDLGsXo9vGFDHOFTZJ9kvOxRn+AjFEFsYWMX8fxBBN8nW1qOU
+ /G3fyZN5R8nY+f1cEavSGNjnwxACgQ9IJg4YD3YYp0o6GeSCDhf0P97CnvplTTef9jkvvNIN/
+ A1S+4Z0QDbESwgpO2HZi1OEeyXchBqCvSNbxKVCXZ4pqUeD5Q9WFOlRLZ1f9tTaD87Q5jllhf
+ /TwByyImGs/BuibAOIJ5X5faqPvXFnvZxtmYLbugWms/YKkATL4NkAKYCqokV041dEE/fiTqw
+ H1gQeSzCDBKtWs8Z8HCPvea7INzFwlLcI+u7rCEeiYorbauHa6eg6EbzLJIZLd5UXS2vOwdYm
+ q/rp1txbM28XyJHEPG92V/mRa+rTaI9D05UbGN5N9kwgJtLxBBqR9i5IEegy9yrlU8tyzKPhR
+ u7qv24hZmRGBm/0jf9tNBfEPYHuCF/OQpBjFti6Rgcpf5YWadnlzpzm+bBXvc4+uB2F++7UOj
+ pTxu6CD3Unk1HVQJOYNzwr1oZ2G15ETzb2i1S6WTUz64vtowBKeRvv49SDpIPs9aP3M2Mxy4U
+ LzWYhJymlXcRQ2je8KkQNvW0c7lx0OrZxgfJXPL10vEiuvtdqTwltKiWVvukv+xyKF3NdNS6h
+ BbLrLsMTxIXPK6+K8SHrghcJ2ldOsblE78WeapCxCuHkOpttvdcoxIlWiCFt/IMvEYxPbNzSh
+ /Gdo5fQVJYlgjylzFDZa61FYz06FYMFx9Q8nzLKMpYtZCqFjsgicnFWe/gnEkfcSzOXI/XkI2
+ 5KKffcAIbr0s6tkmgSEb7ELob4e5i0VbSeuTNgAz7MXo5hqX6zVEDBqoVXa4rv6V1jUmAwOPi
+ c6nLKaHUuUQdvWTpW4vGTg3138UdRpmrURH9ZTlI1FgNKtAkTzy/7er3iyLLwh97iGmbVtztC
+ Bc3HBfoFrKAztJHjMb1OcB50nQfuiKh797bizMkjKbj7QSBgPRdbgb/asOaEUAAU0jeNqVx0+
+ EwIcbe3MbnXjP9MMF9wHPqPl7CDYbdwbmn0weMDKMC5dSRKFGN5ecwMFXOImgJKbewHEKiPFg
+ 5hYkRr7q/Driejx95rYgls4EpIyCgnJ5dNFuxWUbqFaTisuoq
 
-On Thu, Apr 03, 2025 at 04:38:18PM +0800, xiaopeitux@foxmail.com wrote:
-> From: Pei Xiao <xiaopei01@kylinos.cn>
-> 
-> Mark sysrq_replay_logs_op as const, preventing accidental modification.
-> 
-> Signed-off-by: Pei Xiao <xiaopei01@kylinos.cn>
-> ---
->  drivers/tty/sysrq.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index f85ce02e4725..e9ada1c14e26 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -454,7 +454,7 @@ static void sysrq_handle_replay_logs(u8 key)
->  {
->  	console_try_replay_all();
->  }
-> -static struct sysrq_key_op sysrq_replay_logs_op = {
-> +static const struct sysrq_key_op sysrq_replay_logs_op = {
->  	.handler        = sysrq_handle_replay_logs,
->  	.help_msg       = "replay-kernel-logs(R)",
->  	.action_msg     = "Replay kernel logs on consoles",
-> -- 
-> 2.25.1
-> 
+=E2=80=A6
+> Add NULL check after devm_ioremap() to prevent this issue.
 
-Hi,
+Can a summary phrase like =E2=80=9CPrevent null pointer dereference in mlb=
+_usio_probe()=E2=80=9D
+be a bit nicer?
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/process/submitting-patches.rst for what
-  needs to be done here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Regards,
+Markus
