@@ -1,107 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com [209.85.210.195])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D76B81A5B91;
-	Thu,  3 Apr 2025 06:50:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FDC923F273;
+	Thu,  3 Apr 2025 07:03:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743663041; cv=none; b=llZ422bqeFFBsq4sa4czonI9OshmaUCFxZ0s97Rswmq6pjt0kHDmdU0PickenzP1Fnh0A0b5e5Bi4IxydGsGKwIpJEyMibwoLXinhFavCKQ8HrvDCafsJeq+wLn9kj2AyT6UkjwX8mpegGIR258x42MCChhS3y/9xA0zKuXOXRY=
+	t=1743663830; cv=none; b=GKQ5DJdr0SVkZSry3bzzJ2YtBKrzo1y8IZdbCgoBN6HtIJBxMKbklbUj+NAtbGJ0PsT0LzP79tbsnXDMJI0sVx3C5kw2i4lUzWq/9BJEGJK5LXr951QXozTMFKBcAFPcBSVEzK58IzgiWlseAuh4fRBmqNagVHHFAOfsq8QV2g0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743663041; c=relaxed/simple;
-	bh=Jh/rY+EfIjSo98Z/ve5BziCFk7Rx6+VKfxCcaVbDtEs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rFd13bvK3E2ARUJ9SlhQfs++Tn3bIKsFldIGp8aXJnNW4a2jMGiWgJ7EE6ez7QSLUxtnTkrPKNkWidniip7SzVEdqJyfJTUCjVUxVzM2CV3kSNrpO2UnSCilYA0yW13LfNQtue0SLuJ4G6Q6yhAl5041ECnEBeKdV38YIkjXW7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=fCYukXs5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1743663830; c=relaxed/simple;
+	bh=VqD21zug0bzNRIfh64ajCU8czSXSOItLcFIN3MXSFaE=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=VUqzAzlLbTM3dg7KfRRRFRSAPxq9sFA8QBh4WSq4E/f0jzcjpBxM1JCPq2VEEfjNMmPBvnn/x+2VDKHcipyJGhKFCdxcvupzTHFZf6xTSnGkE2KmaHTqQSlIRqCXTOZyuKVyQFZZyytrYKlJZTz9Mp+yilnAUsShH3hoczhJQqM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JkmQLBxD; arc=none smtp.client-ip=209.85.210.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="fCYukXs5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C66E5C4CEE8;
-	Thu,  3 Apr 2025 06:50:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1743663040;
-	bh=Jh/rY+EfIjSo98Z/ve5BziCFk7Rx6+VKfxCcaVbDtEs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fCYukXs5RtwOJrW0aHvACYhB+w3VtDovh0h0XSAhtrAwlJkHFzQeCCHaQraayIh3I
-	 dHdEbfeqNFPw1YeIa6iNSkmi8yws9CsIqRuoBjddeX78VdjQpufEHWDCXbxm0J1WD3
-	 2h82qoGnao1EdRCrUrGeUG54x30CxU0kNJqj5Dxo=
-Date: Thu, 3 Apr 2025 07:49:13 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Henry Martin <bsdhenrymartin@gmail.com>
-Cc: jirislaby@kernel.org, sugaya.taichi@socionext.com,
-	orito.takao@socionext.com, u.kleine-koenig@baylibre.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v1] serial: Fix null-ptr-deref in mlb_usio_probe()
-Message-ID: <2025040301-unmanned-lapdog-5446@gregkh>
-References: <20250403062808.63428-1-bsdhenrymartin@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JkmQLBxD"
+Received: by mail-pf1-f195.google.com with SMTP id d2e1a72fcca58-736b98acaadso519751b3a.1;
+        Thu, 03 Apr 2025 00:03:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1743663828; x=1744268628; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=igrrWjIKA7a8qvg8aOTq0yFxsHm/NBQIR20zcRQX2tE=;
+        b=JkmQLBxDBcpms768ZjrH2SRCZFkl+6IUN9LpQHDKQxpaaX8xSv0MIsK88sBEbeCF8a
+         F7siQ/1qPsNucZUlU9qBAYuX+2b8Fz8ZvpPrLOG98A0D2UkUCaq3oILe3t5rtSuu0F6Q
+         5Hq+Sdf6I1VlIXkZpO0dCgNHyEkR8CPLbHzZ9SPBTpsYsED8JN70wr+pQFJvAcmx2p4f
+         2+MLgQFGgaTN8rECI81fcMRX2zoebvKTFl4ndu38CwKic0Lr6VcPCHwcYRCRZuiBxP58
+         LM1V03G9ywS4X0zbC54WRGaTtlSugqGBuazCOGRlDT92cnc13adqpJ9N+RMPNwlays1r
+         n2wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743663828; x=1744268628;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=igrrWjIKA7a8qvg8aOTq0yFxsHm/NBQIR20zcRQX2tE=;
+        b=IzHkMTjmN8UXYipNizl/gXudrghRTsL3zx1fTX/yQGrmHsUEhCBq7LMTul2em3MoWT
+         VEzGxxrPzXaK00J8XABqV2lQi5U3bibZwEo6q1Ls9vDSqpDjGrrH24IJ7choY6XhYUL1
+         LmUkvuJDr6JQnCVaiGwBhdd8pBwhW566JxpxYhsGBdyrfxIXPWFM3kSMkkYAZ+HZZ55e
+         F//BejGQgfkq+pN0GEwiz5HH4GGldCiaLXqL778ScQwdn5gQBr6eNWSgclJ1z8RZOqlq
+         gSVCKcdB5rOYsVRR+k6cxEUpTKPXfEQswUQKNwptcBAsQZMEhEK53Dj1csIxA7/o9gTK
+         5A6w==
+X-Forwarded-Encrypted: i=1; AJvYcCW7wJahkgcAsjockA+/4f2HZrHgwV4RC0fQXpyTdW68KNVAycIczsegBXk/CcVseC8UUu0acMk5@vger.kernel.org, AJvYcCWKhkojVc/ueg7/o0Uo+WFeEcNQACI38zeYvhDzIE7hA69OqhBOV6HWlQKlzqmRGwqa4YDqZ8JLxE4XAfE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzDG2HHsuZOMOPlpDRXbTDl1pTHKZQf+eUawc0xBp4h/PzfRcJ1
+	XzPAHwViGBziMN93yNT5vGBSsBqrHsoDVsVlf2/iANvVCIqvBWEu
+X-Gm-Gg: ASbGncsHnygAerBoPQ1+pO+heD1ynYJ70Ps2Ug1SjAunCRMffzm0XmbB0BHJdsZr49h
+	IfiDLL932PU9E5H5IMjmmKQ/uxiImpn4TY/v09omtGUjeqPo4i2KU7hAr6Rn8KJjbNewZbKJFty
+	+XOoWtV9q+sO+tSVjnqm4HsOr1dW3ivzKYgy63ALeY8S9VbGe/9QeWb2rMgvY+qXBdFVRrhDpQ6
+	btscZGBOmnIlg9TyenxXbCOrjTjze+oq99QmOz7EQN3ToF9ZIMS/4TxXfH9aJa8ZGpLri2yDRU7
+	/g9rZWWOJezw0mS8IDPhlRtJyXmW7Yc9+EDsPiaMIOvXVQGDNmYFX+7Ay2XKs3sXk/QKvmw=
+X-Google-Smtp-Source: AGHT+IGvBTDG64dD1aEu97XOwefwRvLxgmE2MZM8c2Q0z/ib3acvry/82BosJjBqsHs0ikDVPGaxLw==
+X-Received: by 2002:a05:6a00:130e:b0:736:a8db:93bb with SMTP id d2e1a72fcca58-739c7843529mr6441217b3a.5.1743663828066;
+        Thu, 03 Apr 2025 00:03:48 -0700 (PDT)
+Received: from henry.localdomain ([111.202.148.167])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-739da0b3009sm717700b3a.123.2025.04.03.00.03.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Apr 2025 00:03:47 -0700 (PDT)
+From: Henry Martin <bsdhenrymartin@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	sugaya.taichi@socionext.com,
+	orito.takao@socionext.com,
+	u.kleine-koenig@baylibre.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Henry Martin <bsdhenrymartin@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] serial: Fix null-ptr-deref in mlb_usio_probe()
+Date: Thu,  3 Apr 2025 15:03:39 +0800
+Message-Id: <20250403070339.64990-1-bsdhenrymartin@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <2025040301-unmanned-lapdog-5446@gregkh>
+References: <2025040301-unmanned-lapdog-5446@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250403062808.63428-1-bsdhenrymartin@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 03, 2025 at 02:28:08PM +0800, Henry Martin wrote:
-> devm_ioremap() returns NULL on error. Currently, mlb_usio_probe() does
-> not check for this case, which results in a NULL pointer dereference.
-> 
-> Add NULL check after devm_ioremap() to prevent this issue.
-> 
-> Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
-> Signed-off-by: Henry Martin <bsdhenrymartin@gmail.com>
-> ---
->  drivers/tty/serial/milbeaut_usio.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
-> index 059bea18dbab..4e47dca2c4ed 100644
-> --- a/drivers/tty/serial/milbeaut_usio.c
-> +++ b/drivers/tty/serial/milbeaut_usio.c
-> @@ -523,7 +523,10 @@ static int mlb_usio_probe(struct platform_device *pdev)
->  	}
->  	port->membase = devm_ioremap(&pdev->dev, res->start,
->  				resource_size(res));
-> -
-> +	if (!port->membase) {
-> +		ret = -ENOMEM;
-> +		goto failed;
-> +	}
->  	ret = platform_get_irq_byname(pdev, "rx");
->  	mlb_usio_irq[index][RX] = ret;
->  
-> -- 
-> 2.34.1
-> 
-> 
+devm_ioremap() returns NULL on error. Currently, mlb_usio_probe() does
+not check for this case, which results in a NULL pointer dereference.
 
-Hi,
+Add NULL check after devm_ioremap() to prevent this issue.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Cc: stable@vger.kernel.org
+Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
+Signed-off-by: Henry Martin <bsdhenrymartin@gmail.com>
+---
+V1 -> V2: Add cc: stable line.
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+ drivers/tty/serial/milbeaut_usio.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
+diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
+index 059bea18dbab..4e47dca2c4ed 100644
+--- a/drivers/tty/serial/milbeaut_usio.c
++++ b/drivers/tty/serial/milbeaut_usio.c
+@@ -523,7 +523,10 @@ static int mlb_usio_probe(struct platform_device *pdev)
+ 	}
+ 	port->membase = devm_ioremap(&pdev->dev, res->start,
+ 				resource_size(res));
+-
++	if (!port->membase) {
++		ret = -ENOMEM;
++		goto failed;
++	}
+ 	ret = platform_get_irq_byname(pdev, "rx");
+ 	mlb_usio_irq[index][RX] = ret;
+ 
+-- 
+2.34.1
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
