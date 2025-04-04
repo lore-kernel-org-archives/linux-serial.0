@@ -1,122 +1,137 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6C961BEF87;
-	Fri,  4 Apr 2025 10:58:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC6381EF368
+	for <linux-serial@vger.kernel.org>; Fri,  4 Apr 2025 15:03:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743764323; cv=none; b=ma0r8uGLQlYyr9sAtHv+jqiqfWucoYzNhkWQy98k1TUNDQ4qp67YIAPfXQhj0DVdrWBUlPG1BI/NnH1TwZmiyCbbOuF8AczB6UmypwO4fGWihVQHaXu2+fs5Lri4n6XNKEAD9+zyK/1KDxM8o9JxhIBTRoT5WZZo4O357WbV/6U=
+	t=1743778990; cv=none; b=t7P6faKwUcMBJlTNPnMiOjGaehSj+A6rtKcoMAue+kcMrWGiGCF4lhdZCdzqrZ9zqSiP/fYZqix7HExr4JNJEG1FREfZL9Y6WKy3rNfercfHDUylJFBHoiEWPSUYW1HBXkENczheN4QSfZSbXCG1ya79XLN1gPI2xsSsF3nmX38=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743764323; c=relaxed/simple;
-	bh=29c4vSaKSvPKhmpFz7QIBmh4VQjlG7FqFr9hBMYD4o4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i4jYB3dWT9yqryosvKq/+i8Xdjugl9UgXpnOw4/yA86mVdpGLeRMdRw3DHGnW900K8b1/raQtw5774QrVeYveqkoRWkzaZNSGkh5dPNT4JMS7TYVAtPgdTpW8G7PiD91LTjRq2TnfKvm229XLPj6EzyjNz0vjC3vxzDnalrBYn0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Cj6F314W; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1743778990; c=relaxed/simple;
+	bh=oJdB7ka8sGPN2Ibla2OQ0VFHSSMu1F+rfQjdR8mLW0Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=gF5rj9uYC90M3TWg7bV1mAPIZHgAbY5Gbo/lkXEpVbyucF0T9GIrB/OjMi6yu7RmhNytU9yK8MqzPV0zIKibl0gk8XGTKeLWkp6w/FWQHAk4C1X4VkiK7weka3YYHMV1SBmyLTO1IIVZnNhwM4Co5SUeNw9a3gF/JIQojJgJcXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Er4k41tk; arc=none smtp.client-ip=203.254.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Cj6F314W"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1743764322; x=1775300322;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=29c4vSaKSvPKhmpFz7QIBmh4VQjlG7FqFr9hBMYD4o4=;
-  b=Cj6F314WKTCw4/2vzH0S/Xjbiaj3p7kTmvK6SrZpxP+JeDIM8ipuLeWK
-   M2HHQ+r1xQJ+q7Rtc4QGZpXCuAoepwIPArjGzgEleK/9WhJezMfbBT3Wb
-   D+/wISt31xc3+Zr+9t5C9i/9yeRsrvHk2tTilF0aw99hMuMB9Etp5w3No
-   iWW9DO3V8Hr9GEb6q5eC3fKOnqSs1qqC5yTnN0OQ3Sq7SE7IhTghiNfnI
-   D0iDvU+FtL3OSK7PZu2/+tLHaM6UnfWfObYmtaQ1WZuXducZ7hVb/CayK
-   FAQAQxsjvwEyZVMryRl4l5zsQfxD9eUsJoLMRevjxmh86HQbUkVseRZx0
-   A==;
-X-CSE-ConnectionGUID: asJmgpF1ReaUNUiKqbxruQ==
-X-CSE-MsgGUID: YREFAv6dTbC/QWqhCA5d9g==
-X-IronPort-AV: E=McAfee;i="6700,10204,11393"; a="45340399"
-X-IronPort-AV: E=Sophos;i="6.15,188,1739865600"; 
-   d="scan'208";a="45340399"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2025 03:58:41 -0700
-X-CSE-ConnectionGUID: J2cMLxjEQwm59K7unQAKbA==
-X-CSE-MsgGUID: 4LY1BBZSQfuxy7nPFwCyOg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,188,1739865600"; 
-   d="scan'208";a="132137250"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2025 03:58:38 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1u0ekt-000000096iP-0isf;
-	Fri, 04 Apr 2025 13:58:35 +0300
-Date: Fri, 4 Apr 2025 13:58:34 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: yunhui cui <cuiyunhui@bytedance.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	john.ogness@linutronix.de, pmladek@suse.com, arnd@arndb.de,
-	namcao@linutronix.de, benjamin.larsson@genexis.eu,
-	schnelle@linux.ibm.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [External] Re: [PATCH] serial: 8250: fix panic due to PSLVERR
-Message-ID: <Z--7Wm_erf5U2xMl@smile.fi.intel.com>
-References: <20250403090336.16643-1-cuiyunhui@bytedance.com>
- <Z-5yr2mFaDt8kxC-@smile.fi.intel.com>
- <CAEEQ3wkWmfkq06iyhxs32pyTUp7Mm=UD-dYen_9H5kHnsJe10g@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Er4k41tk"
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+	by mailout4.samsung.com (KnoxPortal) with ESMTP id 20250404150305epoutp0473c58dec774deb0d1057fba72f453c7c~zJb_EF9ST1144811448epoutp04R
+	for <linux-serial@vger.kernel.org>; Fri,  4 Apr 2025 15:03:05 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20250404150305epoutp0473c58dec774deb0d1057fba72f453c7c~zJb_EF9ST1144811448epoutp04R
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1743778985;
+	bh=Fqe5UR8NLUMbvmsRcMfe7BrQFW64ZYVHfs3OeiLu72Y=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=Er4k41tkMCJQCimEJqZm3ZIYpUVEEc3v1li43o08v+VoPh3BXUZv2rf7yTw2/4oWv
+	 8mHrv4S97v8ZOS5KCNVQiC0ZFfAWPHdphaXx/LuFJlQGgbVuWlr9cY55QrN3aG/ReL
+	 eFmwU3SkqGdxcHBTYFvTda9TIupjvqGdQ9eXDKQc=
+Received: from epsnrtp04.localdomain (unknown [182.195.42.156]) by
+	epcas5p2.samsung.com (KnoxPortal) with ESMTPS id
+	20250404150304epcas5p2fd379e74fc61094e6d1e3ecd40865774~zJb9MCh7m2466524665epcas5p24;
+	Fri,  4 Apr 2025 15:03:04 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.174]) by
+	epsnrtp04.localdomain (Postfix) with ESMTP id 4ZThgB28Qqz6B9m5; Fri,  4 Apr
+	2025 15:03:02 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+	epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+	74.0C.09853.6A4FFE76; Sat,  5 Apr 2025 00:03:02 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+	epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+	20250404134131epcas5p4794f2b1e5d289e1faa142c9093ea45e5~zIUwOGZqY1479514795epcas5p4k;
+	Fri,  4 Apr 2025 13:41:31 +0000 (GMT)
+Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
+	epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20250404134131epsmtrp217cd8027a798845e407ad84070c04594~zIUwNL65L0404004040epsmtrp2G;
+	Fri,  4 Apr 2025 13:41:31 +0000 (GMT)
+X-AuditID: b6c32a4a-03cdf7000000267d-0a-67eff4a6120d
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+	epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+	FE.C0.08805.B81EFE76; Fri,  4 Apr 2025 22:41:31 +0900 (KST)
+Received: from bose.samsungds.net (unknown [107.108.83.9]) by
+	epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20250404134129epsmtip1623c5c8b8a5ece2d4912ce92d0f7317a~zIUuo3BpF0898808988epsmtip1a;
+	Fri,  4 Apr 2025 13:41:29 +0000 (GMT)
+From: Faraz Ata <faraz.ata@samsung.com>
+To: alim.akhtar@samsung.com, krzk+dt@kernel.org, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-arm-kernel@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	rosa.pila@samsung.com, dev.tailor@samsung.com, Faraz Ata
+	<faraz.ata@samsung.com>
+Subject: [PATCH v2] tty: serial: samsung_tty: support 18 uart ports
+Date: Fri,  4 Apr 2025 19:20:06 +0530
+Message-Id: <20250404135006.1263827-1-faraz.ata@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEEQ3wkWmfkq06iyhxs32pyTUp7Mm=UD-dYen_9H5kHnsJe10g@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprMJsWRmVeSWpSXmKPExsWy7bCmlu6yL+/TDd6d47V4MG8bm8W9HcvY
+	La7dWMhu0bx4PZvFu7kyFi9n3WOz2PT4GqvF5V1z2CxmnN/HZHFmcS+7xZefD5gduD02repk
+	89g/dw27x+Yl9R59W1YxenzeJBfAGpVtk5GamJJapJCal5yfkpmXbqvkHRzvHG9qZmCoa2hp
+	Ya6kkJeYm2qr5OIToOuWmQN0mJJCWWJOKVAoILG4WEnfzqYov7QkVSEjv7jEVim1ICWnwKRA
+	rzgxt7g0L10vL7XEytDAwMgUqDAhO6PlwlfGghssFVvvfWZvYPzI3MXIySEhYCJxaMcdFhBb
+	SGA3o8TyA7pdjFxA9idGiY5FUxkhnG+MEp1f1zLCdDxdfhwqsZdR4tDfY+wQzntGifmXDrGC
+	VLEJqEvMvHEEbK6IQLLEl8OH2UFsZoH7QKM+ZIPYwgLOEu8OrQKq4eBgEVCVuNGXABLmFbCR
+	eDZ9ARPEMnmJ/QfPMkPEBSVOznzCAjFGXqJ562xmkL0SAm/ZJV49WQ/1j4vE2f1noS4Vlnh1
+	fAs7hC0l8fndXjYI20di8tFvjCB7JQQyJO6sFYEI20usXnCGFSTMLKApsX6XPkRYVmLqqXVM
+	EGv5JHp/P4E6jVdixzwYW1ni5J49rBC2pMSh2y+gbA+J7+9bWSGhGyuxc9U+5gmM8rOQfDML
+	yTezEDYvYGRexSiZWlCcm55abFpglJdaDo/W5PzcTYzg1KnltYPx4YMPeocYmTgYDzFKcDAr
+	ifDezXmfLsSbklhZlVqUH19UmpNafIjRFBjCE5mlRJPzgck7ryTe0MTSwMTMzMzE0tjMUEmc
+	t3lnS7qQQHpiSWp2ampBahFMHxMHp1QDU8QDntAwmXwHmUX2FVpSSy5NiF02ZYreUeuFefP0
+	vSJYj3Z6q20+Lzvr/QZj2/i5r1WOZ/uUr6zo+qgeX/X+mLuZvELI/POKL9NW+sn0fwmY7N/O
+	s01h0UdfHQalRS0q69ufx7/aIVWd9DfUYkrEce3ddh9qGXPM9z97/WKT0fUZbVM7GcQd/9XG
+	s+X/OloSLvz4RwnbYeUFhiu4hc9ZVgtZd5kfs5zjILmqoGDukbvnWtKfTHNijV8kI2CfsvRG
+	bldr6NFfIU9vbV2yJqMjy9P4fvyiPanxDgrLjkZk33u23u4Jt8A5h9een37b/fghYBfRyn2V
+	o3ediMa0c7ePOe9YE7oi5bKG5NT+qeePKrEUZyQaajEXFScCAH3dmO4mBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrILMWRmVeSWpSXmKPExsWy7bCSnG73w/fpBquuc1k8mLeNzeLejmXs
+	FtduLGS3aF68ns3i3VwZi5ez7rFZbHp8jdXi8q45bBYzzu9jsjizuJfd4svPB8wO3B6bVnWy
+	eeyfu4bdY/OSeo++LasYPT5vkgtgjeKySUnNySxLLdK3S+DKaLnwlbHgBkvF1nuf2RsYPzJ3
+	MXJySAiYSDxdfpyxi5GLQ0hgN6PEytu/WSASkhKHn95lhbCFJVb+e84OUfSWUaJ17kM2kASb
+	gLrEzBtHwBpEBNIllnzZzQRSxCzwlFFi7u53YCuEBZwl3h1aBVTEwcEioCpxoy8BJMwrYCPx
+	bPoCJogF8hL7D55lhogLSpyc+QRsJjNQvHnrbOYJjHyzkKRmIUktYGRaxSiZWlCcm55bbFhg
+	lJdarlecmFtcmpeul5yfu4kRHMpaWjsY96z6oHeIkYmD8RCjBAezkgjv3Zz36UK8KYmVValF
+	+fFFpTmpxYcYpTlYlMR5v73uTRESSE8sSc1OTS1ILYLJMnFwSjUwzeNcJ6Fx/03x7ebUVf+f
+	b2CXNQt6nXki7drR2hblL/MYN3fNPm3JwMOlv5vlUZmajFSVVGC7k+Qe+bLqNQEcm5Yz3jvh
+	YOqSHWL8/dqJTXe3zViwYu4FS26HM8v2vzP4EXiizrma6x6/w7GUGSFTVt4Ie+rQ/W7S44f9
+	Lek927jVZ/6Wd1dtPy1ylkNfTONdqrnomZmcsX9M+8/1Tfix0yNxtvY+kSf/3kV3Lijbcbp/
+	opLK3CNCL7K75wWIuK2O6n20Im7pmUWTFmtuUvj/tql6zZLL+w962ltUN35dvLKsZcd7+7L0
+	JxzVU5/4Ny9sOKuZcb//w57JFudNGBrXXa/XieXVF1Vgs42dsjP7nhJLcUaioRZzUXEiACdF
+	nKDUAgAA
+X-CMS-MailID: 20250404134131epcas5p4794f2b1e5d289e1faa142c9093ea45e5
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20250404134131epcas5p4794f2b1e5d289e1faa142c9093ea45e5
+References: <CGME20250404134131epcas5p4794f2b1e5d289e1faa142c9093ea45e5@epcas5p4.samsung.com>
 
-On Fri, Apr 04, 2025 at 10:44:09AM +0800, yunhui cui wrote:
-> On Thu, Apr 3, 2025 at 7:36 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> > On Thu, Apr 03, 2025 at 05:03:36PM +0800, Yunhui Cui wrote:
+Exynos Auto v920 SoC supports up to 18 UART ports.
+Hence changing the value of UART_NR to 18.
+---
+ drivers/tty/serial/samsung_tty.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-...
-
-> > > To resolve this issue, relevant serial_port_out operations should be
-> >
-> > serial_port_out()
-> 
-> Okay.
-> 
-> >
-> > > placed in a critical section, and UART_RX data should only be read
-> > > when the UART_LSR DR bit is set.
-> >
-> > The last one is made in the common code, are you sure that all supported UARTs
-> > will be okay with such a change?
-> 
-> This change enhances code robustness without being intrusive.
-
-It is intrusive as it touches the core part affecting basically
-_all_ of the 8250-based drivers.
-
-Yes, it's small, but still it needs to be done carefully with commit message
-pointing out to the other 8250 datasheets to show that this is _not_ DW
-specific change.
-
-...
-
-> > > Panic message:
-> >
-> > Please, read this
-> > https://www.kernel.org/doc/html/latest/process/submitting-patches.html#backtraces-in-commit-messages
-> > and act accordingly.
-> 
-> Okay, I'll update the next version to follow the guideline: 'Avoid
-> directly copying full dmesg output (e.g., timestamps, registers, and
-> stack dumps); instead, extract the critical call chain.'
-
-and make it short, e.g. ~3-5 lines only.
-
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 210fff7164c1..9a5211b730fb 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -52,7 +52,7 @@
+ #define S3C24XX_SERIAL_MINOR	64
+ 
+ #ifdef CONFIG_ARM64
+-#define UART_NR			12
++#define UART_NR			18
+ #else
+ #define UART_NR			CONFIG_SERIAL_SAMSUNG_UARTS
+ #endif
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
