@@ -1,58 +1,58 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC3551E4BE
-	for <linux-serial@vger.kernel.org>; Mon,  7 Apr 2025 13:00:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 376CB253359
+	for <linux-serial@vger.kernel.org>; Mon,  7 Apr 2025 13:22:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744030836; cv=none; b=imnIkY1H/2BxmUCyLjyu2qdFoRruhZ16gKcLXOcM2qFGjLAYKfihC0IYCO3Q0MsGdOy16MHAFTL1D7HBShubG/CxPseAVBhmIHSulD/AuxjemIKQIqYjfShNLiqxafPdxmviCIcyQYLD9T0h40TAAV28UdCQU5hZ6qibp3ttKoY=
+	t=1744032143; cv=none; b=SGcy3lZYpCNMsp0aj20Ub/a0nEqJg6Lm2KlgH4wd+EV4d9U8b+xy5zJw7RsSHr5R0PLvvZzJZFaLMQyGFHk9s2y9cby8zTd3zcAWTnl4yyAwEmbIIHLQMc3OrTQGXWrwj5/Jguc3Qujv4vJB3/VYnPfjJ/Nqc6sr3fMtgzH71AM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744030836; c=relaxed/simple;
-	bh=4NPyf6Ab1VM5I9gb9TUPJo7YffJdWthSv6pwiFj1bHI=;
+	s=arc-20240116; t=1744032143; c=relaxed/simple;
+	bh=RhSvphEi+Bf9p294col7eSXEeuSairY232+H7tKrkPg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nlTp1dzTZIttlOBGMYQJEmEC6oTONf7Wr/EjvXxIro/lbEObjHl8xsn1diRUMkxWe8juQ7KF7iTnlGJnKbbLBJ6wVvQNcDqM0+rIpp+X1sobLsLK7+pJi7YMtDfiyBpK4jx5ThlP/rpQvTnWu/kSUIj3J28loB3EJg6wqcUxHU4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=OUHbhmSR; arc=none smtp.client-ip=209.85.161.45
+	 To:Cc:Content-Type; b=mLg1CFFJwLFpJhGJ9Eys2s3rbIDwzWDi4741tXnpPOG8kwFA6KAK5/9g2IWoRN1MwaNpGw1VDSOZUXnPPso2Zct1RD3NF9Mg3Cl1EIuiIHAc99UE23HZmL1PRmjeUcr1nZFvjelrnNZBV9IRAaArhJMggkbSc6z86RrO9uh4j+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=dk6JNQfK; arc=none smtp.client-ip=209.85.161.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="OUHbhmSR"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-601fcbff303so2113278eaf.3
-        for <linux-serial@vger.kernel.org>; Mon, 07 Apr 2025 06:00:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="dk6JNQfK"
+Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-603ff8e90acso831639eaf.1
+        for <linux-serial@vger.kernel.org>; Mon, 07 Apr 2025 06:22:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1744030834; x=1744635634; darn=vger.kernel.org;
+        d=bytedance.com; s=google; t=1744032140; x=1744636940; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4NPyf6Ab1VM5I9gb9TUPJo7YffJdWthSv6pwiFj1bHI=;
-        b=OUHbhmSRh4dOtaleifG3n2mFAvEzoQOlwvE8yNka+2diGrAsW0wFLhMFnjfrHsCAXl
-         IzcRA3Xd5os8aE7Zs9abiH6gJ1FJwqt/ztPZK5czPmeD1sIzGKJuqrHgJspTB3JBBn8C
-         hCXkxV8hy5hj5nyNYZpvczt3Zo5OWZt306Nv2rgUvG4ReB2lGqJw12Y0oVmSTIFrSUfr
-         SFs7HhMaMOh4mfG98+LqAJRmah6pwGUmh8bWVqgks2NobUvoDt8/ivZXueno4F9akaDU
-         Hchp4ZnWE378zLiUvTQV8OJgQ8aTnDDAFEOtyp3fSkc4Y9vDK3ILDO2mMjMLbTbRUub/
-         D6nQ==
+        bh=RhSvphEi+Bf9p294col7eSXEeuSairY232+H7tKrkPg=;
+        b=dk6JNQfKc+0AlD+BNse+wWIm0r3lVKr+3BPx0dTnZJ73xqmPyCftbbTuJlEemWn+s+
+         TS3uw5cLeAiL3a3X9TfQ+gBbPo2+A/7X0XfNgOPpqCgn+BdcXFDOIMtZH/u2Wn3O1wKR
+         jZuaJbQgKYUTclTRXxl3EsDIJ//QYcc9dgA+nAiwVMrl3vMculkmQahRUw5G2Hz55wH5
+         93cqhz+159j07dbOaK5I1To7OrwKPL7kmi00B5jydR4RcunZXLun9ZlKSQgy8OWnABL1
+         5opKPRmksk3T6CWtCgh6r8t2TjAKrGKghf8FY7ZAAYXWA15V3oa9PBtEkxlJ3WuKmF1l
+         fwTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744030834; x=1744635634;
+        d=1e100.net; s=20230601; t=1744032140; x=1744636940;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=4NPyf6Ab1VM5I9gb9TUPJo7YffJdWthSv6pwiFj1bHI=;
-        b=fFZlZURCgT6EeN26t90Xlau+8itrj+VYlYuraFeWUjtfi2oT99zrYX30n2vX81te97
-         J91TymfbUFKIDP0OIQ/DL4YdBy629p1w4N9Cw0AlHKZiyUrKdtqYXeWQ2LV7VZetqSry
-         m4lZVEegW+b+HgJg/B6vJIzY90/DKg6MgQigW2AgSVD2yVLZZ4DwjgH8SIFvB3IKKYiw
-         qAO8TC3eYq+WgygK+Q1jzXo8CyooIu3szccNYb58y/i6wK0wHALRHw6a205+boYNE89z
-         jov5GbLqq+rc5zWc6N2d937LHYklutOwr1V8ZaUKcgncmMcVy8TXaV+wnRux1O3oPiZs
-         0FJg==
-X-Forwarded-Encrypted: i=1; AJvYcCVzVm73tkxpGhUV0oW8SpXJdQoi8BvXCoz7tS3WFN4dLpDVxoy6ES2WLTrfeya0zuSqPanl1i4/4iLqTGY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyRNvDU/S7KDlp/VSPqHglRmx9Mr9hIOR/lBNzt56Z4oAxWJvmH
-	sr5Vt0VbtDMMmXgf/SjH4IujPU8Rp6dQURl133iyzdX3jgh+ciW6fxU5AKSYNyHK+mN4UrqJLkP
-	U/Wf/MMyn1YRZcoRB79a+6dUFV/Q42pWqZoF4AA==
-X-Gm-Gg: ASbGncsm6Bp9QRFCO1SgBlz1xhyNZFsBmiNhvlqX/oLv+MW0hWbvdyM5gWxeuxMaMFf
-	hOG7jw2my22O/WYailFi+2Dscd+9rgOav8hh1abdHFZpesq8qF8SeBtSCM61rH6phbi5ccWKUUf
-	/DiqK1d/+lBHyT5bXtgNTemfZMqjQ3
-X-Google-Smtp-Source: AGHT+IGUMt5w+ucLL4Obxt0SSzw21tJii4m0qT64R9zF1VPyv5ecYKFAOH1yOAgukB8jXcNDRujKwD/jT9J8D/s9RC8=
-X-Received: by 2002:a05:6820:1ad6:b0:604:d2b:c585 with SMTP id
- 006d021491bc7-604165c24acmr5931841eaf.3.1744030833836; Mon, 07 Apr 2025
- 06:00:33 -0700 (PDT)
+        bh=RhSvphEi+Bf9p294col7eSXEeuSairY232+H7tKrkPg=;
+        b=tnUVOIFo1SUJ03/t7ZgBvxQSDGQeL5Q/jQ6H8ymg0SvOo+SasxnG3ZwLRi7xP1b9lZ
+         7yjX11Ie5qCIvBOWPtXm7K0GIu133TXn2/Ih7ZakqGalHQPJw/No6h1eRoeFgvzQ5x6B
+         VZw0nT3no+l6pVpDfMhmmoYNn/6myElAIIYZYeXmsOYrwuqDKAiDBPr5chmhw/OI4HWM
+         FPuNto8m10/WVG1yKU5VdwvX9DqJLADnU3OY5JJH9SGiwLluTPeD0a3QPaAbi3ZQ5WZT
+         7SIkgoQL2gNytKP/6mbc5PK0BsD/Oo6/cULcu1FY66zUREmnJ7+h/ZKlmToO43X7J/Ak
+         W8Rw==
+X-Forwarded-Encrypted: i=1; AJvYcCX9jGdUr9WFNMZzCKF4om2OErFBdisfHAtQRizG+kHEKzDwDzrnQvJ+1XmXkjKUAjBppmc9CfhBpU58mho=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxUx38JP61sIemuJq0pcBl8C+4mbUoSIULVDPs4eqO8elAwKDoX
+	ZVxZ17wnVjwL0d0oXSjSeToRAQ3QT94z6veL6s9VPWh/nwo4M8YlL9IL6graAF7blfkLg9MznZq
+	PEnV2pw3VT7hxIhRu+RJljJU62FZUkSyFOEcNWqpivNxxXWWZh4I=
+X-Gm-Gg: ASbGncu+vmt/AmlWTrmEBP6MTCefyRt9K1fHn/D6bt68ET+tPy/kECrznyTPmrRiTKO
+	TogQKNDwpD+BLht2a9kxEr71kqdIeh3A+GzFw2QGGI8QrrhZAoxbIbDjuShCQdzZ7GfC5GXHpVl
+	e62U189vkpQC/1Uq41JPhN/eyHgRU52f4x3DKM898=
+X-Google-Smtp-Source: AGHT+IF/tCXdL/U2eawbN6mcul0H+dBZkMJBUZdOeZTve86ZcGic28DUtHEBBRdbbnukWUr2WTbRPlYDMDvwf2XEIvo=
+X-Received: by 2002:a05:6808:3a19:b0:3fb:bc53:d292 with SMTP id
+ 5614622812f47-400455af733mr8199433b6e.19.1744032140130; Mon, 07 Apr 2025
+ 06:22:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -60,13 +60,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20250403090336.16643-1-cuiyunhui@bytedance.com>
- <Z-5yr2mFaDt8kxC-@smile.fi.intel.com> <Z-51629pjyiZUIVy@smile.fi.intel.com>
- <CAEEQ3w=xVNuSN-4tHx6ir-i+huN8m1JXgJz672=WHAVBqcP+TA@mail.gmail.com> <Z--yqlI0cRnixWpy@smile.fi.intel.com>
-In-Reply-To: <Z--yqlI0cRnixWpy@smile.fi.intel.com>
+ <Z-5yr2mFaDt8kxC-@smile.fi.intel.com> <CAEEQ3wkWmfkq06iyhxs32pyTUp7Mm=UD-dYen_9H5kHnsJe10g@mail.gmail.com>
+ <Z--7Wm_erf5U2xMl@smile.fi.intel.com>
+In-Reply-To: <Z--7Wm_erf5U2xMl@smile.fi.intel.com>
 From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Mon, 7 Apr 2025 21:00:22 +0800
-X-Gm-Features: ATxdqUH2rkCMsQpp9gGxDJ3YFHW6sJInIkL65BBneWufeRCJ-WFejeeX8mWjm-8
-Message-ID: <CAEEQ3wmMymsLZGvomkUth_rczdUaHxeDjCV8Vm6P44RpjVzZQA@mail.gmail.com>
+Date: Mon, 7 Apr 2025 21:22:08 +0800
+X-Gm-Features: ATxdqUFA9gAWoeBDbN_nvkMZIfpUTJWL0TGxGXx_TeKFaOWb6IawirOxVncSRhw
+Message-ID: <CAEEQ3w=VVU=5a3VcrSpFXM5fOgWsM+-Y52FUdRK+w2bjr2ypfw@mail.gmail.com>
 Subject: Re: [External] Re: [PATCH] serial: 8250: fix panic due to PSLVERR
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, 
@@ -78,37 +78,70 @@ Content-Transfer-Encoding: quoted-printable
 
 Hi Andy,
 
-On Fri, Apr 4, 2025 at 6:21=E2=80=AFPM Andy Shevchenko
+
+On Fri, Apr 4, 2025 at 6:58=E2=80=AFPM Andy Shevchenko
 <andriy.shevchenko@linux.intel.com> wrote:
 >
-> On Fri, Apr 04, 2025 at 10:31:25AM +0800, yunhui cui wrote:
-> > On Thu, Apr 3, 2025 at 7:50=E2=80=AFPM Andy Shevchenko
+> On Fri, Apr 04, 2025 at 10:44:09AM +0800, yunhui cui wrote:
+> > On Thu, Apr 3, 2025 at 7:36=E2=80=AFPM Andy Shevchenko
 > > <andriy.shevchenko@linux.intel.com> wrote:
-> > > On Thu, Apr 03, 2025 at 02:36:16PM +0300, Andy Shevchenko wrote:
-> > > > On Thu, Apr 03, 2025 at 05:03:36PM +0800, Yunhui Cui wrote:
+> > > On Thu, Apr 03, 2025 at 05:03:36PM +0800, Yunhui Cui wrote:
+>
+> ...
+>
+> > > > To resolve this issue, relevant serial_port_out operations should b=
+e
 > > >
-> > > A couple of more questions here:
-> > > 1) what is the DW IP version and where did you get the PSLVERR_RESP_E=
-N
-> > > parameter from?
-> > > 2) what is the setting of the UART_16550_COMPATIBLE parameter?
+> > > serial_port_out()
 > >
-> > 1): Refer to: https://www.synopsys.com/dw/ipdir.php?c=3DDW_apb_uart
+> > Okay.
+> >
+> > >
+> > > > placed in a critical section, and UART_RX data should only be read
+> > > > when the UART_LSR DR bit is set.
+> > >
+> > > The last one is made in the common code, are you sure that all suppor=
+ted UARTs
+> > > will be okay with such a change?
+> >
+> > This change enhances code robustness without being intrusive.
 >
-> I don't understand this. I asked about version of the IP, I have datashee=
-ts
-> already for many of them, I can't find PSLVERR_RESP_EN there, that's why =
-the
-> question.
+> It is intrusive as it touches the core part affecting basically
+> _all_ of the 8250-based drivers.
+>
+> Yes, it's small, but still it needs to be done carefully with commit mess=
+age
+> pointing out to the other 8250 datasheets to show that this is _not_ DW
+> specific change.
 
-You can check the link:
-https://iccircle.com/static/upload/img20240313113905.pdf for the
-relevant introduction.
+serial8250_clear_fifos is already part of the serial8250_do_startup
+process. The purpose of adding it to the critical section is to
+prevent the FIFO from being cleared while the UART is in use.
+
+Similarly, serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+
+It is a correct logic to check if the data is ready before reading,
+which prevents the FIFO from being enabled by other CPUs before
+executing serial_port_in(port, UART_RX).
 
 >
-> > 2): data->uart_16550_compatible =3D=3D 0
+> ...
 >
-> Thanks!
+> > > > Panic message:
+> > >
+> > > Please, read this
+> > > https://www.kernel.org/doc/html/latest/process/submitting-patches.htm=
+l#backtraces-in-commit-messages
+> > > and act accordingly.
+> >
+> > Okay, I'll update the next version to follow the guideline: 'Avoid
+> > directly copying full dmesg output (e.g., timestamps, registers, and
+> > stack dumps); instead, extract the critical call chain.'
+>
+> and make it short, e.g. ~3-5 lines only.
+
+Okay.
+
 >
 > --
 > With Best Regards,
