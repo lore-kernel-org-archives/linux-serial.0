@@ -1,95 +1,74 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D106426156E;
-	Tue,  8 Apr 2025 12:28:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A04E41DED6C
+	for <linux-serial@vger.kernel.org>; Tue,  8 Apr 2025 13:09:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744115308; cv=none; b=QjFOCtWnir/J8ZnICY4gAdEm+Ygew8EP/EQSV5eYNE3O+fLVHBK0l9nKmmiof3psXnuS7N4XnsYnNdnO3/RcdvfORlREnCZ+sqU1//Fn3IvZH+qevPNoI8ixEjprnus6O+uf7CtyZDSLyZdZJNrcuMKhBNZRsNWnCcnghXT3Wec=
+	t=1744117784; cv=none; b=QGX0VfZfXXYVY5WJBOJm5Rj1SJcmQddbdBEgqqeUBVwXXSYRYu0IogLGpHYHPtk3jAgy9eMd4cV32QEjk49ND3HuGuI+HP2KN1VoinSbACT91FDDKqW2njMmOKlddnvvPgfvruiSiG9fKKBxQ0qtpIfv3sdIr5Q0o4yd87k9eVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744115308; c=relaxed/simple;
-	bh=NCeWg0s9VQQlDDR6/jZTJWDMUKyOApEDxvm6/O7IKUc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=RtTfc7k6c9uikS0vHeir6d1G+3dj4O0oIAaAkZeu+C2XktZJFCUThMHU69M+JeGHLULMl0j/UrbeTNOqPr/aRfNLXltBAwFB0ZjyFBrj9khDWwNcfJTV2JrEKyOgN0rYTofe7FD7jbJbDFQEHQNV8AEh8X1P2D3HWg6zYnUKkZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ensm72M9; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=cm16+ioB; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1744117784; c=relaxed/simple;
+	bh=Bki+efw7o+OJmQttS7uN1v4hC2NHRP2+KSFCIgTTpLs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=a7uzVkmsZaQwA2pBB21CYZusuG2RoGp6nUwjVmRVZO/Iw2SUP6R8hXXyMFO9Km+log8yFOLeNhLHxDCdxwZ1J5UqHEF5omVxEHrjp0hBjC+yKRe5tws52R8mW0NSq/saJNSjJl9q8cUaZ0R0AX4LFkV6nSqm1rGixHYYsGe5Zcg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tkjv6lmu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ensm72M9";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="cm16+ioB"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1744115305;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=NCeWg0s9VQQlDDR6/jZTJWDMUKyOApEDxvm6/O7IKUc=;
-	b=ensm72M9yZ2NX9fnKMJrXUDBN9SfqKWFo0VLf5Z7ORbIO5a15uWkG8ZymcWyRHjdtb32GE
-	VWOvz0lhh6Epdg6Lm5ciDsRTooTkvG/93BqGzcnJvzSSo/TtO8yRi1ku9Sz3h9P0MZiPIw
-	ddkQeKZt+dKDsvWdDNexpzdlkmmcjNoPU1a1eIM+Cs2+65ju8BT3VRo+SSpLA6UEOPrfnV
-	gsYGpXwDSbXjoAFJho33PC4+XeGKTFJUo77SfRN/hxuRUyyWEKPjjU7C0kkIiVDBa0RZSS
-	m9RSunBRcqdIoqKLGn+TrBI7Wh0csjV2P4kDCcMdtrd0VW5Mz1ax6bD++Q9Tdg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1744115305;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=NCeWg0s9VQQlDDR6/jZTJWDMUKyOApEDxvm6/O7IKUc=;
-	b=cm16+ioBeLtQyOIkqIx0wHqDs7HT5AEpuR14XucWvfTJgBddrrHOmCbCbBDSKJFlfyIBsp
-	2BrGcEz8XJnRMWBg==
-To: Yunhui Cui <cuiyunhui@bytedance.com>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, pmladek@suse.com, arnd@arndb.de,
- andriy.shevchenko@linux.intel.com, namcao@linutronix.de,
- benjamin.larsson@genexis.eu, schnelle@linux.ibm.com,
- matt.porter@linaro.org, tim.kryger@linaro.org, markus.mayer@linaro.org,
- heikki.krogerus@linux.intel.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Cc: Yunhui Cui <cuiyunhui@bytedance.com>
-Subject: Re: [PATCH v2] serial: 8250: fix panic due to PSLVERR
-In-Reply-To: <20250408061200.76148-1-cuiyunhui@bytedance.com>
-References: <20250408061200.76148-1-cuiyunhui@bytedance.com>
-Date: Tue, 08 Apr 2025 14:34:24 +0206
-Message-ID: <84bjt6rg5z.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tkjv6lmu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F03C4CEE7
+	for <linux-serial@vger.kernel.org>; Tue,  8 Apr 2025 13:09:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744117784;
+	bh=Bki+efw7o+OJmQttS7uN1v4hC2NHRP2+KSFCIgTTpLs=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=tkjv6lmuWPZIi45Q+VrEztPd3yW9GKSbwlr+o+isedwKkwcKUMz1B4fCyNV/ojh0J
+	 9DJauuyrxafLu7N/zUlXet2A8A8CVtuajdCivQvsNXY3Ie2jbfKUr7iYPll1RRw2q3
+	 PVgVfDaoXWFbJfkB5BzjX8oOk88Y59Z/If34f0Ic0j3yN85GTcO5YkMw5uHe89FDrK
+	 LcUzJ6RXsSXZSPC8ei/zrOFbctQfvL7YvABDog9NrIwbn74+gPBflzkYzISQP2rgXl
+	 mcb9g/Cr1livF5Ir7yasbkdfBrk3Ec0kaxK7t0RrEEu3YDu/lmXtIWaowyYePKxYEr
+	 m1ZY8snCKJxGA==
+Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5e673822f76so9196865a12.2
+        for <linux-serial@vger.kernel.org>; Tue, 08 Apr 2025 06:09:44 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXkHQX+etVPDs5kE+24ca7vQRGcHh0ZnxHfPR/IK/5Em+qjp8BgzV7IwixXO6GfwNCsOneIPEV5MA+mRDM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzPr0ttN4Wqeq7tCH9AIwrnMxxrZMnUH3VwLfbVIFwOmnmyxGgV
+	p5L7muhOxZyzZ+wzrF+fXIvGUpgWn1uQBRgj0kWrd5RbDp5EtAm9aPj77hMgeR4iGYLftEwGFvI
+	DSPXQEszIxtyIRAc3/Y7RHDRwAw==
+X-Google-Smtp-Source: AGHT+IFRR5xtpSdPE+zcNnNBbdPGiHBWHs0r0C+NXUhFlB7+WmTr+8S76Ku54cA31lz4/HqE4cu6VGoJevyLLNF9TLw=
+X-Received: by 2002:a05:6402:3548:b0:5e7:b081:e0d1 with SMTP id
+ 4fb4d7f45d1cf-5f0b5d82c83mr15704600a12.3.1744117782479; Tue, 08 Apr 2025
+ 06:09:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20250213143430.3893651-1-loic.poulain@linaro.org>
+In-Reply-To: <20250213143430.3893651-1-loic.poulain@linaro.org>
+From: Rob Herring <robh@kernel.org>
+Date: Tue, 8 Apr 2025 08:09:29 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqK+qpy0oUWiLHvQOetv4h-FQyUjim0xD8mN124pU_zk+Q@mail.gmail.com>
+X-Gm-Features: ATxdqUGi4JAR1Dig7Yoob8Sp4WaeyyZgiGjLOjcnObUOJTWdQW3IztczfCV9h68
+Message-ID: <CAL_JsqK+qpy0oUWiLHvQOetv4h-FQyUjim0xD8mN124pU_zk+Q@mail.gmail.com>
+Subject: Re: [PATCH] serdev: Add support for wakeup-source
+To: Loic Poulain <loic.poulain@linaro.org>
+Cc: jirislaby@kernel.org, gregkh@linuxfoundation.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2025-04-08, Yunhui Cui <cuiyunhui@bytedance.com> wrote:
-> When the PSLVERR_RESP_EN parameter is set to 1, the device generates
-> an error response if an attempt is made to read an empty RBR (Receive
-> Buffer Register) while the FIFO is enabled.
+On Thu, Feb 13, 2025 at 8:34=E2=80=AFAM Loic Poulain <loic.poulain@linaro.o=
+rg> wrote:
 >
-> In serial8250_do_startup(), calling serial_port_out(port, UART_LCR,
-> UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
-> dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
-> function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
-> Execution proceeds to the dont_test_tx_en label:
-> ...
-> serial_port_in(port, UART_RX);
-> This satisfies the PSLVERR trigger condition.
->
-> Because another CPU(e.g., using printk()) is accessing the UART (UART
-> is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) ==
-> (lcr & ~UART_LCR_SPAR), causing it to enter dw8250_force_idle().
->
-> To resolve this issue, relevant serial_port_out() operations should be
-> placed in a critical section, and UART_RX data should only be read
-> when the UART_LSR DR bit is set.
+> This brings support for dedicated interrupt as wakeup source into the
+> serdev core, similarly to the I2C bus, and aligned with the documentation=
+:
+> Documentation/devicetree/bindings/power/wakeup-source.txt
 
-The UART_LSR_DR check still has a race condition if the console is in
-RS485 mode and !SER_RS485_RX_DURING_TX. It seems DW supports this mode
-as there is code in dw8250_rs485_config() that sets DW_UART_TCR
-differently for this.
+Don't add new references to old documentation.
 
-In this mode, serial8250_console_write() will call the callback
-->rs485_stop_tx(), which for DW is serial8250_em485_stop_tx(). And this
-calls serial8250_clear_and_reinit_fifos().
+The difference I think is I2C has some defined mechanisms for wakeup.
+We don't have anything in platform devices, SPI, etc., so why serdev?
+A "wakeup" IRQ is also a suggestion more than a hard requirement of
+how wakeup is implemented.
 
-To really close this race, all UART_RX reads would need to be under the
-port lock. Most of them already are.
-
-John Ogness
+Rob
