@@ -1,110 +1,93 @@
-Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B5892147F3;
-	Wed,  9 Apr 2025 21:43:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF48E1E5713;
+	Wed,  9 Apr 2025 22:06:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744235032; cv=none; b=oliogwJUAFMkApT3akHE69zprCLM4Qgt1voLrqs/NtNwfqNv1J088Xw1B4QFORTTZfm3P/gu4MAHDJ69+2HWmUdvtW3B+YHbdESpqFCbHw/LKv9ynTWVdsq23AVRYuqJsH3y3hBx0Qia3pr+lus7GuZkGzDzA10ZpXTM6JEtp2w=
+	t=1744236420; cv=none; b=rKM1E6jCB2nX0xUqOoyP2JFWjvAPiFifbovOqGiqo5SHjSopJWHAx1knMrNtbmV6f05WKlEOO/lhqQesgfL9Qh0IX356p77N1KpYgNt7F04wGT2wWxzaU6sBodOKSbrpEyjMERCtvdxiNNJDnpJ2u+6gvq8nuDR2mrVW4zUImzM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744235032; c=relaxed/simple;
-	bh=eesypCNmz5sJKsF5KpZG/L0WnupeOJYtqoN4SCn0pyw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WOaHYYQtTX/tA+L/PulcOVbwTCkLSygHjU2kEIigO7T8mvveJjuZ6kRWkU7s7HBvIpiP2SasaihNXMUR3SutqEfI/AZCiUJK5eaN34Bgt1GLoyq35NsF9ky3J525ZRMqU/dMHT9nNTSJAB7jBdrvMe1x0fFeaF+Zd/dBNKg4ypM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
-Received: from localhost (unknown [116.232.27.72])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: dlan)
-	by smtp.gentoo.org (Postfix) with ESMTPSA id 426CB343183;
-	Wed, 09 Apr 2025 21:43:48 +0000 (UTC)
-Date: Wed, 9 Apr 2025 21:43:45 +0000
-From: Yixun Lan <dlan@gentoo.org>
-To: Alex Elder <elder@riscstar.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org,
-	benjamin.larsson@genexis.eu, bastien.curutchet@bootlin.com,
-	andriy.shevchenko@linux.intel.com, u.kleine-koenig@baylibre.com,
-	lkundrak@v3.sk, devicetree@vger.kernel.org,
-	linux-serial@vger.kernel.org, spacemit@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] serial: 8250_of: add support for an optional bus
- clock
-Message-ID: <20250409214345-GYA19066@gentoo>
-References: <20250409192213.1130181-1-elder@riscstar.com>
- <20250409192213.1130181-3-elder@riscstar.com>
+	s=arc-20240116; t=1744236420; c=relaxed/simple;
+	bh=LqPIp6+OYr6Lu05eZr+DtxFsHBUkh7pN3E33NAMprsU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=e0nvIUAfJqx28fjf8CHbZqN9riDgTHQ9xLE/Iw8Qxwc4utA97pdH4bhG89xSU3nicgC0uzUM+wJTppmbIshTMxM4ViFAO0o1bNyloVVPahoLg8lbeh+HsLnZ+pV+W8DBD0UadpKse9E8Tag79mLuZNRJTnUzJ3NGMWlgd9FJduM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=asCopqs3; arc=none smtp.client-ip=168.119.38.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="asCopqs3"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+	Resent-Cc:Resent-Message-ID; bh=MXaJb6rqjO6k6hC8GGRd9Nz5/YI2plyuUrbJ5reUjDs=;
+	t=1744236419; x=1745446019; b=asCopqs3XyqFrtO3t8wVBRwG3MlLTFRVdgVfSnVL4Iz61u6
+	vXhM1KbVeFuXEPTY5sMCGxuwXol6WzA0rAzYRuxR6RpD0VhQuPqSgn43Tf/lqvOOMhmwRtcYtsfyB
+	aahgpjeCxTcP/eKvl3kq8bgDLvMl146mioXEJGCK7hmgiIWgwOhN0fMQtwbCjRnSkAHVoKdqXkJyr
+	nS5kVmxAmOBXsVkTCG4vaEk8C3IjMrAVOL+C2Dptw6SjsZE19btV3KOinaLqydwanvSphjYuYIBf+
+	xr4VjceodEemzupHcJCEfQq2Hy/JwdUI4fF97rjjtMAy68TxEpvBwk/H9JrBbeFQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+	(Exim 4.98.1)
+	(envelope-from <johannes@sipsolutions.net>)
+	id 1u2dYb-00000005Jap-0lrk;
+	Thu, 10 Apr 2025 00:06:05 +0200
+Message-ID: <740c7de894d39249665c6333aa3175762cfb13c6.camel@sipsolutions.net>
+Subject: Re: [PATCH v4 03/13] media: pci: cx18-av-vbi: Replace open-coded
+ parity calculation with parity_odd()
+From: Johannes Berg <johannes@sipsolutions.net>
+To: Arend van Spriel <arend.vanspriel@broadcom.com>, Kuan-Wei Chiu	
+ <visitorckw@gmail.com>, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ 	dave.hansen@linux.intel.com, x86@kernel.org, jk@ozlabs.org,
+ joel@jms.id.au, 	eajames@linux.ibm.com, andrzej.hajda@intel.com,
+ neil.armstrong@linaro.org, 	rfoss@kernel.org,
+ maarten.lankhorst@linux.intel.com, mripard@kernel.org, 
+	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+ dmitry.torokhov@gmail.com, 	mchehab@kernel.org, awalls@md.metrocast.net,
+ hverkuil@xs4all.nl, 	miquel.raynal@bootlin.com, richard@nod.at,
+ vigneshr@ti.com, 	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+ davem@davemloft.net, 	edumazet@google.com, pabeni@redhat.com,
+ parthiban.veerasooran@microchip.com, 	gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, yury.norov@gmail.com, 	akpm@linux-foundation.org,
+ jdelvare@suse.com, linux@roeck-us.net, 	alexandre.belloni@bootlin.com,
+ pgaj@cadence.com
+Cc: hpa@zytor.com, alistair@popple.id.au, linux@rasmusvillemoes.dk, 
+	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+ jernej.skrabec@gmail.com, 	kuba@kernel.org, linux-kernel@vger.kernel.org,
+ linux-fsi@lists.ozlabs.org, 	dri-devel@lists.freedesktop.org,
+ linux-input@vger.kernel.org, 	linux-media@vger.kernel.org,
+ linux-mtd@lists.infradead.org, 	oss-drivers@corigine.com,
+ netdev@vger.kernel.org, linux-wireless@vger.kernel.org, 
+	brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com, 
+	linux-serial@vger.kernel.org, bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw, 
+	Frank.Li@nxp.com, linux-hwmon@vger.kernel.org,
+ linux-i3c@lists.infradead.org, 	david.laight.linux@gmail.com,
+ andrew.cooper3@citrix.com, Yu-Chun Lin	 <eleanor15x@gmail.com>
+Date: Thu, 10 Apr 2025 00:06:03 +0200
+In-Reply-To: <25b7888d-f704-493b-a2d7-c5e8fff9cfb4@broadcom.com>
+References: <20250409154356.423512-1-visitorckw@gmail.com>
+	 <20250409154356.423512-4-visitorckw@gmail.com>
+	 <25b7888d-f704-493b-a2d7-c5e8fff9cfb4@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 (3.54.3-1.fc41) 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250409192213.1130181-3-elder@riscstar.com>
+X-malware-bazaar: not-scanned
 
-Hi Alex,
+On Wed, 2025-04-09 at 20:43 +0200, Arend van Spriel wrote:
+>=20
+> This is orthogonal to the change to parity_odd() though. More specific=
+=20
+> to the new parity_odd() you can now do following as parity_odd()=20
+> argument is u64:
+>=20
+> 		err =3D !parity_odd(*(u16 *)p);
+>=20
 
-On 14:22 Wed 09 Apr     , Alex Elder wrote:
-> The SpacemiT UART requires a bus clock to be enabled, in addition to
-> it's "normal" core clock.  Look up the optional bus clock by name,
-> and if that's found, look up the core clock using the name "core".
-> 
-> Supplying a bus clock is optional.  If no bus clock is needed, the
-> the first/only clock is used for the core clock.
-> 
-> Signed-off-by: Alex Elder <elder@riscstar.com>
-> ---
-> v2: Update logic to more check for the optional bus clock first
-> 
->  drivers/tty/serial/8250/8250_of.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
-> index 11c860ea80f60..a90a5462aa72a 100644
-> --- a/drivers/tty/serial/8250/8250_of.c
-> +++ b/drivers/tty/serial/8250/8250_of.c
-> @@ -123,7 +123,16 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
->  
->  	/* Get clk rate through clk driver if present */
->  	if (!port->uartclk) {
-> -		info->clk = devm_clk_get_enabled(dev, NULL);
-> +		struct clk *bus_clk;
-we also need to handle clk in suspend/resume procedure, so
-I think you need to put bus_clk inside struct of_serial_info..
+Can it though? Need to be careful with alignment with that, I'd think.
 
-> +
-> +		bus_clk = devm_clk_get_optional_enabled(dev, "bus");
-for the 'optional', we can interpret it's optional for other vendor 
-UART, but a must required clk for SpacemiT's k1 UART controller
-
-would it better to guard this inside a compatible test or even introduce
-a flag in compatible data?
-
-	if (of_device_is_compatible(pdev->dev.of_node, "spacemit,k1-uart")) {
-		bus_clk = devm_clk_get_enabled(dev, "bus");
-		..
-	}
-
-}
-> +		if (IS_ERR(bus_clk)) {
-> +			ret = dev_err_probe(dev, PTR_ERR(bus_clk), "failed to get bus clock\n");
-> +			goto err_pmruntime;
-> +		}
-> +
-> +		/* If the bus clock is required, core clock must be named */
-> +		info->clk = devm_clk_get_enabled(dev, bus_clk ? "core" : NULL);
->  		if (IS_ERR(info->clk)) {
->  			ret = dev_err_probe(dev, PTR_ERR(info->clk), "failed to get clock\n");
->  			goto err_pmruntime;
-> -- 
-> 2.45.2
-> 
-
--- 
-Yixun Lan (dlan)
-Gentoo Linux Developer
-GPG Key ID AABEFD55
+johannes
