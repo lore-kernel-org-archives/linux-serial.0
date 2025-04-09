@@ -1,141 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5252725A2AF;
-	Wed,  9 Apr 2025 07:29:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2671E5718;
+	Wed,  9 Apr 2025 08:19:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744183759; cv=none; b=B66P+FE4YwWhKQ0Fruu2/CvYL8qUVG+YP9PLehRBGePm0Ut053+yE9jq6Zf0xJtWCzLZP6asoEbVpr5EAwwrDSWyLM1/0gPyXhR57w6RPWex+kBfbHldu28wmjZfFKIE5taB1541tY0XniWEEUOC9ATJXW1MILxEiSw+KDiiK0w=
+	t=1744186767; cv=none; b=cyGDZJ1HJPu12dlRMO5aLaZgl4QHgXLdjGmY6G2YppzlUH5ecVOkYdVr+pOkVh3RaUDpjnf8qLZC9r8V9TZuceFbfMKOPhgUFP4RiFCPuy8XmiZoS2vhiUtkkWVCD655HKVL+dBz93t3FX48X+5rMertJjjaaZ6bkkxPBetmEG8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744183759; c=relaxed/simple;
-	bh=SGfNYxf1SFuOxndDllT2akQb3PF8/MAIXy5zK8FRPFk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MQzzPWSf/UcYHMdBuWN1792STMfStMvUbX4Yf/FZfhYZwa6t2C00PeVPPjW7wlSDIC/ITq27YDRnqukRhLlYpJJsPKHocgpyGDZCz0uc9fuyNOkPt3GQ/2/IVTB8NhrMb2HGrdSWvNSyBr0ph4JZggDe3FE/jzm9GzHQlnolGTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Rm3YTr4z; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1744186767; c=relaxed/simple;
+	bh=cARZ3MoSB/llLZWC/nfsNQVqtIuVgsB9ugipQScHhzg=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=fdJD7T2el8pDXKVq4renMcZvkZU/+RgUMXs6R/IBWMo4cYSOon9H/C9pg8DsBodumlL2pqZ5+2QCDxKYsF/RSB67ZuBkRRdNZVK5ie1tXCY6lEeQscXyDXhSJkDd3aPnm40ijp55xsEf7haoqw6EDTpSm8QoFaAT7w8WpQeoTrE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=Ky13OstA; arc=none smtp.client-ip=212.227.15.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Rm3YTr4z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744183758; x=1775719758;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SGfNYxf1SFuOxndDllT2akQb3PF8/MAIXy5zK8FRPFk=;
-  b=Rm3YTr4zX7jrsW3HdK/2QJVwuds63NoPsnJs0PSkOHj290rWCVwhjJrM
-   0x3I83sGOO3DkXdkZX/mvI5i+sd3v20Dbfbb5FM5cWUmVufAGM8/AFvcg
-   fJpnPk3H/s7I4nHcwab+fbNWy8igJgz71G7XQLlmpaQSCJ33Sc8C/AsN9
-   LI2xFEyjAjhE0T0hqwvHrrAYxqUrM509rbc/dHYDn+jPZ4iEOQj4+sx/D
-   O8TSgR95HVY/ZOrMNm3QU0SeVNvhg4+28O83SDu9Gd7u6RigNgj7P8JOU
-   uf3AwCJYPfgyuPzpAoj4autqb2d2kK+k7Ms1ho7v2Soq1dDefqJgm+DTZ
-   g==;
-X-CSE-ConnectionGUID: 61PDVKtITjey4Br80ruInw==
-X-CSE-MsgGUID: 09pfA6+WR2Ky87QnZbZUJA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11397"; a="33248826"
-X-IronPort-AV: E=Sophos;i="6.15,200,1739865600"; 
-   d="scan'208";a="33248826"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2025 00:29:16 -0700
-X-CSE-ConnectionGUID: Sov2QirNQMyY4Sg8LTP0bw==
-X-CSE-MsgGUID: g5S/97v6QbiG4KufX4Wc1g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,200,1739865600"; 
-   d="scan'208";a="129331858"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2025 00:29:08 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1u2Prs-0000000AeQj-2FRX;
-	Wed, 09 Apr 2025 10:29:04 +0300
-Date: Wed, 9 Apr 2025 10:29:04 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Alex Elder <elder@riscstar.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org,
-	benjamin.larsson@genexis.eu, bastien.curutchet@bootlin.com,
-	u.kleine-koenig@baylibre.com, lkundrak@v3.sk,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] serial: 8250_of: add support for an optional bus
- clock
-Message-ID: <Z_YhwJ1ZGSodMcMH@smile.fi.intel.com>
-References: <20250408175146.979557-1-elder@riscstar.com>
- <20250408175146.979557-3-elder@riscstar.com>
- <Z_V-aKBOFHt-0RKz@smile.fi.intel.com>
- <2b322564-10c0-4bbd-89d9-bc9da405f831@riscstar.com>
+	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="Ky13OstA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
+	s=s31663417; t=1744186756; x=1744791556; i=wahrenst@gmx.net;
+	bh=cARZ3MoSB/llLZWC/nfsNQVqtIuVgsB9ugipQScHhzg=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:From:
+	 Subject:Content-Type:Content-Transfer-Encoding:cc:
+	 content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=Ky13OstA/q5D2hES1XeCKmo3E5yjeuRFIWY61QEPcf8dAh4q3ZNQ44sz7eHfwCrC
+	 uzIEF+qiqmFuBPNlzwrsVlXVCpRooKs6vq6dBjYYK9hdOPNESjQO1Wtw1fA7lXONW
+	 PznwuwnHBtzvBPwyKCcPs6X4lmR2hDjgzDAlVirEP+Afq6zI4XafHL0r8Ih2pnGjY
+	 NSg+ot379GSTxa7Kg/moSz62AOhvPEsf2ut+67NscBajwHQw22AzKRV1Ij/Gsc6Jj
+	 rZT1hfuAbu9YwxyVYcfPhjHfRYZdjW0MJ3jVJ4pGLPHUsSzETnrf/rj4RxY8h00t2
+	 LMNMz+WKgQY1J5WxCw==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from [192.168.1.107] ([37.4.251.153]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MYNJg-1tX8Qz3sZu-00OaZm; Wed, 09
+ Apr 2025 10:19:16 +0200
+Message-ID: <a9263ccf-2873-46e4-8aee-25e0de89a611@gmx.net>
+Date: Wed, 9 Apr 2025 10:19:15 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2b322564-10c0-4bbd-89d9-bc9da405f831@riscstar.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: Sherry Sun <sherry.sun@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+ Frank Li <Frank.li@nxp.com>
+Cc: "imx@lists.linux.dev" <imx@lists.linux.dev>,
+ linux-serial <linux-serial@vger.kernel.org>, dmaengine@vger.kernel.org,
+ Fabio Estevam <festevam@gmail.com>, Christoph Stoidner <C.Stoidner@phytec.de>
+From: Stefan Wahren <wahrenst@gmx.net>
+Subject: fsl_lpuart: imx93: Rare dataloss during DMA receive
+Autocrypt: addr=wahrenst@gmx.net; keydata=
+ xjMEZ1dOJBYJKwYBBAHaRw8BAQdA7H2MMG3q8FV7kAPko5vOAeaa4UA1I0hMgga1j5iYTTvN
+ IFN0ZWZhbiBXYWhyZW4gPHdhaHJlbnN0QGdteC5uZXQ+wo8EExYIADcWIQT3FXg+ApsOhPDN
+ NNFuwvLLwiAwigUCZ1dOJAUJB4TOAAIbAwQLCQgHBRUICQoLBRYCAwEAAAoJEG7C8svCIDCK
+ JQ4BAP4Y9uuHAxbAhHSQf6UZ+hl5BDznsZVBJvH8cZe2dSZ6AQCNgoc1Lxw1tvPscuC1Jd1C
+ TZomrGfQI47OiiJ3vGktBc44BGdXTiQSCisGAQQBl1UBBQEBB0B5M0B2E2XxySUQhU6emMYx
+ f5QR/BrEK0hs3bLT6Hb9WgMBCAfCfgQYFggAJhYhBPcVeD4Cmw6E8M000W7C8svCIDCKBQJn
+ V04kBQkHhM4AAhsMAAoJEG7C8svCIDCKJxoA/i+kqD5bphZEucrJHw77ujnOQbiKY2rLb0pE
+ aHMQoiECAQDVbj827W1Yai/0XEABIr8Ci6a+/qZ8Vz6MZzL5GJosAA==
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:OJM6wNRlhitf8b2UKdZrXaP32BiAer6DsVF/VBciG+2tf3jObDJ
+ +NGBkRPUd6D31eBI32fahWPGzAQd2IoErWmrGBA6HOKjHck4MgFjr4riUO2kJvNxWqJD93a
+ 1lXLGwHfsln+YZIdLwsdiC+mFv7X6+TMlQ/eQkvDoPxO6i+dEi0v1iXMxl0RYDK1/fXN4Aw
+ gNA3UcYsI3D4GnA9MQpLQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:SiBV9w7+K/8=;UCcCE8vRt2bQlX9Qq3i4lY+Nu91
+ Tsm1BvlZJA9rPZjsYunVslyZ+siHFGPTuXiOrO3uuHkUOkvYkYZbRplsWqi6dOLp08exFO2M1
+ OR3WwjUB1tB8jrVgBdxejZCG4swz5fH9zfBGAkx48OExo73Ymut+U3Xx/3SgqbjdsiCYWgyhz
+ fxBOtrZu4mX0PCwBOcC/VDsjGA8S3c8Sxs78pLQZ+yJoOsIdX13nG4L7Ry2OvL1FhH0GRn/n3
+ pDI5L0SNFouFroKy4Hcf5QX4ib6cPi90/5dsv9Xj95KYoTwFvsDWq5qn7Qqt8WU6XQFMpHa5x
+ e711I+QeIqnh3mcgkEAA3elbxWciHWWNR2Z3Sy4FylteQK77Nv4Ktk9CFhEvEA0NVx4VmF6t2
+ 6D8PLUy6i8K01hAlCMs/gY1ucPk8Q2jMcNz2hwHQzKkv2TFzbsqHM/xoCs+q7KUkuGYt/mhh8
+ 7P8i9e0yIpGVTS2MGlDden/cTyuu9L4wCGDGY9o8T39NQR+3CbSmKsFo8yJqhvjh+8bwzCwwH
+ Omt846CZwuD1b6zmRYngK9NB4oPSrVX9gvKCAz3+5d9IEp8wS7JvUwvyqehMTyLsB8E9emS2A
+ 2mh8BfG7xuElwLKhmIHKsaeB7foyh7U4wqHXVQpQcm4/uUPxOjtYA2cxO0JrWjB5ansj2tGxu
+ 3E2yQFETgX/HEylv6SBr+6kItGloipXsJeBgFVuo9M+idLe22LAixNwrSGGiEhrMW13K7QSq0
+ 7yntHVMX1rgYF1hmqqohRAZvrcPkLYJ/gZZvFN5TUieQdQIYTEau3MCM/Pdd8ynZaOLjLJ8xm
+ CQ85zfatbbNsfR3c9iVN5PM1MbkX8hiKAlW8YrDNYUaeOlL9MX/FF1jlGJrnv7Onw4c/d6P78
+ 0plRCKg1pIMHF+AP1c+vyTCM2Jnj4WIte2E9WvjlkNbdQTgDovN1KdRaH7uMUTrmiUPO3jYou
+ 4f+rft42ITN1SmLxRQRPLtBXVNSzzFnmIlCCYtNgt4i21LasiOokPqK4J6lRrHd0uqhbdrZmP
+ /R8gdngBBGOaaBqzGK6dqVRRqOwzso/E5QhKDwUPPrHvnz2pkOpSg6y2zvT4xY+Fqw2w5po8F
+ R7x6JnYKHQdueZnUBn4lEcOggq6m0Co9A63OzV2ScEi/TbFutGJzg3jmJvJw+tJZzg9oPWPXt
+ K9jH35CfN9yLFvKv4Fpqym/ZqmIClk9gzPlCvHvp1L56kk393fFJroSDAt+g4tKbCnKwESoIO
+ Qx4mKemdk4BgDZkJx2PQQGPQQT68Tg0GNfhZXNnJp/UaV44uqECKJ/E2X3hKI3v3gd5YGPik2
+ rGwGhCgF05pC98ADi1XQ0Ou5pGvS/UXo2NkQ6AO6kWCa/LRtLnMZEG92eVllxpB92FfUEKycD
+ hGPlnvPcKxOD5i4/RF4E65/jnRKjsdgXnFYCHjtpy8zslt9cQ39Cmd+Qzv1EHzYdWgW7YXfj2
+ i1vFNspVzv+neYkuG43hTLC4fLVE=
 
-On Tue, Apr 08, 2025 at 03:11:10PM -0500, Alex Elder wrote:
-> On 4/8/25 2:52 PM, Andy Shevchenko wrote:
-> > On Tue, Apr 08, 2025 at 12:51:43PM -0500, Alex Elder wrote:
+Hi,
 
-> > > The SpacemiT UART requires a bus clock to be enabled, in addition to
-> > > it's "normal" core clock.  Look up the core clock by name, and if
-> > > that's found, look up the bus clock.  If named clocks are used, both
-> > > are required.
-> > > 
-> > > Supplying a bus clock is optional.  If no bus clock is needed, the clocks
-> > > aren't named and we only look up the first clock.
-> > 
-> > Code and description are not aligned. And What you are described above make
-> > more sense to me than what's done below.
-> 
-> I want to do this the right way.
-> 
-> My explanation says:
-> - look up the core clock by name
->     - if that is found, look up the bus clock
->     - both clocks are required in this case (error otherwise)
-> - If the "core" clock is not found:
->     - look up the first clock.
-> 
-> And my code does:
-> - look up the core clock by name (not found is OK)
->     - if it is found, look up the bus clock by name
->     - If that is not found or error, it's an error
-> - if the "core" clock is not found
->     - look up the first clock
-> 
-> What is not aligned?
+we have a custom i.MX93 board and on this board the i.MX93=C2=A0(A1 steppi=
+ng)
+is connected via LPUART3 to another MCU. Both processors communicate via
+a small protocol (request/response are smaller than 16 bytes) at 115200
+baud (no parity, no hardware flow control). The i.MX93 is the initiator
+and the other MCU is the responder.
 
-That you are telling that bus is optional and core is not, the code does the
-opposite (and yes, I understand the logic behind, but why not doing the same in
-the code, i.e. check for the *optional* bus clock first?
+So we noticed via logic analyzer that the i.MX93 sometimes doesn't
+receive the complete response (no framing issues). In our setup it
+usually takes 1 or 2 minutes to reproduce this issue. Interestingly this
+issue is not reproducible, if we disable DMA and operate via IRQ.
 
-> > Also can we simply not not touch this conditional at all, but just add
-> > a new one before? Like
-> > 
-> > 	/* Get clk rate through clk driver if present */
-> > 
-> > 	/* Try named clock first */
-> > 	if (!port->uartclk) {
-> > 		...
-> > 	}
-> > 
-> > 	/* Try unnamed core clock */
-> > // the below is just an existing code.
-> 
-> That's easy enough.  I think it might be a little more code
-> but I have no problem with that.
+The issue is still reproducible, if we disable all other DMA channel
+except the ones for LPUART3.
 
-I;m fine with a little more code, but it will be much cleaner in my point of
-view and as a bonus the diff will be easier to review.
+We tested with Linux Mainline 6.14 and Linux NXP 6.6.23, in both cases
+the issue was also reproducible. We debugged the relevant drivers and
+noticed that the UART detects (UARTSTAT has RX pin edge detected) the RX
+signal, but there is not reaction within the DMA driver.
 
-> > 	if (!port->uartclk) {
-> > 		...
-> > 	}
+Is anyone at NXP aware of such an issue?
+Do you have some suggestions to analyze this further?
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+Best regards
 
