@@ -1,177 +1,127 @@
-Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF8925E476
-	for <linux-serial@vger.kernel.org>; Wed,  9 Apr 2025 12:10:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E6FE2561CC
+	for <linux-serial@vger.kernel.org>; Wed,  9 Apr 2025 12:36:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744200620; cv=none; b=Laio6owWJFo1K4H2KhexL96sLfWzqT1hJxIeEUmq5HQsa+OKV811fyVeH2CfYpwzEbLcHIhGh6HOvx5J2iivWv/dtL4FTOkacL44H7/TkWIPsc8C4n9xAbTX3/ymy3irLxMXw1xfcJe3yZQUJJ2TPvieEEGfsta9cZNwrlkY+vc=
+	t=1744202204; cv=none; b=Hd5vwP3YwWEytI5gk8YmLtgLxW3AV826jvkbaMywgYwwIvmeJ7IdhVoXvn0eyMVaTVr0uFWHpwCuRGBhViBhlHu7OSNN3t4wYj8ekzNiTWsxveX6aHchAI6psctUuiLWHk1cmSCsLob4sIGbWwLC9oG66pUioPn4+g+mObYymhg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744200620; c=relaxed/simple;
-	bh=7EbvCyUEXn2qtD5n42Iv8tV6gC107je0x9KkT+DB1Ho=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sD/K5udTJ75vchHkrW8m66HZI4zezN33u29dbWUkcckz+QFQluBQbo5kHYBtp5m99wc7C/bXRwIjaHzDsml3vDm8WzvrxpfiBYhoESAWJsTp3SbnfVNotogNh9PV3DlJ8Tj7vYgABnFlttfI01VLYUdiwt12OB6PcyuZdjHd8fo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=1/C1GspJ; arc=none smtp.client-ip=209.85.166.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
+	s=arc-20240116; t=1744202204; c=relaxed/simple;
+	bh=pCcQnsh8CRxpv5xHp1wrSTOStnKxLEg4YyQW1LbBAlA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WtIgHnVj2UvN9r8mKy41stuTJBMbWMy3Ms1tZrN+KCmdjE5iHrdVqQchUkPY/RlB3EDfvALbE786FJf6w/3di3VHAd7hDleGw7Ph0QeuN7HF+XQE8LiWuikKaQBI60b+2OSc/za0dFSJFecCWeRdNqjerDNZZDMTqrBbQk5+pH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=n1gEqkhQ; arc=none smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="1/C1GspJ"
-Received: by mail-io1-f45.google.com with SMTP id ca18e2360f4ac-85db3475637so18933339f.1
-        for <linux-serial@vger.kernel.org>; Wed, 09 Apr 2025 05:10:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="n1gEqkhQ"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-5f0c8448f99so9804970a12.1
+        for <linux-serial@vger.kernel.org>; Wed, 09 Apr 2025 05:36:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1744200617; x=1744805417; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xZ20LkStNkObd3KEihi6TUJmcbZftlQkn47bOpKz8AE=;
-        b=1/C1GspJG8yzgxSoVPr3ZUVnvaU3BB7PKSkRKpxiBZmr2QtZSkzOymmvjT9K6s2nsx
-         KjSFvQpviDA/8GMbZrEVxJpNmEJrKjw1vOUuCCgJhtkozK1aKQhibkOGwWzt3rNkIG4I
-         lF7Tp7kgWfxyuAQXNMLGGQK0X5kK5iZcoODGRpHY12RJub+QXnxpDk002etGHx3whnUw
-         HIUlkZUS6I50eOx//gZOA2n62RucEk4ObalGTOVKPrlXqezDr/ZZxBaJbqtkMmdPBXpv
-         t96hIeVpCsQHaQisyYgHIf+K+G6AuFm4McaWZ/F0A++v9Yaaj52150YuQg8HHZ23ppoM
-         eSSA==
+        d=linaro.org; s=google; t=1744202201; x=1744807001; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QH7veB4JfW1Wles/JBHNgdIkw9ORpNInhsceujqVsTs=;
+        b=n1gEqkhQi7XM/04q79n2aM4jKTrzu0XaHTUaarT8ZZArWln5aOd8F1PXqVIei/hYbW
+         mB23eTe7Q4+n0HRC7lTKikJR3x8XghGcTsgjqRKRNXTWRb8ob5nf3tIfcpsUFJ4HLal1
+         fZ6WMeCsgJePHnRQugr26IrBYBUJ4V5K5vqVYw2JYQ7bvy4V5kw8nj4J/87kFY4eMzlE
+         BYRFXiNgLUhvhUt145i+bqsDvfa0ky27fEW9xQ7oQfZA7pRQGXvRk6+qjaHmZNbT/byv
+         tJuzpEKVZnVdze88aOKSVLj2pmMz/aemn02hw8C/2mtd7muUSnGMNyY5zh4V1kD9CHLh
+         QcKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744200617; x=1744805417;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xZ20LkStNkObd3KEihi6TUJmcbZftlQkn47bOpKz8AE=;
-        b=VZ/X2h8jSKleHellbltBBtRa49NJJRJtP3QJyJXXZE8n4VojpBQAaMeazRAASE9U/O
-         F7X5yIsruR8GIUOajFSMJ74nbKR7J3zDJdGCUAIUgEqG2Rmro8nZqxLcoKc484l75ogW
-         +4Kp5dyS/Yp41LFPtKUZYJi9pxsCxttROs/2XyeqP0qzzrCZmM7o+e8yzkS16M9VFrda
-         UbBNQ9m7Iky1zbHyRAdaZV/F3U55ghGBwc5WqDUCXH213UFegEVWk9LJM68OS/XZH6z4
-         H18wb2Cw1PUSgSLGGY5BCp2NDAkqeJTAOzonX7sVGWgPSbVZEdpVBLgLe65YfdQEAQ5k
-         54Bw==
-X-Forwarded-Encrypted: i=1; AJvYcCWOtI0SO+tcbM6VvmqKy9KspVEDdqu7hHR0n4yISw9FsLZ3C0Veg+x8HdkhBd3ITSeDHpjy8P/Pybc6qic=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx6gwlu/lbjO4WCfg3LjeynJNRZR4HaLkAVfYiwQqwXukhbiEX5
-	H73RY/CAvk0YipgCRjt7q7Y2pUz1mU5HfHm/Kx63YcSIHzyFkpGnMdsielaTGfk=
-X-Gm-Gg: ASbGnctkB8a0Czqprv0Uef2D/RKJapOaIWXZ5F2qau7SnQE74AkGq/MPrUt0XMbRNdp
-	gErCJ8uABDfeOg7ImbeDc6B6p0+zTNMoCxIrIkFp/slyNmHllhzchBpMzmJhyQQgNqTxRNl5bwb
-	YFtTQY8JD58iv7mFXGMjADuw6Zl+jNoNpDzTAtH158kteYt6cxt8eXvBZG72VN8BP8Hej4HYcLn
-	U1oTyGJV5c95AGy64F1RfejtuT5LvpldUuYUPesJHyglVj4G3iZkk3dxRKaxOl2lNO5usXrD3cF
-	n4t/HkikibI5AaWKS03/CEuwpo5TCZagPwTyAqTQEZzr7Dh9DUWufX4wiGV4q1zo1VZmYWJKMsZ
-	pSRQW
-X-Google-Smtp-Source: AGHT+IHOJ53eVbLiI0OAfSwCZqdwNMQH9qWfpQM+iXRoOuzCIFtY9CzuuScoSIUUfueyiH3NuZt54g==
-X-Received: by 2002:a05:6e02:4413:10b0:3d3:de5f:af25 with SMTP id e9e14a558f8ab-3d7035afda7mr62331215ab.0.1744200617264;
-        Wed, 09 Apr 2025 05:10:17 -0700 (PDT)
-Received: from [172.22.22.28] (c-73-228-159-35.hsd1.mn.comcast.net. [73.228.159.35])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4f505dfd795sm204358173.97.2025.04.09.05.10.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Apr 2025 05:10:16 -0700 (PDT)
-Message-ID: <0ca876ea-2607-407f-a0e8-98bb4bd94135@riscstar.com>
-Date: Wed, 9 Apr 2025 07:10:15 -0500
+        d=1e100.net; s=20230601; t=1744202201; x=1744807001;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QH7veB4JfW1Wles/JBHNgdIkw9ORpNInhsceujqVsTs=;
+        b=EJnEiM3vSYD3wNJBIFhdxe99sgH8LBFK3PPl6C+fFLlYJYEsbjh0aCuPEOmXttztqw
+         yJlZWpCJSHuuAlt78NwXea06egFmB93GogeKeOL6qZ2KpqZAzszkdw0KzY+sM6p0VtVE
+         j165stE060s7BFJzgdd/wpaUFiGOC8yalu6nCGwnrq4pkr31SvwWpp2STuztZzNgDBEu
+         jjQRhbRjK7xDo8WYYTm0xpjSfwSTdxwnanJf35SyUk0DxaJARL7o4h+FnIS8LBwOcFc/
+         vxXxku+vmuBCPwFBB0Iwp8KxmkoOAe2Skp1fKol7t14q+icJkjfCSZ00h4q8Yfu5XTtt
+         IAPA==
+X-Forwarded-Encrypted: i=1; AJvYcCWKN3neTc2AY1e5d9MqkKtxKi3IFdx/bu6lX/eTCbXazndrB4tSBvA6u/CnTT0L7G5zYMakQD9X2Pv7bxY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzomqAPhEoqpx7amD+k4mAsUcAaYBehrV1QjFwtUZjSkeuTCsrX
+	9AxHiKT3AgOTWQ3vvujdJCHCAnmxaJ2aSTvS2GzFHRBxDypxmmC5S38mgJFu+Y0=
+X-Gm-Gg: ASbGncviTfMO/QlBmfzEEVqw8RrKIIgmQTkT+/wdHak09//7WZKwS0+qrIYkxTz0lPo
+	5af3FtSbHe0O6Gwx+ffDOoh2cQraSKYqgw00a76Nxw6lObxZNYCmoCKFRLxaz3f+q/WMt8iAmo5
+	6cW9g0Y+JMpN/Mzey2O+Aj4EdslgJ45WLT538kfBPoR9rReeKCUQURnystNHmhw47UF4jxADgXi
+	Vny9PxjiYt2X/uNAKQAM4qE97JQhViSP57p3wRtmTrLce3w8WDPlLcd4UQowW5UW4J2m46GdQjJ
+	mbu0LXEeVf5R/3w4BYPQ3N81h8Y7/VVF0IVj1biT4WeUwRABdKE=
+X-Google-Smtp-Source: AGHT+IElIPi4StbNu1fXcOUzTMwgB5987RBpnEzg2VNy/DLgYGEJx5pDeTwmq7vbIqpvHrwBZzfZ+w==
+X-Received: by 2002:a17:907:1c1a:b0:ac3:9587:f2ac with SMTP id a640c23a62f3a-aca9d644d3bmr191195666b.33.1744202201219;
+        Wed, 09 Apr 2025 05:36:41 -0700 (PDT)
+Received: from linaro.org ([2a02:2454:ff21:ef30:9738:960c:8c08:7b2])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-acaa1bb3167sm90726666b.21.2025.04.09.05.36.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Apr 2025 05:36:40 -0700 (PDT)
+Date: Wed, 9 Apr 2025 14:36:35 +0200
+From: Stephan Gerhold <stephan.gerhold@linaro.org>
+To: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, Sam Day <me@samcday.com>,
+	Chandana Kishori Chiluveru <cchiluve@qti.qualcomm.com>
+Subject: Re: [PATCH] serial: msm: Configure correct working mode before
+ starting earlycon
+Message-ID: <Z_Zp0yCXrYM9zG83@linaro.org>
+References: <20250408-msm-serial-earlycon-v1-1-429080127530@linaro.org>
+ <058f8b9c-55db-4735-bf61-b1e0f3d05953@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] serial: 8250_of: add support for an optional bus
- clock
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, benjamin.larsson@genexis.eu,
- bastien.curutchet@bootlin.com, u.kleine-koenig@baylibre.com, lkundrak@v3.sk,
- devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20250408175146.979557-1-elder@riscstar.com>
- <20250408175146.979557-3-elder@riscstar.com>
- <Z_V-aKBOFHt-0RKz@smile.fi.intel.com>
- <2b322564-10c0-4bbd-89d9-bc9da405f831@riscstar.com>
- <Z_YhwJ1ZGSodMcMH@smile.fi.intel.com>
-Content-Language: en-US
-From: Alex Elder <elder@riscstar.com>
-In-Reply-To: <Z_YhwJ1ZGSodMcMH@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <058f8b9c-55db-4735-bf61-b1e0f3d05953@quicinc.com>
 
-On 4/9/25 2:29 AM, Andy Shevchenko wrote:
-> On Tue, Apr 08, 2025 at 03:11:10PM -0500, Alex Elder wrote:
->> On 4/8/25 2:52 PM, Andy Shevchenko wrote:
->>> On Tue, Apr 08, 2025 at 12:51:43PM -0500, Alex Elder wrote:
-> 
->>>> The SpacemiT UART requires a bus clock to be enabled, in addition to
->>>> it's "normal" core clock.  Look up the core clock by name, and if
->>>> that's found, look up the bus clock.  If named clocks are used, both
->>>> are required.
->>>>
->>>> Supplying a bus clock is optional.  If no bus clock is needed, the clocks
->>>> aren't named and we only look up the first clock.
->>>
->>> Code and description are not aligned. And What you are described above make
->>> more sense to me than what's done below.
->>
->> I want to do this the right way.
->>
->> My explanation says:
->> - look up the core clock by name
->>      - if that is found, look up the bus clock
->>      - both clocks are required in this case (error otherwise)
->> - If the "core" clock is not found:
->>      - look up the first clock.
->>
->> And my code does:
->> - look up the core clock by name (not found is OK)
->>      - if it is found, look up the bus clock by name
->>      - If that is not found or error, it's an error
->> - if the "core" clock is not found
->>      - look up the first clock
->>
->> What is not aligned?
-> 
-> That you are telling that bus is optional and core is not, the code does the
-> opposite (and yes, I understand the logic behind, but why not doing the same in
-> the code, i.e. check for the *optional* bus clock first?
+On Wed, Apr 09, 2025 at 03:30:02PM +0530, Mukesh Kumar Savaliya wrote:
+> On 4/8/2025 10:52 PM, Stephan Gerhold wrote:
+> > The MSM UART DM controller supports different working modes, e.g. DMA or
+> > the "single-character mode", where all reads/writes operate on a single
+> > character rather than 4 chars (32-bit) at once. When using earlycon,
+> > __msm_console_write() always writes 4 characters at a time, but we don't
+> > know which mode the bootloader was using and we don't set the mode either.
+> > 
+> Looks surprising. I haven't seen pre-kernel UART console ever works in DMA
+> mode. It was always fixed to work in FIFO/PIO mode. From what i know.
 
-Ahh, now I see what you mean.  The result will be the same,
-but if it "reads better" that way to you then I'm all for it.
+I'm sure you're right, since it doesn't really make sense to implement
+DMA mode for the UART console in earlier firmware or the bootloader.
 
-One of the reasons I did it this way was that I wasn't sure
-how to express a "don't care" clock name as a DTS binding,
-so I just tried to avoid that.
+DMA is just the side note here though. As I wrote in the patch
+description, the real problem this patch fixes is the "single-character
+mode". This is still FIFO/PIO mode, except that the register will
+take/return just a single character rather than 4 chars at once.
 
-In other words, I thought about adding the "bus" clock as an
-optional first lookup, and then leaving the existing code to
-look up the core clock by position--without caring about the
-name.  But I assume named clocks aren't guaranteed to be in
-any particular order ("core" clock *could* be listed second).
+This mode is used by firmware on some platforms and I'm planning to make
+use of this mode in U-Boot to fix some edge cases. It's much more simple
+to implement reliably for something minimal like U-Boot. With that
+change in U-Boot, I get the garbled output shown below in the earlycon
+serial console. This patch fixes it.
 
-So I look up the "core" clock by (optional) name, and if not
-found look it up by position.  If it is found, I look up the
-bus clock--required in this case.
+> > This causes garbled output if the bootloader was using the single-character
+> > mode, because only every 4th character appears in the serial console, e.g.
+> > 
+> >    "[ 00oni pi  000xf0[ 00i s 5rm9(l)l s 1  1 SPMTA 7:C 5[ 00A ade k d[
+> >     00ano:ameoi .Q1B[ 00ac _idaM00080oo'"
+> > 
+> > If the bootloader was using the DMA ("DM") mode, output would likely fail
+> > entirely. Later, when the full serial driver probes, the port is
+> > re-initialized and output works as expected.
+> > 
+> AFAIR, console UART was always configured in FIFO/PIO mode. For non Console
+> application e.g. Bluetooth it works in DMA mode.
 
-Now that I write that I understand why you felt the logic was
-a bit inverted.
+I think console UART in msm_serial does use DMA at least for receiving
+at the moment, since we don't differentiate between "console" or
+"non-console" use case in the upstream driver (as far as I can tell).
+My patch doesn't change anything about this though, it just ensures the
+UART controller is in the expected mode before starting earlycon.
 
-I'll send v2 today and will rearrange the logic to match what
-you're talking about.
-
->>> Also can we simply not not touch this conditional at all, but just add
->>> a new one before? Like
->>>
->>> 	/* Get clk rate through clk driver if present */
->>>
->>> 	/* Try named clock first */
->>> 	if (!port->uartclk) {
->>> 		...
->>> 	}
->>>
->>> 	/* Try unnamed core clock */
->>> // the below is just an existing code.
->>
->> That's easy enough.  I think it might be a little more code
->> but I have no problem with that.
-> 
-> I;m fine with a little more code, but it will be much cleaner in my point of
-> view and as a bonus the diff will be easier to review.
-
-I understand that completely.  Thanks a lot for clarifying.
-
-					-Alex
-
->>> 	if (!port->uartclk) {
->>> 		...
->>> 	}
-> 
-
+Thanks,
+Stephan
