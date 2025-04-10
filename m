@@ -1,122 +1,145 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 601BA281529;
-	Thu, 10 Apr 2025 14:23:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C114A1DD0F2;
+	Thu, 10 Apr 2025 15:07:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744294992; cv=none; b=YjpDBFln5Iwy0c9cxknEFRYVlp30unNCyXkkYyBgAD4BHsNRp0rf0E7tm8zB+x0LwWSShmnKYQBnA8WHOPUklXp2WSqUl4OR+1ZKGAOwdPErn51+cmTMr5dhvikVq57Nig55ph9/pnkXYEkneeu7kKGWXwwAZ5zmw0A19sVnWlc=
+	t=1744297655; cv=none; b=WJpkS3pfTeWRpTZAWfQjJrFtQqpJ0y9644gItdMV7RYn15yFH4SycGf1MjUNkqvxQR0xlPOKC8a4QpNBiLAHUi+oYL3SD0orjsAUae1WdqjBGVoHFhQuQkW39E9QnrTIZPD+I7o0sLmxraTssnHjnmhpf42uHridDrF3m7SykkI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744294992; c=relaxed/simple;
-	bh=Cwh6grY8wxhGhDJNXlFA0QmEG6C//znuti9h9BtRBOA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=BXFf4d85YJfxBFwgPBKagU293w5jKG4i8JypB+rhyorcphUFjs8estghMjQETo0vDU3URw5SyKfeOEESddgO4QQt0VD8B5dxRR4nl/hDkArjKZVsSgKhbSjxiE0AkBOhs5NScrdq+YBhmIfxG1zKwmfBudRdfrP2Iom5yFEWjw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UBZQN0EC; arc=none smtp.client-ip=209.85.210.182
+	s=arc-20240116; t=1744297655; c=relaxed/simple;
+	bh=29zjlfK0mXnUdbnnsCXfS6Oi8Qrp5HNYmCj3Q7Up+6s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZFA8T5/E69kW2ox6TRFwZyRUP84kZPN1lVaB59MAnI4jQ2pRjrag3T/vyEpCa82OxjT1c1VYojosoK0TWZxB6FhZa+AQ/PDIXLHSjCRPQE0A5hIBaI/4Kn90cNLAZn6hjAjdD/p130JtWi7dentQLMFmZRoYNOHs9A13WxQjysc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=amDTfSbD; arc=none smtp.client-ip=209.85.210.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UBZQN0EC"
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-7396f13b750so802096b3a.1;
-        Thu, 10 Apr 2025 07:23:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="amDTfSbD"
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-7390d21bb1cso925995b3a.2;
+        Thu, 10 Apr 2025 08:07:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1744294990; x=1744899790; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=T1KzVOT+eZwRVkPvH/8cwKh4uQYPRiQGRGZVOEfjMOc=;
-        b=UBZQN0ECSg7/bra/zC8SloCdnRNkOFcmeCVtd2Fw2OJs00PlueO2YN+BT59yycmHwf
-         pA5hH/lfXXcmT0rtsPQq6+i+SPbG29amoTFFUEGA7+X9WVZYPVjrqbQO2tG+2KJadlSE
-         ZsoEvnKKGXn066hn75SnX9oyKaopXrleXkHKM/1YQ5UIPw+S7FiOT4ag+6DF3u6ST0vO
-         XGyK/QHPX6kprCp7N0i5wFnIicNoLOkjLXYDA8QZVV4OuBpd+XnTKv9vkfI0fl75C96m
-         rddP9JUtoqeblei2bTj24zW8p+64xXW88srI9xIAfASHv4PLqS8OcvtZHULGpz41u8ZX
-         eOBA==
+        d=gmail.com; s=20230601; t=1744297653; x=1744902453; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3D5EegHjNXWtRqs7oVUZyDcWwG0k9rfQtFHn9dOK4Lo=;
+        b=amDTfSbD53YThn8o+gHPCYOPaXb3ht5o+9iKLu1o8PGhl4GpZUUeanQNe27NLA8QqB
+         O4WVra5EoYRlYnIuhpRllVhR8IRIqI/2JiLnhZm/D7QD0t8pCjCQpp+THJGEXWLj3Qg8
+         OkZTXtaSwuzjyQZhtPFNBvEkOv5bBPo7Q9v+yFcMmjQfJwh1u8IC7aAyMvzgDUf4fiMp
+         7u1kVUArdSUPogbagebUmlDBxKcr15uUCVS2BPetFHz11bXGdg9YCXx/OTyrqOJiXM2f
+         +FS8Hr6MaSXRd4iikSg7hTTfnDZtHtKYwHBnK9FSzklkFdYGRDB9erLEXwDGwdwIdMkG
+         qRog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744294990; x=1744899790;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=T1KzVOT+eZwRVkPvH/8cwKh4uQYPRiQGRGZVOEfjMOc=;
-        b=Lg0qmAAKWX/q3EnTtZq9Kp1ztl2O185zLYkCKNzuWgl8TM/VinEeNxnIwosPILFGQc
-         Svb1yBOqZMS4sG3jKPwA9pRPqgr1ETzrNr9KpAZGkO1DzhZPyI9bO+yMkG4YVWVyvrL/
-         SKP5bPmuB32G3R6VHwu2vYb2l+H+EP0FqrcI1QrpmDWu2I833yEl8YY0Hq1eDrD9yxGN
-         0J0Ez2doeSodAgElsPHNJUGflg7VkXk420SHJGCjIA2QQZBOo005ptE9b99lBRAQIw2T
-         KZtF2jyQLyF7Ds7UAdM1g5rD+iB9ld8YfdGfw7/EW2ANFUolYu4Reb0U9UpfYJRkdfW8
-         ddYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUWSN9ZDvLjfuQz2TP6iKDntOhOHR/zhHHCHHzBwAC8V20d7iJinAvBOZ873UW1+/lx+TMDfe01@vger.kernel.org, AJvYcCWsPaBHgA3G776/YhSG0tCWYRFDAgFSWUKkXZlgWLx8odMTGhyvxkpTWvxsIwFhStvape9uN6L3wcuyCol+@vger.kernel.org, AJvYcCWw2j2cJytXgRd0BXmKsRsKfu8QZAI+MtDSfmMS7kRcMzyTJU8x2I6bSQ/ddoSgImFVEwJyDcyz70VXHs4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzqFOj9m9D7A+hQ++rNr4OfM/O1ZpsFTurCLpEKIaIIbyQvvXYF
-	ByRUFghLwW9PPK6O/fr7OKBSK6Qr2LFABztTaxZKLTZLhQ7yyq24
-X-Gm-Gg: ASbGnctxOG/ri/H+hiOvyW7tOI2bUvb5aDjVyGow7BTPEnIomaPLZBN5jtEvRrYyBUc
-	AxrdetVAxDMq4AAmAQkHL3pweV6LyPxUeELbT2RaC1+96GyfNAX/BH5Mcd6gLZPSU7BzRi5Qcqt
-	V4CocyAoaqd4Ej1Q4YsmPebSzpxWom5eZVQHQBq1UW6b7fE0WIvD1mv/xgnGWSWxcbBf8i0hj6Q
-	a3U3yAyTohl3AhFgMWF+UYinWRJp/O/vX+h/EM/Ig6tbJSsabys99x4EownXYR7Z10WJ4NLY0eg
-	e5lapkBCvT2bJfqOiNIKPgggqPPnI+32OuwbGHKEWddxp2r1fOS70KoOGG2H8rDToRdg09Vtb/R
-	tVQ1k6ZAxMbTY0a06ynnSeAmolgJW82iqZhySKg==
-X-Google-Smtp-Source: AGHT+IHYvKz4BNpqFgjqtK4NeKugSkNVTSb75ZAm5QQA7B1M0d8K2TV39Qrya9RbCeBmRX2vLXlgMA==
-X-Received: by 2002:a05:6a21:3298:b0:1f5:709d:e0cb with SMTP id adf61e73a8af0-20169603e52mr4577828637.39.1744294990477;
-        Thu, 10 Apr 2025 07:23:10 -0700 (PDT)
-Received: from DESKTOP-NBGHJ1C.flets-east.jp (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b02a331b481sm3042268a12.75.2025.04.10.07.23.06
+        d=1e100.net; s=20230601; t=1744297653; x=1744902453;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3D5EegHjNXWtRqs7oVUZyDcWwG0k9rfQtFHn9dOK4Lo=;
+        b=Rwbnt88uwAgdeZE/7/6ZPxWrmiAB5+XBCF5NxE64049+Lozqgcr8uVXedjUKTiVpCl
+         7/G3uVjQCIkbzgiGOnXhBDH3jQ++xuadQueY9ox5UGiJlYAgSn8oxvLXGNnCjhqFfY2M
+         GXiNQVCV9KvRKq5CyRE3d53loMR4aIEfIDdrwX02ZS1I+HguoxvLJPVGYF0I2FF3okCV
+         SbjdvXaITe8fnK/BE7ipjTkJXWCz4R8PyGJXNTLRrLl9zbXhsl2t9wyQcqFi5iUmmL6v
+         5kSiw49H0sRrRJjQIwOkpIJCWksNkEEyNSc+Q7hKwypqPZgr3y9t+sAsZw4V2j1X0j9o
+         Tqxw==
+X-Forwarded-Encrypted: i=1; AJvYcCUOXZc/jSHOaGYJZ8V9U3oGXV91M2rU7mUlsWvjjXce98piQd0KgaaUsC5biHt6u1HQBN/A8pnb6VxDFNo=@vger.kernel.org, AJvYcCUtV5dT5rk3w9GBdMX/eau0G0v3F2jG+O2VW4uINRyUHWb2/Qg+FS11+mJR7sfN3d+xvQlcQWErHRgozTlfyq8=@vger.kernel.org, AJvYcCUvp9CHFBXUToar8Pc6Id4+IT0PAhwXBfnNhDeCl1xFoyB4dxcVLqHm4aLo/UG47gAQlYi0LjO+YXmUJiA=@vger.kernel.org, AJvYcCV8/8EubvyJx+OkrdRqrgGX0xdbf6V4OtpPhaON/RaRLZNmVnf2dYSmy9bGeSKhweIGt+PAyUSQcNbZTvim@vger.kernel.org, AJvYcCVa6OSqmh4AqIVHFOKC7ASrcX+jCf4kOprby2u2Q8RyfNCU2+y5GVn5WnX7eE3t0ADQrZ9+HQWr@vger.kernel.org, AJvYcCWMEYGjekVzJ+XYFaYRw9Q5QiJsTdJBipT1nKrKqthRDzIVtwzuYVKiciVqSfyOGRYg8hXJEo4Gp35fuog=@vger.kernel.org, AJvYcCX40BhYTeD5D25GEcix4kPLNhNREHZW1Chb3JtiEzNqXXxqg8GGwYnJsKDx9tWWVm2q8es=@vger.kernel.org, AJvYcCXD8go/IeqNJ4ZtWOfTUg2nK00VdAJDxJI0jmEIhBI4ySF/0u3uVLOtFpbc2r0WUdfyu7aWoewHufQThMOm@vger.kernel.org
+X-Gm-Message-State: AOJu0YxRNV0Ni7lrRayLQw40texyWx54h8br7248G9tHz1Eo4QJTICMS
+	EQ8ftGmiZwLPqb/q4lG59kQEHuFQfZEj05olQCzA0nndfiHRnM6K
+X-Gm-Gg: ASbGncsNSYc5k9RpBlkjv2zau/fW183kDN8nqJFcxJMoH4mXEQCezpJTmUtcGZrzaw6
+	krbqntr0f3+7VEO4fKCLNbBkoU5Cd5ZjA1HMyicVMoRHaw496/VQo3aB5oCDM5WPeSSpMakN/rC
+	iD8R5Knw8TmlxQYtOfQ9IlLVoeFug2RwuIPwRk3C0iLbegi4Q8zeKhZuq0uaglHklUf14BvKZVF
+	bnZLEQdAHlj+QUidSeLqx/NDqKtwcE2pGaB8nsPa8AHe/EtqUfa2AM045i/cZoxTa8iVa30eRNW
+	SvmP8diy5i4+3ZeAgQEXn7CeEmpSYNM1csAmLnzH
+X-Google-Smtp-Source: AGHT+IFy1ewRYIQi2QM4ZSLkQhokapTj0gR7Ltj5GpPkDsZlOlyCTjP19Ec1IKFhcZrwo1l74Iw4rg==
+X-Received: by 2002:a05:6a00:240a:b0:736:ab1d:83c4 with SMTP id d2e1a72fcca58-73bbec49f99mr4365817b3a.0.1744297652831;
+        Thu, 10 Apr 2025 08:07:32 -0700 (PDT)
+Received: from localhost ([216.228.127.131])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73bb1e51f1csm3501019b3a.145.2025.04.10.08.07.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Apr 2025 07:23:10 -0700 (PDT)
-From: Ryo Takakura <ryotkkr98@gmail.com>
-To: pmladek@suse.com
-Cc: alex@ghiti.fr,
-	aou@eecs.berkeley.edu,
-	bigeasy@linutronix.de,
-	conor.dooley@microchip.com,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	john.ogness@linutronix.de,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-serial@vger.kernel.org,
-	palmer@dabbelt.com,
-	paul.walmsley@sifive.com,
-	ryotkkr98@gmail.com,
-	samuel.holland@sifive.com,
-	stable@vger.kernel.org,
-	u.kleine-koenig@baylibre.com
-Subject: Re: [PATCH v2] serial: sifive: lock port in startup()/shutdown() callbacks
-Date: Thu, 10 Apr 2025 23:23:03 +0900
-Message-Id: <20250410142303.5978-1-ryotkkr98@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <Z_erp2nLRKzLXuwF@pathway.suse.cz>
-References: <Z_erp2nLRKzLXuwF@pathway.suse.cz>
+        Thu, 10 Apr 2025 08:07:31 -0700 (PDT)
+Date: Thu, 10 Apr 2025 11:07:29 -0400
+From: Yury Norov <yury.norov@gmail.com>
+To: Kuan-Wei Chiu <visitorckw@gmail.com>
+Cc: tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+	dave.hansen@linux.intel.com, x86@kernel.org, jk@ozlabs.org,
+	joel@jms.id.au, eajames@linux.ibm.com, andrzej.hajda@intel.com,
+	neil.armstrong@linaro.org, rfoss@kernel.org,
+	maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+	tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
+	dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, akpm@linux-foundation.org, jdelvare@suse.com,
+	linux@roeck-us.net, alexandre.belloni@bootlin.com, pgaj@cadence.com,
+	hpa@zytor.com, alistair@popple.id.au, linux@rasmusvillemoes.dk,
+	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+	jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw, Frank.Li@nxp.com,
+	linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
+	david.laight.linux@gmail.com, andrew.cooper3@citrix.com,
+	Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH v4 02/13] media: media/test_drivers: Replace open-coded
+ parity calculation with parity_odd()
+Message-ID: <Z_fesYbCnSjAo-K4@yury>
+References: <20250409154356.423512-1-visitorckw@gmail.com>
+ <20250409154356.423512-3-visitorckw@gmail.com>
+ <Z_aobrK3t7zdwZRK@yury>
+ <Z/a7DecDljuLtKeS@visitorckw-System-Product-Name>
+ <Z_a_PzmNnvC2z7se@yury>
+ <Z/bC6cygo0hem5IO@visitorckw-System-Product-Name>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z/bC6cygo0hem5IO@visitorckw-System-Product-Name>
 
-On Thu, 10 Apr 2025 13:29:43 +0200, Petr Mladek wrote:
->On Sat 2025-04-05 23:53:54, Ryo Takakura wrote:
->> startup()/shutdown() callbacks access SIFIVE_SERIAL_IE_OFFS.
->> The register is also accessed from write() callback.
->> 
->> If console were printing and startup()/shutdown() callback
->> gets called, its access to the register could be overwritten.
->> 
->> Add port->lock to startup()/shutdown() callbacks to make sure
->> their access to SIFIVE_SERIAL_IE_OFFS is synchronized against
->> write() callback.
->> 
->> Fixes: 45c054d0815b ("tty: serial: add driver for the SiFive UART")
->> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
->> Cc: stable@vger.kernel.org
->
->I do not have the hardware around so I could not test it.
->But the change make sense. It fixes a real race.
->And the code looks reasonable:
->
->Reviewed-by: Petr Mladek <pmladek@suse.com>
+On Thu, Apr 10, 2025 at 02:56:41AM +0800, Kuan-Wei Chiu wrote:
+> On Wed, Apr 09, 2025 at 02:41:03PM -0400, Yury Norov wrote:
+> > On Thu, Apr 10, 2025 at 02:23:09AM +0800, Kuan-Wei Chiu wrote:
+> > > On Wed, Apr 09, 2025 at 01:03:42PM -0400, Yury Norov wrote:
+> > > > On Wed, Apr 09, 2025 at 11:43:45PM +0800, Kuan-Wei Chiu wrote:
 
-Thanks for reviewing this one as well!
-I'll send v3 with your Reviewed-by.
+> > > > So, if val == 0 than parity_odd(val) is also 0, and this can be
+> > > > simplified just to:
+> > > >         return parity(val) ? 0 : 0x80;
+> > > > Or I miss something?
+> > > >
+> > > If val == 0x01, the return value of calc_parity() will remain 0x01.
+> > > If changed to return parity_odd(val) ? 0 : 0x80;, the return value will
+> > > be changed to 0x00.
+> > 
+> > Sorry, I meant
+> >         return val ? 0 : 0x80;
+> > 
+> > This 'val | (parity_odd(val)' is only false when val == 0, right?
+> > When val != 0, compiler will return true immediately, not even calling
+> > parity().
+> >
+> I'm still confused.
+> 
+> Maybe you're interpreting the code as:
+> 
+> 	(val | parity(val)) ? 0 : 0x80
+> 
+> But what we're trying to do is:
+> 
+> 	val | (parity(val) ? 0 : 0x80)
+> 
+> So, for example, if val == 0x06, the return value will be 0x86.
+> Only returning 0 or 0x80 seems wrong to me.
+> Or did I misunderstand something?
 
-Sincerely,
-Ryo Takakura
-
->Best Regards,
->Petr
+I misread the whole construction. Sorry, you're right. Scratch this.
