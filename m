@@ -1,16 +1,16 @@
 Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 851001D5143;
-	Thu, 10 Apr 2025 06:49:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ADA7146A68;
+	Thu, 10 Apr 2025 06:52:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744267757; cv=none; b=eq93B6etqlwDy1OVqx8LotVBpxnYZhWAHgjeio1BtZAzNkZLcXX5iFkXw43MEFA9qwNx+oa0jBqsGdEnhWsc+VQiclUqVLKR0KmsFcSsYzIpkkSVOmQDvE2DIuD5QtSqaarv/625ieXi4ceC4m84yCs7igqVDXGIsc4Ems8EZlo=
+	t=1744267934; cv=none; b=I2rJy46rej3vFPAALHXtLmfi229m+EUZ1sfyscBrj8FjtRNtjQzvE6akU556bCEiA5nhuKunMoDCBZAsKUva6icjAjb1h59Q5tIysgK8UaG7Tr/R4RYOUEsVIR+n2otHkJhU/QnQ+N+EYUBEZHDpnL6tfRryV4NMGLgyJ7EgYJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744267757; c=relaxed/simple;
-	bh=k+a2QW6F+/jdpGG/jLmL3WIvZZGQdPahmizjCXGP7+k=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=tQ5UxUuyWCzrY3B4Je+wDQqP5+4RRl+ssqxfyqbyR5XvJ6+9WCuN/oGWDuLdBYRh23++9PwANt8OLGC5YILR6+APsQk4U4v8kcKjVhLu4nJ8DO4VbIPUq2zbbBucpWH3f0eWOoaVBRRllyJWOCJFyFZT8CcLEQxIopca64ShsME=
+	s=arc-20240116; t=1744267934; c=relaxed/simple;
+	bh=MuTsvFLFhKn1lUgsMMjG5XGYH4nPdoJNyRfWny+Ilmc=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=D7jRgy/kD+Xsg6uCBhKc0DcqDBdRmexOKoWTFjW28o7J/nFjhW38Ua31YzyUcwKatHtuDRcQOXA9IM8VVN3i2tD0SUVUEGLaGRln3lcmlpvVD1Higek6gDDWL6fC7/4n9czPNy9ZithmNwr5C+Ko8OdVWyqtyKvcublH/8TH6Es=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
@@ -19,10 +19,10 @@ Received: from [192.168.0.2] (ip5f5af743.dynamic.kabel-deutschland.de [95.90.247
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: pmenzel)
-	by mx.molgen.mpg.de (Postfix) with ESMTPSA id EECB161E64783;
-	Thu, 10 Apr 2025 08:48:46 +0200 (CEST)
-Message-ID: <754b8493-f6e9-4af5-9fb6-eaabccb5ded2@molgen.mpg.de>
-Date: Thu, 10 Apr 2025 08:48:46 +0200
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 95B1B61E64783;
+	Thu, 10 Apr 2025 08:51:49 +0200 (CEST)
+Message-ID: <9a9e1287-d84f-4019-8948-5e00c44e1183@molgen.mpg.de>
+Date: Thu, 10 Apr 2025 08:51:49 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -30,8 +30,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: Kernel WARNING (RCU) with btnxpuart on TI AM62 platform
 From: Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: Re: Kernel WARNING (RCU) with btnxpuart on TI AM62 platform
 To: Francesco Dolcini <francesco@dolcini.it>
 Cc: Vignesh Raghavendra <vigneshr@ti.com>,
  Amitkumar Karwar <amitkumar.karwar@nxp.com>,
@@ -39,7 +39,7 @@ Cc: Vignesh Raghavendra <vigneshr@ti.com>,
  Tero Kristo <kristo@kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>,
  linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
- linux-serial@vger.kernel.org, Marcel Ziswiler <marcel.ziswiler@toradex.com>
+ linux-serial@vger.kernel.org
 References: <20250408083512.GA26035@francesco-nb>
  <24b28bda-e294-4680-bed5-c44efcb6c455@ti.com>
  <20250410062006.GA7506@francesco-nb>
@@ -52,7 +52,7 @@ Content-Transfer-Encoding: 8bit
 Am 10.04.25 um 08:34 schrieb Paul Menzel:
 > [Cc: +Marcel]
 
-[Remove, as email is not valid anymore.]
+[Remove, as email is not valid anymore. (Now really.)]
 
 > Dear Francesco,
 > 
