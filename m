@@ -1,63 +1,63 @@
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B37171C174A;
-	Thu, 10 Apr 2025 14:19:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 601BA281529;
+	Thu, 10 Apr 2025 14:23:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744294753; cv=none; b=S1QiRYjrnUCCORi3fpqFb/XJ/4Qt1HPcMkuwDcjXLIcOBHzcWRmFu5VAKjXUKMNCBWXcOA9fFdifezM2t6O9rtOImlx3mGNLshbrdTjXU/8sv6gnn+guaNhav983SScG6W+T8MeaSG6K0YFSHT3gFbC7KexRbTIEnTtNQldqLfU=
+	t=1744294992; cv=none; b=YjpDBFln5Iwy0c9cxknEFRYVlp30unNCyXkkYyBgAD4BHsNRp0rf0E7tm8zB+x0LwWSShmnKYQBnA8WHOPUklXp2WSqUl4OR+1ZKGAOwdPErn51+cmTMr5dhvikVq57Nig55ph9/pnkXYEkneeu7kKGWXwwAZ5zmw0A19sVnWlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744294753; c=relaxed/simple;
-	bh=LL8nbhHsK/lDnT8ira4baVwLu3Ih8EQqYk76ReEqjIw=;
+	s=arc-20240116; t=1744294992; c=relaxed/simple;
+	bh=Cwh6grY8wxhGhDJNXlFA0QmEG6C//znuti9h9BtRBOA=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=fOGGBSoYzgDEnndUvKfJmvtvDzlPtSXt0YTRcHxUYEzWxzkmSujEHAv1nmNHhB8JE5O6Ituji0dFLSPuNsdx8eI3LT3eckxSxJY93maxQHLXz5ZOAbNPcF97Bn2AKnZFsgT+Lqfby7ls9GCUZpd6m57bR46KGpygUvFhMPFZ9jM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AoK0qpbc; arc=none smtp.client-ip=209.85.216.46
+	 MIME-Version; b=BXFf4d85YJfxBFwgPBKagU293w5jKG4i8JypB+rhyorcphUFjs8estghMjQETo0vDU3URw5SyKfeOEESddgO4QQt0VD8B5dxRR4nl/hDkArjKZVsSgKhbSjxiE0AkBOhs5NScrdq+YBhmIfxG1zKwmfBudRdfrP2Iom5yFEWjw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UBZQN0EC; arc=none smtp.client-ip=209.85.210.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AoK0qpbc"
-Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-30384072398so756377a91.0;
-        Thu, 10 Apr 2025 07:19:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UBZQN0EC"
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-7396f13b750so802096b3a.1;
+        Thu, 10 Apr 2025 07:23:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1744294751; x=1744899551; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1744294990; x=1744899790; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=pg20oY4fk1g4YTuTud9xw6LT1kx/bgpyeNN+Nb2KPyM=;
-        b=AoK0qpbce4fQ5tq3QZi5Axeql2qhOWF3L9kE154EI1SX4TX9g67yQQ1JtPAITxBVZs
-         aW7OkXvDzkXWD8PlURBw+PLIgV0T6uWFZcU9l/C55XF/kHcIRrofHfsfDQueCOgeVywx
-         EvA9m0OQUF/+9gz9UPlKK75fL5jHz8fQG3dZvM1gTREze58qxKcvNDOsQezA6k63Luuz
-         a/qkz1R8vtKvugAD0cDuGOju+csi5o9X9LroM2/fApcNwY+zxV5eE5uir6OTnjxJYTC2
-         PFgi7sOq1IXxjO7P1N3l2s5thDlXnBUk3OillQTPkxUsQOcG0eAt35OmUWhdyUzQK8Ml
-         nhrQ==
+        bh=T1KzVOT+eZwRVkPvH/8cwKh4uQYPRiQGRGZVOEfjMOc=;
+        b=UBZQN0ECSg7/bra/zC8SloCdnRNkOFcmeCVtd2Fw2OJs00PlueO2YN+BT59yycmHwf
+         pA5hH/lfXXcmT0rtsPQq6+i+SPbG29amoTFFUEGA7+X9WVZYPVjrqbQO2tG+2KJadlSE
+         ZsoEvnKKGXn066hn75SnX9oyKaopXrleXkHKM/1YQ5UIPw+S7FiOT4ag+6DF3u6ST0vO
+         XGyK/QHPX6kprCp7N0i5wFnIicNoLOkjLXYDA8QZVV4OuBpd+XnTKv9vkfI0fl75C96m
+         rddP9JUtoqeblei2bTj24zW8p+64xXW88srI9xIAfASHv4PLqS8OcvtZHULGpz41u8ZX
+         eOBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744294751; x=1744899551;
+        d=1e100.net; s=20230601; t=1744294990; x=1744899790;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=pg20oY4fk1g4YTuTud9xw6LT1kx/bgpyeNN+Nb2KPyM=;
-        b=maXMyJC12vybVQpiCFT3U2mmuz6yZ98cYXOPKHEpEdaT97/Bedf+f8h5pQnt0oHuvg
-         5ndVEuPGO+BD07Gt+tcXebgEsnlueKfEKyLW2sEPdgw+0rrXnbwSGMx9ykNMsJS+uwTs
-         ZeqdQNjJ9V/dDqWe2eB2LtvN86Pzv67dgGX8ecyNoOOeKC+DC3WKl4s6A+mtAidFTVWE
-         9mATtHh6+xVKlReBjl4U5D16br8kCIj73LS6km3iRSS7kiL90ufcasMx2/jXyBuboBgc
-         934Fc2KwSiNC36EpRom/v31HMqugw0UAfzSWB7wvjHNNRplAr4cj6S6QZnR8qUQgNzqn
-         cn0g==
-X-Forwarded-Encrypted: i=1; AJvYcCUlG/NpiyFE6WjZ3UpcFs0ST30dpSp7AQIcdD1oAy3IRIGgPWt+lLsEo7yS1z5UU64qxxhD1B2FL8WXicGn@vger.kernel.org, AJvYcCX3oCaHd4SgSP8BQYygn8MXevjlDaxjTJKIwmQh8V76KDe4R3FbRgtqUjV4lfxZ22FqojkFJZwB6znRiNY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyF+Jyus4IxGEaRxwuracn4CC9EBnT2sH/36fCw/V0bdeGfgyeq
-	4EaSD86iPavAqy9TP2nR9yrScBPJHThwb3O9GiFIKL5oeddGVrg1
-X-Gm-Gg: ASbGncvbAEVr1/JPZ/3QYAFAZVgXqcHzZ95RWPzSYC+Khf7rriyhlExHYUva9fKM3W6
-	bQcXPjbQmp+gqR4RYZvsaLQqiRt4itzBj4VAh3a4bKLAyVL/kNayN0rLHkIRDWhjgh2QUdjG5zU
-	Y7CDIj10+P0QCwLZqVoPc1EmyZ+zVoSZ+hmI9sDmJXadr93RDc0911eabMcjIKLcYIqLkowTPQJ
-	NyTsGyalWGGgOgBUYEuy5jzW4cH7utePbGw9HEymmBu5uV3BQG8eULlkpxO7veiqYi3Ld8OQsTO
-	XH+AkebVUJlUEKw+HT/bJdO4FJhILNHeyXAdOT1n7wYYV1IuaRlOmheMWR5I+edFXkRrBDVmBLc
-	aAdm3QuauQFOg8ugFwN5/N1TNPxc47FkCz2cnxg==
-X-Google-Smtp-Source: AGHT+IHGSOe7rLWE6APRJd8oB/Q1p/06cytILMQ3d0nlRQ+N/y5HEXtyxiKwmIZjLfr75eK0oW+JWA==
-X-Received: by 2002:a17:90b:5147:b0:2ee:aed2:c15c with SMTP id 98e67ed59e1d1-3072ba0e83amr4340866a91.28.1744294750880;
-        Thu, 10 Apr 2025 07:19:10 -0700 (PDT)
+        bh=T1KzVOT+eZwRVkPvH/8cwKh4uQYPRiQGRGZVOEfjMOc=;
+        b=Lg0qmAAKWX/q3EnTtZq9Kp1ztl2O185zLYkCKNzuWgl8TM/VinEeNxnIwosPILFGQc
+         Svb1yBOqZMS4sG3jKPwA9pRPqgr1ETzrNr9KpAZGkO1DzhZPyI9bO+yMkG4YVWVyvrL/
+         SKP5bPmuB32G3R6VHwu2vYb2l+H+EP0FqrcI1QrpmDWu2I833yEl8YY0Hq1eDrD9yxGN
+         0J0Ez2doeSodAgElsPHNJUGflg7VkXk420SHJGCjIA2QQZBOo005ptE9b99lBRAQIw2T
+         KZtF2jyQLyF7Ds7UAdM1g5rD+iB9ld8YfdGfw7/EW2ANFUolYu4Reb0U9UpfYJRkdfW8
+         ddYQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUWSN9ZDvLjfuQz2TP6iKDntOhOHR/zhHHCHHzBwAC8V20d7iJinAvBOZ873UW1+/lx+TMDfe01@vger.kernel.org, AJvYcCWsPaBHgA3G776/YhSG0tCWYRFDAgFSWUKkXZlgWLx8odMTGhyvxkpTWvxsIwFhStvape9uN6L3wcuyCol+@vger.kernel.org, AJvYcCWw2j2cJytXgRd0BXmKsRsKfu8QZAI+MtDSfmMS7kRcMzyTJU8x2I6bSQ/ddoSgImFVEwJyDcyz70VXHs4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzqFOj9m9D7A+hQ++rNr4OfM/O1ZpsFTurCLpEKIaIIbyQvvXYF
+	ByRUFghLwW9PPK6O/fr7OKBSK6Qr2LFABztTaxZKLTZLhQ7yyq24
+X-Gm-Gg: ASbGnctxOG/ri/H+hiOvyW7tOI2bUvb5aDjVyGow7BTPEnIomaPLZBN5jtEvRrYyBUc
+	AxrdetVAxDMq4AAmAQkHL3pweV6LyPxUeELbT2RaC1+96GyfNAX/BH5Mcd6gLZPSU7BzRi5Qcqt
+	V4CocyAoaqd4Ej1Q4YsmPebSzpxWom5eZVQHQBq1UW6b7fE0WIvD1mv/xgnGWSWxcbBf8i0hj6Q
+	a3U3yAyTohl3AhFgMWF+UYinWRJp/O/vX+h/EM/Ig6tbJSsabys99x4EownXYR7Z10WJ4NLY0eg
+	e5lapkBCvT2bJfqOiNIKPgggqPPnI+32OuwbGHKEWddxp2r1fOS70KoOGG2H8rDToRdg09Vtb/R
+	tVQ1k6ZAxMbTY0a06ynnSeAmolgJW82iqZhySKg==
+X-Google-Smtp-Source: AGHT+IHYvKz4BNpqFgjqtK4NeKugSkNVTSb75ZAm5QQA7B1M0d8K2TV39Qrya9RbCeBmRX2vLXlgMA==
+X-Received: by 2002:a05:6a21:3298:b0:1f5:709d:e0cb with SMTP id adf61e73a8af0-20169603e52mr4577828637.39.1744294990477;
+        Thu, 10 Apr 2025 07:23:10 -0700 (PDT)
 Received: from DESKTOP-NBGHJ1C.flets-east.jp (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-306dd11e6c8sm3716464a91.14.2025.04.10.07.19.06
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b02a331b481sm3042268a12.75.2025.04.10.07.23.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Apr 2025 07:19:10 -0700 (PDT)
+        Thu, 10 Apr 2025 07:23:10 -0700 (PDT)
 From: Ryo Takakura <ryotkkr98@gmail.com>
 To: pmladek@suse.com
 Cc: alex@ghiti.fr,
@@ -74,13 +74,14 @@ Cc: alex@ghiti.fr,
 	paul.walmsley@sifive.com,
 	ryotkkr98@gmail.com,
 	samuel.holland@sifive.com,
+	stable@vger.kernel.org,
 	u.kleine-koenig@baylibre.com
-Subject: Re: [PATCH v2] serial: sifive: Switch to nbcon console
-Date: Thu, 10 Apr 2025 23:19:04 +0900
-Message-Id: <20250410141904.4750-1-ryotkkr98@gmail.com>
+Subject: Re: [PATCH v2] serial: sifive: lock port in startup()/shutdown() callbacks
+Date: Thu, 10 Apr 2025 23:23:03 +0900
+Message-Id: <20250410142303.5978-1-ryotkkr98@gmail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <Z_e5rWcJKUh7eozw@pathway.suse.cz>
-References: <Z_e5rWcJKUh7eozw@pathway.suse.cz>
+In-Reply-To: <Z_erp2nLRKzLXuwF@pathway.suse.cz>
+References: <Z_erp2nLRKzLXuwF@pathway.suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -89,32 +90,30 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Petr!
-
-On Thu, 10 Apr 2025 14:29:33 +0200, Petr Mladek wrote:
->On Sat 2025-04-05 23:59:15, Ryo Takakura wrote:
->> Add the necessary callbacks(write_atomic, write_thread, device_lock
->> and device_unlock) and CON_NBCON flag to switch the sifive console
->> driver to perform as nbcon console.
+On Thu, 10 Apr 2025 13:29:43 +0200, Petr Mladek wrote:
+>On Sat 2025-04-05 23:53:54, Ryo Takakura wrote:
+>> startup()/shutdown() callbacks access SIFIVE_SERIAL_IE_OFFS.
+>> The register is also accessed from write() callback.
 >> 
->> Both ->write_atomic() and ->write_thread() will check for console
->> ownership whenever they are accessing registers.
+>> If console were printing and startup()/shutdown() callback
+>> gets called, its access to the register could be overwritten.
 >> 
->> The ->device_lock()/unlock() will provide the additional serilization
->> necessary for ->write_thread() which is called from dedicated printing
->> thread.
+>> Add port->lock to startup()/shutdown() callbacks to make sure
+>> their access to SIFIVE_SERIAL_IE_OFFS is synchronized against
+>> write() callback.
 >> 
+>> Fixes: 45c054d0815b ("tty: serial: add driver for the SiFive UART")
 >> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
->> Reviewed-by: John Ogness <john.ogness@linutronix.de>
+>> Cc: stable@vger.kernel.org
 >
 >I do not have the hardware around so I could not test it.
->But the code looks good. With the added comment (reported
->by the robot):
+>But the change make sense. It fixes a real race.
+>And the code looks reasonable:
 >
 >Reviewed-by: Petr Mladek <pmladek@suse.com>
 
-Thanks for reviewing, I appreciate it!
-I'll add your Reviewed-by with the comment for v3.
+Thanks for reviewing this one as well!
+I'll send v3 with your Reviewed-by.
 
 Sincerely,
 Ryo Takakura
