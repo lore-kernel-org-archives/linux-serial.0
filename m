@@ -1,69 +1,69 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A344827C850;
-	Thu, 10 Apr 2025 10:01:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7F13596F;
+	Thu, 10 Apr 2025 10:20:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744279306; cv=none; b=Ps3jTr5dB28eUwdJkdX7son8mSvavpJAnHWa5Drbnx3iC5pYMKRVPZxZ1IrVLJG6XzfAdTzc2cZVi9HNELFE9XUdxcwE9+7S2EZLgZgRJq+6z6sOPYoLkaSZsyWuWlXWzip20PSyYCtN6rsJYCRQnootEbflgPebvY3Jkv10P3c=
+	t=1744280415; cv=none; b=T1yeB80ZVJUPTO2ByXzH+Xgst3JyTF0xOlNvyc+ld8aQqCZAdvhdGs9GeJsWscyfrIyLrHHCTH81vGyRscGDtuZIJvKFY7BWpRR3Snirv+1WJtipx5/6fHojpnMcV4o/NKL/67QzVKfFYufcvRXg1hXnwN+G8wgZcF0xj8uGC3c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744279306; c=relaxed/simple;
-	bh=9b78sYMlgKV8xbhGsnnU6NEj0KRXsexk+EnRgrPV9zo=;
+	s=arc-20240116; t=1744280415; c=relaxed/simple;
+	bh=STXnym/Nr2t8Lenz1RUY5A2v+n8iUqtKTitbeFBx2W4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZmkpxOIxKWyFDEc8qKKD6WamPfHD927kELy485Z+rbSU/OUoy+rlPYSZG+BDRx30QtJtqyyVT5mwz3JvwCosnjV1ethaQcNkMn2P1iG6FDnml5Gem/rLMU0S7n739+d51fXsB0aPFvmMWwf1svS21z4ovSrCgd0mpMWcEZum7DI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.51
+	 To:Cc:Content-Type; b=QcEXfI/u2WZZ/GHpt+t125XvRfUYvruKQKOw6VyI91d+GfL1E1F7j5LGfoPFKiXxXZyFjU5YihgJoYfXmH5kFDNduElwyRumTKpyReug7Vitu7c15Lij/zT3PC1sfEX1r67OHTYK2ZYTJApPgabe3tWAN7PR9LeLWjCYFdDyon0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5f0c8448f99so1273884a12.1;
-        Thu, 10 Apr 2025 03:01:44 -0700 (PDT)
+Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-525b44b7720so321049e0c.0;
+        Thu, 10 Apr 2025 03:20:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744279302; x=1744884102;
+        d=1e100.net; s=20230601; t=1744280411; x=1744885211;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=3F2NKJ9dNLSl3ARkhxIkJK0rOGADequNLd0IXRv1ebs=;
-        b=XDk4WxN0Mx/M+BRmPQUkBRL5qry2AYccEa1FRETBKOrf5s5Dp3S06P1QDvp5eplpMn
-         OEGOFLJv36UHSB7jx1eZXHinrPtocdkKIni9Eb2nn1tWeoX7MBpIJUpbDmU8g0XfPjuW
-         Ngtacz+GpIdJPjKijY/+4XhuUpIYA5BxXxpKK1yVQ3K20PPXeT3kRipu3LHljzBtMoui
-         fX+UmSBafiOsTFIitHwCmzQ+ZgVbZCBDsTnqIgQOLBeQjYLHL0BJNODxlBJCJZIhGcBP
-         Fj7hwHKvKccnAYvx/o/4eBAO4Wy+mzoqgIjaVC4mxMsu84c9uwlbANBPa99raIcLenFQ
-         /ymA==
-X-Forwarded-Encrypted: i=1; AJvYcCVB9JgUrUKn1eOZcGh+DKIOhZtMaey+7+Dx0HRpd97wDlMLtWHmBCEIW9bh6DCkbFUOOc/flYA5HsdgFODu@vger.kernel.org, AJvYcCVBxMV/IIuyJbsd1+eyguA1lPSpjLltLjHVhWZs8lRY1PDQ5a6DSak6AvZ0c1/ozVSLcSAsQwDaD5GMl5Iz@vger.kernel.org, AJvYcCVgmJEH7j4/TAu9Rz6JG4VRgFVdu6dw4N8dY1pl23e62tGWFgNtki6ESSAbH1vznJjQuoM+XmUe1pejcg==@vger.kernel.org, AJvYcCW/xPyQJB6HrVsBhZwt0nKHbPUrkJR6PkacnpmqpWgJnLCIoq29e5Ydz0s0HBmIwfHbwJGX6UuxC6/b@vger.kernel.org, AJvYcCXW82NCKlqUo0pKSvDFq9kzSF8gGNKiY0dpA6EbPn01LLumxxT6IcxaIEMS5989FzMaN6Q7mXvMejeP1Yex9kT4FrM=@vger.kernel.org, AJvYcCXc/Luu+NMR2/jD2qsBaaEtA8QPEReuLUXDOCYKZPP36XuYykbD+qdDOoA8ozVYLu3YcG++5n5Uz2/0@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw0Fya05jVZxNQHvoMiqxa0wvz6Zzz1OWSHJVBm+WoVFrbSAhvH
-	ppczHXTdXdrOGix4s9hgBeFGqgigJamijmSCRVGEmGrj1q5UfX74Etk11Kdo1Oo=
-X-Gm-Gg: ASbGncuQLdf5D6zme7m0drbMsCApWBdvg4m0x+jXhBVnhZi/Im1JbNe1eQ8jlV6XFDn
-	ORiIQvExRJCvzi/3rexvMJ03kpKOveYRhCVheCN+f1Jg+1Mzg4K9KTHO5H8caB/tUcNFoHNCxmS
-	5PJKiTy85Q9oip7IDlg/E7xiJcQaItO2j55tIrJc865iXRnzCYjL1nkkdv9Z2liAgHGdI+MM5mg
-	w6u8d/hjRB2mt5MwgsKeDBzY0XMrivljrSbXcWfGPkc9Ejkm4yqD9lcvcIlxd0YdfZhR+Fw2GHN
-	VkNH2e1kyl/pAZ0ujRp4ojieRuZpv58oVC1BuP4j/+SBPm6+0rF0u8tE09sgYtENLjIMog3j4ma
-	Ndzw=
-X-Google-Smtp-Source: AGHT+IEFrTLNQPfXz1mp8f92xYtXrhIRRdb7ZcNLyKRlx2dfbTxo8MRLNtb6jNbIjIjkmXRlsSFgPw==
-X-Received: by 2002:a17:906:f585:b0:ac3:9587:f2ac with SMTP id a640c23a62f3a-acabd24cb50mr191576566b.33.1744279301862;
-        Thu, 10 Apr 2025 03:01:41 -0700 (PDT)
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-acaa1bb3513sm247952966b.11.2025.04.10.03.01.38
+        bh=ODWzl5U+kYhA+n5JAsKOo52bKLUN4i9fElnwM1XhI38=;
+        b=YCREBFisHBkEK1tCrpLenxse1MzacjCJcEWj5tuYzM6fRcbBxGL+brteqvoj+xdHt0
+         xT18VYsHMasbyUPMhGQiFJUax4m6w5oyD8fLN0gS+0+NlqMs7sXjUG7Ee6VnKoDsiwgk
+         cCm0HA50x9ItrFPSVqtqH0OpBN/Dr0r0yf/98P8M48UOxtiF82cDyP7xhfHK7/1MexS/
+         QQx6e+D70RFhON3vYnyYnv6uzqIBeuA2TkVnJ84VVs9U3QFWNT/CQObUQrF//updUSmp
+         mtctc7j/2LslEdEnAzS1prze4qDGnLwPNh4RsZ026oa0va0W4qZ6AoR0uN/MX0agQNef
+         9mpg==
+X-Forwarded-Encrypted: i=1; AJvYcCU/MQ1a+PR8BPLtCU7xLT1fSYQAhrp/oXRgA2S++j5BVDgTp8z3+2E+U3rgFS0Sq6vRHXM1pwjJng2H1j9r@vger.kernel.org, AJvYcCVNi20Tb0VFzr7qbR9lVsblHeFxugTlppjn8XL7aV4Qb9SWOzXYVcqITtnEW1oftRgMAbfzBrN+uRI1oMsx@vger.kernel.org, AJvYcCWRbBwLfmfX7DMEEhgLm1xBjk5XUgmDchf7BMaZG5c+Kn4/cdzUXTLAHl0r3CaO1+uV+4kdE7CLIUx5EA==@vger.kernel.org, AJvYcCXBAgNB/RkHkYDzlEYzJ6JRjFrFYjga4Bru/UYx/YI1Pa34k6vuP0ZjqsqTe6GYA5r0t5KNHqfsnRRFZZl1xEVM4U8=@vger.kernel.org, AJvYcCXjjWFgJ/G0oDNNj3xdGUIbk0s1/TErzm4VhlccI8ZL25co5qBfon970bgDb2Iz4zLQCQmq3ln1aDp4@vger.kernel.org, AJvYcCXw7yAqJ+RQIZPk9BvmEh2arJskelTyDG8i9wO3UVyglxJvaiRaR/Xpq1Rk3ycHkhC0jsN5H2/LLxeH@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxk6zohWV35bBgJnW/opL2TJ5A+Mk99X44CW71RG+8bEXZCgRXI
+	9G47JFhy/4t3z8z0Jttd1AVf9cy7nhAog2O0Y8cYn0PjfP/HXViFIVAGv8LSuEw=
+X-Gm-Gg: ASbGnctZGGyuw/JPmlxCfxO66Hex2RC1Jpg8j4t7KsaVcQj0pI8mR0OzQZBADBnABdV
+	840/kro23WzB5U3W1LWPSTdwqCl/4p48pBERQz7MCSy+qz2TVtvvqxkNI1S7abeiL1M5dV4LsC/
+	41tlsT7psNQncJh2S5xp7BMVvYGaqjHVHP8Y7ahaBTMZn/Pm2GM4efxJd7MUwPYZP8mrpyTaeTs
+	/USCuP9ueAsxgWQ6RVV588fBY8Bx4Bh9K0M0nciTXcWWI6fQ9JlFOBKr9CG/TJd6q+OUF9w7vft
+	pDobOOImLmfkkx6xIT5GdaXfQNebA3KFCn4elLd7EZtK4XPWiOXIQDp+zbmCKR4YKAtT9/lSn8U
+	NREU=
+X-Google-Smtp-Source: AGHT+IGDnrwd/pRhxXcBRW34jqcXglHIXgKQjOJdxR/uZPSFVzKz648FxnkB/QXrtYn+PgefePQdUw==
+X-Received: by 2002:a05:6122:168d:b0:526:483:95fd with SMTP id 71dfb90a1353d-527b50f5076mr1237693e0c.10.1744280411375;
+        Thu, 10 Apr 2025 03:20:11 -0700 (PDT)
+Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-527abd4e8fdsm585458e0c.2.2025.04.10.03.20.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 10 Apr 2025 03:01:38 -0700 (PDT)
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5e61da95244so1034688a12.2;
-        Thu, 10 Apr 2025 03:01:38 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCU7mXlDrvRwvyguq0Kk1L8BtiqRpjWLIpd0yV87IuXrxOId1vneyr9IZpNizqN9K/FFg5sOvwnQetka@vger.kernel.org, AJvYcCUEKJIUTfQVW9E/J948HtHeh12sTUc1QAc92rDE4HVMKhHm1SLbVOI/Ti5yAoKDNxQ5c5/WqztLHfYmASjR@vger.kernel.org, AJvYcCUXqdIwdtccZvjpxWGyBdEKuMq1TWbXflCeYJ1lUmw/t1MVnHuS5Gcusr4jvYyhivfnTnh7NuVyYGl8@vger.kernel.org, AJvYcCX3JR4QhTBdydenr3//sbADmFcILTDBkW77wt+OXf2F6dL6fCGE0i+hzEVbr538Ks3ptVhqeJa4D1rurJRFTD3m9fg=@vger.kernel.org, AJvYcCXjLZI35mgOkp8GWeHWUZhRRDVDJnQlx56nEzN9h7tpTklYV5VlXL9PFW9S4A+o4CtZk98TdW+rRk+2BHXu@vger.kernel.org, AJvYcCXjrZm+cDJL0in2mHh1dgn3qsUzuC9dJnIOvPbrsTTSnTYBSR9YSmIoB/Yuci21XVsokHPMB0kVQL6sOQ==@vger.kernel.org
-X-Received: by 2002:a17:907:9692:b0:ac7:ecea:8472 with SMTP id
- a640c23a62f3a-acabd206311mr163848966b.26.1744279297800; Thu, 10 Apr 2025
- 03:01:37 -0700 (PDT)
+        Thu, 10 Apr 2025 03:20:10 -0700 (PDT)
+Received: by mail-ua1-f49.google.com with SMTP id a1e0cc1a2514c-86d3805a551so275105241.3;
+        Thu, 10 Apr 2025 03:20:10 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUfknW/C2QFw37QL4sTz1/kD3gMVukMgg5XeTO0u5rDU2iV+kd6Sgx1IbLbVcuIvFYwlQQEaVmbRCXZoYBtaKwjRoE=@vger.kernel.org, AJvYcCUk9jHNC3IoJcgpJrgkzDOZMaj0Rfv/mIh2zf9Wdw7JyH9ynjB9NGIf7v1SGTWO8xwQM04814cqqQj5@vger.kernel.org, AJvYcCVyr7p4jM1+7lWuu6Zfw1hV0vw90zOQs9Gejg5Pr+rcIS37XvGStfglrBl+KuPi4JjPeYGNERFKpHydEA==@vger.kernel.org, AJvYcCXU5pZpe7tC48VfA2BKf36gfjPeARnrziEfGZwM4VIhE3VdHdRQqhlaaAmLDP06LtRCgs+gxClAHVJcGq2X@vger.kernel.org, AJvYcCXpFnUxpwcjxX+wym6wHXh+xKV8vH6gO1AxwbYoS0kC+dwTpvZDdmwEFbGMCKgiHl3T6ycFBMEb0OwxVHL4@vger.kernel.org, AJvYcCXr0Xv0BQ+IR27Y7DJoX2rE9olMjVRTstT3CZtfgN8u/PN/6CNdi4zP9KOSKtF1ttT1WQjdukM0fCT7@vger.kernel.org
+X-Received: by 2002:a05:6102:3e8a:b0:4c1:86bc:f959 with SMTP id
+ ada2fe7eead31-4c9d34b2b55mr1523924137.8.1744280410407; Thu, 10 Apr 2025
+ 03:20:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250407191628.323613-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20250407191628.323613-10-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20250407191628.323613-10-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20250407191628.323613-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20250407191628.323613-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20250407191628.323613-11-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 10 Apr 2025 12:01:21 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXTDMZvVieaTsuPYKjVaK5tFnT_5Pcx7zeRQ6j5vW=C2g@mail.gmail.com>
-X-Gm-Features: ATxdqUFnFS8ru0MA_-DyWlGEfk_lZ9qfaotati6OchDHxwVypNec4oWk2u6TNGc
-Message-ID: <CAMuHMdXTDMZvVieaTsuPYKjVaK5tFnT_5Pcx7zeRQ6j5vW=C2g@mail.gmail.com>
-Subject: Re: [PATCH v2 09/12] dt-bindings: pinctrl: renesas: Document RZ/V2N SoC
+Date: Thu, 10 Apr 2025 12:19:58 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWRokrL3EPKQbhHhCL84h1fZ7L3LjM0gFw96iqv36EiVA@mail.gmail.com>
+X-Gm-Features: ATxdqUGjvQ5S18MOWEQVYhe-LHAQ30tmHpWeWOmzudY-_jg54YISF-DWnbivz3c
+Message-ID: <CAMuHMdWRokrL3EPKQbhHhCL84h1fZ7L3LjM0gFw96iqv36EiVA@mail.gmail.com>
+Subject: Re: [PATCH v2 10/12] pinctrl: renesas: rzg2l: Add support for RZ/V2N SoC
 To: Prabhakar <prabhakar.csengg@gmail.com>
 Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
 	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
@@ -77,24 +77,57 @@ Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>
 	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Content-Type: text/plain; charset="UTF-8"
 
+Hi Prabhakar,
+
 On Mon, 7 Apr 2025 at 21:16, Prabhakar <prabhakar.csengg@gmail.com> wrote:
 > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 >
-> Add documentation for the pin controller found on the Renesas RZ/V2N
-> (R9A09G056) SoC. The RZ/V2N PFC differs slightly from the RZ/G2L family
-> and is almost identical to the RZ/V2H(P) SoC, except that the RZ/V2H(P) SoC
-> has an additional dedicated pin.
+> Add pinctrl support for the Renesas RZ/V2N SoC by reusing the existing
+> RZ/V2H(P) pin configuration data. The PFC block is nearly identical, with
+> the only difference being the absence of `PCIE1_RSTOUTB` on RZ/V2N.
 >
-> To account for this, a SoC-specific compatible string,
-> 'renesas,r9a09g056-pinctrl', is introduced for the RZ/V2N SoC.
+> To accommodate this, move the `PCIE1_RSTOUTB` entry to the end of the
+> `rzv2h_dedicated_pins` array and set `.n_dedicated_pins` to
+> `ARRAY_SIZE(rzv2h_dedicated_pins) - 1` in the RZ/V2N OF data.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
-> v1->v2:
-> - Dropped `renesas,r9a09g056-pinctrl.h` header file.
+
+Thanks for your patch!
 
 Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-pinctrl for v6.16.
+
+Suggestion for improvement below.
+
+> --- a/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> +++ b/drivers/pinctrl/renesas/pinctrl-rzg2l.c
+> @@ -2304,7 +2304,6 @@ static struct rzg2l_dedicated_configs rzv2h_dedicated_pins[] = {
+>         { "SD1DAT3", RZG2L_SINGLE_PIN_PACK(0xc, 3, (PIN_CFG_IOLH_RZV2H | PIN_CFG_SR |
+>                                                     PIN_CFG_IEN | PIN_CFG_PUPD)) },
+>         { "PCIE0_RSTOUTB", RZG2L_SINGLE_PIN_PACK(0xe, 0, (PIN_CFG_IOLH_RZV2H | PIN_CFG_SR)) },
+> -       { "PCIE1_RSTOUTB", RZG2L_SINGLE_PIN_PACK(0xe, 1, (PIN_CFG_IOLH_RZV2H | PIN_CFG_SR)) },
+>         { "ET0_MDIO", RZG2L_SINGLE_PIN_PACK(0xf, 0, (PIN_CFG_IOLH_RZV2H | PIN_CFG_SR |
+>                                                      PIN_CFG_IEN | PIN_CFG_PUPD)) },
+>         { "ET0_MDC", RZG2L_SINGLE_PIN_PACK(0xf, 1, (PIN_CFG_IOLH_RZV2H | PIN_CFG_SR |
+> @@ -2359,6 +2358,14 @@ static struct rzg2l_dedicated_configs rzv2h_dedicated_pins[] = {
+>         { "ET1_RXD1", RZG2L_SINGLE_PIN_PACK(0x14, 5, (PIN_CFG_PUPD)) },
+>         { "ET1_RXD2", RZG2L_SINGLE_PIN_PACK(0x14, 6, (PIN_CFG_PUPD)) },
+>         { "ET1_RXD3", RZG2L_SINGLE_PIN_PACK(0x14, 7, (PIN_CFG_PUPD)) },
+> +
+> +       /*
+> +        * This pin is only available on the RZ/V2H(P) SoC and not on the RZ/V2N.
+> +        * Since this array is shared with the RZ/V2N SoC, this entry should be placed
+> +        * at the end. This ensures that on the RZ/V2N, we can set
+> +        * `.n_dedicated_pins = ARRAY_SIZE(rzv2h_dedicated_pins) - 1,`.
+> +        */
+> +       { "PCIE1_RSTOUTB", RZG2L_SINGLE_PIN_PACK(0xe, 1, (PIN_CFG_IOLH_RZV2H | PIN_CFG_SR)) },
+>  };
+
+Alternatively, you can replace the single array by a structure
+containing two arrays, one for common pins, and a second
+for V2H-only pins, like the common and automotive arrays in
+e.g. drivers/pinctrl/renesas/pfc-r8a7791.c.  That would get rid of
+the literal "- 1" (and the need for a comment ;-), and would protect
+against future mistakes.
 
 Gr{oetje,eeting}s,
 
