@@ -1,56 +1,56 @@
-Received: from fhigh-a1-smtp.messagingengine.com (fhigh-a1-smtp.messagingengine.com [103.168.172.152])
+Received: from fout-a6-smtp.messagingengine.com (fout-a6-smtp.messagingengine.com [103.168.172.149])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6F3B189F5C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA8E189906;
 	Thu, 10 Apr 2025 01:19:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.152
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744247946; cv=none; b=Zqn6fQEzrKEfwUPjhZQ+dea8DwpnVVUsShPINAQ59NYjoSWWC+CIc5vX/AOY7wHB47m3XwFs5DGchj8hKFGtJYwni+Prbw3K4TzNdTZIwCnQXm2cZBIry6SHjYADof+mICqStvm8uOmNmrcbat3uYGwokOMqS3IaI/vxMPKVd8A=
+	t=1744247947; cv=none; b=ZE5CQ+q2SKvjGA1IiTi+ulJN7aPmStOqw0Dj+w6pa4yxAOs556Kd/9xiASdCSGFLaeZTJ/iMB6st3ErRklBf/ZdZ3114Rc34vA+BN5huhp5/LWXkZtuoRNaDZTCrvkcgDQ1r6XruVz1ivoOOkigxLBptuOaqHJJF+Faf7u8+LNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744247946; c=relaxed/simple;
-	bh=tmnfp8FQyes4UwNmiDICLenwz4JDdWtdfJogWU6cNxA=;
+	s=arc-20240116; t=1744247947; c=relaxed/simple;
+	bh=I74X3sNLnMcqf/fraokExTqQ2HZKrSMo4U9rtX1aImo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qBu8xl0Nbk5VWjGGO9QEAt7RXCyQtbAfz/amliW7lf4jqWkY9kPULcUvR9ulGGojyC4VTY8jmYBG+XDJPJAonrzTf5u4rO68g4mLZU/uR9i5XHWc3uNqf06Ap5ZTdZUcsKwoXY0yIpFY+N6TSBWGGgtanvycUefjpdcnypOWnzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=CkULa7kb; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=bIC/uEqs; arc=none smtp.client-ip=103.168.172.152
+	 MIME-Version; b=WdMMmiY3jDLYQZ8R0lpQycntNq8nn3pD5fVGjcBdLhg5rr85nDx+mZfGSfVdZyM4NGkeeDnD5FB5DTjD8auz199Sx1zhNK4B5yTuWgVdEjIQj/I5epa766vNtZnfByBQK6wJj7Ohv7M9A0QLEiTpMaILxaKIJ0x28fnU2XISafk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=GYTfy2k3; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=jBV5dJKW; arc=none smtp.client-ip=103.168.172.149
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="CkULa7kb";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="bIC/uEqs"
-Received: from phl-compute-09.internal (phl-compute-09.phl.internal [10.202.2.49])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id B561A1140295;
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="GYTfy2k3";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="jBV5dJKW"
+Received: from phl-compute-12.internal (phl-compute-12.phl.internal [10.202.2.52])
+	by mailfout.phl.internal (Postfix) with ESMTP id 7049A13801EB;
 	Wed,  9 Apr 2025 21:19:03 -0400 (EDT)
-Received: from phl-frontend-01 ([10.202.2.160])
-  by phl-compute-09.internal (MEProxy); Wed, 09 Apr 2025 21:19:03 -0400
+Received: from phl-frontend-02 ([10.202.2.161])
+  by phl-compute-12.internal (MEProxy); Wed, 09 Apr 2025 21:19:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
 	cc:cc:content-transfer-encoding:content-type:date:date:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to; s=fm2; t=1744247943; x=
-	1744334343; bh=qnKT4y+VqSv7GIH2zX73h94FGzDTN8DZlsY8YrX30t8=; b=C
-	kULa7kbDhheaVWNtZ8gHDiKJvFYW3iFzQRwIlIiaooTY6jm+ONf5pQ4FYhiDYzr8
-	/szP2YtrEsGdk/+n+tIDTMCldCvOi07/Sq7//As3qsnh0MDt+MFJaEA90FwFc+p6
-	6iekap76sisdqm4hMhU3OEyNdJx8IOziTXZuksTJi9F0TB6JUf1YZhbZlcnUYy5x
-	LDEgGTCcZ4mA25XC8gkbSB/HcKE8MmzBe6EyUHqW4GHZtpMIoAvhWbm5FqfOYw+5
-	OjyHKrhp0yYqd0fCqQS/wAr8h5qG0MHK9mFd4nSjOlaYYd4Vv67gzs+m+/Nv+ZS5
-	h39fJAJ9+S6BTQ8B8flTw==
+	1744334343; bh=bvC8V9DFp+JhuTcgzAWmVeg0PQPFYt6N1mRS0QfFSWk=; b=G
+	YTfy2k3r3UJO8ftEYdZ1ldp/jIGNLo+MdmgJnYZUEbGDG4UJi6V+fze44veVs98/
+	lvFKKF6SPHzlTVPbOHL7xlIWiPjHt5QwNTb5bc+ryQ1Q9MvM7aLkTVHNVKh3JNim
+	SBhk4dLpxKKaajSqEZBtTTQTDXtcJfBPh/JzWTSKPAY8wfg7Nm0vn8pthSein0qH
+	SB6Z5c1pt6Szx9FenEN1qxVVk7tbV82BeZVM9bLavfsfsWFTwxYDIUMTjr2RmXZf
+	qy1t1Asz4sg9S09luLLS9opQge8sFH0PCBr1u5/Rk8eWVcGCHErDtgUN/ERqLKTu
+	qM5RzChAqiesktEKA56sg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm2; t=1744247943; x=1744334343; bh=q
-	nKT4y+VqSv7GIH2zX73h94FGzDTN8DZlsY8YrX30t8=; b=bIC/uEqs+IdbmJGLv
-	Ld/StFzmcfootk9Yqe7r7l+t5Un4EOEjvWGO9613i3Fy6Ml+WMvGuBZ5mhWIRWNt
-	R7sBB1hkKuIggI80WhAdOdQvUNUgiUVYMff1G52Tu4PF8tjmt+knZ9hJ4jXyKECY
-	/Qyu0+GB73vkUiEa3IzxMkh1wOUtw7SVo1smyzxcYwdnpaDn/sEeyE7G8+DHMPEQ
-	vMuBOU8002O68881k/vDQ670MM7XmF/F5Uqi0VfpH3d7WKE5/Y5z9zXWBmDoAFLA
-	u8aP22Jr7P30bBnXRexaom3PQEunE2hzvRUtbeY0MbSzwfPLRsegdKEzpPiKAv7o
-	RZaEQ==
-X-ME-Sender: <xms:hxz3ZzWay6ah1dmd2QfcB8bKq-jlXp2lx4o9l6ePOHr4G9RHJ5SLGQ>
-    <xme:hxz3Z7liDlhHMdGXfnDAwGCf_4EThX2_HtAlRvId36xWW0nmCuQ-qDiEVCc3Ji7Pi
-    V9YoNIf5ACphqEppuQ>
-X-ME-Received: <xmr:hxz3Z_aWvtIjcWTOmIhXt81lPCekX3VnHWcPj7AdWiQ42CjPpm812DLhhwsvJ8gH_My1ZAPlR5qaqQDGQBwEaYom7PXgVtQh-f-nrkOspD0jcL7z0w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvtdejheehucetufdoteggodetrf
+	:x-me-sender:x-sasl-enc; s=fm2; t=1744247943; x=1744334343; bh=b
+	vC8V9DFp+JhuTcgzAWmVeg0PQPFYt6N1mRS0QfFSWk=; b=jBV5dJKWzdPxFZ4XY
+	44rg8cs5+nqdkjGp1U1udhya6AKPm5l1gGKs22RipQnk6NnnAnyixUbsHcDQPrsv
+	IHhGN7ps5D5S7iRNShOKsN/QrHvqQxY/EXiqa5f5bkrdG17NuTooeIvkweOJodCb
+	5lovt9N5KEsht/9LBBljo5YrZxXfwxYhK32ixeRP3qFijUm+qLDSd/aSywZg2MvZ
+	Wv2ApcD3MmOZsRym1pJgARfKJqljnFhkeQFsjCwuIQrK2uZIwEb5VXnbBM0I5bCX
+	0llfvIznYXVy/fdOtVPS0bxHboBGeSRPv5l9RtXJb5C4N0jWJ1lbw2dtuHFrtUWl
+	EFaVA==
+X-ME-Sender: <xms:hxz3ZxpkhtfzF2NzrD-gROfwidD3pU424Eg3dCVRvLa_qjOLlb2cLg>
+    <xme:hxz3ZzoXFp4HJxOXVS43JtfFjug-TJureDpsJT1u20XMM4rcAVXQa2hSZ0ZGVAOvU
+    hBd01DOlXXASs4em8I>
+X-ME-Received: <xmr:hxz3Z-NXHtWwVzgnGEhdtK3nRLfOGgKkYMasL1SCP-Gpnt6hwPRzITFgrKD1xQtN6WUxiOYDvxdbORkuxzjI9KU2pa9Wfc6HCGKyDNVo_UWiNYNxBw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvtdejheegucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
     pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
     gvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhgggfestdekredtredt
@@ -64,16 +64,16 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvtdejheehucetufdote
     hgpdhrtghpthhtohepuggrvhgvsehmihgvlhhkvgdrtggtpdhrtghpthhtoheplhhinhhu
     gidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinh
     hugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:hxz3Z-W2crr8p306FgCgIQ-22SpEMrqtJjAcMZVn0TPBwQsvCgvSAg>
-    <xmx:hxz3Z9lhieCsDKtgKkqyeb09lnZhTg5LdVyFcKSYEJU1yNwv4D0BgA>
-    <xmx:hxz3Z7c7WuuKBwCrC_Ca5VudhcmY9Y7WQ_S6uf6X6WY_2625BJhJWw>
-    <xmx:hxz3Z3FoY3jAmJBGbBY5yhWgnPlQa4cqTW4draMPq7Jv2hxetF46yA>
-    <xmx:hxz3Z5H0QGyS7OGTUDviWVGNWFVBHRrN_dA_UlnWYQwJ_vbX7U-xORdK>
+X-ME-Proxy: <xmx:hxz3Z87JCCXhLsjunXTy0dQg50GM6vPgQQlJWx-kCrTzWUSSqdsv6g>
+    <xmx:hxz3Zw7FOJSlKTca3jt5xGH1DStrdnVYtvmTU4xuMD1GDzBdbvjyrQ>
+    <xmx:hxz3Z0gXBWsd8ye-hxfU8ZIEq84QuWgbIp5HT5vVeWRubOONFv1f_w>
+    <xmx:hxz3Zy4rE32OAHRF2r58kbJExzfZDMxxgvtforvccaHAiZ7q4Pbazg>
+    <xmx:hxz3Zz5aI3eFbvYmuXTCQOTj_-_Gd0CLdlCW9s-2XiTRA-l1gfvGb9PC>
 Feedback-ID: i58514971:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
  9 Apr 2025 21:19:03 -0400 (EDT)
 Received: from xanadu.lan (OpenWrt.lan [192.168.1.1])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id B802810D8B7C;
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 6C1C410D8B77;
 	Wed,  9 Apr 2025 21:19:02 -0400 (EDT)
 From: Nicolas Pitre <nico@fluxnic.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -82,9 +82,9 @@ Cc: Nicolas Pitre <npitre@baylibre.com>,
 	Dave Mielke <Dave@mielke.cc>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 09/11] vt: update gen_ucs_width.py to produce more space efficient tables
-Date: Wed,  9 Apr 2025 21:14:01 -0400
-Message-ID: <20250410011839.64418-10-nico@fluxnic.net>
+Subject: [PATCH 07/11] vt: create ucs_recompose.c using gen_ucs_recompose.py
+Date: Wed,  9 Apr 2025 21:13:59 -0400
+Message-ID: <20250410011839.64418-8-nico@fluxnic.net>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250410011839.64418-1-nico@fluxnic.net>
 References: <20250410011839.64418-1-nico@fluxnic.net>
@@ -98,248 +98,234 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolas Pitre <npitre@baylibre.com>
 
-Split table ranges into BMP (16-bit) and non-BMP (above 16-bit).
-This reduces the corresponding text size by 20-25%.
+This provides ucs_recompose() to recompose two Unicode characters into
+a single character if possible. This is needed for the VT to properly
+display decomposed UTF8 sequences.
+
+Note: scripts/checkpatch.pl complains about "... exceeds 100 columns".
+      Please ignore.
 
 Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 ---
- drivers/tty/vt/gen_ucs_width.py | 154 +++++++++++++++++++++++---------
- 1 file changed, 113 insertions(+), 41 deletions(-)
+ drivers/tty/vt/Makefile        |   2 +-
+ drivers/tty/vt/ucs_recompose.c | 170 +++++++++++++++++++++++++++++++++
+ include/linux/consolemap.h     |   6 ++
+ 3 files changed, 177 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/tty/vt/ucs_recompose.c
 
-diff --git a/drivers/tty/vt/gen_ucs_width.py b/drivers/tty/vt/gen_ucs_width.py
-index 41997fe001..c6cbc93e83 100755
---- a/drivers/tty/vt/gen_ucs_width.py
-+++ b/drivers/tty/vt/gen_ucs_width.py
-@@ -132,13 +132,49 @@ def generate_ucs_width():
-         ranges.append((start, prev))
-         return ranges
+diff --git a/drivers/tty/vt/Makefile b/drivers/tty/vt/Makefile
+index bee69277bb..a63f6c9438 100644
+--- a/drivers/tty/vt/Makefile
++++ b/drivers/tty/vt/Makefile
+@@ -8,7 +8,7 @@ obj-$(CONFIG_VT)			+= vt_ioctl.o vc_screen.o \
+ 					   selection.o keyboard.o \
+ 					   vt.o defkeymap.o
+ obj-$(CONFIG_CONSOLE_TRANSLATIONS)	+= consolemap.o consolemap_deftbl.o \
+-					   ucs_width.o
++					   ucs_width.o ucs_recompose.o
  
-+    # Function to split ranges into BMP (16-bit) and non-BMP (above 16-bit)
-+    def split_ranges_by_size(ranges):
-+        bmp_ranges = []
-+        non_bmp_ranges = []
+ # Files generated that shall be removed upon make clean
+ clean-files := consolemap_deftbl.c defkeymap.c
+diff --git a/drivers/tty/vt/ucs_recompose.c b/drivers/tty/vt/ucs_recompose.c
+new file mode 100644
+index 0000000000..5c30c989de
+--- /dev/null
++++ b/drivers/tty/vt/ucs_recompose.c
+@@ -0,0 +1,170 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * ucs_recompose.c - Unicode character recomposition
++ *
++ * Auto-generated by gen_ucs_recompose.py
++ *
++ * Unicode Version: 16.0.0
++ *
++ * This file contains a table with most commonly used Latin, Greek, and
++ * Cyrillic recomposition pairs only (71 entries). To generate a table with
++ * all possible recomposition pairs from the Unicode BMP (1000 entries)
++ * instead, run:
++ *
++ *   python gen_ucs_recompose.py --full
++ */
 +
-+        for start, end in ranges:
-+            if end <= 0xFFFF:
-+                bmp_ranges.append((start, end))
-+            elif start > 0xFFFF:
-+                non_bmp_ranges.append((start, end))
-+            else:
-+                # Split the range at 0xFFFF
-+                bmp_ranges.append((start, 0xFFFF))
-+                non_bmp_ranges.append((0x10000, end))
++#include <linux/types.h>
++#include <linux/array_size.h>
++#include <linux/bsearch.h>
++#include <linux/consolemap.h>
 +
-+        return bmp_ranges, non_bmp_ranges
-+
-     # Extract ranges for each width
-     zero_width_ranges = ranges_optimize(width_map, 0)
-     double_width_ranges = ranges_optimize(width_map, 2)
- 
-+    # Split ranges into BMP and non-BMP
-+    zero_width_bmp, zero_width_non_bmp = split_ranges_by_size(zero_width_ranges)
-+    double_width_bmp, double_width_non_bmp = split_ranges_by_size(double_width_ranges)
-+
-     # Get Unicode version information
-     unicode_version = unicodedata.unidata_version
- 
-+    # Function to generate code point description comments
-+    def get_code_point_comment(start, end):
-+        try:
-+            start_char_desc = unicodedata.name(chr(start))
-+            if start == end:
-+                return f"/* {start_char_desc} */"
-+            else:
-+                end_char_desc = unicodedata.name(chr(end))
-+                return f"/* {start_char_desc} - {end_char_desc} */"
-+        except:
-+            if start == end:
-+                return f"/* U+{start:04X} */"
-+            else:
-+                return f"/* U+{start:04X} - U+{end:04X} */"
-+
-     # Generate C implementation file
-     with open(c_file, 'w') as f:
-         f.write(f"""\
-@@ -156,62 +192,77 @@ def generate_ucs_width():
- #include <linux/bsearch.h>
- #include <linux/consolemap.h>
- 
--struct interval {{
-+struct interval16 {{
-+	uint16_t first;
-+	uint16_t last;
-+}};
-+
-+struct interval32 {{
- 	uint32_t first;
- 	uint32_t last;
- }};
- 
--/* Zero-width character ranges */
--static const struct interval zero_width_ranges[] = {{
-+/* Zero-width character ranges (BMP - Basic Multilingual Plane, U+0000 to U+FFFF) */
-+static const struct interval16 zero_width_bmp[] = {{
- """)
- 
--        for start, end in zero_width_ranges:
--            try:
--                start_char_desc = unicodedata.name(chr(start)) if start < 0x10000 else f"U+{start:05X}"
--                if start == end:
--                    comment = f"/* {start_char_desc} */"
--                else:
--                    end_char_desc = unicodedata.name(chr(end)) if end < 0x10000 else f"U+{end:05X}"
--                    comment = f"/* {start_char_desc} - {end_char_desc} */"
--            except:
--                if start == end:
--                    comment = f"/* U+{start:05X} */"
--                else:
--                    comment = f"/* U+{start:05X} - U+{end:05X} */"
-+        for start, end in zero_width_bmp:
-+            comment = get_code_point_comment(start, end)
-+            f.write(f"\t{{ 0x{start:04X}, 0x{end:04X} }}, {comment}\n")
-+
-+        f.write("""\
++/*
++ * Structure for recomposition pairs.
++ * First element is the base character, second is the combining mark,
++ * third is the recomposed character.
++ * Using uint16_t to save space since all values are within BMP range.
++ */
++struct recomposition {
++	uint16_t base;
++	uint16_t combining;
++	uint16_t recomposed;
 +};
- 
-+/* Zero-width character ranges (non-BMP, U+10000 and above) */
-+static const struct interval32 zero_width_non_bmp[] = {
-+""")
 +
-+        for start, end in zero_width_non_bmp:
-+            comment = get_code_point_comment(start, end)
-             f.write(f"\t{{ 0x{start:05X}, 0x{end:05X} }}, {comment}\n")
- 
-         f.write("""\
- };
- 
--/* Double-width character ranges */
--static const struct interval double_width_ranges[] = {
-+/* Double-width character ranges (BMP - Basic Multilingual Plane, U+0000 to U+FFFF) */
-+static const struct interval16 double_width_bmp[] = {
- """)
- 
--        for start, end in double_width_ranges:
--            try:
--                start_char_desc = unicodedata.name(chr(start)) if start < 0x10000 else f"U+{start:05X}"
--                if start == end:
--                    comment = f"/* {start_char_desc} */"
--                else:
--                    end_char_desc = unicodedata.name(chr(end)) if end < 0x10000 else f"U+{end:05X}"
--                    comment = f"/* {start_char_desc} - {end_char_desc} */"
--            except:
--                if start == end:
--                    comment = f"/* U+{start:05X} */"
--                else:
--                    comment = f"/* U+{start:05X} - U+{end:05X} */"
-+        for start, end in double_width_bmp:
-+            comment = get_code_point_comment(start, end)
-+            f.write(f"\t{{ 0x{start:04X}, 0x{end:04X} }}, {comment}\n")
-+
-+        f.write("""\
++/*
++ * Table of most commonly used Latin, Greek, and Cyrillic recomposition pairs only
++ * Sorted by base character and then combining character for binary search
++ */
++static const struct recomposition recomposition_table[] = {
++	{ 0x0041, 0x0300, 0x00C0 }, /* LATIN CAPITAL LETTER A + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER A WITH GRAVE */
++	{ 0x0041, 0x0301, 0x00C1 }, /* LATIN CAPITAL LETTER A + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER A WITH ACUTE */
++	{ 0x0041, 0x0302, 0x00C2 }, /* LATIN CAPITAL LETTER A + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	{ 0x0041, 0x0303, 0x00C3 }, /* LATIN CAPITAL LETTER A + COMBINING TILDE = LATIN CAPITAL LETTER A WITH TILDE */
++	{ 0x0041, 0x0308, 0x00C4 }, /* LATIN CAPITAL LETTER A + COMBINING DIAERESIS = LATIN CAPITAL LETTER A WITH DIAERESIS */
++	{ 0x0041, 0x030A, 0x00C5 }, /* LATIN CAPITAL LETTER A + COMBINING RING ABOVE = LATIN CAPITAL LETTER A WITH RING ABOVE */
++	{ 0x0043, 0x0327, 0x00C7 }, /* LATIN CAPITAL LETTER C + COMBINING CEDILLA = LATIN CAPITAL LETTER C WITH CEDILLA */
++	{ 0x0045, 0x0300, 0x00C8 }, /* LATIN CAPITAL LETTER E + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER E WITH GRAVE */
++	{ 0x0045, 0x0301, 0x00C9 }, /* LATIN CAPITAL LETTER E + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER E WITH ACUTE */
++	{ 0x0045, 0x0302, 0x00CA }, /* LATIN CAPITAL LETTER E + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	{ 0x0045, 0x0308, 0x00CB }, /* LATIN CAPITAL LETTER E + COMBINING DIAERESIS = LATIN CAPITAL LETTER E WITH DIAERESIS */
++	{ 0x0049, 0x0300, 0x00CC }, /* LATIN CAPITAL LETTER I + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER I WITH GRAVE */
++	{ 0x0049, 0x0301, 0x00CD }, /* LATIN CAPITAL LETTER I + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER I WITH ACUTE */
++	{ 0x0049, 0x0302, 0x00CE }, /* LATIN CAPITAL LETTER I + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER I WITH CIRCUMFLEX */
++	{ 0x0049, 0x0308, 0x00CF }, /* LATIN CAPITAL LETTER I + COMBINING DIAERESIS = LATIN CAPITAL LETTER I WITH DIAERESIS */
++	{ 0x004E, 0x0303, 0x00D1 }, /* LATIN CAPITAL LETTER N + COMBINING TILDE = LATIN CAPITAL LETTER N WITH TILDE */
++	{ 0x004F, 0x0300, 0x00D2 }, /* LATIN CAPITAL LETTER O + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER O WITH GRAVE */
++	{ 0x004F, 0x0301, 0x00D3 }, /* LATIN CAPITAL LETTER O + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER O WITH ACUTE */
++	{ 0x004F, 0x0302, 0x00D4 }, /* LATIN CAPITAL LETTER O + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	{ 0x004F, 0x0303, 0x00D5 }, /* LATIN CAPITAL LETTER O + COMBINING TILDE = LATIN CAPITAL LETTER O WITH TILDE */
++	{ 0x004F, 0x0308, 0x00D6 }, /* LATIN CAPITAL LETTER O + COMBINING DIAERESIS = LATIN CAPITAL LETTER O WITH DIAERESIS */
++	{ 0x0055, 0x0300, 0x00D9 }, /* LATIN CAPITAL LETTER U + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER U WITH GRAVE */
++	{ 0x0055, 0x0301, 0x00DA }, /* LATIN CAPITAL LETTER U + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER U WITH ACUTE */
++	{ 0x0055, 0x0302, 0x00DB }, /* LATIN CAPITAL LETTER U + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER U WITH CIRCUMFLEX */
++	{ 0x0055, 0x0308, 0x00DC }, /* LATIN CAPITAL LETTER U + COMBINING DIAERESIS = LATIN CAPITAL LETTER U WITH DIAERESIS */
++	{ 0x0059, 0x0301, 0x00DD }, /* LATIN CAPITAL LETTER Y + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER Y WITH ACUTE */
++	{ 0x0061, 0x0300, 0x00E0 }, /* LATIN SMALL LETTER A + COMBINING GRAVE ACCENT = LATIN SMALL LETTER A WITH GRAVE */
++	{ 0x0061, 0x0301, 0x00E1 }, /* LATIN SMALL LETTER A + COMBINING ACUTE ACCENT = LATIN SMALL LETTER A WITH ACUTE */
++	{ 0x0061, 0x0302, 0x00E2 }, /* LATIN SMALL LETTER A + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	{ 0x0061, 0x0303, 0x00E3 }, /* LATIN SMALL LETTER A + COMBINING TILDE = LATIN SMALL LETTER A WITH TILDE */
++	{ 0x0061, 0x0308, 0x00E4 }, /* LATIN SMALL LETTER A + COMBINING DIAERESIS = LATIN SMALL LETTER A WITH DIAERESIS */
++	{ 0x0061, 0x030A, 0x00E5 }, /* LATIN SMALL LETTER A + COMBINING RING ABOVE = LATIN SMALL LETTER A WITH RING ABOVE */
++	{ 0x0063, 0x0327, 0x00E7 }, /* LATIN SMALL LETTER C + COMBINING CEDILLA = LATIN SMALL LETTER C WITH CEDILLA */
++	{ 0x0065, 0x0300, 0x00E8 }, /* LATIN SMALL LETTER E + COMBINING GRAVE ACCENT = LATIN SMALL LETTER E WITH GRAVE */
++	{ 0x0065, 0x0301, 0x00E9 }, /* LATIN SMALL LETTER E + COMBINING ACUTE ACCENT = LATIN SMALL LETTER E WITH ACUTE */
++	{ 0x0065, 0x0302, 0x00EA }, /* LATIN SMALL LETTER E + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	{ 0x0065, 0x0308, 0x00EB }, /* LATIN SMALL LETTER E + COMBINING DIAERESIS = LATIN SMALL LETTER E WITH DIAERESIS */
++	{ 0x0069, 0x0300, 0x00EC }, /* LATIN SMALL LETTER I + COMBINING GRAVE ACCENT = LATIN SMALL LETTER I WITH GRAVE */
++	{ 0x0069, 0x0301, 0x00ED }, /* LATIN SMALL LETTER I + COMBINING ACUTE ACCENT = LATIN SMALL LETTER I WITH ACUTE */
++	{ 0x0069, 0x0302, 0x00EE }, /* LATIN SMALL LETTER I + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER I WITH CIRCUMFLEX */
++	{ 0x0069, 0x0308, 0x00EF }, /* LATIN SMALL LETTER I + COMBINING DIAERESIS = LATIN SMALL LETTER I WITH DIAERESIS */
++	{ 0x006E, 0x0303, 0x00F1 }, /* LATIN SMALL LETTER N + COMBINING TILDE = LATIN SMALL LETTER N WITH TILDE */
++	{ 0x006F, 0x0300, 0x00F2 }, /* LATIN SMALL LETTER O + COMBINING GRAVE ACCENT = LATIN SMALL LETTER O WITH GRAVE */
++	{ 0x006F, 0x0301, 0x00F3 }, /* LATIN SMALL LETTER O + COMBINING ACUTE ACCENT = LATIN SMALL LETTER O WITH ACUTE */
++	{ 0x006F, 0x0302, 0x00F4 }, /* LATIN SMALL LETTER O + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	{ 0x006F, 0x0303, 0x00F5 }, /* LATIN SMALL LETTER O + COMBINING TILDE = LATIN SMALL LETTER O WITH TILDE */
++	{ 0x006F, 0x0308, 0x00F6 }, /* LATIN SMALL LETTER O + COMBINING DIAERESIS = LATIN SMALL LETTER O WITH DIAERESIS */
++	{ 0x0075, 0x0300, 0x00F9 }, /* LATIN SMALL LETTER U + COMBINING GRAVE ACCENT = LATIN SMALL LETTER U WITH GRAVE */
++	{ 0x0075, 0x0301, 0x00FA }, /* LATIN SMALL LETTER U + COMBINING ACUTE ACCENT = LATIN SMALL LETTER U WITH ACUTE */
++	{ 0x0075, 0x0302, 0x00FB }, /* LATIN SMALL LETTER U + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER U WITH CIRCUMFLEX */
++	{ 0x0075, 0x0308, 0x00FC }, /* LATIN SMALL LETTER U + COMBINING DIAERESIS = LATIN SMALL LETTER U WITH DIAERESIS */
++	{ 0x0079, 0x0301, 0x00FD }, /* LATIN SMALL LETTER Y + COMBINING ACUTE ACCENT = LATIN SMALL LETTER Y WITH ACUTE */
++	{ 0x0079, 0x0308, 0x00FF }, /* LATIN SMALL LETTER Y + COMBINING DIAERESIS = LATIN SMALL LETTER Y WITH DIAERESIS */
++	{ 0x0391, 0x0301, 0x0386 }, /* GREEK CAPITAL LETTER ALPHA + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER ALPHA WITH TONOS */
++	{ 0x0395, 0x0301, 0x0388 }, /* GREEK CAPITAL LETTER EPSILON + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER EPSILON WITH TONOS */
++	{ 0x0397, 0x0301, 0x0389 }, /* GREEK CAPITAL LETTER ETA + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER ETA WITH TONOS */
++	{ 0x0399, 0x0301, 0x038A }, /* GREEK CAPITAL LETTER IOTA + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER IOTA WITH TONOS */
++	{ 0x039F, 0x0301, 0x038C }, /* GREEK CAPITAL LETTER OMICRON + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER OMICRON WITH TONOS */
++	{ 0x03A5, 0x0301, 0x038E }, /* GREEK CAPITAL LETTER UPSILON + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER UPSILON WITH TONOS */
++	{ 0x03A9, 0x0301, 0x038F }, /* GREEK CAPITAL LETTER OMEGA + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER OMEGA WITH TONOS */
++	{ 0x03B1, 0x0301, 0x03AC }, /* GREEK SMALL LETTER ALPHA + COMBINING ACUTE ACCENT = GREEK SMALL LETTER ALPHA WITH TONOS */
++	{ 0x03B5, 0x0301, 0x03AD }, /* GREEK SMALL LETTER EPSILON + COMBINING ACUTE ACCENT = GREEK SMALL LETTER EPSILON WITH TONOS */
++	{ 0x03B7, 0x0301, 0x03AE }, /* GREEK SMALL LETTER ETA + COMBINING ACUTE ACCENT = GREEK SMALL LETTER ETA WITH TONOS */
++	{ 0x03B9, 0x0301, 0x03AF }, /* GREEK SMALL LETTER IOTA + COMBINING ACUTE ACCENT = GREEK SMALL LETTER IOTA WITH TONOS */
++	{ 0x03BF, 0x0301, 0x03CC }, /* GREEK SMALL LETTER OMICRON + COMBINING ACUTE ACCENT = GREEK SMALL LETTER OMICRON WITH TONOS */
++	{ 0x03C5, 0x0301, 0x03CD }, /* GREEK SMALL LETTER UPSILON + COMBINING ACUTE ACCENT = GREEK SMALL LETTER UPSILON WITH TONOS */
++	{ 0x03C9, 0x0301, 0x03CE }, /* GREEK SMALL LETTER OMEGA + COMBINING ACUTE ACCENT = GREEK SMALL LETTER OMEGA WITH TONOS */
++	{ 0x0418, 0x0306, 0x0419 }, /* CYRILLIC CAPITAL LETTER I + COMBINING BREVE = CYRILLIC CAPITAL LETTER SHORT I */
++	{ 0x0423, 0x0306, 0x040E }, /* CYRILLIC CAPITAL LETTER U + COMBINING BREVE = CYRILLIC CAPITAL LETTER SHORT U */
++	{ 0x0438, 0x0306, 0x0439 }, /* CYRILLIC SMALL LETTER I + COMBINING BREVE = CYRILLIC SMALL LETTER SHORT I */
++	{ 0x0443, 0x0306, 0x045E }, /* CYRILLIC SMALL LETTER U + COMBINING BREVE = CYRILLIC SMALL LETTER SHORT U */
 +};
- 
-+/* Double-width character ranges (non-BMP, U+10000 and above) */
-+static const struct interval32 double_width_non_bmp[] = {
-+""")
 +
-+        for start, end in double_width_non_bmp:
-+            comment = get_code_point_comment(start, end)
-             f.write(f"\t{{ 0x{start:05X}, 0x{end:05X} }}, {comment}\n")
- 
-         f.write("""\
- };
- 
- 
--static int ucs_cmp(const void *key, const void *element)
-+static int ucs_cmp16(const void *key, const void *element)
++/*
++ * Boundary values for quick rejection
++ * These are calculated by analyzing the table during generation
++ */
++#define MIN_BASE_CHAR       0x0041
++#define MAX_BASE_CHAR       0x0443
++#define MIN_COMBINING_CHAR  0x0300
++#define MAX_COMBINING_CHAR  0x0327
++
++struct compare_key {
++	uint16_t base;
++	uint16_t combining;
++};
++
++static int recomposition_compare(const void *key, const void *element)
 +{
-+	uint16_t cp = *(uint16_t *)key;
-+	const struct interval16 *e = element;
++	const struct compare_key *search_key = key;
++	const struct recomposition *table_entry = element;
 +
-+	if (cp > e->last)
-+		return 1;
-+	if (cp < e->first)
++	/* Compare base character first */
++	if (search_key->base < table_entry->base)
 +		return -1;
++	if (search_key->base > table_entry->base)
++		return 1;
++
++	/* Base characters match, now compare combining character */
++	if (search_key->combining < table_entry->combining)
++		return -1;
++	if (search_key->combining > table_entry->combining)
++		return 1;
++
++	/* Both match */
 +	return 0;
 +}
 +
-+static int ucs_cmp32(const void *key, const void *element)
- {
- 	uint32_t cp = *(uint32_t *)key;
--	const struct interval *e = element;
-+	const struct interval32 *e = element;
- 
- 	if (cp > e->last)
- 		return 1;
-@@ -220,13 +271,22 @@ static int ucs_cmp(const void *key, const void *element)
- 	return 0;
- }
- 
--static bool is_in_interval(uint32_t cp, const struct interval *intervals, size_t count)
-+static bool is_in_interval16(uint16_t cp, const struct interval16 *intervals, size_t count)
- {
- 	if (cp < intervals[0].first || cp > intervals[count - 1].last)
- 		return false;
- 
- 	return __inline_bsearch(&cp, intervals, count,
--				sizeof(*intervals), ucs_cmp) != NULL;
-+				sizeof(*intervals), ucs_cmp16) != NULL;
-+}
-+
-+static bool is_in_interval32(uint32_t cp, const struct interval32 *intervals, size_t count)
++/**
++ * Attempt to recompose two Unicode characters into a single character.
++ *
++ * @param previous: Previous Unicode code point (UCS-4)
++ * @param current: Current Unicode code point (UCS-4)
++ * Return: Recomposed Unicode code point, or 0 if no recomposition is possible
++ */
++uint32_t ucs_recompose(uint32_t base, uint32_t combining)
 +{
-+	if (cp < intervals[0].first || cp > intervals[count - 1].last)
-+		return false;
++	/* Check if characters are within the range of our table */
++	if (base < MIN_BASE_CHAR || base > MAX_BASE_CHAR ||
++	    combining < MIN_COMBINING_CHAR || combining > MAX_COMBINING_CHAR)
++		return 0;
 +
-+	return __inline_bsearch(&cp, intervals, count,
-+				sizeof(*intervals), ucs_cmp32) != NULL;
- }
- 
- /**
-@@ -237,7 +297,9 @@ static bool is_in_interval(uint32_t cp, const struct interval *intervals, size_t
-  */
- bool ucs_is_zero_width(uint32_t cp)
- {
--	return is_in_interval(cp, zero_width_ranges, ARRAY_SIZE(zero_width_ranges));
-+	return (cp <= 0xFFFF)
-+	       ? is_in_interval16(cp, zero_width_bmp, ARRAY_SIZE(zero_width_bmp))
-+	       : is_in_interval32(cp, zero_width_non_bmp, ARRAY_SIZE(zero_width_non_bmp));
- }
- 
- /**
-@@ -248,17 +310,27 @@ bool ucs_is_zero_width(uint32_t cp)
-  */
- bool ucs_is_double_width(uint32_t cp)
- {
--	return is_in_interval(cp, double_width_ranges, ARRAY_SIZE(double_width_ranges));
-+	return (cp <= 0xFFFF)
-+	       ? is_in_interval16(cp, double_width_bmp, ARRAY_SIZE(double_width_bmp))
-+	       : is_in_interval32(cp, double_width_non_bmp, ARRAY_SIZE(double_width_non_bmp));
- }
- """)
- 
-     # Print summary
--    zero_width_count = sum(end - start + 1 for start, end in zero_width_ranges)
--    double_width_count = sum(end - start + 1 for start, end in double_width_ranges)
-+    zero_width_bmp_count = sum(end - start + 1 for start, end in zero_width_bmp)
-+    zero_width_non_bmp_count = sum(end - start + 1 for start, end in zero_width_non_bmp)
-+    double_width_bmp_count = sum(end - start + 1 for start, end in double_width_bmp)
-+    double_width_non_bmp_count = sum(end - start + 1 for start, end in double_width_non_bmp)
++	struct compare_key key = { base, combining };
 +
-+    total_zero_width = zero_width_bmp_count + zero_width_non_bmp_count
-+    total_double_width = double_width_bmp_count + double_width_non_bmp_count
++	struct recomposition *result =
++		__inline_bsearch(&key, recomposition_table,
++				 ARRAY_SIZE(recomposition_table),
++				 sizeof(*recomposition_table),
++				 recomposition_compare);
++
++	return result ? result->recomposed : 0;
++}
+diff --git a/include/linux/consolemap.h b/include/linux/consolemap.h
+index b3a9118666..4d3a34c288 100644
+--- a/include/linux/consolemap.h
++++ b/include/linux/consolemap.h
+@@ -30,6 +30,7 @@ int conv_uni_to_8bit(u32 uni);
+ void console_map_init(void);
+ bool ucs_is_double_width(uint32_t cp);
+ bool ucs_is_zero_width(uint32_t cp);
++uint32_t ucs_recompose(uint32_t base, uint32_t combining);
+ #else
+ static inline u16 inverse_translate(const struct vc_data *conp, u16 glyph,
+ 		bool use_unicode)
+@@ -69,6 +70,11 @@ static inline bool ucs_is_zero_width(uint32_t cp)
+ {
+ 	return false;
+ }
++
++static inline uint32_t ucs_recompose(uint32_t base, uint32_t combining)
++{
++	return 0;
++}
+ #endif /* CONFIG_CONSOLE_TRANSLATIONS */
  
-     print(f"Generated {c_file} with:")
--    print(f"- {len(zero_width_ranges)} zero-width ranges covering ~{zero_width_count} code points")
--    print(f"- {len(double_width_ranges)} double-width ranges covering ~{double_width_count} code points")
-+    print(f"- {len(zero_width_bmp)} zero-width BMP ranges (16-bit) covering ~{zero_width_bmp_count} code points")
-+    print(f"- {len(zero_width_non_bmp)} zero-width non-BMP ranges (32-bit) covering ~{zero_width_non_bmp_count} code points")
-+    print(f"- {len(double_width_bmp)} double-width BMP ranges (16-bit) covering ~{double_width_bmp_count} code points")
-+    print(f"- {len(double_width_non_bmp)} double-width non-BMP ranges (32-bit) covering ~{double_width_non_bmp_count} code points")
-+    print(f"Total: {len(zero_width_bmp) + len(zero_width_non_bmp) + len(double_width_bmp) + len(double_width_non_bmp)} ranges covering ~{total_zero_width + total_double_width} code points")
- 
- if __name__ == "__main__":
-     generate_ucs_width()
+ #endif /* __LINUX_CONSOLEMAP_H__ */
 -- 
 2.49.0
 
