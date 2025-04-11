@@ -1,151 +1,212 @@
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A06527CCC7
-	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 06:28:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0E641372;
+	Fri, 11 Apr 2025 07:02:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744352895; cv=none; b=W4B01nVOX8Cbsuv9bdpNJeG3TTCFG021KFIHA8f0p9Pa5W2F9p2lgs8P6a7Aa3XV+VI6pFVlHugSZd1/++NrUJOkmEA/bufNugXqIkkHWf/m3HceY32RDSBmirrpnHZ2kWk7I+gb5AqNxjeX6P416tNWZF6PYsKw+aLjxSdoxXg=
+	t=1744354934; cv=none; b=USRjGLMFsgfOwiqThPXGhZfZcSz2djMyhERm4PJOETWpONFpVzlzQ++xa+HaWMlm5d83Dn1bUhZoGhSy+h2irpWyTQXRE66SYM/R7xspRCijgOTnyFkpIdiVpT6k6r7R7u59EyOoLqPa7G2VxbQN5e8AMz3JVF2gMlyxFe/BTJ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744352895; c=relaxed/simple;
-	bh=NuArtcv0yvrbxm8h5eZX3ZhdCgwnnBc1d2QdkHpQhEY=;
-	h=From:To:Cc:In-Reply-To:Subject:Date:Message-ID:MIME-Version:
-	 Content-Type:References; b=LOVIMLXZL1zF9MXSvS/+I7AYPvFEcE8bi+GacoIWbSvFXYQQ44MX6UHZZ/2EFnGAt/GDw2XtFRFUeBLGZOrV04CFihCWVZCTUL74Pn+124hLRKOG3GreOet2GHlrA8RDjpzOb/IL7TwsHOKMOfzcgLdjGXSwtTdwU3d9/LmRNZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=N/8txkv+; arc=none smtp.client-ip=203.254.224.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1744354934; c=relaxed/simple;
+	bh=AGFFGmB9vBy6TsRyCyNlIMC/OHTiQ9NPOBxnBxibdTI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RuMmBx7FY8Y9hs8s9pftl2QBuNlZp0Naa0frfLPyF03xy27BpZh5Iyj+4glfU2782IwqjzdSVC+3dy4+vlEmvuI2fZ6VFboAVCfRK4KeghGL0GnxYpws2VM7+088ZCykJMHp+ONyWbzYmiZ5piISrpOe7gdqccXTFG/n+bbBCqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h0XaucI9; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="N/8txkv+"
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-	by mailout3.samsung.com (KnoxPortal) with ESMTP id 20250411062805epoutp03788b05323b9633894282ad62ab6349ff~1L7UKuGR21401614016epoutp03H
-	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 06:28:05 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20250411062805epoutp03788b05323b9633894282ad62ab6349ff~1L7UKuGR21401614016epoutp03H
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1744352885;
-	bh=NuArtcv0yvrbxm8h5eZX3ZhdCgwnnBc1d2QdkHpQhEY=;
-	h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-	b=N/8txkv+5pzo/upg++obqz4WsH5nNTKaBRSOiMkl/8gx3FcpSrz/uyh5NiTfgsRxA
-	 8mC82wCybM3QDObV83XrQHX0cL+OifNp4sICGHxL03p6elt3R0p/Cv48O81zL4vNfX
-	 WFV64K1r4fe6MGiJc3KPxvLSRdaMli3ItUmvEsEM=
-Received: from epsnrtp02.localdomain (unknown [182.195.42.154]) by
-	epcas5p3.samsung.com (KnoxPortal) with ESMTPS id
-	20250411062804epcas5p3d31ce10848709a9ac85ac4557bbae885~1L7TmDIBW2518725187epcas5p3X;
-	Fri, 11 Apr 2025 06:28:04 +0000 (GMT)
-Received: from epsmgec5p1new.samsung.com (unknown [182.195.38.182]) by
-	epsnrtp02.localdomain (Postfix) with ESMTP id 4ZYmvk1M62z2SSKX; Fri, 11 Apr
-	2025 06:28:02 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-	epsmgec5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	BB.DA.10173.276B8F76; Fri, 11 Apr 2025 15:28:02 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-	epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-	20250411062357epcas5p24091330994395616ad24998eed97044a~1L3s7jSrw1768217682epcas5p2z;
-	Fri, 11 Apr 2025 06:23:57 +0000 (GMT)
-Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
-	epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20250411062356epsmtrp23c04c9ff80cea2ef861f5e351af0f225~1L3swZmYf3232932329epsmtrp2K;
-	Fri, 11 Apr 2025 06:23:56 +0000 (GMT)
-X-AuditID: b6c32a44-8b5fb700000027bd-bc-67f8b672bb8d
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-	epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-	34.9E.08805.C75B8F76; Fri, 11 Apr 2025 15:23:56 +0900 (KST)
-Received: from INBRO000519 (unknown [107.122.1.150]) by epsmtip1.samsung.com
-	(KnoxPortal) with ESMTPA id
-	20250411062355epsmtip1a9da26eb2195619c4c24d1029a803ea3~1L3rMyBMT0874008740epsmtip1H;
-	Fri, 11 Apr 2025 06:23:55 +0000 (GMT)
-From: "Faraz Ata" <faraz.ata@samsung.com>
-To: "'Krzysztof Kozlowski'" <krzk@kernel.org>, <alim.akhtar@samsung.com>,
-	<krzk+dt@kernel.org>, <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
-Cc: <linux-arm-kernel@lists.infradead.org>,
-	<linux-samsung-soc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, <rosa.pila@samsung.com>,
-	<dev.tailor@samsung.com>
-In-Reply-To: <9970c307-eba6-4c2d-98de-1a0f846efcd4@kernel.org>
-Subject: RE: [PATCH v2] tty: serial: samsung_tty: support 18 uart ports
-Date: Fri, 11 Apr 2025 11:53:44 +0530
-Message-ID: <03cc01dbaaaa$4dea13f0$e9be3bd0$@samsung.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h0XaucI9"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3913d129c1aso1130656f8f.0;
+        Fri, 11 Apr 2025 00:02:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1744354931; x=1744959731; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=e0fB4A0zqHMl0E93R7yWp+6DKpBbr/GksX5p6qlRsg4=;
+        b=h0XaucI9JSWi9mmV+9WVlTKy3o4qX9Hn4sM3+be157u0lzr9ZsgAA/Ak8Db3PeZ31g
+         puGXxdRfZGTZi+d4mW9iPgcy6WCTc+yJH3845O50IWOxp6xHh+WNXmIXBCK4hou1sPx9
+         HVgSoeWNsvPo5utDK7jsvsJsn8nfofOYO3kp0K2lNT6oZdmkaouT1fwIbSK7l0RH+Tgf
+         1mbFMb7ho5SwtCkBokbjhHtBkPXL8GmOmuFAg/2IfOa9up5g5syhgI/fqbnk9McuX687
+         n8c8WgYXvA2c31gRJbA5YSwvefP3IVDjypbTYtn17NJVnn4QMxI8cs3bQ/TAOhWNiYd9
+         jvZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744354931; x=1744959731;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=e0fB4A0zqHMl0E93R7yWp+6DKpBbr/GksX5p6qlRsg4=;
+        b=rqIgymRH15pr+lmmLOb+Vlu1CneU2UoTT2zx5RTLKj5tanmh8gj9PLadsO0YHcsM7s
+         LJV0fVsv2qW088SyvkeC5lx/+UXOviNWdaZEv9jvNcnjPYTumAf23FMmg14dAKyjnVrj
+         VbQI7ADl2ovj27w7a60kjR2t+yeUYibaDg2XrywmLtWyYCpnb9ln38TaFYmiCyjNglTH
+         iB/pXYq3ZXbuDmGGcSL3I6CknfzYiopibyG3tdKFelS7c5zuW1idMQ4PLiOI7k85aZ1a
+         XprnAUR2XTRaKcjkAn622uM1tQ0vMz3jP7a1yBPD9cO3JLFUVh1WxTUmHw5m4OBm0fSQ
+         oZ0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVJhbmZNhHTpI44mqMfKbfyIcLcptnZvaxvw8IQ/xJJew8bd7vQwaB/HynJhdKnNOvjddxY0MrevKMN5hMO@vger.kernel.org, AJvYcCW78yqyCrzfTTnSh9jWHCUUdCNzsjjlwy+M9SeH9cFFXBhfnJoiHwi7GqzRpeShBko6VJt56jgDc3p6TYc=@vger.kernel.org, AJvYcCXES5ECVLNEFAQnwHbRdKNEfDkl6ss2Tz31e/dkL3CGEplHrRpgKHYR6rmSdPTNQZdVimlxSY/R@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxfw8swseu86HoPgllh70qREBdsvUIES9gkc/xLqAXsVqdD1gDv
+	ab4h4AOd+hPoECiy02rskQ0frg34whBMjkN6GJyiwq/SYBmOMVly
+X-Gm-Gg: ASbGnctpFaKgzozCq7iE4wOj0ttq0ISxEypAnoAJ2wzl708nAHMZ+kTkfZvztdF5J5B
+	br4LrTVZwyQppjzFNL4gsq5A1RFDNAhGqh6LaZRIElMEGjZNk5iQ9y+2pah0RwwMNj4sZr8BpKP
+	T6oOBbFJ3wWwqjm7GkHM0gdacj3oge4SfZ+7Wj6xKg0QA6Bo4Pre0vT4SFJM9iQSUqeSngndYjN
+	6YDtWVmNDkAgdJfxYejSZ+7wq6LgR9/65v3WgtLVgNmEqU41Zf9CJsM8c3F4A6n7o4f00IkxkMo
+	Ln1nzdWRYSJUNgULS06XWOOHscrmJP0nhF3g2jUEMAe4f5IrtWaQ3g0SYyU41bPlw08=
+X-Google-Smtp-Source: AGHT+IH8LCzHUSZqtfBQFlJkR7MqXFEh62hFWVQl5PF1/8RaLCtx+2Lw6/EeRGjCvjbReYcDJv6wgQ==
+X-Received: by 2002:a05:6000:1887:b0:38a:4184:14ec with SMTP id ffacd0b85a97d-39e6e45d52fmr1187829f8f.1.1744354930629;
+        Fri, 11 Apr 2025 00:02:10 -0700 (PDT)
+Received: from localhost (ip87-106-108-193.pbiaas.com. [87.106.108.193])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-39eae964073sm1109117f8f.9.2025.04.11.00.02.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Apr 2025 00:02:10 -0700 (PDT)
+From: =?UTF-8?q?G=C3=BCnther=20Noack?= <gnoack3000@gmail.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	=?UTF-8?q?G=C3=BCnther=20Noack?= <gnoack3000@gmail.com>,
+	Jared Finder <jared@finder.org>,
+	Jann Horn <jannh@google.com>,
+	=?UTF-8?q?Hanno=20B=C3=B6ck?= <hanno@hboeck.de>,
+	Kees Cook <kees@kernel.org>,
+	stable@vger.kernel.org
+Subject: [PATCH RESEND] tty: Require CAP_SYS_ADMIN for all usages of TIOCL_SELMOUSEREPORT
+Date: Fri, 11 Apr 2025 09:01:45 +0200
+Message-ID: <20250411070144.3959-2-gnoack3000@gmail.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQE/iintFYLILbr1Km3BNZJiCnEHnQEG7k++AhEV2Ou0vXbOMA==
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrHJsWRmVeSWpSXmKPExsWy7bCmlm7Rth/pBgdfsVs8mLeNzeLejmXs
-	Fs2L17NZvJsrY/Fy1j02i/PnN7BbbHp8jdXi8q45bBYzzu9jsjizuJfd4svPB8wO3B6bVnWy
-	eeyfu4bdY/OSeo++LasYPT5vkgtgjcq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0
-	MFdSyEvMTbVVcvEJ0HXLzAE6TEmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYFKg
-	V5yYW1yal66Xl1piZWhgYGQKVJiQnfF61wSWgl72ij+dvA2MZ1m7GDk5JARMJPZees3UxcjF
-	ISSwm1Fi0ZHLzBDOJ0aJM3c2sEA43xgl5i6fyQbT8mzPLHaIxF5Gif+z57NCOC8ZJXobOhlB
-	qtgENCXufH4KNlhEYBqjxN/DN8EGMwucYJS482cGC0gVp4CdxLVX/WAdwgLuEs/6r7GD2CwC
-	qhLTtvSC1fAKWErsWzqZGcIWlDg58wlYnFlAW2LZwtfMEDcpSPx8ugzsJREBJ4lT33oYIWrE
-	JV4ePQJ2q4TAWg6Ja/0LWSAaXCS+tfRD2cISr45vYYewpSQ+v9sL9aiPxOSj34AGcQDZGRJ3
-	1opAhO0lVi84wwoSZgb6cv0ufYiwrMTUU+uYINbySfT+fsIEEeeV2DEPxlaWOLlnDzTkJSUO
-	3X7BOoFRaRaSz2Yh+WwWkg9mIWxbwMiyilEytaA4Nz012bTAMC+1HB7jyfm5mxjBCVfLZQfj
-	jfn/9A4xMnEwHmKU4GBWEuFtD/6RLsSbklhZlVqUH19UmpNafIjRFBjcE5mlRJPzgSk/ryTe
-	0MTSwMTMzMzE0tjMUEmct3lnS7qQQHpiSWp2ampBahFMHxMHp1QDk8qq4vUT+H5cVUjw3/ly
-	ufmLGTe67mbfX+X/jvWUb4hxqNX2vHmT/uZ/jWyN5TBhf5VdlXm92PLkHu5PG25EsfmHpeVf
-	nyJyP8EysmPPrIgpQQVrPxv3i2yaZW/2x9DAYolVZMb0pA8tyeby8VvDE16pLO1ecZnBn7nH
-	x50pKFP52suZx4Vkn00TYlqtP43pZ13I1hpeW9fXax58O6MRz8a1i3dd2nGFBavfuiy6H7JF
-	9ufqGJkFL0tnykifF3p8Y4/JsmUfOmV7y76UtL/q2f7x2Ynw5aFsPbLSPpobAtv/sH36+vzP
-	l6unv8ve78/yV+j98vqtlsL5T7r3KjSjrfcmzbC46sTk7eC6XuI+sxJLcUaioRZzUXEiAHXf
-	QVVBBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprBIsWRmVeSWpSXmKPExsWy7bCSnG7N1h/pBi2NOhYP5m1js7i3Yxm7
-	RfPi9WwW7+bKWLycdY/N4vz5DewWmx5fY7W4vGsOm8WM8/uYLM4s7mW3+PLzAbMDt8emVZ1s
-	HvvnrmH32Lyk3qNvyypGj8+b5AJYo7hsUlJzMstSi/TtErgyLr89yFLQwV7ROP8zUwPjMdYu
-	Rk4OCQETiWd7ZrF3MXJxCAnsZpS49XEPO0RCUuLw07tQRcISK/89hyp6zijx//FaNpAEm4Cm
-	xJ3PT5lAEiICcxglrv7vZQNxmAXOMEo8fPQfquUAo8T779PB5nIK2Elce9XPCGILC7hLPOu/
-	BhZnEVCVmLallwXE5hWwlNi3dDIzhC0ocXLmE7A4s4C2xNObT+HsZQtfM0PcpyDx8+kysFtF
-	BJwkTn3rYYSoEZd4efQI+wRG4VlIRs1CMmoWklGzkLQsYGRZxSiZWlCcm55bbFhglJdarlec
-	mFtcmpeul5yfu4kRHHlaWjsY96z6oHeIkYmD8RCjBAezkghve/CPdCHelMTKqtSi/Pii0pzU
-	4kOM0hwsSuK83173pggJpCeWpGanphakFsFkmTg4pRqYDs7Wt9iU9vX3C647ys0LdCdO2pe2
-	K/RIs3nWxj2vvzvZmLCvitvwt1ZL4tAO4c/xi0QXvM88Y75ZaNeS7CMZWzmreJaoTf05ZdGB
-	tubkzbsaK26an7+hx/asOf/ZSze1K2vbdz/Zdt5L3EzjuLJIToRV9u5Oqb0bzx5lC09lN36+
-	1FOt1iGx8Fr7UdevLGvn73vM3r+T05pHeetvi1ndW1K7/ToeZ3EHfg7V62K6OnOz6OSOFhv+
-	NgfTI59cXt3Z92TPl5pgkVqdY7PShb8xX25ckHyiYMbudO24xTMq84QtQ+/fuvx7/WHp2il7
-	5f7NSUi99WLtr7mSxR0xqWd4ZogELJQ23P0+NlOLfd91JiWW4oxEQy3mouJEAPquNo8rAwAA
-X-CMS-MailID: 20250411062357epcas5p24091330994395616ad24998eed97044a
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20250404134131epcas5p4794f2b1e5d289e1faa142c9093ea45e5
-References: <CGME20250404134131epcas5p4794f2b1e5d289e1faa142c9093ea45e5@epcas5p4.samsung.com>
-	<20250404135006.1263827-1-faraz.ata@samsung.com>
-	<9970c307-eba6-4c2d-98de-1a0f846efcd4@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hello Krzysztof
+This requirement was overeagerly loosened in commit 2f83e38a095f
+("tty: Permit some TIOCL_SETSEL modes without CAP_SYS_ADMIN"), but as
+it turns out,
 
-> Subject: Re: =5BPATCH v2=5D tty: serial: samsung_tty: support 18 uart por=
-ts
->=20
-> On 04/04/2025 15:50, Faraz Ata wrote:
-> > Exynos Auto v920 SoC supports up to 18 UART ports.
-> > Hence changing the value of UART_NR to 18.
-> > ---
->=20
-> How v2, without changelog, is even worse than v1? It goes to wrong
-> direction.
->=20
-> Please run scripts/checkpatch.pl and fix reported warnings. After that, r=
-un
-> also =60scripts/checkpatch.pl --strict=60 and (probably) fix more warning=
-s. Some
-> warnings can be ignored, especially from --strict run, but the code here =
-looks
-> like it needs a fix. Feel free to get in touch if the warning is not clea=
-r.
->=20
->
-Thanks for your review and sorry for the noise,
- that was not intentional, got posted by mistake, will takecare about it.
-Will send another version with change-log.
-> ...
-> Best regards,
-> Krzysztof
+  (1) the logic I implemented there was inconsistent (apologies!),
+
+  (2) TIOCL_SELMOUSEREPORT might actually be a small security risk
+      after all, and
+
+  (3) TIOCL_SELMOUSEREPORT is only meant to be used by the mouse
+      daemon (GPM or Consolation), which runs as CAP_SYS_ADMIN
+      already.
+
+In more detail:
+
+1. The previous patch has inconsistent logic:
+
+   In commit 2f83e38a095f ("tty: Permit some TIOCL_SETSEL modes
+   without CAP_SYS_ADMIN"), we checked for sel_mode ==
+   TIOCL_SELMOUSEREPORT, but overlooked that the lower four bits of
+   this "mode" parameter were actually used as an additional way to
+   pass an argument.  So the patch did actually still require
+   CAP_SYS_ADMIN, if any of the mouse button bits are set, but did not
+   require it if none of the mouse buttons bits are set.
+
+   This logic is inconsistent and was not intentional.  We should have
+   the same policies for using TIOCL_SELMOUSEREPORT independent of the
+   value of the "hidden" mouse button argument.
+
+   I sent a separate documentation patch to the man page list with
+   more details on TIOCL_SELMOUSEREPORT:
+   https://lore.kernel.org/all/20250223091342.35523-2-gnoack3000@gmail.com/
+
+2. TIOCL_SELMOUSEREPORT is indeed a potential security risk which can
+   let an attacker simulate "keyboard" input to command line
+   applications on the same terminal, like TIOCSTI and some other
+   TIOCLINUX "selection mode" IOCTLs.
+
+   By enabling mouse reporting on a terminal and then injecting mouse
+   reports through TIOCL_SELMOUSEREPORT, an attacker can simulate
+   mouse movements on the same terminal, similar to the TIOCSTI
+   keystroke injection attacks that were previously possible with
+   TIOCSTI and other TIOCL_SETSEL selection modes.
+
+   Many programs (including libreadline/bash) are then prone to
+   misinterpret these mouse reports as normal keyboard input because
+   they do not expect input in the X11 mouse protocol form.  The
+   attacker does not have complete control over the escape sequence,
+   but they can at least control the values of two consecutive bytes
+   in the binary mouse reporting escape sequence.
+
+   I went into more detail on that in the discussion at
+   https://lore.kernel.org/all/20250221.0a947528d8f3@gnoack.org/
+
+   It is not equally trivial to simulate arbitrary keystrokes as it
+   was with TIOCSTI (commit 83efeeeb3d04 ("tty: Allow TIOCSTI to be
+   disabled")), but the general mechanism is there, and together with
+   the small number of existing legit use cases (see below), it would
+   be better to revert back to requiring CAP_SYS_ADMIN for
+   TIOCL_SELMOUSEREPORT, as it was already the case before
+   commit 2f83e38a095f ("tty: Permit some TIOCL_SETSEL modes without
+   CAP_SYS_ADMIN").
+
+3. TIOCL_SELMOUSEREPORT is only used by the mouse daemons (GPM or
+   Consolation), and they are the only legit use case:
+
+   To quote console_codes(4):
+
+     The mouse tracking facility is intended to return
+     xterm(1)-compatible mouse status reports.  Because the console
+     driver has no way to know the device or type of the mouse, these
+     reports are returned in the console input stream only when the
+     virtual terminal driver receives a mouse update ioctl.  These
+     ioctls must be generated by a mouse-aware user-mode application
+     such as the gpm(8) daemon.
+
+   Jared Finder has also confirmed in
+   https://lore.kernel.org/all/491f3df9de6593df8e70dbe77614b026@finder.org/
+   that Emacs does not call TIOCL_SELMOUSEREPORT directly, and it
+   would be difficult to find good reasons for doing that, given that
+   it would interfere with the reports that GPM is sending.
+
+   More information on the interaction between GPM, terminals and the
+   kernel with additional pointers is also available in this patch:
+   https://lore.kernel.org/all/a773e48920aa104a65073671effbdee665c105fc.1603963593.git.tammo.block@gmail.com/
+
+   For background on who else uses TIOCL_SELMOUSEREPORT: Debian Code
+   search finds one page of results, the only two known callers are
+   the two mouse daemons GPM and Consolation.  (GPM does not show up
+   in the search results because it uses literal numbers to refer to
+   TIOCLINUX-related enums.  I looked through GPM by hand instead.
+   TIOCL_SELMOUSEREPORT is also not used from libgpm.)
+   https://codesearch.debian.net/search?q=TIOCL_SELMOUSEREPORT
+
+Cc: Jared Finder <jared@finder.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: Hanno Böck <hanno@hboeck.de>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: Kees Cook <kees@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 2f83e38a095f ("tty: Permit some TIOCL_SETSEL modes without CAP_SYS_ADMIN")
+Signed-off-by: Günther Noack <gnoack3000@gmail.com>
+---
+ drivers/tty/vt/selection.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index 0bd6544e30a6b..791e2f1f7c0b6 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -193,13 +193,12 @@ int set_selection_user(const struct tiocl_selection __user *sel,
+ 		return -EFAULT;
+ 
+ 	/*
+-	 * TIOCL_SELCLEAR, TIOCL_SELPOINTER and TIOCL_SELMOUSEREPORT are OK to
+-	 * use without CAP_SYS_ADMIN as they do not modify the selection.
++	 * TIOCL_SELCLEAR and TIOCL_SELPOINTER are OK to use without
++	 * CAP_SYS_ADMIN as they do not modify the selection.
+ 	 */
+ 	switch (v.sel_mode) {
+ 	case TIOCL_SELCLEAR:
+ 	case TIOCL_SELPOINTER:
+-	case TIOCL_SELMOUSEREPORT:
+ 		break;
+ 	default:
+ 		if (!capable(CAP_SYS_ADMIN))
+
+base-commit: 27102b38b8ca7ffb1622f27bcb41475d121fb67f
+-- 
+2.48.1
 
