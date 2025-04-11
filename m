@@ -1,69 +1,69 @@
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com [209.85.166.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12B020FA9C
-	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 15:44:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFCD22135DE
+	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 15:44:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744386268; cv=none; b=cbv1wbwse2SqOGTEqeESu77vYQJrEaoiLCUUKky98jakz4+SS7k1jcJHhP72bWIo2F1dC0LiOnE4hHpeA8CGvWlzmBswMqEhxrhSDeWIvV/3mZKNdBBHNN8tWSQCsvX8J06pfQL+B9wlZDSGw6wukRn9j94+VB0vkSwoPId5tgg=
+	t=1744386270; cv=none; b=LmASm8bzUUMpLrmZei2rIP8DcNf9Swf0HMSqnFYQSMGoPvGiUBWfAZbfH68bnEGJsbVwQrc5mnr4zR735UZJmWEKTd++RjWdsd2tXb5MyLdcZPVAxkGPWu7c+k4eJG66oNGZsrlp11vqyqSS9rorFGeGmnGjE8uWIpDW/zgdmSY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744386268; c=relaxed/simple;
-	bh=7ZoS0xY5agHPaulRb3cD8XGDbf5Uto+nLhFfKAqokok=;
+	s=arc-20240116; t=1744386270; c=relaxed/simple;
+	bh=ucvbVh/yXALhRLORxO86EDtcUDjhXV2k7FhsHq1IhHU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=g4J0nDU4l2IXwUCNThLTJGjcBdqg6Bm2SH849rACt1ySL3ojTeLB5LqDBv3Hips/huPrdzEH04Zrmj67cMsOwlYzmr9W8HxoFu68ZOKvksboHg5xak9ln0v0S0tobU9DnfP0g0BJPe4iTwNcSawR+Lpdno39Bn1hLCHBgmAkweQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=A69/LT6O; arc=none smtp.client-ip=209.85.166.47
+	 MIME-Version; b=SDDh1dgtAghmEbh5zMRou86PbpGatp1kYHtAcUyt25oM9ir9mB40gcTxkdIU6ska4AjnhNmKJmQXBsnZshn59Gp8B+cG9qR6x0cHB7JJBXdwuesCFuQPRJlW++lN3Kdvy0eiFqypsOCEWSY+c0b+C7zAUF/wwElSaPlWFnXWPck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=WEAWQd6A; arc=none smtp.client-ip=209.85.166.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="A69/LT6O"
-Received: by mail-io1-f47.google.com with SMTP id ca18e2360f4ac-85da5a3667bso63018239f.1
-        for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 08:44:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="WEAWQd6A"
+Received: by mail-il1-f175.google.com with SMTP id e9e14a558f8ab-3d589227978so6978825ab.1
+        for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 08:44:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1744386266; x=1744991066; darn=vger.kernel.org;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1744386267; x=1744991067; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lNEtTIi2VK5ry0lwico5I+3DkBAdLoSFhiEvmP3qbmk=;
-        b=A69/LT6OOQYLw6YgRDIh8Ai1DI8+jzG2Hc/PYn/2+PWrr2HKTGOp2dvELDPepwMkAD
-         G0KT/qMjkHc4SINyIzbxdG7KVNGP2at4C+E3tllBE9xpASKBknB02KI9kXbEd9SikXcF
-         3xvLvIZlsgbn80AQgpf/4OJIWLobGbfoFDQru8DkSPe/Gegn3hlhL8wGicZhEXzpfS+P
-         ZGCWOkzmEIHiZ2oGJpRjCx3jot1UnyKERe13Ls6XUUVWrwpb0hgLkChOq5hsU17eW9H2
-         imEc9t3nHytqu2oI7j7O+JS3u2moAoh7NFlslq8EUgylGz70ell9EVs+8GCaZDpL99RP
-         uoEA==
+        bh=0+No0irtswkb42oZgjOuCr5NaquvvHMgg0F5193JRX8=;
+        b=WEAWQd6AlZmwszqpr2FdMHOqU8RG330klxdCeKbWOQZ57QkTE7ddQSawMK/9di0qCb
+         jrYKhLPt/GL7IkodueJqF7EEf1Ak9KJpVD5Su8U+O+xTx2dJs7HP86tt8SvhdFwQsRTx
+         JjD3/Gjp/wSLWWIy81VlYvqLWYhSU2mrKBLz2Tn+86LmC+jXzHxjwBAoTa9RIjS8fGSj
+         G/Wfzpvfvzo0GfVSPHOgNGHMPMtOwifcrzrh7jAoqwGBe+xGzu4LyvnPll0MIrd3+Dbd
+         V7xHvmPqzW5zy8fhUhcy7Y0DfJkjuk9314SZ3oF2CItb9ZLYpo6WnKl0NuwY7WuEH2Ki
+         sgAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744386266; x=1744991066;
+        d=1e100.net; s=20230601; t=1744386267; x=1744991067;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lNEtTIi2VK5ry0lwico5I+3DkBAdLoSFhiEvmP3qbmk=;
-        b=KIXJBoWE4rFEo7/5tUlatBf8J9icvzgmWFYw5Z9YFDEmlRa/tyJGKLZbgDxVEOQXAT
-         BER56DG8oTO2OQsiEMJJn8bmPon/KG7XHVJPcEudRl4reaZoQCYW1DXJisQLwnzMY3Qt
-         HuUBmUYjjCDmwjIhVFE3aPfiHrfchG8M0z6LNad6FIiMb8Fz/Mc/Y/1IcMmoDOvuEBu4
-         GDzjAwE2WybzWgg4Q3rYjIkigbiRl5iPgDID0pFa6LWjLTVU3vEdkszQPoU7RTpZjrVm
-         qsxzUf1eGGFnLJ/RgL4vujIGJk8v6PP1moR8mjxTPLRqBE1APhYF8yIY8sTn/PlZ60hp
-         UFEg==
-X-Forwarded-Encrypted: i=1; AJvYcCUfwmSuG13XMsCkxf2xOpHNm5tibn3CyFBEPAdSTFkzmHT1pNZr1eQIJFatzmUInwe2HhTKN56Euo5RzGY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwrAci+DhOdquzKAiNaAWuxW73piOrCv4QzmoXIp6ibbRVIeZA/
-	v7gF92JsAt+eFYyL/OI51zm144O3H0LMJ6r1RGUAWOR+Q1AOtnR9m9R2/Wgwwx4=
-X-Gm-Gg: ASbGncv4Tpfj0172NJopx4omdgmelY1d5MrJhXHIdgtJsDiRg05F1CDukdsTgNvHMDp
-	Rilyyv/DKcrihgmRqHOCLYCyCAhI2vbt00qT/AObsUrmmO5pVmIiP9znH4BnnIkiNb5+JmUfe8H
-	yd5TNv0GB8o3XudC6jdBQdx597QvyEd+Qjec7Fz6x9/bxXej0ctkOem3ALXOj5wxqxOcsoZ0kS3
-	dBrdvMN2iVeUSSL8PQZtofWIiUgabdyiqm5fqnbis8QfNMDsSJAj1OXsfeAQUlEtnZ553by8tSQ
-	6pSkNM1W2ZowTbJQ9QQlvvoiu+2WMxAy2gMAlgfvs4NLbcU2KuMAPXikMDXLVb2jN2jqvxcaT3o
-	1EPsc7MwmL64UNA==
-X-Google-Smtp-Source: AGHT+IHmZJkLUp0ElYixFb0pqy12kzxcoZbzdEnj5SOiajP/nfCU4MY0cVdJxZEZG4e9zsnEIRAxIQ==
-X-Received: by 2002:a05:6602:3789:b0:85e:2eba:20ad with SMTP id ca18e2360f4ac-8617cb4660cmr336071839f.2.1744386265918;
-        Fri, 11 Apr 2025 08:44:25 -0700 (PDT)
+        bh=0+No0irtswkb42oZgjOuCr5NaquvvHMgg0F5193JRX8=;
+        b=L66HN9Icbyz7J+4yKKz+PAT6Mx39y95e3fcWGJ10BLBQpK8mIumOuywHhTlLEjXTHR
+         IsMJyq3LSsWbWlxjZmDN3zPAQjIyI+gyECps1NG8CxG1SPK2FZvut0CkL+k0jykPIvt3
+         iD058i/QFxxyNh9Gmw2sNooNxC5iNZtYJmrxxFIJuk35jVOKGnlingeYQO4yty2yEsLO
+         sXueSVu/HUeJlx3hMN3a6HOIViiWeLzAF12WQcwf/ie9IQko021GjHyF+szgEVmGfdKX
+         HqgGQnf8AuPeXEpkss53V53m9Va1xczh2B+jV9xhlCWy2judSjgnLP6kMVoOOit0idtn
+         XrNw==
+X-Forwarded-Encrypted: i=1; AJvYcCXUQjB3zVZkYjvDqaY0m9iqX6YzmQGtsTOtZvs6S5MyLtRw19B7YexswopnWtzwHj0Rf2qVPWq/7LWNccQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywr/3vvg5nxXcByy2X5bYgYrAhmKTxQ0DTwTtOEmuXaqi0ZSolk
+	se73d7ozMwW/YAScj+GyxLeEVBCl9JWu5R3d+LzKSprOLX17J8WVpKPBzKwqHs4=
+X-Gm-Gg: ASbGncuJ8RlxVUvDQYdquE6tNfktS4bDflLyS7vKcpslO2Nz7qOxUB8ZYbf8rkb58GN
+	Dyq6UXJu+XF8MZqjuglSED4Z3Icw11AU2yZjHPlSRWI/opRmbK731lOt+2kwsGUrGM92RL2mMUw
+	vRGLO6+6JtrYPACrlrsvz1nBPjPesQgP5dQ87Ooty1c9pemNDHy9mDx7KS7+lNmP4H2YZ78vII3
+	XK7OQIhwmI94sOwWMz+FKjVA3TYv5a0mvHZoDhCTCt//LrES7OeZ2aq5Pg21SZcwF8TJ28tkLKY
+	e3sNlYn10/s2Haq0mdbwhcSJPCIeJESdHP1fQ7mZwuKkOMR6ppBre56VE3V6XU3R6eQRXSDV62v
+	QizdYnm8KZ3N8BA==
+X-Google-Smtp-Source: AGHT+IFHmGeALO9Wp+63MrFrWPOF/pQKiCJFNH3pXYWduOMBqvBFciOLd/8MEHS0nwfjD94ZFGolaQ==
+X-Received: by 2002:a92:1304:0:b0:3d3:d08d:d526 with SMTP id e9e14a558f8ab-3d7e4d0c549mr59399825ab.11.1744386267024;
+        Fri, 11 Apr 2025 08:44:27 -0700 (PDT)
 Received: from localhost.localdomain (c-73-228-159-35.hsd1.mn.comcast.net. [73.228.159.35])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4f505cf812dsm1276326173.18.2025.04.11.08.44.25
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4f505cf812dsm1276326173.18.2025.04.11.08.44.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Apr 2025 08:44:25 -0700 (PDT)
+        Fri, 11 Apr 2025 08:44:26 -0700 (PDT)
 From: Alex Elder <elder@riscstar.com>
-To: robh@kernel.org,
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	robh@kernel.org,
 	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
+	conor+dt@kernel.org
 Cc: dlan@gentoo.org,
 	benjamin.larsson@genexis.eu,
 	bastien.curutchet@bootlin.com,
@@ -74,9 +74,9 @@ Cc: dlan@gentoo.org,
 	linux-serial@vger.kernel.org,
 	spacemit@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/3] dt-bindings: serial: 8250: support an optional second clock
-Date: Fri, 11 Apr 2025 10:44:16 -0500
-Message-ID: <20250411154419.1379529-2-elder@riscstar.com>
+Subject: [PATCH v3 2/3] serial: 8250_of: add support for an optional bus clock
+Date: Fri, 11 Apr 2025 10:44:17 -0500
+Message-ID: <20250411154419.1379529-3-elder@riscstar.com>
 X-Mailer: git-send-email 2.45.2
 In-Reply-To: <20250411154419.1379529-1-elder@riscstar.com>
 References: <20250411154419.1379529-1-elder@riscstar.com>
@@ -88,67 +88,40 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The SpacemiT UART driver requires a bus clock to be enabled in addition
-to the primary function clock.  Add the option to specify two clocks
-for an 8250-compatible UART, named "core" and "bus".  If both are needed,
-require them to be named.
+The SpacemiT UART requires a bus clock to be enabled, in addition to
+it's "normal" core clock.  Look up the optional bus clock by name,
+and if that's found, look up the core clock using the name "core".
+
+Supplying a bus clock is optional.  If no bus clock is needed, the
+the first/only clock is used for the core clock.
 
 Signed-off-by: Alex Elder <elder@riscstar.com>
-Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 ---
-v3: Added Rob's Reviewed-by tag
+ drivers/tty/serial/8250/8250_of.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
- .../devicetree/bindings/serial/8250.yaml      | 30 ++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
-index dc0d52920575f..33d2016b65090 100644
---- a/Documentation/devicetree/bindings/serial/8250.yaml
-+++ b/Documentation/devicetree/bindings/serial/8250.yaml
-@@ -135,7 +135,16 @@ properties:
-   clock-frequency: true
+diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+index 11c860ea80f60..a90a5462aa72a 100644
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -123,7 +123,16 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
  
-   clocks:
--    maxItems: 1
-+    minItems: 1
-+    items:
-+      - description: The core function clock
-+      - description: An optional bus clock
+ 	/* Get clk rate through clk driver if present */
+ 	if (!port->uartclk) {
+-		info->clk = devm_clk_get_enabled(dev, NULL);
++		struct clk *bus_clk;
 +
-+  clock-names:
-+    minItems: 1
-+    items:
-+      - const: core
-+      - const: bus
- 
-   resets:
-     maxItems: 1
-@@ -224,6 +233,25 @@ required:
-   - reg
-   - interrupts
- 
-+if:
-+  properties:
-+    compatible:
-+      contains:
-+        const: spacemit,k1-uart
-+then:
-+  required: [clock-names]
-+  properties:
-+    clocks:
-+      minItems: 2
-+    clock-names:
-+      minItems: 2
-+else:
-+  properties:
-+    clocks:
-+      maxItems: 1
-+    clock-names:
-+      maxItems: 1
++		bus_clk = devm_clk_get_optional_enabled(dev, "bus");
++		if (IS_ERR(bus_clk)) {
++			ret = dev_err_probe(dev, PTR_ERR(bus_clk), "failed to get bus clock\n");
++			goto err_pmruntime;
++		}
 +
- unevaluatedProperties: false
- 
- examples:
++		/* If the bus clock is required, core clock must be named */
++		info->clk = devm_clk_get_enabled(dev, bus_clk ? "core" : NULL);
+ 		if (IS_ERR(info->clk)) {
+ 			ret = dev_err_probe(dev, PTR_ERR(info->clk), "failed to get clock\n");
+ 			goto err_pmruntime;
 -- 
 2.45.2
 
