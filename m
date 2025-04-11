@@ -1,150 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31C85269892;
-	Fri, 11 Apr 2025 18:41:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F184202C50
+	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 19:12:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744396913; cv=none; b=l5pZ3RNN8cQQDDl9dXqu/i8g40ECWq7tcioHORhB5HnusllLtODBW6KShmrp3j1rfE4HXnxqysVXblmRzyQEltAZVmTF52qMS8Hm8M7SOY1PMXQdBls9qXHrTXmoLnZE0Hfl8avyH6B59ItUEFDH1iw6fMzMwafZ5wmCyu9QmO8=
+	t=1744398728; cv=none; b=PjLQPlRrEFQf4KB25uVzY340AuPcEdltagmEPXtgRIuDZ0m7o5ykf1REvyuqZ7Iab4bBWt5VtjOf4zWYt+6/HHF8uVXNNRNIFHxslRWlHL6FHVL58Huur9a6BFRm63EanhoTz0xrm7RmGPLabLSxsz20cRKueP9dD9TKU496rTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744396913; c=relaxed/simple;
-	bh=NY8+7+ZEmdWqqx0zQOF9aAujJPW4CRyp6FmkPwIcd+w=;
+	s=arc-20240116; t=1744398728; c=relaxed/simple;
+	bh=x5328n9Po4MAp4s+nhheKJVWEt9qvIrfr+K17nPBjxM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Y6pCbFvNiXcmQ1fxo1MNa+q0oQGFulYTYgdFrQMY7cKBaqaBufzSURQmpU69BA5NNU++N/Nyd5tm6CSxLOAh0jWnKaFudOwk8JR6+61D4S19A8UHsfHENJXBZ8h/7PmbaJgOSBL3jNPn1sWG1gtrVjPtyiNsTbe/Hf5dE+2l940=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=d9Lq+nM/; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=EZB+Gt2wO+pbkEM8yzQEFOisZtqYgjnyalLNIlkgg/1VIksR+TCiIFeA48WzioDG6bIxH6ifMQQHvCHFvKASVsSFkSgEuYWuehMpsOSWJcdAvS4Qos08qfaOf6UZ9/v+G7dxhClce56OJBgooEz3dP3L8aCZ+pmqe1t69ZQHCFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=mC36692/; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="d9Lq+nM/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744396911; x=1775932911;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NY8+7+ZEmdWqqx0zQOF9aAujJPW4CRyp6FmkPwIcd+w=;
-  b=d9Lq+nM/2lV5ChjjnQ/zGREVg7pP3vjW11ZIFfd4SEd6pb5Os7uEyySQ
-   Kb0V/rnnpuaEomBjr2ZjfvuWI0Ya2NkEKYgnpZSKvcI0S7NL0RUrRGqUL
-   G5puANSFUtBwqgQ5g/HgOl1YbdqAfBLnmnBAfXX7k/6NFcecqLSJPIbeF
-   cfysNlryKFaoPJ3lCZH2umQQ4X62Ybn/OeaOisEORL3A7F3vdLegaWo7/
-   mMIRTEHIJootX7LO2jQAOjJ6hr9KRoxTfa08gdjCyicZobvcq5ndSBIdN
-   xISSme44mctcWE8vPAWKhraV0it29da9AFwvgxteVwE/2/pXKQ0EbfNBT
-   g==;
-X-CSE-ConnectionGUID: RlttfFGIS3mXtNGLCkFurA==
-X-CSE-MsgGUID: WARzn40OR9Cm0hDklpGVWw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11401"; a="63500552"
-X-IronPort-AV: E=Sophos;i="6.15,205,1739865600"; 
-   d="scan'208";a="63500552"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2025 11:41:48 -0700
-X-CSE-ConnectionGUID: e3q01x+CRf6UfIA1beGItA==
-X-CSE-MsgGUID: 8a1ba08VQkKVcgN2zvTF2A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,205,1739865600"; 
-   d="scan'208";a="129124558"
-Received: from lkp-server01.sh.intel.com (HELO b207828170a5) ([10.239.97.150])
-  by fmviesa006.fm.intel.com with ESMTP; 11 Apr 2025 11:41:43 -0700
-Received: from kbuild by b207828170a5 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1u3JJt-000BJa-0o;
-	Fri, 11 Apr 2025 18:41:41 +0000
-Date: Sat, 12 Apr 2025 02:40:51 +0800
-From: kernel test robot <lkp@intel.com>
-To: Praveen Talari <quic_ptalari@quicinc.com>,
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="mC36692/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=x532
+	8n9Po4MAp4s+nhheKJVWEt9qvIrfr+K17nPBjxM=; b=mC36692/iEOT3fodsSEj
+	uFQb9ftoh+KvrdVp0UW976rY6qr/6Zfs8eFr9eRSLqO/EYPnsJBeEjbU2tqVYGLW
+	3tNz2VDHKN4LZFpKSlUQeIrIIfOvfM9PN4+wYhjLWu+Y3w93KDW4QfI/JmjnAtzE
+	NYi49qcARB0npirHJjWnLer6i+FMSKPM2vViW+LKhIpdRgd7DiI8gw7QLCgT8kKb
+	egI7MUIjbZkCUNwCxeKGeGm9fJEq3sbxA/Yoa4boAwaiQxErZObPAKU+yKslW/gj
+	lz7JwDDS1GMDvsAHlfsCzO5YF5ApTeJrqU7Zx/LfJRrVW6zY2q8Ks8uuyZHli+Sb
+	Zg==
+Received: (qmail 1399403 invoked from network); 11 Apr 2025 21:12:01 +0200
+Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 11 Apr 2025 21:12:01 +0200
+X-UD-Smtp-Session: l3s3148p1@AyIeeoUyQJ8ujnsS
+Date: Fri, 11 Apr 2025 21:12:00 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: Rob Herring <robh@kernel.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-	Stephen Boyd <sboyd@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-pm@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com,
-	quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
-	quic_mnaresh@quicinc.com, quic_shazhuss@quicinc.com
-Subject: Re: [PATCH v1 4/9] soc: qcom: geni-se: Enable QUPs on SA8255p
- Qualcomm platforms
-Message-ID: <202504120226.2XbpK0yU-lkp@intel.com>
-References: <20250410174010.31588-5-quic_ptalari@quicinc.com>
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: Simplify DMA-less
+ RZ/N1 rule
+Message-ID: <Z_lpgMgeIvwVgx6r@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Rob Herring <robh@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+References: <90c7aa143beb6a28255b24e8ef8c96180d869cbb.1744271974.git.geert+renesas@glider.be>
+ <CAL_Jsq+sCDEO_n_TLmyNBfhc71NNWWe2UQ21jh8+AdHH=G+KAw@mail.gmail.com>
+ <Z_k3JV1dEexJurdc@shikoro>
+ <20250411161620.GA3329787-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="UVDKZ3tj4v23nX18"
+Content-Disposition: inline
+In-Reply-To: <20250411161620.GA3329787-robh@kernel.org>
+
+
+--UVDKZ3tj4v23nX18
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250410174010.31588-5-quic_ptalari@quicinc.com>
-
-Hi Praveen,
-
-kernel test robot noticed the following build warnings:
-
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus robh/for-next driver-core/driver-core-testing driver-core/driver-core-next driver-core/driver-core-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.15-rc1 next-20250411]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Praveen-Talari/opp-add-new-helper-API-dev_pm_opp_set_level/20250411-015310
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20250410174010.31588-5-quic_ptalari%40quicinc.com
-patch subject: [PATCH v1 4/9] soc: qcom: geni-se: Enable QUPs on SA8255p Qualcomm platforms
-config: arm-randconfig-001-20250412 (https://download.01.org/0day-ci/archive/20250412/202504120226.2XbpK0yU-lkp@intel.com/config)
-compiler: clang version 21.0.0git (https://github.com/llvm/llvm-project f819f46284f2a79790038e1f6649172789734ae8)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250412/202504120226.2XbpK0yU-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202504120226.2XbpK0yU-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/soc/qcom/qcom-geni-se.c:953:1: warning: unused label 'out' [-Wunused-label]
-     953 | out:
-         | ^~~~
-   1 warning generated.
+Content-Transfer-Encoding: quoted-printable
 
 
-vim +/out +953 drivers/soc/qcom/qcom-geni-se.c
+> IMO, whether you drop the platform is orthogonal to this patch.=20
 
-   928	
-   929	static int geni_se_probe(struct platform_device *pdev)
-   930	{
-   931		struct device *dev = &pdev->dev;
-   932		struct geni_wrapper *wrapper;
-   933		const struct geni_se_desc *desc;
-   934		int ret;
-   935	
-   936		wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
-   937		if (!wrapper)
-   938			return -ENOMEM;
-   939	
-   940		wrapper->dev = dev;
-   941		wrapper->base = devm_platform_ioremap_resource(pdev, 0);
-   942		if (IS_ERR(wrapper->base))
-   943			return PTR_ERR(wrapper->base);
-   944	
-   945		desc = device_get_match_data(&pdev->dev);
-   946	
-   947		if (!has_acpi_companion(&pdev->dev) && desc->geni_se_rsc_init) {
-   948			ret = desc->geni_se_rsc_init(wrapper, desc);
-   949			if (ret)
-   950				return -EINVAL;
-   951		}
-   952	
- > 953	out:
-   954		dev_set_drvdata(dev, wrapper);
-   955		dev_dbg(dev, "GENI SE Driver probed\n");
-   956		return devm_of_platform_populate(dev);
-   957	}
-   958	
+Ok.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> Whether or not the platform can run Linux is irrelevant to whether there=
+=20
+
+Yes and no. I know what you mean with "irrelevant" and I agree to that.
+But...
+
+> are bindings. Can it run u-boot? Now, if no one is going to make the=20
+> bindings complete and upstream a .dts for it, then remove it.
+
+=2E.. also this. If the SoC can hardly run Linux (if at all) it is a lot
+less likely in practice that someone will complete the upstream support,
+no?
+
+
+--UVDKZ3tj4v23nX18
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmf5aXwACgkQFA3kzBSg
+KbbUvA//eg0OOqgCn9QEbFxWpMpiomFIaiLL/hN+32z9/07MpFunNjoqhGKiCzoF
+nVxmiI7GdoV0nG90pfYnkTk9g7jpOcNTL5Xzrod0mZZGQrHUzo2eRT3tHv6qu22e
+LaY3lZTcXghv4Us7iK3K8ysAqu/HxYsBTjNzubFwWm2g1VdCkqRyWU8/VNxxs5en
+9Lbqoyc1FTLWTYnTmgrL8uAmvZlaXQhC8YjRiBaK0ouMgE5m8L4uKl4qYossu6N7
+FpjDiAlKGbg0jGwIs6uDrBLWRjdzqV7dqXAW5o9p0q2gvM+UBZK7Hat5KD+O3Kjp
+vQ8BRGuzkCvzliBMkAz7QJvhE6kijV7jD1fhlY9f4IbYgce83Od+bVFfmHGXSI4E
+WXh0LSNo1FiqdZYXkYua6BDJ9BtAUHMn8yAgnf/lRuXH45Rii0OH5ROFvpKOGymS
+5iGnJsbAczynt0YvLtEm+ChqJZEHYwaFpCAELSLTE3uU7QViPf6oyzqHGqEKXtrC
+S0McEFmRbvGH7yz3mf6b1bExzT0BEMJRCFMcPv4Xjh/ZQ6UHdpNFK1BFKlQLoypA
+0QI06K479tiWE9wvDo91f17mEjB2DGDHNTfITFda+KpbeWt8T3Fyh8qQqcZRaSy8
+h4aJcOvM+sdRjpMkIUklLFIULApSg6ek4Te4tl7JUhobZ6cCN7U=
+=mOpZ
+-----END PGP SIGNATURE-----
+
+--UVDKZ3tj4v23nX18--
