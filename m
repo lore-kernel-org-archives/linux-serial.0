@@ -1,104 +1,127 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C28961FA262
-	for <linux-serial@vger.kernel.org>; Thu, 10 Apr 2025 20:29:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3AEC1E7C07;
+	Fri, 11 Apr 2025 03:47:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744316957; cv=none; b=s9vj/9grMLh+RoNCJ0lFNCC93LENrB1TZ2NjqWt+cD+4uq1VpoNfVBhS1PMQsWXhLdrbclE836rkJPhDnSY3Q1S/fHJ+wnT6yn6uM+4fKWQIqv7wvb6We33nsrTkipc5MXzgax2FmbOHwGm7s+oqnH0mEYwYNv/gx6zrjl0SlgA=
+	t=1744343245; cv=none; b=ZU3sKcySg4wP8RMfrBWeDhNID+vD65RBxB+OtB+ccEFK9gXHC+Ay0+c+yiWrnP8YODTYNDZJZZ2TAoavpT+YeRljrXC+WHl/jVvKDJ4pQEhmcDpSReBfZi6TC7J6gzhulbDqRCX4M8yV3dmKx3u+AWTOgwG57BiQnEsKqyZ+xdw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744316957; c=relaxed/simple;
-	bh=fWMuX5tWEPqP8+GoEqMljo2h2Wk3PTAfB96Lst5Q/0Y=;
+	s=arc-20240116; t=1744343245; c=relaxed/simple;
+	bh=VRpaDPeddYKoPCJkNZD93So02dw0UKpgz41AvSL+wns=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t65PAEvIIRgqnm8TekM+cakUSSbntHmn0Yc2TvSXPjr8HDmrlhIPxFcC9ihrl4huvMXd3AcNYea3RJfl4TniN8Mp/d7V9LPnSeQgHKi11KmfmDrVKTmovdbEPrYXJuONXBhXCRefrcUyW3IDdQHwmFmPmbgvj2m9Ch7eoTTkn80=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=TgVZqirG; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=rW9W+hosigElqP6EJJUAit3wEmlEuXzA6a5K7djNyAuUWsbVIK0bDBzBO+taEv88Dp7GdtfGLm6eSM6KUrhMTThxXzJQgmU0jRADshqtiYovsh4/avpJvIXLhioPWtmMo0J0ssHEcP7jht9kB4YWnoImcK3mYUc2azjqhXnmEmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jKj7Mpg0; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="TgVZqirG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=fWMu
-	X5tWEPqP8+GoEqMljo2h2Wk3PTAfB96Lst5Q/0Y=; b=TgVZqirG56j0ELYEmtr0
-	BvEfyZlEW9ogD1axdxGlPfK7GksFinH+4RjaAgYqFlPVGnN1nkoM/l8fXnKHPcTg
-	fAagmfpFlGC1rpQLp8cBSxC83ukWg0wtcXhKac+tB3VkQok/RcgQ8HV9fGs3xq6Q
-	lADVf+fm7I0EXKujlR9TsyCb5Cun9APd392Syomt0/OYEhG1MafTmlBPvzcm49uY
-	0qlqrBGw36d7laZjVQJiBEsvS6RiAPoNeUVmjD3G0FZCkWfuRVWzv4xOOfyiExFf
-	wLlo8w4by5SJJNxdhkGwxKm5k+9f0F4kD1o13pNzJhIot22mj+Ap/aC+CWYdCIeH
-	ZA==
-Received: (qmail 1034242 invoked from network); 10 Apr 2025 22:29:13 +0200
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 10 Apr 2025 22:29:13 +0200
-X-UD-Smtp-Session: l3s3148p1@MPRmcHIyVroujnsS
-Date: Thu, 10 Apr 2025 22:29:13 +0200
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: Simplify DMA-less
- RZ/N1 rule
-Message-ID: <Z_gqGWN4SjI0uD08@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Geert Uytterhoeven <geert@linux-m68k.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jKj7Mpg0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1744343243; x=1775879243;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VRpaDPeddYKoPCJkNZD93So02dw0UKpgz41AvSL+wns=;
+  b=jKj7Mpg0U55MQRwIlYMPR2cP6Bl4DquWIxijQVB+UFeznw85ZdwhNtmy
+   GsPtCpLzvOnxoxx3tltGkD1BI59uuB9+1sct7ABtLEiSCECYWjoA7x3BQ
+   LizPmqbtfmjSMV4X/MyPfIlgMaioDR62zO0p0rWDGC71tGlFTfnJXbFEI
+   NvD2BVQQ7lyNqh/s491ky0xAAHBGCxVDZiYus1aAUbZBlTqFFI7g56yzl
+   EJVR6I5EpyfTJvOVFytogOfSKNzTN+l+BAAiR185DrrWHGRjf4t19ND7Q
+   8UXiHN+NQ6KOIVhNLD7zs4eikF/KEMalKeO0AC9g+a+HEH42sVy4mjGZz
+   g==;
+X-CSE-ConnectionGUID: 0aNCJT/mTPCb9yBEOio6qQ==
+X-CSE-MsgGUID: FxlXGMDES1W+nyNrMqqzSQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11400"; a="57267543"
+X-IronPort-AV: E=Sophos;i="6.15,203,1739865600"; 
+   d="scan'208";a="57267543"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2025 20:47:22 -0700
+X-CSE-ConnectionGUID: Tif5TBgzTjyoB3N3tyIcvg==
+X-CSE-MsgGUID: KgZ2Tod7TQy/msqFuOQ11Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,203,1739865600"; 
+   d="scan'208";a="129026885"
+Received: from lkp-server01.sh.intel.com (HELO b207828170a5) ([10.239.97.150])
+  by orviesa010.jf.intel.com with ESMTP; 10 Apr 2025 20:47:19 -0700
+Received: from kbuild by b207828170a5 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1u35ML-000Amd-1P;
+	Fri, 11 Apr 2025 03:47:17 +0000
+Date: Fri, 11 Apr 2025 11:47:01 +0800
+From: kernel test robot <lkp@intel.com>
+To: Nicolas Pitre <nico@fluxnic.net>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-References: <90c7aa143beb6a28255b24e8ef8c96180d869cbb.1744271974.git.geert+renesas@glider.be>
- <Z_eCV8aTmr4t1_xZ@shikoro>
- <CAMuHMdV5w_9VpVrJPHy_EtmXoWV9fdBBO_YwhPt2TcX_D4TUxg@mail.gmail.com>
- <Z_eRTafA9mjDC175@shikoro>
- <CAMuHMdWqrJzzEfD0SePdTGDPyW0x5venEvq-aXw5R=+G2kzvJw@mail.gmail.com>
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: oe-kbuild-all@lists.linux.dev, Nicolas Pitre <npitre@baylibre.com>,
+	Dave Mielke <Dave@mielke.cc>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 05/11] vt: update ucs_width.c using gen_ucs_width.py
+Message-ID: <202504111036.YH1iEqBR-lkp@intel.com>
+References: <20250410011839.64418-6-nico@fluxnic.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="eFTvLTwSQPlKrW8+"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWqrJzzEfD0SePdTGDPyW0x5venEvq-aXw5R=+G2kzvJw@mail.gmail.com>
-
-
---eFTvLTwSQPlKrW8+
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20250410011839.64418-6-nico@fluxnic.net>
+
+Hi Nicolas,
+
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus linus/master v6.15-rc1 next-20250410]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Nicolas-Pitre/vt-minor-cleanup-to-vc_translate_unicode/20250410-092318
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20250410011839.64418-6-nico%40fluxnic.net
+patch subject: [PATCH 05/11] vt: update ucs_width.c using gen_ucs_width.py
+config: csky-randconfig-001-20250411 (https://download.01.org/0day-ci/archive/20250411/202504111036.YH1iEqBR-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250411/202504111036.YH1iEqBR-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202504111036.YH1iEqBR-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/vt/ucs_width.c:485: warning: Function parameter or struct member 'cp' not described in 'ucs_is_zero_width'
+>> drivers/tty/vt/ucs_width.c:485: warning: expecting prototype for Determine if a Unicode code point is zero(). Prototype was for ucs_is_zero_width() instead
+>> drivers/tty/vt/ucs_width.c:496: warning: Function parameter or struct member 'cp' not described in 'ucs_is_double_width'
+>> drivers/tty/vt/ucs_width.c:496: warning: expecting prototype for Determine if a Unicode code point is double(). Prototype was for ucs_is_double_width() instead
 
 
-> The watchdog bindings do not have an extra rule that lists all
-> compatible values a second time.
+vim +485 drivers/tty/vt/ucs_width.c
 
-I see, this only simplifies the 'if' condition preventing the dma
-properties. For me, that is just another reason to drop 'r9a06g033'
-altogether because that would simplify both occurences and make it all
-more readable, not less.
+   477	
+   478	/**
+   479	 * Determine if a Unicode code point is zero-width.
+   480	 *
+   481	 * @param ucs: Unicode code point (UCS-4)
+   482	 * Return: true if the character is zero-width, false otherwise
+   483	 */
+   484	bool ucs_is_zero_width(uint32_t cp)
+ > 485	{
+   486		return is_in_interval(cp, zero_width_ranges, ARRAY_SIZE(zero_width_ranges));
+   487	}
+   488	
+   489	/**
+   490	 * Determine if a Unicode code point is double-width.
+   491	 *
+   492	 * @param ucs: Unicode code point (UCS-4)
+   493	 * Return: true if the character is double-width, false otherwise
+   494	 */
+   495	bool ucs_is_double_width(uint32_t cp)
+ > 496	{
 
-And I still think the other two points which you decided to not quote
-still stand.
-
-
---eFTvLTwSQPlKrW8+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmf4KhkACgkQFA3kzBSg
-KbaUMg//VUwJwuBf3SXC6/rGPcOHgwxWUovdwbFMLvWdOgC/DrHB7yfa4hJfvxdh
-WNGphtwMAx7yrkrOf+r8kDUMR/1WUM5Mr9R7pqiZXntdQ9LYlxhI77lzrbZA7WwZ
-BXdv3EuOtnJq0bgk5HD0i8S3FWdWipU7EPI6Fjvq2bBI9jwXy2RRWUTY/tLvo32+
-vBQYvNbNPCUxcV0L3c5VMl5kQ4aKC8+bdHn6K0U9wAk4L3vRGWv/pMXGcM8+GBLF
-HKc3U68JO2po9sPitSVXLnlvsKbV/fp2ccR3PpTUw/a98DAZPMgO+3vl7yyiCn6s
-RPBivOqHBJ++0evfJ7mU675aTp3AE+qSN5H0KPTPxdTF1nV6iV+hlLEcGux1/6Df
-D7F09A9pExChur/t0o7SWLC+yLCleqGAA0P1Fzm9LamqIURcxb8kNCeWOznXip9r
-BKbZWuE3pKA9FKQJL64AFXaUpiKJ+So4NaB9AJMHpAbWOOPREToSLBy7f9tpNROz
-G7qW9TFF5319PiH3mPmx9i2Q5NPTj4vuNMeBD3x6ROy5aKY1vQobX7RRqYePm+U6
-dn9mmHMSbk7qIcRdCnHqrEdgPZvnNvK36D+K83k9TjSEVF7Toipxqv/n4vO2OqY9
-zczghZ1YTihB9IUvYG+r6Gb7h1iCunb2oYLecdndKR+iDAgpOhE=
-=6gpm
------END PGP SIGNATURE-----
-
---eFTvLTwSQPlKrW8+--
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
