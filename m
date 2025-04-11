@@ -1,109 +1,126 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E61201F584C
-	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 15:37:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF0CB20DD6B
+	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 15:44:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744385837; cv=none; b=bRqtvJaVdHq1ukcWJ76f0GjNTLSP9PMolx4/Hugmu9f2dq97tYO4Wt2lSRvF/V9zFaXqOUTID5GQXGonkFhTTVHF2NXzvl+I5QhfY31SM22idGi/yXtubZ9aEwQIMgDIPZhseu6LU5jta1NuTyRkf2saVTtkYMicxA1XkaswM+I=
+	t=1744386267; cv=none; b=tSA1zR1/WSoDMOVmbUnbUeEVt+nQr2vH204ulAm5ztYwAFhaxOWAHUcwQ4eOkkHifQwHc2weCJTv+Mjg9XhfjGZghAQGqZpez2k/y0naj14dQZIitiN5uMLCVWSBXliHaXEJ8FURpx8vtHnfLlsd1XNRRUuHuWI8CCCOy7nTna0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744385837; c=relaxed/simple;
-	bh=DDCedDsenMx3LoiOsAS4rTMDhX29pF/BbPfRwFTg3us=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XAdh5oCPJ3NXvHBRKqtm2zxdxqN7hF2PVCt2qMKdslide2Py1F1gBeCLBT6zGFsPdMLHo6ArNFCuAfBar6Qfptb/B5WLAhLTvi9RMM8ep0huRChqfp0vJ/XW7PGfb/kY++oAVNqzfBGuMEmZexhRwRKEO97kiTop/3VCBx6VhTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=iUKw9U6q; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1744386267; c=relaxed/simple;
+	bh=2wgs8xkLPcDzrMkx5fPptVOf8gKg9PkOJJY3p/JCOtE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CKK/y6WvTU80PgFvy7jBEoZCVybS3ogGRY6Xiur/itS9ji7DQ9fMqOntbSxWiQRDANngasdK9D3dwKIi2sBABNbmWfCID5CsNVBbJRyccmThZHK255JDGXmAQKP5TOgKlyhzBvGEzzFb75g+F080374wMVM+WYSxdD77JTwlFzA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com; spf=pass smtp.mailfrom=riscstar.com; dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b=La62plsp; arc=none smtp.client-ip=209.85.166.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=riscstar.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=riscstar.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="iUKw9U6q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=rM0P
-	vzizVt+4r2P9F3uwCc7rJavN4omFsTV8IYHzbTc=; b=iUKw9U6qIEyTp6sN9vNL
-	YTCX/XLCRcNuVIE8YviCfCbU7NTqRt75EgJKL9srjGNoDB6whXKKl9n7hPySZ98m
-	OXdBewcF3lBxLXpGfy33tavKMtSohGoNL1/+XwQgk6QcfrfC4huHaSS4hOXkm4UT
-	ecdWQb/TrtVYy25zU7kzy2SuSfhSnM37mxFzYDBo9lHNp9FCv43zxhpFrrQ2fwie
-	yJNI07NMWmEr5p4q+kRsWwGHbAC5JMv2vH2FnaQpS0oF0f2c/5LEG0L4ne1WwtTD
-	Cz7Bs/1UjEPxpvZZPyPu3msRSqn81t+xH/hUtji4R7uXHBm+kaRo5hF+rjHa5JUv
-	zA==
-Received: (qmail 1345770 invoked from network); 11 Apr 2025 17:37:10 +0200
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 11 Apr 2025 17:37:10 +0200
-X-UD-Smtp-Session: l3s3148p1@Fzy8eYIyrr8ujnsS
-Date: Fri, 11 Apr 2025 17:37:09 +0200
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Rob Herring <robh@kernel.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: Simplify DMA-less
- RZ/N1 rule
-Message-ID: <Z_k3JV1dEexJurdc@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Rob Herring <robh@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-References: <90c7aa143beb6a28255b24e8ef8c96180d869cbb.1744271974.git.geert+renesas@glider.be>
- <CAL_Jsq+sCDEO_n_TLmyNBfhc71NNWWe2UQ21jh8+AdHH=G+KAw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=riscstar-com.20230601.gappssmtp.com header.i=@riscstar-com.20230601.gappssmtp.com header.b="La62plsp"
+Received: by mail-il1-f170.google.com with SMTP id e9e14a558f8ab-3d5e2606a1bso18118535ab.0
+        for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 08:44:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=riscstar-com.20230601.gappssmtp.com; s=20230601; t=1744386265; x=1744991065; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=2r1c/vOhjgtnKBMGLqUCUilpq9yxWP4WtszcGjN9x5E=;
+        b=La62plsp+VYYlfiiDPGdu3r5WjNlfltaD9Sxk3FEvgxDTjjrzcm7aP54H7fIj9FDAH
+         8R3ooLXpA1wPZiH2qwApaSQGqnS4UgLX8XIw44y7cVDyCl0UZLPXM8n+4W5/nCNEehin
+         041+VdhdvJW37i7DJ1rrwChvp5e9aDR6TERIKHy/rmInbjm0ErGyJGiitrQ5h0kAi0bS
+         EOWUoB083qeTSVanZn3fA5XPNanoXG21YY0Km4KXECEl/vEuRLuA1B//7sr7PMfK67Xr
+         9O1ZDYHHPx6/3xtcKeYRq3NH+8g4IR5rSRMtiUxkKTcSkOIzWVulF4YJYq3afra0r5ZZ
+         3nAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744386265; x=1744991065;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2r1c/vOhjgtnKBMGLqUCUilpq9yxWP4WtszcGjN9x5E=;
+        b=bkpudE9E1ocGZeQL9QS0k63LClyoXgs6XH78lBbfDtLw/jE6m+MUUEj1IlCk2lktND
+         u1P/j6s+gDzc9m3kqcX+OAHKMSKhU+BYqb3+kOkLh02zMe8Vxz4tWNsz6dJhjPGqOYK7
+         Xm5d0Lp3peOx9rXvLvXhtYelJIQakVKcgR8vB0XmVm9P64V/XWJVkKDqU2OHbtFDXQa3
+         OQNfh0yqaJVKZkVJ4WSP9zkze6pAcvehsWZlyONAmUcXgQDx5o8LLKD61B5qYzqUtNIS
+         ICLevjwsm3SxKZR45HoufN32OYOKRQdISkR+tzVbjURJ/pLqA5u5MLwiijK4fCisXytH
+         PNCA==
+X-Forwarded-Encrypted: i=1; AJvYcCWZe+eC+duNjWM1PNS2bM4096wcwGJxw1M6Fkv7cfYa1/Do9I/GaG/7g4PeuLL5QSLQxd8K+bSldsNIzP0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YydFGCtPkKLcn0/Kn2VvxeuJCDxpKtlc7COsnAnkffNObVG+OWn
+	/JqrCUL/bGUH0hIdtUhHIFe4qytW+hJ6VM89azAEPnqpBX+TCQQuO0NDNfPgT1A=
+X-Gm-Gg: ASbGncuIdVE50M1X5CR53yOc4zb/EzKfzXSAmHZWNk5ROr8kCGla4C+xd8afuKTvyhN
+	lWcXOtnvAWFwuTpBFs8+d0Dwr3LQz8FpEzB4C5Lex73OeOMJxD8ngi8wLbF2wk5nYUfeZs8Otdp
+	pgjgg5TECFPCUm3Fl1+qGgjlC/mzEFY8xoWUpK/kWSkEolW/lClXa4DGkBysCBr45IdgLqKxWYs
+	zc+htZmWBj5Qqc+XZ+bDdckF18aWNqxDnvpVgn+GyWP6FhSWLaFh62jABNDab8h05PEABq+SQ2x
+	upw8jDeTuvXizXO9kyfQduaJ0TFOc7Y5wqJLBh6+KFpfB6hAFvkvXUM2BdWU90gb1Q5JO6ts0JI
+	/Pq/Yl/NlpJC2jA==
+X-Google-Smtp-Source: AGHT+IFK5sdaLIBjH4lJHrLTb46aftzH6TysHI0IthYxIBi/kqyaLNxSazBe9csKjIFKMCbouX8yUw==
+X-Received: by 2002:a05:6e02:3601:b0:3d0:4bce:cfa8 with SMTP id e9e14a558f8ab-3d7ec1dc7f4mr34974745ab.3.1744386264887;
+        Fri, 11 Apr 2025 08:44:24 -0700 (PDT)
+Received: from localhost.localdomain (c-73-228-159-35.hsd1.mn.comcast.net. [73.228.159.35])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4f505cf812dsm1276326173.18.2025.04.11.08.44.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Apr 2025 08:44:24 -0700 (PDT)
+From: Alex Elder <elder@riscstar.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: dlan@gentoo.org,
+	benjamin.larsson@genexis.eu,
+	bastien.curutchet@bootlin.com,
+	andriy.shevchenko@linux.intel.com,
+	u.kleine-koenig@baylibre.com,
+	lkundrak@v3.sk,
+	devicetree@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	spacemit@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/3] serial: 8250_of: support an optional bus clock
+Date: Fri, 11 Apr 2025 10:44:15 -0500
+Message-ID: <20250411154419.1379529-1-elder@riscstar.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="j5LROqLSsZoniIDc"
-Content-Disposition: inline
-In-Reply-To: <CAL_Jsq+sCDEO_n_TLmyNBfhc71NNWWe2UQ21jh8+AdHH=G+KAw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 
+The SpacemiT UART hardware requires a bus clock to be enabled in addition
+to the primary function clock.
 
---j5LROqLSsZoniIDc
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This series makes it possible to specify both clocks via DTS.  If a
+bus clock is required, it and the primary clock are fetched by name.
 
-On Fri, Apr 11, 2025 at 08:38:58AM -0500, Rob Herring wrote:
-> On Thu, Apr 10, 2025 at 3:23=E2=80=AFAM Geert Uytterhoeven
-> <geert+renesas@glider.be> wrote:
-> >
-> > There is no need to repeat all SoC-specific compatible values in the
-> > rule for DMA-less RZ/N1 variants.  Use wildcard "{}" instead, to ease
-> > maintenance.
-> >
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > ---
-> >  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml          | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
->=20
-> Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+Changes between v2 and v3:
+  - A third patch was added to disable the bus clock on suspend and
+    enable it again on resume, as requested by Yixun Lan
+  - Rob's Reviewed-by tag has been added to patch 1
+  - The first two patches are otherwise identical to what was in v2
 
-I'll send my counterpatch in some minutes.
+Here is version 2 of this series:
+  https://lore.kernel.org/lkml/20250409192213.1130181-1-elder@riscstar.com/
 
+Changes between v1 and v2:
+  - The DT binding was fixed to properly define the number of clocks and
+    clock names based on the compatible string, as suggested by Rob Herring
+  - Logic to look up the optional bus clock was changed as requested
+    by Andy Shevchenko
+  - The bus clock pointer (which was never used after it was enabled)
+    was renmoved from the of_serial_info structure
 
---j5LROqLSsZoniIDc
-Content-Type: application/pgp-signature; name="signature.asc"
+Here is the first version of this series:
+  https://lore.kernel.org/lkml/20250408175146.979557-1-elder@riscstar.com/
 
------BEGIN PGP SIGNATURE-----
+					-Alex
+Alex Elder (3):
+  dt-bindings: serial: 8250: support an optional second clock
+  serial: 8250_of: add support for an optional bus clock
+  serial: 8250_of: manage bus clock in suspend/resume
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmf5NyEACgkQFA3kzBSg
-KbbXmw/+MusRGq+V8xGIn23wJuJ8wEn4G0I/Vjqq3OyiyiLiSZbGIh/MhmA+L2Hy
-0ORgo3WiQ1ZsQ6l5l50zD+PNHpFJiK8CtZittnfOd1ut5eo1tW56VUtW+o24tLtM
-hKvfSMyeadCkmcOxwm93rk7fInFV+7/awef9xFhqUgaQA57+BR/H4hB0XGdfCKNa
-Qn2S82UgJwudJUd+wUe9axgxxDQTqgV9/Xa/8Amo5tSwEDMFxgywztc7WU4MQv3Z
-jW1j/Vq8kbwR8ehVim3t4oc0B1/6mXxYVxuhz1b6Yf7s7783Jtpv8f+lKVNdM8+0
-G5eoR6umjjBl9iMNp5CwWZyiCT8sSz6Mmyn0lzf2vMfX5qnqWC2wrWjFa7nEarGt
-zpFerc5NLH9PxTzPoOiKYXC2hbFZWOPOvycWllZkk/WQesdMyayU2MtjiZE/ToS7
-+r49XmgJWqKXZgMri+1ngRjU2NeUYNnQ2Rt6A9rgeawdIFcHbQ4mW5exj2KqkW3w
-LehF6lbK+hafvFSYwYX2YQeoQyVIXX/01faCoGc+Q+XwqDNSNrFGBycyBax4lX45
-M7I1qhAyjQ/2Z6HaR5hiG+V9axk5JYdgLixg3naixnqAr3vFjYeysdJwJ8H6xTms
-+YAKuCZP31AHSW0epA0GummihGi4BBy2uncZ/NMLDf+697hp+tA=
-=qv4s
------END PGP SIGNATURE-----
+ .../devicetree/bindings/serial/8250.yaml      | 30 ++++++++++++++++++-
+ drivers/tty/serial/8250/8250_of.c             | 13 +++++++-
+ 2 files changed, 41 insertions(+), 2 deletions(-)
 
---j5LROqLSsZoniIDc--
+base-commit: 0af2f6be1b4281385b618cb86ad946eded089ac8
+-- 
+2.45.2
+
