@@ -1,81 +1,89 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFA5821B91F;
-	Fri, 11 Apr 2025 16:16:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5126219EA5;
+	Fri, 11 Apr 2025 16:23:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744388182; cv=none; b=I4s3JrTqbA02ylxYnB+SAOBCdfr+8A2jGylI/SABggX5j4ohUTWvNq6IDar8/a1beI0K+o4DuEow8eEry+JhiiQj5RBJVLw5Zu9mWD+6XgXXZZs1R7DmeBh+e1W258MbGNOpvQForrK4rGxAct722ocbcBKQzyuv1zel53NDdZ4=
+	t=1744388625; cv=none; b=AR+Aoy4kPAXc93AwHOeBR78QECqS2HRebytPNz0lfQYPJ61v2ba0wburnuyZp9og0pTpOU76YpIn1rH2vREj6CLax5rdl2a604ptSlos4qlW7IQ/8bXC2MBYz6MWFiumeCd1g6PtFi6nUHc8NORoMp/fVLEv/g7nho4N/SwrC9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744388182; c=relaxed/simple;
-	bh=2xLOnobnJNB/BjpuDTwIiL5vfQ3JlI5SqTOn+fLn8Y8=;
-	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wz2BClyC4+EpkmtbGLC50qSKqf3BL17rYPBjSMgN6ykmSpcZptg3p/BOuwK3kt+B4ZlF27q5OrO/1VQKV++P8Dva3A+8A2bBh7DmYqsiAVB5yCZ3M+CnQ01OHE9iBlKZmwLy1hNaNRf6R82ncf7etPKHGnjVvD31KHiN8gNKvqY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h3DMBe8E; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744388625; c=relaxed/simple;
+	bh=g/pganQZSx52qNp6jjj4GSiWZuSgoU31JNjxvldnCLY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uxvSvVoKhBBgg+bCDItkQzAor2QJFi0XZ0FFVJ22ABVmw0PWQAjWktH7zgbdlXpe8EWDYedts4Rf2jyqokwTTPmJ3oVqPse3OdYZ3N3Saj9KdOJQOlUKVvAW16+j53j8ghBpE+FqAh/mxMQ542MpsN1vIw4ZEWzpZ0iKlY8hZHI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uHtsDDWN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h3DMBe8E"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C68BC4CEE2;
-	Fri, 11 Apr 2025 16:16:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uHtsDDWN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAB6C4CEE9;
+	Fri, 11 Apr 2025 16:23:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744388181;
-	bh=2xLOnobnJNB/BjpuDTwIiL5vfQ3JlI5SqTOn+fLn8Y8=;
-	h=Date:From:To:Subject:References:In-Reply-To:From;
-	b=h3DMBe8En4eXq6ouOoXiHBhLql/hno//b0wa9fpaHGgk0bSG0eWvHnixVxt2OGPQE
-	 jSx3V3tzBves5w6dYwh0JzC9AE4zaN6LsXCMUTqJ9Ols93RqjETh66/ODLATebQQVQ
-	 9w+Q8NLImiE3X/fyBK7tPZ4jwdu/uZPfDhunhOom4n1ybs9llQdL5ktsBluuO1Y3GZ
-	 Xq6eRlg7IuRkXXPz1InoS3AL6D6ndHtSEXPsDSSlMEN6Wjvj2JO3wUGtH4tv5g57Pe
-	 oxhh1fTyDQYRwvNx3O/taVVMxTRWoxN3aluikAGjsPXi80Kwvt2GnOXvkrzq+lH7uI
-	 wK2bsjh2WwUIA==
-Date: Fri, 11 Apr 2025 11:16:20 -0500
-From: Rob Herring <robh@kernel.org>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: Simplify DMA-less
- RZ/N1 rule
-Message-ID: <20250411161620.GA3329787-robh@kernel.org>
-References: <90c7aa143beb6a28255b24e8ef8c96180d869cbb.1744271974.git.geert+renesas@glider.be>
- <CAL_Jsq+sCDEO_n_TLmyNBfhc71NNWWe2UQ21jh8+AdHH=G+KAw@mail.gmail.com>
- <Z_k3JV1dEexJurdc@shikoro>
+	s=k20201202; t=1744388625;
+	bh=g/pganQZSx52qNp6jjj4GSiWZuSgoU31JNjxvldnCLY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=uHtsDDWNjwBYEsmUM7icr8cAnu2sgZzilRSQvSL3Yt1whdK8e1N+aYVlAN1f8VjbE
+	 2zgXB7F+y6eJN9vmMe+H1sTDswCA0YJ8RQKZQW16Fbb1Qhz8Ii1hnXnnX6rLI5VQOj
+	 KRTvi4M+TicjxkBN0pgY0QV9H/Pt54+mqqFuslLN5t5FX6/n0FBGBFYhnlPVA/cZta
+	 UREhHxPocCfE+Mpn6qwVMJLfZozBpmWLpXDLwks/1VtgfYowsPtEpK6lRunAQY5MPg
+	 5eU8pi+mQc/hbeewINYCvgL74wwCclCu/GE0a0euqWxWUS/XkDzvFIRiP/rnltPzsu
+	 2FTgS5LM+GFCw==
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5e6167d0536so3945613a12.1;
+        Fri, 11 Apr 2025 09:23:45 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWJuhffQzn/tqBC8D73jaeGFwGOnRdSuyShytGatuj+5XLPDfF5jmdhxNz+aoVKlM2gRWODSCsdJTxeq2AB@vger.kernel.org, AJvYcCXGiu1uCnBC1N7ujJ/yJBTbEtyK/8T+AnUi3Gw5uBrv8LiSQ1tr+Q+YaUySfu7eWI71ro9C7CS+uovP@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy2EFcnY7Rce/cRd3SpGlqGs/0xaKmJ2HcNVIAiqlHp5RmzD6dp
+	Ve49G7uoX8miJXiRCOXUEght4sGRNc0RsXuAK+9jp+kXH6gHx/phEIntRgGNZPJr88sKKtkfE4G
+	AIcyUP5b6F142e9KQ3yrcc09qMQ==
+X-Google-Smtp-Source: AGHT+IHuwjMlWSeE9LYHHyXbSAAkws9dKvVGcB21xtxVyLv8RWBNnUWqa03IxQZN90/AdHGNnORtFsNCROVqplN0GiU=
+X-Received: by 2002:a05:6402:51ce:b0:5e4:9726:7779 with SMTP id
+ 4fb4d7f45d1cf-5f36f78034fmr2576755a12.2.1744388623871; Fri, 11 Apr 2025
+ 09:23:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Z_k3JV1dEexJurdc@shikoro>
+References: <20250411155220.5940-2-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20250411155220.5940-2-wsa+renesas@sang-engineering.com>
+From: Rob Herring <robh@kernel.org>
+Date: Fri, 11 Apr 2025 11:23:32 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+DOp8YOcshTVqYcbmgbuc4etTQeeswmMUYjw1sws4mAA@mail.gmail.com>
+X-Gm-Features: ATxdqUEZECOG4IEUcTzedr2PdAn1TkrPnqxsawpkiGmWrIvHKwA_4AUJi0ReCeE
+Message-ID: <CAL_Jsq+DOp8YOcshTVqYcbmgbuc4etTQeeswmMUYjw1sws4mAA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: remove N1S binding
+To: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: linux-renesas-soc@vger.kernel.org, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 11, 2025 at 05:37:09PM +0200, Wolfram Sang wrote:
-> On Fri, Apr 11, 2025 at 08:38:58AM -0500, Rob Herring wrote:
-> > On Thu, Apr 10, 2025 at 3:23 AM Geert Uytterhoeven
-> > <geert+renesas@glider.be> wrote:
-> > >
-> > > There is no need to repeat all SoC-specific compatible values in the
-> > > rule for DMA-less RZ/N1 variants.  Use wildcard "{}" instead, to ease
-> > > maintenance.
-> > >
-> > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > ---
-> > >  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml          | 4 +---
-> > >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
-> > Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
-> 
-> I'll send my counterpatch in some minutes.
+On Fri, Apr 11, 2025 at 10:52=E2=80=AFAM Wolfram Sang
+<wsa+renesas@sang-engineering.com> wrote:
+>
+> This is one of four (quite randomly) added bindings for Renesas RZ/N1S.
+> Essential bindings like clock support are missing for 8 years. With 6MB
+> of internal RAM only, N1S is not a prime candidate for running Linux,
+> unlike the DDR-RAM capable N1D. I could not find any further activity in
+> upstreaming N1S support, neither for Linux or any other OS. So, remove
+> these half-baked dangling bindings which are incomplete and look
+> unprofessional. We can happily add them back if somebody offers complete
+> support for it. Until then, let's enjoy the easier handling of a single
+> 'const'.
+>
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>
+> This would render Geert's cleanup unnecessary:
+>
+> https://lore.kernel.org/r/90c7aa143beb6a28255b24e8ef8c96180d869cbb.174427=
+1974.git.geert+renesas@glider.be
 
-IMO, whether you drop the platform is orthogonal to this patch. 
+To repeat from that thread, IMO, whether you drop the platform is
+orthogonal to Geert's patch.
 
-Whether or not the platform can run Linux is irrelevant to whether there 
-are bindings. Can it run u-boot? Now, if no one is going to make the 
-bindings complete and upstream a .dts for it, then remove it.
+Seems like the platform is pretty dead. If you want to send a single
+patch removing all the bindings, I can take it.
 
 Rob
-
-
