@@ -1,90 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.gentoo.org (woodpecker.gentoo.org [140.211.166.183])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4774128150A;
-	Fri, 11 Apr 2025 20:50:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 943F126658F;
+	Fri, 11 Apr 2025 22:04:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.211.166.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744404635; cv=none; b=TWkXUklKvpzBdpf/qBAcLbL9DhmldBBoD1IUHI+k9sMdT74QyMRBgLkx5hWiX7qzijb0TQ86vI/UUV3ejq+P0GIBgBZN4qWmRNEWq0++KsbJ6M5ohAmVlEEr1sLJQGROejaaSpaAQRj1550W2vh0xvGPuKFnBFzL6kZkX9dPn8c=
+	t=1744409081; cv=none; b=F0fxVBJR571BC+99uGbtsEZxCNnY+j67FVkOWsEYBzcUCQhz/mRNELkfp3EWrBYzIUUfU7n9BCd5hQlBY3grrWrPDNKhVqvM5YUahiTGwuZxTvk87qg06IZZF8fVlXDa9KWMI+ZRGNKFJudEoQyRH6OYCbFcUhRCFfqZyKfuEdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744404635; c=relaxed/simple;
-	bh=v7tIIykVpkEeHOHOdVPrbm4pD3gJatssoBZugakk8FE=;
+	s=arc-20240116; t=1744409081; c=relaxed/simple;
+	bh=1/jvI+7IxssVFKwkR/nVTeszMiAniorxW/pBqjjU/B0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DYvUM97it6sHn+z8PPqNervFC78mRsszHy4SnqqA3vNZ9Wl8js9bfFd11MJR/0tlYBLOh2mCqIsMjkvRot3COXOOFoQTyf61xsOKRUuIOS2fEC5Swsz8rezPXki/N0tmKfOua8xnJ/+Lsp6vh1fuOszfOZpdC9m04kr4AEJdyaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vMpbqU2S; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vMpbqU2S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5E2C4CEE2;
-	Fri, 11 Apr 2025 20:50:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744404633;
-	bh=v7tIIykVpkEeHOHOdVPrbm4pD3gJatssoBZugakk8FE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=vMpbqU2STK5lIwzX/bYaFEDT5mNwvs2Eox251aQahEaFWvcGdjRCUqLMEwhuAo5VZ
-	 q3D2TRw+ySJvovXAPJ+Q/c9DQ5ParyjN2e9LaaJrpEQStHIFOHpZCG3alMxAosqKCn
-	 iBa4n3xAxZT70+GjwFMnAkaWkC8Hh99rJzWISJypPYVw7TbA0X0KcBBEmWxSA5Qu3d
-	 s9ujKKNJ961v82mdsw50NahhCGc2eEXumTr3djWDnx9FzfR5nx+rKHv+i6zMZ6uhJs
-	 st0Hz2SNm5rfVLtR1BMUTg32bDKVH7rXkjnlwBXXFZ6X+wqebdUHAOXidbfb5LnHfd
-	 3SteTcsAX5JLg==
-Date: Fri, 11 Apr 2025 21:50:26 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org,
-	Marc Kleine-Budde <mkl@pengutronix.de>,
-	Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Wolfgang Grandegger <wg@grandegger.com>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: remove RZ/N1S bindings
-Message-ID: <d2620b77-166a-427f-86e1-9d2dcc34d9ba@sirena.org.uk>
-References: <20250411194849.11067-2-wsa+renesas@sang-engineering.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=jUfx8h8qA0a2RGwFo0qlNoYLRZRXK0kgHMQ1jk6BrV7+u/ZQ/AANmuLQmwz5+GpI6xUzFCTX7/bjsLNyHR9zifitTkEE99iuow1v7TY9CNMYZBbcn5/qnTBcwZzfXPIj4Nr8Hc0tqK7wUXKmOH4JLHCLAh5M8QGJ32WeW6DGQ08=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org; spf=pass smtp.mailfrom=gentoo.org; arc=none smtp.client-ip=140.211.166.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gentoo.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gentoo.org
+Received: from localhost (unknown [116.232.27.72])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: dlan)
+	by smtp.gentoo.org (Postfix) with ESMTPSA id 4E1A7343859;
+	Fri, 11 Apr 2025 22:04:37 +0000 (UTC)
+Date: Fri, 11 Apr 2025 22:04:25 +0000
+From: Yixun Lan <dlan@gentoo.org>
+To: Alex Elder <elder@riscstar.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, andy.shevchenko@gmail.com,
+	benjamin.larsson@genexis.eu, bastien.curutchet@bootlin.com,
+	andriy.shevchenko@linux.intel.com, u.kleine-koenig@baylibre.com,
+	lkundrak@v3.sk, devicetree@vger.kernel.org,
+	linux-serial@vger.kernel.org, spacemit@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/3] serial: 8250_of: manage bus clock in
+ suspend/resume
+Message-ID: <20250411220425-GYA22939@gentoo>
+References: <20250411203828.1491595-1-elder@riscstar.com>
+ <20250411203828.1491595-4-elder@riscstar.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="vH/+6C877RGjxnCX"
-Content-Disposition: inline
-In-Reply-To: <20250411194849.11067-2-wsa+renesas@sang-engineering.com>
-X-Cookie: You will be awarded some great honor.
-
-
---vH/+6C877RGjxnCX
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20250411203828.1491595-4-elder@riscstar.com>
 
-On Fri, Apr 11, 2025 at 09:47:57PM +0200, Wolfram Sang wrote:
-> Except for these four quite random bindings, no further upstream
-> activity has been observed in the last 8 years. So, remove these
-> fragments to reduce maintenance burden.
+hi Alex,
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Glad to see first 2 patches already accepted
+This version is better than v3, thanks
 
---vH/+6C877RGjxnCX
-Content-Type: application/pgp-signature; name="signature.asc"
+On 15:38 Fri 11 Apr     , Alex Elder wrote:
+> Save the bus clock pointer in the of_serial_info structure, and use
+> that to disable the bus clock on suspend and re-enable it on resume.
+> 
+> Signed-off-by: Alex Elder <elder@riscstar.com>
+Reviewed-by: Yixun Lan <dlan@gentoo.org>
 
------BEGIN PGP SIGNATURE-----
+> ---
+>  drivers/tty/serial/8250/8250_of.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_of.c b/drivers/tty/serial/8250/8250_of.c
+> index a90a5462aa72a..d178b6c54ea18 100644
+> --- a/drivers/tty/serial/8250/8250_of.c
+> +++ b/drivers/tty/serial/8250/8250_of.c
+> @@ -24,6 +24,7 @@
+>  
+>  struct of_serial_info {
+>  	struct clk *clk;
+> +	struct clk *bus_clk;
+>  	struct reset_control *rst;
+>  	int type;
+>  	int line;
+> @@ -138,6 +139,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
+>  			goto err_pmruntime;
+>  		}
+>  
+> +		info->bus_clk = bus_clk;
+>  		port->uartclk = clk_get_rate(info->clk);
+>  	}
+>  	/* If current-speed was set, then try not to change it. */
+> @@ -299,6 +301,7 @@ static int of_serial_suspend(struct device *dev)
+>  	if (!uart_console(port) || console_suspend_enabled) {
+>  		pm_runtime_put_sync(dev);
+>  		clk_disable_unprepare(info->clk);
+> +		clk_disable_unprepare(info->bus_clk);
+>  	}
+>  	return 0;
+>  }
+> @@ -311,6 +314,7 @@ static int of_serial_resume(struct device *dev)
+>  
+>  	if (!uart_console(port) || console_suspend_enabled) {
+>  		pm_runtime_get_sync(dev);
+> +		clk_prepare_enable(info->bus_clk);
+>  		clk_prepare_enable(info->clk);
+>  	}
+>  
+> -- 
+> 2.45.2
+> 
+> 
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmf5gJIACgkQJNaLcl1U
-h9AkTAf/fHk08GWeoY58+CGME4cGPGaOVstp6Z/ekdWGfQ0wrNfuxqg8Zt94GxVI
-zAuDxwQG9VCHjlvq7DeZK89SLXXtsZsPlHQDtfd2kLFqDqmPe3ndETnR8Qn1sscC
-J3TJsFsKiETLY2zhvFBM6Kq11iFMmmIO8fBbFwbJobVDG8NAoc2GSH8n1VdxOqEW
-hP7WRlZqOFVxKnonHLSWq/PLCCs+f5vx3gVWyLbb4klnz1TCoMKQRxr7x+isA4/4
-OSUEqEgpvUo6rqRMCbGcLVbV9usNRpSBtWNsoPobP0KWrXNlgecasFlYeyZq2CtH
-MlnA6YWkvtgQf08S0/8KUpzmpPJZ5g==
-=cMYw
------END PGP SIGNATURE-----
-
---vH/+6C877RGjxnCX--
+-- 
+Yixun Lan (dlan)
+Gentoo Linux Developer
+GPG Key ID AABEFD55
