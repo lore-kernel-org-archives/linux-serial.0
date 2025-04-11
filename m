@@ -1,89 +1,280 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5126219EA5;
-	Fri, 11 Apr 2025 16:23:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F0EC1DE2DB;
+	Fri, 11 Apr 2025 16:34:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744388625; cv=none; b=AR+Aoy4kPAXc93AwHOeBR78QECqS2HRebytPNz0lfQYPJ61v2ba0wburnuyZp9og0pTpOU76YpIn1rH2vREj6CLax5rdl2a604ptSlos4qlW7IQ/8bXC2MBYz6MWFiumeCd1g6PtFi6nUHc8NORoMp/fVLEv/g7nho4N/SwrC9o=
+	t=1744389278; cv=none; b=XB330HtAdLO6RDBz87rDlJYK5FSdchBJ0CTg/bqzHTpmUiT/WwGaaUJ6XDnzC6bqbxDjmYf3+XLLD4LqMKVD79jx7btKjTX36et0zSo/22Gtf7wcFlbkQYbMZXx0SbIJKqD/booBu48awxB2ds/OTYVWTihqMwSJr7S+M0GjbIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744388625; c=relaxed/simple;
-	bh=g/pganQZSx52qNp6jjj4GSiWZuSgoU31JNjxvldnCLY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uxvSvVoKhBBgg+bCDItkQzAor2QJFi0XZ0FFVJ22ABVmw0PWQAjWktH7zgbdlXpe8EWDYedts4Rf2jyqokwTTPmJ3oVqPse3OdYZ3N3Saj9KdOJQOlUKVvAW16+j53j8ghBpE+FqAh/mxMQ542MpsN1vIw4ZEWzpZ0iKlY8hZHI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uHtsDDWN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744389278; c=relaxed/simple;
+	bh=TPsDNdO0J5tFY3gM6ug4IFFbTqGLVdNs3Fa7k4whx34=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hFNnwUi87wgH6V5KAHM03eH//r8Qjb5urhQvHuATDmqhMn3chA8qDb/LCfH1LxxLN1FTSVmxBDk0wGepHRbQKv/0Dyi9t4EL8vJEvGMJe1WtuDS7SDSbemWIFWH6IbJdAXc48X2XTP5QBrYo1p/AYt5AhCW9tgmnqr/A1pUdW0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gVc59QP6; arc=none smtp.client-ip=209.85.210.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uHtsDDWN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAB6C4CEE9;
-	Fri, 11 Apr 2025 16:23:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744388625;
-	bh=g/pganQZSx52qNp6jjj4GSiWZuSgoU31JNjxvldnCLY=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=uHtsDDWNjwBYEsmUM7icr8cAnu2sgZzilRSQvSL3Yt1whdK8e1N+aYVlAN1f8VjbE
-	 2zgXB7F+y6eJN9vmMe+H1sTDswCA0YJ8RQKZQW16Fbb1Qhz8Ii1hnXnnX6rLI5VQOj
-	 KRTvi4M+TicjxkBN0pgY0QV9H/Pt54+mqqFuslLN5t5FX6/n0FBGBFYhnlPVA/cZta
-	 UREhHxPocCfE+Mpn6qwVMJLfZozBpmWLpXDLwks/1VtgfYowsPtEpK6lRunAQY5MPg
-	 5eU8pi+mQc/hbeewINYCvgL74wwCclCu/GE0a0euqWxWUS/XkDzvFIRiP/rnltPzsu
-	 2FTgS5LM+GFCw==
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-5e6167d0536so3945613a12.1;
-        Fri, 11 Apr 2025 09:23:45 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWJuhffQzn/tqBC8D73jaeGFwGOnRdSuyShytGatuj+5XLPDfF5jmdhxNz+aoVKlM2gRWODSCsdJTxeq2AB@vger.kernel.org, AJvYcCXGiu1uCnBC1N7ujJ/yJBTbEtyK/8T+AnUi3Gw5uBrv8LiSQ1tr+Q+YaUySfu7eWI71ro9C7CS+uovP@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy2EFcnY7Rce/cRd3SpGlqGs/0xaKmJ2HcNVIAiqlHp5RmzD6dp
-	Ve49G7uoX8miJXiRCOXUEght4sGRNc0RsXuAK+9jp+kXH6gHx/phEIntRgGNZPJr88sKKtkfE4G
-	AIcyUP5b6F142e9KQ3yrcc09qMQ==
-X-Google-Smtp-Source: AGHT+IHuwjMlWSeE9LYHHyXbSAAkws9dKvVGcB21xtxVyLv8RWBNnUWqa03IxQZN90/AdHGNnORtFsNCROVqplN0GiU=
-X-Received: by 2002:a05:6402:51ce:b0:5e4:9726:7779 with SMTP id
- 4fb4d7f45d1cf-5f36f78034fmr2576755a12.2.1744388623871; Fri, 11 Apr 2025
- 09:23:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gVc59QP6"
+Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-736c062b1f5so1937487b3a.0;
+        Fri, 11 Apr 2025 09:34:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1744389275; x=1744994075; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=i2OP7V+QE6E9gg3GbdLcYE8UHgSFfj9Jnjg73a7+53s=;
+        b=gVc59QP68gF8RNguvnLf7TKxOBGzr11uH3fLOvbaypk4RDbI1QIl1E4bzXB3HdjwVx
+         EV8Wf7D1EK9HPYtfSdq9Z+6ZGA9iw26/r8eft9zkFNrtFfFJRmz5K3UHaIO9SXz5XkyO
+         NIpohQMHLrsnTCK5xkzF2swRkbhQXBwsjGpbZT2GsdSVebSPu7VjgtI73pqC4LM6e04o
+         dkRo7uFs4Jr+G13i2PSY2r2+3LEW1RAstPvuUKg07s7wUR5Bxc8parJ6drQ5MEChbcr1
+         Dfk/Mhd/nPLnT+yVPVdZW1cs6BU9M8qlUO46z5bm3mo/xkwMmokmmgzb3p4iIrXDSS7U
+         jPVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744389275; x=1744994075;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=i2OP7V+QE6E9gg3GbdLcYE8UHgSFfj9Jnjg73a7+53s=;
+        b=BCb9oXPoz9pR/aDamY9cPBXQWw5/SlfEJ7MZjCMkc4lr4HCMsi/Kv9X2POmlQOjJ/b
+         PhPZjdJFmtrEN3Ni0/Cri6P+fHZQkpwp3/rJnrGeiQK/bA/oPJuPGjPZ/e8AsLgwf4Gw
+         Tv8J3XYpcFhwIUX8bQfJP0daL7OR+CQYWPpuatT0Q9ju8Ntqum7j66B0gja+gzPE5vls
+         ID2cwt0KLmR85UiMtxK3ANawackkwdWrDdakUVkVB67LhGcn8XoFz1sddnw+jshwhOca
+         Ttw1QW4ETrn74JgkDPSvMJjWyZD8pfvkFvk0D7fEP+4yqFSt7RTC7mkQ6Qen97ch4eWN
+         3i6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUI/KgDsiA7f1xI/TLG89EhaMlm5LSvw1r3eptdg9GmswiQsTyJeu/k2jthm0eL2GUz4mz0vM9vspaw/xtu@vger.kernel.org, AJvYcCVYW1IVwPrSoAKWxWsB/nCClGs8N9UipmpsxTiAaw3uokVL58SzQDieLAq3cP1NlgI8/Y3OEcm5@vger.kernel.org, AJvYcCVaZTs7YG2x09BmjaeTk0Tq3LlAYSsnwCnREYML77r8kion6DO6CnXNOMmYzmOlEnKZuNf2/Gfm33ZlIUgN@vger.kernel.org, AJvYcCVuQsZ9R0Lw8PzgERdOAv4+Ih8vPHkyiCBisJlWmYUbAIDCVmUu0nWaJHy2cm4b42Q6CfIl6NT1rKlO2OI=@vger.kernel.org, AJvYcCWaOeSbAsVTtan1M6+6LyANIRi9uQeyLPjsohdKVDzbw4kg4dAy3C0BO5rHzsLifrQ/ZqI=@vger.kernel.org, AJvYcCXM4ju2CzYOvAiZ5MVTwns1PhkCGYB3TyKeBQmf7lA6M2EZ/ySd+C6Y12YIB27QXOwoDGZ49AvfsAp1nQA=@vger.kernel.org, AJvYcCXhou8VB7YSa8JszAHGL2KihBSBJ2dRM5OvRiCXxLzITQuTJDCIBogQqRycazOjOh66Bvb8ukZT8F2K6tyNyUE=@vger.kernel.org, AJvYcCXzp8Hc1t3QFwawh4FjZ0ynBUCTmASriqXeohL5gT9ywOUcuE/gTf29Kh13BklxOdmDcaVP3NtLXAJ/ZVQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyAuY+DxJFbyJwgkSdLPfqqF8OoEzszrXJCdRVpRznz4lPwgmhY
+	30ezz7BWFBeGcRAtiodZsrke2DJa9PM4vO50s37L3hldJaqb7dM1
+X-Gm-Gg: ASbGncvNFPpbRKPjaHvwHoLKT2muKrx87qlxKwy+B8tkix1lBUeFzHM/qB99Vv0Xlic
+	Kk+sTDI1Tlet7lbNCgKN6AISzVwIrD81z8pZ4wJhNg0MZ/W5ORObt/Gnkvk49v8U2WkMQfEHDLZ
+	MpTDls94znAlJ4U51/S6js9j/KNkVI3xGWw+kIFkdU3Fp15BqKaD+F0uq7X4FRV+sJXHGH/RSr0
+	1ojYoMap8bf7wG4YimOO6GJGiPCnxoRQTOw2et1BUraXTdGS/DD+CleHmWnmg9gUiaVrpJiCtTn
+	BdUPJqzM+P3v8i8o1BF9wlLaG4OWIZmadoKkiib2+3qA+LR+SyA1HJEXaPiPPP3f70Lz1MMtHK4
+	lvuU=
+X-Google-Smtp-Source: AGHT+IEYqWSvO9nmRhuvu9Nod5I62ZHK0q1nd8Adc2Nrxqu798p8njg5jLN2TKIb2S4uFWzFr2oiJA==
+X-Received: by 2002:a05:6a20:d503:b0:1f5:902e:1e97 with SMTP id adf61e73a8af0-2017998c2d3mr6583017637.41.1744389275369;
+        Fri, 11 Apr 2025 09:34:35 -0700 (PDT)
+Received: from visitorckw-System-Product-Name ([140.113.216.168])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b06161333a8sm258713a12.7.2025.04.11.09.34.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Apr 2025 09:34:34 -0700 (PDT)
+Date: Sat, 12 Apr 2025 00:34:24 +0800
+From: Kuan-Wei Chiu <visitorckw@gmail.com>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Yury Norov <yury.norov@gmail.com>, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	jk@ozlabs.org, joel@jms.id.au, eajames@linux.ibm.com,
+	andrzej.hajda@intel.com, neil.armstrong@linaro.org,
+	rfoss@kernel.org, maarten.lankhorst@linux.intel.com,
+	mripard@kernel.org, tzimmermann@suse.de, airlied@gmail.com,
+	simona@ffwll.ch, dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, akpm@linux-foundation.org, jdelvare@suse.com,
+	linux@roeck-us.net, alexandre.belloni@bootlin.com, pgaj@cadence.com,
+	alistair@popple.id.au, linux@rasmusvillemoes.dk,
+	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+	jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw, Frank.Li@nxp.com,
+	linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
+	david.laight.linux@gmail.com, andrew.cooper3@citrix.com,
+	Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH v4 00/13] Introduce parity_odd() and refactor redundant
+ parity code
+Message-ID: <Z/lEkDwefWvw4ZA3@visitorckw-System-Product-Name>
+References: <20250409154356.423512-1-visitorckw@gmail.com>
+ <Z_amQp3gK5Dm8Qz3@yury>
+ <Z/a5Qh/OeLT8JBS4@visitorckw-System-Product-Name>
+ <Z_a9YpE46Xf8581l@yury>
+ <e97a83a2-dabd-4dc3-b69a-840ca17d70b5@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250411155220.5940-2-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20250411155220.5940-2-wsa+renesas@sang-engineering.com>
-From: Rob Herring <robh@kernel.org>
-Date: Fri, 11 Apr 2025 11:23:32 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+DOp8YOcshTVqYcbmgbuc4etTQeeswmMUYjw1sws4mAA@mail.gmail.com>
-X-Gm-Features: ATxdqUEZECOG4IEUcTzedr2PdAn1TkrPnqxsawpkiGmWrIvHKwA_4AUJi0ReCeE
-Message-ID: <CAL_Jsq+DOp8YOcshTVqYcbmgbuc4etTQeeswmMUYjw1sws4mAA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: remove N1S binding
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Magnus Damm <magnus.damm@gmail.com>, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e97a83a2-dabd-4dc3-b69a-840ca17d70b5@zytor.com>
 
-On Fri, Apr 11, 2025 at 10:52=E2=80=AFAM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
->
-> This is one of four (quite randomly) added bindings for Renesas RZ/N1S.
-> Essential bindings like clock support are missing for 8 years. With 6MB
-> of internal RAM only, N1S is not a prime candidate for running Linux,
-> unlike the DDR-RAM capable N1D. I could not find any further activity in
-> upstreaming N1S support, neither for Linux or any other OS. So, remove
-> these half-baked dangling bindings which are incomplete and look
-> unprofessional. We can happily add them back if somebody offers complete
-> support for it. Until then, let's enjoy the easier handling of a single
-> 'const'.
->
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->
-> This would render Geert's cleanup unnecessary:
->
-> https://lore.kernel.org/r/90c7aa143beb6a28255b24e8ef8c96180d869cbb.174427=
-1974.git.geert+renesas@glider.be
+On Wed, Apr 09, 2025 at 07:09:28PM -0700, H. Peter Anvin wrote:
+> On 4/9/25 11:33, Yury Norov wrote:
+> > > > 
+> > > I don't have a strong preference for the name, but if I had to guess
+> > > the return value from the function prototype, I would intuitively
+> > > expect an int to return "0 for even and 1 for odd," and a bool to
+> > > return "true for even, false for odd." I recall Jiri and Jacob shared
+> > > similar thoughts, which is why I felt adding _odd could provide better
+> > > clarity.
+> > 
+> > I think they said they are convinced that parity should return 1 for
+> > odd because of folding and __builtin_parity() arguments.
+> > 
+> 
+> And for bool, 0 == false, and 1 == true. In fact, the *definitions* for
+> false and true in C (but not C++) is:
+> 
+> <stdbool.h>:
+> typedef _Bool bool;
+> #define false	0
+> #define true	1
+> 
+> If someone wants to make more clear, it would be better to put "typedef bool
+> bit_t" in a common header, but that personally seems ridiculous to me.
+>   >>>> type from u8 to u64 for broader applicability, and updates its return
+> > > > > type from int to bool to make its usage and return semantics more
+> > > > > intuitive-returning true for odd parity and false for even parity. It
+> > > > > also adds __attribute_const__ to enable compiler optimizations.
+> > > > 
+> > > > That's correct and nice, but can you support it with a bloat-o-meter's
+> > > > before/after and/or asm snippets? I also think it worth to be a separate
+> > > > patch, preferably the last patch in the series.
+> > > > 
+> > > I quickly tested it with the x86 defconfig, and it appears that the
+> > > generated code doesn't change. I forgot who requested the addition
+> > > during the review process, but I initially thought it would either
+> > > improve the generated code or leave it unchanged without significantly
+> > > increasing the source code size.
+> > 
+> > That's what I actually expected, but was shy to guess openly. :). It's
+> > hard to imagine how compiler may improve code generation in this case...
+> > 
+> > This attribute is used when there's an asm block, or some non-trivial
+> > function call. In this case, the function is self-consistent and makes
+> > no calls. And you see, const annotation raises more questions than
+> > solves problems. Let's drop it.
+> 
+> Ah yes; one of the quirks about gcc asm is that an asm is implicitly assumed
+> "const" (with no memory operands) or "pure" (with memory operands) unless
+> declared volatile or given an explicit "memory" clobber.
+> 
+> So yes, the compiler can most definitely derive the constness from the form
+> of the function even in the variable case.
+> 
+> I would still like to see __builtin_parity() being used as an architecture
+> opt-in; it can, of course, also be unconditionally used in the constant
+> case.
+> 
+> So in the end one of these two become my preferred implementation, and I
+> really don't think it is very complicated:
+> 
+> #ifndef use_builtin_parity
+> #define use_builtin_parity(x) __builtin_constant_p(x)
+> #endif
+> 
+> static inline bool parity8(u8 val)
+> {
+> 	if (use_builtin_parity(val))
+> 		return __builtin_parity(val);
+> 	val ^= val >> 4;
+> 	return (0x6996 >> (val & 0xf)) & 1;
+> }
+> 
+> static inline bool parity16(u16 val)
+> {
+> 	if (use_builtin_parity(val))
+> 		return __builtin_parity(val);
+> 	return parity8(val ^ (val >> 8));
+> }
+> 
+> static inline bool parity32(u32 val)
+> {
+> 	if (use_builtin_parity(val))
+> 		return __builtin_parity(val);
+> 	return parity16(val ^ (val >> 16));
+> }
+> 
+> static inline bool parity64(u64 val)
+> {
+> 	if (use_builtin_parity(val))
+> 		return __builtin_parityll(val);
+> 	return parity32(val ^ (val >> 32));
+> }
+> 
+> This means that an architecture -- in particular, x86 -- can still ask to
+> use __builtin_parity*() directly. It means that architectures on which
+> __builtin_parity*() produces bad code should either complain to the
+> gcc/clang team and have it fixed, or we can add additional mechanism for
+> them to override the implementation at that time.
+> 
+> The alternative is to stop worrying about overengineering, and just do it
+> once and for all:
+> 
+> #ifndef parity8
+> static inline bool parity8(u8 val)
+> {
+> 	val ^= val >> 4;
+> 	return (0x6996 >> (val & 0xf)) & 1;
+> }
+> #endif
+> 
+> #ifndef parity16
+> static inline bool parity16(u16 val)
+> {
+> 	return parity8(val ^ (val >> 8));
+> }
+> #endif
+> 
+> #ifndef parity32
+> static inline bool parity32(u32 val)
+> {
+> 	return parity16(val ^ (val >> 16));
+> }
+> #endif
+> 
+> #ifndef parity64
+> static inline bool parity64(u64 val)
+> {
+> 	return parity32(val ^ (val >> 32));
+> }
+> #endif
+> 
+> In either case, instead of packing the cascade into one function, make good
+> use of it.
+> 
+> In the latter case, __builtin_constant_p() isn't necessary as it puts the
+> onus on the architecture to separate out const and non-const cases, if it
+> matters -- which it doesn't if the architecture simply wants to use
+> __builtin_parity:
+> 
+> #define parity8(x)  ((bool) __builtin_parity((u8)(x)))
+> #define parity16(x) ((bool) __builtin_parity((u16)(x)))
+> #define parity32(x) ((bool) __builtin_parity((u32)(x)))
+> #define parity64(x) ((bool) __builtin_parityll((u64)(x)))
+> 
+> As stated before, I don't really see that the parity function itself would
+> be very suitable for a generic helper, but if it were to, then using the
+> "standard" macro construct for it would seem to be the better option.
+> 
+> (And I would be very much in favor of not open-coding the helper everywhere
+> but to macroize it; effectively creating a C++ template equivalent. It is
+> out of scope for this project, though.)
+> 
+IIUC, you prefer using the parity8/16/32/64() interface with
+__builtin_parity(), regardless of whether there are users on the hot
+path?
 
-To repeat from that thread, IMO, whether you drop the platform is
-orthogonal to Geert's patch.
+If the maintainer has no concerns about maintenance burden, I also lean
+toward this interface. While I don't think the implementation is
+particularly complex, I'm not the maintainer, so I'd rather not argue
+about the maintenance aspect. Also, to be clear, I don't think I'm the
+right person to provide evidence that performance or code generation
+matters to any user.
 
-Seems like the platform is pretty dead. If you want to send a single
-patch removing all the bindings, I can take it.
+OTOH, If we do end up going with one of the two approaches, since
+bitops.h is included (directly or indirectly) by many files while
+parity is only used in fewer than 20, perhaps we should move the
+parity-related code to a separate parity.h. It doesn't necessarily have
+to be maintained by Yury - it could be someone else, or me.
 
-Rob
+Regards,
+Kuan-Wei
