@@ -1,109 +1,151 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B502913F434;
-	Fri, 11 Apr 2025 06:00:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A06527CCC7
+	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 06:28:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744351240; cv=none; b=HVWZB4pON4JdH8fqpJEqqJ5UnVwIxIoo9CTJOu4Dqui496zVzqgnGEtUDhFl7hC3FIwp3ny/rO4KcvZD5hIgR1U7GPav0eo9OMmAZZK61JTPEB0lNwx0qDkv5cTCQoimNizPHu02OxEHHuLtLbX8RA6ITb9WPFu3LOvZyXNJjYw=
+	t=1744352895; cv=none; b=W4B01nVOX8Cbsuv9bdpNJeG3TTCFG021KFIHA8f0p9Pa5W2F9p2lgs8P6a7Aa3XV+VI6pFVlHugSZd1/++NrUJOkmEA/bufNugXqIkkHWf/m3HceY32RDSBmirrpnHZ2kWk7I+gb5AqNxjeX6P416tNWZF6PYsKw+aLjxSdoxXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744351240; c=relaxed/simple;
-	bh=XLNuZl1M/V2LzJD/AZf7Wdiyi698tvwzlUnWdV61V+E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bKavrodKrWCOSyxhHgqpybrq5qBQVRtVlqxskl8FhCo3DyNzEPFPNASvV0l6W3nHkTMofiIGb1C92SCelzM5SQwOBPlzoYr1GvDCQPltaAy49NIlDAfFMBhsj1pmSI36gl/PxexJmdUzETLooBUZSgwo1m9mdoK3PF85sI9jn/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A9gUaiU2; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1744352895; c=relaxed/simple;
+	bh=NuArtcv0yvrbxm8h5eZX3ZhdCgwnnBc1d2QdkHpQhEY=;
+	h=From:To:Cc:In-Reply-To:Subject:Date:Message-ID:MIME-Version:
+	 Content-Type:References; b=LOVIMLXZL1zF9MXSvS/+I7AYPvFEcE8bi+GacoIWbSvFXYQQ44MX6UHZZ/2EFnGAt/GDw2XtFRFUeBLGZOrV04CFihCWVZCTUL74Pn+124hLRKOG3GreOet2GHlrA8RDjpzOb/IL7TwsHOKMOfzcgLdjGXSwtTdwU3d9/LmRNZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=N/8txkv+; arc=none smtp.client-ip=203.254.224.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A9gUaiU2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744351236; x=1775887236;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XLNuZl1M/V2LzJD/AZf7Wdiyi698tvwzlUnWdV61V+E=;
-  b=A9gUaiU2N9hFbUiN2IiDD3IDjhza6SvMtymZLol/stg9fN/Bgx8KQrWo
-   eA5JLWEVZ2nVPKFPsLFqRDWl/OR6LPSz7MdnDajT+7KOpXp8m7GTvXXUa
-   WDFEfOE9Er+H/YDzjb9ly5w4FCDqSJJASEMZA9FZLxMX9ZmpMkDAl64xD
-   OGvGMproJ+j74l/kO8uIziUkGs5pfSRDfj63zsl0HptQQD7RkwTi2s9bC
-   AhBmmF9KUVrb8vmNe2R7pIIMCIbGdAUNrlhufio+L7yeR7bxhaSpOZEAq
-   W6gXFW0tztSE7XsnliRNEBv7BO5BtUk7cfEubzHCHLCkznFi3Fkq1oN6t
-   A==;
-X-CSE-ConnectionGUID: Ap/cq5kBQvmvyrRmZgPaZQ==
-X-CSE-MsgGUID: 4nLKMwyYRL2UXAeHPST0qQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11400"; a="45133933"
-X-IronPort-AV: E=Sophos;i="6.15,203,1739865600"; 
-   d="scan'208";a="45133933"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2025 23:00:35 -0700
-X-CSE-ConnectionGUID: TRt2w+rgSeGCSYvkQJ6qtQ==
-X-CSE-MsgGUID: IKbVr+5tTXqoUI+D6j5Sbg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,203,1739865600"; 
-   d="scan'208";a="129072394"
-Received: from lkp-server01.sh.intel.com (HELO b207828170a5) ([10.239.97.150])
-  by orviesa006.jf.intel.com with ESMTP; 10 Apr 2025 23:00:34 -0700
-Received: from kbuild by b207828170a5 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1u37RH-000Ask-20;
-	Fri, 11 Apr 2025 06:00:31 +0000
-Date: Fri, 11 Apr 2025 14:00:19 +0800
-From: kernel test robot <lkp@intel.com>
-To: Nicolas Pitre <nico@fluxnic.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, Nicolas Pitre <npitre@baylibre.com>,
-	Dave Mielke <Dave@mielke.cc>, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 07/11] vt: create ucs_recompose.c using
- gen_ucs_recompose.py
-Message-ID: <202504111359.urXWyzvQ-lkp@intel.com>
-References: <20250410011839.64418-8-nico@fluxnic.net>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="N/8txkv+"
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+	by mailout3.samsung.com (KnoxPortal) with ESMTP id 20250411062805epoutp03788b05323b9633894282ad62ab6349ff~1L7UKuGR21401614016epoutp03H
+	for <linux-serial@vger.kernel.org>; Fri, 11 Apr 2025 06:28:05 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20250411062805epoutp03788b05323b9633894282ad62ab6349ff~1L7UKuGR21401614016epoutp03H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1744352885;
+	bh=NuArtcv0yvrbxm8h5eZX3ZhdCgwnnBc1d2QdkHpQhEY=;
+	h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+	b=N/8txkv+5pzo/upg++obqz4WsH5nNTKaBRSOiMkl/8gx3FcpSrz/uyh5NiTfgsRxA
+	 8mC82wCybM3QDObV83XrQHX0cL+OifNp4sICGHxL03p6elt3R0p/Cv48O81zL4vNfX
+	 WFV64K1r4fe6MGiJc3KPxvLSRdaMli3ItUmvEsEM=
+Received: from epsnrtp02.localdomain (unknown [182.195.42.154]) by
+	epcas5p3.samsung.com (KnoxPortal) with ESMTPS id
+	20250411062804epcas5p3d31ce10848709a9ac85ac4557bbae885~1L7TmDIBW2518725187epcas5p3X;
+	Fri, 11 Apr 2025 06:28:04 +0000 (GMT)
+Received: from epsmgec5p1new.samsung.com (unknown [182.195.38.182]) by
+	epsnrtp02.localdomain (Postfix) with ESMTP id 4ZYmvk1M62z2SSKX; Fri, 11 Apr
+	2025 06:28:02 +0000 (GMT)
+Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
+	epsmgec5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+	BB.DA.10173.276B8F76; Fri, 11 Apr 2025 15:28:02 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+	epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250411062357epcas5p24091330994395616ad24998eed97044a~1L3s7jSrw1768217682epcas5p2z;
+	Fri, 11 Apr 2025 06:23:57 +0000 (GMT)
+Received: from epsmgms1p2new.samsung.com (unknown [182.195.42.42]) by
+	epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+	20250411062356epsmtrp23c04c9ff80cea2ef861f5e351af0f225~1L3swZmYf3232932329epsmtrp2K;
+	Fri, 11 Apr 2025 06:23:56 +0000 (GMT)
+X-AuditID: b6c32a44-8b5fb700000027bd-bc-67f8b672bb8d
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+	epsmgms1p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+	34.9E.08805.C75B8F76; Fri, 11 Apr 2025 15:23:56 +0900 (KST)
+Received: from INBRO000519 (unknown [107.122.1.150]) by epsmtip1.samsung.com
+	(KnoxPortal) with ESMTPA id
+	20250411062355epsmtip1a9da26eb2195619c4c24d1029a803ea3~1L3rMyBMT0874008740epsmtip1H;
+	Fri, 11 Apr 2025 06:23:55 +0000 (GMT)
+From: "Faraz Ata" <faraz.ata@samsung.com>
+To: "'Krzysztof Kozlowski'" <krzk@kernel.org>, <alim.akhtar@samsung.com>,
+	<krzk+dt@kernel.org>, <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
+Cc: <linux-arm-kernel@lists.infradead.org>,
+	<linux-samsung-soc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, <rosa.pila@samsung.com>,
+	<dev.tailor@samsung.com>
+In-Reply-To: <9970c307-eba6-4c2d-98de-1a0f846efcd4@kernel.org>
+Subject: RE: [PATCH v2] tty: serial: samsung_tty: support 18 uart ports
+Date: Fri, 11 Apr 2025 11:53:44 +0530
+Message-ID: <03cc01dbaaaa$4dea13f0$e9be3bd0$@samsung.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250410011839.64418-8-nico@fluxnic.net>
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQE/iintFYLILbr1Km3BNZJiCnEHnQEG7k++AhEV2Ou0vXbOMA==
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrHJsWRmVeSWpSXmKPExsWy7bCmlm7Rth/pBgdfsVs8mLeNzeLejmXs
+	Fs2L17NZvJsrY/Fy1j02i/PnN7BbbHp8jdXi8q45bBYzzu9jsjizuJfd4svPB8wO3B6bVnWy
+	eeyfu4bdY/OSeo++LasYPT5vkgtgjcq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0
+	MFdSyEvMTbVVcvEJ0HXLzAE6TEmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYFKg
+	V5yYW1yal66Xl1piZWhgYGQKVJiQnfF61wSWgl72ij+dvA2MZ1m7GDk5JARMJPZees3UxcjF
+	ISSwm1Fi0ZHLzBDOJ0aJM3c2sEA43xgl5i6fyQbT8mzPLHaIxF5Gif+z57NCOC8ZJXobOhlB
+	qtgENCXufH4KNlhEYBqjxN/DN8EGMwucYJS482cGC0gVp4CdxLVX/WAdwgLuEs/6r7GD2CwC
+	qhLTtvSC1fAKWErsWzqZGcIWlDg58wlYnFlAW2LZwtfMEDcpSPx8ugzsJREBJ4lT33oYIWrE
+	JV4ePQJ2q4TAWg6Ja/0LWSAaXCS+tfRD2cISr45vYYewpSQ+v9sL9aiPxOSj34AGcQDZGRJ3
+	1opAhO0lVi84wwoSZgb6cv0ufYiwrMTUU+uYINbySfT+fsIEEeeV2DEPxlaWOLlnDzTkJSUO
+	3X7BOoFRaRaSz2Yh+WwWkg9mIWxbwMiyilEytaA4Nz012bTAMC+1HB7jyfm5mxjBCVfLZQfj
+	jfn/9A4xMnEwHmKU4GBWEuFtD/6RLsSbklhZlVqUH19UmpNafIjRFBjcE5mlRJPzgSk/ryTe
+	0MTSwMTMzMzE0tjMUEmct3lnS7qQQHpiSWp2ampBahFMHxMHp1QDk8qq4vUT+H5cVUjw3/ly
+	ufmLGTe67mbfX+X/jvWUb4hxqNX2vHmT/uZ/jWyN5TBhf5VdlXm92PLkHu5PG25EsfmHpeVf
+	nyJyP8EysmPPrIgpQQVrPxv3i2yaZW/2x9DAYolVZMb0pA8tyeby8VvDE16pLO1ecZnBn7nH
+	x50pKFP52suZx4Vkn00TYlqtP43pZ13I1hpeW9fXax58O6MRz8a1i3dd2nGFBavfuiy6H7JF
+	9ufqGJkFL0tnykifF3p8Y4/JsmUfOmV7y76UtL/q2f7x2Ynw5aFsPbLSPpobAtv/sH36+vzP
+	l6unv8ve78/yV+j98vqtlsL5T7r3KjSjrfcmzbC46sTk7eC6XuI+sxJLcUaioRZzUXEiAHXf
+	QVVBBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprBIsWRmVeSWpSXmKPExsWy7bCSnG7N1h/pBi2NOhYP5m1js7i3Yxm7
+	RfPi9WwW7+bKWLycdY/N4vz5DewWmx5fY7W4vGsOm8WM8/uYLM4s7mW3+PLzAbMDt8emVZ1s
+	HvvnrmH32Lyk3qNvyypGj8+b5AJYo7hsUlJzMstSi/TtErgyLr89yFLQwV7ROP8zUwPjMdYu
+	Rk4OCQETiWd7ZrF3MXJxCAnsZpS49XEPO0RCUuLw07tQRcISK/89hyp6zijx//FaNpAEm4Cm
+	xJ3PT5lAEiICcxglrv7vZQNxmAXOMEo8fPQfquUAo8T779PB5nIK2Elce9XPCGILC7hLPOu/
+	BhZnEVCVmLallwXE5hWwlNi3dDIzhC0ocXLmE7A4s4C2xNObT+HsZQtfM0PcpyDx8+kysFtF
+	BJwkTn3rYYSoEZd4efQI+wRG4VlIRs1CMmoWklGzkLQsYGRZxSiZWlCcm55bbFhglJdarlec
+	mFtcmpeul5yfu4kRHHlaWjsY96z6oHeIkYmD8RCjBAezkghve/CPdCHelMTKqtSi/Pii0pzU
+	4kOM0hwsSuK83173pggJpCeWpGanphakFsFkmTg4pRqYDs7Wt9iU9vX3C647ys0LdCdO2pe2
+	K/RIs3nWxj2vvzvZmLCvitvwt1ZL4tAO4c/xi0QXvM88Y75ZaNeS7CMZWzmreJaoTf05ZdGB
+	tubkzbsaK26an7+hx/asOf/ZSze1K2vbdz/Zdt5L3EzjuLJIToRV9u5Oqb0bzx5lC09lN36+
+	1FOt1iGx8Fr7UdevLGvn73vM3r+T05pHeetvi1ndW1K7/ToeZ3EHfg7V62K6OnOz6OSOFhv+
+	NgfTI59cXt3Z92TPl5pgkVqdY7PShb8xX25ckHyiYMbudO24xTMq84QtQ+/fuvx7/WHp2il7
+	5f7NSUi99WLtr7mSxR0xqWd4ZogELJQ23P0+NlOLfd91JiWW4oxEQy3mouJEAPquNo8rAwAA
+X-CMS-MailID: 20250411062357epcas5p24091330994395616ad24998eed97044a
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: REQ_APPROVE
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20250404134131epcas5p4794f2b1e5d289e1faa142c9093ea45e5
+References: <CGME20250404134131epcas5p4794f2b1e5d289e1faa142c9093ea45e5@epcas5p4.samsung.com>
+	<20250404135006.1263827-1-faraz.ata@samsung.com>
+	<9970c307-eba6-4c2d-98de-1a0f846efcd4@kernel.org>
 
-Hi Nicolas,
+Hello Krzysztof
 
-kernel test robot noticed the following build warnings:
+> Subject: Re: =5BPATCH v2=5D tty: serial: samsung_tty: support 18 uart por=
+ts
+>=20
+> On 04/04/2025 15:50, Faraz Ata wrote:
+> > Exynos Auto v920 SoC supports up to 18 UART ports.
+> > Hence changing the value of UART_NR to 18.
+> > ---
+>=20
+> How v2, without changelog, is even worse than v1? It goes to wrong
+> direction.
+>=20
+> Please run scripts/checkpatch.pl and fix reported warnings. After that, r=
+un
+> also =60scripts/checkpatch.pl --strict=60 and (probably) fix more warning=
+s. Some
+> warnings can be ignored, especially from --strict run, but the code here =
+looks
+> like it needs a fix. Feel free to get in touch if the warning is not clea=
+r.
+>=20
+>
+Thanks for your review and sorry for the noise,
+ that was not intentional, got posted by mistake, will takecare about it.
+Will send another version with change-log.
+> ...
+> Best regards,
+> Krzysztof
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on tty/tty-next tty/tty-linus linus/master v6.15-rc1 next-20250410]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Nicolas-Pitre/vt-minor-cleanup-to-vc_translate_unicode/20250410-092318
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-patch link:    https://lore.kernel.org/r/20250410011839.64418-8-nico%40fluxnic.net
-patch subject: [PATCH 07/11] vt: create ucs_recompose.c using gen_ucs_recompose.py
-config: csky-randconfig-001-20250411 (https://download.01.org/0day-ci/archive/20250411/202504111359.urXWyzvQ-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 14.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250411/202504111359.urXWyzvQ-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202504111359.urXWyzvQ-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/tty/vt/ucs_recompose.c:148: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
-    * Attempt to recompose two Unicode characters into a single character.
-
-
-vim +148 drivers/tty/vt/ucs_recompose.c
-
-   146	
-   147	/**
- > 148	 * Attempt to recompose two Unicode characters into a single character.
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
