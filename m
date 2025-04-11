@@ -1,214 +1,152 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA2E2367DC;
-	Fri, 11 Apr 2025 18:16:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2218A2690F0;
+	Fri, 11 Apr 2025 18:41:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744395363; cv=none; b=KswkwXV7Vemo8MD7LcZPUrJyL2uHouzbA79eBcNbqt1KHdYzJV6d8MpZoUQXlhgxgaT4UCmYcKIA3Fi24vi9aCvnzSxiXcqSTylwPsNuwamgT8EWAZ+TPdAj9zIMYMA+SuK556fNZH2ibS7b0hmWDQ43NUaArQd/KiOvtjHeSUE=
+	t=1744396911; cv=none; b=FpydZ459t7Ahbn4DxnpctBVLM/KQbAPbe7A0fxwXB8I7pTaenX1qfbeQpAROsTf9pwupuEGhc57/sJjXREjCj9g0NFuMNYh/4Bp90Nv8I6rqp2J596BVq7KKIvPCsHZ3SrlNwGVK1z0+k4zerzFMeXV31V6Hp3tLpwhzMy3p2lM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744395363; c=relaxed/simple;
-	bh=dyUHYy7uA2zYq4DX3dwXYPvpZrduLWaoUC38taKSDAY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=SK5fRzT+iNMYO5g8zTjZicOO++if3tA/3SN8BMNw1/SPbFB2Dw1vWXRrcvzGzkxrL0ci63LNeuuBcNHKAslZ5DXZywcA/Dq40RkAhztCh8cK9Oezr2MiAg4YkhFGfYNRD92YF3CPWEnmNzy78F1KJzrthCZ2Rg0UbGEaKCmM1GM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=YgAw9tB1; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1744396911; c=relaxed/simple;
+	bh=1iI4AfPrlPKUrGY6yeu/1zp9gMl5LZUj8I/yLIFJQZk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MLOILKuppf+8tHReN3PiaMIAjy0rmOk4lCvg9mmMn1XM78A/G+weWQdASdYfsArESngheodF53fecVVY794+FuOL0tfdLVX2NKx3RAwHGl/ED3dngHimKA6gvJ6mj8d+1UoYQUICu6TavrL/6hBMg0ZFies9xF3TNCGZgBprP90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b3gmgPBj; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="YgAw9tB1"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53BFBKvF018740;
-	Fri, 11 Apr 2025 18:15:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Z3WYEGHjhVBiH0fk/qwPhN94rw6DRAu9oRxXveAoAAw=; b=YgAw9tB1oFNXcH7C
-	H1WUnW1biTBR0Hix+yYpH5y4z6YhctvW7RV681op+sRyVeZn673ErOdtwojm4Z1q
-	w7zbn46AN8UC0pDCoAMh6bAi+Blq7FNehXXIr1sA/fUVPhR+jx8yc9B7M9gl/2XB
-	JvuY3OsOAKt5o7jNMOk0mjX6Bdy+AWMjIY2DIgK7ZJhLZfFEx5Bggy9eXb/jhAEw
-	7J8FV1FIT5qYO/ZAMSdV00krHbwm1BMqDc1RQUE1lk86w0qPjb2DtMAUQkFChTMd
-	UwRB+Ber+vbLG6P/lWBuipcq99W+u1cpbEwQeFZQoXrJ4lS2mDzjZYFldSvq0ldH
-	UebAmg==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45twdguewh-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 11 Apr 2025 18:15:37 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 53BIFaVv005437
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 11 Apr 2025 18:15:36 GMT
-Received: from [10.216.49.215] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 11 Apr
- 2025 11:15:30 -0700
-Message-ID: <c4ae42cc-872d-41ea-95ad-9dc294f1a5a1@quicinc.com>
-Date: Fri, 11 Apr 2025 23:45:26 +0530
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b3gmgPBj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1744396909; x=1775932909;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1iI4AfPrlPKUrGY6yeu/1zp9gMl5LZUj8I/yLIFJQZk=;
+  b=b3gmgPBjzm7JSGgp//U02k+WH6FpxneP4+wnlHuzYcjJLEm1L3Hb5S7b
+   B57d77Lwlxrj4tOcQ9CC98cZzFsHJXRtIGrr/A1fnzatEExasdwfdtZD6
+   3n8BUoEV+Q2mccfw0WcMqzjzn5oZ46U+cMQq3t+Cte2mXa9diJ4m9vguc
+   LeCBmeJCXnYEIqJNSiJzBkZTG04afDbZsL9jMnysUpd+uhZP+9q0moGdN
+   6mFT/aRW2eGmr/rUjDBQoVyod4mFvXNKVa4eAEaAGDTgB3S3GDnGqn/hs
+   lAFzVJUa8rqe2q3XRC5/064MtuZPAjEuYEmFiPs9al5knaMO5Bc1k8NkD
+   A==;
+X-CSE-ConnectionGUID: MJO0Ehl1RHuT70iYESW5YQ==
+X-CSE-MsgGUID: m2V9Yo7jQQW4PFH8xLRoDA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11401"; a="63500548"
+X-IronPort-AV: E=Sophos;i="6.15,205,1739865600"; 
+   d="scan'208";a="63500548"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2025 11:41:48 -0700
+X-CSE-ConnectionGUID: pJSGaWLJTF2fqMRCROz6IQ==
+X-CSE-MsgGUID: nmZqz5r4RXGz8z9j0H9ajw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,205,1739865600"; 
+   d="scan'208";a="129124557"
+Received: from lkp-server01.sh.intel.com (HELO b207828170a5) ([10.239.97.150])
+  by fmviesa006.fm.intel.com with ESMTP; 11 Apr 2025 11:41:43 -0700
+Received: from kbuild by b207828170a5 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1u3JJt-000BJc-0s;
+	Fri, 11 Apr 2025 18:41:41 +0000
+Date: Sat, 12 Apr 2025 02:40:52 +0800
+From: kernel test robot <lkp@intel.com>
+To: Praveen Talari <quic_ptalari@quicinc.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-pm@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, psodagud@quicinc.com, djaggi@quicinc.com,
+	quic_msavaliy@quicinc.com, quic_vtanuku@quicinc.com,
+	quic_arandive@quicinc.com, quic_mnaresh@quicinc.com,
+	quic_shazhuss@quicinc.com
+Subject: Re: [PATCH v1 4/9] soc: qcom: geni-se: Enable QUPs on SA8255p
+ Qualcomm platforms
+Message-ID: <202504120240.SMbLkgHv-lkp@intel.com>
+References: <20250410174010.31588-5-quic_ptalari@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 2/9] dt-bindings: serial: describe SA8255p
-To: Rob Herring <robh@kernel.org>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "Conor
- Dooley" <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        "Konrad Dybcio" <konradybcio@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>, "Nishanth Menon" <nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J.
- Wysocki" <rafael@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <psodagud@quicinc.com>,
-        <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>,
-        Nikunj Kela
-	<quic_nkela@quicinc.com>
-References: <20250410174010.31588-1-quic_ptalari@quicinc.com>
- <20250410174010.31588-3-quic_ptalari@quicinc.com>
- <20250411175730.GA3642862-robh@kernel.org>
-Content-Language: en-US
-From: Praveen Talari <quic_ptalari@quicinc.com>
-In-Reply-To: <20250411175730.GA3642862-robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Authority-Analysis: v=2.4 cv=PJgP+eqC c=1 sm=1 tr=0 ts=67f95c5a cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=gEfo2CItAAAA:8 a=VwQbUJbxAAAA:8 a=COk6AnOGAAAA:8
- a=_YL1DZwizIQu3P7nRPwA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=sptkURWiP4Gy88Gu7hUp:22 a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-ORIG-GUID: Fh9pCnJHT4bNCV0ULywHERNNYgfEWTZ8
-X-Proofpoint-GUID: Fh9pCnJHT4bNCV0ULywHERNNYgfEWTZ8
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-11_07,2025-04-10_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- lowpriorityscore=0 clxscore=1015 adultscore=0 malwarescore=0 spamscore=0
- impostorscore=0 suspectscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0
- priorityscore=1501 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
- definitions=main-2504110116
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250410174010.31588-5-quic_ptalari@quicinc.com>
 
-Hi
+Hi Praveen,
 
-On 4/11/2025 11:27 PM, Rob Herring wrote:
-> On Thu, Apr 10, 2025 at 11:10:03PM +0530, Praveen Talari wrote:
->> From: Nikunj Kela <quic_nkela@quicinc.com>
->>
->> SA8255p platform abstracts resources such as clocks, interconnect and
->> GPIO pins configuration in Firmware. SCMI power and perf protocols are
->> used to send request for resource configurations.
->>
->> Add DT bindings for the QUP GENI UART controller on sa8255p platform.
->>
->> Co-developed-by: Praveen Talari <quic_ptalari@quicinc.com>
->> Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
-> Your tags go last because you touched this last (I assume). The order
-> here would be correct if you were the original author, but Nikunj made
-> significant enough changes to change the author and also sent the
-> patches. The sender always has the last S-o-b (until the maintainer
-> adds their's when applying).
-Do you mean like below
-Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
-Co-developed-by: Praveen Talari <quic_ptalari@quicinc.com>
+kernel test robot noticed the following build warnings:
 
-Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on tty/tty-next tty/tty-linus robh/for-next driver-core/driver-core-testing driver-core/driver-core-next driver-core/driver-core-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.15-rc1 next-20250411]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Are Co-developed-by and Signed-off-by both needed or can i keep s-o-b?
+url:    https://github.com/intel-lab-lkp/linux/commits/Praveen-Talari/opp-add-new-helper-API-dev_pm_opp_set_level/20250411-015310
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+patch link:    https://lore.kernel.org/r/20250410174010.31588-5-quic_ptalari%40quicinc.com
+patch subject: [PATCH v1 4/9] soc: qcom: geni-se: Enable QUPs on SA8255p Qualcomm platforms
+config: arc-randconfig-001-20250412 (https://download.01.org/0day-ci/archive/20250412/202504120240.SMbLkgHv-lkp@intel.com/config)
+compiler: arc-linux-gcc (GCC) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250412/202504120240.SMbLkgHv-lkp@intel.com/reproduce)
 
->
->> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
->> ---
->>   .../serial/qcom,sa8255p-geni-uart.yaml        | 59 +++++++++++++++++++
->>   1 file changed, 59 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml b/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
->> new file mode 100644
->> index 000000000000..0dbfbfa1d504
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
->> @@ -0,0 +1,59 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/serial/qcom,sa8255p-geni-uart.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm Geni based QUP UART interface
->> +
->> +maintainers:
->> +  - Praveen Talari <quic_ptalari@quicinc.com>
->> +
->> +allOf:
->> +  - $ref: /schemas/serial/serial.yaml#
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - qcom,sa8255p-geni-uart
->> +      - qcom,sa8255p-geni-debug-uart
->> +
->> +  interrupts:
->> +    minItems: 1
->> +    items:
->> +      - description: UART core irq
->> +      - description: Wakeup irq (RX GPIO)
-> If this is a wakeup source, then you should have interrupt-names with
-> 'wakeup' for the 2nd irq.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202504120240.SMbLkgHv-lkp@intel.com/
 
-We have taken reference of below existing yaml file
+All warnings (new ones prefixed by >>):
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+   drivers/soc/qcom/qcom-geni-se.c: In function 'geni_se_probe':
+>> drivers/soc/qcom/qcom-geni-se.c:953:1: warning: label 'out' defined but not used [-Wunused-label]
+     953 | out:
+         | ^~~
+--
+>> drivers/soc/qcom/qcom-geni-se.c:110: warning: Function parameter or struct member 'geni_se_rsc_init' not described in 'geni_se_desc'
 
->
->> +
->> +  power-domains:
->> +    minItems: 2
->> +    maxItems: 2
->> +
->> +  power-domain-names:
->> +    items:
->> +      - const: power
->> +      - const: perf
->> +
->> +  reg:
->> +    maxItems: 1
-> 'reg' goes after compatible.
-We have taken reference of 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
->
->> +
->> +required:
->> +  - compatible
->> +  - interrupts
->> +  - reg
->> +  - power-domains
->> +  - power-domain-names
->> +
->> +unevaluatedProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
->> +
->> +    serial@990000 {
->> +        compatible = "qcom,sa8255p-geni-uart";
->> +        reg = <0x990000 0x4000>;
->> +        interrupts = <GIC_SPI 531 IRQ_TYPE_LEVEL_HIGH>;
->> +        power-domains = <&scmi0_pd 0>, <&scmi0_dvfs 0>;
->> +        power-domain-names = "power", "perf";
->> +    };
->> +...
->> -- 
->> 2.17.1
->>
+
+vim +/out +953 drivers/soc/qcom/qcom-geni-se.c
+
+   928	
+   929	static int geni_se_probe(struct platform_device *pdev)
+   930	{
+   931		struct device *dev = &pdev->dev;
+   932		struct geni_wrapper *wrapper;
+   933		const struct geni_se_desc *desc;
+   934		int ret;
+   935	
+   936		wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
+   937		if (!wrapper)
+   938			return -ENOMEM;
+   939	
+   940		wrapper->dev = dev;
+   941		wrapper->base = devm_platform_ioremap_resource(pdev, 0);
+   942		if (IS_ERR(wrapper->base))
+   943			return PTR_ERR(wrapper->base);
+   944	
+   945		desc = device_get_match_data(&pdev->dev);
+   946	
+   947		if (!has_acpi_companion(&pdev->dev) && desc->geni_se_rsc_init) {
+   948			ret = desc->geni_se_rsc_init(wrapper, desc);
+   949			if (ret)
+   950				return -EINVAL;
+   951		}
+   952	
+ > 953	out:
+   954		dev_set_drvdata(dev, wrapper);
+   955		dev_dbg(dev, "GENI SE Driver probed\n");
+   956		return devm_of_platform_populate(dev);
+   957	}
+   958	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
