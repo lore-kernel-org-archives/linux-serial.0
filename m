@@ -1,89 +1,129 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2C43290083;
-	Fri, 11 Apr 2025 09:18:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 668E7278E65;
+	Fri, 11 Apr 2025 11:16:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744363135; cv=none; b=sEq5KBg77RYxwTC5YRI0vkxgLFD2KJ8eNMEFUS8+Ok5FuncBUVvbU4TwOZ5G6kMFhKR5jl9w+sVR/ypp3KnFlx/i/bYjYXjStT2BD58qXiYIPnV1vwaveQLEIUNE69oEj/xdHaCPYAYMwm3thD5Hy52MiTmUXkRdtg65HCLL8Ms=
+	t=1744370172; cv=none; b=Nqex6bklcPDgOgrQ1TYKvskRI+WV/8f74jnfDWb9JhyUMX7Cm2w64v+WABO+fHsXsnlUY8PivvsMCjKKupwvQQGjFQxc3Aevq8n6itbp331YuPunOaqwgTx8U+TL7TKqGyKD5mg9Jaz/a2b3L97g+6u2/70hEV9ksfE/0jc2spk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744363135; c=relaxed/simple;
-	bh=7yUILR2HHoVy6WM/2coCWGrDjXlSF1kGC0dNtca/tpI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=pucuv6xe3B22cGgHWRx6BFIxCxSSPijnaE4l8opjd2ck3O2pRW2/xUaGPvuDQX4xV5pu7tNueMm5AzD8U5RagGeWIPBMdNRf8sF964ZiDSqT074LYgIEKxmtgKda8g4zOdAL0e8/xOYBJotK4W2hv8B6uZRDN9cgzR5/jHQtXGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: f74939c216b511f0a216b1d71e6e1362-20250411
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.45,REQID:97bd0d2f-92db-49d9-89fb-6bbdd8a2c89e,IP:0,U
-	RL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:0
-X-CID-META: VersionHash:6493067,CLOUDID:0cef45754f47842cd311d779ca37ae05,BulkI
-	D:nil,BulkQuantity:0,Recheck:0,SF:80|81|82|83|102,TC:nil,Content:0|52,EDM:
-	-3,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,
-	AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 0,NGT
-X-CID-BAS: 0,NGT,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-UUID: f74939c216b511f0a216b1d71e6e1362-20250411
-Received: from node4.com.cn [(10.44.16.170)] by mailgw.kylinos.cn
-	(envelope-from <xiaopei01@kylinos.cn>)
-	(Generic MTA)
-	with ESMTP id 1327214905; Fri, 11 Apr 2025 17:18:44 +0800
-Received: from node4.com.cn (localhost [127.0.0.1])
-	by node4.com.cn (NSMail) with SMTP id EE66F160038D0;
-	Fri, 11 Apr 2025 17:18:43 +0800 (CST)
-X-ns-mid: postfix-67F8DE73-8881991508
-Received: from [10.42.13.56] (unknown [10.42.13.56])
-	by node4.com.cn (NSMail) with ESMTPA id 2D1CC16003810;
-	Fri, 11 Apr 2025 09:18:42 +0000 (UTC)
-Message-ID: <ae40b4bc-4635-4b5d-bc2a-4c304605e3a1@kylinos.cn>
-Date: Fri, 11 Apr 2025 17:18:22 +0800
+	s=arc-20240116; t=1744370172; c=relaxed/simple;
+	bh=t51hRaoSLgtZoqvKBcyvdIVPw9VVq7caVwXSASFVwhI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tOUUYZxYnW7IZR1IaihJ81RRU030LfdDC8F4InpXt6I0XmqLq7lfleELdYT5kcXymkqA/u/X0iCXZOPgt+zQ/JH33mLodnn72v7ZSGDMygneZe5pD2QYFpODKoszTiHw+JncDp6YKBiOFevpaMOQY7GKJXFmeT0cT6ScWKsDLfg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QNMlCive; arc=none smtp.client-ip=209.85.214.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QNMlCive"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-227b650504fso17611965ad.0;
+        Fri, 11 Apr 2025 04:16:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1744370170; x=1744974970; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=sJJum0r2Y/7pblb79ST9wzJVmnYSTf/wzYK4WqsJza4=;
+        b=QNMlCivePW1RCRC6H85VqAZHAuuTM6JFkLNnrJ4yd2e2lMXn+1Vu+iLSOtMwWBYup0
+         DlPCAz9qjFj7igiAf15FSeyy9jc6jeRiTegbzicZtUBbHCRerklSxpiMT1CW9jY7XK2c
+         LeKcPVo6jv8FEIIyDulNTbQfpO8ZWrreQv+kPPMvZAH1lKPs3yzEHxHfhhRf+6R9VkCR
+         IynroWykE/EM3lRgsWIQJ4MlPgZX8MZD6R6XsdmZP6eMNhIFxaZ+KVI97Jgx1EIF3ybz
+         UBFg5jNAsztnHH9k0vFhAMxKVRDe0Z5V36KsBcD1yeJPm2hs7k1SsuzddTHeJXqta15l
+         F6jA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744370170; x=1744974970;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sJJum0r2Y/7pblb79ST9wzJVmnYSTf/wzYK4WqsJza4=;
+        b=iDJ4MD/7j8KoEn2MoeMJEuWTFClw78z1vjc6igAjv5xuFrLSzDW8UP8fqsrghzJqAD
+         ZuGTdTpof670B+FIY06XIPhIWynnoQVwiYmNGd06ZPeL+aAXkhSXLWe9B9C5FWaXHQhu
+         RWSjUen/ntMUcTrHkaQ6NzNKgmzFkddpadRpMWIDT9lVjKuPobbzh+u9Pa2fYVHtR9Zt
+         RA1WRyXMRXRvvBlaXmqKrWFG76/3VCz6Ey9oxK9+YvkhSZ9+786/AW3zpqBiXw2Gf5B9
+         w0T8jzN/4ubX/JhSBFM15lQdDlMBkgOIbQWhc/A45pHvCtWOwTi7bMaQqQ63ExnhVVJ4
+         kCOg==
+X-Forwarded-Encrypted: i=1; AJvYcCURPIJ1kiQvtgdsPt0VKasSPALeo4YG5BYcg9EWW4L/nWyVd+rj3OkAEdxJJn+16URcZTlBYlFhKrQ/NRA=@vger.kernel.org, AJvYcCVyolSHei7XgbKz1grqJBiIVBy+B58RGk6L2U2J/p5x/Ot84xi1hNbvn6OH4goRi4P8ybO1ursxWfnZgfh6@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzv+2wuYQskEA5pcWzNPcxIoxC4zETxRQECmq1L8o+IYreiqmu/
+	RTxoECmFpkQ74OzJ1WOkJ0ynsHE9uF7AH3S+XOf0rS3kHgDATfoR
+X-Gm-Gg: ASbGncuhlVA4jZc/tCQL4neGN0Fwz05+pbAkoceKJDY88dCxfiGeclPtK23DnE8X6a3
+	r/gDUDeaAmJ3h4RdebqFm5Wve1snIW3WfO1zsKO2aJHojruKQTsPkDhtEir750TeNDK0NiZwaVI
+	4UrM7SZz1X1pzv7QcmOtiCjhG8IjGaCfLygptQollwVSKy6J/7v5sCUUdYePvaSvjWcfWS7G4hK
+	MjC8rrPM1e4McVxkeXZ/vX/7trlpX+wTPFhcQ9DT7BN5LLvK/1GyvVaqvdqGD2wj5XM8sSFEQBw
+	jkKadmIUs8xD8Z+eqGuteg3+y6SdRsOVtr1QxZNDTERh3pnoyPeGS+KYaL2Rl3Hnf8BSWvXVGua
+	ReGSVdA==
+X-Google-Smtp-Source: AGHT+IE37OKu2p+wl7A4uY1zRU9IcPq7RqORMjw09Nsb72jo6RP0YRdN1/ey2jXMQMHTP3gF+aPWrA==
+X-Received: by 2002:a17:902:d485:b0:21f:6fb9:9299 with SMTP id d9443c01a7336-22bea4bf561mr32527795ad.27.1744370170492;
+        Fri, 11 Apr 2025 04:16:10 -0700 (PDT)
+Received: from purva-IdeaPad-Gaming-3-15IHU6.. ([14.139.108.62])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22ac7ccbf1esm46070665ad.251.2025.04.11.04.16.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Apr 2025 04:16:10 -0700 (PDT)
+From: Purva Yeshi <purvayeshi550@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: tglx@linutronix.de,
+	hdegoede@redhat.com,
+	mingo@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Purva Yeshi <purvayeshi550@gmail.com>
+Subject: [PATCH] tty: vt: keyboard: Fix uninitialized variables in vt_do_kdgkb_ioctl
+Date: Fri, 11 Apr 2025 16:45:48 +0530
+Message-Id: <20250411111548.31399-1-purvayeshi550@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty/sysrq: make sysrq_replay_logs_op const
-To: xiaopeitux@foxmail.com, gregkh@linuxfoundation.org, jirislaby@kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <tencent_E7CD9DB87A448073E350F9400678ED9F9C0A@qq.com>
-From: Pei Xiao <xiaopei01@kylinos.cn>
-In-Reply-To: <tencent_E7CD9DB87A448073E350F9400678ED9F9C0A@qq.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-=E5=9C=A8 2025/4/3 16:38, xiaopeitux@foxmail.com =E5=86=99=E9=81=93:
+Fix Smatch-detected issue:
 
-> From: Pei Xiao <xiaopei01@kylinos.cn>
->
-> Mark sysrq_replay_logs_op as const, preventing accidental modification.
->
-> Signed-off-by: Pei Xiao <xiaopei01@kylinos.cn>
-> ---
->  drivers/tty/sysrq.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-> index f85ce02e4725..e9ada1c14e26 100644
-> --- a/drivers/tty/sysrq.c
-> +++ b/drivers/tty/sysrq.c
-> @@ -454,7 +454,7 @@ static void sysrq_handle_replay_logs(u8 key)
->  {
->  	console_try_replay_all();
->  }
-> -static struct sysrq_key_op sysrq_replay_logs_op =3D {
-> +static const struct sysrq_key_op sysrq_replay_logs_op =3D {
->  	.handler        =3D sysrq_handle_replay_logs,
->  	.help_msg       =3D "replay-kernel-logs(R)",
->  	.action_msg     =3D "Replay kernel logs on consoles",
+drivers/tty/vt/keyboard.c:2106 vt_do_kdgkb_ioctl() error:
+uninitialized symbol 'kbs'.
+drivers/tty/vt/keyboard.c:2108 vt_do_kdgkb_ioctl() error:
+uninitialized symbol 'ret'.
 
-now, split into a single patch.
+Fix uninitialized variable warnings reported by Smatch in
+vt_do_kdgkb_ioctl(). The variables kbs and ret were used in the kfree
+and return statements without guaranteed initialization paths, leading to
+potential undefined behavior or false positives during static analysis.
 
-Thanks!
+Initialize char *kbs to NULL and int ret to -EINVAL at declaration.
+This ensures safe use of kfree(kbs) and return ret regardless of control
+flow. Also add a default case in the switch to preserve fallback behavior.
 
-Pei.
+Signed-off-by: Purva Yeshi <purvayeshi550@gmail.com>
+---
+ drivers/tty/vt/keyboard.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+index ae92e6a50a65..d476c2e3f3d3 100644
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -2057,8 +2057,8 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+ {
+ 	unsigned char kb_func;
+ 	unsigned long flags;
+-	char *kbs;
+-	int ret;
++	char *kbs = NULL;
++	int ret = -EINVAL;
+ 
+ 	if (get_user(kb_func, &user_kdgkb->kb_func))
+ 		return -EFAULT;
+@@ -2101,6 +2101,10 @@ int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+ 
+ 		ret = 0;
+ 		break;
++
++	default:
++		/* unknown command, ret already set to -EINVAL */
++		break;
+ 	}
+ 
+ 	kfree(kbs);
+-- 
+2.34.1
 
