@@ -1,153 +1,162 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC7B5274666;
-	Mon, 14 Apr 2025 14:07:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB8A61A08AB;
+	Mon, 14 Apr 2025 17:49:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744639660; cv=none; b=Xbn4b9OxCiOBQ8y4cOB+DTcpKPIhG21wSDqWYK0witF9sakgunLzhxHjGxHGNxJ/7ezHQ1KM73JItvcV2GlJsjo08WpFfejABNvOxnXWiTGupfbvy0OokyMMgwdG0F3IlQUvV5FfS9WSyK9hAKLBdoSeMzAkjWt1breHd3Y+uSY=
+	t=1744652982; cv=none; b=nW9f4FKE2fMhY1/4zTt2MmFRX6M646FDI1LI9g6h74Zjl2qP9fzAzAgkmcqtdVpxgVyS2AX/Eyvn2a+S4C0r/fggSmkB9Ijp6BAicv5zXF+dUYDhfRdic/eVlhnbghRPIR1mbx8IENB9BSZ9si52qIvebkntbfwFxeIIH+BHxbs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744639660; c=relaxed/simple;
-	bh=KmtCqsAqrFxyBENnczCK2DeNWbsxfKKJtq2T1GWqenM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CSUv0I10Y6JZVGK4Gne6xkvnaTSGJOCao5m3Fd9RNxblT37xwT7a6ElA8pAmK+2o+cmCtxC43bT4zjL2sqXcHFsov5tHYHaCs6IHsKUmEl/1UHJxrD/dhD0VDvhvkM4FT4wjgwuo2S3+pJ7R1vQKCX0+qjcuXMQuvlPhqcivN8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4769b16d4fbso23719791cf.2;
-        Mon, 14 Apr 2025 07:07:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744639657; x=1745244457;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1g30+2GKpP3gY6tzv0+fFCd6VwBGCphyrVLIpRyaaTs=;
-        b=easTaY+SB1FP9Y60VGI0emqnJZfyhbZzbmYdmQdMWWqmPgCthhjDldHC1pwmMxH6bi
-         n/p6FoJtrHOTJa4WVQV4BX94e6xT+0a57jUm1OODfAW4mretTMwFgCdaVpVyuyPYdN3a
-         Ex4d3baYCNnUMkmi4rkofcIj8Tahs65qxHOiqMSrlA0Q4Fp8iEktdMfFatPHX8b1IUbu
-         TYyZ8RMyRxRj6Lquj1UFi2rMernaSVvTPn5Vwok0o7GKVdWnkwOnaZlTScU2LIM7HcUm
-         45t+GBizeo1BRJpH1xVzXupQaXiCAqIbr4JoTnJtqH2bahuMEOVl+hW9a0Cilt/P2SbD
-         kgpg==
-X-Forwarded-Encrypted: i=1; AJvYcCU3Q0vMqbEiPP8Bh6bFpbniTzj9dM/O+30w8A54fBhPVymoj3rEqDh1M9FyVTQ6+obvPecdRjodLT+2dN0=@vger.kernel.org, AJvYcCW23mcw0Jm7u/W1QwjDNJwgxBkW8SP7BMZU6ysUNRVbMcDPzH4bVW0PVlJcmhzGJ6njh4nPyp0mF8en1Wr+@vger.kernel.org, AJvYcCXnCwpskcfELl1itfNPqnQNe5S1aVdiIFXQ2r+WOS8hOd7opHYZcPXjAWxfluJZY7ae05Pf7uPxT7mBEYRbn67lSzE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz1usUykSSZ48TqHVWN94X5Qq0I+5Pn2ItmXEdxGPutPxFFgVNd
-	NkGST6M88k8uYFfE4AGJmpL+sl6LTHwYpANf8fESNSdqYngUtow7AN9UZxFh
-X-Gm-Gg: ASbGnctv9IjOc4AyQuQLeK0yy2ulNcG3x5PDJ73KY+b0MiXUrgYknWeDE8gv0rnp93Y
-	YzXzd7F+IShtlg4sUy6NnGJvw3Yu0xC7qTZgi2MfE6/v96IimNbDoGMDekRex5p7hvo0mgqDCAO
-	AmAk8/wSY4eKNHJDvRLHieN5ZyQHUzkTufCAJdah3TcrzmOiGJVimwB/s1PzhdtrR4SH4b9IAaH
-	QGTmNwvZoSymEB1kqFVJXA1tm5aWHnLLm1Fcft/uQ5pI14LNLw+kI8YA/EcwC9RR+coEhdNzdVc
-	yvSS6NjiFYqKQBj+59phPDqlwWVUXCfwyQKGJXrVf2cz7muA+hWl0SPLEOaXdEPGQMvT5AIXr32
-	Cj0IXUBo=
-X-Google-Smtp-Source: AGHT+IHnZYItGCcG6UcyR7fy7zIYMSrTFgm1Iwd3F44ynXSoM3MPbf0xqsDz7sEDI7j2kWJ6UW+Q4w==
-X-Received: by 2002:a05:622a:587:b0:476:b783:c94b with SMTP id d75a77b69052e-479775dd90emr196786661cf.40.1744639656965;
-        Mon, 14 Apr 2025 07:07:36 -0700 (PDT)
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com. [209.85.222.176])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4796eb15e9asm75445521cf.30.2025.04.14.07.07.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Apr 2025 07:07:36 -0700 (PDT)
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7c6a59a515aso265948485a.0;
-        Mon, 14 Apr 2025 07:07:36 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUBwP8gZ33PwhQPKkV1RZVBpKwRT8fIxc3YF577xDBSdbljVyMulV+s+1nl+aNSNmnkMpQV5e0Qhubsr+pj4P3VLsw=@vger.kernel.org, AJvYcCVEI8sKprsaXN4RgmQKVc/hqpjcZrrxBIu08Er5W95XBFYPiKiFXpCMTuJKqkFW49TCNVNvSM6BDhANbFMp@vger.kernel.org, AJvYcCWy6Ig3ukufXO4/Ax/tZ1+d5P+UN8WPLncOnS8vvovmGcquoJR8DMDf5Ls4gnrqjL7vloUTi1hEEmtVGLc=@vger.kernel.org
-X-Received: by 2002:a05:620a:240f:b0:7c5:592c:c27 with SMTP id
- af79cd13be357-7c7af0ca5f0mr1697492785a.21.1744639656203; Mon, 14 Apr 2025
- 07:07:36 -0700 (PDT)
+	s=arc-20240116; t=1744652982; c=relaxed/simple;
+	bh=ulqrosDqiUlPlEkamQ1xyIFEuty/JmTNovXKiA2L3IU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=DVa99rxHYQQhsd+j+KZfn19bVakVs61hA8Jtk38khH6zpvtk1P1pg661gE9BASAh1C9bZJe/jNnQt1bW1QFBkqwZi/WT/uIrCeoTw5eDs9wzmijvpeWK2IxvwvBXnz9937VXcM4u7OB/rpiqSX/fNQ5kpzfZakFKetoamNVLjPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=WX+P93mK; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="WX+P93mK"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53E99qtg011395;
+	Mon, 14 Apr 2025 17:49:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	3yPyywTlsnu2wroIHMQvuyXG7piAsNEAqqurWw7fZ5g=; b=WX+P93mKx4PK3NOj
+	xh6vf6nHiXCBBWURnrOTWK0PFFCFi4dcv/bVkOXZem4aHPSif9elmQmHb8N4J0f3
+	PpqeVeeBu8RuRTL2pLeAT6VG47PWtk+neOiRYRblfAxE+hiZ3dRMYdG4BK6blZea
+	9hF+qYzygsFV4WwWbg3f/XlLFQ6Ye4wsdly/FdcEYjCffbIFoPnALi335BNxyn6S
+	peYjhh4APdN2RVDdlBhdcwK+zITRgUiByUAQlFoABQy4WGYumyb/Vbpi09smeXGp
+	o5kdDY6XFpzlzn2/rWUaG67zUxqlcJNf6RCfLaUub5kPiaLqbCCJbJSRknJBFKde
+	L8nkAw==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45yg8wdbvm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 14 Apr 2025 17:49:22 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 53EHnLCv028213
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 14 Apr 2025 17:49:21 GMT
+Received: from [10.216.13.250] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 14 Apr
+ 2025 10:49:13 -0700
+Message-ID: <de05fd91-b8d2-4799-a57b-ccc6e9fbafd9@quicinc.com>
+Date: Mon, 14 Apr 2025 23:19:09 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250403212919.1137670-1-thierry.bultel.yh@bp.renesas.com>
- <20250403212919.1137670-11-thierry.bultel.yh@bp.renesas.com>
- <2025041152-puzzling-clinking-e573@gregkh> <TYCPR01MB11492DDF2728C9D3B3F14DCA38AB32@TYCPR01MB11492.jpnprd01.prod.outlook.com>
- <2025041456-legacy-craftwork-2d8b@gregkh> <eba16d9a-9e07-498f-a7ab-0bb36076de40@linatsea.fr>
- <2025041458-squint-dean-9999@gregkh>
-In-Reply-To: <2025041458-squint-dean-9999@gregkh>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 14 Apr 2025 16:07:23 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV=1Hoo4b8jmKV2sE0VG2E4g=EUus_gfE8hdMvLag1pew@mail.gmail.com>
-X-Gm-Features: ATxdqUEXwuB_h9ss3B7wAnA40txSs10_xFRwuEUWB9EYVDW80aQGAxh_nb_GlMs
-Message-ID: <CAMuHMdV=1Hoo4b8jmKV2sE0VG2E4g=EUus_gfE8hdMvLag1pew@mail.gmail.com>
-Subject: Re: [PATCH v7 10/13] serial: sh-sci: Add support for RZ/T2H SCI
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Thierry Bultel <thierry.bultel@linatsea.fr>, 
-	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, 
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, 
-	Paul Barker <paul.barker.ct@bp.renesas.com>, 
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 9/9] serial: qcom-geni: Enable Serial on SA8255p
+ Qualcomm platforms
+To: Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>,
+        "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Bjorn
+ Andersson" <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd
+	<sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>
+CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
+References: <20250410174010.31588-1-quic_ptalari@quicinc.com>
+ <20250410174010.31588-10-quic_ptalari@quicinc.com>
+ <4183462f-7e4c-4da2-8f6b-0dadf26e1b2a@kernel.org>
+Content-Language: en-US
+From: Praveen Talari <quic_ptalari@quicinc.com>
+In-Reply-To: <4183462f-7e4c-4da2-8f6b-0dadf26e1b2a@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Authority-Analysis: v=2.4 cv=E9TNpbdl c=1 sm=1 tr=0 ts=67fd4aa2 cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=COk6AnOGAAAA:8 a=ju1iAOFsNRn_4Ngbc6QA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-ORIG-GUID: Jaq6r0Om7_7zFUCmQPg-SgGrNwa1g1rG
+X-Proofpoint-GUID: Jaq6r0Om7_7zFUCmQPg-SgGrNwa1g1rG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-14_07,2025-04-10_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ mlxscore=0 bulkscore=0 clxscore=1015 phishscore=0 lowpriorityscore=0
+ suspectscore=0 mlxlogscore=999 spamscore=0 priorityscore=1501
+ impostorscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504140129
 
-Hi Greg,
+HI
 
-On Mon, 14 Apr 2025 at 11:32, Greg KH <gregkh@linuxfoundation.org> wrote:
-> On Mon, Apr 14, 2025 at 11:23:34AM +0200, Thierry Bultel wrote:
-> > Le 14/04/2025 =C3=A0 10:58, Greg KH a =C3=A9crit :
-> > > On Mon, Apr 14, 2025 at 07:54:12AM +0000, Thierry Bultel wrote:
-> > > > > From: Greg KH <gregkh@linuxfoundation.org>
- > > > > On Thu, Apr 03, 2025 at 11:29:12PM +0200, Thierry Bultel wrote:
-> > > > > > --- a/include/uapi/linux/serial_core.h
-> > > > > > +++ b/include/uapi/linux/serial_core.h
-> > > > > > @@ -231,6 +231,9 @@
-> > > > > >   /* Sunplus UART */
-> > > > > >   #define PORT_SUNPLUS        123
-> > > > > >
-> > > > > > +/* SH-SCI */
-> > > > > > +#define PORT_RSCI    124
-> > > > > Why do you need to tell userspace about this specific port?  Is t=
-hat a
-> > > > > hard requirement that your userspace tools require?  If not, plea=
-se don't
-> > > > > export this here.
-> > > > This point has been discussed with Geert and Wolfram.
-> > > > We cannot use PORT_GENERIC for this IP, and adding the new type
-> > > > is just keeping consistent with the sh-sci driver.
-> > > But, why does userspace need to know this number?  And why doesn't
-> > > PORT_GENERIC work?
-> >
-> > The reason is that the sh-sci driver discriminates internally between p=
-ort
-> > types.
-> > There are number of locations when it checks for PORT_SCI, PORT_SCIF,
-> > PORT_SCIFA...
+On 4/14/2025 1:39 PM, Jiri Slaby wrote:
+> On 10. 04. 25, 19:40, Praveen Talari wrote:
+>> The Qualcomm automotive SA8255p SoC relies on firmware to configure
+>> platform resources, including clocks, interconnects and TLMM.
+>> The driver requests resources operations over SCMI using power
+>> and performance protocols.
+>>
+>> The SCMI power protocol enables or disables resources like clocks,
+>> interconnect paths, and TLMM (GPIOs) using runtime PM framework APIs,
+>> such as resume/suspend, to control power states(on/off).
+>>
+>> The SCMI performance protocol manages UART baud rates, with each baud
+>> rate represented by a performance level. The driver uses the
+>> dev_pm_opp_set_level() API to request the desired baud rate by
+>> specifying the performance level.
+>>
+>> Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
+>> ---
+>>   drivers/tty/serial/qcom_geni_serial.c | 150 +++++++++++++++++++++++---
+>>   1 file changed, 136 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c 
+>> b/drivers/tty/serial/qcom_geni_serial.c
+>> index 9649297d4a9e..40b71d4b7590 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> ...
+>> @@ -1624,8 +1669,27 @@ static int geni_serial_resources_on(struct 
+>> uart_port *uport)
+>>       return ret;
+>>   }
+>>   -static int geni_serial_resource_init(struct qcom_geni_serial_port 
+>> *port)
+>> +static int geni_serial_resource_state(struct uart_port *uport, bool 
+>> power_on)
+>> +{
+>> +    return power_on ? geni_serial_resources_on(uport) : 
+>> geni_serial_resources_off(uport);
+>> +}
+>> +
+>> +static int geni_serial_pwr_init(struct uart_port *uport)
+>>   {
+>> +    struct qcom_geni_serial_port *port = to_dev_port(uport);
+>> +    int ret;
+>> +
+>> +    ret = dev_pm_domain_attach_list(port->se.dev,
+>> +                    &port->dev_data->pd_data, &port->pd_list);
+>> +    if (ret <= 0)
+>> +        return -EINVAL;
 >
-> That is internal to the kernel, not external, right?
+> Any reason to reroute every (sane) error code into EINVAL?
 
-Indeed.
+i opted for EINVAL instead of EBUSY because i don't want the probe to be 
+re-executed if the firmware does not support SE.
+Let me know if you have any suggestions.
 
-> > T2H SCI needs special handling, too, that is the reason why PORT_GENERI=
-C
-> > cannot work. I just therefore added this new type.
->
-> Again, why does userspace need to know this?
+Thanks,
 
-I guess userspace does not need to know about this (does userspace
-actually care about any of these values, except for PORT_8250 and
-friends?).
+Praveen Talari
 
-However, traditionally PORT_* has been used as the differentiator
-for serial port types in most drivers in the kernel (incl. sh-sci.c)
-as well.  Just two drivers use PORT_GENERIC, and these are the ones
-that came with the introduction of PORT_GENERIC.  Since the rsci driver
-is not a new driver, but a sub-driver of the existing sh-sci driver,
-I think it warrants keeping on using the type field, like before. Else
-it will have to become even more complex than it already is.
-
-Note I am fine with using a non-uapi value. Is there a PORT_* number
-range meant for internal (non-uapi) use?
-Thanks!
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
