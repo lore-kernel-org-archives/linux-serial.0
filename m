@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B790254AFC;
-	Mon, 14 Apr 2025 07:17:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78243158DA3;
+	Mon, 14 Apr 2025 07:18:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744615032; cv=none; b=EQ9fl8JEHUc+CogC6etQ2AbPLvA+D8iI/LDyNVvM3S0GGkA8pkKKdXRfQc5DIp5/XgoLi4814hlDWpIx7z2CGxQtN358DPj3k1CfSUvC/vnm9KcsoVLj1AqdZaV/3HazYdlgk6CQLYiX3otmUdh+NQZ1LBxnJtvK56ZaM4AIJF8=
+	t=1744615130; cv=none; b=V/FkdxU5lDtcreWWakgOyC6eH0Vmk6ScfgMV3ktoUwQpZjKgxXH+F1mX1r5wWMg7pGF78WcjABY1fFar63y2sshIKhGvmsXqeMXkFJmNYBRvKx3q6QJqgG9UL+6BK/O/BHgF7pLKN0iqktmdz8YA/5R+aWNU5cMcjfnKbJXQr8g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744615032; c=relaxed/simple;
-	bh=EgvUs0tGMUnfOTbPrEg41rac3uXzGlSdqqVCnNvZNd4=;
+	s=arc-20240116; t=1744615130; c=relaxed/simple;
+	bh=/bk9HUID4txjW16YailWtEgBIySW4ldZU528nnGftv8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EsegJ4h2K5Xy3bgQ2sJRDMFNkUiJRly6yXIWJNq09uWgwBq6QMglBlFAdmWWw0Xr3rDOGPPY8Kdjx8Mrea023BJ2azmCgk2KSFxahen27C0hR8skvTFkLjvv6rTKPtIUopzaO6MCpz92eysUSUhFSCTAQlDnkBM2rk5wnguSw3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kBjYWW1D; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=n+ThXuRKQpF3pz7RTF/wHiSrpmKXRnyPtEY+/jr8UUBsv1sjEfgU8v5bcO+p1LjjTvn7PHw8+e3fdAV+YprP536UgC3Xvhlo4AkdY2zkvcWSRIzcO4tu7oje8aS7en6MB4l/pPiHzynKKNnCrg0FG9QW+gpHgYdP0dPug95mWKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OzhjpGQ2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kBjYWW1D"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22869C4CEE2;
-	Mon, 14 Apr 2025 07:17:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OzhjpGQ2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 939A6C4CEE2;
+	Mon, 14 Apr 2025 07:18:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744615030;
-	bh=EgvUs0tGMUnfOTbPrEg41rac3uXzGlSdqqVCnNvZNd4=;
+	s=k20201202; t=1744615129;
+	bh=/bk9HUID4txjW16YailWtEgBIySW4ldZU528nnGftv8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=kBjYWW1D5PAJkZnrA7DrDYnB7fEilIj9ADPljOAoYo5EZTAy8DAMss++vYyiGXCfK
-	 eubvxa55cAvCrCzopKg1+gjvDIL6dRf6xPhvMXZptVj8eMuPo3ECtu4bpGcVPQcJ8N
-	 JtEjVvVDPCJBIzT2gsEjtP+B+sbyyCq4MQUBO893BfJJhyxYVj2ffmtsjOdIJCeYnl
-	 v4NvTj/tWm4rhs4xfsKKDGfFn+Wxg2/4QI9AiyEkK/8kfoWFrYDTO5vHQzOdQJZZsp
-	 eAGAT3cyLYQ9wMl6HQ5U8oyt0y9tGzUDVl4Z9EezN5SJ7QNmnJmPOCbWKI2v80Q7Fp
-	 BnxdTjXqXAzzw==
-Message-ID: <d676b9f3-e2b4-4b7c-ac37-e706b69af746@kernel.org>
-Date: Mon, 14 Apr 2025 09:17:07 +0200
+	b=OzhjpGQ2v76OSmdF2f747QAJ8Om2xTvG8NWJBIPM+rqGEDIzkQVSEZwxebkKQQSFl
+	 KBR04xpRjpcObNP5Gr5LRP+wsJz273VamC0iFNWEf2EapEeOklnWH0W83yuimJh7BI
+	 Lj1f/RbClZ7hblzcCSav3tScPLxMmH8Zl1WuHJfPtbfOV078YGhdMD+pa2JBz9OGPJ
+	 UIqjDAvEJQ3WjAt469wDgdwXlZMV47z7umvZ+Qa3jS96DQEebclenabars0xxSd6B4
+	 79UZK8IobjkGmfAfoh/hOlH7zEP02CkWBuI93koD///BZW8w/me2FuAPxvDvz0g/tq
+	 vc25WiIJlixYQ==
+Message-ID: <ce04dbc5-e2a7-4574-bc9c-4ecf4b7b0ece@kernel.org>
+Date: Mon, 14 Apr 2025 09:18:46 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,14 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 10/11] vt: update ucs_width.c following latest
- gen_ucs_width.py
+Subject: Re: [PATCH 11/11] vt: pad double-width code points with a
+ zero-white-space
 To: Nicolas Pitre <nico@fluxnic.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>, Dave Mielke <Dave@mielke.cc>,
  linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20250410011839.64418-1-nico@fluxnic.net>
- <20250410011839.64418-11-nico@fluxnic.net>
+ <20250410011839.64418-12-nico@fluxnic.net>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -87,30 +87,37 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250410011839.64418-11-nico@fluxnic.net>
+In-Reply-To: <20250410011839.64418-12-nico@fluxnic.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 10. 04. 25, 3:14, Nicolas Pitre wrote:
 > From: Nicolas Pitre <npitre@baylibre.com>
 > 
-> Split table ranges into BMP (16-bit) and non-BMP (above 16-bit).
-> This reduces the corresponding text size by 20-25%.
-...
-> @@ -483,7 +517,9 @@ static bool is_in_interval(uint32_t cp, const struct interval *intervals, size_t
->    */
->   bool ucs_is_zero_width(uint32_t cp)
->   {
-> -	return is_in_interval(cp, zero_width_ranges, ARRAY_SIZE(zero_width_ranges));
-> +	return (cp <= 0xFFFF)
+> In the Unicode screen buffer, we follow double-width code points with a
+> space to maintain proper column alignment. This, however, creates
+> semantic problems when e.g. using cut and paste or selection.
+> 
+> Let's use a better code point for the column padding's purpose i.e. a
+> zero-white-space rather than a full space.
+> 
+> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
+> ---
+>   drivers/tty/vt/vt.c | 11 ++++++++---
+>   1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index e3d35c4f92..dc84f9c6b7 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -2937,12 +2937,13 @@ static int vc_con_write_normal(struct vc_data *vc, int tc, int c,
+>   			width = 2;
+>   		} else if (ucs_is_zero_width(c)) {
+>   			prev_c = vc_uniscr_getc(vc, -1);
+> -			if (prev_c == ' ' &&
+> +			if (prev_c == 0x200B &&
 
-This calls for some is_bmp() helper.
-
-And then the classic way:
-if (is_bmp())
-   return is_in_interval16();
-
-return is_in_interval32();
+Then introduce a NAME (macro) for this.
 
 thanks,
 -- 
