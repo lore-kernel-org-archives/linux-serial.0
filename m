@@ -1,149 +1,160 @@
-Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15CA615DBB3;
-	Mon, 14 Apr 2025 08:40:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25C951A23A6;
+	Mon, 14 Apr 2025 08:47:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744620027; cv=none; b=KL0x9lxJg1JqMMnj5Ug1dKMuNRXK13vPRvTpVK/q0961szpxtzDWFFwM1NfgPs5+gW4a2hZ8xws2KgB+wPQqUT+jZmD54z1hEAMkOQUMWOM2V2/YrTMDU9JAjavp0sGy07qw9fH/Jo/V3RORFF1KrRUQjIAzT2QOMC9ymgbgiIc=
+	t=1744620465; cv=none; b=XJsbVlWiqQRYyFoZRvyk0KbE3lDQrFiryGTz+6EWLXOMYKnej0RY+bIHdIyA7FhDMYsHEkwK5RoDUmZo+GAhR8XPTA8lhPjWsKp6JH7XDj/xMAzt/Lxv+JCDq6Den8qOLA5EuiOtzqzNiPi5/8fVI3ZtptQlGCkoAEeJBYH/X0M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744620027; c=relaxed/simple;
-	bh=zKaosKnqxAEMJEQPHKc8iNMMQCXDKe5oSZ2DRY1bgWw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=JDTS0SfRcYUBzHsSZ0PdPirLhMnQG5H2PlY2MT7foLYiFEeNe4vCtvJtwGYdb857hB0SpCTnD8jWt+fHjM2hTrKaHxQxUarJuQ3aVvqXunKWaEuis+ItMvllnv63RRv8T0Lz7aC5AsSZGGjvG6aDhbFoEj+HFnjo2djbqmTPUgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TahVKnII; arc=none smtp.client-ip=209.85.221.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1744620465; c=relaxed/simple;
+	bh=8kckFmYJLavCSR35fPALPhq3CLgDQ8jmvjB+vic9bQk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nwzMxnJLMpEvPShiXeA/eXzIdsFTpUmz9EROhzAMtnco3idnp9oKEjhyVtt74L6lybxVsJFBVR7aIIeuloxIDc8nBff3nXNN881U6fihXNBrbXcYzyMaG9J6h5HdgfYKKC4YeeAqspb+070Crdj8TWpRsVyepMeEy7nFHShs42Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IDuUb3Uy; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TahVKnII"
-Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-524038ba657so4055770e0c.0;
-        Mon, 14 Apr 2025 01:40:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1744620025; x=1745224825; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uWMxGH9MN2lw9UiJgZXH2sA9J8cJGOnXvoh40QjiLJY=;
-        b=TahVKnIIsRU1HpboyrV0cL4n709KE4bPEkvR2NpKjrlucZaR9DLKDCcopa/WgWjK27
-         wE+Xb8b5Hl8YajAR3Qu0YQgi6sTZLNOD/v3FhOiBC/qf09yPtSIpaOYu049QRv71HIxm
-         6GjxJD/c3n1WBJVMPsB2huoWJJSmlywNX7sHyfBQ3usgg7M4mLVD2t6/Za7F80FGQV0f
-         PJ+Q8eFXEu+pTk01RwCMsm8usb1W1vH/Uj2DwL4ONalv90LEsH5gNJb3ERPikai8MoFG
-         rRhdy6fHAKatQ3FIrpxeYH/mL2fJtW2zWT/SioQo5gvyo/cSc7mSubafE1axgvvgH88A
-         MtJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744620025; x=1745224825;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uWMxGH9MN2lw9UiJgZXH2sA9J8cJGOnXvoh40QjiLJY=;
-        b=a9UNQdAiC6yGMweuMBaImSir0QiwfAloTxjBvnUlqAKNObXWNW8qSOWBJ/66rKt8T1
-         0vtOt3g0cfLLUe8RJxJDiaOXCkkxngMUifuBkpJvnrTX7GcFPVZCU9MrDLwXif1QBldH
-         34am4fSxlVMFyuiiKiBCpvYpPIlLKgAfY8SV2i+gGgpdZBdUszsr9kXr6/usNO3MnxSL
-         K1GOHn0iagDUCFFCFpQCI9q/M4z/nMlk+sLAYeyQRLDGYH0d7ZzB//ErhDzwxdi5MW65
-         /DXwUQjJXXHnqrel3ATiWlCIPOESccMIC+6/44mX298WUSC+oeMO4yRrnqqSWycdrdNq
-         w95A==
-X-Forwarded-Encrypted: i=1; AJvYcCUgrR4sR0mcD1qxUIBgd+M/JMZ/zBby4oRF6k9UsjfQEJNFz5kn1m+jiLkP+edJCDFGNBw4aiHTyD8njM3T@vger.kernel.org, AJvYcCVXgUQ9yDG1IvWfptbupnWCNzeWMrZ8Eyx2WFYnTRFVwR90+hWPqrSJ+/XhvRnoCI9xoTnCrzpNTWiV5XiZ3QaZwaM=@vger.kernel.org, AJvYcCVwfFWIhF/m0OsANW5acaqc2xMdjM62gbyOSsRrH47t9h3dyYciaXsHdAd7alWHPYWP2HJxyXPBJuR7@vger.kernel.org, AJvYcCW9CnbvKKXm3Nqo2ZqeZAPcV6OIb/uptRdMNLGS6HeUKZu8C/nPApSCWrnlYTsrXkF2Il9z5Uw7elUeIQ==@vger.kernel.org, AJvYcCWWbyNzE54M1TE7HQVzK9fe/bast6Xt0P9CJZ9KeqjXX0myxH6qScaVOZcubjg+vIzGe2ToXbRfMP4STXaR@vger.kernel.org, AJvYcCX/D3B+Km0kOkhQdRHKuimlDxBS21UptLPELdkJjaHMjmtEFW386VwKqCxrw3i8NP4tsTSn3c+U7AIH@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzl6tXJqXXx7BzLTC/4cXTzOelgi1dd0YQfkoWGmA6+UT0EJRpP
-	QidB+9jQzY6vqeLps+xuIwCoQKljkhmpSWd0MPY+5dR969LPbvhLCQdeZMTHVcAVXUUJ+qVQzxi
-	5hKSvmVs0HHZ96Fw53jiDIdzD7F0=
-X-Gm-Gg: ASbGncsPHsYMa3YZvAdQWhQr+zDkFaJtvYo28Kl7L8f+PQA2WiUfDpeO94K6dAWu6df
-	Qo0ZVOcWKy7CZ8/WQfV/9YsL/1FGbSs/3WVcxL3IsX3IFKBxV5V7srRvqO6byfQvD+K/UAla4dT
-	Gvvg8jsgupJtg0894GH4Vv0P5gRVkG22Gf
-X-Google-Smtp-Source: AGHT+IET2qRXboEKhidUb5hBJlClL8RXUpYBKRhEnEi/wLWquyPq+HRgvLZKLIrzDsDjB07VIxygOjghYhgLKS7v14g=
-X-Received: by 2002:a05:6122:3417:b0:523:eb47:2884 with SMTP id
- 71dfb90a1353d-527b5ecadcbmr12260095e0c.6.1744620024811; Mon, 14 Apr 2025
- 01:40:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IDuUb3Uy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1744620465; x=1776156465;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8kckFmYJLavCSR35fPALPhq3CLgDQ8jmvjB+vic9bQk=;
+  b=IDuUb3Uyfs9egMIWvNdq4XTsibPB3dvwoFYC4jQcM7eq4RiAgkpRcb26
+   HiqIk3DGLWb84NnUY2p4s1vfCy2fe/2ARki/BmkZEP6Qe2CbCreb1dEYc
+   ChR5Mn6C+3+U5HQZNqtw8udLZ7ZZhM3IwAkfeOXSDRNdQZDdkVZxatTVF
+   ziWm8TvFVLWOQb8fUQCkyH6400gYxF5jJoLB2Ye2MKa2YnSg/bQq549Oy
+   OwX3X9UQdKY72XKDwZxhSZ9dB53h4jwjqamVDiHiETi8aDygQpviFjYtp
+   L2qqD/7yK6jqi7/8vUWB24+ifFV1bC8FzdR2bKvXyYOb7CAXZj45PmfjA
+   Q==;
+X-CSE-ConnectionGUID: b30NKAGvSeSx8o1oks8PiA==
+X-CSE-MsgGUID: bMYIWnNaTDy06fVmdgmPpA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11402"; a="56260452"
+X-IronPort-AV: E=Sophos;i="6.15,211,1739865600"; 
+   d="scan'208";a="56260452"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2025 01:47:44 -0700
+X-CSE-ConnectionGUID: uhI6Qh+cT7qSV/X2E8qojQ==
+X-CSE-MsgGUID: uyO/3hOgSM6gRD1Ta8zHzw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,211,1739865600"; 
+   d="scan'208";a="129519714"
+Received: from smile.fi.intel.com ([10.237.72.58])
+  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2025 01:47:39 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1u4FTc-0000000CBKp-1ZEi;
+	Mon, 14 Apr 2025 11:47:36 +0300
+Date: Mon, 14 Apr 2025 11:47:36 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Yunhui Cui <cuiyunhui@bytedance.com>
+Cc: ilpo.jarvinen@linux.intel.com, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, john.ogness@linutronix.de, pmladek@suse.com,
+	arnd@arndb.de, namcao@linutronix.de, benjamin.larsson@genexis.eu,
+	schnelle@linux.ibm.com, heikki.krogerus@linux.intel.com,
+	markus.mayer@linaro.org, tim.kryger@linaro.org,
+	matt.porter@linaro.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3] serial: 8250: fix panic due to PSLVERR
+Message-ID: <Z_zLqH1Moavhi52x@smile.fi.intel.com>
+References: <20250414031450.42237-1-cuiyunhui@bytedance.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250407191628.323613-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20250407191628.323613-13-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdVYfe7oUp+2QiHbBqxb3zKUYufpZHJQWmbzD1cu3TuRxg@mail.gmail.com>
-In-Reply-To: <CAMuHMdVYfe7oUp+2QiHbBqxb3zKUYufpZHJQWmbzD1cu3TuRxg@mail.gmail.com>
-From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date: Mon, 14 Apr 2025 09:39:58 +0100
-X-Gm-Features: ATxdqUHlsc5uJ7-xCYIyly9sEU832hppwQxRaNf8N6phxVH69LOeEigYs5a45bg
-Message-ID: <CA+V-a8vzPuxAqJ8waJWw0TNRqV5FMeuojZ7bxfPJzLMPNdy79g@mail.gmail.com>
-Subject: Re: [PATCH v2 12/12] arm64: dts: renesas: Add initial device tree for
- RZ/V2N EVK
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Michael Turquette <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
-	linux-renesas-soc@vger.kernel.org, linux-clk@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Biju Das <biju.das.jz@bp.renesas.com>, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250414031450.42237-1-cuiyunhui@bytedance.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Hi Geert,
+On Mon, Apr 14, 2025 at 11:14:50AM +0800, Yunhui Cui wrote:
 
-Thank you for the review.
+You forgot to rebase against latest tty-next or, if there is something
+in the latter (but I don't see right now), even tty-testing.
 
-On Thu, Apr 10, 2025 at 1:07=E2=80=AFPM Geert Uytterhoeven <geert@linux-m68=
-k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Mon, 7 Apr 2025 at 21:16, Prabhakar <prabhakar.csengg@gmail.com> wrote=
-:
-> > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> >
-> > Add the initial device tree for the Renesas RZ/V2N EVK board, based on
-> > the R9A09G056N48 SoC. Enable basic board functionality, including:
-> >
-> > - Memory mapping (reserve the first 128MB for the secure area)
-> > - Clock inputs (QEXTAL, RTXIN, AUDIO_EXTAL)
-> > - PINCTRL configurations for peripherals
-> > - Serial console (SCIF)
-> > - SDHI1 with power control and UHS modes
-> >
-> > Update the Makefile to include the new DTB.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> > v1->v2
-> > - Followed DTS coding style guidelines
->
-> Thanks for the update!
->
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> i.e. will queue in renesas-devel for v6.16.
->
-> > --- /dev/null
-> > +++ b/arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dts
->
-> > +&pinctrl {
->
-> > +       sdhi1_pins: sd1 {
-> > +               sd1-dat-cmd {
-> > +                       pins =3D "SD1DAT0", "SD1DAT1", "SD1DAT2", "SD1D=
-AT3", "SD1CMD";
-> > +                       input-enable;
-> > +                       renesas,output-impedance =3D <3>;
-> > +                       slew-rate =3D <0>;
-> > +               };
-> > +
-> > +               sd1-clk {
-> > +                       pins =3D "SD1CLK";
-> > +                       renesas,output-impedance =3D <3>;
-> > +                       slew-rate =3D <0>;
-> > +               };
-> > +
-> > +               sd1-cd {
-> > +                       pinmux =3D <RZV2N_PORT_PINMUX(9, 4, 14)>; /* SD=
-1_CD */
-> > +               };
->
-> I will sort these subnodes while applying.
->
-Thanks for taking care.
+> When the PSLVERR_RESP_EN parameter is set to 1, the device generates
+> an error response if an attempt is made to read an empty RBR (Receive
+> Buffer Register) while the FIFO is enabled.
+> 
+> In serial8250_do_startup(), calling serial_port_out(port, UART_LCR,
+> UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
+> dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
+> function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
+> Execution proceeds to the dont_test_tx_en label:
+> ...
+> serial_port_in(port, UART_RX);
+> This satisfies the PSLVERR trigger condition.
+> 
+> Because another CPU(e.g., using printk()) is accessing the UART (UART
+> is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) ==
+> (lcr & ~UART_LCR_SPAR), causing it to enter dw8250_force_idle().
+> 
+> To fix this, all calls to serial_out(UART_LCR) and serial_in(UART_RX)
+> should be executed under port->lock. Additionally, checking the readiness
+> via UART_LSR should also be done under port->lock.
+> 
+> Panic backtrace:
+> [    0.442336] Oops - unknown exception [#1]
+> [    0.442343] epc : dw8250_serial_in32+0x1e/0x4a
+> [    0.442351]  ra : serial8250_do_startup+0x2c8/0x88e
+> ...
+> [    0.442416] console_on_rootfs+0x26/0x70
 
-Cheers,
-Prabhakar
+This patch seems need split to three. See below.
+
+...
+
+First of all, while everything looks better now, there is a chance in the
+future to miss the same issue again. In order to avoid that I suggest to
+introduce a new helper where you made this check _and_ add a comment why.
+
+(Note that currently you have a mixture of serial_in()/serial_port_in() in
+ some cases.)
+
+static inline unsigned int serial8250_discard_data(struct uart_8250_port *up)
+{
+	u16 lsr;
+
+	lsr = serial_in(up, UART_LSR);
+	if (lsr & UART_LSR_DR)
+		return serial_in(up, UART_RX);
+
+	return 0;
+}
+
+And this can be one patch (patch 2).
+
+...
+
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+
+Changes here deserve the separate patch (patch 1).
+
+...
+
+> +	/*
+> +	 * Serial_in(p, UART_RX) should be under port->lock, but we can't add
+
+serial_in()
+
+> +	 * it to avoid AA deadlock as we're unsure if serial_out*(...UART_LCR)
+> +	 * is under port->lock.
+> +	 */
+> +	lockdep_assert_held_once(&p->lock);
+
+...
+
+> +	uart_port_lock_irqsave(port, &flags);
+
+And one patch (patch 3) about locking.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
