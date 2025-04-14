@@ -1,160 +1,170 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25C951A23A6;
-	Mon, 14 Apr 2025 08:47:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBBDC482EB;
+	Mon, 14 Apr 2025 08:55:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744620465; cv=none; b=XJsbVlWiqQRYyFoZRvyk0KbE3lDQrFiryGTz+6EWLXOMYKnej0RY+bIHdIyA7FhDMYsHEkwK5RoDUmZo+GAhR8XPTA8lhPjWsKp6JH7XDj/xMAzt/Lxv+JCDq6Den8qOLA5EuiOtzqzNiPi5/8fVI3ZtptQlGCkoAEeJBYH/X0M=
+	t=1744620955; cv=none; b=VskQ4TUCtObHaPKzVs80f4OJA16Z81puJBOrlQ1CFqP+HYAftLawFQG7H+74hYVglRoMeSc/vz0OFkncye1JH0bFU/Sb8UyILQsyOGS12Josgo6obN1+uVLjJOlF4LPzYfRImNu12jN6zWtuFwGkpOL5vnxTwEieEMNocv0sRY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744620465; c=relaxed/simple;
-	bh=8kckFmYJLavCSR35fPALPhq3CLgDQ8jmvjB+vic9bQk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nwzMxnJLMpEvPShiXeA/eXzIdsFTpUmz9EROhzAMtnco3idnp9oKEjhyVtt74L6lybxVsJFBVR7aIIeuloxIDc8nBff3nXNN881U6fihXNBrbXcYzyMaG9J6h5HdgfYKKC4YeeAqspb+070Crdj8TWpRsVyepMeEy7nFHShs42Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IDuUb3Uy; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1744620955; c=relaxed/simple;
+	bh=Mp570jmlWEeM0GxqOL/8YDaxX/5A3uK3xNw57Lx3N9c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=CTUoTbfxztFATk/QM6lKBeQIXmNb8bU21mWCE0NSwP6muixyZFM+77Bu/vOH3ZRvU8fiGt/HT1AqZmzUcPYRSFyFYhL1mOKEik6gwjAv2TAqvbO/YmYS9qVLXFkLTCMRTnwSWH0ZAhdxwiovnxWPEL9fJ+r428iqrrEyQJNS5kI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=LWVOKgjx; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IDuUb3Uy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744620465; x=1776156465;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8kckFmYJLavCSR35fPALPhq3CLgDQ8jmvjB+vic9bQk=;
-  b=IDuUb3Uyfs9egMIWvNdq4XTsibPB3dvwoFYC4jQcM7eq4RiAgkpRcb26
-   HiqIk3DGLWb84NnUY2p4s1vfCy2fe/2ARki/BmkZEP6Qe2CbCreb1dEYc
-   ChR5Mn6C+3+U5HQZNqtw8udLZ7ZZhM3IwAkfeOXSDRNdQZDdkVZxatTVF
-   ziWm8TvFVLWOQb8fUQCkyH6400gYxF5jJoLB2Ye2MKa2YnSg/bQq549Oy
-   OwX3X9UQdKY72XKDwZxhSZ9dB53h4jwjqamVDiHiETi8aDygQpviFjYtp
-   L2qqD/7yK6jqi7/8vUWB24+ifFV1bC8FzdR2bKvXyYOb7CAXZj45PmfjA
-   Q==;
-X-CSE-ConnectionGUID: b30NKAGvSeSx8o1oks8PiA==
-X-CSE-MsgGUID: bMYIWnNaTDy06fVmdgmPpA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11402"; a="56260452"
-X-IronPort-AV: E=Sophos;i="6.15,211,1739865600"; 
-   d="scan'208";a="56260452"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2025 01:47:44 -0700
-X-CSE-ConnectionGUID: uhI6Qh+cT7qSV/X2E8qojQ==
-X-CSE-MsgGUID: uyO/3hOgSM6gRD1Ta8zHzw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,211,1739865600"; 
-   d="scan'208";a="129519714"
-Received: from smile.fi.intel.com ([10.237.72.58])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2025 01:47:39 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1u4FTc-0000000CBKp-1ZEi;
-	Mon, 14 Apr 2025 11:47:36 +0300
-Date: Mon, 14 Apr 2025 11:47:36 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Yunhui Cui <cuiyunhui@bytedance.com>
-Cc: ilpo.jarvinen@linux.intel.com, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, john.ogness@linutronix.de, pmladek@suse.com,
-	arnd@arndb.de, namcao@linutronix.de, benjamin.larsson@genexis.eu,
-	schnelle@linux.ibm.com, heikki.krogerus@linux.intel.com,
-	markus.mayer@linaro.org, tim.kryger@linaro.org,
-	matt.porter@linaro.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v3] serial: 8250: fix panic due to PSLVERR
-Message-ID: <Z_zLqH1Moavhi52x@smile.fi.intel.com>
-References: <20250414031450.42237-1-cuiyunhui@bytedance.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="LWVOKgjx"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53DLf2CF024141;
+	Mon, 14 Apr 2025 08:55:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	026VEws+o5At9yvPs07UXmfkca/2pcUW8F11Bo9sjlA=; b=LWVOKgjxbXqxescI
+	Ea9Og+G81eotUumg6yHmdbP4ADOntgtlki4w4FXD2zjnmNqAROzgm+687LQECdKx
+	yHwWPRQylblahVCdqerf2aq7iE/YotxbcRZMO4GKP5Vn4CIGuYzv9VtcE4vpg1ME
+	Y4MVz3KmJHMWKKegcAyZ8BvsSsXNNeRorbY4CWT3Q3nNkeqTEeghfGchc9BRFHCT
+	Ra6f/IqggzqEpQqiMa87RiTr9fiypSUaedThDZOj7O5l6YqT/hU9w3Sx8S/2gdka
+	/WMi9aFYMYgZo8bAT9rexMryQ8Nut/k1mKTYFn7T+S93Z3kn8JHQI4EbpCtUEvy9
+	AJQ8sg==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45yfgjbx9j-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 14 Apr 2025 08:55:48 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 53E8tZxZ017583
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 14 Apr 2025 08:55:35 GMT
+Received: from [10.218.11.38] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Mon, 14 Apr
+ 2025 01:55:29 -0700
+Message-ID: <b84f765d-4dfc-4182-8d82-365b3e04f973@quicinc.com>
+Date: Mon, 14 Apr 2025 14:25:26 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250414031450.42237-1-cuiyunhui@bytedance.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 6/9] serial: qcom-geni: move resource control logic to
+ separate functions
+To: Jiri Slaby <jirislaby@kernel.org>,
+        Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>,
+        "Krzysztof
+ Kozlowski" <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Bjorn
+ Andersson" <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd
+	<sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>
+CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
+References: <20250410174010.31588-1-quic_ptalari@quicinc.com>
+ <20250410174010.31588-7-quic_ptalari@quicinc.com>
+ <df025c47-8de8-4f95-a8fa-8d5d5dce5d5f@kernel.org>
+Content-Language: en-US
+From: Praveen Talari <quic_ptalari@quicinc.com>
+In-Reply-To: <df025c47-8de8-4f95-a8fa-8d5d5dce5d5f@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: Y0GaeJLzjIGWNyUbKjJt5ivLRf-LwLru
+X-Proofpoint-ORIG-GUID: Y0GaeJLzjIGWNyUbKjJt5ivLRf-LwLru
+X-Authority-Analysis: v=2.4 cv=Cve/cm4D c=1 sm=1 tr=0 ts=67fccd94 cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=COk6AnOGAAAA:8 a=fsFalsCVRGTP_wyuaD0A:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-14_02,2025-04-10_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
+ malwarescore=0 lowpriorityscore=0 bulkscore=0 spamscore=0 phishscore=0
+ suspectscore=0 impostorscore=0 mlxlogscore=999 mlxscore=0
+ priorityscore=1501 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504140064
 
-On Mon, Apr 14, 2025 at 11:14:50AM +0800, Yunhui Cui wrote:
+Hi
 
-You forgot to rebase against latest tty-next or, if there is something
-in the latter (but I don't see right now), even tty-testing.
-
-> When the PSLVERR_RESP_EN parameter is set to 1, the device generates
-> an error response if an attempt is made to read an empty RBR (Receive
-> Buffer Register) while the FIFO is enabled.
-> 
-> In serial8250_do_startup(), calling serial_port_out(port, UART_LCR,
-> UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
-> dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
-> function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
-> Execution proceeds to the dont_test_tx_en label:
-> ...
-> serial_port_in(port, UART_RX);
-> This satisfies the PSLVERR trigger condition.
-> 
-> Because another CPU(e.g., using printk()) is accessing the UART (UART
-> is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) ==
-> (lcr & ~UART_LCR_SPAR), causing it to enter dw8250_force_idle().
-> 
-> To fix this, all calls to serial_out(UART_LCR) and serial_in(UART_RX)
-> should be executed under port->lock. Additionally, checking the readiness
-> via UART_LSR should also be done under port->lock.
-> 
-> Panic backtrace:
-> [    0.442336] Oops - unknown exception [#1]
-> [    0.442343] epc : dw8250_serial_in32+0x1e/0x4a
-> [    0.442351]  ra : serial8250_do_startup+0x2c8/0x88e
-> ...
-> [    0.442416] console_on_rootfs+0x26/0x70
-
-This patch seems need split to three. See below.
-
-...
-
-First of all, while everything looks better now, there is a chance in the
-future to miss the same issue again. In order to avoid that I suggest to
-introduce a new helper where you made this check _and_ add a comment why.
-
-(Note that currently you have a mixture of serial_in()/serial_port_in() in
- some cases.)
-
-static inline unsigned int serial8250_discard_data(struct uart_8250_port *up)
-{
-	u16 lsr;
-
-	lsr = serial_in(up, UART_LSR);
-	if (lsr & UART_LSR_DR)
-		return serial_in(up, UART_RX);
-
-	return 0;
-}
-
-And this can be one patch (patch 2).
-
-...
-
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-
-Changes here deserve the separate patch (patch 1).
-
-...
-
-> +	/*
-> +	 * Serial_in(p, UART_RX) should be under port->lock, but we can't add
-
-serial_in()
-
-> +	 * it to avoid AA deadlock as we're unsure if serial_out*(...UART_LCR)
-> +	 * is under port->lock.
-> +	 */
-> +	lockdep_assert_held_once(&p->lock);
-
-...
-
-> +	uart_port_lock_irqsave(port, &flags);
-
-And one patch (patch 3) about locking.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+On 4/14/2025 1:29 PM, Jiri Slaby wrote:
+> On 10. 04. 25, 19:40, Praveen Talari wrote:
+>> Supports use in PM system/runtime frameworks, helping to
+>> distinguish new resource control mechanisms and facilitate
+>> future modifications within the new API.
+>>
+>> The code that handles the actual enable or disable of resources
+>> like clock and ICC paths to a separate function
+>> (geni_serial_resources_on() and geni_serial_resources_off()) which
+>> enhances code readability.
+>>
+>> Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
+>> ---
+>>   drivers/tty/serial/qcom_geni_serial.c | 53 +++++++++++++++++++++------
+>>   1 file changed, 42 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c 
+>> b/drivers/tty/serial/qcom_geni_serial.c
+>> index 889ce8961e0a..e341f5090ecc 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -1572,6 +1572,42 @@ static struct uart_driver 
+>> qcom_geni_uart_driver = {
+>>       .nr =  GENI_UART_PORTS,
+>>   };
+>>   +static int geni_serial_resources_off(struct uart_port *uport)
+>> +{
+>> +    struct qcom_geni_serial_port *port = to_dev_port(uport);
+>> +    int ret;
+>> +
+>> +    dev_pm_opp_set_rate(uport->dev, 0);
+>> +    ret = geni_se_resources_off(&port->se);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    geni_icc_disable(&port->se);
+>> +
+>> +    return ret;
+>
+> This is a bit confusing (needs context). return 0 directly.
+here "ret" is also pointing to 0. Why can't we use "ret" directly 
+instead of 0.
+>
+>> +}
+>> +
+>> +static int geni_serial_resources_on(struct uart_port *uport)
+>> +{
+>> +    struct qcom_geni_serial_port *port = to_dev_port(uport);
+>> +    int ret;
+>> +
+>> +    ret = geni_icc_enable(&port->se);
+>> +    if (ret)
+>> +        return ret;
+>> +
+>> +    ret = geni_se_resources_on(&port->se);
+>> +    if (ret) {
+>> +        geni_icc_disable(&port->se);
+>> +        return ret;
+>> +    }
+>> +
+>> +    if (port->clk_rate)
+>> +        dev_pm_opp_set_rate(uport->dev, port->clk_rate);
+>> +
+>> +    return ret;
+>
+> Same here.
+>
+> thanks,
