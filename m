@@ -1,486 +1,215 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E706D2989AE;
-	Mon, 14 Apr 2025 11:41:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CBAC23D2AA;
+	Mon, 14 Apr 2025 13:40:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744630923; cv=none; b=R860lVV9Yso8HontstztW7zwSnBjrfTjDb3LdZhgsT1VeHDL+E/bM1xgSxyOXGsamw+5VXB6Bn3OqGA8gQ+eCvFSUoqPUuySXa85azfhmPEa08B8Fuz6AViHyhTKCS5KronwrUsiLLvwl4P6jLczBPNtMrXjP7BMf5gS+5hoG+8=
+	t=1744638054; cv=none; b=CqazVWiTynEuH7LcS8a1r7S6RTdDXUQFGAaKlR/zqursK1Hr98d0WnwYy8IKIfbSUQd4jp6EZTSug3Epr0c3b2hlglaUL4un0SM1onhUzcxjdNwNRQQ4xBSgB63fRUbSAF/MqWbRioQL7O9rCjX1JLB+v8XMCXJnik2otjdxbZs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744630923; c=relaxed/simple;
-	bh=9DhbCem6qHUdFZLjbIL3JSEZGBo3RveYvhFclEzv8Pc=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=E2SzUbS8U3u32WwILZCeOVO2bLdkk58YTGa0c7xZ7Skday8w069SthRKQsYZ1jSGsWJJfUNvCjgbB1whAgNQsS4SfuZZP9brbiFHzLfOlun5bBctKH5N2IeiN2jAIToyR8sabtEElI/yiXdY6YW/F88hXGIaAGZ3ial7MmccQPc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gTTNh+C1; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gTTNh+C1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744630921; x=1776166921;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version:content-id;
-  bh=9DhbCem6qHUdFZLjbIL3JSEZGBo3RveYvhFclEzv8Pc=;
-  b=gTTNh+C1la16KxuWvrJdbJRWgmyF7yClN9wDncoa54dWJwWmA0oBV+tc
-   aSJJzwLYc0/1SQ8CxGCg7YWxOh/PF2yi1sTDlT3uCTuc2iBbk5M4yi3D/
-   Dlw0SKI11BFq1mxF/Uvgo2mExh8UvF21d1a9N2Q6NspDw+GXXkCn/HufF
-   zGI7Khvd+Qx5jvg95R09FcPOgNVpeHzgLDiO+J5ONCnGhtk8+e+ohafNS
-   oK2Zpgz5WQ4cBJbsy33qcsxqHhbbFZH/6Ag/xBNCQmm3gaStz2MiEG2Wc
-   uXlOhJe+ZClTiBqBhnUV5+WcOBs6hBBlan/aJLnsGy8Sh+LhUFLIDN0G8
-   Q==;
-X-CSE-ConnectionGUID: UkZ6OB1yQJSHA3i8vY9toA==
-X-CSE-MsgGUID: kAUzHh4LRQi5xKzLMvchrA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11402"; a="46184582"
-X-IronPort-AV: E=Sophos;i="6.15,212,1739865600"; 
-   d="scan'208,223";a="46184582"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2025 04:41:59 -0700
-X-CSE-ConnectionGUID: MK1sxc1NRuScLDD7KS7oxA==
-X-CSE-MsgGUID: xqbiNfyvS1SFW3CSpxue8g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,212,1739865600"; 
-   d="scan'208,223";a="134635533"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.8])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2025 04:41:54 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Mon, 14 Apr 2025 14:41:51 +0300 (EEST)
-To: Yunhui Cui <cuiyunhui@bytedance.com>
-cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>, john.ogness@linutronix.de, 
-    pmladek@suse.com, arnd@arndb.de, namcao@linutronix.de, 
-    benjamin.larsson@genexis.eu, schnelle@linux.ibm.com, 
-    heikki.krogerus@linux.intel.com, markus.mayer@linaro.org, 
-    tim.kryger@linaro.org, matt.porter@linaro.org, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    linux-serial <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v3] serial: 8250: fix panic due to PSLVERR
-In-Reply-To: <20250414031450.42237-1-cuiyunhui@bytedance.com>
-Message-ID: <079c8fe6-9ce4-fa59-4b44-93e27dd376d6@linux.intel.com>
-References: <20250414031450.42237-1-cuiyunhui@bytedance.com>
+	s=arc-20240116; t=1744638054; c=relaxed/simple;
+	bh=1eCbuWm8dVGaoYTLm0vad9ErxPZVwWfXk5roSAc9z6U=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VyTN2PSYwLIevnYFDmNUOQfyaXdATC2//15sDwUhnaCDmdCS0FULuTKeyEOzxY5OWTj7vDU5L2nxyd1BAcASaX2r4p6i7uqSjt9ZIxIF3v4E/Jd8yYCNn605MpUYVDcs8i8BM/n+R/HWXA9SXEM3sFK3D7CtMr8uzvhYFpcR1Vs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vk1-f173.google.com with SMTP id 71dfb90a1353d-523fa0df55dso4895453e0c.1;
+        Mon, 14 Apr 2025 06:40:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744638050; x=1745242850;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dxFVREXOrkgNS43wycobvJ4oCa9KVGBm5xx9A69fAqQ=;
+        b=rv8NOquA8LD6c3Oqyg94G1Ys6fK2eC9LO3qs+jouP9AIjmhjDrGeN/2nD5jnEAFC8G
+         736zDTr/mwCzBcxBsaw7d0/ZRv7//wdcjVGBCwABuGEcPPxgUj0DwPNoW/oCkVFT63f1
+         odz8CZC9n3M6lkHHDn86IuiT+qVD/On27c8rxKlu8DWD5PG2EfCdjaDiV00P5bFQ32XT
+         KGFhra9O4U2HnV0k9jnLqGnxn9N3obAKqpXrk0c7nkQPMmZWXWK+TALWrMq9QiGMiTDN
+         sVoUEXjtIoxQpL3YPT4+Uo9YRDN1tJiiEu9WEapMYrbV/bqLDglPPZOKKUlQwIN0BiIm
+         tEYA==
+X-Forwarded-Encrypted: i=1; AJvYcCUKjHTQRVQoOD4RN+OII/Cxs9jhIg29X96GS8e2p1XsRS5BMWFaHytUj/R+OfAeUwQkKouc2n1paiZ+OVZE@vger.kernel.org, AJvYcCUpLhgn2+l0Y38+4sl4l7iwo+Pwy0Tzxq+p/mMKsBPUIpw9a3VpXIdjfNit0XaBy9373k22r3R8i5ld@vger.kernel.org, AJvYcCVCmWfXqo/Aq5iQ3J4V57LgMc6RiDGfq3yQJdMeMQr9w6P0gR4+1t/LxC2KksCWBc2kcXkUAafClZhZ@vger.kernel.org, AJvYcCVl5/XYESOuKi1dqpwPFc2mRfPp5TnF9H8UfNmqU1i1VwDZWtTc1aqaeR7glXkHCAV/N4Kzsls6ZUBQ0dB6@vger.kernel.org, AJvYcCWY7gFFIsPL8s2armxZTjp7RJwZfQm+Qz0YWaZT4oyMfsNPOw47xenY64A0EfnOyP6+M70Gd7llBTX0XQ==@vger.kernel.org, AJvYcCWug5Y6fi0xbWpBkGrFmPNIxr9bu4h/Jhr0U7rMCQ66mT9JkDM+5NPFBrM01OYRINyilBUIvf5TxCnyseLbgI5mmVA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw+wl2dCcETJIDrHXcNj/7T3Gl4J1eS2zG40v4T7EgovNfnQl8q
+	3AW2oaAoRur4VuSjsSwlZB46M4nTZk4nc9AtPCcvzZyEXFyCSicFxXxAHcRD
+X-Gm-Gg: ASbGncsTO24g4CX+8bGYcuEvFq5Z/fHfhqaXkQH8QivfyzaS3IEWlc2iZK/kz//gXaW
+	zQCM2fI3D3SmPXFsr0ZeZDCpMRzfbJwvM/m92X7VkbI6Q3zBA27N28Nd+puw8U/wZNJqEQj4utj
+	0IGdFVsEqTBixb9o++EF/WuCs8ukZxRyZmn3DPOuXsmfwOU/eCUZxK83Ubl3oAHrHmuG8YzmJz8
+	WjigRKNVUyQhNUXz+ZH1TqorQv8yoJjnvO8IYpOdl5LUrrbPi9d1/tArVRv38WOSZHUhe30NLWI
+	7cDrPfm9pyrk9hvMqi7xGTR4yg8BlBacRe6azWHY17lj+hZs5rdU8erT9IPoZ7U+G72diGZC7se
+	b90ULyZM=
+X-Google-Smtp-Source: AGHT+IEPgHG1D7Dy5FoauPMAno7o5t7gB+FO9wBlka1sEgE6+I+oz6cHGCZ1pQlWovGSNPESRVEIkw==
+X-Received: by 2002:a05:6122:336:b0:523:6eef:af62 with SMTP id 71dfb90a1353d-527b5ea09eamr9485321e0c.4.1744638049960;
+        Mon, 14 Apr 2025 06:40:49 -0700 (PDT)
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com. [209.85.221.182])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-527abd4cb93sm2193603e0c.1.2025.04.14.06.40.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 14 Apr 2025 06:40:49 -0700 (PDT)
+Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-523f721bc63so4954291e0c.0;
+        Mon, 14 Apr 2025 06:40:49 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUTnzrhLlPXbSQXpE+7ZRXqOiJp8eApSKqrZ3cWk2xl+MENSZL0HO1fs78uETM/wmFUeKUBgXxgns/7JZlk@vger.kernel.org, AJvYcCVH6RwGZRSpM0HibuxFpwzFQ7mY3kJf/KO6fJlcHbCS9QP4mbOdJWhFBvWi1ZdY4SfKBT5TwqO1/bJFKw==@vger.kernel.org, AJvYcCWBDi5DTZQ4fnAbszA2vj/2cPnji+nGH/lmsTefTgr4iK3cGDahXM3rsMZBzzi80EmYg2IkDmxdouC9@vger.kernel.org, AJvYcCWVK3CEpMf5mak7bEbBvmfk8+sFGv7JpyCY90G0BLpQlbF9unvMpc9Tj2sB6pob241e/xyWXw3cLb0h@vger.kernel.org, AJvYcCWgvp3fZm0iLvooENaowNr1dq6Bx199daEvc/remGgbeycz0d3W0dFn8tSgjf1ClaOi2ukkKHyZ9/BKKx2s@vger.kernel.org, AJvYcCXsMPA9a2+SczrcmEIn7q6H6LdLraPcJjt+sLok0OMaly5DXuhl346r+z1l5O5me1qzuXdQWcB2zT9vrK4qAq8pas0=@vger.kernel.org
+X-Received: by 2002:a05:6122:336:b0:523:6eef:af62 with SMTP id
+ 71dfb90a1353d-527b5ea09eamr9485274e0c.4.1744638049070; Mon, 14 Apr 2025
+ 06:40:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323328-1672980820-1744630364=:10563"
-Content-ID: <d4af13d4-6b75-913c-e1b1-d910337ddb45@linux.intel.com>
+References: <20250407191628.323613-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <CA+V-a8useBh5m+MqGXQwQJhuemehm=bPidL6XydR-FOmVN9QNQ@mail.gmail.com>
+In-Reply-To: <CA+V-a8useBh5m+MqGXQwQJhuemehm=bPidL6XydR-FOmVN9QNQ@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 14 Apr 2025 15:40:36 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU+U8D8iQdks72=Kki2HL+bo8tw9gA1S4D3c4hOphLTuA@mail.gmail.com>
+X-Gm-Features: ATxdqUFKkMO3BbQqjnr_4N17M_FpT_VBDPVT_ExrXL2YuenRJWHQK8qxSnAps2k
+Message-ID: <CAMuHMdU+U8D8iQdks72=Kki2HL+bo8tw9gA1S4D3c4hOphLTuA@mail.gmail.com>
+Subject: Re: [PATCH v2 00/12] Add support for Renesas RZ/V2N SoC and EVK
+To: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc: Magnus Damm <magnus.damm@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
+	Michael Turquette <mturquette@baylibre.com>, Jiri Slaby <jirislaby@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, 
+	Conor Dooley <conor+dt@kernel.org>, linux-renesas-soc@vger.kernel.org, 
+	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi Prabhakar,
 
---8323328-1672980820-1744630364=:10563
-Content-Type: text/plain; CHARSET=US-ASCII
-Content-ID: <08433a8d-047b-5658-9e9d-8037baa7338e@linux.intel.com>
+On Mon, 14 Apr 2025 at 13:19, Lad, Prabhakar <prabhakar.csengg@gmail.com> w=
+rote:
+> On Mon, Apr 7, 2025 at 8:16=E2=80=AFPM Prabhakar <prabhakar.csengg@gmail.=
+com> wrote:
+> > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> >
+> > This patch series adds initial support for the Renesas RZ/V2N (R9A09G05=
+6)
+> > SoC and its evaluation board (EVK). The Renesas RZ/V2N is a vision AI
+> > microprocessor (MPU) designed for power-efficient AI inference and
+> > real-time vision processing. It features Renesas' proprietary AI
+> > accelerator (DRP-AI3), delivering up to 15 TOPS AI performance, making
+> > it ideal for applications such as Driver Monitoring Systems (DMS),
+> > industrial monitoring cameras, and mobile robots.
+> >
+> > Key features of the RZ/V2N SoC:
+> >   Processing Power:
+> >     - Quad Arm Cortex-A55 cores at 1.8GHz for high-performance computin=
+g
+> >     - Single Arm Cortex-M33 core at 200MHz for real-time processing
+> >     - 1.5MB on-chip SRAM for fast data access
+> >     - LPDDR4/LPDDR4X memory interface for high-speed RAM access
+> >
+> >   AI and Vision Processing:
+> >     - DRP-AI3 accelerator for low-power, high-efficiency AI inference
+> >     - Arm Mali-C55 ISP (optional) for image signal processing
+> >     - Dual MIPI CSI-2 camera interfaces for multi-camera support
+> >
+> >   High-Speed Interfaces:
+> >     - PCIe Gen3 (2-lane) 1ch for external device expansion
+> >     - USB 3.2 (Gen2) 1ch (Host-only) for high-speed data transfer
+> >     - USB 2.0 (Host/Function) 1ch for legacy connectivity
+> >     - Gigabit Ethernet (2 channels) for network communication
+> >
+> >   Industrial and Automotive Features:
+> >     - 6x CAN FD channels for automotive and industrial networking
+> >     - 24-channel ADC for sensor data acquisition
+> >
+> > LINK: https://tinyurl.com/renesas-rz-v2n-soc
+> >
+> > The series introduces:
+> > - Device tree bindings for various subsystems (SYS, SCIF, SDHI, CPG, pi=
+nctrl).
+> > - RZ/V2N SoC identification support.
+> > - Clock and pinctrl driver updates for RZ/V2N.
+> > - Initial DTSI and device tree for the RZ/V2N SoC and EVK.
+> >
+> > These patches have been tested on the RZ/V2N EVK with v6.15-rc1 kernel,
+> > logs can be found here:
+> > https://gist.github.com/prabhakarlad/aa3da7558d007aab8a288550005565d3
+> >
+> > @Geert, Ive rebased the patches on top of v6.15-rc1 + renesas-dts-for-v=
+6.16
+> > + renesas-clk-for-v6.16 branches. Also these patches apply on top of th=
+e below
+> > series [1] and [2]. I had to sort the order in Makefile for patch [3] t=
+o
+> > avoid conflicts.
+> > [1] https://lore.kernel.org/all/20250401090133.68146-1-prabhakar.mahade=
+v-lad.rj@bp.renesas.com/
+> > [2] https://lore.kernel.org/all/20250403212919.1137670-1-thierry.bultel=
+.yh@bp.renesas.com/#t
+> > [3] https://lore.kernel.org/all/20250403212919.1137670-13-thierry.bulte=
+l.yh@bp.renesas.com/
+> >
+> > Note, dtbs_check will generate the below warnings this is due to missin=
+g
+> > ICU support as part of initial series. I will be sending a follow-up pa=
+tch
+> > series to add ICU support which will fix these warnings.
+> > arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dtb: pinctrl@1041000=
+0 (renesas,r9a09g056-pinctrl): 'interrupt-controller' is a required propert=
+y
+> >         from schema $id: http://devicetree.org/schemas/pinctrl/renesas,=
+rzg2l-pinctrl.yaml#
+> > arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dtb: pinctrl@1041000=
+0 (renesas,r9a09g056-pinctrl): '#interrupt-cells' is a required property
+> >         from schema $id: http://devicetree.org/schemas/pinctrl/renesas,=
+rzg2l-pinctrl.yaml#
+> >
+> > v1->v2:
+> > - Added acks from Rob.
+> > - Squashed the RZ/V2N EVK and SoC variant documentation into a single
+> >   commit.
+> > - Updated the commit messages.
+> > - Added RZV2N_Px, RZV2N_PORT_PINMUX, and RZV2N_GPIO macros in
+> >   SoC DTSI as we are re-using renesas,r9a09g057-pinctrl.h
+> >   in pictrl driver hence to keep the consistency with the
+> >   RZ/V2H(P) SoC these macros are added.
+> > - Dropped `renesas,r9a09g056-pinctrl.h` header file.
+> > - Followed DTS coding style guidelines
+> > - Dropped defconfig changes from the series.
+> > - Dropped SDHI dt-binding patch as its already applied to mmc -next tre=
+e.
+> >
+> > Cheers,
+> > Prabhakar
+> >
+> > Lad Prabhakar (12):
+> >   dt-bindings: soc: renesas: Document Renesas RZ/V2N SoC variants and
+> >     EVK
+> >   soc: renesas: Add config option for RZ/V2N (R9A09G056) SoC
+> >   dt-bindings: soc: renesas: Document SYS for RZ/V2N SoC
+> >   soc: renesas: sysc: Add SoC identification for RZ/V2N SoC
+> >   dt-bindings: serial: renesas: Document RZ/V2N SCIF
+> >   dt-bindings: clock: renesas: Document RZ/V2N SoC CPG
+> >   clk: renesas: rzv2h-cpg: Sort compatible list based on SoC part numbe=
+r
+> >   clk: renesas: rzv2h: Add support for RZ/V2N SoC
+> >   dt-bindings: pinctrl: renesas: Document RZ/V2N SoC
+> >   pinctrl: renesas: rzg2l: Add support for RZ/V2N SoC
+> >   arm64: dts: renesas: Add initial SoC DTSI for RZ/V2N
+> >   arm64: dts: renesas: Add initial device tree for RZ/V2N EVK
+> >
+> Would it be OK if I send version 3 containing only patches 4/12 and 10/12=
+?
 
-On Mon, 14 Apr 2025, Yunhui Cui wrote:
+For patch 4/12: yes, that is fine. Thx!
+For patch 10/12: I have already applied it.
 
-> When the PSLVERR_RESP_EN parameter is set to 1, the device generates
-> an error response if an attempt is made to read an empty RBR (Receive
-> Buffer Register) while the FIFO is enabled.
-> 
-> In serial8250_do_startup(), calling serial_port_out(port, UART_LCR,
-> UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
-> dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
-> function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
-> Execution proceeds to the dont_test_tx_en label:
-> ...
-> serial_port_in(port, UART_RX);
-> This satisfies the PSLVERR trigger condition.
-> 
-> Because another CPU(e.g., using printk()) is accessing the UART (UART
-> is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) ==
-> (lcr & ~UART_LCR_SPAR), causing it to enter dw8250_force_idle().
-> 
-> To fix this, all calls to serial_out(UART_LCR) and serial_in(UART_RX)
-> should be executed under port->lock. Additionally, checking the readiness
-> via UART_LSR should also be done under port->lock.
-> 
-> Panic backtrace:
-> [    0.442336] Oops - unknown exception [#1]
-> [    0.442343] epc : dw8250_serial_in32+0x1e/0x4a
-> [    0.442351]  ra : serial8250_do_startup+0x2c8/0x88e
-> ...
-> [    0.442416] console_on_rootfs+0x26/0x70
-> 
-> Fixes: c49436b657d0 ("serial: 8250_dw: Improve unwritable LCR workaround")
-> Link: https://lore.kernel.org/all/84cydt5peu.fsf@jogness.linutronix.de/T/
-> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+Gr{oetje,eeting}s,
 
-As Andy mentioned, this change looks it would benefit from splitting to 
-multiple parts.
+                        Geert
 
-However, this change brings back some memories from a few years back.
-Back then, there was a reporter who had issues issues related to 
-dw8250_force_idle() or writing some of the registers (IIRC). I ended up 
-looking into finding a better solution to the write-while-BUSY problem 
-which entirely replaced dw8250_force_idle() that is quite hacky and seems 
-unreliable on fundamendal level.
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-Sadly, once I had posted a patch for testing, the reporter went dead 
-silent so the patch was left rotting as I had no time to try to reproduce.
-
-Perhaps the patch I created back then would be useful for addressing this 
-problem you're facing (the patch is attached). I've rebased the patch on 
-top of the tty-next now (but I did no testing beyond compiling). There are 
-a few further thoughts / missing bits mentioned in the comments within the 
-patch itself (I did not try to updated them now, so the comments may have 
-rotten too).
-
-> ---
->  drivers/tty/serial/8250/8250_dw.c   |  8 +++++
->  drivers/tty/serial/8250/8250_port.c | 46 ++++++++++++++++++-----------
->  2 files changed, 36 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index af24ec25d976..e97200ff30e3 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -13,6 +13,7 @@
->  #include <linux/delay.h>
->  #include <linux/device.h>
->  #include <linux/io.h>
-> +#include <linux/lockdep.h>
->  #include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/notifier.h>
-> @@ -112,6 +113,13 @@ static void dw8250_force_idle(struct uart_port *p)
->  	struct uart_8250_port *up = up_to_u8250p(p);
->  	unsigned int lsr;
->  
-> +	/*
-> +	 * Serial_in(p, UART_RX) should be under port->lock, but we can't add
-> +	 * it to avoid AA deadlock as we're unsure if serial_out*(...UART_LCR)
-> +	 * is under port->lock.
-> +	 */
-> +	lockdep_assert_held_once(&p->lock);
-> +
->  	serial8250_clear_and_reinit_fifos(up);
->  
->  	/*
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 3f256e96c722..21bbd18195f5 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -1328,6 +1328,7 @@ static void autoconfig_irq(struct uart_8250_port *up)
->  	unsigned int ICP = 0;
->  	unsigned long irqs;
->  	int irq;
-> +	u16 lsr;
->  
->  	if (port->flags & UPF_FOURPORT) {
->  		ICP = (port->iobase & 0xfe0) | 0x1f;
-> @@ -1357,9 +1358,10 @@ static void autoconfig_irq(struct uart_8250_port *up)
->  	/* Synchronize UART_IER access against the console. */
->  	uart_port_lock_irq(port);
->  	serial_out(up, UART_IER, UART_IER_ALL_INTR);
-> +	lsr = serial_in(up, UART_LSR);
-> +	if (lsr & UART_LSR_DR)
-> +		serial_port_in(port, UART_RX);
->  	uart_port_unlock_irq(port);
-> -	serial_in(up, UART_LSR);
-> -	serial_in(up, UART_RX);
->  	serial_in(up, UART_IIR);
->  	serial_in(up, UART_MSR);
->  	serial_out(up, UART_TX, 0xFF);
-> @@ -2137,19 +2139,16 @@ static void wait_for_xmitr(struct uart_8250_port *up, int bits)
->  static int serial8250_get_poll_char(struct uart_port *port)
->  {
->  	struct uart_8250_port *up = up_to_u8250p(port);
-> -	int status;
-> +	int status = NO_POLL_CHAR;
->  	u16 lsr;
->  
->  	serial8250_rpm_get(up);
->  
-> +	uart_port_lock_irqsave(port, &flags);
->  	lsr = serial_port_in(port, UART_LSR);
-> -
-> -	if (!(lsr & UART_LSR_DR)) {
-> -		status = NO_POLL_CHAR;
-> -		goto out;
-> -	}
-> -
-> -	status = serial_port_in(port, UART_RX);
-> +	if ((lsr & UART_LSR_DR))
-> +		status = serial_port_in(port, UART_RX);
-> +	uart_port_unlock_irqrestore(port, flags);
->  out:
->  	serial8250_rpm_put(up);
->  	return status;
-> @@ -2264,13 +2263,16 @@ int serial8250_do_startup(struct uart_port *port)
->  	 * Clear the FIFO buffers and disable them.
->  	 * (they will be reenabled in set_termios())
->  	 */
-> +	uart_port_lock_irqsave(port, &flags);
->  	serial8250_clear_fifos(up);
->  
->  	/*
->  	 * Clear the interrupt registers.
->  	 */
-> -	serial_port_in(port, UART_LSR);
-> -	serial_port_in(port, UART_RX);
-> +	lsr = serial_port_in(port, UART_LSR);
-> +	if (lsr & UART_LSR_DR)
-> +		serial_port_in(port, UART_RX);
-> +	uart_port_unlock_irqrestore(port, flags);
->  	serial_port_in(port, UART_IIR);
->  	serial_port_in(port, UART_MSR);
->  
-> @@ -2380,9 +2382,10 @@ int serial8250_do_startup(struct uart_port *port)
->  	/*
->  	 * Now, initialize the UART
->  	 */
-> -	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
->  
->  	uart_port_lock_irqsave(port, &flags);
-> +	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
-> +
->  	if (up->port.flags & UPF_FOURPORT) {
->  		if (!up->port.irq)
->  			up->port.mctrl |= TIOCM_OUT1;
-> @@ -2428,15 +2431,16 @@ int serial8250_do_startup(struct uart_port *port)
->  	}
->  
->  dont_test_tx_en:
-
-I don't see this in the tty-next branch?
-
-~/linux/tty-next$ git grep dont_test_tx_en | cat -
-~/linux/tty-next$ 
-
--- 
- i.
-
-> -	uart_port_unlock_irqrestore(port, flags);
->  
->  	/*
->  	 * Clear the interrupt registers again for luck, and clear the
->  	 * saved flags to avoid getting false values from polling
->  	 * routines or the previous session.
->  	 */
-> -	serial_port_in(port, UART_LSR);
-> -	serial_port_in(port, UART_RX);
-> +	lsr = serial_port_in(port, UART_LSR);
-> +	if (lsr & UART_LSR_DR)
-> +		serial_port_in(port, UART_RX);
-> +	uart_port_unlock_irqrestore(port, flags);
->  	serial_port_in(port, UART_IIR);
->  	serial_port_in(port, UART_MSR);
->  	up->lsr_saved_flags = 0;
-> @@ -2492,6 +2496,7 @@ void serial8250_do_shutdown(struct uart_port *port)
->  {
->  	struct uart_8250_port *up = up_to_u8250p(port);
->  	unsigned long flags;
-> +	u16 lsr;
->  
->  	serial8250_rpm_get(up);
->  	/*
-> @@ -2518,7 +2523,6 @@ void serial8250_do_shutdown(struct uart_port *port)
->  		port->mctrl &= ~TIOCM_OUT2;
->  
->  	serial8250_set_mctrl(port, port->mctrl);
-> -	uart_port_unlock_irqrestore(port, flags);
->  
->  	/*
->  	 * Disable break condition and FIFOs
-> @@ -2526,6 +2530,7 @@ void serial8250_do_shutdown(struct uart_port *port)
->  	serial_port_out(port, UART_LCR,
->  			serial_port_in(port, UART_LCR) & ~UART_LCR_SBC);
->  	serial8250_clear_fifos(up);
-> +	uart_port_unlock_irqrestore(port, flags);
->  
->  #ifdef CONFIG_SERIAL_8250_RSA
->  	/*
-> @@ -2538,7 +2543,12 @@ void serial8250_do_shutdown(struct uart_port *port)
->  	 * Read data port to reset things, and then unlink from
->  	 * the IRQ chain.
->  	 */
-> -	serial_port_in(port, UART_RX);
-> +	uart_port_lock_irqsave(port, &flags);
-> +	lsr = serial_port_in(port, UART_LSR);
-> +	if (lsr & UART_LSR_DR)
-> +		serial_port_in(port, UART_RX);
-> +	uart_port_unlock_irqrestore(port, flags);
-> +
->  	serial8250_rpm_put(up);
->  
->  	up->ops->release_irq(up);
-> 
---8323328-1672980820-1744630364=:10563
-Content-Type: text/x-diff; NAME=0001-serial-8250_dw-Ensure-BUSY-is-deasserted.patch
-Content-Transfer-Encoding: BASE64
-Content-ID: <62bdd06c-209d-2f82-a4cb-118b67f585c1@linux.intel.com>
-Content-Description: 
-Content-Disposition: ATTACHMENT; FILENAME=0001-serial-8250_dw-Ensure-BUSY-is-deasserted.patch
-
-RnJvbSAxMDIzNzY0MGIxNWFkYTMxM2MzYWMzMDIxZDdjYzlhZWI3NzRkNWM2
-IE1vbiBTZXAgMTcgMDA6MDA6MDAgMjAwMQ0KRnJvbTogPT9VVEYtOD9xP0ls
-cG89MjBKPUMzPUE0cnZpbmVuPz0gPGlscG8uamFydmluZW5AbGludXguaW50
-ZWwuY29tPg0KRGF0ZTogTW9uLCAxNCBBcHIgMjAyNSAxNDoyMzozNiArMDMw
-MA0KU3ViamVjdDogW1BBVENIIDEvMV0gc2VyaWFsOiA4MjUwX2R3OiBFbnN1
-cmUgQlVTWSBpcyBkZWFzc2VydGVkDQpNSU1FLVZlcnNpb246IDEuMA0KQ29u
-dGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0PVVURi04DQpDb250ZW50
-LVRyYW5zZmVyLUVuY29kaW5nOiA4Yml0DQoNCkRXIFVBUlQgY2Fubm90IHdy
-aXRlIHRvIExDUiwgRExMLCBhbmQgRExIIHdoaWxlIEJVU1kgaXMgYXNzZXJ0
-ZWQuDQpFeGlzdGFuY2Ugb2YgQlVTWSBkZXBlbmRzIG9uIHVhcnRfMTY1NTBf
-Y29tcGF0aWJsZSwgaWYgVUFSVCBIVyBpcw0KY29uZmlndXJlZCB3aXRoIDE2
-NTUwIGNvbXBhdGlibGUgdGhvc2UgcmVnaXN0ZXJzIGNhbiBhbHdheXMgYmUN
-CndyaXR0ZW4uDQoNClRoZXJlIGN1cnJlbnRseSBpcyBkdzgyNTBfZm9yY2Vf
-aWRsZSgpIHdoaWNoIGF0dGVtcHRzIHRvIGFyY2hpdmUNCm5vbi1CVVNZIHN0
-YXRlIGJ5IGRpc2FibGluZyBGSUZPLCBob3dldmVyLCB0aGUgc29sdXRpb24g
-aXMgdW5yZWxpYWJsZQ0Kd2hlbiBSeCBrZWVwcyBnZXR0aW5nIG1vcmUgYW5k
-IG1vcmUgY2hhcmFjdGVycy4NCg0KQ3JlYXRlIGEgc2VxdWVuY2Ugb2Ygb3Bl
-cmF0aW9ucyB0aGF0IGVuc3VyZXMgVUFSVCBjYW5ub3Qga2VlcCBCVVNZDQph
-c3NlcnRlZCBpbmRlZmluaXRlbHkuIFRoZSBuZXcgc2VxdWVuY2UgcmVsaWVz
-IG9uIGVuYWJsaW5nIGxvb3BiYWNrDQptb2RlIHRlbXBvcmFyaWx5IHRvIHBy
-ZXZlbnQgaW5jb21pbmcgUnggY2hhcmFjdGVycyBrZWVwaW5nIFVBUlQgQlVT
-WS4NCg0KVXNlIHRoZSBuZXcgZHc4MjUwX2lkbGVfZW50ZXIvZXhpdCgpIHRv
-IGRvIGRpdmlzb3Igd3JpdGVzIGFuZCBMQ1INCndyaXRlcy4NCg0KVGhpcyBp
-c3N1ZSB3YXMgcmVwb3J0ZWQgYnkgcWlhbmZhbiBaaGFvIHdobyBwdXQgbG90
-cyBvZiBkZWJ1Z2dpbmcNCmVmZm9ydCBpbnRvIHVuZGVyc3RhbmRpbmcgdGhl
-IHNvbHV0aW9uIHNwYWNlLg0KDQpSZXBvcnRlZC1ieTogcWlhbmZhbiBaaGFv
-IDxxaWFuZmFuZ3VpamluQDE2My5jb20+DQpTaWduZWQtb2ZmLWJ5OiBJbHBv
-IErDpHJ2aW5lbiA8aWxwby5qYXJ2aW5lbkBsaW51eC5pbnRlbC5jb20+DQot
-LS0NCiBkcml2ZXJzL3R0eS9zZXJpYWwvODI1MC84MjUwX2R3LmMgfCAxNDkg
-KysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0tDQogMSBmaWxlIGNoYW5n
-ZWQsIDEwMyBpbnNlcnRpb25zKCspLCA0NiBkZWxldGlvbnMoLSkNCg0KZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZHcuYyBi
-L2RyaXZlcnMvdHR5L3NlcmlhbC84MjUwLzgyNTBfZHcuYw0KaW5kZXggMTkw
-MmYyOTQ0NGExLi44YTlkZmZjODVmZTMgMTAwNjQ0DQotLS0gYS9kcml2ZXJz
-L3R0eS9zZXJpYWwvODI1MC84MjUwX2R3LmMNCisrKyBiL2RyaXZlcnMvdHR5
-L3NlcmlhbC84MjUwLzgyNTBfZHcuYw0KQEAgLTQyLDYgKzQyLDggQEANCiAv
-KiBEZXNpZ25XYXJlIHNwZWNpZmljIHJlZ2lzdGVyIGZpZWxkcyAqLw0KICNk
-ZWZpbmUgRFdfVUFSVF9NQ1JfU0lSRQkJQklUKDYpDQogDQorI2RlZmluZSBE
-V19VQVJUX1VTUl9CVVNZCQlCSVQoMCkNCisNCiAvKiBSZW5lc2FzIHNwZWNp
-ZmljIHJlZ2lzdGVyIGZpZWxkcyAqLw0KICNkZWZpbmUgUlpOMV9VQVJUX3hE
-TUFDUl9ETUFfRU4JCUJJVCgwKQ0KICNkZWZpbmUgUlpOMV9VQVJUX3hETUFD
-Ul8xX1dPUkRfQlVSU1QJKDAgPDwgMSkNCkBAIC03Nyw2ICs3OSw3IEBAIHN0
-cnVjdCBkdzgyNTBfZGF0YSB7DQogDQogCXVuc2lnbmVkIGludAkJc2tpcF9h
-dXRvY2ZnOjE7DQogCXVuc2lnbmVkIGludAkJdWFydF8xNjU1MF9jb21wYXRp
-YmxlOjE7DQorCXVuc2lnbmVkIGludAkJaW5faWRsZToxOw0KIH07DQogDQog
-c3RhdGljIGlubGluZSBzdHJ1Y3QgZHc4MjUwX2RhdGEgKnRvX2R3ODI1MF9k
-YXRhKHN0cnVjdCBkdzgyNTBfcG9ydF9kYXRhICpkYXRhKQ0KQEAgLTEwOCwz
-NiArMTExLDg5IEBAIHN0YXRpYyBpbmxpbmUgaW50IGR3ODI1MF9tb2RpZnlf
-bXNyKHN0cnVjdCB1YXJ0X3BvcnQgKnAsIGludCBvZmZzZXQsIGludCB2YWx1
-ZSkNCiB9DQogDQogLyoNCi0gKiBUaGlzIGZ1bmN0aW9uIGlzIGJlaW5nIGNh
-bGxlZCBhcyBwYXJ0IG9mIHRoZSB1YXJ0X3BvcnQ6OnNlcmlhbF9vdXQoKQ0K
-LSAqIHJvdXRpbmUuIEhlbmNlLCBpdCBtdXN0IG5vdCBjYWxsIHNlcmlhbF9w
-b3J0X291dCgpIG9yIHNlcmlhbF9vdXQoKQ0KLSAqIGFnYWluc3QgdGhlIG1v
-ZGlmaWVkIHJlZ2lzdGVycyBoZXJlLCBpLmUuIExDUi4NCisgKiBFbnN1cmUg
-QlVTWSBpcyBub3QgYXNzZXJ0ZWQuIElmIERXIFVBUlQgaXMgY29uZmlndXJl
-ZCB3aXRoDQorICogIXVhcnRfMTY1NTBfY29tcGF0aWJsZSwgdGhlIHdyaXRl
-cyB0byBMQ1IsIERMTCwgYW5kIERMSCBmYWlsIHdoaWxlDQorICogQlVTWSBp
-cyBhc3NlcnRlZC4NCisgKg0KKyAqIENvbnRleHQ6IHBvcnQncyBsb2NrIG11
-c3QgYmUgaGVsZA0KICAqLw0KLXN0YXRpYyB2b2lkIGR3ODI1MF9mb3JjZV9p
-ZGxlKHN0cnVjdCB1YXJ0X3BvcnQgKnApDQorc3RhdGljIGludCBkdzgyNTBf
-aWRsZV9lbnRlcihzdHJ1Y3QgdWFydF9wb3J0ICpwKQ0KIHsNCisJc3RydWN0
-IGR3ODI1MF9kYXRhICpkID0gdG9fZHc4MjUwX2RhdGEocC0+cHJpdmF0ZV9k
-YXRhKTsNCiAJc3RydWN0IHVhcnRfODI1MF9wb3J0ICp1cCA9IHVwX3RvX3U4
-MjUwcChwKTsNCi0JdW5zaWduZWQgaW50IGxzcjsNCisJdTMyIGxzcjsNCiAN
-Ci0JLyoNCi0JICogVGhlIGZvbGxvd2luZyBjYWxsIGN1cnJlbnRseSBwZXJm
-b3JtcyBzZXJpYWxfb3V0KCkNCi0JICogYWdhaW5zdCB0aGUgRkNSIHJlZ2lz
-dGVyLiBCZWNhdXNlIGl0IGRpZmZlcnMgdG8gTENSDQotCSAqIHRoZXJlIHdp
-bGwgYmUgbm8gaW5maW5pdGUgbG9vcCwgYnV0IGlmIGl0IGV2ZXIgZ2V0cw0K
-LQkgKiBtb2RpZmllZCwgd2UgbWlnaHQgbmVlZCBhIG5ldyBjdXN0b20gdmVy
-c2lvbiBvZiBpdA0KLQkgKiB0aGF0IGF2b2lkcyBpbmZpbml0ZSByZWN1cnNp
-b24uDQotCSAqLw0KLQlzZXJpYWw4MjUwX2NsZWFyX2FuZF9yZWluaXRfZmlm
-b3ModXApOw0KKwlpZiAoZC0+dWFydF8xNjU1MF9jb21wYXRpYmxlKQ0KKwkJ
-cmV0dXJuIDA7DQogDQotCS8qDQotCSAqIFdpdGggUFNMVkVSUl9SRVNQX0VO
-IHBhcmFtZXRlciBzZXQgdG8gMSwgdGhlIGRldmljZSBnZW5lcmF0ZXMgYW4N
-Ci0JICogZXJyb3IgcmVzcG9uc2Ugd2hlbiBhbiBhdHRlbXB0IHRvIHJlYWQg
-YW4gZW1wdHkgUkJSIHdpdGggRklGTw0KLQkgKiBlbmFibGVkLg0KLQkgKi8N
-Ci0JaWYgKHVwLT5mY3IgJiBVQVJUX0ZDUl9FTkFCTEVfRklGTykgew0KLQkJ
-bHNyID0gc2VyaWFsX3BvcnRfaW4ocCwgVUFSVF9MU1IpOw0KLQkJaWYgKCEo
-bHNyICYgVUFSVF9MU1JfRFIpKQ0KLQkJCXJldHVybjsNCisJZC0+aW5faWRs
-ZSA9IDE7DQorDQorCS8qIFByZXZlbnQgdHJpZ2dlcmluZyBpbnRlcnJ1cHQg
-ZnJvbSBSQlIgZmlsbGluZyAqLw0KKwlwLT5zZXJpYWxfb3V0KHAsIFVBUlRf
-SUVSLCAwKTsNCisNCisJc2VyaWFsODI1MF9yeF9kbWFfZmx1c2godXApOw0K
-KwkvLyBXaGF0IGFib3V0IFR4IERNQT8gU2hvdWxkIHByb2JhYmx5IHBhdXNl
-IHRoYXQgdG9vIGFuZCByZXN1bWUNCisJLy8gYWZ0ZXJ3YXJkcy4NCisNCisJ
-cC0+c2VyaWFsX291dChwLCBVQVJUX01DUiwgdXAtPm1jciB8IFVBUlRfTUNS
-X0xPT1ApOw0KKwlpZiAodXAtPmNhcGFiaWxpdGllcyAmIFVBUlRfQ0FQX0ZJ
-Rk8pDQorCQlwLT5zZXJpYWxfb3V0KHAsIFVBUlRfRkNSLCAwKTsNCisNCisJ
-aWYgKHAtPnNlcmlhbF9pbihwLCBkLT5wZGF0YS0+dXNyX3JlZykgJiBEV19V
-QVJUX1VTUl9CVVNZKQ0KKwkJbmRlbGF5KHAtPmZyYW1lX3RpbWUpOw0KKw0K
-Kwlsc3IgPSBzZXJpYWxfbHNyX2luKHVwKTsNCisJaWYgKGxzciAmIFVBUlRf
-TFNSX0RSKSB7DQorCQlwLT5zZXJpYWxfaW4ocCwgVUFSVF9SWCk7DQorCQl1
-cC0+bHNyX3NhdmVkX2ZsYWdzID0gMDsNCiAJfQ0KIA0KLQlzZXJpYWxfcG9y
-dF9pbihwLCBVQVJUX1JYKTsNCisJLyogTm93IGd1YXJhbnRlZWQgdG8gaGF2
-ZSBCVVNZIGRlYXNzZXJ0ZWQ/IEp1c3Qgc2FuaXR5IGNoZWNrICovDQorCWlm
-IChwLT5zZXJpYWxfaW4ocCwgZC0+cGRhdGEtPnVzcl9yZWcpICYgRFdfVUFS
-VF9VU1JfQlVTWSkNCisJCXJldHVybiAtRUJVU1k7DQorDQorCXJldHVybiAw
-Ow0KK30NCisNCitzdGF0aWMgdm9pZCBkdzgyNTBfaWRsZV9leGl0KHN0cnVj
-dCB1YXJ0X3BvcnQgKnApDQorew0KKwlzdHJ1Y3QgZHc4MjUwX2RhdGEgKmQg
-PSB0b19kdzgyNTBfZGF0YShwLT5wcml2YXRlX2RhdGEpOw0KKwlzdHJ1Y3Qg
-dWFydF84MjUwX3BvcnQgKnVwID0gdXBfdG9fdTgyNTBwKHApOw0KKw0KKwlp
-ZiAoZC0+dWFydF8xNjU1MF9jb21wYXRpYmxlKQ0KKwkJcmV0dXJuOw0KKw0K
-KwlpZiAodXAtPmNhcGFiaWxpdGllcyAmIFVBUlRfQ0FQX0ZJRk8pDQorCQlw
-LT5zZXJpYWxfb3V0KHAsIFVBUlRfRkNSLCB1cC0+ZmNyKTsNCisJcC0+c2Vy
-aWFsX291dChwLCBVQVJUX01DUiwgdXAtPm1jcik7DQorCXAtPnNlcmlhbF9v
-dXQocCwgVUFSVF9JRVIsIHVwLT5pZXIpOw0KKw0KKwkvLyBNYXliZSBtb3Zl
-IHRoZSBETUEgUnggcmVzdGFydCBjaGVjayBpbiBkbWFfcnhfY29tcGxldGUo
-KSB0byBvd24NCisJLy8gZnVuY3Rpb24gKHNlcmlhbDgyNTBfcnhfZG1hX3Jl
-c3RhcnQoKSkgYW5kIGNhbGwgaXQgZnJvbSBoZXJlLg0KKwkvLyBETUEgVHgg
-cmVzdW1lDQorDQorCWQtPmluX2lkbGUgPSAwOw0KK30NCisNCitzdGF0aWMg
-dm9pZCBkdzgyNTBfc2V0X2Rpdmlzb3Ioc3RydWN0IHVhcnRfcG9ydCAqcCwg
-dW5zaWduZWQgaW50IGJhdWQsDQorCQkJICAgICAgIHVuc2lnbmVkIGludCBx
-dW90LCB1bnNpZ25lZCBpbnQgcXVvdF9mcmFjKQ0KK3sNCisJc3RydWN0IHVh
-cnRfODI1MF9wb3J0ICp1cCA9IHVwX3RvX3U4MjUwcChwKTsNCisJaW50IHJl
-dDsNCisNCisJcmV0ID0gZHc4MjUwX2lkbGVfZW50ZXIocCk7DQorCWlmIChy
-ZXQgPCAwKQ0KKwkJZ290byBpZGxlX2ZhaWxlZDsNCisNCisJcC0+c2VyaWFs
-X291dChwLCBVQVJUX0xDUiwgdXAtPmxjciB8IFVBUlRfTENSX0RMQUIpOw0K
-KwlpZiAoIShwLT5zZXJpYWxfaW4ocCwgVUFSVF9MQ1IpICYgVUFSVF9MQ1Jf
-RExBQikpDQorCQlnb3RvIGlkbGVfZmFpbGVkOw0KKw0KKwlzZXJpYWxfZGxf
-d3JpdGUodXAsIHF1b3QpOw0KKwlwLT5zZXJpYWxfb3V0KHAsIFVBUlRfTENS
-LCB1cC0+bGNyKTsNCisNCitpZGxlX2ZhaWxlZDoNCisJZHc4MjUwX2lkbGVf
-ZXhpdChwKTsNCiB9DQogDQogLyoNCkBAIC0xNDgsMzcgKzIwNCwzNyBAQCBz
-dGF0aWMgdm9pZCBkdzgyNTBfZm9yY2VfaWRsZShzdHJ1Y3QgdWFydF9wb3J0
-ICpwKQ0KIHN0YXRpYyB2b2lkIGR3ODI1MF9jaGVja19sY3Ioc3RydWN0IHVh
-cnRfcG9ydCAqcCwgaW50IG9mZnNldCwgaW50IHZhbHVlKQ0KIHsNCiAJc3Ry
-dWN0IGR3ODI1MF9kYXRhICpkID0gdG9fZHc4MjUwX2RhdGEocC0+cHJpdmF0
-ZV9kYXRhKTsNCi0Jdm9pZCBfX2lvbWVtICphZGRyID0gcC0+bWVtYmFzZSAr
-IChvZmZzZXQgPDwgcC0+cmVnc2hpZnQpOw0KLQlpbnQgdHJpZXMgPSAxMDAw
-Ow0KKwl1bnNpZ25lZCBpbnQgbGNyID0gcC0+c2VyaWFsX2luKHAsIFVBUlRf
-TENSKTsNCisJaW50IHJldDsNCiANCiAJaWYgKG9mZnNldCAhPSBVQVJUX0xD
-UiB8fCBkLT51YXJ0XzE2NTUwX2NvbXBhdGlibGUpDQogCQlyZXR1cm47DQog
-DQogCS8qIE1ha2Ugc3VyZSBMQ1Igd3JpdGUgd2Fzbid0IGlnbm9yZWQgKi8N
-Ci0Jd2hpbGUgKHRyaWVzLS0pIHsNCi0JCXVuc2lnbmVkIGludCBsY3IgPSBz
-ZXJpYWxfcG9ydF9pbihwLCBvZmZzZXQpOw0KLQ0KLQkJaWYgKCh2YWx1ZSAm
-IH5VQVJUX0xDUl9TUEFSKSA9PSAobGNyICYgflVBUlRfTENSX1NQQVIpKQ0K
-LQkJCXJldHVybjsNCisJaWYgKCh2YWx1ZSAmIH5VQVJUX0xDUl9TUEFSKSA9
-PSAobGNyICYgflVBUlRfTENSX1NQQVIpKQ0KKwkJcmV0dXJuOw0KIA0KLQkJ
-ZHc4MjUwX2ZvcmNlX2lkbGUocCk7DQorCWlmIChkLT5pbl9pZGxlKSB7DQor
-CQkvKg0KKwkJICogRklYTUU6IHRoaXMgZGVhZGxvY2tzIGlmIHBvcnQtPmxv
-Y2sgaXMgYWxyZWFkeSBoZWxkDQorCQkgKiBkZXZfZXJyKHAtPmRldiwgIkNv
-dWxkbid0IHNldCBMQ1IgdG8gJWRcbiIsIHZhbHVlKTsNCisJCSAqLw0KKwkJ
-cmV0dXJuOw0KKwl9DQogDQotI2lmZGVmIENPTkZJR182NEJJVA0KLQkJaWYg
-KHAtPnR5cGUgPT0gUE9SVF9PQ1RFT04pDQotCQkJX19yYXdfd3JpdGVxKHZh
-bHVlICYgMHhmZiwgYWRkcik7DQotCQllbHNlDQotI2VuZGlmDQotCQlpZiAo
-cC0+aW90eXBlID09IFVQSU9fTUVNMzIpDQotCQkJd3JpdGVsKHZhbHVlLCBh
-ZGRyKTsNCi0JCWVsc2UgaWYgKHAtPmlvdHlwZSA9PSBVUElPX01FTTMyQkUp
-DQotCQkJaW93cml0ZTMyYmUodmFsdWUsIGFkZHIpOw0KLQkJZWxzZQ0KLQkJ
-CXdyaXRlYih2YWx1ZSwgYWRkcik7DQorCXJldCA9IGR3ODI1MF9pZGxlX2Vu
-dGVyKHApOw0KKwlpZiAocmV0IDwgMCkgew0KKwkJLyoNCisJCSAqIEZJWE1F
-OiB0aGlzIGRlYWRsb2NrcyBpZiBwb3J0LT5sb2NrIGlzIGFscmVhZHkgaGVs
-ZA0KKwkJICogZGV2X2VycihwLT5kZXYsICJDb3VsZG4ndCBzZXQgTENSIHRv
-ICVkXG4iLCB2YWx1ZSk7DQorCQkgKi8NCisJCWdvdG8gaWRsZV9mYWlsZWQ7
-DQogCX0NCi0JLyoNCi0JICogRklYTUU6IHRoaXMgZGVhZGxvY2tzIGlmIHBv
-cnQtPmxvY2sgaXMgYWxyZWFkeSBoZWxkDQotCSAqIGRldl9lcnIocC0+ZGV2
-LCAiQ291bGRuJ3Qgc2V0IExDUiB0byAlZFxuIiwgdmFsdWUpOw0KLQkgKi8N
-CisNCisJcC0+c2VyaWFsX291dChwLCBVQVJUX0xDUiwgdmFsdWUpOw0KKw0K
-K2lkbGVfZmFpbGVkOg0KKwlkdzgyNTBfaWRsZV9leGl0KHApOw0KIH0NCiAN
-CiAvKiBSZXR1cm5zIG9uY2UgdGhlIHRyYW5zbWl0dGVyIGlzIGVtcHR5IG9y
-IHdlIHJ1biBvdXQgb2YgcmV0cmllcyAqLw0KQEAgLTU0Nyw2ICs2MDMsNyBA
-QCBzdGF0aWMgaW50IGR3ODI1MF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2
-aWNlICpwZGV2KQ0KIAlwLT5kZXYJCT0gZGV2Ow0KIAlwLT5zZXRfbGRpc2MJ
-PSBkdzgyNTBfc2V0X2xkaXNjOw0KIAlwLT5zZXRfdGVybWlvcwk9IGR3ODI1
-MF9zZXRfdGVybWlvczsNCisJcC0+c2V0X2Rpdmlzb3IJPSBkdzgyNTBfc2V0
-X2Rpdmlzb3I7DQogDQogCWRhdGEgPSBkZXZtX2t6YWxsb2MoZGV2LCBzaXpl
-b2YoKmRhdGEpLCBHRlBfS0VSTkVMKTsNCiAJaWYgKCFkYXRhKQ0KDQpiYXNl
-LWNvbW1pdDogMDQzODA2YmM5ZGJjNjU5N2RkMTVlNmNhOTIyMGFlMjc0NjQy
-NWYyZg0KLS0gDQoyLjM5LjUNCg0K
-
---8323328-1672980820-1744630364=:10563--
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
