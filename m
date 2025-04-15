@@ -1,105 +1,114 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BC6328B519
-	for <linux-serial@vger.kernel.org>; Tue, 15 Apr 2025 10:21:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49F482951DF;
+	Tue, 15 Apr 2025 10:45:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744712464; cv=none; b=KECMGnCA/AS/QCaDt8gRIGqJWuC9jvMGQBu17BE27DD6Ebs+z5Br3xBFrjiLbuCOev2NPnw9HCH9Mo2j2BOYMdp+VPmzucJ2gisAzjqvDBXp+US0yKAWol9l85/mKiw8WY/1mQZ7Crc8oG6v21KMZ3WQIWPLkS6694moc0zOeJs=
+	t=1744713905; cv=none; b=Rj1I5RxHP8ust3wo/HGP/l1cg6y2mo1KIN44I5L/Bvt4DGq9mJdvJAUozxyGPAJvkBqzEgKqNZG50emtQMrZMF3lNZRoGlDKjMSoEKFer+BRZfk9QaJXjv9zxp2ge5Yi1zZCt8QNog87cKsv0fFlUQLjOKYoNHWXF9sbB6axtA8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744712464; c=relaxed/simple;
-	bh=ysjcld4I1d/TEaaccvq+g9ufZqs0JEJ/wvx67sEcKBc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gQO9DmrztP9CFas76g4OHvdMdS2klXwORyErgJmiLvvYFQLB97NtD+h/guQkOeU56Df7qRw1rcj4B1BMutYnwsGg+bwxvU15wlKte1rCI/p3K4KGmjgYzFBikZ0UkC+FO7kPCLdnt+sKMJ2RLAD8O7DzinBml3GUynPiyqyPBEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1u4dPD-0004Ii-B1; Tue, 15 Apr 2025 12:20:39 +0200
-Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <mkl@pengutronix.de>)
-	id 1u4dPC-000P2J-0G;
-	Tue, 15 Apr 2025 12:20:38 +0200
-Received: from pengutronix.de (p5b1645f7.dip0.t-ipconnect.de [91.22.69.247])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	(Authenticated sender: mkl-all@blackshift.org)
-	by smtp.blackshift.org (Postfix) with ESMTPSA id A99013F9BB4;
-	Tue, 15 Apr 2025 10:20:37 +0000 (UTC)
-Date: Tue, 15 Apr 2025 12:20:37 +0200
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org, 
-	Vincent Mailhol <mailhol.vincent@wanadoo.fr>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Geert Uytterhoeven <geert+renesas@glider.be>, Linus Walleij <linus.walleij@linaro.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Mark Brown <broonie@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
-	Wolfgang Grandegger <wg@grandegger.com>, Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	linux-can@vger.kernel.org, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: remove RZ/N1S bindings
-Message-ID: <20250415-glittering-dangerous-coati-1c90b1-mkl@pengutronix.de>
-References: <20250411194849.11067-2-wsa+renesas@sang-engineering.com>
+	s=arc-20240116; t=1744713905; c=relaxed/simple;
+	bh=SzAtTYxauZXqLEN7iyAxb1gJsZE7OLBERKWDjqBjIAk=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=lmVXIR8KIon97byhYVxgiB/wmKtW/4cg0HshbZ8W1zwe+uwNzP45r45hrBIUOCO9EX5VeOHpzOES6L8NNJOldlOmTk1UjRuuB1vVeiG5TwrZVBul/iFyuOgiktvqg2kMYk3YNgszG0c3HA8o/6MHRzypNaxm/8LqIlvnjerdwrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WeQXc44p; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WeQXc44p"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-223fd89d036so64246445ad.1;
+        Tue, 15 Apr 2025 03:45:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1744713903; x=1745318703; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SzAtTYxauZXqLEN7iyAxb1gJsZE7OLBERKWDjqBjIAk=;
+        b=WeQXc44pIUfo2xNiMXBXmjRijOgtT0blJXMY47LfbfeSMFb4yoBo9xPy0H8QXXEGkM
+         0GiIp5Dtc+yUta4nPEOvE7RsI/psIoiLdVhOIQQBzxRhQ4msu0Df6vWKKJXyQEj+hvh3
+         xtg3aZsm2wBLcb5qNuYGq5tat77RfI7fLQAz444I+wIftL/K4yGGSgGDRqVpx77rO57h
+         h1qnrurZ8RSmFJ4EATbRWHP6XGmHv5ZNe2xe8abvvrqLQ5YtwBr/xAavSl1plbUj80wm
+         zzaiU5N2EvyGVpX2ACyBu6xYfkAmHyCrAA/0GuBgqlrE0doDJYfVeb2VcGrjnF5oC3q3
+         3vtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744713903; x=1745318703;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SzAtTYxauZXqLEN7iyAxb1gJsZE7OLBERKWDjqBjIAk=;
+        b=JieV7XV/8Tua/9m17nPqbiHqt+O+CD0ztuqaeUUMZenAZieVKeWyV/X+F04chxdBX6
+         FwAzD2vgvHdZoFg3eGqCkkVFCfw56GDeykts8djh3zhiDCNLHfTQ4R2vnqR+my/nLXxw
+         TGUffEnheL/C9b+rwwND0rdCS630nwmhNgZihl9N0/1eI9tnvHjjsSq+P7dXNjQZU7sb
+         ymZGxV5fFv5RzSdyWyxwExS3fL0z026D11PshLjtzNyuTzPkeQB+Ulsah4BgXIWnAmua
+         vnlMafoZUC/ZT69UkVFQ7nMoY0JNtjYVNerufxkb5K722NFUGKqgqQzjxLIooBP7qEXO
+         mWYQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU/+4sisKkz8WvuaGzOUhdmAYFx7/pC5VcqqvapbpKfEEljjaOrmzQB7B5Olmjv0HBaRRBxLSMkjPvHJhk=@vger.kernel.org, AJvYcCW4c2KFjrjhsCZFj1ED47Eg08/Zok+qovFMjzcl/9agsVWQFb/gOvLES5Lipwt3Qx1LtYHDaOdx@vger.kernel.org, AJvYcCWOSQCTlCpkcdCd5jET0ifEHPKHauiVRikuzm9j9KxGuvFUDEj+gx9pJiYEE2mV6ZHWqimfKsZHOvnfsJF2@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxr3voo3uDq5C7hRe12R+6tm/HjEBXbn2rvWm1byVlQU6w2j3OT
+	OQT5evmwKaYEONgZCSDjzN8PetNu51ro5lziP6TD+FTejNtt4weT
+X-Gm-Gg: ASbGncv/tSYfUT0RA3i4XXQXyWVSyoUh/N70089PKVLk301xtDSK8O24SFK52S1/tfx
+	gAQZGg1ZMwtEH+gJQokSviATlOKNMdAwpE5Fj6+KUK2cR3HVv/nPYvdqSZ0BOJseUWYREt2dYQn
+	wc873Vv1rxlZxHWPqDfJDoBmEe1fZCZFuZ8zzaxGDxmZRbzUau0TlyxB7fsm/yIr8oBN4g6J6p4
+	6Ne/MFu5jrp/5CjaGBinFJsnl139tY0WY60dL6192VR1UFDtaU4s9BRazrRJP+8ik6+GYKZR+T2
+	pAtvOwlDU+8UWGa8C7gKJo8R+LcbzyVXE8XS+Kyr7kUGXi0pFrcPFp2CLsFYWjZIAZVK4ojHP4z
+	g0GDa4KxfEAxiCuMRS5+tnD1faeMGWcao7lVcXA==
+X-Google-Smtp-Source: AGHT+IGbuiseGe6dO8ZaeyUMP0vE98HRa1rGWFspkK+5ZgKdbKp7kpHE7FLGo9TmBf7+WV4dwGP3pw==
+X-Received: by 2002:a17:903:144f:b0:220:f151:b668 with SMTP id d9443c01a7336-22bea4b3d11mr202305075ad.20.1744713903453;
+        Tue, 15 Apr 2025 03:45:03 -0700 (PDT)
+Received: from DESKTOP-NBGHJ1C.flets-east.jp (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73bd230e305sm8461509b3a.140.2025.04.15.03.44.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Apr 2025 03:45:03 -0700 (PDT)
+From: Ryo Takakura <ryotkkr98@gmail.com>
+To: john.ogness@linutronix.de
+Cc: alex@ghiti.fr,
+	aou@eecs.berkeley.edu,
+	bigeasy@linutronix.de,
+	conor.dooley@microchip.com,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org,
+	palmer@dabbelt.com,
+	paul.walmsley@sifive.com,
+	pmladek@suse.com,
+	ryotkkr98@gmail.com,
+	samuel.holland@sifive.com,
+	stable@vger.kernel.org,
+	u.kleine-koenig@baylibre.com
+Subject: Re: [PATCH v3] serial: sifive: lock port in startup()/shutdown() callbacks
+Date: Tue, 15 Apr 2025 19:44:53 +0900
+Message-Id: <20250415104453.3690-1-ryotkkr98@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <84r01tooq9.fsf@jogness.linutronix.de>
+References: <84r01tooq9.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="sc425bfm6fmj3k36"
-Content-Disposition: inline
-In-Reply-To: <20250411194849.11067-2-wsa+renesas@sang-engineering.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 
+On Tue, 15 Apr 2025 09:48:06 +0206, John Ogness wrote:
+>On 2025-04-12, Ryo Takakura <ryotkkr98@gmail.com> wrote:
+>> startup()/shutdown() callbacks access SIFIVE_SERIAL_IE_OFFS.
+>> The register is also accessed from write() callback.
+>>
+>> If console were printing and startup()/shutdown() callback
+>> gets called, its access to the register could be overwritten.
+>>
+>> Add port->lock to startup()/shutdown() callbacks to make sure
+>> their access to SIFIVE_SERIAL_IE_OFFS is synchronized against
+>> write() callback.
+>>
+>> Fixes: 45c054d0815b ("tty: serial: add driver for the SiFive UART")
+>> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
+>> Reviewed-by: Petr Mladek <pmladek@suse.com>
+>
+>Reviewed-by: John Ogness <john.ogness@linutronix.de>
 
---sc425bfm6fmj3k36
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] dt-bindings: remove RZ/N1S bindings
-MIME-Version: 1.0
+I'll add for v4, Thank you John!
 
-On 11.04.2025 21:47:57, Wolfram Sang wrote:
-> Except for these four quite random bindings, no further upstream
-> activity has been observed in the last 8 years. So, remove these
-> fragments to reduce maintenance burden.
->=20
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde          |
-Embedded Linux                   | https://www.pengutronix.de |
-Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
-
---sc425bfm6fmj3k36
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEn/sM2K9nqF/8FWzzDHRl3/mQkZwFAmf+MvIACgkQDHRl3/mQ
-kZzTpQgAlPTcKlZ2xk6+ME/4NOQ2N/EBzvg7QNZBqJfusX9dxxdc0o4dklimbHdf
-epiZ9f5sw+DLcWQxm4Ll7LB/jzW4XyMC+lZkS57AiOSpCCuLMunyjhld7Nv/3Q7+
-PsHh0sBe7xvdxw1f3vLL0+nmG9TS3SosuqUZZMczwmN0Q6fPcUMEBN5W+X7+MIvM
-3NghO/IjopmjQiDZSveHzXCpLuW/JRQOSUpad9+Fuyh1T4In4mBrPCQ/JtyFNGSk
-QzTN8PYPuiT2xDQ5CRTm9PKr9Do9XRc+JAYSUdt5F3MV5XVfuG3ouBnoXVnkkCM0
-lufydvGLYi+EcDGT/so8Kc7TSirIrg==
-=erlw
------END PGP SIGNATURE-----
-
---sc425bfm6fmj3k36--
+Sincerely,
+Ryo Takakura
