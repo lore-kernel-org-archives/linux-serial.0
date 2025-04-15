@@ -1,79 +1,79 @@
 Received: from fhigh-a5-smtp.messagingengine.com (fhigh-a5-smtp.messagingengine.com [103.168.172.156])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97A052475E3;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E1882472BF;
 	Tue, 15 Apr 2025 19:22:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.156
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744744945; cv=none; b=pMPumU8gXrkN0BBNyYO3Kz/4O0AaOSfMRbSDrexPgqQXXh0ycCkNv9+a+Ijxsw8X/jSJ2bQU+Fj/jfUNoGuFhEilhJFCxFuxZ0PbbljQ8nRUUDmel1j/Q5Ox7WXaNWZIUEPwLCqrGEqUaYB8BcAODzlMgPR515VcRU+So5noppQ=
+	t=1744744946; cv=none; b=d4ZLALg6Tp1kwknFytJ00/b++JTIC6OEDAw2bz2q4EW2Kkm8L2ycSK+v69e/UWTEA1FfcARf55HTkZ03ORYYy0cC7UUkTACfljo9LgIY0P5gaVb2sRPSMqMMkeaOt5ktxiSHDr/Eq9Fhyabw95bwZkciZptC2QC9nJcnVgnOL+E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744744945; c=relaxed/simple;
-	bh=5LqN3hI7ixJh6B2H56mzahrf8EEt2sBfK62S9N94zCM=;
+	s=arc-20240116; t=1744744946; c=relaxed/simple;
+	bh=660TsqQTVIOW/sfhjyBHpTi4iXWDO6mcstCc/JmzYE0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mMp+ZRxA9NZZVjtlWAqWFUlR6Hm0B7bmJ0SICPdILrcCTtgycJX7nPzHnEd0UC2ABh/1H0pm5WFjDvVaXtMj4amNYHKN3Jwdogyn+e5dhXqmm4alwvj1KBiv1rpi5sf8jgfnJ4VYRwER05OdPlDleT4uth4a/VKuUUeN9scz/8s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=iGCv2Usi; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=nM4a1zla; arc=none smtp.client-ip=103.168.172.156
+	 MIME-Version; b=oT9bLxs/8JsYWbexmclrg6pTq9XEyrfeOKuVUxFoO1zh1oy/+Fr49Z75MRdM03CMXiYJngigGRk+8iwDjhGcYi3tC2eHVYpoDk7Flvflq1ijfVsKMzkYIoMlp+nKhn0j+OwZgQ0bWXL626qW0Io2qAhCpUCAM3HkswZQcNmm8bo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=CxwrnR+f; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=DiL2rtH4; arc=none smtp.client-ip=103.168.172.156
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="iGCv2Usi";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="nM4a1zla"
-Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id C379411400AD;
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="CxwrnR+f";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="DiL2rtH4"
+Received: from phl-compute-08.internal (phl-compute-08.phl.internal [10.202.2.48])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id DA0CA1140139;
 	Tue, 15 Apr 2025 15:22:19 -0400 (EDT)
 Received: from phl-frontend-01 ([10.202.2.160])
-  by phl-compute-05.internal (MEProxy); Tue, 15 Apr 2025 15:22:19 -0400
+  by phl-compute-08.internal (MEProxy); Tue, 15 Apr 2025 15:22:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1744744939;
-	 x=1744831339; bh=Yb5tKtRtrOZEqKIWpRUqh9mXuGAmxCdbqrB1U8/DmPU=; b=
-	iGCv2UsicAkN+3sxggLcrhnCRM5PNXs5FHFuGLcHCbCcLU8P7prCK0/OzYeDa5rX
-	dCCR9wuEDr6tciPflSEqD21lPxh8nUP+ETi/zQyblh+cdsV0Pbap6gjPT8bEkUHK
-	KyuYmCY54suRIuBlX3SaY0IKvz6BOOPllKWlYgYZMzadkJauADYSSPBAL0/1T+Lm
-	R/ZakiAJHJZSUo+Z42XDFuxsJGUlhyCa+nBfhO/6LI3Kno4zrEHhLXdSM7xHSX7q
-	Nimh5fQSovGyMtef1NlV2qC7YGr2mo5jpkyBDQdiIbsaOHmQ7O64uFcZuD43OIZC
-	uGSf6H5y4Q3ixvZpQVSFSg==
+	cc:cc:content-transfer-encoding:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to; s=fm2; t=1744744939; x=
+	1744831339; bh=knAzhWbDFHF/hzKQp+oJi1Fwh6zzADlLrc+A1Hp480Y=; b=C
+	xwrnR+f5iO7O+wPNnChiHsKSLhL5eG2Ki+FV9AxCai+pwcBixJSDMC9YtwTaGeTZ
+	r2000Xra/rOEnDdEmLzd+MizUyVBK7Om6iB56PfmAWJqBXTZ39FblNbDQ4iDGxGA
+	nxLiY1cZFwrz16vWosMUQb74Svir301hMU3waIn+OP5KOCtXJl38RKAOwrpixQxN
+	o0bUb5AvAKnhzp/FwXwAuEVO65USUYzOt59t4TOG4ESAcYXn+k4WOMSPTS1dmsjo
+	ivXVgacKytiqtyOyOA80NszFOa8d2F7T2b5q/MbnrYyYc0zaDnj/m3oDclI2rPkE
+	5FuRqNEN4N2wHUs69EvqA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1744744939; x=
-	1744831339; bh=Yb5tKtRtrOZEqKIWpRUqh9mXuGAmxCdbqrB1U8/DmPU=; b=n
-	M4a1zlaqgHNwN4+Rc4Q8Gy14B8kIyODjZ80gaGBSpMVYG5U6Td5cmYtAVPGgp7i/
-	szqk6DO3H4gBgj+MQDB1Tlr1Apv11T4PaYvmE3SmG/W36yiLazFFy9V0IToEeNjD
-	23V5JE2uIAgEPVXKFyrncomEHoYMJJOpU3Av9MuYn6019jJjA6RKIEk2YkXc0IVz
-	dGAk5AA9Lun5Jx1tQ7UsizIKixocjPwEFwODcZw/JKqyGCl1cNVdi97meXNuHaFx
-	AKEurfmuqzeTJmf/Gi/GOJOvaYMHHbMpcOLwafnV+93wYxe2CP8oUGKsevUx6aH3
-	AtefV2byajxMCRaQAdl2w==
-X-ME-Sender: <xms:67H-ZyVSx-VT3prvClDZ50VbiTky8tGXz0wtC0wbD8W0K29SWIySQg>
-    <xme:67H-Z-lTvQEVYdffzsfk0dgwPKRL3AOcNKucFW4Xgb7th1CH7ghdqhdonsMLImT0j
-    hZmKhTwJXiKmqvmJSA>
-X-ME-Received: <xmr:67H-Z2ZoLDesrLpNJ8P7wxIomOCQTTWqO0ejdlK2xDXkS_Bc93UE0uSXeboXUA7VXWJwHriQn7ffROK-vPgYbPyaihjAl_CV55twqCpP-r5FrFMqhg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvvdegfedvucetufdoteggodetrf
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
+	:x-me-sender:x-sasl-enc; s=fm2; t=1744744939; x=1744831339; bh=k
+	nAzhWbDFHF/hzKQp+oJi1Fwh6zzADlLrc+A1Hp480Y=; b=DiL2rtH4YNqc0qLJb
+	zs/pr0ngzz9gredmr6ywUxTQSZKj891U4NB0BJobC3eEB2Ho7xotWzymrffnlETY
+	hT0DbsKjgQmdaVHWBBJpiJvfhClXnIN2Za+E+1FkEm+aIYccHQ2lBjMYguFczHof
+	L5ZLFwpdIxy5ex92BrULN7wpd+aRm9jWRPawTfa8u5LwbHyNqsENsLPC5UCuJx1c
+	HLFqEQydqCXvzBfcUlczd+Gnno8PVg67lY4lgtJZlh9k4fbZPm6uyq34p13yM/Vb
+	x4+MUoziAqP9N+QoP8J45lEMcJ2PKUuhka6fnXW+i8cvN0Fz9DqhvIKU4LqzeVHM
+	gHTcw==
+X-ME-Sender: <xms:67H-Z8cxoz00msjSVWriE96E0WuZnJgX45e41nPZ2EX-lW-v_UoqqA>
+    <xme:67H-Z-MXn5qnqlfZEgimEKGOHFSx0Vj0ivjCmYKdaejptw77ftAp0aAIxWZuNWLrO
+    HPbWRnvOhf8y-vmJfQ>
+X-ME-Received: <xmr:67H-Z9h115sdlJILy8weMQtjQ2-bhsb37LnI1xa0n1V7HktTAVkrUdm24SgpyBzFIifrLvP1WGziLfwqKxvybtao2xM4aHCsUHGfen4Zija3OMVPuw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvvdegfeduucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
     pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhggtgfgsehtkeertder
-    tdejnecuhfhrohhmpefpihgtohhlrghsucfrihhtrhgvuceonhhitghosehflhhugihnih
-    gtrdhnvghtqeenucggtffrrghtthgvrhhnpedufedvleehffethffhffelkeekieekgeev
-    ffelleejteehieeghfeluedvvdehieenucevlhhushhtvghrufhiiigvpedtnecurfgrrh
-    grmhepmhgrihhlfhhrohhmpehnihgtohesfhhluhignhhitgdrnhgvthdpnhgspghrtghp
-    thhtohephedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepnhhpihhtrhgvsegsrg
-    ihlhhisghrvgdrtghomhdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdr
-    ohhrghdprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdroh
-    hrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdr
-    ohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgvlh
-    drohhrgh
-X-ME-Proxy: <xmx:67H-Z5WDn1pKrQQ17QxYCcyca4J0axG5yyeKID8k_vw1To-OUeI34g>
-    <xmx:67H-Z8mowqV99ikkL1UiSX_UB3YkK-o9KvAttTv4f3f3xQZFuQlb6g>
-    <xmx:67H-Z-cPud-BOHhi_u9KMJBrbmNd0EwcBDsZjPxVOjJHrc9rcLoCdQ>
-    <xmx:67H-Z-HgpvPs-Kk9o-4pAMIyn2JtRUdMMYVeDibbAxwzg2T5LPzszA>
-    <xmx:67H-Z7HFMt-me8D4dA_lPO4tEl4J2XTpwYw4aLr1_L0yhAp9Uw1LvyFq>
+    gvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhgggfestdekredtredt
+    tdenucfhrhhomheppfhitgholhgrshcurfhithhrvgcuoehnihgtohesfhhluhignhhitg
+    drnhgvtheqnecuggftrfgrthhtvghrnheptdejueeiieehieeuffduvdffleehkeelgeek
+    udekfeffhfduffdugedvteeihfetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomhepnhhitghosehflhhugihnihgtrdhnvghtpdhnsggprhgtphht
+    thhopeehpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehnphhithhrvgessggrhi
+    hlihgsrhgvrdgtohhmpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdho
+    rhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorh
+    hgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdho
+    rhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrd
+    horhhg
+X-ME-Proxy: <xmx:67H-Zx-poCYrNMlM9SvLpIpM0_3RM9SP3J__uB_edox5hIS-5qe09w>
+    <xmx:67H-Z4ugMdG6rqhquyfAbw2HiQ2CVJsQCAtB46ImM00xLAjYUCuePg>
+    <xmx:67H-Z4HZaLNHwtYkQf9sqAORfiq7lh5o7B6WzfXBN-7nzX5ng-a7JQ>
+    <xmx:67H-Z3MTmGoXJFl-civi69FTKV9nkAtS_XSLJpQa4OM7xpPPC9oJtw>
+    <xmx:67H-Z0uO8kxUBla0Bz9wx2DtwXdP_uVc_OlWO-WQWJlHDK_r5q2X2zR9>
 Feedback-ID: i58514971:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
  15 Apr 2025 15:22:19 -0400 (EDT)
 Received: from xanadu.lan (OpenWrt.lan [192.168.1.1])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id B3BFA1116610;
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 5CEEC111660D;
 	Tue, 15 Apr 2025 15:22:18 -0400 (EDT)
 From: Nicolas Pitre <nico@fluxnic.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -81,9 +81,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: Nicolas Pitre <npitre@baylibre.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 07/13] vt: introduce gen_ucs_recompose_table.py to create ucs_recompose_table.h
-Date: Tue, 15 Apr 2025 15:17:56 -0400
-Message-ID: <20250415192212.33949-8-nico@fluxnic.net>
+Subject: [PATCH v2 05/13] vt: create ucs_width_table.h with gen_ucs_width_table.py
+Date: Tue, 15 Apr 2025 15:17:54 -0400
+Message-ID: <20250415192212.33949-6-nico@fluxnic.net>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250415192212.33949-1-nico@fluxnic.net>
 References: <20250415192212.33949-1-nico@fluxnic.net>
@@ -93,287 +93,473 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Nicolas Pitre <npitre@baylibre.com>
 
-The generated table maps base character + combining mark pairs to their
-precomposed equivalents using Python's unicodedata module.
+Provide comprehensive ranges for double-width and zero-width Unicode
+code points.
 
-The default script behavior is to create a table with most commonly used
-Latin, Greek, and Cyrillic recomposition pairs only. It is much smaller
-than the table with all possible recomposition pairs (71 entries vs 1000
-entries). But if one needs/wants the full table then simply running the
-script with the --full argument will generate it.
+Note: scripts/checkpatch.pl complains about "... exceeds 100 columns".
+      Please ignore.
 
 Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 ---
- drivers/tty/vt/gen_ucs_recompose_table.py | 255 ++++++++++++++++++++++
- 1 file changed, 255 insertions(+)
- create mode 100755 drivers/tty/vt/gen_ucs_recompose_table.py
+ drivers/tty/vt/ucs_width_table.h | 445 +++++++++++++++++++++++++++++++
+ 1 file changed, 445 insertions(+)
+ create mode 100644 drivers/tty/vt/ucs_width_table.h
 
-diff --git a/drivers/tty/vt/gen_ucs_recompose_table.py b/drivers/tty/vt/gen_ucs_recompose_table.py
-new file mode 100755
-index 0000000000..91e81fb1c9
+diff --git a/drivers/tty/vt/ucs_width_table.h b/drivers/tty/vt/ucs_width_table.h
+new file mode 100644
+index 0000000000..9cc86b5cdf
 --- /dev/null
-+++ b/drivers/tty/vt/gen_ucs_recompose_table.py
-@@ -0,0 +1,255 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Leverage Python's unicodedata module to generate ucs_recompose_table.h
-+#
-+# The generated table maps base character + combining mark pairs to their
-+# precomposed equivalents.
-+#
-+# Usage:
-+#   python gen_ucs_recompose_table.py         # Generate with common recomposition pairs
-+#   python gen_ucs_recompose_table.py --full  # Generate with all recomposition pairs
-+
-+import unicodedata
-+import sys
-+import argparse
-+import textwrap
-+
-+# This script's file name
-+from pathlib import Path
-+this_file = Path(__file__).name
-+
-+# Output file name
-+out_file = "ucs_recompose_table.h"
-+
-+common_recompose_description = "most commonly used Latin, Greek, and Cyrillic recomposition pairs only"
-+COMMON_RECOMPOSITION_PAIRS = [
-+    # Latin letters with accents - uppercase
-+    (0x0041, 0x0300, 0x00C0),  # A + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER A WITH GRAVE
-+    (0x0041, 0x0301, 0x00C1),  # A + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER A WITH ACUTE
-+    (0x0041, 0x0302, 0x00C2),  # A + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER A WITH CIRCUMFLEX
-+    (0x0041, 0x0303, 0x00C3),  # A + COMBINING TILDE = LATIN CAPITAL LETTER A WITH TILDE
-+    (0x0041, 0x0308, 0x00C4),  # A + COMBINING DIAERESIS = LATIN CAPITAL LETTER A WITH DIAERESIS
-+    (0x0041, 0x030A, 0x00C5),  # A + COMBINING RING ABOVE = LATIN CAPITAL LETTER A WITH RING ABOVE
-+    (0x0043, 0x0327, 0x00C7),  # C + COMBINING CEDILLA = LATIN CAPITAL LETTER C WITH CEDILLA
-+    (0x0045, 0x0300, 0x00C8),  # E + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER E WITH GRAVE
-+    (0x0045, 0x0301, 0x00C9),  # E + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER E WITH ACUTE
-+    (0x0045, 0x0302, 0x00CA),  # E + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER E WITH CIRCUMFLEX
-+    (0x0045, 0x0308, 0x00CB),  # E + COMBINING DIAERESIS = LATIN CAPITAL LETTER E WITH DIAERESIS
-+    (0x0049, 0x0300, 0x00CC),  # I + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER I WITH GRAVE
-+    (0x0049, 0x0301, 0x00CD),  # I + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER I WITH ACUTE
-+    (0x0049, 0x0302, 0x00CE),  # I + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER I WITH CIRCUMFLEX
-+    (0x0049, 0x0308, 0x00CF),  # I + COMBINING DIAERESIS = LATIN CAPITAL LETTER I WITH DIAERESIS
-+    (0x004E, 0x0303, 0x00D1),  # N + COMBINING TILDE = LATIN CAPITAL LETTER N WITH TILDE
-+    (0x004F, 0x0300, 0x00D2),  # O + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER O WITH GRAVE
-+    (0x004F, 0x0301, 0x00D3),  # O + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER O WITH ACUTE
-+    (0x004F, 0x0302, 0x00D4),  # O + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER O WITH CIRCUMFLEX
-+    (0x004F, 0x0303, 0x00D5),  # O + COMBINING TILDE = LATIN CAPITAL LETTER O WITH TILDE
-+    (0x004F, 0x0308, 0x00D6),  # O + COMBINING DIAERESIS = LATIN CAPITAL LETTER O WITH DIAERESIS
-+    (0x0055, 0x0300, 0x00D9),  # U + COMBINING GRAVE ACCENT = LATIN CAPITAL LETTER U WITH GRAVE
-+    (0x0055, 0x0301, 0x00DA),  # U + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER U WITH ACUTE
-+    (0x0055, 0x0302, 0x00DB),  # U + COMBINING CIRCUMFLEX ACCENT = LATIN CAPITAL LETTER U WITH CIRCUMFLEX
-+    (0x0055, 0x0308, 0x00DC),  # U + COMBINING DIAERESIS = LATIN CAPITAL LETTER U WITH DIAERESIS
-+    (0x0059, 0x0301, 0x00DD),  # Y + COMBINING ACUTE ACCENT = LATIN CAPITAL LETTER Y WITH ACUTE
-+
-+    # Latin letters with accents - lowercase
-+    (0x0061, 0x0300, 0x00E0),  # a + COMBINING GRAVE ACCENT = LATIN SMALL LETTER A WITH GRAVE
-+    (0x0061, 0x0301, 0x00E1),  # a + COMBINING ACUTE ACCENT = LATIN SMALL LETTER A WITH ACUTE
-+    (0x0061, 0x0302, 0x00E2),  # a + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER A WITH CIRCUMFLEX
-+    (0x0061, 0x0303, 0x00E3),  # a + COMBINING TILDE = LATIN SMALL LETTER A WITH TILDE
-+    (0x0061, 0x0308, 0x00E4),  # a + COMBINING DIAERESIS = LATIN SMALL LETTER A WITH DIAERESIS
-+    (0x0061, 0x030A, 0x00E5),  # a + COMBINING RING ABOVE = LATIN SMALL LETTER A WITH RING ABOVE
-+    (0x0063, 0x0327, 0x00E7),  # c + COMBINING CEDILLA = LATIN SMALL LETTER C WITH CEDILLA
-+    (0x0065, 0x0300, 0x00E8),  # e + COMBINING GRAVE ACCENT = LATIN SMALL LETTER E WITH GRAVE
-+    (0x0065, 0x0301, 0x00E9),  # e + COMBINING ACUTE ACCENT = LATIN SMALL LETTER E WITH ACUTE
-+    (0x0065, 0x0302, 0x00EA),  # e + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER E WITH CIRCUMFLEX
-+    (0x0065, 0x0308, 0x00EB),  # e + COMBINING DIAERESIS = LATIN SMALL LETTER E WITH DIAERESIS
-+    (0x0069, 0x0300, 0x00EC),  # i + COMBINING GRAVE ACCENT = LATIN SMALL LETTER I WITH GRAVE
-+    (0x0069, 0x0301, 0x00ED),  # i + COMBINING ACUTE ACCENT = LATIN SMALL LETTER I WITH ACUTE
-+    (0x0069, 0x0302, 0x00EE),  # i + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER I WITH CIRCUMFLEX
-+    (0x0069, 0x0308, 0x00EF),  # i + COMBINING DIAERESIS = LATIN SMALL LETTER I WITH DIAERESIS
-+    (0x006E, 0x0303, 0x00F1),  # n + COMBINING TILDE = LATIN SMALL LETTER N WITH TILDE
-+    (0x006F, 0x0300, 0x00F2),  # o + COMBINING GRAVE ACCENT = LATIN SMALL LETTER O WITH GRAVE
-+    (0x006F, 0x0301, 0x00F3),  # o + COMBINING ACUTE ACCENT = LATIN SMALL LETTER O WITH ACUTE
-+    (0x006F, 0x0302, 0x00F4),  # o + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER O WITH CIRCUMFLEX
-+    (0x006F, 0x0303, 0x00F5),  # o + COMBINING TILDE = LATIN SMALL LETTER O WITH TILDE
-+    (0x006F, 0x0308, 0x00F6),  # o + COMBINING DIAERESIS = LATIN SMALL LETTER O WITH DIAERESIS
-+    (0x0075, 0x0300, 0x00F9),  # u + COMBINING GRAVE ACCENT = LATIN SMALL LETTER U WITH GRAVE
-+    (0x0075, 0x0301, 0x00FA),  # u + COMBINING ACUTE ACCENT = LATIN SMALL LETTER U WITH ACUTE
-+    (0x0075, 0x0302, 0x00FB),  # u + COMBINING CIRCUMFLEX ACCENT = LATIN SMALL LETTER U WITH CIRCUMFLEX
-+    (0x0075, 0x0308, 0x00FC),  # u + COMBINING DIAERESIS = LATIN SMALL LETTER U WITH DIAERESIS
-+    (0x0079, 0x0301, 0x00FD),  # y + COMBINING ACUTE ACCENT = LATIN SMALL LETTER Y WITH ACUTE
-+    (0x0079, 0x0308, 0x00FF),  # y + COMBINING DIAERESIS = LATIN SMALL LETTER Y WITH DIAERESIS
-+
-+    # Common Greek characters
-+    (0x0391, 0x0301, 0x0386),  # Α + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER ALPHA WITH TONOS
-+    (0x0395, 0x0301, 0x0388),  # Ε + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER EPSILON WITH TONOS
-+    (0x0397, 0x0301, 0x0389),  # Η + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER ETA WITH TONOS
-+    (0x0399, 0x0301, 0x038A),  # Ι + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER IOTA WITH TONOS
-+    (0x039F, 0x0301, 0x038C),  # Ο + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER OMICRON WITH TONOS
-+    (0x03A5, 0x0301, 0x038E),  # Υ + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER UPSILON WITH TONOS
-+    (0x03A9, 0x0301, 0x038F),  # Ω + COMBINING ACUTE ACCENT = GREEK CAPITAL LETTER OMEGA WITH TONOS
-+    (0x03B1, 0x0301, 0x03AC),  # α + COMBINING ACUTE ACCENT = GREEK SMALL LETTER ALPHA WITH TONOS
-+    (0x03B5, 0x0301, 0x03AD),  # ε + COMBINING ACUTE ACCENT = GREEK SMALL LETTER EPSILON WITH TONOS
-+    (0x03B7, 0x0301, 0x03AE),  # η + COMBINING ACUTE ACCENT = GREEK SMALL LETTER ETA WITH TONOS
-+    (0x03B9, 0x0301, 0x03AF),  # ι + COMBINING ACUTE ACCENT = GREEK SMALL LETTER IOTA WITH TONOS
-+    (0x03BF, 0x0301, 0x03CC),  # ο + COMBINING ACUTE ACCENT = GREEK SMALL LETTER OMICRON WITH TONOS
-+    (0x03C5, 0x0301, 0x03CD),  # υ + COMBINING ACUTE ACCENT = GREEK SMALL LETTER UPSILON WITH TONOS
-+    (0x03C9, 0x0301, 0x03CE),  # ω + COMBINING ACUTE ACCENT = GREEK SMALL LETTER OMEGA WITH TONOS
-+
-+    # Common Cyrillic characters
-+    (0x0418, 0x0306, 0x0419),  # И + COMBINING BREVE = CYRILLIC CAPITAL LETTER SHORT I
-+    (0x0438, 0x0306, 0x0439),  # и + COMBINING BREVE = CYRILLIC SMALL LETTER SHORT I
-+    (0x0423, 0x0306, 0x040E),  # У + COMBINING BREVE = CYRILLIC CAPITAL LETTER SHORT U
-+    (0x0443, 0x0306, 0x045E),  # у + COMBINING BREVE = CYRILLIC SMALL LETTER SHORT U
-+]
-+
-+full_recompose_description = "all possible recomposition pairs from the Unicode BMP"
-+def collect_all_recomposition_pairs():
-+    """Collect all possible recomposition pairs from the Unicode data."""
-+    # Map to store recomposition pairs: (base, combining) -> recomposed
-+    recompose_map = {}
-+
-+    # Process all assigned Unicode code points in BMP (Basic Multilingual Plane)
-+    # We limit to BMP (0x0000-0xFFFF) to keep our table smaller with uint16_t
-+    for cp in range(0, 0x10000):
-+        try:
-+            char = chr(cp)
-+
-+            # Skip unassigned or control characters
-+            if not unicodedata.name(char, ''):
-+                continue
-+
-+            # Find decomposition
-+            decomp = unicodedata.decomposition(char)
-+            if not decomp or '<' in decomp:  # Skip compatibility decompositions
-+                continue
-+
-+            # Parse the decomposition
-+            parts = decomp.split()
-+            if len(parts) == 2:  # Simple base + combining mark
-+                base = int(parts[0], 16)
-+                combining = int(parts[1], 16)
-+
-+                # Only store if both are in BMP
-+                if base < 0x10000 and combining < 0x10000:
-+                    recompose_map[(base, combining)] = cp
-+
-+        except (ValueError, TypeError):
-+            continue
-+
-+    # Convert to a list of tuples and sort for binary search
-+    recompose_list = [(base, combining, recomposed)
-+                     for (base, combining), recomposed in recompose_map.items()]
-+    recompose_list.sort()
-+
-+    return recompose_list
-+
-+def validate_common_pairs(full_list):
-+    """Validate that all common pairs are in the full list.
-+
-+    Raises:
-+        ValueError: If any common pair is missing or has a different recomposition
-+        value than what's in the full table.
-+    """
-+    full_pairs = {(base, combining): recomposed for base, combining, recomposed in full_list}
-+    for base, combining, recomposed in COMMON_RECOMPOSITION_PAIRS:
-+        full_recomposed = full_pairs.get((base, combining))
-+        if full_recomposed is None:
-+            error_msg = f"Error: Common pair (0x{base:04X}, 0x{combining:04X}) not found in full data"
-+            print(error_msg)
-+            raise ValueError(error_msg)
-+        elif full_recomposed != recomposed:
-+            error_msg = (f"Error: Common pair (0x{base:04X}, 0x{combining:04X}) has different recomposition: "
-+                         f"0x{recomposed:04X} vs 0x{full_recomposed:04X}")
-+            print(error_msg)
-+            raise ValueError(error_msg)
-+
-+def generate_recomposition_table(use_full_list=False):
-+    """Generate the recomposition C table."""
-+
-+    # Collect all recomposition pairs for validation
-+    full_recompose_list = collect_all_recomposition_pairs()
-+
-+    # Decide which list to use
-+    if use_full_list:
-+        print("Using full recomposition list...")
-+        recompose_list = full_recompose_list
-+        table_description = full_recompose_description
-+        alt_list = COMMON_RECOMPOSITION_PAIRS
-+        alt_description = common_recompose_description
-+    else:
-+        print("Using common recomposition list...")
-+        # Validate that all common pairs are in the full list
-+        validate_common_pairs(full_recompose_list)
-+        recompose_list = sorted(COMMON_RECOMPOSITION_PAIRS)
-+        table_description = common_recompose_description
-+        alt_list = full_recompose_list
-+        alt_description = full_recompose_description
-+    generation_mode = " --full" if use_full_list else ""
-+    alternative_mode = " --full" if not use_full_list else ""
-+    table_description_detail = f"{table_description} ({len(recompose_list)} entries)"
-+    alt_description_detail = f"{alt_description} ({len(alt_list)} entries)"
-+
-+    # Calculate min/max values for boundary checks
-+    min_base = min(base for base, _, _ in recompose_list)
-+    max_base = max(base for base, _, _ in recompose_list)
-+    min_combining = min(combining for _, combining, _ in recompose_list)
-+    max_combining = max(combining for _, combining, _ in recompose_list)
-+
-+    # Generate implementation file
-+    with open(out_file, 'w') as f:
-+        f.write(f"""\
++++ b/drivers/tty/vt/ucs_width_table.h
+@@ -0,0 +1,445 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * {out_file} - Unicode character recomposition
++ * ucs_width_table.h - Unicode character width
 + *
-+ * Auto-generated by {this_file}{generation_mode}
++ * Auto-generated by gen_ucs_width_table.py
 + *
-+ * Unicode Version: {unicodedata.unidata_version}
-+ *
-+{textwrap.fill(
-+    f"This file contains a table with {table_description_detail}. " +
-+    f"To generate a table with {alt_description_detail} instead, run:",
-+    width=75, initial_indent=" * ", subsequent_indent=" * ")}
-+ *
-+ *   python {this_file}{alternative_mode}
++ * Unicode Version: 16.0.0
 + */
 +
-+/*
-+ * Table of {table_description}
-+ * Sorted by base character and then combining mark for binary search
-+ */
-+static const struct ucs_recomposition ucs_recomposition_table[] = {{
-+""")
++/* Zero-width character ranges */
++static const struct ucs_interval ucs_zero_width_ranges[] = {
++	{ 0x000AD, 0x000AD }, /* SOFT HYPHEN */
++	{ 0x00300, 0x0036F }, /* COMBINING GRAVE ACCENT - COMBINING LATIN SMALL LETTER X */
++	{ 0x00483, 0x00489 }, /* COMBINING CYRILLIC TITLO - COMBINING CYRILLIC MILLIONS SIGN */
++	{ 0x00591, 0x005BD }, /* HEBREW ACCENT ETNAHTA - HEBREW POINT METEG */
++	{ 0x005BF, 0x005BF }, /* HEBREW POINT RAFE */
++	{ 0x005C1, 0x005C2 }, /* HEBREW POINT SHIN DOT - HEBREW POINT SIN DOT */
++	{ 0x005C4, 0x005C5 }, /* HEBREW MARK UPPER DOT - HEBREW MARK LOWER DOT */
++	{ 0x005C7, 0x005C7 }, /* HEBREW POINT QAMATS QATAN */
++	{ 0x00600, 0x00605 }, /* ARABIC NUMBER SIGN - ARABIC NUMBER MARK ABOVE */
++	{ 0x00610, 0x0061A }, /* ARABIC SIGN SALLALLAHOU ALAYHE WASSALLAM - ARABIC SMALL KASRA */
++	{ 0x0061C, 0x0061C }, /* ARABIC LETTER MARK */
++	{ 0x0064B, 0x0065F }, /* ARABIC FATHATAN - ARABIC WAVY HAMZA BELOW */
++	{ 0x00670, 0x00670 }, /* ARABIC LETTER SUPERSCRIPT ALEF */
++	{ 0x006D6, 0x006DD }, /* ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA - ARABIC END OF AYAH */
++	{ 0x006DF, 0x006E4 }, /* ARABIC SMALL HIGH ROUNDED ZERO - ARABIC SMALL HIGH MADDA */
++	{ 0x006E7, 0x006E8 }, /* ARABIC SMALL HIGH YEH - ARABIC SMALL HIGH NOON */
++	{ 0x006EA, 0x006ED }, /* ARABIC EMPTY CENTRE LOW STOP - ARABIC SMALL LOW MEEM */
++	{ 0x0070F, 0x0070F }, /* SYRIAC ABBREVIATION MARK */
++	{ 0x00711, 0x00711 }, /* SYRIAC LETTER SUPERSCRIPT ALAPH */
++	{ 0x00730, 0x0074A }, /* SYRIAC PTHAHA ABOVE - SYRIAC BARREKH */
++	{ 0x007A6, 0x007B0 }, /* THAANA ABAFILI - THAANA SUKUN */
++	{ 0x007EB, 0x007F3 }, /* NKO COMBINING SHORT HIGH TONE - NKO COMBINING DOUBLE DOT ABOVE */
++	{ 0x007FD, 0x007FD }, /* NKO DANTAYALAN */
++	{ 0x00816, 0x00819 }, /* SAMARITAN MARK IN - SAMARITAN MARK DAGESH */
++	{ 0x0081B, 0x00823 }, /* SAMARITAN MARK EPENTHETIC YUT - SAMARITAN VOWEL SIGN A */
++	{ 0x00825, 0x00827 }, /* SAMARITAN VOWEL SIGN SHORT A - SAMARITAN VOWEL SIGN U */
++	{ 0x00829, 0x0082D }, /* SAMARITAN VOWEL SIGN LONG I - SAMARITAN MARK NEQUDAA */
++	{ 0x00859, 0x0085B }, /* MANDAIC AFFRICATION MARK - MANDAIC GEMINATION MARK */
++	{ 0x00890, 0x00891 }, /* ARABIC POUND MARK ABOVE - ARABIC PIASTRE MARK ABOVE */
++	{ 0x00897, 0x0089F }, /* ARABIC PEPET - ARABIC HALF MADDA OVER MADDA */
++	{ 0x008CA, 0x00903 }, /* ARABIC SMALL HIGH FARSI YEH - DEVANAGARI SIGN VISARGA */
++	{ 0x0093A, 0x0093C }, /* DEVANAGARI VOWEL SIGN OE - DEVANAGARI SIGN NUKTA */
++	{ 0x0093E, 0x0094F }, /* DEVANAGARI VOWEL SIGN AA - DEVANAGARI VOWEL SIGN AW */
++	{ 0x00951, 0x00957 }, /* DEVANAGARI STRESS SIGN UDATTA - DEVANAGARI VOWEL SIGN UUE */
++	{ 0x00962, 0x00963 }, /* DEVANAGARI VOWEL SIGN VOCALIC L - DEVANAGARI VOWEL SIGN VOCALIC LL */
++	{ 0x00981, 0x00983 }, /* BENGALI SIGN CANDRABINDU - BENGALI SIGN VISARGA */
++	{ 0x009BC, 0x009BC }, /* BENGALI SIGN NUKTA */
++	{ 0x009BE, 0x009C4 }, /* BENGALI VOWEL SIGN AA - BENGALI VOWEL SIGN VOCALIC RR */
++	{ 0x009C7, 0x009C8 }, /* BENGALI VOWEL SIGN E - BENGALI VOWEL SIGN AI */
++	{ 0x009CB, 0x009CD }, /* BENGALI VOWEL SIGN O - BENGALI SIGN VIRAMA */
++	{ 0x009D7, 0x009D7 }, /* BENGALI AU LENGTH MARK */
++	{ 0x009E2, 0x009E3 }, /* BENGALI VOWEL SIGN VOCALIC L - BENGALI VOWEL SIGN VOCALIC LL */
++	{ 0x009FE, 0x009FE }, /* BENGALI SANDHI MARK */
++	{ 0x00A01, 0x00A03 }, /* GURMUKHI SIGN ADAK BINDI - GURMUKHI SIGN VISARGA */
++	{ 0x00A3C, 0x00A3C }, /* GURMUKHI SIGN NUKTA */
++	{ 0x00A3E, 0x00A42 }, /* GURMUKHI VOWEL SIGN AA - GURMUKHI VOWEL SIGN UU */
++	{ 0x00A47, 0x00A48 }, /* GURMUKHI VOWEL SIGN EE - GURMUKHI VOWEL SIGN AI */
++	{ 0x00A4B, 0x00A4D }, /* GURMUKHI VOWEL SIGN OO - GURMUKHI SIGN VIRAMA */
++	{ 0x00A51, 0x00A51 }, /* GURMUKHI SIGN UDAAT */
++	{ 0x00A70, 0x00A71 }, /* GURMUKHI TIPPI - GURMUKHI ADDAK */
++	{ 0x00A75, 0x00A75 }, /* GURMUKHI SIGN YAKASH */
++	{ 0x00A81, 0x00A83 }, /* GUJARATI SIGN CANDRABINDU - GUJARATI SIGN VISARGA */
++	{ 0x00ABC, 0x00ABC }, /* GUJARATI SIGN NUKTA */
++	{ 0x00ABE, 0x00AC5 }, /* GUJARATI VOWEL SIGN AA - GUJARATI VOWEL SIGN CANDRA E */
++	{ 0x00AC7, 0x00AC9 }, /* GUJARATI VOWEL SIGN E - GUJARATI VOWEL SIGN CANDRA O */
++	{ 0x00ACB, 0x00ACD }, /* GUJARATI VOWEL SIGN O - GUJARATI SIGN VIRAMA */
++	{ 0x00AE2, 0x00AE3 }, /* GUJARATI VOWEL SIGN VOCALIC L - GUJARATI VOWEL SIGN VOCALIC LL */
++	{ 0x00AFA, 0x00AFF }, /* GUJARATI SIGN SUKUN - GUJARATI SIGN TWO-CIRCLE NUKTA ABOVE */
++	{ 0x00B01, 0x00B03 }, /* ORIYA SIGN CANDRABINDU - ORIYA SIGN VISARGA */
++	{ 0x00B3C, 0x00B3C }, /* ORIYA SIGN NUKTA */
++	{ 0x00B3E, 0x00B44 }, /* ORIYA VOWEL SIGN AA - ORIYA VOWEL SIGN VOCALIC RR */
++	{ 0x00B47, 0x00B48 }, /* ORIYA VOWEL SIGN E - ORIYA VOWEL SIGN AI */
++	{ 0x00B4B, 0x00B4D }, /* ORIYA VOWEL SIGN O - ORIYA SIGN VIRAMA */
++	{ 0x00B55, 0x00B57 }, /* ORIYA SIGN OVERLINE - ORIYA AU LENGTH MARK */
++	{ 0x00B62, 0x00B63 }, /* ORIYA VOWEL SIGN VOCALIC L - ORIYA VOWEL SIGN VOCALIC LL */
++	{ 0x00B82, 0x00B82 }, /* TAMIL SIGN ANUSVARA */
++	{ 0x00BBE, 0x00BC2 }, /* TAMIL VOWEL SIGN AA - TAMIL VOWEL SIGN UU */
++	{ 0x00BC6, 0x00BC8 }, /* TAMIL VOWEL SIGN E - TAMIL VOWEL SIGN AI */
++	{ 0x00BCA, 0x00BCD }, /* TAMIL VOWEL SIGN O - TAMIL SIGN VIRAMA */
++	{ 0x00BD7, 0x00BD7 }, /* TAMIL AU LENGTH MARK */
++	{ 0x00C00, 0x00C04 }, /* TELUGU SIGN COMBINING CANDRABINDU ABOVE - TELUGU SIGN COMBINING ANUSVARA ABOVE */
++	{ 0x00C3C, 0x00C3C }, /* TELUGU SIGN NUKTA */
++	{ 0x00C3E, 0x00C44 }, /* TELUGU VOWEL SIGN AA - TELUGU VOWEL SIGN VOCALIC RR */
++	{ 0x00C46, 0x00C48 }, /* TELUGU VOWEL SIGN E - TELUGU VOWEL SIGN AI */
++	{ 0x00C4A, 0x00C4D }, /* TELUGU VOWEL SIGN O - TELUGU SIGN VIRAMA */
++	{ 0x00C55, 0x00C56 }, /* TELUGU LENGTH MARK - TELUGU AI LENGTH MARK */
++	{ 0x00C62, 0x00C63 }, /* TELUGU VOWEL SIGN VOCALIC L - TELUGU VOWEL SIGN VOCALIC LL */
++	{ 0x00C81, 0x00C83 }, /* KANNADA SIGN CANDRABINDU - KANNADA SIGN VISARGA */
++	{ 0x00CBC, 0x00CBC }, /* KANNADA SIGN NUKTA */
++	{ 0x00CBE, 0x00CC4 }, /* KANNADA VOWEL SIGN AA - KANNADA VOWEL SIGN VOCALIC RR */
++	{ 0x00CC6, 0x00CC8 }, /* KANNADA VOWEL SIGN E - KANNADA VOWEL SIGN AI */
++	{ 0x00CCA, 0x00CCD }, /* KANNADA VOWEL SIGN O - KANNADA SIGN VIRAMA */
++	{ 0x00CD5, 0x00CD6 }, /* KANNADA LENGTH MARK - KANNADA AI LENGTH MARK */
++	{ 0x00CE2, 0x00CE3 }, /* KANNADA VOWEL SIGN VOCALIC L - KANNADA VOWEL SIGN VOCALIC LL */
++	{ 0x00CF3, 0x00CF3 }, /* KANNADA SIGN COMBINING ANUSVARA ABOVE RIGHT */
++	{ 0x00D00, 0x00D03 }, /* MALAYALAM SIGN COMBINING ANUSVARA ABOVE - MALAYALAM SIGN VISARGA */
++	{ 0x00D3B, 0x00D3C }, /* MALAYALAM SIGN VERTICAL BAR VIRAMA - MALAYALAM SIGN CIRCULAR VIRAMA */
++	{ 0x00D3E, 0x00D44 }, /* MALAYALAM VOWEL SIGN AA - MALAYALAM VOWEL SIGN VOCALIC RR */
++	{ 0x00D46, 0x00D48 }, /* MALAYALAM VOWEL SIGN E - MALAYALAM VOWEL SIGN AI */
++	{ 0x00D4A, 0x00D4D }, /* MALAYALAM VOWEL SIGN O - MALAYALAM SIGN VIRAMA */
++	{ 0x00D57, 0x00D57 }, /* MALAYALAM AU LENGTH MARK */
++	{ 0x00D62, 0x00D63 }, /* MALAYALAM VOWEL SIGN VOCALIC L - MALAYALAM VOWEL SIGN VOCALIC LL */
++	{ 0x00D81, 0x00D83 }, /* SINHALA SIGN CANDRABINDU - SINHALA SIGN VISARGAYA */
++	{ 0x00DCA, 0x00DCA }, /* SINHALA SIGN AL-LAKUNA */
++	{ 0x00DCF, 0x00DD4 }, /* SINHALA VOWEL SIGN AELA-PILLA - SINHALA VOWEL SIGN KETTI PAA-PILLA */
++	{ 0x00DD6, 0x00DD6 }, /* SINHALA VOWEL SIGN DIGA PAA-PILLA */
++	{ 0x00DD8, 0x00DDF }, /* SINHALA VOWEL SIGN GAETTA-PILLA - SINHALA VOWEL SIGN GAYANUKITTA */
++	{ 0x00DF2, 0x00DF3 }, /* SINHALA VOWEL SIGN DIGA GAETTA-PILLA - SINHALA VOWEL SIGN DIGA GAYANUKITTA */
++	{ 0x00E31, 0x00E31 }, /* THAI CHARACTER MAI HAN-AKAT */
++	{ 0x00E34, 0x00E3A }, /* THAI CHARACTER SARA I - THAI CHARACTER PHINTHU */
++	{ 0x00E47, 0x00E4E }, /* THAI CHARACTER MAITAIKHU - THAI CHARACTER YAMAKKAN */
++	{ 0x00EB1, 0x00EB1 }, /* LAO VOWEL SIGN MAI KAN */
++	{ 0x00EB4, 0x00EBC }, /* LAO VOWEL SIGN I - LAO SEMIVOWEL SIGN LO */
++	{ 0x00EC8, 0x00ECE }, /* LAO TONE MAI EK - LAO YAMAKKAN */
++	{ 0x00F18, 0x00F19 }, /* TIBETAN ASTROLOGICAL SIGN -KHYUD PA - TIBETAN ASTROLOGICAL SIGN SDONG TSHUGS */
++	{ 0x00F35, 0x00F35 }, /* TIBETAN MARK NGAS BZUNG NYI ZLA */
++	{ 0x00F37, 0x00F37 }, /* TIBETAN MARK NGAS BZUNG SGOR RTAGS */
++	{ 0x00F39, 0x00F39 }, /* TIBETAN MARK TSA -PHRU */
++	{ 0x00F3E, 0x00F3F }, /* TIBETAN SIGN YAR TSHES - TIBETAN SIGN MAR TSHES */
++	{ 0x00F71, 0x00F84 }, /* TIBETAN VOWEL SIGN AA - TIBETAN MARK HALANTA */
++	{ 0x00F86, 0x00F87 }, /* TIBETAN SIGN LCI RTAGS - TIBETAN SIGN YANG RTAGS */
++	{ 0x00F8D, 0x00F97 }, /* TIBETAN SUBJOINED SIGN LCE TSA CAN - TIBETAN SUBJOINED LETTER JA */
++	{ 0x00F99, 0x00FBC }, /* TIBETAN SUBJOINED LETTER NYA - TIBETAN SUBJOINED LETTER FIXED-FORM RA */
++	{ 0x00FC6, 0x00FC6 }, /* TIBETAN SYMBOL PADMA GDAN */
++	{ 0x0102B, 0x0103E }, /* MYANMAR VOWEL SIGN TALL AA - MYANMAR CONSONANT SIGN MEDIAL HA */
++	{ 0x01056, 0x01059 }, /* MYANMAR VOWEL SIGN VOCALIC R - MYANMAR VOWEL SIGN VOCALIC LL */
++	{ 0x0105E, 0x01060 }, /* MYANMAR CONSONANT SIGN MON MEDIAL NA - MYANMAR CONSONANT SIGN MON MEDIAL LA */
++	{ 0x01062, 0x01064 }, /* MYANMAR VOWEL SIGN SGAW KAREN EU - MYANMAR TONE MARK SGAW KAREN KE PHO */
++	{ 0x01067, 0x0106D }, /* MYANMAR VOWEL SIGN WESTERN PWO KAREN EU - MYANMAR SIGN WESTERN PWO KAREN TONE-5 */
++	{ 0x01071, 0x01074 }, /* MYANMAR VOWEL SIGN GEBA KAREN I - MYANMAR VOWEL SIGN KAYAH EE */
++	{ 0x01082, 0x0108D }, /* MYANMAR CONSONANT SIGN SHAN MEDIAL WA - MYANMAR SIGN SHAN COUNCIL EMPHATIC TONE */
++	{ 0x0108F, 0x0108F }, /* MYANMAR SIGN RUMAI PALAUNG TONE-5 */
++	{ 0x0109A, 0x0109D }, /* MYANMAR SIGN KHAMTI TONE-1 - MYANMAR VOWEL SIGN AITON AI */
++	{ 0x0135D, 0x0135F }, /* ETHIOPIC COMBINING GEMINATION AND VOWEL LENGTH MARK - ETHIOPIC COMBINING GEMINATION MARK */
++	{ 0x01712, 0x01715 }, /* TAGALOG VOWEL SIGN I - TAGALOG SIGN PAMUDPOD */
++	{ 0x01732, 0x01734 }, /* HANUNOO VOWEL SIGN I - HANUNOO SIGN PAMUDPOD */
++	{ 0x01752, 0x01753 }, /* BUHID VOWEL SIGN I - BUHID VOWEL SIGN U */
++	{ 0x01772, 0x01773 }, /* TAGBANWA VOWEL SIGN I - TAGBANWA VOWEL SIGN U */
++	{ 0x017B4, 0x017D3 }, /* KHMER VOWEL INHERENT AQ - KHMER SIGN BATHAMASAT */
++	{ 0x017DD, 0x017DD }, /* KHMER SIGN ATTHACAN */
++	{ 0x0180B, 0x0180F }, /* MONGOLIAN FREE VARIATION SELECTOR ONE - MONGOLIAN FREE VARIATION SELECTOR FOUR */
++	{ 0x01885, 0x01886 }, /* MONGOLIAN LETTER ALI GALI BALUDA - MONGOLIAN LETTER ALI GALI THREE BALUDA */
++	{ 0x018A9, 0x018A9 }, /* MONGOLIAN LETTER ALI GALI DAGALGA */
++	{ 0x01920, 0x0192B }, /* LIMBU VOWEL SIGN A - LIMBU SUBJOINED LETTER WA */
++	{ 0x01930, 0x0193B }, /* LIMBU SMALL LETTER KA - LIMBU SIGN SA-I */
++	{ 0x01A17, 0x01A1B }, /* BUGINESE VOWEL SIGN I - BUGINESE VOWEL SIGN AE */
++	{ 0x01A55, 0x01A5E }, /* TAI THAM CONSONANT SIGN MEDIAL RA - TAI THAM CONSONANT SIGN SA */
++	{ 0x01A60, 0x01A7C }, /* TAI THAM SIGN SAKOT - TAI THAM SIGN KHUEN-LUE KARAN */
++	{ 0x01A7F, 0x01A7F }, /* TAI THAM COMBINING CRYPTOGRAMMIC DOT */
++	{ 0x01AB0, 0x01ACE }, /* COMBINING DOUBLED CIRCUMFLEX ACCENT - COMBINING LATIN SMALL LETTER INSULAR T */
++	{ 0x01B00, 0x01B04 }, /* BALINESE SIGN ULU RICEM - BALINESE SIGN BISAH */
++	{ 0x01B34, 0x01B44 }, /* BALINESE SIGN REREKAN - BALINESE ADEG ADEG */
++	{ 0x01B6B, 0x01B73 }, /* BALINESE MUSICAL SYMBOL COMBINING TEGEH - BALINESE MUSICAL SYMBOL COMBINING GONG */
++	{ 0x01B80, 0x01B82 }, /* SUNDANESE SIGN PANYECEK - SUNDANESE SIGN PANGWISAD */
++	{ 0x01BA1, 0x01BAD }, /* SUNDANESE CONSONANT SIGN PAMINGKAL - SUNDANESE CONSONANT SIGN PASANGAN WA */
++	{ 0x01BE6, 0x01BF3 }, /* BATAK SIGN TOMPI - BATAK PANONGONAN */
++	{ 0x01C24, 0x01C37 }, /* LEPCHA SUBJOINED LETTER YA - LEPCHA SIGN NUKTA */
++	{ 0x01CD0, 0x01CD2 }, /* VEDIC TONE KARSHANA - VEDIC TONE PRENKHA */
++	{ 0x01CD4, 0x01CE8 }, /* VEDIC SIGN YAJURVEDIC MIDLINE SVARITA - VEDIC SIGN VISARGA ANUDATTA WITH TAIL */
++	{ 0x01CED, 0x01CED }, /* VEDIC SIGN TIRYAK */
++	{ 0x01CF4, 0x01CF4 }, /* VEDIC TONE CANDRA ABOVE */
++	{ 0x01CF7, 0x01CF9 }, /* VEDIC SIGN ATIKRAMA - VEDIC TONE DOUBLE RING ABOVE */
++	{ 0x01DC0, 0x01DFF }, /* COMBINING DOTTED GRAVE ACCENT - COMBINING RIGHT ARROWHEAD AND DOWN ARROWHEAD BELOW */
++	{ 0x0200B, 0x0200F }, /* ZERO WIDTH SPACE - RIGHT-TO-LEFT MARK */
++	{ 0x0202A, 0x0202E }, /* LEFT-TO-RIGHT EMBEDDING - RIGHT-TO-LEFT OVERRIDE */
++	{ 0x02060, 0x02064 }, /* WORD JOINER - INVISIBLE PLUS */
++	{ 0x02066, 0x0206F }, /* LEFT-TO-RIGHT ISOLATE - NOMINAL DIGIT SHAPES */
++	{ 0x020D0, 0x020F0 }, /* COMBINING LEFT HARPOON ABOVE - COMBINING ASTERISK ABOVE */
++	{ 0x02640, 0x02640 }, /* FEMALE SIGN */
++	{ 0x02642, 0x02642 }, /* MALE SIGN */
++	{ 0x026A7, 0x026A7 }, /* MALE WITH STROKE AND MALE AND FEMALE SIGN */
++	{ 0x02CEF, 0x02CF1 }, /* COPTIC COMBINING NI ABOVE - COPTIC COMBINING SPIRITUS LENIS */
++	{ 0x02D7F, 0x02D7F }, /* TIFINAGH CONSONANT JOINER */
++	{ 0x02DE0, 0x02DFF }, /* COMBINING CYRILLIC LETTER BE - COMBINING CYRILLIC LETTER IOTIFIED BIG YUS */
++	{ 0x0302A, 0x0302F }, /* IDEOGRAPHIC LEVEL TONE MARK - HANGUL DOUBLE DOT TONE MARK */
++	{ 0x03099, 0x0309A }, /* COMBINING KATAKANA-HIRAGANA VOICED SOUND MARK - COMBINING KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK */
++	{ 0x0A66F, 0x0A672 }, /* COMBINING CYRILLIC VZMET - COMBINING CYRILLIC THOUSAND MILLIONS SIGN */
++	{ 0x0A674, 0x0A67D }, /* COMBINING CYRILLIC LETTER UKRAINIAN IE - COMBINING CYRILLIC PAYEROK */
++	{ 0x0A69E, 0x0A69F }, /* COMBINING CYRILLIC LETTER EF - COMBINING CYRILLIC LETTER IOTIFIED E */
++	{ 0x0A6F0, 0x0A6F1 }, /* BAMUM COMBINING MARK KOQNDON - BAMUM COMBINING MARK TUKWENTIS */
++	{ 0x0A802, 0x0A802 }, /* SYLOTI NAGRI SIGN DVISVARA */
++	{ 0x0A806, 0x0A806 }, /* SYLOTI NAGRI SIGN HASANTA */
++	{ 0x0A80B, 0x0A80B }, /* SYLOTI NAGRI SIGN ANUSVARA */
++	{ 0x0A823, 0x0A827 }, /* SYLOTI NAGRI VOWEL SIGN A - SYLOTI NAGRI VOWEL SIGN OO */
++	{ 0x0A82C, 0x0A82C }, /* SYLOTI NAGRI SIGN ALTERNATE HASANTA */
++	{ 0x0A880, 0x0A881 }, /* SAURASHTRA SIGN ANUSVARA - SAURASHTRA SIGN VISARGA */
++	{ 0x0A8B4, 0x0A8C5 }, /* SAURASHTRA CONSONANT SIGN HAARU - SAURASHTRA SIGN CANDRABINDU */
++	{ 0x0A8E0, 0x0A8F1 }, /* COMBINING DEVANAGARI DIGIT ZERO - COMBINING DEVANAGARI SIGN AVAGRAHA */
++	{ 0x0A8FF, 0x0A8FF }, /* DEVANAGARI VOWEL SIGN AY */
++	{ 0x0A926, 0x0A92D }, /* KAYAH LI VOWEL UE - KAYAH LI TONE CALYA PLOPHU */
++	{ 0x0A947, 0x0A953 }, /* REJANG VOWEL SIGN I - REJANG VIRAMA */
++	{ 0x0A980, 0x0A983 }, /* JAVANESE SIGN PANYANGGA - JAVANESE SIGN WIGNYAN */
++	{ 0x0A9B3, 0x0A9C0 }, /* JAVANESE SIGN CECAK TELU - JAVANESE PANGKON */
++	{ 0x0A9E5, 0x0A9E5 }, /* MYANMAR SIGN SHAN SAW */
++	{ 0x0AA29, 0x0AA36 }, /* CHAM VOWEL SIGN AA - CHAM CONSONANT SIGN WA */
++	{ 0x0AA43, 0x0AA43 }, /* CHAM CONSONANT SIGN FINAL NG */
++	{ 0x0AA4C, 0x0AA4D }, /* CHAM CONSONANT SIGN FINAL M - CHAM CONSONANT SIGN FINAL H */
++	{ 0x0AA7B, 0x0AA7D }, /* MYANMAR SIGN PAO KAREN TONE - MYANMAR SIGN TAI LAING TONE-5 */
++	{ 0x0AAB0, 0x0AAB0 }, /* TAI VIET MAI KANG */
++	{ 0x0AAB2, 0x0AAB4 }, /* TAI VIET VOWEL I - TAI VIET VOWEL U */
++	{ 0x0AAB7, 0x0AAB8 }, /* TAI VIET MAI KHIT - TAI VIET VOWEL IA */
++	{ 0x0AABE, 0x0AABF }, /* TAI VIET VOWEL AM - TAI VIET TONE MAI EK */
++	{ 0x0AAC1, 0x0AAC1 }, /* TAI VIET TONE MAI THO */
++	{ 0x0AAEB, 0x0AAEF }, /* MEETEI MAYEK VOWEL SIGN II - MEETEI MAYEK VOWEL SIGN AAU */
++	{ 0x0AAF5, 0x0AAF6 }, /* MEETEI MAYEK VOWEL SIGN VISARGA - MEETEI MAYEK VIRAMA */
++	{ 0x0ABE3, 0x0ABEA }, /* MEETEI MAYEK VOWEL SIGN ONAP - MEETEI MAYEK VOWEL SIGN NUNG */
++	{ 0x0ABEC, 0x0ABED }, /* MEETEI MAYEK LUM IYEK - MEETEI MAYEK APUN IYEK */
++	{ 0x0FB1E, 0x0FB1E }, /* HEBREW POINT JUDEO-SPANISH VARIKA */
++	{ 0x0FE00, 0x0FE0F }, /* VARIATION SELECTOR-1 - VARIATION SELECTOR-16 */
++	{ 0x0FE20, 0x0FE2F }, /* COMBINING LIGATURE LEFT HALF - COMBINING CYRILLIC TITLO RIGHT HALF */
++	{ 0x0FEFF, 0x0FEFF }, /* ZERO WIDTH NO-BREAK SPACE */
++	{ 0x0FFF9, 0x0FFFB }, /* INTERLINEAR ANNOTATION ANCHOR - INTERLINEAR ANNOTATION TERMINATOR */
++	{ 0x101FD, 0x101FD }, /* PHAISTOS DISC SIGN COMBINING OBLIQUE STROKE */
++	{ 0x102E0, 0x102E0 }, /* COPTIC EPACT THOUSANDS MARK */
++	{ 0x10376, 0x1037A }, /* COMBINING OLD PERMIC LETTER AN - COMBINING OLD PERMIC LETTER SII */
++	{ 0x10A01, 0x10A03 }, /* KHAROSHTHI VOWEL SIGN I - KHAROSHTHI VOWEL SIGN VOCALIC R */
++	{ 0x10A05, 0x10A06 }, /* KHAROSHTHI VOWEL SIGN E - KHAROSHTHI VOWEL SIGN O */
++	{ 0x10A0C, 0x10A0F }, /* KHAROSHTHI VOWEL LENGTH MARK - KHAROSHTHI SIGN VISARGA */
++	{ 0x10A38, 0x10A3A }, /* KHAROSHTHI SIGN BAR ABOVE - KHAROSHTHI SIGN DOT BELOW */
++	{ 0x10A3F, 0x10A3F }, /* KHAROSHTHI VIRAMA */
++	{ 0x10AE5, 0x10AE6 }, /* MANICHAEAN ABBREVIATION MARK ABOVE - MANICHAEAN ABBREVIATION MARK BELOW */
++	{ 0x10D24, 0x10D27 }, /* HANIFI ROHINGYA SIGN HARBAHAY - HANIFI ROHINGYA SIGN TASSI */
++	{ 0x10D69, 0x10D6D }, /* GARAY VOWEL SIGN E - GARAY CONSONANT NASALIZATION MARK */
++	{ 0x10EAB, 0x10EAC }, /* YEZIDI COMBINING HAMZA MARK - YEZIDI COMBINING MADDA MARK */
++	{ 0x10EFC, 0x10EFF }, /* ARABIC COMBINING ALEF OVERLAY - ARABIC SMALL LOW WORD MADDA */
++	{ 0x10F46, 0x10F50 }, /* SOGDIAN COMBINING DOT BELOW - SOGDIAN COMBINING STROKE BELOW */
++	{ 0x10F82, 0x10F85 }, /* OLD UYGHUR COMBINING DOT ABOVE - OLD UYGHUR COMBINING TWO DOTS BELOW */
++	{ 0x11000, 0x11002 }, /* BRAHMI SIGN CANDRABINDU - BRAHMI SIGN VISARGA */
++	{ 0x11038, 0x11046 }, /* BRAHMI VOWEL SIGN AA - BRAHMI VIRAMA */
++	{ 0x11070, 0x11070 }, /* BRAHMI SIGN OLD TAMIL VIRAMA */
++	{ 0x11073, 0x11074 }, /* BRAHMI VOWEL SIGN OLD TAMIL SHORT E - BRAHMI VOWEL SIGN OLD TAMIL SHORT O */
++	{ 0x1107F, 0x11082 }, /* BRAHMI NUMBER JOINER - KAITHI SIGN VISARGA */
++	{ 0x110B0, 0x110BA }, /* KAITHI VOWEL SIGN AA - KAITHI SIGN NUKTA */
++	{ 0x110BD, 0x110BD }, /* KAITHI NUMBER SIGN */
++	{ 0x110C2, 0x110C2 }, /* KAITHI VOWEL SIGN VOCALIC R */
++	{ 0x110CD, 0x110CD }, /* KAITHI NUMBER SIGN ABOVE */
++	{ 0x11100, 0x11102 }, /* CHAKMA SIGN CANDRABINDU - CHAKMA SIGN VISARGA */
++	{ 0x11127, 0x11134 }, /* CHAKMA VOWEL SIGN A - CHAKMA MAAYYAA */
++	{ 0x11145, 0x11146 }, /* CHAKMA VOWEL SIGN AA - CHAKMA VOWEL SIGN EI */
++	{ 0x11173, 0x11173 }, /* MAHAJANI SIGN NUKTA */
++	{ 0x11180, 0x11182 }, /* SHARADA SIGN CANDRABINDU - SHARADA SIGN VISARGA */
++	{ 0x111B3, 0x111C0 }, /* SHARADA VOWEL SIGN AA - SHARADA SIGN VIRAMA */
++	{ 0x111C9, 0x111CC }, /* SHARADA SANDHI MARK - SHARADA EXTRA SHORT VOWEL MARK */
++	{ 0x111CE, 0x111CF }, /* SHARADA VOWEL SIGN PRISHTHAMATRA E - SHARADA SIGN INVERTED CANDRABINDU */
++	{ 0x1122C, 0x11237 }, /* KHOJKI VOWEL SIGN AA - KHOJKI SIGN SHADDA */
++	{ 0x1123E, 0x1123E }, /* KHOJKI SIGN SUKUN */
++	{ 0x11241, 0x11241 }, /* KHOJKI VOWEL SIGN VOCALIC R */
++	{ 0x112DF, 0x112EA }, /* KHUDAWADI SIGN ANUSVARA - KHUDAWADI SIGN VIRAMA */
++	{ 0x11300, 0x11303 }, /* GRANTHA SIGN COMBINING ANUSVARA ABOVE - GRANTHA SIGN VISARGA */
++	{ 0x1133B, 0x1133C }, /* COMBINING BINDU BELOW - GRANTHA SIGN NUKTA */
++	{ 0x1133E, 0x11344 }, /* GRANTHA VOWEL SIGN AA - GRANTHA VOWEL SIGN VOCALIC RR */
++	{ 0x11347, 0x11348 }, /* GRANTHA VOWEL SIGN EE - GRANTHA VOWEL SIGN AI */
++	{ 0x1134B, 0x1134D }, /* GRANTHA VOWEL SIGN OO - GRANTHA SIGN VIRAMA */
++	{ 0x11357, 0x11357 }, /* GRANTHA AU LENGTH MARK */
++	{ 0x11362, 0x11363 }, /* GRANTHA VOWEL SIGN VOCALIC L - GRANTHA VOWEL SIGN VOCALIC LL */
++	{ 0x11366, 0x1136C }, /* COMBINING GRANTHA DIGIT ZERO - COMBINING GRANTHA DIGIT SIX */
++	{ 0x11370, 0x11374 }, /* COMBINING GRANTHA LETTER A - COMBINING GRANTHA LETTER PA */
++	{ 0x113B8, 0x113C0 }, /* TULU-TIGALARI VOWEL SIGN AA - TULU-TIGALARI VOWEL SIGN VOCALIC LL */
++	{ 0x113C2, 0x113C2 }, /* TULU-TIGALARI VOWEL SIGN EE */
++	{ 0x113C5, 0x113C5 }, /* TULU-TIGALARI VOWEL SIGN AI */
++	{ 0x113C7, 0x113CA }, /* TULU-TIGALARI VOWEL SIGN OO - TULU-TIGALARI SIGN CANDRA ANUNASIKA */
++	{ 0x113CC, 0x113D0 }, /* TULU-TIGALARI SIGN ANUSVARA - TULU-TIGALARI CONJOINER */
++	{ 0x113D2, 0x113D2 }, /* TULU-TIGALARI GEMINATION MARK */
++	{ 0x113E1, 0x113E2 }, /* TULU-TIGALARI VEDIC TONE SVARITA - TULU-TIGALARI VEDIC TONE ANUDATTA */
++	{ 0x11435, 0x11446 }, /* NEWA VOWEL SIGN AA - NEWA SIGN NUKTA */
++	{ 0x1145E, 0x1145E }, /* NEWA SANDHI MARK */
++	{ 0x114B0, 0x114C3 }, /* TIRHUTA VOWEL SIGN AA - TIRHUTA SIGN NUKTA */
++	{ 0x115AF, 0x115B5 }, /* SIDDHAM VOWEL SIGN AA - SIDDHAM VOWEL SIGN VOCALIC RR */
++	{ 0x115B8, 0x115C0 }, /* SIDDHAM VOWEL SIGN E - SIDDHAM SIGN NUKTA */
++	{ 0x115DC, 0x115DD }, /* SIDDHAM VOWEL SIGN ALTERNATE U - SIDDHAM VOWEL SIGN ALTERNATE UU */
++	{ 0x11630, 0x11640 }, /* MODI VOWEL SIGN AA - MODI SIGN ARDHACANDRA */
++	{ 0x116AB, 0x116B7 }, /* TAKRI SIGN ANUSVARA - TAKRI SIGN NUKTA */
++	{ 0x1171D, 0x1172B }, /* AHOM CONSONANT SIGN MEDIAL LA - AHOM SIGN KILLER */
++	{ 0x1182C, 0x1183A }, /* DOGRA VOWEL SIGN AA - DOGRA SIGN NUKTA */
++	{ 0x11930, 0x11935 }, /* DIVES AKURU VOWEL SIGN AA - DIVES AKURU VOWEL SIGN E */
++	{ 0x11937, 0x11938 }, /* DIVES AKURU VOWEL SIGN AI - DIVES AKURU VOWEL SIGN O */
++	{ 0x1193B, 0x1193E }, /* DIVES AKURU SIGN ANUSVARA - DIVES AKURU VIRAMA */
++	{ 0x11940, 0x11940 }, /* DIVES AKURU MEDIAL YA */
++	{ 0x11942, 0x11943 }, /* DIVES AKURU MEDIAL RA - DIVES AKURU SIGN NUKTA */
++	{ 0x119D1, 0x119D7 }, /* NANDINAGARI VOWEL SIGN AA - NANDINAGARI VOWEL SIGN VOCALIC RR */
++	{ 0x119DA, 0x119E0 }, /* NANDINAGARI VOWEL SIGN E - NANDINAGARI SIGN VIRAMA */
++	{ 0x119E4, 0x119E4 }, /* NANDINAGARI VOWEL SIGN PRISHTHAMATRA E */
++	{ 0x11A01, 0x11A0A }, /* ZANABAZAR SQUARE VOWEL SIGN I - ZANABAZAR SQUARE VOWEL LENGTH MARK */
++	{ 0x11A33, 0x11A39 }, /* ZANABAZAR SQUARE FINAL CONSONANT MARK - ZANABAZAR SQUARE SIGN VISARGA */
++	{ 0x11A3B, 0x11A3E }, /* ZANABAZAR SQUARE CLUSTER-FINAL LETTER YA - ZANABAZAR SQUARE CLUSTER-FINAL LETTER VA */
++	{ 0x11A47, 0x11A47 }, /* ZANABAZAR SQUARE SUBJOINER */
++	{ 0x11A51, 0x11A5B }, /* SOYOMBO VOWEL SIGN I - SOYOMBO VOWEL LENGTH MARK */
++	{ 0x11A8A, 0x11A99 }, /* SOYOMBO FINAL CONSONANT SIGN G - SOYOMBO SUBJOINER */
++	{ 0x11C2F, 0x11C36 }, /* BHAIKSUKI VOWEL SIGN AA - BHAIKSUKI VOWEL SIGN VOCALIC L */
++	{ 0x11C38, 0x11C3F }, /* BHAIKSUKI VOWEL SIGN E - BHAIKSUKI SIGN VIRAMA */
++	{ 0x11C92, 0x11CA7 }, /* MARCHEN SUBJOINED LETTER KA - MARCHEN SUBJOINED LETTER ZA */
++	{ 0x11CA9, 0x11CB6 }, /* MARCHEN SUBJOINED LETTER YA - MARCHEN SIGN CANDRABINDU */
++	{ 0x11D31, 0x11D36 }, /* MASARAM GONDI VOWEL SIGN AA - MASARAM GONDI VOWEL SIGN VOCALIC R */
++	{ 0x11D3A, 0x11D3A }, /* MASARAM GONDI VOWEL SIGN E */
++	{ 0x11D3C, 0x11D3D }, /* MASARAM GONDI VOWEL SIGN AI - MASARAM GONDI VOWEL SIGN O */
++	{ 0x11D3F, 0x11D45 }, /* MASARAM GONDI VOWEL SIGN AU - MASARAM GONDI VIRAMA */
++	{ 0x11D47, 0x11D47 }, /* MASARAM GONDI RA-KARA */
++	{ 0x11D8A, 0x11D8E }, /* GUNJALA GONDI VOWEL SIGN AA - GUNJALA GONDI VOWEL SIGN UU */
++	{ 0x11D90, 0x11D91 }, /* GUNJALA GONDI VOWEL SIGN EE - GUNJALA GONDI VOWEL SIGN AI */
++	{ 0x11D93, 0x11D97 }, /* GUNJALA GONDI VOWEL SIGN OO - GUNJALA GONDI VIRAMA */
++	{ 0x11EF3, 0x11EF6 }, /* MAKASAR VOWEL SIGN I - MAKASAR VOWEL SIGN O */
++	{ 0x11F00, 0x11F01 }, /* KAWI SIGN CANDRABINDU - KAWI SIGN ANUSVARA */
++	{ 0x11F03, 0x11F03 }, /* KAWI SIGN VISARGA */
++	{ 0x11F34, 0x11F3A }, /* KAWI VOWEL SIGN AA - KAWI VOWEL SIGN VOCALIC R */
++	{ 0x11F3E, 0x11F42 }, /* KAWI VOWEL SIGN E - KAWI CONJOINER */
++	{ 0x11F5A, 0x11F5A }, /* KAWI SIGN NUKTA */
++	{ 0x13430, 0x13440 }, /* EGYPTIAN HIEROGLYPH VERTICAL JOINER - EGYPTIAN HIEROGLYPH MIRROR HORIZONTALLY */
++	{ 0x13447, 0x13455 }, /* EGYPTIAN HIEROGLYPH MODIFIER DAMAGED AT TOP START - EGYPTIAN HIEROGLYPH MODIFIER DAMAGED */
++	{ 0x1611E, 0x1612F }, /* GURUNG KHEMA VOWEL SIGN AA - GURUNG KHEMA SIGN THOLHOMA */
++	{ 0x16AF0, 0x16AF4 }, /* BASSA VAH COMBINING HIGH TONE - BASSA VAH COMBINING HIGH-LOW TONE */
++	{ 0x16B30, 0x16B36 }, /* PAHAWH HMONG MARK CIM TUB - PAHAWH HMONG MARK CIM TAUM */
++	{ 0x16F4F, 0x16F4F }, /* MIAO SIGN CONSONANT MODIFIER BAR */
++	{ 0x16F51, 0x16F87 }, /* MIAO SIGN ASPIRATION - MIAO VOWEL SIGN UI */
++	{ 0x16F8F, 0x16F92 }, /* MIAO TONE RIGHT - MIAO TONE BELOW */
++	{ 0x16FE4, 0x16FE4 }, /* KHITAN SMALL SCRIPT FILLER */
++	{ 0x16FF0, 0x16FF1 }, /* VIETNAMESE ALTERNATE READING MARK CA - VIETNAMESE ALTERNATE READING MARK NHAY */
++	{ 0x1BC9D, 0x1BC9E }, /* DUPLOYAN THICK LETTER SELECTOR - DUPLOYAN DOUBLE MARK */
++	{ 0x1BCA0, 0x1BCA3 }, /* SHORTHAND FORMAT LETTER OVERLAP - SHORTHAND FORMAT UP STEP */
++	{ 0x1CF00, 0x1CF2D }, /* ZNAMENNY COMBINING MARK GORAZDO NIZKO S KRYZHEM ON LEFT - ZNAMENNY COMBINING MARK KRYZH ON LEFT */
++	{ 0x1CF30, 0x1CF46 }, /* ZNAMENNY COMBINING TONAL RANGE MARK MRACHNO - ZNAMENNY PRIZNAK MODIFIER ROG */
++	{ 0x1D165, 0x1D169 }, /* MUSICAL SYMBOL COMBINING STEM - MUSICAL SYMBOL COMBINING TREMOLO-3 */
++	{ 0x1D16D, 0x1D182 }, /* MUSICAL SYMBOL COMBINING AUGMENTATION DOT - MUSICAL SYMBOL COMBINING LOURE */
++	{ 0x1D185, 0x1D18B }, /* MUSICAL SYMBOL COMBINING DOIT - MUSICAL SYMBOL COMBINING TRIPLE TONGUE */
++	{ 0x1D1AA, 0x1D1AD }, /* MUSICAL SYMBOL COMBINING DOWN BOW - MUSICAL SYMBOL COMBINING SNAP PIZZICATO */
++	{ 0x1D242, 0x1D244 }, /* COMBINING GREEK MUSICAL TRISEME - COMBINING GREEK MUSICAL PENTASEME */
++	{ 0x1DA00, 0x1DA36 }, /* SIGNWRITING HEAD RIM - SIGNWRITING AIR SUCKING IN */
++	{ 0x1DA3B, 0x1DA6C }, /* SIGNWRITING MOUTH CLOSED NEUTRAL - SIGNWRITING EXCITEMENT */
++	{ 0x1DA75, 0x1DA75 }, /* SIGNWRITING UPPER BODY TILTING FROM HIP JOINTS */
++	{ 0x1DA84, 0x1DA84 }, /* SIGNWRITING LOCATION HEAD NECK */
++	{ 0x1DA9B, 0x1DA9F }, /* SIGNWRITING FILL MODIFIER-2 - SIGNWRITING FILL MODIFIER-6 */
++	{ 0x1DAA1, 0x1DAAF }, /* SIGNWRITING ROTATION MODIFIER-2 - SIGNWRITING ROTATION MODIFIER-16 */
++	{ 0x1E000, 0x1E006 }, /* COMBINING GLAGOLITIC LETTER AZU - COMBINING GLAGOLITIC LETTER ZHIVETE */
++	{ 0x1E008, 0x1E018 }, /* COMBINING GLAGOLITIC LETTER ZEMLJA - COMBINING GLAGOLITIC LETTER HERU */
++	{ 0x1E01B, 0x1E021 }, /* COMBINING GLAGOLITIC LETTER SHTA - COMBINING GLAGOLITIC LETTER YATI */
++	{ 0x1E023, 0x1E024 }, /* COMBINING GLAGOLITIC LETTER YU - COMBINING GLAGOLITIC LETTER SMALL YUS */
++	{ 0x1E026, 0x1E02A }, /* COMBINING GLAGOLITIC LETTER YO - COMBINING GLAGOLITIC LETTER FITA */
++	{ 0x1E08F, 0x1E08F }, /* COMBINING CYRILLIC SMALL LETTER BYELORUSSIAN-UKRAINIAN I */
++	{ 0x1E130, 0x1E136 }, /* NYIAKENG PUACHUE HMONG TONE-B - NYIAKENG PUACHUE HMONG TONE-D */
++	{ 0x1E2AE, 0x1E2AE }, /* TOTO SIGN RISING TONE */
++	{ 0x1E2EC, 0x1E2EF }, /* WANCHO TONE TUP - WANCHO TONE KOINI */
++	{ 0x1E4EC, 0x1E4EF }, /* NAG MUNDARI SIGN MUHOR - NAG MUNDARI SIGN SUTUH */
++	{ 0x1E5EE, 0x1E5EF }, /* OL ONAL SIGN MU - OL ONAL SIGN IKIR */
++	{ 0x1E8D0, 0x1E8D6 }, /* MENDE KIKAKUI COMBINING NUMBER TEENS - MENDE KIKAKUI COMBINING NUMBER MILLIONS */
++	{ 0x1E944, 0x1E94A }, /* ADLAM ALIF LENGTHENER - ADLAM NUKTA */
++	{ 0x1F3FB, 0x1F3FF }, /* EMOJI MODIFIER FITZPATRICK TYPE-1-2 - EMOJI MODIFIER FITZPATRICK TYPE-6 */
++	{ 0x1F9B0, 0x1F9B3 }, /* EMOJI COMPONENT RED HAIR - EMOJI COMPONENT WHITE HAIR */
++	{ 0xE0001, 0xE0001 }, /* LANGUAGE TAG */
++	{ 0xE0020, 0xE007F }, /* TAG SPACE - CANCEL TAG */
++	{ 0xE0100, 0xE01EF }, /* VARIATION SELECTOR-17 - VARIATION SELECTOR-256 */
++};
 +
-+        for base, combining, recomposed in recompose_list:
-+            try:
-+                base_name = unicodedata.name(chr(base))
-+                combining_name = unicodedata.name(chr(combining))
-+                recomposed_name = unicodedata.name(chr(recomposed))
-+                comment = f"/* {base_name} + {combining_name} = {recomposed_name} */"
-+            except ValueError:
-+                comment = f"/* U+{base:04X} + U+{combining:04X} = U+{recomposed:04X} */"
-+            f.write(f"\t{{ 0x{base:04X}, 0x{combining:04X}, 0x{recomposed:04X} }}, {comment}\n")
-+
-+        f.write(f"""\
-+}};
-+
-+/*
-+ * Boundary values for quick rejection
-+ * These are calculated by analyzing the table during generation
-+ */
-+#define UCS_RECOMPOSE_MIN_BASE  0x{min_base:04X}
-+#define UCS_RECOMPOSE_MAX_BASE  0x{max_base:04X}
-+#define UCS_RECOMPOSE_MIN_MARK  0x{min_combining:04X}
-+#define UCS_RECOMPOSE_MAX_MARK  0x{max_combining:04X}
-+""")
-+
-+if __name__ == "__main__":
-+    parser = argparse.ArgumentParser(description="Generate Unicode recomposition table")
-+    parser.add_argument("--full", action="store_true",
-+                        help="Generate a full recomposition table (default: common pairs only)")
-+    args = parser.parse_args()
-+
-+    generate_recomposition_table(use_full_list=args.full)
++/* Double-width character ranges */
++static const struct ucs_interval ucs_double_width_ranges[] = {
++	{ 0x01100, 0x0115F }, /* HANGUL CHOSEONG KIYEOK - HANGUL CHOSEONG FILLER */
++	{ 0x0231A, 0x0231B }, /* WATCH - HOURGLASS */
++	{ 0x02329, 0x0232A }, /* LEFT-POINTING ANGLE BRACKET - RIGHT-POINTING ANGLE BRACKET */
++	{ 0x023E9, 0x023EC }, /* BLACK RIGHT-POINTING DOUBLE TRIANGLE - BLACK DOWN-POINTING DOUBLE TRIANGLE */
++	{ 0x023F0, 0x023F0 }, /* ALARM CLOCK */
++	{ 0x023F3, 0x023F3 }, /* HOURGLASS WITH FLOWING SAND */
++	{ 0x025FD, 0x025FE }, /* WHITE MEDIUM SMALL SQUARE - BLACK MEDIUM SMALL SQUARE */
++	{ 0x02614, 0x02615 }, /* UMBRELLA WITH RAIN DROPS - HOT BEVERAGE */
++	{ 0x02630, 0x02637 }, /* TRIGRAM FOR HEAVEN - TRIGRAM FOR EARTH */
++	{ 0x02648, 0x02653 }, /* ARIES - PISCES */
++	{ 0x0267F, 0x0267F }, /* WHEELCHAIR SYMBOL */
++	{ 0x0268A, 0x0268F }, /* MONOGRAM FOR YANG - DIGRAM FOR GREATER YIN */
++	{ 0x02693, 0x02693 }, /* ANCHOR */
++	{ 0x026A1, 0x026A1 }, /* HIGH VOLTAGE SIGN */
++	{ 0x026AA, 0x026AB }, /* MEDIUM WHITE CIRCLE - MEDIUM BLACK CIRCLE */
++	{ 0x026BD, 0x026BE }, /* SOCCER BALL - BASEBALL */
++	{ 0x026C4, 0x026C5 }, /* SNOWMAN WITHOUT SNOW - SUN BEHIND CLOUD */
++	{ 0x026CE, 0x026CE }, /* OPHIUCHUS */
++	{ 0x026D4, 0x026D4 }, /* NO ENTRY */
++	{ 0x026EA, 0x026EA }, /* CHURCH */
++	{ 0x026F2, 0x026F3 }, /* FOUNTAIN - FLAG IN HOLE */
++	{ 0x026F5, 0x026F5 }, /* SAILBOAT */
++	{ 0x026FA, 0x026FA }, /* TENT */
++	{ 0x026FD, 0x026FD }, /* FUEL PUMP */
++	{ 0x02705, 0x02705 }, /* WHITE HEAVY CHECK MARK */
++	{ 0x0270A, 0x0270B }, /* RAISED FIST - RAISED HAND */
++	{ 0x02728, 0x02728 }, /* SPARKLES */
++	{ 0x0274C, 0x0274C }, /* CROSS MARK */
++	{ 0x0274E, 0x0274E }, /* NEGATIVE SQUARED CROSS MARK */
++	{ 0x02753, 0x02755 }, /* BLACK QUESTION MARK ORNAMENT - WHITE EXCLAMATION MARK ORNAMENT */
++	{ 0x02757, 0x02757 }, /* HEAVY EXCLAMATION MARK SYMBOL */
++	{ 0x02795, 0x02797 }, /* HEAVY PLUS SIGN - HEAVY DIVISION SIGN */
++	{ 0x027B0, 0x027B0 }, /* CURLY LOOP */
++	{ 0x027BF, 0x027BF }, /* DOUBLE CURLY LOOP */
++	{ 0x02B1B, 0x02B1C }, /* BLACK LARGE SQUARE - WHITE LARGE SQUARE */
++	{ 0x02B50, 0x02B50 }, /* WHITE MEDIUM STAR */
++	{ 0x02B55, 0x02B55 }, /* HEAVY LARGE CIRCLE */
++	{ 0x02E80, 0x02E99 }, /* CJK RADICAL REPEAT - CJK RADICAL RAP */
++	{ 0x02E9B, 0x02EF3 }, /* CJK RADICAL CHOKE - CJK RADICAL C-SIMPLIFIED TURTLE */
++	{ 0x02F00, 0x02FD5 }, /* KANGXI RADICAL ONE - KANGXI RADICAL FLUTE */
++	{ 0x02FF0, 0x03029 }, /* IDEOGRAPHIC DESCRIPTION CHARACTER LEFT TO RIGHT - HANGZHOU NUMERAL NINE */
++	{ 0x03030, 0x0303E }, /* WAVY DASH - IDEOGRAPHIC VARIATION INDICATOR */
++	{ 0x03041, 0x03096 }, /* HIRAGANA LETTER SMALL A - HIRAGANA LETTER SMALL KE */
++	{ 0x0309B, 0x030FF }, /* KATAKANA-HIRAGANA VOICED SOUND MARK - KATAKANA DIGRAPH KOTO */
++	{ 0x03105, 0x0312F }, /* BOPOMOFO LETTER B - BOPOMOFO LETTER NN */
++	{ 0x03131, 0x0318E }, /* HANGUL LETTER KIYEOK - HANGUL LETTER ARAEAE */
++	{ 0x03190, 0x031E5 }, /* IDEOGRAPHIC ANNOTATION LINKING MARK - CJK STROKE SZP */
++	{ 0x031EF, 0x0321E }, /* IDEOGRAPHIC DESCRIPTION CHARACTER SUBTRACTION - PARENTHESIZED KOREAN CHARACTER O HU */
++	{ 0x03220, 0x03247 }, /* PARENTHESIZED IDEOGRAPH ONE - CIRCLED IDEOGRAPH KOTO */
++	{ 0x03250, 0x0A48C }, /* PARTNERSHIP SIGN - YI SYLLABLE YYR */
++	{ 0x0A490, 0x0A4C6 }, /* YI RADICAL QOT - YI RADICAL KE */
++	{ 0x0A960, 0x0A97C }, /* HANGUL CHOSEONG TIKEUT-MIEUM - HANGUL CHOSEONG SSANGYEORINHIEUH */
++	{ 0x0AC00, 0x0D7A3 }, /* HANGUL SYLLABLE GA - HANGUL SYLLABLE HIH */
++	{ 0x0F900, 0x0FAFF }, /* U+F900 - U+FAFF */
++	{ 0x0FE10, 0x0FE19 }, /* PRESENTATION FORM FOR VERTICAL COMMA - PRESENTATION FORM FOR VERTICAL HORIZONTAL ELLIPSIS */
++	{ 0x0FE30, 0x0FE52 }, /* PRESENTATION FORM FOR VERTICAL TWO DOT LEADER - SMALL FULL STOP */
++	{ 0x0FE54, 0x0FE66 }, /* SMALL SEMICOLON - SMALL EQUALS SIGN */
++	{ 0x0FE68, 0x0FE6B }, /* SMALL REVERSE SOLIDUS - SMALL COMMERCIAL AT */
++	{ 0x0FF01, 0x0FF60 }, /* FULLWIDTH EXCLAMATION MARK - FULLWIDTH RIGHT WHITE PARENTHESIS */
++	{ 0x0FFE0, 0x0FFE6 }, /* FULLWIDTH CENT SIGN - FULLWIDTH WON SIGN */
++	{ 0x16FE0, 0x16FE3 }, /* TANGUT ITERATION MARK - OLD CHINESE ITERATION MARK */
++	{ 0x17000, 0x187F7 }, /* U+17000 - U+187F7 */
++	{ 0x18800, 0x18CD5 }, /* TANGUT COMPONENT-001 - KHITAN SMALL SCRIPT CHARACTER-18CD5 */
++	{ 0x18CFF, 0x18D08 }, /* U+18CFF - U+18D08 */
++	{ 0x1AFF0, 0x1AFF3 }, /* KATAKANA LETTER MINNAN TONE-2 - KATAKANA LETTER MINNAN TONE-5 */
++	{ 0x1AFF5, 0x1AFFB }, /* KATAKANA LETTER MINNAN TONE-7 - KATAKANA LETTER MINNAN NASALIZED TONE-5 */
++	{ 0x1AFFD, 0x1AFFE }, /* KATAKANA LETTER MINNAN NASALIZED TONE-7 - KATAKANA LETTER MINNAN NASALIZED TONE-8 */
++	{ 0x1B000, 0x1B122 }, /* KATAKANA LETTER ARCHAIC E - KATAKANA LETTER ARCHAIC WU */
++	{ 0x1B132, 0x1B132 }, /* HIRAGANA LETTER SMALL KO */
++	{ 0x1B150, 0x1B152 }, /* HIRAGANA LETTER SMALL WI - HIRAGANA LETTER SMALL WO */
++	{ 0x1B155, 0x1B155 }, /* KATAKANA LETTER SMALL KO */
++	{ 0x1B164, 0x1B167 }, /* KATAKANA LETTER SMALL WI - KATAKANA LETTER SMALL N */
++	{ 0x1B170, 0x1B2FB }, /* NUSHU CHARACTER-1B170 - NUSHU CHARACTER-1B2FB */
++	{ 0x1D300, 0x1D356 }, /* MONOGRAM FOR EARTH - TETRAGRAM FOR FOSTERING */
++	{ 0x1D360, 0x1D376 }, /* COUNTING ROD UNIT DIGIT ONE - IDEOGRAPHIC TALLY MARK FIVE */
++	{ 0x1F000, 0x1F02F }, /* U+1F000 - U+1F02F */
++	{ 0x1F0A0, 0x1F0FF }, /* U+1F0A0 - U+1F0FF */
++	{ 0x1F18E, 0x1F18E }, /* NEGATIVE SQUARED AB */
++	{ 0x1F191, 0x1F19A }, /* SQUARED CL - SQUARED VS */
++	{ 0x1F200, 0x1F202 }, /* SQUARE HIRAGANA HOKA - SQUARED KATAKANA SA */
++	{ 0x1F210, 0x1F23B }, /* SQUARED CJK UNIFIED IDEOGRAPH-624B - SQUARED CJK UNIFIED IDEOGRAPH-914D */
++	{ 0x1F240, 0x1F248 }, /* TORTOISE SHELL BRACKETED CJK UNIFIED IDEOGRAPH-672C - TORTOISE SHELL BRACKETED CJK UNIFIED IDEOGRAPH-6557 */
++	{ 0x1F250, 0x1F251 }, /* CIRCLED IDEOGRAPH ADVANTAGE - CIRCLED IDEOGRAPH ACCEPT */
++	{ 0x1F260, 0x1F265 }, /* ROUNDED SYMBOL FOR FU - ROUNDED SYMBOL FOR CAI */
++	{ 0x1F300, 0x1F3FA }, /* CYCLONE - AMPHORA */
++	{ 0x1F400, 0x1F64F }, /* RAT - PERSON WITH FOLDED HANDS */
++	{ 0x1F680, 0x1F9AF }, /* ROCKET - PROBING CANE */
++	{ 0x1F9B4, 0x1FAFF }, /* U+1F9B4 - U+1FAFF */
++	{ 0x20000, 0x2FFFD }, /* U+20000 - U+2FFFD */
++	{ 0x30000, 0x3FFFD }, /* U+30000 - U+3FFFD */
++};
 -- 
 2.49.0
 
