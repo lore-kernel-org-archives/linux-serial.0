@@ -1,218 +1,105 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37839205AA3;
-	Tue, 15 Apr 2025 09:28:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BC6328B519
+	for <linux-serial@vger.kernel.org>; Tue, 15 Apr 2025 10:21:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744709322; cv=none; b=PSR3oJ7toq/Sd+H0YQBFFBkDNCn08AgxyL1E3l5Ji74tstsHV+JKBe0JhiugaAbWk/vUv3NM3qIKAdzjNfz0MjSM1NkUOg23v0SpI4c9eqigGcoxa+BuIygxDoj606K5WjitKyk9FKewMqk4WyXHvvwaldd6lT9n8Gd5QIAZOs8=
+	t=1744712464; cv=none; b=KECMGnCA/AS/QCaDt8gRIGqJWuC9jvMGQBu17BE27DD6Ebs+z5Br3xBFrjiLbuCOev2NPnw9HCH9Mo2j2BOYMdp+VPmzucJ2gisAzjqvDBXp+US0yKAWol9l85/mKiw8WY/1mQZ7Crc8oG6v21KMZ3WQIWPLkS6694moc0zOeJs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744709322; c=relaxed/simple;
-	bh=1h6lGzDQGCxsNKEF9zey7TCs2yGJWPFreLHmCD65QQ0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=SdKRnYAyOANzkUzAiXZiPCSdniOZR+drdrG/Vamnf1Q0TlRooCTA2EezIR2xWuIm2akWfXMxm6wSUvtJMcEKJqdPdwj2CyBxKTSOlVJuMmyzDUapv5KYGoPpSsAc8R07IANWompN5Cr6K8gxAx7n6idrBNrcgSLH4DU4PEo3DDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=P/KXfKir; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="P/KXfKir"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43690d4605dso41539545e9.0;
-        Tue, 15 Apr 2025 02:28:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1744709318; x=1745314118; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4ydEHSC0AwYAy9R1jvtmBV2VFl/0Hbq9Dg03lKhyDtg=;
-        b=P/KXfKirUsMydSvuo+LGyO7Iin3lohuloZ2zQxOiZNskFLGFbJo+WTmC6mVfIuo0f3
-         rqYdBmR+WguONHc72g9dY4FABsTOMpd4Z5qD3QuZU3Hn9rxwzl4bQtWNXo7m8Vu8TGZq
-         +Jleby+TRQG0H77ZRH7ymYniuLo3AXiDSyt+5EgOUOms83hvaKCVbLwYJlonlbzfqmXU
-         67HN6A2F6vMtNipm+FeHfPQUVZAL15AJrMCw+nGlr0pfbl+wssx18p1e3Ws6Ll+iardo
-         bz4pl6FwotR5cReSXJE/UtpfN7YBT2kQgaYlayE9lBsMK8jLgCOBakADFBxqxUclug4Z
-         cOjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744709318; x=1745314118;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4ydEHSC0AwYAy9R1jvtmBV2VFl/0Hbq9Dg03lKhyDtg=;
-        b=YZnmkpERPTeqg+gkvCbttGskXVGNQmdiIAK9CY4t3yEco/a1vE1Mj9/MknRa6wyrtI
-         sbc6rP8i44p5/oILQ4BW+0KQop36UhdzVYBHSUn6rXY+LjTWg4FaGqWVtBzmtw0hZzYx
-         oxOJ9tZQkuccnhIZHh/2FetkAXlwP83pb7OYNV3noBj7rzQm53WlkTiF9NFM4lBI+IQn
-         TbE4xBw62I8S1FiS+yn/Gf4ohI5HUcOVorgPwf4hhBvUOAvaKztvRhKU/Vrk2804+WWJ
-         KgEK/V3YQqmrTPVyiBhZLcYCw77stRCoiYiAOGGyKUTdI7siy8NH/sHIlAnTk7XYjZR6
-         UVTw==
-X-Forwarded-Encrypted: i=1; AJvYcCU7Lb1cynKWllaJwyjTQBc7qzEepS+O2ptwWQWqaItK6SML/QtliTRG2a1iPGUt2GxuNwPV/Vq7ikJ8@vger.kernel.org, AJvYcCVoDmu2Jn9+l7ttCGVWfomimag9n/+nIBI9ouG+xkqc/y6ffW7Xc7qHL6/xhHcTnYZPZVQev1ltXVE2mMuQIh7T6SM=@vger.kernel.org, AJvYcCW813gISA8IjX4/ywg8hPNf8GbsZ4gSLsbmTfdON4gYrjEeO6+cFEAg3cn4QDnz111No6j6/iy3s/XS@vger.kernel.org, AJvYcCX1OpK3P1+p8D1iErrhj6dEK4v4cDG3bQ+/hAR8LXOZZ38FlAXyyVbQkhHiSY7f1Zk1qHysgJnJsPVcaJ4A@vger.kernel.org, AJvYcCXdocy2J2mw0RAjlh6dBZG4IXkcRn+uMogxT6mgGGUn9It9N7I1AaYlpmq+fe8foKXbBUmSFCqxCw/WelIV@vger.kernel.org, AJvYcCXrFysT6wYbNKo+6wLSKfRuIBdW/PqAbgTV5KEc/NTfnZz2iuqAxShkZlmJ2PR0IRrSLR8bYoJ9WzyfEg==@vger.kernel.org
-X-Gm-Message-State: AOJu0YwJ9F3MKC6MwM1Rf9tCc1VSnH8Sjsn9EddvXY7wRhAYYOf8AKu+
-	l3bUOt/2Zy5q4A7a+4q1CNIWZEkA0RECZzGtdV95S7t6l+Hqf7Xcsen1of8YtzUGoTCLTRHUSHh
-	Db8kzM3kf5s9bIY3rsjDfEjCpLkY=
-X-Gm-Gg: ASbGnct3OtpTM1tQqOwyUQ4EHVswA0NVEMLYqz8czk0zm3X5KR+d8H0T0SNSJvI3HxI
-	qRAx5f+ZVHBKSO5Qe+CcjoLgdXzQ6gWydjUtn0yRiSGIJL3nsCA1u0hcA19l7gmpF5GonR9+BbM
-	byOIz+hw77+pdFz29uJF+U9gZdSvyGLZ99nqWFrDL1pTXaOz0ajli/SQ==
-X-Google-Smtp-Source: AGHT+IFG+fUPEngMYO3MgfRmjXhAKt8D7GZyaPURDVd3wp/sgNtuZ0IgjriVoFPeF0qbRTK2UdbZcD/1eJv8nHqPJoE=
-X-Received: by 2002:a05:6000:18a5:b0:39c:2692:4259 with SMTP id
- ffacd0b85a97d-39ea51f5a85mr11986754f8f.21.1744709318100; Tue, 15 Apr 2025
- 02:28:38 -0700 (PDT)
+	s=arc-20240116; t=1744712464; c=relaxed/simple;
+	bh=ysjcld4I1d/TEaaccvq+g9ufZqs0JEJ/wvx67sEcKBc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gQO9DmrztP9CFas76g4OHvdMdS2klXwORyErgJmiLvvYFQLB97NtD+h/guQkOeU56Df7qRw1rcj4B1BMutYnwsGg+bwxvU15wlKte1rCI/p3K4KGmjgYzFBikZ0UkC+FO7kPCLdnt+sKMJ2RLAD8O7DzinBml3GUynPiyqyPBEY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1u4dPD-0004Ii-B1; Tue, 15 Apr 2025 12:20:39 +0200
+Received: from moin.white.stw.pengutronix.de ([2a0a:edc0:0:b01:1d::7b] helo=bjornoya.blackshift.org)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <mkl@pengutronix.de>)
+	id 1u4dPC-000P2J-0G;
+	Tue, 15 Apr 2025 12:20:38 +0200
+Received: from pengutronix.de (p5b1645f7.dip0.t-ipconnect.de [91.22.69.247])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	(Authenticated sender: mkl-all@blackshift.org)
+	by smtp.blackshift.org (Postfix) with ESMTPSA id A99013F9BB4;
+	Tue, 15 Apr 2025 10:20:37 +0000 (UTC)
+Date: Tue, 15 Apr 2025 12:20:37 +0200
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: linux-renesas-soc@vger.kernel.org, 
+	Vincent Mailhol <mailhol.vincent@wanadoo.fr>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Linus Walleij <linus.walleij@linaro.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Mark Brown <broonie@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
+	Wolfgang Grandegger <wg@grandegger.com>, Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	linux-can@vger.kernel.org, devicetree@vger.kernel.org, linux-gpio@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: remove RZ/N1S bindings
+Message-ID: <20250415-glittering-dangerous-coati-1c90b1-mkl@pengutronix.de>
+References: <20250411194849.11067-2-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250407191628.323613-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <CA+V-a8useBh5m+MqGXQwQJhuemehm=bPidL6XydR-FOmVN9QNQ@mail.gmail.com> <CAMuHMdU+U8D8iQdks72=Kki2HL+bo8tw9gA1S4D3c4hOphLTuA@mail.gmail.com>
-In-Reply-To: <CAMuHMdU+U8D8iQdks72=Kki2HL+bo8tw9gA1S4D3c4hOphLTuA@mail.gmail.com>
-From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date: Tue, 15 Apr 2025 10:28:12 +0100
-X-Gm-Features: ATxdqUGnCZezFZPsrc8goTpv1icFSVC02yaUa5urXIuUAs8z1znekIaVpOgJiI4
-Message-ID: <CA+V-a8tH9BLjy5aG1qkRJnUFO_4VARu6rW4fQzHoSxvaMgo1Xg@mail.gmail.com>
-Subject: Re: [PATCH v2 00/12] Add support for Renesas RZ/V2N SoC and EVK
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Magnus Damm <magnus.damm@gmail.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
-	Michael Turquette <mturquette@baylibre.com>, Jiri Slaby <jirislaby@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Linus Walleij <linus.walleij@linaro.org>, 
-	Conor Dooley <conor+dt@kernel.org>, linux-renesas-soc@vger.kernel.org, 
-	linux-clk@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
-	linux-serial@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="sc425bfm6fmj3k36"
+Content-Disposition: inline
+In-Reply-To: <20250411194849.11067-2-wsa+renesas@sang-engineering.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
+
+
+--sc425bfm6fmj3k36
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH] dt-bindings: remove RZ/N1S bindings
+MIME-Version: 1.0
 
-Hi Geert,
+On 11.04.2025 21:47:57, Wolfram Sang wrote:
+> Except for these four quite random bindings, no further upstream
+> activity has been observed in the last 8 years. So, remove these
+> fragments to reduce maintenance burden.
+>=20
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-On Mon, Apr 14, 2025 at 2:40=E2=80=AFPM Geert Uytterhoeven <geert@linux-m68=
-k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Mon, 14 Apr 2025 at 13:19, Lad, Prabhakar <prabhakar.csengg@gmail.com>=
- wrote:
-> > On Mon, Apr 7, 2025 at 8:16=E2=80=AFPM Prabhakar <prabhakar.csengg@gmai=
-l.com> wrote:
-> > > From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > >
-> > > This patch series adds initial support for the Renesas RZ/V2N (R9A09G=
-056)
-> > > SoC and its evaluation board (EVK). The Renesas RZ/V2N is a vision AI
-> > > microprocessor (MPU) designed for power-efficient AI inference and
-> > > real-time vision processing. It features Renesas' proprietary AI
-> > > accelerator (DRP-AI3), delivering up to 15 TOPS AI performance, makin=
-g
-> > > it ideal for applications such as Driver Monitoring Systems (DMS),
-> > > industrial monitoring cameras, and mobile robots.
-> > >
-> > > Key features of the RZ/V2N SoC:
-> > >   Processing Power:
-> > >     - Quad Arm Cortex-A55 cores at 1.8GHz for high-performance comput=
-ing
-> > >     - Single Arm Cortex-M33 core at 200MHz for real-time processing
-> > >     - 1.5MB on-chip SRAM for fast data access
-> > >     - LPDDR4/LPDDR4X memory interface for high-speed RAM access
-> > >
-> > >   AI and Vision Processing:
-> > >     - DRP-AI3 accelerator for low-power, high-efficiency AI inference
-> > >     - Arm Mali-C55 ISP (optional) for image signal processing
-> > >     - Dual MIPI CSI-2 camera interfaces for multi-camera support
-> > >
-> > >   High-Speed Interfaces:
-> > >     - PCIe Gen3 (2-lane) 1ch for external device expansion
-> > >     - USB 3.2 (Gen2) 1ch (Host-only) for high-speed data transfer
-> > >     - USB 2.0 (Host/Function) 1ch for legacy connectivity
-> > >     - Gigabit Ethernet (2 channels) for network communication
-> > >
-> > >   Industrial and Automotive Features:
-> > >     - 6x CAN FD channels for automotive and industrial networking
-> > >     - 24-channel ADC for sensor data acquisition
-> > >
-> > > LINK: https://tinyurl.com/renesas-rz-v2n-soc
-> > >
-> > > The series introduces:
-> > > - Device tree bindings for various subsystems (SYS, SCIF, SDHI, CPG, =
-pinctrl).
-> > > - RZ/V2N SoC identification support.
-> > > - Clock and pinctrl driver updates for RZ/V2N.
-> > > - Initial DTSI and device tree for the RZ/V2N SoC and EVK.
-> > >
-> > > These patches have been tested on the RZ/V2N EVK with v6.15-rc1 kerne=
-l,
-> > > logs can be found here:
-> > > https://gist.github.com/prabhakarlad/aa3da7558d007aab8a288550005565d3
-> > >
-> > > @Geert, Ive rebased the patches on top of v6.15-rc1 + renesas-dts-for=
--v6.16
-> > > + renesas-clk-for-v6.16 branches. Also these patches apply on top of =
-the below
-> > > series [1] and [2]. I had to sort the order in Makefile for patch [3]=
- to
-> > > avoid conflicts.
-> > > [1] https://lore.kernel.org/all/20250401090133.68146-1-prabhakar.maha=
-dev-lad.rj@bp.renesas.com/
-> > > [2] https://lore.kernel.org/all/20250403212919.1137670-1-thierry.bult=
-el.yh@bp.renesas.com/#t
-> > > [3] https://lore.kernel.org/all/20250403212919.1137670-13-thierry.bul=
-tel.yh@bp.renesas.com/
-> > >
-> > > Note, dtbs_check will generate the below warnings this is due to miss=
-ing
-> > > ICU support as part of initial series. I will be sending a follow-up =
-patch
-> > > series to add ICU support which will fix these warnings.
-> > > arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dtb: pinctrl@10410=
-000 (renesas,r9a09g056-pinctrl): 'interrupt-controller' is a required prope=
-rty
-> > >         from schema $id: http://devicetree.org/schemas/pinctrl/renesa=
-s,rzg2l-pinctrl.yaml#
-> > > arch/arm64/boot/dts/renesas/r9a09g056n48-rzv2n-evk.dtb: pinctrl@10410=
-000 (renesas,r9a09g056-pinctrl): '#interrupt-cells' is a required property
-> > >         from schema $id: http://devicetree.org/schemas/pinctrl/renesa=
-s,rzg2l-pinctrl.yaml#
-> > >
-> > > v1->v2:
-> > > - Added acks from Rob.
-> > > - Squashed the RZ/V2N EVK and SoC variant documentation into a single
-> > >   commit.
-> > > - Updated the commit messages.
-> > > - Added RZV2N_Px, RZV2N_PORT_PINMUX, and RZV2N_GPIO macros in
-> > >   SoC DTSI as we are re-using renesas,r9a09g057-pinctrl.h
-> > >   in pictrl driver hence to keep the consistency with the
-> > >   RZ/V2H(P) SoC these macros are added.
-> > > - Dropped `renesas,r9a09g056-pinctrl.h` header file.
-> > > - Followed DTS coding style guidelines
-> > > - Dropped defconfig changes from the series.
-> > > - Dropped SDHI dt-binding patch as its already applied to mmc -next t=
-ree.
-> > >
-> > > Cheers,
-> > > Prabhakar
-> > >
-> > > Lad Prabhakar (12):
-> > >   dt-bindings: soc: renesas: Document Renesas RZ/V2N SoC variants and
-> > >     EVK
-> > >   soc: renesas: Add config option for RZ/V2N (R9A09G056) SoC
-> > >   dt-bindings: soc: renesas: Document SYS for RZ/V2N SoC
-> > >   soc: renesas: sysc: Add SoC identification for RZ/V2N SoC
-> > >   dt-bindings: serial: renesas: Document RZ/V2N SCIF
-> > >   dt-bindings: clock: renesas: Document RZ/V2N SoC CPG
-> > >   clk: renesas: rzv2h-cpg: Sort compatible list based on SoC part num=
-ber
-> > >   clk: renesas: rzv2h: Add support for RZ/V2N SoC
-> > >   dt-bindings: pinctrl: renesas: Document RZ/V2N SoC
-> > >   pinctrl: renesas: rzg2l: Add support for RZ/V2N SoC
-> > >   arm64: dts: renesas: Add initial SoC DTSI for RZ/V2N
-> > >   arm64: dts: renesas: Add initial device tree for RZ/V2N EVK
-> > >
-> > Would it be OK if I send version 3 containing only patches 4/12 and 10/=
-12?
->
-> For patch 4/12: yes, that is fine. Thx!
-> For patch 10/12: I have already applied it.
->
-For patch 10/12 ("pinctrl: renesas: rzg2l: Add support for RZ/V2N
-SoC") will that be part of renesas-pinctrl-for-v6.16 branch (which is
-yet to be pushed)?
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
 
-Cheers,
-Prabhakar
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde          |
+Embedded Linux                   | https://www.pengutronix.de |
+Vertretung N=C3=BCrnberg              | Phone: +49-5121-206917-129 |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-9   |
+
+--sc425bfm6fmj3k36
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEn/sM2K9nqF/8FWzzDHRl3/mQkZwFAmf+MvIACgkQDHRl3/mQ
+kZzTpQgAlPTcKlZ2xk6+ME/4NOQ2N/EBzvg7QNZBqJfusX9dxxdc0o4dklimbHdf
+epiZ9f5sw+DLcWQxm4Ll7LB/jzW4XyMC+lZkS57AiOSpCCuLMunyjhld7Nv/3Q7+
+PsHh0sBe7xvdxw1f3vLL0+nmG9TS3SosuqUZZMczwmN0Q6fPcUMEBN5W+X7+MIvM
+3NghO/IjopmjQiDZSveHzXCpLuW/JRQOSUpad9+Fuyh1T4In4mBrPCQ/JtyFNGSk
+QzTN8PYPuiT2xDQ5CRTm9PKr9Do9XRc+JAYSUdt5F3MV5XVfuG3ouBnoXVnkkCM0
+lufydvGLYi+EcDGT/so8Kc7TSirIrg==
+=erlw
+-----END PGP SIGNATURE-----
+
+--sc425bfm6fmj3k36--
