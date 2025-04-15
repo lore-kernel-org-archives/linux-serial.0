@@ -1,119 +1,159 @@
 Received: from fhigh-a5-smtp.messagingengine.com (fhigh-a5-smtp.messagingengine.com [103.168.172.156])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B78424729F;
-	Tue, 15 Apr 2025 19:16:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA9324503A;
+	Tue, 15 Apr 2025 19:22:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.156
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744744615; cv=none; b=UJ5xVIuaqAOI7M/bOzM53eVBHZ/uiz0qhnC0scMUNatxen2I+S0FVh0dyl+gnI88bmfsIgsHmdPfFuUEBRtj8G31Vh2UOu1Y4FpP4H8C/BetG3jQz6Bxs7Eq0emFTz+YQB272pNhJ62IIaseLWSmsOivxhNAM5N26VgUJowmTyE=
+	t=1744744942; cv=none; b=bC0oxJewlAjOKY5qBjHRMyq7MPLv1qXAeHh79U4wuLoA8hJGzKHMcg22JAfkq+PP7aleCZkK1qIpMSGIYuGJ0/pifEuXIO14ITPWueKZ9BEDGoHJNdRTg7QjgL4Tl446gg04GIMZKEiuR28ALRvGbXTCXiT44JjI5I+8o9pHnMA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744744615; c=relaxed/simple;
-	bh=7FbUO2HP+oVng33uxir9ExlN5OZMQvyixLWLLllHeGM=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=SFUxeX9lQUZCzvCA1/WDg2fLmUzSA42691RCIg7Nku4TqKT9rY97bptKocMriyBr7RcK9xSxpYfWI7ytP30l9jUKs6Eq+DhyUx4GCo87KBY5MHg2lWY8JQVP6UIP2Pd9qdL6b0pcDIMI8tC5B8QKVIaItCb23gKlwm0QqvJe/yw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=OhleGdP6; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=SYjsNswk; arc=none smtp.client-ip=103.168.172.156
+	s=arc-20240116; t=1744744942; c=relaxed/simple;
+	bh=ft54p6bhTxDj+z0qJTAsmGd30EjVDhq/ynj+X5E4H/g=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=ciAIGGu+NP/s8fDN43wVT/rH9hkUIXEje+gRLLiVwN8bJPVpjF6Kg4plzmxxyxAEXZSOo6LhiUdgufSSGexq/FPyvPjs8WGKlNwN9FDYdwEHH/bV9ReQmfnmthhjYS7FYl8PjPRft//jaD/bu/beYKabc3mAY5Xw8WT8byXHdd8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=GSvR5vFq; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=Gygb56/N; arc=none smtp.client-ip=103.168.172.156
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="OhleGdP6";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="SYjsNswk"
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="GSvR5vFq";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="Gygb56/N"
 Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id 45CA011401BD;
-	Tue, 15 Apr 2025 15:16:51 -0400 (EDT)
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 0BADE11401BE;
+	Tue, 15 Apr 2025 15:22:19 -0400 (EDT)
 Received: from phl-frontend-01 ([10.202.2.160])
-  by phl-compute-05.internal (MEProxy); Tue, 15 Apr 2025 15:16:51 -0400
+  by phl-compute-05.internal (MEProxy); Tue, 15 Apr 2025 15:22:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:subject
-	:subject:to:to; s=fm2; t=1744744611; x=1744831011; bh=wKWBw7tFzB
-	azlYNeBHUmp7sAO6mkfGaYnxWKhhTdSTo=; b=OhleGdP62z3vMHfQynGIRMZjQ2
-	1tgjaypsob+gUCX5p6/Lwi1xxIBNVyMkt/lYksvFUVd2ngr+PBsUkdP40Vz77tey
-	rh8C+bSojnssSc0N1lM/QMxMiyVxYk85DtH4SnoeWp34CykpFqkd93e3Tx99qTLe
-	G3CdSY0SiS2CwqPOlnKMvCNS6mO5vou9H6FfYwm6Gm9l7Pu6uSYOwNS2IrBrgldr
-	FozPB4X6sahsi88RyZE0eegwy9Hv7mKm3y6PSUyg58NEMCTuy9tE/NVNCpcTeuSA
-	HrjEBFvPpgz8hfr1i8G1KB+tSyxI6k9wWNNbe6KNUIFIjiEWV5gcif7gSS7A==
+	cc:cc:content-transfer-encoding:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to; s=fm2; t=1744744939; x=
+	1744831339; bh=zNG1YKUsmyDP/ojfVRvL6wcBsNKK7C86m9dSyKIqDh8=; b=G
+	SvR5vFq7pJ6IVgUWVYyRCthVZYfp42xWizOdCXTZe4xJJFIHmt6mnh5nnJAY2CMM
+	YNC/fdyCkzukzpEeNUMbJgOGx5yhYR1DeCG0xShc5oWZJ8E0yfXcsC0HJuj+tKqV
+	CO/7EvzYtftM/bssMoNa+OL2pGiZYfg09gi84m8aTDHzm1eGWz/2vmtZ3N4vgtZZ
+	7g/TR3UBulotuf6onK2cLawtPTYNykuXdU7sD8AlS6DqENiaUDgvE5aOX3hfDbM+
+	9tzVSDmfKDQm0nFYrjX9Tr5WhQiIjApU0vMsa9MwTqMN8Rlo3/yEBygdP3aNkpwn
+	eYleefb2KNzsC8dxuhFbA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-	1744744611; x=1744831011; bh=wKWBw7tFzBazlYNeBHUmp7sAO6mkfGaYnxW
-	KhhTdSTo=; b=SYjsNswkWXkMO7Dqjezk5g06xQ7IYYe3pcLLni4C1vriCPnaEnp
-	E0fIkj6ycNSFJc8FXogtMKT7OwAGdX5Iq5F7SIwHs4g5aX/5gUj0BfoSi0WQdADV
-	0WreWBefVuQ47Np1UHYk2qJf0+gRSzA9MtBQ0Cn+NlzyqivopPsi+zT273SWMZSL
-	z0XROCkJFIruXSK2uW5/OywKptLaI6BObnicCAs3TU3ehkyc+iRJI5qnQSQrzOmZ
-	9m0fwYHeetV1pEMPRMiAbZLhFHmZzXmLoto5+tXAlJ+yqCpL/nakKABcy/jgT04c
-	2xrbsBW25VaeHb9L+OWFqsvtuY0sKNehcKA==
-X-ME-Sender: <xms:o7D-Z1AB1LT7Y_2Is1_ONOhrNafYKZnj6ECzWmiPDPRF9_w371lDTw>
-    <xme:o7D-ZziLKFUXQX5Rl9BsrKLuBEVCGurUPwnGOnNK6knCXkcGwGYk86zTByc23-nq_
-    PRucjQl7bBA-vc_7Wo>
-X-ME-Received: <xmr:o7D-ZwnvV44CFMdPyCIBhSyd2QrHrD0TCckJsPyIBaF4YCP-TB8iS4UtLGqSc16-f3XOOym2CTxiCpX9SVj6MV-7ksW0N4tXdbzTZmbWiJQzc634Cw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvvdegfedtucetufdoteggodetrf
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
+	:x-me-sender:x-sasl-enc; s=fm2; t=1744744939; x=1744831339; bh=z
+	NG1YKUsmyDP/ojfVRvL6wcBsNKK7C86m9dSyKIqDh8=; b=Gygb56/NugqO1PuGX
+	mMAcaVLa5yPvQCURno3XhjB76khWPAFCIxhumsh9L6RIyIOMS6t1YQpsYwutx39J
+	K+KSfgYgTIDKP8wfXOgdIWOWNDKd9y0PUkB/IM4pQgIBoMEviIsqAbXApegRjCd6
+	+L1rM3GmIIVHmlIq+2/KDilrcOcKtN88QyWxqBOa7i74keAYabeZHh+GLU1a8zu+
+	t7wN57Iw10uyd9BSs2PgNeieaKYsMDDpbxUL4Z5ux0XTZdHY/g27kRXweOL01wjp
+	QLRYx/bNejWKpXpGlaR1sZnOHbABaBs1rPDX2vInhXRuPfHw/1Op+R4Mcp3G7VeI
+	tRUOg==
+X-ME-Sender: <xms:6rH-Z-GHlB6M-iw6v1qAJ7_30nYjTqm89U3iCFDWP6OwIVOLIlbL0Q>
+    <xme:6rH-Z_UctCBfpNtnexacr1Jotu4XJPNmBNKDLB5Ag3YkRSuwqSg-WpQQjnQ2WMzbH
+    Iupg7gIr6RQdTEBYNo>
+X-ME-Received: <xmr:6rH-Z4LK8N2IBfCzsUooiDM2Yktje7hDNgecPdSjsPRFfeSnhsNGrvmXjL-7bzxDlYtQesFaYluP6TgdBjgV3jLI1DLirf_EeOFKohr_2l1wZlkwVg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvvdegfedvucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
     pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhepfffhvfevufgjkfhfgggtsehttdertddttddv
-    necuhfhrohhmpefpihgtohhlrghsucfrihhtrhgvuceonhhitghosehflhhugihnihgtrd
-    hnvghtqeenucggtffrrghtthgvrhhnpefgvedvhfefueejgefggfefhfelffeiieduvdeh
-    ffduheduffekkefhgeffhfefveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehnihgtohesfhhluhignhhitgdrnhgvthdpnhgspghrtghpthht
-    ohepgedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepjhhirhhishhlrggshieskh
-    gvrhhnvghlrdhorhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggr
-    thhiohhnrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkh
-    gvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdr
-    khgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:o7D-Z_xIYguSoj6HH8ylQkCrU3LIj2F6xeCHBeuaOaRYLraR4foU1g>
-    <xmx:o7D-Z6Q__zLvw0ddxJSwcb2IppapdUGTU8NSShYA8CmooNfz1BBmgw>
-    <xmx:o7D-ZyYN8m00PX7zZveWfUkXncQEpRZxM8ID4BcXNBvuJ3b3BvlR2w>
-    <xmx:o7D-Z7ROhc0PSAV1teCMh0xMh8HY_ZMa2Y_RJmAn4txdFTCkPuh71g>
-    <xmx:o7D-Z1k6-IilWNtlUxj2-M55E84rRV8o9Rr3i3BGcK-ZhxOFynyO9G1N>
+    gvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhgggfestdekredtredt
+    tdenucfhrhhomheppfhitgholhgrshcurfhithhrvgcuoehnihgtohesfhhluhignhhitg
+    drnhgvtheqnecuggftrfgrthhtvghrnheptdejueeiieehieeuffduvdffleehkeelgeek
+    udekfeffhfduffdugedvteeihfetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomhepnhhitghosehflhhugihnihgtrdhnvghtpdhnsggprhgtphht
+    thhopeehpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehnphhithhrvgessggrhi
+    hlihgsrhgvrdgtohhmpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdho
+    rhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorh
+    hgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdho
+    rhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrd
+    horhhg
+X-ME-Proxy: <xmx:6rH-Z4FxMoZiBib1o3l9f10DWxslO3Plo7b1mcKnaJUJyZ8FcdQxyw>
+    <xmx:6rH-Z0X-ozI8mNpdTk_Z--8ZZliNGkbKxV6a03IWYZUAaTNHvwXCkA>
+    <xmx:6rH-Z7Pdx6RZhJcxfaVjty-9Jv1OcYCOLUOG_xU53Kn9oE8oSZAuIA>
+    <xmx:6rH-Z73I6ccdmyBjXPQO-BSoU5ygZiyrMz1Ph52zwnIYJEk3RdPGRw>
+    <xmx:67H-Z30VL7C5arXQ2o_JUoLcPkzuUbiv8N2hVXbbaGNsnwlANRcIDUK6>
 Feedback-ID: i58514971:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 15 Apr 2025 15:16:50 -0400 (EDT)
-Received: from xanadu (xanadu.lan [192.168.1.120])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id 6C2B711165EA;
-	Tue, 15 Apr 2025 15:16:50 -0400 (EDT)
-Date: Tue, 15 Apr 2025 15:16:50 -0400 (EDT)
+ 15 Apr 2025 15:22:18 -0400 (EDT)
+Received: from xanadu.lan (OpenWrt.lan [192.168.1.1])
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id DCEAC1116607;
+	Tue, 15 Apr 2025 15:22:17 -0400 (EDT)
 From: Nicolas Pitre <nico@fluxnic.net>
-To: Jiri Slaby <jirislaby@kernel.org>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/11] vt: update gen_ucs_width.py to produce more space
- efficient tables
-In-Reply-To: <f876fe1c-0058-4f96-b6de-9d0a597e1143@kernel.org>
-Message-ID: <4rn89r00-8294-092o-1n35-opopo1273qnp@syhkavp.arg>
-References: <20250410011839.64418-1-nico@fluxnic.net> <20250410011839.64418-10-nico@fluxnic.net> <f876fe1c-0058-4f96-b6de-9d0a597e1143@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Nicolas Pitre <npitre@baylibre.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2 01/13] vt: minor cleanup to vc_translate_unicode()
+Date: Tue, 15 Apr 2025 15:17:50 -0400
+Message-ID: <20250415192212.33949-2-nico@fluxnic.net>
+X-Mailer: git-send-email 2.49.0
+In-Reply-To: <20250415192212.33949-1-nico@fluxnic.net>
+References: <20250415192212.33949-1-nico@fluxnic.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 
-On Mon, 14 Apr 2025, Jiri Slaby wrote:
+From: Nicolas Pitre <npitre@baylibre.com>
 
-> On 10. 04. 25, 3:14, Nicolas Pitre wrote:
-> > From: Nicolas Pitre <npitre@baylibre.com>
-> > 
-> > Split table ranges into BMP (16-bit) and non-BMP (above 16-bit).
-> > This reduces the corresponding text size by 20-25%.
-> 
-> I like this!
-> 
-> > -struct interval {{
-> > +struct interval16 {{
-> > +	uint16_t first;
-> > +	uint16_t last;
-> > +}};
-> > +
-> > +struct interval32 {{
-> >    uint32_t first;
-> >    uint32_t last;
-> 
-> Actually, why not to use u16 and u32, respectively?
+Make it clearer when a sequence is bad.
 
-No particular reason. The kernel uses both so I picked the one that made 
-it easier for prototyping in user space. It is u16+u32 now.
+Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
+---
+ drivers/tty/vt/vt.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index f5642b3038..b5f3c8a818 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -2817,7 +2817,7 @@ static int vc_translate_unicode(struct vc_data *vc, int c, bool *rescan)
+ 	if ((c & 0xc0) == 0x80) {
+ 		/* Unexpected continuation byte? */
+ 		if (!vc->vc_utf_count)
+-			return 0xfffd;
++			goto bad_sequence;
+ 
+ 		vc->vc_utf_char = (vc->vc_utf_char << 6) | (c & 0x3f);
+ 		vc->vc_npar++;
+@@ -2829,17 +2829,17 @@ static int vc_translate_unicode(struct vc_data *vc, int c, bool *rescan)
+ 		/* Reject overlong sequences */
+ 		if (c <= utf8_length_changes[vc->vc_npar - 1] ||
+ 				c > utf8_length_changes[vc->vc_npar])
+-			return 0xfffd;
++			goto bad_sequence;
+ 
+ 		return vc_sanitize_unicode(c);
+ 	}
+ 
+ 	/* Single ASCII byte or first byte of a sequence received */
+ 	if (vc->vc_utf_count) {
+-		/* Continuation byte expected */
++		/* A continuation byte was expected */
+ 		*rescan = true;
+ 		vc->vc_utf_count = 0;
+-		return 0xfffd;
++		goto bad_sequence;
+ 	}
+ 
+ 	/* Nothing to do if an ASCII byte was received */
+@@ -2858,11 +2858,14 @@ static int vc_translate_unicode(struct vc_data *vc, int c, bool *rescan)
+ 		vc->vc_utf_count = 3;
+ 		vc->vc_utf_char = (c & 0x07);
+ 	} else {
+-		return 0xfffd;
++		goto bad_sequence;
+ 	}
+ 
+ need_more_bytes:
+ 	return -1;
++
++bad_sequence:
++	return 0xfffd;
+ }
+ 
+ static int vc_translate(struct vc_data *vc, int *c, bool *rescan)
+-- 
+2.49.0
 
-Nicolas
