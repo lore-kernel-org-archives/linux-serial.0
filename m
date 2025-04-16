@@ -1,53 +1,53 @@
-Received: from fhigh-a8-smtp.messagingengine.com (fhigh-a8-smtp.messagingengine.com [103.168.172.159])
+Received: from fout-a5-smtp.messagingengine.com (fout-a5-smtp.messagingengine.com [103.168.172.148])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A267818A6AE;
-	Wed, 16 Apr 2025 13:09:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.159
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BC491B5EA4;
+	Wed, 16 Apr 2025 13:17:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.148
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744808964; cv=none; b=TtdLf2a2FH4rwyZzUsOHu3VTSEJGhCnz+Fn4SebLkMTBykwWIlrN2Ahiem0EX4goo9iTNamd8MkikYAknCKsvqqsbkCv/mh+hCZq/kgi7UQHTowIIe64RDzVOnM+bI43Nc3cz5q/pN+l9PTzLiUGPC6rHsuPQbSrlCb9yQOoIxE=
+	t=1744809466; cv=none; b=WTyIv3UHnx4YQ/26EVo6RNRkTn7zUActe8cOzoldv7o35rUaL22h12zaItEnjDXHOa0ZJHigkhQ7VUv0oFbyqK3z4b7tKUoLX6cGYm1q9M+ZE99oLPPLwDNXlYmUNTCRxPBa0Yu2j2KYfxGunECvU0rCMZ9fjCkGb0NKEHzTZBM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744808964; c=relaxed/simple;
-	bh=gDvLnOvCfVSyAinptyO15tUxBl7lFEc/y0+/dcEFDgo=;
+	s=arc-20240116; t=1744809466; c=relaxed/simple;
+	bh=gM+Qt/a7kopGR4V05RRDgd/dcyhhEifAMadfuSwfwGQ=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=jBaSVMEhxvYIKU7C5kS1yHU/oE0CI1/PT4pnoHMZ89pznQQKnDl7axS8ZMMj3+UVhAOC6YXP4nU8YNeNPbIzoZY4axJWNIwngwYldf/QfAcAfR9WKrGOdVZQPlUKKa3EP3qQdQM4djwe+8O5q6HgWEmwE00u7uMRHEx4dlK7nNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=UrtzcOUs; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=MLggXF0z; arc=none smtp.client-ip=103.168.172.159
+	 MIME-Version:Content-Type; b=I44N+DomETUeW87nlhAvPP/tq8y2giRrZSwqLhH/OpITEBaYLZi/sLYCAR+aYUpWQ9PNvQlFGe9a1COKD2x7SfE9xC8gmdmn1ddrZOyRl5RMgVy98kcns2Ajdu+2ORvDr50V7FLJYAb4RAWiGKpHAnzgNoCCe4jF//hP3OA2BlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=ngLc9+U8; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=VJgaeytE; arc=none smtp.client-ip=103.168.172.148
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="UrtzcOUs";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="MLggXF0z"
-Received: from phl-compute-12.internal (phl-compute-12.phl.internal [10.202.2.52])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id 9B81D1140135;
-	Wed, 16 Apr 2025 09:09:19 -0400 (EDT)
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="ngLc9+U8";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="VJgaeytE"
+Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
+	by mailfout.phl.internal (Postfix) with ESMTP id 5CF8113801A2;
+	Wed, 16 Apr 2025 09:17:43 -0400 (EDT)
 Received: from phl-frontend-01 ([10.202.2.160])
-  by phl-compute-12.internal (MEProxy); Wed, 16 Apr 2025 09:09:19 -0400
+  by phl-compute-05.internal (MEProxy); Wed, 16 Apr 2025 09:17:43 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
 	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
 	:in-reply-to:message-id:mime-version:references:reply-to:subject
-	:subject:to:to; s=fm2; t=1744808959; x=1744895359; bh=RT0o9ESgA1
-	IOg2dSl39PiMpkDYcmJ8fSsA4gzhvlJ78=; b=UrtzcOUsHD+648RtY30UiBD3e4
-	3PiGpE3rVGuKVQ7KS9GUfuZioM0UclQoEVRNieaa9c3u8nEE2b84ukpn5HMPJXbm
-	Jk9oMlqOAAqM0ah7yGKqlrqdUoegCUCTfL7s2STQSx/cZqQPA+gQ7PxqM65T1b/S
-	UCtheRgdlLBbLZy0XOdZYzyPnhBiNoWp8js0m5IiAz1tvEqtgrp1ZX95GF/jiEw0
-	x0DQIaeJXv6JQ+XBLPRWs8ZAXjfrX8avTaWkt8KrHJQMUwKOmN92JjTCYXCaKV6X
-	9Q9SA534CiqY4X2JdfYayNdOwKvhJAjgBD+MbR+rclHnzZ/OOWdBeTFws4JA==
+	:subject:to:to; s=fm2; t=1744809463; x=1744895863; bh=I+LCZnsoAG
+	cr8Lu8YNiAW3gdtOZDYjGpQICJr5W6auc=; b=ngLc9+U81tNuJI/z3JMRcQQtSL
+	V8qy55M3+IIMoRwxQXrL1DqNmxzuLi3uy7emLnDTxQTCbYx/fKGf0g5pORDn3Wqo
+	XudpUsoU8J9vcWk4Nc5fzjE0jHO248cjM7rZbcLiuY/RK0DKKt8x6KoOHO+vAUSp
+	XqYlwyvNtxgW1qy31C0JPZoXtQAFmyQ0JDO8lNYXAXPdAk5Cr3uA1FZ/tyPObfBq
+	Swq0LYYMcQn6iY58X/i9AiNvmR9WO7Yzsd19Sj7rkmP6jalttidyPg3VkTi0+cuG
+	5w5JUKIQtSQCwFQvFUzDnfdHui7Qf6tOfmO1V1UQ/mDlUc13WZvC2doxUa6g==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-type:content-type:date:date
 	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
 	:message-id:mime-version:references:reply-to:subject:subject:to
 	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
-	1744808959; x=1744895359; bh=RT0o9ESgA1IOg2dSl39PiMpkDYcmJ8fSsA4
-	gzhvlJ78=; b=MLggXF0zWvc25GHBc+HswrLe7VvoXW86plHGnGw4Ndkcdm+krbX
-	RDpdfkLKbBM925GA3fWO51dK4nwgI/QAZLpI8iEB0KdGPmVJgGMLHT/KAGWOH33S
-	EIXn2eYEd1Sw7Zh6i/2WhQ8nepaY4OoG6TVi0egJa7rk/gxREnLcn1Q4MdMO/sOH
-	yeKFoG1qamkMw0dOeWYW98/U6crdA6wr6vo/XIOd7LC66cSha8YORWlkC/tzBmA4
-	HNVIFb7Z+7My8hDMRErs0b22nf8RW0i7Y9OJeYxLmXYrSV2c1mtbzMjKtMuQoUiX
-	Qq++cAgMo2Eq1+EoPmLrPGP1MvJ8eVKts2w==
-X-ME-Sender: <xms:_6v_Z5X0wtmoeEVMshvwAYjjRJcjRrdbJeL0-bufPnOBmMw4Ykw_lw>
-    <xme:_6v_Z5kdEtdu0_N6569N5rFqaGIxi0EE3zU1wqHUoT2yVpR3KtmJETeEMzIJaqUBj
-    qZAc2QVRk1DhooPwXo>
-X-ME-Received: <xmr:_6v_Z1Zousf7bv9FQUQtBA8OysnrA2nvU-ZMf2KdO9MJvEY2kkSpeWUeJB9GNNf0YbbjmAOwiLwSXLxvoAJ1kju7-OclwAOLRvP3dul8cwKRwSHTjA>
+	1744809463; x=1744895863; bh=I+LCZnsoAGcr8Lu8YNiAW3gdtOZDYjGpQIC
+	Jr5W6auc=; b=VJgaeytEB9G80kqmB7/ydF8to8pPoPCaIGqXXSVJ/QLf/jQMQ1x
+	G3syT8Q+/AvcM+QtnV6W/AdzboXy5aIE1RsR/BCHd//QpPxlPyNpaS/OgLRj/QtD
+	WgLFNIRQXSVadViZu+mB3ykXK0LENRnwH5/W+vSz70jQPE3qVBuydx/fyZZXHDIW
+	+G+X0mZJjOdlPFx5d+01mOOxZAxDsm70KdBLmscJoeRtgD+JSoV/1SUo+o5fr1lW
+	eXepIGgi67FnRTT8mJ8TgkCOtnKRp1ZBnKaBN6PLgaXgrxI2VdYGQaTK3/LlwACY
+	94sJS97Cd/Rlb5bqlztf6PL1gAG9TMzREXA==
+X-ME-Sender: <xms:963_Z0i7nJj3lY3OgY7UErC4ZVJrKqZuk4HzHcwNSy6aTZ14YakwyA>
+    <xme:963_Z9CJVCm7NrN0-FtF0CWY4qH4Bu-FGGBHZaiPgYPPxU7fszyhlBfxZ0g1BiNIk
+    duVzaCuB4cwZueqC-c>
+X-ME-Received: <xmr:963_Z8Hl7-_HR0AftmAcuTgcUTUeRMkWFwU_YjFZc_RaQN-mAjNRNdFMXS0cOI8-EadPqYKCnB9o1AoeJj-6JQki7cguKyTDfDiqK04AsyYKi-jCCw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvvdeigeeiucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
     pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
@@ -61,27 +61,27 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvvdeigeeiucetufdote
     thhiohhnrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkh
     gvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdr
     khgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:_6v_Z8UcR4w1nNcTc-3TrJAN9gxn5n1NwBBxX6UGZKnCmlvMhn79Vw>
-    <xmx:_6v_ZzkCADZ1N4qfMpCZ27f4AtFXzBeVy9hvzH7VNbLH6dpcCAcb5Q>
-    <xmx:_6v_Z5fEcvtmf58ahSKpEmmq9LjwcW4XHvve2u6jL8t7Pm3JOYpVuw>
-    <xmx:_6v_Z9HvTsx4YAV0JKeg00CAYkjyunAQOio_6aWgVw1kkNi0-GG1lg>
-    <xmx:_6v_Z34hJbhSUPUAergXxkQTrNccO0Qf62vyU49RCpxzI_mNTNewmzXy>
+X-ME-Proxy: <xmx:963_Z1SlXyJ8a7W-zoDnTaB69WCgdlNtndSoe9kuDvkWEljOncOXjQ>
+    <xmx:963_Zxyh9g6AHlBxdUuErbFl3L6Vy5pky1VXaqwCdU6jqPhEn82_PA>
+    <xmx:963_Zz5deEKjh9gmDJlLpj_RmwBvuutxtrwrpDtd398BUoCdeuD5Qw>
+    <xmx:963_Z-z4ypyWJM9bXe7VwelpR1qPl5kx1RkT85WOeHfEY_Beg_Na0Q>
+    <xmx:963_Z419ru_WCSgPUwzDggMGPsLVZNQkZqQP22qwDBw-TxULZsEj-A8o>
 Feedback-ID: i58514971:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 16 Apr 2025 09:09:19 -0400 (EDT)
+ 16 Apr 2025 09:17:42 -0400 (EDT)
 Received: from xanadu (xanadu.lan [192.168.1.120])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id 7AE45111853E;
-	Wed, 16 Apr 2025 09:09:18 -0400 (EDT)
-Date: Wed, 16 Apr 2025 09:09:18 -0400 (EDT)
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 576E01118575;
+	Wed, 16 Apr 2025 09:17:42 -0400 (EDT)
+Date: Wed, 16 Apr 2025 09:17:42 -0400 (EDT)
 From: Nicolas Pitre <nico@fluxnic.net>
 To: Jiri Slaby <jirislaby@kernel.org>
 cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 13/13] vt: refresh ucs_width_table.h and adjust code
- in ucs.c accordingly
-In-Reply-To: <7c3a13ce-c5df-4ea7-a3b1-32a13ab95274@kernel.org>
-Message-ID: <9ps0r788-qo06-4893-7753-4n3oo1238q23@syhkavp.arg>
-References: <20250415192212.33949-1-nico@fluxnic.net> <20250415192212.33949-14-nico@fluxnic.net> <7c3a13ce-c5df-4ea7-a3b1-32a13ab95274@kernel.org>
+Subject: Re: [PATCH v2 07/13] vt: introduce gen_ucs_recompose_table.py to
+ create ucs_recompose_table.h
+In-Reply-To: <f39d8b9b-c160-40a3-80d0-62f880122f2b@kernel.org>
+Message-ID: <7nr6809r-74n3-6noo-8qos-2o504r3849p3@syhkavp.arg>
+References: <20250415192212.33949-1-nico@fluxnic.net> <20250415192212.33949-8-nico@fluxnic.net> <f39d8b9b-c160-40a3-80d0-62f880122f2b@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -92,48 +92,26 @@ Content-Type: text/plain; charset=US-ASCII
 
 On Wed, 16 Apr 2025, Jiri Slaby wrote:
 
-> On 15. 04. 25, 21:18, Nicolas Pitre wrote:
-> > From: Nicolas Pitre <npitre@baylibre.com>
-> > 
-> > Width tables are now split into BMP (16-bit) and non-BMP (above 16-bit).
-> > This reduces the corresponding text size by 20-25%.
-> > 
-> > Note: scripts/checkpatch.pl complains about "... exceeds 100 columns".
-> >        Please ignore.
-> ...
-> > --- a/drivers/tty/vt/ucs.c
-> > +++ b/drivers/tty/vt/ucs.c
-> > @@ -5,17 +5,34 @@
-> ...
-> > -static int interval_cmp(const void *key, const void *element)
-> > +static int interval16_cmp(const void *key, const void *element)
-> > +{
-> > +	u16 cp = *(u16 *)key;
+> On 15. 04. 25, 21:17, Nicolas Pitre wrote:
+> > +/*
+> > + * {out_file} - Unicode character recomposition
+> > + *
+> > + * Auto-generated by {this_file}{generation_mode}
+> > + *
+> > + * Unicode Version: {unicodedata.unidata_version}
+> > + *
+> > +{textwrap.fill(
+> > +    f"This file contains a table with {table_description_detail}. " +
+> > +    f"To generate a table with {alt_description_detail} instead, run:",
+> > +    width=75, initial_indent=" * ", subsequent_indent=" * ")}
+> > + *
+> > + *   python {this_file}{alternative_mode}
 > 
-> You cast away const. Does the compiler not complain?
+> This should be python3. Or no 'python' at all -- I assume the script is
+> executable given "new file mode 100755".
 
-Nope.
+On my system, python == python3 since many years. I think it is safe.
 
-> > +	const struct ucs_interval16 *entry = element;
-> > +
-> > +	if (cp < entry->first)
-> > +		return -1;
-> > +	if (cp > entry->last)
-> > +		return 1;
-> > +	return 0;
-> > +}
-> > +
-> > +static int interval32_cmp(const void *key, const void *element)
-> >   {
-> >    u32 cp = *(u32 *)key;
-> 
-> Apparently not, given we do this for ages. I wonder why?
-
-Because we're not creating another pointer that could be used for 
-modifying the referenced memory.
-
-> Anyway:
-> 
 > Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 > 
 > -- 
