@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A1ECE571;
-	Wed, 16 Apr 2025 05:07:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B88A61F4722;
+	Wed, 16 Apr 2025 05:07:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744780055; cv=none; b=U6Ze4/Rd+cghxvuVr1N4HW5/ymVzHYFx3flACeQ+hN2h6xvQww0/WxlNwkqLcJa4Xlt4rVlQGRaPpl/e9/9fADfdKQZ5HI6VL3VHJXsyNA+pfJlEQeRbYzi+wIs09YVdpD6g29DJbi0qTAKaJ4/WmJGbc63PqINvTKS+bWx6eT8=
+	t=1744780077; cv=none; b=QaTfzdJ3J6CILS+4JggpwAQTQ2tZd+fqFnsT+/Mij00lIxD5panqcRfadA7NPmW3k7SmuJOR3CmUvHk8Nlfk/YWjB8NzY9etPEetn7lD++Hh8wKs0f1V361ZlZXuQEcZSrlytVIAsstRQgx1m2pGlBlI54MbuKTH5VSXaYZoO5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744780055; c=relaxed/simple;
-	bh=v0Ke97NLd2EdCzfAPDQIPX5lRbp99dtTBJxxAWaIXNE=;
+	s=arc-20240116; t=1744780077; c=relaxed/simple;
+	bh=kouUl/yivtcZr7G1zXGfOJW07T2XL/XRQrr0c1ymQp8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bEgRDaaUy6TUDCJb+mBqf3Oy2seV/vjvdYc9O/xkcWpu7Nz9Mnh4b7l/f8WEhiKHXtQvR7ce9O9RKX+lIjMjbTR8aMSQeAoKTaEp9uucX2XcO92WX2hbfDcH+GfyXtaY7Wlv7E1/4e8ZaOjY5RNgiGbThdDQlBba4I2o74ZIAZs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dl/1cHB/; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=QINykQEECCqQxqzBv1isNv0tIvSUr4N25xnGCRugEaGohtHG942n+D6oOZ9H5m5izO76Y8H+iu36Jv8QIuiEYu6fHBi8P3hyDVMGFJpW7UFaUTAM1toZzOH7Tg4PXx/zx/SRfNCtfou4k2JkS8grt6Y1OryW9asWOm0XrJEPp5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i1pxWgZE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dl/1cHB/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAC4AC4CEE2;
-	Wed, 16 Apr 2025 05:07:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i1pxWgZE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10ADCC4CEE2;
+	Wed, 16 Apr 2025 05:07:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744780055;
-	bh=v0Ke97NLd2EdCzfAPDQIPX5lRbp99dtTBJxxAWaIXNE=;
+	s=k20201202; t=1744780077;
+	bh=kouUl/yivtcZr7G1zXGfOJW07T2XL/XRQrr0c1ymQp8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=dl/1cHB/sMExolklHxraVcp2ji+vkbVlqEmsBnUz4XMZJQpHiw5HT3ukKFkliL4Rq
-	 /HRGEU6oROa+VZgMFFqJE3Z2Px84++Ywfwtd3703p8uwoAhUJ+7oLnW7LMjRAbofHb
-	 wbBY9FZyiK3Ozs3Kl0kZDdwzUmHY7tluwD/jdxLKYcUQHtQGhIpqbhiZR0EFYQ2dqu
-	 E/VpAbsSZIZRuLO1ospg4r9mQmQUwATvZB0uZxCi+5dVa7HgJI1POVAz100I+/6yQI
-	 xt1/JBICRQoO+TlBTvjhQ0qHlcMU5Mpn/BpoUZoUuZDjgw7Kt278j0aMRM3Tn1oKib
-	 V02vuNz4E4TSw==
-Message-ID: <22d819bf-a62f-4ce0-b970-486f28bb7de1@kernel.org>
-Date: Wed, 16 Apr 2025 07:07:32 +0200
+	b=i1pxWgZE6D2w68HwLnCcsbKYCPxclPoJr0AH8QBcIYs1vbX80AamQsqouTDMxmZCE
+	 HRzo3/xBiC+HA2BQqFgIGU/wnX5FuU08tQvNodUMCxxWGUk4mYQoDE2fXT8S3lDW2h
+	 YafItaXshiB/d+uk2HwJaF06s1o/FU84eobE+FQUau2olbJRobyOGTKqgI1gVyYOrJ
+	 YLu8YK7OoxKApHhwAg9oi8ENDR1kKzp1CWbWW2Y79RH21SNkkrL8rPBh8NXAcJccCZ
+	 MZsOy6SGmJti2jaRUi4IML5HrvucukX1f4WHh4lPLoaEs1qgz+hR9XWtB8h4QYsJR8
+	 GoroSwvjKMDIg==
+Message-ID: <a50b82fa-af1d-4a02-b21c-98d1ddabd804@kernel.org>
+Date: Wed, 16 Apr 2025 07:07:54 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,14 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 10/13] vt: pad double-width code points with a
- zero-width space
+Subject: Re: [PATCH v2 11/13] vt: remove zero-width-space handling from
+ conv_uni_to_pc()
 To: Nicolas Pitre <nico@fluxnic.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20250415192212.33949-1-nico@fluxnic.net>
- <20250415192212.33949-11-nico@fluxnic.net>
+ <20250415192212.33949-12-nico@fluxnic.net>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -87,20 +87,14 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250415192212.33949-11-nico@fluxnic.net>
+In-Reply-To: <20250415192212.33949-12-nico@fluxnic.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 15. 04. 25, 21:17, Nicolas Pitre wrote:
+On 15. 04. 25, 21:18, Nicolas Pitre wrote:
 > From: Nicolas Pitre <npitre@baylibre.com>
 > 
-> In the Unicode screen buffer, we follow double-width code points with a
-> space to maintain proper column alignment. This, however, creates
-> semantic problems when e.g. using cut and paste.
-> 
-> Let's use a better code point for the column padding's purpose i.e. a
-> zero-width space rather than a full space. This way the combination
-> remains with a width of 2.
+> This is now taken care of by ucs_is_zero_width().
 > 
 > Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 
