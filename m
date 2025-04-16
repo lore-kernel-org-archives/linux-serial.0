@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D3291F5425;
-	Wed, 16 Apr 2025 03:42:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 430AD15B543;
+	Wed, 16 Apr 2025 03:45:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744774969; cv=none; b=dIoBLZd7CfQ39sB8kgje4BUD7p7NvPQ7is1Yb2qHdZrGRQ2L0GFQwrXugFTEzkvyMEwYmmlnG+x5WJ/VCt7J7w3jbfGoKQRxCam0SXKhfxMLRPx1y81lSVYbx528XVpdGC5qRTk5+KlMo2xsOoYxJI2wvfwvvkYqnd/HNUCp5xE=
+	t=1744775145; cv=none; b=HzofuEpFm7RuevG9rZCq48PqPNwd1R1sVVBvMUakdtflo1+32A/0dy9wnU0kRVLzbaz98ySRlrYauRc2gWdn7kbthkndQPy8oZK9GWXzROE+1gqbD2kfsBZvp7WRf9H6LE8Nfh4+NgyX43idjQNZb2i6dFqjPsEsQ+8ygT7sHhk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744774969; c=relaxed/simple;
-	bh=HX5sZbiba4W5DtIhnwXjme6Bh05pj+vKXowHGeL9098=;
+	s=arc-20240116; t=1744775145; c=relaxed/simple;
+	bh=Q/SXGPp3w7zDxJbEJI7HKZTVU2NnaABXW4B/3EMpNkw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gvt+0dwuK/5BvHa53zIXC5v9rbxWskDBKCHGwK8OYOAwpm8z+sS/Rka5sYR1DvltYnr8sg7KMP0s09iakszUvZgY4D49gYqy8LPZFdb0+iNSf4fq3kxLawTXpLla70PvKEjmPaJkXr/n01wZrd8CeV6LO+2+IL6SigL419ymWwU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pIzV06yW; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=TvSLmGxUC7RAe+Xicn4jAzZrXwbxjFYkEGHtU14UakisyVD7QUGPnD3+BcYTQ1lf9zvIeV31XojRo2i/8szCSl4mHx2mEE1+BrrKnnCZ9lC+ehNW+4zNbywfukPsfGCfxdrAGyPdIO2ev5uBDWJ5QRcrObqPLc1ztgvsr3F9LLo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aCsXskQp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pIzV06yW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7518C4CEE2;
-	Wed, 16 Apr 2025 03:42:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aCsXskQp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A13F8C4CEE2;
+	Wed, 16 Apr 2025 03:45:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744774969;
-	bh=HX5sZbiba4W5DtIhnwXjme6Bh05pj+vKXowHGeL9098=;
+	s=k20201202; t=1744775144;
+	bh=Q/SXGPp3w7zDxJbEJI7HKZTVU2NnaABXW4B/3EMpNkw=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=pIzV06yW8I6G7ROapUp7vA774rN3yEtVUlbshuzZH4aIiHoaMlUVeG91V4eVf+fWI
-	 4Cdwqtb6sGmuMbBq4efOaEmolG1gw5TDqmRFVZBE+M1GHh8oOfOAjR6PEjzEMEYm0H
-	 YodnaO3nf1Chpe0RwEx06bixzCI9abC5/zFQMRzwAbP7APySWyNPxm/mAGEgRMj3ZA
-	 zn58d+iRz2geJiEDFIO0KtZfBoGcfzvPbDL7RROQ0OUNIoFPG8tZIlYuISaFYgAqjr
-	 NxMnRLAbtxhl0lmwiRKDwLoksN2nWphsgCt5jhlCNIz0FjazSg1Nw7Q1eH1SDqdyHm
-	 MaA3n1q88h8aw==
-Message-ID: <b97efc03-0d74-4ba4-aed0-efa98af2fdcd@kernel.org>
-Date: Wed, 16 Apr 2025 05:42:46 +0200
+	b=aCsXskQpnTkLRG9qwgu2ohYa6Y7IkCCCR7rUl6cVZnJjaNbe7j1aCkG7cl+4g2RcB
+	 vasi7Y84lIspTDm7QDYPgLLMwA9ljoQLwVfxGwrWufPXm2A/kg7YrpvLU+/OdaeOws
+	 NPPtiuecbe+QjgWqE8XnpGmB110JOpcwyh0PMUmFuN/ZFPCSiv2/QcUmKo5zk5wiev
+	 iicOS46VoqIjeKab1sykWkab9lgQltTAUwWTm1mwfZ808s4lV4z+nIxts8fGrCZaMt
+	 ZD0HTxdHgm5vTbk9SVdNSIaMp75lNbHHGB6GPfJ8/7sXLk3Jr5473ncuL6cZxdD+iP
+	 Qh/LMLxBCYezA==
+Message-ID: <a05950b2-8995-484f-8678-699584d30ffe@kernel.org>
+Date: Wed, 16 Apr 2025 05:45:41 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 02/13] vt: move unicode processing to a separate file
+Subject: Re: [PATCH v2 03/13] vt: properly support zero-width Unicode code
+ points
 To: Nicolas Pitre <nico@fluxnic.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20250415192212.33949-1-nico@fluxnic.net>
- <20250415192212.33949-3-nico@fluxnic.net>
+ <20250415192212.33949-4-nico@fluxnic.net>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -86,20 +87,36 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250415192212.33949-3-nico@fluxnic.net>
+In-Reply-To: <20250415192212.33949-4-nico@fluxnic.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 15. 04. 25, 21:17, Nicolas Pitre wrote:
 > From: Nicolas Pitre <npitre@baylibre.com>
 > 
-> This will make it easier to maintain. Also make it depend on
-> CONFIG_CONSOLE_TRANSLATIONS.
+> Zero-width Unicode code points are causing misalignment in vertically
+> aligned content, disrupting the visual layout. Let's handle zero-width
+> code points more intelligently.
+> 
+> Double-width code points are stored in the screen grid followed by a white
+> space code point to create the expected screen layout. When a double-width
+> code point is followed by a zero-width code point in the console incoming
+> bytestream (e.g., an emoji with a presentation selector) then we may
+> replace the white space padding by that zero-width code point instead of
+> dropping it. This maximize screen content information while preserving
+> proper layout.
+> 
+> If a zero-width code point is preceded by a single-width code point then
+> the above trick is not possible and such zero-width code point must
+> be dropped.
+> 
+> VS16 (Variation Selector 16, U+FE0F) is special as it doubles the width
+> of the preceding single-width code point. We handle that case by giving
+> VS16 a width of 1 when that happens.
 > 
 > Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
 
 -- 
 js
