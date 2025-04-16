@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D8B02DFA49;
-	Wed, 16 Apr 2025 04:14:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5E8915B543;
+	Wed, 16 Apr 2025 04:19:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744776857; cv=none; b=H2jl6CJwz2OVAV1sMg+gxNMdTM2cGpOuOGQUnAmMDxSgJbmSKKQytrhW1ZXPIJpxG6db/j4TNXkveTVas6fzKCCVLPjPyIvezOPMSsabf9aPHaAs4oYM1H//0ctQnwVC0WgAeKh6/hp7WE1eBaLNENI0kDtrnYFjNXvZOAsTpfY=
+	t=1744777185; cv=none; b=IC+et/UiZtw7VDaqfXD525cfBrxuReCeiH9rw2/axK714GwbqKio0zwdtOfdxd+/1uFB4mux+aSiOqCxNsEVdn7fcf2TECfkuKSdT/gYWvmtlxx8IjhcsujDwbfg3BQ8K4pX536e7llWsP17v9Y+JvOxg3amkb2NauT9505bT2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744776857; c=relaxed/simple;
-	bh=dakqHx2gTExz8UvtevaPHL9A3Y+5ssJc2gzSkDuxGJE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sIs9mci3sowxRWxNl6H+Hh6zfsCkmBbz8ht8N9b0b+7u0Z6tKIk1GuYbSDS0oMvDagkwbAORrAW24fCYYESQp7oloxagd7KNbdZP+dLowZvw8hSYz8SrmqNSKU3/rYVK0p+R3qvpo/nHbdF2+TJ55W/ytD1cljNy8f0hl9uVXIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qqA2qK8a; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744777185; c=relaxed/simple;
+	bh=dL0ftOeU+Gn5/pUNrn8WVxfUVIkFLu7EG/cVeRMczIM=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=q1bZMJkzWm61fr+2h+QpgCHCIdzpzaWzKHWWEp++PusSGiDBfYZPz0XjjLjeg28wIuoZVMANbGSlMsvcQ1a31GRi16Mt/mPmBGNS8wK61W5j4xB+adyw5btuWgmlOkBnmQSt+SSnt5DXvL331oFX64cbkAC33YkDwP1xBPjIrHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rtzmWNim; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qqA2qK8a"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE6DC4CEE2;
-	Wed, 16 Apr 2025 04:14:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rtzmWNim"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09B64C4CEE2;
+	Wed, 16 Apr 2025 04:19:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744776856;
-	bh=dakqHx2gTExz8UvtevaPHL9A3Y+5ssJc2gzSkDuxGJE=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=qqA2qK8aJJw0OCFRx2gGdTriowkrETTCBPhxg5vF8CN/VjP5eWbZF+rdmwdn1NXPV
-	 uaJ5UvNmi+79Kv3zThpnfahVrJ8Rm/D86qfhb9qX9BoMJ21Ah7J8+mf6CA/5H8KkEZ
-	 U9rM43u1xefIsQf+E4tkv6FZCfDoStWvDTkTsfIANzkJlPx1J5aWTrgNXdllscAxSg
-	 /Kg5tOjwzoayB8/grwNKDC3mVtVtMLvO7HE1I3Ss57qD8fAfECnqlDWwuMPGMEO6Cr
-	 E0MieNF9dGmx7+CdSn72uPLU9dL9CatPZMfHQzFOT8T0RkwuFw84dc5in34u0wz7hx
-	 Ey3HM7O2dJs9g==
-Message-ID: <11e8bb4a-24e0-4347-abea-e200a59a744b@kernel.org>
-Date: Wed, 16 Apr 2025 06:14:14 +0200
+	s=k20201202; t=1744777185;
+	bh=dL0ftOeU+Gn5/pUNrn8WVxfUVIkFLu7EG/cVeRMczIM=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+	b=rtzmWNim52T0Gjk0fCMUwQz6IXw2VXHGU+YW37NHZ7bTdDWdN0jK2m/ObScK+q2Yh
+	 LKw0q7xJKTHx/NFksdiMezDFC7mBo/pqe5caGHO2Jlr0tZU5NGuIQq6EIAQ9DwmN6k
+	 6Zu5AwuSNj2hZf3hanLdybweMWQA1lumczzCcQPNr1G1dFJ9rQIh+HaqbV94e//cXD
+	 nru81e5mL8rdxpzCRAxMBCnWOBbUiEhtLS8RD2mUQRQhKopDOLialr0iZHGN+6jcFf
+	 YKMrS0AQyBXBzhCvSqJwWZb8yPJ737r13VA+Eu7B2fPg40pL06PmQj0bcWKT4HNYZ1
+	 VxuosCn3Kv0Kg==
+Message-ID: <c3c20d22-4755-4335-a600-4966dd50ad7a@kernel.org>
+Date: Wed, 16 Apr 2025 06:19:42 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -37,14 +37,15 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2 04/13] vt: introduce gen_ucs_width_table.py to create
  ucs_width_table.h
+From: Jiri Slaby <jirislaby@kernel.org>
 To: Nicolas Pitre <nico@fluxnic.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20250415192212.33949-1-nico@fluxnic.net>
  <20250415192212.33949-5-nico@fluxnic.net>
+ <11e8bb4a-24e0-4347-abea-e200a59a744b@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -87,21 +88,32 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250415192212.33949-5-nico@fluxnic.net>
+In-Reply-To: <11e8bb4a-24e0-4347-abea-e200a59a744b@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 15. 04. 25, 21:17, Nicolas Pitre wrote:
-> From: Nicolas Pitre <npitre@baylibre.com>
+On 16. 04. 25, 6:14, Jiri Slaby wrote:
+> On 15. 04. 25, 21:17, Nicolas Pitre wrote:
+>> From: Nicolas Pitre <npitre@baylibre.com>
+>>
+>> The table in ucs.c is terribly out of date and incomplete. We also need a
+>> second table to store zero-width code points. Properly maintaining those
+>> tables manually is impossible. So here's a script to generate them.
+>>
+>> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 > 
-> The table in ucs.c is terribly out of date and incomplete. We also need a
-> second table to store zero-width code points. Properly maintaining those
-> tables manually is impossible. So here's a script to generate them.
-> 
-> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Actually, could you create a makefile rule for this too?
 
+Similar to what GENERATE_KEYMAP does in vt/Makefile.
+
+So that you would do:
+   make GENERATE_UCS_WIDTH_TABLE=1 drivers/tty/vt/
+to let the script generate it on the fly?
+
+thanks,
 -- 
 js
 suse labs
+
