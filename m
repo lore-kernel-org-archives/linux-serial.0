@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E555376026;
-	Wed, 16 Apr 2025 03:41:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D3291F5425;
+	Wed, 16 Apr 2025 03:42:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744774901; cv=none; b=VHNpuc9TbahMub8z+h4H0fxaA9T8ovmy1Mc05yhyoclVL5qem/3ECBzi63zyc6A9JgIQmqOeHY0J3xXMA/DZmlQwVZ0qAMipjGNfPbIDIlM++3GCbGe8Dsh9GQKuizJAh8Uq4qXWhV4apyE7+Vk7u2XHh8TVUP827842IA1f6cE=
+	t=1744774969; cv=none; b=dIoBLZd7CfQ39sB8kgje4BUD7p7NvPQ7is1Yb2qHdZrGRQ2L0GFQwrXugFTEzkvyMEwYmmlnG+x5WJ/VCt7J7w3jbfGoKQRxCam0SXKhfxMLRPx1y81lSVYbx528XVpdGC5qRTk5+KlMo2xsOoYxJI2wvfwvvkYqnd/HNUCp5xE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744774901; c=relaxed/simple;
-	bh=vQ4UJLlPUr+k/gTkOrKWORNK4iZkZ9Gg0yvT6/FWQuI=;
+	s=arc-20240116; t=1744774969; c=relaxed/simple;
+	bh=HX5sZbiba4W5DtIhnwXjme6Bh05pj+vKXowHGeL9098=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UTpQJb3t6bBuAWTaGDd/M1HWqVunaJ8+BQ8V1DvVK6PnDV+fseEp0ppz0GZnxdO0jT4bkCGs2+dGjeT/kwRFQNB2Uz9MKOvKv8VfUXnARoXcsPcORYGr7omjY+R/GnTQEb/PwbCjZwJ2V8uyS3mQo/fHRr01KBUxMe5e2iIowRU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rSbXtgNa; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=gvt+0dwuK/5BvHa53zIXC5v9rbxWskDBKCHGwK8OYOAwpm8z+sS/Rka5sYR1DvltYnr8sg7KMP0s09iakszUvZgY4D49gYqy8LPZFdb0+iNSf4fq3kxLawTXpLla70PvKEjmPaJkXr/n01wZrd8CeV6LO+2+IL6SigL419ymWwU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pIzV06yW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rSbXtgNa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350DFC4CEE2;
-	Wed, 16 Apr 2025 03:41:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pIzV06yW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7518C4CEE2;
+	Wed, 16 Apr 2025 03:42:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744774900;
-	bh=vQ4UJLlPUr+k/gTkOrKWORNK4iZkZ9Gg0yvT6/FWQuI=;
+	s=k20201202; t=1744774969;
+	bh=HX5sZbiba4W5DtIhnwXjme6Bh05pj+vKXowHGeL9098=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=rSbXtgNa8Chpud/Rwjvz1kqERvQiriAKk6vNDHJi0LuyswwInX21kntfSVn3imCEE
-	 io1165P5+XjLuNIuUoGITNlsyd3GKicM4r6Js60uHCymigQmGz1DhP2uqFntdumeS8
-	 O+vj/tP1URctI4FRaeRKjdWWICa1rXcrDPq2jQAyOa2o4WcGiKQGjNp6ykCtBh1eJs
-	 sg6n7uQuQmFGB0lpbY/6JH5/LlbcZzcTVimkYmFQMboIH1TjFUof8IS2c3ssg0bWJG
-	 oRm/eX9IldtfOiT/I9F+U9OeM+bcAUnPxI8oN7/9xJk9Eh8HbFg0+Byi25xf/7cxfF
-	 OC+cIUR8irTYw==
-Message-ID: <d96e7caa-179d-44c5-b868-0572694d3cff@kernel.org>
-Date: Wed, 16 Apr 2025 05:41:36 +0200
+	b=pIzV06yW8I6G7ROapUp7vA774rN3yEtVUlbshuzZH4aIiHoaMlUVeG91V4eVf+fWI
+	 4Cdwqtb6sGmuMbBq4efOaEmolG1gw5TDqmRFVZBE+M1GHh8oOfOAjR6PEjzEMEYm0H
+	 YodnaO3nf1Chpe0RwEx06bixzCI9abC5/zFQMRzwAbP7APySWyNPxm/mAGEgRMj3ZA
+	 zn58d+iRz2geJiEDFIO0KtZfBoGcfzvPbDL7RROQ0OUNIoFPG8tZIlYuISaFYgAqjr
+	 NxMnRLAbtxhl0lmwiRKDwLoksN2nWphsgCt5jhlCNIz0FjazSg1Nw7Q1eH1SDqdyHm
+	 MaA3n1q88h8aw==
+Message-ID: <b97efc03-0d74-4ba4-aed0-efa98af2fdcd@kernel.org>
+Date: Wed, 16 Apr 2025 05:42:46 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/13] vt: minor cleanup to vc_translate_unicode()
+Subject: Re: [PATCH v2 02/13] vt: move unicode processing to a separate file
 To: Nicolas Pitre <nico@fluxnic.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20250415192212.33949-1-nico@fluxnic.net>
- <20250415192212.33949-2-nico@fluxnic.net>
+ <20250415192212.33949-3-nico@fluxnic.net>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -86,14 +86,15 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250415192212.33949-2-nico@fluxnic.net>
+In-Reply-To: <20250415192212.33949-3-nico@fluxnic.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 15. 04. 25, 21:17, Nicolas Pitre wrote:
 > From: Nicolas Pitre <npitre@baylibre.com>
 > 
-> Make it clearer when a sequence is bad.
+> This will make it easier to maintain. Also make it depend on
+> CONFIG_CONSOLE_TRANSLATIONS.
 > 
 > Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 
