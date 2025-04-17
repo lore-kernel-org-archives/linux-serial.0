@@ -1,41 +1,33 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 894AA238C25;
-	Wed, 16 Apr 2025 22:49:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.22
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A1188836;
+	Thu, 17 Apr 2025 04:09:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744843778; cv=none; b=QVgHu99IH8HexIjtgkqf8jUpkHcWISz37ofXSSRCjNU7eSYo3LWzdc6/E1VmVjQvAVRoxsBoj8kPihTo7ujoiNbRaw46tJNXWcmhO3FQsYoH/w2Z2hspV0uoTfvC1dN+Vg5C6PsT1kbid8sbcQs+PqGUEBsLLVKtY7W90obe9Eo=
+	t=1744862984; cv=none; b=TEyto85T7tN6FBSXzz7JJJjkWxDLSZogUwN8ibk8YKje8jVpgUMoa7QVqyfrEsaexYzixvA13de3hx9Ci8j17vbV+Duu08WgCUXB1WvLXzZ+1vFvdZT1IghePM1UpwANJdeS2cKkWNuz97vx7YTxLewL1Yj1iF3fuKwaNYurVwU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744843778; c=relaxed/simple;
-	bh=zhARHuIhbLTyXHkW6CXECsYiL9+R0A5TAIw+AjmN5vs=;
+	s=arc-20240116; t=1744862984; c=relaxed/simple;
+	bh=wPB1YjpLTe9Hq0BQE6CSThcIxRhWIcGX0X4NQ1ZVxv8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ox7bvdfDaPbft/e05Rob5B8yAtGQkUWckDGdnKeLNnZ9uo9oYYfyIDhF9t2Sppa3kYXOq2sRr525spK2fyqVWnf4Hz+TsHCuiDMa8AbNkl1llPdqqnA6qBDi3ofUn44GPpJKWrdzkim5bfplNFqyTdU0Ylnoz0zX1hQnusPioco=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b=iG9QV8HT; arc=none smtp.client-ip=212.227.17.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	 In-Reply-To:Content-Type; b=P9FP615Mg6lQWjV/obraoCr6ehdSSX3G3idZLeGMcR2maVg+sv6C4MvYqzL/XfIg643kLPwvhcxtaqK4jFMXgsNBVXj2tsrlefCGb13xsnoVcR8HYXnf9JuCg15btAhEsC6bJO1oWtL/lU0M19Kg+2lbbizCN2Xvb4rgTpjvAYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=avS+Ldrl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=wahrenst@gmx.net header.b="iG9QV8HT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmx.net;
-	s=s31663417; t=1744843771; x=1745448571; i=wahrenst@gmx.net;
-	bh=zhARHuIhbLTyXHkW6CXECsYiL9+R0A5TAIw+AjmN5vs=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:cc:content-transfer-encoding:
-	 content-type:date:from:message-id:mime-version:reply-to:subject:
-	 to;
-	b=iG9QV8HTd3rUGkA48XDBauUafE5EH4g0rcbxil7U9wnhzDzxH0TGNSBox+tp6En5
-	 LQNCsudckMAssmXMdY+GbWkau3ClsQ6frrlo/sVn1OKpPdTKHKEmg1IXTej/ZzkuB
-	 XcMHt+vAJ9hzpG4UjUTBFdpzo2BAsJQLj0BcDvpidVy4h6JhKbEdASqJY7B9KQ5cL
-	 0CRcoEk99hQYxSSIL0aW3mlRULFxp30aFWiW8NjBiiZioKoLjrT67/Co11/rwuRsn
-	 qwjw5VQIq/dSMGs1oW9XktOSI7uIMekawXPHhsHX3wkXz1IL607xVRUbJ7mTAqpmo
-	 a5znv696IHb7emeb5A==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.1.107] ([37.4.251.153]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mzyuc-1v2Dq13NdW-00xVLq; Thu, 17
- Apr 2025 00:49:31 +0200
-Message-ID: <2d5c6d41-90ee-4f33-866f-a8454162e41a@gmx.net>
-Date: Thu, 17 Apr 2025 00:49:30 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="avS+Ldrl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF630C4CEE7;
+	Thu, 17 Apr 2025 04:09:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744862983;
+	bh=wPB1YjpLTe9Hq0BQE6CSThcIxRhWIcGX0X4NQ1ZVxv8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=avS+LdrlpM1W5XPR1RSZHNiTp4aq84S8yMt2llwM6TXK6mQvGHB7DC3cC8kWVoumK
+	 SlBYaA/QJByXumj/2q31yFLWxskHNhiTwUIlRnBsC/IreSg9qvHuYSzl4ENzBjcEpr
+	 RlyB9Ky3HZu6U+R2xVyh239cyIxzE/nwJTwTle/qzTqsKi1kRKOLewYAwNoyM+wDRq
+	 J5JkxepaKytauudyZyiOhA1Hl0ZmfQ98pCCEFgCTar4iFSXt6ZOmkKpHbubr1AIlu2
+	 yoJLTNNcqwOFnF7s8hVe29vdc7kL3S6glA8xMm0NgT/LG8c2/GuoR87zsZRv6ljRvw
+	 OWl8cUPlG2pNA==
+Message-ID: <1400217f-2eb8-4fc8-8581-ef16cd01938d@kernel.org>
+Date: Thu, 17 Apr 2025 06:09:41 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,145 +35,93 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: fsl_lpuart: imx93: Rare dataloss during DMA receive
-To: Sherry Sun <sherry.sun@nxp.com>, Peng Fan <peng.fan@nxp.com>,
- Frank Li <frank.li@nxp.com>, Joy Zou <joy.zou@nxp.com>
-Cc: "imx@lists.linux.dev" <imx@lists.linux.dev>,
- linux-serial <linux-serial@vger.kernel.org>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- Fabio Estevam <festevam@gmail.com>, Christoph Stoidner <c.stoidner@phytec.de>
-References: <a9263ccf-2873-46e4-8aee-25e0de89a611@gmx.net>
- <DB9PR04MB84299ACCDAFE6427B30699F592B42@DB9PR04MB8429.eurprd04.prod.outlook.com>
+Subject: Re: [PATCH v2 07/13] vt: introduce gen_ucs_recompose_table.py to
+ create ucs_recompose_table.h
+To: Nicolas Pitre <nico@fluxnic.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20250415192212.33949-1-nico@fluxnic.net>
+ <20250415192212.33949-8-nico@fluxnic.net>
+ <f39d8b9b-c160-40a3-80d0-62f880122f2b@kernel.org>
+ <7nr6809r-74n3-6noo-8qos-2o504r3849p3@syhkavp.arg>
 Content-Language: en-US
-From: Stefan Wahren <wahrenst@gmx.net>
-Autocrypt: addr=wahrenst@gmx.net; keydata=
- xjMEZ1dOJBYJKwYBBAHaRw8BAQdA7H2MMG3q8FV7kAPko5vOAeaa4UA1I0hMgga1j5iYTTvN
- IFN0ZWZhbiBXYWhyZW4gPHdhaHJlbnN0QGdteC5uZXQ+wo8EExYIADcWIQT3FXg+ApsOhPDN
- NNFuwvLLwiAwigUCZ1dOJAUJB4TOAAIbAwQLCQgHBRUICQoLBRYCAwEAAAoJEG7C8svCIDCK
- JQ4BAP4Y9uuHAxbAhHSQf6UZ+hl5BDznsZVBJvH8cZe2dSZ6AQCNgoc1Lxw1tvPscuC1Jd1C
- TZomrGfQI47OiiJ3vGktBc44BGdXTiQSCisGAQQBl1UBBQEBB0B5M0B2E2XxySUQhU6emMYx
- f5QR/BrEK0hs3bLT6Hb9WgMBCAfCfgQYFggAJhYhBPcVeD4Cmw6E8M000W7C8svCIDCKBQJn
- V04kBQkHhM4AAhsMAAoJEG7C8svCIDCKJxoA/i+kqD5bphZEucrJHw77ujnOQbiKY2rLb0pE
- aHMQoiECAQDVbj827W1Yai/0XEABIr8Ci6a+/qZ8Vz6MZzL5GJosAA==
-In-Reply-To: <DB9PR04MB84299ACCDAFE6427B30699F592B42@DB9PR04MB8429.eurprd04.prod.outlook.com>
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <7nr6809r-74n3-6noo-8qos-2o504r3849p3@syhkavp.arg>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:FjJumgb112Upp1kgY9X3tzPlFxJnmFPdBpwE9KWJw6Q4we6WhAy
- 9EXcTm4YxTp1JjwHBF1sVT+y/rjNvjhShXKra5j2DJk8l8mgsJJnBsYlKq8BdZ9JBkCm0Z9
- lF6tCxQs3gN6GqVrJkv6o4AZkOXWrNVknMohaxL/t+qAKDIDy6VqRZWfLCih8Zc3OkWgG0x
- HcQX53RsHklDieQVkJKsA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:E7J2OZxbYp0=;1mu8zmy9oXp9FTppcd+c/+bUlxa
- 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
+Content-Transfer-Encoding: 7bit
 
-Hi Sherry,
+On 16. 04. 25, 15:17, Nicolas Pitre wrote:
+> On Wed, 16 Apr 2025, Jiri Slaby wrote:
+> 
+>> On 15. 04. 25, 21:17, Nicolas Pitre wrote:
+>>> +/*
+>>> + * {out_file} - Unicode character recomposition
+>>> + *
+>>> + * Auto-generated by {this_file}{generation_mode}
+>>> + *
+>>> + * Unicode Version: {unicodedata.unidata_version}
+>>> + *
+>>> +{textwrap.fill(
+>>> +    f"This file contains a table with {table_description_detail}. " +
+>>> +    f"To generate a table with {alt_description_detail} instead, run:",
+>>> +    width=75, initial_indent=" * ", subsequent_indent=" * ")}
+>>> + *
+>>> + *   python {this_file}{alternative_mode}
+>>
+>> This should be python3. Or no 'python' at all -- I assume the script is
+>> executable given "new file mode 100755".
+> 
+> On my system, python == python3 since many years. I think it is safe.
 
-Am 09.04.25 um 11:51 schrieb Sherry Sun:
->
->> -----Original Message-----
->> From: Stefan Wahren <wahrenst@gmx.net>
->> Sent: Wednesday, April 9, 2025 4:19 PM
->> To: Sherry Sun <sherry.sun@nxp.com>; Peng Fan <peng.fan@nxp.com>;
->> Frank Li <frank.li@nxp.com>
->> Cc: imx@lists.linux.dev; linux-serial <linux-serial@vger.kernel.org>;
->> dmaengine@vger.kernel.org; Fabio Estevam <festevam@gmail.com>;
->> Christoph Stoidner <c.stoidner@phytec.de>
->> Subject: fsl_lpuart: imx93: Rare dataloss during DMA receive
->>
->> Hi,
->>
->> we have a custom i.MX93 board and on this board the i.MX93=C2=A0(A1 ste=
-pping) is
->> connected via LPUART3 to another MCU. Both processors communicate via a
->> small protocol (request/response are smaller than 16 bytes) at 115200 b=
-aud
->> (no parity, no hardware flow control). The i.MX93 is the initiator and =
-the other
->> MCU is the responder.
->>
->> So we noticed via logic analyzer that the i.MX93 sometimes doesn't rece=
-ive
->> the complete response (no framing issues). In our setup it usually take=
-s 1 or 2
->> minutes to reproduce this issue. Interestingly this issue is not reprod=
-ucible, if
->> we disable DMA and operate via IRQ.
->>
->> The issue is still reproducible, if we disable all other DMA channel ex=
-cept the
->> ones for LPUART3.
->>
->> We tested with Linux Mainline 6.14 and Linux NXP 6.6.23, in both cases =
-the
->> issue was also reproducible. We debugged the relevant drivers and notic=
-ed
->> that the UART detects (UARTSTAT has RX pin edge detected) the RX signal=
-, but
->> there is not reaction within the DMA driver.
->>
->> Is anyone at NXP aware of such an issue?
->> Do you have some suggestions to analyze this further?
-> We have not observed this issue in our internal testing, some debug sugg=
-estions from fsl-lpuart side. Perhaps Joy can give some suggestions from e=
-DMA side.
-> Please try with Linux Mainline 6.14.
-> 1. Can you please run "cat /proc/tty/driver/fsl-lpuart" and "cat /proc/i=
-nterrupt | grep serial" when issue observed? That may help to get more inf=
-o.
-> 2. Can you please check if the issue is still observed after enabling ha=
-rdware flow control?
-> 3. Can you please check if this is still observed if setting rx_watermar=
-k=3D1?
-> 4. Is there an easy way to reproduce this issue? Maybe we can give it a =
-try.
-thanks for your fast reply and the hints. Sorry for the noise, I figured=
-=20
-out that there was no dataloss. There was a bug in the test setup and a=20
-misunderstanding how thinks work :-(
+On many systems (incl. _all_ SUSE's):
+$ python
+bash: python: command not found
 
-Regards
->
-> Best Regards
-> Sherry
+The convention is to call python3 if you want py3 (the same as you do in 
+the script's shebang).
 
+-- 
+js
+suse labs
