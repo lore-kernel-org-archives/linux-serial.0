@@ -1,56 +1,56 @@
-Received: from fout-b5-smtp.messagingengine.com (fout-b5-smtp.messagingengine.com [202.12.124.148])
+Received: from fhigh-b4-smtp.messagingengine.com (fhigh-b4-smtp.messagingengine.com [202.12.124.155])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CABC2571C4;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 357AE2566FE;
 	Thu, 17 Apr 2025 18:49:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.148
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.155
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744915753; cv=none; b=N4xBEa6+py/zrIfZo5AmTSEgPfDp9fRnQwM3jTSoKibyvPYy+qhMLlcWsGqes7UkdFktcj5zgxK5yb4RekN00yiJ5lY/aMXNClbT14Ukk/O6nTg9FtWVrwIwZiCe5ouxT+zN/TUzxIBDrPH3MisOcciCnupz/zyESTmK+p/Z3A4=
+	t=1744915754; cv=none; b=ZUv1PLDw9nWIFCKx1ByDbM3GngSGWzC1HEq4sePHCqychlACqCe45Mw9quCLqx9SovM4+W1hj5uvT8Jy5E67pmG7sIhWagRBtfLRdR2kR5KtpK5pS827NsieoGKGxyHtvE0Jtu598X0MESR87Tufduixe5xoh382tKs20LJ3bY0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744915753; c=relaxed/simple;
-	bh=Z9PSCSDOhSboXawTl/XaHB3xvDikfyVQPCnos/5YTFM=;
+	s=arc-20240116; t=1744915754; c=relaxed/simple;
+	bh=azSeZh6pGjwVNUQ0XFxqbK4BRPqes2S8OJZmPp5wogo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LbhCPUNAmSrvT4PWNsL0Krqm8j1ec8+/0GytaqVjrazEEgR/5g+A6rduy3AGIDMIF/R/sBIWq19MrP4WYVdn2gGeicBcJ5tWzj+tSeGM97VFgouqKXVzHgZXShUquTMNfl+vAvNPkVxqCTwQ7F11iDvJMgHMeVavGONdKyLSr8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=XkYRjebd; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=mwjKAj5m; arc=none smtp.client-ip=202.12.124.148
+	 MIME-Version; b=A4/0Gqi8KxbmKGbwJmZk/Gnypo/Z1C7HaWpjsIVk+dsPTK7ObBosUb3wTVsKRQ4f0A6JJ+yFU3iGPmWrE2OgbFHi9s9wVS0l4dl6FFEMHcGFvjEX8O51I14WrEBwvFrgM9Rk14vqe5dyFnhtRlJqzcFKIXLJBUbo3HtdxI20a7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=bQvl0Kfk; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=NXUb2F/U; arc=none smtp.client-ip=202.12.124.155
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="XkYRjebd";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="mwjKAj5m"
-Received: from phl-compute-06.internal (phl-compute-06.phl.internal [10.202.2.46])
-	by mailfout.stl.internal (Postfix) with ESMTP id 74DE5114011C;
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="bQvl0Kfk";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="NXUb2F/U"
+Received: from phl-compute-01.internal (phl-compute-01.phl.internal [10.202.2.41])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 1F88B254015A;
 	Thu, 17 Apr 2025 14:49:09 -0400 (EDT)
-Received: from phl-frontend-02 ([10.202.2.161])
-  by phl-compute-06.internal (MEProxy); Thu, 17 Apr 2025 14:49:09 -0400
+Received: from phl-frontend-01 ([10.202.2.160])
+  by phl-compute-01.internal (MEProxy); Thu, 17 Apr 2025 14:49:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
 	cc:cc:content-transfer-encoding:content-type:date:date:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm2; t=1744915749; x=
-	1745002149; bh=4lKdPBwhtL8GBmmzd2oORR2sO3eJQrQmsD2jhAJOypQ=; b=X
-	kYRjebd558+bupJqqLP997QRJ1rlu3lP5H0AwQ9CIxcadLFqmuooxh8yVbx/couU
-	8cIiuu8CWuuTeRfqOmV3JWk5gNayClr3zk3gTSBZCBHDEK7XkgfUZnhz7IpBySFG
-	F18tDgtJWHuj2SnhpQXCRVx9Lvznl2VBC1s/G7rj5a+i6fQsywI2LJoLS6otnpee
-	2064SeV5DeGzNonVXuhNTye3a1hCcmoQ5zPQZvW5OOv6fguXUiIvF5FqImgRFj63
-	ngzaweSna8lF3fqT3NR1qBv0O+Fv66DxMShsqOhOBP/h+DVdN5xOALSfrlfW2TIc
-	kFzZAo6bay0B5qBSwBnOQ==
+	:reply-to:subject:subject:to:to; s=fm2; t=1744915748; x=
+	1745002148; bh=99nVY6bnkGnbESwgNeAFXn5H5Vcb38/1+1jeQ+ArvBQ=; b=b
+	Qvl0KfkbVH92hvrnwMr9hzDYp9VUOlFpcDna0Nsd1H4zisc3ZOggG/YjUv0wNspK
+	FchtEjg3ScsUOFfnf1LNufBAo0MgZH+wvbXB9nAnm320LjxJFt54HSWhlFr/VKTu
+	ylnQKJwASypmOQRZk4Fnh3bG6swSUxpSbjGB8FU6HLL8oFTVbG0yf2sQOMMo8Ygo
+	Mk4QYcInk+MLqyvoGqLtm51vwg+vE7gqjRf9R35uVg2BPDBuDorrc+qGKrrcqxfL
+	onw/XmBsYELm4yQGsRLm7lN1sl3O99QZaqZB4eb6yUAhwEduXCFwx+TJJXkMietg
+	GdoreKRstwTOA7GEe0KYg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm2; t=1744915749; x=1745002149; bh=4
-	lKdPBwhtL8GBmmzd2oORR2sO3eJQrQmsD2jhAJOypQ=; b=mwjKAj5m9pw0yTymV
-	a7z7wAgSgullHdV7fZBGuSYPrfu22TJT2ii6++yY0KC1D/nHuisRIJQNRh2VzOm1
-	+tKv3/Nd/1mla47wf6v+elspQhARlcxDS05jfN9z8W3cjNO9K90WCmuAITGM4xvG
-	M3l+F5RYg09KwOaeqibrGSZsFbcm8dXd4v9/avJRt6+eb1iDpju+YHjgLdZ3Ejbb
-	PptKd7LwzoM+8aKKxjylnLG+b5NoAFytd8/q3ogGtUtYVowacGiJ7xj4KhsWlgJo
-	a+Pc2ecf7lVEyskjUbYIRF1ul2s/nD/RmqkbLrKZWfAQBwQS88I61v8QaVyhHZXs
-	D+Oew==
-X-ME-Sender: <xms:JU0BaDzV0tVYVtKIaLj2XOKmQ6kRcNdDTJcQXzk0cn-zIB0Etdj9Pg>
-    <xme:JU0BaLTOnlnf5T1UDG7qsi9oaBsG0sOUrWT4yr-RH3AvnohlfdBqVAsrNXafuaEdf
-    lwdoQA2ClLHIeBaZRY>
-X-ME-Received: <xmr:JU0BaNUSpHMlVI1sxXzjqNbw7tkYGudhKHzVE8hzpsIsoP0GImiLsf9FI0xiyyZLztJa2p-CMZJx-88uDRnRf03lh19HhDXnX8hPKN1DFjrZ7mWmSg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvfedttdefucetufdoteggodetrf
+	:x-me-sender:x-sasl-enc; s=fm2; t=1744915748; x=1745002148; bh=9
+	9nVY6bnkGnbESwgNeAFXn5H5Vcb38/1+1jeQ+ArvBQ=; b=NXUb2F/UjMf+DPU5b
+	dueMjkdHa6wNtaRSBYfl2ks3CpDR491micV/Vx9K0S5VypEgD3qbB4oaRJbkCdNd
+	aVpF6dTPjaozOc32BRFV7P6rgQzk8qy/McmIjZQBL94hxAhHxmuKtJ46RbRZbyB7
+	9TUn9PEjRBNr28kajHAYJXkgaanDVzqx8aMl4FDFwy5WhQP2iCeLw0nGqPA7o7um
+	7wPLUhFrFxEmvY/HnxuV5Gv7D6GtrJ2TUj8S4RHzLYUod8ReXDW8f8hokYXKa8Bs
+	whVJB7QgnZqhyysVHJ50DTMVu5akAj89jCcOcYukVyW/ccwgGa7cglLbMBxgdNAX
+	W6u2g==
+X-ME-Sender: <xms:JE0BaFaDhUsarI1oF-yRYzl-bL59CVXSHV_NYHSc5kb-TwUfQlsnGg>
+    <xme:JE0BaMZLFgs4zX7y0Lzg4ZdrPQzvRP6DYCinemor08ALRJuuz0SkYM2rdskgVMy37
+    Cr8SEMebq6uc7LsZwQ>
+X-ME-Received: <xmr:JE0BaH9_ekZzkqz8HtQjN37SOEWYx9ir2AaMLlG6S49AAFoq1AigrnVVaPonS4OTrlSnw4dAQBgJaZbGvh0PjZ00U3GIEiciuMMyA-WGImpXync4wg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvfedttddvucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
     pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
     gvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhgggfestdekredtredt
@@ -64,26 +64,26 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvfedttdefucetufdote
     hgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdho
     rhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrd
     horhhg
-X-ME-Proxy: <xmx:JU0BaNjOBv3mmWYsJCqanR5WBZK2H10Fgk4tVbkkGGek4GY1TzPn_w>
-    <xmx:JU0BaFDmHxUE5xhljkyiDjyKsiwOxYvH6ftctR7upeF0hbwhMTyMsA>
-    <xmx:JU0BaGKMJ9pOUFRNViJmD_vHWitI0GxMChk6ENBcdQhz272DYW-Bsw>
-    <xmx:JU0BaEBj7EP6WAhcHVMnc9eR-uT5pgfHYWguVpQz7y0OqnbrBNxEYw>
-    <xmx:JU0BaKwORgQHbxWJSnmF1r3A6e56TbjyaMa1AtPOnkbK46hp_wcAx7PK>
+X-ME-Proxy: <xmx:JE0BaDrPqwCuDsuC3tdIPxQISgkzdR5IrBB6nc7tK5qLCCJAZuP4Kg>
+    <xmx:JE0BaAocETdIRrvH_zTylia1DzRie85Vf2rCgLpOUdiwrPLV7osCrQ>
+    <xmx:JE0BaJSImNcB8w7AsnBPo6Z6oysw6M6z_1E1NY73dFdZhgkVS1Qp0w>
+    <xmx:JE0BaIqwtImqHTVQ-3hwWW3TD2G5hKJaB5hTIoSZc3rt2_RzDjXEAQ>
+    <xmx:JE0BaN6NqKaW6t-pQMVUi1O01ubwbGTCUJeV0tu8SjYMMrB8wa_IvYma>
 Feedback-ID: i58514971:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 17 Apr 2025 14:49:09 -0400 (EDT)
+ 17 Apr 2025 14:49:08 -0400 (EDT)
 Received: from xanadu.lan (OpenWrt.lan [192.168.1.1])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id 6522E11443DC;
-	Thu, 17 Apr 2025 14:49:08 -0400 (EDT)
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id F0F7511443D5;
+	Thu, 17 Apr 2025 14:49:07 -0400 (EDT)
 From: Nicolas Pitre <nico@fluxnic.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 14/14] vt: move UCS tables to the "shipped" form
-Date: Thu, 17 Apr 2025 14:45:16 -0400
-Message-ID: <20250417184849.475581-15-nico@fluxnic.net>
+Subject: [PATCH v3 10/14] vt: pad double-width code points with a zero-width space
+Date: Thu, 17 Apr 2025 14:45:12 -0400
+Message-ID: <20250417184849.475581-11-nico@fluxnic.net>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250417184849.475581-1-nico@fluxnic.net>
 References: <20250417184849.475581-1-nico@fluxnic.net>
@@ -97,167 +97,56 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolas Pitre <npitre@baylibre.com>
 
-Use the "shipped" mechanism to copy pre-generated tables to the build
-tree by default. If GENERATE_UCS_TABLES=1 then they are generated at
-build time instead. If GENERATE_UCS_TABLES=2 then
-gen_ucs_recompose_table.py is invoked with --full.
+In the Unicode screen buffer, we follow double-width code points with a
+space to maintain proper column alignment. This, however, creates
+semantic problems when e.g. using cut and paste.
+
+Let's use a better code point for the column padding's purpose i.e. a
+zero-width space rather than a full space. This way the combination
+retains a width of 2.
 
 Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
-Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 ---
- drivers/tty/vt/Makefile                       | 27 ++++++++++++++++++-
- drivers/tty/vt/gen_ucs_recompose_table.py     | 10 ++++---
- drivers/tty/vt/gen_ucs_width_table.py         | 18 +++++++++----
- ..._table.h => ucs_recompose_table.h_shipped} |  0
- ...idth_table.h => ucs_width_table.h_shipped} |  0
- 5 files changed, 45 insertions(+), 10 deletions(-)
- rename drivers/tty/vt/{ucs_recompose_table.h => ucs_recompose_table.h_shipped} (100%)
- rename drivers/tty/vt/{ucs_width_table.h => ucs_width_table.h_shipped} (100%)
+ drivers/tty/vt/vt.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/vt/Makefile b/drivers/tty/vt/Makefile
-index e24c8546ac..8ba33cc942 100644
---- a/drivers/tty/vt/Makefile
-+++ b/drivers/tty/vt/Makefile
-@@ -11,7 +11,8 @@ obj-$(CONFIG_CONSOLE_TRANSLATIONS)	+= consolemap.o consolemap_deftbl.o \
- 					   ucs.o
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 76554c2040..1bd1878094 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -2923,6 +2923,7 @@ static void vc_con_rewind(struct vc_data *vc)
+ 	vc->vc_need_wrap = 0;
+ }
  
- # Files generated that shall be removed upon make clean
--clean-files := consolemap_deftbl.c defkeymap.c
-+clean-files :=	consolemap_deftbl.c defkeymap.c \
-+		ucs_width_table.h ucs_recompose_table.h
++#define UCS_ZWS		0x200b	/* Zero Width Space */
+ #define UCS_VS16	0xfe0f	/* Variation Selector 16 */
  
- hostprogs += conmakehash
+ static int vc_process_ucs(struct vc_data *vc, int *c, int *tc)
+@@ -2941,8 +2942,8 @@ static int vc_process_ucs(struct vc_data *vc, int *c, int *tc)
+ 		/*
+ 		 * Let's merge this zero-width code point with the preceding
+ 		 * double-width code point by replacing the existing
+-		 * whitespace padding. To do so we rewind one column and
+-		 * pretend this has a width of 1.
++		 * zero-width space padding. To do so we rewind one column
++		 * and pretend this has a width of 1.
+ 		 * We give the legacy display the same initial space padding.
+ 		 */
+ 		vc_con_rewind(vc);
+@@ -3065,7 +3066,11 @@ static int vc_con_write_normal(struct vc_data *vc, int tc, int c,
+ 		tc = conv_uni_to_pc(vc, ' ');
+ 		if (tc < 0)
+ 			tc = ' ';
+-		next_c = ' ';
++		/*
++		 * Store a zero-width space in the Unicode screen given that
++		 * the previous code point is semantically double width.
++		 */
++		next_c = UCS_ZWS;
+ 	}
  
-@@ -34,3 +35,27 @@ $(obj)/defkeymap.c: $(obj)/%.c: $(src)/%.map
- 	loadkeys --mktable --unicode $< > $@
- 
- endif
-+
-+$(obj)/ucs.o: $(src)/ucs.c $(obj)/ucs_width_table.h $(obj)/ucs_recompose_table.h
-+
-+# You may uncomment one of those to have the UCS tables be regenerated
-+# during the build process. By default the _shipped versions are used.
-+#
-+#GENERATE_UCS_TABLES := 1
-+#GENERATE_UCS_TABLES := 2  # invokes gen_ucs_recompose_table.py with --full
-+
-+ifdef GENERATE_UCS_TABLES
-+
-+$(obj)/ucs_width_table.h: $(src)/gen_ucs_width_table.py
-+	$(PYTHON3) $< -o $@
-+
-+ifeq ($(GENERATE_UCS_TABLES),2)
-+gen_recomp_arg := --full
-+else
-+gen_recomp_arg :=
-+endif
-+
-+$(obj)/ucs_recompose_table.h: $(src)/gen_ucs_recompose_table.py
-+	$(PYTHON3) $< -o $@ $(gen_recomp_arg)
-+
-+endif
-diff --git a/drivers/tty/vt/gen_ucs_recompose_table.py b/drivers/tty/vt/gen_ucs_recompose_table.py
-index d30f8f5242..4434a436ac 100755
---- a/drivers/tty/vt/gen_ucs_recompose_table.py
-+++ b/drivers/tty/vt/gen_ucs_recompose_table.py
-@@ -19,8 +19,8 @@ import textwrap
- from pathlib import Path
- this_file = Path(__file__).name
- 
--# Output file name
--out_file = "ucs_recompose_table.h"
-+# Default output file name
-+DEFAULT_OUT_FILE = "ucs_recompose_table.h"
- 
- common_recompose_description = "most commonly used Latin, Greek, and Cyrillic recomposition pairs only"
- COMMON_RECOMPOSITION_PAIRS = [
-@@ -165,7 +165,7 @@ def validate_common_pairs(full_list):
-             print(error_msg)
-             raise ValueError(error_msg)
- 
--def generate_recomposition_table(use_full_list=False):
-+def generate_recomposition_table(use_full_list=False, out_file=DEFAULT_OUT_FILE):
-     """Generate the recomposition C table."""
- 
-     # Collect all recomposition pairs for validation
-@@ -250,6 +250,8 @@ if __name__ == "__main__":
-     parser = argparse.ArgumentParser(description="Generate Unicode recomposition table")
-     parser.add_argument("--full", action="store_true",
-                         help="Generate a full recomposition table (default: common pairs only)")
-+    parser.add_argument("-o", "--output", dest="output_file", default=DEFAULT_OUT_FILE,
-+                        help=f"Output file name (default: {DEFAULT_OUT_FILE})")
-     args = parser.parse_args()
- 
--    generate_recomposition_table(use_full_list=args.full)
-+    generate_recomposition_table(use_full_list=args.full, out_file=args.output_file)
-diff --git a/drivers/tty/vt/gen_ucs_width_table.py b/drivers/tty/vt/gen_ucs_width_table.py
-index 059ed9a8ba..76e80ebeff 100755
---- a/drivers/tty/vt/gen_ucs_width_table.py
-+++ b/drivers/tty/vt/gen_ucs_width_table.py
-@@ -5,13 +5,14 @@
- 
- import unicodedata
- import sys
-+import argparse
- 
- # This script's file name
- from pathlib import Path
- this_file = Path(__file__).name
- 
--# Output file name
--out_file = "ucs_width_table.h"
-+# Default output file name
-+DEFAULT_OUT_FILE = "ucs_width_table.h"
- 
- # --- Global Constants for Width Assignments ---
- 
-@@ -185,13 +186,14 @@ def create_width_tables():
- 
-     return zero_width_ranges, double_width_ranges
- 
--def write_tables(zero_width_ranges, double_width_ranges):
-+def write_tables(zero_width_ranges, double_width_ranges, out_file=DEFAULT_OUT_FILE):
-     """
-     Write the generated tables to C header file.
- 
-     Args:
-         zero_width_ranges: List of (start, end) ranges for zero-width characters
-         double_width_ranges: List of (start, end) ranges for double-width characters
-+        out_file: Output file name (default: DEFAULT_OUT_FILE)
-     """
- 
-     # Function to split ranges into BMP (16-bit) and non-BMP (above 16-bit)
-@@ -286,14 +288,20 @@ static const struct ucs_interval32 ucs_double_width_non_bmp_ranges[] = {
-         f.write("};\n")
- 
- if __name__ == "__main__":
-+    # Parse command line arguments
-+    parser = argparse.ArgumentParser(description="Generate Unicode width tables")
-+    parser.add_argument("-o", "--output", dest="output_file", default=DEFAULT_OUT_FILE,
-+                        help=f"Output file name (default: {DEFAULT_OUT_FILE})")
-+    args = parser.parse_args()
-+
-     # Write tables to header file
-     zero_width_ranges, double_width_ranges = create_width_tables()
--    write_tables(zero_width_ranges, double_width_ranges)
-+    write_tables(zero_width_ranges, double_width_ranges, out_file=args.output_file)
- 
-     # Print summary
-     zero_width_count = sum(end - start + 1 for start, end in zero_width_ranges)
-     double_width_count = sum(end - start + 1 for start, end in double_width_ranges)
--    print(f"Generated {out_file} with:")
-+    print(f"Generated {args.output_file} with:")
-     print(f"- {len(zero_width_ranges)} zero-width ranges covering ~{zero_width_count} code points")
-     print(f"- {len(double_width_ranges)} double-width ranges covering ~{double_width_count} code points")
-     print(f"- Unicode Version: {unicodedata.unidata_version}")
-diff --git a/drivers/tty/vt/ucs_recompose_table.h b/drivers/tty/vt/ucs_recompose_table.h_shipped
-similarity index 100%
-rename from drivers/tty/vt/ucs_recompose_table.h
-rename to drivers/tty/vt/ucs_recompose_table.h_shipped
-diff --git a/drivers/tty/vt/ucs_width_table.h b/drivers/tty/vt/ucs_width_table.h_shipped
-similarity index 100%
-rename from drivers/tty/vt/ucs_width_table.h
-rename to drivers/tty/vt/ucs_width_table.h_shipped
+ out:
 -- 
 2.49.0
 
