@@ -1,136 +1,152 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EAD42857EF
-	for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2025 14:26:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFC5313C3F6;
+	Tue, 22 Apr 2025 17:07:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745332015; cv=none; b=HfKwWe/LOtMCQaOTcOrjJXWpwDmjKR8+EJ3jxMnenc5bKlR1dpgxgOrxB30hnxpgaDXRe3T3uiA4fIYedwCAqC9QIHCVnmYeB33Mk3S+ihfqQgBK2W4wVdD3ZuJHOb9956kNdQcBJOlGEiQjdIJBL5KUKoTmH00JJePU36sFVAc=
+	t=1745341664; cv=none; b=Gi9YErjWwCiZdpBB3hx1aVkoFOaPqZSm58iWoCmR3eyCUTIR0BexSnldPEZrRd4bIvRjegpT45I+52yLCvl85XW8+9WZrY98cZWkGD7n3xoApXHn04aSM1b3HKXcbLdcZpql8c7rR+oYFn9aroq0uhJUaY3WuXsbex8CWogjgzk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745332015; c=relaxed/simple;
-	bh=2nuL24sxykMJ7Rms6bRBYY6C+lB4kirIqrm1dYwAlII=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=dkUPzylhtDB8osmzFqACVK3AtUjjSRtJh0pdQYxqPpoR+tHESkUNjUHqxgGGQi7+dYHCV+7EeksPxZNsE8/cqiZ57n2ZB2STuATI4AJoz7U9zc5SG2FAA1cyJbsi9xGOCqTkXp2KhMsa4Z3Ho/O+tvW/Uronrs6O2CLmT1hqWG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=vClEnKbT; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1745341664; c=relaxed/simple;
+	bh=wP2HHciPUmMSwT9dbn/j099qBVn4wnF7b816IwB20Wk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=BJa2rfRSOeTvw70pcImoN0Jma6wnzSvus3edf/VhIz6hwQ3oKNmaiqYbYSzY7po4uJCvseQIf+sT14wMU73XRmJbaiAnpCtqnWQpOhZzjftSHip4gvE/jgPudW8rNGTzs0lidLFxi0P4WUFU69588MRU+Kg+FehGLm8cTvV+HhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=jEZ+8Lj6; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vClEnKbT"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-39ee651e419so2995551f8f.3
-        for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2025 07:26:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1745332010; x=1745936810; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:date:message-id:subject
-         :references:in-reply-to:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6/8FBWOKis/5gAhZl+kumNEFhsuTOTp0Tn1yNZmhUVg=;
-        b=vClEnKbTuUX/Tn/89pK2/LS9DFgehutKCQZ0xekC+37DFEKSWAP+bzxp/c5GAm0adb
-         6RkIBd8ksYkgFcR69ttGRQ6b+W+QyTRhdXi9nmFX54fCPcrsS1qOI79YriwPuhad3UR2
-         WQ3Wnd3geyPJUbt6++CcE9Zuax9mSBurXLPlq2ITHR84kzbcH7AHVzizepSNjjmu05UW
-         vnQgpYZsMZKtNLsbDybDIdUe/msQZVowaXqru1tOXWcQoz2ugKF9P1xNtzc8zGn7Tt8f
-         nmRPFh4k6qZ1m9Mz2rL134DMDXsMZ0aQFMHFB2fMVcebMLUbIM6OlQmHoVucaOFKNiTm
-         52aA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745332010; x=1745936810;
-        h=content-transfer-encoding:mime-version:date:message-id:subject
-         :references:in-reply-to:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=6/8FBWOKis/5gAhZl+kumNEFhsuTOTp0Tn1yNZmhUVg=;
-        b=Q7cnnT+REhcQAT8ArgkXwizwbHwk37T2wS3zbmtyde8XFwPlDWtafEPXgSwWpLfAAq
-         H6SrJsga3JF7oUHzijlYPDpYScKKBWhFhCrzn2VXDh65klObPVznCbR+33XdR/op0wNM
-         eS+nrR4I0ofVXvaAYTKACFNdgB+wYLfPMHGthENbfA2i09yHNQdsik7yLuaIw2hlAdH7
-         N3k4Ej/u2+XXF9JtpmOy9NGRnRVQ7iOzZ6VYBwaLoTdjPEA9odb9LtJwi9T8klgSpggT
-         flaF0B5Vo9ropgfSNIuhYUzj8e1GOZ9tykC8DntTJS4z3tLkmhmuZtj1x8OBOs5d59NN
-         IiXA==
-X-Forwarded-Encrypted: i=1; AJvYcCXrdirPjDJ8FvJ0iauGlEOYetpsnG5CeQjNq4VjL6oe5nrajUdHNOeQxtHGS5QOlO2lHIekzE5/uozCRtg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyLV5ovJq5SUQqq5yeR29GtXF+3tZ1o0jM2CePcWFsrtbskxi/2
-	kc0B+lJxHDrxeGe1Spo0fQX04SjsUO8Q4HmuMWngZ1XRAr1qHx+cWF1VOfTNetc=
-X-Gm-Gg: ASbGncvp+TD9HdI1Be3J+lcTUfLAdy9gBpPvu7OJfVfkpFTvVn68TCIGgr9UeJ6kyJt
-	sympBVMD+sPDw+c9x876xLfW8zXOs5UFZWssAfPOqaZLc3yNlLCz9/qmgNTuWPt463E4VIK9W8C
-	ZNx6dxssksP8wy0mcm5ZxDxVZdpltlhID9mr5pALke73ecEhLUl4OOk289+1MJSOXjvJMz0enLy
-	Tz05xEP+2EgFB9xQyEnH5Iyfsara833lLoYdz9LezlzJDAjcDxKS8yrhOdwsexymjBRJIsP2pEU
-	8SchnwGXbjbCUvlTZdHanxwZ+wEUW2zcrC/wSk+Nbbv82tEkIctFwhrWiQl6aQ==
-X-Google-Smtp-Source: AGHT+IErweWrqcRE3OUYv1Tr/uF6zeqr9g8jYjpvjE6dgePIWhMhbjuHUYd714wO1Cy0fgJwbMEbXQ==
-X-Received: by 2002:a05:6000:4308:b0:39f:f5f:5373 with SMTP id ffacd0b85a97d-39f0f5f53c0mr3774129f8f.57.1745332010416;
-        Tue, 22 Apr 2025 07:26:50 -0700 (PDT)
-Received: from arrakeen.starnux.net ([2a01:e0a:3d9:2080:8261:5fff:fe11:bdda])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-39efa4207dbsm15318011f8f.4.2025.04.22.07.26.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Apr 2025 07:26:50 -0700 (PDT)
-From: Neil Armstrong <neil.armstrong@linaro.org>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>, 
- Jerome Brunet <jbrunet@baylibre.com>, Kevin Hilman <khilman@baylibre.com>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Xianwei Zhao <xianwei.zhao@amlogic.com>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-amlogic@lists.infradead.org
-In-Reply-To: <20250317-s6-s7-basic-v1-0-d653384e41f3@amlogic.com>
-References: <20250317-s6-s7-basic-v1-0-d653384e41f3@amlogic.com>
-Subject: Re: (subset) [PATCH 0/7] Baisc devicetree support for Amlogic S6
- S7 and S7D
-Message-Id: <174533200972.67056.15609256008080950446.b4-ty@linaro.org>
-Date: Tue, 22 Apr 2025 16:26:49 +0200
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="jEZ+8Lj6"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53MCF4iH023288;
+	Tue, 22 Apr 2025 17:07:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	UxGbEsZ+4E8+fRBWB7/h7y9QN0FggykMGW/XC4EIPhY=; b=jEZ+8Lj6vmtgSKBa
+	Po/Q3MCmIHLU3cO0SVOzLwGhchb6B8orJtwXzVS23NMPr0Zunhg176zP9UE6qFTD
+	7Sd237PCseUfKIVirCvkavT8XGojrIMnOuaMu5z6Q6S72QTUni2nRfFkv5RrPL60
+	PQhrlsQbKqmKPtKGOflfWpZ3UupAMwB0OmW0eMyrklo4TIWnahiuPGQyryN7WxCX
+	BGvG+8IgoOj51iDDEpDytsddjnJwGAon1wn3ZMLK4f6s1/V7b9sRiSFfJrGQvyrm
+	S2Tw1AxUBkGYm7OaAkQrBukNzplGcXO3U6TStRRLOMlijGblrdfSkn0rlbS6+8Bu
+	2AScZA==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4642svgg8k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 22 Apr 2025 17:07:36 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 53MH7ZDY028289
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 22 Apr 2025 17:07:35 GMT
+Received: from [10.216.54.177] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 22 Apr
+ 2025 10:07:29 -0700
+Message-ID: <e6e1ee6d-a12f-4e18-b2d7-65d1ccca5308@quicinc.com>
+Date: Tue, 22 Apr 2025 22:37:25 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.14.2
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/9] opp: add new helper API dev_pm_opp_set_level()
+To: Viresh Kumar <viresh.kumar@linaro.org>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Viresh Kumar
+	<vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd
+	<sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <psodagud@quicinc.com>,
+        <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>,
+        Nikunj Kela <quic_nkela@quicinc.com>
+References: <20250418151235.27787-1-quic_ptalari@quicinc.com>
+ <20250418151235.27787-2-quic_ptalari@quicinc.com>
+ <20250421074004.yttb42qq4p5xzi3o@vireshk-i7>
+Content-Language: en-US
+From: Praveen Talari <quic_ptalari@quicinc.com>
+In-Reply-To: <20250421074004.yttb42qq4p5xzi3o@vireshk-i7>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: YyWBJ9dLmEkULWUMr6Ar_Yy3ZGwS2WyF
+X-Proofpoint-ORIG-GUID: YyWBJ9dLmEkULWUMr6Ar_Yy3ZGwS2WyF
+X-Authority-Analysis: v=2.4 cv=QLJoRhLL c=1 sm=1 tr=0 ts=6807ccd8 cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=aDFI50vaQ4pevssQf7UA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-22_08,2025-04-22_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 mlxscore=0 spamscore=0 mlxlogscore=999 malwarescore=0
+ adultscore=0 phishscore=0 suspectscore=0 impostorscore=0
+ priorityscore=1501 clxscore=1011 classifier=spam authscore=0 authtc=n/a
+ authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2502280000 definitions=main-2504220129
 
-Hi,
+Thank viresh for review.
 
-On Mon, 17 Mar 2025 15:16:51 +0800, Xianwei Zhao wrote:
-> Amlogic S6 S7 and S7D are application processors designed for
-> hybrid OTT/IP Set Top Box and high-end media box applications.
-> 
-> Add the new S6 SoC/board device tree bindings.
-> Add the new S7 SoC/board device tree bindings.
-> Add the new S7D SoC/board device tree bindings.
-> 
-> [...]
+On 4/21/2025 1:10 PM, Viresh Kumar wrote:
+> On 18-04-25, 20:42, Praveen Talari wrote:
+>> diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+>> index 73e9a3b2f29b..a9bca9502f71 100644
+>> --- a/drivers/opp/core.c
+>> +++ b/drivers/opp/core.c
+>> @@ -3151,3 +3151,25 @@ void dev_pm_opp_remove_table(struct device *dev)
+>>   	dev_pm_opp_put_opp_table(opp_table);
+>>   }
+>>   EXPORT_SYMBOL_GPL(dev_pm_opp_remove_table);
+>> +
+>> +/*
+>> + * dev_pm_opp_set_level() - Configure device for a level
+>> + * @dev: device for which we do this operation
+>> + * @level: level to set to
+>> + *
+>> + * Return: 0 on success, a negative error number otherwise.
+>> + */
+>> +int dev_pm_opp_set_level(struct device *dev, unsigned int level)
+> I would rather move this to pm_opp.h as an inline helper.
 
-Thanks, Applied to https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git (v6.16/arm64-dt)
+most of helper APIs in core.c and even i don't see any helper API in 
+pm_opp.c.
 
-[1/7] dt-bindings: arm: amlogic: add S6 support
-      https://git.kernel.org/amlogic/c/93d968adbba3d30c625149d7aa12369a42b89d3e
-[2/7] dt-bindings: arm: amlogic: add S7 support
-      https://git.kernel.org/amlogic/c/5c9871f98b187747a873dad2773493f2117b5203
-[3/7] dt-bindings: arm: amlogic: add S7D support
-      https://git.kernel.org/amlogic/c/c0c89503f6b722d9eb450ce1cfe52f785be07cfd
-[5/7] arm64: dts: add support for S6 based Amlogic BL209
-      https://git.kernel.org/amlogic/c/5fdecaafa2377731b84c9f3af5994d990224015e
-[6/7] arm64: dts: add support for S7 based Amlogic BP201
-      https://git.kernel.org/amlogic/c/1b753fcfcff8ad1a63512b5be01cc6f3968a859b
-[7/7] arm64: dts: add support for S7D based Amlogic BM202
-      https://git.kernel.org/amlogic/c/1a30661c20dee51675a1ddee1b81b6a0e8580412
+please let me know if you still need to add in pm_opp.h.
 
-These changes has been applied on the intermediate git tree [1].
+>
+>> +{
+>> +	struct dev_pm_opp *opp = dev_pm_opp_find_level_exact(dev, level);
+>> +	int ret;
+>> +
+>> +	if (IS_ERR(opp))
+>> +		return -EINVAL;
+> Why not reuse the same error value ?
 
-The v6.16/arm64-dt branch will then be sent via a formal Pull Request to the Linux SoC maintainers
-for inclusion in their intermediate git branches in order to be sent to Linus during
-the next merge window, or sooner if it's a set of fixes.
+as reference of APIs in core.c, i have used  -EINVAl instead of IS_ERR(opp).
 
-In the cases of fixes, those will be merged in the current release candidate
-kernel and as soon they appear on the Linux master branch they will be
-backported to the previous Stable and Long-Stable kernels [2].
+Let me know your thoughts on return value.
 
-The intermediate git branches are merged daily in the linux-next tree [3],
-people are encouraged testing these pre-release kernels and report issues on the
-relevant mailing-lists.
-
-If problems are discovered on those changes, please submit a signed-off-by revert
-patch followed by a corrective changeset.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-[3] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-
--- 
-Neil
-
+>
+>> +
+>> +	ret = dev_pm_opp_set_opp(dev, opp);
+>> +	dev_pm_opp_put(opp);
+>> +
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(dev_pm_opp_set_level);
+> Make the changes and send it separately (or with the series, your
+> choice), I will apply it to the OPP tree. Thanks.
+>
