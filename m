@@ -1,220 +1,396 @@
-Received: from TYPPR03CU001.outbound.protection.outlook.com (mail-japaneastazon11022112.outbound.protection.outlook.com [52.101.126.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1B341096F;
-	Tue, 22 Apr 2025 11:45:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.126.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745322340; cv=fail; b=NONcaqgY06UCTOLMNY6v+qeKhvwpnZJLPuVmyVGDvmLwhxavy9rIqWk0DDplmwnjPUm/HQygoTwYJAwQGlqXXTVt7v1sBKSyySJbkbFuewotrCKrGnyL6ycA0ze/cN/4RPdKfpozk6nn6LRTpyv6AAPK0x83eQU8LAjXkHoZy58=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745322340; c=relaxed/simple;
-	bh=/K5aGrb3A+48cfG6wB1krGwoe0JvnTReUUSAiXZfro4=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=l+6KIShWKMGvpNWOMoRvlTWIuUH8ahHNwmPPyFtmaxBkZs7aLicL6IEoZdohXL2TLEHrkx5piRsd4iI0TAgte6KR7iMNK/YUxJG/XSEs3Mh/p5n+A7Y+wF5+209mz+IhiMnc7bx6epV9oNs+9ttirLaLUH9Fx66dQrHqkj+3DH4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amlogic.com; spf=pass smtp.mailfrom=amlogic.com; dkim=pass (2048-bit key) header.d=amlogic.com header.i=@amlogic.com header.b=hC7a5M3q; arc=fail smtp.client-ip=52.101.126.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=amlogic.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amlogic.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AFD727CCD5
+	for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2025 12:15:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745324108; cv=none; b=T1e3C74g9aDCTIxH+UKEmAMyaIQtfH5P13hdDpuS3g+GRDA6xY8Pc0kkIYrPbLBJTe+2e9a827VBHqOaBezbjJNIBMBaN6i038kxKkbSKQHWwE7DkBdorsDym4JdeduMdhSBx/xOdBRcV+lqfbPAuPw6CDnaDUE1jrr7I32gW3o=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745324108; c=relaxed/simple;
+	bh=LDDj8CBs5iiI4xrg7P6aRWaXZi/37+jExsKr53FvCPI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SqRQLeZRX34v5d7Rzxc6G/onhP7htqn7wwWumk908APZ8kh2KaPhOkFPexwLNeN1Rxumw9AbcSrZKVmDMhFGZ2DqqZi3RqR4ICIg86HqLEA+aMpnFs6jWB3rjI5bz5E3gxdrZmdqqr9G8BgeYrvO0Xh76KcegVBbisEdoUpUNLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=PV6jiBzQ; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amlogic.com header.i=@amlogic.com header.b="hC7a5M3q"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=j8tyBu4q9If+T7Szz5phoDpkJ4gwbsvS4eyFqzOwUIQ6VCCyWR9E3dbLKcVeaGmDtP3nmfE0wBTqzt8rsckS0TmJ3poLN50R5zSBua6nP0hc9IOAWV4hmg17YEIrgOxuoJ4AtnTfYqlFSkK9+mPWlO9A5FRfACo1z6CgsO/Zum1Iy6faago5fuVID2+3R+kCaN8jjgE+o3Fw/uO+aM4vE+mj0UuSe/XpGPhPBblTCWKr2BXLB5KA5akKdVGEh21/Uepyv6DHDyNLDDW4MvmgPzXkx4pBtD3WFBXb6Cv+UXMxRpXfflRM25MfzYjxQA74yAP8Xuxed/Yg9NJMw3g9mw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LLJuCGyNc0R0GtueYEuoVTEK3UJrshkSS50nq7FppYM=;
- b=PQDAV+/0QU80cHChHaNXdLbjrbxDwj5uqD33sfOd4vNCDbpS69+fQJCz2O7H/cFwyatwmLDGrPSQUN1y8waXg7ho5Mcj17ug3zOHyFNDZfUVmrPN0kyHx7eATp+tZh8Q9drB01wSXLL8R4tmmrBVB8DOGlf90zt8U22Xy6CG86Vm5NFw/aawPLSVLbrUERJ+hi2iEbUf0Yevlsz0cnkV4kGaM+2/wIDYNPdbk5jnKiMVisQ8XkYbUUMdfszIl0NVuzntf6jw9H7fWHKR28G+5CB2epYNxN0qliq31ZbdyBsWtFSuo0kI6kFtEsM2NvUNDIhVd+2CUodIspWWupwXTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amlogic.com; dmarc=pass action=none header.from=amlogic.com;
- dkim=pass header.d=amlogic.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amlogic.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LLJuCGyNc0R0GtueYEuoVTEK3UJrshkSS50nq7FppYM=;
- b=hC7a5M3qIB74oboszBrnfPaVx4/meXGtFYPK3lKSKrQmKKuymvX7fw0rbPpJuvYT9E6+EFMHSwvB2y0wpm5fhePME44BfFlfHLSCjY91Gx7ayEfibB/LgrgFwVPjwM6cCGr3ud72hgrl/V2eJwPFFO0eGScBowiYNuF0kmccm7IcxN8Mx5Hs7Wka9yREVqNNXWXKeXgJn4eDkj4eNDAIMLcBh+YNk6SHecT40ISaj5sJ2yMh9bVAiXD/46mhmDDyGI3BXrvpl1+kRbRpcnbhC5gUaPblseyC3csx6J6zYNlxW0wBM0LE53WBU+g2hRUaEaAPI9Hz1Rf4HJFY/EFFTw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amlogic.com;
-Received: from TYZPR03MB6896.apcprd03.prod.outlook.com (2603:1096:400:289::14)
- by SE1PPFDFE2FD117.apcprd03.prod.outlook.com (2603:1096:108:1::86b) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8655.24; Tue, 22 Apr
- 2025 11:45:32 +0000
-Received: from TYZPR03MB6896.apcprd03.prod.outlook.com
- ([fe80::ac4e:718:3b03:3123]) by TYZPR03MB6896.apcprd03.prod.outlook.com
- ([fe80::ac4e:718:3b03:3123%5]) with mapi id 15.20.8606.027; Tue, 22 Apr 2025
- 11:45:32 +0000
-Message-ID: <a175ed1d-9e57-4150-af8f-7ca785203108@amlogic.com>
-Date: Tue, 22 Apr 2025 19:45:26 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/7] Baisc devicetree support for Amlogic S6 S7 and S7D
-Content-Language: en-US
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Neil Armstrong <neil.armstrong@linaro.org>,
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
- Jerome Brunet <jbrunet@baylibre.com>, Kevin Hilman <khilman@baylibre.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-amlogic@lists.infradead.org
-References: <20250317-s6-s7-basic-v1-0-d653384e41f3@amlogic.com>
-From: Xianwei Zhao <xianwei.zhao@amlogic.com>
-In-Reply-To: <20250317-s6-s7-basic-v1-0-d653384e41f3@amlogic.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR01CA0047.apcprd01.prod.exchangelabs.com
- (2603:1096:4:193::10) To TYZPR03MB6896.apcprd03.prod.outlook.com
- (2603:1096:400:289::14)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="PV6jiBzQ"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-39129fc51f8so4341464f8f.0
+        for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2025 05:15:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1745324104; x=1745928904; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fqMvRRUfYWFEQlJtKo0yq/XAH4EEn6pYmCsE7BYoW9c=;
+        b=PV6jiBzQugSIAmliiBPRT/Ez6uOqNwAcWfguuYSkjdZMaekB528B8F0ftc26+eslPn
+         G2QZeXcUIlXaLzcUjQt79vtQ5MJ3sfiPYVR3qqbkUQbxAe/ZSY31vTSNyEZel2YTHpIQ
+         xgZyNS5j3p6Bj7oDm3F07ofI+rf3p5ehCiz7cSTDiIZj9rY7eFiaDr59Hrw8w5WgWwLZ
+         AZzEeE44GIAHVfz7TO2bOYPU1bIt70sDNfg9Cr5d398MWxR/e7QWMYbnysdi1dExVr1d
+         /66XdYhsoZO74IYnsRCCb7d264awrYzntR00eGd3z8fWXp3g3XnlSfOy4yM6gjND1Nzs
+         OsFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745324104; x=1745928904;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fqMvRRUfYWFEQlJtKo0yq/XAH4EEn6pYmCsE7BYoW9c=;
+        b=qfdsGGTInylPRi1B9H7uSD2K26S+CXhhhxXBh0NFRsBActYapwapQPRXrzwS+HJiHe
+         TbAwFkybXmYBB01gHKD7bAPrnMCFWZ5hw1tM0nMGI9J6FLe+kbjBorQC+xDHchkOjqPZ
+         71rtns3mg08/so5q1afsmUPLglSSE6FPZZ60AChcb5XB4UWK7b1RiFjRMp++qGK3oI2e
+         grca3IqZtBC4wshGaJoe3ZMuFrt8HWs7qptfPy6+gI0ABo0700duXmsUswJNAKkRwn7K
+         C9ltVPUEq1QQhx5WAVU9y3PS0o79xv7pp2sdSehQmsWgKPSoXwHnHdgBtHhkyTAGArTm
+         zuqA==
+X-Forwarded-Encrypted: i=1; AJvYcCXiHChi2tmxE1oq8eOGJHYMUyiMWZ34THz7YUap28PZxWdXsoupH0f9+hzMT1gzY5Pck/2owcMw3GYmuAU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyLVidFJsZbH6GG6jdK7c7OkueVYgoNI75v5Z/ZJXbI2lfmn9jA
+	GyKw6ppj+EGxdB3XMZc4ZXdKnm0gMSuSM0bLQDpFiaq8ZALqyiVl1q1ASAraYnvulampY15CfCM
+	0
+X-Gm-Gg: ASbGncsD+53ZD43ZoS0rXo2XEJCZXJUmfZquDDENoV3yqUWVyhTAcMwOfd3NYUamtTJ
+	T/GF3x7OEmXGFefZK0N3ijcKOdiB+2EFtCXLG50kUtweZMqqZJD0dicG1UUWnDWPsaY5FbPq6LU
+	H25+3sLTT3APgTOeN5wEICG/bI8TYET/+qdNkWJifGwAY/ht1fo/TIJk3q1V87tPFEAhCABYEG9
+	o8yx4AdBYltj/FUsDMJRX/uv7EYuY4q8oz4W12M0oeV6Ctj22cpeyEQl3Af/mxw+bi1gCi5rIdn
+	JLLKO5rHGNgCtfnhBfknz2eNAuXLR4MluKtkVcq4Wj4=
+X-Google-Smtp-Source: AGHT+IHmLn5EVcnwyczfvKP8ed2LDHKhqAf7O6XREEpkYZJgbQjmvzkZpixkhlPFNDF8//ecGhf6Gw==
+X-Received: by 2002:a05:6000:4308:b0:390:f6aa:4e7c with SMTP id ffacd0b85a97d-39efba5e837mr11823334f8f.28.1745324103656;
+        Tue, 22 Apr 2025 05:15:03 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-39efa43d006sm15266686f8f.56.2025.04.22.05.15.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Apr 2025 05:15:03 -0700 (PDT)
+Date: Tue, 22 Apr 2025 14:15:01 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Ryo Takakura <ryotkkr98@gmail.com>
+Cc: john.ogness@linutronix.de, Jason@zx2c4.com, gregkh@linuxfoundation.org,
+	linux-serial@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
+	oliver.sang@intel.com
+Subject: Re: [linux-next:master] [serial]  b63e6f60ea:
+ BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
+Message-ID: <aAeIRZH_VD0mai0V@pathway.suse.cz>
+References: <20250317144221.8231-1-ryotkkr98@gmail.com>
+ <20250421034150.107997-1-ryotkkr98@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: TYZPR03MB6896:EE_|SE1PPFDFE2FD117:EE_
-X-MS-Office365-Filtering-Correlation-Id: cce7eb0a-0eb8-43aa-ae6d-08dd81932f74
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?V3RwOVFkZW9VWUhwL0hYeDJDSnFhNjNIbzZKaDNmSkFwdjNrN1Z0bjhmMHA1?=
- =?utf-8?B?QU1Ocmk5VXhmYk5HYUkyV0N4RnFwWjMxRDZEQVNKcEttbGo5WGdUOCtwSDZo?=
- =?utf-8?B?eDBVYlBJVEpZelNYOU9TOENFWDQwVjBwN0k3UTZBREw1STl5S3dLejU1Vk1U?=
- =?utf-8?B?NGNTTjFML2xmMWZaWnZiQ21GdmFYZ3d1N05RQndhbkdtWGNjUWFUbGtISjUx?=
- =?utf-8?B?ZFNxZG9PNFFzeEhlMk0zU0hUV2tBR0FBY0JJREFKWnRQNXJ0UEM4VlhGZTJ5?=
- =?utf-8?B?Nno5TlBJS1JxaUVzelp4VzJsSEZTazlqL2FwdDRPQ3g0QjBTSUc3dzJSNU0w?=
- =?utf-8?B?TXFERFFyK0VrOG90anNRL3BIQVZ5NkRjRU9mekVVSGxJamh6TkFqTEI0QkND?=
- =?utf-8?B?QlBtM2hZWkFMdk5HMzJXNGxGOUFiMUpzaytwcGlWaUZuZEhRS0h2UHlCdS9t?=
- =?utf-8?B?VnBManVoaXZoOUovS2dVaDJ5aTZmRmhUUFVwbGE2eUdGb01hbFhCTDh2Q0kz?=
- =?utf-8?B?U2lJSmhQbTJ3Skp0ODd6VmNjQ2F5dVJpZEJwR21pUlRNQ3ZCd0Q3WFg2MHF2?=
- =?utf-8?B?ajlhQm94bC9ad2F0REQ4UllXak1FeU13UVFnRDBmUzBwMDZQbW5ZT0ZFSGVi?=
- =?utf-8?B?NTc3WmhPUkpTeGVJOVBlTmEzeG4xTG9GbEFvRml4ZXBFY2s5ODZCY1hBejZu?=
- =?utf-8?B?NU9kTVdqR1RqTUtzb0ppM2pHZFNmNWhScXFqUEVMNXY0aEZucDJHZnRpQVdW?=
- =?utf-8?B?MXRXS0dRYkVRYnVnYUZKUkd3STVXTk80Y0FTUitsa3dGTWhYMjBMeG1kZHU2?=
- =?utf-8?B?K0xTM2hmbm1TcHVSWWZ5VmlCOEJXTC9SbXJBTVYxVGZBaXhUMjk4cmE1dUJF?=
- =?utf-8?B?RXpjemZHaVhDYnMwMEhuaXRScWk4angzSlduMEt1bXpnenVFME9MVGJ5VkRs?=
- =?utf-8?B?cTBxZ01VdUI3VUwwNjdyNU1FQVVSdjQ4UWFLYy9VVk9VV2w2dlkzTFVHV2F0?=
- =?utf-8?B?bjVTNndDRDYyS1AvSFQyZFY0cXJVTTdYY3VvZU1UNjgzTHByMmw4OTBHM3Nk?=
- =?utf-8?B?cjBqUHQ0U0Y2QUFMdlN6RFFPQzZrRXVib3UxcHQ5TDVNY3lpK0JIZlloVytS?=
- =?utf-8?B?bEs4UzBIWHNaSmQvRlc2TVNBY2Z5RjdXcGtkSXYwSndEd3NyZUd1OXFtYmVo?=
- =?utf-8?B?eWk3c09DTEthT0pVZStwTGoxeDIyWHpEQ2tyYy9pR043eHhXWGQrcWd0SGgx?=
- =?utf-8?B?TTFpNE1uV2FmVThOVEhPZHBLK2FnUmN0OTV0YUdxOVNvNEtQSlRZU0RZdW1o?=
- =?utf-8?B?b3lxbHlidWlrUXJoL214Y1dMK1pFeEhCQ0lPQmJBM3BJOXF6N000c1pYQjNU?=
- =?utf-8?B?UlpaMmU5RkI1aE1DWnNVSkN5REFUNHUybTk2OUR4M2RDcW93VXBpOFJYbkpt?=
- =?utf-8?B?ZFVyU3kyNDc1ZE5IWkptVXF5L3hMMUlrSzQzcTJjYVhPaStSMFJJOTFZVFNs?=
- =?utf-8?B?YmhpYUNqWFFsVmJzR2R3TTBSNXNoSWF4TVZkQ2VTVUtSUHdvTVJOS2RtZXd1?=
- =?utf-8?B?SjJRazNBTnJITjJ4M0JPS29MQXF1ekZ5ZHlLeUNXNTdYajV4Z0FHUzkzdjF4?=
- =?utf-8?B?MmExS2llakh5d3BCbzgzVEZORVdNOS9FMDlGdnUwcGZnVFIrcDBFbXF2b3ds?=
- =?utf-8?B?NFIyYkhFNGRJVXJkOGhLbEp5SzFlY3ZQRXFsYTI1V1VZWUNBbG1IRXFlWUx3?=
- =?utf-8?B?eGZtT0I3T21nZGFKeFMreEhacThDeWo1QzVxZGpSQVlKdHMvWGpDNmdCRUpJ?=
- =?utf-8?B?M1NOM01BY1VtUmttM2o0WENFcklNN2NFQWNIMmtWeXY2cEsyVkJ6K1RSSkIr?=
- =?utf-8?B?MCtUYytZbTRoS0tzbGtsZnJDVnRnTm9kTzJ3dmtOcUFnZEE9PQ==?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYZPR03MB6896.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WGZLTzBzb0VjdEVmYTNOcFRDekgvUzBxc3pPSk41ZjljK3hZczJ2RE5OVUlB?=
- =?utf-8?B?SWczMXB4QXFvdTlXem5XNkVMb3NBS1F4bXRseE9lU2tjZEpYVzFITFFzRUZ3?=
- =?utf-8?B?eFFHK2tvUkpvcDdxZTFGNHNCL2hXZlYyOEY4YWFLbDN4em5Kb1RJMEFzdE00?=
- =?utf-8?B?YzdMWmlkSHNRUzJubXZxRDBUUkNLK29heU9sWEc2M0U0cEdyeFpBU3QyUVJj?=
- =?utf-8?B?U1VZMk0zajQ0bU1DazVkNGlWVm9xSlFzNlNOSEE4ZDhlbEh4WUNCT3phczlh?=
- =?utf-8?B?d3VlWUFGSHZjYXNVcncwVkhmSkNqcDQwSnkxRklRNXBCVFhHU0o5all1UmVu?=
- =?utf-8?B?em9qOXZHN1ZrMkRnRTlyS2Y2MWNSY3phWE9OaEVTRWxKRmJ2a3pSeUhvUWxH?=
- =?utf-8?B?Sm1rNEFEaXl0eHVKbzFWTVZxMWpEd0RrVHZDbkxTelplakQ3Q0EzNnFnZnFv?=
- =?utf-8?B?Q0pOWU83aVY3L01sSWlTbmlIZ2I0bllsVUhSTkhJZ3FkTTU5NUNDSW9XODlp?=
- =?utf-8?B?d0NlaVR1QWxZYkdrK2IySGdzZkxwdE01QjdFMlFPWWVJYXJvUmxtWHZrY1FC?=
- =?utf-8?B?bStqL015a2F1c1Bqbkg2NmMwRGs2MDd6c00yTmllZ1dLS2NUQlhCbWFnbnRt?=
- =?utf-8?B?ckpuWGRranpxTHRnTituU1VnRnpKVFNvZUFPQlhLcVB1cktVdWYzTll1aTVV?=
- =?utf-8?B?NXZSTHJJcXRONXFIV0djbSt0Z0o3YWdSQStwdlhNT0ZkTGJPR3JUMjdUQzls?=
- =?utf-8?B?aWI5b1Q4azMvTDMrdkd3N2J5K0RRZ0ZzNXU2TEljZkUrckFLb1d2WmxKWE9E?=
- =?utf-8?B?TkRTR2dzOXZoWDFrTWVHekpJdStWRml4SEF6RFZrVEs4RDBDOUdvcXYrRFRS?=
- =?utf-8?B?VE9WZUNlOHpWWEZQOURHQ2pMbTNHb2M4UXlmZ1RkdW9VOTZoWGVEaHh4cGRa?=
- =?utf-8?B?MWJsak1ZT29Da3NsTkk0ZkZlcnltdklSdVFGZlVRQkpmM0VRK0lJeHE5WTFB?=
- =?utf-8?B?MXBJNEhxUEdGM2FHZ3ZrTy9saVVPSGR3d0Z2K20ra1UwbkM0bXlNU3VwbldT?=
- =?utf-8?B?OGpIR2RXM2pyTGdvQTdSWWpMdlUyUDZkY1FER3EzTkM5dUhEdUR5RHhxVHBT?=
- =?utf-8?B?UHc4aVpCdnRGcEVBWXU0dDVSQUwvalFUYVp0azdTeXd3S0szY0ExUEZpR3R4?=
- =?utf-8?B?L05ZKzN5LzFvY3RITlZJbTN5VFZtYkFKand5SDRKQkk1bnkzWTFSaGZZNVJa?=
- =?utf-8?B?MUZXbEFLbVJJRGVLTGh1bW5uSC9vR0UwR0lTR1gwRnVjUWIyU1A0K1B6aEp1?=
- =?utf-8?B?cEVjRzVZanl1b3ZNd2ZLM0NTaTVQVFZleWx2Z084Vm5KOVZ4TWhvNXNmNjVw?=
- =?utf-8?B?N2RpdzFneDVsZ0NXUWJiRWlFeVQzcGpKL1ZmOXkrV05DOHRaUll6L2xRTVZQ?=
- =?utf-8?B?SDJ6NVMzR1M3UFpSWitUMHJlakJUWmZONWZUVndDOFpXbzh6VHhnUmIvaUlF?=
- =?utf-8?B?b3NUcmk1UjNIMG9HcDdMQlN6QkJoNnhTbVMxZTM1RnFDY0IwaVBNQXdkaW55?=
- =?utf-8?B?NCtJekVCVXN6TVg4aXRLdjV6OWR3cDZVb21uSkdoZ3VQUjVHSnlKSWVHd1JS?=
- =?utf-8?B?eG96NVNBRUFnRVN5SmwrVEFVZUIwOERHVnZVRHBLZkQ4dUtZZWhOZncrTXlr?=
- =?utf-8?B?YndOSHpkSGRpM3Z0UmxjU3diY3lTZTRob0VMU1o5bDlJQTNDcTJnNU53bW1G?=
- =?utf-8?B?S3dwL3NFR2tkT3JXRGhIUFl2NHo4bU9taHFQUmpQYXYwMktmWEVvRDVsaHBh?=
- =?utf-8?B?RGxBODJ1bDZTSW9qWFlFTmlicmJPWDI0T2JRVHN0T3NLWkE0TUM4bVhjaDgv?=
- =?utf-8?B?ZzFBeStDZGcvRmxSQlhmeCtGdDQwVERvdXpRdDNuU1ZNWGdNcGZBTTQ0OHZo?=
- =?utf-8?B?c2VXMmRHY3BEMCsrT2ZEQkZKNml3TXNKc0JGQUdqa2xsU0FybmRkeTljM2pJ?=
- =?utf-8?B?em14YVRLdnU1SXRsMnJHUHJqOVA4bUZUYXIzWDVwSnkxc09uTU5wRzhTSDh0?=
- =?utf-8?B?U2FYbDhvb1NRamVWWS8yRy92SW5BQ1V1OS9vN3hXaGhPcU94MXBVNDNFUVpq?=
- =?utf-8?B?MEFVYVhNQkJZOHZSamtVRXgrYUFTTk02YU9USWZSTUszOEJVVkN5eHQ0TnNL?=
- =?utf-8?B?VEE9PQ==?=
-X-OriginatorOrg: amlogic.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cce7eb0a-0eb8-43aa-ae6d-08dd81932f74
-X-MS-Exchange-CrossTenant-AuthSource: TYZPR03MB6896.apcprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2025 11:45:32.3331
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 0df2add9-25ca-4b3a-acb4-c99ddf0b1114
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s8xzsNrVFt7YZ4FTD++d1bECadOf8RLpgjafACWz5HAXROKbz5VAvrgbg1jWVRnd+EP+4xY2FHkxtjHP77yzA5WGZC0c08rNI/Pgvz4NugA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SE1PPFDFE2FD117
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250421034150.107997-1-ryotkkr98@gmail.com>
 
-Hi Neil,
-    A gentle ping, thanks.
+On Mon 2025-04-21 12:41:50, Ryo Takakura wrote:
+> Hi!
+> 
+> I would like to follow up the last email that I sent.
+> 
+> First, I'm sorry that I later realized that I should have tested
+> the rslib test as an inserted module, as how the robot does, by
+> choosing CONFIG_REED_SOLOMON_TEST=m.
+> Not as a boottime test by enabling CONFIG_REED_SOLOMON_TEST=y.
+> 
+> Running the rslib test as an inserted module without the John's series
+> was less prone to softlockup. Without the John's series, softlockup shows
+> up once in a test or not at all. With the John's series, softlockup can
+> be observed constanly over the test.
 
-On 2025/3/17 15:16, Xianwei Zhao via B4 Relay wrote:
-> [ EXTERNAL EMAIL ]
+> On Mon, 17 Mar 2025 23:42:21 +0900, Ryo Takakura wrote:
+> >On Mon, 17 Mar 2025 09:51:46 +0106, John Ogness wrote:
+> >>On 2025-03-15, Ryo Takakura <ryotkkr98@gmail.com> wrote:
+> >>> I got the same softlockup during the test regardless of the presence
+> >>> of the commits.
+> >>>
+> >>> [   60.222013] watchdog: BUG: soft lockup - CPU#2 stuck for 22s! [swapper/0:1]
+> >>> [   60.222023] Modules linked in:
+> >>> [   60.222032] CPU: 2 UID: 0 PID: 1 Comm: swapper/0 Tainted: G             L     6.14.0-rc6-v14-rc6-voluntary+ #4
+> >>> [   60.222047] Tainted: [L]=SOFTLOCKUP
+> >>> [   60.222051] Hardware name: Raspberry Pi 4 Model B Rev 1.5 (DT)
+> >>> [   60.222055] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> >>> [   60.222066] pc : get_random_u32+0xac/0x118
+> >>> [   60.222081] lr : __get_random_u32_below+0x20/0x78
+> >>> [   60.222094] sp : ffffffc08002bb80
+> >>> [   60.222098] x29: ffffffc08002bb80 x28: 0000000000000003 x27: 0000000000000001
+> >>> [   60.222114] x26: ffffff804112e6a4 x25: ffffffd33ed21820 x24: ffffff804112e69c
+> >>> [   60.222128] x23: 0000000000000000 x22: ffffff804112e64e x21: 0000000000000000
+> >>> [   60.222142] x20: 000000000000000d x19: ffffff80fb7aebb8 x18: 0000000000000002
+> >>> [   60.222156] x17: 0000000000000004 x16: ffffff804112e584 x15: ffffff8041126796
+> >>> [   60.222169] x14: ffffff80411267c0 x13: 0000000000000006 x12: ffffff804112e5c0
+> >>> [   60.222183] x11: ffffff804112e64c x10: 0000000000000007 x9 : ffffffd33dccdd10
+> >>> [   60.222196] x8 : ffffff804112e6a8 x7 : 0000000000000000 x6 : 0005000400060005
+> >>> [   60.222210] x5 : ffffff804112e65a x4 : 0000000000000000 x3 : 0000000000000010
+> >>> [   60.222223] x2 : 0000000000000014 x1 : 000000002c7d0b7a x0 : 0000000000000013
+> >>> [   60.222237] Call trace:
+> >>> [   60.222241]  get_random_u32+0xac/0x118 (P)
+> >>> [   60.222256]  __get_random_u32_below+0x20/0x78
+> >>> [   60.222268]  get_rcw_we+0x180/0x208
+> >>> [   60.222278]  test_rslib_init+0x2c8/0xba0
+> >>> [   60.222292]  do_one_initcall+0x4c/0x210
+> >>> [   60.222303]  kernel_init_freeable+0x1fc/0x3a0
+> >>> [   60.222317]  kernel_init+0x28/0x1f8
+> >>> [   60.222327]  ret_from_fork+0x10/0x20
+> >>>
+> >>>> I wonder if a cond_resched() in some loop would help. Or using a
+> >>>
+> >>> I wasn't sure which loop would be the appropriate one but adding
+> >>> cond_resched() as below worked as suggested.
+> >>>
+> >>> ----- BEGIN -----
+> >>> diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
+> >>> index 75cb1adac..322d7b0a8 100644
+> >>> --- a/lib/reed_solomon/test_rslib.c
+> >>> +++ b/lib/reed_solomon/test_rslib.c
+> >>> @@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
+> >>>
+> >>>                 if (memcmp(r, c, len * sizeof(*r)))
+> >>>                         stat->dwrong++;
+> >>> +
+> >>> +               cond_resched();
+> >>>         }
+> >>>         stat->nwords += trials;
+> >>>  }
+> >>> @@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
+> >>>                 } else {
+> >>>                         stat->rfail++;
+> >>>                 }
+> >>> +
+> >>> +               cond_resched();
+> >>>         }
+> >>>         stat->nwords += trials;
+> >>>  }
+> >>> ----- END -----
+> >>>
+> >>>> pseudorandom generator. I remember the problems related to much
+> >>>> slower random generator, for example, see the commit
+> >>>> f900fde28883602b6 ("crypto: testmgr - fix RNG performance in fuzz
+> >>>> tests").
+> >>>
+> >>> I haven't tested this but I'll look into it!
 > 
-> Amlogic S6 S7 and S7D are application processors designed for
-> hybrid OTT/IP Set Top Box and high-end media box applications.
+> For the same reason pointed out by the commit f900fde28883 ("crypto: 
+> testmgr - fix RNG performance in fuzz tests"), the commit d4150779e60f
+> ("random32: use real rng for non-deterministic randomness") does seem
+> to have slowed down the rslib test.
 > 
-> Add the new S6 SoC/board device tree bindings.
-> Add the new S7 SoC/board device tree bindings.
-> Add the new S7D SoC/board device tree bindings.
+> On Raspberry pi 4(4G Mem, 4 CPUs), running the rslib test on v5.19 with
+> the commit d4150779e60f ("random32: use real rng for non-deterministic
+> randomness") takes about 450sec compared to v5.18(without the commit)
+> which only takes about 350sec.
 > 
-> Add basic support for the S6 based Amlogic BL209 board, which describes
-> the following components: CPU, GIC, IRQ, Timer and UART. These are capable of
-> booting up into the serial console.
+> However, random number generation does not seem to be the only reason
+> for the rslib test being slow.
+> Below is the function stats for v5.18 vs v5.19 for the test.
 > 
-> Add basic support for the S7 based Amlogic BP201 board, which describes
-> the following components: CPU, GIC, IRQ, Timer and UART. These are capable of
-> booting up into the serial console.
+> v5.18
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] load_module
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_init_module
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_one_initcall
+> +   59.90%    59.90%  insmod   [kernel.kallsyms]      [k] decode_rs16
+> +   30.28%     0.00%  insmod   [unknown]              [k] 0xffffffd60413a748
+> +   21.39%    21.39%  insmod   [kernel.kallsyms]      [k] encode_rs16
+> +   20.94%     0.00%  insmod   [unknown]              [k] 0xffffffd60441b0d4
+> +   14.17%     0.01%  insmod   [unknown]              [k] 0xffffffd60413a324
+> +   12.92%     0.00%  insmod   [unknown]              [k] 0xffffffd60413a720
+> +   11.74%     0.00%  insmod   [unknown]              [k] 0xffffffd60413a368
+> +   11.63%     0.01%  insmod   [unknown]              [k] 0xffffffd60413a4b4
+> +    6.60%     0.01%  insmod   [unknown]              [k] 0xffffffd60413a46c
+> +    3.26%     3.26%  insmod   [unknown]              [k] 0xffffffd60413a3c4
+> +    3.11%     3.11%  insmod   [kernel.kallsyms]      [k] prandom_u32
 > 
-> Add basic support for the S7D based Amlogic BM202 board, which describes
-> the following components: CPU, GIC, IRQ, Timer and UART. These are capable of
-> booting up into the serial console.
+> v5.19
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]  [k] load_module
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]  [k] do_init_module
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]  [k] do_one_initcall
+> +   45.13%    45.13%  insmod   [kernel.kallsyms]  [k] decode_rs16
+> +   27.84%    27.83%  insmod   [kernel.kallsyms]  [k] get_random_u32
+> +   22.83%     0.01%  insmod   [unknown]          [k] 0xffffffd62b379324
+> +   22.76%     0.00%  insmod   [unknown]          [k] 0xffffffd62b379748
+> +   22.35%     0.00%  insmod   [unknown]          [k] 0xffffffd62b379720
+> +   16.17%    16.17%  insmod   [kernel.kallsyms]  [k] encode_rs16
 > 
-> Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
-> ---
-> Xianwei Zhao (7):
->        dt-bindings: arm: amlogic: add S6 support
->        dt-bindings: arm: amlogic: add S7 support
->        dt-bindings: arm: amlogic: add S7D support
->        dt-bindings: serial: amlogic,meson-uart: Add compatible string for S6/S7/S7D
->        arm64: dts: add support for S6 based Amlogic BL209
->        arm64: dts: add support for S7 based Amlogic BP201
->        arm64: dts: add support for S7D based Amlogic BM202
+> As the v5.19 stats shows, the commit d4150779e60f ("random32: use real
+> rng for non-deterministic randomness") did slowed down the rslib test
+> by using real random number generator(prandom_u32->get_random_u32).
+> But it also shows that the decode/encoding takes quite a lot of time.
 > 
->   Documentation/devicetree/bindings/arm/amlogic.yaml | 18 ++++
->   .../bindings/serial/amlogic,meson-uart.yaml        |  3 +
->   arch/arm64/boot/dts/amlogic/Makefile               |  3 +
->   .../boot/dts/amlogic/amlogic-s6-s905x5-bl209.dts   | 42 +++++++++
->   arch/arm64/boot/dts/amlogic/amlogic-s6.dtsi        | 97 +++++++++++++++++++++
->   .../boot/dts/amlogic/amlogic-s7-s805x3-bp201.dts   | 41 +++++++++
->   arch/arm64/boot/dts/amlogic/amlogic-s7.dtsi        | 99 ++++++++++++++++++++++
->   .../boot/dts/amlogic/amlogic-s7d-s905x5m-bm202.dts | 41 +++++++++
->   arch/arm64/boot/dts/amlogic/amlogic-s7d.dtsi       | 99 ++++++++++++++++++++++
->   9 files changed, 443 insertions(+)
-> ---
-> base-commit: 73e4ffb27bb8a093d557bb2dac1a271474cca99c
-> change-id: 20250221-s6-s7-basic-f300c30877e6
+> For the above reason, if we want make the softlockup go away, maybe
+> just converting from real to pseudo random generator won't be enough?
+> I tested with below changes applied to v6.14 which uses pseudo random
+> numbers instead of real ones similar to what the commit f900fde28883
+> ("crypto: testmgr - fix RNG performance in fuzz tests") did.
 > 
-> Best regards,
-> --
-> Xianwei Zhao <xianwei.zhao@amlogic.com>
+> The result is that while it did help to fast up the test from 450 sec
+> to 350 sec, it still triggers the softlockup.
+
+It is not that big speedup. 350 sec still provides a lot of
+opportunities for a softlockup.
+
+> --- BEGIN ---
+> diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
+> index 75cb1adac..5785e3c0c 100644
+> --- a/lib/reed_solomon/test_rslib.c
+> +++ b/lib/reed_solomon/test_rslib.c
+[...]
+> @@ -162,9 +174,11 @@ static int get_rcw_we(struct rs_control *rs, struct wspace *ws,
+>         int errloc;
+>         int i;
 > 
+> +       init_rnd_state(&rng);
+> +
+>         /* Load c with random data and encode */
+>         for (i = 0; i < dlen; i++)
+> -               c[i] = get_random_u32() & nn;
+> +               c[i] = prandom_u32_state(&rng) & nn;
 > 
+>         memset(c + dlen, 0, nroots * sizeof(*c));
+>         encode_rs16(rs, c, dlen, c + dlen, 0);
+[...]
+> --- END ---
+> 
+> Below is the function stats for with vs without the above change.
+> 
+> v6.14 without the above change
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] load_module
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_init_module
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_one_initcall
+> +   46.94%    46.94%  insmod   [kernel.kallsyms]      [k] decode_rs16
+> +   24.92%    24.92%  insmod   [kernel.kallsyms]      [k] get_random_u32
+> +   23.59%     0.01%  insmod   [unknown]              [k] 0xffffffde423d88cc
+> +   22.66%     0.00%  insmod   [unknown]              [k] 0xffffffde423d82c0
+> +   22.39%     0.00%  insmod   [unknown]              [k] 0xffffffde423d88a4
+> +   16.67%    16.67%  insmod   [kernel.kallsyms]      [k] encode_rs16
+> 
+> v6.14 with the above change
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] load_module
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_init_module
+> +  100.00%     0.00%  insmod   [kernel.kallsyms]      [k] do_one_initcall
+> +   61.51%    61.50%  insmod   [kernel.kallsyms]      [k] decode_rs16
+> +   31.15%     0.00%  insmod   [unknown]              [k] 0xffffffe7013858cc
+> +   21.75%    21.75%  insmod   [kernel.kallsyms]      [k] encode_rs16
+> +   21.36%     0.01%  insmod   [unknown]              [k] 0xffffffe70137f120
+> +   15.20%     0.00%  insmod   [unknown]              [k] 0xffffffe7013852c0
+> +   12.79%     0.00%  insmod   [unknown]              [k] 0xffffffe7013858a4
+> +   12.00%     0.00%  insmod   [unknown]              [k] 0xffffffe7013854c0
+> +   12.00%     0.00%  insmod   [unknown]              [k] 0xffffffe701385304
+> +    6.74%     0.01%  insmod   [unknown]              [k] 0xffffffe701385600
+> +    3.43%     3.43%  insmod   [unknown]              [k] 0xffffffe701385598
+> +    2.50%     2.50%  insmod   [unknown]              [k] 0xffffffe701385564
+> +    1.96%     1.96%  insmod   [kernel.kallsyms]      [k] prandom_u32_state
+> +    1.85%     1.85%  insmod   [kernel.kallsyms]      [k] get_random_u64
+> 
+> So maybe we still need cond_resched() in addition to converting the
+> test from using psuedo random numbers to real ones in order to make
+> the softlockup go away?
+
+IMHO, cond_resched() should be added, definitely. The code clearly
+prevents scheduling for tens of seconds.
+
+> >>>> That said, I did not dig deep into the code. And I did not try to
+> >>>> reproduce the softlockup. I am pretty busy at the moment with some
+> >>>> other stuff. I just wanted to give it a look and share my opinion.
+> >>>
+> >>> I think the softlockup is rather a problem of test itself,
+> >>> not the two commits.
+> >>
+> >>Thanks Ryo for looking into this! I think we need to have a technical
+> >>explanation/understanding of the problem so that it is clear how my
+> >>series triggers or exaggerates the issue.
+> 
+> As mentioned earlier, I'm sorry that I should have run the test as
+> inserted module... It seems the series does make the test more prone
+> to softlockups.
+
+IMHO, the main difference is that the patch "serial: 8250: Switch to
+nbcon console" removes touch_nmi_watchdog() from
+serial8250_console_write().
+
+The touch_nmi_watchdog() resets the softlockup watchdog. It might
+hide that the CPU did not schedule for a long time.
+
+The touch_nmi_watchdog() was there because the console_lock() owner,
+used by the legacy loop, was responsible for flushing all pending
+messages. And there might be many pending messages when new ones
+were added by other CPUs in parallel. And the legacy loop
+could not call cond_resched() when called from printk() because
+printk() might be called in atomic context.
+
+The series removed the touch_nmi_watchdog() because the kthread
+called cond_resched. And the amount of messages flushed in
+the emergency or panic context was limited.
+
+My view:
+
+The touch_nmi_watchdog() did hide the softlockup scenario in the rslib
+test. The printk series allowed to see the problem reliably.
+
+By other words, the rslib test should get fixed by adding
+cond_resched(). And the conversion of the 8250 serial console
+driver to nbcon is correct.
+
+That said, see below.
+
+> I am still looking into the issue but I noticed that if the printing
+> during the test were done in a caller context, not by printk thread,
+> the softlock goes away.
+> 
+> I tested with a change something like below so that the printing during
+> the test were not delegated to printk thread ("pr/ttyS0"). With the below
+> change, the softlock no longer shows up.
+> 
+> --- BEGIN ---
+> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+> index fd12efcc4..07c879a64 100644
+> --- a/kernel/printk/nbcon.c
+> +++ b/kernel/printk/nbcon.c
+> @@ -1639,6 +1639,7 @@ void nbcon_cpu_emergency_enter(void)
+>         cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
+>         (*cpu_emergency_nesting)++;
+>  }
+> +EXPORT_SYMBOL_GPL(nbcon_cpu_emergency_enter);
+> 
+>  /**
+>   * nbcon_cpu_emergency_exit - Exit an emergency section
+> @@ -1656,6 +1657,7 @@ void nbcon_cpu_emergency_exit(void)
+> 
+>         preempt_enable();
+>  }
+> +EXPORT_SYMBOL_GPL(nbcon_cpu_emergency_exit);
+> 
+>  /**
+>   * nbcon_alloc - Allocate and init the nbcon console specific data
+> diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
+> index 75cb1adac..8208f8317 100644
+> --- a/lib/reed_solomon/test_rslib.c
+> +++ b/lib/reed_solomon/test_rslib.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/moduleparam.h>
+>  #include <linux/random.h>
+>  #include <linux/slab.h>
+> +#include <linux/console.h>
+> 
+>  enum verbosity {
+>         V_SILENT,
+> @@ -323,8 +324,11 @@ static int ex_rs_helper(struct rs_control *rs, struct wspace *ws,
+>         int nroots = rs->codec->nroots;
+>         int errs, eras, retval;
+> 
+> -       if (v >= V_PROGRESS)
+> +       if (v >= V_PROGRESS) {
+> +               nbcon_cpu_emergency_enter();
+>                 pr_info("  %s\n", desc[method]);
+> +               nbcon_cpu_emergency_exit();
+> +       }
+
+I do not understand how this prevented the softlockup.
+
+The emergency context causes that the messages is flushed directly
+from printk(), see nbcon_atomic_flush_pending() in vprintk_emit().
+But see neither cond_resched() nor touch_nmi_watchdog() in this
+code path.
+
+By other words, I do _not_ see how the emergency context either
+triggered scheduling or did reset the watchdog.
+
+But I might be looking at a different code base. I looked at
+Linus' master and linux-next.
+
+Best Regards,
+Petr
