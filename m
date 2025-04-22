@@ -1,166 +1,104 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9457920D51E
-	for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2025 10:20:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ACEE5FB95;
+	Tue, 22 Apr 2025 10:50:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745317246; cv=none; b=nDkhqkYz6d33XuwY30xzhVLkXJwkbSmYPaRjMHWPS/HXo73AqTDjZXr43m2ohav5Sx0C27RGATtfw+mlCB5fP28S3ryM4RYcUXs9ByDJAvEix47VetGgWmVDo8P62M4jdyaKNRGG7tduoh6PuGu9tRbUwmbBsJLQ4OKUJBSBfOE=
+	t=1745319055; cv=none; b=IXldekTHh9B7eOJesM/n7qlDd63L9oseHkvCQd/C3aCGIQN961hy53D2H9UhqndOzId2rYj5+htWgevPOtsN/aQKdIgjoqykNMzu1wCyEdubwD2i7SfyQGCVm9ln3sXJ4lUARv7lYd6tV59cdvp4evamOyXrkoOZ2mWMMaaQ6KM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745317246; c=relaxed/simple;
-	bh=WA25M38AIR7ERueYwyzSBDmn05s7qtY/5PnKWB5/mWw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C+YyQQEFRld/rp1iWQ+siNYVijx00McSJV+yo0eWSDEob4vFF/DfvUkZ37Iuws6WOjoXlHiKj2aECPgyu1D7dWDO8OzKkV1kpdstuvrf4Et0cBTR9hJbZwmiiXqEGSOu9YQ2ivIG4isNYJeO2h7Vx7SCzgPBU/+WwKcYlR65LE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=N5AgF1e6; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=91hkOtyt; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=N5AgF1e6; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=91hkOtyt; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1745319055; c=relaxed/simple;
+	bh=MrCnwF7GdHkVudInO56SmjoTmH9xscxr0moc8/xmCsA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gJU0QSWr2WV+wdoOyGS8U4MNpjq6h1HEsHuQbx4jAkkmMLUtyoCRs/YsnCOtuh5hYHF/ALWOTHK/JGaBbIZNXxfuccgCzkHnqvmoNF+M1xv7+8PsZ96qIqd4NtnelpkU/bZhcdhtBpJOBn3ofNG8K6d0O4uI6yjIMusdWxAMPU8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=zjV3s0mQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="N5AgF1e6";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="91hkOtyt";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="N5AgF1e6";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="91hkOtyt"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id CDFD9211B4;
-	Tue, 22 Apr 2025 10:20:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1745317242; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3D2poOov/3bFYZAbueXXC8mWTQq1cPjBbaHqWB5PKcc=;
-	b=N5AgF1e6ldYFh8sXthel/HoK/0Po6kGmLJrOaJJ+EAGLxiF8vWxU1purTfHnO3ouwDC7gq
-	6Mj0iefMkI+oRyEMXvxKu3euVEYFEIXCi5v1GGvaWGRXuiyo7aO9zmyDuhvwm5/dtJjNDc
-	Pklr7S8xWhAvChkT7P67xlTTzLw9tv0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1745317242;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3D2poOov/3bFYZAbueXXC8mWTQq1cPjBbaHqWB5PKcc=;
-	b=91hkOtytm9qKMrfBYv+ryJG1RdH4MbBnBYifI/Q3l8TIL6qbykLxHma6bunJj5EyKYegQ3
-	U0+QWc9WOpN0yiDg==
-Authentication-Results: smtp-out1.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1745317242; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3D2poOov/3bFYZAbueXXC8mWTQq1cPjBbaHqWB5PKcc=;
-	b=N5AgF1e6ldYFh8sXthel/HoK/0Po6kGmLJrOaJJ+EAGLxiF8vWxU1purTfHnO3ouwDC7gq
-	6Mj0iefMkI+oRyEMXvxKu3euVEYFEIXCi5v1GGvaWGRXuiyo7aO9zmyDuhvwm5/dtJjNDc
-	Pklr7S8xWhAvChkT7P67xlTTzLw9tv0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1745317242;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=3D2poOov/3bFYZAbueXXC8mWTQq1cPjBbaHqWB5PKcc=;
-	b=91hkOtytm9qKMrfBYv+ryJG1RdH4MbBnBYifI/Q3l8TIL6qbykLxHma6bunJj5EyKYegQ3
-	U0+QWc9WOpN0yiDg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 9715F137CF;
-	Tue, 22 Apr 2025 10:20:42 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id g6qTJHptB2i4dQAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Tue, 22 Apr 2025 10:20:42 +0000
-Message-ID: <397723b7-9f04-4cb1-b718-2396ea9d1b91@suse.cz>
-Date: Tue, 22 Apr 2025 12:20:42 +0200
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="zjV3s0mQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 883E8C4CEE9;
+	Tue, 22 Apr 2025 10:50:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1745319055;
+	bh=MrCnwF7GdHkVudInO56SmjoTmH9xscxr0moc8/xmCsA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=zjV3s0mQzAED2/N1v4BwcnaDaVYf7m9YLTrcC+oo27o1aTa76+Db7y1pihHuRAjRZ
+	 Fsa72hBqbtIH5G9TsKZkib6jncINU0cOVLSETRLjcJ2Eim/MkYUpigLT/L3130TG2h
+	 iKG9saWN93SIy2/VBCiWw7oo6GC1d9hQ3qmOEhWY=
+Date: Tue, 22 Apr 2025 12:50:52 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Vlastimil Babka <vbabka@suse.cz>
+Cc: Ryo Takakura <ryotkkr98@gmail.com>, alex@ghiti.fr,
+	aou@eecs.berkeley.edu, bigeasy@linutronix.de,
+	conor.dooley@microchip.com, jirislaby@kernel.org,
+	john.ogness@linutronix.de, palmer@dabbelt.com,
+	paul.walmsley@sifive.com, pmladek@suse.com,
+	samuel.holland@sifive.com, u.kleine-koenig@baylibre.com,
+	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] serial: sifive: lock port in startup()/shutdown()
+ callbacks
+Message-ID: <2025042202-compare-entrap-0089@gregkh>
+References: <20250405043833.397020-1-ryotkkr98@gmail.com>
+ <20250405044338.397237-1-ryotkkr98@gmail.com>
+ <2025040553-video-declared-7d54@gregkh>
+ <397723b7-9f04-4cb1-b718-2396ea9d1b91@suse.cz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/2] serial: sifive: lock port in startup()/shutdown()
- callbacks
-Content-Language: en-US
-To: Greg KH <gregkh@linuxfoundation.org>, Ryo Takakura <ryotkkr98@gmail.com>
-Cc: alex@ghiti.fr, aou@eecs.berkeley.edu, bigeasy@linutronix.de,
- conor.dooley@microchip.com, jirislaby@kernel.org, john.ogness@linutronix.de,
- palmer@dabbelt.com, paul.walmsley@sifive.com, pmladek@suse.com,
- samuel.holland@sifive.com, u.kleine-koenig@baylibre.com,
- linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
- linux-serial@vger.kernel.org, stable@vger.kernel.org
-References: <20250405043833.397020-1-ryotkkr98@gmail.com>
- <20250405044338.397237-1-ryotkkr98@gmail.com>
- <2025040553-video-declared-7d54@gregkh>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <2025040553-video-declared-7d54@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Level: 
-X-Spamd-Result: default: False [-4.30 / 50.00];
-	BAYES_HAM(-3.00)[99.99%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ARC_NA(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FREEMAIL_TO(0.00)[linuxfoundation.org,gmail.com];
-	RCPT_COUNT_TWELVE(0.00)[17];
-	MID_RHS_MATCH_FROM(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	TO_DN_SOME(0.00)[];
-	RCVD_TLS_ALL(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:mid]
-X-Spam-Score: -4.30
-X-Spam-Flag: NO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <397723b7-9f04-4cb1-b718-2396ea9d1b91@suse.cz>
 
-On 4/5/25 09:35, Greg KH wrote:
-> On Sat, Apr 05, 2025 at 01:43:38PM +0900, Ryo Takakura wrote:
->> startup()/shutdown() callbacks access SIFIVE_SERIAL_IE_OFFS.
->> The register is also accessed from write() callback.
->> 
->> If console were printing and startup()/shutdown() callback
->> gets called, its access to the register could be overwritten.
->> 
->> Add port->lock to startup()/shutdown() callbacks to make sure
->> their access to SIFIVE_SERIAL_IE_OFFS is synchronized against
->> write() callback.
->> 
->> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
->> Cc: stable@vger.kernel.org
+On Tue, Apr 22, 2025 at 12:20:42PM +0200, Vlastimil Babka wrote:
+> On 4/5/25 09:35, Greg KH wrote:
+> > On Sat, Apr 05, 2025 at 01:43:38PM +0900, Ryo Takakura wrote:
+> >> startup()/shutdown() callbacks access SIFIVE_SERIAL_IE_OFFS.
+> >> The register is also accessed from write() callback.
+> >> 
+> >> If console were printing and startup()/shutdown() callback
+> >> gets called, its access to the register could be overwritten.
+> >> 
+> >> Add port->lock to startup()/shutdown() callbacks to make sure
+> >> their access to SIFIVE_SERIAL_IE_OFFS is synchronized against
+> >> write() callback.
+> >> 
+> >> Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
+> >> Cc: stable@vger.kernel.org
+> > 
+> > What commit id does this fix?
 > 
-> What commit id does this fix?
-
-> Why does patch 1/2 need to go to stable, but patch 2/2 does not?  Please
-> do not mix changes like this in the same series, otherwise we have to
-> split them up manually when we apply them to the different branches,
-> right?
-
-I admit it's surprising to see such a request as AFAIK it's normally done to
-mix stable fixes and new features in the same series (especially when the
-patches depend on each other), and ordering the fixes first and marking only
-them as stable should be sufficient. We do that all the time in -mm. I
-thought that stable works with stable marked commits primarily, not series?
-
-Also since the patches are AFAIU dependent on each other, sending them
-separately makes the mainline development process more difficult, as
-evidenced by the later revisions having to add notes in the diffstat area
-etc. This would go against the goal that stable process does not add extra
-burden to the mainline process, no?
-
-Thanks,
-Vlastimil
-
-> thanks,
+> > Why does patch 1/2 need to go to stable, but patch 2/2 does not?  Please
+> > do not mix changes like this in the same series, otherwise we have to
+> > split them up manually when we apply them to the different branches,
+> > right?
 > 
-> greg k-h
+> I admit it's surprising to see such a request as AFAIK it's normally done to
+> mix stable fixes and new features in the same series (especially when the
+> patches depend on each other), and ordering the fixes first and marking only
+> them as stable should be sufficient. We do that all the time in -mm. I
+> thought that stable works with stable marked commits primarily, not series?
+
+Yes, but when picking which "branch" to apply a series to, what would
+you do if you have some "fix some bugs, then add some new features" in a
+single patch series?  The one to go to -final or the one for the next
+-rc1?
+
+I see a lot of bugfixes delayed until -rc1 because of this issue, and
+it's really not a good idea at all.
+
+> Also since the patches are AFAIU dependent on each other, sending them
+> separately makes the mainline development process more difficult, as
+> evidenced by the later revisions having to add notes in the diffstat area
+> etc. This would go against the goal that stable process does not add extra
+> burden to the mainline process, no?
+
+If they are dependent on each other, that's the creator's issue, not the
+maintainer's issue, no?  :)
+
+Submit the bug fixes, get them merged, and then submit the new features.
+
+thanks,
+
+greg k-h
