@@ -1,204 +1,128 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81F5726773E
-	for <linux-serial@vger.kernel.org>; Wed, 23 Apr 2025 07:23:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01F72701D5;
+	Wed, 23 Apr 2025 12:10:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745392997; cv=none; b=YKEd+AvWHkY9sIIYLcB9PLKjRvPgG2bStiCIBOWj5LXOR4FI/qf3CEzLPI5Hk5ud49kaARBYCMtZXrsEmcCnU7eyGY4pg2yHTTQKcPGs0npqQ6dBO+FU5f0aSzmgk8XrnfHmjsmaNRDULgKPN34eaHrc9/BptFBdUWk0uKc0IuU=
+	t=1745410244; cv=none; b=EKjzKL70G+5XzOBLohYZqjDX+DZHjds8JA1mUfkPnu7sJw2mpyFRXFgi1ifNwsi6J5cS84f0WoOJPTFgppEDWEcJisy0EdUjSpBGiEl2X91FDuhzjAPkbhMs5wob59NCX4CJ04BfT6C2FWM9WLkLoigytxZ7ncGHhxkc36S500E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745392997; c=relaxed/simple;
-	bh=Tbr2Q90DvfOtSGXfzrp3mJhdDmZv07AsT8h8G2q3gw4=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=E12lCOP9PzqmvdEplIhWcm30h0xqxiBLrmRJtOKnkK2uVtq6Gg4hQh3ecvgQ6akz5oY4Mxq88Jig7VfeBt+9sjg4YpMhav9FSP5fg8o43sG+fs5O9kOvBUOGYuGg6jblYeHU+p6aDamhDFtzcudUd83B+5Cbs6Ws8IIvKRejMg4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=RWs6N5gw; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RWs6N5gw"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-43edb40f357so44628845e9.0
-        for <linux-serial@vger.kernel.org>; Wed, 23 Apr 2025 00:23:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1745392994; x=1745997794; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:references:cc:to:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=WB0RCfrpm6KO0azBMBNT3gQRNEul5d5cuD4mn3Ij+n8=;
-        b=RWs6N5gwxNgu5fYaYYTWtFuLsIi5MuuXBUlM3dbKTM8z0RvoVBOX07Qj40hrZ8X7cC
-         xuwZ00pkQEDbHOXC8oIXO2/pQlkWXf8M0CPLoa72haoX2QbowU8W7tojbd9+L8tXIO6U
-         V66hybfxxizMRC3gqRAlrVOFcF1nP6lc6VI+p/GbihVik10YbjFgN1TiqcaOdrkmD1KU
-         MIjcHL+30acFyl7YuIKx9tRdEOXk/dm+M71+KIb3KrWFBnTcwMHMVmjBXi++wqXwt5sr
-         ASROJdL9LKlfJ3j783XBRLno/c7jQzL0hujM0CZqyMEQtwZ0JeMDrXz0MgeywxWcAsGv
-         k1VQ==
+	s=arc-20240116; t=1745410244; c=relaxed/simple;
+	bh=50OYhniUO40MUdEvUFE9mUFx35g/8lAU7glKM/JLcO4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kSGasSSiBnbVjnZrV6klmbPeWkPJNjIyk9Q5C//fxWw05W+dr2IBuZqBGP5uMBfqTXlISF9UF6vCs3y2rv3W0XUDvXtAtKXAuYsM5jtWWJ2bjSMHR75HLPbzT4W0qWyEy0i1FJSItzneWnnm0hbrCbq89hKI6LZBihhvDzMQcc0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-7c9376c4bddso437716385a.3;
+        Wed, 23 Apr 2025 05:10:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745392994; x=1745997794;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:references:cc:to:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=WB0RCfrpm6KO0azBMBNT3gQRNEul5d5cuD4mn3Ij+n8=;
-        b=uFax8H1fpSf+20OCmg4uGVkN515U2aiYwdTuWRJf8/JskyggQVZohKBS1E9SGUBtzD
-         dqu6tyU6u8Au1LyPVyNXlM1aZ8PPhLk4Gp2+B+5il5/rThrIStknmA0qvyceZA+4iKRw
-         SrkXwUhpGySZUfEZCKF8H8Bc/uBA+1/ieIZe4LhAZgP1aIwVaAfUyIFlI+MRRuZsu01g
-         IrGmFUcX7shGee+STW1/xq2CvM12bp7eLz3rV9eemlqs/lDKPWvw0vQzM+vzMbQc6uDB
-         s4KK4Gm7+k7pONv7Dr8ExVChfikyFcSQ4gXNJV+CTggXiVOv5Or8hSzIUY+tyOi7c+rP
-         IRcA==
-X-Forwarded-Encrypted: i=1; AJvYcCU0I5E7+XTyZmAhygCpqdFYKckzDAhOZ5/m5H/8hCpGn5QuiqPg3J7UB7UsaDUSmC5kyPK9rmkNs+PdhO0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwRxta+yOaP/DvviZ69Xix4FsTwxau7CsmKPYA31iJ4en/akBQE
-	lJ2otNHMiRmum9ZZqmYF2EBNIj6pVkLka39GoAO24QVqKSPgTCR3UNFZITDM8jU=
-X-Gm-Gg: ASbGncvVlXadf9oxveyQLjD9mw5+iVvnwTTL8t6b5Zn6JsxleDjC+SdOkK1w+cO9Yn5
-	CknBiXCEUxXrxnT4rXqeN1Sa7ov018iEwe3u7K/j7UxJHqUNMxf49iA9DEZW1yT269ebYL+pSXc
-	J2TIJpuHzAhvaAH0Vlq/J5pWF1uVLaqpVCfiqXHAlGnADG4IbmsY5JphijYhIzhzZ+I/NK2Dcv7
-	bAKGiHMNPP5Rix/D4twXCdXpjnrba25pUKUmPr+yWXnFErstQ1zEFru10mJWTCMd5XRpQhy+r9x
-	aH6UmpnKVyltYBeRgY4Ok+acOTCwHZph1k+dmhYh4IoTwUuSC3ldRY4ljOu5LZ2RrWLQVk2R4JO
-	cR2QBY0lb20WS2FkQHg==
-X-Google-Smtp-Source: AGHT+IF7iRgKZdIR7ImIaoLwdAL0qVsjtbiBOb3c9EZ1TcpXaE3Utdm6WozDnJe6gph5La9PzewJlg==
-X-Received: by 2002:a05:600c:350a:b0:440:66c5:26f4 with SMTP id 5b1f17b1804b1-4406ab703b8mr160055435e9.1.1745392993806;
-        Wed, 23 Apr 2025 00:23:13 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:3d9:2080:2835:c2f4:c226:77dd? ([2a01:e0a:3d9:2080:2835:c2f4:c226:77dd])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-44092d1709esm15163115e9.7.2025.04.23.00.23.13
+        d=1e100.net; s=20230601; t=1745410240; x=1746015040;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=0QM5ZvbfPXr7i/ZxTBQ5GhLuL0x40QZISlgvl9O7QBQ=;
+        b=SRbkX9a+sVgAJSayEi45MXzCgcIXhhO6AkhrmXpHTispUcrWNxnpNocwsj2scZbquS
+         jRZ85dEIpWVLRb3ORAlEQWihDXX8F7g4OZaI1na0kvS5MDFMXbvAOXtaXXYtbPCMmrap
+         AmCv+vuVCIiBOLb4bUAEeV7HHeip1iod0R3l2ouONGD+oeSzNZ5JYa+9XikaD0YUQrer
+         +iBvP0ciznoYDl17Sk2t2LRcg23d8w3oMxBbKHLP7tKesxkAKps2spHBGP6lG1Sc9fTh
+         VvENRuabohTmcslBpapEMeXNBCH/nbVQpYqPo6/FWGFCiX41TatlaGoZ7Q1kVMToxIE/
+         oI0A==
+X-Forwarded-Encrypted: i=1; AJvYcCV+3xK/FZVPVlTpL1li9lke8qfqyRa3h+mXDM4Xq+Xy5vGiOYXGplt9RSyQ/I5AiiVrSs7FjZg3CWm2lZf4@vger.kernel.org, AJvYcCWuCTdsIpPWVLDD0Qi76tTDGjmSiGAhe63OcwcsnRjf1FOXhqRz4TO30D51wmXQryPUXArArXk/DQfK@vger.kernel.org, AJvYcCWvsKd7it13s6n4whnjEDsFf5UfbN2jXzDIVGOHlM1jXmwIfoYTQrR0IXXqb4BtNteAlP3zBkrEYwJUgkTOPsPSguo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy2VeiADKz2TTBPc96EfI9hUtc7Pk2MOmcXxWT8lLvDSotDwSse
+	J4jET70O/CClOJTl7sotHAsf/38xS385gCgXNAxQgjHbmtA24yB3QW95K17aF0A=
+X-Gm-Gg: ASbGncu3+UmsKNcZglydN+Z1xDcBrbPHIu3jA9KaZMOt9IO9pr3jDd9hZKw5RnoT4fj
+	Te+yyv3Q61nNEnhc/KBN2CVmVyjHEnpCq7/F0xYOBe0Eg3zFd4cUEi+tWjUrYrvMOkMgukBfRvv
+	nAYAsEWU3M5xJ/Dyv5Fsg5jRxIRezgkt4N0u3hPc1CN8/JP5WXf6qj7tNCIIqyt/sjaZ9yG2MwN
+	jH+O3ZQLNE/kdELhjjGcb/hO3RHHGRkPQnNYSEQ87QBQ+ttIlqujnUhBBUBKqvzzbgnd80M1+lY
+	+gC/9mn9xE/+2YbFSoOyLT9f8I4Cm1Kqz5BbsodNZ3sFaguVsKgrXwM7KcoQnaQ/znzZA9ZnMbK
+	ksCvg9OQ=
+X-Google-Smtp-Source: AGHT+IHuVjSt7Qv+69yAR5X4OtcCuZau5YIC+ZndzM9DFYw5yHxRvbj/qK47ccv28JGEtlzIm00Pbg==
+X-Received: by 2002:a05:620a:2890:b0:7c5:9c13:2858 with SMTP id af79cd13be357-7c927e525a4mr2605258485a.0.1745410240282;
+        Wed, 23 Apr 2025 05:10:40 -0700 (PDT)
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com. [209.85.222.180])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925b778c0sm675243785a.112.2025.04.23.05.10.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Apr 2025 00:23:13 -0700 (PDT)
-Message-ID: <eb1c3442-6b86-42e9-a672-eaba7de8b375@linaro.org>
-Date: Wed, 23 Apr 2025 09:23:12 +0200
+        Wed, 23 Apr 2025 05:10:39 -0700 (PDT)
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7c5675dec99so605236585a.0;
+        Wed, 23 Apr 2025 05:10:39 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUvpxnw8DQC7Od+Vclf+C4B1SFCZjR/hL1x4HkAJxnijGrw4S/xGf99EgUiKJIG2R5jn0kjzXV5LNw2@vger.kernel.org, AJvYcCWND1k9j+CDqbTqTX76TK1Hyt7WKet3k4adO/lxvO/txc9ZHffWA77GI0ueTT0TVbRz1h/NFlp6q93MwwyeprY5sj0=@vger.kernel.org, AJvYcCWtXuuSSh/2OCsVDvra2pqOohM8ibkpcri8XmsY8MEt8WlAICwRAVV2a+UrAonOKkk7ORD82J48LgKCU+o6@vger.kernel.org
+X-Received: by 2002:a05:620a:3181:b0:7c5:dfe7:4b2d with SMTP id
+ af79cd13be357-7c927f9a96dmr3344890285a.18.1745410239677; Wed, 23 Apr 2025
+ 05:10:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: neil.armstrong@linaro.org
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH 0/7] Baisc devicetree support for Amlogic S6 S7 and S7D
-To: Xianwei Zhao <xianwei.zhao@amlogic.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>,
- Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
- Jerome Brunet <jbrunet@baylibre.com>, Kevin Hilman <khilman@baylibre.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-amlogic@lists.infradead.org
-References: <20250317-s6-s7-basic-v1-0-d653384e41f3@amlogic.com>
- <a175ed1d-9e57-4150-af8f-7ca785203108@amlogic.com>
- <e3229c42-b322-447a-ad1e-86c6f20dd54e@linaro.org>
- <be8b7874-1251-4ba8-9243-a615517861ab@amlogic.com>
-Content-Language: en-US, fr
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro
-In-Reply-To: <be8b7874-1251-4ba8-9243-a615517861ab@amlogic.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <90c7aa143beb6a28255b24e8ef8c96180d869cbb.1744271974.git.geert+renesas@glider.be>
+ <CAL_Jsq+sCDEO_n_TLmyNBfhc71NNWWe2UQ21jh8+AdHH=G+KAw@mail.gmail.com>
+ <Z_k3JV1dEexJurdc@shikoro> <20250411161620.GA3329787-robh@kernel.org>
+In-Reply-To: <20250411161620.GA3329787-robh@kernel.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 23 Apr 2025 14:10:28 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdW+zxrjAnvxKUrR6jKxrt6j=GqWWqkFsK9wXVed4LjeTg@mail.gmail.com>
+X-Gm-Features: ATxdqUEqDdop42Pl1kgOCsp2hc6Y8nfJGNl1D-80czuaW_alLiTH5lFh5gAgDoc
+Message-ID: <CAMuHMdW+zxrjAnvxKUrR6jKxrt6j=GqWWqkFsK9wXVed4LjeTg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: Simplify DMA-less
+ RZ/N1 rule
+To: Rob Herring <robh@kernel.org>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Hi Rob,
 
-On 23/04/2025 08:15, Xianwei Zhao wrote:
-> Hi Neil,
->     Thanks for your reply.
-> 
-> On 2025/4/22 21:49, Neil Armstrong wrote:
->> [ EXTERNAL EMAIL ]
->>
->> Hi,
->>
->> On 22/04/2025 13:45, Xianwei Zhao wrote:
->>> Hi Neil,
->>>     A gentle ping, thanks.
->>
->> I'll apply them this week except patch 4,
->>
->> so can you send patch 4 separately since it goes via the tty tree ?
->>
-> 
-> I will send patch 4 separately.
-> The following patches(5 6 7) can be not included for now. Without the patch 4, the command "make ARCH=arm64 dtbs_check W=1" will fail to execute.
+On Fri, 11 Apr 2025 at 18:16, Rob Herring <robh@kernel.org> wrote:
+> On Fri, Apr 11, 2025 at 05:37:09PM +0200, Wolfram Sang wrote:
+> > On Fri, Apr 11, 2025 at 08:38:58AM -0500, Rob Herring wrote:
+> > > On Thu, Apr 10, 2025 at 3:23=E2=80=AFAM Geert Uytterhoeven
+> > > <geert+renesas@glider.be> wrote:
+> > > >
+> > > > There is no need to repeat all SoC-specific compatible values in th=
+e
+> > > > rule for DMA-less RZ/N1 variants.  Use wildcard "{}" instead, to ea=
+se
+> > > > maintenance.
+> > > >
+> > > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> > > > ---
+> > > >  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml          | 4 =
++---
+> > > >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > >
+> > > Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
+> >
+> > I'll send my counterpatch in some minutes.
+>
+> IMO, whether you drop the platform is orthogonal to this patch.
+>
+> Whether or not the platform can run Linux is irrelevant to whether there
+> are bindings. Can it run u-boot? Now, if no one is going to make the
+> bindings complete and upstream a .dts for it, then remove it.
 
-I know, but since it's reviewed, Greg KH will pick it for the next release so it's fine.
+FTR, the document "RZ/N1 U-boot Users Manual Rev.1.06"[1] covers not
+only RZ/N1D (dual-A7 + M3) and RZ/N1S (single-A7 + M3, no external RAM),
+but also the lowest member RZ/N1L (M3-only, no external RAM).
 
-Neil
+[1] https://www.renesas.com/en/products/microcontrollers-microprocessors/rz=
+-mpus/rzn1d-microprocessors-featuring-5-ethernet-ports-and-latest-redundanc=
+y-protocol-industrial-network-master
 
-> 
->> Thanks,
->> Neil
->>
->>>
->>> On 2025/3/17 15:16, Xianwei Zhao via B4 Relay wrote:
->>>> [ EXTERNAL EMAIL ]
->>>>
->>>> Amlogic S6 S7 and S7D are application processors designed for
->>>> hybrid OTT/IP Set Top Box and high-end media box applications.
->>>>
->>>> Add the new S6 SoC/board device tree bindings.
->>>> Add the new S7 SoC/board device tree bindings.
->>>> Add the new S7D SoC/board device tree bindings.
->>>>
->>>> Add basic support for the S6 based Amlogic BL209 board, which describes
->>>> the following components: CPU, GIC, IRQ, Timer and UART. These are capable of
->>>> booting up into the serial console.
->>>>
->>>> Add basic support for the S7 based Amlogic BP201 board, which describes
->>>> the following components: CPU, GIC, IRQ, Timer and UART. These are capable of
->>>> booting up into the serial console.
->>>>
->>>> Add basic support for the S7D based Amlogic BM202 board, which describes
->>>> the following components: CPU, GIC, IRQ, Timer and UART. These are capable of
->>>> booting up into the serial console.
->>>>
->>>> Signed-off-by: Xianwei Zhao <xianwei.zhao@amlogic.com>
->>>> ---
->>>> Xianwei Zhao (7):
->>>>        dt-bindings: arm: amlogic: add S6 support
->>>>        dt-bindings: arm: amlogic: add S7 support
->>>>        dt-bindings: arm: amlogic: add S7D support
->>>>        dt-bindings: serial: amlogic,meson-uart: Add compatible string for S6/S7/S7D
->>>>        arm64: dts: add support for S6 based Amlogic BL209
->>>>        arm64: dts: add support for S7 based Amlogic BP201
->>>>        arm64: dts: add support for S7D based Amlogic BM202
->>>>
->>>>   Documentation/devicetree/bindings/arm/amlogic.yaml | 18 ++++
->>>>   .../bindings/serial/amlogic,meson-uart.yaml        |  3 +
->>>>   arch/arm64/boot/dts/amlogic/Makefile               |  3 +
->>>>   .../boot/dts/amlogic/amlogic-s6-s905x5-bl209.dts   | 42 +++++++++
->>>>   arch/arm64/boot/dts/amlogic/amlogic-s6.dtsi        | 97 +++++++++++++++++++++
->>>>   .../boot/dts/amlogic/amlogic-s7-s805x3-bp201.dts   | 41 +++++++++
->>>>   arch/arm64/boot/dts/amlogic/amlogic-s7.dtsi        | 99 ++++++++++++++++++++++
->>>>   .../boot/dts/amlogic/amlogic-s7d-s905x5m-bm202.dts | 41 +++++++++
->>>>   arch/arm64/boot/dts/amlogic/amlogic-s7d.dtsi       | 99 ++++++++++++++++++++++
->>>>   9 files changed, 443 insertions(+)
->>>> ---
->>>> base-commit: 73e4ffb27bb8a093d557bb2dac1a271474cca99c
->>>> change-id: 20250221-s6-s7-basic-f300c30877e6
->>>>
->>>> Best regards,
->>>> -- 
->>>> Xianwei Zhao <xianwei.zhao@amlogic.com>
->>>>
->>>>
->>
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
+
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
