@@ -1,128 +1,149 @@
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B01F72701D5;
-	Wed, 23 Apr 2025 12:10:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 112CB224D6
+	for <linux-serial@vger.kernel.org>; Wed, 23 Apr 2025 13:01:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745410244; cv=none; b=EKjzKL70G+5XzOBLohYZqjDX+DZHjds8JA1mUfkPnu7sJw2mpyFRXFgi1ifNwsi6J5cS84f0WoOJPTFgppEDWEcJisy0EdUjSpBGiEl2X91FDuhzjAPkbhMs5wob59NCX4CJ04BfT6C2FWM9WLkLoigytxZ7ncGHhxkc36S500E=
+	t=1745413276; cv=none; b=C9IByboeaFtkB4MomJdjk5rlfLDgFr5PcoEkzYvIdhpCeBkfSGcl5Bo4s0qk+vAi2he++kH7ckxDbdBMoOdRWsJXzEzu/SUaUlL2VMTDqMh8qqxFAOPudE6WPCVsaYgdepRUKNFbZBBeaZ+MN4aNm+LxQ38GfonDuPeoGIY1cco=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745410244; c=relaxed/simple;
-	bh=50OYhniUO40MUdEvUFE9mUFx35g/8lAU7glKM/JLcO4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kSGasSSiBnbVjnZrV6klmbPeWkPJNjIyk9Q5C//fxWw05W+dr2IBuZqBGP5uMBfqTXlISF9UF6vCs3y2rv3W0XUDvXtAtKXAuYsM5jtWWJ2bjSMHR75HLPbzT4W0qWyEy0i1FJSItzneWnnm0hbrCbq89hKI6LZBihhvDzMQcc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-7c9376c4bddso437716385a.3;
-        Wed, 23 Apr 2025 05:10:42 -0700 (PDT)
+	s=arc-20240116; t=1745413276; c=relaxed/simple;
+	bh=wd9BuDyfY2g+YcmDFO0GJF3WmdKVfVi8IfjkUW9YZzU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=I1pcB6R0e146aFcnibhEfRxWBpxgNdxmt4twxhgARWWEDmw9cHp4ifQYic/QlOTh+o+KxAx8zS9DKA4ej61Rmt9po2eYUVzh6rheFvbuINEk+7JG9C7cclonhAmA0xYSxPqnIf13io9f2JMfve3kQT1Fkxj7LXwpUHxD0EMgbn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=jebbOYq2; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="jebbOYq2"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53NAIN1X008439
+	for <linux-serial@vger.kernel.org>; Wed, 23 Apr 2025 13:01:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	xPikF6CHMtboH8wVgZUcnmTj+ScLp41cXAhI3chWQ6s=; b=jebbOYq2L4NxvuWT
+	OgGT6NlsvwUlxEMsseGJeXf+uSDT3Phwfeia/pLvt2f9Mnd3upe0+fLHgPZxcmYs
+	cSyStGCmznyp94Ooi/KJGUQXCvp4rv/3pmWuXf2Z4yLlAvoZqHOXUdUnOcIBckFf
+	QAMokAIUHz7BXCsvvbKnS195TQ1Uzbpk2Ua2wF4j1BKE3djSoH3htCccvH9nzC25
+	g4E7BSfqA7CoIQvAGQemCJrVKhA3dQJb+cavut9Zp+vK54xBguiVItxHrop4Rf6t
+	Cd4mng7hAS2DtGBoB5+xU1iTO/pqAKxjQkj76N0GNGSWPCWAB4BMFsf4nhzpv3BR
+	65supg==
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 466jh5a6mu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Wed, 23 Apr 2025 13:01:12 +0000 (GMT)
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-7c545ac340aso37935185a.1
+        for <linux-serial@vger.kernel.org>; Wed, 23 Apr 2025 06:01:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745410240; x=1746015040;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0QM5ZvbfPXr7i/ZxTBQ5GhLuL0x40QZISlgvl9O7QBQ=;
-        b=SRbkX9a+sVgAJSayEi45MXzCgcIXhhO6AkhrmXpHTispUcrWNxnpNocwsj2scZbquS
-         jRZ85dEIpWVLRb3ORAlEQWihDXX8F7g4OZaI1na0kvS5MDFMXbvAOXtaXXYtbPCMmrap
-         AmCv+vuVCIiBOLb4bUAEeV7HHeip1iod0R3l2ouONGD+oeSzNZ5JYa+9XikaD0YUQrer
-         +iBvP0ciznoYDl17Sk2t2LRcg23d8w3oMxBbKHLP7tKesxkAKps2spHBGP6lG1Sc9fTh
-         VvENRuabohTmcslBpapEMeXNBCH/nbVQpYqPo6/FWGFCiX41TatlaGoZ7Q1kVMToxIE/
-         oI0A==
-X-Forwarded-Encrypted: i=1; AJvYcCV+3xK/FZVPVlTpL1li9lke8qfqyRa3h+mXDM4Xq+Xy5vGiOYXGplt9RSyQ/I5AiiVrSs7FjZg3CWm2lZf4@vger.kernel.org, AJvYcCWuCTdsIpPWVLDD0Qi76tTDGjmSiGAhe63OcwcsnRjf1FOXhqRz4TO30D51wmXQryPUXArArXk/DQfK@vger.kernel.org, AJvYcCWvsKd7it13s6n4whnjEDsFf5UfbN2jXzDIVGOHlM1jXmwIfoYTQrR0IXXqb4BtNteAlP3zBkrEYwJUgkTOPsPSguo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy2VeiADKz2TTBPc96EfI9hUtc7Pk2MOmcXxWT8lLvDSotDwSse
-	J4jET70O/CClOJTl7sotHAsf/38xS385gCgXNAxQgjHbmtA24yB3QW95K17aF0A=
-X-Gm-Gg: ASbGncu3+UmsKNcZglydN+Z1xDcBrbPHIu3jA9KaZMOt9IO9pr3jDd9hZKw5RnoT4fj
-	Te+yyv3Q61nNEnhc/KBN2CVmVyjHEnpCq7/F0xYOBe0Eg3zFd4cUEi+tWjUrYrvMOkMgukBfRvv
-	nAYAsEWU3M5xJ/Dyv5Fsg5jRxIRezgkt4N0u3hPc1CN8/JP5WXf6qj7tNCIIqyt/sjaZ9yG2MwN
-	jH+O3ZQLNE/kdELhjjGcb/hO3RHHGRkPQnNYSEQ87QBQ+ttIlqujnUhBBUBKqvzzbgnd80M1+lY
-	+gC/9mn9xE/+2YbFSoOyLT9f8I4Cm1Kqz5BbsodNZ3sFaguVsKgrXwM7KcoQnaQ/znzZA9ZnMbK
-	ksCvg9OQ=
-X-Google-Smtp-Source: AGHT+IHuVjSt7Qv+69yAR5X4OtcCuZau5YIC+ZndzM9DFYw5yHxRvbj/qK47ccv28JGEtlzIm00Pbg==
-X-Received: by 2002:a05:620a:2890:b0:7c5:9c13:2858 with SMTP id af79cd13be357-7c927e525a4mr2605258485a.0.1745410240282;
-        Wed, 23 Apr 2025 05:10:40 -0700 (PDT)
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com. [209.85.222.180])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925b778c0sm675243785a.112.2025.04.23.05.10.39
+        d=1e100.net; s=20230601; t=1745413272; x=1746018072;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xPikF6CHMtboH8wVgZUcnmTj+ScLp41cXAhI3chWQ6s=;
+        b=Pi0xLiK+2fMg1U6BeHxpRrxgDaGzZoNo7l1DsUIdMCIxGWFmKd5lX62j7LPjUk1Urq
+         XZi9Hc7hMzA8km2Z/VZIuNqxITYzI7cfJfZmhT7nrrSEjHjZj41rx5w16amQEybgrjwf
+         fEHd3gIyArxTwPMHZV2YmGhJdJrUgzd2CgtTkUInwR6xFFTb6/5K9jtdVnQwdLxmnkwq
+         Xy2Sbjgznsr+W5GwtIHZOIHH6epj7957t/CcwHTDQwIRel0xbXlNNEO/GbfBj08dv3lg
+         jpbEIXRF6xw3LU/JvFq0rcl/ErkYFCqRAm3Iky+EtTi7uoX4xv1nhCLcLWgI1gA4H45L
+         hRAA==
+X-Forwarded-Encrypted: i=1; AJvYcCU/8V5UPCxE8SxJ0ZcWQs0MJ/6bkrtFbR3uh0tKc0eRtovi525KcpnFT5Jsn4OgH4we/ucCwqdsH+1oUdk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyYo9lWfmBWrndPm/W9WAvm0lNadpFcj5GGRzpgQP+9sIYdGEXj
+	5T/aIaHTF6CIiccAWWsjv1DldnE2Df+fHadquR6BHa2hgIIKMErXfcetrX+pvpoY/r1hERHOBod
+	1hVRbM8ZTjOD5V5B3AAjC0LIuC9H9z2mYhYGyBbGxfFF6skdFcJMjTXjvGAP5Rwg=
+X-Gm-Gg: ASbGnct6pfgjOQ2cUS+1aM6nnLqEzc9Cpm/d9uCOVnC5lkKSNX8ell0XNtF90t598tc
+	rruw5W4b6/yPZDK1t77+miPjKuuOx8qvKc88kQT25w7WQ+jz5wXd1fElnl27wGr1Bls72J17B5T
+	Ku+6Ugb+osfMgJwYK82d/PtG2zLXfwU4iTh6bp1+Kxayk2y4/J3puaI7KKkZQ+/OAAenjF+yicc
+	4X8NZKd87rPQFHSJiER5R/hZ48vX5MZgKYFyJlNM/PiIgBFlkxM1IEkktfQ9J/CSagilx0Ky8B4
+	m7OaZcJNGrcv16Aqjk7rTM/tI2TOoJnCzzqCOOPUcg3lqk7ucGUCay0oSXQX+C/T0JM=
+X-Received: by 2002:a05:620a:2584:b0:7c7:a574:c0ac with SMTP id af79cd13be357-7c94d234d2bmr199585585a.3.1745413271774;
+        Wed, 23 Apr 2025 06:01:11 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEvC0BBlTo+m5g1Fq3RkWdluOAVAwUmBFljOPIeXR01i5VEzyjJw3LAtEQjfmCHpr6YmNfHig==
+X-Received: by 2002:a05:620a:2584:b0:7c7:a574:c0ac with SMTP id af79cd13be357-7c94d234d2bmr199580785a.3.1745413271071;
+        Wed, 23 Apr 2025 06:01:11 -0700 (PDT)
+Received: from [192.168.65.183] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-acb6eefc72fsm809912366b.101.2025.04.23.06.01.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Apr 2025 05:10:39 -0700 (PDT)
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7c5675dec99so605236585a.0;
-        Wed, 23 Apr 2025 05:10:39 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUvpxnw8DQC7Od+Vclf+C4B1SFCZjR/hL1x4HkAJxnijGrw4S/xGf99EgUiKJIG2R5jn0kjzXV5LNw2@vger.kernel.org, AJvYcCWND1k9j+CDqbTqTX76TK1Hyt7WKet3k4adO/lxvO/txc9ZHffWA77GI0ueTT0TVbRz1h/NFlp6q93MwwyeprY5sj0=@vger.kernel.org, AJvYcCWtXuuSSh/2OCsVDvra2pqOohM8ibkpcri8XmsY8MEt8WlAICwRAVV2a+UrAonOKkk7ORD82J48LgKCU+o6@vger.kernel.org
-X-Received: by 2002:a05:620a:3181:b0:7c5:dfe7:4b2d with SMTP id
- af79cd13be357-7c927f9a96dmr3344890285a.18.1745410239677; Wed, 23 Apr 2025
- 05:10:39 -0700 (PDT)
+        Wed, 23 Apr 2025 06:01:10 -0700 (PDT)
+Message-ID: <6662b275-6b8e-40be-b62f-c17ae8e63dfa@oss.qualcomm.com>
+Date: Wed, 23 Apr 2025 15:01:07 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <90c7aa143beb6a28255b24e8ef8c96180d869cbb.1744271974.git.geert+renesas@glider.be>
- <CAL_Jsq+sCDEO_n_TLmyNBfhc71NNWWe2UQ21jh8+AdHH=G+KAw@mail.gmail.com>
- <Z_k3JV1dEexJurdc@shikoro> <20250411161620.GA3329787-robh@kernel.org>
-In-Reply-To: <20250411161620.GA3329787-robh@kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 23 Apr 2025 14:10:28 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW+zxrjAnvxKUrR6jKxrt6j=GqWWqkFsK9wXVed4LjeTg@mail.gmail.com>
-X-Gm-Features: ATxdqUEqDdop42Pl1kgOCsp2hc6Y8nfJGNl1D-80czuaW_alLiTH5lFh5gAgDoc
-Message-ID: <CAMuHMdW+zxrjAnvxKUrR6jKxrt6j=GqWWqkFsK9wXVed4LjeTg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: serial: snps-dw-apb-uart: Simplify DMA-less
- RZ/N1 rule
-To: Rob Herring <robh@kernel.org>
-Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/9] Enable QUPs and Serial on SA8255p Qualcomm
+ platforms
+To: Praveen Talari <quic_ptalari@quicinc.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org
+Cc: psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com,
+        quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
+        quic_mnaresh@quicinc.com, quic_shazhuss@quicinc.com
+References: <20250418151235.27787-1-quic_ptalari@quicinc.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <20250418151235.27787-1-quic_ptalari@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNDIzMDA5MSBTYWx0ZWRfX1eByWRJ1MoIr GhMsD7hRc0EDqvPsWemPbLCy1ypBMVONNf4qr5ffbY8kLW5UnT5682Gj91VuNxOaHly9v1aK0FO MxFgKRkxmvHCK9K8TpmZ7fZ/wy9U6V4wXkmXzxdKlq2WxEfq/qYig8xoWgA51e/V79kW8sZE2Lf
+ WtJ3rsUWelVLr+LVPBg4w1wG5Hvl/M8bXjXwT5tQEg0XcpPIVwxMXS5zNKbytYve1y9D4yB2kyE EtPBtQErd0clrOtG8U6UZNDyNqJ1sPeAQxgaVcnzbz6ZP0DtP1ltg154WulSYKWV6tx6jj/PnrO A98bjyy8kH34JSaUcoTqUnoEWtovqxd+WN5iHf0KwX8JdcUU7HTVuRD6oFRXvBX9t6bwd2hEWg9
+ F9kqjrIOItcZHx7rNee5ohXUlzC0KwZka0yfOPtwe/497K2y1pQ0UrR1tyW2qXqchViy5d0h
+X-Proofpoint-GUID: PvPHVz7V6_0lTqsk2Y8FYLUfbXA9cPjN
+X-Authority-Analysis: v=2.4 cv=B/S50PtM c=1 sm=1 tr=0 ts=6808e498 cx=c_pps a=50t2pK5VMbmlHzFWWp8p/g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=NEAV23lmAAAA:8 a=TM_zcG2lH5YfWnRg5aMA:9 a=QEXdDO2ut3YA:10
+ a=IoWCM6iH3mJn3m4BftBB:22
+X-Proofpoint-ORIG-GUID: PvPHVz7V6_0lTqsk2Y8FYLUfbXA9cPjN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.680,FMLib:17.12.80.40
+ definitions=2025-04-23_08,2025-04-22_01,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ lowpriorityscore=0 bulkscore=0 impostorscore=0 suspectscore=0 mlxscore=0
+ priorityscore=1501 phishscore=0 malwarescore=0 spamscore=0 clxscore=1015
+ classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2504230091
 
-Hi Rob,
+On 4/18/25 5:12 PM, Praveen Talari wrote:
+> The Qualcomm automotive SA8255p SoC relies on firmware to configure
+> platform resources, including clocks, interconnects and TLMM. The device
+> drivers request resources operations over SCMI using power and
+> performance protocols.
+> 
+> The SCMI power protocol enables or disables resources like clocks,
+> interconnect paths, and TLMM (GPIOs) using runtime PM framework APIs,
+> such as resume/suspend, to control power states(on/off).
+> 
+> The SCMI performance protocol manages UART baud rates, with each baud
+> rate represented by a performance level. Drivers use the
+> dev_pm_opp_set_level() API to request the desired baud rate by
+> specifying the performance level.
+> 
+> The QUP drivers are SCMI clients, with clocks, interconnects, pinctrl
+> and power-domains abstracted by a SCMI server.
 
-On Fri, 11 Apr 2025 at 18:16, Rob Herring <robh@kernel.org> wrote:
-> On Fri, Apr 11, 2025 at 05:37:09PM +0200, Wolfram Sang wrote:
-> > On Fri, Apr 11, 2025 at 08:38:58AM -0500, Rob Herring wrote:
-> > > On Thu, Apr 10, 2025 at 3:23=E2=80=AFAM Geert Uytterhoeven
-> > > <geert+renesas@glider.be> wrote:
-> > > >
-> > > > There is no need to repeat all SoC-specific compatible values in th=
-e
-> > > > rule for DMA-less RZ/N1 variants.  Use wildcard "{}" instead, to ea=
-se
-> > > > maintenance.
-> > > >
-> > > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > > > ---
-> > > >  .../devicetree/bindings/serial/snps-dw-apb-uart.yaml          | 4 =
-+---
-> > > >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > >
-> > > Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
-> >
-> > I'll send my counterpatch in some minutes.
->
-> IMO, whether you drop the platform is orthogonal to this patch.
->
-> Whether or not the platform can run Linux is irrelevant to whether there
-> are bindings. Can it run u-boot? Now, if no one is going to make the
-> bindings complete and upstream a .dts for it, then remove it.
+So I recently started working on abstracting away power controls from
+the SE protocol drivers into a single place, among other improvements
 
-FTR, the document "RZ/N1 U-boot Users Manual Rev.1.06"[1] covers not
-only RZ/N1D (dual-A7 + M3) and RZ/N1S (single-A7 + M3, no external RAM),
-but also the lowest member RZ/N1L (M3-only, no external RAM).
+A snapshot of this work is available here
 
-[1] https://www.renesas.com/en/products/microcontrollers-microprocessors/rz=
--mpus/rzn1d-microprocessors-featuring-5-ethernet-ports-and-latest-redundanc=
-y-protocol-industrial-network-master
+https://github.com/quic-kdybcio/linux/commits/topic/single_node_genise/
 
-Gr{oetje,eeting}s,
+(not yet 100% ready..)
 
-                        Geert
+I think it'd make sense to get it done first, so that we can condense
+most of your changes in the common driver, where we'd swap out the clock
+handling for perf level setting instead
 
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
+Konrad
