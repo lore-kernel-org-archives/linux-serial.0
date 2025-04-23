@@ -1,141 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66910186A;
-	Wed, 23 Apr 2025 05:11:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4A36266592
+	for <linux-serial@vger.kernel.org>; Wed, 23 Apr 2025 05:36:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745385071; cv=none; b=RtJeDu6kBfX2l5AGA2MZURmfdDDKnjVIwb6nQOUKYQx7cPRDA1MNfrBc3kPraTguOhZwFjMuI8xV7e1P5KU/e0bempapLXg6um7L547kLCW0557D7+bUZBzo3T0z/x4NrwRinP/XBGcb/Ugz096FTJwiRZi+cXrCxAMDnwRSUiU=
+	t=1745386570; cv=none; b=JVr82zFcVzv+0Th+YhkJzURuqJQ6kBporOtVEG0pLKjeqga+VQjf9iEYGWQC8GlB1hBM4lNlo5m/1MNXJ8mBHdtmMrpWyK4/4W/aUQrDBM77X0J+oYAVg/Q5YJTtg4st6BGHKP2JyeIi90RdeImM1X/1x5qO5MJEsV5719Qt3ik=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745385071; c=relaxed/simple;
-	bh=7keckhtABWhiyOtwpWQepxmD1/wWw9n3KVzmE5Vw61o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=EqxhQlnLkQpGATmHs8cMtZQJ2B1YpZPEsnmvQmc8gYmdtw2KfQqqsAKHa9xvpxqcxBsnP2WVjt6dsSk1sJ74W1sWCzHoF5PWLjqA0j+ETrNx09TAm6ePOuADViaQr196B7PY0y9XwbHjU9BDFQbl8YXkITF1BPZNA8Q937eIiyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZmoDNxAz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745386570; c=relaxed/simple;
+	bh=znd3Gx+1i6NPOJ5fHPpMjC5QdTJie7kovH5k6mPOKO4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dwBZT/mCcfpr9iSDGefjGunL+8SRl26orUfuhDNpb7jIcmwnBBJ+P52g8oLfOT1aBHb5ibhs32SCoHokMolgA1AhoKzfkpBxyjogRIPCz282+RxZmSZvIlslNlUHhYFQ5oH4BL4SI+K6mQzgD3NYE0CfM+gaDpUO9nUURJhh3sI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=yfn0ie8l; arc=none smtp.client-ip=209.85.210.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZmoDNxAz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63ACDC4CEE2;
-	Wed, 23 Apr 2025 05:11:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745385070;
-	bh=7keckhtABWhiyOtwpWQepxmD1/wWw9n3KVzmE5Vw61o=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=ZmoDNxAzipeScZRwQ7T9skXTKQ82nLgKZU4wXvwdi6yicNTneoDKwqCu0gXVksvx3
-	 VHGp/VaOp5DFR7TpUXoLA2WxWQzs+1KNnPpcaXspC01leRceHhGnwCDiGX/Y9YcywF
-	 TtUc2dwUtLP4EBY0V2oWrFK+xoP5mNUp/TzsnVIi1xa2GRYtfN53HPS9/2FgI2FLEU
-	 0i0HKN9rZv2+C7OqPPggRWeWy0DiZa7NA8zUrXqRx8Wx4YkgIlRJ7/LpPXMSJek1dK
-	 5xNmZCjiWJcBs++Rjfm7IKD7iuyzhvfQ/GC9b81ri+PQwMBHNILBgNYiQUdMR2piNq
-	 BwTB27au4bjpg==
-Message-ID: <3292610b-acb0-4b72-8aa8-9eec491238c5@kernel.org>
-Date: Wed, 23 Apr 2025 07:11:07 +0200
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yfn0ie8l"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-736b98acaadso5724946b3a.1
+        for <linux-serial@vger.kernel.org>; Tue, 22 Apr 2025 22:36:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1745386568; x=1745991368; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=FqXZmhQqMpQ55WXDkvwtb6bzPG8ypT7T0jmt2s5ZCM4=;
+        b=yfn0ie8l1kYua/HCnXdMB4UPmI749NcR0wtsumJFxdtMr9ul2cJXyy2NrmAIvbZBqz
+         KG6dYBb3ySWWeVEbv3kdV6gNwEl7ynbZ2uZ1VIU/HjliuFsaG3Ci/0gNu4JaRaASuzck
+         WHSqgSShz3DWLxdMlaDw5q7LVbSN8Irg20jqFCyADjw3a/frVe3aL0vhvYHcuWL+iWiE
+         9TWtX/URv0O784ADQO0wD21sFD+Q3VaL2dj9x5ZWpmK5WMVMfQ2MwL3gVzfOcdqnGOMf
+         WlayqPWJc+GbFVX4ebBY5Xm8y9hq7D0U7O73gEH+LiZg2xr2TRemVM67QzhZpgrRjAQb
+         HMJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745386568; x=1745991368;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FqXZmhQqMpQ55WXDkvwtb6bzPG8ypT7T0jmt2s5ZCM4=;
+        b=p4U5OKEVSyH3lsNqdBJwLhPnhVzNUzM5eUadNHBvnqpKU5qp681P2K/iYmYJyhTfQ5
+         Yjhyjo92Orapxj0OxH/wTxf9obb9hUsNe5eK3CGjuduJG1+RDg8Xyx9KfNZOACP5Vjuo
+         6QiOAT3wW6S6DwlK7+PjQh2DcqIScBY9s4NPoeiKBtTJXS179TLqJiBYutaHFvmhqxuZ
+         d+O/HPukIP8if6RBMkdeo7e9bg84U0xZgKpGU8AeyHzHFZRT21xyIWzyhgRZtfJ4YfAm
+         cA8rhGTq8yXpdWIzYgl0555AsFGOMlg4DdwwmXvubz2PuxX0Q3EeQBUit5t5WMuqIAsC
+         MSAw==
+X-Forwarded-Encrypted: i=1; AJvYcCVX3g4oDycfCOc7WVSli0SImloGBRFM1BUKij0vSxYw/YScASWu4UjoDGGJBgmeunbDNMLJhCeGR/bT2mA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw/TlR34Wol9eh5zdVq1RM4ge2674XA9/kDhSHzC96YLEhqqHtu
+	b2IV1oaahSdUPggS6JGqJgbMuS9Ka7sOx3d95FEbj4R/3B9Uy/0vFrcYARD9d7w=
+X-Gm-Gg: ASbGncswivVmYX4/ZGwLEtgzVX498soF3zNwRWMuOs4/RVAOPe0ur/aDnIpPNUGY/dV
+	B7NM0ZM/xUDzyfhu0Jh87pVtLUlAGCvyTKPiKY/lw1GwsCTEAgtnM8xjbNKsOgbUv7Cq8OQDbtY
+	qsMXHk9hRT5LRhM5Hmsa+UEZb4dETgDq6RTjRzLb0poUjdzRVW5snN061t+gEcaRrvWHvCDKExM
+	rpTgvrssTyctGvhW6bVXAKGNA7LMq/yaQd+yL2gqPwkhQRkfDslbrWvxu5nPH+sW6/bS5zEO4TT
+	LIAqaUva22towd/RrKSTF0E7N5QxXXuGyhziQ86FfA==
+X-Google-Smtp-Source: AGHT+IGH5CEH3qbiKs7N8VcrCjZGvYVDP7IFgmEG+4RsZjJN0YJwU+Ch1jF6olLdlhwBTsOOZVjUQg==
+X-Received: by 2002:a05:6a00:3928:b0:736:755b:8317 with SMTP id d2e1a72fcca58-73dc15d32b0mr25849726b3a.21.1745386568035;
+        Tue, 22 Apr 2025 22:36:08 -0700 (PDT)
+Received: from localhost ([122.172.83.32])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73dbf8be876sm9697501b3a.36.2025.04.22.22.36.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Apr 2025 22:36:07 -0700 (PDT)
+Date: Wed, 23 Apr 2025 11:06:05 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+To: Praveen Talari <quic_ptalari@quicinc.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-pm@vger.kernel.org, psodagud@quicinc.com, djaggi@quicinc.com,
+	quic_msavaliy@quicinc.com, quic_vtanuku@quicinc.com,
+	quic_arandive@quicinc.com, quic_mnaresh@quicinc.com,
+	quic_shazhuss@quicinc.com, Nikunj Kela <quic_nkela@quicinc.com>
+Subject: Re: [PATCH v2 1/9] opp: add new helper API dev_pm_opp_set_level()
+Message-ID: <20250423053605.63njjtz3s3krdeqb@vireshk-i7>
+References: <20250418151235.27787-1-quic_ptalari@quicinc.com>
+ <20250418151235.27787-2-quic_ptalari@quicinc.com>
+ <20250421074004.yttb42qq4p5xzi3o@vireshk-i7>
+ <e6e1ee6d-a12f-4e18-b2d7-65d1ccca5308@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 tty-next] 8250: microchip: pci1xxxx: Add PCIe Hot reset
- disable support for Rev C0 and later devices
-To: Rengarajan S <rengarajan.s@microchip.com>,
- kumaravel.thiagarajan@microchip.com, tharunkumar.pasumarthi@microchip.com,
- gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, unglinuxdriver@microchip.com
-References: <20250423033841.33758-1-rengarajan.s@microchip.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20250423033841.33758-1-rengarajan.s@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e6e1ee6d-a12f-4e18-b2d7-65d1ccca5308@quicinc.com>
 
-On 23. 04. 25, 5:38, Rengarajan S wrote:
-> Systems that issue PCIe hot reset requests during a suspend/resume
-> cycle cause PCI1XXXX device revisions prior to C0 to get its UART
-> configuration registers reset to hardware default values. This results
-> in device inaccessibility and data transfer failures. Starting with
-> Revision C0, support was added in the device hardware (via the Hot
-> Reset Disable Bit) to allow resetting only the PCIe interface and its
-> associated logic, but preserving the UART configuration during a hot
-> reset. This patch enables the hot reset disable feature during suspend/
-> resume for C0 and later revisions of the device.
-> 
-> Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
-> ---
->   drivers/tty/serial/8250/8250_pci1xxxx.c | 18 ++++++++++++++++--
->   1 file changed, 16 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-> index e9c51d4e447d..ec573327590f 100644
-> --- a/drivers/tty/serial/8250/8250_pci1xxxx.c
-> +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-> @@ -115,6 +115,7 @@
->   
->   #define UART_RESET_REG				0x94
->   #define UART_RESET_D3_RESET_DISABLE		BIT(16)
-> +#define UART_RESET_HOT_RESET_DISABLE            BIT(17)
->   
->   #define UART_BURST_STATUS_REG			0x9C
->   #define UART_TX_BURST_FIFO			0xA0
-> @@ -620,7 +621,13 @@ static int pci1xxxx_suspend(struct device *dev)
->   	}
->   
->   	data = readl(p + UART_RESET_REG);
-> -	writel(data | UART_RESET_D3_RESET_DISABLE, p + UART_RESET_REG);
-> +
-> +	if (priv->dev_rev >= 0xC0)
-> +		writel(data | (UART_RESET_D3_RESET_DISABLE |
-> +		       UART_RESET_HOT_RESET_DISABLE), p + UART_RESET_REG);
-> +	else
-> +		writel(data | UART_RESET_D3_RESET_DISABLE,
-> +		       p + UART_RESET_REG);
+On 22-04-25, 22:37, Praveen Talari wrote:
+> most of helper APIs in core.c and even i don't see any helper API in
+> pm_opp.c.
 
-Instead of this overly long lines, could you just:
-   data |= UART_RESET_HOT_RESET_DISABLE;
-and keep the writel() as is?
+This is more of a wrapper over the existing C routines which is being
+added to reduce some boilerplate code from drivers. And so it makes
+sense to add this as an inline helper. May be there are others which
+can be moved too.
 
-thanks,
+> as reference of APIs in core.c, i have used  -EINVAl instead of IS_ERR(opp).
+
+That would likely be wrong, maybe we should fix those too.
+
 -- 
-js
-suse labs
+viresh
