@@ -1,112 +1,110 @@
-Received: from outbound.pv.icloud.com (p-west1-cluster4-host10-snip4-10.eps.apple.com [57.103.65.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09B432309B5
-	for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2025 12:24:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.103.65.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AB8427FD4C
+	for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2025 14:13:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745497444; cv=none; b=JyC2mcFO6Iho/aC1KKPK/SRuSG8MsgV8i8pMU4F2yFrgyLhevZcr+gXhWa8HcOy+eBYMskIJqV1rmOK+uvntmKgHOllIAjWRHaoq4L8jd77SjqC963SGktgv3aQmdt+yTtLzuWOxYIzO7uglRGaUhVzKW4aHwOlgv1iyOyLg7kk=
+	t=1745504039; cv=none; b=QqjLNzeig5MjokJGvYEfIKz0kd8o7ZZj52yFt1XAiOp779aVulXTLPmsrniWxUeYSiLlyyKh0wq2sqKPAEoBE3PbcseMbq1I6lXyfCM7475fuvN8RgrKC4WIpdh138SOXCL1klqFGtB5o4cV+6WvR3AYg1IBEPA7GthLINT1904=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745497444; c=relaxed/simple;
-	bh=Svj8K2mMfw7MHqeGqhHzAiT2JUFa4P4M2Mj1oniQpxI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GTNDm//qIuD1RRHW27pLg/XoLOEnfIPfDhQXxR6SfhVqQQtBiMJUFJdnOo5hUYeAziI9rQWlr5gyGsu8zSM/s3l+aPcXXqQaPTmQLsfPqtOArJkeOjzn+1N5CMiqEayFoR0lZv7PdMWoxd3p6jBW5ajKmwd8HqCfNEsz59xpmF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=v420VHWZ; arc=none smtp.client-ip=57.103.65.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
+	s=arc-20240116; t=1745504039; c=relaxed/simple;
+	bh=bEqpNki7jGGD4CCKcLuIXPBkDheH2qulR1vPkXOdIOM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=ZlC2QtmeYKVErkAXuH9yJqv7TzUF1hbOa/XQ3gH156l2KRwjt8Z3J2Pp/C7yPFuus2e+nfqXZWrGyMwbRaM3W4D3zzWZyfeeRmgiRsw//ysdgFJjQUA5SwtOSRDRw2XYBNklBayegPA5IzhZDxTpaKGuHYE9b6VSUfDFO0LFpkc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tk55LPHl; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="v420VHWZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-	s=1a1hai; bh=gzrc5Jt8l/p14lYtc9/COl7AJ4Ldszvxo6hIDOzbFJw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:x-icloud-hme;
-	b=v420VHWZySKjaGTu55npG0wDi7NWc9C9XKyZhky7BV/WD7vj+TjJRLKyr7y3iNmR3
-	 DyGMT0YjgqwkILJIEcFHsCfGaKp2w9aoHROSxywRXZsfFKip9Js2B82qHmo/At2wCu
-	 4kGXJA/VHDL2NN+fghpNwIqSIAyKLK3wrrlC/ok3wmmGQr4evOsu4QmGjeeKJCI5vs
-	 WIf02SWB0o+gKFvQSpwxeld7yv48oyRJiK4qZg3hrCbC9hB2QPOkYnwNybzj03g55F
-	 iWSqDG9tHdALMHwOd3IRX20nica55PiJb9beQTnpkKUTEdsxexZre11zmYFMSo3425
-	 ZqJn1iUr1bGpg==
-Received: from [192.168.1.26] (pv-asmtp-me-k8s.p00.prod.me.com [17.56.9.36])
-	by outbound.pv.icloud.com (Postfix) with ESMTPSA id 1D5A71800631;
-	Thu, 24 Apr 2025 12:23:55 +0000 (UTC)
-From: Zijun Hu <zijun_hu@icloud.com>
-Date: Thu, 24 Apr 2025 20:23:24 +0800
-Subject: [PATCH v2 2/2] serdev: Remove repeated device name in
- dev_(err|dbg) messages
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tk55LPHl"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-22d95f0dda4so16499505ad.2
+        for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2025 07:13:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1745504036; x=1746108836; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=bEqpNki7jGGD4CCKcLuIXPBkDheH2qulR1vPkXOdIOM=;
+        b=Tk55LPHlP4pEqHSLvpq4BVGw93xeBLDzXPom0qvop1cA0LiaB70Ya2uaZBbbBo9Mox
+         fdSYLGSsJkNUo1Pi06i4LuqjCUorPhqtz+KWNDF1jyhbKMHQg1F2NXHju0bvho6b1xQp
+         m+U+RAOqIZnnvk5jatl3rDGxXnuN6SlOTLFGqyJMqkMEouY0kLb6lCZXwRflaB7WU83d
+         pIxaxO4WzklUAB9GJttlZUaRZjJbIKHuy39DEL7KlCw5BN6DOvs4ShYXqdhw6Mc34TFn
+         MbXjlyYLcJuEnkKyyHMh3POCl/7zfyC3S4Pb8EKazCeMIkCmV1NrFc/XMVIo7XvMOPUr
+         FXKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745504036; x=1746108836;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=bEqpNki7jGGD4CCKcLuIXPBkDheH2qulR1vPkXOdIOM=;
+        b=jtKnoE7CCKyBmOr9O6f9W3EevDM+6TbE8YC4PgV5Do96Oj35Ma91oqw0ikmkI3Jrjk
+         igukDV1+RMHn9bKwkKygzQLuL5tcjciKilSgkYENk3oWjZNU36NB+ODSEM4X16R/CPOP
+         jyv7gXZ7L2l5wLKXxmzbSF83lJaqGZXyN/5pU9HIyMofOzf79J5MEEYndnSby5Q1u4Uh
+         ozqjf/jRyZYJ3OZNzZPj4m2pDDhnLHiu4CxvrrsE9ZYGwbRUpjLv77eOILIxkhvOmXCn
+         Z/E4lIiL5fLugv0+YHr/4lNfRZX6+A88aO/ooPqr9Ewl6M1aXX/7iBh9SY6Lrp8HvIx3
+         yY/g==
+X-Forwarded-Encrypted: i=1; AJvYcCU+uXCdtoPADQeZxFTXz5fEVJLneDFxDIaFLQQyy6z5jgcRswcP6Ze6u4NWOcHkCTy5Sl8jaWnY2S75CsE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzQdHkQoojoLbIg7b4aZZ9ITGJKf1U06Bj8OWWHn4i0pn7HBMIV
+	0xmC/Rv8TjNON+rNeyPRHL5zWR4wVN3eLM7ALiy5mYVcZF8EsAtZ
+X-Gm-Gg: ASbGncuE/moq6TUYBFIDmUgx5JfepQukNY5Ox6seG5woshjQINehu5KWqkao2in0RLv
+	a7T61sRFyS8PISm3NOLRkUGs8FriodKJCdsy4hwfyIKvPvN0nAD9vUeOU/C9Ti32lXieH4ZK0RH
+	ts5tWYi9ukBV5qQuGh6Opj/M6tRTLvVarqSPkGgG3sRRFbcrIxdL9OSBjxE66MuHejgszFMafpY
+	K5xef49nR5YhYCjO/3Ez7oQycY8iW9LMkb5CB6t01JC3mOlt4Qjjtuk4zL+F3nNw7Ha6bwJD4Mc
+	WOmIrO9+WkzDWqVe+44r6gqDE5eLxZKkvcVtGTTkZRBdWU/iszz+fkwe
+X-Google-Smtp-Source: AGHT+IGVeoyB0CtF1JIBT/QIdiOCuc0hvo9bPO8kHlwKv6ZbpmQi14kg9HTEQ33x3IgXj1fNkM0diA==
+X-Received: by 2002:a17:902:ef0b:b0:224:584:6f04 with SMTP id d9443c01a7336-22db3be4400mr38867505ad.18.1745504036256;
+        Thu, 24 Apr 2025 07:13:56 -0700 (PDT)
+Received: from fedora.flets-east.jp ([2400:4050:a0e1:7d00:529e:8ad4:796c:105b])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22db4d76c8bsm13764895ad.48.2025.04.24.07.13.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Apr 2025 07:13:55 -0700 (PDT)
+From: Ryo Takakura <ryotkkr98@gmail.com>
+To: john.ogness@linutronix.de
+Cc: Jason@zx2c4.com,
+	gregkh@linuxfoundation.org,
+	linux-serial@vger.kernel.org,
+	lkp@intel.com,
+	oe-lkp@lists.linux.dev,
+	oliver.sang@intel.com,
+	pmladek@suse.com,
+	ryotkkr98@gmail.com
+Subject: Re: [linux-next:master] [serial]  b63e6f60ea: BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
+Date: Thu, 24 Apr 2025 14:13:51 +0000
+Message-ID: <20250424141351.7674-1-ryotkkr98@gmail.com>
+X-Mailer: git-send-email 2.47.1
+In-Reply-To: <84r01i0w9k.fsf@jogness.linutronix.de>
+References: <84r01i0w9k.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250424-fix_serdev-v2-2-a1226ed77435@quicinc.com>
-References: <20250424-fix_serdev-v2-0-a1226ed77435@quicinc.com>
-In-Reply-To: <20250424-fix_serdev-v2-0-a1226ed77435@quicinc.com>
-To: Rob Herring <robh@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: Zijun Hu <zijun_hu@icloud.com>, linux-serial@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
-X-Mailer: b4 0.14.2
-X-Proofpoint-GUID: 0CwPusDRHzQvMoJAS0Ky4AcKP0w1k66l
-X-Proofpoint-ORIG-GUID: 0CwPusDRHzQvMoJAS0Ky4AcKP0w1k66l
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.680,FMLib:17.12.80.40
- definitions=2025-04-24_05,2025-04-22_01,2025-02-21_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 clxscore=1015
- mlxlogscore=999 adultscore=0 malwarescore=0 spamscore=0 mlxscore=0
- bulkscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2504240083
+Content-Transfer-Encoding: 8bit
 
-From: Zijun Hu <quic_zijuhu@quicinc.com>
+On Thu, 24 Apr 2025 11:06:23 +0206, John Ogness wrote:
+>On 2025-04-24, Ryo Takakura <ryotkkr98@gmail.com> wrote:
+>>> By other words, the rslib test should get fixed by adding
+>>> cond_resched(). And the conversion of the 8250 serial console
+>>> driver to nbcon is correct.
+>>
+>> I see, and agree! I'll test what's discussed here so that we can say
+>> the above statement is true and the John's series can be brought back.
+>
+>I'm looking forward to seeing your test results. Note there is also 2
 
-There are serval dev_err() and dev_dbg() usages shown below:
+OK!
 
-dev_dbg(dev, "...%s...", dev_name(dev))
+>more issues blocking the series:
+>
+>https://lore.kernel.org/linux-serial/80b020fc-c18a-4da4-b222-16da1cab2f4c@nvidia.com/
+>
+>and an offlist report from NXP relating to not being able to suspend on
+>ARMv8 due to printk irq work IPIs.
 
-The device name is repeated since dev_dbg() also prints device
-name as prefix.
+Oh, I wasn't aware of those two...
+I may look into them as well after this!
 
-Fix by optimizing the messages printed.
+Sincerely,
+Ryo Takakura
 
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
----
- drivers/tty/serdev/core.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 971651b8e18dcbb5b7983cdfa19e7d60d4cd292b..f00106de76a0f1e547310c7d21cc2fe3d5869e28 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -118,12 +118,12 @@ int serdev_device_add(struct serdev_device *serdev)
- 
- 	err = device_add(&serdev->dev);
- 	if (err < 0) {
--		dev_err(&serdev->dev, "Can't add %s, status %pe\n",
--			dev_name(&serdev->dev), ERR_PTR(err));
-+		dev_err(&serdev->dev, "Can't add serdev, status %pe\n",
-+			ERR_PTR(err));
- 		goto err_clear_serdev;
- 	}
- 
--	dev_dbg(&serdev->dev, "device %s registered\n", dev_name(&serdev->dev));
-+	dev_dbg(&serdev->dev, "serdev registered successfully\n");
- 
- 	return 0;
- 
-@@ -783,8 +783,8 @@ int serdev_controller_add(struct serdev_controller *ctrl)
- 		goto err_rpm_disable;
- 	}
- 
--	dev_dbg(&ctrl->dev, "%s registered: dev:%p\n",
--		dev_name(&ctrl->dev), &ctrl->dev);
-+	dev_dbg(&ctrl->dev, "serdev controller registered: dev:%p\n",
-+		&ctrl->dev);
- 	return 0;
- 
- err_rpm_disable:
-
--- 
-2.34.1
-
+>John
