@@ -1,75 +1,145 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EAC87081C
-	for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2025 09:00:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1B3F20102B
+	for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2025 09:02:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745485227; cv=none; b=ADmDlBpDHNv1KUhwGOs2jn+28S7eWuQXfbFxsoZS7HOVxE4SLV79EyT0PvOMW589rnIW/BYHkuh26TeSkFlaCDh4Gh6GgNEVlmUIVETvfMeJ+aFULoiKh3HVveZk5o6tY4jDyymUZApVXz6ysWcaKn78w8m75vQTCLbtNU8l3cM=
+	t=1745485380; cv=none; b=YKANJvDf5tKsm3epgFmitKnQphuJ51rgTIIzla7Pek2tK5IrFUIjTx0ot3EqYwJZqRxbM/4hpjq7ovAgbHhl+LL9AcybhXFU5pM78JNcR7uNXXqp5YUOa0qhcr9p192Qz6+zu25aSisyBdxzTwYVqY2xzZt7HaMmGcCNCuboXgk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745485227; c=relaxed/simple;
-	bh=Wj0uOJNzwu4ai9LJgzhUJL/ZlzvJD6Urk8u0o7dP6ec=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=oOnhH8m/aSq4chksziumNEiHBdK7aZv3nbq7TFZEeDJGVDr5kcqlJ+C0x/tt81F/XQIGXlsHtowoXnzIS3KfFjFeM0VlEkfGdFvSXcda+N8tYZYD14VLylC4glvuMcQfTcBOrwHzMoF7qfabyEeDBNGzmvD27b/ndGDWs04okJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0uJinCCj; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=FgQckNtS; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1745485380; c=relaxed/simple;
+	bh=w54GuZQEv1bG1cyiJvNDE0F/k24RtaQcjLahg53aQCg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KnNZ66JhGffO6/XEqAEVEHaBjiCDA5aQrDo/ORR3XrAEAPHqHvZdjR5OggdszvicXHcm+td2wqxOVNJiA1A3uO+eP07HbuCugtOfJqdiPixVq95MPwnYzhcV0utJZy14qTSzYcbcENzOCEX4gvbqtODtJCtE5rlzQqnChnUJg6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=LquMe2Oz; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0uJinCCj";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="FgQckNtS"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1745485224;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Wj0uOJNzwu4ai9LJgzhUJL/ZlzvJD6Urk8u0o7dP6ec=;
-	b=0uJinCCjLcql9hPOVZ1SX6i1XomN2HRlOVTbN3u7VHmpGlvCZudBdGBiO+XAuIJU4OcszQ
-	l6VuClosH+0CvuSqeH36AFbbRuMoovJuS9Ys+rJWe7djZydwvS8h8aZ2pi0ZaN5CxARonp
-	hX1ZI94XdqcU5isGmYl/XjFGgNtA8fRjDW3V3mVByLzeDxpai+a1boImNMV4bMcSOXoXfW
-	hYH5QLNKVs+8tFsR+R1d3CHPcKob17Dr753tLFPCrK3RjmjgaNt87M6vmKgzDareC7sh7Q
-	uVm/vuaTT/vfnqoItBjMyTuIAeS5xl7fVR95uXAntO98rIjZfqSR5Id9oBHKsQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1745485224;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Wj0uOJNzwu4ai9LJgzhUJL/ZlzvJD6Urk8u0o7dP6ec=;
-	b=FgQckNtS8DNn7lr2CBj3tsQEZcmUSWre188sr8m+OUxY4wzDDkx9gmZU37drfvFP4fvBUh
-	+h9AZHjxkEEQ9gBA==
-To: Ryo Takakura <ryotkkr98@gmail.com>, pmladek@suse.com
-Cc: Jason@zx2c4.com, gregkh@linuxfoundation.org,
- linux-serial@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
- oliver.sang@intel.com, ryotkkr98@gmail.com
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="LquMe2Oz"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-39bf44be22fso536034f8f.0
+        for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2025 02:02:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1745485377; x=1746090177; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=iQ6P1Y14p2jfp2sUFZ/eBTnX2KLVjb5n8pxkhU3F8C0=;
+        b=LquMe2Ozz6LwGWc+/DTxmVG2VrdZqDnYmGN5pBrkSDL7NhyZv4TPMKOpsJm7xXI8Bq
+         K534U4V/wV7Q9E0Bm18c53WVNRLHC/49iYkG4DByymHQ8OPbMb30ybh0k6x9AQMrYNOh
+         UorpeE166F6/b51FfNya8zu21hmkKiNxowr7YfsPUptX24BqQNMaJd0ZgB1zkJb96nWu
+         zwoUN5aykXSi/gskkwzsiUkHBqR2G50/Uwfd52WfyXRhmJNBcFE+dQyK7pTjQ6+jFJIQ
+         kXZ1P3qy/Y0Y8EgDn8B1Mqsb1VZqGBvwoJ8Ldnbv+x/e/KUrmoAOjy7/4t94Ee9fm9tk
+         +iOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745485377; x=1746090177;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=iQ6P1Y14p2jfp2sUFZ/eBTnX2KLVjb5n8pxkhU3F8C0=;
+        b=OBFkOnyMZGHE7ivm79YVYdJWHZ2FKTmbl7+EyfoOw0+6xvpDQfYPJ7sFJrsx+YwJEQ
+         cUXcZTBkPRBYnFJtfz9XUBvYognNS9DlguQSOrZsCGVOQu0lXRUPoaQNkIdKWyJP4aDi
+         GJsklvFSu4GTkuc+ftntL6aY7JztGS6Jo99m52dj0ogzMsJRQFedx2oe7G9Z5512BsbY
+         a7vKIy8qH4cF00260pjvu86TKTMJ22wPLzKm4fkrBzY2qxUi7YBxs/L7SWxyi8fjtbT0
+         GjazqS7YR6qxsSK+mUFDk416y56x+P1/GDaw07yG7XzO7+tAxP2l5PRdKJMnYm/7ZsOP
+         o/Sg==
+X-Forwarded-Encrypted: i=1; AJvYcCVMeAtyZtOVQVVyNzn6f1t+3yryjUCPB/T58HYXHCIaFmqDiv9y4mwQGigO4pIT8jK8EZU6vkwuvV0+Kr4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynQJEkq7GY0HU/w2LMpKpv/dzsaC8DmKO/MPN2kj5qmRRGA9Gu
+	A0sNe5+utsYkYYLSxbdRZ38G9ZIpE5lmjoKAHoFMT/h1Q28iwFQGjwp9jqapPPs=
+X-Gm-Gg: ASbGnctjTgJpzzOA/woUo28ieReHI/1aLwpx+8O3DpKHs/gn3zgqe6Saowwc4JzU6Xu
+	93Lb6Qaf7GKN0O0FcW1k7Dc7dBlPzxN8jyyZMhgRs5xJx9Z/IlZPdZD4AwssVfDAxC9VIa/7XXj
+	tGKx1TwTIp8NUMhE4AM4L7Gq5WliP0c1HsT0eFL0Zj0hvfDzqXCGuIz2bECD95a7JU1w+GeAmMl
+	hCExOoFZTYza/niYNDHoHmgfwkVG/xt7dachxUoaOhL4y0q4xe+gwEOv+niEgjykqwABlTtgmTL
+	/PnGonmRifyDnKwouVUb3rBBNFDi5XgoNNbfdT3pICA=
+X-Google-Smtp-Source: AGHT+IE5NAuY4qR5YiFVNQhXPQVS5TC7fMz6BpBBJgWqjn21tuMPOH9u/dnlWEQCIWrzI/+4huk7RA==
+X-Received: by 2002:a05:6000:2582:b0:39c:1f10:ba54 with SMTP id ffacd0b85a97d-3a06cf6c1b1mr1457736f8f.35.1745485376883;
+        Thu, 24 Apr 2025 02:02:56 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a06d54f162sm1390896f8f.99.2025.04.24.02.02.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Apr 2025 02:02:56 -0700 (PDT)
+Date: Thu, 24 Apr 2025 11:02:54 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Ryo Takakura <ryotkkr98@gmail.com>
+Cc: john.ogness@linutronix.de, Jason@zx2c4.com, gregkh@linuxfoundation.org,
+	linux-serial@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
+	oliver.sang@intel.com
 Subject: Re: [linux-next:master] [serial]  b63e6f60ea:
  BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
-In-Reply-To: <20250424081101.110914-1-ryotkkr98@gmail.com>
+Message-ID: <aAn-PkxRAz34tTPR@pathway.suse.cz>
 References: <aAeIRZH_VD0mai0V@pathway.suse.cz>
  <20250424081101.110914-1-ryotkkr98@gmail.com>
-Date: Thu, 24 Apr 2025 11:06:23 +0206
-Message-ID: <84r01i0w9k.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250424081101.110914-1-ryotkkr98@gmail.com>
 
-On 2025-04-24, Ryo Takakura <ryotkkr98@gmail.com> wrote:
->> By other words, the rslib test should get fixed by adding
->> cond_resched(). And the conversion of the 8250 serial console
->> driver to nbcon is correct.
->
-> I see, and agree! I'll test what's discussed here so that we can say
-> the above statement is true and the John's series can be brought back.
+On Thu 2025-04-24 17:11:01, Ryo Takakura wrote:
+> Hi Petr and John!
+> 
+> On Tue, 22 Apr 2025 14:15:01 +0200, Petr Mladek wrote:
+> >On Mon 2025-04-21 12:41:50, Ryo Takakura wrote:
+> >> Hi!
+> >> 
+> >> I would like to follow up the last email that I sent.
+> >> 
+> >> First, I'm sorry that I later realized that I should have tested
+> >> the rslib test as an inserted module, as how the robot does, by
+> >> choosing CONFIG_REED_SOLOMON_TEST=m.
+> >> Not as a boottime test by enabling CONFIG_REED_SOLOMON_TEST=y.
+> >> 
+> >> Running the rslib test as an inserted module without the John's series
+> >> was less prone to softlockup. Without the John's series, softlockup shows
+> >> up once in a test or not at all. With the John's series, softlockup can
+> >> be observed constanly over the test.
+> >
+> >> >>Thanks Ryo for looking into this! I think we need to have a technical
+> >> >>explanation/understanding of the problem so that it is clear how my
+> >> >>series triggers or exaggerates the issue.
+> >> 
+> >> As mentioned earlier, I'm sorry that I should have run the test as
+> >> inserted module... It seems the series does make the test more prone
+> >> to softlockups.
+> >
+> >IMHO, the main difference is that the patch "serial: 8250: Switch to
+> >nbcon console" removes touch_nmi_watchdog() from
+> >serial8250_console_write().
+> >
+> >The touch_nmi_watchdog() resets the softlockup watchdog. It might
+> >hide that the CPU did not schedule for a long time.
+> >
+> >The touch_nmi_watchdog() was there because the console_lock() owner,
+> >used by the legacy loop, was responsible for flushing all pending
+> >messages. And there might be many pending messages when new ones
+> >were added by other CPUs in parallel. And the legacy loop
+> >could not call cond_resched() when called from printk() because
+> >printk() might be called in atomic context.
+> 
+> I see. Without the John's series, the cond_resched() in the mention
+> code path should be called during the rslib test as it's not in atomic
+> context in addition to the touch_nmi_watchdog().
 
-I'm looking forward to seeing your test results. Note there is also 2
-more issues blocking the series:
+Just to be sure. The right fix is to add cond_resched() to rslib test.
+The code should allow scheduling and do not block the CPU for too
+long.
 
-https://lore.kernel.org/linux-serial/80b020fc-c18a-4da4-b222-16da1cab2f4c@nvidia.com/
+touch_nmi_watchdog() just hides the problem. It was used in printk()
+because there was no better solution.
 
-and an offlist report from NXP relating to not being able to suspend on
-ARMv8 due to printk irq work IPIs.
+> I used this kernel[1] which is for raspberry pi. Let me recheck
+> with some other machine with Linus' master and linux-next to see
+> if the behavior is raspberry pi specific.
 
-John
+John explained why the emergency context helped. I think that we have
+a pretty good understating of what is going on there.
+
+I believe that the problem will be the same in all code streams.
+It might be enough to check one of them (Linus' tree or linux-next)
+just to be sure that the fix applies and it has not been already
+fixed.
+
+Best Regards,
+Petr
