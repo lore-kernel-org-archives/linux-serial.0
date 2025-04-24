@@ -1,125 +1,75 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4FA422154F;
-	Thu, 24 Apr 2025 08:44:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EAC87081C
+	for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2025 09:00:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745484267; cv=none; b=Cmw8b8kWarNmde4vTVs8PWO8YzPfsa6M5eeWWmoHGktg6dAHBU4xZxWNqbOoMyTayFqQFc7XT1CH17oYdEeG18+kKYRPfRYboA374cr/UxiKQzekdahnW6tzGfDT2NOAT73Uujy/v17YvJXAeechwMvKeB3+LeLN78j9BBhPDPU=
+	t=1745485227; cv=none; b=ADmDlBpDHNv1KUhwGOs2jn+28S7eWuQXfbFxsoZS7HOVxE4SLV79EyT0PvOMW589rnIW/BYHkuh26TeSkFlaCDh4Gh6GgNEVlmUIVETvfMeJ+aFULoiKh3HVveZk5o6tY4jDyymUZApVXz6ysWcaKn78w8m75vQTCLbtNU8l3cM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745484267; c=relaxed/simple;
-	bh=LFKI/gAV5T9H7xC7knhI1XC1tjC1M7eiEQrYT+Vo8k0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=HdT1oMq+22LrXL2MP1L8GGmsVFX1uHWHG9bXQED8h6RfyR0ZIxlMLzPnuC9uQTjrKiAMncQFqlgJmp54E80zxJDEonQJid7MmoO0zNnuilVz2EvTI6D4G8/Peuusp4WCtSEdppu0t7VxBw/gOfeR1uZgVHqT+G0YHXKeKCwJ/bk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XWrX6r25; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745485227; c=relaxed/simple;
+	bh=Wj0uOJNzwu4ai9LJgzhUJL/ZlzvJD6Urk8u0o7dP6ec=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=oOnhH8m/aSq4chksziumNEiHBdK7aZv3nbq7TFZEeDJGVDr5kcqlJ+C0x/tt81F/XQIGXlsHtowoXnzIS3KfFjFeM0VlEkfGdFvSXcda+N8tYZYD14VLylC4glvuMcQfTcBOrwHzMoF7qfabyEeDBNGzmvD27b/ndGDWs04okJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0uJinCCj; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=FgQckNtS; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XWrX6r25"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A39BC4CEEE;
-	Thu, 24 Apr 2025 08:44:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745484267;
-	bh=LFKI/gAV5T9H7xC7knhI1XC1tjC1M7eiEQrYT+Vo8k0=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=XWrX6r25FjODg6/UBD4UJska+JlPFl2DN7sttJTuSJcVHD+oSx9vLDtr0hrdEW56E
-	 KmCjvl4hNhgxpRognjdqr7fOsO5qbhPpRE1h4ezg2n9H36LFsidIlCY99pvEwi7n30
-	 CyRajZHTsr+K/SOZRj8NGm2+r4V0XcCrOXTTaRMkxf9RRvbS5L8h+8CUEh4e1SII1o
-	 cY+lD0meqzc0FlVZb5Qn3Goxsnlwf/EpXo0XtpbSPx+bGE72OjBF+sbN4jqSuFpdqL
-	 UYx93Bses4uzQsbDkTGJjpe1/uUcf2BMZeaE3IsmohKaacYOU3VHnt3455fuChzFAG
-	 Imi/BzjYQI/Hw==
-Message-ID: <bf5c1f39-149e-4bb4-9c07-a38ce5a99341@kernel.org>
-Date: Thu, 24 Apr 2025 10:44:23 +0200
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0uJinCCj";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="FgQckNtS"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1745485224;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Wj0uOJNzwu4ai9LJgzhUJL/ZlzvJD6Urk8u0o7dP6ec=;
+	b=0uJinCCjLcql9hPOVZ1SX6i1XomN2HRlOVTbN3u7VHmpGlvCZudBdGBiO+XAuIJU4OcszQ
+	l6VuClosH+0CvuSqeH36AFbbRuMoovJuS9Ys+rJWe7djZydwvS8h8aZ2pi0ZaN5CxARonp
+	hX1ZI94XdqcU5isGmYl/XjFGgNtA8fRjDW3V3mVByLzeDxpai+a1boImNMV4bMcSOXoXfW
+	hYH5QLNKVs+8tFsR+R1d3CHPcKob17Dr753tLFPCrK3RjmjgaNt87M6vmKgzDareC7sh7Q
+	uVm/vuaTT/vfnqoItBjMyTuIAeS5xl7fVR95uXAntO98rIjZfqSR5Id9oBHKsQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1745485224;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Wj0uOJNzwu4ai9LJgzhUJL/ZlzvJD6Urk8u0o7dP6ec=;
+	b=FgQckNtS8DNn7lr2CBj3tsQEZcmUSWre188sr8m+OUxY4wzDDkx9gmZU37drfvFP4fvBUh
+	+h9AZHjxkEEQ9gBA==
+To: Ryo Takakura <ryotkkr98@gmail.com>, pmladek@suse.com
+Cc: Jason@zx2c4.com, gregkh@linuxfoundation.org,
+ linux-serial@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
+ oliver.sang@intel.com, ryotkkr98@gmail.com
+Subject: Re: [linux-next:master] [serial]  b63e6f60ea:
+ BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
+In-Reply-To: <20250424081101.110914-1-ryotkkr98@gmail.com>
+References: <aAeIRZH_VD0mai0V@pathway.suse.cz>
+ <20250424081101.110914-1-ryotkkr98@gmail.com>
+Date: Thu, 24 Apr 2025 11:06:23 +0206
+Message-ID: <84r01i0w9k.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 tty-next] 8250: microchip: pci1xxxx: Add PCIe Hot reset
- disable support for Rev C0 and later devices
-To: Rengarajan S <rengarajan.s@microchip.com>,
- kumaravel.thiagarajan@microchip.com, tharunkumar.pasumarthi@microchip.com,
- gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, unglinuxdriver@microchip.com
-References: <20250424035913.7673-1-rengarajan.s@microchip.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20250424035913.7673-1-rengarajan.s@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 24. 04. 25, 5:59, Rengarajan S wrote:
-> Systems that issue PCIe hot reset requests during a suspend/resume
-> cycle cause PCI1XXXX device revisions prior to C0 to get its UART
-> configuration registers reset to hardware default values. This results
-> in device inaccessibility and data transfer failures. Starting with
-> Revision C0, support was added in the device hardware (via the Hot
-> Reset Disable Bit) to allow resetting only the PCIe interface and its
-> associated logic, but preserving the UART configuration during a hot
-> reset. This patch enables the hot reset disable feature during suspend/
-> resume for C0 and later revisions of the device.
-> 
-> v2
-> Retained the original writel and simplified the hot reset condition
-> v1
-> Initial Commit.
+On 2025-04-24, Ryo Takakura <ryotkkr98@gmail.com> wrote:
+>> By other words, the rslib test should get fixed by adding
+>> cond_resched(). And the conversion of the 8250 serial console
+>> driver to nbcon is correct.
+>
+> I see, and agree! I'll test what's discussed here so that we can say
+> the above statement is true and the John's series can be brought back.
 
-This should have been under the --- line below.
+I'm looking forward to seeing your test results. Note there is also 2
+more issues blocking the series:
 
-> Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
+https://lore.kernel.org/linux-serial/80b020fc-c18a-4da4-b222-16da1cab2f4c@nvidia.com/
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+and an offlist report from NXP relating to not being able to suspend on
+ARMv8 due to printk irq work IPIs.
 
-> ---
-
-vvvvv here
-
->   drivers/tty/serial/8250/8250_pci1xxxx.c | 10 ++++++++++
->   1 file changed, 10 insertions(+)
-
-thanks,
--- 
-js
-suse labs
+John
