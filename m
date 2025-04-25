@@ -1,144 +1,74 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 551301FA272;
-	Fri, 25 Apr 2025 11:01:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CB3B183CC3;
+	Fri, 25 Apr 2025 11:13:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745578897; cv=none; b=a3eRO35g48ZdHfxDEYvv7WqBBKI5ePlpH01zAEIL10C2mojXvU8esYGWTVWOXItlIkGgmZARgwTvAuE5rsQvtdtF7KaiLPKryPPeGM4lbqnqL41GLDpGBoIXZ0OWbGV/yFjide57KTa+CAIhYnbpk3CJiLUbPlNI1EfgUG6K5rM=
+	t=1745579600; cv=none; b=JzAd2j29IYY/E9K10AkdG5j3Uk9MiDKo53QR80EDPX4okFXXvcptheQyglm+3YcCcDwHcl0c45pvWf3DpT/WJGBx+wULf3uc4Klr+fP6wM+ME60u6dclLt7LgfBJOrf5t5ZeO7/bssh9WLZA2ti1nzItlSJZ3ZGLBs1YVIQpL5A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745578897; c=relaxed/simple;
-	bh=RGHwiLFDEmsVz1diB/515yQaHzjj5w8Exur+yC06dFg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=pxrnvUivCVybc27TI10HweS3wEvYldHuHPq3sfKUFD0pzMCD1T2KnQ3CF6CEhQuV3wlcKISeuzizJCRahAdPjJ+H7nX73BjU5fKd3jdy9c5HO4GMru0rAh6FH0QkMIqWbMBXJ1HnGySToBE9QQQuonz/LvXg9TFSJxW8uavXnLw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Ahko+Z7f; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1745579600; c=relaxed/simple;
+	bh=DNZdYQV7RwfkKh9ZxmtSZR05bOMge8j4Ld8v8tgWcu8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=k/kLYDMb8oHOAh5ic4LX6fIg6in5I0OU6SK2erEokXgVA1I1nj7Me7IV33BydUBhO9qi5W/FC2K3an5IWZq86GBmqr6jCt14+tHcC34y732ug9UypsQLfamku4P5iynQNnDP41ws06m+0ZWxk4XawuUyZW6FbcCU2TqIGdKfQ7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J4HBo9ml; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Ahko+Z7f"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53P8TB34007411;
-	Fri, 25 Apr 2025 11:01:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	K38bVVgxXwdgs486b2Bk50D3WKbdjVT3p30AxM7Jjo0=; b=Ahko+Z7fkcqgX+x6
-	sxOCOrD/S6OibkPbyXKrrW9mhjgkgyI4LJR5lCdzsdw+zNhOY5IzKmbUZLSsxTVv
-	7+wqWivHaWjl7jbTL1e922bvMOappcdnvXDT3XWyW99CRvO2w+vFPqpOWMqMPm3s
-	gLRnZOQk2c48HD4UdyTjR5XYXdEnkJN7Xq8QDechq2dcdy0wZon/BR3nuUel5wzd
-	VBy9Ozr9iFRNhDSY07PgeyuwXgg6ho9zWUb2hXZCDttO7JlF1RlQMuDVqe4xjezl
-	g1VeIO0eKSH6OnkR37E4/TW5nuypxfdqiTitpaDZ9yLTeiw8zNM0Hq8ghIzqUnn+
-	5jBhWQ==
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 466jh0rn51-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Apr 2025 11:01:30 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 53PB1TdB001538
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 25 Apr 2025 11:01:29 GMT
-Received: from [10.216.10.223] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 25 Apr
- 2025 04:01:22 -0700
-Message-ID: <5d3033e7-0798-4246-a6ea-74ead8485053@quicinc.com>
-Date: Fri, 25 Apr 2025 16:31:19 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J4HBo9ml"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A62CBC4CEE4;
+	Fri, 25 Apr 2025 11:13:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745579598;
+	bh=DNZdYQV7RwfkKh9ZxmtSZR05bOMge8j4Ld8v8tgWcu8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=J4HBo9mlo8rMwXEzwYSHrSQl9ClfYBj6D8teBSVpvdGeasY8hhCiCw5WIA92V2Hev
+	 0fwo5EWjV2JOv7cu3yEVn4aUWEwYFtjRubWeitLAKnrQVU/CuVLkywzfRYmNhiyDGF
+	 2rsA5tFV9QcjPH6/XkFczGGTWa2kZ6lx+OQx2cIqtD/Z1BbQ712VNdf0nBD9ptkvAE
+	 d2CzyfZDSk6QtVr1WTgpapmjUq6wm6VSiJACONjeEubGGxCaC/rcfqo0IiSWb5zSD1
+	 PDY54ZDsQf/CD+DWs6EX7LetvOXLKNVWX8WWCkmUHTZ1B89U4RF37ZSyZ8vIBsIwYY
+	 uJEc/UGeob9Kw==
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Subject: [PATCH 0/6] tty: spring cleanup
+Date: Fri, 25 Apr 2025 13:13:09 +0200
+Message-ID: <20250425111315.1036184-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/9] dt-bindings: serial: describe SA8255p
-To: Krzysztof Kozlowski <krzk@kernel.org>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson
-	<andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Viresh Kumar
-	<vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
-        Stephen Boyd
-	<sboyd@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <psodagud@quicinc.com>,
-        <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>,
-        Nikunj Kela <quic_nkela@quicinc.com>
-References: <20250418151235.27787-1-quic_ptalari@quicinc.com>
- <20250418151235.27787-3-quic_ptalari@quicinc.com>
- <20250425-graceful-psychedelic-leopard-0da7fe@kuoka>
-Content-Language: en-US
-From: Praveen Talari <quic_ptalari@quicinc.com>
-In-Reply-To: <20250425-graceful-psychedelic-leopard-0da7fe@kuoka>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: Fn8UqsQi3YZR_F308rkpyTo5a0umiDHj
-X-Authority-Analysis: v=2.4 cv=ftfcZE4f c=1 sm=1 tr=0 ts=680b6b8a cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=DaVkk8uXpmKKpUZFdwsA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-GUID: Fn8UqsQi3YZR_F308rkpyTo5a0umiDHj
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNDI1MDA4MCBTYWx0ZWRfX1H/CV3QBI6o6 6nF7xBoyKc+3+1tV4z1swwYFBENLkPWMPXb+FqguQhqZId3sstEpkNqmlHlMQBFQyUeD7UgSVhx to6Mco5wMjCHwHzvxQZz+pcF7RKA8IPVwElHL2bC990Qj8d2yoTpW73znbWqEGE/W/VSxDq9+By
- BWnyPrN9XLlRNDzH0jbfmCkmQ9URkThXux3OLsApwkBd0WBRktgOry3eKCHFMBI2S6meFv62wyj RgOLMmrlG0pP/Ws3oBqQO3j2mzpWj3PL/4RTUx7WikvJzBtEUSphjXhtdGaCgZ4igKEpfzkh3Kk POytX41Vo7VAwk+Xz2riqDw2FqD7m2JAx1Fo8oQqk8fSuFr3ZQWxWW3ruYXxyuV+tcXbiJIRdmF
- McHqnGR6lLDMTLf9J8pbzrcgKKEiXUI6ali6Rh8DmlViglS1v3OYX2bhONpiQiXFMA5Yyclc
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-04-25_03,2025-04-24_02,2025-02-21_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
- suspectscore=0 mlxlogscore=999 lowpriorityscore=0 phishscore=0
- malwarescore=0 impostorscore=0 adultscore=0 spamscore=0 clxscore=1015
- priorityscore=1501 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
- definitions=main-2504250080
+Content-Transfer-Encoding: 8bit
 
-Hi
+Hi,
 
-On 4/25/2025 3:42 PM, Krzysztof Kozlowski wrote:
-> On Fri, Apr 18, 2025 at 08:42:28PM GMT, Praveen Talari wrote:
->> +  interrupts:
->> +    minItems: 1
->> +    items:
->> +      - description: UART core irq
->> +      - description: Wakeup irq (RX GPIO)
->> +
->> +  interrupt-names:
->> +    description:
->> +      The UART interrupt and optionally the RX in-band wakeup interrupt.
-> Drop description. It is not even accurate because you do not allow
-> wakeup to be optional.
-Will update in next version.
->
->> +    items:
->> +      - const: uart
->> +      - const: wakeup
->> +
->> +  power-domains:
->> +    minItems: 2
->> +    maxItems: 2
->> +
->> +  power-domain-names:
->> +    items:
->> +      - const: power
->> +      - const: perf
->> +
->> +required:
->> +  - compatible
->> +  - interrupts
->> +  - reg
-> Keep the same order as in properties. You already got comment about
-> placement of 'reg'.
-I agree, will update in next version
->
-> Best regards,
-> Krzysztof
->
+this is another series of various cleanup in tty of issues which popped
+up at me during a larger rework.
+
+Jiri Slaby (SUSE) (6):
+  tty: simplify throttling using guard()s
+  tty: use lock guard()s in tty_io
+  serial: switch uart_port::iotype to enum uart_iotype
+  serial: rename local uart_port_lock() -> uart_port_ref_lock()
+  serial: use uart_port_ref_lock() helper
+  serial: 8250: unexport serial8250_rpm_*() functions
+
+ drivers/tty/serial/8250/8250.h       |  6 --
+ drivers/tty/serial/8250/8250_core.c  |  2 +-
+ drivers/tty/serial/8250/8250_early.c |  2 +
+ drivers/tty/serial/8250/8250_port.c  | 16 ++---
+ drivers/tty/serial/8250/8250_rsa.c   |  2 +
+ drivers/tty/serial/amba-pl011.c      |  2 +-
+ drivers/tty/serial/fsl_lpuart.c      |  5 +-
+ drivers/tty/serial/samsung_tty.c     |  4 ++
+ drivers/tty/serial/serial_core.c     | 97 ++++++++++++++--------------
+ drivers/tty/tty_io.c                 | 96 ++++++++++++---------------
+ drivers/tty/tty_ioctl.c              | 50 +++++++-------
+ include/linux/serial_core.h          | 30 +++++----
+ 12 files changed, 149 insertions(+), 163 deletions(-)
+
+-- 
+2.49.0
+
