@@ -1,79 +1,124 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from outbound.pv.icloud.com (p-west1-cluster2-host6-snip4-7.eps.apple.com [57.103.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F49B242D77;
-	Fri, 25 Apr 2025 11:45:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9AB9247285
+	for <linux-serial@vger.kernel.org>; Fri, 25 Apr 2025 12:48:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.103.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745581507; cv=none; b=Z8ND4Pb5B2lzpUldU1qv8jQzFpOujIULAhWyQQz2GkcEAr2L7/djhPIk7Osr7KyMigCsqs1DZB7eUFm35AIC0Ir9bFzhUSNjvNPzsCtTJkpQ7qS91DZORGL2BasNbzSH5lMuy+Ev7ftuCWXWKAKLO3ACPBcmgLzHUx7ccCCSYqc=
+	t=1745585310; cv=none; b=KgEOsRGw3YlXV6PSdigj+ADQ2N69T9/5WYvW1Ayp7CFXwJg5LdeITdi06DCLp0dbE6aLNiEZAqxezew7lO2CCLHS9WnPcSxQTY07w0Dv1KvLABWM3uWirdTV22ZAO+uIjtrrCyoXpbmL9tuCq47Jx0EzxDPVRUwaffwYJef+e4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745581507; c=relaxed/simple;
-	bh=/GNrQRcYdTquEmQsosrnAxEdwu90m8TRYhjlh8bYbhk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BkzxtwhbRSfD1aJLwMnio8olfJcc8LIg7YnCfk2cdsbdNsG5sfKWYRhH63SRsr+QuEiLQLXbI9N9ilPjazUwZyaXQi0U/cTR49H9K78AQdG8zp2Gi5Tja3YD5qkJ/CKy0I6PS/eu8BnYLllHaSNzNCyQ/tJWeyOHvkBNLVY5ju0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=sblzbFqx; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745585310; c=relaxed/simple;
+	bh=ItpS2xzAPSqiTM6g+RYEGXCpDzJkoySyO6rgMQ7nBm4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=TsIENo5d0aLglY40STtyChvRaxjH7koCqAcw4GDtk9Ujb69ZdT35UwZef70dQakLlDyrh9PjGWhYzCK5OfULfSqtixvTr5TXHkFNlPIkrbhP3sJu2PueKKymkg9fmQSJTMAu5U5MrT3IlZe2RmWiDacjVt7KYxaue9NNO9kE/E8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=AYEPtaDk; arc=none smtp.client-ip=57.103.64.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="sblzbFqx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96E4EC4CEEB;
-	Fri, 25 Apr 2025 11:45:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1745581506;
-	bh=/GNrQRcYdTquEmQsosrnAxEdwu90m8TRYhjlh8bYbhk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sblzbFqxpOLKdo1CrWTSjLaak/NWDPnAQp81JSxEJyP0SVygEtjMHAtm8jEzSfktq
-	 /J0kzIUdFrwU60gNsS9JUJW40m1L6nMyU/iz5Q41q1SSqsyZmErG0twk10yhcRKJyJ
-	 ZUJKDJqfVUKdVObeDkiEYOMfaZMPyqpq3dsWWmxw=
-Date: Fri, 25 Apr 2025 13:45:04 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Rengarajan S <rengarajan.s@microchip.com>
-Cc: kumaravel.thiagarajan@microchip.com,
-	tharunkumar.pasumarthi@microchip.com, jirislaby@kernel.org,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	unglinuxdriver@microchip.com
-Subject: Re: [PATCH v2 tty-next] 8250: microchip: pci1xxxx: Add PCIe Hot
- reset disable support for Rev C0 and later devices
-Message-ID: <2025042553-skinless-magazine-6cb9@gregkh>
-References: <20250424035913.7673-1-rengarajan.s@microchip.com>
+	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="AYEPtaDk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
+	s=1a1hai; bh=W+hPrG8Sv+ny5hQpRcrUhB/yLitYHoz8WmN/Jhjb124=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:x-icloud-hme;
+	b=AYEPtaDkVr91tES583vF/Aokv2OvPGvIngv1rMPo6KBL8QQaQ8VLaJoXGn1QjRqNO
+	 mUvGJmEgGyBTWhJJDMDPo4JiFNKEVOY6zs8AH22yvNLwYy2eu4Ry8pytpLiBfFP+tU
+	 KhAxeyWEmU//QL37S2ELlbe3lF3xMQWC3go/LwTrFAy2RjWAmCbiXWpgkjbLxpPvYX
+	 ic5yJioMPilMMKTOfJwjHWGdL8jmoJqS/Xk1Wwbx8CnmEZNaRs/UuhgAammF0rsbRu
+	 Z8a5YjdWoVk5MMzDagNB/Wd+hlGZc/xCZf6BCK3dk77fDH+BIA//zngsi95kYHjbTT
+	 pmvYg6O9dqvLw==
+Received: from outbound.pv.icloud.com (localhost [127.0.0.1])
+	by outbound.pv.icloud.com (Postfix) with ESMTPS id 0C19E1800872;
+	Fri, 25 Apr 2025 12:48:26 +0000 (UTC)
+Received: from [192.168.1.26] (pv-asmtp-me-k8s.p00.prod.me.com [17.56.9.36])
+	by outbound.pv.icloud.com (Postfix) with ESMTPSA id 07AE21800869;
+	Fri, 25 Apr 2025 12:48:24 +0000 (UTC)
+From: Zijun Hu <zijun_hu@icloud.com>
+Date: Fri, 25 Apr 2025 20:48:10 +0800
+Subject: [PATCH v3] serdev: Refine several error or debug messages
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250424035913.7673-1-rengarajan.s@microchip.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250425-fix_serdev-v3-1-2e4ea8261640@quicinc.com>
+X-B4-Tracking: v=1; b=H4sIAImEC2gC/1WMQQ6CMBBFr0Jm7Zh2WkBdeQ9jTG2LzELQVhsN4
+ e4WEhNYvv/z3gDRB/YRDsUAwSeO3HcZ1KYA25ru5pFdZiBBpdBE2PDnkh3nE+6dmaa92MkrZOE
+ RfH7n2OmcueX46sN3bic5rf+MWmaSRIlUWaO0UI1T6vh8s+XObm1/hymUaCnrlUwo0Eiiyru61
+ qpcy+M4/gAjSGch4wAAAA==
+X-Change-ID: 20250422-fix_serdev-9da04229081b
+To: Rob Herring <robh@kernel.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: Zijun Hu <zijun_hu@icloud.com>, linux-serial@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Zijun Hu <quic_zijuhu@quicinc.com>
+X-Mailer: b4 0.14.2
 
-On Thu, Apr 24, 2025 at 09:29:13AM +0530, Rengarajan S wrote:
-> Systems that issue PCIe hot reset requests during a suspend/resume
-> cycle cause PCI1XXXX device revisions prior to C0 to get its UART
-> configuration registers reset to hardware default values. This results
-> in device inaccessibility and data transfer failures. Starting with
-> Revision C0, support was added in the device hardware (via the Hot
-> Reset Disable Bit) to allow resetting only the PCIe interface and its
-> associated logic, but preserving the UART configuration during a hot
-> reset. This patch enables the hot reset disable feature during suspend/
-> resume for C0 and later revisions of the device.
-> 
-> v2
-> Retained the original writel and simplified the hot reset condition
-> v1
-> Initial Commit.
-> 
-> Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
-> ---
->  drivers/tty/serial/8250/8250_pci1xxxx.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-> index e9c51d4e447d..61849312393b 100644
-> --- a/drivers/tty/serial/8250/8250_pci1xxxx.c
-> +++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-> @@ -115,6 +115,7 @@
->  
->  #define UART_RESET_REG				0x94
->  #define UART_RESET_D3_RESET_DISABLE		BIT(16)
-> +#define UART_RESET_HOT_RESET_DISABLE            BIT(17)
+From: Zijun Hu <quic_zijuhu@quicinc.com>
 
-You forgot to use tabs here :(
+Refine several dev_err() and dev_dbg() messages to solve:
+
+// hardcoded device name
+dev_dbg(dev, "...dev_name_str...")
+
+// repeated device name since dev_dbg() also prints it as prefix
+dev_err(dev, "...%s...", dev_name(dev))
+
+// not concise as dev_err(dev, "...%d...", err)
+dev_err(dev, "...%pe...", ERR_PTR(err))
+
+Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+---
+For messages printed by dev_err() and dev_dbg(), this patch series is
+to remove hardcoded or repeated device name.
+---
+Changes in v3:
+- Squash both patches as Rob's comments
+- Simplify error code printing as Jiri's comments 
+- Link to v2: https://lore.kernel.org/r/20250424-fix_serdev-v2-0-a1226ed77435@quicinc.com
+
+Changes in v2:
+- Add one more patch to remove repeated device name pointed out by Greg
+- Link to v1: https://lore.kernel.org/r/20250423-fix_serdev-v1-1-26ca3403fd33@quicinc.com
+---
+ drivers/tty/serdev/core.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+index eb2a2e58fe78fbbdb5839232936a994bda86d0b4..0213381fa35876f43f2f10f6c444160cde73a686 100644
+--- a/drivers/tty/serdev/core.c
++++ b/drivers/tty/serdev/core.c
+@@ -118,12 +118,11 @@ int serdev_device_add(struct serdev_device *serdev)
+ 
+ 	err = device_add(&serdev->dev);
+ 	if (err < 0) {
+-		dev_err(&serdev->dev, "Can't add %s, status %pe\n",
+-			dev_name(&serdev->dev), ERR_PTR(err));
++		dev_err(&serdev->dev, "Failed to add serdev: %d\n", err);
+ 		goto err_clear_serdev;
+ 	}
+ 
+-	dev_dbg(&serdev->dev, "device %s registered\n", dev_name(&serdev->dev));
++	dev_dbg(&serdev->dev, "serdev registered successfully\n");
+ 
+ 	return 0;
+ 
+@@ -783,8 +782,7 @@ int serdev_controller_add(struct serdev_controller *ctrl)
+ 		goto err_rpm_disable;
+ 	}
+ 
+-	dev_dbg(&ctrl->dev, "serdev%d registered: dev:%p\n",
+-		ctrl->nr, &ctrl->dev);
++	dev_dbg(&ctrl->dev, "serdev controller registered: dev:%p\n", &ctrl->dev);
+ 	return 0;
+ 
+ err_rpm_disable:
+
+---
+base-commit: 9d7a0577c9db35c4cc52db90bc415ea248446472
+change-id: 20250422-fix_serdev-9da04229081b
+
+Best regards,
+-- 
+Zijun Hu <quic_zijuhu@quicinc.com>
 
