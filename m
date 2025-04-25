@@ -1,39 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CB3B183CC3;
-	Fri, 25 Apr 2025 11:13:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7D18240604;
+	Fri, 25 Apr 2025 11:13:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745579600; cv=none; b=JzAd2j29IYY/E9K10AkdG5j3Uk9MiDKo53QR80EDPX4okFXXvcptheQyglm+3YcCcDwHcl0c45pvWf3DpT/WJGBx+wULf3uc4Klr+fP6wM+ME60u6dclLt7LgfBJOrf5t5ZeO7/bssh9WLZA2ti1nzItlSJZ3ZGLBs1YVIQpL5A=
+	t=1745579600; cv=none; b=LUysVKE5PVC1yIsz98kGKESQv2iFyxUc/LltU10b4y4KKVwv4TY8sk8PLJARiJXiWRQgc1iw1kdBRZYmhEW9BDwkHlGkmuAmgaEkt9dIQYxd0/pQbnyW4D0p8ZwY0eyWqJp+EitBrw0N0QMDjCiJlM8yXzL7qqKxnnq0C1DBLrE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1745579600; c=relaxed/simple;
-	bh=DNZdYQV7RwfkKh9ZxmtSZR05bOMge8j4Ld8v8tgWcu8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=k/kLYDMb8oHOAh5ic4LX6fIg6in5I0OU6SK2erEokXgVA1I1nj7Me7IV33BydUBhO9qi5W/FC2K3an5IWZq86GBmqr6jCt14+tHcC34y732ug9UypsQLfamku4P5iynQNnDP41ws06m+0ZWxk4XawuUyZW6FbcCU2TqIGdKfQ7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J4HBo9ml; arc=none smtp.client-ip=10.30.226.201
+	bh=c3F1gW9ZPCR5oHtLAFds0q5hpGxchQa902GwA8/ZnVg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=oN8I2kGEt6Bb6Dd9xhUH5lytg7YEc7FseEE2NwcZ70bAHrN7vWouTmBJ+Ug7rOtKYj69HZ8CaY9bfzvOhmAoYpnQWsmCVB7ETvc11wkxtTGSRTBruSjlhkVyHAR4cS04D0xm5ExecvNMrxFa+1ZqWtfbqXRg8Wx3ByNYP91Bgac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lbvtIGdY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J4HBo9ml"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A62CBC4CEE4;
-	Fri, 25 Apr 2025 11:13:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lbvtIGdY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BD83C4CEEB;
+	Fri, 25 Apr 2025 11:13:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745579598;
-	bh=DNZdYQV7RwfkKh9ZxmtSZR05bOMge8j4Ld8v8tgWcu8=;
-	h=From:To:Cc:Subject:Date:From;
-	b=J4HBo9mlo8rMwXEzwYSHrSQl9ClfYBj6D8teBSVpvdGeasY8hhCiCw5WIA92V2Hev
-	 0fwo5EWjV2JOv7cu3yEVn4aUWEwYFtjRubWeitLAKnrQVU/CuVLkywzfRYmNhiyDGF
-	 2rsA5tFV9QcjPH6/XkFczGGTWa2kZ6lx+OQx2cIqtD/Z1BbQ712VNdf0nBD9ptkvAE
-	 d2CzyfZDSk6QtVr1WTgpapmjUq6wm6VSiJACONjeEubGGxCaC/rcfqo0IiSWb5zSD1
-	 PDY54ZDsQf/CD+DWs6EX7LetvOXLKNVWX8WWCkmUHTZ1B89U4RF37ZSyZ8vIBsIwYY
-	 uJEc/UGeob9Kw==
+	s=k20201202; t=1745579600;
+	bh=c3F1gW9ZPCR5oHtLAFds0q5hpGxchQa902GwA8/ZnVg=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=lbvtIGdYxF4RFuOhlej2+RLOUz7SFQ9JsUnKoUHFceBhcL0f94AtmbtNOXrkxJpob
+	 xjJbRz7zCzO/nTy+j++nTSVAr+XuDvJmyQAsZkwHw3tKQyiQsKTzo6zUMZ+jHYPZvm
+	 Gs2aoGXwSL0I0ohYHJnm7FBRlfkrD30wEpz1iVmz3f0Jv94Nbpu1lfPb4mOnydZmQJ
+	 uNhpUrBGh3o3yA6xQnXSL6bNPttwwcSvbdVhCcUEFz91+3wXEIhfMm3FmpYslRqxeF
+	 wFFEHLjcwpMeOqugXDtKQMuvy/66t3wtX7hFn0M+/QOvS/pSARt4hfQmWdlk9T4gZi
+	 +QjfE1lFQG85A==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 0/6] tty: spring cleanup
-Date: Fri, 25 Apr 2025 13:13:09 +0200
-Message-ID: <20250425111315.1036184-1-jirislaby@kernel.org>
+Subject: [PATCH 1/6] tty: simplify throttling using guard()s
+Date: Fri, 25 Apr 2025 13:13:10 +0200
+Message-ID: <20250425111315.1036184-2-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
+In-Reply-To: <20250425111315.1036184-1-jirislaby@kernel.org>
+References: <20250425111315.1036184-1-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,33 +45,85 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi,
+tty_throttle_safe() and tty_unthrottle_safe can be made less convoluted
+using guard()s. Switch them.
 
-this is another series of various cleanup in tty of issues which popped
-up at me during a larger rework.
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ drivers/tty/tty_ioctl.c | 50 +++++++++++++++++++----------------------
+ 1 file changed, 23 insertions(+), 27 deletions(-)
 
-Jiri Slaby (SUSE) (6):
-  tty: simplify throttling using guard()s
-  tty: use lock guard()s in tty_io
-  serial: switch uart_port::iotype to enum uart_iotype
-  serial: rename local uart_port_lock() -> uart_port_ref_lock()
-  serial: use uart_port_ref_lock() helper
-  serial: 8250: unexport serial8250_rpm_*() functions
-
- drivers/tty/serial/8250/8250.h       |  6 --
- drivers/tty/serial/8250/8250_core.c  |  2 +-
- drivers/tty/serial/8250/8250_early.c |  2 +
- drivers/tty/serial/8250/8250_port.c  | 16 ++---
- drivers/tty/serial/8250/8250_rsa.c   |  2 +
- drivers/tty/serial/amba-pl011.c      |  2 +-
- drivers/tty/serial/fsl_lpuart.c      |  5 +-
- drivers/tty/serial/samsung_tty.c     |  4 ++
- drivers/tty/serial/serial_core.c     | 97 ++++++++++++++--------------
- drivers/tty/tty_io.c                 | 96 ++++++++++++---------------
- drivers/tty/tty_ioctl.c              | 50 +++++++-------
- include/linux/serial_core.h          | 30 +++++----
- 12 files changed, 149 insertions(+), 163 deletions(-)
-
+diff --git a/drivers/tty/tty_ioctl.c b/drivers/tty/tty_ioctl.c
+index 85de90eebc7b..90c70d8d14e3 100644
+--- a/drivers/tty/tty_ioctl.c
++++ b/drivers/tty/tty_ioctl.c
+@@ -122,21 +122,19 @@ EXPORT_SYMBOL(tty_unthrottle);
+  */
+ bool tty_throttle_safe(struct tty_struct *tty)
+ {
+-	bool ret = true;
+-
+-	mutex_lock(&tty->throttle_mutex);
+-	if (!tty_throttled(tty)) {
+-		if (tty->flow_change != TTY_THROTTLE_SAFE)
+-			ret = false;
+-		else {
+-			set_bit(TTY_THROTTLED, &tty->flags);
+-			if (tty->ops->throttle)
+-				tty->ops->throttle(tty);
+-		}
+-	}
+-	mutex_unlock(&tty->throttle_mutex);
++	guard(mutex)(&tty->throttle_mutex);
+ 
+-	return ret;
++	if (tty_throttled(tty))
++		return true;
++
++	if (tty->flow_change != TTY_THROTTLE_SAFE)
++		return false;
++
++	set_bit(TTY_THROTTLED, &tty->flags);
++	if (tty->ops->throttle)
++		tty->ops->throttle(tty);
++
++	return true;
+ }
+ 
+ /**
+@@ -152,21 +150,19 @@ bool tty_throttle_safe(struct tty_struct *tty)
+  */
+ bool tty_unthrottle_safe(struct tty_struct *tty)
+ {
+-	bool ret = true;
++	guard(mutex)(&tty->throttle_mutex);
+ 
+-	mutex_lock(&tty->throttle_mutex);
+-	if (tty_throttled(tty)) {
+-		if (tty->flow_change != TTY_UNTHROTTLE_SAFE)
+-			ret = false;
+-		else {
+-			clear_bit(TTY_THROTTLED, &tty->flags);
+-			if (tty->ops->unthrottle)
+-				tty->ops->unthrottle(tty);
+-		}
+-	}
+-	mutex_unlock(&tty->throttle_mutex);
++	if (!tty_throttled(tty))
++		return true;
+ 
+-	return ret;
++	if (tty->flow_change != TTY_UNTHROTTLE_SAFE)
++		return false;
++
++	clear_bit(TTY_THROTTLED, &tty->flags);
++	if (tty->ops->unthrottle)
++		tty->ops->unthrottle(tty);
++
++	return true;
+ }
+ 
+ /**
 -- 
 2.49.0
 
