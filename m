@@ -1,86 +1,82 @@
-Received: from outbound.pv.icloud.com (p-west1-cluster6-host2-snip4-10.eps.apple.com [57.103.67.43])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12CEF1E1C1A
-	for <linux-serial@vger.kernel.org>; Fri, 25 Apr 2025 11:37:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.103.67.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC63A241CB0;
+	Fri, 25 Apr 2025 11:39:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745581076; cv=none; b=BKwrLQOicrw41ZpVlHoLwY3I/Yv//KMjclSz1/i2twypiVe15jtioRn4TPDcqGokAXCF6QgiAvyx/E3elgwfjIX3oKEx36thb38QUeZ+OxR5Zt7J3QLdXTds13z6ajB8yW0mAPhvUdQk87bpvO0exuu7LyjztgVYiPhqJAD3b1M=
+	t=1745581164; cv=none; b=XaC9BfSDJDsquiobifzJ9MdOhoMFwU+dVwGESnbt544DR3Azq/NIDZVVdrcARW+Jo79IjuUfpnUiyl/mosqSzH9OW30MkR8QXA9WXsCdGwhI9VAY9xJuFxlr4ides3BwTv6eGsnW9qHC5te2yfD1ZCfCMatvKBNaPgCREUor47Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745581076; c=relaxed/simple;
-	bh=hLf8I3qN0IkenLrmP40OHYgcgFtsnAx3thMVnWAlEWE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ozzrBV4V9M1i9bB8mI5RVh4d59T5cO07HpEL2qXOm0T1tc6mpxQDxxk14ncYa3m9Q2FyjhCdu1kRdD07kLm+HelK6GxaRmNtv40aoF46gBNbjinMujVDeLAlIZPhbQwJ+BlsrokkPlK/iYkChVVi13NsYcaNR6puDBGDbn3sz6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com; spf=pass smtp.mailfrom=icloud.com; dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b=lAGtUJsj; arc=none smtp.client-ip=57.103.67.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=icloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=icloud.com
+	s=arc-20240116; t=1745581164; c=relaxed/simple;
+	bh=EdIVNlrBhMPbcOu7pJo016eI1srQnax7e5HkwLJSElE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HgZaSIAK4r4NSevI/8s8ZcvuRkEwpmhnUklrXfjs5dYnDiK1WxoHMLj+aeDybix1CL0FeoLiiRONSXMslRuPhoH0wn2erLlsh1Il1134eKpi7JPCYR0z6OG2C9T0woxqVtupMnU65yTrc82Pij7xh+2jZZtnvcL7Z+NfORBfPbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=s8E3NSus; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=icloud.com header.i=@icloud.com header.b="lAGtUJsj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=icloud.com;
-	s=1a1hai; bh=g+6OjhU/9zBErXb66CoyZ6TSEdzr2Bs/NZolCVB1gKw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type:x-icloud-hme;
-	b=lAGtUJsjOqFEjLIlBi+tz+smy0Rx7aUZyw8ewDvmrPIwiGc23/s9nrZZ9tQUrtg3z
-	 9IdxXrgwlGzdZSMBk8wpEzXnfYFIlVei10Wd48drWmm7eQQkVLbpy5UAFKIuzYldE8
-	 cPkwwb1C7CfA64Qr8J1KXCW4EpaxzaITrputK/GkoOGZ4oAIcZ1ITRUq/KOjhh3biy
-	 vCqFu4oJBUWmKRzFyG4LsBYvnTMX0WwJ1I/NhCKaHbLDHnchkQ77OowfJBf23WHEPN
-	 DHtoAJTJkx0w13R27vrep+rEq+lzKNtYHrHvZ6IxzTYk1CMAZrriq9oJ5rFFfAps/n
-	 EsThlGrGErhDg==
-Received: from [192.168.1.26] (pv-asmtp-me-k8s.p00.prod.me.com [17.56.9.36])
-	by outbound.pv.icloud.com (Postfix) with ESMTPSA id B19C31800578;
-	Fri, 25 Apr 2025 11:37:49 +0000 (UTC)
-Message-ID: <05d1f626-1c76-4b78-9028-f31d42f4d528@icloud.com>
-Date: Fri, 25 Apr 2025 19:37:45 +0800
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="s8E3NSus"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00AFDC4CEE4;
+	Fri, 25 Apr 2025 11:39:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1745581163;
+	bh=EdIVNlrBhMPbcOu7pJo016eI1srQnax7e5HkwLJSElE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=s8E3NSus2voUjY9ZXKYq+ar8kmV6wlfkMxQELxDZTpdAbjTqgJsZ3bbiMuWYnJM+y
+	 iAy5PcZl5N8zSx1NsqM7F8psWxV2ZNEu+kytpf7knXbXrMlbRoS/VqLeFGsq9C9O3f
+	 mmIo9h6dyAqbgjAqFJfo3M9akE9mV4zEcqUG84kI=
+Date: Fri, 25 Apr 2025 13:39:20 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Faraz Ata <faraz.ata@samsung.com>
+Cc: 'Krzysztof Kozlowski' <krzk@kernel.org>, alim.akhtar@samsung.com,
+	jirislaby@kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, dev.tailor@samsung.com,
+	rosa.pila@samsung.com
+Subject: Re: [PATCH v3] tty: serial: samsung_tty: support 18 uart ports
+Message-ID: <2025042508-statute-pleading-df6f@gregkh>
+References: <CGME20250417042427epcas5p2df3d35803adcb24da7d83e5df586380d@epcas5p2.samsung.com>
+ <20250417043427.1205626-1-faraz.ata@samsung.com>
+ <d350841c-3560-4511-a866-9490737e48f7@kernel.org>
+ <06cb01dbaf5a$1ea1a8b0$5be4fa10$@samsung.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] serdev: Remove repeated device name in
- dev_(err|dbg) messages
-To: Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Zijun Hu <quic_zijuhu@quicinc.com>
-References: <20250424-fix_serdev-v2-0-a1226ed77435@quicinc.com>
- <20250424-fix_serdev-v2-2-a1226ed77435@quicinc.com>
- <f2389ea1-44f9-4d66-b8e1-d55281541aa8@kernel.org>
-Content-Language: en-US
-From: Zijun Hu <zijun_hu@icloud.com>
-In-Reply-To: <f2389ea1-44f9-4d66-b8e1-d55281541aa8@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: iTYpRsSntvIBGYBxtNXsiDkXA_weDRtw
-X-Proofpoint-ORIG-GUID: iTYpRsSntvIBGYBxtNXsiDkXA_weDRtw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-04-25_03,2025-04-24_02,2025-02-21_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0
- mlxlogscore=999 mlxscore=0 phishscore=0 malwarescore=0 clxscore=1015
- adultscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2411120000 definitions=main-2504250084
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <06cb01dbaf5a$1ea1a8b0$5be4fa10$@samsung.com>
 
-On 2025/4/25 13:38, Jiri Slaby wrote:
->>
->> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
->> index
->> 971651b8e18dcbb5b7983cdfa19e7d60d4cd292b..f00106de76a0f1e547310c7d21cc2fe3d5869e28 100644
->> --- a/drivers/tty/serdev/core.c
->> +++ b/drivers/tty/serdev/core.c
->> @@ -118,12 +118,12 @@ int serdev_device_add(struct serdev_device *serdev)
->>         err = device_add(&serdev->dev);
->>       if (err < 0) {
->> -        dev_err(&serdev->dev, "Can't add %s, status %pe\n",
->> -            dev_name(&serdev->dev), ERR_PTR(err));
->> +        dev_err(&serdev->dev, "Can't add serdev, status %pe\n",
->> +            ERR_PTR(err));
+On Thu, Apr 17, 2025 at 11:02:24AM +0530, Faraz Ata wrote:
+> Hello Krzysztof
 > 
-> You don't need to wrap now.
-> 
-> Could you also get rid of ERR_PTR() and print err directly using %d?
-> 
->>           goto err_clear_serdev; 
+> > -----Original Message-----
+> > From: Krzysztof Kozlowski <krzk@kernel.org>
+> > Sent: Thursday, April 17, 2025 10:50 AM
+> > To: Faraz Ata <faraz.ata@samsung.com>; alim.akhtar@samsung.com;
+> > gregkh@linuxfoundation.org; jirislaby@kernel.org
+> > Cc: linux-arm-kernel@lists.infradead.org; linux-samsung-
+> > soc@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
+> > serial@vger.kernel.org; dev.tailor@samsung.com; rosa.pila@samsung.com
+> > Subject: Re: [PATCH v3] tty: serial: samsung_tty: support 18 uart ports
+> > 
+> > On 17/04/2025 06:34, Faraz Ata wrote:
+> > > ExynosAutov920 SoC supports 18 UART ports, update the value of
+> > UART_NR
+> > > to accommodate the same.
+> > >
+> > > Signed-off-by: Faraz Ata <faraz.ata@samsung.com>
+> > > ---
+> > > Changes in v3:
+> > > - Fixed review comments from Krzysztof
+> > 
+> > Which ones? What changed?
+> > 
+> While sending v2  change log was missed unintentionally.
+> Added missed change log in v3.
 
-sure, will do it in next revision.
+Can you add this properly and send a v4?
 
+thanks,
+
+greg k-h
