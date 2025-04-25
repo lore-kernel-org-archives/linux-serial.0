@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A9F822DF96;
-	Fri, 25 Apr 2025 06:41:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80FB91DFDAB;
+	Fri, 25 Apr 2025 06:43:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745563280; cv=none; b=B9LZhPmRMzjeojHWRVFUv3BcVdenayjYT5XRhkZPk6RMnq0BisVK29nb9SRPQxG4eQe49rnc9Bd79dOKF+kneWnFTdP7AG1acEE655WhCrnu/nuX/gzSj1Jh2nzg6/ICj4q7aT2/Y7dAfEK3XNVZGCLKRb/VGPogquvLhKB09DE=
+	t=1745563408; cv=none; b=dgxcW0x5NZFANmF9VPPBzjpaqkf4HXrxbQx3QM9eo9GJP+XNSl9UIgn1op1JH6q7PBXKBp8YBGatQF9s7XC3kEcuJt5AGsNeMQsa3fTR6yQGH/AHI0nHaBz8dtcRWid88Oz1uVdsFRPawQnjAJQDcQTuub90VH5l81YgrDh3feQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745563280; c=relaxed/simple;
-	bh=caqDoDHC4N/BJwCN/vbQlVrvvBBi9e4J4az3N5xkiR8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=n3V4CcvzLMgNE/62GQcB4ADyEOsZnin302Tc+yY7TS2qcBIT5PFaq1UCPsayc6RgRkepJDBj4dpjjVgG3m53imI1btI9AejFilwHoOe3N+lrz8p/wj8JnvgrJPv1iKEXcMQP4+m49FR1b/obwK0VLBWfqYyzOUhxzsbU2Qaw55s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=syalvRI9; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745563408; c=relaxed/simple;
+	bh=SEGWnTTOGRc1Xw/4NoMcbwV2WvKjpn/2lY/36Bzo9XU=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:References:
+	 In-Reply-To:Content-Type; b=Q/aaIIFi6PRzdwtm540vrrXDNJeQ9f7qI7T7M+78GC3mep1pfrQ/Ucletkj9p24hAZJ2lzRn9166a/jE4yhsjWbrkFb8pPjaxB3MwQLYozfTFFRPH9qNjSG5gFUGkHVpgehHpnNehoo0bep3NeRF6wsNIHgSxrdXoZe6AqXFO6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KJaCBl6z; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="syalvRI9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D94DC4CEEB;
-	Fri, 25 Apr 2025 06:41:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KJaCBl6z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51104C4CEE4;
+	Fri, 25 Apr 2025 06:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745563279;
-	bh=caqDoDHC4N/BJwCN/vbQlVrvvBBi9e4J4az3N5xkiR8=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=syalvRI92jI128TlTG3R7wRPGu5QOr9AJAV9xqhmx91jNPc1rxepzKb7ljimfFSQn
-	 vVhhTA6Plurrw7oRqCoVOA4krUajhFIX9tB0qnl3Dv/uo8/NpN6Ch280TPelYY+Jx+
-	 DcmcYXPWIY2SLx1z9vao5S+DA7tj6fbam0ud+so5N+JAM3qh3LGC64b2iVov2Yr5IY
-	 ITbWsBfrnPlxTGKyT3YtTnxmK7GkHARYWXs3fqj7bGxykNjHRBjb+F1zkTztFJY2xk
-	 X7xBqeaAUmJ2mfxYI3+ZafU8XmCHrvvPNt9cclxhztlfVvT8Jdh/nQB903FBm4g+qG
-	 tN8TsxfR1rK9w==
-Message-ID: <57d75d55-81e3-445f-a705-e8c116281515@kernel.org>
-Date: Fri, 25 Apr 2025 08:41:14 +0200
+	s=k20201202; t=1745563408;
+	bh=SEGWnTTOGRc1Xw/4NoMcbwV2WvKjpn/2lY/36Bzo9XU=;
+	h=Date:Subject:From:To:References:In-Reply-To:From;
+	b=KJaCBl6zQ99CG10igdZO3IHdUt60IdWeGEfAQXmggqPLHXcD68BxYzQh1mEXDrVtD
+	 nEQ5Bbr38CD3gBrYhOx74zK6vHejVKhnWyKAKBmCiieSlNFUhAy2tP0chbkN7MNfrJ
+	 KSMaMZp/iBHe95sFPzvT/cmn/mYvmL7TZSSn6kG324C6Xs23aQSpWZgii9b2P7NyHN
+	 chWJGsDFbDmpTF7Pg0IOYVHfjW/S9Lp+25D6k2llUnQ0NWuIoCLgHRcHx+FvTVeGOO
+	 S74Ncs32EwVrg1DTcoe92JtWBfi4BG/f5Qoli4jFrYxvLHtyQObIg7bjiYDcA5vZoQ
+	 /PMsCGpeNxfcg==
+Message-ID: <9d4e7002-48fe-4fa0-8e23-7c2160419910@kernel.org>
+Date: Fri, 25 Apr 2025 08:43:22 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,6 +36,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v4 4/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
+From: Jiri Slaby <jirislaby@kernel.org>
 To: Yunhui Cui <cuiyunhui@bytedance.com>, arnd@arndb.de,
  andriy.shevchenko@linux.intel.com, benjamin.larsson@genexis.eu,
  gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
@@ -47,8 +48,8 @@ To: Yunhui Cui <cuiyunhui@bytedance.com>, arnd@arndb.de,
  tim.kryger@linaro.org
 References: <20250425062425.68761-1-cuiyunhui@bytedance.com>
  <20250425062425.68761-4-cuiyunhui@bytedance.com>
+ <57d75d55-81e3-445f-a705-e8c116281515@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -91,58 +92,64 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250425062425.68761-4-cuiyunhui@bytedance.com>
+In-Reply-To: <57d75d55-81e3-445f-a705-e8c116281515@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 25. 04. 25, 8:24, Yunhui Cui wrote:
-> In the case of RX_TIMEOUT, to avoid PSLVERR, disable the FIFO
-> before reading UART_RX when UART_LSR_DR is not set.
+On 25. 04. 25, 8:41, Jiri Slaby wrote:
+> On 25. 04. 25, 8:24, Yunhui Cui wrote:
+>> In the case of RX_TIMEOUT, to avoid PSLVERR, disable the FIFO
+>> before reading UART_RX when UART_LSR_DR is not set.
+>>
+>> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from 
+>> bogus rx timeout interrupt")
+>> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+>> ---
+>>   drivers/tty/serial/8250/8250_dw.c | 13 ++++++++++++-
+>>   1 file changed, 12 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/ 
+>> serial/8250/8250_dw.c
+>> index 07f9be074b4b..1e364280a108 100644
+>> --- a/drivers/tty/serial/8250/8250_dw.c
+>> +++ b/drivers/tty/serial/8250/8250_dw.c
+>> @@ -273,6 +273,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+>>       unsigned int quirks = d->pdata->quirks;
+>>       unsigned int status;
+>>       unsigned long flags;
+>> +    unsigned char old_fcr;
 > 
-> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
-> ---
->   drivers/tty/serial/8250/8250_dw.c | 13 ++++++++++++-
->   1 file changed, 12 insertions(+), 1 deletion(-)
+> No more unsigned char, please. Use u8.
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index 07f9be074b4b..1e364280a108 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -273,6 +273,7 @@ static int dw8250_handle_irq(struct uart_port *p)
->   	unsigned int quirks = d->pdata->quirks;
->   	unsigned int status;
->   	unsigned long flags;
-> +	unsigned char old_fcr;
+>> @@ -288,9 +289,19 @@ static int dw8250_handle_irq(struct uart_port *p)
+>>           uart_port_lock_irqsave(p, &flags);
+>>           status = serial_lsr_in(up);
+>> -        if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+>> +        if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
+>> +            /* To avoid PSLVERR, disable the FIFO first. */
+>> +            if (up->fcr & UART_FCR_ENABLE_FIFO) {
+>> +                old_fcr = serial_in(up, UART_FCR);
 
-No more unsigned char, please. Use u8.
+Wait, read(FCR) actually means read(IIR). FCR is write only. Or is DW 
+special in this?
 
-> @@ -288,9 +289,19 @@ static int dw8250_handle_irq(struct uart_port *p)
->   		uart_port_lock_irqsave(p, &flags);
->   		status = serial_lsr_in(up);
->   
-> -		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
-> +		if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
-> +			/* To avoid PSLVERR, disable the FIFO first. */
-> +			if (up->fcr & UART_FCR_ENABLE_FIFO) {
-> +				old_fcr = serial_in(up, UART_FCR);
-> +				serial_out(up, UART_FCR, old_fcr & ~1);
-
-s/1/UART_FCR_ENABLE_FIFO/
-
-> +			}
-> +
->   			(void) p->serial_in(p, UART_RX);
->   
-> +			if (up->fcr & UART_FCR_ENABLE_FIFO)
-> +				serial_out(up, UART_FCR, old_fcr);
-> +		}
-> +
->   		uart_port_unlock_irqrestore(p, flags);
->   	}
->   
-
+>> +                serial_out(up, UART_FCR, old_fcr & ~1);
+> 
+> s/1/UART_FCR_ENABLE_FIFO/
+> 
+>> +            }
+>> +
+>>               (void) p->serial_in(p, UART_RX);
+>> +            if (up->fcr & UART_FCR_ENABLE_FIFO)
+>> +                serial_out(up, UART_FCR, old_fcr);
+>> +        }
+>> +
+>>           uart_port_unlock_irqrestore(p, flags);
+>>       }
+> 
+> 
 
 -- 
 js
 suse labs
+
