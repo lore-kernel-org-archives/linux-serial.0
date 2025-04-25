@@ -1,140 +1,148 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 170FF22D7A5
-	for <linux-serial@vger.kernel.org>; Fri, 25 Apr 2025 06:24:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A9F822DF96;
+	Fri, 25 Apr 2025 06:41:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745562293; cv=none; b=Jf5TrKiecP0dlxr96KFAD1EQ2ipDOgXduzSJDoZh014aDRaWu1y/NYcX4swAXmD+yycmnB4Q9J3rmQ51cr9AA4RgUCWOMd5d9eo8ZMlh0pyu3pRY0myl2VzgNAnRoZEK6RWsaz79Rvs6V9vQR3kXEVaK6+PsdMiPVM59QIFwkGE=
+	t=1745563280; cv=none; b=B9LZhPmRMzjeojHWRVFUv3BcVdenayjYT5XRhkZPk6RMnq0BisVK29nb9SRPQxG4eQe49rnc9Bd79dOKF+kneWnFTdP7AG1acEE655WhCrnu/nuX/gzSj1Jh2nzg6/ICj4q7aT2/Y7dAfEK3XNVZGCLKRb/VGPogquvLhKB09DE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745562293; c=relaxed/simple;
-	bh=LQ95Vn+tu9HRCgEKYvi6s7BkWHtV8kryNAYsYGrRkI4=;
-	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ck7jicaTBij8YidR+TpASun4a/YElhYz+iNQ2bFY5BYw7/bVGCAUEqLzEL0x8s1ZDqryYInC92uWEppnVAgCSo6MDP3hIP48FpOTonpkZOcrAA6p74io6Vat548X/6Y0Yi/TkOKKIb1eBlEH/10Xvz59ubSlb1dOvKHcG2hG+zk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=d0LbQN7i; arc=none smtp.client-ip=209.85.210.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1745563280; c=relaxed/simple;
+	bh=caqDoDHC4N/BJwCN/vbQlVrvvBBi9e4J4az3N5xkiR8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=n3V4CcvzLMgNE/62GQcB4ADyEOsZnin302Tc+yY7TS2qcBIT5PFaq1UCPsayc6RgRkepJDBj4dpjjVgG3m53imI1btI9AejFilwHoOe3N+lrz8p/wj8JnvgrJPv1iKEXcMQP4+m49FR1b/obwK0VLBWfqYyzOUhxzsbU2Qaw55s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=syalvRI9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="d0LbQN7i"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-739be717eddso1422799b3a.2
-        for <linux-serial@vger.kernel.org>; Thu, 24 Apr 2025 23:24:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1745562291; x=1746167091; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=HbKfQhlrgV1dvkptAfP3aiGbVJaK2h9Q5oUHug4Z1q0=;
-        b=d0LbQN7iFuV7MwJuAyX1niiaT0vljgraw4OKPbUNwE7EhH0b5inakDr+bPATwhCqQI
-         rakuHVXQw/6f5VbKnFPj07mm1FABtfRIUgA12bl8I91qHfQqDu5KiEp/BtPCMQQ+TMnX
-         ZF+1osSegoXMwr2MapldNCYAwo4JhZJF0L6/iOFl7V+IMV5xQbdXVQwXNOMhySKC1lIy
-         39jGbuTDahMwrIRZcdgLyWnJnH1nRkKbucmRINa5DGf/bEAZEYY3Ou5sMBzLcBtpawyI
-         CLBtVPKrlwpr7YPuLxgbXeWs4N1li6VND7Y2445C8lgiTAxX3RbGD0homdt5UVz9ShLt
-         Kjdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745562291; x=1746167091;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=HbKfQhlrgV1dvkptAfP3aiGbVJaK2h9Q5oUHug4Z1q0=;
-        b=GPxaBhDFGgLlkOnrbG79tCqL2Pof5UaDfUC6VzKSoK5lCraIGBBOkaW5W3OUzoT/J9
-         v7T1CzL2Iw1oewXGYCwCyd4Esod8Jx0ztLA2FCteXbcsAdq25RiUvomOf3XRild3p/Lc
-         Yd+pN7UXqcNqKPpQuNaZJl4ePe+yZMPM4hVKgGrgjrzUwNy7ofbR49QK/uMHJEfBT3Z0
-         U+8UR9ce1Ib9CWU1lW5Tr5xI2AKEPJoC1m066thAeZRQTWKA0DgbXf0HkGgfFPJ9olnD
-         qZh3X5JR4dcuTglECX/2klrdixLMSZQishJeoz937R6qVtdRWAn3+KoYD+9QXKKrEySK
-         Do9w==
-X-Forwarded-Encrypted: i=1; AJvYcCV6jVbFUYFTM7J23IdZYpdGO+xCZ7Nr7e71p/VHoI0quvQ+Qj57+u7BdocfIpXGOHXWEjsZ5MGg6mKBKTA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx4xh9c5uBWpAVuKtwyxiCgjk/NBRg3qicPAP2PYGPd5uKQaVXf
-	dOK6ZFsS/YZIPdnMPY2Qo9b2tLH9Ft5g1YT15n0Wjk6KJXYIviOnqPyphRGAwNc=
-X-Gm-Gg: ASbGnctOzHHDYw+V305yuJ9hSzSYlOwwri5S+TaMWjWyVvk9DS8BQuXcA/+x8+38uTC
-	raiMJAKHgGLK9rBnGjEIpaJlQfw+lqReMEK+0o1bs/crZYCFzUy/wNNM4Vafaq9mOcol0uQ1Die
-	A7mu2myJJz6n04+y5N3LMmqW/BLlnntk+fb8RlkmLOC1vfoo0/GGXdIQ8VDzkP0A8YUlCE35Adi
-	KSK7gF0brf1Hm0/k0rFjiF9L3NtuCY9cmqUj/L+q5Jg7ryEFEVDUFc9unfAY4RWWofZJcr03LpL
-	zC/RoUtFtzTj2pjBTh32/fsb4txWXIIpj3OD0RwgaywlbwjKBMO3LPyInp8Lhy9S8gj/hUGENc2
-	WOEe0ow==
-X-Google-Smtp-Source: AGHT+IGcbZQtP6uVVePTGOPuBjQ8FV59Z2pbuXebZ/lw/iyZ/2Hsb4J6vuN0bZPf+LViOoXHP7YXbQ==
-X-Received: by 2002:a05:6a00:230c:b0:736:5544:7ad7 with SMTP id d2e1a72fcca58-73fd75c4cc5mr1455328b3a.14.1745562291301;
-        Thu, 24 Apr 2025 23:24:51 -0700 (PDT)
-Received: from L6YN4KR4K9.bytedance.net ([61.213.176.7])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73e25a9fd26sm2414367b3a.151.2025.04.24.23.24.46
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 24 Apr 2025 23:24:51 -0700 (PDT)
-From: Yunhui Cui <cuiyunhui@bytedance.com>
-To: arnd@arndb.de,
-	andriy.shevchenko@linux.intel.com,
-	benjamin.larsson@genexis.eu,
-	cuiyunhui@bytedance.com,
-	gregkh@linuxfoundation.org,
-	heikki.krogerus@linux.intel.com,
-	ilpo.jarvinen@linux.intel.com,
-	jirislaby@kernel.org,
-	jkeeping@inmusicbrands.com,
-	john.ogness@linutronix.de,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	markus.mayer@linaro.org,
-	matt.porter@linaro.org,
-	namcao@linutronix.de,
-	paulmck@kernel.org,
-	pmladek@suse.com,
-	schnelle@linux.ibm.com,
-	sunilvl@ventanamicro.com,
-	tim.kryger@linaro.org
-Subject: [PATCH v4 4/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
-Date: Fri, 25 Apr 2025 14:24:25 +0800
-Message-Id: <20250425062425.68761-4-cuiyunhui@bytedance.com>
-X-Mailer: git-send-email 2.39.2 (Apple Git-143)
-In-Reply-To: <20250425062425.68761-1-cuiyunhui@bytedance.com>
-References: <20250425062425.68761-1-cuiyunhui@bytedance.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="syalvRI9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D94DC4CEEB;
+	Fri, 25 Apr 2025 06:41:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745563279;
+	bh=caqDoDHC4N/BJwCN/vbQlVrvvBBi9e4J4az3N5xkiR8=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=syalvRI92jI128TlTG3R7wRPGu5QOr9AJAV9xqhmx91jNPc1rxepzKb7ljimfFSQn
+	 vVhhTA6Plurrw7oRqCoVOA4krUajhFIX9tB0qnl3Dv/uo8/NpN6Ch280TPelYY+Jx+
+	 DcmcYXPWIY2SLx1z9vao5S+DA7tj6fbam0ud+so5N+JAM3qh3LGC64b2iVov2Yr5IY
+	 ITbWsBfrnPlxTGKyT3YtTnxmK7GkHARYWXs3fqj7bGxykNjHRBjb+F1zkTztFJY2xk
+	 X7xBqeaAUmJ2mfxYI3+ZafU8XmCHrvvPNt9cclxhztlfVvT8Jdh/nQB903FBm4g+qG
+	 tN8TsxfR1rK9w==
+Message-ID: <57d75d55-81e3-445f-a705-e8c116281515@kernel.org>
+Date: Fri, 25 Apr 2025 08:41:14 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 4/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
+To: Yunhui Cui <cuiyunhui@bytedance.com>, arnd@arndb.de,
+ andriy.shevchenko@linux.intel.com, benjamin.larsson@genexis.eu,
+ gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
+ ilpo.jarvinen@linux.intel.com, jkeeping@inmusicbrands.com,
+ john.ogness@linutronix.de, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, markus.mayer@linaro.org,
+ matt.porter@linaro.org, namcao@linutronix.de, paulmck@kernel.org,
+ pmladek@suse.com, schnelle@linux.ibm.com, sunilvl@ventanamicro.com,
+ tim.kryger@linaro.org
+References: <20250425062425.68761-1-cuiyunhui@bytedance.com>
+ <20250425062425.68761-4-cuiyunhui@bytedance.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
+ rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
+ rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
+ i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
+ wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
+ ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
+ cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
+ 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
+ w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
+ YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABzSFKaXJpIFNsYWJ5
+ IDxqaXJpc2xhYnlAa2VybmVsLm9yZz7CwXcEEwEIACEFAlW3RUwCGwMFCwkIBwIGFQgJCgsC
+ BBYCAwECHgECF4AACgkQvSWxBAa0cEnVTg//TQpdIAr8Tn0VAeUjdVIH9XCFw+cPSU+zMSCH
+ eCZoA/N6gitEcnvHoFVVM7b3hK2HgoFUNbmYC0RdcSc80pOF5gCnACSP9XWHGWzeKCARRcQR
+ 4s5YD8I4VV5hqXcKo2DFAtIOVbHDW+0okOzcecdasCakUTr7s2fXz97uuoc2gIBB7bmHUGAH
+ XQXHvdnCLjDjR+eJN+zrtbqZKYSfj89s/ZHn5Slug6w8qOPT1sVNGG+eWPlc5s7XYhT9z66E
+ l5C0rG35JE4PhC+tl7BaE5IwjJlBMHf/cMJxNHAYoQ1hWQCKOfMDQ6bsEr++kGUCbHkrEFwD
+ UVA72iLnnnlZCMevwE4hc0zVhseWhPc/KMYObU1sDGqaCesRLkE3tiE7X2cikmj/qH0CoMWe
+ gjnwnQ2qVJcaPSzJ4QITvchEQ+tbuVAyvn9H+9MkdT7b7b2OaqYsUP8rn/2k1Td5zknUz7iF
+ oJ0Z9wPTl6tDfF8phaMIPISYrhceVOIoL+rWfaikhBulZTIT5ihieY9nQOw6vhOfWkYvv0Dl
+ o4GRnb2ybPQpfEs7WtetOsUgiUbfljTgILFw3CsPW8JESOGQc0Pv8ieznIighqPPFz9g+zSu
+ Ss/rpcsqag5n9rQp/H3WW5zKUpeYcKGaPDp/vSUovMcjp8USIhzBBrmI7UWAtuedG9prjqfO
+ wU0ETpLnhgEQAM+cDWLL+Wvc9cLhA2OXZ/gMmu7NbYKjfth1UyOuBd5emIO+d4RfFM02XFTI
+ t4MxwhAryhsKQQcA4iQNldkbyeviYrPKWjLTjRXT5cD2lpWzr+Jx7mX7InV5JOz1Qq+P+nJW
+ YIBjUKhI03ux89p58CYil24Zpyn2F5cX7U+inY8lJIBwLPBnc9Z0An/DVnUOD+0wIcYVnZAK
+ DiIXODkGqTg3fhZwbbi+KAhtHPFM2fGw2VTUf62IHzV+eBSnamzPOBc1XsJYKRo3FHNeLuS8
+ f4wUe7bWb9O66PPFK/RkeqNX6akkFBf9VfrZ1rTEKAyJ2uqf1EI1olYnENk4+00IBa+BavGQ
+ 8UW9dGW3nbPrfuOV5UUvbnsSQwj67pSdrBQqilr5N/5H9z7VCDQ0dhuJNtvDSlTf2iUFBqgk
+ 3smln31PUYiVPrMP0V4ja0i9qtO/TB01rTfTyXTRtqz53qO5dGsYiliJO5aUmh8swVpotgK4
+ /57h3zGsaXO9PGgnnAdqeKVITaFTLY1ISg+Ptb4KoliiOjrBMmQUSJVtkUXMrCMCeuPDGHo7
+ 39Xc75lcHlGuM3yEB//htKjyprbLeLf1y4xPyTeeF5zg/0ztRZNKZicgEmxyUNBHHnBKHQxz
+ 1j+mzH0HjZZtXjGu2KLJ18G07q0fpz2ZPk2D53Ww39VNI/J9ABEBAAHCwV8EGAECAAkFAk6S
+ 54YCGwwACgkQvSWxBAa0cEk3tRAAgO+DFpbyIa4RlnfpcW17AfnpZi9VR5+zr496n2jH/1ld
+ wRO/S+QNSA8qdABqMb9WI4BNaoANgcg0AS429Mq0taaWKkAjkkGAT7mD1Q5PiLr06Y/+Kzdr
+ 90eUVneqM2TUQQbK+Kh7JwmGVrRGNqQrDk+gRNvKnGwFNeTkTKtJ0P8jYd7P1gZb9Fwj9YLx
+ jhn/sVIhNmEBLBoI7PL+9fbILqJPHgAwW35rpnq4f/EYTykbk1sa13Tav6btJ+4QOgbcezWI
+ wZ5w/JVfEJW9JXp3BFAVzRQ5nVrrLDAJZ8Y5ioWcm99JtSIIxXxt9FJaGc1Bgsi5K/+dyTKL
+ wLMJgiBzbVx8G+fCJJ9YtlNOPWhbKPlrQ8+AY52Aagi9WNhe6XfJdh5g6ptiOILm330mkR4g
+ W6nEgZVyIyTq3ekOuruftWL99qpP5zi+eNrMmLRQx9iecDNgFr342R9bTDlb1TLuRb+/tJ98
+ f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
+ DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
+ S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
+In-Reply-To: <20250425062425.68761-4-cuiyunhui@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-In the case of RX_TIMEOUT, to avoid PSLVERR, disable the FIFO
-before reading UART_RX when UART_LSR_DR is not set.
+On 25. 04. 25, 8:24, Yunhui Cui wrote:
+> In the case of RX_TIMEOUT, to avoid PSLVERR, disable the FIFO
+> before reading UART_RX when UART_LSR_DR is not set.
+> 
+> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
+> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+> ---
+>   drivers/tty/serial/8250/8250_dw.c | 13 ++++++++++++-
+>   1 file changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index 07f9be074b4b..1e364280a108 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -273,6 +273,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+>   	unsigned int quirks = d->pdata->quirks;
+>   	unsigned int status;
+>   	unsigned long flags;
+> +	unsigned char old_fcr;
 
-Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
-Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
----
- drivers/tty/serial/8250/8250_dw.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+No more unsigned char, please. Use u8.
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 07f9be074b4b..1e364280a108 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -273,6 +273,7 @@ static int dw8250_handle_irq(struct uart_port *p)
- 	unsigned int quirks = d->pdata->quirks;
- 	unsigned int status;
- 	unsigned long flags;
-+	unsigned char old_fcr;
- 
- 	/*
- 	 * There are ways to get Designware-based UARTs into a state where
-@@ -288,9 +289,19 @@ static int dw8250_handle_irq(struct uart_port *p)
- 		uart_port_lock_irqsave(p, &flags);
- 		status = serial_lsr_in(up);
- 
--		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
-+		if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
-+			/* To avoid PSLVERR, disable the FIFO first. */
-+			if (up->fcr & UART_FCR_ENABLE_FIFO) {
-+				old_fcr = serial_in(up, UART_FCR);
-+				serial_out(up, UART_FCR, old_fcr & ~1);
-+			}
-+
- 			(void) p->serial_in(p, UART_RX);
- 
-+			if (up->fcr & UART_FCR_ENABLE_FIFO)
-+				serial_out(up, UART_FCR, old_fcr);
-+		}
-+
- 		uart_port_unlock_irqrestore(p, flags);
- 	}
- 
+> @@ -288,9 +289,19 @@ static int dw8250_handle_irq(struct uart_port *p)
+>   		uart_port_lock_irqsave(p, &flags);
+>   		status = serial_lsr_in(up);
+>   
+> -		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+> +		if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
+> +			/* To avoid PSLVERR, disable the FIFO first. */
+> +			if (up->fcr & UART_FCR_ENABLE_FIFO) {
+> +				old_fcr = serial_in(up, UART_FCR);
+> +				serial_out(up, UART_FCR, old_fcr & ~1);
+
+s/1/UART_FCR_ENABLE_FIFO/
+
+> +			}
+> +
+>   			(void) p->serial_in(p, UART_RX);
+>   
+> +			if (up->fcr & UART_FCR_ENABLE_FIFO)
+> +				serial_out(up, UART_FCR, old_fcr);
+> +		}
+> +
+>   		uart_port_unlock_irqrestore(p, flags);
+>   	}
+>   
+
+
 -- 
-2.39.2
-
+js
+suse labs
