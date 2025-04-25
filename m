@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A3EF2451F3;
-	Fri, 25 Apr 2025 11:13:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78DE723DEB6;
+	Fri, 25 Apr 2025 11:13:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745579605; cv=none; b=cQAjKPI7NFnG8boF+RP0t0prm8qmY0avMQVTJ5AbEoIILGFflMyMmxxaGHq3/PJrp5ZGrFSaf7+jTVtMm88xFWRf/XZ2kPc51IeBRQywuXcIlwEaZi/K1N5k1WuDO4WJDZi99soEvpvShYDcGQCqkC0lvLf3YZ7AkFBmeDElsfc=
+	t=1745579606; cv=none; b=ON95vbYj0mVpP721gcCk7diup4TxYWhEUC4IVM7BdIek8fxxUtaKZiMpttaJkyISyDUB296ZAgs7CBCBjdfFgLrEyNheVnFfeIDZ+kc4BXTiNHnMVPkUue0jlmkWdUUzVgx5H+o4kQHpCipvzsAT1zdWVomEF9bJ4FG/+Ye4ZAA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745579605; c=relaxed/simple;
-	bh=filZUCZu1uVbN8m4LwHDnoGpoCMzzgYVOEeequd4tbo=;
+	s=arc-20240116; t=1745579606; c=relaxed/simple;
+	bh=RZuTYAp+J9porolOraxUHRSEcCgxu0uikSg3bbj46JA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=HsJCrPHrhB2B07qXJZgHN88NEVmZys4WjjwUa0NnDRShj78lWgnhUhX+XZxo4D8vDvPDTiWlvdtFMghRHWSB6ioJyo7ESzCWS4yoK6cVy5xAZPs8y/hi8qdms49GR1ZVuLT5QCyd0q7YSZgkRpc3nqXXvzGud0XsJ3F8SQK9PBw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u+6D1cBN; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=KykBn7ONzZSonw43TQ/iFyDofiZWG4EJPmB8QCMWZC7d50BwlOozpw2sMoc9AL7DUYgrQkdSNzmRkMUfZSN9skKgBV3EEJG9Ohy9u8tx+jeX4efvu2s33b9pMpHJs8yW7xyfue0CvzZ7t9yL6qdRx7w6edyBHIMZdHEH6d+97Uc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TfyezEZE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u+6D1cBN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0EC6C4CEEA;
-	Fri, 25 Apr 2025 11:13:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TfyezEZE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B8C6C4CEEC;
+	Fri, 25 Apr 2025 11:13:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745579604;
-	bh=filZUCZu1uVbN8m4LwHDnoGpoCMzzgYVOEeequd4tbo=;
+	s=k20201202; t=1745579606;
+	bh=RZuTYAp+J9porolOraxUHRSEcCgxu0uikSg3bbj46JA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=u+6D1cBNYAUgjXTHoAGcBbmgkWyaz5S6diid/vO3pA2yPTCGNrbQBlvtbG99PoEeY
-	 WLVnRfzDCk+/61DNIIUAs6PTx8arPZIX38v1nT5Zif/rJJmINSEan7Y6aWI4smUwZL
-	 3BRivWN0NQy707Y7LiAVhrEBI4mY3osOEHTY9ZF+iDApffMtKt/MyVLzEDNxaWq0WJ
-	 hN4OQYuy+LaxscO4cS4cYswa3g3XWOwvZ4L5TTrvAIDyXFhET1ot/IQl7qhKQGmr7z
-	 ltJugZrXiZHJgaEOWz5LuN98QO2E4DTjd7t+oBIumrsWo1TwDk8t2+Bgi/4xaFVJDV
-	 uaukuUvSu15Vg==
+	b=TfyezEZEFWNzXJsKPa+kOVL3vke2LJUdz7kerX9AeX/hfajo6MRtRwCafeMgtyg4e
+	 kQy1L18mN5EFqh4kql7uF+umyW4buXYgqM4p50lFQjlT02KOC1YwazS9nKVAAiQqqn
+	 WpSikoT/fIzCtD4g6hepGaku5/7vfURqpjXYk/gTtVVfecy1Zj7rv5SoU106Xk6mia
+	 4tlnKUOdXdZ2lbA4PJtuFxat3Vi6F50YaNe4EnaupWnAMtypvoxzA/csG098XLxUt/
+	 cHMqlFjiW7sXXG3HmW4imBltPe08jNkeQnwUErc4DGEY1ZMY5lRtdoZ3q/9/Zp01Hk
+	 maVpZtIVkFTZQ==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 4/6] serial: rename local uart_port_lock() -> uart_port_ref_lock()
-Date: Fri, 25 Apr 2025 13:13:13 +0200
-Message-ID: <20250425111315.1036184-5-jirislaby@kernel.org>
+Subject: [PATCH 5/6] serial: use uart_port_ref_lock() helper
+Date: Fri, 25 Apr 2025 13:13:14 +0200
+Message-ID: <20250425111315.1036184-6-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250425111315.1036184-1-jirislaby@kernel.org>
 References: <20250425111315.1036184-1-jirislaby@kernel.org>
@@ -45,216 +45,64 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-uart_port_lock() and uart_port_unlock() are (at the same time) defined
-as:
-* functions in include/linux/serial_core.h
-* macros in drivers/tty/serial/serial_core.c
+uart_get_icount() and uart_carrier_raised() open code
+uart_port_ref_lock(). Use the helper instead.
 
-The former are sane uart port lock wrappers.
-
-The latter _lock() does something completely different: it inspects
-a uart_state, obtains a uart_port from it, and increases its reference
-count. And if that all succeeded, the port is locked too.
-
-Similarly, the _unlock() counterpart first unlocks and then decrements
-the refcount too.
-
-This state is REALLY CONFUSING.
-
-So rename the latter (local .c macros):
-* uart_port_lock() -> uart_port_ref_lock(), and
-* uart_port_unlock() -> uart_port_unlock_deref().
-
-Now, the forbidden while-at-it part: convert from a macro to an inline
--- do it here as the passed 'flags' have to be pointer to ulong now. So
-we avoid doubled changes on identical LOCs.
+The difference is we use _irqsave() variants of a spinlock now. But
+that's "safer" than _irq().
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 75 ++++++++++++++++----------------
- 1 file changed, 38 insertions(+), 37 deletions(-)
+ drivers/tty/serial/serial_core.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 5bc145643385..52e764be42c4 100644
+index 52e764be42c4..1f7708a91fc6 100644
 --- a/drivers/tty/serial/serial_core.c
 +++ b/drivers/tty/serial/serial_core.c
-@@ -75,22 +75,23 @@ static inline void uart_port_deref(struct uart_port *uport)
- 		wake_up(&uport->state->remove_wait);
- }
+@@ -1276,14 +1276,13 @@ static int uart_get_icount(struct tty_struct *tty,
+ 	struct uart_state *state = tty->driver_data;
+ 	struct uart_icount cnow;
+ 	struct uart_port *uport;
++	unsigned long flags;
  
--#define uart_port_lock(state, flags)					\
--	({								\
--		struct uart_port *__uport = uart_port_ref(state);	\
--		if (__uport)						\
--			uart_port_lock_irqsave(__uport, &flags);	\
--		__uport;						\
--	})
--
--#define uart_port_unlock(uport, flags)					\
--	({								\
--		struct uart_port *__uport = uport;			\
--		if (__uport) {						\
--			uart_port_unlock_irqrestore(__uport, flags);	\
--			uart_port_deref(__uport);			\
--		}							\
--	})
-+static inline struct uart_port *uart_port_ref_lock(struct uart_state *state, unsigned long *flags)
-+{
-+	struct uart_port *uport = uart_port_ref(state);
-+
-+	if (uport)
-+		uart_port_lock_irqsave(uport, flags);
-+
-+	return uport;
-+}
-+
-+static inline void uart_port_unlock_deref(struct uart_port *uport, unsigned long flags)
-+{
-+	if (uport) {
-+		uart_port_unlock_irqrestore(uport, flags);
-+		uart_port_deref(uport);
-+	}
-+}
- 
- static inline struct uart_port *uart_port_check(struct uart_state *state)
- {
-@@ -127,10 +128,10 @@ static void uart_stop(struct tty_struct *tty)
- 	struct uart_port *port;
- 	unsigned long flags;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref_lock(state, &flags);
- 	if (port)
- 		port->ops->stop_tx(port);
--	uart_port_unlock(port, flags);
-+	uart_port_unlock_deref(port, flags);
- }
- 
- static void __uart_start(struct uart_state *state)
-@@ -168,9 +169,9 @@ static void uart_start(struct tty_struct *tty)
- 	struct uart_port *port;
- 	unsigned long flags;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref_lock(state, &flags);
- 	__uart_start(state);
--	uart_port_unlock(port, flags);
-+	uart_port_unlock_deref(port, flags);
- }
- 
- static void
-@@ -258,14 +259,14 @@ static int uart_alloc_xmit_buf(struct tty_port *port)
- 	if (!page)
- 		return -ENOMEM;
- 
--	uport = uart_port_lock(state, flags);
+-	uport = uart_port_ref(state);
 +	uport = uart_port_ref_lock(state, &flags);
- 	if (!state->port.xmit_buf) {
- 		state->port.xmit_buf = (unsigned char *)page;
- 		kfifo_init(&state->port.xmit_fifo, state->port.xmit_buf,
- 				PAGE_SIZE);
--		uart_port_unlock(uport, flags);
-+		uart_port_unlock_deref(uport, flags);
- 	} else {
--		uart_port_unlock(uport, flags);
-+		uart_port_unlock_deref(uport, flags);
- 		/*
- 		 * Do not free() the page under the port lock, see
- 		 * uart_free_xmit_buf().
-@@ -289,11 +290,11 @@ static void uart_free_xmit_buf(struct tty_port *port)
- 	 * console driver may need to allocate/free a debug object, which
- 	 * can end up in printk() recursion.
- 	 */
--	uport = uart_port_lock(state, flags);
-+	uport = uart_port_ref_lock(state, &flags);
- 	xmit_buf = port->xmit_buf;
- 	port->xmit_buf = NULL;
- 	INIT_KFIFO(port->xmit_fifo);
--	uart_port_unlock(uport, flags);
+ 	if (!uport)
+ 		return -EIO;
+-	uart_port_lock_irq(uport);
+ 	memcpy(&cnow, &uport->icount, sizeof(struct uart_icount));
+-	uart_port_unlock_irq(uport);
+-	uart_port_deref(uport);
 +	uart_port_unlock_deref(uport, flags);
  
- 	free_page((unsigned long)xmit_buf);
+ 	icount->cts         = cnow.cts;
+ 	icount->dsr         = cnow.dsr;
+@@ -1915,9 +1914,10 @@ static bool uart_carrier_raised(struct tty_port *port)
+ {
+ 	struct uart_state *state = container_of(port, struct uart_state, port);
+ 	struct uart_port *uport;
++	unsigned long flags;
+ 	int mctrl;
+ 
+-	uport = uart_port_ref(state);
++	uport = uart_port_ref_lock(state, &flags);
+ 	/*
+ 	 * Should never observe uport == NULL since checks for hangup should
+ 	 * abort the tty_port_block_til_ready() loop before checking for carrier
+@@ -1926,11 +1926,9 @@ static bool uart_carrier_raised(struct tty_port *port)
+ 	 */
+ 	if (WARN_ON(!uport))
+ 		return true;
+-	uart_port_lock_irq(uport);
+ 	uart_enable_ms(uport);
+ 	mctrl = uport->ops->get_mctrl(uport);
+-	uart_port_unlock_irq(uport);
+-	uart_port_deref(uport);
++	uart_port_unlock_deref(uport, flags);
+ 
+ 	return mctrl & TIOCM_CAR;
  }
-@@ -592,15 +593,15 @@ static int uart_put_char(struct tty_struct *tty, u8 c)
- 	unsigned long flags;
- 	int ret = 0;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref_lock(state, &flags);
- 	if (!state->port.xmit_buf) {
--		uart_port_unlock(port, flags);
-+		uart_port_unlock_deref(port, flags);
- 		return 0;
- 	}
- 
- 	if (port)
- 		ret = kfifo_put(&state->port.xmit_fifo, c);
--	uart_port_unlock(port, flags);
-+	uart_port_unlock_deref(port, flags);
- 	return ret;
- }
- 
-@@ -623,9 +624,9 @@ static ssize_t uart_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 	if (WARN_ON(!state))
- 		return -EL3HLT;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref_lock(state, &flags);
- 	if (!state->port.xmit_buf) {
--		uart_port_unlock(port, flags);
-+		uart_port_unlock_deref(port, flags);
- 		return 0;
- 	}
- 
-@@ -633,7 +634,7 @@ static ssize_t uart_write(struct tty_struct *tty, const u8 *buf, size_t count)
- 		ret = kfifo_in(&state->port.xmit_fifo, buf, count);
- 
- 	__uart_start(state);
--	uart_port_unlock(port, flags);
-+	uart_port_unlock_deref(port, flags);
- 	return ret;
- }
- 
-@@ -644,9 +645,9 @@ static unsigned int uart_write_room(struct tty_struct *tty)
- 	unsigned long flags;
- 	unsigned int ret;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref_lock(state, &flags);
- 	ret = kfifo_avail(&state->port.xmit_fifo);
--	uart_port_unlock(port, flags);
-+	uart_port_unlock_deref(port, flags);
- 	return ret;
- }
- 
-@@ -657,9 +658,9 @@ static unsigned int uart_chars_in_buffer(struct tty_struct *tty)
- 	unsigned long flags;
- 	unsigned int ret;
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref_lock(state, &flags);
- 	ret = kfifo_len(&state->port.xmit_fifo);
--	uart_port_unlock(port, flags);
-+	uart_port_unlock_deref(port, flags);
- 	return ret;
- }
- 
-@@ -678,13 +679,13 @@ static void uart_flush_buffer(struct tty_struct *tty)
- 
- 	pr_debug("uart_flush_buffer(%d) called\n", tty->index);
- 
--	port = uart_port_lock(state, flags);
-+	port = uart_port_ref_lock(state, &flags);
- 	if (!port)
- 		return;
- 	kfifo_reset(&state->port.xmit_fifo);
- 	if (port->ops->flush_buffer)
- 		port->ops->flush_buffer(port);
--	uart_port_unlock(port, flags);
-+	uart_port_unlock_deref(port, flags);
- 	tty_port_tty_wakeup(&state->port);
- }
- 
 -- 
 2.49.0
 
