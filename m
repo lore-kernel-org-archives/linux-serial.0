@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 637E124338F;
-	Fri, 25 Apr 2025 11:13:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD22B24468A;
+	Fri, 25 Apr 2025 11:13:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745579602; cv=none; b=MRR9tK9wT7paBPKfr2GL5cS8H6NLCRG4D/1FAFfR9qpu2a5inB2xs3u1aO0gRE6Pc1Jh8DeRz4dLRhL1VaDoWY5TEbWLFvdfqq3Oq5O2yTm9vuA3JTff7/6nJ97bYlVY+xpqKK2MYTKg7qmI899uO2vvic9TjcFjp28vyDcT3dg=
+	t=1745579603; cv=none; b=JB9A4m2N+x7HHmhgnQipBZplGyFHkhLmoSxHraclQInvOp82Ys5gJSDnM4Ot5XAI4h9fO5nvSH1DCKa7MdDd9lezXBUUNGqLCeN2dtTQuv8tsQqdATh3y1MKEIXZJCdX0ENEyP0VOuXvNVnYJgEjrXGQjXZq06h4Zp3rrIM6a/s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745579602; c=relaxed/simple;
-	bh=KJ//6wn7lzLUYBzt9g92iu6mOBp+OD5S2mTUu31bq6Y=;
+	s=arc-20240116; t=1745579603; c=relaxed/simple;
+	bh=ssThIJKeGvl3X5SWalgKQopEkvTDLH+DyEpRuPXOc18=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=knQz7qRM9pGbsy4KBSnl2tbRI3yIyJ8T9UPSB12iynkHPEv9YfFvNvsif1ADs5x2aFsB4UIwEqAFjKez4tFtF3N9LzKFZMEIabn5jWpWy4sv+JSir63qsVlAEHE2eBDQ8BPRMazE879w8817HGuQDrZ1eIGi4NWjxg4JiIlSO8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=giBpK8lG; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=TGjm4rWJ5hAwN44JQ49NhRbWy+dZOEhTpcs4/CeRY+sMXMQZBUnkdTuxvrN7D6Khk+yylhJaUhxucuk3n1SmXjheoUvk4l3pDk20yAg6eCEVXxnOnKqiO/7g0pLqXGu+WmTFxxxe1Uq0J2j8gTKVYoCu27HuzwmgNb3onSnSQDI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YjrUYXFw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="giBpK8lG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA5B1C4CEEA;
-	Fri, 25 Apr 2025 11:13:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YjrUYXFw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42FA5C4CEEB;
+	Fri, 25 Apr 2025 11:13:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745579601;
-	bh=KJ//6wn7lzLUYBzt9g92iu6mOBp+OD5S2mTUu31bq6Y=;
+	s=k20201202; t=1745579603;
+	bh=ssThIJKeGvl3X5SWalgKQopEkvTDLH+DyEpRuPXOc18=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=giBpK8lGGh1i1wNtGuMjgzpYFBwY/Kh8woLj6uvVKQXWs4lFwflV9g5JM5YvOPZe7
-	 hiNKzn5knpkUiYnoFmTeeiX6Jn96fxYMUAcaKXycFloydSZg3Yn9X5r9mAuDI2TdDl
-	 RlzbZnt/tOynD7lO+a/sBFaDZq6peOy08sfRBSLaZZJ67dNUzZsdyjjZT+CWsMt/LJ
-	 Xdt9prQ9OaMjhLyObY16EcV0sqqFBlD8jkDDkuFva5XGJmiy3D8Jucq3Up3sYjFW9w
-	 JG68HyHGBd97yHV75LfROeivqU5LIK/p6Y1YAMMJs0y3I+iXnWsuwjc0qMv1qOVuyz
-	 K8JNCTsz+AxRg==
+	b=YjrUYXFwR9JpqZP9S7TLq5J5fSAmOX6pwU47j7rJkbsBvFPlz76WB27iPclTJ/Be1
+	 exe+6/1Xzu9OoLOLNv9j9WkSyvARyQAIFL1ef6vqahMJtK70An14Sox23mJRJzY5CE
+	 yA9+VZNC8Z7rSihTcECgdVUkRjd6Wyf6icNeiSUB10Us9ih1wveKT0o90Ur/qqvR6c
+	 3QBz6WljoypklaXy4f4qPaYn1VXfG4ig5FPOc3kMTn8r+zG48dUg55d6VdVX8EXCUk
+	 0PH7XM4dN02Z9r0fCVmbjoiZnCs9+4gHemIRsUJCuOuFcgMwc3WhPsF0kfioDJBv6M
+	 M2LEyJutNeY9Q==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 2/6] tty: use lock guard()s in tty_io
-Date: Fri, 25 Apr 2025 13:13:11 +0200
-Message-ID: <20250425111315.1036184-3-jirislaby@kernel.org>
+Subject: [PATCH 3/6] serial: switch uart_port::iotype to enum uart_iotype
+Date: Fri, 25 Apr 2025 13:13:12 +0200
+Message-ID: <20250425111315.1036184-4-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250425111315.1036184-1-jirislaby@kernel.org>
 References: <20250425111315.1036184-1-jirislaby@kernel.org>
@@ -45,265 +45,231 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-guard()s and scoped_guard()s express more clearly what is protected by
-locks. And also makes the code cleaner as it can return immediately in
-case of short returns.
+The inline-defined constants look weird. Instead, define a proper enum
+for them and type uart_port::iotype as that enum. This allows for proper
+checking in switch-case labels (somewhere, a default or UPIO_UNKNOWN
+label needs to be added/handled).
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/tty_io.c | 96 ++++++++++++++++++--------------------------
- 1 file changed, 40 insertions(+), 56 deletions(-)
+ drivers/tty/serial/8250/8250_core.c  |  2 +-
+ drivers/tty/serial/8250/8250_early.c |  2 ++
+ drivers/tty/serial/8250/8250_port.c  |  4 ++++
+ drivers/tty/serial/8250/8250_rsa.c   |  2 ++
+ drivers/tty/serial/amba-pl011.c      |  2 +-
+ drivers/tty/serial/fsl_lpuart.c      |  5 ++++-
+ drivers/tty/serial/samsung_tty.c     |  4 ++++
+ drivers/tty/serial/serial_core.c     |  8 ++++----
+ include/linux/serial_core.h          | 30 +++++++++++++++-------------
+ 9 files changed, 38 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
-index ca9b7d7bad2b..e2d92cf70eb7 100644
---- a/drivers/tty/tty_io.c
-+++ b/drivers/tty/tty_io.c
-@@ -276,11 +276,10 @@ static void check_tty_count(struct tty_struct *tty, const char *routine)
- 	struct list_head *p;
- 	int count = 0, kopen_count = 0;
- 
--	spin_lock(&tty->files_lock);
--	list_for_each(p, &tty->tty_files) {
--		count++;
--	}
--	spin_unlock(&tty->files_lock);
-+	scoped_guard(spinlock, &tty->files_lock)
-+		list_for_each(p, &tty->tty_files)
-+			count++;
-+
- 	if (tty->driver->type == TTY_DRIVER_TYPE_PTY &&
- 	    tty->driver->subtype == PTY_TYPE_SLAVE &&
- 	    tty->link && tty->link->count)
-@@ -378,7 +377,7 @@ EXPORT_SYMBOL_GPL(tty_dev_name_to_number);
-  */
- struct tty_driver *tty_find_polling_driver(char *name, int *line)
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 5a56f853cf6d..68994a964321 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -461,7 +461,7 @@ static int univ8250_console_match(struct console *co, char *name, int idx,
+ 				  char *options)
  {
--	struct tty_driver *p, *res = NULL;
-+	struct tty_driver *p;
- 	int tty_line = 0;
- 	int len;
- 	char *str, *stp;
-@@ -392,7 +391,8 @@ struct tty_driver *tty_find_polling_driver(char *name, int *line)
- 	len = str - name;
- 	tty_line = simple_strtoul(str, &str, 10);
- 
--	mutex_lock(&tty_mutex);
-+	guard(mutex)(&tty_mutex);
-+
- 	/* Search through the tty devices to look for a match */
- 	list_for_each_entry(p, &tty_drivers, tty_drivers) {
- 		if (!len || strncmp(name, p->name, len) != 0)
-@@ -405,14 +405,12 @@ struct tty_driver *tty_find_polling_driver(char *name, int *line)
- 
- 		if (tty_line >= 0 && tty_line < p->num && p->ops &&
- 		    p->ops->poll_init && !p->ops->poll_init(p, tty_line, stp)) {
--			res = tty_driver_kref_get(p);
- 			*line = tty_line;
--			break;
-+			return tty_driver_kref_get(p);
- 		}
- 	}
--	mutex_unlock(&tty_mutex);
- 
--	return res;
-+	return NULL;
- }
- EXPORT_SYMBOL_GPL(tty_find_polling_driver);
- #endif
-@@ -531,16 +529,15 @@ EXPORT_SYMBOL_GPL(tty_wakeup);
-  */
- static struct file *tty_release_redirect(struct tty_struct *tty)
- {
--	struct file *f = NULL;
-+	guard(spinlock)(&redirect_lock);
- 
--	spin_lock(&redirect_lock);
- 	if (redirect && file_tty(redirect) == tty) {
--		f = redirect;
-+		struct file *f = redirect;
- 		redirect = NULL;
-+		return f;
- 	}
--	spin_unlock(&redirect_lock);
- 
--	return f;
-+	return NULL;
- }
- 
- /**
-@@ -765,11 +762,8 @@ void __stop_tty(struct tty_struct *tty)
-  */
- void stop_tty(struct tty_struct *tty)
- {
--	unsigned long flags;
--
--	spin_lock_irqsave(&tty->flow.lock, flags);
-+	guard(spinlock_irqsave)(&tty->flow.lock);
- 	__stop_tty(tty);
--	spin_unlock_irqrestore(&tty->flow.lock, flags);
- }
- EXPORT_SYMBOL(stop_tty);
- 
-@@ -796,11 +790,8 @@ void __start_tty(struct tty_struct *tty)
-  */
- void start_tty(struct tty_struct *tty)
- {
--	unsigned long flags;
--
--	spin_lock_irqsave(&tty->flow.lock, flags);
-+	guard(spinlock_irqsave)(&tty->flow.lock);
- 	__start_tty(tty);
--	spin_unlock_irqrestore(&tty->flow.lock, flags);
- }
- EXPORT_SYMBOL(start_tty);
- 
-@@ -809,7 +800,8 @@ static void tty_update_time(struct tty_struct *tty, bool mtime)
- 	time64_t sec = ktime_get_real_seconds();
- 	struct tty_file_private *priv;
- 
--	spin_lock(&tty->files_lock);
-+	guard(spinlock)(&tty->files_lock);
-+
- 	list_for_each_entry(priv, &tty->tty_files, list) {
- 		struct inode *inode = file_inode(priv->file);
- 		struct timespec64 time = mtime ? inode_get_mtime(inode) : inode_get_atime(inode);
-@@ -827,7 +819,6 @@ static void tty_update_time(struct tty_struct *tty, bool mtime)
- 				inode_set_atime(inode, sec, 0);
- 		}
- 	}
--	spin_unlock(&tty->files_lock);
- }
- 
- /*
-@@ -2314,13 +2305,12 @@ static int tiocsti(struct tty_struct *tty, u8 __user *p)
-  */
- static int tiocgwinsz(struct tty_struct *tty, struct winsize __user *arg)
- {
--	int err;
-+	guard(mutex)(&tty->winsize_mutex);
- 
--	mutex_lock(&tty->winsize_mutex);
--	err = copy_to_user(arg, &tty->winsize, sizeof(*arg));
--	mutex_unlock(&tty->winsize_mutex);
-+	if (copy_to_user(arg, &tty->winsize, sizeof(*arg)))
-+		return -EFAULT;
- 
--	return err ? -EFAULT : 0;
-+	return 0;
- }
- 
- /**
-@@ -2335,10 +2325,10 @@ int tty_do_resize(struct tty_struct *tty, struct winsize *ws)
- {
- 	struct pid *pgrp;
- 
--	/* Lock the tty */
--	mutex_lock(&tty->winsize_mutex);
-+	guard(mutex)(&tty->winsize_mutex);
-+
- 	if (!memcmp(ws, &tty->winsize, sizeof(*ws)))
--		goto done;
-+		return 0;
- 
- 	/* Signal the foreground process group */
- 	pgrp = tty_get_pgrp(tty);
-@@ -2347,8 +2337,7 @@ int tty_do_resize(struct tty_struct *tty, struct winsize *ws)
- 	put_pid(pgrp);
- 
- 	tty->winsize = *ws;
--done:
--	mutex_unlock(&tty->winsize_mutex);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(tty_do_resize);
-@@ -2409,13 +2398,14 @@ static int tioccons(struct file *file)
- 		return -EBADF;
- 	if (!(file->f_mode & FMODE_CAN_WRITE))
- 		return -EINVAL;
--	spin_lock(&redirect_lock);
--	if (redirect) {
--		spin_unlock(&redirect_lock);
-+
-+	guard(spinlock)(&redirect_lock);
-+
-+	if (redirect)
- 		return -EBUSY;
--	}
-+
- 	redirect = get_file(file);
--	spin_unlock(&redirect_lock);
-+
- 	return 0;
- }
- 
-@@ -3028,11 +3018,9 @@ void __do_SAK(struct tty_struct *tty)
- 	struct task_struct *g, *p;
- 	struct pid *session;
+ 	char match[] = "uart";	/* 8250-specific earlycon name */
+-	unsigned char iotype;
++	enum uart_iotype iotype;
+ 	resource_size_t addr;
  	int i;
--	unsigned long flags;
  
--	spin_lock_irqsave(&tty->ctrl.lock, flags);
--	session = get_pid(tty->ctrl.session);
--	spin_unlock_irqrestore(&tty->ctrl.lock, flags);
-+	scoped_guard(spinlock_irqsave, &tty->ctrl.lock)
-+		session = get_pid(tty->ctrl.session);
- 
- 	tty_ldisc_flush(tty);
- 
-@@ -3055,7 +3043,7 @@ void __do_SAK(struct tty_struct *tty)
- 					PIDTYPE_SID);
- 			continue;
- 		}
--		task_lock(p);
-+		guard(task_lock)(p);
- 		i = iterate_fd(p->files, 0, this_tty, tty);
- 		if (i != 0) {
- 			tty_notice(tty, "SAK: killed process %d (%s): by fd#%d\n",
-@@ -3063,7 +3051,6 @@ void __do_SAK(struct tty_struct *tty)
- 			group_send_sig_info(SIGKILL, SEND_SIG_PRIV, p,
- 					PIDTYPE_SID);
- 		}
--		task_unlock(p);
+diff --git a/drivers/tty/serial/8250/8250_early.c b/drivers/tty/serial/8250/8250_early.c
+index 842422921765..dc0371857ecb 100644
+--- a/drivers/tty/serial/8250/8250_early.c
++++ b/drivers/tty/serial/8250/8250_early.c
+@@ -77,6 +77,8 @@ static void serial8250_early_out(struct uart_port *port, int offset, int value)
+ 		outb(value, port->iobase + offset);
+ 		break;
+ #endif
++	default:
++		break;
  	}
- 	read_unlock(&tasklist_lock);
- 	put_pid(session);
-@@ -3465,9 +3452,8 @@ int tty_register_driver(struct tty_driver *driver)
- 			goto err_unreg_char;
- 	}
- 
--	mutex_lock(&tty_mutex);
--	list_add(&driver->tty_drivers, &tty_drivers);
--	mutex_unlock(&tty_mutex);
-+	scoped_guard(mutex, &tty_mutex)
-+		list_add(&driver->tty_drivers, &tty_drivers);
- 
- 	if (!(driver->flags & TTY_DRIVER_DYNAMIC_DEV)) {
- 		for (i = 0; i < driver->num; i++) {
-@@ -3486,9 +3472,8 @@ int tty_register_driver(struct tty_driver *driver)
- 	for (i--; i >= 0; i--)
- 		tty_unregister_device(driver, i);
- 
--	mutex_lock(&tty_mutex);
--	list_del(&driver->tty_drivers);
--	mutex_unlock(&tty_mutex);
-+	scoped_guard(mutex, &tty_mutex)
-+		list_del(&driver->tty_drivers);
- 
- err_unreg_char:
- 	unregister_chrdev_region(dev, driver->num);
-@@ -3507,9 +3492,8 @@ void tty_unregister_driver(struct tty_driver *driver)
- {
- 	unregister_chrdev_region(MKDEV(driver->major, driver->minor_start),
- 				driver->num);
--	mutex_lock(&tty_mutex);
--	list_del(&driver->tty_drivers);
--	mutex_unlock(&tty_mutex);
-+	scoped_guard(mutex, &tty_mutex)
-+		list_del(&driver->tty_drivers);
  }
- EXPORT_SYMBOL(tty_unregister_driver);
  
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 8ac452cea36c..8d9bb91d4bae 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2993,6 +2993,8 @@ static int serial8250_request_std_resource(struct uart_8250_port *up)
+ 		if (!request_region(port->iobase, size, "serial"))
+ 			return -EBUSY;
+ 		return 0;
++	case UPIO_UNKNOWN:
++		break;
+ 	}
+ 
+ 	return 0;
+@@ -3025,6 +3027,8 @@ static void serial8250_release_std_resource(struct uart_8250_port *up)
+ 	case UPIO_PORT:
+ 		release_region(port->iobase, size);
+ 		break;
++	case UPIO_UNKNOWN:
++		break;
+ 	}
+ }
+ 
+diff --git a/drivers/tty/serial/8250/8250_rsa.c b/drivers/tty/serial/8250/8250_rsa.c
+index 82f2593b4c59..4c8b9671bd41 100644
+--- a/drivers/tty/serial/8250/8250_rsa.c
++++ b/drivers/tty/serial/8250/8250_rsa.c
+@@ -43,6 +43,8 @@ static void rsa8250_release_resource(struct uart_8250_port *up)
+ 	case UPIO_PORT:
+ 		release_region(port->iobase + offset, size);
+ 		break;
++	default:
++		break;
+ 	}
+ }
+ 
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 11d65097578c..421ac22555df 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2476,7 +2476,7 @@ static int pl011_console_setup(struct console *co, char *options)
+ static int pl011_console_match(struct console *co, char *name, int idx,
+ 			       char *options)
+ {
+-	unsigned char iotype;
++	enum uart_iotype iotype;
+ 	resource_size_t addr;
+ 	int i;
+ 
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index fe5aed99d55a..dff6a6c57b5f 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -403,6 +403,8 @@ static inline void lpuart32_write(struct uart_port *port, u32 val,
+ 	case UPIO_MEM32BE:
+ 		iowrite32be(val, port->membase + off);
+ 		break;
++	default:
++		break;
+ 	}
+ }
+ 
+@@ -563,8 +565,9 @@ static dma_addr_t lpuart_dma_datareg_addr(struct lpuart_port *sport)
+ 		return sport->port.mapbase + UARTDATA;
+ 	case UPIO_MEM32BE:
+ 		return sport->port.mapbase + UARTDATA + sizeof(u32) - 1;
++	default:
++		return sport->port.mapbase + UARTDR;
+ 	}
+-	return sport->port.mapbase + UARTDR;
+ }
+ 
+ static int lpuart_dma_tx_request(struct uart_port *port)
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index 210fff7164c1..73e2866febc1 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -190,6 +190,8 @@ static void wr_reg(const struct uart_port *port, u32 reg, u32 val)
+ 	case UPIO_MEM32:
+ 		writel_relaxed(val, portaddr(port, reg));
+ 		break;
++	default:
++		break;
+ 	}
+ }
+ 
+@@ -2713,6 +2715,8 @@ static void wr_reg_barrier(const struct uart_port *port, u32 reg, u32 val)
+ 	case UPIO_MEM32:
+ 		writel(val, portaddr(port, reg));
+ 		break;
++	default:
++		break;
+ 	}
+ }
+ 
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 88669972d9a0..5bc145643385 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2178,8 +2178,8 @@ uart_get_console(struct uart_port *ports, int nr, struct console *co)
+  *
+  * Returns: 0 on success or -%EINVAL on failure
+  */
+-int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
+-			char **options)
++int uart_parse_earlycon(char *p, enum uart_iotype *iotype,
++			resource_size_t *addr, char **options)
+ {
+ 	if (strncmp(p, "mmio,", 5) == 0) {
+ 		*iotype = UPIO_MEM;
+@@ -3289,9 +3289,9 @@ bool uart_match_port(const struct uart_port *port1,
+ 	case UPIO_AU:
+ 	case UPIO_TSI:
+ 		return port1->mapbase == port2->mapbase;
++	default:
++		return false;
+ 	}
+-
+-	return false;
+ }
+ EXPORT_SYMBOL(uart_match_port);
+ 
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 743b4afaad4c..914b5e97e056 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -427,6 +427,18 @@ struct uart_icount {
+ typedef u64 __bitwise upf_t;
+ typedef unsigned int __bitwise upstat_t;
+ 
++enum uart_iotype {
++	UPIO_UNKNOWN	= -1,
++	UPIO_PORT	= SERIAL_IO_PORT,	/* 8b I/O port access */
++	UPIO_HUB6	= SERIAL_IO_HUB6,	/* Hub6 ISA card */
++	UPIO_MEM	= SERIAL_IO_MEM,	/* driver-specific */
++	UPIO_MEM32	= SERIAL_IO_MEM32,	/* 32b little endian */
++	UPIO_AU		= SERIAL_IO_AU,		/* Au1x00 and RT288x type IO */
++	UPIO_TSI	= SERIAL_IO_TSI,	/* Tsi108/109 type IO */
++	UPIO_MEM32BE	= SERIAL_IO_MEM32BE,	/* 32b big endian */
++	UPIO_MEM16	= SERIAL_IO_MEM16,	/* 16b little endian */
++};
++
+ struct uart_port {
+ 	spinlock_t		lock;			/* port lock */
+ 	unsigned long		iobase;			/* in/out[bwl] */
+@@ -469,23 +481,13 @@ struct uart_port {
+ 	unsigned char		x_char;			/* xon/xoff char */
+ 	unsigned char		regshift;		/* reg offset shift */
+ 
+-	unsigned char		iotype;			/* io access style */
+-
+-#define UPIO_UNKNOWN		((unsigned char)~0U)	/* UCHAR_MAX */
+-#define UPIO_PORT		(SERIAL_IO_PORT)	/* 8b I/O port access */
+-#define UPIO_HUB6		(SERIAL_IO_HUB6)	/* Hub6 ISA card */
+-#define UPIO_MEM		(SERIAL_IO_MEM)		/* driver-specific */
+-#define UPIO_MEM32		(SERIAL_IO_MEM32)	/* 32b little endian */
+-#define UPIO_AU			(SERIAL_IO_AU)		/* Au1x00 and RT288x type IO */
+-#define UPIO_TSI		(SERIAL_IO_TSI)		/* Tsi108/109 type IO */
+-#define UPIO_MEM32BE		(SERIAL_IO_MEM32BE)	/* 32b big endian */
+-#define UPIO_MEM16		(SERIAL_IO_MEM16)	/* 16b little endian */
+-
+ 	unsigned char		quirks;			/* internal quirks */
+ 
+ 	/* internal quirks must be updated while holding port mutex */
+ #define UPQ_NO_TXEN_TEST	BIT(0)
+ 
++	enum uart_iotype	iotype;			/* io access style */
++
+ 	unsigned int		read_status_mask;	/* driver specific */
+ 	unsigned int		ignore_status_mask;	/* driver specific */
+ 	struct uart_state	*state;			/* pointer to parent state */
+@@ -1101,8 +1103,8 @@ static inline bool uart_console_registered(struct uart_port *port)
+ 
+ struct uart_port *uart_get_console(struct uart_port *ports, int nr,
+ 				   struct console *c);
+-int uart_parse_earlycon(char *p, unsigned char *iotype, resource_size_t *addr,
+-			char **options);
++int uart_parse_earlycon(char *p, enum uart_iotype *iotype,
++			resource_size_t *addr, char **options);
+ void uart_parse_options(const char *options, int *baud, int *parity, int *bits,
+ 			int *flow);
+ int uart_set_options(struct uart_port *port, struct console *co, int baud,
 -- 
 2.49.0
 
