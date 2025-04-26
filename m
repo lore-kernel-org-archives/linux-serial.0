@@ -1,114 +1,141 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 878D1219313;
-	Fri, 25 Apr 2025 19:38:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B1CA29B0;
+	Sat, 26 Apr 2025 04:47:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745609905; cv=none; b=RJkCCWtQbTHW5iG8Nht5ylDWcurQ3rtGeCF+deZTfjAwgGZEcGXOFYbsuCoKtiSShRINF33YKQM/PdhxEQMnwWj1gT0VAwHS9bAl5E+BCS8PoMtWSX2WVf90RjJwaOcSwSv6NeN8vbU/DAH51qsGOd8OJF0dwguotg5hP7hz0TQ=
+	t=1745642859; cv=none; b=KBtTWA5wjUgMpV8zDa0HNDH8KVlq4xexcrGkI8yE20UUxA57MXThAWwZ+WNyf2lWqn63Bps87hUmEMPzBfF8w+g4hG1hAG2eDHrQd26oYfyT1+r45niJUJ0vjt0fUJgpU1u9itP7Oiqe/plCkONPHgEJxUEWqKv/TFfIXmBhI+0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745609905; c=relaxed/simple;
-	bh=wjYY8hD1aR6U/hYht1xTDSyyUul+5U2cO03JezuRPjo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=vEWmgvDpDPkBUf8jmpy/uw0O1MD+IPBri652szM5dLGoa947zRNV08gL4TvyxdoLCasdoLDJX98a/YVQwz2U9uL574fzbVPlcULr3DAI19rFAKhpm1YYwCsYTQevUWC4EUlq/Ux0yDjVNV9LkF7ZJnIGnN4Rg2fA6nx4UUxwur4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=C+Rdr/oo; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	s=arc-20240116; t=1745642859; c=relaxed/simple;
+	bh=Pwj2pD0Y5iJR/YgIKVz2ShrUKt3/7MLRgBv+br9tb80=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y2/GVUIDt4hCx+3XSBh5PZyGQTf0pPZs+20X4OpC38YpOkTcvZdM4OG6Vk4rh6hOAVB058/GMqil24SD/9Nq4a/6SBJjEyvVKPy7FjtfapSAwvszMFaiEmPAaZedYwRpMm+12nVTGe9eX3JZSGzA8xUHPoHB1gtV6yW1hukOW/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TCTG3cXT; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="C+Rdr/oo"
-Received: from [IPV6:2601:646:8081:1f93:3f9b:137e:d2cb:73f7] ([IPv6:2601:646:8081:1f93:3f9b:137e:d2cb:73f7])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 53PJXQqR3199422
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Fri, 25 Apr 2025 12:33:27 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 53PJXQqR3199422
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025042001; t=1745609615;
-	bh=OLByDl2k8QS7+vMeXGAQllfp+4VYlTCCje7Ox6Pfa4g=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=C+Rdr/oohHcjiYl3k1s0a/jc7dixN5R0Mv5Px2j8kDdwJbPFLv4mJw8by+4Oto+F1
-	 tveW9WpgN8ttlpQLpdXcxTyaag9b/7TVjdH+TFVTrbHGQKwFJgak240662L863NwH8
-	 vgd5rhQsraf4buOHAZcbX5elWx80ZG9egeLnGj+ScCeWi6QGr1XXyAHAVnHwSmGqjn
-	 GkUO/NnNKAj8Q2mW/Ez/Vn8NVAPQB+fwhPjMvNjg1RQgr6hZA7HmxZl5MiRxUlxIY9
-	 uDj0XpVrhXq3zSB+OYJgYqNwOTX2giqyzWvO0pM/qCL4rFHYBzL4YJWj3wXsa2EaH3
-	 7hq16GNhLhdyg==
-Message-ID: <8571fd6f-4e71-4a6d-b2e8-16d9d72fa56e@zytor.com>
-Date: Fri, 25 Apr 2025 12:33:21 -0700
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TCTG3cXT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745642856; x=1777178856;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Pwj2pD0Y5iJR/YgIKVz2ShrUKt3/7MLRgBv+br9tb80=;
+  b=TCTG3cXTndX3djbAkLuijIZ4Zd7DhB9Br6ugFTkLFEWXJ0KhMAd/KgJr
+   8IZt0RhTv+pbwiJ8sWkzJ0+kVsopB11ENTniz2Fhv6/0QOaYEFCZKPjbQ
+   kM1PrM5gJuBpzs2vCsN054Fm3MxUGjtDqW38QO8vJASro4Nuu5S0O/RGg
+   Jk5iTnwTaIKDRJ1z/ZF2x/picUpgV3q+7X+/2pZZG+BUT5bc2LquynvHf
+   kTBhJnWY8cvD2ZqWf3poTjTkVODJZ0yySDpsdFtZ23+lkgYen+0hAvMpQ
+   2AnGIVdluZAMYl1b0GMF/lZcAFvhYIM8+j/xYXQQM0FOYvwGKK2CAp4Rv
+   A==;
+X-CSE-ConnectionGUID: 1GqAV/KWSRKvcs7RJoL+HQ==
+X-CSE-MsgGUID: /Xywdna1T5KRdMNk4bX5PA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11414"; a="64836051"
+X-IronPort-AV: E=Sophos;i="6.15,240,1739865600"; 
+   d="scan'208";a="64836051"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2025 21:47:35 -0700
+X-CSE-ConnectionGUID: v6lAdVMuR3S8iK9FVPvOhw==
+X-CSE-MsgGUID: 1Ev+ij+nRgWV74SWSDegzw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,240,1739865600"; 
+   d="scan'208";a="133377135"
+Received: from lkp-server01.sh.intel.com (HELO 050dd05385d1) ([10.239.97.150])
+  by fmviesa008.fm.intel.com with ESMTP; 25 Apr 2025 21:47:31 -0700
+Received: from kbuild by 050dd05385d1 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1u8XRp-0005hR-0Y;
+	Sat, 26 Apr 2025 04:47:29 +0000
+Date: Sat, 26 Apr 2025 12:47:09 +0800
+From: kernel test robot <lkp@intel.com>
+To: Yunhui Cui <cuiyunhui@bytedance.com>, arnd@arndb.de,
+	andriy.shevchenko@linux.intel.com, benjamin.larsson@genexis.eu,
+	gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
+	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org,
+	jkeeping@inmusicbrands.com, john.ogness@linutronix.de,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	markus.mayer@linaro.org, matt.porter@linaro.org,
+	namcao@linutronix.de, paulmck@kernel.org, pmladek@suse.com,
+	schnelle@linux.ibm.com, sunilvl@ventanamicro.com,
+	tim.kryger@linaro.org
+Cc: oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH v4 2/4] serial: 8250: introduce serial8250_discard_data()
+Message-ID: <202504261249.RVGiOFHl-lkp@intel.com>
+References: <20250425062425.68761-2-cuiyunhui@bytedance.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 00/13] Introduce parity_odd() and refactor redundant
- parity code
-To: Kuan-Wei Chiu <visitorckw@gmail.com>
-Cc: Yury Norov <yury.norov@gmail.com>, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        jk@ozlabs.org, joel@jms.id.au, eajames@linux.ibm.com,
-        andrzej.hajda@intel.com, neil.armstrong@linaro.org, rfoss@kernel.org,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch,
-        dmitry.torokhov@gmail.com, mchehab@kernel.org, awalls@md.metrocast.net,
-        hverkuil@xs4all.nl, miquel.raynal@bootlin.com, richard@nod.at,
-        vigneshr@ti.com, louis.peens@corigine.com, andrew+netdev@lunn.ch,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
-        johannes@sipsolutions.net, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, akpm@linux-foundation.org, jdelvare@suse.com,
-        linux@roeck-us.net, alexandre.belloni@bootlin.com, pgaj@cadence.com,
-        alistair@popple.id.au, linux@rasmusvillemoes.dk,
-        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
-        dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
-        oss-drivers@corigine.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
-        brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
-        bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw, Frank.Li@nxp.com,
-        linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
-        david.laight.linux@gmail.com, andrew.cooper3@citrix.com,
-        Yu-Chun Lin <eleanor15x@gmail.com>
-References: <20250409154356.423512-1-visitorckw@gmail.com>
- <Z_amQp3gK5Dm8Qz3@yury> <Z/a5Qh/OeLT8JBS4@visitorckw-System-Product-Name>
- <Z_a9YpE46Xf8581l@yury> <e97a83a2-dabd-4dc3-b69a-840ca17d70b5@zytor.com>
- <Z/lEkDwefWvw4ZA3@visitorckw-System-Product-Name>
-Content-Language: en-US
-From: "H. Peter Anvin" <hpa@zytor.com>
-In-Reply-To: <Z/lEkDwefWvw4ZA3@visitorckw-System-Product-Name>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250425062425.68761-2-cuiyunhui@bytedance.com>
 
-On 4/11/25 09:34, Kuan-Wei Chiu wrote:
->>
->> In either case, instead of packing the cascade into one function, make good
->> use of it.
->>
->> In the latter case, __builtin_constant_p() isn't necessary as it puts the
->> onus on the architecture to separate out const and non-const cases, if it
->> matters -- which it doesn't if the architecture simply wants to use
->> __builtin_parity:
->>
->> #define parity8(x)  ((bool) __builtin_parity((u8)(x)))
->> #define parity16(x) ((bool) __builtin_parity((u16)(x)))
->> #define parity32(x) ((bool) __builtin_parity((u32)(x)))
->> #define parity64(x) ((bool) __builtin_parityll((u64)(x)))
->>
->> As stated before, I don't really see that the parity function itself would
->> be very suitable for a generic helper, but if it were to, then using the
->> "standard" macro construct for it would seem to be the better option.
->>
->> (And I would be very much in favor of not open-coding the helper everywhere
->> but to macroize it; effectively creating a C++ template equivalent. It is
->> out of scope for this project, though.)
->>
-> IIUC, you prefer using the parity8/16/32/64() interface with
-> __builtin_parity(), regardless of whether there are users on the hot
-> path?
+Hi Yunhui,
 
-As a per-architecture opt-in, yes.
+kernel test robot noticed the following build errors:
 
-	-hpa
+[auto build test ERROR on soc/for-next]
+[cannot apply to tty/tty-testing tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.15-rc3 next-20250424]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Yunhui-Cui/serial-8250-introduce-serial8250_discard_data/20250425-142655
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
+patch link:    https://lore.kernel.org/r/20250425062425.68761-2-cuiyunhui%40bytedance.com
+patch subject: [PATCH v4 2/4] serial: 8250: introduce serial8250_discard_data()
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20250426/202504261249.RVGiOFHl-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250426/202504261249.RVGiOFHl-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202504261249.RVGiOFHl-lkp@intel.com/
+
+All error/warnings (new ones prefixed by >>):
+
+   drivers/tty/serial/8250/8250_port.c: In function 'serial8250_get_poll_char':
+>> drivers/tty/serial/8250/8250_port.c:2146:39: error: 'flags' undeclared (first use in this function)
+    2146 |         uart_port_lock_irqsave(port, &flags);
+         |                                       ^~~~~
+   drivers/tty/serial/8250/8250_port.c:2146:39: note: each undeclared identifier is reported only once for each function it appears in
+>> drivers/tty/serial/8250/8250_port.c:2151:1: warning: label 'out' defined but not used [-Wunused-label]
+    2151 | out:
+         | ^~~
+
+
+vim +/flags +2146 drivers/tty/serial/8250/8250_port.c
+
+  2131	
+  2132	#ifdef CONFIG_CONSOLE_POLL
+  2133	/*
+  2134	 * Console polling routines for writing and reading from the uart while
+  2135	 * in an interrupt or debug context.
+  2136	 */
+  2137	
+  2138	static int serial8250_get_poll_char(struct uart_port *port)
+  2139	{
+  2140		struct uart_8250_port *up = up_to_u8250p(port);
+  2141		int status = NO_POLL_CHAR;
+  2142		u16 lsr;
+  2143	
+  2144		serial8250_rpm_get(up);
+  2145	
+> 2146		uart_port_lock_irqsave(port, &flags);
+  2147		lsr = serial_port_in(port, UART_LSR);
+  2148		if ((lsr & UART_LSR_DR))
+  2149			status = serial_port_in(port, UART_RX);
+  2150		uart_port_unlock_irqrestore(port, flags);
+> 2151	out:
+  2152		serial8250_rpm_put(up);
+  2153		return status;
+  2154	}
+  2155	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
