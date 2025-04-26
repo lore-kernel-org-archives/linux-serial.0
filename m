@@ -1,144 +1,122 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C9D91C36;
-	Sat, 26 Apr 2025 09:14:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365E13594E;
+	Sat, 26 Apr 2025 09:24:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745658883; cv=none; b=PfjN9q7+Sum2uGRPAsJKSXpZIl+Xd7//hrZHbb0KVZ6s7MugpcstRYqtuUspBi48q035F8r6JJUpKG4OsGPrkQ4VeWLPhw2vIPx9D4+LkwrpmXugqFv3RImBi/+jNFweQuSWKCJtfyXQUzCD1+741e6HV3i6UUTGUKs6ikimQFc=
+	t=1745659460; cv=none; b=VTcb6rF269NqsucMWH92mj7ff7QltRNfET8m6AR4X7UTmht68aPjiUKZFPBZbWIvG0YECkBFXLvzDpAroIH9Af3xE7ZfPsACSkbnJtCIpTxVeCHXY+ZYp0FuQDILyDC7kIUL7ZywJ6PLdKd1vFobj+ByUOOOLgScdxK6K1Lsw+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745658883; c=relaxed/simple;
-	bh=ajA2/KThvOLmdGQMQlMZ8JSc3s7TdqFCTO4mxSXZP2s=;
+	s=arc-20240116; t=1745659460; c=relaxed/simple;
+	bh=3HU1llpcqAH9jf1dYiuQkto3Ic+P7zmEPkPzWsUsNQs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bWfBx05yVWw5DGWEceUyIj9Qe29A1yxv6ETxf+Z7Uc1qFsceOCmAoJDxEx0gM8CDt0P6HSY0izNe6/+xe5DE1jo88XmbRJNuhNAZjM8FU0vnlPDWLm31+TGbvtkpD68jO6FkyTlt5pjsw/9K0ygqu+O837fR94kJHoa5gaX2GFY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=baMaB2TE; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ga0zI+JtfJ8VtDlKKFuWt5XkuA/u956oMXi3lEjJzPXe4dVHQu3XtF3EgY8g0MILIi4ddCvoLlQFkuN/TZE/R7TN0RQHtCIxZGj2mo/sBIsvcpPM3ZdZ2LroWYMjdbGeNWzB8VHxPtAW1Isouhvq1G6Bs9BB/R9c1iXyGBB2FH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=UeACbn+P; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="baMaB2TE"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-7376dd56eccso3383664b3a.0;
-        Sat, 26 Apr 2025 02:14:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745658881; x=1746263681; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Dpw6EJump0TSOrBYBam8lLy7cnOl6Tzi7s2IdyQv1Eo=;
-        b=baMaB2TELWaNJ+72R5Y0/2CcMD+vTQDoO5alQ9SD7HHMjv8TEso9p6i5BZV3GoKmRz
-         PW2/dD8d+Ab+8WNQEo3TqNUWg4Bd2m1PAqwY0QDBmMSbtXs7mWfYVvcILfXmN/NaC87R
-         KUY+qKogKD4N40rQe+2G/GbS+ZRzMwe6rgkydDP8A+SkJ14hAbRYTvTuz1cmZ+8CfnS3
-         KePlJoih4lDtBA9m8FbgABqn4RsIttUhhvmjGMrzHuL4NnvPTgXqu2x2wN3zbqUuJ2mQ
-         tYonrB1gItZuNPs6pgrsXpBIcyDVia2FMradrNnFC6wBC3fc3nFwONC1dHAtV5hGz1Pt
-         ffkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745658881; x=1746263681;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Dpw6EJump0TSOrBYBam8lLy7cnOl6Tzi7s2IdyQv1Eo=;
-        b=LXD1xOUqjFHbItrm/xdFH5zVZJ8+St6JuaAJpGv1lUr1hIqJprvbJoAUpsLzUBlWrW
-         3RZUQONwoQt5KeP2aIJCrrTqR/xvpHwQunZ3vSztZSNk1xN2Z3KEvgYesYBAlGMOAMdm
-         2q+DS5UpzbwhT/H66OwqBQ1vyc2J/sqwgP+cmc90cuQ0jAipqfJlGrcv7LAJmoUumehO
-         Gcs+SDRGoubh4MtxHVCmmCn3ALbchaSdByG8njuN6Av35/obvZQ1hecLkYGA3B3QINxN
-         f40OG62+iJu+CE6//nnrYxFkN5SoPDBOAul5wfX/vP+ravajLk+/OQzXvBrkW8E0UGzg
-         z89g==
-X-Forwarded-Encrypted: i=1; AJvYcCUHmL3MRTyYH53zJFe/FhMjs8CZ5eH/cTRDHpJhh+zy+kRfrMQAJ/69rBJ9vcc0D/qCBQZcutkMITJDGTN4@vger.kernel.org, AJvYcCUO9jFbvNWjMknO+qYdcoau2GLV2IQ5vQm7lBUSPqvS6tLfV6OFY1PzdfIVZkyu8aaX5IcQvFgQ@vger.kernel.org, AJvYcCUmd4TUIeNWuF+Q2w3tLWqIPGamN2dNRcAvVHsA1sOhgBT2MW/U821B23VGxUmzCYjbK39wZmantsruUyc=@vger.kernel.org, AJvYcCV1wffdBc8IUd/bf/uNLA2GIG5CSBVcWe5c8tdaAvROagmS6uGGD3bFlR0Jd72P4vDcZSlKSE3AYoSVweQ=@vger.kernel.org, AJvYcCVGl+JkgkKgU8T8EmZcg2A0Nfx2z3yeX4V1HOyZGhb/rsUwgD/6MY45W7EPNEuHvWB0lIiYFkOdLvyEYiM8hto=@vger.kernel.org, AJvYcCVvn79c+RkbUr3SC5Xe6rPXRemTpf7Y/8O4c2YrBFF5T3/I1OeIX2N8gZS2Fpli2tFXIfw=@vger.kernel.org, AJvYcCW6g7RQE8FGKLeSdrXZTFQFx/6kCbL+5MhDOIaoUyofezzQHryrdnIyzwNmOCxPfoQFr9CaeabIhfLaz4sL@vger.kernel.org, AJvYcCXdna5tYEyZPZUZzQ4M+eDzjKLPKABxy2rus/XGxcZeF7mImgw/YGOO4DminwC3/1C9hzGA4qPNu0K7Vqo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy19PXovEmwjPh5CceM33CLQCN9uRdvC0SFT0VY2UW3HXc9Wv1U
-	3EiAP3D/inaCfGXiNNL3TeMeQTdth26A4Dk/mNO/e88ntO4da4hx
-X-Gm-Gg: ASbGncvfkEqpBZOp6NmoidGmlOg/H6Alef5TOOMeFS3BhqEg/xm6stFwQ2Fg1o+sS6L
-	0iaG4xBzrNjQIfmYgh92t1cwgCkf7ulfXo4SNev4FHsa+PckPQuhn6XMzabQ4AEKKgxDfYSJs+d
-	jra33XU8hzClUiPmKKTENCxlfxMbG68/bzIyKntuQrsTtXVVOHOQc2u4b9ALYMLCbVYYF7kZ5lu
-	gnaDC0PLj8/vYXRtHWCAqk6d9WsOWag2lXOE13yKzpDSN6IMUM3R8Or8VCLmP3qDraTaLl0WTLx
-	aZvoZo4NF7Zt0yQ9PM7eRPrdvbPhZLEMylq4g8qjrInS2vljmT9FwKVfGnJ1iXHzdY8H
-X-Google-Smtp-Source: AGHT+IFgnshRXYAm4vLgOrmgYGZWM8t1SObZHkSRdPxsGHvAJ5uKKQ60xC74a/vGxL92untQtleJTA==
-X-Received: by 2002:a05:6a00:1306:b0:736:73ad:365b with SMTP id d2e1a72fcca58-73fd74c23c4mr7475320b3a.14.1745658881199;
-        Sat, 26 Apr 2025 02:14:41 -0700 (PDT)
-Received: from visitorckw-System-Product-Name ([140.113.216.168])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73e259412b2sm4594535b3a.66.2025.04.26.02.14.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Apr 2025 02:14:40 -0700 (PDT)
-Date: Sat, 26 Apr 2025 17:14:29 +0800
-From: Kuan-Wei Chiu <visitorckw@gmail.com>
-To: "H. Peter Anvin" <hpa@zytor.com>, Yury Norov <yury.norov@gmail.com>
-Cc: Yury Norov <yury.norov@gmail.com>, tglx@linutronix.de, mingo@redhat.com,
-	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-	jk@ozlabs.org, joel@jms.id.au, eajames@linux.ibm.com,
-	andrzej.hajda@intel.com, neil.armstrong@linaro.org,
-	rfoss@kernel.org, maarten.lankhorst@linux.intel.com,
-	mripard@kernel.org, tzimmermann@suse.de, airlied@gmail.com,
-	simona@ffwll.ch, dmitry.torokhov@gmail.com, mchehab@kernel.org,
-	awalls@md.metrocast.net, hverkuil@xs4all.nl,
-	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-	louis.peens@corigine.com, andrew+netdev@lunn.ch,
-	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
-	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, akpm@linux-foundation.org, jdelvare@suse.com,
-	linux@roeck-us.net, alexandre.belloni@bootlin.com, pgaj@cadence.com,
-	alistair@popple.id.au, linux@rasmusvillemoes.dk,
-	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-	jernej.skrabec@gmail.com, kuba@kernel.org,
-	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
-	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
-	oss-drivers@corigine.com, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
-	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
-	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw, Frank.Li@nxp.com,
-	linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
-	david.laight.linux@gmail.com, andrew.cooper3@citrix.com,
-	Yu-Chun Lin <eleanor15x@gmail.com>
-Subject: Re: [PATCH v4 00/13] Introduce parity_odd() and refactor redundant
- parity code
-Message-ID: <aAyj9SMvYrN9tXZC@visitorckw-System-Product-Name>
-References: <20250409154356.423512-1-visitorckw@gmail.com>
- <Z_amQp3gK5Dm8Qz3@yury>
- <Z/a5Qh/OeLT8JBS4@visitorckw-System-Product-Name>
- <Z_a9YpE46Xf8581l@yury>
- <e97a83a2-dabd-4dc3-b69a-840ca17d70b5@zytor.com>
- <Z/lEkDwefWvw4ZA3@visitorckw-System-Product-Name>
- <8571fd6f-4e71-4a6d-b2e8-16d9d72fa56e@zytor.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="UeACbn+P"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88F44C4CEE2;
+	Sat, 26 Apr 2025 09:24:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1745659459;
+	bh=3HU1llpcqAH9jf1dYiuQkto3Ic+P7zmEPkPzWsUsNQs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=UeACbn+PcZfg+BhOKoasZijSgsRiiCZKL+ZukPX8tiUGPxBq78RDB87bD0fjxW/m5
+	 gEAmPRed/W3X6k5Vma18OHSjEHE12n6CTwGsxchKzziZLuAjLRFpyLydV1espN0euV
+	 /NwcWknM/c2Ajqmy+Iq1cTrWA+esiGqaUt+xEFss=
+Date: Sat, 26 Apr 2025 11:24:17 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Nicolas Pitre <nico@fluxnic.net>
+Cc: Jiri Slaby <jirislaby@kernel.org>, Nicolas Pitre <npitre@baylibre.com>,
+	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 00/14] vt: implement proper Unicode handling
+Message-ID: <2025042609-diagnoses-whinny-36b1@gregkh>
+References: <2025042517-defacing-lushly-10d5@gregkh>
+ <2EDC209B-7D6B-4EFB-ADD0-58D494D8AF98@fluxnic.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <8571fd6f-4e71-4a6d-b2e8-16d9d72fa56e@zytor.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2EDC209B-7D6B-4EFB-ADD0-58D494D8AF98@fluxnic.net>
 
-On Fri, Apr 25, 2025 at 12:33:21PM -0700, H. Peter Anvin wrote:
-> On 4/11/25 09:34, Kuan-Wei Chiu wrote:
-> > > 
-> > > In either case, instead of packing the cascade into one function, make good
-> > > use of it.
-> > > 
-> > > In the latter case, __builtin_constant_p() isn't necessary as it puts the
-> > > onus on the architecture to separate out const and non-const cases, if it
-> > > matters -- which it doesn't if the architecture simply wants to use
-> > > __builtin_parity:
-> > > 
-> > > #define parity8(x)  ((bool) __builtin_parity((u8)(x)))
-> > > #define parity16(x) ((bool) __builtin_parity((u16)(x)))
-> > > #define parity32(x) ((bool) __builtin_parity((u32)(x)))
-> > > #define parity64(x) ((bool) __builtin_parityll((u64)(x)))
-> > > 
-> > > As stated before, I don't really see that the parity function itself would
-> > > be very suitable for a generic helper, but if it were to, then using the
-> > > "standard" macro construct for it would seem to be the better option.
-> > > 
-> > > (And I would be very much in favor of not open-coding the helper everywhere
-> > > but to macroize it; effectively creating a C++ template equivalent. It is
-> > > out of scope for this project, though.)
-> > > 
-> > IIUC, you prefer using the parity8/16/32/64() interface with
-> > __builtin_parity(), regardless of whether there are users on the hot
-> > path?
+On Fri, Apr 25, 2025 at 11:13:40AM -0500, Nicolas Pitre wrote:
 > 
-> As a per-architecture opt-in, yes.
 > 
-I'd prefer to see Yury agree first, otherwise there's a high risk of a
-maintainer NAK after the next submission.
+> > Le 25 avr. 2025 à 09:29, Greg Kroah-Hartman <gregkh@linuxfoundation.org> a écrit :
+> > 
+> > ﻿On Thu, Apr 17, 2025 at 02:45:02PM -0400, Nicolas Pitre wrote:
+> >> The Linux VT console has many problems with regards to proper Unicode
+> >> handling:
+> >> 
+> >> - All new double-width Unicode code points which have been introduced since
+> >>  Unicode 5.0 are not recognized as such (we're at Unicode 16.0 now).
+> >> 
+> >> - Zero-width code points are not recognized at all. If you try to edit files
+> >>  containing a lot of emojis, you will see the rendering issues. When there
+> >>  are a lot of zero-width characters (like "variation selectors"), long
+> >>  lines get wrapped, but any Unicode-aware editor thinks that the content
+> >>  was rendered properly and its rendering logic starts to work in very bad
+> >>  ways. Combine this with tmux or screen, and there is a huge mess going on
+> >>  in the terminal.
+> >> 
+> >> - Also, text which uses combining diacritics has the same effect as text
+> >>  with zero-width characters as programs expect the characters to take fewer
+> >>  columns than what they actually do.
+> >> 
+> >> Some may argue that the Linux VT console is unmaintained and/or not used
+> >> much any longer and that one should consider a user space terminal
+> >> alternative instead. But every such alternative that is not less maintained
+> >> than the Linux VT console does require a full heavy graphical environment
+> >> and that is the exact antithesis of what the Linux console is meant to be.
+> >> 
+> >> Furthermore, there is a significant Linux console user base represented by
+> >> blind users (which I'm a member of) for whom the alternatives are way more
+> >> cumbersome to use reducing our productivity. So it has to stay and
+> >> be maintained to the best of our abilities.
+> >> 
+> >> That being said...
+> >> 
+> >> This patch series is about fixing all the above issues. This is accomplished
+> >> with some Python scripts leveraging Python's unicodedata module to generate
+> >> C code with lookup tables that is suitable for the kernel. In summary:
+> >> 
+> >> - The double-width code point table is updated to the latest Unicode version
+> >>  and the table itself is optimized to reduce its size.
+> >> 
+> >> - A zero-width code point table is created and the console code is modified
+> >>  to properly use it.
+> >> 
+> >> - A table with base character + combining mark pairs is created to convert
+> >>  them into their precomposed equivalents when they're encountered.
+> >>  By default the generated table contains most commonly used Latin, Greek,
+> >>  and Cyrillic recomposition pairs only, but one can execute the provided
+> >>  script with the --full argument to create a table that covers all
+> >>  possibilities. Combining marks that are not listed in the table are simply
+> >>  treated like zero-width code points and properly ignored.
+> >> 
+> >> - All those tables plus related lookup code require about 3500 additional
+> >>  bytes of text which is not very significant these days. Yet, one
+> >>  can still set CONFIG_CONSOLE_TRANSLATIONS=n to configure this all out
+> >>  if need be.
+> >> 
+> >> Note: The generated C code makes scripts/checkpatch.pl complain about
+> >>      "... exceeds 100 columns" because the inserted comments with code
+> >>      point names, well, make some inlines exceed 100 columns. Please make
+> >>      an exception for those files and disregard those warnings. When
+> >>      checkpatch.pl is used on those files directly with -f then it doesn't
+> >>      complain.
+> >> 
+> >> This series was tested on top of v6.15-rc2.
+> > 
+> > I've taken the first version of this, should I revert all of them and
+> > then apply these, or do you want to send a diff between this and what is
+> > in the tty-next tree?
+> Please remove what you have and replace with this v3. Will be much cleaner this way. 
 
-Regards,
-Kuan-Wei
+Ok, just did that, thanks.
+
+greg k-h
