@@ -1,68 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F851A5BA3;
-	Sat, 26 Apr 2025 06:00:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C9D91C36;
+	Sat, 26 Apr 2025 09:14:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745647244; cv=none; b=WqlTLsJxKypTPbtI5e4QmlYwWjtkYMTxzoLBtFjaYuBYJ/R9/4C8ryYLgmCiakaS5BBZVe6i9KXezK0UPg3A7mEkwQI4phWzw8Z+r1zIYQjMYL98E8KQRK8zDoKwagTp1pONL30s80TLUqErytrj5Gk7sTZoNcAfq/UCC4OsogM=
+	t=1745658883; cv=none; b=PfjN9q7+Sum2uGRPAsJKSXpZIl+Xd7//hrZHbb0KVZ6s7MugpcstRYqtuUspBi48q035F8r6JJUpKG4OsGPrkQ4VeWLPhw2vIPx9D4+LkwrpmXugqFv3RImBi/+jNFweQuSWKCJtfyXQUzCD1+741e6HV3i6UUTGUKs6ikimQFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745647244; c=relaxed/simple;
-	bh=DHN+2XwaGWSWPVgZUpkQ5NWYnVCsHjEBcx8IoO728h0=;
+	s=arc-20240116; t=1745658883; c=relaxed/simple;
+	bh=ajA2/KThvOLmdGQMQlMZ8JSc3s7TdqFCTO4mxSXZP2s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hyUPkC9FgBBXTSKohoMrRnrTkRzdm0IG3XrFcQe5DAX+42U3yJqWKpzbb6Tdm2q+HbntoyfQaO0oRcRy0cgf4UBNTo8SjIAVWKmpauxsivZv3Ul/BTFMf6lfuHkVWw7wwIm9s2P5oY6rgWHHH6vfZIIpc/QOVBDgX0P4Ykt+vrU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VWKotXnk; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=bWfBx05yVWw5DGWEceUyIj9Qe29A1yxv6ETxf+Z7Uc1qFsceOCmAoJDxEx0gM8CDt0P6HSY0izNe6/+xe5DE1jo88XmbRJNuhNAZjM8FU0vnlPDWLm31+TGbvtkpD68jO6FkyTlt5pjsw/9K0ygqu+O837fR94kJHoa5gaX2GFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=baMaB2TE; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VWKotXnk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745647242; x=1777183242;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DHN+2XwaGWSWPVgZUpkQ5NWYnVCsHjEBcx8IoO728h0=;
-  b=VWKotXnkCmPbL7t8bSLFLpjAKyRKWmweuVZJ/yn+E6Pf7tiu3xgQVx5e
-   7He+YqtrBaOy56lSE84+65riWkRc8hwqsddgfH4wpLByi5AZF68Y8s9Ru
-   qyJI7Xossz3+BM/rgy/R7dGmoCtezLwAwDKRR03w6jmIADGcV/LSVD4cG
-   X7i/D6dKKpvWoVM5jDqZdxn4G+z1/WETA7KqVDRS9t6jp0TWD5rAJLUIY
-   RBJNKSNFrI6/tixUJw2wklHCVwq2KsZ+LJ+s0KhAnYDl13BA34LXOhoFN
-   WwngoXGg5LzZ2rk6iUXaSRs5v4vEQucX+0+Ezfb3fXLBn/C6hR/WUzWtw
-   g==;
-X-CSE-ConnectionGUID: HJjMGsXYTkuHqTAsWRnvag==
-X-CSE-MsgGUID: tObNXKajTUeVpydfi7I6Mw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11414"; a="57951641"
-X-IronPort-AV: E=Sophos;i="6.15,241,1739865600"; 
-   d="scan'208";a="57951641"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2025 23:00:41 -0700
-X-CSE-ConnectionGUID: fGVsoJFCSU20yY+XSe/Qyg==
-X-CSE-MsgGUID: ckQjLZxXSfiXaCohK5TDOg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,241,1739865600"; 
-   d="scan'208";a="170290518"
-Received: from lkp-server01.sh.intel.com (HELO 050dd05385d1) ([10.239.97.150])
-  by orviesa001.jf.intel.com with ESMTP; 25 Apr 2025 23:00:37 -0700
-Received: from kbuild by 050dd05385d1 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1u8YaX-0005iR-2e;
-	Sat, 26 Apr 2025 06:00:33 +0000
-Date: Sat, 26 Apr 2025 13:59:57 +0800
-From: kernel test robot <lkp@intel.com>
-To: Yunhui Cui <cuiyunhui@bytedance.com>, arnd@arndb.de,
-	andriy.shevchenko@linux.intel.com, benjamin.larsson@genexis.eu,
-	gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com,
-	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org,
-	jkeeping@inmusicbrands.com, john.ogness@linutronix.de,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	markus.mayer@linaro.org, matt.porter@linaro.org,
-	namcao@linutronix.de, paulmck@kernel.org, pmladek@suse.com,
-	schnelle@linux.ibm.com, sunilvl@ventanamicro.com,
-	tim.kryger@linaro.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev
-Subject: Re: [PATCH v4 2/4] serial: 8250: introduce serial8250_discard_data()
-Message-ID: <202504261327.CEtXsr6g-lkp@intel.com>
-References: <20250425062425.68761-2-cuiyunhui@bytedance.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="baMaB2TE"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-7376dd56eccso3383664b3a.0;
+        Sat, 26 Apr 2025 02:14:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1745658881; x=1746263681; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Dpw6EJump0TSOrBYBam8lLy7cnOl6Tzi7s2IdyQv1Eo=;
+        b=baMaB2TELWaNJ+72R5Y0/2CcMD+vTQDoO5alQ9SD7HHMjv8TEso9p6i5BZV3GoKmRz
+         PW2/dD8d+Ab+8WNQEo3TqNUWg4Bd2m1PAqwY0QDBmMSbtXs7mWfYVvcILfXmN/NaC87R
+         KUY+qKogKD4N40rQe+2G/GbS+ZRzMwe6rgkydDP8A+SkJ14hAbRYTvTuz1cmZ+8CfnS3
+         KePlJoih4lDtBA9m8FbgABqn4RsIttUhhvmjGMrzHuL4NnvPTgXqu2x2wN3zbqUuJ2mQ
+         tYonrB1gItZuNPs6pgrsXpBIcyDVia2FMradrNnFC6wBC3fc3nFwONC1dHAtV5hGz1Pt
+         ffkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745658881; x=1746263681;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Dpw6EJump0TSOrBYBam8lLy7cnOl6Tzi7s2IdyQv1Eo=;
+        b=LXD1xOUqjFHbItrm/xdFH5zVZJ8+St6JuaAJpGv1lUr1hIqJprvbJoAUpsLzUBlWrW
+         3RZUQONwoQt5KeP2aIJCrrTqR/xvpHwQunZ3vSztZSNk1xN2Z3KEvgYesYBAlGMOAMdm
+         2q+DS5UpzbwhT/H66OwqBQ1vyc2J/sqwgP+cmc90cuQ0jAipqfJlGrcv7LAJmoUumehO
+         Gcs+SDRGoubh4MtxHVCmmCn3ALbchaSdByG8njuN6Av35/obvZQ1hecLkYGA3B3QINxN
+         f40OG62+iJu+CE6//nnrYxFkN5SoPDBOAul5wfX/vP+ravajLk+/OQzXvBrkW8E0UGzg
+         z89g==
+X-Forwarded-Encrypted: i=1; AJvYcCUHmL3MRTyYH53zJFe/FhMjs8CZ5eH/cTRDHpJhh+zy+kRfrMQAJ/69rBJ9vcc0D/qCBQZcutkMITJDGTN4@vger.kernel.org, AJvYcCUO9jFbvNWjMknO+qYdcoau2GLV2IQ5vQm7lBUSPqvS6tLfV6OFY1PzdfIVZkyu8aaX5IcQvFgQ@vger.kernel.org, AJvYcCUmd4TUIeNWuF+Q2w3tLWqIPGamN2dNRcAvVHsA1sOhgBT2MW/U821B23VGxUmzCYjbK39wZmantsruUyc=@vger.kernel.org, AJvYcCV1wffdBc8IUd/bf/uNLA2GIG5CSBVcWe5c8tdaAvROagmS6uGGD3bFlR0Jd72P4vDcZSlKSE3AYoSVweQ=@vger.kernel.org, AJvYcCVGl+JkgkKgU8T8EmZcg2A0Nfx2z3yeX4V1HOyZGhb/rsUwgD/6MY45W7EPNEuHvWB0lIiYFkOdLvyEYiM8hto=@vger.kernel.org, AJvYcCVvn79c+RkbUr3SC5Xe6rPXRemTpf7Y/8O4c2YrBFF5T3/I1OeIX2N8gZS2Fpli2tFXIfw=@vger.kernel.org, AJvYcCW6g7RQE8FGKLeSdrXZTFQFx/6kCbL+5MhDOIaoUyofezzQHryrdnIyzwNmOCxPfoQFr9CaeabIhfLaz4sL@vger.kernel.org, AJvYcCXdna5tYEyZPZUZzQ4M+eDzjKLPKABxy2rus/XGxcZeF7mImgw/YGOO4DminwC3/1C9hzGA4qPNu0K7Vqo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy19PXovEmwjPh5CceM33CLQCN9uRdvC0SFT0VY2UW3HXc9Wv1U
+	3EiAP3D/inaCfGXiNNL3TeMeQTdth26A4Dk/mNO/e88ntO4da4hx
+X-Gm-Gg: ASbGncvfkEqpBZOp6NmoidGmlOg/H6Alef5TOOMeFS3BhqEg/xm6stFwQ2Fg1o+sS6L
+	0iaG4xBzrNjQIfmYgh92t1cwgCkf7ulfXo4SNev4FHsa+PckPQuhn6XMzabQ4AEKKgxDfYSJs+d
+	jra33XU8hzClUiPmKKTENCxlfxMbG68/bzIyKntuQrsTtXVVOHOQc2u4b9ALYMLCbVYYF7kZ5lu
+	gnaDC0PLj8/vYXRtHWCAqk6d9WsOWag2lXOE13yKzpDSN6IMUM3R8Or8VCLmP3qDraTaLl0WTLx
+	aZvoZo4NF7Zt0yQ9PM7eRPrdvbPhZLEMylq4g8qjrInS2vljmT9FwKVfGnJ1iXHzdY8H
+X-Google-Smtp-Source: AGHT+IFgnshRXYAm4vLgOrmgYGZWM8t1SObZHkSRdPxsGHvAJ5uKKQ60xC74a/vGxL92untQtleJTA==
+X-Received: by 2002:a05:6a00:1306:b0:736:73ad:365b with SMTP id d2e1a72fcca58-73fd74c23c4mr7475320b3a.14.1745658881199;
+        Sat, 26 Apr 2025 02:14:41 -0700 (PDT)
+Received: from visitorckw-System-Product-Name ([140.113.216.168])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73e259412b2sm4594535b3a.66.2025.04.26.02.14.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Apr 2025 02:14:40 -0700 (PDT)
+Date: Sat, 26 Apr 2025 17:14:29 +0800
+From: Kuan-Wei Chiu <visitorckw@gmail.com>
+To: "H. Peter Anvin" <hpa@zytor.com>, Yury Norov <yury.norov@gmail.com>
+Cc: Yury Norov <yury.norov@gmail.com>, tglx@linutronix.de, mingo@redhat.com,
+	bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+	jk@ozlabs.org, joel@jms.id.au, eajames@linux.ibm.com,
+	andrzej.hajda@intel.com, neil.armstrong@linaro.org,
+	rfoss@kernel.org, maarten.lankhorst@linux.intel.com,
+	mripard@kernel.org, tzimmermann@suse.de, airlied@gmail.com,
+	simona@ffwll.ch, dmitry.torokhov@gmail.com, mchehab@kernel.org,
+	awalls@md.metrocast.net, hverkuil@xs4all.nl,
+	miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+	louis.peens@corigine.com, andrew+netdev@lunn.ch,
+	davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+	parthiban.veerasooran@microchip.com, arend.vanspriel@broadcom.com,
+	johannes@sipsolutions.net, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, akpm@linux-foundation.org, jdelvare@suse.com,
+	linux@roeck-us.net, alexandre.belloni@bootlin.com, pgaj@cadence.com,
+	alistair@popple.id.au, linux@rasmusvillemoes.dk,
+	Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+	jernej.skrabec@gmail.com, kuba@kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsi@lists.ozlabs.org,
+	dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org,
+	linux-media@vger.kernel.org, linux-mtd@lists.infradead.org,
+	oss-drivers@corigine.com, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com, linux-serial@vger.kernel.org,
+	bpf@vger.kernel.org, jserv@ccns.ncku.edu.tw, Frank.Li@nxp.com,
+	linux-hwmon@vger.kernel.org, linux-i3c@lists.infradead.org,
+	david.laight.linux@gmail.com, andrew.cooper3@citrix.com,
+	Yu-Chun Lin <eleanor15x@gmail.com>
+Subject: Re: [PATCH v4 00/13] Introduce parity_odd() and refactor redundant
+ parity code
+Message-ID: <aAyj9SMvYrN9tXZC@visitorckw-System-Product-Name>
+References: <20250409154356.423512-1-visitorckw@gmail.com>
+ <Z_amQp3gK5Dm8Qz3@yury>
+ <Z/a5Qh/OeLT8JBS4@visitorckw-System-Product-Name>
+ <Z_a9YpE46Xf8581l@yury>
+ <e97a83a2-dabd-4dc3-b69a-840ca17d70b5@zytor.com>
+ <Z/lEkDwefWvw4ZA3@visitorckw-System-Product-Name>
+ <8571fd6f-4e71-4a6d-b2e8-16d9d72fa56e@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -71,70 +105,40 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250425062425.68761-2-cuiyunhui@bytedance.com>
+In-Reply-To: <8571fd6f-4e71-4a6d-b2e8-16d9d72fa56e@zytor.com>
 
-Hi Yunhui,
+On Fri, Apr 25, 2025 at 12:33:21PM -0700, H. Peter Anvin wrote:
+> On 4/11/25 09:34, Kuan-Wei Chiu wrote:
+> > > 
+> > > In either case, instead of packing the cascade into one function, make good
+> > > use of it.
+> > > 
+> > > In the latter case, __builtin_constant_p() isn't necessary as it puts the
+> > > onus on the architecture to separate out const and non-const cases, if it
+> > > matters -- which it doesn't if the architecture simply wants to use
+> > > __builtin_parity:
+> > > 
+> > > #define parity8(x)  ((bool) __builtin_parity((u8)(x)))
+> > > #define parity16(x) ((bool) __builtin_parity((u16)(x)))
+> > > #define parity32(x) ((bool) __builtin_parity((u32)(x)))
+> > > #define parity64(x) ((bool) __builtin_parityll((u64)(x)))
+> > > 
+> > > As stated before, I don't really see that the parity function itself would
+> > > be very suitable for a generic helper, but if it were to, then using the
+> > > "standard" macro construct for it would seem to be the better option.
+> > > 
+> > > (And I would be very much in favor of not open-coding the helper everywhere
+> > > but to macroize it; effectively creating a C++ template equivalent. It is
+> > > out of scope for this project, though.)
+> > > 
+> > IIUC, you prefer using the parity8/16/32/64() interface with
+> > __builtin_parity(), regardless of whether there are users on the hot
+> > path?
+> 
+> As a per-architecture opt-in, yes.
+> 
+I'd prefer to see Yury agree first, otherwise there's a high risk of a
+maintainer NAK after the next submission.
 
-kernel test robot noticed the following build errors:
-
-[auto build test ERROR on soc/for-next]
-[cannot apply to tty/tty-testing tty/tty-next tty/tty-linus usb/usb-testing usb/usb-next usb/usb-linus linus/master v6.15-rc3 next-20250424]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Yunhui-Cui/serial-8250-introduce-serial8250_discard_data/20250425-142655
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-patch link:    https://lore.kernel.org/r/20250425062425.68761-2-cuiyunhui%40bytedance.com
-patch subject: [PATCH v4 2/4] serial: 8250: introduce serial8250_discard_data()
-config: hexagon-allmodconfig (https://download.01.org/0day-ci/archive/20250426/202504261327.CEtXsr6g-lkp@intel.com/config)
-compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250426/202504261327.CEtXsr6g-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202504261327.CEtXsr6g-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/tty/serial/8250/8250_port.c:2146:32: error: use of undeclared identifier 'flags'
-    2146 |         uart_port_lock_irqsave(port, &flags);
-         |                                       ^
-   drivers/tty/serial/8250/8250_port.c:2150:36: error: use of undeclared identifier 'flags'
-    2150 |         uart_port_unlock_irqrestore(port, flags);
-         |                                           ^
-   2 errors generated.
-
-
-vim +/flags +2146 drivers/tty/serial/8250/8250_port.c
-
-  2131	
-  2132	#ifdef CONFIG_CONSOLE_POLL
-  2133	/*
-  2134	 * Console polling routines for writing and reading from the uart while
-  2135	 * in an interrupt or debug context.
-  2136	 */
-  2137	
-  2138	static int serial8250_get_poll_char(struct uart_port *port)
-  2139	{
-  2140		struct uart_8250_port *up = up_to_u8250p(port);
-  2141		int status = NO_POLL_CHAR;
-  2142		u16 lsr;
-  2143	
-  2144		serial8250_rpm_get(up);
-  2145	
-> 2146		uart_port_lock_irqsave(port, &flags);
-  2147		lsr = serial_port_in(port, UART_LSR);
-  2148		if ((lsr & UART_LSR_DR))
-  2149			status = serial_port_in(port, UART_RX);
-  2150		uart_port_unlock_irqrestore(port, flags);
-  2151	out:
-  2152		serial8250_rpm_put(up);
-  2153		return status;
-  2154	}
-  2155	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Regards,
+Kuan-Wei
