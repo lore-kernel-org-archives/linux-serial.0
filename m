@@ -1,122 +1,152 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f49.google.com (mail-oo1-f49.google.com [209.85.161.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 365E13594E;
-	Sat, 26 Apr 2025 09:24:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7874A19DF6A
+	for <linux-serial@vger.kernel.org>; Sun, 27 Apr 2025 11:18:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745659460; cv=none; b=VTcb6rF269NqsucMWH92mj7ff7QltRNfET8m6AR4X7UTmht68aPjiUKZFPBZbWIvG0YECkBFXLvzDpAroIH9Af3xE7ZfPsACSkbnJtCIpTxVeCHXY+ZYp0FuQDILyDC7kIUL7ZywJ6PLdKd1vFobj+ByUOOOLgScdxK6K1Lsw+A=
+	t=1745752688; cv=none; b=IDxG0mRZrFxxj7COYFkIaimvI7jb2AeU6wDoYNYCPCDNgdXptelw+pICuv+9ghKWQdCU4l24xWdg3qKBxmKGHAi3O1l3YP2qU9nc9Ok2JAwv4ILD5J504A8O2/320fTDDrEMK/G06dkz8PRknJMIuENADryfy8DM9U0UGH3jz9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745659460; c=relaxed/simple;
-	bh=3HU1llpcqAH9jf1dYiuQkto3Ic+P7zmEPkPzWsUsNQs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ga0zI+JtfJ8VtDlKKFuWt5XkuA/u956oMXi3lEjJzPXe4dVHQu3XtF3EgY8g0MILIi4ddCvoLlQFkuN/TZE/R7TN0RQHtCIxZGj2mo/sBIsvcpPM3ZdZ2LroWYMjdbGeNWzB8VHxPtAW1Isouhvq1G6Bs9BB/R9c1iXyGBB2FH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=UeACbn+P; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745752688; c=relaxed/simple;
+	bh=eHhA5tnc+faC6C/bJ5+HpYMF0LeEZc76OZByQLRSITo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=bn+S85s+4jdl2SV9K0r4AXQx5j2/XlBeC17SwyNEEiPYf/o4K5eyjhr8JBh/HMjbl58cJdnAO/o1i3BZRSSi5EjaUF0fsg8LC4K9JKR3Fr/6lSASo8GPNTlOFGuQuXX3tC1umQkI4Esb/2ICLrCXjDOEaqzUX1IszwdBYOgWBso=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=fqOsPg0I; arc=none smtp.client-ip=209.85.161.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="UeACbn+P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88F44C4CEE2;
-	Sat, 26 Apr 2025 09:24:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1745659459;
-	bh=3HU1llpcqAH9jf1dYiuQkto3Ic+P7zmEPkPzWsUsNQs=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UeACbn+PcZfg+BhOKoasZijSgsRiiCZKL+ZukPX8tiUGPxBq78RDB87bD0fjxW/m5
-	 gEAmPRed/W3X6k5Vma18OHSjEHE12n6CTwGsxchKzziZLuAjLRFpyLydV1espN0euV
-	 /NwcWknM/c2Ajqmy+Iq1cTrWA+esiGqaUt+xEFss=
-Date: Sat, 26 Apr 2025 11:24:17 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Nicolas Pitre <nico@fluxnic.net>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Nicolas Pitre <npitre@baylibre.com>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/14] vt: implement proper Unicode handling
-Message-ID: <2025042609-diagnoses-whinny-36b1@gregkh>
-References: <2025042517-defacing-lushly-10d5@gregkh>
- <2EDC209B-7D6B-4EFB-ADD0-58D494D8AF98@fluxnic.net>
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="fqOsPg0I"
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-605ff8aa9d2so961644eaf.0
+        for <linux-serial@vger.kernel.org>; Sun, 27 Apr 2025 04:18:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1745752685; x=1746357485; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MprAgNPWqGJ7CHG6RWipvBG6sPPJFir2MiaXJK5t8Ec=;
+        b=fqOsPg0I4lQ79ZaRg24VyPvNY0jGQTTbU6hXTXNbV+ronr+PTDnzedtLIOwtr2deEt
+         Z98wS56l55KV2hOFskhlXMZX7rumRG0/DCo5tQTLntiBZmW2czemNXlZG6+3lXodl6IZ
+         VMC1juWXjoCiZ2+TFZ7eZsafxZ1+Vj9dbuQDBYAr1Ndl8Sz5GDZ/kiDEMf7+hfZuiK0I
+         NoNzwgBedILUiPtvhhKfgvlddWZPbRGRMXF25psugvbJDMnFLHrpQxPOM4elkUJi1TKP
+         KKYbUDL/hZme99Qc+GUQb56WklF4JG9eIEk58xa1wlWX9eWmkiB2v3LnPg+YJd3LEHnQ
+         fFBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745752685; x=1746357485;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MprAgNPWqGJ7CHG6RWipvBG6sPPJFir2MiaXJK5t8Ec=;
+        b=oh3PwBdqOXHdBRTHOyC90zjIhyG+4avD3j5F0t9C+LXyEl1pgQB6ZsKBpA2cS9LDDK
+         6c8oVSL0bb8ufVQIv+ePks+NxZsBAIVG4Ktnx4JBndctgI1ciXDFeWMrlQ4mjpfzC3+7
+         +C1p9t6n4XR87pguZk4/ejiV5nx69OJ0fa7qJBo2IOB3d1L5dnIpPfZ3cgrHJLu8Wlgk
+         EhMr739hlOVQVxrlLTM0mv19JCbVvi2ucW4ROdBigUhSk5FOqVPX716HUVMayriPEJG5
+         C7lUX58PlfCbVm/O4YL56xLOJwLUJ1xXE2uxf6Yv9jVp2EIJEKS9M+BQdmceqoxu5dqU
+         o4VQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXSfKe2bXKfvc+Hqt9d8lKktR0SGD/dl2b4LYR54rJCQL0jbM+jh2qWeuJ9Kuuq16QJoJ9/RTy2qp0VVgE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy22Ohhgr6ttXh0ArsSG3s40cGf5D2ullkSPqnmZ7CgkF76J3pG
+	BFkJFY66sa7m68mPKAut3SZ1OBW+DfuEUGE4JQC6DodjrSaCO6eZSEY0njoRqTCUmZsagiDEl3p
+	iRyTfiQMTKlJxG2xKeHtfZSAoMv00tiTS61M/vQ==
+X-Gm-Gg: ASbGncsLfNzfq4uo5uWA3QMxlitZ0tAN46vYikrjoVF1WB954Sek7UhCpksxjrY130/
+	Z7QfxG+bfA6ZS5YCGuTjXkiCctz5n6hw5WpbakupMjFDCvM0NxaL/eYR5jPfjw3Dfyl3YI/3AQx
+	HaSyFxIi/DIdZWvqGxIMW9drdodz69hbxfuQ/5B/E=
+X-Google-Smtp-Source: AGHT+IG8fZxwzHNuZuL5P2Cv7KAs0gI3eNFTOYs+RhBLwnkpjnoQB1qDpHKnfQqP0F4gpRdFEEwyCpU317ouvssDGqY=
+X-Received: by 2002:a05:6820:c83:b0:604:9c9b:d096 with SMTP id
+ 006d021491bc7-60658f242e1mr3557749eaf.4.1745752685422; Sun, 27 Apr 2025
+ 04:18:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2EDC209B-7D6B-4EFB-ADD0-58D494D8AF98@fluxnic.net>
+References: <20250425062425.68761-1-cuiyunhui@bytedance.com>
+ <20250425062425.68761-4-cuiyunhui@bytedance.com> <57d75d55-81e3-445f-a705-e8c116281515@kernel.org>
+ <9d4e7002-48fe-4fa0-8e23-7c2160419910@kernel.org>
+In-Reply-To: <9d4e7002-48fe-4fa0-8e23-7c2160419910@kernel.org>
+From: yunhui cui <cuiyunhui@bytedance.com>
+Date: Sun, 27 Apr 2025 19:17:53 +0800
+X-Gm-Features: ATxdqUGrND2eWKgTBQAFuWZ7ZU2WztQbLWkJMVgxrAn4tCVQU7wPRICwW2BvD3A
+Message-ID: <CAEEQ3w=MOSU2mNo8qq8qz9KE9M0Zb55xeS9aw1263osXtP+8SA@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v4 4/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: arnd@arndb.de, andriy.shevchenko@linux.intel.com, 
+	benjamin.larsson@genexis.eu, gregkh@linuxfoundation.org, 
+	heikki.krogerus@linux.intel.com, ilpo.jarvinen@linux.intel.com, 
+	jkeeping@inmusicbrands.com, john.ogness@linutronix.de, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	markus.mayer@linaro.org, matt.porter@linaro.org, namcao@linutronix.de, 
+	paulmck@kernel.org, pmladek@suse.com, schnelle@linux.ibm.com, 
+	sunilvl@ventanamicro.com, tim.kryger@linaro.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 25, 2025 at 11:13:40AM -0500, Nicolas Pitre wrote:
-> 
-> 
-> > Le 25 avr. 2025 à 09:29, Greg Kroah-Hartman <gregkh@linuxfoundation.org> a écrit :
-> > 
-> > ﻿On Thu, Apr 17, 2025 at 02:45:02PM -0400, Nicolas Pitre wrote:
-> >> The Linux VT console has many problems with regards to proper Unicode
-> >> handling:
-> >> 
-> >> - All new double-width Unicode code points which have been introduced since
-> >>  Unicode 5.0 are not recognized as such (we're at Unicode 16.0 now).
-> >> 
-> >> - Zero-width code points are not recognized at all. If you try to edit files
-> >>  containing a lot of emojis, you will see the rendering issues. When there
-> >>  are a lot of zero-width characters (like "variation selectors"), long
-> >>  lines get wrapped, but any Unicode-aware editor thinks that the content
-> >>  was rendered properly and its rendering logic starts to work in very bad
-> >>  ways. Combine this with tmux or screen, and there is a huge mess going on
-> >>  in the terminal.
-> >> 
-> >> - Also, text which uses combining diacritics has the same effect as text
-> >>  with zero-width characters as programs expect the characters to take fewer
-> >>  columns than what they actually do.
-> >> 
-> >> Some may argue that the Linux VT console is unmaintained and/or not used
-> >> much any longer and that one should consider a user space terminal
-> >> alternative instead. But every such alternative that is not less maintained
-> >> than the Linux VT console does require a full heavy graphical environment
-> >> and that is the exact antithesis of what the Linux console is meant to be.
-> >> 
-> >> Furthermore, there is a significant Linux console user base represented by
-> >> blind users (which I'm a member of) for whom the alternatives are way more
-> >> cumbersome to use reducing our productivity. So it has to stay and
-> >> be maintained to the best of our abilities.
-> >> 
-> >> That being said...
-> >> 
-> >> This patch series is about fixing all the above issues. This is accomplished
-> >> with some Python scripts leveraging Python's unicodedata module to generate
-> >> C code with lookup tables that is suitable for the kernel. In summary:
-> >> 
-> >> - The double-width code point table is updated to the latest Unicode version
-> >>  and the table itself is optimized to reduce its size.
-> >> 
-> >> - A zero-width code point table is created and the console code is modified
-> >>  to properly use it.
-> >> 
-> >> - A table with base character + combining mark pairs is created to convert
-> >>  them into their precomposed equivalents when they're encountered.
-> >>  By default the generated table contains most commonly used Latin, Greek,
-> >>  and Cyrillic recomposition pairs only, but one can execute the provided
-> >>  script with the --full argument to create a table that covers all
-> >>  possibilities. Combining marks that are not listed in the table are simply
-> >>  treated like zero-width code points and properly ignored.
-> >> 
-> >> - All those tables plus related lookup code require about 3500 additional
-> >>  bytes of text which is not very significant these days. Yet, one
-> >>  can still set CONFIG_CONSOLE_TRANSLATIONS=n to configure this all out
-> >>  if need be.
-> >> 
-> >> Note: The generated C code makes scripts/checkpatch.pl complain about
-> >>      "... exceeds 100 columns" because the inserted comments with code
-> >>      point names, well, make some inlines exceed 100 columns. Please make
-> >>      an exception for those files and disregard those warnings. When
-> >>      checkpatch.pl is used on those files directly with -f then it doesn't
-> >>      complain.
-> >> 
-> >> This series was tested on top of v6.15-rc2.
-> > 
-> > I've taken the first version of this, should I revert all of them and
-> > then apply these, or do you want to send a diff between this and what is
-> > in the tty-next tree?
-> Please remove what you have and replace with this v3. Will be much cleaner this way. 
+Hi js,
 
-Ok, just did that, thanks.
 
-greg k-h
+On Fri, Apr 25, 2025 at 2:43=E2=80=AFPM Jiri Slaby <jirislaby@kernel.org> w=
+rote:
+>
+> On 25. 04. 25, 8:41, Jiri Slaby wrote:
+> > On 25. 04. 25, 8:24, Yunhui Cui wrote:
+> >> In the case of RX_TIMEOUT, to avoid PSLVERR, disable the FIFO
+> >> before reading UART_RX when UART_LSR_DR is not set.
+> >>
+> >> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from
+> >> bogus rx timeout interrupt")
+> >> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+> >> ---
+> >>   drivers/tty/serial/8250/8250_dw.c | 13 ++++++++++++-
+> >>   1 file changed, 12 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/
+> >> serial/8250/8250_dw.c
+> >> index 07f9be074b4b..1e364280a108 100644
+> >> --- a/drivers/tty/serial/8250/8250_dw.c
+> >> +++ b/drivers/tty/serial/8250/8250_dw.c
+> >> @@ -273,6 +273,7 @@ static int dw8250_handle_irq(struct uart_port *p)
+> >>       unsigned int quirks =3D d->pdata->quirks;
+> >>       unsigned int status;
+> >>       unsigned long flags;
+> >> +    unsigned char old_fcr;
+> >
+> > No more unsigned char, please. Use u8.
+> >
+> >> @@ -288,9 +289,19 @@ static int dw8250_handle_irq(struct uart_port *p)
+> >>           uart_port_lock_irqsave(p, &flags);
+> >>           status =3D serial_lsr_in(up);
+> >> -        if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+> >> +        if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
+> >> +            /* To avoid PSLVERR, disable the FIFO first. */
+> >> +            if (up->fcr & UART_FCR_ENABLE_FIFO) {
+> >> +                old_fcr =3D serial_in(up, UART_FCR);
+>
+> Wait, read(FCR) actually means read(IIR). FCR is write only. Or is DW
+> special in this?
+
+Indeed, the valid bits of the FCR are write-only. It seems that here
+we can only do serial_out(up, UART_FCR, up->fcr); What do you think?
+
+>
+> >> +                serial_out(up, UART_FCR, old_fcr & ~1);
+> >
+> > s/1/UART_FCR_ENABLE_FIFO/
+> >
+> >> +            }
+> >> +
+> >>               (void) p->serial_in(p, UART_RX);
+> >> +            if (up->fcr & UART_FCR_ENABLE_FIFO)
+> >> +                serial_out(up, UART_FCR, old_fcr);
+> >> +        }
+> >> +
+> >>           uart_port_unlock_irqrestore(p, flags);
+> >>       }
+> >
+> >
+>
+> --
+> js
+> suse labs
+>
+
+Thanks,
+Yunhui
