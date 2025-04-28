@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA2B723DE;
-	Mon, 28 Apr 2025 05:32:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8EF178F3A;
+	Mon, 28 Apr 2025 05:34:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745818369; cv=none; b=UTyzTsXbkIBNzzuYk40F5YfsuEbqEunC+XqFRS8PbexNypJE03AIX8mAb7SUqek7iULzrQUalgjkDe0DxXAKCntD4LCQzi7apiLgN/FE2npQhP45rMA0cx/BmfYyPowkRvEQeB51m3ueMNmUYyc1ppNhlRvY3jKesnAqFxAjr7E=
+	t=1745818473; cv=none; b=ZjWqAdg8mMU1qBCVb1u0TIviJCZMa1/TPF2edFC3MWKnJ1fA2tX0ksUZrruUwWfCLJJH6lHhCMA+by9cZDyY6HH+8lNLxE7uW6daKxt+27oCRNy7MB500AgGGVIEXc9nbh3ksNB0vYxkTSmmGv4c26482Ue5i3u51GRnCokmvbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745818369; c=relaxed/simple;
-	bh=WqlTrqTnP3sRfpfQDefyTSZ0RpYgQ6Kb7CveinahaG4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pWXabjcTNV4E5CMdKYHfHW6AhcN+1bbGJ2ltYwm8AxBtFXbqoAsrU6n9DOsXcjbmto6LkG6nXqSELsL53hcEuj54bUTTVrMDvyrNskyJYKxNHQfxXwuMVu9j+EAimeCWZ/MHu3oM99eKEulORh3Xh6xdHWoeSwZEgTrBEp1R6k0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ovp+iv7e; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745818473; c=relaxed/simple;
+	bh=UgmQWhj4hdnfNJBu/n9Xbriwc16DsEnwzsNiGkBhpts=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=nGbyCW3kA/nn2oEmDrZ7z/ZQb1WgDGrvzhaquH8S53Ksj9IFNiYgFnqeUtgU6lgA+epi9VYUywInzU1r+1DgSDVF7m4kSl9lUsPC1/JtYWkUUikLtucXf3qNA/r5eHB5FR6FG/YAw+RHRdIdbBYcAvyOqH5V7hcf7C4eSNrRfaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rOY+BQD9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ovp+iv7e"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4895C4CEE4;
-	Mon, 28 Apr 2025 05:32:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rOY+BQD9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACFDFC4CEE4;
+	Mon, 28 Apr 2025 05:34:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745818369;
-	bh=WqlTrqTnP3sRfpfQDefyTSZ0RpYgQ6Kb7CveinahaG4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ovp+iv7e8Iv4JQ3dqbWJ3I79hsyNxvzf0ihAhmp1QCyCNNctmdi4D1I7Oc4lN4rlx
-	 c0+cQ47zHfuS8NyhaxWanNMU8iNVsTRcwJekP7hJr3BENjxsKsqRZo/R+50f2R8EzT
-	 Yk8eoZWSwZpWtkPirS+nPXEMF0pBuSjFDL4G3JM8KsCg5FKQiVElTOOXJnF3FqDDTd
-	 wiB6ZNP+fZsGxqbd/VFnx9pcwswiUCgOJgYgs7AlcnxAFyFh8na/c2w/6D2EqJpE2X
-	 K6RLe5L8xuafJErrudGFzuOvxPFVjZ5wZRyTEnk01c4lG8n7Oz+X2BM4SnOgNdzbpe
-	 TgxKrXSB8tAvg==
-Message-ID: <ac37802c-65d3-48b8-9d98-fde35986692a@kernel.org>
-Date: Mon, 28 Apr 2025 07:32:45 +0200
+	s=k20201202; t=1745818473;
+	bh=UgmQWhj4hdnfNJBu/n9Xbriwc16DsEnwzsNiGkBhpts=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=rOY+BQD9FraR0wFeVwWm5mfWk1CcO8uYk+XzGKhWd4iZFOinV+ohC6ieyY/VYP2dA
+	 SN3YvSKffnPHHojsINhP+8WTS2If9ZF9dHNsM7Cy6OrplGCTGpDILQATBCgrHvHfH+
+	 f4smJChfKXcovCACKWCt0iYfw4VZnRmpm1gt2WBJMWWa1T1g8+tjoZNV3CbJXmg7RH
+	 hacNkXoT+0t4cZzV1I2GWdaBF92LuktJ47w4dJHlTqDqkJ47rNbq9Y4fkkg00YCO9t
+	 VZlVDMz4NNFDWBAtGfpEGpddezGdOjR0mXEfG0n903/z5L7Dxgv3GByRzr7z40BU5g
+	 2EdBZLKMjI5pg==
+Message-ID: <b56a3b02-3fd9-4461-b223-ba8b50d25157@kernel.org>
+Date: Mon, 28 Apr 2025 07:34:29 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,12 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] serdev: Refine several error or debug messages
-To: Zijun Hu <zijun_hu@icloud.com>, Rob Herring <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- Zijun Hu <quic_zijuhu@quicinc.com>
-References: <20250425-fix_serdev-v3-1-2e4ea8261640@quicinc.com>
+Subject: Re: [PATCH v3 tty-next] 8250: microchip: pci1xxxx: Add PCIe Hot reset
+ disable support for Rev C0 and later devices
+To: Rengarajan S <rengarajan.s@microchip.com>,
+ kumaravel.thiagarajan@microchip.com, tharunkumar.pasumarthi@microchip.com,
+ gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, unglinuxdriver@microchip.com
+References: <20250425145500.29036-1-rengarajan.s@microchip.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -85,30 +86,28 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250425-fix_serdev-v3-1-2e4ea8261640@quicinc.com>
+In-Reply-To: <20250425145500.29036-1-rengarajan.s@microchip.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 25. 04. 25, 14:48, Zijun Hu wrote:
-> From: Zijun Hu <quic_zijuhu@quicinc.com>
+On 25. 04. 25, 16:55, Rengarajan S wrote:
+> Systems that issue PCIe hot reset requests during a suspend/resume
+> cycle cause PCI1XXXX device revisions prior to C0 to get its UART
+> configuration registers reset to hardware default values. This results
+> in device inaccessibility and data transfer failures. Starting with
+> Revision C0, support was added in the device hardware (via the Hot
+> Reset Disable Bit) to allow resetting only the PCIe interface and its
+> associated logic, but preserving the UART configuration during a hot
+> reset. This patch enables the hot reset disable feature during suspend/
+> resume for C0 and later revisions of the device.
 > 
-> Refine several dev_err() and dev_dbg() messages to solve:
-> 
-> // hardcoded device name
-> dev_dbg(dev, "...dev_name_str...")
-> 
-> // repeated device name since dev_dbg() also prints it as prefix
-> dev_err(dev, "...%s...", dev_name(dev))
-> 
-> // not concise as dev_err(dev, "...%d...", err)
-> dev_err(dev, "...%pe...", ERR_PTR(err))
-> 
-> Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
+> Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
 
-This LGTM.
+My
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
+still holds.
 
 -- 
 js
