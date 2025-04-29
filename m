@@ -1,164 +1,102 @@
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCC20219EB
-	for <linux-serial@vger.kernel.org>; Tue, 29 Apr 2025 03:41:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 00C71279780;
+	Tue, 29 Apr 2025 08:20:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745898106; cv=none; b=gj79xfEd4MimYAW4V7gSu8nfYAo6c7ZYQ7z39rtCQUyMcB1dOJPJ4zOzW/8ZDSUpwh8fOJFG0CpD1t/mmC0oWWXv5baVdjZa7u6uCa2JGaKXZeqQhd7IO8ooTN5R1z/K3wLiFcOMp5VOEmrbbXYOJUAbDcSBzcwQKYtg8SQPl2o=
+	t=1745914817; cv=none; b=Zffvx8F2Jt0XDacpNHRx37MuFen1vYdtUBcJQsV/qsQfXIePyic0xm0RPOmF0aoz7F3ga/WPAmZZx5ST4AmTYs2CdYNnIVAYKme/N6Cw3RJkSRGBQ1KYY6VJV2dhxdo+64ofvOWvIO9dQXPaH3w28PUggouN14Lj7kWBy51Naqs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745898106; c=relaxed/simple;
-	bh=ciEaeHxgnREGIrwPwee4LaqjAnVYafV0jX/59qerfYk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=R29FDKSt7O0NAnLgIJ6ueb8aycPxyfzjr5IBbxlGXDqsO5pRN+qix4Ldo9lQfkrLJrO/wL8l4y4gzgKPr2OfqnjCG2dxVIP3pCVN63MICef3ilpwxjU97s2xJNEao+wS78OUic9dD1teXAo3CKBHiZvKmQljnOIvPa1/1RwmL/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=MfCdxAGe; arc=none smtp.client-ip=209.85.161.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="MfCdxAGe"
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-606648c3f9eso648158eaf.3
-        for <linux-serial@vger.kernel.org>; Mon, 28 Apr 2025 20:41:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1745898104; x=1746502904; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L0+PRveIJeGv5ra5sES3AX9a/1qV/HyEee+G6KrNPf0=;
-        b=MfCdxAGeqOUK06oijHFxe3+m+LGjRnt7Ee7OkQg4Dtgh5jzA/J3HCxkAV85ZHJnFR4
-         /WQOJBV1Er0f3QQHL+M8qg8YwyqdJlN+Mf8+WUVMMfGW9mM9vd5gQUIDUd9aSRbdiLNQ
-         R17MkkQ6EA6h59v1wSW20uVo1LWQ9EdawUmb7KsV3z0GUYlF7flIrFn3b2HjKQ0oBX9i
-         H9oBjfKHjYx1o7ygcmTKZkd2j2GFrAXaxTthCStD84CBT2ppOn33OxZ8edE0c4CZ48Jg
-         QrxxQlk6WK64h0Viws9wy3g5O0lH7j0moOCvUgR+xUdAwoaJob0soCpm0TLdaNBleg5v
-         3kRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745898104; x=1746502904;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=L0+PRveIJeGv5ra5sES3AX9a/1qV/HyEee+G6KrNPf0=;
-        b=aYBpA16nB7/7b2K9/cB1SZa6N493OKJkpq8GXXWlpp0r6erd0ggicP0drEDlidFESR
-         c1rs0CkLqhHTfZL8yQfEl5zmIYOtnfv8fw3gg701jWcnDYjh1KN5ZKDero3qPUXjif7U
-         EBfS/jPHms6KSDKadL6kuC2t4JCEvVzlkZN3yzvcLrPUVD6l4OyJbxq7tlNJdgg4dd8T
-         67jmni9c9MAn4dtbeTWh8OgVNundUeZtja0m5ZnBQOHeJT8Q7pAg5yx1j+T/WNC+O5i2
-         wp3u2XHTq3HMb7P+KrF77fU4cbrgfBnF5sRxN1AZsLk8a/V+vaDA64IsZXMUGUx5CPw7
-         r7+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWsYrvO2E0mS/bY6UsHXou+++B6EQBevVLDSX7yVhsdfccF2mhiK9XYerUjsRiRjdQpn+pXtYpirjhhx30=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyDMvN8d/84wtMjpmCj0SaNrQDMA++4PxXeUbsgc7OdoXcY3TB3
-	fZFJxoMiO8BsyzSJ7DFiHhhhzbyANE1a+T59RVrhNZ2H5GFtf6Vr0HgLUmMru8j/ZlwEh8yajRU
-	uf7q8jwBc3wHlK1Wb/U2N4/zrebbu4FnMcAOjIg==
-X-Gm-Gg: ASbGncs8tRYIz6YQDPDST6PPcMAIDRI4iXXGMXQdy9FCRAcsMdT+KL3kfCP7Dr97FeR
-	mI1kGKlssDkAt7fAt/z9eoxxZmztuAlxf600v+6zN2GZpEBkRTBrY7rjC2fWoGoUHMbAFyYX3xW
-	LxdzaMM6oNuRRj6Co01He8Kc2lNdVntKHFy8Y=
-X-Google-Smtp-Source: AGHT+IGIgJEMeJpTxwUkX18+O5XPbZJXJ0/AybPYKgwiz6zA5rIL3rjZAhe/VIyzWBb8u9hXh5Kv3oYzdwm/JWcLxmQ=
-X-Received: by 2002:a4a:ee0e:0:b0:604:66b4:a8f2 with SMTP id
- 006d021491bc7-60658e8dbc5mr6346871eaf.2.1745898103701; Mon, 28 Apr 2025
- 20:41:43 -0700 (PDT)
+	s=arc-20240116; t=1745914817; c=relaxed/simple;
+	bh=73zA2CLYL9Mn6PX0DxYR0lMBD9A44hRDhGJfPS6gdrI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=bA2qgtB9ny1ZkcevwOA4d6iudBqPHz7g+eVsoHxzPUsh+IbdSOh+iKvD5kJ8lcK7QiCONlld4hSVEHtrPxdjVn0baOxaRkPdETBVBSUFW7JFl+xzKJu83LUPi3l1RXW0+ylP1jjR3n/8ycFln4arzPmgBuf59Ghsxvc/bO610Kg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+X-CSE-ConnectionGUID: +jeovNkORJK8jxGD8ggfVA==
+X-CSE-MsgGUID: iFUeV+J8QuesaRFIvVTfjA==
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 29 Apr 2025 17:20:06 +0900
+Received: from superbuilder.administration.lan (unknown [10.226.93.118])
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 2764A4007F4D;
+	Tue, 29 Apr 2025 17:20:02 +0900 (JST)
+From: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+To: thierry.bultel@linatsea.fr
+Cc: linux-renesas-soc@vger.kernel.org,
+	geert@linux-m68k.org,
+	paul.barker.ct@bp.renesas.com,
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v8 01/11] dt-bindings: serial: Added secondary clock for RZ/T2H RSCI
+Date: Tue, 29 Apr 2025 10:19:43 +0200
+Message-ID: <20250429081956.3804621-2-thierry.bultel.yh@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250429081956.3804621-1-thierry.bultel.yh@bp.renesas.com>
+References: <20250429081956.3804621-1-thierry.bultel.yh@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250425062425.68761-1-cuiyunhui@bytedance.com>
- <20250425062425.68761-4-cuiyunhui@bytedance.com> <57d75d55-81e3-445f-a705-e8c116281515@kernel.org>
- <9d4e7002-48fe-4fa0-8e23-7c2160419910@kernel.org> <CAEEQ3w=MOSU2mNo8qq8qz9KE9M0Zb55xeS9aw1263osXtP+8SA@mail.gmail.com>
-In-Reply-To: <CAEEQ3w=MOSU2mNo8qq8qz9KE9M0Zb55xeS9aw1263osXtP+8SA@mail.gmail.com>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Tue, 29 Apr 2025 11:41:32 +0800
-X-Gm-Features: ATxdqUG4oyBOi0YvndKmwL4h6eShdN7sURspXkVL2sh3dzFP_Xt_N1ugSNVE4LY
-Message-ID: <CAEEQ3w=zAzwnbQaSC3JBMcGODt0xzud-fuYvVRA9=C-2tEX_Rg@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH v4 4/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: arnd@arndb.de, andriy.shevchenko@linux.intel.com, 
-	benjamin.larsson@genexis.eu, gregkh@linuxfoundation.org, 
-	heikki.krogerus@linux.intel.com, ilpo.jarvinen@linux.intel.com, 
-	jkeeping@inmusicbrands.com, john.ogness@linutronix.de, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	markus.mayer@linaro.org, matt.porter@linaro.org, namcao@linutronix.de, 
-	paulmck@kernel.org, pmladek@suse.com, schnelle@linux.ibm.com, 
-	sunilvl@ventanamicro.com, tim.kryger@linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sun, Apr 27, 2025 at 7:17=E2=80=AFPM yunhui cui <cuiyunhui@bytedance.com=
-> wrote:
->
-> Hi js,
->
->
-> On Fri, Apr 25, 2025 at 2:43=E2=80=AFPM Jiri Slaby <jirislaby@kernel.org>=
- wrote:
-> >
-> > On 25. 04. 25, 8:41, Jiri Slaby wrote:
-> > > On 25. 04. 25, 8:24, Yunhui Cui wrote:
-> > >> In the case of RX_TIMEOUT, to avoid PSLVERR, disable the FIFO
-> > >> before reading UART_RX when UART_LSR_DR is not set.
-> > >>
-> > >> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from
-> > >> bogus rx timeout interrupt")
-> > >> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
-> > >> ---
-> > >>   drivers/tty/serial/8250/8250_dw.c | 13 ++++++++++++-
-> > >>   1 file changed, 12 insertions(+), 1 deletion(-)
-> > >>
-> > >> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/
-> > >> serial/8250/8250_dw.c
-> > >> index 07f9be074b4b..1e364280a108 100644
-> > >> --- a/drivers/tty/serial/8250/8250_dw.c
-> > >> +++ b/drivers/tty/serial/8250/8250_dw.c
-> > >> @@ -273,6 +273,7 @@ static int dw8250_handle_irq(struct uart_port *p=
-)
-> > >>       unsigned int quirks =3D d->pdata->quirks;
-> > >>       unsigned int status;
-> > >>       unsigned long flags;
-> > >> +    unsigned char old_fcr;
-> > >
-> > > No more unsigned char, please. Use u8.
-> > >
-> > >> @@ -288,9 +289,19 @@ static int dw8250_handle_irq(struct uart_port *=
-p)
-> > >>           uart_port_lock_irqsave(p, &flags);
-> > >>           status =3D serial_lsr_in(up);
-> > >> -        if (!(status & (UART_LSR_DR | UART_LSR_BI)))
-> > >> +        if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
-> > >> +            /* To avoid PSLVERR, disable the FIFO first. */
-> > >> +            if (up->fcr & UART_FCR_ENABLE_FIFO) {
-> > >> +                old_fcr =3D serial_in(up, UART_FCR);
-> >
-> > Wait, read(FCR) actually means read(IIR). FCR is write only. Or is DW
-> > special in this?
->
-> Indeed, the valid bits of the FCR are write-only. It seems that here
-> we can only do serial_out(up, UART_FCR, up->fcr); What do you think?
+At boot, the default clock is the PCLKM core lock (synchronous
+clock, which is enabled by the bootloader).
+For different baudrates, the asynchronous clock input must be used.
+Clock selection is made by an internal register of RCSI.
 
-I looked through the DW databook and found that we can use the SFE
-register. However, it is not guaranteed that all UARTs in the dw
-series have this register.
+Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+---
+ .../bindings/serial/renesas,rsci.yaml          | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
+diff --git a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+index ea879db5f485..aa2428837a2f 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+@@ -35,10 +35,14 @@ properties:
+       - const: tei
+ 
+   clocks:
+-    maxItems: 1
++    items:
++      - description: serial functional clock
++      - description: default core clock
+ 
+   clock-names:
+-    const: fck # UART functional clock
++    items:
++      - const: async
++      - const: bus
+ 
+   power-domains:
+     maxItems: 1
+@@ -58,11 +62,7 @@ unevaluatedProperties: false
+ examples:
+   - |
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
+-    #include <dt-bindings/clock/renesas-cpg-mssr.h>
+-
+-    aliases {
+-        serial0 = &sci0;
+-    };
++    #include <dt-bindings/clock/renesas,r9a09g077-cpg-mssr.h>
+ 
+     sci0: serial@80005000 {
+         compatible = "renesas,r9a09g077-rsci";
+@@ -72,7 +72,7 @@ examples:
+                      <GIC_SPI 592 IRQ_TYPE_EDGE_RISING>,
+                      <GIC_SPI 593 IRQ_TYPE_LEVEL_HIGH>;
+         interrupt-names = "eri", "rxi", "txi", "tei";
+-        clocks = <&cpg CPG_MOD 108>;
+-        clock-names = "fck";
++        clocks = <&cpg CPG_MOD 108>, <&cpg CPG_CORE R9A09G077_CLK_PCLKM>;
++        clock-names = "async", "bus";
+         power-domains = <&cpg>;
+     };
+-- 
+2.43.0
 
-
->
-> >
-> > >> +                serial_out(up, UART_FCR, old_fcr & ~1);
-> > >
-> > > s/1/UART_FCR_ENABLE_FIFO/
-> > >
-> > >> +            }
-> > >> +
-> > >>               (void) p->serial_in(p, UART_RX);
-> > >> +            if (up->fcr & UART_FCR_ENABLE_FIFO)
-> > >> +                serial_out(up, UART_FCR, old_fcr);
-> > >> +        }
-> > >> +
-> > >>           uart_port_unlock_irqrestore(p, flags);
-> > >>       }
-> > >
-> > >
-> >
-> > --
-> > js
-> > suse labs
-> >
->
-> Thanks,
-> Yunhui
