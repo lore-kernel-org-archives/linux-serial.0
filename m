@@ -1,100 +1,107 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A312192F8
-	for <linux-serial@vger.kernel.org>; Wed, 30 Apr 2025 12:29:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F5935961
+	for <linux-serial@vger.kernel.org>; Wed, 30 Apr 2025 13:31:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746016165; cv=none; b=MWyKO/JMKhYlDRDHHn4nL1302RkUr/GhXGj7BNuteZK7e7K6ZmCuOF2voBc6scOyppmOzZYuD/3llm3gvII2EE+8q/kaVw4Ib1kzjQhS14JDvs4lej290BQMztTBWqjbFtTF5rWumQmLMlCIjCl8YYHwBAPnbr8xlbhm+TYV1DE=
+	t=1746019906; cv=none; b=GE95y0yO3uU3gPQj1DhWMZrmYAbl93CDSBE7KfUl1m2TQdfMvy9fFs+mvA6gs5tshPKECYIRnEEY/lUUvcM9s9Ef65xJfp8SVJKHhj4fqQQou6jtb5+fi/eJl89hQKnYqHzhNBHaqIobkG07uGmaKMQoOoNQoEcrYzYkLaJ+Npw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746016165; c=relaxed/simple;
-	bh=65YaHnPW1syjynifrJVzhjCU7krexJAzh8rYWDgDGYg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mASP+vrk8fOClsXXCknxigj2Gazopnfu7UHYocKqY2QZQDTDZFrEV+2zR0eq0yoEjckWPrY0dU/hyO/n/aHC2nSCJei04Eem3PnDmaphfVxjY3D+D7I1/+VfEAOqvYwem+5HWILduAVp6WVQt2zQYBK+4eIB5KIbn9KK6zr2EPk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=t/f3CgWJ; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
+	s=arc-20240116; t=1746019906; c=relaxed/simple;
+	bh=p98MxICZ2hRwZcgshomPAWNE3MrQP1Pftu+P1/2Tcfc=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=GV3jv/+WH6Nu13HVKKI/RP+VjRJIx3yvg3ImDh0a/IQZgsjcORaIWzwP2R5shWZa/m/6Xs6vAeZsekdLZ39nTvBV0Ov8jhy38YMBDGkDoIYuKMTC1jEg2G+U+R3A5eizd0xtVd5Ae/XfOuJrtcATmXegy2jZFQOWYhcZcfA06V0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=GiEbLLJ4; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="t/f3CgWJ"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-43edecbfb94so65895085e9.1
-        for <linux-serial@vger.kernel.org>; Wed, 30 Apr 2025 05:29:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="GiEbLLJ4"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-47ae894e9b7so3050871cf.3
+        for <linux-serial@vger.kernel.org>; Wed, 30 Apr 2025 06:31:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1746016160; x=1746620960; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=4Hin90Q/qlFrY1uw8hPFIj/AZ5kwtshzSEzUknrcF5Y=;
-        b=t/f3CgWJYostu1N+d1eN/RuSZX4U6Y1tAYQdRcjwhmew9I0Rey/2JjdpyJEkP3MhUE
-         tu6GM9eXXjCy1GOjMKDSThxJGtcKXmzU+E068WcrZOUMZKtTsC7TWF8hA3v9gx2AYQwD
-         M6xee8MgTN4dY8TBTIIuFC5fN0c2hXbPur21veWq9ey4C8ndaQylNxDxQ+nAU/4XhdYm
-         Mis7kwVzZTjJHZ9uwOT3o1tVxIW1ILF1/+F2Q0i8W6RES8t9OOSruN/VifGFAL3GFMoH
-         Lm+GkbW1gyL38w2Mp6u2P2JTqe/ZpE3DOndjQsWo43D3edw63OJs889Us9qfgYMALMgV
-         uULw==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1746019902; x=1746624702; darn=vger.kernel.org;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=J27zH1j+2DGLSZuiVQYcAZeTzSnyKb84uUwM/rDsIQM=;
+        b=GiEbLLJ4SwvqnZ+rWGD9lr4E8UOYbZ75S/gGWPb9DlwI427Pcstq246UpNKnV/H3tO
+         KFcIuBLq9gpekY9hnyahirBZycknhkoyCVSLwUWC9lSR+t9ztzbff+0JrZvo35aClXfq
+         FdKjfOS7yUEQuZX0Gx2TBxMPMG9mFoZQcMNAYP3dOt5njkfdmpC9Kp50+ODVXcTJpsQE
+         GovqPlYGe/RiJ5e+p0Guhfibn2aNaHMALn80zzUv6x6YtHpArXGy0FTAgEyrEcRDvATl
+         ATEih+/adwQRbEl69X9l+mIPq+t1+HDl1pj/Vyp8w5EETqxi/LYkK3Zd7/gvNIBTcfjx
+         MYbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746016160; x=1746620960;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4Hin90Q/qlFrY1uw8hPFIj/AZ5kwtshzSEzUknrcF5Y=;
-        b=rCqNoatbCM4c5IlnkmmKZSVHsBgnwG7t48QTFpfSkiMiH3HNXTnh00RkJeX/kHLAsX
-         XsTAwIcFw4Z17HVVrpy37Dp0VTSDa5192jkemfmsKbmHKOiO+5Cy57JOC7NcsnB1nEih
-         WiQoW1My8KUb1PUQNcs7MwSKK68mCC/5o3XVE70yvY5xOjUsbLP+0jCkptda5AeULlCC
-         sCLkgrBA1uUsPLwjS4fmGG1LOC9KkKaEc2RM/F44YgV/iuopYrxMsCDmLA0jf05OyYHz
-         5JEBGe4C6HDvEhRFacNB0OyzO2qoW0TM24kLVfUsNXUuNuTkSoocDNvX/8Dep4PHMZma
-         CqKg==
-X-Forwarded-Encrypted: i=1; AJvYcCVRL4v65lcukvXxu5rdfGPoPuNHV5KcWyeyAGoCGPiGRobqgYTt3nj6RBHk3w9M83Cl74OxlFxTW8wK4Sg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwiGLW3/fHJOn/f5cGCs5JkZAmtoKdDFuJRhifAfl9cWJDtRKnS
-	bOdbm2h9ajzhzw5YumR9vuqYVP3O2P8KKWrjaguhyZsQt2Izp1cR4uqooYvb+iVr/dK/bbjQlVI
-	0i8I=
-X-Gm-Gg: ASbGncvSsjIb8Dw6HofOe8YvqalbgdG14TEtav8HhKdJUD4wYREHxHw4Cvv7YydEcPI
-	n09M3T44o3cG5JTzps+jlGIEuohYBHdbP/TjZ2D49pB8O+DYTi+cDcVWtcVPkO1vAIsaYqtRCXC
-	VPBOJnAk/C7mAbOPSG3MZKw1yD5Jo2hPPwaVPwbFQ990xPqfi1ZKsb9vVIJkAxs5Yuc7AumRfNM
-	6MoVeESKyMcTqe/EWnN78D6jJYoOnLRNqlbnQEzo34F0y8Xie3pEWBvZENFA8N90cEZD0Omvsrr
-	9JquDjfFtrZzisZoyAN7Q6Pyo5N8p4/Qr/t7KiSfjg==
-X-Google-Smtp-Source: AGHT+IEcVop7LCHK+PW7qs+wyQUaCY++bj3vcdHwg7JuOrBDny/qNmv6fx8+wazaQUivLi52v9gpWg==
-X-Received: by 2002:a05:600c:4703:b0:43d:160:cd9e with SMTP id 5b1f17b1804b1-441b1f3aa00mr28328895e9.17.1746016160460;
-        Wed, 30 Apr 2025 05:29:20 -0700 (PDT)
-Received: from brgl-uxlite.home ([2a01:cb1d:dc:7e00:6298:7254:d3df:f23e])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-441b2bbf046sm22914175e9.35.2025.04.30.05.29.19
+        d=1e100.net; s=20230601; t=1746019902; x=1746624702;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=J27zH1j+2DGLSZuiVQYcAZeTzSnyKb84uUwM/rDsIQM=;
+        b=roNB7ZvpaHRdhdwKX81F+u6fCsWPdTiA15RryddUpR+RZ7Qa8Vgi8HyEHsd4rlr7rj
+         uYEbEz0PDH4bRp2lkyhTCJ6Pjtkz2j6ULuvqdE85N8pz5pyK0hNB9qXa+p/Ir3jXr9VY
+         ZoFBuhqTvHWoR1A6rmIjS8tHmyklvic87FhWdn4wE9tSBLLgoq2sFQ0HbaSsJ9eY3uGi
+         aGwQXtxzpxuyexh8LCGiqfb7JwONEYJtsSiMJI5p3yFWPho08Xvv2dQ+qZnsJZFXU0Sp
+         yuNscESO4HswfeEBxbE4Ufd7wUZ2Z8TxLUy0Nj1l5t278eBPO4psx+u3XH7kQ/C2pzEl
+         pgxw==
+X-Forwarded-Encrypted: i=1; AJvYcCW7XbRNawb8DmsW2j+Py5WxRG5CNv5j4PzO+acyuaeGODk6DAfHfiOoh90qXT8kuCLJmwN5JCd6LAHxYnA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyz91bEOM0vDL+MEhnMwo808RJkMdvZoByJZq8W2B8MJeJegDse
+	mhQRfXtw0ReEtinE+PxY1h0YvAuvvfayMZ/p5zQH8tltszBFNOQs4o/gMLXp8eg=
+X-Gm-Gg: ASbGncs9sRBkK2BP8B1xsObbJ7vMvf+ckkh0nFsqm1EuYuaE1xDMfTRqKBEc4wqrMuC
+	kh70rDizY1tj9Bkmt8dEnActn5EQZ2I2gnnJIoihR10Dju2mK0N62ywnxxJEf8r5TkK3DY70L3E
+	tZJylxu7CW9GWQGsYlea4UB3o2Emii2HbPkEIj4jDn00V9KqoJ7O5HDgDV4/laP0SgGtRZmXWT/
+	3OFLEwheIWzLFjvF4R11mpOVel+U/0DGKCGXcEDCisN3tCgXM6tNpHcwIy0TdfIg78S/keLXkzX
+	hxfg3SsvPGetD0eXiT/qM8EQXRFrptGwgUjzhUShwArwhU+/JAApz133BD+/9H6TEFPnTQUlXPr
+	BIFQ=
+X-Google-Smtp-Source: AGHT+IFHOhrysBR+6DovsVdXIpuhTVp8HJr3/OBh9t/W0q0+yunbstdhdagS7/7fV+TcxTFn88rdTw==
+X-Received: by 2002:a05:622a:2514:b0:476:add4:d2c0 with SMTP id d75a77b69052e-489e63d73bcmr43950311cf.35.1746019901714;
+        Wed, 30 Apr 2025 06:31:41 -0700 (PDT)
+Received: from xanadu (modemcable179.17-162-184.mc.videotron.ca. [184.162.17.179])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-47ea1ba29c2sm92032681cf.76.2025.04.30.06.31.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Apr 2025 05:29:20 -0700 (PDT)
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-	Nicolas Pitre <npitre@baylibre.com>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] vt: add new dynamically generated files to .gitignore
-Date: Wed, 30 Apr 2025 14:29:17 +0200
-Message-ID: <20250430122917.72105-1-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.45.2
+        Wed, 30 Apr 2025 06:31:41 -0700 (PDT)
+Date: Wed, 30 Apr 2025 09:31:40 -0400 (EDT)
+From: Nicolas Pitre <npitre@baylibre.com>
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>, 
+    Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, 
+    linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] vt: add new dynamically generated files to .gitignore
+In-Reply-To: <20250430122917.72105-1-brgl@bgdev.pl>
+Message-ID: <sq7527p1-9218-r845-605n-2p419s2650s5@onlyvoer.pbz>
+References: <20250430122917.72105-1-brgl@bgdev.pl>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 
-From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+On Wed, 30 Apr 2025, Bartosz Golaszewski wrote:
 
-Add new dynamically generated headers to the local .gitignore.
+> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> 
+> Add new dynamically generated headers to the local .gitignore.
+> 
+> Fixes: b11a041179e7 ("vt: introduce gen_ucs_width_table.py to create ucs_width_table.h")
+> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-Fixes: b11a041179e7 ("vt: introduce gen_ucs_width_table.py to create ucs_width_table.h")
-Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
----
- drivers/tty/vt/.gitignore | 2 ++
- 1 file changed, 2 insertions(+)
+Reviewed-by: Nicolas Pitre <npitre@baylibre.com>
 
-diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
-index 0221709b177d..49ce44edad65 100644
---- a/drivers/tty/vt/.gitignore
-+++ b/drivers/tty/vt/.gitignore
-@@ -2,3 +2,5 @@
- /conmakehash
- /consolemap_deftbl.c
- /defkeymap.c
-+/ucs_recompose_table.h
-+/ucs_width_table.h
--- 
-2.45.2
 
+> ---
+>  drivers/tty/vt/.gitignore | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
+> index 0221709b177d..49ce44edad65 100644
+> --- a/drivers/tty/vt/.gitignore
+> +++ b/drivers/tty/vt/.gitignore
+> @@ -2,3 +2,5 @@
+>  /conmakehash
+>  /consolemap_deftbl.c
+>  /defkeymap.c
+> +/ucs_recompose_table.h
+> +/ucs_width_table.h
+> -- 
+> 2.45.2
+> 
+> 
