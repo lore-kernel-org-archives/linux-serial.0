@@ -1,72 +1,89 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh-b1-smtp.messagingengine.com (fhigh-b1-smtp.messagingengine.com [202.12.124.152])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F5935961
-	for <linux-serial@vger.kernel.org>; Wed, 30 Apr 2025 13:31:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D27A32DC791;
+	Wed, 30 Apr 2025 14:52:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746019906; cv=none; b=GE95y0yO3uU3gPQj1DhWMZrmYAbl93CDSBE7KfUl1m2TQdfMvy9fFs+mvA6gs5tshPKECYIRnEEY/lUUvcM9s9Ef65xJfp8SVJKHhj4fqQQou6jtb5+fi/eJl89hQKnYqHzhNBHaqIobkG07uGmaKMQoOoNQoEcrYzYkLaJ+Npw=
+	t=1746024765; cv=none; b=a30GkhikXIJVtBztRGH3XkIxET6aB8R/1pVHrrEJ2QovbpNCEwXmcHIAqWdVuW7AJKxQsjD9epk8pTIATx+NxXwqXKXeHHy06toFVtMbyki+06pSzi/vwJs9NO37wQwC//uySrvFgdvFq0Akh1KNJ2iFcvJlQcgGnuPyGoE2N+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746019906; c=relaxed/simple;
-	bh=p98MxICZ2hRwZcgshomPAWNE3MrQP1Pftu+P1/2Tcfc=;
+	s=arc-20240116; t=1746024765; c=relaxed/simple;
+	bh=DqfSgVABBGrSLDg2s1B7t16DNFFluwHJ8LLyzrEjwUI=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=GV3jv/+WH6Nu13HVKKI/RP+VjRJIx3yvg3ImDh0a/IQZgsjcORaIWzwP2R5shWZa/m/6Xs6vAeZsekdLZ39nTvBV0Ov8jhy38YMBDGkDoIYuKMTC1jEg2G+U+R3A5eizd0xtVd5Ae/XfOuJrtcATmXegy2jZFQOWYhcZcfA06V0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=GiEbLLJ4; arc=none smtp.client-ip=209.85.160.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 MIME-Version:Content-Type; b=dziXSlyLAgMxqD3Ldd+YZYJKdyt6rdhiOtxMi6G0dmJtBTB2Rl48Xh/qxk++VixoIzJoY7skx0SD8ph0otyZcKjrbrfpZ7vNIba0YWWYlzSntyIBAOfi/p8Aw2O5MruwW28nRmdvXwsKlVg+F0CcDIQlK+k0xmgtSTnkn/7/O54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=HhuEzmMB; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=CzC7jZdI; arc=none smtp.client-ip=202.12.124.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="GiEbLLJ4"
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-47ae894e9b7so3050871cf.3
-        for <linux-serial@vger.kernel.org>; Wed, 30 Apr 2025 06:31:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1746019902; x=1746624702; darn=vger.kernel.org;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=J27zH1j+2DGLSZuiVQYcAZeTzSnyKb84uUwM/rDsIQM=;
-        b=GiEbLLJ4SwvqnZ+rWGD9lr4E8UOYbZ75S/gGWPb9DlwI427Pcstq246UpNKnV/H3tO
-         KFcIuBLq9gpekY9hnyahirBZycknhkoyCVSLwUWC9lSR+t9ztzbff+0JrZvo35aClXfq
-         FdKjfOS7yUEQuZX0Gx2TBxMPMG9mFoZQcMNAYP3dOt5njkfdmpC9Kp50+ODVXcTJpsQE
-         GovqPlYGe/RiJ5e+p0Guhfibn2aNaHMALn80zzUv6x6YtHpArXGy0FTAgEyrEcRDvATl
-         ATEih+/adwQRbEl69X9l+mIPq+t1+HDl1pj/Vyp8w5EETqxi/LYkK3Zd7/gvNIBTcfjx
-         MYbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746019902; x=1746624702;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=J27zH1j+2DGLSZuiVQYcAZeTzSnyKb84uUwM/rDsIQM=;
-        b=roNB7ZvpaHRdhdwKX81F+u6fCsWPdTiA15RryddUpR+RZ7Qa8Vgi8HyEHsd4rlr7rj
-         uYEbEz0PDH4bRp2lkyhTCJ6Pjtkz2j6ULuvqdE85N8pz5pyK0hNB9qXa+p/Ir3jXr9VY
-         ZoFBuhqTvHWoR1A6rmIjS8tHmyklvic87FhWdn4wE9tSBLLgoq2sFQ0HbaSsJ9eY3uGi
-         aGwQXtxzpxuyexh8LCGiqfb7JwONEYJtsSiMJI5p3yFWPho08Xvv2dQ+qZnsJZFXU0Sp
-         yuNscESO4HswfeEBxbE4Ufd7wUZ2Z8TxLUy0Nj1l5t278eBPO4psx+u3XH7kQ/C2pzEl
-         pgxw==
-X-Forwarded-Encrypted: i=1; AJvYcCW7XbRNawb8DmsW2j+Py5WxRG5CNv5j4PzO+acyuaeGODk6DAfHfiOoh90qXT8kuCLJmwN5JCd6LAHxYnA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyz91bEOM0vDL+MEhnMwo808RJkMdvZoByJZq8W2B8MJeJegDse
-	mhQRfXtw0ReEtinE+PxY1h0YvAuvvfayMZ/p5zQH8tltszBFNOQs4o/gMLXp8eg=
-X-Gm-Gg: ASbGncs9sRBkK2BP8B1xsObbJ7vMvf+ckkh0nFsqm1EuYuaE1xDMfTRqKBEc4wqrMuC
-	kh70rDizY1tj9Bkmt8dEnActn5EQZ2I2gnnJIoihR10Dju2mK0N62ywnxxJEf8r5TkK3DY70L3E
-	tZJylxu7CW9GWQGsYlea4UB3o2Emii2HbPkEIj4jDn00V9KqoJ7O5HDgDV4/laP0SgGtRZmXWT/
-	3OFLEwheIWzLFjvF4R11mpOVel+U/0DGKCGXcEDCisN3tCgXM6tNpHcwIy0TdfIg78S/keLXkzX
-	hxfg3SsvPGetD0eXiT/qM8EQXRFrptGwgUjzhUShwArwhU+/JAApz133BD+/9H6TEFPnTQUlXPr
-	BIFQ=
-X-Google-Smtp-Source: AGHT+IFHOhrysBR+6DovsVdXIpuhTVp8HJr3/OBh9t/W0q0+yunbstdhdagS7/7fV+TcxTFn88rdTw==
-X-Received: by 2002:a05:622a:2514:b0:476:add4:d2c0 with SMTP id d75a77b69052e-489e63d73bcmr43950311cf.35.1746019901714;
-        Wed, 30 Apr 2025 06:31:41 -0700 (PDT)
-Received: from xanadu (modemcable179.17-162-184.mc.videotron.ca. [184.162.17.179])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-47ea1ba29c2sm92032681cf.76.2025.04.30.06.31.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Apr 2025 06:31:41 -0700 (PDT)
-Date: Wed, 30 Apr 2025 09:31:40 -0400 (EDT)
-From: Nicolas Pitre <npitre@baylibre.com>
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="HhuEzmMB";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="CzC7jZdI"
+Received: from phl-compute-06.internal (phl-compute-06.phl.internal [10.202.2.46])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 9C40625401F3;
+	Wed, 30 Apr 2025 10:52:41 -0400 (EDT)
+Received: from phl-frontend-02 ([10.202.2.161])
+  by phl-compute-06.internal (MEProxy); Wed, 30 Apr 2025 10:52:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm3; t=1746024761; x=1746111161; bh=KoXlEHKE9g
+	NyoZYWrnpH30uGodhBmHO2937ZdEmrIPE=; b=HhuEzmMBrx9bw8IglEthSj47lB
+	mmsq2thCawGpfP6d5cOGh7VET8Oi+OSE41K1SqPoBJSAb2Z6Q/RUyFCSZOoSYsNo
+	vcgHFhxsdt5bAwoMevghMr/JeDC9GcFdjgKuTYmlLCVit9vh1Ed07qFHfY9xEGUJ
+	HkHIvTSWuFBUlQhSgxXkXQKmkTapCD62EuM1gDQ8GdmK1FZnZVE0dmIlqoOanSeE
+	LM1NkD2BDNG23RT0YLCPU9cWz9CIQRiEi4ZmFIfmGZLE+1/fCaAzo3T0/mlBAbfp
+	jXNWr26o+HpnlAf+7bWqRkGyilcYwa/osBFQxv/MPb2TqKbQZEeCi9iptpmg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1746024761; x=1746111161; bh=KoXlEHKE9gNyoZYWrnpH30uGodhBmHO2937
+	ZdEmrIPE=; b=CzC7jZdI2wowZjH8Uplkb+2IxovqpFSQNvDvgTkDhxiWpp0V0UW
+	H6oeKkTJweavclaRwM7Rzia29PVdatBmRf34kT5BDggbUfSTucThlMKH3y+NenES
+	5na8UlFyBBU6gTqfbj2B4Czcso74ntQWxqh//1rSsBuZFTOcldokCauJ8+Yz8NZe
+	0WMBGAAbv0LzyD3saU5iuh4Fj7JiKS5o8nwxQuuAAvHXj/XRoIOtDKisNWh//dsp
+	gIAjgig+LID4hBMPEDpE7Lvvy/+OQC6aNNhJwiXv534ZlNJLdIH4+SRo9a4Q9TkR
+	fK46/NUlFWbTda1sjcU5mtnjjX2l6/VyWNA==
+X-ME-Sender: <xms:OTkSaNoZKYbTPyscDZbYBUXLdURncUYxUnIsdP-o4WHKEduos9NlQQ>
+    <xme:OTkSaPr5pzVHtvfwP1MgW_23mbz0y5c--hw-tkHGTk6DvyXLpsD9LRHDXsqRT4p6X
+    zTC7P9lkHG2mKm3oIQ>
+X-ME-Received: <xmr:OTkSaKNj9Pjivtqrv7TNzPleidY4oonOjeVMIz2BR990Wd6W4yTDf0WAtHuSh3YWdC5iaBxk8Xa0zkSOALJ6UQ0XtBPuL7xsfkjnhsX8nKEodQlPVg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvieeileekucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
+    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
+    gvnhhtshculddquddttddmnecujfgurhepfffhvfevufgjkfhfgggtsehttdertddttddv
+    necuhfhrohhmpefpihgtohhlrghsucfrihhtrhgvuceonhhitghosehflhhugihnihgtrd
+    hnvghtqeenucggtffrrghtthgvrhhnpefgvedvhfefueejgefggfefhfelffeiieduvdeh
+    ffduheduffekkefhgeffhfefveenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpehnihgtohesfhhluhignhhitgdrnhgvthdpnhgspghrtghpthht
+    ohepiedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepsghrghhlsegsghguvghvrd
+    hplhdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphht
+    thhopegsrghrthhoshiirdhgohhlrghsiigvfihskhhisehlihhnrghrohdrohhrghdprh
+    gtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdrohhrghdprhgt
+    phhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprh
+    gtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:OTkSaI5Kugqnlnn4MVAEs1rIHM90sjuTScGsqkDSTVVblZv7fxRyfw>
+    <xmx:OTkSaM4WeQuMjyV_v4jQfGTUrAbRoOJc6LgAFNEmtelCH0iJgaO1-g>
+    <xmx:OTkSaAhm2tfRfRYRbiDPnlfXuyTfIjafABL2M_l4O6av0XPYelCjNg>
+    <xmx:OTkSaO4yppF62XEMYkGsnTpU6cRI_yoCfyDjLq6cZqJ9t-_7jKJsUw>
+    <xmx:OTkSaPIjIvoZ6EmjHhAAPOyHq-AtMEYzDrRPfFK-jwGlfxFLalmCojlb>
+Feedback-ID: i58514971:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 30 Apr 2025 10:52:41 -0400 (EDT)
+Received: from xanadu (xanadu.lan [192.168.1.120])
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 961EE117534F;
+	Wed, 30 Apr 2025 10:52:40 -0400 (EDT)
+Date: Wed, 30 Apr 2025 10:52:40 -0400 (EDT)
+From: Nicolas Pitre <nico@fluxnic.net>
 To: Bartosz Golaszewski <brgl@bgdev.pl>
 cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     Jiri Slaby <jirislaby@kernel.org>, 
     Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, 
     linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 Subject: Re: [PATCH] vt: add new dynamically generated files to .gitignore
-In-Reply-To: <20250430122917.72105-1-brgl@bgdev.pl>
-Message-ID: <sq7527p1-9218-r845-605n-2p419s2650s5@onlyvoer.pbz>
-References: <20250430122917.72105-1-brgl@bgdev.pl>
+In-Reply-To: <sq7527p1-9218-r845-605n-2p419s2650s5@onlyvoer.pbz>
+Message-ID: <47np2on4-875o-21r2-p707-rr3rp30s82rq@syhkavp.arg>
+References: <20250430122917.72105-1-brgl@bgdev.pl> <sq7527p1-9218-r845-605n-2p419s2650s5@onlyvoer.pbz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -75,33 +92,22 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-On Wed, 30 Apr 2025, Bartosz Golaszewski wrote:
+On Wed, 30 Apr 2025, Nicolas Pitre wrote:
 
-> From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> On Wed, 30 Apr 2025, Bartosz Golaszewski wrote:
 > 
-> Add new dynamically generated headers to the local .gitignore.
+> > From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> > 
+> > Add new dynamically generated headers to the local .gitignore.
+> > 
+> > Fixes: b11a041179e7 ("vt: introduce gen_ucs_width_table.py to create ucs_width_table.h")
+> > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 > 
-> Fixes: b11a041179e7 ("vt: introduce gen_ucs_width_table.py to create ucs_width_table.h")
-> Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+> Reviewed-by: Nicolas Pitre <npitre@baylibre.com>
 
-Reviewed-by: Nicolas Pitre <npitre@baylibre.com>
+Actually, the fixed commit should be the one titled `vt: move UCS tables 
+to the "shipped" form`. And, unless Greg pushes the revert of the 
+initial series upstream, the commit hash is likely to change too.
 
 
-> ---
->  drivers/tty/vt/.gitignore | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
-> index 0221709b177d..49ce44edad65 100644
-> --- a/drivers/tty/vt/.gitignore
-> +++ b/drivers/tty/vt/.gitignore
-> @@ -2,3 +2,5 @@
->  /conmakehash
->  /consolemap_deftbl.c
->  /defkeymap.c
-> +/ucs_recompose_table.h
-> +/ucs_width_table.h
-> -- 
-> 2.45.2
-> 
-> 
+Nicolas
