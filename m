@@ -1,131 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A29226139A;
-	Wed, 30 Apr 2025 12:06:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A312192F8
+	for <linux-serial@vger.kernel.org>; Wed, 30 Apr 2025 12:29:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746014811; cv=none; b=aqP6kdf2Iu9FUOUsTiZi+zDmAalLQOkdhi9IYwNjkqZVzyFE+o0cAla3s5hJkMtoYA18PQAcRWzSH2YxQF5Ss2tnU1ifHdhT1Q65OrS9JfKbrD5xNW3LigkeD/FY4/sg1Qkq1eeLfF3xWYsnmepIdtduPkyhgRrrFus1uIgERKA=
+	t=1746016165; cv=none; b=MWyKO/JMKhYlDRDHHn4nL1302RkUr/GhXGj7BNuteZK7e7K6ZmCuOF2voBc6scOyppmOzZYuD/3llm3gvII2EE+8q/kaVw4Ib1kzjQhS14JDvs4lej290BQMztTBWqjbFtTF5rWumQmLMlCIjCl8YYHwBAPnbr8xlbhm+TYV1DE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746014811; c=relaxed/simple;
-	bh=RL/8XTQxUPcBIYY01+9ALkEe5daMAevNC3FTDM2eoLE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P7Kf7zuVxuhAsDKRwS+0fu5T0RFcuriSF1JN5zWPb7A8lpPMLVHhwhYjT04CCZ99l5eydnKj0cmGysBmwYILbEb7cFK5APLBJh/cj53aAiIsuJRYXZrN4Q2geLgIcDwBWduYBMf8l6oylK2mHgGJUm49WYM4zjsK3X/nSSJOp+E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=WEKM5o9R; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746016165; c=relaxed/simple;
+	bh=65YaHnPW1syjynifrJVzhjCU7krexJAzh8rYWDgDGYg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mASP+vrk8fOClsXXCknxigj2Gazopnfu7UHYocKqY2QZQDTDZFrEV+2zR0eq0yoEjckWPrY0dU/hyO/n/aHC2nSCJei04Eem3PnDmaphfVxjY3D+D7I1/+VfEAOqvYwem+5HWILduAVp6WVQt2zQYBK+4eIB5KIbn9KK6zr2EPk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=t/f3CgWJ; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="WEKM5o9R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04B8EC4CEE9;
-	Wed, 30 Apr 2025 12:06:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1746014811;
-	bh=RL/8XTQxUPcBIYY01+9ALkEe5daMAevNC3FTDM2eoLE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WEKM5o9RqtjECWTJw91jObFoiWD/O7HUBaybfAyTUp1Jy6U8b6ZRrqSGtUfQSLAAH
-	 o5l/N9m8MC4/QvRQT26NjRhvrp86l1YMqAUVTkqfWIYa7TnknTjr5W//3rQdfvXdS0
-	 mT3ZTk4ZKFyL7OrutPujsZf1iVfymc0Kfkia2SXU=
-Date: Wed, 30 Apr 2025 13:40:17 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Xin Chen <quic_cxin@quicinc.com>
-Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	liulzhao@qti.qualcomm.com, quic_chejiang@quicinc.com,
-	zaiyongc@qti.qualcomm.com, quic_zijuhu@quicinc.com,
-	quic_mohamull@quicinc.com,
-	Panicker Harish <quic_pharish@quicinc.com>
-Subject: Re: [PATCH v1] tty: serdev: serdev-ttyport: Fix use-after-free in
- ttyport_close() due to uninitialized serport->tty
-Message-ID: <2025043022-rumbling-guy-26fb@gregkh>
-References: <20250430111617.1151390-1-quic_cxin@quicinc.com>
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="t/f3CgWJ"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-43edecbfb94so65895085e9.1
+        for <linux-serial@vger.kernel.org>; Wed, 30 Apr 2025 05:29:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1746016160; x=1746620960; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=4Hin90Q/qlFrY1uw8hPFIj/AZ5kwtshzSEzUknrcF5Y=;
+        b=t/f3CgWJYostu1N+d1eN/RuSZX4U6Y1tAYQdRcjwhmew9I0Rey/2JjdpyJEkP3MhUE
+         tu6GM9eXXjCy1GOjMKDSThxJGtcKXmzU+E068WcrZOUMZKtTsC7TWF8hA3v9gx2AYQwD
+         M6xee8MgTN4dY8TBTIIuFC5fN0c2hXbPur21veWq9ey4C8ndaQylNxDxQ+nAU/4XhdYm
+         Mis7kwVzZTjJHZ9uwOT3o1tVxIW1ILF1/+F2Q0i8W6RES8t9OOSruN/VifGFAL3GFMoH
+         Lm+GkbW1gyL38w2Mp6u2P2JTqe/ZpE3DOndjQsWo43D3edw63OJs889Us9qfgYMALMgV
+         uULw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746016160; x=1746620960;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4Hin90Q/qlFrY1uw8hPFIj/AZ5kwtshzSEzUknrcF5Y=;
+        b=rCqNoatbCM4c5IlnkmmKZSVHsBgnwG7t48QTFpfSkiMiH3HNXTnh00RkJeX/kHLAsX
+         XsTAwIcFw4Z17HVVrpy37Dp0VTSDa5192jkemfmsKbmHKOiO+5Cy57JOC7NcsnB1nEih
+         WiQoW1My8KUb1PUQNcs7MwSKK68mCC/5o3XVE70yvY5xOjUsbLP+0jCkptda5AeULlCC
+         sCLkgrBA1uUsPLwjS4fmGG1LOC9KkKaEc2RM/F44YgV/iuopYrxMsCDmLA0jf05OyYHz
+         5JEBGe4C6HDvEhRFacNB0OyzO2qoW0TM24kLVfUsNXUuNuTkSoocDNvX/8Dep4PHMZma
+         CqKg==
+X-Forwarded-Encrypted: i=1; AJvYcCVRL4v65lcukvXxu5rdfGPoPuNHV5KcWyeyAGoCGPiGRobqgYTt3nj6RBHk3w9M83Cl74OxlFxTW8wK4Sg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwiGLW3/fHJOn/f5cGCs5JkZAmtoKdDFuJRhifAfl9cWJDtRKnS
+	bOdbm2h9ajzhzw5YumR9vuqYVP3O2P8KKWrjaguhyZsQt2Izp1cR4uqooYvb+iVr/dK/bbjQlVI
+	0i8I=
+X-Gm-Gg: ASbGncvSsjIb8Dw6HofOe8YvqalbgdG14TEtav8HhKdJUD4wYREHxHw4Cvv7YydEcPI
+	n09M3T44o3cG5JTzps+jlGIEuohYBHdbP/TjZ2D49pB8O+DYTi+cDcVWtcVPkO1vAIsaYqtRCXC
+	VPBOJnAk/C7mAbOPSG3MZKw1yD5Jo2hPPwaVPwbFQ990xPqfi1ZKsb9vVIJkAxs5Yuc7AumRfNM
+	6MoVeESKyMcTqe/EWnN78D6jJYoOnLRNqlbnQEzo34F0y8Xie3pEWBvZENFA8N90cEZD0Omvsrr
+	9JquDjfFtrZzisZoyAN7Q6Pyo5N8p4/Qr/t7KiSfjg==
+X-Google-Smtp-Source: AGHT+IEcVop7LCHK+PW7qs+wyQUaCY++bj3vcdHwg7JuOrBDny/qNmv6fx8+wazaQUivLi52v9gpWg==
+X-Received: by 2002:a05:600c:4703:b0:43d:160:cd9e with SMTP id 5b1f17b1804b1-441b1f3aa00mr28328895e9.17.1746016160460;
+        Wed, 30 Apr 2025 05:29:20 -0700 (PDT)
+Received: from brgl-uxlite.home ([2a01:cb1d:dc:7e00:6298:7254:d3df:f23e])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-441b2bbf046sm22914175e9.35.2025.04.30.05.29.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Apr 2025 05:29:20 -0700 (PDT)
+From: Bartosz Golaszewski <brgl@bgdev.pl>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+	Nicolas Pitre <npitre@baylibre.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] vt: add new dynamically generated files to .gitignore
+Date: Wed, 30 Apr 2025 14:29:17 +0200
+Message-ID: <20250430122917.72105-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250430111617.1151390-1-quic_cxin@quicinc.com>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 30, 2025 at 07:16:17PM +0800, Xin Chen wrote:
-> When ttyport_open() fails to initialize a tty device, serport->tty is not
-> set to NULL, leading to a use-after-free scenario in ttyport_close().
-> 
-> To fix this, initialize serport->tty to NULL upon failure and check its
-> value before reading.
-> 
-> Call trace1:
-> release_tty
-> tty_init_dev
-> ttyport_open
-> serdev_device_open
-> qca_setup[hci_uart]
-> hci_uart_setup[hci_uart]
-> hci_dev_open_sync[bluetooth]
-> hci_dev_do_open[bluetooth]
-> hci_dev_open[bluetooth]
-> hci_sock_bind[bluetooth]
-> 
-> Call trace2:
-> refcount_warn_saturate
-> tty_lock
-> ttyport_close
-> serdev_device_close
-> hci_uart_close[hci_uart]
-> hci_dev_open_sync[bluetooth]
-> hci_dev_do_open[bluetooth]
-> hci_dev_open[bluetooth]
-> hci_sock_bind[bluetooth]
-> 
-> Co-developed-by: Panicker Harish <quic_pharish@quicinc.com>
-> Signed-off-by: Panicker Harish <quic_pharish@quicinc.com>
-> Signed-off-by: Xin Chen <quic_cxin@quicinc.com>
-> ---
->  drivers/tty/serdev/serdev-ttyport.c | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/tty/serdev/serdev-ttyport.c b/drivers/tty/serdev/serdev-ttyport.c
-> index 3d7ae7fa5018..287908f2009b 100644
-> --- a/drivers/tty/serdev/serdev-ttyport.c
-> +++ b/drivers/tty/serdev/serdev-ttyport.c
-> @@ -88,6 +88,10 @@ static void ttyport_write_flush(struct serdev_controller *ctrl)
->  {
->  	struct serport *serport = serdev_controller_get_drvdata(ctrl);
->  	struct tty_struct *tty = serport->tty;
-> +	if (!tty) {
-> +		dev_err(&ctrl->dev, "tty is null\n");
-> +		return;
-> +	}
+From: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
 
-What prevents tty from going NULL right after you just checked this?
+Add new dynamically generated headers to the local .gitignore.
 
-And why print out that message, what can userspace do with it?
+Fixes: b11a041179e7 ("vt: introduce gen_ucs_width_table.py to create ucs_width_table.h")
+Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+---
+ drivers/tty/vt/.gitignore | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> 
->  	tty_driver_flush_buffer(tty);
->  }
-> @@ -108,8 +112,10 @@ static int ttyport_open(struct serdev_controller *ctrl)
->  	int ret;
-> 
->  	tty = tty_init_dev(serport->tty_drv, serport->tty_idx);
-> -	if (IS_ERR(tty))
-> +	if (IS_ERR(tty)) {
-> +		serport->tty = NULL;
->  		return PTR_ERR(tty);
-> +	}
->  	serport->tty = tty;
-> 
->  	if (!tty->ops->open || !tty->ops->close) {
-> @@ -156,6 +162,11 @@ static void ttyport_close(struct serdev_controller *ctrl)
-> 
->  	clear_bit(SERPORT_ACTIVE, &serport->flags);
-> 
-> +	if (!tty) {
-> +		dev_err(&ctrl->dev, "tty is null\n");
-> +		return;
-> +	}
+diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
+index 0221709b177d..49ce44edad65 100644
+--- a/drivers/tty/vt/.gitignore
++++ b/drivers/tty/vt/.gitignore
+@@ -2,3 +2,5 @@
+ /conmakehash
+ /consolemap_deftbl.c
+ /defkeymap.c
++/ucs_recompose_table.h
++/ucs_width_table.h
+-- 
+2.45.2
 
-Again, what prevents it from changing right after you just checked it?
-
-thanks,
-
-greg k-h
