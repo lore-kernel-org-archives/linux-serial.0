@@ -1,208 +1,221 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A013527718;
-	Fri,  2 May 2025 03:49:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBDC9158DA3
+	for <linux-serial@vger.kernel.org>; Fri,  2 May 2025 05:38:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746157798; cv=none; b=nhWljYYbSFxsk1kAUXRUxAfmWOpjfefNcZPlv/0/hDHlHnMV0epR3JSXE/wlFmfXXqkh/5fco3GzJBwUBWiZgycQpfK5WFyH8t9YK89N0mb3TDkEQekCtNgMMuFFM4IkodY0ehiIeju3rvUXp17OGDRVOdOO9KQym2COZT+0GLQ=
+	t=1746164284; cv=none; b=VWZwksA7JWjcEONCNirIlWyIxHVZSdjqtcpTd5ngwT5v0PLgMtzwJj/eXSSap1aTIKLnd8c+8//VjjoUocloD1eLzdCAubEki5uzaA0ViLl2XwrsJzp5nGPsS0JIvX7A5fIL0B0grPp83gl0P5yZ2ZxxK+T22W8cE6zaXOMOpDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746157798; c=relaxed/simple;
-	bh=U5mdhGYsJQIu31ah8zFEE1prb3PTq8AzmT9FnTheryc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=WnnER7C5wKiIHGZXmq5DqDa+nLiiQFZK6JP9+KMV5ZClqUtYBXrqNaec0x6EdGhDGxgX0/+u9r50Jo5kV8W2DrzthQlQGKg4uXWacF6TfEKDjqKMkyR/daj26yei13FIf8vdABoOUigltWCnm44IMWviPar4hcIYvHDkoSS+rBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=J2+h4eJp; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1746164284; c=relaxed/simple;
+	bh=N/Fwk495kD9mepOgV0IPLwaThwSJRDLJnhumIXeiRno=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=a3EtsVXLCo3uAQ9IUmvVEC3inrXwegKmqTgvQrC6J3TE7XWTGkoAgNy+NWEHaGWBjA94GV1Qd22XPpzW9kD9ADfg78gUvr+My4WVV+3oNEtH33ibl4/xUjhYihY9s2sksK1nlTNZMPQvn+dyhYcqABUu8nUxqlbF3N8SPKc2v1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=kH6QIXCx; arc=none smtp.client-ip=209.85.216.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="J2+h4eJp"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5421MvsN001947;
-	Fri, 2 May 2025 03:49:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	8aIn+HhV0I+UOqU2s77LSnK4rEAaF/YhK6sj5oV1cl4=; b=J2+h4eJpvRYGzO7e
-	iERM1hAZT85zLkLdfJQODWCDkBf63UG1AUC8HG7RK+O5UhqUK/fCjSmCOzufUpea
-	LlwFQHFcRllvbq3vfbPlDCDi2FdBIfkoIjnh11HrMVl+/Y9QOm+tqtECEnmnSwuQ
-	oPT02WvE18jDW3aqRYphSM5EeTUaR50f196izV/hAeWY/1vGRJoLq6UhhkZcchL8
-	8mL6qHddxJpOqW9no7Ja7okt7XELeTbEyvHw6t5OE3o4W4kqOE34JurpgetgkNc5
-	5iMPIgcL/ux1Qfaaoo3q6EJchtmSehbIOdMKD9GBqViqMdOUXi052Mm+NqXwqIMP
-	Y1MdUA==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46b6u7771a-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 02 May 2025 03:49:51 +0000 (GMT)
-Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5423npWo026585
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 2 May 2025 03:49:51 GMT
-Received: from [10.110.24.115] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 1 May 2025
- 20:49:50 -0700
-Message-ID: <d7c53dac-790a-490f-b757-fa2bc86b5276@quicinc.com>
-Date: Thu, 1 May 2025 20:49:49 -0700
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="kH6QIXCx"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-309fac646adso2653700a91.1
+        for <linux-serial@vger.kernel.org>; Thu, 01 May 2025 22:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1746164281; x=1746769081; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YaX+qGxsFULZ7aFPA9lXuC3vgye3yN1BRqF93u06YOM=;
+        b=kH6QIXCxDGDbgypMyPjky0LYSk1QUTu0nprBfhSuqcgoy4ZHqMOIe66zMNqVGBSrpO
+         D0w6k5Jflw40imWBOas27XH0LKJI8dXWN5fVShJ5unpfVGMqAPYCLmF1d2p/YhXQyx+N
+         iL+C7jSY/KbI60dOwiXWP8QGTj43Sx5zZqJCMcfP4dMP+sggypKexSVMQ3v+Jkd4E8qW
+         72JdoBxWY7h74zqS6Ihu2hnHeWoKwfEH4BGlZ55rtFEF5ncGqpTI6H2Q4mGjxFeAQ2/N
+         aqpeP6J7XZm9y1Cy0StSJUZZZ5vLY2go6ZiVipRzBBf3bLC9Enw6QlbTSpv/GT/Zr8Wi
+         4oRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746164281; x=1746769081;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YaX+qGxsFULZ7aFPA9lXuC3vgye3yN1BRqF93u06YOM=;
+        b=rcwi/b5LR7qUNncqRIWD+R+HkLBwHlMHxsQh2Yn3w3cect0ynMt8rjY6kHYB27MuUY
+         92vR4ODaim/Agu8HQFrQ+VXkhOSv/4fx9kcCp0LiwOVEc2aLGCVGXxQAQV4tTGtWVvkl
+         CUJrgnVDsrXV5lBMvEoJEKT8dcsLuaeEQxDtz1TH4bngdUKr0/gvIcMx27hhV9DNt5e2
+         u5nJ/DVPPoKU+N1k9rEVsw1YWgy5KAmd9xc3wc5WoXShFgdj+DE8VcjHqr0rvArm8pa+
+         7Z50ZN8Dop2Fji4WZ7so1d4pkLq/uiqf4ZoCU9XOK0amzTA/aItLUIuLF6MRYr+JTjOr
+         MbNQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW/viaEJrzVMafNkxIJ16EcArWRSKzXDQ6dRlkC6PCnz+BQ4r7MNB5p+2hTwyTVVHup/+JwLcH+4g8mSzc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxQ8Jz8D8tWZENCvQesudW8QP3J3bXBZ+EVyjCUtujhQ97qZwVg
+	QzWi+4Ct2tLBcsr+viL3/GHygAL/giIj92NSi390FnO5RoXa2MLjYPV7FRPj5Pg=
+X-Gm-Gg: ASbGncsaOAmxg07z4iYCLMLKdCTz1g3SbxFoFx2ZAVmVQm7mGlQEiIbCpFvS7yrcr14
+	FZdQwl8kIG55CZgr3jH5faxXhkeM/ICTk8de9h5+MkM3vain13RWWmZD1xiPX2/u49PR9QxVueR
+	R9FmrCtyaRLT0KymNOfyK+567w1CmrV3xcu0Kg+lyl13INGy6K62J2TZ082PQmdByKnp34WFOFo
+	JAKcZ/PF5TMwRUnUpH1/sG1lfb8vk/FyqubhpX2yWbcNNwhXs+RQyjpdVgimFPnw1if9+HQpSW+
+	sYL3RaY10oyPyfafWzQ/Thf945f0wZ/FOV7ySOWZPQ==
+X-Google-Smtp-Source: AGHT+IHL3pc4Gg50CajefQDLcK4ACzy8Pdk2nQi1FceIxJmjgGkFLMkDvveyaUAdVzjKAu9GfP26qw==
+X-Received: by 2002:a17:90b:544c:b0:2fa:3174:e344 with SMTP id 98e67ed59e1d1-30a42fd0638mr7349801a91.14.1746164281091;
+        Thu, 01 May 2025 22:38:01 -0700 (PDT)
+Received: from localhost ([122.172.83.32])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-30a34778329sm4692345a91.28.2025.05.01.22.38.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 May 2025 22:38:00 -0700 (PDT)
+Date: Fri, 2 May 2025 11:07:58 +0530
+From: Viresh Kumar <viresh.kumar@linaro.org>
+To: Praveen Talari <quic_ptalari@quicinc.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Viresh Kumar <vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-pm@vger.kernel.org, psodagud@quicinc.com, djaggi@quicinc.com,
+	quic_msavaliy@quicinc.com, quic_vtanuku@quicinc.com,
+	quic_arandive@quicinc.com, quic_mnaresh@quicinc.com,
+	quic_shazhuss@quicinc.com
+Subject: Re: [PATCH v3 1/9] opp: add new helper API dev_pm_opp_set_level()
+Message-ID: <20250502053758.utawzhq6famwenc2@vireshk-i7>
+References: <20250502031018.1292-1-quic_ptalari@quicinc.com>
+ <20250502031018.1292-2-quic_ptalari@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/9] dt-bindings: serial: describe SA8255p
-To: Praveen Talari <quic_ptalari@quicinc.com>,
-        Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio
-	<konradybcio@kernel.org>,
-        Viresh Kumar <vireshk@kernel.org>, Nishanth Menon
-	<nm@ti.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "Rafael J. Wysocki"
-	<rafael@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>
-CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>,
-        Nikunj Kela
-	<quic_nkela@quicinc.com>
-References: <20250502031018.1292-1-quic_ptalari@quicinc.com>
- <20250502031018.1292-3-quic_ptalari@quicinc.com>
-Content-Language: en-US
-From: Trilok Soni <quic_tsoni@quicinc.com>
-In-Reply-To: <20250502031018.1292-3-quic_ptalari@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTAyMDAyNiBTYWx0ZWRfXxQtudpHRtV6Z NMesxL05INmoHCNBtBocmmmOi/PvKeRLaEUr/FGPHJSx+8ty7qdmBpCWkP09klyS9A4UtstyLSN HZiefs1H8B/0MtGmZ/zypGJo8myeg0jcmE7pcpiLPa6if4A4eFj1zmxKhZefHspw/r1P9idi4I8
- B5GpgauU78RfOyejBUMtVHptoiufkX0pWdxngR6Ay8gpFPnfpwGEbev4La4lNOyafK5v08ZUD9+ G30oK/2b438q+2f+z11Q4kYAqsEjuoWPr7k2OkeHgWswxgTBKNwNKD2v+wiGJq3/Nsg/K00gMCa 7tRKwZ7N2vjnaQD7cq5kUYa0wCkx/7Ivi+AL4wLx3dPglclMJoaIaJ2pRD+B1BGUm4N7QA8rV9k
- Wck+k5vMG81hgTv7t9vsTmr0UzKRk/FwVWXO3DEaXuYhSQmSN2gDxCoXhOhLv2lONl2bAQyw
-X-Proofpoint-GUID: z9yNTtQf08yRmmdQ-iyaXiJIvG2XhYYt
-X-Authority-Analysis: v=2.4 cv=W404VQWk c=1 sm=1 tr=0 ts=681440df cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10 a=gEfo2CItAAAA:8 a=COk6AnOGAAAA:8 a=i1IpkjnnKvMeRn0L5gEA:9
- a=QEXdDO2ut3YA:10 a=sptkURWiP4Gy88Gu7hUp:22 a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-ORIG-GUID: z9yNTtQf08yRmmdQ-iyaXiJIvG2XhYYt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-05-01_06,2025-04-24_02,2025-02-21_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- lowpriorityscore=0 priorityscore=1501 mlxscore=0 bulkscore=0 spamscore=0
- clxscore=1015 phishscore=0 impostorscore=0 mlxlogscore=999 malwarescore=0
- suspectscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
- definitions=main-2505020026
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250502031018.1292-2-quic_ptalari@quicinc.com>
 
-On 5/1/2025 8:10 PM, Praveen Talari wrote:
-> From: Nikunj Kela <quic_nkela@quicinc.com>
+On 02-05-25, 08:40, Praveen Talari wrote:
+> To configure a device to a specific performance level, consumer drivers
+> currently need to determine the OPP based on the exact level and then
+> set it, resulting in code duplication across drivers.
 > 
-> SA8255p platform abstracts resources such as clocks, interconnect and
-> GPIO pins configuration in Firmware. SCMI power and perf protocols are
-> used to send request for resource configurations.
+> The new helper API, dev_pm_opp_set_level(), addresses this issue by
+> providing a streamlined method for consumer drivers to find and set the
+> OPP based on the desired performance level, thereby eliminating
+> redundancy.
 > 
-> Add DT bindings for the QUP GENI UART controller on sa8255p platform.
-> 
-> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
-> Co-developed-by: Praveen Talari <quic_ptalari@quicinc.com>
 > Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
 > 
 > v2 -> v3
-> - dropped description for interrupt-names
-> - rebased reg property order in required option
+> - moved function defination to pm_opp.h from core.c with inline
+> - updated return value with IS_ERR(opp)
 > 
 > v1 -> v2
 > - reorder sequence of tags in commit text
-> - moved reg property after compatible field
-> - added interrupt-names property
 
-Please fix all the patches. 
+As Trilok mentioned, this is not the right place for this.
 
 > ---
->  .../serial/qcom,sa8255p-geni-uart.yaml        | 64 +++++++++++++++++++
->  1 file changed, 64 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
+>  include/linux/pm_opp.h | 27 +++++++++++++++++++++++++++
+>  1 file changed, 27 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml b/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
-> new file mode 100644
-> index 000000000000..85b1d7c05079
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
-> @@ -0,0 +1,64 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/qcom,sa8255p-geni-uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> diff --git a/include/linux/pm_opp.h b/include/linux/pm_opp.h
+> index e7b5c602c92f..31ed8a7b554e 100644
+> --- a/include/linux/pm_opp.h
+> +++ b/include/linux/pm_opp.h
+> @@ -197,6 +197,28 @@ int dev_pm_opp_get_sharing_cpus(struct device *cpu_dev, struct cpumask *cpumask)
+>  void dev_pm_opp_remove_table(struct device *dev);
+>  void dev_pm_opp_cpumask_remove_table(const struct cpumask *cpumask);
+>  int dev_pm_opp_sync_regulators(struct device *dev);
 > +
-> +title: Qualcomm Geni based QUP UART interface
-> +
-> +maintainers:
-> +  - Praveen Talari <quic_ptalari@quicinc.com>
-> +
-> +allOf:
-> +  - $ref: /schemas/serial/serial.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - qcom,sa8255p-geni-uart
-> +      - qcom,sa8255p-geni-debug-uart
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    items:
-> +      - description: UART core irq
-> +      - description: Wakeup irq (RX GPIO)
-> +
-> +  interrupt-names:
-> +    items:
-> +      - const: uart
-> +      - const: wakeup
-> +
-> +  power-domains:
-> +    minItems: 2
-> +    maxItems: 2
-> +
-> +  power-domain-names:
-> +    items:
-> +      - const: power
-> +      - const: perf
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - power-domains
-> +  - power-domain-names
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    serial@990000 {
-> +        compatible = "qcom,sa8255p-geni-uart";
-> +        reg = <0x990000 0x4000>;
-> +        interrupts = <GIC_SPI 531 IRQ_TYPE_LEVEL_HIGH>;
-> +        power-domains = <&scmi0_pd 0>, <&scmi0_dvfs 0>;
-> +        power-domain-names = "power", "perf";
-> +    };
-> +...
+> +/*
+> + * dev_pm_opp_set_level() - Configure device for a level
+> + * @dev: device for which we do this operation
+> + * @level: level to set to
+> + *
+> + * Return: 0 on success, a non-zero value if there is an error otherwise.
+> + */
 
+No need of these for simple wrappers.
+
+> +static inline int dev_pm_opp_set_level(struct device *dev, unsigned int level)
+> +{
+> +	struct dev_pm_opp *opp = dev_pm_opp_find_level_exact(dev, level);
+> +	int ret;
+> +
+> +	if (IS_ERR(opp))
+> +		return IS_ERR(opp);
+
+IS_ERR is wrong here, should be PTR_ERR.
+
+> +
+> +	ret = dev_pm_opp_set_opp(dev, opp);
+> +	dev_pm_opp_put(opp);
+> +
+> +	return ret;
+> +}
+> +
+>  #else
+>  static inline struct opp_table *dev_pm_opp_get_opp_table(struct device *dev)
+>  {
+> @@ -461,6 +483,11 @@ static inline int dev_pm_opp_sync_regulators(struct device *dev)
+>  	return -EOPNOTSUPP;
+>  }
+>  
+> +static inline int dev_pm_opp_set_level(struct device *dev, unsigned int level)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+
+No need of these too for such wrappers. And then this isn't rebased
+over latest changes in the OPP core.
+
+I modified it and applied the below version to my tree now.
 
 -- 
----Trilok Soni
+viresh
+
+Author: Praveen Talari <quic_ptalari@quicinc.com>
+Date:   Fri May 2 10:58:22 2025 +0530
+
+    OPP: Add dev_pm_opp_set_level()
+
+    To configure a device to a specific performance level, consumer drivers
+    currently need to determine the OPP based on the exact level and then
+    set it, resulting in code duplication across drivers.
+
+    The new helper API, dev_pm_opp_set_level(), addresses this issue by
+    providing a streamlined method for consumer drivers to find and set the
+    OPP based on the desired performance level, thereby eliminating
+    redundancy.
+
+    Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
+    [ Viresh: Lot of fixes in the code, and rebased over latest changes.
+               Fixed commit log too. ]
+    Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+---
+ include/linux/pm_opp.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/include/linux/pm_opp.h b/include/linux/pm_opp.h
+index 8313ed981535..cf477beae4bb 100644
+--- a/include/linux/pm_opp.h
++++ b/include/linux/pm_opp.h
+@@ -197,6 +197,7 @@ int dev_pm_opp_get_sharing_cpus(struct device *cpu_dev, struct cpumask *cpumask)
+ void dev_pm_opp_remove_table(struct device *dev);
+ void dev_pm_opp_cpumask_remove_table(const struct cpumask *cpumask);
+ int dev_pm_opp_sync_regulators(struct device *dev);
++
+ #else
+ static inline struct opp_table *dev_pm_opp_get_opp_table(struct device *dev)
+ {
+@@ -717,4 +718,14 @@ static inline unsigned long dev_pm_opp_get_freq(struct dev_pm_opp *opp)
+        return dev_pm_opp_get_freq_indexed(opp, 0);
+ }
+
++static inline int dev_pm_opp_set_level(struct device *dev, unsigned int level)
++{
++       struct dev_pm_opp *opp __free(put_opp) = dev_pm_opp_find_level_exact(dev, level);
++
++       if (IS_ERR(opp))
++               return PTR_ERR(opp);
++
++       return dev_pm_opp_set_opp(dev, opp);
++}
++
+ #endif         /* __LINUX_OPP_H__ */
