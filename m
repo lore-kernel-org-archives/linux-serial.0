@@ -1,104 +1,120 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA801E47A8;
-	Fri,  2 May 2025 09:51:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 149BC82D98;
+	Fri,  2 May 2025 14:02:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746179485; cv=none; b=SYdfKjeepab7Hol6WI8tda8FYMGSVPTSpp6faHD8XWRZEZZIZ4YnjUweJGa9zJvXxaxaZfAxxWMSGbJ378AZGnuIV6saLHHK6GUirXBOBzmzFpsrQ5tRh/seZCJaz23ocMnPTXko7ahcm85fkDVrYxxpKnrwmTMyyBWbOI30470=
+	t=1746194528; cv=none; b=HqqGTv+C8Mgo6QnXdRKYTLtDIDClz5ufQZWdOpuiQkih+yh6Q1qzJpxEkpzOcou2IdhPeID362WLWPuNNIXHBkIE/5Fy3TWkON8xiemQeb4xCxOB5dx/LImPwOefT1ruQPjd/gfY+msVyBC3ixY7TwXpE8HyUOGh7pBkiHYp9do=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746179485; c=relaxed/simple;
-	bh=rz+pku6fFVNGDWSjBpK/e58/3Yur8CiXbKPaTU2oPoc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IaqI8wUzw6Ynyek0060C90v3gvGr+RDCylxW1lHIe5a5eOArctyw7Yg8IFCp6g+Nw+XG6uMu0XS2tq0UnaWVarhIDjRFBZzGBKIVchLYLEwqfPudimXXlrRTajzEa7Vh8tRLqnIGQK2uSNdNeaJ9BdjxbhiEZDSZexTesn/9SK4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fSzZNp6L; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1746194528; c=relaxed/simple;
+	bh=grOM45npovMq4poufilpVNpeYgGq5makAUaqB0FVEkI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=EEKysUdphL0OjGy7PetT3J+nyDeHMw89Gkhw1tgilwNs8NtrXU1mo+avGTVpyyWflAOd7g3D+0UoLLJeLgYYNeLloz/gmmqabMJkDGlKzQDkmln7TAWut1qaUvNGAGcRApXOgtgNOKk8UzvD5e3CyzISz9A5WoCz2L9t0NpZbXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Fj4Cqql7; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fSzZNp6L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1746179483; x=1777715483;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rz+pku6fFVNGDWSjBpK/e58/3Yur8CiXbKPaTU2oPoc=;
-  b=fSzZNp6LBtmGhZE2Tw1RxNeSkgI3W7EhO8UTRHvNiggy1JZ364gjUxg/
-   FFmZVJgJ60iqORv/kk7Bpwf9fJUsX8zCMzsYatZ5/kphcrJe5629gta4q
-   CEUbK+ldiFFTCxFDABSpoSGxIcmtN7U7igjLY0ihfPgKOB26Ct0e86y6v
-   pZjVdkgROGsliwaKO5T27AiF1mmFvwFoXa70OMKhNeUdImVYAlCwDqLkX
-   EBdT8He6nm0x20lTVsGY7CpM9sTgeZJeZEynpV1eashWHHUF3muVDriuK
-   9M5eQDYS/KRWqXhyJwtD8rMGwM6BQaJ/wNZ1XqF/p4cKPGpBP591BqGuG
-   w==;
-X-CSE-ConnectionGUID: G7doo2ZBRw63EA3QEeHSZw==
-X-CSE-MsgGUID: sqHyzFJFRK+mcApdThtAlA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11420"; a="65390983"
-X-IronPort-AV: E=Sophos;i="6.15,256,1739865600"; 
-   d="scan'208";a="65390983"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2025 02:51:23 -0700
-X-CSE-ConnectionGUID: QWSz0uvJRK6SZyxAkMWHtg==
-X-CSE-MsgGUID: q6Hsr9EZSySoxE4RUSqrDg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,256,1739865600"; 
-   d="scan'208";a="139780542"
-Received: from smile.fi.intel.com ([10.237.72.55])
-  by orviesa005.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2025 02:51:20 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1uAn37-000000029RW-2ltu;
-	Fri, 02 May 2025 12:51:17 +0300
-Date: Fri, 2 May 2025 12:51:17 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Judith Mendez <jm@ti.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Hari Nagalla <hnagalla@ti.com>
-Subject: Re: [PATCH RFC 0/2] Introduce PRU UART driver
-Message-ID: <aBSVld3HKL_M1agq@smile.fi.intel.com>
-References: <20250501003113.1609342-1-jm@ti.com>
- <2025050103-graduate-anteater-e6f6@gregkh>
- <406ae5d2-9a4a-47be-9663-d746d9661f1f@ti.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Fj4Cqql7"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 542DkCkK009017;
+	Fri, 2 May 2025 14:02:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	cpSw/BCKKfUOiK0e2lEfi+/V9bSozootwS0N2z7tERM=; b=Fj4Cqql7W0/Ut78o
+	mUks0Q+mC4iU/7GsvI2xSp2Zm0jcYuAWUCqBi9Pz9IlM84o7oFNW+s2YI+WdeBJC
+	n7mUtSZLWsRIKeUMk61tlZqGBvsKYJNz/lrs5br1EdTEZnWSItF7g/cBY/wOJIPy
+	196KfB5Z6qUjiRL7i/1Gr2/liMSNtywkCT4btTZm4c7T0k8oEghdlzo3huR6FAwW
+	mrA1RZcHy6J3jf5v/6LTIhJ2u347GZTjhP8240L6H/tc90YIQ5RD+oEkHcDuS9fU
+	f3auQIZUS86oKJENftqaANi1HzIc4qS2CQS7EhJDrLBJhYxPTB8ULpng84AozIiG
+	9YlUog==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46b6ubrj4f-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 02 May 2025 14:02:01 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 542E20UQ025639
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 2 May 2025 14:02:00 GMT
+Received: from [10.216.18.87] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Fri, 2 May 2025
+ 07:01:53 -0700
+Message-ID: <e1b2029b-2461-4cfc-a6b3-acdf5e01c289@quicinc.com>
+Date: Fri, 2 May 2025 19:31:50 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <406ae5d2-9a4a-47be-9663-d746d9661f1f@ti.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/9] opp: add new helper API dev_pm_opp_set_level()
+To: Viresh Kumar <viresh.kumar@linaro.org>
+CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Viresh Kumar
+	<vireshk@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Stephen Boyd
+	<sboyd@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <psodagud@quicinc.com>,
+        <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
+References: <20250502031018.1292-1-quic_ptalari@quicinc.com>
+ <20250502031018.1292-2-quic_ptalari@quicinc.com>
+ <20250502053758.utawzhq6famwenc2@vireshk-i7>
+ <8ba02745-378b-4264-883a-b99764701d0b@quicinc.com>
+ <20250502081402.yjagnnjrfva7u4cb@vireshk-i7>
+Content-Language: en-US
+From: Praveen Talari <quic_ptalari@quicinc.com>
+In-Reply-To: <20250502081402.yjagnnjrfva7u4cb@vireshk-i7>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: ZB74ue-52bsz2Kh-vaA667cgtCjQSJlf
+X-Authority-Analysis: v=2.4 cv=bsxMBFai c=1 sm=1 tr=0 ts=6814d059 cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10 a=6I9h5v2Uro45NzvC834A:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTAyMDExMCBTYWx0ZWRfX3cCWW6G1+ejf /afaQX/UcoruQjgvPpgOQ0G+3kpBXqenHO2kf7MJXCRxDxswctJtUy/DVKwGgaTd7ZAtQQ7OARa wWi0JJCx0V8WzwYySN5L9jNIbRNwNxkLV0NuteVRCUCPhppjUfcADnpqnRiRNEu3hntVnQJ3XUQ
+ Z7bTiYRn2Ql5WyCcFdy0GrI4am0Ls99iXAWz+sT8lkFZsObx1LSxCVq0il2Ihk06ADXK3uGSM+I gCtgbUAYAzJQ6aLdZ37E95uL+xZt3ym1lJUnHrgFEQOm6jk7PCRWKD0H2Ag7/WgVTqKM8v4wcZQ Q96thezQto/tbieNQZLiN8UqH9lfB7knUvxPRNCnAilvR8AuTRKj2s6zt8IigD9g7xRn8P6C5C7
+ PwHTvzQ3O+7Nwr0RIUZFrUO60wz7oE95vVslQhQxG0jjs7RavQ2T2rxekhw9G0He3//MsUVi
+X-Proofpoint-ORIG-GUID: ZB74ue-52bsz2Kh-vaA667cgtCjQSJlf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-02_02,2025-04-30_01,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
+ clxscore=1015 mlxscore=0 priorityscore=1501 spamscore=0 lowpriorityscore=0
+ adultscore=0 malwarescore=0 bulkscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2505020110
 
-On Thu, May 01, 2025 at 09:47:34AM -0500, Judith Mendez wrote:
-> On 5/1/25 12:18 AM, Greg Kroah-Hartman wrote:
-> > On Wed, Apr 30, 2025 at 07:31:11PM -0500, Judith Mendez wrote:
-> > > This patch series is sent as an RFC to get some initial comments
-> > > on the PRU UART driver.
-> > > 
-> > > The ICSSM modules on am64x SoC and the PRUSS module on am62 SoC or am335x
-> > > SoCs have a UART sub-module. This patch series introduces the driver and the
-> > > corresponding binding documentation for this sub-module.
-> > > 
-> > > The DTS patches for adding PRU nodes and enabling PRU UART will be added
-> > > in a later v1 version of the series if accepted.
-> > > 
-> > > This driver has been previously tested on the following boards:
-> > > am64x SK, am62x SK, and am335x SK boards.
-> > 
-> > Why is this "RFC"?  What needs to be done to make it something that you
-> > actually feel works properly and should be merged?
-> 
-> Nothing needs to be done IMO, the only reason it was sent as an RFC is
-> to get initial thoughts/issues that anyone might have with the driver
-> before sending v1.
-> 
-> If none, I will go ahead and send v1. Thanks for your attention Greg.
+Hi Viresh
 
-I have tons of comments, please read my replies before sending a v1.
+On 5/2/2025 1:44 PM, Viresh Kumar wrote:
+> On 02-05-25, 13:31, Praveen Talari wrote:
+>> Shall i keep commit as you suggested with your SIB.
+> I already applied it to my tree. You can drop it from your series now.
 
--- 
-With Best Regards,
-Andy Shevchenko
+now i can push V4 right and will not face errors on my series w.r.t this 
+API.
 
 
+Thanks,
+
+Praveen
+
+>
