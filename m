@@ -1,109 +1,200 @@
-Received: from lelvem-ot02.ext.ti.com (lelvem-ot02.ext.ti.com [198.47.23.235])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B1001F9413;
-	Fri,  2 May 2025 22:07:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.235
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E681ACEBB;
+	Sat,  3 May 2025 11:10:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746223681; cv=none; b=Gm5Nn+Xl9S31bdS14izVtDvaonzfTs8RHvCe4gLaH9OoF58CxBws6Rh90xOOMUCo4krBWBWQ1q79Georx/Lktrh8VsuHttU4RafI+DhkqaUHnoz+KL6qvDVedyPyLqzAkEWASSopmtUC7mcy9/0nuPmGqekIYLK3GR2gz9cJrDA=
+	t=1746270649; cv=none; b=sYYJyh27unVFi71daxZca61P9g90LiVwDQitFFZj/j8GMhNP++Z/z2SQutsNb3RBZhoXEjcf2ys+ob9pZYB000P4a5/COQOhDBaUcUvUfcWEg9VFerTE/Hyu/F068bHilsJpLXutNFSBkNBPcA9eIST/w8khGw+dwy5h8jG+BgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746223681; c=relaxed/simple;
-	bh=0r2MhikgXvAfIvHic5TWQipkRdPnZ37DGufsd81WXTQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=KQQnGLjZQuSg1AO8QSemPiUAmh7vOjo95+vzUHyIGs+W6i9726XAxLN1cl1tqlBZVUIHUzGtY7gcdbFyFX8nMWX9Jv4q4GVOl8C8SdLfvbHOxHaj7ImCrzVnciJLSlhXLG1p8G7KWfzM39nAOGX9vvJKQoU9zQe9SU3DUY+WRgM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=TQ1thFbA; arc=none smtp.client-ip=198.47.23.235
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1746270649; c=relaxed/simple;
+	bh=hDcn5dDjWjika0TvR0LCSmwP7lE/04PhXyU4xhE3Z4Y=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=B6w5WiyTMlGdGz0WEDkWJbK8z/XK3spCM8EPEq89oxzllHHq646ltyDAJlDgMfPAsTUrjZgtwkB6i1wSyTo4uwXtzDpvTZwilk1bQPePgyBnLKqEiEQuoA//3cH9NMGca5Qtdp6T9XL2n+G+uB4PEspvAT+FTbTiRCQRway19FE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=BtgIIGIv; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="TQ1thFbA"
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-	by lelvem-ot02.ext.ti.com (8.15.2/8.15.2) with ESMTPS id 542M7rmO500747
-	(version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 2 May 2025 17:07:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1746223673;
-	bh=RNSe6rza5kHgXd/IlOOzcpPi8hOTfCpY5td7kC0qwbA=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=TQ1thFbAcqfEm6alAcqVHpO/+TszzXXq8WuRhSMAEWmtIETFtTREas0YwghO13htE
-	 thtgL3TKYQCtN4KJQ+WKcSuatFGBdeP88BXy50u6iFgyymMMmOAOC2Xg8nwsQoc5uk
-	 vG2L/FU+bBOElX7BCUQ7r+noFi+49VTKcdN6aECo=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 542M7rpI056639
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 2 May 2025 17:07:53 -0500
-Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Fri, 2
- May 2025 17:07:53 -0500
-Received: from lelvsmtp6.itg.ti.com (10.180.75.249) by DFLE107.ent.ti.com
- (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Fri, 2 May 2025 17:07:53 -0500
-Received: from [128.247.81.105] (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp6.itg.ti.com (8.15.2/8.15.2) with ESMTP id 542M7rCL011092;
-	Fri, 2 May 2025 17:07:53 -0500
-Message-ID: <a7141387-1b3c-422a-963e-d94fe8eaacf3@ti.com>
-Date: Fri, 2 May 2025 17:07:53 -0500
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="BtgIIGIv"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5433jqLE016707;
+	Sat, 3 May 2025 11:10:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=qcppdkim1; bh=bNoUcNJMxMP
+	Y+EuhvBxVYKi6Z959k1wHCSBWOpdVLgw=; b=BtgIIGIv5q1A307nP/qwa2SCna/
+	YBoisc32ra7HhOHTQMi9IhZCqIjPD1Bg7d9HcWYlrLx1N1iATH7hodah4kqPInBk
+	PMpECUzRcVOlTd1Libg8q/gkz0BoCh6mt8zJVyoW10vSTf7jic3phmLuRWUqJhX9
+	KLgk2gphk6VXyMRbScFoOf5ErU8/2i2nu2RbmGA5PqQEhUGZ46SJ54QdLaiw0b63
+	P4IMyuSXvPtT+8AFMlIXop8dE+/j09EKZ+4MR0SmSxCMo5Ag7Gn80jLe4J4S5cz/
+	Kkg/46eE4cLTm0MlEE6aJVyo/TUl04Dj88ai0dT19Z6YYu0U9RxVp3LZpjg==
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46dbh78fxq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 03 May 2025 11:10:36 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 543BAWRl023579;
+	Sat, 3 May 2025 11:10:32 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 46dc7kjmry-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 03 May 2025 11:10:32 +0000
+Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 543BAWQL023574;
+	Sat, 3 May 2025 11:10:32 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com ([10.213.97.252])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 543BAWtZ023570
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 03 May 2025 11:10:32 +0000
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4047106)
+	id BF0C0573; Sat,  3 May 2025 16:40:31 +0530 (+0530)
+From: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+To: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+        conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        broonie@kernel.or, andersson@kernel.org, konradybcio@kernel.org,
+        johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Cc: quic_msavaliy@quicinc.com, quic_anupkulk@quicinc.com,
+        Viken Dadhaniya <quic_vdadhani@quicinc.com>
+Subject: [PATCH v4 1/5] dt-bindings: qcom: se-common: Add QUP Peripheral-specific properties for I2C, SPI, and SERIAL bus
+Date: Sat,  3 May 2025 16:40:25 +0530
+Message-Id: <20250503111029.3583807-2-quic_vdadhani@quicinc.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250503111029.3583807-1-quic_vdadhani@quicinc.com>
+References: <20250503111029.3583807-1-quic_vdadhani@quicinc.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 0/2] Introduce PRU UART driver
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kevin Hilman
-	<khilman@baylibre.com>,
-        Jiri Slaby <jirislaby@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, Hari Nagalla
-	<hnagalla@ti.com>
-References: <20250501003113.1609342-1-jm@ti.com>
- <2025050103-graduate-anteater-e6f6@gregkh>
- <406ae5d2-9a4a-47be-9663-d746d9661f1f@ti.com>
- <aBSVld3HKL_M1agq@smile.fi.intel.com>
-Content-Language: en-US
-From: Judith Mendez <jm@ti.com>
-In-Reply-To: <aBSVld3HKL_M1agq@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Authority-Analysis: v=2.4 cv=fMY53Yae c=1 sm=1 tr=0 ts=6815f9ac cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=dt9VzEwgFbYA:10 a=VwQbUJbxAAAA:8 a=COk6AnOGAAAA:8 a=gEfo2CItAAAA:8
+ a=iUYcLkhhoCkWmsKNmV8A:9 a=TjNXssC_j7lpFel5tvFf:22 a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-GUID: T-prCsmI1k1ZPlQ20rFNzhzmiJ7NQt2a
+X-Proofpoint-ORIG-GUID: T-prCsmI1k1ZPlQ20rFNzhzmiJ7NQt2a
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTAzMDA5OSBTYWx0ZWRfX46SIdaaLUVzA
+ OXA/ozVaUty8CnE7jT0cSbsQ/JPZFAlN7qqXJ2pSBFDlbMlQ6+GL0GWTgqoPBQEkztmPN+C+kxC
+ 2P8H7IRuZIt0KSjsszklvbdPstTXSt/7+ViGjCFVqzKwmTipXklVEE9bJObCClLKVLm6EdLUEXl
+ 3LXaxOiYQXzXQpAnXrZKO/eWRzE77QI7rEz05xqHokosnp7a05K3+656xu95Up/JSQXp2+h0zVw
+ T8e+XZEl9F0O61fJPCQf43XDQ7TQOOf/Kl7tyf7dIzTs5Bbz2sO7ou4lngp9G5d2m/QNXuiDZbm
+ 8EbidX7xnaJmZgbzDR6TIa3ex7/70n5opU87qBEh6r1gWTnDIf+AcQKtNVUz31UJpuF4Ao+jywI
+ AJpIJTEsbI0gZhwo0jsqlluuy1zIO0W3vWXU+Tq4pEaprI74nIqQfFNwZwbJUJJHyqCQEJVf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-03_05,2025-04-30_01,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 impostorscore=0 lowpriorityscore=0 phishscore=0
+ suspectscore=0 mlxlogscore=999 malwarescore=0 spamscore=0 mlxscore=0
+ adultscore=0 bulkscore=0 clxscore=1015 classifier=spam authscore=0 authtc=n/a
+ authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2504070000 definitions=main-2505030099
 
-Hi Andy,
+Introduce a new YAML schema for QUP-supported peripherals. Define common
+properties used across QUP-supported peripherals.
 
-On 5/2/25 4:51 AM, Andy Shevchenko wrote:
-> On Thu, May 01, 2025 at 09:47:34AM -0500, Judith Mendez wrote:
->> On 5/1/25 12:18 AM, Greg Kroah-Hartman wrote:
->>> On Wed, Apr 30, 2025 at 07:31:11PM -0500, Judith Mendez wrote:
->>>> This patch series is sent as an RFC to get some initial comments
->>>> on the PRU UART driver.
->>>>
->>>> The ICSSM modules on am64x SoC and the PRUSS module on am62 SoC or am335x
->>>> SoCs have a UART sub-module. This patch series introduces the driver and the
->>>> corresponding binding documentation for this sub-module.
->>>>
->>>> The DTS patches for adding PRU nodes and enabling PRU UART will be added
->>>> in a later v1 version of the series if accepted.
->>>>
->>>> This driver has been previously tested on the following boards:
->>>> am64x SK, am62x SK, and am335x SK boards.
->>>
->>> Why is this "RFC"?  What needs to be done to make it something that you
->>> actually feel works properly and should be merged?
->>
->> Nothing needs to be done IMO, the only reason it was sent as an RFC is
->> to get initial thoughts/issues that anyone might have with the driver
->> before sending v1.
->>
->> If none, I will go ahead and send v1. Thanks for your attention Greg.
-> 
-> I have tons of comments, please read my replies before sending a v1.
+Add property `qcom,enable-gsi-dma` to configure the Serial Engine (SE) for
+QCOM GPI DMA mode.
 
-Thanks for your comments, I need a day or so to review and then respond
-to your comments and Andrews.
+Reference the common schema YAML in the GENI I2C, SPI, and SERIAL YAML
+files.
 
-Judith
+Co-developed-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+Signed-off-by: Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
+Signed-off-by: Viken Dadhaniya <quic_vdadhani@quicinc.com>
+---
+v1 -> v2:
 
-> 
+- Update qcom,gsi-dma-allowed property name to qcom,enable-gsi-dma.
+- Remove full stop form title.
+- Add reference of common schema YAML in the I2C, SPI, and SERIAL YAML files.
+
+v1 Link: https://lore.kernel.org/linux-arm-msm/20250303124349.3474185-3-quic_vdadhani@quicinc.com/
+---
+---
+ .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |  1 +
+ .../serial/qcom,serial-geni-qcom.yaml         |  1 +
+ .../soc/qcom/qcom,se-common-props.yaml        | 26 +++++++++++++++++++
+ .../bindings/spi/qcom,spi-geni-qcom.yaml      |  1 +
+ 4 files changed, 29 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,se-common-props.yaml
+
+diff --git a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+index 9f66a3bb1f80..51534953a69c 100644
+--- a/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
++++ b/Documentation/devicetree/bindings/i2c/qcom,i2c-geni-qcom.yaml
+@@ -75,6 +75,7 @@ required:
+ 
+ allOf:
+   - $ref: /schemas/i2c/i2c-controller.yaml#
++  - $ref: /schemas/soc/qcom/qcom,se-common-props.yaml#
+   - if:
+       properties:
+         compatible:
+diff --git a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+index dd33794b3534..ed7b3909d87d 100644
+--- a/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
++++ b/Documentation/devicetree/bindings/serial/qcom,serial-geni-qcom.yaml
+@@ -12,6 +12,7 @@ maintainers:
+ 
+ allOf:
+   - $ref: /schemas/serial/serial.yaml#
++  - $ref: /schemas/soc/qcom/qcom,se-common-props.yaml#
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/soc/qcom/qcom,se-common-props.yaml b/Documentation/devicetree/bindings/soc/qcom/qcom,se-common-props.yaml
+new file mode 100644
+index 000000000000..044eea4bb960
+--- /dev/null
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,se-common-props.yaml
+@@ -0,0 +1,26 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/soc/qcom/qcom,se-common-props.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: QUP Peripheral-specific properties for I2C, SPI and SERIAL bus
++
++description:
++  The Generic Interface (GENI) based Qualcomm Universal Peripheral (QUP) is
++  a programmable module that supports a wide range of serial interfaces
++  such as UART, SPI, I2C, I3C, etc. This defines the common properties used
++  across QUP-supported peripherals.
++
++maintainers:
++  - Mukesh Kumar Savaliya <quic_msavaliy@quicinc.com>
++  - Viken Dadhaniya <quic_vdadhani@quicinc.com>
++
++properties:
++  qcom,enable-gsi-dma:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description:
++      Configure the Serial Engine (SE) to transfer data in QCOM GPI DMA mode.
++      By default, FIFO mode (PIO/CPU DMA) will be selected.
++
++additionalProperties: true
+diff --git a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
+index 2e20ca313ec1..d12c5a060ed0 100644
+--- a/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
++++ b/Documentation/devicetree/bindings/spi/qcom,spi-geni-qcom.yaml
+@@ -25,6 +25,7 @@ description:
+ 
+ allOf:
+   - $ref: /schemas/spi/spi-controller.yaml#
++  - $ref: /schemas/soc/qcom/qcom,se-common-props.yaml#
+ 
+ properties:
+   compatible:
+-- 
+2.34.1
 
