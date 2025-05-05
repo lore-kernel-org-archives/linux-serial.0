@@ -1,89 +1,89 @@
-Received: from fout-b4-smtp.messagingengine.com (fout-b4-smtp.messagingengine.com [202.12.124.147])
+Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C13019DF60;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCED1264A89;
 	Mon,  5 May 2025 17:01:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.147
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746464473; cv=none; b=oqjll0vVjUoKM2zR1lg2A4MjjdrHshn9AQYTANuSxEPV8hrQib+bDRqAHOiOxN7fYAIK656NW9/+V98lH56IPbXxrDCw8rJ7wJmO1p2xGES0gyktl17c86EOkhFlsu7wIOdZbsy2Jj2/3hvwuY+mfecJaY8SCY7HfMhcBrnp3jI=
+	t=1746464477; cv=none; b=MHfFZvJK/FZ80smCt974hWChtn5FeLyQFglrgKBBChOJIeUCRT93wwVV8mA28v3hqsL0V74WeJ6EeKdiIfC3umfUxmckWOMQQ0ykKaOpp8Z7dU79u25drSK+aIdHbnRqy75UnZaMee+wGNdoBzc0NZ1zjGPSRR/QymkXSzu2ik8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746464473; c=relaxed/simple;
-	bh=TgTS7hFO5zocIs2+6P/8Gt1QEtK97PKlOQET0WPl74I=;
+	s=arc-20240116; t=1746464477; c=relaxed/simple;
+	bh=uYu1NlCw2YuMtjZpJanYfqF85ljxR695gjMKDxD/ceU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Dnbf3DxwG7ySFkj7Uus/a4HoM6SM+nHWqx6s8dZuQDVnh1H0OGhfTvYfyaCPi3brw6l9HSS7CqBdZRtRcR92hPzTKqMwzqYYcEBDlKgXMk/yDmfquh8qXIjm3yIIDSOjv5gV1mlXXIJhC4gPRmoHEa8JDiRNzkHFeS9XX77W+30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=UzE6sKEP; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=aI0abZ6r; arc=none smtp.client-ip=202.12.124.147
+	 MIME-Version; b=h0CzlyvGXGCGgK208wSoPpqzfq6uO8Xbe3ZRp8aq/ThUIZ6Aq+2YgNCWMjoqO5zA5xPahKxHQefctfAK2KweHpTT7yfaRz/f6poY5UclPyvbvHxo7oz4SmicSKCvPOYVEp9NdmMkgw607+aStp/uqtIP//rSXlAoZ6X1N2bkCTY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=QoqwgLJz; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=E1d2AU1z; arc=none smtp.client-ip=202.12.124.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="UzE6sKEP";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="aI0abZ6r"
-Received: from phl-compute-02.internal (phl-compute-02.phl.internal [10.202.2.42])
-	by mailfout.stl.internal (Postfix) with ESMTP id 0E0981140051;
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="QoqwgLJz";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="E1d2AU1z"
+Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id CA850254029F;
 	Mon,  5 May 2025 13:01:09 -0400 (EDT)
-Received: from phl-frontend-02 ([10.202.2.161])
-  by phl-compute-02.internal (MEProxy); Mon, 05 May 2025 13:01:09 -0400
+Received: from phl-frontend-01 ([10.202.2.160])
+  by phl-compute-05.internal (MEProxy); Mon, 05 May 2025 13:01:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
-	cc:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1746464468;
-	 x=1746550868; bh=w484TecclxwaoKq62gV11UO0zQG1rh9g414iCAOcUhg=; b=
-	UzE6sKEPPWFDkllEert3hil6jjU9xLyV+jkXEP4TTGn4wuzzgZylLN6EIUGOLmsf
-	mPeDyT4ARM/6iV2TeFveBCDhXsS+GlM5/seIQtezZ5PAoQRxHjP7ymzNVLUL6/sJ
-	7nN5vfIj2uvpUA9q5NmdtoAg0tlNawkKjUjdryQllnh+1JmhUolVW6AXlKgVvt3n
-	RAlsMXTQwUX1IoRPI0IqZ8WTUl5WSvMszfA9uggTTV+D89hxj4QpTrxmMO9NEhOH
-	BmjodkWRRCp6srKpLuxihpfUYtKdsqKuNLiOefaPr+8Ebb/M6VWpc/RTx2QdQNf1
-	zQfKz2yF14eK1oH3yvb0QQ==
+	cc:cc:content-transfer-encoding:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to; s=fm3; t=1746464469; x=
+	1746550869; bh=H/Le7e05FCZILAFVfqFgVZWY9fYG6QtbhIiZFnj6gz8=; b=Q
+	oqwgLJzbHiHO6diZJDI2uQ2gV0MnCeAEHMeIkWiCtaC+QA1XJSgHIc24kuOBeng1
+	cxhFmXFJUNv+LKDbfJZPjheFsAM0jm7D6OpjkTp5cOAQV/Z89YY1GrTXHKEHWF4L
+	VcGg8q8nc+32dGjaKwIi57Ua7DBze82KyJKxAInkjLuctjGOOEmnnIlvFFiszj4F
+	Gp78bapFgEvOLoKB4TDfLsDGyjPym5Sp2LCokYo3CYWG2yylO/+AvAWTuNMB5tZX
+	zx+T6vyrZnJ+46ZhXciK14RpKq9aacGxFeMHFc3WHW+CtbQmGwfQQY9HBdLQtSXJ
+	ocKcBtOhrP/7cKzQDoXhg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1746464468; x=
-	1746550868; bh=w484TecclxwaoKq62gV11UO0zQG1rh9g414iCAOcUhg=; b=a
-	I0abZ6rqAkA0qIoF25COOXjYTpAk7bpr9VHneeuAs7E1zML2n+AojoMnJPathR6M
-	MSalAnF51a53KvMnuBp/EZ+5j9uy/drWwNPO2Hf1WKil+ChoS/uhbe0PN3ESGEtZ
-	wId5FthTd9VB3N9t0w9dtKXz687OijRYfBKTFDgjLXtXjHBvj2MkES838D8+58+C
-	WvwKkaOAgDK9uL8eLQoMJtIMWkmZ6G4+apdiDXVF8kDnv6BmMXLphEDzKeTx+9Cf
-	iWxopUcalRolLjwtbeG9Tv3uRJcaoHzyNqtvXtCUPNpUli/JBeSCpzlmDOX/fCYj
-	kVUmRA1a3Ar20J4L2e96g==
-X-ME-Sender: <xms:1O4YaBaq-hf4qrVlCC3JZ6ER8eurjNOBKRuDpDqLfKIClz06AjKrLQ>
-    <xme:1O4YaIZLyJI_exCnlRH2lb7UyBXIGhCTFIznQr1OyXHkYVaRB2V_ZYIOGL1r4Tac8
-    nAqtsb2vSMg-E01psA>
-X-ME-Received: <xmr:1O4YaD_kCj5mxwL-0KL6tcsz_z7OncOnuYhzebxb9Wp2VqjW3E7XJxWtHu0a3hs4T9xyCL65WSB0FZJdH9fQnuCTei1p4-C_xO9Xs5VCqcPtcsekDg>
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
+	:x-me-sender:x-sasl-enc; s=fm3; t=1746464469; x=1746550869; bh=H
+	/Le7e05FCZILAFVfqFgVZWY9fYG6QtbhIiZFnj6gz8=; b=E1d2AU1z6uBY6Rnct
+	xoa5WKl03XPV3fzjCL6F2D4hlhxH/YpXNjo2Ctu4WiBTO+tL2eBejComPEEAQ2xh
+	WcK3aqh/b0Ejn9Y7oi11kNyp/trYlgs69EBSoPT9dW0o0otWIj1xGe833a2+wvC/
+	v78lwXhtmBa8ZbU1RGQ3Tj4XvkxdNmZyLlQgSNYKgYgD9OMkyQ6foT2vlzbCun8r
+	toJiFbMNRTa50ddukSYENHeaWoOPKW3cT1d1dd9oce7abJmxXZKFddQUkyZF0BUU
+	zHNmb23g9Y5rGs4y+GkaGqfzkFdjpjYxRB7AtzP/wjl1vVbWo2oBPUJGgORSwch4
+	5IiTg==
+X-ME-Sender: <xms:1e4YaGJO5jictfcZRxMzOTdPJkySUlM4GLYZsEXVfQjtYKi8KhLtPw>
+    <xme:1e4YaOKHyaoUtdb4198z2m5rE8xvNcPRLN5ty5KrH-E2ax6LRMFeuLeoTs5wzGstR
+    B_LxPN6rUGkYMyvLfM>
+X-ME-Received: <xmr:1e4YaGs_nP_5NsIKypE7Bw0QjPaPLBN_SoE-FCX5ibUgTApawcX65knaXMh2CseD8WM3K2K1iuDKUSj4qbuBJ3frOJztiZ4R4hDA6z_l3AAVxQnUDA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvkeduieegucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
     pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhggtgfgsehtkeertder
-    tdejnecuhfhrohhmpefpihgtohhlrghsucfrihhtrhgvuceonhhitghosehflhhugihnih
-    gtrdhnvghtqeenucggtffrrghtthgvrhhnpedufedvleehffethffhffelkeekieekgeev
-    ffelleejteehieeghfeluedvvdehieenucevlhhushhtvghrufhiiigvpedtnecurfgrrh
-    grmhepmhgrihhlfhhrohhmpehnihgtohesfhhluhignhhitgdrnhgvthdpnhgspghrtghp
-    thhtohephedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepnhhpihhtrhgvsegsrg
-    ihlhhisghrvgdrtghomhdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdr
-    ohhrghdprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdroh
-    hrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdr
-    ohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgvlh
-    drohhrgh
-X-ME-Proxy: <xmx:1O4YaPo0q4Q97iOepWkxSb2lXdY-hWCEmn7_L7PagXGE0AIcpb54iA>
-    <xmx:1O4YaMruOS16f3UxAqyOcNcPbePqJ7n_NPQVphVGDwomvpl_BR1Fjw>
-    <xmx:1O4YaFTEUh34bEs5pdZJlGmB5HvyCmJg8ubZNk0mTNoUaPjNXGHOqA>
-    <xmx:1O4YaEqhriAcjTianJjpA-AvS3tZyc9GznWNfPaxe10E_tpYKurh6w>
-    <xmx:1O4YaJ5pzVUpR1xpoU3WmDQoaW_uTCZzz5iiSIGyyCSuPcpILewJQtSy>
+    gvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhgggfestdekredtredt
+    tdenucfhrhhomheppfhitgholhgrshcurfhithhrvgcuoehnihgtohesfhhluhignhhitg
+    drnhgvtheqnecuggftrfgrthhtvghrnheptdejueeiieehieeuffduvdffleehkeelgeek
+    udekfeffhfduffdugedvteeihfetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
+    hmpehmrghilhhfrhhomhepnhhitghosehflhhugihnihgtrdhnvghtpdhnsggprhgtphht
+    thhopeehpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehnphhithhrvgessggrhi
+    hlihgsrhgvrdgtohhmpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdho
+    rhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorh
+    hgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdho
+    rhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrd
+    horhhg
+X-ME-Proxy: <xmx:1e4YaLaOCLxH5jZcoQFCxGpi7JIpLzHurrwHIEfVZHu8Kv25xOGWzQ>
+    <xmx:1e4YaNYL6F95KuZ6QiMsvHloRVKalAJmBwMg3oohgG9nGDYQ2Td8wg>
+    <xmx:1e4YaHDqnU7pSW_dnWF87R6-nS6wAarAjrowQkl7UPXm4v6Yls2Mpg>
+    <xmx:1e4YaDYDuwsqBpe1Yx4RjpbvFJXPbwdwnhvmwF8ljMzER2et0qUUfQ>
+    <xmx:1e4YaLpJaY4tZEj0FBp72HMFNLjJ85P-gArZFMCwJhiEHjeDhcb82J8b>
 Feedback-ID: i58514971:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 5 May 2025 13:01:08 -0400 (EDT)
+ 5 May 2025 13:01:09 -0400 (EDT)
 Received: from xanadu.lan (OpenWrt.lan [192.168.1.1])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id BC805118545C;
-	Mon, 05 May 2025 13:01:07 -0400 (EDT)
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 089F6118545E;
+	Mon, 05 May 2025 13:01:08 -0400 (EDT)
 From: Nicolas Pitre <nico@fluxnic.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 4/8] vt: introduce gen_ucs_fallback_table.py to create ucs_fallback_table.h
-Date: Mon,  5 May 2025 12:55:27 -0400
-Message-ID: <20250505170021.29944-5-nico@fluxnic.net>
+Subject: [PATCH 5/8] vt: create ucs_fallback_table.h_shipped with gen_ucs_fallback_table.py
+Date: Mon,  5 May 2025 12:55:28 -0400
+Message-ID: <20250505170021.29944-6-nico@fluxnic.net>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250505170021.29944-1-nico@fluxnic.net>
 References: <20250505170021.29944-1-nico@fluxnic.net>
@@ -93,911 +93,1747 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Nicolas Pitre <npitre@baylibre.com>
 
 The generated table maps complex characters to their simpler fallback
 forms for a terminal display when corresponding glyphs are unavailable.
-This includes diacritics, symbols as well as many drawing characters.
-Fallback characters aren't perfect replacements, obviously. But they are
-still far more useful than a bunch of squared question marks.
+Fallback characters are limited to 8-bits LATIN-1 and stored in a separate
+table to save space.
 
 Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 ---
- drivers/tty/vt/gen_ucs_fallback_table.py | 882 +++++++++++++++++++++++
- 1 file changed, 882 insertions(+)
- create mode 100755 drivers/tty/vt/gen_ucs_fallback_table.py
+ drivers/tty/vt/.gitignore                   |    1 +
+ drivers/tty/vt/Makefile                     |    5 +-
+ drivers/tty/vt/ucs_fallback_table.h_shipped | 1686 +++++++++++++++++++
+ 3 files changed, 1691 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/tty/vt/ucs_fallback_table.h_shipped
 
-diff --git a/drivers/tty/vt/gen_ucs_fallback_table.py b/drivers/tty/vt/gen_ucs_fallback_table.py
-new file mode 100755
-index 000000000000..cb4e75b454fe
+diff --git a/drivers/tty/vt/.gitignore b/drivers/tty/vt/.gitignore
+index 49ce44edad65..a74859bab862 100644
+--- a/drivers/tty/vt/.gitignore
++++ b/drivers/tty/vt/.gitignore
+@@ -2,5 +2,6 @@
+ /conmakehash
+ /consolemap_deftbl.c
+ /defkeymap.c
++/ucs_fallback_table.h
+ /ucs_recompose_table.h
+ /ucs_width_table.h
+diff --git a/drivers/tty/vt/Makefile b/drivers/tty/vt/Makefile
+index 8ba33cc942c7..509362a3e11e 100644
+--- a/drivers/tty/vt/Makefile
++++ b/drivers/tty/vt/Makefile
+@@ -12,7 +12,7 @@ obj-$(CONFIG_CONSOLE_TRANSLATIONS)	+= consolemap.o consolemap_deftbl.o \
+ 
+ # Files generated that shall be removed upon make clean
+ clean-files :=	consolemap_deftbl.c defkeymap.c \
+-		ucs_width_table.h ucs_recompose_table.h
++		ucs_width_table.h ucs_recompose_table.h ucs_fallback_table.h
+ 
+ hostprogs += conmakehash
+ 
+@@ -58,4 +58,7 @@ endif
+ $(obj)/ucs_recompose_table.h: $(src)/gen_ucs_recompose_table.py
+ 	$(PYTHON3) $< -o $@ $(gen_recomp_arg)
+ 
++$(obj)/ucs_fallback_table.h: $(src)/gen_ucs_fallback_table.py
++	$(PYTHON3) $< -o $@
++
+ endif
+diff --git a/drivers/tty/vt/ucs_fallback_table.h_shipped b/drivers/tty/vt/ucs_fallback_table.h_shipped
+new file mode 100644
+index 000000000000..d528d500ec9d
 --- /dev/null
-+++ b/drivers/tty/vt/gen_ucs_fallback_table.py
-@@ -0,0 +1,882 @@
-+#!/usr/bin/env python3
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Leverage Python's unicodedata module to generate ucs_fallback_table.h
-+#
-+# The generated table maps complex characters to their simpler fallback forms
-+# for a terminal display when corresponding glyphs are unavailable.
-+#
-+# Usage:
-+#   python3 gen_ucs_fallback_table.py         # Generate fallback tables
-+#   python3 gen_ucs_fallback_table.py -o FILE # Specify output file
-+
-+import unicodedata
-+import sys
-+import argparse
-+from collections import defaultdict
-+
-+# This script's file name
-+from pathlib import Path
-+this_file = Path(__file__).name
-+
-+# Default output file name
-+DEFAULT_OUT_FILE = "ucs_fallback_table.h"
-+
-+def collect_accented_latin_letters():
-+    """Collect already composed Latin letters with diacritics."""
-+    fallback_map = {}
-+
-+    # Latin-1 Supplement (0x00C0-0x00FF)
-+    # Capital letters with accents to their base forms
-+    fallback_map[0x00C0] = ord('A')  # À LATIN CAPITAL LETTER A WITH GRAVE
-+    fallback_map[0x00C1] = ord('A')  # Á LATIN CAPITAL LETTER A WITH ACUTE
-+    fallback_map[0x00C2] = ord('A')  # Â LATIN CAPITAL LETTER A WITH CIRCUMFLEX
-+    fallback_map[0x00C3] = ord('A')  # Ã LATIN CAPITAL LETTER A WITH TILDE
-+    fallback_map[0x00C4] = ord('A')  # Ä LATIN CAPITAL LETTER A WITH DIAERESIS
-+    fallback_map[0x00C5] = ord('A')  # Å LATIN CAPITAL LETTER A WITH RING ABOVE
-+    fallback_map[0x00C7] = ord('C')  # Ç LATIN CAPITAL LETTER C WITH CEDILLA
-+    fallback_map[0x00C8] = ord('E')  # È LATIN CAPITAL LETTER E WITH GRAVE
-+    fallback_map[0x00C9] = ord('E')  # É LATIN CAPITAL LETTER E WITH ACUTE
-+    fallback_map[0x00CA] = ord('E')  # Ê LATIN CAPITAL LETTER E WITH CIRCUMFLEX
-+    fallback_map[0x00CB] = ord('E')  # Ë LATIN CAPITAL LETTER E WITH DIAERESIS
-+    fallback_map[0x00CC] = ord('I')  # Ì LATIN CAPITAL LETTER I WITH GRAVE
-+    fallback_map[0x00CD] = ord('I')  # Í LATIN CAPITAL LETTER I WITH ACUTE
-+    fallback_map[0x00CE] = ord('I')  # Î LATIN CAPITAL LETTER I WITH CIRCUMFLEX
-+    fallback_map[0x00CF] = ord('I')  # Ï LATIN CAPITAL LETTER I WITH DIAERESIS
-+    fallback_map[0x00D1] = ord('N')  # Ñ LATIN CAPITAL LETTER N WITH TILDE
-+    fallback_map[0x00D2] = ord('O')  # Ò LATIN CAPITAL LETTER O WITH GRAVE
-+    fallback_map[0x00D3] = ord('O')  # Ó LATIN CAPITAL LETTER O WITH ACUTE
-+    fallback_map[0x00D4] = ord('O')  # Ô LATIN CAPITAL LETTER O WITH CIRCUMFLEX
-+    fallback_map[0x00D5] = ord('O')  # Õ LATIN CAPITAL LETTER O WITH TILDE
-+    fallback_map[0x00D6] = ord('O')  # Ö LATIN CAPITAL LETTER O WITH DIAERESIS
-+    fallback_map[0x00D9] = ord('U')  # Ù LATIN CAPITAL LETTER U WITH GRAVE
-+    fallback_map[0x00DA] = ord('U')  # Ú LATIN CAPITAL LETTER U WITH ACUTE
-+    fallback_map[0x00DB] = ord('U')  # Û LATIN CAPITAL LETTER U WITH CIRCUMFLEX
-+    fallback_map[0x00DC] = ord('U')  # Ü LATIN CAPITAL LETTER U WITH DIAERESIS
-+    fallback_map[0x00DD] = ord('Y')  # Ý LATIN CAPITAL LETTER Y WITH ACUTE
-+
-+    # Lowercase letters with accents to their base forms
-+    fallback_map[0x00E0] = ord('a')  # à LATIN SMALL LETTER A WITH GRAVE
-+    fallback_map[0x00E1] = ord('a')  # á LATIN SMALL LETTER A WITH ACUTE
-+    fallback_map[0x00E2] = ord('a')  # â LATIN SMALL LETTER A WITH CIRCUMFLEX
-+    fallback_map[0x00E3] = ord('a')  # ã LATIN SMALL LETTER A WITH TILDE
-+    fallback_map[0x00E4] = ord('a')  # ä LATIN SMALL LETTER A WITH DIAERESIS
-+    fallback_map[0x00E5] = ord('a')  # å LATIN SMALL LETTER A WITH RING ABOVE
-+    fallback_map[0x00E7] = ord('c')  # ç LATIN SMALL LETTER C WITH CEDILLA
-+    fallback_map[0x00E8] = ord('e')  # è LATIN SMALL LETTER E WITH GRAVE
-+    fallback_map[0x00E9] = ord('e')  # é LATIN SMALL LETTER E WITH ACUTE
-+    fallback_map[0x00EA] = ord('e')  # ê LATIN SMALL LETTER E WITH CIRCUMFLEX
-+    fallback_map[0x00EB] = ord('e')  # ë LATIN SMALL LETTER E WITH DIAERESIS
-+    fallback_map[0x00EC] = ord('i')  # ì LATIN SMALL LETTER I WITH GRAVE
-+    fallback_map[0x00ED] = ord('i')  # í LATIN SMALL LETTER I WITH ACUTE
-+    fallback_map[0x00EE] = ord('i')  # î LATIN SMALL LETTER I WITH CIRCUMFLEX
-+    fallback_map[0x00EF] = ord('i')  # ï LATIN SMALL LETTER I WITH DIAERESIS
-+    fallback_map[0x00F1] = ord('n')  # ñ LATIN SMALL LETTER N WITH TILDE
-+    fallback_map[0x00F2] = ord('o')  # ò LATIN SMALL LETTER O WITH GRAVE
-+    fallback_map[0x00F3] = ord('o')  # ó LATIN SMALL LETTER O WITH ACUTE
-+    fallback_map[0x00F4] = ord('o')  # ô LATIN SMALL LETTER O WITH CIRCUMFLEX
-+    fallback_map[0x00F5] = ord('o')  # õ LATIN SMALL LETTER O WITH TILDE
-+    fallback_map[0x00F6] = ord('o')  # ö LATIN SMALL LETTER O WITH DIAERESIS
-+    fallback_map[0x00F9] = ord('u')  # ù LATIN SMALL LETTER U WITH GRAVE
-+    fallback_map[0x00FA] = ord('u')  # ú LATIN SMALL LETTER U WITH ACUTE
-+    fallback_map[0x00FB] = ord('u')  # û LATIN SMALL LETTER U WITH CIRCUMFLEX
-+    fallback_map[0x00FC] = ord('u')  # ü LATIN SMALL LETTER U WITH DIAERESIS
-+    fallback_map[0x00FD] = ord('y')  # ý LATIN SMALL LETTER Y WITH ACUTE
-+    fallback_map[0x00FF] = ord('y')  # ÿ LATIN SMALL LETTER Y WITH DIAERESIS
-+
-+    # Special letters
-+    fallback_map[0x00D0] = ord('D')  # Ð LATIN CAPITAL LETTER ETH
-+    fallback_map[0x00F0] = ord('d')  # ð LATIN SMALL LETTER ETH
-+    fallback_map[0x00DE] = ord('P')  # Þ LATIN CAPITAL LETTER THORN
-+    fallback_map[0x00FE] = ord('p')  # þ LATIN SMALL LETTER THORN
-+
-+    # Ligatures to component letters
-+    fallback_map[0x00C6] = ord('E')  # Æ LATIN CAPITAL LETTER AE -> E (could also be 'AE')
-+    fallback_map[0x00E6] = ord('e')  # æ LATIN SMALL LETTER AE -> e (could also be 'ae')
-+    fallback_map[0x0152] = ord('E')  # Œ LATIN CAPITAL LIGATURE OE -> E
-+    fallback_map[0x0153] = ord('e')  # œ LATIN SMALL LIGATURE OE -> e
-+    fallback_map[0x00DF] = ord('s')  # ß LATIN SMALL LETTER SHARP S -> s
-+
-+    # These could also be handled by decomposition, but including for completeness
-+    fallback_map[0x00D8] = ord('O')  # Ø LATIN CAPITAL LETTER O WITH STROKE -> O
-+    fallback_map[0x00F8] = ord('o')  # ø LATIN SMALL LETTER O WITH STROKE -> o
-+
-+    # Space variants - map all to regular ASCII space
-+    fallback_map[0x00A0] = ord(' ')  # NO-BREAK SPACE
-+    fallback_map[0x1680] = ord(' ')  # OGHAM SPACE MARK
-+
-+    # Various space widths (EN QUAD through HAIR SPACE)
-+    for cp in range(0x2000, 0x200A+1):
-+        fallback_map[cp] = ord(' ')
-+
-+    fallback_map[0x202F] = ord(' ')  # NARROW NO-BREAK SPACE
-+    fallback_map[0x205F] = ord(' ')  # MEDIUM MATHEMATICAL SPACE
-+
-+    # Extended Latin
-+    fallback_map[0x0141] = ord('L')  # Ł LATIN CAPITAL LETTER L WITH STROKE -> L
-+    fallback_map[0x0142] = ord('l')  # ł LATIN SMALL LETTER L WITH STROKE -> l
-+
-+    # Additional characters with cedilla and similar marks
-+    fallback_map[0x0122] = ord('G')  # Ģ LATIN CAPITAL LETTER G WITH CEDILLA -> G
-+    fallback_map[0x0123] = ord('g')  # ģ LATIN SMALL LETTER G WITH CEDILLA -> g
-+    fallback_map[0x0136] = ord('K')  # Ķ LATIN CAPITAL LETTER K WITH CEDILLA -> K
-+    fallback_map[0x0137] = ord('k')  # ķ LATIN SMALL LETTER K WITH CEDILLA -> k
-+    fallback_map[0x0145] = ord('N')  # Ņ LATIN CAPITAL LETTER N WITH CEDILLA -> N
-+    fallback_map[0x0146] = ord('n')  # ņ LATIN SMALL LETTER N WITH CEDILLA -> n
-+    fallback_map[0x0156] = ord('R')  # Ŗ LATIN CAPITAL LETTER R WITH CEDILLA -> R
-+    fallback_map[0x0157] = ord('r')  # ŗ LATIN SMALL LETTER R WITH CEDILLA -> r
-+    fallback_map[0x015E] = ord('S')  # Ş LATIN CAPITAL LETTER S WITH CEDILLA -> S
-+    fallback_map[0x015F] = ord('s')  # ş LATIN SMALL LETTER S WITH CEDILLA -> s
-+    fallback_map[0x0162] = ord('T')  # Ţ LATIN CAPITAL LETTER T WITH CEDILLA -> T
-+    fallback_map[0x0163] = ord('t')  # ţ LATIN SMALL LETTER T WITH CEDILLA -> t
-+
-+    # Additional Romanian and Turkish specific letters with cedilla/comma below
-+    fallback_map[0x0218] = ord('S')  # Ș LATIN CAPITAL LETTER S WITH COMMA BELOW -> S
-+    fallback_map[0x0219] = ord('s')  # ș LATIN SMALL LETTER S WITH COMMA BELOW -> s
-+    fallback_map[0x021A] = ord('T')  # Ț LATIN CAPITAL LETTER T WITH COMMA BELOW -> T
-+    fallback_map[0x021B] = ord('t')  # ț LATIN SMALL LETTER T WITH COMMA BELOW -> t
-+
-+    # Letters with caron/háček (Czech, Slovak, Slovenian, Croatian, Lithuanian, Latvian)
-+    fallback_map[0x010C] = ord('C')  # Č LATIN CAPITAL LETTER C WITH CARON -> C
-+    fallback_map[0x010D] = ord('c')  # č LATIN SMALL LETTER C WITH CARON -> c
-+    fallback_map[0x010E] = ord('D')  # Ď LATIN CAPITAL LETTER D WITH CARON -> D
-+    fallback_map[0x010F] = ord('d')  # ď LATIN SMALL LETTER D WITH CARON -> d
-+    fallback_map[0x011A] = ord('E')  # Ě LATIN CAPITAL LETTER E WITH CARON -> E
-+    fallback_map[0x011B] = ord('e')  # ě LATIN SMALL LETTER E WITH CARON -> e
-+    fallback_map[0x013D] = ord('L')  # Ľ LATIN CAPITAL LETTER L WITH CARON -> L
-+    fallback_map[0x013E] = ord('l')  # ľ LATIN SMALL LETTER L WITH CARON -> l
-+    fallback_map[0x0147] = ord('N')  # Ň LATIN CAPITAL LETTER N WITH CARON -> N
-+    fallback_map[0x0148] = ord('n')  # ň LATIN SMALL LETTER N WITH CARON -> n
-+    fallback_map[0x0158] = ord('R')  # Ř LATIN CAPITAL LETTER R WITH CARON -> R
-+    fallback_map[0x0159] = ord('r')  # ř LATIN SMALL LETTER R WITH CARON -> r
-+    fallback_map[0x0160] = ord('S')  # Š LATIN CAPITAL LETTER S WITH CARON -> S
-+    fallback_map[0x0161] = ord('s')  # š LATIN SMALL LETTER S WITH CARON -> s
-+    fallback_map[0x0164] = ord('T')  # Ť LATIN CAPITAL LETTER T WITH CARON -> T
-+    fallback_map[0x0165] = ord('t')  # ť LATIN SMALL LETTER T WITH CARON -> t
-+    fallback_map[0x017D] = ord('Z')  # Ž LATIN CAPITAL LETTER Z WITH CARON -> Z
-+    fallback_map[0x017E] = ord('z')  # ž LATIN SMALL LETTER Z WITH CARON -> z
-+
-+    # Letters with acute (Polish, Hungarian, Czech, Slovak, Icelandic)
-+    fallback_map[0x0139] = ord('L')  # Ĺ LATIN CAPITAL LETTER L WITH ACUTE -> L
-+    fallback_map[0x013A] = ord('l')  # ĺ LATIN SMALL LETTER L WITH ACUTE -> l
-+    fallback_map[0x0143] = ord('N')  # Ń LATIN CAPITAL LETTER N WITH ACUTE -> N
-+    fallback_map[0x0144] = ord('n')  # ń LATIN SMALL LETTER N WITH ACUTE -> n
-+    fallback_map[0x0154] = ord('R')  # Ŕ LATIN CAPITAL LETTER R WITH ACUTE -> R
-+    fallback_map[0x0155] = ord('r')  # ŕ LATIN SMALL LETTER R WITH ACUTE -> r
-+    fallback_map[0x015A] = ord('S')  # Ś LATIN CAPITAL LETTER S WITH ACUTE -> S
-+    fallback_map[0x015B] = ord('s')  # ś LATIN SMALL LETTER S WITH ACUTE -> s
-+    fallback_map[0x0179] = ord('Z')  # Ź LATIN CAPITAL LETTER Z WITH ACUTE -> Z
-+    fallback_map[0x017A] = ord('z')  # ź LATIN SMALL LETTER Z WITH ACUTE -> z
-+    fallback_map[0x017B] = ord('Z')  # Ż LATIN CAPITAL LETTER Z WITH DOT ABOVE -> Z
-+    fallback_map[0x017C] = ord('z')  # ż LATIN SMALL LETTER Z WITH DOT ABOVE -> z
-+
-+    # Letters with diaeresis/umlaut (used in various languages)
-+    fallback_map[0x0178] = ord('Y')  # Ÿ LATIN CAPITAL LETTER Y WITH DIAERESIS -> Y
-+
-+    # Other common European letters
-+    fallback_map[0x00D0] = ord('D')  # Đ LATIN CAPITAL LETTER ETH -> D
-+    fallback_map[0x0110] = ord('D')  # Đ LATIN CAPITAL LETTER D WITH STROKE -> D
-+    fallback_map[0x0111] = ord('d')  # đ LATIN SMALL LETTER D WITH STROKE -> d
-+    fallback_map[0x0126] = ord('H')  # Ħ LATIN CAPITAL LETTER H WITH STROKE -> H
-+    fallback_map[0x0127] = ord('h')  # ħ LATIN SMALL LETTER H WITH STROKE -> h
-+
-+    return fallback_map
-+
-+def collect_drawing_character_mappings():
-+    """Collect box drawing characters with ASCII mappings."""
-+    fallback_map = {}
-+
-+    # Box drawing characters
-+    # Horizontal lines
-+    for cp in range(0x2500, 0x2501+1):  # ─ ━
-+        fallback_map[cp] = ord('-')
-+
-+    # Vertical lines
-+    for cp in range(0x2502, 0x2503+1):  # │ ┃
-+        fallback_map[cp] = ord('|')
-+
-+    # Box corners and intersections
-+
-+    # ┌ ┍ ┎ ┏
-+    for cp in range(0x250C, 0x250F+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ┐ ┑ ┒ ┓
-+    for cp in range(0x2510, 0x2513+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # └ ┕ ┖ ┗
-+    for cp in range(0x2514, 0x2517+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ┘ ┙ ┚ ┛
-+    for cp in range(0x2518, 0x251B+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ├ ┝ ┞ ┟ ┠ ┡ ┢ ┣
-+    for cp in range(0x251C, 0x2523+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ┤ ┥ ┦ ┧ ┨ ┩ ┪ ┫
-+    for cp in range(0x2524, 0x252B+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ┬ ┭ ┮ ┯ ┰ ┱ ┲ ┳
-+    for cp in range(0x252C, 0x2533+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ┴ ┵ ┶ ┷ ┸ ┹ ┺ ┻
-+    for cp in range(0x2534, 0x253B+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ┼ ┽ ┾ ┿ ╀ ╁ ╂ ╃ ╄ ╅ ╆ ╇ ╈ ╉ ╊ ╋
-+    for cp in range(0x253C, 0x254B+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # Double box drawing characters
-+    fallback_map[0x2550] = ord('-')  # ═ BOX DRAWINGS DOUBLE HORIZONTAL
-+    fallback_map[0x2551] = ord('|')  # ║ BOX DRAWINGS DOUBLE VERTICAL
-+
-+    # Double and mixed box corners and intersections
-+    # ╒ ╓ ╔ - top-left corners
-+    for cp in range(0x2552, 0x2554+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ╕ ╖ ╗ - top-right corners
-+    for cp in range(0x2555, 0x2557+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ╘ ╙ ╚ - bottom-left corners
-+    for cp in range(0x2558, 0x255A+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ╛ ╜ ╝ - bottom-right corners
-+    for cp in range(0x255B, 0x255D+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ╞ ╟ ╠ - left T-junctions
-+    for cp in range(0x255E, 0x2560+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ╡ ╢ ╣ - right T-junctions
-+    for cp in range(0x2561, 0x2563+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ╤ ╥ ╦ - top T-junctions
-+    for cp in range(0x2564, 0x2566+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ╧ ╨ ╩ - bottom T-junctions
-+    for cp in range(0x2567, 0x2569+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # ╪ ╫ ╬ - crosses
-+    for cp in range(0x256A, 0x256C+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # Box drawing with arcs
-+    # ╭ ╮ ╯ ╰
-+    for cp in range(0x256D, 0x2570+1):
-+        fallback_map[cp] = ord('+')
-+
-+    # Box drawing partials
-+    # Horizontal segments - map to dash
-+    # ╴ ╶ ╸ ╺ ╼ ╾
-+    fallback_map[0x2574] = ord('-')  # light left
-+    fallback_map[0x2576] = ord('-')  # light right
-+    fallback_map[0x2578] = ord('-')  # heavy left
-+    fallback_map[0x257A] = ord('-')  # heavy right
-+    fallback_map[0x257C] = ord('-')  # light left and heavy right
-+    fallback_map[0x257E] = ord('-')  # heavy left and light right
-+
-+    # Vertical segments - map to pipe
-+    # ╵ ╷ ╹ ╻ ╽ ╿
-+    fallback_map[0x2575] = ord('|')  # light up
-+    fallback_map[0x2577] = ord('|')  # light down
-+    fallback_map[0x2579] = ord('|')  # heavy up
-+    fallback_map[0x257B] = ord('|')  # heavy down
-+    fallback_map[0x257D] = ord('|')  # light up and heavy down
-+    fallback_map[0x257F] = ord('|')  # heavy up and light down
-+
-+    # Block elements
-+    # █ ▉ ▊ ▋ ▌ ▍ ▎ ▏ - map to #
-+    for cp in range(0x2588, 0x258F+1):
-+        fallback_map[cp] = ord('#')
-+
-+    # ▀ ▁ ▂ ▃ ▄ ▅ ▆ ▇
-+    for cp in range(0x2580, 0x2587+1):
-+        fallback_map[cp] = ord('#')
-+
-+    # Right side blocks
-+    fallback_map[0x2590] = ord('#')  # ▐ RIGHT HALF BLOCK
-+    fallback_map[0x2595] = ord('#')  # ▕ RIGHT ONE EIGHTH BLOCK
-+    fallback_map[0x2594] = ord('#')  # ▔ UPPER ONE EIGHTH BLOCK
-+
-+    # Quadrant blocks
-+    for cp in range(0x2596, 0x259F+1):
-+        fallback_map[cp] = ord('#')  # Quadrant blocks (▖ ▗ ▘ ▙ ▚ ▛ ▜ ▝ ▞ ▟)
-+
-+    # ▓ ▒ ░ - map to different densities of shading
-+    fallback_map[0x2593] = ord('#')  # ▓ Dark shade
-+    fallback_map[0x2592] = ord('%')  # ▒ Medium shade
-+    fallback_map[0x2591] = ord('.')  # ░ Light shade
-+
-+    # Additional square/rectangle characters
-+    fallback_map[0x25AA] = ord('.')  # ▪ BLACK SMALL SQUARE
-+    fallback_map[0x25AB] = ord('.')  # ▫ WHITE SMALL SQUARE
-+    fallback_map[0x25AC] = ord('#')  # ▬ BLACK RECTANGLE
-+    fallback_map[0x25AD] = ord('-')  # ▭ WHITE RECTANGLE
-+    fallback_map[0x25AE] = ord('|')  # ▮ BLACK VERTICAL RECTANGLE
-+    fallback_map[0x25AF] = ord('|')  # ▯ WHITE VERTICAL RECTANGLE
-+
-+    # Technical corner/bracket characters
-+    # Bottom corners
-+    fallback_map[0x23A3] = ord('|')  # ⎣ RIGHT BOTTOM CORNER -> |
-+    fallback_map[0x23A6] = ord('|')  # ⎦ RIGHT SQUARE BRACKET LOWER CORNER -> |
-+    fallback_map[0x23A9] = ord('|')  # ⎩ RIGHT SQUARE BRACKET LOWER CORNER WITH UPPER CORNER -> |
-+    fallback_map[0x23B3] = ord('|')  # ⎳ BOTTOM CURLY BRACKET -> |
-+    fallback_map[0x23B8] = ord('|')  # ⎸ LEFT VERTICAL BOX LINE -> |
-+    fallback_map[0x23B9] = ord('|')  # ⎹ RIGHT VERTICAL BOX LINE -> |
-+    fallback_map[0x23BD] = ord('_')  # ⎽ BOTTOM SQUARE BRACKET -> _
-+    fallback_map[0x23BF] = ord('L')  # ⎿ BOTTOM RIGHT CORNER -> L
-+    fallback_map[0x23BE] = ord('L')  # ⎾ TOP RIGHT CORNER -> L
-+    fallback_map[0x23BC] = ord('J')  # ⎼ TOP SQUARE BRACKET -> J
-+
-+    # Top corners
-+    fallback_map[0x23A1] = ord('|')  # ⎡ LEFT SQUARE BRACKET UPPER CORNER -> |
-+    fallback_map[0x23A4] = ord('|')  # ⎤ RIGHT SQUARE BRACKET UPPER CORNER -> |
-+    fallback_map[0x23A7] = ord('|')  # ⎧ LEFT CURLY BRACKET UPPER HOOK -> |
-+    fallback_map[0x23AB] = ord('|')  # ⎫ RIGHT CURLY BRACKET UPPER HOOK -> |
-+    fallback_map[0x23B0] = ord('(')  # ⎰ UPPER LEFT OR LOWER RIGHT CURLY BRACKET SECTION -> (
-+    fallback_map[0x23B1] = ord(')')  # ⎱ UPPER RIGHT OR LOWER LEFT CURLY BRACKET SECTION -> )
-+
-+    # Other useful box-drawing-like characters
-+    # Diagonal lines
-+    # ╱ ╲ ╳
-+    fallback_map[0x2571] = ord('/')   # ╱ Diagonal up-right to down-left
-+    fallback_map[0x2572] = ord('\\')  # ╲ Diagonal up-left to down-right
-+    fallback_map[0x2573] = ord('X')   # ╳ Diagonal cross
-+
-+    # Arrows to ASCII equivalent
-+    # → ⇒ ⟹ etc. to ->
-+    for cp in [0x2192, 0x21D2, 0x27F9]:
-+        fallback_map[cp] = ord('>')  # Treat as '>' for simplicity
-+
-+    # ← ⇐ ⟸ etc. to <-
-+    for cp in [0x2190, 0x21D0, 0x27F8]:
-+        fallback_map[cp] = ord('<')  # Treat as '<' for simplicity
-+
-+    # ↑ ⇑ etc. to ^
-+    for cp in [0x2191, 0x21D1]:
-+        fallback_map[cp] = ord('^')
-+
-+    # ↓ ⇓ etc. to v
-+    for cp in [0x2193, 0x21D3]:
-+        fallback_map[cp] = ord('v')
-+
-+    # Mathematical symbols
-+    fallback_map[0x00B1] = ord('+')  # ± PLUS-MINUS SIGN -> +
-+    fallback_map[0x00D7] = ord('x')  # × MULTIPLICATION SIGN -> x
-+    fallback_map[0x00F7] = ord('/')  # ÷ DIVISION SIGN -> /
-+    fallback_map[0x2212] = ord('-')  # − MINUS SIGN -> -
-+    fallback_map[0x2213] = ord('+')  # ∓ MINUS-OR-PLUS SIGN -> +
-+    fallback_map[0x2215] = ord('/')  # ∕ DIVISION SLASH -> /
-+    fallback_map[0x2216] = ord('\\')  # ∖ SET MINUS -> \
-+    fallback_map[0x2217] = ord('*')  # ∗ ASTERISK OPERATOR -> *
-+    fallback_map[0x2218] = ord('o')  # ∘ RING OPERATOR -> o
-+    fallback_map[0x2219] = ord('.')  # ∙ BULLET OPERATOR -> .
-+    fallback_map[0x221A] = ord('v')  # √ SQUARE ROOT -> v
-+    fallback_map[0x221E] = ord('8')  # ∞ INFINITY -> 8
-+    fallback_map[0x2223] = ord('|')  # ∣ DIVIDES -> |
-+    fallback_map[0x2225] = ord('|')  # ∥ PARALLEL TO -> |
-+    fallback_map[0x2227] = ord('&')  # ∧ LOGICAL AND -> & (C-style)
-+    fallback_map[0x2228] = ord('|')  # ∨ LOGICAL OR -> | (C-style)
-+    fallback_map[0x2229] = ord('n')  # ∩ INTERSECTION -> n
-+    fallback_map[0x222A] = ord('u')  # ∪ UNION -> u
-+    fallback_map[0x222B] = ord('S')  # ∫ INTEGRAL -> S
-+    fallback_map[0x2234] = ord(':')  # ∴ THEREFORE -> :
-+    fallback_map[0x2235] = ord(':')  # ∵ BECAUSE -> :
-+    fallback_map[0x2248] = ord('~')  # ≈ ALMOST EQUAL TO -> ~
-+    fallback_map[0x2264] = ord('<')  # ≤ LESS-THAN OR EQUAL TO -> <
-+    fallback_map[0x2265] = ord('>')  # ≥ GREATER-THAN OR EQUAL TO -> >
-+    fallback_map[0x2282] = ord('c')  # ⊂ SUBSET OF -> c
-+    fallback_map[0x2283] = ord('C')  # ⊃ SUPERSET OF -> C
-+    fallback_map[0x2286] = ord('c')  # ⊆ SUBSET OF OR EQUAL TO -> c
-+    fallback_map[0x2287] = ord('C')  # ⊇ SUPERSET OF OR EQUAL TO -> C
-+    fallback_map[0x22C5] = ord('.')  # ⋅ DOT OPERATOR -> .
-+
-+    # Currency symbols
-+    fallback_map[0x00A2] = ord('c')  # ¢ CENT SIGN -> c
-+    fallback_map[0x00A3] = ord('L')  # £ POUND SIGN -> L
-+    fallback_map[0x00A5] = ord('Y')  # ¥ YEN SIGN -> Y
-+    fallback_map[0x20AC] = ord('E')  # € EURO SIGN -> E
-+
-+    # Common symbols
-+    fallback_map[0x00A9] = ord('C')  # © COPYRIGHT SIGN -> C
-+    fallback_map[0x00AE] = ord('R')  # ® REGISTERED SIGN -> R
-+    fallback_map[0x2122] = ord('T')  # ™ TRADE MARK SIGN -> T
-+    fallback_map[0x00A7] = ord('S')  # § SECTION SIGN -> S
-+    fallback_map[0x00B6] = ord('P')  # ¶ PILCROW SIGN -> P
-+    fallback_map[0x00A6] = ord('|')  # ¦ BROKEN BAR -> |
-+    fallback_map[0x00B0] = ord('o')  # ° DEGREE SIGN -> o
-+    fallback_map[0x00B5] = ord('u')  # µ MICRO SIGN -> u
-+    fallback_map[0x2103] = ord('C')  # ℃ DEGREE CELSIUS -> C
-+    fallback_map[0x2109] = ord('F')  # ℉ DEGREE FAHRENHEIT -> F
-+
-+    # Superscript and subscript numbers
-+    fallback_map[0x00B2] = ord('2')  # ² SUPERSCRIPT TWO -> 2
-+    fallback_map[0x00B3] = ord('3')  # ³ SUPERSCRIPT THREE -> 3
-+    fallback_map[0x00B9] = ord('1')  # ¹ SUPERSCRIPT ONE -> 1
-+    fallback_map[0x2070] = ord('0')  # ⁰ SUPERSCRIPT ZERO -> 0
-+    fallback_map[0x2074] = ord('4')  # ⁴ SUPERSCRIPT FOUR -> 4
-+    fallback_map[0x2075] = ord('5')  # ⁵ SUPERSCRIPT FIVE -> 5
-+    fallback_map[0x2076] = ord('6')  # ⁶ SUPERSCRIPT SIX -> 6
-+    fallback_map[0x2077] = ord('7')  # ⁷ SUPERSCRIPT SEVEN -> 7
-+    fallback_map[0x2078] = ord('8')  # ⁸ SUPERSCRIPT EIGHT -> 8
-+    fallback_map[0x2079] = ord('9')  # ⁹ SUPERSCRIPT NINE -> 9
-+    fallback_map[0x2080] = ord('0')  # ₀ SUBSCRIPT ZERO -> 0
-+    fallback_map[0x2081] = ord('1')  # ₁ SUBSCRIPT ONE -> 1
-+    fallback_map[0x2082] = ord('2')  # ₂ SUBSCRIPT TWO -> 2
-+    fallback_map[0x2083] = ord('3')  # ₃ SUBSCRIPT THREE -> 3
-+    fallback_map[0x2084] = ord('4')  # ₄ SUBSCRIPT FOUR -> 4
-+    fallback_map[0x2085] = ord('5')  # ₅ SUBSCRIPT FIVE -> 5
-+    fallback_map[0x2086] = ord('6')  # ₆ SUBSCRIPT SIX -> 6
-+    fallback_map[0x2087] = ord('7')  # ₇ SUBSCRIPT SEVEN -> 7
-+    fallback_map[0x2088] = ord('8')  # ₈ SUBSCRIPT EIGHT -> 8
-+    fallback_map[0x2089] = ord('9')  # ₉ SUBSCRIPT NINE -> 9
-+
-+    # Common Greek letters used in math/science
-+    fallback_map[0x03B1] = ord('a')  # α GREEK SMALL LETTER ALPHA -> a
-+    fallback_map[0x03B2] = ord('B')  # β GREEK SMALL LETTER BETA -> B
-+    fallback_map[0x03B3] = ord('y')  # γ GREEK SMALL LETTER GAMMA -> y
-+    fallback_map[0x0393] = ord('I')  # Γ GREEK CAPITAL LETTER GAMMA -> I
-+    fallback_map[0x03B4] = ord('d')  # δ GREEK SMALL LETTER DELTA -> d
-+    fallback_map[0x0394] = ord('A')  # Δ GREEK CAPITAL LETTER DELTA -> A
-+    fallback_map[0x03B5] = ord('e')  # ε GREEK SMALL LETTER EPSILON -> e
-+    fallback_map[0x03B6] = ord('z')  # ζ GREEK SMALL LETTER ZETA -> z
-+    fallback_map[0x03B7] = ord('n')  # η GREEK SMALL LETTER ETA -> n
-+    fallback_map[0x03B8] = ord('0')  # θ GREEK SMALL LETTER THETA -> 0
-+    fallback_map[0x0398] = ord('O')  # Θ GREEK CAPITAL LETTER THETA -> O
-+    fallback_map[0x03BB] = ord('l')  # λ GREEK SMALL LETTER LAMBDA -> l
-+    fallback_map[0x039B] = ord('A')  # Λ GREEK CAPITAL LETTER LAMBDA -> A
-+    fallback_map[0x03BC] = ord('u')  # μ GREEK SMALL LETTER MU -> u
-+    fallback_map[0x03C0] = ord('n')  # π GREEK SMALL LETTER PI -> n
-+    fallback_map[0x03A0] = ord('n')  # Π GREEK CAPITAL LETTER PI -> n
-+    fallback_map[0x03C1] = ord('p')  # ρ GREEK SMALL LETTER RHO -> p
-+    fallback_map[0x03C3] = ord('o')  # σ GREEK SMALL LETTER SIGMA -> o
-+    fallback_map[0x03A3] = ord('E')  # Σ GREEK CAPITAL LETTER SIGMA -> E
-+    fallback_map[0x03C4] = ord('t')  # τ GREEK SMALL LETTER TAU -> t
-+    fallback_map[0x03C6] = ord('f')  # φ GREEK SMALL LETTER PHI -> f
-+    fallback_map[0x03A6] = ord('O')  # Φ GREEK CAPITAL LETTER PHI -> O
-+    fallback_map[0x03C7] = ord('X')  # χ GREEK SMALL LETTER CHI -> X
-+    fallback_map[0x03C8] = ord('w')  # ψ GREEK SMALL LETTER PSI -> w
-+    fallback_map[0x03A8] = ord('Y')  # Ψ GREEK CAPITAL LETTER PSI -> Y
-+    fallback_map[0x03C9] = ord('w')  # ω GREEK SMALL LETTER OMEGA -> w
-+    fallback_map[0x03A9] = ord('O')  # Ω GREEK CAPITAL LETTER OMEGA -> O
-+
-+    # Additional punctuation
-+    fallback_map[0x2018] = ord('\'')  # ' LEFT SINGLE QUOTATION MARK -> '
-+    fallback_map[0x2019] = ord('\'')  # ' RIGHT SINGLE QUOTATION MARK -> '
-+    fallback_map[0x201A] = ord(',')  # ‚ SINGLE LOW-9 QUOTATION MARK -> ,
-+    fallback_map[0x201B] = ord('\'')  # ‛ SINGLE HIGH-REVERSED-9 QUOTATION MARK -> '
-+    fallback_map[0x201C] = ord('"')  # " LEFT DOUBLE QUOTATION MARK -> "
-+    fallback_map[0x201D] = ord('"')  # " RIGHT DOUBLE QUOTATION MARK -> "
-+    fallback_map[0x201E] = ord('"')  # „ DOUBLE LOW-9 QUOTATION MARK -> "
-+    fallback_map[0x201F] = ord('"')  # ‟ DOUBLE HIGH-REVERSED-9 QUOTATION MARK -> "
-+    fallback_map[0x2026] = ord('.')  # … HORIZONTAL ELLIPSIS -> .
-+    fallback_map[0x2039] = ord('<')  # ‹ SINGLE LEFT-POINTING ANGLE QUOTATION MARK -> <
-+    fallback_map[0x203A] = ord('>')  # › SINGLE RIGHT-POINTING ANGLE QUOTATION MARK -> >
-+    fallback_map[0x00AB] = ord('<')  # « LEFT-POINTING DOUBLE ANGLE QUOTATION MARK -> <
-+    fallback_map[0x00BB] = ord('>')  # » RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK -> >
-+
-+    # Various dashes and hyphens - all map to ASCII hyphen-minus
-+    for cp in range(0x2010, 0x2015+1):
-+        fallback_map[cp] = ord('-')  # All forms of hyphens and dashes -> -
-+    fallback_map[0x2043] = ord('-')  # ⁃ HYPHEN BULLET -> -
-+    fallback_map[0x2052] = ord('-')  # ⁒ COMMERCIAL MINUS SIGN -> -
-+
-+    # Other punctuation and symbols
-+    fallback_map[0x2023] = ord('>')  # ‣ TRIANGULAR BULLET -> >
-+    fallback_map[0x2027] = ord('.')  # ‧ HYPHENATION POINT -> .
-+    fallback_map[0x2032] = ord('\'')  # ′ PRIME -> '
-+    fallback_map[0x2033] = ord('"')  # ″ DOUBLE PRIME -> "
-+    # Note: Triple prime (U+2034) intentionally omitted to avoid misleading fallback
-+    fallback_map[0x203B] = ord('*')  # ※ REFERENCE MARK -> *
-+    fallback_map[0x203C] = ord('!')  # ‼ DOUBLE EXCLAMATION MARK -> !
-+    fallback_map[0x203D] = ord('?')  # ‽ INTERROBANG -> ?
-+    fallback_map[0x2044] = ord('/')  # ⁄ FRACTION SLASH -> /
-+    fallback_map[0x2047] = ord('?')  # ⁇ DOUBLE QUESTION MARK -> ?
-+    fallback_map[0x2048] = ord('?')  # ⁈ QUESTION EXCLAMATION MARK -> ?
-+    fallback_map[0x2049] = ord('!')  # ⁉ EXCLAMATION QUESTION MARK -> !
-+    fallback_map[0x204A] = ord('&')  # ⁊ TIRONIAN SIGN ET -> &
-+    fallback_map[0x204B] = ord('P')  # ⁋ REVERSED PILCROW SIGN -> P
-+    fallback_map[0x204C] = ord('<')  # ⁌ BLACK LEFTWARDS BULLET -> <
-+    fallback_map[0x204D] = ord('>')  # ⁍ BLACK RIGHTWARDS BULLET -> >
-+    fallback_map[0x204E] = ord('*')  # ⁎ LOW ASTERISK -> *
-+    fallback_map[0x204F] = ord(';')  # ⁏ REVERSED SEMICOLON -> ;
-+    fallback_map[0x2053] = ord('~')  # ⁓ SWUNG DASH -> ~
-+    fallback_map[0x2055] = ord('*')  # ⁕ FLOWER PUNCTUATION MARK -> *
-+    fallback_map[0x205B] = ord(':')  # ⁛ FOUR DOT MARK -> :
-+
-+    # Precomposed negated symbols require special handling. Standard Unicode
-+    # decomposition would strip the negation and preserve only the base symbol,
-+    # which would reverse the intended meaning (e.g., "not equal" would become
-+    # "equal"). This could lead to confusion or errors when reading text with
-+    # fallback characters. Let's override decomposition by providing explicit
-+    # mappings in a best effort at avoiding misleading interpretations.
-+
-+    # Negated mathematical operators
-+    fallback_map[0x2204] = ord('!')  # ∄ THERE DOES NOT EXIST -> !
-+    fallback_map[0x2209] = ord('!')  # ∉ NOT AN ELEMENT OF -> !
-+    fallback_map[0x220C] = ord('!')  # ∌ DOES NOT CONTAIN AS MEMBER -> !
-+    fallback_map[0x2224] = ord('!')  # ∤ DOES NOT DIVIDE -> !
-+    fallback_map[0x2226] = ord('!')  # ∦ NOT PARALLEL TO -> !
-+    fallback_map[0x2241] = ord('#')  # ≁ NOT TILDE -> # (better than ~)
-+    fallback_map[0x2244] = ord('#')  # ≄ NOT ASYMPTOTICALLY EQUAL TO -> # (better than ~)
-+    fallback_map[0x2249] = ord('#')  # ≉ NOT ALMOST EQUAL TO -> # (better than ~)
-+    fallback_map[0x2260] = ord('#')  # ≠ NOT EQUAL TO -> # (better than =)
-+    fallback_map[0x2262] = ord('#')  # ≢ NOT IDENTICAL TO -> # (better than =)
-+    fallback_map[0x2268] = ord('#')  # ≨ LESS-THAN BUT NOT EQUAL TO -> # (better than <)
-+    fallback_map[0x2269] = ord('#')  # ≩ GREATER-THAN BUT NOT EQUAL TO -> # (better than >)
-+    fallback_map[0x226D] = ord('#')  # ≭ NOT EQUIVALENT TO -> # (better than =)
-+    fallback_map[0x226E] = ord('!')  # ≮ NOT LESS-THAN -> ! (better than <)
-+    fallback_map[0x226F] = ord('!')  # ≯ NOT GREATER-THAN -> ! (better than >)
-+
-+    # Negated set operators
-+    fallback_map[0x2280] = ord('!')  # ⊀ DOES NOT PRECEDE -> !
-+    fallback_map[0x2281] = ord('!')  # ⊁ DOES NOT SUCCEED -> !
-+    fallback_map[0x2284] = ord('!')  # ⊄ NOT A SUBSET OF -> ! (better than c)
-+    fallback_map[0x2285] = ord('!')  # ⊅ NOT A SUPERSET OF -> ! (better than C)
-+    fallback_map[0x228A] = ord('#')  # ⊊ SUBSET OF WITH NOT EQUAL TO -> #
-+    fallback_map[0x228B] = ord('#')  # ⊋ SUPERSET OF WITH NOT EQUAL TO -> #
-+
-+    # Negated logical operators
-+    fallback_map[0x22AC] = ord('!')  # ⊬ DOES NOT PROVE -> !
-+    fallback_map[0x22AD] = ord('!')  # ⊭ NOT TRUE -> !
-+    fallback_map[0x22AE] = ord('!')  # ⊮ DOES NOT FORCE -> !
-+    fallback_map[0x22E0] = ord('!')  # ⋠ DOES NOT PRECEDE OR EQUAL -> !
-+    fallback_map[0x22E1] = ord('!')  # ⋡ DOES NOT SUCCEED OR EQUAL -> !
-+    fallback_map[0x22EA] = ord('!')  # ⋪ NOT NORMAL SUBGROUP OF -> !
-+    fallback_map[0x22EB] = ord('!')  # ⋫ DOES NOT CONTAIN AS NORMAL SUBGROUP -> !
-+
-+    # Negated arrows
-+    fallback_map[0x219A] = ord('!')  # ↚ LEFTWARDS ARROW WITH STROKE -> !
-+    fallback_map[0x219B] = ord('!')  # ↛ RIGHTWARDS ARROW WITH STROKE -> !
-+    fallback_map[0x21AE] = ord('!')  # ↮ LEFT RIGHT ARROW WITH STROKE -> !
-+    fallback_map[0x21CD] = ord('!')  # ⇍ LEFTWARDS DOUBLE ARROW WITH STROKE -> !
-+    fallback_map[0x21CE] = ord('!')  # ⇎ LEFT RIGHT DOUBLE ARROW WITH STROKE -> !
-+    fallback_map[0x21CF] = ord('!')  # ⇏ RIGHTWARDS DOUBLE ARROW WITH STROKE -> !
-+
-+    # Bullets and geometric shapes
-+    # • ◦ ○ ◎ ● ◆ ■ □ ▲ △ ▼ ▽
-+    fallback_map[0x2022] = ord('*')  # • Bullet
-+    fallback_map[0x25E6] = ord('o')  # ◦ White bullet
-+    fallback_map[0x25CB] = ord('o')  # ○ White circle
-+    fallback_map[0x25CE] = ord('o')  # ◎ Bullseye
-+    fallback_map[0x25CF] = ord('*')  # ● Black circle
-+    fallback_map[0x25C6] = ord('*')  # ◆ Black diamond
-+    fallback_map[0x25A0] = ord('#')  # ■ Black square
-+    fallback_map[0x25A1] = ord('o')  # □ White square
-+    fallback_map[0x25B2] = ord('^')  # ▲ Black up-pointing triangle
-+    fallback_map[0x25B3] = ord('^')  # △ White up-pointing triangle
-+    fallback_map[0x25BC] = ord('v')  # ▼ Black down-pointing triangle
-+    fallback_map[0x25BD] = ord('v')  # ▽ White down-pointing triangle
-+
-+    # Middle dot and other punctuation
-+    fallback_map[0x00B7] = ord('.')  # · MIDDLE DOT
-+    fallback_map[0x0387] = ord('.')  # · GREEK ANO TELEIA (identical to middle dot)
-+    fallback_map[0x2027] = ord('.')  # ‧ HYPHENATION POINT
-+    fallback_map[0x2219] = ord('.')  # ∙ BULLET OPERATOR
-+    fallback_map[0x22C5] = ord('.')  # ⋅ DOT OPERATOR
-+    fallback_map[0x00A1] = ord('!')  # ¡ INVERTED EXCLAMATION MARK
-+    fallback_map[0x00BF] = ord('?')  # ¿ INVERTED QUESTION MARK
-+    fallback_map[0x203D] = ord('?')  # ‽ INTERROBANG
-+
-+    # Note: Vulgar fractions (like ½, ¼, etc.) are intentionally not mapped to ASCII.
-+    # Using just the numerator (e.g., ½ → 1) would be misleading, and there's no good
-+    # single-character ASCII representation for fractions.
-+
-+    # Check marks and X marks
-+    fallback_map[0x2713] = ord('v')  # ✓ CHECK MARK
-+    fallback_map[0x2714] = ord('V')  # ✔ HEAVY CHECK MARK
-+    fallback_map[0x2715] = ord('x')  # ✕ MULTIPLICATION X
-+    fallback_map[0x2716] = ord('X')  # ✖ HEAVY MULTIPLICATION X
-+    fallback_map[0x2717] = ord('x')  # ✗ BALLOT X
-+    fallback_map[0x2718] = ord('X')  # ✘ HEAVY BALLOT X
-+
-+    # Asterism and asterisk variants
-+    fallback_map[0x2042] = ord('*')  # ⁂ ASTERISM
-+    fallback_map[0x204E] = ord('*')  # ⁎ LOW ASTERISK
-+    fallback_map[0x2051] = ord('*')  # ⁑ TWO ASTERISKS ALIGNED VERTICALLY
-+    fallback_map[0x2055] = ord('*')  # ⁕ FLOWER PUNCTUATION MARK
-+    fallback_map[0x2217] = ord('*')  # ∗ ASTERISK OPERATOR
-+    fallback_map[0x229B] = ord('*')  # ⊛ CIRCLED ASTERISK OPERATOR
-+    fallback_map[0x22C6] = ord('*')  # ⋆ STAR OPERATOR
-+    fallback_map[0x235F] = ord('*')  # ⍟ APL FUNCTIONAL SYMBOL CIRCLE STAR
-+    fallback_map[0x2363] = ord('*')  # ⍣ APL FUNCTIONAL SYMBOL STAR DIAERESIS
-+
-+    # Stars
-+    fallback_map[0x2605] = ord('*')  # ★ BLACK STAR
-+    fallback_map[0x2606] = ord('*')  # ☆ WHITE STAR
-+    fallback_map[0x262A] = ord('*')  # ☪ STAR AND CRESCENT
-+    fallback_map[0x269D] = ord('*')  # ⚝ OUTLINED WHITE STAR
-+    fallback_map[0x2721] = ord('*')  # ✡ STAR OF DAVID
-+    fallback_map[0x2726] = ord('*')  # ✦ BLACK FOUR POINTED STAR
-+    fallback_map[0x2727] = ord('*')  # ✧ WHITE FOUR POINTED STAR
-+    fallback_map[0x2729] = ord('*')  # ✩ STRESS OUTLINED WHITE STAR
-+    fallback_map[0x272A] = ord('*')  # ✪ CIRCLED WHITE STAR
-+    fallback_map[0x272B] = ord('*')  # ✫ OPEN CENTRE BLACK STAR
-+    fallback_map[0x272C] = ord('*')  # ✬ BLACK CENTRE WHITE STAR
-+    fallback_map[0x272D] = ord('*')  # ✭ OUTLINED BLACK STAR
-+    fallback_map[0x272E] = ord('*')  # ✮ HEAVY OUTLINED BLACK STAR
-+    fallback_map[0x272F] = ord('*')  # ✯ PINWHEEL STAR
-+    fallback_map[0x2730] = ord('*')  # ✰ SHADOWED WHITE STAR
-+    fallback_map[0x2734] = ord('*')  # ✴ EIGHT POINTED BLACK STAR
-+    fallback_map[0x2735] = ord('*')  # ✵ EIGHT POINTED PINWHEEL STAR
-+    fallback_map[0x2736] = ord('*')  # ✶ SIX POINTED BLACK STAR
-+    fallback_map[0x2737] = ord('*')  # ✷ EIGHT POINTED RECTILINEAR BLACK STAR
-+    fallback_map[0x2738] = ord('*')  # ✸ HEAVY EIGHT POINTED RECTILINEAR BLACK STAR
-+    fallback_map[0x2739] = ord('*')  # ✹ TWELVE POINTED BLACK STAR
-+
-+    # Asterisk variants
-+    fallback_map[0x273A] = ord('*')  # ✺ SIXTEEN POINTED ASTERISK
-+    fallback_map[0x273B] = ord('*')  # ✻ TEARDROP-SPOKED ASTERISK
-+    fallback_map[0x273C] = ord('*')  # ✼ OPEN CENTRE TEARDROP-SPOKED ASTERISK
-+    fallback_map[0x273D] = ord('*')  # ✽ HEAVY TEARDROP-SPOKED ASTERISK
-+    fallback_map[0x2722] = ord('*')  # ✢ FOUR TEARDROP-SPOKED ASTERISK
-+    fallback_map[0x2723] = ord('*')  # ✣ FOUR BALLOON-SPOKED ASTERISK
-+    fallback_map[0x2724] = ord('*')  # ✤ HEAVY FOUR BALLOON-SPOKED ASTERISK
-+    fallback_map[0x2725] = ord('*')  # ✥ FOUR CLUB-SPOKED ASTERISK
-+    fallback_map[0x2731] = ord('*')  # ✱ HEAVY ASTERISK
-+    fallback_map[0x2732] = ord('*')  # ✲ OPEN CENTRE ASTERISK
-+    fallback_map[0x2733] = ord('*')  # ✳ EIGHT SPOKED ASTERISK
-+    fallback_map[0x2749] = ord('*')  # ❉ BALLOON-SPOKED ASTERISK
-+    fallback_map[0x274A] = ord('*')  # ❊ EIGHT TEARDROP-SPOKED PROPELLER ASTERISK
-+    fallback_map[0x274B] = ord('*')  # ❋ HEAVY EIGHT TEARDROP-SPOKED PROPELLER ASTERISK
-+    fallback_map[0x2743] = ord('*')  # ❃ HEAVY TEARDROP-SPOKED PINWHEEL ASTERISK
-+
-+    # Florettes and snowflakes
-+    fallback_map[0x273E] = ord('*')  # ✾ SIX PETALLED BLACK AND WHITE FLORETTE
-+    fallback_map[0x273F] = ord('*')  # ✿ BLACK FLORETTE
-+    fallback_map[0x2740] = ord('*')  # ❀ WHITE FLORETTE
-+    fallback_map[0x2741] = ord('*')  # ❁ EIGHT PETALLED OUTLINED BLACK FLORETTE
-+    fallback_map[0x2742] = ord('*')  # ❂ CIRCLED OPEN CENTRE EIGHT POINTED STAR
-+    fallback_map[0x2744] = ord('*')  # ❄ SNOWFLAKE
-+    fallback_map[0x2745] = ord('*')  # ❅ TIGHT TRIFOLIATE SNOWFLAKE
-+    fallback_map[0x2746] = ord('*')  # ❆ HEAVY CHEVRON SNOWFLAKE
-+    fallback_map[0x2698] = ord('*')  # ⚘ FLOWER
-+
-+    # Add special ASCII characters with full-width equivalents
-+    # Map between full-width and ASCII forms
-+    for i, cp in enumerate(range(0xFF01, 0xFF5E+1)):
-+        # Full-width to ASCII mapping (covering all printable ASCII 33-126)
-+        # 0xFF01 (！) to 0xFF5E (～) -> ASCII 33 (!) to 126 (~)
-+        fallback_map[cp] = 33 + i
-+
-+    return fallback_map
-+
-+def collect_decomposition_pairs():
-+    """Collect all possible decomposition pairs from the Unicode data."""
-+    # Map to store decomposition pairs: composite -> base
-+    fallback_map = {}
-+
-+    # Process all assigned Unicode code points in BMP (Basic Multilingual Plane)
-+    # We limit to BMP (0x0000-0xFFFF) to keep our table smaller with uint16_t
-+    for cp in range(0, 0x10000):
-+        try:
-+            char = chr(cp)
-+
-+            # Skip unassigned or control characters
-+            if not unicodedata.name(char, ''):
-+                continue
-+
-+            # Find decomposition
-+            decomp = unicodedata.decomposition(char)
-+            if not decomp or '<' in decomp:  # Skip compatibility decompositions
-+                continue
-+
-+            # Parse the decomposition
-+            parts = decomp.split()
-+            if len(parts) == 2:  # Simple base + combining mark
-+                base = int(parts[0], 16)
-+                combining = int(parts[1], 16)
-+
-+                # Only store if base is in BMP
-+                if base < 0x10000:
-+                    fallback_map[cp] = base
-+
-+        except (ValueError, TypeError):
-+            continue
-+
-+    return fallback_map
-+
-+def create_hybrid_tables(fallback_map):
-+    """
-+    Create optimized hybrid tables for fallback characters.
-+
-+    Args:
-+        fallback_map: The original mapping of complex characters to base characters
-+
-+    Returns:
-+        A tuple of (intervals, singles, dropped) where:
-+        - intervals: List of (first, last, fallback) tuples
-+        - singles: List of (codepoint, fallback) tuples
-+        - dropped: List of (codepoint, fallback) tuples
-+    """
-+
-+    # Create a map with fallbacks that fit in a single byte (≤ 0xFF)
-+    # following fallback chains until a suitable byte-sized fallback is found.
-+    # Using byte-sized fallbacks saves table space and Latin-1 glyphs are
-+    # more likely to exist. Runtime code may recurse further if necessary.
-+    byte_fallback_map = {}
-+    dropped = []
-+    for complex_char, fallback in fallback_map.items():
-+        while fallback > 0xFF and fallback in fallback_map:
-+            fallback = fallback_map[fallback]
-+        if fallback <= 0xFF:
-+            byte_fallback_map[complex_char] = fallback
-+        else:
-+            dropped.append((complex_char, fallback))
-+
-+    # Group characters by their base character
-+    base_groups = defaultdict(list)
-+    for complex_char, base in byte_fallback_map.items():
-+        base_groups[base].append(complex_char)
-+
-+    # Sort complex characters in each group
-+    for base in base_groups:
-+        base_groups[base].sort()
-+
-+    # Create interval tables and single-entry tables
-+    intervals = []
-+    singles = []
-+
-+    for base, complex_char_list in base_groups.items():
-+        # Identify continuous ranges
-+        ranges = []
-+        current_range = [complex_char_list[0], complex_char_list[0]]
-+
-+        for i in range(1, len(complex_char_list)):
-+            if complex_char_list[i] == current_range[1] + 1:
-+                # Extend current range
-+                current_range[1] = complex_char_list[i]
-+            else:
-+                # Finish current range and start a new one
-+                ranges.append(tuple(current_range))
-+                current_range = [complex_char_list[i], complex_char_list[i]]
-+
-+        # Add the last range
-+        ranges.append(tuple(current_range))
-+
-+        # Add to appropriate table
-+        for first, last in ranges:
-+            if first == last:
-+                # Single entry
-+                singles.append((first, base))
-+            else:
-+                # Range
-+                intervals.append((first, last, base))
-+
-+    # Sort tables by first code point for binary search
-+    intervals.sort()
-+    singles.sort()
-+
-+    return intervals, singles, dropped
-+
-+def cp_name(cp):
-+    try:
-+        return unicodedata.name(chr(cp))
-+    except:
-+        return f"U+{cp:04X}"
-+
-+def generate_fallback_tables(out_file=DEFAULT_OUT_FILE):
-+    """Generate the fallback character tables."""
-+    # Collect standard decomposition pairs
-+    decomposition_map = collect_decomposition_pairs()
-+    print(f"Collected {len(decomposition_map)} standard decomposition pairs")
-+
-+    # Collect composed Latin letters
-+    latin_map = collect_accented_latin_letters()
-+    print(f"Collected {len(latin_map)} already composed Latin letter mappings")
-+
-+    # Collect drawing character mappings
-+    drawing_map = collect_drawing_character_mappings()
-+    print(f"Collected {len(drawing_map)} drawing character mappings")
-+
-+    # Combine maps - prioritize explicit mappings over decomposition
-+    # This ensures that composed characters can be handled directly even if
-+    # decomposition would also work
-+    fallback_map = {**decomposition_map, **latin_map, **drawing_map}
-+    print(f"Combined into {len(fallback_map)} total mappings")
-+
-+    # Create hybrid tables with fallback values limited to 1 byte (0xFF)
-+    intervals, singles, dropped = create_hybrid_tables(fallback_map)
-+    print(f"Dropped {len(dropped)} mappings whose fallback was larger than a byte")
-+    print(f"Created {len(intervals)} intervals and {len(singles)} single entries")
-+
-+    # Generate C tables
-+    with open(out_file, 'w') as f:
-+        f.write(f"""\
++++ b/drivers/tty/vt/ucs_fallback_table.h_shipped
+@@ -0,0 +1,1686 @@
 +/* SPDX-License-Identifier: GPL-2.0 */
 +/*
-+ * {out_file} - Unicode character fallback table for display simplification
++ * ucs_fallback_table.h - Unicode character fallback table for display simplification
 + *
-+ * Auto-generated by {this_file}
++ * Auto-generated by gen_ucs_fallback_table.py
 + *
-+ * Unicode Version: {unicodedata.unidata_version}
++ * Unicode Version: 16.0.0
 + *
 + * This file contains tables that map complex Unicode characters to simpler
 + * fallback characters for terminal display when corresponding glyphs are
 + * unavailable.
 + */
 +
-+static const struct ucs_interval16 ucs_fallback_intervals[] = {{
-+""")
-+
-+        # Write interval table
-+        for first, last, fallback in intervals:
-+            comment = f"/* {cp_name(first)} - {cp_name(last)} -> {cp_name(fallback)} */"
-+            f.write(f"\t{{ 0x{first:04X}, 0x{last:04X}, }}, {comment}\n")
-+
-+        f.write("""\
++static const struct ucs_interval16 ucs_fallback_intervals[] = {
++	{ 0x00C0, 0x00C5, }, /* LATIN CAPITAL LETTER A WITH GRAVE - LATIN CAPITAL LETTER A WITH RING ABOVE -> LATIN CAPITAL LETTER A */
++	{ 0x00C8, 0x00CB, }, /* LATIN CAPITAL LETTER E WITH GRAVE - LATIN CAPITAL LETTER E WITH DIAERESIS -> LATIN CAPITAL LETTER E */
++	{ 0x00CC, 0x00CF, }, /* LATIN CAPITAL LETTER I WITH GRAVE - LATIN CAPITAL LETTER I WITH DIAERESIS -> LATIN CAPITAL LETTER I */
++	{ 0x00D2, 0x00D6, }, /* LATIN CAPITAL LETTER O WITH GRAVE - LATIN CAPITAL LETTER O WITH DIAERESIS -> LATIN CAPITAL LETTER O */
++	{ 0x00D9, 0x00DC, }, /* LATIN CAPITAL LETTER U WITH GRAVE - LATIN CAPITAL LETTER U WITH DIAERESIS -> LATIN CAPITAL LETTER U */
++	{ 0x00E0, 0x00E5, }, /* LATIN SMALL LETTER A WITH GRAVE - LATIN SMALL LETTER A WITH RING ABOVE -> LATIN SMALL LETTER A */
++	{ 0x00E8, 0x00EB, }, /* LATIN SMALL LETTER E WITH GRAVE - LATIN SMALL LETTER E WITH DIAERESIS -> LATIN SMALL LETTER E */
++	{ 0x00EC, 0x00EF, }, /* LATIN SMALL LETTER I WITH GRAVE - LATIN SMALL LETTER I WITH DIAERESIS -> LATIN SMALL LETTER I */
++	{ 0x00F2, 0x00F6, }, /* LATIN SMALL LETTER O WITH GRAVE - LATIN SMALL LETTER O WITH DIAERESIS -> LATIN SMALL LETTER O */
++	{ 0x00F9, 0x00FC, }, /* LATIN SMALL LETTER U WITH GRAVE - LATIN SMALL LETTER U WITH DIAERESIS -> LATIN SMALL LETTER U */
++	{ 0x03C8, 0x03C9, }, /* GREEK SMALL LETTER PSI - GREEK SMALL LETTER OMEGA -> LATIN SMALL LETTER W */
++	{ 0x1F00, 0x1F07, }, /* GREEK SMALL LETTER ALPHA WITH PSILI - GREEK SMALL LETTER ALPHA WITH DASIA AND PERISPOMENI -> LATIN SMALL LETTER A */
++	{ 0x1F10, 0x1F15, }, /* GREEK SMALL LETTER EPSILON WITH PSILI - GREEK SMALL LETTER EPSILON WITH DASIA AND OXIA -> LATIN SMALL LETTER E */
++	{ 0x1F20, 0x1F27, }, /* GREEK SMALL LETTER ETA WITH PSILI - GREEK SMALL LETTER ETA WITH DASIA AND PERISPOMENI -> LATIN SMALL LETTER N */
++	{ 0x1F60, 0x1F67, }, /* GREEK SMALL LETTER OMEGA WITH PSILI - GREEK SMALL LETTER OMEGA WITH DASIA AND PERISPOMENI -> LATIN SMALL LETTER W */
++	{ 0x1F68, 0x1F6F, }, /* GREEK CAPITAL LETTER OMEGA WITH PSILI - GREEK CAPITAL LETTER OMEGA WITH DASIA AND PERISPOMENI -> LATIN CAPITAL LETTER O */
++	{ 0x1F80, 0x1F87, }, /* GREEK SMALL LETTER ALPHA WITH PSILI AND YPOGEGRAMMENI - GREEK SMALL LETTER ALPHA WITH DASIA AND PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER A */
++	{ 0x1F90, 0x1F97, }, /* GREEK SMALL LETTER ETA WITH PSILI AND YPOGEGRAMMENI - GREEK SMALL LETTER ETA WITH DASIA AND PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER N */
++	{ 0x1FA0, 0x1FA7, }, /* GREEK SMALL LETTER OMEGA WITH PSILI AND YPOGEGRAMMENI - GREEK SMALL LETTER OMEGA WITH DASIA AND PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER W */
++	{ 0x1FA8, 0x1FAF, }, /* GREEK CAPITAL LETTER OMEGA WITH PSILI AND PROSGEGRAMMENI - GREEK CAPITAL LETTER OMEGA WITH DASIA AND PERISPOMENI AND PROSGEGRAMMENI -> LATIN CAPITAL LETTER O */
++	{ 0x1FB0, 0x1FB4, }, /* GREEK SMALL LETTER ALPHA WITH VRACHY - GREEK SMALL LETTER ALPHA WITH OXIA AND YPOGEGRAMMENI -> LATIN SMALL LETTER A */
++	{ 0x1FB6, 0x1FB7, }, /* GREEK SMALL LETTER ALPHA WITH PERISPOMENI - GREEK SMALL LETTER ALPHA WITH PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER A */
++	{ 0x1FC2, 0x1FC4, }, /* GREEK SMALL LETTER ETA WITH VARIA AND YPOGEGRAMMENI - GREEK SMALL LETTER ETA WITH OXIA AND YPOGEGRAMMENI -> LATIN SMALL LETTER N */
++	{ 0x1FC6, 0x1FC7, }, /* GREEK SMALL LETTER ETA WITH PERISPOMENI - GREEK SMALL LETTER ETA WITH PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER N */
++	{ 0x1FE4, 0x1FE5, }, /* GREEK SMALL LETTER RHO WITH PSILI - GREEK SMALL LETTER RHO WITH DASIA -> LATIN SMALL LETTER P */
++	{ 0x1FF2, 0x1FF4, }, /* GREEK SMALL LETTER OMEGA WITH VARIA AND YPOGEGRAMMENI - GREEK SMALL LETTER OMEGA WITH OXIA AND YPOGEGRAMMENI -> LATIN SMALL LETTER W */
++	{ 0x1FF6, 0x1FF7, }, /* GREEK SMALL LETTER OMEGA WITH PERISPOMENI - GREEK SMALL LETTER OMEGA WITH PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER W */
++	{ 0x2000, 0x200A, }, /* EN QUAD - HAIR SPACE -> SPACE */
++	{ 0x2010, 0x2015, }, /* HYPHEN - HORIZONTAL BAR -> HYPHEN-MINUS */
++	{ 0x2018, 0x2019, }, /* LEFT SINGLE QUOTATION MARK - RIGHT SINGLE QUOTATION MARK -> APOSTROPHE */
++	{ 0x201C, 0x201F, }, /* LEFT DOUBLE QUOTATION MARK - DOUBLE HIGH-REVERSED-9 QUOTATION MARK -> QUOTATION MARK */
++	{ 0x2026, 0x2027, }, /* HORIZONTAL ELLIPSIS - HYPHENATION POINT -> FULL STOP */
++	{ 0x2047, 0x2048, }, /* DOUBLE QUESTION MARK - QUESTION EXCLAMATION MARK -> QUESTION MARK */
++	{ 0x219A, 0x219B, }, /* LEFTWARDS ARROW WITH STROKE - RIGHTWARDS ARROW WITH STROKE -> EXCLAMATION MARK */
++	{ 0x21CD, 0x21CF, }, /* LEFTWARDS DOUBLE ARROW WITH STROKE - RIGHTWARDS DOUBLE ARROW WITH STROKE -> EXCLAMATION MARK */
++	{ 0x2234, 0x2235, }, /* THEREFORE - BECAUSE -> COLON */
++	{ 0x2268, 0x2269, }, /* LESS-THAN BUT NOT EQUAL TO - GREATER-THAN BUT NOT EQUAL TO -> NUMBER SIGN */
++	{ 0x226E, 0x226F, }, /* NOT LESS-THAN - NOT GREATER-THAN -> EXCLAMATION MARK */
++	{ 0x2280, 0x2281, }, /* DOES NOT PRECEDE - DOES NOT SUCCEED -> EXCLAMATION MARK */
++	{ 0x2284, 0x2285, }, /* NOT A SUBSET OF - NOT A SUPERSET OF -> EXCLAMATION MARK */
++	{ 0x228A, 0x228B, }, /* SUBSET OF WITH NOT EQUAL TO - SUPERSET OF WITH NOT EQUAL TO -> NUMBER SIGN */
++	{ 0x22AC, 0x22AE, }, /* DOES NOT PROVE - DOES NOT FORCE -> EXCLAMATION MARK */
++	{ 0x22E0, 0x22E1, }, /* DOES NOT PRECEDE OR EQUAL - DOES NOT SUCCEED OR EQUAL -> EXCLAMATION MARK */
++	{ 0x22EA, 0x22EB, }, /* NOT NORMAL SUBGROUP OF - DOES NOT CONTAIN AS NORMAL SUBGROUP -> EXCLAMATION MARK */
++	{ 0x23A3, 0x23A4, }, /* LEFT SQUARE BRACKET LOWER CORNER - RIGHT SQUARE BRACKET UPPER CORNER -> VERTICAL LINE */
++	{ 0x23A6, 0x23A7, }, /* RIGHT SQUARE BRACKET LOWER CORNER - LEFT CURLY BRACKET UPPER HOOK -> VERTICAL LINE */
++	{ 0x23B8, 0x23B9, }, /* LEFT VERTICAL BOX LINE - RIGHT VERTICAL BOX LINE -> VERTICAL LINE */
++	{ 0x23BE, 0x23BF, }, /* DENTISTRY SYMBOL LIGHT VERTICAL AND TOP RIGHT - DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM RIGHT -> LATIN CAPITAL LETTER L */
++	{ 0x2500, 0x2501, }, /* BOX DRAWINGS LIGHT HORIZONTAL - BOX DRAWINGS HEAVY HORIZONTAL -> HYPHEN-MINUS */
++	{ 0x2502, 0x2503, }, /* BOX DRAWINGS LIGHT VERTICAL - BOX DRAWINGS HEAVY VERTICAL -> VERTICAL LINE */
++	{ 0x250C, 0x254B, }, /* BOX DRAWINGS LIGHT DOWN AND RIGHT - BOX DRAWINGS HEAVY VERTICAL AND HORIZONTAL -> PLUS SIGN */
++	{ 0x2552, 0x2570, }, /* BOX DRAWINGS DOWN SINGLE AND RIGHT DOUBLE - BOX DRAWINGS LIGHT ARC UP AND RIGHT -> PLUS SIGN */
++	{ 0x2580, 0x2590, }, /* UPPER HALF BLOCK - RIGHT HALF BLOCK -> NUMBER SIGN */
++	{ 0x2593, 0x25A0, }, /* DARK SHADE - BLACK SQUARE -> NUMBER SIGN */
++	{ 0x25AA, 0x25AB, }, /* BLACK SMALL SQUARE - WHITE SMALL SQUARE -> FULL STOP */
++	{ 0x25AE, 0x25AF, }, /* BLACK VERTICAL RECTANGLE - WHITE VERTICAL RECTANGLE -> VERTICAL LINE */
++	{ 0x25B2, 0x25B3, }, /* BLACK UP-POINTING TRIANGLE - WHITE UP-POINTING TRIANGLE -> CIRCUMFLEX ACCENT */
++	{ 0x25BC, 0x25BD, }, /* BLACK DOWN-POINTING TRIANGLE - WHITE DOWN-POINTING TRIANGLE -> LATIN SMALL LETTER V */
++	{ 0x2605, 0x2606, }, /* BLACK STAR - WHITE STAR -> ASTERISK */
++	{ 0x2721, 0x2727, }, /* STAR OF DAVID - WHITE FOUR POINTED STAR -> ASTERISK */
++	{ 0x2729, 0x2746, }, /* STRESS OUTLINED WHITE STAR - HEAVY CHEVRON SNOWFLAKE -> ASTERISK */
++	{ 0x2749, 0x274B, }, /* BALLOON-SPOKED ASTERISK - HEAVY EIGHT TEARDROP-SPOKED PROPELLER ASTERISK -> ASTERISK */
 +};
 +
 +static const u8 ucs_fallback_intervals_subs[] = {
-+""")
-+
-+        # Write interval fallback character table
-+        for first, last, fallback in intervals:
-+            comment = f"/* {cp_name(first)} - {cp_name(last)} -> {cp_name(fallback)} */"
-+            f.write(f"\t0x{fallback:02X}, {comment}\n")
-+
-+        f.write("""\
++	0x41, /* LATIN CAPITAL LETTER A WITH GRAVE - LATIN CAPITAL LETTER A WITH RING ABOVE -> LATIN CAPITAL LETTER A */
++	0x45, /* LATIN CAPITAL LETTER E WITH GRAVE - LATIN CAPITAL LETTER E WITH DIAERESIS -> LATIN CAPITAL LETTER E */
++	0x49, /* LATIN CAPITAL LETTER I WITH GRAVE - LATIN CAPITAL LETTER I WITH DIAERESIS -> LATIN CAPITAL LETTER I */
++	0x4F, /* LATIN CAPITAL LETTER O WITH GRAVE - LATIN CAPITAL LETTER O WITH DIAERESIS -> LATIN CAPITAL LETTER O */
++	0x55, /* LATIN CAPITAL LETTER U WITH GRAVE - LATIN CAPITAL LETTER U WITH DIAERESIS -> LATIN CAPITAL LETTER U */
++	0x61, /* LATIN SMALL LETTER A WITH GRAVE - LATIN SMALL LETTER A WITH RING ABOVE -> LATIN SMALL LETTER A */
++	0x65, /* LATIN SMALL LETTER E WITH GRAVE - LATIN SMALL LETTER E WITH DIAERESIS -> LATIN SMALL LETTER E */
++	0x69, /* LATIN SMALL LETTER I WITH GRAVE - LATIN SMALL LETTER I WITH DIAERESIS -> LATIN SMALL LETTER I */
++	0x6F, /* LATIN SMALL LETTER O WITH GRAVE - LATIN SMALL LETTER O WITH DIAERESIS -> LATIN SMALL LETTER O */
++	0x75, /* LATIN SMALL LETTER U WITH GRAVE - LATIN SMALL LETTER U WITH DIAERESIS -> LATIN SMALL LETTER U */
++	0x77, /* GREEK SMALL LETTER PSI - GREEK SMALL LETTER OMEGA -> LATIN SMALL LETTER W */
++	0x61, /* GREEK SMALL LETTER ALPHA WITH PSILI - GREEK SMALL LETTER ALPHA WITH DASIA AND PERISPOMENI -> LATIN SMALL LETTER A */
++	0x65, /* GREEK SMALL LETTER EPSILON WITH PSILI - GREEK SMALL LETTER EPSILON WITH DASIA AND OXIA -> LATIN SMALL LETTER E */
++	0x6E, /* GREEK SMALL LETTER ETA WITH PSILI - GREEK SMALL LETTER ETA WITH DASIA AND PERISPOMENI -> LATIN SMALL LETTER N */
++	0x77, /* GREEK SMALL LETTER OMEGA WITH PSILI - GREEK SMALL LETTER OMEGA WITH DASIA AND PERISPOMENI -> LATIN SMALL LETTER W */
++	0x4F, /* GREEK CAPITAL LETTER OMEGA WITH PSILI - GREEK CAPITAL LETTER OMEGA WITH DASIA AND PERISPOMENI -> LATIN CAPITAL LETTER O */
++	0x61, /* GREEK SMALL LETTER ALPHA WITH PSILI AND YPOGEGRAMMENI - GREEK SMALL LETTER ALPHA WITH DASIA AND PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER A */
++	0x6E, /* GREEK SMALL LETTER ETA WITH PSILI AND YPOGEGRAMMENI - GREEK SMALL LETTER ETA WITH DASIA AND PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER N */
++	0x77, /* GREEK SMALL LETTER OMEGA WITH PSILI AND YPOGEGRAMMENI - GREEK SMALL LETTER OMEGA WITH DASIA AND PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER W */
++	0x4F, /* GREEK CAPITAL LETTER OMEGA WITH PSILI AND PROSGEGRAMMENI - GREEK CAPITAL LETTER OMEGA WITH DASIA AND PERISPOMENI AND PROSGEGRAMMENI -> LATIN CAPITAL LETTER O */
++	0x61, /* GREEK SMALL LETTER ALPHA WITH VRACHY - GREEK SMALL LETTER ALPHA WITH OXIA AND YPOGEGRAMMENI -> LATIN SMALL LETTER A */
++	0x61, /* GREEK SMALL LETTER ALPHA WITH PERISPOMENI - GREEK SMALL LETTER ALPHA WITH PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER A */
++	0x6E, /* GREEK SMALL LETTER ETA WITH VARIA AND YPOGEGRAMMENI - GREEK SMALL LETTER ETA WITH OXIA AND YPOGEGRAMMENI -> LATIN SMALL LETTER N */
++	0x6E, /* GREEK SMALL LETTER ETA WITH PERISPOMENI - GREEK SMALL LETTER ETA WITH PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER N */
++	0x70, /* GREEK SMALL LETTER RHO WITH PSILI - GREEK SMALL LETTER RHO WITH DASIA -> LATIN SMALL LETTER P */
++	0x77, /* GREEK SMALL LETTER OMEGA WITH VARIA AND YPOGEGRAMMENI - GREEK SMALL LETTER OMEGA WITH OXIA AND YPOGEGRAMMENI -> LATIN SMALL LETTER W */
++	0x77, /* GREEK SMALL LETTER OMEGA WITH PERISPOMENI - GREEK SMALL LETTER OMEGA WITH PERISPOMENI AND YPOGEGRAMMENI -> LATIN SMALL LETTER W */
++	0x20, /* EN QUAD - HAIR SPACE -> SPACE */
++	0x2D, /* HYPHEN - HORIZONTAL BAR -> HYPHEN-MINUS */
++	0x27, /* LEFT SINGLE QUOTATION MARK - RIGHT SINGLE QUOTATION MARK -> APOSTROPHE */
++	0x22, /* LEFT DOUBLE QUOTATION MARK - DOUBLE HIGH-REVERSED-9 QUOTATION MARK -> QUOTATION MARK */
++	0x2E, /* HORIZONTAL ELLIPSIS - HYPHENATION POINT -> FULL STOP */
++	0x3F, /* DOUBLE QUESTION MARK - QUESTION EXCLAMATION MARK -> QUESTION MARK */
++	0x21, /* LEFTWARDS ARROW WITH STROKE - RIGHTWARDS ARROW WITH STROKE -> EXCLAMATION MARK */
++	0x21, /* LEFTWARDS DOUBLE ARROW WITH STROKE - RIGHTWARDS DOUBLE ARROW WITH STROKE -> EXCLAMATION MARK */
++	0x3A, /* THEREFORE - BECAUSE -> COLON */
++	0x23, /* LESS-THAN BUT NOT EQUAL TO - GREATER-THAN BUT NOT EQUAL TO -> NUMBER SIGN */
++	0x21, /* NOT LESS-THAN - NOT GREATER-THAN -> EXCLAMATION MARK */
++	0x21, /* DOES NOT PRECEDE - DOES NOT SUCCEED -> EXCLAMATION MARK */
++	0x21, /* NOT A SUBSET OF - NOT A SUPERSET OF -> EXCLAMATION MARK */
++	0x23, /* SUBSET OF WITH NOT EQUAL TO - SUPERSET OF WITH NOT EQUAL TO -> NUMBER SIGN */
++	0x21, /* DOES NOT PROVE - DOES NOT FORCE -> EXCLAMATION MARK */
++	0x21, /* DOES NOT PRECEDE OR EQUAL - DOES NOT SUCCEED OR EQUAL -> EXCLAMATION MARK */
++	0x21, /* NOT NORMAL SUBGROUP OF - DOES NOT CONTAIN AS NORMAL SUBGROUP -> EXCLAMATION MARK */
++	0x7C, /* LEFT SQUARE BRACKET LOWER CORNER - RIGHT SQUARE BRACKET UPPER CORNER -> VERTICAL LINE */
++	0x7C, /* RIGHT SQUARE BRACKET LOWER CORNER - LEFT CURLY BRACKET UPPER HOOK -> VERTICAL LINE */
++	0x7C, /* LEFT VERTICAL BOX LINE - RIGHT VERTICAL BOX LINE -> VERTICAL LINE */
++	0x4C, /* DENTISTRY SYMBOL LIGHT VERTICAL AND TOP RIGHT - DENTISTRY SYMBOL LIGHT VERTICAL AND BOTTOM RIGHT -> LATIN CAPITAL LETTER L */
++	0x2D, /* BOX DRAWINGS LIGHT HORIZONTAL - BOX DRAWINGS HEAVY HORIZONTAL -> HYPHEN-MINUS */
++	0x7C, /* BOX DRAWINGS LIGHT VERTICAL - BOX DRAWINGS HEAVY VERTICAL -> VERTICAL LINE */
++	0x2B, /* BOX DRAWINGS LIGHT DOWN AND RIGHT - BOX DRAWINGS HEAVY VERTICAL AND HORIZONTAL -> PLUS SIGN */
++	0x2B, /* BOX DRAWINGS DOWN SINGLE AND RIGHT DOUBLE - BOX DRAWINGS LIGHT ARC UP AND RIGHT -> PLUS SIGN */
++	0x23, /* UPPER HALF BLOCK - RIGHT HALF BLOCK -> NUMBER SIGN */
++	0x23, /* DARK SHADE - BLACK SQUARE -> NUMBER SIGN */
++	0x2E, /* BLACK SMALL SQUARE - WHITE SMALL SQUARE -> FULL STOP */
++	0x7C, /* BLACK VERTICAL RECTANGLE - WHITE VERTICAL RECTANGLE -> VERTICAL LINE */
++	0x5E, /* BLACK UP-POINTING TRIANGLE - WHITE UP-POINTING TRIANGLE -> CIRCUMFLEX ACCENT */
++	0x76, /* BLACK DOWN-POINTING TRIANGLE - WHITE DOWN-POINTING TRIANGLE -> LATIN SMALL LETTER V */
++	0x2A, /* BLACK STAR - WHITE STAR -> ASTERISK */
++	0x2A, /* STAR OF DAVID - WHITE FOUR POINTED STAR -> ASTERISK */
++	0x2A, /* STRESS OUTLINED WHITE STAR - HEAVY CHEVRON SNOWFLAKE -> ASTERISK */
++	0x2A, /* BALLOON-SPOKED ASTERISK - HEAVY EIGHT TEARDROP-SPOKED PROPELLER ASTERISK -> ASTERISK */
 +};
 +
 +static const u16 ucs_fallback_singles[] = {
-+""")
-+
-+        # Write single entry table
-+        for codepoint, fallback in singles:
-+            comment = f"/* {cp_name(codepoint)} -> {cp_name(fallback)} */"
-+            f.write(f"\t0x{codepoint:04X}, {comment}\n")
-+
-+        f.write("""\
++	0x00A0, /* NO-BREAK SPACE -> SPACE */
++	0x00A1, /* INVERTED EXCLAMATION MARK -> EXCLAMATION MARK */
++	0x00A2, /* CENT SIGN -> LATIN SMALL LETTER C */
++	0x00A3, /* POUND SIGN -> LATIN CAPITAL LETTER L */
++	0x00A5, /* YEN SIGN -> LATIN CAPITAL LETTER Y */
++	0x00A6, /* BROKEN BAR -> VERTICAL LINE */
++	0x00A7, /* SECTION SIGN -> LATIN CAPITAL LETTER S */
++	0x00A9, /* COPYRIGHT SIGN -> LATIN CAPITAL LETTER C */
++	0x00AB, /* LEFT-POINTING DOUBLE ANGLE QUOTATION MARK -> LESS-THAN SIGN */
++	0x00AE, /* REGISTERED SIGN -> LATIN CAPITAL LETTER R */
++	0x00B0, /* DEGREE SIGN -> LATIN SMALL LETTER O */
++	0x00B1, /* PLUS-MINUS SIGN -> PLUS SIGN */
++	0x00B2, /* SUPERSCRIPT TWO -> DIGIT TWO */
++	0x00B3, /* SUPERSCRIPT THREE -> DIGIT THREE */
++	0x00B5, /* MICRO SIGN -> LATIN SMALL LETTER U */
++	0x00B6, /* PILCROW SIGN -> LATIN CAPITAL LETTER P */
++	0x00B7, /* MIDDLE DOT -> FULL STOP */
++	0x00B9, /* SUPERSCRIPT ONE -> DIGIT ONE */
++	0x00BB, /* RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK -> GREATER-THAN SIGN */
++	0x00BF, /* INVERTED QUESTION MARK -> QUESTION MARK */
++	0x00C6, /* LATIN CAPITAL LETTER AE -> LATIN CAPITAL LETTER E */
++	0x00C7, /* LATIN CAPITAL LETTER C WITH CEDILLA -> LATIN CAPITAL LETTER C */
++	0x00D0, /* LATIN CAPITAL LETTER ETH -> LATIN CAPITAL LETTER D */
++	0x00D1, /* LATIN CAPITAL LETTER N WITH TILDE -> LATIN CAPITAL LETTER N */
++	0x00D7, /* MULTIPLICATION SIGN -> LATIN SMALL LETTER X */
++	0x00D8, /* LATIN CAPITAL LETTER O WITH STROKE -> LATIN CAPITAL LETTER O */
++	0x00DD, /* LATIN CAPITAL LETTER Y WITH ACUTE -> LATIN CAPITAL LETTER Y */
++	0x00DE, /* LATIN CAPITAL LETTER THORN -> LATIN CAPITAL LETTER P */
++	0x00DF, /* LATIN SMALL LETTER SHARP S -> LATIN SMALL LETTER S */
++	0x00E6, /* LATIN SMALL LETTER AE -> LATIN SMALL LETTER E */
++	0x00E7, /* LATIN SMALL LETTER C WITH CEDILLA -> LATIN SMALL LETTER C */
++	0x00F0, /* LATIN SMALL LETTER ETH -> LATIN SMALL LETTER D */
++	0x00F1, /* LATIN SMALL LETTER N WITH TILDE -> LATIN SMALL LETTER N */
++	0x00F7, /* DIVISION SIGN -> SOLIDUS */
++	0x00F8, /* LATIN SMALL LETTER O WITH STROKE -> LATIN SMALL LETTER O */
++	0x00FD, /* LATIN SMALL LETTER Y WITH ACUTE -> LATIN SMALL LETTER Y */
++	0x00FE, /* LATIN SMALL LETTER THORN -> LATIN SMALL LETTER P */
++	0x00FF, /* LATIN SMALL LETTER Y WITH DIAERESIS -> LATIN SMALL LETTER Y */
++	0x0100, /* LATIN CAPITAL LETTER A WITH MACRON -> LATIN CAPITAL LETTER A */
++	0x0101, /* LATIN SMALL LETTER A WITH MACRON -> LATIN SMALL LETTER A */
++	0x0102, /* LATIN CAPITAL LETTER A WITH BREVE -> LATIN CAPITAL LETTER A */
++	0x0103, /* LATIN SMALL LETTER A WITH BREVE -> LATIN SMALL LETTER A */
++	0x0104, /* LATIN CAPITAL LETTER A WITH OGONEK -> LATIN CAPITAL LETTER A */
++	0x0105, /* LATIN SMALL LETTER A WITH OGONEK -> LATIN SMALL LETTER A */
++	0x0106, /* LATIN CAPITAL LETTER C WITH ACUTE -> LATIN CAPITAL LETTER C */
++	0x0107, /* LATIN SMALL LETTER C WITH ACUTE -> LATIN SMALL LETTER C */
++	0x0108, /* LATIN CAPITAL LETTER C WITH CIRCUMFLEX -> LATIN CAPITAL LETTER C */
++	0x0109, /* LATIN SMALL LETTER C WITH CIRCUMFLEX -> LATIN SMALL LETTER C */
++	0x010A, /* LATIN CAPITAL LETTER C WITH DOT ABOVE -> LATIN CAPITAL LETTER C */
++	0x010B, /* LATIN SMALL LETTER C WITH DOT ABOVE -> LATIN SMALL LETTER C */
++	0x010C, /* LATIN CAPITAL LETTER C WITH CARON -> LATIN CAPITAL LETTER C */
++	0x010D, /* LATIN SMALL LETTER C WITH CARON -> LATIN SMALL LETTER C */
++	0x010E, /* LATIN CAPITAL LETTER D WITH CARON -> LATIN CAPITAL LETTER D */
++	0x010F, /* LATIN SMALL LETTER D WITH CARON -> LATIN SMALL LETTER D */
++	0x0110, /* LATIN CAPITAL LETTER D WITH STROKE -> LATIN CAPITAL LETTER D */
++	0x0111, /* LATIN SMALL LETTER D WITH STROKE -> LATIN SMALL LETTER D */
++	0x0112, /* LATIN CAPITAL LETTER E WITH MACRON -> LATIN CAPITAL LETTER E */
++	0x0113, /* LATIN SMALL LETTER E WITH MACRON -> LATIN SMALL LETTER E */
++	0x0114, /* LATIN CAPITAL LETTER E WITH BREVE -> LATIN CAPITAL LETTER E */
++	0x0115, /* LATIN SMALL LETTER E WITH BREVE -> LATIN SMALL LETTER E */
++	0x0116, /* LATIN CAPITAL LETTER E WITH DOT ABOVE -> LATIN CAPITAL LETTER E */
++	0x0117, /* LATIN SMALL LETTER E WITH DOT ABOVE -> LATIN SMALL LETTER E */
++	0x0118, /* LATIN CAPITAL LETTER E WITH OGONEK -> LATIN CAPITAL LETTER E */
++	0x0119, /* LATIN SMALL LETTER E WITH OGONEK -> LATIN SMALL LETTER E */
++	0x011A, /* LATIN CAPITAL LETTER E WITH CARON -> LATIN CAPITAL LETTER E */
++	0x011B, /* LATIN SMALL LETTER E WITH CARON -> LATIN SMALL LETTER E */
++	0x011C, /* LATIN CAPITAL LETTER G WITH CIRCUMFLEX -> LATIN CAPITAL LETTER G */
++	0x011D, /* LATIN SMALL LETTER G WITH CIRCUMFLEX -> LATIN SMALL LETTER G */
++	0x011E, /* LATIN CAPITAL LETTER G WITH BREVE -> LATIN CAPITAL LETTER G */
++	0x011F, /* LATIN SMALL LETTER G WITH BREVE -> LATIN SMALL LETTER G */
++	0x0120, /* LATIN CAPITAL LETTER G WITH DOT ABOVE -> LATIN CAPITAL LETTER G */
++	0x0121, /* LATIN SMALL LETTER G WITH DOT ABOVE -> LATIN SMALL LETTER G */
++	0x0122, /* LATIN CAPITAL LETTER G WITH CEDILLA -> LATIN CAPITAL LETTER G */
++	0x0123, /* LATIN SMALL LETTER G WITH CEDILLA -> LATIN SMALL LETTER G */
++	0x0124, /* LATIN CAPITAL LETTER H WITH CIRCUMFLEX -> LATIN CAPITAL LETTER H */
++	0x0125, /* LATIN SMALL LETTER H WITH CIRCUMFLEX -> LATIN SMALL LETTER H */
++	0x0126, /* LATIN CAPITAL LETTER H WITH STROKE -> LATIN CAPITAL LETTER H */
++	0x0127, /* LATIN SMALL LETTER H WITH STROKE -> LATIN SMALL LETTER H */
++	0x0128, /* LATIN CAPITAL LETTER I WITH TILDE -> LATIN CAPITAL LETTER I */
++	0x0129, /* LATIN SMALL LETTER I WITH TILDE -> LATIN SMALL LETTER I */
++	0x012A, /* LATIN CAPITAL LETTER I WITH MACRON -> LATIN CAPITAL LETTER I */
++	0x012B, /* LATIN SMALL LETTER I WITH MACRON -> LATIN SMALL LETTER I */
++	0x012C, /* LATIN CAPITAL LETTER I WITH BREVE -> LATIN CAPITAL LETTER I */
++	0x012D, /* LATIN SMALL LETTER I WITH BREVE -> LATIN SMALL LETTER I */
++	0x012E, /* LATIN CAPITAL LETTER I WITH OGONEK -> LATIN CAPITAL LETTER I */
++	0x012F, /* LATIN SMALL LETTER I WITH OGONEK -> LATIN SMALL LETTER I */
++	0x0130, /* LATIN CAPITAL LETTER I WITH DOT ABOVE -> LATIN CAPITAL LETTER I */
++	0x0134, /* LATIN CAPITAL LETTER J WITH CIRCUMFLEX -> LATIN CAPITAL LETTER J */
++	0x0135, /* LATIN SMALL LETTER J WITH CIRCUMFLEX -> LATIN SMALL LETTER J */
++	0x0136, /* LATIN CAPITAL LETTER K WITH CEDILLA -> LATIN CAPITAL LETTER K */
++	0x0137, /* LATIN SMALL LETTER K WITH CEDILLA -> LATIN SMALL LETTER K */
++	0x0139, /* LATIN CAPITAL LETTER L WITH ACUTE -> LATIN CAPITAL LETTER L */
++	0x013A, /* LATIN SMALL LETTER L WITH ACUTE -> LATIN SMALL LETTER L */
++	0x013B, /* LATIN CAPITAL LETTER L WITH CEDILLA -> LATIN CAPITAL LETTER L */
++	0x013C, /* LATIN SMALL LETTER L WITH CEDILLA -> LATIN SMALL LETTER L */
++	0x013D, /* LATIN CAPITAL LETTER L WITH CARON -> LATIN CAPITAL LETTER L */
++	0x013E, /* LATIN SMALL LETTER L WITH CARON -> LATIN SMALL LETTER L */
++	0x0141, /* LATIN CAPITAL LETTER L WITH STROKE -> LATIN CAPITAL LETTER L */
++	0x0142, /* LATIN SMALL LETTER L WITH STROKE -> LATIN SMALL LETTER L */
++	0x0143, /* LATIN CAPITAL LETTER N WITH ACUTE -> LATIN CAPITAL LETTER N */
++	0x0144, /* LATIN SMALL LETTER N WITH ACUTE -> LATIN SMALL LETTER N */
++	0x0145, /* LATIN CAPITAL LETTER N WITH CEDILLA -> LATIN CAPITAL LETTER N */
++	0x0146, /* LATIN SMALL LETTER N WITH CEDILLA -> LATIN SMALL LETTER N */
++	0x0147, /* LATIN CAPITAL LETTER N WITH CARON -> LATIN CAPITAL LETTER N */
++	0x0148, /* LATIN SMALL LETTER N WITH CARON -> LATIN SMALL LETTER N */
++	0x014C, /* LATIN CAPITAL LETTER O WITH MACRON -> LATIN CAPITAL LETTER O */
++	0x014D, /* LATIN SMALL LETTER O WITH MACRON -> LATIN SMALL LETTER O */
++	0x014E, /* LATIN CAPITAL LETTER O WITH BREVE -> LATIN CAPITAL LETTER O */
++	0x014F, /* LATIN SMALL LETTER O WITH BREVE -> LATIN SMALL LETTER O */
++	0x0150, /* LATIN CAPITAL LETTER O WITH DOUBLE ACUTE -> LATIN CAPITAL LETTER O */
++	0x0151, /* LATIN SMALL LETTER O WITH DOUBLE ACUTE -> LATIN SMALL LETTER O */
++	0x0152, /* LATIN CAPITAL LIGATURE OE -> LATIN CAPITAL LETTER E */
++	0x0153, /* LATIN SMALL LIGATURE OE -> LATIN SMALL LETTER E */
++	0x0154, /* LATIN CAPITAL LETTER R WITH ACUTE -> LATIN CAPITAL LETTER R */
++	0x0155, /* LATIN SMALL LETTER R WITH ACUTE -> LATIN SMALL LETTER R */
++	0x0156, /* LATIN CAPITAL LETTER R WITH CEDILLA -> LATIN CAPITAL LETTER R */
++	0x0157, /* LATIN SMALL LETTER R WITH CEDILLA -> LATIN SMALL LETTER R */
++	0x0158, /* LATIN CAPITAL LETTER R WITH CARON -> LATIN CAPITAL LETTER R */
++	0x0159, /* LATIN SMALL LETTER R WITH CARON -> LATIN SMALL LETTER R */
++	0x015A, /* LATIN CAPITAL LETTER S WITH ACUTE -> LATIN CAPITAL LETTER S */
++	0x015B, /* LATIN SMALL LETTER S WITH ACUTE -> LATIN SMALL LETTER S */
++	0x015C, /* LATIN CAPITAL LETTER S WITH CIRCUMFLEX -> LATIN CAPITAL LETTER S */
++	0x015D, /* LATIN SMALL LETTER S WITH CIRCUMFLEX -> LATIN SMALL LETTER S */
++	0x015E, /* LATIN CAPITAL LETTER S WITH CEDILLA -> LATIN CAPITAL LETTER S */
++	0x015F, /* LATIN SMALL LETTER S WITH CEDILLA -> LATIN SMALL LETTER S */
++	0x0160, /* LATIN CAPITAL LETTER S WITH CARON -> LATIN CAPITAL LETTER S */
++	0x0161, /* LATIN SMALL LETTER S WITH CARON -> LATIN SMALL LETTER S */
++	0x0162, /* LATIN CAPITAL LETTER T WITH CEDILLA -> LATIN CAPITAL LETTER T */
++	0x0163, /* LATIN SMALL LETTER T WITH CEDILLA -> LATIN SMALL LETTER T */
++	0x0164, /* LATIN CAPITAL LETTER T WITH CARON -> LATIN CAPITAL LETTER T */
++	0x0165, /* LATIN SMALL LETTER T WITH CARON -> LATIN SMALL LETTER T */
++	0x0168, /* LATIN CAPITAL LETTER U WITH TILDE -> LATIN CAPITAL LETTER U */
++	0x0169, /* LATIN SMALL LETTER U WITH TILDE -> LATIN SMALL LETTER U */
++	0x016A, /* LATIN CAPITAL LETTER U WITH MACRON -> LATIN CAPITAL LETTER U */
++	0x016B, /* LATIN SMALL LETTER U WITH MACRON -> LATIN SMALL LETTER U */
++	0x016C, /* LATIN CAPITAL LETTER U WITH BREVE -> LATIN CAPITAL LETTER U */
++	0x016D, /* LATIN SMALL LETTER U WITH BREVE -> LATIN SMALL LETTER U */
++	0x016E, /* LATIN CAPITAL LETTER U WITH RING ABOVE -> LATIN CAPITAL LETTER U */
++	0x016F, /* LATIN SMALL LETTER U WITH RING ABOVE -> LATIN SMALL LETTER U */
++	0x0170, /* LATIN CAPITAL LETTER U WITH DOUBLE ACUTE -> LATIN CAPITAL LETTER U */
++	0x0171, /* LATIN SMALL LETTER U WITH DOUBLE ACUTE -> LATIN SMALL LETTER U */
++	0x0172, /* LATIN CAPITAL LETTER U WITH OGONEK -> LATIN CAPITAL LETTER U */
++	0x0173, /* LATIN SMALL LETTER U WITH OGONEK -> LATIN SMALL LETTER U */
++	0x0174, /* LATIN CAPITAL LETTER W WITH CIRCUMFLEX -> LATIN CAPITAL LETTER W */
++	0x0175, /* LATIN SMALL LETTER W WITH CIRCUMFLEX -> LATIN SMALL LETTER W */
++	0x0176, /* LATIN CAPITAL LETTER Y WITH CIRCUMFLEX -> LATIN CAPITAL LETTER Y */
++	0x0177, /* LATIN SMALL LETTER Y WITH CIRCUMFLEX -> LATIN SMALL LETTER Y */
++	0x0178, /* LATIN CAPITAL LETTER Y WITH DIAERESIS -> LATIN CAPITAL LETTER Y */
++	0x0179, /* LATIN CAPITAL LETTER Z WITH ACUTE -> LATIN CAPITAL LETTER Z */
++	0x017A, /* LATIN SMALL LETTER Z WITH ACUTE -> LATIN SMALL LETTER Z */
++	0x017B, /* LATIN CAPITAL LETTER Z WITH DOT ABOVE -> LATIN CAPITAL LETTER Z */
++	0x017C, /* LATIN SMALL LETTER Z WITH DOT ABOVE -> LATIN SMALL LETTER Z */
++	0x017D, /* LATIN CAPITAL LETTER Z WITH CARON -> LATIN CAPITAL LETTER Z */
++	0x017E, /* LATIN SMALL LETTER Z WITH CARON -> LATIN SMALL LETTER Z */
++	0x01A0, /* LATIN CAPITAL LETTER O WITH HORN -> LATIN CAPITAL LETTER O */
++	0x01A1, /* LATIN SMALL LETTER O WITH HORN -> LATIN SMALL LETTER O */
++	0x01AF, /* LATIN CAPITAL LETTER U WITH HORN -> LATIN CAPITAL LETTER U */
++	0x01B0, /* LATIN SMALL LETTER U WITH HORN -> LATIN SMALL LETTER U */
++	0x01CD, /* LATIN CAPITAL LETTER A WITH CARON -> LATIN CAPITAL LETTER A */
++	0x01CE, /* LATIN SMALL LETTER A WITH CARON -> LATIN SMALL LETTER A */
++	0x01CF, /* LATIN CAPITAL LETTER I WITH CARON -> LATIN CAPITAL LETTER I */
++	0x01D0, /* LATIN SMALL LETTER I WITH CARON -> LATIN SMALL LETTER I */
++	0x01D1, /* LATIN CAPITAL LETTER O WITH CARON -> LATIN CAPITAL LETTER O */
++	0x01D2, /* LATIN SMALL LETTER O WITH CARON -> LATIN SMALL LETTER O */
++	0x01D3, /* LATIN CAPITAL LETTER U WITH CARON -> LATIN CAPITAL LETTER U */
++	0x01D4, /* LATIN SMALL LETTER U WITH CARON -> LATIN SMALL LETTER U */
++	0x01D5, /* LATIN CAPITAL LETTER U WITH DIAERESIS AND MACRON -> LATIN CAPITAL LETTER U WITH DIAERESIS */
++	0x01D6, /* LATIN SMALL LETTER U WITH DIAERESIS AND MACRON -> LATIN SMALL LETTER U WITH DIAERESIS */
++	0x01D7, /* LATIN CAPITAL LETTER U WITH DIAERESIS AND ACUTE -> LATIN CAPITAL LETTER U WITH DIAERESIS */
++	0x01D8, /* LATIN SMALL LETTER U WITH DIAERESIS AND ACUTE -> LATIN SMALL LETTER U WITH DIAERESIS */
++	0x01D9, /* LATIN CAPITAL LETTER U WITH DIAERESIS AND CARON -> LATIN CAPITAL LETTER U WITH DIAERESIS */
++	0x01DA, /* LATIN SMALL LETTER U WITH DIAERESIS AND CARON -> LATIN SMALL LETTER U WITH DIAERESIS */
++	0x01DB, /* LATIN CAPITAL LETTER U WITH DIAERESIS AND GRAVE -> LATIN CAPITAL LETTER U WITH DIAERESIS */
++	0x01DC, /* LATIN SMALL LETTER U WITH DIAERESIS AND GRAVE -> LATIN SMALL LETTER U WITH DIAERESIS */
++	0x01DE, /* LATIN CAPITAL LETTER A WITH DIAERESIS AND MACRON -> LATIN CAPITAL LETTER A WITH DIAERESIS */
++	0x01DF, /* LATIN SMALL LETTER A WITH DIAERESIS AND MACRON -> LATIN SMALL LETTER A WITH DIAERESIS */
++	0x01E0, /* LATIN CAPITAL LETTER A WITH DOT ABOVE AND MACRON -> LATIN CAPITAL LETTER A */
++	0x01E1, /* LATIN SMALL LETTER A WITH DOT ABOVE AND MACRON -> LATIN SMALL LETTER A */
++	0x01E2, /* LATIN CAPITAL LETTER AE WITH MACRON -> LATIN CAPITAL LETTER AE */
++	0x01E3, /* LATIN SMALL LETTER AE WITH MACRON -> LATIN SMALL LETTER AE */
++	0x01E6, /* LATIN CAPITAL LETTER G WITH CARON -> LATIN CAPITAL LETTER G */
++	0x01E7, /* LATIN SMALL LETTER G WITH CARON -> LATIN SMALL LETTER G */
++	0x01E8, /* LATIN CAPITAL LETTER K WITH CARON -> LATIN CAPITAL LETTER K */
++	0x01E9, /* LATIN SMALL LETTER K WITH CARON -> LATIN SMALL LETTER K */
++	0x01EA, /* LATIN CAPITAL LETTER O WITH OGONEK -> LATIN CAPITAL LETTER O */
++	0x01EB, /* LATIN SMALL LETTER O WITH OGONEK -> LATIN SMALL LETTER O */
++	0x01EC, /* LATIN CAPITAL LETTER O WITH OGONEK AND MACRON -> LATIN CAPITAL LETTER O */
++	0x01ED, /* LATIN SMALL LETTER O WITH OGONEK AND MACRON -> LATIN SMALL LETTER O */
++	0x01F0, /* LATIN SMALL LETTER J WITH CARON -> LATIN SMALL LETTER J */
++	0x01F4, /* LATIN CAPITAL LETTER G WITH ACUTE -> LATIN CAPITAL LETTER G */
++	0x01F5, /* LATIN SMALL LETTER G WITH ACUTE -> LATIN SMALL LETTER G */
++	0x01F8, /* LATIN CAPITAL LETTER N WITH GRAVE -> LATIN CAPITAL LETTER N */
++	0x01F9, /* LATIN SMALL LETTER N WITH GRAVE -> LATIN SMALL LETTER N */
++	0x01FA, /* LATIN CAPITAL LETTER A WITH RING ABOVE AND ACUTE -> LATIN CAPITAL LETTER A WITH RING ABOVE */
++	0x01FB, /* LATIN SMALL LETTER A WITH RING ABOVE AND ACUTE -> LATIN SMALL LETTER A WITH RING ABOVE */
++	0x01FC, /* LATIN CAPITAL LETTER AE WITH ACUTE -> LATIN CAPITAL LETTER AE */
++	0x01FD, /* LATIN SMALL LETTER AE WITH ACUTE -> LATIN SMALL LETTER AE */
++	0x01FE, /* LATIN CAPITAL LETTER O WITH STROKE AND ACUTE -> LATIN CAPITAL LETTER O WITH STROKE */
++	0x01FF, /* LATIN SMALL LETTER O WITH STROKE AND ACUTE -> LATIN SMALL LETTER O WITH STROKE */
++	0x0200, /* LATIN CAPITAL LETTER A WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER A */
++	0x0201, /* LATIN SMALL LETTER A WITH DOUBLE GRAVE -> LATIN SMALL LETTER A */
++	0x0202, /* LATIN CAPITAL LETTER A WITH INVERTED BREVE -> LATIN CAPITAL LETTER A */
++	0x0203, /* LATIN SMALL LETTER A WITH INVERTED BREVE -> LATIN SMALL LETTER A */
++	0x0204, /* LATIN CAPITAL LETTER E WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER E */
++	0x0205, /* LATIN SMALL LETTER E WITH DOUBLE GRAVE -> LATIN SMALL LETTER E */
++	0x0206, /* LATIN CAPITAL LETTER E WITH INVERTED BREVE -> LATIN CAPITAL LETTER E */
++	0x0207, /* LATIN SMALL LETTER E WITH INVERTED BREVE -> LATIN SMALL LETTER E */
++	0x0208, /* LATIN CAPITAL LETTER I WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER I */
++	0x0209, /* LATIN SMALL LETTER I WITH DOUBLE GRAVE -> LATIN SMALL LETTER I */
++	0x020A, /* LATIN CAPITAL LETTER I WITH INVERTED BREVE -> LATIN CAPITAL LETTER I */
++	0x020B, /* LATIN SMALL LETTER I WITH INVERTED BREVE -> LATIN SMALL LETTER I */
++	0x020C, /* LATIN CAPITAL LETTER O WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER O */
++	0x020D, /* LATIN SMALL LETTER O WITH DOUBLE GRAVE -> LATIN SMALL LETTER O */
++	0x020E, /* LATIN CAPITAL LETTER O WITH INVERTED BREVE -> LATIN CAPITAL LETTER O */
++	0x020F, /* LATIN SMALL LETTER O WITH INVERTED BREVE -> LATIN SMALL LETTER O */
++	0x0210, /* LATIN CAPITAL LETTER R WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER R */
++	0x0211, /* LATIN SMALL LETTER R WITH DOUBLE GRAVE -> LATIN SMALL LETTER R */
++	0x0212, /* LATIN CAPITAL LETTER R WITH INVERTED BREVE -> LATIN CAPITAL LETTER R */
++	0x0213, /* LATIN SMALL LETTER R WITH INVERTED BREVE -> LATIN SMALL LETTER R */
++	0x0214, /* LATIN CAPITAL LETTER U WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER U */
++	0x0215, /* LATIN SMALL LETTER U WITH DOUBLE GRAVE -> LATIN SMALL LETTER U */
++	0x0216, /* LATIN CAPITAL LETTER U WITH INVERTED BREVE -> LATIN CAPITAL LETTER U */
++	0x0217, /* LATIN SMALL LETTER U WITH INVERTED BREVE -> LATIN SMALL LETTER U */
++	0x0218, /* LATIN CAPITAL LETTER S WITH COMMA BELOW -> LATIN CAPITAL LETTER S */
++	0x0219, /* LATIN SMALL LETTER S WITH COMMA BELOW -> LATIN SMALL LETTER S */
++	0x021A, /* LATIN CAPITAL LETTER T WITH COMMA BELOW -> LATIN CAPITAL LETTER T */
++	0x021B, /* LATIN SMALL LETTER T WITH COMMA BELOW -> LATIN SMALL LETTER T */
++	0x021E, /* LATIN CAPITAL LETTER H WITH CARON -> LATIN CAPITAL LETTER H */
++	0x021F, /* LATIN SMALL LETTER H WITH CARON -> LATIN SMALL LETTER H */
++	0x0226, /* LATIN CAPITAL LETTER A WITH DOT ABOVE -> LATIN CAPITAL LETTER A */
++	0x0227, /* LATIN SMALL LETTER A WITH DOT ABOVE -> LATIN SMALL LETTER A */
++	0x0228, /* LATIN CAPITAL LETTER E WITH CEDILLA -> LATIN CAPITAL LETTER E */
++	0x0229, /* LATIN SMALL LETTER E WITH CEDILLA -> LATIN SMALL LETTER E */
++	0x022A, /* LATIN CAPITAL LETTER O WITH DIAERESIS AND MACRON -> LATIN CAPITAL LETTER O WITH DIAERESIS */
++	0x022B, /* LATIN SMALL LETTER O WITH DIAERESIS AND MACRON -> LATIN SMALL LETTER O WITH DIAERESIS */
++	0x022C, /* LATIN CAPITAL LETTER O WITH TILDE AND MACRON -> LATIN CAPITAL LETTER O WITH TILDE */
++	0x022D, /* LATIN SMALL LETTER O WITH TILDE AND MACRON -> LATIN SMALL LETTER O WITH TILDE */
++	0x022E, /* LATIN CAPITAL LETTER O WITH DOT ABOVE -> LATIN CAPITAL LETTER O */
++	0x022F, /* LATIN SMALL LETTER O WITH DOT ABOVE -> LATIN SMALL LETTER O */
++	0x0230, /* LATIN CAPITAL LETTER O WITH DOT ABOVE AND MACRON -> LATIN CAPITAL LETTER O */
++	0x0231, /* LATIN SMALL LETTER O WITH DOT ABOVE AND MACRON -> LATIN SMALL LETTER O */
++	0x0232, /* LATIN CAPITAL LETTER Y WITH MACRON -> LATIN CAPITAL LETTER Y */
++	0x0233, /* LATIN SMALL LETTER Y WITH MACRON -> LATIN SMALL LETTER Y */
++	0x0385, /* GREEK DIALYTIKA TONOS -> DIAERESIS */
++	0x0387, /* GREEK ANO TELEIA -> FULL STOP */
++	0x038F, /* GREEK CAPITAL LETTER OMEGA WITH TONOS -> LATIN CAPITAL LETTER O */
++	0x0393, /* GREEK CAPITAL LETTER GAMMA -> LATIN CAPITAL LETTER I */
++	0x0394, /* GREEK CAPITAL LETTER DELTA -> LATIN CAPITAL LETTER A */
++	0x0398, /* GREEK CAPITAL LETTER THETA -> LATIN CAPITAL LETTER O */
++	0x039B, /* GREEK CAPITAL LETTER LAMDA -> LATIN CAPITAL LETTER A */
++	0x03A0, /* GREEK CAPITAL LETTER PI -> LATIN SMALL LETTER N */
++	0x03A3, /* GREEK CAPITAL LETTER SIGMA -> LATIN CAPITAL LETTER E */
++	0x03A6, /* GREEK CAPITAL LETTER PHI -> LATIN CAPITAL LETTER O */
++	0x03A8, /* GREEK CAPITAL LETTER PSI -> LATIN CAPITAL LETTER Y */
++	0x03A9, /* GREEK CAPITAL LETTER OMEGA -> LATIN CAPITAL LETTER O */
++	0x03AC, /* GREEK SMALL LETTER ALPHA WITH TONOS -> LATIN SMALL LETTER A */
++	0x03AD, /* GREEK SMALL LETTER EPSILON WITH TONOS -> LATIN SMALL LETTER E */
++	0x03AE, /* GREEK SMALL LETTER ETA WITH TONOS -> LATIN SMALL LETTER N */
++	0x03B1, /* GREEK SMALL LETTER ALPHA -> LATIN SMALL LETTER A */
++	0x03B2, /* GREEK SMALL LETTER BETA -> LATIN CAPITAL LETTER B */
++	0x03B3, /* GREEK SMALL LETTER GAMMA -> LATIN SMALL LETTER Y */
++	0x03B4, /* GREEK SMALL LETTER DELTA -> LATIN SMALL LETTER D */
++	0x03B5, /* GREEK SMALL LETTER EPSILON -> LATIN SMALL LETTER E */
++	0x03B6, /* GREEK SMALL LETTER ZETA -> LATIN SMALL LETTER Z */
++	0x03B7, /* GREEK SMALL LETTER ETA -> LATIN SMALL LETTER N */
++	0x03B8, /* GREEK SMALL LETTER THETA -> DIGIT ZERO */
++	0x03BB, /* GREEK SMALL LETTER LAMDA -> LATIN SMALL LETTER L */
++	0x03BC, /* GREEK SMALL LETTER MU -> LATIN SMALL LETTER U */
++	0x03C0, /* GREEK SMALL LETTER PI -> LATIN SMALL LETTER N */
++	0x03C1, /* GREEK SMALL LETTER RHO -> LATIN SMALL LETTER P */
++	0x03C3, /* GREEK SMALL LETTER SIGMA -> LATIN SMALL LETTER O */
++	0x03C4, /* GREEK SMALL LETTER TAU -> LATIN SMALL LETTER T */
++	0x03C6, /* GREEK SMALL LETTER PHI -> LATIN SMALL LETTER F */
++	0x03C7, /* GREEK SMALL LETTER CHI -> LATIN CAPITAL LETTER X */
++	0x03CE, /* GREEK SMALL LETTER OMEGA WITH TONOS -> LATIN SMALL LETTER W */
++	0x1680, /* OGHAM SPACE MARK -> SPACE */
++	0x1E00, /* LATIN CAPITAL LETTER A WITH RING BELOW -> LATIN CAPITAL LETTER A */
++	0x1E01, /* LATIN SMALL LETTER A WITH RING BELOW -> LATIN SMALL LETTER A */
++	0x1E02, /* LATIN CAPITAL LETTER B WITH DOT ABOVE -> LATIN CAPITAL LETTER B */
++	0x1E03, /* LATIN SMALL LETTER B WITH DOT ABOVE -> LATIN SMALL LETTER B */
++	0x1E04, /* LATIN CAPITAL LETTER B WITH DOT BELOW -> LATIN CAPITAL LETTER B */
++	0x1E05, /* LATIN SMALL LETTER B WITH DOT BELOW -> LATIN SMALL LETTER B */
++	0x1E06, /* LATIN CAPITAL LETTER B WITH LINE BELOW -> LATIN CAPITAL LETTER B */
++	0x1E07, /* LATIN SMALL LETTER B WITH LINE BELOW -> LATIN SMALL LETTER B */
++	0x1E08, /* LATIN CAPITAL LETTER C WITH CEDILLA AND ACUTE -> LATIN CAPITAL LETTER C WITH CEDILLA */
++	0x1E09, /* LATIN SMALL LETTER C WITH CEDILLA AND ACUTE -> LATIN SMALL LETTER C WITH CEDILLA */
++	0x1E0A, /* LATIN CAPITAL LETTER D WITH DOT ABOVE -> LATIN CAPITAL LETTER D */
++	0x1E0B, /* LATIN SMALL LETTER D WITH DOT ABOVE -> LATIN SMALL LETTER D */
++	0x1E0C, /* LATIN CAPITAL LETTER D WITH DOT BELOW -> LATIN CAPITAL LETTER D */
++	0x1E0D, /* LATIN SMALL LETTER D WITH DOT BELOW -> LATIN SMALL LETTER D */
++	0x1E0E, /* LATIN CAPITAL LETTER D WITH LINE BELOW -> LATIN CAPITAL LETTER D */
++	0x1E0F, /* LATIN SMALL LETTER D WITH LINE BELOW -> LATIN SMALL LETTER D */
++	0x1E10, /* LATIN CAPITAL LETTER D WITH CEDILLA -> LATIN CAPITAL LETTER D */
++	0x1E11, /* LATIN SMALL LETTER D WITH CEDILLA -> LATIN SMALL LETTER D */
++	0x1E12, /* LATIN CAPITAL LETTER D WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER D */
++	0x1E13, /* LATIN SMALL LETTER D WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER D */
++	0x1E14, /* LATIN CAPITAL LETTER E WITH MACRON AND GRAVE -> LATIN CAPITAL LETTER E */
++	0x1E15, /* LATIN SMALL LETTER E WITH MACRON AND GRAVE -> LATIN SMALL LETTER E */
++	0x1E16, /* LATIN CAPITAL LETTER E WITH MACRON AND ACUTE -> LATIN CAPITAL LETTER E */
++	0x1E17, /* LATIN SMALL LETTER E WITH MACRON AND ACUTE -> LATIN SMALL LETTER E */
++	0x1E18, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER E */
++	0x1E19, /* LATIN SMALL LETTER E WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER E */
++	0x1E1A, /* LATIN CAPITAL LETTER E WITH TILDE BELOW -> LATIN CAPITAL LETTER E */
++	0x1E1B, /* LATIN SMALL LETTER E WITH TILDE BELOW -> LATIN SMALL LETTER E */
++	0x1E1C, /* LATIN CAPITAL LETTER E WITH CEDILLA AND BREVE -> LATIN CAPITAL LETTER E */
++	0x1E1D, /* LATIN SMALL LETTER E WITH CEDILLA AND BREVE -> LATIN SMALL LETTER E */
++	0x1E1E, /* LATIN CAPITAL LETTER F WITH DOT ABOVE -> LATIN CAPITAL LETTER F */
++	0x1E1F, /* LATIN SMALL LETTER F WITH DOT ABOVE -> LATIN SMALL LETTER F */
++	0x1E20, /* LATIN CAPITAL LETTER G WITH MACRON -> LATIN CAPITAL LETTER G */
++	0x1E21, /* LATIN SMALL LETTER G WITH MACRON -> LATIN SMALL LETTER G */
++	0x1E22, /* LATIN CAPITAL LETTER H WITH DOT ABOVE -> LATIN CAPITAL LETTER H */
++	0x1E23, /* LATIN SMALL LETTER H WITH DOT ABOVE -> LATIN SMALL LETTER H */
++	0x1E24, /* LATIN CAPITAL LETTER H WITH DOT BELOW -> LATIN CAPITAL LETTER H */
++	0x1E25, /* LATIN SMALL LETTER H WITH DOT BELOW -> LATIN SMALL LETTER H */
++	0x1E26, /* LATIN CAPITAL LETTER H WITH DIAERESIS -> LATIN CAPITAL LETTER H */
++	0x1E27, /* LATIN SMALL LETTER H WITH DIAERESIS -> LATIN SMALL LETTER H */
++	0x1E28, /* LATIN CAPITAL LETTER H WITH CEDILLA -> LATIN CAPITAL LETTER H */
++	0x1E29, /* LATIN SMALL LETTER H WITH CEDILLA -> LATIN SMALL LETTER H */
++	0x1E2A, /* LATIN CAPITAL LETTER H WITH BREVE BELOW -> LATIN CAPITAL LETTER H */
++	0x1E2B, /* LATIN SMALL LETTER H WITH BREVE BELOW -> LATIN SMALL LETTER H */
++	0x1E2C, /* LATIN CAPITAL LETTER I WITH TILDE BELOW -> LATIN CAPITAL LETTER I */
++	0x1E2D, /* LATIN SMALL LETTER I WITH TILDE BELOW -> LATIN SMALL LETTER I */
++	0x1E2E, /* LATIN CAPITAL LETTER I WITH DIAERESIS AND ACUTE -> LATIN CAPITAL LETTER I WITH DIAERESIS */
++	0x1E2F, /* LATIN SMALL LETTER I WITH DIAERESIS AND ACUTE -> LATIN SMALL LETTER I WITH DIAERESIS */
++	0x1E30, /* LATIN CAPITAL LETTER K WITH ACUTE -> LATIN CAPITAL LETTER K */
++	0x1E31, /* LATIN SMALL LETTER K WITH ACUTE -> LATIN SMALL LETTER K */
++	0x1E32, /* LATIN CAPITAL LETTER K WITH DOT BELOW -> LATIN CAPITAL LETTER K */
++	0x1E33, /* LATIN SMALL LETTER K WITH DOT BELOW -> LATIN SMALL LETTER K */
++	0x1E34, /* LATIN CAPITAL LETTER K WITH LINE BELOW -> LATIN CAPITAL LETTER K */
++	0x1E35, /* LATIN SMALL LETTER K WITH LINE BELOW -> LATIN SMALL LETTER K */
++	0x1E36, /* LATIN CAPITAL LETTER L WITH DOT BELOW -> LATIN CAPITAL LETTER L */
++	0x1E37, /* LATIN SMALL LETTER L WITH DOT BELOW -> LATIN SMALL LETTER L */
++	0x1E38, /* LATIN CAPITAL LETTER L WITH DOT BELOW AND MACRON -> LATIN CAPITAL LETTER L */
++	0x1E39, /* LATIN SMALL LETTER L WITH DOT BELOW AND MACRON -> LATIN SMALL LETTER L */
++	0x1E3A, /* LATIN CAPITAL LETTER L WITH LINE BELOW -> LATIN CAPITAL LETTER L */
++	0x1E3B, /* LATIN SMALL LETTER L WITH LINE BELOW -> LATIN SMALL LETTER L */
++	0x1E3C, /* LATIN CAPITAL LETTER L WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER L */
++	0x1E3D, /* LATIN SMALL LETTER L WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER L */
++	0x1E3E, /* LATIN CAPITAL LETTER M WITH ACUTE -> LATIN CAPITAL LETTER M */
++	0x1E3F, /* LATIN SMALL LETTER M WITH ACUTE -> LATIN SMALL LETTER M */
++	0x1E40, /* LATIN CAPITAL LETTER M WITH DOT ABOVE -> LATIN CAPITAL LETTER M */
++	0x1E41, /* LATIN SMALL LETTER M WITH DOT ABOVE -> LATIN SMALL LETTER M */
++	0x1E42, /* LATIN CAPITAL LETTER M WITH DOT BELOW -> LATIN CAPITAL LETTER M */
++	0x1E43, /* LATIN SMALL LETTER M WITH DOT BELOW -> LATIN SMALL LETTER M */
++	0x1E44, /* LATIN CAPITAL LETTER N WITH DOT ABOVE -> LATIN CAPITAL LETTER N */
++	0x1E45, /* LATIN SMALL LETTER N WITH DOT ABOVE -> LATIN SMALL LETTER N */
++	0x1E46, /* LATIN CAPITAL LETTER N WITH DOT BELOW -> LATIN CAPITAL LETTER N */
++	0x1E47, /* LATIN SMALL LETTER N WITH DOT BELOW -> LATIN SMALL LETTER N */
++	0x1E48, /* LATIN CAPITAL LETTER N WITH LINE BELOW -> LATIN CAPITAL LETTER N */
++	0x1E49, /* LATIN SMALL LETTER N WITH LINE BELOW -> LATIN SMALL LETTER N */
++	0x1E4A, /* LATIN CAPITAL LETTER N WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER N */
++	0x1E4B, /* LATIN SMALL LETTER N WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER N */
++	0x1E4C, /* LATIN CAPITAL LETTER O WITH TILDE AND ACUTE -> LATIN CAPITAL LETTER O WITH TILDE */
++	0x1E4D, /* LATIN SMALL LETTER O WITH TILDE AND ACUTE -> LATIN SMALL LETTER O WITH TILDE */
++	0x1E4E, /* LATIN CAPITAL LETTER O WITH TILDE AND DIAERESIS -> LATIN CAPITAL LETTER O WITH TILDE */
++	0x1E4F, /* LATIN SMALL LETTER O WITH TILDE AND DIAERESIS -> LATIN SMALL LETTER O WITH TILDE */
++	0x1E50, /* LATIN CAPITAL LETTER O WITH MACRON AND GRAVE -> LATIN CAPITAL LETTER O */
++	0x1E51, /* LATIN SMALL LETTER O WITH MACRON AND GRAVE -> LATIN SMALL LETTER O */
++	0x1E52, /* LATIN CAPITAL LETTER O WITH MACRON AND ACUTE -> LATIN CAPITAL LETTER O */
++	0x1E53, /* LATIN SMALL LETTER O WITH MACRON AND ACUTE -> LATIN SMALL LETTER O */
++	0x1E54, /* LATIN CAPITAL LETTER P WITH ACUTE -> LATIN CAPITAL LETTER P */
++	0x1E55, /* LATIN SMALL LETTER P WITH ACUTE -> LATIN SMALL LETTER P */
++	0x1E56, /* LATIN CAPITAL LETTER P WITH DOT ABOVE -> LATIN CAPITAL LETTER P */
++	0x1E57, /* LATIN SMALL LETTER P WITH DOT ABOVE -> LATIN SMALL LETTER P */
++	0x1E58, /* LATIN CAPITAL LETTER R WITH DOT ABOVE -> LATIN CAPITAL LETTER R */
++	0x1E59, /* LATIN SMALL LETTER R WITH DOT ABOVE -> LATIN SMALL LETTER R */
++	0x1E5A, /* LATIN CAPITAL LETTER R WITH DOT BELOW -> LATIN CAPITAL LETTER R */
++	0x1E5B, /* LATIN SMALL LETTER R WITH DOT BELOW -> LATIN SMALL LETTER R */
++	0x1E5C, /* LATIN CAPITAL LETTER R WITH DOT BELOW AND MACRON -> LATIN CAPITAL LETTER R */
++	0x1E5D, /* LATIN SMALL LETTER R WITH DOT BELOW AND MACRON -> LATIN SMALL LETTER R */
++	0x1E5E, /* LATIN CAPITAL LETTER R WITH LINE BELOW -> LATIN CAPITAL LETTER R */
++	0x1E5F, /* LATIN SMALL LETTER R WITH LINE BELOW -> LATIN SMALL LETTER R */
++	0x1E60, /* LATIN CAPITAL LETTER S WITH DOT ABOVE -> LATIN CAPITAL LETTER S */
++	0x1E61, /* LATIN SMALL LETTER S WITH DOT ABOVE -> LATIN SMALL LETTER S */
++	0x1E62, /* LATIN CAPITAL LETTER S WITH DOT BELOW -> LATIN CAPITAL LETTER S */
++	0x1E63, /* LATIN SMALL LETTER S WITH DOT BELOW -> LATIN SMALL LETTER S */
++	0x1E64, /* LATIN CAPITAL LETTER S WITH ACUTE AND DOT ABOVE -> LATIN CAPITAL LETTER S */
++	0x1E65, /* LATIN SMALL LETTER S WITH ACUTE AND DOT ABOVE -> LATIN SMALL LETTER S */
++	0x1E66, /* LATIN CAPITAL LETTER S WITH CARON AND DOT ABOVE -> LATIN CAPITAL LETTER S */
++	0x1E67, /* LATIN SMALL LETTER S WITH CARON AND DOT ABOVE -> LATIN SMALL LETTER S */
++	0x1E68, /* LATIN CAPITAL LETTER S WITH DOT BELOW AND DOT ABOVE -> LATIN CAPITAL LETTER S */
++	0x1E69, /* LATIN SMALL LETTER S WITH DOT BELOW AND DOT ABOVE -> LATIN SMALL LETTER S */
++	0x1E6A, /* LATIN CAPITAL LETTER T WITH DOT ABOVE -> LATIN CAPITAL LETTER T */
++	0x1E6B, /* LATIN SMALL LETTER T WITH DOT ABOVE -> LATIN SMALL LETTER T */
++	0x1E6C, /* LATIN CAPITAL LETTER T WITH DOT BELOW -> LATIN CAPITAL LETTER T */
++	0x1E6D, /* LATIN SMALL LETTER T WITH DOT BELOW -> LATIN SMALL LETTER T */
++	0x1E6E, /* LATIN CAPITAL LETTER T WITH LINE BELOW -> LATIN CAPITAL LETTER T */
++	0x1E6F, /* LATIN SMALL LETTER T WITH LINE BELOW -> LATIN SMALL LETTER T */
++	0x1E70, /* LATIN CAPITAL LETTER T WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER T */
++	0x1E71, /* LATIN SMALL LETTER T WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER T */
++	0x1E72, /* LATIN CAPITAL LETTER U WITH DIAERESIS BELOW -> LATIN CAPITAL LETTER U */
++	0x1E73, /* LATIN SMALL LETTER U WITH DIAERESIS BELOW -> LATIN SMALL LETTER U */
++	0x1E74, /* LATIN CAPITAL LETTER U WITH TILDE BELOW -> LATIN CAPITAL LETTER U */
++	0x1E75, /* LATIN SMALL LETTER U WITH TILDE BELOW -> LATIN SMALL LETTER U */
++	0x1E76, /* LATIN CAPITAL LETTER U WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER U */
++	0x1E77, /* LATIN SMALL LETTER U WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER U */
++	0x1E78, /* LATIN CAPITAL LETTER U WITH TILDE AND ACUTE -> LATIN CAPITAL LETTER U */
++	0x1E79, /* LATIN SMALL LETTER U WITH TILDE AND ACUTE -> LATIN SMALL LETTER U */
++	0x1E7A, /* LATIN CAPITAL LETTER U WITH MACRON AND DIAERESIS -> LATIN CAPITAL LETTER U */
++	0x1E7B, /* LATIN SMALL LETTER U WITH MACRON AND DIAERESIS -> LATIN SMALL LETTER U */
++	0x1E7C, /* LATIN CAPITAL LETTER V WITH TILDE -> LATIN CAPITAL LETTER V */
++	0x1E7D, /* LATIN SMALL LETTER V WITH TILDE -> LATIN SMALL LETTER V */
++	0x1E7E, /* LATIN CAPITAL LETTER V WITH DOT BELOW -> LATIN CAPITAL LETTER V */
++	0x1E7F, /* LATIN SMALL LETTER V WITH DOT BELOW -> LATIN SMALL LETTER V */
++	0x1E80, /* LATIN CAPITAL LETTER W WITH GRAVE -> LATIN CAPITAL LETTER W */
++	0x1E81, /* LATIN SMALL LETTER W WITH GRAVE -> LATIN SMALL LETTER W */
++	0x1E82, /* LATIN CAPITAL LETTER W WITH ACUTE -> LATIN CAPITAL LETTER W */
++	0x1E83, /* LATIN SMALL LETTER W WITH ACUTE -> LATIN SMALL LETTER W */
++	0x1E84, /* LATIN CAPITAL LETTER W WITH DIAERESIS -> LATIN CAPITAL LETTER W */
++	0x1E85, /* LATIN SMALL LETTER W WITH DIAERESIS -> LATIN SMALL LETTER W */
++	0x1E86, /* LATIN CAPITAL LETTER W WITH DOT ABOVE -> LATIN CAPITAL LETTER W */
++	0x1E87, /* LATIN SMALL LETTER W WITH DOT ABOVE -> LATIN SMALL LETTER W */
++	0x1E88, /* LATIN CAPITAL LETTER W WITH DOT BELOW -> LATIN CAPITAL LETTER W */
++	0x1E89, /* LATIN SMALL LETTER W WITH DOT BELOW -> LATIN SMALL LETTER W */
++	0x1E8A, /* LATIN CAPITAL LETTER X WITH DOT ABOVE -> LATIN CAPITAL LETTER X */
++	0x1E8B, /* LATIN SMALL LETTER X WITH DOT ABOVE -> LATIN SMALL LETTER X */
++	0x1E8C, /* LATIN CAPITAL LETTER X WITH DIAERESIS -> LATIN CAPITAL LETTER X */
++	0x1E8D, /* LATIN SMALL LETTER X WITH DIAERESIS -> LATIN SMALL LETTER X */
++	0x1E8E, /* LATIN CAPITAL LETTER Y WITH DOT ABOVE -> LATIN CAPITAL LETTER Y */
++	0x1E8F, /* LATIN SMALL LETTER Y WITH DOT ABOVE -> LATIN SMALL LETTER Y */
++	0x1E90, /* LATIN CAPITAL LETTER Z WITH CIRCUMFLEX -> LATIN CAPITAL LETTER Z */
++	0x1E91, /* LATIN SMALL LETTER Z WITH CIRCUMFLEX -> LATIN SMALL LETTER Z */
++	0x1E92, /* LATIN CAPITAL LETTER Z WITH DOT BELOW -> LATIN CAPITAL LETTER Z */
++	0x1E93, /* LATIN SMALL LETTER Z WITH DOT BELOW -> LATIN SMALL LETTER Z */
++	0x1E94, /* LATIN CAPITAL LETTER Z WITH LINE BELOW -> LATIN CAPITAL LETTER Z */
++	0x1E95, /* LATIN SMALL LETTER Z WITH LINE BELOW -> LATIN SMALL LETTER Z */
++	0x1E96, /* LATIN SMALL LETTER H WITH LINE BELOW -> LATIN SMALL LETTER H */
++	0x1E97, /* LATIN SMALL LETTER T WITH DIAERESIS -> LATIN SMALL LETTER T */
++	0x1E98, /* LATIN SMALL LETTER W WITH RING ABOVE -> LATIN SMALL LETTER W */
++	0x1E99, /* LATIN SMALL LETTER Y WITH RING ABOVE -> LATIN SMALL LETTER Y */
++	0x1EA0, /* LATIN CAPITAL LETTER A WITH DOT BELOW -> LATIN CAPITAL LETTER A */
++	0x1EA1, /* LATIN SMALL LETTER A WITH DOT BELOW -> LATIN SMALL LETTER A */
++	0x1EA2, /* LATIN CAPITAL LETTER A WITH HOOK ABOVE -> LATIN CAPITAL LETTER A */
++	0x1EA3, /* LATIN SMALL LETTER A WITH HOOK ABOVE -> LATIN SMALL LETTER A */
++	0x1EA4, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND ACUTE -> LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	0x1EA5, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE -> LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	0x1EA6, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND GRAVE -> LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	0x1EA7, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE -> LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	0x1EA8, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	0x1EA9, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	0x1EAA, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND TILDE -> LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	0x1EAB, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND TILDE -> LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	0x1EAC, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND DOT BELOW -> LATIN CAPITAL LETTER A */
++	0x1EAD, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW -> LATIN SMALL LETTER A */
++	0x1EAE, /* LATIN CAPITAL LETTER A WITH BREVE AND ACUTE -> LATIN CAPITAL LETTER A */
++	0x1EAF, /* LATIN SMALL LETTER A WITH BREVE AND ACUTE -> LATIN SMALL LETTER A */
++	0x1EB0, /* LATIN CAPITAL LETTER A WITH BREVE AND GRAVE -> LATIN CAPITAL LETTER A */
++	0x1EB1, /* LATIN SMALL LETTER A WITH BREVE AND GRAVE -> LATIN SMALL LETTER A */
++	0x1EB2, /* LATIN CAPITAL LETTER A WITH BREVE AND HOOK ABOVE -> LATIN CAPITAL LETTER A */
++	0x1EB3, /* LATIN SMALL LETTER A WITH BREVE AND HOOK ABOVE -> LATIN SMALL LETTER A */
++	0x1EB4, /* LATIN CAPITAL LETTER A WITH BREVE AND TILDE -> LATIN CAPITAL LETTER A */
++	0x1EB5, /* LATIN SMALL LETTER A WITH BREVE AND TILDE -> LATIN SMALL LETTER A */
++	0x1EB6, /* LATIN CAPITAL LETTER A WITH BREVE AND DOT BELOW -> LATIN CAPITAL LETTER A */
++	0x1EB7, /* LATIN SMALL LETTER A WITH BREVE AND DOT BELOW -> LATIN SMALL LETTER A */
++	0x1EB8, /* LATIN CAPITAL LETTER E WITH DOT BELOW -> LATIN CAPITAL LETTER E */
++	0x1EB9, /* LATIN SMALL LETTER E WITH DOT BELOW -> LATIN SMALL LETTER E */
++	0x1EBA, /* LATIN CAPITAL LETTER E WITH HOOK ABOVE -> LATIN CAPITAL LETTER E */
++	0x1EBB, /* LATIN SMALL LETTER E WITH HOOK ABOVE -> LATIN SMALL LETTER E */
++	0x1EBC, /* LATIN CAPITAL LETTER E WITH TILDE -> LATIN CAPITAL LETTER E */
++	0x1EBD, /* LATIN SMALL LETTER E WITH TILDE -> LATIN SMALL LETTER E */
++	0x1EBE, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND ACUTE -> LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	0x1EBF, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND ACUTE -> LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	0x1EC0, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND GRAVE -> LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	0x1EC1, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE -> LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	0x1EC2, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	0x1EC3, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	0x1EC4, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND TILDE -> LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	0x1EC5, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND TILDE -> LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	0x1EC6, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND DOT BELOW -> LATIN CAPITAL LETTER E */
++	0x1EC7, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW -> LATIN SMALL LETTER E */
++	0x1EC8, /* LATIN CAPITAL LETTER I WITH HOOK ABOVE -> LATIN CAPITAL LETTER I */
++	0x1EC9, /* LATIN SMALL LETTER I WITH HOOK ABOVE -> LATIN SMALL LETTER I */
++	0x1ECA, /* LATIN CAPITAL LETTER I WITH DOT BELOW -> LATIN CAPITAL LETTER I */
++	0x1ECB, /* LATIN SMALL LETTER I WITH DOT BELOW -> LATIN SMALL LETTER I */
++	0x1ECC, /* LATIN CAPITAL LETTER O WITH DOT BELOW -> LATIN CAPITAL LETTER O */
++	0x1ECD, /* LATIN SMALL LETTER O WITH DOT BELOW -> LATIN SMALL LETTER O */
++	0x1ECE, /* LATIN CAPITAL LETTER O WITH HOOK ABOVE -> LATIN CAPITAL LETTER O */
++	0x1ECF, /* LATIN SMALL LETTER O WITH HOOK ABOVE -> LATIN SMALL LETTER O */
++	0x1ED0, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND ACUTE -> LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	0x1ED1, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE -> LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	0x1ED2, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND GRAVE -> LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	0x1ED3, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE -> LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	0x1ED4, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	0x1ED5, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	0x1ED6, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND TILDE -> LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	0x1ED7, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE -> LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	0x1ED8, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND DOT BELOW -> LATIN CAPITAL LETTER O */
++	0x1ED9, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW -> LATIN SMALL LETTER O */
++	0x1EDA, /* LATIN CAPITAL LETTER O WITH HORN AND ACUTE -> LATIN CAPITAL LETTER O */
++	0x1EDB, /* LATIN SMALL LETTER O WITH HORN AND ACUTE -> LATIN SMALL LETTER O */
++	0x1EDC, /* LATIN CAPITAL LETTER O WITH HORN AND GRAVE -> LATIN CAPITAL LETTER O */
++	0x1EDD, /* LATIN SMALL LETTER O WITH HORN AND GRAVE -> LATIN SMALL LETTER O */
++	0x1EDE, /* LATIN CAPITAL LETTER O WITH HORN AND HOOK ABOVE -> LATIN CAPITAL LETTER O */
++	0x1EDF, /* LATIN SMALL LETTER O WITH HORN AND HOOK ABOVE -> LATIN SMALL LETTER O */
++	0x1EE0, /* LATIN CAPITAL LETTER O WITH HORN AND TILDE -> LATIN CAPITAL LETTER O */
++	0x1EE1, /* LATIN SMALL LETTER O WITH HORN AND TILDE -> LATIN SMALL LETTER O */
++	0x1EE2, /* LATIN CAPITAL LETTER O WITH HORN AND DOT BELOW -> LATIN CAPITAL LETTER O */
++	0x1EE3, /* LATIN SMALL LETTER O WITH HORN AND DOT BELOW -> LATIN SMALL LETTER O */
++	0x1EE4, /* LATIN CAPITAL LETTER U WITH DOT BELOW -> LATIN CAPITAL LETTER U */
++	0x1EE5, /* LATIN SMALL LETTER U WITH DOT BELOW -> LATIN SMALL LETTER U */
++	0x1EE6, /* LATIN CAPITAL LETTER U WITH HOOK ABOVE -> LATIN CAPITAL LETTER U */
++	0x1EE7, /* LATIN SMALL LETTER U WITH HOOK ABOVE -> LATIN SMALL LETTER U */
++	0x1EE8, /* LATIN CAPITAL LETTER U WITH HORN AND ACUTE -> LATIN CAPITAL LETTER U */
++	0x1EE9, /* LATIN SMALL LETTER U WITH HORN AND ACUTE -> LATIN SMALL LETTER U */
++	0x1EEA, /* LATIN CAPITAL LETTER U WITH HORN AND GRAVE -> LATIN CAPITAL LETTER U */
++	0x1EEB, /* LATIN SMALL LETTER U WITH HORN AND GRAVE -> LATIN SMALL LETTER U */
++	0x1EEC, /* LATIN CAPITAL LETTER U WITH HORN AND HOOK ABOVE -> LATIN CAPITAL LETTER U */
++	0x1EED, /* LATIN SMALL LETTER U WITH HORN AND HOOK ABOVE -> LATIN SMALL LETTER U */
++	0x1EEE, /* LATIN CAPITAL LETTER U WITH HORN AND TILDE -> LATIN CAPITAL LETTER U */
++	0x1EEF, /* LATIN SMALL LETTER U WITH HORN AND TILDE -> LATIN SMALL LETTER U */
++	0x1EF0, /* LATIN CAPITAL LETTER U WITH HORN AND DOT BELOW -> LATIN CAPITAL LETTER U */
++	0x1EF1, /* LATIN SMALL LETTER U WITH HORN AND DOT BELOW -> LATIN SMALL LETTER U */
++	0x1EF2, /* LATIN CAPITAL LETTER Y WITH GRAVE -> LATIN CAPITAL LETTER Y */
++	0x1EF3, /* LATIN SMALL LETTER Y WITH GRAVE -> LATIN SMALL LETTER Y */
++	0x1EF4, /* LATIN CAPITAL LETTER Y WITH DOT BELOW -> LATIN CAPITAL LETTER Y */
++	0x1EF5, /* LATIN SMALL LETTER Y WITH DOT BELOW -> LATIN SMALL LETTER Y */
++	0x1EF6, /* LATIN CAPITAL LETTER Y WITH HOOK ABOVE -> LATIN CAPITAL LETTER Y */
++	0x1EF7, /* LATIN SMALL LETTER Y WITH HOOK ABOVE -> LATIN SMALL LETTER Y */
++	0x1EF8, /* LATIN CAPITAL LETTER Y WITH TILDE -> LATIN CAPITAL LETTER Y */
++	0x1EF9, /* LATIN SMALL LETTER Y WITH TILDE -> LATIN SMALL LETTER Y */
++	0x1F70, /* GREEK SMALL LETTER ALPHA WITH VARIA -> LATIN SMALL LETTER A */
++	0x1F72, /* GREEK SMALL LETTER EPSILON WITH VARIA -> LATIN SMALL LETTER E */
++	0x1F74, /* GREEK SMALL LETTER ETA WITH VARIA -> LATIN SMALL LETTER N */
++	0x1F7C, /* GREEK SMALL LETTER OMEGA WITH VARIA -> LATIN SMALL LETTER W */
++	0x1FC1, /* GREEK DIALYTIKA AND PERISPOMENI -> DIAERESIS */
++	0x1FED, /* GREEK DIALYTIKA AND VARIA -> DIAERESIS */
++	0x1FFA, /* GREEK CAPITAL LETTER OMEGA WITH VARIA -> LATIN CAPITAL LETTER O */
++	0x1FFC, /* GREEK CAPITAL LETTER OMEGA WITH PROSGEGRAMMENI -> LATIN CAPITAL LETTER O */
++	0x201A, /* SINGLE LOW-9 QUOTATION MARK -> COMMA */
++	0x201B, /* SINGLE HIGH-REVERSED-9 QUOTATION MARK -> APOSTROPHE */
++	0x2022, /* BULLET -> ASTERISK */
++	0x2023, /* TRIANGULAR BULLET -> GREATER-THAN SIGN */
++	0x202F, /* NARROW NO-BREAK SPACE -> SPACE */
++	0x2032, /* PRIME -> APOSTROPHE */
++	0x2033, /* DOUBLE PRIME -> QUOTATION MARK */
++	0x2039, /* SINGLE LEFT-POINTING ANGLE QUOTATION MARK -> LESS-THAN SIGN */
++	0x203A, /* SINGLE RIGHT-POINTING ANGLE QUOTATION MARK -> GREATER-THAN SIGN */
++	0x203B, /* REFERENCE MARK -> ASTERISK */
++	0x203C, /* DOUBLE EXCLAMATION MARK -> EXCLAMATION MARK */
++	0x203D, /* INTERROBANG -> QUESTION MARK */
++	0x2042, /* ASTERISM -> ASTERISK */
++	0x2043, /* HYPHEN BULLET -> HYPHEN-MINUS */
++	0x2044, /* FRACTION SLASH -> SOLIDUS */
++	0x2049, /* EXCLAMATION QUESTION MARK -> EXCLAMATION MARK */
++	0x204A, /* TIRONIAN SIGN ET -> AMPERSAND */
++	0x204B, /* REVERSED PILCROW SIGN -> LATIN CAPITAL LETTER P */
++	0x204C, /* BLACK LEFTWARDS BULLET -> LESS-THAN SIGN */
++	0x204D, /* BLACK RIGHTWARDS BULLET -> GREATER-THAN SIGN */
++	0x204E, /* LOW ASTERISK -> ASTERISK */
++	0x204F, /* REVERSED SEMICOLON -> SEMICOLON */
++	0x2051, /* TWO ASTERISKS ALIGNED VERTICALLY -> ASTERISK */
++	0x2052, /* COMMERCIAL MINUS SIGN -> HYPHEN-MINUS */
++	0x2053, /* SWUNG DASH -> TILDE */
++	0x2055, /* FLOWER PUNCTUATION MARK -> ASTERISK */
++	0x205B, /* FOUR DOT MARK -> COLON */
++	0x205F, /* MEDIUM MATHEMATICAL SPACE -> SPACE */
++	0x2070, /* SUPERSCRIPT ZERO -> DIGIT ZERO */
++	0x2074, /* SUPERSCRIPT FOUR -> DIGIT FOUR */
++	0x2075, /* SUPERSCRIPT FIVE -> DIGIT FIVE */
++	0x2076, /* SUPERSCRIPT SIX -> DIGIT SIX */
++	0x2077, /* SUPERSCRIPT SEVEN -> DIGIT SEVEN */
++	0x2078, /* SUPERSCRIPT EIGHT -> DIGIT EIGHT */
++	0x2079, /* SUPERSCRIPT NINE -> DIGIT NINE */
++	0x2080, /* SUBSCRIPT ZERO -> DIGIT ZERO */
++	0x2081, /* SUBSCRIPT ONE -> DIGIT ONE */
++	0x2082, /* SUBSCRIPT TWO -> DIGIT TWO */
++	0x2083, /* SUBSCRIPT THREE -> DIGIT THREE */
++	0x2084, /* SUBSCRIPT FOUR -> DIGIT FOUR */
++	0x2085, /* SUBSCRIPT FIVE -> DIGIT FIVE */
++	0x2086, /* SUBSCRIPT SIX -> DIGIT SIX */
++	0x2087, /* SUBSCRIPT SEVEN -> DIGIT SEVEN */
++	0x2088, /* SUBSCRIPT EIGHT -> DIGIT EIGHT */
++	0x2089, /* SUBSCRIPT NINE -> DIGIT NINE */
++	0x20AC, /* EURO SIGN -> LATIN CAPITAL LETTER E */
++	0x2103, /* DEGREE CELSIUS -> LATIN CAPITAL LETTER C */
++	0x2109, /* DEGREE FAHRENHEIT -> LATIN CAPITAL LETTER F */
++	0x2122, /* TRADE MARK SIGN -> LATIN CAPITAL LETTER T */
++	0x2190, /* LEFTWARDS ARROW -> LESS-THAN SIGN */
++	0x2191, /* UPWARDS ARROW -> CIRCUMFLEX ACCENT */
++	0x2192, /* RIGHTWARDS ARROW -> GREATER-THAN SIGN */
++	0x2193, /* DOWNWARDS ARROW -> LATIN SMALL LETTER V */
++	0x21AE, /* LEFT RIGHT ARROW WITH STROKE -> EXCLAMATION MARK */
++	0x21D0, /* LEFTWARDS DOUBLE ARROW -> LESS-THAN SIGN */
++	0x21D1, /* UPWARDS DOUBLE ARROW -> CIRCUMFLEX ACCENT */
++	0x21D2, /* RIGHTWARDS DOUBLE ARROW -> GREATER-THAN SIGN */
++	0x21D3, /* DOWNWARDS DOUBLE ARROW -> LATIN SMALL LETTER V */
++	0x2204, /* THERE DOES NOT EXIST -> EXCLAMATION MARK */
++	0x2209, /* NOT AN ELEMENT OF -> EXCLAMATION MARK */
++	0x220C, /* DOES NOT CONTAIN AS MEMBER -> EXCLAMATION MARK */
++	0x2212, /* MINUS SIGN -> HYPHEN-MINUS */
++	0x2213, /* MINUS-OR-PLUS SIGN -> PLUS SIGN */
++	0x2215, /* DIVISION SLASH -> SOLIDUS */
++	0x2216, /* SET MINUS -> REVERSE SOLIDUS */
++	0x2217, /* ASTERISK OPERATOR -> ASTERISK */
++	0x2218, /* RING OPERATOR -> LATIN SMALL LETTER O */
++	0x2219, /* BULLET OPERATOR -> FULL STOP */
++	0x221A, /* SQUARE ROOT -> LATIN SMALL LETTER V */
++	0x221E, /* INFINITY -> DIGIT EIGHT */
++	0x2223, /* DIVIDES -> VERTICAL LINE */
++	0x2224, /* DOES NOT DIVIDE -> EXCLAMATION MARK */
++	0x2225, /* PARALLEL TO -> VERTICAL LINE */
++	0x2226, /* NOT PARALLEL TO -> EXCLAMATION MARK */
++	0x2227, /* LOGICAL AND -> AMPERSAND */
++	0x2228, /* LOGICAL OR -> VERTICAL LINE */
++	0x2229, /* INTERSECTION -> LATIN SMALL LETTER N */
++	0x222A, /* UNION -> LATIN SMALL LETTER U */
++	0x222B, /* INTEGRAL -> LATIN CAPITAL LETTER S */
++	0x2241, /* NOT TILDE -> NUMBER SIGN */
++	0x2244, /* NOT ASYMPTOTICALLY EQUAL TO -> NUMBER SIGN */
++	0x2248, /* ALMOST EQUAL TO -> TILDE */
++	0x2249, /* NOT ALMOST EQUAL TO -> NUMBER SIGN */
++	0x2260, /* NOT EQUAL TO -> NUMBER SIGN */
++	0x2262, /* NOT IDENTICAL TO -> NUMBER SIGN */
++	0x2264, /* LESS-THAN OR EQUAL TO -> LESS-THAN SIGN */
++	0x2265, /* GREATER-THAN OR EQUAL TO -> GREATER-THAN SIGN */
++	0x226D, /* NOT EQUIVALENT TO -> NUMBER SIGN */
++	0x2270, /* NEITHER LESS-THAN NOR EQUAL TO -> LESS-THAN SIGN */
++	0x2271, /* NEITHER GREATER-THAN NOR EQUAL TO -> GREATER-THAN SIGN */
++	0x2282, /* SUBSET OF -> LATIN SMALL LETTER C */
++	0x2283, /* SUPERSET OF -> LATIN CAPITAL LETTER C */
++	0x2286, /* SUBSET OF OR EQUAL TO -> LATIN SMALL LETTER C */
++	0x2287, /* SUPERSET OF OR EQUAL TO -> LATIN CAPITAL LETTER C */
++	0x2288, /* NEITHER A SUBSET OF NOR EQUAL TO -> LATIN SMALL LETTER C */
++	0x2289, /* NEITHER A SUPERSET OF NOR EQUAL TO -> LATIN CAPITAL LETTER C */
++	0x229B, /* CIRCLED ASTERISK OPERATOR -> ASTERISK */
++	0x22C5, /* DOT OPERATOR -> FULL STOP */
++	0x22C6, /* STAR OPERATOR -> ASTERISK */
++	0x235F, /* APL FUNCTIONAL SYMBOL CIRCLE STAR -> ASTERISK */
++	0x2363, /* APL FUNCTIONAL SYMBOL STAR DIAERESIS -> ASTERISK */
++	0x23A1, /* LEFT SQUARE BRACKET UPPER CORNER -> VERTICAL LINE */
++	0x23A9, /* LEFT CURLY BRACKET LOWER HOOK -> VERTICAL LINE */
++	0x23AB, /* RIGHT CURLY BRACKET UPPER HOOK -> VERTICAL LINE */
++	0x23B0, /* UPPER LEFT OR LOWER RIGHT CURLY BRACKET SECTION -> LEFT PARENTHESIS */
++	0x23B1, /* UPPER RIGHT OR LOWER LEFT CURLY BRACKET SECTION -> RIGHT PARENTHESIS */
++	0x23B3, /* SUMMATION BOTTOM -> VERTICAL LINE */
++	0x23BC, /* HORIZONTAL SCAN LINE-7 -> LATIN CAPITAL LETTER J */
++	0x23BD, /* HORIZONTAL SCAN LINE-9 -> LOW LINE */
++	0x2550, /* BOX DRAWINGS DOUBLE HORIZONTAL -> HYPHEN-MINUS */
++	0x2551, /* BOX DRAWINGS DOUBLE VERTICAL -> VERTICAL LINE */
++	0x2571, /* BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT -> SOLIDUS */
++	0x2572, /* BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT -> REVERSE SOLIDUS */
++	0x2573, /* BOX DRAWINGS LIGHT DIAGONAL CROSS -> LATIN CAPITAL LETTER X */
++	0x2574, /* BOX DRAWINGS LIGHT LEFT -> HYPHEN-MINUS */
++	0x2575, /* BOX DRAWINGS LIGHT UP -> VERTICAL LINE */
++	0x2576, /* BOX DRAWINGS LIGHT RIGHT -> HYPHEN-MINUS */
++	0x2577, /* BOX DRAWINGS LIGHT DOWN -> VERTICAL LINE */
++	0x2578, /* BOX DRAWINGS HEAVY LEFT -> HYPHEN-MINUS */
++	0x2579, /* BOX DRAWINGS HEAVY UP -> VERTICAL LINE */
++	0x257A, /* BOX DRAWINGS HEAVY RIGHT -> HYPHEN-MINUS */
++	0x257B, /* BOX DRAWINGS HEAVY DOWN -> VERTICAL LINE */
++	0x257C, /* BOX DRAWINGS LIGHT LEFT AND HEAVY RIGHT -> HYPHEN-MINUS */
++	0x257D, /* BOX DRAWINGS LIGHT UP AND HEAVY DOWN -> VERTICAL LINE */
++	0x257E, /* BOX DRAWINGS HEAVY LEFT AND LIGHT RIGHT -> HYPHEN-MINUS */
++	0x257F, /* BOX DRAWINGS HEAVY UP AND LIGHT DOWN -> VERTICAL LINE */
++	0x2591, /* LIGHT SHADE -> FULL STOP */
++	0x2592, /* MEDIUM SHADE -> PERCENT SIGN */
++	0x25A1, /* WHITE SQUARE -> LATIN SMALL LETTER O */
++	0x25AC, /* BLACK RECTANGLE -> NUMBER SIGN */
++	0x25AD, /* WHITE RECTANGLE -> HYPHEN-MINUS */
++	0x25C6, /* BLACK DIAMOND -> ASTERISK */
++	0x25CB, /* WHITE CIRCLE -> LATIN SMALL LETTER O */
++	0x25CE, /* BULLSEYE -> LATIN SMALL LETTER O */
++	0x25CF, /* BLACK CIRCLE -> ASTERISK */
++	0x25E6, /* WHITE BULLET -> LATIN SMALL LETTER O */
++	0x262A, /* STAR AND CRESCENT -> ASTERISK */
++	0x2698, /* FLOWER -> ASTERISK */
++	0x269D, /* OUTLINED WHITE STAR -> ASTERISK */
++	0x2713, /* CHECK MARK -> LATIN SMALL LETTER V */
++	0x2714, /* HEAVY CHECK MARK -> LATIN CAPITAL LETTER V */
++	0x2715, /* MULTIPLICATION X -> LATIN SMALL LETTER X */
++	0x2716, /* HEAVY MULTIPLICATION X -> LATIN CAPITAL LETTER X */
++	0x2717, /* BALLOT X -> LATIN SMALL LETTER X */
++	0x2718, /* HEAVY BALLOT X -> LATIN CAPITAL LETTER X */
++	0x27F8, /* LONG LEFTWARDS DOUBLE ARROW -> LESS-THAN SIGN */
++	0x27F9, /* LONG RIGHTWARDS DOUBLE ARROW -> GREATER-THAN SIGN */
++	0xFF01, /* FULLWIDTH EXCLAMATION MARK -> EXCLAMATION MARK */
++	0xFF02, /* FULLWIDTH QUOTATION MARK -> QUOTATION MARK */
++	0xFF03, /* FULLWIDTH NUMBER SIGN -> NUMBER SIGN */
++	0xFF04, /* FULLWIDTH DOLLAR SIGN -> DOLLAR SIGN */
++	0xFF05, /* FULLWIDTH PERCENT SIGN -> PERCENT SIGN */
++	0xFF06, /* FULLWIDTH AMPERSAND -> AMPERSAND */
++	0xFF07, /* FULLWIDTH APOSTROPHE -> APOSTROPHE */
++	0xFF08, /* FULLWIDTH LEFT PARENTHESIS -> LEFT PARENTHESIS */
++	0xFF09, /* FULLWIDTH RIGHT PARENTHESIS -> RIGHT PARENTHESIS */
++	0xFF0A, /* FULLWIDTH ASTERISK -> ASTERISK */
++	0xFF0B, /* FULLWIDTH PLUS SIGN -> PLUS SIGN */
++	0xFF0C, /* FULLWIDTH COMMA -> COMMA */
++	0xFF0D, /* FULLWIDTH HYPHEN-MINUS -> HYPHEN-MINUS */
++	0xFF0E, /* FULLWIDTH FULL STOP -> FULL STOP */
++	0xFF0F, /* FULLWIDTH SOLIDUS -> SOLIDUS */
++	0xFF10, /* FULLWIDTH DIGIT ZERO -> DIGIT ZERO */
++	0xFF11, /* FULLWIDTH DIGIT ONE -> DIGIT ONE */
++	0xFF12, /* FULLWIDTH DIGIT TWO -> DIGIT TWO */
++	0xFF13, /* FULLWIDTH DIGIT THREE -> DIGIT THREE */
++	0xFF14, /* FULLWIDTH DIGIT FOUR -> DIGIT FOUR */
++	0xFF15, /* FULLWIDTH DIGIT FIVE -> DIGIT FIVE */
++	0xFF16, /* FULLWIDTH DIGIT SIX -> DIGIT SIX */
++	0xFF17, /* FULLWIDTH DIGIT SEVEN -> DIGIT SEVEN */
++	0xFF18, /* FULLWIDTH DIGIT EIGHT -> DIGIT EIGHT */
++	0xFF19, /* FULLWIDTH DIGIT NINE -> DIGIT NINE */
++	0xFF1A, /* FULLWIDTH COLON -> COLON */
++	0xFF1B, /* FULLWIDTH SEMICOLON -> SEMICOLON */
++	0xFF1C, /* FULLWIDTH LESS-THAN SIGN -> LESS-THAN SIGN */
++	0xFF1D, /* FULLWIDTH EQUALS SIGN -> EQUALS SIGN */
++	0xFF1E, /* FULLWIDTH GREATER-THAN SIGN -> GREATER-THAN SIGN */
++	0xFF1F, /* FULLWIDTH QUESTION MARK -> QUESTION MARK */
++	0xFF20, /* FULLWIDTH COMMERCIAL AT -> COMMERCIAL AT */
++	0xFF21, /* FULLWIDTH LATIN CAPITAL LETTER A -> LATIN CAPITAL LETTER A */
++	0xFF22, /* FULLWIDTH LATIN CAPITAL LETTER B -> LATIN CAPITAL LETTER B */
++	0xFF23, /* FULLWIDTH LATIN CAPITAL LETTER C -> LATIN CAPITAL LETTER C */
++	0xFF24, /* FULLWIDTH LATIN CAPITAL LETTER D -> LATIN CAPITAL LETTER D */
++	0xFF25, /* FULLWIDTH LATIN CAPITAL LETTER E -> LATIN CAPITAL LETTER E */
++	0xFF26, /* FULLWIDTH LATIN CAPITAL LETTER F -> LATIN CAPITAL LETTER F */
++	0xFF27, /* FULLWIDTH LATIN CAPITAL LETTER G -> LATIN CAPITAL LETTER G */
++	0xFF28, /* FULLWIDTH LATIN CAPITAL LETTER H -> LATIN CAPITAL LETTER H */
++	0xFF29, /* FULLWIDTH LATIN CAPITAL LETTER I -> LATIN CAPITAL LETTER I */
++	0xFF2A, /* FULLWIDTH LATIN CAPITAL LETTER J -> LATIN CAPITAL LETTER J */
++	0xFF2B, /* FULLWIDTH LATIN CAPITAL LETTER K -> LATIN CAPITAL LETTER K */
++	0xFF2C, /* FULLWIDTH LATIN CAPITAL LETTER L -> LATIN CAPITAL LETTER L */
++	0xFF2D, /* FULLWIDTH LATIN CAPITAL LETTER M -> LATIN CAPITAL LETTER M */
++	0xFF2E, /* FULLWIDTH LATIN CAPITAL LETTER N -> LATIN CAPITAL LETTER N */
++	0xFF2F, /* FULLWIDTH LATIN CAPITAL LETTER O -> LATIN CAPITAL LETTER O */
++	0xFF30, /* FULLWIDTH LATIN CAPITAL LETTER P -> LATIN CAPITAL LETTER P */
++	0xFF31, /* FULLWIDTH LATIN CAPITAL LETTER Q -> LATIN CAPITAL LETTER Q */
++	0xFF32, /* FULLWIDTH LATIN CAPITAL LETTER R -> LATIN CAPITAL LETTER R */
++	0xFF33, /* FULLWIDTH LATIN CAPITAL LETTER S -> LATIN CAPITAL LETTER S */
++	0xFF34, /* FULLWIDTH LATIN CAPITAL LETTER T -> LATIN CAPITAL LETTER T */
++	0xFF35, /* FULLWIDTH LATIN CAPITAL LETTER U -> LATIN CAPITAL LETTER U */
++	0xFF36, /* FULLWIDTH LATIN CAPITAL LETTER V -> LATIN CAPITAL LETTER V */
++	0xFF37, /* FULLWIDTH LATIN CAPITAL LETTER W -> LATIN CAPITAL LETTER W */
++	0xFF38, /* FULLWIDTH LATIN CAPITAL LETTER X -> LATIN CAPITAL LETTER X */
++	0xFF39, /* FULLWIDTH LATIN CAPITAL LETTER Y -> LATIN CAPITAL LETTER Y */
++	0xFF3A, /* FULLWIDTH LATIN CAPITAL LETTER Z -> LATIN CAPITAL LETTER Z */
++	0xFF3B, /* FULLWIDTH LEFT SQUARE BRACKET -> LEFT SQUARE BRACKET */
++	0xFF3C, /* FULLWIDTH REVERSE SOLIDUS -> REVERSE SOLIDUS */
++	0xFF3D, /* FULLWIDTH RIGHT SQUARE BRACKET -> RIGHT SQUARE BRACKET */
++	0xFF3E, /* FULLWIDTH CIRCUMFLEX ACCENT -> CIRCUMFLEX ACCENT */
++	0xFF3F, /* FULLWIDTH LOW LINE -> LOW LINE */
++	0xFF40, /* FULLWIDTH GRAVE ACCENT -> GRAVE ACCENT */
++	0xFF41, /* FULLWIDTH LATIN SMALL LETTER A -> LATIN SMALL LETTER A */
++	0xFF42, /* FULLWIDTH LATIN SMALL LETTER B -> LATIN SMALL LETTER B */
++	0xFF43, /* FULLWIDTH LATIN SMALL LETTER C -> LATIN SMALL LETTER C */
++	0xFF44, /* FULLWIDTH LATIN SMALL LETTER D -> LATIN SMALL LETTER D */
++	0xFF45, /* FULLWIDTH LATIN SMALL LETTER E -> LATIN SMALL LETTER E */
++	0xFF46, /* FULLWIDTH LATIN SMALL LETTER F -> LATIN SMALL LETTER F */
++	0xFF47, /* FULLWIDTH LATIN SMALL LETTER G -> LATIN SMALL LETTER G */
++	0xFF48, /* FULLWIDTH LATIN SMALL LETTER H -> LATIN SMALL LETTER H */
++	0xFF49, /* FULLWIDTH LATIN SMALL LETTER I -> LATIN SMALL LETTER I */
++	0xFF4A, /* FULLWIDTH LATIN SMALL LETTER J -> LATIN SMALL LETTER J */
++	0xFF4B, /* FULLWIDTH LATIN SMALL LETTER K -> LATIN SMALL LETTER K */
++	0xFF4C, /* FULLWIDTH LATIN SMALL LETTER L -> LATIN SMALL LETTER L */
++	0xFF4D, /* FULLWIDTH LATIN SMALL LETTER M -> LATIN SMALL LETTER M */
++	0xFF4E, /* FULLWIDTH LATIN SMALL LETTER N -> LATIN SMALL LETTER N */
++	0xFF4F, /* FULLWIDTH LATIN SMALL LETTER O -> LATIN SMALL LETTER O */
++	0xFF50, /* FULLWIDTH LATIN SMALL LETTER P -> LATIN SMALL LETTER P */
++	0xFF51, /* FULLWIDTH LATIN SMALL LETTER Q -> LATIN SMALL LETTER Q */
++	0xFF52, /* FULLWIDTH LATIN SMALL LETTER R -> LATIN SMALL LETTER R */
++	0xFF53, /* FULLWIDTH LATIN SMALL LETTER S -> LATIN SMALL LETTER S */
++	0xFF54, /* FULLWIDTH LATIN SMALL LETTER T -> LATIN SMALL LETTER T */
++	0xFF55, /* FULLWIDTH LATIN SMALL LETTER U -> LATIN SMALL LETTER U */
++	0xFF56, /* FULLWIDTH LATIN SMALL LETTER V -> LATIN SMALL LETTER V */
++	0xFF57, /* FULLWIDTH LATIN SMALL LETTER W -> LATIN SMALL LETTER W */
++	0xFF58, /* FULLWIDTH LATIN SMALL LETTER X -> LATIN SMALL LETTER X */
++	0xFF59, /* FULLWIDTH LATIN SMALL LETTER Y -> LATIN SMALL LETTER Y */
++	0xFF5A, /* FULLWIDTH LATIN SMALL LETTER Z -> LATIN SMALL LETTER Z */
++	0xFF5B, /* FULLWIDTH LEFT CURLY BRACKET -> LEFT CURLY BRACKET */
++	0xFF5C, /* FULLWIDTH VERTICAL LINE -> VERTICAL LINE */
++	0xFF5D, /* FULLWIDTH RIGHT CURLY BRACKET -> RIGHT CURLY BRACKET */
++	0xFF5E, /* FULLWIDTH TILDE -> TILDE */
 +};
 +
 +static const u8 ucs_fallback_singles_subs[] = {
-+""")
-+
-+        # Write single fallback character table
-+        for codepoint, fallback in singles:
-+            comment = f"/* {cp_name(codepoint)} -> {cp_name(fallback)} */"
-+            f.write(f"\t0x{fallback:02X}, {comment}\n")
-+
-+        f.write("};\n")
-+
-+if __name__ == "__main__":
-+    parser = argparse.ArgumentParser(description="Generate Unicode fallback character tables")
-+    parser.add_argument("-o", "--output", dest="output_file", default=DEFAULT_OUT_FILE,
-+                       help=f"Output file name (default: {DEFAULT_OUT_FILE})")
-+    args = parser.parse_args()
-+
-+    generate_fallback_tables(out_file=args.output_file)
++	0x20, /* NO-BREAK SPACE -> SPACE */
++	0x21, /* INVERTED EXCLAMATION MARK -> EXCLAMATION MARK */
++	0x63, /* CENT SIGN -> LATIN SMALL LETTER C */
++	0x4C, /* POUND SIGN -> LATIN CAPITAL LETTER L */
++	0x59, /* YEN SIGN -> LATIN CAPITAL LETTER Y */
++	0x7C, /* BROKEN BAR -> VERTICAL LINE */
++	0x53, /* SECTION SIGN -> LATIN CAPITAL LETTER S */
++	0x43, /* COPYRIGHT SIGN -> LATIN CAPITAL LETTER C */
++	0x3C, /* LEFT-POINTING DOUBLE ANGLE QUOTATION MARK -> LESS-THAN SIGN */
++	0x52, /* REGISTERED SIGN -> LATIN CAPITAL LETTER R */
++	0x6F, /* DEGREE SIGN -> LATIN SMALL LETTER O */
++	0x2B, /* PLUS-MINUS SIGN -> PLUS SIGN */
++	0x32, /* SUPERSCRIPT TWO -> DIGIT TWO */
++	0x33, /* SUPERSCRIPT THREE -> DIGIT THREE */
++	0x75, /* MICRO SIGN -> LATIN SMALL LETTER U */
++	0x50, /* PILCROW SIGN -> LATIN CAPITAL LETTER P */
++	0x2E, /* MIDDLE DOT -> FULL STOP */
++	0x31, /* SUPERSCRIPT ONE -> DIGIT ONE */
++	0x3E, /* RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK -> GREATER-THAN SIGN */
++	0x3F, /* INVERTED QUESTION MARK -> QUESTION MARK */
++	0x45, /* LATIN CAPITAL LETTER AE -> LATIN CAPITAL LETTER E */
++	0x43, /* LATIN CAPITAL LETTER C WITH CEDILLA -> LATIN CAPITAL LETTER C */
++	0x44, /* LATIN CAPITAL LETTER ETH -> LATIN CAPITAL LETTER D */
++	0x4E, /* LATIN CAPITAL LETTER N WITH TILDE -> LATIN CAPITAL LETTER N */
++	0x78, /* MULTIPLICATION SIGN -> LATIN SMALL LETTER X */
++	0x4F, /* LATIN CAPITAL LETTER O WITH STROKE -> LATIN CAPITAL LETTER O */
++	0x59, /* LATIN CAPITAL LETTER Y WITH ACUTE -> LATIN CAPITAL LETTER Y */
++	0x50, /* LATIN CAPITAL LETTER THORN -> LATIN CAPITAL LETTER P */
++	0x73, /* LATIN SMALL LETTER SHARP S -> LATIN SMALL LETTER S */
++	0x65, /* LATIN SMALL LETTER AE -> LATIN SMALL LETTER E */
++	0x63, /* LATIN SMALL LETTER C WITH CEDILLA -> LATIN SMALL LETTER C */
++	0x64, /* LATIN SMALL LETTER ETH -> LATIN SMALL LETTER D */
++	0x6E, /* LATIN SMALL LETTER N WITH TILDE -> LATIN SMALL LETTER N */
++	0x2F, /* DIVISION SIGN -> SOLIDUS */
++	0x6F, /* LATIN SMALL LETTER O WITH STROKE -> LATIN SMALL LETTER O */
++	0x79, /* LATIN SMALL LETTER Y WITH ACUTE -> LATIN SMALL LETTER Y */
++	0x70, /* LATIN SMALL LETTER THORN -> LATIN SMALL LETTER P */
++	0x79, /* LATIN SMALL LETTER Y WITH DIAERESIS -> LATIN SMALL LETTER Y */
++	0x41, /* LATIN CAPITAL LETTER A WITH MACRON -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH MACRON -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH BREVE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH BREVE -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH OGONEK -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH OGONEK -> LATIN SMALL LETTER A */
++	0x43, /* LATIN CAPITAL LETTER C WITH ACUTE -> LATIN CAPITAL LETTER C */
++	0x63, /* LATIN SMALL LETTER C WITH ACUTE -> LATIN SMALL LETTER C */
++	0x43, /* LATIN CAPITAL LETTER C WITH CIRCUMFLEX -> LATIN CAPITAL LETTER C */
++	0x63, /* LATIN SMALL LETTER C WITH CIRCUMFLEX -> LATIN SMALL LETTER C */
++	0x43, /* LATIN CAPITAL LETTER C WITH DOT ABOVE -> LATIN CAPITAL LETTER C */
++	0x63, /* LATIN SMALL LETTER C WITH DOT ABOVE -> LATIN SMALL LETTER C */
++	0x43, /* LATIN CAPITAL LETTER C WITH CARON -> LATIN CAPITAL LETTER C */
++	0x63, /* LATIN SMALL LETTER C WITH CARON -> LATIN SMALL LETTER C */
++	0x44, /* LATIN CAPITAL LETTER D WITH CARON -> LATIN CAPITAL LETTER D */
++	0x64, /* LATIN SMALL LETTER D WITH CARON -> LATIN SMALL LETTER D */
++	0x44, /* LATIN CAPITAL LETTER D WITH STROKE -> LATIN CAPITAL LETTER D */
++	0x64, /* LATIN SMALL LETTER D WITH STROKE -> LATIN SMALL LETTER D */
++	0x45, /* LATIN CAPITAL LETTER E WITH MACRON -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH MACRON -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH BREVE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH BREVE -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH DOT ABOVE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH DOT ABOVE -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH OGONEK -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH OGONEK -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH CARON -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH CARON -> LATIN SMALL LETTER E */
++	0x47, /* LATIN CAPITAL LETTER G WITH CIRCUMFLEX -> LATIN CAPITAL LETTER G */
++	0x67, /* LATIN SMALL LETTER G WITH CIRCUMFLEX -> LATIN SMALL LETTER G */
++	0x47, /* LATIN CAPITAL LETTER G WITH BREVE -> LATIN CAPITAL LETTER G */
++	0x67, /* LATIN SMALL LETTER G WITH BREVE -> LATIN SMALL LETTER G */
++	0x47, /* LATIN CAPITAL LETTER G WITH DOT ABOVE -> LATIN CAPITAL LETTER G */
++	0x67, /* LATIN SMALL LETTER G WITH DOT ABOVE -> LATIN SMALL LETTER G */
++	0x47, /* LATIN CAPITAL LETTER G WITH CEDILLA -> LATIN CAPITAL LETTER G */
++	0x67, /* LATIN SMALL LETTER G WITH CEDILLA -> LATIN SMALL LETTER G */
++	0x48, /* LATIN CAPITAL LETTER H WITH CIRCUMFLEX -> LATIN CAPITAL LETTER H */
++	0x68, /* LATIN SMALL LETTER H WITH CIRCUMFLEX -> LATIN SMALL LETTER H */
++	0x48, /* LATIN CAPITAL LETTER H WITH STROKE -> LATIN CAPITAL LETTER H */
++	0x68, /* LATIN SMALL LETTER H WITH STROKE -> LATIN SMALL LETTER H */
++	0x49, /* LATIN CAPITAL LETTER I WITH TILDE -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH TILDE -> LATIN SMALL LETTER I */
++	0x49, /* LATIN CAPITAL LETTER I WITH MACRON -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH MACRON -> LATIN SMALL LETTER I */
++	0x49, /* LATIN CAPITAL LETTER I WITH BREVE -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH BREVE -> LATIN SMALL LETTER I */
++	0x49, /* LATIN CAPITAL LETTER I WITH OGONEK -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH OGONEK -> LATIN SMALL LETTER I */
++	0x49, /* LATIN CAPITAL LETTER I WITH DOT ABOVE -> LATIN CAPITAL LETTER I */
++	0x4A, /* LATIN CAPITAL LETTER J WITH CIRCUMFLEX -> LATIN CAPITAL LETTER J */
++	0x6A, /* LATIN SMALL LETTER J WITH CIRCUMFLEX -> LATIN SMALL LETTER J */
++	0x4B, /* LATIN CAPITAL LETTER K WITH CEDILLA -> LATIN CAPITAL LETTER K */
++	0x6B, /* LATIN SMALL LETTER K WITH CEDILLA -> LATIN SMALL LETTER K */
++	0x4C, /* LATIN CAPITAL LETTER L WITH ACUTE -> LATIN CAPITAL LETTER L */
++	0x6C, /* LATIN SMALL LETTER L WITH ACUTE -> LATIN SMALL LETTER L */
++	0x4C, /* LATIN CAPITAL LETTER L WITH CEDILLA -> LATIN CAPITAL LETTER L */
++	0x6C, /* LATIN SMALL LETTER L WITH CEDILLA -> LATIN SMALL LETTER L */
++	0x4C, /* LATIN CAPITAL LETTER L WITH CARON -> LATIN CAPITAL LETTER L */
++	0x6C, /* LATIN SMALL LETTER L WITH CARON -> LATIN SMALL LETTER L */
++	0x4C, /* LATIN CAPITAL LETTER L WITH STROKE -> LATIN CAPITAL LETTER L */
++	0x6C, /* LATIN SMALL LETTER L WITH STROKE -> LATIN SMALL LETTER L */
++	0x4E, /* LATIN CAPITAL LETTER N WITH ACUTE -> LATIN CAPITAL LETTER N */
++	0x6E, /* LATIN SMALL LETTER N WITH ACUTE -> LATIN SMALL LETTER N */
++	0x4E, /* LATIN CAPITAL LETTER N WITH CEDILLA -> LATIN CAPITAL LETTER N */
++	0x6E, /* LATIN SMALL LETTER N WITH CEDILLA -> LATIN SMALL LETTER N */
++	0x4E, /* LATIN CAPITAL LETTER N WITH CARON -> LATIN CAPITAL LETTER N */
++	0x6E, /* LATIN SMALL LETTER N WITH CARON -> LATIN SMALL LETTER N */
++	0x4F, /* LATIN CAPITAL LETTER O WITH MACRON -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH MACRON -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH BREVE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH BREVE -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH DOUBLE ACUTE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH DOUBLE ACUTE -> LATIN SMALL LETTER O */
++	0x45, /* LATIN CAPITAL LIGATURE OE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LIGATURE OE -> LATIN SMALL LETTER E */
++	0x52, /* LATIN CAPITAL LETTER R WITH ACUTE -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH ACUTE -> LATIN SMALL LETTER R */
++	0x52, /* LATIN CAPITAL LETTER R WITH CEDILLA -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH CEDILLA -> LATIN SMALL LETTER R */
++	0x52, /* LATIN CAPITAL LETTER R WITH CARON -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH CARON -> LATIN SMALL LETTER R */
++	0x53, /* LATIN CAPITAL LETTER S WITH ACUTE -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH ACUTE -> LATIN SMALL LETTER S */
++	0x53, /* LATIN CAPITAL LETTER S WITH CIRCUMFLEX -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH CIRCUMFLEX -> LATIN SMALL LETTER S */
++	0x53, /* LATIN CAPITAL LETTER S WITH CEDILLA -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH CEDILLA -> LATIN SMALL LETTER S */
++	0x53, /* LATIN CAPITAL LETTER S WITH CARON -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH CARON -> LATIN SMALL LETTER S */
++	0x54, /* LATIN CAPITAL LETTER T WITH CEDILLA -> LATIN CAPITAL LETTER T */
++	0x74, /* LATIN SMALL LETTER T WITH CEDILLA -> LATIN SMALL LETTER T */
++	0x54, /* LATIN CAPITAL LETTER T WITH CARON -> LATIN CAPITAL LETTER T */
++	0x74, /* LATIN SMALL LETTER T WITH CARON -> LATIN SMALL LETTER T */
++	0x55, /* LATIN CAPITAL LETTER U WITH TILDE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH TILDE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH MACRON -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH MACRON -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH BREVE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH BREVE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH RING ABOVE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH RING ABOVE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH DOUBLE ACUTE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH DOUBLE ACUTE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH OGONEK -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH OGONEK -> LATIN SMALL LETTER U */
++	0x57, /* LATIN CAPITAL LETTER W WITH CIRCUMFLEX -> LATIN CAPITAL LETTER W */
++	0x77, /* LATIN SMALL LETTER W WITH CIRCUMFLEX -> LATIN SMALL LETTER W */
++	0x59, /* LATIN CAPITAL LETTER Y WITH CIRCUMFLEX -> LATIN CAPITAL LETTER Y */
++	0x79, /* LATIN SMALL LETTER Y WITH CIRCUMFLEX -> LATIN SMALL LETTER Y */
++	0x59, /* LATIN CAPITAL LETTER Y WITH DIAERESIS -> LATIN CAPITAL LETTER Y */
++	0x5A, /* LATIN CAPITAL LETTER Z WITH ACUTE -> LATIN CAPITAL LETTER Z */
++	0x7A, /* LATIN SMALL LETTER Z WITH ACUTE -> LATIN SMALL LETTER Z */
++	0x5A, /* LATIN CAPITAL LETTER Z WITH DOT ABOVE -> LATIN CAPITAL LETTER Z */
++	0x7A, /* LATIN SMALL LETTER Z WITH DOT ABOVE -> LATIN SMALL LETTER Z */
++	0x5A, /* LATIN CAPITAL LETTER Z WITH CARON -> LATIN CAPITAL LETTER Z */
++	0x7A, /* LATIN SMALL LETTER Z WITH CARON -> LATIN SMALL LETTER Z */
++	0x4F, /* LATIN CAPITAL LETTER O WITH HORN -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH HORN -> LATIN SMALL LETTER O */
++	0x55, /* LATIN CAPITAL LETTER U WITH HORN -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH HORN -> LATIN SMALL LETTER U */
++	0x41, /* LATIN CAPITAL LETTER A WITH CARON -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH CARON -> LATIN SMALL LETTER A */
++	0x49, /* LATIN CAPITAL LETTER I WITH CARON -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH CARON -> LATIN SMALL LETTER I */
++	0x4F, /* LATIN CAPITAL LETTER O WITH CARON -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH CARON -> LATIN SMALL LETTER O */
++	0x55, /* LATIN CAPITAL LETTER U WITH CARON -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH CARON -> LATIN SMALL LETTER U */
++	0xDC, /* LATIN CAPITAL LETTER U WITH DIAERESIS AND MACRON -> LATIN CAPITAL LETTER U WITH DIAERESIS */
++	0xFC, /* LATIN SMALL LETTER U WITH DIAERESIS AND MACRON -> LATIN SMALL LETTER U WITH DIAERESIS */
++	0xDC, /* LATIN CAPITAL LETTER U WITH DIAERESIS AND ACUTE -> LATIN CAPITAL LETTER U WITH DIAERESIS */
++	0xFC, /* LATIN SMALL LETTER U WITH DIAERESIS AND ACUTE -> LATIN SMALL LETTER U WITH DIAERESIS */
++	0xDC, /* LATIN CAPITAL LETTER U WITH DIAERESIS AND CARON -> LATIN CAPITAL LETTER U WITH DIAERESIS */
++	0xFC, /* LATIN SMALL LETTER U WITH DIAERESIS AND CARON -> LATIN SMALL LETTER U WITH DIAERESIS */
++	0xDC, /* LATIN CAPITAL LETTER U WITH DIAERESIS AND GRAVE -> LATIN CAPITAL LETTER U WITH DIAERESIS */
++	0xFC, /* LATIN SMALL LETTER U WITH DIAERESIS AND GRAVE -> LATIN SMALL LETTER U WITH DIAERESIS */
++	0xC4, /* LATIN CAPITAL LETTER A WITH DIAERESIS AND MACRON -> LATIN CAPITAL LETTER A WITH DIAERESIS */
++	0xE4, /* LATIN SMALL LETTER A WITH DIAERESIS AND MACRON -> LATIN SMALL LETTER A WITH DIAERESIS */
++	0x41, /* LATIN CAPITAL LETTER A WITH DOT ABOVE AND MACRON -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH DOT ABOVE AND MACRON -> LATIN SMALL LETTER A */
++	0xC6, /* LATIN CAPITAL LETTER AE WITH MACRON -> LATIN CAPITAL LETTER AE */
++	0xE6, /* LATIN SMALL LETTER AE WITH MACRON -> LATIN SMALL LETTER AE */
++	0x47, /* LATIN CAPITAL LETTER G WITH CARON -> LATIN CAPITAL LETTER G */
++	0x67, /* LATIN SMALL LETTER G WITH CARON -> LATIN SMALL LETTER G */
++	0x4B, /* LATIN CAPITAL LETTER K WITH CARON -> LATIN CAPITAL LETTER K */
++	0x6B, /* LATIN SMALL LETTER K WITH CARON -> LATIN SMALL LETTER K */
++	0x4F, /* LATIN CAPITAL LETTER O WITH OGONEK -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH OGONEK -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH OGONEK AND MACRON -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH OGONEK AND MACRON -> LATIN SMALL LETTER O */
++	0x6A, /* LATIN SMALL LETTER J WITH CARON -> LATIN SMALL LETTER J */
++	0x47, /* LATIN CAPITAL LETTER G WITH ACUTE -> LATIN CAPITAL LETTER G */
++	0x67, /* LATIN SMALL LETTER G WITH ACUTE -> LATIN SMALL LETTER G */
++	0x4E, /* LATIN CAPITAL LETTER N WITH GRAVE -> LATIN CAPITAL LETTER N */
++	0x6E, /* LATIN SMALL LETTER N WITH GRAVE -> LATIN SMALL LETTER N */
++	0xC5, /* LATIN CAPITAL LETTER A WITH RING ABOVE AND ACUTE -> LATIN CAPITAL LETTER A WITH RING ABOVE */
++	0xE5, /* LATIN SMALL LETTER A WITH RING ABOVE AND ACUTE -> LATIN SMALL LETTER A WITH RING ABOVE */
++	0xC6, /* LATIN CAPITAL LETTER AE WITH ACUTE -> LATIN CAPITAL LETTER AE */
++	0xE6, /* LATIN SMALL LETTER AE WITH ACUTE -> LATIN SMALL LETTER AE */
++	0xD8, /* LATIN CAPITAL LETTER O WITH STROKE AND ACUTE -> LATIN CAPITAL LETTER O WITH STROKE */
++	0xF8, /* LATIN SMALL LETTER O WITH STROKE AND ACUTE -> LATIN SMALL LETTER O WITH STROKE */
++	0x41, /* LATIN CAPITAL LETTER A WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH DOUBLE GRAVE -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH INVERTED BREVE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH INVERTED BREVE -> LATIN SMALL LETTER A */
++	0x45, /* LATIN CAPITAL LETTER E WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH DOUBLE GRAVE -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH INVERTED BREVE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH INVERTED BREVE -> LATIN SMALL LETTER E */
++	0x49, /* LATIN CAPITAL LETTER I WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH DOUBLE GRAVE -> LATIN SMALL LETTER I */
++	0x49, /* LATIN CAPITAL LETTER I WITH INVERTED BREVE -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH INVERTED BREVE -> LATIN SMALL LETTER I */
++	0x4F, /* LATIN CAPITAL LETTER O WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH DOUBLE GRAVE -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH INVERTED BREVE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH INVERTED BREVE -> LATIN SMALL LETTER O */
++	0x52, /* LATIN CAPITAL LETTER R WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH DOUBLE GRAVE -> LATIN SMALL LETTER R */
++	0x52, /* LATIN CAPITAL LETTER R WITH INVERTED BREVE -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH INVERTED BREVE -> LATIN SMALL LETTER R */
++	0x55, /* LATIN CAPITAL LETTER U WITH DOUBLE GRAVE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH DOUBLE GRAVE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH INVERTED BREVE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH INVERTED BREVE -> LATIN SMALL LETTER U */
++	0x53, /* LATIN CAPITAL LETTER S WITH COMMA BELOW -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH COMMA BELOW -> LATIN SMALL LETTER S */
++	0x54, /* LATIN CAPITAL LETTER T WITH COMMA BELOW -> LATIN CAPITAL LETTER T */
++	0x74, /* LATIN SMALL LETTER T WITH COMMA BELOW -> LATIN SMALL LETTER T */
++	0x48, /* LATIN CAPITAL LETTER H WITH CARON -> LATIN CAPITAL LETTER H */
++	0x68, /* LATIN SMALL LETTER H WITH CARON -> LATIN SMALL LETTER H */
++	0x41, /* LATIN CAPITAL LETTER A WITH DOT ABOVE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH DOT ABOVE -> LATIN SMALL LETTER A */
++	0x45, /* LATIN CAPITAL LETTER E WITH CEDILLA -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH CEDILLA -> LATIN SMALL LETTER E */
++	0xD6, /* LATIN CAPITAL LETTER O WITH DIAERESIS AND MACRON -> LATIN CAPITAL LETTER O WITH DIAERESIS */
++	0xF6, /* LATIN SMALL LETTER O WITH DIAERESIS AND MACRON -> LATIN SMALL LETTER O WITH DIAERESIS */
++	0xD5, /* LATIN CAPITAL LETTER O WITH TILDE AND MACRON -> LATIN CAPITAL LETTER O WITH TILDE */
++	0xF5, /* LATIN SMALL LETTER O WITH TILDE AND MACRON -> LATIN SMALL LETTER O WITH TILDE */
++	0x4F, /* LATIN CAPITAL LETTER O WITH DOT ABOVE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH DOT ABOVE -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH DOT ABOVE AND MACRON -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH DOT ABOVE AND MACRON -> LATIN SMALL LETTER O */
++	0x59, /* LATIN CAPITAL LETTER Y WITH MACRON -> LATIN CAPITAL LETTER Y */
++	0x79, /* LATIN SMALL LETTER Y WITH MACRON -> LATIN SMALL LETTER Y */
++	0xA8, /* GREEK DIALYTIKA TONOS -> DIAERESIS */
++	0x2E, /* GREEK ANO TELEIA -> FULL STOP */
++	0x4F, /* GREEK CAPITAL LETTER OMEGA WITH TONOS -> LATIN CAPITAL LETTER O */
++	0x49, /* GREEK CAPITAL LETTER GAMMA -> LATIN CAPITAL LETTER I */
++	0x41, /* GREEK CAPITAL LETTER DELTA -> LATIN CAPITAL LETTER A */
++	0x4F, /* GREEK CAPITAL LETTER THETA -> LATIN CAPITAL LETTER O */
++	0x41, /* GREEK CAPITAL LETTER LAMDA -> LATIN CAPITAL LETTER A */
++	0x6E, /* GREEK CAPITAL LETTER PI -> LATIN SMALL LETTER N */
++	0x45, /* GREEK CAPITAL LETTER SIGMA -> LATIN CAPITAL LETTER E */
++	0x4F, /* GREEK CAPITAL LETTER PHI -> LATIN CAPITAL LETTER O */
++	0x59, /* GREEK CAPITAL LETTER PSI -> LATIN CAPITAL LETTER Y */
++	0x4F, /* GREEK CAPITAL LETTER OMEGA -> LATIN CAPITAL LETTER O */
++	0x61, /* GREEK SMALL LETTER ALPHA WITH TONOS -> LATIN SMALL LETTER A */
++	0x65, /* GREEK SMALL LETTER EPSILON WITH TONOS -> LATIN SMALL LETTER E */
++	0x6E, /* GREEK SMALL LETTER ETA WITH TONOS -> LATIN SMALL LETTER N */
++	0x61, /* GREEK SMALL LETTER ALPHA -> LATIN SMALL LETTER A */
++	0x42, /* GREEK SMALL LETTER BETA -> LATIN CAPITAL LETTER B */
++	0x79, /* GREEK SMALL LETTER GAMMA -> LATIN SMALL LETTER Y */
++	0x64, /* GREEK SMALL LETTER DELTA -> LATIN SMALL LETTER D */
++	0x65, /* GREEK SMALL LETTER EPSILON -> LATIN SMALL LETTER E */
++	0x7A, /* GREEK SMALL LETTER ZETA -> LATIN SMALL LETTER Z */
++	0x6E, /* GREEK SMALL LETTER ETA -> LATIN SMALL LETTER N */
++	0x30, /* GREEK SMALL LETTER THETA -> DIGIT ZERO */
++	0x6C, /* GREEK SMALL LETTER LAMDA -> LATIN SMALL LETTER L */
++	0x75, /* GREEK SMALL LETTER MU -> LATIN SMALL LETTER U */
++	0x6E, /* GREEK SMALL LETTER PI -> LATIN SMALL LETTER N */
++	0x70, /* GREEK SMALL LETTER RHO -> LATIN SMALL LETTER P */
++	0x6F, /* GREEK SMALL LETTER SIGMA -> LATIN SMALL LETTER O */
++	0x74, /* GREEK SMALL LETTER TAU -> LATIN SMALL LETTER T */
++	0x66, /* GREEK SMALL LETTER PHI -> LATIN SMALL LETTER F */
++	0x58, /* GREEK SMALL LETTER CHI -> LATIN CAPITAL LETTER X */
++	0x77, /* GREEK SMALL LETTER OMEGA WITH TONOS -> LATIN SMALL LETTER W */
++	0x20, /* OGHAM SPACE MARK -> SPACE */
++	0x41, /* LATIN CAPITAL LETTER A WITH RING BELOW -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH RING BELOW -> LATIN SMALL LETTER A */
++	0x42, /* LATIN CAPITAL LETTER B WITH DOT ABOVE -> LATIN CAPITAL LETTER B */
++	0x62, /* LATIN SMALL LETTER B WITH DOT ABOVE -> LATIN SMALL LETTER B */
++	0x42, /* LATIN CAPITAL LETTER B WITH DOT BELOW -> LATIN CAPITAL LETTER B */
++	0x62, /* LATIN SMALL LETTER B WITH DOT BELOW -> LATIN SMALL LETTER B */
++	0x42, /* LATIN CAPITAL LETTER B WITH LINE BELOW -> LATIN CAPITAL LETTER B */
++	0x62, /* LATIN SMALL LETTER B WITH LINE BELOW -> LATIN SMALL LETTER B */
++	0xC7, /* LATIN CAPITAL LETTER C WITH CEDILLA AND ACUTE -> LATIN CAPITAL LETTER C WITH CEDILLA */
++	0xE7, /* LATIN SMALL LETTER C WITH CEDILLA AND ACUTE -> LATIN SMALL LETTER C WITH CEDILLA */
++	0x44, /* LATIN CAPITAL LETTER D WITH DOT ABOVE -> LATIN CAPITAL LETTER D */
++	0x64, /* LATIN SMALL LETTER D WITH DOT ABOVE -> LATIN SMALL LETTER D */
++	0x44, /* LATIN CAPITAL LETTER D WITH DOT BELOW -> LATIN CAPITAL LETTER D */
++	0x64, /* LATIN SMALL LETTER D WITH DOT BELOW -> LATIN SMALL LETTER D */
++	0x44, /* LATIN CAPITAL LETTER D WITH LINE BELOW -> LATIN CAPITAL LETTER D */
++	0x64, /* LATIN SMALL LETTER D WITH LINE BELOW -> LATIN SMALL LETTER D */
++	0x44, /* LATIN CAPITAL LETTER D WITH CEDILLA -> LATIN CAPITAL LETTER D */
++	0x64, /* LATIN SMALL LETTER D WITH CEDILLA -> LATIN SMALL LETTER D */
++	0x44, /* LATIN CAPITAL LETTER D WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER D */
++	0x64, /* LATIN SMALL LETTER D WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER D */
++	0x45, /* LATIN CAPITAL LETTER E WITH MACRON AND GRAVE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH MACRON AND GRAVE -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH MACRON AND ACUTE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH MACRON AND ACUTE -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH TILDE BELOW -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH TILDE BELOW -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH CEDILLA AND BREVE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH CEDILLA AND BREVE -> LATIN SMALL LETTER E */
++	0x46, /* LATIN CAPITAL LETTER F WITH DOT ABOVE -> LATIN CAPITAL LETTER F */
++	0x66, /* LATIN SMALL LETTER F WITH DOT ABOVE -> LATIN SMALL LETTER F */
++	0x47, /* LATIN CAPITAL LETTER G WITH MACRON -> LATIN CAPITAL LETTER G */
++	0x67, /* LATIN SMALL LETTER G WITH MACRON -> LATIN SMALL LETTER G */
++	0x48, /* LATIN CAPITAL LETTER H WITH DOT ABOVE -> LATIN CAPITAL LETTER H */
++	0x68, /* LATIN SMALL LETTER H WITH DOT ABOVE -> LATIN SMALL LETTER H */
++	0x48, /* LATIN CAPITAL LETTER H WITH DOT BELOW -> LATIN CAPITAL LETTER H */
++	0x68, /* LATIN SMALL LETTER H WITH DOT BELOW -> LATIN SMALL LETTER H */
++	0x48, /* LATIN CAPITAL LETTER H WITH DIAERESIS -> LATIN CAPITAL LETTER H */
++	0x68, /* LATIN SMALL LETTER H WITH DIAERESIS -> LATIN SMALL LETTER H */
++	0x48, /* LATIN CAPITAL LETTER H WITH CEDILLA -> LATIN CAPITAL LETTER H */
++	0x68, /* LATIN SMALL LETTER H WITH CEDILLA -> LATIN SMALL LETTER H */
++	0x48, /* LATIN CAPITAL LETTER H WITH BREVE BELOW -> LATIN CAPITAL LETTER H */
++	0x68, /* LATIN SMALL LETTER H WITH BREVE BELOW -> LATIN SMALL LETTER H */
++	0x49, /* LATIN CAPITAL LETTER I WITH TILDE BELOW -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH TILDE BELOW -> LATIN SMALL LETTER I */
++	0xCF, /* LATIN CAPITAL LETTER I WITH DIAERESIS AND ACUTE -> LATIN CAPITAL LETTER I WITH DIAERESIS */
++	0xEF, /* LATIN SMALL LETTER I WITH DIAERESIS AND ACUTE -> LATIN SMALL LETTER I WITH DIAERESIS */
++	0x4B, /* LATIN CAPITAL LETTER K WITH ACUTE -> LATIN CAPITAL LETTER K */
++	0x6B, /* LATIN SMALL LETTER K WITH ACUTE -> LATIN SMALL LETTER K */
++	0x4B, /* LATIN CAPITAL LETTER K WITH DOT BELOW -> LATIN CAPITAL LETTER K */
++	0x6B, /* LATIN SMALL LETTER K WITH DOT BELOW -> LATIN SMALL LETTER K */
++	0x4B, /* LATIN CAPITAL LETTER K WITH LINE BELOW -> LATIN CAPITAL LETTER K */
++	0x6B, /* LATIN SMALL LETTER K WITH LINE BELOW -> LATIN SMALL LETTER K */
++	0x4C, /* LATIN CAPITAL LETTER L WITH DOT BELOW -> LATIN CAPITAL LETTER L */
++	0x6C, /* LATIN SMALL LETTER L WITH DOT BELOW -> LATIN SMALL LETTER L */
++	0x4C, /* LATIN CAPITAL LETTER L WITH DOT BELOW AND MACRON -> LATIN CAPITAL LETTER L */
++	0x6C, /* LATIN SMALL LETTER L WITH DOT BELOW AND MACRON -> LATIN SMALL LETTER L */
++	0x4C, /* LATIN CAPITAL LETTER L WITH LINE BELOW -> LATIN CAPITAL LETTER L */
++	0x6C, /* LATIN SMALL LETTER L WITH LINE BELOW -> LATIN SMALL LETTER L */
++	0x4C, /* LATIN CAPITAL LETTER L WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER L */
++	0x6C, /* LATIN SMALL LETTER L WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER L */
++	0x4D, /* LATIN CAPITAL LETTER M WITH ACUTE -> LATIN CAPITAL LETTER M */
++	0x6D, /* LATIN SMALL LETTER M WITH ACUTE -> LATIN SMALL LETTER M */
++	0x4D, /* LATIN CAPITAL LETTER M WITH DOT ABOVE -> LATIN CAPITAL LETTER M */
++	0x6D, /* LATIN SMALL LETTER M WITH DOT ABOVE -> LATIN SMALL LETTER M */
++	0x4D, /* LATIN CAPITAL LETTER M WITH DOT BELOW -> LATIN CAPITAL LETTER M */
++	0x6D, /* LATIN SMALL LETTER M WITH DOT BELOW -> LATIN SMALL LETTER M */
++	0x4E, /* LATIN CAPITAL LETTER N WITH DOT ABOVE -> LATIN CAPITAL LETTER N */
++	0x6E, /* LATIN SMALL LETTER N WITH DOT ABOVE -> LATIN SMALL LETTER N */
++	0x4E, /* LATIN CAPITAL LETTER N WITH DOT BELOW -> LATIN CAPITAL LETTER N */
++	0x6E, /* LATIN SMALL LETTER N WITH DOT BELOW -> LATIN SMALL LETTER N */
++	0x4E, /* LATIN CAPITAL LETTER N WITH LINE BELOW -> LATIN CAPITAL LETTER N */
++	0x6E, /* LATIN SMALL LETTER N WITH LINE BELOW -> LATIN SMALL LETTER N */
++	0x4E, /* LATIN CAPITAL LETTER N WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER N */
++	0x6E, /* LATIN SMALL LETTER N WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER N */
++	0xD5, /* LATIN CAPITAL LETTER O WITH TILDE AND ACUTE -> LATIN CAPITAL LETTER O WITH TILDE */
++	0xF5, /* LATIN SMALL LETTER O WITH TILDE AND ACUTE -> LATIN SMALL LETTER O WITH TILDE */
++	0xD5, /* LATIN CAPITAL LETTER O WITH TILDE AND DIAERESIS -> LATIN CAPITAL LETTER O WITH TILDE */
++	0xF5, /* LATIN SMALL LETTER O WITH TILDE AND DIAERESIS -> LATIN SMALL LETTER O WITH TILDE */
++	0x4F, /* LATIN CAPITAL LETTER O WITH MACRON AND GRAVE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH MACRON AND GRAVE -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH MACRON AND ACUTE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH MACRON AND ACUTE -> LATIN SMALL LETTER O */
++	0x50, /* LATIN CAPITAL LETTER P WITH ACUTE -> LATIN CAPITAL LETTER P */
++	0x70, /* LATIN SMALL LETTER P WITH ACUTE -> LATIN SMALL LETTER P */
++	0x50, /* LATIN CAPITAL LETTER P WITH DOT ABOVE -> LATIN CAPITAL LETTER P */
++	0x70, /* LATIN SMALL LETTER P WITH DOT ABOVE -> LATIN SMALL LETTER P */
++	0x52, /* LATIN CAPITAL LETTER R WITH DOT ABOVE -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH DOT ABOVE -> LATIN SMALL LETTER R */
++	0x52, /* LATIN CAPITAL LETTER R WITH DOT BELOW -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH DOT BELOW -> LATIN SMALL LETTER R */
++	0x52, /* LATIN CAPITAL LETTER R WITH DOT BELOW AND MACRON -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH DOT BELOW AND MACRON -> LATIN SMALL LETTER R */
++	0x52, /* LATIN CAPITAL LETTER R WITH LINE BELOW -> LATIN CAPITAL LETTER R */
++	0x72, /* LATIN SMALL LETTER R WITH LINE BELOW -> LATIN SMALL LETTER R */
++	0x53, /* LATIN CAPITAL LETTER S WITH DOT ABOVE -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH DOT ABOVE -> LATIN SMALL LETTER S */
++	0x53, /* LATIN CAPITAL LETTER S WITH DOT BELOW -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH DOT BELOW -> LATIN SMALL LETTER S */
++	0x53, /* LATIN CAPITAL LETTER S WITH ACUTE AND DOT ABOVE -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH ACUTE AND DOT ABOVE -> LATIN SMALL LETTER S */
++	0x53, /* LATIN CAPITAL LETTER S WITH CARON AND DOT ABOVE -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH CARON AND DOT ABOVE -> LATIN SMALL LETTER S */
++	0x53, /* LATIN CAPITAL LETTER S WITH DOT BELOW AND DOT ABOVE -> LATIN CAPITAL LETTER S */
++	0x73, /* LATIN SMALL LETTER S WITH DOT BELOW AND DOT ABOVE -> LATIN SMALL LETTER S */
++	0x54, /* LATIN CAPITAL LETTER T WITH DOT ABOVE -> LATIN CAPITAL LETTER T */
++	0x74, /* LATIN SMALL LETTER T WITH DOT ABOVE -> LATIN SMALL LETTER T */
++	0x54, /* LATIN CAPITAL LETTER T WITH DOT BELOW -> LATIN CAPITAL LETTER T */
++	0x74, /* LATIN SMALL LETTER T WITH DOT BELOW -> LATIN SMALL LETTER T */
++	0x54, /* LATIN CAPITAL LETTER T WITH LINE BELOW -> LATIN CAPITAL LETTER T */
++	0x74, /* LATIN SMALL LETTER T WITH LINE BELOW -> LATIN SMALL LETTER T */
++	0x54, /* LATIN CAPITAL LETTER T WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER T */
++	0x74, /* LATIN SMALL LETTER T WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER T */
++	0x55, /* LATIN CAPITAL LETTER U WITH DIAERESIS BELOW -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH DIAERESIS BELOW -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH TILDE BELOW -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH TILDE BELOW -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH CIRCUMFLEX BELOW -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH CIRCUMFLEX BELOW -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH TILDE AND ACUTE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH TILDE AND ACUTE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH MACRON AND DIAERESIS -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH MACRON AND DIAERESIS -> LATIN SMALL LETTER U */
++	0x56, /* LATIN CAPITAL LETTER V WITH TILDE -> LATIN CAPITAL LETTER V */
++	0x76, /* LATIN SMALL LETTER V WITH TILDE -> LATIN SMALL LETTER V */
++	0x56, /* LATIN CAPITAL LETTER V WITH DOT BELOW -> LATIN CAPITAL LETTER V */
++	0x76, /* LATIN SMALL LETTER V WITH DOT BELOW -> LATIN SMALL LETTER V */
++	0x57, /* LATIN CAPITAL LETTER W WITH GRAVE -> LATIN CAPITAL LETTER W */
++	0x77, /* LATIN SMALL LETTER W WITH GRAVE -> LATIN SMALL LETTER W */
++	0x57, /* LATIN CAPITAL LETTER W WITH ACUTE -> LATIN CAPITAL LETTER W */
++	0x77, /* LATIN SMALL LETTER W WITH ACUTE -> LATIN SMALL LETTER W */
++	0x57, /* LATIN CAPITAL LETTER W WITH DIAERESIS -> LATIN CAPITAL LETTER W */
++	0x77, /* LATIN SMALL LETTER W WITH DIAERESIS -> LATIN SMALL LETTER W */
++	0x57, /* LATIN CAPITAL LETTER W WITH DOT ABOVE -> LATIN CAPITAL LETTER W */
++	0x77, /* LATIN SMALL LETTER W WITH DOT ABOVE -> LATIN SMALL LETTER W */
++	0x57, /* LATIN CAPITAL LETTER W WITH DOT BELOW -> LATIN CAPITAL LETTER W */
++	0x77, /* LATIN SMALL LETTER W WITH DOT BELOW -> LATIN SMALL LETTER W */
++	0x58, /* LATIN CAPITAL LETTER X WITH DOT ABOVE -> LATIN CAPITAL LETTER X */
++	0x78, /* LATIN SMALL LETTER X WITH DOT ABOVE -> LATIN SMALL LETTER X */
++	0x58, /* LATIN CAPITAL LETTER X WITH DIAERESIS -> LATIN CAPITAL LETTER X */
++	0x78, /* LATIN SMALL LETTER X WITH DIAERESIS -> LATIN SMALL LETTER X */
++	0x59, /* LATIN CAPITAL LETTER Y WITH DOT ABOVE -> LATIN CAPITAL LETTER Y */
++	0x79, /* LATIN SMALL LETTER Y WITH DOT ABOVE -> LATIN SMALL LETTER Y */
++	0x5A, /* LATIN CAPITAL LETTER Z WITH CIRCUMFLEX -> LATIN CAPITAL LETTER Z */
++	0x7A, /* LATIN SMALL LETTER Z WITH CIRCUMFLEX -> LATIN SMALL LETTER Z */
++	0x5A, /* LATIN CAPITAL LETTER Z WITH DOT BELOW -> LATIN CAPITAL LETTER Z */
++	0x7A, /* LATIN SMALL LETTER Z WITH DOT BELOW -> LATIN SMALL LETTER Z */
++	0x5A, /* LATIN CAPITAL LETTER Z WITH LINE BELOW -> LATIN CAPITAL LETTER Z */
++	0x7A, /* LATIN SMALL LETTER Z WITH LINE BELOW -> LATIN SMALL LETTER Z */
++	0x68, /* LATIN SMALL LETTER H WITH LINE BELOW -> LATIN SMALL LETTER H */
++	0x74, /* LATIN SMALL LETTER T WITH DIAERESIS -> LATIN SMALL LETTER T */
++	0x77, /* LATIN SMALL LETTER W WITH RING ABOVE -> LATIN SMALL LETTER W */
++	0x79, /* LATIN SMALL LETTER Y WITH RING ABOVE -> LATIN SMALL LETTER Y */
++	0x41, /* LATIN CAPITAL LETTER A WITH DOT BELOW -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH DOT BELOW -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH HOOK ABOVE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH HOOK ABOVE -> LATIN SMALL LETTER A */
++	0xC2, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND ACUTE -> LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	0xE2, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND ACUTE -> LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	0xC2, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND GRAVE -> LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	0xE2, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND GRAVE -> LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	0xC2, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	0xE2, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	0xC2, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND TILDE -> LATIN CAPITAL LETTER A WITH CIRCUMFLEX */
++	0xE2, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND TILDE -> LATIN SMALL LETTER A WITH CIRCUMFLEX */
++	0x41, /* LATIN CAPITAL LETTER A WITH CIRCUMFLEX AND DOT BELOW -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH CIRCUMFLEX AND DOT BELOW -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH BREVE AND ACUTE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH BREVE AND ACUTE -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH BREVE AND GRAVE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH BREVE AND GRAVE -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH BREVE AND HOOK ABOVE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH BREVE AND HOOK ABOVE -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH BREVE AND TILDE -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH BREVE AND TILDE -> LATIN SMALL LETTER A */
++	0x41, /* LATIN CAPITAL LETTER A WITH BREVE AND DOT BELOW -> LATIN CAPITAL LETTER A */
++	0x61, /* LATIN SMALL LETTER A WITH BREVE AND DOT BELOW -> LATIN SMALL LETTER A */
++	0x45, /* LATIN CAPITAL LETTER E WITH DOT BELOW -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH DOT BELOW -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH HOOK ABOVE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH HOOK ABOVE -> LATIN SMALL LETTER E */
++	0x45, /* LATIN CAPITAL LETTER E WITH TILDE -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH TILDE -> LATIN SMALL LETTER E */
++	0xCA, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND ACUTE -> LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	0xEA, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND ACUTE -> LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	0xCA, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND GRAVE -> LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	0xEA, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND GRAVE -> LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	0xCA, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	0xEA, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	0xCA, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND TILDE -> LATIN CAPITAL LETTER E WITH CIRCUMFLEX */
++	0xEA, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND TILDE -> LATIN SMALL LETTER E WITH CIRCUMFLEX */
++	0x45, /* LATIN CAPITAL LETTER E WITH CIRCUMFLEX AND DOT BELOW -> LATIN CAPITAL LETTER E */
++	0x65, /* LATIN SMALL LETTER E WITH CIRCUMFLEX AND DOT BELOW -> LATIN SMALL LETTER E */
++	0x49, /* LATIN CAPITAL LETTER I WITH HOOK ABOVE -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH HOOK ABOVE -> LATIN SMALL LETTER I */
++	0x49, /* LATIN CAPITAL LETTER I WITH DOT BELOW -> LATIN CAPITAL LETTER I */
++	0x69, /* LATIN SMALL LETTER I WITH DOT BELOW -> LATIN SMALL LETTER I */
++	0x4F, /* LATIN CAPITAL LETTER O WITH DOT BELOW -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH DOT BELOW -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH HOOK ABOVE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH HOOK ABOVE -> LATIN SMALL LETTER O */
++	0xD4, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND ACUTE -> LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	0xF4, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND ACUTE -> LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	0xD4, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND GRAVE -> LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	0xF4, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND GRAVE -> LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	0xD4, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	0xF4, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND HOOK ABOVE -> LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	0xD4, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND TILDE -> LATIN CAPITAL LETTER O WITH CIRCUMFLEX */
++	0xF4, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND TILDE -> LATIN SMALL LETTER O WITH CIRCUMFLEX */
++	0x4F, /* LATIN CAPITAL LETTER O WITH CIRCUMFLEX AND DOT BELOW -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH CIRCUMFLEX AND DOT BELOW -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH HORN AND ACUTE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH HORN AND ACUTE -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH HORN AND GRAVE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH HORN AND GRAVE -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH HORN AND HOOK ABOVE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH HORN AND HOOK ABOVE -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH HORN AND TILDE -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH HORN AND TILDE -> LATIN SMALL LETTER O */
++	0x4F, /* LATIN CAPITAL LETTER O WITH HORN AND DOT BELOW -> LATIN CAPITAL LETTER O */
++	0x6F, /* LATIN SMALL LETTER O WITH HORN AND DOT BELOW -> LATIN SMALL LETTER O */
++	0x55, /* LATIN CAPITAL LETTER U WITH DOT BELOW -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH DOT BELOW -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH HOOK ABOVE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH HOOK ABOVE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH HORN AND ACUTE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH HORN AND ACUTE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH HORN AND GRAVE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH HORN AND GRAVE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH HORN AND HOOK ABOVE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH HORN AND HOOK ABOVE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH HORN AND TILDE -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH HORN AND TILDE -> LATIN SMALL LETTER U */
++	0x55, /* LATIN CAPITAL LETTER U WITH HORN AND DOT BELOW -> LATIN CAPITAL LETTER U */
++	0x75, /* LATIN SMALL LETTER U WITH HORN AND DOT BELOW -> LATIN SMALL LETTER U */
++	0x59, /* LATIN CAPITAL LETTER Y WITH GRAVE -> LATIN CAPITAL LETTER Y */
++	0x79, /* LATIN SMALL LETTER Y WITH GRAVE -> LATIN SMALL LETTER Y */
++	0x59, /* LATIN CAPITAL LETTER Y WITH DOT BELOW -> LATIN CAPITAL LETTER Y */
++	0x79, /* LATIN SMALL LETTER Y WITH DOT BELOW -> LATIN SMALL LETTER Y */
++	0x59, /* LATIN CAPITAL LETTER Y WITH HOOK ABOVE -> LATIN CAPITAL LETTER Y */
++	0x79, /* LATIN SMALL LETTER Y WITH HOOK ABOVE -> LATIN SMALL LETTER Y */
++	0x59, /* LATIN CAPITAL LETTER Y WITH TILDE -> LATIN CAPITAL LETTER Y */
++	0x79, /* LATIN SMALL LETTER Y WITH TILDE -> LATIN SMALL LETTER Y */
++	0x61, /* GREEK SMALL LETTER ALPHA WITH VARIA -> LATIN SMALL LETTER A */
++	0x65, /* GREEK SMALL LETTER EPSILON WITH VARIA -> LATIN SMALL LETTER E */
++	0x6E, /* GREEK SMALL LETTER ETA WITH VARIA -> LATIN SMALL LETTER N */
++	0x77, /* GREEK SMALL LETTER OMEGA WITH VARIA -> LATIN SMALL LETTER W */
++	0xA8, /* GREEK DIALYTIKA AND PERISPOMENI -> DIAERESIS */
++	0xA8, /* GREEK DIALYTIKA AND VARIA -> DIAERESIS */
++	0x4F, /* GREEK CAPITAL LETTER OMEGA WITH VARIA -> LATIN CAPITAL LETTER O */
++	0x4F, /* GREEK CAPITAL LETTER OMEGA WITH PROSGEGRAMMENI -> LATIN CAPITAL LETTER O */
++	0x2C, /* SINGLE LOW-9 QUOTATION MARK -> COMMA */
++	0x27, /* SINGLE HIGH-REVERSED-9 QUOTATION MARK -> APOSTROPHE */
++	0x2A, /* BULLET -> ASTERISK */
++	0x3E, /* TRIANGULAR BULLET -> GREATER-THAN SIGN */
++	0x20, /* NARROW NO-BREAK SPACE -> SPACE */
++	0x27, /* PRIME -> APOSTROPHE */
++	0x22, /* DOUBLE PRIME -> QUOTATION MARK */
++	0x3C, /* SINGLE LEFT-POINTING ANGLE QUOTATION MARK -> LESS-THAN SIGN */
++	0x3E, /* SINGLE RIGHT-POINTING ANGLE QUOTATION MARK -> GREATER-THAN SIGN */
++	0x2A, /* REFERENCE MARK -> ASTERISK */
++	0x21, /* DOUBLE EXCLAMATION MARK -> EXCLAMATION MARK */
++	0x3F, /* INTERROBANG -> QUESTION MARK */
++	0x2A, /* ASTERISM -> ASTERISK */
++	0x2D, /* HYPHEN BULLET -> HYPHEN-MINUS */
++	0x2F, /* FRACTION SLASH -> SOLIDUS */
++	0x21, /* EXCLAMATION QUESTION MARK -> EXCLAMATION MARK */
++	0x26, /* TIRONIAN SIGN ET -> AMPERSAND */
++	0x50, /* REVERSED PILCROW SIGN -> LATIN CAPITAL LETTER P */
++	0x3C, /* BLACK LEFTWARDS BULLET -> LESS-THAN SIGN */
++	0x3E, /* BLACK RIGHTWARDS BULLET -> GREATER-THAN SIGN */
++	0x2A, /* LOW ASTERISK -> ASTERISK */
++	0x3B, /* REVERSED SEMICOLON -> SEMICOLON */
++	0x2A, /* TWO ASTERISKS ALIGNED VERTICALLY -> ASTERISK */
++	0x2D, /* COMMERCIAL MINUS SIGN -> HYPHEN-MINUS */
++	0x7E, /* SWUNG DASH -> TILDE */
++	0x2A, /* FLOWER PUNCTUATION MARK -> ASTERISK */
++	0x3A, /* FOUR DOT MARK -> COLON */
++	0x20, /* MEDIUM MATHEMATICAL SPACE -> SPACE */
++	0x30, /* SUPERSCRIPT ZERO -> DIGIT ZERO */
++	0x34, /* SUPERSCRIPT FOUR -> DIGIT FOUR */
++	0x35, /* SUPERSCRIPT FIVE -> DIGIT FIVE */
++	0x36, /* SUPERSCRIPT SIX -> DIGIT SIX */
++	0x37, /* SUPERSCRIPT SEVEN -> DIGIT SEVEN */
++	0x38, /* SUPERSCRIPT EIGHT -> DIGIT EIGHT */
++	0x39, /* SUPERSCRIPT NINE -> DIGIT NINE */
++	0x30, /* SUBSCRIPT ZERO -> DIGIT ZERO */
++	0x31, /* SUBSCRIPT ONE -> DIGIT ONE */
++	0x32, /* SUBSCRIPT TWO -> DIGIT TWO */
++	0x33, /* SUBSCRIPT THREE -> DIGIT THREE */
++	0x34, /* SUBSCRIPT FOUR -> DIGIT FOUR */
++	0x35, /* SUBSCRIPT FIVE -> DIGIT FIVE */
++	0x36, /* SUBSCRIPT SIX -> DIGIT SIX */
++	0x37, /* SUBSCRIPT SEVEN -> DIGIT SEVEN */
++	0x38, /* SUBSCRIPT EIGHT -> DIGIT EIGHT */
++	0x39, /* SUBSCRIPT NINE -> DIGIT NINE */
++	0x45, /* EURO SIGN -> LATIN CAPITAL LETTER E */
++	0x43, /* DEGREE CELSIUS -> LATIN CAPITAL LETTER C */
++	0x46, /* DEGREE FAHRENHEIT -> LATIN CAPITAL LETTER F */
++	0x54, /* TRADE MARK SIGN -> LATIN CAPITAL LETTER T */
++	0x3C, /* LEFTWARDS ARROW -> LESS-THAN SIGN */
++	0x5E, /* UPWARDS ARROW -> CIRCUMFLEX ACCENT */
++	0x3E, /* RIGHTWARDS ARROW -> GREATER-THAN SIGN */
++	0x76, /* DOWNWARDS ARROW -> LATIN SMALL LETTER V */
++	0x21, /* LEFT RIGHT ARROW WITH STROKE -> EXCLAMATION MARK */
++	0x3C, /* LEFTWARDS DOUBLE ARROW -> LESS-THAN SIGN */
++	0x5E, /* UPWARDS DOUBLE ARROW -> CIRCUMFLEX ACCENT */
++	0x3E, /* RIGHTWARDS DOUBLE ARROW -> GREATER-THAN SIGN */
++	0x76, /* DOWNWARDS DOUBLE ARROW -> LATIN SMALL LETTER V */
++	0x21, /* THERE DOES NOT EXIST -> EXCLAMATION MARK */
++	0x21, /* NOT AN ELEMENT OF -> EXCLAMATION MARK */
++	0x21, /* DOES NOT CONTAIN AS MEMBER -> EXCLAMATION MARK */
++	0x2D, /* MINUS SIGN -> HYPHEN-MINUS */
++	0x2B, /* MINUS-OR-PLUS SIGN -> PLUS SIGN */
++	0x2F, /* DIVISION SLASH -> SOLIDUS */
++	0x5C, /* SET MINUS -> REVERSE SOLIDUS */
++	0x2A, /* ASTERISK OPERATOR -> ASTERISK */
++	0x6F, /* RING OPERATOR -> LATIN SMALL LETTER O */
++	0x2E, /* BULLET OPERATOR -> FULL STOP */
++	0x76, /* SQUARE ROOT -> LATIN SMALL LETTER V */
++	0x38, /* INFINITY -> DIGIT EIGHT */
++	0x7C, /* DIVIDES -> VERTICAL LINE */
++	0x21, /* DOES NOT DIVIDE -> EXCLAMATION MARK */
++	0x7C, /* PARALLEL TO -> VERTICAL LINE */
++	0x21, /* NOT PARALLEL TO -> EXCLAMATION MARK */
++	0x26, /* LOGICAL AND -> AMPERSAND */
++	0x7C, /* LOGICAL OR -> VERTICAL LINE */
++	0x6E, /* INTERSECTION -> LATIN SMALL LETTER N */
++	0x75, /* UNION -> LATIN SMALL LETTER U */
++	0x53, /* INTEGRAL -> LATIN CAPITAL LETTER S */
++	0x23, /* NOT TILDE -> NUMBER SIGN */
++	0x23, /* NOT ASYMPTOTICALLY EQUAL TO -> NUMBER SIGN */
++	0x7E, /* ALMOST EQUAL TO -> TILDE */
++	0x23, /* NOT ALMOST EQUAL TO -> NUMBER SIGN */
++	0x23, /* NOT EQUAL TO -> NUMBER SIGN */
++	0x23, /* NOT IDENTICAL TO -> NUMBER SIGN */
++	0x3C, /* LESS-THAN OR EQUAL TO -> LESS-THAN SIGN */
++	0x3E, /* GREATER-THAN OR EQUAL TO -> GREATER-THAN SIGN */
++	0x23, /* NOT EQUIVALENT TO -> NUMBER SIGN */
++	0x3C, /* NEITHER LESS-THAN NOR EQUAL TO -> LESS-THAN SIGN */
++	0x3E, /* NEITHER GREATER-THAN NOR EQUAL TO -> GREATER-THAN SIGN */
++	0x63, /* SUBSET OF -> LATIN SMALL LETTER C */
++	0x43, /* SUPERSET OF -> LATIN CAPITAL LETTER C */
++	0x63, /* SUBSET OF OR EQUAL TO -> LATIN SMALL LETTER C */
++	0x43, /* SUPERSET OF OR EQUAL TO -> LATIN CAPITAL LETTER C */
++	0x63, /* NEITHER A SUBSET OF NOR EQUAL TO -> LATIN SMALL LETTER C */
++	0x43, /* NEITHER A SUPERSET OF NOR EQUAL TO -> LATIN CAPITAL LETTER C */
++	0x2A, /* CIRCLED ASTERISK OPERATOR -> ASTERISK */
++	0x2E, /* DOT OPERATOR -> FULL STOP */
++	0x2A, /* STAR OPERATOR -> ASTERISK */
++	0x2A, /* APL FUNCTIONAL SYMBOL CIRCLE STAR -> ASTERISK */
++	0x2A, /* APL FUNCTIONAL SYMBOL STAR DIAERESIS -> ASTERISK */
++	0x7C, /* LEFT SQUARE BRACKET UPPER CORNER -> VERTICAL LINE */
++	0x7C, /* LEFT CURLY BRACKET LOWER HOOK -> VERTICAL LINE */
++	0x7C, /* RIGHT CURLY BRACKET UPPER HOOK -> VERTICAL LINE */
++	0x28, /* UPPER LEFT OR LOWER RIGHT CURLY BRACKET SECTION -> LEFT PARENTHESIS */
++	0x29, /* UPPER RIGHT OR LOWER LEFT CURLY BRACKET SECTION -> RIGHT PARENTHESIS */
++	0x7C, /* SUMMATION BOTTOM -> VERTICAL LINE */
++	0x4A, /* HORIZONTAL SCAN LINE-7 -> LATIN CAPITAL LETTER J */
++	0x5F, /* HORIZONTAL SCAN LINE-9 -> LOW LINE */
++	0x2D, /* BOX DRAWINGS DOUBLE HORIZONTAL -> HYPHEN-MINUS */
++	0x7C, /* BOX DRAWINGS DOUBLE VERTICAL -> VERTICAL LINE */
++	0x2F, /* BOX DRAWINGS LIGHT DIAGONAL UPPER RIGHT TO LOWER LEFT -> SOLIDUS */
++	0x5C, /* BOX DRAWINGS LIGHT DIAGONAL UPPER LEFT TO LOWER RIGHT -> REVERSE SOLIDUS */
++	0x58, /* BOX DRAWINGS LIGHT DIAGONAL CROSS -> LATIN CAPITAL LETTER X */
++	0x2D, /* BOX DRAWINGS LIGHT LEFT -> HYPHEN-MINUS */
++	0x7C, /* BOX DRAWINGS LIGHT UP -> VERTICAL LINE */
++	0x2D, /* BOX DRAWINGS LIGHT RIGHT -> HYPHEN-MINUS */
++	0x7C, /* BOX DRAWINGS LIGHT DOWN -> VERTICAL LINE */
++	0x2D, /* BOX DRAWINGS HEAVY LEFT -> HYPHEN-MINUS */
++	0x7C, /* BOX DRAWINGS HEAVY UP -> VERTICAL LINE */
++	0x2D, /* BOX DRAWINGS HEAVY RIGHT -> HYPHEN-MINUS */
++	0x7C, /* BOX DRAWINGS HEAVY DOWN -> VERTICAL LINE */
++	0x2D, /* BOX DRAWINGS LIGHT LEFT AND HEAVY RIGHT -> HYPHEN-MINUS */
++	0x7C, /* BOX DRAWINGS LIGHT UP AND HEAVY DOWN -> VERTICAL LINE */
++	0x2D, /* BOX DRAWINGS HEAVY LEFT AND LIGHT RIGHT -> HYPHEN-MINUS */
++	0x7C, /* BOX DRAWINGS HEAVY UP AND LIGHT DOWN -> VERTICAL LINE */
++	0x2E, /* LIGHT SHADE -> FULL STOP */
++	0x25, /* MEDIUM SHADE -> PERCENT SIGN */
++	0x6F, /* WHITE SQUARE -> LATIN SMALL LETTER O */
++	0x23, /* BLACK RECTANGLE -> NUMBER SIGN */
++	0x2D, /* WHITE RECTANGLE -> HYPHEN-MINUS */
++	0x2A, /* BLACK DIAMOND -> ASTERISK */
++	0x6F, /* WHITE CIRCLE -> LATIN SMALL LETTER O */
++	0x6F, /* BULLSEYE -> LATIN SMALL LETTER O */
++	0x2A, /* BLACK CIRCLE -> ASTERISK */
++	0x6F, /* WHITE BULLET -> LATIN SMALL LETTER O */
++	0x2A, /* STAR AND CRESCENT -> ASTERISK */
++	0x2A, /* FLOWER -> ASTERISK */
++	0x2A, /* OUTLINED WHITE STAR -> ASTERISK */
++	0x76, /* CHECK MARK -> LATIN SMALL LETTER V */
++	0x56, /* HEAVY CHECK MARK -> LATIN CAPITAL LETTER V */
++	0x78, /* MULTIPLICATION X -> LATIN SMALL LETTER X */
++	0x58, /* HEAVY MULTIPLICATION X -> LATIN CAPITAL LETTER X */
++	0x78, /* BALLOT X -> LATIN SMALL LETTER X */
++	0x58, /* HEAVY BALLOT X -> LATIN CAPITAL LETTER X */
++	0x3C, /* LONG LEFTWARDS DOUBLE ARROW -> LESS-THAN SIGN */
++	0x3E, /* LONG RIGHTWARDS DOUBLE ARROW -> GREATER-THAN SIGN */
++	0x21, /* FULLWIDTH EXCLAMATION MARK -> EXCLAMATION MARK */
++	0x22, /* FULLWIDTH QUOTATION MARK -> QUOTATION MARK */
++	0x23, /* FULLWIDTH NUMBER SIGN -> NUMBER SIGN */
++	0x24, /* FULLWIDTH DOLLAR SIGN -> DOLLAR SIGN */
++	0x25, /* FULLWIDTH PERCENT SIGN -> PERCENT SIGN */
++	0x26, /* FULLWIDTH AMPERSAND -> AMPERSAND */
++	0x27, /* FULLWIDTH APOSTROPHE -> APOSTROPHE */
++	0x28, /* FULLWIDTH LEFT PARENTHESIS -> LEFT PARENTHESIS */
++	0x29, /* FULLWIDTH RIGHT PARENTHESIS -> RIGHT PARENTHESIS */
++	0x2A, /* FULLWIDTH ASTERISK -> ASTERISK */
++	0x2B, /* FULLWIDTH PLUS SIGN -> PLUS SIGN */
++	0x2C, /* FULLWIDTH COMMA -> COMMA */
++	0x2D, /* FULLWIDTH HYPHEN-MINUS -> HYPHEN-MINUS */
++	0x2E, /* FULLWIDTH FULL STOP -> FULL STOP */
++	0x2F, /* FULLWIDTH SOLIDUS -> SOLIDUS */
++	0x30, /* FULLWIDTH DIGIT ZERO -> DIGIT ZERO */
++	0x31, /* FULLWIDTH DIGIT ONE -> DIGIT ONE */
++	0x32, /* FULLWIDTH DIGIT TWO -> DIGIT TWO */
++	0x33, /* FULLWIDTH DIGIT THREE -> DIGIT THREE */
++	0x34, /* FULLWIDTH DIGIT FOUR -> DIGIT FOUR */
++	0x35, /* FULLWIDTH DIGIT FIVE -> DIGIT FIVE */
++	0x36, /* FULLWIDTH DIGIT SIX -> DIGIT SIX */
++	0x37, /* FULLWIDTH DIGIT SEVEN -> DIGIT SEVEN */
++	0x38, /* FULLWIDTH DIGIT EIGHT -> DIGIT EIGHT */
++	0x39, /* FULLWIDTH DIGIT NINE -> DIGIT NINE */
++	0x3A, /* FULLWIDTH COLON -> COLON */
++	0x3B, /* FULLWIDTH SEMICOLON -> SEMICOLON */
++	0x3C, /* FULLWIDTH LESS-THAN SIGN -> LESS-THAN SIGN */
++	0x3D, /* FULLWIDTH EQUALS SIGN -> EQUALS SIGN */
++	0x3E, /* FULLWIDTH GREATER-THAN SIGN -> GREATER-THAN SIGN */
++	0x3F, /* FULLWIDTH QUESTION MARK -> QUESTION MARK */
++	0x40, /* FULLWIDTH COMMERCIAL AT -> COMMERCIAL AT */
++	0x41, /* FULLWIDTH LATIN CAPITAL LETTER A -> LATIN CAPITAL LETTER A */
++	0x42, /* FULLWIDTH LATIN CAPITAL LETTER B -> LATIN CAPITAL LETTER B */
++	0x43, /* FULLWIDTH LATIN CAPITAL LETTER C -> LATIN CAPITAL LETTER C */
++	0x44, /* FULLWIDTH LATIN CAPITAL LETTER D -> LATIN CAPITAL LETTER D */
++	0x45, /* FULLWIDTH LATIN CAPITAL LETTER E -> LATIN CAPITAL LETTER E */
++	0x46, /* FULLWIDTH LATIN CAPITAL LETTER F -> LATIN CAPITAL LETTER F */
++	0x47, /* FULLWIDTH LATIN CAPITAL LETTER G -> LATIN CAPITAL LETTER G */
++	0x48, /* FULLWIDTH LATIN CAPITAL LETTER H -> LATIN CAPITAL LETTER H */
++	0x49, /* FULLWIDTH LATIN CAPITAL LETTER I -> LATIN CAPITAL LETTER I */
++	0x4A, /* FULLWIDTH LATIN CAPITAL LETTER J -> LATIN CAPITAL LETTER J */
++	0x4B, /* FULLWIDTH LATIN CAPITAL LETTER K -> LATIN CAPITAL LETTER K */
++	0x4C, /* FULLWIDTH LATIN CAPITAL LETTER L -> LATIN CAPITAL LETTER L */
++	0x4D, /* FULLWIDTH LATIN CAPITAL LETTER M -> LATIN CAPITAL LETTER M */
++	0x4E, /* FULLWIDTH LATIN CAPITAL LETTER N -> LATIN CAPITAL LETTER N */
++	0x4F, /* FULLWIDTH LATIN CAPITAL LETTER O -> LATIN CAPITAL LETTER O */
++	0x50, /* FULLWIDTH LATIN CAPITAL LETTER P -> LATIN CAPITAL LETTER P */
++	0x51, /* FULLWIDTH LATIN CAPITAL LETTER Q -> LATIN CAPITAL LETTER Q */
++	0x52, /* FULLWIDTH LATIN CAPITAL LETTER R -> LATIN CAPITAL LETTER R */
++	0x53, /* FULLWIDTH LATIN CAPITAL LETTER S -> LATIN CAPITAL LETTER S */
++	0x54, /* FULLWIDTH LATIN CAPITAL LETTER T -> LATIN CAPITAL LETTER T */
++	0x55, /* FULLWIDTH LATIN CAPITAL LETTER U -> LATIN CAPITAL LETTER U */
++	0x56, /* FULLWIDTH LATIN CAPITAL LETTER V -> LATIN CAPITAL LETTER V */
++	0x57, /* FULLWIDTH LATIN CAPITAL LETTER W -> LATIN CAPITAL LETTER W */
++	0x58, /* FULLWIDTH LATIN CAPITAL LETTER X -> LATIN CAPITAL LETTER X */
++	0x59, /* FULLWIDTH LATIN CAPITAL LETTER Y -> LATIN CAPITAL LETTER Y */
++	0x5A, /* FULLWIDTH LATIN CAPITAL LETTER Z -> LATIN CAPITAL LETTER Z */
++	0x5B, /* FULLWIDTH LEFT SQUARE BRACKET -> LEFT SQUARE BRACKET */
++	0x5C, /* FULLWIDTH REVERSE SOLIDUS -> REVERSE SOLIDUS */
++	0x5D, /* FULLWIDTH RIGHT SQUARE BRACKET -> RIGHT SQUARE BRACKET */
++	0x5E, /* FULLWIDTH CIRCUMFLEX ACCENT -> CIRCUMFLEX ACCENT */
++	0x5F, /* FULLWIDTH LOW LINE -> LOW LINE */
++	0x60, /* FULLWIDTH GRAVE ACCENT -> GRAVE ACCENT */
++	0x61, /* FULLWIDTH LATIN SMALL LETTER A -> LATIN SMALL LETTER A */
++	0x62, /* FULLWIDTH LATIN SMALL LETTER B -> LATIN SMALL LETTER B */
++	0x63, /* FULLWIDTH LATIN SMALL LETTER C -> LATIN SMALL LETTER C */
++	0x64, /* FULLWIDTH LATIN SMALL LETTER D -> LATIN SMALL LETTER D */
++	0x65, /* FULLWIDTH LATIN SMALL LETTER E -> LATIN SMALL LETTER E */
++	0x66, /* FULLWIDTH LATIN SMALL LETTER F -> LATIN SMALL LETTER F */
++	0x67, /* FULLWIDTH LATIN SMALL LETTER G -> LATIN SMALL LETTER G */
++	0x68, /* FULLWIDTH LATIN SMALL LETTER H -> LATIN SMALL LETTER H */
++	0x69, /* FULLWIDTH LATIN SMALL LETTER I -> LATIN SMALL LETTER I */
++	0x6A, /* FULLWIDTH LATIN SMALL LETTER J -> LATIN SMALL LETTER J */
++	0x6B, /* FULLWIDTH LATIN SMALL LETTER K -> LATIN SMALL LETTER K */
++	0x6C, /* FULLWIDTH LATIN SMALL LETTER L -> LATIN SMALL LETTER L */
++	0x6D, /* FULLWIDTH LATIN SMALL LETTER M -> LATIN SMALL LETTER M */
++	0x6E, /* FULLWIDTH LATIN SMALL LETTER N -> LATIN SMALL LETTER N */
++	0x6F, /* FULLWIDTH LATIN SMALL LETTER O -> LATIN SMALL LETTER O */
++	0x70, /* FULLWIDTH LATIN SMALL LETTER P -> LATIN SMALL LETTER P */
++	0x71, /* FULLWIDTH LATIN SMALL LETTER Q -> LATIN SMALL LETTER Q */
++	0x72, /* FULLWIDTH LATIN SMALL LETTER R -> LATIN SMALL LETTER R */
++	0x73, /* FULLWIDTH LATIN SMALL LETTER S -> LATIN SMALL LETTER S */
++	0x74, /* FULLWIDTH LATIN SMALL LETTER T -> LATIN SMALL LETTER T */
++	0x75, /* FULLWIDTH LATIN SMALL LETTER U -> LATIN SMALL LETTER U */
++	0x76, /* FULLWIDTH LATIN SMALL LETTER V -> LATIN SMALL LETTER V */
++	0x77, /* FULLWIDTH LATIN SMALL LETTER W -> LATIN SMALL LETTER W */
++	0x78, /* FULLWIDTH LATIN SMALL LETTER X -> LATIN SMALL LETTER X */
++	0x79, /* FULLWIDTH LATIN SMALL LETTER Y -> LATIN SMALL LETTER Y */
++	0x7A, /* FULLWIDTH LATIN SMALL LETTER Z -> LATIN SMALL LETTER Z */
++	0x7B, /* FULLWIDTH LEFT CURLY BRACKET -> LEFT CURLY BRACKET */
++	0x7C, /* FULLWIDTH VERTICAL LINE -> VERTICAL LINE */
++	0x7D, /* FULLWIDTH RIGHT CURLY BRACKET -> RIGHT CURLY BRACKET */
++	0x7E, /* FULLWIDTH TILDE -> TILDE */
++};
 -- 
 2.49.0
 
