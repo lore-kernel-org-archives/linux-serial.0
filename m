@@ -1,132 +1,194 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 666E1249F9;
-	Mon,  5 May 2025 09:59:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C1F71F4C9B;
+	Mon,  5 May 2025 11:43:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746439186; cv=none; b=V/B1LX7g1s+G4tefscIQf/WKlGPDo/mBQuEfs6F8O5cC068Fa0yRdwzMF5qlulDUEOAaHjBb8U1/VOey3VV+EgogTDyde63+4cYtfue2h6cECH6anzrUbEuyQ4v4gaxPCJ6djMYKM6+No7jP4K1gMXUgnjPfiP7k5ur6H3Nv9wM=
+	t=1746445420; cv=none; b=kgKFL6GVKXSO8XXtwf6VX+SYZ47mZlMUH7DJB/erupL78kVXmkXinEGntvIm93Ef1Dq6viphl3oFjjK2Z5eMvf612/bjlV04ZIWaw0r+xdr0Th/TEdn+xGz77RJlJvFSn6AlEaQd3kyHs4g6SzUeZXcSJTebOBwu5QOTw8pP+ek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746439186; c=relaxed/simple;
-	bh=de3l3kkB8vXxfDlYtVQYyBBmvnV8dNWzcLCceAxX9Dk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=I9N3U7CKZoJ044x2DZtC6G09P3nXnuPqpNUIleppcvs2SC/zi0NIQE2pwRLnTy+xtx6pHT+0h11J15h85lUL/IcbI6Wvpw9ESfEVxES1fjHnRN+YeGTmFZtRpCF7NRJfjR8CPAaG7AjDEFnj+Dlj8u6wAQM9hVRgq0vJ3QQ7U70=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DoR/UX8q; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DoR/UX8q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 797DFC4CEE4;
-	Mon,  5 May 2025 09:59:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746439185;
-	bh=de3l3kkB8vXxfDlYtVQYyBBmvnV8dNWzcLCceAxX9Dk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=DoR/UX8qvvenyPV8SY3/uHGrLOWi0y8zR5ZZ9FapeHgGqBA0R733YJDgKA88+wOzo
-	 UvbKBp96GZImkR1ek1zAcRac+MOZBegH6XHhCTJ/tDN5z6eMoB1B1cSAORN94V7Jgs
-	 2/IWLn3a2PYh9IRqwgexynx+Vwn45obCs27DP483n6hljWuxcPgBYnwYXeMbXkvu8r
-	 f3yv9ifXghy9cFt/Oo7frZJbkFNDZzfvlOg/OYkcl2WjFwcHYSqvCYOIPKbzpYLgOE
-	 IdygZs3L+WwsCAsi/uKYE1/icHn5qdkLAeX/inECAb6pxddSE5mokurUbmemUrmjRY
-	 ydFYGtsZVhymg==
-Message-ID: <1de5c0b7-7761-4d0c-bced-7e26150e995f@kernel.org>
-Date: Mon, 5 May 2025 11:59:39 +0200
+	s=arc-20240116; t=1746445420; c=relaxed/simple;
+	bh=LroyPHP++7p+Vgslel/c4KZw8fDFrIhu9uNkaYu9lRM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KgiR4dy3T1Dqg3GodFkqu8xD4ayl3yd1QpLcN4usvhgD9lF6QtRvKjVg2KN9DEnPmsfpL1WjVHi8LDhc4ssDuzd9+/vJwjWCrJ7FubO15PRWS/Wvh4LCrg8LEGGUzHcrogbnfarS0tMqi03BkmDIhTl0B/sDKWraqjtzZS0OG2o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-877c46ab075so778921241.3;
+        Mon, 05 May 2025 04:43:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746445415; x=1747050215;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TAF5arAbrcK4xPOLwu1J3gN7QYwL2MYYXKtYUP5/0f0=;
+        b=RPrB9n7I3s5XlngBfob6hI4Zl4I2I7Cv/5ES6Wdc6QAAMgf2sJymAHA6Z+HNTOIdGq
+         /JljKt0xI3o0fgfj2X7IE8N8B4V6qpYrYAziACgzTfkmbcUC+jBgAj1ZrGd1CGFSdv5M
+         S7HTm60hvCOcmRQkMjr4n6S4If1w7hiFZzarU5EfCNrrQTBr+rk0RrFiUk4ZNUGfu8Pc
+         Kic5kBZSY6FxYF+XSjgGpYjZnNUA3xb+SpNd0ToLgVK+HGqBUDnRP9LOYVHnhzT4NyYR
+         MBMoIPMYpQp5h7xsqn7pmix/AZE6W3Qy7UBZn7z37YaI+ww78CC9cnGVJAJLWGMqKKpf
+         zUFA==
+X-Forwarded-Encrypted: i=1; AJvYcCUI5+X3WugQgb5CJvc14As0MR30/rwOPfbPksfvTU4OKS+OJn96SkOGu0YiFzPAXGfHJgrGXaTHFi2bZQ==@vger.kernel.org, AJvYcCW+XSmmfIQ/v33GfgyOfhrKgH29WxP82o8yCelb7a22W6IsxmuShzUeKebfS81bX9W2CkxvtHNia0xZDh8=@vger.kernel.org, AJvYcCWEDubAwjbXIA+h+tWjMlFzJ9BojBkThvJ1vM73vuQxrFBv6QYdvKGEVksZwj7t2WELVtN5WntzXyfiuFBb@vger.kernel.org
+X-Gm-Message-State: AOJu0YzpuTYrr0WkuNwtNPcbZYuOPHwAJ3f+dQ2kpqZ05T2rH1ALajFf
+	KIrr5WvBpW9PnwgBis4/h+gNEOdXUqFSOxVr6QzhfpZktnP2Po79T18TE+GA
+X-Gm-Gg: ASbGncs8EgHQSSPg4BxEiwvECIYjhZ6GjaJcIIzWUEBJgSJQ7zLdrutJbTB78qi07gG
+	DUdRnmStKkUvH0dIHAJe3Kt7eG2z5kY9elqbvXQUiTp0RWGOlkezrJZjqpSUq352L3VGz17vwbD
+	cyZlnSThRyJpVoSXPBU6Q6YR0Rv1ML5OrZQXwBDmYlN44iFHTTSBPzo2XJAq6TojC7q/YM4j/3n
+	W9PuQO/QUmwxT+TLy7GBEk4OFxGvUDdIKxPJ3BqS6a4Rd/NcVGmnCh6nTVRU7GKMxQ7LxNc8FT2
+	OrUD+nKGAd8Q2Iv1FXGL6WnjQZzFT1irTBwZGO/LfO50lzqquPgauxJhFfQ3MuA1ybXwTdhB8G+
+	0EKI=
+X-Google-Smtp-Source: AGHT+IE7IJ7bv2yj/LcpTrbexPVvKOMqsxHuGF52MSdoIwREL0t7RWCf15deqDhebcghDqBukIaFQg==
+X-Received: by 2002:a05:6102:4a95:b0:4da:e629:58c5 with SMTP id ada2fe7eead31-4db0c42b114mr4244571137.23.1746445415332;
+        Mon, 05 May 2025 04:43:35 -0700 (PDT)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-8780b09bc00sm1246606241.27.2025.05.05.04.43.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 May 2025 04:43:34 -0700 (PDT)
+Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-877c46ab075so778907241.3;
+        Mon, 05 May 2025 04:43:34 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVROFjN4iybKFHDyGE/K15obyL/cPfyvLhk/YT14CiqVHRC5gyiXmtB/X5+xWqC5qvM7DGaoFGVsNJLNl8u@vger.kernel.org, AJvYcCVfy8lPJ8tnMBa9rH4gXGunRU9Y4/t69cGM4XcoqWI1wnkC/nAUdyniy/EXWVwMMWJjkrFpo4bzssqcPRk=@vger.kernel.org, AJvYcCXen6Yrt3Zq2x1an98TtcAaWmLRdDAIQ8G6H45dVNxvz3/gJR1Qd18XKXte/E6v9Y0qQ7oFV+9N2w1tbA==@vger.kernel.org
+X-Received: by 2002:a05:6102:2c85:b0:4c5:1bea:1c29 with SMTP id
+ ada2fe7eead31-4db0c3de40cmr4336025137.19.1746445414091; Mon, 05 May 2025
+ 04:43:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/8] dt-bindings: serial: describe SA8255p
-To: Praveen Talari <quic_ptalari@quicinc.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, psodagud@quicinc.com, djaggi@quicinc.com,
- quic_msavaliy@quicinc.com, quic_vtanuku@quicinc.com,
- quic_arandive@quicinc.com, quic_mnaresh@quicinc.com,
- quic_shazhuss@quicinc.com, Nikunj Kela <quic_nkela@quicinc.com>
-References: <20250502171417.28856-1-quic_ptalari@quicinc.com>
- <20250502171417.28856-2-quic_ptalari@quicinc.com>
- <20250504-hilarious-ultra-grebe-d67e7d@kuoka>
- <6f97510c-eb6c-4f3b-b219-aa8d895b060b@quicinc.com>
- <20250505-ostrich-of-impossible-conversion-a0f8ac@kuoka>
- <4ebe065e-9686-4e35-bb00-a9e816fb8926@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <4ebe065e-9686-4e35-bb00-a9e816fb8926@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20250430163709.15850-1-mans@mansr.com>
+In-Reply-To: <20250430163709.15850-1-mans@mansr.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Mon, 5 May 2025 13:43:22 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUrQjcb7mqTo0EOEDWFSaK3j-_3sumLTjoDEnP8qTvakg@mail.gmail.com>
+X-Gm-Features: ATxdqUHBwbolkuQR-MXBj2JzT0P9vufOLogqeqtvnB3CPASb942XHDr6Mh4LOhU
+Message-ID: <CAMuHMdUrQjcb7mqTo0EOEDWFSaK3j-_3sumLTjoDEnP8qTvakg@mail.gmail.com>
+Subject: Re: [PATCH] tty: serial: 8250_omap: fix tx with dma
+To: Mans Rullgard <mans@mansr.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Kevin Hilman <khilman@baylibre.com>, Aaro Koskinen <aaro.koskinen@iki.fi>, 
+	Andreas Kemnade <andreas@kemnade.info>, Roger Quadros <rogerq@kernel.org>, 
+	Tony Lindgren <tony@atomide.com>, 
+	"open list:TI ETHERNET SWITCH DRIVER (CPSW)" <linux-omap@vger.kernel.org>, Matti Vaittinen <mazziesaccount@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 05/05/2025 08:51, Praveen Talari wrote:
->>>>> +    serial@990000 {
->>>>> +        compatible = "qcom,sa8255p-geni-uart";
->>>>> +        reg = <0x990000 0x4000>;
->>>>> +        interrupts = <GIC_SPI 531 IRQ_TYPE_LEVEL_HIGH>;
->>>> Why isn't here wakeup interrupt? Commit msg also does not help me to
->>>> understand why number of interrupts varies.
->>> Currently we are not using wake-irq because it is optional for our current
->>> implementation.
->> Great explanation. I asked why is it optional, answer because it is
->> optional.
-> sorry.
->>
->> What does it mean optional? This is part of the SoC, so how given one,
->> fixed SoC can have it routed or not routed in the same time?
-> 
-> the serial driver doesn't enter runtime suspend mode until the port is 
-> closed.
-> 
-> therefore, there is no need for a wake IRQ when the driver is in an 
-> active state
-You described current Linux driver, so if we change Linux driver or we
-try for example FreeBSD, then bindings are different?
+CC omap
 
-Again, explain how SoC can have this interrupt not routed.
+On Wed, 30 Apr 2025 at 18:45, Mans Rullgard <mans@mansr.com> wrote:
+> Commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> introduced two errors in the TX DMA handling for 8250_omap.
+>
+> Firstly, kfifo_dma_out_prepare_mapped() needs a scatterlist with two
+> entries whereas only one is provided.  The same error was fixed for
+> 8250_dma in 59449c9dbdaa ("tty: serial: 8250_dma: use sgl with 2 nents
+> to take care of buffer wrap").
+>
+> Secondly, when the OMAP_DMA_TX_KICK flag is set, one byte is pulled from
+> the kfifo and emitted directly in order to start the DMA.  This is done
+> without updating DMA tx_size which leads to uart_xmit_advance() called
+> in the DMA complete callback advancing the kfifo by one too much.
+>
+> In practice, transmitting N bytes has been seen to result in the last
+> N-1 bytes being sent repeatedly.
+>
+> This change fixes both problems.
+>
+> Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> Signed-off-by: Mans Rullgard <mans@mansr.com>
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 35 +++++++++++++++--------------
+>  1 file changed, 18 insertions(+), 17 deletions(-)
+>
+> diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+> index f1aee915bc02..84a2f013015e 100644
+> --- a/drivers/tty/serial/8250/8250_omap.c
+> +++ b/drivers/tty/serial/8250/8250_omap.c
+> @@ -1152,9 +1152,11 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
+>         struct omap8250_priv            *priv = p->port.private_data;
+>         struct tty_port                 *tport = &p->port.state->port;
+>         struct dma_async_tx_descriptor  *desc;
+> -       struct scatterlist sg;
+> +       struct scatterlist *sg;
+> +       struct scatterlist sgl[2];
+>         int skip_byte = -1;
+>         int ret;
+> +       int i;
+>
+>         if (dma->tx_running)
+>                 return 0;
+> @@ -1173,16 +1175,6 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
+>                 return 0;
+>         }
+>
+> -       sg_init_table(&sg, 1);
+> -       ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
+> -                                          UART_XMIT_SIZE, dma->tx_addr);
+> -       if (ret != 1) {
+> -               serial8250_clear_THRI(p);
+> -               return 0;
+> -       }
+> -
+> -       dma->tx_size = sg_dma_len(&sg);
+> -
+>         if (priv->habit & OMAP_DMA_TX_KICK) {
+>                 unsigned char c;
+>                 u8 tx_lvl;
+> @@ -1207,7 +1199,7 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
+>                         ret = -EBUSY;
+>                         goto err;
+>                 }
+> -               if (dma->tx_size < 4) {
+> +               if (kfifo_len(&tport->xmit_fifo) < 4) {
+>                         ret = -EINVAL;
+>                         goto err;
+>                 }
+> @@ -1216,12 +1208,19 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
+>                         goto err;
+>                 }
+>                 skip_byte = c;
+> -               /* now we need to recompute due to kfifo_get */
+> -               kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
+> -                               UART_XMIT_SIZE, dma->tx_addr);
+>         }
+>
+> -       desc = dmaengine_prep_slave_sg(dma->txchan, &sg, 1, DMA_MEM_TO_DEV,
+> +       sg_init_table(sgl, ARRAY_SIZE(sgl));
+> +
+> +       ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, sgl, ARRAY_SIZE(sgl),
+> +                                          UART_XMIT_SIZE, dma->tx_addr);
+> +
+> +       dma->tx_size = 0;
+> +
+> +       for_each_sg(sgl, sg, ret, i)
+> +               dma->tx_size += sg_dma_len(sg);
+> +
+> +       desc = dmaengine_prep_slave_sg(dma->txchan, sgl, ret, DMA_MEM_TO_DEV,
+>                         DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+>         if (!desc) {
+>                 ret = -EBUSY;
+> @@ -1248,8 +1247,10 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
+>  err:
+>         dma->tx_err = 1;
+>  out_skip:
+> -       if (skip_byte >= 0)
+> +       if (skip_byte >= 0) {
+>                 serial_out(p, UART_TX, skip_byte);
+> +               p->port.icount.tx++;
+> +       }
+>         return ret;
+>  }
+>
+> --
+> 2.49.0
 
-Best regards,
-Krzysztof
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
