@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FFC627F4C9;
-	Tue,  6 May 2025 12:08:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87296280A4D;
+	Tue,  6 May 2025 12:25:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746533338; cv=none; b=deWqiIoqpAVCSPDyzqV67uvJnEuozRcdyw9kTX9CTM3IqoYktQmNO0geEcD8ySlIjn+uERnA6JL6Pj0+kx1f8LjSl0jQt+xXAX3FK4HlC5mTxgJqSwRY1rFhxxieUdwcqKUYESb0/jN8PL5wJTpc/mXW7c48YTS1YgEFJ94+36k=
+	t=1746534348; cv=none; b=eMoxDo4H2Cvgx8ydWv9BzeFFiBd6ncF15fTjDTZ5mgCoweD457PDwBx/wJsv99YE1hsjhE3+Wnk5B4WPpJCUoCKKqWRsj2ufX+7hnwBaU5fcZTU7xmQrexMHMzZ9/fDOWvsZg3b+VlAgjjuHY+9R82l8nG36syeu5W6HxO1dQ58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746533338; c=relaxed/simple;
-	bh=qWEQKN50Sfhev29R+1iiRJnG9Ap2n+NOPh3MBXCQJgg=;
+	s=arc-20240116; t=1746534348; c=relaxed/simple;
+	bh=kXX4nc5q++bTLdVqTjAwDwXHD++x2VmwCQKLGF0w+Ns=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=QzBp/i4a9iKfsEtmLzjPBiEBFK6Ct5JlBAJlp7MO4gdXJ090Ue3OE7uQLFa4Zfb8ylAhaG+2nDWmVqwyOLkvwY9EoPI2W+HPMlgQZCMF+/5DWT/nn+5QqJOVaJq3d3yprpgYFjBbkwK4LTnG/aUMCkDkyewALfdzcVuf3D4fKJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GEvW4hTI; arc=none smtp.client-ip=192.198.163.17
+	 MIME-Version:Content-Type; b=GXBoRJSmXpOxrxRMfXEiuQRqTuoiJcrr93p92zDkR2LrIT2mkugryrBsrAGMdCrtiC6zCPdOLykFitIg8BGw3Q3ntKTOu/z/+MIEQ9A3f/fdBmPzOWyX43unnm/xV0TcJ1SyRUmuxrSkjjYeyZLaMGBy1wSV+Ph6YWvjl1309ww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KYvHgf7p; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GEvW4hTI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KYvHgf7p"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1746533337; x=1778069337;
+  t=1746534346; x=1778070346;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=qWEQKN50Sfhev29R+1iiRJnG9Ap2n+NOPh3MBXCQJgg=;
-  b=GEvW4hTIcb8YgGnDbL0QkQuWF9UkEbckf2RAJbrBd12pYkJP1SzqeDDH
-   u4gfMIqj+Ji4ZN/UUS0JzZ/Xs6empqr4bVFUEKPDMf476DKg1+pvmkx5g
-   SaY1zyEZY8kL12gtNNB+JBGKqXRS19TNkISwsl5gA5fR12qqSKVpVaKbJ
-   9mPG5xxF6ipZ/yNLoTOOeyVJ6EayVqBnixqS1Ck6kp8BTsWJE1pchlEKp
-   tIXw8RtxNDEW3nQrxZYSe8RikgrVbLmyE/FJJYqNtyjzLQG7NdP3iwI7g
-   WVyn+71OrE2rvkaSvYzJXMPi8Ya+F4qnmB0wNrHHC0LVL3Q4Ew0sQCtnc
-   Q==;
-X-CSE-ConnectionGUID: 2d71jEmDQqKv6zwcJBkfkg==
-X-CSE-MsgGUID: rw0UmB39SteVvhISkmoU8Q==
-X-IronPort-AV: E=McAfee;i="6700,10204,11425"; a="48106480"
+  bh=kXX4nc5q++bTLdVqTjAwDwXHD++x2VmwCQKLGF0w+Ns=;
+  b=KYvHgf7pNOcP0qJhimpl4J6k0b4n3codeNBgMJ05yjx9ZqbwzqM6SVUb
+   5odFSh3tv1uNwr//fScIn3DEWm7Bcc9oZBQ2XLbYGDuqJi343MDle2OKh
+   6Bw4ITUnK3xBs73VJmkXESHZE+ESrQTQHM62jqJ4IGp2+W+R+JvwSbYGs
+   xtAe5cUjr/bJ9Mu3T9kUNEODL2cbWIpIpkVmuotnE6a2SM88mvMIqgfE1
+   ybKMQ2rBqFqdD73YD/7RuodAaH+xzKN1F3SD6ENemSEGEvabt1jBYZZDW
+   iwNYOwBHTpEliSzPiUXVj6r2X1wCp62zpKE1VBO9yJLYprcnK6CLolwjh
+   w==;
+X-CSE-ConnectionGUID: w9rGrTBDRK2B0Ag54CJNTQ==
+X-CSE-MsgGUID: lPjG6nG9Rb6upjtAJtMphg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11425"; a="47457643"
 X-IronPort-AV: E=Sophos;i="6.15,266,1739865600"; 
-   d="scan'208";a="48106480"
+   d="scan'208";a="47457643"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2025 05:08:56 -0700
-X-CSE-ConnectionGUID: 43eUpEGxTxibNHy2EkAEag==
-X-CSE-MsgGUID: ggD0ZOv0TrOdeUhfCxxZtg==
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2025 05:25:45 -0700
+X-CSE-ConnectionGUID: 02PNiSStR1+X30d9+EsQQA==
+X-CSE-MsgGUID: bUJvuiWhTPilaf7CCnCNrQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,266,1739865600"; 
-   d="scan'208";a="136537055"
+   d="scan'208";a="136542207"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.207])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2025 05:08:50 -0700
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2025 05:25:39 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 6 May 2025 15:08:46 +0300 (EEST)
+Date: Tue, 6 May 2025 15:25:35 +0300 (EEST)
 To: Yunhui Cui <cuiyunhui@bytedance.com>
 cc: arnd@arndb.de, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
     benjamin.larsson@genexis.eu, 
@@ -56,89 +56,76 @@ cc: arnd@arndb.de, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
     matt.porter@linaro.org, namcao@linutronix.de, paulmck@kernel.org, 
     pmladek@suse.com, schnelle@linux.ibm.com, sunilvl@ventanamicro.com, 
     tim.kryger@linaro.org
-Subject: Re: [PATCH v5 3/4] serial: 8250_dw: warning on entering dw8250_force_idle
- unlocked
-In-Reply-To: <71a295db-72ea-bf2a-338f-416b178f5305@linux.intel.com>
-Message-ID: <f4fe790b-8dcd-1002-f6cd-0fbf451d28e1@linux.intel.com>
-References: <20250506112321.61710-1-cuiyunhui@bytedance.com> <20250506112321.61710-3-cuiyunhui@bytedance.com> <71a295db-72ea-bf2a-338f-416b178f5305@linux.intel.com>
+Subject: Re: [PATCH v5 4/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
+In-Reply-To: <20250506112321.61710-4-cuiyunhui@bytedance.com>
+Message-ID: <85e57aad-c612-7f1a-03cf-cabd406a1c44@linux.intel.com>
+References: <20250506112321.61710-1-cuiyunhui@bytedance.com> <20250506112321.61710-4-cuiyunhui@bytedance.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-505674580-1746533326=:1921"
+Content-Type: text/plain; charset=US-ASCII
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+I think shortlog should include mention to "dummy read" to make it a 
+bit more specific.
 
---8323328-505674580-1746533326=:1921
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+On Tue, 6 May 2025, Yunhui Cui wrote:
 
-Also, you should also improve the shortlog (in Subject) to something less=
-=20
-vague, e.g.:
+> In the case of RX_TIMEOUT, to avoid PSLVERR, disable the FIFO
 
-serial: 8250_dw: assert port->lock is held in dw8250_force_idle()
+As with patch 2, please don't assume it is know to the reader how PSLVERR 
+is triggered.
 
-On Tue, 6 May 2025, Ilpo J=E4rvinen wrote:
-> On Tue, 6 May 2025, Yunhui Cui wrote:
->=20
-> > Read UART_RX and check UART_LSR_DR in critical section. Unsure if
->=20
-> Unsure if -> Ensure the
->=20
-> > caller of dw8250_force_idle() holds port->lock. Don't acquire it
-> > directly to avoid deadlock. Use lockdep_assert_held_once for warning.
->=20
-> Add (), although the last two sentences don't seem that useful, IMO.
->=20
-> >=20
-> > Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
-> > ---
-> >  drivers/tty/serial/8250/8250_dw.c | 8 ++++++++
-> >  1 file changed, 8 insertions(+)
-> >=20
-> > diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/825=
-0/8250_dw.c
-> > index af24ec25d976..f41c4a9ed58b 100644
-> > --- a/drivers/tty/serial/8250/8250_dw.c
-> > +++ b/drivers/tty/serial/8250/8250_dw.c
-> > @@ -13,6 +13,7 @@
-> >  #include <linux/delay.h>
-> >  #include <linux/device.h>
-> >  #include <linux/io.h>
-> > +#include <linux/lockdep.h>
-> >  #include <linux/mod_devicetable.h>
-> >  #include <linux/module.h>
-> >  #include <linux/notifier.h>
-> > @@ -112,6 +113,13 @@ static void dw8250_force_idle(struct uart_port *p)
-> >  =09struct uart_8250_port *up =3D up_to_u8250p(p);
-> >  =09unsigned int lsr;
-> > =20
-> > +=09/*
-> > +=09 * The serial_in(p, UART_RX) should be under port->lock, but we can=
-'t add
-> > +=09 * it to avoid AA deadlock as we're unsure if serial_out*(...UART_L=
-CR)
-> > +=09 * is under port->lock.
->=20
-> I'm left to wonder who/what "we" is here? Could you change it something=
-=20
-> more precise.
->=20
-> > +=09 */
-> > +=09lockdep_assert_held_once(&p->lock);
-> > +
-> >  =09serial8250_clear_and_reinit_fifos(up);
-> > =20
-> >  =09/*
-> >=20
->=20
->=20
+> before reading UART_RX when UART_LSR_DR is not set.
 
---=20
+IMO, it would be better to explain the problem better first, something 
+along these lines:
+
+DW UART can fire RX_TIMEOUT interrupt without data and remain in that 
+state forever. dw8250_handle_irq() detects this condition by checking if 
+UART_LSR_DR is not asserted when RX_TIMEOUT occurred, and if detected, 
+performs a dummy read to kick DW UART out of this state.
+
+Performing dummy read from UART_RX is problematic because with ... it lead 
+to ...
+
+And only then explain the solution (disable FIFO for while performing of 
+the dummy read).
+
+> 
+> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
+> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+> ---
+>  drivers/tty/serial/8250/8250_dw.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+> index f41c4a9ed58b..ffa8cb10b39c 100644
+> --- a/drivers/tty/serial/8250/8250_dw.c
+> +++ b/drivers/tty/serial/8250/8250_dw.c
+> @@ -288,9 +288,17 @@ static int dw8250_handle_irq(struct uart_port *p)
+>  		uart_port_lock_irqsave(p, &flags);
+>  		status = serial_lsr_in(up);
+>  
+> -		if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+> +		if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
+> +			/* To avoid PSLVERR, disable the FIFO first. */
+> +			if (up->fcr & UART_FCR_ENABLE_FIFO)
+> +				serial_out(up, UART_FCR, 0);
+> +
+>  			(void) p->serial_in(p, UART_RX);
+>  
+> +			if (up->fcr & UART_FCR_ENABLE_FIFO)
+> +				serial_out(up, UART_FCR, up->fcr);
+> +		}
+> +
+>  		uart_port_unlock_irqrestore(p, flags);
+>  	}
+>  
+> 
+
+-- 
  i.
 
---8323328-505674580-1746533326=:1921--
