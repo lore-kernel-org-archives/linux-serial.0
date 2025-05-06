@@ -1,136 +1,146 @@
-Received: from unicorn.mansr.com (unicorn.mansr.com [81.2.72.234])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B4E427B4F8;
-	Tue,  6 May 2025 15:08:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.2.72.234
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87A7A1AAA1F;
+	Tue,  6 May 2025 18:03:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746544084; cv=none; b=EmZ2PCaHTZ7/ip8oCIWsvro7CZaMRs66q9T/RA/I5TNKm3UtbB/m1aaXs33USmnRVNVd27c5mnkBTwvvcA2vshRmXHcDa0+5pFbR6hkPzSA2zslyz4ZglMut60tPQaTdH/MOhdhPixPgGC+rK8vba74SRkKjybP9o7vIoBceHEI=
+	t=1746554584; cv=none; b=qZAfz3qIHdrXLV4xfJuVwjoFOv/+wBCkBN0aqub3OUCTWrfLH5+/bvu1KXcTQfwoy9/UVFi4f8skZzHE0H9xcka0lsQsFBTY/yjE4Wj+j3qIEJPQHLTsse9OyAmpr9RGouHCGKDe6DMnas6Bx0M1g6FV2Wi1xGpRosVAQ8aVyZk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746544084; c=relaxed/simple;
-	bh=V0Qnd7XGUYL4VJVx/NNGZxOFnfryDun38SvbJqd1K94=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hpiGaqOFBDs+ZeOWPUPhlBoXHDXb70UXCqorDjf2WbPjEOvh/HFJw+JTTSygQWUpBfq/LurdU+Bva/MalnNGLV3uKvkpp7acx2L7KYp2HkarodMV7b9TBf8ubHz37V6MfsvXLI9MDPgQPY/vG4utzak3zdTr2oLI6vZZT7/G+PA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mansr.com; spf=pass smtp.mailfrom=mansr.com; arc=none smtp.client-ip=81.2.72.234
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mansr.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mansr.com
-Received: from raven.mansr.com (raven.mansr.com [IPv6:2001:8b0:ca0d:1::3])
-	by unicorn.mansr.com (Postfix) with ESMTPS id 6213715380;
-	Tue, 06 May 2025 16:07:55 +0100 (BST)
-Received: by raven.mansr.com (Postfix, from userid 51770)
-	id 4BAE821A3DA; Tue, 06 May 2025 16:07:55 +0100 (BST)
-From: Mans Rullgard <mans@mansr.com>
-To: jirislaby@kernel.org
-Cc: gregkh@linuxfoundation.org,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-omap@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH v2 1/2] tty: serial: 8250_omap: fix tx with dma
-Date: Tue,  6 May 2025 16:07:29 +0100
-Message-ID: <20250506150748.3162-1-mans@mansr.com>
-X-Mailer: git-send-email 2.49.0
+	s=arc-20240116; t=1746554584; c=relaxed/simple;
+	bh=I6ZJf1ewxQVUGMccsiKD0bYREX3+2yWx/jb9aQwbA4o=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=l2SgFz3rfKtwDvS7dd8Ph8qre6Xn8qK21g2+VmijmC5gHYGqN98xqGgVPn/vpaYHiTtHENcnepHoi62LzvnoGjTACOniJAehhQEjwIdlHSW4TCfCEyKlIEw2jCQEyxNT1F3o8xcd3i9NE+WIk4m6ObfkZwU3vIUTMB3ShTMzvvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=kyKSasU9; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="kyKSasU9"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 546HfLrK017515;
+	Tue, 6 May 2025 18:02:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:message-id:mime-version:subject:to; s=
+	qcppdkim1; bh=C4NefBXU1mIg6NtdQJ5DyHLItC3++Kb51ZY9LzbsbEU=; b=ky
+	KSasU9WXVZMeHQPeKX2mgvChtRnkYXVTzjHKVENNiQYX2BMkPBLes2xFKoJpMaxj
+	DYcOM6sJsSmN87ubT7SYrvSwYglZbvsOIZwrn7RP63uZS3OF4abacjRxGeMP30Dh
+	HrqBajjHeTy0Tfhcq/TWzABto3dHhPss0VaB238AXzOmR+pLW27ehTwe7K5Qra4E
+	IhiehqatQnrG/03Ez7fSCTU7/0YeoEuAM3xFfPxF/9vRjCHnuoF8NTZgV7B7Mi/F
+	D9G29iCGc+6pMPjWv1ItE02RGarqUDAdaBoLbFjMdwx7GdjbMuPx25rz07ahDHX9
+	vagsZtobNdy+q5+Vzwgg==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46e0xsy0nv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 06 May 2025 18:02:58 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 546I2vLZ022167
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 6 May 2025 18:02:57 GMT
+Received: from hu-ptalari-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01c.na.qualcomm.com (10.45.79.139) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Tue, 6 May 2025 11:02:51 -0700
+From: Praveen Talari <quic_ptalari@quicinc.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        "Praveen
+ Talari" <quic_ptalari@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
+Subject: [PATCH v5 0/8] Enable QUPs and Serial on SA8255p Qualcomm platforms
+Date: Tue, 6 May 2025 23:32:24 +0530
+Message-ID: <20250506180232.1299-1-quic_ptalari@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: JfGfiCwIjBAI4LnAuCJsK7yP6NqbtM5i
+X-Proofpoint-ORIG-GUID: JfGfiCwIjBAI4LnAuCJsK7yP6NqbtM5i
+X-Authority-Analysis: v=2.4 cv=bdprUPPB c=1 sm=1 tr=0 ts=681a4ed2 cx=c_pps
+ a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=GEpy-HfZoHoA:10 a=dt9VzEwgFbYA:10 a=wPpz0gULE6-aHRqVbM0A:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTA2MDE3MCBTYWx0ZWRfX3rbHOC+Ql4Ht
+ berbE6tg/93GbbQEeWNlz2kvhUkAoKQ+CFAak4fO222pxcQ/5oV+qeEAf5BtHS3DSP79RUP0JYn
+ gzKfyw7dszUOLpjeWUmXeRJKAb53KuLcvOBRPYwQ4kucEt8lcpYs9pnwubTH46HdK2vrltvFw9+
+ JFY1bdsCN8PvGttVWBqKxExRXn0OqTaw/i0EqESqWb7sumE1iKnt7eIiDXaGNmzKfc6TnEmkvl/
+ VoXCoy9L6LaQbTKPGvJtxUsp0mTAmxlvq1c0y2p7xz42TTpuwVwUBIUq6SYrVitVa4Y5HwdJ3hS
+ Iz5oUmEvPyssAOC1kOpy5Qn3uNAZLu87myROY0I8aaIYOmmQeAp3BzzogDii5IFTe/7c2zjaWch
+ yLjMdGFJLh3OhF2HQxHeaPfj6naj5hEh22QoDqXG8wT/XvcayXEYMBZkbaWo9L6aLWppoaxL
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-06_08,2025-05-05_01,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 lowpriorityscore=0 suspectscore=0 malwarescore=0
+ clxscore=1015 phishscore=0 adultscore=0 spamscore=0 impostorscore=0
+ mlxlogscore=760 mlxscore=0 bulkscore=0 classifier=spam authscore=0 authtc=n/a
+ authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2504070000 definitions=main-2505060170
 
-Commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
-introduced an error in the TX DMA handling for 8250_omap.
+The Qualcomm automotive SA8255p SoC relies on firmware to configure
+platform resources, including clocks, interconnects and TLMM. The device
+drivers request resources operations over SCMI using power and
+performance protocols.
 
-When the OMAP_DMA_TX_KICK flag is set, one byte is pulled from the
-kfifo and emitted directly in order to start the DMA.  This is done
-without updating DMA tx_size which leads to uart_xmit_advance() called
-in the DMA complete callback advancing the kfifo by one too much.
+The SCMI power protocol enables or disables resources like clocks,
+interconnect paths, and TLMM (GPIOs) using runtime PM framework APIs,
+such as resume/suspend, to control power states(on/off).
 
-In practice, transmitting N bytes has been seen to result in the last
-N-1 bytes being sent repeatedly.
+The SCMI performance protocol manages UART baud rates, with each baud
+rate represented by a performance level. Drivers use the
+dev_pm_opp_set_level() API to request the desired baud rate by
+specifying the performance level.
 
-This change fixes the problem by moving all of the dma setup after
-the OMAP_DMA_TX_KICK handling and using kfifo_len() instead of the
-dma size for the 4-byte cutoff check. This slightly changes the
-behaviour at buffer wraparound, but it still transmits the correct
-bytes somehow. At the point kfifo_dma_out_prepare_mapped is called,
-at least one byte is guaranteed to be in the fifo, so checking the
-return value is not necessary.
+The QUP drivers are SCMI clients, with clocks, interconnects, pinctrl
+and power-domains abstracted by a SCMI server.
 
-Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
-Cc: stable@vger.kernel.org
-Signed-off-by: Mans Rullgard <mans@mansr.com>
+The serial driver has a dependency on the dev_pm_opp_set_level() function,
+which is applied in the OPP tree's linux-next branch.
+
+Nikunj Kela (2):
+  dt-bindings: serial: describe SA8255p
+  dt-bindings: qcom: geni-se: describe SA8255p
+
+Praveen Talari (6):
+  soc: qcom: geni-se: Enable QUPs on SA8255p Qualcomm platforms
+  serial: qcom-geni: move resource initialization to separate function
+  serial: qcom-geni: move resource control logic to separate functions
+  serial: qcom-geni: move clock-rate logic to separate function
+  serial: qcom-geni: Enable PM runtime for serial driver
+  serial: qcom-geni: Enable Serial on SA8255p Qualcomm platforms
 ---
-v2: split patch in two
+v3 -> v4
+- removed patch "[PATCH v3 1/9] opp: add new helper API dev_pm_opp_set_level()"
+  from series and serial driver has dependency of this API which is
+  applied in the OPP tree's linux-next branch.
 ---
- drivers/tty/serial/8250/8250_omap.c | 24 +++++++++---------------
- 1 file changed, 9 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index f1aee915bc02..180466e09605 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -1173,16 +1173,6 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
- 		return 0;
- 	}
- 
--	sg_init_table(&sg, 1);
--	ret = kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
--					   UART_XMIT_SIZE, dma->tx_addr);
--	if (ret != 1) {
--		serial8250_clear_THRI(p);
--		return 0;
--	}
--
--	dma->tx_size = sg_dma_len(&sg);
--
- 	if (priv->habit & OMAP_DMA_TX_KICK) {
- 		unsigned char c;
- 		u8 tx_lvl;
-@@ -1207,7 +1197,7 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
- 			ret = -EBUSY;
- 			goto err;
- 		}
--		if (dma->tx_size < 4) {
-+		if (kfifo_len(&tport->xmit_fifo) < 4) {
- 			ret = -EINVAL;
- 			goto err;
- 		}
-@@ -1216,11 +1206,12 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
- 			goto err;
- 		}
- 		skip_byte = c;
--		/* now we need to recompute due to kfifo_get */
--		kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
--				UART_XMIT_SIZE, dma->tx_addr);
- 	}
- 
-+	sg_init_table(&sg, 1);
-+	kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
-+				     UART_XMIT_SIZE, dma->tx_addr);
-+
- 	desc = dmaengine_prep_slave_sg(dma->txchan, &sg, 1, DMA_MEM_TO_DEV,
- 			DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
- 	if (!desc) {
-@@ -1228,6 +1219,7 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
- 		goto err;
- 	}
- 
-+	dma->tx_size = sg_dma_len(&sg);
- 	dma->tx_running = 1;
- 
- 	desc->callback = omap_8250_dma_tx_complete;
-@@ -1248,8 +1240,10 @@ static int omap_8250_tx_dma(struct uart_8250_port *p)
- err:
- 	dma->tx_err = 1;
- out_skip:
--	if (skip_byte >= 0)
-+	if (skip_byte >= 0) {
- 		serial_out(p, UART_TX, skip_byte);
-+		p->port.icount.tx++;
-+	}
- 	return ret;
- }
- 
+ .../serial/qcom,sa8255p-geni-uart.yaml        |  66 ++++
+ .../soc/qcom/qcom,sa8255p-geni-se-qup.yaml    | 107 ++++++
+ drivers/soc/qcom/qcom-geni-se.c               |  73 ++--
+ drivers/tty/serial/qcom_geni_serial.c         | 351 ++++++++++++++----
+ 4 files changed, 496 insertions(+), 101 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml
+
+
+base-commit: 37ff6e9a2ce321b7932d3987701757fb4d87b0e6
 -- 
-2.49.0
+2.17.1
 
