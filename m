@@ -1,138 +1,98 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF61A278146;
-	Tue,  6 May 2025 18:25:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAADA218838;
+	Tue,  6 May 2025 22:00:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746555941; cv=none; b=aBtMbq2E6G3M6yfFkOtcpDQl0bbjBEn2W40K8/5SXu93B1Zc8upMVw8g+7jHPgRQOV6DFS7pT6kH3gUFTt0k5MlojtF0EaAazdR1z5YyPyWh3OBKSXoXPwLNUmUgUYjqxyfXvif/ngxSzodIHfmubk76FR59anK6fFGJnadlg38=
+	t=1746568803; cv=none; b=FcV1WOqxGccSXo4Q59FbA0EilAssNBTLMZgNkJhbmaJppzzgGipDGpxq4r1VdNtR1WkNl3WJXCRgQUimAXgI1gB/MdFTokGeimRFxbYhbufOZtoJT5/D4VMSuvJnh++XMmnMXo8lB+HKlMM8n0Hgy8RzM7wnUTYBJnhwov9A8pU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746555941; c=relaxed/simple;
-	bh=eZMtMRX+XEqjPAGK33crRcL0vjbLxp3ZTlEuyfjqAoA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kXd1JpAMa2DFCUdDRey1HTFrCtEGf5ovrZDBw2P66cPPo49gYznnnwc/AVhcubiiOZstaaN+SaNyGuyG6k4mAWmRlLYP4OHOt8+YmtQF3WH3hZgRf7LPqBeZ9vbsuPdmedAmsQfrnsjmMw/sGlvdBqXSPbd+iS9hzrGLij7SGjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B8J/URRK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746568803; c=relaxed/simple;
+	bh=x0kj9Jv4aZPukUlCk34g8XBO/482wG4PTvrgKvgia2k=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=B0/iSKQcgvXiSWD2HwLiYcbVNZr2EsI7oSWEb8kGN20A8+PAyvWOzqhbskaUpRNS7gZkpz7ZY2JiD5wdoSwbopCNXwc7pRyJEBvQfsCGfiCo3B/yeon2zr4dSgTdKi7Ft5Tl0EQIDrPbYfHJ1FBx0Qn1ZBxiuLp6DbJhKSsJdx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dgrIkkK7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B8J/URRK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D482EC4CEE4;
-	Tue,  6 May 2025 18:25:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dgrIkkK7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05F45C4CEE4;
+	Tue,  6 May 2025 22:00:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746555941;
-	bh=eZMtMRX+XEqjPAGK33crRcL0vjbLxp3ZTlEuyfjqAoA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=B8J/URRKLWpKRIOJp6qYCTRL6ZN1QKrIV9paC9NNi8EdKHQZpKoIBQ9m3afopNyqd
-	 YbzyWaEn7PDtAHFXsWfBW4ZPA1QLlCthkDlbU8nZ7xpi4jJmMSJbZnmmOUw5aNsAdX
-	 JxUivRnkKDShsZmgAa1My5LD9hwXlnSouCBFiGXRsSGl2DuEB8Fvvxc2RjW0Ryoqvx
-	 +sOtNiBXPZClJ46F98XVTBaIU/8y7Z4zudU561QH9N9EDSWP6Ydb89H2MIYz5co5uC
-	 TM8o7qmo3KeIqNV5rmaK8yNohGkkJe1SZ9CaXwHuThYNlA+aVA5E6Xt1gkjhKz623V
-	 XqHU3ii65D2Cg==
-Message-ID: <8def8f5d-3bc6-4ca3-85bf-f55dc7dc7d9c@kernel.org>
-Date: Tue, 6 May 2025 20:25:35 +0200
+	s=k20201202; t=1746568803;
+	bh=x0kj9Jv4aZPukUlCk34g8XBO/482wG4PTvrgKvgia2k=;
+	h=From:To:Cc:Subject:Date:From;
+	b=dgrIkkK7HAvlEDQcNymbKS0V2gBDv+iWjyjxsiXg+1/1JL095lGvZ5zGgCCUp6B9b
+	 depbAmj4LCyB15mG+hOKoeHy9KOtsXDc7eYgZDqYRj/QWuzgMrSOMetb2m2ANa9CCa
+	 ZIFJEgvzHf8NeX0J4Z8OHH0TX3bitKjcpGme551AWDCUtDRFKhRVTa37PXskICjHFH
+	 2ckmrU1xZ5thzslYRzCTEl0ltStPlIN27QH/2lJ9c3oSkxublMvw4+NJHN0e6NTf6J
+	 ZX5wiGApVLy0McVD09lDsne+bfX5tI/t9UWDoeG1kjF4ZWB510JDkUYld41R/yZ2jS
+	 m8QxqzsUL+J8A==
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Dinh Nguyen <dinguyen@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH] dt-bindings: serial: Convert altr,juart-1.0 to DT schema
+Date: Tue,  6 May 2025 16:59:58 -0500
+Message-ID: <20250506215959.2544931-1-robh@kernel.org>
+X-Mailer: git-send-email 2.47.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 2/8] dt-bindings: qcom: geni-se: describe SA8255p
-To: Praveen Talari <quic_ptalari@quicinc.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org
-Cc: psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com,
- quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
- quic_mnaresh@quicinc.com, quic_shazhuss@quicinc.com,
- Nikunj Kela <quic_nkela@quicinc.com>
-References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
- <20250506180232.1299-3-quic_ptalari@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20250506180232.1299-3-quic_ptalari@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 06/05/2025 20:02, Praveen Talari wrote:
-> From: Nikunj Kela <quic_nkela@quicinc.com>
-> 
-> SA8255p platform abstracts resources such as clocks, interconnect
-> configuration in Firmware.
-> 
-> Add DT bindings for the QUP Wrapper on sa8255p platform.
-> 
-> Signed-off-by: Nikunj Kela <quic_nkela@quicinc.com>
-> Co-developed-by: Praveen Talari <quic_ptalari@quicinc.com>
-> Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
-You are wasting people's time, srsly, replying without giving any chance
-to comment and then totally ignoring review.
+Convert the Altera JTAG UART binding to DT schema. The "ALTR,juart-1.0"
+compatible has long been deprecated, so drop it.
 
-Reach to your colleagues before sending next version to be sure you
-understand the process.
+Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+---
+ .../bindings/serial/altera_jtaguart.txt       |  5 -----
+ .../bindings/serial/altr,juart-1.0.yaml       | 19 +++++++++++++++++++
+ 2 files changed, 19 insertions(+), 5 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/altera_jtaguart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/altr,juart-1.0.yaml
 
-<form letter>
-It looks like you received a tag and forgot to add it.
+diff --git a/Documentation/devicetree/bindings/serial/altera_jtaguart.txt b/Documentation/devicetree/bindings/serial/altera_jtaguart.txt
+deleted file mode 100644
+index 55a901051e8f..000000000000
+--- a/Documentation/devicetree/bindings/serial/altera_jtaguart.txt
++++ /dev/null
+@@ -1,5 +0,0 @@
+-Altera JTAG UART
+-
+-Required properties:
+-- compatible : should be "ALTR,juart-1.0" <DEPRECATED>
+-- compatible : should be "altr,juart-1.0"
+diff --git a/Documentation/devicetree/bindings/serial/altr,juart-1.0.yaml b/Documentation/devicetree/bindings/serial/altr,juart-1.0.yaml
+new file mode 100644
+index 000000000000..02e20fa591da
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/altr,juart-1.0.yaml
+@@ -0,0 +1,19 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/altr,juart-1.0.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Altera JTAG UART
++
++maintainers:
++  - Dinh Nguyen <dinguyen@kernel.org>
++
++properties:
++  compatible:
++    const: altr,juart-1.0
++
++required:
++  - compatible
++
++additionalProperties: false
+-- 
+2.47.2
 
-If you do not know the process, here is a short explanation:
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new versions
-of patchset, under or above your Signed-off-by tag, unless patch changed
-significantly (e.g. new properties added to the DT bindings). Tag is
-"received", when provided in a message replied to you on the mailing
-list. Tools like b4 can help here. However, there's no need to repost
-patches *only* to add the tags. The upstream maintainer will do that for
-tags received on the version they apply.
-
-Please read:
-https://elixir.bootlin.com/linux/v6.12-rc3/source/Documentation/process/submitting-patches.rst#L577
-
-If a tag was not added on purpose, please state why and what changed.
-</form letter>
-
-Best regards,
-Krzysztof
