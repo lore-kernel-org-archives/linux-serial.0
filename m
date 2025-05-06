@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74D31211494;
-	Tue,  6 May 2025 05:56:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C0CD218AB3;
+	Tue,  6 May 2025 05:58:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746510963; cv=none; b=tO4iuFWc1NbWCnBXtZAGVJLzFxcY8A1amyIo+46id4wmI6Ne9I2cexrM0oyPe+1TDqRD6yFjvNfWDd6yfr34o3XMymbPnGPqvsaiSBWvE+ky1zYwXisAah19WPBClH3IUTjmTijF20n+xi5dMWEF21pIFHQNuukzC2idApboYcI=
+	t=1746511097; cv=none; b=ILJdlocILHvXK0/WZicpYwZ3lnct9TG3JgzfkGhhofN79FdFScybwnodo9Uf3XQ9dJg7xMepLI7wMhuX7dVxIx1ksmaRSy5HFlN8vIJ48OSJulCjJ3RUyAfaLIcc3TZO4LDSHas0XzLTlIsHadNCcOSlwfgUOApiV006L0F5BRE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746510963; c=relaxed/simple;
-	bh=TghzRX75CNwnBhrhnizeck8TccB3K24BdAiqGkT2ozw=;
+	s=arc-20240116; t=1746511097; c=relaxed/simple;
+	bh=z4Sc892/qTN3m034IKTiq6MZu0gxahFTuLKF8euUnQE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nKhk8XLsM8e9zOixZLHZYPRAICRx7kxngOWq16JpzFPtZbMHlEe8aaVFOkSM0nEGwVYh4J481+qtIe24kekKmICD4geN0dybp/84DbtfxrFWJUdisIvaOIdGXvOuFF/Nu8jiFAh6z09ZT1rHX17Eai369RuyfWtVdR1Y4QsziP0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fEebFZCt; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=P7/jxC2W2n7PygXmyuTskbPq6/7vRUsUEGmmmeX2qFThfrDYB0ROazHdXy0cej34D0+4NIF1JqNEjwcjvFAiezejVceaWga/J5XfCCai0XCgy3mfhoG8d3ZgCR8Xowvn+gRoFeK6zR1E5dJ5/TmMMqMno+VykR6asK3acf+BwRc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MVyPwlMt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fEebFZCt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D91D3C4CEE4;
-	Tue,  6 May 2025 05:56:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MVyPwlMt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBEC5C4CEE4;
+	Tue,  6 May 2025 05:58:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746510962;
-	bh=TghzRX75CNwnBhrhnizeck8TccB3K24BdAiqGkT2ozw=;
+	s=k20201202; t=1746511097;
+	bh=z4Sc892/qTN3m034IKTiq6MZu0gxahFTuLKF8euUnQE=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fEebFZCtqn147cyBmy9NhWOq8c59/sC3fVqugWMaT0NFjm6JIXTZAKc8DDPX3HwpW
-	 h5XaaFE/aKWmrDTS4DU6GMuzjRme76VaPw4GqGMX16x6fyZLBvdifokwkBbISK89LH
-	 yKU0IjE51kdAMGM+HRO1Wz5l8/of3aQv1uKglcNo+Y0BuiCOkHa4pdL4KhFT1MQ03l
-	 pEvCdpxfq25vxCr+i64hLJ+XZHyBjrpTDH6pDQsoSK5hTw9MWGK05eDkJHTCw9Ig6T
-	 U4gtKIuYFLqWVJL4rnne/ft/g8Hrp/oAHBGwcB2TzXWeosFpeVAg5XNohkGNgIcjKG
-	 wAY/XdSL5VhJw==
-Message-ID: <58ee071e-b2d9-4e1a-b150-c2be59827676@kernel.org>
-Date: Tue, 6 May 2025 07:55:59 +0200
+	b=MVyPwlMtAABebttrBcuaNWjPhlw4Hpf4LhPsB4DLCWgkPPxSmO6lGk4bXnWMBvHn+
+	 dHnwjBtKaF7Z+PiI5K8sXIfR6RZjUUy0KBjmywibs590GngXc2R7RY9EuFhHZf8VJP
+	 b3m6QkeZPKsl43aCQ6drvdizWUn+HYS2LEKV130VGw6dXSgVyMLZitrqgVOZ2LCzgc
+	 I/lxSIqtVwzn3vHslm2IQP7dOJjaXqXvhQtV9CO1MisaOgjSMYHcWR2fppf9pHeEB6
+	 1M8YgpmkmYiqlL50p5f1lKYT3iKMnPd7mZQ4i5svZhjSRCkobnaciaogk3Z9ryQVxT
+	 FNTEPATHrbimw==
+Message-ID: <29fbcca8-0e38-453f-a204-bbfc932af9e0@kernel.org>
+Date: Tue, 6 May 2025 07:58:13 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,14 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 8/8] vt: process the full-width ASCII fallback range
- programmatically
+Subject: Re: [PATCH 1/8] vt: ucs.c: fix misappropriate in_range() usage
 To: Nicolas Pitre <nico@fluxnic.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20250505170021.29944-1-nico@fluxnic.net>
- <20250505170021.29944-9-nico@fluxnic.net>
+ <20250505170021.29944-2-nico@fluxnic.net>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -87,34 +86,23 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250505170021.29944-9-nico@fluxnic.net>
+In-Reply-To: <20250505170021.29944-2-nico@fluxnic.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
 On 05. 05. 25, 18:55, Nicolas Pitre wrote:
 > From: Nicolas Pitre <npitre@baylibre.com>
 > 
-> This saves about 258 bytes of text.
+> The in_range() helper accepts a start and a length, not a start and
+> an end.
 
-You mean .rodata, actually?
+Indeed.
 
-> --- a/drivers/tty/vt/ucs.c
-> +++ b/drivers/tty/vt/ucs.c
-> @@ -222,5 +222,13 @@ u32 ucs_get_fallback(u32 cp)
->   	if (single)
->   		return ucs_fallback_singles_subs[single - ucs_fallback_singles];
->   
-> +	/*
-> +	 * Full-width to ASCII mapping (covering all printable ASCII 33-126)
-> +	 * 0xFF01 (！) to 0xFF5E (～) -> ASCII 33 (!) to 126 (~)
-> +	 * We process them programmatically to reduce the table size.
-> +	 */
-> +	if (cp >= 0xFF01 && cp <= 0xFF5E)
-> +		return cp - 0xFF01 + 33;
+> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 
-So do really »+ '!'« instead of »+ 33«.
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-thanks,
+
 -- 
 js
 suse labs
