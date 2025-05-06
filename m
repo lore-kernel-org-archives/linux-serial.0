@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C0CD218AB3;
-	Tue,  6 May 2025 05:58:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D761721B9C4;
+	Tue,  6 May 2025 06:06:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746511097; cv=none; b=ILJdlocILHvXK0/WZicpYwZ3lnct9TG3JgzfkGhhofN79FdFScybwnodo9Uf3XQ9dJg7xMepLI7wMhuX7dVxIx1ksmaRSy5HFlN8vIJ48OSJulCjJ3RUyAfaLIcc3TZO4LDSHas0XzLTlIsHadNCcOSlwfgUOApiV006L0F5BRE=
+	t=1746511606; cv=none; b=HaSKosKgerhIP4cEPS07Rfy/0dpFeoExllLPuApi/kv3BAO7TZZTKVtiNa0mosdtEZMGzBshNUvOMgfUAefShKAX7tHBW1hpvLwLDt24poNdZfaCSgT7H0Jftenp2XUJAsEo2wCVF259IsZLFytZnDd5B3qH6/rN6nftHRN74NQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746511097; c=relaxed/simple;
-	bh=z4Sc892/qTN3m034IKTiq6MZu0gxahFTuLKF8euUnQE=;
+	s=arc-20240116; t=1746511606; c=relaxed/simple;
+	bh=t0esOVO5bIt6WvoJRwMbPq0dSQ5GoPADIvxR9YsuShI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=P7/jxC2W2n7PygXmyuTskbPq6/7vRUsUEGmmmeX2qFThfrDYB0ROazHdXy0cej34D0+4NIF1JqNEjwcjvFAiezejVceaWga/J5XfCCai0XCgy3mfhoG8d3ZgCR8Xowvn+gRoFeK6zR1E5dJ5/TmMMqMno+VykR6asK3acf+BwRc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MVyPwlMt; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=eRHqIi+PuRlVAx71rm1zWDtX9RbYvk3QEQ+YAyMzFM7XccTkUJC4rPVv5aDddoWMhFwf3F1DhfS6QvoRrpMeJKcZm8qNe4rQB99uGjHBe/Nj6ErdVz0YBcce/6Mkis2KiHhrFgrWGmp40hyhaxh3Qfp3O9s4zhHnwHyOcSmE0Gk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n+xlbhQ5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MVyPwlMt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBEC5C4CEE4;
-	Tue,  6 May 2025 05:58:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n+xlbhQ5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30BAAC4CEE4;
+	Tue,  6 May 2025 06:06:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746511097;
-	bh=z4Sc892/qTN3m034IKTiq6MZu0gxahFTuLKF8euUnQE=;
+	s=k20201202; t=1746511606;
+	bh=t0esOVO5bIt6WvoJRwMbPq0dSQ5GoPADIvxR9YsuShI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=MVyPwlMtAABebttrBcuaNWjPhlw4Hpf4LhPsB4DLCWgkPPxSmO6lGk4bXnWMBvHn+
-	 dHnwjBtKaF7Z+PiI5K8sXIfR6RZjUUy0KBjmywibs590GngXc2R7RY9EuFhHZf8VJP
-	 b3m6QkeZPKsl43aCQ6drvdizWUn+HYS2LEKV130VGw6dXSgVyMLZitrqgVOZ2LCzgc
-	 I/lxSIqtVwzn3vHslm2IQP7dOJjaXqXvhQtV9CO1MisaOgjSMYHcWR2fppf9pHeEB6
-	 1M8YgpmkmYiqlL50p5f1lKYT3iKMnPd7mZQ4i5svZhjSRCkobnaciaogk3Z9ryQVxT
-	 FNTEPATHrbimw==
-Message-ID: <29fbcca8-0e38-453f-a204-bbfc932af9e0@kernel.org>
-Date: Tue, 6 May 2025 07:58:13 +0200
+	b=n+xlbhQ5g2IEcc2CRUDUA4YDnMWYZFYHrmQIwgvXSJx4B4XEkyYDP8FABEsKqhScg
+	 xw8loxDFcPQ6/w4yY5Seqvm5ZVdlnunNbId+wpaDfkHXV+2tTb1zHyTRTBW6D9/K+U
+	 NmJtrdSmtCsaq+K1IBlr/NbVBVgt8pUfbyI7RcmgJq6aKtMKs6kAkEq9SkacQJk3TY
+	 GhO3q2zrXJVTOYpTAyEsKe37KJyCzs5ufddKBY1l3Bv1f3V7cXNReZ+ReU16Obh5PA
+	 AleOAJUheD6kMOeH2twEeKGOSlHKg2s6KuMzStS+7MXnKpsQPsjjYBPW4liDSLTKsS
+	 anKyQu/632QbA==
+Message-ID: <fe312c65-99de-4519-9072-caeebf44227b@kernel.org>
+Date: Tue, 6 May 2025 08:06:43 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/8] vt: ucs.c: fix misappropriate in_range() usage
+Subject: Re: [PATCH 3/8] vt: move glyph determination to a separate function
 To: Nicolas Pitre <nico@fluxnic.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20250505170021.29944-1-nico@fluxnic.net>
- <20250505170021.29944-2-nico@fluxnic.net>
+ <20250505170021.29944-4-nico@fluxnic.net>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -86,23 +86,57 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250505170021.29944-2-nico@fluxnic.net>
+In-Reply-To: <20250505170021.29944-4-nico@fluxnic.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 05. 05. 25, 18:55, Nicolas Pitre wrote:
 > From: Nicolas Pitre <npitre@baylibre.com>
 > 
-> The in_range() helper accepts a start and a length, not a start and
-> an end.
+> No logical changes. Make it easier for enhancements to come.
+...
+> @@ -2984,12 +2985,40 @@ static int vc_process_ucs(struct vc_data *vc, int *c, int *tc)
+>   	return 0;
+>   }
+>   
+> +static int vc_get_glyph(struct vc_data *vc, int tc)
+> +{
+> +	int glyph = conv_uni_to_pc(vc, tc);
+> +	int charmask = vc->vc_hi_font_mask ? 0x1ff : 0xff;
 
-Indeed.
+Could you keep charmask unsigned? It used to be u16.
 
-> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
+> +
+> +	if (!(glyph & ~charmask))
+> +		return glyph;
+> +
+> +	if (glyph == -1)
+> +		return -1; /* nothing to display */
+> +
+> +	/* Glyph not found */
+> +
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Do no additional \n here ^^.
 
+> +	if ((!vc->vc_utf || vc->vc_disp_ctrl || tc < 128) && !(tc & ~charmask)) {
+> +		/*
+> +		 * In legacy mode use the glyph we get by a 1:1 mapping.
+> +		 * This would make absolutely no sense with Unicode in mind,
+> +		 * but do this for ASCII characters since a font may lack
+> +		 * Unicode mapping info and we don't want to end up with
+> +		 * having question marks only.
 
+Generally: feel free to use 100 characters per line.
+
+> +		 */
+> +		return tc;
+> +	}
+> +
+> +	/* Display U+FFFD (Unicode Replacement Character). */
+> +	return conv_uni_to_pc(vc, UCS_REPLACEMENT);
+> +}
+
+thanks,
 -- 
 js
 suse labs
