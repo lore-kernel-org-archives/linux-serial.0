@@ -1,218 +1,95 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C57D38668A;
-	Mon,  5 May 2025 23:11:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A62282D54A1
+	for <linux-serial@vger.kernel.org>; Tue,  6 May 2025 04:28:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746486715; cv=none; b=df2R5P3F/NMOZFjv7cTYMhw8XXkdTv36s/jJ81RmboE5KLZDmJbxxaFiDvxZk8TRJ1BpNc9wVd3IHL89K55PRbYg2jGXLgLLdsybCnfAsK0Devh685GldHN4svoJQ3FGmQdiRg4y/9ohfXe0ihAlLowU1cHacVSycxu1u2UPLiY=
+	t=1746505736; cv=none; b=gfuYg6dmLzyBgN0aQmyO9RRzJT/wKYa0EXgCOORMhh8vnIgisPB4MVNUFwkizSQqAsBElm209VRvKCIZo00lYm2s051XvzJ8o01j9OyYjHaveij4IN+lUe/JeWW3JiYQsQ9UMYtXGaZ9UtHuKxwbcg1kk8RDiQ7gijI5JC1pC9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746486715; c=relaxed/simple;
-	bh=1znkFGi3Z99swP4p+XKrV6PMB22FhHydVUbdtJFLRJM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Q+DRIr9nWvtKQL/UvRnKNXLPwM/66eVCDpG7iLeKnHzFAGa+ZwZEjrfZLyJURkhXHzCG/11CMBgNSvm34A/b3gFgtwX/Bf2DpXP35KY8rFyR/+6XOLsxuv+saDaqtAsrEHKZzOX5eROZ3343UNp5IxAgHSraGWbr0ETWDIW/lkY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fJ8/ViQj; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746505736; c=relaxed/simple;
+	bh=uftm2dF8OowlBV4Ju7tMaN4CBLXn6dWungM8xjfXTRw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QqZGHUu/7VFD5dN6G4402XVUpljjXeMZslmMAbghEeGbl1Sla1VMU2a8dperlDo3tuotIPpnTQ0FNRMiE2O/mfEOUgOgMj8ig6tmd6t2yzCzvbdN1a6XT+cLQatjwJhNeZVky+clvqJZCYRJJs14rLeHPLAElkVSI37OUZMSj2c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2TF3H69N; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fJ8/ViQj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E0BEC4CEED;
-	Mon,  5 May 2025 23:11:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746486714;
-	bh=1znkFGi3Z99swP4p+XKrV6PMB22FhHydVUbdtJFLRJM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=fJ8/ViQj31mylK0IIAcgFpIVwkbNPg837DuBJDTMxTKK898W+g/+ILZzoPN8umphg
-	 vYHcnfhWB1v9GYQbmAM2TiBQjcGrDD7XMpRIvXyL6sj87WydHAbviyFtq/oPOQjupA
-	 BB1LJhRf68RqZGd1xm5s7N3Bfa3Jp4AzTRCD9nrtydNzlQ32tDIfouvBzpzqzDz+2I
-	 3KWfkTyBcT4MGOgBRLqIjvU81cml+vbH6CMsjuLFpkfK2hElFF5deQakcVL6AcA5H6
-	 P6P3n1Qrlzuajh+SnGICM2ET6zm/PpBsAaystih69evaETD77if6r1fQDJI3ylO0Xz
-	 j/GC9Hv0/U8eA==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sasha Levin <sashal@kernel.org>,
-	jirislaby@kernel.org,
-	p.zabel@pengutronix.de,
-	wsa+renesas@sang-engineering.com,
-	zack.rusin@broadcom.com,
-	namcao@linutronix.de,
-	prabhakar.mahadev-lad.rj@bp.renesas.com,
-	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.1 168/212] serial: sh-sci: Update the suspend/resume support
-Date: Mon,  5 May 2025 19:05:40 -0400
-Message-Id: <20250505230624.2692522-168-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250505230624.2692522-1-sashal@kernel.org>
-References: <20250505230624.2692522-1-sashal@kernel.org>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2TF3H69N"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77E6C4CEE4;
+	Tue,  6 May 2025 04:28:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1746505736;
+	bh=uftm2dF8OowlBV4Ju7tMaN4CBLXn6dWungM8xjfXTRw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=2TF3H69ND1/whqwxRaNDQc3QItqEuQpjuqdIMo2/jzL/u7oNMLtZUXcH0s3Sj8eGK
+	 y7WTRVyTPS9wH8MX3+EoKVTgFhn+rIVaMJZ0bIkVwbalVy68KK/LxrOi/nxmzju3Jy
+	 WYSHUOcVUad6kFMtkADHZr/eMFeZ2U0VY3w0Js/c=
+Date: Tue, 6 May 2025 06:27:12 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Dustin Lundquist <dustin@null-ptr.net>
+Cc: linux-serial@vger.kernel.org, Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH] serial: jsm: fix NPE during jsm_uart_port_init
+Message-ID: <2025050657-banana-deduct-5c67@gregkh>
+References: <613DBD1A-3BD8-45B9-BF90-75E907CBE859@null-ptr.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.136
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <613DBD1A-3BD8-45B9-BF90-75E907CBE859@null-ptr.net>
 
-From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+On Mon, May 05, 2025 at 11:18:34AM -0700, Dustin Lundquist wrote:
+> No driver was set which caused serial_base_ctrl_add to crash.
+> 
+> Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers to enable runtime PM")
+> Signed-off-by: Dustin Lundquist <dustin@null-ptr.net>
+> ---
+> drivers/tty/serial/jsm/jsm_tty.c | 1 +
+> 1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/tty/serial/jsm/jsm_tty.c b/drivers/tty/serial/jsm/jsm_tty.c
+> index ce0fef7e2c66..be2f130696b3 100644
+> --- a/drivers/tty/serial/jsm/jsm_tty.c
+> +++ b/drivers/tty/serial/jsm/jsm_tty.c
+> @@ -451,6 +451,7 @@ int jsm_uart_port_init(struct jsm_board *brd)
+> 		if (!brd->channels[i])
+> 			continue;
+> 
+> +		brd->channels[i]->uart_port.dev = &brd->pci_dev->dev;
+> 		brd->channels[i]->uart_port.irq = brd->irq;
+> 		brd->channels[i]->uart_port.uartclk = 14745600;
+> 		brd->channels[i]->uart_port.type = PORT_JSM;
+> -- 
+> 2.47.2
 
-[ Upstream commit 22a6984c5b5df8eab864d7f3e8b94d5a554d31ab ]
+Hi,
 
-The Renesas RZ/G3S supports a power saving mode where power to most of the
-SoC components is turned off. When returning from this power saving mode,
-SoC components need to be re-configured.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-The SCIFs on the Renesas RZ/G3S need to be re-configured as well when
-returning from this power saving mode. The sh-sci code already configures
-the SCIF clocks, power domain and registers by calling uart_resume_port()
-in sci_resume(). On suspend path the SCIF UART ports are suspended
-accordingly (by calling uart_suspend_port() in sci_suspend()). The only
-missing setting is the reset signal. For this assert/de-assert the reset
-signal on driver suspend/resume.
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-In case the no_console_suspend is specified by the user, the registers need
-to be saved on suspend path and restore on resume path. To do this the
-sci_console_save()/sci_console_restore() functions were added. There is no
-need to cache/restore the status or FIFO registers. Only the control
-registers. The registers that will be saved/restored on suspend/resume are
-specified by the struct sci_suspend_regs data structure.
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documentation/process/stable-kernel-rules.rst file for how to resolve
+  this.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20250207113313.545432-1-claudiu.beznea.uj@bp.renesas.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/sh-sci.c | 71 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 69 insertions(+), 2 deletions(-)
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
 
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index e2dfca4c2eff8..191136dcb94d0 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -105,6 +105,15 @@ struct plat_sci_reg {
- 	u8 offset, size;
- };
- 
-+struct sci_suspend_regs {
-+	u16 scsmr;
-+	u16 scscr;
-+	u16 scfcr;
-+	u16 scsptr;
-+	u8 scbrr;
-+	u8 semr;
-+};
-+
- struct sci_port_params {
- 	const struct plat_sci_reg regs[SCIx_NR_REGS];
- 	unsigned int fifosize;
-@@ -135,6 +144,8 @@ struct sci_port {
- 	struct dma_chan			*chan_tx;
- 	struct dma_chan			*chan_rx;
- 
-+	struct reset_control		*rstc;
-+
- #ifdef CONFIG_SERIAL_SH_SCI_DMA
- 	struct dma_chan			*chan_tx_saved;
- 	struct dma_chan			*chan_rx_saved;
-@@ -154,6 +165,7 @@ struct sci_port {
- 	int				rx_trigger;
- 	struct timer_list		rx_fifo_timer;
- 	int				rx_fifo_timeout;
-+	struct sci_suspend_regs		suspend_regs;
- 	u16				hscif_tot;
- 
- 	bool has_rtscts;
-@@ -3252,6 +3264,7 @@ static struct plat_sci_port *sci_parse_dt(struct platform_device *pdev,
- 	}
- 
- 	sp = &sci_ports[id];
-+	sp->rstc = rstc;
- 	*dev_id = id;
- 
- 	p->type = SCI_OF_TYPE(data);
-@@ -3400,13 +3413,57 @@ static int sci_probe(struct platform_device *dev)
- 	return 0;
- }
- 
-+static void sci_console_save(struct sci_port *s)
-+{
-+	struct sci_suspend_regs *regs = &s->suspend_regs;
-+	struct uart_port *port = &s->port;
-+
-+	if (sci_getreg(port, SCSMR)->size)
-+		regs->scsmr = sci_serial_in(port, SCSMR);
-+	if (sci_getreg(port, SCSCR)->size)
-+		regs->scscr = sci_serial_in(port, SCSCR);
-+	if (sci_getreg(port, SCFCR)->size)
-+		regs->scfcr = sci_serial_in(port, SCFCR);
-+	if (sci_getreg(port, SCSPTR)->size)
-+		regs->scsptr = sci_serial_in(port, SCSPTR);
-+	if (sci_getreg(port, SCBRR)->size)
-+		regs->scbrr = sci_serial_in(port, SCBRR);
-+	if (sci_getreg(port, SEMR)->size)
-+		regs->semr = sci_serial_in(port, SEMR);
-+}
-+
-+static void sci_console_restore(struct sci_port *s)
-+{
-+	struct sci_suspend_regs *regs = &s->suspend_regs;
-+	struct uart_port *port = &s->port;
-+
-+	if (sci_getreg(port, SCSMR)->size)
-+		sci_serial_out(port, SCSMR, regs->scsmr);
-+	if (sci_getreg(port, SCSCR)->size)
-+		sci_serial_out(port, SCSCR, regs->scscr);
-+	if (sci_getreg(port, SCFCR)->size)
-+		sci_serial_out(port, SCFCR, regs->scfcr);
-+	if (sci_getreg(port, SCSPTR)->size)
-+		sci_serial_out(port, SCSPTR, regs->scsptr);
-+	if (sci_getreg(port, SCBRR)->size)
-+		sci_serial_out(port, SCBRR, regs->scbrr);
-+	if (sci_getreg(port, SEMR)->size)
-+		sci_serial_out(port, SEMR, regs->semr);
-+}
-+
- static __maybe_unused int sci_suspend(struct device *dev)
- {
- 	struct sci_port *sport = dev_get_drvdata(dev);
- 
--	if (sport)
-+	if (sport) {
- 		uart_suspend_port(&sci_uart_driver, &sport->port);
- 
-+		if (!console_suspend_enabled && uart_console(&sport->port))
-+			sci_console_save(sport);
-+		else
-+			return reset_control_assert(sport->rstc);
-+	}
-+
- 	return 0;
- }
- 
-@@ -3414,8 +3471,18 @@ static __maybe_unused int sci_resume(struct device *dev)
- {
- 	struct sci_port *sport = dev_get_drvdata(dev);
- 
--	if (sport)
-+	if (sport) {
-+		if (!console_suspend_enabled && uart_console(&sport->port)) {
-+			sci_console_restore(sport);
-+		} else {
-+			int ret = reset_control_deassert(sport->rstc);
-+
-+			if (ret)
-+				return ret;
-+		}
-+
- 		uart_resume_port(&sci_uart_driver, &sport->port);
-+	}
- 
- 	return 0;
- }
--- 
-2.39.5
+thanks,
 
+greg k-h's patch email bot
