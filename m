@@ -1,80 +1,137 @@
-Received: from mail.mleia.com (mleia.com [178.79.152.223])
+Received: from unicorn.mansr.com (unicorn.mansr.com [81.2.72.234])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 671BF2116E7;
-	Wed,  7 May 2025 06:52:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.79.152.223
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F78720C48A;
+	Wed,  7 May 2025 07:49:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.2.72.234
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746600723; cv=none; b=dBKlg7Bshi2Zy8Nsv4gvtoxcTK2oqOc+hpRfEXMTcf+1kjvL8hGHagjSNQRzOWFgUeuIg8NiVnXrrPf4UH1GXZo4DQIeVURfOHhmg3CfpepWtN98YJFgzv/Aujo9eOWG416dE3tZTq8Vqdp52aK6lVMpa2MfcKn+eUc0Rste/c8=
+	t=1746604195; cv=none; b=JukMrUxzjJh3TLdkOdRV1I/bVZjZdILcWlxhKGx/6ez2kbpz+mPX3cG8AX26D2lSbAxq9ehdRHYzwel5RrYf/HolxVNIG26KwPvFTBp1OfcNxME3OCVV0oKX8L1nEfYrXL1OxKJuu8omRuSrsJ1698A98pdi3zWURCqV1bposME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746600723; c=relaxed/simple;
-	bh=7HbNIzMEBH3G1bZP2toTzbtQQnF+CEXpP6d9nsdQ/bY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FCn/BPjrem8Cp7HAJ2UsnvaU4e6DAlu+Nb+8f4kylbP8CkZT9WfAUZHPNfunTdMNjuskdfIk6xTZTEztE7DloEoNNUvLEqEsK/IIRyDu2hCX/BNWAE/QeQeZ1pAsymZIXDAZro0oqqTRqBPT4MF8YvXrUrvm9uHu4Dqi6PcSfsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com; spf=none smtp.mailfrom=mleia.com; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=TSDu3/e9; dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b=TSDu3/e9; arc=none smtp.client-ip=178.79.152.223
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mleia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=mleia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="TSDu3/e9";
-	dkim=pass (2048-bit key) header.d=mleia.com header.i=@mleia.com header.b="TSDu3/e9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-	t=1746600331; bh=7HbNIzMEBH3G1bZP2toTzbtQQnF+CEXpP6d9nsdQ/bY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=TSDu3/e9wC/7vkGemThhcyDL1eyfJswqiF+QvbHgBBl5FWJdrT3q+vqpcVyLE53ZI
-	 PP6DCQL3tLLlz4Ygb5IXgCe4AvGmt1NsYzFrOl6Tt2gyiBwrk6ZPBds7qSL620m86B
-	 LQmiNSbBi7qQ8xhaiTy0oMF8qyeRiCEl+hQdebrQUoD2Ye+IcH0fMiyo1q0yuSoVfN
-	 cXPi2iOGg4TDbFl+bdURsC9F1hSyiiFkXY42/53VIX6aQJThmsPwaLmc2kVWx35tV/
-	 2IvU8xF3JWvhpMH/OscJWcOdTRs0hPvhelVz+9TEwOpJ+jjwd0reaU258Gd3mvp/zK
-	 PSTtEEgGHVzeA==
-Received: from mail.mleia.com (localhost [127.0.0.1])
-	by mail.mleia.com (Postfix) with ESMTP id 2C8DA3B7F0F;
-	Wed,  7 May 2025 06:45:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mleia.com; s=mail;
-	t=1746600331; bh=7HbNIzMEBH3G1bZP2toTzbtQQnF+CEXpP6d9nsdQ/bY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=TSDu3/e9wC/7vkGemThhcyDL1eyfJswqiF+QvbHgBBl5FWJdrT3q+vqpcVyLE53ZI
-	 PP6DCQL3tLLlz4Ygb5IXgCe4AvGmt1NsYzFrOl6Tt2gyiBwrk6ZPBds7qSL620m86B
-	 LQmiNSbBi7qQ8xhaiTy0oMF8qyeRiCEl+hQdebrQUoD2Ye+IcH0fMiyo1q0yuSoVfN
-	 cXPi2iOGg4TDbFl+bdURsC9F1hSyiiFkXY42/53VIX6aQJThmsPwaLmc2kVWx35tV/
-	 2IvU8xF3JWvhpMH/OscJWcOdTRs0hPvhelVz+9TEwOpJ+jjwd0reaU258Gd3mvp/zK
-	 PSTtEEgGHVzeA==
-Message-ID: <fd2eaad2-2c9a-4277-b705-cac5258d6409@mleia.com>
-Date: Wed, 7 May 2025 09:45:28 +0300
+	s=arc-20240116; t=1746604195; c=relaxed/simple;
+	bh=UkkcMQYBLv3KciShTAVIk1/vTcRrB7rDmhTNevPTtwI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=DLQGeCrLiiUF8ZyhjEF9d6TDSh1nDb3mbTrbDDwfx8pJVmYmFgxRcZOAr/T7ZYUtEJ8XR3PQ8HECB+A46RxOcc6RPrI08m1YK7WVPU3kbf1jXNql16+45z+v5U0CVVuJuNc0GlKxhyzG3ICRQOxVwz6mo+ZFr4QUteicm0J9YvI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mansr.com; spf=pass smtp.mailfrom=mansr.com; arc=none smtp.client-ip=81.2.72.234
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mansr.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mansr.com
+Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
+	by unicorn.mansr.com (Postfix) with ESMTPS id 2CA6B15365;
+	Wed, 07 May 2025 08:49:51 +0100 (BST)
+Received: by raven.mansr.com (Postfix, from userid 51770)
+	id B4AE321A3DA; Wed, 07 May 2025 08:49:50 +0100 (BST)
+From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-omap@vger.kernel.org,
+ stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] tty: serial: 8250_omap: fix tx with dma
+In-Reply-To: <d51b4422-0c46-4b03-840b-302603b3136f@kernel.org> (Jiri Slaby's
+	message of "Wed, 7 May 2025 08:05:35 +0200")
+References: <20250506150748.3162-1-mans@mansr.com>
+	<d51b4422-0c46-4b03-840b-302603b3136f@kernel.org>
+Date: Wed, 07 May 2025 08:49:50 +0100
+Message-ID: <yw1xwmaslv1d.fsf@mansr.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.4 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dt-bindings: serial: Convert nxp,lpc3220-hsuart to DT
- schema
-Content-Language: ru-RU
-To: "Rob Herring (Arm)" <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>,
- Piotr Wojtaszczyk <piotr.wojtaszczyk@timesys.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20250506220048.2546915-1-robh@kernel.org>
-From: Vladimir Zapolskiy <vz@mleia.com>
-In-Reply-To: <20250506220048.2546915-1-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CRM114-Version: 20100106-BlameMichelson ( TRE 0.8.0 (BSD) ) MR-49551924 
-X-CRM114-CacheID: sfid-20250507_064531_201306_81B92975 
-X-CRM114-Status: UNSURE (   4.52  )
-X-CRM114-Notice: Please train this message. 
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-On 5/7/25 01:00, Rob Herring (Arm) wrote:
-> Convert the NXP LPC3220 HS UART binding to DT schema. It is a
-> straight-forward conversion.
-> 
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+Jiri Slaby <jirislaby@kernel.org> writes:
 
-Acked-by: Vladimir Zapolskiy <vz@mleia.com>
+> On 06. 05. 25, 17:07, Mans Rullgard wrote:
+>> Commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+>> introduced an error in the TX DMA handling for 8250_omap.
+>> When the OMAP_DMA_TX_KICK flag is set, one byte is pulled from the
+>> kfifo and emitted directly in order to start the DMA.  This is done
+>> without updating DMA tx_size which leads to uart_xmit_advance() called
+>> in the DMA complete callback advancing the kfifo by one too much.
+>> In practice, transmitting N bytes has been seen to result in the last
+>> N-1 bytes being sent repeatedly.
+>> This change fixes the problem by moving all of the dma setup after
+>> the OMAP_DMA_TX_KICK handling and using kfifo_len() instead of the
+>> dma size for the 4-byte cutoff check. This slightly changes the
+>> behaviour at buffer wraparound, but it still transmits the correct
+>> bytes somehow. At the point kfifo_dma_out_prepare_mapped is called,
+>> at least one byte is guaranteed to be in the fifo, so checking the
+>> return value is not necessary.
+>> Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Mans Rullgard <mans@mansr.com>
+>> ---
+>> v2: split patch in two
+>> ---
+>>   drivers/tty/serial/8250/8250_omap.c | 24 +++++++++---------------
+>>   1 file changed, 9 insertions(+), 15 deletions(-)
+>> diff --git a/drivers/tty/serial/8250/8250_omap.c
+>> b/drivers/tty/serial/8250/8250_omap.c
+>> index f1aee915bc02..180466e09605 100644
+>> --- a/drivers/tty/serial/8250/8250_omap.c
+>> +++ b/drivers/tty/serial/8250/8250_omap.c
+>> @@ -1173,16 +1173,6 @@ static int omap_8250_tx_dma(struct uart_8250_port=
+ *p)
+>>   		return 0;
+>>   	}
+>>   -	sg_init_table(&sg, 1);
+>> -	ret =3D kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
+>> -					   UART_XMIT_SIZE, dma->tx_addr);
+>> -	if (ret !=3D 1) {
+>> -		serial8250_clear_THRI(p);
+>> -		return 0;
+>> -	}
+>> -
+>> -	dma->tx_size =3D sg_dma_len(&sg);
+>> -
+>>   	if (priv->habit & OMAP_DMA_TX_KICK) {
+>>   		unsigned char c;
+>>   		u8 tx_lvl;
+> ...
+>> @@ -1216,11 +1206,12 @@ static int omap_8250_tx_dma(struct uart_8250_por=
+t *p)
+>>   			goto err;
+>>   		}
+>>   		skip_byte =3D c;
+>> -		/* now we need to recompute due to kfifo_get */
+>> -		kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
+>> -				UART_XMIT_SIZE, dma->tx_addr);
+>>   	}
+>>   +	sg_init_table(&sg, 1);
+>> +	kfifo_dma_out_prepare_mapped(&tport->xmit_fifo, &sg, 1,
+>> +				     UART_XMIT_SIZE, dma->tx_addr);
+>
+> This can fail (note the first call to this was checked). The latter
+> (deliberately) not.
 
---
-Best wishes,
-Vladimir
+No, it can't.  The fifo has already been checked to contain something
+right at the top of the function.  There is no other failure mode for
+kfifo_dma_out_prepare_mapped.
+
+>> +
+>>   	desc =3D dmaengine_prep_slave_sg(dma->txchan, &sg, 1, DMA_MEM_TO_DEV,
+>>   			DMA_PREP_INTERRUPT | DMA_CTRL_ACK);
+>>   	if (!desc) {
+> ...
+>> @@ -1248,8 +1240,10 @@ static int omap_8250_tx_dma(struct uart_8250_port=
+ *p)
+>>   err:
+>>   	dma->tx_err =3D 1;
+>>   out_skip:
+>> -	if (skip_byte >=3D 0)
+>> +	if (skip_byte >=3D 0) {
+>>   		serial_out(p, UART_TX, skip_byte);
+>> +		p->port.icount.tx++;
+>
+> This is still unrelated.
+
+No, it's not.  Your broken code called uart_xmit_advance with the full
+amount due to the incorrect tx_size value.  This compensates for that.
+
+You made this mess.  Now fix it.  I don't care how.  It's wasted enough
+of my time already.
+
+--=20
+M=E5ns Rullg=E5rd
