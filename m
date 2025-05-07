@@ -1,178 +1,253 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 370BC522A;
-	Wed,  7 May 2025 02:01:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE65B1E522;
+	Wed,  7 May 2025 02:03:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746583266; cv=none; b=UpPNqaEBJB5G634u95WFTuMKp1zeACgW098CnA7dMIKlr8PBmfOeiYCOGV2iv2oIwb1ADG8eOsst4HIQX5JSr6+Y2dJDsgUGHJa+m/c95V3LDBVmoTwzinYV5T/d3mf5miojR/aS5NBR3Z7tvJREenSyBhzZdHDyPETGcvv0z5M=
+	t=1746583410; cv=none; b=huTnkSQTsZ/mbgR653WYyOdv7aY/+igun010jdA7QSM30ul+pMjftNvT08cZ+uJ/RcbtV4tedeiNttaJr87psupUNYVN6EJhBllBhesaozc2D18YzGXFjDTS5ybLwNk144fp6hUyfn/1xC4Ot6NggYfTguHZBn0nQEor8cb01sQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746583266; c=relaxed/simple;
-	bh=VgNvse4H/eq2OujE04ZDZ9sBxsDAQBAPeSCn++qNUdw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qOFz+/M6qE+yh3mK7G/Axb0ObdZlpsaE+PsJN8sDauvlGyOIUBUWTJJAAhQ0oIKdtKzIE8s7xn31ThONUU1Sg6uLU+u7g/PR8OKDRjjzr115G2uEFR4I9bjLOrbnGfhbQg98mgxUK2rsuHecTMO5IqXp+WvROiAsBgy//swPlvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kvH8q1cH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746583410; c=relaxed/simple;
+	bh=iWUfpozT6gTBIvpNZECYHH6SUFyXp8R9OvUIR/bNZhk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fMchEdasfCq+qIZ/6IGKG/GSpJeDTOz70jB21xYwfl+D6Rkgu0qjVjpmjBkLSWAAxXeAnGq7yy0fZVr4q4YB7UOuKjIHojkWBRdN83C/OlifZaxplQK9sAkJdIbjXKgSIz2iSoVzGDuDRuTqT7VjFEYcYpvHLfTxe/0XigMVFB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ovQpq0FE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kvH8q1cH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 941ADC4AF0B;
-	Wed,  7 May 2025 02:01:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ovQpq0FE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A74FC4CEE4;
+	Wed,  7 May 2025 02:03:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746583265;
-	bh=VgNvse4H/eq2OujE04ZDZ9sBxsDAQBAPeSCn++qNUdw=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=kvH8q1cHU9ArVwtm7svXH4sEKgSJq2xKNK93D+IxlEtejoNnRRpGCL//rYCSKwLCB
-	 rMKmfPl64IIFk18Sd2LWGSu/6WEYMfRCUVKyDkJbhUS62L/MVR0/v0A7Q7b544QNmC
-	 w+tQPVVMrHYcMANmHZqrTUEQw0nUPYJun+o6gcs0dqMvHIKu+0tJhD7yA+Q16B9ZPJ
-	 bhzHqZLJGx/9oc6dCRTToTIR3WVN804/eTBWCI/vkUgS4r9VryAqnKyL6MgKCT0sn+
-	 jyqwAU/wTtnFoczmEjlVnmWKCio+YJvoWEXQFOUQqBl1t8Ob2PbPP3aOJnN2NzUFK3
-	 aHeYPpJTRMVlA==
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-ac2dfdf3c38so1154529066b.3;
-        Tue, 06 May 2025 19:01:05 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUUKNYgVGCgCK64BM15zuOZ1v9Po9ulnyi8oXW16tpZipUE2xfRVosyoXnNh3SOD7QiHmd1vTFoUNtf@vger.kernel.org, AJvYcCWg99T0+6y0uKmnzZGsnaTjVhBu0Fu4rEq2wakoM7WE1iIDXSEMKcsjLs2ZSJvnkV1pgbJrKzuhk31+KQXl@vger.kernel.org, AJvYcCXJoGHYl3PUPwUWOa9Ua7T6fBvgTi449vChcK4tpk77Re4+bDSeEDveitZZWCTlAf0ZPFP72Nj8RxNtAlXk@vger.kernel.org
-X-Gm-Message-State: AOJu0YwuT1uaGX8PYvxtA0HAxBcfRsKWhBX22eW5SbKeeTpt0hURZirA
-	54pllSMbzQe9rqJUEED+NCaeoMC8w7p8AWB84diSXXzaRQ9t2O0IBMKJTd8Bjon+3gEQ53Kn3Is
-	xB88h/YuIr3dbAnVPpZ+w6LCCkg==
-X-Google-Smtp-Source: AGHT+IFiAj1U3tUkZvUUEVDNltfangwBzZ/T7uwjxTYdZcRTQVGly0mhbRkPnXukD/bEJ4ZRfAqpBpEO/PQuULnmuII=
-X-Received: by 2002:a17:907:728f:b0:ac2:a473:4186 with SMTP id
- a640c23a62f3a-ad1e8ce60b2mr125905166b.34.1746583264066; Tue, 06 May 2025
- 19:01:04 -0700 (PDT)
+	s=k20201202; t=1746583410;
+	bh=iWUfpozT6gTBIvpNZECYHH6SUFyXp8R9OvUIR/bNZhk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=ovQpq0FEtMuXJMnvGfqL61jPvx8tnPczAGSBVc+o7C+Qaj7SB8N+WYioA7dyMNua+
+	 qQfbeEZ21H7thdDb4lfVHiHS1GfAgeFohlcvATfY0EV9P8NSUkxdXqwmaEx9gxVIOF
+	 qd6UWxxAflTpB6Xafah9OZ2gRwbxMt6hwHVjnVYxN+n/sENP7kVOuypqjmEWs16xEl
+	 Hk1ILyPXF66eN3/s7UpW2Bld6EbEuyM+j5/nw7D3KlOd6oG6NZHTLxREY4keMqqflI
+	 ahXjYhBM3p0wQ/KncDOTjKqZJczMdxjixC4mk+cB2dXYAdWAkyRKH1oMMc9vm9ljsm
+	 ZBGj5R3XgSspA==
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v2] dt-bindings: serial: Convert marvell,armada-3700-uart to DT schema
+Date: Tue,  6 May 2025 21:03:21 -0500
+Message-ID: <20250507020325.3407521-1-robh@kernel.org>
+X-Mailer: git-send-email 2.47.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250506220044.2546706-1-robh@kernel.org> <20250506221751.t3iwqquzjgysjaai@pali>
- <CAL_Jsq+T-NZE1--VN7J2c5GbpG8d4nWpfceKE=ZGg3wfXn5iFQ@mail.gmail.com> <20250506225009.satvy4xjp2pq2h6p@pali>
-In-Reply-To: <20250506225009.satvy4xjp2pq2h6p@pali>
-From: Rob Herring <robh@kernel.org>
-Date: Tue, 6 May 2025 21:00:52 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLVfdayMi=Sbe+LP5-4zvvR-tao3xEVVVB52SN-3S0DWw@mail.gmail.com>
-X-Gm-Features: ATxdqUHeeIhWJFFr3u_6cfFYhKwfquu2Jxv_pOMIL7pn6lfEI2D6K-QY6iv1uGw
-Message-ID: <CAL_JsqLVfdayMi=Sbe+LP5-4zvvR-tao3xEVVVB52SN-3S0DWw@mail.gmail.com>
-Subject: Re: [PATCH] irq-names dt-bindings: serial: Convert
- marvell,armada-3700-uart to DT schema
-To: =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tue, May 6, 2025 at 5:50=E2=80=AFPM Pali Roh=C3=A1r <pali@kernel.org> wr=
-ote:
->
-> On Tuesday 06 May 2025 17:45:06 Rob Herring wrote:
-> > On Tue, May 6, 2025 at 5:17=E2=80=AFPM Pali Roh=C3=A1r <pali@kernel.org=
-> wrote:
-> > >
-> > > On Tuesday 06 May 2025 17:00:41 Rob Herring (Arm) wrote:
-> > > > Convert the Marvell Armada-3700 UART binding to DT schema. It is a
-> > > > straight-forward conversion.
-> > > >
-> > > > Drop the long deprecated single interrupt support.
-> > > >
-> > > > Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
-> > > > ---
-> > > >  .../serial/marvell,armada-3700-uart.yaml      | 102 ++++++++++++++=
-++++
-> > > >  .../devicetree/bindings/serial/mvebu-uart.txt |  56 ----------
-> > > >  MAINTAINERS                                   |   2 +-
-> > > >  3 files changed, 103 insertions(+), 57 deletions(-)
-> > > >  create mode 100644 Documentation/devicetree/bindings/serial/marvel=
-l,armada-3700-uart.yaml
-> > > >  delete mode 100644 Documentation/devicetree/bindings/serial/mvebu-=
-uart.txt
-> > > >
-> > > > diff --git a/Documentation/devicetree/bindings/serial/marvell,armad=
-a-3700-uart.yaml b/Documentation/devicetree/bindings/serial/marvell,armada-=
-3700-uart.yaml
-> > > > new file mode 100644
-> > > > index 000000000000..fa454337f06f
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/serial/marvell,armada-3700-=
-uart.yaml
-> > > > @@ -0,0 +1,102 @@
-> > > > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > > > +%YAML 1.2
-> > > > +---
-> > > > +$id: http://devicetree.org/schemas/serial/marvell,armada-3700-uart=
-.yaml#
-> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > +
-> > > > +title: Marvell Armada-3700 UART
-> > > > +
-> > > > +maintainers:
-> > > > +  - Pali Roh=C3=A1r <pali@kernel.org>
-> > > > +
-> > > > +description:
-> > > > +  Marvell UART is a non standard UART used in some of Marvell EBU =
-SoCs (e.g.
-> > > > +  Armada-3700).
-> > > > +
-> > > > +properties:
-> > > > +  compatible:
-> > > > +    enum:
-> > > > +      - marvell,armada-3700-uart
-> > > > +      - marvell,armada-3700-uart-ext
-> > > > +
-> > > > +  reg:
-> > > > +    maxItems: 1
-> > > > +
-> > > > +  clocks:
-> > > > +    maxItems: 1
-> > > > +    description:
-> > > > +      UART reference clock used to derive the baud rate. If absent=
-, only fixed
-> > > > +      baud rate from the bootloader is supported.
-> > > > +
-> > > > +  interrupts:
-> > > > +    minItems: 2
-> > > > +    items:
-> > > > +      - description: UART sum interrupt (deprecated single-element=
- form)
-> > > > +      - description: UART TX interrupt
-> > > > +      - description: UART RX interrupt
-> > >
-> > > I think that this is wrong description and does not match the old txt
-> > > description:
-> >
-> > It's correct that a single irq entry is deprecated, but I did say I
-> > dropped that. So "(deprecated single-element form)" should be dropped
-> > here.
-> >
-> > > - Must contain three elements for the standard variant of the IP
-> > >   (marvell,armada-3700-uart): "uart-sum", "uart-tx" and "uart-rx",
-> > >
-> > > - Must contain two elements for the extended variant of the IP
-> > >   (marvell,armada-3700-uart-ext): "uart-tx" and "uart-rx",
-> >
-> > Note that the descriptions don't really match this either. Expressing
-> > it correctly makes the schema worse (using a oneOf) and doesn't
-> > improve validation. We have interrupt-names correct, so I think it is
-> > fine.
-> >
-> > Really, no one has cared for 6 years about this binding and converting
-> > it, so I'm not going to spend a lot of time worrying about
-> > descriptions. There's a 1000 more to do.
-> >
-> > Rob
->
-> Sorry, but when I sent you some DT yaml changes, you have not responded
-> for a year, even after periodic reminder. After this experience I have
-> no reason to spend any more time on DT yaml as it makes no sense for me
-> to work in my spare time on something which will ends in the trash.
+Convert the Marvell Armada-3700 UART binding to DT schema. It is a
+straight-forward conversion.
 
-If you send patches to the DT list, I pretty much guarantee I (or
-another maintainer) have responded. You can check the status in PW[0].
-If I've already acked/reviewed or they failed automated testing, then
-generally I don't look at them again (because someone else is going to
-apply them). Sorry, but that's all I can guarantee I'll get to with
-the firehose of binding patches. As we speak, I've got 200 patches in
-my queue. I don't see anything in lore[1] where I didn't respond under
-those conditions.
+Drop the long deprecated single interrupt support.
 
-Rob
+Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+---
+v2:
+ - Drop deprecated part of interrupt description
+ - fix subject
+---
+ .../serial/marvell,armada-3700-uart.yaml      | 102 ++++++++++++++++++
+ .../devicetree/bindings/serial/mvebu-uart.txt |  56 ----------
+ MAINTAINERS                                   |   2 +-
+ 3 files changed, 103 insertions(+), 57 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/mvebu-uart.txt
 
-[0] https://patchwork.ozlabs.org/project/devicetree-bindings/list/
-[1] https://lore.kernel.org/all/?q=3Df%3Apali%40kernel.org+s%3Adt-bindings
+diff --git a/Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml b/Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+new file mode 100644
+index 000000000000..231e1e9d1d72
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+@@ -0,0 +1,102 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/marvell,armada-3700-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Marvell Armada-3700 UART
++
++maintainers:
++  - Pali Rohár <pali@kernel.org>
++
++description:
++  Marvell UART is a non standard UART used in some of Marvell EBU SoCs (e.g.
++  Armada-3700).
++
++properties:
++  compatible:
++    enum:
++      - marvell,armada-3700-uart
++      - marvell,armada-3700-uart-ext
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++    description:
++      UART reference clock used to derive the baud rate. If absent, only fixed
++      baud rate from the bootloader is supported.
++
++  interrupts:
++    minItems: 2
++    items:
++      - description: UART sum interrupt
++      - description: UART TX interrupt
++      - description: UART RX interrupt
++
++  interrupt-names:
++    minItems: 2
++    maxItems: 3
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++
++unevaluatedProperties: false
++
++allOf:
++  - $ref: /schemas/serial.yaml#
++  - if:
++      properties:
++        compatible:
++          const: marvell,armada-3700-uart-ext
++    then:
++      properties:
++        interrupts:
++          maxItems: 2
++
++        interrupt-names:
++          items:
++            - const: uart-tx
++            - const: uart-rx
++    else:
++      properties:
++        interrupts:
++          minItems: 3
++
++        interrupt-names:
++          items:
++            - const: uart-sum
++            - const: uart-tx
++            - const: uart-rx
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@12000 {
++        compatible = "marvell,armada-3700-uart";
++        reg = <0x12000 0x18>;
++        clocks = <&uartclk 0>;
++        interrupts =
++            <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
++            <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
++            <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-names = "uart-sum", "uart-tx", "uart-rx";
++    };
++
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@12200 {
++        compatible = "marvell,armada-3700-uart-ext";
++        reg = <0x12200 0x30>;
++        clocks = <&uartclk 1>;
++        interrupts =
++            <GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
++            <GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
++        interrupt-names = "uart-tx", "uart-rx";
++    };
+diff --git a/Documentation/devicetree/bindings/serial/mvebu-uart.txt b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
+deleted file mode 100644
+index a062bbca532c..000000000000
+--- a/Documentation/devicetree/bindings/serial/mvebu-uart.txt
++++ /dev/null
+@@ -1,56 +0,0 @@
+-* Marvell UART : Non standard UART used in some of Marvell EBU SoCs
+-                 e.g., Armada-3700.
+-
+-Required properties:
+-- compatible:
+-    - "marvell,armada-3700-uart" for the standard variant of the UART
+-      (32 bytes FIFO, no DMA, level interrupts, 8-bit access to the
+-      FIFO), called also UART1.
+-    - "marvell,armada-3700-uart-ext" for the extended variant of the
+-      UART (128 bytes FIFO, DMA, front interrupts, 8-bit or 32-bit
+-      accesses to the FIFO), called also UART2.
+-- reg: offset and length of the register set for the device.
+-- clocks: UART reference clock used to derive the baudrate. If no clock
+-      is provided (possible only with the "marvell,armada-3700-uart"
+-      compatible string for backward compatibility), it will only work
+-      if the baudrate was initialized by the bootloader and no baudrate
+-      change will then be possible. When provided it should be UART1-clk
+-      for standard variant of UART and UART2-clk for extended variant
+-      of UART. TBG clock (with UART TBG divisors d1=d2=1) or xtal clock
+-      should not be used and are supported only for backward compatibility.
+-- interrupts:
+-    - Must contain three elements for the standard variant of the IP
+-      (marvell,armada-3700-uart): "uart-sum", "uart-tx" and "uart-rx",
+-      respectively the UART sum interrupt, the UART TX interrupt and
+-      UART RX interrupt. A corresponding interrupt-names property must
+-      be defined.
+-    - Must contain two elements for the extended variant of the IP
+-      (marvell,armada-3700-uart-ext): "uart-tx" and "uart-rx",
+-      respectively the UART TX interrupt and the UART RX interrupt. A
+-      corresponding interrupt-names property must be defined.
+-    - For backward compatibility reasons, a single element interrupts
+-      property is also supported for the standard variant of the IP,
+-      containing only the UART sum interrupt. This form is deprecated
+-      and should no longer be used.
+-
+-Example:
+-	uart0: serial@12000 {
+-		compatible = "marvell,armada-3700-uart";
+-		reg = <0x12000 0x18>;
+-		clocks = <&uartclk 0>;
+-		interrupts =
+-		<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
+-		<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
+-		<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
+-		interrupt-names = "uart-sum", "uart-tx", "uart-rx";
+-	};
+-
+-	uart1: serial@12200 {
+-		compatible = "marvell,armada-3700-uart-ext";
+-		reg = <0x12200 0x30>;
+-		clocks = <&uartclk 1>;
+-		interrupts =
+-		<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
+-		<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
+-		interrupt-names = "uart-tx", "uart-rx";
+-	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 96b827049501..8b1306c14380 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14254,7 +14254,7 @@ MARVELL ARMADA 3700 SERIAL DRIVER
+ M:	Pali Rohár <pali@kernel.org>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-clock.yaml
+-F:	Documentation/devicetree/bindings/serial/mvebu-uart.txt
++F:	Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+ F:	drivers/tty/serial/mvebu-uart.c
+ 
+ MARVELL ARMADA DRM SUPPORT
+-- 
+2.47.2
+
