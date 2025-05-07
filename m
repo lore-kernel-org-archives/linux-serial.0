@@ -1,104 +1,114 @@
-Received: from fllvem-ot04.ext.ti.com (fllvem-ot04.ext.ti.com [198.47.19.246])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E216828A419;
-	Wed,  7 May 2025 16:31:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.246
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94D944B1E4B;
+	Wed,  7 May 2025 16:33:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746635509; cv=none; b=XU6366Bqqo98WbQBk7ILsHy6bImBrg7lP8e55CNLfgLNi3Vowo/nO6fBs+GjtUM15AYgTY8QTUFMQiquSYKmyb0qdpa0Y5fV6q6Vu+VHKF0fV7PTsI/iIiNuZ3YNp7+oLZSSiDH2OmzQNXsvyAbnVVd8OlxX9br2vQLo3ZGcIgA=
+	t=1746635602; cv=none; b=AlJ0HfJYGaJ2+1kcSwAr5jD/AteD3Ihh/mhASMQol8opFrvdIWbUKUe1T5CWxr/DHwlo1bDvRoBO5zsTIE1KIkQ+mGYV3dxXe+V9CbD6oI6jwfKjQTM41NCJLN2Dzk9cvIj5yn1wQEKGHQEyT0Nvdvfc624zLaMn1eXku6aLYQ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746635509; c=relaxed/simple;
-	bh=J7zUAtlGwiwO/WIy81WUiaijUl2DgI8V4ukSV13GD4U=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Xb5X5u0jmHPVNhfZxgzDBT/7G0YREg0vATtx+4/n2r24UqCujqk4UjHsd1FiCWFJf/9LBYlB0Pto2258wC0ZsZoPCqZFq6m8Q0K/aMBhe0av92MqZAK4TDVR7PQ+7QPD7/Drs7FRpHbLPHCKJEhxZ4qWYCk1gZP/FBWuZqxjPFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=helrUNnD; arc=none smtp.client-ip=198.47.19.246
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	s=arc-20240116; t=1746635602; c=relaxed/simple;
+	bh=5PNsaUkEGcwl6bLcWpVgvynTWCnJdydaJWuyO6roJWo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jzxG9il6SNaP0tv8br6e5gDqkv2iAoXESCad2vT4gDzMVr5vLUIvtgvyUAem9gelXO71a/xh4yBWVc59FtZSp9OS1i3kMgH5pD9FPyRzsOQMOXGMlAnRvOjYUinECjWoh5A4nC6090pWQtKjjj/ZZtqC5dbDNyqObu1R47Uogvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PNeuv9i4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="helrUNnD"
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-	by fllvem-ot04.ext.ti.com (8.15.2/8.15.2) with ESMTPS id 547GVSR21426205
-	(version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 7 May 2025 11:31:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-	s=ti-com-17Q1; t=1746635488;
-	bh=T5HdIX4Eagvu+H1MhZGppYcNn1F0MPYiO0LJscqQoS0=;
-	h=Date:Subject:To:CC:References:From:In-Reply-To;
-	b=helrUNnDcX8ZBFLiV/JattiHtRMgbRJucIJHH0ZMZNfxWLQRe0zEf1ENwnqpwWI+1
-	 IadWicWNHSemEtS0lmE6D2WY53XePKp6AZPsvfzyXTPQLJLWpE1HmqeceI4l3a5zCt
-	 3jVbkTxutRUhSp9iPOAPbkSKh64t2HXrgZh/3M78=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-	by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 547GVSEG052668
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 7 May 2025 11:31:28 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Wed, 7
- May 2025 11:31:27 -0500
-Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
- Frontend Transport; Wed, 7 May 2025 11:31:27 -0500
-Received: from [128.247.81.105] (judy-hp.dhcp.ti.com [128.247.81.105])
-	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 547GVRia102625;
-	Wed, 7 May 2025 11:31:27 -0500
-Message-ID: <ba88a5c0-a8b8-4e48-9752-76881fa8e94e@ti.com>
-Date: Wed, 7 May 2025 11:31:27 -0500
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PNeuv9i4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16B81C4CEE2;
+	Wed,  7 May 2025 16:33:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1746635602;
+	bh=5PNsaUkEGcwl6bLcWpVgvynTWCnJdydaJWuyO6roJWo=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=PNeuv9i4FW68lrdYEIH+OvkPUun2GCl+X5bZ8d6QTCI93nFrsrCwxh50EN+kCBmlw
+	 mQCq5hjGlkHBeSI/DtB4qkLOeRO6XJEnBCDQvYV5SU9yHWchq0W1/WcjzwqjQQmeoM
+	 gReuu6roxmtjr4SJPq+7+HX7Z/x9vBn6MR1xA8uZZS53z8Xiu4Ak+JGc+xCXXLgpAz
+	 gy37jLwfjq4Iuko8jbQzuMcjfKUINz1h1pOmNM5Ueg9bEAktFG+36wnGDJJQ++BP/a
+	 d25WpFMg67fiNJ+EXaPmzC3Pv+UmvEzoB0n8ZKTyOfZD602hSMnPcXtViyJZfYJLQH
+	 6DzoXXb70/yeA==
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-ac2902f7c2aso821066b.1;
+        Wed, 07 May 2025 09:33:22 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUzvxunn98yAPU19+qjcjVXAEGAAMoVNAZeY74V7rS26ADxX/ZCmWvjQhl6TYmrggTIaLi2F20eKGMGbnpC@vger.kernel.org, AJvYcCV3/2/OzhEds31GPIi55Bg4AZH7H4F181OLxtx6tJQbgYzYMoFq0WZjVW52Gtf/lmMnOl/qQjXm5cHCBGi7@vger.kernel.org, AJvYcCWpARgmEPAskhFfOU6ZPDVGt0TQi5pdZNB93mbn4DDA4F1ItcqU1qvf6XF/MC7hnCgXzu9/R70++Eqr@vger.kernel.org
+X-Gm-Message-State: AOJu0YzFavzO37A3rtjEqEZ0h7gbR8UN9V021ZkkOo5g2HRKL10uWXYV
+	dhyXr5CI2ASyaiE6hOBncdO34Rvj1NFIrTWIslvbIKqir5p1j18XwwiDJYoNRoPt4t7vovRewq/
+	FZqUR6R86ZYGjoQ0PjiAtKGFNqA==
+X-Google-Smtp-Source: AGHT+IFbXKkluOPn99/o7gDALkGZlj3EQIAiAnWfyaoAaMejb4qqqHeuVh2Qnro+FLlcAyfNU+PnEPf3FfamJcZhNoQ=
+X-Received: by 2002:a17:907:3e21:b0:ac7:f00d:52ec with SMTP id
+ a640c23a62f3a-ad1e8d0db1bmr336967966b.58.1746635600709; Wed, 07 May 2025
+ 09:33:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 0/2] Introduce PRU UART driver
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kevin Hilman
-	<khilman@baylibre.com>,
-        Jiri Slaby <jirislaby@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, Hari Nagalla
-	<hnagalla@ti.com>
-References: <20250501003113.1609342-1-jm@ti.com>
- <aBSSpsT_7UsqN6bl@smile.fi.intel.com>
-Content-Language: en-US
-From: Judith Mendez <jm@ti.com>
-In-Reply-To: <aBSSpsT_7UsqN6bl@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
+References: <20250506220016.2545637-1-robh@kernel.org> <20250507165447.7e340d47@donnerap.manchester.arm.com>
+In-Reply-To: <20250507165447.7e340d47@donnerap.manchester.arm.com>
+From: Rob Herring <robh@kernel.org>
+Date: Wed, 7 May 2025 11:33:09 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKve4hXiR31ApMADEz3NqD_futjETWrPKEWz3tADsX7gA@mail.gmail.com>
+X-Gm-Features: ATxdqUFg1sT4pwdyybWgm-K9_ztHsP0q9-QRdWfCP7CwDJwHRKdVQ4NBVzTsuSU
+Message-ID: <CAL_JsqKve4hXiR31ApMADEz3NqD_futjETWrPKEWz3tADsX7gA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: serial: Convert arm,sbsa-uart to DT schema
+To: Andre Przywara <andre.przywara@arm.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Andy,
+On Wed, May 7, 2025 at 10:54=E2=80=AFAM Andre Przywara <andre.przywara@arm.=
+com> wrote:
+>
+> On Tue,  6 May 2025 17:00:15 -0500
+> "Rob Herring (Arm)" <robh@kernel.org> wrote:
+>
+> > Convert the Arm SBSA UART binding to DT schema. It is a straight-forwar=
+d
+> > conversion.
+> >
+> > Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+> >
+> > ---
+> >  .../bindings/serial/arm,sbsa-uart.yaml        | 38 +++++++++++++++++++
+> >  .../bindings/serial/arm_sbsa_uart.txt         | 10 -----
+> >  2 files changed, 38 insertions(+), 10 deletions(-)
+> >  create mode 100644 Documentation/devicetree/bindings/serial/arm,sbsa-u=
+art.yaml
+> >  delete mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_u=
+art.txt
+> >
+> > diff --git a/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yam=
+l b/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
+> > new file mode 100644
+> > index 000000000000..68e3fd64b1d8
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
+> > @@ -0,0 +1,38 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +---
+> > +$id: http://devicetree.org/schemas/serial/arm,sbsa-uart.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: ARM SBSA UART
+> > +
+> > +maintainers:
+> > +  - Andre Przywara <andre.przywara@arm.com>
+> > +
+> > +description:
+> > +  This UART uses a subset of the PL011 registers and consequently live=
+s in the
+> > +  PL011 driver. It's baudrate and other communication parameters canno=
+t be
+>
+> He said "driver" in a binding document!! ;-) I think you can remove that
+> part, or maybe rephrase it to say it could be supported by the same drive=
+r
+> that supports a PL011.
 
-On 5/2/25 4:38 AM, Andy Shevchenko wrote:
-> On Wed, Apr 30, 2025 at 07:31:11PM -0500, Judith Mendez wrote:
->> This patch series is sent as an RFC to get some initial comments
->> on the PRU UART driver.
->>
->> The ICSSM modules on am64x SoC and the PRUSS module on am62 SoC or am335x
->> SoCs have a UART sub-module. This patch series introduces the driver and the
->> corresponding binding documentation for this sub-module.
->>
->> The DTS patches for adding PRU nodes and enabling PRU UART will be added
->> in a later v1 version of the series if accepted.
->>
->> This driver has been previously tested on the following boards:
->> am64x SK, am62x SK, and am335x SK boards.
-> 
-> The first and main question here: Have you checked the existing zillion of
-> drivers and become with an idea that none of them not even close to this one
-> (based on RTL)?
-> 
+I know that's 'the rule', but I kind of think that's relevant in this
+case. If we're looking for improvements, defining SBSA here might be
+the place to start... But I'm not really as this is 1 of 1100
+remaining I've had chatgpt to convert and then I fix all the issues.
 
-Thanks for reviewing.
-
-I have looked through the drivers in tty/serial/8250 and I believe there
-are no drivers we could leverage, especially since this driver has a
-dependency on the PRU drivers for clock and power. This PORT_16550A UART
-is in PRU module which is specific to TI, so besides simplifying the
-driver a bit further, I don't think we can use another driver.
-
-~ Judith
-
-
-
+Rob
