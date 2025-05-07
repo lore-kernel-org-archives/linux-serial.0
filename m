@@ -1,125 +1,133 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh-a4-smtp.messagingengine.com (fhigh-a4-smtp.messagingengine.com [103.168.172.155])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941D828936E;
-	Wed,  7 May 2025 13:58:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E891772637;
+	Wed,  7 May 2025 14:04:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.155
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746626307; cv=none; b=dFDMY3lKqMcuYOWvqtMaMd5IeWMWk3NT+zoLkIsYJuUl0HjBH7RHtyAdqxARMc81J9QYIWjGGb+sZ8vdQBpkQkpJjO7NGH2mQ5rbAQj5+aQ/YJUpOmSDvzxXYfcT5SykMGHTYKLupu90DVisJO/M5lRdMge5dSL5ixsi5rksGW4=
+	t=1746626662; cv=none; b=XZMwv3Y+ATuzWEPFZceLzw4PLj18vFi1X+TvZhUphoq/HYiqseRVefhB0dp91g3Z33mGP/j+mSPGTQZvCRcMQzcp4CJmUq9tC0x2juyktogu2K2c/9mcPDqEhTHbjL/axZtXbnokI6PEVDUIVODX3/TSksvwLe0stHqLIIlPG/s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746626307; c=relaxed/simple;
-	bh=WFer8e0bFikfukjmXwGyg1ZGpzNoXKUjdhtAJDp1nzE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i3xcH0rmGedYOdXoJ8b5RXQqkEuC7x+q//CxIGLJ5JPP67I/cQxwsppWGVl9tVZw11Dpn5tzr8+364+11nayvt6z4Jh1K9IcrrgUmGAqTQd3dpV9gOSG+UbOV/rd3R/IDTdPhrO9jQQJZ0IcnqVrrkCKKsQ2qaUx1D8ZXPDRpKQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=magUTuRh; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1746626662; c=relaxed/simple;
+	bh=isVRjAVTnJdLXP9eMmF4E2ceEc9sRy5hZKwW3gaLap4=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=KcGV2cUPfWohdutXt3FRx8dM0TM1p4b0GOXwrRs3JOWvuAwwUx2SjdXPY5n5aYE82Tydd9e/v1FUbFj8Zee13Rw1fmycQ3Qtg2sDclNS1UB6zH/rOaeufD9P74EzRXGk1VxRFAPEn4xEWTerWNGDS7MF8tma+1nQLAEDkqY5ljM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=DZgvryuF; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=P6jl+Ik7; arc=none smtp.client-ip=103.168.172.155
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="magUTuRh"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3a0adcc3e54so1165534f8f.1;
-        Wed, 07 May 2025 06:58:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746626304; x=1747231104; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=dpBOaKV+yyjzqRs1dDOpKMagpR3gaIT9d9jJ3WjXu5k=;
-        b=magUTuRhaKRZOIKmjnpB2+R4/r1vVZvmGwDb3/n6PBv40LLzvtpMJj/72Uy02m4lau
-         qjGr8dixZq3b3+7u4lxIbrYoCk+Nk/soBYzFF2d68HGBpRnMUa21fedgz7fHBbS6fjjT
-         Uc9TP5kXnznAPjZ1FM8DSkaZ8Kh5NHRInHFLfPtMozFpUQ8KCAJTdQi6tfimxbs9fqqL
-         4I8XU74fL6UdvZ449XQzbKQzzTuKs6mU2z1jdf4nMRi1L6sTHNzOzFaHA1kDENqL3RFe
-         FUvZI45yASEmuWfbS5f43H+2i7bwtxhjiVQag9hBz0L0zzY4r24IIk2CYeT94uL6PgST
-         E35Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746626304; x=1747231104;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dpBOaKV+yyjzqRs1dDOpKMagpR3gaIT9d9jJ3WjXu5k=;
-        b=mgFVn6VNglOpzW7Z/5PKQh2xh4ORYwiwDiYIsfn32NrcxUusyLxHGzyBtDwq3cqacV
-         ra8alNzKgU4rL3KmZGqdkBn9zvmx8KD0NAixytakDPEwwX9CXZGoHNSo9zBVBNhi2JDy
-         vODSwf5d5w4dbJmG56AL39dkbYASeh6g46ObhiEme1i5HS/QoOBjI9Hz72QzY+bBRBS7
-         yMAAgNkMHyd8ESJ9y0PQf3uj5F5oWSCXBNJelzS5GxMMhwSLP8obiVci79RnkBQA/Fy9
-         SrYC28k3J11JeqQlMJ1GE8nPNtudErmy1rqm2WnUQY5V//FNBDw3rOoqkRO/DPnFjRS4
-         vMJA==
-X-Forwarded-Encrypted: i=1; AJvYcCV8byfJ+pQw4L6L3DMpg0EeIR1vTU2cVI2duQSelZ1hUDG5EYhQrN8ZnKQl84+MEN93BgFuvzgxk46IDPm1@vger.kernel.org, AJvYcCX7nIyiBW5yyMtTrnejwJqz0I53Hd5HniT7Agp6FVbR3uQvHvo5NKqDVSjlIvvITYI5XuFejlTxoDEXxTZB@vger.kernel.org, AJvYcCXzzWCWzdRXNeajeznbbaXvXaX1d2lCVexC01QcRREiCLQBKJVIlU5yNlTdUQKZPRDoWmwFhDM/t/3x@vger.kernel.org
-X-Gm-Message-State: AOJu0YyehlFYVwBvJO1kAPo5nXIvDl6nBxdILZd1JuAdhI9OCUDFCFBr
-	tUj+nXdtAeV0HHNKraAYDjmGW7FQcdzKa7j0WhC4GPD20oR13juuaixDaw==
-X-Gm-Gg: ASbGnctAX9d6tCOn197CeqI9Q4v8aBhIzD8NkMrZBgZBzoNv6bmxLU7y1C3C8xTDeFf
-	Ywn/VYvRq58kTd8ZZtys4/EnD0MicyOz/YYg3ET2t1Epp+yyviCy548ExHGYSMp2Bv/cFp+Dv4Q
-	ChnpJzmMxoyieY4xjLOZ8nqjD+TSfn8Mlz3ye51DePfDqm6a3Sl77j5LspSg0AKBgCqJhf4/PJS
-	9WehrKjC2LeDuPuVbkd0Dji0DCViU8zQcrZrWM+mPf9T3mn7iZ1UVMveCcH7z2uRmvMS8Mn1DBR
-	ciafl3UGicqkLr7ifdOCf7IJH0DUJjToi7LJ9AduvD9AV8ShwKJRNv8ig50b/5oMU0WSA+uLO/v
-	o0Se7qcTGyr/flXJ6vv+ajZfYIDQ=
-X-Google-Smtp-Source: AGHT+IEE73NhNkRPDgIrsa2zntE0urmbFH7L73hnMkdy1TBZb0kNJDjkn9LP+dpojQJT9A7UbLLGFw==
-X-Received: by 2002:a05:6000:1367:b0:3a0:b4f0:c84d with SMTP id ffacd0b85a97d-3a0b4f0c867mr2423476f8f.0.1746626303703;
-        Wed, 07 May 2025 06:58:23 -0700 (PDT)
-Received: from orome (p200300e41f281b00f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f28:1b00:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a099ae0bb5sm16722021f8f.7.2025.05.07.06.58.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 May 2025 06:58:22 -0700 (PDT)
-Date: Wed, 7 May 2025 15:58:20 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Dinh Nguyen <dinguyen@kernel.org>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: Convert altr,juart-1.0 to DT schema
-Message-ID: <q7lacaplecj6kjbatxiwh6sjhby5mhxzoowwhr6feza7iownt7@sej7agtylc7o>
-References: <20250506215959.2544931-1-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="DZgvryuF";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="P6jl+Ik7"
+Received: from phl-compute-02.internal (phl-compute-02.phl.internal [10.202.2.42])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id AA7021140163;
+	Wed,  7 May 2025 10:04:17 -0400 (EDT)
+Received: from phl-frontend-02 ([10.202.2.161])
+  by phl-compute-02.internal (MEProxy); Wed, 07 May 2025 10:04:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm3; t=1746626657; x=1746713057; bh=RpZ1wH82Kb
+	3RQvc6BvVGwJPwQFc9QvFjJH3aSsmodhU=; b=DZgvryuF04PlAcWSoY3uCG/aZb
+	+mOefJTMh3Yrak2SHS+kCVkMDB8nYv2pVNTi1bOz3Ves4XpdoMOXLuBjsyc8dTWb
+	Z5WCg7/+HxQoIvPVdYi06kURxyf1K4sR4lkz9VrKter3/2zjzQiMKbUqKDqbjcjd
+	ioSQE4W69cFIQlDAvrpSqaZxWBPIYeQnuNSJF8ViHlsj91WAVwogWyWzRslNqldA
+	dIXtr2uvmXs3svCaNaYS2bSTMVLSxz36rTbc16SFLxk0gaarcE6yP913SWmGAG7r
+	hKVU5zl2pG310Pdz9ynZGRAphlXeOQH8foqlHg+tZHqWLyOxQ+o7YAU4h3Zw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1746626657; x=1746713057; bh=RpZ1wH82Kb3RQvc6BvVGwJPwQFc9QvFjJH3
+	aSsmodhU=; b=P6jl+Ik7G4QUrVnZuGPjBNsZ6VNRqmrZg+XZJpmyPZo+WkBSgpr
+	dwkC4B7kDR6fpQZDiNJVqg05DuVNZe2ESLKruu2/eNV7Vnm0aYnXFQfaMAiIZpRp
+	ShfisieB3KQNryN6H7eAMP4Z4Eaigls2hCBmLYPNq7vEzJEmkiMzkkmfc2NhjaP/
+	zv62PIvxhQZXlEHCohav2PsyDfedQSZbTQulTBJ8GiHHmLNtgBZpipyuNePpsB9g
+	jT+MNsS10ggCqVnMXGHVQso9ttxQvHm2XewsmaIE+SV1KBuEcHyCF9qIOHyRwpGV
+	WuOHyLTpGtjIU/0TzleJVQtjQkVKNx5BSCA==
+X-ME-Sender: <xms:YWgbaGvKQTCKpvnTp4Xq_BS76pVCRmtAdrURSM1esVpCQw4WNnpeZg>
+    <xme:YWgbaLdteVQWKQbGxu8353C0NAZI2fXdcA-Mij2sVuuz4KxtFkdw8e1dHthz8bP_E
+    6WXjVAK4KjHH-8QJ38>
+X-ME-Received: <xmr:YWgbaBx5Wt7FfVTv28drwVP09NLSO7SwXAFgWbgPbve-gPE1vSZhVWSel_EZOJc6oyGZ_0GQAtZ_N9eNXt6q19kby7HfSzwqxUm3ow9CvyneRCLL1A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvkeejtdehucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
+    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
+    gvnhhtshculddquddttddmnecujfgurhepfffhvfevufgjkfhfgggtsehmtderredttdej
+    necuhfhrohhmpefpihgtohhlrghsucfrihhtrhgvuceonhhitghosehflhhugihnihgtrd
+    hnvghtqeenucggtffrrghtthgvrhhnpeekveeftdfgkeejhfejleeigeffueehieetvdei
+    fedvhfeluedtkedvgeeuieejgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpehnihgtohesfhhluhignhhitgdrnhgvthdpnhgspghrtghpthht
+    ohepgedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepjhhirhhishhlrggshieskh
+    gvrhhnvghlrdhorhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggr
+    thhiohhnrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkh
+    gvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdr
+    khgvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:YWgbaBMlCCjSUCrVIr5BYQHIo9_bth7kMLVMC_gEoWa5xaD_jNftQQ>
+    <xmx:YWgbaG-fjkBrzPueprtC7ML61AVhONjGwX-4U4IRMa9THmV5gVwRCQ>
+    <xmx:YWgbaJU4Ml0zjlwsmWODIFU7AAn9OaPCvS0vMZ6jfefo4fMfFDDKkA>
+    <xmx:YWgbaPeGMZ98iJ2oTLpfuNLpF8OPWKFjVlKw-7EqCV21cieqdbjShA>
+    <xmx:YWgbaJRzEe3T75DSapInXBaOXofc1V3qaM0NgzttO1CzvZned2P1sw7s>
+Feedback-ID: i58514971:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 7 May 2025 10:04:17 -0400 (EDT)
+Received: from xanadu (xanadu.lan [192.168.1.120])
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 96E611189E49;
+	Wed, 07 May 2025 10:04:16 -0400 (EDT)
+Date: Wed, 7 May 2025 10:04:16 -0400 (EDT)
+From: Nicolas Pitre <nico@fluxnic.net>
+To: Jiri Slaby <jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 8/8] vt: process the full-width ASCII fallback range
+ programmatically
+In-Reply-To: <58ee071e-b2d9-4e1a-b150-c2be59827676@kernel.org>
+Message-ID: <ss849930-nr48-q998-oo41-3qs64or91670@syhkavp.arg>
+References: <20250505170021.29944-1-nico@fluxnic.net> <20250505170021.29944-9-nico@fluxnic.net> <58ee071e-b2d9-4e1a-b150-c2be59827676@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="f4b6bbsdc4dsnfyf"
-Content-Disposition: inline
-In-Reply-To: <20250506215959.2544931-1-robh@kernel.org>
+Content-Type: multipart/mixed; boundary="-1463781375-782106772-1746626656=:8235"
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+---1463781375-782106772-1746626656=:8235
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+
+On Tue, 6 May 2025, Jiri Slaby wrote:
+
+> On 05. 05. 25, 18:55, Nicolas Pitre wrote:
+> > From: Nicolas Pitre <npitre@baylibre.com>
+> > 
+> > This saves about 258 bytes of text.
+> 
+> You mean .rodata, actually?
+
+I used the `size`command which lumps .text and .rodata together. In 
+reality .rodata goes down and .text goes up a little, and the end result 
+is the combined text size.
+
+> > --- a/drivers/tty/vt/ucs.c
+> > +++ b/drivers/tty/vt/ucs.c
+> > @@ -222,5 +222,13 @@ u32 ucs_get_fallback(u32 cp)
+> >    if (single)
+> >     return ucs_fallback_singles_subs[single - ucs_fallback_singles];
+> >   +	/*
+> > +	 * Full-width to ASCII mapping (covering all printable ASCII 33-126)
+> > +	 * 0xFF01 (！) to 0xFF5E (～) -> ASCII 33 (!) to 126 (~)
+> > +	 * We process them programmatically to reduce the table size.
+> > +	 */
+> > +	if (cp >= 0xFF01 && cp <= 0xFF5E)
+> > +		return cp - 0xFF01 + 33;
+> 
+> So do really »+ '!'« instead of »+ 33«.
+
+Uh... why? Having both as numerical value is more meaningful and clearer 
+here IMHO.
 
 
---f4b6bbsdc4dsnfyf
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] dt-bindings: serial: Convert altr,juart-1.0 to DT schema
-MIME-Version: 1.0
-
-On Tue, May 06, 2025 at 04:59:58PM -0500, Rob Herring (Arm) wrote:
-> Convert the Altera JTAG UART binding to DT schema. The "ALTR,juart-1.0"
-> compatible has long been deprecated, so drop it.
->=20
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
-> ---
->  .../bindings/serial/altera_jtaguart.txt       |  5 -----
->  .../bindings/serial/altr,juart-1.0.yaml       | 19 +++++++++++++++++++
->  2 files changed, 19 insertions(+), 5 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/altera_jtagu=
-art.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/altr,juart-1=
-=2E0.yaml
-
-Reviewed-by: Thierry Reding <treding@nvidia.com>
-
---f4b6bbsdc4dsnfyf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmgbZvwACgkQ3SOs138+
-s6EaUw/+PFpKm217yyGnEEtkwhARJq1ODAIXlAzA9oOlrGF4OtXsfMxD1nbJYeL7
-HPjJZUwaymepSChyDvLUxw3gCx0hYnNFkoPrywBvkawvOtrmIf33DBNfDyD8lZZM
-LnwQQCS6UmSDX+lzFbLOI12qw+bnApMTTDIcbvZwSOY//OPXpGg8oejxViHm59h0
-KNP1Ry6FTA+tLVRwsUWwW6wxizXXhX+7+LbnF2u5w8zdsJCbgklB/QZe+cbr+02s
-Q1UAQRDYQ5EmGwWHCjrlgX8XSxJhThpXS2qP1t8z0b4FvG6eXtU3jvOQim4NMKqf
-REMFWd2JPNF2PjoETb4QFfANPxyZJttWkhAC1zwmKwecvAf73PnmF/kKs6WBHivk
-OHus2lttXKLoEFebPPFsHcq+Bfk1nmfyPaiOVReSeAQ8adYdVBu3Y4s/dn4N8ASp
-x5iYnb9zRI6h+vWpz/UGpiAywfrRNWe7rDLypMoFtwG+o6VH6oxLpMoZObMk3WZF
-a3meBfJgSLNG0P2xT8DmF9xvIxVKs4bdRWZ/nAMsHE0Y794VfG61pE7TWQ6wwEq/
-FoiBsoEFJq/ZLbYC/r5sqO4Mv0ZPnEJv3VOisAS4cNuoSiVPcGRFn9XjTJU5sEE4
-JGaSYV5EwqQj9bcwD7MU0NfKbZ2zcQTDYHpldmF0wj4JvxaWe0A=
-=lzjv
------END PGP SIGNATURE-----
-
---f4b6bbsdc4dsnfyf--
+Nicolas
+---1463781375-782106772-1746626656=:8235--
