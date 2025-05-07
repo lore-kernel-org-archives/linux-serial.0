@@ -1,121 +1,256 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF92728C004;
-	Wed,  7 May 2025 15:43:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 346D028B3FB;
+	Wed,  7 May 2025 15:44:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746632599; cv=none; b=P4+d6+A5WVWAMFyILwH02UEvfQ+XIBPq+a99IVx0o1yf7VBom9opOdQ7vuuveoapdDNkL8vJPgqsrEwRp8U5QmIeeGR9nTkKKQT0nnPVYX/H5MuOwXAZqHfvmu6dKP7YJyuJg4rqx70DnuI7ybYvojMvBkFIkxiM7brBjLy8AMo=
+	t=1746632655; cv=none; b=sYOG9BdAzyiwZje73YoRS8zsZM8B43T5AJsdWkaK+Triud0QLkgVSGnUX69b1f6VPl5IXzsiFWaYkGxpCZEwCxYSZUlUj/bboW+YusN6Xcrpvzq337jfS5uO6OX9RZEEXQdWcVZkkyYb8qWvCQeauRkkqdmIxyHxm448V5tSIHY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746632599; c=relaxed/simple;
-	bh=6E20BuLxmf7Ou6q+WhERGS6qz0/P5Z1+f0iLMyDY14k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BKnYy1s5LVtX9dUpc2u8mdYXMdeKvd/9CLgawkTWT+z82Xva9/SGV6jT1gi5RmbeWXkfiq3I7QOWp1P+C5i/wk1s2Zwea0uINBH7PQOKis8vGrgwoL4jQdY5abgnnWiMLfeHqxDQCXxZg/GfbQDtCE0cVJ7LYNgneGuR3ZJEsCI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ikg17e7s; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1746632655; c=relaxed/simple;
+	bh=9DwO+tMCHVnRer2N2lnbbKSzIKIMSeGptXpWGmXWqLI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=NYKEyA01f2NUPfWW9bsoKw2QfIiS5dkl6IlznFDsclaHectwf2892oP5/kNUU10J4xL3rflTbtNNpOfZRBk+2dmG/HQen+JqVkOwhI39PWHJxt5Cn7FqQS21MFneK/9LemWVgAiMTH87X0plxtwVpeXQvke4O10tNgBdvy5vync=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AbSCCxNO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ikg17e7s"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-39ac8e7688aso9969f8f.2;
-        Wed, 07 May 2025 08:43:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746632596; x=1747237396; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=wBr3zUbq54VZyL+/LHjVYV2mIQ3PF+kL4DJjDshhJ3M=;
-        b=Ikg17e7sZQlIxeixWVOtbviCuvMO0XEftnz32rxDS7f33wl4Blk2gdbVcrGjf8SOpv
-         QC7ArOpnWMvYgikrzSzParSiGY8TUtGSlC7KZprwJflEPeQZ0Zla5uPOeETWlREi2wQh
-         olp2EPhp6VU1YtW5LiZSPdoUZWAa+Yf8TPVq9e9Ax142q9fZRw8QfLBQL7ix0o6ShQvI
-         R+15oOErHQapDvs7XPcwerKfmeOwacPp7I38CEGX+wjX/ymDErBI1EkE2H7AqH9LzpxI
-         SyJYZxCYLFz0p6i30nCIhu64FKnb8y3l3frwoeBu3/xjlN/vuIWcn3qRmrWSdUpK+HFs
-         IuFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746632596; x=1747237396;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=wBr3zUbq54VZyL+/LHjVYV2mIQ3PF+kL4DJjDshhJ3M=;
-        b=BP9vSOOlhOdQ0QOWY4emSRAKyoleOf47Ze7EECVodl7crjt5IRKmGp3fiytK2UJqtz
-         MZhxTVaiF6VERLnllBDJJySW2z+t1NDh5fiv1WCDP1ykyzeHm+IiR4sLmjE9ZBVnRJ2/
-         IXjES6VgjRetKfqf3KRJXs5wDRM1+47eIB01PlRNYvAGDwni1nonmSFzHxf6OMsJprV1
-         sCt1QvjFLDcTXOEqkfVYIlVGvdyJkgfZ2lPj79S/6KD84SfZ46ko3W4mrNBJe0JLY+5Q
-         nmSEySB/xs5NHuGxRXO/ozYCgVumi9Jc/pGLbJZ/6ugfxqUxzQcq+GC7wRj7b+/Y1Gr3
-         VYuA==
-X-Forwarded-Encrypted: i=1; AJvYcCUz3nC8uWmzawnt2wYrp581HQbKjbInAHi08vsYIpfBcd2lp08rarFEAYNo3TGQp7DCKqy67Gj2ZDWDKkjf@vger.kernel.org, AJvYcCVLEJQe0HIftlwzk8xgixSFFZxt013AlGuWhEAMO0V0h9S0QbBKNvW4siFwtE5buGR4y+bUEdCdemdvzUY=@vger.kernel.org, AJvYcCX1cx4uoakBCSDRY1KzsxAuOiho3zGwsBLy8TKnApG7mx9AON9ytXSlj0enbJsrz8qYKJMiTM3ewYn0DUw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwfC74jMq0dY4bjTQs02KlEn1kbQrj+qgleSKF3s84aSxa+GqCd
-	B9WIWjqwDWSq5kZRiUTB9PTbBQ01T6oJTbr7xqyEzeAbAvc3myZN
-X-Gm-Gg: ASbGncvtNb9WFn7PZ2FCS2IJmYeOEXGmjzV32/Cf4xmgSAEDFX6yiFqiZs8TWoxCHJU
-	OcsPsD1POGnF/2edy2MNG5zUfIJrKjRHjWzt0B+TRz8t2XeeDKiXct9++Symu55azeSwNdweTI+
-	2AOJm7SlLfseWBaLNnE8QjHVKm5sELJ9lVzla1IxcCT8xgXHkTVw2eg70PulRVqLhKrQ6UlZOdV
-	oqSNtBy5WH8mVv0tx46XcDz4BKcIFROAz31gV1PYZ+2MI5J/5RyGgIpUCClxMjy4yg01/MRih2B
-	81eu2bxZAushgFE6yY3li6Gt3dvoM89ZSkO2H6BCAVOLjYfeNuroDjy6McRr1fY0tgvzSW+NqmA
-	CdvNl7OisIeBBeeAzz6ldSAi3hNk=
-X-Google-Smtp-Source: AGHT+IFewhDO4Iidnrkn2dQZNyPk+OKIQ0nIKow81Cn4DupL8wePD8W7+Ka5SzlZLEBFKF8krlLPEA==
-X-Received: by 2002:a05:6000:2c7:b0:3a0:8ac0:bbbb with SMTP id ffacd0b85a97d-3a0b4a0509cmr3678532f8f.46.1746632596044;
-        Wed, 07 May 2025 08:43:16 -0700 (PDT)
-Received: from orome (p200300e41f281b00f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f28:1b00:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a099ae834bsm17419773f8f.60.2025.05.07.08.43.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 May 2025 08:43:14 -0700 (PDT)
-Date: Wed, 7 May 2025 17:43:13 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Chen Ni <nichen@iscas.ac.cn>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, jonathanh@nvidia.com, 
-	kkartik@nvidia.com, andriy.shevchenko@linux.intel.com, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH] serial: tegra-utc: Remove unneeded semicolon
-Message-ID: <ny7qenz2vnbvjaam6glkx73cu3u27iyxv6lmgur7m3rjzmcccp@4hwy3badcids>
-References: <20250407040712.2577607-1-nichen@iscas.ac.cn>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AbSCCxNO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE115C4CEE9;
+	Wed,  7 May 2025 15:44:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1746632655;
+	bh=9DwO+tMCHVnRer2N2lnbbKSzIKIMSeGptXpWGmXWqLI=;
+	h=From:To:Cc:Subject:Date:From;
+	b=AbSCCxNO8CNVYOzDUipZoJUA7G9IStnYJU16V2/WnYLNWQRTFxYwb8WwMI4wAUxBh
+	 qUidnIcAnN3kl6Vr7dcbBeBK26VpviAuUSg/iGCWkF0NF0d8A76dQkBaLe1MhHz8IJ
+	 bBeMQZFx+zi9fnFM7ipIn1oc1YI7LUiVkqEi3h1io22ZjMVmynoHAmMiR7+lVK81Jy
+	 W1sB6k+5nfS2B1JKBRB/CvPWSG0EHqgRuWDS7Q9Z2XjpbHH10W5Vbex5b+Va4kvBYC
+	 ljaUU3QOj1/n4AzjMUZKHcktUi8GKr4r+QzJGFTnAZ2Hg35yBUM2i18RKJbFcgPiha
+	 s6WvXUISfX9Xw==
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v3] dt-bindings: serial: Convert marvell,armada-3700-uart to DT schema
+Date: Wed,  7 May 2025 10:44:02 -0500
+Message-ID: <20250507154408.1595932-1-robh@kernel.org>
+X-Mailer: git-send-email 2.47.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="qzz6islky2ua2azc"
-Content-Disposition: inline
-In-Reply-To: <20250407040712.2577607-1-nichen@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+Convert the Marvell Armada-3700 UART binding to DT schema. It is a
+straight-forward conversion.
 
---qzz6islky2ua2azc
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] serial: tegra-utc: Remove unneeded semicolon
-MIME-Version: 1.0
+Drop the long deprecated single interrupt support.
 
-On Mon, Apr 07, 2025 at 12:07:12PM +0800, Chen Ni wrote:
-> Remove unnecessary semicolons reported by Coccinelle/coccicheck and the
-> semantic patch at scripts/coccinelle/misc/semicolon.cocci.
->=20
-> Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
-> ---
->  drivers/tty/serial/tegra-utc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+---
+v3:
+ - Fix serial.yaml path
 
-This probably went under the radar, so in case it helps:
+v2:
+ - Drop deprecated part of interrupt description
+ - fix subject
+---
+ .../serial/marvell,armada-3700-uart.yaml      | 102 ++++++++++++++++++
+ .../devicetree/bindings/serial/mvebu-uart.txt |  56 ----------
+ MAINTAINERS                                   |   2 +-
+ 3 files changed, 103 insertions(+), 57 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/mvebu-uart.txt
 
-Acked-by: Thierry Reding <treding@nvidia.com>
+diff --git a/Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml b/Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+new file mode 100644
+index 000000000000..6c7fa3d19369
+--- /dev/null
++++ b/Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+@@ -0,0 +1,102 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/serial/marvell,armada-3700-uart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Marvell Armada-3700 UART
++
++maintainers:
++  - Pali Rohár <pali@kernel.org>
++
++description:
++  Marvell UART is a non standard UART used in some of Marvell EBU SoCs (e.g.
++  Armada-3700).
++
++properties:
++  compatible:
++    enum:
++      - marvell,armada-3700-uart
++      - marvell,armada-3700-uart-ext
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++    description:
++      UART reference clock used to derive the baud rate. If absent, only fixed
++      baud rate from the bootloader is supported.
++
++  interrupts:
++    minItems: 2
++    items:
++      - description: UART sum interrupt
++      - description: UART TX interrupt
++      - description: UART RX interrupt
++
++  interrupt-names:
++    minItems: 2
++    maxItems: 3
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++
++unevaluatedProperties: false
++
++allOf:
++  - $ref: /schemas/serial/serial.yaml#
++  - if:
++      properties:
++        compatible:
++          const: marvell,armada-3700-uart-ext
++    then:
++      properties:
++        interrupts:
++          maxItems: 2
++
++        interrupt-names:
++          items:
++            - const: uart-tx
++            - const: uart-rx
++    else:
++      properties:
++        interrupts:
++          minItems: 3
++
++        interrupt-names:
++          items:
++            - const: uart-sum
++            - const: uart-tx
++            - const: uart-rx
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@12000 {
++        compatible = "marvell,armada-3700-uart";
++        reg = <0x12000 0x18>;
++        clocks = <&uartclk 0>;
++        interrupts =
++            <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
++            <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
++            <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-names = "uart-sum", "uart-tx", "uart-rx";
++    };
++
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    serial@12200 {
++        compatible = "marvell,armada-3700-uart-ext";
++        reg = <0x12200 0x30>;
++        clocks = <&uartclk 1>;
++        interrupts =
++            <GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
++            <GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
++        interrupt-names = "uart-tx", "uart-rx";
++    };
+diff --git a/Documentation/devicetree/bindings/serial/mvebu-uart.txt b/Documentation/devicetree/bindings/serial/mvebu-uart.txt
+deleted file mode 100644
+index a062bbca532c..000000000000
+--- a/Documentation/devicetree/bindings/serial/mvebu-uart.txt
++++ /dev/null
+@@ -1,56 +0,0 @@
+-* Marvell UART : Non standard UART used in some of Marvell EBU SoCs
+-                 e.g., Armada-3700.
+-
+-Required properties:
+-- compatible:
+-    - "marvell,armada-3700-uart" for the standard variant of the UART
+-      (32 bytes FIFO, no DMA, level interrupts, 8-bit access to the
+-      FIFO), called also UART1.
+-    - "marvell,armada-3700-uart-ext" for the extended variant of the
+-      UART (128 bytes FIFO, DMA, front interrupts, 8-bit or 32-bit
+-      accesses to the FIFO), called also UART2.
+-- reg: offset and length of the register set for the device.
+-- clocks: UART reference clock used to derive the baudrate. If no clock
+-      is provided (possible only with the "marvell,armada-3700-uart"
+-      compatible string for backward compatibility), it will only work
+-      if the baudrate was initialized by the bootloader and no baudrate
+-      change will then be possible. When provided it should be UART1-clk
+-      for standard variant of UART and UART2-clk for extended variant
+-      of UART. TBG clock (with UART TBG divisors d1=d2=1) or xtal clock
+-      should not be used and are supported only for backward compatibility.
+-- interrupts:
+-    - Must contain three elements for the standard variant of the IP
+-      (marvell,armada-3700-uart): "uart-sum", "uart-tx" and "uart-rx",
+-      respectively the UART sum interrupt, the UART TX interrupt and
+-      UART RX interrupt. A corresponding interrupt-names property must
+-      be defined.
+-    - Must contain two elements for the extended variant of the IP
+-      (marvell,armada-3700-uart-ext): "uart-tx" and "uart-rx",
+-      respectively the UART TX interrupt and the UART RX interrupt. A
+-      corresponding interrupt-names property must be defined.
+-    - For backward compatibility reasons, a single element interrupts
+-      property is also supported for the standard variant of the IP,
+-      containing only the UART sum interrupt. This form is deprecated
+-      and should no longer be used.
+-
+-Example:
+-	uart0: serial@12000 {
+-		compatible = "marvell,armada-3700-uart";
+-		reg = <0x12000 0x18>;
+-		clocks = <&uartclk 0>;
+-		interrupts =
+-		<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
+-		<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
+-		<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
+-		interrupt-names = "uart-sum", "uart-tx", "uart-rx";
+-	};
+-
+-	uart1: serial@12200 {
+-		compatible = "marvell,armada-3700-uart-ext";
+-		reg = <0x12200 0x30>;
+-		clocks = <&uartclk 1>;
+-		interrupts =
+-		<GIC_SPI 30 IRQ_TYPE_EDGE_RISING>,
+-		<GIC_SPI 31 IRQ_TYPE_EDGE_RISING>;
+-		interrupt-names = "uart-tx", "uart-rx";
+-	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 96b827049501..8b1306c14380 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14254,7 +14254,7 @@ MARVELL ARMADA 3700 SERIAL DRIVER
+ M:	Pali Rohár <pali@kernel.org>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-clock.yaml
+-F:	Documentation/devicetree/bindings/serial/mvebu-uart.txt
++F:	Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+ F:	drivers/tty/serial/mvebu-uart.c
+ 
+ MARVELL ARMADA DRM SUPPORT
+-- 
+2.47.2
 
---qzz6islky2ua2azc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmgbf5AACgkQ3SOs138+
-s6GFtw//UYXBUThKIJCTGtfwciWm3yMQ5GMO5bV69EScq6S4G+9iWtYiXj4hpKjL
-CMELPelbXz0vsb7Te0/B4Ca42b6ZU4QX3qnWMQDSkIUax1xPiHYfWV7vrtGVSbDF
-i+jZiVQJDdIWqOtoNh983kCX01HknVhi8Pa+ExLN3VBOV+HavZZOEPrpCrQSG58v
-d/AldDq391TapQQZ5nzYE+UhAfusEWemOP7FARdRE+4Qn3YxJNN8zD1KpinC73dK
-YIvZ5Hw4Wy4uytvaz3Q2sZ/MR3L3RqPzmiuEX23gAI+nz9uQrZdTl0eUAZ/8A5S/
-o7rcToG/HMRrjlIk6gOrzlBznPatO8w8M6dsWQUKQT0IE9nKizIkq9vOb8cqJV5s
-Co0YgcdgE6mvY96J+sO3M+DEY4gK5MTKTZXIxe7Lm00Xd8o+qsd0NKhhEClviJxM
-M2K7JbCOb2prizv88EKdUo7RJ5I6kKLSrtehbdmKq2HVQlE/2Vuk69MuTT36nL/2
-zW3wb01qfuwi6HvRh4CSVQr8xKkKM8tTW4eCXfbfdEMxOsZu5TDIWns08jOUWGJ7
-jUG+fviwXkncK+UsnIuP/AZ472Q+As0Wwz/zHz1oTSfskBedr9P2hET1lk9VlawB
-gaKhneVwJU4dOgymAwIN6flYTBWwhC8au8YPj+2U/rUeNKwDL88=
-=8GSg
------END PGP SIGNATURE-----
-
---qzz6islky2ua2azc--
