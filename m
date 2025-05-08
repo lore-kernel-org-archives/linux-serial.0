@@ -1,142 +1,96 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A4FC136A;
-	Thu,  8 May 2025 05:46:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C8654B1E45;
+	Thu,  8 May 2025 06:36:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.61.82.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746683179; cv=none; b=BovgIsznuRGEt95Afk+nzaOq8qsfjy8mSQ5rgUq1+v20oEyz3zmfDwKY/BjhdppB5uEL2e5/GQ5idtryZE7rN4G3atKC/AKkaaN3X1vNMqfjlx6kLr5VDZxpugfxGSlJDMPswp5EdHWM8xH2pDteNHsWTuqSXdq7uOYlVmIRTkg=
+	t=1746686163; cv=none; b=Ii2HazqKRVceNCMkBqvsG/OgEGEW6OVysSOKAkg5gDMQdiQJAkOamOHWSZCraiGhEJcWje65y9Cd4BW30RBCyjAoQ8Lrr9ZhJfJphYmqQjffujflMSi3f/LUbh4z5/+Uk9PsRi+4xgcIqe6cB8X5lNN8MeOCnDTTVi/uJJkW+GE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746683179; c=relaxed/simple;
-	bh=ss/4RK5BjT/swp02jG+5lJstfWo3krG0HFi/UmsxU/E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=TPpM5p1Wp6rsaTV/sNjcfZprXFp5E1urCflV+VmuSX+WSxpItguWuh21hsI1TEII5/7KqEqveuioyKJoBeyfYLpZ7ETKW1sl9KyWovKGYDSNvZZxEW+1VFV3CDVxV0QdfaIHNZOkSwMYr7fy1Yoeed9HEBjH69CRUAXQvcirgZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=cnROXt0h; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1746686163; c=relaxed/simple;
+	bh=nUybPfIJN8nxlB8+l3za+c+gQiaPurdscHuMFvr6DO4=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=T+H+wti3uKbf6jYp5FsaKDzraDxlKU8AQ+lXYxHPD5x/+HLZ6vlxuqJ1vZwYXAQ9A7LHAg3O3meKx+zA8bjF1jcZx4Mcv65+A0kdBIAf+xDxLz7IMeW6YdaKmkL5YpKkUt+X25I3Ktx8s1A5ODQB6XCvq5ImxUYmv0g82FciGt4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=QUSjx8Qj; arc=none smtp.client-ip=210.61.82.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="cnROXt0h"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5484WkIk016749;
-	Thu, 8 May 2025 05:46:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ZlmY9+RE5tVTvzudHgirH8bQj5eAneibbTLM15Rcq+8=; b=cnROXt0hZByAcw74
-	LaeUiMakRYDoKLH0Yrt3pGOxp/rSxHXrORiI+OBsDsmfnX7Nq1xfDh8m/Y4ZZKqs
-	qf6MOjPufxI34ph4QMLZRGSwV7L08cGZ6+BptaWlP7Bx+lk+K0wUdXOZ6xERsWPu
-	yw5jV5IUPCRxV4z/BLDETXocRP5DFJDJaOFQr+HjavInPAtyDaXIjj/BHxfAkFK2
-	dk7p1OpbEt0X76CpTmrkNre/qQqE8T3Hya0h+eqz+yfOoxvmLXswy4+LIEalqq6j
-	it77Ulx7bnRbJfijlOCp4dt5JZ000bPezwNimvjNFgF4rypjcS7D4sdKhRBRKZxD
-	jip9tg==
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46gnp684s2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 08 May 2025 05:46:01 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5485k1TN026146
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 8 May 2025 05:46:01 GMT
-Received: from [10.218.11.38] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 7 May 2025
- 22:45:55 -0700
-Message-ID: <2f3e608b-5536-4c6d-b7ca-c8cf4c9d0b1b@quicinc.com>
-Date: Thu, 8 May 2025 11:15:53 +0530
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="QUSjx8Qj"
+X-UUID: afc9ab5a2bd611f082f7f7ac98dee637-20250508
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=J+k3hUUer1eheTQ5q4p0oNapEKv+llZFBmeNNNPE+z8=;
+	b=QUSjx8QjXcBcFbUTnvERCNfWsHaaNBXDTfH9tym/UjrcKYbdyAT2x5jM24bnAZaM5TtMJzjstypTPEq+3yRTZCarzsnqNL/Kq2mnVDYT39HiR1e1aFg3npD2QmJyK9DJqwNTvg20jfioLHJDrD9W7P6JRETyVwthCp0/9SnzHhY=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.2.1,REQID:e1517d43-1ca9-400d-bc5d-0844d04bcae6,IP:0,UR
+	L:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
+	release,TS:-5
+X-CID-META: VersionHash:0ef645f,CLOUDID:b0b96c80-1eec-4f76-b81b-944fecd9abcd,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:81|82|102,TC:nil,Content:0|50,EDM:-3
+	,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV
+	:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-UUID: afc9ab5a2bd611f082f7f7ac98dee637-20250508
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+	(envelope-from <sirius.wang@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 2036067457; Thu, 08 May 2025 14:35:52 +0800
+Received: from mtkmbs13n1.mediatek.inc (172.21.101.193) by
+ MTKMBS14N1.mediatek.inc (172.21.101.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.39; Thu, 8 May 2025 14:35:50 +0800
+Received: from mtksitap99.mediatek.inc (10.233.130.16) by
+ mtkmbs13n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1258.39 via Frontend Transport; Thu, 8 May 2025 14:35:50 +0800
+From: Sirius Wang <sirius.wang@mediatek.com>
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, Sean Wang <sean.wang@mediatek.com>
+CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-mediatek@lists.infradead.org>, <wenst@chromium.org>,
+	<xavier.chang@mediatek.com>, Sirius Wang <sirius.wang@mediatek.com>
+Subject: [PATCH v2 1/3] dt-bindings: arm: Add compatible for MediaTek MT8189
+Date: Thu, 8 May 2025 14:35:40 +0800
+Message-ID: <20250508063546.289115-2-sirius.wang@mediatek.com>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20250508063546.289115-1-sirius.wang@mediatek.com>
+References: <20250508063546.289115-1-sirius.wang@mediatek.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/8] dt-bindings: serial: describe SA8255p
-To: Krzysztof Kozlowski <krzk@kernel.org>,
-        Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio
-	<konradybcio@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>,
-        Nikunj Kela
-	<quic_nkela@quicinc.com>
-References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
- <20250506180232.1299-2-quic_ptalari@quicinc.com>
- <35659475-862a-4678-a2a5-173c2254ae60@kernel.org>
-Content-Language: en-US
-From: Praveen Talari <quic_ptalari@quicinc.com>
-In-Reply-To: <35659475-862a-4678-a2a5-173c2254ae60@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTA4MDA0NiBTYWx0ZWRfXwof7nuWtGvQz
- aYcHN86XHWH8ZvQrpqHN60WXkTvU5kxjbs4Kq8dZW03Vgl+eGhJGvcCzc0vEJg1hOnWLUINCcfe
- 0/sUtrUbGOwrMMsZeHZkSQscN9gdkaA6+yIFPgFQn+yaABUr3ZsDd3zMajDnXYQ5Uz5TYp8DDd6
- g5EQXTsdot7zx/9nLkrp4LNThNq9U8sMf1CKAF6IH89kKrmcJrbF53fIagrVwje7+EpTgBdOTE9
- WylO1o53ARFCtIlj6cs7rmGN1NX8y94AGgLtjOdEpUstYj4ELwofPHFTjY/WjZxaemVhKRa7Wtp
- CBvBaFsHAvcJhu7gmpD1iALFU522o6Y+GU2gEtV/i76DNACZjfpp/933V14NO1ZfsY54Is8By21
- 5MgjWCzuJh/7f4F9wr2xDQmYJCQtcac0ru+J1DgqyZQOmcUDHF9Az6wAyUA124p9EwwoMIq7
-X-Proofpoint-GUID: jgEl_RRUtbRNM5Xfh74gibIyVuhAC7vM
-X-Proofpoint-ORIG-GUID: jgEl_RRUtbRNM5Xfh74gibIyVuhAC7vM
-X-Authority-Analysis: v=2.4 cv=BvGdwZX5 c=1 sm=1 tr=0 ts=681c4519 cx=c_pps
- a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10
- a=zwwrgv8Ryh7oewfrMAYA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-05-08_01,2025-05-07_02,2025-02-21_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 priorityscore=1501 phishscore=0 impostorscore=0 mlxscore=0
- spamscore=0 mlxlogscore=950 malwarescore=0 bulkscore=0 suspectscore=0
- lowpriorityscore=0 clxscore=1015 classifier=spam authscore=0 authtc=n/a
- authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2504070000 definitions=main-2505080046
+Content-Type: text/plain
 
-Hi Krzysztof
+This commit adds dt-binding documentation for the MediaTek MT8189
+reference board.
 
-Thank you for your patience. I consider your inputs as valuable learning.
+Signed-off-by: Sirius Wang <sirius.wang@mediatek.com>
+---
+ Documentation/devicetree/bindings/arm/mediatek.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-On 5/6/2025 11:53 PM, Krzysztof Kozlowski wrote:
-> On 06/05/2025 20:02, Praveen Talari wrote:
->> +
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - qcom,sa8255p-geni-uart
->> +      - qcom,sa8255p-geni-debug-uart
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    minItems: 1
-> Nothing changed here, this should be dropped based on previous discussion.
->
-> You sent this v5 on 8:02 PM of my time. *THEN* you responded to my
-> comment at v4 at 8:05 PM. That's the way to waste everyone's time.
->
-> I do not understand why interrupt is optional for a new, complete device
-> description.
+diff --git a/Documentation/devicetree/bindings/arm/mediatek.yaml b/Documentation/devicetree/bindings/arm/mediatek.yaml
+index fa1646bc0bac..05e827076a7f 100644
+--- a/Documentation/devicetree/bindings/arm/mediatek.yaml
++++ b/Documentation/devicetree/bindings/arm/mediatek.yaml
+@@ -372,6 +372,10 @@ properties:
+           - enum:
+               - mediatek,mt8188-evb
+           - const: mediatek,mt8188
++      - items:
++          - enum:
++              - mediatek,mt8189-evb
++          - const: mediatek,mt8189
+       - description: Google Hayato
+         items:
+           - const: google,hayato-rev1
+-- 
+2.45.2
 
-On this platform, there is no use case of waking up UART, so we consider 
-the  wake up IRQ as optional.
-
-Thanks,
-
-Praveen
-
->
-> Best regards,
-> Krzysztof
