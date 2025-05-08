@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3AE522154E;
-	Thu,  8 May 2025 07:09:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52CB3221DA8;
+	Thu,  8 May 2025 07:09:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746688197; cv=none; b=U988oSBNyfSaDs4Q2oN69IzHUaWXMGt/SoZhyWQd6Z3+J3mwXV1PvBns2gYzzCHDYVDy0adp1IZCSSGbtnBXRc6CN/1pB8Tl1yywfBLrlvomSZUYqqSVAk+uFy/v6nT5i7fHzU4W76BJCFOiYjKJlqi0A43bL1Lsl2JGDdk845w=
+	t=1746688199; cv=none; b=Aye7KyMSL7GanitfildYY39l5SYwPgKdDcH2cY8wLqYWZN2Gka8JNUKMhL+rYsZaSl/+QqhlfKJDWw0Uclh6jUuA/2sR1S13xi1qxWmQIMuNKvwwA1ASaYlfkHofpimFniX8Ooi06sayQpyoPYuAawG8JrewH0gF+6PVTl4Wqd4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746688197; c=relaxed/simple;
-	bh=Yr2J78SHWoOtKQSemvYmYF7NMQk3vdDKnwJFh78hPRU=;
+	s=arc-20240116; t=1746688199; c=relaxed/simple;
+	bh=RrwRtaujjlqJpIgcXtqqvO+THEkQ26LzURxmJEZVRD8=;
 	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=SqnNu0tQkma+S1J2nL7yFxZFWTv/BcIY3FWhlUC4kVQKrX2wMeVSozLtsTaL2z6u75+3kOfweorYycDCKr0XRoa/aJQftciQkCgMat6NN7CkThaA5HdvJVgqU0iPUthkLVna9UfPXR42vXWYpUzsxEXxVWgn800hz+MpolaFnAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FI83Seu2; arc=none smtp.client-ip=10.30.226.201
+	 Message-Id:Subject; b=onDRzZaU/0hFkK9T6OHz0y4QylG/SYmeOuOgIMhsDDaJcKobTvUNp+v+OUS3dTGcQX2fIngfH8Zi5+EJPvgswsijB2HlLlvggb6eWQxcLfJGnnclEW01XbdQQq9ggpkxfct+YLUgTxL7ivDaB/P7B3aDca3SUMlQqU+5ma7Gd3U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PHUON7AE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FI83Seu2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D463FC4CEEB;
-	Thu,  8 May 2025 07:09:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PHUON7AE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D888C4CEEB;
+	Thu,  8 May 2025 07:09:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746688197;
-	bh=Yr2J78SHWoOtKQSemvYmYF7NMQk3vdDKnwJFh78hPRU=;
+	s=k20201202; t=1746688198;
+	bh=RrwRtaujjlqJpIgcXtqqvO+THEkQ26LzURxmJEZVRD8=;
 	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=FI83Seu2KbzvpHecpTY3G01Iz4PgSGjhZ3fU6bLjrCRPko3zjL0ofM8MabPLKdl9w
-	 tA5VmxBV7dWog8cBUK0Fbs+z+18q5y8DEphda8FiVEtyl1dtdcMDFhZM5RtFAjzAa8
-	 pRgvgx2t1B83Yx6qtJGheF+OHXTfB/wtI+6LgzvswZnW/G9K9WxOjC72go0tOVjlcB
-	 SXtccGNK3/tuzEIxskr66PRmLKg0sA73vqVXJ4Ck62tYy6yYf/o3UAki7nEqnmDRPS
-	 iNHoh67/y6nqOh3torH/NwhsT0YrpUWbgAEBvUsx8BDp2rtY/ZaciFrTromuQSCfu6
-	 r6+JlSGcwfxlA==
-Date: Thu, 08 May 2025 02:09:55 -0500
+	b=PHUON7AE9iEwY4EReMGouzh8o4Xx3NEVh1B3niBALfu93L0I1ZeEBBxRkmVQCo71P
+	 yYHulapgtsDqfZAEoi6oXb3FV35XThgJhiI4G4xEt37OPJYaoUB1PexJZr/5LwScE9
+	 XJseyi7K7OLnNmO+GoGG2onANkWJCoDjkp5ZBq5hWrm9yjaAmcHPtmpi5XsZrjNjOh
+	 w0nbRR+nv/EZq9AdfrsAR47j51d5g6dGLnqr5vVIdfmXZ9cEGPcdy7NfErMeilz2of
+	 T+KcaV2SPlNGcoQ1z3JK3W7Pg572JpINQ9JrtRc3M1rgKE7ZafmuyCBlVpVkJuIgOX
+	 d9DTGaPjoGgng==
+Date: Thu, 08 May 2025 02:09:57 -0500
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -36,32 +36,31 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, 
+Cc: devicetree@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>, 
+ Jiri Slaby <jirislaby@kernel.org>, 
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- linux-arm-kernel@lists.infradead.org, wenst@chromium.org, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Jiri Slaby <jirislaby@kernel.org>, Sean Wang <sean.wang@mediatek.com>, 
- linux-mediatek@lists.infradead.org, xavier.chang@mediatek.com, 
  Matthias Brugger <matthias.bgg@gmail.com>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>
+ Conor Dooley <conor+dt@kernel.org>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ linux-serial@vger.kernel.org, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, 
+ xavier.chang@mediatek.com, wenst@chromium.org, linux-kernel@vger.kernel.org
 To: Sirius Wang <sirius.wang@mediatek.com>
-In-Reply-To: <20250508063546.289115-2-sirius.wang@mediatek.com>
+In-Reply-To: <20250508063546.289115-3-sirius.wang@mediatek.com>
 References: <20250508063546.289115-1-sirius.wang@mediatek.com>
- <20250508063546.289115-2-sirius.wang@mediatek.com>
-Message-Id: <174668818902.3553912.2627807939857046416.robh@kernel.org>
-Subject: Re: [PATCH v2 1/3] dt-bindings: arm: Add compatible for MediaTek
- MT8189
+ <20250508063546.289115-3-sirius.wang@mediatek.com>
+Message-Id: <174668818993.3553950.2026638570584322328.robh@kernel.org>
+Subject: Re: [PATCH v2 2/3] dt-bindings: serial: mediatek,uart: Add
+ compatible for MT8189
 
 
-On Thu, 08 May 2025 14:35:40 +0800, Sirius Wang wrote:
-> This commit adds dt-binding documentation for the MediaTek MT8189
-> reference board.
+On Thu, 08 May 2025 14:35:41 +0800, Sirius Wang wrote:
+> Add compatible string for serial on MT8189 SoC.
 > 
 > Signed-off-by: Sirius Wang <sirius.wang@mediatek.com>
 > ---
->  Documentation/devicetree/bindings/arm/mediatek.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+>  Documentation/devicetree/bindings/serial/mediatek,uart.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
 My bot found errors running 'make dt_binding_check' on your patch:
@@ -73,7 +72,7 @@ dtschema/dtc warnings/errors:
 
 doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20250508063546.289115-2-sirius.wang@mediatek.com
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20250508063546.289115-3-sirius.wang@mediatek.com
 
 The base for the series is generally the latest rc1. A different dependency
 should be noted in *this* patch.
