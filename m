@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54C421442F4;
-	Fri,  9 May 2025 16:15:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C9B9235BF1;
+	Fri,  9 May 2025 16:16:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746807341; cv=none; b=JlUE/qw8r9qqNsgY+OgTWTSApxeC0udnxE+TiXzCI31MA7+lns9gP2R6qnyojl0yER8J7J/SOKxTMMJF87e/3sNIRHvD6a3rhrd47oNZTHcEMVCM4m6B63AEQEpobStA1GC/3XG2jl+aDzhzGkxXBfq4jFu76/yeKN3ZT+hi57k=
+	t=1746807413; cv=none; b=m/koeOlRhnUGoNQP0Fp3369sPMmQCEJ/frBmh4l/7ZAul2gz3WOrligCQUoqvWbZgVWqwJoaJMzVer2vAv0sVhFHBIe27PaTN5kIAy+cDd1Q/mOi2eAcKK98oNyCVJ1NgQeDrz//PJ8s9xxmdQcJE72IG+viiX7qautGWb/4P9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746807341; c=relaxed/simple;
-	bh=XQbL8BmAFuosZaYmT/ElwQ5uw+SyRwdfAf6yqJgUZug=;
+	s=arc-20240116; t=1746807413; c=relaxed/simple;
+	bh=9LQ7U1q484EMBGzcv2NLb3WZTde10mn4MnfvrW94KnQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V9WFyUoW0NQKbDI1e8xTHC63Q8KUOh6w0DSmnttmVeso64AaYuzcYTRdkbKQA8RTzaMvmWGgQzfSvzr73hFDZCNdWF0eWkUcIgmcA2V8xMp0uRt48Blac15uaP9nEbejbPftHBmmXXaAkD6CQN5Rg/nbdv0usHdccmn3c2nHvuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G3a9wvT5; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=nCmUVtgQZ8Mhq7Ijy88yQFv/XeznBgowKrxYF07erIVCRP4xMuXJWvlTtGseH4ZkwdWLXiPnrIfsir+tCZg1J0OFEuUO+lwcwm8k0o6QAFE8vGeJBvhNBIQAKOg/lsXzmOJk3yW7C3qCmUypTfFrkVZJNxkD3fUzpUtXk1ogD48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VuKjVZbX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G3a9wvT5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04945C4CEE4;
-	Fri,  9 May 2025 16:15:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VuKjVZbX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC0EDC4CEE4;
+	Fri,  9 May 2025 16:16:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746807340;
-	bh=XQbL8BmAFuosZaYmT/ElwQ5uw+SyRwdfAf6yqJgUZug=;
+	s=k20201202; t=1746807412;
+	bh=9LQ7U1q484EMBGzcv2NLb3WZTde10mn4MnfvrW94KnQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=G3a9wvT5biurDKoNcBKnJlCuv01JpDOepyaSOAwd9lorRrm83pFmqxiLpmzPi9jM+
-	 cqx9Oih5ueV7vDXlQjehSx0LA47eKhIYV13U/D8N9v6jY+vwsVE+rhoPZF5mtVxXbX
-	 2UoGiOC4tNESt4sqPojj40mQpmXBcR/vyg8i7jsmjh9KZOSe9+El0Ky4KHSn/CYWM4
-	 OJv1khMt/1hl9MduxJ67iGc+ACG26die+ipSEDXo1GA9A+kwaerWm1wyJw39hu9KEH
-	 ytrdvYPjD5cEsoqgOmk0MMYlz44C602k8yr5JnqfmFOwz4GppwoDMB+3RNHSDjZHuR
-	 AFIsZ2YR+jB1g==
-Date: Fri, 9 May 2025 09:15:38 -0700
+	b=VuKjVZbX3m+XkLcmmq4SMw/O6/AcM7cZmvVJNNInHmmG4amWUIEefBJ2vTCf9fMVh
+	 EA14kx+EoQty/caFt2uvocikYqE2iddJOAbSOfYghvOzUfsuOUbpunu5sqvNKU7dQt
+	 vjs3XFiaJMAMCRXRv54Ral5dkbC7r0ekW6r196GTUol0WaSf+lKNAa13I7zoxh7Iiq
+	 XZvMx7WJZyNipq7abnxLWuAkzGFn5CZ3o1SIMA95HkXCG5se/r6kSNOOjciBKi6lSE
+	 49XjDBgOQhM/8but/tkucCB36MVG+zKfUkH3QBFAMuibGgyitbJopW8NuEhNkA9b31
+	 EIDAKh8qJ4i5A==
+Date: Fri, 9 May 2025 09:16:50 -0700
 From: Luis Chamberlain <mcgrof@kernel.org>
 To: Joel Granados <joel.granados@kernel.org>
 Cc: Petr Pavlu <petr.pavlu@suse.com>,
@@ -53,10 +53,10 @@ Cc: Petr Pavlu <petr.pavlu@suse.com>,
 	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
 	rcu@vger.kernel.org, linux-mm@kvack.org,
 	linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 05/12] parisc/power: Move soft-power into power.c
-Message-ID: <aB4qKkDXoGs8EDkN@bombadil.infradead.org>
+Subject: Re: [PATCH 04/12] mm: move randomize_va_space into memory.c
+Message-ID: <aB4qclsUbZVVs9xq@bombadil.infradead.org>
 References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
- <20250509-jag-mv_ctltables_iter2-v1-5-d0ad83f5f4c3@kernel.org>
+ <20250509-jag-mv_ctltables_iter2-v1-4-d0ad83f5f4c3@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -65,11 +65,12 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-5-d0ad83f5f4c3@kernel.org>
+In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-4-d0ad83f5f4c3@kernel.org>
 
-On Fri, May 09, 2025 at 02:54:09PM +0200, Joel Granados wrote:
-> Move the soft-power ctl table into parisc/power.c. As a consequence the
-> pwrsw_enabled var is made static.
+On Fri, May 09, 2025 at 02:54:08PM +0200, Joel Granados wrote:
+> Move the randomize_va_space variable together with all its sysctl table
+> elements into memory.c. Register it to the "kernel" directory by
+> adding it to the subsys initialization calls
 > 
 > This is part of a greater effort to move ctl tables into their
 > respective subsystems which will reduce the merge conflicts in
