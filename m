@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFD272918EB;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EABB92918F0;
 	Fri,  9 May 2025 12:55:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746795307; cv=none; b=agIZ0l+stdk3Ys5U5BnQ9aE+aN5RK9wtM3ly5CCZiL+ob7Hwz89usC8+GdE3i6lAsai05UzhiD4hDuv+fc+KIsBQtagLZxLuEt8GCMlQH0iaRTYnLINR8ZcTMm0ovhfArmqC/yP8erAxZRPzawWvd9bs/vmnGCVEueLxORLIWKI=
+	t=1746795307; cv=none; b=ZQ59KqPOrkSt/NErBdW0z/5pAq47pSy0k/MxLZ/ESrQHvIAyraCfxrM03dAVALSIqIyLUmu6qp+Tw1ufQeWQSkWaxxQT0PoIAgxgbGc8XFwY8e8kcSMgvdV2KY3OJ69gw1W7HXOzHEsnHDX1BZF3jtEEsSVreV5U6MDbf40AJOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1746795307; c=relaxed/simple;
-	bh=iBWZYDpQ2juAjhx5pX1DbD1nKbOZE742NSDAPf/9QSo=;
+	bh=9rUI733v52tyD4qD/w5fv4MFvpEqPz2boNwanOapOa0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=NQdYKpKRSHtpoQqWgIoL3wXLcAtvsYLyttDauuvw7ndXY7PmOTenuIsDBeGKwoA21MqYccs5Hk2iTlghK5QJUNJKsnEL2fQPz4hDapU2Cpwkmy+ZtlDaspl/qE3zgKngBS0YnEwH5BpJZhUzROw2KSDCkpE7wGXMvkPhNhtEOIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YzQzGNG2; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=ED19uSIKHLhn3uZ4kdxo+EB6J49yqrfQRJfdTmx7ZBpqJJJH1uNi3TaZK9f9An2cKwokWIkJeWJHr183ViyI7mk4WBbyFTVfyeWwdO6BxjrLxvppSZyLeiZLxaNyOK3+bAJ7vcmTLcoJpvvvRfMxhL8+yz6dHZ6p3cP5bw6HHjE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a2gnI2ZJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YzQzGNG2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 49234C2BC9E;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a2gnI2ZJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 69714C4CEF3;
 	Fri,  9 May 2025 12:55:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1746795306;
-	bh=iBWZYDpQ2juAjhx5pX1DbD1nKbOZE742NSDAPf/9QSo=;
+	bh=9rUI733v52tyD4qD/w5fv4MFvpEqPz2boNwanOapOa0=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=YzQzGNG2i+QOu0+1G3VOs39FT4R/N1C52TFCga1mn4Nz8jHMewzsn8ZHyR/a7pxnN
-	 GRc2Mgzjna+zJQG2Hd4OTMU/79ex4ic3GiD8LcKnqxBgYa/ckpSfI8V0J4jreqyEm/
-	 V8qyoGkZneoRaurWLO6AfjOEVZAUZwGTJzvPSp2LvNB6Kf2HESZxzG4bHDwaB30UQG
-	 +L8il5x37JywipHbMXUTAFlpyXfxwBUzz8G0xh1EI4Cjz6GYfwde03JCLNG0UwskVz
-	 s+0EvsOy9/rOTBmSqrL9ljOXyNXrtOF4Q5qR1xGXMBs2IHh9C9r4e2jLQLnh036ABA
-	 kPHtvgDL1WZww==
+	b=a2gnI2ZJQZbb9jNAm2UICyM4UeiBulsb1SLjv9+QiXAsZAhPIIOaClx3sCZEs6vyK
+	 7GmfUMqUbqfp9FEbJ1P8skw1q3Kz5V25wbQM4wdMOFkNWXexqzrDjH0ryjP/wjcvfz
+	 T1aROfRgK1I/NkbhdhxN9PKUdrEpjCb9t8NAr+DH/C3lKFz5twJsYZso5K2wO6j+w4
+	 DE651QxGkwT8ilBPqmfELA9nJOBGNZbJ7G8HAa5PBIISXDrFExmVT+p5z9EFNhBexA
+	 aGnjoRfsTo1fxoRkJAXN01w2ERMQ83cZRDdy3DriWWb580GRTVxYiZW5tPfND/dXRn
+	 hBPaHXPG11wGA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F82AC3ABBC;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C66CC3ABCE;
 	Fri,  9 May 2025 12:55:06 +0000 (UTC)
 From: Joel Granados <joel.granados@kernel.org>
-Date: Fri, 09 May 2025 14:54:14 +0200
-Subject: [PATCH 10/12] sysctl: Move sysctl_panic_on_stackoverflow to
- kernel/panic.c
+Date: Fri, 09 May 2025 14:54:16 +0200
+Subject: [PATCH 12/12] sysctl: Remove superfluous includes from
+ kernel/sysctl.c
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250509-jag-mv_ctltables_iter2-v1-10-d0ad83f5f4c3@kernel.org>
+Message-Id: <20250509-jag-mv_ctltables_iter2-v1-12-d0ad83f5f4c3@kernel.org>
 References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
 In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
 To: Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>, 
@@ -67,76 +67,107 @@ Cc: linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org, 
  Joel Granados <joel.granados@kernel.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1738;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2583;
  i=joel.granados@kernel.org; h=from:subject:message-id;
- bh=iBWZYDpQ2juAjhx5pX1DbD1nKbOZE742NSDAPf/9QSo=;
- b=owJ4nAHtARL+kA0DAAoBupfNUreWQU8ByyZiAGgd+yZVZlAJvlSFeIOK7ZUIBFeRAqCzIUtq1
- EXP6L0iac8e6okBswQAAQoAHRYhBK5HCVcl5jElzssnkLqXzVK3lkFPBQJoHfsmAAoJELqXzVK3
- lkFPKsUL/34wrM9l0suCAomA6YIWhJCQFnrdoNObwQnmqYlomYI6m+y92V0xy+ltvIjej2DhMm9
- Zo7HqxRyRmRFfsvqc5OGeZkQQgCiKriH3QMnOiEt7ZNXZZWWura6lhop2H5YVmONmix6awBu8ok
- n6UWQ+lQG8Gg3b+l8Rs+ON5FCfDrM5pFk1VyQnpQ+qKQY8Jz17Isp/gJxz1hPUdCLgWEhuW9kD5
- MTnu4NTj8f7+ZDkSF/2sfIm5O0umKl+BNzXhJ8APNvw9PW2tuX/jD5tTYDxbGfBr1BOchy5eJZe
- DOEJAuJ1fUxNfP4HlZ6OD7TpYvLKsUTEA6cF9YrsqW/TThUbv52ajFr/LHzxj2KbUx9+QTnf3u1
- HdU2RSmv9uKIcVnQBvI80bJftXsSVI2fUQqQfwongGBHQLG4r51JY4KivxNZrgg7qS2CsWccQF9
- 73RaPh70zGvXKDXnO7oh+GVcexPplGQ853rGTC8tjEiG6hO9FnaUG2fGqoWkB9/dH2Pn8Cuz8X8
- 0A=
+ bh=9rUI733v52tyD4qD/w5fv4MFvpEqPz2boNwanOapOa0=;
+ b=owJ4nAHtARL+kA0DAAoBupfNUreWQU8ByyZiAGgd+ydY223rqSHwB4C1mckkQQi7bRKrIQfLI
+ rtDBZEL1cuGSIkBswQAAQoAHRYhBK5HCVcl5jElzssnkLqXzVK3lkFPBQJoHfsnAAoJELqXzVK3
+ lkFPmBsL/2553g/JX/UeMa5y5SOfFJmDPzhUtapo/71UW/5OdLFx2JZskrl0SbCOFUfjTwu4mJp
+ c5jTGK5aw/Hb2/PyQveQBCyfhdq5TjMC2c/rpw3Ryp3BEvjdyPp+PvWY0YuLlMjnTkir8oNYX3C
+ Pym1ifCJS+k178tPjpVMvnew9QomUmd8TgWhBcYOsiSyCUY/x93rKSyWwFlrnOCaiXRn6YsDkCk
+ 97/85cO2uaUxkz3Ayi+CHOmlQYwuPT0jl3MgjN98SBFJ4mdks2b3s7bAMGuIU3I75iKBwVLdScp
+ UbjEiSSeFUvKyiro5Bx8RJadVmBgGivzJApqMmJc41WKE9paV61DlIYT/41oniS6v/z+R82BSQH
+ 4AGsd1bvzVsIHiBLKIMfcs+rMhnhCCqzpn8ATz82I+SRZaUGTho21sMU4jBU/wSwW41PjOP4tMB
+ UzYzCRVa4WwLsWhHJiReLrqNzM+hUw93Y1QlQ3MwcIFI78jxVYsb2Va5Hghv4fzkbhaabqEClB7
+ Us=
 X-Developer-Key: i=joel.granados@kernel.org; a=openpgp;
  fpr=F1F8E46D30F0F6C4A45FF4465895FAAC338C6E77
 X-Endpoint-Received: by B4 Relay for joel.granados@kernel.org/default with
  auth_id=239
 
-This is part of a greater effort to move ctl tables into their
-respective subsystems which will reduce the merge conflicts in
-kernel/sysctl.c.
+Remove the following headers from the include list in sysctl.c.
+
+* These are removed as the related variables are no longer there.
+  ===================   ====================
+  Include               Related Var
+  ===================   ====================
+  linux/kmod.h          usermodehelper
+  asm/nmi.h             nmi_watchdoc_enabled
+  asm/io.h              io_delay_type
+  linux/pid.h           pid_max_{,min,max}
+  linux/sched/sysctl.h  sysctl_{sched_*,numa_*,timer_*}
+  linux/mount.h         sysctl_mount_max
+  linux/reboot.h        poweroff_cmd
+  linux/ratelimit.h     {,printk_}ratelimit_state
+  linux/printk.h        kptr_restrict
+  linux/security.h      CONFIG_SECURITY_CAPABILITIES
+  linux/net.h           net_table
+  linux/key.h           key_sysctls
+  linux/nvs_fs.h        acpi_video_flags
+  linux/acpi.h          acpi_video_flags
+  linux/fs.h            proc_nr_files
+
+* These are no longer needed as intermediate includes
+  ==============
+  Include
+  ==============
+  linux/filter.h
+  linux/binfmts.h
 
 Signed-off-by: Joel Granados <joel.granados@kernel.org>
 ---
- kernel/panic.c  | 10 ++++++++++
- kernel/sysctl.c | 10 ----------
- 2 files changed, 10 insertions(+), 10 deletions(-)
+ kernel/sysctl.c | 20 --------------------
+ 1 file changed, 20 deletions(-)
 
-diff --git a/kernel/panic.c b/kernel/panic.c
-index 213c6c9d6a750ff3d17f3cf530b37c619cd816f4..401f0997f654797acc3351040bbbda1845ce00c1 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -183,6 +183,16 @@ static const struct ctl_table kern_panic_table[] = {
- 		.mode           = 0644,
- 		.proc_handler   = proc_douintvec,
- 	},
-+#if (defined(CONFIG_X86_32) || defined(CONFIG_PARISC)) && \
-+	defined(CONFIG_DEBUG_STACKOVERFLOW)
-+	{
-+		.procname	= "panic_on_stackoverflow",
-+		.data		= &sysctl_panic_on_stackoverflow,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
-+#endif
- };
- 
- static __init int kernel_panic_sysctls_init(void)
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index d5bebdd02cd4f1def7d9dd2b85454a9022b600b7..446d77ec44f57a4929389b64fc23d3b180f550b4 100644
+index dee9a818a9bbc8b1ecd17b8ac1ae533ce15c2029..0716c7df7243dc38f0a49c7cae78651c3f75f5a3 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1552,16 +1552,6 @@ static const struct ctl_table kern_table[] = {
- 		.mode		= 0444,
- 		.proc_handler	= proc_dointvec,
- 	},
--#if (defined(CONFIG_X86_32) || defined(CONFIG_PARISC)) && \
--	defined(CONFIG_DEBUG_STACKOVERFLOW)
--	{
--		.procname	= "panic_on_stackoverflow",
--		.data		= &sysctl_panic_on_stackoverflow,
--		.maxlen		= sizeof(int),
--		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
--	},
+@@ -5,44 +5,24 @@
+ 
+ #include <linux/sysctl.h>
+ #include <linux/bitmap.h>
+-#include <linux/printk.h>
+ #include <linux/proc_fs.h>
+-#include <linux/security.h>
+ #include <linux/ctype.h>
+-#include <linux/filter.h>
+-#include <linux/fs.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/kobject.h>
+-#include <linux/net.h>
+ #include <linux/highuid.h>
+ #include <linux/writeback.h>
+-#include <linux/ratelimit.h>
+ #include <linux/initrd.h>
+-#include <linux/key.h>
+ #include <linux/times.h>
+ #include <linux/limits.h>
+ #include <linux/syscalls.h>
+-#include <linux/nfs_fs.h>
+-#include <linux/acpi.h>
+-#include <linux/reboot.h>
+-#include <linux/kmod.h>
+ #include <linux/capability.h>
+-#include <linux/binfmts.h>
+-#include <linux/sched/sysctl.h>
+-#include <linux/mount.h>
+-#include <linux/pid.h>
+ 
+ #include "../lib/kstrtox.h"
+ 
+ #include <linux/uaccess.h>
+ #include <asm/processor.h>
+ 
+-#ifdef CONFIG_X86
+-#include <asm/nmi.h>
+-#include <asm/io.h>
 -#endif
- #ifdef CONFIG_SYSCTL_ARCH_UNALIGN_NO_WARN
- 	{
- 		.procname	= "ignore-unaligned-usertrap",
+-
+ /* shared constants to be used in various sysctls */
+ const int sysctl_vals[] = { 0, 1, 2, 3, 4, 100, 200, 1000, 3000, INT_MAX, 65535, -1 };
+ EXPORT_SYMBOL(sysctl_vals);
 
 -- 
 2.47.2
