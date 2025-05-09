@@ -1,44 +1,62 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 825252163BD;
-	Fri,  9 May 2025 18:59:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6C272417DE;
+	Fri,  9 May 2025 19:00:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746817140; cv=none; b=u2JLdl9BNW5B/bbsXfiR/d2erbGLlecfYxR9Vr00pm3NdRTMD8Q5AaT7Ncuyqfr6Whcdc4z6CIlUCnRIp9fn4g94fKlcvtTtv2lg/CN4OgucnOkQjR9eLYO67aMd+Y6wmh8BnbV+a2G5b50A/jozY/LkbzRqysnqRd6dWPxmAcs=
+	t=1746817215; cv=none; b=NIAfZA3v/tld8+dkj6FI7ekfUhZuhliNl66PJ953OnVgbWyR/LtewZdIbKPLw9abWOaYgTcDZQ65veE3xQkY0qW16V1rn9SL6ccJmAHG6dB5HrSzmsLNluJN2ar2+Hh72+mbs0yYhPs1uRQD20qf0rspzxg2tKCBdfPUu+Vwxwc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746817140; c=relaxed/simple;
-	bh=2uB/UBFl793LBBu1ZjcvTxD2vU/Siid954qLuejgKi8=;
+	s=arc-20240116; t=1746817215; c=relaxed/simple;
+	bh=+34HNPEUj+p5uVPbJVtQH6X/OyK2KbD04zwbGTKrMJA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cPYdkqcICk5isGLmlsqkFDfvHqckhJSb8qyXdg46kPid5KV/g5L/LvbjHXYR6lRkJw4umZxOOshg1CopIKyz4phXIIoUpDVDn6p+F/xn8/sV9dMAao74FyKW3jP/73dh0URg9s3tWddflRO/AQVdun77wdWbxpHsN6AvtnlM6/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SVhH2BHI; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=mlfAhRZBodF+4jYwERZ0ICwZIi+EX5nMVGAvUiTfI/NJyRzzJZv82v2U7MZ3qptqMUYXde5g8u0ec443t2kOUVicfg0uu/JfjybKG8t9berj+rEUiGq8wLAavFE4cqTywpz96ZlXCMAqA+VY7Dxro2K8dFdJl4fT8D6myrccz1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b11OPmzK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SVhH2BHI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAC39C4CEE4;
-	Fri,  9 May 2025 18:58:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b11OPmzK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 541BDC4CEE4;
+	Fri,  9 May 2025 19:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746817139;
-	bh=2uB/UBFl793LBBu1ZjcvTxD2vU/Siid954qLuejgKi8=;
+	s=k20201202; t=1746817214;
+	bh=+34HNPEUj+p5uVPbJVtQH6X/OyK2KbD04zwbGTKrMJA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=SVhH2BHI4tpEYlrAAjKW5lF4U+VKFye9Zo6vkmk3O/RPuv95MPzH0VVgxPfpWYdXA
-	 /Koe4qjNW+YgVlSGjyMqWft+N7o8XzTY9NQBXvZe39yUCFpRkHNU/Ax9ScTLUFeiZa
-	 SvwWKp9oS/sBi4gq8xIMlbTGPH4FHTfwYKkfvhpRySwopHFvspsGiht893wYvD/dFU
-	 2xKMQ1chxsNbDZqkRgihROhho1fAFyNAC5E2BbdGrZ4anu9M7sPmBCbs7LX37IVz69
-	 uZdkTNZ+uzXOc70LV+8ZPaBBzKXJIcm+fN/SrLQnULtZ33mUxWy+7HTFBgbHr02BoE
-	 Kx0xNudMuWTeA==
-Date: Fri, 9 May 2025 13:58:58 -0500
-From: Rob Herring <robh@kernel.org>
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org,
-	geert@linux-m68k.org, paul.barker.ct@bp.renesas.com,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v8 01/11] dt-bindings: serial: Added secondary clock for
- RZ/T2H RSCI
-Message-ID: <20250509185858.GA3933854-robh@kernel.org>
-References: <20250429081956.3804621-1-thierry.bultel.yh@bp.renesas.com>
- <20250429081956.3804621-2-thierry.bultel.yh@bp.renesas.com>
+	b=b11OPmzKdUzVTGgQSAh6M0bVyEdjiG1qUs49izPnBDGpFqvktevOyQNAuloaSPyVA
+	 73sX2u5QtCHM7x3aIwQWqFlcT2oQMnSNVWBxymLOFWreEF+HNQSWfUmfoWrKLqrqux
+	 R7LbGvpx8NvPD0idmU85xolZ2w7J6M4N1dWSRAVsJhM54+iadih/vRo0vQn/EaDduS
+	 226ADQATxQUtOPOPdiSjb350tnu61idQaV9rDctF1tndjMyn96bkQnNYZktJ7R3cgs
+	 O3GPuk+NYatdpOSwF4ztsL6sUavjhUOQE363YfunS7uH1FnBRMmbSvEeHuNCQNgrJx
+	 I5tLTxIKxBDAA==
+Date: Fri, 9 May 2025 12:00:11 -0700
+From: Kees Cook <kees@kernel.org>
+To: Joel Granados <joel.granados@kernel.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>,
+	Sami Tolvanen <samitolvanen@google.com>,
+	Daniel Gomez <da.gomez@samsung.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+	Boqun Feng <boqun.feng@gmail.com>, Waiman Long <longman@redhat.com>,
+	"Paul E. McKenney" <paulmck@kernel.org>,
+	Frederic Weisbecker <frederic@kernel.org>,
+	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
+	Joel Fernandes <joel@joelfernandes.org>,
+	Josh Triplett <josh@joshtriplett.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Lai Jiangshan <jiangshanlai@gmail.com>,
+	Zqiang <qiang.zhang1211@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Helge Deller <deller@gmx.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-modules@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	rcu@vger.kernel.org, linux-mm@kvack.org,
+	linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 08/12] sysctl: Move tainted ctl_table into kernel/panic.c
+Message-ID: <202505091200.34A24BF5C@keescook>
+References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
+ <20250509-jag-mv_ctltables_iter2-v1-8-d0ad83f5f4c3@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -47,38 +65,19 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250429081956.3804621-2-thierry.bultel.yh@bp.renesas.com>
+In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-8-d0ad83f5f4c3@kernel.org>
 
-On Tue, Apr 29, 2025 at 10:19:43AM +0200, Thierry Bultel wrote:
-> At boot, the default clock is the PCLKM core lock (synchronous
-> clock, which is enabled by the bootloader).
-> For different baudrates, the asynchronous clock input must be used.
-> Clock selection is made by an internal register of RCSI.
+On Fri, May 09, 2025 at 02:54:12PM +0200, Joel Granados wrote:
+> Move the ctl_table with the "tainted" proc_name into kernel/panic.c.
+> With it moves the proc_tainted helper function.
 > 
-> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> ---
->  .../bindings/serial/renesas,rsci.yaml          | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
+> This is part of a greater effort to move ctl tables into their
+> respective subsystems which will reduce the merge conflicts in
+> kernel/sysctl.c.
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-> index ea879db5f485..aa2428837a2f 100644
-> --- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-> +++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-> @@ -35,10 +35,14 @@ properties:
->        - const: tei
->  
->    clocks:
-> -    maxItems: 1
-> +    items:
-> +      - description: serial functional clock
-> +      - description: default core clock
->  
->    clock-names:
-> -    const: fck # UART functional clock
-> +    items:
-> +      - const: async
-> +      - const: bus
+> Signed-off-by: Joel Granados <joel.granados@kernel.org>
 
-This is an ABI change. You can't just drop 'fck' without good reasons.
+Reviewed-by: Kees Cook <kees@kernel.org>
 
-Rob
+-- 
+Kees Cook
