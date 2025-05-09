@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEFC42356A4;
-	Fri,  9 May 2025 16:09:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 097AD2356C0;
+	Fri,  9 May 2025 16:11:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746806987; cv=none; b=mLlxBW0gFOECWjDu5DRwxAqCGpfsax0AE20JV4mlv5+thYxshiLpP8owF19o2d943r8//KHThJFKdOmzN2IIKlmpBFJIymtB9J3OQYTqSR+6tglVayYBraIlOKo5jMQ9Jzap8F7ZdVakEMDNJMINrzBBiaN2XqhwwX6hBnkuLKY=
+	t=1746807087; cv=none; b=GlF1HtPO0SIUKIPVBNyy9zRPAU8/TyBH8wInFR7U0IexKIzJm0x8yj3h/Mq+HyTpXpohjlUJOQnPwRm5Z92zzP8xsMebdfRG+emovVI/icTTddPYDMqv6RMVRQln7eKAmEwBL4Bii6O2+yr5aqtOYsElMa7gZPD7lXzUQHxehws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746806987; c=relaxed/simple;
-	bh=Zx9q53OQA04c5qmcm0DsdpJC9W96D9D2DyB30Y/gQSE=;
+	s=arc-20240116; t=1746807087; c=relaxed/simple;
+	bh=qFAmpRBipwPI762xkvJQ+WGWMAV3O9aNq/+nZjbf4jM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XBmYtyEpf6jk6Xcllr0OoP8sLuL6/ddcGkbf8bNmSElppTbezv47it6weZ7DhkJa5iCiH6qbYlOPWQ9RoIqHM38soewUWJrCh9uH8lBbRQC8id+pFGGIfS0W/4v1wArvzug0vyzYo/4cr+gzq3jMnqaCSdxNlUbMSApJqQQ398E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jj9Vh6d8; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=cUhrnWq9j1A6R3E1QGZC1JUjYigF/LUPmH9R9YjDtKAkppqpOT7zufTYtYQ1q6EbRTXreI4mhTJ6X5PejTX9yM/dJGDw7D+t/RGdCt79q076fXvX7QOYao0nDxngeoDY/zjBWUI6qm1RxoJn8jz/UfVJ1LbTSTRDxOeuUFBikko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=af0B5VQy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jj9Vh6d8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4BCCC4CEE4;
-	Fri,  9 May 2025 16:09:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="af0B5VQy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CDF5C4CEE4;
+	Fri,  9 May 2025 16:11:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746806986;
-	bh=Zx9q53OQA04c5qmcm0DsdpJC9W96D9D2DyB30Y/gQSE=;
+	s=k20201202; t=1746807086;
+	bh=qFAmpRBipwPI762xkvJQ+WGWMAV3O9aNq/+nZjbf4jM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=jj9Vh6d8aZ3F7OG5lDvoVMttOWKZaPPKIalxI97k/c3EO70+j54kHabw7t/ZrGoNS
-	 zrQteMjPuFQ6I8S8tIpySjMKb3PuIuBtC1BHE4w+ws+84ltQRhnM3QR3LosBoXXZ3H
-	 B6fgLxE2y40MC3ZhcfhRa+pf6qbEi+y38YjqVR1GV1p56MJWu/08UNbehTSA5ky+an
-	 iOu0l0EUXCdZM+8s8zZtK80qZUOfd6PgUInGfEwSU6Am9GvV+QzRyII9EHLDxWRm/A
-	 wmBhOtaea+Ve9EDNILiLlKDlpIqDJ3eumwOOS2UoFgZnZPckifxdwODvxcM1wnrFCG
-	 CgI54YXFKVorw==
-Date: Fri, 9 May 2025 09:09:44 -0700
+	b=af0B5VQyI5ZKeq9eukqrxympxNkc5AzsQSmd6IKR/FqeMYyIcnFQjGrqPPYiSwjiI
+	 w0WpgmBmPUsrkz7YSrnaH9XivhYPF4yp0PhSbGtmpzD6MoiokCgWGeIzDUw9xUBytD
+	 TR9OZMRnxLmsrDNAr9ujHiU9/nk+wYm75vociC/SLnTbsBM7NI7dolnVdBiBTInd2o
+	 0Qv0OQH7AOLzfNtwQyDd24MsU/0nx4pEwa+MWaQmMmBhgPhH3g+bsLhQLHFYWCY6B8
+	 e11wrI05s821S2/G/x+S2Y8GJlDh/mveK7gKaVzWA2EwBo6+VJawWsMoBJFOP1K56h
+	 bb3l2B2RpnzEw==
+Date: Fri, 9 May 2025 09:11:24 -0700
 From: Luis Chamberlain <mcgrof@kernel.org>
 To: Joel Granados <joel.granados@kernel.org>
 Cc: Petr Pavlu <petr.pavlu@suse.com>,
@@ -53,11 +53,10 @@ Cc: Petr Pavlu <petr.pavlu@suse.com>,
 	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
 	rcu@vger.kernel.org, linux-mm@kvack.org,
 	linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 01/12] module: Move modprobe_path and modules_disabled
- ctl_tables into the module subsys
-Message-ID: <aB4oyFBMH4PKjJn0@bombadil.infradead.org>
+Subject: Re: [PATCH 11/12] sysctl: Remove (very) old file changelog
+Message-ID: <aB4pLLZqv3rTbb3z@bombadil.infradead.org>
 References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
- <20250509-jag-mv_ctltables_iter2-v1-1-d0ad83f5f4c3@kernel.org>
+ <20250509-jag-mv_ctltables_iter2-v1-11-d0ad83f5f4c3@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -66,38 +65,15 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-1-d0ad83f5f4c3@kernel.org>
+In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-11-d0ad83f5f4c3@kernel.org>
 
-On Fri, May 09, 2025 at 02:54:05PM +0200, Joel Granados wrote:
-> diff --git a/kernel/module/kmod.c b/kernel/module/kmod.c
-> index 25f25381251281a390b273cd8a734c92b960113a..5701629adc27b4bb5080db75f0e69f9f55e9d2ad 100644
-> --- a/kernel/module/kmod.c
-> +++ b/kernel/module/kmod.c
-> @@ -60,7 +60,7 @@ static DEFINE_SEMAPHORE(kmod_concurrent_max, MAX_KMOD_CONCURRENT);
->  /*
->  	modprobe_path is set via /proc/sys.
->  */
-> -char modprobe_path[KMOD_PATH_LEN] = CONFIG_MODPROBE_PATH;
-> +static char modprobe_path[KMOD_PATH_LEN] = CONFIG_MODPROBE_PATH;
->  
->  static void free_modprobe_argv(struct subprocess_info *info)
->  {
-> @@ -177,3 +177,33 @@ int __request_module(bool wait, const char *fmt, ...)
->  	return ret;
->  }
->  EXPORT_SYMBOL(__request_module);
-> +
-> +#ifdef CONFIG_MODULES
-
-kernel/Makefile:
-
-obj-$(CONFIG_MODULES) += module/
-
-And so you can drop this ifdef.
-
-Other than that:
+On Fri, May 09, 2025 at 02:54:15PM +0200, Joel Granados wrote:
+> These comments are older than 2003 and therefore do not bare any
+> relevance on the current state of the sysctl.c file. Remove them as they
+> confuse more than clarify.
+> 
+> Signed-off-by: Joel Granados <joel.granados@kernel.org>
 
 Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
 
   Luis
-
