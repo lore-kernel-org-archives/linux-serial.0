@@ -1,58 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8080321ABC9;
-	Fri,  9 May 2025 14:49:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DBD5233D86;
+	Fri,  9 May 2025 14:51:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746802181; cv=none; b=sb7vsT7eVIKS4GGToi6ecIBeuMvudfpM0gTYKzsLfGhNkTC5CLbI7u5d5bCRw3fU1kxIQU9lLl8AL4DSDz55svcGrgsJkdjSdIYiXW9ueEeinODR0K7HSNqfa8SfIJsTikYzd6iSChd3kCfoDZUFx5lpBNdZYS3WOMQruwlJyH4=
+	t=1746802318; cv=none; b=qTew61x3sA2VKziCGqCoKpgxnYkFM8AaKM3I7axVW7c+3+B1ReN435jifImrduh0pJUfQ/OlizuLQ2Xh3hG5Ru6Dy1kAL6Wg0jDB7X+t5ryY06egLyyRkLZsVALX5eSNKTleW0SlUGq76E8PNUnlEUJuHLXje2zH5JScM6h4QOU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746802181; c=relaxed/simple;
-	bh=gGdOF/gEQWgew/HXHrjutcqpvcvaJtkPg4JwuG5uiak=;
+	s=arc-20240116; t=1746802318; c=relaxed/simple;
+	bh=SQ3ST0q+wlQSTzpE963cNh46bGrba2SRAPHYEHnXIgo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Gfdgeg+GQG68RmaNmG3c+5t9a95HIKjtk3zF3qzbNep4Zh5EVbf+KebxfxJXVBPl/WVna+jGKumZ2MKATCjes0jeSdmdJWdirUiFPa/a0Nn90H6YI1lNNDMxB8sH2zYYNUr+hMzBhWj+rd98iUu4YjnW3ZNszmo+/xEwAXc2WPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=J0hUZ5Ed; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=d4TIOwczukcfdlAtSHRop3gfDMY7vvlub2IxDSLZa22v8t2QWxdXU/NF9RkOZycGqSj7XNoESJhYsByY5nWIr92guxuvYXOEjAcpWedzPHsCa/lVmMvni9RdDacJmGPwces1NOQq7NgxXmIqkB48sZ3+fp7tHq+AyaleT7F9c6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=RwDYD33S; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="J0hUZ5Ed"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65305C4CEE4;
-	Fri,  9 May 2025 14:49:40 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="RwDYD33S"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A22C4CEF0;
+	Fri,  9 May 2025 14:51:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1746802180;
-	bh=gGdOF/gEQWgew/HXHrjutcqpvcvaJtkPg4JwuG5uiak=;
+	s=korg; t=1746802317;
+	bh=SQ3ST0q+wlQSTzpE963cNh46bGrba2SRAPHYEHnXIgo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=J0hUZ5EdSyLDJCBhJ5SNSc14A9+lLvOpmSPKdzfb0KuJsAQUzl5nNxTc5MID5/aDN
-	 MO68D2WF9sFPPJ/RL3bByKzfhC7gBCWA/PuBWJRg/hsFmhfluDV8o0Pbr1juXKFyEa
-	 f5MPWPllM1AWjmmYp1m0zTDfVu6yrczte0FzZoPs=
-Date: Fri, 9 May 2025 16:47:55 +0200
+	b=RwDYD33SjQ9aKUqfaVwft5DDadUpj0CiulF2fzFJ71vMWCAXZJ50kWMbId5ehqMfS
+	 ctRpGO9Q5mUMWHICghU0Ww667FSEMKSkf6Cpf0bwtjKo58fvub7X5ueD2DluePLWVg
+	 2fklH6LDRrCmfvUeMRdOXgJ5CnroMOOmVEsicY4g=
+Date: Fri, 9 May 2025 16:50:12 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Joel Granados <joel.granados@kernel.org>
-Cc: Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Daniel Gomez <da.gomez@samsung.com>, Kees Cook <kees@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-	Boqun Feng <boqun.feng@gmail.com>, Waiman Long <longman@redhat.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
-	Joel Fernandes <joel@joelfernandes.org>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Lai Jiangshan <jiangshanlai@gmail.com>,
-	Zqiang <qiang.zhang1211@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>, Jiri Slaby <jirislaby@kernel.org>,
-	linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, rcu@vger.kernel.org,
-	linux-mm@kvack.org, linux-parisc@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH 07/12] Input: sysrq: mv sysrq into drivers/tty/sysrq.c
-Message-ID: <2025050947-override-pulp-cc9f@gregkh>
-References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
- <20250509-jag-mv_ctltables_iter2-v1-7-d0ad83f5f4c3@kernel.org>
+To: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Taichi Sugaya <sugaya.taichi@socionext.com>,
+	Takao Orito <orito.takao@socionext.com>,
+	Thierry Reding <treding@nvidia.com>, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] dt-bindings: serial: Convert
+ socionext,milbeaut-usio-uart to DT schema
+Message-ID: <2025050935-suffocate-snazzy-c5f3@gregkh>
+References: <20250507154924.1602842-1-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -61,23 +46,28 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-7-d0ad83f5f4c3@kernel.org>
+In-Reply-To: <20250507154924.1602842-1-robh@kernel.org>
 
-On Fri, May 09, 2025 at 02:54:11PM +0200, Joel Granados wrote:
-> Move both sysrq ctl_table and supported sysrq_sysctl_handler helper
-> function into drivers/tty/sysrq.c. Replaced the __do_proc_dointvec in
-> helper function with do_proc_dointvec as the former is local to
-> kernel/sysctl.c.
+On Wed, May 07, 2025 at 10:49:22AM -0500, Rob Herring (Arm) wrote:
+> Convert the Socionext Milbeaut UART binding to DT schema. It is a
+> straight-forward conversion.
 > 
-> This is part of a greater effort to move ctl tables into their
-> respective subsystems which will reduce the merge conflicts in
-> kernel/sysctl.c.
-> 
-> Signed-off-by: Joel Granados <joel.granados@kernel.org>
+> Reviewed-by: Thierry Reding <treding@nvidia.com>
+> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
 > ---
->  drivers/tty/sysrq.c | 38 ++++++++++++++++++++++++++++++++++++++
->  kernel/sysctl.c     | 30 ------------------------------
->  2 files changed, 38 insertions(+), 30 deletions(-)
-> 
+> v2:
+>  - Fix $id path
+> ---
+>  .../bindings/serial/milbeaut-uart.txt         | 21 -------
+>  .../serial/socionext,milbeaut-usio-uart.yaml  | 56 +++++++++++++++++++
+>  2 files changed, 56 insertions(+), 21 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/serial/milbeaut-uart.txt
+>  create mode 100644 Documentation/devicetree/bindings/serial/socionext,milbeaut-usio-uart.yaml
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Are you wanting all of these serial "convert to dt schema" patches to go
+through the tty/serial tree, or will you be taking them?  Either is fine
+with me, your choice.
+
+thanks,
+
+greg k-h
