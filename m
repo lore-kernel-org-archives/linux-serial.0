@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FEB4290DA4;
-	Fri,  9 May 2025 12:55:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FF7D290DBE;
+	Fri,  9 May 2025 12:55:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746795306; cv=none; b=qr9Qsy5dzoXoG6B6kyybgdsXpB4E0yuJYM2z3VCO7O/TbVKiz0j6Fh63Iq4uFylsoiAoe5/CYU/1e6yZbnX3jh28V12BgrfixM9pO8Nx4suaf96bNCzvY82HpFHczb4EumlAZtf8HzE5rYqZp3Y5L0kzqFs1LlwvjHQ+wwS9bjk=
+	t=1746795306; cv=none; b=YhailvoZIkhfP/KLess+Y/hQMf5qvH7/iZT1f+PpBus5NQvxthUt8l5ipixPYCLJgh6rM1lf0z41WJHkA+TDTZVfnLcI7K1axsJLer4Mn7ez7AIaKqq+3jOpwqzLb09hGhm3kLlXFj+gzlb9cvdAzVzoB3Ybj/3adqnJ8BTtrMA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1746795306; c=relaxed/simple;
-	bh=GOjBhs9Ib0MUGQiJvmUAWG/9445JnpsIsFkQfqoyx1M=;
+	bh=BpmzDMZbudMRxYnWKdn7By3e4oIcbEz4h214VtRxk9I=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Rqj+VZ9aO57Bc+AT8uW/vfhhJ9NZ9vDDZdaQ8cmfI09qxJyA6u0wCK0jq8KDbRXAQ/YASe0bB3Gkq0REWoDdDVpWPXoLQEgbop/730wfUBkr41nJUme/f0YKewYq1h6ek4WXti3maS7FqCLJl/Rqi7NghKmaIoSv9R17sqYNZ9w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HC4gZAQS; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Vz0NZFhwsLqlg5f5jCRh8hvSwNUfJ7l2wCN3I5mvAmgA9VxY6xgbQcGtobN8C4GTkpiay0HrwMQvfyp/RaSb5F7i+2I4F5Cuf8fqWWMx28006V3/qAjXxnC6b5GgsBwWy0+PMaBEsPRKfD1WXyZOAEpwflH58O6jnnMUk9M0Qy4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oOk/J+va; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HC4gZAQS"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D37EAC4AF0C;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oOk/J+va"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BD55CC4CEEF;
 	Fri,  9 May 2025 12:55:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1746795305;
-	bh=GOjBhs9Ib0MUGQiJvmUAWG/9445JnpsIsFkQfqoyx1M=;
+	bh=BpmzDMZbudMRxYnWKdn7By3e4oIcbEz4h214VtRxk9I=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=HC4gZAQShIHAHu307mqxvEK8mAnN8Vv63k3tMZ2cwycpJwIEFpTfyFyxcAPGJE2HK
-	 8yiVGp0cZGkA8bOWargqzwe5t+erz/ixFfzTsS9x9pVuOktbwPNI2mXAd8jAOGZYFe
-	 i5Mr0WEkKhjhW7/Ae29ajrcx25uEjm5KqtTkaKbbjViPF6QLmYmlq2PRNKobbpASeb
-	 xDPkN1D33Ab04nDMvSh649jyInBCBFdD9DFE7h7UnBrM5BCF0TE5tGwu0bOVuty8UQ
-	 QR3E/52JdkeVxJhg/9Q0qpWgQasvN13SwZr1vn0m08XD8hjsPRb3vffWdm3xZngpoy
-	 3MucbEhkc/crA==
+	b=oOk/J+vaXcCK+KIoAHGzkTE6SF1jxzmX9CvUYcBR+nY+HuSCBjmFriMTsBAAz/W4b
+	 07h7jWzhlKlcjHwLg0p26MQ23p0yUS+5xgty/9MCfu9V7oFN3MXsA39qQyWvh7W3fl
+	 Iq5AgI9VOLFne6dwxGr0dDSl7S1GdCliiuUxzK479K1e6qQtwWgtDX1QtGAEv+mq4c
+	 Hs7ShgRff+NXpp8P6VAJW4xlkiZC5jtQC+MnmliVVuImATzNBgwr08H8s6jJUL4YyT
+	 GOVC4ltAY08YmmX8Y+wSal1CAuiN87dLWgau8HpMQl2CXOPvWV/HeuVnZIhNPL9XGH
+	 gv3BZhiSiwGZg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AFCC3ABCD;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD60C3ABC3;
 	Fri,  9 May 2025 12:55:05 +0000 (UTC)
 From: Joel Granados <joel.granados@kernel.org>
-Date: Fri, 09 May 2025 14:54:07 +0200
-Subject: [PATCH 03/12] rcu: Move rcu_stall related sysctls into
- rcu/tree_stall.h
+Date: Fri, 09 May 2025 14:54:05 +0200
+Subject: [PATCH 01/12] module: Move modprobe_path and modules_disabled
+ ctl_tables into the module subsys
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250509-jag-mv_ctltables_iter2-v1-3-d0ad83f5f4c3@kernel.org>
+Message-Id: <20250509-jag-mv_ctltables_iter2-v1-1-d0ad83f5f4c3@kernel.org>
 References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
 In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
 To: Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>, 
@@ -67,28 +67,28 @@ Cc: linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org, 
  Joel Granados <joel.granados@kernel.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3493;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3577;
  i=joel.granados@kernel.org; h=from:subject:message-id;
- bh=GOjBhs9Ib0MUGQiJvmUAWG/9445JnpsIsFkQfqoyx1M=;
- b=owJ4nAHtARL+kA0DAAoBupfNUreWQU8ByyZiAGgd+yIcQI+tvF5Nf2VvFXZdiynCbCQ6sUxEe
- 0XfrKJsz2Y0mokBswQAAQoAHRYhBK5HCVcl5jElzssnkLqXzVK3lkFPBQJoHfsiAAoJELqXzVK3
- lkFP8AML/RLD37zpvtcqTs+AdQPaL/oilhjcYTEBWeV8O06muca2S+v/BCsYCHrWuQ6fuJwa6/L
- kNbBLnGE+/FLg4WqWCSxa9qYc1k6W31LyVk59M9YYpqwr65nWtTVxh+/rW3vNW4mIkmUmVMI85r
- JlmwBQps6LBgQvg9L2r1wpbIDmLQIBSaAu4Y4eLl4hIm7PFgSEY1LTbb3augTLNmTa0Tf6ZdfxO
- ViMZAvqBzzfRBdv9SwhA88E33eptU37Nx8MnxQNMm5NXfA2iJGb/NsQLx5DPDVQtjKl3WO+Jygx
- p64kuZlSl/FL0HLbSl4x1jvWNjeU5tZLuQMc3qgTZSVVYN9M8o3OtF9Vlm/rO38Gw+WwnSUQGrC
- mf0gFT1fa+Ba/CF5rJR9SBN3yRcg0+q6xbHDu0igMPFC1UZDN2bAu4XfPlagJH2dZKiiCl8z4np
- oWou1P5hkekOj6omNQ3SYmiTLPHkF9KQFZwP6rJU9a64iDjk2AU0ibgezMgzA9eystZgCvVX+C4
- HE=
+ bh=BpmzDMZbudMRxYnWKdn7By3e4oIcbEz4h214VtRxk9I=;
+ b=owJ4nAHtARL+kA0DAAoBupfNUreWQU8ByyZiAGgd+yERlHWpCzKql69kqBrlIddBBHXw3ii2o
+ uiBdL8PsdBJNokBswQAAQoAHRYhBK5HCVcl5jElzssnkLqXzVK3lkFPBQJoHfshAAoJELqXzVK3
+ lkFPiYAL/jcKTOT3jHcbWnBmzVITRoAGWzzbqeMhLRmW02xJEovcpCPY557YgiP0MDw733croZF
+ E0B+rCl82lMougLjMo2ERjTkG5jEIC1YMnEdSHENOsBYDKsGjQc78C+gjzKuRex2SijKeNi9iQ1
+ uyVHT+J023ir1ZOBlut49P1x2aMYq/ijeE0GaEf0fKwCon+h4r4tDZl28rRqr3i54D2Ceg0jR/U
+ DdK3iItzrHNAohjw6kT8VcgV38sk6Vqn1GIBtGRXmwT2Hzt8UpXR8Z2UTrHoYw1UoUsT1tjt75K
+ knCtPI1vnOkhFgERft4V4NEq2+JM4D7Q4mnWCQWPXogsEFVdIss6C6E/JXzfQqTXfeMbXuSw/aB
+ FtYyvMGEbh1FldKAR3MrNrWwkFnOFNfVxGhHR7YLyRfsXpeuVWIzTAwTHK3FG2vEvcogCTywjTA
+ QH0H+x43FnFzxiYTQ2JKcV2Nn8mPVyUwTV/FYApI7fa8tKnApPVwY3R+ZcCXgtJy3gd0HxiIcE2
+ os=
 X-Developer-Key: i=joel.granados@kernel.org; a=openpgp;
  fpr=F1F8E46D30F0F6C4A45FF4465895FAAC338C6E77
 X-Endpoint-Received: by B4 Relay for joel.granados@kernel.org/default with
  auth_id=239
 
-Move sysctl_panic_on_rcu_stall and sysctl_max_rcu_stall_to_panic into
-the kernel/rcu subdirectory. Make these static in tree_stall.h and
-removed them as extern from panic.h as their scope is now confined into
-one file.
+Move module sysctl (modprobe_path and modules_disabled) out of sysctl.c
+and into the modules subsystem. Make the modprobe_path variable static
+as it no longer needs to be exported. Remove module.h from the includes
+in sysctl as it no longer uses any module exported variables.
 
 This is part of a greater effort to move ctl tables into their
 respective subsystems which will reduce the merge conflicts in
@@ -96,99 +96,108 @@ kernel/sysctl.c.
 
 Signed-off-by: Joel Granados <joel.granados@kernel.org>
 ---
- include/linux/panic.h   |  2 --
- kernel/rcu/tree_stall.h | 33 +++++++++++++++++++++++++++++++--
- kernel/sysctl.c         | 20 --------------------
- 3 files changed, 31 insertions(+), 24 deletions(-)
+ include/linux/kmod.h |  1 -
+ kernel/module/kmod.c | 32 +++++++++++++++++++++++++++++++-
+ kernel/sysctl.c      | 20 --------------------
+ 3 files changed, 31 insertions(+), 22 deletions(-)
 
-diff --git a/include/linux/panic.h b/include/linux/panic.h
-index 2494d51707ef422dfe191e484c0676e428a2de09..33ecead16b7c1af46aac07fb10b88beed5074b18 100644
---- a/include/linux/panic.h
-+++ b/include/linux/panic.h
-@@ -27,8 +27,6 @@ extern int panic_on_warn;
- extern unsigned long panic_on_taint;
- extern bool panic_on_taint_nousertaint;
+diff --git a/include/linux/kmod.h b/include/linux/kmod.h
+index 68f69362d427caaaefc2565127a7a4158433e5f5..cc32e56dae44896f74a9faf0e97f432f133869b9 100644
+--- a/include/linux/kmod.h
++++ b/include/linux/kmod.h
+@@ -17,7 +17,6 @@
+ #define KMOD_PATH_LEN 256
  
--extern int sysctl_panic_on_rcu_stall;
--extern int sysctl_max_rcu_stall_to_panic;
- extern int sysctl_panic_on_stackoverflow;
+ #ifdef CONFIG_MODULES
+-extern char modprobe_path[]; /* for sysctl */
+ /* modprobe exit status on success, -ve on error.  Return value
+  * usually useless though. */
+ extern __printf(2, 3)
+diff --git a/kernel/module/kmod.c b/kernel/module/kmod.c
+index 25f25381251281a390b273cd8a734c92b960113a..5701629adc27b4bb5080db75f0e69f9f55e9d2ad 100644
+--- a/kernel/module/kmod.c
++++ b/kernel/module/kmod.c
+@@ -60,7 +60,7 @@ static DEFINE_SEMAPHORE(kmod_concurrent_max, MAX_KMOD_CONCURRENT);
+ /*
+ 	modprobe_path is set via /proc/sys.
+ */
+-char modprobe_path[KMOD_PATH_LEN] = CONFIG_MODPROBE_PATH;
++static char modprobe_path[KMOD_PATH_LEN] = CONFIG_MODPROBE_PATH;
  
- extern bool crash_kexec_post_notifiers;
-diff --git a/kernel/rcu/tree_stall.h b/kernel/rcu/tree_stall.h
-index 925fcdad5dea22cfc8b0648546b78870cee485a6..5a0009b7e30b5a057856a3544f841712625699ce 100644
---- a/kernel/rcu/tree_stall.h
-+++ b/kernel/rcu/tree_stall.h
-@@ -17,8 +17,37 @@
- // Controlling CPU stall warnings, including delay calculation.
- 
- /* panic() on RCU Stall sysctl. */
--int sysctl_panic_on_rcu_stall __read_mostly;
--int sysctl_max_rcu_stall_to_panic __read_mostly;
-+static int sysctl_panic_on_rcu_stall __read_mostly;
-+static int sysctl_max_rcu_stall_to_panic __read_mostly;
+ static void free_modprobe_argv(struct subprocess_info *info)
+ {
+@@ -177,3 +177,33 @@ int __request_module(bool wait, const char *fmt, ...)
+ 	return ret;
+ }
+ EXPORT_SYMBOL(__request_module);
 +
-+static const struct ctl_table rcu_stall_sysctl_table[] = {
++#ifdef CONFIG_MODULES
++static const struct ctl_table kmod_sysctl_table[] = {
 +	{
-+		.procname	= "panic_on_rcu_stall",
-+		.data		= &sysctl_panic_on_rcu_stall,
-+		.maxlen		= sizeof(sysctl_panic_on_rcu_stall),
++		.procname	= "modprobe",
++		.data		= &modprobe_path,
++		.maxlen		= KMOD_PATH_LEN,
 +		.mode		= 0644,
-+		.proc_handler	= proc_dointvec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_ONE,
++		.proc_handler	= proc_dostring,
 +	},
 +	{
-+		.procname	= "max_rcu_stall_to_panic",
-+		.data		= &sysctl_max_rcu_stall_to_panic,
-+		.maxlen		= sizeof(sysctl_max_rcu_stall_to_panic),
++		.procname	= "modules_disabled",
++		.data		= &modules_disabled,
++		.maxlen		= sizeof(int),
 +		.mode		= 0644,
++		/* only handle a transition from default "0" to "1" */
 +		.proc_handler	= proc_dointvec_minmax,
 +		.extra1		= SYSCTL_ONE,
-+		.extra2		= SYSCTL_INT_MAX,
++		.extra2		= SYSCTL_ONE,
 +	},
 +};
 +
-+static int __init init_rcu_stall_sysctl(void)
++static int __init init_kmod_sysctl(void)
 +{
-+	register_sysctl_init("kernel", rcu_stall_sysctl_table);
++	register_sysctl_init("kernel", kmod_sysctl_table);
 +	return 0;
 +}
 +
-+subsys_initcall(init_rcu_stall_sysctl);
- 
- #ifdef CONFIG_PROVE_RCU
- #define RCU_STALL_DELAY_DELTA		(5 * HZ)
++subsys_initcall(init_kmod_sysctl);
++#endif
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index a22f35013da0d838ef421fc5d192f00d1e70fb0f..fd76f0e1d490940a67d72403d72d204ff13d888a 100644
+index 9b4f0cff76eaddc823065ea587760156576a8686..473133d9651eac4ef44b8b63a44b77189818ac08 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -1706,26 +1706,6 @@ static const struct ctl_table kern_table[] = {
+@@ -19,7 +19,6 @@
+  *  Removed it and replaced it with older style, 03/23/00, Bill Wendling
+  */
+ 
+-#include <linux/module.h>
+ #include <linux/sysctl.h>
+ #include <linux/bitmap.h>
+ #include <linux/printk.h>
+@@ -1616,25 +1615,6 @@ static const struct ctl_table kern_table[] = {
  		.proc_handler	= proc_dointvec,
  	},
  #endif
--#ifdef CONFIG_TREE_RCU
+-#ifdef CONFIG_MODULES
 -	{
--		.procname	= "panic_on_rcu_stall",
--		.data		= &sysctl_panic_on_rcu_stall,
--		.maxlen		= sizeof(sysctl_panic_on_rcu_stall),
+-		.procname	= "modprobe",
+-		.data		= &modprobe_path,
+-		.maxlen		= KMOD_PATH_LEN,
 -		.mode		= 0644,
--		.proc_handler	= proc_dointvec_minmax,
--		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_ONE,
+-		.proc_handler	= proc_dostring,
 -	},
 -	{
--		.procname	= "max_rcu_stall_to_panic",
--		.data		= &sysctl_max_rcu_stall_to_panic,
--		.maxlen		= sizeof(sysctl_max_rcu_stall_to_panic),
+-		.procname	= "modules_disabled",
+-		.data		= &modules_disabled,
+-		.maxlen		= sizeof(int),
 -		.mode		= 0644,
+-		/* only handle a transition from default "0" to "1" */
 -		.proc_handler	= proc_dointvec_minmax,
 -		.extra1		= SYSCTL_ONE,
--		.extra2		= SYSCTL_INT_MAX,
+-		.extra2		= SYSCTL_ONE,
 -	},
 -#endif
- };
- 
- int __init sysctl_init_bases(void)
+ #ifdef CONFIG_UEVENT_HELPER
+ 	{
+ 		.procname	= "hotplug",
 
 -- 
 2.47.2
