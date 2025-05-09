@@ -1,143 +1,193 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7AFD27A925;
-	Fri,  9 May 2025 11:43:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FE3C290DA1;
+	Fri,  9 May 2025 12:55:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746791008; cv=none; b=MfXQkz5mc4sntba2aKAtRHsY7u5YT0kYxCxm21uJrvuTjexb8MUW9J/t8RGm11tnyhHOGjKCP9083QEXy9cZ3FoKX4h4uAVKW2NFDNU4YxOCx8o31PQTEFyCVQGeBCfuIduRHY4KV7xG1UgbB3cHL/PvHZETm8MiV9kC7pQXgNA=
+	t=1746795306; cv=none; b=myKgREclvvnouwGRfb81SdOKk7oOkIn2qS/K3Us8VVkCffu/475c8CoKr/65viw7PHRI0nZ+634TawXqLIi4QBNltKiE0lA01C+p99xahoq1Qlo7Djg/TmhkOvoJcF+6mY4rHDyNhGmkdqy7CBL1JT531CLVCQ+iAIiP41k1Q6M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746791008; c=relaxed/simple;
-	bh=m+H1/8ViVgDOq8MR5pZ2MQkUSV/nUQAsOK5uSoyLjkk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p+zAQ9EkAqAy3qWT4HHgDgYX7BuAdLnvXfbA+z4alOU81fdRQ32liKWz4r6b9aSRijV5Uxh3Ics6dnlqV0D9QiHkf7cZRHe5uyx1S8oif0n6JSysG0X44uyTM+UaiR+4ur6dhUbO17ZVPxIie2eyC6DOnTySbYdHz6X9UpTi8yg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YVIGjyan; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1746795306; c=relaxed/simple;
+	bh=c3c94OjA1q5qb8EGSYnHVBVy8iOw9HUdPL9oEFYfxLk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=jWRrFYex4iLboGjQKE+BTxDHzX8A1LYIMDmQ+NpYLYv9Xi9+iRKZqpIozh69p7nWL/ZVK8qfv/U4ms2z94pHA7grrM5p5cXhTFpJQYVUr0bEClayoDsdFsALZ+Y8Ed/EGj5CkNgoUlxEU7opaVzVv188Ix25r0Fo/s4ONKUQ/FY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DimXxpcf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YVIGjyan"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1746791007; x=1778327007;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=m+H1/8ViVgDOq8MR5pZ2MQkUSV/nUQAsOK5uSoyLjkk=;
-  b=YVIGjyanvSkiVTgeggqlpU3PcV0P7FblcQlygWKnOW2Yx62D8o9CLJM5
-   A43ZY9IUv1zq9+DsZ31P1aDDNCug4U3Mz+ZGZ76DRZ0rJOOk8DXzhm1CB
-   TvHUztPh4xLng/QZ5YJ1VPTtYVvZh6e9xMdYg6WFlZNtr/zgcJwY+TwPM
-   yRQSPDrVbsGXERoJIThOID5XlLwipeq0AMb113rNrRXUMNoocSId7FXoZ
-   S092AistIrsa7K21acRd0DApHJBlTvAmpFk/kzHcDtlw3s8a23x+jNG2S
-   9ICEOoj5fIJSf4b2BIxo3Gd4GrHEwxdsuXUgJbqVN7tR53afXPuflyhtT
-   w==;
-X-CSE-ConnectionGUID: 2JIQb31wSJiI/xrh4pLQxw==
-X-CSE-MsgGUID: sm4zaRXdTtm+LQLS5lrw7A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11427"; a="48773844"
-X-IronPort-AV: E=Sophos;i="6.15,275,1739865600"; 
-   d="scan'208";a="48773844"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2025 04:43:27 -0700
-X-CSE-ConnectionGUID: 4coElZisQ+SyDOyBQNDiWQ==
-X-CSE-MsgGUID: 7GDizL0uRvWXTINzlS+Hwg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,275,1739865600"; 
-   d="scan'208";a="141372472"
-Received: from smile.fi.intel.com ([10.237.72.52])
-  by orviesa003.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2025 04:43:25 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1uDM8P-000000004xf-3Sp7;
-	Fri, 09 May 2025 14:43:21 +0300
-Date: Fri, 9 May 2025 14:43:21 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Judith Mendez <jm@ti.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, Hari Nagalla <hnagalla@ti.com>
-Subject: Re: [PATCH RFC 2/2] serial: 8250: Add PRUSS UART driver
-Message-ID: <aB3qWWgWfs6fDTgg@smile.fi.intel.com>
-References: <20250501003113.1609342-1-jm@ti.com>
- <20250501003113.1609342-3-jm@ti.com>
- <aBSVeKoR0j4J0ruz@smile.fi.intel.com>
- <22de0384-974d-4170-8181-e43cc90aab9d@ti.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DimXxpcf"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AC6E0C4CEEB;
+	Fri,  9 May 2025 12:55:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1746795305;
+	bh=c3c94OjA1q5qb8EGSYnHVBVy8iOw9HUdPL9oEFYfxLk=;
+	h=From:Subject:Date:To:Cc:From;
+	b=DimXxpcfw4ebKQKH7DiK6f8PW/85zKA5OAFMbEXfxOrhT0N20cI4VMF5gYPrckgiU
+	 F7rXr8UXkQwhA81+Aj1F6DhsPHy3xi0bQoho7o4uFaBrof6zFimYIV+Pvg/9KSFriQ
+	 Vln4fCLIj70oiahJ7qOxo9+5Me4NpybqeRxX9Yz9bhzRhjOtGiKPsuXO5kygpU0RuW
+	 9VXrlGN/WOzNTqjoSB7/h8d3vsVOWF1NMa7BAr+7G4U03ZkNyEFZcF+k7wtLdW2uVu
+	 dBf5mLXoYU41w2aADbw5csR/3VdK6kbIvay2kxYMvuY14x9NQyrGCFbb5qt8Z/Pvga
+	 +7Do9GVd7Wj5g==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C9DC3ABBC;
+	Fri,  9 May 2025 12:55:05 +0000 (UTC)
+From: Joel Granados <joel.granados@kernel.org>
+Subject: [PATCH 00/12] sysctl: Move sysctls to their respective subsystems
+ (second batch)
+Date: Fri, 09 May 2025 14:54:04 +0200
+Message-Id: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <22de0384-974d-4170-8181-e43cc90aab9d@ti.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAO36HWgC/x3M3QpAQBBA4VfRXNtaI7ReRdJYg5G/djcpeXeby
+ +/inAc8O2EPdfKA40u8HHtEliZgZ9onVjJEA2osdKGNWmhS29XZsAbqV/adBHaoDGVVSTmiNQP
+ E+HQ8yv2Pm/Z9Pxv//uxoAAAA
+X-Change-ID: 20250509-jag-mv_ctltables_iter2-9a176a322c9d
+To: Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>, 
+ Sami Tolvanen <samitolvanen@google.com>, 
+ Daniel Gomez <da.gomez@samsung.com>, Kees Cook <kees@kernel.org>, 
+ Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, 
+ Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>, 
+ Waiman Long <longman@redhat.com>, "Paul E. McKenney" <paulmck@kernel.org>, 
+ Frederic Weisbecker <frederic@kernel.org>, 
+ Neeraj Upadhyay <neeraj.upadhyay@kernel.org>, 
+ Joel Fernandes <joel@joelfernandes.org>, 
+ Josh Triplett <josh@joshtriplett.org>, Uladzislau Rezki <urezki@gmail.com>, 
+ Steven Rostedt <rostedt@goodmis.org>, 
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+ Lai Jiangshan <jiangshanlai@gmail.com>, Zqiang <qiang.zhang1211@gmail.com>, 
+ Andrew Morton <akpm@linux-foundation.org>, 
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>, 
+ Helge Deller <deller@gmx.de>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-fsdevel@vger.kernel.org, rcu@vger.kernel.org, linux-mm@kvack.org, 
+ linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Joel Granados <joel.granados@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4502;
+ i=joel.granados@kernel.org; h=from:subject:message-id;
+ bh=c3c94OjA1q5qb8EGSYnHVBVy8iOw9HUdPL9oEFYfxLk=;
+ b=owJ4nAHtARL+kA0DAAoBupfNUreWQU8ByyZiAGgd+xMW7Hzi52CWL9iWR+Z70SJ7b24h1VVTE
+ 9+RcZ6N+tkWRYkBswQAAQoAHRYhBK5HCVcl5jElzssnkLqXzVK3lkFPBQJoHfsTAAoJELqXzVK3
+ lkFP/6IL/jqzfrkpLBdybK4gjSc6ouWp4ieAHXYsQp1S7DOTMfmtKoA3WGZiaS/e09VycqVxmV7
+ QL7bIphe5aOAGsKRfnzXH/Hw7gCvdsJ7wIDxjbXyoEZUvdZyAOe8ZXj/dvFWk1mTifku+SVY/tF
+ 0nAq1rIlLyFh8p7/3PU7knC9Chtj+lelUov03LWHsB7O1+aFpCDy2GRqkhDAeuYFPdE/iQes9mw
+ 2NJXuX6auIitRw64qZDDYLrbz2ZhcXKmYkc1m5h4tcIdJPhMOcI5jBaz+xT709w9P0ojGopy/I4
+ iRU6Cpv3crKjS07AYXf0mSucoF//u0OalGFPsTMJkN5usP8JcRovnwFrPa+cLE8uC09Z+WXtXIV
+ InsEjNTX8XjAZFZ07Z3Im0b4DJaT8bb0HUN1qHPR/smJbhD5qy6XjyWAZ6v1GgsYF1No+2YtLVm
+ 74Y6dZPLQqguGo8y7ok+l1LnUwN3yTYUlKz8oHZs4bVH3wIwcgGgmSjJ/E8AWrV+umAJ97WKW55
+ TI=
+X-Developer-Key: i=joel.granados@kernel.org; a=openpgp;
+ fpr=F1F8E46D30F0F6C4A45FF4465895FAAC338C6E77
+X-Endpoint-Received: by B4 Relay for joel.granados@kernel.org/default with
+ auth_id=239
 
-On Thu, May 08, 2025 at 05:09:03PM -0500, Judith Mendez wrote:
-> On 5/2/25 4:50 AM, Andy Shevchenko wrote:
-> > On Wed, Apr 30, 2025 at 07:31:13PM -0500, Judith Mendez wrote:
+This series relocates sysctl tables from kern_table to their respective
+subsystems. It is mostly moves to core kernel subsystems but also
+includes mm/memory.c and 2 drivers (parisc and tty). With this series we
+are left with 8 ctl_tables out of the original 50 that existed within
+the kern_table array. With all this activity in kernel/sysctl.c, I took
+the liberty of removing unneeded include headers as well as outdated
+changelog comments.
 
-...
+By decentralizing sysctl registrations, subsystem maintainers regain
+control over their sysctl interfaces, improving maintainability and
+reducing the likelihood of merge conflicts. All this is made possible by
+the work done to reduce the ctl_table memory footprint in commit
+d7a76ec87195 ("sysctl: Remove check for sentinel element in ctl_table
+arrays").
 
-> > The list of the inclusions is semi-random. Please, follow the IWYU principle.
+A few comments on the process:
+1. If you see that the change is good and want to push it through a tree
+   different than sysctl, please tell me so I can remove it from this
+   series and try to avoid conflicts in linux-next.
+2. Apologies if you have received this in error. Please tell me if you
+   want to be removed from recipient list and note that it is difficult
+   to actually know who is interested in these "treewide" changes.
 
-This and other comments left unanswered, why? What does this mean? Usual way is
-to remove the context with all what you are agree on and discuss only stuff
-that needs more elaboration.
+Testing done by running sysctl selftests on x86_64 and 0-day.
 
-Ah, I see now the P.S., but please also remove the context you agree with next
-time.
+You can find the first batch here [1], if you are curious.
 
-> > > +#include <linux/clk.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/serial_reg.h>
-> > > +#include <linux/serial_core.h>
-> > 
-> > > +#include <linux/of_irq.h>
-> > > +#include <linux/of_address.h>
-> > > +#include <linux/of_platform.h>
-> > 
-> > Please, no of*.h in a new code.
-> 
-> Will only keep linux/of_platform.h for of_device_id struct.
+Comments are greatly appreciated
 
-Hmm... Is it really the header where it's defined? (I know the answer,
-but want you to perform some research.)
+[1] https://lore.kernel.org/20250313-jag-mv_ctltables-v3-0-91f3bb434d27@kernel.org
 
-> > > +#include <linux/remoteproc.h>
-> > 
-> > Keep them ordered as well.
-> > 
-> > + blank line here.
-> > 
-> > > +#include "8250.h"
+To: Luis Chamberlain <mcgrof@kernel.org>
+To: Petr Pavlu <petr.pavlu@suse.com>
+To: Sami Tolvanen <samitolvanen@google.com>
+To: Daniel Gomez <da.gomez@samsung.com>
+To: Kees Cook <kees@kernel.org>
+To: Peter Zijlstra <peterz@infradead.org>
+To: Ingo Molnar <mingo@redhat.com>
+To: Will Deacon <will@kernel.org>
+To: Boqun Feng <boqun.feng@gmail.com>
+To: Waiman Long <longman@redhat.com>
+To: Paul E. McKenney <paulmck@kernel.org>
+To: Frederic Weisbecker <frederic@kernel.org>
+To: Neeraj Upadhyay <neeraj.upadhyay@kernel.org>
+To: Joel Fernandes <joel@joelfernandes.org>
+To: Josh Triplett <josh@joshtriplett.org>
+To: Uladzislau Rezki <urezki@gmail.com>
+To: Steven Rostedt <rostedt@goodmis.org>
+To: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To: Lai Jiangshan <jiangshanlai@gmail.com>
+To: Zqiang <qiang.zhang1211@gmail.com>
+To: Andrew Morton <akpm@linux-foundation.org>
+To: James E.J. Bottomley <James.Bottomley@HansenPartnership.com>
+To: Helge Deller <deller@gmx.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-modules@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-fsdevel@vger.kernel.org
+Cc: rcu@vger.kernel.org
+Cc: linux-mm@kvack.org
+Cc: linux-parisc@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
 
-...
+Signed-off-by: Joel Granados <joel.granados@kernel.org>
+---
+Joel Granados (12):
+      module: Move modprobe_path and modules_disabled ctl_tables into the module subsys
+      locking/rtmutex: Move max_lock_depth into rtmutex.c
+      rcu: Move rcu_stall related sysctls into rcu/tree_stall.h
+      mm: move randomize_va_space into memory.c
+      parisc/power: Move soft-power into power.c
+      fork: mv threads-max into kernel/fork.c
+      Input: sysrq: mv sysrq into drivers/tty/sysrq.c
+      sysctl: Move tainted ctl_table into kernel/panic.c
+      sysctl: move cad_pid into kernel/pid.c
+      sysctl: Move sysctl_panic_on_stackoverflow to kernel/panic.c
+      sysctl: Remove (very) old file changelog
+      sysctl: Remove superfluous includes from kernel/sysctl.c
 
-> > > +	/* Old custom speed handling */
-> > > +	if (baud == 38400 && (port->flags & UPF_SPD_MASK) == UPF_SPD_CUST) {
-> > > +		quot = port->custom_divisor & UART_DIV_MAX;
-> > > +		if (port->custom_divisor & (1 << 16))
-> > > +			*frac = PRUSS_UART_MDR_13X_MODE;
-> > > +		else
-> > > +			*frac = PRUSS_UART_MDR_16X_MODE;
-> > > +
-> > > +		return quot;
-> > > +	}
-> > 
-> > Why?! Please, try to avoid adding more drivers with this ugly hack.
-> 
-> My understanding is that this is not a hack, for 38400 we need to pass
-> as custom baud. What is the alternative here?
+ drivers/parisc/power.c       |  20 +++-
+ drivers/tty/sysrq.c          |  38 +++++++
+ include/linux/kmod.h         |   1 -
+ include/linux/panic.h        |   2 -
+ include/linux/rtmutex.h      |   2 -
+ include/linux/sysctl.h       |   4 -
+ kernel/fork.c                |  20 +++-
+ kernel/locking/rtmutex.c     |  23 +++++
+ kernel/locking/rtmutex_api.c |   5 -
+ kernel/module/kmod.c         |  32 +++++-
+ kernel/panic.c               |  60 +++++++++++
+ kernel/pid.c                 |  32 ++++++
+ kernel/rcu/tree_stall.h      |  33 +++++-
+ kernel/sysctl.c              | 233 -------------------------------------------
+ mm/memory.c                  |  18 ++++
+ 15 files changed, 271 insertions(+), 252 deletions(-)
+---
+base-commit: 7a94ff386a4a0d9322c56c0e998dd20468d869b1
+change-id: 20250509-jag-mv_ctltables_iter2-9a176a322c9d
 
-BOTHER. The 38400 is a hack, you lie to the stakeholders that you are at 38.4,
-while in real life it means anything.
-
-> I see other drivers are doing this as well, will look into this further
-> but not sure if there is a better solution for this.
-
-BOTHER is the solution. Not perfect, but the existing one.
-
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
+Joel Granados <joel.granados@kernel.org>
 
 
