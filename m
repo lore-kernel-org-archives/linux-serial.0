@@ -1,76 +1,71 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A4D01E2852;
-	Sat, 10 May 2025 01:36:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB97878C91;
+	Sat, 10 May 2025 16:38:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746840991; cv=none; b=jXnaFpLNvXrwTIbe04sNRwwfYO9k/6SDKK7LAkf3IJce9QBg6/du8510Y8qIkf87xOorSJbfLI6kpm6Wgimdi5e6IqghPAhXO1Zql2VBQCt8rY+wKBcymGcb0xLxZ2Zynyfktl1AuFBqttkwnP2njuzjLN4D8IYWdQ6hSsLecD8=
+	t=1746895118; cv=none; b=cPqMuAAFcWl+mvVhwdjQB2w1UtqezNt1QRu24m7jNuE5c8x9G+Y/cLOIk3AtxL91raRArk8u+AfW8+7AA+sYHmd1+GiZnyZ8tZxCZzN5Ur8EpzcY+DVBKDxVRkZuntYAqmqsZEZTYRW7jDU0O17DM9fH3IICJ2E7ph4YXjXu8qM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746840991; c=relaxed/simple;
-	bh=JqYUP0gYITpwIO56NDGK79wZtTPw/VgY4gE78t6lC9s=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=eX5Ju4spoQm5+A3zNO++DIK+PnJ1JJRgfx8aXXZkXplBbouQSHafWm6lCqbN8IieeHpYX4+bTJD6eSTFf7U6cES2DkkcaGkrO1myfZOuAjrCQJ5QMCk7XSxPeXdmf5SvaiMjHp1EsEpZFLIfTlp9IBtuaWXKWn3slUequ6+umIs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FELXjd7n; arc=none smtp.client-ip=209.85.214.171
+	s=arc-20240116; t=1746895118; c=relaxed/simple;
+	bh=+oD11Hhq1SifV8wWUxQGl8z4mlOsK5Dajs0XHf6rsDg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sYNt06mOM+dsMLEJlQh+WdJdIZq9+y2ZzGXwqL4w8+kOyFkZlCXWfP8F834ojhcBf+nnt61YJehoHQyA8H2IsSyIm8wBbnIvbXL4G5aGlkTx6B1AMWYsYFppqdfV7rMVyI36ofdHfqvAHGOuYvthDEst/9s7rDxRjIG55gm9iZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Oor14e/2; arc=none smtp.client-ip=209.85.210.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FELXjd7n"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-22c336fcdaaso28122155ad.3;
-        Fri, 09 May 2025 18:36:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oor14e/2"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-73c17c770a7so3826656b3a.2;
+        Sat, 10 May 2025 09:38:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746840989; x=1747445789; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1746895116; x=1747499916; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=wD9SkKboBNMZ2NtG53GX3UU3m+Xh67ccGkM3pd0hqvQ=;
-        b=FELXjd7nuqd4aVfe0keq+aClN7yUecO2YYtWdYDAOKSpe28UnEa2stwMkbB7+TIIpL
-         N7aM28w9JwErPXsf6+QN5JTl6rQdBKGQwEGg8tGZBIDVK4qu79PHvn1c+bqC6nASLTnC
-         nEJ5hZYh2JVaF7/3ZBQVWxWzQ7BBExjY2l37tUYSOfAJWByFFGS9rr4ASMLPiK2mZIWZ
-         cBI2TkPfHp5d/qGSNnCjHssnpcjF3OUSXzPvGeFmyS1lCphOzUNt+OWzdbleMkZSo+gY
-         o3DGp7QTZNf9cHUAXiQTE+wNvWrW+iys48nK2Zdcs6uPTu1Yl7WFbxj0A14PDwl88S8r
-         wPnA==
+        bh=NYY3xvs/hoQR/RMoyxL6CTuYbkJnioycFjEXIOY4vtU=;
+        b=Oor14e/2uianlPaE+/TzgH4tRk15biQ8wuEQEXyrHI5kyiC2esCMa609MPDUI4CEgo
+         6wUNrMUoqh45EykTx8Bgf97LLkA4x8IP0SUdp5R3xH0RJYHiNiwNOQByl0qNzl3npCMf
+         z9LiKBATdSNLrBcO09rFhMJVN4iPfftD2IIz27ytAgxMrhWlGzwWY6FlPcSASgJLAxn1
+         T0LczP+0kd3wOwAJ2Ay0s0Yufj7NnLexdKzeFBKbWsMPqhE54PkLQ2qUNmm0T9yHa+a1
+         Di9fRvRbwMbv2N+E6R3KYrNaUBPgdH1KHJhoDWW5UVha/a1hK607FXu9UWViAT/cAcNW
+         /Ztg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746840989; x=1747445789;
+        d=1e100.net; s=20230601; t=1746895116; x=1747499916;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=wD9SkKboBNMZ2NtG53GX3UU3m+Xh67ccGkM3pd0hqvQ=;
-        b=C5W5oD1zBkan5FSajYHX8To05TEbM9RR2sAUwiq5XZK6Ent/wt6Z5c6FB5LiobrLlr
-         LZ5nl4mlY9oDxB4FtjPYvZfuPOYRFXAYUClPhLRyCiRcJNZBzn3OWsN+Pe7RI9MphYtS
-         zOEFu5UjFnqoRYeyNXHKFTWEEGLWVgzehrXbSCHMHlXHB66xutcaGylEfZRXZiYcTaB4
-         nng4Ly42mLITefTkaedXqW57hYSEMII/PtXcxXxA3In6UXVthuCrjF6lJalH0/y5nCiY
-         B9n9F9cYaD4LEGNQgzLxDPvOjcXSlfAr5rOL1s6XheTezNHq+0roDI2WmOetJ4LM51XP
-         7Trw==
-X-Forwarded-Encrypted: i=1; AJvYcCV7JDIQwYxI52ujTKlKZzVO/QCFv4mxFDmjE1RrEOmlvP6URVifKm8N5wr2Zie5YITdouwbkqLgs1F+iSlk@vger.kernel.org, AJvYcCXxJgZpjy2Lq+I/E5y4nQzVvvEwcHmcvdrpvmh97I/YhO6NaxPPH2lXMVia/X0Ab413+/IASYfoOfu/Brs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyj+pmG1QFh1SAFg7wkwX3odDtF7lkPBDM83bn3Dz6Q6Ot2PkFB
-	X0iylSK90p5/vu7tTKwHHD28xGhH59hppTwxpPLh2K9rGn1kIkYA
-X-Gm-Gg: ASbGncuyQ7oVO+i8J10n/2wP88T2pvse6HAKO+hqsybZrdwKLxwqi88P4zS4nyTUbis
-	6b68cCoQbQ3cOkojzfOb9JeQBf6hic2iaCg6trZtGhA7H2D6DYTjTekvgOdfpAfTt6By5MYMfMH
-	tc0M7y+S+sTCvCQ+b7IVsicanaUF5R14jeg9UffTZnGvu6YEj07mSyW+jgXrvIn3MHFjdprlbti
-	BccqZWd6rQJEtockDrNUyHYtqlpXKgJXPZXQE0Np6fEaXWhCVsywMmqwL61svlKx/RnD8lgt8Pt
-	PsYNYD3jwmf4BqJwjg+V38aMWXj+HhiB/OT4LIgDWPWZO3GOBErR6ULF2U2odzaNDG68deQJZmJ
-	zR0sNRoBCZztsyGbAuDThRZK0NdyCJGHdwmChkQ==
-X-Google-Smtp-Source: AGHT+IENg0QA4pDDrAf5YXcYOBv5jJnYgaomoJkaWvWaHINOGGkwFUMAt+vGF529iQB2hgnXBoY+FQ==
-X-Received: by 2002:a17:903:1904:b0:22e:4d64:821f with SMTP id d9443c01a7336-22fc8b56982mr61314845ad.20.1746840988708;
-        Fri, 09 May 2025 18:36:28 -0700 (PDT)
-Received: from localhost.localdomain (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22fc8271bcfsm23902965ad.125.2025.05.09.18.36.26
+        bh=NYY3xvs/hoQR/RMoyxL6CTuYbkJnioycFjEXIOY4vtU=;
+        b=lPbzIk/rvbskvZBMdRrOK5S8dYIlzwVxJ8LmIHySSSUqfSBC3699qW6nhVhCBTWPS6
+         arjmUlE16BE4ddHwk9j2IDrIBqx+hYD0uwLshnEvrqaud3ucvTmF8nkfbBd36vYQMsYR
+         Q0SUykAtkvCU+hQ+b1DdFb/9htODVispYGdDYI7omo9R2CmCJaWXV8HDolBsCX0mw2x/
+         xbQNlPdj+4x4Pr7aU+EHyKSiJI6tq2CYmIy0ifYZAecLpCwLQ4Q0pVBHvySAI0uu7VvZ
+         nFCqtIFj0phL0hTh8GGLmgHgz22ZQD02XQ0/N0GjH6eTQSGTtkqkj2T/Wbj2nls96nyF
+         GVyA==
+X-Forwarded-Encrypted: i=1; AJvYcCWVgnwvv041m9rPF/ZEDuvQc5kemwYXEqBP6Q51lOdWyv7SJp4I2cURci07zJ3MTuvfjHYlexgZ2ADfgMk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxxnWfC5/+C4WaDR24wT45+df1iwa6dGhsmSA4Z/YgqDwXhgk3t
+	tIpF4EWoHxyoyHsuBgEkjFIALQ41u0n1j4WXJ5hYsIvOhUBcsUMrvGLQ8UDmRg0=
+X-Gm-Gg: ASbGncso4CwIEMxg4i26JLN4MENqSP0DHQnfPV+Py10KxJ9tgIU6J+vuJQ4UJOM4/Lc
+	uqqOkPqPvgCE2GsXfrKgUSOmNCy8QBaJiIk565RJx0iXgImpPufPrpA8D+Rd29gEASUXO/QDRKf
+	XfoXN4fsgfdELzdgBnqES3AC8WEsEu94wSyR1GhB0uzN0p/ffLg+ANNqUKHQbxA7BCBoZ1KdUHk
+	G+li76+uu6BmANTF0cdmdOx+l1vrSWdZ2DX1FwpR5tW+Hl4mlvYvrCGWDj7pX1y/HfyeU+x3Ros
+	uhB7bUO2X2Peku7RjD+x6n1ftjBRZBjgdonccZ/NX+Gr71zaFFugI3Fo+0Cu7Pz/cOqor2oHCbY
+	zJGl7lexPqxWUlNY=
+X-Google-Smtp-Source: AGHT+IEalHcH+lEKumbEO69hX83MgcEzoVZj4otUwM2OLLsC3N5xsIFsWYOrkodSPcpFydmL3IHRDQ==
+X-Received: by 2002:a05:6a00:855:b0:740:8153:68f with SMTP id d2e1a72fcca58-7423c00bf24mr10184167b3a.20.1746895115945;
+        Sat, 10 May 2025 09:38:35 -0700 (PDT)
+Received: from localhost.localdomain ([121.185.186.233])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-74237727a02sm3520937b3a.56.2025.05.10.09.38.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 May 2025 18:36:28 -0700 (PDT)
-From: Ryo Takakura <ryotkkr98@gmail.com>
-To: john.ogness@linutronix.de,
-	pmladek@suse.com
-Cc: Jason@zx2c4.com,
-	gregkh@linuxfoundation.org,
+        Sat, 10 May 2025 09:38:35 -0700 (PDT)
+From: Jeongjun Park <aha310510@gmail.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	lkp@intel.com,
-	oe-lkp@lists.linux.dev,
-	oliver.sang@intel.com,
-	ryotkkr98@gmail.com
-Subject: [PATCH] rslib: Add scheduling points during the test
-Date: Sat, 10 May 2025 10:35:15 +0900
-Message-Id: <20250510013515.69636-1-ryotkkr98@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	Jeongjun Park <aha310510@gmail.com>
+Subject: [PATCH] n_tty: fix data race in n_tty_poll()
+Date: Sun, 11 May 2025 01:38:27 +0900
+Message-ID: <20250510163828.21963-1-aha310510@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -79,54 +74,60 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The test has been prone to softlockup but stayed unnoticed because
-of the printk calls during the test resets the soflockup watchdog by
-calling touch_nmi_watchdog(). With the commit b63e6f60eab4 ("serial:
-8250: Switch to nbcon console"), the printk calls no longer suppress
-the softlockup and warnings can be observed more evidently that shows
-the test needs more scheduling points.
+I found data-race in my fuzzer:
 
-Provide scheduling points by adding cond_resched() for each test
-iteration on their up to/beyond error correction capacity.
+==================================================================
+BUG: KCSAN: data-race in n_tty_poll / tty_set_termios
 
-Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
+read to 0xffff8880116b4d14 of 4 bytes by task 5443 on cpu 0:
+ n_tty_poll+0xa4/0x4c0 drivers/tty/n_tty.c:2452
+ tty_poll+0x8f/0x100 drivers/tty/tty_io.c:2208
+ vfs_poll include/linux/poll.h:82 [inline]
+ select_poll_one fs/select.c:480 [inline]
+ do_select+0x95f/0x1030 fs/select.c:536
+ core_sys_select+0x284/0x6d0 fs/select.c:677
+....
+
+write to 0xffff8880116b4d08 of 44 bytes by task 14547 on cpu 1:
+ tty_set_termios+0xf9/0x500 drivers/tty/tty_ioctl.c:339
+ set_termios.part.0+0x3bc/0x4d0 drivers/tty/tty_ioctl.c:520
+ set_termios drivers/tty/tty_ioctl.c:454 [inline]
+ tty_mode_ioctl+0x2db/0xa00 drivers/tty/tty_ioctl.c:807
+ n_tty_ioctl_helper+0x4e/0x230 drivers/tty/tty_ioctl.c:986
+ n_tty_ioctl+0x67/0x230 drivers/tty/n_tty.c:2509
+....
+==================================================================
+
+In n_tty_poll() we are doing a read on tty->termios but we are missing
+rwsem lock, which causes a concurrency problem. To fix this, we need to
+add rwsem lock at the appropriate location.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Jeongjun Park <aha310510@gmail.com>
 ---
-
-Hi!
-
-The discussion on how the printk was preventing
-the softlockup can be found here [0].
-
-Sincerely,
-Ryo Takakura
-
-[0] https://lore.kernel.org/all/202501221029.fb0d574d-lkp@intel.com/
----
- lib/reed_solomon/test_rslib.c | 4 ++++
+ drivers/tty/n_tty.c | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
-index 75cb1adac..322d7b0a8 100644
---- a/lib/reed_solomon/test_rslib.c
-+++ b/lib/reed_solomon/test_rslib.c
-@@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
+diff --git a/drivers/tty/n_tty.c b/drivers/tty/n_tty.c
+index 6af3f3a0b531..36b41374e1bd 100644
+--- a/drivers/tty/n_tty.c
++++ b/drivers/tty/n_tty.c
+@@ -2449,6 +2449,8 @@ static __poll_t n_tty_poll(struct tty_struct *tty, struct file *file,
  
- 		if (memcmp(r, c, len * sizeof(*r)))
- 			stat->dwrong++;
+ 	poll_wait(file, &tty->read_wait, wait);
+ 	poll_wait(file, &tty->write_wait, wait);
 +
-+		cond_resched();
++	down_read(&tty->termios_rwsem);
+ 	if (input_available_p(tty, 1))
+ 		mask |= EPOLLIN | EPOLLRDNORM;
+ 	else {
+@@ -2456,6 +2458,8 @@ static __poll_t n_tty_poll(struct tty_struct *tty, struct file *file,
+ 		if (input_available_p(tty, 1))
+ 			mask |= EPOLLIN | EPOLLRDNORM;
  	}
- 	stat->nwords += trials;
- }
-@@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
- 		} else {
- 			stat->rfail++;
- 		}
++	up_read(&tty->termios_rwsem);
 +
-+		cond_resched();
- 	}
- 	stat->nwords += trials;
- }
--- 
-2.34.1
-
+ 	if (tty->ctrl.packet && tty->link->ctrl.pktstatus)
+ 		mask |= EPOLLPRI | EPOLLIN | EPOLLRDNORM;
+ 	if (test_bit(TTY_OTHER_CLOSED, &tty->flags))
+--
