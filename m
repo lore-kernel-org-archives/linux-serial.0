@@ -1,86 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB3321DE4D8;
-	Fri,  9 May 2025 19:03:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A4D01E2852;
+	Sat, 10 May 2025 01:36:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746817405; cv=none; b=t5W8GPM6ys0b8Ax09VwcS2fUEox0tUDGFBl+Q7AVtNjvc9J6O9AsZpNpIZqxdKf2lMmPnqRl6E3Z/ehspxK5K1JgAH42uiJvrkXG1akO3Io6D+J10fea76k21ulxM4W3bpZl6W9UB8vaY06Y0yI/LnqnCEbBYmL9XySvwakQiRA=
+	t=1746840991; cv=none; b=jXnaFpLNvXrwTIbe04sNRwwfYO9k/6SDKK7LAkf3IJce9QBg6/du8510Y8qIkf87xOorSJbfLI6kpm6Wgimdi5e6IqghPAhXO1Zql2VBQCt8rY+wKBcymGcb0xLxZ2Zynyfktl1AuFBqttkwnP2njuzjLN4D8IYWdQ6hSsLecD8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746817405; c=relaxed/simple;
-	bh=W2NoV5ZI3o86lBhRg03bG1iPC4hkJQ4zqlaLRujWNDM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bjFJ8IjcObrIAcKUb95GXc1oVzDgE2fgNP+3mQuo0PYe5K1mBb07H/eE++3ubdgj9G4+BE7IIu6FM5hCcwL1BVlPuVjju/AB0e/Ngx6gh96Eoe5iFU/6ZpWIEnv6gtY+olbVrLDxJohq0pcp0KJzDNch0rywulU5UvcCc3c2a+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OEAki/RY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746840991; c=relaxed/simple;
+	bh=JqYUP0gYITpwIO56NDGK79wZtTPw/VgY4gE78t6lC9s=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=eX5Ju4spoQm5+A3zNO++DIK+PnJ1JJRgfx8aXXZkXplBbouQSHafWm6lCqbN8IieeHpYX4+bTJD6eSTFf7U6cES2DkkcaGkrO1myfZOuAjrCQJ5QMCk7XSxPeXdmf5SvaiMjHp1EsEpZFLIfTlp9IBtuaWXKWn3slUequ6+umIs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FELXjd7n; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OEAki/RY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5475BC4CEE4;
-	Fri,  9 May 2025 19:03:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746817404;
-	bh=W2NoV5ZI3o86lBhRg03bG1iPC4hkJQ4zqlaLRujWNDM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OEAki/RYkfHmL6+I3PQYm2xT1Dvips82K236jWpv9L41cN8DIFZJFOWqb8j0qDEGq
-	 E+mDvMc+WK0Jlxfam5ajEooJ2ZLNR5lCMrqqYtVqsqfxPAjfXhlCavFDY45rOATzbt
-	 gavWJeR77q3YSGyPTvsP9Bu9+aUsCgo1HOgJ1dEjG2uoYHyW2RgizC2QFKh+kTl4Nd
-	 sZhebP7N9yXcYp4TghMBiessyIhGQZpCYzroZzdjmXTieUZBwOCTAMsDW+Xjed73Zs
-	 y4KsaAXxQO9PhKrdDN257VGlJRNLSFkRXfZkdtnUlubtr6CAi4FQbnonvQRo6cceiy
-	 o81T9qzsmkryg==
-Date: Fri, 9 May 2025 12:03:21 -0700
-From: Kees Cook <kees@kernel.org>
-To: Joel Granados <joel.granados@kernel.org>
-Cc: Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>,
-	Sami Tolvanen <samitolvanen@google.com>,
-	Daniel Gomez <da.gomez@samsung.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-	Boqun Feng <boqun.feng@gmail.com>, Waiman Long <longman@redhat.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Frederic Weisbecker <frederic@kernel.org>,
-	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>,
-	Joel Fernandes <joel@joelfernandes.org>,
-	Josh Triplett <josh@joshtriplett.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	Lai Jiangshan <jiangshanlai@gmail.com>,
-	Zqiang <qiang.zhang1211@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-	Helge Deller <deller@gmx.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, linux-modules@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	rcu@vger.kernel.org, linux-mm@kvack.org,
-	linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 03/12] rcu: Move rcu_stall related sysctls into
- rcu/tree_stall.h
-Message-ID: <202505091203.962B37BAF@keescook>
-References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
- <20250509-jag-mv_ctltables_iter2-v1-3-d0ad83f5f4c3@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FELXjd7n"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-22c336fcdaaso28122155ad.3;
+        Fri, 09 May 2025 18:36:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1746840989; x=1747445789; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=wD9SkKboBNMZ2NtG53GX3UU3m+Xh67ccGkM3pd0hqvQ=;
+        b=FELXjd7nuqd4aVfe0keq+aClN7yUecO2YYtWdYDAOKSpe28UnEa2stwMkbB7+TIIpL
+         N7aM28w9JwErPXsf6+QN5JTl6rQdBKGQwEGg8tGZBIDVK4qu79PHvn1c+bqC6nASLTnC
+         nEJ5hZYh2JVaF7/3ZBQVWxWzQ7BBExjY2l37tUYSOfAJWByFFGS9rr4ASMLPiK2mZIWZ
+         cBI2TkPfHp5d/qGSNnCjHssnpcjF3OUSXzPvGeFmyS1lCphOzUNt+OWzdbleMkZSo+gY
+         o3DGp7QTZNf9cHUAXiQTE+wNvWrW+iys48nK2Zdcs6uPTu1Yl7WFbxj0A14PDwl88S8r
+         wPnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746840989; x=1747445789;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wD9SkKboBNMZ2NtG53GX3UU3m+Xh67ccGkM3pd0hqvQ=;
+        b=C5W5oD1zBkan5FSajYHX8To05TEbM9RR2sAUwiq5XZK6Ent/wt6Z5c6FB5LiobrLlr
+         LZ5nl4mlY9oDxB4FtjPYvZfuPOYRFXAYUClPhLRyCiRcJNZBzn3OWsN+Pe7RI9MphYtS
+         zOEFu5UjFnqoRYeyNXHKFTWEEGLWVgzehrXbSCHMHlXHB66xutcaGylEfZRXZiYcTaB4
+         nng4Ly42mLITefTkaedXqW57hYSEMII/PtXcxXxA3In6UXVthuCrjF6lJalH0/y5nCiY
+         B9n9F9cYaD4LEGNQgzLxDPvOjcXSlfAr5rOL1s6XheTezNHq+0roDI2WmOetJ4LM51XP
+         7Trw==
+X-Forwarded-Encrypted: i=1; AJvYcCV7JDIQwYxI52ujTKlKZzVO/QCFv4mxFDmjE1RrEOmlvP6URVifKm8N5wr2Zie5YITdouwbkqLgs1F+iSlk@vger.kernel.org, AJvYcCXxJgZpjy2Lq+I/E5y4nQzVvvEwcHmcvdrpvmh97I/YhO6NaxPPH2lXMVia/X0Ab413+/IASYfoOfu/Brs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyj+pmG1QFh1SAFg7wkwX3odDtF7lkPBDM83bn3Dz6Q6Ot2PkFB
+	X0iylSK90p5/vu7tTKwHHD28xGhH59hppTwxpPLh2K9rGn1kIkYA
+X-Gm-Gg: ASbGncuyQ7oVO+i8J10n/2wP88T2pvse6HAKO+hqsybZrdwKLxwqi88P4zS4nyTUbis
+	6b68cCoQbQ3cOkojzfOb9JeQBf6hic2iaCg6trZtGhA7H2D6DYTjTekvgOdfpAfTt6By5MYMfMH
+	tc0M7y+S+sTCvCQ+b7IVsicanaUF5R14jeg9UffTZnGvu6YEj07mSyW+jgXrvIn3MHFjdprlbti
+	BccqZWd6rQJEtockDrNUyHYtqlpXKgJXPZXQE0Np6fEaXWhCVsywMmqwL61svlKx/RnD8lgt8Pt
+	PsYNYD3jwmf4BqJwjg+V38aMWXj+HhiB/OT4LIgDWPWZO3GOBErR6ULF2U2odzaNDG68deQJZmJ
+	zR0sNRoBCZztsyGbAuDThRZK0NdyCJGHdwmChkQ==
+X-Google-Smtp-Source: AGHT+IENg0QA4pDDrAf5YXcYOBv5jJnYgaomoJkaWvWaHINOGGkwFUMAt+vGF529iQB2hgnXBoY+FQ==
+X-Received: by 2002:a17:903:1904:b0:22e:4d64:821f with SMTP id d9443c01a7336-22fc8b56982mr61314845ad.20.1746840988708;
+        Fri, 09 May 2025 18:36:28 -0700 (PDT)
+Received: from localhost.localdomain (p12284229-ipxg45101marunouchi.tokyo.ocn.ne.jp. [60.39.60.229])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22fc8271bcfsm23902965ad.125.2025.05.09.18.36.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 May 2025 18:36:28 -0700 (PDT)
+From: Ryo Takakura <ryotkkr98@gmail.com>
+To: john.ogness@linutronix.de,
+	pmladek@suse.com
+Cc: Jason@zx2c4.com,
+	gregkh@linuxfoundation.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	lkp@intel.com,
+	oe-lkp@lists.linux.dev,
+	oliver.sang@intel.com,
+	ryotkkr98@gmail.com
+Subject: [PATCH] rslib: Add scheduling points during the test
+Date: Sat, 10 May 2025 10:35:15 +0900
+Message-Id: <20250510013515.69636-1-ryotkkr98@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250509-jag-mv_ctltables_iter2-v1-3-d0ad83f5f4c3@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Fri, May 09, 2025 at 02:54:07PM +0200, Joel Granados wrote:
-> Move sysctl_panic_on_rcu_stall and sysctl_max_rcu_stall_to_panic into
-> the kernel/rcu subdirectory. Make these static in tree_stall.h and
-> removed them as extern from panic.h as their scope is now confined into
-> one file.
-> 
-> This is part of a greater effort to move ctl tables into their
-> respective subsystems which will reduce the merge conflicts in
-> kernel/sysctl.c.
-> 
-> Signed-off-by: Joel Granados <joel.granados@kernel.org>
+The test has been prone to softlockup but stayed unnoticed because
+of the printk calls during the test resets the soflockup watchdog by
+calling touch_nmi_watchdog(). With the commit b63e6f60eab4 ("serial:
+8250: Switch to nbcon console"), the printk calls no longer suppress
+the softlockup and warnings can be observed more evidently that shows
+the test needs more scheduling points.
 
-Reviewed-by: Kees Cook <kees@kernel.org>
+Provide scheduling points by adding cond_resched() for each test
+iteration on their up to/beyond error correction capacity.
 
+Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
+---
+
+Hi!
+
+The discussion on how the printk was preventing
+the softlockup can be found here [0].
+
+Sincerely,
+Ryo Takakura
+
+[0] https://lore.kernel.org/all/202501221029.fb0d574d-lkp@intel.com/
+---
+ lib/reed_solomon/test_rslib.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
+index 75cb1adac..322d7b0a8 100644
+--- a/lib/reed_solomon/test_rslib.c
++++ b/lib/reed_solomon/test_rslib.c
+@@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
+ 
+ 		if (memcmp(r, c, len * sizeof(*r)))
+ 			stat->dwrong++;
++
++		cond_resched();
+ 	}
+ 	stat->nwords += trials;
+ }
+@@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
+ 		} else {
+ 			stat->rfail++;
+ 		}
++
++		cond_resched();
+ 	}
+ 	stat->nwords += trials;
+ }
 -- 
-Kees Cook
+2.34.1
+
