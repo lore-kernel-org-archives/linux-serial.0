@@ -1,396 +1,200 @@
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D207E51022
-	for <linux-serial@vger.kernel.org>; Mon, 12 May 2025 14:00:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FCCAB66E;
+	Mon, 12 May 2025 14:48:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747058444; cv=none; b=eMsG5rqto3raLpF1fF07MMyQiZWM65sVL3jDZF1jybc6kyqQTnl1KewTVyXqkjNG/Md5usGS5IjNxDURhCgGOYlb8gkYgtQFMbykw3nssDapxpGk4oMtgXV0lzkBuxI+KLRxstr71DTw07Fd+cGppt90T4b/m8YREHrpww3vJzg=
+	t=1747061288; cv=none; b=Ut82yIYrikX7sGOCdYyHtThrGN+vYfJlMO62Y5QeUwq6aDqhVGEsF39gFY/MYFBUfeZnpxONG4b4Oh8svvyEXKCWV0hfuK0golrup+rzEMSc88SDVCpeb3GdRvBBAnbzWQ5vldSo0XPxlbcwKLf9m5FNUf0Wqs4bA8Wrnen+GnE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747058444; c=relaxed/simple;
-	bh=FpSOrFTBA3zPhR8xzcPPZckD+36feXezDwiD5X0jZ7I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=e81c2JcuxogUzrsW2Eoh1oPOFn2KDLReTXfTGRoX4ngG69c1nWLdWQ6ehabaKZrYCZx5aU1YPDgvSpOYWHZxDDzs7q+1/seNECEoQbR4R82yhQ/wfYstC6sZLODgFntFZ8xwn/RGTtmEOR6UtrskvLMu7SM/nr37zvUfGlYKt7M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=jDBET9ag; arc=none smtp.client-ip=209.85.161.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="jDBET9ag"
-Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-60638c07cabso2520054eaf.3
-        for <linux-serial@vger.kernel.org>; Mon, 12 May 2025 07:00:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1747058442; x=1747663242; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oY5MPOFskIW58U8yakui/ToG+SoS5dGhSlJd4Y0itw4=;
-        b=jDBET9agE4STi0F9psBnCjrM4hNXKr+ppVeCJXO1ubEZ41ztJBGs6h0uEClH9heDCy
-         km22pjYc5dpeJM9so6U6tx6+sM1fumO2Lp3o9QB5nP041c3n3m7+n7055Rt1xfCqfqde
-         UY4/Gva/8FL8XOHTSqpvKaGB6fPG+w+82KYY6IExEHHCOAQ4dS+CbHCnDPBj4Es0TEg0
-         OdbSPPnhyIsRqnF8I5Wt+0/NSDvwqfZRXltFJnZqtOIBnRa8w7ZSz5u37RMETeQJnC5T
-         RsLd82SmKoc6Vve26RvEMmj2nXXW0eYQBOzt4WXnNjVOiPvfWeqGQYUs9hrMxMD6ICBp
-         pajg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747058442; x=1747663242;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=oY5MPOFskIW58U8yakui/ToG+SoS5dGhSlJd4Y0itw4=;
-        b=UUBIFpAmQEv5KzcyAi8pRfsmoSIjfykqhiURF6aJYco33Sy9Pqhj/fZ6ZLgg115aen
-         LSyiU18Qe7jJ5DgzN1GamdbNn4xziRBAVbSQR98TCeZL9zxusaO8L6DomUXzncvkoTWa
-         BsceQNYnnG9vcYalCHcVgScdrrlkScBlecdu3/rFGnETjWMynyJi4gBHyXaAOkhM4hq0
-         i7GfVSwYQCNXasH0qMmE2u1tIkg0nBwYUwGO3rfxkeJYVCDbrkLixV1A//09c+ANHfIW
-         1wiVbgd6ZiJi+3xXsC6ABOP6nCk/bEUpF+a61wSbgPwM9MBnqtRSqhN12qAPPmNh/As/
-         UoFw==
-X-Forwarded-Encrypted: i=1; AJvYcCV902GWv+Do/5r6UvqI5GfLgIilG3swvIhkbbtzJuFZJmqwvR32V/1an+NkXV+GCOZ75J04b6oxkHs7c6A=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyNg0+nt/pzlA27PqLrgoaHsNQI1HIVZ5x49cpEPFMvmZKIW5rX
-	/jJXiaONNFas55oGSbM0ODagfQOdtJT3FgBKSL6sAR1H1NS60Pb3IuLLjbvMASnUCuuVrltDYKt
-	1H5oKiKt7EsJGOxaegm4begooLuzTEp+OFBV9Pg==
-X-Gm-Gg: ASbGncvWzWpBrwHXpptMI0+2SjdFTvMM27zYhgYT8+6AhvYwyW/CVTCS1odtMAQ9z8E
-	jJzDEPMhtynGiBedBr6DnO12f0r9iu0tUZoEi8ZZln7luxzfvcXx0Z6jHYBIPXblmMUbJzziyqE
-	tYy5w9tmEC0Ug8kFcwD/C7HWwf/+MLfIw/nnH6iFo8o9K/ltYIjw==
-X-Google-Smtp-Source: AGHT+IHsSG6LFf5PiDFFo3ewFAedI003xvd4xJxMeRbQ3MH6DeQs3j9PCwinE182BXoCfinBuy0Ea+M9rZ1PRL74+a4=
-X-Received: by 2002:a05:6820:450a:b0:606:8579:4c5e with SMTP id
- 006d021491bc7-6083ff1566bmr6867317eaf.1.1747058441567; Mon, 12 May 2025
- 07:00:41 -0700 (PDT)
+	s=arc-20240116; t=1747061288; c=relaxed/simple;
+	bh=xQyQu/FRlNL+ULjmzkrL2nUUTe8lDVX8t3KVQe1yqp0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DzZpKg0Mrx/UekXFDWdnm80XGp3z2SHFh1HJOb97E2er7PsRi73j2KfSUypOai8piJCtvWDrVcj/Dwv3ZT22iLGdIHfKopHHzPOr7Go09l9P7uSlEUymT6+kHQTVpryhGJSWusBenG3DBHa+XbOD6axDufRfUEZRurGgvfhUfJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
+Received: from [141.14.220.36] (g36.guest.molgen.mpg.de [141.14.220.36])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: pmenzel)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id F243D601EBF02;
+	Mon, 12 May 2025 16:47:28 +0200 (CEST)
+Message-ID: <4286c852-c5c5-468b-a8f5-fc226e71d5e9@molgen.mpg.de>
+Date: Mon, 12 May 2025 16:47:28 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250506112321.61710-1-cuiyunhui@bytedance.com>
- <20250506112321.61710-2-cuiyunhui@bytedance.com> <6801686d-a0b3-7093-1293-cdac6ad055e4@linux.intel.com>
- <CAEEQ3wnouWbVvkvhV1oB8MrOADNhN6BQB4-epUXa6cLYkKFRiw@mail.gmail.com>
- <41066f2f-a690-83ef-5fbb-0bc1d956a19d@linux.intel.com> <CAEEQ3w=xPmbyaCHLPtCBgFOzz7TzDYMkOnKt=EvpdknQqot=cA@mail.gmail.com>
- <34f3c38c-b224-8a4d-3235-c1df04ac1d04@linux.intel.com>
-In-Reply-To: <34f3c38c-b224-8a4d-3235-c1df04ac1d04@linux.intel.com>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Mon, 12 May 2025 22:00:30 +0800
-X-Gm-Features: AX0GCFtQnMyMmbX6QGe3uzimLWaCVKqkrdfQH7AzCtz4fE2y6kAPg4G42xunhNw
-Message-ID: <CAEEQ3wn8Q04ne7nqq+MTtx=ocbi16FuCR-ptZpmYx_23Xwt60Q@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH v5 2/4] serial: 8250: avoid potential
- PSLVERR issue
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: arnd@arndb.de, Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
-	benjamin.larsson@genexis.eu, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	heikki.krogerus@linux.intel.com, Jiri Slaby <jirislaby@kernel.org>, 
-	jkeeping@inmusicbrands.com, john.ogness@linutronix.de, 
-	LKML <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, 
-	markus.mayer@linaro.org, matt.porter@linaro.org, namcao@linutronix.de, 
-	paulmck@kernel.org, pmladek@suse.com, schnelle@linux.ibm.com, 
-	sunilvl@ventanamicro.com, tim.kryger@linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: Kernel WARNING (RCU) with btnxpuart on TI AM62 platform
+To: Francesco Dolcini <francesco@dolcini.it>,
+ Vignesh Raghavendra <vigneshr@ti.com>
+Cc: Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+ Neeraj Kale <neeraj.sanjaykale@nxp.com>, Nishanth Menon <nm@ti.com>,
+ Tero Kristo <kristo@kernel.org>, Santosh Shilimkar <ssantosh@kernel.org>,
+ linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+ linux-serial@vger.kernel.org, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
+ linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+References: <20250408083512.GA26035@francesco-nb>
+ <24b28bda-e294-4680-bed5-c44efcb6c455@ti.com>
+ <20250410062006.GA7506@francesco-nb>
+Content-Language: en-US
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20250410062006.GA7506@francesco-nb>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Ilpo,
-
-On Mon, May 12, 2025 at 8:03=E2=80=AFPM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> On Mon, 12 May 2025, yunhui cui wrote:
->
-> > Hi Ilpo,
-> >
-> > On Mon, May 12, 2025 at 6:27=E2=80=AFPM Ilpo J=C3=A4rvinen
-> > <ilpo.jarvinen@linux.intel.com> wrote:
-> > >
-> > > On Mon, 12 May 2025, yunhui cui wrote:
-> > >
-> > > > Hi Ilpo,
-> > > >
-> > > > On Tue, May 6, 2025 at 8:00=E2=80=AFPM Ilpo J=C3=A4rvinen
-> > > > <ilpo.jarvinen@linux.intel.com> wrote:
-> > > > >
-> > > > > On Tue, 6 May 2025, Yunhui Cui wrote:
-> > > > >
-> > > > > > Failure to check the UART_LSR_DR before reading UART_RX, or the
-> > > > > > non-atomic nature of clearing the FIFO and reading UART_RX, pos=
-es
-> > > > > > potential risks that could lead to PSLVERR.
-> > > > >
-> > > > > Don't expect reader to know the condition how PSLVERR is triggere=
-d. I know
-> > > > > it's worded out in the other patch but also explain it here.
-> > > > >
-> > > > > You're only explaining problem and missing what this patch does t=
-o solve
-> > > > > the problem.
-> > > > >
-> > > > > > Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
-> > > > > > ---
-> > > > > >  drivers/tty/serial/8250/8250.h      | 13 +++++++++
-> > > > > >  drivers/tty/serial/8250/8250_port.c | 43 +++++++++++++++------=
---------
-> > > > > >  2 files changed, 35 insertions(+), 21 deletions(-)
-> > > > > >
-> > > > > > diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/seria=
-l/8250/8250.h
-> > > > > > index b861585ca02a..6f97ff3a197d 100644
-> > > > > > --- a/drivers/tty/serial/8250/8250.h
-> > > > > > +++ b/drivers/tty/serial/8250/8250.h
-> > > > > > @@ -162,6 +162,19 @@ static inline u16 serial_lsr_in(struct uar=
-t_8250_port *up)
-> > > > > >       return lsr;
-> > > > > >  }
-> > > > > >
-> > > > > > +/*
-> > > > > > + * To avoid PSLVERR, check UART_LSR_DR in UART_LSR before
-> > > > > > + * reading UART_RX.
-> > > > > > + */
-> > > > > > +static inline void serial8250_discard_data(struct uart_8250_po=
-rt *up)
-> > > > > > +{
-> > > > > > +     u16 lsr;
-> > > > > > +
-> > > > > > +     lsr =3D serial_in(up, UART_LSR);
-> > > > > > +     if (lsr & UART_LSR_DR)
-> > > > > > +             serial_in(up, UART_RX);
-> > > > > > +}
-> > > > > > +
-> > > > > >  /*
-> > > > > >   * For the 16C950
-> > > > > >   */
-> > > > > > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/=
-serial/8250/8250_port.c
-> > > > > > index a913135d5217..1666b965f6a0 100644
-> > > > > > --- a/drivers/tty/serial/8250/8250_port.c
-> > > > > > +++ b/drivers/tty/serial/8250/8250_port.c
-> > > > > > @@ -1357,9 +1357,8 @@ static void autoconfig_irq(struct uart_82=
-50_port *up)
-> > > > > >       /* Synchronize UART_IER access against the console. */
-> > > > > >       uart_port_lock_irq(port);
-> > > > > >       serial_out(up, UART_IER, UART_IER_ALL_INTR);
-> > > > > > +     serial8250_discard_data(up);
-> > > > > >       uart_port_unlock_irq(port);
-> > > > > > -     serial_in(up, UART_LSR);
-> > > > > > -     serial_in(up, UART_RX);
-> > > > > >       serial_in(up, UART_IIR);
-> > > > > >       serial_in(up, UART_MSR);
-> > > > > >       serial_out(up, UART_TX, 0xFF);
-> > > > > > @@ -2137,25 +2136,22 @@ static void wait_for_xmitr(struct uart_=
-8250_port *up, int bits)
-> > > > > >  static int serial8250_get_poll_char(struct uart_port *port)
-> > > > > >  {
-> > > > > >       struct uart_8250_port *up =3D up_to_u8250p(port);
-> > > > > > -     int status;
-> > > > > > +     int status =3D NO_POLL_CHAR;
-> > > > > >       u16 lsr;
-> > > > > > +     unsigned long flags;
-> > > > > >
-> > > > > >       serial8250_rpm_get(up);
-> > > > > >
-> > > > > > +     uart_port_lock_irqsave(port, &flags);
-> > > > > >       lsr =3D serial_port_in(port, UART_LSR);
-> > > > > > +     if (lsr & UART_LSR_DR)
-> > > > > > +             status =3D serial_port_in(port, UART_RX);
-> > > > > > +     uart_port_unlock_irqrestore(port, flags);
-> > > > > >
-> > > > > > -     if (!(lsr & UART_LSR_DR)) {
-> > > > > > -             status =3D NO_POLL_CHAR;
-> > > > > > -             goto out;
-> > > > > > -     }
-> > > > > > -
-> > > > > > -     status =3D serial_port_in(port, UART_RX);
-> > > > > > -out:
-> > > > > >       serial8250_rpm_put(up);
-> > > > > >       return status;
-> > > > >
-> > > > > Not a problem that originates from you, but IMO calling this vari=
-able
-> > > > > "status" is quite misleading when it is the character (or NO_POLL=
-_CHAR
-> > > > > is no character is present).
-> > > > >
-> > > > > >  }
-> > > > > >
-> > > > > > -
-> > > > > >  static void serial8250_put_poll_char(struct uart_port *port,
-> > > > > >                        unsigned char c)
-> > > > > >  {
-> > > > > > @@ -2264,13 +2260,17 @@ int serial8250_do_startup(struct uart_p=
-ort *port)
-> > > > > >        * Clear the FIFO buffers and disable them.
-> > > > > >        * (they will be reenabled in set_termios())
-> > > > > >        */
-> > > > > > +     uart_port_lock_irqsave(port, &flags);
-> > > > > >       serial8250_clear_fifos(up);
-> > > > > >
-> > > > > >       /*
-> > > > > > -      * Clear the interrupt registers.
-> > > > > > +      * Read UART_RX to clear interrupts (e.g., Character Time=
-out).
-> > > > > > +      * No data on UART_IIR_RX_TIMEOUT, UART_LSR_DR won't set.
-> > > > > > +      * FIFO disabled, read UART_RX without LSR check, no PSLV=
-ERR.
-> > > > >
-> > > > > I don't understand what the last two lines mean and I don't see t=
-he
-> > > > > connection to the code that is below the comment either, could yo=
-u try to
-> > > > > rephrase the comment.
-> > > >
-> > > > The original intention was to check UART_LSR_DR first when reading
-> > > > UART_RX. However, the purpose of serial_port_in(port, UART_RX) here=
- is
-> > > > to clear the interrupt, such as the interrupt caused by RX_TIMEOUT.
-> > >
-> > > I understood the first sentence in the comment but the rest of it is =
-very
-> > > cryptic and has many grammar issues too. Also, the extent of passive =
-voice
-> > > there makes it hard to know who does what (UART / kernel).
-> > >
-> > > > The logic for clearing the interrupt in the interrupt handling
-> > > > function of RX_TIMEOUT is !UART_LSR_DR. And to avoid PSLVERR, we ne=
-ed
-> > > > to check UART_LSR_DR first. To meet the requirements of both, the F=
-IFO
-> > > > needs to be disabled.
-> > >
-> > > The grammar is so broken, it failed to convey that message.
-> >
-> > The purpose of serial_port_in(port, UART_RX) is to clear interrupts
-> > such as rx_timeout. In dw8250_handle_irq(), serial_port_in(p, UART_RX)
-> > is called when the LSR does not have the UART_LSR_DR bit set.
-> >
-> > To avoid PSLVERR when the FIFO is enabled, serial_in(up, UART_RX)
-> > should be called only when the LSR has the UART_LSR_DR bit set.
-> >
-> > These two logics are clearly contradictory. Therefore, both
-> > serial8250_clear_fifos() and serial_port_in(port, UART_RX) are placed
-> > under the protection of port->lock.
-> >
-> > If you believe this is not a potential issue, that's fine. I can
-> > remove this patch in the next patchset version.
->
-> No, my goal is not to get this removed from the patch series.
->
-> I meant that the comment wording needs to be fixed for the next version
-> such that it is understandable for those that are not deeply familiar wit=
-h
-> what is related to PSLVERR. Currently even I struggle to follow what's
-> written into that comment (unless I read heavily between lines and base
-> guesses on the extra knowledge I've about how this entire patchset relate=
-s
-> to PSLVERR).
->
-
-I plan to change the commit message as follows:
-When the PSLVERR_RESP_EN parameter is set to 1, reading UART_RX while
-the FIFO is enabled and UART_LSR_DR is not set will generate a PSLVERR
-error.
-Failure to check the UART_LSR_DR before reading UART_RX, or the non -
-atomic nature of clearing the FIFO and reading UART_RX, poses
-potential risks that could lead to PSLVERR.
-PSLVERR is addressed through two methods. One is to introduce
-serial8250_discard_data() to check whether UART_LSR_DR is set before
-reading UART_RX, thus solving the PSLVERR issue when the FIFO is
-enabled. The other is to place FIFO clearing and reading of UART_RX
-under port->lock.
+Dear Vignesh, dear Francesco,
 
 
-The comment here will be changed as follows:
-To prevent PSLVERR, we can either disable the FIFO before reading
-UART_RX or read UART_RX only when UART_LSR_DR is set while the FIFO
-remains enabled. If using the latter approach to avoid PSLVERR, it
-creates a contradiction with the interrupt - clearing (see the
-rx_timeout handling in dw8250_handle_irq()).
+Am 10.04.25 um 08:20 schrieb Francesco Dolcini:
 
-What do you think?
+> On Tue, Apr 08, 2025 at 09:15:26PM +0530, Vignesh Raghavendra wrote:
+>> On 08/04/25 14:05, Francesco Dolcini wrote:
+>>> I do have the following kernel warning with 6.15-rc1, on a TI AM62
+>>> platform (arm64), single CPU core, using btnxpuart driver, any idea?
+>>> PREEMPT_RT is enabled, if it matters.
+>>>
+>>> Either the issue is not systematic, or multi cores SoCs are not affected
+>>> (no error on the exact same image on a dual nor on quad core TI AM62).
+>>>
+>>>
+>>> [   23.139080] Voluntary context switch within RCU read-side critical section!
+>>> [   23.139119] WARNING: CPU: 0 PID: 61 at /kernel/rcu/tree_plugin.h:332 rcu_note_context_switch+0x3c4/0x430
+>>> [   23.139172] Modules linked in: uas onboard_usb_dev optee_rng dwc3 evdev btnxpuart spidev aes_ce_blk aes_ce_cipher ghash_ce gf128mul sha2_ce sha256_arm64 sha1_ce snd_soc_simple_card snd_soc_simple_card_utils optee spi_cadence_quadspi tee gpio_keys usb_conn_gpio display_connector roles dwc3_am62 mwifiex_sdio k3_j72xx_bandgap mwifiex rtc_ti_k3 cfg80211 tidss sa2ul sha512_generic snd_soc_davinci_mcasp authenc drm_display_helper snd_soc_ti_udma crypto_null snd_soc_ti_edma sha1_generic snd_soc_ti_sdma omap_hwspinlock lontium_lt8912b ina2xx snd_soc_wm8904 ti_ads1015 industrialio_triggered_buffer kfifo_buf lm75 tpm_tis_i2c tps65219_pwrbutton crc_ccitt tpm_tis_core tpm rng_core tc358768 m_can_platform pwm_tiehrpwm m_can spi_omap2_mcspi can_dev bluetooth ecdh_generic ecc rfkill libaes loop fuse ipv6 autofs4
+>>> [   23.139459] CPU: 0 UID: 0 PID: 61 Comm: kworker/u5:0 Not tainted 6.15.0-rc1-0.0.0-devel #1 PREEMPT_RT
+>>> [   23.139471] Hardware name: Toradex Verdin AM62 WB on Dahlia Board (DT)
+>>> [   23.139478] Workqueue: hci0 hci_power_off [bluetooth]
+>>> [   23.139615] pstate: 600000c5 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>>> [   23.139625] pc : rcu_note_context_switch+0x3c4/0x430
+>>> [   23.139647] lr : rcu_note_context_switch+0x3c4/0x430
+>>> [   23.139658] sp : ffff8000819fb740
+>>> [   23.139661] x29: ffff8000819fb740 x28: 0000000000000000 x27: ffff0000079d2010
+>>> [   23.139673] x26: ffff0000011e7810 x25: ffff000001c2c200 x24: 0000000000000000
+>>> [   23.139688] x23: 0000000000000000 x22: ffff000001c2c200 x21: ffff000001c2c200
+>>> [   23.139700] x20: ffff800081083ec0 x19: ffff00001da9fec0 x18: fffffffffffe7e78
+>>> [   23.139712] x17: ffff7fff9ca1c000 x16: ffff800080000000 x15: ffff00001da9f8c0
+>>> [   23.139726] x14: fffffffffffc7e77 x13: 216e6f6974636573 x12: 206c616369746972
+>>> [   23.139738] x11: 6320656469732d64 x10: 6165722055435220 x9 : 206e696874697720
+>>> [   23.139750] x8 : ffff80008113f040 x7 : ffff8000819fb4e0 x6 : 000000000000000c
+>>> [   23.139761] x5 : ffff00001da95888 x4 : 0000000000000000 x3 : 0000000000000027
+>>> [   23.139775] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff000001c2c200
+>>> [   23.139788] Call trace:
+>>> [   23.139793]  rcu_note_context_switch+0x3c4/0x430 (P)
+>>> [   23.139813]  __schedule+0xa0/0x7dc
+>>> [   23.139830]  schedule+0x34/0x11c
+>>> [   23.139841]  schedule_timeout+0x8c/0x110
+>>> [   23.139861]  wait_for_completion_timeout+0x78/0x14c
+>>> [   23.139873]  ti_sci_set_device_state+0x120/0x1fc
+>>> [   23.139886]  ti_sci_cmd_get_device_exclusive+0x18/0x30
+>>> [   23.139899]  ti_sci_pd_power_on+0x28/0x54
+>>> [   23.139916]  _genpd_power_on+0x98/0x188
+>>> [   23.139927]  genpd_power_on+0xa8/0x168
+>>> [   23.139940]  genpd_runtime_resume+0xc0/0x298
+>>> [   23.139957]  __rpm_callback+0x48/0x1a4
+>>> [   23.139974]  rpm_callback+0x74/0x80
+>>> [   23.139987]  rpm_resume+0x3b0/0x698
+>>> [   23.140000]  __pm_runtime_resume+0x48/0x88
+>>> [   23.140012]  omap8250_set_mctrl+0x2c/0xbc
+>>> [   23.140030]  serial8250_set_mctrl+0x20/0x40
+>>> [   23.140046]  uart_update_mctrl+0x80/0x110
+>>
+>> I think issue is that uart_update_mctrl() holds a spinlock:
+>>
+>> 	uart_port_lock_irqsave(port, &flags);
+>>
+>> and then omap8250_set_mctrl() calls pm_runtime APIs which on K3 SoC
+>> needs to talk to a Firmware to enable pd. This IPC call is a sleeping
+>> call leading to scheduling with IRQs disabled.
+>>
+>> I guess this is what RT linux is complaining? I dont have a solution
+>> though, maybe serdev delays pm_runtime_put till the port is closed?
+> 
+> Our CI reproduced what looks like the same issue also on current
+> torvalds/master (6.15-rc1+) branch, without PREEMPT_RT.
+> 
+> The call trace seems just the same, but attaching it here for
+> completeness.
+> 
+> 
+> [   20.931923] BUG: scheduling while atomic: kworker/u5:0/42/0x00000002
+> [   20.938429] Modules linked in: sd_mod uas onboard_usb_dev btnxpuart optee_rng dwc3 evdev spidev aes_ce_blk aes_ce_cipher ghash_ce gf128mul sha2_ce sha256_arm64 sha1_ce snd_soc_simple_card snd_soc_simple_card_utils mwifiex_sdio mwifiex display_connector spi_cadence_quadspi optee usb_conn_gpio tee gpio_keys roles k3_j72xx_bandgap cfg80211 rtc_ti_k3 dwc3_am62 bluetooth ecdh_generic ecc sa2ul sha512_generic rfkill authenc tidss crypto_null libaes snd_soc_davinci_mcasp sha1_generic drm_display_helper snd_soc_ti_udma snd_soc_ti_edma snd_soc_ti_sdma omap_hwspinlock lontium_lt8912b ina2xx ti_ads1015 snd_soc_wm8904 industrialio_triggered_buffer kfifo_buf lm75 tpm_tis_i2c crc_ccitt tps65219_pwrbutton tpm_tis_core tpm m_can_platform m_can rng_core tc358768 can_dev pwm_tiehrpwm spi_omap2_mcspi loop fuse ipv6 autofs4
+> [   20.938865] CPU: 0 UID: 0 PID: 42 Comm: kworker/u5:0 Not tainted 6.15.0-rc1-0.0.0-devel #1 PREEMPT
+> [   20.938878] Hardware name: Toradex Verdin AM62 WB on Dahlia Board (DT)
+> [   20.938895] Workqueue: hci0 hci_power_off [bluetooth]
+> [   20.939032] Call trace:
+> [   20.939037]  show_stack+0x2c/0x84 (C)
+> [   20.939063]  dump_stack_lvl+0x60/0x80
+> [   20.939084]  dump_stack+0x18/0x24
+> [   20.939096]  __schedule_bug+0x54/0x70
+> [   20.939116]  __schedule+0x628/0x7dc
+> [   20.939129]  schedule+0x34/0x11c
+> [   20.939138]  rpm_resume+0x17c/0x6a0
+> [   20.939155]  __pm_runtime_resume+0x50/0x9c
+> [   20.939168]  omap8250_set_mctrl+0x2c/0xc0
+> [   20.939183]  serial8250_set_mctrl+0x20/0x40
+> [   20.939193]  uart_update_mctrl+0x88/0x11c
+> [   20.939215]  uart_dtr_rts+0x104/0x120
+> [   20.939226]  tty_port_shutdown+0xd4/0xdc
+> [   20.939236]  tty_port_close+0x40/0xc0
+> [   20.939248]  uart_close+0x34/0x9c
+> [   20.939259]  ttyport_close+0x50/0xa0
+> [   20.939272]  serdev_device_close+0x40/0x5c
+> [   20.939283]  btnxpuart_close+0x1c/0xa0 [btnxpuart]
+> [   20.939309]  hci_dev_close_sync+0x304/0x7cc [bluetooth]
+> [   20.939376]  hci_dev_do_close+0x2c/0x70 [bluetooth]
+> [   20.939441]  hci_power_off+0x20/0x64 [bluetooth]
+> [   20.939508]  process_one_work+0x148/0x290
+> [   20.939528]  worker_thread+0x2c8/0x3e4
+> [   20.939541]  kthread+0x12c/0x204
+> [   20.939554]  ret_from_fork+0x10/0x20
+> [   20.943567] BUG: scheduling while atomic: kworker/u5:0/42/0x00000000
+> [   20.950126] Modules linked in: sd_mod uas onboard_usb_dev btnxpuart optee_rng dwc3 evdev spidev aes_ce_blk aes_ce_cipher ghash_ce gf128mul sha2_ce sha256_arm64 sha1_ce snd_soc_simple_card snd_soc_simple_card_utils mwifiex_sdio mwifiex display_connector spi_cadence_quadspi optee usb_conn_gpio tee gpio_keys roles k3_j72xx_bandgap cfg80211 rtc_ti_k3 dwc3_am62 bluetooth ecdh_generic ecc sa2ul sha512_generic rfkill authenc tidss crypto_null libaes snd_soc_davinci_mcasp sha1_generic drm_display_helper snd_soc_ti_udma snd_soc_ti_edma snd_soc_ti_sdma omap_hwspinlock lontium_lt8912b ina2xx ti_ads1015 snd_soc_wm8904 industrialio_triggered_buffer kfifo_buf lm75 tpm_tis_i2c crc_ccitt tps65219_pwrbutton tpm_tis_core tpm m_can_platform m_can rng_core tc358768 can_dev pwm_tiehrpwm spi_omap2_mcspi loop fuse ipv6 autofs4
+> [   20.950550] CPU: 0 UID: 0 PID: 42 Comm: kworker/u5:0 Tainted: G        W           6.15.0-rc1-0.0.0-devel #1 PREEMPT
+> [   20.950566] Tainted: [W]=WARN
+> [   20.950570] Hardware name: Toradex Verdin AM62 WB on Dahlia Board (DT)
+> [   20.950584] Workqueue: hci0 hci_power_off [bluetooth]
+> [   20.950721] Call trace:
+> [   20.950726]  show_stack+0x2c/0x84 (C)
+> [   20.950747]  dump_stack_lvl+0x60/0x80
+> [   20.950771]  dump_stack+0x18/0x24
+> [   20.950783]  __schedule_bug+0x54/0x70
+> [   20.950798]  __schedule+0x628/0x7dc
+> [   20.950815]  schedule+0x34/0x11c
+> [   20.950824]  schedule_timeout+0xd4/0x110
+> [   20.950838]  wait_for_completion+0x78/0x140
+> [   20.950853]  __flush_work+0x250/0x340
+> [   20.950868]  flush_work+0x14/0x20
+> [   20.950879]  omap_8250_shutdown+0x2c/0x1a4
+> [   20.950903]  serial8250_shutdown+0x18/0x40
+> [   20.950913]  uart_port_shutdown+0x40/0x58
+> [   20.950926]  uart_tty_port_shutdown+0x5c/0x178
+> [   20.950940]  tty_port_shutdown+0x84/0xdc
+> [   20.950950]  tty_port_close+0x40/0xc0
+> [   20.950958]  uart_close+0x34/0x9c
+> [   20.950969]  ttyport_close+0x50/0xa0
+> [   20.950990]  serdev_device_close+0x40/0x5c
+> [   20.951001]  btnxpuart_close+0x1c/0xa0 [btnxpuart]
+> [   20.951017]  hci_dev_close_sync+0x304/0x7cc [bluetooth]
+> [   20.951082]  hci_dev_do_close+0x2c/0x70 [bluetooth]
+> [   20.951149]  hci_power_off+0x20/0x64 [bluetooth]
+> [   20.951214]  process_one_work+0x148/0x290
+> [   20.951227]  worker_thread+0x2c8/0x3e4
+> [   20.951242]  kthread+0x12c/0x204
+> [   20.951258]  ret_from_fork+0x10/0x20
 
-> > > > Therefore, we should put serial8250_clear_fifos() and the execution=
- of
-> > > > serial_port_in(port, UART_RX) without checking UART_LSR_DR under th=
-e
-> > > > port->lock.
-> > > >
-> > > > >
-> > > > > >        */
-> > > > > >       serial_port_in(port, UART_LSR);
-> > > > > >       serial_port_in(port, UART_RX);
-> > > > > > +     uart_port_unlock_irqrestore(port, flags);
-> > > > > >       serial_port_in(port, UART_IIR);
-> > > > > >       serial_port_in(port, UART_MSR);
-> > > > > >
-> > > > > > @@ -2429,15 +2429,14 @@ int serial8250_do_startup(struct uart_p=
-ort *port)
-> > > > > >       }
-> > > > > >
-> > > > > >  dont_test_tx_en:
-> > > > > > -     uart_port_unlock_irqrestore(port, flags);
-> > > > > >
-> > > > > >       /*
-> > > > > >        * Clear the interrupt registers again for luck, and clea=
-r the
-> > > > > >        * saved flags to avoid getting false values from polling
-> > > > > >        * routines or the previous session.
-> > > > > >        */
-> > > > > > -     serial_port_in(port, UART_LSR);
-> > > > > > -     serial_port_in(port, UART_RX);
-> > > > > > +     serial8250_discard_data(up);
-> > > > > > +     uart_port_unlock_irqrestore(port, flags);
-> > > > > >       serial_port_in(port, UART_IIR);
-> > > > > >       serial_port_in(port, UART_MSR);
-> > > > > >       up->lsr_saved_flags =3D 0;
-> > > > > > @@ -2519,7 +2518,6 @@ void serial8250_do_shutdown(struct uart_p=
-ort *port)
-> > > > > >               port->mctrl &=3D ~TIOCM_OUT2;
-> > > > > >
-> > > > > >       serial8250_set_mctrl(port, port->mctrl);
-> > > > > > -     uart_port_unlock_irqrestore(port, flags);
-> > > > > >
-> > > > > >       /*
-> > > > > >        * Disable break condition and FIFOs
-> > > > > > @@ -2527,6 +2525,14 @@ void serial8250_do_shutdown(struct uart_=
-port *port)
-> > > > > >       serial_port_out(port, UART_LCR,
-> > > > > >                       serial_port_in(port, UART_LCR) & ~UART_LC=
-R_SBC);
-> > > > > >       serial8250_clear_fifos(up);
-> > > > > > +     /*
-> > > > > > +      * Read data port to reset things, and then unlink from
-> > > > > > +      * the IRQ chain.
-> > > > > > +      * Since reading UART_RX clears interrupts, doing so with
-> > > > > > +      * FIFO disabled won't trigger PSLVERR.
-> > > > > > +      */
-> > > > > > +     serial_port_in(port, UART_RX);
-> > > > > > +     uart_port_unlock_irqrestore(port, flags);
-> > > > > >
-> > > > > >  #ifdef CONFIG_SERIAL_8250_RSA
-> > > > > >       /*
-> > > > > > @@ -2535,11 +2541,6 @@ void serial8250_do_shutdown(struct uart_=
-port *port)
-> > > > > >       disable_rsa(up);
-> > > > > >  #endif
-> > > > > >
-> > > > > > -     /*
-> > > > > > -      * Read data port to reset things, and then unlink from
-> > > > > > -      * the IRQ chain.
-> > > > > > -      */
-> > > > > > -     serial_port_in(port, UART_RX);
-> > > > > >       serial8250_rpm_put(up);
-> > > > > >
-> > > > > >       up->ops->release_irq(up);
-> > > > > >
-> > > > >
-> > > > > --
-> > > > >  i.
-> > > > >
-> > > >
-> > > > Thanks,
-> > > > Yunhui
-> > > >
-> > >
-> > > --
-> > >  i.
-> >
-> > Thanks,
-> > Yunhui
-> >
->
-> --
->  i.
+Not that this gets forgotten. Vignesh, is your theory still valid with 
+PREEMPT_RT not set?
 
-Thanks,
-Yunhui
+Francesco, were you able to test older Linux kernels in the meantime?
+
+
+Kind regards,
+
+Paul
