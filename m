@@ -1,124 +1,111 @@
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C47051E570D;
-	Tue, 13 May 2025 09:40:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C76C20DD7D;
+	Tue, 13 May 2025 10:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747129230; cv=none; b=K9VTNvtiFESNhh/D4YYm0PD92tNzk9gCtIc6/2ebNfQH6pY9C3gx2fCtVcPmK7gHjfGVjcfwpv22dPCjx0iGNFCE/GMzp1VT3m+WreR0P8JUQX7/9H7eHFJigxU/DCuau7/Yme0IYhxg4n2V14JX28UrWDuR19A/L1HL0hTQ5y0=
+	t=1747132563; cv=none; b=rf3CE91/F4Kx9BaFVfBYQnakrVFBC1RpZrKHRRAAAuWdEbW63Y2x3twG/kSrSM4ZAgAdlMdyvpOW0k6ceEiQ9WQT6EfavSmRb1UZU3AOUEjok/KgaF5BOhZ7kRhvMmJlaJJ0WmtQOJj1fxYJOuj5lcz0//8fi8iudKj1NQmzLkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747129230; c=relaxed/simple;
-	bh=1wIIwHD8c+CPmX9U6aGb2yK2udHw+4iA68GBonq3u8Y=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WVow3SYiR06dFy/92Aqs0RM2pX9a/YC2LxV54Ozh+Sc195+lbpE6jMOQvVG9PfSM7ATOJY/xyN9PhJgK1UYY7xXsHWlE6eEzTiLuoGOPoTMk+rcKx6yuUPyGy9gsVIw9EisVfomutMR/09Av+eDH0ucQ1v72Q3KoS6/uHGJ22Yk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-878427f091eso1487001241.3;
-        Tue, 13 May 2025 02:40:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747129226; x=1747734026;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=OLVlgbGY6C4NmUHQLVUAYE7yGL5LTr+dlKy+YPb+qSA=;
-        b=sJ0s32thJHSnsEAESTlHZrGbGBKypJu9ex9EqPPDJZgTJSMerD8xxv33x+LKou+fgD
-         V0mB5TwDu+gcpownkh0baokiNPziEnum+vVCx4EHV5KakCj/5KokUK9AYbjxMH37wbki
-         ++vC9GsOgGlE+Mym8c1rnQ2NH+QDsZvQdOHQ4eEzt2zWkgoYgmwFSQFkvxHyEQYxo8Yf
-         KojFpb/VyaxEgX4GMtd3w6X3z4N2zUCLdyiexUqYVOpa1fJINNzEhkIKcMMdbhl3OZEQ
-         DDfmR7A4NwtN7LB08ua+URU2BhAlAxgHOc8ggy9S6/CNnKinbEecLbYQ/RXV3CBcs+Wp
-         ed7g==
-X-Forwarded-Encrypted: i=1; AJvYcCU/i5aTP4xrPnmx+tO6BN0UrEIHho71WH5nlsgKrqas2LFZ/BKdt6AfeubmPs5aCClJPrA90vqENgloU7iJ@vger.kernel.org, AJvYcCW1Ax0Iaqg/b8Jcn5EDUxS+2sMwuDklMRfGj97jkasF1slF2Dv3CCxMieMOvX7NJ6hu8cKXR2DwZOcC@vger.kernel.org, AJvYcCWmIl/fKiueg1LGwhG4ESX9wtKv0m2F7EfSlHZsJWFaxSHQaQDyx1J8h4figiUOlQt2WbTD4tnHvCKAOH2ePORLgHk=@vger.kernel.org, AJvYcCXwFp/FKH2W2jRa6OiukzXbWq56PnxOcEVf8PibYF5WEiwbyAc9so1IliB/oEmw4DqcZHHrrMJZHo+dl3vP@vger.kernel.org
-X-Gm-Message-State: AOJu0YxzA4FbOqXbguzZD9OFRyeIiS25/m8zB2/jSK3BriS+vjNFv1uf
-	Xr9vIfM8pI4S6jD947bO3SoHcKjPKUAiE7tQlDJ2eyRFQLkH+MKPg2EjdsGu
-X-Gm-Gg: ASbGncv3l5Z5mWuyk6OAC96ak0XVuOlu3FRrmx9YkktmCcI8NqLVkKP1fzGBEO7XptN
-	Wq/d2f17E5ypIkxRHDSedCh286t3Sqr7HtZgFXIUEaoHAM5usLjHzfRxP2MLBJwngkJxamWHm3/
-	7jwqQxSHKu8S5mi41G+SJwN5ypx34g8nrnkYnM48s4y1ZvvskLEQgCZdrbzyBeyereJ8vB1obhE
-	7qVQA8le55KzV2eqTSOWWlnYQsrbNQiZTkiFrz2VreWrrQXdmH0yxGRlIr+WAe6X3sfI7t+XhA7
-	N6ld7e4WPJyxX4oNwfZs+3+kkCY9ZGbPMcs8WIbTpeNLj9XaGWdAJqG3WcrCFwj7dCyeSAE802T
-	cI9pMV66NdNI47Q==
-X-Google-Smtp-Source: AGHT+IE3B47kPtK8UhqwT/tACvgvfC0ea5Y6FSrSPPQcx0GYHA1fSNMO5tJpBQ8T6/RG72IV5Gu0Bw==
-X-Received: by 2002:a05:6102:3c9f:b0:4dc:81c9:13b1 with SMTP id ada2fe7eead31-4deed227f12mr14340536137.0.1747129226568;
-        Tue, 13 May 2025 02:40:26 -0700 (PDT)
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-52c565cc6d9sm6903223e0c.5.2025.05.13.02.40.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 May 2025 02:40:26 -0700 (PDT)
-Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-87843d9d40bso1416458241.2;
-        Tue, 13 May 2025 02:40:26 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUFiX+I2UryBDfV3ADIRhZPl5jf8QwltmhpIqnZ2WwmCagXg5It/OgFQTWgiwIRKABjwBai0wWi54A2Dqpl@vger.kernel.org, AJvYcCUMvGh3DFVfZg8EWbgraosHGbUvOZXqBD3UwIPsBD1D4gU27gWxBIrWRfg4LgBz/M9elgfITtYXoFVa@vger.kernel.org, AJvYcCUccVMbPGoJVG1OUl1UB9W+ds59DKhT+WD6hI7K2KhTQmPeYnSBdpXzHMYubdF8VNpvSvQ5fbAjfMjBy7JQBl1t0lY=@vger.kernel.org, AJvYcCUl7VsP4vYrWbj9LHkHd2lmNlNM0jssXV8RwcStpjSqdosiGj4T0FiCl6/ptz6FsRydoDDV7+i/2arK+9a4@vger.kernel.org
-X-Received: by 2002:a05:6102:2c02:b0:4de:81a:7d49 with SMTP id
- ada2fe7eead31-4deed351e14mr13783445137.8.1747129226114; Tue, 13 May 2025
- 02:40:26 -0700 (PDT)
+	s=arc-20240116; t=1747132563; c=relaxed/simple;
+	bh=k3cgEGFvfI+UR2OHsoaQoAD1vBhtb9YfwTLJV34Qngc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sTbEreo7ukxDNnTSgFZrR21lM6r4WqR26Gs/CfjSzxNvkNwSYvtji4ugfgFxtBmuyJ0h/r4S6y8oUEV5M19uZIdDTmwv3V+tkeJtpOQEofbMVFtwk/pbi+GLQF/F1doU+Wma3VGR8jv9ME+kzp17FQ4JzTiuLtyBWi9dcvnAUZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XTjzYX11; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XTjzYX11"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD03CC4CEED;
+	Tue, 13 May 2025 10:36:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1747132562;
+	bh=k3cgEGFvfI+UR2OHsoaQoAD1vBhtb9YfwTLJV34Qngc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=XTjzYX11lSDlj43OY//wkzH5rBC//EQ4PT6KNoCIKW/3tKqK2xqbZZctfDTNMUBh+
+	 A7IWAJHG22LNjhGjFj5joYur0n7XibKwRQX6yGk+ynXSyEb0X+JdrxilkT4cs4KmFR
+	 r6JtEfsZkzhvsMjGowFzV9XesXA+Q9ldJ8X9mrvF4bn/39/HNOjINukXMZYPArEP0L
+	 y7cD398u6U7pWV8KFq5XjH2lHWCSqMg7FxlXN6/4kdP81HA4K448OPAzdDlzWMP5zn
+	 uL7M+Ot3mkOwlVhUNYTdHBc69Ygq4WUFgBpiE2nc3+x6DngrYvtn/3iW+1Y2Ebv0Ho
+	 /bJdaru0FPqOg==
+Message-ID: <a1123fe1-b242-4b01-9883-82b2c4e0a0df@kernel.org>
+Date: Tue, 13 May 2025 12:35:59 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250429081956.3804621-1-thierry.bultel.yh@bp.renesas.com>
- <20250429081956.3804621-2-thierry.bultel.yh@bp.renesas.com> <20250509185858.GA3933854-robh@kernel.org>
-In-Reply-To: <20250509185858.GA3933854-robh@kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 13 May 2025 11:40:14 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUBo98nA4=VVVe2YDeFTKFx+ynuDox_tV17cmGw2acLAg@mail.gmail.com>
-X-Gm-Features: AX0GCFtDW9XhFJSnWBy8wJPJMO9llEfB3d8gRYXObtTzIaElJDfhlG-xRp6Jb2A
-Message-ID: <CAMuHMdUBo98nA4=VVVe2YDeFTKFx+ynuDox_tV17cmGw2acLAg@mail.gmail.com>
-Subject: Re: [PATCH v8 01/11] dt-bindings: serial: Added secondary clock for
- RZ/T2H RSCI
-To: Rob Herring <robh@kernel.org>
-Cc: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, thierry.bultel@linatsea.fr, 
-	linux-renesas-soc@vger.kernel.org, paul.barker.ct@bp.renesas.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/8] vt: introduce gen_ucs_fallback_table.py to create
+ ucs_fallback_table.h
+To: Nicolas Pitre <nico@fluxnic.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nicolas Pitre <npitre@baylibre.com>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20250507141535.40655-1-nico@fluxnic.net>
+ <20250507141535.40655-5-nico@fluxnic.net>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
+ rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
+ rSD5CwQl19fm4AJCS6A9GJtOoiLpWn2/IbogPc71jQVrupZYYx51rAaHZ0D2KYK/uhfc6neJ
+ i0WqPlbtIlIrpvWxckucNu6ZwXjFY0f3qIRg3Vqh5QxPkojGsq9tXVFVLEkSVz6FoqCHrUTx
+ wr+aw6qqQVgvT/McQtsI0S66uIkQjzPUrgAEtWUv76rM4ekqL9stHyvTGw0Fjsualwb0Gwdx
+ ReTZzMgheAyoy/umIOKrSEpWouVoBt5FFSZUyjuDdlPPYyPav+hpI6ggmCTld3u2hyiHji2H
+ cDpcLM2LMhlHBipu80s9anNeZhCANDhbC5E+NZmuwgzHBcan8WC7xsPXPaiZSIm7TKaVoOcL
+ 9tE5aN3jQmIlrT7ZUX52Ff/hSdx/JKDP3YMNtt4B0cH6ejIjtqTd+Ge8sSttsnNM0CQUkXps
+ w98jwz+Lxw/bKMr3NSnnFpUZaxwji3BC9vYyxKMAwNelBCHEgS/OAa3EJoTfuYOK6wT6nadm
+ YqYjwYbZE5V/SwzMbpWu7Jwlvuwyfo5mh7w5iMfnZE+vHFwp/wARAQABzSFKaXJpIFNsYWJ5
+ IDxqaXJpc2xhYnlAa2VybmVsLm9yZz7CwXcEEwEIACEFAlW3RUwCGwMFCwkIBwIGFQgJCgsC
+ BBYCAwECHgECF4AACgkQvSWxBAa0cEnVTg//TQpdIAr8Tn0VAeUjdVIH9XCFw+cPSU+zMSCH
+ eCZoA/N6gitEcnvHoFVVM7b3hK2HgoFUNbmYC0RdcSc80pOF5gCnACSP9XWHGWzeKCARRcQR
+ 4s5YD8I4VV5hqXcKo2DFAtIOVbHDW+0okOzcecdasCakUTr7s2fXz97uuoc2gIBB7bmHUGAH
+ XQXHvdnCLjDjR+eJN+zrtbqZKYSfj89s/ZHn5Slug6w8qOPT1sVNGG+eWPlc5s7XYhT9z66E
+ l5C0rG35JE4PhC+tl7BaE5IwjJlBMHf/cMJxNHAYoQ1hWQCKOfMDQ6bsEr++kGUCbHkrEFwD
+ UVA72iLnnnlZCMevwE4hc0zVhseWhPc/KMYObU1sDGqaCesRLkE3tiE7X2cikmj/qH0CoMWe
+ gjnwnQ2qVJcaPSzJ4QITvchEQ+tbuVAyvn9H+9MkdT7b7b2OaqYsUP8rn/2k1Td5zknUz7iF
+ oJ0Z9wPTl6tDfF8phaMIPISYrhceVOIoL+rWfaikhBulZTIT5ihieY9nQOw6vhOfWkYvv0Dl
+ o4GRnb2ybPQpfEs7WtetOsUgiUbfljTgILFw3CsPW8JESOGQc0Pv8ieznIighqPPFz9g+zSu
+ Ss/rpcsqag5n9rQp/H3WW5zKUpeYcKGaPDp/vSUovMcjp8USIhzBBrmI7UWAtuedG9prjqfO
+ wU0ETpLnhgEQAM+cDWLL+Wvc9cLhA2OXZ/gMmu7NbYKjfth1UyOuBd5emIO+d4RfFM02XFTI
+ t4MxwhAryhsKQQcA4iQNldkbyeviYrPKWjLTjRXT5cD2lpWzr+Jx7mX7InV5JOz1Qq+P+nJW
+ YIBjUKhI03ux89p58CYil24Zpyn2F5cX7U+inY8lJIBwLPBnc9Z0An/DVnUOD+0wIcYVnZAK
+ DiIXODkGqTg3fhZwbbi+KAhtHPFM2fGw2VTUf62IHzV+eBSnamzPOBc1XsJYKRo3FHNeLuS8
+ f4wUe7bWb9O66PPFK/RkeqNX6akkFBf9VfrZ1rTEKAyJ2uqf1EI1olYnENk4+00IBa+BavGQ
+ 8UW9dGW3nbPrfuOV5UUvbnsSQwj67pSdrBQqilr5N/5H9z7VCDQ0dhuJNtvDSlTf2iUFBqgk
+ 3smln31PUYiVPrMP0V4ja0i9qtO/TB01rTfTyXTRtqz53qO5dGsYiliJO5aUmh8swVpotgK4
+ /57h3zGsaXO9PGgnnAdqeKVITaFTLY1ISg+Ptb4KoliiOjrBMmQUSJVtkUXMrCMCeuPDGHo7
+ 39Xc75lcHlGuM3yEB//htKjyprbLeLf1y4xPyTeeF5zg/0ztRZNKZicgEmxyUNBHHnBKHQxz
+ 1j+mzH0HjZZtXjGu2KLJ18G07q0fpz2ZPk2D53Ww39VNI/J9ABEBAAHCwV8EGAECAAkFAk6S
+ 54YCGwwACgkQvSWxBAa0cEk3tRAAgO+DFpbyIa4RlnfpcW17AfnpZi9VR5+zr496n2jH/1ld
+ wRO/S+QNSA8qdABqMb9WI4BNaoANgcg0AS429Mq0taaWKkAjkkGAT7mD1Q5PiLr06Y/+Kzdr
+ 90eUVneqM2TUQQbK+Kh7JwmGVrRGNqQrDk+gRNvKnGwFNeTkTKtJ0P8jYd7P1gZb9Fwj9YLx
+ jhn/sVIhNmEBLBoI7PL+9fbILqJPHgAwW35rpnq4f/EYTykbk1sa13Tav6btJ+4QOgbcezWI
+ wZ5w/JVfEJW9JXp3BFAVzRQ5nVrrLDAJZ8Y5ioWcm99JtSIIxXxt9FJaGc1Bgsi5K/+dyTKL
+ wLMJgiBzbVx8G+fCJJ9YtlNOPWhbKPlrQ8+AY52Aagi9WNhe6XfJdh5g6ptiOILm330mkR4g
+ W6nEgZVyIyTq3ekOuruftWL99qpP5zi+eNrMmLRQx9iecDNgFr342R9bTDlb1TLuRb+/tJ98
+ f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
+ DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
+ S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
+In-Reply-To: <20250507141535.40655-5-nico@fluxnic.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Rob,
+On 07. 05. 25, 16:13, Nicolas Pitre wrote:
+> From: Nicolas Pitre <npitre@baylibre.com>
+> 
+> The generated table maps complex characters to their simpler fallback
+> forms for a terminal display when corresponding glyphs are unavailable.
+> This includes diacritics, symbols as well as many drawing characters.
+> Fallback characters aren't perfect replacements, obviously. But they are
+> still far more useful than a bunch of squared question marks.
+> 
+> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 
-On Fri, 9 May 2025 at 20:59, Rob Herring <robh@kernel.org> wrote:
-> On Tue, Apr 29, 2025 at 10:19:43AM +0200, Thierry Bultel wrote:
-> > At boot, the default clock is the PCLKM core lock (synchronous
-> > clock, which is enabled by the bootloader).
-> > For different baudrates, the asynchronous clock input must be used.
-> > Clock selection is made by an internal register of RCSI.
-> >
-> > Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> > ---
-> >  .../bindings/serial/renesas,rsci.yaml          | 18 +++++++++---------
-> >  1 file changed, 9 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-> > index ea879db5f485..aa2428837a2f 100644
-> > --- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-> > @@ -35,10 +35,14 @@ properties:
-> >        - const: tei
-> >
-> >    clocks:
-> > -    maxItems: 1
-> > +    items:
-> > +      - description: serial functional clock
-> > +      - description: default core clock
-> >
-> >    clock-names:
-> > -    const: fck # UART functional clock
-> > +    items:
-> > +      - const: async
-> > +      - const: bus
->
-> This is an ABI change. You can't just drop 'fck' without good reasons.
+Much better!
 
-This is fine, as there are no users yet.
-The initial DT bindings were written based on a limited understanding of
-the device.  Let's hope our current understanding is less limited ;-)
-
-Gr{oetje,eeting}s,
-
-                        Geert
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+js
+suse labs
