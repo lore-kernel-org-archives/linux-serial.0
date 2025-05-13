@@ -1,36 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 421072D7BF;
-	Tue, 13 May 2025 07:37:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEAF41E5B94;
+	Tue, 13 May 2025 07:49:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747121826; cv=none; b=YvwngdpSqmWBU89b5+0leqSheM4Efwf4qpy9HSyWgaetbAIbvs4qrQjrH7/ZcYIT4c8WgvBxdtias8T3nJh/qcKrZ3yP9RZ5yqndrw4Bcn8f4wzMJ9j1eKE5dupxVYrTOLchu90rQz1Oy5z6VsQjbHDuBEcCEa1UmizN9Lxel58=
+	t=1747122591; cv=none; b=URFxxIC+sV5NTM595YjVU8CxeE7/Cn0sU2fqnioetpItBnukas/xiypj+zGC62/T7Gdg8yqn5Q/01ZSqC7E8NDvS6oU+eHxu2ep91aX/UC1fGZjeu5jrWevkNU9Hk9bTPrP4aZwt88sF6ofittY3yi/JbNllTgKnnNpKn+Znqkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747121826; c=relaxed/simple;
-	bh=3eJWzTh8RQPPZqSzUIOgAER3ng2OBNfm7iT2iwjU8Cc=;
+	s=arc-20240116; t=1747122591; c=relaxed/simple;
+	bh=z+XKwlKxvho0rlpEIn0bjoCqOXNrPIEWodnNK5WbJJI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MXQEIza4rycV/Z+y4/zeWtpYkF6YG533zzlcRoZFWpc4MoJruUGGrNURqDiGughbrkeiY7T7nAmNPx1hbyCX0jOBRMQQB2nxqBISfq/I9u+vEOUo7nBpWwFHvplcCcwLkrM9Tf0FUjv+64SsgKunqae3V8Nxnyy9jDN3AEkwAps=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=scm7ESZP; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=JYViPWda8p+NEHHCvzN5Yo8bR6JbL4Ii672Z9Z0pMn4FTV1XVG0Uxrv+PkVOotsqVM4yvlvEVuT6I5h3N+4JMBMTdZTMdIAOXrsGPfCtMmWuLBXjChnVjfTIYZbeJLOX5XdSwx6o4Hz1+wNrEs/F9ypg53zmL+9VhUETCKpw1uU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ICyfMrK8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="scm7ESZP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9F4C4CEE4;
-	Tue, 13 May 2025 07:37:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ICyfMrK8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE39EC4CEE4;
+	Tue, 13 May 2025 07:49:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747121824;
-	bh=3eJWzTh8RQPPZqSzUIOgAER3ng2OBNfm7iT2iwjU8Cc=;
+	s=k20201202; t=1747122590;
+	bh=z+XKwlKxvho0rlpEIn0bjoCqOXNrPIEWodnNK5WbJJI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=scm7ESZPqGKRICUMPr0ebRK/9FLzyDjTKcWLva5L6oU2ggz0+sB3iI801PyQcK0mK
-	 /meQaHzbsmhKsoIVhHX0/F589L34t+QE+xYW1QE+p/3pRDzJlwBK2K6pgZBj0zw1WI
-	 BTAB7Bd2vGF90fKutKOszz3KrrlkuBZHxZvDL4ZIxCCMTi6t/rGi+xyj8xoYqfOWv2
-	 JPFj88qlpmVDUpYAfGItnUsoBm3zhWlI4m+rGq7IzeoTqOwA1v/w/COBIuv7bA+/Ov
-	 1IDRsWZyjHwVUl1c3hVguVXcxHW15fdcdUIQYHp5qFwFtEoTbP2X2Qugmer+edJHt+
-	 2heXJWzcGhAMw==
-Date: Tue, 13 May 2025 09:37:00 +0200
+	b=ICyfMrK8mhiA/OukQgVVroae9K1GoFJUvWMzgTt2E9VSNfkJVyx/BiJXh7hDwRupN
+	 vQugGeWqM/CZbN07jv+GX+v7HG44hoBoz7j1e/xSsj/MrkgkUaxC8Vw0zpZT6eeXFR
+	 5pDKYrmSzylrdVyA6z2oLJNWxwsu9Af9MqA46swDCjseS7ly4YQ6W7qzvB90G9vcKN
+	 gMPsr6tcbDpNY+sLEN8fVVA1Fe8zFmpd9TUPkKiRRjfBxBjA4oUQh/ABIb0I+ai1VE
+	 T6A0zExe59APk/1qaqjF8GO+BWLk9cBZFzQs2DCDYTAXkhKk1Slpx2OsT44RbP5ASH
+	 fZ8VPCWKfD5EQ==
+Date: Tue, 13 May 2025 09:49:43 +0200
 From: Joel Granados <joel.granados@kernel.org>
-To: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Petr Pavlu <petr.pavlu@suse.com>, 
-	Sami Tolvanen <samitolvanen@google.com>, Daniel Gomez <da.gomez@samsung.com>, Kees Cook <kees@kernel.org>, 
+To: Kees Cook <kees@kernel.org>
+Cc: Luis Chamberlain <mcgrof@kernel.org>, Petr Pavlu <petr.pavlu@suse.com>, 
+	Sami Tolvanen <samitolvanen@google.com>, Daniel Gomez <da.gomez@samsung.com>, 
 	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>, 
 	Boqun Feng <boqun.feng@gmail.com>, Waiman Long <longman@redhat.com>, 
 	"Paul E. McKenney" <paulmck@kernel.org>, Frederic Weisbecker <frederic@kernel.org>, 
@@ -43,12 +43,11 @@ Cc: Petr Pavlu <petr.pavlu@suse.com>,
 	Jiri Slaby <jirislaby@kernel.org>, linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	linux-fsdevel@vger.kernel.org, rcu@vger.kernel.org, linux-mm@kvack.org, 
 	linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 01/12] module: Move modprobe_path and modules_disabled
- ctl_tables into the module subsys
-Message-ID: <3mco5hjj2lefeyyoy2wcm63fl3wh2qvac57puktpqpwx7vpunf@63vk55fgiikt>
+Subject: Re: [PATCH 07/12] Input: sysrq: mv sysrq into drivers/tty/sysrq.c
+Message-ID: <ddkgmitslawut5zmeinxvuiwsfzxx5ysn5gtuvruemnnrhicwn@lkpckufsinum>
 References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
- <20250509-jag-mv_ctltables_iter2-v1-1-d0ad83f5f4c3@kernel.org>
- <aB4oyFBMH4PKjJn0@bombadil.infradead.org>
+ <20250509-jag-mv_ctltables_iter2-v1-7-d0ad83f5f4c3@kernel.org>
+ <202505091010.F2F8C676@keescook>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -56,75 +55,59 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ormwqfkrprpiilub"
+	protocol="application/pgp-signature"; boundary="4m4abidfdrbxi5yd"
 Content-Disposition: inline
-In-Reply-To: <aB4oyFBMH4PKjJn0@bombadil.infradead.org>
+In-Reply-To: <202505091010.F2F8C676@keescook>
 
 
---ormwqfkrprpiilub
+--4m4abidfdrbxi5yd
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, May 09, 2025 at 09:09:44AM -0700, Luis Chamberlain wrote:
-> On Fri, May 09, 2025 at 02:54:05PM +0200, Joel Granados wrote:
-> > diff --git a/kernel/module/kmod.c b/kernel/module/kmod.c
-> > index 25f25381251281a390b273cd8a734c92b960113a..5701629adc27b4bb5080db7=
-5f0e69f9f55e9d2ad 100644
-> > --- a/kernel/module/kmod.c
-> > +++ b/kernel/module/kmod.c
-> > @@ -60,7 +60,7 @@ static DEFINE_SEMAPHORE(kmod_concurrent_max, MAX_KMOD=
-_CONCURRENT);
-> >  /*
-> >  	modprobe_path is set via /proc/sys.
-> >  */
-> > -char modprobe_path[KMOD_PATH_LEN] =3D CONFIG_MODPROBE_PATH;
-> > +static char modprobe_path[KMOD_PATH_LEN] =3D CONFIG_MODPROBE_PATH;
-> > =20
-> >  static void free_modprobe_argv(struct subprocess_info *info)
-> >  {
-> > @@ -177,3 +177,33 @@ int __request_module(bool wait, const char *fmt, .=
-=2E.)
-> >  	return ret;
-> >  }
-> >  EXPORT_SYMBOL(__request_module);
-> > +
-> > +#ifdef CONFIG_MODULES
+On Fri, May 09, 2025 at 10:10:28AM -0700, Kees Cook wrote:
+> On Fri, May 09, 2025 at 02:54:11PM +0200, Joel Granados wrote:
+> > Move both sysrq ctl_table and supported sysrq_sysctl_handler helper
+> > function into drivers/tty/sysrq.c. Replaced the __do_proc_dointvec in
+> > helper function with do_proc_dointvec as the former is local to
+> > kernel/sysctl.c.
 >=20
-> kernel/Makefile:
->=20
-> obj-$(CONFIG_MODULES) +=3D module/
->=20
-> And so you can drop this ifdef.
-Done. Modified in my version, but will not bother to send a V2 for this.
->=20
-> Other than that:
->=20
-> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
->=20
->   Luis
->=20
+> nit: do_proc_dointvec_minmax
+Thx. I even added a small comment to the commit message to clarify:
+```
+Move both sysrq ctl_table and supported sysrq_sysctl_handler helper
+function into drivers/tty/sysrq.c. Replaced the __do_proc_dointvec in
+helper function with do_proc_dointvec_minmax as the former is local to
+kernel/sysctl.c. Here we use the minmax version of do_proc_dointvec
+because do_proc_dointvec is static and calling do_proc_dointvec_minmax
+with a NULL min and max is the same as calling do_proc_dointvec.
+```
+
+I'll also put a comment in the code to make sure that a min max is not
+added by mistake.
+
+Best
 
 --=20
 
 Joel Granados
 
---ormwqfkrprpiilub
+--4m4abidfdrbxi5yd
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmgi9psACgkQupfNUreW
-QU8bzwv9GHn9q80K4WLodwErjZKnXswr6KwUEI0c9eHsdmFPBt2RjTo06HJtguMb
-0kvfMFNn2PAooIe37ym5MHSod9+xcOVLlQY/8A2ClIf9NBaPsWMIkkyM+KhWcO8i
-0E8Nfni6EKPbAAurHklbRft1cnpRSz2FM5yc8USBLQSDjY8lHDGUBYRiKLeiuZdu
-BD2oTfxU1HKKvv+k4IAonAsRc5fX9WKeVCcJqRBRx3iI7zsqyArktttxXuDgSf9e
-Sny9c88uZGwsqdFolhgmv0HZF+/94DZobqzW0FS3Vs3N2CPPi0NsqRDnC62U8cDx
-ez/K2w4byBXR85L7MG6DWLFy5nyCFrNPzIuKQdVrqDvBVfAfJUIZWdT18OskOJsC
-AocFglwyj5U28DU6J6oRfGwouGeKsn5f9GhQOjRoVQGsXZ7LUVJ/vAmXtNOBr8w6
-fcJDSP+sr2iphL7RnV35xdEz+sAAhulDj8ka3odtUmKoJC6P0UWf4qIAQpT7HAud
-ZENwtTtF
-=LNIR
+iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmgi+ZcACgkQupfNUreW
+QU+v4Qv/efXaubw/UZ0/uYrlHOJZg+VxZvyldRdbiHjo3Ub408gh2trrRYtceCsY
+ICssy3kBVRggr7y+KLqjXZZOVoAz8/PVXR38X+6FozTLuSpwrtIY0vLeXeew7GU0
+kwYWrcn+MtqfBuo32INYySExZJs7/NoQLVqGwQrPIdRhuM/N/srMoe/uGeMwQnhl
+mLdzg3jlOdcYSxbKj6bdCMBg/2qHTWIv9iVQfdRNy3bALXOmvGJNlHBgd2qROsyg
+T7Y78uAfyz2h/mnTrRi0JxjssYLfjFQLoy2+Y/KBwonDdAyRRRQg6na93jB+DJWs
+Veq4CcLz5XA4OfxXNPosQYtrfzKUahzQSiwGvOq4F+fNhp2JrHf3jYmojoC2pPSN
+e0AV2jZBVk7Y+gkyeEkYgEF9A7AtHqFXLlCc5wovR/dYG8seSJWLuaVkphB0oXdC
+QK0b1e9pm6iy1k5xhRhP7KZCcoqynySk816gPhatZI0ARh0+5YJT8D2TEJYkCvJx
+IoAnZ+8h
+=dHUN
 -----END PGP SIGNATURE-----
 
---ormwqfkrprpiilub--
+--4m4abidfdrbxi5yd--
