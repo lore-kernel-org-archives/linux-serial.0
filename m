@@ -1,257 +1,109 @@
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com [209.85.222.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fllvem-ot03.ext.ti.com (fllvem-ot03.ext.ti.com [198.47.19.245])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11D317482;
-	Tue, 13 May 2025 13:30:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 282661F4C90;
+	Tue, 13 May 2025 21:59:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.245
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747143007; cv=none; b=MDRMtANxfA0llNQNWuexx57LQfd5TjGorWDZ1u/XEunVPSLRh9asR/Jw4XNKN5yQ7qmF+HgeSCzbqYP6bxqAvcy8Se4sCkAsMIs/UneFeqyAcoSt2SSoyLg8SXO3pqss1lYPZC96aK3qxUz/CZh8tGjGgv9GpIWPL/3FQAA10SQ=
+	t=1747173587; cv=none; b=tHd/reQs4wueelXi9RSrEd1dnwZp/QIgFwI4p3K2sCEGOnafVcWXIrJqBhjoA6GoUkkhJloU3YQwaM7JUb58A13jFpJQ6EZg2Xnn1An7pIz8G9OzqBn6waLIAZGnXtvt1FZh7yvjmPf9qQAAa0tiqzsgAzGTlRQqw3XSyyA7tjk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747143007; c=relaxed/simple;
-	bh=1/jT1irQV0hD0/JfAceUMneUWj/CaNn1xhCEvSmqDyw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XI7vwHTwtApnM+LNRhRjobSi1lD+D+rVplDhEgV17jfoucZIJmUvm3qIzl6fWPOgYsPzMgyUF9+FL6CE0Jz8qwzOPTepZlveKvqNf/xNmzG0a708+LngMMqu4ZpFYDCNE5pfF7WRHIXa+90BATxntw7ytmBXC7xNiOQlMbaxPME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f46.google.com with SMTP id a1e0cc1a2514c-86d587dbc15so4023816241.1;
-        Tue, 13 May 2025 06:30:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747143003; x=1747747803;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=h5p2EOZr1+EqtWMypguUKgD4pFT1Q96G1mqgN1MElIE=;
-        b=XD2Xc/36V6m0nH2t9zAQpSxKtFdMOgP9EE4UrIT0zLlKnkDrzcOdxc9Lnmy5anS8Ba
-         pv2GlPv4ZEYckedco33logj6Ab1f4G2zbJGNyaEI0ISAEi5p5Nfl0/bkLnsGg+pm/3t5
-         UE575qKYvAd0Wt2gOtxKL/If5t7pXNeirzvJbj9zvV5o3C1cRBi7g4MGCTKz6pAE3rcN
-         LyUEvMB9vgw0VQ/m4dLYxzIDHM/ynM+3nFHyAlOp8x6LeojX7qAT7pPnu5md7Xts+5Mb
-         t+/KOTXWErQ+DE0BX8TrgiPI6YGmQlXkk5K43A2DX19qaiGI2Hv83E4STJpdofq+B07X
-         qkwA==
-X-Forwarded-Encrypted: i=1; AJvYcCUXzZSMsjXFsCGmi4pWckJ6mOrRpWqpk16SMgDMEjlbkBZa5EMLk9r6dKR/K/oALX++bQ25lgDoANWB7XR6@vger.kernel.org, AJvYcCWbsXJES9MnCcCsUitjIY6Gfzfm5oNP6nmWP1EtJnRbXCccMk8hC9MorumFrlUU9BFR0L5Hlsjo0zTO4H0=@vger.kernel.org, AJvYcCXk4AEWyMFqn5Cr8rfwRmsxcZ+Fqr7tqAVPrTCORPs7++MeuwWVsdT7I5RkukfbrxJc8JP1/KD4Lnh7u+jBKxD1Rj8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwUuUbNf0uGUhxm2R7y4imzv7K1jFrz/W4B9XiSC36QFFcacguE
-	DcveIjv/nqvPie3KX1IaaBG2KHOBUpWQ3U4sDNErNr1YGJ+IpX5uOcJR68ru
-X-Gm-Gg: ASbGnctGmEPk1xp0e5oMrWsL4z4IUQlypNa9fGZDff5g9Mr2+WyIlGrpUka7nrfvhhg
-	z1mWIe5ahimva2APDgHE2xlZYE0mLK83c50ZnAXNoaJ0HiMrCMLGn4Y7z6INiw5a4GsnB21wkQH
-	5cvxGEb6KQ7vQf7e3Wnr0itEtKlIAEBC44KOk06xBGbtp4d21OJbHq1pO3r5D/z7FnDLwo9gDfL
-	Mt6j0kFy1ig+crXzgNretjKaeSbnT1ZFi6vjsgGglvxzN1MmZh4BTacUp6Pl200d9IqrSvpdy1g
-	0yqx15esBEqYH0/LR+Px6Lwkq6HcKasiQc/gB7o6zh6wEk20/EEHd7P9oP40Vf5ulpvX5cnexXL
-	6vDmaH4uP1TyF7w==
-X-Google-Smtp-Source: AGHT+IH97OBudEFVi67EJYdOq4olbIc6UPdocpSzR2esCNaCdDdzY3+bejv//rCh/sbYCHYsMURfcQ==
-X-Received: by 2002:a05:6102:2b9a:b0:4cb:644f:fc51 with SMTP id ada2fe7eead31-4df6e3958f4mr2491512137.9.1747143002529;
-        Tue, 13 May 2025 06:30:02 -0700 (PDT)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4deb20173d5sm6517847137.23.2025.05.13.06.30.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 May 2025 06:30:02 -0700 (PDT)
-Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-86d587dbc15so4023788241.1;
-        Tue, 13 May 2025 06:30:01 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVmRdhqcLlpy84Izx50RID8eSVHz13kUqg62Db/FrZOD14h04/E8/A1ioPxdGGY2u9fE6fb6h2N9WKgxhQ=@vger.kernel.org, AJvYcCXMFKiRLMPyi71ZIlkoNf4R+wvN0Wskcz6e8ypkZKkdcNAZQ7dLZYssTra0lSAprrS2PMEddo/cuJFqyGWm@vger.kernel.org, AJvYcCXlKQWaOWu5NYWZJQDpH5TNmfC+DKeCwSKXd5QE5LngA/PbRxM7bnayAVoNcOiuJXnip4YZ5mIxr0FwxJfVqJkklYA=@vger.kernel.org
-X-Received: by 2002:a67:e408:0:b0:4db:10bf:6f2c with SMTP id
- ada2fe7eead31-4df6e4da24emr2536824137.11.1747143001753; Tue, 13 May 2025
- 06:30:01 -0700 (PDT)
+	s=arc-20240116; t=1747173587; c=relaxed/simple;
+	bh=BtounoG/vKSbu3tsaWeS/rSZEDXAUdtFU0rHDEv38No=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Js72Yc1pnZppHAKXIepS/AW9cgcgj3wttpgs34jSYSbNLKTK9vp2k9mQK6w93O1hVDvRXlta8sb0NsF/fnb7lwCpUFLjm/pNKyJ0DGnmX/itl0tkuOaM3wi3HsVFw5si1OSVFoczUAOKj3maGYtQB/dkxOdFh0S2764eNoxdqyk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=p3Lt/g9G; arc=none smtp.client-ip=198.47.19.245
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="p3Lt/g9G"
+Received: from lelvem-sh01.itg.ti.com ([10.180.77.71])
+	by fllvem-ot03.ext.ti.com (8.15.2/8.15.2) with ESMTP id 54DLxaSb2425891;
+	Tue, 13 May 2025 16:59:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1747173576;
+	bh=eg2RLq5HKtaxZ8TLlhhXyUxGYIdmPjE+5+PbHdsfi00=;
+	h=From:To:CC:Subject:Date:In-Reply-To:References;
+	b=p3Lt/g9G0a88NqAQhNyRc900jqn7/juwG4vqL1a5QKK8GUYbq7PuZFU7gJczi7B7p
+	 qmJNbN3TTH3CYnP03w90YQDRjluasJwCTBfDeIVyiLzUQnjLWse+zmB3dcF0fnypkB
+	 Gxt7nep74RR/gTXh2YRIQ+TUqXizNF+VdxGbm/uw=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+	by lelvem-sh01.itg.ti.com (8.18.1/8.18.1) with ESMTPS id 54DLxZpw1915694
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-SHA256 bits=128 verify=FAIL);
+	Tue, 13 May 2025 16:59:35 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Tue, 13
+ May 2025 16:59:35 -0500
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Tue, 13 May 2025 16:59:35 -0500
+Received: from judy-hp.dhcp.ti.com (judy-hp.dhcp.ti.com [128.247.81.105])
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 54DLxYdH111031;
+	Tue, 13 May 2025 16:59:35 -0500
+From: Judith Mendez <jm@ti.com>
+To: Judith Mendez <jm@ti.com>,
+        Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+CC: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Santosh
+ Shilimkar <ssantosh@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero
+ Kristo <kristo@kernel.org>, Bin Liu <b-liu@ti.com>,
+        Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>,
+        Andrew Davis <afd@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH 6/7] DONOTMERGE: arm64: dts: ti: k3-am62-main: Add PRU UART node
+Date: Tue, 13 May 2025 16:59:33 -0500
+Message-ID: <20250513215934.933807-7-jm@ti.com>
+X-Mailer: git-send-email 2.49.0
+In-Reply-To: <20250513215934.933807-1-jm@ti.com>
+References: <20250513215934.933807-1-jm@ti.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250429081956.3804621-1-thierry.bultel.yh@bp.renesas.com> <20250429081956.3804621-9-thierry.bultel.yh@bp.renesas.com>
-In-Reply-To: <20250429081956.3804621-9-thierry.bultel.yh@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 13 May 2025 15:29:49 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVVdr0R4a1WpsQ7-2fO3G_dXdwDfW367m=7VKmbEP_Xxg@mail.gmail.com>
-X-Gm-Features: AX0GCFu8VBeDSuejzlHlLhABhkfYHWHqiFlAAnr60hE8ObYp29deqasE78gcWao
-Message-ID: <CAMuHMdVVdr0R4a1WpsQ7-2fO3G_dXdwDfW367m=7VKmbEP_Xxg@mail.gmail.com>
-Subject: Re: [PATCH v8 08/11] serial: sh-sci: Add support for RZ/T2H SCI
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org, 
-	paul.barker.ct@bp.renesas.com, 
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
 
-Hi Thierry,
+There is one PRU UART module in the PRU subsystem for am62 SoC.
 
-Thanks for the update!
+Add a PRU UART child node in PRUSS node in am62 main voltage
+domain .dtsi file for am62x device.
 
-You forgot to CC the serial maintainers.
+Signed-off-by: Judith Mendez <jm@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-am62-main.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-On Tue, 29 Apr 2025 at 10:20, Thierry Bultel
-<thierry.bultel.yh@bp.renesas.com> wrote:
->
-> Define a new RSCI port type, and the RSCI 32 bits registers set.
-> The RZ/T2H SCI has a a fifo, and a quite different set of registers
-> from the orginal SH SCI ones.
+diff --git a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
+index 9e0b6eee9ac7..c012f33f4609 100644
+--- a/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am62-main.dtsi
+@@ -1144,6 +1144,15 @@ pruss_intc: interrupt-controller@20000 {
+ 					  "host_intr6", "host_intr7";
+ 		};
+ 
++		pruss_uart: serial@28000 {
++			compatible = "ti,pruss-uart";
++			reg = <0x28000 0x40>;
++			clocks = <&k3_clks 81 13>; /* pruss_uart_clk */
++			interrupt-parent = <&pruss_intc>;
++			interrupts = <6 4 4>;
++			status = "disabled";
++		};
++
+ 		pru0: pru@34000 {
+ 			compatible = "ti,am625-pru";
+ 			reg = <0x34000 0x3000>,
+-- 
+2.49.0
 
-original
-
-> DMA is not supported yet.
->
-> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> ---
-> Changes v7->v8:
->   - s/rzsci/rsci/g
->   - declared SCI_PORT_RSCI as private port ID
->   - look for secondary clock
->   - report error when rsci clocks are not found
-
-> --- a/drivers/tty/serial/Kconfig
-> +++ b/drivers/tty/serial/Kconfig
-> @@ -675,6 +675,13 @@ config SERIAL_SH_SCI_DMA
->         depends on SERIAL_SH_SCI && DMA_ENGINE
->         default ARCH_RENESAS
->
-> +config SERIAL_RSCI
-> +       tristate "Support for Renesas RZ/T2H SCI variant"
-> +       depends on SERIAL_SH_SCI
-
-As this subdriver can be a module, the relevant symbols in the sh-sci
-driver need to be exported, as reported by the kernel robot.
-
-> +       help
-> +         Support for the RZ/T2H SCI variant with fifo.
-> +         Say Y if you want to be able to use the RZ/T2H SCI serial port.
-> +
->  config SERIAL_HS_LPC32XX
->         tristate "LPC32XX high speed serial port support"
->         depends on ARCH_LPC32XX || COMPILE_TEST
-
-> --- /dev/null
-> +++ b/drivers/tty/serial/rsci.c
-
-> +static void rsci_prepare_console_write(struct uart_port *port, u32 ctrl)
-> +{
-> +       struct sci_port *s = to_sci_port(port);
-> +       u32 ctrl_temp =
-> +               s->params->param_bits->rxtx_enable |
-> +               CCR0_TIE |
-> +               s->hscif_tot;
-
-This fits on two lines:
-
-        u32 ctrl_temp = s->params->param_bits->rxtx_enable | CCR0_TIE |
-                        s->hscif_tot;
-
-> +       rsci_serial_out(port, CCR0, ctrl_temp);
-> +}
-
-> +static const struct uart_ops rzt2_sci_uart_ops = {
-
-rsci_uart_ops
-
-> +       .tx_empty       = rsci_tx_empty,
-> +       .set_mctrl      = rsci_set_mctrl,
-> +       .get_mctrl      = rsci_get_mctrl,
-> +       .start_tx       = rsci_start_tx,
-> +       .stop_tx        = rsci_stop_tx,
-> +       .stop_rx        = rsci_stop_rx,
-> +       .startup        = sci_startup,
-> +       .shutdown       = sci_shutdown,
-> +       .set_termios    = rsci_set_termios,
-> +       .pm             = sci_pm,
-> +       .type           = rsci_type,
-> +       .release_port   = sci_release_port,
-> +       .request_port   = sci_request_port,
-> +       .config_port    = sci_config_port,
-> +       .verify_port    = sci_verify_port,
-> +};
-
-> +struct sci_of_data of_sci_r9a09g077_data = {
-
-of_sci_rsci_data
-
-> +       .type = SCI_PORT_RSCI,
-> +       .ops = &rsci_port_ops,
-> +       .uart_ops = &rzt2_sci_uart_ops,
-> +       .params = &rsci_port_params,
-> +};
-> +
-> +#ifdef CONFIG_SERIAL_SH_SCI_EARLYCON
-> +
-> +static int __init rzt2hsci_early_console_setup(struct earlycon_device *device,
-
-rsci_early_console_setup
-
-> +                                              const char *opt)
-> +{
-> +       return scix_early_console_setup(device, &of_sci_r9a09g077_data);
-> +}
-> +
-> +OF_EARLYCON_DECLARE(rsci, "renesas,r9a09g077-rsci", rzt2hsci_early_console_setup);
-> +
-> +#endif /* CONFIG_SERIAL_SH_SCI_EARLYCON */
-
-> --- a/drivers/tty/serial/sh-sci-common.h
-> +++ b/drivers/tty/serial/sh-sci-common.h
-> @@ -5,6 +5,11 @@
->
->  #include <linux/serial_core.h>
->
-> +/* Private port IDs */
-> +enum SCI_PORT_TYPE {
-> +       SCI_PORT_RSCI = BIT(15)|0,
-
-Please add spaces around "|".
-
-> +};
-> +
->  enum SCI_CLKS {
->         SCI_FCK,                /* Functional Clock */
->         SCI_SCK,                /* Optional External Clock */
-> diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-> index 2abf80230a77..44066cd53e5e 100644
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-
-> @@ -2977,14 +2978,26 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
->         struct clk *clk;
->         unsigned int i;
->
-> -       if (sci_port->type == PORT_HSCIF)
-> +       if (sci_port->type == PORT_HSCIF) {
->                 clk_names[SCI_SCK] = "hsck";
-> +       } else if (sci_port->type == SCI_PORT_RSCI) {
-> +               clk_names[SCI_FCK] = "async";
-
-As per my comment on the bindings, I think you should use a different
-name.  But the actual behavior (overriding [SCI_SCK]) is fine.
-
-> +               clk_names[SCI_SCK] = "bus";
-
-This is not OK, as on RSCI the SCK pin can serve as a clock input.
-I see two options here:
-  - Add a fifth entry for the RSCI bus clock,
-  - Override the [SCI_BRG_INT] entry (which is the closest to a
-    bus clock); RSCI will have its own set_termios implementation anyway.
-
-> +       }
-
-> @@ -3085,10 +3098,10 @@ static int sci_init_single(struct platform_device *dev,
->         }
->
->         /*
-> -        * The fourth interrupt on SCI port is transmit end interrupt, so
-> +        * The fourth interrupt on SCI and RSCI port is transmit end interrupt, so
-
-(R)SCI?
-
->          * shuffle the interrupts.
->          */
-> -       if (p->type == PORT_SCI)
-> +       if (p->type == PORT_SCI || p->type == SCI_PORT_RSCI)
->                 swap(sci_port->irqs[SCIx_BRI_IRQ], sci_port->irqs[SCIx_TEI_IRQ]);
->
->         /* The SCI generates several interrupts. They can be muxed together or
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
