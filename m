@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAC04146A66;
-	Wed, 14 May 2025 12:33:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AFDE22A4EA;
+	Wed, 14 May 2025 12:35:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747226013; cv=none; b=WQxDSPRrR5exFTI6WsAisCJ1R0pxqsfprQaj7HjBIWI3fJU6XkT9b77ev7k55cfW9vZrBSvwbbTULBWWRqP1UI/DkyHggp0i7NoJ4zUCxkHyTDY4bQmacKthstVFkB/vdThBOL7Pum61kCIxYrCUUJHgnSUjmSQ0wZgu7KpNQNk=
+	t=1747226115; cv=none; b=WjfTpKGsEJ+eJQwJ1Fm0WtCUpy/b/dm9f3iVwcsfUTLdZkSsdatvYVlx5kOips78NV4wHPdfGJO0fOIPVB6EcsAErDXftTKN/mvexhPFOhBROM4GuaAUmMW7ISaWnF7zoVdJkxsRyiLYhbnMVY1Qwyfn76kcZx7h5jFusV+TXRA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747226013; c=relaxed/simple;
-	bh=4hNXGXjH5xyvAS0mX4iDQO9/cuD818xRy9au/RSL/3g=;
+	s=arc-20240116; t=1747226115; c=relaxed/simple;
+	bh=FqKEEgh2CgxDQgoHYR3IHgfrOAxC4C3q34QQPyLKnZ8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=plrEIIJxwVZ2e+85gWi4kNq5hQ66e4GKxf/P6P6ITP324lfypBbspSkjx5v4qGJlcICyqkMmMZy/c2PTjy0xNY+6SK+Gf9w1guqCf6nO4jnKr39TLZoi7s3xa9GXZm719c/Gae3lNneNp1Y8xP2sIS/dxSFcRHlUp4VomrXp1Cc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=C9PxnoLN; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=ugKypSRVwLeErL2K3RTuE41rE5nlhicI9MhQANwVn0Wx2s3E5pSTYCEHYGH3SauCZKtJ9vMzONLeewzTty7O5e0vsMQ1002zMcN7vTaRo3fr3OJmtQw55+3jA80cQpoaADl7daCFvS6EOuvBgnOnecQsvX93Ikc7zA90oJ7fdGk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z8OGSJ2P; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="C9PxnoLN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69FE7C4CEE9;
-	Wed, 14 May 2025 12:33:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z8OGSJ2P"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BBAFC4CEE9;
+	Wed, 14 May 2025 12:35:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747226013;
-	bh=4hNXGXjH5xyvAS0mX4iDQO9/cuD818xRy9au/RSL/3g=;
+	s=k20201202; t=1747226115;
+	bh=FqKEEgh2CgxDQgoHYR3IHgfrOAxC4C3q34QQPyLKnZ8=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=C9PxnoLNkZoXPWF7qWWBmjFvI3/jm2p90GneD3OySvk/Dvz5ktlN+5dHokOfnj7xi
-	 SzCibLUn/ZhTX1JNF9xuqc/43KJ5uI2uoTa78VmtF+bOb2zvGbkGz2JjR3MEoZVjL8
-	 g0A9OXXdfsNIr+PCRtNXrISl4+iXImypI7vXCOz59v+5Y90U4WAvcu+uKtpH0j+6DR
-	 UyKD3T621U3V3OU3eUmx8OmEgrQEWzt1leGqDcwywgkjftHhHsQ5/aCRIlRkCpuznA
-	 vb7EtwxKAXwmWrMOUk5saJhr07vuZ/0RLKH/MrnyRpM17aBJKqqVPMHatx6FEu6aPH
-	 pMYVEtJAGVs6A==
-Message-ID: <ead3dce9-324e-47ab-b0fc-6c7084bb0003@kernel.org>
-Date: Wed, 14 May 2025 14:33:27 +0200
+	b=Z8OGSJ2P078kwQym6+Q0t6XZ7/BkHTLvacYqtwtaqh6zLjr3vykRQheOYWMikz1Vp
+	 I7BiYZ8xBbUyWfllKKWFSRmbRLAOfVo6JX5Ddfa3k1SHGloLnuBq9yimw2ZaXdzplI
+	 DIVfCI7M++0cJZUhr+Kd6B6v205QCP4SzaAUN/w0uAHCuPd+qp2nxs2ZwrukR8RJah
+	 svSgMWEXaO39PvS67G4taKdyVQvENyV91gXN06V/FZtsFxNa3mmho+1BjCdwK7Qfoe
+	 sHRu/NLnnbELbpwRhq88cf7/CiMx15OO1OSKIHB5w7BNIExTlewEn8ZD6pbDVOmE6h
+	 mMODW+VzqWd7g==
+Message-ID: <3f989f5c-312c-4fac-8cc0-f387de84925a@kernel.org>
+Date: Wed, 14 May 2025 14:35:09 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,8 +35,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/7] dt-bindings: serial: add binding documentation for TI
- PRUSS UART
+Subject: Re: [PATCH 2/7] dt-bindings: soc: ti: pruss: Add documentation for
+ PRU UART support
 To: Judith Mendez <jm@ti.com>, Greg Kroah-Hartman
  <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
 Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
@@ -48,7 +48,7 @@ Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org
 References: <20250513215934.933807-1-jm@ti.com>
- <20250513215934.933807-2-jm@ti.com>
+ <20250513215934.933807-3-jm@ti.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -94,106 +94,39 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20250513215934.933807-2-jm@ti.com>
+In-Reply-To: <20250513215934.933807-3-jm@ti.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 13/05/2025 23:59, Judith Mendez wrote:
-> From: Bin Liu <b-liu@ti.com>
+> Add documentation for PRU UART node which is for PRU serial UART
+> based-off the industry standard TL16C550 asynchronous communications
+> element.
 > 
-> This adds the YAML DT binding for PRUSS UART on TI SoCs.
-
-Please do not use "This commit/patch/change", but imperative mood. See
-longer explanation here:
-https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
-
-A nit, subject: drop second/last, redundant "binding documentation for".
-The "dt-bindings" prefix is already stating that these are bindings.
-See also:
-https://elixir.bootlin.com/linux/v6.7-rc8/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
-
-
-> 
-> Signed-off-by: Bin Liu <b-liu@ti.com>
 > Signed-off-by: Judith Mendez <jm@ti.com>
 > ---
->  .../bindings/serial/ti,pruss-uart.yaml        | 54 +++++++++++++++++++
->  1 file changed, 54 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/serial/ti,pruss-uart.yaml
+>  Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml | 7 +++++++
+>  1 file changed, 7 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/serial/ti,pruss-uart.yaml b/Documentation/devicetree/bindings/serial/ti,pruss-uart.yaml
-> new file mode 100644
-> index 000000000000..34a03d572333
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/ti,pruss-uart.yaml
-> @@ -0,0 +1,54 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/ti,pruss-uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: TI PRUSS serial UART
-> +
-> +maintainers:
-> +  - Bin Liu <b-liu@ti.com>
-> +
-> +description: |
+
+Nothing in cover letter explains dependency and this the most important
+part of cover letter. Otherwise how maintainers are supposed to guess
+what they can take and what cannot?
+
+Squash the patch with previous in such case.
+
+> diff --git a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+> index 927b3200e29e..54397297cbf5 100644
+> --- a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+> +++ b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
+> @@ -324,6 +324,13 @@ patternProperties:
+>      $ref: /schemas/net/ti,davinci-mdio.yaml#
+>      type: object
+>  
+> +  serial@[a-f0-9]+$:
+> +    description: |
 
 Do not need '|' unless you need to preserve formatting.
-
-> +  The PRU subsystem has a serial UART peripheral based on the industry
-> +  standard TL16C550, with 16-byte TX/RX FIFOs.
-> +
-> +allOf:
-> +  - $ref: /schemas/serial.yaml#
-
-Wrong schema. From which file did you take such syntax?
-
-> +
-> +properties:
-> +  compatible:
-> +    items:
-
-You can drop items here.
-
-> +      - const: ti,pruss-uart
-
-Why this isn't SoC compatible?
-
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +    description: |
-> +      PRU UART interrupt mappings, containing an entry of 3 cell-values.
-> +      The first is the PRU System Event ID for PRU UART Interrupt Request.
-> +      The second is the PRU interrupt channel ID.
-> +      The third is the PRU host interrupt ID.
-
-I do not understand how this description is related to the property.
-What if I use cells=1 or cells=4? Binding becomes wrong? Drop.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    pruss_uart: serial@28000 {
-
-Drop unused label
-
 
 Best regards,
 Krzysztof
