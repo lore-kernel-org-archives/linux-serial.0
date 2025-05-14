@@ -1,69 +1,84 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from unicorn.mansr.com (unicorn.mansr.com [81.2.72.234])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 590C3201004;
-	Wed, 14 May 2025 07:38:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 482401E04BD;
+	Wed, 14 May 2025 08:41:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.2.72.234
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747208314; cv=none; b=TC5aJaaMs6Y88g4HrUeZvp0n5InWBnbHqlLQwGXriCa0yzsHo54nguWIoNTqTZV6hcpUy5wUISCGg9RaMN/cusXfDEkgmZY9N5GNSaPERLlJ98BZrb6/yyM+t/hvuPvFcJd8fjX+GpASDGyUbmuFZBUChcVAoAuDi2Km1Gjwlf8=
+	t=1747212086; cv=none; b=fCV9uvHzMjtweQ+S60cZrWEg8qi5n3s1NfPhXQsiw3xjbadvaGFMTP0l0f4wWu75YsAn3EurrUhurMXptRC7HviogpOyqn5goPUYcAnvnWlT+bOkQWLSMfHMGDUxtB6JpTy3V9L06z75ONTAxXA6DyglWLQN7Vg0YzZChiy8Pdc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747208314; c=relaxed/simple;
-	bh=FAn473klWAnhnmlMdk63GTbxuuQb/yWgRlVVBKaV7Tw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VqkpKbswGVfo1e4u0uJaAVbu7eFREmmxd5ftwBM9JoS16YVFB2FjLCEzqBu5/svpw2xIirTeYS02kOb229iV+SxyovyFdqWlRO1x86JZgnvYWFJZ9DqkW5eVt3B5kadh4ummcgFQLqASIcyUfpBGnQ3kYXlMBQObfEQujCQomYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=NNQc0Geq; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="NNQc0Geq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFADDC4CEE9;
-	Wed, 14 May 2025 07:38:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1747208313;
-	bh=FAn473klWAnhnmlMdk63GTbxuuQb/yWgRlVVBKaV7Tw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NNQc0GeqAGdfUW9/KjWYCMCy9pKHow1UJ9WKSATh3epF6ltJ8U47GkbW4E3H6yar2
-	 ln+VF+keJNXuyiBvab/PNbKWO9CQosIN2Te6mEgxe6ZUQSStVduesKzVprbAlu7vld
-	 lhOUrqlkVyf/OZphw+rx4jrj9OC7ckmMnKAQ5Mk8=
-Date: Wed, 14 May 2025 09:36:45 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Judith Mendez <jm@ti.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
-	Santosh Shilimkar <ssantosh@kernel.org>,
-	Vignesh Raghavendra <vigneshr@ti.com>,
-	Tero Kristo <kristo@kernel.org>, Bin Liu <b-liu@ti.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Andrew Davis <afd@ti.com>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH 3/7] serial: 8250: Add PRUSS UART driver
-Message-ID: <2025051408-discolor-backwash-5574@gregkh>
-References: <20250513215934.933807-1-jm@ti.com>
- <20250513215934.933807-4-jm@ti.com>
+	s=arc-20240116; t=1747212086; c=relaxed/simple;
+	bh=BHG6ZK7DUhY1prFc6nxmJ13YsH63YJl0RUxivpgX9qs=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Bh8y/NgsiaeD4DDm9Nb8IM1A6mOoeeeXTH/lT/huC9mJVVIV9eFkn4q6I5slq48IZkGfv61SxddEUL9NIP21qjYkG4Hj/ayDgDVAY23a1oGqSs3UG8RiRF9H72hxtjJyuRhFAY7mFvebbGm+7PSKyzVEyUZOPj1xgO0365aRmho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mansr.com; spf=pass smtp.mailfrom=mansr.com; arc=none smtp.client-ip=81.2.72.234
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mansr.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mansr.com
+Received: from raven.mansr.com (raven.mansr.com [81.2.72.235])
+	by unicorn.mansr.com (Postfix) with ESMTPS id 1DA1C15360;
+	Wed, 14 May 2025 09:41:17 +0100 (BST)
+Received: by raven.mansr.com (Postfix, from userid 51770)
+	id AF3BB21A3DA; Wed, 14 May 2025 09:41:16 +0100 (BST)
+From: =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: 8250_omap: fix TX with DMA for am33xx
+In-Reply-To: <20250514072035.2757435-1-jirislaby@kernel.org> (Jiri Slaby's
+	message of "Wed, 14 May 2025 09:20:35 +0200")
+References: <20250514072035.2757435-1-jirislaby@kernel.org>
+Date: Wed, 14 May 2025 09:41:16 +0100
+Message-ID: <yw1xldqzlh3n.fsf@mansr.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.4 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250513215934.933807-4-jm@ti.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, May 13, 2025 at 04:59:30PM -0500, Judith Mendez wrote:
-> From: Bin Liu <b-liu@ti.com>
-> 
-> This adds a new serial 8250 driver that supports the UART in PRUSS or
-> PRU_ICSS*.
-> 
-> The UART sub-module is based on the industry standard TL16C550 UART
-> controller, which has 16-bytes FIFO and supports 16x and 13x over
-> samplings.
+"Jiri Slaby (SUSE)" <jirislaby@kernel.org> writes:
 
-If it is based on an existing controller, why do we need a new driver
-for this?  Please explain in detail why this code is needed at all, and
-not just a new "quirk" for the existing driver?
+> Commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> introduced an error in the TX DMA handling for 8250_omap.
+>
+> When the OMAP_DMA_TX_KICK flag is set, the "skip_byte" is pulled from
+> the kfifo and emitted directly in order to start the DMA. While the
+> kfifo is updated, dma->tx_size is not decreased. This leads to
+> uart_xmit_advance() called in omap_8250_dma_tx_complete() advancing the
+> kfifo by one too much.
+>
+> In practice, transmitting N bytes has been seen to result in the last
+> N-1 bytes being sent repeatedly.
+>
+> This change fixes the problem by moving all of the dma setup after the
+> OMAP_DMA_TX_KICK handling and using kfifo_len() instead of the DMA size
+> for the 4-byte cutoff check. This slightly changes the behaviour at
+> buffer wraparound, but it still transmits the correct bytes somehow.
+>
+> Now, the "skip_byte" would no longer be accounted to the stats. As
+> previously, dma->tx_size included also this skip byte, up->icount.tx was
+> updated by aforementioned uart_xmit_advance() in
+> omap_8250_dma_tx_complete(). Fix this by using the uart_fifo_out()
+> helper instead of bare kfifo_get().
+>
+> Based on patch by Mans Rullgard <mans@mansr.com>
+>
+> Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> Reported-by: Mans Rullgard <mans@mansr.com>
+> Cc: stable@vger.kernel.org
+>
+> ---
+> The same as for the original patch, I would appreaciate if someone
+> actually tests this one on a real HW too.
+>
+> A patch to optimize the driver to use 2 sgls is still welcome. I will
+> not add it without actually having the HW.
 
-thanks,
+Are you seriously expecting me to waste even more time on this?
+Do your damn job like you should have to begin with.
 
-greg k-h
+--=20
+M=E5ns Rullg=E5rd
