@@ -1,24 +1,24 @@
 Received: from fout-a8-smtp.messagingengine.com (fout-a8-smtp.messagingengine.com [103.168.172.151])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F71A8F6E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F7851D54EF;
 	Wed, 14 May 2025 01:56:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.151
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747187776; cv=none; b=Tuo0lTCQZlGteENwRerAXk5VrOm1CTf2Qx1r3EzkkOrgurLkcLHQuf6fok8JOwIDzvkpL3swhGpsU1ZubeSs48ClvzOnaofT0r+gSGSyS/ho7ld9KXzpgds+gLAwqItkI9BkgUOsJR67EW5d+nEa9vud5VKuwu+f9P7iNydLj68=
+	t=1747187777; cv=none; b=H1rbvecaay1ePTIqvop2HO0lE+4+yStOp2U9iW71xHcK3vhaqGevE/D+6iiCaD20iocX0NPrZwusOZsGAl3ZJm7LB1DufpNgYwfXYXsW+i7j/H5oNrTjSCDs9tfF0mn1DGtE3PnTbOvs3NjZXVTaJFopl+afKtJElkjhAb3FGL0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747187776; c=relaxed/simple;
-	bh=pwpGJLCxMvblR/fqWSrrpSyMXEgz4M3Z2/0HbbZRwtY=;
+	s=arc-20240116; t=1747187777; c=relaxed/simple;
+	bh=GhDZA2yzFUGM/WEprlssE0ISu5wMlmmeOvmU+/mZWa4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=cxi5HZ8peSu5KQQumn23i1cPMhzOyofKcXP6NK/2L1qqWatn7P8FzcJuv4ztpMklMW/+7dMuX4IiRXXtFZIFk4xp5oJabhn8IBeQkMwzjGGPe1Ay6HYHJpf9/4++3mV7u+Kf9Fbkmp84otZyXYmP+alf5d4dvqspuMOaEVFzz8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=COXUm77a; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=hAXcUazi; arc=none smtp.client-ip=103.168.172.151
+	 MIME-Version; b=u9/tjy2+NvX9LDNyUvrXQy6GAf2mVSn+Z936/tkC3rk6XPhcS3Scv6MRZZXTGH60h9yf1tMqkbtBgLCVnUQBNfhIJYl1oeh9gAXE5/u4iIWS8MjlOY2fQzoacljIQ+HD06RKitxxq/jI5edLup/1jrwbJXLyy07p6Yrc2dv/O50=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=DNZdonSu; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=HyQrh9dq; arc=none smtp.client-ip=103.168.172.151
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="COXUm77a";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="hAXcUazi"
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="DNZdonSu";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="HyQrh9dq"
 Received: from phl-compute-06.internal (phl-compute-06.phl.internal [10.202.2.46])
-	by mailfout.phl.internal (Postfix) with ESMTP id 71A24138013E;
+	by mailfout.phl.internal (Postfix) with ESMTP id 5F9971380130;
 	Tue, 13 May 2025 21:56:13 -0400 (EDT)
 Received: from phl-frontend-02 ([10.202.2.161])
   by phl-compute-06.internal (MEProxy); Tue, 13 May 2025 21:56:13 -0400
@@ -26,54 +26,54 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
 	cc:cc:content-transfer-encoding:content-type:date:date:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to; s=fm3; t=1747187773; x=
-	1747274173; bh=JCnByk9tATHpA5kwfqJBxsplUrnKcd6kfo6AeIj+I1c=; b=C
-	OXUm77aAwETmmDQrSRqP3FtcRIaBlJ/JlKshg3Gq6EmbPJgPYBmgVA5vAoGbRglK
-	0Hfwk9ptRjywBMJ6I230VucfTimZ4SM8r+lcBdy3lQXJLLMuLdFpVggCCFIPlz9R
-	a0YFs9I2DPqDIsDPg6ZwxDDMpAxaLln0KNjvfI1Lct3V/vRkfpvMc89/jp4PBtI/
-	U9Y3KrFtDdCkwd4UF8mGTDAsm/vYzugq+45vtYP+pOZpzMGxgSkfwoWz+RqgFEgU
-	vklIhIJt1mBF72/yDKrFI0qqHH7QNyIcs2vK58YqhYIw0mZPBKPpkRxHnKJDQ24A
-	asXlRaY0VckKDnYAHKscQ==
+	1747274173; bh=1sN+Q0V6uO6gbyFjrK9KygHtWNP7ta31+oqMUG0XGy0=; b=D
+	NZdonSuv3feVjf4wcVS9p0Y6g3eT8cROz31+O1W8FkXG3RijcOKcrtehlP476leL
+	346PwWrE7KxbVHXEYIs7Tb6uJ+iHkKIUiJG+cUI/BqBVD1vHYuZ70a2mJ85WwweU
+	QIYH6gs4rje+Xte6KNkInysBg6sM4V+13u8KkuUe8xAlVsq0ZPCQLZ4KiWMTJb93
+	N9d5ErvXzRt88LnwMQx6kDeG2OAIt6AqUMBy6bLYRfjx3LBh0KmTdkYTYb1+E06D
+	I3/ZwMPHjaLOICOovjgnhUav4xvp3MGQVzTL05WywsFpIpS00bYqKLf6ZCmX+nuv
+	UPytmv03Z1RFPUA8CMghQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:date:date:feedback-id:feedback-id:from:from
 	:in-reply-to:in-reply-to:message-id:mime-version:references
 	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm3; t=1747187773; x=1747274173; bh=J
-	CnByk9tATHpA5kwfqJBxsplUrnKcd6kfo6AeIj+I1c=; b=hAXcUaziWHjTlTB85
-	Z8BWqcmX53TWim6AL5XtzuCTYRXm6SCzfLtkhZiKmxORfYj0VXD6zqj2hDeDK0qG
-	ABdEJlyYJCEv9vzbaPvOwcO0BWk2Wy9FUsaEltGz4KznWJnkFalbFMqgR9ZRN5e6
-	U+hDkgGR2bj9jkxMI50oLoGX1funxpGeCqcQJ2nbj9BtzkjsHHka6+8oQ/4L/qs8
-	aN97PmW1I7j3BfearJ7Qji+O0mJroPf0jXUqydoj4+7rZMeJyW40wLr3fstt0I8u
-	OIS+qh26RRS2K57k1H0V7UYJWMBxNAGtQDN8hHEQkKxWiRxWTsCeo0lQoIz/2QFV
-	lM7Ww==
-X-ME-Sender: <xms:PfgjaMEJagP6pQH2RPK3bw6ik1yyXfcTnMDVA8jrLr_YFGTKSSuwgw>
-    <xme:PfgjaFWpy1wdL3fSFEOBIxOUUoOSbmAa39f2pJ60pa192GKVZmX0HxHFbQHmaKKBG
-    s_hhK-kcCxKvxJXL8o>
-X-ME-Received: <xmr:PfgjaGLPlUSRqMXcUj3UQ4pzDGJzKEnI83bpvyCfzGpQp5CCe1d2uW1lOr9syjm8awGScstGvfPwdgyuv-zWMpmXZJsiOqnOUxfHpb7bKuBV6hlJ5A>
+	:x-me-sender:x-sasl-enc; s=fm3; t=1747187773; x=1747274173; bh=1
+	sN+Q0V6uO6gbyFjrK9KygHtWNP7ta31+oqMUG0XGy0=; b=HyQrh9dqC4RT7Q5vA
+	g5dTzntBfpbrv+H2Vmwa7nyIQGGZyCMkIcfMgoRXfdO0l8cecgllZHdSJaBZ0SYx
+	Nm6l0/huS5LTopRlJXT6RdXqpChr2xi+sw4YcuVAhc8UuvUnz4yhhlUmRu3kyJrE
+	slG95kkZ9FThs3DMv3zJdB9BrKtWhjIix/AtGoyW2rPtGJyBg0Lx9syi+TJx4ohe
+	GyJ6iXoNfDqimbtRoQJc2hS5y5yZ7h/Mp4kuB21V7Og/dKkclHx2viyGfa1VOCPq
+	DsQkfh8Ol49EdLSYYcxPfmvVNWfXWMBaPL8W+y8NKKSROK2dpAWC9WH3+KXCRd7J
+	4by8g==
+X-ME-Sender: <xms:PPgjaIFa1TfZi9p-5FecW4qlHGfU8qkSwCyX9L9UCgh3q1wLB0ISjA>
+    <xme:PPgjaBWLCQpak9QOv31CSJZ8N3Vn5c_iEG5oLlWpyVOF6FK0kN8NbaeqRD9FifA9b
+    gZ5ilwdp2Ygoo3VPAU>
+X-ME-Received: <xmr:PPgjaCJuwT2Nk3nmoLkLhIMdqL_rWHs-rKrCqZpSkzYUqUapoQk1ZDn_1B-ku7CQqnxheBDhKBFShrLEGYktUwBZDVHEO4jL4NBIa_yLczY-vi72rQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdeftdehjedvucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
     pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
     gvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgjfhgggfestdekredtredt
     tdenucfhrhhomheppfhitgholhgrshcurfhithhrvgcuoehnihgtohesfhhluhignhhitg
-    drnhgvtheqnecuggftrfgrthhtvghrnheptdejueeiieehieeuffduvdffleehkeelgeek
-    udekfeffhfduffdugedvteeihfetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
-    hmpehmrghilhhfrhhomhepnhhitghosehflhhugihnihgtrdhnvghtpdhnsggprhgtphht
-    thhopeehpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehnphhithhrvgessggrhi
-    hlihgsrhgvrdgtohhmpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdho
-    rhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorh
-    hgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdho
-    rhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrd
-    horhhg
-X-ME-Proxy: <xmx:PfgjaOHEVjv1-L16Aways5Pa5mYYHOJi8zDZ5T6m7AHyHeRZ3aRBpg>
-    <xmx:PfgjaCW-gxJXT_MDOPifZT1IeEA17FDfFxiLDK7MUxu-AWGAzmPQ9w>
-    <xmx:PfgjaBPQ7x8M5jECN_QVgPkMDfD6EAPZ_bjWWWSqRmgx8M-kC49Cxw>
-    <xmx:PfgjaJ07LsxuF-EPs7bKajum3WTMypLRD8Cz-Fi7S9eK598C8eGXcw>
-    <xmx:PfgjaN0X-R6ac2ABq7B_VpIAGVh0mDvNp8bTviy09lFHaei-Vb_9WTqP>
+    drnhgvtheqnecuggftrfgrthhtvghrnhepgeevuddukeevhfdujefgfeevuddvuedvieeu
+    vdduieevjeeuudeggeetvefhhfejnecuffhomhgrihhnpeifihhkihhpvgguihgrrdhorh
+    hgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepnhhi
+    tghosehflhhugihnihgtrdhnvghtpdhnsggprhgtphhtthhopeehpdhmohguvgepshhmth
+    hpohhuthdprhgtphhtthhopehnphhithhrvgessggrhihlihgsrhgvrdgtohhmpdhrtghp
+    thhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepghhrvg
+    hgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtoheplhhinhhu
+    gidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinh
+    hugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:PPgjaKHciVzXYTw_JnXG32IpkZgwfSrp4-LF5RObeiKckJdg1NxnRA>
+    <xmx:PPgjaOVam4HIIIy2bElPt_fNdoMM8KU60Mn4t0qHb8q8hg03JZCjsA>
+    <xmx:PPgjaNMN0qQ_MGLSRunmeZfI1fB82PhUrpI0Lse7iw5ijQcWokzWuA>
+    <xmx:PPgjaF0G_RBPMW4sdQuTgQix6sYgiaI1kidayKVCFRbp-VF4qIo1rw>
+    <xmx:PfgjaJ31QNFoHI3YaqmNXqh38XDNWPeXDmBbZF_5q8DBXw-ukKI3lFB_>
 Feedback-ID: i58514971:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
  13 May 2025 21:56:12 -0400 (EDT)
 Received: from xanadu.lan (OpenWrt.lan [192.168.1.1])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id 4988F11A0BC9;
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 2CA9E11A0BC7;
 	Tue, 13 May 2025 21:56:12 -0400 (EDT)
 From: Nicolas Pitre <nico@fluxnic.net>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -81,9 +81,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: Nicolas Pitre <npitre@baylibre.com>,
 	linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] vt: add TIOCL_GETCURSORPOS to retrieve the screen cursor position
-Date: Tue, 13 May 2025 21:52:58 -0400
-Message-ID: <20250514015554.19978-3-nico@fluxnic.net>
+Subject: [PATCH 1/2] vt: bracketed paste support
+Date: Tue, 13 May 2025 21:52:57 -0400
+Message-ID: <20250514015554.19978-2-nico@fluxnic.net>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250514015554.19978-1-nico@fluxnic.net>
 References: <20250514015554.19978-1-nico@fluxnic.net>
@@ -97,92 +97,165 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolas Pitre <npitre@baylibre.com>
 
-The screen cursor position (as well as the screen dimension) is
-available through the /dev/vcsa interface already. However the vcsa
-header format uses single-byte fields therefore those values are
-clamped to 255.
+This is comprised of 3 aspects:
 
-As surprizing as this may seem, some people do use 240-column 67-row
-screens (a 1920x1080 monitor with 8x16 pixel fonts) which is getting
-close to the limit. Monitors with higher resolution are not uncommon
-these days (3840x2160 producing a 480x135 character display) and it is
-just a matter of time before someone with, say, a braille display using
-the Linux VT console and BRLTTY on such a screen reports a bug about
-missing and oddly misaligned screen content.
+- Take note of when applications advertise bracketed paste support via
+  "\e[?2004h" and "\e[?2004l".
 
-The screen dimension may already be obtained using TIOCGWINSZ but there
-is no such alternatives for obtaining the cursor position. Querying it by
-writing "\033[6n" to a tty and reading back the result by anything else
-than the actual application using that tty is not possible.
+- Insert bracketed paste markers ("\e[200~" and "\e[201~") around pasted
+  content in paste_selection() when bracketed paste is active.
 
-So let's work around this limitation by adding TIOCL_GETCURSORPOS as a
-fallback method to get the cursor position when /dev/vcsa reports 255.
+- Add TIOCL_GETBRACKETEDPASTE to return bracketed paste status so user
+  space daemons implementing cut-and-paste functionality (e.g. gpm,
+  BRLTTY) may know when to insert bracketed paste markers.
+
+Link: https://en.wikipedia.org/wiki/Bracketed-paste
 
 Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 ---
- drivers/tty/vt/vt.c        | 22 ++++++++++++++++++++++
- include/uapi/linux/tiocl.h |  4 ++++
- 2 files changed, 26 insertions(+)
+ drivers/tty/vt/selection.c     | 35 ++++++++++++++++++++++++++++++----
+ drivers/tty/vt/vt.c            | 15 +++++++++++++++
+ include/linux/console_struct.h |  1 +
+ include/uapi/linux/tiocl.h     |  1 +
+ 4 files changed, 48 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index 791e2f1f7c0b..ac86b82411a8 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -403,6 +403,12 @@ int paste_selection(struct tty_struct *tty)
+ 	DECLARE_WAITQUEUE(wait, current);
+ 	int ret = 0;
+ 
++	bool bp = vc->vc_bracketed_paste;
++	static const char bracketed_paste_start[] = "\033[200~";
++	static const char bracketed_paste_end[]   = "\033[201~";
++	const char *bps = bp ? bracketed_paste_start : NULL;
++	const char *bpe = bp ? bracketed_paste_end : NULL;
++
+ 	console_lock();
+ 	poke_blanked_console();
+ 	console_unlock();
+@@ -414,7 +420,7 @@ int paste_selection(struct tty_struct *tty)
+ 
+ 	add_wait_queue(&vc->paste_wait, &wait);
+ 	mutex_lock(&vc_sel.lock);
+-	while (vc_sel.buffer && vc_sel.buf_len > pasted) {
++	while (vc_sel.buffer && (vc_sel.buf_len > pasted || bpe)) {
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (signal_pending(current)) {
+ 			ret = -EINTR;
+@@ -427,10 +433,31 @@ int paste_selection(struct tty_struct *tty)
+ 			continue;
+ 		}
+ 		__set_current_state(TASK_RUNNING);
++
++		if (bps) {
++			count = tty_ldisc_receive_buf(ld, bps, NULL, strlen(bps));
++			bps += count;
++			if (*bps == '\0')
++				bps = NULL;
++			else
++				continue;
++		}
++
+ 		count = vc_sel.buf_len - pasted;
+-		count = tty_ldisc_receive_buf(ld, vc_sel.buffer + pasted, NULL,
+-					      count);
+-		pasted += count;
++		if (count) {
++			count = tty_ldisc_receive_buf(ld, vc_sel.buffer + pasted,
++						      NULL, count);
++			pasted += count;
++			if (vc_sel.buf_len > pasted)
++				continue;
++		}
++
++		if (bpe) {
++			count = tty_ldisc_receive_buf(ld, bpe, NULL, strlen(bpe));
++			bpe += count;
++			if (*bpe == '\0')
++				bpe = NULL;
++		}
+ 	}
+ 	mutex_unlock(&vc_sel.lock);
+ 	remove_wait_queue(&vc->paste_wait, &wait);
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index ed39d9cb4432..60a1fee17198 100644
+index efb761454166..ed39d9cb4432 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -152,6 +152,7 @@ static void con_driver_unregister_callback(struct work_struct *ignored);
- static void blank_screen_t(struct timer_list *unused);
- static void set_palette(struct vc_data *vc);
- static void unblank_screen(void);
-+static int get_cursor_pos(struct tty_struct *tty);
- 
- #define vt_get_kmsg_redirect() vt_kmsg_redirect(-1)
- 
-@@ -3498,6 +3499,8 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
- 		return console_blanked;
- 	case TIOCL_GETBRACKETEDPASTE:
- 		return get_bracketed_paste(tty);
-+	case TIOCL_GETCURSORPOS:
-+		return get_cursor_pos(tty);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -4991,6 +4994,25 @@ void putconsxy(struct vc_data *vc, unsigned char xy[static const 2])
- 	set_cursor(vc);
+@@ -1870,6 +1870,14 @@ int mouse_reporting(void)
+ 	return vc_cons[fg_console].d->vc_report_mouse;
  }
  
 +/* invoked via ioctl(TIOCLINUX) */
-+static int get_cursor_pos(struct tty_struct *tty)
++static int get_bracketed_paste(struct tty_struct *tty)
 +{
 +	struct vc_data *vc = tty->driver_data;
-+	unsigned int x, y;
 +
-+	console_lock();
-+	x = vc->state.x;
-+	y = vc->state.y;
-+	console_unlock();
-+
-+	/*
-+	 * Clamp x to 16 bits, y to 15 bits. A display larger than 65535x32767
-+	 * characters won't be a concern for the foreseeable future.
-+	 * Bit 31 is reserved to represent negative error codes elsewhere.
-+	 */
-+	return min(x, 0xFFFFu) | (min(y, 0x7FFFu) << 16);
++	return vc->vc_bracketed_paste;
 +}
 +
- u16 vcs_scr_readw(const struct vc_data *vc, const u16 *org)
- {
- 	if ((unsigned long)org == vc->vc_pos && softcursor_original != -1)
+ enum {
+ 	CSI_DEC_hl_CURSOR_KEYS	= 1,	/* CKM: cursor keys send ^[Ox/^[[x */
+ 	CSI_DEC_hl_132_COLUMNS	= 3,	/* COLM: 80/132 mode switch */
+@@ -1880,6 +1888,7 @@ enum {
+ 	CSI_DEC_hl_MOUSE_X10	= 9,
+ 	CSI_DEC_hl_SHOW_CURSOR	= 25,	/* TCEM */
+ 	CSI_DEC_hl_MOUSE_VT200	= 1000,
++	CSI_DEC_hl_BRACKETED_PASTE = 2004,
+ };
+ 
+ /* console_lock is held */
+@@ -1932,6 +1941,9 @@ static void csi_DEC_hl(struct vc_data *vc, bool on_off)
+ 		case CSI_DEC_hl_MOUSE_VT200:
+ 			vc->vc_report_mouse = on_off ? 2 : 0;
+ 			break;
++		case CSI_DEC_hl_BRACKETED_PASTE:
++			vc->vc_bracketed_paste = on_off;
++			break;
+ 		}
+ }
+ 
+@@ -2157,6 +2169,7 @@ static void reset_terminal(struct vc_data *vc, int do_clear)
+ 	vc->state.charset	= 0;
+ 	vc->vc_need_wrap	= 0;
+ 	vc->vc_report_mouse	= 0;
++	vc->vc_bracketed_paste	= 0;
+ 	vc->vc_utf              = default_utf8;
+ 	vc->vc_utf_count	= 0;
+ 
+@@ -3483,6 +3496,8 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
+ 		break;
+ 	case TIOCL_BLANKEDSCREEN:
+ 		return console_blanked;
++	case TIOCL_GETBRACKETEDPASTE:
++		return get_bracketed_paste(tty);
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/include/linux/console_struct.h b/include/linux/console_struct.h
+index 20f564e98552..59b4fec5f254 100644
+--- a/include/linux/console_struct.h
++++ b/include/linux/console_struct.h
+@@ -145,6 +145,7 @@ struct vc_data {
+ 	unsigned int	vc_need_wrap	: 1;
+ 	unsigned int	vc_can_do_color	: 1;
+ 	unsigned int	vc_report_mouse : 2;
++	unsigned int	vc_bracketed_paste : 1;
+ 	unsigned char	vc_utf		: 1;	/* Unicode UTF-8 encoding */
+ 	unsigned char	vc_utf_count;
+ 		 int	vc_utf_char;
 diff --git a/include/uapi/linux/tiocl.h b/include/uapi/linux/tiocl.h
-index 88faba506c3d..51d33d55abf5 100644
+index b32acc229024..88faba506c3d 100644
 --- a/include/uapi/linux/tiocl.h
 +++ b/include/uapi/linux/tiocl.h
-@@ -38,4 +38,8 @@ struct tiocl_selection {
+@@ -36,5 +36,6 @@ struct tiocl_selection {
+ #define TIOCL_BLANKSCREEN	14	/* keep screen blank even if a key is pressed */
+ #define TIOCL_BLANKEDSCREEN	15	/* return which vt was blanked */
  #define TIOCL_GETKMSGREDIRECT	17	/* get the vt the kernel messages are restricted to */
- #define TIOCL_GETBRACKETEDPASTE	18	/* get whether paste may be bracketed */
++#define TIOCL_GETBRACKETEDPASTE	18	/* get whether paste may be bracketed */
  
-+#define TIOCL_GETCURSORPOS	20	/* Get screen cursor position */
-+	/* If return value >= 0: x = lower 16 bits, y = upper 16 bits. */
-+	/* Negative error code otherwise. */
-+
  #endif /* _LINUX_TIOCL_H */
 -- 
 2.49.0
