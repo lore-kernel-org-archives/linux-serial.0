@@ -1,132 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AFDE22A4EA;
-	Wed, 14 May 2025 12:35:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E1F827933F
+	for <linux-serial@vger.kernel.org>; Wed, 14 May 2025 12:51:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747226115; cv=none; b=WjfTpKGsEJ+eJQwJ1Fm0WtCUpy/b/dm9f3iVwcsfUTLdZkSsdatvYVlx5kOips78NV4wHPdfGJO0fOIPVB6EcsAErDXftTKN/mvexhPFOhBROM4GuaAUmMW7ISaWnF7zoVdJkxsRyiLYhbnMVY1Qwyfn76kcZx7h5jFusV+TXRA=
+	t=1747227110; cv=none; b=GkrxYbTu7CXYk0zd9X/GnvL+RzTSIHMhBTKhG1LZ+is+f0Rpg0KH25VXOmaatW018vZoc6cPeOm6lcwOJhcOlO3QMdMI7rwQg7tfT6gvZZJMTuSbjuyooBpklW/UoLsxO8k+jbdkt6/lTFWIJl4byg8ziWVvXI5SwjJGgJa8540=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747226115; c=relaxed/simple;
-	bh=FqKEEgh2CgxDQgoHYR3IHgfrOAxC4C3q34QQPyLKnZ8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ugKypSRVwLeErL2K3RTuE41rE5nlhicI9MhQANwVn0Wx2s3E5pSTYCEHYGH3SauCZKtJ9vMzONLeewzTty7O5e0vsMQ1002zMcN7vTaRo3fr3OJmtQw55+3jA80cQpoaADl7daCFvS6EOuvBgnOnecQsvX93Ikc7zA90oJ7fdGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z8OGSJ2P; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1747227110; c=relaxed/simple;
+	bh=qFzqK2fj1HCSeZvxxjuZEOJdMePJq2O0RxP7hWzNXos=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=u+ndsSZzU6OBE/mHIEo+6JSxXIu6h7HEHDO9TUIUuggr2e0MTHMWYFmQIsSG8W/JLb+s1XJiN9lOL2SKcRICioUB/h5CxsrkbOf7pYcZy2OK6GLLPmvuuQlVMC3Ev7KR6QseQ7kl6u8YZucPLQNw2Xc2+4IsaIjp6dPTlWr6hKc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=bdc6/miz; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z8OGSJ2P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BBAFC4CEE9;
-	Wed, 14 May 2025 12:35:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747226115;
-	bh=FqKEEgh2CgxDQgoHYR3IHgfrOAxC4C3q34QQPyLKnZ8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Z8OGSJ2P078kwQym6+Q0t6XZ7/BkHTLvacYqtwtaqh6zLjr3vykRQheOYWMikz1Vp
-	 I7BiYZ8xBbUyWfllKKWFSRmbRLAOfVo6JX5Ddfa3k1SHGloLnuBq9yimw2ZaXdzplI
-	 DIVfCI7M++0cJZUhr+Kd6B6v205QCP4SzaAUN/w0uAHCuPd+qp2nxs2ZwrukR8RJah
-	 svSgMWEXaO39PvS67G4taKdyVQvENyV91gXN06V/FZtsFxNa3mmho+1BjCdwK7Qfoe
-	 sHRu/NLnnbELbpwRhq88cf7/CiMx15OO1OSKIHB5w7BNIExTlewEn8ZD6pbDVOmE6h
-	 mMODW+VzqWd7g==
-Message-ID: <3f989f5c-312c-4fac-8cc0-f387de84925a@kernel.org>
-Date: Wed, 14 May 2025 14:35:09 +0200
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bdc6/miz"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-442f4d40152so529755e9.2
+        for <linux-serial@vger.kernel.org>; Wed, 14 May 2025 05:51:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1747227106; x=1747831906; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=G96WwZNOynjvqyGyKipx2eszkDBgYS84tw9/9TdkKxc=;
+        b=bdc6/miz6LnbAOtDGMp+rti5xxxoYPUuocP4rtE7bDSXtGhFLC/DUGI23z6lPi+W7s
+         IsElHn9MwESvX902ThEHbm6ClzVuvzA8RwhYYmVW9qG5I5uKmThRSLmHx3HeKwhLBhSS
+         gjodoRR+31kPoTzK8CLASlHwBqf2MTrecPUeEq4ppHKQwXZDOjbOF2A+vbL8yqhHVp+x
+         3OQlquL6JuEvlMpw0Ruo4Y+OY0BSM7oeIdvJ+4AQu1i/u2qU/AAczMvLnNUy0UW017F7
+         7sCFleQR67cSXRX+0WIXvWJe6JXwMTqNKfrF1+62Gjjfv91+YP5qFo9SG0yC+k/NMGcn
+         Ij3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1747227106; x=1747831906;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=G96WwZNOynjvqyGyKipx2eszkDBgYS84tw9/9TdkKxc=;
+        b=SI74NeE6/jTBjUf5FWFybpVVF80Zw5l1Uq9vrDHUDYoAQecTz4q6GOtXBe8/7XHIJg
+         CIebeo8A+zpFFEtPtz9jexd75V/hrFXZ0ar/84wQiO5VzaxgRzQbkdfHXk0seV1hiae3
+         HWEXEtLt2ouEZEJFy2uP+LY3M7C1cZAr75OSxjmI+K/aslAFU+wshPjk3DRtHiSsKXVa
+         5l9sZTO/p2L3XOkJEhH9waApH2puOr/GPU9FyvucRiSUx77V6IMjtya0jqv/JwN7DVFw
+         oKCgyUoSdsAikzqU7nvQMj+HNHrbnlw4YWt1qZ3lGnqtK5Jio6ujFteDfHqlC6xR+N15
+         xjUA==
+X-Forwarded-Encrypted: i=1; AJvYcCUV7g8LK8tOOWLeB03qeDqyKwffICpOEzEkyQXSiu7NNdMACI/nLFDpJybVY9moBak7Az4bEIpuqdN+ogo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YycWcAx9OBVuftuvoje3jeXbvXH46G0S9SvhF3m5MUA9/XRjN0C
+	8Ka2qP5fEET1cKEAbyOS8IUJOW2GO1/9ilGc1ju/h4umKw4KPs+9DoQSKoT+eVM=
+X-Gm-Gg: ASbGncup6CV9ca+0fN/dN2ZVGFMP/mF13fVsVOfWq/rYthMqdV0/aHJ9kgr7QH5f1qA
+	ARW+VZ4U2i9lxMmQ/qLeK7vWK98CFKcs0MpkIDyLlmozMuxfFguE+MvjEwxjwwUqKmMRmVH3ZLb
+	eh4YC8GUt+zxKek8ywolNopckK9RYVogW/P8u4aZp9YxlziY5sFs1DRIT+ugbM7zDaQczmEU51m
+	oVjTbA0YATUlJXh4qIS+qeGiRlavZn3csMXpUSZBEt49zub+lytMVMUqfTBvW4a9oz1Xou/Yg2y
+	TL0iACuOzl7jrIltdEsaXVdRYl7dHJrPve8fb9GATX+HmjWXQ4fZtsW+HDZeHKBNwSrJydtevdL
+	7lW4lmYadJtkAx5y5JTv4xakPSzwBaBFznxmKgKw=
+X-Google-Smtp-Source: AGHT+IFZIaPFeS+MCIGc/n0k7HQIiRGAtaHoEjEST/i2knk0UNX+vPMn1mIz7kEQxw5X9yopq23eiQ==
+X-Received: by 2002:a05:6000:40ce:b0:3a0:6c12:237e with SMTP id ffacd0b85a97d-3a349966539mr949736f8f.16.1747227105716;
+        Wed, 14 May 2025 05:51:45 -0700 (PDT)
+Received: from kuoka.c.hoisthospitality.com (110.8.30.213.rev.vodafone.pt. [213.30.8.110])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a22ea7a53asm7745942f8f.23.2025.05.14.05.51.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 May 2025 05:51:45 -0700 (PDT)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Vignesh Raghavendra <vigneshr@ti.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: serial: 8250_omap: Drop redundant properties
+Date: Wed, 14 May 2025 14:51:28 +0200
+Message-ID: <20250514125127.56149-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/7] dt-bindings: soc: ti: pruss: Add documentation for
- PRU UART support
-To: Judith Mendez <jm@ti.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Nishanth Menon <nm@ti.com>,
- Santosh Shilimkar <ssantosh@kernel.org>,
- Vignesh Raghavendra <vigneshr@ti.com>, Tero Kristo <kristo@kernel.org>,
- Bin Liu <b-liu@ti.com>, Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Andrew Davis <afd@ti.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
-References: <20250513215934.933807-1-jm@ti.com>
- <20250513215934.933807-3-jm@ti.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20250513215934.933807-3-jm@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1088; i=krzysztof.kozlowski@linaro.org;
+ h=from:subject; bh=qFzqK2fj1HCSeZvxxjuZEOJdMePJq2O0RxP7hWzNXos=;
+ b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBoJJHPtqHSU1Qk8BxXvilLaKyVFgAjZk+a0lzio
+ oXCt1bupleJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCaCSRzwAKCRDBN2bmhouD
+ 14RpD/9BzBk88TJILONuQMPpVKrbk05NXBDJsbdZ0Q1iJwNlspfgM7/gV2ey6liewYj6+SzZ6Jq
+ 4xRE3jSOzfCWksHPpevKlQF5LBTCORR9nl+NER6hX4Rc/7u+7nSO43SSNp7O0hoAP1De6n0I9LY
+ Zw81y/qGJ1dpGf42tTnx/GyyE1F1j2g4hxlGLI3+1UvJr093vBMLqX6Bw2KaCyTzlJQkuOngtjr
+ 3JsASV2TEnkDOCq/PkiYqDJi64KukEhbTW0rP0oLKLBUQNM2OuAL92gJ86E4XubIi3/iMKbwt7H
+ v4lk4TBgbqs4JtY9luz6A/qwPHkmus+XgZXiqxC6kasPea3zp+FHrsousGJyVIcvZHd7eS37GEs
+ HWfI7PlDvef6/RKUtuQfKCWupFkU1KZRsFoYqJTRYfniKwRCL4JJ0L1jHwsdsoIdPHoDhctieNq
+ KqBffAUvwZlKSBJ8WCo2PHNwIGGzZxllwKvLpXLTzTsY/5Ayx31E52AW33whTFdXbdV+YU8XFZq
+ G10Y0InpyOMrs0F3kERufANk6nvXozHSfCcAg8rbMmNMkjVgnovc3hUATZiOlkjaYivuaW+/iPV
+ 84vqTRU3nSqyDuAt3dHJ1pHMG5AoZxhFymXWYo5m2iXob4xB21Ra18+VRnfQmg6uTA6F9QZmQ+R t3E5quDi45zWwZA==
+X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp; fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
+Content-Transfer-Encoding: 8bit
 
-On 13/05/2025 23:59, Judith Mendez wrote:
-> Add documentation for PRU UART node which is for PRU serial UART
-> based-off the industry standard TL16C550 asynchronous communications
-> element.
-> 
-> Signed-off-by: Judith Mendez <jm@ti.com>
-> ---
->  Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
+The binding references in-kernel serial.yaml, so there is no need to
+explicitly list its properties.  Note that rts-gpio is also redundant
+because DTS should be simply converted to -gpios variants.
 
-Nothing in cover letter explains dependency and this the most important
-part of cover letter. Otherwise how maintainers are supposed to guess
-what they can take and what cannot?
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Squash the patch with previous in such case.
+---
 
-> diff --git a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-> index 927b3200e29e..54397297cbf5 100644
-> --- a/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-> +++ b/Documentation/devicetree/bindings/soc/ti/ti,pruss.yaml
-> @@ -324,6 +324,13 @@ patternProperties:
->      $ref: /schemas/net/ti,davinci-mdio.yaml#
->      type: object
->  
-> +  serial@[a-f0-9]+$:
-> +    description: |
+There are two cases of 'rts-gpio' which I will fix in separate patchset.
+---
+ Documentation/devicetree/bindings/serial/8250_omap.yaml | 7 -------
+ 1 file changed, 7 deletions(-)
 
-Do not need '|' unless you need to preserve formatting.
+diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+index 4b78de6b46a2..1859f71297ff 100644
+--- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
++++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+@@ -64,14 +64,7 @@ properties:
+   clock-names:
+     const: fclk
+ 
+-  rts-gpios: true
+-  cts-gpios: true
+-  dtr-gpios: true
+-  dsr-gpios: true
+-  rng-gpios: true
+-  dcd-gpios: true
+   rs485-rts-active-high: true
+-  rts-gpio: true
+   power-domains: true
+   clock-frequency: true
+   current-speed: true
+-- 
+2.45.2
 
-Best regards,
-Krzysztof
