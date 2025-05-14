@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 373DC1F3FED;
-	Wed, 14 May 2025 05:43:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC1B81FDE31;
+	Wed, 14 May 2025 05:57:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747201419; cv=none; b=a8KpznJJ5S1Fnm519/xWciCfV88eUORyZnDTTOoCLRXNZfGvsWGkqyaw4Gcc7sd/6ORVmCgSyfsUCV3QD0w5IPEMuZ3b/D0T5ZTIWZFhM2USmzZpFJH+t94fFEBv8OB0Edy6nV1u6vN57wwHiiLT+6E63h3Av6SU+pzHGzDbVl4=
+	t=1747202278; cv=none; b=Q+BuXUNmc8MtYbxjXVNzK7iUCSRWVevrZM+k5k3WIWjjNTcmFcuZ21PQZOxq76cMnA8OVxoWYgia7QCU3vFiMwbgC8J8RSNZZvdYDRMZdAYsYLWbviBRhAyLzjeBraXJEQCARn79sYDfl1vDGYev5BkyINK8mQIgjcjzrSHDjbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747201419; c=relaxed/simple;
-	bh=ToBGjHXrPQqmhHhPi2h5AhEO0dYh0gr5acZEkolmOZk=;
+	s=arc-20240116; t=1747202278; c=relaxed/simple;
+	bh=Via0WbJSOQi5O3nYN12ZpM2528gmRa1eiQC3UECK9jI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=i/Sq4aBhmWUy57rQnWHLcUbdPPb/KYvoitzkttnA3VBEH9YgxGBX6dOOZTYgIEzLxZPHXmZzFpXuO086m8BtL1E/++USVgWxKLe6+ZTKks69cvXADxBe28sQycZy4fGmb5qwqr1LFoP+QNk4OaHTAeUkuSURl3HkpvuVt7B0AbI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hi489zuy; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=i8LOxMMfycDVUf3hwyisJP3JZ8sQgRUH3JOmbpYe7lEujrRd41qWRTt1Pn2Ldt+/j9zwHYs8WqUV5qOXOx2YuXgxXjZUFD7n0bkk3R63vL4dTOHi6NMqDUpw40IsAbsSFQ5/lI0ucVhxiyfoGHWccDQVA/Fd18UMUZIKD8f2T2k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fxYNo2qB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hi489zuy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4FB5C4CEEB;
-	Wed, 14 May 2025 05:43:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fxYNo2qB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53F2EC4CEF2;
+	Wed, 14 May 2025 05:57:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747201418;
-	bh=ToBGjHXrPQqmhHhPi2h5AhEO0dYh0gr5acZEkolmOZk=;
+	s=k20201202; t=1747202277;
+	bh=Via0WbJSOQi5O3nYN12ZpM2528gmRa1eiQC3UECK9jI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=hi489zuy7UUyWUDRDFNgiBeo9dJtPEb/Q16yZoOqRWv/Rmv87uNOSRoS+5PxRZNUF
-	 IXLqALij7GK9UoeXGx/A9Oswwb27cjHkRElsQ41AmN92Eu+NV0qPqFoTEEZEt2KdSU
-	 yyrPIMa7rCz6nX24UB0XXkTOtH5dBRd1Wz9q2CDJw3858qRmiGGiR6CtXGVhh16g7R
-	 TzxDNSHvzmKthF/rpsMLEhZKj08KOVeE+XqIguLq4Qj0DpuBFWWoOvVSA0aJgWGKkE
-	 B2O/3wk+UNY3sCM4NKzkAFHyN4Jjy4h/enG9UdXn8IUuNAy0D6i5curbkgP2cI1URh
-	 vp94dAUdg4mIg==
-Message-ID: <8d38bf57-ad99-4889-8e5a-9ae7e5c5b39e@kernel.org>
-Date: Wed, 14 May 2025 07:43:35 +0200
+	b=fxYNo2qBMKwejd20yBECNUbHLDy7pkr8bpniol+L1FvE3QX9lkod04FL0w53m9ICP
+	 Qie5eKk1JEj3cWri+ySNDUVcNP90VpqRYwRKDlpBbKyGvszx9eae3SZHaw/roKPp6h
+	 8HSBl19amP+/ZGILTDaYIzMx/EhXQWYuBqjm1iF6tlHOPGXYj0y+pJtiNasnDwdjZN
+	 Jc80DdwzCTAd4q3vuzJUn0va5beDe9F/Jen2tYRLL4lzwHFAxa7Biq8KshLJQiaRfT
+	 1vlntZJycuFEwfUnvQGl7xww8Er4FbWepKA10ujiZk3Igp6npL3WE/Aa1UtUbwLhpf
+	 a2hD6t57OXIow==
+Message-ID: <518b6620-bca0-45e4-8c1f-6cd9ab18bee2@kernel.org>
+Date: Wed, 14 May 2025 07:57:54 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] vt: bracketed paste support
+Subject: Re: [PATCH 2/2] vt: add TIOCL_GETCURSORPOS to retrieve the screen
+ cursor position
 To: Nicolas Pitre <nico@fluxnic.net>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc: Nicolas Pitre <npitre@baylibre.com>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20250514015554.19978-1-nico@fluxnic.net>
- <20250514015554.19978-2-nico@fluxnic.net>
+ <20250514015554.19978-3-nico@fluxnic.net>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -86,132 +87,47 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250514015554.19978-2-nico@fluxnic.net>
+In-Reply-To: <20250514015554.19978-3-nico@fluxnic.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 14. 05. 25, 3:52, Nicolas Pitre wrote:
-> From: Nicolas Pitre <npitre@baylibre.com>
-> 
-> This is comprised of 3 aspects:
-> 
-> - Take note of when applications advertise bracketed paste support via
->    "\e[?2004h" and "\e[?2004l".
-> 
-> - Insert bracketed paste markers ("\e[200~" and "\e[201~") around pasted
->    content in paste_selection() when bracketed paste is active.
-> 
-> - Add TIOCL_GETBRACKETEDPASTE to return bracketed paste status so user
->    space daemons implementing cut-and-paste functionality (e.g. gpm,
->    BRLTTY) may know when to insert bracketed paste markers.
-> 
-> Link: https://en.wikipedia.org/wiki/Bracketed-paste
-
-LGTM.
-
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-In case (and only then) you resend for some reason, I have some nits below.
-
-(And a question at the bottom.)
-
-> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
-> ---
->   drivers/tty/vt/selection.c     | 35 ++++++++++++++++++++++++++++++----
->   drivers/tty/vt/vt.c            | 15 +++++++++++++++
->   include/linux/console_struct.h |  1 +
->   include/uapi/linux/tiocl.h     |  1 +
->   4 files changed, 48 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
-> index 791e2f1f7c0b..ac86b82411a8 100644
-> --- a/drivers/tty/vt/selection.c
-> +++ b/drivers/tty/vt/selection.c
 ...
-> @@ -427,10 +433,31 @@ int paste_selection(struct tty_struct *tty)
->   			continue;
->   		}
->   		__set_current_state(TASK_RUNNING);
-> +
-> +		if (bps) {
-> +			count = tty_ldisc_receive_buf(ld, bps, NULL, strlen(bps));
-> +			bps += count;
-> +			if (*bps == '\0')
-> +				bps = NULL;
-> +			else
-> +				continue;
-
-This could have been simpler:
-
-bps += tty_ldisc_receive_buf(ld, bps, NULL, strlen(bps));
-if (*bps != '\0')
-   continue;
-
-bps = NULL;
-
-> +		}
-> +
->   		count = vc_sel.buf_len - pasted;
-> -		count = tty_ldisc_receive_buf(ld, vc_sel.buffer + pasted, NULL,
-> -					      count);
-> -		pasted += count;
-> +		if (count) {
-> +			count = tty_ldisc_receive_buf(ld, vc_sel.buffer + pasted,
-> +						      NULL, count);
-> +			pasted += count;
-
-Same here for pasted.
-
-> +			if (vc_sel.buf_len > pasted)
-> +				continue;
-> +		}
-> +
-> +		if (bpe) {
-> +			count = tty_ldisc_receive_buf(ld, bpe, NULL, strlen(bpe));
-> +			bpe += count;
-
-And bpe.
-
-> +			if (*bpe == '\0')
-> +				bpe = NULL;
-> +		}
->   	}
->   	mutex_unlock(&vc_sel.lock);
->   	remove_wait_queue(&vc->paste_wait, &wait);
-> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index efb761454166..ed39d9cb4432 100644
+> So let's work around this limitation by adding TIOCL_GETCURSORPOS as a
+> fallback method to get the cursor position when /dev/vcsa reports 255.
+...
 > --- a/drivers/tty/vt/vt.c
 > +++ b/drivers/tty/vt/vt.c
-> @@ -1870,6 +1870,14 @@ int mouse_reporting(void)
->   	return vc_cons[fg_console].d->vc_report_mouse;
->   }
->   
+...
 > +/* invoked via ioctl(TIOCLINUX) */
-> +static int get_bracketed_paste(struct tty_struct *tty)
-
-vc_bracketed_paste is unsigned. (I understand tioclinux() returns an int.)
-
+> +static int get_cursor_pos(struct tty_struct *tty)
 > +{
 > +	struct vc_data *vc = tty->driver_data;
+> +	unsigned int x, y;
 > +
-> +	return vc->vc_bracketed_paste;
-> +}
+> +	console_lock();
+> +	x = vc->state.x;
+> +	y = vc->state.y;
+> +	console_unlock();
 > +
->   enum {
->   	CSI_DEC_hl_CURSOR_KEYS	= 1,	/* CKM: cursor keys send ^[Ox/^[[x */
->   	CSI_DEC_hl_132_COLUMNS	= 3,	/* COLM: 80/132 mode switch */
-...
+> +	/*
+> +	 * Clamp x to 16 bits, y to 15 bits. A display larger than 65535x32767
+> +	 * characters won't be a concern for the foreseeable future.
+> +	 * Bit 31 is reserved to represent negative error codes elsewhere.
+> +	 */
+> +	return min(x, 0xFFFFu) | (min(y, 0x7FFFu) << 16);
+
+Hmm, I would do a proper struct instead. Like winsize.
+
 > --- a/include/uapi/linux/tiocl.h
 > +++ b/include/uapi/linux/tiocl.h
-> @@ -36,5 +36,6 @@ struct tiocl_selection {
->   #define TIOCL_BLANKSCREEN	14	/* keep screen blank even if a key is pressed */
->   #define TIOCL_BLANKEDSCREEN	15	/* return which vt was blanked */
+> @@ -38,4 +38,8 @@ struct tiocl_selection {
 >   #define TIOCL_GETKMSGREDIRECT	17	/* get the vt the kernel messages are restricted to */
-> +#define TIOCL_GETBRACKETEDPASTE	18	/* get whether paste may be bracketed */
+>   #define TIOCL_GETBRACKETEDPASTE	18	/* get whether paste may be bracketed */
+>   
+> +#define TIOCL_GETCURSORPOS	20	/* Get screen cursor position */
 
-Do you plan on updating man-pages too?
-
-https://git.kernel.org/pub/scm/docs/man-pages/man-pages.git/tree/man/man2const/TIOCLINUX.2const
+The same question about man-pages :).
 
 thanks,
 -- 
