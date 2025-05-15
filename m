@@ -1,117 +1,142 @@
-Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34619CA6B;
-	Thu, 15 May 2025 08:13:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A31662882AC;
+	Thu, 15 May 2025 08:33:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747296798; cv=none; b=BpR682kyiNjOCZs8MOBZbzu5XzBHavHuD0qkBwbjv0qt44AHziyFVTr5PJflLE46dtjsvztYShPo7N/8ciJUrgBBx9xHBNrKrumn2L6dl5Xk3l2CgMdy+oH31Yx3BXtveb2IjcgwcMBpQxBKE5KAxLgUL062fdrvyUjzWIjRwL4=
+	t=1747298006; cv=none; b=AvOv8SMYnsxlARHv5VDoZcdEqIjmz59FxzWXSRSAwG4X/JDBwfjXkAAUTYoSiCu7sW6/9mTYmQfXdPUMSjK/DDt2rrHXCLIwQ5YYCqXWdGbS36qp1IjCEtV4MoZ/xCcNBADHTvSXSRl3/4F522qpfc2SEVZL6UHGLPJI+yTtgck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747296798; c=relaxed/simple;
-	bh=DxyT6W9hw+QLqH++O0m3qf0OogpXov8SOzPA1UQb8bE=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=VjHTken4kTdAkin4wxI9fQDlwcs1lJGzLgGsrSEtMNCLtOfPlYBqVEoHxJIfyYWURqqWxAPe4MYBPsFZc9Su1ddDyXNkCqthcNX4MTXhoOdQcxnwAASmqRXTFF4zXp7TwZL1zmr5NrzcrCsSMBpGfKJbT70kOqkKKcBiVPcQ13A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DEl7eCgo; arc=none smtp.client-ip=209.85.210.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1747298006; c=relaxed/simple;
+	bh=MYaOkdMz5hv3neikPI2nXVOxPya68wJ9/1C8V/e7NmQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lkgo5I4UZuLMrZ1DoJV4Nk9+Wyx0VKP2CXMcF9moTBT42aXQnETJ8uaCGoyLjL9ryeb/r4w3O9x7cpSm+zhRyavEtjYOXdMyJnGeCbs1DIZBwn7goEM7tLFIqcpTlOz94VAXgy+Wbjl0DT2pGlCFrG8ryFLtPuApW1U5cn64jzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XNrkfwIW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DEl7eCgo"
-Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-736c277331eso1580496b3a.1;
-        Thu, 15 May 2025 01:13:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1747296796; x=1747901596; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Pva8j2GZFLttdtKxinE0hP/DJHkfs2IvbbPFLofHyZ8=;
-        b=DEl7eCgoTu0Wy07J3lCuUaD3Gkcgzmg1iX9Hdr6u7eOPrEVrATB7ZV1v48M8OAgr2d
-         hL4tJoKnco+4+98yt9I9QgJxvZYpLxMFaLa5jKu7KOFUo0KWNZmnKapq+jv8iUKIsRSX
-         ciULcSVoNBlABOQ08PGGwues2o+Vda0m3t7JFiyrYgfWpVKh0PX9PYF00w38KPNxslDK
-         ScOQHxMhwwdGtRd2h48kBtEEYfV8WAn2UddFz3s0HAQiwqOZ/gQnf9bzaaWsxaYFc6tK
-         p0hF5moY62hl91yvR6npcoCCW3r45aTuoB+6SBgRbSEgwUqmr1nbkZg+sE1L3jTGiBbh
-         VbyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747296796; x=1747901596;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Pva8j2GZFLttdtKxinE0hP/DJHkfs2IvbbPFLofHyZ8=;
-        b=PUygdATxy+lPv6cGPdNfEold/Tvkf/f0bJhf+PSki5wSELaDVG6e06jog0jz4P3DyD
-         4kWPftqzrNpeNqUAFYAcoY3lYCvr/+syKvkor466sJUAEGPtzF42lc3wjjTK7s8SybKJ
-         SZ4zH5zsh5EGuQBIgUneXKQn9nW4rPX6fMnDt6xgPJKtgUnTTXkWxGCa5eYPNL64UiF6
-         qGYcKMXABOaaLaAI4Pddl7pZHbncQiWXYvSj2Kyy4d5u0RcDaj2UDgAzlDdtTPYkqvkw
-         vIz/Lm1JVvUi+wnk9hLb/EDPG4r+IzTOJZ9ScAPh/u3dy+37FTb6JaivqGLTmDjE+uk+
-         GUQA==
-X-Forwarded-Encrypted: i=1; AJvYcCUUwl5GxWgZdKAJBkSNRxBp6Wb6+FelxBOvGgN+5tXNMU7NAsjOTn0o3Y+TfEgqmSzc/aZ6Koceh7wH8d8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx4BEXF9UGX4pyFKaiS5hMUB3uDeC8k+riSGb6ty5vLi2SjynYX
-	aVIAbxW4MRnVtiMthYqphSE5DqJonMKR90vgfn5PVqZCGlFqAwMc
-X-Gm-Gg: ASbGncsx9L0AlMiP04mFMZLVEwkTvz6pdXIP0K+DRHAvJoimOceZchEDktE5QGbYl7N
-	Fr3mYNxXjiv1pTJGdXWT+TK1gooRoH6afwj1kwxA0sMLO6A2qxmrBgGT3zWyN+mybjVLvbQnc0G
-	WbrJBU8uBQOlOTKFdkzn9yjyRy67BbPrgtT/RunyNxmvLU9u+V99B/7eyrlxeTK3g87KDtjUM66
-	aIUYyk79eOOMIHFuZmuSjRRUVz2e28ECdBP66a9R3k2jkWTJp1NaZdaDDUjdwJfLX5fnTvT+3ZT
-	Flv0ZZ0a8SJ2Eabq2yGe3b9RYaRkMTqNUtb0GhP+0+23p1mxMkMnoF/NNm6UGZuFA4Mbxo7vKKP
-	ah9RAhA==
-X-Google-Smtp-Source: AGHT+IHpxEDG8gwBDARRHS3Vz56j9VlacquoxXwyhH0WsZwqbL30t5Q3hYEztXrcC3PUqwMY4AwpIA==
-X-Received: by 2002:a17:902:f542:b0:22e:23c1:d711 with SMTP id d9443c01a7336-231b399df70mr43125495ad.16.1747296796237;
-        Thu, 15 May 2025 01:13:16 -0700 (PDT)
-Received: from visitorckw-System-Product-Name.. ([140.113.216.168])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22fc82a0fffsm111215775ad.224.2025.05.15.01.13.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 May 2025 01:13:15 -0700 (PDT)
-From: Kuan-Wei Chiu <visitorckw@gmail.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	jserv@ccns.ncku.edu.tw,
-	Kuan-Wei Chiu <visitorckw@gmail.com>,
-	Yu-Chun Lin <eleanor15x@gmail.com>
-Subject: [PATCH v5] serial: max3100: Replace open-coded parity calculation with parity8()
-Date: Thu, 15 May 2025 16:13:11 +0800
-Message-Id: <20250515081311.775559-1-visitorckw@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XNrkfwIW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C3EC4CEE7;
+	Thu, 15 May 2025 08:33:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1747298006;
+	bh=MYaOkdMz5hv3neikPI2nXVOxPya68wJ9/1C8V/e7NmQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=XNrkfwIWNmsVE4SxZa66HbhRXvupwMEpAU0Nj80mM4QIUjwBh/k/GPARlIeSBOe3z
+	 O4YDHnLHTtATKGdOl3QzG/I0NEldFowwI9CgkGGe8PaGFilUXXZ12hGcj7uOiiI02o
+	 vlL4cil1f4zLQOinOmdwD4skB4874qaHNkDAY2QGqW1wykP3h6EI5upg8diYMSHXC2
+	 o8SF5kRznXmVLFHMrXxubYMUU35CJTTeMuz0Ys6x6H/Q/IzCO1QS1wEWpd3ZjLwP0l
+	 Neq5eKvicPG7UTRobb/bKs+4krFtqahSPWs+WzbA7QEXd7McjtONI0RBd9PwdJ3/P7
+	 dz5xilOa2nmVg==
+Message-ID: <184449a6-f2db-4307-8351-66b617a3839b@kernel.org>
+Date: Thu, 15 May 2025 10:33:23 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re:
+To: Nicolas Pitre <nico@fluxnic.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: npitre@baylibre.com, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <62s32907-1954-862o-5p1r-967n6873sp2n@syhkavp.arg>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <62s32907-1954-862o-5p1r-967n6873sp2n@syhkavp.arg>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Refactor parity calculations to use the standard parity8() helper.
-This change eliminates redundant implementations.
+On 14. 05. 25, 22:21, Nicolas Pitre wrote:
+>  From 28043dec8352fd857c6878c2ee568620a124b855 Mon Sep 17 00:00:00 2001
+> From: Nicolas Pitre <nico@fluxnic.net>
+> Date: Wed, 14 May 2025 15:58:22 -0400
+> Subject: [PATCH] vt: remove VT_RESIZE and VT_RESIZEX from vt_compat_ioctl()
+> From: Nicolas Pitre <npitre@baylibre.com>
+> 
+> They are listed amon those cmd values that "treat 'arg' as an integer"
+> which is wrong. They should instead fall into the default case. Probably
+> nobody ever exercized that code since 2009 but still.
 
-Co-developed-by: Yu-Chun Lin <eleanor15x@gmail.com>
-Signed-off-by: Yu-Chun Lin <eleanor15x@gmail.com>
-Signed-off-by: Kuan-Wei Chiu <visitorckw@gmail.com>
----
-Changes in v5:
-- Dropped changes to bitops.h
-- Switched to using existing parity8()
-- Split parity8() conversion patch out of the series
+AFAICS in the debian code search, exactly noone (except sanitizers, 
+strace, fuzzers, valgrind, ...) uses VT_RESIZEX.
 
- drivers/tty/serial/max3100.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+VT_RESIZE is used by kbd's resizecons -- and there it's the sole purpose 
+to call this ioctl. I wonder how comes noone using 32bit of resizecons 
+on 64bit noticed?
 
-diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index f2dd83692b2c..d28a2ebfa29f 100644
---- a/drivers/tty/serial/max3100.c
-+++ b/drivers/tty/serial/max3100.c
-@@ -16,6 +16,7 @@
- /* 4 MAX3100s should be enough for everyone */
- #define MAX_MAX3100 4
- 
-+#include <linux/bitops.h>
- #include <linux/container_of.h>
- #include <linux/delay.h>
- #include <linux/device.h>
-@@ -133,7 +134,7 @@ static int max3100_do_parity(struct max3100_port *s, u16 c)
- 	else
- 		c &= 0xff;
- 
--	parity = parity ^ (hweight8(c) & 1);
-+	parity = parity ^ parity8(c);
- 	return parity;
- }
- 
+Thinking...
+
+Actually, on x86, it doesn't matter if it takes arg (case VT_RESIZE) or 
+compat_ptr() (default label) path as both are given the same user pointer...
+
+It matters on s390x, but noone cares about the 32--64bit mix in there, 
+apparently.
+
+> Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
+> Fixes: e92166517e3c ("tty: handle VT specific compat ioctls in vt driver")
+
+FWIW, the e-mail's Subject is empty.
+
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+> diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+> index 83a3d49535e5..61342e06970a 100644
+> --- a/drivers/tty/vt/vt_ioctl.c
+> +++ b/drivers/tty/vt/vt_ioctl.c
+> @@ -1119,8 +1119,6 @@ long vt_compat_ioctl(struct tty_struct *tty,
+>   	case VT_WAITACTIVE:
+>   	case VT_RELDISP:
+>   	case VT_DISALLOCATE:
+> -	case VT_RESIZE:
+> -	case VT_RESIZEX:
+>   		return vt_ioctl(tty, cmd, arg);
+>   
+>   	/*
+
+
 -- 
-2.34.1
-
+js
+suse labs
