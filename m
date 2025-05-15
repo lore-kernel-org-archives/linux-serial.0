@@ -1,115 +1,134 @@
-Received: from fhigh-b8-smtp.messagingengine.com (fhigh-b8-smtp.messagingengine.com [202.12.124.159])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF71F213E79;
-	Wed, 14 May 2025 20:21:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.159
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55CB41F9F51;
+	Thu, 15 May 2025 03:52:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747254065; cv=none; b=En6k0+Nqqcz4CLnv6oZvv2+e3DCkmlv5kBW6U2PcTNrD/A/noAGGsLpjkBN4qSUmTtKpLpQH+mUszXkTEJGXA6k1pchqD1JmjBgYyt5Fa1GuCUUwbaO3ouup6ePZiHNWtZ1y7LpZxZf6dXU0pePQnbZsWM1JQpwktxVaF4ghAlc=
+	t=1747281142; cv=none; b=O8j/BtyW3NDyOFCndvEbT/DbSTUY9ICPUGu2MIs6D3J1nG57mYsHLMXLHpxPWCNv1RwC2+0DtUK/XtHYhyNxgL4+wc85MAstMKBXNXJonBTla73denEXJZ+TYvmFOemh/Ntoy6AHe8xhsyNIhju95MEpqD6ks/4utnPoMu9jKY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747254065; c=relaxed/simple;
-	bh=GVRJCIwVCNnNb3MIAQJ/6WNQV6YxlH6shaCjoTj+vew=;
-	h=Date:From:To:cc:Message-ID:MIME-Version:Content-Type; b=tpJqcL4z7+Er1wAsMC5kJrMxwMl9nonp4Kt0sVS2UANE4/wSY/XwN/+cC92r5MhMlQmI4wB/ebNp3t61VTIlERO/cYwdD64X5yejzh7szYZQKvO6sRbEIVsT/TUF1LJdWVADsNUQOxtDwZbhn2+kmnRTlnWwLfSUr9/k+N04S7U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=AaKPI1b5; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=oO4YOD7x; arc=none smtp.client-ip=202.12.124.159
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
+	s=arc-20240116; t=1747281142; c=relaxed/simple;
+	bh=fA5WjGl8OzCwdqaIDKpGiFrGKSy4SNccRFrd0ME3Z7w=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=sOQohsWcOnPCtcCGnkAoj7qFINrBk88gysgdVpEQQOGIcbxBq/oV+4/iTLSTZ43vZd8VtD7DUMn4WZdxIFwAwgUhc14SfR4avyexiMCuVj0DlSLSElzrB4K24X2mtXrGTSKjBOD9OCGNED3OAluZ96fjwP+9vPVudWx5d3Phun0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b59P4EEl; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="AaKPI1b5";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="oO4YOD7x"
-Received: from phl-compute-11.internal (phl-compute-11.phl.internal [10.202.2.51])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id 9B7DA25400E0;
-	Wed, 14 May 2025 16:21:02 -0400 (EDT)
-Received: from phl-frontend-01 ([10.202.2.160])
-  by phl-compute-11.internal (MEProxy); Wed, 14 May 2025 16:21:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:message-id:mime-version:reply-to:subject:to:to; s=fm3; t=
-	1747254062; x=1747340462; bh=1NZsnymokUXxmWmAKbgR17C63yo+HACqEnh
-	Iux2U9ZQ=; b=AaKPI1b5mP19bKzQJKEYleJGD41z3buW9Wt4DSiiMaqjeb0rs93
-	UObWAm7OPHIrdhEmvzNC4uknR3B9MHHEyvGwJh52l3ALZ8huME7owUPQIjVKx3fd
-	qrFcg+gdldDC1ApTr48jmG6rx0v3AdBvYxUMhwsqPrSoB5GblgYXla/YSLU5DZ8y
-	BpBFenqapSSrwHgBJCdmdmK7gUTMfiJyJdjKwFC2Bcb+OW/xbfZeUS3E/pQZwzro
-	oYKauafsls7cwhNpUNuUSg+77eRCYHDPLfvh5MbQOK0MObSEai3A05R5w+dTV3PW
-	QSS44hFANhTnqZ6Tgbz9yO2VMujeDlPoafA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:message-id
-	:mime-version:reply-to:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm3; t=1747254062; x=1747340462; bh=1
-	NZsnymokUXxmWmAKbgR17C63yo+HACqEnhIux2U9ZQ=; b=oO4YOD7xMQF3RJpdV
-	eVERzqzE0YTEPN/ZkmwxuF24LJYq1tLifpQGDt0Fvu+Icc/FhlpPHibfJvktCnXq
-	zRpzppOx+MNPtWqEm+fHhN2FZ0bDLE0BrBsTMy4/l0FD1z68pW7ZoSF272dNIlFo
-	CSh7cXMD/mNwfVopNe2FvOJzs2sJ87Yet0E+2NU0+igN0qXhFMstI5vWQ5iDY+SX
-	wQKKGw/tjQ6XanUMehstz/raJ/zafZT0uPc1d0/pqBSa8sGrprBifH9AwcPCirCO
-	2RiBQ/i2PDtxk7PPTPukp4w1cU5nY+4s/Q/jAL8LmjoNTn5sDIkfbiSWmuucCbG0
-	y5PjA==
-X-ME-Sender: <xms:LvskaPdtQtDcpwTyjtIRma5rw-KqLS1JyrWkh-I_E3WO7ZZ6rCZWpw>
-    <xme:LvskaFPYvjRFHgn7XoFNtA4N2KybOszxPAMEs8WcXQgdXaD7Z5Ro0OkfhWY0HzxLc
-    smbKGE6aheWL-BvnLc>
-X-ME-Received: <xmr:LvskaIgFgUnt0ae4Xe352_36CLXZJpCpgTTbxti4cJfhN3M5SFvdChBJ6xfO3sy60gTgCJWgBlcnTpZNeeLCYMF2VtOd--bG0HJA6tssgxH-X--n6Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdeftdejleegucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnefgmhhpthihuchsuhgsjhgvtghtucdluddtmdenucfjughr
-    peffhffvvefkgggtsehttdertddttddvnecuhfhrohhmpefpihgtohhlrghsucfrihhtrh
-    gvuceonhhitghosehflhhugihnihgtrdhnvghtqeenucggtffrrghtthgvrhhnpeetvdeg
-    udejhfehvdfhjeegkedvhfejteetveehiefhgffhveevleetheevjefgheenucevlhhush
-    htvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehnihgtohesfhhluhig
-    nhhitgdrnhgvthdpnhgspghrtghpthhtohephedpmhhouggvpehsmhhtphhouhhtpdhrtg
-    hpthhtohepnhhpihhtrhgvsegsrgihlhhisghrvgdrtghomhdprhgtphhtthhopehjihhr
-    ihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehgrhgvghhkhheslhhinh
-    hugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgv
-    lhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrih
-    grlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:LvskaA_3KoUHAcDL6Bbx7H9MXhHAZlUYugEdvGEgKvibQKkqaSJTYg>
-    <xmx:LvskaLtvWk0v-hSXGLcClcjeORLu_MzYYN9NgRpAt3j4bMKocn5u_g>
-    <xmx:LvskaPEwLtvR7Tg6-xZopr-O7P4oAr1KStm9LD26PenDvVkKcVKUmg>
-    <xmx:LvskaCPubGGg-y60RWyn2GBy7OR_SNFD_4-Sf6Y8uxi11SkJIQrYuA>
-    <xmx:LvskaLtNHUB4F_PTmwb5WIzXolrlO0sYcf8I9RT-xLXKvYvH-Vrv8xVZ>
-Feedback-ID: i58514971:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 14 May 2025 16:21:01 -0400 (EDT)
-Received: from xanadu (xanadu.lan [192.168.1.120])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id 7280A11A27A2;
-	Wed, 14 May 2025 16:21:01 -0400 (EDT)
-Date: Wed, 14 May 2025 16:21:01 -0400 (EDT)
-From: Nicolas Pitre <nico@fluxnic.net>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    Jiri Slaby <jirislaby@kernel.org>
-cc: npitre@baylibre.com, linux-serial@vger.kernel.org, 
-    linux-kernel@vger.kernel.org
-Message-ID: <62s32907-1954-862o-5p1r-967n6873sp2n@syhkavp.arg>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b59P4EEl"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-22fb33898bbso6725965ad.3;
+        Wed, 14 May 2025 20:52:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1747281140; x=1747885940; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=oxUHbPUHgnMm/JVb3wKb9mNsMs1RzSv1R7MGL5FIcTg=;
+        b=b59P4EElKV4vvf9tf3AluperLHFqeIDmVHNdzpyRdtHCfSMPlO3NxbjMVr2u7/JoxA
+         lcTKnMM+1mfj8xEBJLtszC++m+HKCVUbFY9a2UhT8mQy4Yhgmv771FPG3EZFyROUcjz9
+         5W1wbdlwuisQvRCmSrAG0DIa8mQNVGeKf2ZFGFW3qld9MZXrgYpjb39Wci/d/Peg8BeJ
+         9xF5W4WvHauwF3D9IjiUJpB99lilpwvc71iLup3pcz368I7AI6H0tBiO+x51gP96remm
+         dDfVRtR0POLSBF/gsfolDje2OU8KVvULu/xMHYI542EMb1nfRQyiUmKMdlQZvzJjc01K
+         XoYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1747281140; x=1747885940;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=oxUHbPUHgnMm/JVb3wKb9mNsMs1RzSv1R7MGL5FIcTg=;
+        b=l6r2fIajFvZfkOhPC6uuRWXeYdN/UP7nEwpWXo/7kvNcAMNJ1gYjqseLJjXeDSUO1r
+         9zTgH5q2rpNbw9cz4CUQY0NyHRJROq2cLEwnra1hNM2pPd0lbYOMuIMxu76jm7l7qAt3
+         CSpyqNaY/2zKj+qC+tXzudzAAMKbOIETUrdifzaFmXhd9j0VWuWaGTETpPj8QohBoWCk
+         mlNz5EUdk2MwAXGJAM2n2qQqvuy8o+aklapXkh+/WjQY+drMItxFMp5C5bmaNGtetOSj
+         lSkmN6lxv3WnsJyRDfH1wD8k0j7LbOo9FMSC8Hm23RFbikJX+KLDpzxS4RjXHem4JqUZ
+         lXLg==
+X-Forwarded-Encrypted: i=1; AJvYcCUBNTT9YEuIWoZIRQQPAAVF6l7ZgeP3Um0JqcF6LwiUVOxogFnc694x0kRQSESvQtg+/lWogJs7OU78YHqW@vger.kernel.org, AJvYcCVReOLbAfdKslMyKNUM09QKzalT6POHlxMCdnSBdNjAZS3XYrJRlsSV3AF1BL3o+IGu8tfanG23QRwkP2U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwDUhzG0qw5Vs7MtK+ymnoJJa5WeQB0XxDRqGsN0F24OIjB8XPc
+	iVSaT2EI5iIvrZfbTMS1d1VkOTVem+eQBzgHM4ZMXwP5ida78hNuK2NF7g==
+X-Gm-Gg: ASbGncuSSUlf6ntBEgs9aJGlyyeCSUruAGz7Nx+EtzIRlDXSqcG41vh9ZlYDArHHFZC
+	MjqTqqzO2pg9YbYmDJbqYHEgpwHUMIf8hV+wT3QiXpqPGX1eth7CwN4Q4z/wWbez9jPaPwcsrow
+	dmP8GJHYf8pFkZIx3wykWHXmQYQRDcXuTV6PYji9iQMXbyYN3ogM6JF884KebN5IzAUCFcL/4Hf
+	qdHelSMwS9z3ZxxP8ylf2FziPPOKvlQaXMYg3CsRjt6ucgm3DJ6qROnoQe1uwxWsxSgptvd+Tcc
+	B6Pgd0o3JQyIP+TpVNqieKbI+ZGhors+6U3S4NCMet9fcOLZh4ELE6E+HWterRpbECOzi5dvy/Y
+	ZIAGBmRGsbTSuMTr135TiWg==
+X-Google-Smtp-Source: AGHT+IEP1XoHBuHE270i0ZfYjYgbUDh2B4NmjzG24AtfqEoOZjen9Q8A09oNwnEn8CwSDeYSqf0PqQ==
+X-Received: by 2002:a17:903:983:b0:22c:33b2:e420 with SMTP id d9443c01a7336-231b6034100mr12332745ad.7.1747281140467;
+        Wed, 14 May 2025 20:52:20 -0700 (PDT)
+Received: from DESKTOP-NBGHJ1C.local.valinux.co.jp (vagw.valinux.co.jp. [210.128.90.14])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22fc7540c8csm108162985ad.5.2025.05.14.20.52.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 May 2025 20:52:20 -0700 (PDT)
+From: Ryo Takakura <ryotkkr98@gmail.com>
+To: john.ogness@linutronix.de,
+	pmladek@suse.com
+Cc: Jason@zx2c4.com,
+	gregkh@linuxfoundation.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	lkp@intel.com,
+	oe-lkp@lists.linux.dev,
+	oliver.sang@intel.com,
+	ryotkkr98@gmail.com
+Subject: [PATCH v2] rslib: Add scheduling points during the test
+Date: Thu, 15 May 2025 12:51:51 +0900
+Message-Id: <20250515035151.38575-1-ryotkkr98@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 
-From 28043dec8352fd857c6878c2ee568620a124b855 Mon Sep 17 00:00:00 2001
-From: Nicolas Pitre <nico@fluxnic.net>
-Date: Wed, 14 May 2025 15:58:22 -0400
-Subject: [PATCH] vt: remove VT_RESIZE and VT_RESIZEX from vt_compat_ioctl()
-From: Nicolas Pitre <npitre@baylibre.com>
+The test has been prone to softlockup but stayed unnoticed because
+of the printk calls during the test resets the soflockup watchdog by
+calling touch_nmi_watchdog(). With the commit b63e6f60eab4 ("serial:
+8250: Switch to nbcon console"), the printk calls no longer suppress
+the softlockup and warnings can be observed more evidently that shows
+the test needs more scheduling points.
 
-They are listed amon those cmd values that "treat 'arg' as an integer"
-which is wrong. They should instead fall into the default case. Probably
-nobody ever exercized that code since 2009 but still.
+Provide scheduling points by adding cond_resched() for each test
+iteration on their up to/beyond error correction capacity.
 
-Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
-Fixes: e92166517e3c ("tty: handle VT specific compat ioctls in vt driver")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Closes: https://lore.kernel.org/oe-lkp/202501221029.fb0d574d-lkp@intel.com
+Signed-off-by: Ryo Takakura <ryotkkr98@gmail.com>
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+---
 
-diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
-index 83a3d49535e5..61342e06970a 100644
---- a/drivers/tty/vt/vt_ioctl.c
-+++ b/drivers/tty/vt/vt_ioctl.c
-@@ -1119,8 +1119,6 @@ long vt_compat_ioctl(struct tty_struct *tty,
- 	case VT_WAITACTIVE:
- 	case VT_RELDISP:
- 	case VT_DISALLOCATE:
--	case VT_RESIZE:
--	case VT_RESIZEX:
- 		return vt_ioctl(tty, cmd, arg);
+Changes since v1:
+[1] https://lore.kernel.org/linux-serial/20250510013515.69636-1-ryotkkr98@gmail.com/
+
+- Add Reviewed-by by John and Petr.
+- Add Reported-by by kernel test robot <oliver.sang@intel.com>.
+- Add Closes and its link.
+
+---
+ lib/reed_solomon/test_rslib.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/lib/reed_solomon/test_rslib.c b/lib/reed_solomon/test_rslib.c
+index 75cb1adac..322d7b0a8 100644
+--- a/lib/reed_solomon/test_rslib.c
++++ b/lib/reed_solomon/test_rslib.c
+@@ -306,6 +306,8 @@ static void test_uc(struct rs_control *rs, int len, int errs,
  
- 	/*
+ 		if (memcmp(r, c, len * sizeof(*r)))
+ 			stat->dwrong++;
++
++		cond_resched();
+ 	}
+ 	stat->nwords += trials;
+ }
+@@ -400,6 +402,8 @@ static void test_bc(struct rs_control *rs, int len, int errs,
+ 		} else {
+ 			stat->rfail++;
+ 		}
++
++		cond_resched();
+ 	}
+ 	stat->nwords += trials;
+ }
+-- 
+2.34.1
+
