@@ -1,175 +1,143 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE4ED21CC4D;
-	Fri, 16 May 2025 06:36:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D4A2230BE9
+	for <linux-serial@vger.kernel.org>; Fri, 16 May 2025 09:44:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747377390; cv=none; b=pBYo81BvZLLZAUaAWpaNWvz1YDxfXFXRgVLW4NgH2se/ntQgDnMkfGNy/BoXj5iDHt3kwZCVGzYbo5zJIgRikRbLDfxzRWwsOunDhqP2McRQwktRrz0iMwTM06LiSNeEjdKbLZYGFVayOJVIR6lAYPHApXxpe9XFaZaqcyY/zSI=
+	t=1747388644; cv=none; b=igw1iFJZ9A8v5BJSMNzZ0JxCBkv6cCJoEcFZTs9phKbcKEJk761eqnZXdCRWIV9mvLirymKvwrqLMCN4i/YvC7bZghtEM/PgqfbbRsMUGK8xo1WZpzOp6aFKh8ikpIHweLSyWjZ/vXQ3yZoLi8wyUxE02mDZ5EK+fJc91iA8Qy4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747377390; c=relaxed/simple;
-	bh=ha4URqno53+8IBqXFpktJS1GXjWV40bui4aNG0QuF8g=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:CC:References:
-	 In-Reply-To:Content-Type; b=Xr+1Gv54EIm66w/Xzwo293QbOh8d0g+/rThTSFir0HpSSw0ks+9yxMyDjBLNF5UYwVkhAu5D62jD31HPkqAyqJTAO1V6l67v8m6gSOr6Ss9TVFquwsSnkkdPIJx+pst4U7BjOns12+L64ip5bhlAbHIJ3bSQaO3BPCMafVjwz/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ZacF8oTr; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1747388644; c=relaxed/simple;
+	bh=F+iWm4gh0xmhPqsj7z8aDIut+eHgKGb4Z7XQRwUYRH8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=m7CFFRRup7jsZ+EQHTfrWpo6AIRnCe6cXxUMuLAOq5dbp4pvJOfaN+ZGAYCWQc/E/+7JVeHqNdAstN2zp2qG/02khdmHdLPAm40+JrLMl5XaMcKx3ObQHj61o+sSwAoENPiyTZf0zjfPfg59A9lzRCdWrIMk6hODDc4YSQxJdo0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=gvY8YQKk; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Js1+4yYA; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ZacF8oTr"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 54G37mmC001154;
-	Fri, 16 May 2025 06:36:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	WaMAGfBbgDWG1NFAeAULSkUJlJOsNpmee8ZzO7nXfBc=; b=ZacF8oTrBc0LqKLx
-	P0TgtGmMl5Muu690TCV8cZlH52BH0NOj8ltic8NRNgE+sUzpVPHwnQuszZLvoiBo
-	0LDg4/zVCUf0/vF8qmFlfdwz9OvDGr+o6fFkowoasFXLDCwhCSIVHrZjl1SSehGi
-	kVfrq9ttV4f/peQrPchYdH19+5Mhx4rGEfsfl3q+QaqKgPX38QedT7rue8wM5+O4
-	57BhgQVeeRGfbb+MvSNoaj7KRcHHH2teuCpW209cAtPeOWHDta4ylcu5ezYDgRWl
-	6J0iJ+AlkNIdRA/v5WTYNxqC3s7cIavhMqOxZEMs6FCCJ5y+liI5w3OB3pLj5fQr
-	JqC/EQ==
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46mbcp0w6q-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 16 May 2025 06:36:24 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 54G6aN4s010065
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 16 May 2025 06:36:23 GMT
-Received: from [10.218.32.171] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 15 May
- 2025 23:36:17 -0700
-Message-ID: <df6386a1-5b4e-46d5-a431-6ca136a87980@quicinc.com>
-Date: Fri, 16 May 2025 12:06:14 +0530
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="gvY8YQKk";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Js1+4yYA"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1747388640;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QoidoMi24XMr0gV7ZT6tKiaE7KQX9Ucg+1Rm8DPUzbo=;
+	b=gvY8YQKkoBGAfqtmlpBj2W/aCJ7hUmXnU2J2aGIJgubdPIGijIJhJ2LedK4Cb4Xbg/zeSO
+	Rt+sn90FKszzJFICWAuRAT7/b9h+qTFxDJ+VPlZq09NbIeFveG1lfsk7rm93wRCVoljN2B
+	F3e4o9G+8vrFNI9x0NndGUT0nhFaHcLvH+YkJ1KIPmaecCXOwq1RN3/9BwQONALPLzAhi1
+	JeFdYs2l7ow6oi7B24+5uCrtgKTqOMS9gPeSht8T6KhiKDg09aw6pH4nw15hkey3AbND1Q
+	IA+2/MCw9Mprlx7HUgb2dGhFWclfq0ppNqXDCFoZMIyeaGqGe3mL7AKxHkl5vg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1747388640;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QoidoMi24XMr0gV7ZT6tKiaE7KQX9Ucg+1Rm8DPUzbo=;
+	b=Js1+4yYAmrjeVtE80AxipZ+7BY7r1vXsTri90RnzspjEZR0/Qfcljo2P2YUdjl2cS5Cplj
+	2XfQOlnVCDcjqiCg==
+To: Michael Cobb <mcobb@thegoodpenguin.co.uk>, pmladek@suse.com,
+ rostedt@goodmis.org, senozhatsky@chromium.org
+Cc: linux-serial@vger.kernel.org, Michael Cobb <mcobb@thegoodpenguin.co.uk>
+Subject: Re: [PATCH RFC 0/3] printk: Don't flush messages using write_atomic
+ during console registration if kthreads have not been started yet.
+In-Reply-To: <20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk>
+References: <20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk>
+Date: Fri, 16 May 2025 11:50:00 +0206
+Message-ID: <84jz6gdh5r.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/8] dt-bindings: serial: describe SA8255p
-From: Praveen Talari <quic_ptalari@quicinc.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>,
-        Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio
-	<konradybcio@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>,
-        Nikunj Kela
-	<quic_nkela@quicinc.com>
-References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
- <20250506180232.1299-2-quic_ptalari@quicinc.com>
- <35659475-862a-4678-a2a5-173c2254ae60@kernel.org>
- <2f3e608b-5536-4c6d-b7ca-c8cf4c9d0b1b@quicinc.com>
- <4b2c24e4-d515-481d-a00b-d50ae57304dd@quicinc.com>
-Content-Language: en-US
-In-Reply-To: <4b2c24e4-d515-481d-a00b-d50ae57304dd@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 9LDWp9enGqWWGUhQVSS3gMVl2DXkuiyY
-X-Proofpoint-ORIG-GUID: 9LDWp9enGqWWGUhQVSS3gMVl2DXkuiyY
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTE2MDA2MCBTYWx0ZWRfX8QSRwKutBXH1
- ZTw81ApNsrFIp8iecc7noiNQ6l3Gc7NvTl9krPdGVlBbfZjbBdvzv2qhJ08RnUylaaQExr9Cgfz
- gatUHQ7vr5bIA8ReKdI8pNa5Vupi3FOGVn/MX/K77MBhTTlwnzd0YSzpVJo/7FRr4XPV8nBPDNw
- fftTO6svgaamIvfBmsTx+bL5WnSKFO4LPkXNrN85qGQcIUsEXS0Drain/WqBVFwbDTlp1o3Vd2c
- K1qZd4n4So78WpEP/IBejfOw5Ks85RUnPhNUIakD2iibRjFwfDNJwrnNyVSjN0WXO56qqMZ9cLu
- GPX/QMDSU1hxTABD+Jc8gfcoRALFRNqQn9yVdnqF8FvfbkcJssMu1b6e7MrCd9L/UsVOoONZ5bm
- AdQuCroGNwkCee1TOT5YHWr2yt5KQbb+QXvjmtrUMaeidd+IE/K3AyUsJ8VJcBrLm5gQXx+1
-X-Authority-Analysis: v=2.4 cv=Gp9C+l1C c=1 sm=1 tr=0 ts=6826dce8 cx=c_pps
- a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10
- a=Am187KbwW9CzcosyEMcA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-05-16_02,2025-05-15_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 clxscore=1015 spamscore=0 lowpriorityscore=0 impostorscore=0
- bulkscore=0 adultscore=0 suspectscore=0 priorityscore=1501 mlxscore=0
- malwarescore=0 mlxlogscore=943 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505070000
- definitions=main-2505160060
+Content-Type: text/plain
 
-Hi Krzysztof
+Hi Michael,
 
-Gentle reminder!!
+On 2025-05-14, Michael Cobb <mcobb@thegoodpenguin.co.uk> wrote:
+> Hello all,
+>
+> When using a legacy console, there is a large amount of time during boot
+> that is spent printing boot messages to the serial port. I have spent time
+> looking at nbcon and the potential effects the new interface should have on
+> boot times. We should expect a significant reduction in boot times as this
+> work is now offloaded to a dedicated kthread.
+>
+> With some slight tweaks to the behaviour of nbcon during console
+> registration, it is possible to reduce boot times significantly.
+>
+> During initial console registration, we mainly rely on two flags,
+> `have_nbcon_console` and `printk_kthreads_running`, to handle the glboal
+> state of nbcon and to determine the appropriate method to handle flushing
+> messages.
+>
+> In the case of nbcon, when calling `printk()`, messages are either flushed
+> by the caller using `write_atomic`, or this work is offloaded to the
+> console's printk kthread. As can be seen in
+> `printk_get_console_flush_type()`, under normal (i.e. non-emergency or
+> panic) priority, we check the value of `printk_kthreads_running` to
+> determine if nbcon consoles should be flushed via `write_atomic` or not.
+>
+> When `register_console()` is called to register the first nbcon console
+> during boot, we know that `printk_kthreads_running` will be false as:
+> - before the `printk_set_kthreads_ready` initcall, no kthreads have been
+>   started since `printk_kthreads_ready` will be false.
+> - after the `printk_set_kthreads_ready` initcall, `printk_kthreads_running`
+>   will be false since we have not yet registered any nbcon consoles. As we
+>   are registering an nbcon console, `register_console()` will set
+>   `have_nbcon_console = true`. At this point, we are now in an intermediate
+>   state - we have registered an nbcon console but a kthread for it has not
+>   yet been started.
+>
+> In effect, this means that any calls made to `printk()` after
+> `have_nbcon_console` has been set but before
+> `printk_kthreads_check_locked()` has set `printk_kthreads_running` will use
+> `write_atomic` on nbcon consoles. As `vprintk_emit()` calls
+> `nbcon_atomic_flush_pending()` in this situation, we see that the newly
+> registered console has all boot messages flushed in this manner.
+>
+> This RFC patch introduces a new flag, `printk_kthreads_pending_start`, to
+> handle this intermediate state. This flag is set when an nbcon console is
+> registered and cleared once `printk_kthreads_running` is set to true. We
+> then check this flag under `printk_get_console_flush_type()`, so that
+> printk's are deferred in this state, relying on the fact that a kthread is
+> about to be started. This does not affect behaviour under panic and
+> emergency priorities which are flushed via `write_atomic`.
+>
+> With this change applied, the flushing of printk messages on a newly
+> registered nbcon console is now fully handled by the console's kthread. On
+> my test hardware (Raspberry Pi 3B+), I have seen a reduction in the time
+> taken to boot into userspace when using nbcon consoles from ~9s to ~1s:
 
-On 5/9/2025 10:02 AM, Praveen Talari wrote:
-> Hi Krzysztof,
->
-> Thank for you review and valuable inputs.
->
-> On 5/8/2025 11:15 AM, Praveen Talari wrote:
->> Hi Krzysztof
->>
->> Thank you for your patience. I consider your inputs as valuable 
->> learning.
->>
->> On 5/6/2025 11:53 PM, Krzysztof Kozlowski wrote:
->>> On 06/05/2025 20:02, Praveen Talari wrote:
->>>> +
->>>> +properties:
->>>> +  compatible:
->>>> +    enum:
->>>> +      - qcom,sa8255p-geni-uart
->>>> +      - qcom,sa8255p-geni-debug-uart
->>>> +
->>>> +  reg:
->>>> +    maxItems: 1
->>>> +
->>>> +  interrupts:
->>>> +    minItems: 1
->>> Nothing changed here, this should be dropped based on previous 
->>> discussion.
->>>
->>> You sent this v5 on 8:02 PM of my time. *THEN* you responded to my
->>> comment at v4 at 8:05 PM. That's the way to waste everyone's time.
->>>
->>> I do not understand why interrupt is optional for a new, complete 
->>> device
->>> description.
->
-> To put it simply, because we are using the RX GPIO line as wake up IRQ 
-> and not all SE related pins are mapped in the PDC,
->
-> there is no specific wake-up pin to define. Therefore, the wake-up IRQ 
-> should be considered optional.
+If I understand the problem correctly, it is really due to the "console
+enabled" message that is printed upon registration. For the first
+console, it would perform a full atomic flush, even though it is about
+to create the kthread printer.
 
-I hope this response has addressed your query.
+What if we create the kthread _before_ printing the message. Something
+like the below (untested) changes. Does this also address the issue?
 
-Thanks,
+John Ogness
 
-Praveen
-
->
-> Thanks,
->
-> Praveen
->
->>
->> On this platform, there is no use case of waking up UART, so we 
->> consider the  wake up IRQ as optional.
->>
->> Thanks,
->>
->> Praveen
->>
->>>
->>> Best regards,
->>> Krzysztof
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 1eea80d0648ed..ecc0f393cacf0 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -4122,7 +4122,6 @@ void register_console(struct console *newcon)
+ 	 * users know there might be something in the kernel's log buffer that
+ 	 * went to the bootconsole (that they do not see on the real console)
+ 	 */
+-	con_printk(KERN_INFO, newcon, "enabled\n");
+ 	if (bootcon_registered &&
+ 	    ((newcon->flags & (CON_CONSDEV | CON_BOOT)) == CON_CONSDEV) &&
+ 	    !keep_bootcon) {
+@@ -4136,6 +4135,7 @@ void register_console(struct console *newcon)
+ 
+ 	/* Changed console list, may require printer threads to start/stop. */
+ 	printk_kthreads_check_locked();
++	con_printk(KERN_INFO, newcon, "enabled\n");
+ unlock:
+ 	console_list_unlock();
+ }
