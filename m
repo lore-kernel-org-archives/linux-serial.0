@@ -1,133 +1,117 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fhigh-a4-smtp.messagingengine.com (fhigh-a4-smtp.messagingengine.com [103.168.172.155])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 123F72528EB
-	for <linux-serial@vger.kernel.org>; Tue, 20 May 2025 15:04:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D172248895;
+	Tue, 20 May 2025 16:34:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.155
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747753495; cv=none; b=DEoIWu0xwcPSnaeSXCvmINIcfqIDh6uaU4Z90fv7CLuWFTEuQ+gH3VQeZELaIxos+2LYBMuGJf7qxjr065G7aDeWbFcCFfShdOyt5pvhm9C0MLwFCYUQIFgGlu7Vo12gZH7yBR9OxiJmKnJhDmcLXdTWoUPS7TNtB+urZoHR3KY=
+	t=1747758883; cv=none; b=IpgQ6z+YdN6fxr/or2YN7X8lmhIpvMmtR4PyaUX7vS3u1ifIWSkwVG4PuHC0L5p9HV9t4WmpxXiyQeG1uKV3fKs+rO9OPRchAqH2tvdn/+dxxMqw4hiu2cJKU2xwEm9YqlfnRk9PDAMwU01mQNacHNAUUYOjJUVRoocoT0O26nM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747753495; c=relaxed/simple;
-	bh=CR4qWjJ2rSzRmG6I2MqjQUHOJ2swJQ7HmUMMkmp8R2o=;
-	h=Message-ID:Subject:From:To:Cc:Date:Content-Type:MIME-Version; b=jRKdgwECB3M0X3JgAKX+72trg0tyjldvyt+rBebKkKrIa0BGzoopI7CSry169vNPBfHie2+1kFdGO98sKANmqrS5WCi5FG8FIf3mHCAtbY2nedeR6Ee/6ZToVyuOZjl3Nn7bEYHCFCVkPXIyYhL2a8M8Pn5YSO7jzAuLodUorKQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=null-ptr.net; spf=none smtp.mailfrom=null-ptr.net; dkim=pass (2048-bit key) header.d=null-ptr-net.20230601.gappssmtp.com header.i=@null-ptr-net.20230601.gappssmtp.com header.b=YeiOoM6i; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=null-ptr.net
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=null-ptr.net
+	s=arc-20240116; t=1747758883; c=relaxed/simple;
+	bh=P2O37HzNh0Nda2elBwcK/r/ztmkVrVoMjJoyPLYWE04=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=VcTXMA/qpC2ytmx8uRBcHWMTBztlPP6hX04YKY6noXY4C5Xrt86+UrYqwzTIrDGGqCszMFVNIFFML+weCG2x4BCxIcVnDzzauunegjXA3CmDMFuQ6BGuNvaPBl0cTdpk7H9ojgEx0dj8pYrfns/R97uzX/S9fbccEOxOipe7W9M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=kNbZy5an; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=aQN6erTe; arc=none smtp.client-ip=103.168.172.155
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=null-ptr-net.20230601.gappssmtp.com header.i=@null-ptr-net.20230601.gappssmtp.com header.b="YeiOoM6i"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-742c5eb7d1cso3689262b3a.3
-        for <linux-serial@vger.kernel.org>; Tue, 20 May 2025 08:04:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=null-ptr-net.20230601.gappssmtp.com; s=20230601; t=1747753481; x=1748358281; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:date:cc:to:from
-         :subject:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=8qt2AMOwYQBn/iXfBtf2T9ZgjdnCumetSBveJiLr4T4=;
-        b=YeiOoM6iXWIjvXn07bfNETGccoQ92pTQn1G+sIJ6cZuYUtk1gaIIFHnEd3C4tWXwuF
-         nPmEw8SIqUIHHA8WIzaiPhVDfqLp0cx1U5xJ5njM0bfaKNl78NSW7TBIwrxRuniTUtjt
-         c3SLUcFQEskjOh5r1UxCw1FRRabD+AM5o1cxaz4wGD4YD8a9VjmOzlJzkQ4sn8/w5KWx
-         vDVTh+XpnEIQgfFFETxwItBPIslVgpDC+cKVEGSC7hfunfU+lxy8xuoI9VfaJtKvV/mv
-         baD3heKXJMnibK56MdatfLpJvugkghYERbNu8exfRLApn10+q3zjvLTpAaV2olIQX+U8
-         WNkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747753481; x=1748358281;
-        h=mime-version:user-agent:content-transfer-encoding:date:cc:to:from
-         :subject:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8qt2AMOwYQBn/iXfBtf2T9ZgjdnCumetSBveJiLr4T4=;
-        b=EXml/PfRZ0XeeXySwQQA7a7kAgBm05Xp+2vVy9fqf6Kcux77NvDg00ONJn92/S/osC
-         oW2IH4k20w8RNP+nSIcm0BRHeyBgKBcFReC2lrMnLFLIUmWMLxZd5UmEODX5mVgy8+n1
-         Ab0OIRniaHAVEQEe2x24iJCJhWeHtv6YBnyrKyiCZWFSURovLAmncl/Q96evxy2HPJiL
-         4OGnfR1lvPeAoPPNLCBhkrz21bUIV2BDV8ZqoOD1hvxirBfaxEyFNOYlXE906xJZhrFo
-         RdwSyC5b5NBUTj5dpwLvEeXhnfjcs2WOGlVfZY7O4KlY2flrABJIgFUUO3jm0IjUX2sr
-         r+ew==
-X-Gm-Message-State: AOJu0Yx4RZ35oDYXK7SzJFpA9UDJjm3QiQTAQ6nKqBxNPN/FnVn9TWjX
-	eQHPOUgcyfLGvGlLSLuPaDT9vstdWUL9N8aCGRpO+QsH3cIss8u5axXmJiPBXyjHkXnc5blhYD9
-	ra8JFZ3o=
-X-Gm-Gg: ASbGncsn3lEMOLR+oGSsPX2cE+6rIy7HfewcSXNEbAO0HnQ9FQLGQMPGkCktTP9zSV/
-	EJEBV/WAEj2jtaiXrqTaIa7YheCgD1VQnMOu0FcvSua+fArxtrwxr69YTYUIGBEe339ZmgEdfUk
-	dGCUbuICovxpjcO27ig2ZNN+hBsm+ltmRdBa5UVaIuZqYzoFtNcj4wRqvFK5Hco4u4PBwSQ6n61
-	6FPmWEWqZPBBkaOLKU1qw1wuBxuuJfnxhyjiq1z7MgXg690nb3AW6zrxHWYC7Tckc3BpnC3p/HL
-	X6uXjlHZPjwEIBXwuOFcW3veSrP1j6kqyo/FeKv15D3AahJosQWBVKwbq8mM6UiSOgzBnYKUQS4
-	0DpGCbFJp0Dw0I6I=
-X-Google-Smtp-Source: AGHT+IHUnZ1tmrsd4d4ov2wUOKLkS2xykDRBuz9U2ImOWJ9EgYi+XH0++plY+sMvKkwcXYxHO7/AWA==
-X-Received: by 2002:a05:6a00:3c89:b0:742:9cdc:5cbd with SMTP id d2e1a72fcca58-742a98abc68mr20370226b3a.17.1747753481233;
-        Tue, 20 May 2025 08:04:41 -0700 (PDT)
-Received: from ?IPv6:2601:601:600:19d0:223:a4ff:fe0e:1f8? ([2601:601:600:19d0:223:a4ff:fe0e:1f8])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-742a9878b53sm7983972b3a.152.2025.05.20.08.04.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 May 2025 08:04:40 -0700 (PDT)
-Message-ID: <624cb205581e6bedc205d07d633587e389ee1582.camel@null-ptr.net>
-Subject: [Resend PATCH v2] serial: jsm: fix NPE during jsm_uart_port_init
-From: Dustin Lundquist <dustin@null-ptr.net>
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Date: Tue, 20 May 2025 08:04:40 -0700
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.1-1 
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="kNbZy5an";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="aQN6erTe"
+Received: from phl-compute-04.internal (phl-compute-04.phl.internal [10.202.2.44])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 47DAE1140116;
+	Tue, 20 May 2025 12:34:39 -0400 (EDT)
+Received: from phl-frontend-01 ([10.202.2.160])
+  by phl-compute-04.internal (MEProxy); Tue, 20 May 2025 12:34:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm1; t=1747758879; x=1747845279; bh=QnFTV+24z4
+	RnwaKMJjOmGrH2cprdkqCWnr/+fNT7CHA=; b=kNbZy5anszPa/LXxo0OCr3hdCo
+	Im88AN+u1xZTgpm4BWMgs/4/Iokt7C1CwThFHmFP2o7WgzdHV6X8hW4crt/O5da7
+	0rA5+70/7YDrGXys66jJNJ4M0roXzzYuYEkPQhPBbltAYJkIg2/qIOUiGcS/HAQd
+	UW2fQF6Pfe51d36uES62JGt0CGv3Olrx0WIMnz6ytI+BtuLEDWhSSo3n6xKqTvM9
+	XzgbfXsnM9fPYUnWpcuzB4BWqTvbx5cduD18mAq64YqHDF9Yh7ma2TVPNJrGG31z
+	lBSbzaRg1inVlJbHMgxHzf7U6NwlCDNAOi0KwYS0QiAcxrohE3wh9iMCcfIA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1747758879; x=1747845279; bh=QnFTV+24z4RnwaKMJjOmGrH2cprdkqCWnr/
+	+fNT7CHA=; b=aQN6erTe2q7U6T4Avgg+5XPNpDTiNk+uZio/0RGFzt1DhSVyG6E
+	Njha/w5QnZ5sSmgDLd0iMBVra0QEt/XYEqA/6XP0lGGH6VXdIqlINfu/l8aGYp2n
+	RhvjsRGhopPXAIO/9nvIAvyye5jGjJS2K4jcgDGuIpCkQxVKHQjyMut/SRiSbgkQ
+	VNmSjBnU2RwNe8dPPoruaNhvi9OoIwWMTj1pHb1bY5+Vtnx/RI5sgsdplpG/BO9N
+	UhZbzmlO3UGMc2AZKsm/osnbvypwMRdKA0JFFdshDDRWM7s1hIrqcyLvvps8lCae
+	RLJ1Q9xz7+IclzkNKPJceGf/DAfYiWv/8tQ==
+X-ME-Sender: <xms:H68saLWB0cgtzKFzCX7fT75TcuWrKVGsfkR3eS2HX08l8vrl1tbk2Q>
+    <xme:H68saDn0joy_67idtBBDsF4KAHYJEYzVjbs1Fa72w9mxmCcAaq-pBbP0qE5-AOSKi
+    Shh_tYXmAjagvzda3I>
+X-ME-Received: <xmr:H68saHaKNdJWvMcUdD4MgZ1F9uKoogxaPSi_fOpo2JaEUNLhVri0p3rCp797rtTp_zNeJdbWjLmxDiwYOxfODRVURxsUz4ucBPE9G8TiV0_Jn0Oy4Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddtgdejudculddtuddrgeefvddrtddtmd
+    cutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghn
+    shhusghstghrihgsvgdpuffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtne
+    cusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvvefujgfkfhgg
+    tgesthdtredttddtvdenucfhrhhomheppfhitgholhgrshcurfhithhrvgcuoehnihgtoh
+    esfhhluhignhhitgdrnhgvtheqnecuggftrfgrthhtvghrnhepgfevvdfhfeeujeeggffg
+    fefhleffieeiuddvheffudehudffkeekhfegfffhfeevnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepnhhitghosehflhhugihnihgtrdhnvght
+    pdhnsggprhgtphhtthhopeegpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehjih
+    hrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehgrhgvghhkhheslhhi
+    nhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnh
+    gvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsvghr
+    ihgrlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:H68saGVk3dhVGf3Ii5grgm3jY8h5e8HFNSo7CKdGjzPe4X0tRgySUA>
+    <xmx:H68saFlB1p1MuBgZAaCN1PZY-6Z_l7aNmw32LswM__UQI3BYBABC7w>
+    <xmx:H68saDdl4p9Sc8wNZ7SfnrE8sOevCt20GC3s855pcgRaSYi2SgOR4Q>
+    <xmx:H68saPETpu3mg3Ta_esOyUm_E1QlVuqeTIxhcQA4UdwuxxjY3ZGbow>
+    <xmx:H68saFaRGSFxsZToI2eOpBy7ETVHzoTV9MYInx2u2GikcbiuCrplVpVc>
+Feedback-ID: i58514971:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 20 May 2025 12:34:38 -0400 (EDT)
+Received: from xanadu (xanadu.lan [192.168.1.120])
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 4C18111B0C33;
+	Tue, 20 May 2025 12:34:38 -0400 (EDT)
+Date: Tue, 20 May 2025 12:34:38 -0400 (EDT)
+From: Nicolas Pitre <nico@fluxnic.net>
+To: Jiri Slaby <jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] vt: add VT_GETCONSIZECSRPOS to retrieve console
+ size and cursor position
+In-Reply-To: <3o3q5896-8540-nro6-534o-307nn81r7r5r@syhkavp.arg>
+Message-ID: <p7p83sq1-4ro2-o924-s9o2-30spr74n076o@syhkavp.arg>
+References: <20250514194710.6709-1-nico@fluxnic.net> <20250514194710.6709-3-nico@fluxnic.net> <8fb2c16f-0e9b-402d-a7f2-4881de8c7bd9@kernel.org> <3o3q5896-8540-nro6-534o-307nn81r7r5r@syhkavp.arg>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 
-From: Dustin Lundquist <dustin@null-ptr.net>
+On Thu, 15 May 2025, Nicolas Pitre wrote:
 
-No device was set which caused serial_base_ctrl_add to crash.
+> On Thu, 15 May 2025, Jiri Slaby wrote:
+> 
+> > On 14. 05. 25, 21:42, Nicolas Pitre wrote:
+> > > +#define VT_GETCONSIZECSRPOS 0x5610  /* get console size and cursor position
+> > > */
+> > 
+> > Can we define that properly as
+> >   _IOR(0x56, 0x10, struct vt_consizecsrpos)
+> > ? Note this would still differ from "conflicting":
+> > #define VIDIOC_G_FBUF            _IOR('V', 10, struct v4l2_framebuffer)
+> 
+> Similarly as the reason above: given that no other definitions in that 
+> file use the _IO*() scheme for historical reasons, it is preferable to 
+> follow what's already there to avoid unsuspected confusion. The VT layer 
+> is pretty much unlykely to grow many additional ioctls in the 
+> foreseeable future so I'd lean towards keeping things simple and in line 
+> with the existing code.
 
-=C2=A0BUG: kernel NULL pointer dereference, address: 0000000000000050
-=C2=A0Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
-=C2=A0CPU: 16 UID: 0 PID: 368 Comm: (udev-worker) Not tainted 6.12.25-amd64
-#1=C2=A0 Debian 6.12.25-1
-=C2=A0RIP: 0010:serial_base_ctrl_add+0x96/0x120
-=C2=A0Call Trace:
-=C2=A0 <TASK>
-=C2=A0 serial_core_register_port+0x1a0/0x580
-=C2=A0 ? __setup_irq+0x39c/0x660
-=C2=A0 ? __kmalloc_cache_noprof+0x111/0x310
-=C2=A0 jsm_uart_port_init+0xe8/0x180 [jsm]
-=C2=A0 jsm_probe_one+0x1f4/0x410 [jsm]
-=C2=A0 local_pci_probe+0x42/0x90
-=C2=A0 pci_device_probe+0x22f/0x270
-=C2=A0 really_probe+0xdb/0x340
-=C2=A0 ? pm_runtime_barrier+0x54/0x90
-=C2=A0 ? __pfx___driver_attach+0x10/0x10
-=C2=A0 __driver_probe_device+0x78/0x110
-=C2=A0 driver_probe_device+0x1f/0xa0
-=C2=A0 __driver_attach+0xba/0x1c0
-=C2=A0 bus_for_each_dev+0x8c/0xe0
-=C2=A0 bus_add_driver+0x112/0x1f0
-=C2=A0 driver_register+0x72/0xd0
-=C2=A0 jsm_init_module+0x36/0xff0 [jsm]
-=C2=A0 ? __pfx_jsm_init_module+0x10/0x10 [jsm]
-=C2=A0 do_one_initcall+0x58/0x310
-=C2=A0 do_init_module+0x60/0x230
+OK... I found precedents for a mixed sheme in 
+include/uapi/asm-generic/ioctls.h. Therefore I give in.
 
-Tested with Digi Neo PCIe 8 port card.
 
-Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers
-to enable runtime PM")
-Cc: stable@vger.kernel.org=C2=A0# 6.4+
-Cc: Greg KH <gregkh@linuxfoundation.org>
-Signed-off-by: Dustin Lundquist <dustin@null-ptr.net>
-
----
-V1 -> V2: added Cc stable, corrected explanation, added backtrace
-
-=C2=A0drivers/tty/serial/jsm/jsm_tty.c | 1 +
-=C2=A01 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/serial/jsm/jsm_tty.c
-b/drivers/tty/serial/jsm/jsm_tty.c
-index ce0fef7e2c66..be2f130696b3 100644
---- a/drivers/tty/serial/jsm/jsm_tty.c
-+++ b/drivers/tty/serial/jsm/jsm_tty.c
-@@ -451,6 +451,7 @@ int jsm_uart_port_init(struct jsm_board *brd)
-=C2=A0		if (!brd->channels[i])
-=C2=A0			continue;
-=C2=A0
-+		brd->channels[i]->uart_port.dev =3D &brd->pci_dev->dev;
-=C2=A0		brd->channels[i]->uart_port.irq =3D brd->irq;
-=C2=A0		brd->channels[i]->uart_port.uartclk =3D 14745600;
-=C2=A0		brd->channels[i]->uart_port.type =3D PORT_JSM;
+Nicolas
