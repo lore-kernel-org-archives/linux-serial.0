@@ -1,106 +1,133 @@
-Received: from flow-a3-smtp.messagingengine.com (flow-a3-smtp.messagingengine.com [103.168.172.138])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ABD73594C;
-	Tue, 20 May 2025 03:42:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.138
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 123F72528EB
+	for <linux-serial@vger.kernel.org>; Tue, 20 May 2025 15:04:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747712569; cv=none; b=IdTRXJY1i3he3YWsq4jeMltoWMPHzJwBM6FNtSppJbO4pR4cfHf6SM6K0pMYDIdhevMW9ornwI/Rc5e2JCbJ+nQRAuOaGh6mGE/3Iad5cVYE/girdeqF0ZATONiiB1CLR+5FtUjFXzxU835ciG55qZHNF8iSNtzkKKGEdfjwAHs=
+	t=1747753495; cv=none; b=DEoIWu0xwcPSnaeSXCvmINIcfqIDh6uaU4Z90fv7CLuWFTEuQ+gH3VQeZELaIxos+2LYBMuGJf7qxjr065G7aDeWbFcCFfShdOyt5pvhm9C0MLwFCYUQIFgGlu7Vo12gZH7yBR9OxiJmKnJhDmcLXdTWoUPS7TNtB+urZoHR3KY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747712569; c=relaxed/simple;
-	bh=oLyCXWWUMKIsSeoPo6Z6kNZwKj7A0fJXyb8s8tWPUlU=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=HS3N1dx9C6++JkJPRSXhB5F19SxkmS2ORKpVzRTi9mKFXQ8Or0eUSRPpmLU80iLuhs31fUaYboeSBA1d1UOjYXIt3HyWW/MimF9Zc9sWMssclsjOWh0NeIwpxo6GHeZXpaN+dLxiuXSGPuLax+Rez9sOFS+Uh+t0ZZxOXIL+SOU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=Z9u2ixnI; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=dJIdq+s7; arc=none smtp.client-ip=103.168.172.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
+	s=arc-20240116; t=1747753495; c=relaxed/simple;
+	bh=CR4qWjJ2rSzRmG6I2MqjQUHOJ2swJQ7HmUMMkmp8R2o=;
+	h=Message-ID:Subject:From:To:Cc:Date:Content-Type:MIME-Version; b=jRKdgwECB3M0X3JgAKX+72trg0tyjldvyt+rBebKkKrIa0BGzoopI7CSry169vNPBfHie2+1kFdGO98sKANmqrS5WCi5FG8FIf3mHCAtbY2nedeR6Ee/6ZToVyuOZjl3Nn7bEYHCFCVkPXIyYhL2a8M8Pn5YSO7jzAuLodUorKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=null-ptr.net; spf=none smtp.mailfrom=null-ptr.net; dkim=pass (2048-bit key) header.d=null-ptr-net.20230601.gappssmtp.com header.i=@null-ptr-net.20230601.gappssmtp.com header.b=YeiOoM6i; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=null-ptr.net
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=null-ptr.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="Z9u2ixnI";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="dJIdq+s7"
-Received: from phl-compute-06.internal (phl-compute-06.phl.internal [10.202.2.46])
-	by mailflow.phl.internal (Postfix) with ESMTP id F229A200311;
-	Mon, 19 May 2025 23:42:45 -0400 (EDT)
-Received: from phl-frontend-02 ([10.202.2.161])
-  by phl-compute-06.internal (MEProxy); Mon, 19 May 2025 23:42:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:subject
-	:subject:to:to; s=fm3; t=1747712565; x=1747719765; bh=ypLGYSRPxg
-	zJ/f1t6oKhgJlVNaEgTfXoS9qN+1k4YEk=; b=Z9u2ixnI0fxOltK49MQux2neXq
-	WqEkfepenD5IsFmdCE2WAWOKf9MAL9qzwWl88GSw3qLv08ZRWFZehV5ucdR3MSc4
-	w6FQW9rhycI5ZqhllQXNQMJ8hD9G8NgeEXY+/pjg7BFwoD0sb90p2Amq+ztvtgHa
-	vr54ADkXQ10UnX3PFhZuJtWAyBnBVYNdYrZnZUqH2aS3EqbXE7usOIg43veMXS2q
-	vZa2q68k/7Rq9aEExn69NfLO05j0pKpf60Fc+TxRdAWNKMAfCr/qpeYEE3wT4W/U
-	jxVColg4os+Qsjlr9n+0x3ZH4iuudbzPSPAZRwUQ4ovVOJTd5gBD1HP4fEsA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-	1747712565; x=1747719765; bh=ypLGYSRPxgzJ/f1t6oKhgJlVNaEgTfXoS9q
-	N+1k4YEk=; b=dJIdq+s72I84Knx5Sd7Q1d9OGNszwxORc1n6yUuvv5w0fO8mPK9
-	y5z/maIOksNBPqtGPrZdmE7xdAOdKxfW+xYacPARcwZ0Iqr1DzhOmd/XTtXzFJt3
-	218yRA+DSGBHJsS4L3OMB5LdCwLIKwln4O1YDclMArS3fnp3i99d0NO9wL6MDc7i
-	eZhswum3TyzY6doUgM0a/4ADZ9lo8g8vdeTV13C1ESFab/sOLff1KhrSpei92wOs
-	ISyfghOpEf3G9X8nPySGW9c0dMdLhZayRbVJDfrT4OBNvqk3JKd3EzkqS+9bLBsK
-	gWXJ7+dbBmzlUm/KKpRYxNJ86u22UImmmhg==
-X-ME-Sender: <xms:NforaMFLB9foMQmJ7eU3WrB8-DGaFO9AVvH_q8JQBg5LbGjU3WMtwQ>
-    <xme:NforaFXDDJgYyFmcNSNBbSKKGS9dgTBg_xEp6hd-bESOUNE2Dt_pFeGYQKRxYjQQX
-    lfERAvwGgPw44tC3LQ>
-X-ME-Received: <xmr:NforaGLhqfQRnUFC72ptqfvqq7a-ND9hzVD0umrEQpQg0lChlwVwblaisCmr0WrzSOSs-d1I5Q08Di7kP2dSD11xGXBGOUv79URn_YxKiY3wqfONnw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdefvdefvddtucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmneetughnkfguqdgfufdqffettdelucdlfedttddmnecujfgu
-    rhepfffhvfevufgjkfhfgggtsehttdertddttddvnecuhfhrohhmpefpihgtohhlrghsuc
-    frihhtrhgvuceonhhitghosehflhhugihnihgtrdhnvghtqeenucggtffrrghtthgvrhhn
-    pefgvedvhfefueejgefggfefhfelffeiieduvdehffduheduffekkefhgeffhfefveenuc
-    evlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehnihgtohes
-    fhhluhignhhitgdrnhgvthdpnhgspghrtghpthhtohepgedpmhhouggvpehsmhhtphhouh
-    htpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthht
-    ohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtoh
-    eplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthht
-    oheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:NforaOFuDtR8uz0ZC3TE8Ngkh4EDl8rm4GGKWrXCohQcLRoB84PBgQ>
-    <xmx:NforaCUgc9NWjI5TlIWWFyVthcHwrFR7CAH3S4dvID_V36ilJVh-WA>
-    <xmx:NforaBOK6K9rjgkL3QI6h6nOJL9yBYFi1w8UhT4mv8gMCCEwIuE36Q>
-    <xmx:NforaJ1tMQj0PFL0WZuH6-n9WcmHsQklrh3Sugp3hezAKEb4lcyiUg>
-    <xmx:NforaAgTP0BEiPeT0TfcE5c1A0KKR790toPpTszwI0sfqrtfSNHocQKG>
-Feedback-ID: i58514971:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 19 May 2025 23:42:45 -0400 (EDT)
-Received: from xanadu (xanadu.lan [192.168.1.120])
-	by yoda.fluxnic.net (Postfix) with ESMTPSA id 0F7E911B007A;
-	Mon, 19 May 2025 23:42:45 -0400 (EDT)
-Date: Mon, 19 May 2025 23:42:44 -0400 (EDT)
-From: Nicolas Pitre <nico@fluxnic.net>
-To: Jiri Slaby <jirislaby@kernel.org>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] vt: add VT_GETCONSIZECSRPOS to retrieve console
- size and cursor position
-In-Reply-To: <a5463522-1fa8-4ede-aec9-73f8a0aee196@kernel.org>
-Message-ID: <508npq7p-46or-n703-3725-r5649qno371q@syhkavp.arg>
-References: <20250514194710.6709-1-nico@fluxnic.net> <20250514194710.6709-3-nico@fluxnic.net> <8fb2c16f-0e9b-402d-a7f2-4881de8c7bd9@kernel.org> <3o3q5896-8540-nro6-534o-307nn81r7r5r@syhkavp.arg> <a5463522-1fa8-4ede-aec9-73f8a0aee196@kernel.org>
+	dkim=pass (2048-bit key) header.d=null-ptr-net.20230601.gappssmtp.com header.i=@null-ptr-net.20230601.gappssmtp.com header.b="YeiOoM6i"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-742c5eb7d1cso3689262b3a.3
+        for <linux-serial@vger.kernel.org>; Tue, 20 May 2025 08:04:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=null-ptr-net.20230601.gappssmtp.com; s=20230601; t=1747753481; x=1748358281; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:date:cc:to:from
+         :subject:message-id:from:to:cc:subject:date:message-id:reply-to;
+        bh=8qt2AMOwYQBn/iXfBtf2T9ZgjdnCumetSBveJiLr4T4=;
+        b=YeiOoM6iXWIjvXn07bfNETGccoQ92pTQn1G+sIJ6cZuYUtk1gaIIFHnEd3C4tWXwuF
+         nPmEw8SIqUIHHA8WIzaiPhVDfqLp0cx1U5xJ5njM0bfaKNl78NSW7TBIwrxRuniTUtjt
+         c3SLUcFQEskjOh5r1UxCw1FRRabD+AM5o1cxaz4wGD4YD8a9VjmOzlJzkQ4sn8/w5KWx
+         vDVTh+XpnEIQgfFFETxwItBPIslVgpDC+cKVEGSC7hfunfU+lxy8xuoI9VfaJtKvV/mv
+         baD3heKXJMnibK56MdatfLpJvugkghYERbNu8exfRLApn10+q3zjvLTpAaV2olIQX+U8
+         WNkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1747753481; x=1748358281;
+        h=mime-version:user-agent:content-transfer-encoding:date:cc:to:from
+         :subject:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8qt2AMOwYQBn/iXfBtf2T9ZgjdnCumetSBveJiLr4T4=;
+        b=EXml/PfRZ0XeeXySwQQA7a7kAgBm05Xp+2vVy9fqf6Kcux77NvDg00ONJn92/S/osC
+         oW2IH4k20w8RNP+nSIcm0BRHeyBgKBcFReC2lrMnLFLIUmWMLxZd5UmEODX5mVgy8+n1
+         Ab0OIRniaHAVEQEe2x24iJCJhWeHtv6YBnyrKyiCZWFSURovLAmncl/Q96evxy2HPJiL
+         4OGnfR1lvPeAoPPNLCBhkrz21bUIV2BDV8ZqoOD1hvxirBfaxEyFNOYlXE906xJZhrFo
+         RdwSyC5b5NBUTj5dpwLvEeXhnfjcs2WOGlVfZY7O4KlY2flrABJIgFUUO3jm0IjUX2sr
+         r+ew==
+X-Gm-Message-State: AOJu0Yx4RZ35oDYXK7SzJFpA9UDJjm3QiQTAQ6nKqBxNPN/FnVn9TWjX
+	eQHPOUgcyfLGvGlLSLuPaDT9vstdWUL9N8aCGRpO+QsH3cIss8u5axXmJiPBXyjHkXnc5blhYD9
+	ra8JFZ3o=
+X-Gm-Gg: ASbGncsn3lEMOLR+oGSsPX2cE+6rIy7HfewcSXNEbAO0HnQ9FQLGQMPGkCktTP9zSV/
+	EJEBV/WAEj2jtaiXrqTaIa7YheCgD1VQnMOu0FcvSua+fArxtrwxr69YTYUIGBEe339ZmgEdfUk
+	dGCUbuICovxpjcO27ig2ZNN+hBsm+ltmRdBa5UVaIuZqYzoFtNcj4wRqvFK5Hco4u4PBwSQ6n61
+	6FPmWEWqZPBBkaOLKU1qw1wuBxuuJfnxhyjiq1z7MgXg690nb3AW6zrxHWYC7Tckc3BpnC3p/HL
+	X6uXjlHZPjwEIBXwuOFcW3veSrP1j6kqyo/FeKv15D3AahJosQWBVKwbq8mM6UiSOgzBnYKUQS4
+	0DpGCbFJp0Dw0I6I=
+X-Google-Smtp-Source: AGHT+IHUnZ1tmrsd4d4ov2wUOKLkS2xykDRBuz9U2ImOWJ9EgYi+XH0++plY+sMvKkwcXYxHO7/AWA==
+X-Received: by 2002:a05:6a00:3c89:b0:742:9cdc:5cbd with SMTP id d2e1a72fcca58-742a98abc68mr20370226b3a.17.1747753481233;
+        Tue, 20 May 2025 08:04:41 -0700 (PDT)
+Received: from ?IPv6:2601:601:600:19d0:223:a4ff:fe0e:1f8? ([2601:601:600:19d0:223:a4ff:fe0e:1f8])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-742a9878b53sm7983972b3a.152.2025.05.20.08.04.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 May 2025 08:04:40 -0700 (PDT)
+Message-ID: <624cb205581e6bedc205d07d633587e389ee1582.camel@null-ptr.net>
+Subject: [Resend PATCH v2] serial: jsm: fix NPE during jsm_uart_port_init
+From: Dustin Lundquist <dustin@null-ptr.net>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Date: Tue, 20 May 2025 08:04:40 -0700
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.1-1 
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 
-On Fri, 16 May 2025, Jiri Slaby wrote:
+From: Dustin Lundquist <dustin@null-ptr.net>
 
-> On 15. 05. 25, 18:02, Nicolas Pitre wrote:
-> > So I think that such a change, if it is to happen,
-> > should be done for the whole file at once and in a separate patch.
-> 
-> Let me bite the bullet and send something. (Likely on Mon -- now queued up in
-> my queue for build tests).
+No device was set which caused serial_base_ctrl_add to crash.
 
-Do you have that patch ready? I'd be happy to rebase my changes on top 
-of it and adapt them to follow the file's latest code style.
+=C2=A0BUG: kernel NULL pointer dereference, address: 0000000000000050
+=C2=A0Oops: Oops: 0000 [#1] PREEMPT SMP NOPTI
+=C2=A0CPU: 16 UID: 0 PID: 368 Comm: (udev-worker) Not tainted 6.12.25-amd64
+#1=C2=A0 Debian 6.12.25-1
+=C2=A0RIP: 0010:serial_base_ctrl_add+0x96/0x120
+=C2=A0Call Trace:
+=C2=A0 <TASK>
+=C2=A0 serial_core_register_port+0x1a0/0x580
+=C2=A0 ? __setup_irq+0x39c/0x660
+=C2=A0 ? __kmalloc_cache_noprof+0x111/0x310
+=C2=A0 jsm_uart_port_init+0xe8/0x180 [jsm]
+=C2=A0 jsm_probe_one+0x1f4/0x410 [jsm]
+=C2=A0 local_pci_probe+0x42/0x90
+=C2=A0 pci_device_probe+0x22f/0x270
+=C2=A0 really_probe+0xdb/0x340
+=C2=A0 ? pm_runtime_barrier+0x54/0x90
+=C2=A0 ? __pfx___driver_attach+0x10/0x10
+=C2=A0 __driver_probe_device+0x78/0x110
+=C2=A0 driver_probe_device+0x1f/0xa0
+=C2=A0 __driver_attach+0xba/0x1c0
+=C2=A0 bus_for_each_dev+0x8c/0xe0
+=C2=A0 bus_add_driver+0x112/0x1f0
+=C2=A0 driver_register+0x72/0xd0
+=C2=A0 jsm_init_module+0x36/0xff0 [jsm]
+=C2=A0 ? __pfx_jsm_init_module+0x10/0x10 [jsm]
+=C2=A0 do_one_initcall+0x58/0x310
+=C2=A0 do_init_module+0x60/0x230
 
+Tested with Digi Neo PCIe 8 port card.
 
-Nicolas
+Fixes: 84a9582fd203 ("serial: core: Start managing serial controllers
+to enable runtime PM")
+Cc: stable@vger.kernel.org=C2=A0# 6.4+
+Cc: Greg KH <gregkh@linuxfoundation.org>
+Signed-off-by: Dustin Lundquist <dustin@null-ptr.net>
+
+---
+V1 -> V2: added Cc stable, corrected explanation, added backtrace
+
+=C2=A0drivers/tty/serial/jsm/jsm_tty.c | 1 +
+=C2=A01 file changed, 1 insertion(+)
+
+diff --git a/drivers/tty/serial/jsm/jsm_tty.c
+b/drivers/tty/serial/jsm/jsm_tty.c
+index ce0fef7e2c66..be2f130696b3 100644
+--- a/drivers/tty/serial/jsm/jsm_tty.c
++++ b/drivers/tty/serial/jsm/jsm_tty.c
+@@ -451,6 +451,7 @@ int jsm_uart_port_init(struct jsm_board *brd)
+=C2=A0		if (!brd->channels[i])
+=C2=A0			continue;
+=C2=A0
++		brd->channels[i]->uart_port.dev =3D &brd->pci_dev->dev;
+=C2=A0		brd->channels[i]->uart_port.irq =3D brd->irq;
+=C2=A0		brd->channels[i]->uart_port.uartclk =3D 14745600;
+=C2=A0		brd->channels[i]->uart_port.type =3D PORT_JSM;
