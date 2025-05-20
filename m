@@ -1,254 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from flow-a3-smtp.messagingengine.com (flow-a3-smtp.messagingengine.com [103.168.172.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39C8B2746A;
-	Mon, 19 May 2025 15:20:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ABD73594C;
+	Tue, 20 May 2025 03:42:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747668036; cv=none; b=ZOoGtwz4OiQr11Vthr1y18ZxRHGR0Lpj4QGFW5f0dLavDo3Hp6SLYNrOePXvE9CRfiwf9y+4WuH6yQJdndz8R5EwXg1J13B2f9o+Ya8bUacMKSAM8jmGkM/v0cgrU2645yaS7e6uCD05SW4lSApXJdWalZ5mfHUGQE0nU6tePDY=
+	t=1747712569; cv=none; b=IdTRXJY1i3he3YWsq4jeMltoWMPHzJwBM6FNtSppJbO4pR4cfHf6SM6K0pMYDIdhevMW9ornwI/Rc5e2JCbJ+nQRAuOaGh6mGE/3Iad5cVYE/girdeqF0ZATONiiB1CLR+5FtUjFXzxU835ciG55qZHNF8iSNtzkKKGEdfjwAHs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747668036; c=relaxed/simple;
-	bh=hCsytdVeeJL9k59PuEkSeSt24V1PhRpfKVXpzj7jUtw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TmuY1pafp96XZnbeYS8sjGpmWiuaUkSysChoircafBfcFGvWGnzLE7OOlFFL3zIVN4PlNYNIc3eF9/EntNUE4nBeGEkLVXv0E2atWMLJ6v3Dj4lTQmZAh0h6WfhSEBBEBs2SvlqoPdtfVt4KaAJVmhAYKcG2VP3v3Da6ycANMkY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pg+W/TWK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1747712569; c=relaxed/simple;
+	bh=oLyCXWWUMKIsSeoPo6Z6kNZwKj7A0fJXyb8s8tWPUlU=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=HS3N1dx9C6++JkJPRSXhB5F19SxkmS2ORKpVzRTi9mKFXQ8Or0eUSRPpmLU80iLuhs31fUaYboeSBA1d1UOjYXIt3HyWW/MimF9Zc9sWMssclsjOWh0NeIwpxo6GHeZXpaN+dLxiuXSGPuLax+Rez9sOFS+Uh+t0ZZxOXIL+SOU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net; spf=pass smtp.mailfrom=fluxnic.net; dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b=Z9u2ixnI; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=dJIdq+s7; arc=none smtp.client-ip=103.168.172.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fluxnic.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fluxnic.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pg+W/TWK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31192C4CEE4;
-	Mon, 19 May 2025 15:20:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747668035;
-	bh=hCsytdVeeJL9k59PuEkSeSt24V1PhRpfKVXpzj7jUtw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pg+W/TWKKyjgF5xP20j0uAdD0cIn+UCdcUHoBD8pvqnECQMtWaatkCm3ynMk1tcKQ
-	 BnFX9YSkQqtUIqBJw8xMqDfNAU80qfQ5jKuhqN8lSxQ1uBnPX+xsF7kROYIXaoGtbi
-	 p41LAZ79T2BhxM69kZciPyVjVh+p1iGy9hvmiFowCNVhK4wPPalkEdnOUGWnvX3Ph2
-	 N2wvZe/D7j8ui6YHApTHqAm0hdwMIhqIYwg76JLjDrJAoUCh2T4wWySPbqF8c8KZPf
-	 XfUUm4HHS5mTc9BxQFVQ59h5CSgXnfwnOolD5CF6/Y97/QLWj/M15r9u+xhM86jyb7
-	 M5DYrZNKbxFoQ==
-Date: Mon, 19 May 2025 17:20:30 +0200
-From: Joel Granados <joel.granados@kernel.org>
-To: Petr Pavlu <petr.pavlu@suse.com>
-Cc: Luis Chamberlain <mcgrof@kernel.org>, 
-	Sami Tolvanen <samitolvanen@google.com>, Daniel Gomez <da.gomez@samsung.com>, Kees Cook <kees@kernel.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>, 
-	Boqun Feng <boqun.feng@gmail.com>, Waiman Long <longman@redhat.com>, 
-	"Paul E. McKenney" <paulmck@kernel.org>, Frederic Weisbecker <frederic@kernel.org>, 
-	Neeraj Upadhyay <neeraj.upadhyay@kernel.org>, Joel Fernandes <joel@joelfernandes.org>, 
-	Josh Triplett <josh@joshtriplett.org>, Uladzislau Rezki <urezki@gmail.com>, 
-	Steven Rostedt <rostedt@goodmis.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Lai Jiangshan <jiangshanlai@gmail.com>, Zqiang <qiang.zhang1211@gmail.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, 
-	Helge Deller <deller@gmx.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, rcu@vger.kernel.org, linux-mm@kvack.org, 
-	linux-parisc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 01/12] module: Move modprobe_path and modules_disabled
- ctl_tables into the module subsys
-Message-ID: <l7dgle5lhsvfrikd4rqvzuwrqwrseucf5ijgnbi6fxook6dnhj@sc7givb3qimb>
-References: <20250509-jag-mv_ctltables_iter2-v1-0-d0ad83f5f4c3@kernel.org>
- <20250509-jag-mv_ctltables_iter2-v1-1-d0ad83f5f4c3@kernel.org>
- <e2ebf88d-46a2-4f38-a0c8-940c3d3bee49@suse.com>
- <g3e3ygz4jb73b3zhxexpwacwui3imlwauujzeq2nlopp2i2fjp@lzj33hcwztc2>
- <f6058414-e04d-4b7f-b4e6-3ac3613edbc1@suse.com>
+	dkim=pass (2048-bit key) header.d=fluxnic.net header.i=@fluxnic.net header.b="Z9u2ixnI";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="dJIdq+s7"
+Received: from phl-compute-06.internal (phl-compute-06.phl.internal [10.202.2.46])
+	by mailflow.phl.internal (Postfix) with ESMTP id F229A200311;
+	Mon, 19 May 2025 23:42:45 -0400 (EDT)
+Received: from phl-frontend-02 ([10.202.2.161])
+  by phl-compute-06.internal (MEProxy); Mon, 19 May 2025 23:42:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fluxnic.net; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm3; t=1747712565; x=1747719765; bh=ypLGYSRPxg
+	zJ/f1t6oKhgJlVNaEgTfXoS9qN+1k4YEk=; b=Z9u2ixnI0fxOltK49MQux2neXq
+	WqEkfepenD5IsFmdCE2WAWOKf9MAL9qzwWl88GSw3qLv08ZRWFZehV5ucdR3MSc4
+	w6FQW9rhycI5ZqhllQXNQMJ8hD9G8NgeEXY+/pjg7BFwoD0sb90p2Amq+ztvtgHa
+	vr54ADkXQ10UnX3PFhZuJtWAyBnBVYNdYrZnZUqH2aS3EqbXE7usOIg43veMXS2q
+	vZa2q68k/7Rq9aEExn69NfLO05j0pKpf60Fc+TxRdAWNKMAfCr/qpeYEE3wT4W/U
+	jxVColg4os+Qsjlr9n+0x3ZH4iuudbzPSPAZRwUQ4ovVOJTd5gBD1HP4fEsA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1747712565; x=1747719765; bh=ypLGYSRPxgzJ/f1t6oKhgJlVNaEgTfXoS9q
+	N+1k4YEk=; b=dJIdq+s72I84Knx5Sd7Q1d9OGNszwxORc1n6yUuvv5w0fO8mPK9
+	y5z/maIOksNBPqtGPrZdmE7xdAOdKxfW+xYacPARcwZ0Iqr1DzhOmd/XTtXzFJt3
+	218yRA+DSGBHJsS4L3OMB5LdCwLIKwln4O1YDclMArS3fnp3i99d0NO9wL6MDc7i
+	eZhswum3TyzY6doUgM0a/4ADZ9lo8g8vdeTV13C1ESFab/sOLff1KhrSpei92wOs
+	ISyfghOpEf3G9X8nPySGW9c0dMdLhZayRbVJDfrT4OBNvqk3JKd3EzkqS+9bLBsK
+	gWXJ7+dbBmzlUm/KKpRYxNJ86u22UImmmhg==
+X-ME-Sender: <xms:NforaMFLB9foMQmJ7eU3WrB8-DGaFO9AVvH_q8JQBg5LbGjU3WMtwQ>
+    <xme:NforaFXDDJgYyFmcNSNBbSKKGS9dgTBg_xEp6hd-bESOUNE2Dt_pFeGYQKRxYjQQX
+    lfERAvwGgPw44tC3LQ>
+X-ME-Received: <xmr:NforaGLhqfQRnUFC72ptqfvqq7a-ND9hzVD0umrEQpQg0lChlwVwblaisCmr0WrzSOSs-d1I5Q08Di7kP2dSD11xGXBGOUv79URn_YxKiY3wqfONnw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdefvdefvddtucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
+    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
+    gvnhhtshculddquddttddmneetughnkfguqdgfufdqffettdelucdlfedttddmnecujfgu
+    rhepfffhvfevufgjkfhfgggtsehttdertddttddvnecuhfhrohhmpefpihgtohhlrghsuc
+    frihhtrhgvuceonhhitghosehflhhugihnihgtrdhnvghtqeenucggtffrrghtthgvrhhn
+    pefgvedvhfefueejgefggfefhfelffeiieduvdehffduheduffekkefhgeffhfefveenuc
+    evlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehnihgtohes
+    fhhluhignhhitgdrnhgvthdpnhgspghrtghpthhtohepgedpmhhouggvpehsmhhtphhouh
+    htpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthht
+    ohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtoh
+    eplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthht
+    oheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:NforaOFuDtR8uz0ZC3TE8Ngkh4EDl8rm4GGKWrXCohQcLRoB84PBgQ>
+    <xmx:NforaCUgc9NWjI5TlIWWFyVthcHwrFR7CAH3S4dvID_V36ilJVh-WA>
+    <xmx:NforaBOK6K9rjgkL3QI6h6nOJL9yBYFi1w8UhT4mv8gMCCEwIuE36Q>
+    <xmx:NforaJ1tMQj0PFL0WZuH6-n9WcmHsQklrh3Sugp3hezAKEb4lcyiUg>
+    <xmx:NforaAgTP0BEiPeT0TfcE5c1A0KKR790toPpTszwI0sfqrtfSNHocQKG>
+Feedback-ID: i58514971:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 19 May 2025 23:42:45 -0400 (EDT)
+Received: from xanadu (xanadu.lan [192.168.1.120])
+	by yoda.fluxnic.net (Postfix) with ESMTPSA id 0F7E911B007A;
+	Mon, 19 May 2025 23:42:45 -0400 (EDT)
+Date: Mon, 19 May 2025 23:42:44 -0400 (EDT)
+From: Nicolas Pitre <nico@fluxnic.net>
+To: Jiri Slaby <jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] vt: add VT_GETCONSIZECSRPOS to retrieve console
+ size and cursor position
+In-Reply-To: <a5463522-1fa8-4ede-aec9-73f8a0aee196@kernel.org>
+Message-ID: <508npq7p-46or-n703-3725-r5649qno371q@syhkavp.arg>
+References: <20250514194710.6709-1-nico@fluxnic.net> <20250514194710.6709-3-nico@fluxnic.net> <8fb2c16f-0e9b-402d-a7f2-4881de8c7bd9@kernel.org> <3o3q5896-8540-nro6-534o-307nn81r7r5r@syhkavp.arg> <a5463522-1fa8-4ede-aec9-73f8a0aee196@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="otw3l52sr4y45r5c"
-Content-Disposition: inline
-In-Reply-To: <f6058414-e04d-4b7f-b4e6-3ac3613edbc1@suse.com>
+Content-Type: text/plain; charset=US-ASCII
+
+On Fri, 16 May 2025, Jiri Slaby wrote:
+
+> On 15. 05. 25, 18:02, Nicolas Pitre wrote:
+> > So I think that such a change, if it is to happen,
+> > should be done for the whole file at once and in a separate patch.
+> 
+> Let me bite the bullet and send something. (Likely on Mon -- now queued up in
+> my queue for build tests).
+
+Do you have that patch ready? I'd be happy to rebase my changes on top 
+of it and adapt them to follow the file's latest code style.
 
 
---otw3l52sr4y45r5c
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, May 15, 2025 at 02:45:22PM +0200, Petr Pavlu wrote:
-> On 5/15/25 12:04, Joel Granados wrote:
-> > On Thu, May 15, 2025 at 10:04:53AM +0200, Petr Pavlu wrote:
-> >> On 5/9/25 14:54, Joel Granados wrote:
-> >>> Move module sysctl (modprobe_path and modules_disabled) out of sysctl=
-=2Ec
-> >>> and into the modules subsystem. Make the modprobe_path variable static
-> >>> as it no longer needs to be exported. Remove module.h from the includ=
-es
-> >>> in sysctl as it no longer uses any module exported variables.
-=2E..
-> > Like this?:
-> > [...]
->=20
-> Let's also move the KMOD_PATH_LEN definition and the modprobe_path
-> declaration from include/linux/kmod.h to kernel/module/internal.h, as
-> they are now fully internal to the module loader, and use "module"
-> instead of "kmod" in the sysctl registration to avoid confusion with the
-> modprobe logic.
->=20
-> The adjusted patch is below.
->=20
-> Reviewed-by: Petr Pavlu <petr.pavlu@suse.com>
-Thx for review and patch. Have applied it to my current V2 branch [1]
-
-Best
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/joel.granados/linux.git=
-/log/?h=3Djag/mv_ctltables_iter2
-
->=20
-> --=20
-> Thanks,
-> Petr
->=20
->=20
-> diff --git a/include/linux/kmod.h b/include/linux/kmod.h
-> index 68f69362d427..9a07c3215389 100644
-> --- a/include/linux/kmod.h
-> +++ b/include/linux/kmod.h
-> @@ -14,10 +14,7 @@
->  #include <linux/workqueue.h>
->  #include <linux/sysctl.h>
-> =20
-> -#define KMOD_PATH_LEN 256
-> -
->  #ifdef CONFIG_MODULES
-> -extern char modprobe_path[]; /* for sysctl */
->  /* modprobe exit status on success, -ve on error.  Return value
->   * usually useless though. */
->  extern __printf(2, 3)
-> diff --git a/include/linux/module.h b/include/linux/module.h
-> index 8050f77c3b64..f4ab8d90c475 100644
-> --- a/include/linux/module.h
-> +++ b/include/linux/module.h
-> @@ -304,7 +304,6 @@ struct notifier_block;
-> =20
->  #ifdef CONFIG_MODULES
-> =20
-> -extern int modules_disabled; /* for sysctl */
->  /* Get/put a kernel symbol (calls must be symmetric) */
->  void *__symbol_get(const char *symbol);
->  void *__symbol_get_gpl(const char *symbol);
-> diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-> index 626cf8668a7e..0954c8de00c2 100644
-> --- a/kernel/module/internal.h
-> +++ b/kernel/module/internal.h
-> @@ -58,6 +58,9 @@ extern const struct kernel_symbol __stop___ksymtab_gpl[=
-];
->  extern const u32 __start___kcrctab[];
->  extern const u32 __start___kcrctab_gpl[];
-> =20
-> +#define KMOD_PATH_LEN 256
-> +extern char modprobe_path[];
-> +
->  struct load_info {
->  	const char *name;
->  	/* pointer to module in temporary copy, freed at end of load_module() */
-> diff --git a/kernel/module/main.c b/kernel/module/main.c
-> index a2859dc3eea6..a336b7b3fb23 100644
-> --- a/kernel/module/main.c
-> +++ b/kernel/module/main.c
-> @@ -126,9 +126,37 @@ static void mod_update_bounds(struct module *mod)
->  }
-> =20
->  /* Block module loading/unloading? */
-> -int modules_disabled;
-> +static int modules_disabled;
->  core_param(nomodule, modules_disabled, bint, 0);
-> =20
-> +static const struct ctl_table module_sysctl_table[] =3D {
-> +	{
-> +		.procname	=3D "modprobe",
-> +		.data		=3D &modprobe_path,
-> +		.maxlen		=3D KMOD_PATH_LEN,
-> +		.mode		=3D 0644,
-> +		.proc_handler	=3D proc_dostring,
-> +	},
-> +	{
-> +		.procname	=3D "modules_disabled",
-> +		.data		=3D &modules_disabled,
-> +		.maxlen		=3D sizeof(int),
-> +		.mode		=3D 0644,
-> +		/* only handle a transition from default "0" to "1" */
-> +		.proc_handler	=3D proc_dointvec_minmax,
-> +		.extra1		=3D SYSCTL_ONE,
-> +		.extra2		=3D SYSCTL_ONE,
-> +	},
-> +};
-> +
-> +static int __init init_module_sysctl(void)
-> +{
-> +	register_sysctl_init("kernel", module_sysctl_table);
-> +	return 0;
-> +}
-> +
-> +subsys_initcall(init_module_sysctl);
-> +
->  /* Waiting for a module to finish initializing? */
->  static DECLARE_WAIT_QUEUE_HEAD(module_wq);
-> =20
-> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-> index 9b4f0cff76ea..473133d9651e 100644
-> --- a/kernel/sysctl.c
-> +++ b/kernel/sysctl.c
-> @@ -19,7 +19,6 @@
->   *  Removed it and replaced it with older style, 03/23/00, Bill Wendling
->   */
-> =20
-> -#include <linux/module.h>
->  #include <linux/sysctl.h>
->  #include <linux/bitmap.h>
->  #include <linux/printk.h>
-> @@ -1616,25 +1615,6 @@ static const struct ctl_table kern_table[] =3D {
->  		.proc_handler	=3D proc_dointvec,
->  	},
->  #endif
-> -#ifdef CONFIG_MODULES
-> -	{
-> -		.procname	=3D "modprobe",
-> -		.data		=3D &modprobe_path,
-> -		.maxlen		=3D KMOD_PATH_LEN,
-> -		.mode		=3D 0644,
-> -		.proc_handler	=3D proc_dostring,
-> -	},
-> -	{
-> -		.procname	=3D "modules_disabled",
-> -		.data		=3D &modules_disabled,
-> -		.maxlen		=3D sizeof(int),
-> -		.mode		=3D 0644,
-> -		/* only handle a transition from default "0" to "1" */
-> -		.proc_handler	=3D proc_dointvec_minmax,
-> -		.extra1		=3D SYSCTL_ONE,
-> -		.extra2		=3D SYSCTL_ONE,
-> -	},
-> -#endif
->  #ifdef CONFIG_UEVENT_HELPER
->  	{
->  		.procname	=3D "hotplug",
->=20
-
---=20
-
-Joel Granados
-
---otw3l52sr4y45r5c
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmgrTDAACgkQupfNUreW
-QU/twAv8DxA6gxRLdNSDZrJxSdnvcFu76bvp0iwD1X6Ms0Yq16tmcaIqSS8XtA7r
-Qe9aRNluUy/XUZj84T/WmyEBTVMLERBJAxp0moXvGXSHJ7hkKDJ2uM74VfH3xvcR
-RhM9Hlc6MkUqywUumSFsCUeqvsftJY/e/3Yg72ANzknwRuNC97dh+EZihUxDnufa
-JrBHT/f2y3qUHeJfpHS8aOa7LuZtL93rHeoju8Sacw6PQcmI2+hZWFr3nC3UK3FW
-jiEn6n2oZgzpdgpgnoguceNDRjqCJMVojeM24vEPT7XRxl8ez9cbu4w/vWqtuts4
-0fekBOrig2pDSWAA2u/Qkyk4uWpLxveSsYb8XCXjYqMWcZSJJ+Z+o/bv5z5niPZP
-DP7eTwecC+yS6lwU2aN0CLFu13QL9XAVp28YO2xzRLN0g5HqqViItD8bl4F3kZCr
-m9bb0y2TKAwncoFOEPGa5tEIZ39w2C7RWlXM8XIRYWR0vp4it6KAi92eO7Cb0374
-3lh/X1hk
-=Ofdx
------END PGP SIGNATURE-----
-
---otw3l52sr4y45r5c--
+Nicolas
