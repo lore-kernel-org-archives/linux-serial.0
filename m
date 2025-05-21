@@ -1,36 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FCB0191F66;
-	Wed, 21 May 2025 11:27:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A62FD239585;
+	Wed, 21 May 2025 11:38:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747826830; cv=none; b=NA6ZOConc0YvGKmHCIRuG4/RCQj3eG0bA3aHniVqPJkKX29P/wayvb2BHMwXA68AagBC+VzpyRUgSu7jFB8WLckk3TE9DXbiR7KdVv7jj4W+tL7ULIOytwgW+g6JXpt7j4w58C/+tm4l2e6TpjYx6BGWM0Mu7vp8gccAuztHnXA=
+	t=1747827501; cv=none; b=BJWi8Pgrd9IYGIS7BjOhQp/57oF17ZNFcRqOSDOZnsgsERTJNPepOPPGaUU9L78kJ1Pj6rrTDohSsvr6UpnGMGAQk6kDsnJrpBPCEIHK656eyINYw5kQdiogB3dISggfrAgS0mY200JfsploBNBrA6fKtpPUh9uJcAYzKQsvmFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747826830; c=relaxed/simple;
-	bh=1tbe7hOaBRnZ6DRnlTl6S/1A0T/boVCPhktEG+J2VnM=;
+	s=arc-20240116; t=1747827501; c=relaxed/simple;
+	bh=RTk6zZE4Ocqx64VCuCzzw2IhiKNg639tTa3vFSVixtU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=djGtPvzHLIJ6z1bHg0+2vJyIagLNwySP4I83yZaVlIgqv+NIuHB61FWXXtU33r6BZdrFIJX85EhWGEUgPmrHwsAy2TPDh1LDydQN/JRQ+KUg5x0hjc3GI3zqOUIRFYUGiBuva6ap10SrGx7hZy/w6DllYksvzlf9KQsz4TJdQYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=KCLALQLx; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=p0v2AQRv6wQ20t1PMCeV6BIGwBISH/AIidAdpogphdKTkrQhgUY46PL7A6+7N0FrMYmZOXMsw9KmvTYJEQIuS6JwhEFdxn2SnZQ8O+AC7F7bK9Vb4PgSdPfGzLtyzQAh8Lc35IhkVTgGVTSj1A93nT0johmjxKH3Cv3i8TTqL40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=rxNfRTss; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="KCLALQLx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 288E7C4CEE4;
-	Wed, 21 May 2025 11:27:08 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="rxNfRTss"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81511C4CEE4;
+	Wed, 21 May 2025 11:38:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1747826829;
-	bh=1tbe7hOaBRnZ6DRnlTl6S/1A0T/boVCPhktEG+J2VnM=;
+	s=korg; t=1747827501;
+	bh=RTk6zZE4Ocqx64VCuCzzw2IhiKNg639tTa3vFSVixtU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=KCLALQLx1g1kLmFk2VhkuOsbZzJBdla48ppeL50+N0JS3BUvvbPiiZ06RJU/U5yTn
-	 9O3kNjQzIHsBF8p7/OYXa61ETLDYJtD8VVLA+4OQdMIzw4pL+yKChs05v/9SEABhzg
-	 DbI4PHgFhsszObjyk/MPUFLX5zGR1Z/ofxuLCpvM=
-Date: Wed, 21 May 2025 13:27:06 +0200
+	b=rxNfRTss/fINM5OSrc1IzeDcbzVLjNTyGJ2ZXyqPPZI3R31361spKZ3bJx9IoENWS
+	 1PjRjk/ZJzqXHEoVoPXTMcLAEFf/w9X+D2oS8JVLWjFrfaFy6y9wy9eyQ2giQ2dQOI
+	 DIbtMm62iogL8wtCArxBDYdDZA7vwxD2osg8sGbA=
+Date: Wed, 21 May 2025 13:38:18 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
-To: Jeongjun Park <aha310510@gmail.com>
-Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] n_tty: fix data race in n_tty_poll()
-Message-ID: <2025052123-landmark-capitol-effb@gregkh>
-References: <20250510163828.21963-1-aha310510@gmail.com>
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Mans Rullgard <mans@mansr.com>, stable@vger.kernel.org
+Subject: Re: [PATCH] tty: serial: 8250_omap: fix TX with DMA for am33xx
+Message-ID: <2025052101-lunchbox-catacomb-79fe@gregkh>
+References: <20250514072035.2757435-1-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -39,41 +39,43 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250510163828.21963-1-aha310510@gmail.com>
+In-Reply-To: <20250514072035.2757435-1-jirislaby@kernel.org>
 
-On Sun, May 11, 2025 at 01:38:27AM +0900, Jeongjun Park wrote:
-> I found data-race in my fuzzer:
+On Wed, May 14, 2025 at 09:20:35AM +0200, Jiri Slaby (SUSE) wrote:
+> Commit 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> introduced an error in the TX DMA handling for 8250_omap.
 > 
-> ==================================================================
-> BUG: KCSAN: data-race in n_tty_poll / tty_set_termios
+> When the OMAP_DMA_TX_KICK flag is set, the "skip_byte" is pulled from
+> the kfifo and emitted directly in order to start the DMA. While the
+> kfifo is updated, dma->tx_size is not decreased. This leads to
+> uart_xmit_advance() called in omap_8250_dma_tx_complete() advancing the
+> kfifo by one too much.
 > 
-> read to 0xffff8880116b4d14 of 4 bytes by task 5443 on cpu 0:
->  n_tty_poll+0xa4/0x4c0 drivers/tty/n_tty.c:2452
->  tty_poll+0x8f/0x100 drivers/tty/tty_io.c:2208
->  vfs_poll include/linux/poll.h:82 [inline]
->  select_poll_one fs/select.c:480 [inline]
->  do_select+0x95f/0x1030 fs/select.c:536
->  core_sys_select+0x284/0x6d0 fs/select.c:677
-> ....
+> In practice, transmitting N bytes has been seen to result in the last
+> N-1 bytes being sent repeatedly.
 > 
-> write to 0xffff8880116b4d08 of 44 bytes by task 14547 on cpu 1:
->  tty_set_termios+0xf9/0x500 drivers/tty/tty_ioctl.c:339
->  set_termios.part.0+0x3bc/0x4d0 drivers/tty/tty_ioctl.c:520
->  set_termios drivers/tty/tty_ioctl.c:454 [inline]
->  tty_mode_ioctl+0x2db/0xa00 drivers/tty/tty_ioctl.c:807
->  n_tty_ioctl_helper+0x4e/0x230 drivers/tty/tty_ioctl.c:986
->  n_tty_ioctl+0x67/0x230 drivers/tty/n_tty.c:2509
-> ....
-> ==================================================================
+> This change fixes the problem by moving all of the dma setup after the
+> OMAP_DMA_TX_KICK handling and using kfifo_len() instead of the DMA size
+> for the 4-byte cutoff check. This slightly changes the behaviour at
+> buffer wraparound, but it still transmits the correct bytes somehow.
 > 
-> In n_tty_poll() we are doing a read on tty->termios but we are missing
-> rwsem lock, which causes a concurrency problem. To fix this, we need to
-> add rwsem lock at the appropriate location.
+> Now, the "skip_byte" would no longer be accounted to the stats. As
+> previously, dma->tx_size included also this skip byte, up->icount.tx was
+> updated by aforementioned uart_xmit_advance() in
+> omap_8250_dma_tx_complete(). Fix this by using the uart_fifo_out()
+> helper instead of bare kfifo_get().
+> 
+> Based on patch by Mans Rullgard <mans@mansr.com>
+> 
+> Fixes: 1788cf6a91d9 ("tty: serial: switch from circ_buf to kfifo")
+> Reported-by: Mans Rullgard <mans@mansr.com>
+> Cc: stable@vger.kernel.org
+> 
+> ---
 
-Does this "concurrency problem" actually cause a real issue?
+You forgot to sign off on this patch :(
 
-As the tools point out, your change will not work as you will have a
-locking deadlock, which makes me wonder how you tested it?
+Can you resend it with that?
 
 thanks,
 
