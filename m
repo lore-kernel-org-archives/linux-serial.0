@@ -1,110 +1,80 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C3144B1E7B
-	for <linux-serial@vger.kernel.org>; Wed, 21 May 2025 11:00:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FCB0191F66;
+	Wed, 21 May 2025 11:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747825255; cv=none; b=nV56e4MHNCj+Vp1yilqEl36Olv4haqStcONspz1hIXt/um4cAZwe+u0wVYiuSVwElbfpOPByaIMGQpzmpcd+YnXo5v8Bhs98r1CXKqFj3mE5NhftK+TowYq12RnLj/jcnRZbAOdqsGwgqSmLc28c/51AwV3IDhgw4QkQeWs36Ug=
+	t=1747826830; cv=none; b=NA6ZOConc0YvGKmHCIRuG4/RCQj3eG0bA3aHniVqPJkKX29P/wayvb2BHMwXA68AagBC+VzpyRUgSu7jFB8WLckk3TE9DXbiR7KdVv7jj4W+tL7ULIOytwgW+g6JXpt7j4w58C/+tm4l2e6TpjYx6BGWM0Mu7vp8gccAuztHnXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747825255; c=relaxed/simple;
-	bh=kQeuco4+e5SsARtY3nfrCmGKpElXymN3zNb4E6sJy9I=;
+	s=arc-20240116; t=1747826830; c=relaxed/simple;
+	bh=1tbe7hOaBRnZ6DRnlTl6S/1A0T/boVCPhktEG+J2VnM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iuUCwiWaODsEZigMkohScqUupEL1OZTH9fSghv7xGCL92I1fN0Dz/Wgnhgv+kDMjc4ElRxrQDDaM/7UJcwaJX7/h4AJF04kxtrUNTW40fL0a82MAiC1p9n7hDuHNUrNn68dSinx4/spbi0cqtN4iLy2S8G312FHDcUKuNpypBOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=QjI942zD; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=djGtPvzHLIJ6z1bHg0+2vJyIagLNwySP4I83yZaVlIgqv+NIuHB61FWXXtU33r6BZdrFIJX85EhWGEUgPmrHwsAy2TPDh1LDydQN/JRQ+KUg5x0hjc3GI3zqOUIRFYUGiBuva6ap10SrGx7hZy/w6DllYksvzlf9KQsz4TJdQYI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=KCLALQLx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="QjI942zD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=RM2B
-	44woUcjorhr9JLF9M8YKkzNP8iwLoLPgMAmQoBE=; b=QjI942zDQMU3wXSQKXRZ
-	R4gk1IzYpI5zjowjyt4U6b5trqpvVoelFRw7Xuk3wLlADF9qGgZX9y1uoY5+Fvgh
-	Fyse6BZWQo2cw/6H4MCkzEmTqjTMABMj6LW+kan2njJqiY816apQI7pRZTc3/DO6
-	lJpJ3Jr6h6p6U5xSt+GYkw4Ddr+REaJtQs8OgbCtZF7SjLnWFbVj7t36+iVq2mLs
-	pb3hN70dzGXhrucPn+M42xkCtuDLkYMz1vEs99zsihXcJIZCp3No63yBD2CSl6MP
-	QNkGacs34XVz/qN7+XjK0+Yndf6lDpqKMD3WTArctgvCI18HJhOQAEBjFBzY/Rtr
-	VA==
-Received: (qmail 3232836 invoked from network); 21 May 2025 13:00:48 +0200
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 May 2025 13:00:48 +0200
-X-UD-Smtp-Session: l3s3148p1@Ea4MR6M1bLlehhrc
-Date: Wed, 21 May 2025 13:00:48 +0200
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org,
-	geert@linux-m68k.org, paul.barker.ct@bp.renesas.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v9 06/10] serial: sh-sci: Use private port ID
-Message-ID: <aC2yYDpsv7ef9IVA@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
-	thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org,
-	geert@linux-m68k.org, paul.barker.ct@bp.renesas.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250515141828.43444-1-thierry.bultel.yh@bp.renesas.com>
- <20250515141828.43444-7-thierry.bultel.yh@bp.renesas.com>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="KCLALQLx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 288E7C4CEE4;
+	Wed, 21 May 2025 11:27:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1747826829;
+	bh=1tbe7hOaBRnZ6DRnlTl6S/1A0T/boVCPhktEG+J2VnM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=KCLALQLx1g1kLmFk2VhkuOsbZzJBdla48ppeL50+N0JS3BUvvbPiiZ06RJU/U5yTn
+	 9O3kNjQzIHsBF8p7/OYXa61ETLDYJtD8VVLA+4OQdMIzw4pL+yKChs05v/9SEABhzg
+	 DbI4PHgFhsszObjyk/MPUFLX5zGR1Z/ofxuLCpvM=
+Date: Wed, 21 May 2025 13:27:06 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jeongjun Park <aha310510@gmail.com>
+Cc: jirislaby@kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH] n_tty: fix data race in n_tty_poll()
+Message-ID: <2025052123-landmark-capitol-effb@gregkh>
+References: <20250510163828.21963-1-aha310510@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="/HOrjV2F0H4FDVet"
-Content-Disposition: inline
-In-Reply-To: <20250515141828.43444-7-thierry.bultel.yh@bp.renesas.com>
-
-
---/HOrjV2F0H4FDVet
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20250510163828.21963-1-aha310510@gmail.com>
 
-On Thu, May 15, 2025 at 04:18:21PM +0200, Thierry Bultel wrote:
-> New port types cannot be added in serial_core.h, which is shared with
-> userspace.
-> In order to support new port types, the coming new ones will have
-> BIT(7) set in the id value, and in this case, uartport->type is
-> set to PORT_GENERIC.
-> This commit therefore changes all the places where the port type is
-> read, by not relying on uartport->type but on the private
-> value stored in struct sci_port.
+On Sun, May 11, 2025 at 01:38:27AM +0900, Jeongjun Park wrote:
+> I found data-race in my fuzzer:
+> 
+> ==================================================================
+> BUG: KCSAN: data-race in n_tty_poll / tty_set_termios
+> 
+> read to 0xffff8880116b4d14 of 4 bytes by task 5443 on cpu 0:
+>  n_tty_poll+0xa4/0x4c0 drivers/tty/n_tty.c:2452
+>  tty_poll+0x8f/0x100 drivers/tty/tty_io.c:2208
+>  vfs_poll include/linux/poll.h:82 [inline]
+>  select_poll_one fs/select.c:480 [inline]
+>  do_select+0x95f/0x1030 fs/select.c:536
+>  core_sys_select+0x284/0x6d0 fs/select.c:677
+> ....
+> 
+> write to 0xffff8880116b4d08 of 44 bytes by task 14547 on cpu 1:
+>  tty_set_termios+0xf9/0x500 drivers/tty/tty_ioctl.c:339
+>  set_termios.part.0+0x3bc/0x4d0 drivers/tty/tty_ioctl.c:520
+>  set_termios drivers/tty/tty_ioctl.c:454 [inline]
+>  tty_mode_ioctl+0x2db/0xa00 drivers/tty/tty_ioctl.c:807
+>  n_tty_ioctl_helper+0x4e/0x230 drivers/tty/tty_ioctl.c:986
+>  n_tty_ioctl+0x67/0x230 drivers/tty/n_tty.c:2509
+> ....
+> ==================================================================
+> 
+> In n_tty_poll() we are doing a read on tty->termios but we are missing
+> rwsem lock, which causes a concurrency problem. To fix this, we need to
+> add rwsem lock at the appropriate location.
 
-I quite like this approach to become independent of serial_core.h by
-adding a driver-local type. Because it changes only access to the
-variables but not much the logic of this driver. Two high level comments
-I do have:
+Does this "concurrency problem" actually cause a real issue?
 
-- I'd go for bit 31 as the flag, though. It is extremly unlikely that we
-  ever need a number in serial_core.h again, but if, it could likely be
-  > 127
+As the tools point out, your change will not work as you will have a
+locking deadlock, which makes me wonder how you tested it?
 
-- whatever bit numer we choose, it should be hidden as a constant. My
-  suggestion:
+thanks,
 
-#define SCI_LOCAL_PORT_FLAG	BIT(x)
-
-?
-
-
---/HOrjV2F0H4FDVet
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmgtslwACgkQFA3kzBSg
-KbY9hw/+KCPfBEqpxSdVAC0NmTxrvYGMxQdLx9nhBGbKTSF65kHMvHbCeB3/VCMX
-EtIonj5Gm+ZLLEUFw7rPOlByOAXn/50pzmLN5Z9h6I++dM4MDMdj24LUMGLU7DbG
-/Eydt4Du2bjmKviosBJnpV/Whz2wfI4FUOHinI8fWvuo4BwLHuYUHj0EtIkrI992
-EbaUg77yTdb0qZF+e322wS2+E+b483MZHmgYzT19jbd9RzfLJ4BbLbw9SXXldpoM
-ljbVN1Jg6T9tZxQjFGJmhTRdW/BHMF+nimu4/uSuIp9ANGDhzahxbm200+TQtNl9
-0De1Bu2rKqanFLWbNZns4xcsj3eQVn719zt30g1GxB3PLJuHazLRzX1ed+yha85C
-KczWWLWECmpY9X7FooNEJjUI8IAx8hupjPo76lFQUrapujwFrbk0ilRbRS7tnB/g
-FeMxPbYgkQB/rPThjTo3lqdFxGSur/HUzGwdddiCEZvYayhbG5wWNXjWiVHJoMen
-cgxyhpFmcQVyE2dT9wNKtSLxApxPgRlfMxpqfcAvWHXHtntk6Swa85Ti1FVg1UhM
-/LU5p0RfsWJoB75ooAiISVN+7cPrtRsnLONK7YyZ1G+UK4A2fnn4EuIzwlE02bjB
-Ul0khEfB+0kv2wZYUqsxmoMTDjT44Q9Sz8gOWKSiRcbNc4uyPPs=
-=vEFG
------END PGP SIGNATURE-----
-
---/HOrjV2F0H4FDVet--
+greg k-h
