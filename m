@@ -1,110 +1,98 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0090189919;
-	Fri, 23 May 2025 10:38:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C99543164
+	for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 12:21:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747996684; cv=none; b=J5Bj5rtwyfd7txjjXIssIwXFykJ/u41PIATaX760Lb/yzsECnHA1CEgItQmYbFhv5jdv2xBhPv8iGXybmQiw+2i1Pd/vC6Ig+ITCoveXb/BUU9Sf5diHf6VZUTk2QsztXxLf6PjLX+KEqvrZ9GWLXnVfWAfplWKR9EdIgzK4mn0=
+	t=1748002876; cv=none; b=TeJE+7czLkA8j+1A6c8HB7m6IhIaZNdQLQ9lVeN5ZF3+QAUynTqkAuobaXQ4Ue+eBL0atHF0lK6Hb9yA9VdTpYD1bGh/H46JVUMXCP+PxlQw/1VSp17FUftMDhV1qwjooCAXBUxhIF09SxxFtnK2Fo4lOSPl/F7eG7YdWlurIe8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747996684; c=relaxed/simple;
-	bh=sv0pREbVOCvjCN8ul9TzmQLU8hHqkLDMyQKB+FDtPSM=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=QCDknOEyswbNLc+NDmD48O2fdKQ34PhtbHtX4slYy3oWGSONp7tG1xccS5QPDu6UnOH1s4Gw8zFLJsXH6nU3N/Uo5G6+V8N4RP9AS4ybljunhZ2EjCOQ5gnE33+kVJ0/KlewYuwbQ85u/9YdGIy0+1f7PYxPMkNS4NIPos3ddeQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=W68Hev6I; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1748002876; c=relaxed/simple;
+	bh=L3DKgn1jmnsO15VtrOJaAwUF1WELYU9QQph1Ud3friA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rPFrYjvcYLRW762fpur/mBZuMVp/c4W/VfYparAh91+Pp6Ma2czRUjlS1cilMtuxmifpqzwTZrrv/hw9Hb2S2xDeU5IHAOaNgl6J/pDOTkKY4F5QR4fMUyskXiG782G5hc71Qu/Vuq/AZW6KGZPVvJ7vgWwVG4Gr5e+X/icaqRc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=ZMMWkoa6; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="W68Hev6I"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 54N39ftC020640;
-	Fri, 23 May 2025 10:37:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-type:date:from:message-id:mime-version:subject:to; s=
-	qcppdkim1; bh=B2W63gAjLsrk+66KoqByrEnMo2r5cVdBUCPBnwcSWvQ=; b=W6
-	8Hev6IWLmw443nEpsM47M9uXODnILhDY6hi6A1F/yVv55TzH93fmjrQlc/HbR0TR
-	LCnKCcLQ5UKejNkQH14QeS/9swF6EToL1u13xFv0l3GthTEZxzEY/nA8XCe+5WBw
-	C+1Fd1YqBsMvxqBuM58WXCyGXdZG2aTlcmeFY4Ge7tSIh+R1O+ofiktmI/xSEt0H
-	iKeMxs59yFXAUnV07xijDfBJ7cgF19EO0JwbzWbxOx3f0x2VkPvCKCuebNZhOnEL
-	kkf/8VwTwECemRAj07Rx6cKIgOt8pOlH2FSOMvjN6oLZBRIRiEf7MNW2ri1KTs9/
-	jNl4gFQ37JTxBkdYKJ0g==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46s9pb82k8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 May 2025 10:37:59 +0000 (GMT)
-Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
-	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 54NAbwsa030346
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 May 2025 10:37:58 GMT
-Received: from hu-jseerapu-hyd.qualcomm.com (10.80.80.8) by
- nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 23 May 2025 03:37:55 -0700
-From: Jyothi Kumar Seerapu <quic_jseerapu@quicinc.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>
-CC: <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <dmitry.baryshkov@oss.qualcomm.com>
-Subject: [PATCH v1] serial: qcom-geni: Add support for 8 Mbps baud rate
-Date: Fri, 23 May 2025 16:07:21 +0530
-Message-ID: <20250523103721.5042-1-quic_jseerapu@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="ZMMWkoa6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=L3DK
+	gn1jmnsO15VtrOJaAwUF1WELYU9QQph1Ud3friA=; b=ZMMWkoa604Pc6CQ2v/9p
+	HNIzJ92n1tW6fxStetChBPNlJOaS4nSNrG43LRu5B5N8yrtsfHHXNHr3E7ab/Q+w
+	fDqSFVYM8LBop5ElQbRXcYfeBCCujFBr64+Z9TWGA91UH8lGJcdo8u4AMv6CSmAB
+	58BdA8Nsjt+l6Wh27OpZzOFfAKKn4oFNqR4iydkOeEv1zzvvRTTdScjGJBryP1Yr
+	HVYRVRNk6nB1N9S/50lvk46g8CZ6lQ4Zb78zOqJU9CMUMctfqFxTvqA8lC7jYKyy
+	wcl+5TIoiUKpMdAxDGweTOsQlgL2fx/V0D5gTMk4GdOdPPWBw9Yb12IAyc9Fza0c
+	JQ==
+Received: (qmail 4034848 invoked from network); 23 May 2025 14:21:03 +0200
+Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 23 May 2025 14:21:03 +0200
+X-UD-Smtp-Session: l3s3148p1@2fK5ocw1colehhrS
+Date: Fri, 23 May 2025 14:21:02 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org,
+	paul.barker.ct@bp.renesas.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v9 06/10] serial: sh-sci: Use private port ID
+Message-ID: <aDBoLr-uPxxHgzEU@ninjato>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Geert Uytterhoeven <geert@linux-m68k.org>,
+	thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org,
+	paul.barker.ct@bp.renesas.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+References: <20250515141828.43444-1-thierry.bultel.yh@bp.renesas.com>
+ <20250515141828.43444-7-thierry.bultel.yh@bp.renesas.com>
+ <aC2yYDpsv7ef9IVA@shikoro>
+ <CAMuHMdVPn3adKZMiLqoEz9ANNyekmB9WRFyz++49+FeEOkrSSA@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01b.na.qualcomm.com (10.46.141.250)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Authority-Analysis: v=2.4 cv=WJl/XmsR c=1 sm=1 tr=0 ts=68305007 cx=c_pps
- a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=GEpy-HfZoHoA:10 a=dt9VzEwgFbYA:10 a=COk6AnOGAAAA:8 a=EyDw_Kcl9UowM1yU27AA:9
- a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-ORIG-GUID: oxJMvvbEJ5dTnTN3-YubJ-TQ7ZzZw_sB
-X-Proofpoint-GUID: oxJMvvbEJ5dTnTN3-YubJ-TQ7ZzZw_sB
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTIzMDA5NCBTYWx0ZWRfX2QpVKCdEoxVH
- 4zIInU9B1o6huVii11WPVp15geiBE66ttLyoGQz8tDgkL8zpU1BaOTTcEo0VcC8YbjvHNdJnneb
- W+oGZxBZYUcsVgIi1nWx093Zq8B7ZqdKihWe3rSkbt1mGLWBvhN9OkZzIUbAET8IX2THAfqGryi
- OHqRzA6auD7Qx1pxn3nE+SeEP8FcQwZz9Edi6FLDHl8lvZYheicE5n6yBkZMj/6bsCyfvdUrAXn
- sBXrIJ23ErX2G3e57N4x7gNgSlUigZhmu0PBcr3vBQ8YL8y3Ma8NTgoP8QI9qsCgsbCmgcR1beL
- d6PwynoZI/cutkOzDuqAcYkIxiBC6ONHkX1GsMcEuFpz5yDibBcLPkPEhlacXCR8tuv8Z3es5M8
- eyegmgLBc8vHC0lcUHBdexg0KPKB3892/jut1SXkbgpIlRNMsMKWE6VHAGBPJ+oryrr/RjEn
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-05-23_03,2025-05-22_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 lowpriorityscore=0 clxscore=1011 suspectscore=0 bulkscore=0
- malwarescore=0 impostorscore=0 mlxscore=0 adultscore=0 phishscore=0
- mlxlogscore=999 priorityscore=1501 classifier=spam authscore=0 authtc=n/a
- authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2505160000 definitions=main-2505230094
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="Y0ZUl/CYrsepN4Nh"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdVPn3adKZMiLqoEz9ANNyekmB9WRFyz++49+FeEOkrSSA@mail.gmail.com>
 
-Current GENI UART driver supports Max Baud rate up to 4 Mbps.
-Add support to increase maximum baud rate to 8 Mbps.
 
-Signed-off-by: Jyothi Kumar Seerapu <quic_jseerapu@quicinc.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--Y0ZUl/CYrsepN4Nh
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index a80ce7aaf309..a86b84d7b134 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1287,7 +1287,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	unsigned long timeout;
- 
- 	/* baud rate */
--	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
-+	baud = uart_get_baud_rate(uport, termios, old, 300, 8000000);
- 
- 	sampling_rate = UART_OVERSAMPLING;
- 	/* Sampling rate is halved for IP versions >= 2.5 */
--- 
-2.17.1
 
+> Actually I asked Thierry to use bit 7, so both type and regtype can
+> fit in the existing hole in struct sci_port.
+
+Okay. I looked at older series to see if this was already an agreement
+but I obviously did not find this part.
+
+> and 128 can be changed easily when the need ever arises?
+
+Yes, this was my motivation as well. Easy to modify if somewhen a need
+might arise.
+
+
+--Y0ZUl/CYrsepN4Nh
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmgwaCsACgkQFA3kzBSg
+KbbpPQ/9GV3OjeX/HMdAJpLnQ1ODmhV4euoVExOtEv4JdQiQRskt2j0fNESb+n9o
+tztTdEZ+uaCwS+uKgVeE40HH8MpE49n2vR7IOZeMbT50hF3ouFdEDvxvfQt6FfNj
+iji4977MBZ9OvPVjCnP4gmYi/6pkiTeDzWDs+5HW3mZ6uyxhei3Zfknb1U6R8242
+AkHRSBgR5MuJOQPmQFIL0zE8BTnFyZHE5ZWoXKwUz07p4Qni1/hNAqpxL4+sfbcw
+TzRNvRL1XTUggPU6R1j2kGbq+tQdbULd/Zsv+FJBm5cZYDLFZHL35WIsAw/7xoIR
+EUOv62RTCs+6OPF82coSQDGJHvpTuA3dpDKd5mR9guwYGHkdpswTkThem1Z3LaXB
+O4O3b7kZRGDYfQqvCFGQiTrKvueLPTjAWNwaMjYwhEGCaMrvH2GOByTyRhFeZuQ0
+2MhvboMohshUGG3MZ3C615AoSZ52POlltmGiwOu+/mkoE3rASFezCfKBQdrnjkv+
+ULELPfnX5XuXzwPA+MY9QbOfBdoPyrlugn3L21HL+LaCmrCciTfeAfNWM+V0LQqd
+3UITOEBbXfuelkM9B4QaQXSPQsT3UvTqe/NzNIoWWKsvVawyyx1E5hN2k5Jgt1Jl
+paEmAmHmTasqYr9bzXEPt6ZXkhIb7yceM9BvBLjv9d+w1ly9wes=
+=2DqP
+-----END PGP SIGNATURE-----
+
+--Y0ZUl/CYrsepN4Nh--
