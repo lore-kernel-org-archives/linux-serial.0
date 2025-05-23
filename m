@@ -1,206 +1,125 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail11.truemail.it (mail11.truemail.it [217.194.8.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A81431A9B49
-	for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 06:58:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33664198E9B;
+	Fri, 23 May 2025 08:07:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.194.8.81
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747983504; cv=none; b=PrpdB/yFUkI5QoXfDroxN1Spap3ZerYqPuo4u+Bxh52CtaI/eWsKP2BgvymxhCI9mJ/3Cwu8NL8jr709kC6THWRi4xrl3nUV+sl770Z7VQSm3U/yQKGVY0so6AHJw1nrpYKiQRPkgG8b5Z4CLRKnLHpplrvP745mM7N5jZOjBDg=
+	t=1747987662; cv=none; b=XPvNm88eSPsUYykimDHepzevD6vCj75z+EikxvDS7/qjsNhqmthFx+XQtYpCO7HfvnE5CE9oPDBcwVvEup1gA231cR8fvIDRaRZvY64RB2xPv9XSDdSLVC/lmGxJoLu+mBZ3OgJTN3DaWd9IYglvccZ90VlF2fMzwvDqvOuQpu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747983504; c=relaxed/simple;
-	bh=GX09q7c7yVndMhOJ+DV95PHMn5FdxHD4tpUZiAvn8F8=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=ieHGgBAhcq0ad0Xk4v76kl+0ivVUzyDLceY88/vjXv97YofihMvIb6joC9xFTN+lVXul2L1PMByCh4e6343PeMaZ+cwXUU2dyopgarUrlK/+PZl94liE8VAfp703riSrmpJ1JxrGY9xiPrgIM0/1vJnEXk4UeBIRoUvD7FoXlms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QXp4YeRQ; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1747987662; c=relaxed/simple;
+	bh=DE5o0vGXg+hqOOQk4Hm/wWFCUDFnHrEGGTVjRHA9UW4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=X5GUKRC5/qSxj7bVxqJbe8fBveN8Yp+gZDgZyZJhk25MiyzVk7Gp3M7YQuwItHXG0loZr7gKByk4iBjEmVFF4xhZcaYusbyCoXsomIDSw7pn27HX6xpRihUVrb8y0JmHtODjxwOFbpUYGM/+fWZD2CE0vPo1A10216bGnMm9CLc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolcini.it; spf=pass smtp.mailfrom=dolcini.it; dkim=pass (2048-bit key) header.d=dolcini.it header.i=@dolcini.it header.b=ks9Uwfuo; arc=none smtp.client-ip=217.194.8.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dolcini.it
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dolcini.it
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QXp4YeRQ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1747983503; x=1779519503;
-  h=date:from:to:cc:subject:message-id;
-  bh=GX09q7c7yVndMhOJ+DV95PHMn5FdxHD4tpUZiAvn8F8=;
-  b=QXp4YeRQzhUpmUX3upGy+HXBSScn1JpDMxTx5PcRYzFPsfZYFbc4Gemb
-   pPILjkzRLr3kkBATylRdhQqE944Of+lBJFy9MMPWDjTXkmKeOsA7IhHku
-   XfdmV3BV3UjlP5JyteSUh44NJ6i7kyNZbIDq17PUtQBqLlZk2vNHjWw39
-   jaWWaWrXamKLa3q6niOxu6EAwr3aqxiFctcEwU2nbewMDC3i1GUGOfTmC
-   tzP4amXmcDN0ihOuHHZOu5YxcLmR/LmhdUHmuFocsUxg3qCJpK++Ip2AM
-   +IkZLexLdr6YLPDD2BKScm6FHKXs3y4+DsURprD6K55c5KkVaRfHfny96
-   g==;
-X-CSE-ConnectionGUID: SB6XPFJJQI6RrXpXermPhw==
-X-CSE-MsgGUID: Nq7nz5sJRLaXgJrEvm3LXg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11441"; a="75430649"
-X-IronPort-AV: E=Sophos;i="6.15,308,1739865600"; 
-   d="scan'208";a="75430649"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2025 23:58:22 -0700
-X-CSE-ConnectionGUID: fGQuoZEQReCfOmopBD04qQ==
-X-CSE-MsgGUID: CwOVeM5+SpWD56cTrhA8fA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,308,1739865600"; 
-   d="scan'208";a="145715827"
-Received: from lkp-server01.sh.intel.com (HELO 1992f890471c) ([10.239.97.150])
-  by orviesa003.jf.intel.com with ESMTP; 22 May 2025 23:58:21 -0700
-Received: from kbuild by 1992f890471c with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uIMME-000Q72-1m;
-	Fri, 23 May 2025 06:58:18 +0000
-Date: Fri, 23 May 2025 14:57:27 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- b495021a973e2468497689bd3e29b736747b896f
-Message-ID: <202505231417.W6NrVfdy-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=dolcini.it header.i=@dolcini.it header.b="ks9Uwfuo"
+Received: from francesco-nb (93-49-2-63.ip317.fastwebnet.it [93.49.2.63])
+	by mail11.truemail.it (Postfix) with ESMTPA id 719BA1F96B;
+	Fri, 23 May 2025 10:07:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dolcini.it;
+	s=default; t=1747987657;
+	bh=KRX2tV0I4E69oy6vP6qOq5WU7oIum9yZL7yNHkbYpOQ=; h=From:To:Subject;
+	b=ks9UwfuodmbKMAQu9i8FmCAfx9+lFecn0FmZRnlsyHQWPsnk+nlh2unax5n53Dd4A
+	 ls8tygk8ro76FNTQ+Sz9vCKAiP+YWhRjSFDP9Dvq2vd5iiw2fbmsY3TZwj3D79wOqp
+	 etWGlPr07FXY2Pn2/kLc8YlwCnYfGebWsZyfAw6zUSVoWCMY+nT+RdiehVKvrxjnU/
+	 e7G/6xaWUvGOn35xJkVc2a48TUcxG1/k4j+IgrBFGQYw+tbJr6Akr61FtCWdvjoW4f
+	 Axie7cYZkJ9/7LAHYOlI2SYpztYAqzOPq6uYvOdrDpLXzOsyJpWYkqbdvprWwFhFZm
+	 mKCb5wb0I13Nw==
+Date: Fri, 23 May 2025 10:07:32 +0200
+From: Francesco Dolcini <francesco@dolcini.it>
+To: Paul Menzel <pmenzel@molgen.mpg.de>
+Cc: Francesco Dolcini <francesco@dolcini.it>,
+	Vignesh Raghavendra <vigneshr@ti.com>,
+	Amitkumar Karwar <amitkumar.karwar@nxp.com>,
+	Neeraj Kale <neeraj.sanjaykale@nxp.com>, Nishanth Menon <nm@ti.com>,
+	Tero Kristo <kristo@kernel.org>,
+	Santosh Shilimkar <ssantosh@kernel.org>,
+	linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: Kernel WARNING (RCU) with btnxpuart on TI AM62 platform
+Message-ID: <20250523080732.GA19643@francesco-nb>
+References: <20250408083512.GA26035@francesco-nb>
+ <24b28bda-e294-4680-bed5-c44efcb6c455@ti.com>
+ <20250410062006.GA7506@francesco-nb>
+ <4286c852-c5c5-468b-a8f5-fc226e71d5e9@molgen.mpg.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4286c852-c5c5-468b-a8f5-fc226e71d5e9@molgen.mpg.de>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: b495021a973e2468497689bd3e29b736747b896f  tty: serial: 8250_omap: fix TX with DMA for am33xx
+On Mon, May 12, 2025 at 04:47:28PM +0200, Paul Menzel wrote:
+> Am 10.04.25 um 08:20 schrieb Francesco Dolcini:
+> > On Tue, Apr 08, 2025 at 09:15:26PM +0530, Vignesh Raghavendra wrote:
+> > > On 08/04/25 14:05, Francesco Dolcini wrote:
+> > > > I do have the following kernel warning with 6.15-rc1, on a TI AM62
+> > > > platform (arm64), single CPU core, using btnxpuart driver, any idea?
+> > > > PREEMPT_RT is enabled, if it matters.
+> > > > 
+> > > > Either the issue is not systematic, or multi cores SoCs are not affected
+> > > > (no error on the exact same image on a dual nor on quad core TI AM62).
 
-elapsed time: 1460m
+...
 
-configs tested: 129
-configs skipped: 2
+> Not that this gets forgotten. Vignesh, is your theory still valid with
+> PREEMPT_RT not set?
+> 
+> Francesco, were you able to test older Linux kernels in the meantime?
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+Yes. The same happens with 6.12.30 kernel. Not systematic.
 
-tested configs:
-alpha                             allnoconfig    gcc-14.2.0
-alpha                            allyesconfig    gcc-14.2.0
-alpha                               defconfig    gcc-14.2.0
-arc                              allmodconfig    gcc-14.2.0
-arc                               allnoconfig    gcc-14.2.0
-arc                              allyesconfig    gcc-14.2.0
-arc                                 defconfig    gcc-14.2.0
-arc                   randconfig-001-20250522    gcc-15.1.0
-arc                   randconfig-002-20250522    gcc-15.1.0
-arc                           tb10x_defconfig    gcc-14.2.0
-arm                              allmodconfig    gcc-14.2.0
-arm                               allnoconfig    clang-21
-arm                              allyesconfig    gcc-14.2.0
-arm                            dove_defconfig    gcc-14.2.0
-arm                             mxs_defconfig    clang-21
-arm                   randconfig-001-20250522    clang-21
-arm                   randconfig-002-20250522    clang-21
-arm                   randconfig-003-20250522    clang-18
-arm                   randconfig-004-20250522    gcc-7.5.0
-arm64                            allmodconfig    clang-19
-arm64                             allnoconfig    gcc-14.2.0
-arm64                 randconfig-001-20250522    clang-21
-arm64                 randconfig-002-20250522    gcc-7.5.0
-arm64                 randconfig-003-20250522    clang-21
-arm64                 randconfig-004-20250522    gcc-5.5.0
-csky                              allnoconfig    gcc-14.2.0
-csky                  randconfig-001-20250522    gcc-15.1.0
-csky                  randconfig-002-20250522    gcc-15.1.0
-hexagon                          allmodconfig    clang-17
-hexagon                           allnoconfig    clang-21
-hexagon                          allyesconfig    clang-21
-hexagon               randconfig-001-20250522    clang-17
-hexagon               randconfig-002-20250522    clang-21
-i386                              allnoconfig    gcc-12
-i386                             allyesconfig    gcc-12
-i386        buildonly-randconfig-001-20250522    clang-20
-i386        buildonly-randconfig-002-20250522    gcc-12
-i386        buildonly-randconfig-003-20250522    gcc-12
-i386        buildonly-randconfig-004-20250522    gcc-12
-i386        buildonly-randconfig-005-20250522    gcc-12
-i386        buildonly-randconfig-006-20250522    clang-20
-i386                                defconfig    clang-20
-loongarch                        allmodconfig    gcc-14.2.0
-loongarch                         allnoconfig    gcc-14.2.0
-loongarch             randconfig-001-20250522    gcc-15.1.0
-loongarch             randconfig-002-20250522    gcc-15.1.0
-m68k                             allmodconfig    gcc-14.2.0
-m68k                              allnoconfig    gcc-14.2.0
-m68k                             allyesconfig    gcc-14.2.0
-m68k                       m5208evb_defconfig    gcc-14.2.0
-m68k                            mac_defconfig    gcc-14.2.0
-microblaze                       allmodconfig    gcc-14.2.0
-microblaze                        allnoconfig    gcc-14.2.0
-microblaze                       allyesconfig    gcc-14.2.0
-mips                              allnoconfig    gcc-14.2.0
-mips                      bmips_stb_defconfig    clang-21
-mips                          rb532_defconfig    clang-18
-nios2                             allnoconfig    gcc-14.2.0
-nios2                 randconfig-001-20250522    gcc-9.3.0
-nios2                 randconfig-002-20250522    gcc-9.3.0
-openrisc                          allnoconfig    gcc-14.2.0
-openrisc                         allyesconfig    gcc-14.2.0
-openrisc                            defconfig    gcc-14.2.0
-parisc                           alldefconfig    gcc-14.2.0
-parisc                           allmodconfig    gcc-14.2.0
-parisc                            allnoconfig    gcc-14.2.0
-parisc                           allyesconfig    gcc-14.2.0
-parisc                              defconfig    gcc-14.2.0
-parisc                randconfig-001-20250522    gcc-6.5.0
-parisc                randconfig-002-20250522    gcc-12.4.0
-powerpc                           allnoconfig    gcc-14.2.0
-powerpc                      mgcoge_defconfig    clang-21
-powerpc                    mvme5100_defconfig    gcc-14.2.0
-powerpc               randconfig-001-20250522    gcc-9.3.0
-powerpc               randconfig-002-20250522    clang-21
-powerpc               randconfig-003-20250522    gcc-7.5.0
-powerpc64             randconfig-001-20250522    clang-21
-powerpc64             randconfig-002-20250522    gcc-10.5.0
-powerpc64             randconfig-003-20250522    gcc-7.5.0
-riscv                             allnoconfig    gcc-14.2.0
-riscv                               defconfig    clang-21
-riscv                 randconfig-001-20250522    gcc-9.3.0
-riscv                 randconfig-002-20250522    clang-18
-s390                             allmodconfig    clang-18
-s390                              allnoconfig    clang-21
-s390                             allyesconfig    gcc-14.2.0
-s390                                defconfig    clang-21
-s390                  randconfig-001-20250522    clang-19
-s390                  randconfig-002-20250522    clang-18
-sh                               allmodconfig    gcc-14.2.0
-sh                                allnoconfig    gcc-14.2.0
-sh                               allyesconfig    gcc-14.2.0
-sh                                  defconfig    gcc-14.2.0
-sh                         ecovec24_defconfig    gcc-14.2.0
-sh                            hp6xx_defconfig    gcc-14.2.0
-sh                 kfr2r09-romimage_defconfig    gcc-14.2.0
-sh                          polaris_defconfig    gcc-14.2.0
-sh                    randconfig-001-20250522    gcc-13.3.0
-sh                    randconfig-002-20250522    gcc-13.3.0
-sh                              ul2_defconfig    gcc-14.2.0
-sparc                            allmodconfig    gcc-14.2.0
-sparc                             allnoconfig    gcc-14.2.0
-sparc                 randconfig-001-20250522    gcc-14.2.0
-sparc                 randconfig-002-20250522    gcc-6.5.0
-sparc64                             defconfig    gcc-14.2.0
-sparc64               randconfig-001-20250522    gcc-14.2.0
-sparc64               randconfig-002-20250522    gcc-12.4.0
-um                               allmodconfig    clang-19
-um                                allnoconfig    clang-21
-um                               allyesconfig    gcc-12
-um                                  defconfig    clang-21
-um                             i386_defconfig    gcc-12
-um                    randconfig-001-20250522    gcc-12
-um                    randconfig-002-20250522    gcc-12
-um                           x86_64_defconfig    clang-21
-x86_64                            allnoconfig    clang-20
-x86_64                           allyesconfig    clang-20
-x86_64      buildonly-randconfig-001-20250522    clang-20
-x86_64      buildonly-randconfig-002-20250522    gcc-12
-x86_64      buildonly-randconfig-003-20250522    gcc-12
-x86_64      buildonly-randconfig-004-20250522    gcc-12
-x86_64      buildonly-randconfig-005-20250522    gcc-12
-x86_64      buildonly-randconfig-006-20250522    gcc-12
-x86_64                              defconfig    gcc-11
-x86_64                          rhel-9.4-rust    clang-18
-xtensa                            allnoconfig    gcc-14.2.0
-xtensa                randconfig-001-20250522    gcc-14.2.0
-xtensa                randconfig-002-20250522    gcc-10.5.0
-xtensa                    xip_kc705_defconfig    gcc-14.2.0
+[   19.908418] Voluntary context switch within RCU read-side critical section!
+[   19.908453] WARNING: CPU: 0 PID: 371 at /kernel/rcu/tree_plugin.h:331 rcu_note_context_switch+0x3d0/0x428
+[   19.908510] Modules linked in: sd_mod uas onboard_usb_dev optee_rng rng_core btnxpuart dwc3 evdev spidev aes_ce_blk aes_ce_cipher ghash_ce gf128mul sha2_ce sha256_arm64 sha1_ce snd_soc_simple_card snd_soc_simple_card_utils display_connector optee gpio_keys spi_cadence_quadspi usb_conn_gpio tee roles k3_j72xx_bandgap mwifiex_sdio mwifiex cfg80211 rtc_ti_k3 dwc3_am62 bluetooth ecdh_generic ecc sa2ul rfkill sha512_generic authenc tidss snd_soc_davinci_mcasp crypto_null libaes snd_soc_ti_udma drm_display_helper snd_soc_ti_edma sha1_generic snd_soc_ti_sdma omap_hwspinlock ti_ads1015 lontium_lt8912b ina2xx industrialio_triggered_buffer kfifo_buf tps65219_pwrbutton tc358768 lm75 m_can_platform snd_soc_wm8904 pwm_tiehrpwm m_can can_dev spi_omap2_mcspi fuse ipv6 autofs4
+[   19.908761] CPU: 0 UID: 0 PID: 371 Comm: kworker/u5:2 Not tainted 6.12.30-7.3.0-devel #1
+[   19.908773] Hardware name: Toradex Verdin AM62 WB on Dahlia Board (DT)
+[   19.908780] Workqueue: hci0 hci_power_off [bluetooth]
+[   19.908917] pstate: 600000c5 (nZCv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   19.908930] pc : rcu_note_context_switch+0x3d0/0x428
+[   19.908946] lr : rcu_note_context_switch+0x3d0/0x428
+[   19.908957] sp : ffff8000825dba60
+[   19.908961] x29: ffff8000825dba60 x28: 0000000000000000 x27: 0000000000000000
+[   19.908977] x26: ffff0000011e11c0 x25: ffff00000a5a9080 x24: 0000000000000000
+[   19.908988] x23: 0000000000000000 x22: ffff00000a5a9080 x21: ffff00001daa92c0
+[   19.908999] x20: ffff8000810220c0 x19: ffff00001daaa0c0 x18: fffffffffffe7a38
+[   19.909010] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000048
+[   19.909023] x14: fffffffffffe7a80 x13: 216e6f6974636573 x12: 206c616369746972
+[   19.909034] x11: 6320656469732d64 x10: 6165722055435220 x9 : 206e696874697720
+[   19.909045] x8 : 6863746977732074 x7 : ffff80008122c840 x6 : ffff8000825db820
+[   19.909056] x5 : ffff00001da9f888 x4 : 0000000000000000 x3 : 0000000000000027
+[   19.909071] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff00000a5a9080
+[   19.909084] Call trace:
+[   19.909089]  rcu_note_context_switch+0x3d0/0x428
+[   19.909107]  __schedule+0x98/0x774
+[   19.909124]  schedule+0x34/0x104
+[   19.909133]  rpm_resume+0x17c/0x6b0
+[   19.909144]  __pm_runtime_resume+0x48/0x88
+[   19.909158]  serial8250_stop_rx+0x28/0x84
+[   19.909173]  uart_tty_port_shutdown+0x3c/0x178
+[   19.909184]  tty_port_shutdown+0x84/0xdc
+[   19.909201]  tty_port_close+0x3c/0xac
+[   19.909211]  uart_close+0x34/0x98
+[   19.909219]  ttyport_close+0x50/0x94
+[   19.909230]  serdev_device_close+0x40/0x50
+[   19.909243]  btnxpuart_close+0x1c/0x9c [btnxpuart]
+[   19.909258]  hci_dev_close_sync+0x314/0x7d8 [bluetooth]
+[   19.909325]  hci_dev_do_close+0x2c/0x70 [bluetooth]
+[   19.909388]  hci_power_off+0x20/0x64 [bluetooth]
+[   19.909454]  process_one_work+0x148/0x28c
+[   19.909477]  worker_thread+0x2d4/0x3d8
+[   19.909488]  kthread+0x110/0x114
+[   19.909499]  ret_from_fork+0x10/0x20
+[   19.909518] ---[ end trace 0000000000000000 ]---
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Francesco
+
