@@ -1,160 +1,206 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DF2627466;
-	Fri, 23 May 2025 02:52:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A81431A9B49
+	for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 06:58:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747968766; cv=none; b=MRooTbzKX8GlivpP1aiVGolInDS89jqoGy/kvdtp9ELU1oKTvHAjTEcuGzRzPA/0tZ/kSk1T13oHSMhQC+xnGwEXV2XsFktQi3jn52BEBpW0HB4zjUD3SirjaMiWICqpgIcF1OhAa8GYD5SN2yu7x+TU8Ssf7RX3Jpz/+5HOucY=
+	t=1747983504; cv=none; b=PrpdB/yFUkI5QoXfDroxN1Spap3ZerYqPuo4u+Bxh52CtaI/eWsKP2BgvymxhCI9mJ/3Cwu8NL8jr709kC6THWRi4xrl3nUV+sl770Z7VQSm3U/yQKGVY0so6AHJw1nrpYKiQRPkgG8b5Z4CLRKnLHpplrvP745mM7N5jZOjBDg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747968766; c=relaxed/simple;
-	bh=RMZSHyGq8lLP5R/e5mbMKL+hRBJ17vHYbXM+BXDmcB8=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:CC:References:
-	 In-Reply-To:Content-Type; b=DnVVHirIbJ4BOUB9iMXf8E41rNUSAKBd1l1hK8j8pAMJ1HtKywdQJTqHzqkmmdCR4r/1FBUZTuhFq05YboJX/rC4NM+R+aNMikYW752D+ks9Ykd+2bJkOs092OK3tIfsiY9JqLB+KOPVahVxbOQ8Rdq1giIzeDKawb26bmAgDB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Z7EEbjuD; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1747983504; c=relaxed/simple;
+	bh=GX09q7c7yVndMhOJ+DV95PHMn5FdxHD4tpUZiAvn8F8=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=ieHGgBAhcq0ad0Xk4v76kl+0ivVUzyDLceY88/vjXv97YofihMvIb6joC9xFTN+lVXul2L1PMByCh4e6343PeMaZ+cwXUU2dyopgarUrlK/+PZl94liE8VAfp703riSrmpJ1JxrGY9xiPrgIM0/1vJnEXk4UeBIRoUvD7FoXlms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QXp4YeRQ; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Z7EEbjuD"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 54MIA2b2025025;
-	Fri, 23 May 2025 02:52:34 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ZKOEpOnXCkx//rWtBuQbetdixfQvhhL4O3NFDgntfg0=; b=Z7EEbjuDiARDzaqp
-	+MoPHM3eyzWVEhwLgca0jk0MncOOPcMJYBJ1spMYsDpXV9SDjcSLm0Gbe3NGXU7u
-	cImPAAzC2YKgdL4kKOUpHK1b0scN0N2wVyRNlL4BoXIi6qWJs18c22lSyAyFBbJr
-	/C2JSmYD40nF/u1Eu+REyHhVDhv11cd9wl7+cJpj4zr0jx+Rm6N2tPqwHRtP1gRI
-	wn6FmaNW5AC2It5bmt5LvWG9xq1CL3PiPlKiujbC5Nl/layIaIZuuGuaZBT9mCcJ
-	ySmnxl88CZ1oS5EW0JUsQdI+3kfSjlAO7/Ra9KmkiZoZsj67k0JQr1uZJUS0UAsl
-	tXGMhA==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46rwf707uf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 May 2025 02:52:33 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 54N2qWQb031983
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 May 2025 02:52:32 GMT
-Received: from [10.253.8.154] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 22 May
- 2025 19:52:29 -0700
-Message-ID: <8e171057-b3c3-4808-b49e-f04ffd310b31@quicinc.com>
-Date: Fri, 23 May 2025 10:52:27 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QXp4YeRQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1747983503; x=1779519503;
+  h=date:from:to:cc:subject:message-id;
+  bh=GX09q7c7yVndMhOJ+DV95PHMn5FdxHD4tpUZiAvn8F8=;
+  b=QXp4YeRQzhUpmUX3upGy+HXBSScn1JpDMxTx5PcRYzFPsfZYFbc4Gemb
+   pPILjkzRLr3kkBATylRdhQqE944Of+lBJFy9MMPWDjTXkmKeOsA7IhHku
+   XfdmV3BV3UjlP5JyteSUh44NJ6i7kyNZbIDq17PUtQBqLlZk2vNHjWw39
+   jaWWaWrXamKLa3q6niOxu6EAwr3aqxiFctcEwU2nbewMDC3i1GUGOfTmC
+   tzP4amXmcDN0ihOuHHZOu5YxcLmR/LmhdUHmuFocsUxg3qCJpK++Ip2AM
+   +IkZLexLdr6YLPDD2BKScm6FHKXs3y4+DsURprD6K55c5KkVaRfHfny96
+   g==;
+X-CSE-ConnectionGUID: SB6XPFJJQI6RrXpXermPhw==
+X-CSE-MsgGUID: Nq7nz5sJRLaXgJrEvm3LXg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11441"; a="75430649"
+X-IronPort-AV: E=Sophos;i="6.15,308,1739865600"; 
+   d="scan'208";a="75430649"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2025 23:58:22 -0700
+X-CSE-ConnectionGUID: fGQuoZEQReCfOmopBD04qQ==
+X-CSE-MsgGUID: CwOVeM5+SpWD56cTrhA8fA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,308,1739865600"; 
+   d="scan'208";a="145715827"
+Received: from lkp-server01.sh.intel.com (HELO 1992f890471c) ([10.239.97.150])
+  by orviesa003.jf.intel.com with ESMTP; 22 May 2025 23:58:21 -0700
+Received: from kbuild by 1992f890471c with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1uIMME-000Q72-1m;
+	Fri, 23 May 2025 06:58:18 +0000
+Date: Fri, 23 May 2025 14:57:27 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ b495021a973e2468497689bd3e29b736747b896f
+Message-ID: <202505231417.W6NrVfdy-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] tty: serdev: serdev-ttyport: Fix use-after-free in
- ttyport_close() due to uninitialized serport->tty
-From: Xin Chen <quic_cxin@quicinc.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liulzhao@qti.qualcomm.com>, <quic_chejiang@quicinc.com>,
-        <zaiyongc@qti.qualcomm.com>, <quic_zijuhu@quicinc.com>,
-        <quic_mohamull@quicinc.com>,
-        Panicker Harish <quic_pharish@quicinc.com>
-References: <20250430111617.1151390-1-quic_cxin@quicinc.com>
- <2025043022-rumbling-guy-26fb@gregkh>
- <d388b471-482b-48ba-a504-694529535362@quicinc.com>
- <2025050851-splatter-thesaurus-f54e@gregkh>
- <38bf94e1-ebed-4d03-8ea0-4040009e8d31@quicinc.com>
-Content-Language: en-US
-In-Reply-To: <38bf94e1-ebed-4d03-8ea0-4040009e8d31@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: MeW7e1yphHbr84ng-NDw_-BhoCDClvYY
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTIzMDAyNCBTYWx0ZWRfX+dTMXtCyVZqZ
- SgyP15MPIn5nPIkYZRuxwCadsL9eJYiKgLUOUs/3leOVBNWkbXnXsI19wXmZrbFH/edUVcl1TT1
- Tvy+TGh9Of+mWZZx3Wi3T33460W5msaolnMrh2CIEIU2zk6M3wyx6flWoF2jB94FB9tG9lLvgNS
- iZ8jcB4nk6m8V9msSQCfHj2w7awJ5+SHtD42hQiF0S14cg0qqddF6brEI3tK3XT6cVjejdg9Epm
- O3DYylBupyGW2D2PqUydnkuZ6N/vrThINun1ami+cBezqGhVSUUpq1rGrMB6XEz6u5m2MY2M/k1
- zszUIIhUMo4S6CWKjeIJUI2EEah4mEQP5yktEc2C6b40BupYqXajQ8uAhx7SlhXms+2ZfhxApEI
- fcSOCEnkcfckF4Va7f9jfl1pIZAjEiPUpeJnVShreNCh3e+nHvf95zj8rwPYcuRQz75anVms
-X-Authority-Analysis: v=2.4 cv=fZOty1QF c=1 sm=1 tr=0 ts=682fe2f1 cx=c_pps
- a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10
- a=_eFTLsDQhpw06QD9osAA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: MeW7e1yphHbr84ng-NDw_-BhoCDClvYY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-05-23_02,2025-05-22_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 mlxscore=0 adultscore=0 spamscore=0 bulkscore=0 suspectscore=0
- malwarescore=0 priorityscore=1501 impostorscore=0 mlxlogscore=877
- lowpriorityscore=0 phishscore=0 classifier=spam authscore=0 authtc=n/a
- authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2505160000 definitions=main-2505230024
 
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: b495021a973e2468497689bd3e29b736747b896f  tty: serial: 8250_omap: fix TX with DMA for am33xx
 
+elapsed time: 1460m
 
-On 5/14/2025 5:14 PM, Xin Chen wrote:
-> 
-> 
-> On 5/8/2025 5:41 PM, Greg Kroah-Hartman wrote:
->> On Thu, May 08, 2025 at 05:29:18PM +0800, Xin Chen wrote:
->>>
->>> On 4/30/2025 7:40 PM, Greg Kroah-Hartman wrote:
->>>> On Wed, Apr 30, 2025 at 07:16:17PM +0800, Xin Chen wrote:
->>>>> When ttyport_open() fails to initialize a tty device, serport->tty is not
->>>>> --- a/drivers/tty/serdev/serdev-ttyport.c
->>>>> +++ b/drivers/tty/serdev/serdev-ttyport.c
->>>>> @@ -88,6 +88,10 @@ static void ttyport_write_flush(struct serdev_controller *ctrl)
->>>>>  {
->>>>>  	struct serport *serport = serdev_controller_get_drvdata(ctrl);
->>>>>  	struct tty_struct *tty = serport->tty;
->>>>> +	if (!tty) {
->>>>> +		dev_err(&ctrl->dev, "tty is null\n");
->>>>> +		return;
->>>>> +	}
->>>>
->>>> What prevents tty from going NULL right after you just checked this?
->>>
->>> First sorry for reply so late for I have a long statutory holidays.
->>> Maybe I don't get your point. From my side, there is nothing to prevent it.
->>> Check here is to avoid code go on if tty is NULL.
->>
->> Yes, but the problem is, serport->tty could change to be NULL right
->> after you check it, so you have not removed the real race that can
->> happen here.  There is no lock, so by adding this check you are only
->> reducing the risk of the problem happening, not actually fixing the
->> issue so that it will never happen.
->>
->> Please fix it so that this can never happen.
->>
-> 
-> Actually I have never thought the race condition issue since the crash I met is
-> not caused by race condition. It's caused due to Bluetooth driver call
-> ttyport_close() after ttyport_open() failed. This two action happen one after
-> another in one thread and it seems impossible to have race condition. And with
-> my fix the crash doesn't happen again in several test of same case.
-> 
-> Let me introduce the complete process for you:
->   1) hci_dev_open_sync()->
-> hci_dev_init_sync()->hci_dev_setup_sync()->hdev->setup()(hci_uart_setup)->qca_setup(),
-> here in qca_setup(), qca_read_soc_version() fails and goto out, then calls
-> serdev_device_close() to close tty normally. And then call serdev_device_open()
-> to retry.
->   2) serdev_device_open() fails due to tty_init_dev() fails, then tty gets
-> released, which means this time the tty has been freed succesfully.
->   3) Return back to upper func  hci_dev_open_sync(),
-> hdev->close()(hci_uart_close) is called. And hci_uart_close calls
-> hci_uart_flush() and serdev_device_close(). serdev_device_close() tries to close
-> tty again, it's calltrace is serdev_device_close()->ttyport_close()->tty_lock(),
-> tty_unlock(), tty_release_struct(). The four funcs hci_uart_flush(), tty_lock(),
-> tty_unlock(), tty_release_struct() read tty pointer's value, which is invalid
-> and causes crash.
-> 
+configs tested: 129
+configs skipped: 2
 
-Hi Greg, could you please take some time to review my reply?
-Thanks very much!
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+tested configs:
+alpha                             allnoconfig    gcc-14.2.0
+alpha                            allyesconfig    gcc-14.2.0
+alpha                               defconfig    gcc-14.2.0
+arc                              allmodconfig    gcc-14.2.0
+arc                               allnoconfig    gcc-14.2.0
+arc                              allyesconfig    gcc-14.2.0
+arc                                 defconfig    gcc-14.2.0
+arc                   randconfig-001-20250522    gcc-15.1.0
+arc                   randconfig-002-20250522    gcc-15.1.0
+arc                           tb10x_defconfig    gcc-14.2.0
+arm                              allmodconfig    gcc-14.2.0
+arm                               allnoconfig    clang-21
+arm                              allyesconfig    gcc-14.2.0
+arm                            dove_defconfig    gcc-14.2.0
+arm                             mxs_defconfig    clang-21
+arm                   randconfig-001-20250522    clang-21
+arm                   randconfig-002-20250522    clang-21
+arm                   randconfig-003-20250522    clang-18
+arm                   randconfig-004-20250522    gcc-7.5.0
+arm64                            allmodconfig    clang-19
+arm64                             allnoconfig    gcc-14.2.0
+arm64                 randconfig-001-20250522    clang-21
+arm64                 randconfig-002-20250522    gcc-7.5.0
+arm64                 randconfig-003-20250522    clang-21
+arm64                 randconfig-004-20250522    gcc-5.5.0
+csky                              allnoconfig    gcc-14.2.0
+csky                  randconfig-001-20250522    gcc-15.1.0
+csky                  randconfig-002-20250522    gcc-15.1.0
+hexagon                          allmodconfig    clang-17
+hexagon                           allnoconfig    clang-21
+hexagon                          allyesconfig    clang-21
+hexagon               randconfig-001-20250522    clang-17
+hexagon               randconfig-002-20250522    clang-21
+i386                              allnoconfig    gcc-12
+i386                             allyesconfig    gcc-12
+i386        buildonly-randconfig-001-20250522    clang-20
+i386        buildonly-randconfig-002-20250522    gcc-12
+i386        buildonly-randconfig-003-20250522    gcc-12
+i386        buildonly-randconfig-004-20250522    gcc-12
+i386        buildonly-randconfig-005-20250522    gcc-12
+i386        buildonly-randconfig-006-20250522    clang-20
+i386                                defconfig    clang-20
+loongarch                        allmodconfig    gcc-14.2.0
+loongarch                         allnoconfig    gcc-14.2.0
+loongarch             randconfig-001-20250522    gcc-15.1.0
+loongarch             randconfig-002-20250522    gcc-15.1.0
+m68k                             allmodconfig    gcc-14.2.0
+m68k                              allnoconfig    gcc-14.2.0
+m68k                             allyesconfig    gcc-14.2.0
+m68k                       m5208evb_defconfig    gcc-14.2.0
+m68k                            mac_defconfig    gcc-14.2.0
+microblaze                       allmodconfig    gcc-14.2.0
+microblaze                        allnoconfig    gcc-14.2.0
+microblaze                       allyesconfig    gcc-14.2.0
+mips                              allnoconfig    gcc-14.2.0
+mips                      bmips_stb_defconfig    clang-21
+mips                          rb532_defconfig    clang-18
+nios2                             allnoconfig    gcc-14.2.0
+nios2                 randconfig-001-20250522    gcc-9.3.0
+nios2                 randconfig-002-20250522    gcc-9.3.0
+openrisc                          allnoconfig    gcc-14.2.0
+openrisc                         allyesconfig    gcc-14.2.0
+openrisc                            defconfig    gcc-14.2.0
+parisc                           alldefconfig    gcc-14.2.0
+parisc                           allmodconfig    gcc-14.2.0
+parisc                            allnoconfig    gcc-14.2.0
+parisc                           allyesconfig    gcc-14.2.0
+parisc                              defconfig    gcc-14.2.0
+parisc                randconfig-001-20250522    gcc-6.5.0
+parisc                randconfig-002-20250522    gcc-12.4.0
+powerpc                           allnoconfig    gcc-14.2.0
+powerpc                      mgcoge_defconfig    clang-21
+powerpc                    mvme5100_defconfig    gcc-14.2.0
+powerpc               randconfig-001-20250522    gcc-9.3.0
+powerpc               randconfig-002-20250522    clang-21
+powerpc               randconfig-003-20250522    gcc-7.5.0
+powerpc64             randconfig-001-20250522    clang-21
+powerpc64             randconfig-002-20250522    gcc-10.5.0
+powerpc64             randconfig-003-20250522    gcc-7.5.0
+riscv                             allnoconfig    gcc-14.2.0
+riscv                               defconfig    clang-21
+riscv                 randconfig-001-20250522    gcc-9.3.0
+riscv                 randconfig-002-20250522    clang-18
+s390                             allmodconfig    clang-18
+s390                              allnoconfig    clang-21
+s390                             allyesconfig    gcc-14.2.0
+s390                                defconfig    clang-21
+s390                  randconfig-001-20250522    clang-19
+s390                  randconfig-002-20250522    clang-18
+sh                               allmodconfig    gcc-14.2.0
+sh                                allnoconfig    gcc-14.2.0
+sh                               allyesconfig    gcc-14.2.0
+sh                                  defconfig    gcc-14.2.0
+sh                         ecovec24_defconfig    gcc-14.2.0
+sh                            hp6xx_defconfig    gcc-14.2.0
+sh                 kfr2r09-romimage_defconfig    gcc-14.2.0
+sh                          polaris_defconfig    gcc-14.2.0
+sh                    randconfig-001-20250522    gcc-13.3.0
+sh                    randconfig-002-20250522    gcc-13.3.0
+sh                              ul2_defconfig    gcc-14.2.0
+sparc                            allmodconfig    gcc-14.2.0
+sparc                             allnoconfig    gcc-14.2.0
+sparc                 randconfig-001-20250522    gcc-14.2.0
+sparc                 randconfig-002-20250522    gcc-6.5.0
+sparc64                             defconfig    gcc-14.2.0
+sparc64               randconfig-001-20250522    gcc-14.2.0
+sparc64               randconfig-002-20250522    gcc-12.4.0
+um                               allmodconfig    clang-19
+um                                allnoconfig    clang-21
+um                               allyesconfig    gcc-12
+um                                  defconfig    clang-21
+um                             i386_defconfig    gcc-12
+um                    randconfig-001-20250522    gcc-12
+um                    randconfig-002-20250522    gcc-12
+um                           x86_64_defconfig    clang-21
+x86_64                            allnoconfig    clang-20
+x86_64                           allyesconfig    clang-20
+x86_64      buildonly-randconfig-001-20250522    clang-20
+x86_64      buildonly-randconfig-002-20250522    gcc-12
+x86_64      buildonly-randconfig-003-20250522    gcc-12
+x86_64      buildonly-randconfig-004-20250522    gcc-12
+x86_64      buildonly-randconfig-005-20250522    gcc-12
+x86_64      buildonly-randconfig-006-20250522    gcc-12
+x86_64                              defconfig    gcc-11
+x86_64                          rhel-9.4-rust    clang-18
+xtensa                            allnoconfig    gcc-14.2.0
+xtensa                randconfig-001-20250522    gcc-14.2.0
+xtensa                randconfig-002-20250522    gcc-10.5.0
+xtensa                    xip_kc705_defconfig    gcc-14.2.0
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
