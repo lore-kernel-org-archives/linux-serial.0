@@ -1,183 +1,110 @@
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88B16226D09;
-	Fri, 23 May 2025 09:57:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0090189919;
+	Fri, 23 May 2025 10:38:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747994275; cv=none; b=ILiGfk1q44+8ecbro3zuh6yz+N7wjJHZCHoXeyjNDHCo++FeExm2MV+6dNbxs8Di3oJ5rW25SgP5M31ji0/UFTf2Nbo+DNbHYRTxlY3b0FUC2kamptYbZQ22qq05RYMWMe8fSHCMqL2VfxiaLv1FiRr2XlHGVFGGKl6CVQDQ1fw=
+	t=1747996684; cv=none; b=J5Bj5rtwyfd7txjjXIssIwXFykJ/u41PIATaX760Lb/yzsECnHA1CEgItQmYbFhv5jdv2xBhPv8iGXybmQiw+2i1Pd/vC6Ig+ITCoveXb/BUU9Sf5diHf6VZUTk2QsztXxLf6PjLX+KEqvrZ9GWLXnVfWAfplWKR9EdIgzK4mn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747994275; c=relaxed/simple;
-	bh=o3+U2pTjpoLy4VBlboNFSpKjjYw/1Y9CbZlyI6v5MxI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Itsjk/RzHJ0Nu593JPB3bwovKMvo2MeZSu9DY448wmEaFHRzuIXnj+1UMRVqfaw+u+cag4hI8wD/vzaANFe6xT3APUfbzJUIs1URCUPZaa2/qXw3DhKB+8zIHLftnslPuQGIk+bvffjzPaS9fyQ9NfMeiW/gfChEtc+Xfxtixxg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-4e2b5ffb932so1067454137.0;
-        Fri, 23 May 2025 02:57:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747994271; x=1748599071;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=dOpTsqxLWECKPkArKUXl99v0o7bZ+EJjw6Rtwx3j45U=;
-        b=lue3UFOrrSSSSC+zEej3jV+eWKVg0Qin64rbFFMuswF4F8Jtwhs5MB0mQZCmkBXG16
-         aB1BaFB0699+jYBf5iwXosUtH2u4CoyMAJyoFMCjAMp/KjONn8VeSy5FZ6JSaO2X1Jdx
-         a4flWTqxxR7toM4uKAi+abE+vmh3OW5pwt2MyA13FbPXlJk1JlPm94X5PqjMjPIJ4fWQ
-         +tJiKihWE2bf2BJcS/Jmgh3LISolzVaWIyV4B9ejgAOjdepDXf1Cp/4SIhOAtf6xF9Bk
-         mpSPMfWnVx8zNWqgk0PYmuWxk/PDyzbTO05XVT2Iq9jYea3PsC8ZSmIcKR7zArWeyNb5
-         826Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVZBolRXZHmP3fvDLKprd8uk3dM/7tj+z97ni6nn6YIYjjR+XlZ2XfG/J1NQFQm1WiolLRlwb60AeCjsew=@vger.kernel.org, AJvYcCWpPD1W2Dej+UULo+3gUVWHeo7OUA3sGp5UpsrlCEtUt0kNMr+aKIyQnemBKneY17dfZmk/dvuCAYFmaMh7Kqdzkrg=@vger.kernel.org, AJvYcCXDVsyzfxa8K89LZpeHnLsKWPlVh/GnzuSGvv8mk2LS3V6kV4Ov6uL34V/0rGj2E5xDmd/LZFMT6+hddhpQ@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx2MHV3gNbOdfZq+3ZfjiU8lBAXqmfDVnasfnPbyfrZUkqcNoz6
-	FC0ymlmjikLV60jtW/rOUinN/AYY/xSAtODCH7ivzLPywnifoc4g9VwBHmDq4GBH
-X-Gm-Gg: ASbGncv7YLNiEFH+qn/M8Eu0ubsnvbVTrWEDt64OIW6G26IyBA9AsNnhuKj7BgZeSs8
-	uKDnnn8f5rvkqcb90ujyp03HEdj3qAmFgqUqKCaGuIZW+qUW2pU4adq/Xfzk/SPRTJ3iLQPakTS
-	p6r/gvJJBEhyNX0vjrOSv0I9nV5F0eZbm2FSxvTfeA7VSZHEIkyJOrT8BsOk2Ploh8KXfW71nEV
-	BFc9NUhaXaH5AE3RKfNOXpOKU94nICtpXeUoUaYlRRDPH1mO0v+y3fxPd1yfa8NtmiTQ1hbW7yU
-	dbXNCxbqUdQ0eiOGFjCro16d/vG/Du31Y4+BENIDKUnlh81m0kLlEYqEcGXaG4DgS8I/UbyouO4
-	WckenA4KU7M+CwerWXQ==
-X-Google-Smtp-Source: AGHT+IErEm1p66emtG23zmtX6IYikVXCh98rO9xeqwquTjV91rWvkBqKHgVLffSQ8t4REJVocOMIyQ==
-X-Received: by 2002:a05:6102:50a4:b0:4bb:e5bf:9c7d with SMTP id ada2fe7eead31-4dfa6c31c98mr25458123137.17.1747994270671;
-        Fri, 23 May 2025 02:57:50 -0700 (PDT)
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com. [209.85.221.170])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4dfa66e2910sm12328267137.13.2025.05.23.02.57.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 23 May 2025 02:57:50 -0700 (PDT)
-Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-52dc826204eso2317494e0c.1;
-        Fri, 23 May 2025 02:57:50 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCU/p6oGcOuCpHsZBJJG32iwhLE+bSwW9GxAjzu5vRHX8Ne+pCFQ2X8MqoaLyhQKmq+BNhqsuHlWJ6IYzkV4@vger.kernel.org, AJvYcCW9+/q/DUjN3QVREvJDt3ai1pI9h1b+WERkVO9LmxLPdiPJIUalLlQdcaS8Q6fFVSaLJKaxqwux4MRgH+A=@vger.kernel.org, AJvYcCXrHI8T841FT6tN7YEolXpYuoxS9puwcgIebpOtOQX/wPc6rIkVbu5+nYs/jyUL5ScYblF6uzttZc8scYfM2LuaYm4=@vger.kernel.org
-X-Received: by 2002:a05:6122:2529:b0:52a:791f:7e20 with SMTP id
- 71dfb90a1353d-52dba80d3e3mr25830440e0c.4.1747994269866; Fri, 23 May 2025
- 02:57:49 -0700 (PDT)
+	s=arc-20240116; t=1747996684; c=relaxed/simple;
+	bh=sv0pREbVOCvjCN8ul9TzmQLU8hHqkLDMyQKB+FDtPSM=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=QCDknOEyswbNLc+NDmD48O2fdKQ34PhtbHtX4slYy3oWGSONp7tG1xccS5QPDu6UnOH1s4Gw8zFLJsXH6nU3N/Uo5G6+V8N4RP9AS4ybljunhZ2EjCOQ5gnE33+kVJ0/KlewYuwbQ85u/9YdGIy0+1f7PYxPMkNS4NIPos3ddeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=W68Hev6I; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="W68Hev6I"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 54N39ftC020640;
+	Fri, 23 May 2025 10:37:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:message-id:mime-version:subject:to; s=
+	qcppdkim1; bh=B2W63gAjLsrk+66KoqByrEnMo2r5cVdBUCPBnwcSWvQ=; b=W6
+	8Hev6IWLmw443nEpsM47M9uXODnILhDY6hi6A1F/yVv55TzH93fmjrQlc/HbR0TR
+	LCnKCcLQ5UKejNkQH14QeS/9swF6EToL1u13xFv0l3GthTEZxzEY/nA8XCe+5WBw
+	C+1Fd1YqBsMvxqBuM58WXCyGXdZG2aTlcmeFY4Ge7tSIh+R1O+ofiktmI/xSEt0H
+	iKeMxs59yFXAUnV07xijDfBJ7cgF19EO0JwbzWbxOx3f0x2VkPvCKCuebNZhOnEL
+	kkf/8VwTwECemRAj07Rx6cKIgOt8pOlH2FSOMvjN6oLZBRIRiEf7MNW2ri1KTs9/
+	jNl4gFQ37JTxBkdYKJ0g==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46s9pb82k8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 23 May 2025 10:37:59 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 54NAbwsa030346
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 23 May 2025 10:37:58 GMT
+Received: from hu-jseerapu-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Fri, 23 May 2025 03:37:55 -0700
+From: Jyothi Kumar Seerapu <quic_jseerapu@quicinc.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <dmitry.baryshkov@oss.qualcomm.com>
+Subject: [PATCH v1] serial: qcom-geni: Add support for 8 Mbps baud rate
+Date: Fri, 23 May 2025 16:07:21 +0530
+Message-ID: <20250523103721.5042-1-quic_jseerapu@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250515141828.43444-1-thierry.bultel.yh@bp.renesas.com> <20250515141828.43444-8-thierry.bultel.yh@bp.renesas.com>
-In-Reply-To: <20250515141828.43444-8-thierry.bultel.yh@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 23 May 2025 11:57:37 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWhq+o18hgBO7Kg_Rsq47WsEwV7-DWYcyJCM0h1wsMshg@mail.gmail.com>
-X-Gm-Features: AX0GCFutLZp2NjdVwF0AAwLhMEAFa6NnDGxnoo0-7WDTAMJFZVVCBRJ3x6pp41o
-Message-ID: <CAMuHMdWhq+o18hgBO7Kg_Rsq47WsEwV7-DWYcyJCM0h1wsMshg@mail.gmail.com>
-Subject: Re: [PATCH v9 07/10] serial: sh-sci: Add support for RZ/T2H SCI
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org, 
-	paul.barker.ct@bp.renesas.com, 
-	Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Authority-Analysis: v=2.4 cv=WJl/XmsR c=1 sm=1 tr=0 ts=68305007 cx=c_pps
+ a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=GEpy-HfZoHoA:10 a=dt9VzEwgFbYA:10 a=COk6AnOGAAAA:8 a=EyDw_Kcl9UowM1yU27AA:9
+ a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-ORIG-GUID: oxJMvvbEJ5dTnTN3-YubJ-TQ7ZzZw_sB
+X-Proofpoint-GUID: oxJMvvbEJ5dTnTN3-YubJ-TQ7ZzZw_sB
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTIzMDA5NCBTYWx0ZWRfX2QpVKCdEoxVH
+ 4zIInU9B1o6huVii11WPVp15geiBE66ttLyoGQz8tDgkL8zpU1BaOTTcEo0VcC8YbjvHNdJnneb
+ W+oGZxBZYUcsVgIi1nWx093Zq8B7ZqdKihWe3rSkbt1mGLWBvhN9OkZzIUbAET8IX2THAfqGryi
+ OHqRzA6auD7Qx1pxn3nE+SeEP8FcQwZz9Edi6FLDHl8lvZYheicE5n6yBkZMj/6bsCyfvdUrAXn
+ sBXrIJ23ErX2G3e57N4x7gNgSlUigZhmu0PBcr3vBQ8YL8y3Ma8NTgoP8QI9qsCgsbCmgcR1beL
+ d6PwynoZI/cutkOzDuqAcYkIxiBC6ONHkX1GsMcEuFpz5yDibBcLPkPEhlacXCR8tuv8Z3es5M8
+ eyegmgLBc8vHC0lcUHBdexg0KPKB3892/jut1SXkbgpIlRNMsMKWE6VHAGBPJ+oryrr/RjEn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-23_03,2025-05-22_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 lowpriorityscore=0 clxscore=1011 suspectscore=0 bulkscore=0
+ malwarescore=0 impostorscore=0 mlxscore=0 adultscore=0 phishscore=0
+ mlxlogscore=999 priorityscore=1501 classifier=spam authscore=0 authtc=n/a
+ authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505160000 definitions=main-2505230094
 
-Hi Thierry,
+Current GENI UART driver supports Max Baud rate up to 4 Mbps.
+Add support to increase maximum baud rate to 8 Mbps.
 
-On Thu, 15 May 2025 at 16:19, Thierry Bultel
-<thierry.bultel.yh@bp.renesas.com> wrote:
-> Define a new RSCI port type, and the RSCI 32 bits registers set.
-> The RZ/T2H SCI has a a fifo, and a quite different set of registers
-> from the original SH SCI ones.
-> DMA is not supported yet.
->
-> Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> ---
-> Changes v8->v9:
->   - Fixed some code formatting
->   - Renamed rzt2_sci_uart_ops to rsci_uart_ops
->   - Renamed of_sci_r9a09g077_data to of_sci_rsci_data
->   - Added EXPORT_SYMBOL for public functions
->   - Added MODULE_LICENSE & MODULE_DESCRIPTION
->   - Fixed RSCI clock names
->   - Fixed SCI_PORT_RSCI using BIT(7)
+Signed-off-by: Jyothi Kumar Seerapu <quic_jseerapu@quicinc.com>
+---
+ drivers/tty/serial/qcom_geni_serial.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks for the update!
-
-> --- /dev/null
-> +++ b/drivers/tty/serial/rsci.h
-> @@ -0,0 +1,12 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +
-> +#ifndef __RSCI_H__
-> +#define __RSCI_H__
-> +
-> +#include "sh-sci-common.h"
-> +
-> +#ifdef CONFIG_SERIAL_RSCI
-> +extern struct sci_of_data of_sci_rsci_data;
-> +#endif
-
-The #ifdef isn't really needed.
-
-> +
-> +#endif /* __RSCI_H__ */
-
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-
-> @@ -2977,14 +2987,27 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
->         struct clk *clk;
->         unsigned int i;
->
-> -       if (sci_port->type == PORT_HSCIF)
-> +       if (sci_port->type == PORT_HSCIF) {
->                 clk_names[SCI_SCK] = "hsck";
-> +       } else if (sci_port->type == SCI_PORT_RSCI) {
-> +               clk_names[SCI_FCK] = "operation";
-> +               clk_names[SCI_BRG_INT] = "bus";
-> +       }
->
->         for (i = 0; i < SCI_NUM_CLKS; i++) {
-> -               clk = devm_clk_get_optional(dev, clk_names[i]);
-> +               const char *name = clk_names[i];
-> +
-> +               clk = devm_clk_get_optional(dev, name);
->                 if (IS_ERR(clk))
->                         return PTR_ERR(clk);
->
-> +               if (!clk && sci_port->type == SCI_PORT_RSCI &&
-> +                   (i == SCI_FCK || i == SCI_BRG_INT)) {
-> +                       return dev_err_probe(dev, -ENODEV,
-> +                                            "failed to get '%s' clock\n",
-
-I would make the error message identical to the other cases below,
-so the format string can be shared by the compiler.
-
-> +                                            name);
-> +               }
-> +
->                 if (!clk && i == SCI_FCK) {
->                         /*
->                          * Not all SH platforms declare a clock lookup entry
-> @@ -2995,13 +3018,13 @@ static int sci_init_clocks(struct sci_port *sci_port, struct device *dev)
->                         if (IS_ERR(clk))
->                                 return dev_err_probe(dev, PTR_ERR(clk),
->                                                      "failed to get %s\n",
-> -                                                    clk_names[i]);
-> +                                                    name);
->                 }
->
->                 if (!clk)
-> -                       dev_dbg(dev, "failed to get %s\n", clk_names[i]);
-> +                       dev_dbg(dev, "failed to get %s\n", name);
->                 else
-> -                       dev_dbg(dev, "clk %s is %pC rate %lu\n", clk_names[i],
-> +                       dev_dbg(dev, "clk %s is %pC rate %lu\n", name,
->                                 clk, clk_get_rate(clk));
->                 sci_port->clks[i] = clk;
->         }
-
-The rest of the (generic; I didn't look at the RSCI low-level details)
-changes LGTM.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index a80ce7aaf309..a86b84d7b134 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1287,7 +1287,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
+ 	unsigned long timeout;
+ 
+ 	/* baud rate */
+-	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
++	baud = uart_get_baud_rate(uport, termios, old, 300, 8000000);
+ 
+ 	sampling_rate = UART_OVERSAMPLING;
+ 	/* Sampling rate is halved for IP versions >= 2.5 */
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.17.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
