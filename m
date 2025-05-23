@@ -1,124 +1,96 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D742822A1CD
-	for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 17:25:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45642298C1C
+	for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 18:22:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748021146; cv=none; b=TMkDiJP4uCCAepO8L7TRsDfyoz+EY3N/4ab61lk9b6JLiOT6Ct0WO2Y8MqRhKBmxfQ1lSOX3YXY39XQyeIYuiN8SAiB/qSlzNTCW0lSz/vxifh0O2M6IiQb9iu7dSUSLzpDRzZUL7zYV3h1OkFevZGpBMAT0DoIWtzUOg865Wdg=
+	t=1748024565; cv=none; b=mmhnoBJYaDKDxCc7tNaHZWoIxhM9CuyxLHbr6YsJThLDJHZtkdd+2iwzbfDgaV2Cz+orDpgA5tSGuusuBLoECPy1j/VYVjg3EFhxv/rlhdyoSRh/e21oRRiNZAHweTLGVe/zMADvHh9PEr8/sN8+WePNc7aEgPt8FIq1GdCbvSs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748021146; c=relaxed/simple;
-	bh=7rcCNSJVSwEq1xrZ1u5/+ky+mLguy6zK/o7fp7M5HSY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LjBNpPOtvL2vJxXXC5ZvOcd7pTv7gx4CKVRlE8HPxhs+xp2AS1x6GfJltLpyRjCPF50mP+rdy/MqxBsLz/vaqLGX4u7pF1+CTpSRP/1Hpej5Lru4p0Zg3njS3pE6k5nv7dCcqTt4ifeCKa70ArssOdckQJUEQ4WCWJlDlnYQzYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=U6nUPANF; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1748024565; c=relaxed/simple;
+	bh=s/6eqYOTLrxmW0LGX7eGemIDLzBddKua1DF2bww+zAo=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=anLkKWUt/XhHSjFYlOP5cWz71xMMZoyQXIiWgccMdWpT3Ff2oZvjIdWgUQr9Qs6+6w/7kqbQiRC14Ds/RLEgDksCDwk82jxnBvZxZZmdvc/nf1wCxN7ArEZRjT6NeiuVDQmr7OuV5V8DrNTk3GSCk3/jw9HD9oXovhnv5BCo4VM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=1M3Gq0sB; arc=none smtp.client-ip=209.85.219.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="U6nUPANF"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 54NE0MDZ021071
-	for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 17:25:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=HT0F8cGHWEQc238afO9TzLz/
-	3SBoXaCqVeKXpo6ggCQ=; b=U6nUPANFVoIfiIjVAy1DYa/qEGq5CTqTkPzfytOb
-	vuZaF/v8H1JQzFY9x5XaSVNhyS/X6m+fKK8W6f+oS0eDHdIVw9As/VSiE3+3E7VO
-	UsfEg8WVkI+u3Vn1xdESU/35fmlgqaQCEv0O0nwKqxx85bPButM8M5kOKyYr1LBG
-	MOkXhzv3U4Dz3pvVFEVPxkkoIqYqOE1ALP5Oa7QSj1wefkbhTIFTrggq9pavBZm/
-	R4kZoGjzly7rwYK37F/+0HzyZPPnz5lmBA0Ak/y+ivx1MHZ+lYrOQgbW3+wxLFha
-	bU1F0HPFDcauw5QQ5l3hNnk2IQVCXWTBFT6OCw6ruNcHBQ==
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com [209.85.219.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46rwfa2t83-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 17:25:43 +0000 (GMT)
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-6f8cc1c047dso1043936d6.0
-        for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 10:25:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="1M3Gq0sB"
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-6fa9dced621so220286d6.1
+        for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 11:22:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1748024562; x=1748629362; darn=vger.kernel.org;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=BClPbehAu6JBgNUB0ZQty6Cn+WSxNViJiPjUPJj/yCw=;
+        b=1M3Gq0sBFkRYElwIstMMRFgXHLwAT7q0n0q6HybokgkH4buOU9ce3/qUMheQIiddgE
+         wxpBPFsnsTSg/xTpG01JsO6ED44qToFo1AjBnYHrP/IrLhuNuaovvgi3nlxKjjX964LQ
+         ZAw/NLGgXPW4WyA+bOOjOv3Mk/0Jzy4GiBKxhaGdWUOKl3Gf1/v7qv19yeaDRvRDnfif
+         KZOKe+Z/GAF8lwTFOZFtZ23RFyZYK59/Wwm6idyvXIwKpoh96XMNDuaD2AtBpuWvatoG
+         GPdUcDc7Lrcof2osxKHPTJSe48StG/ubpOcMjYdBNYR+tB7rjdQZOaYOb/ByYLXkdRGQ
+         TojQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748021143; x=1748625943;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HT0F8cGHWEQc238afO9TzLz/3SBoXaCqVeKXpo6ggCQ=;
-        b=LZMdkZtGgWUa/vQmouoV7XQmfsEl48VqtSGiwZkSQTmPLCDAcn5AnzWoRpmnXJUxAk
-         7zvymLuHSpNWIMoFyirCxQKRVoEJtzrdNgGSytDdhT28gXlAYGc0PdflPTDFIcYsyetG
-         ySW83lbgUpS0aewQ/+2bJ0R+vCgCVFVslXq4BfJTnTa29y/T3mbTVwiDu5I599P7uyXR
-         oapHV91RAVLsnzNstNPP1Dc3ieOCLliAcLQBFg5Qj7vHE2V5YkH7gp/tCqEv2He75ahb
-         Wg/6mZiJAbyeZeKbBcYvWqIakOPoRg+3FRQ6xi8e1CF1jIS/qxaOJrJWMRxk9I/LwN+3
-         7P/w==
-X-Forwarded-Encrypted: i=1; AJvYcCUyCCN57iKDs0wPCB/so+Vf7RhN+yL2iTJCoI27Q75J04pJ6qO+K9mkG4R5E6oGOykuQzyctWx4fz3iDa8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxm6yeGeqce0uYyR5fj3JhbUwSKfEgjjMuVRDE9jt4N3hls566b
-	9TKMEjU5J1ERJ7E/28R3cXGUF+zCHlyR7IVsUl6XKDMlZZYR6GVrj+mQRee79+8eaCJdqaf0WuJ
-	Ehw4nGrwFzQoaUlRPxw4B5+j4sSXuprBwpvSAg1BjG8WCzNoWE76ywL4JhBCN0klb0sg=
-X-Gm-Gg: ASbGnctDFxUFjidsi3XxKP/Q5K5NxpyxBqryNCwxbk1Z0KmfhHKk2mEWZ/UczKwMa+p
-	KgDEnjvzwWQsrkCoJ0tEsc0YP2Rk34PwV8JFlMMql3JqGQeSzvFpqakpW0nnefJlo1L8KmhwVRP
-	lDIAIg4wBfSiSFDcLhUZ8yWqtsaR+dp6s8jeq4pUiJha+utOzBjnFkIysxnuz3FeqFZU6SANkY8
-	QKi/UI8lrG/otzZuhAT5wnuwo6708TKvU9TRhzaT0c1pe/mG/sHMVj7/EHp3ab2WBTUK0gqZod2
-	QA842Rim9FaiZuzK8KgsSWcsxbuZ3V8puyBzu4IfkQ7N/c93Ut0dG8aQnxL+eFySeIx1esa2EPs
-	=
-X-Received: by 2002:a05:6214:1d0d:b0:6f8:e2ab:cb8a with SMTP id 6a1803df08f44-6fa9cfff18fmr5886706d6.5.1748021142761;
-        Fri, 23 May 2025 10:25:42 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IF1fuehJqloS19yc8HH7Owq/jk518Mad4i90LYUjgFgeJsI99YBxj75Y2MxKlxrFuXWwV/Y8Q==
-X-Received: by 2002:a05:6214:1d0d:b0:6f8:e2ab:cb8a with SMTP id 6a1803df08f44-6fa9cfff18fmr5886246d6.5.1748021142385;
-        Fri, 23 May 2025 10:25:42 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-328085b9033sm40183991fa.80.2025.05.23.10.25.41
+        d=1e100.net; s=20230601; t=1748024562; x=1748629362;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BClPbehAu6JBgNUB0ZQty6Cn+WSxNViJiPjUPJj/yCw=;
+        b=s5tARnf1Rc5iwPzQpfDaWX7HLwE3nNpiyvO/G5VFI1ca0xJDXzf+7gvF8imXzFCK50
+         fWDxfhsZpIkVD0ujLmIcGHf2nM6nhoMjqKWzDFt9OA3VMOeNxexdVwhPnq4s6EKsMIj3
+         aoNLjjT1Fq3uc3xG2oa1TQROB5INYyH81hqF90jSxbEkuUwqI6woqjjKgaTw8FKCVwtw
+         GxuWVKiJxF9N3EaHM6XwEL+J9FC6cbNY7npnpaRAdKRg41XsHPBfcKaTDtTjserE1uTn
+         B29CGe1LInKHzXpIaEPU/3tbXY8GQjxGxfel2tAWaqy8jp3Zfe8tGWJKrG38ZYZ4oKnY
+         Nzyg==
+X-Gm-Message-State: AOJu0YzDFlO4JIUCn9EIADJNoHjQnd7Ufrtrox+B2kPduYMvIPXgBcVw
+	MojTXC4rDrOddmPIZfUM9ydhRh5x1uHx4ioK79ge7cIwhGJe25Q+66PVzuK9mdiE+O0=
+X-Gm-Gg: ASbGncvoYdkOYiuOs2QewEhoTx+MzFTnLrV0HmAnO9v67TqgJA1jEyDVoH32ClhJNoD
+	F8vc0nyfvPB7TXqlFCwWI7oh87P1Hwp/csf+cPgbGt7rxFBQ5dqk7attVhG6WermlMXO089BVqM
+	n9ZfSqAY4Tho+y+cDOamKMjvZz6dnQQdgsSO0DFDTUATvUz+nMT1VwxiAvWoPzw3Dw9BnrWitJI
+	sXlwtUAN2MylN1pJEL88Vu8BmjcGk232l436gBlnpuhcb++VTVZgSM1cruKGiyWc0ISxYape+G4
+	o1V+gHwS5/U7W0IDhI20nv6OSUl1R622ia//0n1a64UYFKEiR1B/xDKDkJcFqzNYzw3uF/BeMSL
+	rTcUIOdXOJZuBlQ==
+X-Google-Smtp-Source: AGHT+IHtcqZzqfWbk5o/UzOJDRxNNio2Z/lxjmpT3kSO+7xSuTcmZ2FTV0xn5lzDCf4Hua7Q5fv9Ug==
+X-Received: by 2002:ad4:5dc4:0:b0:6f5:1192:ccdf with SMTP id 6a1803df08f44-6fa9d139408mr6440336d6.6.1748024562089;
+        Fri, 23 May 2025 11:22:42 -0700 (PDT)
+Received: from xanadu (modemcable179.17-162-184.mc.videotron.ca. [184.162.17.179])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6f8b0898f66sm118824496d6.27.2025.05.23.11.22.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 May 2025 10:25:41 -0700 (PDT)
-Date: Fri, 23 May 2025 20:25:40 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Jyothi Kumar Seerapu <quic_jseerapu@quicinc.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-        quic_msavaliy@quicinc.com, quic_vtanuku@quicinc.com
-Subject: Re: [PATCH v1] serial: qcom-geni: Add support for 8 Mbps baud rate
-Message-ID: <fmt3prey5rrm5pqz7wn3p4g6lqpupazbbcahuzp6giod7l2v5j@u64bykj7pi7j>
-References: <20250523103721.5042-1-quic_jseerapu@quicinc.com>
+        Fri, 23 May 2025 11:22:41 -0700 (PDT)
+Date: Fri, 23 May 2025 14:22:40 -0400 (EDT)
+From: Nicolas Pitre <npitre@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>
+cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vt: remove redundant condition from redraw_screen()
+In-Reply-To: <n58o097s-s20p-4222-nqo5-2qp26843rs35@onlyvoer.pbz>
+Message-ID: <srp75229-623q-q31s-79op-076nqs4so36q@onlyvoer.pbz>
+References: <n58o097s-s20p-4222-nqo5-2qp26843rs35@onlyvoer.pbz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250523103721.5042-1-quic_jseerapu@quicinc.com>
-X-Authority-Analysis: v=2.4 cv=V9990fni c=1 sm=1 tr=0 ts=6830af97 cx=c_pps
- a=UgVkIMxJMSkC9lv97toC5g==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=dt9VzEwgFbYA:10 a=COk6AnOGAAAA:8 a=EUspDBNiAAAA:8 a=yKaScz8-J4BNzvBwqzMA:9
- a=CjuIK1q_8ugA:10 a=1HOtulTD9v-eNWfpl4qZ:22 a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-ORIG-GUID: zaAE9GxDGkHfZ1OWSC5spnFFwADvUk2K
-X-Proofpoint-GUID: zaAE9GxDGkHfZ1OWSC5spnFFwADvUk2K
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTIzMDE1OSBTYWx0ZWRfXybs1x3SNDXTA
- BY8F7d7icGcDfizMEi4jPj+oWCmu3vO34f86ofzidwfbUz1RB3PKuz9l+PzoTZeSdEmFmHNm4Gp
- c0SJb8s7FAbPJJrl7JsqLTbLqC+wNMX8xxXxE4oW4u+94WYQqgu2luIKUoKvDp2qcOjerGxkSFd
- ac2qaOASlC9Y9yNGmWv9IK76CLrZoBaI0ujDecMM6Lo+vfldc51oh6CFRP9y/kA3Ff1zQsYTFTQ
- fAl+P2AUcp+NRYrMECj/w1VVnXgh/Z86OmWl3O7KX2D9Luq5sGrwQAYNay4dAdvYYX527Urj03c
- 4NsOW8CPZME+buUhtId/UCXPZzJGS3jogfjubFoF2lzKBh3AtHWACLng5T+qXE6N0J+2ujb5UbK
- 78lYYK+ySABFqaZtrc790ghZUhFFPNRyzNFODT2oZrVvgV5UCOM6a++woEILqHkHAO15XxPa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-05-23_06,2025-05-22_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- mlxlogscore=955 bulkscore=0 impostorscore=0 clxscore=1015 priorityscore=1501
- lowpriorityscore=0 mlxscore=0 spamscore=0 phishscore=0 suspectscore=0
- adultscore=0 malwarescore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505160000
- definitions=main-2505230159
+Content-Type: text/plain; charset=US-ASCII
 
-On Fri, May 23, 2025 at 04:07:21PM +0530, Jyothi Kumar Seerapu wrote:
-> Current GENI UART driver supports Max Baud rate up to 4 Mbps.
-> Add support to increase maximum baud rate to 8 Mbps.
+On Fri, 23 May 2025, Nicolas Pitre wrote:
+
+> Given !con_is_visible(vc) is the equivalent of *vc->vc_display_fg != vc
+> we have:
 > 
-> Signed-off-by: Jyothi Kumar Seerapu <quic_jseerapu@quicinc.com>
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+> 	struct vc_data *old_vc = vc_cons[fg_console].d;
+> 	if (old_vc == vc)
+> 		return;
+> 	*vc->vc_display_fg = vc;
+> 	if (*vc->vc_display_fg != old_vc) /* !con_is_visible(old_vc) */
+> 		...
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Please disregard this patch. Obviously the last if substitution should
+rather be:
 
--- 
-With best wishes
-Dmitry
+        if (*old_vcvc->vc_display_fg != old_vc)
+
+and there is no guarantee that vc->vc_display_fg and
+old_vc->vc_display_fg have the same value.
+
+
+Nicolas
