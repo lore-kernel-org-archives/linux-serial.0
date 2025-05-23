@@ -1,103 +1,114 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D01314437C
-	for <linux-serial@vger.kernel.org>; Fri, 23 May 2025 13:17:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5C7E514286;
+	Fri, 23 May 2025 14:24:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748006263; cv=none; b=dC9jrOzcYf6BqFeGDljQnqCjcgD3qdvUXBNdKtJSue8GOnZQE8i2Njr1GDBwQnJ6vUCDsPoZM9HNq7W6LVnf91AAoLVyqzasCAnQeK8TKlrsWzv1a6n4DTSlD8cy6TetG0+Jep6ATbexe8BVsAAKsR8GUGOXHhc5dQwxEhbANxk=
+	t=1748010276; cv=none; b=Db6v+FrdxZL7vm7IrlauDeLd2sDWPZ/he6/Yn15pRCspGp3MAOn+6nb2idYfejcq5e5rGLtAG940ozxP2Ey5NLyS6Ba9EPPGTtTfKlsqvd0l/D7z1Jm7EuiNSROWYlDdkvuWHK1yQE0R76aCSb9NrX70YAHO9BDqXWWxUpDdwWY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748006263; c=relaxed/simple;
-	bh=s7FKmfnt3j9otfDhlONhzVebzNJubqL1vlpgOU5y99I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Au34UyxFx8pm3Xa2LV39S3r3FE9m2YOLTmjjR1alN9L6+ewlkGOBFK4dLbo4tjKIHYB7MDGMqREG6Sv9qVMvFeEnQVDRCb0krzyT1NQl3ZgtpNS0pXvj/Wt8yvYlZQInCrbc26PJsTvkq8DaOC7Bptcgr9oKWhxsug+Udd16xYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=g4m8U/u+; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="g4m8U/u+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=s7FK
-	mfnt3j9otfDhlONhzVebzNJubqL1vlpgOU5y99I=; b=g4m8U/u+zpjSb85r0t3f
-	G2uSqztrliE99E9hzHKnWUTF5ZLHFZbj+ljpyj5figknh07b5+gts+o802TrCQ7Y
-	u9PQuKcaLmxtV3jo/sdrVPpe9rJh7/YzWpTw5RbvhFv9U+LM4/WODVtVO7reSj0y
-	SZWqbidY6MQ+vEn1tkEAEHE8DwniRPNMhwgXTz6SCDgbRNFsWggghhNRNZwkBXRF
-	HS5wO2j9kZcVPekeqZK44UPqRE/CHQBluITc1pL3ZnaEd4XgRec/HjzfEWWev1nR
-	dhdL4wbE/+5fVzGs1I3Ex0o4NR/A2XHJP3mMTpfDrzjJURJd+B66RVp0BhlZIDpj
-	dg==
-Received: (qmail 4052540 invoked from network); 23 May 2025 15:17:34 +0200
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 23 May 2025 15:17:34 +0200
-X-UD-Smtp-Session: l3s3148p1@Z8baa801bMdehhrS
-Date: Fri, 23 May 2025 15:17:34 +0200
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-Cc: thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org,
-	geert@linux-m68k.org, paul.barker.ct@bp.renesas.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v9 06/10] serial: sh-sci: Use private port ID
-Message-ID: <aDB1bm01fuUkk0-U@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	s=arc-20240116; t=1748010276; c=relaxed/simple;
+	bh=Vf+auSoeFf6uL/0+48TV95yQilu/xyEfOWUvRHJ7Egc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=mIE/giAyBUWlHFF9Cuy+ECM4/L7yLJNd0D+HhPUqWFj4GTey1810CIWsSLYMbMpn8r4aGVLozxEETu1eJEl8uFwwTUErlPomJrllmL77byHvpQoiVC337Cz2UcPVKX/gm/gVsBaYQx1yNNyNK33uS9UgVkDeH49DdM6V+uwrRhQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; arc=none smtp.client-ip=210.160.252.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+X-CSE-ConnectionGUID: ZR+O8YDJSZWevl+j9Z39IA==
+X-CSE-MsgGUID: ECrIav6VR0CszXy0VsgiKQ==
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 23 May 2025 23:24:27 +0900
+Received: from superbuilder.administration.lan (unknown [10.226.92.97])
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 2CD5E4010DE6;
+	Fri, 23 May 2025 23:24:23 +0900 (JST)
+From: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+To: thierry.bultel@linatsea.fr
+Cc: linux-renesas-soc@vger.kernel.org,
+	geert@linux-m68k.org,
+	paul.barker.ct@bp.renesas.com,
 	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
-	thierry.bultel@linatsea.fr, linux-renesas-soc@vger.kernel.org,
-	geert@linux-m68k.org, paul.barker.ct@bp.renesas.com,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250515141828.43444-1-thierry.bultel.yh@bp.renesas.com>
- <20250515141828.43444-7-thierry.bultel.yh@bp.renesas.com>
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: [PATCH v10 01/10] dt-bindings: serial: Added secondary clock for RZ/T2H RSCI
+Date: Fri, 23 May 2025 16:24:05 +0200
+Message-ID: <20250523142417.2840797-2-thierry.bultel.yh@bp.renesas.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250523142417.2840797-1-thierry.bultel.yh@bp.renesas.com>
+References: <20250523142417.2840797-1-thierry.bultel.yh@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="7Z6tc/8G+wfrnnQj"
-Content-Disposition: inline
-In-Reply-To: <20250515141828.43444-7-thierry.bultel.yh@bp.renesas.com>
+Content-Transfer-Encoding: 8bit
 
+At boot, the default clock is the PCLKM core clock (synchronous
+clock, which is enabled by the bootloader).
+For different baudrates, the asynchronous clock input must be used.
+Clock selection is made by an internal register of RCSI.
 
---7Z6tc/8G+wfrnnQj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add the optional "sck", external clock input.
 
-On Thu, May 15, 2025 at 04:18:21PM +0200, Thierry Bultel wrote:
-> New port types cannot be added in serial_core.h, which is shared with
-> userspace.
-> In order to support new port types, the coming new ones will have
-> BIT(7) set in the id value, and in this case, uartport->type is
-> set to PORT_GENERIC.
-> This commit therefore changes all the places where the port type is
-> read, by not relying on uartport->type but on the private
-> value stored in struct sci_port.
->=20
-> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+Also remove the unneeded serial0 alias from the dts example.
 
-If you promise to incermentally add the stuff we discussed, then
+Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+---
+Changes v9->v10:
+ - mention sck in description
+ - no maxItems on clock-names
+ - fixed the #include dependency in dts example
+Changes v8->v9:
+ - typo in description
+ - named clocks 'operational' and 'bus', and added optional 'sck' clock
+ - uses value of 2nd core clock in example to break the dependency on cpg patch
+---
+ .../bindings/serial/renesas,rsci.yaml           | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+diff --git a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+index ea879db5f485..1bf255407df0 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+@@ -35,10 +35,15 @@ properties:
+       - const: tei
+ 
+   clocks:
+-    maxItems: 1
++    minItems: 2
++    maxItems: 3
+ 
+   clock-names:
+-    const: fck # UART functional clock
++    minItems: 2
++    items:
++      - const: operation
++      - const: bus
++      - const: sck # optional external clock input
+ 
+   power-domains:
+     maxItems: 1
+@@ -60,10 +65,6 @@ examples:
+     #include <dt-bindings/interrupt-controller/arm-gic.h>
+     #include <dt-bindings/clock/renesas-cpg-mssr.h>
+ 
+-    aliases {
+-        serial0 = &sci0;
+-    };
+-
+     sci0: serial@80005000 {
+         compatible = "renesas,r9a09g077-rsci";
+         reg = <0x80005000 0x400>;
+@@ -72,7 +73,7 @@ examples:
+                      <GIC_SPI 592 IRQ_TYPE_EDGE_RISING>,
+                      <GIC_SPI 593 IRQ_TYPE_LEVEL_HIGH>;
+         interrupt-names = "eri", "rxi", "txi", "tei";
+-        clocks = <&cpg CPG_MOD 108>;
+-        clock-names = "fck";
++        clocks = <&cpg CPG_MOD 8>, <&cpg CPG_CORE 13>;
++        clock-names = "operation", "bus";
+         power-domains = <&cpg>;
+     };
+-- 
+2.43.0
 
-;)
-
-
---7Z6tc/8G+wfrnnQj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmgwdW0ACgkQFA3kzBSg
-KbYCaw/9GEz/FLucy3l5sEdql+ARAfsRci4eTKis9U29FXYUX04AGvMZi2fpMP6t
-K5+f2N+NyEnJdKH4S1fyzbmQ3/FRdEyaThu7ol5KGaMs/G+RqBMI3HKib7C0ZPUY
-X17NCNNriMPrqV7tRdQ2zsrpomCGJ+Nwn2nTxELr11hKNny5xOD5UrPb/S4b+qtT
-030MgQ7CVc4Rij3UxwSPONfjJ0seH21cDfZ4uCAbMD8eUgzoZQI1uFaDaXM4W7Oz
-OxjSe8WCmWBBpgOrDqKeBvpAJ/ceZVgAy8sh6S5P4p3oqfDTKI9A/Eom0yTMcIyf
-n54m9Tm3XYb+f0N0C0+iqZ0NNs9HT3aiLaRhCFK3dwlzsoej1+ueyZXMl0gCVscK
-ctK7mcLUTUbu3Sdrib/0ccPgNAfQXUa+piisyBgs/Q4ILetDpa+l8JVV5nyfHG33
-VjpVCEN8pfZoqyoXF5XkPSa+91SjjErkNQTenQCd7ldZJZCW/011Ap+7ZEcu2Dx1
-85NbWkDMBqecvLLIrsce0mORFrVVhuPbAiIlX65VusmxQMOO+K3nyBsar4BywEVV
-qbEIWaYO4khkJNrkzjaW7zldvSU7Tg1TeuGW0ubelpMrXcP+G38KuYv6fEUp+cbe
-RQ2ts/Qn9E4wHfO52rkMibAmWknuh8+chPVuLj1xfK03GTWjqlk=
-=wrA/
------END PGP SIGNATURE-----
-
---7Z6tc/8G+wfrnnQj--
