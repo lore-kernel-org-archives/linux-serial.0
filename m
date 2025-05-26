@@ -1,163 +1,164 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F112C181;
-	Sun, 25 May 2025 02:46:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EFDF194A60;
+	Mon, 26 May 2025 11:26:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.38.239.100
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748141169; cv=none; b=DKJIJIrCUeTheq2q6uD4zZJKU/gKQK1WV1cmmBZGM0VF7f3KX1FjsQdBmrI+MfCd0+0CJkNpxdyqRdlnoGa8tmK+1UeLb/064oBkx/SswuzGGBF5A4qi8mALBC8/bqrtij09CSpEhDgSadOWammS8O9Ku32RTHW4fP/eoyDgHf0=
+	t=1748258764; cv=none; b=CI1ryyElwqxZphzGX8X3qJT158Va/ZFnEDvbcC6vfC/+nUYjiv0oVy8Py6ODRqrHLVjHNZDk+INYcDCcE+2fMiqpUs+rgNYpDk1ST3+kFkRS66qQiMASJsFHHvBqPf+OT+Nv/b6Hd2lpKPBqWVJv+N2foDXYqWodK5XA5QDAbI0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748141169; c=relaxed/simple;
-	bh=OxlWYued1qwgYdzX737Wr2KjNkSsaqCH+6uEdTlEtzA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GYgoVIssFUIHDrVccNElQzpwwSHpk0NUUMxGYVq2kjBUEXxGG4poyMuB70sriq3H5C3ECieSyRgKErUQeeBtq4QzcZYYZ+b/p6ZEObse5K95jPwaMONxnCIuay9+wfV48aTuR6VXyEBBaacdrpbwi4AwQPSshl0uv2bDMc5Mcus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D/u7UQ0L; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D/u7UQ0L"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6046C4CEE4;
-	Sun, 25 May 2025 02:46:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1748141168;
-	bh=OxlWYued1qwgYdzX737Wr2KjNkSsaqCH+6uEdTlEtzA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=D/u7UQ0Lntycg+UCM4HEKiuCxHqOvjlFkLgOowzVYZvTUCTx+vs5zNU/euoLbJJV3
-	 LkhFgCnLWOpoY0bNHl0h4hanFAH8vCiYaA0pN4XZcQsNaaJSlMo5yJQNjrr7D2LIJP
-	 4RvFVFeKIpirfaxK2gOUeNwfphLj+p2ywlqppyFZNyznWQsUyKcD+uyekPmkx3CUp/
-	 mbk/fIqWLUl4cnH6aI4ih48HJ5mc6ItKClVK+HAQ2N77PMo8xjvD6LIFHMusz30YHX
-	 l96g4PnQmDaxhVv5deREyUMPJpTs35WJq+pLqVK9npgOeR26l1+04AtzY/NvkXjmzx
-	 0Q9eK4SxT8gmQ==
-Message-ID: <68eeeb84-5df1-4647-b247-6fdf87658c5a@kernel.org>
-Date: Sat, 24 May 2025 19:46:06 -0700
+	s=arc-20240116; t=1748258764; c=relaxed/simple;
+	bh=cNykbtFCy/zbGufd3BDVlaJfGLUg3tqp11zRdKmxSHA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ArscMLRdU7h3dbrCAICLNtd9dWwt803mv0EjJqkzBINguVuNxsPox7ssgtsz+vk2nVyPsglrfgq1GlX2Ya94ArJUXhR04/aC1bsuPfZjb1mn2OZoROwUjrUlnkDpJJbyA+i8HkyPfvpUUVfcLbkVgubh92F21zqV3Tog/c6UCkc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=enpas.org; spf=pass smtp.mailfrom=enpas.org; arc=none smtp.client-ip=46.38.239.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=enpas.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=enpas.org
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+	by mail.enpas.org (Postfix) with ESMTPSA id 0206C1011CB;
+	Mon, 26 May 2025 11:25:57 +0000 (UTC)
+From: Max Staudt <max@enpas.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Max Staudt <max@enpas.org>
+Subject: [PATCH v1] tty: Register device *after* creating the cdev for a tty
+Date: Mon, 26 May 2025 20:25:23 +0900
+Message-Id: <20250526112523.23122-1-max@enpas.org>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] dt-bindings: serial: Convert snps,arc-uart to DT
- schema
-To: "Rob Herring (Arm)" <robh@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Vineet Gupta <vgupta@kernel.org>
-Cc: Thierry Reding <treding@nvidia.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org
-References: <20250507154909.1602497-1-robh@kernel.org>
-From: Vineet Gupta <vgupta@kernel.org>
-Content-Language: en-US
-In-Reply-To: <20250507154909.1602497-1-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 5/7/25 08:49, Rob Herring (Arm) wrote:
-> Convert the Synopsys ARC UART binding to DT schema. Drop the "aliases"
-> portion which is not relevant to this schema.
->
-> Reviewed-by: Thierry Reding <treding@nvidia.com>
-> Signed-off-by: Rob Herring (Arm) <robh@kernel.org>
+This change makes the tty device file available only after the tty's
+backing character device is ready.
 
-Acked-by: Vineet Gupta <vgupta@kernel.org>
+Since 6a7e6f78c235975cc14d4e141fa088afffe7062c, the class device is
+registered before the cdev is created, and userspace may pick it up,
+yet open() will fail because the backing cdev doesn't exist yet.
+Userspace is racing the bottom half of tty_register_device_attr() here,
+specifically the call to tty_cdev_add().
 
-Thx,
--Vineet
+dev_set_uevent_suppress() was used to work around this, but this fails
+on embedded systems that rely on bare devtmpfs rather than udev.
+On such systems, the device file is created as part of device_add(),
+and userspace can pick it up via inotify, irrespective of uevent
+suppression.
 
-> ---
-> v2:
->  - Fix $id path
-> ---
->  .../devicetree/bindings/serial/arc-uart.txt   | 25 ---------
->  .../bindings/serial/snps,arc-uart.yaml        | 51 +++++++++++++++++++
->  2 files changed, 51 insertions(+), 25 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/serial/arc-uart.txt
->  create mode 100644 Documentation/devicetree/bindings/serial/snps,arc-uart.yaml
->
-> diff --git a/Documentation/devicetree/bindings/serial/arc-uart.txt b/Documentation/devicetree/bindings/serial/arc-uart.txt
-> deleted file mode 100644
-> index 256cc150ca7e..000000000000
-> --- a/Documentation/devicetree/bindings/serial/arc-uart.txt
-> +++ /dev/null
-> @@ -1,25 +0,0 @@
-> -* Synopsys ARC UART : Non standard UART used in some of the ARC FPGA boards
-> -
-> -Required properties:
-> -- compatible		: "snps,arc-uart"
-> -- reg			: offset and length of the register set for the device.
-> -- interrupts		: device interrupt
-> -- clock-frequency	: the input clock frequency for the UART
-> -- current-speed		: baud rate for UART
-> -
-> -e.g.
-> -
-> -arcuart0: serial@c0fc1000 {
-> -	compatible = "snps,arc-uart";
-> -	reg = <0xc0fc1000 0x100>;
-> -	interrupts = <5>;
-> -	clock-frequency = <80000000>;
-> -	current-speed = <115200>;
-> -};
-> -
-> -Note: Each port should have an alias correctly numbered in "aliases" node.
-> -
-> -e.g.
-> -aliases {
-> -	serial0 = &arcuart0;
-> -};
-> diff --git a/Documentation/devicetree/bindings/serial/snps,arc-uart.yaml b/Documentation/devicetree/bindings/serial/snps,arc-uart.yaml
-> new file mode 100644
-> index 000000000000..dd3096fbfb6a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/serial/snps,arc-uart.yaml
-> @@ -0,0 +1,51 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/serial/snps,arc-uart.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Synopsys ARC UART
-> +
-> +maintainers:
-> +  - Vineet Gupta <vgupta@kernel.org>
-> +
-> +description:
-> +  Synopsys ARC UART is a non-standard UART used in some of the ARC FPGA boards.
-> +
-> +allOf:
-> +  - $ref: /schemas/serial/serial.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    const: snps,arc-uart
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clock-frequency:
-> +    description: the input clock frequency for the UART
-> +
-> +  current-speed:
-> +    description: baud rate for UART
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clock-frequency
-> +  - current-speed
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    serial@c0fc1000 {
-> +        compatible = "snps,arc-uart";
-> +        reg = <0xc0fc1000 0x100>;
-> +        interrupts = <5>;
-> +        clock-frequency = <80000000>;
-> +        current-speed = <115200>;
-> +    };
+So let's undo the existing patch, and create the cdev first, and only
+afterwards register the class device in the kernel's device tree.
+
+However, this restores the original race of the cdev existing before the
+class device is registered, and an attempt to open it during this time
+will lead to tty->dev being assigned NULL by alloc_tty_struct().
+
+alloc_tty_struct() is called via tty_init_dev() when the tty is firstly
+opened, and is entered with tty_mutex held, so let's lock the critical
+section in tty_register_device_attr() with the same global mutex.
+This guarantees that tty->dev can be assigned a sane value.
+
+Fixes: 6a7e6f78c235 ("tty: close race between device register and open")
+Signed-off-by: Max Staudt <max@enpas.org>
+---
+ drivers/tty/tty_io.c | 59 +++++++++++++++++++++++++++-----------------
+ 1 file changed, 37 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+index ca9b7d7bad2b..94768509e2d2 100644
+--- a/drivers/tty/tty_io.c
++++ b/drivers/tty/tty_io.c
+@@ -3245,6 +3245,7 @@ struct device *tty_register_device_attr(struct tty_driver *driver,
+ 	struct ktermios *tp;
+ 	struct device *dev;
+ 	int retval;
++	bool cdev_added = false;
+ 
+ 	if (index >= driver->num) {
+ 		pr_err("%s: Attempt to register invalid tty line number (%d)\n",
+@@ -3257,23 +3258,7 @@ struct device *tty_register_device_attr(struct tty_driver *driver,
+ 	else
+ 		tty_line_name(driver, index, name);
+ 
+-	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+-	if (!dev)
+-		return ERR_PTR(-ENOMEM);
+-
+-	dev->devt = devt;
+-	dev->class = &tty_class;
+-	dev->parent = device;
+-	dev->release = tty_device_create_release;
+-	dev_set_name(dev, "%s", name);
+-	dev->groups = attr_grp;
+-	dev_set_drvdata(dev, drvdata);
+-
+-	dev_set_uevent_suppress(dev, 1);
+-
+-	retval = device_register(dev);
+-	if (retval)
+-		goto err_put;
++	mutex_lock(&tty_mutex);
+ 
+ 	if (!(driver->flags & TTY_DRIVER_DYNAMIC_ALLOC)) {
+ 		/*
+@@ -3288,19 +3273,49 @@ struct device *tty_register_device_attr(struct tty_driver *driver,
+ 
+ 		retval = tty_cdev_add(driver, devt, index, 1);
+ 		if (retval)
+-			goto err_del;
++			goto err_unlock;
++
++		cdev_added = true;
++	}
++
++	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
++	if (!dev) {
++		retval = -ENOMEM;
++		goto err_del_cdev;
+ 	}
+ 
+-	dev_set_uevent_suppress(dev, 0);
+-	kobject_uevent(&dev->kobj, KOBJ_ADD);
++	dev->devt = devt;
++	dev->class = &tty_class;
++	dev->parent = device;
++	dev->release = tty_device_create_release;
++	dev_set_name(dev, "%s", name);
++	dev->groups = attr_grp;
++	dev_set_drvdata(dev, drvdata);
++
++	retval = device_register(dev);
++	if (retval)
++		goto err_put;
++
++	mutex_unlock(&tty_mutex);
+ 
+ 	return dev;
+ 
+-err_del:
+-	device_del(dev);
+ err_put:
++	/*
++	 * device_register() calls device_add(), after which
++	 * we must use put_device() instead of kfree().
++	 */
+ 	put_device(dev);
+ 
++err_del_cdev:
++	if (cdev_added) {
++		cdev_del(driver->cdevs[index]);
++		driver->cdevs[index] = NULL;
++	}
++
++err_unlock:
++	mutex_unlock(&tty_mutex);
++
+ 	return ERR_PTR(retval);
+ }
+ EXPORT_SYMBOL_GPL(tty_register_device_attr);
+-- 
+2.39.5
 
