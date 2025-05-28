@@ -1,219 +1,176 @@
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E05241E833D
-	for <linux-serial@vger.kernel.org>; Wed, 28 May 2025 03:30:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A1931311AC;
+	Wed, 28 May 2025 05:10:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748403010; cv=none; b=MJTpQK31JYgQGHchgfaeNEBYDKQqOLW/HWWdulPWdQsl3dJQU2Df5qo/ujLwebRErmJHBH6G53o8h06fT/WIkRHekv/OaGgcdkoNagVnCbkFqh14jbPZivsrXRdQ6nAFn/EFSk1V+0F68HFHCKRfm2rjJYRiEe3JtysYFX5hWk8=
+	t=1748409034; cv=none; b=AihNlYPDE0zCPlTGLdo2WSllJ4BPnB9nxxI4NasVK+lC76nQ+Ss2nEPWYUFLMjj7j/EqBX0U0k2i7m+sYPsjQCeEXS4sC0gxz6uejTJaQ2hsp2M0ec+uxLzZfLRpOrImWjmTGzB+pAJTq8mGfTo5F7eAwFsXPHhN5EQpRGnIDBA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748403010; c=relaxed/simple;
-	bh=lp59MG/v0MEjnyPw9NAqaEU+qnQ/CI3UyhnltWOSdD4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=T9T5v+Ay4KtPXfNJdy8uFsWM1JPTBI1CqcqoTh9yAFTGjxWqmoC52VjYIhtHwnAbxCjL5+KJHncuiTt4Zd82eQWXcjrROjgT8zGwyelfY2jkrr49hg1UzSWIEkSgFOLJtG6Yp5uLO6IMRsK9Yv6QsAQxqVAZYKSbWznjf1rpUHw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=IneiC2An; arc=none smtp.client-ip=209.85.167.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1748409034; c=relaxed/simple;
+	bh=ouTR8OMSlzgRcCFldOeftgpUh1qdqQW/Oq/iU4E+u5Y=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:CC:References:
+	 In-Reply-To:Content-Type; b=tUQY053088Evmm8Epszah9sVRX8qxDjS+OvCcJs23l5EvR8hWAzjr7/8ZN2E8AqIieceO956ehEYs54RopGA0InMD3xwoY/X7LP5hPBnvXrV5UJFBxgRwtV9mACc8xgpFVd7j1whOS+SsU/j5hqnuK05q32EGQ+d2lccdEe3T8A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=SiUG03Wj; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="IneiC2An"
-Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-40356cb3352so298352b6e.1
-        for <linux-serial@vger.kernel.org>; Tue, 27 May 2025 20:30:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1748403008; x=1749007808; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VrpEuuXYvnSuwWGsniVnX2YpkMWl6dVwsPZNUsHfWF0=;
-        b=IneiC2AnaH9l+bH9QnSyFBFORZxwRCR34xeHjAKi77lDEuL1t78exhV737N5mOZTNS
-         f3DfCXpQYy+EVTvie0m2KMKX+8irttOXGAyKt/WQ/f5cbJN6Kx2j7a6zkrGvfqZH7zu/
-         qMk/zP3+cOsxjPs2SU5jjIn3XqP5s0M1PGSafo4r7ZE6qTo+kR2bGIAQLMFY6vZc5Lqo
-         U07qsCtsixz+okq5uJoeCqb85FV/uXOxyj4nOKRWN1qje3HxxyVyKZfhSLVwP9KCU1U0
-         S+B0UhVdDwpmFVTT+53b5CrskZBR4ATuzDyMHUqyg+SHtcf53TCFfNK5+qSo9ATyg+yd
-         tnyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748403008; x=1749007808;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VrpEuuXYvnSuwWGsniVnX2YpkMWl6dVwsPZNUsHfWF0=;
-        b=H+4RRbpXxT+IxO0VquYXLFoCuGgB+ixkETr66RivJ38Y3RKP6OMJAYpLOONa+0kJry
-         Mtn9h8H84AqkihXk3/+xTW5KMeSoBWphnLkayB2TuG/ncFw8c4Cx9+4221nIdljT1Vdd
-         Oz9JwrK0782T5VdM/IdGF14olV8BzlOOkmyJoH0StolgN98NjlKk0aozt3MaIOrtndsZ
-         OIaWukh+Q9aTUoLHuUf7Z3lYFq2TpLLZbDgMhilqkZ+lQLoGrdIf64FyfZKEUCLBwd74
-         vTwTqU0RqChRUxwn7UP4YI3l/tdy5v75mfkpLvL43Vlu+ZcRlH5raoPABUWhiDpW6kF6
-         8TXA==
-X-Forwarded-Encrypted: i=1; AJvYcCXIO2oX5p+GE6ZiAeopNa38Ofr17P870GW+80CrIizndMl4HvkGpUEfJWiLSQdG3+VB9oiYh1YzrycQ8/Q=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwW/vFYEibZQsHJUkvh9FRiHdF0kxPlcQ/Zm0UjrhdihGV+vbIJ
-	vH6C21czspCGZYntvPHDYciHn6ozADnO3x7Uwmya1JhOBOCU6HYktStL/oIE6fziZSEDGOjm2Zz
-	2+sGkQKXHoGUFNA4L1gbpjzs9Qf90Zt5KGtr99GUbUA==
-X-Gm-Gg: ASbGncta/jlOg632hsrkbz4+CTrSXeflms35MEUJ7DG6SrhBJ12AvyyXgJdSCLbyaaK
-	xOCQgEmQBpC4Aah/ycouUSPq9+VotguzJ23RpV2WmbAIMK95QqdiNlbCgwA2m9k2BAUEIhzvUq4
-	3uNAA9cc7oyqfCXzhDShjtp0wxvlGyi5tptYY=
-X-Google-Smtp-Source: AGHT+IHM257O3Htv6+WIrvCz49XVMrZHrN3aXMi+LHiIEKQzjeEjAt/Co+wbNNhuDh0ENQfvDtdU1wumurlo0vJP6vw=
-X-Received: by 2002:a05:6808:1b87:b0:406:4e0c:9aab with SMTP id
- 5614622812f47-406603dcfb4mr1959266b6e.11.1748403007652; Tue, 27 May 2025
- 20:30:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="SiUG03Wj"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 54RJnYOe027383;
+	Wed, 28 May 2025 05:10:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	XJdDHVkAnG0QT0R+tJQOwTJayaRqYiOsuAxnnKUq950=; b=SiUG03Wj/Ra0DXFc
+	zPXRAbPSt4njBxFPwKbfCHAqL2TYT2ryB7kWYxXbwWMf9va6Ihv4srhl5Kj2+x7C
+	zW3d6Gw10L0wRYxm9A+9jlj5Sb6Gyh1+d8u/UoTN1sKhDEn29TGitP26SRX5NKIY
+	z6kDIKMA4CEZxHl4+NTLfgMgkrHgmvrPco/J28xGTEOnAVUdHi2otUVMN67G53sO
+	qZo3wdlwDUaSwg6/ozaEqfk11FNSA0D4+sXEkyOscut3RtP2P7wJ3tW87x/mm1Xb
+	1fcTdVeNnukCt4QvXA/E3EKasMDurMSO9RZVwvta8V6REfw3ClMoebT5nD7F3Oni
+	frM0CQ==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46u79p94vt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 28 May 2025 05:10:27 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 54S5AQkw027223
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 28 May 2025 05:10:26 GMT
+Received: from [10.218.32.171] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Tue, 27 May
+ 2025 22:10:21 -0700
+Message-ID: <1bde9d17-4e99-435d-952f-efeea0dd6761@quicinc.com>
+Date: Wed, 28 May 2025 10:40:18 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250513024212.74658-1-cuiyunhui@bytedance.com>
- <20250513024212.74658-2-cuiyunhui@bytedance.com> <84y0uq9z0o.fsf@jogness.linutronix.de>
-In-Reply-To: <84y0uq9z0o.fsf@jogness.linutronix.de>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Wed, 28 May 2025 11:29:55 +0800
-X-Gm-Features: AX0GCFtY48YUUoKYOkevJvcVSQCY_T7dJuR9Fc4nQmnT8dJb_3-42tZKJL-37Ck
-Message-ID: <CAEEQ3wn6tY7QQppTScBMQTeAZDTXdEY1CJYxvGHhE9FNm_4a7g@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH v6 2/4] serial: 8250: avoid potential
- PSLVERR issue
-To: John Ogness <john.ogness@linutronix.de>
-Cc: arnd@arndb.de, andriy.shevchenko@linux.intel.com, 
-	benjamin.larsson@genexis.eu, gregkh@linuxfoundation.org, 
-	heikki.krogerus@linux.intel.com, ilpo.jarvinen@linux.intel.com, 
-	jirislaby@kernel.org, jkeeping@inmusicbrands.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	markus.mayer@linaro.org, matt.porter@linaro.org, namcao@linutronix.de, 
-	paulmck@kernel.org, pmladek@suse.com, schnelle@linux.ibm.com, 
-	sunilvl@ventanamicro.com, tim.kryger@linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/8] dt-bindings: serial: describe SA8255p
+From: Praveen Talari <quic_ptalari@quicinc.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+        Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio
+	<konradybcio@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>,
+        Nikunj Kela
+	<quic_nkela@quicinc.com>
+References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
+ <20250506180232.1299-2-quic_ptalari@quicinc.com>
+ <35659475-862a-4678-a2a5-173c2254ae60@kernel.org>
+ <2f3e608b-5536-4c6d-b7ca-c8cf4c9d0b1b@quicinc.com>
+ <4b2c24e4-d515-481d-a00b-d50ae57304dd@quicinc.com>
+Content-Language: en-US
+In-Reply-To: <4b2c24e4-d515-481d-a00b-d50ae57304dd@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 5JhaxWHAcCKc9OISxS8eJ0izZzKaulAb
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTI4MDA0NCBTYWx0ZWRfXyv+pUT4K+iWb
+ +1W/Hljcw5rdTgpTX5F28zx2/svS8p9+BZwB7ogT6amXh5dv6pzuNW7PeT0ZKKOl9O8+E+4IfHt
+ 9SI3NEMsnszeElBCUsTreWm/J8JWXeoTzyH9xA9wCN3yuUu3who8D6Yr1pB1rh+4vjKVLuQQNjt
+ hdg7WPU6KB54QkyWDDqfqvtJb/nMBEw7bFmlDtzJQDBr0ynQVFTVWc3/0OjuFB9pcUMZ795zezh
+ PhMLHcKLCXEkCSvybtZphfQ12jX9uYCM1cD7Vtnz5d7P5tx0fXMqglcjaYRhGHt6G8xKToEnSgA
+ AlW3FrWFEC+0cnC70V7sedC/KQebgEF10cJoCLCIAEsB+hMCZFHulExx5p+UKdv2Xd75g/8gjIe
+ g2vi6HIX8NDRAhv2QCkkXKeF30XhLnlTwCWcHbUdPn5w8uZRjH8NgvQMFimBCHjup5RhEGby
+X-Authority-Analysis: v=2.4 cv=HNnDFptv c=1 sm=1 tr=0 ts=68369ac3 cx=c_pps
+ a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10
+ a=Am187KbwW9CzcosyEMcA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: 5JhaxWHAcCKc9OISxS8eJ0izZzKaulAb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-28_02,2025-05-27_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 suspectscore=0 malwarescore=0 lowpriorityscore=0 adultscore=0
+ priorityscore=1501 mlxlogscore=952 phishscore=0 mlxscore=0 spamscore=0
+ bulkscore=0 impostorscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505160000
+ definitions=main-2505280044
 
-Hi John Ogness,
+Hi Krzysztof,
 
-On Wed, May 21, 2025 at 3:57=E2=80=AFPM John Ogness <john.ogness@linutronix=
-.de> wrote:
->
-> On 2025-05-13, Yunhui Cui <cuiyunhui@bytedance.com> wrote:
-> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
-250/8250_port.c
-> > index 07fe818dffa34..9a04f24b0c762 100644
-> > --- a/drivers/tty/serial/8250/8250_port.c
-> > +++ b/drivers/tty/serial/8250/8250_port.c
-> > @@ -2133,25 +2132,22 @@ static void wait_for_xmitr(struct uart_8250_por=
-t *up, int bits)
-> >  static int serial8250_get_poll_char(struct uart_port *port)
-> >  {
-> >       struct uart_8250_port *up =3D up_to_u8250p(port);
-> > -     int status;
-> > +     int status =3D NO_POLL_CHAR;
-> >       u16 lsr;
-> > +     unsigned long flags;
-> >
-> >       serial8250_rpm_get(up);
-> >
-> > +     uart_port_lock_irqsave(port, &flags);
-> >       lsr =3D serial_port_in(port, UART_LSR);
-> > +     if (lsr & UART_LSR_DR)
-> > +             status =3D serial_port_in(port, UART_RX);
-> > +     uart_port_unlock_irqrestore(port, flags);
->
-> I realize I previously made a comment saying it was OK to add the spin
-> locking here. But I have changed my mind. Please remove this spin
-> locking. It is not necessary because with kgdb all the other CPUs are
-> quiesced, so there is no need to synchronize with the console. Also, it
-> will deadlock if kgdb took over while the port was locked.
->
+Gentle reminder!!
 
-Okay.
+On 5/9/2025 10:02 AM, Praveen Talari wrote:
+> Hi Krzysztof,
+>
+> Thank for you review and valuable inputs.
+>
+> On 5/8/2025 11:15 AM, Praveen Talari wrote:
+>> Hi Krzysztof
+>>
+>> Thank you for your patience. I consider your inputs as valuable 
+>> learning.
+>>
+>> On 5/6/2025 11:53 PM, Krzysztof Kozlowski wrote:
+>>> On 06/05/2025 20:02, Praveen Talari wrote:
+>>>> +
+>>>> +properties:
+>>>> +  compatible:
+>>>> +    enum:
+>>>> +      - qcom,sa8255p-geni-uart
+>>>> +      - qcom,sa8255p-geni-debug-uart
+>>>> +
+>>>> +  reg:
+>>>> +    maxItems: 1
+>>>> +
+>>>> +  interrupts:
+>>>> +    minItems: 1
+>>> Nothing changed here, this should be dropped based on previous 
+>>> discussion.
+>>>
+>>> You sent this v5 on 8:02 PM of my time. *THEN* you responded to my
+>>> comment at v4 at 8:05 PM. That's the way to waste everyone's time.
+>>>
+>>> I do not understand why interrupt is optional for a new, complete 
+>>> device
+>>> description.
+>
+> To put it simply, because we are using the RX GPIO line as wake up IRQ 
+> and not all SE related pins are mapped in the PDC,
+>
+> there is no specific wake-up pin to define. Therefore, the wake-up IRQ 
+> should be considered optional.
 
-
-> > @@ -2513,7 +2514,6 @@ void serial8250_do_shutdown(struct uart_port *por=
-t)
-> >               port->mctrl &=3D ~TIOCM_OUT2;
-> >
-> >       serial8250_set_mctrl(port, port->mctrl);
-> > -     uart_port_unlock_irqrestore(port, flags);
-> >
-> >       /*
-> >        * Disable break condition and FIFOs
-> > @@ -2521,6 +2521,14 @@ void serial8250_do_shutdown(struct uart_port *po=
-rt)
-> >       serial_port_out(port, UART_LCR,
-> >                       serial_port_in(port, UART_LCR) & ~UART_LCR_SBC);
-> >       serial8250_clear_fifos(up);
-> > +     /*
-> > +      * Read data port to reset things, and then unlink from
-> > +      * the IRQ chain.
-> > +      * Since reading UART_RX clears interrupts, doing so with
-> > +      * FIFO disabled won't trigger PSLVERR.
-> > +      */
-> > +     serial_port_in(port, UART_RX);
-> > +     uart_port_unlock_irqrestore(port, flags);
-> >
-> >  #ifdef CONFIG_SERIAL_8250_RSA
-> >       /*
-> > @@ -2529,11 +2537,6 @@ void serial8250_do_shutdown(struct uart_port *po=
-rt)
-> >       disable_rsa(up);
-> >  #endif
-> >
-> > -     /*
-> > -      * Read data port to reset things, and then unlink from
-> > -      * the IRQ chain.
-> > -      */
-> > -     serial_port_in(port, UART_RX);
->
-> I am thinking you should keep the read here and instead move the unlock
-> below the read. This would mean the lock/unlock in disable_rsa() need to
-> be removed. (The function comments for disable_rsa() aready say that the
-> caller needs to hold the port lock.)
->
-> I am thinking something like the below (untested) diff instead of the
-> above 2 hunks.
-
-Reasonable. disable_rsa() has only one caller currently, to be updated
-in the next version.
-
->
-> John Ogness
->
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index 22b3f7a193070..51467383aaf5a 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -781,8 +781,6 @@ static void disable_rsa(struct uart_8250_port *up)
->
->         if (up->port.type =3D=3D PORT_RSA &&
->             up->port.uartclk =3D=3D SERIAL_RSA_BAUD_BASE * 16) {
-> -               uart_port_lock_irq(&up->port);
-> -
->                 mode =3D serial_in(up, UART_RSA_MSR);
->                 result =3D !(mode & UART_RSA_MSR_FIFO);
->
-> @@ -794,7 +792,6 @@ static void disable_rsa(struct uart_8250_port *up)
->
->                 if (result)
->                         up->port.uartclk =3D SERIAL_RSA_BAUD_BASE_LO * 16=
-;
-> -               uart_port_unlock_irq(&up->port);
->         }
->  }
->  #endif /* CONFIG_SERIAL_8250_RSA */
-> @@ -2536,7 +2533,6 @@ void serial8250_do_shutdown(struct uart_port *port)
->                 port->mctrl &=3D ~TIOCM_OUT2;
->
->         serial8250_set_mctrl(port, port->mctrl);
-> -       uart_port_unlock_irqrestore(port, flags);
->
->         /*
->          * Disable break condition and FIFOs
-> @@ -2555,8 +2551,12 @@ void serial8250_do_shutdown(struct uart_port *port=
-)
->         /*
->          * Read data port to reset things, and then unlink from
->          * the IRQ chain.
-> +        *
-> +        * Since reading UART_RX clears interrupts, doing so with
-> +        * FIFO disabled won't trigger PSLVERR.
->          */
->         serial_port_in(port, UART_RX);
-> +       uart_port_unlock_irqrestore(port, flags);
->         serial8250_rpm_put(up);
->
->         up->ops->release_irq(up);
+I hope this response has addressed your query.
 
 Thanks,
-Yunhui
+
+Praveen Talari
+
+>
+>
+> Thanks,
+>
+> Praveen
+>
+>>
+>> On this platform, there is no use case of waking up UART, so we 
+>> consider the  wake up IRQ as optional.
+>>
+>> Thanks,
+>>
+>> Praveen
+>>
+>>>
+>>> Best regards,
+>>> Krzysztof
