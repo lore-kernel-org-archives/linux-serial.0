@@ -1,160 +1,180 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 121B6EED7;
-	Sat, 31 May 2025 07:20:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5F7427456
+	for <linux-serial@vger.kernel.org>; Sat, 31 May 2025 07:49:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748676038; cv=none; b=D/dd9DwSIddEb10NdV7MdL7fedBNR7x/6sCLPBO71GhWNmzFvtHybZOr6Nd5A3JkOjWfLLl6xrLexA/BIkAh21GrbROLoh37NHuzA154h2noCsKr1n5Drlvj7InFWGFUOAHT+/fXrkK8WgVL4jTBNJqjxds382xmS3GbQt/dY2A=
+	t=1748677761; cv=none; b=Cump5WywgiAwzn7Da48zfLt9pKgSOIcHw78/aYAuIr2r5nK7yDWa/ZGWW9ekZ3Rg3v5SPTwnMJA5+kBteI0afpkK+xNHtN+Tk9sweUajfLAKs7stTia+Wk13yuC1McyW/p2+y1yxpAj7N22DLUOi2VHSpAcB+vC54JtJH6s3NBU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748676038; c=relaxed/simple;
-	bh=q7StwAEdoCBLTvHso5qOc4F4XXzh+vqPXGAmdy6h9sY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jXZO4JDxq830Kfv4isoLw4XiLnQYqmfaTOkoK+ms6g4jeWgcu4sDDVVYgsEDhCGtmPA+76/CP/h7qjzAXB1L8R9hAUEdClBcaNh0SgIWO9EeWf060jo0DAhFdYNkeBkyGSLB2DmyPqf25wZ7D4Bz58Hkg64W5ZBO434+0Fj9xr0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=r34oAsx1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1748677761; c=relaxed/simple;
+	bh=CyNSMyiMWd3SzqA7ufkwY2qUvOzg7NpoWk6iBdctArw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=lRrVv/pZ0HLP2hR+gDWfDY4E7M6wMIr8JATY3G53e8HmGc/bPLcW410DiAimg2zmXcYTUQ+unTHf6gEFUFpPvCNCGuqnyFkQdPc3dJcSMHJzTdH7wa1VDk5vl7UhdtC/EUwnc2wRh24YA/LukG4NzdW2kwt7RzXJCrylqprEhEw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=no6Ha8nA; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=6rBk6hIB; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="r34oAsx1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D60AC4CEE3;
-	Sat, 31 May 2025 07:20:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1748676037;
-	bh=q7StwAEdoCBLTvHso5qOc4F4XXzh+vqPXGAmdy6h9sY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=r34oAsx1vmLgzO6MhbhXs5hcu1zojKEgRFxumhD9ugI1bBJGdsHonJcXNzhdK0fnC
-	 uUA1/TAd7X+h+L+HQO1APbk7fgE7M0cul4gz8yfC2W9aVcDfaMpR3ADFu1PRRH2RhY
-	 Q8i03rEywRlDzIkkgBgYb7mTjkRYnL5iKQgC7Y8c=
-Date: Sat, 31 May 2025 09:20:34 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Xin Chen <quic_cxin@quicinc.com>
-Cc: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-	liulzhao@qti.qualcomm.com, quic_chejiang@quicinc.com,
-	zaiyongc@qti.qualcomm.com, quic_zijuhu@quicinc.com,
-	quic_mohamull@quicinc.com,
-	Panicker Harish <quic_pharish@quicinc.com>
-Subject: Re: [PATCH v1] tty: serdev: serdev-ttyport: Fix use-after-free in
- ttyport_close() due to uninitialized serport->tty
-Message-ID: <2025053107-ancient-departed-a202@gregkh>
-References: <20250430111617.1151390-1-quic_cxin@quicinc.com>
- <2025043022-rumbling-guy-26fb@gregkh>
- <d388b471-482b-48ba-a504-694529535362@quicinc.com>
- <2025050851-splatter-thesaurus-f54e@gregkh>
- <38bf94e1-ebed-4d03-8ea0-4040009e8d31@quicinc.com>
- <8e171057-b3c3-4808-b49e-f04ffd310b31@quicinc.com>
- <2025052926-net-economist-a016@gregkh>
- <2025052957-jawless-superhero-09be@gregkh>
- <25361fe1-988d-41cc-a5f0-76773e41531a@quicinc.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="no6Ha8nA";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="6rBk6hIB"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1748677757;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=a4ioo6gIdu0kA2jB1wmvqYu015ydGbJWJxI/Jkf9moE=;
+	b=no6Ha8nAGkk38vz3fBW/5qzkg6Zto2MRaVsnEWpOHoEn7FcgaTA8Qt+06DgkSzQClNUEYS
+	QtCWwkZSr846y3vkavkDDE0DNmTWUdsAsevEXgqM8vJ/qzMWxadLSgKaa1gjg8qVuhK+gJ
+	WnkZLWuocjzy730EJLSrJqGQt6TKJIbY6wzH1YTt0ammZhDfi4bCJxk7HBxUg3rxl/nYXN
+	WYDKGt1s/sbbKKOpAiLpVXZ3IlN6D8eITdSXZRJOsLz7Q+xWMBKUMsMpKxnjF5LYChg9r/
+	OThlze84YO/hS0phrCuo6wqIbHkI+Q/yOlT3pKunWyKHRd6uH12fGcNUQzTrWw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1748677757;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=a4ioo6gIdu0kA2jB1wmvqYu015ydGbJWJxI/Jkf9moE=;
+	b=6rBk6hIB1IHn8nhN5dkdLbpFKCX1R+yjhyxZRG+P8myK5+b3gF48nA+aJqSeXqPSoCiv1e
+	EcShzwlbIhV7jvBA==
+To: Michael Cobb <mcobb@thegoodpenguin.co.uk>
+Cc: pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org,
+ linux-serial@vger.kernel.org
+Subject: Re: [PATCH RFC 0/3] printk: Don't flush messages using write_atomic
+ during console registration if kthreads have not been started yet.
+In-Reply-To: <CAC251sUpHHU26wDgBuOGdxNGvE=2M22+b5E4Y+Lc9Ow63fOidw@mail.gmail.com>
+References: <20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk>
+ <84jz6gdh5r.fsf@jogness.linutronix.de>
+ <CAC251sUpHHU26wDgBuOGdxNGvE=2M22+b5E4Y+Lc9Ow63fOidw@mail.gmail.com>
+Date: Sat, 31 May 2025 09:55:16 +0206
+Message-ID: <847c1xrzib.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <25361fe1-988d-41cc-a5f0-76773e41531a@quicinc.com>
+Content-Type: text/plain
 
-On Fri, May 30, 2025 at 04:34:49PM +0800, Xin Chen wrote:
-> 
-> 
-> On 5/29/2025 5:41 PM, Greg Kroah-Hartman wrote:
-> > On Thu, May 29, 2025 at 11:07:25AM +0200, Greg Kroah-Hartman wrote:
-> >> On Fri, May 23, 2025 at 10:52:27AM +0800, Xin Chen wrote:
-> >>>
-> >>>
-> >>> On 5/14/2025 5:14 PM, Xin Chen wrote:
-> >>>>
-> >>>>
-> >>>> On 5/8/2025 5:41 PM, Greg Kroah-Hartman wrote:
-> >>>>> On Thu, May 08, 2025 at 05:29:18PM +0800, Xin Chen wrote:
-> >>>>>>
-> >>>>>> On 4/30/2025 7:40 PM, Greg Kroah-Hartman wrote:
-> >>>>>>> On Wed, Apr 30, 2025 at 07:16:17PM +0800, Xin Chen wrote:
-> >>>>>>>> When ttyport_open() fails to initialize a tty device, serport->tty is not
-> >>>>>>>> --- a/drivers/tty/serdev/serdev-ttyport.c
-> >>>>>>>> +++ b/drivers/tty/serdev/serdev-ttyport.c
-> >>>>>>>> @@ -88,6 +88,10 @@ static void ttyport_write_flush(struct serdev_controller *ctrl)
-> >>>>>>>>  {
-> >>>>>>>>  	struct serport *serport = serdev_controller_get_drvdata(ctrl);
-> >>>>>>>>  	struct tty_struct *tty = serport->tty;
-> >>>>>>>> +	if (!tty) {
-> >>>>>>>> +		dev_err(&ctrl->dev, "tty is null\n");
-> >>>>>>>> +		return;
-> >>>>>>>> +	}
-> >>>>>>>
-> >>>>>>> What prevents tty from going NULL right after you just checked this?
-> >>>>>>
-> >>>>>> First sorry for reply so late for I have a long statutory holidays.
-> >>>>>> Maybe I don't get your point. From my side, there is nothing to prevent it.
-> >>>>>> Check here is to avoid code go on if tty is NULL.
-> >>>>>
-> >>>>> Yes, but the problem is, serport->tty could change to be NULL right
-> >>>>> after you check it, so you have not removed the real race that can
-> >>>>> happen here.  There is no lock, so by adding this check you are only
-> >>>>> reducing the risk of the problem happening, not actually fixing the
-> >>>>> issue so that it will never happen.
-> >>>>>
-> >>>>> Please fix it so that this can never happen.
-> >>>>>
-> >>>>
-> >>>> Actually I have never thought the race condition issue since the crash I met is
-> >>>> not caused by race condition. It's caused due to Bluetooth driver call
-> >>>> ttyport_close() after ttyport_open() failed. This two action happen one after
-> >>>> another in one thread and it seems impossible to have race condition. And with
-> >>>> my fix the crash doesn't happen again in several test of same case.
-> >>>>
-> >>>> Let me introduce the complete process for you:
-> >>>>   1) hci_dev_open_sync()->
-> >>>> hci_dev_init_sync()->hci_dev_setup_sync()->hdev->setup()(hci_uart_setup)->qca_setup(),
-> >>>> here in qca_setup(), qca_read_soc_version() fails and goto out, then calls
-> >>>> serdev_device_close() to close tty normally. And then call serdev_device_open()
-> >>>> to retry.
-> > 
-> > Wait, what?  Why is qca_read_soc_version() failing?  
-> 
-> Actually I have not root cause why qca_read_soc_version() fails of
-> __hci_cmd_sync_ev(). It may be relative to FW issue.
+On 2025-05-30, Michael Cobb <mcobb@thegoodpenguin.co.uk> wrote:
+> On Fri, 16 May 2025 at 10:44, John Ogness <john.ogness@linutronix.de> wrote:
+>> What if we create the kthread _before_ printing the message. Something
+>> like the below (untested) changes. Does this also address the issue?
+>
+> Yes, that works and avoids the atomic flush, however we then lose the
+> "console [ttyS0] enabled" message on any boot consoles that we are
+> about to unregister.
 
-Please start there, don't you want to know why things are failing?
+Right. I was going about it wrong. Really we should start the threads as
+soon as the console is fully registered. Waiting until after the boot
+consoles are unregistered is wrong. So how about this change instead?
 
-> > Why are you retrying multiple times until either you run out of attempts?  
-> 
-> This is a retry mechanism. I find the reason in the change commit message
-> "Currently driver only retries to download FW if FW downloading
-> is failed. Sometimes observed command timeout for version request
-> command, if this happen on some platforms during boot time, then
-> a reboot is needed to turn ON BT. Instead to avoid a reboot, now
-> extended retry logic for version request command too."
-> 
-> > Why are you closing the port and then opening it again right away? 
-> 
-> This is a retry mechanism as above said. Do you mean there should be a gap
-> between close and open? The change owner maybe don't think about this issue.
+Note that printk_kthreads_check_locked() is only needed for the newly
+added console. If any boot console is unregistered,
+printk_kthreads_check_locked() is called again in
+unregister_console_locked().
 
-Why are you calling close/open at all?  Why does that do anything?
-Doesn't that feel wrong?
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 1eea80d0648ed..b142d69330de2 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -4115,6 +4115,9 @@ void register_console(struct console *newcon)
+ 
+ 	console_sysfs_notify();
+ 
++	/* Changed console list, may require printer threads to start/stop. */
++	printk_kthreads_check_locked();
++
+ 	/*
+ 	 * By unregistering the bootconsoles after we enable the real console
+ 	 * we get the "console xxx enabled" message on all the consoles -
+@@ -4133,9 +4136,6 @@ void register_console(struct console *newcon)
+ 				unregister_console_locked(con);
+ 		}
+ 	}
+-
+-	/* Changed console list, may require printer threads to start/stop. */
+-	printk_kthreads_check_locked();
+ unlock:
+ 	console_list_unlock();
+ }
 
-Again, please root-cause the failure, don't try to paper over it by
-loads of looping and odd open/close attempts that are not understood and
-seem to actually cause other types of crashes :)
 
-> > What close/open pair seems totally unnecessary, why do that at all?
-> > 
-> > If I read that function qca_setup(), it can NEVER detect if a failure
-> > really happened (i.e. if it does run out of retries, you just plow on
-> > and keep going and keep on registering things and THEN return an error
-> > for some reason.
-> > 
-> > In other words, the error handling in qca_setup() is very suspect, why
-> > not fix all of that up first?
-> > 
-> 
-> qca_read_soc_version() in qca_setup() can detect whether the hci_dev is set up
-> successfully. If if fails then a failure happens.
-> You mean I should fix why qca_read_soc_version() fails?
+> I am worried that by avoiding calling printk() to not trigger a flush,
+> this might not be robust enough?
 
-Yes, why wouldn't you want to do that?
+The problem is that we cannot trust that the kthreads will start.
 
-thanks,
+I think my above change is correct because it starts the kthreads before
+unregistering the boot console, so if there are any problems, the boot
+consoles are still around to report them.
 
-greg k-h
+In your case you have no boot consoles, so you really just want to avoid
+all atomic printing until the kthread has had a chance. Something like
+this change might be more appropriate:
+
+diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
+index 48a24e7b309db..7462a6d179850 100644
+--- a/kernel/printk/internal.h
++++ b/kernel/printk/internal.h
+@@ -240,7 +240,7 @@ static inline void printk_get_console_flush_type(struct console_flush_type *ft)
+ 	switch (nbcon_get_default_prio()) {
+ 	case NBCON_PRIO_NORMAL:
+ 		if (have_nbcon_console && !have_boot_console) {
+-			if (printk_kthreads_running)
++			if (printk_kthreads_running || printk_kthreads_pending_start)
+ 				ft->nbcon_offload = true;
+ 			else
+ 				ft->nbcon_atomic = true;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 1eea80d0648ed..9c0378dc88c4c 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -4072,6 +4072,14 @@ void register_console(struct console *newcon)
+ 	if (newcon->flags & CON_BOOT)
+ 		have_boot_console = true;
+ 
++	/*
++	 * If this is the first console, avoid flushing the backlog
++	 * until the printing kthread has had a chance to start via
++	 * printk_kthreads_check_locked() below.
++	 */
++	if (hlist_empty(&console_list) && (newcon->flags & CON_NBCON))
++		printk_kthread_pending_start = true;
++
+ 	/*
+ 	 * If another context is actively using the hardware of this new
+ 	 * console, it will not be aware of the nbcon synchronization. This
+@@ -4115,6 +4123,10 @@ void register_console(struct console *newcon)
+ 
+ 	console_sysfs_notify();
+ 
++	/* Changed console list, may require printer threads to start/stop. */
++	printk_kthreads_check_locked();
++	printk_kthread_pending_start = false;
++
+ 	/*
+ 	 * By unregistering the bootconsoles after we enable the real console
+ 	 * we get the "console xxx enabled" message on all the consoles -
+@@ -4133,9 +4145,6 @@ void register_console(struct console *newcon)
+ 				unregister_console_locked(con);
+ 		}
+ 	}
+-
+-	/* Changed console list, may require printer threads to start/stop. */
+-	printk_kthreads_check_locked();
+ unlock:
+ 	console_list_unlock();
+ }
+
+Notice that I kept the control of the new flag inside the register
+function.
+
+I do not really like this because printk_get_console_flush_type() is now
+checking an extra flag every time for something that is a special case
+and only at boot. Although, theoretically, it can happen anytime that
+all consoles are removed during runtime and then later added.
+
+Thoughts?
+
+John
