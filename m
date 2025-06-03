@@ -1,127 +1,121 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60E592629D;
-	Tue,  3 Jun 2025 11:09:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 236082040B6;
+	Tue,  3 Jun 2025 13:43:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748948984; cv=none; b=GAbzbZKATGoeV7RiYKE2GIRfF8MGT8Aze5MP1maBldFdSmd0b2X7RpOLoCPtXRj4ZBkS9XgCBVzmCvpToZx612ZqVFxTVLCIEhXzgRctGsR583TCnqR4lt/mgGGW8JPqcWlal2v/PtEJXEbp4dB+AM9pwDBizmiuAKS1MQWYuWE=
+	t=1748958193; cv=none; b=N8IKI3Q7V8H9iA83mAtb0YsI+5iH+DfyMBdbXs8+/9341M7cFwYgX27q2obfhdKrZfUnC/fShgaxfr2k29M681eGOc+Q5jUaO6uXd+zpGiXvwss9Cu6Ex3pz40UQTOtJEu4khdmeV08exaXS0FaD2AyQtxTD9VmfqfqGzybEXrw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748948984; c=relaxed/simple;
-	bh=hsvHtz8hbEbZdfgWCg7X2R/JN8FQgC+kg2ZRkW0wU8I=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=ZjTd4pJ8fpVgqV86BPuUH8YbU6d0HaNF7gyamJF863JjI1qp2B9C6GDZTDnq//BTqtCydeprV83zpCAobUwC+C7dSaj5pBk9cCK+nSOiIFlDE7wcWzJsXD+f4URTS0v/yJCbCC02C06ZhBaoAAm4st5xNemkdL3lD9mDBh0pQJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=yfTIZSBp; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=J4qg9UZ1; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1748958193; c=relaxed/simple;
+	bh=f0Vts21CODFgvUIe6d7miDR1R94z5uujshns22T5DEI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NQPziMzcyvQb305locu05MkyiJgj8l4b+OFkF4CpisyucJsMAErxvkTT4zp0OTyQxvqXBtBUnWIjPNYjmfmq2FKAmwwm9/OpTpW04XfmnEULSrD0cTTimnFqdRfFw2tU/NeOJupvKDHpUHd0pjSMVNDt2Dxwqs4+D7jSgEt7l70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dTrW3brN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="yfTIZSBp";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="J4qg9UZ1"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1748948979;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bSILnF8ALIga7ol7KA0XLGa9sgrZiwLmZV6n0yOi3XI=;
-	b=yfTIZSBpy5wwH7vutk1qg0rFMVXceMLdecwvwpXNQJRcBoM+Yyy9ykNR98BVsj1TxMzMk2
-	g8+UvQHVCBiteNweMsZ8rEEHskOGiWxknuKEPxkctPjaiwan81mPCSLlb34Yu0fmmipY1P
-	taWiBXXsmXiC9pLqfPSeNCzR3iHsEVn8ee4zrdwGDt+8q6c+P5h8gkvaECqIoLO83DSNx9
-	tF5y5NszsmM8J+cwM3p+ip4rid589mD3wMlaJjm92AcQvEtLBvL8BSxG5kHeY2Fkto8sto
-	uvYDnZz+sD4TNf450kyWmzdZytVGD7gGYGIbt33o6NldOHWL3tWmzhdzyhcgmA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1748948979;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bSILnF8ALIga7ol7KA0XLGa9sgrZiwLmZV6n0yOi3XI=;
-	b=J4qg9UZ1ZUwWnm70gdWiEtdVO+Muyz5BT1zrP5oqHRzpEnmyYcZaFYNMwssNNEzDsz6X7/
-	0Bt2qYwxc8y5HwBA==
-To: pmladek@suse.com
-Cc: "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com>,
-	'Michael Kelley' <mhklinux@outlook.com>,
-	'Ryo Takakura' <ryotkkr98@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Subject: RE: Problem with nbcon console and amba-pl011 serial port
-In-Reply-To: <84y0u95e0j.fsf@jogness.linutronix.de>
-References: <SN6PR02MB4157A4C5E8CB219A75263A17D46DA@SN6PR02MB4157.namprd02.prod.outlook.com>
- <OS7PR01MB13775FE1A20762D1EA4A38D0ED76DA@OS7PR01MB13775.jpnprd01.prod.outlook.com>
- <84y0u95e0j.fsf@jogness.linutronix.de>
-Date: Tue, 03 Jun 2025 13:15:38 +0206
-Message-ID: <84plfl5bf1.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dTrW3brN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20277C4CEED;
+	Tue,  3 Jun 2025 13:43:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1748958192;
+	bh=f0Vts21CODFgvUIe6d7miDR1R94z5uujshns22T5DEI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=dTrW3brNAI40yQ+lEJJtV1PRO+6XB7A++lkDT8TKFAkaWimNeZRoOak2au8RDl9jA
+	 waUdu1K+xPDBKrH/HEIWTrO63K4Y6GPstVfSW2gtMBTAYmIGgliSSfUS4QGp6Pno/i
+	 MfmXkcYstcIYzqN+Hpg4EUiRu1E5i4KEOmClvnZzNgQk/NUlL5GDSGoPc9kzzwCvE0
+	 RQ9t3veMWZ8VCNmyUkq1YYdukmqbRbuSop0EXD4QRz9GwvZpjccBp941Q/wFrwgtNz
+	 8/kDyMQ9bMn2Hv2dPwGHKMZJydmduDUimlUygi9Ik0TI/8wtBCznxBl564wusPIU+x
+	 gntJdxl36jx8Q==
+Message-ID: <2a5432be-41b7-4adc-b68a-1f706036a59f@kernel.org>
+Date: Tue, 3 Jun 2025 15:43:09 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/2] tty: Fix race against tty_open() in
+ tty_register_device_attr()
+To: Max Staudt <max@enpas.org>, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Johan Hovold <johan@kernel.org>, linux-serial
+ <linux-serial@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+ stable@vger.kernel.org
+References: <20250528132816.11433-1-max@enpas.org>
+ <20250528132816.11433-2-max@enpas.org>
+ <6068387e-7064-0c2b-700a-3817bea1045b@linux.intel.com>
+ <16cc8c9d-f89a-406c-9427-94ca75984752@enpas.org>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <16cc8c9d-f89a-406c-9427-94ca75984752@enpas.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Petr,
+On 02. 06. 25, 15:40, Max Staudt wrote:
+> On 6/2/25 19:31, Ilpo Järvinen wrote:
+>>> +    mutex_lock(&tty_mutex);
+>>
+>> Use guard() so you don't need to change the returns and rollback path.
+> 
+> Thanks, I didn't know about this new kind of helper.
+> 
+> I'll leave it up to the TTY maintainers - if they don't express a 
+> preference for guard(), 
 
-On 2025-06-03, John Ogness <john.ogness@linutronix.de> wrote:
-> On 2025-06-03, "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com> wrote:
->>> 4. pr_emerg() has a high logging level, and it effectively steals the console
->>> from the "pr/ttyAMA0" task, which I believe is intentional in the nbcon design.
->>> Down in pl011_console_write_thread(), the "pr/ttyAMA0" task is doing
->>> nbcon_enter_unsafe() and nbcon_exit_unsafe() around each character
->>> that it outputs.  When pr_emerg() steals the console, nbcon_exit_unsafe()
->>> returns 0, so the "for" loop exits. pl011_console_write_thread() then
->>> enters a busy "while" loop waiting to reclaim the console. It's doing this
->>> busy "while" loop with interrupts disabled, and because of the panic,
->>> it never succeeds. Whatever CPU is running "pr/ttyAMA0" is effectively
->>> stuck at this point.
->>> 
->>> 5. Meanwhile panic() continues, calling panic_other_cpus_shutdown(). On
->>> ARM64, other CPUs are stopped by sending them an IPI. Each CPU receives
->>> the IPI and calls the PSCI function to stop itself. But the CPU running
->>> "pr/ttyAMA0" is looping forever with interrupts disabled, so it never
->>> processes the IPI and it never stops. ARM64 doesn't have a true NMI that
->>> can override the looping with interrupts disabled, so there's no way to
->>> stop that CPU.
->>> 
->>> 6. The failure to stop the "pr/ttyAMA0" CPU then causes downstream
->>> problems, such as when loading and running a kdump kernel.
->
-> [...]
->
->> After reproducing the issue, 
->> I plan to try a workaround that forcibly terminates the nbcon_reacquire_nobuf
->> loop in pl011_console_write_thread if other_cpu_in_panic is true.
->> Please comment if you have any other ideas.
->
-> For panic, if it is OK to leave uap->clk enabled and not restore REG_CR,
-> then it should be fine to just return. But only for panic.
->
-> So something like:
->
-> 	while (!nbcon_enter_unsafe(wctxt)) {
-> 		if (other_cpu_in_panic())
-> 			return;
-> 		nbcon_reacquire_nobuf(wctxt);
-> 	}
+I prefer guard(). Actually, I have a patchset to add a support for 
+guard() for uart_lock and console_lock too and use it all over (incl. 
+__free). They untangle the code on many places and get rid of much 
+unneeded churn.
 
-Actually this is not enough because there is also a loop inside
-nbcon_reacquire_nobuf().
+But in this very case, I see there is a label, I am not sure if it works 
+right here. Try compiling with clang -- it will tell you. You likely 
+won't cross the label with the guard().
 
-nbcon_reacquire_nobuf() needs to return an error for the panic case
-because it will never succeed. This is the only case where it will never
-succeed. Should we use a bool? Or return some code like -EPERM?
-
-So the above code becomes:
-
- 	while (!nbcon_enter_unsafe(wctxt)) {
- 		if (!nbcon_reacquire_nobuf(wctxt))
- 			return;
- 	}
-
-We should also add __must_check to the prototype.
-
-Thoughts?
-
-John
+thanks,
+-- 
+js
+suse labs
