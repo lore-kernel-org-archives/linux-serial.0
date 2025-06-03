@@ -1,255 +1,104 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E64F223C4F2
-	for <linux-serial@vger.kernel.org>; Tue,  3 Jun 2025 16:09:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01C0F38DD1
+	for <linux-serial@vger.kernel.org>; Tue,  3 Jun 2025 16:38:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748966992; cv=none; b=IfWaQSsarMgFkXYSL3dA464btDAdJVenDaNN6k+W6sqZdeh7LYdl7S5ygZ0MuJP5rWu0nT8U9MzJokchC2iUjP4hCTXGl78IVKIh3ngWefbrPbrDqRl2hnxPCZk8w3Nm9Qexj/Sij9HdnC90apgrU7cuVxjOlWtO4jxDFeBYZUY=
+	t=1748968732; cv=none; b=PqZjIIatlIMEmn1+VdzuAF5BO+YTsJxaI6CryWPZdNFNE+o8r4NoE192xjKDDQFp5e13JY6lbBQSR/IQWwGu7SxhaF5gy4puQZZ+L9oo4bD3mYx55druBn1yDfT6TU99EmRIhzFd5UgP2zEoLKpJImTZr/RUJFHDdHjcH/5Gz2k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748966992; c=relaxed/simple;
-	bh=SHEGR8KPZJvfsOip2MnweQXdIk+BMjx+EkfXIlEeH38=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=T2E9HaH/NhERbRfojKf7JKhGb7eNJ0UMbl9iBPrZkoiJKpP7RSjz108zkC14S57qpaSxXwydzkrdPUemEFjsfVw8JQTDcg/ir/VFJZ1IgdXqqu2hl9RhtPS8EpM3vRCe464vlNPbFpZz6Kk754HXwALvSu2yfYqYHwNnDRyVl0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XhrNoXKR; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=tDS21zIL; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1748968732; c=relaxed/simple;
+	bh=21ebxQPVxT/ww7UQNAT5KOqEC4d8ef+gfXcxIrxqSXk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JxN3QhyzHRdyNHzyYGqKQXG7mok3R+bcCbqeWtsnkizwNmFqq7MAFbEkikAROJodqmUAg+PAFaBO90yZM8Memwsl6mBZxg3fpLInVIjzdxeL4GqOfdOfblUoxranRZGVocIJ1QilMCNk22S8odInDnINSeyqXFvbRf1hz52F2RA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk; spf=pass smtp.mailfrom=thegoodpenguin.co.uk; dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b=UV3/abas; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thegoodpenguin.co.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XhrNoXKR";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="tDS21zIL"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1748966989;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Vc8xam8+6cGwz36v0F+JsmYtuOKohU38lEgYCT2Z/Ec=;
-	b=XhrNoXKRlCMwAnTYDU8thWUwv7bKnDJe9SmJeKHG4hXqF5SoPYxFF5Uf9wjs+VSmPyeHnY
-	FtVHTKPjRAh7emYnb7ZaeNYJMSfWxxU9dfWmE3SqiCf4KJyLIc4KOSBKW8Q6sY/amqiJmv
-	gh+wWYX07UDGaa7flVLCrvuAMwplsiMa2GxO6A0AHwGsYdrR2ZbCxXu5ZnHYMA85M+tD2L
-	4j2JjkTmIRDrsKkddVV+URzvfVguPNocTVMxFgBcIkuNyCyRdXXCQcQSHwdRrm1flI4HOi
-	NTLQp+8WMDF7xcb3yJ3F5uoij7ayMFjWEgPzBMLGuEM+IymhpIVApuVhmSnYTg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1748966989;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Vc8xam8+6cGwz36v0F+JsmYtuOKohU38lEgYCT2Z/Ec=;
-	b=tDS21zILd0kNn4AxinxWbtz+HNo3eV77eutbasckzY68mA75P36jgzVGZkdHLHlSCTDzQt
-	bmZTef10vrL4XWBg==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Michael Cobb <mcobb@thegoodpenguin.co.uk>, rostedt@goodmis.org,
- senozhatsky@chromium.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH RFC 0/3] printk: Don't flush messages using write_atomic
- during console registration if kthreads have not been started yet.
-In-Reply-To: <aD8JOlDVP4ufgv44@pathway.suse.cz>
-References: <20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk>
- <84jz6gdh5r.fsf@jogness.linutronix.de>
- <CAC251sUpHHU26wDgBuOGdxNGvE=2M22+b5E4Y+Lc9Ow63fOidw@mail.gmail.com>
- <847c1xrzib.fsf@jogness.linutronix.de>
- <84iklerw1i.fsf@jogness.linutronix.de> <aD8JOlDVP4ufgv44@pathway.suse.cz>
-Date: Tue, 03 Jun 2025 18:15:48 +0206
-Message-ID: <84msao6c37.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b="UV3/abas"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-23035b3edf1so53007735ad.3
+        for <linux-serial@vger.kernel.org>; Tue, 03 Jun 2025 09:38:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=thegoodpenguin-co-uk.20230601.gappssmtp.com; s=20230601; t=1748968730; x=1749573530; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=21ebxQPVxT/ww7UQNAT5KOqEC4d8ef+gfXcxIrxqSXk=;
+        b=UV3/abas2gHxeAogJzktvsVXcPv8BlJdMhdLeQAvL63vWyIfFTJShxDtbBiGQd+yKI
+         orNchJh7YCrDibi3JvBR6RmwOCTuM2r6VVK9sWMWGsrhV3PP1vOtOLyVf9bsdAMo7bMc
+         UfzRZbGFkZEH5L+0oVlTb0HmymM0Y2VA3PKB27uHxxJ9Oj2vrJj1FQnldnu+EV2J+pUX
+         fUJSfuHIkkWVb26O3OUtJ4j93N/ezyJImuEMYNIpVixPojbRHYB+ZRYHU5yw7UA48kjd
+         oTF1UExYdJzglNRyfRlHqGinMeyDqYoPoU5WcILXcoaLMk+9Iv7DEVUAUT/jJXil8YLt
+         YhPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748968730; x=1749573530;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=21ebxQPVxT/ww7UQNAT5KOqEC4d8ef+gfXcxIrxqSXk=;
+        b=fpSoyfiGbp2Jfp7OHI51StOe9UgO9cvJnPZ/XYXdgYkhjyxya4KouR2cgZ6qlo76mc
+         +FFSRnhpH1o+ojMIVuyvOL8djNuKMdtOrT1LzoWEYEip71LnulfmbIoBCmYBfpIqUie3
+         ZC0rg8XYN20Z5R1o9tSVRE7uncuXl4bzLXpe7wOHxfHNxJWO9jFkw9osqbTf6Crt9JNc
+         8yFqZ/XS2KtUYaY9mVDeq7CRunJm6q1P9PwMhw0CtVYLBhDVtdAAFUoyCz9cZGxEUj0W
+         BbG8A1toPOovJ6Oj5LRBhLULaAPU3OhP6Tq6vURpR9auq0Me2WYqVRtaLb1tbGPm1Zfu
+         JGMQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUxFwD61hg3PyQRq/ifVHjhERYix4tHwwjpOq/iS8jnik3PDv+pHDwT0vbrF3lcD52lawenv3mWPWCBg+s=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzwqoXUlnQp8U/FAQmdL1zDUwAPlLJBnu3CtE0VvGcZR61hJpVq
+	I6NbpflNkFvHs+AFLr1xLCRMX3OIcoJLZ/VolIuLuE3miAcrYRPP3nUhMPHSzwALoFccJOfNi3A
+	GbhdvIdWdAFJQfpkmcE1rjuWRRV7cwElGl6A/mSuTdUJsj21RaSqJE5fHxg==
+X-Gm-Gg: ASbGncuiXwKUvGqQT10sviYVF5Ql8pZnnp72yI35sp/GNFMuUfsEXPd/nHdKY9bPPc7
+	Jl0kRCm+/mG5O/K1vdMMpahQ0RzXh83Q2xx8BQ2NHVdLZWRcUm/WjvA4jysGE9UwriB2ZNY8N3x
+	oW7kac6FOZWTuY9NvMyg+NgJ0H2A1cbNeSdf9Vs6w/jy4=
+X-Google-Smtp-Source: AGHT+IE/lntDiMYoq7FRCcQWBwouaKzFURPvKbd9gnFy698MpqhWNKzgpFG/AGpL6nP2WvpCNiuw5FW0sdf0Sm+moz4=
+X-Received: by 2002:a17:903:234d:b0:234:9375:e07c with SMTP id
+ d9443c01a7336-23529b463a2mr273624215ad.46.1748968730062; Tue, 03 Jun 2025
+ 09:38:50 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk>
+ <84jz6gdh5r.fsf@jogness.linutronix.de> <CAC251sUpHHU26wDgBuOGdxNGvE=2M22+b5E4Y+Lc9Ow63fOidw@mail.gmail.com>
+ <847c1xrzib.fsf@jogness.linutronix.de> <84iklerw1i.fsf@jogness.linutronix.de>
+ <aD8JOlDVP4ufgv44@pathway.suse.cz> <84msao6c37.fsf@jogness.linutronix.de>
+In-Reply-To: <84msao6c37.fsf@jogness.linutronix.de>
+From: Michael Cobb <mcobb@thegoodpenguin.co.uk>
+Date: Tue, 3 Jun 2025 17:38:38 +0100
+X-Gm-Features: AX0GCFs3y5z_KNZ_VvDYzWSVxdXLX9z236_VOcmLbqdsutZruZkwFJQfe5rWOnA
+Message-ID: <CAC251sUp=mwaw2=CmGGxnBn-rAHO6u-MdSe6mDgcbbCKi3UPMA@mail.gmail.com>
+Subject: Re: [PATCH RFC 0/3] printk: Don't flush messages using write_atomic
+ during console registration if kthreads have not been started yet.
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Petr Mladek <pmladek@suse.com>, rostedt@goodmis.org, senozhatsky@chromium.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 2025-06-03, Petr Mladek <pmladek@suse.com> wrote:
-> I thought whether we could avoid introducing yet another variable
-> and still keep the code sane. And I came with the following.
-> The commit messages describes the idea.
+Hi John, Petr,
+
+Thanks for your time on this. I've had a look at John's suggestions
+and I had a go at trying to remove the need for adding an additional
+flag. Though I think Petr's solution is better than what I had come up
+with.
+
+On Tue, 3 Jun 2025 at 15:40, Petr Mladek <pmladek@suse.com> wrote:
 >
 > I hope that I have covered all the cases. Note that I haven't tested
 > it with nbcon console though.
 >
 > What do you think, please?
->
-> From 5768ff7e9d944bb904344341a2a447d2f101e6ba Mon Sep 17 00:00:00 2001
-> From: Petr Mladek <pmladek@suse.com>
-> Date: Tue, 3 Jun 2025 14:19:00 +0200
-> Subject: [PATCH] printk: Allow to use the printk kthread immediately even for
->  1st nbcon
->
-> The kthreads for nbcon consoles are created by nbcon_alloc() at the beginning
-> of the console registration. But it currently works only for the 2nd or
-> later nbcon console because the code checks @printk_kthreads_running.
->
-> The kthread for the 1st registered nbcon console is created at the very
-> end of register_console() by printk_kthreads_check_locked(). As a result,
-> the entire log is replayed synchronously when the "enabled" message
-> gets printed. It might block the boot for a long time with a slow serial
-> console.
->
-> Prevent the synchronous flush by creating the kthread even for the 1st
-> nbcon console when it is safe (kthreads ready and no boot consoles).
->
-> Also inform printk() to use the kthread by setting @printk_kthreads_running.
-> Note that the kthreads already must be running when it is safe and this
-> is not the 1st nbcon console.
->
-> Symmetrically, clear @printk_kthreads_running when the last nbcon
-> console was unregistered by nbcon_free(). This requires updating
-> @have_nbcon_console before nbcon_free() gets called.
->
-> Note that there is _no_ problem when the 1st nbcon console replaces boot
-> consoles. In this case, the kthread will be started at the end
-> of registration after the boot consoles are removed. But the console
-> does not reply the entire log buffer in this case. Note that
-> the flag CON_PRINTBUFFER is always cleared when the boot consoles are
-> removed and vice versa.
->
-> Closes: https://lore.kernel.org/r/20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk
-> Signed-off-by: Petr Mladek <pmladek@suse.com>
-> ---
->  kernel/printk/internal.h |  2 ++
->  kernel/printk/nbcon.c    | 17 +++++++++++++++--
->  kernel/printk/printk.c   | 19 ++++++++++---------
->  3 files changed, 27 insertions(+), 11 deletions(-)
->
-> diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
-> index 48a24e7b309d..567c9e100d47 100644
-> --- a/kernel/printk/internal.h
-> +++ b/kernel/printk/internal.h
-> @@ -64,6 +64,7 @@ struct dev_printk_info;
->  
->  extern struct printk_ringbuffer *prb;
->  extern bool printk_kthreads_running;
-> +extern bool printk_kthreads_ready;
->  extern bool debug_non_panic_cpus;
->  
->  __printf(4, 0)
-> @@ -180,6 +181,7 @@ static inline void nbcon_kthread_wake(struct console *con)
->  #define PRINTKRB_RECORD_MAX	0
->  
->  #define printk_kthreads_running (false)
-> +#define printk_kthreads_ready (false)
->  
->  /*
->   * In !PRINTK builds we still export console_sem
-> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-> index fd12efcc4aed..7519d09c20e7 100644
-> --- a/kernel/printk/nbcon.c
-> +++ b/kernel/printk/nbcon.c
-> @@ -1671,6 +1671,9 @@ bool nbcon_alloc(struct console *con)
->  {
->  	struct nbcon_state state = { };
->  
-> +	/* Synchronize the kthread start. */
-> +	lockdep_assert_console_list_lock_held();
-> +
->  	/* The write_thread() callback is mandatory. */
->  	if (WARN_ON(!con->write_thread))
->  		return false;
-> @@ -1701,12 +1704,15 @@ bool nbcon_alloc(struct console *con)
->  			return false;
->  		}
->  
-> -		if (printk_kthreads_running) {
-> +		if (printk_kthreads_ready && !have_boot_console) {
->  			if (!nbcon_kthread_create(con)) {
->  				kfree(con->pbufs);
->  				con->pbufs = NULL;
->  				return false;
->  			}
-> +
-> +			/* Might be the first kthread. */
-> +			printk_kthreads_running = true;
->  		}
->  	}
->  
-> @@ -1721,8 +1727,15 @@ void nbcon_free(struct console *con)
->  {
->  	struct nbcon_state state = { };
->  
-> -	if (printk_kthreads_running)
-> +	/* Synchronize the kthread stop. */
-> +	lockdep_assert_console_list_lock_held();
-> +
-> +	if (printk_kthreads_running) {
->  		nbcon_kthread_stop(con);
-> +		/* Might be the last nbcon console */
 
-Super small nit... add a period at the end of the comment to be
-consistent with the one one-liners.
+Applied and tested this patch with an nbcon console, and I can see
+that it's not causing an atomic flush. (Tested both with and without a
+boot console/earlycon).
 
-> +		if (!have_nbcon_console)
-> +			printk_kthreads_running = false;
-> +	}
-
-This is pretty tricky. We should have a comment here (and possibly in
-the function description of nbcon_free()) mentioning that nbcon_free()
-must be called _after_ @have_nbcon_console has been updated for the
-removal of this console. Generally it would not matter because
-printk_kthreads_check_locked() is called at the end of
-unregister. However, if in register CON_BRL is set, then nbcon_free() is
-called without ever calling printk_kthreads_check_locked(). So this new
-code in nbcon_free() is necessary to correctly reset
-@printk_kthreads_running in that case.
-
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 1eea80d0648e..af6e4f0e8e22 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3574,7 +3574,7 @@ EXPORT_SYMBOL(console_resume);
->  static int unregister_console_locked(struct console *console);
->  
->  /* True when system boot is far enough to create printer threads. */
-> -static bool printk_kthreads_ready __ro_after_init;
-> +bool printk_kthreads_ready __ro_after_init;
->  
->  static struct task_struct *printk_legacy_kthread;
->  
-> @@ -3713,6 +3713,7 @@ static void printk_kthreads_check_locked(void)
->  	if (!printk_kthreads_ready)
->  		return;
->  
-> +	/* Start or stop the legacy kthread when needed. */
->  	if (have_legacy_console || have_boot_console) {
->  		if (!printk_legacy_kthread &&
->  		    force_legacy_kthread() &&
-> @@ -4204,14 +4205,6 @@ static int unregister_console_locked(struct console *console)
->  	 */
->  	synchronize_srcu(&console_srcu);
->  
-> -	if (console->flags & CON_NBCON)
-> -		nbcon_free(console);
-> -
-> -	console_sysfs_notify();
-> -
-> -	if (console->exit)
-> -		res = console->exit(console);
-> -
->  	/*
->  	 * With this console gone, the global flags tracking registered
->  	 * console types may have changed. Update them.
-> @@ -4232,6 +4225,14 @@ static int unregister_console_locked(struct console *console)
->  	if (!found_nbcon_con)
->  		have_nbcon_console = found_nbcon_con;
+On Tue, 3 Jun 2025 at 17:09, John Ogness <john.ogness@linutronix.de> wrote:
 >
+> Note that LKML is not CC. I can offer my reviewed-by when the patch is
+> posted on LKML.
 
-Maybe also a small comment here that it can be freed because
-@have_nbcon_console has been updated. Just to leave a little hint for
-future developers that its location is important.
+I can also offer my Tested-by for this patch.
 
-> +	if (console->flags & CON_NBCON)
-> +		nbcon_free(console);
-> +
-> +	console_sysfs_notify();
-> +
-> +	if (console->exit)
-> +		res = console->exit(console);
-> +
->  	/* Changed console list, may require printer threads to start/stop. */
->  	printk_kthreads_check_locked();
+Kind regards,
 
-Aside from documenting these new subtle relationships, I think this is
-a good solution.
-
-Note that LKML is not CC. I can offer my reviewed-by when the patch is
-posted on LKML.
-
-John Ogness
+Michael Cobb
