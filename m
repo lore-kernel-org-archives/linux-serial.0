@@ -1,65 +1,65 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 447B1239E9F
-	for <linux-serial@vger.kernel.org>; Tue,  3 Jun 2025 14:28:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A28238C10
+	for <linux-serial@vger.kernel.org>; Tue,  3 Jun 2025 14:29:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748960923; cv=none; b=FoFmU0UZmyZeQp+Is1YqqdXRRpySCwuIAl5F2j8s3XMaLBGtm4FBc8Dk5JgxYx8aF/9wwfFze5HgXrGOLcVUuFqX0QJUf7Je1jpNiudRI5VZPStNKezI4odeEJ1XGlg5lwdc3rf540wCM42Waf/MkureA7gjc9K3RH3YTBlRwRU=
+	t=1748960971; cv=none; b=h30v32Y2jTkKMiv3B9DqueS90Q6srAzikQM41EbJuh0sea71yyRc9yEoyO+z0dZGzsL09LWMgNXoEqosspaKKRbD3RC+SBjIdhV/gKBf5QMbKZrV+2F2OvvglyFK1oEew4CoNsEYqmr1OYl+sKGtoCRncPw+O5QmcZC0SlgS2xk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748960923; c=relaxed/simple;
-	bh=BHoROxq4Yg70EhGIUKjQurV0ymRZkbKIPnWlHTUtRds=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pMkM55+wzR/4x3lRoaCfynLFeA9DTkqWq/8lYfaEA37zzOQUqCQcGpHdozdcroRAcrXWSl14DKdxj9W4ZeYb35mlMSldsaJpYYyAb+f4Y6gH/ME89M7AK0vu+lKt2B29JRHkDSLDPTGUFekQQsivvNDL4MNYcNUvPrHFHGOiX1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=JuWtqqmc; arc=none smtp.client-ip=209.85.221.42
+	s=arc-20240116; t=1748960971; c=relaxed/simple;
+	bh=w3qJbbLFKIlr8IPpz61OWbLhA8Ojb0Iq6R/Q/kcUNfE=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=PNRlTXmWqPExwtCMEJCMvNuHGOMkYiAiessMyAystKse1SiYRPjCEQJznE3dY/aKss96d4si3BqtanH9nvN6JYE0ayiupV0AYUUUbzhGTcA2/T4opo/pj9q22T/L9MUsWxxGcTMOJ9FzrtGVhH77r7VQuzU6t6VBrwDhCCspbzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=qhS66DSC; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JuWtqqmc"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3a36748920cso6330541f8f.2
-        for <linux-serial@vger.kernel.org>; Tue, 03 Jun 2025 07:28:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qhS66DSC"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-442eb5d143eso57742255e9.0
+        for <linux-serial@vger.kernel.org>; Tue, 03 Jun 2025 07:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1748960918; x=1749565718; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QVoevd4lyUI3zPOEpq/RIzyFhX2NtvaxczLaES3uue8=;
-        b=JuWtqqmcW7cs/mhXv5O115HtovW8asw97hwTSQw9d9XqBDzUrRVEWGisSLkHnVVYmI
-         CUzsDzFZj0FfNU2CBWftGl3eQhSbCBp6slJia9l+RcRM82Ta04EAGMOJANfBcdUN6s3p
-         5yNiVDC+zEsNSXi7Iax54ef+CplDKEttjYunsjVE9kJsz9jLQ4zz1tR944hvjcEif/Dz
-         7yiaauwTIrjmDUZhNYYHxeswAmra3sn8GnCsKFIS+q6pMcCmnBT9NGFzjN4ryG2fIkYB
-         /VY5oyOl4JENgGVqXEEMEYK1LedohwkxjJD1f7LbAAnx/vQV7iyWCVX1vT9Q+xQEi9Fv
-         RvyA==
+        d=linaro.org; s=google; t=1748960967; x=1749565767; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=w3qJbbLFKIlr8IPpz61OWbLhA8Ojb0Iq6R/Q/kcUNfE=;
+        b=qhS66DSCblxDHQ/+6QqutjtGeROiPt1Qf1X5jnY1DME/xSClLc33q6/h5Le1W62QKz
+         8cRcdBI4fwk/r8I1t1pk9SXPXXUUdtPvHtJ3ehvmfiG0PGfcidXORezs9oK2zlgHSjFO
+         jOquDR2LLAleUGz9JBJOQ6H8jcA7QzoEox5OZmZk1nd8+qkTGgRbYp52/mfVztfwYc+7
+         meesWt5V2ymyalyk0604nRSa/8otRweAF5kfGhzPAYu+ZZ/RnXT45MgGaowK1xgeVROT
+         VsS/CQqDOiVte2PEUfLCyr4SpZYA214l9jNyQfb+6LArGXhLL5OSh9c/Wb72AI0vVvgh
+         6dQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748960918; x=1749565718;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1748960967; x=1749565767;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QVoevd4lyUI3zPOEpq/RIzyFhX2NtvaxczLaES3uue8=;
-        b=cPM5lpOloHe+pC3ZPXLg8XdbKEp7KOJU0G9jyu2dIyKUXcIokr1HdZfOqOU2UT9XDk
-         E54XuLSNxnfMcMQZIEGwfuaZLjGgqmZV7M+g0PFH8CBNcMAPLydp0cdfLJ0ocw3Lvmv4
-         2hm4baPHCuGFU22vTwx+jb810rtv69Mv+OX0cEJVFo8J7dzDzXODcagQSXeSf2SniDNF
-         VjUnuxPYwfjyop/TZNDFvw2Eb3GSDmKF0oEep9K21ajKHC1inFgnbY6HiNLmDppkPgBg
-         m6y1lXIbOtb4qAIAfCqSHohAVMARbac8NCc7QqPdmc3X2nGg/6VTvHyhy6MS4XXdVhQ3
-         W4JQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUMgSr7DHP6WAaruk8s8lnwOh+JDJOw6qwZi3PnQg36N3Xuj6PH+opX/v7CIjjph25OEOU7eDV1z9+y98g=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyIrB43IS/CIwbpqHa+wuiRfBxJ/nbb3bAtG9OTm9IwcohpSZO9
-	Sdr7GJgH33cSDGoxCtywjg1DkQqALD7N5wpp2xRTubGJChwgHqYFeRAKaQBCzD7cb9w=
-X-Gm-Gg: ASbGnctPa8IQBQ0nUIf9YHaEIlmIrhnFScquf6mLkx1I7P4rd6lUBDxB/bXJJHIHM7t
-	8OWb4+c6LTetF9BCHOtH37XGRD/iXa90tWuir7kJkTjbEc3OqtF+g3JK9bE6mI40o3aZvaFLA/i
-	jE2whqOdJ9Cu3nqySRrI+IXbm+PZGhFHcSQNnNdGbGE7YCu0N3brjfTNV4iyD+2iLFpPjaPN9ha
-	l4hKErBNXDZT6cFAVAJfvSspmLB0HTogviYnvmLVt7wmB98vKDTMcMifpENM/4DkMTNoQVeF/nH
-	L7oiI4sBM80RxspJcQSxgr5w2opq3JmbtMxyUVTB3xJIUye/mBTcaRwY7EmNqlDU8Cw+4q5Z435
-	d1v2D+Y7wpkVgce0HNxGr6lq9RMQ=
-X-Google-Smtp-Source: AGHT+IHZurIKIq1+E6HJ23X1xCR/CPwysvL7IX6Z+9+U73oLFe1k7nAiy+c7nnudAfdU7L/qlrvwEA==
-X-Received: by 2002:a05:6000:2306:b0:3a4:de02:208 with SMTP id ffacd0b85a97d-3a4f89ac91cmr13017254f8f.25.1748960918481;
-        Tue, 03 Jun 2025 07:28:38 -0700 (PDT)
+        bh=w3qJbbLFKIlr8IPpz61OWbLhA8Ojb0Iq6R/Q/kcUNfE=;
+        b=J4QG2tU0sd4COFgK5v8n63oQyamARz3mBXpbwSOj1460Ar79jtYogf7QBzkJbQMXjj
+         1mIhQyAH6YRVj2MM4Px8nVNL6ZP+PMzazPF2qZcSWgs4U/F16cniY0ojSEBF2njgP4iV
+         UaADpvsFYPv3FOepJBBIVntJZXvkwr7si7TZAWV+ZNrATrVJnTue1XcB8P2Y/M6e6/qJ
+         dIGnX0ArQo8v2b+ZcyFmJbf9cMUgo4m0la/T5eGW5NKfxw9vmGXq48GuqQARhrirFSDP
+         Q+DfduhJyKgQE0Tgqyw0nIfnaVFb1zCrx+wCKTrdoa/TkFE6RXXiuk6g6SFMNwF5e07v
+         4LXA==
+X-Forwarded-Encrypted: i=1; AJvYcCUdkrFozXcg5UCwfkvxwVFwHqsa9fX7jWBP+pJyb6q8ixv7VQ8w1hpxsbJwmyQXLjrZV4PWCDlwX90LxQM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxMYXkhbBFOGOFxwAOSrTWd35mkjUJlCP8TC8tDbBWENn0Kb47M
+	jNMZEyt9UBbcEK1sjrBtLr8eGMY9sg4fEIlZhJyUqgO8rX2ekMd7I1CwmATiQEuJg1s=
+X-Gm-Gg: ASbGnct5hvMPA3sABpJKKgFFXfMmqQBEqlZTQGmsXLyoV9F6ZlZSGF2RZLXWSrouZBl
+	h70279DRB8gWQ3M8D/0JK+D4u2b60ytH8hvc2s4FEWNeaO/MlYXezFdqHzpLBvrgK/C4ZN59KIU
+	yziQ99mXAsggpC/CaLCiAoWIv5QJV46/xGTXkQDY97OFLQDQOIoKR4BEp/2wlTmzqoNwQdx1E4S
+	aYB1dXXwf/zBvc82ZsVj41aEwUSVjCPWooc5vRrNdyxmk/cfSzmuMcsIoGoOSLDTRJC8+P8L3OC
+	QRzHakPA9JZBCS/C0eY6budhzgvrSQK2te5bvlZCqJFs1JDa9XlCqjXD4slBFUZn5oVPn3zQ5LL
+	xxp2CmJcBk3tvwoWh
+X-Google-Smtp-Source: AGHT+IGBJA6javCrcGvDz9kgjIx0gKy0MSn3MwVpuFlPN9NEjpfetf/hiQAdNxpchZl7GR3GtryIaA==
+X-Received: by 2002:a05:600c:3b9f:b0:43c:fe85:e4ba with SMTP id 5b1f17b1804b1-4511edc208amr131076915e9.15.1748960967166;
+        Tue, 03 Jun 2025 07:29:27 -0700 (PDT)
 Received: from [192.168.0.35] (188-141-3-146.dynamic.upc.ie. [188.141.3.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a4efe6c4f2sm18232873f8f.22.2025.06.03.07.28.37
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-450d7fb8990sm168262475e9.32.2025.06.03.07.29.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Jun 2025 07:28:38 -0700 (PDT)
-Message-ID: <f912588b-fb54-4257-a4d8-db58e93b8378@linaro.org>
-Date: Tue, 3 Jun 2025 15:28:37 +0100
+        Tue, 03 Jun 2025 07:29:26 -0700 (PDT)
+Message-ID: <afe41159-00e4-45d1-857f-0a68f6fc6c8e@linaro.org>
+Date: Tue, 3 Jun 2025 15:29:25 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,6 +69,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v5 5/8] serial: qcom-geni: move resource control logic to
  separate functions
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 To: Praveen Talari <quic_ptalari@quicinc.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -83,129 +84,18 @@ Cc: psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com,
 References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
  <vTOsjvsB7oSpu2Oe8i1ufoz5C2Hy3EtfDnfBsLag2p-s63J0BLdqbLn44Hds17WR12JGfo7sd52k7uHaXlTTeQ==@protonmail.internalid>
  <20250506180232.1299-6-quic_ptalari@quicinc.com>
+ <f912588b-fb54-4257-a4d8-db58e93b8378@linaro.org>
 Content-Language: en-US
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-In-Reply-To: <20250506180232.1299-6-quic_ptalari@quicinc.com>
+In-Reply-To: <f912588b-fb54-4257-a4d8-db58e93b8378@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 06/05/2025 19:02, Praveen Talari wrote:
-> Supports use in PM system/runtime frameworks, helping to
-> distinguish new resource control mechanisms and facilitate
-> future modifications within the new API.
-> 
-> The code that handles the actual enable or disable of resources
-> like clock and ICC paths to a separate function
-> (geni_serial_resources_on() and geni_serial_resources_off()) which
-> enhances code readability.
-> 
-> Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
-> ---
-> v3 -> v4
-> - added version log after ---
-> 
-> v1 -> v2
-> - returned 0 instead of ret variable
-> ---
->   drivers/tty/serial/qcom_geni_serial.c | 54 +++++++++++++++++++++------
->   1 file changed, 42 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 6ad759146f71..2cd2085473f3 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1588,6 +1588,42 @@ static struct uart_driver qcom_geni_uart_driver = {
->   	.nr =  GENI_UART_PORTS,
->   };
-> 
-> +static int geni_serial_resources_off(struct uart_port *uport)
+On 03/06/2025 15:28, Bryan O'Donoghue wrote:
+>> 2.17.1
+>>
+>>
+> Assuming you address my points.
 
-It seems like an extremely nit-picky thing to say BUT
+[sic]
 
-geni_serial_resources_on();
-geni_serial_resources_off();
-
-since that is the order you use in the code below.
-
-> +{
-> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
-> +	int ret;
-> +
-> +	dev_pm_opp_set_rate(uport->dev, 0);
-> +	ret = geni_se_resources_off(&port->se);
-> +	if (ret)
-> +		return ret;
-> +
-> +	geni_icc_disable(&port->se);
-> +
-> +	return 0;
-> +}
-> +
-> +static int geni_serial_resources_on(struct uart_port *uport)
-> +{
-> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
-> +	int ret;
-> +
-> +	ret = geni_icc_enable(&port->se);
-> +	if (ret)
-> +		return ret;
-You're adding additional logical checks here, which seem reasonable but 
-are not stated in your commit log.
-
-Please make clear in the commit log that additional, minor function 
-return checks are added as you do your functional decomposition.
-
-> +
-> +	ret = geni_se_resources_on(&port->se);
-> +	if (ret) {
-> +		geni_icc_disable(&port->se);
-> +		return ret;
-> +	}
-> +
-> +	if (port->clk_rate)
-> +		dev_pm_opp_set_rate(uport->dev, port->clk_rate);
-> +
-> +	return 0;
-> +}
-> +
->   static int geni_serial_resource_init(struct qcom_geni_serial_port *port)
->   {
->   	int ret;
-> @@ -1628,23 +1664,17 @@ static int geni_serial_resource_init(struct qcom_geni_serial_port *port)
->   static void qcom_geni_serial_pm(struct uart_port *uport,
->   		unsigned int new_state, unsigned int old_state)
->   {
-> -	struct qcom_geni_serial_port *port = to_dev_port(uport);
-> 
->   	/* If we've never been called, treat it as off */
->   	if (old_state == UART_PM_STATE_UNDEFINED)
->   		old_state = UART_PM_STATE_OFF;
-> 
-> -	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF) {
-> -		geni_icc_enable(&port->se);
-> -		if (port->clk_rate)
-> -			dev_pm_opp_set_rate(uport->dev, port->clk_rate);
-> -		geni_se_resources_on(&port->se);
-> -	} else if (new_state == UART_PM_STATE_OFF &&
-> -			old_state == UART_PM_STATE_ON) {
-> -		geni_se_resources_off(&port->se);
-> -		dev_pm_opp_set_rate(uport->dev, 0);
-> -		geni_icc_disable(&port->se);
-> -	}
-> +	if (new_state == UART_PM_STATE_ON && old_state == UART_PM_STATE_OFF)
-> +		geni_serial_resources_on(uport);
-> +	else if (new_state == UART_PM_STATE_OFF &&
-> +			old_state == UART_PM_STATE_ON)
-> +		geni_serial_resources_off(uport);
-> +
->   }
-> 
->   static const struct uart_ops qcom_geni_console_pops = {
-> --
-> 2.17.1
-> 
-> 
-Assuming you address my points.
-
-
-
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
