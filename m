@@ -1,151 +1,264 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 291F02900B0;
-	Wed,  4 Jun 2025 14:10:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6895B26ACC
+	for <linux-serial@vger.kernel.org>; Wed,  4 Jun 2025 14:21:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749046203; cv=none; b=unDzUR9Buu4Vnc+XwfXBroHeMhdPVWZRB6OFjeXrzX2SgObt20oPnqM5YAwfa6715Mj8e5/ADuNeVZPe5UOYMGLZ+HxZUjhw80MUIk97SrqHhLf2zhMne1wZcs6Gm6ylCbKvBWySUZlrnx8QDlkoEI8msozCZLWTaIUFtnisHvY=
+	t=1749046866; cv=none; b=ehaSqA3uk25+0dGXapmOaMVAGHvL6KVhLoHoiuXdgM353M+9l+El3pZTloiASqbIc7Zn+0+C9QOHcOoDPiewLc9lFmevZQ5iK9zvcaP1IIqWMlZVrURFjd9hJRGHtbv+ax2BtU6VT/115XmnzrMYSbJ+SIalUNF6mcUOlfkb87w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749046203; c=relaxed/simple;
-	bh=B2ABg1wz3GCV/5nlluOeLv+jcW/anS6JFpPQBFpgC+Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=AWF1gIs4Pm5x9fXBA/imRQcuOKN2KLxxNLQpyruw9/39yaKV+/vF3y5hu6PtO0fN88c5fcWwLfcRNVs1kmHfwBS08ivAjrYNpR/MwLwh2S8aLraghTlVk2RIGQtrfAFLLgcxFyit+6VbVZOaxPIcgGNjjar7Z5rcenwVoINwwsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=CT2N6f/E; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1749046866; c=relaxed/simple;
+	bh=T4x64PN7OhuJ+VVZnlwfgOCHUQ1ENCLEJmnYuXzxbNc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iGt5FLg/YpCkknuabgQBxKzWNkNV/VrUpmnt1FMYwRdZDCrGbmpZQ4dMophhmxjymO5uW4K2KDMiViqfGst5UqoF8O5BPPRnd+lGEt8IK1BZVadzJ+TQb18vTLklk4M7v7+Gy/Q4Buj9GjtxIcIzLO+p8BZ39d3j79xfHtU5RMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=jImr0aJ5; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=jImr0aJ5; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="CT2N6f/E"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5548ObLq013606;
-	Wed, 4 Jun 2025 14:09:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	7Lm/hVQBqxHZuoTLZRaf4HoCuxZUf0ilzEKB6T/CUQc=; b=CT2N6f/E18W/8Xnm
-	qdlOmx8mcFFma8nJKf16rTU4cuP0arw+4BxBvjUSTnvRZmLkaBkxVEPvjHm2tMpx
-	NGYVd7Q8x3Oxs54720vx+nSOhZBrOw6pAmyU4HXXWb+WwsxOfteFWllGjRmKMGH7
-	N14XRoQpubN5xntluyAgm6gQsC+oCED6xMbUtjB3mZvUFtD41efqbozMmO/yGJtS
-	M5s2FEtNVgeyPEzQ4TeYHyOPKyxViE96+4vdBNvqdiycGka48ly8zDebJaNCd4QE
-	XSCJkmQKHW/O8w9sUudZ+teggUWJL3u7Cbmrru7JHYvA/5QZ/XfkwhwNvXn7s8fN
-	sxLzsQ==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 471g8np8vq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Jun 2025 14:09:55 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 554E9tZl018095
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 4 Jun 2025 14:09:55 GMT
-Received: from [10.216.5.91] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 4 Jun 2025
- 07:09:49 -0700
-Message-ID: <0daf396a-29af-458b-a7ba-3b711b22cde9@quicinc.com>
-Date: Wed, 4 Jun 2025 19:39:45 +0530
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="jImr0aJ5";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="jImr0aJ5"
+Received: from pathway.suse.cz (unknown [10.100.208.146])
+	by smtp-out2.suse.de (Postfix) with ESMTP id 6B3431FE0F;
+	Wed,  4 Jun 2025 14:21:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1749046860; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=dn8ycOFPKuW7F8mba8U0a3Fdcnope2szBHssTbLgnV8=;
+	b=jImr0aJ5eqn77qP29wl1Ni+2dWAxxG+rQggMFERr0vX7DuAjc1rKsu2fZ2sZBia5IC7PCW
+	bYkjnovyeGvPwKslyUPX0aFIOdh+ErExW4vl7beHZH++n08/nC6wc3fbfutF3fW29LJ7/1
+	CeqXaOXGMcD31fR3l+hvAEEIRzJRT9E=
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1749046860; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=dn8ycOFPKuW7F8mba8U0a3Fdcnope2szBHssTbLgnV8=;
+	b=jImr0aJ5eqn77qP29wl1Ni+2dWAxxG+rQggMFERr0vX7DuAjc1rKsu2fZ2sZBia5IC7PCW
+	bYkjnovyeGvPwKslyUPX0aFIOdh+ErExW4vl7beHZH++n08/nC6wc3fbfutF3fW29LJ7/1
+	CeqXaOXGMcD31fR3l+hvAEEIRzJRT9E=
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Petr Mladek <pmladek@suse.com>,
+	Michael Cobb <mcobb@thegoodpenguin.co.uk>,
+	rostedt@goodmis.org,
+	senozhatsky@chromium.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] printk: Allow to use the printk kthread immediately even for 1st nbcon
+Date: Wed,  4 Jun 2025 16:20:45 +0200
+Message-ID: <20250604142045.253301-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 5/8] serial: qcom-geni: move resource control logic to
- separate functions
-To: Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio
-	<konradybcio@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
-References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
- <vTOsjvsB7oSpu2Oe8i1ufoz5C2Hy3EtfDnfBsLag2p-s63J0BLdqbLn44Hds17WR12JGfo7sd52k7uHaXlTTeQ==@protonmail.internalid>
- <20250506180232.1299-6-quic_ptalari@quicinc.com>
- <f912588b-fb54-4257-a4d8-db58e93b8378@linaro.org>
- <y41ikVJ5uSSaGZHmqsvTm9akz3EUUT7X6dTPrfSuIYqGmMdlEfPRWqPA630jmsEzwC-6JSgYRPobg4e933PgxA==@protonmail.internalid>
- <afe41159-00e4-45d1-857f-0a68f6fc6c8e@linaro.org>
- <6b7ca51a-241a-49fc-8aac-da5af96b5e10@linaro.org>
-Content-Language: en-US
-From: Praveen Talari <quic_ptalari@quicinc.com>
-In-Reply-To: <6b7ca51a-241a-49fc-8aac-da5af96b5e10@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: z6yQMhYhryW_9wQWU3XXftpSRpkf-1-M
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA0MDEwOCBTYWx0ZWRfX5rwUcoh+0KBv
- iU3XtrSQV03RVhFbdGSS06rO+6Yl5KW4J5JEcYJ4EgmWoigHVuRRgIOYSydQOVsbWGn8N62ubUx
- ubZ31D9nDwTftLiemlHqNzxfnLOmssps7IIar7MOiBEDlljfGDVQHkDEjNXYceH30tKyLZYIQrA
- Di4btjY9ZWWMbbu5N8TrpJKT3ZeAYHV9ghXKBBKf4eY88EcEwN4Y9XuRiPjKNRl35NF+aVqPzcO
- DLr8ioW3tUePu2xXuNcy+yqYZcGZwaYEQmzc88sHTC0Q7yy5oXrHkecPX2/j3TTkiCt1EE8zKsR
- 5ILjQqrrgFFvIjIszrMJPZNPtEJDPmbmtKZw4zZLiwvxdsF/Yt466uVDnmI0drn7o/JisI7RuRt
- kOdF3zta9ky+mvmax9SbQ0pBtevYmThJb0TmQUJpMbQonwvwE6a2MmvLPgL7fufKyu1S8exy
-X-Proofpoint-ORIG-GUID: z6yQMhYhryW_9wQWU3XXftpSRpkf-1-M
-X-Authority-Analysis: v=2.4 cv=UphjN/wB c=1 sm=1 tr=0 ts=684053b3 cx=c_pps
- a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=KKAkSRfTAAAA:8
- a=s5ISWN8GRDGLSXsRgHIA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-06-04_03,2025-06-03_02,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 spamscore=0 impostorscore=0 lowpriorityscore=0
- phishscore=0 mlxlogscore=999 clxscore=1015 malwarescore=0 adultscore=0
- bulkscore=0 mlxscore=0 suspectscore=0 classifier=spam authscore=0 authtc=n/a
- authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2505280000 definitions=main-2506040108
+X-Spamd-Result: default: False [-2.80 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_MISSING_CHARSET(0.50)[];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_COUNT_ZERO(0.00)[0];
+	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_SEVEN(0.00)[7];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.com:mid]
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Spam-Score: -2.80
 
-Hi Bryan
+The kthreads for nbcon consoles are created by nbcon_alloc() at
+the beginning of the console registration. But it currently works
+only for the 2nd or later nbcon console because the code checks
+@printk_kthreads_running.
 
-On 6/3/2025 8:16 PM, Bryan O'Donoghue wrote:
-> On 03/06/2025 15:29, Bryan O'Donoghue wrote:
->> On 03/06/2025 15:28, Bryan O'Donoghue wrote:
->>>> 2.17.1
->>>>
->>>>
->>> Assuming you address my points.
->>
->> [sic]
->>
->> Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
->>
-> 
-> Oh please fix this in the next version
-can i fix this in separate patch since i haven't touch these two lines
-or
-fix within same patch?
+The kthread for the 1st registered nbcon console is created at the very
+end of register_console() by printk_kthreads_check_locked(). As a result,
+the entire log is replayed synchronously when the "enabled" message
+gets printed. It might block the boot for a long time with a slow serial
+console.
 
-Thanks,
-Praveen Talari
-> 
-> checkpatch.pl --strict mypatch.patch
-> 
-> CHECK: Alignment should match open parenthesis
-> #92: FILE: drivers/tty/serial/qcom_geni_serial.c:1675:
-> +    else if (new_state == UART_PM_STATE_OFF &&
-> +            old_state == UART_PM_STATE_ON)
-> 
-> total: 0 errors, 0 warnings, 1 checks, 71 lines checked
-> 
-> NOTE: For some of the reported defects, checkpatch may be able to
->        mechanically convert to the typical style using --fix or 
-> --fix-inplace.
-> 
-> 0005-serial-qcom-geni-move-resource-control-logic-to-sepa.patch has 
-> style problems, please review.
-> 
-> ---
-> bod
+Prevent the synchronous flush by creating the kthread even for the 1st
+nbcon console when it is safe (kthreads ready and no boot consoles).
+
+Also inform printk() to use the kthread by setting
+@printk_kthreads_running. Note that the kthreads already must be
+running when it is safe and this is not the 1st nbcon console.
+
+Symmetrically, clear @printk_kthreads_running when the last nbcon
+console was unregistered by nbcon_free(). This requires updating
+@have_nbcon_console before nbcon_free() gets called.
+
+Note that there is _no_ problem when the 1st nbcon console replaces boot
+consoles. In this case, the kthread will be started at the end
+of registration after the boot consoles are removed. But the console
+does not reply the entire log buffer in this case. Note that
+the flag CON_PRINTBUFFER is always cleared when the boot consoles are
+removed and vice versa.
+
+Closes: https://lore.kernel.org/r/20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk
+Signed-off-by: Petr Mladek <pmladek@suse.com>
+---
+Hi,
+
+I am sending this patch for a proper review.
+
+I have just updated comments according to the review. Otherwise,
+there is no function change against the already tested patch,
+see https://lore.kernel.org/all/aD8JOlDVP4ufgv44@pathway.suse.cz/
+
+Best Regards,
+Petr
+
+ kernel/printk/internal.h |  2 ++
+ kernel/printk/nbcon.c    | 26 ++++++++++++++++++++++++--
+ kernel/printk/printk.c   | 20 +++++++++++---------
+ 3 files changed, 37 insertions(+), 11 deletions(-)
+
+diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
+index 48a24e7b309d..567c9e100d47 100644
+--- a/kernel/printk/internal.h
++++ b/kernel/printk/internal.h
+@@ -64,6 +64,7 @@ struct dev_printk_info;
+ 
+ extern struct printk_ringbuffer *prb;
+ extern bool printk_kthreads_running;
++extern bool printk_kthreads_ready;
+ extern bool debug_non_panic_cpus;
+ 
+ __printf(4, 0)
+@@ -180,6 +181,7 @@ static inline void nbcon_kthread_wake(struct console *con)
+ #define PRINTKRB_RECORD_MAX	0
+ 
+ #define printk_kthreads_running (false)
++#define printk_kthreads_ready (false)
+ 
+ /*
+  * In !PRINTK builds we still export console_sem
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index fd12efcc4aed..d60596777d27 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -1671,6 +1671,9 @@ bool nbcon_alloc(struct console *con)
+ {
+ 	struct nbcon_state state = { };
+ 
++	/* Synchronize the kthread start. */
++	lockdep_assert_console_list_lock_held();
++
+ 	/* The write_thread() callback is mandatory. */
+ 	if (WARN_ON(!con->write_thread))
+ 		return false;
+@@ -1701,12 +1704,15 @@ bool nbcon_alloc(struct console *con)
+ 			return false;
+ 		}
+ 
+-		if (printk_kthreads_running) {
++		if (printk_kthreads_ready && !have_boot_console) {
+ 			if (!nbcon_kthread_create(con)) {
+ 				kfree(con->pbufs);
+ 				con->pbufs = NULL;
+ 				return false;
+ 			}
++
++			/* Might be the first kthread. */
++			printk_kthreads_running = true;
+ 		}
+ 	}
+ 
+@@ -1716,14 +1722,30 @@ bool nbcon_alloc(struct console *con)
+ /**
+  * nbcon_free - Free and cleanup the nbcon console specific data
+  * @con:	Console to free/cleanup nbcon data
++ *
++ * Important: @have_nbcon_console must be updated before calling
++ *	this function. In particular, it can be set only when there
++ *	is still another nbcon console registered.
+  */
+ void nbcon_free(struct console *con)
+ {
+ 	struct nbcon_state state = { };
+ 
+-	if (printk_kthreads_running)
++	/* Synchronize the kthread stop. */
++	lockdep_assert_console_list_lock_held();
++
++	if (printk_kthreads_running) {
+ 		nbcon_kthread_stop(con);
+ 
++		/* Might be the last nbcon console.
++		 *
++		 * Do not rely on printk_kthreads_check_locked(). It is not
++		 * called in some code paths, see nbcon_free() callers.
++		 */
++		if (!have_nbcon_console)
++			printk_kthreads_running = false;
++	}
++
+ 	nbcon_state_set(con, &state);
+ 
+ 	/* Boot consoles share global printk buffers. */
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 1eea80d0648e..0efbcdda9aab 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3574,7 +3574,7 @@ EXPORT_SYMBOL(console_resume);
+ static int unregister_console_locked(struct console *console);
+ 
+ /* True when system boot is far enough to create printer threads. */
+-static bool printk_kthreads_ready __ro_after_init;
++bool printk_kthreads_ready __ro_after_init;
+ 
+ static struct task_struct *printk_legacy_kthread;
+ 
+@@ -3713,6 +3713,7 @@ static void printk_kthreads_check_locked(void)
+ 	if (!printk_kthreads_ready)
+ 		return;
+ 
++	/* Start or stop the legacy kthread when needed. */
+ 	if (have_legacy_console || have_boot_console) {
+ 		if (!printk_legacy_kthread &&
+ 		    force_legacy_kthread() &&
+@@ -4204,14 +4205,6 @@ static int unregister_console_locked(struct console *console)
+ 	 */
+ 	synchronize_srcu(&console_srcu);
+ 
+-	if (console->flags & CON_NBCON)
+-		nbcon_free(console);
+-
+-	console_sysfs_notify();
+-
+-	if (console->exit)
+-		res = console->exit(console);
+-
+ 	/*
+ 	 * With this console gone, the global flags tracking registered
+ 	 * console types may have changed. Update them.
+@@ -4232,6 +4225,15 @@ static int unregister_console_locked(struct console *console)
+ 	if (!found_nbcon_con)
+ 		have_nbcon_console = found_nbcon_con;
+ 
++	/* @have_nbcon_console must be updated before calling nbcon_free(). */
++	if (console->flags & CON_NBCON)
++		nbcon_free(console);
++
++	console_sysfs_notify();
++
++	if (console->exit)
++		res = console->exit(console);
++
+ 	/* Changed console list, may require printer threads to start/stop. */
+ 	printk_kthreads_check_locked();
+ 
+-- 
+2.49.0
+
