@@ -1,373 +1,307 @@
-Received: from esa16.fujitsucc.c3s2.iphmx.com (esa16.fujitsucc.c3s2.iphmx.com [216.71.158.33])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6EE41E5206;
-	Wed,  4 Jun 2025 04:12:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=216.71.158.33
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749010350; cv=fail; b=OzFtAt/ObohxFgLc2Ss/dq5DzRfnU1TvmhycnTKMePFkFw6jkPdxazpFNHhINzF6yZMsfC9RqUO+hRsilYLNacdU4D4pvcPyFetJLMKInfcVInjn097dTojO2FbGWdYBg9Jem3vVj35lipw1yLy2GrePKAuoG9hkiJPT0bTbPEM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749010350; c=relaxed/simple;
-	bh=sugZd5uaEQjT1W5zCgfBOGu7/cPIbGjHpwc37MM3Sqc=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=rt1z1K3pPCn7fwTsHWZAfSQcPzGSJlvEtk8hXu9/4R0ly8BQFlZWBOaL95FPabaGkSKAxN7oGfR3Mw720THVRWEjCplX7kVwojfkZ9J/CtPse2eC+7MgTarvOh5CartY5bFHZTjCikdgsrbw5FrF4i9RlZppXeQT5bWT+mj3BgA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com; spf=pass smtp.mailfrom=fujitsu.com; dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b=y2DYr6jA; arc=fail smtp.client-ip=216.71.158.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28FF92C3246;
+	Wed,  4 Jun 2025 07:28:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749022137; cv=none; b=jF1uSl4O8twE62pppmzRDLntXRrUOcSfVn58whkyS5QJGjvZW2OrKB1wZ7bb5WSs5+/alLqP/prPJiodX34TsoSirAs96BhoHagOnYwj+GzwmnebaMka2QmKWCISNn5+15zlrSWrbUF92wCMxWl1wiTF2WCtmnSPMRJ8rnsXf58=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749022137; c=relaxed/simple;
+	bh=OLcyeaK0QaFwX/QD+b6vr3goVzhNT5ae0rF/7cGv6DU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=CVi4yPLbQUKzDbP2J2rpFn+gnzqyqVGkR2hwB6BQM+yD7O0w1SIQ4RD7q4jMQ5mkaDqdk7WWG19WzOnMgkzGFGflhbijQwnQBj+7VOeobofN3hWnQAGZViicI/j61xfTOZ+CepOTkWp0nl6SgXF7OeJvNogoppM49mIGBW1ZVg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=dj8WsLub; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b="y2DYr6jA"
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
-  t=1749010348; x=1780546348;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=sugZd5uaEQjT1W5zCgfBOGu7/cPIbGjHpwc37MM3Sqc=;
-  b=y2DYr6jAigcrA6m+ayi0TQVfYrCAOmqBwfEW4byfy6w24yU+rxJjrKh1
-   k6Kl1eMOnn/iUP3QARoeZSLaZhEDzaNUlEKam2KwYoJouw32FF6ACcl4x
-   iCr/hRlNvGf47pibSJ5SsmheHUNrG00zN+z5nJmcO9ElD7fqXAsTDI8H/
-   jeLM8pMHEwakZCbqBr8uxlLjpwlwTq1YDjwO4E/i7+rYWIb4qoQxBsZs3
-   54lR8jnw+PvkjUXNMOg1OYJtU7An3m5tMvbstAuv5PXdTW0QWows3irrh
-   gthQONZSWdcQjBe9H0ri2CnnjYRM5Mvws7b42eVLVF1ME71N0IXqZsDHQ
-   w==;
-X-CSE-ConnectionGUID: myaBcA+hT8qBIDZA68Q6sg==
-X-CSE-MsgGUID: x3PXBVVcSRyjANg/TRqONQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11453"; a="157543794"
-X-IronPort-AV: E=Sophos;i="6.16,208,1744038000"; 
-   d="scan'208";a="157543794"
-Received: from mail-japaneastazon11011047.outbound.protection.outlook.com (HELO TYVP286CU001.outbound.protection.outlook.com) ([52.101.125.47])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jun 2025 13:11:14 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VQ33ztG+PZABQY2rH7ullHRby5Jc+CTJuTNhthUSzCmUqlxYOHYC0v9lFaihu0SSzEM26PBeeQfc/fGRvwDHC5hwSUDwpT8V3f0eKWw2heVVtx6gvCrP61CxKLELV6/y2MfTsN57fcFqjKnzOd9tY7NPxUBTv0cc5e+9m+q8gYvyBBxE9atZYIYta5C7xR24yif2x5IIwyCH68hAaVlb8msxDiLiW4tKDwitUJrpkzK7xZGpCAYQowsQgCL/6YTe7n/vp280AsoE4+eHqZnYdJrlBwjLA9neZc1HEIFpoNnsF/cbuuBoH2S66GJJ+1pkP9EidCBnqwxK0c05O7oIjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vVACEDmMwEomIdsjy2ZKr2BnRP2e90i/N+KBQnlziB8=;
- b=wjCh5xlnR7pNmrOMBKe6yX1Tl+spqgT9k3co6OWtodigTvjUHEHs7I/S2x1d1qDBZnD8t39Rju+QJTZcDT2RH00b2duJElYwFxqIzDhpy2JSp/5loSZlyYAdNBYZJqUqomoIee0cbVwkDiEGAMIld70clkkAbCrFxGvs3KPdGB0Un/oSOKtl/QJM2lLx7AUXiu0RraPYJdnwbT7q4nQ5yMz/QVKYfgreCkhHzC1w5txIVnnvm60YTuT9zC8ydCCjfMTsOlFGNht5tp904G+K3SqQ1rrSQtgS4bBPBmRGchyqW3L2g51fcVoPNVkBzXXqDEjpr+KNU11t/0eXnC3i7Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-Received: from TY4PR01MB13777.jpnprd01.prod.outlook.com (2603:1096:405:1f8::9)
- by TYCPR01MB12110.jpnprd01.prod.outlook.com (2603:1096:400:449::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.37; Wed, 4 Jun
- 2025 04:11:11 +0000
-Received: from TY4PR01MB13777.jpnprd01.prod.outlook.com
- ([fe80::60b7:270b:27c7:4fcc]) by TY4PR01MB13777.jpnprd01.prod.outlook.com
- ([fe80::60b7:270b:27c7:4fcc%7]) with mapi id 15.20.8813.018; Wed, 4 Jun 2025
- 04:11:10 +0000
-From: "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com>
-To: 'Michael Kelley' <mhklinux@outlook.com>, 'John Ogness'
-	<john.ogness@linutronix.de>
-CC: "pmladek@suse.com" <pmladek@suse.com>, 'Ryo Takakura'
-	<ryotkkr98@gmail.com>, Russell King <linux@armlinux.org.uk>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
-	<jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "Toshiyuki Sato (Fujitsu)"
-	<fj6611ie@fujitsu.com>
-Subject: RE: Problem with nbcon console and amba-pl011 serial port
-Thread-Topic: Problem with nbcon console and amba-pl011 serial port
-Thread-Index: AdvULbS8DdGjT9TLS9OOSVhbv2AtDgAN1+gwAALFDgAAAfWTAAAeB8Ng
-Date: Wed, 4 Jun 2025 04:11:10 +0000
-Message-ID:
- <TY4PR01MB13777674C22721FCD8ACF4FCCD76CA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
-References:
- <SN6PR02MB4157A4C5E8CB219A75263A17D46DA@SN6PR02MB4157.namprd02.prod.outlook.com>
- <OS7PR01MB13775FE1A20762D1EA4A38D0ED76DA@OS7PR01MB13775.jpnprd01.prod.outlook.com>
- <84y0u95e0j.fsf@jogness.linutronix.de> <84plfl5bf1.fsf@jogness.linutronix.de>
-In-Reply-To: <84plfl5bf1.fsf@jogness.linutronix.de>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_ActionId=be343133-71c6-4d99-8848-8967c516ceda;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_ContentBits=0;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_Enabled=true;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_Method=Privileged;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_Name=FUJITSU-PUBLIC?;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_SetDate=2025-06-04T01:30:08Z;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_SiteId=a19f121d-81e1-4858-a9d8-736e267fd4c7;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=fujitsu.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TY4PR01MB13777:EE_|TYCPR01MB12110:EE_
-x-ms-office365-filtering-correlation-id: 71b26a35-165b-4ef6-c9b0-08dda31dd6a6
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|7416014|1800799024|366016|1580799027|38070700018;
-x-microsoft-antispam-message-info:
- =?iso-2022-jp?B?bm1wamNyckx1TGh0bzhpZ01Jb0d6NHZIc3JmWVFuelJPUks4Rm1ndGVY?=
- =?iso-2022-jp?B?VEVOYTZhYWg1WDZFRTU4d3B5aW4yNTVpTnBxVWVxK2ZMN3l4UTB4TGgr?=
- =?iso-2022-jp?B?QW8yRUZnWWhqd1pwTFpWdXY3N2V2L0VYOUw3dmptSmJlRGNUQ2YxcGIv?=
- =?iso-2022-jp?B?SmtqeDZZMFhmdUFpRVNPbWNiTTNkZnNVREZFaWFVYXlsZndTVkYzUW5H?=
- =?iso-2022-jp?B?bUxiN1IydFBIMzJ3bFhpWkYzcGp0Q3JYOE1zaWtUdytqaWdoMk9Ob3I0?=
- =?iso-2022-jp?B?Sm5la2pSZnFEMEJNSkZjZ2dRVi82KzlkalNMOUpaeTNmOUhwVURpb1px?=
- =?iso-2022-jp?B?SXgyNGRPNVNsdTdteTFhTFNSK29GdWNUdTdBcU1yZXlMUEFXMzJWNjRo?=
- =?iso-2022-jp?B?SkxuTUxJMExSTzlKSHB3RGVKTk13MkVLekY0cFk5d05oV0JXSnpyUVZJ?=
- =?iso-2022-jp?B?V2lqRTZZZnJxdXlCZ0orVGphRHh2eEw1emNFRnFXS2dmQ0NudDB0dFN2?=
- =?iso-2022-jp?B?QmFIWXB2cWxPalViWHJKN2x1cXFLeWY2Q2oySHVvUXc2ZGlLQkVMNHRR?=
- =?iso-2022-jp?B?bEk4UnFEV1h3Y0VDd3Y2WG9aMUhCVHdPUFFFNy94Y0ptcmlMaExrS1VG?=
- =?iso-2022-jp?B?d2Y1N1dYYy9OaTZ3bkxhMTNPN0lya1lOcUdER3c4L0RLTWExdHJGNDFD?=
- =?iso-2022-jp?B?dUptQXJ4WHJlZVUyRUZkWEZHMXVwcEFhOXFXN3JoT3E5dFJxSVNsUXVv?=
- =?iso-2022-jp?B?a3ZqM0ZZQ0V0TmxJVjdNNGNNS2J1SFhkOTNNUVJNUzkyeURibExNMkRi?=
- =?iso-2022-jp?B?aFA1ZDVKckVhTUp5YkxadVN0akdMc0thZUpKd1laYXhrT09OYVNJRm1U?=
- =?iso-2022-jp?B?MVk4UnhnbWEzN3NZRk9mZzdvM1VoSU83Z29nT1lzQ0FsNm5UYVNCTHM1?=
- =?iso-2022-jp?B?K3kzS21UK0FtdzlDdjF0SC94dWpOclZ1VTcxTzlkbVB6UUhDOUtnQVRq?=
- =?iso-2022-jp?B?dkVaTHY2UTY0WWlrSUFtendoMzFZSmk0amUrTFdxSi9FQkNidGNQUUlw?=
- =?iso-2022-jp?B?dHR3VktYTWlPakY0WGRGR0VERTUzSWVlaUZxSnp3Z0szTUpseGNpOC84?=
- =?iso-2022-jp?B?dGQ3eHI4VmgrNGdnUEhtd05VbEVIWmE3cExBYjljN1JlVU5wSUsxUkpK?=
- =?iso-2022-jp?B?RGhyQ1N0U3lBWmx4aTB1TnlGOS9DQTJITnZQL3JnbUtiMHdQbWZoTi9G?=
- =?iso-2022-jp?B?TmQ5MmI4V0JrYjcweUJheWlkT1ZKWHNxc0p3aVR0aHdkUmZISGtkZzVp?=
- =?iso-2022-jp?B?c3VWbUZIVkFpSXl2Wm1TN1ZZR1gwTW5XdVVibWE0aFVNVkcyd2ZPVW1z?=
- =?iso-2022-jp?B?ZTRmUDNGMWN6MU55TjVxNmlmQlQzUWpONllyZTdDS1BlSnNoVldJSXNJ?=
- =?iso-2022-jp?B?TTAxNlN2YXN4dHFBdUl5blFtOCs0YVEzZzJMQ01oNk9zZHVnYkoyMmlB?=
- =?iso-2022-jp?B?Yng3Z3M2akxiZTI5QklUcFFlUFNkSWk3UmJjYUxGSnF4RjRiZGRGOHlD?=
- =?iso-2022-jp?B?ZTRLbmdwcHJENzlDWFhURCtocUFIZjJ1ZjFTUlBVZEZlenBUSjZHTVRx?=
- =?iso-2022-jp?B?VnhLSnl1MmxMWDZlRElhRG1mT2dzdUI0eWxnNGJ3QlBlaStNZVludVFD?=
- =?iso-2022-jp?B?cWthejkyc013OGF2K08zV1UvYTdxSGRnSTM1bkJXeVdnY1puc2puVG94?=
- =?iso-2022-jp?B?UGcyRXlXSlBPMmNOeXA1a0xDV2VpR2VLREVPNTd1bkdkSmkvdFc1Nlk1?=
- =?iso-2022-jp?B?SlNub0xqK1BxRk5NNFVTWVNYM1RjQzNsTHIzY1ZTRC9wbytzRzNvU2lV?=
- =?iso-2022-jp?B?Z09COG1rQnIvdjFtTE1LeXBEWC9HZE8xbHFYQjB3Wlk5cmhJYWxHWkRX?=
- =?iso-2022-jp?B?Yjc5Z0ZqbUMwNzJMd3RqbnJGdmhGWm13N2wwbzBGaUd5UDJUSmorTVdS?=
- =?iso-2022-jp?B?MnBWQWJHOTdaSE5UMGhwMEhpU1BhRnFhUjZUTmFPNk1YeXJSSnY1cXhz?=
- =?iso-2022-jp?B?YlZrUzFaNHdHQS9CSVRSS2QzS2V6WGNXMERSUURVWmxEbEdhbHFPSnZj?=
- =?iso-2022-jp?B?MjFYV0dMYmIwWEtvRHpZSmVqVGJkNEt0dHF1b0t3dUlHODJPSDZGbHBX?=
- =?iso-2022-jp?B?WHdYQWVmSklnRkg0VStJZVVtZ3hZczNK?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:ja;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY4PR01MB13777.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016)(1580799027)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-2022-jp?B?MUtSdWZJeHFKaUw5clVDQ0RMMklVd1VuOGUxUzJDZnk2a2VROHRZTmFU?=
- =?iso-2022-jp?B?UWl2UE1HSmhyMTZ6VU1TNnQzL3pmOGEvaitwU0ZmOUYvbmppUDZTb2RP?=
- =?iso-2022-jp?B?Q0owVXFxTDdmRTVzcElSb3JWS0V4T3hlVUtMSWNKOEhEWGdhYmNsZk5Z?=
- =?iso-2022-jp?B?MVI4NVVROVl1YW9QYVZUSjlVL3pmRHRPZCtBY3YxbHExcFpLOCtrVSsv?=
- =?iso-2022-jp?B?MGhLWmVQMktzVGhhWmZRWlR2eWN1VXZXeW5nMjZnVzBXRWpubUlUNkJE?=
- =?iso-2022-jp?B?eWw0UzdhM1RWRG1HckFUR1J2bmluN3lCVTc2K3dOYUhRNTF0RnhCVHlz?=
- =?iso-2022-jp?B?Q0FFdGlEMXRPbUg2dFZ6azBTcHBSOHRwbWlGOGZua0xva1VQZ1hDUXRC?=
- =?iso-2022-jp?B?MDI0WFhHWE5tS3RCT0l2T0RQU0xYRXJiVHZpaHFQSG9PS1VlZDNjMkFK?=
- =?iso-2022-jp?B?Y3YrbmFyejAzWDFlT0UvYVBjZStqY1hEdmVRenk2RS8yS2wxa0pzZGsr?=
- =?iso-2022-jp?B?V1o0SkFUZmdiNFh6L2xDODF6RjRhMW5YV3JJWkZ5VmoxQzMrcnpWbm1T?=
- =?iso-2022-jp?B?alRKU1JTMEZWdUZRQVVTN2ZtaktidkZvZlVjQkE1L0k2ZHdpN01uQnRx?=
- =?iso-2022-jp?B?aEtmVUhzWUh5dUs4R2xTeDdQK2RsQkN5TkFVNEhpcmFZSzJKbjEzekI1?=
- =?iso-2022-jp?B?d3lzMWdXbFlIanJEV0pFT2lzK1NES09GUGt0UU1YUjJDYjNwNkpPM3hk?=
- =?iso-2022-jp?B?NWhZQWNtbXRlUmQvSWk2ck9ncjFtdXVmL0NKS2lublcvcHhjYjZPcVB6?=
- =?iso-2022-jp?B?eHI5V3FxOWJUZG1nenphcU5XUlNpNlB1SFNUK1VQd2RyYXc2d3BueG5U?=
- =?iso-2022-jp?B?Q3UrR1hwdE5ZdGJLa2RXRVNVbmdGNHRwUkEwNlZpUXg1Rm9majZ1OUhK?=
- =?iso-2022-jp?B?SEFXakxWVVZCUEgzeEdmZGwrTi9kc09TM2lkQlZUQkZkbGZ2VFppZDRW?=
- =?iso-2022-jp?B?V0F4a2I4eWZGTG1qWDl2MUMrejgyMnVsUlZsZHlZakJYNy9nM0FJa2g5?=
- =?iso-2022-jp?B?Qlhxb3YxMmxKYlk5cEh3dHc0OW1Sd2tqd3BqZmVVa0Y3cWUzMWxVcC84?=
- =?iso-2022-jp?B?SDVoR0puUVAySFBKcC8zVld5Y00zSDFubkI5RFlRTndMYm5YcjdNV1gv?=
- =?iso-2022-jp?B?N0N3WjliTERqMWgxTG1RQ1cwTmdKYjYvL21rYXQ2NkM3MXdqaDhVdGJ6?=
- =?iso-2022-jp?B?Q2tzRmd6U0tXVm13NUVFVVBTaVVMYzZZdHIxS0RRaWNaOFMvRmFQVEhu?=
- =?iso-2022-jp?B?cGp6bFdZeWR5TU83ZEFkTExLY2dsNFlpUE1OYVVzVnJ0TDB3aWJuNHVn?=
- =?iso-2022-jp?B?ZG54RUZWVkk4elhmSDhPRFFtUm1GeHM1eW1qTHp3c01DSmFiQ0pNZlNa?=
- =?iso-2022-jp?B?SHYzaEZWUUQ0bnB1SFd0V21kRERTMU1oenVRdEdtbHBlbERKSkxIYVh4?=
- =?iso-2022-jp?B?R0FHbXU1ZlkxZk1aNFhEenZSTUwyN0J2bVAvdVYyMjRRbTRMSE53MWRn?=
- =?iso-2022-jp?B?T01iTSsxUGJIMHgzc09GbldvMks0dlZmQVcwcTZoYkYzZlkrRU5sbTVa?=
- =?iso-2022-jp?B?aXFCQ3FqK241dkQ0UmZoamU3em1BdXAvV21xQjV1QmMwN3p2cmU4enRT?=
- =?iso-2022-jp?B?UDdNSEo1dG9jeUF3SjhVYmhQS3NFRVFhSUJnQjNlTE5DZjlEOVV0eFIx?=
- =?iso-2022-jp?B?Tng2bWd3bjkwL3dXck1FdmZPNUlvTkFsaGNleFRGV1kvdnRsbkt2RGFr?=
- =?iso-2022-jp?B?ZzRVNk1wWU1nUEZQUmtBYjN5cWhGdUptNmdUZnJwM25BbW52SC9ySGpU?=
- =?iso-2022-jp?B?eFFJekJtK2VGN2hJMFd0aExYUDZTKzNFUWFUTmpTZVVsbjhJcy9pa1k5?=
- =?iso-2022-jp?B?RVNyQVZwZXZkVHlYazlDS29aNWI1V1JGVkNEYjRWSVQ1dTdpU08vRTlC?=
- =?iso-2022-jp?B?WjBaZDd5eEVudjgrRHY4R29tN0lsak9ZQmZ6QVA3djlvZlBVU1JjcnQ5?=
- =?iso-2022-jp?B?dlpKVjRqV1I1OStqRnFWRjgydlp6R05aS01MVm55UlB6TUViazF2OFJD?=
- =?iso-2022-jp?B?TlBiNnJGdytnWWlqNjVrWGlUK2JEZkhNb2tHbTR4bFlFVnZHNEZnM1A1?=
- =?iso-2022-jp?B?TDlWc2JKS3ZIU01GcG00M2RZSjJudk9qcFpBSEFqbStoTFFUNWpjMmFp?=
- =?iso-2022-jp?B?NmtjSEI2VndkenNPdkI2OENwMVJBbWRrdVFDbjk0R0NSaXhrdEpRaU9K?=
- =?iso-2022-jp?B?eURPNWlzM1dpVy9hamx4ZHQ1T1l5S0RtTWc9PQ==?=
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="dj8WsLub"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 553Jrjql027289;
+	Wed, 4 Jun 2025 07:28:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	u488RfVb+B5wzmvfwRwAr9mI64t5M7PCEZ6lB41OcjA=; b=dj8WsLubuC7c18AM
+	MbU7EWxwaup6ZgzF3NzJH5l7EeDICqeKR+9JlpYeUXWd6i5Qh5oozdbz8AVxeYEt
+	X/pVkPNfsB7B7jyfrww6UYjzDeWetd4LfiB/SEszTva5ZbQaYvTYyyPPiQpeoNli
+	qe4vpWjHT6+2gZ2oDE6pGaBpEDgqYeoSLOtCApnepiHgJngZ4JbeYd0CO2jsBY3m
+	3V+L+S0AvUx1qcUuH4IX+4I6RzHAoku+H4cYnYHfwuHb3vyuid7mUu8U5IT2PV+Q
+	8XEIp6rmh+VvnbJHuy27iQzu8F/JTzDUnjFTQfTHRMnYy0EEWKxehztdoDYISEMW
+	rV3HGA==
+Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 471g8sw674-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 04 Jun 2025 07:28:49 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5547Snn7030313
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 4 Jun 2025 07:28:49 GMT
+Received: from [10.218.32.171] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 4 Jun 2025
+ 00:28:43 -0700
+Message-ID: <85ba8e7b-a1a5-4f70-9660-bb78e7169acc@quicinc.com>
+Date: Wed, 4 Jun 2025 12:58:40 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	oiK+VplRtKOsa1I5QomPS6CscZw0hKuwFvRG+Z6UdpZ0HjZY2tGN+COhFYDchAf92fhQhZxwkysQDiMKUhNNNvqkRSt3UHdd/J76MKkPaazulz2aW3ZJarmEtP5KIA+0PkluU806Laa8g62kiPapLM6C3MitxK1mWD4PGoDYc8GT+0hvN9ov1IbZ50d4/IIE+Ys8qAsdkVscvL7tQulAiV/4jcVFnS3q6tll3cdunPaO+e4Vo/ZGWtSM02T1FyWs5gXl8YFfFQ8feLsroR+/owaummcyUFNdfx4VaA7Tyoufcr7nN5lxy6Ug+TM82zinfo2o3IHH74PFQX9mIaJQjtY2syCr+KU0BP/PakkNnGYVP+lbwlqs/yLYU5QOgEiTKbqHk0WO09xQxDgykXxaSyhtSHzwO1T6T0M5Q7i+GADMFCKYkD2CwU6bKdjtzUvO7Xq0X0ThPOQSmP57Tiyc/97un8A79FCUtevGtpnFsPYrSN4KUANNTMUk9TD0Ek8hWUVGUabGyQz/CHZbnWFi5D8QEoUgUNqZZ8A3r9Qx7IiDnnTYe+9El3KVUc8vzbbZvtHgcb8FGwOXJz4tPJ89JnXxzt2knOs8P5srQ63wm/gHagr39r6uqyOqK0aZt7/w
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY4PR01MB13777.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71b26a35-165b-4ef6-c9b0-08dda31dd6a6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2025 04:11:10.6536
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nJNSEMF3LHFQ8TZBdA4brPLNz8DCgv/TvRoTyrq5WH22CGHMEWzaM80Zg7ZwccWk9/fSlBaclegTb1+iJGBLj/mHloDM2oIYvoJ2KLBUfko=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYCPR01MB12110
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 3/8] soc: qcom: geni-se: Enable QUPs on SA8255p
+ Qualcomm platforms
+To: Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio
+	<konradybcio@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
+References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
+ <VgXAbpS__r4C24FLFz5nqCPgygil3nr3-oNHbL7bQxE0X1GnDStFaWlnts8iSxCeG6TCqa8mzIFqOysqIlWeJg==@protonmail.internalid>
+ <20250506180232.1299-4-quic_ptalari@quicinc.com>
+ <e6517c54-9163-48d1-80c2-4fd964dac349@linaro.org>
+Content-Language: en-US
+From: Praveen Talari <quic_ptalari@quicinc.com>
+In-Reply-To: <e6517c54-9163-48d1-80c2-4fd964dac349@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Authority-Analysis: v=2.4 cv=RMizH5i+ c=1 sm=1 tr=0 ts=683ff5b1 cx=c_pps
+ a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=COk6AnOGAAAA:8
+ a=A-9vhQJTosZNU69VUx0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA0MDA2MCBTYWx0ZWRfX+H6QsDyPIo7Y
+ dSyNjfZAiaeQz9Ycve8F55B7SnHZ6lejl/cW2hFZ/WPnspPBEckuWqQBwlCzyuIqUqXKDOF0YOO
+ OiE2n5tMp32PZnwh3/PGN7RW8ejwT/szXvkM/Xqo7A0bTwCFOdoGamqfTmhAeJQbh6rT7iYNRIz
+ +xrMtDY7AjdfybCCqX+Qc3gGTvlctsQZ8ynsQkHNVvu2KNA7wgeLdqdXB3jyw0fAzHDb9anbCj4
+ rI7E4nezFjoRlIxgD/lR8G9uC2EdreagjBgzSMDXSrUAJyNDjcCTTEfHpiD5GSpLBvAf2NuAelb
+ oCR7nsjcb1QrBDjQo93MBPcRHMrMgpwN+RT0HlRxtZ8QRSmeoIidVR8z+iJ0DC+kjXIOOn6+s+H
+ 7s0+xGAs2Bh/1S1hazU/mSi99X78e+zRx/RcHY0JLVGsSJ2f+Qhkw7WX32Ciyx4XENob006a
+X-Proofpoint-GUID: b1JSqOmHQJWpaQnaLH6hGB6qWUK8yNxG
+X-Proofpoint-ORIG-GUID: b1JSqOmHQJWpaQnaLH6hGB6qWUK8yNxG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-06-04_02,2025-06-03_02,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 phishscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0
+ bulkscore=0 suspectscore=0 adultscore=0 mlxlogscore=999 mlxscore=0
+ clxscore=1011 priorityscore=1501 classifier=spam authscore=0 authtc=n/a
+ authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2506040060
 
-Hi Michael, John,
+Hi Bryan,
 
-> Hi Petr,
->=20
-> On 2025-06-03, John Ogness <john.ogness@linutronix.de> wrote:
-> > On 2025-06-03, "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com> wrote:
-> >>> 4. pr_emerg() has a high logging level, and it effectively steals the=
- console
-> >>> from the "pr/ttyAMA0" task, which I believe is intentional in the nbc=
-on
-> design.
-> >>> Down in pl011_console_write_thread(), the "pr/ttyAMA0" task is doing
-> >>> nbcon_enter_unsafe() and nbcon_exit_unsafe() around each character
-> >>> that it outputs.  When pr_emerg() steals the console, nbcon_exit_unsa=
-fe()
-> >>> returns 0, so the "for" loop exits. pl011_console_write_thread() then
-> >>> enters a busy "while" loop waiting to reclaim the console. It's doing=
- this
-> >>> busy "while" loop with interrupts disabled, and because of the panic,
-> >>> it never succeeds. Whatever CPU is running "pr/ttyAMA0" is effectivel=
-y
-> >>> stuck at this point.
-> >>>
-> >>> 5. Meanwhile panic() continues, calling panic_other_cpus_shutdown(). =
-On
-> >>> ARM64, other CPUs are stopped by sending them an IPI. Each CPU receiv=
-es
-> >>> the IPI and calls the PSCI function to stop itself. But the CPU runni=
-ng
-> >>> "pr/ttyAMA0" is looping forever with interrupts disabled, so it never
-> >>> processes the IPI and it never stops. ARM64 doesn't have a true NMI t=
-hat
-> >>> can override the looping with interrupts disabled, so there's no way =
-to
-> >>> stop that CPU.
-> >>>
-> >>> 6. The failure to stop the "pr/ttyAMA0" CPU then causes downstream
-> >>> problems, such as when loading and running a kdump kernel.
-> >
-> > [...]
-> >
-> >> After reproducing the issue,
-> >> I plan to try a workaround that forcibly terminates the nbcon_reacquir=
-e_nobuf
-> >> loop in pl011_console_write_thread if other_cpu_in_panic is true.
-> >> Please comment if you have any other ideas.
-> >
-> > For panic, if it is OK to leave uap->clk enabled and not restore REG_CR=
-,
-> > then it should be fine to just return. But only for panic.
-> >
-> > So something like:
-> >
-> > 	while (!nbcon_enter_unsafe(wctxt)) {
-> > 		if (other_cpu_in_panic())
-> > 			return;
-> > 		nbcon_reacquire_nobuf(wctxt);
-> > 	}
->=20
-> Actually this is not enough because there is also a loop inside
-> nbcon_reacquire_nobuf().
->=20
-> nbcon_reacquire_nobuf() needs to return an error for the panic case
-> because it will never succeed. This is the only case where it will never
-> succeed. Should we use a bool? Or return some code like -EPERM?
->=20
-> So the above code becomes:
->=20
->  	while (!nbcon_enter_unsafe(wctxt)) {
->  		if (!nbcon_reacquire_nobuf(wctxt))
->  			return;
->  	}
->=20
-> We should also add __must_check to the prototype.
->=20
-> Thoughts?
->=20
-> John
+Thank you for review.
 
-Thanks for the suggestion, John.
+On 6/3/2025 7:51 PM, Bryan O'Donoghue wrote:
+> On 06/05/2025 19:02, Praveen Talari wrote:
+>> On the sa8255p platform, resources such as clocks,interconnects
+>> and TLMM (GPIO) configurations are managed by firmware.
+>>
+>> Introduce a platform data function callback to distinguish whether
+>> resource control is performed by firmware or directly by the driver
+>> in linux.
+>>
+>> The refactor ensures clear differentiation of resource
+>> management mechanisms, improving maintainability and flexibility
+>> in handling platform-specific configurations.
+>>
+>> Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
+>> ---
+>> v3 -> v4
+>> - declared an empty struct for sa8255p and added check as num clks.
+>> - Added version log after ---
+>>
+>> v1 -> v2
+>> - changed datatype of i from int to unsigned int as per comment.
+>> ---
+>>   drivers/soc/qcom/qcom-geni-se.c | 73 ++++++++++++++++++++-------------
+>>   1 file changed, 45 insertions(+), 28 deletions(-)
+>>
+>> diff --git a/drivers/soc/qcom/qcom-geni-se.c 
+>> b/drivers/soc/qcom/qcom-geni-se.c
+>> index 4cb959106efa..b6e90bac55fe 100644
+>> --- a/drivers/soc/qcom/qcom-geni-se.c
+>> +++ b/drivers/soc/qcom/qcom-geni-se.c
+>> @@ -105,6 +105,8 @@ struct geni_wrapper {
+>>   struct geni_se_desc {
+>>       unsigned int num_clks;
+>>       const char * const *clks;
+>> +    int (*geni_se_rsc_init)(struct geni_wrapper *wrapper,
+>> +                const struct geni_se_desc *desc);
+>>   };
+>>
+>>   static const char * const icc_path_names[] = {"qup-core", "qup-config",
+>> @@ -891,10 +893,44 @@ int geni_icc_disable(struct geni_se *se)
+>>   }
+>>   EXPORT_SYMBOL_GPL(geni_icc_disable);
+>>
+>> +static int geni_se_resource_init(struct geni_wrapper *wrapper,
+>> +                 const struct geni_se_desc *desc)
+>> +{
+>> +    struct device *dev = wrapper->dev;
+>> +    int ret;
+>> +    unsigned int i;
+>> +
+>> +    wrapper->num_clks = min_t(unsigned int, desc->num_clks, MAX_CLKS);
+> 
+> It should be an error to depend on more clocks - which are specified in 
+> a descriptor down the bottom of this file than MAX_CLKS allows.
+should i keep condition before assign num_clks to wrapper->num_clks as 
+below right?
 
-This is a proposed fix to force termination by returning false from
-nbcon_reacquire_nobuf when a panic occurs within pl011_console_write_thread=
-.
- (I believe this is similar to what John suggested in his previous reply.)
+if(desc->num_clks > MAX_CLKS){
+{
+  	return dev_err_probe(dev, " to many clocks defined in descriptor:%u 
+(max allowed: %u)\n", desc->num_clks, MAX_CLKS);
+}
 
-While I couldn't reproduce the issue using sysrq-trigger in my environment
- (It seemed that the panic was being executed before the thread processing)=
-,
-I did observe nbcon_reacquire_nobuf failing to complete when injecting an
-NMI (SError) during pl011_console_write_thread.=20
-Applying this fix seems to have resolved the "SMP: failed to stop secondary
-CPUs" issue.
+Please correct me if i am wrong.
 
-This patch is for test.
-Modifications to imx and other drivers, as well as adding __must_check,=20
-will likely be required.
+Thanks,
+Praveen Talari
+> 
+>> +
+>> +    for (i = 0; i < wrapper->num_clks; ++i)
+>> +        wrapper->clks[i].id = desc->clks[i];
+>> +
+>> +    ret = of_count_phandle_with_args(dev->of_node, "clocks", 
+>> "#clock-cells");
+>> +    if (ret < 0) {
+>> +        dev_err(dev, "invalid clocks property at %pOF\n", dev->of_node);
+>> +        return ret;
+> 
+> return dev_err_probe();
+> 
+>> +    }
+>> +
+>> +    if (ret < wrapper->num_clks) {
+>> +        dev_err(dev, "invalid clocks count at %pOF, expected %d 
+>> entries\n",
+>> +            dev->of_node, wrapper->num_clks);
+>> +        return -EINVAL;
+>> +    }
+>> +
+>> +    ret = devm_clk_bulk_get(dev, wrapper->num_clks, wrapper->clks);
+>> +    if (ret) {
+>> +        dev_err(dev, "Err getting clks %d\n", ret);
+>> +        return ret;
+>> +    }
+>> +
+>> +    return ret;
+>> +}
+>> +
+>>   static int geni_se_probe(struct platform_device *pdev)
+>>   {
+>>       struct device *dev = &pdev->dev;
+>>       struct geni_wrapper *wrapper;
+>> +    const struct geni_se_desc *desc;
+>>       int ret;
+>>
+>>       wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
+>> @@ -906,36 +942,12 @@ static int geni_se_probe(struct platform_device 
+>> *pdev)
+>>       if (IS_ERR(wrapper->base))
+>>           return PTR_ERR(wrapper->base);
+>>
+>> -    if (!has_acpi_companion(&pdev->dev)) {
+>> -        const struct geni_se_desc *desc;
+>> -        int i;
+>> +    desc = device_get_match_data(&pdev->dev);
+>>
+>> -        desc = device_get_match_data(&pdev->dev);
+>> -        if (!desc)
+>> +    if (!has_acpi_companion(&pdev->dev) && desc->num_clks) {
+> 
+> There is no desc in this file that has !num_clks I don't think the 
+> conjunction is justified.
 
-Michael, could you please test this fix in your environment?
+there is empty struct defined below sa8255p_qup_desc.
 
-Regards,
-Toshiyuki Sato
-
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl01=
-1.c
-index 11d650975..c3a2b22e6 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2577,8 +2577,10 @@ pl011_console_write_thread(struct console *co, struc=
-t nbcon_write_context *wctxt
- 		}
- 	}
-=20
--	while (!nbcon_enter_unsafe(wctxt))
--		nbcon_reacquire_nobuf(wctxt);
-+	while (!nbcon_enter_unsafe(wctxt)) {
-+		if (!nbcon_reacquire_nobuf(wctxt))
-+			return;
-+	}
-=20
- 	while ((pl011_read(uap, REG_FR) ^ uap->vendor->inv_fr) & uap->vendor->fr_=
-busy)
- 		cpu_relax();
-diff --git a/include/linux/console.h b/include/linux/console.h
-index 8f10d0a85..ae278b875 100644
---- a/include/linux/console.h
-+++ b/include/linux/console.h
-@@ -604,14 +604,14 @@ extern void nbcon_cpu_emergency_exit(void);
- extern bool nbcon_can_proceed(struct nbcon_write_context *wctxt);
- extern bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt);
- extern bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt);
--extern void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt);
-+extern bool nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt);
- #else
- static inline void nbcon_cpu_emergency_enter(void) { }
- static inline void nbcon_cpu_emergency_exit(void) { }
- static inline bool nbcon_can_proceed(struct nbcon_write_context *wctxt) { =
-return false; }
- static inline bool nbcon_enter_unsafe(struct nbcon_write_context *wctxt) {=
- return false; }
- static inline bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt) { =
-return false; }
--static inline void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt=
-) { }
-+static inline bool nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt=
-) { }
- #endif
-=20
- extern int console_set_on_cmdline;
-diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-index fd12efcc4..ec016bb24 100644
---- a/kernel/printk/nbcon.c
-+++ b/kernel/printk/nbcon.c
-@@ -909,14 +909,18 @@ EXPORT_SYMBOL_GPL(nbcon_exit_unsafe);
-  * output buffer because that has been lost. This function cannot be used =
-to
-  * resume printing.
-  */
--void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt)
-+bool nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt)
- {
- 	struct nbcon_context *ctxt =3D &ACCESS_PRIVATE(wctxt, ctxt);
-=20
--	while (!nbcon_context_try_acquire(ctxt))
-+	while (!nbcon_context_try_acquire(ctxt)) {
- 		cpu_relax();
-+		if (other_cpu_in_panic())
-+			return false;
-+	}
-=20
- 	nbcon_write_context_set_buf(wctxt, NULL, 0);
-+	return true;
- }
- EXPORT_SYMBOL_GPL(nbcon_reacquire_nobuf);
-
+> 
+>> +        ret = desc->geni_se_rsc_init(wrapper, desc);
+>> +        if (ret)
+>>               return -EINVAL;
+>> -
+>> -        wrapper->num_clks = min_t(unsigned int, desc->num_clks, 
+>> MAX_CLKS);
+>> -
+>> -        for (i = 0; i < wrapper->num_clks; ++i)
+>> -            wrapper->clks[i].id = desc->clks[i];
+>> -
+>> -        ret = of_count_phandle_with_args(dev->of_node, "clocks", 
+>> "#clock-cells");
+>> -        if (ret < 0) {
+>> -            dev_err(dev, "invalid clocks property at %pOF\n", 
+>> dev->of_node);
+>> -            return ret;
+>> -        }
+>> -
+>> -        if (ret < wrapper->num_clks) {
+>> -            dev_err(dev, "invalid clocks count at %pOF, expected %d 
+>> entries\n",
+>> -                dev->of_node, wrapper->num_clks);
+>> -            return -EINVAL;
+>> -        }
+>> -
+>> -        ret = devm_clk_bulk_get(dev, wrapper->num_clks, wrapper->clks);
+>> -        if (ret) {
+>> -            dev_err(dev, "Err getting clks %d\n", ret);
+>> -            return ret;
+>> -        }
+>>       }
+>>
+>>       dev_set_drvdata(dev, wrapper);
+>> @@ -951,8 +963,11 @@ static const char * const qup_clks[] = {
+>>   static const struct geni_se_desc qup_desc = {
+>>       .clks = qup_clks,
+>>       .num_clks = ARRAY_SIZE(qup_clks),
+>> +    .geni_se_rsc_init = geni_se_resource_init,
+>>   };
+>>
+>> +static const struct geni_se_desc sa8255p_qup_desc;
+>> +
+>>   static const char * const i2c_master_hub_clks[] = {
+>>       "s-ahb",
+>>   };
+>> @@ -960,11 +975,13 @@ static const char * const i2c_master_hub_clks[] = {
+>>   static const struct geni_se_desc i2c_master_hub_desc = {
+>>       .clks = i2c_master_hub_clks,
+>>       .num_clks = ARRAY_SIZE(i2c_master_hub_clks),
+>> +    .geni_se_rsc_init = geni_se_resource_init,
+>>   };
+>>
+>>   static const struct of_device_id geni_se_dt_match[] = {
+>>       { .compatible = "qcom,geni-se-qup", .data = &qup_desc },
+>>       { .compatible = "qcom,geni-se-i2c-master-hub", .data = 
+>> &i2c_master_hub_desc },
+>> +    { .compatible = "qcom,sa8255p-geni-se-qup", .data = 
+>> &sa8255p_qup_desc },
+>>       {}
+>>   };
+>>   MODULE_DEVICE_TABLE(of, geni_se_dt_match);
+>> -- 
+>> 2.17.1
+>>
+>>
+> Other than those minor details looks pretty good.
+> Please include me in v6 and I will review further.
+> ---
+> bod
+> 
