@@ -1,136 +1,151 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDA9D18E1F
-	for <linux-serial@vger.kernel.org>; Wed,  4 Jun 2025 13:42:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 291F02900B0;
+	Wed,  4 Jun 2025 14:10:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749044546; cv=none; b=Otg5fLKpQ/RjFTlSnZODlWZ0+NYqnoGXxya0Tbeli5sY4pObKyTDQxULeaN41zO4/ytw6MObuNw6LBqi6pExU1ObUDIdBHoe0dm7Md1qFJ0TsBDSzdOgqwCtraKirH5L/oyemIVTZQVOPxFsKt/ewP00B2TY+BcMGUYkFbTyYuw=
+	t=1749046203; cv=none; b=unDzUR9Buu4Vnc+XwfXBroHeMhdPVWZRB6OFjeXrzX2SgObt20oPnqM5YAwfa6715Mj8e5/ADuNeVZPe5UOYMGLZ+HxZUjhw80MUIk97SrqHhLf2zhMne1wZcs6Gm6ylCbKvBWySUZlrnx8QDlkoEI8msozCZLWTaIUFtnisHvY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749044546; c=relaxed/simple;
-	bh=dIABzik+Xpu8YPlwTdFf/8MsdySvzM2KB+LBe47QblU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F+Msg7F8ScjJEOJBqjwIY7j2z24NCEMgJLqMtv2adXmRidrzUhka0f2m7Yuq1Co95NDW6l4U653RTr+YB3TUtvcdW2t+HnGhCbbyDADKsCPMF9JoNzjG6gbxJTecfNw1UzsHmH4VYSLPOFIjMUm3fHLGJAeS/mdwgunextXEUgs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=ejPz2crY; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1749046203; c=relaxed/simple;
+	bh=B2ABg1wz3GCV/5nlluOeLv+jcW/anS6JFpPQBFpgC+Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=AWF1gIs4Pm5x9fXBA/imRQcuOKN2KLxxNLQpyruw9/39yaKV+/vF3y5hu6PtO0fN88c5fcWwLfcRNVs1kmHfwBS08ivAjrYNpR/MwLwh2S8aLraghTlVk2RIGQtrfAFLLgcxFyit+6VbVZOaxPIcgGNjjar7Z5rcenwVoINwwsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=CT2N6f/E; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="ejPz2crY"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-3a375e72473so3976626f8f.0
-        for <linux-serial@vger.kernel.org>; Wed, 04 Jun 2025 06:42:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1749044543; x=1749649343; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=4krNLYqTu5PwEOLh0tYgHTp5VBnZZoifiHQYwqKpyGI=;
-        b=ejPz2crYxqiM5ee2GjwBptlCsRtZLdTE86Ds6mlULeCOLIxRaDeXyuGLCNRk66Ah7b
-         b2iYquU8MD+v4KJ70vTS7bPPxR5ZHt7TYZu5+yd76gYLmtL7vx68E8MKDXAAf/qSsX4U
-         xhZX8T05hPnPC9D7zeu5l2maVyqLlUPdVRoAzhFtxBLrq3LxunOFppY0uA2mPWD/ZPDi
-         Cvu0WPFc0ZQeTsqd/Sb56df7Yx9sxUXbjRzOSCDSAp7PxamDdHZm/xxYbBJTzLHG7NK2
-         hcpimXO9HvDHNNbr1WBsN6boMYDKYeTidtkRiT5vwwPOHCZp2K93ibobGRztLq24qEb3
-         ooRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749044543; x=1749649343;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4krNLYqTu5PwEOLh0tYgHTp5VBnZZoifiHQYwqKpyGI=;
-        b=ANt5L9OeGFpNt07eMs9sotGiYgLz5Rp8zjkZDcUnqYigR/MDv6PNiCjU+4I2BFj154
-         DYCrSYDIuCM6/fqTi90uK9xiDDbAwpGfEFeJl/rXqpcLqZ/rtRDzuGZsZrYOAw75IKrK
-         ZOKZYo8nBD6oyUGPaSI2tIaSQlykLfXZKeuHWZszciI/uE564dg9JpXC492m2g7wtFqA
-         nOAw5kktCSP0//fIE1vnGjtdw8Bc6ESHJojJAjnl9UdrMczUjphZI9AEOdTpZCbgCCPk
-         T1BmqgkswRmHMtXFff5dZBMwJsD9v9+w1R1GiRQx4kEqAwBSoDhAOpDPN7HzD/7nI1qE
-         JqyA==
-X-Forwarded-Encrypted: i=1; AJvYcCWdXj/u0h0Zy0sbCuCWnbf/WUzIgR3I2c96rC4nrybwiWXHy8SDVwW0LxzC22ODMvv803bZeWTnJX3EQhs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx0JYsAn/uxYY/dOsqqnl5nCT12CHprnz6ZV+NiBus/YvvZ+XMW
-	NjW9RKUTv1pELg1dD/rfGR+TyO4Hr7Dk9Wa3ehRPYxYxVh+WGf3h2Lkp+aMJVcTkPRw=
-X-Gm-Gg: ASbGncsZRAyFAOJrTbqkODhC+ZgiduT6Avqa0qHzaf/HrgIgmLLyXIYn9x06EEdT8Ui
-	PXL3axBSFucVtrtFN2/z75dNB0+zWOed7RSCa9LgqouRTscFxMo5lCVlN2DcfGJxZ6g85/9R/3P
-	1GcfTObC9/DboiwMBGC8brAhrWlXfdpGfShCZGT8Wa3Px3Rs/Ug0viuyrrPUyDtdcgH8UgYO1vO
-	kgwLSVaopWHkU2NwqJ/PcZgnbyqMcErwaDHZoXJ0FM3bSMRCAg0f8c3CkNbZ68YpPRmX3n2csrP
-	xpyXt8L6wQfom4DxfPCkX/LEmhoFQKnFFWOvzK7fsuDeH5BPlzKWOA==
-X-Google-Smtp-Source: AGHT+IFBf1ks7FvkIM9/KgiSH1Nm0ceyhd9C2E9/xug+Okpyo/jMkoHYpfHI27ynqCD67VSiZ+dtUg==
-X-Received: by 2002:a5d:588d:0:b0:3a4:f7dc:8a62 with SMTP id ffacd0b85a97d-3a51db2deedmr2311080f8f.0.1749044543082;
-        Wed, 04 Jun 2025 06:42:23 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3124e32feecsm8910312a91.47.2025.06.04.06.42.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Jun 2025 06:42:22 -0700 (PDT)
-Date: Wed, 4 Jun 2025 15:42:04 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com>,
-	'Michael Kelley' <mhklinux@outlook.com>,
-	'Ryo Takakura' <ryotkkr98@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
-Subject: Re: Problem with nbcon console and amba-pl011 serial port
-Message-ID: <aEBNLMYVUOGzusuR@pathway.suse.cz>
-References: <SN6PR02MB4157A4C5E8CB219A75263A17D46DA@SN6PR02MB4157.namprd02.prod.outlook.com>
- <OS7PR01MB13775FE1A20762D1EA4A38D0ED76DA@OS7PR01MB13775.jpnprd01.prod.outlook.com>
- <84y0u95e0j.fsf@jogness.linutronix.de>
- <84plfl5bf1.fsf@jogness.linutronix.de>
- <TY4PR01MB13777674C22721FCD8ACF4FCCD76CA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <aEApOPTqbVOR35F_@pathway.suse.cz>
- <84o6v3ohdh.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="CT2N6f/E"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5548ObLq013606;
+	Wed, 4 Jun 2025 14:09:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	7Lm/hVQBqxHZuoTLZRaf4HoCuxZUf0ilzEKB6T/CUQc=; b=CT2N6f/E18W/8Xnm
+	qdlOmx8mcFFma8nJKf16rTU4cuP0arw+4BxBvjUSTnvRZmLkaBkxVEPvjHm2tMpx
+	NGYVd7Q8x3Oxs54720vx+nSOhZBrOw6pAmyU4HXXWb+WwsxOfteFWllGjRmKMGH7
+	N14XRoQpubN5xntluyAgm6gQsC+oCED6xMbUtjB3mZvUFtD41efqbozMmO/yGJtS
+	M5s2FEtNVgeyPEzQ4TeYHyOPKyxViE96+4vdBNvqdiycGka48ly8zDebJaNCd4QE
+	XSCJkmQKHW/O8w9sUudZ+teggUWJL3u7Cbmrru7JHYvA/5QZ/XfkwhwNvXn7s8fN
+	sxLzsQ==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 471g8np8vq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 04 Jun 2025 14:09:55 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 554E9tZl018095
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 4 Jun 2025 14:09:55 GMT
+Received: from [10.216.5.91] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 4 Jun 2025
+ 07:09:49 -0700
+Message-ID: <0daf396a-29af-458b-a7ba-3b711b22cde9@quicinc.com>
+Date: Wed, 4 Jun 2025 19:39:45 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <84o6v3ohdh.fsf@jogness.linutronix.de>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 5/8] serial: qcom-geni: move resource control logic to
+ separate functions
+To: Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio
+	<konradybcio@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
+References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
+ <vTOsjvsB7oSpu2Oe8i1ufoz5C2Hy3EtfDnfBsLag2p-s63J0BLdqbLn44Hds17WR12JGfo7sd52k7uHaXlTTeQ==@protonmail.internalid>
+ <20250506180232.1299-6-quic_ptalari@quicinc.com>
+ <f912588b-fb54-4257-a4d8-db58e93b8378@linaro.org>
+ <y41ikVJ5uSSaGZHmqsvTm9akz3EUUT7X6dTPrfSuIYqGmMdlEfPRWqPA630jmsEzwC-6JSgYRPobg4e933PgxA==@protonmail.internalid>
+ <afe41159-00e4-45d1-857f-0a68f6fc6c8e@linaro.org>
+ <6b7ca51a-241a-49fc-8aac-da5af96b5e10@linaro.org>
+Content-Language: en-US
+From: Praveen Talari <quic_ptalari@quicinc.com>
+In-Reply-To: <6b7ca51a-241a-49fc-8aac-da5af96b5e10@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: z6yQMhYhryW_9wQWU3XXftpSRpkf-1-M
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA0MDEwOCBTYWx0ZWRfX5rwUcoh+0KBv
+ iU3XtrSQV03RVhFbdGSS06rO+6Yl5KW4J5JEcYJ4EgmWoigHVuRRgIOYSydQOVsbWGn8N62ubUx
+ ubZ31D9nDwTftLiemlHqNzxfnLOmssps7IIar7MOiBEDlljfGDVQHkDEjNXYceH30tKyLZYIQrA
+ Di4btjY9ZWWMbbu5N8TrpJKT3ZeAYHV9ghXKBBKf4eY88EcEwN4Y9XuRiPjKNRl35NF+aVqPzcO
+ DLr8ioW3tUePu2xXuNcy+yqYZcGZwaYEQmzc88sHTC0Q7yy5oXrHkecPX2/j3TTkiCt1EE8zKsR
+ 5ILjQqrrgFFvIjIszrMJPZNPtEJDPmbmtKZw4zZLiwvxdsF/Yt466uVDnmI0drn7o/JisI7RuRt
+ kOdF3zta9ky+mvmax9SbQ0pBtevYmThJb0TmQUJpMbQonwvwE6a2MmvLPgL7fufKyu1S8exy
+X-Proofpoint-ORIG-GUID: z6yQMhYhryW_9wQWU3XXftpSRpkf-1-M
+X-Authority-Analysis: v=2.4 cv=UphjN/wB c=1 sm=1 tr=0 ts=684053b3 cx=c_pps
+ a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=KKAkSRfTAAAA:8
+ a=s5ISWN8GRDGLSXsRgHIA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-06-04_03,2025-06-03_02,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 spamscore=0 impostorscore=0 lowpriorityscore=0
+ phishscore=0 mlxlogscore=999 clxscore=1015 malwarescore=0 adultscore=0
+ bulkscore=0 mlxscore=0 suspectscore=0 classifier=spam authscore=0 authtc=n/a
+ authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2506040108
 
-On Wed 2025-06-04 13:56:34, John Ogness wrote:
-> On 2025-06-04, Petr Mladek <pmladek@suse.com> wrote:
-> > On Wed 2025-06-04 04:11:10, Toshiyuki Sato (Fujitsu) wrote:
-> >> > On 2025-06-03, John Ogness <john.ogness@linutronix.de> wrote:
-> >> > > On 2025-06-03, "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com> wrote:
-> >> > >>> 4. pr_emerg() has a high logging level, and it effectively steals the console
-> >> > >>> from the "pr/ttyAMA0" task, which I believe is intentional in the nbcon
-> >> > design.
-> >> > >>> Down in pl011_console_write_thread(), the "pr/ttyAMA0" task is doing
-> >> > >>> nbcon_enter_unsafe() and nbcon_exit_unsafe() around each character
-> >> > >>> that it outputs.  When pr_emerg() steals the console, nbcon_exit_unsafe()
-> >> > >>> returns 0, so the "for" loop exits. pl011_console_write_thread() then
-> >> > >>> enters a busy "while" loop waiting to reclaim the console. It's doing this
-> >> > >>> busy "while" loop with interrupts disabled, and because of the panic,
-> >> > >>> it never succeeds.
-> >
-> > I am a bit surprised that it never succeeds. The panic CPU takes over
-> > the ownership but it releases it when the messages are flushed. And
-> > the original owner should be able to reacquire it in this case.
+Hi Bryan
+
+On 6/3/2025 8:16 PM, Bryan O'Donoghue wrote:
+> On 03/06/2025 15:29, Bryan O'Donoghue wrote:
+>> On 03/06/2025 15:28, Bryan O'Donoghue wrote:
+>>>> 2.17.1
+>>>>
+>>>>
+>>> Assuming you address my points.
+>>
+>> [sic]
+>>
+>> Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+>>
 > 
-> The problem is that other_cpu_in_panic() will return true forever, which
-> will cause _all_ acquires to fail forever. Originally we did allow
-> non-panic to take over again after panic releases ownership. But IIRC we
-> removed that capability because it allowed us to reduce a lot of
-> complexity. And now nbcon_waiter_matches() relies on "Lower priorities
-> are ignored during panic() until reboot."
+> Oh please fix this in the next version
+can i fix this in separate patch since i haven't touch these two lines
+or
+fix within same patch?
 
-Great catch! I forgot it. And it explains everything.
-
-It would be nice to mention this in the commit message or
-in the comment above nbcon_reacquire_nobuf().
-
-My updated prosal of the comment is:
-
- * Return:	True when the context reacquired the owner ship. The caller
- *		might try entering the unsafe state and restore the original
- *		console device setting. It must not access the output buffer
- *		anymore.
- *
- *		False when another CPU is in panic(). nbcon_try_acquire()
- *		would never succeed and the infinite loop would	prevent
- *		stopping this CPU on architectures without proper NMI.
- *		The caller should bail out immediately without
- *		touching the console device or the output buffer.
-
-Best Regards,
-Petr
+Thanks,
+Praveen Talari
+> 
+> checkpatch.pl --strict mypatch.patch
+> 
+> CHECK: Alignment should match open parenthesis
+> #92: FILE: drivers/tty/serial/qcom_geni_serial.c:1675:
+> +    else if (new_state == UART_PM_STATE_OFF &&
+> +            old_state == UART_PM_STATE_ON)
+> 
+> total: 0 errors, 0 warnings, 1 checks, 71 lines checked
+> 
+> NOTE: For some of the reported defects, checkpatch may be able to
+>        mechanically convert to the typical style using --fix or 
+> --fix-inplace.
+> 
+> 0005-serial-qcom-geni-move-resource-control-logic-to-sepa.patch has 
+> style problems, please review.
+> 
+> ---
+> bod
