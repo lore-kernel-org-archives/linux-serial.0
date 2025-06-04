@@ -1,48 +1,65 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75E9432C85;
-	Wed,  4 Jun 2025 17:11:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB4C31C84C4
+	for <linux-serial@vger.kernel.org>; Wed,  4 Jun 2025 23:49:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749057108; cv=none; b=rmTTpw/kAOZoe7mxMdnnPCeD4BnjdX9wZxMJM06SqYZUMBawPS5dLGzNAFTAE5o+/bDNwlbKBdPalYyfQB1W7gmzWz6V7ky3WbgmkGFl5IQ9Jqz9XBf4OunOmFd7XMuvRngx4VhKn8I9OLzRVuStskscRIKYkygTDbfeD5IdF28=
+	t=1749080960; cv=none; b=sVlXH/iszl31MAfmSURpxYLXEXJaK7SuiTu4BNYwdvZzjeWD6bHngvOfjqsLwEn+LAUskmAmy3bQE6S0VSfiPKLA4cfW/IVIM1On6jdExukrC3xVObbRU4w+2d2rdKPv7rNb7KLhLrnSDy5LElxHlIYsaDlAMNa+pVNX1g25Bzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749057108; c=relaxed/simple;
-	bh=u3RQ0MuAj7Hb7zignGUFDcyFEUbjoKeV7VD5W4yl4Ds=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=SlAfoa6gHG+STJtbX6etUGAzMjQoz1tM2xqZXietne4O8P8nzr94fRuS1wWAoFhvAfpekRuba6u4Qr/fLaFpkB+WDe586rQDBHHm8nq6JXxSD90r1wVMKGuQq3M9WGZUWkZlyuwvGH+06gosNjVfUr17siLTzF+0UvXmhvrtmwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=jQAn5OhK; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1749080960; c=relaxed/simple;
+	bh=ZESbz4ELnO8zQblI3om9NB+hAW28VwXYgt6cEiXrarg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bF6djcYme8qOeDf4GHZt0tUs2aKm0VEMVgTTdsFebk1RMJhidR3VmQOUCh0yTcrlNQT4zwcPM8Rh2hM5Hg8XvZfCf/b+rivfzbSY58sMG3dSVrxkn/+DCtb115uVOzaG1FGEOPzEqThk9U92CtMMIe00mD9kFvTDN6Bwf/Y1F4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=eKSlsQB+; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="jQAn5OhK"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5549PEuC012867;
-	Wed, 4 Jun 2025 17:11:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	4i/ajO3EBvye/1TdHU6V/5kg4qohajAkIxEF+I0YpZo=; b=jQAn5OhKTrqEHiMd
-	zW/+EUK8xtFGjFf7qflhY0x+7VcdHnGthBYYW5KBCO6a/7R3SsIQzsV4tH30BaHy
-	QSEDSTVI8DH0V+AAoNbG0I2pnSJTNob802aTr6AP98cl0GRSc7gb5DCOv4udt80D
-	Xogl01iHu/OXBMQGL8xoQEgOUwCCon7bh9Hpa7LNXdWt+5oQx6IXETOxmNA7jZWP
-	8gRRHov3x6hZ7NEQ0xm+1qGOPQallVyGudmtQVhxhFkhX9X08W/RsI6b7cpFw4fE
-	RYOupe14ApzF+GyV8YQb/fgtBvqm8MHyST8ZuxekYygYbZmtLI15tlbk0mbjXZ9c
-	uHnhTw==
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47202wcewv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Jun 2025 17:11:40 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 554HBdfj027919
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 4 Jun 2025 17:11:39 GMT
-Received: from [10.216.5.91] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Wed, 4 Jun 2025
- 10:11:33 -0700
-Message-ID: <8f18716f-cba2-4615-950a-63b6b73e23e9@quicinc.com>
-Date: Wed, 4 Jun 2025 22:41:30 +0530
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eKSlsQB+"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-451d3f72391so4027215e9.3
+        for <linux-serial@vger.kernel.org>; Wed, 04 Jun 2025 16:49:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1749080954; x=1749685754; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=LXMgX1rI0BiX2paFRHt2ngtjy2dYKyJCurcIJGGVP0I=;
+        b=eKSlsQB+axJ2wBrBCcutB3u/sEifgBhfgzUGAXXMdeQQEVtOpHlVvpd8O0jbeWn7nj
+         oiPgcvs7+si4r3rftBX02Ijlfw6LrW4jkD1rHsgm+BoG/2Jbmu2CJOAezK0/MkzlDLTF
+         ND2HOjbvFzq1krlSILyAn+ByDVinaD5ubP3s8qTludNEpGdVXQTMdpDsVYNZiJ4o+R/l
+         oFT5QmQaG2ggRpjrY1xuc017x6gJ3sr3mxY1qfcRDjMVMrDgltopcruGloUWrPuSNuxm
+         DcsFCV6IuMB+khXbT9ezTn3tk37dktAZMY5NCcqIcCSWsDz0TddBcQtkFeNYwxjPC3Fs
+         P/HQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749080954; x=1749685754;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LXMgX1rI0BiX2paFRHt2ngtjy2dYKyJCurcIJGGVP0I=;
+        b=apYUnrK0XuBaY5LGALeLSwZl++e6XCYp9nHKSj1cfcu52+tp7tvgY+z43faBuCXeYv
+         u2YHahMHwqQLjiPTkr4f1vA4M30gmh/97KMW48azXqnqVAI8gqgMaYFoTDrtjGyTQcPd
+         DYDGZ0dX40PRTuuOfgDDsCSTo2KIHI+VEPZrZTkhMbzVg6oDL4O0FgFsqSojsDFD3QOR
+         O2fyR9YmrFufUFSP4mVqZqWcY9bumffO0mYxffH9Hq0I2LgytQeRfaxqQdFujLi9Sm1c
+         +pBIYnTgVJgBTseLxEsWNCbXEKw4KsKI2IZCyclRc9NLGnNtGg3jkaUsoEjZzHD54Isb
+         0PDg==
+X-Forwarded-Encrypted: i=1; AJvYcCWZ/4S7WYd5y2vEeIKemU5Mb0kJZoxF8XbNL3j1NdIF3Ta6L9wyRqG26RwaFWZAmMvw7qiPu2hYvrl2kPU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwEUthJ6NHg9qMAbS5CbCFmvE7h6ObuLvbuXLr3890sUHFwKkMS
+	4dFTckHhKc20YufYUBi8WzMZQwlFIOqvjDOsfcpjkL2DADE4etvKgtpiIO8wfhNbArs=
+X-Gm-Gg: ASbGnctoI/WOpA1BOnLakQf+Vx2zzosoR3FWibycoI+wCsIqEHmSGhRSaMuuvMH2hUH
+	TqYn2I6+SDrrnlXOo9MPsEVQuRznfuBYzaOvzCPjxS90sultCzddQnl7BerZ8X+HG5zLW5a3Gwx
+	QQxQs6j4eUiLoGyMXhQ5VGtiuJ5CMD40wyh8kd4TYsWTyvJdQq0leNVTZnxYrD6eKunY3CgEFaB
+	7llrToxp26D8U2PGKHLr1uMqiJGSoAUXruu+yDRs8TzcPyQdHahjXMk+FYp5oPVEqykrbreBLu5
+	4JnEud0C3gy1GlZrJJly0YYJChxdNS7VbeB2anEnnKSmrcd90otSN1vymrLtoV4a7q5+jf5QwnV
+	zZTvAy9x6euSISgyF
+X-Google-Smtp-Source: AGHT+IF1mChU7rsrPqSp02CZnJuBIHPZRlYSiml5HbxrDzi778Xa2HmHel+wqN5T3oDjSRgQCq7PnA==
+X-Received: by 2002:a05:600c:3b01:b0:450:cf2e:7c92 with SMTP id 5b1f17b1804b1-451f0b0e796mr46847795e9.16.1749080954166;
+        Wed, 04 Jun 2025 16:49:14 -0700 (PDT)
+Received: from [192.168.0.35] (188-141-3-146.dynamic.upc.ie. [188.141.3.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-451f9816cdasm5975275e9.13.2025.06.04.16.49.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Jun 2025 16:49:13 -0700 (PDT)
+Message-ID: <bdcc3e48-ceee-45bf-bc4f-f0e63d44b333@linaro.org>
+Date: Thu, 5 Jun 2025 00:49:11 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -52,86 +69,41 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v5 6/8] serial: qcom-geni: move clock-rate logic to
  separate function
-To: Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio
-	<konradybcio@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
+To: Praveen Talari <quic_ptalari@quicinc.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org
+Cc: psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com,
+ quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
+ quic_mnaresh@quicinc.com, quic_shazhuss@quicinc.com
 References: <20250506180232.1299-1-quic_ptalari@quicinc.com>
  <VkNsXqYDdmwW9dutwc76Dv8ks2pvgcUwpf1UREJXhbXDQRaobVZL8m0hLz6rsOG-v6CjyAW3vHbuKMiPc9kN_Q==@protonmail.internalid>
  <20250506180232.1299-7-quic_ptalari@quicinc.com>
  <47d19ad8-37ad-462f-8cb3-d39c29008709@linaro.org>
+ <8f18716f-cba2-4615-950a-63b6b73e23e9@quicinc.com>
 Content-Language: en-US
-From: Praveen Talari <quic_ptalari@quicinc.com>
-In-Reply-To: <47d19ad8-37ad-462f-8cb3-d39c29008709@linaro.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: iWmGidyfj-w3FQMyXgezkWXLZfUxlxSI
-X-Proofpoint-GUID: iWmGidyfj-w3FQMyXgezkWXLZfUxlxSI
-X-Authority-Analysis: v=2.4 cv=Y/D4sgeN c=1 sm=1 tr=0 ts=68407e4c cx=c_pps
- a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10
- a=_xQr-q912Lc-BbZZ_8YA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA0MDEzMiBTYWx0ZWRfXyXwx1MucbnsN
- OGiLiLBKmhrD1SKNCUV9IfBS4kYo9csA5FA2AcadXHwtYokIyPuBWKX/ZH/qaW1kgiTcvkZW2Kx
- iC/H9VldSVmaf9oSkbMwWCior114Ayww47nq9dROiP6KwhdrjQ3YkFzL5h9+mNdipoqMSP/Hq0g
- DjRoDJ1igVDxPU03cOuwoD8DsM8vjUuFnhKUQ4YvhrTJZhTg7tZnQFt3/6vCwb13yGCl4/Bt0/v
- ocNAleuf6KxncmZqIg/zGumoRYElX4Bq4JX8PGH74BTyILqqk4DTXsJytza+wbOHGKrt9IJMwmy
- uio9x5i8fZEVxTgU3waQaHuDPLQLHP1NbTuhQFjGf4giRi9pywgU8fLqcRx1bDK1ww0FYP1XY54
- U9tBvtZJQUHiy8wBQW2Hv2bBlXcksFa5YseSFUfft7iT4k17irNzcFSfGYKfJXTkxpPGyAgG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-06-04_03,2025-06-03_02,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 priorityscore=1501 spamscore=0 adultscore=0 impostorscore=0
- lowpriorityscore=0 phishscore=0 mlxscore=0 mlxlogscore=999 malwarescore=0
- bulkscore=0 suspectscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506040132
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+In-Reply-To: <8f18716f-cba2-4615-950a-63b6b73e23e9@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Bryan,
-
-On 6/3/2025 8:11 PM, Bryan O'Donoghue wrote:
-> On 06/05/2025 19:02, Praveen Talari wrote:
->> -            "Couldn't find suitable clock rate for %u\n",
->> +            "Couldn't find suitable clock rate for %lu\n",
->>               baud * sampling_rate);
->> -        return;
->> +        return -EINVAL;
->>       }
+On 04/06/2025 18:11, Praveen Talari wrote:
+>> Separate this stuff out.
 >>
->> -    dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div 
->> = %u\n",
->> -            baud * sampling_rate, clk_rate, clk_div);
->> +    dev_dbg(port->se.dev, "desired_rate = %lu, clk_rate = %lu, 
->> clk_div = %u\n",
->> +        baud * sampling_rate, clk_rate, clk_div);
+>> Your code should match the commit log. If you want to convert %u to 
+>> %lu make a patch to do that, even if it seems trivial, it is better to 
+>> make granular submissions.
 > 
-> Separate this stuff out.
-> 
-> Your code should match the commit log. If you want to convert %u to %lu 
-> make a patch to do that, even if it seems trivial, it is better to make 
-> granular submissions.
+> It comes under newly added API. Do we still need to make separate patch?
 
-It comes under newly added API. Do we still need to make separate patch?
+Best practice is to split this stuff up.
 
-Thanks,
-Praveen Talari
-> 
-> ---
-> bod
+If your commit log says "I'm moving code" then it should _only_ move 
+code, don't sneak any other changes in, no matter how seemingly innocuous.
+
+---
+bod
