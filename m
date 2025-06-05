@@ -1,213 +1,121 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f52.google.com (mail-pj1-f52.google.com [209.85.216.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62C21B3930;
-	Thu,  5 Jun 2025 08:13:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 557B220B22
+	for <linux-serial@vger.kernel.org>; Thu,  5 Jun 2025 09:46:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749111229; cv=none; b=TbdEjkFecRjYtEwMsnGHNQBOpX6OX54TJtF6yqyjHwgR5dtfv78Bj/RDZZpHKelbkanAWtQXuzDyKzKHxcjxCR7WkVeoQGXT1qXVL3DCYy/zMexh+b37vpSYKRo6rV6Mhe9Pa1bF7SGQUyOi2BqcJudlS/625Jbt+1Df2fwdnZI=
+	t=1749116804; cv=none; b=GQw+4xnFURR4vTJ3kTgPU3P4AbzCdV8Pj0/u50TkM3FOxm5WWESpG95g2rNnii0cGdYjRmiUMUG9/p4afEz80mKEMPYiyGjwNAV/Rd+wjoOBI1IHS9G604hiBjcynNxUBClCtKPEgLi/yzKr43LhYNRWV4vrlrdbpjXbJoG4zRI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749111229; c=relaxed/simple;
-	bh=PQ8oJKn+wDAOWt+FQK/1/p76F8hS0x3RslUhMmOtWLQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=uLM+tEYUxqf7+apO/8d4DzQMjyc8cQIdgY9gYW69yIRmYczaOZ6/jMxWfbD2YYvOtBS8qsPLyg1kV5K9ktFgC7wMbaBlBuxNyu4UQ+UttgLXdHO8rRfJuuzsnrIZDu5T2AEXsmL91/7J24KF4LnA2Kvnj+LzETy5cy6xlrD+jVs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=P/kRnII/; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1749116804; c=relaxed/simple;
+	bh=wnNS4HhULRyBFREAvZHyfSws5K9uvj//gUc7yGT6CpI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LeT2Q1YJgVjb9o0F0v23XLC1uyq4LQTD0qSIgKbCpx17OnpqC9obR0S8OILYqA8Fu/hGX2n30NhhebcxA+LdSTWCm6Bxnl83UkHqNYUT/5wpsBDFEYPBf3mgSzR9Bn4rvQjl967KtwVHhDwwot4c2KrZ6w5N9EVfBWujkvWJ+5g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk; spf=pass smtp.mailfrom=thegoodpenguin.co.uk; dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b=t24rVWWp; arc=none smtp.client-ip=209.85.216.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thegoodpenguin.co.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="P/kRnII/"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5557rYGi007396;
-	Thu, 5 Jun 2025 08:13:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	3wLWCjM3LjpzCoxQQVkdh3UlKQDoh3jVUIb7/PyAWHU=; b=P/kRnII/Recy7Y5a
-	jwobYoI6ingNrWcVDgCSaJEZFUdu8wYgCc+/xvY0IMZiZHuNOQawUPyVOjqywWYA
-	2d7OWstGIs60u77Dd+OIQiVUf9DPBupEQO5tbZLavueoxHkXZChjxcCUwE7ENac/
-	91jZhLg8ahR6oyd5MxFjt0TjB9Pq1cO5HX6SZLUqRAqProI4bVI31x0cmfwH17IH
-	BCSST9ynT8TWdcAeuZKPbBy9X8EbkVv60UsO/pxS+1rzFcHP9lkOBCCshM+Mdqe2
-	noDYJXamMpGEpONOJDiIjP9eROVSJ7kXBmBghyNEDYLwEgCjxmFqLahUknhFWFor
-	wKza0w==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 471g8t0jks-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 05 Jun 2025 08:13:42 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 5558DfZb030012
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 5 Jun 2025 08:13:41 GMT
-Received: from [10.253.8.208] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 5 Jun 2025
- 01:13:37 -0700
-Message-ID: <c531923d-ddb7-4512-b0b3-ac0998167b75@quicinc.com>
-Date: Thu, 5 Jun 2025 16:13:34 +0800
+	dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b="t24rVWWp"
+Received: by mail-pj1-f52.google.com with SMTP id 98e67ed59e1d1-311a6236effso577530a91.2
+        for <linux-serial@vger.kernel.org>; Thu, 05 Jun 2025 02:46:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=thegoodpenguin-co-uk.20230601.gappssmtp.com; s=20230601; t=1749116802; x=1749721602; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=wnNS4HhULRyBFREAvZHyfSws5K9uvj//gUc7yGT6CpI=;
+        b=t24rVWWp60WwkOJ6moR2eXoU0A553vsmxVKAh8BDBQtUN8Wdr8hb+RuAQoKnj/jxG3
+         zGP3zZcVuCXHNPdn3OJR94GNsPSc9b1FM8cWiu9wHkd6XdDImASxc0lUgWl1DT5SEKAn
+         /dWLWtmOw33EfVDP9+dNBdFoZzmwZcqHvuXsb8clN6Xl5xAnvaQRibGyvrIllvYW5LbG
+         JBcNUXyLz+UpPy2cRb0mnxcdoJVK68JCeoKR24+ZY/NqPuSEvGAH3FTYoMdlQU2/dhhj
+         r7pKR6hMvznLjBH23y6oGjYaMgr6LqVt7nC8OD3c6YZCImsk7HEs6mJg1rB+6afCSGNe
+         Tadg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749116802; x=1749721602;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wnNS4HhULRyBFREAvZHyfSws5K9uvj//gUc7yGT6CpI=;
+        b=Hvmnzcf0voxushsr1lRsZQm6kO4+ykorg4G1EfkQOnS1njUdLL0WHwHLcruZEDtZPu
+         18UnC+X2phXM6UclC17fLxI0WkoorqTR3sgw/njsmyU9dKK5oS0iSBLf0D+7ulifByTL
+         qaCv4WgKZHO8XyN/io3ugxu04gqBy18TpLblpvGNfyMU4kVjpcMVWcDpnhhMEpNBgRyr
+         AKUCJOy8D+X6/9rSnhNkCaNbdzQOKVGzXGFVCuPRYE/wNJbHOXyfFqLswUtKSd6y5lgY
+         44P3yTD0PDkWSgr81BLTPY9J8NRLdZ8ltiYiimKjxCNWXdLzHG4a/3a7ODBTl5jlhftq
+         MM6w==
+X-Forwarded-Encrypted: i=1; AJvYcCU2Fyj+ZV5JZh66h9OlB4ZdNnkGMhZpDD3T3btNmeZERfLjWlT3Ux3SE49czl97wRDJusXihyNbhVMfL44=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzaoWUmOSSsRINC2huRzttKgPlxhb0tSZtnGKAgm8hMlagk6h2i
+	YWZCD4vU5FNUCSmjvA6DNYS/5jQGdGP0UXC6q+lZ2t27qX7pv1JlrH4Y5T8zQdsolvl+KnD7/mq
+	eA4Od36Cng4WLNa+W59NRluCvq2XY2mOI7HgP+TvJlw==
+X-Gm-Gg: ASbGncvctxrA3XgA249hnqhdcadtCdWm7zKQz9bPcfSZx/rEQ6pIUFjuDFECK2FVEy8
+	jnp0Cy/8y/2QaFkC1FDsBLt36OPe9C0qeKA4RPU5EXALFbPrjSS94wKnfUCpMujtspM7sxy+pni
+	ZOK5+4usZ5MDpzdtoOqSQHtE/W+6Zx0PY8
+X-Google-Smtp-Source: AGHT+IFGGi6RW+Ple5Wj2uUthdfC6mUCtgiFUSAwFtEXZ2lvtu6VqU7yOVFh2lRK8DXTZ1sibCEWgX3LcQt6ubIiNGI=
+X-Received: by 2002:a17:90b:4fc9:b0:311:b413:f5e1 with SMTP id
+ 98e67ed59e1d1-3130cd7b12emr7162901a91.32.1749116802568; Thu, 05 Jun 2025
+ 02:46:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] tty: serdev: serdev-ttyport: Fix use-after-free in
- ttyport_close() due to uninitialized serport->tty
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC: Rob Herring <robh@kernel.org>, Jiri Slaby <jirislaby@kernel.org>,
-        <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <liulzhao@qti.qualcomm.com>, <quic_chejiang@quicinc.com>,
-        <zaiyongc@qti.qualcomm.com>, <quic_zijuhu@quicinc.com>,
-        <quic_mohamull@quicinc.com>,
-        Panicker Harish <quic_pharish@quicinc.com>
-References: <20250430111617.1151390-1-quic_cxin@quicinc.com>
- <2025043022-rumbling-guy-26fb@gregkh>
- <d388b471-482b-48ba-a504-694529535362@quicinc.com>
- <2025050851-splatter-thesaurus-f54e@gregkh>
- <38bf94e1-ebed-4d03-8ea0-4040009e8d31@quicinc.com>
- <8e171057-b3c3-4808-b49e-f04ffd310b31@quicinc.com>
- <2025052926-net-economist-a016@gregkh>
- <2025052957-jawless-superhero-09be@gregkh>
- <25361fe1-988d-41cc-a5f0-76773e41531a@quicinc.com>
- <2025053107-ancient-departed-a202@gregkh>
-Content-Language: en-US
-From: Xin Chen <quic_cxin@quicinc.com>
-In-Reply-To: <2025053107-ancient-departed-a202@gregkh>
+References: <20250604142045.253301-1-pmladek@suse.com>
+In-Reply-To: <20250604142045.253301-1-pmladek@suse.com>
+From: Michael Cobb <mcobb@thegoodpenguin.co.uk>
+Date: Thu, 5 Jun 2025 10:46:31 +0100
+X-Gm-Features: AX0GCFsGRKoKjDpzuaKJUW8xRoFbxRydeDfH7Jd7KKAH6uvxjps5xknvmV5dIko
+Message-ID: <CAC251sX=FezWGmZ==hAJg+8sbe-MS_CVSx8HwJfFthiAh2-L5g@mail.gmail.com>
+Subject: Re: [PATCH] printk: Allow to use the printk kthread immediately even
+ for 1st nbcon
+To: Petr Mladek <pmladek@suse.com>
+Cc: John Ogness <john.ogness@linutronix.de>, rostedt@goodmis.org, 
+	senozhatsky@chromium.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Authority-Analysis: v=2.4 cv=RMizH5i+ c=1 sm=1 tr=0 ts=684151b6 cx=c_pps
- a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10
- a=2vsLSQM2qi3k9njhwQwA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA1MDA3MSBTYWx0ZWRfX3khncYxEAafL
- dEpViInOc2FT8yROPW0mFhUvgisqjpE9Gqb//cx7RePK39jJylWO0+WCTwpKka14e0Rbwr1TzpU
- wFFDFqsyEC8kmgb2JF+7AWrH4eaecwWIw4RhD2bdS7FPB0q1XF9dtR9mAmEsQvtsNOdQ2ImlEko
- 4H48EfLCi5nMSh9QlJKKlWuF9mAQuJYK+4SzGuT8JG2kv8r+UUfsaexfhP/WVr1je2xMbgqUd3e
- zeO/+DHyjdkqH+rZKi8tN8L/t+295atydIjHQWj+p8AW1XOi1xFc8Ibn9FLJ9BJZ9a7lf0xgxSL
- +EdcSI8KH9aHyDXEVvWdyJNz2I4xcFDP0GRqdH+6yr+rhELRqhZO4UZLr7ZCcUbLhzZcTGUc9HA
- 8B6FTGFQ9Ajk+JHkuPPylu9vwVLuxFgVnkASpTKSqjn8JVX7IInoubTEiJGfZW6GZjGFEtNr
-X-Proofpoint-GUID: zvBQ0NIrQvHro7dNCiI8F1B2KFjsaRCK
-X-Proofpoint-ORIG-GUID: zvBQ0NIrQvHro7dNCiI8F1B2KFjsaRCK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-06-05_02,2025-06-03_02,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 phishscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0
- bulkscore=0 suspectscore=0 adultscore=0 mlxlogscore=999 mlxscore=0
- clxscore=1015 priorityscore=1501 classifier=spam authscore=0 authtc=n/a
- authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2505280000 definitions=main-2506050071
 
+On Wed, 4 Jun 2025 at 15:21, Petr Mladek <pmladek@suse.com> wrote:
+>
+> The kthreads for nbcon consoles are created by nbcon_alloc() at
+> the beginning of the console registration. But it currently works
+> only for the 2nd or later nbcon console because the code checks
+> @printk_kthreads_running.
+>
+> The kthread for the 1st registered nbcon console is created at the very
+> end of register_console() by printk_kthreads_check_locked(). As a result,
+> the entire log is replayed synchronously when the "enabled" message
+> gets printed. It might block the boot for a long time with a slow serial
+> console.
+>
+> Prevent the synchronous flush by creating the kthread even for the 1st
+> nbcon console when it is safe (kthreads ready and no boot consoles).
+>
+> Also inform printk() to use the kthread by setting
+> @printk_kthreads_running. Note that the kthreads already must be
+> running when it is safe and this is not the 1st nbcon console.
+>
+> Symmetrically, clear @printk_kthreads_running when the last nbcon
+> console was unregistered by nbcon_free(). This requires updating
+> @have_nbcon_console before nbcon_free() gets called.
+>
+> Note that there is _no_ problem when the 1st nbcon console replaces boot
+> consoles. In this case, the kthread will be started at the end
+> of registration after the boot consoles are removed. But the console
+> does not reply the entire log buffer in this case. Note that
+> the flag CON_PRINTBUFFER is always cleared when the boot consoles are
+> removed and vice versa.
+>
+> Closes: https://lore.kernel.org/r/20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 
+Tested-by: Michael Cobb <mcobb@thegoodpenguin.co.uk>
 
-On 5/31/2025 3:20 PM, Greg Kroah-Hartman wrote:
-> On Fri, May 30, 2025 at 04:34:49PM +0800, Xin Chen wrote:
->>
->>
->> On 5/29/2025 5:41 PM, Greg Kroah-Hartman wrote:
->>> On Thu, May 29, 2025 at 11:07:25AM +0200, Greg Kroah-Hartman wrote:
->>>> On Fri, May 23, 2025 at 10:52:27AM +0800, Xin Chen wrote:
->>>>>
->>>>>
->>>>> On 5/14/2025 5:14 PM, Xin Chen wrote:
->>>>>>
->>>>>>
->>>>>> On 5/8/2025 5:41 PM, Greg Kroah-Hartman wrote:
->>>>>>> On Thu, May 08, 2025 at 05:29:18PM +0800, Xin Chen wrote:
->>>>>>>>
->>>>>>>> On 4/30/2025 7:40 PM, Greg Kroah-Hartman wrote:
->>>>>>>>> On Wed, Apr 30, 2025 at 07:16:17PM +0800, Xin Chen wrote:
->>>>>>>>>> When ttyport_open() fails to initialize a tty device, serport->tty is not
->>>>>>>>>> --- a/drivers/tty/serdev/serdev-ttyport.c
->>>>>>>>>> +++ b/drivers/tty/serdev/serdev-ttyport.c
->>>>>>>>>> @@ -88,6 +88,10 @@ static void ttyport_write_flush(struct serdev_controller *ctrl)
->>>>>>>>>>  {
->>>>>>>>>>  	struct serport *serport = serdev_controller_get_drvdata(ctrl);
->>>>>>>>>>  	struct tty_struct *tty = serport->tty;
->>>>>>>>>> +	if (!tty) {
->>>>>>>>>> +		dev_err(&ctrl->dev, "tty is null\n");
->>>>>>>>>> +		return;
->>>>>>>>>> +	}
->>>>>>>>>
->>>>>>>>> What prevents tty from going NULL right after you just checked this?
->>>>>>>>
->>>>>>>> First sorry for reply so late for I have a long statutory holidays.
->>>>>>>> Maybe I don't get your point. From my side, there is nothing to prevent it.
->>>>>>>> Check here is to avoid code go on if tty is NULL.
->>>>>>>
->>>>>>> Yes, but the problem is, serport->tty could change to be NULL right
->>>>>>> after you check it, so you have not removed the real race that can
->>>>>>> happen here.  There is no lock, so by adding this check you are only
->>>>>>> reducing the risk of the problem happening, not actually fixing the
->>>>>>> issue so that it will never happen.
->>>>>>>
->>>>>>> Please fix it so that this can never happen.
->>>>>>>
->>>>>>
->>>>>> Actually I have never thought the race condition issue since the crash I met is
->>>>>> not caused by race condition. It's caused due to Bluetooth driver call
->>>>>> ttyport_close() after ttyport_open() failed. This two action happen one after
->>>>>> another in one thread and it seems impossible to have race condition. And with
->>>>>> my fix the crash doesn't happen again in several test of same case.
->>>>>>
->>>>>> Let me introduce the complete process for you:
->>>>>>   1) hci_dev_open_sync()->
->>>>>> hci_dev_init_sync()->hci_dev_setup_sync()->hdev->setup()(hci_uart_setup)->qca_setup(),
->>>>>> here in qca_setup(), qca_read_soc_version() fails and goto out, then calls
->>>>>> serdev_device_close() to close tty normally. And then call serdev_device_open()
->>>>>> to retry.
->>>
->>> Wait, what?  Why is qca_read_soc_version() failing?  
->>
->> Actually I have not root cause why qca_read_soc_version() fails of
->> __hci_cmd_sync_ev(). It may be relative to FW issue.
-> 
-> Please start there, don't you want to know why things are failing?
-> 
->>> Why are you retrying multiple times until either you run out of attempts?  
->>
->> This is a retry mechanism. I find the reason in the change commit message
->> "Currently driver only retries to download FW if FW downloading
->> is failed. Sometimes observed command timeout for version request
->> command, if this happen on some platforms during boot time, then
->> a reboot is needed to turn ON BT. Instead to avoid a reboot, now
->> extended retry logic for version request command too."
->>
->>> Why are you closing the port and then opening it again right away? 
->>
->> This is a retry mechanism as above said. Do you mean there should be a gap
->> between close and open? The change owner maybe don't think about this issue.
-> 
-> Why are you calling close/open at all?  Why does that do anything?
-> Doesn't that feel wrong?
-> 
-> Again, please root-cause the failure, don't try to paper over it by
-> loads of looping and odd open/close attempts that are not understood and
-> seem to actually cause other types of crashes :)
-> 
->>> What close/open pair seems totally unnecessary, why do that at all?
->>>
->>> If I read that function qca_setup(), it can NEVER detect if a failure
->>> really happened (i.e. if it does run out of retries, you just plow on
->>> and keep going and keep on registering things and THEN return an error
->>> for some reason.
->>>
->>> In other words, the error handling in qca_setup() is very suspect, why
->>> not fix all of that up first?
->>>
->>
->> qca_read_soc_version() in qca_setup() can detect whether the hci_dev is set up
->> successfully. If if fails then a failure happens.
->> You mean I should fix why qca_read_soc_version() fails?
-> 
-> Yes, why wouldn't you want to do that?
-> 
+With this patch, on Raspberry Pi 3B+, I'm seeing the kernel will reach
+userspace in ~1.5s, which is consistent with a boot with no console
+output (loglevel=1) and at slower baudrates too. For reference, I was
+seeing ~5s to reach userspace at 115200 baud and ~15s with
+initcall_debug turned on.
 
-Yeah you are right. I will try to root cause the qca read version issue and fix
-it first. Thanks very much!
+Thanks for your work on this Petr and John for your support!
 
-Xin
+Kind regards,
 
+Michael Cobb
