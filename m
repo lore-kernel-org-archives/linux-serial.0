@@ -1,267 +1,113 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 136621D435F;
-	Fri,  6 Jun 2025 17:44:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F4891BF58
+	for <linux-serial@vger.kernel.org>; Fri,  6 Jun 2025 19:37:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749231901; cv=none; b=b3Zm4NSLjnhtF3BfZGmBJdW3g5n8B/sJC+Syli0+4UNnXIa/sbQ6A1xhtKei0tAL8w30pbHQ7fzTKmZfOZFqcFN1EMNoISy9xNeY86Ai5GNhjsPS+2QXYhLDaccbaySlcTIJX1NHNu9j3LejS7tcZfOEIJVUabNilHqJ5vFqHDE=
+	t=1749238636; cv=none; b=UPULTICkTI/7KliHlLOexYpZIZMHeoiEGtGAHrCFOzRiVIJ1laSAxpbz76x9581ALlmzzmoxSLPruIaNG+zDdu5EnJa3H9nBMRtoNDJgGpogd2uA5rs8e3C+h/L8M7UhWuMUIkG0YIl+xIQMyhMfyGRSC6NtO+M7h5iXQlAGLV4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749231901; c=relaxed/simple;
-	bh=03BTYp0hCew3APG3+/xf6oi00M6560JY6uql0eOUp84=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ciSDi2HCTcM53uylo+PM9XGQ2UNwSsGHlqnjvOtZsByX9g9PFClRypqnjcvYbkYWqJ2K1jwexU36VuLHJGa5a2s39onS0Zz8i8SsN4XmmVB853FiUXB4IVrZyyzZFnzdI1xd3X53kJh1WhdQo9Ceo+XVaanKrWnYGMu/1hiHfvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Np5P2jVr; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1749238636; c=relaxed/simple;
+	bh=DP7B/KnXqE/5Fx+2b6vnlriV7vATtl0GEcFlV7hZQBQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=anAPB2AnxXyE4RJ368fcAYfNSl3nlEQMzNHi7GeED5afSVjPOZnYect8EDJ5X5XIHL85tj6MjhVNj0qjxjPBfbS8shsBPH5/tuCJvNZ2a4AujboEzpFPFdK/jDQyka/5oxA0XdEpItK3bFXeQoVb2w6vmLUePGlAK1AJTaITUM4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=dbBxvmOF; arc=none smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Np5P2jVr"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 556F9Da9001920;
-	Fri, 6 Jun 2025 17:21:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=E1SHzflA2o0mpMZzZEfBQHsT
-	N9vhHq/idAZbyCvjvnw=; b=Np5P2jVrzQCc5ckg6rLaYJRsP4v9VOiHuDUZTlVy
-	3wuBA2vUWAiac7nZQ25Gwv3oFq0JxhBMnGkS/mS9nUPBQGpOYRSbRBRFqJWT4prt
-	E+yEoLuWcnyIuv/4OeEPZL04ysXpjg4Tine//rrcx0WqbVYj6gPX83cBEyWOukio
-	4QRkyztdDXpNOpE7UHlkyRhI72WVWNsTTegRxZNirDqnh7o+H/7tIycN0JY5cObH
-	oW+A0vdrdDzbQOWJDRweNG27HQ1FnptIm7Q7axRYF4BUL2QsUEJRm1vElxxXothd
-	SjKhg1UsSugO6/rapLzMs5FuBoif0366WfJr6wmfZoP4sg==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4737me4sc9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 06 Jun 2025 17:21:57 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 556HLur6024493
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 6 Jun 2025 17:21:56 GMT
-Received: from hu-ptalari-hyd.qualcomm.com (10.80.80.8) by
- nasanex01c.na.qualcomm.com (10.45.79.139) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 6 Jun 2025 10:21:51 -0700
-From: Praveen Talari <quic_ptalari@quicinc.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson
-	<andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        "Praveen
- Talari" <quic_ptalari@quicinc.com>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
-CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
-Subject: [PATCH v6 3/8] soc: qcom: geni-se: Enable QUPs on SA8255p Qualcomm platforms
-Date: Fri, 6 Jun 2025 22:51:09 +0530
-Message-ID: <20250606172114.6618-4-quic_ptalari@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20250606172114.6618-1-quic_ptalari@quicinc.com>
-References: <20250606172114.6618-1-quic_ptalari@quicinc.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="dbBxvmOF"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-ad69e4f2100so415600766b.2
+        for <linux-serial@vger.kernel.org>; Fri, 06 Jun 2025 12:37:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1749238631; x=1749843431; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=jgatZKIZeCG/8Okk2kimmj0LPUfz/8b8SqKivoXRX6U=;
+        b=dbBxvmOFkdkQfopXBpg7uhRU55vh1JlHlFmw3px59iOZMHKybr80EZUqVcxIMaFaVK
+         V3Rb5KxmmdjvlLjqVDpPh9Phmbo9HRt0+xwwwZX6NFibW+uD710QEv9io8AhPiEB2C18
+         kgcshvkXfhStv8lBtFRNoSx4Z15W0lQ0DTHUs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749238631; x=1749843431;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jgatZKIZeCG/8Okk2kimmj0LPUfz/8b8SqKivoXRX6U=;
+        b=j1C+fBB5/cv0DmFbzwSxx3HCJSDDekIwBcwONX9VVYopQsO51Y88n+XV8wDuX3W3ew
+         xkI4nuUnxqFEAYSyRuauaeC5tAJo2t1hNG8EY2Biw79bPaZhuRJ9Xm4f+9/ikonFEbvA
+         HNy0wyiXmIWx3Aw+pEPT+/uWHLLp9kIV7Qp8e70rZzi7FlTEbccmd7w40bwpyUjlwHAB
+         jS57glZcylV+obQSAgulrM6heZzl2+spHQNltajW/Y8N1jFAHBDu5IExA9MRWLWlM0wr
+         cyqMzNFrFPNQkQWdTaY+G3XB6Rvnr24snI7Aa6OP5BRZB1dhd+tZB4rCid5SJJbRLh8D
+         e6Ow==
+X-Forwarded-Encrypted: i=1; AJvYcCVtx4lzLSM0Hxo9mCg+ZIVIz/9RoHc8xwRuoJBc1Kv1M5nh2HyeA1XrsuvQ2JgaWuIiek6b/0AWjZ89YIk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzoBo9FGcmSL9Rdb+YiDm0CrJRRSJ0WMJOhloBfhsVe+FQPsXwc
+	jBc235QmwfsAlzfxDPijucG6TfAMBByUQ4VhIljtwfA0mWYFdrPJscewEP+kI5ARswXNeODtKVQ
+	Paunbt6I=
+X-Gm-Gg: ASbGncsa+A/JNzwgw44gZnc7HbBrWF2DiwgU50yKkM47Ntxzy1ImFTn8wyjszxQ0v1q
+	DknLY7EOVumsnSFcVhajuwGFxFiqTiYK06njK9nsUory6VJkKyrmwbli0oJaTLX0PD9vfNR+AOa
+	YNxSWPW6Hazch1GE5QXWqepuXKOmJuuV5ja8rV4EM+hKvjRCCFxu4AgR1g/GnNwhmlydHt0HC/+
+	Vwtg1/4bDwI+ce1avNGSKp+4OAG3zsh9msvEEAtG+tD05jWNyXiyjUF2Rm1LLQDiBzfxjiI6Lt4
+	VehwVKvW+S723i/z53aXPPSiNkMr2MsxOfe9F5znWc7j0o/J+nGIFtZ1EfhDu1Hp9f7hISrrYFn
+	FGxuFnFjEveRWn0EQRfiVx57kSzVLh0CTGN8h
+X-Google-Smtp-Source: AGHT+IF2LnffiUVRQEDM0J5X0cvrRmWcpcjQMY6pEVukGBqvNueePAPv4XY+qSDtvA4wfi/jK+Oi0g==
+X-Received: by 2002:a17:907:3f0e:b0:ad2:2d60:24a1 with SMTP id a640c23a62f3a-ade1aa5d453mr363788466b.11.1749238631132;
+        Fri, 06 Jun 2025 12:37:11 -0700 (PDT)
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com. [209.85.208.48])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ade1dc7c765sm164186866b.178.2025.06.06.12.37.09
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Jun 2025 12:37:09 -0700 (PDT)
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6077d0b9bbeso1556711a12.3
+        for <linux-serial@vger.kernel.org>; Fri, 06 Jun 2025 12:37:09 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWZLMOhVIQPUOlVwz3qDH5RlN9iBei+CWvt1juAxhkXfTCVyD3RYwrXpCQqrr58CQsZs9UjFdwbToOzQI8=@vger.kernel.org
+X-Received: by 2002:a05:6402:1ed5:b0:604:e82b:e255 with SMTP id
+ 4fb4d7f45d1cf-6077285cb5fmr3963530a12.0.1749238629421; Fri, 06 Jun 2025
+ 12:37:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 02bo1TjJ8bKg6Zg0mRm8XtI2h1rGFuM0
-X-Authority-Analysis: v=2.4 cv=GPQIEvNK c=1 sm=1 tr=0 ts=684323b5 cx=c_pps
- a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=GEpy-HfZoHoA:10 a=6IFa9wvqVegA:10 a=COk6AnOGAAAA:8 a=YhC7SW2_YIdFTIakBAEA:9
- a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-GUID: 02bo1TjJ8bKg6Zg0mRm8XtI2h1rGFuM0
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA2MDE1MSBTYWx0ZWRfX7eBVNHacv9zN
- K0mocNmZSMofolImv1khdoUdM41gr41Yu395mA9pILXPdD3JfJQKNB8zqXoGxVbQeHsj4fcy0Wq
- 5pptgkoFGwUW+kRDJYVM1Lk2i4h2c7jkSCFKkfXCmjNJ+P3aMGjp9PHnY9S1/hdBdvzbc/pMoM2
- M6GrNwCIvjmRIkcVte2uqMDFGM3MCdtsgVI+j4o6sQOHKAFC8YBmTxQWdLvPRGklosJUVDaIh8X
- o84n/s7jsSbA8vemm17hrAHQutjb0FXotEf36cK4bEKT2W1t9JR5ButLyKx5O7S5YoZ0MXqRdvU
- xtH0oD4TJJ2TiQaAJwJa9Z4YL+s1RhNcQvgVd0+BZJd6quuTDwSlEvKP7MCuoNyIaJGE1ifZWo0
- kdUAUazdt7gpmzPz0P96g58FSvmzN/7PD84JEgfbqWRCbpW8NXg4SGvvTNLgdrdWJeLdz7EQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-06-06_06,2025-06-05_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 priorityscore=1501 adultscore=0 phishscore=0
- lowpriorityscore=0 spamscore=0 impostorscore=0 mlxlogscore=999 bulkscore=0
- clxscore=1015 malwarescore=0 mlxscore=0 classifier=spam authscore=0
- authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2505280000 definitions=main-2506060151
+References: <aEKpKk71YuLPPMZC@kroah.com>
+In-Reply-To: <aEKpKk71YuLPPMZC@kroah.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Fri, 6 Jun 2025 12:36:53 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh3sbe9ZU_-q4Et=OWtedfFoB2tsZy_+ssMRZnsjApYhw@mail.gmail.com>
+X-Gm-Features: AX0GCFtGZ3fLGhUMu4DFWfeNgP1rwthkpBUB0ueA9yTfoNZEIvW9N3jor1L4vq4
+Message-ID: <CAHk-=wh3sbe9ZU_-q4Et=OWtedfFoB2tsZy_+ssMRZnsjApYhw@mail.gmail.com>
+Subject: Re: [GIT PULL] TTY / Serial driver changes for 6.16-rc1
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, 
+	Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On the sa8255p platform, resources such as clocks,interconnects
-and TLMM (GPIO) configurations are managed by firmware.
+On Fri, 6 Jun 2025 at 01:39, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> Here is the big set of tty and serial driver changes for 6.16-rc1.
+> A little more churn than normal in this portion of the kernel for this
+> development cycle, Jiri and Nicholas were busy with cleanups and reviews
+> and fixes for the vt unicode handling logic which composed most of the
+> overall work in here.
 
-Introduce a platform data function callback to distinguish whether
-resource control is performed by firmware or directly by the driver
-in linux.
+That series of "revert one series to re-apply the other" looks
+absolutely disgusting.
 
-The refactor ensures clear differentiation of resource
-management mechanisms, improving maintainability and flexibility
-in handling platform-specific configurations.
+I was close to deciding to not pull this at all, because some of it is
+just inexcusably stupid. Lookie here:
 
-Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
----
-v5 -> v6
-- replaced dev_err with dev_err_probe
-- added a check for desc->num_clks with MAX_CLKS, an error if
-  the specified num_clks in descriptor exceeds defined MAX_CLKS.
-- removed min_t which is not necessary.
-- renamed callback function names to resources_init.
-- resolved kernel bot warning error by documenting function
-  pointer in geni_se_desc structure.
+  git diff d066989a3d41..d066989a3d41^^
+  git log -2 --oneline d066989a3d41
 
-v3 -> v4
-- declared an empty struct for sa8255p and added check as num clks.
-- Added version log after ---
+and just stare in wonder at the pure unadulterated garbage.
 
-v1 -> v2
-- changed datatype of i from int to unsigned int as per comment.
----
- drivers/soc/qcom/qcom-geni-se.c | 77 +++++++++++++++++++++------------
- 1 file changed, 49 insertions(+), 28 deletions(-)
+Yes, the second series then improves on the first one the rest of the
+way, but this should have been done better. And I don't mean just that
+one truly pointless revert and reapply, but just "people should have
+communicated that the patch series wasn't done"
 
-diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-index 4cb959106efa..5c727b9a17e9 100644
---- a/drivers/soc/qcom/qcom-geni-se.c
-+++ b/drivers/soc/qcom/qcom-geni-se.c
-@@ -101,10 +101,13 @@ struct geni_wrapper {
-  * struct geni_se_desc - Data structure to represent the QUP Wrapper resources
-  * @clks:		Name of the primary & optional secondary AHB clocks
-  * @num_clks:		Count of clock names
-+ * @resources_init:	Function pointer for initializing QUP Wrapper resources
-  */
- struct geni_se_desc {
- 	unsigned int num_clks;
- 	const char * const *clks;
-+	int (*resources_init)(struct geni_wrapper *wrapper,
-+			      const struct geni_se_desc *desc);
- };
- 
- static const char * const icc_path_names[] = {"qup-core", "qup-config",
-@@ -891,10 +894,47 @@ int geni_icc_disable(struct geni_se *se)
- }
- EXPORT_SYMBOL_GPL(geni_icc_disable);
- 
-+static int geni_se_resource_init(struct geni_wrapper *wrapper,
-+				 const struct geni_se_desc *desc)
-+{
-+	struct device *dev = wrapper->dev;
-+	int ret;
-+	unsigned int i;
-+
-+	if (desc->num_clks > MAX_CLKS)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "Too many clocks specified in descriptor:%u (max allowed: %u)\n",
-+				     desc->num_clks, MAX_CLKS);
-+
-+	wrapper->num_clks = desc->num_clks;
-+
-+	for (i = 0; i < wrapper->num_clks; ++i)
-+		wrapper->clks[i].id = desc->clks[i];
-+
-+	ret = of_count_phandle_with_args(dev->of_node, "clocks", "#clock-cells");
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "invalid clocks property at %pOF\n", dev->of_node);
-+
-+	if (ret < wrapper->num_clks) {
-+		dev_err(dev, "invalid clocks count at %pOF, expected %d entries\n",
-+			dev->of_node, wrapper->num_clks);
-+		return -EINVAL;
-+	}
-+
-+	ret = devm_clk_bulk_get(dev, wrapper->num_clks, wrapper->clks);
-+	if (ret) {
-+		dev_err(dev, "Err getting clks %d\n", ret);
-+		return ret;
-+	}
-+
-+	return ret;
-+}
-+
- static int geni_se_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct geni_wrapper *wrapper;
-+	const struct geni_se_desc *desc;
- 	int ret;
- 
- 	wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
-@@ -906,36 +946,12 @@ static int geni_se_probe(struct platform_device *pdev)
- 	if (IS_ERR(wrapper->base))
- 		return PTR_ERR(wrapper->base);
- 
--	if (!has_acpi_companion(&pdev->dev)) {
--		const struct geni_se_desc *desc;
--		int i;
--
--		desc = device_get_match_data(&pdev->dev);
--		if (!desc)
--			return -EINVAL;
--
--		wrapper->num_clks = min_t(unsigned int, desc->num_clks, MAX_CLKS);
--
--		for (i = 0; i < wrapper->num_clks; ++i)
--			wrapper->clks[i].id = desc->clks[i];
--
--		ret = of_count_phandle_with_args(dev->of_node, "clocks", "#clock-cells");
--		if (ret < 0) {
--			dev_err(dev, "invalid clocks property at %pOF\n", dev->of_node);
--			return ret;
--		}
-+	desc = device_get_match_data(&pdev->dev);
- 
--		if (ret < wrapper->num_clks) {
--			dev_err(dev, "invalid clocks count at %pOF, expected %d entries\n",
--				dev->of_node, wrapper->num_clks);
-+	if (!has_acpi_companion(&pdev->dev) && desc->num_clks) {
-+		ret = desc->resources_init(wrapper, desc);
-+		if (ret)
- 			return -EINVAL;
--		}
--
--		ret = devm_clk_bulk_get(dev, wrapper->num_clks, wrapper->clks);
--		if (ret) {
--			dev_err(dev, "Err getting clks %d\n", ret);
--			return ret;
--		}
- 	}
- 
- 	dev_set_drvdata(dev, wrapper);
-@@ -951,8 +967,11 @@ static const char * const qup_clks[] = {
- static const struct geni_se_desc qup_desc = {
- 	.clks = qup_clks,
- 	.num_clks = ARRAY_SIZE(qup_clks),
-+	.resources_init = geni_se_resource_init,
- };
- 
-+static const struct geni_se_desc sa8255p_qup_desc;
-+
- static const char * const i2c_master_hub_clks[] = {
- 	"s-ahb",
- };
-@@ -960,11 +979,13 @@ static const char * const i2c_master_hub_clks[] = {
- static const struct geni_se_desc i2c_master_hub_desc = {
- 	.clks = i2c_master_hub_clks,
- 	.num_clks = ARRAY_SIZE(i2c_master_hub_clks),
-+	.resources_init = geni_se_resource_init,
- };
- 
- static const struct of_device_id geni_se_dt_match[] = {
- 	{ .compatible = "qcom,geni-se-qup", .data = &qup_desc },
- 	{ .compatible = "qcom,geni-se-i2c-master-hub", .data = &i2c_master_hub_desc },
-+	{ .compatible = "qcom,sa8255p-geni-se-qup", .data = &sa8255p_qup_desc },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, geni_se_dt_match);
--- 
-2.17.1
+I've pulled this, but I want to protest this kind of development
+practice. The complete mindlessness of that "revert only to reapply"
+really almost made me throw this out.
 
+               Linus
