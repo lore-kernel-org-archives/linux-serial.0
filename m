@@ -1,45 +1,45 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D2A728B50E;
-	Fri,  6 Jun 2025 17:22:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 136621D435F;
+	Fri,  6 Jun 2025 17:44:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749230553; cv=none; b=Nz0a20/Sp+6itw31N7SUNSOu7djuEzO5ED3GnJ0ZIgOa+/ngUcfS4kl19pkaBzl/22ogaPUkzkp0ZN+uMWdOf3PR2LC2FjGM40VUvJI/8ynPM/SHkCBq1zclH/lH8CYfrtZw3KFVy6n7N1sd/ubzzcNwtcW9kAYjzocbiwEXCnI=
+	t=1749231901; cv=none; b=b3Zm4NSLjnhtF3BfZGmBJdW3g5n8B/sJC+Syli0+4UNnXIa/sbQ6A1xhtKei0tAL8w30pbHQ7fzTKmZfOZFqcFN1EMNoISy9xNeY86Ai5GNhjsPS+2QXYhLDaccbaySlcTIJX1NHNu9j3LejS7tcZfOEIJVUabNilHqJ5vFqHDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749230553; c=relaxed/simple;
-	bh=bhj5g/w8bauZlpVY9i07z/IKBMhffTt+GqxeLAjKeOw=;
+	s=arc-20240116; t=1749231901; c=relaxed/simple;
+	bh=03BTYp0hCew3APG3+/xf6oi00M6560JY6uql0eOUp84=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LbDLpk5PYtAoGiYRw+hanWhtR3pg0JU48tM10RinZRkYCnu4n5QtAN8STQUOEnzA1Q/YLO+EbzgGbCxgklLcl62SLsbe2ydwRptnF2pHeZvvXram2vuI1L3HsAt32+ehJ4o4lmviT9Vf2PTk1ioLy2ZQ7OG8ffm2QusFRbaOWDA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=dtQ5xu9v; arc=none smtp.client-ip=205.220.168.131
+	 MIME-Version:Content-Type; b=ciSDi2HCTcM53uylo+PM9XGQ2UNwSsGHlqnjvOtZsByX9g9PFClRypqnjcvYbkYWqJ2K1jwexU36VuLHJGa5a2s39onS0Zz8i8SsN4XmmVB853FiUXB4IVrZyyzZFnzdI1xd3X53kJh1WhdQo9Ceo+XVaanKrWnYGMu/1hiHfvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Np5P2jVr; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="dtQ5xu9v"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 556F9FtE027178;
-	Fri, 6 Jun 2025 17:22:28 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Np5P2jVr"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 556F9Da9001920;
+	Fri, 6 Jun 2025 17:21:57 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=vpyxSBy436azb/RjHLQXR8+V
-	HdwE39sRmhvzsM9e1Ko=; b=dtQ5xu9vqGmGdnK0Mf4Qk7WRp5us7hqU46dAKdss
-	azBHBTmFyXeoo13vSIyta2F9IEuQEMYtEMXIAsVRLcBwoMJbh47puwkxqO21/tGj
-	cxHdE/Y8BUpr1ZPg6wrCRz7Vd+XWkCr2hKBypmCl3NSsx0oS186izBjr8aIuxAkh
-	8aiHK+83HThv3/yTbNdKdROHK8VQmXT5mIoa1Sbuko7CRxrGHgpEkFPYiuSDV+5v
-	FkeciVpdWUMNDF2UKdX4/9xPomw+quSrZVq1sYyd90+BC6dxm9c85Jc66xsv61Fu
-	CPRjXqOtvNXNHYrTD1NME1aKyuDXT3XWSVScFXO4aD5pIg==
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 471g8t5cx0-1
+	:references:subject:to; s=qcppdkim1; bh=E1SHzflA2o0mpMZzZEfBQHsT
+	N9vhHq/idAZbyCvjvnw=; b=Np5P2jVrzQCc5ckg6rLaYJRsP4v9VOiHuDUZTlVy
+	3wuBA2vUWAiac7nZQ25Gwv3oFq0JxhBMnGkS/mS9nUPBQGpOYRSbRBRFqJWT4prt
+	E+yEoLuWcnyIuv/4OeEPZL04ysXpjg4Tine//rrcx0WqbVYj6gPX83cBEyWOukio
+	4QRkyztdDXpNOpE7UHlkyRhI72WVWNsTTegRxZNirDqnh7o+H/7tIycN0JY5cObH
+	oW+A0vdrdDzbQOWJDRweNG27HQ1FnptIm7Q7axRYF4BUL2QsUEJRm1vElxxXothd
+	SjKhg1UsSugO6/rapLzMs5FuBoif0366WfJr6wmfZoP4sg==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4737me4sc9-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 06 Jun 2025 17:22:28 +0000 (GMT)
+	Fri, 06 Jun 2025 17:21:57 +0000 (GMT)
 Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA03.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 556HMRbM028249
+	by NASANPPMTA05.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 556HLur6024493
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 6 Jun 2025 17:22:27 GMT
+	Fri, 6 Jun 2025 17:21:56 GMT
 Received: from hu-ptalari-hyd.qualcomm.com (10.80.80.8) by
  nasanex01c.na.qualcomm.com (10.45.79.139) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Fri, 6 Jun 2025 10:22:22 -0700
+ 15.2.1544.9; Fri, 6 Jun 2025 10:21:51 -0700
 From: Praveen Talari <quic_ptalari@quicinc.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby
@@ -57,9 +57,9 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
         <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
         <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
-Subject: [PATCH v6 8/8] serial: qcom-geni: Enable Serial on SA8255p Qualcomm platforms
-Date: Fri, 6 Jun 2025 22:51:14 +0530
-Message-ID: <20250606172114.6618-9-quic_ptalari@quicinc.com>
+Subject: [PATCH v6 3/8] soc: qcom: geni-se: Enable QUPs on SA8255p Qualcomm platforms
+Date: Fri, 6 Jun 2025 22:51:09 +0530
+Message-ID: <20250606172114.6618-4-quic_ptalari@quicinc.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20250606172114.6618-1-quic_ptalari@quicinc.com>
 References: <20250606172114.6618-1-quic_ptalari@quicinc.com>
@@ -74,349 +74,194 @@ X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nasanex01c.na.qualcomm.com (10.45.79.139)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: ma74kAO4a9BriCQ6ES03pZFx4-jQwC-9
-X-Authority-Analysis: v=2.4 cv=EPcG00ZC c=1 sm=1 tr=0 ts=684323d4 cx=c_pps
+X-Proofpoint-ORIG-GUID: 02bo1TjJ8bKg6Zg0mRm8XtI2h1rGFuM0
+X-Authority-Analysis: v=2.4 cv=GPQIEvNK c=1 sm=1 tr=0 ts=684323b5 cx=c_pps
  a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=GEpy-HfZoHoA:10 a=6IFa9wvqVegA:10 a=KKAkSRfTAAAA:8 a=COk6AnOGAAAA:8
- a=YJyStIVdxSjxqG8W5N4A:9 a=cvBusfyB2V15izCimMoJ:22 a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-GUID: ma74kAO4a9BriCQ6ES03pZFx4-jQwC-9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA2MDE1MCBTYWx0ZWRfX7gWCr1zUZk0/
- QVO2tRwf5MxRB6CRId8IW2oXNwm4tue9wwLzHvY8XsCeJA8iRcYhkjlApMM1OY8HIWmQO+6dXsl
- 0KE5s7QgUPJfQk4SOsEHj+zrFtHtRKgCHaaHp+3qYckUGdrpZMMwFtlsgaBXEFbHG95wwECNJkC
- /4EO8/fM+ShVjJchzp6Uy+bsYRUrOGpxXfSxguuTLWDR4YhnhNN8eZVsJeCVg6Y549sAHeZXdwd
- CcIh8tn7uOc5d//lCq1aDvnFwKmpJ+19cThq2KHVMJxdPOz1NDc8CiWAIRvkQmePnxkMaAMGGUP
- B6JW28jJnLd1rnyLmF2nKHtKNI21wPN+PVf6vWRjDoTU2Nhpy/j0ZG5/p0tQ0xsZrpixlR10Qpf
- 3/S7mStNJGYQPhHuMLCOH342E3GJgVOQVbwvFzxH21WfXnB+hxQFcuCNqA0ir3kMj2F0OlzH
+ a=GEpy-HfZoHoA:10 a=6IFa9wvqVegA:10 a=COk6AnOGAAAA:8 a=YhC7SW2_YIdFTIakBAEA:9
+ a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-GUID: 02bo1TjJ8bKg6Zg0mRm8XtI2h1rGFuM0
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA2MDE1MSBTYWx0ZWRfX7eBVNHacv9zN
+ K0mocNmZSMofolImv1khdoUdM41gr41Yu395mA9pILXPdD3JfJQKNB8zqXoGxVbQeHsj4fcy0Wq
+ 5pptgkoFGwUW+kRDJYVM1Lk2i4h2c7jkSCFKkfXCmjNJ+P3aMGjp9PHnY9S1/hdBdvzbc/pMoM2
+ M6GrNwCIvjmRIkcVte2uqMDFGM3MCdtsgVI+j4o6sQOHKAFC8YBmTxQWdLvPRGklosJUVDaIh8X
+ o84n/s7jsSbA8vemm17hrAHQutjb0FXotEf36cK4bEKT2W1t9JR5ButLyKx5O7S5YoZ0MXqRdvU
+ xtH0oD4TJJ2TiQaAJwJa9Z4YL+s1RhNcQvgVd0+BZJd6quuTDwSlEvKP7MCuoNyIaJGE1ifZWo0
+ kdUAUazdt7gpmzPz0P96g58FSvmzN/7PD84JEgfbqWRCbpW8NXg4SGvvTNLgdrdWJeLdz7EQ
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
  definitions=2025-06-06_06,2025-06-05_01,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 suspectscore=0 bulkscore=0 priorityscore=1501 phishscore=0
- impostorscore=0 lowpriorityscore=0 adultscore=0 malwarescore=0 mlxscore=0
- clxscore=1015 mlxlogscore=999 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506060150
+ suspectscore=0 priorityscore=1501 adultscore=0 phishscore=0
+ lowpriorityscore=0 spamscore=0 impostorscore=0 mlxlogscore=999 bulkscore=0
+ clxscore=1015 malwarescore=0 mlxscore=0 classifier=spam authscore=0
+ authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2506060151
 
-The Qualcomm automotive SA8255p SoC relies on firmware to configure
-platform resources, including clocks, interconnects and TLMM.
-The driver requests resources operations over SCMI using power
-and performance protocols.
+On the sa8255p platform, resources such as clocks,interconnects
+and TLMM (GPIO) configurations are managed by firmware.
 
-The SCMI power protocol enables or disables resources like clocks,
-interconnect paths, and TLMM (GPIOs) using runtime PM framework APIs,
-such as resume/suspend, to control power states(on/off).
+Introduce a platform data function callback to distinguish whether
+resource control is performed by firmware or directly by the driver
+in linux.
 
-The SCMI performance protocol manages UART baud rates, with each baud
-rate represented by a performance level. The driver uses the
-dev_pm_opp_set_level() API to request the desired baud rate by
-specifying the performance level.
+The refactor ensures clear differentiation of resource
+management mechanisms, improving maintainability and flexibility
+in handling platform-specific configurations.
 
-Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
 ---
 v5 -> v6
-- added reviewed-by tag in commit
-- used "unsigned int" instead of "unsigned long" in set_rate callback
-  and geni_serial_set_level to avoid build warnings.
+- replaced dev_err with dev_err_probe
+- added a check for desc->num_clks with MAX_CLKS, an error if
+  the specified num_clks in descriptor exceeds defined MAX_CLKS.
+- removed min_t which is not necessary.
+- renamed callback function names to resources_init.
+- resolved kernel bot warning error by documenting function
+  pointer in geni_se_desc structure.
 
 v3 -> v4
-- renamed callback function names to resources_init, set_rate and
-  power_state
----
- drivers/tty/serial/qcom_geni_serial.c | 150 +++++++++++++++++++++++---
- 1 file changed, 135 insertions(+), 15 deletions(-)
+- declared an empty struct for sa8255p and added check as num clks.
+- Added version log after ---
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 3691340ce7e8..3dd3b1e1ed78 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -11,6 +11,7 @@
- #include <linux/irq.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/pm_domain.h>
- #include <linux/pm_opp.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
-@@ -99,10 +100,16 @@
- #define DMA_RX_BUF_SIZE		2048
- 
- static DEFINE_IDA(port_ida);
-+#define DOMAIN_IDX_POWER	0
-+#define DOMAIN_IDX_PERF		1
- 
- struct qcom_geni_device_data {
- 	bool console;
- 	enum geni_se_xfer_mode mode;
-+	struct dev_pm_domain_attach_data pd_data;
-+	int (*resources_init)(struct uart_port *uport);
-+	int (*set_rate)(struct uart_port *uport, unsigned int baud);
-+	int (*power_state)(struct uart_port *uport, bool state);
+v1 -> v2
+- changed datatype of i from int to unsigned int as per comment.
+---
+ drivers/soc/qcom/qcom-geni-se.c | 77 +++++++++++++++++++++------------
+ 1 file changed, 49 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
+index 4cb959106efa..5c727b9a17e9 100644
+--- a/drivers/soc/qcom/qcom-geni-se.c
++++ b/drivers/soc/qcom/qcom-geni-se.c
+@@ -101,10 +101,13 @@ struct geni_wrapper {
+  * struct geni_se_desc - Data structure to represent the QUP Wrapper resources
+  * @clks:		Name of the primary & optional secondary AHB clocks
+  * @num_clks:		Count of clock names
++ * @resources_init:	Function pointer for initializing QUP Wrapper resources
+  */
+ struct geni_se_desc {
+ 	unsigned int num_clks;
+ 	const char * const *clks;
++	int (*resources_init)(struct geni_wrapper *wrapper,
++			      const struct geni_se_desc *desc);
  };
  
- struct qcom_geni_private_data {
-@@ -140,6 +147,7 @@ struct qcom_geni_serial_port {
- 
- 	struct qcom_geni_private_data private_data;
- 	const struct qcom_geni_device_data *dev_data;
-+	struct dev_pm_domain_list *pd_list;
- };
- 
- static const struct uart_ops qcom_geni_console_pops;
-@@ -1331,6 +1339,42 @@ static int geni_serial_set_rate(struct uart_port *uport, unsigned int baud)
- 	return 0;
+ static const char * const icc_path_names[] = {"qup-core", "qup-config",
+@@ -891,10 +894,47 @@ int geni_icc_disable(struct geni_se *se)
  }
+ EXPORT_SYMBOL_GPL(geni_icc_disable);
  
-+static int geni_serial_set_level(struct uart_port *uport, unsigned int baud)
++static int geni_se_resource_init(struct geni_wrapper *wrapper,
++				 const struct geni_se_desc *desc)
 +{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
-+	struct device *perf_dev = port->pd_list->pd_devs[DOMAIN_IDX_PERF];
-+
-+	/*
-+	 * The performance protocol sets UART communication
-+	 * speeds by selecting different performance levels
-+	 * through the OPP framework.
-+	 *
-+	 * Supported perf levels for baudrates in firmware are below
-+	 * +---------------------+--------------------+
-+	 * |  Perf level value   |  Baudrate values   |
-+	 * +---------------------+--------------------+
-+	 * |      300            |      300           |
-+	 * |      1200           |      1200          |
-+	 * |      2400           |      2400          |
-+	 * |      4800           |      4800          |
-+	 * |      9600           |      9600          |
-+	 * |      19200          |      19200         |
-+	 * |      38400          |      38400         |
-+	 * |      57600          |      57600         |
-+	 * |      115200         |      115200        |
-+	 * |      230400         |      230400        |
-+	 * |      460800         |      460800        |
-+	 * |      921600         |      921600        |
-+	 * |      2000000        |      2000000       |
-+	 * |      3000000        |      3000000       |
-+	 * |      3200000        |      3200000       |
-+	 * |      4000000        |      4000000       |
-+	 * +---------------------+--------------------+
-+	 */
-+
-+	return dev_pm_opp_set_level(perf_dev, baud);
-+}
-+
- static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 					 struct ktermios *termios,
- 					 const struct ktermios *old)
-@@ -1349,7 +1393,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	/* baud rate */
- 	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
- 
--	ret = geni_serial_set_rate(uport, baud);
-+	ret = port->dev_data->set_rate(uport, baud);
- 	if (ret) {
- 		dev_err(port->se.dev,
- 			"%s: Failed to set baud:%u ret:%d\n",
-@@ -1640,8 +1684,27 @@ static int geni_serial_resources_off(struct uart_port *uport)
- 	return 0;
- }
- 
--static int geni_serial_resource_init(struct qcom_geni_serial_port *port)
-+static int geni_serial_resource_state(struct uart_port *uport, bool power_on)
- {
-+	return power_on ? geni_serial_resources_on(uport) : geni_serial_resources_off(uport);
-+}
-+
-+static int geni_serial_pwr_init(struct uart_port *uport)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
++	struct device *dev = wrapper->dev;
 +	int ret;
++	unsigned int i;
 +
-+	ret = dev_pm_domain_attach_list(port->se.dev,
-+					&port->dev_data->pd_data, &port->pd_list);
-+	if (ret <= 0)
++	if (desc->num_clks > MAX_CLKS)
++		return dev_err_probe(dev, -EINVAL,
++				     "Too many clocks specified in descriptor:%u (max allowed: %u)\n",
++				     desc->num_clks, MAX_CLKS);
++
++	wrapper->num_clks = desc->num_clks;
++
++	for (i = 0; i < wrapper->num_clks; ++i)
++		wrapper->clks[i].id = desc->clks[i];
++
++	ret = of_count_phandle_with_args(dev->of_node, "clocks", "#clock-cells");
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "invalid clocks property at %pOF\n", dev->of_node);
++
++	if (ret < wrapper->num_clks) {
++		dev_err(dev, "invalid clocks count at %pOF, expected %d entries\n",
++			dev->of_node, wrapper->num_clks);
 +		return -EINVAL;
++	}
 +
-+	return 0;
++	ret = devm_clk_bulk_get(dev, wrapper->num_clks, wrapper->clks);
++	if (ret) {
++		dev_err(dev, "Err getting clks %d\n", ret);
++		return ret;
++	}
++
++	return ret;
 +}
 +
-+static int geni_serial_resource_init(struct uart_port *uport)
-+{
-+	struct qcom_geni_serial_port *port = to_dev_port(uport);
+ static int geni_se_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct geni_wrapper *wrapper;
++	const struct geni_se_desc *desc;
  	int ret;
  
- 	port->se.clk = devm_clk_get(port->se.dev, "se");
-@@ -1680,7 +1743,6 @@ static int geni_serial_resource_init(struct qcom_geni_serial_port *port)
- static void qcom_geni_serial_pm(struct uart_port *uport,
- 		unsigned int new_state, unsigned int old_state)
- {
+ 	wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
+@@ -906,36 +946,12 @@ static int geni_se_probe(struct platform_device *pdev)
+ 	if (IS_ERR(wrapper->base))
+ 		return PTR_ERR(wrapper->base);
+ 
+-	if (!has_acpi_companion(&pdev->dev)) {
+-		const struct geni_se_desc *desc;
+-		int i;
 -
- 	/* If we've never been called, treat it as off */
- 	if (old_state == UART_PM_STATE_UNDEFINED)
- 		old_state = UART_PM_STATE_OFF;
-@@ -1774,13 +1836,16 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	port->se.dev = &pdev->dev;
- 	port->se.wrapper = dev_get_drvdata(pdev->dev.parent);
+-		desc = device_get_match_data(&pdev->dev);
+-		if (!desc)
+-			return -EINVAL;
+-
+-		wrapper->num_clks = min_t(unsigned int, desc->num_clks, MAX_CLKS);
+-
+-		for (i = 0; i < wrapper->num_clks; ++i)
+-			wrapper->clks[i].id = desc->clks[i];
+-
+-		ret = of_count_phandle_with_args(dev->of_node, "clocks", "#clock-cells");
+-		if (ret < 0) {
+-			dev_err(dev, "invalid clocks property at %pOF\n", dev->of_node);
+-			return ret;
+-		}
++	desc = device_get_match_data(&pdev->dev);
  
--	ret = geni_serial_resource_init(port);
-+	ret = port->dev_data->resources_init(uport);
- 	if (ret)
- 		return ret;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!res)
--		return -EINVAL;
-+	if (!res) {
-+		ret = -EINVAL;
-+		goto error;
-+	}
-+
- 	uport->mapbase = res->start;
- 
- 	port->tx_fifo_depth = DEF_FIFO_DEPTH_WORDS;
-@@ -1790,19 +1855,26 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 	if (!data->console) {
- 		port->rx_buf = devm_kzalloc(uport->dev,
- 					    DMA_RX_BUF_SIZE, GFP_KERNEL);
--		if (!port->rx_buf)
--			return -ENOMEM;
-+		if (!port->rx_buf) {
-+			ret = -ENOMEM;
-+			goto error;
-+		}
+-		if (ret < wrapper->num_clks) {
+-			dev_err(dev, "invalid clocks count at %pOF, expected %d entries\n",
+-				dev->of_node, wrapper->num_clks);
++	if (!has_acpi_companion(&pdev->dev) && desc->num_clks) {
++		ret = desc->resources_init(wrapper, desc);
++		if (ret)
+ 			return -EINVAL;
+-		}
+-
+-		ret = devm_clk_bulk_get(dev, wrapper->num_clks, wrapper->clks);
+-		if (ret) {
+-			dev_err(dev, "Err getting clks %d\n", ret);
+-			return ret;
+-		}
  	}
  
- 	port->name = devm_kasprintf(uport->dev, GFP_KERNEL,
- 			"qcom_geni_serial_%s%d",
- 			uart_console(uport) ? "console" : "uart", uport->line);
--	if (!port->name)
--		return -ENOMEM;
-+	if (!port->name) {
-+		ret = -ENOMEM;
-+		goto error;
-+	}
- 
- 	irq = platform_get_irq(pdev, 0);
--	if (irq < 0)
--		return irq;
-+	if (irq < 0) {
-+		ret = irq;
-+		goto error;
-+	}
-+
- 	uport->irq = irq;
- 	uport->has_sysrq = IS_ENABLED(CONFIG_SERIAL_QCOM_GENI_CONSOLE);
- 
-@@ -1824,7 +1896,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			IRQF_TRIGGER_HIGH, port->name, uport);
- 	if (ret) {
- 		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
--		return ret;
-+		goto error;
- 	}
- 
- 	pm_runtime_enable(port->se.dev);
-@@ -1849,6 +1921,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 
- error:
- 	pm_runtime_disable(port->se.dev);
-+	dev_pm_domain_detach_list(port->pd_list);
- 	return ret;
- }
- 
-@@ -1863,22 +1936,31 @@ static void qcom_geni_serial_remove(struct platform_device *pdev)
- 	ida_free(&port_ida, uport->line);
- 	pm_runtime_disable(port->se.dev);
- 	uart_remove_one_port(drv, &port->uport);
-+	dev_pm_domain_detach_list(port->pd_list);
- }
- 
- static int __maybe_unused qcom_geni_serial_runtime_suspend(struct device *dev)
- {
- 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
- 	struct uart_port *uport = &port->uport;
-+	int ret = 0;
- 
--	return geni_serial_resources_off(uport);
-+	if (port->dev_data->power_state)
-+		ret = port->dev_data->power_state(uport, false);
-+
-+	return ret;
- }
- 
- static int __maybe_unused qcom_geni_serial_runtime_resume(struct device *dev)
- {
- 	struct qcom_geni_serial_port *port = dev_get_drvdata(dev);
- 	struct uart_port *uport = &port->uport;
-+	int ret = 0;
-+
-+	if (port->dev_data->power_state)
-+		ret = port->dev_data->power_state(uport, true);
- 
--	return geni_serial_resources_on(uport);
-+	return ret;
- }
- 
- static int qcom_geni_serial_suspend(struct device *dev)
-@@ -1916,11 +1998,41 @@ static int qcom_geni_serial_resume(struct device *dev)
- static const struct qcom_geni_device_data qcom_geni_console_data = {
- 	.console = true,
- 	.mode = GENI_SE_FIFO,
-+	.resources_init = geni_serial_resource_init,
-+	.set_rate = geni_serial_set_rate,
-+	.power_state = geni_serial_resource_state,
+ 	dev_set_drvdata(dev, wrapper);
+@@ -951,8 +967,11 @@ static const char * const qup_clks[] = {
+ static const struct geni_se_desc qup_desc = {
+ 	.clks = qup_clks,
+ 	.num_clks = ARRAY_SIZE(qup_clks),
++	.resources_init = geni_se_resource_init,
  };
  
- static const struct qcom_geni_device_data qcom_geni_uart_data = {
- 	.console = false,
- 	.mode = GENI_SE_DMA,
-+	.resources_init = geni_serial_resource_init,
-+	.set_rate = geni_serial_set_rate,
-+	.power_state = geni_serial_resource_state,
-+};
++static const struct geni_se_desc sa8255p_qup_desc;
 +
-+static const struct qcom_geni_device_data sa8255p_qcom_geni_console_data = {
-+	.console = true,
-+	.mode = GENI_SE_FIFO,
-+	.pd_data = {
-+		.pd_flags = PD_FLAG_DEV_LINK_ON,
-+		.pd_names = (const char*[]) { "power", "perf" },
-+		.num_pd_names = 2,
-+	},
-+	.resources_init = geni_serial_pwr_init,
-+	.set_rate = geni_serial_set_level,
-+};
-+
-+static const struct qcom_geni_device_data sa8255p_qcom_geni_uart_data = {
-+	.console = false,
-+	.mode = GENI_SE_DMA,
-+	.pd_data = {
-+		.pd_flags = PD_FLAG_DEV_LINK_ON,
-+		.pd_names = (const char*[]) { "power", "perf" },
-+		.num_pd_names = 2,
-+	},
-+	.resources_init = geni_serial_pwr_init,
-+	.set_rate = geni_serial_set_level,
+ static const char * const i2c_master_hub_clks[] = {
+ 	"s-ahb",
+ };
+@@ -960,11 +979,13 @@ static const char * const i2c_master_hub_clks[] = {
+ static const struct geni_se_desc i2c_master_hub_desc = {
+ 	.clks = i2c_master_hub_clks,
+ 	.num_clks = ARRAY_SIZE(i2c_master_hub_clks),
++	.resources_init = geni_se_resource_init,
  };
  
- static const struct dev_pm_ops qcom_geni_serial_pm_ops = {
-@@ -1934,10 +2046,18 @@ static const struct of_device_id qcom_geni_serial_match_table[] = {
- 		.compatible = "qcom,geni-debug-uart",
- 		.data = &qcom_geni_console_data,
- 	},
-+	{
-+		.compatible = "qcom,sa8255p-geni-debug-uart",
-+		.data = &sa8255p_qcom_geni_console_data,
-+	},
- 	{
- 		.compatible = "qcom,geni-uart",
- 		.data = &qcom_geni_uart_data,
- 	},
-+	{
-+		.compatible = "qcom,sa8255p-geni-uart",
-+		.data = &sa8255p_qcom_geni_uart_data,
-+	},
+ static const struct of_device_id geni_se_dt_match[] = {
+ 	{ .compatible = "qcom,geni-se-qup", .data = &qup_desc },
+ 	{ .compatible = "qcom,geni-se-i2c-master-hub", .data = &i2c_master_hub_desc },
++	{ .compatible = "qcom,sa8255p-geni-se-qup", .data = &sa8255p_qup_desc },
  	{}
  };
- MODULE_DEVICE_TABLE(of, qcom_geni_serial_match_table);
+ MODULE_DEVICE_TABLE(of, geni_se_dt_match);
 -- 
 2.17.1
 
