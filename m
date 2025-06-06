@@ -1,169 +1,134 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCC2A2C3242;
-	Fri,  6 Jun 2025 10:35:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7981B253355;
+	Fri,  6 Jun 2025 10:40:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749206110; cv=none; b=M/XokEQwUKVmVlC2Ytr1Zw9xYMvlvfKnB2c0zTwBUpQ1qB0aFbf1WMX0mNRIEC9icnZH5SKP0aCBAWbwvBAoIE1pWBSl//ZyfMvl/izoA4XHqzJ2qjPSDf448hm17zfRS55UqZ9mX8ypL6Vi5cL6p5CO1QHURj4XIb8FiJyjMvA=
+	t=1749206437; cv=none; b=PluaLMWsTxDOtadCParaKFB7bwlN9n679cZkK35g41MdBC1jjjDa9YEUEZuXiBeZQr3Viatso81PYAAYMY8N8UIEed1663GJ3Cl8lZRE1dCJOoQozhzptKFf/ylyNJdNt96VAEQNDaeQH2hPD7xxw2aw+tXQkfD0DlVzeU6daP4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749206110; c=relaxed/simple;
-	bh=FVNLm1VrL8jaqyqM/ByJ16XfYaxZyZvq2f7/obGxSPY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=lonP6t8nrTWxsWWoLHS+von23d81yl7IasjrcKEFS1mVGV7LPaRL8/IakLuEAGDFxjE7PMM4bv6l119n7Jx6WBxpjRNV3N9TCDREZMibUsYtz92y4mZHEra2MU57AdtbzlQvAmXgb4VLh+oKF1AabWCPggWNirCHFr9FKNB/Nhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=tY4fxOkz; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=nRJZ20Ac; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1749206437; c=relaxed/simple;
+	bh=N0dWlwt/wUZAlKZIKffM0LxIo2EDg6xSxq+YVnEkUYs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eQUurBhX5k5RBjYuQ1YIFQmYoHyp2ZG4dlpnEb+4xFh0tqyvPhIFU8Awlwwy4U2sg7exl2qpx+V6ebxQ0I0g36GTqumDXk3TDiL+86Ji4rwOyf3BDAfmqigxdUZ4O1yt4mgqFgZveV21Vu2vOIGGYpjasKnimVbDpymekC+zcdY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=LlhYlBT/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="tY4fxOkz";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="nRJZ20Ac"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1749206106;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FNlEqQbY+fa98gHMzcIrLM+qc3h/stf4tBXFHk8HQmQ=;
-	b=tY4fxOkzUOGEzSfuyTD1Xd7XXCr0wIg9z+OmDJ1uHXs/0D6FrBM/ARQL+JKenmmx/SpN1Z
-	JAaEnnksFD2pAgpGepixdsCDbPwxD74kL6ismmFvB9cLDuRgf8ibnKAFi5/2b5701+mDCg
-	5VpEE4EglAvv54Fl8fO/P2s7xX4L3DtAiHURV80AJrT7N47nWHbrRREZFuqYmx38diQKZs
-	BKUf+HgD+rtvBpRhYWfMzpNZuqVoW4oPOpDSwEJeV5WekTNskz0yvoEUH1kCnq2ICR1vVE
-	YbvnoKZtWzTI3AC6z4Ds2rIK1sD6dpBSviLaFZzF+GvfnCIm4DZojFmf8kxmVA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1749206106;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FNlEqQbY+fa98gHMzcIrLM+qc3h/stf4tBXFHk8HQmQ=;
-	b=nRJZ20AcwHFYUmZVwaWsjyLVYVVIrcXFd2uY86bpZxAlNp2w/pQPxHQZvAEKp0MqcL8Y+l
-	KcVTJEOFTSVwaWBg==
-To: Petr Mladek <pmladek@suse.com>, "Toshiyuki Sato (Fujitsu)"
- <fj6611ie@fujitsu.com>
-Cc: 'Michael Kelley' <mhklinux@outlook.com>, 'Ryo Takakura'
- <ryotkkr98@gmail.com>, Russell King <linux@armlinux.org.uk>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
- <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>
-Subject: Re: Problem with nbcon console and amba-pl011 serial port
-In-Reply-To: <84frgdcgug.fsf@jogness.linutronix.de>
-References: <SN6PR02MB4157A4C5E8CB219A75263A17D46DA@SN6PR02MB4157.namprd02.prod.outlook.com>
- <OS7PR01MB13775FE1A20762D1EA4A38D0ED76DA@OS7PR01MB13775.jpnprd01.prod.outlook.com>
- <84y0u95e0j.fsf@jogness.linutronix.de>
- <84plfl5bf1.fsf@jogness.linutronix.de>
- <TY4PR01MB13777674C22721FCD8ACF4FCCD76CA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <aEApOPTqbVOR35F_@pathway.suse.cz> <84o6v3ohdh.fsf@jogness.linutronix.de>
- <aEBNLMYVUOGzusuR@pathway.suse.cz>
- <TY4PR01MB13777CC92C858572B9C19394FD76FA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <aEGeARVcCwqcoHb8@pathway.suse.cz> <84frgdcgug.fsf@jogness.linutronix.de>
-Date: Fri, 06 Jun 2025 12:41:06 +0206
-Message-ID: <84cybhcg4l.fsf@jogness.linutronix.de>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="LlhYlBT/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23A3AC4CEEB;
+	Fri,  6 Jun 2025 10:40:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1749206436;
+	bh=N0dWlwt/wUZAlKZIKffM0LxIo2EDg6xSxq+YVnEkUYs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LlhYlBT/0EQdYF0dX9loZ15WZBxDzM3zowld8tKGu4uUwK1OzXcDwNyxHMks1wjgt
+	 SawS3DS6Mp5CtUbz+FNqcguL78XRgRIPU7TTSL5G7Wjbcneo3sI+leO5/03MpLxD1z
+	 P9b1eBOXp1zO84Srh5X8sbMZxP+loTc6DOAv3CFg=
+Date: Fri, 6 Jun 2025 12:40:34 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Yunhui Cui <cuiyunhui@bytedance.com>
+Cc: arnd@arndb.de, andriy.shevchenko@linux.intel.com,
+	benjamin.larsson@genexis.eu, heikki.krogerus@linux.intel.com,
+	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org,
+	jkeeping@inmusicbrands.com, john.ogness@linutronix.de,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	markus.mayer@linaro.org, matt.porter@linaro.org,
+	namcao@linutronix.de, paulmck@kernel.org, pmladek@suse.com,
+	schnelle@linux.ibm.com, sunilvl@ventanamicro.com,
+	tim.kryger@linaro.org
+Subject: Re: [PATCH v7 1/4] serial: 8250: fix panic due to PSLVERR
+Message-ID: <2025060621-hankie-groovy-bad6@gregkh>
+References: <20250528062609.25104-1-cuiyunhui@bytedance.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250528062609.25104-1-cuiyunhui@bytedance.com>
 
-On 2025-06-06, John Ogness <john.ogness@linutronix.de> wrote:
-> On 2025-06-05, Petr Mladek <pmladek@suse.com> wrote:
->> The question is if it is worth it. Is the clean up really important?
->
-> I must admit that I am not happy about encouraging the proposed solution
-> so far (i.e. expecting driver authors to create special unsafe code in
-> the panic situation). It leads down the "hope and pray" path that nbcon
-> was designed to fix.
->
-> What if during non-panic-CPU shutdown, we allow reacquires to succeed
-> only for _direct_ acquires? The below diff shows how this could be
-> implemented. Since it only supports direct acquires, it does not violate
-> any state rules. And also, since it only involves the reacquire, there
-> is no ugly battling for console printing between the panic and non-panic
-> CPUs.
+On Wed, May 28, 2025 at 02:26:06PM +0800, Yunhui Cui wrote:
+> When the PSLVERR_RESP_EN parameter is set to 1, the device generates
+> an error response if an attempt is made to read an empty RBR (Receive
+> Buffer Register) while the FIFO is enabled.
+> 
+> In serial8250_do_startup(), calling serial_port_out(port, UART_LCR,
+> UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
+> dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
+> function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
+> Execution proceeds to the serial_port_in(port, UART_RX).
+> This satisfies the PSLVERR trigger condition.
+> 
+> When another CPU (e.g., using printk()) is accessing the UART (UART
+> is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) ==
+> (lcr & ~UART_LCR_SPAR) in dw8250_check_lcr(), causing it to enter
+> dw8250_force_idle().
+> 
+> Put serial_port_out(port, UART_LCR, UART_LCR_WLEN8) under the port->lock
+> to fix this issue.
+> 
+> Panic backtrace:
+> [    0.442336] Oops - unknown exception [#1]
+> [    0.442343] epc : dw8250_serial_in32+0x1e/0x4a
+> [    0.442351]  ra : serial8250_do_startup+0x2c8/0x88e
+> ...
+> [    0.442416] console_on_rootfs+0x26/0x70
+> 
+> Fixes: c49436b657d0 ("serial: 8250_dw: Improve unwritable LCR workaround")
+> Link: https://lore.kernel.org/all/84cydt5peu.fsf@jogness.linutronix.de/T/
+> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index 6d7b8c4667c9c..07fe818dffa34 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2376,9 +2376,10 @@ int serial8250_do_startup(struct uart_port *port)
+>  	/*
+>  	 * Now, initialize the UART
+>  	 */
+> -	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+>  
+>  	uart_port_lock_irqsave(port, &flags);
+> +	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+> +
+>  	if (up->port.flags & UPF_FOURPORT) {
+>  		if (!up->port.irq)
+>  			up->port.mctrl |= TIOCM_OUT1;
+> -- 
+> 2.39.5
+> 
+> 
 
-Thinking about it some more, since it does not involve printing, why not
-just always allow reacquiring directly in panic?
+Hi,
 
-This simplifies the diff significantly.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-John
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-index d60596777d278..26c229b7f56ea 100644
---- a/kernel/printk/nbcon.c
-+++ b/kernel/printk/nbcon.c
-@@ -235,7 +235,8 @@ static void nbcon_seq_try_update(struct nbcon_context *ctxt, u64 new_seq)
-  *			the handover acquire method.
-  */
- static int nbcon_context_try_acquire_direct(struct nbcon_context *ctxt,
--					    struct nbcon_state *cur)
-+					    struct nbcon_state *cur,
-+					    bool ignore_other_cpu_in_panic)
- {
- 	unsigned int cpu = smp_processor_id();
- 	struct console *con = ctxt->console;
-@@ -249,7 +250,7 @@ static int nbcon_context_try_acquire_direct(struct nbcon_context *ctxt,
- 		 * nbcon_waiter_matches(). In particular, the assumption that
- 		 * lower priorities are ignored during panic.
- 		 */
--		if (other_cpu_in_panic())
-+		if (other_cpu_in_panic() && !ignore_other_cpu_in_panic)
- 			return -EPERM;
- 
- 		if (ctxt->prio <= cur->prio || ctxt->prio <= cur->req_prio)
-@@ -568,7 +569,7 @@ static struct printk_buffers panic_nbcon_pbufs;
-  * in an unsafe state. Otherwise, on success the caller may assume
-  * the console is not in an unsafe state.
-  */
--static bool nbcon_context_try_acquire(struct nbcon_context *ctxt)
-+static bool nbcon_context_try_acquire(struct nbcon_context *ctxt, bool ignore_other_cpu_in_panic)
- {
- 	unsigned int cpu = smp_processor_id();
- 	struct console *con = ctxt->console;
-@@ -577,7 +578,7 @@ static bool nbcon_context_try_acquire(struct nbcon_context *ctxt)
- 
- 	nbcon_state_read(con, &cur);
- try_again:
--	err = nbcon_context_try_acquire_direct(ctxt, &cur);
-+	err = nbcon_context_try_acquire_direct(ctxt, &cur, ignore_other_cpu_in_panic);
- 	if (err != -EBUSY)
- 		goto out;
- 
-@@ -913,7 +914,7 @@ void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt)
- {
- 	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
- 
--	while (!nbcon_context_try_acquire(ctxt))
-+	while (!nbcon_context_try_acquire(ctxt, true))
- 		cpu_relax();
- 
- 	nbcon_write_context_set_buf(wctxt, NULL, 0);
-@@ -1101,7 +1102,7 @@ static bool nbcon_emit_one(struct nbcon_write_context *wctxt, bool use_atomic)
- 		cant_migrate();
- 	}
- 
--	if (!nbcon_context_try_acquire(ctxt))
-+	if (!nbcon_context_try_acquire(ctxt, false))
- 		goto out;
- 
- 	/*
-@@ -1486,7 +1487,7 @@ static int __nbcon_atomic_flush_pending_con(struct console *con, u64 stop_seq,
- 	ctxt->prio			= nbcon_get_default_prio();
- 	ctxt->allow_unsafe_takeover	= allow_unsafe_takeover;
- 
--	if (!nbcon_context_try_acquire(ctxt))
-+	if (!nbcon_context_try_acquire(ctxt, false))
- 		return -EPERM;
- 
- 	while (nbcon_seq_read(con) < stop_seq) {
-@@ -1784,7 +1785,7 @@ bool nbcon_device_try_acquire(struct console *con)
- 	ctxt->console	= con;
- 	ctxt->prio	= NBCON_PRIO_NORMAL;
- 
--	if (!nbcon_context_try_acquire(ctxt))
-+	if (!nbcon_context_try_acquire(ctxt, false))
- 		return false;
- 
- 	if (!nbcon_context_enter_unsafe(ctxt))
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documentation/process/stable-kernel-rules.rst file for how to resolve
+  this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
