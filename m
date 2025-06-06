@@ -1,363 +1,346 @@
-Received: from esa14.fujitsucc.c3s2.iphmx.com (esa14.fujitsucc.c3s2.iphmx.com [68.232.156.101])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E707542AA9;
-	Fri,  6 Jun 2025 06:48:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=68.232.156.101
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749192520; cv=fail; b=QyZAEmXVMvB5NsVNMe+9P+tf6swhxaf7OiTHSELqEKqmnCfUCr0rwiVPfI01psO3S3XrnCS/zY12qjQBFuHlj/4Cyw3eLyqZDM/i19H0mxHe3eYx2xjXz/EHlDJZxrtmNFPpWpdTzgN5B7pAz+xbHuOjBnDSktvxAExJ4KPIcmc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749192520; c=relaxed/simple;
-	bh=xuvRZQOkLUSUQgLfJsQfKXKyWIBvFeM2FFFQoHZvr+Y=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=HadBFj0NVX2hJOESyVJ9E7R4neQpy39kZaE6ztSgSQ5e/8n4QFeXL0Nr4XVTEr3bNhHIntJOpN/Qf2nLHgmrnnuh2nTxk9/MWjoipf5YAVRtZ1UjL4Nbn6gRhYejmyfd7xv+jTxDBbrt3CSRkwdWYVzpWhS/ACsM1okJOJnKFYc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com; spf=pass smtp.mailfrom=fujitsu.com; dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b=kgyYTX6s; arc=fail smtp.client-ip=68.232.156.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 844421E47B3;
+	Fri,  6 Jun 2025 08:39:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749199149; cv=none; b=WFQFQr7IdijdQj6/GUC1KUdEtUIbvJEGH07Mtj36PzgyheskFu/ynsoYWbmMHjKccaeAhxFrNef/kvxED4EEkTjWSjVeLnZh7JjPSAffw8KiDslyNl4H+jbCnITmBUHdiTUx2lhh5onAWX0h5JLf6MLLnC9lSdPHu1gxHDRQ6Ms=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749199149; c=relaxed/simple;
+	bh=L8i9F2CQBlUJYI7gLW6qhQGKoWZwPQYsYKDVaSpLmKA=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=lRloawuLPiJAvai4i2bqet3QJS8NHtpOonZ5tp4Ov9rR6RR0WFthfjJHtPPkuZsKhB2wZdSbU0TBcOR7mg/7+ogvcoFw9p/otj+xLgDaNJCRc1GGsUry/RQ/n3r/OZhcA+lGYp0JDnU8UZwjIagjZ4JdzBIWUU9N3Bzf18eYKHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=SI2+wc3r; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.b="kgyYTX6s"
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
-  t=1749192519; x=1780728519;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=xuvRZQOkLUSUQgLfJsQfKXKyWIBvFeM2FFFQoHZvr+Y=;
-  b=kgyYTX6sGT1tIcCnsk6nc3Y1hb7m6E/UcKOfZG+mPIp19j5iIA8Lnkgv
-   NCi/pPhd+KY0DCauAGGN99bhtRsZBdFuFEb4pY6gMkMTqO6XQDfPoJBbM
-   mFgh0kMXdgF+DYZouSK1ZQxLpBxghEdq7WYDCZHeKq51sLKpUQX18pLOn
-   nDsX1w3zFNlvU4Wfp1PW1LAx5TBSwj5q2fiSAv3dKIFeCfIOrrXLpdFS0
-   g3gbOzHcZSgEH6JS7ew+9oTqdOlL8QZDWacjnpryR/kcIXgMLrMbgIUKk
-   jFbgMzmD3Nl5GlUUXlhi6UojW2xq/DNmS7BcktMTFWoJ+75iv92CWb+IU
-   g==;
-X-CSE-ConnectionGUID: GJkcXpSKTTSWxatF5lSb4w==
-X-CSE-MsgGUID: brC9uzI+TI2YjVr5S78nmQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11455"; a="157370708"
-X-IronPort-AV: E=Sophos;i="6.16,214,1744038000"; 
-   d="scan'208";a="157370708"
-Received: from mail-japanwestazon11011051.outbound.protection.outlook.com (HELO OS0P286CU010.outbound.protection.outlook.com) ([40.107.74.51])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2025 15:46:32 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=djDSY+EZepx/rcKJSGaxYAYiQpZoi+RIjBd4b2CrQin8JESlPbcgJBS+a75Mt+7oLVsedzutiwtSHFcLSLLiPz+M9IN8L3qR1pszDBjsy/dHh7VR9m5zdKGPm3SsZnnRcaT9eG/p97k1VBeMbV0WtFVlzGhRAmxbuZp0flZDIz6wmbJMGcgBFDJX5k9N2UG9BMBUooKxBvLfRYiS5QKCfaFL3ldz1us9HiTVHxte6yzcB8w4DDOLNq+fMalJqURp3rL0/DRkPXTwvwHKmMQiC4/0Oud0R2U/EyG6JMufr5wQx3mG4RiFWr+3piU1VjbZAbR9G+2jM6iyf4QMyVotTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mOfSqUetFaktbjdAWX8ALdaTG4Ymzk7ZHTerKw8Zd58=;
- b=XYWi2fKn6yo5YWVx8uNLzKFBpFIq5YFXBwM/kwSmx12P/N49CWCmXSTIZ7dkBNsDZOYmNgP22KqXwyMvemt0L5J9Go6GvZvWaXn71Wh9AAXaohaAs+rx5F72z406ltQP9lY4eP4jucJ5xJSp9X+7PIv/vtwSB9jaP0OtKuOfX0SXa+e48nbMoOIrNdqDp7u626t9c4gUNOHWnmbiXRcQH8J3EgSML3Lf+oUlAmqLqaOqfpVy/3LvX8bzATUozU1cQemHYpYSbh3musU9t84Lt/BUykHhCsoO8oc6jrUxk23ubZc0SR/CYqr1XKCT5W3k9LiFRHs5eZyKhwQpsWu1hQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-Received: from TY4PR01MB13777.jpnprd01.prod.outlook.com (2603:1096:405:1f8::9)
- by TYYPR01MB12240.jpnprd01.prod.outlook.com (2603:1096:405:f3::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8813.22; Fri, 6 Jun
- 2025 06:46:27 +0000
-Received: from TY4PR01MB13777.jpnprd01.prod.outlook.com
- ([fe80::60b7:270b:27c7:4fcc]) by TY4PR01MB13777.jpnprd01.prod.outlook.com
- ([fe80::60b7:270b:27c7:4fcc%7]) with mapi id 15.20.8813.018; Fri, 6 Jun 2025
- 06:46:27 +0000
-From: "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com>
-To: 'Petr Mladek' <pmladek@suse.com>
-CC: John Ogness <john.ogness@linutronix.de>, 'Michael Kelley'
-	<mhklinux@outlook.com>, 'Ryo Takakura' <ryotkkr98@gmail.com>, Russell King
-	<linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "Toshiyuki Sato (Fujitsu)"
-	<fj6611ie@fujitsu.com>
-Subject: RE: Problem with nbcon console and amba-pl011 serial port
-Thread-Topic: Problem with nbcon console and amba-pl011 serial port
-Thread-Index:
- AdvULbS8DdGjT9TLS9OOSVhbv2AtDgAN1+gwAALFDgAAAfWTAAAeB8NgABQ6MwAAAXadAAAD5OQAABRXfIAAHd5CAAAW9gPA
-Date: Fri, 6 Jun 2025 06:46:27 +0000
-Message-ID:
- <TY4PR01MB13777D072C4BCB40C88256334D76EA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
-References:
- <SN6PR02MB4157A4C5E8CB219A75263A17D46DA@SN6PR02MB4157.namprd02.prod.outlook.com>
- <OS7PR01MB13775FE1A20762D1EA4A38D0ED76DA@OS7PR01MB13775.jpnprd01.prod.outlook.com>
- <84y0u95e0j.fsf@jogness.linutronix.de> <84plfl5bf1.fsf@jogness.linutronix.de>
- <TY4PR01MB13777674C22721FCD8ACF4FCCD76CA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <aEApOPTqbVOR35F_@pathway.suse.cz> <84o6v3ohdh.fsf@jogness.linutronix.de>
- <aEBNLMYVUOGzusuR@pathway.suse.cz>
- <TY4PR01MB13777CC92C858572B9C19394FD76FA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <aEGeARVcCwqcoHb8@pathway.suse.cz>
-In-Reply-To: <aEGeARVcCwqcoHb8@pathway.suse.cz>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
- MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_ActionId=e0948610-2367-4ac4-96e6-e1fbbb12e16b;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_ContentBits=0;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_Enabled=true;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_Method=Privileged;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_Name=FUJITSU-PUBLIC?;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_SetDate=2025-06-06T00:38:29Z;MSIP_Label_1e92ef73-0ad1-40c5-ad55-46de3396802f_SiteId=a19f121d-81e1-4858-a9d8-736e267fd4c7;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=fujitsu.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TY4PR01MB13777:EE_|TYYPR01MB12240:EE_
-x-ms-office365-filtering-correlation-id: 6c433098-a7a8-4dd0-9294-08dda4c5dc86
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|7416014|376014|1580799027|38070700018;
-x-microsoft-antispam-message-info:
- =?iso-2022-jp?B?S0hZdDFRWlpreSsrZ1NQcWxEQytXWGRTRXlWUDRlYlFMdzJIV1pqcm54?=
- =?iso-2022-jp?B?UlRURDFIZmlpbHZrRC80c3dKR1RVSW1XaWliTVlodkRRVnl1ajgvQmpk?=
- =?iso-2022-jp?B?dHdYSUc5UE9YRGhMYWpMWnB2NjhoVVpvZVpCN3BCcWt3VnZQWUw1ZU1Y?=
- =?iso-2022-jp?B?ekxxdzYxMy82Tk5rZ1l0YmVhbkg4T25la1o3cU1zVm9tKzEzVGhlU0Z0?=
- =?iso-2022-jp?B?VnhPTTZWL3ArdnZPSzJhYjJnd3hUWjNiTS9LbTA5NUJIQk51SEQzYjh6?=
- =?iso-2022-jp?B?dGVhcExXWllPZ1E0T3RUUTNpcW4zOHluTnA2M3pqNGx6b3hlTXBMeDBp?=
- =?iso-2022-jp?B?ZFFWd3l3dWxnamxKdWMxRFpaMERlL1ZoVlFGNi9DdXJsaGZHaVRWbjF3?=
- =?iso-2022-jp?B?aVV6ZERLNUc0R0tvT0pqZk1Mc3hyb1k4OGF5OWZUWUY1Z3NyZ0ZhcU1G?=
- =?iso-2022-jp?B?TnlFZ3VVS0xKWlZWMGptNVM5YVBrZjAxYUJLRUZJcFp4UDgvZGZVY3F2?=
- =?iso-2022-jp?B?NWpDWUFwWnlNYXIvdGNzRjU2U08xdE9XeFZsUDhrREdlUS9mY0pudjlI?=
- =?iso-2022-jp?B?OU1JZDMvZzdrR1M2SDVwaEgwQXlhZjVPWnVDOVRkUkpWQTVyTVRtNUxS?=
- =?iso-2022-jp?B?Nnc5a01iWWNzQXh3QTM4SDIvbm1sa3hYRmN0NWVGcUxCdjE3NDhIeDFo?=
- =?iso-2022-jp?B?dkJ2QXRlMFNsVHl0N3RCVnNZVVZzTGZxcGp6dXphTEhJNVhCOGJsTE54?=
- =?iso-2022-jp?B?RVNSbWo5aFRLcEVLR0czU3RYRkVCQ0JMdHgrNy9BYTgrbkR1RVJZb3FY?=
- =?iso-2022-jp?B?dTFYaXUrQTRuT0l4NnIwc1NRdTZDSVM2WVdOKy9xSE52T0w1enJOSDZH?=
- =?iso-2022-jp?B?SjZweUxMOW9QL3hsZGplQ1ZjRStmZHBGTUcwd3M1QUVvSDJqK1l0ZVpD?=
- =?iso-2022-jp?B?K3lET0JhMFFnY2RxYXdIWUk2aThBTFFkUFgvb1BoMlM2QndLdXViNk44?=
- =?iso-2022-jp?B?VUhNeXRYemkyK2EyeURUOVBFOFJKdVpUYXZYVlF0UldmREgwUjRUdU14?=
- =?iso-2022-jp?B?NDNnNkp2cXJGRVV3cFI5VUZYTUtlMFduVUNyTGpjK1VJbHlPR0FNQmNk?=
- =?iso-2022-jp?B?Z1JpYUZ4UkJtczhmZDgwb0Y0L29Zbll6eFFSWnE5N0F1QWNkcW9ocWxR?=
- =?iso-2022-jp?B?aElmOGIxWUxZNmVKdXowM283NnlDM3ZLdlJlTDRDdzJrMmNDVEhRNFpa?=
- =?iso-2022-jp?B?QlkvRnVaYlhZajJBZk4zZFluQWpreTZJcDRRU3JWUEhqcytNUGllaEx4?=
- =?iso-2022-jp?B?cWRYUkZ5ZE5nRkp0a2FQZktBT1ptWm9STTBsZU5VZGpmaDROSkZPYUwx?=
- =?iso-2022-jp?B?MitueXRqbGRGaEtXUS9wVmptZ3pQSlpxbDhNdW1saE5DQWZDSXdRMWR2?=
- =?iso-2022-jp?B?aTZjTUl5dk1hNFduR2V0V2dNNWpBdzg2UUVtMkIzVkRUR2dVZEtZbzA1?=
- =?iso-2022-jp?B?Wmx0Mk4zVk1jZC9hMzd4dnEvVFBnS2pvSDBvRno1amwxSHdFMDBnUlpy?=
- =?iso-2022-jp?B?d2g0Y253TlUzSjhVeE9uYW5BOTJQZkxVTlAzUnFSUERKSGtidUpYdmpx?=
- =?iso-2022-jp?B?U0I4ZklWRmphdzdLTTJ1eWhQbU9zazlFcXZuRGlIVS94NEJRVWlJYlNr?=
- =?iso-2022-jp?B?L01FZzFRalpkckFoSFh2QlFLVElob0YxQ1lnRnJ5dWxqdXN2WGszamQw?=
- =?iso-2022-jp?B?cjJpNlNOSzNtMGNET25ZeEJ1U05NR2FqeDh5QjFndWZub0FvWndZWlN6?=
- =?iso-2022-jp?B?NW8yYWNSQWpkTVJvMzVlOWZZdHBNK29WOXRZU25xRTZMd0F6OFdZR1dn?=
- =?iso-2022-jp?B?SUJuaEVhc25JSThUSmFDVHV0UTROUTZ0M2J1Z21IdmtEWXZoWDZpaE5W?=
- =?iso-2022-jp?B?b1A2S2RxMFN2aHV1V0N4VkxBWGNhY3NGWEdjaXQ2c1o2R0xEQkJhcmJL?=
- =?iso-2022-jp?B?VnRMTHpEUHh5T3JMUXVsMnJNWDVtKzVPL1E3TzJHcElFZTlFNUxlNVh0?=
- =?iso-2022-jp?B?cVRpNXIrM3Z0VGtvQVhVUkhBMXpPUXBVb1ExcmtSZVRyNHoxSFdCODQ4?=
- =?iso-2022-jp?B?SXlaQmlvUnNVVDVEb1ZOdGd3Z1FoNG1TSFJtZTY1T0FwTjJ6NllRbzcy?=
- =?iso-2022-jp?B?VWxJd1gzcEYrRDhjbGdzUlFTSlZLVTQx?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:ja;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY4PR01MB13777.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(1580799027)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-2022-jp?B?cHE1M3R5VFBrRXdUdEZsUjJNVlJjVTAzUDhBZ0ZZWUwwZjJJV3hLeU1I?=
- =?iso-2022-jp?B?SjdrcGRocGRaemdHOGNGSFhHRTZKYXVXTkpoNUZCbGcwRXlYeXMxU1ho?=
- =?iso-2022-jp?B?WjJiQ0YwUHlPMnZaWlhOK05QZEdXY0oyc2Y2eitUNGlmNFZRN1ZJQ0FR?=
- =?iso-2022-jp?B?SGd2WkFpdVM3dDV0MjFlN3d3RStpd3Z4Zjd3Q1pRMjFkU2I3NWFIVjk2?=
- =?iso-2022-jp?B?SVorTHBQSjVqV1R0KzV3RU9wVDJBVnpIeUJMdHR0WkY5ZTFZbG0zb005?=
- =?iso-2022-jp?B?VXArZHludjZUNUV5WEN3NjhpbVJycEpmM2xVeTFCNk5TOWZXbWRTcFAw?=
- =?iso-2022-jp?B?Z0VPRm5xRW5wdk1jN1IzWjVLYjBwOVNIOTdZSnVWOGRmbjZjWkE5QlRm?=
- =?iso-2022-jp?B?WXNwZzlobGM0OTNBdzR2M3JJNFowdXd4TEZBK1hyRTFmZDU0d0RvbFox?=
- =?iso-2022-jp?B?YlkrT2Vkb2hrMkE1cGpUOENoZzkxMDZkZjVBdG9IMmVsYTBlNDk1d2E5?=
- =?iso-2022-jp?B?OWtGNG5vOUNQTDN4RHpOOXIzek5RSlA3VkhVN051aWlpYkxTVS9zMGg5?=
- =?iso-2022-jp?B?UTF3UVpYY0ZDZW9DTTZiK2ZOUWVxajZYY01RbmZ6QWNTYmJDZU5nL1hO?=
- =?iso-2022-jp?B?L1FQYW53NUtlb3QrN2g2WHRRbXRuTG5jT0NPdXdxWlRMTEgxblJHdnA2?=
- =?iso-2022-jp?B?NXBKbWJqS1BibEVXOWxoVE40M2VmRW96S0Q5OTZhM2ZrSDIzUkVyc0lo?=
- =?iso-2022-jp?B?K3VXWVcyakQxMWE2S05JbGo5ZGRWcm83QlBnM1JNZFVnVU5FT3lMZUNr?=
- =?iso-2022-jp?B?bHpKRm9LZ3JrWkxxRDNoSzNBVTFnZ3RIMWRReXlJUEYyKzBBczJLVkUw?=
- =?iso-2022-jp?B?WjNpWXpDSlhESVF3N0pIamovK2JMV2EvbHJFcXJqajBzdG0wOUpmZDhT?=
- =?iso-2022-jp?B?THdyenoxVXk0WmNURm8walB6b1QwamxWOGp1ODRlTmFiMG1RS256MGlX?=
- =?iso-2022-jp?B?NkNkZkVvL2V3RUo0MFJIYm5aMzFYbDVZRTVZS2xXWWJ4Mnp1R0U3QWph?=
- =?iso-2022-jp?B?WXFpN0wwaE5FZm5aWkFVZzhkZFdDY1ZnSHNsVmlaTlVJM2tJQ1oyc1hP?=
- =?iso-2022-jp?B?MzBpa3BNQ1o2YXYzeWQxL0pMRnlsaGM0Q1h3bFNqU2VKN3JidzhhaXNk?=
- =?iso-2022-jp?B?dHdUWEpZNk90ZWJVdmZ5Z25sN1JnRnhtNW1EcUhJcW5EWXU0WlRXY1VC?=
- =?iso-2022-jp?B?T2RJSk5ONUZkeW1Gc3FKQmF4TU85eVkzZUYxZ080RGkveGI5NVMzdnBH?=
- =?iso-2022-jp?B?TDErOHlZWno0V25HNUFpWjhSazBCekM5Qmw4THNnakZVVTI1d1hJREJp?=
- =?iso-2022-jp?B?NUd2QjdHUFNDb0NZMGlwMkp2SmNjemQ4QnpOajg2UkZibEUwQ1BmMlgx?=
- =?iso-2022-jp?B?ZjN6VlB4bVpTZ2Zabjd0dFR0ZmhaekM1QWZtYUNuaXRkdjI3TlMreE00?=
- =?iso-2022-jp?B?NEFRZEo0OEt2ZHdyVWpiSTF3Sys5NWJNb3lVMjRvZU5VZkJ5VDBSQW9Y?=
- =?iso-2022-jp?B?Z1B3WGpSMlV1TGJ0MEJ3WmFxUUQ1WHg4aWtlY2Z3elBFMk5RdkhUUHd0?=
- =?iso-2022-jp?B?SEdYMEYrakZxcDVESVlDTnNiUzZWdVhOWVZLSVZKdmFKOE9oUmpYUk1a?=
- =?iso-2022-jp?B?RWRqL0N3b3dnN2JWczdrZHBUd3hrMExGY2NUS2FCaWRpRHg4N0Z3MG85?=
- =?iso-2022-jp?B?bkRDNWJZdzZwZVZwYUptdjMxaUJ5RDBKU252UWo3c0JWaU9iaWl1VDNw?=
- =?iso-2022-jp?B?dDF5YXRkMnUvb0VOYXkxcDIrbzdSeHdlNmFpMTU5TVhUaC9aS0ZPZjFR?=
- =?iso-2022-jp?B?TEpwUXNmLzIrNDNRSzIvdXgraGRnY3ljNHhldFVKMlZER0svbEVTR1BU?=
- =?iso-2022-jp?B?VU9YZTN0RFBacEZ0OXFOVk1UcmlKMHlWL0trZ0JwdThtN0FOTkdnWkVE?=
- =?iso-2022-jp?B?SjBjOVBMbGwrWkFPMm5ISGp4S0QzSDlnOWpiWFZDckkvWjd5NWtBUUQr?=
- =?iso-2022-jp?B?UzNabndzOERKZ2RJYmNZUU0zcnUvM3U5aDkzK3pxajRNUnFhdi9JeUdC?=
- =?iso-2022-jp?B?em9HdUJaMTFlWjJMTkhvSWlBTUNGN28xR0dmZUY1RU1sd09kMDE2dnli?=
- =?iso-2022-jp?B?eS9nb2trajFsblBDdXhUSyt2Si9kcldwbVU1b2JZS081c2gxa0FXTURJ?=
- =?iso-2022-jp?B?QlE5ckYrNkt6dVY1MnEvZk5Ldi96bGZKQmlUM0RBOGw0Y012dWNYRUVS?=
- =?iso-2022-jp?B?bi9KRHRiRHRrVVBJVGxPQ0x4UnNKdUcwSXc9PQ==?=
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="SI2+wc3r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9486EC4CEEB;
+	Fri,  6 Jun 2025 08:39:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1749199148;
+	bh=L8i9F2CQBlUJYI7gLW6qhQGKoWZwPQYsYKDVaSpLmKA=;
+	h=Date:From:To:Cc:Subject:From;
+	b=SI2+wc3rbH3P4uLF2SAV+UJtWWpRKM+8PRNi6EMfifOP26GjiBKKRfXy5ZVzx+WQ3
+	 IWvNjsOJ7sYrMBMdk7Valzvo22VVjPNNr4Sd8zIwgUtx7pH66vdmMxE7cmGNXNNrMh
+	 ctGa+b1RvCBig7GXwrsojd9qheQbiJvrYP5/bvWs=
+Date: Fri, 6 Jun 2025 10:39:06 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY / Serial driver changes for 6.16-rc1
+Message-ID: <aEKpKk71YuLPPMZC@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	aPqHXdQ/4F+/Wh9WbbptS12wsir0/8n6oDmLa8c8plc0zbqvg/l9Q40R2dbmSNGmvAI/X7VdgZXyuMFedIJxOCBGr84K3ds0ukUBgIGhToD7CKEbwUDE+dgpQ8huhvXObGSHYj7hM2ieHNfJHL2PmiHWnt9BNqqc8GZKaMCXo2TgOJcsmLYkIX49KzdpNVriF78b5CBngm90cuVKN4mlarzMl1H8m6A7O55wK4fVHr/ceK6cotDZFeTEMjz73fQP6s/mYPHIjMx4ARd8Z55VEdC7cZsWepPGRyzJ0FnhAGu+5VqQJDpcASI1ltKK0dt9ggp0TBD1rV2MSg283RBUpPTjUoJEn9fUZUwan4Vp5Z99IQjreF6Z9B8cHijIKEou3W/wN47ij+nJ7Fx4gwsgmijeF+gN9ssI8AR8AEoZa3dNgOgM1oydfIYwCXrYpR/yU0sR1/VhHAqc1ku/luuQ/oIUDG1b1h8SYvzg+R+lsb48gn/poFNVsN3YmRPw0aRMACt4fath7/dgZYP0Hlo9GbUuOyG96H6TozLKdeGMCmVfy7/hlGtWlI8MJJpVFLJtvCCspTKWvuifa0G1L/qLa9l7nsIqbQEW1g/4WvmIHLcrhNjDg1r1xhGphwCYNDnY
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY4PR01MB13777.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6c433098-a7a8-4dd0-9294-08dda4c5dc86
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jun 2025 06:46:27.1671
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: z/a1GljUCP6IV7dc4KD81hG/YhsnKMkDrgPMMsuqvMTiYOpa7uHIqU3hD655zkfhQZQlB6gx5+e3T25IQFcyxsF8U8vAwpHx5+6sM9XuHPI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYYPR01MB12240
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hi Petr,
+The following changes since commit b4432656b36e5cc1d50a1f2dc15357543add530e:
 
-Thanks for your comment.
+  Linux 6.15-rc4 (2025-04-27 15:19:23 -0700)
 
-> On Thu 2025-06-05 05:27:56, Toshiyuki Sato (Fujitsu) wrote:
-> > Hi John and Petr,
-> >
-> > > On Wed 2025-06-04 13:56:34, John Ogness wrote:
-> > > > On 2025-06-04, Petr Mladek <pmladek@suse.com> wrote:
-> > > > > On Wed 2025-06-04 04:11:10, Toshiyuki Sato (Fujitsu) wrote:
-> > > > >> > On 2025-06-03, John Ogness <john.ogness@linutronix.de> wrote:
-> > > > >> > > On 2025-06-03, "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.=
-com> wrote:
-> > > > >> > >>> 4. pr_emerg() has a high logging level, and it effectively=
- steals the console
-> > > > >> > >>> from the "pr/ttyAMA0" task, which I believe is intentional=
- in the nbcon
-> > > > >> > design.
-> > > > >> > >>> Down in pl011_console_write_thread(), the "pr/ttyAMA0" tas=
-k is doing
-> > > > >> > >>> nbcon_enter_unsafe() and nbcon_exit_unsafe() around each c=
-haracter
-> > > > >> > >>> that it outputs.  When pr_emerg() steals the console, nbco=
-n_exit_unsafe()
-> > > > >> > >>> returns 0, so the "for" loop exits. pl011_console_write_th=
-read() then
-> > > > >> > >>> enters a busy "while" loop waiting to reclaim the console.=
- It's doing this
-> > > > >> > >>> busy "while" loop with interrupts disabled, and because of=
- the panic,
-> > > > >> > >>> it never succeeds.
-> > > > >
-> > > > > I am a bit surprised that it never succeeds. The panic CPU takes =
-over
-> > > > > the ownership but it releases it when the messages are flushed. A=
-nd
-> > > > > the original owner should be able to reacquire it in this case.
-> > > >
-> > > > The problem is that other_cpu_in_panic() will return true forever, =
-which
-> > > > will cause _all_ acquires to fail forever. Originally we did allow
-> > > > non-panic to take over again after panic releases ownership. But II=
-RC we
-> > > > removed that capability because it allowed us to reduce a lot of
-> > > > complexity. And now nbcon_waiter_matches() relies on "Lower priorit=
-ies
-> > > > are ignored during panic() until reboot."
-> > >
-> > > Great catch! I forgot it. And it explains everything.
-> > >
-> > > It would be nice to mention this in the commit message or
-> > > in the comment above nbcon_reacquire_nobuf().
-> > >
-> > > My updated prosal of the comment is:
-> > >
-> > >  * Return:	True when the context reacquired the owner ship. The calle=
-r
-> > >  *		might try entering the unsafe state and restore the original
-> > >  *		console device setting. It must not access the output buffer
-> > >  *		anymore.
-> > >  *
-> > >  *		False when another CPU is in panic(). nbcon_try_acquire()
-> > >  *		would never succeed and the infinite loop would	prevent
-> > >  *		stopping this CPU on architectures without proper NMI.
-> > >  *		The caller should bail out immediately without
-> > >  *		touching the console device or the output buffer.
-> > >
-> > > Best Regards,
-> > > Petr
-> >
-> > Thank you for your comments and suggestions.
-> >
-> > After consideration,
-> > I believe that there is no problem with forcibly terminating the proces=
-s when
-> > nbcon_reacquire_nobuf returns false at the pl011 driver level,
-> > as in the test patch.
-> >
-> > It feels a bit harsh that a thread which started processing before the =
-panic
-> > and then transferred ownership to an atomic operation isn't allowed to =
-perform
-> > cleanup during panic handling or the grace period before the CPU halts.
-> >
-> > I would like to hear your opinion on this.
-> > If nbcon_reacquire_nobuf() could acquire ownership even after the panic=
-,
-> > then driver-side modifications might not be necessary.
-> > (The responsibility to complete the process without hindering the panic=
- process
-> > would still remain.)
-> >
-> > Would it be difficult to make an exception to the rule,
-> >   "Lower priorities are ignored during panic() until reboot,"
-> > depending on the situation?
->=20
-> Good question.
->=20
-> The following two problems came to my mind:
->=20
-> 1. As John, pointed out, the fact that non-panic CPUs are not
->    able to acquire the context allowed to simplify the implementation.
->=20
->    I think that it is primary about nbcon_waiter_matches(),
->    nbcon_owner_matches(), and the related logic. It was documented by
->    the commit 8c9dab2c55ad7 ("printk: nbcon: Clarify rules of
->    the owner/waiter matching").
->=20
->    But it seems that nbcon_owner_matches() is safe even without the rule.
->    The race is prevented either by disabling interrupts and preemption
->    or by taking device_lock().
->=20
->    The rule prevents a race in nbcon_waiter_matches(). But it seems
->    that in the worst case, more CPUs might end up busy waiting.
->    And it would be acceptable during panic().
->=20
->    So, this need not be a big problem in the end.
->=20
->=20
-> 2. If we allowed non-panic() CPUs to acquire the ownership, it would
->    increase the risk that the panic CPU will not be able to
->    flush the messages.
->=20
->    But maybe, the problem is only when the architecture supports
->    proper NMI and non-panic CPUs might be stopped anywhere.
->=20
->    It should be less problem on architectures without proper NMI
->    where the non-panic CPU could not be stopped in the problematic
->    situation.
->=20
->    So, maybe, we could relax the rule on architectures without
->    proper NMI.
->=20
->=20
-> The question is if it is worth it. Is the clean up really important?
->=20
-> Note that the clean up will never be guaranteed on architectures with
-> a proper NMI. They would stop the non-panic CPUs, including the printk
-> kthread, anywhere.
->=20
-> And I guess that the console devices will be initialized after the
-> reboot anyway.
->=20
+are available in the Git repository at:
 
-Understood.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.16-rc1
 
-At least for pl011, a forced shutdown does not cause any problems.
-(Since clk remains enabled and CR maintains a transmittable state,
-it does not hinder the panic handling process.)
+for you to fetch changes up to b495021a973e2468497689bd3e29b736747b896f:
 
-I'll create a revised patch based on the patch I posted for testing this ti=
-me.
-Please allow me some time.
+  tty: serial: 8250_omap: fix TX with DMA for am33xx (2025-05-22 07:50:45 +0200)
 
-When I submit the patch,
-I would appreciate your continued assistance with reviews and other aspects=
-.
+----------------------------------------------------------------
+TTY/Serial changes for 6.16-rc1
 
-Regards,
-Toshiyuki Sato
+Here is the big set of tty and serial driver changes for 6.16-rc1.
+A little more churn than normal in this portion of the kernel for this
+development cycle, Jiri and Nicholas were busy with cleanups and reviews
+and fixes for the vt unicode handling logic which composed most of the
+overall work in here.
+
+Major changes are:
+  - vt unicode changes/reverts/changes from Nicholas.  This should help
+    out a lot with screen readers and others that rely on vt console
+    support
+  - lock guard additions to the core tty/serial code to clean up lots of
+    error handling logic
+  - 8250 driver updates and fixes
+  - device tree conversions to yaml
+  - sh-sci driver updates
+  - other small cleanups and updates for serial drivers and tty core
+    portions
+
+All of these have been in linux-next for 2 weeks with no reported issues
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Alex Elder (3):
+      dt-bindings: serial: 8250: support an optional second clock
+      serial: 8250_of: add support for an optional bus clock
+      serial: 8250_of: manage bus clock in suspend/resume
+
+Alexey Gladkov (2):
+      tty/vt: Use KVAL instead of use bit operation
+      tty/vt: Gather the code that outputs char with utf8 in mind
+
+Andy Shevchenko (7):
+      serial: 8250_ni: Switch to use uart_read_port_properties()
+      serial: 8250_ni: Remove duplicate mapping
+      serial: 8250_ni: Switch to use platform_get_mem_or_io()
+      serial: 8250_ni: Remove unneeded conditionals
+      serial: 8250_ni: use serial_port_in()/serial_port_out() helpers
+      serial: 8250_ni: Switch to use dev_err_probe()
+      serial: 8250_ni: Tidy up ACPI ID table
+
+AngeloGioacchino Del Regno (1):
+      dt-bindings: serial: mediatek,uart: Add compatible for MT6893
+
+Bartosz Golaszewski (3):
+      serial: max310x: use new GPIO line value setter callbacks
+      serial: sc16is7xx: use new GPIO line value setter callbacks
+      vt: add new dynamically generated files to .gitignore
+
+Chen Ni (2):
+      serial: lantiq: Remove unnecessary print function dev_err()
+      serial: tegra-utc: Remove unneeded semicolon
+
+Dharma Balasubiramani (1):
+      dt-bindings: serial: atmel,at91-usart: add microchip,sama7d65-usart
+
+Dustin Lundquist (1):
+      serial: jsm: fix NPE during jsm_uart_port_init
+
+Faraz Ata (1):
+      tty: serial: samsung_tty: support 18 uart ports
+
+Geert Uytterhoeven (1):
+      dt-bindings: serial: snps-dw-apb-uart: Simplify DMA-less RZ/N1 rule
+
+Greg Kroah-Hartman (14):
+      Revert "vt: fix comment vs definition mismatch"
+      Revert "vt: remove zero-white-space handling from conv_uni_to_pc()"
+      Revert "vt: pad double-width code points with a zero-white-space"
+      Revert "vt: update ucs_width.c following latest gen_ucs_width.py"
+      Revert "vt: update gen_ucs_width.py to produce more space efficient tables"
+      Revert "vt: support Unicode recomposition"
+      Revert "vt: create ucs_recompose.c using gen_ucs_recompose.py"
+      Revert "vt: introduce gen_ucs_recompose.py to create ucs_recompose.c"
+      Revert "vt: update ucs_width.c using gen_ucs_width.py"
+      Revert "vt: introduce gen_ucs_width.py to create ucs_width.c"
+      Revert "vt: properly support zero-width Unicode code points"
+      Revert "vt: move unicode processing to a separate file"
+      Revert "vt: minor cleanup to vc_translate_unicode()"
+      Merge 6.15-rc4 into tty-next
+
+Henry Martin (1):
+      serial: Fix potential null-ptr-deref in mlb_usio_probe()
+
+Jakub Lewalski (1):
+      tty: serial: uartlite: register uart driver in init
+
+Jiri Slaby (SUSE) (7):
+      tty: simplify throttling using guard()s
+      tty: use lock guard()s in tty_io
+      serial: switch uart_port::iotype to enum uart_iotype
+      serial: rename local uart_port_lock() -> uart_port_ref_lock()
+      serial: use uart_port_ref_lock() helper
+      serial: 8250: unexport serial8250_rpm_*() functions
+      tty: serial: 8250_omap: fix TX with DMA for am33xx
+
+Krzysztof Kozlowski (1):
+      dt-bindings: serial: 8250_omap: Drop redundant properties
+
+Kuan-Wei Chiu (1):
+      serial: max3100: Replace open-coded parity calculation with parity8()
+
+Nicolas Pitre (38):
+      vt: minor cleanup to vc_translate_unicode()
+      vt: move unicode processing to a separate file
+      vt: properly support zero-width Unicode code points
+      vt: introduce gen_ucs_width.py to create ucs_width.c
+      vt: update ucs_width.c using gen_ucs_width.py
+      vt: introduce gen_ucs_recompose.py to create ucs_recompose.c
+      vt: create ucs_recompose.c using gen_ucs_recompose.py
+      vt: support Unicode recomposition
+      vt: update gen_ucs_width.py to produce more space efficient tables
+      vt: update ucs_width.c following latest gen_ucs_width.py
+      vt: pad double-width code points with a zero-white-space
+      vt: remove zero-white-space handling from conv_uni_to_pc()
+      vt: fix comment vs definition mismatch
+      vt: minor cleanup to vc_translate_unicode()
+      vt: move unicode processing to a separate file
+      vt: properly support zero-width Unicode code points
+      vt: introduce gen_ucs_width_table.py to create ucs_width_table.h
+      vt: create ucs_width_table.h with gen_ucs_width_table.py
+      vt: use new tables in ucs.c
+      vt: introduce gen_ucs_recompose_table.py to create ucs_recompose_table.h
+      vt: create ucs_recompose_table.h with gen_ucs_recompose_table.py
+      vt: support Unicode recomposition
+      vt: pad double-width code points with a zero-width space
+      vt: remove zero-width-space handling from conv_uni_to_pc()
+      vt: update gen_ucs_width_table.py to make tables more space efficient
+      vt: refresh ucs_width_table.h and adjust code in ucs.c accordingly
+      vt: move UCS tables to the "shipped" form
+      vt: ucs.c: fix misappropriate in_range() usage
+      vt: make sure displayed double-width characters are remembered as such
+      vt: move glyph determination to a separate function
+      vt: introduce gen_ucs_fallback_table.py to create ucs_fallback_table.h
+      vt: create ucs_fallback_table.h_shipped with gen_ucs_fallback_table.py
+      vt: add ucs_get_fallback()
+      vt: make use of ucs_get_fallback() when glyph is unavailable
+      vt: process the full-width ASCII fallback range programmatically
+      vt: remove VT_RESIZE and VT_RESIZEX from vt_compat_ioctl()
+      vt: bracketed paste support
+      vt: add VT_GETCONSIZECSRPOS to retrieve console size and cursor position
+
+Philipp Stanner (1):
+      mxser: Use non-hybrid PCI devres API
+
+Rengarajan S (1):
+      8250: microchip: pci1xxxx: Add PCIe Hot reset disable support for Rev C0 and later devices
+
+Rob Herring (Arm) (10):
+      dt-bindings: serial: Convert cnxt,cx92755-usart to DT schema
+      dt-bindings: serial: Convert nxp,lpc3220-hsuart to DT schema
+      dt-bindings: serial: Convert arm,mps2-uart to DT schema
+      dt-bindings: serial: Convert cirrus,ep7209-uart to DT schema
+      dt-bindings: serial: Convert lantiq,asc to DT schema
+      dt-bindings: serial: Convert marvell,armada-3700-uart to DT schema
+      dt-bindings: serial: Convert snps,arc-uart to DT schema
+      dt-bindings: serial: Convert arm,sbsa-uart to DT schema
+      dt-bindings: serial: Convert microchip,pic32mzda-uart to DT schema
+      dt-bindings: serial: Convert socionext,milbeaut-usio-uart to DT schema
+
+Ryo Takakura (1):
+      serial: sifive: Switch to nbcon console
+
+Thierry Bultel (4):
+      dt-bindings: serial: Add compatible for Renesas RZ/T2H SoC in sci
+      serial: sh-sci: Fix a comment about SCIFA
+      serial: sh-sci: Introduced function pointers
+      serial: sh-sci: Introduced sci_of_data
+
+Viken Dadhaniya (1):
+      serial: qcom-geni: Remove alias dependency from qcom serial driver
+
+Xianwei Zhao (1):
+      dt-bindings: serial: amlogic,meson-uart: Add compatible string for S6/S7/S7D
+
+Zijun Hu (2):
+      tty: Remove unused API tty_port_register_device_serdev()
+      serdev: Refine several error or debug messages
+
+ Documentation/devicetree/bindings/serial/8250.yaml |   30 +-
+ .../devicetree/bindings/serial/8250_omap.yaml      |    7 -
+ .../bindings/serial/amlogic,meson-uart.yaml        |    3 +
+ .../devicetree/bindings/serial/arc-uart.txt        |   25 -
+ .../devicetree/bindings/serial/arm,mps2-uart.txt   |   19 -
+ .../devicetree/bindings/serial/arm,mps2-uart.yaml  |   46 +
+ .../devicetree/bindings/serial/arm,sbsa-uart.yaml  |   38 +
+ .../devicetree/bindings/serial/arm_sbsa_uart.txt   |   10 -
+ .../bindings/serial/atmel,at91-usart.yaml          |    1 +
+ .../bindings/serial/cirrus,clps711x-uart.txt       |   31 -
+ .../bindings/serial/cirrus,ep7209-uart.yaml        |   56 +
+ .../bindings/serial/cnxt,cx92755-usart.yaml        |   48 +
+ .../devicetree/bindings/serial/digicolor-usart.txt |   27 -
+ .../devicetree/bindings/serial/lantiq,asc.yaml     |   56 +
+ .../devicetree/bindings/serial/lantiq_asc.txt      |   31 -
+ .../bindings/serial/marvell,armada-3700-uart.yaml  |  102 +
+ .../devicetree/bindings/serial/mediatek,uart.yaml  |    1 +
+ .../bindings/serial/microchip,pic32-uart.txt       |   29 -
+ .../bindings/serial/microchip,pic32mzda-uart.yaml  |   53 +
+ .../devicetree/bindings/serial/milbeaut-uart.txt   |   21 -
+ .../devicetree/bindings/serial/mvebu-uart.txt      |   56 -
+ .../bindings/serial/nxp,lpc3220-hsuart.yaml        |   39 +
+ .../bindings/serial/nxp-lpc32xx-hsuart.txt         |   14 -
+ .../devicetree/bindings/serial/renesas,rsci.yaml   |   78 +
+ .../devicetree/bindings/serial/snps,arc-uart.yaml  |   51 +
+ .../bindings/serial/snps-dw-apb-uart.yaml          |    4 +-
+ .../serial/socionext,milbeaut-usio-uart.yaml       |   56 +
+ MAINTAINERS                                        |    2 +-
+ drivers/tty/mxser.c                                |    4 +-
+ drivers/tty/serdev/core.c                          |    8 +-
+ drivers/tty/serial/8250/8250.h                     |    6 -
+ drivers/tty/serial/8250/8250_core.c                |    2 +-
+ drivers/tty/serial/8250/8250_early.c               |    2 +
+ drivers/tty/serial/8250/8250_ni.c                  |   89 +-
+ drivers/tty/serial/8250/8250_of.c                  |   15 +-
+ drivers/tty/serial/8250/8250_omap.c                |   25 +-
+ drivers/tty/serial/8250/8250_pci1xxxx.c            |   10 +
+ drivers/tty/serial/8250/8250_port.c                |   16 +-
+ drivers/tty/serial/8250/8250_rsa.c                 |    2 +
+ drivers/tty/serial/8250/Kconfig                    |    2 +-
+ drivers/tty/serial/amba-pl011.c                    |    2 +-
+ drivers/tty/serial/fsl_lpuart.c                    |    5 +-
+ drivers/tty/serial/jsm/jsm_tty.c                   |    1 +
+ drivers/tty/serial/lantiq.c                        |    4 +-
+ drivers/tty/serial/max3100.c                       |    3 +-
+ drivers/tty/serial/max310x.c                       |    7 +-
+ drivers/tty/serial/milbeaut_usio.c                 |    5 +-
+ drivers/tty/serial/qcom_geni_serial.c              |   25 +-
+ drivers/tty/serial/samsung_tty.c                   |    6 +-
+ drivers/tty/serial/sc16is7xx.c                     |    7 +-
+ drivers/tty/serial/serial_core.c                   |   95 +-
+ drivers/tty/serial/sh-sci-common.h                 |  167 +
+ drivers/tty/serial/sh-sci.c                        |  630 ++--
+ drivers/tty/serial/sh-sci.h                        |    2 -
+ drivers/tty/serial/sifive.c                        |   88 +-
+ drivers/tty/serial/tegra-utc.c                     |    2 +-
+ drivers/tty/serial/uartlite.c                      |   25 +-
+ drivers/tty/tty_io.c                               |   96 +-
+ drivers/tty/tty_ioctl.c                            |   48 +-
+ drivers/tty/tty_port.c                             |   20 -
+ drivers/tty/vt/.gitignore                          |    3 +
+ drivers/tty/vt/Makefile                            |   34 +-
+ drivers/tty/vt/consolemap.c                        |    2 -
+ drivers/tty/vt/gen_ucs_fallback_table.py           |  360 +++
+ drivers/tty/vt/gen_ucs_recompose_table.py          |  257 ++
+ drivers/tty/vt/gen_ucs_width_table.py              |  307 ++
+ drivers/tty/vt/keyboard.c                          |   37 +-
+ drivers/tty/vt/selection.c                         |   31 +-
+ drivers/tty/vt/ucs.c                               |  251 ++
+ drivers/tty/vt/ucs_fallback_table.h_shipped        | 3346 ++++++++++++++++++++
+ drivers/tty/vt/ucs_recompose_table.h_shipped       |  102 +
+ drivers/tty/vt/ucs_width_table.h_shipped           |  453 +++
+ drivers/tty/vt/vt.c                                |  242 +-
+ drivers/tty/vt/vt_ioctl.c                          |   18 +-
+ include/linux/console_struct.h                     |    1 +
+ include/linux/consolemap.h                         |   24 +
+ include/linux/serial_core.h                        |   30 +-
+ include/linux/tty_port.h                           |    3 -
+ include/uapi/linux/tiocl.h                         |    1 +
+ include/uapi/linux/vt.h                            |   11 +
+ 80 files changed, 6909 insertions(+), 957 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/serial/arc-uart.txt
+ delete mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
+ delete mode 100644 Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/cirrus,ep7209-uart.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/cnxt,cx92755-usart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/digicolor-usart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/lantiq,asc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/lantiq_asc.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/microchip,pic32mzda-uart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/milbeaut-uart.txt
+ delete mode 100644 Documentation/devicetree/bindings/serial/mvebu-uart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/nxp,lpc3220-hsuart.yaml
+ delete mode 100644 Documentation/devicetree/bindings/serial/nxp-lpc32xx-hsuart.txt
+ create mode 100644 Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/snps,arc-uart.yaml
+ create mode 100644 Documentation/devicetree/bindings/serial/socionext,milbeaut-usio-uart.yaml
+ create mode 100644 drivers/tty/serial/sh-sci-common.h
+ create mode 100755 drivers/tty/vt/gen_ucs_fallback_table.py
+ create mode 100755 drivers/tty/vt/gen_ucs_recompose_table.py
+ create mode 100755 drivers/tty/vt/gen_ucs_width_table.py
+ create mode 100644 drivers/tty/vt/ucs.c
+ create mode 100644 drivers/tty/vt/ucs_fallback_table.h_shipped
+ create mode 100644 drivers/tty/vt/ucs_recompose_table.h_shipped
+ create mode 100644 drivers/tty/vt/ucs_width_table.h_shipped
