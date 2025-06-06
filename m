@@ -1,346 +1,227 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 844421E47B3;
-	Fri,  6 Jun 2025 08:39:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 914BA3234;
+	Fri,  6 Jun 2025 10:19:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749199149; cv=none; b=WFQFQr7IdijdQj6/GUC1KUdEtUIbvJEGH07Mtj36PzgyheskFu/ynsoYWbmMHjKccaeAhxFrNef/kvxED4EEkTjWSjVeLnZh7JjPSAffw8KiDslyNl4H+jbCnITmBUHdiTUx2lhh5onAWX0h5JLf6MLLnC9lSdPHu1gxHDRQ6Ms=
+	t=1749205180; cv=none; b=GuYsTFokhTmsq8HuDsDZ52+Nep0Patpd87uQDoJhHEPEAMblGj2KfvArvAb5w/YqL9euJNk0sgmHHJyYYaG78T1Oj7zeVS61wKeQbiWwgF3nsDYTj7Xceu1KkjPYBzP+ZK7DYWfil1dLjk1+mN3HfXB0BQu3BaBq47tLOifAQls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749199149; c=relaxed/simple;
-	bh=L8i9F2CQBlUJYI7gLW6qhQGKoWZwPQYsYKDVaSpLmKA=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=lRloawuLPiJAvai4i2bqet3QJS8NHtpOonZ5tp4Ov9rR6RR0WFthfjJHtPPkuZsKhB2wZdSbU0TBcOR7mg/7+ogvcoFw9p/otj+xLgDaNJCRc1GGsUry/RQ/n3r/OZhcA+lGYp0JDnU8UZwjIagjZ4JdzBIWUU9N3Bzf18eYKHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=SI2+wc3r; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749205180; c=relaxed/simple;
+	bh=U9oRcqk8pQONKNF0tSAsSNHiaoMlLKsDK3FIcKhEGQk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=pXiuQqEkfHvJWzN9bwtv/C9pRb1O+7ih7Jk9AEkGlHZONn1b7hgcwhA6a2Grd4FxjsqizfA8u1Up0c5scBB5/EzVGd/Vaas5k6ZNIBM4K0M5ExGuyRDfFdXDG0kD6P21SE9GhI5fVn8t8Vi9p56Beuq0at6EXlGN84yjZuDELyk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=NAcC5HuI; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=oU5sfJAx; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="SI2+wc3r"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9486EC4CEEB;
-	Fri,  6 Jun 2025 08:39:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1749199148;
-	bh=L8i9F2CQBlUJYI7gLW6qhQGKoWZwPQYsYKDVaSpLmKA=;
-	h=Date:From:To:Cc:Subject:From;
-	b=SI2+wc3rbH3P4uLF2SAV+UJtWWpRKM+8PRNi6EMfifOP26GjiBKKRfXy5ZVzx+WQ3
-	 IWvNjsOJ7sYrMBMdk7Valzvo22VVjPNNr4Sd8zIwgUtx7pH66vdmMxE7cmGNXNNrMh
-	 ctGa+b1RvCBig7GXwrsojd9qheQbiJvrYP5/bvWs=
-Date: Fri, 6 Jun 2025 10:39:06 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY / Serial driver changes for 6.16-rc1
-Message-ID: <aEKpKk71YuLPPMZC@kroah.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="NAcC5HuI";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="oU5sfJAx"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1749205176;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2Wj8ecJw8sQMELv22VyqXO77n+w+BEzjGz6ZQfwvvzw=;
+	b=NAcC5HuIuZMqVi0R070oigm72+7GL9UEurnIlPXXJZ3LfgUaFtk0M2Za0cGz/tUqCN+vr/
+	b5YdrvdC2jhJwxrsQD45HLC6oAWzXVejuT3MuPcYfyZ3zmDUJNvN++edpV0XbMn7cPVMrg
+	mF0NqAMkjNudN/f0dMo8nOS2CDMbILTm2jD0jTeO/m2N/9RYDMqta++hz3YEYHEC+JcZF4
+	P8g+YCmJqQ+hUdUH30LbU9toOmsYkpjwDooAi6MPzvXt9u0ncTB/f5bv2lf8kFYr9EJ3yo
+	Qi2ZlQzJ9K6Yc/K1RIemL0Bh5eTXnXB8OMMgviFVyMA7Vzg8NBQQHLx5HYVmXA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1749205176;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2Wj8ecJw8sQMELv22VyqXO77n+w+BEzjGz6ZQfwvvzw=;
+	b=oU5sfJAxPYPEf4Mjq9ihtQjWLaP3Dg/H2+yCANCmxnuvywVX0+sZLQKU+aAWpT5RSmH39E
+	6+95i4B+bR+O5eAA==
+To: Petr Mladek <pmladek@suse.com>, "Toshiyuki Sato (Fujitsu)"
+ <fj6611ie@fujitsu.com>
+Cc: 'Michael Kelley' <mhklinux@outlook.com>, 'Ryo Takakura'
+ <ryotkkr98@gmail.com>, Russell King <linux@armlinux.org.uk>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
+ <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>
+Subject: Re: Problem with nbcon console and amba-pl011 serial port
+In-Reply-To: <aEGeARVcCwqcoHb8@pathway.suse.cz>
+References: <SN6PR02MB4157A4C5E8CB219A75263A17D46DA@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <OS7PR01MB13775FE1A20762D1EA4A38D0ED76DA@OS7PR01MB13775.jpnprd01.prod.outlook.com>
+ <84y0u95e0j.fsf@jogness.linutronix.de>
+ <84plfl5bf1.fsf@jogness.linutronix.de>
+ <TY4PR01MB13777674C22721FCD8ACF4FCCD76CA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
+ <aEApOPTqbVOR35F_@pathway.suse.cz> <84o6v3ohdh.fsf@jogness.linutronix.de>
+ <aEBNLMYVUOGzusuR@pathway.suse.cz>
+ <TY4PR01MB13777CC92C858572B9C19394FD76FA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
+ <aEGeARVcCwqcoHb8@pathway.suse.cz>
+Date: Fri, 06 Jun 2025 12:25:35 +0206
+Message-ID: <84frgdcgug.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain
 
-The following changes since commit b4432656b36e5cc1d50a1f2dc15357543add530e:
+On 2025-06-05, Petr Mladek <pmladek@suse.com> wrote:
+> The question is if it is worth it. Is the clean up really important?
 
-  Linux 6.15-rc4 (2025-04-27 15:19:23 -0700)
+I must admit that I am not happy about encouraging the proposed solution
+so far (i.e. expecting driver authors to create special unsafe code in
+the panic situation). It leads down the "hope and pray" path that nbcon
+was designed to fix.
 
-are available in the Git repository at:
+What if during non-panic-CPU shutdown, we allow reacquires to succeed
+only for _direct_ acquires? The below diff shows how this could be
+implemented. Since it only supports direct acquires, it does not violate
+any state rules. And also, since it only involves the reacquire, there
+is no ugly battling for console printing between the panic and non-panic
+CPUs.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.16-rc1
+Thoughts?
 
-for you to fetch changes up to b495021a973e2468497689bd3e29b736747b896f:
+John Ogness
 
-  tty: serial: 8250_omap: fix TX with DMA for am33xx (2025-05-22 07:50:45 +0200)
-
-----------------------------------------------------------------
-TTY/Serial changes for 6.16-rc1
-
-Here is the big set of tty and serial driver changes for 6.16-rc1.
-A little more churn than normal in this portion of the kernel for this
-development cycle, Jiri and Nicholas were busy with cleanups and reviews
-and fixes for the vt unicode handling logic which composed most of the
-overall work in here.
-
-Major changes are:
-  - vt unicode changes/reverts/changes from Nicholas.  This should help
-    out a lot with screen readers and others that rely on vt console
-    support
-  - lock guard additions to the core tty/serial code to clean up lots of
-    error handling logic
-  - 8250 driver updates and fixes
-  - device tree conversions to yaml
-  - sh-sci driver updates
-  - other small cleanups and updates for serial drivers and tty core
-    portions
-
-All of these have been in linux-next for 2 weeks with no reported issues
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Alex Elder (3):
-      dt-bindings: serial: 8250: support an optional second clock
-      serial: 8250_of: add support for an optional bus clock
-      serial: 8250_of: manage bus clock in suspend/resume
-
-Alexey Gladkov (2):
-      tty/vt: Use KVAL instead of use bit operation
-      tty/vt: Gather the code that outputs char with utf8 in mind
-
-Andy Shevchenko (7):
-      serial: 8250_ni: Switch to use uart_read_port_properties()
-      serial: 8250_ni: Remove duplicate mapping
-      serial: 8250_ni: Switch to use platform_get_mem_or_io()
-      serial: 8250_ni: Remove unneeded conditionals
-      serial: 8250_ni: use serial_port_in()/serial_port_out() helpers
-      serial: 8250_ni: Switch to use dev_err_probe()
-      serial: 8250_ni: Tidy up ACPI ID table
-
-AngeloGioacchino Del Regno (1):
-      dt-bindings: serial: mediatek,uart: Add compatible for MT6893
-
-Bartosz Golaszewski (3):
-      serial: max310x: use new GPIO line value setter callbacks
-      serial: sc16is7xx: use new GPIO line value setter callbacks
-      vt: add new dynamically generated files to .gitignore
-
-Chen Ni (2):
-      serial: lantiq: Remove unnecessary print function dev_err()
-      serial: tegra-utc: Remove unneeded semicolon
-
-Dharma Balasubiramani (1):
-      dt-bindings: serial: atmel,at91-usart: add microchip,sama7d65-usart
-
-Dustin Lundquist (1):
-      serial: jsm: fix NPE during jsm_uart_port_init
-
-Faraz Ata (1):
-      tty: serial: samsung_tty: support 18 uart ports
-
-Geert Uytterhoeven (1):
-      dt-bindings: serial: snps-dw-apb-uart: Simplify DMA-less RZ/N1 rule
-
-Greg Kroah-Hartman (14):
-      Revert "vt: fix comment vs definition mismatch"
-      Revert "vt: remove zero-white-space handling from conv_uni_to_pc()"
-      Revert "vt: pad double-width code points with a zero-white-space"
-      Revert "vt: update ucs_width.c following latest gen_ucs_width.py"
-      Revert "vt: update gen_ucs_width.py to produce more space efficient tables"
-      Revert "vt: support Unicode recomposition"
-      Revert "vt: create ucs_recompose.c using gen_ucs_recompose.py"
-      Revert "vt: introduce gen_ucs_recompose.py to create ucs_recompose.c"
-      Revert "vt: update ucs_width.c using gen_ucs_width.py"
-      Revert "vt: introduce gen_ucs_width.py to create ucs_width.c"
-      Revert "vt: properly support zero-width Unicode code points"
-      Revert "vt: move unicode processing to a separate file"
-      Revert "vt: minor cleanup to vc_translate_unicode()"
-      Merge 6.15-rc4 into tty-next
-
-Henry Martin (1):
-      serial: Fix potential null-ptr-deref in mlb_usio_probe()
-
-Jakub Lewalski (1):
-      tty: serial: uartlite: register uart driver in init
-
-Jiri Slaby (SUSE) (7):
-      tty: simplify throttling using guard()s
-      tty: use lock guard()s in tty_io
-      serial: switch uart_port::iotype to enum uart_iotype
-      serial: rename local uart_port_lock() -> uart_port_ref_lock()
-      serial: use uart_port_ref_lock() helper
-      serial: 8250: unexport serial8250_rpm_*() functions
-      tty: serial: 8250_omap: fix TX with DMA for am33xx
-
-Krzysztof Kozlowski (1):
-      dt-bindings: serial: 8250_omap: Drop redundant properties
-
-Kuan-Wei Chiu (1):
-      serial: max3100: Replace open-coded parity calculation with parity8()
-
-Nicolas Pitre (38):
-      vt: minor cleanup to vc_translate_unicode()
-      vt: move unicode processing to a separate file
-      vt: properly support zero-width Unicode code points
-      vt: introduce gen_ucs_width.py to create ucs_width.c
-      vt: update ucs_width.c using gen_ucs_width.py
-      vt: introduce gen_ucs_recompose.py to create ucs_recompose.c
-      vt: create ucs_recompose.c using gen_ucs_recompose.py
-      vt: support Unicode recomposition
-      vt: update gen_ucs_width.py to produce more space efficient tables
-      vt: update ucs_width.c following latest gen_ucs_width.py
-      vt: pad double-width code points with a zero-white-space
-      vt: remove zero-white-space handling from conv_uni_to_pc()
-      vt: fix comment vs definition mismatch
-      vt: minor cleanup to vc_translate_unicode()
-      vt: move unicode processing to a separate file
-      vt: properly support zero-width Unicode code points
-      vt: introduce gen_ucs_width_table.py to create ucs_width_table.h
-      vt: create ucs_width_table.h with gen_ucs_width_table.py
-      vt: use new tables in ucs.c
-      vt: introduce gen_ucs_recompose_table.py to create ucs_recompose_table.h
-      vt: create ucs_recompose_table.h with gen_ucs_recompose_table.py
-      vt: support Unicode recomposition
-      vt: pad double-width code points with a zero-width space
-      vt: remove zero-width-space handling from conv_uni_to_pc()
-      vt: update gen_ucs_width_table.py to make tables more space efficient
-      vt: refresh ucs_width_table.h and adjust code in ucs.c accordingly
-      vt: move UCS tables to the "shipped" form
-      vt: ucs.c: fix misappropriate in_range() usage
-      vt: make sure displayed double-width characters are remembered as such
-      vt: move glyph determination to a separate function
-      vt: introduce gen_ucs_fallback_table.py to create ucs_fallback_table.h
-      vt: create ucs_fallback_table.h_shipped with gen_ucs_fallback_table.py
-      vt: add ucs_get_fallback()
-      vt: make use of ucs_get_fallback() when glyph is unavailable
-      vt: process the full-width ASCII fallback range programmatically
-      vt: remove VT_RESIZE and VT_RESIZEX from vt_compat_ioctl()
-      vt: bracketed paste support
-      vt: add VT_GETCONSIZECSRPOS to retrieve console size and cursor position
-
-Philipp Stanner (1):
-      mxser: Use non-hybrid PCI devres API
-
-Rengarajan S (1):
-      8250: microchip: pci1xxxx: Add PCIe Hot reset disable support for Rev C0 and later devices
-
-Rob Herring (Arm) (10):
-      dt-bindings: serial: Convert cnxt,cx92755-usart to DT schema
-      dt-bindings: serial: Convert nxp,lpc3220-hsuart to DT schema
-      dt-bindings: serial: Convert arm,mps2-uart to DT schema
-      dt-bindings: serial: Convert cirrus,ep7209-uart to DT schema
-      dt-bindings: serial: Convert lantiq,asc to DT schema
-      dt-bindings: serial: Convert marvell,armada-3700-uart to DT schema
-      dt-bindings: serial: Convert snps,arc-uart to DT schema
-      dt-bindings: serial: Convert arm,sbsa-uart to DT schema
-      dt-bindings: serial: Convert microchip,pic32mzda-uart to DT schema
-      dt-bindings: serial: Convert socionext,milbeaut-usio-uart to DT schema
-
-Ryo Takakura (1):
-      serial: sifive: Switch to nbcon console
-
-Thierry Bultel (4):
-      dt-bindings: serial: Add compatible for Renesas RZ/T2H SoC in sci
-      serial: sh-sci: Fix a comment about SCIFA
-      serial: sh-sci: Introduced function pointers
-      serial: sh-sci: Introduced sci_of_data
-
-Viken Dadhaniya (1):
-      serial: qcom-geni: Remove alias dependency from qcom serial driver
-
-Xianwei Zhao (1):
-      dt-bindings: serial: amlogic,meson-uart: Add compatible string for S6/S7/S7D
-
-Zijun Hu (2):
-      tty: Remove unused API tty_port_register_device_serdev()
-      serdev: Refine several error or debug messages
-
- Documentation/devicetree/bindings/serial/8250.yaml |   30 +-
- .../devicetree/bindings/serial/8250_omap.yaml      |    7 -
- .../bindings/serial/amlogic,meson-uart.yaml        |    3 +
- .../devicetree/bindings/serial/arc-uart.txt        |   25 -
- .../devicetree/bindings/serial/arm,mps2-uart.txt   |   19 -
- .../devicetree/bindings/serial/arm,mps2-uart.yaml  |   46 +
- .../devicetree/bindings/serial/arm,sbsa-uart.yaml  |   38 +
- .../devicetree/bindings/serial/arm_sbsa_uart.txt   |   10 -
- .../bindings/serial/atmel,at91-usart.yaml          |    1 +
- .../bindings/serial/cirrus,clps711x-uart.txt       |   31 -
- .../bindings/serial/cirrus,ep7209-uart.yaml        |   56 +
- .../bindings/serial/cnxt,cx92755-usart.yaml        |   48 +
- .../devicetree/bindings/serial/digicolor-usart.txt |   27 -
- .../devicetree/bindings/serial/lantiq,asc.yaml     |   56 +
- .../devicetree/bindings/serial/lantiq_asc.txt      |   31 -
- .../bindings/serial/marvell,armada-3700-uart.yaml  |  102 +
- .../devicetree/bindings/serial/mediatek,uart.yaml  |    1 +
- .../bindings/serial/microchip,pic32-uart.txt       |   29 -
- .../bindings/serial/microchip,pic32mzda-uart.yaml  |   53 +
- .../devicetree/bindings/serial/milbeaut-uart.txt   |   21 -
- .../devicetree/bindings/serial/mvebu-uart.txt      |   56 -
- .../bindings/serial/nxp,lpc3220-hsuart.yaml        |   39 +
- .../bindings/serial/nxp-lpc32xx-hsuart.txt         |   14 -
- .../devicetree/bindings/serial/renesas,rsci.yaml   |   78 +
- .../devicetree/bindings/serial/snps,arc-uart.yaml  |   51 +
- .../bindings/serial/snps-dw-apb-uart.yaml          |    4 +-
- .../serial/socionext,milbeaut-usio-uart.yaml       |   56 +
- MAINTAINERS                                        |    2 +-
- drivers/tty/mxser.c                                |    4 +-
- drivers/tty/serdev/core.c                          |    8 +-
- drivers/tty/serial/8250/8250.h                     |    6 -
- drivers/tty/serial/8250/8250_core.c                |    2 +-
- drivers/tty/serial/8250/8250_early.c               |    2 +
- drivers/tty/serial/8250/8250_ni.c                  |   89 +-
- drivers/tty/serial/8250/8250_of.c                  |   15 +-
- drivers/tty/serial/8250/8250_omap.c                |   25 +-
- drivers/tty/serial/8250/8250_pci1xxxx.c            |   10 +
- drivers/tty/serial/8250/8250_port.c                |   16 +-
- drivers/tty/serial/8250/8250_rsa.c                 |    2 +
- drivers/tty/serial/8250/Kconfig                    |    2 +-
- drivers/tty/serial/amba-pl011.c                    |    2 +-
- drivers/tty/serial/fsl_lpuart.c                    |    5 +-
- drivers/tty/serial/jsm/jsm_tty.c                   |    1 +
- drivers/tty/serial/lantiq.c                        |    4 +-
- drivers/tty/serial/max3100.c                       |    3 +-
- drivers/tty/serial/max310x.c                       |    7 +-
- drivers/tty/serial/milbeaut_usio.c                 |    5 +-
- drivers/tty/serial/qcom_geni_serial.c              |   25 +-
- drivers/tty/serial/samsung_tty.c                   |    6 +-
- drivers/tty/serial/sc16is7xx.c                     |    7 +-
- drivers/tty/serial/serial_core.c                   |   95 +-
- drivers/tty/serial/sh-sci-common.h                 |  167 +
- drivers/tty/serial/sh-sci.c                        |  630 ++--
- drivers/tty/serial/sh-sci.h                        |    2 -
- drivers/tty/serial/sifive.c                        |   88 +-
- drivers/tty/serial/tegra-utc.c                     |    2 +-
- drivers/tty/serial/uartlite.c                      |   25 +-
- drivers/tty/tty_io.c                               |   96 +-
- drivers/tty/tty_ioctl.c                            |   48 +-
- drivers/tty/tty_port.c                             |   20 -
- drivers/tty/vt/.gitignore                          |    3 +
- drivers/tty/vt/Makefile                            |   34 +-
- drivers/tty/vt/consolemap.c                        |    2 -
- drivers/tty/vt/gen_ucs_fallback_table.py           |  360 +++
- drivers/tty/vt/gen_ucs_recompose_table.py          |  257 ++
- drivers/tty/vt/gen_ucs_width_table.py              |  307 ++
- drivers/tty/vt/keyboard.c                          |   37 +-
- drivers/tty/vt/selection.c                         |   31 +-
- drivers/tty/vt/ucs.c                               |  251 ++
- drivers/tty/vt/ucs_fallback_table.h_shipped        | 3346 ++++++++++++++++++++
- drivers/tty/vt/ucs_recompose_table.h_shipped       |  102 +
- drivers/tty/vt/ucs_width_table.h_shipped           |  453 +++
- drivers/tty/vt/vt.c                                |  242 +-
- drivers/tty/vt/vt_ioctl.c                          |   18 +-
- include/linux/console_struct.h                     |    1 +
- include/linux/consolemap.h                         |   24 +
- include/linux/serial_core.h                        |   30 +-
- include/linux/tty_port.h                           |    3 -
- include/uapi/linux/tiocl.h                         |    1 +
- include/uapi/linux/vt.h                            |   11 +
- 80 files changed, 6909 insertions(+), 957 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/serial/arc-uart.txt
- delete mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/arm,mps2-uart.yaml
- create mode 100644 Documentation/devicetree/bindings/serial/arm,sbsa-uart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/arm_sbsa_uart.txt
- delete mode 100644 Documentation/devicetree/bindings/serial/cirrus,clps711x-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/cirrus,ep7209-uart.yaml
- create mode 100644 Documentation/devicetree/bindings/serial/cnxt,cx92755-usart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/digicolor-usart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/lantiq,asc.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/lantiq_asc.txt
- create mode 100644 Documentation/devicetree/bindings/serial/marvell,armada-3700-uart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/microchip,pic32-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/microchip,pic32mzda-uart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/milbeaut-uart.txt
- delete mode 100644 Documentation/devicetree/bindings/serial/mvebu-uart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/nxp,lpc3220-hsuart.yaml
- delete mode 100644 Documentation/devicetree/bindings/serial/nxp-lpc32xx-hsuart.txt
- create mode 100644 Documentation/devicetree/bindings/serial/renesas,rsci.yaml
- create mode 100644 Documentation/devicetree/bindings/serial/snps,arc-uart.yaml
- create mode 100644 Documentation/devicetree/bindings/serial/socionext,milbeaut-usio-uart.yaml
- create mode 100644 drivers/tty/serial/sh-sci-common.h
- create mode 100755 drivers/tty/vt/gen_ucs_fallback_table.py
- create mode 100755 drivers/tty/vt/gen_ucs_recompose_table.py
- create mode 100755 drivers/tty/vt/gen_ucs_width_table.py
- create mode 100644 drivers/tty/vt/ucs.c
- create mode 100644 drivers/tty/vt/ucs_fallback_table.h_shipped
- create mode 100644 drivers/tty/vt/ucs_recompose_table.h_shipped
- create mode 100644 drivers/tty/vt/ucs_width_table.h_shipped
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 5b462029d03c1..d58ebdc8170b3 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -208,6 +208,7 @@ extern bool nbcon_device_try_acquire(struct console *con);
+ extern void nbcon_device_release(struct console *con);
+ void nbcon_atomic_flush_unsafe(void);
+ bool pr_flush(int timeout_ms, bool reset_on_progress);
++void nbcon_panic_allow_reacquire_set(bool value);
+ #else
+ static inline __printf(1, 0)
+ int vprintk(const char *s, va_list args)
+@@ -321,6 +322,10 @@ static inline bool pr_flush(int timeout_ms, bool reset_on_progress)
+ 	return true;
+ }
+ 
++static inline void nbcon_panic_allow_reacquire_set(bool value)
++{
++}
++
+ #endif
+ 
+ bool this_cpu_in_panic(void);
+diff --git a/kernel/panic.c b/kernel/panic.c
+index b0b9a8bf4560d..8f572630c9f7e 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -292,6 +292,12 @@ static void panic_other_cpus_shutdown(bool crash_kexec)
+ 		panic_triggering_all_cpu_backtrace = false;
+ 	}
+ 
++	/*
++	 * Temporarily allow non-panic CPUs to finish any nbcon cleanup
++	 * in case they were interrupted due to the panic.
++	 */
++	nbcon_panic_allow_reacquire_set(true);
++
+ 	/*
+ 	 * Note that smp_send_stop() is the usual SMP shutdown function,
+ 	 * which unfortunately may not be hardened to work in a panic
+@@ -304,6 +310,8 @@ static void panic_other_cpus_shutdown(bool crash_kexec)
+ 		smp_send_stop();
+ 	else
+ 		crash_smp_send_stop();
++
++	nbcon_panic_allow_reacquire_set(false);
+ }
+ 
+ /**
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index d60596777d278..d960cb8a05558 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -235,7 +235,8 @@ static void nbcon_seq_try_update(struct nbcon_context *ctxt, u64 new_seq)
+  *			the handover acquire method.
+  */
+ static int nbcon_context_try_acquire_direct(struct nbcon_context *ctxt,
+-					    struct nbcon_state *cur)
++					    struct nbcon_state *cur,
++					    bool ignore_other_cpu_in_panic)
+ {
+ 	unsigned int cpu = smp_processor_id();
+ 	struct console *con = ctxt->console;
+@@ -249,7 +250,7 @@ static int nbcon_context_try_acquire_direct(struct nbcon_context *ctxt,
+ 		 * nbcon_waiter_matches(). In particular, the assumption that
+ 		 * lower priorities are ignored during panic.
+ 		 */
+-		if (other_cpu_in_panic())
++		if (other_cpu_in_panic() && !ignore_other_cpu_in_panic)
+ 			return -EPERM;
+ 
+ 		if (ctxt->prio <= cur->prio || ctxt->prio <= cur->req_prio)
+@@ -568,7 +569,7 @@ static struct printk_buffers panic_nbcon_pbufs;
+  * in an unsafe state. Otherwise, on success the caller may assume
+  * the console is not in an unsafe state.
+  */
+-static bool nbcon_context_try_acquire(struct nbcon_context *ctxt)
++static bool nbcon_context_try_acquire(struct nbcon_context *ctxt, bool ignore_other_cpu_in_panic)
+ {
+ 	unsigned int cpu = smp_processor_id();
+ 	struct console *con = ctxt->console;
+@@ -577,7 +578,7 @@ static bool nbcon_context_try_acquire(struct nbcon_context *ctxt)
+ 
+ 	nbcon_state_read(con, &cur);
+ try_again:
+-	err = nbcon_context_try_acquire_direct(ctxt, &cur);
++	err = nbcon_context_try_acquire_direct(ctxt, &cur, ignore_other_cpu_in_panic);
+ 	if (err != -EBUSY)
+ 		goto out;
+ 
+@@ -892,6 +893,12 @@ bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt)
+ }
+ EXPORT_SYMBOL_GPL(nbcon_exit_unsafe);
+ 
++static bool nbcon_panic_allow_reacquire;
++void nbcon_panic_allow_reacquire_set(bool value)
++{
++	nbcon_panic_allow_reacquire = value;
++}
++
+ /**
+  * nbcon_reacquire_nobuf - Reacquire a console after losing ownership
+  *				while printing
+@@ -913,7 +920,7 @@ void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt)
+ {
+ 	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
+ 
+-	while (!nbcon_context_try_acquire(ctxt))
++	while (!nbcon_context_try_acquire(ctxt, READ_ONCE(nbcon_panic_allow_reacquire)))
+ 		cpu_relax();
+ 
+ 	nbcon_write_context_set_buf(wctxt, NULL, 0);
+@@ -1101,7 +1108,7 @@ static bool nbcon_emit_one(struct nbcon_write_context *wctxt, bool use_atomic)
+ 		cant_migrate();
+ 	}
+ 
+-	if (!nbcon_context_try_acquire(ctxt))
++	if (!nbcon_context_try_acquire(ctxt, false))
+ 		goto out;
+ 
+ 	/*
+@@ -1486,7 +1493,7 @@ static int __nbcon_atomic_flush_pending_con(struct console *con, u64 stop_seq,
+ 	ctxt->prio			= nbcon_get_default_prio();
+ 	ctxt->allow_unsafe_takeover	= allow_unsafe_takeover;
+ 
+-	if (!nbcon_context_try_acquire(ctxt))
++	if (!nbcon_context_try_acquire(ctxt, false))
+ 		return -EPERM;
+ 
+ 	while (nbcon_seq_read(con) < stop_seq) {
+@@ -1784,7 +1791,7 @@ bool nbcon_device_try_acquire(struct console *con)
+ 	ctxt->console	= con;
+ 	ctxt->prio	= NBCON_PRIO_NORMAL;
+ 
+-	if (!nbcon_context_try_acquire(ctxt))
++	if (!nbcon_context_try_acquire(ctxt, false))
+ 		return false;
+ 
+ 	if (!nbcon_context_enter_unsafe(ctxt))
