@@ -1,63 +1,67 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4264A28A1DC;
-	Fri,  6 Jun 2025 16:58:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5850A1A275;
+	Fri,  6 Jun 2025 17:21:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749229107; cv=none; b=RaJ5ha+MCs66SwdNJ99bd6JxoJ6UbPkbex7yLE0jao6yQwEQvbiEXnS0VpZILTirIoeQ5Fcy54usXisUN0IIGnM/peio2Le53/VwE60eH3RV5rjWE+pr3VTYUfagKmMRw8w9CS4xpmpZqYTFfmyAT2beTZKblpkvmZEsPFHj5H8=
+	t=1749230502; cv=none; b=RzZ+00PTNVFWNLYV+D2gswR8qHryTDr1yzb0K7hVYAOD+tv/g9/vl0yJ0fA+F4BtO7kkqYfr8L66945KCP3SfB0dj9W4eOgxV/q/PRwuAtc1wq81hcqrhsx5/z3tzFUimpP0GSm5yWfeoicMxLGhUQ87JWs1CJfY1EWtKdPC3DI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749229107; c=relaxed/simple;
-	bh=fcglZOKYAlZZOQ2/Dkb0cJsSrYB7P0UhmfoDzTbxPtY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=HVvgQhcDp3958A3itbKGh+v9cAFH+rgxQkoB1zEbmWMoq8LArLW3PBVy2Ai9coTqH61iwn5zDcfcF9ZPeCm17xRG1N3niOaBMZ0/BEjb5fDY/ejIQ+nLPWT+AomF2aIZyBrfvijkF89liSjxAzitpP2MD+jplK4Sl4/LRei/Htk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=35ARZ3cW; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=D/ZzWL1W; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1749230502; c=relaxed/simple;
+	bh=4J/Opf7R08HOZ5GkctNGo1Tr3acCuPNCgX9uJ7XX1Kk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=WKSTLly+zYH2akZ984eHqhOFMkPcAj7V8iVnpD0iA3/FPfoWRlAV6VLpZWpI9LqR1ADk0C6y40kaBEuf+kPMin2EIF0EGI56feYxoWDGpA2fxCABwkxp1yS4ng528qd5FmB09XzToimMfujtgJnMol7yn/5CWYxG2vI8JaSwKC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=BZrODUMj; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="35ARZ3cW";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="D/ZzWL1W"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1749229102;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=k95L5dONGc9CGpjQXqAX4pgyDviRC1HRrOs4s2XHP00=;
-	b=35ARZ3cWSCFsiwLfUkdujv+aKxhUsCTUh2IX4MmwT3dO0YvNhz8mxqLjOLSmRedTSFebTq
-	psSABq/JZEzPlaUlHXBoeRc1oUYheu3iQI9vWbhT1AgIwul1wKZhwKSByI/aTYyprU81AP
-	WDs52bDysUvt+72dq1xUeXUJxknI1Zij1y76fKpF69gei+VLeesoQgLgGfI3JlPIW20Cq1
-	yWVwMlT2Kl1M/LZEdGyYhkTBiYx8FuORb+ERVlRo27PChn4RZE5gkqCGWNiTkgqqzzDW7K
-	kgzePptvKAELg7I58UBeLnnPQ9pGPu4PhTNHLy/mdwBh7lGsczKGkYLat+gSUQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1749229102;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=k95L5dONGc9CGpjQXqAX4pgyDviRC1HRrOs4s2XHP00=;
-	b=D/ZzWL1WLUKSjbYuu1m6EkVXeRSKEWqtK71hgfzILpbVD+lKbq+WraD7rm7MeCUilnhyBo
-	Z/6FCBLz9/2tTICg==
-To: Petr Mladek <pmladek@suse.com>
-Cc: "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com>, 'Michael Kelley'
- <mhklinux@outlook.com>, 'Ryo Takakura' <ryotkkr98@gmail.com>, Russell King
- <linux@armlinux.org.uk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
- <linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>
-Subject: Re: Problem with nbcon console and amba-pl011 serial port
-In-Reply-To: <aEL0tZgSEhsR9qbf@pathway.suse.cz>
-References: <OS7PR01MB13775FE1A20762D1EA4A38D0ED76DA@OS7PR01MB13775.jpnprd01.prod.outlook.com>
- <84y0u95e0j.fsf@jogness.linutronix.de>
- <84plfl5bf1.fsf@jogness.linutronix.de>
- <TY4PR01MB13777674C22721FCD8ACF4FCCD76CA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <aEApOPTqbVOR35F_@pathway.suse.cz> <84o6v3ohdh.fsf@jogness.linutronix.de>
- <aEBNLMYVUOGzusuR@pathway.suse.cz>
- <TY4PR01MB13777CC92C858572B9C19394FD76FA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <aEGeARVcCwqcoHb8@pathway.suse.cz> <84frgdcgug.fsf@jogness.linutronix.de>
- <aEL0tZgSEhsR9qbf@pathway.suse.cz>
-Date: Fri, 06 Jun 2025 19:04:22 +0206
-Message-ID: <84msakdcy9.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="BZrODUMj"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 556F9DQT027143;
+	Fri, 6 Jun 2025 17:21:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-type:date:from:message-id:mime-version:subject:to; s=
+	qcppdkim1; bh=hLtkTW6FbxYBPlQQb2oTSGhqClKEFCb5F6tvG/Dr4yY=; b=BZ
+	rODUMjMryYCz24Dn/dAiMNp4QERVtsoRKpBPHSmPkyERQuEiE+G5h4ZIFTHTY/n6
+	Uijvw1IRI/tPeYt+4syMA5GeBvO2QchzJ+DStRstXd56zsH53ShSmPNB8rcBWS2A
+	gsuUhQ9VRkh3ukXkbOFYmZiLG/cz0ALallw8t1C7b2eLNh5axVodeTmkekQ1Uly4
+	q8y2Zx20uyLx5XM1MZaIxDjS6oNoyaNGJwuH6b+bdm201qFnOaIb2/CEXON39tEx
+	uXp0xty7ls1cKxW8c6wVS/lrEHJ4l3CGnycclMpD7gxmqqK5PFhDUB80M605wn2r
+	1Ak7N9E8XdXfpJ2hYd7Q==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 471g8s5dqb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 06 Jun 2025 17:21:36 +0000 (GMT)
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 556HLZbg021183
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 6 Jun 2025 17:21:35 GMT
+Received: from hu-ptalari-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01c.na.qualcomm.com (10.45.79.139) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.9; Fri, 6 Jun 2025 10:21:30 -0700
+From: Praveen Talari <quic_ptalari@quicinc.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson
+	<andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        "Praveen
+ Talari" <quic_ptalari@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC: <psodagud@quicinc.com>, <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
+        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>,
+        Praveen Talari
+	<ptalari@qti.qualcomm.com>
+Subject: [PATCH v6 0/8] Enable QUPs and Serial on SA8255p Qualcomm platforms
+Date: Fri, 6 Jun 2025 22:51:06 +0530
+Message-ID: <20250606172114.6618-1-quic_ptalari@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -65,119 +69,82 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.45.79.139)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 2ivd-TTfMIjn0nvTW0-Yd-95qoF95h_A
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA2MDE1MCBTYWx0ZWRfX5MqTvfiQSjqc
+ o/9hItbR7IoAn//R9YPltNl8ihECIxWWSjRb0YxyBXC9gAriU7bA7By6csVxoQPR7H3ID4KdmAo
+ Y09YWpbFO0f5hYw/d0GdwJxDpDFTEsReF/KQAqOhH5v0dyud4rZiqy28a6+pMsvEhiHcbSEK2CD
+ y/thu4usRZhpbSZDX2xMz7NRw/A3TVElfLacu+4s9BQzllsEDQqtUPz9ql+CEuyM6XMqP9FZjmO
+ 5arVqOHWYqN9M6uDbQxjUJP9oe52Yc745kjdytzYgjMDOY0ctexz56FbCBD42Uj/CUfe1M1qtjR
+ aDag2+/rfpwEyyMrGef79l89UpDMBFPIts36lFMZovpdZlN03PO4RVS1bwFbT52/SAXv4bt9d1h
+ hhwcMc8xinc1YoKTYXxC8hEG7cgz/v42v7a+/b/q91kgUDkPq3/nc4CFTSZUw9PdFlh6tQXK
+X-Authority-Analysis: v=2.4 cv=RdWQC0tv c=1 sm=1 tr=0 ts=684323a0 cx=c_pps
+ a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
+ a=GEpy-HfZoHoA:10 a=6IFa9wvqVegA:10 a=EUspDBNiAAAA:8 a=wPpz0gULE6-aHRqVbM0A:9
+X-Proofpoint-GUID: 2ivd-TTfMIjn0nvTW0-Yd-95qoF95h_A
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-06-06_06,2025-06-05_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 adultscore=0 mlxscore=0 priorityscore=1501 phishscore=0
+ clxscore=1015 lowpriorityscore=0 malwarescore=0 suspectscore=0
+ impostorscore=0 spamscore=0 mlxlogscore=769 classifier=spam authscore=0
+ authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2506060150
 
-On 2025-06-06, Petr Mladek <pmladek@suse.com> wrote:
->> What if during non-panic-CPU shutdown, we allow reacquires to succeed
->> only for _direct_ acquires? The below diff shows how this could be
->> implemented. Since it only supports direct acquires, it does not violate
->> any state rules. And also, since it only involves the reacquire, there
->> is no ugly battling for console printing between the panic and non-panic
->> CPUs.
->
-> Interesting idea. I thought a lot about it, see below.
->
->
->> diff --git a/include/linux/printk.h b/include/linux/printk.h
->> index 5b462029d03c1..d58ebdc8170b3 100644
->> --- a/include/linux/printk.h
->> +++ b/include/linux/printk.h
->> diff --git a/kernel/panic.c b/kernel/panic.c
->> index b0b9a8bf4560d..8f572630c9f7e 100644
->> --- a/kernel/panic.c
->> +++ b/kernel/panic.c
->> @@ -304,6 +310,8 @@ static void panic_other_cpus_shutdown(bool crash_kexec)
->>  		smp_send_stop();
->>  	else
->>  		crash_smp_send_stop();
->> +
->> +	nbcon_panic_allow_reacquire_set(false);
->>  }
->
-> I have two concerns here:
->
-> 1. I wonder whether this is reliable enough. It seems that
->    smp_send_stop() waits at least 1 sec until the CPUs
->    get stopped. But is this enough on virtualized systems?
->
-> 2. It might increase a risk when CPUs are stopped using NMI.
->    The change would allow a non-panic CPU to reacquire the ownership
->    and enter _unsafe_ section right before being stopped by NMI.
->
->
-> The 1st problem might be avoided by allowing the reacquire all
-> the time unless an "unsafe" takeover happened.
->
-> The 2nd problem is worse. But allowing the reacquire all the time
-> might actually help as well.
->
-> Note that the information about the "unsafe_takeover" is stored
-> in struct console so that we even won't need a new global
-> variable.
+From: Praveen Talari <ptalari@qti.qualcomm.com>
 
-That is a good idea. We should add unsafe_takeover as a condition as
-well. That can only happen way after the smp_send_stop() anyway. But it
-means that only the atomic printing code would ever need to worry about
-unsafe_takeover (assuming a driver were to implement some sort of
-handling of it).
+The Qualcomm automotive SA8255p SoC relies on firmware to configure
+platform resources, including clocks, interconnects and TLMM. The device
+drivers request resources operations over SCMI using power and
+performance protocols.
 
->>  /**
->> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
->> index d60596777d278..d960cb8a05558 100644
->> --- a/kernel/printk/nbcon.c
->> +++ b/kernel/printk/nbcon.c
->> @@ -235,7 +235,8 @@ static void nbcon_seq_try_update(struct nbcon_context *ctxt, u64 new_seq)
->>   *			the handover acquire method.
->>   */
->>  static int nbcon_context_try_acquire_direct(struct nbcon_context *ctxt,
->> -					    struct nbcon_state *cur)
->> +					    struct nbcon_state *cur,
->> +					    bool ignore_other_cpu_in_panic)
->>  {
->>  	unsigned int cpu = smp_processor_id();
->>  	struct console *con = ctxt->console;
->> @@ -249,7 +250,7 @@ static int nbcon_context_try_acquire_direct(struct nbcon_context *ctxt,
->>  		 * nbcon_waiter_matches(). In particular, the assumption that
->>  		 * lower priorities are ignored during panic.
->>  		 */
->> -		if (other_cpu_in_panic())
->> +		if (other_cpu_in_panic() && !ignore_other_cpu_in_panic)
->
-> If you agree with allowing the reacquire all the time then I would
-> rename the parameter to @is_reacquire and do something like:
->
-> 	if (other_cpu_in_panic() &&
-> 	   (!is_reacquire || cur->unsafe_takeover))
+The SCMI power protocol enables or disables resources like clocks,
+interconnect paths, and TLMM (GPIOs) using runtime PM framework APIs,
+such as resume/suspend, to control power states(on/off).
 
-Looks fine to me.
+The SCMI performance protocol manages UART baud rates, with each baud
+rate represented by a performance level. Drivers use the
+dev_pm_opp_set_level() API to request the desired baud rate by
+specifying the performance level.
 
->>  			return -EPERM;
->>  
->>  		if (ctxt->prio <= cur->prio || ctxt->prio <= cur->req_prio)
->> @@ -913,7 +920,7 @@ void nbcon_reacquire_nobuf(struct nbcon_write_context *wctxt)
->>  {
->>  	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
->>  
->> -	while (!nbcon_context_try_acquire(ctxt))
->> +	while (!nbcon_context_try_acquire(ctxt, READ_ONCE(nbcon_panic_allow_reacquire)))
->
-> And here it would be:
->
-> 	while (!nbcon_context_try_acquire(ctxt, true))
+The QUP drivers are SCMI clients, with clocks, interconnects, pinctrl
+and power-domains abstracted by a SCMI server.
 
-Right.
+The serial driver has a dependency on the dev_pm_opp_set_level() function,
+which is applied in the OPP tree's linux-next branch.
 
->>  		cpu_relax();
->>  
->>  	nbcon_write_context_set_buf(wctxt, NULL, 0);
->
->
-> Summary:
->
-> I open to give this alternative approach a chance when we allow the
-> reacquire all the time. It might work well. And it won't require
-> any special "panic" handling in all console drivers.
+Nikunj Kela (2):
+  dt-bindings: serial: describe SA8255p
+  dt-bindings: qcom: geni-se: describe SA8255p
 
-Agreed. Thanks for being open about this approach. I will put together
-an official patch.
+Praveen Talari (6):
+  soc: qcom: geni-se: Enable QUPs on SA8255p Qualcomm platforms
+  serial: qcom-geni: move resource initialization to separate function
+  serial: qcom-geni: move resource control logic to separate functions
+  serial: qcom-geni: move clock-rate logic to separate function
+  serial: qcom-geni: Enable PM runtime for serial driver
+  serial: qcom-geni: Enable Serial on SA8255p Qualcomm platforms
+---
+v3 -> v4
+- removed patch "[PATCH v3 1/9] opp: add new helper API dev_pm_opp_set_level()"
+  from series and serial driver has dependency of this API which is
+  applied in the OPP tree's linux-next branch.
+---
 
-John
+ .../serial/qcom,sa8255p-geni-uart.yaml        |  68 ++++
+ .../soc/qcom/qcom,sa8255p-geni-se-qup.yaml    | 107 ++++++
+ drivers/soc/qcom/qcom-geni-se.c               |  77 ++--
+ drivers/tty/serial/qcom_geni_serial.c         | 345 ++++++++++++++----
+ 4 files changed, 499 insertions(+), 98 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/qcom,sa8255p-geni-uart.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,sa8255p-geni-se-qup.yaml
+
+
+base-commit: 475c850a7fdd0915b856173186d5922899d65686
+-- 
+2.17.1
+
