@@ -1,65 +1,65 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 078C325A2C7
-	for <linux-serial@vger.kernel.org>; Sat,  7 Jun 2025 02:54:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 549BC25A342
+	for <linux-serial@vger.kernel.org>; Sat,  7 Jun 2025 02:54:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749264872; cv=none; b=UwJSgrpLN/NPDkshLU+hYK8zbtmxu2YxSDGTYEVjE4m4ECxKGst2mHg+oybOrCG+4hYH+3KxpOPLgpUPzGkHPXDLSRZN93yIcLDdZFqrLOV6jUKmA2DTSX8dy1Wgw78JG3A7ZghI5408PPRmLVoDHW1IVD4codXOoZyWjQxatV8=
+	t=1749264877; cv=none; b=LAhL4JfBhsEhaWKc1DPnI9Z+o4pd6B3ncl+ybofWfb615K6f2bU1izv//ftg8hQGm/9D5TFu5w9dbfuqIWZVXwdNzBM3thRyFPwxXxjTPHdkAdno7K0g2TUgRotoE7C8FcG25A+ztKnHmVEk17E6Cl3dYlAOEg3d8C63+XgN98g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749264872; c=relaxed/simple;
-	bh=ZiQkH309SsPv8lN8ObW99ERD0AIPkQszerT12qHwgsk=;
+	s=arc-20240116; t=1749264877; c=relaxed/simple;
+	bh=iLfgT9HQWZUDDzN0tovkdkdRnEgGdMwJcOWfpYFBuU0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=alMW8YcMsGQaQ4dI7Oyy3uruslu3C9P1MqUv+udJ6P/uiaaOj70bFlfAa2sFwqAbxOYwVY0mxARPtldXtt6Xe2KyOgG4vWkWE4UHzj9vVGmpMc4Ne3mQaTTm5cAZr3Ue/leP2KqjaVBGVwUV67IdLINEcMCA1qN9ouoN9Bd9NYc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=QseZwSqS; arc=none smtp.client-ip=209.85.128.53
+	 In-Reply-To:To:Cc; b=hNUfgHIEMR9f1DBFObluU1q3qH/UjNRbiXloZi5pVe+/fxeNVocXZO3/PAsjkOIWRITcMggjIyWeojJitB+R+Bw6ZfAMWxzNGzJFDCN/abStz2CDwtdPmkGU22S8mKlqUv7UTaR9AD/ngukPkLNz9wDkWyHLq1EXiDP759PPGwA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=NOa0jP8T; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="QseZwSqS"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-451d54214adso23536315e9.3
-        for <linux-serial@vger.kernel.org>; Fri, 06 Jun 2025 19:54:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="NOa0jP8T"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-450cfb79177so14363655e9.0
+        for <linux-serial@vger.kernel.org>; Fri, 06 Jun 2025 19:54:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1749264868; x=1749869668; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1749264874; x=1749869674; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=X/JKVoHG52bM7iYj5PS7gTiSERcG5UqrCOig8DJiksU=;
-        b=QseZwSqSj0+A5J2VqodR6bP8uCtr+YN/25CKSwPgCAYSqOaOq9nWxcTUNf26G4W72m
-         5nWvitpDE/jzkLGoDXgsOQ5EyKEC5fphVEWkOgTDaAX+KERF/Vz6hayl31vB55Pjo/Hc
-         5BHp3p+BQCeC0+Quo0/K+3MIUg17U0iLN+cnH+33Es34KDbOetvEKwwAVT2E1O3H5XoB
-         i/3J9jSZ1PUgw3twgxNM6ZzwzgT3Z2S3vgSdvTZmVjDc7bGch1tAaSdkm+06eAxVZey+
-         f86/7ro+EGaVf0HlqSHH3oF4ywDmmoexk9KjMvYmLCY1bc5UMiMKlNPwk1gYrjhisnzP
-         7YMg==
+        bh=Cwhjr/MwOcrXAJEej0LaRMGIcO9EQcwPYBdM3grsn/c=;
+        b=NOa0jP8TfuHGiGnE7hKL/+QAnBqOu8pKY/DhDXe5P9VJfjY7iRMfLnONAUSTr+Mvd4
+         B1Jlr95oEadJ5TCKALdU6JkMmFwGF3ENn1eQp7EN2Z/+4UvUiqQVI5W4PGUERz43Xlch
+         hEnp024VJ6/Eij3jsd5E0f0003wZ/QVfEX4dk84yOlmGl9RoXvkjuxHIs7M87lMrAkSe
+         mrjU7Dqrg0J/S8T8aP00xcasX0yogg40c2JNpJQVzmxb2ALn0RB9fumYFYHhdbm9aa5/
+         kBaWSE9U0GBO/SREpkKwC+YDCyXHRnkBmhJ1pMwxQ94Sk7rk6IKkn7ifO4ud1s1reKNY
+         RWOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749264868; x=1749869668;
+        d=1e100.net; s=20230601; t=1749264874; x=1749869674;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=X/JKVoHG52bM7iYj5PS7gTiSERcG5UqrCOig8DJiksU=;
-        b=GgKR/vmevvU2pm7X85Op1T4CoZAXAqC09jkBp5KEFBKwnK4vfjjF9CbcA0+aBrCWxP
-         2ATj/7F0Qe0spimSRai7Hgvm/l8i49vsBpxS2RrYWCDBEvYK8mZZUH2X+u2ya5pCgb4o
-         iVcaHVZtOlkC/NB0h5El2AI4ZE8TWXkXt6MTBLdfCUKy0NeajnOQkvhnrQGaYljk5gti
-         35it8Bk0fcjLf5UjEH53O9Mb2tE56QGUuv5sWV/aEl/uZz036e6hWB31NSZEJzNvTP4e
-         +FYR6rxq84ML8DVUWJnkVi6aoYwwpVa8DXJYyV9ifu/k09CP5FrH4YmXDVxI+uE6Q014
-         fWZA==
-X-Forwarded-Encrypted: i=1; AJvYcCWxUptcV/FpYlmY3ewY3BsUium2D9++JRLOc/t+JQ9HbxRRXltL3n+3dvz0zEAuD+KEymR0jmNdYGw408o=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1Mv1ImNEqYeYQnXwGGERzkNJFKs4OCJh6lA28XCHVIjbgKFQC
-	PRcECz6xtDjl/sReM5rnVNhNwOqGvZcWKx+Ch8PMNVtHq+Swtn39GOEdVSZlCgh5UO4=
-X-Gm-Gg: ASbGnctXqsAaM4P6JqwjlFP0INyvccGe6ax+WZS89RjzXUa8gaz24nA89e4ij2aqZUG
-	LdEt4Vbyeqgr/b6oqb2EDJzfCpq+d6oHx07MsrMdj0pN6HJZ5yR/rWTsbjdfpBKXtpsuPRGDvgw
-	3Kn0Jd+aqT9wzbWC8lXsnoldZRN+UmgB1U4guZAR1z7KhQAAcZ6z4OahvEXsunnT60K2UJgg9tU
-	lykjbUskPZrcN/hQRdnBKYpu4+vd15YRwcYAfWKhVdk1ICD2FmEjRYCCX0b4yMeJBSdHPTb4pPE
-	4i6C04oRSPLNAXquXQWxYX19kG+UPZE76JDt8BMF5snX4yjv
-X-Google-Smtp-Source: AGHT+IH5d/vDAJyZSz6fuV0j5C8IVfGiu/PKk0FvmAPHACrM59+l4DsDYjrQIDTW1PtMdxhQU8+9aQ==
-X-Received: by 2002:adf:e705:0:b0:3a5:39bb:3d61 with SMTP id ffacd0b85a97d-3a539bb41abmr1337284f8f.27.1749264868362;
-        Fri, 06 Jun 2025 19:54:28 -0700 (PDT)
+        bh=Cwhjr/MwOcrXAJEej0LaRMGIcO9EQcwPYBdM3grsn/c=;
+        b=qJyBOwW4v3zbd5EPre/Ai2/CWgye9v/a8zko2mOngmJ+q0xm844cduwKJNgKGIqKYi
+         wazHTd+jTxTjJ4E9cktU7S2vONTDwgEe5olfBf+ZRu/692KSb3noEXQUvxRoz750yF13
+         R/tQFWpib5jIhxeW4/dhPLadkuP5CPLCeo6Tgk3gz2RvwrUVapmRig4wIZkLYSjjnfgh
+         mE4JM0eETik1v0y3uEOBfpIXjlL+wRDoyq0PP8Eh14vRel7ofSkwupwW160ivfF3Jpvy
+         cwmXYR4afG6LJHZ/jZxLbOp6hrhOSw/8jbnMq9qpI0Fi4ip2YY02SiKcpGf6U1bXROkR
+         7Pqw==
+X-Forwarded-Encrypted: i=1; AJvYcCWXc1JQ/QK/+3/+7mwKhs3kpTsRpOb2emuPjptcWfGN+XuEc3kxlSDuxhjpWisds06Pu/lp5gtCcJ/hpbM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwFA+F4vfzojrpmuH9v777ovcAwRHheWIgaJXqrH//MaGACZ3SH
+	OwjjtqO/5U18EQwZxUrPc0XUkyLfTTvCXZedIGHmqgvEjxQcWHAjSSADkNok9+p2GnU=
+X-Gm-Gg: ASbGncuvZyIzg1zpPT0wAYmEWDuyHR/AHDOIYZkOVdVix6Lj+ZcR41C2DLi+GQVqPp/
+	zMJjvzl7JctywS6ghoWHfA7BCYa8HLDqjcyUkdvC3XgW2X+9T54XawhD8GPe0L668vwm8Po5B7p
+	91KSKHHQg7zX8JHtforsjHVYPrq1DI4zp4wlTE6/gnDhX15+AEh7MFChYQqO1ic+m2N01iVQbqM
+	4OtDvTIBXmNvi8Qu3KWgteT6Fah4Q5F9+kzJ+w4+bLoREHlbo8T9uR7VmTLBxXYepV/DsiOnEgx
+	Luvk5gK5JHFDAtoyraXbJDWgNyMJBuV3YYHL/8/FQWNP8C9n
+X-Google-Smtp-Source: AGHT+IHvN9wEy6EKNYkDxnnT81hoywOQZ08WI1JRYEWNl3eQSXHLiVXm+Dos5iynM7Sa+3YILwrh5Q==
+X-Received: by 2002:a05:6000:1786:b0:3a4:d452:fff with SMTP id ffacd0b85a97d-3a5318837d3mr4663312f8f.17.1749264873645;
+        Fri, 06 Jun 2025 19:54:33 -0700 (PDT)
 Received: from [127.0.0.1] ([2804:5078:80f:b600:58f2:fc97:371f:2])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-530e6429475sm2005465e0c.45.2025.06.06.19.54.22
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-530e6429475sm2005465e0c.45.2025.06.06.19.54.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Jun 2025 19:54:27 -0700 (PDT)
+        Fri, 06 Jun 2025 19:54:33 -0700 (PDT)
 From: Marcos Paulo de Souza <mpdesouza@suse.com>
-Date: Fri, 06 Jun 2025 23:53:47 -0300
-Subject: [PATCH 5/7] arch: um: kmsg_dump: Don't check for CON_ENABLED
+Date: Fri, 06 Jun 2025 23:53:48 -0300
+Subject: [PATCH 6/7] debug: kgd_io: Don't check for CON_ENABLED
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -68,7 +68,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250606-printk-cleanup-part2-v1-5-f427c743dda0@suse.com>
+Message-Id: <20250606-printk-cleanup-part2-v1-6-f427c743dda0@suse.com>
 References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
 In-Reply-To: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
 To: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
@@ -86,36 +86,36 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org, 
  Marcos Paulo de Souza <mpdesouza@suse.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1749264832; l=916;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1749264832; l=912;
  i=mpdesouza@suse.com; s=20231031; h=from:subject:message-id;
- bh=ZiQkH309SsPv8lN8ObW99ERD0AIPkQszerT12qHwgsk=;
- b=jWqGiPKl/XV1kWO8hkwg925xr1q6tsYBxos9FuxBE92z/Pq14tW6oRTqYnah8nuO92j1JK2AA
- efZNwgbsN74BdsXUFSv+HbPRvTzvr8dhPJfS5pW4gOs10Hl/GEHry89
+ bh=iLfgT9HQWZUDDzN0tovkdkdRnEgGdMwJcOWfpYFBuU0=;
+ b=lwh6KzwEyh2dinkiRzMgjAoctl1hygotlVKEbxBK2YgOdS8fCmLq/Q05gztFUdw0JdxCeH0Hs
+ zy4lhvv4ZsBAeKV44NBYiajx6Sqj8Awb920ZzuYNMmySvPls0kFGTyP
 X-Developer-Key: i=mpdesouza@suse.com; a=ed25519;
  pk=/Ni/TsKkr69EOmdZXkp1Q/BlzDonbOBRsfPa18ySIwU=
 
-All consoles found on for_each_console are registered, meaning that all of
+All consoles found on for_each_console_srcu are registered, meaning that all of
 them are CON_ENABLED. The code tries to find an active console, so check if the
 console is not suspended instead.
 
 Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 ---
- arch/um/kernel/kmsg_dump.c | 2 +-
+ kernel/debug/kdb/kdb_io.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/um/kernel/kmsg_dump.c b/arch/um/kernel/kmsg_dump.c
-index 4190211752726593dd2847f66efd9d3a61cea982..f3025b2a813453f479d720618c630bee135d4e08 100644
---- a/arch/um/kernel/kmsg_dump.c
-+++ b/arch/um/kernel/kmsg_dump.c
-@@ -31,7 +31,7 @@ static void kmsg_dumper_stdout(struct kmsg_dumper *dumper,
- 		 * expected to output the crash information.
- 		 */
- 		if (strcmp(con->name, "ttynull") != 0 &&
--		    (console_srcu_read_flags(con) & CON_ENABLED)) {
-+		    (console_srcu_read_flags(con) & CON_SUSPENDED) == 0) {
- 			break;
- 		}
- 	}
+diff --git a/kernel/debug/kdb/kdb_io.c b/kernel/debug/kdb/kdb_io.c
+index 9b11b10b120cf07e451a7a4d92ce50f9a6c066b2..cdc1ee81d7332a9a00b967af719939f438f26cef 100644
+--- a/kernel/debug/kdb/kdb_io.c
++++ b/kernel/debug/kdb/kdb_io.c
+@@ -589,7 +589,7 @@ static void kdb_msg_write(const char *msg, int msg_len)
+ 	 */
+ 	cookie = console_srcu_read_lock();
+ 	for_each_console_srcu(c) {
+-		if (!(console_srcu_read_flags(c) & CON_ENABLED))
++		if (console_srcu_read_flags(c) & CON_SUSPENDED)
+ 			continue;
+ 		if (c == dbg_io_ops->cons)
+ 			continue;
 
 -- 
 2.49.0
