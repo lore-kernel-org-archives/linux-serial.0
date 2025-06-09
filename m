@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BD8E8F5B;
-	Mon,  9 Jun 2025 13:48:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D594217E0;
+	Mon,  9 Jun 2025 13:48:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749476891; cv=none; b=s4rigArK2Ud83ZGxnZ4QxhOeipCIWGGKab6aOZX/vQltL6wyfOTvCHyOXCNq3n5Fr5CIGR/0hJO1wE1QUPnHoOXK8MkZ+KKZW3ZdXis011jse2Rcxb30ATb4ijbv8SKvxE8L0u27nKzj2GqYg0lkn8X+iCm0LZ6RQcMuWKyaFm4=
+	t=1749476928; cv=none; b=hupxgJz5osC9+n9uGkyptmCJDeD6lOPy4yMSimYEYrCV5ZdZnhVfGYVGx2jPUgJuOBwLxNiPIYIKxlNgn/F93Wc7CRjDzkkgZQFi2uWG5Ib5Up0xaEO5h/xWNmqkXoYyhbNd4K8FcFErWeLw1B7vBMGlmI+wKwWsVH983Nek6vA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749476891; c=relaxed/simple;
-	bh=kPuRNE1vUjIBjP3nb7hg2Mr9X8hqaTpp5ufz3r1wISQ=;
+	s=arc-20240116; t=1749476928; c=relaxed/simple;
+	bh=B9qnXIeCFxebL+SVg2h03q5UtSQHCEBe+aXwcJ+yOGg=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qYRlSy88/BJ6uG55NEpsCQHudmFzevlCXgIMgwHrVX8U94Dzyv25o1Kh4NuzcRU3iRZo/q94KdcAzIYVI7ZbMUIX/7rhd7RgwjbbqRe4ZouNFghZ96EKia6iSmLXT92+K3xCOsl6y/rcFox7hW+gJAGOIQpKNdd+8I5mIPzxCt8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IIv+TuxR; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=hgGF6u+9AE0YRTsqPq1p7Wx+aNX4oj8od7WyVKafRC8PlAOl9PzvHTW3ig5OAdUAt/XKJv74DL8ZsGVUUt0bG/BLe0aXRxDDcAuOJfU2+drW50qWvPilxSs3RmSrPmaee+flUFR2DnuDlJnKOyJyDJpYO4F0LNT8hxaoPTHNEVE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GQtalX3f; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IIv+TuxR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1912AC4CEF4;
-	Mon,  9 Jun 2025 13:48:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GQtalX3f"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEF4CC4CEED;
+	Mon,  9 Jun 2025 13:48:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749476891;
-	bh=kPuRNE1vUjIBjP3nb7hg2Mr9X8hqaTpp5ufz3r1wISQ=;
+	s=k20201202; t=1749476928;
+	bh=B9qnXIeCFxebL+SVg2h03q5UtSQHCEBe+aXwcJ+yOGg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=IIv+TuxRZjyqPds3ztuq7fwzhOkuGmqKN+Fe8zAFKc3/WUzqG1Rx8LQHlDnSm5jrL
-	 Ly355RHjb+icT782tpogFiv7ipi4mWLs1G6uss9L6QLcBTgGujKBAoFu0EiOilRPEz
-	 /AMsM2JyDCRsEX09wTgtmfZjc8wPnVimiFh4/RQPSu/Tb00B6wtLJup0Pdxayljxuo
-	 er+fN3dhBE/0kqiMWRvJB5P3UF4Xeh6Cx/wmkXq2DM72YmmGBnXPgjHFDWX0rgUR0A
-	 a/qohtLyQYcmlhxmUsxrUGh2Cf2VJUifOtRWYJyhs9ay2BNup0VJOJHiOYLD2mkv00
-	 kQHKEuJ4iqAcg==
+	b=GQtalX3fCHkdTgJA0AGpbKlyd1Krric2Ws/XDynX9WFveedR5pPu76wnc1nYr8omR
+	 vz75XiUi4dvqDlSWx6CdVwB8Q6D3iX6zyXj5X/RZe6DxbxZe3O+ceCbYspfJ8BTcs0
+	 //mEnrBvy6430/WeoRELh4ZgfIJRuzLX4TE1T/Zf0VtmSgQNC+6G1SpWl07i3yNzxl
+	 xr1wj7Ffk5+i0QER+RQ1DzGOtFKjl8npanmJWLqHc8aE061gCp08HhyAMQHwBmn2uy
+	 EAlFK3PShgYx6f6hmW6ZhaemqlxqEl/0nhXjMhPRRG2XRm/JrawNEvDtLim+jPidIO
+	 9KLi4jh8xpBHw==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
@@ -35,12 +35,12 @@ Cc: Jakub Lewalski <jakub.lewalski@nokia.com>,
 	Sasha Levin <sashal@kernel.org>,
 	jacmet@sunsite.dk,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/12] tty: serial: uartlite: register uart driver in init
-Date: Mon,  9 Jun 2025 09:47:51 -0400
-Message-Id: <20250609134755.1345286-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 4/7] tty: serial: uartlite: register uart driver in init
+Date: Mon,  9 Jun 2025 09:48:37 -0400
+Message-Id: <20250609134840.1345797-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250609134755.1345286-1-sashal@kernel.org>
-References: <20250609134755.1345286-1-sashal@kernel.org>
+In-Reply-To: <20250609134840.1345797-1-sashal@kernel.org>
+References: <20250609134840.1345797-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.15.185
+X-stable-base: Linux 5.4.294
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
@@ -244,31 +244,14 @@ devices. The architectural change from probe-time to init-time driver
 registration is a **best practice** that eliminates the race condition
 entirely.
 
- drivers/tty/serial/uartlite.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
+ drivers/tty/serial/uartlite.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 36871cebd6a0f..0345eaf969630 100644
+index 9a4049c894f7a..e323e9c0a321e 100644
 --- a/drivers/tty/serial/uartlite.c
 +++ b/drivers/tty/serial/uartlite.c
-@@ -808,16 +808,6 @@ static int ulite_probe(struct platform_device *pdev)
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
- 
--	if (!ulite_uart_driver.state) {
--		dev_dbg(&pdev->dev, "uartlite: calling uart_register_driver()\n");
--		ret = uart_register_driver(&ulite_uart_driver);
--		if (ret < 0) {
--			dev_err(&pdev->dev, "Failed to register driver\n");
--			clk_disable_unprepare(pdata->clk);
--			return ret;
--		}
--	}
--
- 	ret = ulite_assign(&pdev->dev, id, res->start, irq, pdata);
- 
- 	pm_runtime_mark_last_busy(&pdev->dev);
-@@ -859,16 +849,25 @@ static struct platform_driver ulite_platform_driver = {
+@@ -874,16 +874,25 @@ static struct platform_driver ulite_platform_driver = {
  
  static int __init ulite_init(void)
  {
