@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94716155342;
-	Mon,  9 Jun 2025 07:49:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABD2F1E1C1A;
+	Mon,  9 Jun 2025 08:26:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749455393; cv=none; b=PTCeE+SZzXOv1QcGOntPY/Qxp3+icp7y9hsavUT2vGTJ8sY52UOkUE/QzLNHAkx/e8vTw9HMNXSjHTzxi9yWHO+ADGX1JQ9G88DmwtV6uqUaCPOGtnW1t31DqElCHsb9NAE9sH6GIjkNI1/yEP3vIy+iLWaDnTcIyjphU3x1GVg=
+	t=1749457610; cv=none; b=rU++dGjP1zxMzIUG8JD+9JQvy6g+t/taPv7aT4VaaM2IWUR0CYXu8IF2NP910e0U1PtxuXZeJPZNUg7iC19B1IlI38aAytfxRtukR/DSudaAOfDIs9SzsfWrEjf2vzrPbyVkb+hKpdppcA2ivQcXyXnKjgorVNh435O0qv9VNSg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749455393; c=relaxed/simple;
-	bh=lZ2ZMEBmnRHpTlTIYdzJPlUAPZOUDipAjOSeRh+GA8c=;
+	s=arc-20240116; t=1749457610; c=relaxed/simple;
+	bh=xsOfmsExcDSzjOkylQLmMH5BNiFhxoYNtiscRufSP1Q=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=brZUUzZjn2GUvYpS0Gks78B7W45XsOfPmuaWCu8YORV5Us3l9Eu1tTSwdT83oI/sT3VaZIMSW/KWqy/wIJsSkOe8mK+Hmh6BwGYZGw3FdhL00fsMIc5oUhHRYyB7SRe+lteJhOexA+CyZpJXyTq+Pw8av7WRCPg47mH5lZ7bBzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l3CS7xNE; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=SEsiRaxs5X17MXMwGPVf3LaUCDudrP3HmBtAbeqNOciaJKrKcr8xKUXAwBW2LsyQyq9oEjQKfzMxaXKgTwbf//Q3o1ST0JmwtqG811TfSUiAsR/OuGB2OPf93UNu6hIBxwTp6w738Ntz4w4KJU/FNPbBpim1X2MBvgFjDWEwfck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j0OZ3VHp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l3CS7xNE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD5D2C4CEEB;
-	Mon,  9 Jun 2025 07:49:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j0OZ3VHp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAE75C4CEEB;
+	Mon,  9 Jun 2025 08:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749455393;
-	bh=lZ2ZMEBmnRHpTlTIYdzJPlUAPZOUDipAjOSeRh+GA8c=;
+	s=k20201202; t=1749457610;
+	bh=xsOfmsExcDSzjOkylQLmMH5BNiFhxoYNtiscRufSP1Q=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=l3CS7xNEWwnsKqLsiTHAiEqf09/7KNYdWnQeSnuf5QO3Ws1d13IaB2Gf0+5Pk6YTY
-	 7VQiSc8fyd2T8Xcaw7ktsAzn/Gkps+3bkMCFGWlef9oG+5Zry1NzhLgFrgCQhshfHL
-	 b99OlX+kf2WKqPWFcb4GtBqoWeqqaaHLgpVh/rTVree6HAcVVwuwZFTDKWgjOL2KEm
-	 djUpztzSvKCIvax6lAH8E7cyV46POrCQDxn++/bDN8BXMgV52x5Rl3KtYh/XtmtBai
-	 AJGPtyHszcvdaBUyE7DuvKCIkr4CdREwQmRgZvizzofto8pcbs2LDKH/+ZWFoWMSV+
-	 xkd/bto3rKuaQ==
-Message-ID: <ba9f6de0-4ead-4393-9a9e-9bf5bd4656e2@kernel.org>
-Date: Mon, 9 Jun 2025 09:49:50 +0200
+	b=j0OZ3VHpWvVBuRKcI+zou7foIEA8jCLUN0s9nywFLvoMb1RnSS1FyBHooJXs2ppfY
+	 X7d/eI5CMZ/FB/s4MOk5GVaOMJfU1woixEX8y+KK/sYTeKLNZXG/4ClQdBxH3QqUpq
+	 S0myfbskkDlUZzFJYkhr2z0n+JeZ+Y+tzcDhJuNEYKg7XS0I22XBi/4PgRfer38AJU
+	 al5Rfy7kO7YcqcMuLYEI/Q/FJ0gJrzPX0T3RgeK783plPXDiLUnnYOlEkaWB/jToFh
+	 LnKKdCP/Ui+7A1Z+tf62Q8+V2UNXvoFhCvOGe3GUl5kkBcawA65dNkL37uytZE+yOJ
+	 IVmZHjAtojANQ==
+Message-ID: <ea39399a-56f7-41a1-b542-f684ef2a1fa2@kernel.org>
+Date: Mon, 9 Jun 2025 10:26:46 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,11 +35,11 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: Remove unused uart_get_console
-To: linux@treblig.org, gregkh@linuxfoundation.org, corbet@lwn.net
-Cc: linux-serial@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20250608154654.73994-1-linux@treblig.org>
+Subject: Re: [PATCH] drivers/tty/moxa: Fix spelling mistake in comment
+To: shanmukh.iyer@gmail.com, gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ trivial@kernel.org, Shanmukh Iyer <shanmukh.iyer@polymtl.ca>
+References: <20250605000903.74242-1-shanmukh.iyer@polymtl.ca>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -84,22 +84,19 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250608154654.73994-1-linux@treblig.org>
+In-Reply-To: <20250605000903.74242-1-shanmukh.iyer@polymtl.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 08. 06. 25, 17:46, linux@treblig.org wrote:
-> From: "Dr. David Alan Gilbert" <linux@treblig.org>
+On 05. 06. 25, 2:09, shanmukh.iyer@gmail.com wrote:
+> From: Shanmukh Iyer <shanmukh.iyer@polymtl.ca>
 > 
-> uart_get_console() has been unused since 2019's
-> commit bd0d9d159988 ("serial: remove ks8695 driver")
+> Corrected to "maximum" as my very first patch to the kernel.
+> Just to get used to the contribution workflow.
 > 
-> Remove it, and it's associated docs.
-> 
-> Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
+> Signed-off-by: Shanmukh Iyer <shanmukh.iyer@polymtl.ca>
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
 
 -- 
 js
