@@ -1,214 +1,181 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazolkn19012049.outbound.protection.outlook.com [52.103.2.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C9625A359;
-	Mon,  9 Jun 2025 03:38:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.2.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749440292; cv=fail; b=Of4FyaMo59ZIBd2O3Hatu5Q40eM3Vi2fQDYG7FGuFAUgy0qtIlfhEwNDFssjLS8ZkiryJiLP9s6R7r5z5ktBG+1x/WuQ1bB+nfQcTvOFKFj8gu9/wYEE8FLEhqOAPVU6m6HMxGKbVCH7CoemcSFZ+Wk/SDwtsIkfRBrQXuT0iMo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749440292; c=relaxed/simple;
-	bh=H9tnEJ/q9SqoZwDKpEd/6S/x08VO6I07R7EGf4WulLg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=Mg5w25qSgiTv3yfCj/Vp9gTWTrgcHOrs9+tQSpfyPGddyKh9kLqRGQWjXzhr9ANCeMYQi/7TjTZbhTmXk0MoRO3JNP3bPgroP+9esyOcLIUBTsUS0mW0E+BeeIw4SagSfR0MSebEnO6CZCPbTPeX3Zv0xyDgc0H9s5I7Ei/cnEM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=iKSIGvgJ; arc=fail smtp.client-ip=52.103.2.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1A7511185
+	for <linux-serial@vger.kernel.org>; Mon,  9 Jun 2025 07:02:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749452582; cv=none; b=uvZzSHr/jFqHGKotqYKoHIGRm2UmUxUbHU9qW2RHctk29HljcYkM9UJWla+FFeO4D58rcl8Dn1em5MZESuqvM6x79joEZuknn3s1p+v8tmkGDi2vL68C5txk/4AqZK5Dkvwbl6Fn+XT+UX06rxrymKSjxpiz7xUBXoHXa7YTFsY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749452582; c=relaxed/simple;
+	bh=S8fMRb/pNZfo6KEjY8l9YetEwYEAJ2ej7DTgEr3gLDA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=U5b1VGVS3snPOJ8P3B66SjU/OKi7lhNxuXpgnXNK2XqiGUvZLEACpJJd/9c1pS0v1ptoWJkiC1yxClFiezypKqSE+Vf2eGIH/Jlebc2ptCQQQmB6BNmxl32fYnReOmInkQEnF/Z48IBkeR0ulkShCtZ29xn5yOFwyd9VBpqhhqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=fbSfYtIB; arc=none smtp.client-ip=209.85.160.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="iKSIGvgJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FNdGyowg6d7QWkTskaAiF/CVlKJJE+hiFUjsriAfVCw7aNTO3nycok8LQx3HMLOko/1MpkUQVQZs33/mbPWCU2g+jP9CJ4lMyeq3o1UBrjOzTfeTA6bVcYhc5JcOWB8QjzPyFXSRsZzBl63TY+JHZvwiB9UhjbDKxB7klFMyrZ6D+Tm540vcuDHJtItnzhvU0Vnv/nWKTD5fiiTeckae3I6raDiiBDvt4t7MsA0C5E1EDfaL9Mz3fGfPwSyrJrrRDcffVbOHq+na29ddkCkg5MFCdCqrfZS0YiuSS+W3xtVDQDOmKBjFyi4H3vFEpoV2c5DUu5S893f5NW+aAYaSIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=H9tnEJ/q9SqoZwDKpEd/6S/x08VO6I07R7EGf4WulLg=;
- b=y+N92OIwtGf8lgPkWIQfAnFlSccHipgarYvzCfjJYts3hgHZZN6WalIFRGqKAFKTiEIY5zZh5mKtgTvGuA4/mjpfnVcJkNhWf2r7jtyKOSd3xRxYb/hxtX4URuUgYhf9MHU9GY6oOBr2OqkWnWeT9skl7pMXRSN8dv21DFNTsX/WbXjVsb78MdTpXVUPfGvMZHBtuKQvH1JnXk6S+RlsY+reOaBwelhx+6GSQcLkvFO46qq5WzsFNfEPVZ1zzuCOl10r97Ou+D9icDWI8WZvuW1SuhXiQxPELvJBDulilG612tle8gVv0ONt4eLjSSUIMTcIaKtuPh7aylMEdr54FA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=H9tnEJ/q9SqoZwDKpEd/6S/x08VO6I07R7EGf4WulLg=;
- b=iKSIGvgJYiGFfbgy8MM9AT8O8XDXYbUiwMQSROLN5SVVwL0xSxFQwytppGIMDamEBV+F/B+XMCITDD0nI88r3xlwNHE4v0yWymKIoJLZRgt8OhxxrxYhsGBEmDziIBrWmo1IKufoaH+J1ayLYbPhkJAizqgj2OEnoOl7HF+RoZgeAPr7tnTc//6fpVMAiYOfRELk0IR2JfZHT8YzIPjo6QS0crU03st2OrTo+9d/aLkHHc5/rUargMczivDnhV7uB5Y9WaCyCIkpMTddbDaBHykuUMjikxtPfeG0A4QPsgqfxkZzm2zzwJ+izR0XuJJTrJrR5s6McvozKTjjfdVm+A==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by LV3PR02MB10643.namprd02.prod.outlook.com (2603:10b6:408:281::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8813.26; Mon, 9 Jun
- 2025 03:38:08 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df%4]) with mapi id 15.20.8813.016; Mon, 9 Jun 2025
- 03:38:08 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: John Ogness <john.ogness@linutronix.de>, "Toshiyuki Sato (Fujitsu)"
-	<fj6611ie@fujitsu.com>
-CC: "pmladek@suse.com" <pmladek@suse.com>, 'Ryo Takakura'
-	<ryotkkr98@gmail.com>, Russell King <linux@armlinux.org.uk>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
-	<jirislaby@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-serial@vger.kernel.org"
-	<linux-serial@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "Toshiyuki Sato (Fujitsu)"
-	<fj6611ie@fujitsu.com>
-Subject: RE: Problem with nbcon console and amba-pl011 serial port
-Thread-Topic: Problem with nbcon console and amba-pl011 serial port
-Thread-Index:
- AdvULbS8DdGjT9TLS9OOSVhbv2AtDgAN1+gwAALFDgAAAfWTAAAeB8NgADP4FvAABDFXIAAHKeQAAL9pDfA=
-Date: Mon, 9 Jun 2025 03:38:07 +0000
-Message-ID:
- <SN6PR02MB41578CF81FC4C831C02525F5D46BA@SN6PR02MB4157.namprd02.prod.outlook.com>
-References:
- <SN6PR02MB4157A4C5E8CB219A75263A17D46DA@SN6PR02MB4157.namprd02.prod.outlook.com>
- <OS7PR01MB13775FE1A20762D1EA4A38D0ED76DA@OS7PR01MB13775.jpnprd01.prod.outlook.com>
- <84y0u95e0j.fsf@jogness.linutronix.de> <84plfl5bf1.fsf@jogness.linutronix.de>
- <TY4PR01MB13777674C22721FCD8ACF4FCCD76CA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <SN6PR02MB41575419E1223B8A8B0A1F1FD46FA@SN6PR02MB4157.namprd02.prod.outlook.com>
- <TY4PR01MB1377757DD5E7F27A41F0B4723D76FA@TY4PR01MB13777.jpnprd01.prod.outlook.com>
- <84frgevdl9.fsf@jogness.linutronix.de>
-In-Reply-To: <84frgevdl9.fsf@jogness.linutronix.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|LV3PR02MB10643:EE_
-x-ms-office365-filtering-correlation-id: 28b79bc9-15a8-4fcb-c05d-08dda7070ce0
-x-microsoft-antispam:
- BCL:0;ARA:14566002|8062599006|8060799009|461199028|15080799009|19110799006|3412199025|440099028|102099032;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?ccu5HwJY9s5ykIKPR21/vE1y+pIqm9g54VspOTT1w22jVLI6mwzw8B9BwFlh?=
- =?us-ascii?Q?zUWwpBQuQWTksyFJhVgcmP/e+Iz6NoEN+qzWqqMilQwMAnRi+n1cqYgHZ414?=
- =?us-ascii?Q?F3y4zrbEA8QVQKudRyfQhg0VWziJo1D2MF2OS3jyE09VGvyCggs5RMdxFSO5?=
- =?us-ascii?Q?6AJWFFagqOhFSDl/SjkA9ykek9jd7SXTZ98v2cl/SaBnAJ54fRVU1tImcGf0?=
- =?us-ascii?Q?n68d2z7DwLs7mi5kmckxeahkfc+yJoI3cJYQYTwZ5EHuFWEF38as+XWq6270?=
- =?us-ascii?Q?xtQ+ou4Am1dPmD1hKTOX0Epe4rKf1uWjF0KOQD3E7c0vSUReJs7tddD58zCQ?=
- =?us-ascii?Q?YwyZK6J07hpLSN+xVaLnprhw/WBGkU4WRWOtBen1MnrphlhrB3N+TETmrEhT?=
- =?us-ascii?Q?V3qJcc+vd0U+PPHRFmwpgX5xMxj2vW0IQ0A+3RPVg5Ur0EJuCHvKPtoL/NBg?=
- =?us-ascii?Q?1+6h3OnC5iWEFaWh9sfgH6VOeoCz/1+4HIMIv176Gyj7PRLJd4JHdQE5igro?=
- =?us-ascii?Q?hndt4RrXCU1AlFBRZ/GxY+8cDha0ROxZV7X3Um7M2lxLPVjxjwg2OJhkd2tj?=
- =?us-ascii?Q?eQC+3Y1rFW6iGap4Cub+ba9JPu1dp79F3zxKY2s09RlAXnEmXz+3rMThU+Od?=
- =?us-ascii?Q?VdVr9SVgjrb/poGnrJ85GlY9R2LOFIdXMQogBNARhiZH5/kvphwFT7T08tIa?=
- =?us-ascii?Q?JX6eFMxGMvQjOyoUZ8EvqkmypLNo3j4nEG1AexHFYSM909GEtIlwxl3AD5rF?=
- =?us-ascii?Q?QJV9KKDCJl5ozuJhgPUiifMC2F89R4AU/ymlYtrhnihVzBv6UOOx+bFRwWS5?=
- =?us-ascii?Q?FUAVF3XOIU+Ghdexx1lxnT/E6xaMhjfThpGweG9pJO4nEfMqa2TFYhZn/KCK?=
- =?us-ascii?Q?YtTx8kXYVjLDd90zwemsnAC8Npj+LOtWLVGddGKbtzb/E4LREebiDcv+u+XR?=
- =?us-ascii?Q?B2vz5CwJNXSDiDTQ9CgyI5Lk3xovxd5N8ttjPZt/ZhvjGIj8bkYRHHolK3T0?=
- =?us-ascii?Q?m+eyiMKWKk/Kfj1xOEVn8Tq0AWo4Hl5eqzMPGdwREw+z6oWfXI97qCDra+2Z?=
- =?us-ascii?Q?IIWA2s5uYSQQnKPkIjSaXTfbiqXrKg=3D=3D?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?91+VivNKXNo1ThFsz7GJh/zyB+9F9DPPl2pjEQp4qYHnux1kuu5eYnCx57g8?=
- =?us-ascii?Q?rdOAUATWnw/N4A+4Yslct/JCx4RwOEdFrbHAWChBv4mrpliCPDEC0iwzuNIw?=
- =?us-ascii?Q?LeIlf+9051538rh5GG7N+K9A939e2CttUfRgkZpIm5CyvdbZ4uKgYZBrfA9C?=
- =?us-ascii?Q?LWV5/iRcXBWtNjMpqb/H/MalcG1GCwAlxbqBiX7MS5UY+hrythcX8aZN/nzp?=
- =?us-ascii?Q?GsaMJLdba5QjSH6C0gr8lstpku/b1Vb2qsjBm7dDlb+L8Ww4kI0NMV1rWtep?=
- =?us-ascii?Q?OYTVR1L2AXnU35gj/4hAQRNXAcz92mSjTakFB0n7nv3/phBy4w/SWbSq90cN?=
- =?us-ascii?Q?bRk47QKtPAGDbsii4MAA2KE1Jtvqob64liQJDmkdKzh238hjOmC4425smn93?=
- =?us-ascii?Q?7ZAqMNBDo98FCIu8hwmZPQoaspBZ4k++tb2ykSu4dfqSPs8AfMNeuOeabUSo?=
- =?us-ascii?Q?cj8ezqk975PKgQtWK4K3l9GLJG4gWFa2cB6ghkOSs1A7yBZRMg+qrYWSJNA1?=
- =?us-ascii?Q?/nVbMz+99s1b5c93mGZug8OR+qbleJyDqBhIjCBnXR3fezcEGXMXYXPVEltf?=
- =?us-ascii?Q?aNiAliLUhxMu02fp1yY4q07UQQsIaMTkfsCfiMg4jKI8+l14YdxZjiRGXS+s?=
- =?us-ascii?Q?tGmKyuHHQQrUjcpyfkPglVqjlVGsxYKrIrXm/lgIRyvQoFQpd7jHWCk15DoQ?=
- =?us-ascii?Q?+q4Rp9q+9pBpIGKbb6f1TcTp4bIc9Gh7v57FgoHMAD72g+hg/qblzzYx6JDP?=
- =?us-ascii?Q?97VfNojjZeJw1T8W8ZfQ+yL3BKvaxWL02QwVVYFXof4F8TPMET9Alvqh4iNR?=
- =?us-ascii?Q?KJ4eLDdFqJSRtvlhBCaqHxY+FZMFhUa/ljpRku9PDkrBxVqgPE1Ki63y+/oM?=
- =?us-ascii?Q?P+Ys/4WWBPsypwsXNunE8mQ8vsSTj8KrlHgJFxSzhXvgmqhDM0TowAaA4aAx?=
- =?us-ascii?Q?RzXhKRG7H51HxB5G078SK18larf3dkBOhIBxZBs/qJ+vrr+LLgljGQwsOfwr?=
- =?us-ascii?Q?xTCFmuO7mBvQj+aDphs4gLfZH/kWLdvbS3rHMz/G9yFW3se1impoa7BhWeYg?=
- =?us-ascii?Q?sxjRxbBM9DMPURGdp0JeVSp3XvP/428cboC0lm6+YZyds+huTJVwi6mHG28l?=
- =?us-ascii?Q?uI0T+EbQaRNnvf35Z5CWw9knvqk30sDX2Y+pRwfHZmVwcKncxg8tuQt0LJbh?=
- =?us-ascii?Q?91CTj8bTiFNxYKB+Vj7ALfMlMls++wIEFV4o0Jtth5pqU1NEeulBrFQOvys?=
- =?us-ascii?Q?=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="fbSfYtIB"
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-2da73158006so3084023fac.0
+        for <linux-serial@vger.kernel.org>; Mon, 09 Jun 2025 00:02:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1749452579; x=1750057379; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8223fsD/IEHnEpRfxR/6JS/tsDBYZuVwnOiA2sfiMIE=;
+        b=fbSfYtIBp9k+nJ/RJGFvSKhcLS1KyXRMWgMuY6J4A+N1Q4XpcoUlEkWK2xWBgJo31p
+         wPPNTCNq043bnhuY64GPhLjN9Hl/22O120bsGwKhlJQE7bb8d2Rbz8Ax6MEjD0P6MgmE
+         YsaNueOcMfww1vBivJWuycYGRAyczLnoVzUchzvei2gN3VUVmIG1CYmi6rZbzs0sHbx9
+         JDyeSzUiXKL09Q2hiqNsSxQlDpXQlxxBi9MST9WcNLxVVNc1LFzO1iYbZ+0nnhdiAqls
+         HBLvCCYRelvjEEh/k6y6SNrbmWK/qs0BrApFJyx9083w3BQO4BXEk7AihS4KXdJoPDwF
+         iLAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749452579; x=1750057379;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8223fsD/IEHnEpRfxR/6JS/tsDBYZuVwnOiA2sfiMIE=;
+        b=IU2dT3CWd+zRDLTPF+U4rzdI59OslK2IN1o7RTw9A7S4aQuxT0ml2qAHNtBgOcmJEg
+         A+WjnuPeZU32slQ6LJ/9bNhxBHeYZ9KKG5OURJhWXQRgOGSzf46Z6Mr3n9wJlAKH9+/4
+         5rMdoe8KXglT5rRM8DNUcFi0MseKv1JM7hQ31Puqe717EakUw0TZVnkiQTI5blccpiQo
+         1fTdYxEbW21EoOpBEclzvV4VQRoWSFfhWRx0IdSyBMuecYmS8I1h8n6nBuWrA6SjKOO9
+         5/AqKKRqhfaaolD/txFczqbTxCoN4JmVIG6qNjjZiIjKypXRNJwIRSvn2sfLIA0YaYyg
+         /2zg==
+X-Forwarded-Encrypted: i=1; AJvYcCWLCUUsIhiLEVKXl1GZ/r8jXPYG3BdI9XAttUqD3L/QeCVrmOUu2OQNrNeNojJpC88rsR4egPmnlRWAv9U=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw1Xv74u48A8SsJpFzhF3mOtB9/6jYxmqRhLT/hRV5T5o2MT4GK
+	k6YmblN2V+yJozqmkOfpuOv9Bad7mb76HGaIEWQu1xHJK0C816gxX7pGW3WN7bCZm34Dz8Q9LFA
+	Jcg9kR/q97zPxLBEivWt+5USooCPKRt7cg+THW3cz3A==
+X-Gm-Gg: ASbGncteG9SITBFDFXQylM7gJCK/fjDtZ8EwsLDTe/leT9E+sZT/xgc2dE6odTha1yl
+	8Y6iBKuPmsJcyFGYswjvORENgXcAzIaDvuTu8rK71iMYOHPBKKIcpyZk3EJ4faO0HtTJjV17rTv
+	pnWa440uPcgjEsF729XvqtjoI0/izzpmCnzNXw2bzmH65t+Q==
+X-Google-Smtp-Source: AGHT+IH1nxoI2XvMM7f85vg72xn7IbH1IhOyMv7tTDbpvh3JBSFHmswM2t153ADD6iCcfsT/oKucRb66bfSmRHyAaag=
+X-Received: by 2002:a05:6870:1994:b0:2d4:ef88:97bb with SMTP id
+ 586e51a60fabf-2ea00633f53mr7181695fac.1.1749452578810; Mon, 09 Jun 2025
+ 00:02:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28b79bc9-15a8-4fcb-c05d-08dda7070ce0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Jun 2025 03:38:07.9067
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR02MB10643
+References: <20250528062609.25104-1-cuiyunhui@bytedance.com> <2025060621-hankie-groovy-bad6@gregkh>
+In-Reply-To: <2025060621-hankie-groovy-bad6@gregkh>
+From: yunhui cui <cuiyunhui@bytedance.com>
+Date: Mon, 9 Jun 2025 15:02:47 +0800
+X-Gm-Features: AX0GCFt2g1WWTOdG3if77QeLjjHzxyv5anTnGECTOVqS1-c1TzNIWHg7hGyjWfI
+Message-ID: <CAEEQ3w=Xfn=o9idu0KZKEALYvogiJ2fSCjC9jAkKLkCZ5E4hKg@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v7 1/4] serial: 8250: fix panic due to PSLVERR
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: arnd@arndb.de, andriy.shevchenko@linux.intel.com, 
+	benjamin.larsson@genexis.eu, heikki.krogerus@linux.intel.com, 
+	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org, 
+	jkeeping@inmusicbrands.com, john.ogness@linutronix.de, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	markus.mayer@linaro.org, matt.porter@linaro.org, namcao@linutronix.de, 
+	paulmck@kernel.org, pmladek@suse.com, schnelle@linux.ibm.com, 
+	sunilvl@ventanamicro.com, tim.kryger@linaro.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: John Ogness <john.ogness@linutronix.de> Sent: Thursday, June 5, 2025 =
-12:43 AM
->=20
-> On 2025-06-05, "Toshiyuki Sato (Fujitsu)" <fj6611ie@fujitsu.com> wrote:
-> >> I've tested the fix in my primary environment (ARM64 VM in the Azure c=
-loud), and
-> I've seen no failures to stop a CPU. I kept my
-> >> custom logging in place, so I could confirm that the problem path is s=
-till happening,
-> and the fix recovers from the problem path.
-> >> So the good results are not due to just a timing change. The "pr/ttyAM=
-A0" task is still
-> looping forever trying to get ownership
-> >> of the console, but it is doing so at a higher level in nbcon_kthread_=
-func() and in
-> calling nbcon_emit_one(), and interrupts are
-> >> enabled for part of the loop.
-> >>
-> >> Full disclosure: I have a secondary environment, also an ARM64 VM in t=
-he Azure
-> cloud, but running on an older version of
-> >> Hyper-V. In this environment I see the same custom logging results, an=
-d the
-> "pr/ttyAMA0" task is indeed looping with
-> >> interrupts enabled. But for some reason, the CPU doesn't stop in respo=
-nse to
-> IPI_CPU_STOP. I don't see any evidence that this
-> >> failure to stop is due to the Linux pl011 driver or nbcon. This older =
-version of Hyper-V
-> has a known problem in pl011 UART
-> >> emulation, and I have a theory on how that problem may be causing the =
-failure to
-> stop. It will take me some time to investigate
-> >> further, but based on what I know now, that investigation should not h=
-old up this fix.
-> >>
-> >> Michael
+Hi,
+
+On Fri, Jun 6, 2025 at 6:40=E2=80=AFPM Greg KH <gregkh@linuxfoundation.org>=
+ wrote:
+>
+> On Wed, May 28, 2025 at 02:26:06PM +0800, Yunhui Cui wrote:
+> > When the PSLVERR_RESP_EN parameter is set to 1, the device generates
+> > an error response if an attempt is made to read an empty RBR (Receive
+> > Buffer Register) while the FIFO is enabled.
 > >
-> > Thank you for testing the patch.
-> > I'm concerned about the thread looping...
->=20
-> The thread would only loop if there is a backlog. But that backlog
-> should have been flushed atomically by the panic CPU.
->=20
-> Are you able to dump the kernel buffer and see if there are trailing
-> messages in the kernel buffer that did not get printed? I wonder if the
-> atomic printing is hanging or something.
->=20
+> > In serial8250_do_startup(), calling serial_port_out(port, UART_LCR,
+> > UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
+> > dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
+> > function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
+> > Execution proceeds to the serial_port_in(port, UART_RX).
+> > This satisfies the PSLVERR trigger condition.
+> >
+> > When another CPU (e.g., using printk()) is accessing the UART (UART
+> > is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) =3D=
+=3D
+> > (lcr & ~UART_LCR_SPAR) in dw8250_check_lcr(), causing it to enter
+> > dw8250_force_idle().
+> >
+> > Put serial_port_out(port, UART_LCR, UART_LCR_WLEN8) under the port->loc=
+k
+> > to fix this issue.
+> >
+> > Panic backtrace:
+> > [    0.442336] Oops - unknown exception [#1]
+> > [    0.442343] epc : dw8250_serial_in32+0x1e/0x4a
+> > [    0.442351]  ra : serial8250_do_startup+0x2c8/0x88e
+> > ...
+> > [    0.442416] console_on_rootfs+0x26/0x70
+> >
+> > Fixes: c49436b657d0 ("serial: 8250_dw: Improve unwritable LCR workaroun=
+d")
+> > Link: https://lore.kernel.org/all/84cydt5peu.fsf@jogness.linutronix.de/=
+T/
+> > Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+> > ---
+> >  drivers/tty/serial/8250/8250_port.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8=
+250/8250_port.c
+> > index 6d7b8c4667c9c..07fe818dffa34 100644
+> > --- a/drivers/tty/serial/8250/8250_port.c
+> > +++ b/drivers/tty/serial/8250/8250_port.c
+> > @@ -2376,9 +2376,10 @@ int serial8250_do_startup(struct uart_port *port=
+)
+> >       /*
+> >        * Now, initialize the UART
+> >        */
+> > -     serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+> >
+> >       uart_port_lock_irqsave(port, &flags);
+> > +     serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+> > +
+> >       if (up->port.flags & UPF_FOURPORT) {
+> >               if (!up->port.irq)
+> >                       up->port.mctrl |=3D TIOCM_OUT1;
+> > --
+> > 2.39.5
+> >
+> >
+>
+> Hi,
+>
+> This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+> a patch that has triggered this response.  He used to manually respond
+> to these common problems, but in order to save his sanity (he kept
+> writing the same thing over and over, yet to different people), I was
+> created.  Hopefully you will not take offence and will fix the problem
+> in your patch and resubmit it so that it can be accepted into the Linux
+> kernel tree.
+>
+> You are receiving this message because of the following common error(s)
+> as indicated below:
+>
+> - You have marked a patch with a "Fixes:" tag for a commit that is in an
+>   older released kernel, yet you do not have a cc: stable line in the
+>   signed-off-by area at all, which means that the patch will not be
+>   applied to any older kernel releases.  To properly fix this, please
+>   follow the documented rules in the
+>   Documentation/process/stable-kernel-rules.rst file for how to resolve
+>   this.
 
-Getting back to your question. There are 24 lines of console output
-in the panic path with sysrq, up to and including the "SMP: stopping
-secondary CPUs" line. The nbcon kthread starts to output the
-first line, which is at INFO level. Then the panic() function outputs
-the 2nd line at EMERGENCY level and in doing so it takes control
-of the console, and re-outputs the 1st line followed by the 2nd line.
-The panic function then outputs the remaining 22 lines. What I see
-is that in nbcon_kthread_func(), the call to rcuwait_wait_event()
-completes about 80,000 times after the panic() path takes control
-of the console. That rcuwait_wait_event() stops completing sometime
-between when the panic path calls nbcon_emit_next_record() for
-the 2nd line and again for the 3rd line. Then nbcon_kthread_func()
-remains quiescent as the panic path outputs the remaining lines in
-successive calls to nbcon_emit_next_record(). Of course, the other
-CPUs then get stopped, and the kthread can't do anything anyway. I
-haven't tried to track down all the nuances of the expected behavior,
-and my custom tracing has limitations. But maybe the kthread looping
-behavior is as expected?
+Okay, update under v8.
 
-Separately, I see that you have posted a patch that solves the
-original problem in a different way. I'll test that tonight or
-tomorrow.
+>
+> If you wish to discuss this problem further, or you have questions about
+> how to resolve this issue, please feel free to respond to this email and
+> Greg will reply once he has dug out from the pending patches received
+> from other developers.
+>
+> thanks,
+>
+> greg k-h's patch email bot
 
-Michael
+Thanks,
+Yunhui
