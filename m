@@ -1,46 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7966325A331;
-	Mon,  9 Jun 2025 13:45:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A209E8BFF;
+	Mon,  9 Jun 2025 13:46:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749476751; cv=none; b=NAwCdeS93Y73/dCQOzdLP6TGt3egpYThDpzjnaOB4kXIr3ovaQOXlV7Y+yd9ozo5Ky9bnlZrwwxCnR+5+topByeVYnBzG+OAUKrjIqxqLvqrL1tAuHMSiIrjh/w3XTFNsJ8fc9dtWL7qOmk+L3N9dE3JL6aHtbZhqwt7FTPeU1I=
+	t=1749476790; cv=none; b=L40T08pt4o9DaAPUkMCzbBZdInLtI4qIp5P0d8rvLZWn+F62Jk5387uzWTmKPGtl2KdDJn8LDkELwa2dQqN/xKS+/fdtSez1CEdnqbe3p0st2wx1tUKyhoY0wxFlD5SdphJCV2QIoWYk2mQTvF6KhAF9jmdeU0xi0qITmB9r44w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749476751; c=relaxed/simple;
-	bh=ycRb6XJylwLxKKuiMO0mmhKuPjDXZUnaEJfow+uOIJk=;
+	s=arc-20240116; t=1749476790; c=relaxed/simple;
+	bh=4Rzsrxa4U5PQh47lqqSzIXsbfOCZCxth4BdL7DFEuBo=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WaRgANVSqx87cfI3B4iwF9CnmWpTLd04FIUxaH0ctYCfQ877J6SSpQC0NXNfaqsYYbnk1IB6hYUAsKQBl5P+JaFL/fQgvvPs3IhFT2CCv+CgIj92Yfb5AjSOfDU5ejYdmXDEC0A/jCtTSE29gEdh9/rB+KyC+ES+cWpEZXIZiEk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UMyFrrPG; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=VU3wNfuwxF6lZ5c4OXJP0MG76TlUfjq35ukqXCQoZ8q9X23eMJJUxAzl1x6iD4D7QsN8GlzEj6zWOKZ6lbUGjWFwsrTSGdHTebxb/ehZMd2OzvUtNQAviCmM8qlFQx2RWZpUjTgGZLyCuVjtA+U6J7L1RiLx0rfQReyCg4TwRcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f2M+ITeO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UMyFrrPG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76879C4CEED;
-	Mon,  9 Jun 2025 13:45:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f2M+ITeO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F4E8C4CEEB;
+	Mon,  9 Jun 2025 13:46:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749476751;
-	bh=ycRb6XJylwLxKKuiMO0mmhKuPjDXZUnaEJfow+uOIJk=;
+	s=k20201202; t=1749476790;
+	bh=4Rzsrxa4U5PQh47lqqSzIXsbfOCZCxth4BdL7DFEuBo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=UMyFrrPGaSR4p7X3+4s+zzQ4cK5cw1hjoZnewC9M24lyrFFolP1Y15zFsuSdkwOy4
-	 dsOlCEPAOcg9ahcJvPXkv0bHZ4OkABs2yckOVOcmpt+YmvpU+e/gYIsAFlFANKYU7T
-	 Yqa4mrFXwOrrr5gzEZqnf/xI3g+k++zSTfMlooPW+cC64QgyeXz1qkXOlcIAok/059
-	 MjPT3ulx9YZIRmu9P50ZHXoW1FNWk4mMUbHnajMfxX2e/3n4nAG12kzQhuDoj7NNNg
-	 GB4whCcHr1FttvM96ACoUsUKl/15YkdC9Gp5agdHHSM/XrrxvbnbaM+BkRE1cE8+dl
-	 4VNQQzfWNf2fA==
+	b=f2M+ITeOA47CcqAydtdz1/6ynJNtucfEPRw594Aq0k0wOAsnyzY9ucHz55Ug/Q+Gd
+	 di6c2ufONYmmh3X4Zh+Eq5NnwB5Ivy3L/SjCTCB9KRw6Lhh1QR0HMWmNEMR27BodUM
+	 iJ356CMRkjl/dr+npi24h0uFY7JcUuMP3QaTJPllzCSNfpGSzyVSxCfILEhhlDVD0w
+	 fkCGrFaZBFhX7EItL5EpLQGwgZmGyZvRlcblRGVh5H7HOUO7rh3omcvtXR7KdMQia5
+	 gtgPTSqmLwphuZUK2UlWGdBKNat+zSw+SLCjVDNQClqr3xqKFdEITi8CflzEVucFeE
+	 5lUbNz3yMxUDQ==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Jakub Lewalski <jakub.lewalski@nokia.com>,
-	Elodie Decerle <elodie.decerle@nokia.com>,
+Cc: Rengarajan S <rengarajan.s@microchip.com>,
+	Jiri Slaby <jirislaby@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Sasha Levin <sashal@kernel.org>,
-	jacmet@sunsite.dk,
+	kumaravel.thiagarajan@microchip.com,
+	tharunkumar.pasumarthi@microchip.com,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.14 21/29] tty: serial: uartlite: register uart driver in init
-Date: Mon,  9 Jun 2025 09:45:02 -0400
-Message-Id: <20250609134511.1342999-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.12 11/23] 8250: microchip: pci1xxxx: Add PCIe Hot reset disable support for Rev C0 and later devices
+Date: Mon,  9 Jun 2025 09:45:58 -0400
+Message-Id: <20250609134610.1343777-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250609134511.1342999-1-sashal@kernel.org>
-References: <20250609134511.1342999-1-sashal@kernel.org>
+In-Reply-To: <20250609134610.1343777-1-sashal@kernel.org>
+References: <20250609134610.1343777-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,254 +50,145 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.14.10
+X-stable-base: Linux 6.12.32
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Jakub Lewalski <jakub.lewalski@nokia.com>
+From: Rengarajan S <rengarajan.s@microchip.com>
 
-[ Upstream commit 6bd697b5fc39fd24e2aa418c7b7d14469f550a93 ]
+[ Upstream commit c40b91e38eb8d4489def095d62ab476d45871323 ]
 
-When two instances of uart devices are probing, a concurrency race can
-occur. If one thread calls uart_register_driver function, which first
-allocates and assigns memory to 'uart_state' member of uart_driver
-structure, the other instance can bypass uart driver registration and
-call ulite_assign. This calls uart_add_one_port, which expects the uart
-driver to be fully initialized. This leads to a kernel panic due to a
-null pointer dereference:
+Systems that issue PCIe hot reset requests during a suspend/resume
+cycle cause PCI1XXXX device revisions prior to C0 to get its UART
+configuration registers reset to hardware default values. This results
+in device inaccessibility and data transfer failures. Starting with
+Revision C0, support was added in the device hardware (via the Hot
+Reset Disable Bit) to allow resetting only the PCIe interface and its
+associated logic, but preserving the UART configuration during a hot
+reset. This patch enables the hot reset disable feature during suspend/
+resume for C0 and later revisions of the device.
 
-[    8.143581] BUG: kernel NULL pointer dereference, address: 00000000000002b8
-[    8.156982] #PF: supervisor write access in kernel mode
-[    8.156984] #PF: error_code(0x0002) - not-present page
-[    8.156986] PGD 0 P4D 0
-...
-[    8.180668] RIP: 0010:mutex_lock+0x19/0x30
-[    8.188624] Call Trace:
-[    8.188629]  ? __die_body.cold+0x1a/0x1f
-[    8.195260]  ? page_fault_oops+0x15c/0x290
-[    8.209183]  ? __irq_resolve_mapping+0x47/0x80
-[    8.209187]  ? exc_page_fault+0x64/0x140
-[    8.209190]  ? asm_exc_page_fault+0x22/0x30
-[    8.209196]  ? mutex_lock+0x19/0x30
-[    8.223116]  uart_add_one_port+0x60/0x440
-[    8.223122]  ? proc_tty_register_driver+0x43/0x50
-[    8.223126]  ? tty_register_driver+0x1ca/0x1e0
-[    8.246250]  ulite_probe+0x357/0x4b0 [uartlite]
-
-To prevent it, move uart driver registration in to init function. This
-will ensure that uart_driver is always registered when probe function
-is called.
-
-Signed-off-by: Jakub Lewalski <jakub.lewalski@nokia.com>
-Signed-off-by: Elodie Decerle <elodie.decerle@nokia.com>
-Link: https://lore.kernel.org/r/20250331160732.2042-1-elodie.decerle@nokia.com
+Signed-off-by: Rengarajan S <rengarajan.s@microchip.com>
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Link: https://lore.kernel.org/r/20250425145500.29036-1-rengarajan.s@microchip.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
 
-Based on my comprehensive analysis, I can now provide a definitive
-assessment:
-
 **YES**
 
-## Extensive Analysis
+This commit should be backported to stable kernel trees based on the
+following analysis:
 
-This commit **should be backported** to stable kernel trees. Here's my
-detailed analysis:
+## Bug Fix Analysis
 
-### **1. Critical Bug Fix Nature**
+**This commit fixes a significant user-facing bug**: Systems that issue
+PCIe hot reset requests during suspend/resume cycles cause PCI1XXXX
+device revisions prior to C0 to lose their UART configuration registers,
+resulting in:
+- Device inaccessibility
+- Data transfer failures
+- Complete loss of UART functionality after suspend/resume
 
-The commit fixes a **serious race condition** that causes kernel panics
-with NULL pointer dereferences. The stack trace in the commit message
-shows:
+This is exactly the type of critical hardware functionality bug that
+stable backports are designed to address.
 
-```
-[    8.143581] BUG: kernel NULL pointer dereference, address:
-00000000000002b8
-[    8.180668] RIP: 0010:mutex_lock+0x19/0x30
-[    8.223116]  uart_add_one_port+0x60/0x440
-```
+## Code Changes Assessment
 
-This is a **critical system stability issue** that can crash the kernel
-during device initialization.
+**The changes are minimal and well-contained**:
 
-### **2. Race Condition Analysis**
+1. **Single bit definition added** (line 118):
+  ```c
+  #define UART_RESET_HOT_RESET_DISABLE    BIT(17)
+  ```
 
-**The Problem:**
-- **Before the fix:** `uart_register_driver()` was called in
-  `ulite_probe()` (lines 883-891 in current code)
-- **Race scenario:** When two UART devices probe simultaneously:
-  1. Thread 1 calls `uart_register_driver()` and starts allocating
-     `uart_driver.state`
-  2. Thread 2 sees `!ulite_uart_driver.state` as false, bypasses
-     registration, and calls `ulite_assign()`
-  3. Thread 2's `ulite_assign()` calls `uart_add_one_port()` (line 678)
-     expecting a fully initialized driver
-  4. Thread 1's registration hasn't completed, causing NULL pointer
-     dereference in `uart_add_one_port()`
+2. **Revision-gated logic in suspend** (lines 625-626):
+  ```c
+  if (priv->dev_rev >= 0xC0)
+  data |= UART_RESET_HOT_RESET_DISABLE;
+  ```
 
-**The Fix:**
-- **After the fix:** `uart_register_driver()` is moved to `ulite_init()`
-  ensuring:
-  1. Driver registration completes **before** any platform driver
-     registration
-  2. **No race window** exists between driver registration and device
-     probing
-  3. All probe calls find a **fully initialized** uart driver
+3. **Corresponding logic in resume** (lines 656-657):
+  ```c
+  if (priv->dev_rev >= 0xC0)
+  data &= ~UART_RESET_HOT_RESET_DISABLE;
+  ```
 
-### **3. Code Changes Analysis**
+**Risk Assessment**:
+- **Very low risk** - Only affects C0 and later hardware revisions (>=
+  0xC0)
+- **Hardware-specific** - Only impacts Microchip PCI1XXXX UART devices
+- **Well-tested functionality** - Uses existing hardware feature
+  designed for this purpose
+- **No architectural changes** - Simple register bit manipulation in
+  existing suspend/resume paths
 
-**Changes in `ulite_init()`:**
-```c
-static int __init ulite_init(void)
-{
-+   int ret;
+## Comparison with Similar Commits
+
+Looking at the reference examples, this commit aligns with **Similar
+Commit #3** which was marked for backporting ("Backport Status: YES").
+That commit also:
+- Fixed a hardware-specific bug (RTS pin toggle issue)
+- Made minimal, contained changes
+- Addressed device functionality problems
+- Was revision-specific (B0 hardware only)
+
+Unlike the "NO" examples which added new features (suspend/resume
+support, RS485 support, burst mode), this commit purely fixes existing
+broken functionality.
+
+## Stable Tree Criteria Met
+
+✅ **Fixes important bug** - Complete UART failure after suspend/resume
+✅ **Minimal risk** - Small, contained changes to single driver
+✅ **No new features** - Just enables existing hardware capability
+✅ **No architectural changes** - Uses existing suspend/resume framework
+✅ **Critical subsystem impact** - Serial communication is essential
+functionality
+
+The commit message explicitly states this addresses "device
+inaccessibility and data transfer failures" which are exactly the types
+of regressions stable trees exist to prevent.
+
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
+index f462b3d1c104c..d6b01e015a96b 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -115,6 +115,7 @@
+ 
+ #define UART_RESET_REG				0x94
+ #define UART_RESET_D3_RESET_DISABLE		BIT(16)
++#define UART_RESET_HOT_RESET_DISABLE		BIT(17)
+ 
+ #define UART_BURST_STATUS_REG			0x9C
+ #define UART_TX_BURST_FIFO			0xA0
+@@ -620,6 +621,10 @@ static int pci1xxxx_suspend(struct device *dev)
+ 	}
+ 
+ 	data = readl(p + UART_RESET_REG);
 +
-+   pr_debug("uartlite: calling uart_register_driver()\n");
-+   ret = uart_register_driver(&ulite_uart_driver);
-+   if (ret)
-+       return ret;
-
-    pr_debug("uartlite: calling platform_driver_register()\n");
-- return platform_driver_register(&ulite_platform_driver);
-+   ret = platform_driver_register(&ulite_platform_driver);
-+   if (ret)
-+       uart_unregister_driver(&ulite_uart_driver);
++	if (priv->dev_rev >= 0xC0)
++		data |= UART_RESET_HOT_RESET_DISABLE;
 +
-+   return ret;
-}
-```
-
-**Changes in `ulite_probe()`:**
-```c
-// REMOVED the problematic race-prone code:
-- if (!ulite_uart_driver.state) {
-- dev_dbg(&pdev->dev, "uartlite: calling uart_register_driver()\n");
-- ret = uart_register_driver(&ulite_uart_driver);
-- if (ret < 0) {
-- dev_err(&pdev->dev, "Failed to register driver\n");
-- clk_disable_unprepare(pdata->clk);
-- return ret;
-- }
-- }
-```
-
-**Changes in `ulite_exit()`:**
-```c
-static void __exit ulite_exit(void)
-{
-    platform_driver_unregister(&ulite_platform_driver);
-- if (ulite_uart_driver.state)
-- uart_unregister_driver(&ulite_uart_driver);
-+   uart_unregister_driver(&ulite_uart_driver);
-}
-```
-
-### **4. Follows Kernel Best Practices**
-
-The fix aligns with **established kernel patterns**. My analysis of
-other UART drivers shows that well-architected drivers like 8250,
-altera, atmel, and liteuart all register their uart drivers in `__init`
-functions, not probe functions. This architectural pattern:
-
-- **Separates concerns:** Driver registration (what) vs device binding
-  (when)
-- **Eliminates races:** Driver available before any device probing
-- **Improves reliability:** Predictable initialization order
-
-### **5. Stable Tree Suitability Criteria**
-
-✅ **Fixes important bug:** Kernel panic with NULL pointer dereference
-✅ **Small and contained:** Moves existing code, no new functionality
-✅ **Minimal risk:** Follows established kernel patterns
-✅ **Clear side effects:** Better initialization order, no regressions
-expected
-✅ **Confined to subsystem:** Only affects uartlite driver
-✅ **Important for users:** Prevents boot crashes on Xilinx platforms
-
-### **6. Similar Historical Pattern**
-
-This fix is very similar to **Similar Commit #5** (Status: YES) which
-also fixed race conditions in TTY/serial code by ensuring proper
-initialization order. Both commits:
-- Fix race conditions in serial/TTY subsystem
-- Make architectural improvements to initialization order
-- Prevent NULL pointer dereferences
-- Have clear stable tree value
-
-### **7. Low Regression Risk**
-
-The change is **architecturally sound** because:
-- It ensures `uart_register_driver()` completes before any
-  `uart_add_one_port()` calls
-- Proper error handling ensures cleanup if platform driver registration
-  fails
-- The exit sequence properly reverses the initialization sequence
-- No functional behavior changes, only timing/ordering improvements
-
-### **Conclusion**
-
-This commit fixes a **critical kernel panic** caused by a race condition
-in the uartlite driver. The fix is **small, contained, and follows
-established kernel patterns**. It has **minimal regression risk** and
-provides **significant stability improvements** for users of Xilinx UART
-devices. The architectural change from probe-time to init-time driver
-registration is a **best practice** that eliminates the race condition
-entirely.
-
- drivers/tty/serial/uartlite.c | 25 ++++++++++++-------------
- 1 file changed, 12 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index a41e7fc373b7c..39c1fd1ff9ced 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -880,16 +880,6 @@ static int ulite_probe(struct platform_device *pdev)
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
+ 	writel(data | UART_RESET_D3_RESET_DISABLE, p + UART_RESET_REG);
  
--	if (!ulite_uart_driver.state) {
--		dev_dbg(&pdev->dev, "uartlite: calling uart_register_driver()\n");
--		ret = uart_register_driver(&ulite_uart_driver);
--		if (ret < 0) {
--			dev_err(&pdev->dev, "Failed to register driver\n");
--			clk_disable_unprepare(pdata->clk);
--			return ret;
--		}
--	}
--
- 	ret = ulite_assign(&pdev->dev, id, res->start, irq, pdata);
+ 	if (wakeup)
+@@ -647,7 +652,12 @@ static int pci1xxxx_resume(struct device *dev)
+ 	}
  
- 	pm_runtime_mark_last_busy(&pdev->dev);
-@@ -929,16 +919,25 @@ static struct platform_driver ulite_platform_driver = {
- 
- static int __init ulite_init(void)
- {
-+	int ret;
+ 	data = readl(p + UART_RESET_REG);
 +
-+	pr_debug("uartlite: calling uart_register_driver()\n");
-+	ret = uart_register_driver(&ulite_uart_driver);
-+	if (ret)
-+		return ret;
- 
- 	pr_debug("uartlite: calling platform_driver_register()\n");
--	return platform_driver_register(&ulite_platform_driver);
-+	ret = platform_driver_register(&ulite_platform_driver);
-+	if (ret)
-+		uart_unregister_driver(&ulite_uart_driver);
++	if (priv->dev_rev >= 0xC0)
++		data &= ~UART_RESET_HOT_RESET_DISABLE;
 +
-+	return ret;
- }
+ 	writel(data & ~UART_RESET_D3_RESET_DISABLE, p + UART_RESET_REG);
++
+ 	iounmap(p);
  
- static void __exit ulite_exit(void)
- {
- 	platform_driver_unregister(&ulite_platform_driver);
--	if (ulite_uart_driver.state)
--		uart_unregister_driver(&ulite_uart_driver);
-+	uart_unregister_driver(&ulite_uart_driver);
- }
- 
- module_init(ulite_init);
+ 	for (i = 0; i < priv->nr; i++) {
 -- 
 2.39.5
 
