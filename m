@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86404258CF5;
-	Mon,  9 Jun 2025 13:46:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D934257452;
+	Mon,  9 Jun 2025 13:47:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749476799; cv=none; b=Gz6CZuHozTm90VBEWhP7m1hh5dxFnZXQLXxWMcr7h+E1gfuFXx4uuevR/YojUFojjWZ9Cy5UW9MjG9oq/IsbOLMs68wI1kJXzF57iPSRJB4EAaBxCensJtmDGxq7G/xvVBxvVFjXFn30Z7oClhhAaPbwWfqUnIwh30gDVIdBCNs=
+	t=1749476835; cv=none; b=Fz5s8jQsGI9LEC+qp6qney4PShHUV7Anr3G+oIBU9seM874S3zsquVlVbSOQ6RiTsNUaYefvWrQTq1mJWBh8nnusEFbhWtfjQo1SzC146WD5mWj3vvnQ6+9eiy0sy8hsKYs4AWmsIXqrNyHiAx2AF1EmH81FFflJWLclC6FU8cg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749476799; c=relaxed/simple;
-	bh=tl5GZsoSVZ/4GDIUYzPPrgy/wLJ/e74zBOa2Y2/bxwU=;
+	s=arc-20240116; t=1749476835; c=relaxed/simple;
+	bh=MTV4e7MxNaK2BnYD1QIGfGuK+8jIWRmnqe8EwVNfris=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eV16FBkRXqcY3/pfIrmen1ubmeFvormsIC2O48hUQKS2ApdxU9g4moZSC470lg3xvjDozX/QV57NLMgtqxGZxXbRJzSRYLCWc5hbeVygWRTgxkoVbmf2s0JD4E4LKYg+E8Fm9jEA/ZE0Nu3S3fXVWX3DvxNnbSYx51sOiLxKMNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rhs1geHd; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=tfoDFeA/lX91Evk+34T4hjrBvgFOxKVE4v0OtVrdQMgivz1ObWJnG1PljPK0VDSZfswltVWWBDzNMH6pz6peUmEtfoFUCHQKHF58hb3n1hh+RG/V/ocDBPiii2k5TzKU/VLCxPSpaZhyR5UEmTkIxfxhL0X1rrvdMp5OeaRZgos=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=abdCalQv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rhs1geHd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72F92C4CEED;
-	Mon,  9 Jun 2025 13:46:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="abdCalQv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D3E6C4CEF2;
+	Mon,  9 Jun 2025 13:47:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749476799;
-	bh=tl5GZsoSVZ/4GDIUYzPPrgy/wLJ/e74zBOa2Y2/bxwU=;
+	s=k20201202; t=1749476835;
+	bh=MTV4e7MxNaK2BnYD1QIGfGuK+8jIWRmnqe8EwVNfris=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Rhs1geHddGWHc7SQaBmtkGDWsKff7X1b4l4pHMPC499zhrEaTuwnVwYMJh41vJi+f
-	 HKJ4LdzOQ8GbdWUurHwSHQnsvUeWVPmJbZ8ZTDGngFBw10MsCMUvhz4uNssrKHNYBH
-	 FQNgV43rMcGKus4+TL4SQtmeDbyZQq5gCii2EgOKq7ocSi3NDCRr/iyXtiE5e0sNVh
-	 1Caa182KwKomr+7ycQZpptE72ksgTRTqHg8zSQx7Ev2G7+LTYao1+9TtBKDP8fqlRs
-	 RLU7e3+WX1CQnKXDDZ0oucBcTR/+70xwx3gqL6NkZCMjQvjPIuEfzHLLEVK9t2DdgM
-	 pbTpmOqcceo3w==
+	b=abdCalQv//uWPM7kmNX8+YYlybxy8bNEBUMxEQbBDeihDu3t4nJkU52ZN95hHJTB4
+	 GZ2VeFyHfsAApqzt6gl+2pPb6nMXstUl7NUikqx6u9P+QhREcK9C2RK/vG7wl0cx1j
+	 hucsEg9uxjFPhuabjxx1pLYUqEV5eyOrKEf9GvN4Cbgjr0l+KAojuilFeTOPX/Vtbs
+	 3p2zKZNxztAhedzrsPD7aeCLDyYqPb/9/AprzYd+Ukza0zilJEGTk8kdfWfwRf/oYJ
+	 frzUTvRhqFpzlcfVP9X/Ts1peOxMQfEdZTiCKef01/B9vBH1JooMPZUwfPJUaA0wNt
+	 ixGs4morqFN1A==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
@@ -35,12 +35,12 @@ Cc: Jakub Lewalski <jakub.lewalski@nokia.com>,
 	Sasha Levin <sashal@kernel.org>,
 	jacmet@sunsite.dk,
 	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.12 17/23] tty: serial: uartlite: register uart driver in init
-Date: Mon,  9 Jun 2025 09:46:04 -0400
-Message-Id: <20250609134610.1343777-17-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.6 13/18] tty: serial: uartlite: register uart driver in init
+Date: Mon,  9 Jun 2025 09:46:47 -0400
+Message-Id: <20250609134652.1344323-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250609134610.1343777-1-sashal@kernel.org>
-References: <20250609134610.1343777-1-sashal@kernel.org>
+In-Reply-To: <20250609134652.1344323-1-sashal@kernel.org>
+References: <20250609134652.1344323-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,7 +49,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.12.32
+X-stable-base: Linux 6.6.93
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
@@ -248,10 +248,10 @@ entirely.
  1 file changed, 12 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 68357ac8ffe3c..71890f3244a0f 100644
+index b225a78f6175f..9f39bafa7fa96 100644
 --- a/drivers/tty/serial/uartlite.c
 +++ b/drivers/tty/serial/uartlite.c
-@@ -880,16 +880,6 @@ static int ulite_probe(struct platform_device *pdev)
+@@ -872,16 +872,6 @@ static int ulite_probe(struct platform_device *pdev)
  	pm_runtime_set_active(&pdev->dev);
  	pm_runtime_enable(&pdev->dev);
  
@@ -268,7 +268,7 @@ index 68357ac8ffe3c..71890f3244a0f 100644
  	ret = ulite_assign(&pdev->dev, id, res->start, irq, pdata);
  
  	pm_runtime_mark_last_busy(&pdev->dev);
-@@ -929,16 +919,25 @@ static struct platform_driver ulite_platform_driver = {
+@@ -922,16 +912,25 @@ static struct platform_driver ulite_platform_driver = {
  
  static int __init ulite_init(void)
  {
