@@ -1,138 +1,160 @@
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A111CF7AF
-	for <linux-serial@vger.kernel.org>; Mon,  9 Jun 2025 20:13:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5940422422E
+	for <linux-serial@vger.kernel.org>; Mon,  9 Jun 2025 22:45:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749500020; cv=none; b=IXTZgfgg3bWOMN9kDib+ltQG/+pNelCt1Cc1XhATpR4Ap217pXypGOD/q1qmGEzLaE/FxF1xnMTukDjqd+qoSwaD0BCAJqcgPwdGOS3xvTs4LWdaTZXUqljDw1DkUbV5Z4is0xCZoHuMye6C/wYtQMyI+V/6jT0QEZ33ezAmzk4=
+	t=1749509124; cv=none; b=LSpQ4z1wBaovLjjrK73tla/Rzo/VvUD1FamwXJYao9mmmAR0JKZuQsFQSs6AqDQMJt+R5yzXYCrldROuBe0sxJPqa3kAfuxujsAC/raW53CuLBVb8leEl+7iQwJPieO0btwFBZMIjL9JeXUm7zg+GJCNwvzbXxcqM3w5q9E8VV0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749500020; c=relaxed/simple;
-	bh=6NIEMC0xnA+C5jNliqunaIOn/xrFyw0xsARx0C0pKpI=;
+	s=arc-20240116; t=1749509124; c=relaxed/simple;
+	bh=Iq0x5q2nwlvRMcB2qn2pumIsm+x63752VXEgXOhaJCQ=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uesRmGhqpLWUs1OnDgTZVoP1JNypBeWVLFDjnBdcURzqhjXL20WAl0pPOJrTn9JMD+rgjry706MnsQUaET8EHRAYRxmuCtVGS5rRPVCTHk4BxxJchOCFKa6z1bFeZ97sB5CIVhzh6MM4GNu+u+ujbt5QNTNhBFOGwwZU4h0uM0Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=lsWmM95w; arc=none smtp.client-ip=209.85.210.176
+	 To:Cc:Content-Type; b=rGBJn/Xk8I4IAxJ3bIGjzRmx9/Rca393MCGMaPkCzfBV78kzOt/OXQhFMnwmRjEY2KCrjyg+3nIsy42wPcb9PppDTx+cozLnLHuXL6/2SSNsKUu2980I1Ha5rA5fkLu8Ec2iRAgwOzK7OhiB95VhowH/u/EbfqMgL/eBG/iEY6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=UZhS2BAg; arc=none smtp.client-ip=209.85.215.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="lsWmM95w"
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-747d59045a0so3250161b3a.1
-        for <linux-serial@vger.kernel.org>; Mon, 09 Jun 2025 13:13:37 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="UZhS2BAg"
+Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-b2c40a7ca6eso4581290a12.1
+        for <linux-serial@vger.kernel.org>; Mon, 09 Jun 2025 15:45:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1749500016; x=1750104816; darn=vger.kernel.org;
+        d=chromium.org; s=google; t=1749509117; x=1750113917; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9yFNgGlGCkVHg1knXwtU8l8k12+pdKexGY49aaidt7U=;
-        b=lsWmM95wuh3avqSZS452d5EgDMSss8VmzsVSDAmXHhhLohYGSAAlMdP8G23nM23ich
-         F55STEEc0hN3iOzPFS2FkTkNjyA2Omm3gV0kgtkststABzUpbdWNbRos43amymwQScDN
-         iYSSfx+T4MMbLpp0tN8m0wSdksn6e+sQ2AUxI=
+        bh=a/LCGkPSUi11y6YDbtw03gAAN8X0aMlNFtkYip4Smws=;
+        b=UZhS2BAgdnWp2y1MrJb8Abl6UkXMp18Aqa+ZxZDs4FVnOjlJSEqaeRidRe+OUnZe+r
+         u0JvcT4rNrekQy8kpFnX+dzOj27lUNEcw3TfkX+5lOlV8SDYdniWNvW6541wQTxQKVwT
+         Xpd8/63mVT95n+4IPRt4hHzLl1sIL11dJ0G9s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749500016; x=1750104816;
+        d=1e100.net; s=20230601; t=1749509117; x=1750113917;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=9yFNgGlGCkVHg1knXwtU8l8k12+pdKexGY49aaidt7U=;
-        b=GIPWwjPeYdx+e/rUyloOoVUE6eSp+UCcd6r9Etw3OAcF/xpa+OlHTOhmnaw+Lb3vO5
-         eOVN7KzF0DgDV+ON5bsiRN6T3Bb1qw3ztIE6lxdtKJ/1Q8nYqCYJyPlBGp8BHaXhNKZ1
-         3VKtVxFLUMiybQ+Mc3CPB18s9W9HrrXoV1JQpHNoZO/sJMtaB71HHamL0bmiLHMMkUNU
-         dbtOt+hWq/mhYJbBR67WOYQ/8bg7y1eOBiLcpXm1RdP+F25S8ml8mTIdIc9sgCi4MOJb
-         we2E/C/uquFa1hLckMw5eevI1ihvufPct51iLu5wFpWAE1URIaGFWVR6w8ntvm0P/wn5
-         3GSA==
-X-Forwarded-Encrypted: i=1; AJvYcCUhdqfwQtmhV6TXrMT7glUQy78RF9/hQwhxkh7z1nbF9h6KIlYxJEoWubFGIUAh+TeIa36gB2uXooQW7NI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxyrTIr3RNfka2Oy1Jtlh3Pb5nPmtY2qlp0r2c0LIXK40KKsxpl
-	j1m1Y4bFgFRcVsgf7s9wgT7XJt+g4sNqPhEt0ZWYrbnI9iWzj4aFdU6PHELSx//34iptuweCSRh
-	bl0I=
-X-Gm-Gg: ASbGnctHJMLG8Ep3Gt0f+cO4AnQuBdZsJkqb7MeslXX8qf1q1q2w7yxxofWuZBxwSHb
-	YiqSBhBf3s4eT7PDaqYQW3Wvl86/6zUWPs2EzQyRG9D8XoqYg9xSKBdEe0i6G8oFKRHm2c4p6xo
-	DXyuuCKLMjjtI+oawDWE6b9C/GLw4GY4INFJT0d2BUTMNDR5Ky6pLbMcIK4qlCkbVIyKtRkPEl+
-	uWsk9Q/sczYn2/D/VsZZbPqyG9jTCwpztaD1gVULW/2ZngNyN6SzEjqKn3uIan3+S9ngVZC8twI
-	OcZN7Q51qz7YuroXTFYuSD+14+oI+T0Ifv1iqsej7xU5HJeheMO3u6Df6i/Ud07Oya600iGfG8A
-	xcwQKrZ8Oq3fW4VLV0q1EKwrAhCzYCA==
-X-Google-Smtp-Source: AGHT+IG05eopiiGkKXxT+zKTrJlFJr7lpEKHg8w90oQWmXzuZGN0mNE3y6jPKQq4hdbAkyP7UMAEZQ==
-X-Received: by 2002:a05:6a21:339f:b0:21c:fa68:c33a with SMTP id adf61e73a8af0-21ee257aad2mr17902907637.23.1749500016080;
-        Mon, 09 Jun 2025 13:13:36 -0700 (PDT)
-Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com. [209.85.215.175])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7482af383f9sm6094259b3a.25.2025.06.09.13.13.33
+        bh=a/LCGkPSUi11y6YDbtw03gAAN8X0aMlNFtkYip4Smws=;
+        b=bZdcqQ9LpfSapH7nfxXLRL27WcljrCFV4SPyTkNbCqvuFX8CcmEW1cFX9tJtbbfpkD
+         ml6rPqntIhnThXZSLPsWQk7a+S9Zc5cvCW96AfXLEKsHX4yVuXr7so7kUgg6byu2MD0v
+         BnLA4m/PZ6o9EnV/ITkvKaJQTzZFji68iUPBZ++BCT5qsI6bzZBMk2shM3SCNAB+QpNS
+         QqV3zSG3v8JON3GgvdxKx0B+il8RTbT72GQHc+i93IxG7f5s/YmRYrwUrycMdUtBbMp9
+         2QhgIhLyGtnZaRcrU1eu4bybyDTXPw5glo+Gd0JmkqXgOwxvrsgg49ao3JjwPLlVDIkU
+         0t6A==
+X-Forwarded-Encrypted: i=1; AJvYcCUYN7qXJpHMEyxcNH8LANpf3qGLLdEnO27XW8MkQWQ0EozmEVhoDBEPv1UnanWI/2KIh1RBMi8VrGepOy4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyls4es+yPg+f3Do4T9QczVWELeaNJ45VfLhyMIxMySS7O0a2pt
+	19iQaur4d/LXBCy+lR4wR+kf7V7HtApr1FjkkpPp52qKuF/ArtbOZE3e9vrTSE/mjQvk1RxObJn
+	39iCV0g==
+X-Gm-Gg: ASbGncs7tjnbWVpWGLjZeeBfuB0YljSWpwpXkEbP9Qb9I59sWAwGxti6JdnarONxX/M
+	iHomOe4ALhy2bZx8ROksDWw/ya8U15WPBmteYcOoLV1xMM/THTABuSbQQrMtl/ZaYzJmzbf1IMW
+	0UIofcUA4q1nAqBoWP+wbAWs69Pw0q2AsZMkFzWUZbS54U4hLYKWt1i7el2HpsYAnNNGarWT2+u
+	Lo2PZE87jk7fahIVB0TDuRzqftvziUAP5p7m0Ojeka2Urpw9F6EtJTJlytPKqy37slx6KgTXEXX
+	xkv2pcQvmJxhWeRnfk8nDM4W6fxMhfcQGvHOUM7B0Q6+siogkUriaU0QmUeWmTrnHznMJ//mxQg
+	LVDlMZVc4vLQhdJpHi1QfB2wzhT21NpEn21Hc
+X-Google-Smtp-Source: AGHT+IHMYEmqaTz+JkKqqO1Tb+qoQ7kCw2wXiAkRkDwgYASGcvg+zXcJua+uXSlK2w+1Aju6hKOmqg==
+X-Received: by 2002:a17:90b:28c3:b0:311:c1ec:7d05 with SMTP id 98e67ed59e1d1-313a16e9839mr334604a91.35.1749509117595;
+        Mon, 09 Jun 2025 15:45:17 -0700 (PDT)
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com. [209.85.216.53])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3134b9b730bsm6054822a91.18.2025.06.09.15.45.15
         for <linux-serial@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jun 2025 13:13:34 -0700 (PDT)
-Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-b2c49373c15so3230563a12.3
-        for <linux-serial@vger.kernel.org>; Mon, 09 Jun 2025 13:13:33 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXHXvnOoV6HuTMn/F+DV+JOmrsfL7KnQqTDWOqIj2+t0sGi/MfEvfmBiWNvQL55ptg8c/ZoWEVy5qvmgn0=@vger.kernel.org
-X-Received: by 2002:a17:90b:2d4e:b0:311:afd1:745b with SMTP id
- 98e67ed59e1d1-313472e8c6dmr21398818a91.11.1749500013266; Mon, 09 Jun 2025
- 13:13:33 -0700 (PDT)
+        Mon, 09 Jun 2025 15:45:15 -0700 (PDT)
+Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-3109f106867so5841130a91.1
+        for <linux-serial@vger.kernel.org>; Mon, 09 Jun 2025 15:45:15 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWtwiWYeQEiekGkdxTBad+EgaWugs6nN5I7Wuv+BWZrgyg0xT5D2MWj6CgfHCcSVaTttoxgSO2MAPQX96I=@vger.kernel.org
+X-Received: by 2002:a17:90b:6c7:b0:313:1a8c:c2c6 with SMTP id
+ 98e67ed59e1d1-313a1695527mr399198a91.16.1749509115055; Mon, 09 Jun 2025
+ 15:45:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com> <20250606-printk-cleanup-part2-v1-4-f427c743dda0@suse.com>
-In-Reply-To: <20250606-printk-cleanup-part2-v1-4-f427c743dda0@suse.com>
+References: <20250506125133.108786-1-nicolescu.roxana@protonmail.com> <20250506125133.108786-3-nicolescu.roxana@protonmail.com>
+In-Reply-To: <20250506125133.108786-3-nicolescu.roxana@protonmail.com>
 From: Doug Anderson <dianders@chromium.org>
-Date: Mon, 9 Jun 2025 13:13:21 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com>
-X-Gm-Features: AX0GCFtFMIswKIAvt6rQB2Iu1HAY0gUkQ581gK2nBv_6C3TWCO4_jkt3VeYMeO4
-Message-ID: <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com>
-Subject: Re: [PATCH 4/7] drivers: serial: kgdboc: Check CON_SUSPENDED instead
- of CON_ENABLED
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <danielt@kernel.org>, 
-	Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, 
-	Johannes Berg <johannes@sipsolutions.net>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, 
-	linux-um@lists.infradead.org
+Date: Mon, 9 Jun 2025 15:45:02 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=V2PSoakXH0_nKx1MkjPGXrHkFbPyMR=om9efW7LPn-dw@mail.gmail.com>
+X-Gm-Features: AX0GCFvms_bTeu1m1tYJFabPtpRa0hg1AcW21wJUDi4AC8ourQTRpSPGDqEtFkQ
+Message-ID: <CAD=FV=V2PSoakXH0_nKx1MkjPGXrHkFbPyMR=om9efW7LPn-dw@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/2] serial: kgdboc: convert to use faux_device
+To: Roxana Nicolescu <nicolescu.roxana@protonmail.com>
+Cc: gregkh@linuxfoundation.org, rafael@kernel.org, dakr@kernel.org, 
+	jason.wessel@windriver.com, danielt@kernel.org, jirislaby@kernel.org, 
+	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, skhan@linuxfoundation.org, 
+	linux-kernel-mentees@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
 
-On Fri, Jun 6, 2025 at 7:54=E2=80=AFPM Marcos Paulo de Souza <mpdesouza@sus=
-e.com> wrote:
+On Tue, May 6, 2025 at 5:51=E2=80=AFAM Roxana Nicolescu
+<nicolescu.roxana@protonmail.com> wrote:
 >
-> All consoles found on for_each_console are registered, meaning that all o=
-f
-> them are CON_ENABLED. The code tries to find an active console, so check =
-if the
-> console is not suspended instead.
+> The kgdboc uses a "fake" platform device to handle tty drivers showing
+> up late. In case the tty device is not detected during probe, it will
+> return EPROBE_DEFER which means the probe will be called later when the
+> tty device might be there. Before this, the kgdboc driver
+> would be initialized early in the process (useful for early boot
+> debugging) but then the tty device wouldn't be there, and retry wouldn't =
+be
+> done later. For a better explanation, see commit
+> '68e55f61c138: ("kgdboc: Use a platform device to handle tty drivers
+> showing up late")'.
 >
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> This replaces the platform_device usage with faux_device which was
+> introduced recently for scenarios like this, where there is not real
+> platform device needed. Moreover, it makes the code cleaner than before.
+>
+> Signed-off-by: Roxana Nicolescu <nicolescu.roxana@protonmail.com>
 > ---
->  drivers/tty/serial/kgdboc.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/tty/serial/kgdboc.c | 50 +++++++++++--------------------------
+>  1 file changed, 14 insertions(+), 36 deletions(-)
 >
 > diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 85f6c5a76e0fff556f86f0d45ebc5aadf5b191e8..af6d2208b8ddb82d62f33292b=
-006b2923583a0d2 100644
+> index 85f6c5a76e0f..d1ffe6186685 100644
 > --- a/drivers/tty/serial/kgdboc.c
 > +++ b/drivers/tty/serial/kgdboc.c
-> @@ -577,7 +577,8 @@ static int __init kgdboc_earlycon_init(char *opt)
->         console_list_lock();
->         for_each_console(con) {
->                 if (con->write && con->read &&
-> -                   (con->flags & (CON_BOOT | CON_ENABLED)) &&
-> +                   (con->flags & CON_BOOT) &&
-> +                   ((con->flags & CON_SUSPENDED) =3D=3D 0) &&
+> @@ -21,7 +21,7 @@
+>  #include <linux/input.h>
+>  #include <linux/irq_work.h>
+>  #include <linux/module.h>
+> -#include <linux/platform_device.h>
+> +#include <linux/device/faux.h>
+>  #include <linux/serial_core.h>
+>
+>  #define MAX_CONFIG_LEN         40
+> @@ -42,7 +42,7 @@ static int kgdboc_use_kms;  /* 1 if we use kernel mode =
+switching */
+>  static struct tty_driver       *kgdb_tty_driver;
+>  static int                     kgdb_tty_line;
+>
+> -static struct platform_device *kgdboc_pdev;
+> +static struct faux_device *kgdboc_fdev;
+>
+>  #if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
+>  static struct kgdb_io          kgdboc_earlycon_io_ops;
+> @@ -259,7 +259,7 @@ static int configure_kgdboc(void)
+>         return err;
+>  }
+>
+> -static int kgdboc_probe(struct platform_device *pdev)
+> +static int kgdboc_probe(struct faux_device *fdev)
+>  {
+>         int ret =3D 0;
+>
+> @@ -276,47 +276,26 @@ static int kgdboc_probe(struct platform_device *pde=
+v)
+>         return ret;
+>  }
+>
+> -static struct platform_driver kgdboc_platform_driver =3D {
+> +struct faux_device_ops kgdboc_driver =3D {
 
-I haven't tried running the code, so I could easily be mistaken, but...
+nit: s/kgdboc_driver/kgdboc_faux_ops/ ?
 
-...the above doesn't seem like the correct conversion. The old expression w=
-as:
-
-(con->flags & (CON_BOOT | CON_ENABLED))
-
-That would evaluate to non-zero (true) if the console was _either_
-"boot" or "enabled".
-
-The new expression is is:
-
-(con->flags & CON_BOOT) && ((con->flags & CON_SUSPENDED) =3D=3D 0)
-
-That's only true if the console is _both_ "boot" and "not suspended".
+Other than that, this seems reasonable to me. I guess I'd assume that
+Greg would chime in at some point since patch #1 in this series would
+need to go through him.
 
 -Doug
