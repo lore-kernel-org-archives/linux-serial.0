@@ -1,285 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D594217E0;
-	Mon,  9 Jun 2025 13:48:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7694A1FE44D
+	for <linux-serial@vger.kernel.org>; Mon,  9 Jun 2025 15:13:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749476928; cv=none; b=hupxgJz5osC9+n9uGkyptmCJDeD6lOPy4yMSimYEYrCV5ZdZnhVfGYVGx2jPUgJuOBwLxNiPIYIKxlNgn/F93Wc7CRjDzkkgZQFi2uWG5Ib5Up0xaEO5h/xWNmqkXoYyhbNd4K8FcFErWeLw1B7vBMGlmI+wKwWsVH983Nek6vA=
+	t=1749482006; cv=none; b=F2INTrJZEErXrnvOa9o+RkGdkrM4UR8QX636YVfxKZ497zMWsPzfe6qfKNwIBi0h0pScdO68L3Q2hTjvIoHj7cVyYqP8DT8AQtA7dJQtm5HXkYeolDcgi9PuGS63U9sQ6ORMaoRGwrJ8uQo05k2+gvOdTHqfX9HVZhH+b9zZ1cc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749476928; c=relaxed/simple;
-	bh=B9qnXIeCFxebL+SVg2h03q5UtSQHCEBe+aXwcJ+yOGg=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hgGF6u+9AE0YRTsqPq1p7Wx+aNX4oj8od7WyVKafRC8PlAOl9PzvHTW3ig5OAdUAt/XKJv74DL8ZsGVUUt0bG/BLe0aXRxDDcAuOJfU2+drW50qWvPilxSs3RmSrPmaee+flUFR2DnuDlJnKOyJyDJpYO4F0LNT8hxaoPTHNEVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GQtalX3f; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749482006; c=relaxed/simple;
+	bh=5YqNGf/cGlymW3XgUoEw7B3PohtEOnJMscJX1o7OaT8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SswK8VW1Jfc529EUr8hBpwLV4o7CxcdKjDNKJ4uf0Cm0amzPbhXHL4qUsW/RVuF6vNcNoFvyZkGDO6YE/SbtxR6u0g5eljkE9XxRCSu1ENCcxaoJrRu6YF7qxr0moB5u/+kpi+rX1eeKJ/+uFc0n9GIKG86LaXfI6NluoShiYfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=NjN6NKk9; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GQtalX3f"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEF4CC4CEED;
-	Mon,  9 Jun 2025 13:48:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749476928;
-	bh=B9qnXIeCFxebL+SVg2h03q5UtSQHCEBe+aXwcJ+yOGg=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=GQtalX3fCHkdTgJA0AGpbKlyd1Krric2Ws/XDynX9WFveedR5pPu76wnc1nYr8omR
-	 vz75XiUi4dvqDlSWx6CdVwB8Q6D3iX6zyXj5X/RZe6DxbxZe3O+ceCbYspfJ8BTcs0
-	 //mEnrBvy6430/WeoRELh4ZgfIJRuzLX4TE1T/Zf0VtmSgQNC+6G1SpWl07i3yNzxl
-	 xr1wj7Ffk5+i0QER+RQ1DzGOtFKjl8npanmJWLqHc8aE061gCp08HhyAMQHwBmn2uy
-	 EAlFK3PShgYx6f6hmW6ZhaemqlxqEl/0nhXjMhPRRG2XRm/JrawNEvDtLim+jPidIO
-	 9KLi4jh8xpBHw==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Jakub Lewalski <jakub.lewalski@nokia.com>,
-	Elodie Decerle <elodie.decerle@nokia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Sasha Levin <sashal@kernel.org>,
-	jacmet@sunsite.dk,
-	linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 4/7] tty: serial: uartlite: register uart driver in init
-Date: Mon,  9 Jun 2025 09:48:37 -0400
-Message-Id: <20250609134840.1345797-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250609134840.1345797-1-sashal@kernel.org>
-References: <20250609134840.1345797-1-sashal@kernel.org>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="NjN6NKk9"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-3a3798794d3so3758211f8f.1
+        for <linux-serial@vger.kernel.org>; Mon, 09 Jun 2025 08:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1749482002; x=1750086802; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=115U0atOdCsNHTutWzQlIOaInHOFsxVptLCsxbc7wOA=;
+        b=NjN6NKk94cDeEa3LBQKKVEEXGuCOpWa0T27BnTfl6+w3dN8OBcNx2fFey9PULuiZwx
+         tSCb3iMt2VT5HD4kKrYSR2vRYKKocG5lD2nsCDiqJpSN+fy3DGw6O/PnsmCkKod7KaO5
+         AJKwmoK6nBzAQxSqvNjNdN9o/Ahd1Q1CHLhJXInLWnlkSBQ9Lc+UjHOikSyhaIureGyG
+         Od/54TzapP6Wo/Wt+lgzYhMB0XRb1NTyR2s2VCU8dnAYB6XqKrbFHNHRjKdYsu7obzgn
+         J4ELBKwd890vI1/xXU2UuzkhonL+IGEbYelK3EGPjz9i9vWZkO4aHw5/EmW9r+z0Zo5X
+         scGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749482002; x=1750086802;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=115U0atOdCsNHTutWzQlIOaInHOFsxVptLCsxbc7wOA=;
+        b=Btn40viD8fJJ/cbs+wy3ichC8hOMmma6e4f/w1bYMwiqMBUCpIe8oC47j00P3qQFZs
+         ODRbZ4EDm4aP6Yuz49V8Ocu7JR7OSSAGGWkGHbQ/VEuvwt/Hlxsn5JxNqycr4dtSzJNm
+         UGxmZtzx/9taBF9P0zKj0djo3/g6WWs3icsI5mG1pRQ5SXlJNsvPvA9nvLw5g1SUjqgH
+         YXdu8NTsC1wxWO9IzIDNvyTGZr8yQwYvghq7e1TXWJ2ajmKfsSAm9exmrGYFbCCtlRDX
+         fGX9J6SMueYTSrPm0qlfz4yXSpLSTDub9PJ5C93Q82POBoxY3U/wHFjffIiDoWKRml8r
+         KwvQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXlW7Wys5iPIzn/sghtFM/riyz5C4GfCWDmNuIz8Hrl8WdZsKPSNrS3UIGpP026+8910n3C1Y3vmACMDkM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx6sjA/jC2LZe/0ms/klaLVhkgzWGSEVceZ0ys3EYHLW8w0g+An
+	e9f9LHPezLS34D3Yom9Ma2W9PQHZhETnsvMWaCJy0d9iybFMF/06pyct96xJ0ov8008=
+X-Gm-Gg: ASbGnctkCGxC5DEHm2bTabewwFwirTybeS0uvf/06MEhDRU/8IR+cNUjdWL+yG/UUio
+	xEzrM9iCGOq//I1Un+5e0kv/GLnkpDeEXWP6SlEl922FYQmCvqs53N9PXmt/lwguRzC7N7/1iCw
+	hoVlIOj1wk711qst7Ctx5RCG3cnCDhXaBXw0VwXv3iYLo+iTATJl3j6BTWkRgKbj5xWETKDKhaK
+	gzzjlWFCrqhQRHWg3wLIW5KkuR7FhGDta3nylFFi9OkVgCNnuKiQfe1kKk/2k/LR8curKEPzsXp
+	RN7qAhkb7lNORx3HazdeXWazbmvtmRQqnJMTFyCQg+nQNB3y3SGOC39BXCm9fGrV
+X-Google-Smtp-Source: AGHT+IEFprjPP+DiCCV17LSIzeABJVh1gE0I30CjfTegeTleM6Q9xGeiwJ5QQBZWcD4HJvcatAT/OA==
+X-Received: by 2002:a05:6000:310e:b0:3a4:e480:b5df with SMTP id ffacd0b85a97d-3a531cdcf1bmr11774546f8f.44.1749482001785;
+        Mon, 09 Jun 2025 08:13:21 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7482b0c5f73sm5804250b3a.126.2025.06.09.08.13.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Jun 2025 08:13:21 -0700 (PDT)
+Date: Mon, 9 Jun 2025 17:12:57 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Michael Cobb <mcobb@thegoodpenguin.co.uk>, rostedt@goodmis.org,
+	senozhatsky@chromium.org, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] printk: Allow to use the printk kthread immediately even
+ for 1st nbcon
+Message-ID: <aEb5-fzIPobOEfHW@pathway.suse.cz>
+References: <20250604142045.253301-1-pmladek@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.4.294
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250604142045.253301-1-pmladek@suse.com>
 
-From: Jakub Lewalski <jakub.lewalski@nokia.com>
+On Wed 2025-06-04 16:20:45, Petr Mladek wrote:
+> The kthreads for nbcon consoles are created by nbcon_alloc() at
+> the beginning of the console registration. But it currently works
+> only for the 2nd or later nbcon console because the code checks
+> @printk_kthreads_running.
+> 
+> The kthread for the 1st registered nbcon console is created at the very
+> end of register_console() by printk_kthreads_check_locked(). As a result,
+> the entire log is replayed synchronously when the "enabled" message
+> gets printed. It might block the boot for a long time with a slow serial
+> console.
+> 
+> Prevent the synchronous flush by creating the kthread even for the 1st
+> nbcon console when it is safe (kthreads ready and no boot consoles).
+> 
+> Also inform printk() to use the kthread by setting
+> @printk_kthreads_running. Note that the kthreads already must be
+> running when it is safe and this is not the 1st nbcon console.
+> 
+> Symmetrically, clear @printk_kthreads_running when the last nbcon
+> console was unregistered by nbcon_free(). This requires updating
+> @have_nbcon_console before nbcon_free() gets called.
+> 
+> Note that there is _no_ problem when the 1st nbcon console replaces boot
+> consoles. In this case, the kthread will be started at the end
+> of registration after the boot consoles are removed. But the console
+> does not reply the entire log buffer in this case. Note that
+> the flag CON_PRINTBUFFER is always cleared when the boot consoles are
+> removed and vice versa.
+> 
+> Closes: https://lore.kernel.org/r/20250514173514.2117832-1-mcobb@thegoodpenguin.co.uk
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 
-[ Upstream commit 6bd697b5fc39fd24e2aa418c7b7d14469f550a93 ]
+JFYI, the patch has been committed into printk/linux.git,
+branch rework/optimizations.
 
-When two instances of uart devices are probing, a concurrency race can
-occur. If one thread calls uart_register_driver function, which first
-allocates and assigns memory to 'uart_state' member of uart_driver
-structure, the other instance can bypass uart driver registration and
-call ulite_assign. This calls uart_add_one_port, which expects the uart
-driver to be fully initialized. This leads to a kernel panic due to a
-null pointer dereference:
-
-[    8.143581] BUG: kernel NULL pointer dereference, address: 00000000000002b8
-[    8.156982] #PF: supervisor write access in kernel mode
-[    8.156984] #PF: error_code(0x0002) - not-present page
-[    8.156986] PGD 0 P4D 0
-...
-[    8.180668] RIP: 0010:mutex_lock+0x19/0x30
-[    8.188624] Call Trace:
-[    8.188629]  ? __die_body.cold+0x1a/0x1f
-[    8.195260]  ? page_fault_oops+0x15c/0x290
-[    8.209183]  ? __irq_resolve_mapping+0x47/0x80
-[    8.209187]  ? exc_page_fault+0x64/0x140
-[    8.209190]  ? asm_exc_page_fault+0x22/0x30
-[    8.209196]  ? mutex_lock+0x19/0x30
-[    8.223116]  uart_add_one_port+0x60/0x440
-[    8.223122]  ? proc_tty_register_driver+0x43/0x50
-[    8.223126]  ? tty_register_driver+0x1ca/0x1e0
-[    8.246250]  ulite_probe+0x357/0x4b0 [uartlite]
-
-To prevent it, move uart driver registration in to init function. This
-will ensure that uart_driver is always registered when probe function
-is called.
-
-Signed-off-by: Jakub Lewalski <jakub.lewalski@nokia.com>
-Signed-off-by: Elodie Decerle <elodie.decerle@nokia.com>
-Link: https://lore.kernel.org/r/20250331160732.2042-1-elodie.decerle@nokia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
-
-Based on my comprehensive analysis, I can now provide a definitive
-assessment:
-
-**YES**
-
-## Extensive Analysis
-
-This commit **should be backported** to stable kernel trees. Here's my
-detailed analysis:
-
-### **1. Critical Bug Fix Nature**
-
-The commit fixes a **serious race condition** that causes kernel panics
-with NULL pointer dereferences. The stack trace in the commit message
-shows:
-
-```
-[    8.143581] BUG: kernel NULL pointer dereference, address:
-00000000000002b8
-[    8.180668] RIP: 0010:mutex_lock+0x19/0x30
-[    8.223116]  uart_add_one_port+0x60/0x440
-```
-
-This is a **critical system stability issue** that can crash the kernel
-during device initialization.
-
-### **2. Race Condition Analysis**
-
-**The Problem:**
-- **Before the fix:** `uart_register_driver()` was called in
-  `ulite_probe()` (lines 883-891 in current code)
-- **Race scenario:** When two UART devices probe simultaneously:
-  1. Thread 1 calls `uart_register_driver()` and starts allocating
-     `uart_driver.state`
-  2. Thread 2 sees `!ulite_uart_driver.state` as false, bypasses
-     registration, and calls `ulite_assign()`
-  3. Thread 2's `ulite_assign()` calls `uart_add_one_port()` (line 678)
-     expecting a fully initialized driver
-  4. Thread 1's registration hasn't completed, causing NULL pointer
-     dereference in `uart_add_one_port()`
-
-**The Fix:**
-- **After the fix:** `uart_register_driver()` is moved to `ulite_init()`
-  ensuring:
-  1. Driver registration completes **before** any platform driver
-     registration
-  2. **No race window** exists between driver registration and device
-     probing
-  3. All probe calls find a **fully initialized** uart driver
-
-### **3. Code Changes Analysis**
-
-**Changes in `ulite_init()`:**
-```c
-static int __init ulite_init(void)
-{
-+   int ret;
-+
-+   pr_debug("uartlite: calling uart_register_driver()\n");
-+   ret = uart_register_driver(&ulite_uart_driver);
-+   if (ret)
-+       return ret;
-
-    pr_debug("uartlite: calling platform_driver_register()\n");
-- return platform_driver_register(&ulite_platform_driver);
-+   ret = platform_driver_register(&ulite_platform_driver);
-+   if (ret)
-+       uart_unregister_driver(&ulite_uart_driver);
-+
-+   return ret;
-}
-```
-
-**Changes in `ulite_probe()`:**
-```c
-// REMOVED the problematic race-prone code:
-- if (!ulite_uart_driver.state) {
-- dev_dbg(&pdev->dev, "uartlite: calling uart_register_driver()\n");
-- ret = uart_register_driver(&ulite_uart_driver);
-- if (ret < 0) {
-- dev_err(&pdev->dev, "Failed to register driver\n");
-- clk_disable_unprepare(pdata->clk);
-- return ret;
-- }
-- }
-```
-
-**Changes in `ulite_exit()`:**
-```c
-static void __exit ulite_exit(void)
-{
-    platform_driver_unregister(&ulite_platform_driver);
-- if (ulite_uart_driver.state)
-- uart_unregister_driver(&ulite_uart_driver);
-+   uart_unregister_driver(&ulite_uart_driver);
-}
-```
-
-### **4. Follows Kernel Best Practices**
-
-The fix aligns with **established kernel patterns**. My analysis of
-other UART drivers shows that well-architected drivers like 8250,
-altera, atmel, and liteuart all register their uart drivers in `__init`
-functions, not probe functions. This architectural pattern:
-
-- **Separates concerns:** Driver registration (what) vs device binding
-  (when)
-- **Eliminates races:** Driver available before any device probing
-- **Improves reliability:** Predictable initialization order
-
-### **5. Stable Tree Suitability Criteria**
-
-✅ **Fixes important bug:** Kernel panic with NULL pointer dereference
-✅ **Small and contained:** Moves existing code, no new functionality
-✅ **Minimal risk:** Follows established kernel patterns
-✅ **Clear side effects:** Better initialization order, no regressions
-expected
-✅ **Confined to subsystem:** Only affects uartlite driver
-✅ **Important for users:** Prevents boot crashes on Xilinx platforms
-
-### **6. Similar Historical Pattern**
-
-This fix is very similar to **Similar Commit #5** (Status: YES) which
-also fixed race conditions in TTY/serial code by ensuring proper
-initialization order. Both commits:
-- Fix race conditions in serial/TTY subsystem
-- Make architectural improvements to initialization order
-- Prevent NULL pointer dereferences
-- Have clear stable tree value
-
-### **7. Low Regression Risk**
-
-The change is **architecturally sound** because:
-- It ensures `uart_register_driver()` completes before any
-  `uart_add_one_port()` calls
-- Proper error handling ensures cleanup if platform driver registration
-  fails
-- The exit sequence properly reverses the initialization sequence
-- No functional behavior changes, only timing/ordering improvements
-
-### **Conclusion**
-
-This commit fixes a **critical kernel panic** caused by a race condition
-in the uartlite driver. The fix is **small, contained, and follows
-established kernel patterns**. It has **minimal regression risk** and
-provides **significant stability improvements** for users of Xilinx UART
-devices. The architectural change from probe-time to init-time driver
-registration is a **best practice** that eliminates the race condition
-entirely.
-
- drivers/tty/serial/uartlite.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 9a4049c894f7a..e323e9c0a321e 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -874,16 +874,25 @@ static struct platform_driver ulite_platform_driver = {
- 
- static int __init ulite_init(void)
- {
-+	int ret;
-+
-+	pr_debug("uartlite: calling uart_register_driver()\n");
-+	ret = uart_register_driver(&ulite_uart_driver);
-+	if (ret)
-+		return ret;
- 
- 	pr_debug("uartlite: calling platform_driver_register()\n");
--	return platform_driver_register(&ulite_platform_driver);
-+	ret = platform_driver_register(&ulite_platform_driver);
-+	if (ret)
-+		uart_unregister_driver(&ulite_uart_driver);
-+
-+	return ret;
- }
- 
- static void __exit ulite_exit(void)
- {
- 	platform_driver_unregister(&ulite_platform_driver);
--	if (ulite_uart_driver.state)
--		uart_unregister_driver(&ulite_uart_driver);
-+	uart_unregister_driver(&ulite_uart_driver);
- }
- 
- module_init(ulite_init);
--- 
-2.39.5
-
+Best Regards,
+Petr
