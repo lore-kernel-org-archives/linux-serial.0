@@ -1,160 +1,120 @@
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5940422422E
-	for <linux-serial@vger.kernel.org>; Mon,  9 Jun 2025 22:45:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 011A321D3DF;
+	Mon,  9 Jun 2025 23:35:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749509124; cv=none; b=LSpQ4z1wBaovLjjrK73tla/Rzo/VvUD1FamwXJYao9mmmAR0JKZuQsFQSs6AqDQMJt+R5yzXYCrldROuBe0sxJPqa3kAfuxujsAC/raW53CuLBVb8leEl+7iQwJPieO0btwFBZMIjL9JeXUm7zg+GJCNwvzbXxcqM3w5q9E8VV0=
+	t=1749512152; cv=none; b=bHUfPd9LudC/2J7Bbg2wgSiBz3ci4EM8tJZEsU58Y7olaDMSyyUwv5p7KxL+M5IMuhWMbisoVfiAe0C2phqpy793+4yxo/duzA/9XgPQsQE657Tph9r5ntZjUQ1mENgS7hEg+r/h/6qc5Ls8ThcWM25nKS10AQoVbECtDY8K+FM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749509124; c=relaxed/simple;
-	bh=Iq0x5q2nwlvRMcB2qn2pumIsm+x63752VXEgXOhaJCQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rGBJn/Xk8I4IAxJ3bIGjzRmx9/Rca393MCGMaPkCzfBV78kzOt/OXQhFMnwmRjEY2KCrjyg+3nIsy42wPcb9PppDTx+cozLnLHuXL6/2SSNsKUu2980I1Ha5rA5fkLu8Ec2iRAgwOzK7OhiB95VhowH/u/EbfqMgL/eBG/iEY6I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=UZhS2BAg; arc=none smtp.client-ip=209.85.215.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1749512152; c=relaxed/simple;
+	bh=w/GL+mj8bQYIANGl3yIcT+DA7Bds2Z69Os710eHh57M=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=pQsGnUGBgcwdWbwjhovd/JqGIZY2DL5l/zW6gAjDbJACwqLjsnWw1obgD2TGnejhBpJR65/eB8tpPVeopp3j5IsYklTdmOpJ4Jx1D0vHFmGsVOwRmzZMq+0Yj9BRxFht6bQSUBtux/FUyHK/qPf04NdJClyVNuulYkwaRDkwLuA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AvUFdhwg; arc=none smtp.client-ip=209.85.219.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="UZhS2BAg"
-Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-b2c40a7ca6eso4581290a12.1
-        for <linux-serial@vger.kernel.org>; Mon, 09 Jun 2025 15:45:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AvUFdhwg"
+Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-6f8a70fe146so93316126d6.0;
+        Mon, 09 Jun 2025 16:35:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1749509117; x=1750113917; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1749512150; x=1750116950; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=a/LCGkPSUi11y6YDbtw03gAAN8X0aMlNFtkYip4Smws=;
-        b=UZhS2BAgdnWp2y1MrJb8Abl6UkXMp18Aqa+ZxZDs4FVnOjlJSEqaeRidRe+OUnZe+r
-         u0JvcT4rNrekQy8kpFnX+dzOj27lUNEcw3TfkX+5lOlV8SDYdniWNvW6541wQTxQKVwT
-         Xpd8/63mVT95n+4IPRt4hHzLl1sIL11dJ0G9s=
+        bh=r4VuZtE4rUm5jy4wnNJLez49lBHWyhH0Dn/21RvXZ9s=;
+        b=AvUFdhwgh56BA1Yi4vPJlktwiRF4nV8DMdTfxelxlUpTWOeelr2hktwF9j6YkX+c63
+         zy2cDNuR1BKjpawl5bj79rIh9GAEee6rluE2BjGqAZi7snWuLrBy/5yLDi6Tz+XJzqIZ
+         SX3xJtDCcFG3IDEAXp/oFQuoNZodToZO0m9rq2lWUJrIH9IdI/8lSLQrxX6/tpiUql5P
+         pQKAYn/lcWFbhx0DK1sYOGP67pg37pf1cu/THjgf0NCRyES4tVpHOM4LrcZuv93suJZK
+         vblGyggLI++/YKUZCF4oulcM/s3AhRc7oUhgNadzLYaXtCKAHWBFG8DSzUhu+2SWPXLF
+         maIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749509117; x=1750113917;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1749512150; x=1750116950;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=a/LCGkPSUi11y6YDbtw03gAAN8X0aMlNFtkYip4Smws=;
-        b=bZdcqQ9LpfSapH7nfxXLRL27WcljrCFV4SPyTkNbCqvuFX8CcmEW1cFX9tJtbbfpkD
-         ml6rPqntIhnThXZSLPsWQk7a+S9Zc5cvCW96AfXLEKsHX4yVuXr7so7kUgg6byu2MD0v
-         BnLA4m/PZ6o9EnV/ITkvKaJQTzZFji68iUPBZ++BCT5qsI6bzZBMk2shM3SCNAB+QpNS
-         QqV3zSG3v8JON3GgvdxKx0B+il8RTbT72GQHc+i93IxG7f5s/YmRYrwUrycMdUtBbMp9
-         2QhgIhLyGtnZaRcrU1eu4bybyDTXPw5glo+Gd0JmkqXgOwxvrsgg49ao3JjwPLlVDIkU
-         0t6A==
-X-Forwarded-Encrypted: i=1; AJvYcCUYN7qXJpHMEyxcNH8LANpf3qGLLdEnO27XW8MkQWQ0EozmEVhoDBEPv1UnanWI/2KIh1RBMi8VrGepOy4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyls4es+yPg+f3Do4T9QczVWELeaNJ45VfLhyMIxMySS7O0a2pt
-	19iQaur4d/LXBCy+lR4wR+kf7V7HtApr1FjkkpPp52qKuF/ArtbOZE3e9vrTSE/mjQvk1RxObJn
-	39iCV0g==
-X-Gm-Gg: ASbGncs7tjnbWVpWGLjZeeBfuB0YljSWpwpXkEbP9Qb9I59sWAwGxti6JdnarONxX/M
-	iHomOe4ALhy2bZx8ROksDWw/ya8U15WPBmteYcOoLV1xMM/THTABuSbQQrMtl/ZaYzJmzbf1IMW
-	0UIofcUA4q1nAqBoWP+wbAWs69Pw0q2AsZMkFzWUZbS54U4hLYKWt1i7el2HpsYAnNNGarWT2+u
-	Lo2PZE87jk7fahIVB0TDuRzqftvziUAP5p7m0Ojeka2Urpw9F6EtJTJlytPKqy37slx6KgTXEXX
-	xkv2pcQvmJxhWeRnfk8nDM4W6fxMhfcQGvHOUM7B0Q6+siogkUriaU0QmUeWmTrnHznMJ//mxQg
-	LVDlMZVc4vLQhdJpHi1QfB2wzhT21NpEn21Hc
-X-Google-Smtp-Source: AGHT+IHMYEmqaTz+JkKqqO1Tb+qoQ7kCw2wXiAkRkDwgYASGcvg+zXcJua+uXSlK2w+1Aju6hKOmqg==
-X-Received: by 2002:a17:90b:28c3:b0:311:c1ec:7d05 with SMTP id 98e67ed59e1d1-313a16e9839mr334604a91.35.1749509117595;
-        Mon, 09 Jun 2025 15:45:17 -0700 (PDT)
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com. [209.85.216.53])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3134b9b730bsm6054822a91.18.2025.06.09.15.45.15
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jun 2025 15:45:15 -0700 (PDT)
-Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-3109f106867so5841130a91.1
-        for <linux-serial@vger.kernel.org>; Mon, 09 Jun 2025 15:45:15 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWtwiWYeQEiekGkdxTBad+EgaWugs6nN5I7Wuv+BWZrgyg0xT5D2MWj6CgfHCcSVaTttoxgSO2MAPQX96I=@vger.kernel.org
-X-Received: by 2002:a17:90b:6c7:b0:313:1a8c:c2c6 with SMTP id
- 98e67ed59e1d1-313a1695527mr399198a91.16.1749509115055; Mon, 09 Jun 2025
- 15:45:15 -0700 (PDT)
+        bh=r4VuZtE4rUm5jy4wnNJLez49lBHWyhH0Dn/21RvXZ9s=;
+        b=SrIoLgBS4yKBqmTP6Z/E6lBHt3euZG0u8lP9zjt1K9m9XOxFWKrh0b3zo1T7I1qpaF
+         PhuOB1zcQye0jHjnAsRtqvYGtCZ6w2Rs/4Oy4/z4uiMUTUlpVa4Bos/m9rYCqHXUDRVy
+         vyv+kB4oCMQYsYqvmhIKIxzH7oHJmDyhQU++MTlJ5z/Xd0hHy8wV4DGb2HT/jEEx74IY
+         99xVg2iXYbxhgMkx58psk+N9kp/+gBJZDqUkTettebBbhL7gIXbwmK0rzXQZX6GxE/rD
+         z+39gPEchCoMOOeaDyf2fkw4zK2lAQ9A4RON/e5XlLo4Cz1dfJchn5zbvJ9SZUWaBip4
+         32gg==
+X-Forwarded-Encrypted: i=1; AJvYcCUfdRjOwYVmfuIP1VbSKgiWxdf2mBlS/kb025PYVECibAqqi0GurNHm0PNPbmKxWOYsgibIXHl1ogJAJpOB@vger.kernel.org, AJvYcCUo9SnkOY8QtK6k/NqmWtQr2AO4ltvnVqmzcc1w/gTBVIv4MsiOT72Bwyl8SRVwWIb599lGcy9V00cR/oA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWXtdyX1JewdKkIJBREHfGfxp9+AW195NVSAT722U83M4aucjM
+	EWSpra5yfwTHBXgc4knQF+WKXVOVTyhHBYpCvyDsVxtBouCJQBRqDT2f
+X-Gm-Gg: ASbGncvRFjg5we5JYhFwe23oL57NoqNNzF45sF/8oJkVJoSX1/Xx4GpYhdi6J253ALO
+	SDF9pkhsdzbd2N2FbjAQHXtQrakMzduJyr5083CA6m3ynSdJTYJHkm7SgieYqwVcCmW1PpnIRS8
+	V+O6f4p8hErFg15OX9DWv1cGmBYTMBN3A8XTQMd3HVxkWcJGr9yXdP0CMufS4GkiDvgIzsyKtty
+	xhrHzo91BwxeLEajkyDFK6V77q6fEbzuO7OlTwBmQ3+14QP2z7CIPVDbhw33HSa74ZqIUZAehc9
+	1d4vWQvH/sKQpf6xQGzNx/HaTk/gz2A3mA37WOeloF5O1IsQwVZyBl/Mq3qJOd+8vPfU30E63QO
+	UM6E10+MoKPZkYt4ht8vIXrKFnw==
+X-Google-Smtp-Source: AGHT+IFz3oc1IO+Bv2N+B84/4uhowwz5+aJ3yZ6Ch3vSOOb2rKvZtBlRDFcAsM21zApr0U+brrdJQQ==
+X-Received: by 2002:a05:6214:c2f:b0:6f4:cdca:2a6e with SMTP id 6a1803df08f44-6fb0906fda5mr253760046d6.45.1749512149883;
+        Mon, 09 Jun 2025 16:35:49 -0700 (PDT)
+Received: from node.. (dhcp-24-53-249-184.cable.user.start.ca. [24.53.249.184])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d2518ee8dbsm605781085a.18.2025.06.09.16.35.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Jun 2025 16:35:49 -0700 (PDT)
+From: shanmukh.iyer@gmail.com
+To: hugo@hugovil.com
+Cc: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	shanmukh.iyer@gmail.com,
+	trivial@kernel.org
+Subject: [PATCH v2] drivers/tty/moxa.c: Fix spelling mistake in comment
+Date: Mon,  9 Jun 2025 19:34:52 -0400
+Message-Id: <20250609233452.164722-1-shanmukh.iyer@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250609083906.2612e881444ee04360715aed@hugovil.com>
+References: <20250609083906.2612e881444ee04360715aed@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250506125133.108786-1-nicolescu.roxana@protonmail.com> <20250506125133.108786-3-nicolescu.roxana@protonmail.com>
-In-Reply-To: <20250506125133.108786-3-nicolescu.roxana@protonmail.com>
-From: Doug Anderson <dianders@chromium.org>
-Date: Mon, 9 Jun 2025 15:45:02 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=V2PSoakXH0_nKx1MkjPGXrHkFbPyMR=om9efW7LPn-dw@mail.gmail.com>
-X-Gm-Features: AX0GCFvms_bTeu1m1tYJFabPtpRa0hg1AcW21wJUDi4AC8ourQTRpSPGDqEtFkQ
-Message-ID: <CAD=FV=V2PSoakXH0_nKx1MkjPGXrHkFbPyMR=om9efW7LPn-dw@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] serial: kgdboc: convert to use faux_device
-To: Roxana Nicolescu <nicolescu.roxana@protonmail.com>
-Cc: gregkh@linuxfoundation.org, rafael@kernel.org, dakr@kernel.org, 
-	jason.wessel@windriver.com, danielt@kernel.org, jirislaby@kernel.org, 
-	kgdb-bugreport@lists.sourceforge.net, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, skhan@linuxfoundation.org, 
-	linux-kernel-mentees@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi,
+From: Shanmukh Iyer <shanmukh.iyer@gmail.com>
 
-On Tue, May 6, 2025 at 5:51=E2=80=AFAM Roxana Nicolescu
-<nicolescu.roxana@protonmail.com> wrote:
->
-> The kgdboc uses a "fake" platform device to handle tty drivers showing
-> up late. In case the tty device is not detected during probe, it will
-> return EPROBE_DEFER which means the probe will be called later when the
-> tty device might be there. Before this, the kgdboc driver
-> would be initialized early in the process (useful for early boot
-> debugging) but then the tty device wouldn't be there, and retry wouldn't =
-be
-> done later. For a better explanation, see commit
-> '68e55f61c138: ("kgdboc: Use a platform device to handle tty drivers
-> showing up late")'.
->
-> This replaces the platform_device usage with faux_device which was
-> introduced recently for scenarios like this, where there is not real
-> platform device needed. Moreover, it makes the code cleaner than before.
->
-> Signed-off-by: Roxana Nicolescu <nicolescu.roxana@protonmail.com>
-> ---
->  drivers/tty/serial/kgdboc.c | 50 +++++++++++--------------------------
->  1 file changed, 14 insertions(+), 36 deletions(-)
->
-> diff --git a/drivers/tty/serial/kgdboc.c b/drivers/tty/serial/kgdboc.c
-> index 85f6c5a76e0f..d1ffe6186685 100644
-> --- a/drivers/tty/serial/kgdboc.c
-> +++ b/drivers/tty/serial/kgdboc.c
-> @@ -21,7 +21,7 @@
->  #include <linux/input.h>
->  #include <linux/irq_work.h>
->  #include <linux/module.h>
-> -#include <linux/platform_device.h>
-> +#include <linux/device/faux.h>
->  #include <linux/serial_core.h>
->
->  #define MAX_CONFIG_LEN         40
-> @@ -42,7 +42,7 @@ static int kgdboc_use_kms;  /* 1 if we use kernel mode =
-switching */
->  static struct tty_driver       *kgdb_tty_driver;
->  static int                     kgdb_tty_line;
->
-> -static struct platform_device *kgdboc_pdev;
-> +static struct faux_device *kgdboc_fdev;
->
->  #if IS_BUILTIN(CONFIG_KGDB_SERIAL_CONSOLE)
->  static struct kgdb_io          kgdboc_earlycon_io_ops;
-> @@ -259,7 +259,7 @@ static int configure_kgdboc(void)
->         return err;
->  }
->
-> -static int kgdboc_probe(struct platform_device *pdev)
-> +static int kgdboc_probe(struct faux_device *fdev)
->  {
->         int ret =3D 0;
->
-> @@ -276,47 +276,26 @@ static int kgdboc_probe(struct platform_device *pde=
-v)
->         return ret;
->  }
->
-> -static struct platform_driver kgdboc_platform_driver =3D {
-> +struct faux_device_ops kgdboc_driver =3D {
+Corrected some spelling and grammar in the comments, such as:
+- Units (baud -> baud rate)
+- Sentence flow
+- typos
 
-nit: s/kgdboc_driver/kgdboc_faux_ops/ ?
+This is part of my first patch to get familiar with
+the kernel's patch contribution workflow.
 
-Other than that, this seems reasonable to me. I guess I'd assume that
-Greg would chime in at some point since patch #1 in this series would
-need to go through him.
+Signed-off-by: Shanmukh Iyer <shanmukh.iyer@gmail.com>
+---
+ drivers/tty/moxa.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
--Doug
+diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+index 329b30fac8fc..bf86f24e5655 100644
+--- a/drivers/tty/moxa.c
++++ b/drivers/tty/moxa.c
+@@ -1627,10 +1627,11 @@ static void MoxaPortFlushData(struct moxa_port *port, int mode)
+  *           long baud          : baud rate (50 - 115200)
+  *
+  *           return:    0       : this port is invalid or baud < 50
+- *                      50 - 115200 : the real baud rate set to the port, if
+- *                                    the argument baud is large than maximun
+- *                                    available baud rate, the real setting
+- *                                    baud rate will be the maximun baud rate.
++ *                      50 - 115200 : the real baud rate is set to the port, if
++ *                                    the argument baud rate is larger than 
++ *                                    the maximum available baud rate, the 
++ *                                    real setting baud rate will be the 
++ *                                    maximum baud rate.
+  *
+  *
+  *      Function 12:    Configure the port.
+-- 
+2.34.1
+
