@@ -1,133 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA80743ABC;
-	Mon,  9 Jun 2025 10:09:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DAFA1487D1;
+	Mon,  9 Jun 2025 12:39:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749463790; cv=none; b=ZzaITpoOVbaSSZyDBtkuXcQ6WEK4/0Qt4isaCENerMA61asZQEtxVzxnhI66diEnw1aWRHjan8cY+DPuoXmGa//o4nr1tSJbp/pvnYWuxEIGNsxpCbdSil48C1B+BAt8TctDTQ4VULF1W0EU9GNXrh/2e0JvUQ99xt/3eIJ41OY=
+	t=1749472758; cv=none; b=udi4BGh0U5nT2/sVw0lFI5mu5RW8s0cN8+EDwoYnISdeODCuIVnsiAsJvRH771yFe7KyzKTrqDW1LrjzVrmGkUcM4Y5eZmuuuv4KwnoZtMHB5eaRoItBBlJjjc6wxvvOQezfKk5X1y9ecpmWNc78+cXU1+F/88teZ7YEAI5cxvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749463790; c=relaxed/simple;
-	bh=nafC/TkzgkJkaGKtZqf+sDQG6HfLYyz2kXki9H3xdGk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YxM6cCaCw7/E3vaoelWn5xoTVN7CgLudzJqn8qH0CIfgVmyYhbeGeTiKJliQLn3ASrTgbCiVdk9t0iSWcsrENBfKuDRhIWnxYoMIDfXJ1msupTqC0BPbQsWfsIE/WTUfhFk/58+B6znL520WH1exb11m0NvyxWEMcS+Al2IXGM8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=pGywsSwc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749472758; c=relaxed/simple;
+	bh=bBK+fw1Pb3Rb0q/iEK29jV7iVAI/EBRtGoYRmC74JFg=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=mg5hA98MLOxna1KAkPdXosXRUJKTPFzkhVkWdRFTat4ht8N/2x2+/kNqPYgDG8mJSSrYVPy8ThS+FaWdEChZwnIi5kAolB1p/DQOXBOBzJL/kVW5EWjGa8AYNzfc0kivUf8dpm32t9FU8ij8N+pevOsFLAI9yKHhVqOIk4y0lRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=vLMW9n5W; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="pGywsSwc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 555AAC4CEEB;
-	Mon,  9 Jun 2025 10:09:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1749463789;
-	bh=nafC/TkzgkJkaGKtZqf+sDQG6HfLYyz2kXki9H3xdGk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pGywsSwcsoGuAXizzilNnBIdXVQ3lFnhE6uOAqYkF04qcfGFljU4SM7Fa6pKGfk21
-	 TWPaA/xqUWtr615PHQ2ho6fAXSNp8heqgtJBajmB6ZkWSQvj7krcbXUM+b6AAT0kr+
-	 BsZ7L6FW4fULEmeJF0V4ASW5u3Ep5sWh1GGCGe5g=
-Date: Mon, 9 Jun 2025 12:09:37 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Yunhui Cui <cuiyunhui@bytedance.com>
-Cc: arnd@arndb.de, andriy.shevchenko@linux.intel.com,
-	benjamin.larsson@genexis.eu, heikki.krogerus@linux.intel.com,
-	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org,
-	jkeeping@inmusicbrands.com, john.ogness@linutronix.de,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	markus.mayer@linaro.org, matt.porter@linaro.org,
-	namcao@linutronix.de, paulmck@kernel.org, pmladek@suse.com,
-	schnelle@linux.ibm.com, sunilvl@ventanamicro.com,
-	tim.kryger@linaro.org, stable@vger.kernel.org
-Subject: Re: [PATCH v8 1/4] serial: 8250: fix panic due to PSLVERR
-Message-ID: <2025060913-suave-riveter-66d0@gregkh>
-References: <20250609074348.54899-1-cuiyunhui@bytedance.com>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="vLMW9n5W"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=e5FqJHW2gfLCv1rYVjg7825Aoec+97DH4gBEZutMljw=; b=vLMW9n5W87oxtql+bhbf8rfzdH
+	rjPD5d9pd2ZOa/zLYrYgje0FnCZn1pDPKVOhLUbJAk1YElQst8u9gJpR72SXr072sFjV35KebsOXa
+	TDVCgDtF8M7bJ7DxKBJHt+8rrFKC2sLC3jMI4KVZ2lixzJrWWVYt8m6nwQ8dJfsmCokQ=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:38760 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1uObmN-00071a-A1; Mon, 09 Jun 2025 08:39:07 -0400
+Date: Mon, 9 Jun 2025 08:39:06 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: shanmukh.iyer@gmail.com
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ trivial@kernel.org, Shanmukh Iyer <shanmukh.iyer@polymtl.ca>
+Message-Id: <20250609083906.2612e881444ee04360715aed@hugovil.com>
+In-Reply-To: <20250605000903.74242-1-shanmukh.iyer@polymtl.ca>
+References: <20250605000903.74242-1-shanmukh.iyer@polymtl.ca>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250609074348.54899-1-cuiyunhui@bytedance.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -1.9 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH] drivers/tty/moxa: Fix spelling mistake in comment
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-On Mon, Jun 09, 2025 at 03:43:45PM +0800, Yunhui Cui wrote:
-> When the PSLVERR_RESP_EN parameter is set to 1, the device generates
-> an error response if an attempt is made to read an empty RBR (Receive
-> Buffer Register) while the FIFO is enabled.
+On Wed,  4 Jun 2025 20:09:03 -0400
+shanmukh.iyer@gmail.com wrote:
+
+Hi Shanmukh,
+
+> From: Shanmukh Iyer <shanmukh.iyer@polymtl.ca>
 > 
-> In serial8250_do_startup(), calling serial_port_out(port, UART_LCR,
-> UART_LCR_WLEN8) triggers dw8250_check_lcr(), which invokes
-> dw8250_force_idle() and serial8250_clear_and_reinit_fifos(). The latter
-> function enables the FIFO via serial_out(p, UART_FCR, p->fcr).
-> Execution proceeds to the serial_port_in(port, UART_RX).
-> This satisfies the PSLVERR trigger condition.
+> Corrected to "maximum" as my very first patch to the kernel.
+> Just to get used to the contribution workflow.
 > 
-> When another CPU (e.g., using printk()) is accessing the UART (UART
-> is busy), the current CPU fails the check (value & ~UART_LCR_SPAR) ==
-> (lcr & ~UART_LCR_SPAR) in dw8250_check_lcr(), causing it to enter
-> dw8250_force_idle().
-> 
-> Put serial_port_out(port, UART_LCR, UART_LCR_WLEN8) under the port->lock
-> to fix this issue.
-> 
-> Panic backtrace:
-> [    0.442336] Oops - unknown exception [#1]
-> [    0.442343] epc : dw8250_serial_in32+0x1e/0x4a
-> [    0.442351]  ra : serial8250_do_startup+0x2c8/0x88e
-> ...
-> [    0.442416] console_on_rootfs+0x26/0x70
-> 
-> Fixes: c49436b657d0 ("serial: 8250_dw: Improve unwritable LCR workaround")
-> Link: https://lore.kernel.org/all/84cydt5peu.fsf@jogness.linutronix.de/T/
-> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
-> Cc: stable@vger.kernel.org
+> Signed-off-by: Shanmukh Iyer <shanmukh.iyer@polymtl.ca>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/tty/moxa.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 6d7b8c4667c9c..07fe818dffa34 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2376,9 +2376,10 @@ int serial8250_do_startup(struct uart_port *port)
->  	/*
->  	 * Now, initialize the UART
->  	 */
-> -	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
->  
->  	uart_port_lock_irqsave(port, &flags);
-> +	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
-> +
->  	if (up->port.flags & UPF_FOURPORT) {
->  		if (!up->port.irq)
->  			up->port.mctrl |= TIOCM_OUT1;
+> diff --git a/drivers/tty/moxa.c b/drivers/tty/moxa.c
+> index 329b30fac8fc..d32fb37e2e1c 100644
+> --- a/drivers/tty/moxa.c
+> +++ b/drivers/tty/moxa.c
+> @@ -1628,9 +1628,9 @@ static void MoxaPortFlushData(struct moxa_port *port, int mode)
+>   *
+>   *           return:    0       : this port is invalid or baud < 50
+>   *                      50 - 115200 : the real baud rate set to the port, if
+> - *                                    the argument baud is large than maximun
+> + *                                    the argument baud is large than maximum
+
+while at it:
+
+s/large/larger
+
+>   *                                    available baud rate, the real setting
+> - *                                    baud rate will be the maximun baud rate.
+> + *                                    baud rate will be the maximum baud rate.
+>   *
+>   *
+>   *      Function 12:    Configure the port.
 > -- 
-> 2.39.5
+> 2.34.1
 > 
 > 
 
-Hi,
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/process/submitting-patches.rst for what
-  needs to be done here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+-- 
+Hugo Villeneuve
