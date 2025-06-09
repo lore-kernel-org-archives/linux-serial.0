@@ -1,121 +1,109 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6BFF19258E;
-	Mon,  9 Jun 2025 19:23:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20D5C2206B3;
+	Mon,  9 Jun 2025 20:06:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749497034; cv=none; b=stDXh0LPDDJx4CxKaq2/D0S8ra4eFwCoNw5vQLxyzrVB2nr7AqV6ll4xFPKVcZUw460mKGqIigqjWf4cru2oN5CJC6nDizdwRj68A4r+H8uWav4nLjHs/OIy5k2Li77wwCTap+Na1Gy9U+Opt/I2T+LmuPNiF02h+oj8kMxqrLA=
+	t=1749499593; cv=none; b=J88GbueWN7mig51BVnRgPh8iOJt2IhUNs7262z1ElX1cm5qNC4p/M4JVB+rPl3/tGzyAxwiaM9aDgm0v7TR3DTmTCXPvdWxr9iHQGt3nMqxlOczZc6K8B9zMU7+sa9f9YIRUTTtextsLRzhXeNMfr5063rTa+/hWsIuZ7RB3wQ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749497034; c=relaxed/simple;
-	bh=AbQYkT7CdMUdntdjXLRc8xTX3MDCPW0NlQFSGoYY+WA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=GyB52/ermVK5fZ7N+t7/F+QYLiXbzRx7rTxuofyoYoHbz9YYIilp7C8ihuUA++KdF+GS8dQzCu8IvLYFPHRYHQ4zfgKZtIHtdZBC8ZeebuSDpKcEY1OzbHIY4CmkXUeU48Ici9+9p3DERYIxTX2dzVq0/mnlLlMNb2DFy1up93g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lRMah0rw; arc=none smtp.client-ip=209.85.128.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1749499593; c=relaxed/simple;
+	bh=ys30SfhXg4+OJ3Cv1EkSHiA3x3HApyhWEfE8YPGYD4s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IMVawOQzSRdnxR2J/20pquhob70w01RVBGe73A5iuW6NsXlXA3FWCfzx2x+7w95YD7k34tQ5Z7Nibosju3rheztU9hZRB+lknkoEIdb+gwXGExAQIQ9dtwZkI2vhBOb2zQvj1oq0CTTegeLAdcv/iroQUU3xjXCl8t8uPHZmHoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W4WrckCr; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lRMah0rw"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-441d437cfaaso29472075e9.1;
-        Mon, 09 Jun 2025 12:23:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1749497031; x=1750101831; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=8m2SIKgEeh11NXiSgiEtvpyuW0o22vDjLrJzj6QvLlw=;
-        b=lRMah0rwUpBIUQfDSUGZxtFQdLmYjcFnZ7o7PK0z4zVZIeoagCXX89lHZuKMRnHsJc
-         A8LCJXrE1+UyO3dAGNa8F29z63i7C0VZFUkK+GXSsB0aoeDa/mDTUA/TfIgmBw77F/hz
-         M+b2F6zQ7DnyI3IxaJ1vkJs4q/Xs2fepGmHqykqn6MC3NU463g5FFX6M20HvuoJHGVph
-         8Um0CvnikfnG6h9QMwGAJW4wPNEo/UKjlLCQycIPOJ/H/TfPVh97IXMchhm+yb4n7naH
-         euKV3IwSEwK1Y847v330wbw3U52SjglRWC5IXXCe9adrXbAZlwxUotrLdYTLcBQYmfgm
-         my3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749497031; x=1750101831;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8m2SIKgEeh11NXiSgiEtvpyuW0o22vDjLrJzj6QvLlw=;
-        b=DID97WS8jiMZEZdzT7LbDBHTpnHyV4TY74EqC7tRy0oUAld2JsydI0kUVtXhKG5Myf
-         yV8ThBaau2oAeQK0qdQ3ojzZcrbZ1j/RD2mh8wolIszre6I7yfTfn2by69nFZlbkdd/H
-         MQYcUMrEahpnt5SMhoGUnhUc6voy4xMLMZayq0KCPhmdNemIcCKLjWQPtctd6WFyKU3q
-         8mp7kUWOiFYmWLJ2fMA9EADy7Omam0MKUDOJ6igJAlVmjiJyD6Rd1Cm6R2XMPCVoEhtl
-         kCA2zGaRT5SzlEbSdVht58n8L4IRi1sdooEGoexQZFqPYdRXWj8Mj1ZlQrQrcjlCwpI4
-         9WxQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUmLSHyT7FMf66DeQzF7pkmgoU0qz7RctdCRT+TTaA5x+c0ga+rgmw4uo/BjTOMUYfVrVjgVvOYtj8XHkjd@vger.kernel.org, AJvYcCVPscCvFi8ikqG/GF6Oj3PgtMBRIdpmhpEXLzJ83XtL2GFi++bYDzL+/X8RAKSdYkN/BV7rQ30R9bYlsTPZuOKUJKE=@vger.kernel.org, AJvYcCXj6KUJCeoHEaBGpVYqT/LTro27r0ARaumMUh5nU6//Gxsnvs2o+xNrpGq7Cg8pxbkWr6pcQzA9t5rF@vger.kernel.org
-X-Gm-Message-State: AOJu0YwEmdLhzXwij1SBpCI5Z8+hHJqWuiRaryjSS/b306LBsEXc7OlH
-	jNTk3jEOCkZCzt4DnGu0K1EO4cbTBMP+mgas6WUXejkFToS4EL9WDm1A
-X-Gm-Gg: ASbGnctoEM19HHy4ALJtSWH/kUP5/L07JgzAWb9eBwaX2/+df3XtWvAvGlRl/V9Belh
-	wo9MNFRhJxY0caAkOLIC2ny8ZEHx1PQsYUM3Q2o27w34aH+U49rWh8CKOBytcBWonsi4ICkBnjI
-	2rIa8C6wyiqH3dC7vcLLv9mvO5kR5bU95PJapg3Q0FlJ6ywucYwBCsnEVIUXlGVZ6/GsJiq7lNi
-	yClFrNmkbaa77ty7/5DJ9KrCZ2axI4dRrHX0LwVCIz0qxa+4mRubM+HSMw2gjhbxl+6UP3R5GpL
-	TsaqZWI7mN9JnVN85jb0IVMHzWvaPM4x3GRU+IW4+232//XpTNu4NaEt7fL4cYRSEPGOaTVeypQ
-	FFLWmJG09
-X-Google-Smtp-Source: AGHT+IH2c2VCeRIAR5Qjq3rtO0ssmIvCuMnonfmD9bjdjUBx45jnBpYNKx/oyk2iVPxBCk+tKfAQ9A==
-X-Received: by 2002:a05:600c:a49:b0:43c:f513:958a with SMTP id 5b1f17b1804b1-452014165a9mr138219205e9.13.1749497030717;
-        Mon, 09 Jun 2025 12:23:50 -0700 (PDT)
-Received: from iku.example.org ([2a06:5906:61b:2d00:3c26:913e:81d:9d46])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4526e158a19sm117639055e9.12.2025.06.09.12.23.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Jun 2025 12:23:50 -0700 (PDT)
-From: Prabhakar <prabhakar.csengg@gmail.com>
-X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Prabhakar <prabhakar.csengg@gmail.com>,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [PATCH] dt-bindings: serial: renesas,rsci: Document RZ/N2H support
-Date: Mon,  9 Jun 2025 20:23:44 +0100
-Message-ID: <20250609192344.293317-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.49.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W4WrckCr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1749499582; x=1781035582;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ys30SfhXg4+OJ3Cv1EkSHiA3x3HApyhWEfE8YPGYD4s=;
+  b=W4WrckCrWsvDy7aY/S6OvRvJI34+MQd5rI+tH8vEErhykJxL24jKqHA1
+   C0GlCvwF4Aufuj5ZwkQPTGQ8ekJL95i5jjtGeR4IURItonAMssLDhz7+U
+   yt2lrpGCcRGOGuIe1oePDkRBFszAeb0Erq7NWYbciJiZpW77RvDM1EsFT
+   fxW6Pynz6Xtli01KQpjFeuMztq+igXwd1Yq7eDQdsP12Q0e0u00TQg2LY
+   nIEOPTatuv4Xl5Ppyp6ICJ9WPc2mt2U1YZfD/D82kbyFnFJdGYroqXzLZ
+   o2DE7FoQFqVNgqd1FzmZnzjVrsg20RpytTO4L2Lz1y60MwqUh+Yuvgjfu
+   Q==;
+X-CSE-ConnectionGUID: in1jArkJS9u7Z9QuO5PTkg==
+X-CSE-MsgGUID: IZ5KxrVeQle8668iCoBqJQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11459"; a="51734248"
+X-IronPort-AV: E=Sophos;i="6.16,223,1744095600"; 
+   d="scan'208";a="51734248"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2025 13:06:21 -0700
+X-CSE-ConnectionGUID: uQoT6WnpROumleVGhXl4dQ==
+X-CSE-MsgGUID: W7a2AjxqQUCOpE5MWEGN0w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,223,1744095600"; 
+   d="scan'208";a="151750928"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by fmviesa004.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2025 13:06:16 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1uOil3-000000059Q8-1sPV;
+	Mon, 09 Jun 2025 23:06:13 +0300
+Date: Mon, 9 Jun 2025 23:06:13 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: yunhui cui <cuiyunhui@bytedance.com>, arnd@arndb.de,
+	benjamin.larsson@genexis.eu, heikki.krogerus@linux.intel.com,
+	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org,
+	jkeeping@inmusicbrands.com, john.ogness@linutronix.de,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	markus.mayer@linaro.org, matt.porter@linaro.org,
+	namcao@linutronix.de, paulmck@kernel.org, pmladek@suse.com,
+	schnelle@linux.ibm.com, sunilvl@ventanamicro.com,
+	tim.kryger@linaro.org, stable@vger.kernel.org
+Subject: Re: [External] Re: [PATCH v8 1/4] serial: 8250: fix panic due to
+ PSLVERR
+Message-ID: <aEc-taZPSrO520ui@smile.fi.intel.com>
+References: <20250609074348.54899-1-cuiyunhui@bytedance.com>
+ <2025060913-suave-riveter-66d0@gregkh>
+ <CAEEQ3wmaiwd4TZfTa0YrLcKui9fSNJT0fR3j1=H1EK0T3npfyw@mail.gmail.com>
+ <2025060925-curator-stubbed-bfb4@gregkh>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <2025060925-curator-stubbed-bfb4@gregkh>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Mon, Jun 09, 2025 at 03:44:19PM +0200, Greg KH wrote:
+> On Mon, Jun 09, 2025 at 09:18:02PM +0800, yunhui cui wrote:
+> > On Mon, Jun 9, 2025 at 6:10 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > On Mon, Jun 09, 2025 at 03:43:45PM +0800, Yunhui Cui wrote:
 
-Add documentation for the serial communication interface (RSCI) found on
-the Renesas RZ/N2H (R9A09G087) SoC. The RSCI IP on this SoC is identical
-to that on the RZ/T2H (R9A09G077) SoC. Therefore, "renesas,r9a09g077-rsci"
-is used as a fallback compatible string for RZ/N2H.
+...
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
----
- .../devicetree/bindings/serial/renesas,rsci.yaml          | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+> > > - This looks like a new version of a previously submitted patch, but you
+> > >   did not list below the --- line any changes from the previous version.
+> > >   Please read the section entitled "The canonical patch format" in the
+> > >   kernel file, Documentation/process/submitting-patches.rst for what
+> > >   needs to be done here to properly describe this.
+> > 
+> > Can this issue reported by the bot be ignored?
+> 
+> No, why?  How do we know what changed from previous versions?  Otherwise
+> we assume you just ignored previous review comments?
+> 
+> This series took at least 8 tries for some reason, might as well
+> document it, right?  :)
 
-diff --git a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-index 1bf255407df0..f20de85d5304 100644
---- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-+++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
-@@ -15,7 +15,13 @@ allOf:
- 
- properties:
-   compatible:
--    const: renesas,r9a09g077-rsci      # RZ/T2H
-+    oneOf:
-+      - items:
-+          - const: renesas,r9a09g087-rsci # RZ/N2H
-+          - const: renesas,r9a09g077-rsci # RZ/T2H
-+
-+      - items:
-+          - const: renesas,r9a09g077-rsci # RZ/T2H
- 
-   reg:
-     maxItems: 1
++ many to what Greg said. The main problem you have is the absence of cover
+letter, where it's naturally to put changelog for the series.
+
 -- 
-2.49.0
+With Best Regards,
+Andy Shevchenko
+
 
