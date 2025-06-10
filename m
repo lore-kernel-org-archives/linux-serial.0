@@ -1,166 +1,196 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C93FA2620F1
-	for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 20:03:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CF752D540A
+	for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 23:18:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749585794; cv=none; b=JAD7D2nBcDwtPWMeydGBycjC6X/JWItnzWGKPN1FWybb8WcbjwwhDF92uoOhLhDnWekAmvtbMUSHy/ItSWT7SLs3RAsJaIfogtwxkAumzT8eNT/pFNyY4WrC8RZnBuCJfZsvOHrUz/chfIEeBMzvFla9ubBq6LFoeBy8yXDNdRs=
+	t=1749597526; cv=none; b=Qv5lUeCnPw2uHnZa8eo3WRThTdqkpnUwVpM/zN/4h+F5EP0ndW9NoKTuBYWUTvF/XXO546erScGZuuQA8dNCeE9gfUD3IFPzeRMujX8ufvn+5MbjrmmhSE3M7VAWM3hk2TKVfDOP2e4Q6kZX/cTTNcZMYgqXY9rwLkXv50tWd64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749585794; c=relaxed/simple;
-	bh=wGQrwjvbxP5TElWRzftoyq5VMQ1P3z0T9KV3nef+RkU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Z+mEK67xUYNbQ8VgmUGBTaXRNZ+/dlcYLgqUBmItE7vOtJInHjzr+oS/XQeXJRPasBmId01eLlpQjk3wizviu/fEivcZkSYCyO6qyVeheRbO3ATorzBoB1BkUKXurb9ilUZzVRAyk95f4nunhc70oROE58tGu9xXxGEFZgZgoiY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=JQ0BMac/; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1749597526; c=relaxed/simple;
+	bh=6wCR/wOF6mnpcOQvAKfddSkIw1hDl8dX/s/2AHpXUDU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=AyzpbiZuf9+IVbkz4sss/x1bNfQEzPFbtJ4STn/tNzbG3Dl828GRbN65R+aRT3atwJKpKP+NeVv/9GFqLtz/rLNHxjQEq3sFhDZLg0FcQbzijdXLnUahBsQzeJ8/JsQtleJtWfPNR3aOPE+T8FGkBH5bVwF8gMltZP9BNgiWz20=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=KoauuRl1; arc=none smtp.client-ip=209.85.215.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="JQ0BMac/"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3a36748920cso5183806f8f.2
-        for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 13:03:11 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="KoauuRl1"
+Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-b2c4476d381so327954a12.0
+        for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 16:18:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1749585790; x=1750190590; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=wGQrwjvbxP5TElWRzftoyq5VMQ1P3z0T9KV3nef+RkU=;
-        b=JQ0BMac/myFnKgIVsEGjYdvKS8gJkfsLNkbReik3SqapjYxGO1NmjI4eYtbv2XaDyh
-         5PxvD5Gmp2iUvsXnTQPufDei61Hjfg+LbwcanIaSq/xvWWzXwYY0mkibwgh3vh9tDi64
-         0+y38ECtymXBT9JZw8qJAUuJUuzXiwUCAgiPGS7FLkwXL2PqfJgDO5/Iz4zMekXEhYo/
-         WJ40tlPmcCrQpSVUZSVU78tgw1AezAW5/BQ0GWszKyWBkxYKOU4CeiMCvWj5VKjmqsz4
-         Wa4VQosJZHIKCuYYKGoGh+d0VCuaY1nNSMF87a3r3MxLIL15urED+esXcXsziXlWV09N
-         KvNw==
+        d=chromium.org; s=google; t=1749597519; x=1750202319; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mtgyGRFsx3W1moknyTRh8eklG3kKIqbE5e8lYnyeAfo=;
+        b=KoauuRl1Q5Ren43HWyrch62TYXfpIRE6xXWyUZohupt9BTbP1r+at1InkhZyT1/v8y
+         rq+Jm/sajhW+C2b+xyC1oLbYSkTeJPd1hZMPFRV/8retAA0qfXueRFQvYRrwhX92rEbv
+         M1AR6wSJzuid0Olf3Hb9xrEGTo3HvBE2+0Nko=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749585790; x=1750190590;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wGQrwjvbxP5TElWRzftoyq5VMQ1P3z0T9KV3nef+RkU=;
-        b=IElGK/UkVC4c+sHQsttsiBI27OJRlJWU5QQMrf00yj8q5IW2an8T+ROaW5yWgiwXrI
-         w/lCfP+BFo1piTUWjXbwqKAfI04BaCcL1o4iYM4QsU5c3jw1el6SL0CXp03qND0YknpB
-         RAT/x06FbeHc/M8WoOPe+0/Dnljf/D5/Ic3I2nFcacV001HRABteN0tl7DtrH115fxwn
-         Po7SI2Omqmz/znAyNWTQOkPzDSdv4x31ODc90BpZZg6MUNvkFy/L0apmg2ZPXoSbDF5H
-         uH/krSJ7pyazkxm5AlOLCwuKbO1aGTd9sNxws5bJVwhJzr5o9OuC0SjNpu13xCw/Bkjk
-         QN/Q==
-X-Forwarded-Encrypted: i=1; AJvYcCW1m8QrZtV3MkFp2pDVH0rg9MYnswCslsTz8CEnYjSFO4sJ2wvmIbLoB4d/C08qcWYAwzSMlKy784wY9bU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzwqok0/EX9cLVCemDETr3/CXrZFfCGUhbb6a5HuTswiKpbt/p8
-	6EIJRe7mSpmnvM1gK/w/XWxiAyBy9VFoWWcBnKbdSRCtckN66S+VQydsCeFyEgpxjQs=
-X-Gm-Gg: ASbGncva4SNUjMYAln77W+TkCH04X/Iy2L2thXf/n3DGfDVIpghD36G4xEM1EjpgOfn
-	XbbHWMRtYdv0Mh92mjBsuRm8BAEKXcXvKwmVsdHpXQiye2uskK4T3tYvu83iCM0w8zB1+ksFx3l
-	vGOC/UGarEQTpY5+yK4FQLEGjzsu9lO/Shj6fCoka2pS0N9yJPG2Qk2ZapOc0dYq3u+o6Ja6ltL
-	WvB0SmawEc+WLGQdxPdunB8MXn92hsS8hBJAx2dln7Q2k/oVitTAxQafA3Gq1WE1cRQy8rAIwEI
-	Syo/7OoVK/pW3/Uw88v5U3oc+SJXBfeZczyHpr3B3N3/EaFWHacJpNO83dGTyran8J/sYjxP75j
-	y2jNHkB3XclSmTpVl
-X-Google-Smtp-Source: AGHT+IEtm22Ya9JUV8ulYRQRT6vYHBjx+q7IOEDUr9BMoA+Edf/n/UDiFasL+UkKEL9+F1awgGEj8Q==
-X-Received: by 2002:a05:6000:40d9:b0:3a4:d31e:4af3 with SMTP id ffacd0b85a97d-3a558ad6e98mr181211f8f.37.1749585790019;
-        Tue, 10 Jun 2025 13:03:10 -0700 (PDT)
-Received: from [192.168.3.33] (115.39.160.45.gramnet.com.br. [45.160.39.115])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a53229de48sm13364311f8f.10.2025.06.10.13.03.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Jun 2025 13:03:09 -0700 (PDT)
-Message-ID: <f962e9bab3dc8bf5cae1c7e187a54fb96a543d51.camel@suse.com>
-Subject: Re: [PATCH 4/7] drivers: serial: kgdboc: Check CON_SUSPENDED
- instead of CON_ENABLED
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
- John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Jason
- Wessel	 <jason.wessel@windriver.com>, Daniel Thompson <danielt@kernel.org>,
- Richard Weinberger <richard@nod.at>, Anton Ivanov
- <anton.ivanov@cambridgegreys.com>, Johannes Berg	
- <johannes@sipsolutions.net>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, 
-	linux-um@lists.infradead.org
-Date: Tue, 10 Jun 2025 17:03:02 -0300
-In-Reply-To: <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com>
-References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
-	 <20250606-printk-cleanup-part2-v1-4-f427c743dda0@suse.com>
-	 <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com>
-Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
- keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
- Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
- gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
- QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
- GO8seNG8sYiP6JfRjl7Hyqca6YsE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.1 (by Flathub.org) 
+        d=1e100.net; s=20230601; t=1749597519; x=1750202319;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=mtgyGRFsx3W1moknyTRh8eklG3kKIqbE5e8lYnyeAfo=;
+        b=jEmacuOoLKb46oxzALwhpwAhehdV1XhAiswuVh28RLEz7ns/D2NqhrTHTGgG6H0w9p
+         AkN9GDa10i2dg1MSl18pe5rdVfH62vJd3WYFyeFz/R+NFPhpFIjfg0UajBuNJwPCDsP2
+         vyyrVhb/43LaTfLzm93LLuZvzMQ8g8oekvGAvC422RP85F1sMRQd61WSETUX2hMGMKYD
+         q3FReaVyFdMzr7ABwFxscusdT7iNLGJnyv+tAn7HoJXS9odhF6yEd9E/zXyB1Y+pq70N
+         /1WiHOX4uYdVIxQWOo+e+Nima57OPNqiJ8Howrh9yp4TZh559gO52Qd0jkysLJn6VlLc
+         uXig==
+X-Forwarded-Encrypted: i=1; AJvYcCVN89C7zDwv0bhwSnVBwmUsf63zIo212UBVrUdvGvv20r2S0LPocLmIfcLh3HuMtnco5BCfv+xI0WcFcx0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxzUQ8ettCVbSzJb9wqkfKJsDpqI6N3gVSs53WU9cpEno5jD21x
+	TCTbdjA/Ai9pJk0JtJQ9gKddjXPWvPxX3+UXwDTXtakXpRzFev+/3Y8LcJIjUZCWiJoltgkfK8j
+	BUQ8=
+X-Gm-Gg: ASbGnctl5AkupduimZkTyWh/qVhULIBjnsybindihWx5Ig3jS58DADriRrObPEW34oY
+	0uy+xHM9wivQI3/ixFGvh/siPWO8oLccLGb56rm2806ZkhCWcJDgbin0dUdOLTAibWadZ8Be1Uo
+	R1PFJQ6S04wqF1JLUXpWXIW9koUivu7n5g5B9YSnUr+5LD6Cq/BETFC+GByoMp42rR83c65X8hV
+	f13Gka37S+NKvmll23DZd6MRfFldgflxrd4kndk54NxTmnIIYyIf+3pRAv/BAx0sLpc/5BgsaV2
+	E14nr+Xx0mRpTVi4d8ng30Vjlz/C0HRsn7hw2jMJhbjkUpsxqt2p+Z7K2MCNzvdj4xojRr3kfxj
+	dPP/L5zNffgk4lOCEW5qKoe6B1w==
+X-Google-Smtp-Source: AGHT+IFE9cJTc7Y5EhrtYC3OSOSY8Zk+LJg5fRyXS4CyMCQSj6GgD8YND+gpsBEX9/Der4ipfAqLSA==
+X-Received: by 2002:a17:90b:2241:b0:311:b5ac:6f7d with SMTP id 98e67ed59e1d1-313af81e8f6mr1364842a91.6.1749597518594;
+        Tue, 10 Jun 2025 16:18:38 -0700 (PDT)
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com. [209.85.216.47])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-313b1fecf2csm134082a91.6.2025.06.10.16.18.36
+        for <linux-serial@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Jun 2025 16:18:36 -0700 (PDT)
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-313a188174fso304214a91.1
+        for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 16:18:36 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXn9Az0G5wa7OS9eJFK/euEDnpId84O36zhTxM9QUcngSMLolrUIYHNkytgKszZUOpfLWJ+Szd98d7qbAQ=@vger.kernel.org
+X-Received: by 2002:a17:90b:3908:b0:311:ab20:1591 with SMTP id
+ 98e67ed59e1d1-313af9711a2mr1450240a91.15.1749597515737; Tue, 10 Jun 2025
+ 16:18:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-4-f427c743dda0@suse.com>
+ <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com> <f962e9bab3dc8bf5cae1c7e187a54fb96a543d51.camel@suse.com>
+In-Reply-To: <f962e9bab3dc8bf5cae1c7e187a54fb96a543d51.camel@suse.com>
+From: Doug Anderson <dianders@chromium.org>
+Date: Tue, 10 Jun 2025 16:18:22 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XFeokpbMUFjAc0OkwJ97vR8aB+4GbnFxRKymvpEY3gnA@mail.gmail.com>
+X-Gm-Features: AX0GCFt6n77pbmil8IDH9ETyvVBk9GLYcHe7RwT91u86Q2sJf5v-ZMY6TwpptAA
+Message-ID: <CAD=FV=XFeokpbMUFjAc0OkwJ97vR8aB+4GbnFxRKymvpEY3gnA@mail.gmail.com>
+Subject: Re: [PATCH 4/7] drivers: serial: kgdboc: Check CON_SUSPENDED instead
+ of CON_ENABLED
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <danielt@kernel.org>, 
+	Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, 
+	Johannes Berg <johannes@sipsolutions.net>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, 
+	linux-um@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 2025-06-09 at 13:13 -0700, Doug Anderson wrote:
-> Hi,
->=20
-> On Fri, Jun 6, 2025 at 7:54=E2=80=AFPM Marcos Paulo de Souza
-> <mpdesouza@suse.com> wrote:
-> >=20
-> > All consoles found on for_each_console are registered, meaning that
-> > all of
-> > them are CON_ENABLED. The code tries to find an active console, so
-> > check if the
-> > console is not suspended instead.
-> >=20
-> > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> > ---
-> > =C2=A0drivers/tty/serial/kgdboc.c | 3 ++-
-> > =C2=A01 file changed, 2 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/tty/serial/kgdboc.c
-> > b/drivers/tty/serial/kgdboc.c
-> > index
-> > 85f6c5a76e0fff556f86f0d45ebc5aadf5b191e8..af6d2208b8ddb82d62f33292b
-> > 006b2923583a0d2 100644
-> > --- a/drivers/tty/serial/kgdboc.c
-> > +++ b/drivers/tty/serial/kgdboc.c
-> > @@ -577,7 +577,8 @@ static int __init kgdboc_earlycon_init(char
-> > *opt)
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 console_list_lock();
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 for_each_console(con) {
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 if (con->write && con->read &&
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (con->flags & (CON_BOOT | CON_ENABL=
-ED)) &&
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (con->flags & CON_BOOT) &&
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ((con->flags & CON_SUSPENDED) =3D=
-=3D 0) &&
->=20
-> I haven't tried running the code, so I could easily be mistaken,
-> but...
->=20
-> ...the above doesn't seem like the correct conversion. The old
-> expression was:
->=20
-> (con->flags & (CON_BOOT | CON_ENABLED))
->=20
-> That would evaluate to non-zero (true) if the console was _either_
-> "boot" or "enabled".
->=20
-> The new expression is is:
->=20
-> (con->flags & CON_BOOT) && ((con->flags & CON_SUSPENDED) =3D=3D 0)
->=20
-> That's only true if the console is _both_ "boot" and "not suspended".
+Hi,
 
-My idea here was that the users of for_each_console would find the
-first available console, and by available I would expect them to be
-usable. In this case, is there any value for kgdboc to use a console
-that is suspended? Would it work in this case?
+On Tue, Jun 10, 2025 at 1:03=E2=80=AFPM Marcos Paulo de Souza
+<mpdesouza@suse.com> wrote:
+>
+> On Mon, 2025-06-09 at 13:13 -0700, Doug Anderson wrote:
+> > Hi,
+> >
+> > On Fri, Jun 6, 2025 at 7:54=E2=80=AFPM Marcos Paulo de Souza
+> > <mpdesouza@suse.com> wrote:
+> > >
+> > > All consoles found on for_each_console are registered, meaning that
+> > > all of
+> > > them are CON_ENABLED. The code tries to find an active console, so
+> > > check if the
+> > > console is not suspended instead.
+> > >
+> > > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> > > ---
+> > >  drivers/tty/serial/kgdboc.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/tty/serial/kgdboc.c
+> > > b/drivers/tty/serial/kgdboc.c
+> > > index
+> > > 85f6c5a76e0fff556f86f0d45ebc5aadf5b191e8..af6d2208b8ddb82d62f33292b
+> > > 006b2923583a0d2 100644
+> > > --- a/drivers/tty/serial/kgdboc.c
+> > > +++ b/drivers/tty/serial/kgdboc.c
+> > > @@ -577,7 +577,8 @@ static int __init kgdboc_earlycon_init(char
+> > > *opt)
+> > >         console_list_lock();
+> > >         for_each_console(con) {
+> > >                 if (con->write && con->read &&
+> > > -                   (con->flags & (CON_BOOT | CON_ENABLED)) &&
+> > > +                   (con->flags & CON_BOOT) &&
+> > > +                   ((con->flags & CON_SUSPENDED) =3D=3D 0) &&
+> >
+> > I haven't tried running the code, so I could easily be mistaken,
+> > but...
+> >
+> > ...the above doesn't seem like the correct conversion. The old
+> > expression was:
+> >
+> > (con->flags & (CON_BOOT | CON_ENABLED))
+> >
+> > That would evaluate to non-zero (true) if the console was _either_
+> > "boot" or "enabled".
+> >
+> > The new expression is is:
+> >
+> > (con->flags & CON_BOOT) && ((con->flags & CON_SUSPENDED) =3D=3D 0)
+> >
+> > That's only true if the console is _both_ "boot" and "not suspended".
+>
+> My idea here was that the users of for_each_console would find the
+> first available console, and by available I would expect them to be
+> usable. In this case, is there any value for kgdboc to use a console
+> that is suspended? Would it work in this case?
+>
+> I never really used kgdboc, but only checking if the console was
+> enabled (which it's always the case here) was something that needed to
+> be fixed.
+>
+> Maybe I'm missing something here as well, so please let me know if I
+> should remove the new check.
 
-I never really used kgdboc, but only checking if the console was
-enabled (which it's always the case here) was something that needed to
-be fixed.
+So it's been 5 years since I wrote the code, but reading that I was
+checking for:
 
-Maybe I'm missing something here as well, so please let me know if I
-should remove the new check.
+  (con->flags & (CON_BOOT | CON_ENABLED))
 
->=20
-> -Doug
+Makes me believe that this was the case when I wrote the code:
+1. Early boot consoles (earlycon) were not marked as CON_ENABLED but
+were instead marked as CON_BOOT.
+2. Once consoles became non-early they were moved to CON_ENABLED.
+
+...and the code was basically looking for any consoles with a matching
+name that were either boot consoles or normal/enabled consoles.
+
+Is that a plausible theory? It's also possible that I just was
+confused when I code things up and that I really meant to write:
+
+((con->flags & (CON_BOOT | CON_ENABLED)) =3D=3D (CON_BOOT | CON_ENABLED))
+
+...AKA that I wanted consoles that were BOOT _and_ ENABLED.
+
+In any case, I booted up the current mainline and I put a printout here. I =
+saw:
+
+[    0.000000] kgdboc: DOUG: console qcom_geni has flags 0x0000000f
+
+So that means that both BOOT and ENABLED were set. That makes me feel
+like it's plausible that I was confused and really meant BOOT _and_
+ENABLED. I didn't spend time trying to figure out how to build/boot an
+old kernel to check, though.
+
+In any case, given my test then I think your change should be fine.
+Given that it does change the boolean logic, it seems like that
+deserves a mention in the commit message.
+
+-Doug
