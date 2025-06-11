@@ -1,173 +1,143 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0697253F07;
-	Wed, 11 Jun 2025 12:43:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FA61272E63;
+	Wed, 11 Jun 2025 12:47:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749645833; cv=none; b=La710kZck4mtL2brWvkg1JR1m8P7hyw9X0iyfrd5I11G2KM2TLKqc4D6LvjJicRNKg+mUmZAdmzkT34f4hlIHgaNjWnJDWMyovlJ0Sx8gTldSD9fckTuL32nN4Lv5ZqCOLsMuvOHFEgyu1+NWa6qEFbgt0pDjSQhRYWHfswjWkM=
+	t=1749646067; cv=none; b=ecg0TUZpO+rcXebpKQAG5vksd1UeDunb5Z4/fodXLLW8XPtCQuanpjamiz0TIYxTL3I7lcXNzUYNJ368F9HEx/v3R9f5bomMDWIt7jkpSK/Y94R70rm1n3/WJifUgoum9FRZPz1j2NRQZFJHt5t+VejQMz2o7z7Od3Coz8SLNR0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749645833; c=relaxed/simple;
-	bh=8CWw+IWPIrYBbXtL5RphJdZSTR77wntQotLoXBWVcNw=;
+	s=arc-20240116; t=1749646067; c=relaxed/simple;
+	bh=58wWmn/AAv0t5U67CJoTQL76p41O7pOXAuazZpFO0rU=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=ZXZmG8mUQkYiwLboVah0zgmoKfsHGH6bPZ/ON88SmUlHIw8DGAsfelyaU5r0oyyrxrDr43QJRR5L6qYHYgsUf4WEBdsfGQx7rpGAYfqf/RA/mobXxkPQlh9h0WjeMFw8apzu2o22DjXofkj4OzPS8f93P3xYXCeFZUTuhnUstGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QpjMgZm8; arc=none smtp.client-ip=198.175.65.10
+	 MIME-Version:Content-Type; b=rEKiMn2EVZJ7/22NRyWpV+gJVcGmOgYH9LMY8MKHmMLcoapXZm/tCL/kYB0epu+7GEK5yJrgMYHgHN+NGA8adoBXLcGfweOhzOGv1vXM6TnZjT+hOEnNmJ19Wg8ggHB5572r78L5q7ITE6vpMC/lZkuMIfK86wD4zy7qn7dG6Fo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Id8G1AAP; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QpjMgZm8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Id8G1AAP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1749645832; x=1781181832;
+  t=1749646066; x=1781182066;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=8CWw+IWPIrYBbXtL5RphJdZSTR77wntQotLoXBWVcNw=;
-  b=QpjMgZm8cASJG71GDkuu1Lj8O+QeJSLSBSdpTcwI+7TlM1GUw1E27rHW
-   Xvwh/LdvXPNUFr/IvmfW6Em5WHk56K/sxiB438kVpLrpC7W84dJpJKUdg
-   VCc+K/C7n8h+lXZLN59bEu7oUQXMPKmBzHhrz44xpLhUEXlydPdR4+MoX
-   S3toDOk8DPFzdLEm9LQIYCvLKF4kr6Hffx5vg5dISTvmnAD/J+cfsUc1B
-   CoH3f7j7bR3gWS9kFSec1bvaDomqRwgXXxNRMQR1srS6xvE3UDkvtUJaM
-   SjpUEq59S8GxfvRwxmw2dsQl/s6V1WnwlX6eoqIvSQJqYG0KlpAYxAw+D
+  bh=58wWmn/AAv0t5U67CJoTQL76p41O7pOXAuazZpFO0rU=;
+  b=Id8G1AAPxs6CNhDg2/ieLSBFRUyYWB33osXHhg5iTncsM4hoUXSAbBeh
+   lmjcz19T2WfUQWG/jtaNJjLZpyy59W7SG9+4yt5ewo0cFy6XhWUWf/+m7
+   ywl+7gWMskPGbiAvTnccH19471Bcc8mBInqCnpyVwWO0oxGgcBRkKFZRx
+   qYIulEbYbNvQYqfIuXafqbo9fqFLtE3o3HssxRByZuduZ448gX6GE7XeB
+   +m4cfhPk6ht5GuFbmNMDS0R+q4NfhI7k2zbkCttjuOYOJbz6YUgyIfB+Q
+   GkTdisDlHzkgCx2jzZc3Xyzo8p9EvjHyE3xVYS80dILrlRDQD9Om6ZpYz
    Q==;
-X-CSE-ConnectionGUID: B7eDmI+hRiqEjbIvHTJ9YQ==
-X-CSE-MsgGUID: XcAh9wPoTRKYygoP3p4h6g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11461"; a="69227664"
+X-CSE-ConnectionGUID: 20o2LHJ7Rhu/3qPWucYPNg==
+X-CSE-MsgGUID: f5iT5ZgnSQ6/jh0kFhRw5g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11461"; a="51499827"
 X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
-   d="scan'208";a="69227664"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:43:51 -0700
-X-CSE-ConnectionGUID: WAjCfuZpTAqX4eNaqGmX/w==
-X-CSE-MsgGUID: 4O6bIGYpT+yZuq3JR+ORHw==
+   d="scan'208";a="51499827"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:47:46 -0700
+X-CSE-ConnectionGUID: AhtYIV9MR1WC5kP6ZWyYfA==
+X-CSE-MsgGUID: dmI2UtMxTAil53awZIlCvg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
-   d="scan'208";a="184394909"
+   d="scan'208";a="152467978"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.183])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:43:49 -0700
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:47:43 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 11 Jun 2025 15:43:45 +0300 (EEST)
+Date: Wed, 11 Jun 2025 15:47:38 +0300 (EEST)
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 21/33] serial: 8250: extract
- serial8250_set_errors_and_ignores
-In-Reply-To: <20250611100319.186924-22-jirislaby@kernel.org>
-Message-ID: <c3917f82-40e9-6aa8-79d3-f6dae57671c4@linux.intel.com>
-References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-22-jirislaby@kernel.org>
+cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 22/33] serial: 8250: extract serial8250_set_ier()
+In-Reply-To: <20250611100319.186924-23-jirislaby@kernel.org>
+Message-ID: <0c8d8cf2-03fd-b65d-9dc1-b8529e46cd3f@linux.intel.com>
+References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-23-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: multipart/mixed; boundary="8323328-1986209817-1749646058=:957"
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+
+--8323328-1986209817-1749646058=:957
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: QUOTED-PRINTABLE
 
 On Wed, 11 Jun 2025, Jiri Slaby (SUSE) wrote:
 
 > serial8250_do_set_termios() consists of many registers and up flags
 > settings. Extract all these into separate functions. This time, setting
-> of ignore_status_mask and read_status_mask.
-> 
+> of IER.
+>=20
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 67 ++++++++++++++---------------
->  1 file changed, 33 insertions(+), 34 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index b15371838366..6bb7f004d607 100644
+>  drivers/tty/serial/8250/8250_port.c | 31 ++++++++++++++++-------------
+>  1 file changed, 17 insertions(+), 14 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index 6bb7f004d607..2c045a4369fc 100644
 > --- a/drivers/tty/serial/8250/8250_port.c
 > +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2720,6 +2720,38 @@ static void serial8250_set_afe(struct uart_port *port, struct ktermios *termios)
->  		up->mcr |= UART_MCR_AFE;
+> @@ -2752,6 +2752,22 @@ static void serial8250_set_errors_and_ignores(stru=
+ct uart_port *port, struct kte
+>  =09=09port->ignore_status_mask |=3D UART_LSR_DR;
 >  }
->  
-> +static void serial8250_set_errors_and_ignores(struct uart_port *port, struct ktermios *termios)
+> =20
+> +static void serial8250_set_ier(struct uart_port *port, struct ktermios *=
+termios)
 > +{
-> +	/*
-> +	 * Specify which conditions may be considered for error handling and the ignoring of
-> +	 * characters. The actual ignoring of characters only occurs if the bit is set in
-> +	 * @ignore_status_mask as well.
-> +	 */
-> +	port->read_status_mask = UART_LSR_OE | UART_LSR_DR;
-> +	if (termios->c_iflag & INPCK)
-> +		port->read_status_mask |= UART_LSR_FE | UART_LSR_PE;
-> +	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
-> +		port->read_status_mask |= UART_LSR_BI;
+> +=09struct uart_8250_port *up =3D up_to_u8250p(port);
 > +
-> +	/* Characters to ignore */
-> +	port->ignore_status_mask = 0;
-> +	if (termios->c_iflag & IGNPAR)
-> +		port->ignore_status_mask |= UART_LSR_PE | UART_LSR_FE;
-> +	if (termios->c_iflag & IGNBRK) {
-> +		port->ignore_status_mask |= UART_LSR_BI;
-> +		/*
-> +		 * If we're ignoring parity and break indicators, ignore overruns too (for real raw
-> +		 * support).
-> +		 */
-> +		if (termios->c_iflag & IGNPAR)
-> +			port->ignore_status_mask |= UART_LSR_OE;
-> +	}
+> +=09/* CTS flow control flag and modem status interrupts */
+> +=09up->ier &=3D ~UART_IER_MSI;
+> +=09if (!(up->bugs & UART_BUG_NOMSR) && UART_ENABLE_MS(&up->port, termios=
+->c_cflag))
+> +=09=09up->ier |=3D UART_IER_MSI;
+> +=09if (up->capabilities & UART_CAP_UUE)
+> +=09=09up->ier |=3D UART_IER_UUE;
+> +=09if (up->capabilities & UART_CAP_RTOIE)
+> +=09=09up->ier |=3D UART_IER_RTOIE;
 > +
-> +	/* ignore all characters if CREAD is not set */
-> +	if ((termios->c_cflag & CREAD) == 0)
-> +		port->ignore_status_mask |= UART_LSR_DR;
+> +=09serial_port_out(port, UART_IER, up->ier);
 > +}
-
-Can this function be used also by 8250_omap.c or made reusable if not 
-directly possible?
-
-Inside non-8250 drivers there might even more duplication related to 
-these. There might also be some duplication on the read character side
-as I've feeling I've seen plenty of copy paste related these flags (or 
-what looked copy paste).
-
+> +
 >  void
->  serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
->  		          const struct ktermios *old)
-> @@ -2747,40 +2779,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
->  	serial8250_set_trigger_for_slow_speed(port, termios, baud);
->  	serial8250_set_afe(port, termios);
->  	uart_update_timeout(port, termios->c_cflag, baud);
+>  serial8250_do_set_termios(struct uart_port *port, struct ktermios *termi=
+os,
+>  =09=09          const struct ktermios *old)
+> @@ -2780,20 +2796,7 @@ serial8250_do_set_termios(struct uart_port *port, =
+struct ktermios *termios,
+>  =09serial8250_set_afe(port, termios);
+>  =09uart_update_timeout(port, termios->c_cflag, baud);
+>  =09serial8250_set_errors_and_ignores(port, termios);
 > -
-> -	/*
-> -	 * Specify which conditions may be considered for error
-> -	 * handling and the ignoring of characters. The actual
-> -	 * ignoring of characters only occurs if the bit is set
-> -	 * in @ignore_status_mask as well.
-> -	 */
-> -	port->read_status_mask = UART_LSR_OE | UART_LSR_DR;
-> -	if (termios->c_iflag & INPCK)
-> -		port->read_status_mask |= UART_LSR_FE | UART_LSR_PE;
-> -	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
-> -		port->read_status_mask |= UART_LSR_BI;
+> -=09/*
+> -=09 * CTS flow control flag and modem status interrupts
+> -=09 */
+> -=09up->ier &=3D ~UART_IER_MSI;
+> -=09if (!(up->bugs & UART_BUG_NOMSR) &&
+> -=09=09=09UART_ENABLE_MS(&up->port, termios->c_cflag))
+> -=09=09up->ier |=3D UART_IER_MSI;
+> -=09if (up->capabilities & UART_CAP_UUE)
+> -=09=09up->ier |=3D UART_IER_UUE;
+> -=09if (up->capabilities & UART_CAP_RTOIE)
+> -=09=09up->ier |=3D UART_IER_RTOIE;
 > -
-> -	/*
-> -	 * Characters to ignore
-> -	 */
-> -	port->ignore_status_mask = 0;
-> -	if (termios->c_iflag & IGNPAR)
-> -		port->ignore_status_mask |= UART_LSR_PE | UART_LSR_FE;
-> -	if (termios->c_iflag & IGNBRK) {
-> -		port->ignore_status_mask |= UART_LSR_BI;
-> -		/*
-> -		 * If we're ignoring parity and break indicators,
-> -		 * ignore overruns too (for real raw support).
-> -		 */
-> -		if (termios->c_iflag & IGNPAR)
-> -			port->ignore_status_mask |= UART_LSR_OE;
-> -	}
-> -
-> -	/*
-> -	 * ignore all characters if CREAD is not set
-> -	 */
-> -	if ((termios->c_cflag & CREAD) == 0)
-> -		port->ignore_status_mask |= UART_LSR_DR;
-> +	serial8250_set_errors_and_ignores(port, termios);
->  
->  	/*
->  	 * CTS flow control flag and modem status interrupts
-> 
+> -=09serial_port_out(port, UART_IER, up->ier);
+> +=09serial8250_set_ier(port, termios);
+> =20
+>  =09if (up->capabilities & UART_CAP_EFR) {
+>  =09=09unsigned char efr =3D 0;
+>=20
 
--- 
+Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+
+--=20
  i.
 
+--8323328-1986209817-1749646058=:957--
