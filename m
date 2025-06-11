@@ -1,211 +1,335 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634212E6122;
-	Wed, 11 Jun 2025 11:46:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18E32E611B;
+	Wed, 11 Jun 2025 11:49:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749642402; cv=none; b=W4hWz4smOPp6WRnLGxvtC8pjXbtvAGh7Om/8Yd8IlFFWTl9sWryZhYs9+pH3wvY5oZ3Gi51wpxvRS7RPDoKR6zFU7+0x1l/XiMEpbYQWmGUIukhavomXTq8GZuH+7HGvim269ffUbewKZkoe2yf5JntAYLeNFJbAZS9hFQBsAjA=
+	t=1749642571; cv=none; b=UwyDpRlUOnC+XthCrpx0tM86LRB1YQ3ibCfd37aOO5WTin2XBfEJm/2+mXDY3ZyaYrG3KZwfyHYMzNVYp4JcC+TGgJbv/Viy7Z8snPz4bwgCu5WDLCe+wCcAegzaNXB8Nevrc9AGfDPt6MTfEJmqmwxTOx0K9nzmXC5RUzWpSzc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749642402; c=relaxed/simple;
-	bh=ZUlVFcUAC/pCaM5x+TevXdecSEVUqfUzanokBPqQUzY=;
+	s=arc-20240116; t=1749642571; c=relaxed/simple;
+	bh=AuV1sbkvV6me8J9YURc/SUOK6IBHhelqaiEVy4c4ZEM=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=qFk06tmoKFXaLltdQ59DypGUAcf6c9jmarzG6uHizqHgNqI15yz+GY3BmjLA84fYy22V6t/owRlsvfi3OO+V78U0f0fVSe/kixMXdGgjCDpwspflhEafHAZo4tYfzltRcRg303zdPkFXH5zi3+Dtvz4IlTnKADfVOfCJM7bb7/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LOBIM0P/; arc=none smtp.client-ip=192.198.163.9
+	 MIME-Version:Content-Type; b=ENRUgUoYNNQ6IC0abG34gkhOlwhK/xHX3Cxys3szvY5cC7+vF3D17n3R3EWt4Fq9IgqAjwdSO6iVUprpRU3A9Ii2OKc2QH9hyC78s2Neuw7zQd2pUJ6TcOtnO7Q+7AWstg8PpD80mCzXSSZrW4GavIJY+iv0Ct8cNoprrQR0ldc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iV43ZDb6; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LOBIM0P/"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iV43ZDb6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1749642400; x=1781178400;
+  t=1749642570; x=1781178570;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=ZUlVFcUAC/pCaM5x+TevXdecSEVUqfUzanokBPqQUzY=;
-  b=LOBIM0P/08vqRHDejOi4otruILXZsa9Cny9qj/Mgb9QH7f4DAlCEQbPy
-   Yz8i7XPoCU7APhNxcIYuLM6nDFMWWwyIiVTvH9qtGhHL73ZPbaxztJkYM
-   1duzxKF4Vy9ljonq6qJLrDH7ZytQiQ1aTTGzqaYxJ1DfO1DwhqQ9zC1jt
-   8NfiKharUSJso1m/GqgJIM+ojLAIz+KexOVKYGA3s37SZqo7vO7RYu3Ae
-   iUnM06tUur1dzJI8h7yNKwWF+Z6tE7Pqzk4kfNORb6d/RI4NEcdUL9RZu
-   M46thWZ14ntlOJBeZncDEd+yplPPzGoz7VQu5+EQie+qKoQOLL7RMwumK
-   g==;
-X-CSE-ConnectionGUID: X6HnY10dTQaEgYT+HE832Q==
-X-CSE-MsgGUID: T4WGC75ASGyPVnhYqNNt7w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11460"; a="62434413"
+  bh=AuV1sbkvV6me8J9YURc/SUOK6IBHhelqaiEVy4c4ZEM=;
+  b=iV43ZDb6YpxkV2ca6W7kn2eLtvf7SdDLLmbpryq+gFHxUOw+792KQX2k
+   0/aS1nBpzImgHuYseqjIdK4tjWs0hBTuXcAkcsU5C+wggQvnQ5Vqa6QBD
+   DAUzidojhBctG5bpcJTO7IWljiTkrAKdCW4JNwZU6K9RjSXdOVZeLd8BV
+   6lb3qBGZmqBL6uIGuo0pceojYKb8wXDf0EDcDWJt5cxNsbWGi3ThQnHqs
+   yfQMX7nYb5207oG0efszX1XSjdjzju0VoePCr5r3Z/NjQofLPl/zUvbnV
+   udcGjOs5gEQI5CdEEIJTxwBK4yRAo23Q54uNxernn3mOaCApOzCQp9DBx
+   w==;
+X-CSE-ConnectionGUID: pzYPZGT1RTmAyClB6GrQAA==
+X-CSE-MsgGUID: 4hFHfO5gSAKtvLRX+6wsDw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11460"; a="39400851"
 X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
-   d="scan'208";a="62434413"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 04:46:40 -0700
-X-CSE-ConnectionGUID: GzZ1AoAWTkSRB75O7rUf/w==
-X-CSE-MsgGUID: /E7l+tARS7+Mk7ucpVjQlw==
+   d="scan'208";a="39400851"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 04:49:17 -0700
+X-CSE-ConnectionGUID: uhaPBnlMRNCWDnv1/G+TvA==
+X-CSE-MsgGUID: 4HFYnJJZT3aRwg3UQNPX6A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
-   d="scan'208";a="152066028"
+   d="scan'208";a="147089132"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.183])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 04:46:37 -0700
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 04:49:16 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 11 Jun 2025 14:46:33 +0300 (EEST)
+Date: Wed, 11 Jun 2025 14:49:11 +0300 (EEST)
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 09/33] serial: 8250: remove CONFIG_SERIAL_8250_RSA inline
- macros from code
-In-Reply-To: <20250611100319.186924-10-jirislaby@kernel.org>
-Message-ID: <43385fba-407a-418a-d3df-ac50eaa761f8@linux.intel.com>
-References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-10-jirislaby@kernel.org>
+cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
+    linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 12/33] serial: 8250: move RSA functions to 8250_rsa.c
+In-Reply-To: <20250611100319.186924-13-jirislaby@kernel.org>
+Message-ID: <12af3273-a8b3-d88e-3c5a-290595e346a2@linux.intel.com>
+References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-13-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-462843366-1749642393=:957"
+Content-Type: multipart/mixed; boundary="8323328-1686644607-1749642551=:957"
 
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-462843366-1749642393=:957
+--8323328-1686644607-1749642551=:957
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 
 On Wed, 11 Jun 2025, Jiri Slaby (SUSE) wrote:
 
-> All these:
->   #ifdef CONFIG_SERIAL_8250_RSA
->   ...
->   #endif
+> They are RSA-specific, so should live in a preexisting 8250_rsa.c. Move
+> them there.
 >=20
-> in the 8250 generic code distract the reader. Introduce empty inlines to
-> handle the !CONFIG_SERIAL_8250_RSA case and handle the '#if's around the
-> RSA functions definitions.
->=20
-> This means rsa_autoconfig() and rsa_reset() functions were introduced to
-> contain the particular code.
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+
+No unexpected change found in the diff-of-diffs,
 
 Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
 
 --=20
  i.
 
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 54 ++++++++++++++---------------
->  1 file changed, 27 insertions(+), 27 deletions(-)
+>  drivers/tty/serial/8250/8250.h      |  8 +++
+>  drivers/tty/serial/8250/8250_port.c | 99 -----------------------------
+>  drivers/tty/serial/8250/8250_rsa.c  | 92 +++++++++++++++++++++++++++
+>  3 files changed, 100 insertions(+), 99 deletions(-)
 >=20
+> diff --git a/drivers/tty/serial/8250/8250.h b/drivers/tty/serial/8250/825=
+0.h
+> index 18530c31a598..cfe6ba286b45 100644
+> --- a/drivers/tty/serial/8250/8250.h
+> +++ b/drivers/tty/serial/8250/8250.h
+> @@ -318,8 +318,16 @@ static inline void serial8250_pnp_exit(void) { }
+> =20
+>  #ifdef CONFIG_SERIAL_8250_RSA
+>  void univ8250_rsa_support(struct uart_ops *ops);
+> +void rsa_enable(struct uart_8250_port *up);
+> +void rsa_disable(struct uart_8250_port *up);
+> +void rsa_autoconfig(struct uart_8250_port *up);
+> +void rsa_reset(struct uart_8250_port *up);
+>  #else
+>  static inline void univ8250_rsa_support(struct uart_ops *ops) { }
+> +static inline void rsa_enable(struct uart_8250_port *up) {}
+> +static inline void rsa_disable(struct uart_8250_port *up) {}
+> +static inline void rsa_autoconfig(struct uart_8250_port *up) {}
+> +static inline void rsa_reset(struct uart_8250_port *up) {}
+>  #endif
+> =20
+>  #ifdef CONFIG_SERIAL_8250_FINTEK
 > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
 0/8250_port.c
-> index f5407832e8a7..233316a88df2 100644
+> index d8a90818f431..476f5fc50237 100644
 > --- a/drivers/tty/serial/8250/8250_port.c
 > +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -738,6 +738,9 @@ static int __enable_rsa(struct uart_8250_port *up)
->  =09return result;
+> @@ -713,105 +713,6 @@ static void serial8250_clear_IER(struct uart_8250_p=
+ort *up)
+>  =09=09serial_out(up, UART_IER, 0);
 >  }
 > =20
+> -#ifdef CONFIG_SERIAL_8250_RSA
+> -/*
+> - * Attempts to turn on the RSA FIFO.  Returns zero on failure.
+> - * We set the port uart clock rate if we succeed.
+> - */
+> -static int __rsa_enable(struct uart_8250_port *up)
+> -{
+> -=09unsigned char mode;
+> -=09int result;
+> -
+> -=09mode =3D serial_in(up, UART_RSA_MSR);
+> -=09result =3D mode & UART_RSA_MSR_FIFO;
+> -
+> -=09if (!result) {
+> -=09=09serial_out(up, UART_RSA_MSR, mode | UART_RSA_MSR_FIFO);
+> -=09=09mode =3D serial_in(up, UART_RSA_MSR);
+> -=09=09result =3D mode & UART_RSA_MSR_FIFO;
+> -=09}
+> -
+> -=09if (result)
+> -=09=09up->port.uartclk =3D SERIAL_RSA_BAUD_BASE * 16;
+> -
+> -=09return result;
+> -}
+> -
+> -/*
+> - * If this is an RSA port, see if we can kick it up to the higher speed =
+clock.
+> - */
+> -static void rsa_enable(struct uart_8250_port *up)
+> -{
+> -=09if (up->port.type !=3D PORT_RSA)
+> -=09=09return;
+> -
+> -=09if (up->port.uartclk !=3D SERIAL_RSA_BAUD_BASE * 16) {
+> -=09=09uart_port_lock_irq(&up->port);
+> -=09=09__rsa_enable(up);
+> -=09=09uart_port_unlock_irq(&up->port);
+> -=09}
+> -=09if (up->port.uartclk =3D=3D SERIAL_RSA_BAUD_BASE * 16)
+> -=09=09serial_out(up, UART_RSA_FRR, 0);
+> -}
+> -
+> -/*
+> - * Attempts to turn off the RSA FIFO and resets the RSA board back to 11=
+5kbps compat mode. It is
+> - * unknown why interrupts were disabled in here. However, the caller is =
+expected to preserve this
+> - * behaviour by grabbing the spinlock before calling this function.
+> - */
+> -static void rsa_disable(struct uart_8250_port *up)
+> -{
+> -=09unsigned char mode;
+> -=09int result;
+> -
+> -=09if (up->port.type !=3D PORT_RSA)
+> -=09=09return;
+> -
+> -=09if (up->port.uartclk !=3D SERIAL_RSA_BAUD_BASE * 16)
+> -=09=09return;
+> -
+> -=09uart_port_lock_irq(&up->port);
+> -=09mode =3D serial_in(up, UART_RSA_MSR);
+> -=09result =3D !(mode & UART_RSA_MSR_FIFO);
+> -
+> -=09if (!result) {
+> -=09=09serial_out(up, UART_RSA_MSR, mode & ~UART_RSA_MSR_FIFO);
+> -=09=09mode =3D serial_in(up, UART_RSA_MSR);
+> -=09=09result =3D !(mode & UART_RSA_MSR_FIFO);
+> -=09}
+> -
+> -=09if (result)
+> -=09=09up->port.uartclk =3D SERIAL_RSA_BAUD_BASE_LO * 16;
+> -=09uart_port_unlock_irq(&up->port);
+> -}
+> -
+> -static void rsa_autoconfig(struct uart_8250_port *up)
+> -{
+> -=09/* Only probe for RSA ports if we got the region. */
+> -=09if (up->port.type !=3D PORT_16550A)
+> -=09=09return;
+> -=09if (!(up->probe & UART_PROBE_RSA))
+> -=09=09return;
+> -
+> -=09if (__rsa_enable(up))
+> -=09=09up->port.type =3D PORT_RSA;
+> -}
+> -
+> -static void rsa_reset(struct uart_8250_port *up)
+> -{
+> -=09if (up->port.type !=3D PORT_RSA)
+> -=09=09return;
+> -
+> -=09serial_out(up, UART_RSA_FRR, 0);
+> -}
+> -#else
+> -static inline void rsa_enable(struct uart_8250_port *up) {}
+> -static inline void rsa_disable(struct uart_8250_port *up) {}
+> -static inline void rsa_autoconfig(struct uart_8250_port *up) {}
+> -static inline void rsa_reset(struct uart_8250_port *up) {}
+> -#endif /* CONFIG_SERIAL_8250_RSA */
+> -
+>  /*
+>   * This is a quickie test to see how big the FIFO is.
+>   * It doesn't work at all the time, more's the pity.
+> diff --git a/drivers/tty/serial/8250/8250_rsa.c b/drivers/tty/serial/8250=
+/8250_rsa.c
+> index 4c8b9671bd41..59d2ecf23068 100644
+> --- a/drivers/tty/serial/8250/8250_rsa.c
+> +++ b/drivers/tty/serial/8250/8250_rsa.c
+> @@ -107,6 +107,98 @@ void univ8250_rsa_support(struct uart_ops *ops)
+>  module_param_hw_array(probe_rsa, ulong, ioport, &probe_rsa_count, 0444);
+>  MODULE_PARM_DESC(probe_rsa, "Probe I/O ports for RSA");
+> =20
+> +/*
+> + * Attempts to turn on the RSA FIFO.  Returns zero on failure.
+> + * We set the port uart clock rate if we succeed.
+> + */
+> +static int __rsa_enable(struct uart_8250_port *up)
+> +{
+> +=09unsigned char mode;
+> +=09int result;
+> +
+> +=09mode =3D serial_in(up, UART_RSA_MSR);
+> +=09result =3D mode & UART_RSA_MSR_FIFO;
+> +
+> +=09if (!result) {
+> +=09=09serial_out(up, UART_RSA_MSR, mode | UART_RSA_MSR_FIFO);
+> +=09=09mode =3D serial_in(up, UART_RSA_MSR);
+> +=09=09result =3D mode & UART_RSA_MSR_FIFO;
+> +=09}
+> +
+> +=09if (result)
+> +=09=09up->port.uartclk =3D SERIAL_RSA_BAUD_BASE * 16;
+> +
+> +=09return result;
+> +}
+> +
 > +/*
 > + * If this is an RSA port, see if we can kick it up to the higher speed =
 clock.
 > + */
->  static void enable_rsa(struct uart_8250_port *up)
->  {
->  =09if (up->port.type =3D=3D PORT_RSA) {
-> @@ -752,10 +755,9 @@ static void enable_rsa(struct uart_8250_port *up)
->  }
-> =20
->  /*
-> - * Attempts to turn off the RSA FIFO.  Returns zero on failure.
-> - * It is unknown why interrupts were disabled in here.  However,
-> - * the caller is expected to preserve this behaviour by grabbing
-> - * the spinlock before calling this function.
+> +void rsa_enable(struct uart_8250_port *up)
+> +{
+> +=09if (up->port.type !=3D PORT_RSA)
+> +=09=09return;
+> +
+> +=09if (up->port.uartclk !=3D SERIAL_RSA_BAUD_BASE * 16) {
+> +=09=09uart_port_lock_irq(&up->port);
+> +=09=09__rsa_enable(up);
+> +=09=09uart_port_unlock_irq(&up->port);
+> +=09}
+> +=09if (up->port.uartclk =3D=3D SERIAL_RSA_BAUD_BASE * 16)
+> +=09=09serial_out(up, UART_RSA_FRR, 0);
+> +}
+> +
+> +/*
 > + * Attempts to turn off the RSA FIFO and resets the RSA board back to 11=
 5kbps compat mode. It is
 > + * unknown why interrupts were disabled in here. However, the caller is =
 expected to preserve this
 > + * behaviour by grabbing the spinlock before calling this function.
->   */
->  static void disable_rsa(struct uart_8250_port *up)
->  {
-> @@ -780,6 +782,25 @@ static void disable_rsa(struct uart_8250_port *up)
->  =09=09uart_port_unlock_irq(&up->port);
->  =09}
->  }
+> + */
+> +void rsa_disable(struct uart_8250_port *up)
+> +{
+> +=09unsigned char mode;
+> +=09int result;
 > +
-> +static void rsa_autoconfig(struct uart_8250_port *up)
+> +=09if (up->port.type !=3D PORT_RSA)
+> +=09=09return;
+> +
+> +=09if (up->port.uartclk !=3D SERIAL_RSA_BAUD_BASE * 16)
+> +=09=09return;
+> +
+> +=09uart_port_lock_irq(&up->port);
+> +=09mode =3D serial_in(up, UART_RSA_MSR);
+> +=09result =3D !(mode & UART_RSA_MSR_FIFO);
+> +
+> +=09if (!result) {
+> +=09=09serial_out(up, UART_RSA_MSR, mode & ~UART_RSA_MSR_FIFO);
+> +=09=09mode =3D serial_in(up, UART_RSA_MSR);
+> +=09=09result =3D !(mode & UART_RSA_MSR_FIFO);
+> +=09}
+> +
+> +=09if (result)
+> +=09=09up->port.uartclk =3D SERIAL_RSA_BAUD_BASE_LO * 16;
+> +=09uart_port_unlock_irq(&up->port);
+> +}
+> +
+> +void rsa_autoconfig(struct uart_8250_port *up)
 > +{
 > +=09/* Only probe for RSA ports if we got the region. */
-> +=09if (up->port.type =3D=3D PORT_16550A && up->probe & UART_PROBE_RSA &&
-> +=09    __enable_rsa(up))
+> +=09if (up->port.type !=3D PORT_16550A)
+> +=09=09return;
+> +=09if (!(up->probe & UART_PROBE_RSA))
+> +=09=09return;
+> +
+> +=09if (__rsa_enable(up))
 > +=09=09up->port.type =3D PORT_RSA;
 > +}
 > +
-> +static void rsa_reset(struct uart_8250_port *up)
+> +void rsa_reset(struct uart_8250_port *up)
 > +{
-> +=09if (up->port.type =3D=3D PORT_RSA)
-> +=09=09serial_out(up, UART_RSA_FRR, 0);
+> +=09if (up->port.type !=3D PORT_RSA)
+> +=09=09return;
+> +
+> +=09serial_out(up, UART_RSA_FRR, 0);
 > +}
-> +#else
-> +static inline void enable_rsa(struct uart_8250_port *up) {}
-> +static inline void disable_rsa(struct uart_8250_port *up) {}
-> +static inline void rsa_autoconfig(struct uart_8250_port *up) {}
-> +static inline void rsa_reset(struct uart_8250_port *up) {}
->  #endif /* CONFIG_SERIAL_8250_RSA */
-> =20
+> +
+>  #ifdef CONFIG_SERIAL_8250_DEPRECATED_OPTIONS
+>  #ifndef MODULE
 >  /*
-> @@ -1267,14 +1288,7 @@ static void autoconfig(struct uart_8250_port *up)
->  =09=09break;
->  =09}
-> =20
-> -#ifdef CONFIG_SERIAL_8250_RSA
-> -=09/*
-> -=09 * Only probe for RSA ports if we got the region.
-> -=09 */
-> -=09if (port->type =3D=3D PORT_16550A && up->probe & UART_PROBE_RSA &&
-> -=09    __enable_rsa(up))
-> -=09=09port->type =3D PORT_RSA;
-> -#endif
-> +=09rsa_autoconfig(up);
-> =20
->  =09serial_out(up, UART_LCR, save_lcr);
-> =20
-> @@ -1289,10 +1303,7 @@ static void autoconfig(struct uart_8250_port *up)
->  =09/*
->  =09 * Reset the UART.
->  =09 */
-> -#ifdef CONFIG_SERIAL_8250_RSA
-> -=09if (port->type =3D=3D PORT_RSA)
-> -=09=09serial_out(up, UART_RSA_FRR, 0);
-> -#endif
-> +=09rsa_reset(up);
->  =09serial8250_out_MCR(up, save_mcr);
->  =09serial8250_clear_fifos(up);
->  =09serial_in(up, UART_RX);
-> @@ -2248,13 +2259,7 @@ int serial8250_do_startup(struct uart_port *port)
->  =09=09=09=09UART_DA830_PWREMU_MGMT_FREE);
->  =09}
-> =20
-> -#ifdef CONFIG_SERIAL_8250_RSA
-> -=09/*
-> -=09 * If this is an RSA port, see if we can kick it up to the
-> -=09 * higher speed clock.
-> -=09 */
->  =09enable_rsa(up);
-> -#endif
-> =20
->  =09/*
->  =09 * Clear the FIFO buffers and disable them.
-> @@ -2521,12 +2526,7 @@ void serial8250_do_shutdown(struct uart_port *port=
-)
->  =09=09=09serial_port_in(port, UART_LCR) & ~UART_LCR_SBC);
->  =09serial8250_clear_fifos(up);
-> =20
-> -#ifdef CONFIG_SERIAL_8250_RSA
-> -=09/*
-> -=09 * Reset the RSA board back to 115kbps compat mode.
-> -=09 */
->  =09disable_rsa(up);
-> -#endif
-> =20
->  =09/*
->  =09 * Read data port to reset things, and then unlink from
 >=20
---8323328-462843366-1749642393=:957--
+--8323328-1686644607-1749642551=:957--
