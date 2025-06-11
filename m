@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B27272E5A;
-	Wed, 11 Jun 2025 10:04:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5595D2741B0;
+	Wed, 11 Jun 2025 10:04:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749636250; cv=none; b=P8sVxIu4K8EyVJk7qOd68pwCHfwOWzZcT0wxVawkwZyCHrZ8psVnVj3FrSUEW4qnjBG43htGXK3APXsSyqMbRWHcJ+cIjUwdgU58gpSoCL1NhRy3XMy2MIf33k1WuEwXnT2sHboQprxZCDkSuA1N5zfB8dupsSb0kdNiq1mJuJw=
+	t=1749636252; cv=none; b=Xvp3M+dbTsOMkM0UKO+gprz0TyX3JZsArebKgmbaLb3FtLhrDTzj7FvNFNG2iWL9x7nc2nOzj+XApVtU6h9zRLCLL/RFqngYlXasqtyzfJ7HEN8DMGm6G1qAb/L9jvhuB3nZF1FciIDsPmed0YAwnJB52cF1bZUJeDWNlGyHpWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749636250; c=relaxed/simple;
-	bh=5iZ1B5ZkaY5ZLX/qDcX1g+zAgRyPtiYm0Fa29q1Y75c=;
+	s=arc-20240116; t=1749636252; c=relaxed/simple;
+	bh=rKS+4K+FzL8vD+6uKlsTZAKIzZuyv6esLcxPlYOcUz8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jgxBjiPRcstUgdPBMjkQsWWTT3qeIG8KijbQTK3EqkZnvBBd1s/+KB4vZWWj+D5vfPPBwUJIqjcpUhuVdE+U7k2s5DGZspwMeiyM6+SoVJ/UQk3mcwJqVND9unY2opEDulEdwNait6xIA9RNV4cUGXmttofbpCjV8eKqgxXyDrw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AtVAmJRo; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=lBV3iIl0pU4VN7eQ1UFB28DLRNtIivrdRvPkq8i/CTSXIlUwthuTr7AxZ0jPyTOpPDOrNK95sMzc8lLM6cR7Z61IR2vOLddMRrc0HYEkDOTY2829xZH8V50oswfSd0zCWSmpHBmklvvTM9j0iXtOp3vRgf+csjprjR3DQP8j4R4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JkGoraFe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AtVAmJRo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B278C4CEF2;
-	Wed, 11 Jun 2025 10:04:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JkGoraFe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26DB8C4CEEE;
+	Wed, 11 Jun 2025 10:04:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749636250;
-	bh=5iZ1B5ZkaY5ZLX/qDcX1g+zAgRyPtiYm0Fa29q1Y75c=;
+	s=k20201202; t=1749636252;
+	bh=rKS+4K+FzL8vD+6uKlsTZAKIzZuyv6esLcxPlYOcUz8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=AtVAmJRolfNj5x09ChZgJSMCbHzPtttsgnXsR95rt1SWJIV8U/We3OY8S19l0JjXV
-	 yJJrn74vXcmn7tf96eGQdl3AnvMw3U2GoSYE9H0fpBc984cZ6puMFhNqhIksf16OQi
-	 BoG7RqRZydtm7T3dWCGs9fz4bPvMPT2B1941Lil7YfiwT0owo0s5KO3O8gF5lUZQvB
-	 K4TzhwL5585but1APU8zyoKqZT9R4AcsoGoz1A9AkEno5XMtiv5WrgTGJREPf3c02v
-	 c0jGmLXZutbryYcZNliGB2IUHNNOypnJ82lVkwOvolovG0zIdOZ5ys1RsFEywf/+Df
-	 xIZsrlBjvyeVQ==
+	b=JkGoraFewgN/0jEinfQQORzp7pjyDQZcTWLx+TnJwwhZzEWWsiOVS/mpvWtsDs0Fz
+	 vnNfgM7UG3gutvJM7W2K2LqRPRPVxM4Vsh0cE+mZ6QHfrc54WBqcld1fU99xlkaoCH
+	 +4zwAvOaylq9bc/xU6NzjbUaw1HI5Apds7ajAMPUd4AFNBbT1Tg+BZiF6c8MrUn0uU
+	 v5aI+cW1ZMNQIJ1yPQSeaEfVOH5HKQBbkJia/MACp/mqAfPAq/2pTSLuEgMEN8aQhk
+	 xSSjIv4FKf0anoN14blA0drnm7pY0p565TsTCMl3sak1x9wlPD/jDrrq1u5ywo5PdY
+	 h0MI9AaiEHxXA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 26/33] serial: 8250: drop unused frac from serial8250_do_get_divisor()
-Date: Wed, 11 Jun 2025 12:03:12 +0200
-Message-ID: <20250611100319.186924-27-jirislaby@kernel.org>
+Subject: [PATCH 27/33] serial: 8250: extract serial_get_or_create_irq_info()
+Date: Wed, 11 Jun 2025 12:03:13 +0200
+Message-ID: <20250611100319.186924-28-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250611100319.186924-1-jirislaby@kernel.org>
 References: <20250611100319.186924-1-jirislaby@kernel.org>
@@ -45,39 +45,85 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-'frac' is not used in the generic implementation of get_divisor. Drop it
-from there. (Only some port->get_divisor() compute that and receive it
-then to port->set_divisor()).
+This find-or-create-irq part of the serial_link_irq_chain()'s code is
+logically bounded and self-standing. For easier-to-follow code flow,
+extract the code to a separate function:
+serial_get_or_create_irq_info().
+
+This allows for an easier found-an-irq handling -- simple jump to the
+'unlock' label and return. That results in one less 'if' levels.
+
+Note when using guard()s in the upcoming patchset, the label can dropped
+altogether.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 37 ++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 2af89038e50e..6363915a1787 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2481,9 +2481,7 @@ static void serial8250_flush_buffer(struct uart_port *port)
- 		serial8250_tx_dma_flush(up);
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 7a6050f1c094..d42ceb6ffdc2 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -129,11 +129,15 @@ static void serial_do_unlink(struct irq_info *i, struct uart_8250_port *up)
+ 	}
  }
  
--static unsigned int serial8250_do_get_divisor(struct uart_port *port,
--					      unsigned int baud,
--					      unsigned int *frac)
-+static unsigned int serial8250_do_get_divisor(struct uart_port *port, unsigned int baud)
+-static int serial_link_irq_chain(struct uart_8250_port *up)
++/*
++ * Either:
++ * - find the corresponding info in the hashtable and return it, or
++ * - allocate a new one, add it to the hashtable and return it.
++ */
++static struct irq_info *serial_get_or_create_irq_info(const struct uart_8250_port *up)
  {
- 	upf_t magic_multiplier = port->flags & UPF_MAGIC_MULTIPLIER;
- 	struct uart_8250_port *up = up_to_u8250p(port);
-@@ -2544,7 +2542,7 @@ static unsigned int serial8250_get_divisor(struct uart_port *port,
- 	if (port->get_divisor)
- 		return port->get_divisor(port, baud, frac);
+ 	struct hlist_head *h;
+ 	struct irq_info *i;
+-	int ret;
  
--	return serial8250_do_get_divisor(port, baud, frac);
-+	return serial8250_do_get_divisor(port, baud);
- }
+ 	mutex_lock(&hash_mutex);
  
- static unsigned char serial8250_compute_lcr(struct uart_8250_port *up, tcflag_t c_cflag)
+@@ -141,20 +145,31 @@ static int serial_link_irq_chain(struct uart_8250_port *up)
+ 
+ 	hlist_for_each_entry(i, h, node)
+ 		if (i->irq == up->port.irq)
+-			break;
++			goto unlock;
+ 
++	i = kzalloc(sizeof(*i), GFP_KERNEL);
+ 	if (i == NULL) {
+-		i = kzalloc(sizeof(struct irq_info), GFP_KERNEL);
+-		if (i == NULL) {
+-			mutex_unlock(&hash_mutex);
+-			return -ENOMEM;
+-		}
+-		spin_lock_init(&i->lock);
+-		i->irq = up->port.irq;
+-		hlist_add_head(&i->node, h);
++		i = ERR_PTR(-ENOMEM);
++		goto unlock;
+ 	}
++	spin_lock_init(&i->lock);
++	i->irq = up->port.irq;
++	hlist_add_head(&i->node, h);
++unlock:
+ 	mutex_unlock(&hash_mutex);
+ 
++	return i;
++}
++
++static int serial_link_irq_chain(struct uart_8250_port *up)
++{
++	struct irq_info *i;
++	int ret;
++
++	i = serial_get_or_create_irq_info(up);
++	if (IS_ERR(i))
++		return PTR_ERR(i);
++
+ 	spin_lock_irq(&i->lock);
+ 
+ 	if (i->head) {
 -- 
 2.49.0
 
