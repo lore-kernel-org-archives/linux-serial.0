@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 935B6267AF7;
-	Wed, 11 Jun 2025 10:03:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 812A12620CD;
+	Wed, 11 Jun 2025 10:03:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749636209; cv=none; b=ToIrtw/gPDz9HZy1OXGIyMG5N3LT20yt+B9zsgR7ip/HwXmIjgfV9LOobo79xddpxMz/z9fdaO82MIOGNosEJO/QHB7m7Zhj4NBq7m5RqMWqmIcNgt6DtpS/JrxVhzG2lUZ4CPQBoGGTfpwgBxg2TI7QtHHgCtTTZ0+uDoScw74=
+	t=1749636211; cv=none; b=pnG1DeSG//lynAsNkOdJDqOtS9gQ0zNrvA7LplwwHgMJGrpbaWDPwO6KeifmWdLcqRtjhDi4oro1jSWQm2Jm1S3HH7dxKq+Z+n3wvqVBnHkaDLaNpdT+se+K+7w+2PYnQAzplKAArFa0i9aDBGsuCCBsseJOv4fx1x/KBfoyWCM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749636209; c=relaxed/simple;
-	bh=8bnFg7Ex1c31Wg8ZGfwLvn1m/DM1vD49g1g+c7qmqE4=;
+	s=arc-20240116; t=1749636211; c=relaxed/simple;
+	bh=yxtl7EkAbzex+676ZNuv1dtaZF4rmNGRTIkf1D3Ud1E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=B4nWYoIG8V6LV4TQwXiJ5WDp4E0R1QtTMI+SvM+FJ/j8sy+x3VN68e+41E4p3mCoyAkyzHZDJY5Sv3xJO/NKPNiI5oLtV4v390wqyUIkV6Zyxi4f0vwEWr1lhSteK7poe1F5tQKUw2YY498pW8aKkwLwXaVZ35KQqhMi7TWgZec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rfgyq3tc; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=VD0bu8Z8LigphlHswkMiFGsI8PMYr8KG28zIiBaJkZtjQwbyhLwBNG7RTsZq1FIpymUHIFyzM9yJZVpGUOy1DvzJt6I0YwWtdMg+2L5X+Wvtgh7tiCB3xlj/Qzqic/CmrvI8/KJa++1l2behLkZM8elkTfI3r3s6ApfTs2TRcaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CNUOYO7f; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rfgyq3tc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19293C4CEF5;
-	Wed, 11 Jun 2025 10:03:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CNUOYO7f"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 863D8C4CEEE;
+	Wed, 11 Jun 2025 10:03:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749636209;
-	bh=8bnFg7Ex1c31Wg8ZGfwLvn1m/DM1vD49g1g+c7qmqE4=;
+	s=k20201202; t=1749636211;
+	bh=yxtl7EkAbzex+676ZNuv1dtaZF4rmNGRTIkf1D3Ud1E=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rfgyq3tczjfCxpExT7x4sCS2GTkABalaCVdcqQW2DYDoWoLPGVpvmAbLHZwZh7kye
-	 Q+km2FU/OK951dY5/AobofzeH1DR1H52TR/vJs4yaCvod/K7io9IlMom970gOaP4lq
-	 HDVquE2oKLHj7taHe+S2EjUKCc44HiAKq9XF4H/u7jcCURN0oTMaHv3D0MLgdWs7Hq
-	 UMoSztVaQPk3xRXeQL1NjWzGVGypSVRfRHL6uExX/LqU5wPqhH+7typ8d6ThDjMnFC
-	 Llk1oy7xE4FbxT1NgdJYE20McAHnWNOUQJN+BoedB2vMU5BiImvnnTebP7Ih6QtMxU
-	 buXjjXwmjgi3Q==
+	b=CNUOYO7fgfGC6GZ+qBkpFyS167m1YE+R5rSbIl9pzS0PKWVB2GP5whyUKGJFTfaO6
+	 dWF1dYOGPR+3vhRLVo26E3rrCxpb5v3wKCog5JfbU+rggD6CZjYG9H9k1/7ilYnjL6
+	 aoNo/OgvGoB8OrX0Wvck31pFeaLwSDQLDlAYHG9gxAPQv28I6swlx3rcsnawbna8MC
+	 04Y85mry8Heh/bArpPqF0O39h3HYfLztHrnyXyWArr2qPViq2DmGZl0g7dNDnOPlVs
+	 q7ui1Nm3XUc5qGGz3/J4vDcj7BqdMKsS0ZS1pxaqOaPYOR50uBIU0/YohflJ+0DsSi
+	 NspBeOWDUssPw==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
@@ -34,11 +34,10 @@ Cc: linux-serial@vger.kernel.org,
 	Madhavan Srinivasan <maddy@linux.ibm.com>,
 	Michael Ellerman <mpe@ellerman.id.au>,
 	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH 02/33] powerpc/legacy_serial: cache serial port and info in add_legacy_port()
-Date: Wed, 11 Jun 2025 12:02:48 +0200
-Message-ID: <20250611100319.186924-3-jirislaby@kernel.org>
+	Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: [PATCH 03/33] powerpc/legacy_serial: use %pa for phys_addr_t prints
+Date: Wed, 11 Jun 2025 12:02:49 +0200
+Message-ID: <20250611100319.186924-4-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250611100319.186924-1-jirislaby@kernel.org>
 References: <20250611100319.186924-1-jirislaby@kernel.org>
@@ -50,107 +49,31 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Caching the port and info in local variables makes the code more compact
-and easier to understand.
+It makes the code easier to read as casts are not needed.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
 Cc: Michael Ellerman <mpe@ellerman.id.au>
 Cc: Nicholas Piggin <npiggin@gmail.com>
 Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc: linuxppc-dev@lists.ozlabs.org
 ---
- arch/powerpc/kernel/legacy_serial.c | 52 ++++++++++++++---------------
- 1 file changed, 26 insertions(+), 26 deletions(-)
+ arch/powerpc/kernel/legacy_serial.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/legacy_serial.c
-index 1da2f6e7d2a1..d9080189c28c 100644
+index d9080189c28c..a874eb8e000b 100644
 --- a/arch/powerpc/kernel/legacy_serial.c
 +++ b/arch/powerpc/kernel/legacy_serial.c
-@@ -77,6 +77,8 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
- 				  phys_addr_t taddr, unsigned long irq,
- 				  upf_t flags, int irq_check_parent)
- {
-+	struct plat_serial8250_port *legacy_port;
-+	struct legacy_serial_info *legacy_info;
- 	const __be32 *clk, *spd, *rs;
- 	u32 clock = BASE_BAUD * 16;
- 	u32 shift = 0;
-@@ -110,16 +112,17 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
- 	if (index >= legacy_serial_count)
- 		legacy_serial_count = index + 1;
- 
-+	legacy_port = &legacy_serial_ports[index];
-+	legacy_info = &legacy_serial_infos[index];
-+
- 	/* Check if there is a port who already claimed our slot */
--	if (legacy_serial_infos[index].np != NULL) {
-+	if (legacy_info->np != NULL) {
- 		/* if we still have some room, move it, else override */
- 		if (legacy_serial_count < MAX_LEGACY_SERIAL_PORTS) {
- 			printk(KERN_DEBUG "Moved legacy port %d -> %d\n",
- 			       index, legacy_serial_count);
--			legacy_serial_ports[legacy_serial_count] =
--				legacy_serial_ports[index];
--			legacy_serial_infos[legacy_serial_count] =
--				legacy_serial_infos[index];
-+			legacy_serial_ports[legacy_serial_count] = *legacy_port;
-+			legacy_serial_infos[legacy_serial_count] = *legacy_info;
- 			legacy_serial_count++;
- 		} else {
- 			printk(KERN_DEBUG "Replacing legacy port %d\n", index);
-@@ -127,36 +130,33 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
+@@ -153,10 +153,9 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
  	}
  
- 	/* Now fill the entry */
--	memset(&legacy_serial_ports[index], 0,
--	       sizeof(struct plat_serial8250_port));
-+	memset(legacy_port, 0, sizeof(*legacy_port));
- 	if (iotype == UPIO_PORT)
--		legacy_serial_ports[index].iobase = base;
-+		legacy_port->iobase = base;
- 	else
--		legacy_serial_ports[index].mapbase = base;
--
--	legacy_serial_ports[index].iotype = iotype;
--	legacy_serial_ports[index].uartclk = clock;
--	legacy_serial_ports[index].irq = irq;
--	legacy_serial_ports[index].flags = flags;
--	legacy_serial_ports[index].regshift = shift;
--	legacy_serial_infos[index].taddr = taddr;
--	legacy_serial_infos[index].np = of_node_get(np);
--	legacy_serial_infos[index].clock = clock;
--	legacy_serial_infos[index].speed = spd ? be32_to_cpup(spd) : 0;
--	legacy_serial_infos[index].irq_check_parent = irq_check_parent;
-+		legacy_port->mapbase = base;
-+
-+	legacy_port->iotype = iotype;
-+	legacy_port->uartclk = clock;
-+	legacy_port->irq = irq;
-+	legacy_port->flags = flags;
-+	legacy_port->regshift = shift;
-+	legacy_info->taddr = taddr;
-+	legacy_info->np = of_node_get(np);
-+	legacy_info->clock = clock;
-+	legacy_info->speed = spd ? be32_to_cpup(spd) : 0;
-+	legacy_info->irq_check_parent = irq_check_parent;
- 
- 	if (iotype == UPIO_TSI) {
--		legacy_serial_ports[index].serial_in = tsi_serial_in;
--		legacy_serial_ports[index].serial_out = tsi_serial_out;
-+		legacy_port->serial_in = tsi_serial_in;
-+		legacy_port->serial_out = tsi_serial_out;
- 	}
- 
--	printk(KERN_DEBUG "Found legacy serial port %d for %pOF\n",
--	       index, np);
-+	printk(KERN_DEBUG "Found legacy serial port %d for %pOF\n", index, np);
- 	printk(KERN_DEBUG "  %s=%llx, taddr=%llx, irq=%lx, clk=%d, speed=%d\n",
+ 	printk(KERN_DEBUG "Found legacy serial port %d for %pOF\n", index, np);
+-	printk(KERN_DEBUG "  %s=%llx, taddr=%llx, irq=%lx, clk=%d, speed=%d\n",
++	printk(KERN_DEBUG "  %s=%pa, taddr=%pa, irq=%lx, clk=%d, speed=%d\n",
  	       (iotype == UPIO_PORT) ? "port" : "mem",
- 	       (unsigned long long)base, (unsigned long long)taddr, irq,
--	       legacy_serial_ports[index].uartclk,
--	       legacy_serial_infos[index].speed);
-+	       legacy_port->uartclk, legacy_info->speed);
+-	       (unsigned long long)base, (unsigned long long)taddr, irq,
+-	       legacy_port->uartclk, legacy_info->speed);
++	       &base, &taddr, irq, legacy_port->uartclk, legacy_info->speed);
  
  	return index;
  }
