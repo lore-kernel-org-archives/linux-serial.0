@@ -1,196 +1,90 @@
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CF752D540A
-	for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 23:18:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41F2F145B27
+	for <linux-serial@vger.kernel.org>; Wed, 11 Jun 2025 01:41:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749597526; cv=none; b=Qv5lUeCnPw2uHnZa8eo3WRThTdqkpnUwVpM/zN/4h+F5EP0ndW9NoKTuBYWUTvF/XXO546erScGZuuQA8dNCeE9gfUD3IFPzeRMujX8ufvn+5MbjrmmhSE3M7VAWM3hk2TKVfDOP2e4Q6kZX/cTTNcZMYgqXY9rwLkXv50tWd64=
+	t=1749606111; cv=none; b=HbQ/w/KZOCGhqKEe/zAH15BNyud539oaCiZDcmiVb/O/vS1LfFKPjyREdodh8mkaK0B/m2VRBsnwCW53/B6AV0VNPZOt7ulmdOANGkfoii1Wy2SvEj+DMfjY64nvLwBalWQYtEvzsuy9eD9fyd+DSGDQoT2qU8ZBNsvtba4rLNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749597526; c=relaxed/simple;
-	bh=6wCR/wOF6mnpcOQvAKfddSkIw1hDl8dX/s/2AHpXUDU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=AyzpbiZuf9+IVbkz4sss/x1bNfQEzPFbtJ4STn/tNzbG3Dl828GRbN65R+aRT3atwJKpKP+NeVv/9GFqLtz/rLNHxjQEq3sFhDZLg0FcQbzijdXLnUahBsQzeJ8/JsQtleJtWfPNR3aOPE+T8FGkBH5bVwF8gMltZP9BNgiWz20=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=KoauuRl1; arc=none smtp.client-ip=209.85.215.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1749606111; c=relaxed/simple;
+	bh=2kNFgJvFiHWl25tdl5JVTyWrVYRncCS6MCCO8o0uDrQ=;
+	h=Date:From:To:cc:Subject:Message-ID:MIME-Version:Content-Type; b=O1B742TQpqcm+fWaRMie34hjtoueZqqsDexYa6X4PMegWnHoYl1cncRLNUG5LVJM3LKFmX8UcBbdb8eJmjETqmuaPA36tJVtORqtRp7IGQXJxEeBqe3xx7wRl+VLJui8ox6tUFpM8n3g5oOWJaPHrA/lc4EOdbycN7OFAW2rHcQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=ppZxc4ID; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="KoauuRl1"
-Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-b2c4476d381so327954a12.0
-        for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 16:18:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="ppZxc4ID"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-476a720e806so56174301cf.0
+        for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 18:41:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1749597519; x=1750202319; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mtgyGRFsx3W1moknyTRh8eklG3kKIqbE5e8lYnyeAfo=;
-        b=KoauuRl1Q5Ren43HWyrch62TYXfpIRE6xXWyUZohupt9BTbP1r+at1InkhZyT1/v8y
-         rq+Jm/sajhW+C2b+xyC1oLbYSkTeJPd1hZMPFRV/8retAA0qfXueRFQvYRrwhX92rEbv
-         M1AR6wSJzuid0Olf3Hb9xrEGTo3HvBE2+0Nko=
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1749606106; x=1750210906; darn=vger.kernel.org;
+        h=mime-version:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=a0dVcb4mCq2bSSy46KTU9Gw7pSw3OfMXBWad0p0FySA=;
+        b=ppZxc4IDbRUpxdKr8t652woLHg1RyzQxv/RuyP2R96pEolTyaXs0QsjWTRDtS0/L5G
+         OujhCqUreOIEu+tkuhuKLcWeWrUq4MWT2PpN1BTtqqcuJZypUUzGoCpAx4hQWFheEUaK
+         r0QJBYGtGpYoywwBAzvMHAcVcZ9kHcjuI2MmdPVyf80JNxWQCQ6XDrI+cp5iFBOyzRB+
+         +XkxuTeQD8vSJjouarr8do/Ne9GMBkEdnOYtZYZfBtcCHHqSrFo6XwDIlDuUfTkwzes4
+         kUEn+eMpwvI1dwl13B2AmgxXt3LOXcaf7Jcasj+V4bD2OWkMtDEas86H3kCNVlq+I63n
+         dbbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749597519; x=1750202319;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mtgyGRFsx3W1moknyTRh8eklG3kKIqbE5e8lYnyeAfo=;
-        b=jEmacuOoLKb46oxzALwhpwAhehdV1XhAiswuVh28RLEz7ns/D2NqhrTHTGgG6H0w9p
-         AkN9GDa10i2dg1MSl18pe5rdVfH62vJd3WYFyeFz/R+NFPhpFIjfg0UajBuNJwPCDsP2
-         vyyrVhb/43LaTfLzm93LLuZvzMQ8g8oekvGAvC422RP85F1sMRQd61WSETUX2hMGMKYD
-         q3FReaVyFdMzr7ABwFxscusdT7iNLGJnyv+tAn7HoJXS9odhF6yEd9E/zXyB1Y+pq70N
-         /1WiHOX4uYdVIxQWOo+e+Nima57OPNqiJ8Howrh9yp4TZh559gO52Qd0jkysLJn6VlLc
-         uXig==
-X-Forwarded-Encrypted: i=1; AJvYcCVN89C7zDwv0bhwSnVBwmUsf63zIo212UBVrUdvGvv20r2S0LPocLmIfcLh3HuMtnco5BCfv+xI0WcFcx0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxzUQ8ettCVbSzJb9wqkfKJsDpqI6N3gVSs53WU9cpEno5jD21x
-	TCTbdjA/Ai9pJk0JtJQ9gKddjXPWvPxX3+UXwDTXtakXpRzFev+/3Y8LcJIjUZCWiJoltgkfK8j
-	BUQ8=
-X-Gm-Gg: ASbGnctl5AkupduimZkTyWh/qVhULIBjnsybindihWx5Ig3jS58DADriRrObPEW34oY
-	0uy+xHM9wivQI3/ixFGvh/siPWO8oLccLGb56rm2806ZkhCWcJDgbin0dUdOLTAibWadZ8Be1Uo
-	R1PFJQ6S04wqF1JLUXpWXIW9koUivu7n5g5B9YSnUr+5LD6Cq/BETFC+GByoMp42rR83c65X8hV
-	f13Gka37S+NKvmll23DZd6MRfFldgflxrd4kndk54NxTmnIIYyIf+3pRAv/BAx0sLpc/5BgsaV2
-	E14nr+Xx0mRpTVi4d8ng30Vjlz/C0HRsn7hw2jMJhbjkUpsxqt2p+Z7K2MCNzvdj4xojRr3kfxj
-	dPP/L5zNffgk4lOCEW5qKoe6B1w==
-X-Google-Smtp-Source: AGHT+IFE9cJTc7Y5EhrtYC3OSOSY8Zk+LJg5fRyXS4CyMCQSj6GgD8YND+gpsBEX9/Der4ipfAqLSA==
-X-Received: by 2002:a17:90b:2241:b0:311:b5ac:6f7d with SMTP id 98e67ed59e1d1-313af81e8f6mr1364842a91.6.1749597518594;
-        Tue, 10 Jun 2025 16:18:38 -0700 (PDT)
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com. [209.85.216.47])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-313b1fecf2csm134082a91.6.2025.06.10.16.18.36
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Jun 2025 16:18:36 -0700 (PDT)
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-313a188174fso304214a91.1
-        for <linux-serial@vger.kernel.org>; Tue, 10 Jun 2025 16:18:36 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXn9Az0G5wa7OS9eJFK/euEDnpId84O36zhTxM9QUcngSMLolrUIYHNkytgKszZUOpfLWJ+Szd98d7qbAQ=@vger.kernel.org
-X-Received: by 2002:a17:90b:3908:b0:311:ab20:1591 with SMTP id
- 98e67ed59e1d1-313af9711a2mr1450240a91.15.1749597515737; Tue, 10 Jun 2025
- 16:18:35 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1749606106; x=1750210906;
+        h=mime-version:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=a0dVcb4mCq2bSSy46KTU9Gw7pSw3OfMXBWad0p0FySA=;
+        b=aC9DkH4iC6ul/WLhs4xxXAxTPicUMHN7/rpL1UpRPdy/e9SauDa0ZaRNqxBN7WHJwX
+         XKS66dmZlbcyb05SJem9TwqZzy4ObNUNqI4ZMW0xj3mgGmr8c1H+eDx63Ae+G27NJvM9
+         dnnOgl4uyPtT8WYasAEL4OzLCJB2CYHHT5usxncgyLSYI7BbIJrhBcsylQdZ/ySh3AVK
+         4Lo040507p7nXoevXNNXYR0xo8vJuEJD0FqB6vdrnsUspEiOJ4Cd+fMHTQoCCLE7u7gi
+         sOG5brPILL/wTIMM+TpB5pCYQ6zG+w+yVBYT1krrpyLLnqdYZ3HhsvxKLUY5sMw2seY/
+         j9iQ==
+X-Gm-Message-State: AOJu0Yz5z2JocEedA0Odiq4ZXyG8vOFnOwP32b68wp7HoyppIiuOUkU9
+	kVfylge634SbCvcb1U2d7e+Z7U6BF4ZmUhmYbsqciScevSpmViBugITVOtGSeo0ixCR0z1WVSld
+	nawnn
+X-Gm-Gg: ASbGncsH+9z26tzaMt2neVfLIlKPzTXF/g8x0ujW52i5cj4QpIJz+UlpCc8nraLpPYy
+	8EveAB/6G6glDlGXKF0wSvGROnwhoe3t5nck1A1TQarOCuXPiRDs7gY07hAYCsgCAPgrgzHeuIF
+	lheZ3YPKTk/1MLexmgHF/X30t6xJLNMIW0WW1yUfA4WXiofPU59zrY+tAByuGBo82ARQX84NGjy
+	Ysp2hv1R9AKGzdK+wdtM3YjeVK+P9dSvRZmWbJUe76gM9xBuBxRUIbSlwn+fO3Go4RRXEt0NP5q
+	s+Sa9r0jbXi4fzjW83CCkX8eNFFrD/3ypkXt1goXKVCTKfakda6yUYptbqodELu/qjPxkLAMk7n
+	7OPim5ar2/vNQNfI7t2TEYx+j
+X-Google-Smtp-Source: AGHT+IEQbrz7RwyiGN8V+7z64D4xdgmsviG8r/Zzdp8SlBm6YsYUWWHHm2ur+UN7w5AuSq1h89JPbA==
+X-Received: by 2002:a05:622a:2287:b0:494:a36c:ebd7 with SMTP id d75a77b69052e-4a713c35ff8mr32647061cf.34.1749606105997;
+        Tue, 10 Jun 2025 18:41:45 -0700 (PDT)
+Received: from xanadu (modemcable179.17-162-184.mc.videotron.ca. [184.162.17.179])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a619865d36sm80410911cf.56.2025.06.10.18.41.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Jun 2025 18:41:45 -0700 (PDT)
+Date: Tue, 10 Jun 2025 21:41:44 -0400 (EDT)
+From: Nicolas Pitre <npitre@baylibre.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    Jiri Slaby <jirislaby@kernel.org>
+cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] vt: add missing notification when switching back to text
+ mode
+Message-ID: <9o5ro928-0pp4-05rq-70p4-ro385n21n723@onlyvoer.pbz>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
- <20250606-printk-cleanup-part2-v1-4-f427c743dda0@suse.com>
- <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com> <f962e9bab3dc8bf5cae1c7e187a54fb96a543d51.camel@suse.com>
-In-Reply-To: <f962e9bab3dc8bf5cae1c7e187a54fb96a543d51.camel@suse.com>
-From: Doug Anderson <dianders@chromium.org>
-Date: Tue, 10 Jun 2025 16:18:22 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XFeokpbMUFjAc0OkwJ97vR8aB+4GbnFxRKymvpEY3gnA@mail.gmail.com>
-X-Gm-Features: AX0GCFt6n77pbmil8IDH9ETyvVBk9GLYcHe7RwT91u86Q2sJf5v-ZMY6TwpptAA
-Message-ID: <CAD=FV=XFeokpbMUFjAc0OkwJ97vR8aB+4GbnFxRKymvpEY3gnA@mail.gmail.com>
-Subject: Re: [PATCH 4/7] drivers: serial: kgdboc: Check CON_SUSPENDED instead
- of CON_ENABLED
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Petr Mladek <pmladek@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <danielt@kernel.org>, 
-	Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, 
-	Johannes Berg <johannes@sipsolutions.net>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, 
-	linux-um@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 
-Hi,
+Programs using poll() on /dev/vcsa to be notified when VT changes occur
+were missing one case: the switch from gfx to text mode.
 
-On Tue, Jun 10, 2025 at 1:03=E2=80=AFPM Marcos Paulo de Souza
-<mpdesouza@suse.com> wrote:
->
-> On Mon, 2025-06-09 at 13:13 -0700, Doug Anderson wrote:
-> > Hi,
-> >
-> > On Fri, Jun 6, 2025 at 7:54=E2=80=AFPM Marcos Paulo de Souza
-> > <mpdesouza@suse.com> wrote:
-> > >
-> > > All consoles found on for_each_console are registered, meaning that
-> > > all of
-> > > them are CON_ENABLED. The code tries to find an active console, so
-> > > check if the
-> > > console is not suspended instead.
-> > >
-> > > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> > > ---
-> > >  drivers/tty/serial/kgdboc.c | 3 ++-
-> > >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/tty/serial/kgdboc.c
-> > > b/drivers/tty/serial/kgdboc.c
-> > > index
-> > > 85f6c5a76e0fff556f86f0d45ebc5aadf5b191e8..af6d2208b8ddb82d62f33292b
-> > > 006b2923583a0d2 100644
-> > > --- a/drivers/tty/serial/kgdboc.c
-> > > +++ b/drivers/tty/serial/kgdboc.c
-> > > @@ -577,7 +577,8 @@ static int __init kgdboc_earlycon_init(char
-> > > *opt)
-> > >         console_list_lock();
-> > >         for_each_console(con) {
-> > >                 if (con->write && con->read &&
-> > > -                   (con->flags & (CON_BOOT | CON_ENABLED)) &&
-> > > +                   (con->flags & CON_BOOT) &&
-> > > +                   ((con->flags & CON_SUSPENDED) =3D=3D 0) &&
-> >
-> > I haven't tried running the code, so I could easily be mistaken,
-> > but...
-> >
-> > ...the above doesn't seem like the correct conversion. The old
-> > expression was:
-> >
-> > (con->flags & (CON_BOOT | CON_ENABLED))
-> >
-> > That would evaluate to non-zero (true) if the console was _either_
-> > "boot" or "enabled".
-> >
-> > The new expression is is:
-> >
-> > (con->flags & CON_BOOT) && ((con->flags & CON_SUSPENDED) =3D=3D 0)
-> >
-> > That's only true if the console is _both_ "boot" and "not suspended".
->
-> My idea here was that the users of for_each_console would find the
-> first available console, and by available I would expect them to be
-> usable. In this case, is there any value for kgdboc to use a console
-> that is suspended? Would it work in this case?
->
-> I never really used kgdboc, but only checking if the console was
-> enabled (which it's always the case here) was something that needed to
-> be fixed.
->
-> Maybe I'm missing something here as well, so please let me know if I
-> should remove the new check.
+Signed-off-by: Nicolas Pitre <npitre@baylibre.com>
 
-So it's been 5 years since I wrote the code, but reading that I was
-checking for:
-
-  (con->flags & (CON_BOOT | CON_ENABLED))
-
-Makes me believe that this was the case when I wrote the code:
-1. Early boot consoles (earlycon) were not marked as CON_ENABLED but
-were instead marked as CON_BOOT.
-2. Once consoles became non-early they were moved to CON_ENABLED.
-
-...and the code was basically looking for any consoles with a matching
-name that were either boot consoles or normal/enabled consoles.
-
-Is that a plausible theory? It's also possible that I just was
-confused when I code things up and that I really meant to write:
-
-((con->flags & (CON_BOOT | CON_ENABLED)) =3D=3D (CON_BOOT | CON_ENABLED))
-
-...AKA that I wanted consoles that were BOOT _and_ ENABLED.
-
-In any case, I booted up the current mainline and I put a printout here. I =
-saw:
-
-[    0.000000] kgdboc: DOUG: console qcom_geni has flags 0x0000000f
-
-So that means that both BOOT and ENABLED were set. That makes me feel
-like it's plausible that I was confused and really meant BOOT _and_
-ENABLED. I didn't spend time trying to figure out how to build/boot an
-old kernel to check, though.
-
-In any case, given my test then I think your change should be fine.
-Given that it does change the boolean logic, it seems like that
-deserves a mention in the commit message.
-
--Doug
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index ed39d9cb4432..62049ceb34de 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -4650,6 +4650,7 @@ void do_unblank_screen(int leaving_gfx)
+ 	set_palette(vc);
+ 	set_cursor(vc);
+ 	vt_event_post(VT_EVENT_UNBLANK, vc->vc_num, vc->vc_num);
++	notify_update(vc);
+ }
+ EXPORT_SYMBOL(do_unblank_screen);
+ 
