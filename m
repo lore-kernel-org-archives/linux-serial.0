@@ -1,52 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DFCB26463A;
-	Wed, 11 Jun 2025 10:03:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 935B6267AF7;
+	Wed, 11 Jun 2025 10:03:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749636207; cv=none; b=aKSYiPNb2J2bAbZandYCCZ4jYSE4ZMXL4gFlWe9a+vJKWPE+n2cGLnFc7Cri2RJl0et5hfnJPhEBUbnqiwFOC2LObVxThUZufRcOBMr39+nbdAwlLsxZksEGDiaYg8+i0pFU/oswyrsV6Pq/CB5dBLjY/6flO81ESFccVV5uB/E=
+	t=1749636209; cv=none; b=ToIrtw/gPDz9HZy1OXGIyMG5N3LT20yt+B9zsgR7ip/HwXmIjgfV9LOobo79xddpxMz/z9fdaO82MIOGNosEJO/QHB7m7Zhj4NBq7m5RqMWqmIcNgt6DtpS/JrxVhzG2lUZ4CPQBoGGTfpwgBxg2TI7QtHHgCtTTZ0+uDoScw74=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749636207; c=relaxed/simple;
-	bh=KpqxD4POGHfy23PplJeilT9uuVSTNzfSBk37cW0+nQs=;
+	s=arc-20240116; t=1749636209; c=relaxed/simple;
+	bh=8bnFg7Ex1c31Wg8ZGfwLvn1m/DM1vD49g1g+c7qmqE4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QDlNdixQpjPhkbTYGbuSJxMzJU70g+25Z7vCDQOMSXOsi2eUzNKeHy+nWMRc7y6pCmjbhBZ7rplHV8k4md09iDSr+PeFFWMp2Lzv4B97IMXlUJXoW/8849nVSdyUp79FB61M2884WNBeA7qO2tmEknffsPPV+ySQxc4PdL1Ae5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rU7fDQ+5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=B4nWYoIG8V6LV4TQwXiJ5WDp4E0R1QtTMI+SvM+FJ/j8sy+x3VN68e+41E4p3mCoyAkyzHZDJY5Sv3xJO/NKPNiI5oLtV4v390wqyUIkV6Zyxi4f0vwEWr1lhSteK7poe1F5tQKUw2YY498pW8aKkwLwXaVZ35KQqhMi7TWgZec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rfgyq3tc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rU7fDQ+5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A41EC4CEF4;
-	Wed, 11 Jun 2025 10:03:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rfgyq3tc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19293C4CEF5;
+	Wed, 11 Jun 2025 10:03:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749636206;
-	bh=KpqxD4POGHfy23PplJeilT9uuVSTNzfSBk37cW0+nQs=;
+	s=k20201202; t=1749636209;
+	bh=8bnFg7Ex1c31Wg8ZGfwLvn1m/DM1vD49g1g+c7qmqE4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=rU7fDQ+5pTYxH0ytcyrwQgoHOCsVbLm5NnmPR4QFM0EM7EYgtNRw+LFFxwP/Hhvao
-	 RIt1V9+ZnGAgKnDI6H/E4rtFQMXK/OetCGUZs/5SVxBGM3dOb202foEfio4q9rZdM8
-	 /9O1Q0cFZ39DFXyVVZ9SHjAtKdBm9c4dRuuf2uOdhp6eKCde1oiDfHR1ENgAK1nG8C
-	 yXw+d0dOokqHgp6SFTQPGfBbmouyYt6/EtfGIqbM3KdlFyrIEEaieGuf750zrtL3+Q
-	 xe4o9rTBfWY92n/+czgIgmUxYeaQUROIjdvAi5IkXrVpA5nAA/Kd5+4no3uz4J2TAB
-	 r3iVHsKUHwmXg==
+	b=rfgyq3tczjfCxpExT7x4sCS2GTkABalaCVdcqQW2DYDoWoLPGVpvmAbLHZwZh7kye
+	 Q+km2FU/OK951dY5/AobofzeH1DR1H52TR/vJs4yaCvod/K7io9IlMom970gOaP4lq
+	 HDVquE2oKLHj7taHe+S2EjUKCc44HiAKq9XF4H/u7jcCURN0oTMaHv3D0MLgdWs7Hq
+	 UMoSztVaQPk3xRXeQL1NjWzGVGypSVRfRHL6uExX/LqU5wPqhH+7typ8d6ThDjMnFC
+	 Llk1oy7xE4FbxT1NgdJYE20McAHnWNOUQJN+BoedB2vMU5BiImvnnTebP7Ih6QtMxU
+	 buXjjXwmjgi3Q==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Karsten Keil <isdn@linux-pingi.de>,
-	David Lin <dtwlin@gmail.com>,
-	Johan Hovold <johan@kernel.org>,
-	Alex Elder <elder@kernel.org>,
-	Oliver Neukum <oneukum@suse.com>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Johan Hedberg <johan.hedberg@gmail.com>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	netdev@vger.kernel.org,
-	greybus-dev@lists.linaro.org,
-	linux-staging@lists.linux.dev,
-	linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org
-Subject: [PATCH 01/33] tty: introduce and use tty_port_tty_vhangup() helper
-Date: Wed, 11 Jun 2025 12:02:47 +0200
-Message-ID: <20250611100319.186924-2-jirislaby@kernel.org>
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 02/33] powerpc/legacy_serial: cache serial port and info in add_legacy_port()
+Date: Wed, 11 Jun 2025 12:02:48 +0200
+Message-ID: <20250611100319.186924-3-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250611100319.186924-1-jirislaby@kernel.org>
 References: <20250611100319.186924-1-jirislaby@kernel.org>
@@ -58,243 +50,110 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This code (tty_get -> vhangup -> tty_put) is repeated on few places.
-Introduce a helper similar to tty_port_tty_hangup() (asynchronous) to
-handle even vhangup (synchronous).
-
-And use it on those places.
-
-In fact, reuse the tty_port_tty_hangup()'s code and call tty_vhangup()
-depending on a new bool parameter.
+Caching the port and info in local variables makes the code more compact
+and easier to understand.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Cc: Karsten Keil <isdn@linux-pingi.de>
-Cc: David Lin <dtwlin@gmail.com>
-Cc: Johan Hovold <johan@kernel.org>
-Cc: Alex Elder <elder@kernel.org>
-Cc: Oliver Neukum <oneukum@suse.com>
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc: linuxppc-dev@lists.ozlabs.org
 ---
-Cc: netdev@vger.kernel.org
-Cc: greybus-dev@lists.linaro.org
-Cc: linux-staging@lists.linux.dev
-Cc: linux-usb@vger.kernel.org
-Cc: linux-bluetooth@vger.kernel.org
----
- drivers/isdn/capi/capi.c         |  8 +-------
- drivers/staging/greybus/uart.c   |  7 +------
- drivers/tty/serial/serial_core.c |  7 +------
- drivers/tty/tty_port.c           | 12 ++++++++----
- drivers/usb/class/cdc-acm.c      |  7 +------
- drivers/usb/serial/usb-serial.c  |  7 +------
- include/linux/tty_port.h         | 12 +++++++++++-
- net/bluetooth/rfcomm/tty.c       |  7 +------
- 8 files changed, 25 insertions(+), 42 deletions(-)
+ arch/powerpc/kernel/legacy_serial.c | 52 ++++++++++++++---------------
+ 1 file changed, 26 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/isdn/capi/capi.c b/drivers/isdn/capi/capi.c
-index 70dee9ad4bae..78e6e7748fb9 100644
---- a/drivers/isdn/capi/capi.c
-+++ b/drivers/isdn/capi/capi.c
-@@ -306,15 +306,9 @@ static void capincci_alloc_minor(struct capidev *cdev, struct capincci *np)
- static void capincci_free_minor(struct capincci *np)
+diff --git a/arch/powerpc/kernel/legacy_serial.c b/arch/powerpc/kernel/legacy_serial.c
+index 1da2f6e7d2a1..d9080189c28c 100644
+--- a/arch/powerpc/kernel/legacy_serial.c
++++ b/arch/powerpc/kernel/legacy_serial.c
+@@ -77,6 +77,8 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
+ 				  phys_addr_t taddr, unsigned long irq,
+ 				  upf_t flags, int irq_check_parent)
  {
- 	struct capiminor *mp = np->minorp;
--	struct tty_struct *tty;
++	struct plat_serial8250_port *legacy_port;
++	struct legacy_serial_info *legacy_info;
+ 	const __be32 *clk, *spd, *rs;
+ 	u32 clock = BASE_BAUD * 16;
+ 	u32 shift = 0;
+@@ -110,16 +112,17 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
+ 	if (index >= legacy_serial_count)
+ 		legacy_serial_count = index + 1;
  
- 	if (mp) {
--		tty = tty_port_tty_get(&mp->port);
--		if (tty) {
--			tty_vhangup(tty);
--			tty_kref_put(tty);
--		}
--
-+		tty_port_tty_vhangup(&mp->port);
- 		capiminor_free(mp);
++	legacy_port = &legacy_serial_ports[index];
++	legacy_info = &legacy_serial_infos[index];
++
+ 	/* Check if there is a port who already claimed our slot */
+-	if (legacy_serial_infos[index].np != NULL) {
++	if (legacy_info->np != NULL) {
+ 		/* if we still have some room, move it, else override */
+ 		if (legacy_serial_count < MAX_LEGACY_SERIAL_PORTS) {
+ 			printk(KERN_DEBUG "Moved legacy port %d -> %d\n",
+ 			       index, legacy_serial_count);
+-			legacy_serial_ports[legacy_serial_count] =
+-				legacy_serial_ports[index];
+-			legacy_serial_infos[legacy_serial_count] =
+-				legacy_serial_infos[index];
++			legacy_serial_ports[legacy_serial_count] = *legacy_port;
++			legacy_serial_infos[legacy_serial_count] = *legacy_info;
+ 			legacy_serial_count++;
+ 		} else {
+ 			printk(KERN_DEBUG "Replacing legacy port %d\n", index);
+@@ -127,36 +130,33 @@ static int __init add_legacy_port(struct device_node *np, int want_index,
  	}
- }
-diff --git a/drivers/staging/greybus/uart.c b/drivers/staging/greybus/uart.c
-index 308ed1ca9947..10df5c37c83e 100644
---- a/drivers/staging/greybus/uart.c
-+++ b/drivers/staging/greybus/uart.c
-@@ -916,7 +916,6 @@ static void gb_uart_remove(struct gbphy_device *gbphy_dev)
- {
- 	struct gb_tty *gb_tty = gb_gbphy_get_data(gbphy_dev);
- 	struct gb_connection *connection = gb_tty->connection;
--	struct tty_struct *tty;
- 	int ret;
  
- 	ret = gbphy_runtime_get_sync(gbphy_dev);
-@@ -929,11 +928,7 @@ static void gb_uart_remove(struct gbphy_device *gbphy_dev)
- 	wake_up_all(&gb_tty->wioctl);
- 	mutex_unlock(&gb_tty->mutex);
- 
--	tty = tty_port_tty_get(&gb_tty->port);
--	if (tty) {
--		tty_vhangup(tty);
--		tty_kref_put(tty);
--	}
-+	tty_port_tty_vhangup(&gb_tty->port);
- 
- 	gb_connection_disable_rx(connection);
- 	tty_unregister_device(gb_tty_driver, gb_tty->minor);
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 1f7708a91fc6..d6485714eb0f 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -3209,7 +3209,6 @@ static void serial_core_remove_one_port(struct uart_driver *drv,
- 	struct uart_state *state = drv->state + uport->line;
- 	struct tty_port *port = &state->port;
- 	struct uart_port *uart_port;
--	struct tty_struct *tty;
- 
- 	mutex_lock(&port->mutex);
- 	uart_port = uart_port_check(state);
-@@ -3228,11 +3227,7 @@ static void serial_core_remove_one_port(struct uart_driver *drv,
- 	 */
- 	tty_port_unregister_device(port, drv->tty_driver, uport->line);
- 
--	tty = tty_port_tty_get(port);
--	if (tty) {
--		tty_vhangup(port->tty);
--		tty_kref_put(tty);
--	}
-+	tty_port_tty_vhangup(port);
- 
- 	/*
- 	 * If the port is used as a console, unregister it
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 4af1fbf73f51..903eebdbe12d 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -396,15 +396,19 @@ EXPORT_SYMBOL(tty_port_hangup);
-  * @port: tty port
-  * @check_clocal: hang only ttys with %CLOCAL unset?
-  */
--void tty_port_tty_hangup(struct tty_port *port, bool check_clocal)
-+void __tty_port_tty_hangup(struct tty_port *port, bool check_clocal, bool async)
- {
- 	struct tty_struct *tty = tty_port_tty_get(port);
- 
--	if (tty && (!check_clocal || !C_CLOCAL(tty)))
--		tty_hangup(tty);
-+	if (tty && (!check_clocal || !C_CLOCAL(tty))) {
-+		if (async)
-+			tty_hangup(tty);
-+		else
-+			tty_vhangup(tty);
-+	}
- 	tty_kref_put(tty);
- }
--EXPORT_SYMBOL_GPL(tty_port_tty_hangup);
-+EXPORT_SYMBOL_GPL(__tty_port_tty_hangup);
- 
- /**
-  * tty_port_tty_wakeup - helper to wake up a tty
-diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index c2ecfa3c8349..f9171fbedf5c 100644
---- a/drivers/usb/class/cdc-acm.c
-+++ b/drivers/usb/class/cdc-acm.c
-@@ -1571,7 +1571,6 @@ static int acm_probe(struct usb_interface *intf,
- static void acm_disconnect(struct usb_interface *intf)
- {
- 	struct acm *acm = usb_get_intfdata(intf);
--	struct tty_struct *tty;
- 	int i;
- 
- 	/* sibling interface is already cleaning up */
-@@ -1598,11 +1597,7 @@ static void acm_disconnect(struct usb_interface *intf)
- 	usb_set_intfdata(acm->data, NULL);
- 	mutex_unlock(&acm->mutex);
- 
--	tty = tty_port_tty_get(&acm->port);
--	if (tty) {
--		tty_vhangup(tty);
--		tty_kref_put(tty);
--	}
-+	tty_port_tty_vhangup(&acm->port);
- 
- 	cancel_delayed_work_sync(&acm->dwork);
- 
-diff --git a/drivers/usb/serial/usb-serial.c b/drivers/usb/serial/usb-serial.c
-index 7266558d823a..c78ff40b1e5f 100644
---- a/drivers/usb/serial/usb-serial.c
-+++ b/drivers/usb/serial/usb-serial.c
-@@ -1176,7 +1176,6 @@ static void usb_serial_disconnect(struct usb_interface *interface)
- 	struct usb_serial *serial = usb_get_intfdata(interface);
- 	struct device *dev = &interface->dev;
- 	struct usb_serial_port *port;
--	struct tty_struct *tty;
- 
- 	/* sibling interface is cleaning up */
- 	if (!serial)
-@@ -1191,11 +1190,7 @@ static void usb_serial_disconnect(struct usb_interface *interface)
- 
- 	for (i = 0; i < serial->num_ports; ++i) {
- 		port = serial->port[i];
--		tty = tty_port_tty_get(&port->port);
--		if (tty) {
--			tty_vhangup(tty);
--			tty_kref_put(tty);
--		}
-+		tty_port_tty_vhangup(&port->port);
- 		usb_serial_port_poison_urbs(port);
- 		wake_up_interruptible(&port->port.delta_msr_wait);
- 		cancel_work_sync(&port->work);
-diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-index 08f89a598366..021f9a8415c0 100644
---- a/include/linux/tty_port.h
-+++ b/include/linux/tty_port.h
-@@ -232,7 +232,7 @@ bool tty_port_carrier_raised(struct tty_port *port);
- void tty_port_raise_dtr_rts(struct tty_port *port);
- void tty_port_lower_dtr_rts(struct tty_port *port);
- void tty_port_hangup(struct tty_port *port);
--void tty_port_tty_hangup(struct tty_port *port, bool check_clocal);
-+void __tty_port_tty_hangup(struct tty_port *port, bool check_clocal, bool async);
- void tty_port_tty_wakeup(struct tty_port *port);
- int tty_port_block_til_ready(struct tty_port *port, struct tty_struct *tty,
- 		struct file *filp);
-@@ -251,4 +251,14 @@ static inline int tty_port_users(struct tty_port *port)
- 	return port->count + port->blocked_open;
- }
- 
-+static inline void tty_port_tty_hangup(struct tty_port *port, bool check_clocal)
-+{
-+	__tty_port_tty_hangup(port, check_clocal, true);
-+}
+ 	/* Now fill the entry */
+-	memset(&legacy_serial_ports[index], 0,
+-	       sizeof(struct plat_serial8250_port));
++	memset(legacy_port, 0, sizeof(*legacy_port));
+ 	if (iotype == UPIO_PORT)
+-		legacy_serial_ports[index].iobase = base;
++		legacy_port->iobase = base;
+ 	else
+-		legacy_serial_ports[index].mapbase = base;
+-
+-	legacy_serial_ports[index].iotype = iotype;
+-	legacy_serial_ports[index].uartclk = clock;
+-	legacy_serial_ports[index].irq = irq;
+-	legacy_serial_ports[index].flags = flags;
+-	legacy_serial_ports[index].regshift = shift;
+-	legacy_serial_infos[index].taddr = taddr;
+-	legacy_serial_infos[index].np = of_node_get(np);
+-	legacy_serial_infos[index].clock = clock;
+-	legacy_serial_infos[index].speed = spd ? be32_to_cpup(spd) : 0;
+-	legacy_serial_infos[index].irq_check_parent = irq_check_parent;
++		legacy_port->mapbase = base;
 +
-+static inline void tty_port_tty_vhangup(struct tty_port *port)
-+{
-+	__tty_port_tty_hangup(port, false, false);
-+}
-+
- #endif
-diff --git a/net/bluetooth/rfcomm/tty.c b/net/bluetooth/rfcomm/tty.c
-index 21a5b5535ebc..827dfbe66085 100644
---- a/net/bluetooth/rfcomm/tty.c
-+++ b/net/bluetooth/rfcomm/tty.c
-@@ -438,7 +438,6 @@ static int __rfcomm_release_dev(void __user *arg)
- {
- 	struct rfcomm_dev_req req;
- 	struct rfcomm_dev *dev;
--	struct tty_struct *tty;
++	legacy_port->iotype = iotype;
++	legacy_port->uartclk = clock;
++	legacy_port->irq = irq;
++	legacy_port->flags = flags;
++	legacy_port->regshift = shift;
++	legacy_info->taddr = taddr;
++	legacy_info->np = of_node_get(np);
++	legacy_info->clock = clock;
++	legacy_info->speed = spd ? be32_to_cpup(spd) : 0;
++	legacy_info->irq_check_parent = irq_check_parent;
  
- 	if (copy_from_user(&req, arg, sizeof(req)))
- 		return -EFAULT;
-@@ -464,11 +463,7 @@ static int __rfcomm_release_dev(void __user *arg)
- 		rfcomm_dlc_close(dev->dlc, 0);
+ 	if (iotype == UPIO_TSI) {
+-		legacy_serial_ports[index].serial_in = tsi_serial_in;
+-		legacy_serial_ports[index].serial_out = tsi_serial_out;
++		legacy_port->serial_in = tsi_serial_in;
++		legacy_port->serial_out = tsi_serial_out;
+ 	}
  
- 	/* Shut down TTY synchronously before freeing rfcomm_dev */
--	tty = tty_port_tty_get(&dev->port);
--	if (tty) {
--		tty_vhangup(tty);
--		tty_kref_put(tty);
--	}
-+	tty_port_tty_vhangup(&dev->port);
+-	printk(KERN_DEBUG "Found legacy serial port %d for %pOF\n",
+-	       index, np);
++	printk(KERN_DEBUG "Found legacy serial port %d for %pOF\n", index, np);
+ 	printk(KERN_DEBUG "  %s=%llx, taddr=%llx, irq=%lx, clk=%d, speed=%d\n",
+ 	       (iotype == UPIO_PORT) ? "port" : "mem",
+ 	       (unsigned long long)base, (unsigned long long)taddr, irq,
+-	       legacy_serial_ports[index].uartclk,
+-	       legacy_serial_infos[index].speed);
++	       legacy_port->uartclk, legacy_info->speed);
  
- 	if (!test_bit(RFCOMM_TTY_OWNED, &dev->status))
- 		tty_port_put(&dev->port);
+ 	return index;
+ }
 -- 
 2.49.0
 
