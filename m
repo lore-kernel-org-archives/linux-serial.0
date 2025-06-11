@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9663A26FA4E;
-	Wed, 11 Jun 2025 10:03:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82E7826FD87;
+	Wed, 11 Jun 2025 10:04:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749636238; cv=none; b=Etlg5dXoqtBWe/tH09jRaaepB+bwKYnBgh9LTM4Wybs8qZfNSlyAc/TACI4IhhocOvpIvYZmdPvHktdpHwohqRGy+9MHsSRL50xuJDXyY5y9Pw7NvBvpaQgmUC2qb7LqY9V3vFd+KKYYpRKbB66ZliQwD/1uP8Ds7Z4Qd43kYgo=
+	t=1749636240; cv=none; b=WEZuNkg5qzJIPCacfcPu9JY9RtKHARe/Su/Dx4r9MwgO8d1nONo8G8KZuNKfAQgqIAQSg+EvnxLeAdTFTE2AQi/fMZWR2AsIqRev6IBv74wPkLq+7VfLEcY93oNtb9ZCoTmvBD6KLOpn4DrfSd+KUz6si73HKUtgIlagkf0EHYU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749636238; c=relaxed/simple;
-	bh=xaJJlQcxKm++tvGMXyDRzn8B2BvesW+EjNbVHmVVJug=;
+	s=arc-20240116; t=1749636240; c=relaxed/simple;
+	bh=yk7rS8uj6HMJ5l7KaUfXbIeHDknoyAKWxylgblqDUG0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CtgDt6Sb3yPOuIFZYPSZfM8D3DB77aFoR++VUoqo9agKWb0JxEJhCdyJhxXMD04e1i8Yur4ASKmuhXU7vcWcCJ4IYTFnTnllZRQtSrsqF0BYeEL4XBWkbjnC8VllBFC58ZnLWPXhemYy63Nkb/quTuLti64s2M20M4XXLmGMa7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eKPjiF70; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=leBbbmn0AARrxgyq7x8/g4qjG6LWRt+CrFRDZ9wSjXB2BE1GNImvbqNO5GxrkhNwUm389gUYeE3cmezrWKBo01yewL2QtEo0cf9p6TTLuH6T4usbBvydwiP3DQDjfQHpGbglfRKZhMf5rFqOeL954Ee4q/1vSmeKgW1g/xQ6xWk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LzCpjg+y; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eKPjiF70"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67DCCC4CEEE;
-	Wed, 11 Jun 2025 10:03:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LzCpjg+y"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E88C4CEEE;
+	Wed, 11 Jun 2025 10:03:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749636238;
-	bh=xaJJlQcxKm++tvGMXyDRzn8B2BvesW+EjNbVHmVVJug=;
+	s=k20201202; t=1749636240;
+	bh=yk7rS8uj6HMJ5l7KaUfXbIeHDknoyAKWxylgblqDUG0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=eKPjiF70Z9ktWH2DzYCR1IMSJdDGOIOyBvbS1GMXPfZUKNaIeSw8l2dnIw31Lhyxy
-	 H2pCQ00z3f/6QmiOJYTP/RqLwKmw2cHiB8dIVl3JXeiPIHJyuNjEr+i6xy6SqAMnmL
-	 9ypC+euhuc0TZ2x97nAZoFuMPF5gDQbZPm/y6QZAky6N990Gqcq+nRr92luIJ86B43
-	 ZTEj1HDtQbbIFGzpcc9K3lVd9NqbNjy3uBjd5EAeTolVDRo+6bIrmo6+y3iyrOJKjV
-	 ZOy9L4AWe9t7Duzx3ZyiiNWInkvWr2AEuFsbrVEH/sRliH2uQiFszGJUW6LqNlr8Ex
-	 ZzQZdi0qgvNYg==
+	b=LzCpjg+yH5ePv7DpJE9qCDkCezIZ3nXkckOKrFjKY4uCS3G3ogR2KfEFaWR+4JtY0
+	 /JXZqz+kZ6aZsQTMns/CJm2ZGM5d2U1QN36GjrCdZ3Rb8e18uPntcmZONR8v08DsjF
+	 p+b5wQ7bSaFQZfYcggCFBf23LTJKS0m+WTb/vAfiz9j00MlzzfenvQ27f6su6JiOTK
+	 0BqIDNjAJmZAw1jB2PWmg0mKkfB6U8kfNIJiAjp2FfuJBe08kLhfwS6xuRpHFlY7cB
+	 iYnpNW4KSOnU6CaVemsUtnuYAstzzJzm70ia701MIw53l9i9z1XSnMudPZvGVwXw8P
+	 LMgqSdWDv83NA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 18/33] serial: 8250: extract serial8250_set_mini()
-Date: Wed, 11 Jun 2025 12:03:04 +0200
-Message-ID: <20250611100319.186924-19-jirislaby@kernel.org>
+Subject: [PATCH 19/33] serial: 8250: extract serial8250_set_trigger_for_slow_speed()
+Date: Wed, 11 Jun 2025 12:03:05 +0200
+Message-ID: <20250611100319.186924-20-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250611100319.186924-1-jirislaby@kernel.org>
 References: <20250611100319.186924-1-jirislaby@kernel.org>
@@ -47,56 +47,57 @@ Content-Transfer-Encoding: 8bit
 
 serial8250_do_set_termios() consists of many registers and up flags
 settings. Extract all these into separate functions. This time, setting
-of CSIZE for UART_CAP_MINI ports.
+of trigger level for slow speeds.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 26 +++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index a73f4db22feb..edfbaa6b7a1b 100644
+index edfbaa6b7a1b..52385314c426 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2670,6 +2670,22 @@ void serial8250_update_uartclk(struct uart_port *port, unsigned int uartclk)
+@@ -2686,6 +2686,24 @@ static void serial8250_set_mini(struct uart_port *port, struct ktermios *termios
+ 	}
  }
- EXPORT_SYMBOL_GPL(serial8250_update_uartclk);
  
-+static void serial8250_set_mini(struct uart_port *port, struct ktermios *termios)
++static void serial8250_set_trigger_for_slow_speed(struct uart_port *port, struct ktermios *termios,
++						  unsigned int baud)
 +{
 +	struct uart_8250_port *up = up_to_u8250p(port);
 +
-+	if (!(up->capabilities & UART_CAP_MINI))
++	if (!(up->capabilities & UART_CAP_FIFO))
++		return;
++	if (port->fifosize <= 1)
++		return;
++	if (baud >= 2400)
++		return;
++	if (up->dma)
 +		return;
 +
-+	termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CMSPAR);
-+
-+	tcflag_t csize = termios->c_cflag & CSIZE;
-+	if (csize == CS5 || csize == CS6) {
-+		termios->c_cflag &= ~CSIZE;
-+		termios->c_cflag |= CS7;
-+	}
++	up->fcr &= ~UART_FCR_TRIGGER_MASK;
++	up->fcr |= UART_FCR_TRIGGER_1;
 +}
 +
  void
  serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
  		          const struct ktermios *old)
-@@ -2679,14 +2695,8 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	unsigned long flags;
- 	unsigned int baud, quot, frac = 0;
+@@ -2710,13 +2728,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	uart_port_lock_irqsave(port, &flags);
  
--	if (up->capabilities & UART_CAP_MINI) {
--		termios->c_cflag &= ~(CSTOPB | PARENB | PARODD | CMSPAR);
--		if ((termios->c_cflag & CSIZE) == CS5 ||
--		    (termios->c_cflag & CSIZE) == CS6)
--			termios->c_cflag = (termios->c_cflag & ~CSIZE) | CS7;
--	}
-+	serial8250_set_mini(port, termios);
- 	cval = serial8250_compute_lcr(up, termios->c_cflag);
+ 	up->lcr = cval;					/* Save computed LCR */
 -
- 	baud = serial8250_get_baud_rate(port, termios, old);
- 	quot = serial8250_get_divisor(port, baud, &frac);
+-	if (up->capabilities & UART_CAP_FIFO && port->fifosize > 1) {
+-		if (baud < 2400 && !up->dma) {
+-			up->fcr &= ~UART_FCR_TRIGGER_MASK;
+-			up->fcr |= UART_FCR_TRIGGER_1;
+-		}
+-	}
++	serial8250_set_trigger_for_slow_speed(port, termios, baud);
  
+ 	/*
+ 	 * MCR-based auto flow control.  When AFE is enabled, RTS will be
 -- 
 2.49.0
 
