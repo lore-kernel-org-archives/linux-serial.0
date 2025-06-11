@@ -1,171 +1,205 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C00625BF12;
-	Wed, 11 Jun 2025 11:54:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4F6E271459;
+	Wed, 11 Jun 2025 12:03:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749642853; cv=none; b=cprTP10x4WYraNygEqQ/bKSa5gZ11kSyvvQqEpdCr7VvJtaWwwfF/VX4y/idj/YF/VsTrOcnBZVJ7ASCGSscfUlpq01m72OZ39qdFILBSHuq8QOHCKjU2iQW2/2KaoE8n7Kwv2RpZDv+CnA5vupjeq76R3rjx10BED6n2ceYpNA=
+	t=1749643407; cv=none; b=iZvFFYI5zarKshSwdGubeLxWZa/ssvCDnGlDwQI5JfjcFG4WNhWH2JMPS045vVkA+ZOxhWWzp7xvvq8S5aBW0nyaS8bBJP0Ncr887KPdJW8Ed8gTd6HehSX6EDegxHj9YyXTITNOdw8bGbCmJGIbGuOpYQDv40n3ALHIvyhaVd0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749642853; c=relaxed/simple;
-	bh=aNqfbkDfrbz8wt+Ae/fhU2Bit6+gN5flB4KN4WMaMLE=;
+	s=arc-20240116; t=1749643407; c=relaxed/simple;
+	bh=MLNf9BlK6xMOHAGq5DSVwdju6kiEM8tRxQxwL0LNK24=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=STTNZegPTGADs+mgkN5RNud//lPrRTgiwPyGk0t9ozAfsrYfXOnal4CZQNVO2Ri9l+zVLDr5dNhfdXyrEKn/O1DCVSHwdSE2RUFCgqwEcBMSAggkLs8u9QyRUvln/zgoKdIOOzx4wwReNQ70iDkqNVUsuQRPXLVwCLYTPoYwmWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j2YWlW/l; arc=none smtp.client-ip=192.198.163.16
+	 MIME-Version:Content-Type; b=tVWgo1I28IksqqB6CjlF4TRq/jTvNU5DNMbuwBQwKEX5A+B4n55/Y2FUUtzdjlIOWAtjr2kwAlH0eWREdHvqZaCr+93UvJ2pSK+FFvIvT9jAoyOxgA4ssNBwb0ox/+QDGVpEuiM/irFPz3ZbuzVPmb8M1yD1JgG/KahnQBx5hws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=E88IPVB+; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j2YWlW/l"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="E88IPVB+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1749642852; x=1781178852;
+  t=1749643406; x=1781179406;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=aNqfbkDfrbz8wt+Ae/fhU2Bit6+gN5flB4KN4WMaMLE=;
-  b=j2YWlW/l2jVXps9mXN1jc6LuwHL8Fx5JJXX2//asvntpktn+hJI/Hi3f
-   i0oHzMUXN8N6bkDoGZ4aPt++lX0/Jrr03BiPHbkMBp5yJQlfs8lvhftDT
-   ltVM6jMdVHCNgifEqa1tbIRUbRunE3tVsBLi9rfO4AEj/pxUnFO8Wgtlt
-   7awXUKf1AoorXXXcPh5icdEpNDsSiyFufGP6lA6SJl1fZMvztzajHFs64
-   8VIQSMEYcfZ/UEqGl506OAm8y72vqELN18Azq148gHxzfrUoFMkJIZN+N
-   D7FgDhdY4Pj0DHxewxiXGj8gpCkDFlr1rZbNSbQPHnJeRDzbFEuZDqio0
-   w==;
-X-CSE-ConnectionGUID: NQCr+8p/QwS7khbBGDh/jw==
-X-CSE-MsgGUID: MrVItyhCSPu9HsBQzwDXKQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11460"; a="39401368"
+  bh=MLNf9BlK6xMOHAGq5DSVwdju6kiEM8tRxQxwL0LNK24=;
+  b=E88IPVB+XNMcgsaGdwVLN/vdCbP/YPsopSrjMOfCcd2GM5ThOXlgkFxt
+   HKESv3Ks7c9Iks8opEkecL54f3UUjYjkKh5+VsJuidV0JRLQ/SxBT8x7c
+   FrdDZUImmWCesAEY5pT0N2NwG8QFaOiYN9q0cxWgZh/+z/eVsdOHErxxm
+   GriRWnLIQhSVW2j2qdHqK1YWxd9oAreBfz3F6qhXU8hRiSUKxqn462O4F
+   /4VCXHG75/37UPTX3o9gvr7QOQ5o/9ns+V36tw45rYCF1Z8D8pRvm7Xeg
+   cJ3XLvHapdJC42JxrcVMVnw3zC56FbCLSbzr2ehs+saRS20pAhvfjTJi3
+   A==;
+X-CSE-ConnectionGUID: cNotr/r8SxSZbRoHtKWNgg==
+X-CSE-MsgGUID: B7lE8BlhQSCYDBNRTn2Rmg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11460"; a="55576967"
 X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
-   d="scan'208";a="39401368"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 04:54:11 -0700
-X-CSE-ConnectionGUID: eB6Ltda0TqW/R0CQcoHSIg==
-X-CSE-MsgGUID: POlUJcP1RjKd7eQzOUhK2g==
+   d="scan'208";a="55576967"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:03:25 -0700
+X-CSE-ConnectionGUID: RyqVNbn+RLeC9FrtBdOFNw==
+X-CSE-MsgGUID: MEbQAkFVTTuxyjqiH1G0gg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
-   d="scan'208";a="147091665"
+   d="scan'208";a="184382899"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.183])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 04:54:09 -0700
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:03:23 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 11 Jun 2025 14:54:04 +0300 (EEST)
+Date: Wed, 11 Jun 2025 15:03:18 +0300 (EEST)
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 11/33] serial: 8250: put RSA functions to their
- namespace
-In-Reply-To: <20250611100319.186924-12-jirislaby@kernel.org>
-Message-ID: <b7331326-8317-7e7e-809e-e61211cd7e0a@linux.intel.com>
-References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-12-jirislaby@kernel.org>
+cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+    linux-serial <linux-serial@vger.kernel.org>, 
+    LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 15/33] serial: 8250: extract serial8250_THRE_test()
+In-Reply-To: <20250611100319.186924-16-jirislaby@kernel.org>
+Message-ID: <2c7977aa-831d-16be-667f-9f761ea0060f@linux.intel.com>
+References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-16-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1177581371-1749642844=:957"
-
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323328-1177581371-1749642844=:957
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-Type: text/plain; charset=US-ASCII
 
 On Wed, 11 Jun 2025, Jiri Slaby (SUSE) wrote:
 
-> Prefix the functions with rsa_, not suffix.
->=20
-> This is a preparation for moving them out to 8250_rsa.c in the next
-> patch.
->
+> serial8250_do_startup() contains a stand-alone code for probing THRE.
+> Furthermore, the code block is conditional (port->irq and test for
+> UPF_NO_THRE_TEST).
+> 
+> Move this code to a separate function. The conditional can be evaluated
+> easier there -- by a simple return in the beginning. So the indentation
+> level lowers and the code is overall more readable now.
+> 
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index e7652d62ab2f..d8a90818f431 100644
+>  drivers/tty/serial/8250/8250_port.c | 92 +++++++++++++++--------------
+>  1 file changed, 49 insertions(+), 43 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+> index c09a90b38d8f..5466286bb44f 100644
 > --- a/drivers/tty/serial/8250/8250_port.c
 > +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -718,7 +718,7 @@ static void serial8250_clear_IER(struct uart_8250_por=
-t *up)
->   * Attempts to turn on the RSA FIFO.  Returns zero on failure.
->   * We set the port uart clock rate if we succeed.
->   */
-> -static int __enable_rsa(struct uart_8250_port *up)
-> +static int __rsa_enable(struct uart_8250_port *up)
->  {
->  =09unsigned char mode;
->  =09int result;
-> @@ -741,14 +741,14 @@ static int __enable_rsa(struct uart_8250_port *up)
->  /*
->   * If this is an RSA port, see if we can kick it up to the higher speed =
-clock.
->   */
-> -static void enable_rsa(struct uart_8250_port *up)
-> +static void rsa_enable(struct uart_8250_port *up)
->  {
->  =09if (up->port.type !=3D PORT_RSA)
->  =09=09return;
-> =20
->  =09if (up->port.uartclk !=3D SERIAL_RSA_BAUD_BASE * 16) {
->  =09=09uart_port_lock_irq(&up->port);
-> -=09=09__enable_rsa(up);
-> +=09=09__rsa_enable(up);
->  =09=09uart_port_unlock_irq(&up->port);
->  =09}
->  =09if (up->port.uartclk =3D=3D SERIAL_RSA_BAUD_BASE * 16)
-> @@ -760,7 +760,7 @@ static void enable_rsa(struct uart_8250_port *up)
->   * unknown why interrupts were disabled in here. However, the caller is =
-expected to preserve this
->   * behaviour by grabbing the spinlock before calling this function.
->   */
-> -static void disable_rsa(struct uart_8250_port *up)
-> +static void rsa_disable(struct uart_8250_port *up)
->  {
->  =09unsigned char mode;
->  =09int result;
-> @@ -794,7 +794,7 @@ static void rsa_autoconfig(struct uart_8250_port *up)
->  =09if (!(up->probe & UART_PROBE_RSA))
->  =09=09return;
-> =20
-> -=09if (__enable_rsa(up))
-> +=09if (__rsa_enable(up))
->  =09=09up->port.type =3D PORT_RSA;
+> @@ -2199,6 +2199,54 @@ static void serial8250_set_TRG_levels(struct uart_port *port)
+>  	}
 >  }
-> =20
-> @@ -806,8 +806,8 @@ static void rsa_reset(struct uart_8250_port *up)
->  =09serial_out(up, UART_RSA_FRR, 0);
->  }
->  #else
-> -static inline void enable_rsa(struct uart_8250_port *up) {}
-> -static inline void disable_rsa(struct uart_8250_port *up) {}
-> +static inline void rsa_enable(struct uart_8250_port *up) {}
-> +static inline void rsa_disable(struct uart_8250_port *up) {}
->  static inline void rsa_autoconfig(struct uart_8250_port *up) {}
->  static inline void rsa_reset(struct uart_8250_port *up) {}
->  #endif /* CONFIG_SERIAL_8250_RSA */
-> @@ -2268,7 +2268,7 @@ int serial8250_do_startup(struct uart_port *port)
->  =09=09=09=09UART_DA830_PWREMU_MGMT_FREE);
->  =09}
-> =20
-> -=09enable_rsa(up);
-> +=09rsa_enable(up);
-> =20
->  =09/*
->  =09 * Clear the FIFO buffers and disable them.
-> @@ -2535,7 +2535,7 @@ void serial8250_do_shutdown(struct uart_port *port)
->  =09=09=09serial_port_in(port, UART_LCR) & ~UART_LCR_SBC);
->  =09serial8250_clear_fifos(up);
-> =20
-> -=09disable_rsa(up);
-> +=09rsa_disable(up);
-> =20
->  =09/*
->  =09 * Read data port to reset things, and then unlink from
->=20
+>  
+> +static void serial8250_THRE_test(struct uart_port *port)
+> +{
+> +	struct uart_8250_port *up = up_to_u8250p(port);
+> +	unsigned long flags;
+> +	bool iir_noint1, iir_noint2;
+> +
+> +	if (!port->irq)
+> +		return;
+> +
+> +	if (up->port.flags & UPF_NO_THRE_TEST)
+> +		return;
+> +
+> +	if (port->irqflags & IRQF_SHARED)
+> +		disable_irq_nosync(port->irq);
+> +
+> +	/*
+> +	 * Test for UARTs that do not reassert THRE when the transmitter is idle and the interrupt
+> +	 * has already been cleared.  Real 16550s should always reassert this interrupt whenever the
+> +	 * transmitter is idle and the interrupt is enabled.  Delays are necessary to allow register
+> +	 * changes to become visible.
 
-Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
+Very long comment lines are hard to read. (This is mostly not related to
+line length limits, but with eye movement required.)
 
---=20
+It may make sense to place some of the descriptive comment text into a 
+function comment instead of placing them mid-function.
+
+> +	 *
+> +	 * Synchronize UART_IER access against the console.
+> +	 */
+> +	uart_port_lock_irqsave(port, &flags);
+> +
+> +	wait_for_xmitr(up, UART_LSR_THRE);
+> +	serial_port_out_sync(port, UART_IER, UART_IER_THRI);
+> +	udelay(1); /* allow THRE to set */
+
+These comments mix visually into the code making this look a big wall of 
+text overall. Maybe consider adding empty lines to the logic as well as
+there are what looks clear steps in this logic.
+
+> +	iir_noint1 = serial_port_in(port, UART_IIR) & UART_IIR_NO_INT;
+> +	serial_port_out(port, UART_IER, 0);
+> +	serial_port_out_sync(port, UART_IER, UART_IER_THRI);
+> +	udelay(1); /* allow a working UART time to re-assert THRE */
+> +	iir_noint2 = serial_port_in(port, UART_IIR) & UART_IIR_NO_INT;
+> +	serial_port_out(port, UART_IER, 0);
+> +
+> +	uart_port_unlock_irqrestore(port, flags);
+> +
+> +	if (port->irqflags & IRQF_SHARED)
+> +		enable_irq(port->irq);
+> +
+> +	/*
+> +	 * If the interrupt is not reasserted, or we otherwise don't trust the iir, setup a timer to
+> +	 * kick the UART on a regular basis.
+> +	 */
+> +	if ((!iir_noint1 && iir_noint2) || up->port.flags & UPF_BUG_THRE)
+> +		up->bugs |= UART_BUG_THRE;
+> +}
+> +
+>  int serial8250_do_startup(struct uart_port *port)
+>  {
+>  	struct uart_8250_port *up = up_to_u8250p(port);
+> @@ -2258,49 +2306,7 @@ int serial8250_do_startup(struct uart_port *port)
+>  	if (retval)
+>  		goto out;
+>  
+> -	if (port->irq && !(up->port.flags & UPF_NO_THRE_TEST)) {
+> -		unsigned char iir1;
+> -
+> -		if (port->irqflags & IRQF_SHARED)
+> -			disable_irq_nosync(port->irq);
+> -
+> -		/*
+> -		 * Test for UARTs that do not reassert THRE when the
+> -		 * transmitter is idle and the interrupt has already
+> -		 * been cleared.  Real 16550s should always reassert
+> -		 * this interrupt whenever the transmitter is idle and
+> -		 * the interrupt is enabled.  Delays are necessary to
+> -		 * allow register changes to become visible.
+> -		 *
+> -		 * Synchronize UART_IER access against the console.
+> -		 */
+> -		uart_port_lock_irqsave(port, &flags);
+> -
+> -		wait_for_xmitr(up, UART_LSR_THRE);
+> -		serial_port_out_sync(port, UART_IER, UART_IER_THRI);
+> -		udelay(1); /* allow THRE to set */
+> -		iir1 = serial_port_in(port, UART_IIR);
+> -		serial_port_out(port, UART_IER, 0);
+> -		serial_port_out_sync(port, UART_IER, UART_IER_THRI);
+> -		udelay(1); /* allow a working UART time to re-assert THRE */
+> -		iir = serial_port_in(port, UART_IIR);
+> -		serial_port_out(port, UART_IER, 0);
+> -
+> -		uart_port_unlock_irqrestore(port, flags);
+> -
+> -		if (port->irqflags & IRQF_SHARED)
+> -			enable_irq(port->irq);
+> -
+> -		/*
+> -		 * If the interrupt is not reasserted, or we otherwise
+> -		 * don't trust the iir, setup a timer to kick the UART
+> -		 * on a regular basis.
+> -		 */
+> -		if ((!(iir1 & UART_IIR_NO_INT) && (iir & UART_IIR_NO_INT)) ||
+> -		    up->port.flags & UPF_BUG_THRE) {
+> -			up->bugs |= UART_BUG_THRE;
+> -		}
+> -	}
+> +	serial8250_THRE_test(port);
+>  
+>  	up->ops->setup_timer(up);
+>  
+> 
+
+-- 
  i.
 
---8323328-1177581371-1749642844=:957--
