@@ -1,168 +1,137 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C01882777F7;
-	Wed, 11 Jun 2025 12:27:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 695F727780D;
+	Wed, 11 Jun 2025 12:29:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749644852; cv=none; b=oRSDtwORB1N/Aomh+QPdYtHeT4pVOexGEEWSpqI/+YvbD5bn6O+ahOF0ICF0VuuuBYgqqlVyJts3PXO2Gaj231dvM0r0USVlAmIKl7dZJzmZPo4y5KR0eaO+awdsxUIlgCw+GbiRd5735WWY49g9TcZTOPvlnXi3AL86mbJdvwc=
+	t=1749644971; cv=none; b=U/vSA2vi/AycXL+6PqwLvacJq79+BgbuCnA2LGOFRyQbe6hLFpX9I7hDeoU5E1jvt3VMgUJslqV4ThZe1ZR1W6wdpxkM+vfyZiKk/lzNLtF1BjJBfMAXVjXD6ioAbiC+9jkl8BNzDPqLDA+VTKYKkPdHldN3VnOpWsRo2kflFE8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749644852; c=relaxed/simple;
-	bh=RjEntDbrU6uWcnkzSUUjf9kM9SHS98XmvdM0tJf5ijo=;
+	s=arc-20240116; t=1749644971; c=relaxed/simple;
+	bh=JkyzVtj6QCYNu/epXmbZRTiTVfDL+CA3Usj57mVgLe0=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=LX4jkmxql0qcZcVNO5F0g2hhEwPv9EyyvXmrVpW8KicQF1Q7bagvC+PfGcz6imVt6IoLpYXeN3E7FIo6HasXMZvqRjwKNSnGV+eBp3+eHHDHkqlo/ClaLKDoqLJSYE0my6JWSkTfSdHpAc38Os/fCiClB1YxwCg21mjuGLxI2IE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ItuEfpaa; arc=none smtp.client-ip=192.198.163.18
+	 MIME-Version:Content-Type; b=XGAB5Zm/U60nwi1vAeMIwT4uwlZMm2yy0gL/aScRAsd/2M7DLebVu2x3+z+/Ul32OXcVyvE6Yo7UFwQhnRMPuzfmTnSWwktxxH7xq3kI/6NQDYpH/RwLBZGEZMCOBYYM4JOZ2cm4scSl/09yCrGkwBnybJ+dyHu3oszEdp8OIno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Vtg9ZLlA; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ItuEfpaa"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Vtg9ZLlA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1749644851; x=1781180851;
+  t=1749644970; x=1781180970;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=RjEntDbrU6uWcnkzSUUjf9kM9SHS98XmvdM0tJf5ijo=;
-  b=ItuEfpaadiE2pCEQRQWierNhLsdZ5rXLHrJ9rrPoJ5z0engAOokiJBp+
-   DajbBBfoAcMphSspHf0de13ZWlSsoLfnxye/CindFSSH+OHYM4HOPqyOh
-   1ZXlL4DiOrzIJjPmvKPmmpXKaMHGbyIodSYqS9FNACW9iYBebV7YidcbO
-   c5gPLDfNDYm8EwTnnZOEFJSCQB2QaoEyTU/xXlULTJqL3TdioWqLdqXzg
-   rx101A5E6oHaaZO5GIEYcd6QxvGPYgCBaJW/tAOV5C3m5jLiBjl2hEKls
-   bWrLYEifc/BFIkPyGoXGuqpodeQXJvI8g6SU3tTUJLU3X74I+HEosPJmk
+  bh=JkyzVtj6QCYNu/epXmbZRTiTVfDL+CA3Usj57mVgLe0=;
+  b=Vtg9ZLlA7Nb+WIbR/cFSglJ6lCoDASjGDYKi2F0m+/LOUZNvNBni9BAx
+   sE/4eghV3Y9UxKwNgtspT9sxWD0IlyOVu9WuCST0DuUhTeFiXf2RX40ug
+   hBZT89zTkGhDmWwjKoa2k0dgAuhbLQ96CJ5PzoImFlaTXT2Arsn2uJ1ok
+   aE4TGL/P2VyoLi/hVLE6cmf0vewTnzF+MsPSQ8XlaBQZnoWdEGqOGoK0t
+   lvWd4L6rWeE25Q3xIMa8tfDCnoq2H/4eCRyJDZdsqA+d+z+7Bl07Bs0ga
+   IYK+tvf1oTMxanrRXAb23Bg7rBWFglU2L43QdV0YXY57j3J8IdpamCpDF
    g==;
-X-CSE-ConnectionGUID: h0wjVm5cSy6khihLjfnAmw==
-X-CSE-MsgGUID: mz0W/GZYRIuYciozySmoRw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11461"; a="51008122"
+X-CSE-ConnectionGUID: fZNJk2fBQ+OXQrPTFBpHfg==
+X-CSE-MsgGUID: FDY/2ko9T4amrivKeJ1syw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11461"; a="39405236"
 X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
-   d="scan'208";a="51008122"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:27:30 -0700
-X-CSE-ConnectionGUID: s7c5YyUPSvSCi3Drb16i0A==
-X-CSE-MsgGUID: 3SP6jsmsR2WA/9UxHBFOvQ==
+   d="scan'208";a="39405236"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:29:29 -0700
+X-CSE-ConnectionGUID: JSyh68v3Tjq6yVTT0KX7Dg==
+X-CSE-MsgGUID: Lc0M1UUPR3uS52jEDKB04Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
-   d="scan'208";a="151965714"
+   d="scan'208";a="152465810"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.183])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:27:28 -0700
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jun 2025 05:29:26 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 11 Jun 2025 15:27:23 +0300 (EEST)
+Date: Wed, 11 Jun 2025 15:29:21 +0300 (EEST)
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     linux-serial <linux-serial@vger.kernel.org>, 
     LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 17/33] serial: 8250: extract
- serial8250_clear_interrupts()
-In-Reply-To: <20250611100319.186924-18-jirislaby@kernel.org>
-Message-ID: <baba910f-7c63-d908-af13-7120d085c6a1@linux.intel.com>
-References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-18-jirislaby@kernel.org>
+Subject: Re: [PATCH 18/33] serial: 8250: extract serial8250_set_mini()
+In-Reply-To: <20250611100319.186924-19-jirislaby@kernel.org>
+Message-ID: <bf84598f-0a20-31bf-4967-d01db6fae700@linux.intel.com>
+References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-19-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1301835318-1749644843=:957"
+Content-Type: multipart/mixed; boundary="8323328-2067956457-1749644961=:957"
 
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-1301835318-1749644843=:957
+--8323328-2067956457-1749644961=:957
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 
 On Wed, 11 Jun 2025, Jiri Slaby (SUSE) wrote:
 
-> On three places in 8250_port.c, the interrupts are cleared by reading 4
-> registers. Extract this to a separate function:
-> serial8250_clear_interrupts(). And call it from all the places.
->=20
-> Note autoconfig_irq() now uses serial_port_in() instead of serial_in().
-> But they are the same, in fact (modulo parameter).
+> serial8250_do_set_termios() consists of many registers and up flags
+> settings. Extract all these into separate functions. This time, setting
+> of CSIZE for UART_CAP_MINI ports.
 >=20
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 > ---
->  drivers/tty/serial/8250/8250_port.c | 27 ++++++++++++---------------
->  1 file changed, 12 insertions(+), 15 deletions(-)
+>  drivers/tty/serial/8250/8250_port.c | 24 +++++++++++++++++-------
+>  1 file changed, 17 insertions(+), 7 deletions(-)
 >=20
 > diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
 0/8250_port.c
-> index 6851c197b31d..a73f4db22feb 100644
+> index a73f4db22feb..edfbaa6b7a1b 100644
 > --- a/drivers/tty/serial/8250/8250_port.c
 > +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -705,6 +705,15 @@ static void serial8250_set_sleep(struct uart_8250_po=
-rt *p, int sleep)
->  =09serial8250_rpm_put(p);
+> @@ -2670,6 +2670,22 @@ void serial8250_update_uartclk(struct uart_port *p=
+ort, unsigned int uartclk)
 >  }
+>  EXPORT_SYMBOL_GPL(serial8250_update_uartclk);
 > =20
-> +/* Clear the interrupt registers. */
-> +static void serial8250_clear_interrupts(struct uart_port *port)
+> +static void serial8250_set_mini(struct uart_port *port, struct ktermios =
+*termios)
 > +{
-> +=09serial_port_in(port, UART_LSR);
-> +=09serial_port_in(port, UART_RX);
-> +=09serial_port_in(port, UART_IIR);
-> +=09serial_port_in(port, UART_MSR);
-
-Okay, although I'd call some of these "status" registers. Yes, one can use=
-=20
-their status flags to trigger interrupts but it's not immediately obvious=
-=20
-to me if the calling code really _only_ wants to clear interrupts or if it=
-=20
-is also clearing stale status bits even if that's not explicitly=20
-mentioned. Especially, the one callsite which zeroes also the stored=20
-flags looks like it wants to get rid of stale status too (some status=20
-bits might have not yet migrated from the register to the cached flags).
-
-Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
-
-
+> +=09struct uart_8250_port *up =3D up_to_u8250p(port);
+> +
+> +=09if (!(up->capabilities & UART_CAP_MINI))
+> +=09=09return;
+> +
+> +=09termios->c_cflag &=3D ~(CSTOPB | PARENB | PARODD | CMSPAR);
+> +
+> +=09tcflag_t csize =3D termios->c_cflag & CSIZE;
+> +=09if (csize =3D=3D CS5 || csize =3D=3D CS6) {
+> +=09=09termios->c_cflag &=3D ~CSIZE;
+> +=09=09termios->c_cflag |=3D CS7;
+> +=09}
 > +}
 > +
->  static void serial8250_clear_IER(struct uart_8250_port *up)
->  {
->  =09if (up->capabilities & UART_CAP_UUE)
-> @@ -1275,10 +1284,7 @@ static void autoconfig_irq(struct uart_8250_port *=
-up)
->  =09uart_port_lock_irq(port);
->  =09serial_out(up, UART_IER, UART_IER_ALL_INTR);
->  =09uart_port_unlock_irq(port);
-> -=09serial_in(up, UART_LSR);
-> -=09serial_in(up, UART_RX);
-> -=09serial_in(up, UART_IIR);
-> -=09serial_in(up, UART_MSR);
-> +=09serial8250_clear_interrupts(port);
->  =09serial_out(up, UART_TX, 0xFF);
->  =09udelay(20);
->  =09irq =3D probe_irq_off(irqs);
-> @@ -2322,13 +2328,7 @@ int serial8250_do_startup(struct uart_port *port)
->  =09 */
->  =09serial8250_clear_fifos(up);
+>  void
+>  serial8250_do_set_termios(struct uart_port *port, struct ktermios *termi=
+os,
+>  =09=09          const struct ktermios *old)
+> @@ -2679,14 +2695,8 @@ serial8250_do_set_termios(struct uart_port *port, =
+struct ktermios *termios,
+>  =09unsigned long flags;
+>  =09unsigned int baud, quot, frac =3D 0;
 > =20
-> -=09/*
-> -=09 * Clear the interrupt registers.
-> -=09 */
-> -=09serial_port_in(port, UART_LSR);
-> -=09serial_port_in(port, UART_RX);
-> -=09serial_port_in(port, UART_IIR);
-> -=09serial_port_in(port, UART_MSR);
-> +=09serial8250_clear_interrupts(port);
-> =20
->  =09/*
->  =09 * At this point, there's no way the LSR could still be 0xff;
-> @@ -2363,10 +2363,7 @@ int serial8250_do_startup(struct uart_port *port)
->  =09 * saved flags to avoid getting false values from polling
->  =09 * routines or the previous session.
->  =09 */
-> -=09serial_port_in(port, UART_LSR);
-> -=09serial_port_in(port, UART_RX);
-> -=09serial_port_in(port, UART_IIR);
-> -=09serial_port_in(port, UART_MSR);
-> +=09serial8250_clear_interrupts(port);
->  =09up->lsr_saved_flags =3D 0;
->  =09up->msr_saved_flags =3D 0;
+> -=09if (up->capabilities & UART_CAP_MINI) {
+> -=09=09termios->c_cflag &=3D ~(CSTOPB | PARENB | PARODD | CMSPAR);
+> -=09=09if ((termios->c_cflag & CSIZE) =3D=3D CS5 ||
+> -=09=09    (termios->c_cflag & CSIZE) =3D=3D CS6)
+> -=09=09=09termios->c_cflag =3D (termios->c_cflag & ~CSIZE) | CS7;
+> -=09}
+> +=09serial8250_set_mini(port, termios);
+>  =09cval =3D serial8250_compute_lcr(up, termios->c_cflag);
+> -
+>  =09baud =3D serial8250_get_baud_rate(port, termios, old);
+>  =09quot =3D serial8250_get_divisor(port, baud, &frac);
 > =20
 >=20
+
+Reviewed-by: Ilpo J=E4rvinen <ilpo.jarvinen@linux.intel.com>
 
 --=20
  i.
 
---8323328-1301835318-1749644843=:957--
+--8323328-2067956457-1749644961=:957--
