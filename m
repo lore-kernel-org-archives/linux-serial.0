@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE99826A1DD;
-	Wed, 11 Jun 2025 10:03:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4728E26B0B6;
+	Wed, 11 Jun 2025 10:03:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749636226; cv=none; b=ZholNl16PK3wzmZjjpZPl93ygEhU9vMiHexK6gfvaSSub5pkx5A4HbE7ZcI5vyDCrov1OCA1L6dwm69Fsf/QhrKL/UACZQtaz3ZUO5pG2dn3+N/3wFcejDcEH4Bwzk8Hawd0Exx1PATrcscgpF1Mm8GBpF1Z7GTsuXs+qLFF8uU=
+	t=1749636228; cv=none; b=tr2AkjVq97SplxdxufI136CaNXbNHNDcYYSoEyaMw3h7C+TswoIofQ3NMJG9Jy/eamD8anLRjep4Sa2cozfeDAI6IlOXVnPMG9TrEZ0tCpZW3S+OQ1W0wGGB4Ik1yVJ70LfkuUlreoEEn27BEiksSxpO99/0+3jnfl4PjPmSfms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749636226; c=relaxed/simple;
-	bh=zADBZh3/I+6iFXqflCXcndvocrGLcKPL2i3MplPDgAs=;
+	s=arc-20240116; t=1749636228; c=relaxed/simple;
+	bh=aqVbkfTUA8V0nJKIHfTwYOHOebwoKHiR0JhSOS93pEk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Xe7t1rA2/HrIfeyDtiacbW1vU9OomAzWQO7IiXaB0yTvi5l3SlSVmo2C9PhzEST3icCCE6xoZibrrhoV9MmfO70lGiRlV3aXAl4idM15LuBQRw5z+8gp8WQAwg85P3LeYy5W/P3NyTl7fMDmSvAw5E3kusDHVMI3sBv2acGlEgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hr7dYY7X; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=eEsEVRqjo1JU/ohoRdTkG5YGaGU0ooe984SxSoa9VCwKFYwRNuhZrrnoaKE/1H1OE+hFqPzoyuqmuzgPzlSn1iev/5YUvRFuaIoHqCb2YOtKGy8xKNRTHtDkQO4xD13SzGumOU/9q36YpHBPBE10f0iYSrybfgrSH9Mzy76ASeo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RnsbPBGB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hr7dYY7X"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37EB0C4CEF1;
-	Wed, 11 Jun 2025 10:03:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RnsbPBGB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8C19C4CEF2;
+	Wed, 11 Jun 2025 10:03:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749636226;
-	bh=zADBZh3/I+6iFXqflCXcndvocrGLcKPL2i3MplPDgAs=;
+	s=k20201202; t=1749636227;
+	bh=aqVbkfTUA8V0nJKIHfTwYOHOebwoKHiR0JhSOS93pEk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=hr7dYY7XREUs/MaaLoarDIL48Blok43CyLjPM6/8jdwGrV29QOCSt+n4h8em2tmbI
-	 dSz6h8XpWGA5H9bZS/XdpdjeDJbHktO8jFi8UY20txhpZo8T39Sx5/AWaaF7+1kx1t
-	 pP8vtg8hi+d+p1GQ/qgUmm5J2B21H6dHbB0O7MNu+f1TYWHeKkKEBsMDD96tpiCo7O
-	 d+B60IXh+moyYQ0mCHBCu+keyreTput1FZzObn/29vdSGNYoNkF5Ucm3WUYXnWYXci
-	 uoA3WM0jblfKIg239E28LrvWQIwu3iJKFDtm0T8q4mxTd4fycsAQ/TfQ5nCLDO3efI
-	 WhmGVS3Kdjxqw==
+	b=RnsbPBGBj7fVaW1UbWAmfdSlz5Pr134lZUnuDQyOIebvYMpelbuPfwD7RViLD/rlp
+	 3SHhEF/8Lf++vh2FNDBl9fTypxkw2eeA3otWdodQfdpXsTm02CI9RT2S0/jzwa7iUe
+	 r5g5XRMbY7i4ANAOhN9nUXCoucihI9s/PVMyoZt+vy0l/AksaHBmTHWWWB+xfYROd3
+	 lm0Cd1kG88PGnvakZE4HNaZ7orZg0DyonQb14C3uHJUynd9wqAfVmLs35rqrec6WiB
+	 vSQZkNnpwb87t6ToPR9UqXq1mNsc4+QCvotDBfWWRaXLdHdAv4SFtsvZNfYM2BixvJ
+	 GodV9n0sie+ww==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 10/33] serial: 8250: invert conditions in RSA functions
-Date: Wed, 11 Jun 2025 12:02:56 +0200
-Message-ID: <20250611100319.186924-11-jirislaby@kernel.org>
+Subject: [PATCH 11/33] serial: 8250: put RSA functions to their namespace
+Date: Wed, 11 Jun 2025 12:02:57 +0200
+Message-ID: <20250611100319.186924-12-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250611100319.186924-1-jirislaby@kernel.org>
 References: <20250611100319.186924-1-jirislaby@kernel.org>
@@ -45,107 +45,93 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The code can short-return in case something does not hold. So invert the
-conditions and return in those cases immediately. This makes the code
-flow more natural and less nested.
+Prefix the functions with rsa_, not suffix.
+
+This is a preparation for moving them out to 8250_rsa.c in the next
+patch.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 59 +++++++++++++++++------------
- 1 file changed, 34 insertions(+), 25 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 233316a88df2..e7652d62ab2f 100644
+index e7652d62ab2f..d8a90818f431 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -743,15 +743,16 @@ static int __enable_rsa(struct uart_8250_port *up)
+@@ -718,7 +718,7 @@ static void serial8250_clear_IER(struct uart_8250_port *up)
+  * Attempts to turn on the RSA FIFO.  Returns zero on failure.
+  * We set the port uart clock rate if we succeed.
   */
- static void enable_rsa(struct uart_8250_port *up)
+-static int __enable_rsa(struct uart_8250_port *up)
++static int __rsa_enable(struct uart_8250_port *up)
  {
--	if (up->port.type == PORT_RSA) {
--		if (up->port.uartclk != SERIAL_RSA_BAUD_BASE * 16) {
--			uart_port_lock_irq(&up->port);
--			__enable_rsa(up);
--			uart_port_unlock_irq(&up->port);
--		}
--		if (up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16)
--			serial_out(up, UART_RSA_FRR, 0);
-+	if (up->port.type != PORT_RSA)
-+		return;
-+
-+	if (up->port.uartclk != SERIAL_RSA_BAUD_BASE * 16) {
-+		uart_port_lock_irq(&up->port);
-+		__enable_rsa(up);
-+		uart_port_unlock_irq(&up->port);
- 	}
-+	if (up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16)
-+		serial_out(up, UART_RSA_FRR, 0);
- }
- 
- /*
-@@ -764,37 +765,45 @@ static void disable_rsa(struct uart_8250_port *up)
  	unsigned char mode;
  	int result;
- 
--	if (up->port.type == PORT_RSA &&
--	    up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16) {
--		uart_port_lock_irq(&up->port);
-+	if (up->port.type != PORT_RSA)
-+		return;
- 
--		mode = serial_in(up, UART_RSA_MSR);
--		result = !(mode & UART_RSA_MSR_FIFO);
-+	if (up->port.uartclk != SERIAL_RSA_BAUD_BASE * 16)
-+		return;
- 
--		if (!result) {
--			serial_out(up, UART_RSA_MSR, mode & ~UART_RSA_MSR_FIFO);
--			mode = serial_in(up, UART_RSA_MSR);
--			result = !(mode & UART_RSA_MSR_FIFO);
--		}
-+	uart_port_lock_irq(&up->port);
-+	mode = serial_in(up, UART_RSA_MSR);
-+	result = !(mode & UART_RSA_MSR_FIFO);
- 
--		if (result)
--			up->port.uartclk = SERIAL_RSA_BAUD_BASE_LO * 16;
--		uart_port_unlock_irq(&up->port);
-+	if (!result) {
-+		serial_out(up, UART_RSA_MSR, mode & ~UART_RSA_MSR_FIFO);
-+		mode = serial_in(up, UART_RSA_MSR);
-+		result = !(mode & UART_RSA_MSR_FIFO);
- 	}
-+
-+	if (result)
-+		up->port.uartclk = SERIAL_RSA_BAUD_BASE_LO * 16;
-+	uart_port_unlock_irq(&up->port);
- }
- 
- static void rsa_autoconfig(struct uart_8250_port *up)
+@@ -741,14 +741,14 @@ static int __enable_rsa(struct uart_8250_port *up)
+ /*
+  * If this is an RSA port, see if we can kick it up to the higher speed clock.
+  */
+-static void enable_rsa(struct uart_8250_port *up)
++static void rsa_enable(struct uart_8250_port *up)
  {
- 	/* Only probe for RSA ports if we got the region. */
--	if (up->port.type == PORT_16550A && up->probe & UART_PROBE_RSA &&
--	    __enable_rsa(up))
-+	if (up->port.type != PORT_16550A)
-+		return;
-+	if (!(up->probe & UART_PROBE_RSA))
-+		return;
-+
-+	if (__enable_rsa(up))
+ 	if (up->port.type != PORT_RSA)
+ 		return;
+ 
+ 	if (up->port.uartclk != SERIAL_RSA_BAUD_BASE * 16) {
+ 		uart_port_lock_irq(&up->port);
+-		__enable_rsa(up);
++		__rsa_enable(up);
+ 		uart_port_unlock_irq(&up->port);
+ 	}
+ 	if (up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16)
+@@ -760,7 +760,7 @@ static void enable_rsa(struct uart_8250_port *up)
+  * unknown why interrupts were disabled in here. However, the caller is expected to preserve this
+  * behaviour by grabbing the spinlock before calling this function.
+  */
+-static void disable_rsa(struct uart_8250_port *up)
++static void rsa_disable(struct uart_8250_port *up)
+ {
+ 	unsigned char mode;
+ 	int result;
+@@ -794,7 +794,7 @@ static void rsa_autoconfig(struct uart_8250_port *up)
+ 	if (!(up->probe & UART_PROBE_RSA))
+ 		return;
+ 
+-	if (__enable_rsa(up))
++	if (__rsa_enable(up))
  		up->port.type = PORT_RSA;
  }
  
- static void rsa_reset(struct uart_8250_port *up)
- {
--	if (up->port.type == PORT_RSA)
--		serial_out(up, UART_RSA_FRR, 0);
-+	if (up->port.type != PORT_RSA)
-+		return;
-+
-+	serial_out(up, UART_RSA_FRR, 0);
+@@ -806,8 +806,8 @@ static void rsa_reset(struct uart_8250_port *up)
+ 	serial_out(up, UART_RSA_FRR, 0);
  }
  #else
- static inline void enable_rsa(struct uart_8250_port *up) {}
+-static inline void enable_rsa(struct uart_8250_port *up) {}
+-static inline void disable_rsa(struct uart_8250_port *up) {}
++static inline void rsa_enable(struct uart_8250_port *up) {}
++static inline void rsa_disable(struct uart_8250_port *up) {}
+ static inline void rsa_autoconfig(struct uart_8250_port *up) {}
+ static inline void rsa_reset(struct uart_8250_port *up) {}
+ #endif /* CONFIG_SERIAL_8250_RSA */
+@@ -2268,7 +2268,7 @@ int serial8250_do_startup(struct uart_port *port)
+ 				UART_DA830_PWREMU_MGMT_FREE);
+ 	}
+ 
+-	enable_rsa(up);
++	rsa_enable(up);
+ 
+ 	/*
+ 	 * Clear the FIFO buffers and disable them.
+@@ -2535,7 +2535,7 @@ void serial8250_do_shutdown(struct uart_port *port)
+ 			serial_port_in(port, UART_LCR) & ~UART_LCR_SBC);
+ 	serial8250_clear_fifos(up);
+ 
+-	disable_rsa(up);
++	rsa_disable(up);
+ 
+ 	/*
+ 	 * Read data port to reset things, and then unlink from
 -- 
 2.49.0
 
