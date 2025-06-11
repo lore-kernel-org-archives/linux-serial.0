@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F2632701C5;
-	Wed, 11 Jun 2025 10:04:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2259926FDB6;
+	Wed, 11 Jun 2025 10:04:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749636243; cv=none; b=XfIAOxRjmzPAydFjsD+UFNE1lrITXYYe/K+aXg6tu/2Yp9q7BV69wT6bi89tLyeXVnCyrk1R4CN7F9OfBxeLduYclqyQAb2Nqoute1zkXVczjg7bjMfFUk1iLzfZ7bbg7sjtJDSfmlekuV/3tdMNdDis8+Eu2cdDkJMTNu0HuH0=
+	t=1749636245; cv=none; b=H3Nhe5GC4zr1uflLQhLDJwxfXIGEmE48lWZI8N3u02G6sWhz6Ni/cF9hc+5/yTotMbzsoyNuTSbvBSk4agYuLVBuYr5HTs1DLiP0J2agHqvf75Cz986VOfp6MEvLRQUhkl3ojUSw0SNSiAYDTPMSKDZ2u53WF68JFsO3zXlIplA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749636243; c=relaxed/simple;
-	bh=YgGgl4hmHOZF95YQRTmyFWWejDONs+53HuHseWC5klE=;
+	s=arc-20240116; t=1749636245; c=relaxed/simple;
+	bh=KipqVa0cNBWMnucUp3kii6iZVqiqOBeiBoGWeEe2I+s=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CLUWfbVK8GH31AJLfN4bFiCLG7Nc/QCMPiRuhFDgrt/pOh26W+WH9LHIGWfM4U+6CPMDVKSclHW5bcxj9rkfnRFijOWD8i7zFhLRIVQs5C0grfG04YEJxXL2TSDmUYGekjtIRPOpqa5FrACwFJaid5zsv4Kc9Ku4bgcbrzkSmGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Qq+T7KpH; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=WO5342wB4cp9cfUitZw2fPwQdkWpHP85o9h3XweCmv4tC0OMXFq+OWNnqEPQx7NnowN6ZIlplSongqUoJpqFX6fg3eNqjWWf1FIuK0MSnkeedmYiv4cB8w9vumridmncr0zUas+N4oGSl1Zx9xPRp54aGnmG2ZngvNKEjlIk8YY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m1FFDVyv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Qq+T7KpH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00BFEC4CEF2;
-	Wed, 11 Jun 2025 10:04:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m1FFDVyv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83431C4CEF2;
+	Wed, 11 Jun 2025 10:04:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749636243;
-	bh=YgGgl4hmHOZF95YQRTmyFWWejDONs+53HuHseWC5klE=;
+	s=k20201202; t=1749636244;
+	bh=KipqVa0cNBWMnucUp3kii6iZVqiqOBeiBoGWeEe2I+s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Qq+T7KpHhafK7EOTBRBJ+f05Py20OBwKTETYGDRqmkdoIFcKHzNEgTh/YEji5SNVJ
-	 Bwqaf/G5ixol0J5/C6Qj6dFBmEYgmn+Fk/zXBGd86Owb2VQ++fbrK7LHMeid1QIgVJ
-	 hCRu5DsRtkVvbc0JjXhGPs7OlZ1YEj9RQe70pBtjnh7uLwTrp1VYkg2rZp7fDVgO9n
-	 T4/SvHhbTcf5CVsR3w+4665edl2kADGXbL2tZIjWFUq6+uC3VRO1M5k9ph0UGqUk+i
-	 fsDCG5mcCNDkl6z6LCB2xsBwvB3zin+Il10OCkKfgHQTC86TBVMkdgByUvRQ8+I0gQ
-	 OWI1ZgcKt2ebw==
+	b=m1FFDVyvU0mI35SVPNWaLTNLsnlFtr+TbnyNSm/+UKPx9Yh5RoD++TiBwYTVxWFMZ
+	 umaJ28++7YMaWxWyOdabGxBGE4XPULVq0ku0FmT5TPw6yzB2WfhpVNc8j0HB6I0oVH
+	 DdBUbJwOCe8Z8/8AcqbQvs4IcGZGXheNGYn7Hp6CzLXbqZoq8QaT39m7u1LEHQdU6i
+	 xXbwRD3EAi6mGA3sxL5ZUqNIy5oqFjpMlSv8eRCOsMK2q4U4EluFYV9skH3eNcdz3q
+	 ud+MFGmXdrzW1qaETBitbuyeISU1pjCzEq9/1ID7YXOiXxLnzafcYfBfONYpdo0tqM
+	 4DSfgw0yWn+MA==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 21/33] serial: 8250: extract serial8250_set_errors_and_ignores
-Date: Wed, 11 Jun 2025 12:03:07 +0200
-Message-ID: <20250611100319.186924-22-jirislaby@kernel.org>
+Subject: [PATCH 22/33] serial: 8250: extract serial8250_set_ier()
+Date: Wed, 11 Jun 2025 12:03:08 +0200
+Message-ID: <20250611100319.186924-23-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250611100319.186924-1-jirislaby@kernel.org>
 References: <20250611100319.186924-1-jirislaby@kernel.org>
@@ -47,98 +47,62 @@ Content-Transfer-Encoding: 8bit
 
 serial8250_do_set_termios() consists of many registers and up flags
 settings. Extract all these into separate functions. This time, setting
-of ignore_status_mask and read_status_mask.
+of IER.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 67 ++++++++++++++---------------
- 1 file changed, 33 insertions(+), 34 deletions(-)
+ drivers/tty/serial/8250/8250_port.c | 31 ++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index b15371838366..6bb7f004d607 100644
+index 6bb7f004d607..2c045a4369fc 100644
 --- a/drivers/tty/serial/8250/8250_port.c
 +++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2720,6 +2720,38 @@ static void serial8250_set_afe(struct uart_port *port, struct ktermios *termios)
- 		up->mcr |= UART_MCR_AFE;
+@@ -2752,6 +2752,22 @@ static void serial8250_set_errors_and_ignores(struct uart_port *port, struct kte
+ 		port->ignore_status_mask |= UART_LSR_DR;
  }
  
-+static void serial8250_set_errors_and_ignores(struct uart_port *port, struct ktermios *termios)
++static void serial8250_set_ier(struct uart_port *port, struct ktermios *termios)
 +{
-+	/*
-+	 * Specify which conditions may be considered for error handling and the ignoring of
-+	 * characters. The actual ignoring of characters only occurs if the bit is set in
-+	 * @ignore_status_mask as well.
-+	 */
-+	port->read_status_mask = UART_LSR_OE | UART_LSR_DR;
-+	if (termios->c_iflag & INPCK)
-+		port->read_status_mask |= UART_LSR_FE | UART_LSR_PE;
-+	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
-+		port->read_status_mask |= UART_LSR_BI;
++	struct uart_8250_port *up = up_to_u8250p(port);
 +
-+	/* Characters to ignore */
-+	port->ignore_status_mask = 0;
-+	if (termios->c_iflag & IGNPAR)
-+		port->ignore_status_mask |= UART_LSR_PE | UART_LSR_FE;
-+	if (termios->c_iflag & IGNBRK) {
-+		port->ignore_status_mask |= UART_LSR_BI;
-+		/*
-+		 * If we're ignoring parity and break indicators, ignore overruns too (for real raw
-+		 * support).
-+		 */
-+		if (termios->c_iflag & IGNPAR)
-+			port->ignore_status_mask |= UART_LSR_OE;
-+	}
++	/* CTS flow control flag and modem status interrupts */
++	up->ier &= ~UART_IER_MSI;
++	if (!(up->bugs & UART_BUG_NOMSR) && UART_ENABLE_MS(&up->port, termios->c_cflag))
++		up->ier |= UART_IER_MSI;
++	if (up->capabilities & UART_CAP_UUE)
++		up->ier |= UART_IER_UUE;
++	if (up->capabilities & UART_CAP_RTOIE)
++		up->ier |= UART_IER_RTOIE;
 +
-+	/* ignore all characters if CREAD is not set */
-+	if ((termios->c_cflag & CREAD) == 0)
-+		port->ignore_status_mask |= UART_LSR_DR;
++	serial_port_out(port, UART_IER, up->ier);
 +}
 +
  void
  serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
  		          const struct ktermios *old)
-@@ -2747,40 +2779,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
- 	serial8250_set_trigger_for_slow_speed(port, termios, baud);
+@@ -2780,20 +2796,7 @@ serial8250_do_set_termios(struct uart_port *port, struct ktermios *termios,
  	serial8250_set_afe(port, termios);
  	uart_update_timeout(port, termios->c_cflag, baud);
+ 	serial8250_set_errors_and_ignores(port, termios);
 -
 -	/*
--	 * Specify which conditions may be considered for error
--	 * handling and the ignoring of characters. The actual
--	 * ignoring of characters only occurs if the bit is set
--	 * in @ignore_status_mask as well.
+-	 * CTS flow control flag and modem status interrupts
 -	 */
--	port->read_status_mask = UART_LSR_OE | UART_LSR_DR;
--	if (termios->c_iflag & INPCK)
--		port->read_status_mask |= UART_LSR_FE | UART_LSR_PE;
--	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
--		port->read_status_mask |= UART_LSR_BI;
+-	up->ier &= ~UART_IER_MSI;
+-	if (!(up->bugs & UART_BUG_NOMSR) &&
+-			UART_ENABLE_MS(&up->port, termios->c_cflag))
+-		up->ier |= UART_IER_MSI;
+-	if (up->capabilities & UART_CAP_UUE)
+-		up->ier |= UART_IER_UUE;
+-	if (up->capabilities & UART_CAP_RTOIE)
+-		up->ier |= UART_IER_RTOIE;
 -
--	/*
--	 * Characters to ignore
--	 */
--	port->ignore_status_mask = 0;
--	if (termios->c_iflag & IGNPAR)
--		port->ignore_status_mask |= UART_LSR_PE | UART_LSR_FE;
--	if (termios->c_iflag & IGNBRK) {
--		port->ignore_status_mask |= UART_LSR_BI;
--		/*
--		 * If we're ignoring parity and break indicators,
--		 * ignore overruns too (for real raw support).
--		 */
--		if (termios->c_iflag & IGNPAR)
--			port->ignore_status_mask |= UART_LSR_OE;
--	}
--
--	/*
--	 * ignore all characters if CREAD is not set
--	 */
--	if ((termios->c_cflag & CREAD) == 0)
--		port->ignore_status_mask |= UART_LSR_DR;
-+	serial8250_set_errors_and_ignores(port, termios);
+-	serial_port_out(port, UART_IER, up->ier);
++	serial8250_set_ier(port, termios);
  
- 	/*
- 	 * CTS flow control flag and modem status interrupts
+ 	if (up->capabilities & UART_CAP_EFR) {
+ 		unsigned char efr = 0;
 -- 
 2.49.0
 
