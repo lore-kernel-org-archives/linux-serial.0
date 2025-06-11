@@ -1,82 +1,140 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 220886FBF;
-	Wed, 11 Jun 2025 02:02:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 375CA21B19D;
+	Wed, 11 Jun 2025 06:33:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749607352; cv=none; b=sZU/IADpQxbhShRW6r9rGlgcMIhyeBuEHdiBtv/e2DmLAvikO6R+vrnxZCxpvqIZu70wEWVpVcbmkivWBN/VeUbBCQrN47vopSGnXlS5TEQvnTXyqhRGtCn3KiiqxCTt30bGKiur63hJBS7LGRdliEKFWsO9p5FLW+b9wIwvdM4=
+	t=1749623633; cv=none; b=L4ot+KloroqEc0IXgEd/XRYMtvcc5MN8jtVupeoacxHMMFcSp2O1hYlbg6JyR561cZm05tDYD5zH2b9uFlhytdV11CQsZOi9IHm4bhHCRaN4Xioimz0qy+Wu2fLqLvtlHeUo6+bNJzyDMQRtm8hczRY/O6EoAZYa6OgZ9n2OeDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749607352; c=relaxed/simple;
-	bh=MwRP3MjkanXH5MsPlrHeH1GolpSHF55hJd1hVoFHLu4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dN8gG3fyf+FBtHJ9bBoPZsLJP/6qTphnymLbJtBo8XbDR0yCMRWHCC2kg1DtIcTHUwhnAtVAyW6Yz8VsoClOIxtLtS3gBhFLCFMuF/GpCk5inyMlLysIInm2EwCTZEm223fiufxXpKh1/VVc7ClZpZk3MnL8NK+wZeoqZi1BzAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=0v7Hnj7l; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1749623633; c=relaxed/simple;
+	bh=Mh3IBAJJLPsihFnUd8lzghlKsY+ledSbMenVLAl8F7Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=oRMXc4qhnulW4xk71ZPDNl5IGeZHHZ+dufNPasjggpGuwmwSqXvOf7rbmc9i31V666u+7kvWYoeFX7+CUs0N0BW4PLiXokNpykZ4qgpl7rhRi79yiLt553VSZM3ItPY6+rFPwGz7VKlUaj8mseFW/FhLibqc7d4eTaWK3vi9fIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CoHhrVry; arc=none smtp.client-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="0v7Hnj7l"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=X9FpvER8PD2MOmvDWoEC2AeOOYPGUKq7iiqeH/690Ks=; b=0v7Hnj7lM4xToCUI17yyO+fn+g
-	9HvEOLGQdUm3uPftBCgMs4PTKazylzf+AHHlRRrqmCoOMfkphEXQKM6a/U+50crXuF6XJBDrEvz+B
-	lUEwOpN9yrZ6pNdkC7MP/8A2sCFQW8b5eg4TlDHJ1ZbpIktE4Whq2yD5oc5JsxiowcF4fB/KIdmKN
-	qEEFG1uN54cyThC0IofFeH/QejYohlqmrUM/ikl3NchltC4jMLYO17HM95LaT2MsOeS64kGEBXs1u
-	uFQ6zxm9tMJRvrekQ3Boa6Jnl/fonr80Ixx3dlMQRbq4JOTXRAcN1cwBY97iW8+fh+oXKPP/1w1V7
-	aEg8pvtQ==;
-Received: from [50.53.25.54] (helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uPAnO-00000008bTm-0UU3;
-	Wed, 11 Jun 2025 02:02:30 +0000
-From: Randy Dunlap <rdunlap@infradead.org>
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Nicolas Pitre <npitre@baylibre.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CoHhrVry"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-3a4f7865b22so26283f8f.0;
+        Tue, 10 Jun 2025 23:33:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1749623630; x=1750228430; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Xi53fMKD3cKJk5G9CvrhErtFN8YzIqzdTSF68BonW+Q=;
+        b=CoHhrVryH+2OkpVXuk0orGcliGcNQOJiMXp9G5QCwtaF4z3MOTAAUL7ncijbzDk70o
+         spZAa5CLVPPhUm2NQHB5XTnmd0cMvYnAs35UwZxx5YKLczRYmzX2+xEs4HeA3Yr9inXY
+         XrDy17n75s3VZ+1b3MPyRRbGwNzZwI3jtJ0u7mtdhTnUjuUYA1okBGiQcao0Yc/QQ3LJ
+         GTFelb1yN9pVWfEHYjjrsxXi2hMCPPz/Cf47jy522UwcOqpe0+YCLaNRcE4ooZEeqgIN
+         gY4O3xqqpEJ1RTAyHY/P9t4n4NCLmmuq/abnhM8DvsMRBCKG9Gcwr9ioT+bLGAOG85Hj
+         DQhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749623630; x=1750228430;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Xi53fMKD3cKJk5G9CvrhErtFN8YzIqzdTSF68BonW+Q=;
+        b=H2cF5RtKWoRP+cfveezahMJTlVwTjZXcpFOBdg9jXGR/ybIkX30TkVbTnbS4PU2prv
+         xG8pPzw9aAO+sVAvos+rP5RlQiaNCrB6EbPdtA/0yt0hPd/SRITPvjSrlQseUHb4Rp61
+         9xLr/7Gx1gwdW6zeMRhk8OzThoyXrL1ubTIKh5emnZnty/MNDWc1HrY7OmV31FDc2YQ+
+         4s62GWy49g7VueRnuaAS/DQ2JRRmhsCTsZggb9v5cJy9PjWw03XENv7aNkSaQJoaShri
+         K7uh1mGBRFrWj/KuSdgawzxQRyv/jxDHyoUDqGHMQxisU0DnZkvmGRfWT7LtyG/Yst0N
+         NHfQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVR2ZmYy4LVJXhIKgMCoXg5AgvT8FAD0GB6yGF0bWtiZYJ04vjtI2zXTjK6/Ap+dL/YRJTwbe3J/2GbA1k=@vger.kernel.org, AJvYcCXBYP3quec7Y3tU8HtHDHACo5w87Z1+mAIMAyaXaFWP7ymgg6wQr3UWiMBvulZF5obaqDTdi3rMZHaDurIg@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzffa3vC3FXhCcHAty34YpIt/DEQ9iFQUlHYx0dbBNhtZCtiXiv
+	Knp6fuADtFAqUhmUCy7XzbawU5+SWxyEOosiwNl4QHtmVTvweul+vc/1
+X-Gm-Gg: ASbGncsqck1fYpsqgG2ZFz03DeL0x7DZg0fumG+ciARwA1vBoMyeq/uGZJtifnLmHw5
+	e86aecyDqWBOKNp1rlb13nPvwmgQ8axFjrD4W/sEWZlY5Of1fMc/ewzTrToxIS2RRIOYh4mKKy8
+	+7vJ0/Ae/MnItF4C47EvysMz/cJVxd9bjzC7y5M40XIzFc/XMiMp+QOspJ3sDesXJuzLL2u6ilM
+	PCYnh5ggQJrXFJD48S6ZWX2NEUZSkqh2uZprlcoShU5AM4I5jvIDkM0l7CTGdMHwyM+5T50XRhl
+	S3tH5qtUSovqJs8NRZrLzG2HSCcmq+jwhV1adeXrhmXI5PvVa5Bg8qZWHuveOOqhWaFltA4iSfS
+	ijNO2g9M=
+X-Google-Smtp-Source: AGHT+IHqzA22qfVooFHgPHYXbsp7freFm89h/OzXJ7nibh5EChOXLAXLUwkTVzWLKe8uuREBQYZA1Q==
+X-Received: by 2002:a05:6000:208a:b0:3a4:f7ae:77cd with SMTP id ffacd0b85a97d-3a5586bd8e1mr443311f8f.1.1749623630296;
+        Tue, 10 Jun 2025 23:33:50 -0700 (PDT)
+Received: from DESKTOP-LCRLR8G.localdomain ([102.186.42.58])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a5323b653dsm14364226f8f.39.2025.06.10.23.33.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Jun 2025 23:33:49 -0700 (PDT)
+From: Marwan Seliem <marwanmhks@gmail.com>
+To: jirislaby@kernel.org
+Cc: gregkh@linuxfoundation.org,
+	akpm@linux-foundation.org,
+	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: [PATCH v4] vt: fix kernel-doc warnings in ucs_get_fallback()
-Date: Tue, 10 Jun 2025 19:02:29 -0700
-Message-ID: <20250611020229.2650595-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.49.0
+Subject: Re: [PATCH] tty: sysrq: Introduce compile-time crash-only mode
+Date: Wed, 11 Jun 2025 09:33:49 +0300
+Message-Id: <20250611063349.25187-1-marwanmhks@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250607151957.222347-1-marwanmhks@gmail.com>
+References: <20250607151957.222347-1-marwanmhks@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=y
 Content-Transfer-Encoding: 8bit
 
-Use the correct function parameter name in ucs_get_fallback() to prevent
-kernel-doc warnings:
+Hi Jiri,
 
-Warning: drivers/tty/vt/ucs.c:218 function parameter 'cp' not described in 'ucs_get_fallback'
-Warning: drivers/tty/vt/ucs.c:218 Excess function parameter 'base' description in 'ucs_get_fallback'
+Thank you for your review and feedback. Let me address your comments and provide more context about the use case for this change.
 
-Fixes: fe26933cf1e1 ("vt: add ucs_get_fallback()")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Nicolas Pitre <npitre@baylibre.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org
-Reviewed-by: Nicolas Pitre <npitre@baylibre.com>.
----
-v2: add Jiri and linux-serial. Mea culpa.
-v3: drop "Base" from @cp description (Nicolas).
-v4: add Nicolas' Reviewed-by tag (duh).
+> I must admit I don't much understand the purpose of this. It can be
+> spelled as: you can crash the system only by sysrq-c from now on. Don't
+> use sysrq-r or others. Who did ask for this?
 
- drivers/tty/vt/ucs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This change was created with embedded systems that have external subsystems in mind (like modems/co-processors) where we need:
+    - The ability to trigger a full system crash (via sysrq-c) to collect subsystem crash dumps
+    - While explicitly disabling all other sysrq functionality for security reasons
 
---- lnx-616-rc1.orig/drivers/tty/vt/ucs.c
-+++ lnx-616-rc1/drivers/tty/vt/ucs.c
-@@ -206,7 +206,7 @@ static int ucs_page_entry_cmp(const void
- 
- /**
-  * ucs_get_fallback() - Get a substitution for the provided Unicode character
-- * @base: Base Unicode code point (UCS-4)
-+ * @cp: Unicode code point (UCS-4)
-  *
-  * Get a simpler fallback character for the provided Unicode character.
-  * This is used for terminal display when corresponding glyph is unavailable.
+In these environments:
+    - Crash dumps are essential for debugging
+	- Other sysrq commands pose unnecessary security risks
+
+> These inline #ifdefs are horrid.
+
+Agreed. I will restructure this.
+
+> This can be invoked from userspace. So you can nicely DoS the machine by
+> the added warn, right? Hint: use ratelimiting.
+
+Good point. I'll add ratelimiting to the pr_warn() calls or we can consider reducing these to pr_debug()?
+
+> No need for this return ^^.
+
+You're right, the second return is redundant. I'll clean this up.
+
+> Is it for real?
+
+From a pure security viewpoint, expert advice is to remove this Magic Sysrq functionality, 
+either with kernel.sysrq=0 in sysctl config file, or with a full kernel rebuild 
+with n value for CONFIG_MAGIC_SYSRQ parameter.
+This patch provides a middle ground that:
+    1) Resolves the Core Security Conflict
+		The CRASH_ONLY mode provides the minimal debug capability while eliminating:
+            - Register dumps (disables 'p' command)
+            - Filesystem operations (disables 'u'/sync commands)
+            - All other privileged operations
+    2) Security Architecture Benefits
+	
+		Traditional: All-or-nothing  
+		│─────────────┬─────────────│  
+			Full disable			Full enable  
+
+		Our Approach: Principle of Least Privilege  
+		│─────┬───────┬─────────────│  
+			Off	Crash-only		Full enable  
+
+For v2 of the patch, I'll make these improvements:
+    1) Restructure to minimize #ifdef fiasco
+	2) Add proper rate limiting on pr_warn/change it to pr_debug
+	3) Clean up redundant return
+
+Thank you again for your valuable feedback. I appreciate you taking the time to review this.
+
+Warmest regards,
+Marwan Seliem
