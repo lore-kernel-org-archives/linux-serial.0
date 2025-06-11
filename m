@@ -1,71 +1,71 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAB3027815D
-	for <linux-serial@vger.kernel.org>; Wed, 11 Jun 2025 14:38:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D0C227AC54
+	for <linux-serial@vger.kernel.org>; Wed, 11 Jun 2025 14:43:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749652716; cv=none; b=AQDQNbgkz1ODJGLjXkeaqyMzdU95cjbs1Oi9Gr4anXu6556lyAqpXjpoti8sHJt2ICo/igP/GA/+OO8KqSgYi3UsJfKZqpk+eiPvNBr8c1rdDHNFmIn4EflNU9jnHZnlXyP5wCr0XfeVeePNjXcypFAMHvRXc3/IxBSnst2KfHI=
+	t=1749652984; cv=none; b=G07ueMfh7Cu8WT05sAXKiZLQNwOSeocouxe7QRcz24YCMPgSo3VYiBT2onn+zW7jx5rgkdLKTJ/RbZvg1Wxs366NLF/YQkiMZcLP/KS1cQgwnnygnNMriCitjp9GawHtD05NGPs/TAibSVcyVFhMeIYLy8NHtahWD5kzRkU06rU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749652716; c=relaxed/simple;
-	bh=DDbLBH2b0Du1LQLMF4T/yVMhsv/G95JHEgrJ0ODJBWc=;
+	s=arc-20240116; t=1749652984; c=relaxed/simple;
+	bh=cclPtbM4URW+eHiaPTS+SHyrinx7Ma5PBGOytirKWy8=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=XOgwUCVCIVhttL+iJJ88nQixXcSi5uhmZ2kIxua9QKaN1XeXExPm10gOhk+IG/nvUKLmMyTeNWSEIZCOPuhe3+0phjqmZ/oBOZ1/0FiV5EMX4wjpFsLpamAmm9+jl7MHQkJuVWPKjzVojec0om+rtSRtBbpRiwpDJzV69kUqUjs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=mdyooSaX; arc=none smtp.client-ip=209.85.222.169
+	 MIME-Version:Content-Type; b=hTxBg6Mya70yA3KuQCdoVLPhDgBkrgs99aCOJ/D2sIOWZ/hBylMrKWUv9fAFOxMg9S/i0jMF3LxkOtl6gP3fzNCC+iQte6VuSBTZClDU24asw6Q2tIxsImXg/+vEIZKE7THg6wauoJhOH1aVW/pi+uGm6HpELFRzhk5SN4REqAg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=jol07FQT; arc=none smtp.client-ip=209.85.166.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="mdyooSaX"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7c59e7039eeso942445385a.2
-        for <linux-serial@vger.kernel.org>; Wed, 11 Jun 2025 07:38:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="jol07FQT"
+Received: by mail-io1-f52.google.com with SMTP id ca18e2360f4ac-8723a232750so589784539f.1
+        for <linux-serial@vger.kernel.org>; Wed, 11 Jun 2025 07:43:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1749652709; x=1750257509; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1749652981; x=1750257781; darn=vger.kernel.org;
         h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=A6j0biEtB99I7SzduC4IGOhw62CXpo3VTbiHBYid9pA=;
-        b=mdyooSaX8EQqwZEeP4sK6z7zh1yPOkRUyFkeCUoogAu2J7PdCJCWSSNuSncZw4dGbU
-         uG6haCYAwAp/kAM/W/fhQsY7C76i+wWmllzi/L+CIzY8YzNxwUa2N363U6DV7kurm9Uf
-         xsAKW6GKwJJ2ADFZsA56n8ssIqubCxGm5cJuCLiE5TEm1y6o+DfcGDdibmje0WFXvuh5
-         iVyLRNrgMZ8mm3f2GtlEj5jEw/+342T8ifhesOKHzVu44fOGgUfUAAFXZLwZERtZTgOW
-         N2zF1BbVnGwKup7FsBqW1KMdhUjR8c7yMMka1K6z+ObNH+Ke5H2/GSN5P7MJXV9oilNh
-         ZQvQ==
+        bh=5UqPIqFartaPblQPlcuUyc+gxPJ8IWERL5l+XGvc8xk=;
+        b=jol07FQTDs4ygUJ5p/drnb1EO2WFd3tK65xZ6JlkTL9hZI/NMie3nqJV6/VuN1XZGX
+         Jb7lEEldumQ9QtSnCIPsxFLF5Dcbzrmj95ffHXcVWrVkGO4d7pXpMo7uerLk6rwBliOk
+         jzLsCwqVs5KhOhuWQru+T8ivqllE74V+UGjKEk3UeDYJrDq1566x1C3YP1I6vSfSdztX
+         64GkQzmdlvg2tn4ii7JopVy2xK9WVsadIeV28o1Jgb1ABYeN7kl+u9JUX05MNDh4R2PZ
+         bPnnf33XjfCRbRkUZNgsAEBxqtPxvLB3beEbu0jGCRpxCh33dQM3ChVrevZvlSDhIqgo
+         1LuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749652709; x=1750257509;
+        d=1e100.net; s=20230601; t=1749652981; x=1750257781;
         h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=A6j0biEtB99I7SzduC4IGOhw62CXpo3VTbiHBYid9pA=;
-        b=YbsRhLE2kT74m2kQQ008xOxxchD8g4worfd9HQpv3wtjS25ji8WwVyXUV0pN+3qbeM
-         B1tQ0NrsX2rhuQ0Q0jiFYLsNJKSwtgrb0II/Bpp/lfrftu0UxxZu6i6SSCr+JRzVRShY
-         TGtqQhLikJbGz0yNWqOlClD9b0jExmB4uc3I7HMQsV6hmfNsG/tVWHzvRbVz1UUJ9Zg1
-         MkUIH+p3x9oMqCxbsDRshVxMOg2z3IH5fPR2zS1TzrXtssB4X2oivrYc2YYzhjeGzcSq
-         mzimy1XHKr3/b8Db2DUlmNWEf5gNWBYMsI/6NBHi1Z6jcAseZrJiJwb8TV+9pZ26Nxrq
-         mYsw==
-X-Forwarded-Encrypted: i=1; AJvYcCXYvHQ0ANDLrvVkHEo/jH0+ehoWZuwJgI7Pavuj6XWtimR2hzAkRdNN5/DYbWN1nAa9arX927WSwZ989d0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw9NnrRet0rcH15xEXaQVfHIdkrutcB+DHLOhM4ncCrYepDXs68
-	c3OH9ZRELHNwxH0BeXCeEMD3t0c2AkaHUxdHpqMrd+YRFjvk7Pgo0qWhkszMxnIE1aqb+MD6JNe
-	EyzNx
-X-Gm-Gg: ASbGncv57VJhANHh0M8P8/eBYJl1hWo3kHUja2rPtliABoRkjnfznRQ/e04hqV7aT/n
-	BUfZQOCk4l1qTfvJOaZcB9Cnf8wXPT9vPaFBkrB2qjioUd06H/ymAomtCJcPIWM6S0OpMho3UTe
-	6b84At6l8xWLHtsc3H8CQMgCN/ob0AWYGXbEfH5BpS4JvH/StDzjHIMqL138Tid/oWHQ3PCldFa
-	Yav0CCiM6Lj2HRsnwHrg0OyTpKaFyUdk7tnlMhu6YinL2fh9L3ndkZEWhoNomcPf+HvHVd7KHYf
-	+PLv7MghOiR5phpRW/+RahczY6DJFB49mGLMRHOS7gkh4WguiDAsPJVOKvNuHweGZE17sAFZaZi
-	QDa1HOmsY+GBipTTBLoXw1m8r
-X-Google-Smtp-Source: AGHT+IGk1TUfTSRf2WwMN0HBizHNyVuFyGNFi8F+xAN2diNmYy6gFLATJcxMHO+hOBgL1bjNmqSPPg==
-X-Received: by 2002:ac8:6904:0:b0:4a3:d015:38ae with SMTP id d75a77b69052e-4a714bc0ca3mr52426861cf.23.1749652698874;
-        Wed, 11 Jun 2025 07:38:18 -0700 (PDT)
+        bh=5UqPIqFartaPblQPlcuUyc+gxPJ8IWERL5l+XGvc8xk=;
+        b=S+goLeqoLESqYvGMQOr28g26XEcxfFjQGMbImc+yDKkxPDZe2jUZ4aG0QzIK/Ipocv
+         XSQAScyZSbM/R5RkqnLmJmXCbIJhCL1anE3d8mhXWhUljqKjSV10yf8FpdOBAnZhOFJ1
+         Fvt0MCq6S+89ediCylWKkGA+j8hl0DPQkoqrgPvDYuVEEYLwYSdfnYxEuNmLIdqoCbZI
+         /q8fsXfzke6fkb3Q4PXub06oXJ6iOPEs9XNXrFsZ6+nUs03ELgajcLTLpzNNNSHbruPb
+         e1TuBEL7N+gTBgdx4e3HMN7c7E7y4A2r8F+RO06m4U4lLK5c79Xn4XFzm87T2Ltdn7wP
+         Y2oA==
+X-Forwarded-Encrypted: i=1; AJvYcCUyE0Mssh1TYsXMq7l5Fwnc8+FH7ej8WNbgUnu6bDRixrSxUsYXYX5liFnsct8/T9GQyIQgrPa2UgV8CPA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy3MdOLnF9BOAzT4LIuH8XZ2kAqFDSnkMdTNoKRzs6ORwlQLdY9
+	WzFPc7BrHXQoNsTPL5hhPLL2rLijBqODlGgxeJvCJTcP/yqXUc6pWgiCh09/RTnASsDEZ1nMU2+
+	vdw7O
+X-Gm-Gg: ASbGncuKKaegDn4oPnMw08y5rqnaHX4hhv1W0/0gU757F2NsINM2fVe0LVxu0aM9Ylw
+	G8T5GNNLx2fJmGE1LEplFeeogXyeQuNbrmzYRXumVa0/L2oHKrO5AVjBdeBer2bfMLEYykDqvdK
+	VikIy6WVLnfzRmoPFEMWX8yqvae1U7EadR65I/EsZV06Ty2Rjk2i+drbLXfqlmGwZaze6argFfX
+	nYOATcYKrrAAjuPtOvImN9ujiIDVwcIF5KK8rBtNgM4/JLgwGRC+4IcbqqYVn9NoNUFw68MQz2N
+	gqZGEWyvIAZNPJUYuc/kUgiENg/3N1RefSSRe6cZWU3tq1wNVccDCymRfPg6vgJJcTSeB3S0CRL
+	sJRWtjBAgQ0mORv5liCqL+zb6IVqIpkSDg4g=
+X-Google-Smtp-Source: AGHT+IFC7MoxQ9CiG2v6hQKNS9M+a23H++31zfrbnKZkH0xG2tyrkZnEOyKLbgpIwmujkpqmsiL1Ww==
+X-Received: by 2002:a05:6214:300a:b0:6f4:ca4f:43f8 with SMTP id 6a1803df08f44-6fb2d0ce77amr44105966d6.6.1749652970490;
+        Wed, 11 Jun 2025 07:42:50 -0700 (PDT)
 Received: from xanadu (modemcable179.17-162-184.mc.videotron.ca. [184.162.17.179])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a61985443asm90603141cf.46.2025.06.11.07.38.18
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6fb09b1ce86sm82940086d6.61.2025.06.11.07.42.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Jun 2025 07:38:18 -0700 (PDT)
-Date: Wed, 11 Jun 2025 10:38:17 -0400 (EDT)
+        Wed, 11 Jun 2025 07:42:49 -0700 (PDT)
+Date: Wed, 11 Jun 2025 10:42:48 -0400 (EDT)
 From: Nicolas Pitre <npitre@baylibre.com>
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 06/33] tty: vt: use sane types for userspace API
-In-Reply-To: <20250611100319.186924-7-jirislaby@kernel.org>
-Message-ID: <7pqnq81s-07on-4pr3-q561-29516o9o3457@onlyvoer.pbz>
-References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-7-jirislaby@kernel.org>
+Subject: Re: [PATCH 07/33] tty: vt: use _IO() to define ioctl numbers
+In-Reply-To: <20250611100319.186924-8-jirislaby@kernel.org>
+Message-ID: <s30q2616-q5ss-64oo-92r0-956nss9p244o@onlyvoer.pbz>
+References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-8-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -76,116 +76,116 @@ Content-Type: text/plain; charset=US-ASCII
 
 On Wed, 11 Jun 2025, Jiri Slaby (SUSE) wrote:
 
-> As discussed earlier (see the Link below), use the preferred ioctl types
-> in vt.h (__u8, __u16, ...).
+> _IO*() is the proper way of defining ioctl numbers. All these vt numbers
+> were synthetically built up the same way the _IO() macro does.
 > 
-> These types are already used for the new VT_GETCONSIZECSRPOS.
-> Therefore, the necessary includes are already present. Since now, the
-> types are used for every structure defined in the header now.
+> So instead of implicit hex numbers, use _IO() properly.
 > 
-> Note the kernel is built with -funsigned-char, therefore 'char' becomes
-> '__u8' in here.
+> To not change the pre-existing numbers, use only _IO() (and not _IOR()
+> or _IOW()). The latter would change the numbers indeed.
+> 
+> Objdump of vt_ioctl.o reveals no difference with this patch.
+> 
+> Again, VT_GETCONSIZECSRPOS already uses _IOR(), so everything is paved
+> for this patch.
 > 
 > Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 > Cc: Nicolas Pitre <nico@fluxnic.net>
-> Link: https://lore.kernel.org/all/p7p83sq1-4ro2-o924-s9o2-30spr74n076o@syhkavp.arg/
 
 Reviewed-by: Nicolas Pitre <npitre@baylibre.com>
 
 > ---
->  include/uapi/linux/vt.h | 44 ++++++++++++++++++++---------------------
->  1 file changed, 22 insertions(+), 22 deletions(-)
+>  include/uapi/linux/vt.h | 34 +++++++++++++++++-----------------
+>  1 file changed, 17 insertions(+), 17 deletions(-)
 > 
 > diff --git a/include/uapi/linux/vt.h b/include/uapi/linux/vt.h
-> index e5b0c492aa18..714483d68c69 100644
+> index 714483d68c69..b60fcdfb2746 100644
 > --- a/include/uapi/linux/vt.h
 > +++ b/include/uapi/linux/vt.h
-> @@ -19,11 +19,11 @@
->  #define VT_OPENQRY	0x5600	/* find available vt */
+> @@ -14,9 +14,9 @@
+>  		/* Note: the ioctl VT_GETSTATE does not work for
+>  		   consoles 16 and higher (since it returns a short) */
+>  
+> -/* 0x56 is 'V', to avoid collision with termios and kd */
+> +/* 'V' to avoid collision with termios and kd */
+>  
+> -#define VT_OPENQRY	0x5600	/* find available vt */
+> +#define VT_OPENQRY		_IO('V', 0x00)	/* find available vt */
 >  
 >  struct vt_mode {
-> -	char mode;		/* vt mode */
-> -	char waitv;		/* if set, hang on writes if not active */
-> -	short relsig;		/* signal to raise on release req */
-> -	short acqsig;		/* signal to raise on acquisition */
-> -	short frsig;		/* unused (set to 0) */
-> +	__u8 mode;		/* vt mode */
-> +	__u8 waitv;		/* if set, hang on writes if not active */
-> +	__s16 relsig;		/* signal to raise on release req */
-> +	__s16 acqsig;		/* signal to raise on acquisition */
-> +	__s16 frsig;		/* unused (set to 0) */
+>  	__u8 mode;		/* vt mode */
+> @@ -25,8 +25,8 @@ struct vt_mode {
+>  	__s16 acqsig;		/* signal to raise on acquisition */
+>  	__s16 frsig;		/* unused (set to 0) */
 >  };
->  #define VT_GETMODE	0x5601	/* get mode of active vt */
->  #define VT_SETMODE	0x5602	/* set mode of active vt */
-> @@ -32,9 +32,9 @@ struct vt_mode {
+> -#define VT_GETMODE	0x5601	/* get mode of active vt */
+> -#define VT_SETMODE	0x5602	/* set mode of active vt */
+> +#define VT_GETMODE		_IO('V', 0x01)	/* get mode of active vt */
+> +#define VT_SETMODE		_IO('V', 0x02)	/* set mode of active vt */
+>  #define		VT_AUTO		0x00	/* auto vt switching */
+>  #define		VT_PROCESS	0x01	/* process controls switching */
 >  #define		VT_ACKACQ	0x02	/* acknowledge switch */
->  
->  struct vt_stat {
-> -	unsigned short v_active;	/* active vt */
-> -	unsigned short v_signal;	/* signal to send */
-> -	unsigned short v_state;		/* vt bitmask */
-> +	__u16 v_active;	/* active vt */
-> +	__u16 v_signal;	/* signal to send */
-> +	__u16 v_state;		/* vt bitmask */
+> @@ -36,21 +36,21 @@ struct vt_stat {
+>  	__u16 v_signal;	/* signal to send */
+>  	__u16 v_state;		/* vt bitmask */
 >  };
->  #define VT_GETSTATE	0x5603	/* get global vt state info */
->  #define VT_SENDSIG	0x5604	/* signal to send to bitmask of vts */
-> @@ -46,19 +46,19 @@ struct vt_stat {
->  #define VT_DISALLOCATE	0x5608  /* free memory associated to vt */
+> -#define VT_GETSTATE	0x5603	/* get global vt state info */
+> -#define VT_SENDSIG	0x5604	/* signal to send to bitmask of vts */
+> +#define VT_GETSTATE		_IO('V', 0x03)	/* get global vt state info */
+> +#define VT_SENDSIG		_IO('V', 0x04)	/* signal to send to bitmask of vts */
+>  
+> -#define VT_RELDISP	0x5605	/* release display */
+> +#define VT_RELDISP		_IO('V', 0x05)	/* release display */
+>  
+> -#define VT_ACTIVATE	0x5606	/* make vt active */
+> -#define VT_WAITACTIVE	0x5607	/* wait for vt active */
+> -#define VT_DISALLOCATE	0x5608  /* free memory associated to vt */
+> +#define VT_ACTIVATE		_IO('V', 0x06)	/* make vt active */
+> +#define VT_WAITACTIVE		_IO('V', 0x07)	/* wait for vt active */
+> +#define VT_DISALLOCATE		_IO('V', 0x08)  /* free memory associated to vt */
 >  
 >  struct vt_sizes {
-> -	unsigned short v_rows;		/* number of rows */
-> -	unsigned short v_cols;		/* number of columns */
-> -	unsigned short v_scrollsize;	/* number of lines of scrollback */
-> +	__u16 v_rows;		/* number of rows */
-> +	__u16 v_cols;		/* number of columns */
-> +	__u16 v_scrollsize;	/* number of lines of scrollback */
+>  	__u16 v_rows;		/* number of rows */
+>  	__u16 v_cols;		/* number of columns */
+>  	__u16 v_scrollsize;	/* number of lines of scrollback */
 >  };
->  #define VT_RESIZE	0x5609	/* set kernel's idea of screensize */
+> -#define VT_RESIZE	0x5609	/* set kernel's idea of screensize */
+> +#define VT_RESIZE		_IO('V', 0x09)	/* set kernel's idea of screensize */
 >  
 >  struct vt_consize {
-> -	unsigned short v_rows;	/* number of rows */
-> -	unsigned short v_cols;	/* number of columns */
-> -	unsigned short v_vlin;	/* number of pixel rows on screen */
-> -	unsigned short v_clin;	/* number of pixel rows per character */
-> -	unsigned short v_vcol;	/* number of pixel columns on screen */
-> -	unsigned short v_ccol;	/* number of pixel columns per character */
-> +	__u16 v_rows;	/* number of rows */
-> +	__u16 v_cols;	/* number of columns */
-> +	__u16 v_vlin;	/* number of pixel rows on screen */
-> +	__u16 v_clin;	/* number of pixel rows per character */
-> +	__u16 v_vcol;	/* number of pixel columns on screen */
-> +	__u16 v_ccol;	/* number of pixel columns per character */
+>  	__u16 v_rows;	/* number of rows */
+> @@ -60,10 +60,10 @@ struct vt_consize {
+>  	__u16 v_vcol;	/* number of pixel columns on screen */
+>  	__u16 v_ccol;	/* number of pixel columns per character */
 >  };
->  #define VT_RESIZEX      0x560A  /* set kernel's idea of screensize + more */
->  #define VT_LOCKSWITCH   0x560B  /* disallow vt switching */
-> @@ -66,21 +66,21 @@ struct vt_consize {
->  #define VT_GETHIFONTMASK 0x560D  /* return hi font mask */
+> -#define VT_RESIZEX      0x560A  /* set kernel's idea of screensize + more */
+> -#define VT_LOCKSWITCH   0x560B  /* disallow vt switching */
+> -#define VT_UNLOCKSWITCH 0x560C  /* allow vt switching */
+> -#define VT_GETHIFONTMASK 0x560D  /* return hi font mask */
+> +#define VT_RESIZEX		_IO('V', 0x0A)  /* set kernel's idea of screensize + more */
+> +#define VT_LOCKSWITCH		_IO('V', 0x0B)  /* disallow vt switching */
+> +#define VT_UNLOCKSWITCH		_IO('V', 0x0C)  /* allow vt switching */
+> +#define VT_GETHIFONTMASK	_IO('V', 0x0D)  /* return hi font mask */
 >  
 >  struct vt_event {
-> -	unsigned int event;
-> +	__u32 event;
->  #define VT_EVENT_SWITCH		0x0001	/* Console switch */
->  #define VT_EVENT_BLANK		0x0002	/* Screen blank */
->  #define VT_EVENT_UNBLANK	0x0004	/* Screen unblank */
->  #define VT_EVENT_RESIZE		0x0008	/* Resize display */
->  #define VT_MAX_EVENT		0x000F
-> -	unsigned int oldev;		/* Old console */
-> -	unsigned int newev;		/* New console (if changing) */
-> -	unsigned int pad[4];		/* Padding for expansion */
-> +	__u32 oldev;		/* Old console */
-> +	__u32 newev;		/* New console (if changing) */
-> +	__u32 pad[4];		/* Padding for expansion */
+>  	__u32 event;
+> @@ -77,14 +77,14 @@ struct vt_event {
+>  	__u32 pad[4];		/* Padding for expansion */
 >  };
 >  
->  #define VT_WAITEVENT	0x560E	/* Wait for an event */
+> -#define VT_WAITEVENT	0x560E	/* Wait for an event */
+> +#define VT_WAITEVENT		_IO('V', 0x0E)	/* Wait for an event */
 >  
 >  struct vt_setactivate {
-> -	unsigned int console;
-> +	__u32 console;
+>  	__u32 console;
 >  	struct vt_mode mode;
 >  };
 >  
+> -#define VT_SETACTIVATE	0x560F	/* Activate and set the mode of a console */
+> +#define VT_SETACTIVATE		_IO('V', 0x0F)	/* Activate and set the mode of a console */
+>  
+>  /* get console size and cursor position */
+>  struct vt_consizecsrpos {
 > -- 
 > 2.49.0
 > 
