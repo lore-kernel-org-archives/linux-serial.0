@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A10E6274676;
-	Wed, 11 Jun 2025 10:04:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 630022749FA;
+	Wed, 11 Jun 2025 10:04:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749636255; cv=none; b=SmKxIoriejl5QCubPDtiBtkp8Uur0JIwC/0hRYFBJ47r1ssD7rrJD0TMdxepqhzK8nDtYtM7airh1OD9oPe8wWq6wQSNdZeeMcmX48gL0VoegMrZCKGVVnDrKF4vpzm3rzLcZzqYCS6mvDfjegHBBL2AN/Prg4AznKE1DN4ltFQ=
+	t=1749636257; cv=none; b=GxvtYBezPGudTrTb2wDciKp4Y86Knn7xproqbX1Q+59zo4H9GS8xpuju9O81WtE8SXOWgTZ1/DXJCdwLD3dv6EJhWDONk3+mZauHVVUri1htZIyp3I5XWCTqv1c4CK0XBsjB12BKEnaY+2e9FuPY3ZRm1MAnCMlp3K/A/c36ttw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749636255; c=relaxed/simple;
-	bh=/pmfUrZUdBfKWuAWDNedV43TaddT3zUC0Xn4iWMbi6c=;
+	s=arc-20240116; t=1749636257; c=relaxed/simple;
+	bh=yv/RaTW9MuC3s3vDA052dackvAJiP/l11cLARUKG7co=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AcYa/j/cQNLqBW3eEoaZrdN2OlnYir+Jb1nuILHy6Se6B5miF9HpfDd/i4bnHgxkig8E3wDtquV6W00ITibPXzCAERSRlTuc13KJSbQypkCEXtEIfJyHSo7bLsV+WKcyVRY/RBcWgmWDdmvt5s1ERtKCFdu3UYFv29P4egWqs+E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bY2CsjGy; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=PCbdlFjX0VN6d5a3E0LTVNfjPvxB75gqScJ+hTiIEk06OVf05CXg0KXHIfDHIaF64h7qHW68O3HQNQK90X/ZenXBioNQ7Q9wGDRdo8Z4Eq5xEy66vbte/21ZmPrwm341kj4OxmI9BvL14GcQjMNCBHrak47VErjJZqjckpsyGMY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b8HB5jaP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bY2CsjGy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E05C4CEEE;
-	Wed, 11 Jun 2025 10:04:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b8HB5jaP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3442C4CEF2;
+	Wed, 11 Jun 2025 10:04:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749636255;
-	bh=/pmfUrZUdBfKWuAWDNedV43TaddT3zUC0Xn4iWMbi6c=;
+	s=k20201202; t=1749636256;
+	bh=yv/RaTW9MuC3s3vDA052dackvAJiP/l11cLARUKG7co=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=bY2CsjGyKXjOmsqONsJFd2Vlwrfu5mSsTfjM+dacdICNsmkIYDD+/OzESSj1/CkLK
-	 A7YhuswTiRwTnhz9qflVzw2JwU+TPlgrC5tr2wgrUBJs6LAFa7NbLpT7M/y5ZwK/lu
-	 P/rbJf1QqzygDvNtOSDHwDfvwoG36zmQHecb3zT88xzt7crVaHtNMNvtEmHVMmFGey
-	 c6NAL59LERm4FYH3mnX3IdqE1m1eTSzvsHSfn9/BP3NxMSfFKoVYiQiy6AN7/hx/kW
-	 0tcRzTeYRdSgG3och6vfBi1PFGuvbGSU2h5r/jgVJx/FlCAA41mcuxQrMv8qKMwSyq
-	 T2FVuSB/KMLWg==
+	b=b8HB5jaPPkKuGtW0E9IQaFvuvkR8d3NDRMLU1z6KIyzqOwqEYU95JgcmCwdhj27Sq
+	 aNpSybkuRyfFZCS/mRZJxHZHspA2RwFCd6JVxNnxPGIdt1a05pinCcaC0P1RZBczc6
+	 mt6EzpDgeEbTOviIwQczx/w53gMnpFeiB6IZ3U8FO4QxUGSXwOJwcTKp0Cxq/wWEib
+	 bNShiXHD3+qM0dgX6itMcDSXWDgkYUQD+dbPNzy9hesMhnvUARJAJcpkjdeqIM+XfV
+	 GXBnjN6TQoCsHb3iYSqom2K9RvClS+aCHXtyQWANcy2yT6Zbrd9wwKWSwyyYYGzzwr
+	 DjblzLYqsdufQ==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 29/33] serial: 8250: drop DEBUG_AUTOCONF() macro
-Date: Wed, 11 Jun 2025 12:03:15 +0200
-Message-ID: <20250611100319.186924-30-jirislaby@kernel.org>
+Subject: [PATCH 30/33] serial: 8250: invert serial8250_register_8250_port() CIR condition
+Date: Wed, 11 Jun 2025 12:03:16 +0200
+Message-ID: <20250611100319.186924-31-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250611100319.186924-1-jirislaby@kernel.org>
 References: <20250611100319.186924-1-jirislaby@kernel.org>
@@ -45,149 +45,291 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-DEBUG_AUTOCONF() is always disabled (by "#if 0"), so one would need to
-recompile the kernel to use it. And even if they did, they would find
-out it is broken anyway:
-  error: variable 'scratch' is used uninitialized whenever 'if' condition is false
+There is no point in a long 'if' in serial8250_register_8250_port() to
+just return ENOSPC for PORT_8250_CIR ports. Invert the condition and
+return immediately.
 
-Drop it.
+'gpios' variable was moved to its set location.
+
+And return ENODEV instead of ENOSPC. The latter is a leftover from the
+previous find-uart 'if'. The former makes a lot more sense in this case.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/serial/8250/8250_port.c | 39 ++---------------------------
- 1 file changed, 2 insertions(+), 37 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 253 ++++++++++++++--------------
+ 1 file changed, 127 insertions(+), 126 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 6363915a1787..e93bfdac3d0e 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -38,15 +38,6 @@
- 
- #include "8250.h"
- 
--/*
-- * Debugging.
-- */
--#if 0
--#define DEBUG_AUTOCONF(fmt...)	printk(fmt)
--#else
--#define DEBUG_AUTOCONF(fmt...)	do { } while (0)
--#endif
--
- /*
-  * Here we define the default xmit fifo size used for each type of UART.
-  */
-@@ -825,8 +816,6 @@ static void autoconfig_has_efr(struct uart_8250_port *up)
- 	id3 = serial_icr_read(up, UART_ID3);
- 	rev = serial_icr_read(up, UART_REV);
- 
--	DEBUG_AUTOCONF("950id=%02x:%02x:%02x:%02x ", id1, id2, id3, rev);
--
- 	if (id1 == 0x16 && id2 == 0xC9 &&
- 	    (id3 == 0x50 || id3 == 0x52 || id3 == 0x54)) {
- 		up->port.type = PORT_16C950;
-@@ -850,7 +839,6 @@ static void autoconfig_has_efr(struct uart_8250_port *up)
- 	 *  0x14 - XR16C854.
- 	 */
- 	id1 = autoconfig_read_divisor_id(up);
--	DEBUG_AUTOCONF("850id=%04x ", id1);
- 
- 	id2 = id1 >> 8;
- 	if (id2 == 0x10 || id2 == 0x12 || id2 == 0x14) {
-@@ -937,7 +925,6 @@ static void autoconfig_16550a(struct uart_8250_port *up)
- 	if (serial_in(up, UART_EFR) == 0) {
- 		serial_out(up, UART_EFR, 0xA8);
- 		if (serial_in(up, UART_EFR) != 0) {
--			DEBUG_AUTOCONF("EFRv1 ");
- 			up->port.type = PORT_16650;
- 			up->capabilities |= UART_CAP_EFR | UART_CAP_SLEEP;
- 		} else {
-@@ -950,8 +937,6 @@ static void autoconfig_16550a(struct uart_8250_port *up)
- 
- 			if (status1 == UART_IIR_FIFO_ENABLED_16750)
- 				up->port.type = PORT_16550A_FSL64;
--			else
--				DEBUG_AUTOCONF("Motorola 8xxx DUART ");
- 		}
- 		serial_out(up, UART_EFR, 0);
- 		return;
-@@ -963,7 +948,6 @@ static void autoconfig_16550a(struct uart_8250_port *up)
- 	 */
- 	serial_out(up, UART_LCR, UART_LCR_CONF_MODE_B);
- 	if (serial_in(up, UART_EFR) == 0 && !broken_efr(up)) {
--		DEBUG_AUTOCONF("EFRv2 ");
- 		autoconfig_has_efr(up);
- 		return;
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index 2bac9c7827de..10f25bae9f46 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -725,139 +725,140 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 		nr_uarts++;
  	}
-@@ -1026,8 +1010,6 @@ static void autoconfig_16550a(struct uart_8250_port *up)
  
- 	serial_out(up, UART_LCR, 0);
- 
--	DEBUG_AUTOCONF("iir1=%d iir2=%d ", status1, status2);
+-	if (uart->port.type != PORT_8250_CIR) {
+-		struct mctrl_gpios *gpios;
 -
- 	if (status1 == UART_IIR_FIFO_ENABLED_16550A &&
- 	    status2 == UART_IIR_FIFO_ENABLED_16750) {
- 		up->port.type = PORT_16750;
-@@ -1056,17 +1038,10 @@ static void autoconfig_16550a(struct uart_8250_port *up)
- 			 * It's an Xscale.
- 			 * We'll leave the UART_IER_UUE bit set to 1 (enabled).
- 			 */
--			DEBUG_AUTOCONF("Xscale ");
- 			up->port.type = PORT_XSCALE;
- 			up->capabilities |= UART_CAP_UUE | UART_CAP_RTOIE;
- 			return;
- 		}
--	} else {
+-		if (uart->port.dev)
+-			uart_remove_one_port(&serial8250_reg, &uart->port);
+-
+-		uart->port.ctrl_id	= up->port.ctrl_id;
+-		uart->port.port_id	= up->port.port_id;
+-		uart->port.iobase       = up->port.iobase;
+-		uart->port.membase      = up->port.membase;
+-		uart->port.irq          = up->port.irq;
+-		uart->port.irqflags     = up->port.irqflags;
+-		uart->port.uartclk      = up->port.uartclk;
+-		uart->port.fifosize     = up->port.fifosize;
+-		uart->port.regshift     = up->port.regshift;
+-		uart->port.iotype       = up->port.iotype;
+-		uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
+-		uart->bugs		= up->bugs;
+-		uart->port.mapbase      = up->port.mapbase;
+-		uart->port.mapsize      = up->port.mapsize;
+-		uart->port.private_data = up->port.private_data;
+-		uart->tx_loadsz		= up->tx_loadsz;
+-		uart->capabilities	= up->capabilities;
+-		uart->port.throttle	= up->port.throttle;
+-		uart->port.unthrottle	= up->port.unthrottle;
+-		uart->port.rs485_config	= up->port.rs485_config;
+-		uart->port.rs485_supported = up->port.rs485_supported;
+-		uart->port.rs485	= up->port.rs485;
+-		uart->rs485_start_tx	= up->rs485_start_tx;
+-		uart->rs485_stop_tx	= up->rs485_stop_tx;
+-		uart->lsr_save_mask	= up->lsr_save_mask;
+-		uart->dma		= up->dma;
+-
+-		/* Take tx_loadsz from fifosize if it wasn't set separately */
+-		if (uart->port.fifosize && !uart->tx_loadsz)
+-			uart->tx_loadsz = uart->port.fifosize;
+-
+-		if (up->port.dev) {
+-			uart->port.dev = up->port.dev;
+-			ret = uart_get_rs485_mode(&uart->port);
+-			if (ret)
+-				goto err;
+-		}
++	if (uart->port.type == PORT_8250_CIR) {
++		ret = -ENODEV;
++		goto unlock;
++	}
+ 
+-		if (up->port.flags & UPF_FIXED_TYPE)
+-			uart->port.type = up->port.type;
++	if (uart->port.dev)
++		uart_remove_one_port(&serial8250_reg, &uart->port);
++
++	uart->port.ctrl_id	= up->port.ctrl_id;
++	uart->port.port_id	= up->port.port_id;
++	uart->port.iobase       = up->port.iobase;
++	uart->port.membase      = up->port.membase;
++	uart->port.irq          = up->port.irq;
++	uart->port.irqflags     = up->port.irqflags;
++	uart->port.uartclk      = up->port.uartclk;
++	uart->port.fifosize     = up->port.fifosize;
++	uart->port.regshift     = up->port.regshift;
++	uart->port.iotype       = up->port.iotype;
++	uart->port.flags        = up->port.flags | UPF_BOOT_AUTOCONF;
++	uart->bugs		= up->bugs;
++	uart->port.mapbase      = up->port.mapbase;
++	uart->port.mapsize      = up->port.mapsize;
++	uart->port.private_data = up->port.private_data;
++	uart->tx_loadsz		= up->tx_loadsz;
++	uart->capabilities	= up->capabilities;
++	uart->port.throttle	= up->port.throttle;
++	uart->port.unthrottle	= up->port.unthrottle;
++	uart->port.rs485_config	= up->port.rs485_config;
++	uart->port.rs485_supported = up->port.rs485_supported;
++	uart->port.rs485	= up->port.rs485;
++	uart->rs485_start_tx	= up->rs485_start_tx;
++	uart->rs485_stop_tx	= up->rs485_stop_tx;
++	uart->lsr_save_mask	= up->lsr_save_mask;
++	uart->dma		= up->dma;
++
++	/* Take tx_loadsz from fifosize if it wasn't set separately */
++	if (uart->port.fifosize && !uart->tx_loadsz)
++		uart->tx_loadsz = uart->port.fifosize;
++
++	if (up->port.dev) {
++		uart->port.dev = up->port.dev;
++		ret = uart_get_rs485_mode(&uart->port);
++		if (ret)
++			goto err;
++	}
+ 
 -		/*
--		 * If we got here we couldn't force the IER_UUE bit to 0.
--		 * Log it and continue.
+-		 * Only call mctrl_gpio_init(), if the device has no ACPI
+-		 * companion device
 -		 */
--		DEBUG_AUTOCONF("Couldn't force IER_UUE to 0 ");
- 	}
- 	serial_out(up, UART_IER, iersave);
+-		if (!has_acpi_companion(uart->port.dev)) {
+-			gpios = mctrl_gpio_init(&uart->port, 0);
+-			if (IS_ERR(gpios)) {
+-				ret = PTR_ERR(gpios);
+-				goto err;
+-			} else {
+-				uart->gpios = gpios;
+-			}
+-		}
++	if (up->port.flags & UPF_FIXED_TYPE)
++		uart->port.type = up->port.type;
  
-@@ -1098,9 +1073,6 @@ static void autoconfig(struct uart_8250_port *up)
- 	if (!port->iobase && !port->mapbase && !port->membase)
- 		return;
- 
--	DEBUG_AUTOCONF("%s: autoconf (0x%04lx, 0x%p): ",
--		       port->name, port->iobase, port->membase);
+-		serial8250_set_defaults(uart);
 -
- 	/*
- 	 * We really do need global IRQs disabled here - we're going to
- 	 * be frobbing the chips IRQ enable register to see if it exists.
-@@ -1147,9 +1119,7 @@ static void autoconfig(struct uart_8250_port *up)
- 			 * We failed; there's nothing here
- 			 */
- 			uart_port_unlock_irqrestore(port, flags);
--			DEBUG_AUTOCONF("IER test failed (%02x, %02x) ",
--				       scratch2, scratch3);
--			goto out;
-+			return;
+-		/* Possibly override default I/O functions.  */
+-		if (up->port.serial_in)
+-			uart->port.serial_in = up->port.serial_in;
+-		if (up->port.serial_out)
+-			uart->port.serial_out = up->port.serial_out;
+-		if (up->port.handle_irq)
+-			uart->port.handle_irq = up->port.handle_irq;
+-		/*  Possibly override set_termios call */
+-		if (up->port.set_termios)
+-			uart->port.set_termios = up->port.set_termios;
+-		if (up->port.set_ldisc)
+-			uart->port.set_ldisc = up->port.set_ldisc;
+-		if (up->port.get_mctrl)
+-			uart->port.get_mctrl = up->port.get_mctrl;
+-		if (up->port.set_mctrl)
+-			uart->port.set_mctrl = up->port.set_mctrl;
+-		if (up->port.get_divisor)
+-			uart->port.get_divisor = up->port.get_divisor;
+-		if (up->port.set_divisor)
+-			uart->port.set_divisor = up->port.set_divisor;
+-		if (up->port.startup)
+-			uart->port.startup = up->port.startup;
+-		if (up->port.shutdown)
+-			uart->port.shutdown = up->port.shutdown;
+-		if (up->port.pm)
+-			uart->port.pm = up->port.pm;
+-		if (up->port.handle_break)
+-			uart->port.handle_break = up->port.handle_break;
+-		if (up->dl_read)
+-			uart->dl_read = up->dl_read;
+-		if (up->dl_write)
+-			uart->dl_write = up->dl_write;
+-
+-		if (uart->port.type != PORT_8250_CIR) {
+-			if (uart_console_registered(&uart->port))
+-				pm_runtime_get_sync(uart->port.dev);
+-
+-			if (serial8250_isa_config != NULL)
+-				serial8250_isa_config(0, &uart->port,
+-						&uart->capabilities);
+-
+-			serial8250_apply_quirks(uart);
+-			ret = uart_add_one_port(&serial8250_reg,
+-						&uart->port);
+-			if (ret)
+-				goto err;
+-
+-			ret = uart->port.line;
++	/*
++	 * Only call mctrl_gpio_init(), if the device has no ACPI
++	 * companion device
++	 */
++	if (!has_acpi_companion(uart->port.dev)) {
++		struct mctrl_gpios *gpios = mctrl_gpio_init(&uart->port, 0);
++		if (IS_ERR(gpios)) {
++			ret = PTR_ERR(gpios);
++			goto err;
+ 		} else {
+-			dev_info(uart->port.dev,
+-				"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
+-				uart->port.iobase,
+-				(unsigned long long)uart->port.mapbase,
+-				uart->port.irq);
+-
+-			ret = 0;
++			uart->gpios = gpios;
  		}
++	}
+ 
+-		if (!uart->lsr_save_mask)
+-			uart->lsr_save_mask = LSR_SAVE_FLAGS;	/* Use default LSR mask */
++	serial8250_set_defaults(uart);
++
++	/* Possibly override default I/O functions.  */
++	if (up->port.serial_in)
++		uart->port.serial_in = up->port.serial_in;
++	if (up->port.serial_out)
++		uart->port.serial_out = up->port.serial_out;
++	if (up->port.handle_irq)
++		uart->port.handle_irq = up->port.handle_irq;
++	/*  Possibly override set_termios call */
++	if (up->port.set_termios)
++		uart->port.set_termios = up->port.set_termios;
++	if (up->port.set_ldisc)
++		uart->port.set_ldisc = up->port.set_ldisc;
++	if (up->port.get_mctrl)
++		uart->port.get_mctrl = up->port.get_mctrl;
++	if (up->port.set_mctrl)
++		uart->port.set_mctrl = up->port.set_mctrl;
++	if (up->port.get_divisor)
++		uart->port.get_divisor = up->port.get_divisor;
++	if (up->port.set_divisor)
++		uart->port.set_divisor = up->port.set_divisor;
++	if (up->port.startup)
++		uart->port.startup = up->port.startup;
++	if (up->port.shutdown)
++		uart->port.shutdown = up->port.shutdown;
++	if (up->port.pm)
++		uart->port.pm = up->port.pm;
++	if (up->port.handle_break)
++		uart->port.handle_break = up->port.handle_break;
++	if (up->dl_read)
++		uart->dl_read = up->dl_read;
++	if (up->dl_write)
++		uart->dl_write = up->dl_write;
+ 
+-		/* Initialise interrupt backoff work if required */
+-		if (up->overrun_backoff_time_ms > 0) {
+-			uart->overrun_backoff_time_ms =
+-				up->overrun_backoff_time_ms;
+-			INIT_DELAYED_WORK(&uart->overrun_backoff,
+-					serial_8250_overrun_backoff_work);
+-		} else {
+-			uart->overrun_backoff_time_ms = 0;
+-		}
++	if (uart->port.type != PORT_8250_CIR) {
++		if (uart_console_registered(&uart->port))
++			pm_runtime_get_sync(uart->port.dev);
++
++		if (serial8250_isa_config != NULL)
++			serial8250_isa_config(0, &uart->port,
++					&uart->capabilities);
++
++		serial8250_apply_quirks(uart);
++		ret = uart_add_one_port(&serial8250_reg,
++					&uart->port);
++		if (ret)
++			goto err;
++
++		ret = uart->port.line;
++	} else {
++		dev_info(uart->port.dev,
++			"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
++			uart->port.iobase,
++			(unsigned long long)uart->port.mapbase,
++			uart->port.irq);
++
++		ret = 0;
++	}
++
++	if (!uart->lsr_save_mask)
++		uart->lsr_save_mask = LSR_SAVE_FLAGS;	/* Use default LSR mask */
++
++	/* Initialise interrupt backoff work if required */
++	if (up->overrun_backoff_time_ms > 0) {
++		uart->overrun_backoff_time_ms =
++			up->overrun_backoff_time_ms;
++		INIT_DELAYED_WORK(&uart->overrun_backoff,
++				serial_8250_overrun_backoff_work);
++	} else {
++		uart->overrun_backoff_time_ms = 0;
  	}
  
-@@ -1171,9 +1141,7 @@ static void autoconfig(struct uart_8250_port *up)
- 		serial8250_out_MCR(up, save_mcr);
- 		if (status1 != (UART_MSR_DCD | UART_MSR_CTS)) {
- 			uart_port_unlock_irqrestore(port, flags);
--			DEBUG_AUTOCONF("LOOP test failed (%02x) ",
--				       status1);
--			goto out;
-+			return;
- 		}
- 	}
- 
-@@ -1241,9 +1209,6 @@ static void autoconfig(struct uart_8250_port *up)
- 		dev_warn(port->dev, "detected caps %08x should be %08x\n",
- 			 old_capabilities, up->capabilities);
- 	}
--out:
--	DEBUG_AUTOCONF("iir=%d ", scratch);
--	DEBUG_AUTOCONF("type=%s\n", uart_config[port->type].name);
- }
- 
- static void autoconfig_irq(struct uart_8250_port *up)
+ unlock:
 -- 
 2.49.0
 
