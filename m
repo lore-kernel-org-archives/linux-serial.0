@@ -1,104 +1,129 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B044522B8D9;
-	Thu, 12 Jun 2025 10:04:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 505521D89FD
+	for <linux-serial@vger.kernel.org>; Thu, 12 Jun 2025 11:46:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749722670; cv=none; b=czms159KoTqa6Hl6sI+RKvwduQqGtlJtkRf+XRMRfQYWThh+HplWIz0ZBxgVNxxOa/EuFIHvo5O8rxCto2wigZne6/d82z24MIsubCV+/X+GLZFp87zic0JJ21Zhp8KPiebNBwjN7+8EzL+/sPhI1GV3zfnG4c8XtYatmgvrWP4=
+	t=1749728788; cv=none; b=HIygPkN8mKdoVrPk/6VbkPjToTg+g9qAIrA3zWJ11JlF2YBoZANQHMK/SNjzw0Qk0D/DY9NpCHOOszm5YBZO5UYGLOs0S5mcazUB5vEWehrTL3TfyYZNO+gE/2Jy4+OODd9JRrCmiDAnBjXC7vQHiV1bc867kQXVKn08/zSwN8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749722670; c=relaxed/simple;
-	bh=QBAYqX6Pw2ZwWYI5EF1qzqiJNs8mwdk6y1BAmfqBmNA=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=SIbGXB+Qzg40UwM4In7BQ5rkTg3x1/k+uWBmkChHdgTCGBH1IxCi+UclOvzHOa4gaeGT1ASamP84SVmbTRMx8GmQ5Y6Ad5jIpXgQbqcWH7am4sUMfuYZVKBpfwn+um8kpHMjzSI8P94cRlGEZdMb/rtanqwq/sYKJAaAnJ6dskI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TCyr094p; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749728788; c=relaxed/simple;
+	bh=lLCZoZNMy3Q3zpv+mA+EoiOjvX3DENCn4LWJlLw9slI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YGq24Oe/H0cFmj2dPbjXKZfnUioDZrbQ98m0j5TGemXdy9EPfHGvAov7l1O911108dN20XJ2b8tnY4bBarOAUqA0LkiGKdEpBgd+j/9dDp9prrQGFQ2in4u07CHuL1AYRtwjLkWkK0LuoBzFPru8Xszy4xJpVD6nHkgkMcMDQAQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=azkPblft; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TCyr094p"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25725C4CEEA;
-	Thu, 12 Jun 2025 10:04:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749722670;
-	bh=QBAYqX6Pw2ZwWYI5EF1qzqiJNs8mwdk6y1BAmfqBmNA=;
-	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
-	b=TCyr094pT/fl8yodSHT9QsFROyFgU9HVL3utpppBPSxMI5g74JEt1arMXIaf+jVAh
-	 m2LIatmmGDMmMRU/iBE0xfGN1UCpDp/y2+ZCGjD3HqnBMbrjYiEneFpIEVHID6Rs4T
-	 j5JxIjbuB3kXuul6l3kzvhpxMzuFd+d2TsjO2aoe1LZOPLIOzRmU430wnYU2YzgfWh
-	 ef3mLfI8w4XlY2EJZ3lAzwIa0shACe1KnkILyim9tR2A9N1fgQoia8XRDWJXWdS/ET
-	 6a+O0mfFpjGezRNn56LVVck8d2mnGhnbg3Q8FkcG43uLHJ9Dg9HDGgyc4q9UUnVIXz
-	 DsV0Gv1U3/mKw==
-Message-ID: <3bf97628-fb30-4298-bfd4-1ec819a43340@kernel.org>
-Date: Thu, 12 Jun 2025 12:04:27 +0200
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="azkPblft"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-3a4f72cba73so1430548f8f.1
+        for <linux-serial@vger.kernel.org>; Thu, 12 Jun 2025 04:46:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1749728785; x=1750333585; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=VpdeBAczxDpMxHPi8ej3bXu0PaquJ+drDxjVDx3klZk=;
+        b=azkPblfthaMsAYiVC3TGIUkA7B+KCXYBneQcDIdKHw3r66IxHcQ2bZ0sqlvGY+OQFz
+         lnnOfB4N/lHO0GMa8hYSRfrTG4bst5icBtlCg4JWmEpaKU8arX2rc2LHhvCHg/Mg2KAa
+         /NGn0kEdwTZgfVm7BbkpYSrvJp292WHscB63qK186206wjWvJbKRhN86eedM+Da3pgkx
+         dW/bWHyzLTYfabAhpOeun5drulKTtPv2hi8vttJGXlIqbQgmEnSV/3CVuP55qNgfOqvO
+         xZL4am0vXPEy05KRCzdQahYJCIR7f+ZvxMEPtF1UJUUhWt4UMByZ9S54Zl186UKZXqL1
+         SisA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749728785; x=1750333585;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=VpdeBAczxDpMxHPi8ej3bXu0PaquJ+drDxjVDx3klZk=;
+        b=EZoaTHC7dskq+sMvldCXm9Luh3ZD/MOwjHxNKWhSM7x3+iWzsy0WtVUWNMB/jRBoUv
+         nxe+3kcc2a6eP9Z0n6seZ6t+1tjkK6cF3YT84/EAQgdLpxM2H1EeCxvUBYPFBr/K0M3/
+         QET68n9eVOjROCkh4+Sj+4prX0yRfWyepLaoCmWTfwe8LEPjLbVDLewmNnyjA3qMzf4y
+         iD7FX/TTrdnHv2h77aa8ITYgc2DWV18jeZ4RZGKW9In28eRNN4/2GkajgAjxiZCDKqVa
+         qZzjfrz6N7UCqdcVu/nw6pptVzPbbcuKyI6jLp58RWQlHw0RrnnIrOXeeSJpYHSN69Wx
+         a2UQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUpnANS7GLz2pDC2u5YId6t3inO8PClCLdKoJI6SWf8T0IZmHMjhfnFL5q/gPzlGqhPcKcnXHX3Cakf0x8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxbvjjSqtKzzDDs6Yv85MsddBkkmO3GAwqtxEVKy+h4nPrdLGyp
+	wy9mB9EwbtmzgH7feUOBpyG4s4xhogtLE16Ca4XHEGXT9hhO7IyR6wYmxmUzoxSQFUc=
+X-Gm-Gg: ASbGncs7Zub6981awRopxiwXABjoOH/TnwUPf40DUCN5RPHP1vfdgq5xbAqUGUdzDxd
+	dlO7kbXv7AIFxuJy62bB9Deu7IpU4rFxyM7L63cZ2ZjFoszz7EJaq2/dk2OCko91FctD07hiC9F
+	wJP5gfCs2r7wp3tsqUxG6d+JFEoKc/yoXLxfPxhhg0RtWfE5nDiYxYzm2Qw8bikjOfPQGHyy/mu
+	v/LizjBU7FISjy6DDTTKpuNKF507ftVjVeVXeHXP42iFA6t6Xi+mXqHWCICZcVsdwE4pN9mvli4
+	TPyG2iX7xepqD2QgsuQ3UuZdGENIJlnTxCsTmyrT9UhbcrLE4ZcdztiFqq/w35Cm
+X-Google-Smtp-Source: AGHT+IF/248Rvx3CVC08UaAQ4P3dTeJa+QHLA+I/CORpcgGm1jvrTGpa+IJI7ILEeBXIza4gfGGQkg==
+X-Received: by 2002:a05:6000:288e:b0:3a5:271e:c684 with SMTP id ffacd0b85a97d-3a560814897mr2780693f8f.24.1749728784595;
+        Thu, 12 Jun 2025 04:46:24 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-313c19dcd05sm1406413a91.14.2025.06.12.04.46.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Jun 2025 04:46:23 -0700 (PDT)
+Date: Thu, 12 Jun 2025 13:46:06 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
+Subject: Re: [PATCH 1/7] printk: Make console_{suspend,resume} handle
+ CON_SUSPENDED
+Message-ID: <aEq9_kOoLSQwuYBq@pathway.suse.cz>
+References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-1-f427c743dda0@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 23/33] serial: 8250: extract serial8250_set_efr()
-From: Jiri Slaby <jirislaby@kernel.org>
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-serial <linux-serial@vger.kernel.org>,
- LKML <linux-kernel@vger.kernel.org>
-References: <20250611100319.186924-1-jirislaby@kernel.org>
- <20250611100319.186924-24-jirislaby@kernel.org>
- <2b9d3171-6a71-ad9e-8a73-f07487f0ad6b@linux.intel.com>
- <451ac044-6e91-4895-a5b3-cb30396436e5@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <451ac044-6e91-4895-a5b3-cb30396436e5@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250606-printk-cleanup-part2-v1-1-f427c743dda0@suse.com>
 
-On 12. 06. 25, 12:01, Jiri Slaby wrote:
-> The question is whether we need the code or we can drop it 8-).
+On Fri 2025-06-06 23:53:43, Marcos Paulo de Souza wrote:
+> Since commit 9e70a5e109a4 ("printk: Add per-console suspended state") the
+> CON_SUSPENDED flag was introced, and this flag was being checked on
+> console_is_usable function, which returns false if the console is suspended.
+> 
+> No functional changes.
 
-As it is now, we could drop UPF_EXAR_EFR altogether, right?
+I double checked potential functional changes. In particular, I
+checked where the CON_ENABLED and CON_SUSPENDED flags were used.
 
--- 
-js
-suse labs
+Both flags seems to have the same effect in most situations,
+for example, in console_is_usable() or console_unblank().
 
+But there seems to be two exceptions: kdb_msg_write() and
+show_cons_active(). These two functions check only
+the CON_ENABLED flag. And they think that the console is
+usable when the flag is set.
+
+The change in this patch would change the behavior of the two
+functions during suspend. It is later fixed by the 3rd and 4th
+patch. But it might cause regressions during bisections.
+
+It is probably not a big deal because the system is not much
+usable during the suspend anyway. But still, I would feel more
+comfortable if we prevented the "temporary" regression.
+
+I see two possibilities:
+
+   1. Merge the 3rd and 4th patch into this one. It would change
+      the semantic in a single patch.
+
+   2. First update kdb_msg_write() and show_cons_active()
+      to check both CON_ENABLE and CON_SUSPENDED flags.
+
+The 1st solution probably makes more sense because we are going
+to remove the CON_ENABLE flag in the end. And even the merged
+patch is small enough.
+
+Best Regards,
+Petr
