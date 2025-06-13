@@ -1,255 +1,154 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD572D23B4
-	for <linux-serial@vger.kernel.org>; Fri, 13 Jun 2025 10:52:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 451DF19B5B1;
+	Fri, 13 Jun 2025 13:53:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749811979; cv=none; b=fAQSLkXrwIE9j2949GXy7lfiJFeJGiFRtRW0G5dISO8w9NouShwntoQGykJKQbiFcASt/k5k7WIvaGLCrzukDE4bDLjMMkWUpQ36GugOBlYi4nd3pbwmqdNbSdqvDNnH7IGBDfxbkRLspo11i8+io5sN85SJZjKVnOspsdBmd+U=
+	t=1749822809; cv=none; b=GfPSseY+i7Sir99pll6EPrg9sRV9bWNW8yU1NCQJlI/sH2SeARWOOOk7Jei4iByH+RjP7WUdZIwqs7ICJiSdHZPLycZz8rs4rLwSxgfsliSBC1CI3uy0BUvBzBb7Ywvd4tq6AbbfqNueRQvDrovzgzyVJHNb6WJAmPrLbh9mEEA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749811979; c=relaxed/simple;
-	bh=dATxbca+ASPlW96U0TtaJ9IYiEu9l+L7yn537Xj305s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Mn4oGVYiNDMlDoz4wHRbqGy4xPgZKd7yFYqT9+hkE1n+qvpw2WAdmc8RjM5qRkDgDTfj60K/9vyc5GW/Cunrjc/1WDzjdoAxII7GVR/t5Snvft/rJ7LdaszQ3QqhljlVG7eRCM5M24cm9GZFUur0o5WA4xBKnd6T39cnczZjtFU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=A0KZniRP; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1749822809; c=relaxed/simple;
+	bh=KUZfzfZsPE24PRLfx/DqXRXx6K0jTqrrFaXznX8oEdw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TPebUhp33RIx0OoeELbUxWF5icHfpe0QO218d+HdBLCgqrkLFqSGgPPzIL+VvNdFZ2enBUgHmNTc1Wm8ewMgx+4AIW+9g93A7+jJ+u5/I6Jic4xKR3OB6wElA3610BXryXy/EeApWeN9eQWkEZaE0GoWcFdEAxzMIbFsdlrH/pM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j04z/oIh; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="A0KZniRP"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-3a54836cb7fso1260503f8f.2
-        for <linux-serial@vger.kernel.org>; Fri, 13 Jun 2025 03:52:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j04z/oIh"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5532f9ac219so2124843e87.1;
+        Fri, 13 Jun 2025 06:53:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1749811975; x=1750416775; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=DgWvQag2QGzdzZH71/CBz+H5MGX3oMtaddibtY3jjg8=;
-        b=A0KZniRPtIf+/Dk4oZqLCVOk7dzRtrYgyq5fdGaFbZidLLdkFG28l1bair95aKNug+
-         k0QuN5Sa0MLF3PZSjNrmUlwivQI9HEvkRVeyEuguwUZGU41sFrrTl0ndu4dGkDmrTtRD
-         TDUS/BVuI8r7cpB1aKmXgyXNZx7VH7iVkE7tidVTnREetfWaGEvciB25r/LvhjgWhQu/
-         kKsu6/40ySOkjMu0WnbITbnRufgNgXaCRQhqNAI9gjiyCY10DYvdZYE6iOLpSMvt7uTt
-         6ko3L8oNgCoFSfDyn68uewSFFUnFg4Z935ogrJ8rwXvQXN+MZC3yqsRPN/Har2jghieK
-         Rwhg==
+        d=gmail.com; s=20230601; t=1749822805; x=1750427605; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ujtinyWtMOPXsq5wXbPCOHOmFoKO1rUWjgdXnoqJksw=;
+        b=j04z/oIhVo2VPtXwbC0IjJv1RzNBbu5mPHVRHnHrxZsaiWb1hFCV/c/N1Ohy9CX6Em
+         bpPGQlbPP45yDEeLlOHQ3A8IkTIll+5fvLQBydcuHFKw0IQdh/G6dTVKTI/9Lv0D/zPn
+         UZdHvA4+pP9vP42IAzOSurtliRfRhVJvd0YzmnTwJdEUAw2iuO2gg4+7kaqLqBYuueRG
+         /+BwKNgn4fYNuaB7Jg1R0HCBk4iDokpETORCXjU1zZsV8R8kBgB6QZQ83bcbwyind1lA
+         3KA+tjVfN2hrvR5kiZAAbWyMSo6WXCOgaxuJb2dCIOyOZJG0Bc2iRnk1smXZdqeHq/Ep
+         F2pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749811975; x=1750416775;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=DgWvQag2QGzdzZH71/CBz+H5MGX3oMtaddibtY3jjg8=;
-        b=q3tIwmf/bH1bdXu72N65j8zBCEYMeA4kKmZv2VqKR3d58cn5so8Pz6ta3UpS8svFJB
-         9hHRTVVJPZLIfF3dkx+tL1lvvIEsNUCVzH1i4wb/FoyYD+eInV9WiGIycG47vc8P5+P1
-         US009ZaDIFtoWu7kpknPEdvzasPuIIh6178uSLooi5lW3mmTmqscHX9iCbGbotZUjvSF
-         hl0Diwyd6fzcaY8uXlcBz0fwqppSNIV4KsU5IIm/di6v5ZxSg0UvtFmJZwJPW4iG9Dx7
-         /ZRV1T86BZg1hPovD45Tds3swT6xnChrJa9eg5bqzjcM/gspSs9dT7bQqeeiGA+ZuZ9e
-         nL9Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWFE44zKTrqS3xzvhjOfMEak2Xc2nLP8OMxYmhdbi/sqpaVos8NXiqhBsLoziFOZi/LlptPVFR/ciJaE24=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz3Sn2CJnqG3dy8Ht4mK84MY14nZHmzvBrV6woE2G6m97T3P4Qv
-	VTMIYFciJWLBNJBYAWounMc33g72ljD+yN9rzmOfw4N3A6fWQtBZrc6Ys/Nvo8mzA1w=
-X-Gm-Gg: ASbGncs9nnnj1Mz7Eg6dBtpL+uriiribnL1kBMXINomK8pEsjc+G2bKDiIvuq0FN0Nw
-	nfmTqEY9JiB2DIi3jdYj4WMlHQ8gtrknFSOCLihNXZLGKxjI2cRcOrprmDPBGrmJecVTtmil12e
-	/Y7t25TiYfhqnhPoZMLENAsRmghYgao8gco2vh1dIfjhk4Onh5TYVkaAyh2u32+a2tS3ZzBRXg/
-	rroG2Jrxrw8UZI9hQU9vvhsT4xGojg7pmGmjycaO131UeQOBmK+qwpb39LRVZdRtsS+OxtM7wcg
-	UuspMKn3Lczv1NHGif/Bk6e0ntlf30G1JOA5+nDmABKdt4NonwjsfnUW4PmV+JYx
-X-Google-Smtp-Source: AGHT+IHJOeLrZP5NvvZh4tWyIjAn3K7bzr2Vcb2r/+QXO+h/w0YFHvsR1/KLQStT6Bew+1GfqtSw2g==
-X-Received: by 2002:a05:6000:2582:b0:3a4:f722:f00b with SMTP id ffacd0b85a97d-3a5686e4287mr1798399f8f.11.1749811975195;
-        Fri, 13 Jun 2025 03:52:55 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-748900060c5sm1273973b3a.45.2025.06.13.03.52.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jun 2025 03:52:54 -0700 (PDT)
-Date: Fri, 13 Jun 2025 12:52:35 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
-Subject: Re: [PATCH 4/7] drivers: serial: kgdboc: Check CON_SUSPENDED instead
- of CON_ENABLED
-Message-ID: <aEwC81RhvveGP73Y@pathway.suse.cz>
-References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
- <20250606-printk-cleanup-part2-v1-4-f427c743dda0@suse.com>
- <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com>
- <f962e9bab3dc8bf5cae1c7e187a54fb96a543d51.camel@suse.com>
- <CAD=FV=XFeokpbMUFjAc0OkwJ97vR8aB+4GbnFxRKymvpEY3gnA@mail.gmail.com>
- <aErcrCKcsi9cpANY@pathway.suse.cz>
- <CAD=FV=WFWviPPR6VWmsN2-+vzRDoU6oTNH=EP6z1usG4EDR3+w@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1749822805; x=1750427605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ujtinyWtMOPXsq5wXbPCOHOmFoKO1rUWjgdXnoqJksw=;
+        b=q0mrJD/Q3CH+rYon1SR9wKo1Wm4pBWOxqQW6bo5KZgSQeY4NPMK1144LbeQUWrQkf/
+         6XvhSoqVdgUV89CMIWibfNnr8FKTvh2ME36MAAXNnqC4QXP7KtH32aAjU53b2Hmm2zDj
+         FTlQa9sQdJfzti1+9UCsNUDRbp2Psve5APR4V68H/5ioZjdm0sITU0P0TPjS4d3rSGAR
+         DHdpTxH8+xFkcx3oKcyLHobD24wj0i5ehI5Fjsd4UwyRGjFGwM97SUFH3ow/o3vCDywg
+         Mdupu+1k7S5ObuyY2m7D4O9t4v3ONEdVn1RnL6axvrHID/tUvNwq+QywsWO8MHesBa9C
+         0ORg==
+X-Forwarded-Encrypted: i=1; AJvYcCWsWy6EZTAYCCH3MZTqxouesDeUMx8PQCOMLbr5eaxACZhvsFMEg9HiMNsyOgoYVzwwj4i5XNmVgTzk5VE=@vger.kernel.org, AJvYcCXq7dJITwyk24WBrvdp+QpumrqpOoEvUqO+Xj3y+mPTT+fsTwKy/PpYqqNI6DaIMjc7NCu+ThcWJQplcJd2@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz1i3BBnsaLFrtGMdOxirrwWjjIm35svdyDHcvv/72J22uHmcyE
+	rj9qOTRJvIJVUvPazmtbEt0DIbbv1SXsFe5gihqrkPzlPeCcPJuXErOnwPRtruuE+8mDV2/2QYl
+	x3/xYkPKnGHYLxmXWMOAQ0JPON6/o9+phkfyXTVo=
+X-Gm-Gg: ASbGncvlRmz7LUq+acEPCRyRkQMh0t1nmEJJa5weoNGDpKK2H7uLhnXF9si293uYiVG
+	39v8zZbpno2OcZHv89QaSYAoLt/8WClapqkWXMtrq87E5qDvu48rn77/9RU8e3TeYNm73yVU7O+
+	a5VRQLNvdupKLWAbTWuG/nM4E6GnB/SRw9hC0lY/DYxPpeHvCpfGBpo4oZVRi8E1bFM+dDOC1NZ
+	S88pBo0zdbU4EzE
+X-Google-Smtp-Source: AGHT+IEl9qUXSspxpoaRt1cWqMw9LrrkgkBou8E8RGmOH7wcmz4yJUesGfCY+Lzvcz6mFzDt9o/Pi/NbzEKE8A2bXvU=
+X-Received: by 2002:a05:6512:3ba3:b0:553:3654:3319 with SMTP id
+ 2adb3069b0e04-553af96da66mr960902e87.43.1749822805033; Fri, 13 Jun 2025
+ 06:53:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=WFWviPPR6VWmsN2-+vzRDoU6oTNH=EP6z1usG4EDR3+w@mail.gmail.com>
+References: <20250607134114.21899-1-pranav.tyagi03@gmail.com> <2025060848-exact-sasquatch-a899@gregkh>
+In-Reply-To: <2025060848-exact-sasquatch-a899@gregkh>
+From: Pranav Tyagi <pranav.tyagi03@gmail.com>
+Date: Fri, 13 Jun 2025 19:23:13 +0530
+X-Gm-Features: AX0GCFuGnNvyr6p72H6rynUnhfvQazx12X4BcJBVJRGB_9dMoCuBvt4-i8OKev4
+Message-ID: <CAH4c4jLRcjceC2tynp5h9zFv9ev+usUrKO2Titnup1SPe_aNBg@mail.gmail.com>
+Subject: Re: [PATCH] tty: replace capable() with file_ns_capable()
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, kees@kernel.org, skhan@linuxfoundation.org, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	linux-kernel-mentees@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu 2025-06-12 16:16:09, Doug Anderson wrote:
-> Hi,
-> 
-> On Thu, Jun 12, 2025 at 6:57 AM Petr Mladek <pmladek@suse.com> wrote:
+On Sun, Jun 8, 2025 at 3:55=E2=80=AFPM Greg KH <gregkh@linuxfoundation.org>=
+ wrote:
+>
+> On Sat, Jun 07, 2025 at 07:11:14PM +0530, Pranav Tyagi wrote:
+> > The TIOCCONS ioctl currently uses capable(CAP_SYS_ADMIN) to check for
+> > privileges, which validates the current task's credentials. Since this
+> > ioctl acts on an open file descriptor, the check should instead use the
+> > file opener's credentials.
 > >
-> > > > > > @@ -577,7 +577,8 @@ static int __init kgdboc_earlycon_init(char
-> > > > > > *opt)
-> > > > > >         console_list_lock();
-> > > > > >         for_each_console(con) {
-> > > > > >                 if (con->write && con->read &&
-> > > > > > -                   (con->flags & (CON_BOOT | CON_ENABLED)) &&
-> > > > > > +                   (con->flags & CON_BOOT) &&
-> > > > > > +                   ((con->flags & CON_SUSPENDED) == 0) &&
-> > > > >
-> > > > > I haven't tried running the code, so I could easily be mistaken,
-> > > > > but...
-> > > > >
-> > > > > ...the above doesn't seem like the correct conversion. The old
-> > > > > expression was:
-> > > > >
-> > > > > (con->flags & (CON_BOOT | CON_ENABLED))
-> > > > >
-> > It is easy to get confused by the register_console() code. And
-> > it has been even worse some years ago.
+> > Replace capable() with file_ns_capable() to ensure the capability is
+> > checked against file->f_cred in the correct user namespace. This
+> > prevents unintended privilege escalation and aligns with best practices
+> > for secure ioctl implementations.
 > >
-> > Anyway, the current code sets CON_ENABLED for all registered
-> > consoles, including CON_BOOT consoles. The flag is cleared only
-> > by console_suspend()[*] or unregister_console().
+> > Signed-off-by: Pranav Tyagi <pranav.tyagi03@gmail.com>
+> > Link: https://github.com/KSPP/linux/issues/156
+> > ---
+> >  drivers/tty/tty_io.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
 > >
-> > IMHO, kgdboc_earlycon_init() does not need to care about
-> > console_suspend() because the kernel could not be suspended
-> > during boot. Does this makes sense?
-> 
-> Yeah, makes sense to me.
-> 
-> > Resume:
+> > diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> > index e2d92cf70eb7..ee0df35d65c3 100644
+> > --- a/drivers/tty/tty_io.c
+> > +++ b/drivers/tty/tty_io.c
+> > @@ -102,6 +102,9 @@
+> >  #include <linux/uaccess.h>
+> >  #include <linux/termios_internal.h>
+> >  #include <linux/fs.h>
+> > +#include <linux/cred.h>
+> > +#include <linux/user_namespace.h>
+> > +#include <linux/capability.h>
 > >
-> > I would remove the check of CON_ENABLED or CON_SUSPENDED
-> > from kgdboc_earlycon_init() completely.
-> >
-> > IMHO, we should keep the check of CON_BOOT because we do not
-> > want to register "normal" console drivers as kgdboc_earlycon_io_ops.
-> > It is later removed by kgdboc_earlycon_deinit(). I guess
-> > that the code is not ready to handle a takeover from normal
-> > to normal (even the same) console driver.
-> 
-> I'm not sure I understand your last sentence there. In general the
-> code handling all of the possible handoff (or lack of handoff) cases
-> between kgdboc_earlycon and regular kgdboc is pretty wacky. At one
-> point I thought through it all and tried to test as many scenarios as
-> I could and I seem to remember trying to model some of the behavior on
-> how earlycon worked. If something looks broken here then let me know.
+> >  #include <linux/kbd_kern.h>
+> >  #include <linux/vt_kern.h>
+> > @@ -2379,7 +2382,7 @@ static int tiocswinsz(struct tty_struct *tty, str=
+uct winsize __user *arg)
+> >   */
+> >  static int tioccons(struct file *file)
+> >  {
+> > -     if (!capable(CAP_SYS_ADMIN))
+> > +     if (!file_ns_capable(file, file->f_cred->user_ns, CAP_SYS_ADMIN))
+>
+> As you now are affecting the user/kernel api here, how was this tested
+> and are you _SURE_ this is the correct thing to be doing?  Did you audit
+> all userspace users of this ioctl that you can find (i.e. a Debian code
+> search) to verify that they can handle this change in behaviour?
+>
+> I need a lot of assurances before being able to take a change like this,
+> for obvious reasons.
+>
+> thanks,
+>
+> greg k-h
 
-Later update: The code is safe. The scenario below does not exist,
-	      see the "WAIT:" section below.
+Hi,
 
+Thank you for the feedback.
 
-I am not familiar with the kgdb init code. I thought about the
-following scenario:
+I could not find any existing selftests specifically targeting
+TIOCCONS. If there are any related ones, I=E2=80=99d appreciate it if you
+could point me in the right direction.
 
-1. kgdboc_earlycon_init() registers some struct console via
+Given that, I had to write a standalone functional test to exercise
+this ioctl and validate the permission behavior with the proposed
+change. I=E2=80=99ll share the test code and output shortly.
 
-	kgdboc_earlycon_io_ops.cons = con;
-	pr_info("Going to register kgdb with earlycon '%s'\n", con->name);
-	if (kgdb_register_io_module(&kgdboc_earlycon_io_ops) != 0) {
+I'm also in the process of auditing userspace tools that use
+TIOCCONS, using Debian Code Search as suggested. That is taking a
+bit of time, but I=E2=80=99ll include the findings in my next update.
 
-   and sets
+In addition, I plan to run integration tests with a few known tools
+that rely on TIOCCONS and will report those results as well.
 
-		earlycon_orig_exit = con->exit;
-		con->exit = kgdboc_earlycon_deferred_exit;
+I=E2=80=99d appreciate a bit more time to complete this work and ensure all
+bases are covered before resubmitting.
 
-
-2. Later, configure_kgdboc() would find some "preferred" console
-   and register it via
-
-	for_each_console_srcu(cons) {
-		int idx;
-		if (cons->device && cons->device(cons, &idx) == p &&
-		    idx == tty_line) {
-			kgdboc_io_ops.cons = cons;
-[...]
-	err = kgdb_register_io_module(&kgdboc_io_ops);
-
-   , where kgdb_register_io_module would call deinit for the
-   previously registered kgdboc_earlycon_io_ops:
-
-	if (old_dbg_io_ops) {
-		old_dbg_io_ops->deinit();
-		return 0;
-	}
-
-   , where kgdboc_earlycon_deinit() might call the .exit() callback
-
-		kgdboc_earlycon_io_ops.cons->exit(kgdboc_earlycon_io_ops.cons);
-
-
-BANG: If both "kgdboc_earlycon_io_ops" and "kgdboc_io_ops" pointed to
-      the same struct console then this might call .exit() callback
-      for a console which is still being used.
-
-      But I am wrong, see below.
-
-WAIT:
-
-I have got all the pieces together when writing this mail).
-I see that the code is safe, namely:
-
-static void kgdboc_earlycon_deinit(void)
-{
-	if (!kgdboc_earlycon_io_ops.cons)
-		return;
-
-	if (kgdboc_earlycon_io_ops.cons->exit == kgdboc_earlycon_deferred_exit)
-		/*
-		 * kgdboc_earlycon is exiting but original boot console exit
-		 * was never called (AKA kgdboc_earlycon_deferred_exit()
-		 * didn't ever run).  Undo our trap.
-		 */
-		kgdboc_earlycon_io_ops.cons->exit = earlycon_orig_exit;
-	else if (kgdboc_earlycon_io_ops.cons->exit)
-		/*
-		 * We skipped calling the exit() routine so we could try to
-		 * keep using the boot console even after it went away.  We're
-		 * finally done so call the function now.
-		 */
-		kgdboc_earlycon_io_ops.cons->exit(kgdboc_earlycon_io_ops.cons);
-
-	kgdboc_earlycon_io_ops.cons = NULL;
-}
-
-It calls kgdboc_earlycon_io_ops.cons->exit() only when
-unregister_console() tried to call the original con->exit()
-which was reassigned to kgdboc_earlycon_deferred_exit()...
-
-Updated resume:
-
-It looks to me that even normal console can be used by
-kgdboc_earlycon_io_ops and we could remove even the check
-of the CON_BOOT flag.
-
-My expectation:
-
-If a "struct console" is registered then the driver is used
-by printk() and it should be safe even for kgdboc_earlycon,
-as long as it has both "con->write" and "con->read" callbacks.
-
-So the check in kgdboc_earlycon_init() might be:
-
-	for_each_console(con) {
-		if (con->write && con->read &&
-		    (!opt || !opt[0] || strcmp(con->name, opt) == 0))
-			break;
-	}
-
-Heh, I hope that you were able to follow my thoughts and I did not
-create even bigger confusion.
-
-Best Regards,
-Petr
+Regards
+Pranav Tyagi
