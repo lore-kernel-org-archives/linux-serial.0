@@ -1,213 +1,255 @@
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51FC915C158
-	for <linux-serial@vger.kernel.org>; Thu, 12 Jun 2025 23:16:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD572D23B4
+	for <linux-serial@vger.kernel.org>; Fri, 13 Jun 2025 10:52:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749770186; cv=none; b=W7OE1BCHReEYA1YQVTqHSZ6A6dlJz9/iVCrkwiwvW3gD4Zfiq2kv+InOV78dbLkuDAZ8lMM8OwqIBMihhNR0uebrdEBUM03npO/bwfq86cNw/V1WfiLn9OM8f+suIKR4rNLkLYtolyVFjwApxkW8u013kUxm/mhh4xijrYYNfaA=
+	t=1749811979; cv=none; b=fAQSLkXrwIE9j2949GXy7lfiJFeJGiFRtRW0G5dISO8w9NouShwntoQGykJKQbiFcASt/k5k7WIvaGLCrzukDE4bDLjMMkWUpQ36GugOBlYi4nd3pbwmqdNbSdqvDNnH7IGBDfxbkRLspo11i8+io5sN85SJZjKVnOspsdBmd+U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749770186; c=relaxed/simple;
-	bh=GVl2AarfDIZ4o7KzER4XK3b0vrUv5ejYJly+UE5yuvo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XcM9sAlsHKZ5wYw+VoKgDkRET++eriVK5lsSNJg/jOQQTqV7RTtTBYTKLUtlNFG6PlTGU5yeb6YId6PJrioCwx2P45bNzcX8UJ3ScVbECtI842Jyjj7LTQ+ucbOBqg1/Xphuq/oCmr/w76OkLvSLSV8VN11llddTF0xP4S2iRY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=UhGeBphW; arc=none smtp.client-ip=209.85.210.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1749811979; c=relaxed/simple;
+	bh=dATxbca+ASPlW96U0TtaJ9IYiEu9l+L7yn537Xj305s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Mn4oGVYiNDMlDoz4wHRbqGy4xPgZKd7yFYqT9+hkE1n+qvpw2WAdmc8RjM5qRkDgDTfj60K/9vyc5GW/Cunrjc/1WDzjdoAxII7GVR/t5Snvft/rJ7LdaszQ3QqhljlVG7eRCM5M24cm9GZFUur0o5WA4xBKnd6T39cnczZjtFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=A0KZniRP; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="UhGeBphW"
-Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-747abb3cd0bso1958793b3a.1
-        for <linux-serial@vger.kernel.org>; Thu, 12 Jun 2025 16:16:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="A0KZniRP"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-3a54836cb7fso1260503f8f.2
+        for <linux-serial@vger.kernel.org>; Fri, 13 Jun 2025 03:52:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1749770183; x=1750374983; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VX2tp7vE9Xc39hTYGYaV6T2gV76j7v4yp4p4MnAvSyU=;
-        b=UhGeBphW/TKFVpYGmAqJtd10OFBhx3yyOBAaKmFPj4OVsQWxj1FwPmpsqNYR+QbaN0
-         je93cuJ1rbWvRTjnpKYzOnPRn747DML2rRnRI9cVnb4wVRUc1oF5IpJVoyukHRQITZHY
-         zHzf1KRsrgwnSKbCcFJ7A7rmF+QnB+rqV5eu0=
+        d=suse.com; s=google; t=1749811975; x=1750416775; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=DgWvQag2QGzdzZH71/CBz+H5MGX3oMtaddibtY3jjg8=;
+        b=A0KZniRPtIf+/Dk4oZqLCVOk7dzRtrYgyq5fdGaFbZidLLdkFG28l1bair95aKNug+
+         k0QuN5Sa0MLF3PZSjNrmUlwivQI9HEvkRVeyEuguwUZGU41sFrrTl0ndu4dGkDmrTtRD
+         TDUS/BVuI8r7cpB1aKmXgyXNZx7VH7iVkE7tidVTnREetfWaGEvciB25r/LvhjgWhQu/
+         kKsu6/40ySOkjMu0WnbITbnRufgNgXaCRQhqNAI9gjiyCY10DYvdZYE6iOLpSMvt7uTt
+         6ko3L8oNgCoFSfDyn68uewSFFUnFg4Z935ogrJ8rwXvQXN+MZC3yqsRPN/Har2jghieK
+         Rwhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749770183; x=1750374983;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VX2tp7vE9Xc39hTYGYaV6T2gV76j7v4yp4p4MnAvSyU=;
-        b=cB5GRRtB3yKa86Zc3l+aAsfGkwvBAQWD4jbXen5HNMR5t2ug5zGk04xzi8wzPhLevv
-         OzIbIbnLc7P61E3RR4/J0SSIG5UvRBKSJL4GUVTn+8OawHV5XRA0So18gECNfmif1FRg
-         bFPEhJUgs1s496P5yryCLG2EK9SjWNbeJqHjQ46ZLCNHSNRMwUXGy3b6r2FBCcGI6Pom
-         4ESRNbmGaPqZJmZm62SLMtHHFPgC05EeGGwRAlgIY/zacS117awnyVdy6AO2w/hETseK
-         LnRu7pAxuCmcLtRDJ+X9IvJX5v4X3AbnuFD6Fmc/2HC4Xp5AsvWkm1vY2zzalmYzXHya
-         aa0A==
-X-Forwarded-Encrypted: i=1; AJvYcCXTPB1IUzPdLbka/IAmyc743N7MMp0zvO0O5+ySrflLOLUaIy/s8jtFwb+NVAIA7FodzqVa4gmzP2KL8Ic=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz4jlqpRRfcqkIGaYWf90U+jPHpTv/5h+VwwVmKBTrqdY0t2StW
-	o8yJMJjqgwpK5h8fUqAdPncy+FasrYTOfnDMi9kfq0WmDHkBrKRAx8KDKLLuK5U8y1VnTkJqWJp
-	oAf4=
-X-Gm-Gg: ASbGncsuJbD0fM26HxrZ9ijK/GrrytD2NOe/oWNSbO0CQJhxiwW0H9CWUh4lwlPTx/r
-	APaaeeh3JNF1tRamLPrWOgPrPMrgYCxuKCYQMTT8VENJOb3UocNOy67/qOHvODIPFy5O7wF3i/L
-	SRys2AN4YWPId1/XfXtmFbeuZT70+N21Z3ASUTLT2KzayBqeKQhLwraxjIjkFVBJStXLf8ukFPP
-	/inyXV0d9w4rrBmqDJkL4ykcLJOKNWuBS0V8BZ3Xqsl+0WgPyGeh0XqSL8BRI5jSAtChwOAEMU/
-	wd/zIiTIQ7NbPuwSjPYcweV32593rhLNtNc2RqO01P1nj6ytJFVaVHyzG8GGzMi4LXQAB6sOGgP
-	+vv+MixvlFo5+HYLNIRytmXEe1ousRw==
-X-Google-Smtp-Source: AGHT+IGQVR+DAbH0UGk5t3eLnQFJof7fCuv+8esFoguySH0AruVpDilvLjw1t1MCZk0lBJpRR1mYIA==
-X-Received: by 2002:a17:90b:3dcb:b0:310:c8ec:4192 with SMTP id 98e67ed59e1d1-313dc298ab4mr496260a91.10.1749770183478;
-        Thu, 12 Jun 2025 16:16:23 -0700 (PDT)
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com. [209.85.215.173])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-313c1bcbc4fsm2107095a91.1.2025.06.12.16.16.22
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Jun 2025 16:16:22 -0700 (PDT)
-Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-b2f645eba5dso1999651a12.1
-        for <linux-serial@vger.kernel.org>; Thu, 12 Jun 2025 16:16:22 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCU25CotZpMfLhA/3/U63/R2h867OVX0tUCCgSg9LgglRnRpABMJBlgrCwstdz3NJTHVKkVMADOk1O0/wcE=@vger.kernel.org
-X-Received: by 2002:a17:90b:588b:b0:2ff:556f:bf9 with SMTP id
- 98e67ed59e1d1-313dc227afamr497218a91.4.1749770181738; Thu, 12 Jun 2025
- 16:16:21 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1749811975; x=1750416775;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DgWvQag2QGzdzZH71/CBz+H5MGX3oMtaddibtY3jjg8=;
+        b=q3tIwmf/bH1bdXu72N65j8zBCEYMeA4kKmZv2VqKR3d58cn5so8Pz6ta3UpS8svFJB
+         9hHRTVVJPZLIfF3dkx+tL1lvvIEsNUCVzH1i4wb/FoyYD+eInV9WiGIycG47vc8P5+P1
+         US009ZaDIFtoWu7kpknPEdvzasPuIIh6178uSLooi5lW3mmTmqscHX9iCbGbotZUjvSF
+         hl0Diwyd6fzcaY8uXlcBz0fwqppSNIV4KsU5IIm/di6v5ZxSg0UvtFmJZwJPW4iG9Dx7
+         /ZRV1T86BZg1hPovD45Tds3swT6xnChrJa9eg5bqzjcM/gspSs9dT7bQqeeiGA+ZuZ9e
+         nL9Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWFE44zKTrqS3xzvhjOfMEak2Xc2nLP8OMxYmhdbi/sqpaVos8NXiqhBsLoziFOZi/LlptPVFR/ciJaE24=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz3Sn2CJnqG3dy8Ht4mK84MY14nZHmzvBrV6woE2G6m97T3P4Qv
+	VTMIYFciJWLBNJBYAWounMc33g72ljD+yN9rzmOfw4N3A6fWQtBZrc6Ys/Nvo8mzA1w=
+X-Gm-Gg: ASbGncs9nnnj1Mz7Eg6dBtpL+uriiribnL1kBMXINomK8pEsjc+G2bKDiIvuq0FN0Nw
+	nfmTqEY9JiB2DIi3jdYj4WMlHQ8gtrknFSOCLihNXZLGKxjI2cRcOrprmDPBGrmJecVTtmil12e
+	/Y7t25TiYfhqnhPoZMLENAsRmghYgao8gco2vh1dIfjhk4Onh5TYVkaAyh2u32+a2tS3ZzBRXg/
+	rroG2Jrxrw8UZI9hQU9vvhsT4xGojg7pmGmjycaO131UeQOBmK+qwpb39LRVZdRtsS+OxtM7wcg
+	UuspMKn3Lczv1NHGif/Bk6e0ntlf30G1JOA5+nDmABKdt4NonwjsfnUW4PmV+JYx
+X-Google-Smtp-Source: AGHT+IHJOeLrZP5NvvZh4tWyIjAn3K7bzr2Vcb2r/+QXO+h/w0YFHvsR1/KLQStT6Bew+1GfqtSw2g==
+X-Received: by 2002:a05:6000:2582:b0:3a4:f722:f00b with SMTP id ffacd0b85a97d-3a5686e4287mr1798399f8f.11.1749811975195;
+        Fri, 13 Jun 2025 03:52:55 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-748900060c5sm1273973b3a.45.2025.06.13.03.52.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Jun 2025 03:52:54 -0700 (PDT)
+Date: Fri, 13 Jun 2025 12:52:35 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: Doug Anderson <dianders@chromium.org>
+Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	John Ogness <john.ogness@linutronix.de>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
+Subject: Re: [PATCH 4/7] drivers: serial: kgdboc: Check CON_SUSPENDED instead
+ of CON_ENABLED
+Message-ID: <aEwC81RhvveGP73Y@pathway.suse.cz>
+References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-4-f427c743dda0@suse.com>
+ <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com>
+ <f962e9bab3dc8bf5cae1c7e187a54fb96a543d51.camel@suse.com>
+ <CAD=FV=XFeokpbMUFjAc0OkwJ97vR8aB+4GbnFxRKymvpEY3gnA@mail.gmail.com>
+ <aErcrCKcsi9cpANY@pathway.suse.cz>
+ <CAD=FV=WFWviPPR6VWmsN2-+vzRDoU6oTNH=EP6z1usG4EDR3+w@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
- <20250606-printk-cleanup-part2-v1-4-f427c743dda0@suse.com>
- <CAD=FV=XXQyZLYKoszj68ZGFDY=9-cmEUp406WeOeSBVZOHyUHw@mail.gmail.com>
- <f962e9bab3dc8bf5cae1c7e187a54fb96a543d51.camel@suse.com> <CAD=FV=XFeokpbMUFjAc0OkwJ97vR8aB+4GbnFxRKymvpEY3gnA@mail.gmail.com>
- <aErcrCKcsi9cpANY@pathway.suse.cz>
-In-Reply-To: <aErcrCKcsi9cpANY@pathway.suse.cz>
-From: Doug Anderson <dianders@chromium.org>
-Date: Thu, 12 Jun 2025 16:16:09 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WFWviPPR6VWmsN2-+vzRDoU6oTNH=EP6z1usG4EDR3+w@mail.gmail.com>
-X-Gm-Features: AX0GCFujYjZY5QQA0SHYIPZy8d0O0rad7ID3hPYo1lls7-hp2LxFCT3Du9JnL2k
-Message-ID: <CAD=FV=WFWviPPR6VWmsN2-+vzRDoU6oTNH=EP6z1usG4EDR3+w@mail.gmail.com>
-Subject: Re: [PATCH 4/7] drivers: serial: kgdboc: Check CON_SUSPENDED instead
- of CON_ENABLED
-To: Petr Mladek <pmladek@suse.com>
-Cc: Marcos Paulo de Souza <mpdesouza@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
-	John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <danielt@kernel.org>, 
-	Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, 
-	Johannes Berg <johannes@sipsolutions.net>, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net, 
-	linux-um@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAD=FV=WFWviPPR6VWmsN2-+vzRDoU6oTNH=EP6z1usG4EDR3+w@mail.gmail.com>
 
-Hi,
-
-On Thu, Jun 12, 2025 at 6:57=E2=80=AFAM Petr Mladek <pmladek@suse.com> wrot=
-e:
->
-> > > > > @@ -577,7 +577,8 @@ static int __init kgdboc_earlycon_init(char
-> > > > > *opt)
-> > > > >         console_list_lock();
-> > > > >         for_each_console(con) {
-> > > > >                 if (con->write && con->read &&
-> > > > > -                   (con->flags & (CON_BOOT | CON_ENABLED)) &&
-> > > > > +                   (con->flags & CON_BOOT) &&
-> > > > > +                   ((con->flags & CON_SUSPENDED) =3D=3D 0) &&
-> > > >
-> > > > I haven't tried running the code, so I could easily be mistaken,
-> > > > but...
-> > > >
-> > > > ...the above doesn't seem like the correct conversion. The old
-> > > > expression was:
-> > > >
-> > > > (con->flags & (CON_BOOT | CON_ENABLED))
-> > > >
-> > > > That would evaluate to non-zero (true) if the console was _either_
-> > > > "boot" or "enabled".
-> > > >
-> > > > The new expression is is:
-> > > >
-> > > > (con->flags & CON_BOOT) && ((con->flags & CON_SUSPENDED) =3D=3D 0)
-> > > >
-> > > > That's only true if the console is _both_ "boot" and "not suspended=
-".
-> > >
-> > > My idea here was that the users of for_each_console would find the
-> > > first available console, and by available I would expect them to be
-> > > usable. In this case, is there any value for kgdboc to use a console
-> > > that is suspended? Would it work in this case?
-> > >
-> > > I never really used kgdboc, but only checking if the console was
-> > > enabled (which it's always the case here) was something that needed t=
-o
-> > > be fixed.
-> > >
-> > > Maybe I'm missing something here as well, so please let me know if I
-> > > should remove the new check.
+On Thu 2025-06-12 16:16:09, Doug Anderson wrote:
+> Hi,
+> 
+> On Thu, Jun 12, 2025 at 6:57 AM Petr Mladek <pmladek@suse.com> wrote:
 > >
-> > So it's been 5 years since I wrote the code, but reading that I was
-> > checking for:
+> > > > > > @@ -577,7 +577,8 @@ static int __init kgdboc_earlycon_init(char
+> > > > > > *opt)
+> > > > > >         console_list_lock();
+> > > > > >         for_each_console(con) {
+> > > > > >                 if (con->write && con->read &&
+> > > > > > -                   (con->flags & (CON_BOOT | CON_ENABLED)) &&
+> > > > > > +                   (con->flags & CON_BOOT) &&
+> > > > > > +                   ((con->flags & CON_SUSPENDED) == 0) &&
+> > > > >
+> > > > > I haven't tried running the code, so I could easily be mistaken,
+> > > > > but...
+> > > > >
+> > > > > ...the above doesn't seem like the correct conversion. The old
+> > > > > expression was:
+> > > > >
+> > > > > (con->flags & (CON_BOOT | CON_ENABLED))
+> > > > >
+> > It is easy to get confused by the register_console() code. And
+> > it has been even worse some years ago.
 > >
-> >   (con->flags & (CON_BOOT | CON_ENABLED))
+> > Anyway, the current code sets CON_ENABLED for all registered
+> > consoles, including CON_BOOT consoles. The flag is cleared only
+> > by console_suspend()[*] or unregister_console().
 > >
-> > Makes me believe that this was the case when I wrote the code:
-> > 1. Early boot consoles (earlycon) were not marked as CON_ENABLED but
-> > were instead marked as CON_BOOT.
-> > 2. Once consoles became non-early they were moved to CON_ENABLED.
+> > IMHO, kgdboc_earlycon_init() does not need to care about
+> > console_suspend() because the kernel could not be suspended
+> > during boot. Does this makes sense?
+> 
+> Yeah, makes sense to me.
+> 
+> > Resume:
 > >
-> > ...and the code was basically looking for any consoles with a matching
-> > name that were either boot consoles or normal/enabled consoles.
+> > I would remove the check of CON_ENABLED or CON_SUSPENDED
+> > from kgdboc_earlycon_init() completely.
 > >
-> > Is that a plausible theory? It's also possible that I just was
-> > confused when I code things up and that I really meant to write:
->
-> It is easy to get confused by the register_console() code. And
-> it has been even worse some years ago.
->
-> Anyway, the current code sets CON_ENABLED for all registered
-> consoles, including CON_BOOT consoles. The flag is cleared only
-> by console_suspend()[*] or unregister_console().
->
-> IMHO, kgdboc_earlycon_init() does not need to care about
-> console_suspend() because the kernel could not be suspended
-> during boot. Does this makes sense?
+> > IMHO, we should keep the check of CON_BOOT because we do not
+> > want to register "normal" console drivers as kgdboc_earlycon_io_ops.
+> > It is later removed by kgdboc_earlycon_deinit(). I guess
+> > that the code is not ready to handle a takeover from normal
+> > to normal (even the same) console driver.
+> 
+> I'm not sure I understand your last sentence there. In general the
+> code handling all of the possible handoff (or lack of handoff) cases
+> between kgdboc_earlycon and regular kgdboc is pretty wacky. At one
+> point I thought through it all and tried to test as many scenarios as
+> I could and I seem to remember trying to model some of the behavior on
+> how earlycon worked. If something looks broken here then let me know.
 
-Yeah, makes sense to me.
-
-
-> Also it does not need to care about unregister_console() because
-> the unregistered console won't be listed by for_each_console().
->
-> [*] The 1st patch in this patchset updates console_suspend()
->     to set CON_SUSPENDED instead of clearing CON_ENABLED.
->     It helps to make it clear that it is suspend-related.
->
->
-> Resume:
->
-> I would remove the check of CON_ENABLED or CON_SUSPENDED
-> from kgdboc_earlycon_init() completely.
->
-> IMHO, we should keep the check of CON_BOOT because we do not
-> want to register "normal" console drivers as kgdboc_earlycon_io_ops.
-> It is later removed by kgdboc_earlycon_deinit(). I guess
-> that the code is not ready to handle a takeover from normal
-> to normal (even the same) console driver.
-
-I'm not sure I understand your last sentence there. In general the
-code handling all of the possible handoff (or lack of handoff) cases
-between kgdboc_earlycon and regular kgdboc is pretty wacky. At one
-point I thought through it all and tried to test as many scenarios as
-I could and I seem to remember trying to model some of the behavior on
-how earlycon worked. If something looks broken here then let me know.
+Later update: The code is safe. The scenario below does not exist,
+	      see the "WAIT:" section below.
 
 
-> To make it clear, I would use:
->
->         for_each_console(con) {
->                 if (con->write && con->read &&
->                     (con->flags & CON_BOOT) &&
->                     (!opt || !opt[0] || strcmp(con->name, opt) =3D=3D 0))
->                         break;
->         }
->
-> And I would do this change as the 1st patch in the patchset
-> before we change the flag modified by console_suspend().
+I am not familiar with the kgdb init code. I thought about the
+following scenario:
 
-Seems OK to me.
+1. kgdboc_earlycon_init() registers some struct console via
 
--Doug
+	kgdboc_earlycon_io_ops.cons = con;
+	pr_info("Going to register kgdb with earlycon '%s'\n", con->name);
+	if (kgdb_register_io_module(&kgdboc_earlycon_io_ops) != 0) {
+
+   and sets
+
+		earlycon_orig_exit = con->exit;
+		con->exit = kgdboc_earlycon_deferred_exit;
+
+
+2. Later, configure_kgdboc() would find some "preferred" console
+   and register it via
+
+	for_each_console_srcu(cons) {
+		int idx;
+		if (cons->device && cons->device(cons, &idx) == p &&
+		    idx == tty_line) {
+			kgdboc_io_ops.cons = cons;
+[...]
+	err = kgdb_register_io_module(&kgdboc_io_ops);
+
+   , where kgdb_register_io_module would call deinit for the
+   previously registered kgdboc_earlycon_io_ops:
+
+	if (old_dbg_io_ops) {
+		old_dbg_io_ops->deinit();
+		return 0;
+	}
+
+   , where kgdboc_earlycon_deinit() might call the .exit() callback
+
+		kgdboc_earlycon_io_ops.cons->exit(kgdboc_earlycon_io_ops.cons);
+
+
+BANG: If both "kgdboc_earlycon_io_ops" and "kgdboc_io_ops" pointed to
+      the same struct console then this might call .exit() callback
+      for a console which is still being used.
+
+      But I am wrong, see below.
+
+WAIT:
+
+I have got all the pieces together when writing this mail).
+I see that the code is safe, namely:
+
+static void kgdboc_earlycon_deinit(void)
+{
+	if (!kgdboc_earlycon_io_ops.cons)
+		return;
+
+	if (kgdboc_earlycon_io_ops.cons->exit == kgdboc_earlycon_deferred_exit)
+		/*
+		 * kgdboc_earlycon is exiting but original boot console exit
+		 * was never called (AKA kgdboc_earlycon_deferred_exit()
+		 * didn't ever run).  Undo our trap.
+		 */
+		kgdboc_earlycon_io_ops.cons->exit = earlycon_orig_exit;
+	else if (kgdboc_earlycon_io_ops.cons->exit)
+		/*
+		 * We skipped calling the exit() routine so we could try to
+		 * keep using the boot console even after it went away.  We're
+		 * finally done so call the function now.
+		 */
+		kgdboc_earlycon_io_ops.cons->exit(kgdboc_earlycon_io_ops.cons);
+
+	kgdboc_earlycon_io_ops.cons = NULL;
+}
+
+It calls kgdboc_earlycon_io_ops.cons->exit() only when
+unregister_console() tried to call the original con->exit()
+which was reassigned to kgdboc_earlycon_deferred_exit()...
+
+Updated resume:
+
+It looks to me that even normal console can be used by
+kgdboc_earlycon_io_ops and we could remove even the check
+of the CON_BOOT flag.
+
+My expectation:
+
+If a "struct console" is registered then the driver is used
+by printk() and it should be safe even for kgdboc_earlycon,
+as long as it has both "con->write" and "con->read" callbacks.
+
+So the check in kgdboc_earlycon_init() might be:
+
+	for_each_console(con) {
+		if (con->write && con->read &&
+		    (!opt || !opt[0] || strcmp(con->name, opt) == 0))
+			break;
+	}
+
+Heh, I hope that you were able to follow my thoughts and I did not
+create even bigger confusion.
+
+Best Regards,
+Petr
