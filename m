@@ -1,62 +1,62 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEF882F3635
-	for <linux-serial@vger.kernel.org>; Mon, 16 Jun 2025 13:33:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21D932C3745
+	for <linux-serial@vger.kernel.org>; Mon, 16 Jun 2025 13:57:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750080814; cv=none; b=t/3pBO3BH7cMQRp0qZMsNc090FGWjoViSFj7krDAYUX3UIulOIwZV+OZI14YjsI/RtgXQVLqbX287i6dSAqpnLOF2kTwe0K2Npn6N04xle9Xh5KtNdkW/TyCNlBy7EJFXizcMAFOA4Y+DbuFZSfVRVx0bjTvhljyIUV2EaEpQo8=
+	t=1750082239; cv=none; b=aUA53lNF8B4G/TRZeZqVl5E+i/Dh+KzNLQ5Dtgfy1nrMwOFOZFmdtL67jz93EOtpAE4hoBmGegbs0B3HFFyYBBqX0dPq/qI/o5ocjbkM4MQdZ2b7C+fSqN2e+e35hUNvnweNK2G0p0H+wcG855e9U2OVc/Om3YVn9VLPRFjveME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750080814; c=relaxed/simple;
-	bh=/PmblSL9BUeWLs9QcuEhZwOxi3hMLjCTpeJw/Yoam94=;
+	s=arc-20240116; t=1750082239; c=relaxed/simple;
+	bh=NH0FX9kt0WubJvwnc+nYK/maDfQ9wwkDesbyODdRkTY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iOjcXhcV85RgI+ZcGq2PPXkra1z172kgCmxyC9HB+MqGA70u2U8OYNgqogWr/1zxcxUA7DP5B1pbmTmFn6sNz+Uda9WVzqntzbv1tviWX+rZapDrb9bmzXM7BNDPklJaGCYFPuId90XKvc+4enA3KB1mmYfVuhEj54nZA2niRh4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=OvEPh/dN; arc=none smtp.client-ip=209.85.221.51
+	 Content-Type:Content-Disposition:In-Reply-To; b=nKyVXkcjl/78JPf/xlKWdRbtebcyTruf2CzKUV6Jw2xuzto2netOP4LJAoC7lpbrHo9NJ/4AYYpBJUFebxbfc11WUC9Eqb6msSCL6rB9ofFVKTeGUHqsne2OvxeURQtXCOx0t3r3DqGl+tdu8IIfvYh0kx40xuMePQ1NQ/CvKhQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=hGTxF0p6; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="OvEPh/dN"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3a575a988f9so1360623f8f.0
-        for <linux-serial@vger.kernel.org>; Mon, 16 Jun 2025 06:33:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="hGTxF0p6"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3a36748920cso5370595f8f.2
+        for <linux-serial@vger.kernel.org>; Mon, 16 Jun 2025 06:57:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1750080810; x=1750685610; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1750082235; x=1750687035; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mDsjdTiosngDCcbjk569uHEPxRmT2Rin/eFUrpVF9Nc=;
-        b=OvEPh/dNF/Duj1GBom7xu+Bc5AScZLfHzd+IAqYwPPzePNv2OmZNddSGnTNjvczK1N
-         KMDWP/VmCeZK0TYMFPNeXfeZbGtPFZD7AK7PzUpIS74Gc/nFrD6vNSv8mkx47NBZqH3W
-         h+O2qb3TXKvuUTApSgRYdzUClhTo6YmcCeohMHjsNuMNqPbiJJFavGcdYknnUjuygde1
-         k4lou+pRmEucC185ydKehRRWPr0vKTMVOdY1Jfm0Y0ICyYkQqGURDuaQ69SWHB+wwiUk
-         5194Cg9C5OUrf3bGhnRylrH5NX9JA6E6CVZdP2pJjJFkOs+TlEkMvi5iBpFMMcpdXrOk
-         vKCg==
+        bh=E5U21iemE/c9Sz0YhEWkD1P9gtyQVcNDFZou5zB9HsA=;
+        b=hGTxF0p6tGO+hQUegUdTkJeP17/HhQs9wCy334tOFiX1HT+Y/DvpMaGKoSRHZ5597N
+         pY7u4a08y3J1KNnDG5DfyU42bZp4mOVeQdh0guB3Uv1B3Wrsa103Wwf69rGXKReMidUc
+         jHJJzYnseEc7JWxkZxukJbxcthl0yrx9kL4TTWPD0jJ1FVDSxij8b1UMYVJNgVy3T1BM
+         tfSu12FvP+T/IVMiJcsAWIpt2veVuMYy0TQhzKA3ryl0XKuchDwYnHjjTb6N9BeuwTkl
+         5C/g6H389IT/4cmQez+9PlnKqdCgH+qaDzmlnMy4eUxVkHrqfIDonY2NpzmkPE9+5fUR
+         icBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750080810; x=1750685610;
+        d=1e100.net; s=20230601; t=1750082235; x=1750687035;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=mDsjdTiosngDCcbjk569uHEPxRmT2Rin/eFUrpVF9Nc=;
-        b=Db8jh8z9+1dHOUKepFmQOHpBzvahtKVsQMWhNKNFC7xHNLXYXllfqUT6/2s3g+m5FA
-         ifmKPsfdiDwRQcsnmWtaS//vXrgRsaxqrQluN52UU0+b/0E5Sh1c03Y0/39vmRQEwz18
-         zB/gf5ACOfU2hgmy8hBfxi1o/MWeUaaAiACSlZCKp0YgjSxWwsMb+KPjrblcaBDev42I
-         HnZg1h9HJGUS7cDTxD9vmBg5TUbviMd5leyKAwAEnyeH6TnLmpwJlhG460rIzGqQTiWb
-         Y/2tFIb4tUr4n8TDINglfykeeBFxVcuy9WTkZK2UP5r7tQ0ajvJiui1/fxIDsdA4GQYc
-         O1Aw==
-X-Forwarded-Encrypted: i=1; AJvYcCWI+FaVaDsIK3NCiVeEq1sboOUfXPBBvVq3nQXYv2wOFo++ptVv+3Q9RVN2CD/zAQT6EQBIHqCdjCxwB/0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwOYZpvqIvC0CwXDr8NAvg27pxIZaDIyEecd005XDAh8QUwMq3w
-	JsitlBX06FZsZYOZBtbKIKDBHuUTLQFdmqv/WMsrxUlVEVBTvVyYLUMFzCTLXDEyN0k=
-X-Gm-Gg: ASbGncv9G8UeiEK3s3tjbmPcfbjBd0owhAw7HbalL5f3NmsuPnvTO+FSSWINgW97p+i
-	AjB0+hfoUn8uNaDs7TGtlv/J1L2U2dO3fuHbPOACIKsmqi1RL4TUAMS9Pd4Z/ziB5ylKgS6Ddlq
-	7DYhZ3ZJK5y8HYdSWYCRS7jeaZNSSn/kL1jZC4APcA7zGtMruUehkCkODmtNMeTLuOaxComJUc2
-	AWMNivFM8fcV/50975ZgKylktNWWOG278A3olalv3HDSirxen1ZDfAxi2n5fa7alDndcLj3dcVi
-	kbnt4HUE8qvBvGuch2rA4vQHa2zm7xNFFfr+G0OEfVTacu2Dt4YxSfFVrjboGDci
-X-Google-Smtp-Source: AGHT+IHsMKMEFnK4iRSKN4yA2G25+VoXuC33JoKTL84hU+3purxVVSbR+gePOjO6tpOk2JJiHzT3Fg==
-X-Received: by 2002:a5d:5887:0:b0:3a5:2dae:970c with SMTP id ffacd0b85a97d-3a572e82154mr7975991f8f.37.1750080810126;
-        Mon, 16 Jun 2025 06:33:30 -0700 (PDT)
+        bh=E5U21iemE/c9Sz0YhEWkD1P9gtyQVcNDFZou5zB9HsA=;
+        b=RRI9MU7djYNFtETNafVbe9+jigPbqINKuGDTdcqfFL0k9V1r6SSc3YU6Ad4oJ1kOVN
+         rV0X6filsglgMFdVIDnBlyjBNyWNbBzvPmT5AMfU7NobEKKf8XZNxB5fl3LDkDyp4fqF
+         ags7SgSejc4FzDZtiy2H2XXjPR+8wzVuGTDeYGOzt/IHHkwuYfZa6e33svqo5g2p5Y2I
+         +WmdSiZoUsKQHIxt0z2i6nlo6gpBkRLp/gXmyyun5VOqTeF+i9KAQ0NcSMQ0N4mGnMkw
+         uwIMH4y+xYKDLT5SD9h7nmUO2t44jT9HPX+Mou3qVPdrIVqQiAS5s2fPrcjGSevDITMm
+         yM2A==
+X-Forwarded-Encrypted: i=1; AJvYcCUJgYoWoGX7waIXUeX3g4hSJhmowm1id4E6o0kyysrcU9k0o2uu768egcap306N5ah46N+7nUvjMomG5+U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyK6lujeSj0P/3wZzlsBigpFj58Vn2hzou6GSHunSL/VuArtiTK
+	aVa/bEcyEsV5Z+bFxNa3o9WtJ1Hx7fVaQp2PoaJv2+nY7oFY+roMTstD3+YDobV6hQg=
+X-Gm-Gg: ASbGnculO3itsKyFnTYh+ta1kRWkLQLdolCFRE8Gtd3kqpAkV+XUBytLG1kZA7bErdK
+	ILaWngA+lE2ww7pXYXpDqCj1DiHzotXW3DOLFc0bO2juI+uVs0gQ9OhKhqMIedMHWmNc74MNSmQ
+	5Djd+Php/MUSPgZrQyNym3zL3T4NK7bdDJpa8Ldu8keqJoXfWh0rU7tUtBzA3pnu8ZtFJtNNvUa
+	5d6PnQ097iRtYdx10UqaC2fVsv6zXnuly+E+d6zk/kWdVDcb/Bk42vvp2tPm+KpQVSdZr4lX16b
+	BkK9ZAF2QTjCHBU4SxY25kPS2VLy6gJuec2DOnGmPHeLU3jeMysb4QVTOvAhg+aa
+X-Google-Smtp-Source: AGHT+IG5cdNsogAjYlCwwv/Yr99wBxZ5kpKFYKtrzNVTxQPp1q35B4mAJcdg7PMSO6nM0Lz7izNcdg==
+X-Received: by 2002:a05:6000:1449:b0:3a4:ed62:c7e1 with SMTP id ffacd0b85a97d-3a572367734mr6709880f8f.12.1750082235292;
+        Mon, 16 Jun 2025 06:57:15 -0700 (PDT)
 Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2365de77605sm60637745ad.105.2025.06.16.06.33.18
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2365dea927asm61349195ad.155.2025.06.16.06.57.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jun 2025 06:33:29 -0700 (PDT)
-Date: Mon, 16 Jun 2025 15:33:13 +0200
+        Mon, 16 Jun 2025 06:57:14 -0700 (PDT)
+Date: Mon, 16 Jun 2025 15:56:59 +0200
 From: Petr Mladek <pmladek@suse.com>
 To: Marcos Paulo de Souza <mpdesouza@suse.com>
 Cc: Steven Rostedt <rostedt@goodmis.org>,
@@ -72,10 +72,10 @@ Cc: Steven Rostedt <rostedt@goodmis.org>,
 	Johannes Berg <johannes@sipsolutions.net>,
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
-Subject: Re: [PATCH 5/7] arch: um: kmsg_dump: Don't check for CON_ENABLED
-Message-ID: <aFAdGas9yGB4zhqc@pathway.suse.cz>
+Subject: Re: [PATCH 6/7] debug: kgd_io: Don't check for CON_ENABLED
+Message-ID: <aFAiq3IEic8DuATR@pathway.suse.cz>
 References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
- <20250606-printk-cleanup-part2-v1-5-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-6-f427c743dda0@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -84,75 +84,55 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250606-printk-cleanup-part2-v1-5-f427c743dda0@suse.com>
+In-Reply-To: <20250606-printk-cleanup-part2-v1-6-f427c743dda0@suse.com>
 
-On Fri 2025-06-06 23:53:47, Marcos Paulo de Souza wrote:
-> All consoles found on for_each_console are registered, meaning that all of
+On Fri 2025-06-06 23:53:48, Marcos Paulo de Souza wrote:
+> All consoles found on for_each_console_srcu are registered, meaning that all of
 > them are CON_ENABLED. The code tries to find an active console, so check if the
 > console is not suspended instead.
 > 
 > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
 > ---
->  arch/um/kernel/kmsg_dump.c | 2 +-
+>  kernel/debug/kdb/kdb_io.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/arch/um/kernel/kmsg_dump.c b/arch/um/kernel/kmsg_dump.c
-> index 4190211752726593dd2847f66efd9d3a61cea982..f3025b2a813453f479d720618c630bee135d4e08 100644
-> --- a/arch/um/kernel/kmsg_dump.c
-> +++ b/arch/um/kernel/kmsg_dump.c
-> @@ -31,7 +31,7 @@ static void kmsg_dumper_stdout(struct kmsg_dumper *dumper,
->  		 * expected to output the crash information.
->  		 */
->  		if (strcmp(con->name, "ttynull") != 0 &&
-> -		    (console_srcu_read_flags(con) & CON_ENABLED)) {
-> +		    (console_srcu_read_flags(con) & CON_SUSPENDED) == 0) {
->  			break;
+> diff --git a/kernel/debug/kdb/kdb_io.c b/kernel/debug/kdb/kdb_io.c
+> index 9b11b10b120cf07e451a7a4d92ce50f9a6c066b2..cdc1ee81d7332a9a00b967af719939f438f26cef 100644
+> --- a/kernel/debug/kdb/kdb_io.c
+> +++ b/kernel/debug/kdb/kdb_io.c
+> @@ -589,7 +589,7 @@ static void kdb_msg_write(const char *msg, int msg_len)
+>  	 */
+>  	cookie = console_srcu_read_lock();
+>  	for_each_console_srcu(c) {
+> -		if (!(console_srcu_read_flags(c) & CON_ENABLED))
+> +		if (console_srcu_read_flags(c) & CON_SUSPENDED)
+>  			continue;
 
-I think that we should actually replace the check of the
-CON_ENABLE/CON_SUSPENDED flag with
+I think that this is similar to the 5th patch. We should check
+here is_console_usable(con, console_srcu_read_flags(c), true)
+because it checks more conditions:
 
-		is_console_usable(con, console_srcu_read_flags(con), true)
+     + the global console_suspended flag. The consoles drivers should
+       not be used when it is set...
 
-And it should be done at the beginning of the patchset before
-changing the semantic of the flags.
+     + whether NBCON console driver has con->write_atomic
 
-Motivation:
+and we should also fix kdb_msg_write() to actually use
+con->write_atomic() when it is a NBCON console driver.
+There is hard-coded con->write() at the moment.
 
-There is the following comment at the beginning of the function:
+But it might get more complicated. It would be nice to do it correctly
+and use con->write_atomit() only when nbcon_context_try_acquire()
+succeeds. We probably should use a context with NBCON_PRIO_EMERGENCY.
 
-	/*
-	 * If no consoles are available to output crash information, dump
-	 * the kmsg buffer to stdout.
-	 */
-
-The if-condition checks for:
-
-  + "ttynull" because this special console does not show any messages
-    by definition
-
-  + disabled/suspended consoles; note that this patchset is replacing
-    CON_ENABLED with CON_SUSPENDED flag because it the state is
-    changed during suspend.
-
-But it should check also for:
-
-  + whether the console is NBCON_console and does not have con->write_atomic
-    because such a console would not be able to show the messages
-    in panic().
-
-And it should also check the global "consoles_suspended" flag. Because
-consoles won't show anything when it is set.
-
-And all these is already done by "is_console_usable()" except for
-the check of "ttynull" which is very special.
-
-How does the sound, please?
+And this should be fixed at the beginning of the patchset because
+it actually fixes the support of the new NBCON console drivers.
 
 Best Regards,
 Petr
 
->  		}
->  	}
+>  		if (c == dbg_io_ops->cons)
+>  			continue;
 > 
 > -- 
 > 2.49.0
