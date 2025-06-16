@@ -1,133 +1,145 @@
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F277D1DE3DB
-	for <linux-serial@vger.kernel.org>; Mon, 16 Jun 2025 14:02:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6936720F087
+	for <linux-serial@vger.kernel.org>; Mon, 16 Jun 2025 15:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750082582; cv=none; b=YalsLc8rkJdpxTrV+B4fo5/zlhr6oiWHKcvHVbKr3v48muYUc0GyGJr9+Pd2VYJrODsKN+Cfy/XOH8eIL6lMlvkbbn9O2VlSkiGppPnGKcz8UMBKCxETqAYUsgE8lNq8bV1tAy0X344e/mXbug3bqDMDh5shty8PBv46vKN9VSQ=
+	t=1750087534; cv=none; b=d4diNFE6JveXTauSH5xnJnSE8TaWvTNRN3mfjFRyRR60Lx841Y4AJXztVcF9R0phyrh5s7r5UGbLzaNnuG7HmNk7rlpBwtFg3d3oT9Kjpkanmluv+k++GQxLpHYf3j8MQljPX7ctNM2YWmVwmWBTig8ehyR6P2LrXYtAK9PyLec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750082582; c=relaxed/simple;
-	bh=lbevI24s0PcQlyhZvC9TEbrNV1GfInZjLjxZx9MLu40=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hb7TvUhzSzLrb1ODAB9wXnlhwNyC8PwYOwPIu0GQFEkmdfkEkD4573Lzn4GUAiAbYjjoSIdGRgbv7bZtqAUHx95BlUSQzgWbs+UV4LeREwfiJt0uKek0FKklYIGLS7HnfkOYVuiEaFoq12Tyg/3cF5YjD4cKA/3G7jfT5ko8efY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=H2LZB1DK; arc=none smtp.client-ip=209.85.208.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1750087534; c=relaxed/simple;
+	bh=ZluQ5ElQw3LUVNqieIkCVlfwh1Ost0NTYdyQ1DKlhsA=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=WAH5dgNAzZv6gL3hUfR3kPJNy6ZdihYuJJxhvgDrwYkLV4hU03hDu/xnAYOB36mm8/y+/o1k+h7V7mJDg57DWwpM3HRCDcaLDd8OWQtW5OoyeqdVECkTe9XijJ0VqdVB48DLn612IX4pAm/RdEav9WhpQRisN4tLzECyVJdi/Ug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=r44q+UjZ; arc=none smtp.client-ip=185.136.64.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="H2LZB1DK"
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6084dfb4cd5so10652708a12.0
-        for <linux-serial@vger.kernel.org>; Mon, 16 Jun 2025 07:02:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1750082578; x=1750687378; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NezTSsyMagu8zLGwg6DhObhL/nAKADWh56tKSWG5+zE=;
-        b=H2LZB1DK9b1oV0sOfzBXvPxiInhgRgy4NQsI9P8I2mS5UgGEYJEwSPFdx+PQYsTO3h
-         /UcnFVx9L/V98lqeA6lGg69sEqOs5HwdFn5+eExxreSkf31z1CBc5ob0x6VKcaDBCxNp
-         etdmyH+KL2D54wMTcRCRA6QevpW8a07miiRPInySdAODpp8ERrBB2Nse2PY+pmLmm5Ka
-         QoiQIfB1tS9523E6urOWT4OkY7P/kbpXOeYauI8ZDpKRpx4dsE3VEcwdvRUQ7XE7c+pc
-         gjz4SngbWG4otyMvx5yiLKqtMJUW/yY+/yNWPQqavgwik5C+ORX2MypGajplaif/dyfv
-         qzQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750082578; x=1750687378;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NezTSsyMagu8zLGwg6DhObhL/nAKADWh56tKSWG5+zE=;
-        b=N4tG/I31jLiDmUtkhUzfqftc3KJU731xc8iVm45HzcL/XV5weiO1FT7uk7W1sHHBdM
-         mTQT70vIDwSx/MmlQRScYamEqgi+eqAJdyjHVHS7NZFbTO2UiOuy64VWfYkNNX7bZ9k7
-         J32tGzz3Zbm2RLTv8rQwJ1JM3dsW9ygCTJL6OXg70rWYiXdVfWrZAepbKjb8GFbB7S9l
-         YQeuiIskEZIhekJ9qTdqcJeLvCHd19Z1j4psudVquANfc9LgyhB5JslYC2FE5jtbo4sx
-         dU3rP3q69xDVlmHoJuHemgCOrzJenlY9tgTugpxYVSD1z+2s1HuQ0cEH8cS8t7Sirh4+
-         u6VQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVTlqEXep1Blli+USqmQm4E1uz7GsHHdMhFrHsdfbl32BlSRc4r2SmyrpvMopFVJwoInd+DB/FnlQrmjdQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwjA1XrBkNRYH+Nx6Twpb2Qtw4EWAz+atCKOgoFTdoxgsayTXHy
-	g64K83SryXaNFsFFK0sKzVFK9JOUabbsxgJGao15b4sb3C2JWo0xtPvxQ3pbcIKnZKA=
-X-Gm-Gg: ASbGncvYb8cg1sxPB8ybUoVf1VCGyq0fuSd2YA7uIw74JwV2Az/c0cu50tGptxwCo7F
-	YFVCg2tR3QAJ201A9TqHoVn9CaFKoda8xp8bN3MO33WzwbGyTGoCSDJz85isxaWlIHvr7wFySA0
-	xxk50cdqYR4FFXUFeZJkPI9mFXmDUDDJ7z9BXsgO0Ibo5l8561W5vNzCdiiXbDXlO6HOdhDoRKM
-	L0liia9jdjtWFUPpS4PSWxjtxAWkKYlujeDt+/NiZKIVQIfeT4i48id+riEHv2SmdF2SWowYD4H
-	XmS0+BeaorUJiNg9rSxoI3J7bRYxSFOpIp/VF1/PhtNO2jPANc+oXuYk5l7u/CfX
-X-Google-Smtp-Source: AGHT+IGQKt/OCARGss+vM72Zy1ByQz9dfh+HKXz/EINJ++KGru6AYFAdN86jIyZYD5v+8Ya81pTKAg==
-X-Received: by 2002:a17:907:3f97:b0:ade:3a1b:88b2 with SMTP id a640c23a62f3a-adf4fa9117fmr1057658266b.29.1750082577978;
-        Mon, 16 Jun 2025 07:02:57 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-adec81b8e38sm674489766b.50.2025.06.16.07.02.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jun 2025 07:02:57 -0700 (PDT)
-Date: Mon, 16 Jun 2025 16:02:55 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: Marcos Paulo de Souza <mpdesouza@suse.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>,
-	John Ogness <john.ogness@linutronix.de>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
-Subject: Re: [PATCH 7/7] printk: Don't check for CON_ENABLED on
- console_unblank
-Message-ID: <aFAkD2i0ceH6qYQz@pathway.suse.cz>
-References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
- <20250606-printk-cleanup-part2-v1-7-f427c743dda0@suse.com>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="r44q+UjZ"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20250616151520b1dcef6e0702a36f00
+        for <linux-serial@vger.kernel.org>;
+        Mon, 16 Jun 2025 17:15:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=ZluQ5ElQw3LUVNqieIkCVlfwh1Ost0NTYdyQ1DKlhsA=;
+ b=r44q+UjZVJbzFgu0DuTYp+jN4kiVZR9Oi7IWeYchA7K49R8t+cxKeMSLN7uWVzrjqlegG5
+ R6PqTlqYOT84KcipWY6Y4ZNkQL/1DbaTbcAdXUQeSj7mWrHdxp4fuPzgTeLAIRy4rQx14Nrm
+ 88UdtjejcbmeiBLuLVei5FFVkSxgk4ejQNEdgH3G7pe8IrfD5SJ5sdCMEyZhxZcCJ4SC0c8D
+ dnNZXCOz5rcfRtlB1rOnr/PIkAap/yyho9KLS2yA0jtTwH7qXkjzag3n6vLcYHgOTsaZLXig
+ Vzryel3WekZwSYJBPkWOQ0U4IVzDeisVB9ztLBGuR03Kxe++II0ICUFA==;
+Message-ID: <030bfa50783bc9f40ce3afd4e1f65da2a48322c1.camel@siemens.com>
+Subject: Re: [linux-next:master] [serial]  b63e6f60ea:
+ BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Ryo Takakura <ryotkkr98@gmail.com>, john.ogness@linutronix.de, 
+	pmladek@suse.com
+Cc: Jason@zx2c4.com, gregkh@linuxfoundation.org,
+ linux-serial@vger.kernel.org, 	lkp@intel.com, oe-lkp@lists.linux.dev,
+ oliver.sang@intel.com, Jan Kiszka	 <jan.kiszka@siemens.com>
+Date: Mon, 16 Jun 2025 17:15:19 +0200
+In-Reply-To: <20250501041055.6504-1-ryotkkr98@gmail.com>
+References: <84y0vhodwy.fsf@jogness.linutronix.de>
+	 <20250501041055.6504-1-ryotkkr98@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250606-printk-cleanup-part2-v1-7-f427c743dda0@suse.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Fri 2025-06-06 23:53:49, Marcos Paulo de Souza wrote:
-> All consoles found on for_each_console_srcu are registered, meaning that all of
-> them are already CON_ENABLEDed.
-> 
-> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
-> ---
->  kernel/printk/printk.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index 658acf92aa3d2a3d1e294b7e17e5ee96d8169afe..8074a0f73691cfc5f637361048097ace1545c7c0 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -3360,7 +3360,7 @@ void console_unblank(void)
->  		if (flags & CON_SUSPENDED)
->  			continue;
->  
-> -		if ((flags & CON_ENABLED) && c->unblank) {
-> +		if (c->unblank) {
+Hi all,
 
-It might actually make sense to check is_console_usable() here.
-The reason is similar as for the 5th and 6th patch, see
-https://lore.kernel.org/r/aFAdGas9yGB4zhqc@pathway.suse.cz
-https://lore.kernel.org/r/aFAiq3IEic8DuATR@pathway.suse.cz
+On Thu, 2025-05-01 at 13:10 +0900, Ryo Takakura wrote:
+> On Wed, 30 Apr 2025 17:47:01 +0206, John Ogness wrote:
+> > On 2025-04-30, Ryo Takakura <ryotkkr98@gmail.com> wrote:
+> > > > > The touch_nmi_watchdog() resets the softlockup watchdog. It might
+> > > > > hide that the CPU did not schedule for a long time.
+> > >=20
+> > > To test the above, I run the rslib test using legacy console(without
+> > > the John's series) with the touch_nmi_watchdog()s removed as
+> > > following.
+> > >=20
+> > > The result is that it triggered the softlockup as expected. So I gues=
+s
+> > > we can say that the legacy console was indeed hiding the softlockup
+> > > scenario as suggested by Petr.
+> >=20
+> > Excellent.
+> >=20
+> > > > With the John's series appied, I guess the kthread were running on =
+a
+> > > > cpu other than the one running the rslib test as John said[0], and
+> > > > neither of touch_nmi_watchdog() nor cond_resched() were called that
+> > > > could prevent the softlockup.
+> > >=20
+> > > To test the above, I removed the touch_nmi_watchdog() mentioned by Jo=
+hn[0]
+> > > on top of the John's series with the printing forced to be done on th=
+e same
+> > > cpu running the rslib test by marking emergency section(below change =
+applied).
+> > >=20
+> > > The result is that it triggered the softlockup as expected. Similar t=
+o
+> > > the first test, the touch_nmi_watchdog() was preventing the softlocku=
+p
+> > > when its marked with emergency section.
+> >=20
+> > Excellent.
+> >=20
+> > > And I believe this implies that the kthread was running on some other=
+ cpu
+> > > as stated above as it should also be calling the touch_nmi_watchdog()
+> > > when it does printing.
+> >=20
+> > Agreed.
+> >=20
+> > > If sounds good, I will prepare a fix adding cond_resched() to the
+> > > rslib test later on.
+> >=20
+> > Yes, please add a cond_resched() to the rslib test.
+>=20
+> Thank you for checking the results, Got it!
+>=20
+> > > I tested with Linus' master on x86 qemu. I was able to see the rslib
+> > > tests prone to softlockup and the John's series exaggerating it, same
+> > > as raspberry pi.
+> > >=20
+> > > But I couldn't see the softlockup go away by marking the emergency
+> > > section around the printk call within the rslib test. Looks like it
+> > > never calls the touch_nmi_watchdog() in wait_for_lsr(). Maybe because
+> > > trasmission gets immediatly completed on qemu board?
+> >=20
+> > qemu does not emulate a baudrate, so indeed transmission completes
+> > immediately. It would need to be tested on real hardware. But I am
+>=20
+> Oh I see, that makes sense.
+>=20
+> > certain we found the cause and explanation. Thank you for digging into
+> > this!
+>=20
+> Great, my pleasure!
+
+With that it has been confirmed that the original test report [1] was
+wrong. It reported the trigger, not the root cause.
+
+b63e6f60eab4 ("serial: 8250: Switch to nbcon console")
+
+was / is correct but got reverted by Greg in mainline with=20
+
+f79b163c4231 ("Revert "serial: 8250: Switch to nbcon console"")
+
+This leads to the situation that stable-rt branches still ship this
+patch while mainline and stable do not. John, is that intended or was
+mainline / stable never informed about that?
+
+Best regards,
+Florian
 
 
->  			found_unblank = true;
->  			break;
->  		}
-> @@ -3402,7 +3402,7 @@ void console_unblank(void)
->  		if (flags & CON_SUSPENDED)
->  			continue;
->  
-> -		if ((flags & CON_ENABLED) && c->unblank)
-> +		if (c->unblank)
->  			c->unblank();
-
-Same here.
-
->  	}
->  	console_srcu_read_unlock(cookie);
-> 
-> -- 
-> 2.49.0
+[1] https://lore.kernel.org/all/202501221029.fb0d574d-lkp@intel.com/#t
