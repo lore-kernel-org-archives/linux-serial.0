@@ -1,188 +1,114 @@
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
+Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF45D28FFE1;
-	Tue, 17 Jun 2025 08:44:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09F3718C034;
+	Tue, 17 Jun 2025 09:32:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750149873; cv=none; b=fm0tZXzzkqp4+9ISZ2sWXw960aEa327E6gnDjd7XXZcXpJdpvgBzU2KQmIP6pA+GVIFYCiRi9TEEvcsy0uIjSl4HdjOXail+A4eLOd6ceyZXYcWbswoaKCJTiKQ1jWJCrwP29RelJ3lxMwkpiBW4ItNiJjNDGK1cDjDPMqBGxeA=
+	t=1750152772; cv=none; b=hG5kAOtywesWIHZvZDUfEEUPiWj3GaCvmCgK8PaWKPcuJCZEYSY3dLOjwFFtIEPNYfsO/g9NFLQinDNh95dvdjaFC282wanr2MvbNHIRLp1kVqdBjLADEHc1w2g7FTAJFjaHFN78GVkNdwXw8/a8YpL4aDpso2mpM+AjHXISnvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750149873; c=relaxed/simple;
-	bh=EMaZW0W6NTuCn8tFaeSafgDTZ6GVDT5IJeOSEngyzIk=;
+	s=arc-20240116; t=1750152772; c=relaxed/simple;
+	bh=q7w5+CTnJ0yLDPAwJSUlND9pevORmQQFzUJ/Y7Mz7jU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FC9RUxL2DadSO9D3rU5T8z3u/NcwKJ/h8otpigCvDMMSsNcEFQJKrJfdQVyK5hUZjcyYHMdXcQsJFLrFjF3rrbjUmJrnQ4N2vm9JGQoenxsz91eoMEkEaxNYt15bCO9gPzdrsHa3jNddC/Drxdk20Uk+dUnYjg4egFDGIq11Q7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.43
+	 To:Cc:Content-Type; b=QBjxUzxQoPLKMDoYMz8d2j6p7c4x5PsD5tkmBFxmtLR19c4TtGPP3ViMUd6R/Eq1ZERIUcfwEp2U6H4Ccba43aPrWLwS2JqmK1vNVImbRrMjNtopP5AnooYMBAUu3RTlAvjIEY0B8QVwffxZARdMboqG/QcZKGjJD3SGWwvqAAk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f43.google.com with SMTP id a1e0cc1a2514c-87f1bd2229aso547479241.0;
-        Tue, 17 Jun 2025 01:44:30 -0700 (PDT)
+Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-5313ea766d8so1330083e0c.0;
+        Tue, 17 Jun 2025 02:32:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750149869; x=1750754669;
+        d=1e100.net; s=20230601; t=1750152767; x=1750757567;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=fIpxA99mr6qgUAtAVkjCW/9Y2TY9goKEtR/+Z0STSCw=;
-        b=Gezgqh4h3u8vxn4bHL+2WB1tvXAPhjqxmE/Obwu29gpU+r8xsfu5b2HaXw8ysBZ/H2
-         zfcqJ/tG+WR4PhuHzChrpU5zFJTtIpk/4Jan/4EGugJsfaIvlZxyyFMXg82m5iLYBB96
-         A9qMr5ckH8oog+3/vVXML4cjlVEX46TryBGhiXkODfhoi2GdK41DgRhON/Z7WwbbZ/8F
-         jKAFuLtGVw/xNNgYWKIkZtWDhzXO2bT+t+B1xebk8kaSdFvZIA5bAL8EPDIwxkOdXVlE
-         tcmE8OYQut5TYO2Tkj23bfCAbvWl4Bu8KdvkRVAzVH6rmc7KUHS5CXLq9wwDI3rh21QN
-         7z9w==
-X-Forwarded-Encrypted: i=1; AJvYcCU7NSffZT0H4cWUPfW1SJhNslDrUhR00XzoQQqL3V3ifMid92cLPURIY7Zu5808QD9zUy8MAa2b2nwtw4JJ@vger.kernel.org, AJvYcCV1xlpxtfQc9B6s8e5OdPNIhx9BwnaX4H6p+Kbi6ODwAAp2Q7MS+VyggOwjq1Z0Nb2kgbhONvbhJ/g3BXUr@vger.kernel.org, AJvYcCVYSMvmaYjxC8dIUpa/70YcmhqJTWStFQg5vqhqaIELCv1Bar1We6JwBP9KBtSQ0hACl9YK5nhqO6RqIJzTKJ2DmgU=@vger.kernel.org, AJvYcCXa373lfYmDdrNJ4ADz0NAkA5uQIXj6VoV1IuATe8EaLC7LT7JjGVXPg/xw9eFtbwYVMqJ25itumVAr@vger.kernel.org
-X-Gm-Message-State: AOJu0YzPig2Z5PMQqK7Cga0F3h5Qfca6UIwYoWw1K/A/YBT1tIExtnFZ
-	Y6fw3Io1U1EygFdC+3Otws54FBMHcpvAii50KqdnBlhHbJCB4s14Pr+Hn0B9dPGS
-X-Gm-Gg: ASbGncuuFOwvKotT+6TzIaR7rHErz2frQ7FF3xdD6xLW5832TxEOtoFlAajGo04VEDY
-	1gwwjLL7Gu+g/s1CzwBlAol8P7ybOjf8Vsi31v5YWTDa0I0p0smXMKjkc3SV02GzYHZ4ZBuuYpU
-	M9GujpgC1QxAP2+pRcrRlTd4CKMnGmFFQ0ngl3ysRLsDyk3FxJPZc9wwUQWfI05FDNT+RKAPZQ4
-	faTgCW7WTIBnzBprRylZQCqPyoxux/zobYxgpKKJo1lCIYpkCdWvth5Q9SwTNpYtERMIjhKzPkr
-	2IKlfh/wLslv+PHldcIZmOmA16U0ZNPS4fjvuD5wfHHLITUg1XQ9ixAgHfFWtD6wlny11AYtjTN
-	O3AtRuqUvD0wcEPVaU47XWRlX
-X-Google-Smtp-Source: AGHT+IGkzaQczw5HupLSBSC9OG58i3xOsAJR2nM/rhptgXTUii39REDpddFugyuat8Ca+EXMbd2xPw==
-X-Received: by 2002:a05:6102:8359:b0:4e9:8f71:bd6e with SMTP id ada2fe7eead31-4e98f71bfe3mr41701137.0.1750149868593;
-        Tue, 17 Jun 2025 01:44:28 -0700 (PDT)
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-87f21ab5768sm1107859241.10.2025.06.17.01.44.28
+        bh=IpyRO35mdNeXwjpxX8WgCP2jvjoVuRIOBEbtU0BIjNU=;
+        b=DsXDtu3+FsLlsxUHAyrHcB2/NNuis0LkaOKaZn/ZB17cib3VPZdKWoic6YkLLROagG
+         RxKlOJPu34Z9xgtxVR1hQo8/Hb2Z1fzOtntGltdb14KxidO3VTVKVcEs+KXW4yZ0SmcJ
+         QsycMvm3jOE9DC+fVuGhwk07iXb+oIHLxXZJqUVtNXvulpYKPXel8+2prw6Jd+fBXS4O
+         iNW5+JaHUGN4AKhwsU4RFSc+/6MwvUlE/jktymftD6q03/l558g6JCpWkuINQLQBqF7O
+         v7ebl9zpmohgQIFf8Cu/CwQoqYh0zVfPVsnSu8WEjdJKzgP0qTrRfNtfOPup+IGb2D1A
+         QZVg==
+X-Forwarded-Encrypted: i=1; AJvYcCWCmK+PZ6Z7yExxaara/Xu9zfTKfD4lOhX18j1qNvPxn3U7WftjOyphHlExTmPjW40pOJse7s6SqQ1URV/n@vger.kernel.org, AJvYcCXTQfjHg7vF+CYTB4XjSdQ+9B0xqXwHbTpplz6Vq0TDOLwI5Zdjg1yaj6TWOs0IyiIZARM0b2E87ac6ack=@vger.kernel.org
+X-Gm-Message-State: AOJu0YydLiqWDtSdXALwtW8t9ZYaRB9VUj78dhT//naPPS8WYjRgCkw3
+	bVqK9keRgACvZMeuwmch9Tj4FXft3viaeb3OVKV6nuaL0k1n9wwA4F2BFY1PYogh
+X-Gm-Gg: ASbGnctCfo9PDK0skWZCGdKUQzqdh73Y4PpNPN1AlTHwl/P2E4zNzftSWZ1zJb4T3jO
+	Y91X6O60WzDOAjMMA2kCdhdQKzELCJOPvM1zb4DN4s/4LTl/bjOgl3xX9+oPiaVzrGjxHJAdFEE
+	XLq24MkIGJ6uIh9PL4Xi1O1V+XVg5GMHnfSZmj8qqhJBEeljEeZf0p/IfSOyoHYQkEM/Y7F1vkX
+	pEjpPm2w7zNN9SUY0VgEsKtTsa2ynlC0hSeNHBY6ts3mIAq4tTIqHbu5muUiRrjIuVmOtBpEhfq
+	oLkeltXhXVGBbluVQBfaJnPRUDq0nus/wNqEKfxDlv2NWLi3Cwo4d2KN23brHMp+AI2XWvR7Uj0
+	J7e+WfPZdDcz5bzsjcB1mcCFDNtXSHWvNV6zxvKg=
+X-Google-Smtp-Source: AGHT+IH9XZjos/K8EMOSEmRI9McTtuJvEjHbJ0fJCrOsgyj2bTk11VwH98wTG/uLCl4cOQOaK0TIkQ==
+X-Received: by 2002:a05:6122:2b1a:b0:530:720b:abe9 with SMTP id 71dfb90a1353d-531497442d1mr6333258e0c.7.1750152766999;
+        Tue, 17 Jun 2025 02:32:46 -0700 (PDT)
+Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com. [209.85.221.176])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5313dd7a7c4sm1559455e0c.1.2025.06.17.02.32.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Jun 2025 01:44:28 -0700 (PDT)
-Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-87f1bd2229aso547466241.0;
-        Tue, 17 Jun 2025 01:44:28 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVLLPpg6cY7Nvmzi1gnwmmbMtvrypuTX2RWHOAKv2HCLgfS0QDxbfebsMbkD56Oy2cPUcFyY4HTxBSv0NAd@vger.kernel.org, AJvYcCW8M+TKKDHgubmG0a9+sRSvtLeOEb2aUmT+UX74syO9S/uNoNvFcS0JztcTdJV+J1PjHepgcNBNGTEeieG3r5pOMKc=@vger.kernel.org, AJvYcCWGS1sav0xl0j0gYXgaWk6u/FmGektBKAcGYECXYNjByukMqUezGiMHYn6MQ7AN3oRudroqtWjUTTkf@vger.kernel.org, AJvYcCWvEsKjaHLQGBIlpQw1Gijr+W1BjqM/CbE0oMkwGwwXfFG6xH3H+XiDJ+lDu8HFOmNtCZe7wChy5CQi6P3s@vger.kernel.org
-X-Received: by 2002:a05:6102:26c2:b0:4e2:ecd8:a1f with SMTP id
- ada2fe7eead31-4e7f6186014mr6831759137.1.1750149867998; Tue, 17 Jun 2025
- 01:44:27 -0700 (PDT)
+        Tue, 17 Jun 2025 02:32:45 -0700 (PDT)
+Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-5313ea766d8so1330067e0c.0;
+        Tue, 17 Jun 2025 02:32:45 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCWzPy8xNPBNnVD4uU/ZBuYKChj4uZyviEbhXE0XzwvKgvA3ADZp/hnn4oaij9FxApw/Y/1MjnPbXfg3UYk=@vger.kernel.org, AJvYcCXy+Z3X3BRlMv+GOEEulz2G3vylJt9u1XT0t6W/1NDkjiiONFSw152peP3M3vAuVQjQ3iIoB8m4PDGIusFw@vger.kernel.org
+X-Received: by 2002:a05:6122:547:b0:529:2644:8c with SMTP id
+ 71dfb90a1353d-531497d3ee3mr7253853e0c.8.1750152765304; Tue, 17 Jun 2025
+ 02:32:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250616213927.475921-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20250616213927.475921-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20250616213927.475921-4-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-7-f427c743dda0@suse.com> <aFAkD2i0ceH6qYQz@pathway.suse.cz>
+In-Reply-To: <aFAkD2i0ceH6qYQz@pathway.suse.cz>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 17 Jun 2025 10:44:16 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUU-EyU3DgqP9KDmeT_A4i-xaE9hAUOvYFQcbYmpJc2ng@mail.gmail.com>
-X-Gm-Features: AX0GCFu96slHpR78sWUkf3MntdiwPRfZq6OEEltMiCRMN1dl7oBZu7rvTpsJ3sE
-Message-ID: <CAMuHMdUU-EyU3DgqP9KDmeT_A4i-xaE9hAUOvYFQcbYmpJc2ng@mail.gmail.com>
-Subject: Re: [PATCH v11 3/5] tty: serial: sh-sci: Use port ops callbacks
-To: Prabhakar <prabhakar.csengg@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, 
+Date: Tue, 17 Jun 2025 11:32:32 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXN4Xf1o03cYU3ug_gRdFtBXJC5Nvvt9U6UeP=U2AQTTA@mail.gmail.com>
+X-Gm-Features: AX0GCFtvZQSD4F-97UDxOqiDqN4VEggSrDhztYpPcqEOiEQEvpc1f_0ccYJ9a2M
+Message-ID: <CAMuHMdXN4Xf1o03cYU3ug_gRdFtBXJC5Nvvt9U6UeP=U2AQTTA@mail.gmail.com>
+Subject: Re: [PATCH 7/7] printk: Don't check for CON_ENABLED on console_unblank
+To: Petr Mladek <pmladek@suse.com>
+Cc: Marcos Paulo de Souza <mpdesouza@suse.com>, Steven Rostedt <rostedt@goodmis.org>, 
+	John Ogness <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Jason Wessel <jason.wessel@windriver.com>, Daniel Thompson <danielt@kernel.org>, 
+	Douglas Anderson <dianders@chromium.org>, Richard Weinberger <richard@nod.at>, 
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes Berg <johannes@sipsolutions.net>, 
 	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
-	Biju Das <biju.das.jz@bp.renesas.com>, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 
-Hi Prabhakar,
+Hi Petr,
 
-On Mon, 16 Jun 2025 at 23:39, Prabhakar <prabhakar.csengg@gmail.com> wrote:
-> From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On Mon, 16 Jun 2025 at 17:27, Petr Mladek <pmladek@suse.com> wrote:
+> On Fri 2025-06-06 23:53:49, Marcos Paulo de Souza wrote:
+> > All consoles found on for_each_console_srcu are registered, meaning that all of
+> > them are already CON_ENABLEDed.
+> >
+> > Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+> > ---
+> >  kernel/printk/printk.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+> > index 658acf92aa3d2a3d1e294b7e17e5ee96d8169afe..8074a0f73691cfc5f637361048097ace1545c7c0 100644
+> > --- a/kernel/printk/printk.c
+> > +++ b/kernel/printk/printk.c
+> > @@ -3360,7 +3360,7 @@ void console_unblank(void)
+> >               if (flags & CON_SUSPENDED)
+> >                       continue;
+> >
+> > -             if ((flags & CON_ENABLED) && c->unblank) {
+> > +             if (c->unblank) {
 >
-> Replace direct calls to internal helpers such as sci_stop_tx(),
-> sci_start_tx(), sci_stop_rx(), sci_set_mctrl(), sci_enable_ms(), and
-> sci_request_port() with their corresponding port ops callbacks.
->
-> This change improves consistency and abstraction across the driver and
-> prepares the codebase for adding support for the RSCI driver on the
-> Renesas RZ/T2H SoC, which heavily reuses the existing SCI driver.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> It might actually make sense to check is_console_usable() here.
 
-Thanks for your patch!
-
-I am a bit reluctant to increase the number of indirect calls in a
-driver that is also used on (old and slow) SH systems...
-
-> --- a/drivers/tty/serial/sh-sci.c
-> +++ b/drivers/tty/serial/sh-sci.c
-> @@ -880,7 +880,7 @@ static void sci_transmit_chars(struct uart_port *port)
->                         sci_serial_out(port, SCSCR, ctrl);
->                 }
->
-> -               sci_stop_tx(port);
-> +               s->port.ops->stop_tx(port);
-
-RSCI has its own implementation of sci_port_ops.transmit_chars(), so
-I think it is better to avoid the overhead of an indirect call, and keep
-calling sci_stop_tx() directly.
-
-         }
->  }
->
-> @@ -1497,7 +1497,7 @@ static void sci_dma_tx_work_fn(struct work_struct *work)
->  switch_to_pio:
->         uart_port_lock_irqsave(port, &flags);
->         s->chan_tx = NULL;
-> -       sci_start_tx(port);
-> +       s->port.ops->start_tx(port);
-
-This function is indeed shared by sh-sci and rsci, but still unused
-by the latter as it does not support DMA yet.
-
->         uart_port_unlock_irqrestore(port, flags);
->         return;
->  }
-> @@ -2289,8 +2289,8 @@ void sci_shutdown(struct uart_port *port)
->         mctrl_gpio_disable_ms_sync(to_sci_port(port)->gpios);
->
->         uart_port_lock_irqsave(port, &flags);
-> -       sci_stop_rx(port);
-> -       sci_stop_tx(port);
-> +       s->port.ops->stop_rx(port);
-> +       s->port.ops->stop_tx(port);
-
-OK.
-
->         s->ops->shutdown_complete(port);
->         uart_port_unlock_irqrestore(port, flags);
->
-> @@ -2684,7 +2684,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
->         }
->         if (port->flags & UPF_HARD_FLOW) {
->                 /* Refresh (Auto) RTS */
-> -               sci_set_mctrl(port, port->mctrl);
-> +               s->port.ops->set_mctrl(port, port->mctrl);
-
-RSCI has its own implementation of uart_ops.set_termios(), so please
-keep the direct call.
-
->         }
->
->         /*
-> @@ -2721,7 +2721,7 @@ static void sci_set_termios(struct uart_port *port, struct ktermios *termios,
->         sci_port_disable(s);
->
->         if (UART_ENABLE_MS(port, termios->c_cflag))
-> -               sci_enable_ms(port);
-> +               s->port.ops->enable_ms(port);
-
-Likewise.
-And once RSCI fully implements uart_ops.set_termios(), I think
-it can just reuse sci_enable_ms().
-
->  }
->
->  void sci_pm(struct uart_port *port, unsigned int state,
-> @@ -2827,7 +2827,7 @@ void sci_config_port(struct uart_port *port, int flags)
->                 struct sci_port *sport = to_sci_port(port);
->
->                 port->type = sport->cfg->type;
-> -               sci_request_port(port);
-> +               sport->port.ops->request_port(port);
-
-Both sh-sci and rsci use sci_request_port() as their
-uart_ops.request_port() callbacks, so please use a direct call.
-
->         }
->  }
+My first thought was: one more to convert to a better name!
+But the actual function is already called console_is_usable() ;-)
 
 Gr{oetje,eeting}s,
 
                         Geert
 
---
+-- 
 Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
 In personal conversations with technical people, I call myself a hacker. But
