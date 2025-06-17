@@ -1,255 +1,138 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F19A2EF64C;
-	Tue, 17 Jun 2025 14:25:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 272911DE8BE;
+	Tue, 17 Jun 2025 14:47:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750170301; cv=none; b=PZKEMF7J0rIPIkSP6NwsQGuE0H9JhzhMjn3tVYQx/hrJ5rH2KZLcuIWHwoazsXOEVmuhhHUuBG3tblnAHg6EG7g40qY5rxGx9mAk4bMAEIpapjJ7TIomYoBGciSS1Kg/qi0QCfmmSJauVqr3xUcbK6H1PsO+V2UFhKogHh/iOuk=
+	t=1750171644; cv=none; b=uCPgJAxBu6SHcd9oJ4x9MvTuLTYQN6G09YLjZROZf15U5upAm6ePrc4wi0egawtxn8NYsuOMn2OF5ZGScRv/GTWKZr89llocB33/R3aMI/JlrFkyKMxAysXv/8HUAfteBNREAY61iXyRzkJ8JuiTXeaYIVLtTY8KVyhLSAhAZfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750170301; c=relaxed/simple;
-	bh=RKp0dSWKgDenpsXCZCvzvHN8SLhhM9lokbjMKsoO5ck=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B6USRnaxWiXCzIfKLmTl7AGCWemu5sszAS7o4iEOD/l6NPDZ+xdD5HSGiGaqbixtgBC1m3LtIYmxXyjNZmIOMgpxX55URyoQsDkTAfsdWJAUSuVzJhrEsL0oqH/gu9zGAd9AzZbCcfdm7jDbaDP/cgJbkybZYL/ibu6nAYMbQEs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XIyeNQqd; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XIyeNQqd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5819C4CEE3;
-	Tue, 17 Jun 2025 14:24:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750170300;
-	bh=RKp0dSWKgDenpsXCZCvzvHN8SLhhM9lokbjMKsoO5ck=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=XIyeNQqdJi42s3GLrTWVJiA9ldEF6TQB1VgOWYIkFcnZPgXIvvdOuAUjFH9ZAezBy
-	 16VsCgej3Fg8e58rWMKQAnqCSckI6RRa2/XtlrWgEjM1/mQLP9LTyGgAnoGais4edQ
-	 Q+OEM8m7lnJC4ssINvEXmcuZcaryB9Kndt8zuYdG1pOl3E53x5iF49a75hCH31HGuq
-	 sv86Fm4lvWlw5H9Uw6YcO/VzzMIOqv5hGEcqCKsq4lTOEjNEi6NQ4F5jan5VtHLKjl
-	 6KhuRhtCU25ChgQx0RJWpXYD5MtGJXd5E9MWOnOxqsqD78VLr+03ReQqYRpjnGmUN7
-	 LiJrSr+z83WBg==
-Date: Tue, 17 Jun 2025 09:24:57 -0500
-From: Bjorn Andersson <andersson@kernel.org>
-To: Praveen Talari <quic_ptalari@quicinc.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, psodagud@quicinc.com, 
-	djaggi@quicinc.com, quic_msavaliy@quicinc.com, quic_vtanuku@quicinc.com, 
-	quic_arandive@quicinc.com, quic_mnaresh@quicinc.com, quic_shazhuss@quicinc.com
-Subject: Re: [PATCH v6 3/8] soc: qcom: geni-se: Enable QUPs on SA8255p
- Qualcomm platforms
-Message-ID: <52elmnb77a4kvlnmy5bhheypfyyw6x5qn4k45u22mvzybax7ti@wmpi2ww5uqsg>
-References: <20250606172114.6618-1-quic_ptalari@quicinc.com>
- <20250606172114.6618-4-quic_ptalari@quicinc.com>
+	s=arc-20240116; t=1750171644; c=relaxed/simple;
+	bh=kNOBX3kDwcJCVjRwO63OOerW1N3E3Inq45ML+Jh9mRc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=oiHUk9Nztl0FW3eTd7FaLDpPjG7gCQo1eCOqp+LRE1pKMQ2rMUdgvu1aK8Q1rc5NbSC8AoS6qfk2/XkexlifAXtHRvjOOsRpFiFBkxWgjxp8A9DBdnhhnaQkGWH5B24YrZrzTcIscSZADPxAnPkbZxwVSEJl6kWQW/GctfsVR04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7cadd46ea9aso918484985a.1;
+        Tue, 17 Jun 2025 07:47:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750171641; x=1750776441;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=ZL174OVf+FE8GUAaly+9Noj4AvnbyoVh06lJ5C/YSZk=;
+        b=xAHuEttRpWtypHO80dKxdkyE/zBippV/2iQa72XXN+Kbke2ktt++xv3JXNKEt40HRr
+         nJvvaC6lnEBrFD4ONgb2Qy/c+FU+beKnyiJ+xgb1Hh+BevRTzK3w737+bSQZUQAF3DtM
+         hWpiw1FLcSyfq7Wul90K9sjJ7gSsPZ9+ptp9dyiup54Ri5tdQoFx149/D570ZVTdpdh4
+         HY5SUMbLyptPi6+e84IBE/NBRI5KPuanEqSeINNIeJmS+dDMZeLeN9eE9aBfBtqt3oe7
+         9JydlogqbU/IQWeWFZDgAIRCmjGtEBZnD3+yTxv6io5O95gYRZWNs1WbI3crOiKUP1AC
+         Z/gg==
+X-Forwarded-Encrypted: i=1; AJvYcCUw734szWdmteJW18++k6r7MCXwwOwpiObrbI/KWGEQ5g8unTWwy/Q5Lk2MK59z6gvWI3npQvMHgPHTwEfO@vger.kernel.org, AJvYcCWL7QHeVZZ4BROfX1o3Upkrr75OWMAOlSpMXVSbNYtIUEdUBRJ1GQRNZ705/kviVfUiVSW1akrgRF7O63X2dlerEp8=@vger.kernel.org, AJvYcCX6MpU6JHW4sqfJMcW5In1zPz1FBQSAmH5TFUJfzFeMBfX21LNlYBccuhj0pwKEEMWkA9iVZ7omCWEsC3v5@vger.kernel.org, AJvYcCXfNZjXAvB6aah50IvTb8HvKzCbPK2tE0cHmC6L12MzCU/s//19tQadWXF332P2li9ZIZa/NQnq66lu@vger.kernel.org
+X-Gm-Message-State: AOJu0YxJ2DXVRPqzirdDg0G/BIHMJJzID92+NOG1Y1FsCLick+1eoXOJ
+	JUZREXzrLGo8FUcYg3lrIDagsz+Qz0ffIecKdfS3SWLxq92lPozXXhyws8uM6V1M
+X-Gm-Gg: ASbGncvJshj5rYXBq6aX0cJZDxlLbjoQcqfyIbeCxaraanBQVQZYpWsMu30PyyvtaXD
+	2aWWXIA2dS1TtNS0xZpt1Hvj4MxSSv8QQIgx2hoiyKPevK/CmrD6/rRyzBMexTBDZStvzkAmaDb
+	I35eoVVudodQNlplclF9zNVdha8i4BGc/hQVCDCs7xtAdYtQ5oXTmZmBtHX9/xmLSMrt0ZemSuX
+	o6IQhB6souRc6W4WwpCKyAg72QOJMQOeHW0uiR+0mj7FwZ/uA5MYzk3UoMOGIL11cNZH8FntEBs
+	emkJVWXdkfhe2p3sXs46MvKWRBZLl8AcnlRW0N0K7xbH56o6JkMRFHSaXGyvy9yMz2DZPOXQUpl
+	j2yvbY+vPPAfKH+/Zpf+TK7rCspZo
+X-Google-Smtp-Source: AGHT+IEYti1h5NrKENasCOdwjBAWss/NVzwxJLdBrl4NNVRcapEG1Xs+MWS7kM3UPTWCsZ22hLozIQ==
+X-Received: by 2002:a05:620a:4101:b0:7c5:3c0a:ab77 with SMTP id af79cd13be357-7d3c6c096ffmr2103611185a.4.1750171640703;
+        Tue, 17 Jun 2025 07:47:20 -0700 (PDT)
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com. [209.85.222.170])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d3b8eac910sm663345685a.72.2025.06.17.07.47.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Jun 2025 07:47:19 -0700 (PDT)
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7d20f79a00dso846008185a.0;
+        Tue, 17 Jun 2025 07:47:19 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVh+de6tLvxtYHL7Uy63G8xEtD7+7fq6NovJgAh5clxmiF9I4///XaaRK6IJVa7i1MUsyN8NFdOXa4DElOl@vger.kernel.org, AJvYcCVpYw58VOP4BaVBHCniK4VS+x0X3ZZX7fyKAdID3Bjl2v8t0JUiGzTfUrsHH36j8uERyW0R6o/TmRMBPj1y@vger.kernel.org, AJvYcCWeReIQ+0uEI8+Lx1xkjfpTCRoPuAwOfak2p1nE25uRq3DlErU8DzTciEOYIm5JBvd5LBR2V1Vf+yjl@vger.kernel.org, AJvYcCWesG/TpqL5g3CkxWtMG03HPazrEQo0D3X82b+dDbRhLBgBTFDmAfCJseFwzispylyU9Z7vB19kx4JmyGpR32Dm6Co=@vger.kernel.org
+X-Received: by 2002:a05:620a:244d:b0:7c7:b5e9:6428 with SMTP id
+ af79cd13be357-7d3c6c193f7mr2182882985a.22.1750171639228; Tue, 17 Jun 2025
+ 07:47:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250606172114.6618-4-quic_ptalari@quicinc.com>
+References: <20250617134504.126313-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20250617134504.126313-8-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdWfsqYvdL16hrbWug3PhK1XrSunaWtduajRzViKBRPeCA@mail.gmail.com> <CA+V-a8sx9iuUjn3uvSqq3Sd=JeTj_UMyDiLzisrnj1uQw6nbGQ@mail.gmail.com>
+In-Reply-To: <CA+V-a8sx9iuUjn3uvSqq3Sd=JeTj_UMyDiLzisrnj1uQw6nbGQ@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 17 Jun 2025 16:47:06 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXn+Bhhp1KdeX+86ceG8-Tu6-k32Q4e35tr4rnS6ATzww@mail.gmail.com>
+X-Gm-Features: Ac12FXxX_-svUz3B-XW3PKGFENxEpML0XitXkiF8yDYZJw0qOf4W2v_oYmV7urM
+Message-ID: <CAMuHMdXn+Bhhp1KdeX+86ceG8-Tu6-k32Q4e35tr4rnS6ATzww@mail.gmail.com>
+Subject: Re: [PATCH v12 7/7] arm64: defconfig: Enable Renesas RZ/T2H serial SCI
+To: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Geert Uytterhoeven <geert+renesas@glider.be>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Magnus Damm <magnus.damm@gmail.com>, 
+	Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-arm-kernel@lists.infradead.org, 
+	linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
+	Biju Das <biju.das.jz@bp.renesas.com>, 
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 06, 2025 at 10:51:09PM +0530, Praveen Talari wrote:
-> On the sa8255p platform, resources such as clocks,interconnects
-> and TLMM (GPIO) configurations are managed by firmware.
-> 
-> Introduce a platform data function callback to distinguish whether
-> resource control is performed by firmware or directly by the driver
-> in linux.
-> 
-> The refactor ensures clear differentiation of resource
-> management mechanisms, improving maintainability and flexibility
-> in handling platform-specific configurations.
-> 
-> Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
-> ---
-> v5 -> v6
-> - replaced dev_err with dev_err_probe
-> - added a check for desc->num_clks with MAX_CLKS, an error if
->   the specified num_clks in descriptor exceeds defined MAX_CLKS.
-> - removed min_t which is not necessary.
-> - renamed callback function names to resources_init.
-> - resolved kernel bot warning error by documenting function
->   pointer in geni_se_desc structure.
-> 
-> v3 -> v4
-> - declared an empty struct for sa8255p and added check as num clks.
-> - Added version log after ---
-> 
-> v1 -> v2
-> - changed datatype of i from int to unsigned int as per comment.
-> ---
->  drivers/soc/qcom/qcom-geni-se.c | 77 +++++++++++++++++++++------------
->  1 file changed, 49 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
-> index 4cb959106efa..5c727b9a17e9 100644
-> --- a/drivers/soc/qcom/qcom-geni-se.c
-> +++ b/drivers/soc/qcom/qcom-geni-se.c
-> @@ -101,10 +101,13 @@ struct geni_wrapper {
->   * struct geni_se_desc - Data structure to represent the QUP Wrapper resources
->   * @clks:		Name of the primary & optional secondary AHB clocks
->   * @num_clks:		Count of clock names
-> + * @resources_init:	Function pointer for initializing QUP Wrapper resources
->   */
->  struct geni_se_desc {
->  	unsigned int num_clks;
->  	const char * const *clks;
-> +	int (*resources_init)(struct geni_wrapper *wrapper,
-> +			      const struct geni_se_desc *desc);
->  };
->  
->  static const char * const icc_path_names[] = {"qup-core", "qup-config",
-> @@ -891,10 +894,47 @@ int geni_icc_disable(struct geni_se *se)
->  }
->  EXPORT_SYMBOL_GPL(geni_icc_disable);
->  
-> +static int geni_se_resource_init(struct geni_wrapper *wrapper,
-> +				 const struct geni_se_desc *desc)
-> +{
-> +	struct device *dev = wrapper->dev;
-> +	int ret;
-> +	unsigned int i;
-> +
-> +	if (desc->num_clks > MAX_CLKS)
-> +		return dev_err_probe(dev, -EINVAL,
-> +				     "Too many clocks specified in descriptor:%u (max allowed: %u)\n",
-> +				     desc->num_clks, MAX_CLKS);
-> +
-> +	wrapper->num_clks = desc->num_clks;
-> +
-> +	for (i = 0; i < wrapper->num_clks; ++i)
-> +		wrapper->clks[i].id = desc->clks[i];
-> +
-> +	ret = of_count_phandle_with_args(dev->of_node, "clocks", "#clock-cells");
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret, "invalid clocks property at %pOF\n", dev->of_node);
-> +
-> +	if (ret < wrapper->num_clks) {
-> +		dev_err(dev, "invalid clocks count at %pOF, expected %d entries\n",
-> +			dev->of_node, wrapper->num_clks);
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = devm_clk_bulk_get(dev, wrapper->num_clks, wrapper->clks);
-> +	if (ret) {
-> +		dev_err(dev, "Err getting clks %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->  static int geni_se_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
->  	struct geni_wrapper *wrapper;
-> +	const struct geni_se_desc *desc;
->  	int ret;
->  
->  	wrapper = devm_kzalloc(dev, sizeof(*wrapper), GFP_KERNEL);
-> @@ -906,36 +946,12 @@ static int geni_se_probe(struct platform_device *pdev)
->  	if (IS_ERR(wrapper->base))
->  		return PTR_ERR(wrapper->base);
->  
-> -	if (!has_acpi_companion(&pdev->dev)) {
-> -		const struct geni_se_desc *desc;
-> -		int i;
-> -
-> -		desc = device_get_match_data(&pdev->dev);
-> -		if (!desc)
-> -			return -EINVAL;
-> -
-> -		wrapper->num_clks = min_t(unsigned int, desc->num_clks, MAX_CLKS);
-> -
-> -		for (i = 0; i < wrapper->num_clks; ++i)
-> -			wrapper->clks[i].id = desc->clks[i];
-> -
-> -		ret = of_count_phandle_with_args(dev->of_node, "clocks", "#clock-cells");
-> -		if (ret < 0) {
-> -			dev_err(dev, "invalid clocks property at %pOF\n", dev->of_node);
-> -			return ret;
-> -		}
-> +	desc = device_get_match_data(&pdev->dev);
->  
-> -		if (ret < wrapper->num_clks) {
-> -			dev_err(dev, "invalid clocks count at %pOF, expected %d entries\n",
-> -				dev->of_node, wrapper->num_clks);
-> +	if (!has_acpi_companion(&pdev->dev) && desc->num_clks) {
+Hi Prabhakar,
 
-Reading this again, the only functional change I can spot is the
-addition of this desc->num_clks check. (And the addition of the new
-compatible)
+On Tue, 17 Jun 2025 at 16:04, Lad, Prabhakar <prabhakar.csengg@gmail.com> w=
+rote:
+> On Tue, Jun 17, 2025 at 2:57=E2=80=AFPM Geert Uytterhoeven <geert@linux-m=
+68k.org> wrote:
+> > On Tue, 17 Jun 2025 at 15:45, Prabhakar <prabhakar.csengg@gmail.com> wr=
+ote:
+> > > From: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+> > >
+> > > Selects RZ/T2H (aka r9a09g077) SCI (serial) specific code.
+> > >
+> > > Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com=
+>
+> > > Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> > > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> >
+> > Thanks for your patch!
+> >
+> > > ---
+> > >  arch/arm64/configs/defconfig | 1 +
+> > >  1 file changed, 1 insertion(+)
+> >
+> > I don't expect GregKH to apply this patch (or better: I expect GregKH
+> > to not apply this patch ;-) so IMO there is no point in including it
+> > in this series.
+> >
+> Ok, got you.
+>
+> > Thierry's original version is still in my queue, together with the
+> > DTS patches, waiting for the RSCI DT bindings to be accepted...
+> >
+> I plan to send a new version for RZ/T2H DTS/I which includes fixes
+> from series [0] squashed and also mainly update the model string from
+> "Renesas Development EVK based on r9a09g077m44" to "Renesas RZ/T2H EVK
+> Board based on r9a09g077m44". Is that OK with you?
+>
+> [0] https://lore.kernel.org/all/20250613135614.154100-1-prabhakar.mahadev=
+-lad.rj@bp.renesas.com/
 
-The rest of the patch is just moving things out of this if statement
-body, introducing the flexibility of a function pointer with a single
-possible value etc.
+Sure, please go ahead.
 
+Gr{oetje,eeting}s,
 
-As I've said before, function pointers are useful to create
-abstractions, but they make it harder to follow the code (both for me
-and the CPU) so you need to provide some value in return - and I'm
-failing to see what that value is.
+                        Geert
 
-> +		ret = desc->resources_init(wrapper, desc);
+--=20
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
+.org
 
-In other words, you can replace this line with:
-
-	ret = geni_se_resource_init();
-
-Or, if this is all we get, then you can do nothing and just add the
-additional expression to the condition and be done with it.
-
-> +		if (ret)
->  			return -EINVAL;
-> -		}
-> -
-> -		ret = devm_clk_bulk_get(dev, wrapper->num_clks, wrapper->clks);
-> -		if (ret) {
-> -			dev_err(dev, "Err getting clks %d\n", ret);
-> -			return ret;
-> -		}
->  	}
->  
->  	dev_set_drvdata(dev, wrapper);
-> @@ -951,8 +967,11 @@ static const char * const qup_clks[] = {
->  static const struct geni_se_desc qup_desc = {
->  	.clks = qup_clks,
->  	.num_clks = ARRAY_SIZE(qup_clks),
-> +	.resources_init = geni_se_resource_init,
->  };
->  
-> +static const struct geni_se_desc sa8255p_qup_desc;
-
-This looks like a forward declaration, it took me a while to realize
-that this is giving you the actual all-zero geni_se_desc.
-
-Add a = {}; to make it clear that this is where you declare the
-variable.
-
-Thanks,
-Bjorn
-
-> +
->  static const char * const i2c_master_hub_clks[] = {
->  	"s-ahb",
->  };
-> @@ -960,11 +979,13 @@ static const char * const i2c_master_hub_clks[] = {
->  static const struct geni_se_desc i2c_master_hub_desc = {
->  	.clks = i2c_master_hub_clks,
->  	.num_clks = ARRAY_SIZE(i2c_master_hub_clks),
-> +	.resources_init = geni_se_resource_init,
->  };
->  
->  static const struct of_device_id geni_se_dt_match[] = {
->  	{ .compatible = "qcom,geni-se-qup", .data = &qup_desc },
->  	{ .compatible = "qcom,geni-se-i2c-master-hub", .data = &i2c_master_hub_desc },
-> +	{ .compatible = "qcom,sa8255p-geni-se-qup", .data = &sa8255p_qup_desc },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, geni_se_dt_match);
-> -- 
-> 2.17.1
-> 
+In personal conversations with technical people, I call myself a hacker. Bu=
+t
+when I'm talking to journalists I just say "programmer" or something like t=
+hat.
+                                -- Linus Torvalds
