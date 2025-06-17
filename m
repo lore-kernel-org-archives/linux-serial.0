@@ -1,92 +1,96 @@
-Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com [209.85.217.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A3CE218EB1;
-	Tue, 17 Jun 2025 12:29:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.45
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BC4734A3E;
+	Tue, 17 Jun 2025 13:21:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.133.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750163362; cv=none; b=MbszdA+Tipo0uouLtdfu6WD8z0XO3jVuzwinhQisoJtCQZmO6niQpW1ys5ubat2gvLKLHEl4c/fj3WI8gtnp0QwdYzIP2rz8Z22M+Mb2EQ6GmroCbEn7IZ0Qdw0GcAmbgZJv2/E92+F9Vb2OscOPjjllE9CTPaKThjCda3B3rFc=
+	t=1750166505; cv=none; b=ZRIkdG8zqfVSp2zl7iaXt+L433/mB+gmIuSS0sXpIYkBSM5/PFQ7hCxJrm14T53nMuXFHn88jLtZN/VbT6IQYa09QEPT7Xiz1NmZOGM4jCvP7GwrcqxcbmF3vJ1q1ky9hCjYVHS0cQZo0g4zxeFWfGviNrvyOR7pMDfIpwIjZ6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750163362; c=relaxed/simple;
-	bh=1rabJWHs/troXwkLRRhetm/8+lxBBJBnQJuQDDtiXSQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=E9Fr5QTZM72gbKjPD085gZ5KJg1tnjTduNI0Ya9UYyYGXclFVIfMISMJoiELQFL3lo0L7NCp7JOC2ZXUHE4697ByNEJVqNRC3yT/WDDW/fWF/IdVS235vLQ0p44y1H5wbPKwWBG/hUmI5epcPJnpTrPjjt9DQuDppJEhirjo2eI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f45.google.com with SMTP id ada2fe7eead31-4e7fc3309f2so822883137.2;
-        Tue, 17 Jun 2025 05:29:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750163356; x=1750768156;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uly5rMibStMdldgH/XC+DdGvc/SzsbEOlkLd11yOicU=;
-        b=dfr7NktUk0k0y9GJZLEoYi8lpXckQZAhFgitxPyBmmtLMwn20pprnBLu7XyvG8xWxA
-         XjqR2ta0KUmXaO+vy0AjECHVE/u9LUCX1gKCV8ePpw90pSyDtuysaMMWPAdLxsuPyKGH
-         YK7y6uA+JWfwv3BkC7/BU5bjwBcCWNORpbQssziRxuNzE49rqB0NJnnidCi76qeyCXlp
-         AxQeOEKuoFAMuskSxh8jqAT8jDOjIJTcKU9cAGA4e+FyKPPO8VlbTXVVksJFjfg1gxOK
-         zcPQSC5AyrIv/g/CJqPQLXIA2qfJ3yqfmCVOumTNuC+A06bLeAYwmSm98cAPK/al55xn
-         jBuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVDkLlZSnxbE9Ah1uAgWfqH2Z8CIbGs5CbDPGgW4b3+RLUNMRLebjfKR1FM65Uj2Xr/YI5/ohDmC7uqOKk=@vger.kernel.org, AJvYcCWJJZEt/k3Qa6uim9GELNXXsrD68LVJYiHDH29qoQxWfkZbiGiWRynnb6yjkyPfnpTUWA7zO/oXwlTTxdCI@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx7Y5sr8gIg48hslLHgc0q0p19/iEkVKIZVh87aDQ1ZI0eYwC0u
-	jfp5uVpZ28NjrjBWwQVRaW+ixg8exoEkr0FcYHnNmKXuavPhihu1NvgbzogVsDuo
-X-Gm-Gg: ASbGncvEaWTePzBbDonNv1JrwX8J1WCUbXcn3SAbboqY/VculdqmsV8lq8YC5GKYplv
-	ZJBfLNJm+SC/MW54qmTwrZzp48MSKaPvhtqgc2+SJB8BUVkEVbiv3ki26dW3ErkilGtAoEz7V0e
-	UHXgOdP+5ZUzQnfrB8no1v/nRykTSaow8oGEFuOPN39MlT5Y0h8MaJqrWJLgXP8w3xqp0mJpJQK
-	FzcjyfXleg1Dc2cvgZ0tvV4FowHP/QbNEcRBTfin7upcql0lTh6AJwiq06t0rwTk3cQi97KnReN
-	A0pSFiY8n0hnPWSzKEOLRaT3HxcquDhPoepHCehdxrMvYz7YO4PBIQPcWvBBaEoaEWDS64WGfhE
-	9f3tuoWpSsxrAO9yzdNiphLnF
-X-Google-Smtp-Source: AGHT+IFmZEcii9qLnDX7tPSnNnbt3GSrEazD1Fz6FNjMWw1e+qqMvLFx9hM0qGG2n+gRO5AXuD8iyg==
-X-Received: by 2002:a05:6102:26d3:b0:4de:d08f:6727 with SMTP id ada2fe7eead31-4e7f63a1f01mr8365900137.13.1750163356430;
-        Tue, 17 Jun 2025 05:29:16 -0700 (PDT)
-Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com. [209.85.217.41])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-4e7f2fbf5b9sm1450960137.29.2025.06.17.05.29.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Jun 2025 05:29:16 -0700 (PDT)
-Received: by mail-vs1-f41.google.com with SMTP id ada2fe7eead31-4e2b5ffb932so1513186137.0;
-        Tue, 17 Jun 2025 05:29:16 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUBty6xD7iZkyQ9bzBix6HCaQac8MxtYydnw7g0ExdNCxXXKWXSR+CEePRH8MHjdITJp0a56QlzEKcsD7UM@vger.kernel.org, AJvYcCVSuDTlhxdtnqBv4aKue8XlPBBRUrV6ntktVxWd7JsCWnmPoWKmEQVOI2vfRdpEgXw8QIXlglcq4L2U3Bo=@vger.kernel.org
-X-Received: by 2002:a05:6102:6c9:b0:4e5:9867:14fb with SMTP id
- ada2fe7eead31-4e7f63f3d52mr8675512137.24.1750163355790; Tue, 17 Jun 2025
- 05:29:15 -0700 (PDT)
+	s=arc-20240116; t=1750166505; c=relaxed/simple;
+	bh=gqSvXtD/LeDvjmtzmU0yBYcCrTeP+69NZfXtKjQMzwQ=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=BstC/oomfU2Hl4rp58iS6SpS3OM8e6TJcVu4NNSCulj6GKRielg30urRHiCG7phoInM6nEQL8F8opt4YdYMVtLKRVPkWmn8ZNM3Ul1ve4z/s0O3CCZ5lYT1MV9MiBZG8ic2HSaemSNb4KZ+auRQgUWEmeW/fneeND0mXbevw9so=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk; spf=none smtp.mailfrom=orcam.me.uk; arc=none smtp.client-ip=78.133.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=orcam.me.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=orcam.me.uk
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+	id 5CEE092009C; Tue, 17 Jun 2025 15:21:40 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by angie.orcam.me.uk (Postfix) with ESMTP id 56B6892009B;
+	Tue, 17 Jun 2025 14:21:40 +0100 (BST)
+Date: Tue, 17 Jun 2025 14:21:40 +0100 (BST)
+From: "Maciej W. Rozycki" <macro@orcam.me.uk>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+cc: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>, 
+    =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>, 
+    linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 29/33] serial: 8250: drop DEBUG_AUTOCONF() macro
+In-Reply-To: <2025061733-pushy-croon-08da@gregkh>
+Message-ID: <alpine.DEB.2.21.2506171341570.37405@angie.orcam.me.uk>
+References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-30-jirislaby@kernel.org> <alpine.DEB.2.21.2506171216090.37405@angie.orcam.me.uk> <2025061733-pushy-croon-08da@gregkh>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250611100319.186924-1-jirislaby@kernel.org> <20250611100319.186924-5-jirislaby@kernel.org>
-In-Reply-To: <20250611100319.186924-5-jirislaby@kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 17 Jun 2025 14:29:04 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUDFjBwu-3+bx=MqNW_m5EdUHcfn-gROY1ZfHFahzkUgw@mail.gmail.com>
-X-Gm-Features: Ac12FXy71I420HG6FoY8xytnP_y8sbWA9TF3YO8Rg8lKJ2-nqSvV06O0TmPz6vM
-Message-ID: <CAMuHMdUDFjBwu-3+bx=MqNW_m5EdUHcfn-gROY1ZfHFahzkUgw@mail.gmail.com>
-Subject: Re: [PATCH 04/33] m68k: remove unneeded tty includes
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Joshua Thompson <funaho@jurai.org>, 
-	linux-m68k@lists.linux-m68k.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 
-On Wed, 11 Jun 2025 at 12:03, Jiri Slaby (SUSE) <jirislaby@kernel.org> wrote:
-> All these includes must have been cut & pasted. The code does not use
-> any tty or vt functionality at all.
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+On Tue, 17 Jun 2025, Greg Kroah-Hartman wrote:
 
-Since GregKH seems to be eager to pick up this series:
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> > > DEBUG_AUTOCONF() is always disabled (by "#if 0"), so one would need to
+> > > recompile the kernel to use it. And even if they did, they would find
+> > > out it is broken anyway:
+> > >   error: variable 'scratch' is used uninitialized whenever 'if' condition is false
+> > 
+> >  This is removing useful debugging aids.
+> 
+> How can it be "useful" if it's broken and no one has ever reported that?
 
-Gr{oetje,eeting}s,
+ It's broken in a trivial way and would be fixed by a competent developer 
+in no time.  If no one has reported the breakage, it means no one has used 
+this code in a way that would trigger it, e.g. -Wno-error in effect would 
+mask the compilation issue.  I'm fairly sure I used this code while making 
+changes to the OxSemi Tornado backend a couple of years ago.
 
-                        Geert
+> >  The issue with compilation is related to commit 3398cc4f2b15 ("serial: 
+> > 8250: Add IIR FIFOs enabled field properly"), which removed the assignment 
+> > of IIR to `scratch' (although a path did exist before it that bypassed the 
+> > assignment anyway), and can be trivially fixed by bringing the assignment 
+> > back and moving the debug statement next to it.
+> 
+> So it's been broken for over 2 years and no one has asked for it to be
+> fixed?
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+ Well, what can I say beyond the obvious?  That debugging a mature driver 
+doesn't happen all the time?  This would typically happen when adding a 
+new chip-specific backend, and I don't think new variants of 8250-style 
+serial ports appear that often nowadays.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ You can argue one can insert these debug statements back if they need it, 
+but someone already made this effort years ago, so why waste it?  To save 
+a handful of source lines?  It doesn't seem a good justification to me.
+
+> >  I agree that "#if 0" isn't very useful as it requires patching the source 
+> > to activate; changing it to "#ifdef DEBUG" would make more sense nowadays.
+> 
+> No, dynamic debugging is the proper solution, not build-time stuff.  If
+> you really need/want this, add it back in that way, not this old-style
+> "let's rebuild the whole kernel" type of thing.  This isn't the 1990's
+> anymore :)
+
+ There's no need to rebuild everything, handing CFLAGS_8250_port.o=-DDEBUG 
+to `make' only causes the named object to be recompiled.  I use it all the 
+time, also to pass other compilation flags if needed (call me outdated if 
+you prefer).
+
+ Any kind of run-time selectable debugging would bloat the kernel binary 
+unnecessarily for everyone, for the corner case of driver development or 
+debugging.  Unless made optional at configuration or build time, but then 
+we're back to the "1990's solution" with little to no gain over the local 
+CFLAGS override.
+
+ And if working on a piece of code, then rebuilding it sooner or later 
+seems inevitable anyway, so what's the deal?
+
+  Maciej
