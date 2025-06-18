@@ -1,122 +1,151 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B136DA93D;
-	Wed, 18 Jun 2025 05:48:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EB561E503D;
+	Wed, 18 Jun 2025 06:32:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750225740; cv=none; b=eZ9oQod7fzHYEuDE0Pl6ONgo6ztweM3zyTt4cAYR14D4Wo5D6WzD17Uf6C08yxl/VS2PycoFaa/6+y1M2P21VtdL7Km3XsKTPMxMd54ZbuovAbjpow+ag1N/eEuYt+F8yxOH5lK6UzomKNK4HyxoWLRkZxNg1f5XEbrD5YxQ2GU=
+	t=1750228364; cv=none; b=NzquI/ich9pAnfpM1x5vsZcLaTJXbhNpMXyNq5hNvQ7U9TPNSePkjSgeuptPGR+UHOY97OOTFcrxEhJ9Id7uee+rd+r76Aq85bYNWH1pd1BY1NuGh+V4tdxz2+jxryrjNeDQ9Ku4yv9UP3QOCH/uIXRJ6fZanwzehE+oYKKh/Xw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750225740; c=relaxed/simple;
-	bh=0t4p8OABWaqZSIgV2AO/AGAOkVnzT1MLBwZEUajBQGI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ynw/J2hMN9vOmh7fkAM09bw3N7PKQnBaYfzJWoeAuVq2gIg8OGO5LyEJhtgoxpy9p1IjN401FFek0MoUYks+pH9hjUdWQ3PL49F/ZbHBWMMCKjwEhgbJ18fR3ghGfOW/+3j0kfPf+jGFUex4r0+vJYINIDK87MdFuczdzFNFiyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cVLQy5xu; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1750228364; c=relaxed/simple;
+	bh=Q6R9VpJK+yebI8V2UHdLDoGLpV7IjX7AVke6WGXxh3M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=gGg1jBeekZRv23KfiNYED5YHbaqeliOgzYIe/bmMYjtF8h2HUWCNIAArIec4FYm7s42LmxX2dzg7UPsm1x8YQhCz3NR0JLSfptpi9rvDLKXRjKkaUKe52Pyng5sdy/pYsl7p52VUxgVfvkdthB1Y6uq0VHVdwRafxV+ZH6MU5Ww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KKxcITdp; arc=none smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cVLQy5xu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750225738; x=1781761738;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0t4p8OABWaqZSIgV2AO/AGAOkVnzT1MLBwZEUajBQGI=;
-  b=cVLQy5xuVMngWzTajRJ8OExOJy/2hiOM49u26hnI6U4AGvLX5tIDBmD7
-   HXYjzarFc4kqfOxktYrc7V/+L5p51ojwRFpXsK8KsHzaeYjDX5ZwwtbBa
-   431d5SKWRUAw6Fn93km4ng6CTfl2c4kQnIXKk2FsL9hc/kdGq+SWIfaLP
-   vs2vKZQ2WX2SzRkk0oDnWQkV4Sq3/53LfddmVFDOTWvRssGCQHWXyvLzN
-   eORUIdKF7cc9OuRbnR+6S9HD3KAUxZJd+NvqgarR4MhC9Jex04m1Sf8mE
-   7u3Gr0ynjalw4gE9+lEwbgoHxM49xGii1WIwDAh/+xatiR8z9fjgntcaL
-   w==;
-X-CSE-ConnectionGUID: mxexm3Q+RJ2TkYxq4coybw==
-X-CSE-MsgGUID: cK1zExnaQPmJQCgTn9GRTw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11467"; a="52568543"
-X-IronPort-AV: E=Sophos;i="6.16,245,1744095600"; 
-   d="scan'208";a="52568543"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2025 22:48:53 -0700
-X-CSE-ConnectionGUID: +k55VszYQI6t5YIPvw9vIg==
-X-CSE-MsgGUID: 7a/nQIixQVya1mTu7WWcqQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,245,1744095600"; 
-   d="scan'208";a="180185537"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa002.jf.intel.com with ESMTP; 17 Jun 2025 22:48:51 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 64E9012D; Wed, 18 Jun 2025 08:48:50 +0300 (EEST)
-Date: Wed, 18 Jun 2025 08:48:50 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 30/33] serial: 8250: invert
- serial8250_register_8250_port() CIR condition
-Message-ID: <aFJTQqVvmLBvrVRA@black.fi.intel.com>
-References: <20250611100319.186924-1-jirislaby@kernel.org>
- <20250611100319.186924-31-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KKxcITdp"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-54e7967cf67so6701875e87.0;
+        Tue, 17 Jun 2025 23:32:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1750228361; x=1750833161; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Bwqo1Tn/UI5NB53KqrvduG70MhvCcVKMdoEFHbfpgfk=;
+        b=KKxcITdp0Jw7bsq0b+w3AJ5emxuZxu+vokIEh23sMJGs6CQoJ2QO6Bo7bie46Pu8NH
+         J4AzWswfFLbfx4r7sOyISC6800urIKfO9XmV2yGE5zF7mi8+pZ87W8FBOqDhzYMEfkvn
+         fqnq0cYhYutgrOrhp3SaHsfy7/CU17DVElPTIYa3lRv8YrLbPBy6rn1tBR6vt+R5pShL
+         kvBbrQ9Mu0AHG4gwzxxgfrhP/xwMpbAPCUIkO00dS5ESCsWYZr+1aWPcoYt046keMH5f
+         Fsc+jX76DStJTvmljpWBya7lL4KiLQZf3Yp2WJWFNu8I4Ed2M9hT8NELjMXXS5Nn7Twg
+         RTDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750228361; x=1750833161;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Bwqo1Tn/UI5NB53KqrvduG70MhvCcVKMdoEFHbfpgfk=;
+        b=OAUNIw9zu31GMIb7hpXaTFlwFXnnC/KDXfBhNftRyO2T56b8D7a5Nzu49JdTj9Bsaa
+         aRtWLbmu/qdrMle1FKe+/dATIKMPz+zGuh+3jm4Lpc6/rPADSuQnKWI7G/F7iSvc/C1l
+         MIQ+jm9WZ4zKRIXgJkYgtWYVlDoMqKwyHj1YLFp/JO4lgW/PDKjTCQlk9ZODNE9PYaYx
+         jKiaU2nH7gMyMIr32TEMx3A5shdTexpD7nqBcs3LRQ3oGBLnn9u3C2kuq4yDv7WcFKSp
+         9pxtSh2FyXEWBq7eJMLzwPFMnKRSA4o/806poYniraEFTlV0mNVpKhNS53QAVj3cRPpv
+         qtxw==
+X-Forwarded-Encrypted: i=1; AJvYcCWFTLisRnj2KtEucCcLBqmeE0LdFEmh/WvZcbZLXrOdl80J84X5O85vKlUvCv9BJAXxrNs7T+u5yF48ETDc@vger.kernel.org, AJvYcCWcoiv+ojyg7qNC/2Ty3/DoQgDUCR6S07OpGGKa8CskHzNI3Y4xa7oIfkeBUk9ItNgqsNykaq4B/n4GB9o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzvsuRK67cevRYHNjQP+tmoSWR4Fz9dG47YNSmR45MHNchLNNoD
+	yJbtvv0+a0Mx9WfNGv6LcuPQ0UUFKWoap2XRnC55D11KUqDilz8LLc0eTdxs+fBMUQbxu3iU+mi
+	rQ6WSeiJj3klMbtLNNyjSOMlydBFqi3k=
+X-Gm-Gg: ASbGncuadmqSSMtglofvqn+ND64TRer8v79fh/zzIZsg7U/UqEXGkwmpRcPyCIdi4IL
+	pBQYStNL16vA+jNSu2N+XlyMqe6YRQ7e+gCroDuGrsxHTCeK9KggYHdPo3O5eSOhUGMzBRillYL
+	Ug+rE+kttDmxQFVJrPt42SnvWY2cKqyuUI2fi87YniPhyQUsU9WWyQgV5UUTHbwrWpX+/Oh2Zu7
+	sHPbg==
+X-Google-Smtp-Source: AGHT+IE9/lVOC9RD5dqHWaSWa1j5VajQRRLgW6hA855xIJmZ/spd0YvrkdXm0ZHnMiUmLACFqGFrlt0hesE7QYoVWtc=
+X-Received: by 2002:a05:6512:304d:b0:553:3172:1c23 with SMTP id
+ 2adb3069b0e04-553b6e75482mr5205429e87.17.1750228360458; Tue, 17 Jun 2025
+ 23:32:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250611100319.186924-31-jirislaby@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20250607134114.21899-1-pranav.tyagi03@gmail.com> <20250617130431.50f761dc@pumpkin>
+In-Reply-To: <20250617130431.50f761dc@pumpkin>
+From: Pranav Tyagi <pranav.tyagi03@gmail.com>
+Date: Wed, 18 Jun 2025 12:02:28 +0530
+X-Gm-Features: Ac12FXw1swBMxxqP7uL84LhUXsvU1fv-TbWZJqVqxFBuKmhpQqAXjySO2_KEEhg
+Message-ID: <CAH4c4j+BEJqMqECPDgOF5vq4hg7_yBRrLBPSuTKnA+CO658SOQ@mail.gmail.com>
+Subject: Re: [PATCH] tty: replace capable() with file_ns_capable()
+To: David Laight <david.laight.linux@gmail.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, kees@kernel.org, 
+	skhan@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, linux-kernel-mentees@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jun 11, 2025 at 12:03:16PM +0200, Jiri Slaby (SUSE) wrote:
-> There is no point in a long 'if' in serial8250_register_8250_port() to
-> just return ENOSPC for PORT_8250_CIR ports. Invert the condition and
-> return immediately.
-> 
-> 'gpios' variable was moved to its set location.
-> 
-> And return ENODEV instead of ENOSPC. The latter is a leftover from the
-> previous find-uart 'if'. The former makes a lot more sense in this case.
+On Tue, Jun 17, 2025 at 5:34=E2=80=AFPM David Laight
+<david.laight.linux@gmail.com> wrote:
+>
+> On Sat,  7 Jun 2025 19:11:14 +0530
+> Pranav Tyagi <pranav.tyagi03@gmail.com> wrote:
+>
+> > The TIOCCONS ioctl currently uses capable(CAP_SYS_ADMIN) to check for
+> > privileges, which validates the current task's credentials. Since this
+> > ioctl acts on an open file descriptor, the check should instead use the
+> > file opener's credentials.
+>
+> Is that right?
+> A terminal will have been opened before the login sequence changed the us=
+er id.
+>
+> The 'best practise' might be to check both!
+>
+>         David
 
-...
+Hi,
 
-> +	if (uart->port.type == PORT_8250_CIR) {
-> +		ret = -ENODEV;
-> +		goto unlock;
-> +	}
+You're right =E2=80=94 I hadn=E2=80=99t fully considered that the terminal =
+is typically
+opened before the user ID changes during login. Checking only the file
+opener's credentials may miss important security context.
 
-> +	if (up->port.flags & UPF_FIXED_TYPE)
-> +		uart->port.type = up->port.type;
+Best practice would indeed be to validate both: ensure that the current
+task has sufficient privileges and that the file was opened by an
+authorized user.
 
-> +	if (uart->port.type != PORT_8250_CIR) {
+Thanks for pointing this out =E2=80=94 I=E2=80=99ll revise the patch accord=
+ingly.
 
-I admit that there tons of mysterious ways of UART initialisation, but can you
-elaborate how this is not a always-true conditional?
-
-> +		if (uart_console_registered(&uart->port))
-> +			pm_runtime_get_sync(uart->port.dev);
-> +
-> +		if (serial8250_isa_config != NULL)
-> +			serial8250_isa_config(0, &uart->port,
-> +					&uart->capabilities);
-> +
-> +		serial8250_apply_quirks(uart);
-> +		ret = uart_add_one_port(&serial8250_reg,
-> +					&uart->port);
-> +		if (ret)
-> +			goto err;
-> +
-> +		ret = uart->port.line;
-> +	} else {
-> +		dev_info(uart->port.dev,
-> +			"skipping CIR port at 0x%lx / 0x%llx, IRQ %d\n",
-> +			uart->port.iobase,
-> +			(unsigned long long)uart->port.mapbase,
-> +			uart->port.irq);
-> +
-> +		ret = 0;
-> +	}
-
--- 
-With Best Regards,
-Andy Shevchenko
+Regards
+Pranav Tyagi
 
 
+>
+> >
+> > Replace capable() with file_ns_capable() to ensure the capability is
+> > checked against file->f_cred in the correct user namespace. This
+> > prevents unintended privilege escalation and aligns with best practices
+> > for secure ioctl implementations.
+> >
+> > Signed-off-by: Pranav Tyagi <pranav.tyagi03@gmail.com>
+> > Link: https://github.com/KSPP/linux/issues/156
+> > ---
+> >  drivers/tty/tty_io.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/tty/tty_io.c b/drivers/tty/tty_io.c
+> > index e2d92cf70eb7..ee0df35d65c3 100644
+> > --- a/drivers/tty/tty_io.c
+> > +++ b/drivers/tty/tty_io.c
+> > @@ -102,6 +102,9 @@
+> >  #include <linux/uaccess.h>
+> >  #include <linux/termios_internal.h>
+> >  #include <linux/fs.h>
+> > +#include <linux/cred.h>
+> > +#include <linux/user_namespace.h>
+> > +#include <linux/capability.h>
+> >
+> >  #include <linux/kbd_kern.h>
+> >  #include <linux/vt_kern.h>
+> > @@ -2379,7 +2382,7 @@ static int tiocswinsz(struct tty_struct *tty, str=
+uct winsize __user *arg)
+> >   */
+> >  static int tioccons(struct file *file)
+> >  {
+> > -     if (!capable(CAP_SYS_ADMIN))
+> > +     if (!file_ns_capable(file, file->f_cred->user_ns, CAP_SYS_ADMIN))
+> >               return -EPERM;
+> >       if (file->f_op->write_iter =3D=3D redirected_tty_write) {
+> >               struct file *f;
+>
