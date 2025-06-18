@@ -1,74 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA01F2FA624;
-	Tue, 17 Jun 2025 16:59:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FE721E0DFE
+	for <linux-serial@vger.kernel.org>; Wed, 18 Jun 2025 04:42:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750179595; cv=none; b=lTqTAs+YM8XvlhLoRLQQ0mYqJU/xrbBv6DzwFuVa3wJ+YjImDhf9CjbSArdQE8otikj4LLm6vVxnyetxy9ZtgL71KuQsjiubI1C6oY0+egwcHqntCLNh940Hv2HNTVdf9DE2z7N5AFGlpkrQrZK0juvtBARRVCVZd2fvJTmGucM=
+	t=1750221745; cv=none; b=YezJeLUSLIjtGa8WLwSWwl6sU2aQIyetW0vqz4pI6pcEEfNXca7q+Zco9OAPLzcDpReWkeOFf9Cs5S0Q4g91E1Xk/3gEKAoIVPuNNTK8Mw5hyIySmdCWov+8pG5pFZrcQjHQ1uJdN7OCK7lBvgjCWcI4flEma2T2b2UdSzdgC2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750179595; c=relaxed/simple;
-	bh=uEOMgL0enjAcnngHzRz3sXuDxKITAnkXRV1o9HPvaIE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=m6i7NtmBSPqv7B7I3hDbF7otmGujDTmQXSKYyXkjq5RMNAY11ptyoKzNqbW5s/ablKQCs1pyDF9Y1jBnaz+gyFYLZPsZg7F4x8hJfKwxDz1jNiWc20n/eFREiWkEJTGz4kWM/UVOfyzSvKNV05Mu85arxPDB5xEDma01CHHA+6I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Fo0EChMa; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750221745; c=relaxed/simple;
+	bh=/V+tYyEXAT2YSm154FNcH3MZXFw1XT+XX5Gv6Ey5gNY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=WqiDzehoOk36Ts5m1kR9EH4YjkxmOaYS2BHFJsQGnV+iC9XI4Wb0kfSCrbm7gEvRfXKrd3EtsC/CW4urfHdWa7Dh5VF8syoOuDh82cAnyzlBe4ynaQt0MG71akewWydP31jz+EiIKjZDVS1M3tmDxd1g6AODAdKVsaljfXjpj+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=O/pli8+6; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=jHhLwp2N; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Fo0EChMa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26D13C4CEF0;
-	Tue, 17 Jun 2025 16:59:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1750179595;
-	bh=uEOMgL0enjAcnngHzRz3sXuDxKITAnkXRV1o9HPvaIE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Fo0EChMa7s6vQniwm+xb0uKPr5MvPVjqgu2ivI/SpK3Rvof5c0D/40E9AGjA8WDmy
-	 9jE2igMgBxD3NJCCiUDZlGAdmpIcz8ZkXLEtJEuXzdivjH/vBnhOWZ0l9YHyv8+ojp
-	 3/McfGdtgmSajg4anTY9MfdwOhN5ysAxheAxoPKs=
-Date: Tue, 17 Jun 2025 17:56:03 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Aidan Stewart <astewart@tektelic.com>
-Cc: "jirislaby@kernel.org" <jirislaby@kernel.org>,
-	"tony@atomide.com" <tony@atomide.com>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] serial: core: restore of_node information in sysfs
-Message-ID: <2025061740-sustained-linked-a845@gregkh>
-References: <20250616162154.9057-1-astewart@tektelic.com>
- <2025061746-raking-gusto-d1f3@gregkh>
- <915d0631ac123bbbb5d3fac1248b97d9de3295c6.camel@tektelic.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="O/pli8+6";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="jHhLwp2N"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1750221741;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=gCkN1UaeGSgMvS52kXxBzHCLhstjH4vMb9KGD7dp2JI=;
+	b=O/pli8+6rQ+r/rk73LpotBMFbSHNDFZsSjceRn0jgkRBPdOBRAeoTIkH0sdPP4xJ0Ih6dZ
+	uzv4mbBYJ/o1FLK0zQeqB1U52Z6zy1hWsOA3CT0YZ5NUb6+TaFUU3tO/OHTxdXLDT96Tr7
+	hiXWJMO5Sap8IsQXrzx+9Oz0ZxWhzdg84QCq+69wjqpl0OMQ5usAff9r4ZHfLP5sshf/6s
+	9C/mfrvOvGHGdl0gVqNO/ZHuSp8+JE17GCOuMTvCMrvwtinAb3gJbZnmIX/e3YOoSQ4qD0
+	mehivAHz6YEUOjVLjHVbDZe69iYYJNGDPbX1mkyZqhYRZk/qJ6pPPBg7AJdURQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1750221741;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=gCkN1UaeGSgMvS52kXxBzHCLhstjH4vMb9KGD7dp2JI=;
+	b=jHhLwp2NkczZH3wlj0H29ddiTa5duZeCqb2xrC8Wf1hfLyL/BfTNwE6N8ZLMm6QjoT21SK
+	+BuCRz6s6c70FuAA==
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, Ryo Takakura
+ <ryotkkr98@gmail.com>, pmladek@suse.com
+Cc: Jason@zx2c4.com, gregkh@linuxfoundation.org,
+ linux-serial@vger.kernel.org, lkp@intel.com, oe-lkp@lists.linux.dev,
+ oliver.sang@intel.com, Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [linux-next:master] [serial]  b63e6f60ea:
+ BUG:soft_lockup-CPU##stuck_for#s![modprobe:#]
+In-Reply-To: <030bfa50783bc9f40ce3afd4e1f65da2a48322c1.camel@siemens.com>
+References: <84y0vhodwy.fsf@jogness.linutronix.de>
+ <20250501041055.6504-1-ryotkkr98@gmail.com>
+ <030bfa50783bc9f40ce3afd4e1f65da2a48322c1.camel@siemens.com>
+Date: Wed, 18 Jun 2025 06:48:20 +0206
+Message-ID: <84cyb1vexf.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <915d0631ac123bbbb5d3fac1248b97d9de3295c6.camel@tektelic.com>
+Content-Type: text/plain
 
-On Tue, Jun 17, 2025 at 03:46:37PM +0000, Aidan Stewart wrote:
-> On Tue, 2025-06-17 at 06:44 +0200, Greg KH wrote:
-> > 
-> > On Mon, Jun 16, 2025 at 10:21:54AM -0600, Aidan Stewart wrote:
-> > > 
-> > > 
-> > > +     if (IS_ENABLED(CONFIG_OF)) {
-> > > +             device_set_of_node_from_dev(dev, parent_dev);
-> > > +     }
-> > 
-> > Did this pass checkpatch.pl?
-> I ran checkpatch.pl with the --strict option and I didn't get any warnings
-> or errors. Is there a style issue you would like me to fix?
+Hi Florian,
 
-You should not need {} for a one line if statement.
+On 2025-06-16, Florian Bezdeka <florian.bezdeka@siemens.com> wrote:
+> With that it has been confirmed that the original test report [1] was
+> wrong. It reported the trigger, not the root cause.
+>
+> b63e6f60eab4 ("serial: 8250: Switch to nbcon console")
+>
+> was / is correct but got reverted by Greg in mainline with 
+>
+> f79b163c4231 ("Revert "serial: 8250: Switch to nbcon console"")
+>
+> This leads to the situation that stable-rt branches still ship this
+> patch while mainline and stable do not. John, is that intended or was
+> mainline / stable never informed about that?
 
-> > And why is the if statement needed?
-> I guess it's not really needed. I was trying to avoid the call for non-DT
-> systems, but it should still be safe to do. I will remove it in v2.
+stable-rt carries the 8250-nbcon patches because we intend for them to
+go mainline. Greg reverted them from mainline at my request because of 2
+power management regression reports (related to suspending on arm32). I
+do not believe 8250-nbcon is the real problem, but I need to determine
+the root issue and offer a solution before sending the 8250-nbcon
+patches to mainline again.
 
-Please do!
+Regardless, the fix in this thread is still relevant for mainline now
+because there are now other nbcon serial drivers mainline.
 
-thanks,
-
-greg k-h
+John
