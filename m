@@ -1,325 +1,245 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12F8F21C17D
-	for <linux-serial@vger.kernel.org>; Fri, 20 Jun 2025 12:50:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65AF828DF1F;
+	Fri, 20 Jun 2025 14:43:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750423825; cv=none; b=GK2YOjWA4XnuLB8gQM+GrIhCxu6RBkJukaGouq3ij1t4QIYFfgIPo9NKw6T/lKDPRQsbHmhOvU4vhuyA+UlGhV81E/G7CQaProQSBnKw12ivTpkFFwgaLimsGkGP2aHNYtyfnR7Mp782CgXo+5qcBP4EXGRxefXuywOwiusXcCQ=
+	t=1750430592; cv=none; b=dQd6+/0qshCHIhHlA1DUe+7lwCJQGV2W1OmfDAbicCXvphiw7QCjG/9zDppHuR8R5p0JQcBTKzSjUYOIVk4LXuQeWyApoVzC2QaCzr3C1lRz27keaj5PJVG6EsC9OcAWQrmdRRcv67vSSpT20pqIZEHhnsO6Nj76uPkMm1Gmet4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750423825; c=relaxed/simple;
-	bh=UQKkY/TpMbHwu4b/q/0e0oEvFp3ZSisAKA4mw5mEOVg=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=u0ZafM1xrJwtRO6dGc/9kuL0yd0ENNADzW3DvJ+580qYD63Tfabf8tF/jHPeTdhpYEwESfvU/aQZ3TwfujffsvUhn55IugBAvt7tvRU0JQ6+xpD28bxyDtn5KU4Bvtp+TkD4RRuZNuVX6Zk6GHFdy+XgiI7s78spNM3/aCzwmPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ccrfLHhR; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1750430592; c=relaxed/simple;
+	bh=XA2XtaQFY5JwiKn9pbwDxeF/R6eSdkFkct68OHPhRvI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=psv6iu0zkdzhkGiQ1abcoyyAa3uB56Bh6lIMgS8u6LeTpsSKUfbXqaTinYmtBDMUOVG7L71/W3nbOsFC8CiMqI95ddR62V0UMSgF9BzBRoJlAf77Yi2bAD1iFXKA96g/Z41UTOonfJuCXKDOm5wnW06SYBX3AmI5ehCvOafiq/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=hb5o0dc5; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=GK+xBRhv; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ccrfLHhR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750423823; x=1781959823;
-  h=date:from:to:cc:subject:message-id;
-  bh=UQKkY/TpMbHwu4b/q/0e0oEvFp3ZSisAKA4mw5mEOVg=;
-  b=ccrfLHhR2Rh9abRrOyBwz/TyxY33v5RpM/vqFRn0huw03aPnK5yVxeuw
-   WyL4g/q/QZR0O+XXQsnsR5LeL3KcIvTW658rOup9i23AxfvTxrxGDMtsb
-   hiUppfibWGU1cLV9cWSTZLIK+b9Byyy8yD1WVIqq0jtuGcjt/dlXEB7FH
-   JTicsXOu2HRB4V/ttLocrLoNDw6Eo2FVH2naVubUyxDUKOBlnL0kvzXg4
-   cGMlr0Qwoqi61gaZd089u87ZF+TspNnxu5NiGwHY7j1SXSbioczpQ6bH3
-   fK8qlNhNUuYyBWDrHUluOpsA3lasJAkz2k5f7DwtUbL3n1aeNQcfocUED
-   Q==;
-X-CSE-ConnectionGUID: dcCvM+FfTgCCx3pXmtPrXw==
-X-CSE-MsgGUID: T35c2E9RRZm4ualfzib71A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11469"; a="70122303"
-X-IronPort-AV: E=Sophos;i="6.16,251,1744095600"; 
-   d="scan'208";a="70122303"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jun 2025 05:50:23 -0700
-X-CSE-ConnectionGUID: v5qc66NETxm1Kicm2MfInA==
-X-CSE-MsgGUID: uTrPbz9SQyubF8L/3rMv3g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,251,1744095600"; 
-   d="scan'208";a="151591119"
-Received: from lkp-server01.sh.intel.com (HELO e8142ee1dce2) ([10.239.97.150])
-  by fmviesa010.fm.intel.com with ESMTP; 20 Jun 2025 05:50:17 -0700
-Received: from kbuild by e8142ee1dce2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uSbC9-000Llc-3D;
-	Fri, 20 Jun 2025 12:50:13 +0000
-Date: Fri, 20 Jun 2025 20:49:42 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-linus] BUILD SUCCESS
- d36f0e9a0002f04f4d6dd9be908d58fe5bd3a279
-Message-ID: <202506202032.jqsFN5fc-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="hb5o0dc5";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="GK+xBRhv"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1750430588;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Zf9eZNGS/J7cqsYhd+Ez8QubB3SKjLSoDlWDiWnAjOA=;
+	b=hb5o0dc5GvKPdYV2/5l5iL+pdghzJ2cRGQIbp7KrHSBtdO/MvYQA9hh0euy5xWrNs0MPpg
+	RJU0iL6518QlFrA1pAP7KYd/L+m8HX1RZQSqEWaVhhxDWnphvEtVas/jU/v33PqkNo4p/w
+	40jWxyWIXW6IBniJKMlSY3cetMBiJcGrOnGX2Xs2vHEHEUTXEVlDpZytucx+jIxnwveFTq
+	BZJA1eQMDblJv1+5SDfDNEMJchkbmNGr27nSwY6VaSoVmE9guI6vTlXJWRplUxCfPC/7ww
+	RlS3OC5noZq6jer3COwBLhR0eLTaieuys/mBmz0Ws3fNPoPKuu/Is+R12ktaFQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1750430588;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Zf9eZNGS/J7cqsYhd+Ez8QubB3SKjLSoDlWDiWnAjOA=;
+	b=GK+xBRhvIL3VuhN/qjyFnX59zi7Ek/5vSo7O6W52qAcr05hqeOrgmxcBFIwe5uMC0oARw/
+	vIV++n1IzWc76PCQ==
+To: Petr Mladek <pmladek@suse.com>, Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Jason
+ Wessel <jason.wessel@windriver.com>, Daniel Thompson <danielt@kernel.org>,
+ Douglas Anderson <dianders@chromium.org>, Richard Weinberger
+ <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes
+ Berg <johannes@sipsolutions.net>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+ linux-um@lists.infradead.org
+Subject: Re: [PATCH 2/7] printk: Use consoles_suspended flag when
+ suspending/resuming all consoles
+In-Reply-To: <aExBo-8cVOy6GegR@pathway.suse.cz>
+References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-2-f427c743dda0@suse.com>
+ <aExBo-8cVOy6GegR@pathway.suse.cz>
+Date: Fri, 20 Jun 2025 16:49:07 +0206
+Message-ID: <84y0tmiidg.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
-branch HEAD: d36f0e9a0002f04f4d6dd9be908d58fe5bd3a279  serial: core: restore of_node information in sysfs
+On 2025-06-13, Petr Mladek <pmladek@suse.com> wrote:
+>> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+>> index fd12efcc4aeda8883773d9807bc215f6e5cdf71a..72de12396e6f1bc5234acfdf=
+6dcc393acf88d216 100644
+>> --- a/kernel/printk/nbcon.c
+>> +++ b/kernel/printk/nbcon.c
+>> @@ -1147,7 +1147,7 @@ static bool nbcon_kthread_should_wakeup(struct con=
+sole *con, struct nbcon_contex
+>>  	cookie =3D console_srcu_read_lock();
+>>=20=20
+>>  	flags =3D console_srcu_read_flags(con);
+>> -	if (console_is_usable(con, flags, false)) {
+>> +	if (console_is_usable(con, flags, false, consoles_suspended)) {
+>
+> The new global console_suspended value has the be synchronized the
+> same way as the current CON_SUSPENDED per-console flag.
+> It means that the value must be:
+>
+>   + updated only under console_list_lock together with
+>     synchronize_rcu().
+>
+>   + read using READ_ONCE() under console_srcu_read_lock()
 
-elapsed time: 1455m
+Yes.
 
-configs tested: 248
-configs skipped: 6
+> I am going to propose more solutions because no one is obviously
+> the best one.
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+[...]
 
-tested configs:
-alpha                             allnoconfig    gcc-15.1.0
-alpha                            allyesconfig    clang-19
-alpha                            allyesconfig    gcc-15.1.0
-alpha                               defconfig    gcc-15.1.0
-arc                              allmodconfig    clang-19
-arc                              allmodconfig    gcc-15.1.0
-arc                               allnoconfig    gcc-15.1.0
-arc                              allyesconfig    clang-19
-arc                              allyesconfig    gcc-15.1.0
-arc                          axs103_defconfig    clang-21
-arc                                 defconfig    gcc-15.1.0
-arc                   randconfig-001-20250619    gcc-15.1.0
-arc                   randconfig-001-20250620    clang-21
-arc                   randconfig-002-20250619    gcc-15.1.0
-arc                   randconfig-002-20250620    clang-21
-arm                              allmodconfig    clang-19
-arm                               allnoconfig    gcc-15.1.0
-arm                              allyesconfig    clang-19
-arm                              allyesconfig    gcc-15.1.0
-arm                         axm55xx_defconfig    clang-21
-arm                                 defconfig    gcc-15.1.0
-arm                          ixp4xx_defconfig    clang-21
-arm                            mps2_defconfig    clang-21
-arm                   randconfig-001-20250619    clang-21
-arm                   randconfig-001-20250620    clang-21
-arm                   randconfig-002-20250619    gcc-8.5.0
-arm                   randconfig-002-20250620    clang-21
-arm                   randconfig-003-20250619    gcc-8.5.0
-arm                   randconfig-003-20250620    clang-21
-arm                   randconfig-004-20250619    gcc-10.5.0
-arm                   randconfig-004-20250620    clang-21
-arm64                            allmodconfig    clang-19
-arm64                             allnoconfig    gcc-15.1.0
-arm64                               defconfig    gcc-15.1.0
-arm64                 randconfig-001-20250619    gcc-8.5.0
-arm64                 randconfig-001-20250620    clang-21
-arm64                 randconfig-002-20250619    gcc-9.5.0
-arm64                 randconfig-002-20250620    clang-21
-arm64                 randconfig-003-20250619    gcc-10.5.0
-arm64                 randconfig-003-20250620    clang-21
-arm64                 randconfig-004-20250619    gcc-10.5.0
-arm64                 randconfig-004-20250620    clang-21
-csky                              allnoconfig    gcc-15.1.0
-csky                                defconfig    gcc-15.1.0
-csky                  randconfig-001-20250619    gcc-11.5.0
-csky                  randconfig-001-20250620    clang-21
-csky                  randconfig-002-20250619    gcc-9.3.0
-csky                  randconfig-002-20250620    clang-21
-hexagon                          allmodconfig    clang-17
-hexagon                          allmodconfig    clang-19
-hexagon                           allnoconfig    gcc-15.1.0
-hexagon                          allyesconfig    clang-19
-hexagon                          allyesconfig    clang-21
-hexagon                             defconfig    gcc-15.1.0
-hexagon               randconfig-001-20250619    clang-21
-hexagon               randconfig-001-20250620    clang-21
-hexagon               randconfig-002-20250619    clang-21
-hexagon               randconfig-002-20250620    clang-21
-i386                             allmodconfig    clang-20
-i386                             allmodconfig    gcc-12
-i386                              allnoconfig    clang-20
-i386                              allnoconfig    gcc-12
-i386                             allyesconfig    clang-20
-i386                             allyesconfig    gcc-12
-i386        buildonly-randconfig-001-20250619    gcc-12
-i386        buildonly-randconfig-001-20250620    clang-20
-i386        buildonly-randconfig-002-20250619    gcc-12
-i386        buildonly-randconfig-002-20250620    clang-20
-i386        buildonly-randconfig-003-20250619    clang-20
-i386        buildonly-randconfig-003-20250620    clang-20
-i386        buildonly-randconfig-004-20250619    clang-20
-i386        buildonly-randconfig-004-20250620    clang-20
-i386        buildonly-randconfig-005-20250619    clang-20
-i386        buildonly-randconfig-005-20250620    clang-20
-i386        buildonly-randconfig-006-20250619    clang-20
-i386        buildonly-randconfig-006-20250620    clang-20
-i386                                defconfig    clang-20
-i386                  randconfig-001-20250620    gcc-12
-i386                  randconfig-002-20250620    gcc-12
-i386                  randconfig-003-20250620    gcc-12
-i386                  randconfig-004-20250620    gcc-12
-i386                  randconfig-005-20250620    gcc-12
-i386                  randconfig-006-20250620    gcc-12
-i386                  randconfig-007-20250620    gcc-12
-i386                  randconfig-011-20250620    gcc-12
-i386                  randconfig-012-20250620    gcc-12
-i386                  randconfig-013-20250620    gcc-12
-i386                  randconfig-014-20250620    gcc-12
-i386                  randconfig-015-20250620    gcc-12
-i386                  randconfig-016-20250620    gcc-12
-i386                  randconfig-017-20250620    gcc-12
-loongarch                        allmodconfig    gcc-15.1.0
-loongarch                         allnoconfig    gcc-15.1.0
-loongarch                           defconfig    gcc-15.1.0
-loongarch             randconfig-001-20250619    gcc-15.1.0
-loongarch             randconfig-001-20250620    clang-21
-loongarch             randconfig-002-20250619    gcc-15.1.0
-loongarch             randconfig-002-20250620    clang-21
-m68k                             allmodconfig    gcc-15.1.0
-m68k                              allnoconfig    gcc-15.1.0
-m68k                             allyesconfig    gcc-15.1.0
-m68k                          atari_defconfig    clang-21
-m68k                                defconfig    gcc-15.1.0
-m68k                           virt_defconfig    clang-21
-microblaze                       allmodconfig    gcc-15.1.0
-microblaze                        allnoconfig    gcc-15.1.0
-microblaze                       allyesconfig    gcc-15.1.0
-microblaze                          defconfig    gcc-15.1.0
-mips                              allnoconfig    gcc-15.1.0
-mips                      bmips_stb_defconfig    clang-21
-nios2                             allnoconfig    gcc-15.1.0
-nios2                               defconfig    gcc-15.1.0
-nios2                 randconfig-001-20250619    gcc-8.5.0
-nios2                 randconfig-001-20250620    clang-21
-nios2                 randconfig-002-20250619    gcc-8.5.0
-nios2                 randconfig-002-20250620    clang-21
-openrisc                          allnoconfig    clang-21
-openrisc                          allnoconfig    gcc-15.1.0
-openrisc                         allyesconfig    gcc-15.1.0
-openrisc                            defconfig    gcc-12
-parisc                           allmodconfig    gcc-15.1.0
-parisc                            allnoconfig    clang-21
-parisc                            allnoconfig    gcc-15.1.0
-parisc                           allyesconfig    gcc-15.1.0
-parisc                              defconfig    gcc-12
-parisc                randconfig-001-20250619    gcc-11.5.0
-parisc                randconfig-001-20250620    clang-21
-parisc                randconfig-002-20250619    gcc-8.5.0
-parisc                randconfig-002-20250620    clang-21
-parisc64                            defconfig    gcc-15.1.0
-powerpc                          allmodconfig    gcc-15.1.0
-powerpc                           allnoconfig    clang-21
-powerpc                           allnoconfig    gcc-15.1.0
-powerpc                          allyesconfig    clang-21
-powerpc                          allyesconfig    gcc-15.1.0
-powerpc                      cm5200_defconfig    clang-21
-powerpc                     mpc5200_defconfig    clang-21
-powerpc               mpc834x_itxgp_defconfig    clang-21
-powerpc                     ppa8548_defconfig    clang-21
-powerpc               randconfig-001-20250619    gcc-9.3.0
-powerpc               randconfig-001-20250620    clang-21
-powerpc               randconfig-002-20250619    clang-21
-powerpc               randconfig-002-20250620    clang-21
-powerpc               randconfig-003-20250619    gcc-10.5.0
-powerpc               randconfig-003-20250620    clang-21
-powerpc                     stx_gp3_defconfig    clang-21
-powerpc64             randconfig-001-20250619    gcc-11.5.0
-powerpc64             randconfig-001-20250620    clang-21
-powerpc64             randconfig-002-20250619    clang-21
-powerpc64             randconfig-002-20250620    clang-21
-powerpc64             randconfig-003-20250619    gcc-10.5.0
-powerpc64             randconfig-003-20250620    clang-21
-riscv                            allmodconfig    clang-21
-riscv                            allmodconfig    gcc-15.1.0
-riscv                             allnoconfig    clang-21
-riscv                             allnoconfig    gcc-15.1.0
-riscv                            allyesconfig    clang-16
-riscv                            allyesconfig    gcc-15.1.0
-riscv                               defconfig    gcc-12
-riscv                 randconfig-001-20250619    gcc-11.5.0
-riscv                 randconfig-001-20250620    gcc-13.3.0
-riscv                 randconfig-002-20250619    clang-16
-riscv                 randconfig-002-20250620    gcc-13.3.0
-s390                             allmodconfig    clang-18
-s390                             allmodconfig    gcc-15.1.0
-s390                              allnoconfig    clang-21
-s390                             allyesconfig    gcc-15.1.0
-s390                                defconfig    gcc-12
-s390                  randconfig-001-20250619    clang-19
-s390                  randconfig-001-20250620    gcc-13.3.0
-s390                  randconfig-002-20250619    gcc-13.2.0
-s390                  randconfig-002-20250620    gcc-13.3.0
-sh                               allmodconfig    gcc-15.1.0
-sh                                allnoconfig    gcc-15.1.0
-sh                               allyesconfig    gcc-15.1.0
-sh                                  defconfig    gcc-12
-sh                         ecovec24_defconfig    clang-21
-sh                            hp6xx_defconfig    clang-21
-sh                    randconfig-001-20250619    gcc-9.3.0
-sh                    randconfig-001-20250620    gcc-13.3.0
-sh                    randconfig-002-20250619    gcc-9.3.0
-sh                    randconfig-002-20250620    gcc-13.3.0
-sparc                            allmodconfig    gcc-15.1.0
-sparc                             allnoconfig    gcc-15.1.0
-sparc                 randconfig-001-20250619    gcc-14.3.0
-sparc                 randconfig-001-20250620    gcc-13.3.0
-sparc                 randconfig-002-20250619    gcc-10.3.0
-sparc                 randconfig-002-20250620    gcc-13.3.0
-sparc64                             defconfig    gcc-12
-sparc64               randconfig-001-20250619    gcc-13.3.0
-sparc64               randconfig-001-20250620    gcc-13.3.0
-sparc64               randconfig-002-20250619    gcc-8.5.0
-sparc64               randconfig-002-20250620    gcc-13.3.0
-um                               allmodconfig    clang-19
-um                                allnoconfig    clang-21
-um                               allyesconfig    clang-19
-um                               allyesconfig    gcc-12
-um                                  defconfig    gcc-12
-um                             i386_defconfig    gcc-12
-um                    randconfig-001-20250619    clang-19
-um                    randconfig-001-20250620    gcc-13.3.0
-um                    randconfig-002-20250619    clang-21
-um                    randconfig-002-20250620    gcc-13.3.0
-um                           x86_64_defconfig    gcc-12
-x86_64                            allnoconfig    clang-20
-x86_64                           allyesconfig    clang-20
-x86_64      buildonly-randconfig-001-20250619    clang-20
-x86_64      buildonly-randconfig-001-20250620    gcc-12
-x86_64      buildonly-randconfig-002-20250619    gcc-12
-x86_64      buildonly-randconfig-002-20250620    gcc-12
-x86_64      buildonly-randconfig-003-20250619    clang-20
-x86_64      buildonly-randconfig-003-20250620    gcc-12
-x86_64      buildonly-randconfig-004-20250619    gcc-12
-x86_64      buildonly-randconfig-004-20250620    gcc-12
-x86_64      buildonly-randconfig-005-20250619    clang-20
-x86_64      buildonly-randconfig-005-20250620    gcc-12
-x86_64      buildonly-randconfig-006-20250619    gcc-12
-x86_64      buildonly-randconfig-006-20250620    gcc-12
-x86_64                              defconfig    clang-20
-x86_64                              defconfig    gcc-11
-x86_64                                  kexec    clang-20
-x86_64                randconfig-001-20250620    clang-20
-x86_64                randconfig-002-20250620    clang-20
-x86_64                randconfig-003-20250620    clang-20
-x86_64                randconfig-004-20250620    clang-20
-x86_64                randconfig-005-20250620    clang-20
-x86_64                randconfig-006-20250620    clang-20
-x86_64                randconfig-007-20250620    clang-20
-x86_64                randconfig-008-20250620    clang-20
-x86_64                randconfig-071-20250620    clang-20
-x86_64                randconfig-072-20250620    clang-20
-x86_64                randconfig-073-20250620    clang-20
-x86_64                randconfig-074-20250620    clang-20
-x86_64                randconfig-075-20250620    clang-20
-x86_64                randconfig-076-20250620    clang-20
-x86_64                randconfig-077-20250620    clang-20
-x86_64                randconfig-078-20250620    clang-20
-x86_64                               rhel-9.4    clang-20
-x86_64                           rhel-9.4-bpf    gcc-12
-x86_64                         rhel-9.4-kunit    gcc-12
-x86_64                           rhel-9.4-ltp    gcc-12
-x86_64                          rhel-9.4-rust    clang-18
-x86_64                          rhel-9.4-rust    clang-20
-xtensa                            allnoconfig    gcc-15.1.0
-xtensa                randconfig-001-20250619    gcc-9.3.0
-xtensa                randconfig-001-20250620    gcc-13.3.0
-xtensa                randconfig-002-20250619    gcc-8.5.0
-xtensa                randconfig-002-20250620    gcc-13.3.0
+> Variant C:
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+> Remove even @flags parameter from console_is_usable() and read both
+> values there directly.
+>
+> Many callers read @flags only because they call console_is_usable().
+> The change would simplify the code.
+>
+> But there are few exceptions:
+>
+>   1. __nbcon_atomic_flush_pending(), console_flush_all(),
+>      and legacy_kthread_should_wakeup() pass @flags to
+>      console_is_usable() and also check CON_NBCON flag.
+>
+>      But CON_NBCON flag is special. It is statically initialized
+>      and never set/cleared at runtime. It can be checked without
+>      READ_ONCE(). Well, we still might want to be sure that
+>      the struct console can't disappear.
+>
+>      IMHO, this can be solved by a helper function:
+>
+> 	/**
+> 	 * console_srcu_is_nbcon - Locklessly check whether the console is nbcon
+> 	 * @con:	struct console pointer of console to check
+> 	 *
+> 	 * Requires console_srcu_read_lock to be held, which implies that @con m=
+ight
+> 	 * be a registered console. The purpose of holding console_srcu_read_loc=
+k is
+> 	 * to guarantee that no exit/cleanup routines will run if the console
+> 	 * is currently undergoing unregistration.
+> 	 *
+> 	 * If the caller is holding the console_list_lock or it is _certain_ that
+> 	 * @con is not and will not become registered, the caller may read
+> 	 * @con->flags directly instead.
+> 	 *
+> 	 * Context: Any context.
+> 	 * Return: True when CON_NBCON flag is set.
+> 	 */
+> 	static inline bool console_is_nbcon(const struct console *con)
+> 	{
+> 		WARN_ON_ONCE(!console_srcu_read_lock_is_held());
+>
+> 		/*
+> 		 * The CON_NBCON flag is statically initialized and is never
+> 		 * set or cleared at runtime.
+> 		return data_race(con->flags & CON_NBCON);
+> 	}
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Agreed.
+
+>    2. Another exception is __pr_flush() where console_is_usable() is
+>       called twice with @use_atomic set "true" and "false".
+>
+>       We would want to read "con->flags" only once here. A solution
+>       would be to add a parameter to check both con->write_atomic
+>       and con->write_thread in a single call.
+
+Or it could become a bitmask of printing types to check:
+
+#define ATOMIC_PRINTING 0x1
+#define NONATOMIC_PRINTING 0x2
+
+and then __pr_flush() looks like:
+
+if (!console_is_usable(c, flags, ATOMIC_PRINTING|NONATOMIC_PRINTING)
+
+>       But it might actually be enough to check is with the "false"
+>       value because "con->write_thread()" is mandatory for nbcon
+>       consoles. And legacy consoles do not distinguish atomic mode.
+
+A bit tricky, but you are right.
+
+>
+>
+> Variant D:
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+> We need to distinguish the global and per-console "suspended" flag
+> because they might be nested. But we could use a separate flag
+> for the global setting.
+>
+> I mean that:
+>
+>     + console_suspend() would set CON_SUSPENDED flag
+>     + console_suspend_all() would set CON_SUSPENDED_ALL flag
+>
+> They both will be in con->flags.
+>
+> Pros:
+>
+>     + It is easy to implement.
+>
+> Cons:
+>
+>     + It feels a bit ugly.
+>
+>
+> My opinion:
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+> I personally prefer the variant C because:
+>
+>   + Removes one parameter from console_is_usable().
+>
+>   + The lockless synchronization of both global and per-console
+>     flags is hidden in console_is_usable().
+>
+>   + The global console_suspended flag will be stored in global
+>     variable (in compare with variant D).
+>
+> What do you think, please?
+>
+> Best Regards,
+> Petr
+>
+>
+> PS: The commit message and the cover letter should better explain
+>     the background of this change.
+>
+>     It would be great if the cover letter described the bigger
+>     picture, especially the history of the console_suspended,
+>     CON_SUSPENDED, and CON_ENABLED flags. It might use info
+>     from
+>     https://lore.kernel.org/lkml/ZyoNZfLT6tlVAWjO@pathway.suse.cz/
+>     and maybe even this link.
+>
+>     Also this commit message should mention that it partly reverts
+>     the commit 9e70a5e109a4a233678 ("printk: Add per-console
+>     suspended state"). But it is not simple revert because
+>     we need to preserve the synchronization using
+>     the console_list_lock for writing and SRCU for reading.
+
+--=20
+John Ogness
+Linutronix GmbH | Bahnhofstra=C3=9Fe 3 | D-88690 Uhldingen-M=C3=BChlhofen
+Phone: +49 7556 25 999 20; Fax.: +49 7556 25 999 99
+
+Hinweise zum Datenschutz finden Sie hier (Information on data privacy
+can be found here): https://linutronix.de/legal/data-protection.php
+
+Linutronix GmbH | Firmensitz (Registered Office): Uhldingen-M=C3=BChlhofen |
+Registergericht (Registration Court): Amtsgericht Freiburg i.Br., HRB700
+806 | Gesch=C3=A4ftsf=C3=BChrer (Managing Directors): Harry Demas, Heinz Eg=
+ger,
+Thomas Gleixner, Yin Sorrell, Jeffrey Schneiderman
