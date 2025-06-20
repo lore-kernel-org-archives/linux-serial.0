@@ -1,166 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ED6B2E4241;
-	Fri, 20 Jun 2025 15:43:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53B552E7F13;
+	Fri, 20 Jun 2025 15:45:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750434234; cv=none; b=or+h7u1WysKgmdf8IoB80y2Oj/0Se+7ZIG335Sl+PgQKWvZa8jzwgxpfeW8BFVg2mLBUN+m79yZPsM7sbnQwfAo/EhSmSfarMw28GgLcCTD+jDAkJvE9ud1bzOj+QvI0dPM7n1bG6LtAtNI3NyvMLVNdWw8P0p9VGvwZNb37da4=
+	t=1750434321; cv=none; b=rXodaiXqx4epwyXu/0bYk+FWbtlPiZWUyxsUpe5RZzsV8HkFMUXA4AKO81BhRBo7eCvdgMDLDUf51I9GXfjLL6owAqh7QcqMTMF7ImYn99pXXSu3yV1LjnZ+ypGjm4ppKz4BO9qtGVqKi0QOmwIGr1nh8vDk5zQfrZ/wPQkRG6A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750434234; c=relaxed/simple;
-	bh=n3mrHhbKnKUpC1kN1NJ7p70/oxST9+GlzZGgUiw5Xms=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=kO7Btjb5ySETZTtq5T3Qrw7aTSoq7SjyZHK+pMxGBNFDzHbI/Ih7QUMQ80h02T5nJT98diaTgwYqJ5ZKrGYIrLwDndiIttd7u5L3fA9w2NUeUPDF3iI4AlD+3MA4wKprs8aetgzs4KrNMAch2h3iDveV/Bmu9DFJRwO4Y7olzoA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c0cdnnRC; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750434321; c=relaxed/simple;
+	bh=vsYN0kNwPk9M38AomU5wS4W5qcHymhLXI6Q9WrYbACc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=FsrhlyFxxCOjkLZI3Nef84omYabaOOPhb4wVRxhx2coejKqs4G32IXYfQWcryc77HEsjaWNBs/jb6wYOifEu3ze4JJ/j2KeKVR0FNrfI9B2yWDVkS4QOp2VOo/6pVSenp5Hsg03VCpR5OErNxft+0ZvWmNeGRz4c+zjOLT+X+cY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=HNJCi0Jd; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=+D98VrXK; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c0cdnnRC"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1DF8FC4CEF0;
-	Fri, 20 Jun 2025 15:43:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750434234;
-	bh=n3mrHhbKnKUpC1kN1NJ7p70/oxST9+GlzZGgUiw5Xms=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=c0cdnnRCMiUXGUWRZKXjuQmmed1u1TmtaK0z2m8n7D0R3KpYtieyKYq4ZU2adkxIK
-	 v0XfH4uedfuYeKiHMFP/WclYAZhKY/C1gN9p58PpigwzJHHd4OF/t9QvlFAS7J6oAa
-	 3Rny6oFVXm99QF49ZNpZXtJ45gqFsbi0fCk2G+AZw54v0yOYQKbYAgZeWodi+nx597
-	 XHHwEhh31CO5H1aYuPX1V+6TOp63xuChlkMFwWYdzPAeV44NdUJ8RS00DqnEthGzBY
-	 THsRre7+TYNJtEQumx0l1yeNmf43bLJKBWuVoH1BBgoaowhdSPy8WERy/YK3d1buPp
-	 dIUXQ9PUJs8Ww==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1343DC7115B;
-	Fri, 20 Jun 2025 15:43:54 +0000 (UTC)
-From: Max Shevchenko via B4 Relay <devnull+wctrl.proton.me@kernel.org>
-Date: Fri, 20 Jun 2025 18:40:50 +0300
-Subject: [PATCH 11/11] ARM: dts: mediatek: add basic support for Lenovo
- A369i board
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="HNJCi0Jd";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="+D98VrXK"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1750434316;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QRasoAf86UvMVNSfJDyTQbAWje5bM+KDr1G1hgdDfEs=;
+	b=HNJCi0Jd/ZLNOsQCSs/tAPCrfmflLF5AiXX3mwSEGz4cCYRZN6q/FhpOvb49AdmaBGvuHv
+	Av3cHnDHDZTduSKOeQqFJ7cYMCN2eWwcmYdwPSDafQ3t1qu4s8i9ig13ZhrBRVxczOrrju
+	7N0LHDXm88LCR7K9QGh7AuJsrZGW95ouYo2o7jJa/c3AlJPtza/EDNKODY86Do3I1aNum/
+	qGWccPwOkhGInS8QsmQYadufeSmOz+DH0/mVC5U62ZbdBA9p0T4REbU9Yh99ywPGypcAA2
+	2RFXBb2NkmCZPg8bZfxQylEPrkY8A7tjTUWXw3KbutCgKp1IgBRQU3jP+oYZSw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1750434316;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QRasoAf86UvMVNSfJDyTQbAWje5bM+KDr1G1hgdDfEs=;
+	b=+D98VrXKw7IagiGrRJBS8PGYp+GEQTGnISyjliozgrXhhDELu8zjdPdSYVAP/Au+veoU3t
+	l6wSABhaRK9NfVDg==
+To: Petr Mladek <pmladek@suse.com>, Marcos Paulo de Souza <mpdesouza@suse.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>, Sergey Senozhatsky
+ <senozhatsky@chromium.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Jason
+ Wessel <jason.wessel@windriver.com>, Daniel Thompson <danielt@kernel.org>,
+ Douglas Anderson <dianders@chromium.org>, Richard Weinberger
+ <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, Johannes
+ Berg <johannes@sipsolutions.net>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+ linux-um@lists.infradead.org
+Subject: Re: [PATCH 5/7] arch: um: kmsg_dump: Don't check for CON_ENABLED
+In-Reply-To: <aFAdGas9yGB4zhqc@pathway.suse.cz>
+References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-5-f427c743dda0@suse.com>
+ <aFAdGas9yGB4zhqc@pathway.suse.cz>
+Date: Fri, 20 Jun 2025 17:51:15 +0206
+Message-ID: <84tt4aifhw.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250620-mt6572-v1-11-e2d47820f042@proton.me>
-References: <20250620-mt6572-v1-0-e2d47820f042@proton.me>
-In-Reply-To: <20250620-mt6572-v1-0-e2d47820f042@proton.me>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Thomas Gleixner <tglx@linutronix.de>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, 
- Wim Van Sebroeck <wim@linux-watchdog.org>, 
- Guenter Roeck <linux@roeck-us.net>, Sean Wang <sean.wang@mediatek.com>, 
- Russell King <linux@armlinux.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org, 
- Max Shevchenko <wctrl@proton.me>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1750434231; l=2299;
- i=wctrl@proton.me; s=20250603; h=from:subject:message-id;
- bh=lTjo3ihR3gUlpL1GW0vPSnD1O+oT6SyQn7cpI3Gt7SU=;
- b=AJjRsHDZP2J6V9EgEJwBSC0mqa9ApUP+Ke6oP/dYMgZ8GuD8lxcVsUuCuG0TjHk29w5JOc3sR
- L2O+R7DD6/3CnY8tLfMAxbq+ollMI5/867XTIes34t+guE0rQF2NjyT
-X-Developer-Key: i=wctrl@proton.me; a=ed25519;
- pk=JXUx3mL/OrnRvbK57HXgugBjEBKq4QgDKJqp7BALm74=
-X-Endpoint-Received: by B4 Relay for wctrl@proton.me/20250603 with
- auth_id=421
-X-Original-From: Max Shevchenko <wctrl@proton.me>
-Reply-To: wctrl@proton.me
+Content-Type: text/plain
 
-From: Max Shevchenko <wctrl@proton.me>
+On 2025-06-16, Petr Mladek <pmladek@suse.com> wrote:
+> On Fri 2025-06-06 23:53:47, Marcos Paulo de Souza wrote:
+>> All consoles found on for_each_console are registered, meaning that all of
+>> them are CON_ENABLED. The code tries to find an active console, so check if the
+>> console is not suspended instead.
+>> 
+>> Signed-off-by: Marcos Paulo de Souza <mpdesouza@suse.com>
+>> ---
+>>  arch/um/kernel/kmsg_dump.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> 
+>> diff --git a/arch/um/kernel/kmsg_dump.c b/arch/um/kernel/kmsg_dump.c
+>> index 4190211752726593dd2847f66efd9d3a61cea982..f3025b2a813453f479d720618c630bee135d4e08 100644
+>> --- a/arch/um/kernel/kmsg_dump.c
+>> +++ b/arch/um/kernel/kmsg_dump.c
+>> @@ -31,7 +31,7 @@ static void kmsg_dumper_stdout(struct kmsg_dumper *dumper,
+>>  		 * expected to output the crash information.
+>>  		 */
+>>  		if (strcmp(con->name, "ttynull") != 0 &&
+>> -		    (console_srcu_read_flags(con) & CON_ENABLED)) {
+>> +		    (console_srcu_read_flags(con) & CON_SUSPENDED) == 0) {
+>>  			break;
+>
+> I think that we should actually replace the check of the
+> CON_ENABLE/CON_SUSPENDED flag with
+>
+> 		is_console_usable(con, console_srcu_read_flags(con), true)
+>
+> And it should be done at the beginning of the patchset before
+> changing the semantic of the flags.
+>
+> Motivation:
+>
+> There is the following comment at the beginning of the function:
+>
+> 	/*
+> 	 * If no consoles are available to output crash information, dump
+> 	 * the kmsg buffer to stdout.
+> 	 */
+>
+> The if-condition checks for:
+>
+>   + "ttynull" because this special console does not show any messages
+>     by definition
+>
+>   + disabled/suspended consoles; note that this patchset is replacing
+>     CON_ENABLED with CON_SUSPENDED flag because it the state is
+>     changed during suspend.
+>
+> But it should check also for:
+>
+>   + whether the console is NBCON_console and does not have con->write_atomic
+>     because such a console would not be able to show the messages
+>     in panic().
+>
+> And it should also check the global "consoles_suspended" flag. Because
+> consoles won't show anything when it is set.
+>
+> And all these is already done by "is_console_usable()" except for
+> the check of "ttynull" which is very special.
+>
+> How does the sound, please?
 
-This smartphone uses a MediaTek MT6572 system-on-chip with 512MB of RAM.
-It can currently boot into initramfs with a working UART and
-Simple Framebuffer using already initialized panel by the bootloader.
+FWIW, I agree with all these points.
 
-Signed-off-by: Max Shevchenko <wctrl@proton.me>
----
- arch/arm/boot/dts/mediatek/Makefile                |  1 +
- arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dts | 57 ++++++++++++++++++++++
- 2 files changed, 58 insertions(+)
-
-diff --git a/arch/arm/boot/dts/mediatek/Makefile b/arch/arm/boot/dts/mediatek/Makefile
-index cb869a1aaec21a1d99f7f2a829b84672a3f52726..e48de3efeb3b9ab00108cc28afa8da525d0ec14a 100644
---- a/arch/arm/boot/dts/mediatek/Makefile
-+++ b/arch/arm/boot/dts/mediatek/Makefile
-@@ -2,6 +2,7 @@
- dtb-$(CONFIG_ARCH_MEDIATEK) += \
- 	mt2701-evb.dtb \
- 	mt6572-jty-d101.dtb \
-+	mt6572-lenovo-a369i.dtb \
- 	mt6580-evbp1.dtb \
- 	mt6582-prestigio-pmt5008-3g.dtb \
- 	mt6589-aquaris5.dtb \
-diff --git a/arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dts b/arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dts
-new file mode 100644
-index 0000000000000000000000000000000000000000..da8865a6b7e4f0e346f42504b3f8a4db61cb240e
---- /dev/null
-+++ b/arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dts
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2025 Max Shevchenko <wctrl@proton.me>
-+ */
-+
-+/dts-v1/;
-+#include "mt6572.dtsi"
-+
-+/ {
-+	model = "Lenovo A369i";
-+	compatible = "lenovo,a369i", "mediatek,mt6572";
-+
-+	aliases {
-+		serial0 = &uart0;
-+	};
-+
-+	chosen {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		stdout-path = "serial0:921600n8";
-+
-+		framebuffer: framebuffer@9fa00000 {
-+			compatible = "simple-framebuffer";
-+			memory-region = <&framebuffer_reserved>;
-+			width = <480>;
-+			height = <800>;
-+			stride = <(480 * 2)>;
-+			format = "r5g6b5";
-+			status = "okay";
-+		};
-+	};
-+
-+	memory {
-+		device_type = "memory";
-+		reg = <0x80000000 0x20000000>;
-+	};
-+
-+	reserved-memory {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+
-+		connsys@80000000 {
-+			reg = <0x80000000 0x100000>;
-+			no-map;
-+		};
-+
-+		framebuffer_reserved: framebuffer@9fa00000 {
-+			reg = <0x9fa00000 0x600000>;
-+			no-map;
-+		};
-+	};
-+};
-+
-+&uart0 {
-+	status = "okay";
-+};
-
--- 
-2.50.0
-
-
+John
