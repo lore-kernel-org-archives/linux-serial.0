@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5013C1E519;
-	Mon, 23 Jun 2025 06:55:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 448B318E1F;
+	Mon, 23 Jun 2025 06:59:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750661708; cv=none; b=rhN4bixiCy2Q2nHKyXmLa5iQOVjv0aaLvSiLaCVCT4gI0iOz3R+oj0MrtT0h++Zn/4Kxn6mmFG3gI7I8Uk8h84Zh42RA1N0uGCHprKK/emHSAV8RLAAuvOqCACjewoaGiQljwLO31W+c9V3vCiPdvsflHDcq8pNp3oVC5yYMUG0=
+	t=1750661993; cv=none; b=HFu9V7P1+vvOXrA7j81YAP7PIIQYE69D8XoZG22p74J5hleSMpje4REs51LyyjztH8eiw055i4ycTNokQS93VniX2SYgTo90bjsWa5Yabhen1b5EQMfZYj67Q9Pi2KDJXgba/1g4iEbZ6QfNVH0uRN4nO62Sc/xDK92DFMQJUaM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750661708; c=relaxed/simple;
-	bh=+UUYhxbhh5cVwZ2/qMKb53nrEeN6AGie0y9hUr6U0X0=;
+	s=arc-20240116; t=1750661993; c=relaxed/simple;
+	bh=O+BsX25v1Dc9OnSkScz4xMuv9tqXzJtScDCD39EwI6s=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aFX6yny66k3LCnjcMSCITh+1RmuAiKvI657kM54q0KLTwXNvJeCrTz18+8dO0qqtVAT+hX0Byj+lUlM/AJV16aA6am4VZxpEztXCAG6x4nSMWh4b+pW64FcmszuI+Rb+N2L9LgPlYAxkkoEeFChEAQj7N8752sw43HP7nwOAO80=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=itUqZRr0; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=dBP15AKmnePblH2Zfmzpe0KwzhqM5YC+tIkbLJUCYHXk6gvqPoJs4SlKEPfzuX3eTTyD/8fNqDLlJ51nupwOaZpOdSTRAGwsV7x04SQ9IN356AIrRpRVOw4tuS67DkYx33k3owIVjlGx4wjZOUyTZ8PrG5JnJpwQ3xmceMr639s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CWympaoO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="itUqZRr0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06185C4CEED;
-	Mon, 23 Jun 2025 06:55:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CWympaoO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E28CFC4CEEF;
+	Mon, 23 Jun 2025 06:59:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750661708;
-	bh=+UUYhxbhh5cVwZ2/qMKb53nrEeN6AGie0y9hUr6U0X0=;
+	s=k20201202; t=1750661992;
+	bh=O+BsX25v1Dc9OnSkScz4xMuv9tqXzJtScDCD39EwI6s=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=itUqZRr0WgCDNzpl1JcmpaZTuPZqxsSfSGlrd1K6rL9sZXtb1VuXMJTVSTHKPL2Td
-	 VkuJF1GDpQWVfV/pmITUJgpJ7UyE6lvV6Cn3vQ3v357La9At2XE383l7vyRFxwcoNQ
-	 i7gVZMcFq/TBps0Uu6DEwNcLwoc13Mz7bkRbNKhLK7MLgXMpER+sLBwmcJsBjzGiJN
-	 nPxstGjksDT4RoTklMPc7i46AiADzu65cuD4HamVRYQftn3b6J/X34bwMJwB6bQ81h
-	 ceflgSxNZqLg70cG0K1cakBZNUsW7IrovNV+b/rR3rHbB/8uF1pWVUBJlRm3Dn8vD9
-	 oSVprIhLxBPWQ==
-Message-ID: <b9a128a9-5135-4288-ba95-de0925c2b580@kernel.org>
-Date: Mon, 23 Jun 2025 08:55:03 +0200
+	b=CWympaoO7G6bVgDnV1bXRab9za50M7Gn8umWOxwF7ywkU8J6C6/9CY1woqW/ha5hl
+	 TvEghg7DdfMPvFZS/QjRdqJvmrkrlonAGCA85ncKMUDbt9oOzTvcka670hzFkxIWDF
+	 EKZEj/RQFV0QJlP0nexJKtril9oPeVDoxv60M/gVHVJW2uppY76SkFdw/l0v+m0NJn
+	 37dxJmKn5GrV3OddiMxHXGZpZQhj9JAv5NzNjmjhgKADO3J+jmyKqkS9PQE0WJ4xg2
+	 gX5M/Yo0hou/KkmP7g594HA4zcUobvNix59eoue1FLE/iKo1NdIUyUOKmLdZI0F0BJ
+	 gA80ZqpFIqfUw==
+Message-ID: <d10b7892-bb4b-43ba-9804-7a03351927ec@kernel.org>
+Date: Mon, 23 Jun 2025 08:59:50 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,21 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 08/33] serial: 8250: sanitize uart_port::serial_{in,out}()
- types
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.org, Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Christophe Leroy <christophe.leroy@csgroup.eu>,
- =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Paul Cercueil <paul@crapouillou.net>, Vladimir Zapolskiy <vz@mleia.com>,
- Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
- Masami Hiramatsu <mhiramat@kernel.org>, linuxppc-dev@lists.ozlabs.org,
- linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 16/33] serial: 8250: extract serial8250_initialize()
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-serial <linux-serial@vger.kernel.org>,
+ LKML <linux-kernel@vger.kernel.org>
 References: <20250611100319.186924-1-jirislaby@kernel.org>
- <20250611100319.186924-9-jirislaby@kernel.org>
- <aEmcxySiXun--YZs@smile.fi.intel.com>
+ <20250611100319.186924-17-jirislaby@kernel.org>
+ <49e23ee2-a432-5d0e-3185-e455c2d1ca8c@linux.intel.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -94,28 +87,34 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <aEmcxySiXun--YZs@smile.fi.intel.com>
+In-Reply-To: <49e23ee2-a432-5d0e-3185-e455c2d1ca8c@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 11. 06. 25, 17:12, Andy Shevchenko wrote:
-> On Wed, Jun 11, 2025 at 12:02:54PM +0200, Jiri Slaby (SUSE) wrote:
->> uart_port::{serial_in,serial_out} (and plat_serial8250_port::* likewise)
->> historically use:
->> * 'unsigned int' for 32-bit register values in reads and writes, and
->> * 'int' for offsets.
->>
->> Make them sane such that:
->> * 'u32' is used for register values, and
->> * 'unsigned int' is used for offsets.
->>
->> While at it, name hooks' parameters, so it is clear what is what.
+On 11. 06. 25, 14:19, Ilpo Järvinen wrote:
+>> +	 * variable. So, let's just don't test if we receive TX irq.  This way, we'll never enable
+>> +	 * UART_BUG_TXEN.
+>> +	 */
+>> +	if (!(port->quirks & UPQ_NO_TXEN_TEST)) {
+>> +		/* Do a quick test to see if we receive an interrupt when we enable the TX irq. */
+>> +		serial_port_out(port, UART_IER, UART_IER_THRI);
+>> +		lsr_TEMT = serial_port_in(port, UART_LSR) & UART_LSR_TEMT;
+>> +		iir_NOINT = serial_port_in(port, UART_IIR) & UART_IIR_NO_INT;
+>> +		serial_port_out(port, UART_IER, 0);
+>> +
+>> +		if (lsr_TEMT && iir_NOINT) {
+>> +			if (!(up->bugs & UART_BUG_TXEN)) {
+>> +				up->bugs |= UART_BUG_TXEN;
+>> +				dev_dbg(port->dev, "enabling bad tx status workarounds\n");
+>> +			}
+>> +		} else {
+>> +			up->bugs &= ~UART_BUG_TXEN;
 > 
-> At a glance this looks just mechanical change. Have you used coccinelle for
-> that?
+> Is this necessary at all as the line above is the only place setting this
+> flag (AFAICT)?
 
-No, I haven't managed to learn that :P. But I used 
-https://github.com/jirislaby/clang-struct.
+TBH, I don't know. I guess it is unnecessary but it is there since this 
+UART_BUG_TXEN was added. /me shrugs.
 
 thanks,
 -- 
