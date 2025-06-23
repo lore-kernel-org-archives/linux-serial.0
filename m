@@ -1,232 +1,106 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7574822F16C;
-	Mon, 23 Jun 2025 08:35:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58AE323D286;
+	Mon, 23 Jun 2025 09:35:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750667725; cv=none; b=hb/vR4O2kOdYRysvdXSmzWEZXY/BkT7jq0OdUYVADVeC4dFnbYBOozjlWEzGY81+5afjy+7A9OVAkwczliaOrNRwCRlR6TZyLZccOiKLtHvRjSXvmbxqzZ7Ia2tQ/AbzthPJKp85JjIeiFipuYJjdVbpVMUZhWwL4lVErF6gnXs=
+	t=1750671317; cv=none; b=mcoAc6NOofEkjE5mbTt6mT193fy6SMrCjhtfmLfz+UO2ePtP0cSEJudbycittZJrs79RNBW0MaIrjjYaA8O9XpP+3+zu82Z1860Op/eDOCzfYdbov3iBhE/xIxnuFrnnVZPn4D6ouy4B6fOx68j1quAKuapY9KRdf7YXfe+7SR0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750667725; c=relaxed/simple;
-	bh=47EqE7bU1EPZXo/pjpY2FIwSnKhw6fXy7NDRDFk7+i8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KzMunMy6wQt/nTCS50Vq7412yhzCDYrgzwXrAvPm+uCRhHmu2JDj4tclwuq8v0uz5i6kKqBI9+MXUfLsfgmDHHLM3ot+4sjN/xdNIV6/Bts9yGX98TSv9fsRDwqSKAl7IsfNiulyFsSrFqxMgttVWzxWtCQVSWLZbflNQ5yVpcQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=cDPA0C7F; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1750671317; c=relaxed/simple;
+	bh=da79pZNN2aEY0mj+gSG8wWPoFOyi+E/yZ//aZFT96Bw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=jmvWcqHsbXPRmtntk97UdUhZMQLfDkJQgiz5/2MsG0+vXtRrx29ZRYXkbvae7WxRFcKCCPX+9hsd1YE/UiB8jkuZ3EbcNDGlzYjnY23lxuUBgpgS8+NVdNQw4A9kw6ThuIo19gBz3q/8zL/xi4mv+dGOUmvsYSqmY54MDog4c0k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=Zj6zhUHv; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="cDPA0C7F"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1750667721;
-	bh=47EqE7bU1EPZXo/pjpY2FIwSnKhw6fXy7NDRDFk7+i8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=cDPA0C7Fwu1zSbSbKN6+YeyJ4ftsnw094NVThPnQOfnjq0UHZHC6wSM/Xl+jk7uct
-	 upVXYPCwrYn4q/AlcmHCYvJPHZs9QgIMvjnq1hXuXUStPv5Ot0OMw+RrGWQixzP6m1
-	 UvRv6+iiT5rCMw7RiDDLiIxqBOPDV/CbW28cLAUNzK5+iZr1KtzPRWHQgdB1T0iF1s
-	 5IiUEiE2v1JVo21plMvLDw5KIHgpG/+wNjuXe9H2hS9cFmM+kdd/KSKhxg9IE4/dEz
-	 wPodhUPTHknLwzQcWPuHXBfoqIfagzS2nPp/L/N23jxpc6sTkzmi6EJxGAtDLttVMF
-	 pmi48CZbLnNPA==
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id C25AF17E159C;
-	Mon, 23 Jun 2025 10:35:20 +0200 (CEST)
-Message-ID: <94fd71e6-0f09-42d0-94ef-1ff111daac9f@collabora.com>
-Date: Mon, 23 Jun 2025 10:35:20 +0200
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="Zj6zhUHv"
+Received: from mail01.disroot.lan (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id 769C520468;
+	Mon, 23 Jun 2025 11:35:07 +0200 (CEST)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from layka.disroot.org ([127.0.0.1])
+ by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
+ id R4l370J94e8X; Mon, 23 Jun 2025 11:35:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1750671306; bh=da79pZNN2aEY0mj+gSG8wWPoFOyi+E/yZ//aZFT96Bw=;
+	h=From:To:Cc:Subject:Date;
+	b=Zj6zhUHvIdxIIr+/UqghypFZfQacduvJ/Rjcm0iWnx/JyYBrzDX40IangFB188PvQ
+	 D8c4MsPYaBfW0tTtR+ZHU/Mx9aW0mO/4CNJIyTQnmhqC85/SlRrsS4VkIFN9A64uI8
+	 NvoFghhfegoY66BhAELo/0HEXo+NcklHZ5CiggTDOfW45z+/99B8nxlp9ZqNclret5
+	 I8oNiV5O22ntmWdj1cwez4e3phUstSoTgbLPcmFaBPxIU4WP+4Zdkgvuui/vb9L8v6
+	 mhXmDyQ0FwO72Yd9orMImzfDRw1CTWjM5tYY0My08GeEKtR4ZTpPTqI8GsCqiFafQp
+	 HcrxM4yruIqqw==
+From: Yao Zi <ziyao@disroot.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Lubomir Rintel <lkundrak@v3.sk>
+Cc: devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Yao Zi <ziyao@disroot.org>,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v2] dt-bindings: serial: 8250: Make clocks and clock-frequency exclusive
+Date: Mon, 23 Jun 2025 09:34:45 +0000
+Message-ID: <20250623093445.62327-1-ziyao@disroot.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 09/11] ARM: dts: mediatek: add basic support for MT6572
- SoC
-To: wctrl@proton.me, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- Thomas Gleixner <tglx@linutronix.de>,
- Daniel Lezcano <daniel.lezcano@linaro.org>,
- Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
- <linux@roeck-us.net>, Sean Wang <sean.wang@mediatek.com>,
- Russell King <linux@armlinux.org.uk>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org
-References: <20250620-mt6572-v1-0-e2d47820f042@proton.me>
- <20250620-mt6572-v1-9-e2d47820f042@proton.me>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Content-Language: en-US
-In-Reply-To: <20250620-mt6572-v1-9-e2d47820f042@proton.me>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Il 20/06/25 17:40, Max Shevchenko via B4 Relay ha scritto:
-> From: Max Shevchenko <wctrl@proton.me>
-> 
-> Add basic support for the MediaTek MT6572 SoC.
-> 
-> Signed-off-by: Max Shevchenko <wctrl@proton.me>
-> ---
->   arch/arm/boot/dts/mediatek/mt6572.dtsi | 105 +++++++++++++++++++++++++++++++++
->   1 file changed, 105 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/mediatek/mt6572.dtsi b/arch/arm/boot/dts/mediatek/mt6572.dtsi
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..dd12231ca745be7455e99391abd2d708f2f1a8a9
-> --- /dev/null
-> +++ b/arch/arm/boot/dts/mediatek/mt6572.dtsi
-> @@ -0,0 +1,105 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (c) 2025 Max Shevchenko <wctrl@proton.me>
-> + */
-> +
-> +#include <dt-bindings/interrupt-controller/irq.h>
-> +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +/ {
-> +	#address-cells = <1>;
-> +	#size-cells = <1>;
-> +	compatible = "mediatek,mt6572";
-> +	interrupt-parent = <&sysirq>;
-> +
-> +	cpus {
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +		enable-method = "mediatek,mt6589-smp";
-> +
-> +		cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a7";
-> +			reg = <0x0>;
-> +		};
-> +		cpu@1 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a7";
-> +			reg = <0x1>;
-> +		};
-> +	};
-> +
-> +	system_clk: dummy13m {
-> +		compatible = "fixed-clock";
-> +		clock-frequency = <13000000>;
-> +		#clock-cells = <0>;
-> +	};
-> +
-> +	rtc_clk: dummy32k {
-> +		compatible = "fixed-clock";
-> +		clock-frequency = <32000>;
-> +		#clock-cells = <0>;
-> +	};
-> +
-> +	uart_clk: dummy26m {
-> +		compatible = "fixed-clock";
-> +		clock-frequency = <26000000>;
-> +		#clock-cells = <0>;
-> +	};
-> +
+The 8250 binding before converting to json-schema states,
 
-Anything that has an MMIO address shall be child of "soc".
+  - clock-frequency : the input clock frequency for the UART
+  	or
+  - clocks phandle to refer to the clk used as per Documentation/devicetree
 
-soc {
-	watchdog@....
+for clock-related properties, where "or" indicates these properties
+shouldn't exist at the same time.
 
-	timer@....
+Additionally, the behavior of Linux's driver is strange when both clocks
+and clock-frequency are specified: it ignores clocks and obtains the
+frequency from clock-frequency, left the specified clocks unclaimed. It
+may even be disabled, which is undesired most of the time.
 
-	etc.
-};
+But "anyOf" doesn't prevent these two properties from coexisting, as it
+considers the object valid as long as there's at LEAST one match.
 
-> +	watchdog: watchdog@10007000 {
-> +		compatible = "mediatek,mt6572-wdt",
-> +			     "mediatek,mt6589-wdt";
+Let's switch to "oneOf" and disallows the other property if one exists,
+precisely matching the original binding and avoiding future confusion on
+the driver's behavior.
 
-those fit in one line:
+Fixes: e69f5dc623f9 ("dt-bindings: serial: Convert 8250 to json-schema")
+Signed-off-by: Yao Zi <ziyao@disroot.org>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+---
 
-compatible = "mediatek,mt6572-wdt", "mediatek,mt6589-wdt";
+Changed from v1:
+- Remove unnecessary allOf blocks
+- Fix grammar issues in the commit message
+- Link to v1: https://lore.kernel.org/all/20250524105602.53949-1-ziyao@disroot.org/
 
-> +		reg = <0x10007000 0x100>;
-> +		interrupts = <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
-> +		timeout-sec = <15>;
-> +		#reset-cells = <1>;
-> +	};
-> +
-> +	timer: timer@10008000 {
-> +		compatible = "mediatek,mt6572-timer",
-> +			     "mediatek,mt6577-timer";
+ Documentation/devicetree/bindings/serial/8250.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-same
+diff --git a/Documentation/devicetree/bindings/serial/8250.yaml b/Documentation/devicetree/bindings/serial/8250.yaml
+index 33d2016b6509..c6bc27709bf7 100644
+--- a/Documentation/devicetree/bindings/serial/8250.yaml
++++ b/Documentation/devicetree/bindings/serial/8250.yaml
+@@ -45,7 +45,7 @@ allOf:
+                   - ns16550
+                   - ns16550a
+     then:
+-      anyOf:
++      oneOf:
+         - required: [ clock-frequency ]
+         - required: [ clocks ]
+ 
+-- 
+2.49.0
 
-> +		reg = <0x10008000 0x80>;
-> +		interrupts = <GIC_SPI 74 IRQ_TYPE_LEVEL_LOW>;
-> +		clocks = <&system_clk>, <&rtc_clk>;
-> +		clock-names = "system-clk", "rtc-clk";
-> +	};
-> +
-> +	sysirq: interrupt-controller@10200100 {
-> +		compatible = "mediatek,mt6572-sysirq",
-> +			     "mediatek,mt6577-sysirq";
-
-same; and reg goes after compatible.
-
-> +		interrupt-controller;
-> +		#interrupt-cells = <3>;
-> +		interrupt-parent = <&gic>;
-
-are you sure that interrupt-parent is gic?
-
-> +		reg = <0x10200100 0x1c>;
-> +	};
-> +
-> +	gic: interrupt-controller@10211000 {
-> +		compatible = "arm,cortex-a7-gic";
-
-reg here.
-
-
-> +		interrupt-controller;
-> +		#interrupt-cells = <3>;
-> +		interrupt-parent = <&gic>;
-
-are you sure that the interrupt parent isn't sysirq here? :-)
-
-> +		reg = <0x10211000 0x1000>,
-> +		      <0x10212000 0x2000>,
-> +		      <0x10214000 0x2000>,
-> +		      <0x10216000 0x2000>;
-> +	};
-> +
-> +	uart0: serial@11005000 {
-> +		compatible = "mediatek,mt6572-uart",
-> +			     "mediatek,mt6577-uart";
-
-fits in one line
-
-> +		reg = <0x11005000 0x400>;
-> +		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_LOW>;
-> +		clocks = <&uart_clk>;
-
-clock-names = .....
-
-> +		status = "disabled";
-> +	};
-> +
-> +	uart1: serial@11006000 {
-> +		compatible = "mediatek,mt6572-uart",
-
-...again.
-
-> +			     "mediatek,mt6577-uart";
-> +		reg = <0x11006000 0x400>;
-> +		interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_LOW>;
-> +		clocks = <&uart_clk>;
-> +		status = "disabled";
-> +	};
-> +};
-> 
-
-Cheers,
-Angelo
