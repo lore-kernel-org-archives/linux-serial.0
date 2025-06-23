@@ -1,246 +1,100 @@
-Received: from mail-24426.protonmail.ch (mail-24426.protonmail.ch [109.224.244.26])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37D001F6667
-	for <linux-serial@vger.kernel.org>; Mon, 23 Jun 2025 09:50:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=109.224.244.26
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B19C41FE44A;
+	Mon, 23 Jun 2025 10:12:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750672216; cv=none; b=gNtOHBTc+l2xhv42wqW1JfxvjbG+c+Qeae+04V1ZY+6Zpdeby042/NyUAoacq8G6NyVy7PcZ1691CMLzL/8XZJxulTrjEuqn2q/zpA8BFeff2625CCO+am0rSj08EQaam9z5MpLYoGObprmeghzVJf44gBXZRAjAbgZ4ndPweNI=
+	t=1750673570; cv=none; b=Ksfgp0LQuCzJPkId8NXvhOIi6dRNhxr5bBLTgFaP/uuVbcS4E/ZlE75IfCqJmyHDRGyZEVJ448WOqlBu8owcHvBzvnObEXr9n5bKmtk6K0VcJSKgQNfUe2e/r2Pm4TQ63pK8oLnZYb13Xz8ydQSyd3uvygh19U+swPg1+rHKm5Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750672216; c=relaxed/simple;
-	bh=2qh1CJjO8c2zLPbBAKpH3KGrCB+i0u1GVzjXdu6Efzw=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UIczler/bOI62Q6mJbHTx5hyb7JXrbGuHkxcZN/QhgAogaoc2j2wLivL3qYv0xSOlUGrM2Va9YGc6OaXVcKtJRXL6OFG9fUipkrgUbOrCIb/w7YdAz/sLRvdnlWDscichgyToHyXiigSOhufESGnzyf58rh2yVWs5xXzQ/wgX44=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=E8POB4Dv; arc=none smtp.client-ip=109.224.244.26
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
+	s=arc-20240116; t=1750673570; c=relaxed/simple;
+	bh=hgfA/b06GuQR9iRfwkMjqHmGnydmJxYS9Q7Ri5B7ndY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=X1Y6gXpqmOPJhksE+0i5MdaxIaGFeWpebSCbK7orhwo51wATeQlNx5v4ZnBR3jhfWKxYM/wByzJ/jJJsND0sInrx30by02jBOeGNZPkps6tpMzHsJUBKJZS/X2VMPXE4YKKH6HvXocKM4WWw+PsHq8/pHwdNlhuoD2fRN23pHic=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pTLE45Pw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="E8POB4Dv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
-	s=protonmail; t=1750672205; x=1750931405;
-	bh=2qh1CJjO8c2zLPbBAKpH3KGrCB+i0u1GVzjXdu6Efzw=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector;
-	b=E8POB4Dv/lqhX+/sJjDZa0/eRygsCa8wa0bD650TGPocFSrQmngVcmH1D3sAxuPA+
-	 LW1kx1i/1pOmqd1rUMvyIAhqBWl1APVUa8m9mGWcG7GKTjZYT6pcqc9TgtP7e47tmX
-	 qniN6zrdbbESjD1VetTautbvt1mkQo6xrcZtlg2bNE8ZxjqWMJH+FOeC792/ZFCjA2
-	 cJYsbS5g0TjVCk8W/p8chAN4R8U7yoOff0HvBQ2Nd5H/49aF46mWlAnjhafpzeMz3Z
-	 K47KMGRf+oZnnk9ahBhiWXKdU8vibpziYrRLgevjgfQ3LlNNNuqTpqC9bZtwqcdO9a
-	 e7L6adwy/WWKQ==
-Date: Mon, 23 Jun 2025 09:49:59 +0000
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-From: Max Shevchenko <wctrl@proton.me>
-Cc: "conor+dt@kernel.org" <conor+dt@kernel.org>, "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>, "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>, "jirislaby@kernel.org" <jirislaby@kernel.org>, "krzk+dt@kernel.org" <krzk+dt@kernel.org>, "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>, "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>, "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>, "linux@armlinux.org.uk" <linux@armlinux.org.uk>, "linux@roeck-us.net" <linux@roeck-us.net>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>, "robh@kernel.org" <robh@kernel.org>, "sean.wang@mediatek.com" <sean.wang@mediatek.com>, "tglx@linutronix.de" <tglx@linutronix.de>, "wctrl@proton.me" <wctrl@proton.me>, "wim@linux-watchdog.org"
-	<wim@linux-watchdog.org>
-Subject: Re: [PATCH 09/11] ARM: dts: mediatek: add basic support for MT6572 SoC
-Message-ID: <kZ6sH6-8EHhW5FtsAmo9HXndj7D1jFyW0cv0A4KDO3i5SS9JiGEZNTd1gbMXizu4vI0M0hjROLK5DEnKbB36jWUKUPRKukq5IRK9Tz2qz7k=@proton.me>
-In-Reply-To: <94fd71e6-0f09-42d0-94ef-1ff111daac9f@collabora.com>
-References: <20250620-mt6572-v1-0-e2d47820f042@proton.me> <20250620-mt6572-v1-9-e2d47820f042@proton.me> <94fd71e6-0f09-42d0-94ef-1ff111daac9f@collabora.com>
-Feedback-ID: 131238559:user:proton
-X-Pm-Message-ID: 776204d2426614811a793f4a9aa639b87ffcd972
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pTLE45Pw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 129E1C4CEF0;
+	Mon, 23 Jun 2025 10:12:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750673570;
+	bh=hgfA/b06GuQR9iRfwkMjqHmGnydmJxYS9Q7Ri5B7ndY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=pTLE45Pwy/7Ih/VF0V81Zobp/miUcMfOC6jgVBNwrlkUOZyQ9GsRhgcV/r90zXQ5g
+	 wZtutyGP970xPoXjMfUssBBlvarwZkazUAeih6NkPGVCaiw60A2JN36r5Wh9gudwZU
+	 UNrg4Oa6aLbu7wiFpSVci7h9F0QwMEh3shxe3y5PnXWXKOZpdRG9j/6QiSBvve2frq
+	 mTCrqLm6nKgX+B/Gz282qB1FBZe/COHYsxzIXc3L0twUjQJ5TCzRffA/7xTUlL9KE4
+	 l4zYVFwh/QljNNFmf+JjYWZwh+akLHO2M2zSczcyIfcF/kqzKSHGgtnFpZyfxaRWhO
+	 h1rm8mRDn25Cw==
+From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+To: gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	kernel test robot <lkp@intel.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH 1/2] serial: ce4100: fix build after serial_in/out() changes
+Date: Mon, 23 Jun 2025 12:12:45 +0200
+Message-ID: <20250623101246.486866-1-jirislaby@kernel.org>
+X-Mailer: git-send-email 2.50.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
+This x86_32 driver remain unnoticed, so after the commit below, the
+compilation now fails with:
+  arch/x86/platform/ce4100/ce4100.c:107:16: error: incompatible function pointer types assigning to '...' from '...'
 
-On Monday, June 23rd, 2025 at 11:35 AM, AngeloGioacchino Del Regno <angelog=
-ioacchino.delregno@collabora.com> wrote:
+To fix the error, convert also ce4100 to the new
+uart_port::serial_{in,out}() types.
 
-> Il 20/06/25 17:40, Max Shevchenko via B4 Relay ha scritto:
->
-> > From: Max Shevchenko wctrl@proton.me
-> >
-> > Add basic support for the MediaTek MT6572 SoC.
-> >
-> > Signed-off-by: Max Shevchenko wctrl@proton.me
-> > ---
-> > arch/arm/boot/dts/mediatek/mt6572.dtsi | 105 ++++++++++++++++++++++++++=
-+++++++
-> > 1 file changed, 105 insertions(+)
-> >
-> > diff --git a/arch/arm/boot/dts/mediatek/mt6572.dtsi b/arch/arm/boot/dts=
-/mediatek/mt6572.dtsi
-> > new file mode 100644
-> > index 0000000000000000000000000000000000000000..dd12231ca745be7455e9939=
-1abd2d708f2f1a8a9
-> > --- /dev/null
-> > +++ b/arch/arm/boot/dts/mediatek/mt6572.dtsi
-> > @@ -0,0 +1,105 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (c) 2025 Max Shevchenko wctrl@proton.me
-> > + */
-> > +
-> > +#include <dt-bindings/interrupt-controller/irq.h>
-> > +#include <dt-bindings/interrupt-controller/arm-gic.h>
-> > +
-> > +/ {
-> > + #address-cells =3D <1>;
-> > + #size-cells =3D <1>;
-> > + compatible =3D "mediatek,mt6572";
-> > + interrupt-parent =3D <&sysirq>;
-> > +
-> > + cpus {
-> > + #address-cells =3D <1>;
-> > + #size-cells =3D <0>;
-> > + enable-method =3D "mediatek,mt6589-smp";
-> > +
-> > + cpu@0 {
-> > + device_type =3D "cpu";
-> > + compatible =3D "arm,cortex-a7";
-> > + reg =3D <0x0>;
-> > + };
-> > + cpu@1 {
-> > + device_type =3D "cpu";
-> > + compatible =3D "arm,cortex-a7";
-> > + reg =3D <0x1>;
-> > + };
-> > + };
-> > +
-> > + system_clk: dummy13m {
-> > + compatible =3D "fixed-clock";
-> > + clock-frequency =3D <13000000>;
-> > + #clock-cells =3D <0>;
-> > + };
-> > +
-> > + rtc_clk: dummy32k {
-> > + compatible =3D "fixed-clock";
-> > + clock-frequency =3D <32000>;
-> > + #clock-cells =3D <0>;
-> > + };
-> > +
-> > + uart_clk: dummy26m {
-> > + compatible =3D "fixed-clock";
-> > + clock-frequency =3D <26000000>;
-> > + #clock-cells =3D <0>;
-> > + };
-> > +
->
->
-> Anything that has an MMIO address shall be child of "soc".
->
-> soc {
-> watchdog@....
->
-> timer@....
->
-> etc.
-> };
->
-> > + watchdog: watchdog@10007000 {
-> > + compatible =3D "mediatek,mt6572-wdt",
-> > + "mediatek,mt6589-wdt";
->
->
-> those fit in one line:
->
-> compatible =3D "mediatek,mt6572-wdt", "mediatek,mt6589-wdt";
->
-> > + reg =3D <0x10007000 0x100>;
-> > + interrupts =3D <GIC_SPI 126 IRQ_TYPE_LEVEL_LOW>;
-> > + timeout-sec =3D <15>;
-> > + #reset-cells =3D <1>;
-> > + };
-> > +
-> > + timer: timer@10008000 {
-> > + compatible =3D "mediatek,mt6572-timer",
-> > + "mediatek,mt6577-timer";
->
->
-> same
->
-> > + reg =3D <0x10008000 0x80>;
-> > + interrupts =3D <GIC_SPI 74 IRQ_TYPE_LEVEL_LOW>;
-> > + clocks =3D <&system_clk>, <&rtc_clk>;
-> > + clock-names =3D "system-clk", "rtc-clk";
-> > + };
-> > +
-> > + sysirq: interrupt-controller@10200100 {
-> > + compatible =3D "mediatek,mt6572-sysirq",
-> > + "mediatek,mt6577-sysirq";
->
->
-> same; and reg goes after compatible.
->
-> > + interrupt-controller;
-> > + #interrupt-cells =3D <3>;
-> > + interrupt-parent =3D <&gic>;
->
->
-> are you sure that interrupt-parent is gic?
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Fixes: fc9ceb501e38 ("serial: 8250: sanitize uart_port::serial_{in,out}() types")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202506190552.TqNasrC3-lkp@intel.com/
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: x86@kernel.org
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+---
+ arch/x86/platform/ce4100/ce4100.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Other MT65xx devicetrees have GIC as parent for itself and SYSIRQ, so I ass=
-ume.
+diff --git a/arch/x86/platform/ce4100/ce4100.c b/arch/x86/platform/ce4100/ce4100.c
+index f8126821a94d..f19d20f0dfa4 100644
+--- a/arch/x86/platform/ce4100/ce4100.c
++++ b/arch/x86/platform/ce4100/ce4100.c
+@@ -49,9 +49,9 @@ static unsigned int mem_serial_in(struct uart_port *p, int offset)
+  * errata number 9 in Errata - B step.
+ */
+ 
+-static unsigned int ce4100_mem_serial_in(struct uart_port *p, int offset)
++static u32 ce4100_mem_serial_in(struct uart_port *p, unsigned int offset)
+ {
+-	unsigned int ret, ier, lsr;
++	u32 ret, ier, lsr;
+ 
+ 	if (offset == UART_IIR) {
+ 		offset = offset << p->regshift;
+@@ -73,7 +73,7 @@ static unsigned int ce4100_mem_serial_in(struct uart_port *p, int offset)
+ 	return ret;
+ }
+ 
+-static void ce4100_mem_serial_out(struct uart_port *p, int offset, int value)
++static void ce4100_mem_serial_out(struct uart_port *p, unsigned int offset, u32 value)
+ {
+ 	offset = offset << p->regshift;
+ 	writel(value, p->membase + offset);
+-- 
+2.50.0
 
->
-> > + reg =3D <0x10200100 0x1c>;
-> > + };
-> > +
-> > + gic: interrupt-controller@10211000 {
-> > + compatible =3D "arm,cortex-a7-gic";
->
->
-> reg here.
->
-> > + interrupt-controller;
-> > + #interrupt-cells =3D <3>;
-> > + interrupt-parent =3D <&gic>;
->
->
-> are you sure that the interrupt parent isn't sysirq here? :-)
-
-not really, downstream has no mentions about SYSIRQ or its' address
-
->
-> > + reg =3D <0x10211000 0x1000>,
-> > + <0x10212000 0x2000>,
-> > + <0x10214000 0x2000>,
-> > + <0x10216000 0x2000>;
-> > + };
-> > +
-> > + uart0: serial@11005000 {
-> > + compatible =3D "mediatek,mt6572-uart",
-> > + "mediatek,mt6577-uart";
->
->
-> fits in one line
->
-> > + reg =3D <0x11005000 0x400>;
-> > + interrupts =3D <GIC_SPI 31 IRQ_TYPE_LEVEL_LOW>;
-> > + clocks =3D <&uart_clk>;
->
->
-> clock-names =3D .....
->
-> > + status =3D "disabled";
-> > + };
-> > +
-> > + uart1: serial@11006000 {
-> > + compatible =3D "mediatek,mt6572-uart",
->
->
-> ...again.
->
-> > + "mediatek,mt6577-uart";
-> > + reg =3D <0x11006000 0x400>;
-> > + interrupts =3D <GIC_SPI 32 IRQ_TYPE_LEVEL_LOW>;
-> > + clocks =3D <&uart_clk>;
-> > + status =3D "disabled";
-> > + };
-> > +};
->
->
-> Cheers,
-> Angelo
-
-thanks for suggestions, applied.
-
-
-Sincerely,
-Max
