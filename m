@@ -1,92 +1,146 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A4B6611E;
-	Mon, 23 Jun 2025 08:20:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B737211C;
+	Mon, 23 Jun 2025 08:32:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750666810; cv=none; b=bstl89PKnct8nk+Tvwe8NilVqCqZWGGm+PGp3487ioS8xcRhqmPniFM7FUv+QbpRDp+gLJqQcCSjISEvgdtn8Njsg4xKiboBrdjsAAKloCyRmXBAREAmlxIb/x+xy09WR09wYoLGjQPvoIx4N1CTjCRGLWodYsYNMx8P1mCh9PE=
+	t=1750667548; cv=none; b=gwLwrdSCnjw3122DmPIwFQk0k6I59guePh+NlxdOUJhiXChRe8OZWvNZb72+EzvkgnBYH45/BygFiT+1Z/zBiH7V+/uu8QOv0hoQpZwRfEFFdqB9ab2y68OKpGAIC7XmLwI6h8XGT9LVZvr7UnFMedYKvSIhvwVVUcv2utNXuH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750666810; c=relaxed/simple;
-	bh=vQ3NdGm6nr4U+9F4Qc3Fz9IFHhP2xxNTl1OqC0Evr9I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tLKHCDKcGQgHF5FWoO1dA1VLXLG5udbtLJ7trikJ3JyQP+/93Y85bnWO9dmGIeVN0FbDGEfYHNDHVu73LvzSybek2AMK1y6kW9aHy48Rr/J+7inEK2nxM+WtQbypikEEzyUxwWNhDMw8hPA/qdjn13SXO9CdSEtZZSiHw8l/7oM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A4UIZYUl; arc=none smtp.client-ip=209.85.218.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1750667548; c=relaxed/simple;
+	bh=NkTK2xU5GNOOTzt4+4ac7aMoAn+9hIaNTqCBu3oKpbI=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=OUN+8fJUFUMa+k4CuV7UjZOcsp9TQSjYOddRqooKnHDS4Z7qB9M0UyD6K8GkADV+SVe8jiJLygZugd13NJE+4+fRjBSQXr5dOKI2s5Ch4AoA1kCrecigQcVF8MgzZoqB61KTZY/Y3Ub/jRf5SdZLl7tS8FJ8DTIcYcqinvD9VYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=lkQF8OCx; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=CECKkIHZ; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A4UIZYUl"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-ad89ee255easo712394066b.3;
-        Mon, 23 Jun 2025 01:20:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1750666807; x=1751271607; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vQ3NdGm6nr4U+9F4Qc3Fz9IFHhP2xxNTl1OqC0Evr9I=;
-        b=A4UIZYUlqNPqy/UmDQREYiaPMA0so1K+igx85Iv10zfrm4z806+3/bhZhRz2ZanZ6S
-         AF5BB2JL2cEdYdKXzaoc1RW2e7qlIrZFIOasneBnFbxnK034t3l3x+erOa9uQMnamniB
-         yAu9LSLBJmP2Cqdrk2XbzAE5NonuFLvkpFOXxAulGtDaw4RL+YN5Y04pFNL1dxegS6S/
-         6oLmJjcrR90/W/jK/LeLBaLoUEzI1Vau2nIiGZt6SmVCmtUNoBmXpAp/XXKhiga+ro28
-         LvwQvok/fHNbG/9yyt+Mh3CnNDWv82jsGAZ8MLAUyIVfY0KAP6QSE7u+bHslYUitbklU
-         zg5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750666807; x=1751271607;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vQ3NdGm6nr4U+9F4Qc3Fz9IFHhP2xxNTl1OqC0Evr9I=;
-        b=He41UaORQtupPUMJ9fpwhVca8FrKiQbC6yJdO61lnVIhm4o4Qlvo62+/5Dk0zsI3G4
-         iw4JbIsHZhaaT6Iht9/48Ueer6tb8wUOT+rm0tvEejCuSORpN1SmGYeAvofs9Ft2XudK
-         UTDT0+mJDZxzmyInc+KVxECeuM22RZKOvpLT2bQDI0hhVolX6nZ/4/MODxrUkhw4E4Y1
-         30ER5xZ5MwPsKSwZWrjEm90Vz3aA4EPCWZBBRzmFnFeaow+ULLYIZtfmstfKrk61L+aN
-         /2znJXP1xsDljlIDvFVrlRPNEKzrp73e4KGLzEF+Pi3bh5VKY47aP1KLFEA6PzteqwFP
-         FvZA==
-X-Forwarded-Encrypted: i=1; AJvYcCUb1Fsz+scM3Y5RKGpUSz4zBeKXHtzvqDV9dfSTQGgVj8UHNN0osJHQmcr36gOwB6hjE0V6CdfMKil3mUM=@vger.kernel.org, AJvYcCVzlIum0NberZrjbIOOyfCP06vuz1f73Voxkd07ovmWJRAwS9E4ma5bK6+lbwulpUJzSpFlBDVf/dYKhnC8@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzd7Mc+C27+NNsnSrMo/zNT56YaFH4K/bW29eXLdcjnzZ6DtRNz
-	Kbv2mQxzXHgLc4auakiKJq3d2e9R1SJbjWRhNxO7Q7kSi1cQXfzp4rnkvhhljv+2txN3y0Vo91p
-	4ZHiOq6P2fVtQeXZ+aiBgBgWrWyl99nc=
-X-Gm-Gg: ASbGncv0ESTiuW6c0alkkMRVB/ACfJrSLRkkFMbV265gWyp9rN5axNsGq2u8owh4N64
-	DeiJ+O3Md27bkiwH0GfGOXJsK/GI4Zk8/plm/6a84+JNbv0zz45nB72l7vKHjCouMKYEvUtSnAm
-	fCDrny1xSGdElWSSiHuIv3FY383dwFrqLFtZ226o8oYGnSFQ==
-X-Google-Smtp-Source: AGHT+IGlfPv+3y0R6hYF+u4HtG1mWOjwQo+JOIVfYpdIvUWKcWjPMT6HJoy6U1k7L2cMnDsMRLfdT6+/IxvW998DPeE=
-X-Received: by 2002:a17:907:e846:b0:ade:3eb6:3b0 with SMTP id
- a640c23a62f3a-ae057f34d92mr1154129566b.31.1750666806637; Mon, 23 Jun 2025
- 01:20:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="lkQF8OCx";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="CECKkIHZ"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1750667544;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6TBn4MEBOK0ZmxdXFsUTHmooPn2yAfLFgSEgICXe3Wg=;
+	b=lkQF8OCxmCGCB6iWsrGliKc+7GLLsC5mdKAEbfMLPnyPcZgyYVvBdn14i2CUlL6qLCCM5Q
+	DfgA782HtzGnZt0nxPzgX27haotYmdzZiV3VEfTOSwtmgnwsNsMxx4SFlj2eHQWsThWOOF
+	P7CkXc2yIGGRCnXwG3LyjXSNM+gX6WIp2Aney+BaSdJVu/g3mr+0CoSBlZ9pUKYL1rl89M
+	MsRQltWBKCrAhF6hcm3P62Cj7kIS2r90Sqb9euXnhOXmFmqdY4C4v0sVfp4M0XtlAbkYQ6
+	6+ciq7Nk6N/Fg3hbmYZhlugJ9qCQgIzOeQwk4+uE3LyYTtt9x7xUQHLsYGMP0A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1750667544;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=6TBn4MEBOK0ZmxdXFsUTHmooPn2yAfLFgSEgICXe3Wg=;
+	b=CECKkIHZGm4M0F5XqJ/bjKbES7SjUlsNHDOD4Vw5cw3bx6wC3oCXUZavDxLcNMs9twGyJq
+	AG4iZr9bntxaYMDA==
+To: yunhui cui <cuiyunhui@bytedance.com>, arnd@arndb.de,
+ andriy.shevchenko@linux.intel.com, benjamin.larsson@genexis.eu,
+ cuiyunhui@bytedance.com, gregkh@linuxfoundation.org,
+ heikki.krogerus@linux.intel.com, ilpo.jarvinen@linux.intel.com,
+ jirislaby@kernel.org, jkeeping@inmusicbrands.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ markus.mayer@linaro.org, matt.porter@linaro.org, namcao@linutronix.de,
+ paulmck@kernel.org, pmladek@suse.com, schnelle@linux.ibm.com,
+ sunilvl@ventanamicro.com, tim.kryger@linaro.org
+Cc: stable@vger.kernel.org
+Subject: Re: [PATCH v9 2/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
+In-Reply-To: <CAEEQ3w=pUPEVOM4fG6wr06eOD_uO6_ZBzORaG1zhtPswD8HLNQ@mail.gmail.com>
+References: <20250610092135.28738-1-cuiyunhui@bytedance.com>
+ <20250610092135.28738-3-cuiyunhui@bytedance.com>
+ <CAEEQ3w=pUPEVOM4fG6wr06eOD_uO6_ZBzORaG1zhtPswD8HLNQ@mail.gmail.com>
+Date: Mon, 23 Jun 2025 10:38:23 +0206
+Message-ID: <84cyauq2nc.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250623074606.456532-1-jirislaby@kernel.org> <20250623074606.456532-5-jirislaby@kernel.org>
-In-Reply-To: <20250623074606.456532-5-jirislaby@kernel.org>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 23 Jun 2025 11:19:30 +0300
-X-Gm-Features: Ac12FXxFda-FDbDzSCXQJ53RDRPriasagqdTqbRXaZDTcU4mUE5f_ygqXy31Jy4
-Message-ID: <CAHp75Vd0-cORgEozDcoogYfO=XscFwvbXhseGfdYNqmE3HHWEQ@mail.gmail.com>
-Subject: Re: [PATCH 4/5] serial: 8250: document doubled "type ==
- PORT_8250_CIR" check
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, 
-	"Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 
-On Mon, Jun 23, 2025 at 10:46=E2=80=AFAM Jiri Slaby (SUSE) <jirislaby@kerne=
-l.org> wrote:
+Hi Yunhui,
+
+On 2025-06-23, yunhui cui <cuiyunhui@bytedance.com> wrote:
+>> The DW UART may trigger the RX_TIMEOUT interrupt without data
+>> present and remain stuck in this state indefinitely. The
+>> dw8250_handle_irq() function detects this condition by checking
+>> if the UART_LSR_DR bit is not set when RX_TIMEOUT occurs. When
+>> detected, it performs a "dummy read" to recover the DW UART from
+>> this state.
+>>
+>> When the PSLVERR_RESP_EN parameter is set to 1, reading the UART_RX
+>> while the FIFO is enabled and UART_LSR_DR is not set will generate a
+>> PSLVERR error, which may lead to a system panic. There are two methods
+>> to prevent PSLVERR: one is to check if UART_LSR_DR is set before reading
+>> UART_RX when the FIFO is enabled, and the other is to read UART_RX when
+>> the FIFO is disabled.
+>>
+>> Given these two scenarios, the FIFO must be disabled before the
+>> "dummy read" operation and re-enabled afterward to maintain normal
+>> UART functionality.
+>>
+>> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogus rx timeout interrupt")
+>> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+>> Cc: stable@vger.kernel.org
+>> ---
+>>  drivers/tty/serial/8250/8250_dw.c | 10 +++++++++-
+>>  1 file changed, 9 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+>> index 1902f29444a1c..082b7fcf251db 100644
+>> --- a/drivers/tty/serial/8250/8250_dw.c
+>> +++ b/drivers/tty/serial/8250/8250_dw.c
+>> @@ -297,9 +297,17 @@ static int dw8250_handle_irq(struct uart_port *p)
+>>                 uart_port_lock_irqsave(p, &flags);
+>>                 status = serial_lsr_in(up);
+>>
+>> -               if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+>> +               if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
+>> +                       /* To avoid PSLVERR, disable the FIFO first. */
+>> +                       if (up->fcr & UART_FCR_ENABLE_FIFO)
+>> +                               serial_out(up, UART_FCR, 0);
+>> +
+>>                         serial_port_in(p, UART_RX);
+>>
+>> +                       if (up->fcr & UART_FCR_ENABLE_FIFO)
+>> +                               serial_out(up, UART_FCR, up->fcr);
+>> +               }
+>> +
+>>                 uart_port_unlock_irqrestore(p, flags);
+>>         }
+>>
+>> --
+>> 2.39.5
 >
-> The check for "port.type =3D=3D PORT_8250_CIR" is present twice in
-> serial8250_register_8250_port(). The latter was already tried to be
-> dropped by 1104321a7b3b ("serial: Delete dead code for CIR serial
-> ports") and then reverted by 9527b82ae3af ("Revert "serial: Delete dead
-> code for CIR serial ports"").
->
-> Document this weirdness with a reason.
+> Any comments on this patch?
 
-Acked-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+I do not know enough about the hardware. Is a dummy read really the only
+way to exit the RX_TIMEOUT state?
 
---=20
-With Best Regards,
-Andy Shevchenko
+What if there are bytes in the TX-FIFO. Are they in danger of being
+cleared?
+
+From [0] I see:
+
+"Writing a "0" to bit 0 will disable the FIFOs, in essence turning the
+ UART into 8250 compatibility mode. In effect this also renders the rest
+ of the settings in this register to become useless. If you write a "0"
+ here it will also stop the FIFOs from sending or receiving data, so any
+ data that is sent through the serial data port may be scrambled after
+ this setting has been changed. It would be recommended to disable FIFOs
+ only if you are trying to reset the serial communication protocol and
+ clearing any working buffers you may have in your application
+ software. Some documentation suggests that setting this bit to "0" also
+ clears the FIFO buffers, but I would recommend explicit buffer clearing
+ instead using bits 1 and 2."
+
+Have you performed tests where you fill the TX-FIFO and then
+disable/enable the FIFO to see if the TX-bytes survive?
+
+John Ogness
+
+[0] https://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programming
