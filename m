@@ -1,127 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A0A8376;
-	Mon, 23 Jun 2025 07:46:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A4B6611E;
+	Mon, 23 Jun 2025 08:20:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750664778; cv=none; b=fRyxFeUnFlkl11vPcjZX7TPxUnS3h0IYw9H3xfp5Vqi4ZFNkUHwhW4RuFcgMh9WR0GRvjubP3E7KB8CcmlM0gWI/wbkRHE93aHNTL2UavuGl1LSer/DCJFazd82XiBIwcj0e4tPQTUOsigtYrKquX8dboav/+AKiO5nyC5i1Ye8=
+	t=1750666810; cv=none; b=bstl89PKnct8nk+Tvwe8NilVqCqZWGGm+PGp3487ioS8xcRhqmPniFM7FUv+QbpRDp+gLJqQcCSjISEvgdtn8Njsg4xKiboBrdjsAAKloCyRmXBAREAmlxIb/x+xy09WR09wYoLGjQPvoIx4N1CTjCRGLWodYsYNMx8P1mCh9PE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750664778; c=relaxed/simple;
-	bh=+Uu7ZDBV8otT4ly3/z72aeMoH2gzzQm99pYq+sIxM2Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F93B18YQB6aI/MMa68IFkR0yvy4moSNGunejaeCeMSEH8m3gTcY+0mjLi7qcOu4ob5t1Kokdo6kRgQP8bU/Cru5LIk8fS6uSaUrZssDndLSOLSFgB85QnVLZBr6vSqtSm7H9MiDjvs+hnhAzops8oRweN/WRfTpQKRWKOcji4NI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YaTiHsmx; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750666810; c=relaxed/simple;
+	bh=vQ3NdGm6nr4U+9F4Qc3Fz9IFHhP2xxNTl1OqC0Evr9I=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tLKHCDKcGQgHF5FWoO1dA1VLXLG5udbtLJ7trikJ3JyQP+/93Y85bnWO9dmGIeVN0FbDGEfYHNDHVu73LvzSybek2AMK1y6kW9aHy48Rr/J+7inEK2nxM+WtQbypikEEzyUxwWNhDMw8hPA/qdjn13SXO9CdSEtZZSiHw8l/7oM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A4UIZYUl; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YaTiHsmx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A964C4CEF1;
-	Mon, 23 Jun 2025 07:46:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750664777;
-	bh=+Uu7ZDBV8otT4ly3/z72aeMoH2gzzQm99pYq+sIxM2Q=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=YaTiHsmx9fcU1jHFGTUE/P7l3uItgMpvwlksKjUK53q1DIR4RLx3wMKNmRozrrruh
-	 kaVvWaOA0dUwrWOAfsrKQ8u+SShD72545UAh7cJNWDEI9KlJ19fctj26riZvz6dd3j
-	 8eZMzSAQ1WtC+ZrCF+l/JA5EHP2ZhyqS6Al4tEb5IUooUo49FwEABwK04ZSCFvksp8
-	 fyJlgW1iyyVhgZEgvtD2WcVMop7HBcjKfQrxXXI7FcHBH6Vxpvv/tBD4bf5bR6hxZP
-	 Ny3zUE2QLzOX6G8Ht4fQTWzUKIjKrD6PIUm7mzzM3GsBtg0axOO9fjjIYa9aln1Tou
-	 gmsqITgESetxQ==
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	linux-doc@vger.kernel.org
-Subject: [PATCH 5/5] tty: fix tty_port_tty_*hangup() kernel-doc
-Date: Mon, 23 Jun 2025 09:46:06 +0200
-Message-ID: <20250623074606.456532-6-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.49.0
-In-Reply-To: <20250623074606.456532-1-jirislaby@kernel.org>
-References: <20250623074606.456532-1-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A4UIZYUl"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-ad89ee255easo712394066b.3;
+        Mon, 23 Jun 2025 01:20:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1750666807; x=1751271607; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vQ3NdGm6nr4U+9F4Qc3Fz9IFHhP2xxNTl1OqC0Evr9I=;
+        b=A4UIZYUlqNPqy/UmDQREYiaPMA0so1K+igx85Iv10zfrm4z806+3/bhZhRz2ZanZ6S
+         AF5BB2JL2cEdYdKXzaoc1RW2e7qlIrZFIOasneBnFbxnK034t3l3x+erOa9uQMnamniB
+         yAu9LSLBJmP2Cqdrk2XbzAE5NonuFLvkpFOXxAulGtDaw4RL+YN5Y04pFNL1dxegS6S/
+         6oLmJjcrR90/W/jK/LeLBaLoUEzI1Vau2nIiGZt6SmVCmtUNoBmXpAp/XXKhiga+ro28
+         LvwQvok/fHNbG/9yyt+Mh3CnNDWv82jsGAZ8MLAUyIVfY0KAP6QSE7u+bHslYUitbklU
+         zg5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750666807; x=1751271607;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=vQ3NdGm6nr4U+9F4Qc3Fz9IFHhP2xxNTl1OqC0Evr9I=;
+        b=He41UaORQtupPUMJ9fpwhVca8FrKiQbC6yJdO61lnVIhm4o4Qlvo62+/5Dk0zsI3G4
+         iw4JbIsHZhaaT6Iht9/48Ueer6tb8wUOT+rm0tvEejCuSORpN1SmGYeAvofs9Ft2XudK
+         UTDT0+mJDZxzmyInc+KVxECeuM22RZKOvpLT2bQDI0hhVolX6nZ/4/MODxrUkhw4E4Y1
+         30ER5xZ5MwPsKSwZWrjEm90Vz3aA4EPCWZBBRzmFnFeaow+ULLYIZtfmstfKrk61L+aN
+         /2znJXP1xsDljlIDvFVrlRPNEKzrp73e4KGLzEF+Pi3bh5VKY47aP1KLFEA6PzteqwFP
+         FvZA==
+X-Forwarded-Encrypted: i=1; AJvYcCUb1Fsz+scM3Y5RKGpUSz4zBeKXHtzvqDV9dfSTQGgVj8UHNN0osJHQmcr36gOwB6hjE0V6CdfMKil3mUM=@vger.kernel.org, AJvYcCVzlIum0NberZrjbIOOyfCP06vuz1f73Voxkd07ovmWJRAwS9E4ma5bK6+lbwulpUJzSpFlBDVf/dYKhnC8@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzd7Mc+C27+NNsnSrMo/zNT56YaFH4K/bW29eXLdcjnzZ6DtRNz
+	Kbv2mQxzXHgLc4auakiKJq3d2e9R1SJbjWRhNxO7Q7kSi1cQXfzp4rnkvhhljv+2txN3y0Vo91p
+	4ZHiOq6P2fVtQeXZ+aiBgBgWrWyl99nc=
+X-Gm-Gg: ASbGncv0ESTiuW6c0alkkMRVB/ACfJrSLRkkFMbV265gWyp9rN5axNsGq2u8owh4N64
+	DeiJ+O3Md27bkiwH0GfGOXJsK/GI4Zk8/plm/6a84+JNbv0zz45nB72l7vKHjCouMKYEvUtSnAm
+	fCDrny1xSGdElWSSiHuIv3FY383dwFrqLFtZ226o8oYGnSFQ==
+X-Google-Smtp-Source: AGHT+IGlfPv+3y0R6hYF+u4HtG1mWOjwQo+JOIVfYpdIvUWKcWjPMT6HJoy6U1k7L2cMnDsMRLfdT6+/IxvW998DPeE=
+X-Received: by 2002:a17:907:e846:b0:ade:3eb6:3b0 with SMTP id
+ a640c23a62f3a-ae057f34d92mr1154129566b.31.1750666806637; Mon, 23 Jun 2025
+ 01:20:06 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20250623074606.456532-1-jirislaby@kernel.org> <20250623074606.456532-5-jirislaby@kernel.org>
+In-Reply-To: <20250623074606.456532-5-jirislaby@kernel.org>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 23 Jun 2025 11:19:30 +0300
+X-Gm-Features: Ac12FXxFda-FDbDzSCXQJ53RDRPriasagqdTqbRXaZDTcU4mUE5f_ygqXy31Jy4
+Message-ID: <CAHp75Vd0-cORgEozDcoogYfO=XscFwvbXhseGfdYNqmE3HHWEQ@mail.gmail.com>
+Subject: Re: [PATCH 4/5] serial: 8250: document doubled "type ==
+ PORT_8250_CIR" check
+To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-serial@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, 
+	"Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The commit below added a new helper, but omitted to move (and add) the
-corressponding kernel-doc. Do it now.
+On Mon, Jun 23, 2025 at 10:46=E2=80=AFAM Jiri Slaby (SUSE) <jirislaby@kerne=
+l.org> wrote:
+>
+> The check for "port.type =3D=3D PORT_8250_CIR" is present twice in
+> serial8250_register_8250_port(). The latter was already tried to be
+> dropped by 1104321a7b3b ("serial: Delete dead code for CIR serial
+> ports") and then reverted by 9527b82ae3af ("Revert "serial: Delete dead
+> code for CIR serial ports"").
+>
+> Document this weirdness with a reason.
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Fixes: 2b5eac0f8c6e ("tty: introduce and use tty_port_tty_vhangup() helper")
-Link: https://lore.kernel.org/all/b23d566c-09dc-7374-cc87-0ad4660e8b2e@linux.intel.com/
-Reported-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-doc@vger.kernel.org
----
- Documentation/driver-api/tty/tty_port.rst | 5 +++--
- drivers/tty/tty_port.c                    | 5 -----
- include/linux/tty_port.h                  | 9 +++++++++
- 3 files changed, 12 insertions(+), 7 deletions(-)
+Acked-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-diff --git a/Documentation/driver-api/tty/tty_port.rst b/Documentation/driver-api/tty/tty_port.rst
-index 5cb90e954fcf..504a353f2682 100644
---- a/Documentation/driver-api/tty/tty_port.rst
-+++ b/Documentation/driver-api/tty/tty_port.rst
-@@ -42,9 +42,10 @@ TTY Refcounting
- TTY Helpers
- -----------
- 
-+.. kernel-doc::  include/linux/tty_port.h
-+   :identifiers: tty_port_tty_hangup tty_port_tty_vhangup
- .. kernel-doc::  drivers/tty/tty_port.c
--   :identifiers: tty_port_tty_hangup tty_port_tty_wakeup
--
-+   :identifiers: tty_port_tty_wakeup
- 
- Modem Signals
- -------------
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 903eebdbe12d..5b4d5fb99a59 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -391,11 +391,6 @@ void tty_port_hangup(struct tty_port *port)
- }
- EXPORT_SYMBOL(tty_port_hangup);
- 
--/**
-- * tty_port_tty_hangup - helper to hang up a tty
-- * @port: tty port
-- * @check_clocal: hang only ttys with %CLOCAL unset?
-- */
- void __tty_port_tty_hangup(struct tty_port *port, bool check_clocal, bool async)
- {
- 	struct tty_struct *tty = tty_port_tty_get(port);
-diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-index 021f9a8415c0..332ddb93603e 100644
---- a/include/linux/tty_port.h
-+++ b/include/linux/tty_port.h
-@@ -251,11 +251,20 @@ static inline int tty_port_users(struct tty_port *port)
- 	return port->count + port->blocked_open;
- }
- 
-+/**
-+ * tty_port_tty_hangup - helper to hang up a tty asynchronously
-+ * @port: tty port
-+ * @check_clocal: hang only ttys with %CLOCAL unset?
-+ */
- static inline void tty_port_tty_hangup(struct tty_port *port, bool check_clocal)
- {
- 	__tty_port_tty_hangup(port, check_clocal, true);
- }
- 
-+/**
-+ * tty_port_tty_vhangup - helper to hang up a tty synchronously
-+ * @port: tty port
-+ */
- static inline void tty_port_tty_vhangup(struct tty_port *port)
- {
- 	__tty_port_tty_hangup(port, false, false);
--- 
-2.49.0
-
+--=20
+With Best Regards,
+Andy Shevchenko
