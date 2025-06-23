@@ -1,103 +1,113 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D85FC1F03DE;
-	Mon, 23 Jun 2025 06:10:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2179D1624C5;
+	Mon, 23 Jun 2025 06:11:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750659039; cv=none; b=oDQmq5z7KSArkYHXPY5JEYDRcVMDWBl3r6/FhEGJPQv2XHEoOU73XDmaIdDMoJnSyrvM4XSFgTHM+c1zZO0gXF7DYKCjK6Hgrq14eBeEuIJy37Q1+BjTIYTJU02BNknd8w9YpSwQSzAb6wab2/eiI6eCA9oFpLfFyYGeNZz+eas=
+	t=1750659100; cv=none; b=De6l+etj+9AbJv2DYclirRU00sYEiKRa05ygs5KBeMcHhre5dUtorHCPyDIga2C42s/NfndO7PXt08k6YzhESbz+ydUNq+0gxAw2NectBFSkn47lwnL9Nu1li25V7kn9PN19ZPz8zKvwhCVjWDfNeSliFbBCrxTrcv5FYp4EKyI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750659039; c=relaxed/simple;
-	bh=CHl8Bc1LPxNncbSW22kKIdroqpbenW6GL3LHLeZfJvQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=FzjlHPRn/3Q3REJ+/gYU1Mv9ICN3vvaGG6NWgPZGhZjBvP9Jc8u/gYcdFketr1KBUk7Cry9+ATbQHV12z/y9oDFKz3TB6OynslWMTUy5bp7b+XEJA9gFU9SbZMe5w33NHKU9d1taa9yfujEE0an3h14XWzsWZ9u7Zvlel9/gp94=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sTcGzDkb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750659100; c=relaxed/simple;
+	bh=uG9S9uq5V1TVuuk+S38NklO6swzSbL2R/TJNZQBZugw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Fze5y46GSYKcZsPUMTuYSuQKleyd45o16J1/OLeZzEjL2K9YoraTTO0T4s8iojxnTZ0/drTAtY4TqVZYxpqbZ01CjFlL7IE3Pc4CV+OVJxpsaOAAJYHgFMkjFbhD0KRSSiHqordnOPW9p28pThHiNJnb/8tLU6wmWwCjbEIy8kE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gPRUcZK3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sTcGzDkb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C02BC4AF09;
-	Mon, 23 Jun 2025 06:10:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gPRUcZK3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FA46C4CEEF;
+	Mon, 23 Jun 2025 06:11:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750659038;
-	bh=CHl8Bc1LPxNncbSW22kKIdroqpbenW6GL3LHLeZfJvQ=;
-	h=From:To:Cc:Subject:Date:From;
-	b=sTcGzDkbyAFU66AoDlnGdHsccLgblIYbZp10hDpVDh16BARbT81rVewLF0g+PriVU
-	 4Ja4jm8rtnWTUkWV+dqSBgA5h0w2Ig7tRk6MIHCVTXUxyo/vriZpXXnz2MA0a5YO4f
-	 5Rdj9oW5NHxM4DEnJ5wT42nhNIWUO/JsQZ717TzQc3U2zLyiWw7u1HcmMzRYko8q4z
-	 E235v3R+mfmrJzk6GopvyVMHSxKokJpaLTW10E2FJy9WkAdn3yA2WX+OpTAHbMjP9J
-	 hpz/XpZXYCkMwYYb3UnVVgZUZx5wa9sQrKiUVrOZcMyf9RlrkstgM9WhxD70TVgiDE
-	 g9FH/XWwADC7Q==
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH] serial: 8250: export RSA functions
-Date: Mon, 23 Jun 2025 08:10:35 +0200
-Message-ID: <20250623061035.436414-1-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.49.0
+	s=k20201202; t=1750659099;
+	bh=uG9S9uq5V1TVuuk+S38NklO6swzSbL2R/TJNZQBZugw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=gPRUcZK3gVCsIUJgeyMrmI5i/5wUvMdor/SFTbVyjd6TWUKMjKfkHnHrlTNlJhKz0
+	 oJfuVMnBM1/SOfqq4sJXk5k8cKHzrHfUvGg9+jHWi4WkXj5O5c5Mu0X8yeZ2czKxVv
+	 nzHJbBcQnjqkJJ6t5XmXxjWNRlLM3bClAu5DqJI/DWLo3+LldzNjM6+0u31+MjP2O7
+	 d4o+9koz1SI49+IWSEf/iR9Trlfg6LoYYcOGTkXH2ZUyKc5XCZBVF7mij367jPon9w
+	 cov9nGCNhW/pfnx7jPw2wiW/Cf5Loe6YNDTf/irmRsW4+rtCSnXmIYmaQrwip+SOQu
+	 f029YhaB5JVWw==
+Message-ID: <d6fbaa2a-81f9-42bf-9d68-020cf01a004e@kernel.org>
+Date: Mon, 23 Jun 2025 08:11:33 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 01/11] dt-bindings: serial: mediatek,uart: add MT6572
+To: wctrl@proton.me, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
+ <linux@roeck-us.net>, Sean Wang <sean.wang@mediatek.com>,
+ Russell King <linux@armlinux.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org
+References: <20250620-mt6572-v1-0-e2d47820f042@proton.me>
+ <20250620-mt6572-v1-1-e2d47820f042@proton.me>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <20250620-mt6572-v1-1-e2d47820f042@proton.me>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The RSA functions moved by the below commit to 8250_rsa.c are used in
-8250_base.c. Since that can be a module (when CONFIG_SERIAL_8250=m),
-this causes build failures:
-  ERROR: modpost: "rsa_autoconfig" [drivers/tty/serial/8250/8250_base.ko] undefined!
-  ERROR: modpost: "rsa_reset" [drivers/tty/serial/8250/8250_base.ko] undefined!
-  ERROR: modpost: "rsa_disable" [drivers/tty/serial/8250/8250_base.ko] undefined!
-  ERROR: modpost: "rsa_enable" [drivers/tty/serial/8250/8250_base.ko] undefined!
+On 20/06/2025 17:40, Max Shevchenko via B4 Relay wrote:
+> From: Max Shevchenko <wctrl@proton.me>
+> 
+> Add a compatible string for serial on the MT6572 SoC.
+> 
+> Signed-off-by: Max Shevchenko <wctrl@proton.me>
 
-Fix them by exporting the functions. But only to the base module using
-EXPORT_SYMBOL_GPL_FOR_MODULES(). (And not to the whole world.)
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Link: https://lore.kernel.org/all/20250619165607.33403e19@canb.auug.org.au/
-Fixes: 5a128fb475fb ("serial: 8250: move RSA functions to 8250_rsa.c")
----
- drivers/tty/serial/8250/8250_rsa.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/tty/serial/8250/8250_rsa.c b/drivers/tty/serial/8250/8250_rsa.c
-index 2f1ee693103d..ff52ad02f6be 100644
---- a/drivers/tty/serial/8250/8250_rsa.c
-+++ b/drivers/tty/serial/8250/8250_rsa.c
-@@ -146,6 +146,7 @@ void rsa_enable(struct uart_8250_port *up)
- 	if (up->port.uartclk == SERIAL_RSA_BAUD_BASE * 16)
- 		serial_out(up, UART_RSA_FRR, 0);
- }
-+EXPORT_SYMBOL_GPL_FOR_MODULES(rsa_enable, "8250_base");
- 
- /*
-  * Attempts to turn off the RSA FIFO and resets the RSA board back to 115kbps compat mode. It is
-@@ -177,6 +178,7 @@ void rsa_disable(struct uart_8250_port *up)
- 	if (result)
- 		up->port.uartclk = SERIAL_RSA_BAUD_BASE_LO * 16;
- }
-+EXPORT_SYMBOL_GPL_FOR_MODULES(rsa_disable, "8250_base");
- 
- void rsa_autoconfig(struct uart_8250_port *up)
- {
-@@ -189,6 +191,7 @@ void rsa_autoconfig(struct uart_8250_port *up)
- 	if (__rsa_enable(up))
- 		up->port.type = PORT_RSA;
- }
-+EXPORT_SYMBOL_GPL_FOR_MODULES(rsa_autoconfig, "8250_base");
- 
- void rsa_reset(struct uart_8250_port *up)
- {
-@@ -197,6 +200,7 @@ void rsa_reset(struct uart_8250_port *up)
- 
- 	serial_out(up, UART_RSA_FRR, 0);
- }
-+EXPORT_SYMBOL_GPL_FOR_MODULES(rsa_reset, "8250_base");
- 
- #ifdef CONFIG_SERIAL_8250_DEPRECATED_OPTIONS
- #ifndef MODULE
--- 
-2.49.0
-
+Best regards,
+Krzysztof
