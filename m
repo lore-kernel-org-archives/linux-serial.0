@@ -1,238 +1,199 @@
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com [209.85.221.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E0D12C158F
-	for <linux-serial@vger.kernel.org>; Mon, 23 Jun 2025 18:53:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3542D4B7B
+	for <linux-serial@vger.kernel.org>; Mon, 23 Jun 2025 19:05:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750704804; cv=none; b=l4zunocYWJtCQjQ1K0x+3SWzmBZRs5qJ4KAKcv2N3wBYJxyoxcX1855K7ME7DCHpcJJ/2RYzOk2jttqvv4LkzXVaAqa3dO6LedCYEoNi0H3Buxzsk0JNngJ3wDZk6tU4Ty+r8quKKCUEQF8vm8v6F4l9yBv6oj+7e2Q1qY4H23I=
+	t=1750705504; cv=none; b=dM8g9YP3LOT/SyHh++kezWu5s9L+QUxwVzAGsMtSS7L5ScLPuGw8vZzU7iJAqT9gTPVImTIDOs2uBQfMvyGo3PSCutvcwtIE4TlQ5LMMqYpswJ97i2wYbbHhSaQft3ZEBpt4w8VUB5DS3iZ0cHMyZ22kLREUonNktQgILk/fCRQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750704804; c=relaxed/simple;
-	bh=nMJQo4OpjNZh+tTS7oPgvQNI+OMhplRpVepoL8H0W2U=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=dD+hLwxHJqZv8NOrb1duYTTecXx9i3IrJeduunorz+0iW1YeV9Z7axVRMmoQg1b6guG61XS38698MTS/3wTIfB8eUFCB47x8xGYqX/Hd3KwfJE2qelXEf1/5Ch1jCkVyJGgdoE5Nw8Sb1/+snBSalGxv4vDK0ihUwF8Q7J+K3t8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=I9QFtqqH; arc=none smtp.client-ip=209.85.221.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1750705504; c=relaxed/simple;
+	bh=RnNRO6V4BkuyU1oiQ9A8402wQxxwKkGU1pgl/9Wcvgg=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=c9KwqE5bVdNOZkzsI2UZ4Ba6uL2Obnayl1gi3JGuc6pfWzz1/JKIFZzci9klKLXsEtg9yPpPKqg8iPjJKXI85Snl6fNGohLJGiJ71g+My2eRgC2M1bi4XUZjusHHSStWy/LLlJB382u+5Uc9QwhcPWYKlpTp0RhNK2R32PjpR84=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bS+M7gnk; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="I9QFtqqH"
-Received: by mail-wr1-f65.google.com with SMTP id ffacd0b85a97d-3a36748920cso3450015f8f.2
-        for <linux-serial@vger.kernel.org>; Mon, 23 Jun 2025 11:53:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1750704801; x=1751309601; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=kP3LfikwJoT5jZxTfYQ53BJecw5PNc+P0zrWLzEkXCM=;
-        b=I9QFtqqHylp3gwbIoB+PqXh8IxMHCxdP8IIZjjZHka1JHBTEi7xAZ8PQC3Z6IH7wDZ
-         GcW6m/ZmiBUcBHQA7T5y8FF6bJ+sxvCJ3Zxt7bWdYMWkl/ynFuVffPfR4jCXKM2Tq8ww
-         7UsZ/8Zo9BODvIONY+ZPLUemswroeTfRVDHe8rCsT5WIqMZDbO2IGokSynFcmnV1HhAF
-         D+GcaBhlAUttSZXpcyJ5dij9PtZtSlroCSWWEBvN5ZCdEvlidIxJTiCBBXD6zPmvEqrs
-         s0xmE9//w6gNQlCN31YDaDcxs5pDfNle2NMvYmcHwhRIWbDHHVL4THMGuXfBoJ2k9hA8
-         53Jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750704801; x=1751309601;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kP3LfikwJoT5jZxTfYQ53BJecw5PNc+P0zrWLzEkXCM=;
-        b=HMMx+WmoPAmfvbsr1rDdVF0yNv+7/XLLmrVMhmcHt4SSm3PlU9bgDZNDwfot/9Pz2X
-         FOsplcCVZdXPIEE5UuXxwME25IBDRvXLc++OcW2J46PKVTRm2qa8IcWfwL8r08hFeB5q
-         lE9OggRd4fxVuRjiuiSbFC/lM9vTz55LQFTS4qe3WK6yHdqwns0iF9zSxYQA12fGrSH/
-         aSaCiiW4Ou/I13TugQsBapzuXDiPjF3GdtxC0Tfz1QvD1dJD7iH3GsmOGrc6ZERnKthf
-         wCLscbOfooT4qhAJsrH0LgZj5Tyn9JC5FnEllJpXwimFQVJAfpmZQeqq9dCcHzz9lUfJ
-         ftZQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXUM3cgWSkJsIADMl5SzQB9XQq6nc7GVzc3RzRDScfG/eyzEaOXmbSwTu2bqBNsHt63wKBYQNqWIXup2TQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyaNyG72Rp2fAskLgiYi5DHLlCV0d1xoz1tCBHNVyMso9s4NOWM
-	2hRrbz9Zp/LyMdkQexSFcg6fU069l0PTAm8iYCylOLOP0XzuXbjtBTvFckst7EGikJ5J/kUlsr4
-	j97qBkyww0/S2
-X-Gm-Gg: ASbGncu2qDKSdqt60rxgUV+YYx8MzDVN7vjZrwoEr/zW3xuGsbOTMRFlnTu7YAnItXx
-	Bv8zZmXZ+r/Wh1Xig2qnIQmXEKSZzOvXwykBT4eYbb7/Ja3ilhR4WErQUrj76nPcoqpoLOaQZqP
-	KDZSkaktRDa8Lh3O0K1AKArM2JYnb2bAbeXYLsM72LYSUNb+vUe0C45AaX5gBQGkt2qJoAvv0oT
-	0RxkMo00kRZ+meECfmILEAyYnuSIx4vwbA6Uzxdjkim968+hW9C3UQJiMJ+nK/r7PR4zHS5NQdv
-	lnlrLMfymY/aeYH9/PysxraSOhLfrDEGrnvKzYNNl83x2Je1NHhtzmcfGVdvp+2LpL+KAmlBJ9o
-	QJh079a2WURyVqVPL6C/Vr3mf
-X-Google-Smtp-Source: AGHT+IHl7WUsTHsArXNJ7BBLS48xIuonfKG5DP3IbYFgDHwpfpJdrP3CunJHC4qeSAikuH/t9ORELQ==
-X-Received: by 2002:a05:6000:1a8e:b0:3a4:eeb5:21cb with SMTP id ffacd0b85a97d-3a6d12e5b71mr11313647f8f.26.1750704800592;
-        Mon, 23 Jun 2025 11:53:20 -0700 (PDT)
-Received: from ?IPv6:2804:5078:805:6b00:58f2:fc97:371f:2? ([2804:5078:805:6b00:58f2:fc97:371f:2])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b31f126a2aesm8483866a12.67.2025.06.23.11.53.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jun 2025 11:53:19 -0700 (PDT)
-Message-ID: <d4f7a4dd5bedf288d2011fc9817716b8af2ec032.camel@suse.com>
-Subject: Re: [PATCH 2/7] printk: Use consoles_suspended flag when
- suspending/resuming all consoles
-From: Marcos Paulo de Souza <mpdesouza@suse.com>
-To: Petr Mladek <pmladek@suse.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>, John Ogness	
- <john.ogness@linutronix.de>, Sergey Senozhatsky <senozhatsky@chromium.org>,
-  Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Jason Wessel	 <jason.wessel@windriver.com>, Daniel
- Thompson <danielt@kernel.org>, Douglas Anderson <dianders@chromium.org>,
- Richard Weinberger <richard@nod.at>, Anton Ivanov	
- <anton.ivanov@cambridgegreys.com>, Johannes Berg
- <johannes@sipsolutions.net>, 	linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, 	kgdb-bugreport@lists.sourceforge.net,
- linux-um@lists.infradead.org
-Date: Mon, 23 Jun 2025 15:53:14 -0300
-In-Reply-To: <aExBo-8cVOy6GegR@pathway.suse.cz>
-References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
-	 <20250606-printk-cleanup-part2-v1-2-f427c743dda0@suse.com>
-	 <aExBo-8cVOy6GegR@pathway.suse.cz>
-Autocrypt: addr=mpdesouza@suse.com; prefer-encrypt=mutual;
- keydata=mDMEZ/0YqhYJKwYBBAHaRw8BAQdA4JZz0FED+JD5eKlhkNyjDrp6lAGmgR3LPTduPYGPT
- Km0Kk1hcmNvcyBQYXVsbyBkZSBTb3V6YSA8bXBkZXNvdXphQHN1c2UuY29tPoiTBBMWCgA7FiEE2g
- gC66iLbhUsCBoBemssEuRpLLUFAmf9GKoCGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgk
- QemssEuRpLLWGxwD/S1I0bjp462FlKb81DikrOfWbeJ0FOJP44eRzmn20HmEBALBZIMrfIH2dJ5eM
- GO8seNG8sYiP6JfRjl7Hyqca6YsE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.1 (by Flathub.org) 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bS+M7gnk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750705503; x=1782241503;
+  h=date:from:to:cc:subject:message-id;
+  bh=RnNRO6V4BkuyU1oiQ9A8402wQxxwKkGU1pgl/9Wcvgg=;
+  b=bS+M7gnkVeUJprl0hBlBxPlhL6s6+H8qisSjnMxBHSA7w8BDeG1T8A8Y
+   vJjkCPzLBknSs7Jdv7pvOpZT7EJWw3+ldepDxFT9RDSWm1bIRmcGzCr7r
+   Mtq7o5v0r6YrWSnRlhG9qx0t2jS3PNYbgT8ZRWxgqes8QqBmzY+3gPcM1
+   wAwD/9ZLxHVXpIfD5AS6NkTeC48s6+PfCKvpP9rXLa2cQ+JdP7Tkhsp8S
+   fyfGwJrzLRJWO+wxzUIuqcFQJ3hFn3wr2i5B60dEcrmwmBcOuPLAv+POq
+   765DfHV9XQD05YO6ffZEFzhnAYMn6QNS92I1DSqr8gUlaK3+FjVm2g/tl
+   w==;
+X-CSE-ConnectionGUID: CSlPthz/RuG7G+xkKWrB0g==
+X-CSE-MsgGUID: j5mL7VLBRM6d7kSYdaK/zw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="40540522"
+X-IronPort-AV: E=Sophos;i="6.16,259,1744095600"; 
+   d="scan'208";a="40540522"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2025 12:05:02 -0700
+X-CSE-ConnectionGUID: 7BKq40x7TRe9P2LPh7Ne/g==
+X-CSE-MsgGUID: mZY5MV2WQAOC9kAY0p5LHA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,259,1744095600"; 
+   d="scan'208";a="182554573"
+Received: from lkp-server01.sh.intel.com (HELO e8142ee1dce2) ([10.239.97.150])
+  by fmviesa001.fm.intel.com with ESMTP; 23 Jun 2025 12:05:01 -0700
+Received: from kbuild by e8142ee1dce2 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1uTmTT-000PEy-0k;
+	Mon, 23 Jun 2025 19:04:59 +0000
+Date: Tue, 24 Jun 2025 03:04:49 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Subject: [tty:tty-testing] BUILD SUCCESS
+ b20d6576cdb3530d4a2d81611a8b8eb99780ce3e
+Message-ID: <202506240339.qFp6bMnc-lkp@intel.com>
+User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
 
-On Fri, 2025-06-13 at 17:20 +0200, Petr Mladek wrote:
-> On Fri 2025-06-06 23:53:44, Marcos Paulo de Souza wrote:
->=20
->=20
-> Variant C:
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> Remove even @flags parameter from console_is_usable() and read both
-> values there directly.
->=20
-> Many callers read @flags only because they call console_is_usable().
-> The change would simplify the code.
->=20
-> But there are few exceptions:
->=20
-> =C2=A0 1. __nbcon_atomic_flush_pending(), console_flush_all(),
-> =C2=A0=C2=A0=C2=A0=C2=A0 and legacy_kthread_should_wakeup() pass @flags t=
-o
-> =C2=A0=C2=A0=C2=A0=C2=A0 console_is_usable() and also check CON_NBCON fla=
-g.
->=20
-> =C2=A0=C2=A0=C2=A0=C2=A0 But CON_NBCON flag is special. It is statically =
-initialized
-> =C2=A0=C2=A0=C2=A0=C2=A0 and never set/cleared at runtime. It can be chec=
-ked without
-> =C2=A0=C2=A0=C2=A0=C2=A0 READ_ONCE(). Well, we still might want to be sur=
-e that
-> =C2=A0=C2=A0=C2=A0=C2=A0 the struct console can't disappear.
->=20
-> =C2=A0=C2=A0=C2=A0=C2=A0 IMHO, this can be solved by a helper function:
->=20
-> 	/**
-> 	 * console_srcu_is_nbcon - Locklessly check whether the
-> console is nbcon
-> 	 * @con:	struct console pointer of console to check
-> 	 *
-> 	 * Requires console_srcu_read_lock to be held, which implies
-> that @con might
-> 	 * be a registered console. The purpose of holding
-> console_srcu_read_lock is
-> 	 * to guarantee that no exit/cleanup routines will run if
-> the console
-> 	 * is currently undergoing unregistration.
-> 	 *
-> 	 * If the caller is holding the console_list_lock or it is
-> _certain_ that
-> 	 * @con is not and will not become registered, the caller
-> may read
-> 	 * @con->flags directly instead.
-> 	 *
-> 	 * Context: Any context.
-> 	 * Return: True when CON_NBCON flag is set.
-> 	 */
-> 	static inline bool console_is_nbcon(const struct console
-> *con)
-> 	{
-> 		WARN_ON_ONCE(!console_srcu_read_lock_is_held());
->=20
-> 		/*
-> 		 * The CON_NBCON flag is statically initialized and
-> is never
-> 		 * set or cleared at runtime.
-> 		return data_race(con->flags & CON_NBCON);
-> 	}
->=20
->=20
-> =C2=A0=C2=A0 2. Another exception is __pr_flush() where console_is_usable=
-() is
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 called twice with @use_atomic set "true" a=
-nd "false".
->=20
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 We would want to read "con->flags" only on=
-ce here. A solution
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 would be to add a parameter to check both =
-con->write_atomic
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 and con->write_thread in a single call.
->=20
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 But it might actually be enough to check i=
-s with the "false"
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 value because "con->write_thread()" is man=
-datory for nbcon
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 consoles. And legacy consoles do not disti=
-nguish atomic mode.
->=20
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+branch HEAD: b20d6576cdb3530d4a2d81611a8b8eb99780ce3e  serial: 8250: export RSA functions
 
-I like this idea. Also, thanks a lot for explaining why the current
-version won't work.
+elapsed time: 725m
 
-I also liked John's proposal to use a a bitmask on console_is_usable,
-but I'll think a little on it once I restart working on it this week.
+configs tested: 122
+configs skipped: 1
 
->=20
-> My opinion:
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->=20
-> I personally prefer the variant C because:
->=20
-> =C2=A0 + Removes one parameter from console_is_usable().
->=20
-> =C2=A0 + The lockless synchronization of both global and per-console
-> =C2=A0=C2=A0=C2=A0 flags is hidden in console_is_usable().
->=20
-> =C2=A0 + The global console_suspended flag will be stored in global
-> =C2=A0=C2=A0=C2=A0 variable (in compare with variant D).
->=20
-> What do you think, please?
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-Much better, I'll adapt the code as you suggested.
+tested configs:
+alpha                             allnoconfig    gcc-15.1.0
+alpha                            allyesconfig    gcc-15.1.0
+arc                              allmodconfig    gcc-15.1.0
+arc                               allnoconfig    gcc-15.1.0
+arc                              allyesconfig    gcc-15.1.0
+arc                   randconfig-001-20250623    gcc-10.5.0
+arc                   randconfig-001-20250624    gcc-12.4.0
+arc                   randconfig-002-20250623    gcc-8.5.0
+arc                   randconfig-002-20250624    gcc-8.5.0
+arm                              allmodconfig    gcc-15.1.0
+arm                               allnoconfig    clang-21
+arm                              allyesconfig    gcc-15.1.0
+arm                   randconfig-001-20250623    gcc-10.5.0
+arm                   randconfig-001-20250624    gcc-13.3.0
+arm                   randconfig-002-20250623    clang-21
+arm                   randconfig-002-20250624    gcc-8.5.0
+arm                   randconfig-003-20250623    gcc-8.5.0
+arm                   randconfig-004-20250623    gcc-10.5.0
+arm64                            allmodconfig    clang-19
+arm64                             allnoconfig    gcc-15.1.0
+arm64                 randconfig-001-20250623    gcc-14.3.0
+arm64                 randconfig-002-20250623    gcc-14.3.0
+arm64                 randconfig-003-20250623    gcc-9.5.0
+arm64                 randconfig-004-20250623    clang-16
+csky                              allnoconfig    gcc-15.1.0
+csky                  randconfig-001-20250623    gcc-15.1.0
+csky                  randconfig-002-20250623    gcc-15.1.0
+hexagon                          allmodconfig    clang-17
+hexagon                           allnoconfig    clang-21
+hexagon                          allyesconfig    clang-21
+hexagon               randconfig-001-20250623    clang-21
+hexagon               randconfig-002-20250623    clang-20
+i386                             allmodconfig    gcc-12
+i386                              allnoconfig    gcc-12
+i386                             allyesconfig    gcc-12
+i386        buildonly-randconfig-001-20250623    clang-20
+i386        buildonly-randconfig-001-20250624    clang-20
+i386        buildonly-randconfig-001-20250624    gcc-12
+i386        buildonly-randconfig-002-20250623    gcc-11
+i386        buildonly-randconfig-002-20250624    gcc-12
+i386        buildonly-randconfig-003-20250623    gcc-12
+i386        buildonly-randconfig-003-20250624    clang-20
+i386        buildonly-randconfig-003-20250624    gcc-12
+i386        buildonly-randconfig-004-20250623    clang-20
+i386        buildonly-randconfig-004-20250624    clang-20
+i386        buildonly-randconfig-004-20250624    gcc-12
+i386        buildonly-randconfig-005-20250623    gcc-12
+i386        buildonly-randconfig-005-20250624    clang-20
+i386        buildonly-randconfig-005-20250624    gcc-12
+i386        buildonly-randconfig-006-20250623    gcc-11
+i386        buildonly-randconfig-006-20250624    gcc-12
+i386                                defconfig    clang-20
+loongarch                        allmodconfig    gcc-15.1.0
+loongarch                         allnoconfig    gcc-15.1.0
+loongarch             randconfig-001-20250623    gcc-14.3.0
+loongarch             randconfig-002-20250623    gcc-15.1.0
+m68k                             allmodconfig    gcc-15.1.0
+m68k                              allnoconfig    gcc-15.1.0
+m68k                             allyesconfig    gcc-15.1.0
+microblaze                       allmodconfig    gcc-15.1.0
+microblaze                        allnoconfig    gcc-15.1.0
+microblaze                       allyesconfig    gcc-15.1.0
+mips                              allnoconfig    gcc-15.1.0
+nios2                             allnoconfig    gcc-14.2.0
+nios2                             allnoconfig    gcc-15.1.0
+nios2                 randconfig-001-20250623    gcc-9.3.0
+nios2                 randconfig-002-20250623    gcc-14.2.0
+openrisc                          allnoconfig    clang-21
+openrisc                          allnoconfig    gcc-15.1.0
+openrisc                         allyesconfig    gcc-15.1.0
+parisc                           allmodconfig    gcc-15.1.0
+parisc                            allnoconfig    clang-21
+parisc                            allnoconfig    gcc-15.1.0
+parisc                           allyesconfig    gcc-15.1.0
+parisc                randconfig-001-20250623    gcc-14.3.0
+parisc                randconfig-002-20250623    gcc-8.5.0
+powerpc                          allmodconfig    gcc-15.1.0
+powerpc                           allnoconfig    clang-21
+powerpc                           allnoconfig    gcc-15.1.0
+powerpc                          allyesconfig    clang-21
+powerpc               randconfig-001-20250623    gcc-15.1.0
+riscv                            allmodconfig    clang-21
+riscv                             allnoconfig    clang-21
+riscv                             allnoconfig    gcc-15.1.0
+riscv                            allyesconfig    clang-16
+riscv                 randconfig-001-20250623    gcc-13.3.0
+riscv                 randconfig-002-20250623    gcc-12.4.0
+s390                             allmodconfig    clang-18
+s390                              allnoconfig    clang-21
+s390                             allyesconfig    gcc-15.1.0
+s390                  randconfig-001-20250623    gcc-13.2.0
+s390                  randconfig-002-20250623    gcc-8.5.0
+sh                               allmodconfig    gcc-15.1.0
+sh                                allnoconfig    gcc-15.1.0
+sh                               allyesconfig    gcc-15.1.0
+sh                    randconfig-001-20250623    gcc-12.4.0
+sh                    randconfig-002-20250623    gcc-13.3.0
+sparc                            allmodconfig    gcc-15.1.0
+sparc                             allnoconfig    gcc-15.1.0
+sparc                 randconfig-001-20250623    gcc-8.5.0
+sparc                 randconfig-002-20250623    gcc-8.5.0
+sparc64               randconfig-001-20250623    gcc-13.3.0
+sparc64               randconfig-002-20250623    gcc-12.4.0
+um                               allmodconfig    clang-19
+um                                allnoconfig    clang-21
+um                               allyesconfig    gcc-12
+x86_64                            allnoconfig    clang-20
+x86_64                           allyesconfig    clang-20
+x86_64      buildonly-randconfig-001-20250623    clang-20
+x86_64      buildonly-randconfig-002-20250623    gcc-12
+x86_64      buildonly-randconfig-003-20250623    gcc-12
+x86_64      buildonly-randconfig-004-20250623    gcc-12
+x86_64      buildonly-randconfig-005-20250623    gcc-12
+x86_64      buildonly-randconfig-006-20250623    clang-20
+x86_64                              defconfig    gcc-11
+x86_64                                  kexec    clang-20
+x86_64                               rhel-9.4    clang-20
+x86_64                           rhel-9.4-bpf    gcc-12
+x86_64                         rhel-9.4-kunit    gcc-12
+x86_64                           rhel-9.4-ltp    gcc-12
+x86_64                          rhel-9.4-rust    clang-18
+xtensa                            allnoconfig    gcc-15.1.0
 
->=20
-> Best Regards,
-> Petr
->=20
->=20
-> PS: The commit message and the cover letter should better explain
-> =C2=A0=C2=A0=C2=A0 the background of this change.
->=20
-> =C2=A0=C2=A0=C2=A0 It would be great if the cover letter described the bi=
-gger
-> =C2=A0=C2=A0=C2=A0 picture, especially the history of the console_suspend=
-ed,
-> =C2=A0=C2=A0=C2=A0 CON_SUSPENDED, and CON_ENABLED flags. It might use inf=
-o
-> =C2=A0=C2=A0=C2=A0 from
-> =C2=A0=C2=A0=C2=A0 https://lore.kernel.org/lkml/ZyoNZfLT6tlVAWjO@pathway.=
-suse.cz/
-> =C2=A0=C2=A0=C2=A0 and maybe even this link.
->=20
-> =C2=A0=C2=A0=C2=A0 Also this commit message should mention that it partly=
- reverts
-> =C2=A0=C2=A0=C2=A0 the commit 9e70a5e109a4a233678 ("printk: Add per-conso=
-le
-> =C2=A0=C2=A0=C2=A0 suspended state"). But it is not simple revert because
-> =C2=A0=C2=A0=C2=A0 we need to preserve the synchronization using
-> =C2=A0=C2=A0=C2=A0 the console_list_lock for writing and SRCU for reading=
-.
-
-I agree, such a context would even help the reviewers that would spend
-some time reading the code and thinking themselves that some code is
-being readded for some reason.
-
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
