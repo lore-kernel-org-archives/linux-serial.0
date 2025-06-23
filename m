@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83FD81F4295;
-	Mon, 23 Jun 2025 07:20:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D62181EFF9B;
+	Mon, 23 Jun 2025 07:30:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750663249; cv=none; b=vAYtlwmh+4MIrTU1q50/8TLQ51KJH4ne53SNUJKvdCLDIE7651sQb/9fGJHnFRu6AVYuIKehTbQePJxwPiOs6zGJBXGVxJmeqZAhavpxnCgHU3/b9al51o6giMpneBiAqQRs9fMlyX+Ai5h5EajfdhjDKVpYM9+EMOGFXKplsZ0=
+	t=1750663840; cv=none; b=dWbgnNTOG0d5LhtLbpDOWZFvLhsR3h7oKIM3SBytqtreJODz0PI6T3VXQSBcmUf3adeW+kQ5FnZB6xhkHHOzE3INleTVh259oQ4HK5VlewiMUDMjPkUu7fQ0FeTTuQjDSTRl26e/rmtgvX46689c91+JpVz+44DtqKyeGGYeLyw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750663249; c=relaxed/simple;
-	bh=cJnr33ltC3QFPl+si9XX3r8eZFoZ/L3aNbIUnIVx0+U=;
+	s=arc-20240116; t=1750663840; c=relaxed/simple;
+	bh=0fxnIO1ueEKttEOSc6w2pdQ+CTBTO4fMXTnxx3V+1KM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=S59BF+4/e9RmJgXr5KC/06tffjIeeJICK4rLd+sGkuIqSSAmkgK7LNox9RyOIY04YZZgjpjPUUAjedyA/MXF5V0vzIR9muJvnjy3PWTAFYFUaFJdYG2/Ri2VocaH5MDt1rrcZrV8ZeoIUVbFbiVssQqMZwNtHWxV8tI76BuC+40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lFWqB8dq; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=gqH47DzTdOp3KT8O9gYjI8g6CyoJ6Mgp9Z2VV20r6fUTKKL1NMUxf0W0+FTBqxQxBQkrc1AtANukbRCVw0ndjSI1zoxffnZ4JQPjefBX+OC0KpBAle1Rq/2PyT8oTyWCt+9FaHGrkdOodgY8mQO9Z1rHYY/rzqAkhjb+kWhIudk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sN49WEI9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lFWqB8dq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1249C4CEEF;
-	Mon, 23 Jun 2025 07:20:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sN49WEI9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36DC9C4CEED;
+	Mon, 23 Jun 2025 07:30:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750663248;
-	bh=cJnr33ltC3QFPl+si9XX3r8eZFoZ/L3aNbIUnIVx0+U=;
+	s=k20201202; t=1750663839;
+	bh=0fxnIO1ueEKttEOSc6w2pdQ+CTBTO4fMXTnxx3V+1KM=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=lFWqB8dqWhk6r5VIxlYvx682kZtj9UbUvIMSMEoDFcb3cJa+WR67sOxM1S5cbMoF9
-	 cnaybT9Yq6E9WM4wMdSEXuNmUM/W46rue/gEs2bi5yn8xm4+xl0mKzaHc+tItH9B9L
-	 hHOAbuoO8M0yCzfcridwgHXJeXnm7cYqcUzj0D0PvsDh7vHsx9fSpLplelToSvk3zd
-	 T8p9TPk2Z2HkPEwBli1VsNfNNupcc2am8YI/u69LVxDk+Ksja7L55cizwxMroerXrc
-	 TX/VOIBpXb4kjzhHBHgqiGTAgtjIMqmKXzYkfwfoGxv71dzU/pAZ+4+sfKDdQs+34q
-	 egOCS5+DWMByA==
-Message-ID: <054c6d81-aaea-43a2-939e-b845d54c0926@kernel.org>
-Date: Mon, 23 Jun 2025 09:20:46 +0200
+	b=sN49WEI9IaAgjMXN9MskZ0qZQWHhvBbTjvPi/yn2Eyd4MImu7PE4n4MX4+hl73U6l
+	 1wXrT0qZOKsLC4XeREcWtsOqQ2mt1gis8otMgG7yMZsudHcgy7Sq74od50firDixoJ
+	 XySW/0y4xrTFxr5/C0wWr9vr33Ch47wMmQuPrYObqZtvjA6i/gacRr3sqaQEewYsXQ
+	 v61cfixtg/mQncS93UrzP+G4whzm9CA5xsPNDrQNHwr54sd75ggVWWCBBcvNu37P9K
+	 sl7PpcYXSkXEq17uNVQvc0DmJ8LxRALeFTErtZHsTSylKnEVS8iLlgH2w02+ZPMYE9
+	 lEo1n+29z70jw==
+Message-ID: <e0a07ca3-447a-4e3d-be0b-49892c945179@kernel.org>
+Date: Mon, 23 Jun 2025 09:30:34 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,17 +35,23 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 23/33] serial: 8250: extract serial8250_set_efr()
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Subject: Re: [PATCH 01/33] tty: introduce and use tty_port_tty_vhangup()
+ helper
+To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  linux-serial <linux-serial@vger.kernel.org>,
- LKML <linux-kernel@vger.kernel.org>
+ LKML <linux-kernel@vger.kernel.org>, Karsten Keil <isdn@linux-pingi.de>,
+ David Lin <dtwlin@gmail.com>, Johan Hovold <johan@kernel.org>,
+ Alex Elder <elder@kernel.org>, Oliver Neukum <oneukum@suse.com>,
+ Marcel Holtmann <marcel@holtmann.org>,
+ Johan Hedberg <johan.hedberg@gmail.com>,
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+ Netdev <netdev@vger.kernel.org>, greybus-dev@lists.linaro.org,
+ linux-staging@lists.linux.dev, linux-usb@vger.kernel.org,
+ linux-bluetooth@vger.kernel.org
 References: <20250611100319.186924-1-jirislaby@kernel.org>
- <20250611100319.186924-24-jirislaby@kernel.org>
- <2b9d3171-6a71-ad9e-8a73-f07487f0ad6b@linux.intel.com>
- <451ac044-6e91-4895-a5b3-cb30396436e5@kernel.org>
- <aEsid-cr1SwHJWV6@smile.fi.intel.com>
+ <20250611100319.186924-2-jirislaby@kernel.org>
+ <b23d566c-09dc-7374-cc87-0ad4660e8b2e@linux.intel.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -90,27 +96,47 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <aEsid-cr1SwHJWV6@smile.fi.intel.com>
+In-Reply-To: <b23d566c-09dc-7374-cc87-0ad4660e8b2e@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 12. 06. 25, 20:54, Andy Shevchenko wrote:
-> On Thu, Jun 12, 2025 at 12:01:29PM +0200, Jiri Slaby wrote:
->> On 11. 06. 25, 14:58, Ilpo Järvinen wrote:
->>> On Wed, 11 Jun 2025, Jiri Slaby (SUSE) wrote:
+On 11. 06. 25, 13:13, Ilpo Järvinen wrote:
+> On Wed, 11 Jun 2025, Jiri Slaby (SUSE) wrote:
 > 
-> ...
+>> This code (tty_get -> vhangup -> tty_put) is repeated on few places.
+>> Introduce a helper similar to tty_port_tty_hangup() (asynchronous) to
+>> handle even vhangup (synchronous).
+>>
+>> And use it on those places.
+>>
+>> In fact, reuse the tty_port_tty_hangup()'s code and call tty_vhangup()
+>> depending on a new bool parameter.
+>>
+>> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+>> Cc: Karsten Keil <isdn@linux-pingi.de>
+>> Cc: David Lin <dtwlin@gmail.com>
+>> Cc: Johan Hovold <johan@kernel.org>
+>> Cc: Alex Elder <elder@kernel.org>
+>> Cc: Oliver Neukum <oneukum@suse.com>
+>> Cc: Marcel Holtmann <marcel@holtmann.org>
+>> Cc: Johan Hedberg <johan.hedberg@gmail.com>
+>> Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
 > 
->>>> +	if (port->flags & UPF_EXAR_EFR)
->>>
->>> I wonder if it is possible to trigger this at all? Only 8250_exar.c sets
->>> this flag and does not contain UART_CAP_EFR at all (nor uses
->>> UPF_BOOT_AUTOCONF)??
-> 
-> The file indeed does not contain it, BUT it sets it implicitly (via port type).
-> So, this is not a dead code. Please, do not remove it.
+> Nice cleanup. I'm not sure if it's important enough to be mentioned in
+> Documentation/driver-api/tty/tty_port.rst .
 
-Ah, both PORT_XR17D15X and PORT_XR17V35X set UART_CAP_EFR in uart_config[].
+At minimum I broke tty_port_tty_hangup()'s kernel-doc:
+/**
+  * tty_port_tty_hangup - helper to hang up a tty
+  * @port: tty port
+  * @check_clocal: hang only ttys with %CLOCAL unset?
+  */
+  void __tty_port_tty_hangup(struct tty_port *port, bool check_clocal, 
+bool async)
+
+
+doc says tty_port_tty_hangup(), code says __tty_port_tty_hangup(). Fix 
+coming, incl. vhangup addition.
 
 thanks,
 -- 
