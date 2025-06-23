@@ -1,40 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5936121765E;
-	Mon, 23 Jun 2025 07:46:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 416CA21B9C8;
+	Mon, 23 Jun 2025 07:46:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750664774; cv=none; b=iG+zXQhZ9SWdNLo88Pnw6oJsZscJiEHm8f2Xzy+R9blJ3aZqdc9AWRLLcxCbRspcXV9DQ2cSYssMf54Ol00SdqLngRFxijasUJbF4EYknY+KF7NjvLe3lGpzJoy0A0EQ6GMHHb0d8o6v67V+9ysOTlkvTxiogdvwr0cklhgAz00=
+	t=1750664776; cv=none; b=oUHnq7CB/ERMxMUH9nyNbCamVIQmftqUxN53jr2qYCQHtr0lSWxHGxSL+7zvoRa1dEv84S2DR0A1JuY8pNCohMG/WYGISY6xUzKPWsk6JF/ua3Crarta3Ujg0y3ISyU6OLXs/IuFusLwmUONGk6dsaGMUIKbtpNIhat99N6r5JM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750664774; c=relaxed/simple;
-	bh=Ha3d6EU+LDV8//CrsuOIY0ka7VTKRN1AMCeo/OLzfXw=;
+	s=arc-20240116; t=1750664776; c=relaxed/simple;
+	bh=smpKSO6O9D81D3q6N5YAOrgecS7Nl7xNAoJ7zHJtccI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SuaShGdva5q8yxiR0/ep5VkC4+K1T58aadL1x57IOof6Hq3Zkvzjjb0llkF7Yq5n2GePVjVcH4rQH+anQkcjs1DRwJ47AAGr4rss6WGF1Q2Eww/9G7LWPKAAzPY0BB3GyfNXpat13pvwmVqAwrPJ5Xz1ZUy7FwbdTlVrzNxixNU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EBiEwCSB; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=UV9PsxIyzqUIKkAICbBb6XHoECY8iMZX/AKMIzyqnjD9eTL/EHxB1xW9N2wEFz58LH9MF2XsA3aiLIhGAUdCLjPDGUm9BztANOJzNp14NvyslxA/qZ3agS1SeMbdUt60RkQbJGeK46PBtsExxLHvxc3L+yFMOAsnB+WyExjRCcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wis3Uiic; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EBiEwCSB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B318DC4CEF1;
-	Mon, 23 Jun 2025 07:46:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wis3Uiic"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61A3AC4CEED;
+	Mon, 23 Jun 2025 07:46:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750664773;
-	bh=Ha3d6EU+LDV8//CrsuOIY0ka7VTKRN1AMCeo/OLzfXw=;
+	s=k20201202; t=1750664775;
+	bh=smpKSO6O9D81D3q6N5YAOrgecS7Nl7xNAoJ7zHJtccI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=EBiEwCSBhpEIDigOflulIbx5UFxYA6mn32of2lHlOC8emMq6LcnardFJWQPgev02y
-	 LL2HENdK0xnNxjvsUScqjI+w8L0RGGKVl24OIL8+SLuT5IVWSRSciawQZ02Vb8+jaJ
-	 DjvFBxE9SdcoMac/ghGcNfBOAoW5PIugXRzG/j+z9dJkQ7G4En+Rks6Dzz/enk4XUy
-	 G/F321QOLcBZmeO60JH41OEaLW1GM46wKdL21mQjhzk2vgsgojT7TV4oHP1G0ntekt
-	 yU6Z9Qs+VuHUpPoPc2yV/i+oEE1/IDQK91jNgAdNsVsLbqj677132V4Zxg+Zes8WuN
-	 kifL1+0Fa/VWA==
+	b=Wis3UiiclxSQdffgfqsnVlk2ELRucQmBF4WJ/dezNyPE/Yt6ne0HSvYJcU1C97JDf
+	 bVa/4Bh3eXgY4tEkK1vCBEbcH4PviDpofxFCwrWQjuai9i+dikL0cGjtE8pvMLJxB5
+	 FaFF1A81FMcJfa3rdenQqXlStObwGMHLvYcXmEm9kiXsWU7dJ+WU/WbBAw4sjkFlVO
+	 /w3QP7dyMPq5Wuyw1XCEDQNVTvW1YSCiufj6GI2OYgtESYNPwVElDKKtroi1ITiwca
+	 ADRfTUtRCHjM+Bs/pE0CGqbi10XUv5WMe9LbzuVYSrwL2LGP9o7HBGJzpgrl3IUyMY
+	 SJxofE9FSeVDw==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Subject: [PATCH 3/5] serial: 8250: rename lsr_TEMT, iir_NOINT to lowercase
-Date: Mon, 23 Jun 2025 09:46:04 +0200
-Message-ID: <20250623074606.456532-4-jirislaby@kernel.org>
+	Andy Shevchenko <andy.shevchenko@gmail.com>,
+	"Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: [PATCH 4/5] serial: 8250: document doubled "type == PORT_8250_CIR" check
+Date: Mon, 23 Jun 2025 09:46:05 +0200
+Message-ID: <20250623074606.456532-5-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250623074606.456532-1-jirislaby@kernel.org>
 References: <20250623074606.456532-1-jirislaby@kernel.org>
@@ -44,51 +45,44 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-There are already variables like 'iir_noint1' and 'iir_noint2'. Follow
-the preexisting lowercase naming of variables. So s/lsr_TEMT/lsr_temt/
-and 'iir_NOINT' likewise.
+The check for "port.type == PORT_8250_CIR" is present twice in
+serial8250_register_8250_port(). The latter was already tried to be
+dropped by 1104321a7b3b ("serial: Delete dead code for CIR serial
+ports") and then reverted by 9527b82ae3af ("Revert "serial: Delete dead
+code for CIR serial ports"").
+
+Document this weirdness with a reason.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Maciej S. Szmigiero <mail@maciej.szmigiero.name>
+Link: https://lore.kernel.org/all/aFcDOx1bdB34I5hS@surfacebook.localdomain/
 ---
- drivers/tty/serial/8250/8250_port.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/8250/8250_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 584563c45424..f67b206d1676 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2236,15 +2236,15 @@ static void serial8250_init_mctrl(struct uart_port *port)
- static void serial8250_iir_txen_test(struct uart_port *port)
- {
- 	struct uart_8250_port *up = up_to_u8250p(port);
--	bool lsr_TEMT, iir_NOINT;
-+	bool lsr_temt, iir_noint;
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index a6ecb8575da4..feb920c5b2e8 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -717,6 +717,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 		nr_uarts++;
+ 	}
  
- 	if (port->quirks & UPQ_NO_TXEN_TEST)
- 		return;
++	/* Check if it is CIR already. We check this below again, see there why. */
+ 	if (uart->port.type == PORT_8250_CIR) {
+ 		ret = -ENODEV;
+ 		goto unlock;
+@@ -815,6 +816,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+ 	if (up->dl_write)
+ 		uart->dl_write = up->dl_write;
  
- 	/* Do a quick test to see if we receive an interrupt when we enable the TX irq. */
- 	serial_port_out(port, UART_IER, UART_IER_THRI);
--	lsr_TEMT = serial_port_in(port, UART_LSR) & UART_LSR_TEMT;
--	iir_NOINT = serial_port_in(port, UART_IIR) & UART_IIR_NO_INT;
-+	lsr_temt = serial_port_in(port, UART_LSR) & UART_LSR_TEMT;
-+	iir_noint = serial_port_in(port, UART_IIR) & UART_IIR_NO_INT;
- 	serial_port_out(port, UART_IER, 0);
- 
- 	/*
-@@ -2256,7 +2256,7 @@ static void serial8250_iir_txen_test(struct uart_port *port)
- 	 * variable. So, in case of UPQ_NO_TXEN_TEST, let's just don't test if we receive TX irq.
- 	 * This way, we'll never enable UART_BUG_TXEN.
- 	 */
--	if (lsr_TEMT && iir_NOINT) {
-+	if (lsr_temt && iir_noint) {
- 		if (!(up->bugs & UART_BUG_TXEN)) {
- 			up->bugs |= UART_BUG_TXEN;
- 			dev_dbg(port->dev, "enabling bad tx status workarounds\n");
++	/* Check the type (again)! It might have changed by the port.type assignment above. */
+ 	if (uart->port.type != PORT_8250_CIR) {
+ 		if (uart_console_registered(&uart->port))
+ 			pm_runtime_get_sync(uart->port.dev);
 -- 
 2.49.0
 
