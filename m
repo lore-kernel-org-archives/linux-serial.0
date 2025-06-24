@@ -1,164 +1,145 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11595288C18;
-	Tue, 24 Jun 2025 11:00:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 409F11B87D9;
+	Tue, 24 Jun 2025 11:02:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750762839; cv=none; b=rPCz6xZblUQtpAwoykEOrEGSI/1+nfaHswGj/S8aqsxxLsQABQeg5giTBC42JSw6XjVNfbuPmaLKoNcK8HPIPHPIHTOu3lveO5u6DSIzXUejrsdoVdX+ZJmKT0U7cQV7vOuVw1nz5lW+2uVy/p8/GW0qasVixa4Jal74FL0wFl4=
+	t=1750762944; cv=none; b=FquvTN6HXOYRV+ExTFTW/0atSMsok2zUoucdBSZKUuPmUGuYeSJFFoeSuB27lvojcl5UjIFuan8DlTVbt5cZpWjPzGq04U0fhlLnmWOPYJMhFLRyrVixdH42YbjQdlFjmidXr1ZYv1wuyfsfooiWIxOY4sYuhBBlxWplLYeu+lI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750762839; c=relaxed/simple;
-	bh=4lLnp/IXNyE09zyiTjqD67fRc62ECfdr4B1UG0KapV0=;
+	s=arc-20240116; t=1750762944; c=relaxed/simple;
+	bh=uIUTFdHMprKJpRb7GqF1AX4ILHX5Lv3mp3u/iKGLJTs=;
 	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=qVuEx9jijBJa+aqr0meCbfEcYhZxurwn/ezXXbwF4J2nrDICx9dlMN5B67q2Zhcj0DyYQ0LyBgE1uieCAoLXAv5Wl6f70THRl1+cOSyRNdu/4U0lqSbLm5i+N6gSkhbCc+PGY9kbeeVIeC/rA+XJq4LWTaQXPxM3aWdyxkFPgnk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TTSEWekK; arc=none smtp.client-ip=198.175.65.17
+	 MIME-Version:Content-Type; b=f0HgesDG1MfP5LdS2DurGrCW+rzp+b4+gpJBSCE09+Cu400OVrV4o6dEMbKBcMsDuYREwvHIX4iJad4MNDEc2Kzl2uy4brD9ktzkaLzHjdPqyFEL3LSwJo5KG69i/9NEjQc4k9ECn3+K/gHPkyIWDeotAKkMdW7JkpDxFqkMmNo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W+QKwx73; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TTSEWekK"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W+QKwx73"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750762838; x=1782298838;
+  t=1750762943; x=1782298943;
   h=from:date:to:cc:subject:in-reply-to:message-id:
    references:mime-version;
-  bh=4lLnp/IXNyE09zyiTjqD67fRc62ECfdr4B1UG0KapV0=;
-  b=TTSEWekKpSjERS23sCmzt7MBy6Kez4253dChH3q7ONCFQqhn+Se1gDVi
-   f1wIYvuU+ZrWQaiWS4eJ8I9dvzYkGvzLS9z92gwDcvKXGZkrA5gu3/e6F
-   tHjFcRDbbY5e9ST2juNY1vwiSNB1aRaLyLLIJ0rIza7wB5kykn0DyJf+l
-   A5uarzLSIRg3IyEKAtpofMn6uxwE5lZVqGFmODYFG1xquHGoi+C34nEoz
-   qnbtvwspnzBkzd3wm1hDSDraegbLDb5gDVCUUasMjbDZsUFtoKlj34UO4
-   Jpj/UVVdcE2wvYmII3QfBbni6ASTSsi59KmXjB5SGy8VSandr/k/9CR0I
-   Q==;
-X-CSE-ConnectionGUID: kE7KyfSzTBiIVCaIl4tpog==
-X-CSE-MsgGUID: jbjD/rvzQd2LQ3UBhyL1CA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="52965015"
+  bh=uIUTFdHMprKJpRb7GqF1AX4ILHX5Lv3mp3u/iKGLJTs=;
+  b=W+QKwx73//fhjF/UL+rbmvfL5xIahZaMQ5MOP/FiCgIyNc6xBURu3R1i
+   9HLmwGzEI/CKoOTUtmlVyc8aE83OPbiuxBqM8hkOQbTyGNuvyXE7h2o96
+   IeUvB8ZD+8NFIht0+isUm/OgF++7fmENbk3Ob0wjpXWqdpgFcYWK3iV1O
+   NYM4BTIw1e9ATX56fRQsojfNbhq1mnObJmnuRRiAokbPHsxvXQl0Ga8eI
+   CDjruRv6shOI/2hMYWfh8YRAUcIy1PUhf33MwOCBWUgFMPENnxvKBFejJ
+   Y0b/UvDy555/bjpTwpiSV1/NO82yPxderHTB62rMYfnE1U/WyzwFRSChA
+   w==;
+X-CSE-ConnectionGUID: WoifrOa5RN27TgaPn5vurw==
+X-CSE-MsgGUID: swLSgGNZR2Cpk17eqlg2Tw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="52965421"
 X-IronPort-AV: E=Sophos;i="6.16,261,1744095600"; 
-   d="scan'208";a="52965015"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 04:00:37 -0700
-X-CSE-ConnectionGUID: 9I9mPZzEQe6wtCVPsZYBYQ==
-X-CSE-MsgGUID: VR0J+emwQCaAozgzwuhpLg==
+   d="scan'208";a="52965421"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 04:02:20 -0700
+X-CSE-ConnectionGUID: f3S6VbB4Tk6ABs9grH6svQ==
+X-CSE-MsgGUID: OJsIolJ9SvSD/DFJ32XErQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,261,1744095600"; 
-   d="scan'208";a="182766271"
+   d="scan'208";a="151480967"
 Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.16])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 04:00:34 -0700
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 04:02:18 -0700
 From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 24 Jun 2025 14:00:30 +0300 (EEST)
+Date: Tue, 24 Jun 2025 14:02:15 +0300 (EEST)
 To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
     linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-    linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] tty: fix tty_port_tty_*hangup() kernel-doc
-In-Reply-To: <20250624080641.509959-6-jirislaby@kernel.org>
-Message-ID: <1c4b6fc9-bdce-31c0-87eb-b7aa34758877@linux.intel.com>
-References: <20250624080641.509959-1-jirislaby@kernel.org> <20250624080641.509959-6-jirislaby@kernel.org>
+    LKML <linux-kernel@vger.kernel.org>, 
+    Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v2 1/5] serial: 8250: extract serial8250_init_mctrl()
+In-Reply-To: <20250624080641.509959-2-jirislaby@kernel.org>
+Message-ID: <b78023eb-f5ab-6287-1cd7-5db76d905eed@linux.intel.com>
+References: <20250624080641.509959-1-jirislaby@kernel.org> <20250624080641.509959-2-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-1387142005-1750762830=:943"
+Content-Type: multipart/mixed; boundary="8323328-584487287-1750762935=:943"
 
   This message is in MIME format.  The first part should be readable text,
   while the remaining parts are likely unreadable without MIME-aware tools.
 
---8323328-1387142005-1750762830=:943
+--8323328-584487287-1750762935=:943
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: QUOTED-PRINTABLE
 
 On Tue, 24 Jun 2025, Jiri Slaby (SUSE) wrote:
 
-> The commit below added a new helper, but omitted to move (and add) the
-> corressponding kernel-doc. Do it now.
+> After commit 795158691cc0 ("serial: 8250: extract
+> serial8250_initialize()"), split serial8250_initialize() even more --
+> the mctrl part of this code can be separated into
+> serial8250_init_mctrl() -- done now.
+>=20
+> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+> Suggested-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
-corresponding
+Heh, I didn't even realize I was suggesting this :-D but it's good=20
+nonetheless.
 
-With that fixed, Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel=
-=2Ecom>
+Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> ---
+> [v2]
+> * use port-> directly.
+> * do not remove curly braces.
+> Both rebase errors -- noticed by Andy.
+> ---
+>  drivers/tty/serial/8250/8250_port.c | 21 +++++++++++++--------
+>  1 file changed, 13 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
+0/8250_port.c
+> index 48c30e158cb8..0f85a2f292fc 100644
+> --- a/drivers/tty/serial/8250/8250_port.c
+> +++ b/drivers/tty/serial/8250/8250_port.c
+> @@ -2216,15 +2216,8 @@ static void serial8250_THRE_test(struct uart_port =
+*port)
+>  =09=09up->bugs |=3D UART_BUG_THRE;
+>  }
+> =20
+> -static void serial8250_initialize(struct uart_port *port)
+> +static void serial8250_init_mctrl(struct uart_port *port)
+>  {
+> -=09struct uart_8250_port *up =3D up_to_u8250p(port);
+> -=09unsigned long flags;
+> -=09bool lsr_TEMT, iir_NOINT;
+> -
+> -=09serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+> -
+> -=09uart_port_lock_irqsave(port, &flags);
+>  =09if (port->flags & UPF_FOURPORT) {
+>  =09=09if (!port->irq)
+>  =09=09=09port->mctrl |=3D TIOCM_OUT1;
+> @@ -2235,6 +2228,18 @@ static void serial8250_initialize(struct uart_port=
+ *port)
+>  =09}
+> =20
+>  =09serial8250_set_mctrl(port, port->mctrl);
+> +}
+> +
+> +static void serial8250_initialize(struct uart_port *port)
+> +{
+> +=09struct uart_8250_port *up =3D up_to_u8250p(port);
+> +=09unsigned long flags;
+> +=09bool lsr_TEMT, iir_NOINT;
+> +
+> +=09serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+> +
+> +=09uart_port_lock_irqsave(port, &flags);
+> +=09serial8250_init_mctrl(port);
+> =20
+>  =09/*
+>  =09 * Serial over Lan (SoL) hack:
+>=20
 
 --=20
  i.
 
-
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Fixes: 2b5eac0f8c6e ("tty: introduce and use tty_port_tty_vhangup() helpe=
-r")
-> Link: https://lore.kernel.org/all/b23d566c-09dc-7374-cc87-0ad4660e8b2e@li=
-nux.intel.com/
-> Reported-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: linux-doc@vger.kernel.org
-> ---
->  Documentation/driver-api/tty/tty_port.rst | 5 +++--
->  drivers/tty/tty_port.c                    | 5 -----
->  include/linux/tty_port.h                  | 9 +++++++++
->  3 files changed, 12 insertions(+), 7 deletions(-)
->=20
-> diff --git a/Documentation/driver-api/tty/tty_port.rst b/Documentation/dr=
-iver-api/tty/tty_port.rst
-> index 5cb90e954fcf..504a353f2682 100644
-> --- a/Documentation/driver-api/tty/tty_port.rst
-> +++ b/Documentation/driver-api/tty/tty_port.rst
-> @@ -42,9 +42,10 @@ TTY Refcounting
->  TTY Helpers
->  -----------
-> =20
-> +.. kernel-doc::  include/linux/tty_port.h
-> +   :identifiers: tty_port_tty_hangup tty_port_tty_vhangup
->  .. kernel-doc::  drivers/tty/tty_port.c
-> -   :identifiers: tty_port_tty_hangup tty_port_tty_wakeup
-> -
-> +   :identifiers: tty_port_tty_wakeup
-> =20
->  Modem Signals
->  -------------
-> diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-> index 903eebdbe12d..5b4d5fb99a59 100644
-> --- a/drivers/tty/tty_port.c
-> +++ b/drivers/tty/tty_port.c
-> @@ -391,11 +391,6 @@ void tty_port_hangup(struct tty_port *port)
->  }
->  EXPORT_SYMBOL(tty_port_hangup);
-> =20
-> -/**
-> - * tty_port_tty_hangup - helper to hang up a tty
-> - * @port: tty port
-> - * @check_clocal: hang only ttys with %CLOCAL unset?
-> - */
->  void __tty_port_tty_hangup(struct tty_port *port, bool check_clocal, boo=
-l async)
->  {
->  =09struct tty_struct *tty =3D tty_port_tty_get(port);
-> diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-> index 021f9a8415c0..332ddb93603e 100644
-> --- a/include/linux/tty_port.h
-> +++ b/include/linux/tty_port.h
-> @@ -251,11 +251,20 @@ static inline int tty_port_users(struct tty_port *p=
-ort)
->  =09return port->count + port->blocked_open;
->  }
-> =20
-> +/**
-> + * tty_port_tty_hangup - helper to hang up a tty asynchronously
-> + * @port: tty port
-> + * @check_clocal: hang only ttys with %CLOCAL unset?
-> + */
->  static inline void tty_port_tty_hangup(struct tty_port *port, bool check=
-_clocal)
->  {
->  =09__tty_port_tty_hangup(port, check_clocal, true);
->  }
-> =20
-> +/**
-> + * tty_port_tty_vhangup - helper to hang up a tty synchronously
-> + * @port: tty port
-> + */
->  static inline void tty_port_tty_vhangup(struct tty_port *port)
->  {
->  =09__tty_port_tty_hangup(port, false, false);
->=20
-
---8323328-1387142005-1750762830=:943--
+--8323328-584487287-1750762935=:943--
