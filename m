@@ -1,145 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 409F11B87D9;
-	Tue, 24 Jun 2025 11:02:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A12219F480;
+	Tue, 24 Jun 2025 11:04:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750762944; cv=none; b=FquvTN6HXOYRV+ExTFTW/0atSMsok2zUoucdBSZKUuPmUGuYeSJFFoeSuB27lvojcl5UjIFuan8DlTVbt5cZpWjPzGq04U0fhlLnmWOPYJMhFLRyrVixdH42YbjQdlFjmidXr1ZYv1wuyfsfooiWIxOY4sYuhBBlxWplLYeu+lI=
+	t=1750763069; cv=none; b=COyQ0324Q5ugzfiE7ZzD6TtDfThOA7Qf+3JhVJRJgbccWIT9LS+Fubt9JN3JgqlNafIeTex6C862jYx06gbHEaECyXdyi17o2DWqE8oEEgy3/WByEjLSI2XplptQmdFB5ZigPwYuw5rf3r0SN6AZV2ffFFxv1MT7Tq66ixZUAIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750762944; c=relaxed/simple;
-	bh=uIUTFdHMprKJpRb7GqF1AX4ILHX5Lv3mp3u/iKGLJTs=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=f0HgesDG1MfP5LdS2DurGrCW+rzp+b4+gpJBSCE09+Cu400OVrV4o6dEMbKBcMsDuYREwvHIX4iJad4MNDEc2Kzl2uy4brD9ktzkaLzHjdPqyFEL3LSwJo5KG69i/9NEjQc4k9ECn3+K/gHPkyIWDeotAKkMdW7JkpDxFqkMmNo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W+QKwx73; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1750763069; c=relaxed/simple;
+	bh=caNPTD3VH7dgoobCeidFv0d4v5Nuqkjz4WPaa5obIRM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=ULT+/siptXBNkAB5ZzPv/T2Sa4QNdkob9edfNQHFjNgMU9BEFkuMkrFT1c2rV3yL6TqbRJB6X20BdwrH7KnMBwYlT1N9KqdLpKl7RK0IivhMcxLBMUFeC6AxzY354XXpY4sLE445gU1TEua6vGtkK2Pp3HrfATRMArlG6j3P/L0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=QYALeI+w; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=b0nCeoNQ; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W+QKwx73"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750762943; x=1782298943;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=uIUTFdHMprKJpRb7GqF1AX4ILHX5Lv3mp3u/iKGLJTs=;
-  b=W+QKwx73//fhjF/UL+rbmvfL5xIahZaMQ5MOP/FiCgIyNc6xBURu3R1i
-   9HLmwGzEI/CKoOTUtmlVyc8aE83OPbiuxBqM8hkOQbTyGNuvyXE7h2o96
-   IeUvB8ZD+8NFIht0+isUm/OgF++7fmENbk3Ob0wjpXWqdpgFcYWK3iV1O
-   NYM4BTIw1e9ATX56fRQsojfNbhq1mnObJmnuRRiAokbPHsxvXQl0Ga8eI
-   CDjruRv6shOI/2hMYWfh8YRAUcIy1PUhf33MwOCBWUgFMPENnxvKBFejJ
-   Y0b/UvDy555/bjpTwpiSV1/NO82yPxderHTB62rMYfnE1U/WyzwFRSChA
-   w==;
-X-CSE-ConnectionGUID: WoifrOa5RN27TgaPn5vurw==
-X-CSE-MsgGUID: swLSgGNZR2Cpk17eqlg2Tw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="52965421"
-X-IronPort-AV: E=Sophos;i="6.16,261,1744095600"; 
-   d="scan'208";a="52965421"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 04:02:20 -0700
-X-CSE-ConnectionGUID: f3S6VbB4Tk6ABs9grH6svQ==
-X-CSE-MsgGUID: OJsIolJ9SvSD/DFJ32XErQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,261,1744095600"; 
-   d="scan'208";a="151480967"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.16])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 04:02:18 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Tue, 24 Jun 2025 14:02:15 +0300 (EEST)
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-    linux-serial <linux-serial@vger.kernel.org>, 
-    LKML <linux-kernel@vger.kernel.org>, 
-    Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2 1/5] serial: 8250: extract serial8250_init_mctrl()
-In-Reply-To: <20250624080641.509959-2-jirislaby@kernel.org>
-Message-ID: <b78023eb-f5ab-6287-1cd7-5db76d905eed@linux.intel.com>
-References: <20250624080641.509959-1-jirislaby@kernel.org> <20250624080641.509959-2-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="QYALeI+w";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="b0nCeoNQ"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1750763066;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=5eEk+aF+pt0MvEUwqDpSXabyNiN3Qdyl9X0CVlT8PCA=;
+	b=QYALeI+wDWqdBcwoiCZT1gW13kZ0aWUTJAiRv5eh24JUe0U9MCzVDV71qbKcJEx8oDqHiL
+	OXwAdfdvdF/diXvlbh8URTt5TzWvTQhqVtnQheBVZ9jGaOscKmRkIr5JQ5/aBxmfeXjrgj
+	JExpQURBdHLkh1O0cglLYOty2dkpagdb8/D5sSy5v4SvOVCr1n9LAkduV6Lfau4uCW3UcY
+	03pvnvXuyhL8EjsMe69F/RQCrvQFaldkgAEfcchAE6GBiu0j284+9FXRSD89SBHuUEusm6
+	aSzZLEvID0iLevu9ODhbRcNDdAvhyEDmMYalCMdUVZk3uk1DNXtTFgDkYOCIsQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1750763066;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=5eEk+aF+pt0MvEUwqDpSXabyNiN3Qdyl9X0CVlT8PCA=;
+	b=b0nCeoNQlxtkF/VATw84CXoUW5gF8S9AJRZCXj3wuKZzjUykZsiuJ6FQYpbQlla9ns5vhy
+	D23fvPgwu8aY34AQ==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Marcos Paulo de Souza <mpdesouza@suse.com>, Steven Rostedt
+ <rostedt@goodmis.org>, Sergey Senozhatsky <senozhatsky@chromium.org>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Jason Wessel <jason.wessel@windriver.com>, Daniel
+ Thompson <danielt@kernel.org>, Douglas Anderson <dianders@chromium.org>,
+ Richard Weinberger <richard@nod.at>, Anton Ivanov
+ <anton.ivanov@cambridgegreys.com>, Johannes Berg
+ <johannes@sipsolutions.net>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+ linux-um@lists.infradead.org
+Subject: Re: [PATCH 2/7] printk: Use consoles_suspended flag when
+ suspending/resuming all consoles
+In-Reply-To: <aFpkQHwNCslbKSP6@pathway.suse.cz>
+References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-2-f427c743dda0@suse.com>
+ <aExBo-8cVOy6GegR@pathway.suse.cz> <84y0tmiidg.fsf@jogness.linutronix.de>
+ <aFpkQHwNCslbKSP6@pathway.suse.cz>
+Date: Tue, 24 Jun 2025 13:10:25 +0206
+Message-ID: <84wm919z9i.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323328-584487287-1750762935=:943"
+Content-Type: text/plain
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On 2025-06-24, Petr Mladek <pmladek@suse.com> wrote:
+>> > Variant C:
+>> > ==========
+>> >
+>> > Remove even @flags parameter from console_is_usable() and read both
+>> > values there directly.
+>> >
+>> > Many callers read @flags only because they call console_is_usable().
+>> > The change would simplify the code.
+>> >
+>> > But there are few exceptions:
+>> >
+>> >    2. Another exception is __pr_flush() where console_is_usable() is
+>> >       called twice with @use_atomic set "true" and "false".
+>> >
+>> >       We would want to read "con->flags" only once here. A solution
+>> >       would be to add a parameter to check both con->write_atomic
+>> >       and con->write_thread in a single call.
+>> 
+>> Or it could become a bitmask of printing types to check:
+>> 
+>> #define ATOMIC_PRINTING 0x1
+>> #define NONATOMIC_PRINTING 0x2
+>> 
+>> and then __pr_flush() looks like:
+>> 
+>> if (!console_is_usable(c, flags, ATOMIC_PRINTING|NONATOMIC_PRINTING)
+>
+> I like this. It will help even in all other cases when one mode is needed.
+> I mean that, for example:
+>
+>    console_is_usable(c, flags, ATOMIC_PRINTING)
+>
+> is more self-explaining than
+>
+>    console_is_usable(c, flags, true)
 
---8323328-584487287-1750762935=:943
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: QUOTED-PRINTABLE
+After I wrote that suggestion, I decided that the naming is not
+good. There is always confusion about what "atomic printing" means. For
+that reason the parameter was changed to "use_atomic". Basically we are
+specifying which callback to use and not the purpose. It is a bit tricky
+because legacy consoles do not have an atomic callback, i.e. the
+parameter only has meaning for nbcon consoles.
 
-On Tue, 24 Jun 2025, Jiri Slaby (SUSE) wrote:
+Perhaps these macros would be more suitable:
 
-> After commit 795158691cc0 ("serial: 8250: extract
-> serial8250_initialize()"), split serial8250_initialize() even more --
-> the mctrl part of this code can be separated into
-> serial8250_init_mctrl() -- done now.
->=20
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Suggested-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+#define NBCON_USE_ATOMIC 0x1
+#define NBCON_USE_THREAD 0x2
 
-Heh, I didn't even realize I was suggesting this :-D but it's good=20
-nonetheless.
+or
 
-Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+#define NBCON_USE_WRITE_ATOMIC 0x1
+#define NBCON_USE_WRITE_THREAD 0x2
 
-> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-> ---
-> [v2]
-> * use port-> directly.
-> * do not remove curly braces.
-> Both rebase errors -- noticed by Andy.
-> ---
->  drivers/tty/serial/8250/8250_port.c | 21 +++++++++++++--------
->  1 file changed, 13 insertions(+), 8 deletions(-)
->=20
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/825=
-0/8250_port.c
-> index 48c30e158cb8..0f85a2f292fc 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2216,15 +2216,8 @@ static void serial8250_THRE_test(struct uart_port =
-*port)
->  =09=09up->bugs |=3D UART_BUG_THRE;
->  }
-> =20
-> -static void serial8250_initialize(struct uart_port *port)
-> +static void serial8250_init_mctrl(struct uart_port *port)
->  {
-> -=09struct uart_8250_port *up =3D up_to_u8250p(port);
-> -=09unsigned long flags;
-> -=09bool lsr_TEMT, iir_NOINT;
-> -
-> -=09serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
-> -
-> -=09uart_port_lock_irqsave(port, &flags);
->  =09if (port->flags & UPF_FOURPORT) {
->  =09=09if (!port->irq)
->  =09=09=09port->mctrl |=3D TIOCM_OUT1;
-> @@ -2235,6 +2228,18 @@ static void serial8250_initialize(struct uart_port=
- *port)
->  =09}
-> =20
->  =09serial8250_set_mctrl(port, port->mctrl);
-> +}
-> +
-> +static void serial8250_initialize(struct uart_port *port)
-> +{
-> +=09struct uart_8250_port *up =3D up_to_u8250p(port);
-> +=09unsigned long flags;
-> +=09bool lsr_TEMT, iir_NOINT;
-> +
-> +=09serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
-> +
-> +=09uart_port_lock_irqsave(port, &flags);
-> +=09serial8250_init_mctrl(port);
-> =20
->  =09/*
->  =09 * Serial over Lan (SoL) hack:
->=20
+or
 
---=20
- i.
+#define NBCON_ATOMIC_CB 0x1
+#define NBCON_THREAD_CB 0x2
 
---8323328-584487287-1750762935=:943--
+or
+
+#define NBCON_ATOMIC_FUNC 0x1
+#define NBCON_THREAD_FUNC 0x2
+
+Hopefully that gives Petr enough ideas that he can come up with good
+naming. ;-)
+
+John
