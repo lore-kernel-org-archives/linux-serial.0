@@ -1,127 +1,158 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 464C5190664;
-	Tue, 24 Jun 2025 08:06:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B2E026A0BF
+	for <linux-serial@vger.kernel.org>; Tue, 24 Jun 2025 08:41:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750752414; cv=none; b=IqSlN5ICp5ZeyfMz0tpvP2c97qzm13EUa9weiL/ck1yC0hgJ8Ntw0ELl1Lfo+/ozDWPI/AA1u62KV8EgeqVgozyu9wdcwRIT4vKFynGdNfFCZ1gzgy5z5NAnEbEWlhdn7tGId1jdifTszjmQHWn3X98QTIaccFRKNXel1Dd6ES0=
+	t=1750754466; cv=none; b=rIYzy1Yl+wV/F/BkN/7xelQyix9EaVqPIr/7v0aFt/oIRAXLdTubdbH+tuq3H4UVptgmCGH5HFnEiM2fifCCRvhWufxrp1PgTmsoTSlbPfogPs4u07Aqq3ubS/mqJ3X0g9iPNdHRGk3ziIeOO5uder2pr1+fSvXFILRPTxUo10M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750752414; c=relaxed/simple;
-	bh=rONZBqSu0G336QD6fdEcLUvwhyF4RivARlvQIYQaJu0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LF66IqYHpw0R27vnJmRDyqs+/O2bIJF7AvtXgUgbSiR3QaTLtFLpsg5u3dJZMYc2S8O9dRCk5383zimZGVClb20ksRzDDfAK331fFI06hWb+947XFas26gfMBhu3w8wnrYDlP2AnUGppSfRzICxX/2J5oc9/oOGsjdY4Ms2TG7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G/9oKIGy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750754466; c=relaxed/simple;
+	bh=zdAtxHvqY91gdiWBUFT7jBGg+f5hSLcaeJSjeAJNEVw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VBOYGfKJRDyskmPsp0ElfTY2xGQ+hhjZMYJN0UJVh6Vx/iOUlxOwNEZyIRgIRtHFBs3FnQ6zUjjgIQDRPfTFvmckLVcrKmvT/AKXHzmju8R42L0nODLBcMJ5ylpTzpHw2p1czj4YmfwXnNSOg4Q2JJ7ibxazvk34TP96p5i+ICc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=UH1V3t9S; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G/9oKIGy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D05EC4CEEF;
-	Tue, 24 Jun 2025 08:06:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750752413;
-	bh=rONZBqSu0G336QD6fdEcLUvwhyF4RivARlvQIYQaJu0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=G/9oKIGypl9sgF5wi0bI6DQWCsjBJW4+FlBDMK61TRiZyAz92va9RLWsu4sdbpB9X
-	 b7/PNne8bE4qUL/cpttYo16r+fGTPKNYruANTu+nXoAd9p8+Wkdk+uy7zr6KMvY1oh
-	 0PyTGm3+jhHFz6gEZOFMmVAQHRgS2CbLmS98RBy2wULZThNEXkVe4R2gZ3OSOhP5X7
-	 Hw7EQc0F4iFxPWEic/GOvMuvRFHk/SYeZ5jax1PQczZqgT1sk4XwDx19xc6gTN9J2+
-	 FmR1FaM5gjjQ/cGBzZVq3ItGp6DXEqvVhiSdlIWfRn3npU8KIT+j0SR+902vy1tLSc
-	 xNnluErWJ81Cg==
-From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	linux-doc@vger.kernel.org
-Subject: [PATCH v2 5/5] tty: fix tty_port_tty_*hangup() kernel-doc
-Date: Tue, 24 Jun 2025 10:06:41 +0200
-Message-ID: <20250624080641.509959-6-jirislaby@kernel.org>
-X-Mailer: git-send-email 2.50.0
-In-Reply-To: <20250624080641.509959-1-jirislaby@kernel.org>
-References: <20250624080641.509959-1-jirislaby@kernel.org>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="UH1V3t9S"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-3a57c8e247cso4038863f8f.1
+        for <linux-serial@vger.kernel.org>; Tue, 24 Jun 2025 01:41:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1750754463; x=1751359263; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=42Y2N6ebar+wiBFiVwZ+1np3R1M+VYIv1aIQkqIKk40=;
+        b=UH1V3t9S4NXkPqOqyNyHVbHAvxkVhK777/oSyAzWRZWd6k92Hp4OfCtbGtwNzDa4NO
+         aHhBhJNq4Q3A+nOxolkOrzG72lygIik4Y4E+LWv/mSGQbN9iz3HUSvmv0HQK5PYMdQvj
+         brqPqcaUXH96LLCaWAUegv/ZlT7PD9EU1kzbq4fve7XPzLifVTz0o4UWYAj7PQBeOQSr
+         JRgXLjd1gtNqd/KDijBDLEv9x2tEREMuAv+kC35tuY2gJl9ERBaTJVwENE4mCpoAXrMP
+         czg3WpLW9ng2/Ip1qS6Kg1UNBBG9QOQPV57fiSUcR4QzdS9omCKPVzKAT84JEmwyzS9d
+         /10A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750754463; x=1751359263;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=42Y2N6ebar+wiBFiVwZ+1np3R1M+VYIv1aIQkqIKk40=;
+        b=P9bqopS9tghmOR48vUfV05dXKt0puck15XuYeWrgVdJX52GaxwhNykdv961Yc15+Ln
+         W/YT9h6l5oSU4SeT2EYNGTKyJtzwcolAaHQPm2DF1oxzSlQLIt0+SvpCvszJDMy+6iyl
+         4uQwciJSK5IZEHGrpnJhk7M8AdbUvX793Q1JZy76RoAjX/XdjZQmiJAHEZQJBDmNGAIY
+         h+ny7irSW8UfaD1ggAldDlE12mYYDyR4X4CwVFtdXw9nAXUd7nXawH5TIjkSjW2GoSu9
+         EXlOn1vyDnWhaVp+bQ8XodTzF68BmAKfSt4BT9+rDB+P6ETcU+EM/v0x6POmEQmQIbfY
+         q5sA==
+X-Forwarded-Encrypted: i=1; AJvYcCUXfxQ5w+W640zHjYQXngaHgwtfpX65xaDOfBRtGHWoZPiG/eILbQVadQOk2L5AFIiEngcDHi/q9zkxS88=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyP4TwgcM+KFxMsKesY1lVuewxk4lXcCQzX5wJmWXrF0b6eL66z
+	gHfRUE4AkW0XC6B7FYUHkwYQhuPGN58o4isdSBBqCfhNWlahBeA71y1NitAaYhpotZY=
+X-Gm-Gg: ASbGncvw71bVFT101oLcRvJbXa3DJM3NJiS/d3x4BV4leipHMAT/a74YEwitEBCW5Om
+	3VezJuVd7kBUkF55ku0qkLxWRJHkMJk6sE2vXMsyMWyHfa+xMYcvVnC5peOfP3zxjI7kyPY4JS/
+	ueUHoWrV9iXaMevCqESPw/CHTjbvWhWJjuBMMZCGQWbiNtZXNITbeITBzPxGPvbu6Cmr9RZJ8+b
+	TN0EyxgjIAbtMT+nYL/+tvxHzC4LWew0VtcqnWiKhLNLXMxa5AHD1tcupkLXndKr3gKem3iDvba
+	+rRLaPDO93MZUeOUkWGgKHCfeXkTi/absjS65DuaXHbBHxVHKnkHc7FrPHCP7Pg1
+X-Google-Smtp-Source: AGHT+IHSGyDwoYjnGgDbPlFSLTlqgEue3oGk1SeNKtOch4nBjPOzzj8KWkuWYgkah6BLwc+G22XXxA==
+X-Received: by 2002:a05:6000:3111:b0:3a1:fcd6:1e6b with SMTP id ffacd0b85a97d-3a6d1334011mr11624969f8f.57.1750754462679;
+        Tue, 24 Jun 2025 01:41:02 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-749b5e08e52sm1231044b3a.9.2025.06.24.01.40.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Jun 2025 01:41:02 -0700 (PDT)
+Date: Tue, 24 Jun 2025 10:40:46 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jason Wessel <jason.wessel@windriver.com>,
+	Daniel Thompson <danielt@kernel.org>,
+	Douglas Anderson <dianders@chromium.org>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
+Subject: Re: [PATCH 2/7] printk: Use consoles_suspended flag when
+ suspending/resuming all consoles
+Message-ID: <aFpkQHwNCslbKSP6@pathway.suse.cz>
+References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
+ <20250606-printk-cleanup-part2-v1-2-f427c743dda0@suse.com>
+ <aExBo-8cVOy6GegR@pathway.suse.cz>
+ <84y0tmiidg.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <84y0tmiidg.fsf@jogness.linutronix.de>
 
-The commit below added a new helper, but omitted to move (and add) the
-corressponding kernel-doc. Do it now.
+On Fri 2025-06-20 16:49:07, John Ogness wrote:
+> On 2025-06-13, Petr Mladek <pmladek@suse.com> wrote:
+> >> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+> >> index fd12efcc4aeda8883773d9807bc215f6e5cdf71a..72de12396e6f1bc5234acfdf6dcc393acf88d216 100644
+> >> --- a/kernel/printk/nbcon.c
+> >> +++ b/kernel/printk/nbcon.c
+> >> @@ -1147,7 +1147,7 @@ static bool nbcon_kthread_should_wakeup(struct console *con, struct nbcon_contex
+> >>  	cookie = console_srcu_read_lock();
+> >>  
+> >>  	flags = console_srcu_read_flags(con);
+> >> -	if (console_is_usable(con, flags, false)) {
+> >> +	if (console_is_usable(con, flags, false, consoles_suspended)) {
+> >
+> > The new global console_suspended value has the be synchronized the
+> > same way as the current CON_SUSPENDED per-console flag.
+> > It means that the value must be:
+> >
+> >   + updated only under console_list_lock together with
+> >     synchronize_rcu().
+> >
+> >   + read using READ_ONCE() under console_srcu_read_lock()
+> 
+> Yes.
+> 
+> > I am going to propose more solutions because no one is obviously
+> > the best one.
+> 
+> [...]
+> 
+> > Variant C:
+> > ==========
+> >
+> > Remove even @flags parameter from console_is_usable() and read both
+> > values there directly.
+> >
+> > Many callers read @flags only because they call console_is_usable().
+> > The change would simplify the code.
+> >
+> > But there are few exceptions:
+> >
+> >    2. Another exception is __pr_flush() where console_is_usable() is
+> >       called twice with @use_atomic set "true" and "false".
+> >
+> >       We would want to read "con->flags" only once here. A solution
+> >       would be to add a parameter to check both con->write_atomic
+> >       and con->write_thread in a single call.
+> 
+> Or it could become a bitmask of printing types to check:
+> 
+> #define ATOMIC_PRINTING 0x1
+> #define NONATOMIC_PRINTING 0x2
+> 
+> and then __pr_flush() looks like:
+> 
+> if (!console_is_usable(c, flags, ATOMIC_PRINTING|NONATOMIC_PRINTING)
 
-Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-Fixes: 2b5eac0f8c6e ("tty: introduce and use tty_port_tty_vhangup() helper")
-Link: https://lore.kernel.org/all/b23d566c-09dc-7374-cc87-0ad4660e8b2e@linux.intel.com/
-Reported-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-doc@vger.kernel.org
----
- Documentation/driver-api/tty/tty_port.rst | 5 +++--
- drivers/tty/tty_port.c                    | 5 -----
- include/linux/tty_port.h                  | 9 +++++++++
- 3 files changed, 12 insertions(+), 7 deletions(-)
+I like this. It will help even in all other cases when one mode is needed.
+I mean that, for example:
 
-diff --git a/Documentation/driver-api/tty/tty_port.rst b/Documentation/driver-api/tty/tty_port.rst
-index 5cb90e954fcf..504a353f2682 100644
---- a/Documentation/driver-api/tty/tty_port.rst
-+++ b/Documentation/driver-api/tty/tty_port.rst
-@@ -42,9 +42,10 @@ TTY Refcounting
- TTY Helpers
- -----------
- 
-+.. kernel-doc::  include/linux/tty_port.h
-+   :identifiers: tty_port_tty_hangup tty_port_tty_vhangup
- .. kernel-doc::  drivers/tty/tty_port.c
--   :identifiers: tty_port_tty_hangup tty_port_tty_wakeup
--
-+   :identifiers: tty_port_tty_wakeup
- 
- Modem Signals
- -------------
-diff --git a/drivers/tty/tty_port.c b/drivers/tty/tty_port.c
-index 903eebdbe12d..5b4d5fb99a59 100644
---- a/drivers/tty/tty_port.c
-+++ b/drivers/tty/tty_port.c
-@@ -391,11 +391,6 @@ void tty_port_hangup(struct tty_port *port)
- }
- EXPORT_SYMBOL(tty_port_hangup);
- 
--/**
-- * tty_port_tty_hangup - helper to hang up a tty
-- * @port: tty port
-- * @check_clocal: hang only ttys with %CLOCAL unset?
-- */
- void __tty_port_tty_hangup(struct tty_port *port, bool check_clocal, bool async)
- {
- 	struct tty_struct *tty = tty_port_tty_get(port);
-diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-index 021f9a8415c0..332ddb93603e 100644
---- a/include/linux/tty_port.h
-+++ b/include/linux/tty_port.h
-@@ -251,11 +251,20 @@ static inline int tty_port_users(struct tty_port *port)
- 	return port->count + port->blocked_open;
- }
- 
-+/**
-+ * tty_port_tty_hangup - helper to hang up a tty asynchronously
-+ * @port: tty port
-+ * @check_clocal: hang only ttys with %CLOCAL unset?
-+ */
- static inline void tty_port_tty_hangup(struct tty_port *port, bool check_clocal)
- {
- 	__tty_port_tty_hangup(port, check_clocal, true);
- }
- 
-+/**
-+ * tty_port_tty_vhangup - helper to hang up a tty synchronously
-+ * @port: tty port
-+ */
- static inline void tty_port_tty_vhangup(struct tty_port *port)
- {
- 	__tty_port_tty_hangup(port, false, false);
--- 
-2.50.0
+   console_is_usable(c, flags, ATOMIC_PRINTING)
 
+is more self-explaining than
+
+   console_is_usable(c, flags, true)
+
+Best Regards,
+Petr
