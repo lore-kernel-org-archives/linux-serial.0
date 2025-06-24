@@ -1,158 +1,213 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B2E026A0BF
-	for <linux-serial@vger.kernel.org>; Tue, 24 Jun 2025 08:41:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DACFB25CC50;
+	Tue, 24 Jun 2025 09:51:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750754466; cv=none; b=rIYzy1Yl+wV/F/BkN/7xelQyix9EaVqPIr/7v0aFt/oIRAXLdTubdbH+tuq3H4UVptgmCGH5HFnEiM2fifCCRvhWufxrp1PgTmsoTSlbPfogPs4u07Aqq3ubS/mqJ3X0g9iPNdHRGk3ziIeOO5uder2pr1+fSvXFILRPTxUo10M=
+	t=1750758676; cv=none; b=cdmBpvPVJqm1Zwf8MTSTyLrjUeOPQbLqqaLrP3mLqRwx+KvHTE0wJYkhemFCPFTzN5Wov6vw07+BN7JE/fKbF+Ok5XLBKUlyKVgjiVblfb3CMxOfKbQbz+hj6rBnZL0Yi8JbLzusa4+b7T6GoP5+3ozjjg7hDnpRn9872LJD2qM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750754466; c=relaxed/simple;
-	bh=zdAtxHvqY91gdiWBUFT7jBGg+f5hSLcaeJSjeAJNEVw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VBOYGfKJRDyskmPsp0ElfTY2xGQ+hhjZMYJN0UJVh6Vx/iOUlxOwNEZyIRgIRtHFBs3FnQ6zUjjgIQDRPfTFvmckLVcrKmvT/AKXHzmju8R42L0nODLBcMJ5ylpTzpHw2p1czj4YmfwXnNSOg4Q2JJ7ibxazvk34TP96p5i+ICc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=UH1V3t9S; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1750758676; c=relaxed/simple;
+	bh=JYmiyGEacQq75Q27iwEKQgp/kF0padbvVGq+8y+OVa0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PC5UeC2n+kxRKYCCeOMJ2C623OzvJdL0X88o5YcaS+KN11cCIMsabsWt+LCx0QWbxOBhOh/vaBMpXtN8DjCwsX8MAjxGbeu33YlAmUujmFVOxygoRosRZ4XLNG3UgKm5v5KGdXba8VoCBiAUjXW1YurE8rZ88zjFGXIMMT3tsN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=P+RoxOQA; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="UH1V3t9S"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-3a57c8e247cso4038863f8f.1
-        for <linux-serial@vger.kernel.org>; Tue, 24 Jun 2025 01:41:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1750754463; x=1751359263; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=42Y2N6ebar+wiBFiVwZ+1np3R1M+VYIv1aIQkqIKk40=;
-        b=UH1V3t9S4NXkPqOqyNyHVbHAvxkVhK777/oSyAzWRZWd6k92Hp4OfCtbGtwNzDa4NO
-         aHhBhJNq4Q3A+nOxolkOrzG72lygIik4Y4E+LWv/mSGQbN9iz3HUSvmv0HQK5PYMdQvj
-         brqPqcaUXH96LLCaWAUegv/ZlT7PD9EU1kzbq4fve7XPzLifVTz0o4UWYAj7PQBeOQSr
-         JRgXLjd1gtNqd/KDijBDLEv9x2tEREMuAv+kC35tuY2gJl9ERBaTJVwENE4mCpoAXrMP
-         czg3WpLW9ng2/Ip1qS6Kg1UNBBG9QOQPV57fiSUcR4QzdS9omCKPVzKAT84JEmwyzS9d
-         /10A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750754463; x=1751359263;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=42Y2N6ebar+wiBFiVwZ+1np3R1M+VYIv1aIQkqIKk40=;
-        b=P9bqopS9tghmOR48vUfV05dXKt0puck15XuYeWrgVdJX52GaxwhNykdv961Yc15+Ln
-         W/YT9h6l5oSU4SeT2EYNGTKyJtzwcolAaHQPm2DF1oxzSlQLIt0+SvpCvszJDMy+6iyl
-         4uQwciJSK5IZEHGrpnJhk7M8AdbUvX793Q1JZy76RoAjX/XdjZQmiJAHEZQJBDmNGAIY
-         h+ny7irSW8UfaD1ggAldDlE12mYYDyR4X4CwVFtdXw9nAXUd7nXawH5TIjkSjW2GoSu9
-         EXlOn1vyDnWhaVp+bQ8XodTzF68BmAKfSt4BT9+rDB+P6ETcU+EM/v0x6POmEQmQIbfY
-         q5sA==
-X-Forwarded-Encrypted: i=1; AJvYcCUXfxQ5w+W640zHjYQXngaHgwtfpX65xaDOfBRtGHWoZPiG/eILbQVadQOk2L5AFIiEngcDHi/q9zkxS88=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyP4TwgcM+KFxMsKesY1lVuewxk4lXcCQzX5wJmWXrF0b6eL66z
-	gHfRUE4AkW0XC6B7FYUHkwYQhuPGN58o4isdSBBqCfhNWlahBeA71y1NitAaYhpotZY=
-X-Gm-Gg: ASbGncvw71bVFT101oLcRvJbXa3DJM3NJiS/d3x4BV4leipHMAT/a74YEwitEBCW5Om
-	3VezJuVd7kBUkF55ku0qkLxWRJHkMJk6sE2vXMsyMWyHfa+xMYcvVnC5peOfP3zxjI7kyPY4JS/
-	ueUHoWrV9iXaMevCqESPw/CHTjbvWhWJjuBMMZCGQWbiNtZXNITbeITBzPxGPvbu6Cmr9RZJ8+b
-	TN0EyxgjIAbtMT+nYL/+tvxHzC4LWew0VtcqnWiKhLNLXMxa5AHD1tcupkLXndKr3gKem3iDvba
-	+rRLaPDO93MZUeOUkWGgKHCfeXkTi/absjS65DuaXHbBHxVHKnkHc7FrPHCP7Pg1
-X-Google-Smtp-Source: AGHT+IHSGyDwoYjnGgDbPlFSLTlqgEue3oGk1SeNKtOch4nBjPOzzj8KWkuWYgkah6BLwc+G22XXxA==
-X-Received: by 2002:a05:6000:3111:b0:3a1:fcd6:1e6b with SMTP id ffacd0b85a97d-3a6d1334011mr11624969f8f.57.1750754462679;
-        Tue, 24 Jun 2025 01:41:02 -0700 (PDT)
-Received: from pathway.suse.cz ([176.114.240.130])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-749b5e08e52sm1231044b3a.9.2025.06.24.01.40.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jun 2025 01:41:02 -0700 (PDT)
-Date: Tue, 24 Jun 2025 10:40:46 +0200
-From: Petr Mladek <pmladek@suse.com>
-To: John Ogness <john.ogness@linutronix.de>
-Cc: Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Sergey Senozhatsky <senozhatsky@chromium.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Jason Wessel <jason.wessel@windriver.com>,
-	Daniel Thompson <danielt@kernel.org>,
-	Douglas Anderson <dianders@chromium.org>,
-	Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	kgdb-bugreport@lists.sourceforge.net, linux-um@lists.infradead.org
-Subject: Re: [PATCH 2/7] printk: Use consoles_suspended flag when
- suspending/resuming all consoles
-Message-ID: <aFpkQHwNCslbKSP6@pathway.suse.cz>
-References: <20250606-printk-cleanup-part2-v1-0-f427c743dda0@suse.com>
- <20250606-printk-cleanup-part2-v1-2-f427c743dda0@suse.com>
- <aExBo-8cVOy6GegR@pathway.suse.cz>
- <84y0tmiidg.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="P+RoxOQA"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55O8xQaw022985;
+	Tue, 24 Jun 2025 09:51:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=CxVzBY/H1+RhoLMscX59zfnY1PMC/8fIUY+
+	OGESrTJw=; b=P+RoxOQAp8qhWqZndvy7rh2Q71FI4OoGbXXaDKKDBJc+vv3MklT
+	VgSRh54O8ixq1vN43+bpExg1mnVTa5hIisK4+yxqt7c22Yy8oWPvZjMEOgk4Rsh4
+	L4KNAevHvHHxvPkn5JblDjjHJVNwyRpWDjgvOdW0wEODqlhWTiGLAa9WWkAQ0hLx
+	Z2H224x3Cvx1c9iS8srcM3CtZ124hJhyqr+lP8baAoJUdOao18/eiB7uz85Rw5le
+	slB7MTN0q8SaVugRVYqgYNCtylDhvnML6ZO+kyvIYagsB2IYzSQFiNHvpSsh0EKy
+	r/cRmXskLVoCYro9k7UJrXmmrOGS8G4TxoA==
+Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47f3bgbme5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 24 Jun 2025 09:51:09 +0000 (GMT)
+Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTP id 55O9p6uj024161;
+	Tue, 24 Jun 2025 09:51:06 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 47dntktds5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 24 Jun 2025 09:51:06 +0000
+Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 55O9p6m0024153;
+	Tue, 24 Jun 2025 09:51:06 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com ([10.213.97.252])
+	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 55O9p5ff024146
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 24 Jun 2025 09:51:06 +0000
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4047106)
+	id 30F2656E; Tue, 24 Jun 2025 15:21:05 +0530 (+0530)
+From: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
+To: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+        conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        andersson@kernel.org, konradybcio@kernel.org, johan+linaro@kernel.org,
+        dianders@chromium.org, agross@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Cc: mukesh.savaliya@oss.qualcomm.com, quic_anupkulk@quicinc.com,
+        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
+Subject: [PATCH v5 0/5] Add support to load QUP SE firmware from
+Date: Tue, 24 Jun 2025 15:20:57 +0530
+Message-Id: <20250624095102.1587580-1-viken.dadhaniya@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <84y0tmiidg.fsf@jogness.linutronix.de>
+Content-Transfer-Encoding: 8bit
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: F_FlamUoFfvpgJgurMu0z-lMQaPI-l39
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjI0MDA4MyBTYWx0ZWRfXwST6OOVC5jYz
+ HrygCDUlLWdMBSu4M1yc1ZcIrmRpfCuKFHlVxrB0Rxv+4A9tfnqQ6ADSYxM6XVBNsJayXg7QFZn
+ ncm+/TkI9YfCEwwxAqYLV1ler4YOekrl5BLeWng7Z9nBDKZGP7gqV3NOvIv1MRN41Odgovq5C8h
+ RnFInt69CX2201smfzkkCwdkT+WR+ssq2XnYuc1LrRLTlE19EQsoB+bXJ81MKnzEm513DWZoLaF
+ 4TUzZzQ0Dtr01qflDulW5uBxNyLg4c0wzXvP0VAQ6CnnPIltik7tAAVhzM77axVQYrKCUz3jQVD
+ 9J6DTrzjioJxbnDU74/lrkT5sr2tiy4wdpK2yWWpvgaetHBAmmvafBHILKuOcEFKdeKOS2tIBFC
+ z/t4ElFgMm5iV0e8yS7qnS2kVKn2VSaCWYAjYyGOUSO2j1JmQ1wI8xr9cjXQ85gsxxY/ippA
+X-Authority-Analysis: v=2.4 cv=L4kdQ/T8 c=1 sm=1 tr=0 ts=685a750e cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=6IFa9wvqVegA:10 a=VwQbUJbxAAAA:8 a=COk6AnOGAAAA:8 a=03-ClwGjdYBXaTv5q9oA:9
+ a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-GUID: F_FlamUoFfvpgJgurMu0z-lMQaPI-l39
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
+ definitions=2025-06-24_03,2025-06-23_07,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxscore=0 malwarescore=0 bulkscore=0 clxscore=1011 suspectscore=0
+ adultscore=0 priorityscore=1501 impostorscore=0 lowpriorityscore=0
+ spamscore=0 phishscore=0 mlxlogscore=999 classifier=spam authscore=0
+ authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2506240083
 
-On Fri 2025-06-20 16:49:07, John Ogness wrote:
-> On 2025-06-13, Petr Mladek <pmladek@suse.com> wrote:
-> >> diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-> >> index fd12efcc4aeda8883773d9807bc215f6e5cdf71a..72de12396e6f1bc5234acfdf6dcc393acf88d216 100644
-> >> --- a/kernel/printk/nbcon.c
-> >> +++ b/kernel/printk/nbcon.c
-> >> @@ -1147,7 +1147,7 @@ static bool nbcon_kthread_should_wakeup(struct console *con, struct nbcon_contex
-> >>  	cookie = console_srcu_read_lock();
-> >>  
-> >>  	flags = console_srcu_read_flags(con);
-> >> -	if (console_is_usable(con, flags, false)) {
-> >> +	if (console_is_usable(con, flags, false, consoles_suspended)) {
-> >
-> > The new global console_suspended value has the be synchronized the
-> > same way as the current CON_SUSPENDED per-console flag.
-> > It means that the value must be:
-> >
-> >   + updated only under console_list_lock together with
-> >     synchronize_rcu().
-> >
-> >   + read using READ_ONCE() under console_srcu_read_lock()
-> 
-> Yes.
-> 
-> > I am going to propose more solutions because no one is obviously
-> > the best one.
-> 
-> [...]
-> 
-> > Variant C:
-> > ==========
-> >
-> > Remove even @flags parameter from console_is_usable() and read both
-> > values there directly.
-> >
-> > Many callers read @flags only because they call console_is_usable().
-> > The change would simplify the code.
-> >
-> > But there are few exceptions:
-> >
-> >    2. Another exception is __pr_flush() where console_is_usable() is
-> >       called twice with @use_atomic set "true" and "false".
-> >
-> >       We would want to read "con->flags" only once here. A solution
-> >       would be to add a parameter to check both con->write_atomic
-> >       and con->write_thread in a single call.
-> 
-> Or it could become a bitmask of printing types to check:
-> 
-> #define ATOMIC_PRINTING 0x1
-> #define NONATOMIC_PRINTING 0x2
-> 
-> and then __pr_flush() looks like:
-> 
-> if (!console_is_usable(c, flags, ATOMIC_PRINTING|NONATOMIC_PRINTING)
+In Qualcomm SoCs, firmware loading for Serial Engines (SE) in the QUP
+hardware has traditionally been managed by TrustZone (TZ). This setup
+handled Serial Engines(SE) assignments and access control permissions,
+ensuring a high level of security but limiting flexibility and
+accessibility.
+ 
+This limitation poses a significant challenge for developers who need more
+flexibility to enable any protocol on any of the SEs within the QUP
+hardware.
+ 
+To address this, we are introducing a change that opens the firmware
+loading mechanism to the Linux environment. This enhancement increases
+flexibility and allows for more streamlined and efficient management. We
+can now handle SE assignments and access control permissions directly
+within Linux, eliminating the dependency on TZ.
+ 
+We propose an alternative method for firmware loading and SE
+ownership/transfer mode configuration based on device tree configuration.
+This method does not rely on other execution environments, making it
+accessible to all developers.
+ 
+For SEs used prior to the kernel, their firmware will be loaded by the
+respective image drivers (e.g., Debug UART, Secure or trusted SE).
+Additionally, the GSI firmware, which is common to all SEs per QUPV3 core,
+will not be loaded by Linux driver but TZ only. At the kernel level, only
+the SE protocol driver should load the respective protocol firmware.
+---
+v4 -> v5:
 
-I like this. It will help even in all other cases when one mode is needed.
-I mean that, for example:
+- Added Reviewd-by tag.
+- Resolved kernel test robot error by including the missing bitfield header file.
+- Updated the SE firmware ELF structure name for consistency.
+- Specified _leb4 format for the magic number definition.
+- Updated the email domain from 'quic' to 'oss'.
 
-   console_is_usable(c, flags, ATOMIC_PRINTING)
+v4 Link: https://lore.kernel.org/all/20250503111029.3583807-1-quic_vdadhani@quicinc.com/ 
 
-is more self-explaining than
+v3 -> v4: 
 
-   console_is_usable(c, flags, true)
+- Drop patch 1 of the v3 series as it has been reviewed and merged.
+- Update the qcom,gsi-dma-allowed property name to qcom,enable-gsi-dma.
+- Remove the full stop from the title.
+- Add a reference to the common schema YAML in the I2C, SPI, and SERIAL
+  YAML files in a single patch and drop the individual patches for protocol YAML.
+- Update the commit message.
+- Resolve kernel test robot warnings.
+- Add a multiline comment in the Copyright section.
+- Remove valid_seg_size and geni_config_common_control functions and add the code inline.
+- Rename read_elf function to geni_read_elf.
+- Add a firmware size check.
+- Assign *pelfseg after finding a match.
+- Break one large condition check into multiple checks to improve code readability.
+- Remove return type documentation for void functions.
+- Update error messages to be more descriptive.
+- Correct indentation.
+- Rename geni_flash_fw_revision function to geni_write_fw_revision.
+- Remove __func__ from all print statements.
+- Move resource_on to the appropriate section after parsing the firmware file.
+- Update variable names and function arguments as suggested.
+- Use FIELD_GET, FIELD_PREP, and GENMASK.
+- Use memcpy_toio() instead of memcpy.
+- Remove duplicate registers and bitmask macros.
+- Remove rsc struct and add required variables in geni_se struct.
+- Add a patch dependency note.
 
-Best Regards,
-Petr
+v3 Link: https://lore.kernel.org/linux-arm-msm/20250303124349.3474185-1-quic_vdadhani@quicinc.com/ 
+
+v2 -> v3:
+
+- Add a new YAML file for QUP peripheral-specific properties for I2C, SPI, and SERIAL buses.
+- Drop the 'qcom,xfer-mode' property and add the 'qcom,gsi-dma-allowed' property in protocol-specific YAML.
+- Add a reference for the QUP peripheral shared YAML to protocol-specific YAML.
+- Enhance error handling and remove redundant if conditions in the qcom-geni-se.c driver.
+- Remove the ternary operator in the qup_fw_load function.
+- Update function descriptions and use imperative mood in qcom-geni-se.c
+- Load firmware during probe only if the protocol is invalid.
+
+v2 Link: https://lore.kernel.org/linux-kernel/20250124105309.295769-1-quic_vdadhani@quicinc.com/ 
+ 
+v1 -> v2:
+
+- Drop the qcom,load-firmware property.
+- Remove the fixed firmware path.
+- Add the 'firmware-name' property in the QUP common driver.
+- Add logic to read the firmware path from the device tree.
+- Resolve kernel test robot warnings.
+- Update the 'qcom,xfer-mode' property description.
+
+v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-1-quic_vdadhani@quicinc.com/ 
+---
+Viken Dadhaniya (5):
+  dt-bindings: qcom: se-common: Add QUP Peripheral-specific properties
+    for I2C, SPI, and SERIAL bus
+  soc: qcom: geni-se: Add support to load QUP SE Firmware via Linux
+    subsystem
+  i2c: qcom-geni: Load i2c qup Firmware from linux side
+  spi: geni-qcom: Load spi qup Firmware from linux side
+  serial: qcom-geni: Load UART qup Firmware from linux side
+
+ .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |   1 +
+ .../serial/qcom,serial-geni-qcom.yaml         |   1 +
+ .../soc/qcom/qcom,se-common-props.yaml        |  26 ++
+ .../bindings/spi/qcom,spi-geni-qcom.yaml      |   1 +
+ drivers/i2c/busses/i2c-qcom-geni.c            |   8 +-
+ drivers/soc/qcom/qcom-geni-se.c               | 404 +++++++++++++++++-
+ drivers/spi/spi-geni-qcom.c                   |   6 +
+ drivers/tty/serial/qcom_geni_serial.c         |   8 +-
+ include/linux/soc/qcom/geni-se.h              |  32 +-
+ include/linux/soc/qcom/qup-fw-load.h          |  93 ++++
+ 10 files changed, 556 insertions(+), 24 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,se-common-props.yaml
+ create mode 100644 include/linux/soc/qcom/qup-fw-load.h
+
+-- 
+2.34.1
+
