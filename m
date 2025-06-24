@@ -1,39 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65527253950;
-	Tue, 24 Jun 2025 08:06:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 408CF2571A2;
+	Tue, 24 Jun 2025 08:06:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750752405; cv=none; b=DWNhjxPhHmpZlyyXyyvO2L6ypE10klubxz4uLb3njLyTjcyTPrCDbFzdIxJJ7sN1TvtEE3DKIB+uro+3wexAo9rE2PTuPUm6xs/v69oiTvtMApTftjEuzSyjKIc655jz+/lEHfqVECHLkXS+ZxYzDLJT1AhuQr5zERyvM4X0vI8=
+	t=1750752407; cv=none; b=P7AywD5ZKZNPW/4Eghb91siu5N2oLKkdlv4N13QRndq+xTqi0sdUJj0pMXKl9ewfUpvcYqTVzVyv5ep6nCjNneROZvgxpNIEVM18LQ8VI9nF1D41flFUo1f51vtHd2ExfPSaNqRujsieR/2rZ8tG4SLLlkxPBukpDIjlH6wGpic=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750752405; c=relaxed/simple;
-	bh=NKW5h3kHh0oUo7QTNcVMZxhriKcYzprBe2/Zcqsnkjg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=W9Y9qw+05AyvAksDpoXNsrEKUUad+A4n5f4TPxJYRDop8lF0lcuD2Hv+ZYd3vc5HYIyYknuUxf1UPJdnh8GnhuvNW2XrPu2I6zFhb2II6vqHEUmnDvXprcD7mfDkf9vYbswQ445lytffO0MqWb11RDyf++ZP2G3StQqWd1AAMzo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rr+mkyNN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750752407; c=relaxed/simple;
+	bh=ZDOr+KyMbsjP150xtbS+m55ZlY3PgRkTcYJNBAoR6bw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=vD47Z0so83hc44woCDS+E+UCvMZVsrOwl6B18qnSHaBA5fNKYUY5LRiHdsXR9wzcD230vbo+C8oS+VK7Mys2Ekc4npOsdbNdpVziN+ahj0kRSQsfIFisFF2aIL3aJDFbrnHzaYSdVIlUL3nZwkXTvHK/mIVwThpmAoNQH6oWgtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZK+gTj6z; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rr+mkyNN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC969C4CEE3;
-	Tue, 24 Jun 2025 08:06:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZK+gTj6z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F5A0C4CEF2;
+	Tue, 24 Jun 2025 08:06:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750752404;
-	bh=NKW5h3kHh0oUo7QTNcVMZxhriKcYzprBe2/Zcqsnkjg=;
-	h=From:To:Cc:Subject:Date:From;
-	b=rr+mkyNNg/oq/yv1zxCndITAG8qIrZzt2HY3nKf2LQGmY/aFEGxA/FxseId2LGtbR
-	 GnByK0DZHd8ketQ5fUlFmWNl6wuzs+h7uU543HVAGWP/HH3iZPQqsnZbN6oD8jlXcw
-	 9AmRgggGV6ljb7vUysYi4Lyy+tTXriJzVaf0Jjvn+IrdyVYA6TxYoJ3iRD0x3kORt6
-	 QTX6ooNDGJPnMI2GRdE9bopRG5mXIhB8h3UZb60zOU/DjlQM1puL8/Xqr0MIjur1+E
-	 b4EjQKuZSDRia7dKz9Wg2OnktqcfYEme6O6/sZZCiEfsrP6au1xR+GYp+AmC+oiAhP
-	 XcQRERIYO/4wQ==
+	s=k20201202; t=1750752406;
+	bh=ZDOr+KyMbsjP150xtbS+m55ZlY3PgRkTcYJNBAoR6bw=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=ZK+gTj6zBEYCkP5QGKOUTM0u9El+p1qcOXeqAcSiDJpGxAAIjyptVoredENyt0+7e
+	 BoWxMy4jgZFwPQafSuWc6CQjpjRuZiELL9oeLosAKdNECMjHW5axvZuYuxJvAwGf2u
+	 8MmMJCPtSjql7kcMEdoaWNOTcc+kEuX1FqtPrsljG+H9rTPmLAfXzn1MDDOadCABzm
+	 xXTJS/2BVhxt/4CU+8FiyjdCJX6OWTj/2q+ElOTMosy7g6TVqTADnwYQj1pDpW0tFX
+	 DLhpel13xyQCjXiFQYfWHIRohJwMrMXNHZSOAan8C9c4APV9hF7tDlpB4Xu8GpGLIY
+	 JvN6rvbnX80+Q==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH v2 0/5] tty: fixes on top of summer cleanup
-Date: Tue, 24 Jun 2025 10:06:36 +0200
-Message-ID: <20250624080641.509959-1-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+	Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v2 1/5] serial: 8250: extract serial8250_init_mctrl()
+Date: Tue, 24 Jun 2025 10:06:37 +0200
+Message-ID: <20250624080641.509959-2-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.50.0
+In-Reply-To: <20250624080641.509959-1-jirislaby@kernel.org>
+References: <20250624080641.509959-1-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -43,25 +48,63 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-These are fixes which were suggested or popped out of the summer cleanup
-series.
+After commit 795158691cc0 ("serial: 8250: extract
+serial8250_initialize()"), split serial8250_initialize() even more --
+the mctrl part of this code can be separated into
+serial8250_init_mctrl() -- done now.
 
-For v1..v2 diff, see the comments in respective patches.
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+Suggested-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+[v2]
+* use port-> directly.
+* do not remove curly braces.
+Both rebase errors -- noticed by Andy.
+---
+ drivers/tty/serial/8250/8250_port.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-Jiri Slaby (SUSE) (5):
-  serial: 8250: extract serial8250_init_mctrl()
-  serial: 8250: extract serial8250_iir_txen_test()
-  serial: 8250: rename lsr_TEMT, iir_NOINT to lowercase
-  serial: 8250: document doubled "type == PORT_8250_CIR" check
-  tty: fix tty_port_tty_*hangup() kernel-doc
-
- Documentation/driver-api/tty/tty_port.rst |  5 +-
- drivers/tty/serial/8250/8250_core.c       |  2 +
- drivers/tty/serial/8250/8250_port.c       | 60 ++++++++++++++---------
- drivers/tty/tty_port.c                    |  5 --
- include/linux/tty_port.h                  |  9 ++++
- 5 files changed, 50 insertions(+), 31 deletions(-)
-
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 48c30e158cb8..0f85a2f292fc 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2216,15 +2216,8 @@ static void serial8250_THRE_test(struct uart_port *port)
+ 		up->bugs |= UART_BUG_THRE;
+ }
+ 
+-static void serial8250_initialize(struct uart_port *port)
++static void serial8250_init_mctrl(struct uart_port *port)
+ {
+-	struct uart_8250_port *up = up_to_u8250p(port);
+-	unsigned long flags;
+-	bool lsr_TEMT, iir_NOINT;
+-
+-	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
+-
+-	uart_port_lock_irqsave(port, &flags);
+ 	if (port->flags & UPF_FOURPORT) {
+ 		if (!port->irq)
+ 			port->mctrl |= TIOCM_OUT1;
+@@ -2235,6 +2228,18 @@ static void serial8250_initialize(struct uart_port *port)
+ 	}
+ 
+ 	serial8250_set_mctrl(port, port->mctrl);
++}
++
++static void serial8250_initialize(struct uart_port *port)
++{
++	struct uart_8250_port *up = up_to_u8250p(port);
++	unsigned long flags;
++	bool lsr_TEMT, iir_NOINT;
++
++	serial_port_out(port, UART_LCR, UART_LCR_WLEN8);
++
++	uart_port_lock_irqsave(port, &flags);
++	serial8250_init_mctrl(port);
+ 
+ 	/*
+ 	 * Serial over Lan (SoL) hack:
 -- 
 2.50.0
 
