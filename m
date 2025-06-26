@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37C941C8610;
-	Thu, 26 Jun 2025 08:53:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39780296177;
+	Thu, 26 Jun 2025 08:53:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750928038; cv=none; b=i8suA97+4xq/sdvAHaj8ZxOz8+w1lniNWncMYF4oQduYaQdY+vy6gOzRLu/AFoShUvLS2La1Z35HrpoTqxOHa2JNSOZK4ksWheZNB+kM89mdQ/OsCJ4y9yqUPzpJ7v3eRP+YbIMjxVAdpZ3NTd3tDZqPaYb3w10CdXvlJXIuh20=
+	t=1750928038; cv=none; b=omTG08ZcXSQ2rLVW9BL118q5M9hLxI0Ymb/BCKGUPWjwlce3R4aMFUEZseBHhfmkdunDqndpCNGNKIttbYNx73zhjph5wBf60/5GnpiUTtBNhUoHY9NgrOKOJ4Qvbx1NX08cGyo7spTJgBrPMpJx0El1gFKsj1f92yZ3UnC7AcU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1750928038; c=relaxed/simple;
-	bh=H0v0d6tjzcWb9GqSlLtPRYMtkUgH3T7WvDid9FYTX2w=;
+	bh=po6gf5kjyV61lVb3y37IqmcQLE0mzdCfVR7P77/L3+8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=nrCqD6AEyQUpBhJCpAJv2Hqsyj/fQQhzpP5COvju2ZJoIrvzFGHhMuvcL1dar7ucg7RFcdvdtPKuPzYXZRl63nH4v1lA7X6aofLSfSvXVaB5TbmAWaE7WrmqgpOZcoKYbCWsSdXlNZRI6h8SXymj74soNBAefzrTPzZny8mZ45Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dkPPbuZL; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=DHFb2sRIEbJ7EFcz1yum6ULJRr8HnUq0hZh4pcapbgFXdMf7GV4x3TvKAp8ft4MreVctK/tRXl1161jhw6cICfA1vuBXYYTfqPZI8sy+bkEjxI7C5Y8mHrocBzaSwD2vDmIBL6TL93lSrCX1ziUoQC4GAUsifnUXZJej6BQke4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R4ffXAv3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dkPPbuZL"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D6556C4AF0C;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R4ffXAv3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C23D7C4CEEF;
 	Thu, 26 Jun 2025 08:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1750928037;
-	bh=H0v0d6tjzcWb9GqSlLtPRYMtkUgH3T7WvDid9FYTX2w=;
+	bh=po6gf5kjyV61lVb3y37IqmcQLE0mzdCfVR7P77/L3+8=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=dkPPbuZLz3ISzb2mnswAjz28m1vP2MAWLCLKP1z3HPeIZiCfwCBtvCYFVD/HM5CCY
-	 AvKAPMa4srJQoqR/Ks6rAxz08MIdMAbzfC7JJGv+LHK/NBZxPD6L0C9ocAGdv7gFO2
-	 ReVu5ecU3jYb4zE8lIsKzrLd90LqdgslZ4yPQprbcUwjuChqA3bKfx6jDxLkgiMsK1
-	 dBlLeJsLdRqTQC/FNAR02JHP6gDSQoWNxOHdwvRcHQbl3++i7+unjIHitFqak4vMEt
-	 ywgziacEtFk1Chk+GE+CxyWLv1Mzv/uwL/7ZWHEkTfcq25FXt/hZ1Xlsk+pOFr5qSt
-	 1IB23vUcyCHEg==
+	b=R4ffXAv3IHmTvK0P3NGOlI5Fpr8p2z7K3aBvpnFCj5fXsikRR5A9ZTWKhw4Fs48JS
+	 FVg3A7V1NOaU+lCEmbh3fouLbpofrD19fUvOWHJRKXgMDAYizDb0MatrpURDSuAZCD
+	 2I+2qQWBmkpPg/vjuQPqscbGBMlaLLPf7VLR1yUPCfFedxWpybw1jUFleqMvw072Zh
+	 Y7HP9cskPBe54EHwPsI8JD8exhwq/MhZB9z6sHWytfTEB9HzPSkDcHUdLwGPTuo76C
+	 hLF31I2jJUw5e6scHbSSo9EGLL5heLavuEhk8xldDDyiSLlpfFo1Qw81SCe9FBTZGl
+	 q6VsFjgNbEIeQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2207C7115B;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDC5C77B7F;
 	Thu, 26 Jun 2025 08:53:57 +0000 (UTC)
 From: Max Shevchenko via B4 Relay <devnull+wctrl.proton.me@kernel.org>
-Date: Thu, 26 Jun 2025 11:53:55 +0300
-Subject: [PATCH v2 02/11] dt-bindings: interrupt-controller:
- mediatek,mt6577-sysirq: add MT6572
+Date: Thu, 26 Jun 2025 11:53:54 +0300
+Subject: [PATCH v2 01/11] dt-bindings: serial: mediatek,uart: add MT6572
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250626-mt6572-v2-2-f7f842196986@proton.me>
+Message-Id: <20250626-mt6572-v2-1-f7f842196986@proton.me>
 References: <20250626-mt6572-v2-0-f7f842196986@proton.me>
 In-Reply-To: <20250626-mt6572-v2-0-f7f842196986@proton.me>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -58,13 +57,14 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
  linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org, 
- Max Shevchenko <wctrl@proton.me>
+ Max Shevchenko <wctrl@proton.me>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1750928035; l=1081;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1750928035; l=945;
  i=wctrl@proton.me; s=20250603; h=from:subject:message-id;
- bh=ta3ujqr64pHbaGSlqm/Z8V+hlQFPt/BKX+PtFYGGo7c=;
- b=N7WTUdWGPF56DU0xKHYlV34F+JsC61gaqGOETMQ/cWPTeHSJpWFwZ0sT8FgqTbNhOMlTH8ukC
- tbzCPLf5dCoDQiqRY4nhQVb9Xv9wiKvGRZ9NUDILa9z5KakOldtmVE5
+ bh=bXsi5V4HlQoXzvgDyvOxJjmemw7ad9ICPPuvV97fHUk=;
+ b=kQJmMQjdTJC0sIEny0OI0bVxUP2oAfpEp83ogXq9Xq/NhSxIhwwEWA9DAbDUA6YpDhr+AFLrn
+ ZK6mOK7FfM0ChTMOSkmGC9/M0W4rkF4slGePOGJcTOt6HLa1wQBaD8d
 X-Developer-Key: i=wctrl@proton.me; a=ed25519;
  pk=JXUx3mL/OrnRvbK57HXgugBjEBKq4QgDKJqp7BALm74=
 X-Endpoint-Received: by B4 Relay for wctrl@proton.me/20250603 with
@@ -74,26 +74,26 @@ Reply-To: wctrl@proton.me
 
 From: Max Shevchenko <wctrl@proton.me>
 
-Add a compatible string for sysirq on the MT6572 SoC.
+Add a compatible string for serial on the MT6572 SoC.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Max Shevchenko <wctrl@proton.me>
 ---
- .../devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml | 1 +
+ Documentation/devicetree/bindings/serial/mediatek,uart.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml b/Documentation/devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml
-index 123d24b05556c67374fbb87abe5e16c65031d2ed..30d76692ca87b507900076cd2f7d2e7ed2605b33 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/mediatek,mt6577-sysirq.yaml
-@@ -21,6 +21,7 @@ properties:
+diff --git a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+index 1b02f0b197ff46e3530372d1d9303210cca9c2d5..fe283494188dea64bdfdd34a781bf54c8cbc1f05 100644
+--- a/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
++++ b/Documentation/devicetree/bindings/serial/mediatek,uart.yaml
+@@ -25,6 +25,7 @@ properties:
            - enum:
-               - mediatek,mt2701-sysirq
-               - mediatek,mt2712-sysirq
-+              - mediatek,mt6572-sysirq
-               - mediatek,mt6580-sysirq
-               - mediatek,mt6582-sysirq
-               - mediatek,mt6589-sysirq
+               - mediatek,mt2701-uart
+               - mediatek,mt2712-uart
++              - mediatek,mt6572-uart
+               - mediatek,mt6580-uart
+               - mediatek,mt6582-uart
+               - mediatek,mt6589-uart
 
 -- 
 2.50.0
