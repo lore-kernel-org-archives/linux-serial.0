@@ -1,254 +1,154 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2B031DD877;
-	Thu, 26 Jun 2025 15:57:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27D5E2EAB7F;
+	Thu, 26 Jun 2025 19:53:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750953448; cv=none; b=TZ5UBCg38IkBOCYwzUsJYMa23UAfTe2oFQw2AHDR+QMDw66NCLjRsvWCpFBylvxWJMb9Sps8pBAFnVnyqudD9l1Rjfh9sCn2ZMVFnoI94qzvbLQuR/wp4iYmXWRUGPa1eV18pamP6pl7Cz6GCvE8lvceAj62pfvfNfKyrkOHd1o=
+	t=1750967601; cv=none; b=mCwlP8UTw+ekl/E9ov8OIyCNs72QP01/is4Tw8pOuLMGBd70+X/K3ZEQAhL9iY+r2YUc+kscOMch5kikEj2grYx8kOuwpgfnACBd66OfWy46wFZHyfBE3oMn1zspfqgvw0i/U2S0kspUUGiIeEcBfrj5EqBnsj2t5pUZqseM3lQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750953448; c=relaxed/simple;
-	bh=6JWbMamyvHhdjBVtHAdEKl0VYOQ1UTS0CLtrLHlgRZc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Rg7EJd+cy80pqwt15NSFYTK6eZdzGvdIMXR9+f3MSpeqbEY6AQXmOhGQpPO6exnmtJwEzy2Hh6ucwUjNJKLVCtMRJy0hYAMvx05PNhOqM1qCsn0ISxKzRslnYZbMeaEqG5pMjoh9/vnwSXjvTVLy5lWrM9hF3jzyA8UpgaDfOrk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ZLWAF3WW; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1750967601; c=relaxed/simple;
+	bh=gP/lLAielMQ0FzJZoQVZVvW32nn5aVh+e1xIp7tL+5Y=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=Zm0ZzXauQTv6slLo+WkEDYmJg4vhBR7BBXtuAYpGhAgDY+NmwHliBSz7n69VehgyUJYAhpsiQhKoDWVXcaUTMZD2zDOPa5jS5EQC53reLlWm/c5RXzrU4EYm0D2ICbgDlhZSSrg+H3tNnbPraLBV05DYVdN/zzpn5YAjDK2oEHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mdJgSNJl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ZLWAF3WW"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55Q9IHis003766;
-	Thu, 26 Jun 2025 15:57:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	voG4a/i08ZzBiT1eAP6p9N0cTFLoavHgXndP0j/QmbQ=; b=ZLWAF3WWQbaJT9/I
-	jqx3gSADowH8nabNZKsZ5xdLdrB8IlzdBYjB+iUMWdIOAGIu/VJNr99hVxSknhwS
-	rOcpSE6IoosS0IrHQEHIRnmeWDsiRgGlGFw9SaCBkbLuztpYjBDfs/mQQwwtfi80
-	IOe1rnMHDwQibxErivg3I8JM3JZkpzcg8z+wMx/rrxosHw1fguDeZP+YcZDehVJ6
-	ztJvM1NuXbnXHqKlyvvjerteGPfKR1wF0Rh6mymnGzVxL05JvuQo3vaQZJ42Mjfs
-	KFgeGi62P2RrKUvUULSTzeqB2Sz/TjfcqQXqF46JcR0SSbwqD7LxqCAr3Kbri74Z
-	jl5ExQ==
-Received: from nasanppmta01.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47emcmwmn3-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 26 Jun 2025 15:57:21 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 55QFvLHW008178
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 26 Jun 2025 15:57:21 GMT
-Received: from [10.216.16.3] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.10; Thu, 26 Jun
- 2025 08:57:15 -0700
-Message-ID: <42eb99eb-5882-489f-b9f2-71d131429052@quicinc.com>
-Date: Thu, 26 Jun 2025 21:27:11 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mdJgSNJl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93113C4CEEB;
+	Thu, 26 Jun 2025 19:53:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750967600;
+	bh=gP/lLAielMQ0FzJZoQVZVvW32nn5aVh+e1xIp7tL+5Y=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=mdJgSNJlTCiBsgp1QvD08F4fcua2wPsC395F4cWUyYK5vhobW4WMrk+HNckMyVVnv
+	 SyBNxW8pmK1kHZyq62uSz+dqrTw1gWvGDX0uHKIZ95/VXLbqpGGbwJG74X91Vnjsi9
+	 +lQzSu24MxCmAgiA8BskBo3XspT8PnF1p1j3naF6V3QQpXBRto/8rg8B0pXSV1nxy/
+	 PS9dPFp7nBnSwxPAIaY4YnH4KsI93PilBkhbzyeokHcCVyvvCaYEyHKzk5JbxcnpQU
+	 w7YqCokzH58UfMS+MSYQhnF//W+DCn8cHiJPcbX/eUqFZ0koRzligdhE7BpIk9cWlA
+	 nEVqcKieCsypQ==
+Date: Thu, 26 Jun 2025 14:53:19 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 6/8] serial: qcom-geni: move clock-rate logic to
- separate function
-To: Bjorn Andersson <andersson@kernel.org>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby
-	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Konrad Dybcio
-	<konradybcio@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-serial@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>, <psodagud@quicinc.com>,
-        <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
-        <quic_mnaresh@quicinc.com>, <quic_shazhuss@quicinc.com>
-References: <20250606172114.6618-1-quic_ptalari@quicinc.com>
- <20250606172114.6618-7-quic_ptalari@quicinc.com>
- <509c94bb-cf31-43bb-a92d-db006efd43aa@quicinc.com>
- <mtdi5hpkrthohdvhtbojhhp6saip2uohv5343vpqwz2jssvskp@lpebfyxhqcjt>
-Content-Language: en-US
-From: Praveen Talari <quic_ptalari@quicinc.com>
-In-Reply-To: <mtdi5hpkrthohdvhtbojhhp6saip2uohv5343vpqwz2jssvskp@lpebfyxhqcjt>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: RqShRyVUgaAro1DVd4Rt_sUnvbYdlsDA
-X-Proofpoint-ORIG-GUID: RqShRyVUgaAro1DVd4Rt_sUnvbYdlsDA
-X-Authority-Analysis: v=2.4 cv=J+eq7BnS c=1 sm=1 tr=0 ts=685d6de1 cx=c_pps
- a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=COk6AnOGAAAA:8
- a=Hf93abl8SHV9aGI-kEQA:9 a=QEXdDO2ut3YA:10 a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjI2MDEzNSBTYWx0ZWRfX0kBNRmKxgcPW
- ob51K9Y0FiJK83KR/UMTMMM1vuLEmQOrE1njReUluR7Ml6zRWva/UTrLyN082TcKdjCcBZHYZgj
- XfJQzeh32oI6HT/OByZPPjvLcCiJP07o13dz4W4ITbJhdw5i3fxq1Dk3XMrxq7zyRa0XkO/yay6
- cYvwk38zYoOhICPAL38FMUxZJDCh7dU30hANPOZ3eOVEdeTIjR4/eFPHBssh+v8rPEip+BTv7BB
- jrkPmJ7h4zwJlB3nKhKwEBmvz1WjXSBwP1Jsgp8a2pdIDaHGwZJTyUiuRjkZ9yVzquEjH1MLOEv
- GooB/klHhAcC/ljtFQ4btqV40W6xw8NcM65PuBfzO6y4YWI02lCLPFRu3bGhs3ILV6sO9TWAUb5
- zxYYbqTU8eqjYCbmDdJz5WKKamht2P+1EoaFFlr+B7jLyd/cU4i9iVxUM14kf80OjF7C2C5C
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-06-26_06,2025-06-26_05,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 mlxlogscore=999 adultscore=0 impostorscore=0 clxscore=1015
- spamscore=0 malwarescore=0 phishscore=0 priorityscore=1501 suspectscore=0
- mlxscore=0 lowpriorityscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506260135
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ linux-mediatek@lists.infradead.org, Guenter Roeck <linux@roeck-us.net>, 
+ linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ Conor Dooley <conor+dt@kernel.org>, Sean Wang <sean.wang@mediatek.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Russell King <linux@armlinux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, 
+ Wim Van Sebroeck <wim@linux-watchdog.org>
+To: Max Shevchenko <wctrl@proton.me>
+In-Reply-To: <20250626-mt6572-v2-0-f7f842196986@proton.me>
+References: <20250626-mt6572-v2-0-f7f842196986@proton.me>
+Message-Id: <175096753913.717927.14601371478727547482.robh@kernel.org>
+Subject: Re: [PATCH v2 00/11] ARM: Add support for MediaTek MT6572 SoC
 
-HI Bjorn,
 
-Thank you for review.
+On Thu, 26 Jun 2025 11:53:53 +0300, Max Shevchenko wrote:
+> This series of patches adds support for the MT6572 SoC and
+> the JTY D101 tablet and Lenovo A369i smartphone based on it.
+> 
+> Signed-off-by: Max Shevchenko <wctrl@proton.me>
+> ---
+> Changes in v2:
+> - Drop the status property for the board devicetrees
+> - Add an soc node for the MT6572 and reorder the nodes and properties
+> - Change the commit title to a more descriptive one
+> - Change the cover title to the correct one
+> - Link to v1: https://lore.kernel.org/r/20250620-mt6572-v1-0-e2d47820f042@proton.me
+> 
+> ---
+> Max Shevchenko (11):
+>       dt-bindings: serial: mediatek,uart: add MT6572
+>       dt-bindings: interrupt-controller: mediatek,mt6577-sysirq: add MT6572
+>       dt-bindings: timer: mediatek: add MT6572
+>       dt-bindings: watchdog: mediatek,mtk-wdt: add MT6572
+>       dt-bindings: vendor-prefixes: add JTY
+>       dt-bindings: arm: mediatek: add boards based on the MT6572 SoC
+>       ARM: mediatek: add board_dt_compat entry for the MT6572 SoC
+>       ARM: mediatek: add MT6572 smp bring up code
+>       ARM: dts: mediatek: add basic support for MT6572 SoC
+>       ARM: dts: mediatek: add basic support for JTY D101 board
+>       ARM: dts: mediatek: add basic support for Lenovo A369i board
+> 
+>  .../devicetree/bindings/arm/mediatek.yaml          |   5 +
+>  .../mediatek,mt6577-sysirq.yaml                    |   1 +
+>  .../devicetree/bindings/serial/mediatek,uart.yaml  |   1 +
+>  .../devicetree/bindings/timer/mediatek,timer.yaml  |   1 +
+>  .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+>  .../bindings/watchdog/mediatek,mtk-wdt.yaml        |   1 +
+>  arch/arm/boot/dts/mediatek/Makefile                |   2 +
+>  arch/arm/boot/dts/mediatek/mt6572-jty-d101.dts     |  61 ++++++++++++
+>  arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dts |  56 +++++++++++
+>  arch/arm/boot/dts/mediatek/mt6572.dtsi             | 109 +++++++++++++++++++++
+>  arch/arm/mach-mediatek/Kconfig                     |   4 +
+>  arch/arm/mach-mediatek/mediatek.c                  |   1 +
+>  arch/arm/mach-mediatek/platsmp.c                   |   7 ++
+>  13 files changed, 251 insertions(+)
+> ---
+> base-commit: 0ff41df1cb268fc69e703a08a57ee14ae967d0ca
+> change-id: 20250619-mt6572-ef78a3d45168
+> 
+> Best regards,
+> --
+> Max Shevchenko <wctrl@proton.me>
+> 
+> 
+> 
 
-On 6/17/2025 9:37 PM, Bjorn Andersson wrote:
-> On Mon, Jun 16, 2025 at 09:34:27PM +0530, Praveen Talari wrote:
->> Hi Bryan,
->>
->> Gentle reminder!!
->>
-> 
-> As I've told you all countless times, if you want attention to your
-> patchset review each others patches! For some reason you're the only one
-> showing interest in getting this series merged.
 
-My intention is to CC Bryan with a polite reminder, one week after the 
-initial post.
+My bot found new DTB warnings on the .dts files added or changed in this
+series.
 
-> 
->> Thanks,
->> Praveen Talari
->>
->> On 6/6/2025 10:51 PM, Praveen Talari wrote:
->>> Facilitates future modifications within the new function,
->>> leading to better readability and maintainability of the code.
->>>
->>> Move the code that handles the actual logic of clock-rate
->>> calculations to a separate function geni_serial_set_rate()
->>> which enhances code readability.
->>>
->>> Signed-off-by: Praveen Talari <quic_ptalari@quicinc.com>
->>> ---
->>> v5 -> v6
->>> - used "unsigned int" instead of "unsigned long" in newly
->>>     added API function params to avoid the format specifier
->>>     warnings.
->>>
->>> v3 -> v4
->>> - added version log after ---
->>>
->>> v1 -> v2
->>> - resolved build warnings for datatype format specifiers
->>> - removed double spaces in log
->>> ---
->>>    drivers/tty/serial/qcom_geni_serial.c | 56 +++++++++++++++++----------
->>>    1 file changed, 36 insertions(+), 20 deletions(-)
->>>
->>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
->>> index 715db35bab2f..b6fa7dc9b1fb 100644
->>> --- a/drivers/tty/serial/qcom_geni_serial.c
->>> +++ b/drivers/tty/serial/qcom_geni_serial.c
->>> @@ -1283,27 +1283,14 @@ static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
->>>    	return ser_clk;
->>>    }
->>> -static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>> -					 struct ktermios *termios,
->>> -					 const struct ktermios *old)
->>> +static int geni_serial_set_rate(struct uart_port *uport, unsigned int baud)
->>>    {
->>> -	unsigned int baud;
->>> -	u32 bits_per_char;
->>> -	u32 tx_trans_cfg;
->>> -	u32 tx_parity_cfg;
->>> -	u32 rx_trans_cfg;
->>> -	u32 rx_parity_cfg;
->>> -	u32 stop_bit_len;
->>> -	unsigned int clk_div;
->>> -	u32 ser_clk_cfg;
->>>    	struct qcom_geni_serial_port *port = to_dev_port(uport);
->>>    	unsigned long clk_rate;
->>> -	u32 ver, sampling_rate;
->>>    	unsigned int avg_bw_core;
->>> -	unsigned long timeout;
->>> -
->>> -	/* baud rate */
->>> -	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
->>> +	unsigned int clk_div;
->>> +	u32 ver, sampling_rate;
->>> +	u32 ser_clk_cfg;
->>>    	sampling_rate = UART_OVERSAMPLING;
->>>    	/* Sampling rate is halved for IP versions >= 2.5 */
->>> @@ -1317,7 +1304,7 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>>    		dev_err(port->se.dev,
->>>    			"Couldn't find suitable clock rate for %u\n",
->>>    			baud * sampling_rate);
->>> -		return;
->>> +		return -EINVAL;
->>>    	}
->>>    	dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div = %u\n",
->>> @@ -1339,6 +1326,37 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>>    	port->se.icc_paths[CPU_TO_GENI].avg_bw = Bps_to_icc(baud);
->>>    	geni_icc_set_bw(&port->se);
->>> +	writel(ser_clk_cfg, uport->membase + GENI_SER_M_CLK_CFG);
->>> +	writel(ser_clk_cfg, uport->membase + GENI_SER_S_CLK_CFG);
->>> +	return 0;
->>> +}
->>> +
->>> +static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>> +					 struct ktermios *termios,
->>> +					 const struct ktermios *old)
->>> +{
->>> +	struct qcom_geni_serial_port *port = to_dev_port(uport);
->>> +	unsigned int baud;
->>> +	unsigned long timeout;
->>> +	u32 bits_per_char;
->>> +	u32 tx_trans_cfg;
->>> +	u32 tx_parity_cfg;
->>> +	u32 rx_trans_cfg;
->>> +	u32 rx_parity_cfg;
->>> +	u32 stop_bit_len;
->>> +	int ret = 0;
->>> +
->>> +	/* baud rate */
->>> +	baud = uart_get_baud_rate(uport, termios, old, 300, 4000000);
->>> +
->>> +	ret = geni_serial_set_rate(uport, baud);
->>> +	if (ret) {
->>> +		dev_err(port->se.dev,
->>> +			"%s: Failed to set baud:%u ret:%d\n",
->>> +			__func__, baud, ret);
-> 
-> As far as I can tell there's one error path in geni_serial_set_rate()
-> and there you already printed a more specific error message, as such
-> this doesn't add any value.
-Sure, will review and update in next patch-set.
+Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
+are fixed by another series. Ultimately, it is up to the platform
+maintainer whether these warnings are acceptable or not. No need to reply
+unless the platform maintainer has comments.
 
-Thanks,
-Praveen Talari
-> 
-> PS. In general, please don't use __func__, write helpful error messages
-> instead.
-> 
-> Regards,
-> Bjorn
-> 
->>> +		return;
->>> +	}
->>> +
->>>    	/* parity */
->>>    	tx_trans_cfg = readl(uport->membase + SE_UART_TX_TRANS_CFG);
->>>    	tx_parity_cfg = readl(uport->membase + SE_UART_TX_PARITY_CFG);
->>> @@ -1406,8 +1424,6 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
->>>    	writel(bits_per_char, uport->membase + SE_UART_TX_WORD_LEN);
->>>    	writel(bits_per_char, uport->membase + SE_UART_RX_WORD_LEN);
->>>    	writel(stop_bit_len, uport->membase + SE_UART_TX_STOP_BIT_LEN);
->>> -	writel(ser_clk_cfg, uport->membase + GENI_SER_M_CLK_CFG);
->>> -	writel(ser_clk_cfg, uport->membase + GENI_SER_S_CLK_CFG);
->>>    }
->>>    #ifdef CONFIG_SERIAL_QCOM_GENI_CONSOLE
+If you already ran DT checks and didn't see these error(s), then
+make sure dt-schema is up to date:
+
+  pip3 install dtschema --upgrade
+
+
+This patch series was applied (using b4) to base:
+ Base: using specified base-commit 0ff41df1cb268fc69e703a08a57ee14ae967d0ca
+
+If this is not the correct base, please add 'base-commit' tag
+(or use b4 which does this automatically)
+
+New warnings running 'make CHECK_DTBS=y for arch/arm/boot/dts/mediatek/' for 20250626-mt6572-v2-0-f7f842196986@proton.me:
+
+arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dtb: / (lenovo,a369i): memory: False schema does not allow {'device_type': ['memory'], 'reg': [[2147483648, 536870912]]}
+	from schema $id: http://devicetree.org/schemas/root-node.yaml#
+arch/arm/boot/dts/mediatek/mt6572-jty-d101.dtb: / (jty,d101): memory: False schema does not allow {'device_type': ['memory'], 'reg': [[2147483648, 1073741824]]}
+	from schema $id: http://devicetree.org/schemas/root-node.yaml#
+arch/arm/boot/dts/mediatek/mt7623a-rfb-nand.dtb: spi@1100a000 (mediatek,mt7623-spi): compatible: 'oneOf' conditional failed, one must be fixed:
+	['mediatek,mt7623-spi', 'mediatek,mt2701-spi'] is too long
+	'mediatek,mt7623-spi' is not one of ['mediatek,mt7629-spi', 'mediatek,mt8365-spi']
+	'mediatek,mt7623-spi' is not one of ['mediatek,mt8516-spi']
+	'mediatek,mt7623-spi' is not one of ['mediatek,mt6779-spi', 'mediatek,mt8186-spi', 'mediatek,mt8192-spi', 'mediatek,mt8195-spi']
+	'mediatek,mt7623-spi' is not one of ['mediatek,mt7981-spi-ipm', 'mediatek,mt7986-spi-ipm', 'mediatek,mt7988-spi-quad', 'mediatek,mt7988-spi-single', 'mediatek,mt8188-spi-ipm']
+	'mediatek,mt7623-spi' is not one of ['mediatek,mt2701-spi', 'mediatek,mt2712-spi', 'mediatek,mt6589-spi', 'mediatek,mt6765-spi', 'mediatek,mt6893-spi', 'mediatek,mt7622-spi', 'mediatek,mt8135-spi', 'mediatek,mt8173-spi', 'mediatek,mt8183-spi']
+	'mediatek,mt7622-spi' was expected
+	'mediatek,mt2712-spi' was expected
+	'mediatek,mt6765-spi' was expected
+	'mediatek,spi-ipm' was expected
+	from schema $id: http://devicetree.org/schemas/spi/mediatek,spi-mt65xx.yaml#
+
+
+
+
+
