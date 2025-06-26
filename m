@@ -1,154 +1,137 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27D5E2EAB7F;
-	Thu, 26 Jun 2025 19:53:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACDE12236F8;
+	Thu, 26 Jun 2025 23:09:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750967601; cv=none; b=mCwlP8UTw+ekl/E9ov8OIyCNs72QP01/is4Tw8pOuLMGBd70+X/K3ZEQAhL9iY+r2YUc+kscOMch5kikEj2grYx8kOuwpgfnACBd66OfWy46wFZHyfBE3oMn1zspfqgvw0i/U2S0kspUUGiIeEcBfrj5EqBnsj2t5pUZqseM3lQ=
+	t=1750979354; cv=none; b=BA/a4081JoVoEl2k9QSFoyxa1dC64OEHf/D0LaW0QqZS2suekyaXoMtLbWNphIfzLmXoM06OAebLfyg40YaHiifHKbCqpSCoORndu7Ee/9rXIqZcX0uE0Q5grb6RW/nUJSLOt9oW+dx2uAhiky658fuBpBWIxbroy9w5y8Qj5oQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750967601; c=relaxed/simple;
-	bh=gP/lLAielMQ0FzJZoQVZVvW32nn5aVh+e1xIp7tL+5Y=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=Zm0ZzXauQTv6slLo+WkEDYmJg4vhBR7BBXtuAYpGhAgDY+NmwHliBSz7n69VehgyUJYAhpsiQhKoDWVXcaUTMZD2zDOPa5jS5EQC53reLlWm/c5RXzrU4EYm0D2ICbgDlhZSSrg+H3tNnbPraLBV05DYVdN/zzpn5YAjDK2oEHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mdJgSNJl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750979354; c=relaxed/simple;
+	bh=NldmZOZLq6IiyJ7LGJYUM4TN7NywgseMK5R0ow1fO/8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LQTc5TVwKzv93wHmj7mpqtHq0FleC7fnDLBrTt9wP2IhS4X75NI9SpCOkHQEpYB4WU8/sa/Uf8/gV9RXS/x4fxZa24nFozYiMTGlWC0FDjgb6H1/wiSH3LK9Aov22VlLQzTRex5kdXLGpIlsjE4IK/GbFQZ4sbWdtBKs1j1qzmE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E6HSjCRP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mdJgSNJl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93113C4CEEB;
-	Thu, 26 Jun 2025 19:53:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E6HSjCRP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ADE8C4CEEB;
+	Thu, 26 Jun 2025 23:09:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750967600;
-	bh=gP/lLAielMQ0FzJZoQVZVvW32nn5aVh+e1xIp7tL+5Y=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=mdJgSNJlTCiBsgp1QvD08F4fcua2wPsC395F4cWUyYK5vhobW4WMrk+HNckMyVVnv
-	 SyBNxW8pmK1kHZyq62uSz+dqrTw1gWvGDX0uHKIZ95/VXLbqpGGbwJG74X91Vnjsi9
-	 +lQzSu24MxCmAgiA8BskBo3XspT8PnF1p1j3naF6V3QQpXBRto/8rg8B0pXSV1nxy/
-	 PS9dPFp7nBnSwxPAIaY4YnH4KsI93PilBkhbzyeokHcCVyvvCaYEyHKzk5JbxcnpQU
-	 w7YqCokzH58UfMS+MSYQhnF//W+DCn8cHiJPcbX/eUqFZ0koRzligdhE7BpIk9cWlA
-	 nEVqcKieCsypQ==
-Date: Thu, 26 Jun 2025 14:53:19 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=k20201202; t=1750979354;
+	bh=NldmZOZLq6IiyJ7LGJYUM4TN7NywgseMK5R0ow1fO/8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=E6HSjCRPb3tBYcmnXFW9/p22GYEtwy21hP711lYkpkPd4mwOBVxRGjnHQ3R0KjkjH
+	 SEYaHKTFRmOrsANeVQbR/0gO0lyVdUySyGuN/rY0tc7d2HYUz/nPff/5x5H/IaCFpy
+	 fnE8s17wbZRpNTjj6dQ0BNJEnU68NHfABTerdjf+qRrS/oPTDeR+tWonZQsbATzqMI
+	 JT6yYp1vKUSvDC1luTlH51pdNzV3zoUnDoGheZ2voD4CZw+O5WGtv8WQisUrxEM0ew
+	 G7tnTvIhhICfW6iAUzzKrc5B3go9Hu8Kaz39mIX5GklyOJQKnMReDZIaMdXQe75dNU
+	 SEebhsihP8elA==
+Date: Thu, 26 Jun 2025 18:09:13 -0500
+From: Rob Herring <robh@kernel.org>
+To: Prabhakar <prabhakar.csengg@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Magnus Damm <magnus.damm@gmail.com>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH v12 1/7] dt-bindings: serial: Added secondary clock for
+ RZ/T2H RSCI
+Message-ID: <20250626230913.GA1338561-robh@kernel.org>
+References: <20250617134504.126313-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20250617134504.126313-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- linux-mediatek@lists.infradead.org, Guenter Roeck <linux@roeck-us.net>, 
- linux-serial@vger.kernel.org, linux-watchdog@vger.kernel.org, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- Conor Dooley <conor+dt@kernel.org>, Sean Wang <sean.wang@mediatek.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
- Russell King <linux@armlinux.org.uk>, Thomas Gleixner <tglx@linutronix.de>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
- Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org, 
- Wim Van Sebroeck <wim@linux-watchdog.org>
-To: Max Shevchenko <wctrl@proton.me>
-In-Reply-To: <20250626-mt6572-v2-0-f7f842196986@proton.me>
-References: <20250626-mt6572-v2-0-f7f842196986@proton.me>
-Message-Id: <175096753913.717927.14601371478727547482.robh@kernel.org>
-Subject: Re: [PATCH v2 00/11] ARM: Add support for MediaTek MT6572 SoC
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250617134504.126313-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-
-On Thu, 26 Jun 2025 11:53:53 +0300, Max Shevchenko wrote:
-> This series of patches adds support for the MT6572 SoC and
-> the JTY D101 tablet and Lenovo A369i smartphone based on it.
+On Tue, Jun 17, 2025 at 02:44:58PM +0100, Prabhakar wrote:
+> From: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
 > 
-> Signed-off-by: Max Shevchenko <wctrl@proton.me>
+> At boot, the default clock is the PCLKM core clock (synchronous
+> clock, which is enabled by the bootloader).
+> For different baudrates, the asynchronous clock input must be used.
+> Clock selection is made by an internal register of RCSI.
+> 
+> Add the optional "sck", external clock input.
+> 
+> Also remove the unneeded serial0 alias from the dts example.
+> 
+> Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
-> Changes in v2:
-> - Drop the status property for the board devicetrees
-> - Add an soc node for the MT6572 and reorder the nodes and properties
-> - Change the commit title to a more descriptive one
-> - Change the cover title to the correct one
-> - Link to v1: https://lore.kernel.org/r/20250620-mt6572-v1-0-e2d47820f042@proton.me
+> Hi Rob,
+> As mentioned in the thread [1] below there are no users of the RSCI binding
+> hence this change doesn not break any ABI.
 > 
+> [1] https://lore.kernel.org/all/CAMuHMdUThuWxxznhjvcn5cOFCWOkb5u-fRYwTOoenDRY=4H6FA@mail.gmail.com/
+
+Please state this in the commit message. If you want to break the ABI 
+you have to say that you are and why it is okay.
+
+> 
+> Cheers, Prabhakar
 > ---
-> Max Shevchenko (11):
->       dt-bindings: serial: mediatek,uart: add MT6572
->       dt-bindings: interrupt-controller: mediatek,mt6577-sysirq: add MT6572
->       dt-bindings: timer: mediatek: add MT6572
->       dt-bindings: watchdog: mediatek,mtk-wdt: add MT6572
->       dt-bindings: vendor-prefixes: add JTY
->       dt-bindings: arm: mediatek: add boards based on the MT6572 SoC
->       ARM: mediatek: add board_dt_compat entry for the MT6572 SoC
->       ARM: mediatek: add MT6572 smp bring up code
->       ARM: dts: mediatek: add basic support for MT6572 SoC
->       ARM: dts: mediatek: add basic support for JTY D101 board
->       ARM: dts: mediatek: add basic support for Lenovo A369i board
+>  .../bindings/serial/renesas,rsci.yaml           | 17 +++++++++--------
+>  1 file changed, 9 insertions(+), 8 deletions(-)
 > 
->  .../devicetree/bindings/arm/mediatek.yaml          |   5 +
->  .../mediatek,mt6577-sysirq.yaml                    |   1 +
->  .../devicetree/bindings/serial/mediatek,uart.yaml  |   1 +
->  .../devicetree/bindings/timer/mediatek,timer.yaml  |   1 +
->  .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
->  .../bindings/watchdog/mediatek,mtk-wdt.yaml        |   1 +
->  arch/arm/boot/dts/mediatek/Makefile                |   2 +
->  arch/arm/boot/dts/mediatek/mt6572-jty-d101.dts     |  61 ++++++++++++
->  arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dts |  56 +++++++++++
->  arch/arm/boot/dts/mediatek/mt6572.dtsi             | 109 +++++++++++++++++++++
->  arch/arm/mach-mediatek/Kconfig                     |   4 +
->  arch/arm/mach-mediatek/mediatek.c                  |   1 +
->  arch/arm/mach-mediatek/platsmp.c                   |   7 ++
->  13 files changed, 251 insertions(+)
-> ---
-> base-commit: 0ff41df1cb268fc69e703a08a57ee14ae967d0ca
-> change-id: 20250619-mt6572-ef78a3d45168
+> diff --git a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+> index ea879db5f485..1bf255407df0 100644
+> --- a/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+> +++ b/Documentation/devicetree/bindings/serial/renesas,rsci.yaml
+> @@ -35,10 +35,15 @@ properties:
+>        - const: tei
+>  
+>    clocks:
+> -    maxItems: 1
+> +    minItems: 2
+> +    maxItems: 3
+>  
+>    clock-names:
+> -    const: fck # UART functional clock
+> +    minItems: 2
+> +    items:
+> +      - const: operation
+> +      - const: bus
+> +      - const: sck # optional external clock input
+>  
+>    power-domains:
+>      maxItems: 1
+> @@ -60,10 +65,6 @@ examples:
+>      #include <dt-bindings/interrupt-controller/arm-gic.h>
+>      #include <dt-bindings/clock/renesas-cpg-mssr.h>
+>  
+> -    aliases {
+> -        serial0 = &sci0;
+> -    };
+> -
+>      sci0: serial@80005000 {
+>          compatible = "renesas,r9a09g077-rsci";
+>          reg = <0x80005000 0x400>;
+> @@ -72,7 +73,7 @@ examples:
+>                       <GIC_SPI 592 IRQ_TYPE_EDGE_RISING>,
+>                       <GIC_SPI 593 IRQ_TYPE_LEVEL_HIGH>;
+>          interrupt-names = "eri", "rxi", "txi", "tei";
+> -        clocks = <&cpg CPG_MOD 108>;
+> -        clock-names = "fck";
+> +        clocks = <&cpg CPG_MOD 8>, <&cpg CPG_CORE 13>;
+> +        clock-names = "operation", "bus";
+>          power-domains = <&cpg>;
+>      };
+> -- 
+> 2.49.0
 > 
-> Best regards,
-> --
-> Max Shevchenko <wctrl@proton.me>
-> 
-> 
-> 
-
-
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
-
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
-
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
-
-  pip3 install dtschema --upgrade
-
-
-This patch series was applied (using b4) to base:
- Base: using specified base-commit 0ff41df1cb268fc69e703a08a57ee14ae967d0ca
-
-If this is not the correct base, please add 'base-commit' tag
-(or use b4 which does this automatically)
-
-New warnings running 'make CHECK_DTBS=y for arch/arm/boot/dts/mediatek/' for 20250626-mt6572-v2-0-f7f842196986@proton.me:
-
-arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dtb: / (lenovo,a369i): memory: False schema does not allow {'device_type': ['memory'], 'reg': [[2147483648, 536870912]]}
-	from schema $id: http://devicetree.org/schemas/root-node.yaml#
-arch/arm/boot/dts/mediatek/mt6572-jty-d101.dtb: / (jty,d101): memory: False schema does not allow {'device_type': ['memory'], 'reg': [[2147483648, 1073741824]]}
-	from schema $id: http://devicetree.org/schemas/root-node.yaml#
-arch/arm/boot/dts/mediatek/mt7623a-rfb-nand.dtb: spi@1100a000 (mediatek,mt7623-spi): compatible: 'oneOf' conditional failed, one must be fixed:
-	['mediatek,mt7623-spi', 'mediatek,mt2701-spi'] is too long
-	'mediatek,mt7623-spi' is not one of ['mediatek,mt7629-spi', 'mediatek,mt8365-spi']
-	'mediatek,mt7623-spi' is not one of ['mediatek,mt8516-spi']
-	'mediatek,mt7623-spi' is not one of ['mediatek,mt6779-spi', 'mediatek,mt8186-spi', 'mediatek,mt8192-spi', 'mediatek,mt8195-spi']
-	'mediatek,mt7623-spi' is not one of ['mediatek,mt7981-spi-ipm', 'mediatek,mt7986-spi-ipm', 'mediatek,mt7988-spi-quad', 'mediatek,mt7988-spi-single', 'mediatek,mt8188-spi-ipm']
-	'mediatek,mt7623-spi' is not one of ['mediatek,mt2701-spi', 'mediatek,mt2712-spi', 'mediatek,mt6589-spi', 'mediatek,mt6765-spi', 'mediatek,mt6893-spi', 'mediatek,mt7622-spi', 'mediatek,mt8135-spi', 'mediatek,mt8173-spi', 'mediatek,mt8183-spi']
-	'mediatek,mt7622-spi' was expected
-	'mediatek,mt2712-spi' was expected
-	'mediatek,mt6765-spi' was expected
-	'mediatek,spi-ipm' was expected
-	from schema $id: http://devicetree.org/schemas/spi/mediatek,spi-mt65xx.yaml#
-
-
-
-
-
