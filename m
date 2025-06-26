@@ -1,67 +1,124 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27ABB2D4B47;
-	Wed, 25 Jun 2025 20:13:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA89A295DB2;
+	Thu, 26 Jun 2025 08:53:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750882413; cv=none; b=Ghs1IbStvIqGBBkJYJXCpv4IpuziF+Ocjn+ru0GYOUW7JEiNywIsePlCxu4vfinbn8Z1nHxy4kjtJelYBg1jI/2Yfogml6FTWYi8BtU1Yi+s4mOxbnfruoH3adLHFFoQkZSgVCOzS9S5IWtp279Ez1rOzB+6arf+An/LUoPGHpo=
+	t=1750928038; cv=none; b=UTNpKMyCDF5838DHFx8Oq8yyIRAgjiNauOoo6SgP0slE9kLkamrNHNZopVRm7I2ejP+Gc2W/M/e6sAI1PagoPYZQFJe4NR7Z7D1NNa7IBCcwHKQtLd+JeeJiuYLAqH9VmSskDDizYgtUEoBpqVztw4qqaqmn7R1NbxdunMOAs7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750882413; c=relaxed/simple;
-	bh=vTsBed0/2n4hgLLsMZJbBT7tPunlaecDCOUWKSB9iKc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lvwcLaN6F8xPhuCDs7mKpriSTflg59Uyqk5Rv7huNR9FjqdFRXOLyGW9V4WOYJfI6PoMhcPoGuwQ1gke7rPhfzBKVnt7nTemgghA/Fj0rGOwwWukn/UeTu0RE3N8cDEZWxZuN7hTFb00j8X0e0QqINB7egedM56M+GN9ZGHMO60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nMWvYaVQ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750928038; c=relaxed/simple;
+	bh=OwU7D8PADIgeGXWG37O9GOsus96bJ6yiGEjt9OCGGg4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Q7kNzV0UV1g5yDrXwx1XvHFfqgciauKbs0ClPrt4/HfaDa3Xcj1RKavZPGfDnnFGpVX3v7cchi5l6x5Z9e10i20WxIVU+Bb7D5NleQYJODLgdzwcwOME0b9Fb5DQ0NMu2ZFGpgNwTTyrLBqaZLQhwVQJcUzJTy9gtaJl9GCg96c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DKMrfeFU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nMWvYaVQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 973C9C4CEEA;
-	Wed, 25 Jun 2025 20:13:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DKMrfeFU"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B0B46C4CEEB;
+	Thu, 26 Jun 2025 08:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750882412;
-	bh=vTsBed0/2n4hgLLsMZJbBT7tPunlaecDCOUWKSB9iKc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nMWvYaVQPQyDYChTBCCtpkl2eJ1Y0z1/MwmTrHjVb4rGwihuNQoL74YUppu391Gxa
-	 NYHED/Whl6jW+MdrNSkfFrN7M+k0swslAPnJzGPQKYsopX3SDhOBqEXJXqOJ4nptuh
-	 GdZu5s/sefBWOZo1oYBlmzB6K1Ye9veNHSIJJzhsXyRG2cGTk45obyrvLL8Vqls+XT
-	 siiXLstk1eP6kYUk9t1EFs+z1yNAkL/6mFncVYrzACwMO+nwqvDhpb9D5eed6O+t0g
-	 3IVPM18af1RzFtGWr3jMUncGIneZ3CRsTVYxGIKZH9/OLppVixB74ZiOjvMCx42NSB
-	 hwt1vQ1+WB79w==
-Date: Wed, 25 Jun 2025 15:13:31 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: krzk+dt@kernel.org, conor+dt@kernel.org, linux-i2c@vger.kernel.org,
-	matthias.bgg@gmail.com, daniel.lezcano@linaro.org,
-	linux-mediatek@lists.infradead.org, qii.wang@mediatek.com,
-	kernel@collabora.com, linux-serial@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	jirislaby@kernel.org, gregkh@linuxfoundation.org,
-	andi.shyti@kernel.org, linux-kernel@vger.kernel.org,
-	tglx@linutronix.de
-Subject: Re: [PATCH 2/3] dt-bindings: serial: mediatek,uart: Add compatible
- for MT8196
-Message-ID: <175088241131.2135556.8017034319394467736.robh@kernel.org>
-References: <20250611110800.458164-1-angelogioacchino.delregno@collabora.com>
- <20250611110800.458164-3-angelogioacchino.delregno@collabora.com>
+	s=k20201202; t=1750928037;
+	bh=OwU7D8PADIgeGXWG37O9GOsus96bJ6yiGEjt9OCGGg4=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=DKMrfeFUOrzQ+q2EjnOdTN75U7ouLUQ/xGrr0CJQ1ZSQNT/f3MPL+kKaCiJMvSUaZ
+	 8VFZvHva0c1Wt48gaqJzxTgM2bccFrcvtdGSIXFBwUrk3P90kqm0GaaF7fWOKcyUP8
+	 /2yh0oiAQ+EXezl/oOzS2tydyd+/xn2kwJk1sPM3UUnRmgpIBFpWRjvk9+ctLt241K
+	 tLnselK0Og2mQVFgpfAMFLIUwW8zT0MI2QqFcbeXM/0jR7pZkd2f90zzvz4GO4bDXf
+	 55o0XKyqY4DSLizwSQK1mVMeaIE8NbrXxQzN9+JVmX4xK7c/GzEQR0PFZATLuT8ptb
+	 SX2JZ7sFv5bzw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CD3C7EE32;
+	Thu, 26 Jun 2025 08:53:57 +0000 (UTC)
+From: Max Shevchenko via B4 Relay <devnull+wctrl.proton.me@kernel.org>
+Subject: [PATCH v2 00/11] ARM: Add support for MediaTek MT6572 SoC
+Date: Thu, 26 Jun 2025 11:53:53 +0300
+Message-Id: <20250626-mt6572-v2-0-f7f842196986@proton.me>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250611110800.458164-3-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAKEKXWgC/zXMSw7CIBSF4a00dywGrrzsyH2YDhq5WAaFBhqia
+ bp3sdHhf3LybVAoByrQdxtkqqGEFFvgqYPHNMYnseBaA3JUXIsrm1etDDLyxo4XJ5XQFtp5yeT
+ D64DuQ+splDXl9+FW8V1/BPI/UQXjjNBJY5F7LvG25LSmeJ4Jhn3fP/dlbN+cAAAA
+X-Change-ID: 20250619-mt6572-ef78a3d45168
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Thomas Gleixner <tglx@linutronix.de>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Wim Van Sebroeck <wim@linux-watchdog.org>, 
+ Guenter Roeck <linux@roeck-us.net>, Sean Wang <sean.wang@mediatek.com>, 
+ Russell King <linux@armlinux.org.uk>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org, 
+ Max Shevchenko <wctrl@proton.me>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1750928035; l=2226;
+ i=wctrl@proton.me; s=20250603; h=from:subject:message-id;
+ bh=OwU7D8PADIgeGXWG37O9GOsus96bJ6yiGEjt9OCGGg4=;
+ b=baIgSdGhRpPQDRrIAAZqPHxm2ghrGJjBIImam6uwo0RV19u1bA8Bu0NK72e5cy9k8IIzWH1kz
+ Jy6jsC+ed2PBY0D7f7rUV2LakXFzOBxjLQCNTbuWlHUPAtXa2IdsUgK
+X-Developer-Key: i=wctrl@proton.me; a=ed25519;
+ pk=JXUx3mL/OrnRvbK57HXgugBjEBKq4QgDKJqp7BALm74=
+X-Endpoint-Received: by B4 Relay for wctrl@proton.me/20250603 with
+ auth_id=421
+X-Original-From: Max Shevchenko <wctrl@proton.me>
+Reply-To: wctrl@proton.me
 
+This series of patches adds support for the MT6572 SoC and
+the JTY D101 tablet and Lenovo A369i smartphone based on it.
 
-On Wed, 11 Jun 2025 13:07:59 +0200, AngeloGioacchino Del Regno wrote:
-> Add a compatible string for the MediaTek MT8196 Chromebook SoC,
-> which UART IPs are fully compatible with MT6577.
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  Documentation/devicetree/bindings/serial/mediatek,uart.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Signed-off-by: Max Shevchenko <wctrl@proton.me>
+---
+Changes in v2:
+- Drop the status property for the board devicetrees
+- Add an soc node for the MT6572 and reorder the nodes and properties
+- Change the commit title to a more descriptive one
+- Change the cover title to the correct one
+- Link to v1: https://lore.kernel.org/r/20250620-mt6572-v1-0-e2d47820f042@proton.me
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+---
+Max Shevchenko (11):
+      dt-bindings: serial: mediatek,uart: add MT6572
+      dt-bindings: interrupt-controller: mediatek,mt6577-sysirq: add MT6572
+      dt-bindings: timer: mediatek: add MT6572
+      dt-bindings: watchdog: mediatek,mtk-wdt: add MT6572
+      dt-bindings: vendor-prefixes: add JTY
+      dt-bindings: arm: mediatek: add boards based on the MT6572 SoC
+      ARM: mediatek: add board_dt_compat entry for the MT6572 SoC
+      ARM: mediatek: add MT6572 smp bring up code
+      ARM: dts: mediatek: add basic support for MT6572 SoC
+      ARM: dts: mediatek: add basic support for JTY D101 board
+      ARM: dts: mediatek: add basic support for Lenovo A369i board
+
+ .../devicetree/bindings/arm/mediatek.yaml          |   5 +
+ .../mediatek,mt6577-sysirq.yaml                    |   1 +
+ .../devicetree/bindings/serial/mediatek,uart.yaml  |   1 +
+ .../devicetree/bindings/timer/mediatek,timer.yaml  |   1 +
+ .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+ .../bindings/watchdog/mediatek,mtk-wdt.yaml        |   1 +
+ arch/arm/boot/dts/mediatek/Makefile                |   2 +
+ arch/arm/boot/dts/mediatek/mt6572-jty-d101.dts     |  61 ++++++++++++
+ arch/arm/boot/dts/mediatek/mt6572-lenovo-a369i.dts |  56 +++++++++++
+ arch/arm/boot/dts/mediatek/mt6572.dtsi             | 109 +++++++++++++++++++++
+ arch/arm/mach-mediatek/Kconfig                     |   4 +
+ arch/arm/mach-mediatek/mediatek.c                  |   1 +
+ arch/arm/mach-mediatek/platsmp.c                   |   7 ++
+ 13 files changed, 251 insertions(+)
+---
+base-commit: 0ff41df1cb268fc69e703a08a57ee14ae967d0ca
+change-id: 20250619-mt6572-ef78a3d45168
+
+Best regards,
+-- 
+Max Shevchenko <wctrl@proton.me>
+
 
