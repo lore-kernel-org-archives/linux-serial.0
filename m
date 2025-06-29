@@ -1,46 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7254121A931;
-	Sun, 29 Jun 2025 12:28:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A69B51D6AA;
+	Sun, 29 Jun 2025 12:30:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751200098; cv=none; b=rPPY7i28XQMKLbeaD1Xgn1lq4EQMOowEox7rGpwl3NIO+QCVtEvly2UOjp/98O5mtF4D/N/pbo/DKjOayvZCi6NNwQ4P5yvedMF2hB3f9VqzQUr8l3sVNaE2K0ljBKQUIUPD40v9CIBGspfteOQBX09rPozKSPg08NdwH6aLero=
+	t=1751200220; cv=none; b=NdfOGbs/JRPkRnc8fkoMRmsF3ZCEqCM6BZZ/B+8D/hwu82b1GcEBblB4dSsZofrm/cU1Qe7xsPJkspHV/kk3/7jlaaOY0F/WE+f+NGq2lBYnRtpKebRf7DI0mcIFHWo2DQ0R/ACBOB9IPLJ18GG2doLNuT3ucnN0V9Y/CIme0RQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751200098; c=relaxed/simple;
-	bh=UmCkYjZ4SN7uIpGorsrh78pScN/soOWdA3gPhn0qSTA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=niQvO5Z9exBTl7ZRjTPw/jdOKGZlkCWeqWIl0RrnFzXvzBB4jp1wzKw52q/m0bbNb5Sus6LAtKIAgM5LzpsM/899AA2UEohrdG/ekA+mTHxB1bpOLmAO0tk6Y/dE8FRF8vD8EQ8pJhh7nz32PHLWdhzgq4qFX2nv2cdM1AQcIHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=D+U/fpi2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1751200220; c=relaxed/simple;
+	bh=UM+OvlejUrRI0VfiNesQkThGz3t5ZeebEYKwPufLmto=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=Suk7Q2I/QeT4KiLL2NyKX25MwgoewbO/2cmVGwq/ThVCDQRFHIoaSmdv4zIkxZVvP+ftE2p2yflryF/LTZhSJV+d/ldBoa0oCDPC4MyUiMOyADjdc/Wxoo2aHvjm9q/Fq69iQJq0oZkUgfcp3Sj51pvqkFinFKBpE7nXDOUiWZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=X2SltdUb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="D+U/fpi2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B204C4CEEB;
-	Sun, 29 Jun 2025 12:28:17 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="X2SltdUb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3514C4CEEB;
+	Sun, 29 Jun 2025 12:30:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1751200097;
-	bh=UmCkYjZ4SN7uIpGorsrh78pScN/soOWdA3gPhn0qSTA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=D+U/fpi2tf4PSGtkLBR/FbmGlNiv1hnR3zCDhpcPBjWhGTBagzsgWhhZlc2C5sgHm
-	 iJuwYogEmMKlQdLmHSUSYoF3PDHcd8oHw6XgFNtj+//v8mfBas0N0w2pLuMFOXod1u
-	 mPpOze7T83NdqDfS+W18NNDAmbOJebe12k5977WM=
-Date: Sun, 29 Jun 2025 14:27:09 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Prabhakar <prabhakar.csengg@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-	Biju Das <biju.das.jz@bp.renesas.com>,
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH v13 5/5] serial: sh-sci: Add support for RZ/T2H SCI
-Message-ID: <2025062914-unkempt-reentry-470c@gregkh>
-References: <20250628115715.102338-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20250628115715.102338-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+	s=korg; t=1751200219;
+	bh=UM+OvlejUrRI0VfiNesQkThGz3t5ZeebEYKwPufLmto=;
+	h=Date:From:To:Cc:Subject:From;
+	b=X2SltdUbSa1cvkI1Lbwj8e7o8f0iCVVHrRgNYIozA7sr0w7KsMonMHguA3ylKFRgw
+	 +XJILdN7iByaF/vepGi8/vKdiqWoNOGHl1bWWI4eQ/PYErzB0cQNlke2xjT8pOg06O
+	 bn0CWZVJrwyzN9q5h0i6NsiQKf0UOKd7dmH6MKDY=
+Date: Sun, 29 Jun 2025 14:29:42 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY / Serial driver fixes for 6.16-rc4
+Message-ID: <aGExtgnENnLLFsET@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -49,18 +39,53 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250628115715.102338-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-On Sat, Jun 28, 2025 at 12:57:15PM +0100, Prabhakar wrote:
-> +EXPORT_SYMBOL(sci_port_enable);
+The following changes since commit e04c78d86a9699d136910cfc0bdcf01087e3267e:
 
-EXPORT_SYMBOL_GPL() perhaps?  (sorry, I have to ask).
+  Linux 6.16-rc2 (2025-06-15 13:49:41 -0700)
 
-Also, why not limit this to just this one other driver that you want to
-use it with the proper namespace usage instead?
+are available in the Git repository at:
 
-Same for all other new exports in this file.
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.16-rc4
 
-thanks,
+for you to fetch changes up to 09812134071b3941fb81def30b61ed36d3a5dfb5:
 
-greg k-h
+  dt-bindings: serial: 8250: Make clocks and clock-frequency exclusive (2025-06-24 15:34:37 +0100)
+
+----------------------------------------------------------------
+TTY/Serial driver fixes for 6.16-rc4
+
+Here are 5 small serial and tty and vt fixes for 6.16-rc4.  Included in
+here are:
+  - kerneldoc fixes for vt recent changes
+  - imx serial driver fix
+  - of_node sysfs fix for a regression
+  - vt missing notification fix
+  - 8250 dt bindings fix
+
+All of these have been in linux-next for a while with no reported issues
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Aidan Stewart (1):
+      serial: core: restore of_node information in sysfs
+
+Fabio Estevam (1):
+      serial: imx: Restore original RXTL for console to fix data loss
+
+Nicolas Pitre (1):
+      vt: add missing notification when switching back to text mode
+
+Randy Dunlap (1):
+      vt: fix kernel-doc warnings in ucs_get_fallback()
+
+Yao Zi (1):
+      dt-bindings: serial: 8250: Make clocks and clock-frequency exclusive
+
+ Documentation/devicetree/bindings/serial/8250.yaml |  2 +-
+ drivers/tty/serial/imx.c                           | 17 ++++++++++++-----
+ drivers/tty/serial/serial_base_bus.c               |  1 +
+ drivers/tty/vt/ucs.c                               |  2 +-
+ drivers/tty/vt/vt.c                                |  1 +
+ 5 files changed, 16 insertions(+), 7 deletions(-)
