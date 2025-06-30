@@ -1,66 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FED828A3EF;
-	Mon, 30 Jun 2025 12:38:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B57CC2701DF;
+	Mon, 30 Jun 2025 12:49:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751287088; cv=none; b=dBOVUyXE5vvF0NJV0gTT4mOJlaAD/fUeN8mCpVXwCUGclbcdmql+Iac/uEAjXFDOMBMlwxANd52/VlcAheTV10C+xWTSWRy+cAmUjNu2rKalSGIn4+93z13biF8vRAa1VZVDCqXUGZi5292EcjNo12tYNgihg6AkBAa2y+8Jv1Q=
+	t=1751287779; cv=none; b=DkQ7/0L0bxlvvzk3LZQiVlSAPCN9Sc7P2Swce7/nkWL/AK2k2OmOP/82oRk30+slNfsHBbtc+5bJ692Tyv1w3CA4tNKlKygkxlL7gkWl6u/vLhLe3GkhCJ/EvTqw94V7HrxfKOp3R29ZNBh5susXHZvE4bhxgpzO99bQyS8mMgQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751287088; c=relaxed/simple;
-	bh=Hc4d0axlb0QIm7buUtUoHen9OaZG8yxdv/vS2Vp5K9U=;
+	s=arc-20240116; t=1751287779; c=relaxed/simple;
+	bh=KtF4BRKLvG1l73SzUGVON88ZrJJsmmnn4uqKn3idkrU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IdshFyqtieNDBcIrFJKrcw31uaNx5fn/PkIk3H38X4eSGhCigvQzm575Pso/CJZyf/co68PWkUd9vhGTGfd4X/NOY0eCWE1oQ8+LYgpT9f5D7r2KmJWo2cdcVDrsKFa8XWGnEtL5LTz44fPGJD7YdYKuQV2FvNd8n+LVfyOdQuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FOvEVZut; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hsx5On1OLWVDGDnocrWNkkNuky0txDPdsXHdysKPqA61o38uFbkEg5VbHsaoNjf8al0pUgSQWxVqNCZZyQ9sOax0hUYxZcpho64iLn0tP5trUoymn6pJUdCb70rXv9LKiQQzNj7hhOcdGpDKNB+yEmCXGjo7kBo9292BZMlL/Y8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=revmr0zY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FOvEVZut"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751287088; x=1782823088;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Hc4d0axlb0QIm7buUtUoHen9OaZG8yxdv/vS2Vp5K9U=;
-  b=FOvEVZutmdYkOk+2VZR5H9nbJpkYfTk9ErQcqdR71y7rq2lhRC2MTH/d
-   McATlQYILJRuE1Ja0cyEVY8CC6jzOm0zO4oi5bne3JUGhAui6ri/+Hm3/
-   +IL9F3KUzQwz9YhbDKPkKolVP3VTJM9LKJi+6P4/C0JiieNtqa6zPOPBc
-   w4WoIsoJRxOVT2hQDCe3e9do3nqchAEQzLWjOoFCtWqTE4RygxMLPFOyR
-   r1aZO2fBSDh7mf1vxWgjBYkWCnseJcq/frDgBqR+/k9az0cpPi98PdNjm
-   QTdIKsS/bjHHdVcVJQfznIXQt3vJakYXLOTo9jU0gPoV61LWnv5qGkRgj
-   A==;
-X-CSE-ConnectionGUID: QvY2GwgeSDidrfmI1y9ygQ==
-X-CSE-MsgGUID: ISLRMK/+T3a9w9KdBMBVEg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11480"; a="53634349"
-X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
-   d="scan'208";a="53634349"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2025 05:38:07 -0700
-X-CSE-ConnectionGUID: keLvS+2ATcykwwgAecvlQw==
-X-CSE-MsgGUID: zEalniYYRZ2v4I0ct8WWoA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
-   d="scan'208";a="153990099"
-Received: from smile.fi.intel.com ([10.237.72.52])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2025 05:38:04 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1uWDlo-0000000BJ3z-4AOE;
-	Mon, 30 Jun 2025 15:38:00 +0300
-Date: Mon, 30 Jun 2025 15:38:00 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH v1 1/1] serial: 8250: Move CE4100 quirks to a module
- under 8250 driver
-Message-ID: <aGKFKOWv1xTDlhnD@smile.fi.intel.com>
-References: <20250627182743.1273326-1-andriy.shevchenko@linux.intel.com>
- <a7f162cf-b7ba-472c-b13a-e3a5cd722bab@kernel.org>
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="revmr0zY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E678AC4CEF1;
+	Mon, 30 Jun 2025 12:49:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1751287779;
+	bh=KtF4BRKLvG1l73SzUGVON88ZrJJsmmnn4uqKn3idkrU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=revmr0zYtlzg+DeCEgI/3wLFgnKXwCNArgIWBZcr/KhfOobIncgMjF3tGSRhA+fXW
+	 6vfzpBKJlc80jdu5/wPtsdL52l18cjOPUD3FrjH3XS6vIEE4scZUD//POLhqAikP9i
+	 USd2bA3XdoVlbdh1a9+5IgTl9RCZIXwgZD6fC7mQ=
+Date: Mon, 30 Jun 2025 14:49:36 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Thomas Fourier <fourier.thomas@gmail.com>
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] pch_uart: Fix dma_sync_sg_for_device() nents value
+Message-ID: <2025063023-trough-pyramid-3594@gregkh>
+References: <20250630121021.106643-2-fourier.thomas@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -69,64 +41,68 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a7f162cf-b7ba-472c-b13a-e3a5cd722bab@kernel.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20250630121021.106643-2-fourier.thomas@gmail.com>
 
-On Mon, Jun 30, 2025 at 01:27:10PM +0200, Jiri Slaby wrote:
-> On 27. 06. 25, 20:25, Andy Shevchenko wrote:
-> > There is inconvenient for maintainers and maintainership to have
-> > some quirks under architectural code. Move it to the specific quirk
-> > file like other 8250-compatible drivers do.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Mon, Jun 30, 2025 at 02:10:19PM +0200, Thomas Fourier wrote:
+> The dma_sync_sg_for_device() functions should be called with the same
+> nents as the dma_map_sg(), not the value the map function returned.
 > 
-> Nice.
+> Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
+> Signed-off-by: Thomas Fourier <fourier.thomas@gmail.com>
+> ---
+>  drivers/tty/serial/pch_uart.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-Thanks, but it seems a bit late :-)
-
-> Just two nits (one suggestion actually) below. Ignore if you won't resubmit
-> for some other reasons...
-
-Sure, see above.
-
-...
-
-> > +static inline void sdv_serial_fixup(void) {};
+> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+> index 508e8c6f01d4..884fefbfd5a1 100644
+> --- a/drivers/tty/serial/pch_uart.c
+> +++ b/drivers/tty/serial/pch_uart.c
+> @@ -954,7 +954,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
+>  			__func__);
+>  		return 0;
+>  	}
+> -	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, nent, DMA_TO_DEVICE);
+> +	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, num, DMA_TO_DEVICE);
+>  	priv->desc_tx = desc;
+>  	desc->callback = pch_dma_tx_complete;
+>  	desc->callback_param = priv;
+> -- 
+> 2.43.0
 > 
-> Superfluous ;.
-
-Indeed. But I don't want to update just this (as it now may require
-a separate change for x86).
-
-...
-
-> > -static u32 ce4100_mem_serial_in(struct uart_port *p, unsigned int offset)
-> > -{
-> > -	u32 ret, ier, lsr;
-> > -
-> > -	if (offset != UART_IIR)
-> > -		return mem_serial_in(p, offset);
-> > -
-> > -	offset <<= p->regshift;
-> > -
-> > -	ret = readl(p->membase + offset);
 > 
-> Just noticed: why the two above lines are not one:
-> ret = mem_serial_in()?
-> 
-> Or in fact the whole function intro:
-> ret = mem_serial_in(p, offset);
-> if (offset != UART_IIR)
->   return ret;
 
-Hmm... Sounds like an equivalent. I probably can send a followup for this
-suggestion.
+Hi,
 
--- 
-With Best Regards,
-Andy Shevchenko
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
+You are receiving this message because of the following common error(s)
+as indicated below:
 
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/process/submitting-patches.rst for what
+  needs to be done here to properly describe this.
+
+- You have marked a patch with a "Fixes:" tag for a commit that is in an
+  older released kernel, yet you do not have a cc: stable line in the
+  signed-off-by area at all, which means that the patch will not be
+  applied to any older kernel releases.  To properly fix this, please
+  follow the documented rules in the
+  Documentation/process/stable-kernel-rules.rst file for how to resolve
+  this.
+
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
