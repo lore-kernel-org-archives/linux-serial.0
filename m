@@ -1,85 +1,62 @@
-Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54F28285CBA;
-	Mon, 30 Jun 2025 13:30:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5423241C89;
+	Mon, 30 Jun 2025 13:30:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751290219; cv=none; b=W9g8K8FIt991oxpff/QM6FOX6dy5Fq9v+F2LMOE3qoC+7K/QoRdwGK8MJCpUJV21z6oY768tCL/HvCTySdnVXuTT2AXC5Pza7R6az0jGCwDOAAeDxSA+36n54n3OoG0t24DvXVr/vwiMdHlRBB2jkECtQKSdcStxHKUill91Q5E=
+	t=1751290246; cv=none; b=BZOu0KEQWlIks/T5CyOMGxWuievZAr3vkqGrQgUt89AfhYEpe4miN23AXKsruT7iQJwzHHmwX9lt2vzZ0nHLSmPHYMgKDnTHIEOPTWDNlVE3j1CFo2tlhohAShkcLmVvdWkJB9os5ppQ+kCbiA/xVlg+eXqo8ZKmBFeM3a6W2/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751290219; c=relaxed/simple;
-	bh=k/F7wzi/Oivivw2NvLIoEktel4OXBWBf1njcoWD3Dbk=;
+	s=arc-20240116; t=1751290246; c=relaxed/simple;
+	bh=dgzPfkhy+ytF7h2R7fum3/9PiN1OYr4wvmrvLBauyNQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A1ENwTTUijHaFLlAjyHUMlINvvpArns/mLafB702OxUnEsy1yWNthhK5HgBrYIfPPBMVPuhPqS0JKQIIQQfm4Vt7z+JbXDc5tBnFn8wOvMcDAqdtdFhk1X/qsdVKQme9qAUIT3SMVnrXI42M52CYQyT73lV3s0CMOjHFEPcjU6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ain0cqz7; arc=none smtp.client-ip=209.85.210.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=VYvgzqMn8s0u226Cv4Xgv+wjue+EHyHwnzqCGJWa55BfvtGxEnPBNPVJzD4EbxErjiAkraH6N+6C7w38js5ShmIwkRnN6Ykk/XeU/2Qfevq1DSJXuISYzyNkyqSv5Snpt0NKW86hQam6WBZ5YUN21PiAgsJsSw81XeQzgCixJbg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LKj+4ILL; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ain0cqz7"
-Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-748e81d37a7so3169806b3a.1;
-        Mon, 30 Jun 2025 06:30:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1751290217; x=1751895017; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vqz5wu4a9+fyxIcUMARw02jDw0fFs9t8Ss/9EgTuY8g=;
-        b=Ain0cqz7AzWP/YEgejlwFZ1Fq4kHMKHKkhfGuO9loCElgYoFqg24rzbxzmkrRhDqg8
-         Rt6SLbY+/LiTsVfa7Rj5LLKqHeXYSvSZ3mB8e3PYU+MIqawZf1KintQt46sBmqCLZISs
-         CTP82KL+oKhHBMJIVXo+2At/e4KYEFEJfF2MrW8asxpcMBM1Qm103oK5UgmH55nUCJpb
-         +MNrJt4p6QSZYOZqVhzZgOn6l/JrLrVOKlmcmiASQkuGtnM9RNSYRAUgaBmpeUC/DjkH
-         XX0jzzb8/5RS86iq+kebu5tgLzIXIUXSGParYI2ganJ/pktffCfTAjnrGd9HpvBWQHwb
-         8VXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751290217; x=1751895017;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vqz5wu4a9+fyxIcUMARw02jDw0fFs9t8Ss/9EgTuY8g=;
-        b=sG3Xgtu590GV/ed776BSjv3QpO5NOJviQNYm6NVsHZ8KuOZrLWzYKpvetd7v4KH2mP
-         n/TKZ1z1rQA98+yeOPwhCQ3mphMRHVdyuHZR8NF5JTIMROaxTSGNB0FpzbtGnUKw8rwc
-         hVLmWxdPGyCjfAgcDF/a6Us850+KtBli0RIdV8fTico+1sS9DkFMHf/EBOkjtrMmfmfd
-         qtK32Mn8gmhpYKYAre0rmlAMR5a4746wuMy+UvppLh6WF/dL9fiPoZAn5QdQSb3M/XzM
-         fT7V+zEn9xFvWV+PGt2+CWRy3MfMruc8FoCnDhyfQk5ki4LaPw/BiN7ieoaXRK7l9jPV
-         tdPA==
-X-Forwarded-Encrypted: i=1; AJvYcCU4cRiNw5k3axz8WMBSzRXXP7Mq/GXCuMQXnCMoST8vzc86/3A/sX+B4rp+9MNmUP1YsWZk7cIF5MY7CriS@vger.kernel.org, AJvYcCWKCHYPPol70EKpfU85J1dUpAvls4+f5PD+OzO1lYosbriAx9Ga6PmYeU5fvQ16VNOio02KB3i34leHxas9@vger.kernel.org, AJvYcCXCN9jqCbNkKttJVmSAfr7oDShOyAIxMtFfGZop2Y9Ml1i4w8BwJSbwEfpQTcE9C4E6+27xvNVfTKhD8Zab6Sk=@vger.kernel.org, AJvYcCXafwvTsaHGOHUtM9NZ/x6YRwHOMpAmA5rhVEKnpFyYrndzQ31Ua4lQOqArfuPF+vl4EqzBw5oZ27FX@vger.kernel.org
-X-Gm-Message-State: AOJu0YzVcgnv9iiKtDfwjFYjdEuhf0ZqJt/ACMvHYvKPxvTBORZ3Ldmw
-	q9kivacinp/uRIyG4TjnkWpTjgcrLVbRRN6fruSXoLkumSjbBoZcHZlT
-X-Gm-Gg: ASbGncvpo2+znEfScT244iy5o472D5lVp98lUN6iffuQtN8WlGxD9TyWj7Y/5w8Zlqb
-	f3p9myKFMuVQlOsHk2B7eRFuv2jd5lQqfNlfPoly7T8kui/0x+AowlbC7YtibQhIQb6YuuGH4B6
-	a0I/+wIoF2mHEGRFAWzeXi15pPjNZchG9GiDgosCMDSdDzSBbVF2gTkr/YF5nXLDiUkAxFWQ0/5
-	aeUpY5B/E+MMCMpcq64Fn9xJs7Jhkntzr2CggCSesyaQzBC5pTTCYwtN1Tkj5yAkkiHg7dDh7c1
-	lYJCZ1LlAc7fMXQ9fb5UkfcSc+jYIuRApRENGMoXnLMdkFJjuI/7wTwtiuMUp74fbKyPv/2ut65
-	P+FIpnHFbMg==
-X-Google-Smtp-Source: AGHT+IHsEfXOWrT8Uf27lIFmnKIwzXoqP5mPWVdDMXddwdbdnzqfqiqgg5d8T6nDpFccz1puGjbcBw==
-X-Received: by 2002:a05:6a20:c90e:b0:21f:53e4:1925 with SMTP id adf61e73a8af0-220a12dbff0mr19639755637.10.1751290217517;
-        Mon, 30 Jun 2025 06:30:17 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:da43:aeff:fecc:bfd5])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b350d81f0ecsm2964147a12.27.2025.06.30.06.30.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jun 2025 06:30:15 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date: Mon, 30 Jun 2025 06:30:15 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: wctrl@proton.me
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Sean Wang <sean.wang@mediatek.com>,
-	Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v2 05/11] dt-bindings: vendor-prefixes: add JTY
-Message-ID: <4c48a544-1252-40fe-8dd7-17ec848f6957@roeck-us.net>
-References: <20250626-mt6572-v2-0-f7f842196986@proton.me>
- <20250626-mt6572-v2-5-f7f842196986@proton.me>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LKj+4ILL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1751290245; x=1782826245;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dgzPfkhy+ytF7h2R7fum3/9PiN1OYr4wvmrvLBauyNQ=;
+  b=LKj+4ILLUbE4e7kPWHVmnwP1qoT6sLbh/kljfnLefT7jv8Q3KV/PMU77
+   eLH1iEXWHlrL92zO5PETUlTwBcYP9JTa8J0ewh2GoiHjCa5KqnovBpYeq
+   Zgt95fmksdndUDTj5CVy3K0VYpn7zkjwvoWE/lNzcU8VGQvfLPG9Dbw/I
+   C/2gfmS4VQNA22/GuMb/gNULnG2FHru0mAsunhmHEW1UsWT1xdJOUMEM7
+   ipzhpoJN4+QyUNWoMxJvWOZCxiamWVxjlT1mZuQSwC7Fb0XVXAt155OIN
+   SmF1XIczWyyxNifyOQgljIwHZy/ePSF4KiD81ASQo99sq2RypDTpy1h+G
+   w==;
+X-CSE-ConnectionGUID: 3Pt2xPFfSbe9iZyGo9A8tw==
+X-CSE-MsgGUID: UTygQIWFSpqylxvfv0m5iA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11480"; a="70946626"
+X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
+   d="scan'208";a="70946626"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2025 06:30:43 -0700
+X-CSE-ConnectionGUID: rLrgEnVWQhKA11NnVHMhjg==
+X-CSE-MsgGUID: mlwKJsyaSoWUGlYzIly57Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
+   d="scan'208";a="157735147"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2025 06:30:41 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1uWEak-0000000BJnw-3lNQ;
+	Mon, 30 Jun 2025 16:30:38 +0300
+Date: Mon, 30 Jun 2025 16:30:38 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v1 1/1] serial: 8520_ce4100: Reuse mem_serial_in() in
+ ce4100_mem_serial_in()
+Message-ID: <aGKRfuu0p9krbejj@smile.fi.intel.com>
+References: <20250630125427.2266455-1-andriy.shevchenko@linux.intel.com>
+ <023bb251-255d-4f0e-8b2a-d6c8bc35d75b@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -88,38 +65,38 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250626-mt6572-v2-5-f7f842196986@proton.me>
+In-Reply-To: <023bb251-255d-4f0e-8b2a-d6c8bc35d75b@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jun 26, 2025 at 11:53:58AM +0300, Max Shevchenko via B4 Relay wrote:
-> From: Max Shevchenko <wctrl@proton.me>
-> 
-> JTY produced low-cost Android tablets based on various
-> MediaTek MT65xx SoCs.
-> 
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Signed-off-by: Max Shevchenko <wctrl@proton.me>
+On Mon, Jun 30, 2025 at 03:02:11PM +0200, Jiri Slaby wrote:
+> On 30. 06. 25, 14:54, Andy Shevchenko wrote:
+> > In one place in ce4100_mem_serial_in() the code may be replaced with
+> > mem_serial_in() call. Do it so and collapse two conditionals into one.
 
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+...
 
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
+> >   	u32 ret, ier, lsr;
+> > -	if (offset != UART_IIR)
+> > -		return mem_serial_in(p, offset);
+> > -
+> > -	offset <<= p->regshift;
+> > -
+> > -	ret = readl(p->membase + offset);
+> > -	if (!(ret & UART_IIR_NO_INT))
+> > +	ret = mem_serial_in(p, offset);
+> > +	if (!(offset == UART_IIR) && (ret & UART_IIR_NO_INT))
 > 
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> index 86f6a19b28ae217643bf7a63a471f74819d18238..517bd129288c96483ffe358127ce8e16f60d902b 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-> @@ -782,6 +782,8 @@ patternProperties:
->      description: Jide Tech
->    "^joz,.*":
->      description: JOZ BV
-> +  "^jty,.*":
-> +    description: JTY
->    "^kam,.*":
->      description: Kamstrup A/S
->    "^karo,.*":
-> 
-> -- 
-> 2.50.0
-> 
-> 
+> I am in haste, but a misplaced right paren (should be at the end)?
+
+Ah, good catch! It's probably better in the original form, i.e.
+
+	if ((offset != UART_IIR) || !(ret & UART_IIR_NO_INT))
+
+What do you think?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
