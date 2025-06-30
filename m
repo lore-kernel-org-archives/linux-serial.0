@@ -1,138 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8B401DC988;
-	Mon, 30 Jun 2025 11:33:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF83E25EFBC;
+	Mon, 30 Jun 2025 11:42:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751283189; cv=none; b=a7x//4E3RUf46hxPdGrxkMSR4KGnCofAUzYyj6mJuRqwOVYVtkp1bOSd72RtVEjRzW6OTR1aeyVhPbVp559FwtovPOlEEPjPhEVFFlUX5mwWk/5GeKr//am1qeqAXBuL2GLSUqY1HfIP0T3GAN90VjywVCRRA6ovBYQZObIOydg=
+	t=1751283722; cv=none; b=nVkXjd1Nofquza+AcuPgWw3fLvA2zLKakO8LNBABsh7m9xyVKBY+Rtk25DoCxID+TtBszOVIFGfJCzG1ydRIGoZl0b/D0kCU7dzIPNvPsxiQpdbvS9ZTEylX90Ye6BzDnycHQpqUetwQhYQhrMjHifEtiNLAPco5zfijXjO+KNs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751283189; c=relaxed/simple;
-	bh=IPMjnLBknZLh6qHuUlnriRP1h0VMQJ8k1ulWCLOWsR8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ru6GkL5juzyJw198ncl6ZkzymfT9toEMvMqbvWCsTCH5lM7Sq5zlP83YZNoF8EecxVRHc/HHi7HGQyGo7W/n0TEPkM1FJWAyYD+mDGdV2423T58v8yFZqQRH3IqPeRJloZKQzBvMV0g2rhZY+Eagr+9rosaEPWRcpX2dmkU0W8w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fg0JUpCb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1751283722; c=relaxed/simple;
+	bh=FO51ABSuHOGNa4urR01Hd1w5txbouBf4qswW4i6xqv4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=j6uouBsJcWLkRKwOnaaEXxpBtjihJLzN9vWJiU5A9fesXgMKVsSBzFxfOL/gyeUW0zhDQvjCrR3sH59nSC1+VVWSeziklJ7i30FwQjOJqxtUkqlHvCNEBVD3JtJml09p3hsUUJ9a8aZz4SnLLTALBAWWpCzaRkyLuIXrwvbKr3w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JvUuHkmC; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fg0JUpCb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4448CC4CEE3;
-	Mon, 30 Jun 2025 11:33:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751283189;
-	bh=IPMjnLBknZLh6qHuUlnriRP1h0VMQJ8k1ulWCLOWsR8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fg0JUpCbHIqOpclzBvOvtwLBzfPd/Qn3PaZj1HQ6JdZLf38C+kLWXzUgZo3ES5T/w
-	 sFYvUlCmilGHhmUALi+PWqXKRCuQXYngwYpUpTfcUztR10jufXhXbEz/u2IUeMM+S5
-	 i9hLY9yvgACXDK3Dvl9KeUryJ3rEFYz9rS67h/dcc0PZoMVkjRxNJDxCGi/cVGhvdJ
-	 OOwLBi2MKgfdRXh0MZjnuiRBMZOI5EyZ/99N8MgEIwdHomNhNg92TOsXXDU/Uw+bGI
-	 eJ+JFtnb/4XECJKBx41exqgcdVtswjhnDIY0Lp4aMPVqhaxuLvpQZ5XT+yZa3LFlbd
-	 U974yi+y+lKzA==
-Message-ID: <3f983134-5726-4a42-b534-132f51a8154f@kernel.org>
-Date: Mon, 30 Jun 2025 13:32:59 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JvUuHkmC"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3a577ab8c34so621520f8f.3;
+        Mon, 30 Jun 2025 04:42:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1751283719; x=1751888519; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8jvy3pp04vKzvPchJ+mlkBLjd4Hm79oWF7qAKiCY2Q8=;
+        b=JvUuHkmCJWIuaB3R8U8fbcsueztCH4UE4/aIzMaqoHQO+02ikbISAyyrfGb9rV6V4z
+         g1qNEZxC8ZdhEAG+BzpkuEuvSJK/mwc02Tc9mRhf9ponBa8DglBhSaf3axv3MMbYCm1B
+         +1meNxjhOqUdj9U91JgqEkRRyykn0krYa0gEO5UARVJNC3vhLJ43DEAhi03d0NMRlD5i
+         d1H7rLv+28wUDTwWDt0BbMERly74ygUEH5BBNdqMRPTeWz1VG9vtxF3lz1tEE32I1Ntd
+         vRFT8XrAdiL4ddCcmx5ddbHwUflpxNIOj6fpdEMGAf2GSNpMiunKY2YcGNpajqIMJcsh
+         +VzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751283719; x=1751888519;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=8jvy3pp04vKzvPchJ+mlkBLjd4Hm79oWF7qAKiCY2Q8=;
+        b=EozpFp96Kc/KXDskkQ9E0yKxDUm/NLt7r3PVcSeWnvzLvOrxd9erJ09183/PvNFBGe
+         ziJeRnmiqYKqcrrOyYXyrcBl/jtqCMxanIr5w202HFKoh6gEQcpjVSpUSB4WEv6+WlHR
+         S8bCi+Zk5+n0/3IBNUhIRMfF4RTnZcdDl3VsVubatXnC5oPov4ExLOKZ1Csj2o7kOCvK
+         Bx0nYuJf5zCZdcus33G08YzmnCjFV7pZclpsOMvDXSvRKFDfqHGqojGmHKe0cyVCIe/u
+         vfivNsEiXdyggL1X5ArE9Y0nUWb2QeLyzSCC6yDwuRaOOuPQOsoHULLizsg9/2NEJ/cj
+         Jegg==
+X-Forwarded-Encrypted: i=1; AJvYcCVH2kIxBj5KU16rzl1N3LzYyfhdec5TK8VsUbOHTRYnOAEsOowh+An6a0zcgTecYniEwZdR7uGggWowh36y@vger.kernel.org, AJvYcCXdxhmNm4sU+yvsSy2ey+jbH5zK4skXrFbd0bp97n75XrxMlJi8IzdnvVgNkPvfMsbZqtdzcwMYy/bJkQo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyH//7pW9mUweBl1c3PviIIN8oyTtMWRFzUiW+HrntD0jF5BkuK
+	zK4hfjYb2KnFb0TvFZ/o6uugX+dtwlP8sIGoEQ7OkB2RHZyAy15k26kVB3WbWSiP
+X-Gm-Gg: ASbGncu8D0u1s3VU8dTa/VOhRZX7iaJlz5wxIq/gXXpy99XnsanNDTSE0iCoc0iHtO6
+	Epcsuv622rbyWaB/kIoV6gkM9ir6KeeWOu8Li0qz99USL17iCzXApCF/D205nkXizn9Av1Cbn9w
+	mz1hjWlMewKpN8LwiEH5qbcIV8A6qSoWaLmVI2oOycfJu/yfl8UpS9mC1VNKc1P6vaC/B5fDxDU
+	KqobvwL6Iygd0fosfT8bnUgdGOxLYjpPTBl7XyOTpJeZ0LfEN3ZEull9JQJVwCSf7rJuM3SIZIH
+	Ibjlz9NX02+ROUjSEDMWQ2y2DZs06GKRXcWhX5NEw2QHNjfd5R+AzQifTiQxJo6EnlRy7N0Khl0
+	CitkaPvNdyp/1FQ==
+X-Google-Smtp-Source: AGHT+IEmezVG1+j27QeYrX9JQ+mctaV9VM/JouAhXHfJ3pm7y7wF8l3UZkmO7hL/kj4nRD0FRdPj6g==
+X-Received: by 2002:adf:9c8d:0:b0:3a3:584b:f5d7 with SMTP id ffacd0b85a97d-3aaf3c06454mr2452694f8f.5.1751283718694;
+        Mon, 30 Jun 2025 04:41:58 -0700 (PDT)
+Received: from thomas-precision3591.imag.fr ([2001:660:5301:24:43e:be8c:f80c:622a])
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-3a892e595d1sm10277730f8f.71.2025.06.30.04.41.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Jun 2025 04:41:58 -0700 (PDT)
+From: Thomas Fourier <fourier.thomas@gmail.com>
+To: 
+Cc: Thomas Fourier <fourier.thomas@gmail.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH] pch_uart: Fix dma_sync_sg_for_device() nents value
+Date: Mon, 30 Jun 2025 13:41:21 +0200
+Message-ID: <20250630114124.102326-2-fourier.thomas@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 7/8] serial: qcom-geni: Enable PM runtime for serial
- driver
-To: Praveen Talari <quic_ptalari@quicinc.com>,
- Bjorn Andersson <andersson@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
- psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com,
- quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
- quic_mnaresh@quicinc.com, quic_shazhuss@quicinc.com
-References: <20250606172114.6618-1-quic_ptalari@quicinc.com>
- <20250606172114.6618-8-quic_ptalari@quicinc.com>
- <d6cr4elhrbh27lmlcv5xzuel75uvsgi7klxjkevm7vg4jcbawe@5ojgetrxkag5>
- <f87807c9-5249-4d97-ab89-898b7d8d260d@quicinc.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
- QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
- +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
- ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
- 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
- hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
- tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
- 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
- naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
- hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
- whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
- qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
- RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
- Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
- H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
- dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
- AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
- jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
- zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
- XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <f87807c9-5249-4d97-ab89-898b7d8d260d@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 30/06/2025 07:10, Praveen Talari wrote:
-> Hi Bjorn,
-> 
-> Thank you for review.
-> 
-> On 6/17/2025 9:23 PM, Bjorn Andersson wrote:
->> On Fri, Jun 06, 2025 at 10:51:13PM +0530, Praveen Talari wrote:
->>> Add Power Management (PM) runtime support to Qualcomm GENI
->>> serial driver.
->>>
->>
->> Doesn't this have impact on the behavior outside of your
->> project? Or is the transition from qcom_geni_serial_pm() to explicit
->> RPM merely moving code around?
->>
->> Seems like this deserves to not be hidden in a middle of a patch series.
->>
->>> Introduce necessary callbacks and updates to ensure seamless
->>> transitions between power states, enhancing overall power
->>> efficiency.
->>>
->>
->> This commit message fails to state why we need runtime PM support in the
->> driver.
-> 
-> Introduce PM runtime support to the Qualcomm GENI serial driver to enable
-> better power efficiency and modularity across diverse resource control
-> mechanisms, including Linux and firmware-managed systems.
+The dma_sync_sg_for_device() functions should be called with the same
+nents as the dma_map_sg(), not the value the map function returned.
 
+Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
+Signed-off-by: Thomas Fourier <fourier.thomas@gmail.com>
+---
+ drivers/tty/serial/pch_uart.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-No, not better, that's some marketing blob without saying how this power
-efficiency is visible/observable.
+diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+index 508e8c6f01d4..5aee3fdba8a1 100644
+--- a/drivers/tty/serial/pch_uart.c
++++ b/drivers/tty/serial/pch_uart.c
+@@ -954,7 +954,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
+ 			__func__);
+ 		return 0;
+ 	}
+-	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, nent, DMA_TO_DEVICE);
++	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, priv->nent, DMA_TO_DEVICE);
+ 	priv->desc_tx = desc;
+ 	desc->callback = pch_dma_tx_complete;
+ 	desc->callback_param = priv;
+-- 
+2.43.0
 
-Best regards,
-Krzysztof
