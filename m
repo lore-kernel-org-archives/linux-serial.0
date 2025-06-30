@@ -1,103 +1,132 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82BA91DFCE;
-	Mon, 30 Jun 2025 12:21:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FED828A3EF;
+	Mon, 30 Jun 2025 12:38:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751286101; cv=none; b=iH47RgHczzjFqSvfxo7mYaE2lSHBobBKERJ+72NcD79SKCUgZ8WFyC8Hq7qETX5Dt0QaQllqrPDNrSyqio1I1Zqq1d8pVjsdL86IojH3l26zYYXM0O7NRzF3/+Fkz9ah5Ff1XIO7gVxK2tyCyJoEJS2IcyG8YSMebfnryMIQqSs=
+	t=1751287088; cv=none; b=dBOVUyXE5vvF0NJV0gTT4mOJlaAD/fUeN8mCpVXwCUGclbcdmql+Iac/uEAjXFDOMBMlwxANd52/VlcAheTV10C+xWTSWRy+cAmUjNu2rKalSGIn4+93z13biF8vRAa1VZVDCqXUGZi5292EcjNo12tYNgihg6AkBAa2y+8Jv1Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751286101; c=relaxed/simple;
-	bh=gUBGn6LkNrYYfc0MMtJUx1r9qQ8A9wY7woWHmYabnzU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nmGWvwu5DB2Xyvo1nkgrh+VleIhKlSi/TQ0bkKqXITBtcRb/4k7MsbV8/mX9V6UcZKpPpdTH3/hzh7cSC0LvEiqJgxC/zuvgwrAQeoJO+pf1LeI4vzfqz1+Wg6ep3YhiT4DzYMUGiwGJuoGCM/+Vz/rtbC6qdGwRAJTqVfN9t6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UwNKtsBj; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1751287088; c=relaxed/simple;
+	bh=Hc4d0axlb0QIm7buUtUoHen9OaZG8yxdv/vS2Vp5K9U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IdshFyqtieNDBcIrFJKrcw31uaNx5fn/PkIk3H38X4eSGhCigvQzm575Pso/CJZyf/co68PWkUd9vhGTGfd4X/NOY0eCWE1oQ8+LYgpT9f5D7r2KmJWo2cdcVDrsKFa8XWGnEtL5LTz44fPGJD7YdYKuQV2FvNd8n+LVfyOdQuY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FOvEVZut; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UwNKtsBj"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-450828af36aso1447235e9.1;
-        Mon, 30 Jun 2025 05:21:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1751286096; x=1751890896; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=CG85nVM05UH8KlWyPytsUQqw/p1VMbS1nOa01h9/4vY=;
-        b=UwNKtsBjdGV8s4FnYQZ5t8o3U0TKqXN9ijxOiTzkW3s3encDiccxuWDE0hubPZzruH
-         n1gVXiraWYNlrkDB+IathI+VBwPhFBADf50FNI7B6htmzItAF0MQ0ApbNlQdSELJoMPJ
-         LG32TKxnAYyxl+j4hn2TiAZYWFTVl7JSoibt9NRqfnAgSi1PK4koz5ynYud9Fr/e+CR9
-         HOOqYONcQC2XuU4uo02mtad2nu6aBpja4dYmW8GfyVkPDZnDIB1GIbm1MbZcIFoF+5aL
-         JySxYj5wA98WOJ+SL5nzZ7H0jGfrGDePWnSjIQ1vzU2JDHXyhKlpRJRSuDqCgMtEUkzW
-         npDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751286096; x=1751890896;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=CG85nVM05UH8KlWyPytsUQqw/p1VMbS1nOa01h9/4vY=;
-        b=fb0pLa1YxpRFA3j9JKcCxJSJ1s7KvFLRm73JVBpsxw8hofF3TBl8mLZpFTGgsQt7qf
-         vW3peBD5Wyk9KS++IYdEErwLV79DiBJC4+xveyw2V9KjrRIM9ABUdclD+i0a3LSxannF
-         z4qGPX5VY4d+QPmgtjnNMYjTuLFFScckEtT+r+votangfUMmXa1Hpodr3SFXkOoZOlG0
-         KW8iaRenhf1+IGvqFEoutB5FNsn+qoXRNe2a9g/wTJ55R2dmL/buL4XCbUr2xZw85DPO
-         Mx6Bcgg8AA8OestwukYMjRSB8SLOA/T7VTpVfM+hvaQlEN2U8MdusO0FMkmNQVKUwin6
-         rAlA==
-X-Forwarded-Encrypted: i=1; AJvYcCUEEoCykQHO9pgvGydrGBqPxt0IMHDeKic1p2glWVUiaZpz9pi+G1i5LahgbisrePQI9aFQFWzS239nYRLv@vger.kernel.org, AJvYcCWLFaENRi/5LI6fBnbK3rzZLQmc5uZ1iD/SIx97izD0L1Een8OQktvnLCsE5f7VLZ847IUaHmkgQNWTYu0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzl1lcJ2sJtpKeiVxJpoN9J6P3hVAjgyBFJJu8D9g0/ThL7TUQO
-	xhoF0U7tAg3nA7L2V9zf7Y9xLjMh3qbP0erw+M8RPSK8Qtm9oXz+BFdk
-X-Gm-Gg: ASbGncusyLbOmb4xgvbsAFw1/PbOdnp/37Na+Lhp4T403VTIkNnt1uaMyxn3t4qgqxb
-	jjNdXZmV8Dn5uTcbsrYlHKXWG5hO/JXCHUxpj82LqWHDaF4UfkvveyBgwUFuN/xWY6N1z6o/6/D
-	g3ICj3UZM9eboUkre9bPKXTKDvM4N59HUKg2YHiauMyp+GXzt3RqKasaVrMyb/LBe6FsKVvV7sP
-	ZDV3Xyomo7A5GnE/rpcyXs2E/ddpkKhsVqf2anLxy3h+ciewhJjKk04Svn5RKmDpnx/eS1U8+qq
-	o59YEOFjH4Rbec5SoYClgaYqOpkdl4H3D8ToTg9JoOTUFNeojJZTT0dAkaNpcOhrhVeJPg2JUY4
-	7ZeiU5yi7SzFoOA==
-X-Google-Smtp-Source: AGHT+IGPyiTzplS597WFAua/Opv6CmYnj9L/8QI+8mgzvqs+dsPU1U9+4dQRWDdPswPQvm+BqCZ9Hw==
-X-Received: by 2002:a05:600c:681b:b0:453:8c5:95d3 with SMTP id 5b1f17b1804b1-453a017c020mr13353015e9.7.1751286095366;
-        Mon, 30 Jun 2025 05:21:35 -0700 (PDT)
-Received: from thomas-precision3591.imag.fr ([2001:660:5301:24:43e:be8c:f80c:622a])
-        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-4538a3fe24esm133800375e9.23.2025.06.30.05.21.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jun 2025 05:21:35 -0700 (PDT)
-From: Thomas Fourier <fourier.thomas@gmail.com>
-To: 
-Cc: Thomas Fourier <fourier.thomas@gmail.com>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH v2] pch_uart: Fix dma_sync_sg_for_device() nents value
-Date: Mon, 30 Jun 2025 14:10:19 +0200
-Message-ID: <20250630121021.106643-2-fourier.thomas@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FOvEVZut"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1751287088; x=1782823088;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Hc4d0axlb0QIm7buUtUoHen9OaZG8yxdv/vS2Vp5K9U=;
+  b=FOvEVZutmdYkOk+2VZR5H9nbJpkYfTk9ErQcqdR71y7rq2lhRC2MTH/d
+   McATlQYILJRuE1Ja0cyEVY8CC6jzOm0zO4oi5bne3JUGhAui6ri/+Hm3/
+   +IL9F3KUzQwz9YhbDKPkKolVP3VTJM9LKJi+6P4/C0JiieNtqa6zPOPBc
+   w4WoIsoJRxOVT2hQDCe3e9do3nqchAEQzLWjOoFCtWqTE4RygxMLPFOyR
+   r1aZO2fBSDh7mf1vxWgjBYkWCnseJcq/frDgBqR+/k9az0cpPi98PdNjm
+   QTdIKsS/bjHHdVcVJQfznIXQt3vJakYXLOTo9jU0gPoV61LWnv5qGkRgj
+   A==;
+X-CSE-ConnectionGUID: QvY2GwgeSDidrfmI1y9ygQ==
+X-CSE-MsgGUID: ISLRMK/+T3a9w9KdBMBVEg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11480"; a="53634349"
+X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
+   d="scan'208";a="53634349"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2025 05:38:07 -0700
+X-CSE-ConnectionGUID: keLvS+2ATcykwwgAecvlQw==
+X-CSE-MsgGUID: zEalniYYRZ2v4I0ct8WWoA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
+   d="scan'208";a="153990099"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2025 05:38:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1uWDlo-0000000BJ3z-4AOE;
+	Mon, 30 Jun 2025 15:38:00 +0300
+Date: Mon, 30 Jun 2025 15:38:00 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH v1 1/1] serial: 8250: Move CE4100 quirks to a module
+ under 8250 driver
+Message-ID: <aGKFKOWv1xTDlhnD@smile.fi.intel.com>
+References: <20250627182743.1273326-1-andriy.shevchenko@linux.intel.com>
+ <a7f162cf-b7ba-472c-b13a-e3a5cd722bab@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a7f162cf-b7ba-472c-b13a-e3a5cd722bab@kernel.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The dma_sync_sg_for_device() functions should be called with the same
-nents as the dma_map_sg(), not the value the map function returned.
+On Mon, Jun 30, 2025 at 01:27:10PM +0200, Jiri Slaby wrote:
+> On 27. 06. 25, 20:25, Andy Shevchenko wrote:
+> > There is inconvenient for maintainers and maintainership to have
+> > some quirks under architectural code. Move it to the specific quirk
+> > file like other 8250-compatible drivers do.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> Nice.
+> 
+> Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
-Signed-off-by: Thomas Fourier <fourier.thomas@gmail.com>
----
- drivers/tty/serial/pch_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks, but it seems a bit late :-)
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 508e8c6f01d4..884fefbfd5a1 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -954,7 +954,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
- 			__func__);
- 		return 0;
- 	}
--	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, nent, DMA_TO_DEVICE);
-+	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, num, DMA_TO_DEVICE);
- 	priv->desc_tx = desc;
- 	desc->callback = pch_dma_tx_complete;
- 	desc->callback_param = priv;
+> Just two nits (one suggestion actually) below. Ignore if you won't resubmit
+> for some other reasons...
+
+Sure, see above.
+
+...
+
+> > +static inline void sdv_serial_fixup(void) {};
+> 
+> Superfluous ;.
+
+Indeed. But I don't want to update just this (as it now may require
+a separate change for x86).
+
+...
+
+> > -static u32 ce4100_mem_serial_in(struct uart_port *p, unsigned int offset)
+> > -{
+> > -	u32 ret, ier, lsr;
+> > -
+> > -	if (offset != UART_IIR)
+> > -		return mem_serial_in(p, offset);
+> > -
+> > -	offset <<= p->regshift;
+> > -
+> > -	ret = readl(p->membase + offset);
+> 
+> Just noticed: why the two above lines are not one:
+> ret = mem_serial_in()?
+> 
+> Or in fact the whole function intro:
+> ret = mem_serial_in(p, offset);
+> if (offset != UART_IIR)
+>   return ret;
+
+Hmm... Sounds like an equivalent. I probably can send a followup for this
+suggestion.
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
