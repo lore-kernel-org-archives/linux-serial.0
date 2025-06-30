@@ -1,104 +1,125 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF83E25EFBC;
-	Mon, 30 Jun 2025 11:42:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 963F32749D1;
+	Mon, 30 Jun 2025 11:44:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751283722; cv=none; b=nVkXjd1Nofquza+AcuPgWw3fLvA2zLKakO8LNBABsh7m9xyVKBY+Rtk25DoCxID+TtBszOVIFGfJCzG1ydRIGoZl0b/D0kCU7dzIPNvPsxiQpdbvS9ZTEylX90Ye6BzDnycHQpqUetwQhYQhrMjHifEtiNLAPco5zfijXjO+KNs=
+	t=1751283896; cv=none; b=QRxP73iDGkVU1ezak+6R4JniG/AYfECU020rxFRDRUvwqdluyUbKyrJ9+mbSJGG83RfbgVlJ4i++P/Yf/jfGm6VmlQ/0+5ZphXUtp/bKkrNSFwUV9vp4HE6dJ75uiteUCG6+Z0VZG/Bxg5R7rEGHDwprJSweOctx2Vy08AHRt1c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751283722; c=relaxed/simple;
-	bh=FO51ABSuHOGNa4urR01Hd1w5txbouBf4qswW4i6xqv4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=j6uouBsJcWLkRKwOnaaEXxpBtjihJLzN9vWJiU5A9fesXgMKVsSBzFxfOL/gyeUW0zhDQvjCrR3sH59nSC1+VVWSeziklJ7i30FwQjOJqxtUkqlHvCNEBVD3JtJml09p3hsUUJ9a8aZz4SnLLTALBAWWpCzaRkyLuIXrwvbKr3w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JvUuHkmC; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1751283896; c=relaxed/simple;
+	bh=DqZJQgp9Fs00ASgigomQ+vjSEETpD7ZaFTeuzYQKI2M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZmKZGpAC+NvKt/sgefJz4Q6PqQcRJsuMEoP29SG6/fAeVhuxCDCEY0+NnajIQGCGyVpCdATtWkTFT3sN6tHo7UogJ6GzgnW6gtv2OhLtI0zfIUy7PFX4I83yZLUjARUNd8Re/WbUIq3+Hdzjqcn4+cjdZfauMy9iLsSairWUXlg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g9XJ/TJf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JvUuHkmC"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-3a577ab8c34so621520f8f.3;
-        Mon, 30 Jun 2025 04:42:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1751283719; x=1751888519; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=8jvy3pp04vKzvPchJ+mlkBLjd4Hm79oWF7qAKiCY2Q8=;
-        b=JvUuHkmCJWIuaB3R8U8fbcsueztCH4UE4/aIzMaqoHQO+02ikbISAyyrfGb9rV6V4z
-         g1qNEZxC8ZdhEAG+BzpkuEuvSJK/mwc02Tc9mRhf9ponBa8DglBhSaf3axv3MMbYCm1B
-         +1meNxjhOqUdj9U91JgqEkRRyykn0krYa0gEO5UARVJNC3vhLJ43DEAhi03d0NMRlD5i
-         d1H7rLv+28wUDTwWDt0BbMERly74ygUEH5BBNdqMRPTeWz1VG9vtxF3lz1tEE32I1Ntd
-         vRFT8XrAdiL4ddCcmx5ddbHwUflpxNIOj6fpdEMGAf2GSNpMiunKY2YcGNpajqIMJcsh
-         +VzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751283719; x=1751888519;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8jvy3pp04vKzvPchJ+mlkBLjd4Hm79oWF7qAKiCY2Q8=;
-        b=EozpFp96Kc/KXDskkQ9E0yKxDUm/NLt7r3PVcSeWnvzLvOrxd9erJ09183/PvNFBGe
-         ziJeRnmiqYKqcrrOyYXyrcBl/jtqCMxanIr5w202HFKoh6gEQcpjVSpUSB4WEv6+WlHR
-         S8bCi+Zk5+n0/3IBNUhIRMfF4RTnZcdDl3VsVubatXnC5oPov4ExLOKZ1Csj2o7kOCvK
-         Bx0nYuJf5zCZdcus33G08YzmnCjFV7pZclpsOMvDXSvRKFDfqHGqojGmHKe0cyVCIe/u
-         vfivNsEiXdyggL1X5ArE9Y0nUWb2QeLyzSCC6yDwuRaOOuPQOsoHULLizsg9/2NEJ/cj
-         Jegg==
-X-Forwarded-Encrypted: i=1; AJvYcCVH2kIxBj5KU16rzl1N3LzYyfhdec5TK8VsUbOHTRYnOAEsOowh+An6a0zcgTecYniEwZdR7uGggWowh36y@vger.kernel.org, AJvYcCXdxhmNm4sU+yvsSy2ey+jbH5zK4skXrFbd0bp97n75XrxMlJi8IzdnvVgNkPvfMsbZqtdzcwMYy/bJkQo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyH//7pW9mUweBl1c3PviIIN8oyTtMWRFzUiW+HrntD0jF5BkuK
-	zK4hfjYb2KnFb0TvFZ/o6uugX+dtwlP8sIGoEQ7OkB2RHZyAy15k26kVB3WbWSiP
-X-Gm-Gg: ASbGncu8D0u1s3VU8dTa/VOhRZX7iaJlz5wxIq/gXXpy99XnsanNDTSE0iCoc0iHtO6
-	Epcsuv622rbyWaB/kIoV6gkM9ir6KeeWOu8Li0qz99USL17iCzXApCF/D205nkXizn9Av1Cbn9w
-	mz1hjWlMewKpN8LwiEH5qbcIV8A6qSoWaLmVI2oOycfJu/yfl8UpS9mC1VNKc1P6vaC/B5fDxDU
-	KqobvwL6Iygd0fosfT8bnUgdGOxLYjpPTBl7XyOTpJeZ0LfEN3ZEull9JQJVwCSf7rJuM3SIZIH
-	Ibjlz9NX02+ROUjSEDMWQ2y2DZs06GKRXcWhX5NEw2QHNjfd5R+AzQifTiQxJo6EnlRy7N0Khl0
-	CitkaPvNdyp/1FQ==
-X-Google-Smtp-Source: AGHT+IEmezVG1+j27QeYrX9JQ+mctaV9VM/JouAhXHfJ3pm7y7wF8l3UZkmO7hL/kj4nRD0FRdPj6g==
-X-Received: by 2002:adf:9c8d:0:b0:3a3:584b:f5d7 with SMTP id ffacd0b85a97d-3aaf3c06454mr2452694f8f.5.1751283718694;
-        Mon, 30 Jun 2025 04:41:58 -0700 (PDT)
-Received: from thomas-precision3591.imag.fr ([2001:660:5301:24:43e:be8c:f80c:622a])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-3a892e595d1sm10277730f8f.71.2025.06.30.04.41.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jun 2025 04:41:58 -0700 (PDT)
-From: Thomas Fourier <fourier.thomas@gmail.com>
-To: 
-Cc: Thomas Fourier <fourier.thomas@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: [PATCH] pch_uart: Fix dma_sync_sg_for_device() nents value
-Date: Mon, 30 Jun 2025 13:41:21 +0200
-Message-ID: <20250630114124.102326-2-fourier.thomas@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g9XJ/TJf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19D3EC4CEE3;
+	Mon, 30 Jun 2025 11:44:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1751283896;
+	bh=DqZJQgp9Fs00ASgigomQ+vjSEETpD7ZaFTeuzYQKI2M=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=g9XJ/TJfHhCBP0/5gnuGekyq8GdU3qvQo3vIKGOR01lOlZx+xZ1JlnLNK5KW1ghXd
+	 X9kxRd9WmdCb/9ASn2ukRh5y0upEShNRMDM04JQM+0gintAHAKo1Gj1MTEqEcqz1W5
+	 DDFqVuf2rv0HPjMPTa3hyWmQkAbegQwhUh5k47SRePqB84TPmmgZmojprMw9WedIhS
+	 IYS09FXmXDWgTb6QBwV376LYdGRF6ZFKq6hAzDAWBLlGRRRhN8sRTH8kxaGDLjM5EG
+	 VSLH7hw2YqQsqwgOk/t6yFZCqYn/4ipP1OaUSla5yLiYsfk60jY3jDIltQO5+Q8pIh
+	 pP6lIwWcZ65aw==
+Message-ID: <fe0a6cb5-3d63-484b-ad54-08d1865e1c23@kernel.org>
+Date: Mon, 30 Jun 2025 13:44:53 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] pch_uart: Fix dma_sync_sg_for_device() nents value
+To: Thomas Fourier <fourier.thomas@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20250630114124.102326-2-fourier.thomas@gmail.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20250630114124.102326-2-fourier.thomas@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The dma_sync_sg_for_device() functions should be called with the same
-nents as the dma_map_sg(), not the value the map function returned.
+On 30. 06. 25, 13:41, Thomas Fourier wrote:
+> The dma_sync_sg_for_device() functions should be called with the same
+> nents as the dma_map_sg(), not the value the map function returned.
+> 
+> Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
+> Signed-off-by: Thomas Fourier <fourier.thomas@gmail.com>
+> ---
+>   drivers/tty/serial/pch_uart.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
+> index 508e8c6f01d4..5aee3fdba8a1 100644
+> --- a/drivers/tty/serial/pch_uart.c
+> +++ b/drivers/tty/serial/pch_uart.c
+> @@ -954,7 +954,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
+>   			__func__);
+>   		return 0;
+>   	}
 
-Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
-Signed-off-by: Thomas Fourier <fourier.thomas@gmail.com>
----
- drivers/tty/serial/pch_uart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I don't follow, given:
+   priv->nent = nent;
+few lines above.
 
-diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-index 508e8c6f01d4..5aee3fdba8a1 100644
---- a/drivers/tty/serial/pch_uart.c
-+++ b/drivers/tty/serial/pch_uart.c
-@@ -954,7 +954,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
- 			__func__);
- 		return 0;
- 	}
--	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, nent, DMA_TO_DEVICE);
-+	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, priv->nent, DMA_TO_DEVICE);
- 	priv->desc_tx = desc;
- 	desc->callback = pch_dma_tx_complete;
- 	desc->callback_param = priv;
+> -	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, nent, DMA_TO_DEVICE);
+> +	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, priv->nent, DMA_TO_DEVICE);
+>   	priv->desc_tx = desc;
+>   	desc->callback = pch_dma_tx_complete;
+>   	desc->callback_param = priv;
+
+
 -- 
-2.43.0
-
+js
+suse labs
