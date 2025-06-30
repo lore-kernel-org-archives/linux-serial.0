@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1588728DF40;
-	Mon, 30 Jun 2025 13:01:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D876B28A1EE;
+	Mon, 30 Jun 2025 13:02:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751288465; cv=none; b=hQKIcVFHzDHdZQEfBYee+1DhQjdtIG4GlTjND5GGF0d2wmN5XRt6lVBUun6A/ri2gBTE6ioQ7v/lfO9W3KkC9PU13TrOZCnS2ageaWcha1kxN5gAhfJytLWGthPYShUdHjSXm9ajAnovj9fshcqOZnK9tPBv8bGKqCLmgG/Xy0M=
+	t=1751288533; cv=none; b=G18KWcN2TposUKvkE6C7zoFvCCflKi5sEAc5r8U/T0/RW333tv631RQS7xlL4HACbaISC3gNm26x6avtqWr9Nw+Wxla8MWhnR61TJAJZvJt2k0AtOjXtGmyfTCmhO1j/MxtL51iQoZkQ7caGweAE2gc11ATXmjWOuAaQLxatad0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751288465; c=relaxed/simple;
-	bh=WRaOMJwCpCxrVTiUswN7GF0ou5GSniU273Bj0Bv3H/E=;
+	s=arc-20240116; t=1751288533; c=relaxed/simple;
+	bh=I31p0u6j058Rd5oGpFXUFGufdyBoIiWWrNqRhhb6Y2Q=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XYsgrY8XhAAKgO+R3H+lh8yULcKxFoPHAI/1OUWNHIXL5HOwBdXHaJdImf9rb5XskW3qU9zgdrB1aFQP5bFNztZTkCw3fwia98nHuY2m7bXnfAY39RqCnPxgs6N65zYD2uGx1HevIZDfcXD3cYEMyeAfy2FUo0gJgrrwamJAMYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XFU8kxrB; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=GvJljaibu0YcpRct2XN6Ek/Vo0BKpKUnA2giBe1SMwA6LFt4+wFXdGLjnqp6JBKXNROgeF8zTeAghZ7iyH1p2IThPLf8ZQoBeQ6PVLlAueyx6Lpy+b80fVWSISJNKrn7j3ZloKihf0VL5MBOUSvkxRPgTQCJ7uUrlltGV42WV2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iJDl6D67; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XFU8kxrB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7918FC4CEEF;
-	Mon, 30 Jun 2025 13:01:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iJDl6D67"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD269C4CEE3;
+	Mon, 30 Jun 2025 13:02:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751288464;
-	bh=WRaOMJwCpCxrVTiUswN7GF0ou5GSniU273Bj0Bv3H/E=;
+	s=k20201202; t=1751288533;
+	bh=I31p0u6j058Rd5oGpFXUFGufdyBoIiWWrNqRhhb6Y2Q=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=XFU8kxrBDCaAgTpn/u7oXYOLkWHXPfS48i9z7uXBwhL8N8pBDzzKDQelWxr3bihVi
-	 5BqxQjMuGNYrbxnggX1kST010OQ27KuNseJLuxDmHgua2C4dfTp5qdrKL471thWL1G
-	 1LznBgBgtISPqWGti95qm1ljjbugteDGsPmJfqnhDDpOeuaNjEisek0rFpR8aR7Ho7
-	 ISPiy9UJ3/vFvV57wuLc5Qr08+Doue7xiaTDPS3Ni0GxGL+iHBsMAU8T7HhAM6m9/O
-	 C1wLIVMafAKK1wSuK+4A5oBQ57ZULxHWPHpOSFKfaS8F4pD0biMndUNE7jR5MlkgDk
-	 ore9eE8EOYaYA==
-Message-ID: <624ba0b2-afe0-4111-96b9-8b678b6472fe@kernel.org>
-Date: Mon, 30 Jun 2025 15:01:01 +0200
+	b=iJDl6D67cAP6q5VyN0Y1mNnnQGdjToZOW7f6/p4nRidWnjkW8VM5TPSkrgEL356rO
+	 36CNrT4aGJrq/xWnTGxWw4yJlLWr9hoAcYRCiPIXeEBCvVS9SEsTPR3iUyTG8Fn5dY
+	 kqJGmGylFyvdwzZ9IDaRk4rNvlKzivmXxblBMGYAt82LVY32l2mib3D/HV/EIfaUOh
+	 UEjGr54eXG4FSdEBYOUW6Cw+tDTKID0vs90V9yvekKKTPlphCv1siXuxnXqR1j7jJo
+	 L/qOO7sIgTXiRtixX9F1zDSpiGRGPtxAeAXrGP8+n4mo+gG188Q8m5JkbTx0bcpY4D
+	 PiQAu2NPS5WoA==
+Message-ID: <023bb251-255d-4f0e-8b2a-d6c8bc35d75b@kernel.org>
+Date: Mon, 30 Jun 2025 15:02:11 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,12 +35,12 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] pch_uart: Fix dma_sync_sg_for_device() nents value
-To: Thomas Fourier <fourier.thomas@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>,
+Subject: Re: [PATCH v1 1/1] serial: 8520_ce4100: Reuse mem_serial_in() in
+ ce4100_mem_serial_in()
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
  linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250630121021.106643-2-fourier.thomas@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20250630125427.2266455-1-andriy.shevchenko@linux.intel.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -85,36 +85,43 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250630121021.106643-2-fourier.thomas@gmail.com>
+In-Reply-To: <20250630125427.2266455-1-andriy.shevchenko@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 30. 06. 25, 14:10, Thomas Fourier wrote:
-> The dma_sync_sg_for_device() functions should be called with the same
-> nents as the dma_map_sg(), not the value the map function returned.
-
-Care to explain why do you intend to sync more than mapped? "should be 
-called" is way to vague.
-
-> Fixes: da3564ee027e ("pch_uart: add multi-scatter processing")
-> Signed-off-by: Thomas Fourier <fourier.thomas@gmail.com>
-> ---
->   drivers/tty/serial/pch_uart.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+On 30. 06. 25, 14:54, Andy Shevchenko wrote:
+> In one place in ce4100_mem_serial_in() the code may be replaced with
+> mem_serial_in() call. Do it so and collapse two conditionals into one.
 > 
-> diff --git a/drivers/tty/serial/pch_uart.c b/drivers/tty/serial/pch_uart.c
-> index 508e8c6f01d4..884fefbfd5a1 100644
-> --- a/drivers/tty/serial/pch_uart.c
-> +++ b/drivers/tty/serial/pch_uart.c
-> @@ -954,7 +954,7 @@ static unsigned int dma_handle_tx(struct eg20t_port *priv)
->   			__func__);
->   		return 0;
->   	}
-> -	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, nent, DMA_TO_DEVICE);
-> +	dma_sync_sg_for_device(port->dev, priv->sg_tx_p, num, DMA_TO_DEVICE);
->   	priv->desc_tx = desc;
->   	desc->callback = pch_dma_tx_complete;
->   	desc->callback_param = priv;
+> Suggested-by: Jiri Slaby <jirislaby@kernel.org>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>   drivers/tty/serial/8250/8250_ce4100.c | 9 ++-------
+>   1 file changed, 2 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_ce4100.c b/drivers/tty/serial/8250/8250_ce4100.c
+> index 3dd88f372a51..8221b872fd33 100644
+> --- a/drivers/tty/serial/8250/8250_ce4100.c
+> +++ b/drivers/tty/serial/8250/8250_ce4100.c
+> @@ -35,13 +35,8 @@ static u32 ce4100_mem_serial_in(struct uart_port *p, unsigned int offset)
+>   {
+>   	u32 ret, ier, lsr;
+>   
+> -	if (offset != UART_IIR)
+> -		return mem_serial_in(p, offset);
+> -
+> -	offset <<= p->regshift;
+> -
+> -	ret = readl(p->membase + offset);
+> -	if (!(ret & UART_IIR_NO_INT))
+> +	ret = mem_serial_in(p, offset);
+> +	if (!(offset == UART_IIR) && (ret & UART_IIR_NO_INT))
+
+I am in haste, but a misplaced right paren (should be at the end)?
+
+>   		return ret;
+>   
+>   	/* see if the TX interrupt should have really set */
 
 
 -- 
