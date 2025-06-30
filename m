@@ -1,140 +1,152 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 957E01D6AA;
-	Mon, 30 Jun 2025 10:36:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D90925CC57;
+	Mon, 30 Jun 2025 11:27:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751279799; cv=none; b=ee9dJcvyABtIPikzPJKhF5Jt4rQ47i9P310Wavj+cyp/xxde4Cm5jmZpQdYlg0XRtZC5CSWM3kjlQ6x/rv5u8RTDa6oGuddjdl/VyILXZQIaUtG2xouiOXqY0fbHckIpoAE0tEio3VsEnySYRWI5aLb1AU7wTWqel1l6pFwerBU=
+	t=1751282835; cv=none; b=ssaAOgRL9En7FViHDfKwvVRYQ7dzaN3UuvHuYFU8+gHsVe1FgjNZBWA09I8G12nvz7NIYgcQiYlishaQMOtxgaMN5IwsdgGPCt5c0QZq018vyldt5QgJPyO1jVEPqeVQn+CMtZFdXQvdR37piTN9k8Nrno0Ob9MlSjQqonCUkoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751279799; c=relaxed/simple;
-	bh=TYEa5gctuVllzJIY/gmCP0l/2r/1GM9o29nN2z/wSSc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=L9RZw6JCDhGs+Xo2/n0lFZ5KJh3AFBH2w0WAGbjuWkuSyVmuOkpoHe12o2Nd0+18Ij83DrMWk+onyLizDXCVKd8Zi2+gDNOcfjSxRILldjDuphmqUccMCk7rm89Ddebw4leirVrYPtks1i88eABIlsBNgkJmwMlVYKNiFDErgxQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EXGj0mqm; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1751282835; c=relaxed/simple;
+	bh=5pisyeqkzQcHB9QfHftEopCAmihgL4yq8jLQ1pBpxkU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GVVVzquC2eT5whH/jl+tuxiP1mPMJCBXHgWlcWr7SLRUXMmwbWmHP/CkepGpGjq/AfXcDSDtlwHkz2Db4Ynx8B/yIZgTeqcrWJbpNY8Mr5VPBMzG6zlpEO6F29TRGixuJKo0h7sOseEGMvtKQlfCugiSecLDGrBPuSCmdoTjb/8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aae9WaLr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EXGj0mqm"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-45348bff79fso19451715e9.2;
-        Mon, 30 Jun 2025 03:36:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1751279796; x=1751884596; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TYEa5gctuVllzJIY/gmCP0l/2r/1GM9o29nN2z/wSSc=;
-        b=EXGj0mqmD42l8ojSG0zhEIfCL+20EmXXHHAfhivowsYpqgvz7wEQHM1DCD+86wnALr
-         BE7Iu7V6n/yjCNSKnOnAs6A1O1F/E9+f/Wksde3OP9nDkyw+wospj4DYe2Av+eoQU2BG
-         CtUWQHG8pJ8BE6WF3A/3oS5rCT8r4zATVDK4Y9p84Eby8ny7NnawDU/n+178Ytc8o6vC
-         P0yoVstc2e9p2+pISJ34UIMkYaz3np+IMctWytopCTFvm9fGFSk45fZ/PXOeXoq2LmYg
-         C1i44N4Z68UBk5JMM7Q9TG23jT33Yedw/y/xmtuz7kI2SykiS/PIk4HJeoXdliRszX3L
-         M9Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751279796; x=1751884596;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TYEa5gctuVllzJIY/gmCP0l/2r/1GM9o29nN2z/wSSc=;
-        b=Qh7dVU+ZDvWVCcCTNT91WJIV/OsTFZwNDmYWjEThZudBj55YMkuuryM5OvEqEKzhPt
-         XmNp9Vv80o8PFz2dRUfmuA6X9TACEHyElpRAsdfw0LqWAdbzWxyski4E3soLRFomYUaw
-         5jn+KFiBvrTR/y0QDIDksmFN7ZNKMkSJNmb0iwYM9e+JuOUCieUWxj3jUF0BTIDB672X
-         riC0w+i/3E+JjsVAWlPkQErS3HeaaJ1u8faoEAOwBEPLaL9ADfVyATfvfNwiV1lXFzEw
-         Ag1ZhGLBVs9cDzaxvDsPGjRWjzA6fGPwsqGb3h2bhn4e9XhANQi8EficPKZYpsZgHYOm
-         chsA==
-X-Forwarded-Encrypted: i=1; AJvYcCVChgJNsjSlprCLvvagweBs6vbz0Hz7f/4MEEfB5Z5XESY8MHg7ff7+R+kFvRxlwdVx+pIcXZ5J5S7K@vger.kernel.org, AJvYcCWNQI7gCjKQI+14K+yQOeWvHvUsORcxMOCnaH1zjmKp+nRmCsiN41BEjnQ3Wn4Ra7DeNwDmGi2ooOUvG7OK@vger.kernel.org, AJvYcCWq3pa9kO2ou/HqUllyQln6zP+YwOzvuoHNUyCgz+tzzEov6y526EKdyHjyO2ySRFHHHvE7gsvaXaGJPEgL8DzoaNI=@vger.kernel.org, AJvYcCWxnBooJvj2vSILu/2z6H/XQISgyuvanGm+EzJ9EXmHlFyh1DM+yEvJL1m2nktl+EMgFTHNEBDpGv9xriu/@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz380cldm7vSyFmv9LBx5k3LbVB7GtZZn2Fnx7PRrAT1j2b8lUu
-	RB/bM+IsXV6GuEaTsCeFqC9ekos2h6bSFSOC0lElOmTWBK/E6TLjGKBY3NgblhiWtHAaW+ZqJ++
-	AlAINJJYMXiHlsJfcu4N/96bz3OsTTUk=
-X-Gm-Gg: ASbGncs389BitNekYO7yi4plXEZgX1eZ4QkpcZTW7tvBteBw9qtFhdhfOqXKf3aEnKH
-	TWSXBtzou3PsHbrhj1OCophpzcyRRyurGau1YslzlXW5uI1jGqowN1S8umz+o2JPWdJs3MeWByH
-	YnzL4Q+NzCmOh55tyjOZfI47z2Djg0+JQe7ukvLy5fZHHhN/M7YLpshCqshfQKfwrAD9B05SJql
-	kMt
-X-Google-Smtp-Source: AGHT+IHzVJSs9extZB6R4mzBdKoauxBA5qwzHvS01dBh5S/+5yMN/p2KX/oPAAPczklKOfT8+30x09RxKH1pE92PQUs=
-X-Received: by 2002:a5d:5f4e:0:b0:3a4:dcb0:a4c with SMTP id
- ffacd0b85a97d-3a8f435e1b9mr9812832f8f.12.1751279795507; Mon, 30 Jun 2025
- 03:36:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aae9WaLr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84C45C4CEF1;
+	Mon, 30 Jun 2025 11:27:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1751282834;
+	bh=5pisyeqkzQcHB9QfHftEopCAmihgL4yq8jLQ1pBpxkU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=aae9WaLrbk7g271m2SIJXdl1ELcCvNICXYnM1tuzTOpT6+vA3+8mOep5PVMCs0hOO
+	 DWVdC1nJFGvRN4OIsQmmFrZ/1/Lwr3n5zZS5clJimzfNseFOA0WUzkSIQ+PGwe8MH6
+	 PzWQ1DYBY8d0vqM+OY/OQrIcyigC7qSSEyVqngGo/MTTD806XyzvvMVrfSQ/Upl9Yx
+	 +/OCbACkVAiXbD37CBdTbIN6dNwif4sRzkfYQFusWRl+lr7Hm9eG7In88agQytHr+X
+	 aq3ENICDQDbjvHbd5he3Rw5tyLhjHxsnYNv3pIllKUK3Fh5E9qbKVh8vmIgv2AoEx1
+	 QPS3B4gZMaN5Q==
+Message-ID: <a7f162cf-b7ba-472c-b13a-e3a5cd722bab@kernel.org>
+Date: Mon, 30 Jun 2025 13:27:10 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250628115715.102338-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20250628115715.102338-2-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdUrkcxr+_jcr-F76cOg+rie3c2FcrEpfrH36kKJFhF9vw@mail.gmail.com>
-In-Reply-To: <CAMuHMdUrkcxr+_jcr-F76cOg+rie3c2FcrEpfrH36kKJFhF9vw@mail.gmail.com>
-From: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date: Mon, 30 Jun 2025 11:36:09 +0100
-X-Gm-Features: Ac12FXw9ORdx6x4Jhwr20Jn-ldjmdRU9J48DPBGMOKaO7WlJFPMxmdc61lXkOYQ
-Message-ID: <CA+V-a8tQ70vGVr6i1Wfs=ogYodQCvRpMKtsPx=VCh61xfjZ==g@mail.gmail.com>
-Subject: Re: [PATCH v13 1/5] dt-bindings: serial: renesas,rsci: Add optional
- secondary clock input
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, Wolfram Sang <wsa+renesas@sang-engineering.com>, 
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
-	Biju Das <biju.das.jz@bp.renesas.com>, 
-	Fabrizio Castro <fabrizio.castro.jz@renesas.com>, 
-	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/1] serial: 8250: Move CE4100 quirks to a module under
+ 8250 driver
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>
+References: <20250627182743.1273326-1-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20250627182743.1273326-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Geert,
+On 27. 06. 25, 20:25, Andy Shevchenko wrote:
+> There is inconvenient for maintainers and maintainership to have
+> some quirks under architectural code. Move it to the specific quirk
+> file like other 8250-compatible drivers do.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On Mon, Jun 30, 2025 at 9:10=E2=80=AFAM Geert Uytterhoeven <geert@linux-m68=
-k.org> wrote:
->
-> Hi Prabhakar,
->
-> On Sat, 28 Jun 2025 at 13:57, Prabhakar <prabhakar.csengg@gmail.com> wrot=
-e:
-> > From: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> >
-> > Update the RSCI binding to support an optional secondary clock input on
-> > the RZ/T2H SoC. At boot, the RSCI operates using the default synchronou=
-s
-> > clock (PCLKM core clock), which is enabled by the bootloader. However, =
-to
-> > support a wider range of baud rates, the hardware also requires an
-> > asynchronous external clock input. Clock selection is controlled
-> > internally by the CCR3 register in the RSCI block.
-> >
-> > Due to an incomplete understanding of the hardware, the original bindin=
-g
-> > defined only a single clock ("fck"), which is insufficient to describe =
-the
-> > full capabilities of the RSCI on RZ/T2H. This update corrects the bindi=
-ng
-> > by allowing up to three clocks and defining the `clock-names` as
-> > "operation", "bus", and optionally "sck" for the asynchronous clock inp=
-ut.
-> >
-> > This is an ABI change, as it modifies the expected number and names of
-> > clocks. However, since there are no in-kernel consumers of this binding
-> > yet, the change is considered safe and non-disruptive.
-> >
-> > Also remove the unneeded `serial0` alias from the DTS example and use
-> > the R9A09G077_CLK_PCLKM macro for core clock.
-> >
-> > Signed-off-by: Thierry Bultel <thierry.bultel.yh@bp.renesas.com>
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> > ---
-> > v12->v13:
-> > - Rebased on latest linux-next.
-> > - Updated commit message to clarify the ABI change.
->
-> Thanks for the update!
->
-> > - Used `R9A09G077_CLK_PCLKM` macro for core clock
->
-> Unfortunately include/dt-bindings/clock/renesas,r9a09g077-cpg-mssr.h
-> is not yet upstream, so you cannot use its definitions yet outside
-> renesas-clk.
->
-Thanks for pointing that out.
+Nice.
 
-Cheers,
-Prabhakar
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+Just two nits (one suggestion actually) below. Ignore if you won't 
+resubmit for some other reasons...
+
+> --- a/arch/x86/include/asm/ce4100.h
+> +++ b/arch/x86/include/asm/ce4100.h
+> @@ -4,4 +4,10 @@
+>   
+>   int ce4100_pci_init(void);
+>   
+> +#ifdef CONFIG_SERIAL_8250
+> +void __init sdv_serial_fixup(void);
+> +#else
+> +static inline void sdv_serial_fixup(void) {};
+
+Superfluous ;.
+
+> +#endif
+> +
+>   #endif
+> --- a/arch/x86/platform/ce4100/ce4100.c
+> +++ b/arch/x86/platform/ce4100/ce4100.c
+...
+> @@ -31,97 +24,6 @@ static void ce4100_power_off(void)
+...
+> -static u32 ce4100_mem_serial_in(struct uart_port *p, unsigned int offset)
+> -{
+> -	u32 ret, ier, lsr;
+> -
+> -	if (offset != UART_IIR)
+> -		return mem_serial_in(p, offset);
+> -
+> -	offset <<= p->regshift;
+> -
+> -	ret = readl(p->membase + offset);
+
+Just noticed: why the two above lines are not one:
+ret = mem_serial_in()?
+
+Or in fact the whole function intro:
+ret = mem_serial_in(p, offset);
+if (offset != UART_IIR)
+   return ret;
+
+thanks,
+-- 
+js
+suse labs
