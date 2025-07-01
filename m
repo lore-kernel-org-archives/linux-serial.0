@@ -1,99 +1,85 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 099CB149C4A;
-	Tue,  1 Jul 2025 13:42:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 434C32459C7;
+	Tue,  1 Jul 2025 13:53:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751377326; cv=none; b=VopDRPOBFDsVy6yIK5kXowM4OIiPpYCDw0IU1WgFptm408xy3xpVnhszFXnLSnxC0a4mti5x53r5na6Tc2mn5oHVWBlq7Oxl+71MPRM25XBo8a5n2vG1Ig4gnDWqHt5Iy4QXsJX2JYLEx3yHA7ziLpmZKrStFMUNxUmTkoueOXs=
+	t=1751378036; cv=none; b=IKtVkRLL/3XnLeRxWFLiYS2ik4r4n0L2DCXpojcan0Gv9h7sEfWQRRlI22tj4AkWOnG4tPFo7Pd3l/d3BGI8mSXpCw99dPXyrAhSAvr3av12t0tNmT87SqNsE+O4vAZDQDm6chNZTzKalC4ZcbmeazUknqCngTdkBdC2KCAa/KE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751377326; c=relaxed/simple;
-	bh=ZvBmRJCbf4BqcFDviY6wG5SRoxs4TwMRkF6Krn1jX2M=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WHw0c54PvXMO1H2sil65R+2kHxY++F7AJbIn3vl4lpmja0lh3BXp6WAvxGl5sAd5VoXDXmtNBqEGCshyU1wp2M5qL+hIZ5S5pAG6hsyPu3WgsWWG3KOP9ycIceuYIpJkzrX+CxQyfFV25lvChOJEjDBpTorEmuXDGFWMhg79kHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Raceko7F; arc=none smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1751378036; c=relaxed/simple;
+	bh=w3O6JX+TFxgUQvh9AQY+xLMJfuINSkF/pchzYSsDsm4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NGKWZMgW+JphHRiOy0y5pW2kc0mB9MSJPUMwE83V41SU94yzgenR0hLc6BnqOjjzxJU7yRE8ZVRWfNaIM2osy8yWqfgUL8q1/z14cpfKYtVu3b06QX4xg7oYzxCLrvsPxf69hSFMyaRRm2qnBVDDaO084jQKPyZOiFQAX05UGvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JVnWrVc4; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Raceko7F"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JVnWrVc4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751377325; x=1782913325;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ZvBmRJCbf4BqcFDviY6wG5SRoxs4TwMRkF6Krn1jX2M=;
-  b=Raceko7F5jRq22ByR5bVvvuVZQXNbG1QM5nDNk+/izFyicRhWypIo6ha
-   +r1o1CkMHjfzUVKO6t4S9LGroZkhjU20LrW838jha4fTGJA31HX7u56Rj
-   BxCRBWW4jg59OvmxSJEeqyYaexY0wkgmHn+t9fFcz96OwjLcIZ+e4Wj1c
-   TDmQji9r5oCMb4XsC9+6j6JRjkHmR78s1+IkM7vKseUxL5uT3PTsgbgJM
-   retvWvk+iX3aYBSjx3uBW4IOJ3EUfsHLipaFF1tgV8mo6xY45CseZrhu7
-   W8cvgFEE8e6mHGLs9eQXxh8rSmw14humtmIRp+YhTe1sm9tPi9AXKyOUa
-   w==;
-X-CSE-ConnectionGUID: qvMWPT/aQcqrtcQusfPX2g==
-X-CSE-MsgGUID: /1WevgExRRGnSBtuTNokhQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11481"; a="57419909"
+  t=1751378035; x=1782914035;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=w3O6JX+TFxgUQvh9AQY+xLMJfuINSkF/pchzYSsDsm4=;
+  b=JVnWrVc4Sdg6EuEXewWhX66nVQBw4yf0Npr3eospz/L4pOlQmmuy9mNM
+   6DViAW7/FafB4umssOy87J3xTZuBXIMAFU2vBEnC8QUZTS1xwOkXJJDZK
+   zObekoEsw/LsQq/nZ6F0FdahlAlwnxdmFSfZmcMXhxPfo8psUsWrzitwR
+   Mjl+HM1sNI0HTkFfam+gcAsB7/ev8/B+T/aTwJQA2+G9lHLeZYNv15hdB
+   gqtCDku3fUhKfI7bEtFbbwfn96HJdMtxf60kwpZKGfOT+vReo5ZBDLsUQ
+   ju6jcNTMZyn/XcaWkYLOjT4a+PGrP8JtQ5g5pZlKsOepSlc/16kFaIIJv
+   A==;
+X-CSE-ConnectionGUID: 9/x2d6VJQDWN/fIqY9P4WQ==
+X-CSE-MsgGUID: +0/1kwUkRDaZIRnEoNcazA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11481"; a="57421218"
 X-IronPort-AV: E=Sophos;i="6.16,279,1744095600"; 
-   d="scan'208";a="57419909"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2025 06:42:04 -0700
-X-CSE-ConnectionGUID: hXhPQhIYSMiQrftxilxcNw==
-X-CSE-MsgGUID: Z8lAHxDtQ9mtolWAB8bVDA==
+   d="scan'208";a="57421218"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2025 06:53:54 -0700
+X-CSE-ConnectionGUID: gbz6/TwyQreIlfdtoHgxDQ==
+X-CSE-MsgGUID: jcOZJOwzQwabrl2Jj/NP8g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,279,1744095600"; 
-   d="scan'208";a="153858497"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa006.fm.intel.com with ESMTP; 01 Jul 2025 06:42:03 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 4C6C315B; Tue, 01 Jul 2025 16:42:01 +0300 (EEST)
+   d="scan'208";a="158057304"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Jul 2025 06:53:52 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1uWbQj-0000000Bc1W-2mr5;
+	Tue, 01 Jul 2025 16:53:49 +0300
+Date: Tue, 1 Jul 2025 16:53:49 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
+To: Thomas Fourier <fourier.thomas@gmail.com>
 Cc: Jiri Slaby <jirislaby@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 1/1] serial: 8520_ce4100: Reuse mem_serial_in() in ce4100_mem_serial_in()
-Date: Tue,  1 Jul 2025 16:41:38 +0300
-Message-ID: <20250701134200.2621898-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.47.2
+	Tomoya MORINAGA <tomoya-linux@dsn.okisemi.com>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v3] pch_uart: Fix dma_sync_sg_for_device() nents value
+Message-ID: <aGPobZ6reAWrRtV0@smile.fi.intel.com>
+References: <20250701113452.18590-2-fourier.thomas@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250701113452.18590-2-fourier.thomas@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-In one place in ce4100_mem_serial_in() the code may be replaced with
-mem_serial_in() call. Do it so and collapse two conditionals into one.
+On Tue, Jul 01, 2025 at 01:34:52PM +0200, Thomas Fourier wrote:
+> The dma_sync_sg_for_device() functions should be called with the same
+> nents as the dma_map_sg(), not the value the map function returned
+> according to the documentation in Documentation/core-api/dma-api.rst:450:
+> 	With the sync_sg API, all the parameters must be the same
+> 	as those passed into the sg mapping API.
 
-Suggested-by: Jiri Slaby <jirislaby@kernel.org>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+Good enough to me,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-v2: fixed condition (Jiri)
-
- drivers/tty/serial/8250/8250_ce4100.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_ce4100.c b/drivers/tty/serial/8250/8250_ce4100.c
-index 3dd88f372a51..81dfb2adbabd 100644
---- a/drivers/tty/serial/8250/8250_ce4100.c
-+++ b/drivers/tty/serial/8250/8250_ce4100.c
-@@ -35,13 +35,8 @@ static u32 ce4100_mem_serial_in(struct uart_port *p, unsigned int offset)
- {
- 	u32 ret, ier, lsr;
- 
--	if (offset != UART_IIR)
--		return mem_serial_in(p, offset);
--
--	offset <<= p->regshift;
--
--	ret = readl(p->membase + offset);
--	if (!(ret & UART_IIR_NO_INT))
-+	ret = mem_serial_in(p, offset);
-+	if (offset != UART_IIR || !(ret & UART_IIR_NO_INT))
- 		return ret;
- 
- 	/* see if the TX interrupt should have really set */
 -- 
-2.47.2
+With Best Regards,
+Andy Shevchenko
+
 
