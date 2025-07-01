@@ -1,28 +1,28 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2139.outbound.protection.outlook.com [40.107.94.139])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2106.outbound.protection.outlook.com [40.107.243.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 727A72EA489;
-	Tue,  1 Jul 2025 20:27:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07A2B2F0C5C;
+	Tue,  1 Jul 2025 20:28:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.106
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751401681; cv=fail; b=Cxl/SHQKK8wo56p3ah8ZteJhkZstveRet3VebRDTD/7tXnwxj+ThQ4/CqPf2hsWxmPblPKFdjhW0xMcaYWwIlUDoSh/m6mKMeLf3A+W8HUe5TYoociaD8+g0OpoxaMin4058svj1Jor27mODDs36ezPCGnk2LuuuuWb4sOMBEBQ=
+	t=1751401684; cv=fail; b=ZFJlBfinRtEfrmZRg79njSuqD9XFJfeBHiHnfoh0pBCZgB1jza1mUcj3QrTXFc/lPwLZVbJj3tJzJMOfj574MW/eAwMhD8N3eFD1o6sIZRthaTETjLYvm9kh/9VkSrai7GfK5rI/C8ZoCqV/WrRXrzgOj/wSqdio5iEC5fTiX7s=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751401681; c=relaxed/simple;
-	bh=cl5NcuMz9Y6i+BfxOzW8SDm/AeqJ3J++rlUInBHsi2E=;
+	s=arc-20240116; t=1751401684; c=relaxed/simple;
+	bh=j/+Qky+fPOazs6K3HBXW5y+0plotmY96K3xa4zO52Uk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=if0xbQ8C72H/txttePL+nfcLt0v1Lsk3PXRB5IAR6sTJE1iMaew4zrFM9iGBICdrP9a31NocC60le9lKgww0+CVh24a1y7cJWFPZLzXKcWXl1Mklwt4j3U10OTJa8ZifYSLy8h8g/4Th/0kjZBMxN7MUxh923By5xadqQjTX5K0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=qYvfTmR5; arc=fail smtp.client-ip=40.107.94.139
+	 In-Reply-To:To:Cc; b=hBKBOu80OmS4I7/qRggEtz4VrcWcmiAK6Ezeq6idhWpSw2h0LYj6pRpSrQOHkIYsOU+daMMokYnoIYMJDERiYIpIlO0yEZ/FOPvCfE+KfqZlW7qdNTOtXThf7U+3dRilblbBeDr2CVhzr0Ro//6WUnoMDGOnw483TVr0KekcmyQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=eof/T6Wy; arc=fail smtp.client-ip=40.107.243.106
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="qYvfTmR5"
+	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="eof/T6Wy"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=MnL9NcE/6l3iGpCaLJT2kF8n7Uh/wPT8vbnU2RPEMixCkN8H8eICrfeMy1cFymMKNtsqT5hyylxy2JfDoEGiZAeYBjIMrxwpWUrdOy3p77975otxoNNQAnPcEyq9+1h0psGx9Ux7FW2dLHcfEILsx8BQV9xfsd/2QzL/S5pUV8c4Yj4BUU33f8xVpKxwKx2vHtX6wcALOF6CsJyxh8lY/MgxKq1lhLSRV493pfyoHUuZ5qUyynQPJYhAN6UcXUvawvLZBatCbMmSIWJYaqSrko3WHvjJL927mrY5AMCOWmgCdikU/ETFku5WWWXoD10JQWLEhVMP2FE/oW/3qvSolA==
+ b=VOGWgUvpbxNoRg3czvjEbI00zyvJBxU8DMfZH3R2rFDqfqc12pcit6gTcc60yTNZpVnZuoWj5n4bL5IUCj/RbXdcEWee4H/Hxrk8OaOKcYjtzcDfEUsEssZp5NhyR45MT/lHZP/2frVatBwOQ4WEGbaGvWLa3c6kQzS3GtrpIxYXO+agdmF4WaAtzQsNLoL4Hh7cVOKloflbBAPnhYTW0IbP8QixaRGzdiR7HUhf12GIFKK4fWY/bd42IffrOoau7V/Bjye1du+Bfdb3tzsBzbHt/pfCu77fzNPxx7+xYm+nSzSun0rsEt/CYyFcMj4+liYUAMKo6Fy27UC12esPgA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wi6eIdOJZi787dC2equMVaKsWhUMs6++fSjWwFwPRxM=;
- b=JFghi1la+c4WYvXT1e4H4sY3z0nYpQsuQ8qo7yID/XQGoCaelqViRq/0FI+I3FKOzVaomNX7ZzLR8/Ca84fj1kRIZGm/ov2ljj6sSQ1T4t/A8LwRWVWeeUMf8GOr0VlsIPVWno78mawEA9bA96pyqMUwSQ/Deu47OjUsmm1692NM+DakMylfvt8CSUYEEeiMJ2rAbo/2qL+fNOy8BDCb6I3VVpoUUdf2P00RSfhn0xIv6sVtkkhQN1BOlRWMuIO455KIe3QC6+j1qJWzAOvpPlRIrRSVZIRoBjaZnttZy0r+QHsa/p1rt95/zJescUDet+1WLFVWO20Y/tBdjn3DDg==
+ bh=vCh3w3rY8JdMlzOwVY1oKEt3qSDu4NfQ8QQCpWbtIUM=;
+ b=mQMOrkxLIKZyWGco3aTQ/uZ9wjR9kqzp22uPazdn+XH35FugrpNCoMPrHiVLTHpZBcFGAi4vfMCL5KYzw/LkEgTOSClr5N8X6C5LIkoK1NTdqSuqDWyAEnHs6yjIBqcx5mNyAQDiUxhManISQXZkKW6/FLVaxGsmazOoKFPUMbXCKay2QmsKc+poxs6+6m7BmEOEAMyGbChyumrEHiCVgEIuTzXCshzG0ZmQNImlbaix4bgjqIEbLA4yJXfW7j14w1dykhMpqcyPKEqorO+n/EaPITg+bClGOg7yu6K2apFacDwflnVY9W6SOFh6n6nFXX8fK3gMWvzWLG3n3jUuEA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
  50.233.182.194) smtp.rcpttodomain=amd.com smtp.mailfrom=axiado.com;
  dmarc=none action=none header.from=axiado.com; dkim=none (message not
@@ -30,18 +30,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wi6eIdOJZi787dC2equMVaKsWhUMs6++fSjWwFwPRxM=;
- b=qYvfTmR5fXFeUVZBmHOXA5U08sz4CuaGdcsUhaSocdap3xNKEBxLOaDpkSQrj/Ebu0B9e1I1tr3t7BBJVv3tmmpY85w626n8Pkp+u07K5XsdgLnqSOtUOOUNvB3zA3+Z0FPmRNevxtI2gZCjTGaWGSDDZIcszotWex9ofLcvQpwUT32JSTqHFXYmFqUKYPvheQE8whZ0aQ8LCUEm8t6ex7XeqicmconBZfsCt8AEXob6mo4LIPjXxbnhmJIoqlBSgntqCLhQ0Sv+LKTALB0sDG0F5BDOu68yECm77vJbtEgDqB4vUBPPE+qjBHhyD0QRBCLJ+dd3ritO767zFphPKQ==
-Received: from DM6PR14CA0046.namprd14.prod.outlook.com (2603:10b6:5:18f::23)
- by BL1PPFB43CC8EEE.namprd18.prod.outlook.com (2603:10b6:20f:fc04::dbe) with
+ bh=vCh3w3rY8JdMlzOwVY1oKEt3qSDu4NfQ8QQCpWbtIUM=;
+ b=eof/T6Wyyk2+Zt5Hj4CqVIG3VNNBJ9Oz/6o7eOQ+nwi6L6yh71bpNxY7tYNlPvRhacoLrkbddhlC7OjQ3FAbywXfySIwEhvUyVSIwja763OZmjwvBSJwbvFcTQkORYZgBFEjBXOaVl4fWntClNUz6Ru0B9EV3B6IX4P65uHXk37xgDxT71rZ5ySisaxPVLn5Wi8XQyYmyPi1SCpJqyPzsjM2qHfHQPH3l+si0sHN5Kic3r5nEJG6T3Yi4qu7aAYJqRmIZ/2ZF8jyJf29oLroGicOGYhIfoRGwA3f13b6pgaPnimAhddhyz5ufUlPYB8RMBwmPqSl91K72rRCk4OtVw==
+Received: from DM6PR14CA0047.namprd14.prod.outlook.com (2603:10b6:5:18f::24)
+ by MN6PR18MB5468.namprd18.prod.outlook.com (2603:10b6:208:472::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.31; Tue, 1 Jul
- 2025 20:27:54 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8880.29; Tue, 1 Jul
+ 2025 20:27:58 +0000
 Received: from DS2PEPF0000343E.namprd02.prod.outlook.com
- (2603:10b6:5:18f:cafe::e1) by DM6PR14CA0046.outlook.office365.com
- (2603:10b6:5:18f::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8880.30 via Frontend Transport; Tue,
- 1 Jul 2025 20:27:54 +0000
+ (2603:10b6:5:18f:cafe::a2) by DM6PR14CA0047.outlook.office365.com
+ (2603:10b6:5:18f::24) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8880.31 via Frontend Transport; Tue,
+ 1 Jul 2025 20:27:57 +0000
 X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 50.233.182.194)
  smtp.mailfrom=axiado.com; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=axiado.com;
@@ -51,11 +51,11 @@ Received-SPF: Fail (protection.outlook.com: domain of axiado.com does not
 Received: from [127.0.1.1] (50.233.182.194) by
  DS2PEPF0000343E.mail.protection.outlook.com (10.167.18.41) with Microsoft
  SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.15
- via Frontend Transport; Tue, 1 Jul 2025 20:27:53 +0000
+ via Frontend Transport; Tue, 1 Jul 2025 20:27:56 +0000
 From: Harshit Shah <hshah@axiado.com>
-Date: Tue, 01 Jul 2025 13:27:30 -0700
-Subject: [PATCH v4 06/10] dt-bindings: i3c: cdns: add Axiado AX3000 I3C
- controller
+Date: Tue, 01 Jul 2025 13:27:32 -0700
+Subject: [PATCH v4 08/10] arm64: dts: axiado: Add initial support for
+ AX3000 SoC and eval board
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -63,8 +63,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250701-axiado-ax3000-soc-and-evaluation-board-support-v4-6-11ba6f62bf86@axiado.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250701-axiado-ax3000-soc-and-evaluation-board-support-v4-8-11ba6f62bf86@axiado.com>
 References: <20250701-axiado-ax3000-soc-and-evaluation-board-support-v4-0-11ba6f62bf86@axiado.com>
 In-Reply-To: <20250701-axiado-ax3000-soc-and-evaluation-board-support-v4-0-11ba6f62bf86@axiado.com>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -84,104 +84,723 @@ Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
  linux-serial@vger.kernel.org, linux-i3c@lists.infradead.org, 
  Harshit Shah <hshah@axiado.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1023; i=hshah@axiado.com;
- h=from:subject:message-id; bh=cl5NcuMz9Y6i+BfxOzW8SDm/AeqJ3J++rlUInBHsi2E=;
- b=owEB7QES/pANAwAKAfFYcxGhMtX7AcsmYgBoZES9JvchQ92KUSN+lPAgSimBa1k9/Xpvu/dKI
- G5qAYxjb2+JAbMEAAEKAB0WIQRO3pC/7SkLS2viWOvxWHMRoTLV+wUCaGREvQAKCRDxWHMRoTLV
- +0+QC/wKnZ1MyhfwA0HUwHcAsrQzUDcAWek0Yd+CCZQ6NSRNBrHmn27FH9zhLqWjvFefoD22sh3
- 2W3XNBHWkvzV7XQMHTQaL8gK7JU0GNG4/yH86m/gMnfyi12Ay+kdYNZZOfyJvCV4U6T8fj0XIGT
- EfbEhVYk5y4DqhEtk+tlG+MGQLmhPX5VIHIQlVQnAyJbKEy7/CxQECKS3z/uCab+Qs/hVK2/Lb+
- PzOSB4ALm0gwSmLeGvWyO/mCgM28KJa2JZ9mcYTZAF7Isy17Im0QCJ95uF9pu/k8XqRldZlWmNo
- 3qF/gd8iXQe6S4UF1loPmD9P46ijWlXFjfCWURyw9U10jacZy3q0raPeLWrx3BBiF/20dLCley3
- yHogX2saFsXEA1mwyhyusaDT040nKl4kvyE5Ysjr1cBIqHJHM2pKCC08eeyVUuWL5Si5Kh9Rbj0
- mFOl4CNbMZOYA2sXLPlvHWdqke1o1n9JCqSqHRG5RRvL2nnvLaQsWCNqeHFcpMZhG7QPI=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=18250; i=hshah@axiado.com;
+ h=from:subject:message-id; bh=j/+Qky+fPOazs6K3HBXW5y+0plotmY96K3xa4zO52Uk=;
+ b=owEB7QES/pANAwAKAfFYcxGhMtX7AcsmYgBoZES+iS3RNSiGO95QiQMpliCrxdGU+VjJ/T876
+ g1ba8Jo4HeJAbMEAAEKAB0WIQRO3pC/7SkLS2viWOvxWHMRoTLV+wUCaGREvgAKCRDxWHMRoTLV
+ +yt5C/9xM5tw4tC0FlLWmMgxP0nm8ZSGDzTZE8ac3EUISUGiXbmb4vPE7Y2s2RIgZlFn/BnurpY
+ eyDYq2O1Qo6bgsWG6jvDc7lL+G4bfzAOjMr0sIylURvRUSh2S/PdgaPWJ/sbeIeUShp0U8MXqAB
+ VLbIs4mq8s3aU0GanihWRs08ozrqyplJpHeauQIUhmtc1f/DAhTrMb+mtuYLCOuMo8/QodZOoDX
+ Q5wdHlL4Klvu2xUkecTz34mKMm9INuFTKkAfIdUF7n2StFHepruM8K0schHpz2eiPJwk3xYUwim
+ bv4+a4WB8PlayUvcDKZEZoe32HS7uyZcdX4NCxAkCOCxpM3wSTV1pha3dSfD00PW07/2WLmGmEh
+ EhErHCOmE4nQlTEKuuQmNnywPVYOUHWSJgqFw+uEGBlue44VDXiPP/NtkaJfcIycAxsuY0/qUbD
+ SCRzJSoBj+y2Nuq+kptqDYaHnihqMqTS0/C0W+FxZgn8gLbC/NeVFZtXdgcte/l8uuN7Q=
 X-Developer-Key: i=hshah@axiado.com; a=openpgp;
  fpr=4EDE90BFED290B4B6BE258EBF1587311A132D5FB
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS2PEPF0000343E:EE_|BL1PPFB43CC8EEE:EE_
-X-MS-Office365-Filtering-Correlation-Id: 634a75f4-7966-41a4-b7b5-08ddb8ddc254
+X-MS-TrafficTypeDiagnostic: DS2PEPF0000343E:EE_|MN6PR18MB5468:EE_
+X-MS-Office365-Filtering-Correlation-Id: 136597b2-c018-4bd6-f9e3-08ddb8ddc475
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700013|82310400026|7416014|376014|921020;
+	BCL:0;ARA:13230040|7416014|1800799024|82310400026|36860700013|376014|921020;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?dDZndTB1bmFtNmU5ZXltRW1Vb1R3aGp0NGd5Ymc1eWlKWmFaQ3Bpd1dGS0sv?=
- =?utf-8?B?VDlJSi9pblBLazVNbmprc3k0UUt2MGJwV3RTWkFlaEl1cGhMTTFvMlhWOUhY?=
- =?utf-8?B?TmsyN3JlNExuY29lOUNsVkE2Q1ZvVkY4WGJzaFY5U2pKNzB0dmFSV3ZyUTJi?=
- =?utf-8?B?Y2NON04vNmgvM3NFQjc2NWZqY1FCMklUNUdKNFBsZm9LM1BsK2VqaktQMXhG?=
- =?utf-8?B?Zk5oUWVxYzE0TkhHUGYwYm1iWWY1M1EwYmZya213MzVpMFpYRXpaNlRHRHRI?=
- =?utf-8?B?SWYyR0hyamhrYUpUeHc3NFhzZWxsdThxZUhWMEZUVG8zU0ZyWXlkK3B1QjUy?=
- =?utf-8?B?NmN5V3pUR3o3TEVHT0txL3plNmhrUUoxMGN6dVgwb3d4dkNPU1FIRmNOMVZk?=
- =?utf-8?B?SU9PdGFKakJpNnBOQlRkMjVTNzh0UFVuOVlvcmdIQUJzckhja2ZXS2Jhajl0?=
- =?utf-8?B?eTVSUFhYTFMrNXcvN3VpSE50YWxndUFsUENtbkVkS3h4MUNwWGNCODMrYjBD?=
- =?utf-8?B?SXJKc1pCUzVuQmpBNGF4MklEQUN4VlZubFZnb0p0WUVvcUpoT2xwOFNJRFRI?=
- =?utf-8?B?dzBxaVhPZzAvOVNPcXN2a1ZUUitqRmlIeCt5ZGxQbE5yeHB3dmtvOE55aklt?=
- =?utf-8?B?YldKdHI2QjYwajZSdzVvaDVObXVleWdCL05iMytWS3Jic3FYZEoxSFpGbE1m?=
- =?utf-8?B?a1ZuMUhMYkFFeW1EcExoZWdLRU9FeU9JSk1jb0RoTFhaL1lTL2tYeitHRFJu?=
- =?utf-8?B?RWRNMWI2TFBxeGxFYVNEbXZXNlVtOHFvMWJLRVg4SDdOdHl6TzdieUpzTGVN?=
- =?utf-8?B?UFA1WDN5VjNlREY4MzJHd0NwbnJJYnlpbTlpMERiNTBTTmVYMExvWmEwQXo5?=
- =?utf-8?B?Nnc4VFM4RnFNb0RYS1ZzS0FMc0V3WTRDclBvQkhwK1V3b2VRc05BT3hjN2lO?=
- =?utf-8?B?NzRIYkQrSnNLZ0kwZ25tbG02a1JBNWF3ZUh1dnpnQUtsMGlzT1VjekpGSFJ6?=
- =?utf-8?B?bVRRSlRJeWE2UHRIN0RVUER2TCs1SkNndWRaZm45d1g1Umw4akRkUG5pT1NJ?=
- =?utf-8?B?QzB1Yms5dU9aT21wZTVwWE90cVNCM2lUYUxtV2FJZzA4OGNvQTNTYkhWOFhi?=
- =?utf-8?B?UldGd2NrV1FBZG1oWi9McXZJR0xjZHdpRmpVZ2Z6QWt5bk5uY2Z6OTRZc3do?=
- =?utf-8?B?RXYzL0loZmRzL3BJSXVCdlVob1RRaTdhd3lzbFNnNUNBdEVOTVAxMHZsRDJ2?=
- =?utf-8?B?U2tmajNwSStRTG5xTk5tRmNkRTdEUVBiKzZvVis0b251WGJkYlJjaWIwcERy?=
- =?utf-8?B?NlI0QVV4MzBTdmFzZFJSVzhrNUVMVTNYT1Rjd3B2VDJJR0p1V0xsdjNtUTNa?=
- =?utf-8?B?eHNUVVhUN3RPLzdJS3NXc0RndEpVRERuOVh4TzRKSGJDTGNKdzN2TXpFaUh5?=
- =?utf-8?B?T1lkZkg3Qk94ZktpN2pweEVwckx3NnVjSGh3OVV6Z0RpM1hScHF4NFNmRXBl?=
- =?utf-8?B?K2RQNDltS2ZLc3NlN1BnQzFCVzBZdWVKa2xmVlJjL0d2S2wwc1VCMCszcWhI?=
- =?utf-8?B?eHBCeUM3MXU1TTN5RkdLVHprS0h0KzVDTnNuNzczeWg5S2FHcHg3R0FQMi82?=
- =?utf-8?B?eTZFNGhNT1RPUFdTeFJBOHZNMUYza1BzdFF6S3dOVXVWNEUxbFBPUVlwM3FL?=
- =?utf-8?B?aUdkcUt4U3o5NkF0Y2hHL3hpbWRmaWpGdGcyTmZ3Qk54Q3JSMUxjVEloUVFN?=
- =?utf-8?B?VndyVkloZmlxcDFINXY3Q0wxTkNlUXN2NVJGclNHN2NzcC9vMm9DWkp0c2l0?=
- =?utf-8?B?SXB5cG00VDJCTkpEWURNOU0wZ1Q1anVudyt1TnhZWTdyaFlnOHpCcmExK0RY?=
- =?utf-8?B?RmNDY0dySExSTDRCSVU0UVN4UjhmbEtodmMzd21WeXlid0NrcWJvbFgxTFRX?=
- =?utf-8?B?dmMxcStkZlVBQ0dYS2FEOEZTWWZDR0g3a0NSb1grMmRpV251R2hiTnBFYkVi?=
- =?utf-8?B?RGN2bkFYaGNZV1phRzJmZ0lpUnlVd1p1WmxRNFZzdHlOUEc4UDd4OHF5RVlI?=
- =?utf-8?B?cTdtQ3hTQ2dFOTdha3hYWHk5ZUcwWTRhTnNtdz09?=
+	=?utf-8?B?dHJLNXVPTUVOMEtFUmFsYS9YaHZTOGxyeVgxRDRMdXhsZVNaTGZHZ0Z4bmUz?=
+ =?utf-8?B?dmNqclB4VlRZOTIrZEJQRVFZUDRlNWlTSUJWb3lqa3UrYitKTzBlZlk4V3dG?=
+ =?utf-8?B?dDEzQnJuWTBkK0IyRVArRHMxV2lBWU5EakdCdTNOU2dxcHlidFI0dGZ5UVg4?=
+ =?utf-8?B?RHY4dkRuU0svalVZYzRtTlU1Zm9tNU5qZzN1eXE5NGQ5enlzRDJxdkdLaU5w?=
+ =?utf-8?B?dDI1alFjWlBTVlpFaktKQ0tTV01iVlpJWWs1a0lDNUphanc0VFdCa1hwejdi?=
+ =?utf-8?B?VmlYcmc4RmJZUk9CVXRraThRMEhJZ1E4QktzNnhpc3RqZThGS0tXOXREa3Z1?=
+ =?utf-8?B?TW1wNlFHYUlHWDRtYVJmb1JML2pGbzg5NkZoaXFPYWhpYWVQNkdUdVRZUnhi?=
+ =?utf-8?B?b2xYRytXcGdnSFpFaTZUWlIzeE9iQjhuUU93L3NtcnBBbDNxNXRNNTlOOEFs?=
+ =?utf-8?B?a3hBRHIxNnpPaXJWdWJxOHRseC80dmIvOEtPT2l6UCtpQWRHak9HWnM2N01U?=
+ =?utf-8?B?RXFZUmQyYmRueTFrNjg3YmlWWERtSVRRckk0ajJTdHhNeDFMM2w0ejRWRTRN?=
+ =?utf-8?B?U1J2TVk2M2JZdnB5Sjk4c09CVzluTDlGNC9qRnkyZGRpS3M0cjNHa2ZRV1lx?=
+ =?utf-8?B?UTdoMmNRbnVlN3ZYZVJBQjloQnZDaEh2aHdySHpvT2ZHekhTSXJqMzQ1enkz?=
+ =?utf-8?B?ODJXZzkyRXFjZlkva1VkMTlYdEVEYnZieTI3VCtqTENsVFVOZ0ZFNEpjOC9Q?=
+ =?utf-8?B?TkpDb2NCSXFVYnNrVEt2eWwwOW11NHNweEpnR25kLzdoWXFkQXpXemloVk9X?=
+ =?utf-8?B?Q3ZzRTZCS0wzOCt6YUgyN3VkVURJNlFQalVMWDM4SzUrVkE1QVdYejZGRkww?=
+ =?utf-8?B?dXdraEgrbGs1VzltVnBSaER6ejFGZWxMMlFEK25TK3VIU2hVL3NUL1BpR1Ex?=
+ =?utf-8?B?bkkzMUZJc0dKRzdVWnE4ZC9VVjNQbFNpQ09kRWtVT1IvMzU2c3VaVHA3SVNj?=
+ =?utf-8?B?aG9lME1JekpYSThSUlR5emI3WVlhdGxCcWRkS2hBdTNkM2ozbVJPeE5KbUNC?=
+ =?utf-8?B?Qkk3eit2UzRvcktBdDBJNUVKeUhvRTJoZG9BVlBRUEtpRVgvc05aY05iNjRY?=
+ =?utf-8?B?eHBwWkRzS0xqZ2Z3bjZFSGJIRFEyQWtWTjE1Vlc4U1FQVFB2OVZPdEx1aE1v?=
+ =?utf-8?B?cmpYZnpzeUd6TzgraGRJeDF1Z0daeGxrblF0ZEM5dlFFY0ZoR3Iwclpyd0FY?=
+ =?utf-8?B?dXVKYTZqQ05yTFFSMkZJdmlBaWxNeTB4WjJpeGlIOS9VeHBmVVRrRlhtYU9H?=
+ =?utf-8?B?eW0rejBEaWFUN2NNMEp4RkFReTR2NWNkR29QODQzTXB6djY0Ulg5ZFFHdkhh?=
+ =?utf-8?B?UjZnZFJXMXF6UzIwNEVmTDhIMzlWRVUyZERnTDlrcDdRSTZWL3hlYVRwV1g5?=
+ =?utf-8?B?a3JYYS9oNDkxQmdBdUdTVEkvcWFtVFpyc1BJVFF3Z3BSc1paQzlldEJDOGVk?=
+ =?utf-8?B?bjFNdFFLWjRuRENpSTdta0ZlRzNEN3BGdmVGQ3lDYWlwenhVM3lnQzEwT1E5?=
+ =?utf-8?B?NTg2dG5aUXdsV0R1Q0R2NXZZd1JJOWNLbTE3TjBpalBFaTJDWkxVUVhNSWxP?=
+ =?utf-8?B?KzRzMEMxUm53YzBtYk9JQytSQWtVV1pZK3EybjRyYnRmTXg0K1IrbGMwL1Qv?=
+ =?utf-8?B?U0dBNTZTakpLaHR1dE1hUHVPdEpGbXhuU0hkOVJKMlRYNm54V1laRWp4UzdH?=
+ =?utf-8?B?bEwxODJQV2w4L2FwbzU1a3c4NFJZOTliQjlnM3BHaTBIQ3NuZXRLczRoT0NK?=
+ =?utf-8?B?VnZGRFV4SFRvZDhrYVZlR0VleUVXT1NnRWhRbGpCZjBrak05b0lBaU9wYksy?=
+ =?utf-8?B?b053UEp4WG9FTkRNUlFKZExESVlrZmkyRnpFNytrUlRKK05vdk9aOERyczU2?=
+ =?utf-8?B?USs3b00xL281ZVhBU0FkSkRZYS85TnhCSERkNUV0QTZGS3FoeWVqYmtZeUVq?=
+ =?utf-8?B?eDREYk1LdnlvODNvU3YvZUxVTVgxQ3ZjT1VYYnBIanBjVDN2UTl4R1VwTC93?=
+ =?utf-8?B?SzBlN1dXaEduQ25ZU2Fra09YMHI0bVF3bnNOUT09?=
 X-Forefront-Antispam-Report:
-	CIP:50.233.182.194;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:[127.0.1.1];PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(82310400026)(7416014)(376014)(921020);DIR:OUT;SFP:1102;
+	CIP:50.233.182.194;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:[127.0.1.1];PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(82310400026)(36860700013)(376014)(921020);DIR:OUT;SFP:1102;
 X-OriginatorOrg: axiado.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2025 20:27:53.1942
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jul 2025 20:27:56.7246
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 634a75f4-7966-41a4-b7b5-08ddb8ddc254
+X-MS-Exchange-CrossTenant-Network-Message-Id: 136597b2-c018-4bd6-f9e3-08ddb8ddc475
 X-MS-Exchange-CrossTenant-Id: ff2db17c-4338-408e-9036-2dee8e3e17d7
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=ff2db17c-4338-408e-9036-2dee8e3e17d7;Ip=[50.233.182.194];Helo=[[127.0.1.1]]
 X-MS-Exchange-CrossTenant-AuthSource:
 	DS2PEPF0000343E.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PPFB43CC8EEE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR18MB5468
 
-Add binding for AX3000 I3C controller. So far, no changes known,
-so it can fallback to default compatible.
+Add initial device tree support for the AX3000 SoC and its evaluation
+platform. The AX3000 is a multi-core SoC featuring 4 Cortex-A53 cores,
+Secure Vault, AI Engine and Firewall.
+
+It adds support for Cortex-A53 CPUs, timer, UARTs, and I3C
+controllers on the AX3000 evaluation board.
 
 Signed-off-by: Harshit Shah <hshah@axiado.com>
 ---
- Documentation/devicetree/bindings/i3c/cdns,i3c-master.yaml | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/Makefile              |   1 +
+ arch/arm64/boot/dts/axiado/Makefile       |   2 +
+ arch/arm64/boot/dts/axiado/ax3000-evk.dts |  79 +++++
+ arch/arm64/boot/dts/axiado/ax3000.dtsi    | 520 ++++++++++++++++++++++++++++++
+ 4 files changed, 602 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/i3c/cdns,i3c-master.yaml b/Documentation/devicetree/bindings/i3c/cdns,i3c-master.yaml
-index cad6d53d0e2e35ddaaad35215ec93dd182f28319..bd3f31a03376b3351276ae2cd247615ee4eff52f 100644
---- a/Documentation/devicetree/bindings/i3c/cdns,i3c-master.yaml
-+++ b/Documentation/devicetree/bindings/i3c/cdns,i3c-master.yaml
-@@ -14,7 +14,13 @@ allOf:
- 
- properties:
-   compatible:
--    const: cdns,i3c-master
-+    oneOf:
-+      - description: Cadence I3C controller
-+        const: cdns,i3c-master
-+      - description: Axiado AX3000 I3C controller
-+        items:
-+          - const: axiado,ax3000-i3c
-+          - const: cdns,i3c-master
- 
-   reg:
-     maxItems: 1
+diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
+index 79b73a21ddc22b17308554e502f8207392935b45..47dd8a1a7960d179ee28969a1d6750bfa0d73da1 100644
+--- a/arch/arm64/boot/dts/Makefile
++++ b/arch/arm64/boot/dts/Makefile
+@@ -9,6 +9,7 @@ subdir-y += amlogic
+ subdir-y += apm
+ subdir-y += apple
+ subdir-y += arm
++subdir-y += axiado
+ subdir-y += bitmain
+ subdir-y += blaize
+ subdir-y += broadcom
+diff --git a/arch/arm64/boot/dts/axiado/Makefile b/arch/arm64/boot/dts/axiado/Makefile
+new file mode 100644
+index 0000000000000000000000000000000000000000..6676ad07db6129f8b333b0feffee705d272517c2
+--- /dev/null
++++ b/arch/arm64/boot/dts/axiado/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++dtb-$(CONFIG_ARCH_AXIADO) += ax3000-evk.dtb
+diff --git a/arch/arm64/boot/dts/axiado/ax3000-evk.dts b/arch/arm64/boot/dts/axiado/ax3000-evk.dts
+new file mode 100644
+index 0000000000000000000000000000000000000000..92101c5b534bfac8b463adaa1c4f0d4367d01e21
+--- /dev/null
++++ b/arch/arm64/boot/dts/axiado/ax3000-evk.dts
+@@ -0,0 +1,79 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (c) 2021-25 Axiado Corporation (or its affiliates). All rights reserved.
++ */
++
++/dts-v1/;
++
++#include "ax3000.dtsi"
++
++/ {
++	model = "Axiado AX3000 EVK";
++	compatible = "axiado,ax3000-evk", "axiado,ax3000";
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	aliases {
++		serial3 = &uart3;
++	};
++
++	chosen {
++		stdout-path = "serial3:115200";
++	};
++
++	memory@0 {
++		device_type = "memory";
++		/* Cortex-A53 will use following memory map */
++		reg = <0x00000000 0x3d000000 0x00000000 0x23000000>,
++		      <0x00000004 0x00000000 0x00000000 0x80000000>;
++	};
++};
++
++/* GPIO bank 0 - 7 */
++&gpio0 {
++	status = "okay";
++};
++
++&gpio1 {
++	status = "okay";
++};
++
++&gpio2 {
++	status = "okay";
++};
++
++&gpio3 {
++	status = "okay";
++};
++
++&gpio4 {
++	status = "okay";
++};
++
++&gpio5 {
++	status = "okay";
++};
++
++&gpio6 {
++	status = "okay";
++};
++
++&gpio7 {
++	status = "okay";
++};
++
++&uart0 {
++	status = "okay";
++};
++
++&uart1 {
++	status = "okay";
++};
++
++&uart2 {
++	status = "okay";
++};
++
++&uart3 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/axiado/ax3000.dtsi b/arch/arm64/boot/dts/axiado/ax3000.dtsi
+new file mode 100644
+index 0000000000000000000000000000000000000000..792f52e0c7dd42cbc54b0eb47e25b0fbf1a706b8
+--- /dev/null
++++ b/arch/arm64/boot/dts/axiado/ax3000.dtsi
+@@ -0,0 +1,520 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (c) 2021-25 Axiado Corporation (or its affiliates). All rights reserved.
++ */
++
++/dts-v1/;
++
++#include <dt-bindings/interrupt-controller/irq.h>
++#include <dt-bindings/interrupt-controller/arm-gic.h>
++
++/memreserve/ 0x3c0013a0 0x00000008;	/* cpu-release-addr */
++/ {
++	model = "Axiado AX3000";
++	interrupt-parent = <&gic500>;
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++	cpus {
++		#address-cells = <2>;
++		#size-cells = <0>;
++
++		cpu0: cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a53";
++			reg = <0x0 0x0>;
++			enable-method = "spin-table";
++			cpu-release-addr = <0x0 0x3c0013a0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>;
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>;
++			next-level-cache = <&l2>;
++		};
++
++		cpu1: cpu@1 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a53";
++			reg = <0x0 0x1>;
++			enable-method = "spin-table";
++			cpu-release-addr = <0x0 0x3c0013a0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>;
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>;
++			next-level-cache = <&l2>;
++		};
++
++		cpu2: cpu@2 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a53";
++			reg = <0x0 0x2>;
++			enable-method = "spin-table";
++			cpu-release-addr = <0x0 0x3c0013a0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>;
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>;
++			next-level-cache = <&l2>;
++		};
++
++		cpu3: cpu@3 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a53";
++			reg = <0x0 0x3>;
++			enable-method = "spin-table";
++			cpu-release-addr = <0x0 0x3c0013a0>;
++			d-cache-size = <0x8000>;
++			d-cache-line-size = <64>;
++			d-cache-sets = <128>;
++			i-cache-size = <0x8000>;
++			i-cache-line-size = <64>;
++			i-cache-sets = <256>;
++			next-level-cache = <&l2>;
++		};
++
++		l2: l2-cache0 {
++			compatible = "cache";
++			cache-size = <0x100000>;
++			cache-unified;
++			cache-line-size = <64>;
++			cache-sets = <1024>;
++			cache-level = <2>;
++		};
++	};
++
++	clocks {
++		clk_xin: clock-200000000 {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <200000000>;
++			clock-output-names = "clk_xin";
++		};
++
++		refclk: clock-125000000 {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <125000000>;
++		};
++	};
++
++	soc {
++		compatible = "simple-bus";
++		ranges;
++		#address-cells = <2>;
++		#size-cells = <2>;
++		interrupt-parent = <&gic500>;
++
++		gic500: interrupt-controller@80300000 {
++			compatible = "arm,gic-v3";
++			reg = <0x00 0x80300000 0x00 0x10000>,
++			      <0x00 0x80380000 0x00 0x80000>;
++			ranges;
++			#interrupt-cells = <3>;
++			#address-cells = <2>;
++			#size-cells = <2>;
++			interrupt-controller;
++			#redistributor-regions = <1>;
++			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
++		};
++
++		/* GPIO Controller banks 0 - 7 */
++		gpio0: gpio-controller@80500000 {
++			compatible = "axiado,ax3000-gpio", "cdns,gpio-r1p02";
++			reg = <0x00 0x80500000 0x00 0x400>;
++			clocks = <&refclk>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 183 IRQ_TYPE_LEVEL_HIGH>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio1: gpio-controller@80580000 {
++			compatible = "axiado,ax3000-gpio", "cdns,gpio-r1p02";
++			reg = <0x00 0x80580000 0x00 0x400>;
++			clocks = <&refclk>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio2: gpio-controller@80600000 {
++			compatible = "axiado,ax3000-gpio", "cdns,gpio-r1p02";
++			reg = <0x00 0x80600000 0x00 0x400>;
++			clocks = <&refclk>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio3: gpio-controller@80680000 {
++			compatible = "axiado,ax3000-gpio", "cdns,gpio-r1p02";
++			reg = <0x00 0x80680000 0x00 0x400>;
++			clocks = <&refclk>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio4: gpio-controller@80700000 {
++			compatible = "axiado,ax3000-gpio", "cdns,gpio-r1p02";
++			reg = <0x00 0x80700000 0x00 0x400>;
++			clocks = <&refclk>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio5: gpio-controller@80780000 {
++			compatible = "axiado,ax3000-gpio", "cdns,gpio-r1p02";
++			reg = <0x00 0x80780000 0x00 0x400>;
++			clocks = <&refclk>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio6: gpio-controller@80800000 {
++			compatible = "axiado,ax3000-gpio", "cdns,gpio-r1p02";
++			reg = <0x00 0x80800000 0x00 0x400>;
++			clocks = <&refclk>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			status = "disabled";
++		};
++
++		gpio7: gpio-controller@80880000 {
++			compatible = "axiado,ax3000-gpio", "cdns,gpio-r1p02";
++			reg = <0x00 0x80880000 0x00 0x400>;
++			clocks = <&refclk>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>;
++			gpio-controller;
++			#gpio-cells = <2>;
++			interrupt-controller;
++			#interrupt-cells = <2>;
++			status = "disabled";
++		};
++
++		/* I3C Controller 0 - 16 */
++		i3c0: i3c@80500400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80500400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c1: i3c@80500800 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80500800 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c2: i3c@80580400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80580400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c3: i3c@80580800 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80580800 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c4: i3c@80600400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80600400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c5: i3c@80600800 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80600800 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c6: i3c@80680400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80680400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c7: i3c@80680800 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80680800 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c8: i3c@80700400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80700400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c9: i3c@80700800 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80700800 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c10: i3c@80780400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80780400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c11: i3c@80780800 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80780800 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c12: i3c@80800400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80800400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c13: i3c@80800800 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80800800 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c14: i3c@80880400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80880400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c15: i3c@80880800 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80880800 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		i3c16: i3c@80620400 {
++			compatible = "axiado,ax3000-i3c", "cdns,i3c-master";
++			reg = <0x00 0x80620400 0x00 0x400>;
++			clocks = <&refclk &clk_xin>;
++			clock-names = "pclk", "sysclk";
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
++			i2c-scl-hz = <100000>;
++			i3c-scl-hz = <400000>;
++			#address-cells = <3>;
++			#size-cells = <0>;
++			status = "disabled";
++		};
++
++		uart0: serial@80520000 {
++			compatible = "axiado,ax3000-uart", "cdns,uart-r1p12";
++			reg = <0x00 0x80520000 0x00 0x100>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 112 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "uart_clk", "pclk";
++			clocks = <&refclk &refclk>;
++			status = "disabled";
++		};
++
++		uart1: serial@805a0000 {
++			compatible = "axiado,ax3000-uart", "cdns,uart-r1p12";
++			reg = <0x00 0x805A0000 0x00 0x100>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 113 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "uart_clk", "pclk";
++			clocks = <&refclk &refclk>;
++			status = "disabled";
++		};
++
++		uart2: serial@80620000 {
++			compatible = "axiado,ax3000-uart", "cdns,uart-r1p12";
++			reg = <0x00 0x80620000 0x00 0x100>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "uart_clk", "pclk";
++			clocks = <&refclk &refclk>;
++			status = "disabled";
++		};
++
++		uart3: serial@80520800 {
++			compatible = "axiado,ax3000-uart", "cdns,uart-r1p12";
++			reg = <0x00 0x80520800 0x00 0x100>;
++			interrupt-parent = <&gic500>;
++			interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
++			clock-names = "uart_clk", "pclk";
++			clocks = <&refclk &refclk>;
++			status = "disabled";
++		};
++	};
++
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupt-parent = <&gic500>;
++		interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL_HIGH>,
++			   <GIC_PPI 14 IRQ_TYPE_LEVEL_HIGH>,
++			   <GIC_PPI 11 IRQ_TYPE_LEVEL_HIGH>,
++			   <GIC_PPI 10 IRQ_TYPE_LEVEL_HIGH>;
++	};
++};
 
 -- 
 2.25.1
