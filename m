@@ -1,142 +1,314 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9F1AA2550CF;
-	Thu,  3 Jul 2025 16:31:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751560276; cv=none; b=mlvaTOwq0AfmMWv+JWmn2YuGqzPTq+ZuiMZwJGUNgK/QwbCT06/5TjPvumLOKcuoJIhaaixmd74yoSLPUnfKWXZA9D3cVkE48Mi9tdC13MUR0z03ktl7um6YEPNscGNWrp1qwa/jqsLvVuF24rgoRpkvgf20/r0dRBlDPWqyZBI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751560276; c=relaxed/simple;
-	bh=+vt57VWzBdJjPWmw3ULSUUlX6k9y5W3q1Z+hvF4S8kc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=E9yr/KOSQEOijLt2ApeGNFzZf/V/PgBb1pUKZE5z+SLrymHyDFHTw8xF+J2atRIuTX9sfoYNEYGuawiOHO49vuu0FMDsgbKwo1oUVxtcW0MDYCOeAhhuRrv1LQaB1TadmD5At7+mjQsRylriS/9fg/WYnIJMM0CcdnuEOQUP0b4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 714C41596;
-	Thu,  3 Jul 2025 09:30:59 -0700 (PDT)
-Received: from J2N7QTR9R3 (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1D6E33F6A8;
-	Thu,  3 Jul 2025 09:31:12 -0700 (PDT)
-Date: Thu, 3 Jul 2025 17:31:09 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Breno Leitao <leitao@debian.org>
-Cc: cov@codeaurora.org, rmk+kernel@armlinux.org.uk, catalin.marinas@arm.com,
-	linux-serial@vger.kernel.org, rmikey@meta.com,
-	linux-arm-kernel@lists.infradead.org, usamaarif642@gmail.com,
-	leo.yan@arm.com, linux-kernel@vger.kernel.org, paulmck@kernel.org,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Besar Wicaksono <bwicaksono@nvidia.com>
-Subject: Re: arm64: csdlock at early boot due to slow serial (?)
-Message-ID: <aGawTd8N2i8MDCmL@J2N7QTR9R3>
-References: <aGVn/SnOvwWewkOW@gmail.com>
- <aGZbYmV26kUKJwu_@J2N7QTR9R3>
- <aGaQBghdAl8VGWmV@gmail.com>
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2097.outbound.protection.outlook.com [40.107.237.97])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 874CD28D8F2;
+	Thu,  3 Jul 2025 18:20:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.97
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751566857; cv=fail; b=rPNPjIJ4YXernSJGpoqS41xOpSBt5gcPND/gGHwz1UdEj0+SxXR55MAqFpTua+b68wEVhIykZPn25g09uzsIuzXCMHjBMb6BzSOCz2CDve5qPi6oCuAIC8L3IUZa8iPHSUrBxs6SzXw4P9lz2yRc98pxcZ5B9TqjWS9C9TLuIog=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751566857; c=relaxed/simple;
+	bh=NcDqMoh23r1KFI79Xbm6yJXGGabLmDZmovDvsYLVxdw=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=E3FZgvrYbc+CwhdGs3o/+bSiVUNEo3pQuK0MxPKk0+1IMoBnwhaT78jeX0Jqqc+5g0mtDpninXdXZGmJwjc7BnHcbc/235fXzo18qthTIjbxAnn9cTbOKUMRXF+hqc4fsxh20EmAokYikP2dRuV3/ZVbjaqMbD1n5I6KjP/zdLs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=PH59I4fw; arc=fail smtp.client-ip=40.107.237.97
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="PH59I4fw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=u7N4KTY7JV87qfDjdrOtIujY+hbeG6RU5Wf9mIhpf+PkfOxls8loOcLf0RDmz5ObzdTM37uDTGE7heGYnGXZ5ipm3e/51GoLKB81+GgCTPDSRO0HkZKBzUpK11YBpU8/JDV/ih07bM/nppRcNYMeX2Zxp9DyJxNezdanGRWwLleJ4er3yk2T7zRZkz1Wdvi8qGEV8byQ9FINsxPLAz0p8tA3bfM3JySnSA0DJfEB/5HNonYGNMzWIo3+WgePWR1JpDl3wd0P83QK5oKkeGHIpf2ZOGvps4h0qYREimwE0RLhkFNDVFxBWKQWQ8zOzuXYd04a9vh3dF/BUdGxadZBBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=D1hbTtGPCCd8VwVXyUrapht8lKy5BhXgNEhGGyj4yAk=;
+ b=p5nwdc8MFAKK/XZK2PsarUUf0MAmdfr0PnUPYtUPM3196c8b0y7BjYWSjGCiWfBt9aCWCjXaA9Jx5356SFBJr1GH9t7i6ZJzhRhLEoR6k25D6dkWvfhzLdu/BOfDB/1mggGLbccaJXtaS68CRc9TXuf/Vt32axBoXqhGHBbxtxlg63L2kIjMcJEMdSDGC7T2+ukBZ5hB7V66yVQalgrUaCFzQOMMvAFxNMpvbYtvay77ILISv5sGCx04qJLIgm0iIP3iTft/alnxaIWUJvVyAf76Ih+FphYc1nyrh+g45eFICpOYNPpXS0ZCqz8F8ThXSjeACMUcHkDTtWAYP5AxmA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 50.233.182.194) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axiado.com;
+ dmarc=none action=none header.from=axiado.com; dkim=none (message not
+ signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=D1hbTtGPCCd8VwVXyUrapht8lKy5BhXgNEhGGyj4yAk=;
+ b=PH59I4fwW95THjU9xBDiW3O1pMXzjhshtCIxbaDYnTubPiDhxDQL2NxOzC2FOL4baq5zFkWYChRWHpEgykGceOsMK8V3EgLfqVLflTJyuLQ3Oz4yn0bhuQyEYhj5NdU6nTaHb79Il6MKcqi3FzfMWt8IN0ODLv0ZQtltWubZJ3Ns+Q8mMK5OhF0UN4B67JKjKyV92Hw5eJ7VSOca0YC8zWOedGSmsslz3lzL5xwRZBjKnAuV7IYWaPXvalTr+pg/s1tzNfr7t2TV1A0a+ED03XKAA345GQ4HRAwXecrDijAkKFGb7jYKE9NdORoIfNjqGfnWayzQLw8VfkS/9moB/w==
+Received: from BL1PR13CA0302.namprd13.prod.outlook.com (2603:10b6:208:2c1::7)
+ by PH0PR18MB4427.namprd18.prod.outlook.com (2603:10b6:510:d5::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.19; Thu, 3 Jul
+ 2025 18:20:51 +0000
+Received: from BL6PEPF0001AB75.namprd02.prod.outlook.com
+ (2603:10b6:208:2c1:cafe::85) by BL1PR13CA0302.outlook.office365.com
+ (2603:10b6:208:2c1::7) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.19 via Frontend Transport; Thu,
+ 3 Jul 2025 18:20:51 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 50.233.182.194)
+ smtp.mailfrom=axiado.com; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axiado.com;
+Received-SPF: Fail (protection.outlook.com: domain of axiado.com does not
+ designate 50.233.182.194 as permitted sender)
+ receiver=protection.outlook.com; client-ip=50.233.182.194; helo=[127.0.1.1];
+Received: from [127.0.1.1] (50.233.182.194) by
+ BL6PEPF0001AB75.mail.protection.outlook.com (10.167.242.168) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.15
+ via Frontend Transport; Thu, 3 Jul 2025 18:20:49 +0000
+From: Harshit Shah <hshah@axiado.com>
+Subject: [PATCH v6 00/10] Axiado AX3000 SoC and Evaluation Board Support
+Date: Thu, 03 Jul 2025 11:20:42 -0700
+Message-Id: <20250703-axiado-ax3000-soc-and-evaluation-board-support-v6-0-cebd810e7e26@axiado.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aGaQBghdAl8VGWmV@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAPrJZmgC/53NTW7DIBCG4atErEvF8DN2suo9qiwGgxuk1ljgo
+ ESR716cLurKK3eFPqR53gfLPgWf2enwYMmXkEMc6sCXA+suNHx4HlzdTAppBILmdAvkYn2UEIL
+ n2HEaHPeFPq801WNuIyXH83UcY5o42BatpqMj6lhFx+T7cHsG3891X0KeYro/+wWW33+nCnDBl
+ WzIKq07QPf2A7x28YstrSLXvtnty8XXYIR0qkVoN75a+VLt9lX1rfKI1Ogj9Gbj61+/EbDb19U
+ HsIQ9Stu3uPHN2pe7fVN9JOcBhSep7B9/nudvoRoHGW0CAAA=
+X-Change-ID: 20250614-axiado-ax3000-soc-and-evaluation-board-support-1b86b4a9daac
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, Arnd Bergmann <arnd@arndb.de>, 
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+ Jan Kotas <jank@cadence.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Michal Simek <michal.simek@amd.com>, 
+ =?utf-8?q?Przemys=C5=82aw_Gaj?= <pgaj@cadence.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Frank Li <Frank.Li@nxp.com>, Boris Brezillon <bbrezillon@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, 
+ soc@lists.linux.dev, Jan Kotas <jank@cadence.com>, 
+ linux-serial@vger.kernel.org, linux-i3c@lists.infradead.org, 
+ Harshit Shah <hshah@axiado.com>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6034; i=hshah@axiado.com;
+ h=from:subject:message-id; bh=NcDqMoh23r1KFI79Xbm6yJXGGabLmDZmovDvsYLVxdw=;
+ b=owEB7QES/pANAwAKAfFYcxGhMtX7AcsmYgBoZsn+wMiKYdSqRD+ZJVhVZSKIpXmlMX4IWs8/L
+ TFmaeEDATaJAbMEAAEKAB0WIQRO3pC/7SkLS2viWOvxWHMRoTLV+wUCaGbJ/gAKCRDxWHMRoTLV
+ +7qcC/9TBZ5AXvsPiCzp3v6yROHh1ieKhSL3i4qnHbuxo68js3soNv0I2Pya7EJDfNP6wlx/Ms2
+ gxjeduEcE1YhaVSTlQwnHPvLaWBBdcgX+08JCGDCzIXMvz7M7E4aZeOJomkRD8gC5mg6OdW7tZk
+ kacFShY1iZ5mhv24PeIAckoq4egvL3MsAJpgigPU4a5WvwSG0B0Uex2gSTNXwngOCE9zBJmagWr
+ VO1+dDnG545SssqzehdfnWqh7Q17PmyxM08WMhRueo48g/0zke09TVi+CIq9XjnpWsilfluGqtr
+ JxJgUNVQH8H/1kQFezi283cNznvO0+zt7WphQfy4dMT2bgg8taqEhBA1VhlLHqCBUzZrGnMhRVO
+ TeHA6Dxe6jBiweOC7q3DTl1p9rnjvxdkq1RzgS3ro4h2uR8dTq9yfiS6yf1fkDMqZGIZqmk5zZM
+ +ghS0Ww/MMGKXSdknh6j7KrQ6st0sLDQLo9wr7TrteCpAsqC+SnbX/ABvMVdh2ZeeK1vI=
+X-Developer-Key: i=hshah@axiado.com; a=openpgp;
+ fpr=4EDE90BFED290B4B6BE258EBF1587311A132D5FB
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB75:EE_|PH0PR18MB4427:EE_
+X-MS-Office365-Filtering-Correlation-Id: 37cacef3-1a86-4b29-e6e9-08ddba5e5778
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014|7416014|921020|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?Z2tlYVAycnBISmNCalIrcWRVdC8vRmZIeUJ3cVNDbExwSEN1OXF6ei9JZDNo?=
+ =?utf-8?B?c0FVcDlvS1ZiWUYzOHdpMXRQbWx6Lzl2bDN1NGozZ09WczQzeldYN0dzZ080?=
+ =?utf-8?B?YjBGcmdFb3lmWEFDRUVNSmVvNW5ZQ1R1U3U0ckNFcEdIeEpnS1d4c2dGMCtI?=
+ =?utf-8?B?empWU2JUd2lla1pHRTNqYVBwZjdFYjRySU85bGJsRGdnWVlPN2o1SGRVbW9u?=
+ =?utf-8?B?dWZSeERtQUVSRGpEbCtNYjl1WWZMUFdBdGhaNjZMbHR1TkFZTVJTMzZ5Nm9j?=
+ =?utf-8?B?MGFJVjRVMVZ2N1dvb01LUVBvVUc0b3diV240RHdUakxrQlEwZ3dFeG1iaDF0?=
+ =?utf-8?B?Vzd3TFFkWmlOSjl2NkttSEFRYWVlN1JTUXNKMHpyR25ZRXExemJJemg2Y1U3?=
+ =?utf-8?B?SmtYeWY2SHFLcHpJQU1EZVdzUXY3bU52dlVrdDlmOG5WOWhkbzFSRUJ1Ykgw?=
+ =?utf-8?B?SWc5NzFOaVZDSlE4aFhUL0MwY08xL1lZWkx3V21NeW8zR29LSjI1cnNHaDd4?=
+ =?utf-8?B?L1A4RGdUVHNWN3dtc2E3RUl4U3hoQnFMUVVPUzB3Sk81M2FhQ29yOTlXeFpj?=
+ =?utf-8?B?WnJLYnpaSlpxb3p5KzhwVENYQmdWSHloTE92NVRRQ292emtkVlQ0YVlsYVE4?=
+ =?utf-8?B?bWhpSjNLK0lUamNERzBNclE1OWQ0c0I3cHNtQkhoU2RmRGdHZGYwVHVOaXV4?=
+ =?utf-8?B?U0h3YVRHOU1QVGY2bm95NUZYYXNYMFZab0Urdk1sc1lyOU1BdTRPWFprcmxN?=
+ =?utf-8?B?b2RtNUtLS2NGWE54blM4MnEyTmpRZzNDR2w5TU1DTWFmREs5U1NSM2RHN2xO?=
+ =?utf-8?B?WW9BbElYWUZFVHhzTDZNYzl2NEx3Zno0NTNzemxWMnZ2amkvUVltdXNXbjdw?=
+ =?utf-8?B?SXBHa0ViNFFueWIrZUVHU0RlU0M0dDhCMnVkcFRCMmszOWNUd1pCNUhoL2NS?=
+ =?utf-8?B?Z2JsdjdNbHlGU2VMaUVlQ0d5cC84blgzN0JyVjg1Nmw5dFd6VzJzSk5GbjA3?=
+ =?utf-8?B?RklmUklCTkxpVCtTM25nNHoyWDlPKzh3WGNzb1FkRmhHd00rbDdwQWpnMENo?=
+ =?utf-8?B?NnB5dFlzakpFaFBlVzRuaStFRXZUdkRZWGtEdTIwZFBJZWVleFlSZGNtTUl3?=
+ =?utf-8?B?N3NudkVLekQwV21RVEF5am1UNGxGOWR4VWwyTWpzN25qR0xyS0FXU2wxbENI?=
+ =?utf-8?B?elNPekRQQm9Rd3I3eFZTZUROVzJHOXc5VHhDaWJSaXN1emkrKzdLaGZqVUcw?=
+ =?utf-8?B?V3pVb1BGS0JkY0hvcDR0U3YvRHRrTTdVcWJwYmtHaFQzWWw3VHpwSzdoOEtX?=
+ =?utf-8?B?TmxmY2FpcCsycXcvMTd2L0Z3Ti8vRDd6RUV0eGZOQkJCVG02OXJkU1A3ZWdi?=
+ =?utf-8?B?UmFxTXkrYkhQVnBsNU5TWXBVcGdvTlMyYnZuMU5BaVllZGdJcGdUWXU1MXMx?=
+ =?utf-8?B?eWh4bXN5ZUZRNEZ6R0NNdEM0b3JMeVhGdlRrOW5LNGsyYkEyV0xITitsd3Az?=
+ =?utf-8?B?VkdHTmpBWVRyaElEdXhDRTZxNlVmQVlXRVd5elYxaUZYTXdqYlZZalhYb0hl?=
+ =?utf-8?B?TmtPV1RXMkdOeG9UOEhoajd5MFZMSng5c2Q3Zm03cUlCVFp0OUVrZVZuSzVx?=
+ =?utf-8?B?MUtiRVNiMFdWR29SU1g2dm05ZXQxZmpCVHdvNXQxa3gxVWlYWFlwKzRqT0h4?=
+ =?utf-8?B?cWl6VytFVGM1Tk5Nc3lPRytNK1BUZXNreEVlSjJ1Y28zZXZxK1VVM2lYazNU?=
+ =?utf-8?B?MHNudmpPNUx3MTQwYTFhbzJVNGUwbjFBdGpGUEF6M2JBancwYUNrdlZ2Z2Fr?=
+ =?utf-8?B?bWhtMmhSNFNKdzZyQzFLS0ZUSCtTOWNGaSttZGhsS0I2S2FseFhKZFREaFlE?=
+ =?utf-8?B?ZjBVbVRaeVN4Q0VEMFA4V0ZtQ0V3SlVTYkZlcWczaFNkdXlYTzNvUStpTFYy?=
+ =?utf-8?B?VmFYYW83VFlpd0lkaWN3TkMwNVczcVNQd3kwWlFjZThzOEFId0JFWGxwU3Nu?=
+ =?utf-8?B?QlExRmlsYmd2dTRISW5kU3Btc1FXN29TZjJ4ajBXUkRtYXpqRWdseGhGbDlF?=
+ =?utf-8?B?N0JlenZmNVVyZUVGdXRSWE9iOGVUSjB1dFJCdz09?=
+X-Forefront-Antispam-Report:
+	CIP:50.233.182.194;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:[127.0.1.1];PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014)(7416014)(921020)(7053199007);DIR:OUT;SFP:1102;
+X-OriginatorOrg: axiado.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2025 18:20:49.5355
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37cacef3-1a86-4b29-e6e9-08ddba5e5778
+X-MS-Exchange-CrossTenant-Id: ff2db17c-4338-408e-9036-2dee8e3e17d7
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=ff2db17c-4338-408e-9036-2dee8e3e17d7;Ip=[50.233.182.194];Helo=[[127.0.1.1]]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0001AB75.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR18MB4427
 
-On Thu, Jul 03, 2025 at 03:13:26PM +0100, Breno Leitao wrote:
-> On Thu, Jul 03, 2025 at 11:28:50AM +0100, Mark Rutland wrote:
-> > On Wed, Jul 02, 2025 at 10:10:21AM -0700, Breno Leitao wrote:
-> > > I'm observing two unusual behaviors during the boot process on my SBSA
-> > > ARM machine, with upstream kernel (6.16-rc4):
-> > 
-> > Can you say which SoC in particular that is? Knowing that would help to
-> > identify whether there's some known erratum, clocking issue, etc.
-> 
-> This is custom made rack mounted machine based on Grace CPU. Here are
-> some info about the hardware:
-> 
-> 	# lscpu:
-> 		Vendor ID:                   ARM
-> 		  Model name:                Neoverse-V2
-> 		    Model:                   0
-> 		    Thread(s) per core:      1
-> 		    Core(s) per socket:      72
-> 		    Socket(s):               1
-> 		    Stepping:                r0p0
-> 
-> 	# /proc/cpuinfo
-> 		processor	: 71
-> 		BogoMIPS	: 2000.00
-> 		Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 sm3 sm4 asimddp sha512 sve asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp sve2 sveaes svepmull svebitperm svesha3 svesm4 flagm2 frint svei8mm svebf16 i8mm bf16 dgh bti
-> 		CPU implementer	: 0x41
-> 		CPU architecture: 8
-> 		CPU variant	: 0x0
-> 		CPU part	: 0xd4f
-> 		CPU revision	: 0
-> 
-> 	# lshw
-> 	    description: Rack Mount Chassis
-> 	    product: <Internal name>
-> 	    vendor: Quanta
-> 	    version: <Internal name>
-> 	    width: 64 bits
-> 	    capabilities: smbios-3.6.0 dmi-3.6.0 smp sve_default_vector_length tagged_addr_disabled
-> 	    configuration: boot=normal chassis=rackmount family=Default string sku=Default string uuid=...
-> 
-> How do I find the SoC exactly?
+This patch series adds initial support for the Axiado AX3000 SoC and its
+evaluation board.
 
-From what you've told me above, the SoC is Nvidia Grace; what they call
-the CPU is the whole SoC.
+The AX3000 is a multi-core system-on-chip featuring four ARM Cortex-A53
+cores, secure vault, hardware firewall, and AI acceleration engines. This
+initial support enables basic bring-up of the SoC and evaluation platform
+with CPU, timer, UART, and I3C functionality.
 
-> > Likewise that might imply more folk to add to Cc.
+The series begins by adding the "axiado" vendor prefix and compatible
+strings for the SoC and board. It then introduces the device tree files
+and minimal ARCH_AXIADO platform support in arm64.
 
-I've added Ankit and Besar, since they've both worked on some system
-level bits on Grace, and might have an idea.
+Patch breakdown:
+  - Patch 1 add the vendor prefix entry
+  - Patch 2 document the SoC and board bindings
+  - Patch 3 convert cdns,gpio.txt to gpio-cdns.yaml
+  - Patch 4 add binding for ax3000 gpio controller
+  - Patch 5 add binding for ax3000 uart controller
+  - Patch 6 add binding for ax3000 i3c controller
+  - Patch 7 add Axiado SoC family
+  - Patch 8 add device tree for the ax3000 & ax3000-evk
+  - Patch 9 add ARCH_AXIADO in defconfig
+  - Patch 10 update MAINTAINERS file
 
-Ankit, Besar, are you aware of any UART issues on Grace (as described in
-Breno's messages below), or do you know of anyone who might have an
-idea?
+Note: A few checkpatch.pl warnings appear due to DT binding conversions and
+MAINTAINERS update. The binding conversion and includes were kept together in 
+patch 3/10 due to their close relationship, but we are happy to split them if 
+preferred.
 
-Thanks,
-Mark.
+Feedback and suggestions are welcome.
 
-> > [...]
-> > 
-> > > At timestamp 9.69 seconds, the serial console is still flushing messages from
-> > > 0.92 seconds, indicating that the initial 9-second gap is spent looping in
-> > > cpu_relax()-about 20,000 times per message, which is clearly suboptimal.
-> > > 
-> > > Further debugging revealed the following sequence with the pl011 registers:
-> > > 
-> > > 	1) uart_console_write()
-> > > 	2) REG_FR has BUSY | RXFE | TXFF for a while (~1k cpu_relax())
-> > > 	3) RXFE and TXFF are cleaned, and BUSY stay on for another 17k-19k cpu_relax()
-> > > 
-> > > Michael has reported a hardware issue where the BUSY bit could get
-> > > stuck (see commit d8a4995bcea1: "tty: pl011: Work around QDF2400 E44 stuck BUSY
-> > > bit"), which is very similar. TXFE goes down, but BUSY is(?) still stuck for long.
-> > 
-> > Looking at the commit message, that was an issue with the a "custom
-> > (non-PrimeCell) implementation of the SBSA UART" present on QDF400. I
-> > assume that was soemthing that Qualcomm Datacenter Technologies designed
-> > themselves.
-> > 
-> > It's possible that your SoC has a similar issue with whatever IP block
-> > is being used as the UART, but the issue in that commit certainly
-> > doesn't apply to most PL011 / SBSA-UART implementations.
-> 
-> That makes total sense. Decoding SPCR I see the following:
-> 
-> 	# iasl -d spcr.dat
-> 	Intel ACPI Component Architecture
-> 	ASL+ Optimizing Compiler/Disassembler version 20210604
-> 	Copyright (c) 2000 - 2021 Intel Corporation
-> 
-> 	File appears to be binary: found 56 non-ASCII characters, disassembling
-> 	Binary file appears to be a valid ACPI table, disassembling
-> 	Input file spcr.dat, Length 0x50 (80) bytes
-> 	ACPI: SPCR 0x0000000000000000 000050 (v02 NVIDIA A M I    00000001 ARMH 00010000)
-> 	Acpi Data Table [SPCR] decoded
-> 	Formatted output:  spcr.dsl - 2624 bytes
-> 
-> Thanks,
-> --breno
+Signed-off-by: Harshit Shah <hshah@axiado.com>
+
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+To: Bartosz Golaszewski <brgl@bgdev.pl>
+To: Arnd Bergmann <arnd@arndb.de>
+To: Catalin Marinas <catalin.marinas@arm.com>
+To: Will Deacon <will@kernel.org>
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-gpio@vger.kernel.org
+Cc: soc@lists.linux.dev
+Cc: Jan Kotas <jank@cadence.com>
+
+Signed-off-by: Harshit Shah <hshah@axiado.com>
+---
+Changes in v6:
+* patch#4
+ - added missing blank line (Krzysztof)
+* patch#5
+ - add reviewed-by Krzysztof
+* patch#6
+ - moved enum of axiado,ax3000-uart along with xlnx  (Krzysztof)
+ - removed description (Krzysztof)
+
+- Link to v5: https://lore.kernel.org/r/20250702-axiado-ax3000-soc-and-evaluation-board-support-v5-0-6ade160ea23b@axiado.com
+
+Changes in v5:
+* patch#4
+ - remove description, add enum (Krzysztof)
+* patch#5
+ - removed description, add enum (Krzysztof)
+ - moved to the first entry (Krzysztof)
+* patch#6
+ - removed description, add enum (Krzysztof)
+* patch#8
+ - add reviewed-by Krzysztof
+
+- Link to v4: https://lore.kernel.org/r/20250701-axiado-ax3000-soc-and-evaluation-board-support-v4-0-11ba6f62bf86@axiado.com
+
+Changes in v4:
+* patch#1
+ - add acked-by Rob
+* patch#2
+ - add reviewed-by Krzysztof
+* patch#3 
+ - remove description in "ngpio" (Krzysztof)
+ - add reviewed-by Krzysztof
+* patch#4 (new)
+ - add binding for ax3000 gpio controller
+ - backward compatible with original binding
+* patch#5 (new)
+ - add binding for ax3000 uart controller
+ - backward compatible with original binding
+* patch#6 (new)
+ - add binding for ax3000 i3c controller
+ - backward compatible with original binding
+* patch#7
+ - add reviewed-by Krzysztof
+* patch#8
+ - update compatibles uart -> axiado,ax3000-uart, i3c -> axiado,ax3000-i3c, gpio -> axiado,ax3000-gpio (Krzysztof)
+ - add space between nodes (Krzysztof)
+* patch#9-10
+ - add reviewed-by Krzysztof
+ 
+- Link to v3: https://lore.kernel.org/r/20250623-axiado-ax3000-soc-and-evaluation-board-support-v3-0-b3e66a7491f5@axiado.com
+
+Changes in v3:
+- patch#3 
+ - Update with the original filename (Krzysztof)
+ - maitainer and property name updates (Krzysztof)
+- patch#4
+  - removed defconfig (Krzysztof)
+- patch#5 
+  - update nodes to alphabetical order, remove redudant nodes (Krzysztof)
+  - add fix clock nodes (Krzysztof)
+- patch#6 
+  - enable ARCH_AXIADO in defconfig (Krzysztof)
+- Link to v2: https://lore.kernel.org/r/20250615-axiado-ax3000-soc-and-evaluation-board-support-v2-0-341502d38618@axiado.com
+
+Changes in v2:
+- update patch#2 to fix the yamlint,dt_binding_check error
+- update patch#6 to update path mentioned by kernel test robot
+- Link to v1: https://lore.kernel.org/r/20250614-axiado-ax3000-soc-and-evaluation-board-support-v1-0-327ab344c16d@axiado.com
+
+---
+Harshit Shah (10):
+      dt-bindings: vendor-prefixes: Add Axiado Corporation
+      dt-bindings: arm: axiado: add AX3000 EVK compatible strings
+      dt-bindings: gpio: cdns: convert to YAML
+      dt-bindings: gpio: cdns: add Axiado AX3000 GPIO variant
+      dt-bindings: serial: cdns: add Axiado AX3000 UART controller
+      dt-bindings: i3c: cdns: add Axiado AX3000 I3C controller
+      arm64: add Axiado SoC family
+      arm64: dts: axiado: Add initial support for AX3000 SoC and eval board
+      arm64: defconfig: enable the Axiado family
+      MAINTAINERS: Add entry for Axiado
+
+ Documentation/devicetree/bindings/arm/axiado.yaml  |  23 +
+ .../devicetree/bindings/gpio/cdns,gpio.txt         |  43 --
+ .../devicetree/bindings/gpio/cdns,gpio.yaml        |  84 ++++
+ .../devicetree/bindings/i3c/cdns,i3c-master.yaml   |   7 +-
+ .../devicetree/bindings/serial/cdns,uart.yaml      |   7 +-
+ .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
+ MAINTAINERS                                        |   8 +
+ arch/arm64/Kconfig.platforms                       |   6 +
+ arch/arm64/boot/dts/Makefile                       |   1 +
+ arch/arm64/boot/dts/axiado/Makefile                |   2 +
+ arch/arm64/boot/dts/axiado/ax3000-evk.dts          |  79 ++++
+ arch/arm64/boot/dts/axiado/ax3000.dtsi             | 520 +++++++++++++++++++++
+ arch/arm64/configs/defconfig                       |   1 +
+ 13 files changed, 736 insertions(+), 47 deletions(-)
+---
+base-commit: 8c6bc74c7f8910ed4c969ccec52e98716f98700a
+change-id: 20250614-axiado-ax3000-soc-and-evaluation-board-support-1b86b4a9daac
+
+Best regards,
+-- 
+Harshit Shah <hshah@axiado.com>
+
