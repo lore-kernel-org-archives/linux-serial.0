@@ -1,252 +1,77 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 213BC2E54CE
-	for <linux-serial@vger.kernel.org>; Thu,  3 Jul 2025 11:27:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9568B24DD07;
+	Thu,  3 Jul 2025 11:46:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751542076; cv=none; b=DhszsQdbpjdiI8HJLPeZHl+7SHxiWeUsRmZh2J8tdwsq9fn0GGowfkyUEDXqoHnxtEAiB4hMYc8SvxDLELfizF2LSUqel4LWobP4+0knruQkKnIGA/vjblQL26v1QHhn1fYPR1qSDUI/6pIVqTDV4XOoN2zE8MWlJ/hY2iaPZzk=
+	t=1751543169; cv=none; b=NvgCntIOehWnWjPJ+41aX1bAxLDGsYZrjQdHHbBe4m0oc1emPrqGacgPMgDUJh0yK78uf37ZLnBUjy/CRGuFt9QK4GpvtUDiZnUBr0JrGv0a0/BpETRtrOKgf2U8IP9WkGTX9G70lKmVVCvTRbQo7450bDVIHPOKC9EGmckymdI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751542076; c=relaxed/simple;
-	bh=dKp9sNBVKhCMWq2ozbMkBemUSa+iPERmFu+4dZggoQ0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=qnoqtqOpzwcraTeiQ3/ER12EiV5XwljlY9jrdp8MvtMo9HQ+hSuXguEJRsVsO3ACAagWZE1fivWr2U/w1xKC/3qYMu3XKPhkHRLeP3sd1ksreeLVUTC9badKt9DJuqkqIBGQohoPYL6lRBfdgTx213K1u0QTLtpKnI3c7QbnuKc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=cxqeRkAm; arc=none smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="cxqeRkAm"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-ae3703c2a8bso1081720766b.0
-        for <linux-serial@vger.kernel.org>; Thu, 03 Jul 2025 04:27:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1751542072; x=1752146872; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=amy1aSEWJFLjdFKle4TRafGT1dI6FK2dRgoWrJhpEoE=;
-        b=cxqeRkAmo+uhAkoMMQwvBP/akaaA+fW/9V9vZNVm2+J3NsvGJPkfzEQDkhNz6BvmOh
-         3sy7SDwTPiykFPgHxFKqPDV70lgxb9VitxB2zID8UhJEFqbjSr6/beF1A+paHxzJLbV2
-         fCsPFX0X2dXVHFISOIdTo8bHJzzw2i/2PWJU1fYLb+tV1f0mIKR8nnHFEOgX2m69aacR
-         NgtAX6hIBrFtiKatkSlnHgVieJORSNq7h/WbY5fRfJUzCPYMt6OG0G9qmrBkr2OuIoFH
-         BjAsSdZRFHbIo+yxKwu60qLSEiRdqqKoSmqYbWC/MXA7Fwv6q3tItqmJmsLAJS2Nzb1K
-         iL3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751542072; x=1752146872;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=amy1aSEWJFLjdFKle4TRafGT1dI6FK2dRgoWrJhpEoE=;
-        b=li1b35CpweL7mjoJWVwbZC3AtqQUolfgVBLA+0pcpWR/Be80yfuZfedQS+CdI7xl/k
-         cBo8jrWjG8+u41hunK7mEul5WjWMJ7IQDZehhAMoRxsy5+n/LnTfEgXaAtrDHsZyYhm7
-         g3rf9A8sACvc3Uzw3kM85Uuiw6q57XlyKQuNDGA9CqQG0f/XjtQlpLW7ZK82qEmwAhk1
-         SUFyhq0xK7lxfMJZZuwOWTiBxMCwl1TBVNuhF9ngeNM0D7If/nAN4jsIAdrGF13QHDPq
-         0iM2loRK35UDIvbSxWRmN0LiGRITI34vOuszGaytA+2PcFla9r7V3qeeFrSxOBvH3mXS
-         Fv8g==
-X-Forwarded-Encrypted: i=1; AJvYcCW6GHRDGEtN0jW4w9RgGoPR8QESHw3B3N+X0FWJKr0b8Q1WQ5SSHl8pa1vwaIoUHOvU/0i0j0mY99mBoVo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwNeuVO6G1g4aaWArYcu5yjprXnTrPROfFWcyzCisco8zVcYD9d
-	HXPbnIeXNsZwvrMnFlKhfwCeshICSkrA4h1BW+XbQMiJec9aA6rmAU+b6N6vYJYtqYo=
-X-Gm-Gg: ASbGncsPcWbrq0mCAp0zsWWf24LigZWF8a4FWNF4neZVVMeXL+Ql0Ds3xeSKvpPWMNv
-	Zz9Fr0VJa4DbrTPiY47nwiSgPZSa81rlZhc6wFzC1suvnVyGEI3C6TFoFhFfas2YoRVYNyZPPKH
-	H4W59hem8gPRezyRFcpngaIO96ZCmtwN+txdL4yoxEgG7RrCKnLqqpqthF0cGLZK/MlT08HGUZL
-	F2wMeIKNeCiGsfGdWIjnVuUwvE7F8UPJSnBuT6zg9sbO/fjIuN7+hcSXxI5aSzS7KYHKgqokDp+
-	2hZilecobjrnS91MS6UjLJf4B8oDOXkpA5gPC9g028RWkxuFfvyD5MOQbm+9vdXrnLL8hpmskhC
-	kPYGHQ44jkPUIk1Q=
-X-Google-Smtp-Source: AGHT+IGtvsJyDMQsLfUDl9utWzUCxFT2n50ILIV0XhgAq1dND93ylmRMS+yE9TxwtIdCeTyEpsNdFg==
-X-Received: by 2002:a17:907:d644:b0:ae3:cd73:efde with SMTP id a640c23a62f3a-ae3d8b1b1d4mr273821366b.44.1751542072208;
-        Thu, 03 Jul 2025 04:27:52 -0700 (PDT)
-Received: from claudiu-X670E-Pro-RS.. ([82.78.167.83])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae35365a75fsm1247016966b.67.2025.07.03.04.27.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jul 2025 04:27:51 -0700 (PDT)
-From: Claudiu <claudiu.beznea@tuxon.dev>
-X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
-To: linux@armlinux.org.uk,
-	gregkh@linuxfoundation.org,
-	david.m.ertman@intel.com,
-	ira.weiny@intel.com,
-	leon@kernel.org,
-	rafael@kernel.org,
-	dakr@kernel.org,
-	len.brown@intel.com,
-	pavel@kernel.org,
-	andersson@kernel.org,
-	mturquette@baylibre.com,
-	sboyd@kernel.org,
-	maarten.lankhorst@linux.intel.com,
-	mripard@kernel.org,
-	tzimmermann@suse.de,
-	airlied@gmail.com,
-	simona@ffwll.ch,
-	wsa+renesas@sang-engineering.com,
-	ulf.hansson@linaro.org,
-	mathieu.poirier@linaro.org,
-	vkoul@kernel.org,
-	yung-chuan.liao@linux.intel.com,
-	pierre-louis.bossart@linux.dev,
-	broonie@kernel.org,
-	robh@kernel.org,
-	jirislaby@kernel.org,
-	saravanak@google.com,
-	jic23@kernel.org,
-	dmitry.torokhov@gmail.com
-Cc: claudiu.beznea@tuxon.dev,
-	linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-clk@vger.kernel.org,
-	linux-i2c@vger.kernel.org,
-	linux-mmc@vger.kernel.org,
-	linux-remoteproc@vger.kernel.org,
-	linux-sound@vger.kernel.org,
-	linux-spi@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	bhelgaas@google.com,
-	geert@linux-m68k.org,
-	linux-iio@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	fabrizio.castro.jz@renesas.com,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH v5 3/3] driver core: platform: Drop dev_pm_domain_detach() call
-Date: Thu,  3 Jul 2025 14:27:08 +0300
-Message-ID: <20250703112708.1621607-4-claudiu.beznea.uj@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250703112708.1621607-1-claudiu.beznea.uj@bp.renesas.com>
-References: <20250703112708.1621607-1-claudiu.beznea.uj@bp.renesas.com>
+	s=arc-20240116; t=1751543169; c=relaxed/simple;
+	bh=2k11KvoMBeQIvrAWZA7P5gWj9h1H7/1T5f53ZD8lUOM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qpNjrKrInjTExdTO9XV+834QPUZTVTB7DeWg1yMgXEfu6eH+X6WsQ7JKn2/+9/9I4lenZbSCu+OYRvGvdrfInPgHKNEFYK51LtLyscpC/6BUKKiqzlJaVLPJBWLi0vujQTXYOSm1iKN2C+cftBholPK4vdaicBvvFkjCmYjSSIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AD9DF1596;
+	Thu,  3 Jul 2025 04:45:45 -0700 (PDT)
+Received: from localhost (e132581.arm.com [10.1.196.87])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B5B1E3F6A8;
+	Thu,  3 Jul 2025 04:45:59 -0700 (PDT)
+Date: Thu, 3 Jul 2025 12:45:57 +0100
+From: Leo Yan <leo.yan@arm.com>
+To: Breno Leitao <leitao@debian.org>
+Cc: cov@codeaurora.org, rmk+kernel@armlinux.org.uk, mark.rutland@arm.com,
+	catalin.marinas@arm.com, linux-serial@vger.kernel.org,
+	rmikey@meta.com, linux-arm-kernel@lists.infradead.org,
+	usamaarif642@gmail.com, linux-kernel@vger.kernel.org,
+	paulmck@kernel.org
+Subject: Re: arm64: csdlock at early boot due to slow serial (?)
+Message-ID: <20250703114557.GD1039028@e132581.arm.com>
+References: <aGVn/SnOvwWewkOW@gmail.com>
+ <20250702172036.GC1039028@e132581.arm.com>
+ <aGZVP8A2a3VVQwzt@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aGZVP8A2a3VVQwzt@gmail.com>
 
-From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+On Thu, Jul 03, 2025 at 03:02:39AM -0700, Breno Leitao wrote:
 
-On the Renesas RZ/G3S (and other Renesas SoCs, e.g., RZ/G2{L, LC, UL}),
-clocks are managed through PM domains. These PM domains, registered on
-behalf of the clock controller driver, are configured with
-GENPD_FLAG_PM_CLK. In most of the Renesas drivers used by RZ SoCs, the
-clocks are enabled/disabled using runtime PM APIs. The power domains may
-also have power_on/power_off support implemented. After the device PM
-domain is powered off any CPU accesses to these domains leads to system
-aborts.
+[...]
 
-During probe, devices are attached to the PM domain controlling their
-clocks and power. Similarly, during removal, devices are detached from the
-PM domain.
+> > In some cases, if normal world and secure world share the same UART
+> > port, it can cause the UART state machine malfunction and long wait.
+> 
+> I don't know how to check it for sure, but, looking at the serial
+> console output, I don't see anything else using the UART. The only
+> output I see on the console at that time is coming from linux kernel.
+> 
+> Would you recommend any additional check?
 
-The detachment call stack is as follows:
+I have no experience in the driver, I should avoid any noise. But two
+things in my head for quick trying.
 
-device_driver_detach() ->
-  device_release_driver_internal() ->
-    __device_release_driver() ->
-      device_remove() ->
-        platform_remove() ->
-          dev_pm_domain_detach()
+- First, you could try earlycon mode, e.g., add option in kernel
+  command line:
+  
+    earlycon=pl011,mmio32,0xc280000
+    earlycon=pl011,0xc280000
 
-During driver unbind, after the device is detached from its PM domain,
-the device_unbind_cleanup() function is called, which subsequently invokes
-devres_release_all(). This function handles devres resource cleanup.
+  This would be possible to give more printing logs. If earlycon works
+  well, then the issue might be caused by later init code (clock, or
+  UART driver itself).
 
-If runtime PM is enabled in driver probe via devm_pm_runtime_enable(), the
-cleanup process triggers the action or reset function for disabling runtime
-PM. This function is pm_runtime_disable_action(), which leads to the
-following call stack of interest when called:
+- Try another UART port if this is possible.
 
-pm_runtime_disable_action() ->
-  pm_runtime_dont_use_autosuspend() ->
-    __pm_runtime_use_autosuspend() ->
-      update_autosuspend() ->
-        rpm_idle()
+Just curious, you mentioned you are working on the mainline kernel. If
+you can confirm a workable kernel version, then this info can help to
+rule out hardware issue and we can review the delta changes.
 
-The rpm_idle() function attempts to resume the device at runtime. However,
-at the point it is called, the device is no longer part of a PM domain
-(which manages clocks and power states). If the driver implements its own
-runtime PM APIs for specific functionalities - such as the rzg2l_adc
-driver - while also relying on the power domain subsystem for power
-management, rpm_idle() will invoke the driver's runtime PM API. However,
-since the device is no longer part of a PM domain at this point, the PM
-domain's runtime PM APIs will not be called. This leads to system aborts on
-Renesas SoCs.
-
-Another identified case is when a subsystem performs various cleanups
-using device_unbind_cleanup(), calling driver-specific APIs in the process.
-A known example is the thermal subsystem, which may call driver-specific
-APIs to disable the thermal device. The relevant call stack in this case
-is:
-
-device_driver_detach() ->
-  device_release_driver_internal() ->
-    device_unbind_cleanup() ->
-      devres_release_all() ->
-        devm_thermal_of_zone_release() ->
-          thermal_zone_device_disable() ->
-            thermal_zone_device_set_mode() ->
-              struct thermal_zone_device_ops::change_mode()
-
-At the moment the driver-specific change_mode() API is called, the device
-is no longer part of its PM domain. Accessing its registers without proper
-power management leads to system aborts.
-
-Drop the call to dev_pm_domain_detach() from the platform bus remove
-function and rely on the newly introduced call in device_unbind_cleanup().
-This ensures the same effect, but the call now occurs after all
-driver-specific devres resources have been freed.
-
-Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
----
-
-Changes in v5:
-- dropped tab in the call traces from patch description
-- used PD_FLAG_ATTACH_POWER_ON, PD_FLAG_DETACH_POWER_OFF
-
-Changes in v4:
-- dropped devm_pm_domain_attach() approach
-- adjusted patch description to reflect this
-
-Changes in v3:
-- adjusted the call to devm_pm_domain_attach() as it now gets
-  2 parameters
-
-Changes in v2:
-- dropped the devres group open/close approach and use
-  devm_pm_domain_attach()
-- adjusted patch description to reflect the new approach
-
- drivers/base/platform.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index df1ec34fdf56..09450349cf32 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -1396,15 +1396,13 @@ static int platform_probe(struct device *_dev)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = dev_pm_domain_attach(_dev, PD_FLAG_ATTACH_POWER_ON);
-+	ret = dev_pm_domain_attach(_dev, PD_FLAG_ATTACH_POWER_ON |
-+					 PD_FLAG_DETACH_POWER_OFF);
- 	if (ret)
- 		goto out;
- 
--	if (drv->probe) {
-+	if (drv->probe)
- 		ret = drv->probe(dev);
--		if (ret)
--			dev_pm_domain_detach(_dev, true);
--	}
- 
- out:
- 	if (drv->prevent_deferred_probe && ret == -EPROBE_DEFER) {
-@@ -1422,7 +1420,6 @@ static void platform_remove(struct device *_dev)
- 
- 	if (drv->remove)
- 		drv->remove(dev);
--	dev_pm_domain_detach(_dev, true);
- }
- 
- static void platform_shutdown(struct device *_dev)
--- 
-2.43.0
-
+Thanks,
+Leo
