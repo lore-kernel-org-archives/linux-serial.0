@@ -1,115 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com [209.85.217.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F21F294A06;
-	Thu,  3 Jul 2025 06:42:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6E19298CBC;
+	Thu,  3 Jul 2025 08:24:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751524934; cv=none; b=tC2DerSmXp9d/EB4To1ly52joq2JkqNHVhDQbQkBXvM+/40GE+s37qLHyF23q02jnvffK9mF+M0LMDutB+xwv3ZgPdtRUsz5SCqg/W7ZlBJ8w49K6h3/wHms3D6SqC2+CfDVowaRW/qfcan8ALtrq8E89z0sx3pmKnQo6YMYE04=
+	t=1751531098; cv=none; b=FyTXaMKIYszJm4W9JEiO2rLNz8n5QDFU8Esow2MfiRGZgiy9QGhIASl5I9oYzNV7jk5s2Yzmk2qqnCvqr4YohfX33bgffQ9pBppKniItQY4ZeKlcwZwo66a9Ud6F4X6bRGaFdjIU5Vr/E6xcDAYMoEQ9tU6dIEAnGVfzUAtkqsA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751524934; c=relaxed/simple;
-	bh=IYtPmTW5mKb9jqmjmSEpJYzVhdXnmtMgUhd++8DKChs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ffONGQRwAdxIuex+4tcIVfRU+jDAfBu79Xzyqqgd07r1kJvZe5p7pQaMRrzREue5pQUHGXf6rTeDowmEmlWfJjiQvrgaZ8Sn761rNEmJ+gnZTykbkB44j0K46FQdaJ0QKZFXgVYtyfBlOx4m4b/8V/r90aeURIhst1AomrVZv6k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sgRmw5cg; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sgRmw5cg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E083AC4CEE3;
-	Thu,  3 Jul 2025 06:42:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751524933;
-	bh=IYtPmTW5mKb9jqmjmSEpJYzVhdXnmtMgUhd++8DKChs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=sgRmw5cgUZF1k3xHdNWYgMCmG0lbvjY5bneMeHwpnD98GGkf7NsFwyLLbhJgt49Co
-	 7w8vfeI9gJ6iONRKExTlNmO38CKRgc4TuKdKi60aXpaEXtVND0OnTTUfNzKiyBxh/d
-	 Uc2Bp2lB+v/Ne6zW2sLNGOgVCHFP8bn3S3W+xb96+dshBDPzH+vhgB1MIbLn+RG2Ja
-	 zZWzhW5I+A3n+vRbrO78JgaRutyZLXjBYo/A2mEmcE3wjdY1V/ZvoQaX9lx0xWRgS8
-	 J2DxQ32n/NwBtJOAsXldV9DXvDmWgK+WObtKzlnvGWEkJMAm04sm8uEgRwO/fyrccy
-	 b/W4V1N/21YFg==
-Message-ID: <0a5c5a72-6004-4c69-9430-d75d0d1d410b@kernel.org>
-Date: Thu, 3 Jul 2025 08:42:04 +0200
+	s=arc-20240116; t=1751531098; c=relaxed/simple;
+	bh=AvzCXy9cHRBUMZVg/Ovmp+lRgGHZ6AljsobBvHwydJo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=J2d7gbhqmiAB7R/2z/+gGz92Tr40wKPsQ2AnA1Aqg0ystUxt/eN38pBoBqd+QScfkYgrSde5xffDruWKN9yilL7xFRJ/NejRirKBR5+aEx8jgIZVOJIx9oTcY8tuymRrHbfvTRDpTjJoIvShkkFpODJg/au4Jd3zPYvFJEcoLZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vs1-f54.google.com with SMTP id ada2fe7eead31-4e7e5b6207bso1510569137.2;
+        Thu, 03 Jul 2025 01:24:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751531095; x=1752135895;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DWPEL7q51Xv55KR5u/ve8+3d+j78wGLGSO6Hbswv84k=;
+        b=UrIeYduDifZKVwcyRJVGac/LA7R4oA3WRWUPocRHltarJdNVcK8D3XXEkFbIBp1hIK
+         trW+X7/qVvGZvvD8TtcbiaSxnsj1KfgNSLFFzL3Fe2noMsvs1zvoi2ceO5RlhG2Tq/uq
+         8buii5JiDicJpG8yjWV4Hhw/HHqCEHDBDQM4YK4gtsDKJ2nUDelkT2qk4bXoTUNxKWrz
+         Yxg7CuKA7q8b4u2wKfjps/EzTZ1G7Yqu1rSGG5TYPKPUBbcaqZvtbQQP/st1PI0NMvcp
+         c9XGgU37s6ki+smS2kI3FemDuBtRhz+BJU7bjPM3bpOVTxYfn733Fxcc5FmZdmrRuIvd
+         QCsw==
+X-Forwarded-Encrypted: i=1; AJvYcCU/G980nSGr5XzboxV/+6KWmyuudY8HV/dmZ7Hpp937xNawtMRlVIsCCSWNOus2rJQ9xmHZFlO9rkda@vger.kernel.org, AJvYcCVWkvUHML46B5NfgjyEIU5aIFMv6tnurqw+Y31uEoRPWhcwY0qsqj/VeNv38S3/B2STmFThVcAlhmaBR3YFitYPF9o=@vger.kernel.org, AJvYcCXq3OXTaPqMSEaKB1zQNaqKMCS1Rh2YNRKNCZn90QQ16+7LHR7aiUyXDOc60C7pXFjhYfcOzDsw1311VNe3@vger.kernel.org
+X-Gm-Message-State: AOJu0YyCLwxHXuy1psu4D8kJsWGAt25FyS43nTqZKyfing3TSy5d52dz
+	RnZmfM9Zv3mUs5au3L1v0oERSUsYZd/53zt9p5f1xfkxmtdqZYv+ikhWGJ22cEnJ
+X-Gm-Gg: ASbGncvJFJS/dWRb1wz1rCzJgzMm6Rz/SOJDbTFfgqlBphRZR0t02U12bgfk8VzeSZR
+	dATVPAzjlu6F5BP+fziYfHwHNlcFaJLIco38NJCGCuplD12zoRj9MRLHpJfCbE1VSmPBzCqjD53
+	qDjzy+rqFkYPB/Y6DOKeSnED1pYiYt8zmnnolTP86GyY/KGPuUSQrpv3OvDd30YjdehABjRT0Dr
+	xxLcWzBSHjnvGt6Myr2UK9favDEPFyZ4dBmAUhM6jFmaQUFwKQhbTEScQXKmcAtsiCLKi44FTjq
+	UTIhoGNQE4p6IgYKcBDKs1SbNDyrNFalxvROfS0gtuYoYv20JudEuK7p0AR95FzypUiP7p5gGmT
+	D1YXSJwt/Y4bV+Roeoz2+fyuJ33R0bnSfnkc=
+X-Google-Smtp-Source: AGHT+IHq6kAWtB0uSb0JHwuEY4VCRzBwu2OKfDNf96ihmkVqdEtvYiIYQJvfpuDOJUCMB4LiySXRrg==
+X-Received: by 2002:a05:6102:3049:b0:4c5:1c2e:79f5 with SMTP id ada2fe7eead31-4f1611daf6fmr3780236137.16.1751531094581;
+        Thu, 03 Jul 2025 01:24:54 -0700 (PDT)
+Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-884d1d87df1sm2866136241.16.2025.07.03.01.24.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 03 Jul 2025 01:24:54 -0700 (PDT)
+Received: by mail-ua1-f44.google.com with SMTP id a1e0cc1a2514c-880f92a63c7so1058762241.1;
+        Thu, 03 Jul 2025 01:24:54 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCW75EerK91H0vfXHyOGZ3kDaDJK5rvcLwbIYNE0a/CgKqJJlUWCGcEi/bPIaoqz7PzfrWsQcSKuPsZbpmitM5dlpfs=@vger.kernel.org, AJvYcCWQFl54Ok/670r2hV7kudO3kC0+SieUVt8m7rUptuSX++hXJdjnnxQ5GGHgIUHGzUJ6eEKYttcKjsEV@vger.kernel.org, AJvYcCXoFl8GrEx2i/qC09GUvUxhumkhsvVyBd1LEfv5TZWhePSOt8nAKqCvGnWKzCLcBuGTvzGgSvXXxuOzr2U6@vger.kernel.org
+X-Received: by 2002:a05:6102:3053:b0:4e7:bf04:412e with SMTP id
+ ada2fe7eead31-4f160c6056amr4665224137.0.1751531094101; Thu, 03 Jul 2025
+ 01:24:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 06/10] dt-bindings: i3c: cdns: add Axiado AX3000 I3C
- controller
-To: Harshit Shah <hshah@axiado.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Arnd Bergmann <arnd@arndb.de>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Jan Kotas <jank@cadence.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
- Michal Simek <michal.simek@amd.com>, =?UTF-8?Q?Przemys=C5=82aw_Gaj?=
- <pgaj@cadence.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Frank Li <Frank.Li@nxp.com>, Boris Brezillon <bbrezillon@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
- soc@lists.linux.dev, linux-serial@vger.kernel.org,
- linux-i3c@lists.infradead.org
-References: <20250702-axiado-ax3000-soc-and-evaluation-board-support-v5-0-6ade160ea23b@axiado.com>
- <20250702-axiado-ax3000-soc-and-evaluation-board-support-v5-6-6ade160ea23b@axiado.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20250702-axiado-ax3000-soc-and-evaluation-board-support-v5-6-6ade160ea23b@axiado.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <87frfddghg.wl-kuninori.morimoto.gx@renesas.com> <87ecuxdggq.wl-kuninori.morimoto.gx@renesas.com>
+In-Reply-To: <87ecuxdggq.wl-kuninori.morimoto.gx@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 3 Jul 2025 10:24:41 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdV+Qx_P+ddtz5dBVPfiii0mjbXKGk4UJpJhYf1AZoPKbQ@mail.gmail.com>
+X-Gm-Features: Ac12FXz_9ERBG7EOZ2U3Rmt3JLH2jMJCpOtZkA8vuPSFdrZqr0uaZeylvSyUGWs
+Message-ID: <CAMuHMdV+Qx_P+ddtz5dBVPfiii0mjbXKGk4UJpJhYf1AZoPKbQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: serial: sh-sci: Document r8a78000 bindings
+To: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+Cc: Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, devicetree@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, 
+	Nghia Nguyen <nghia.nguyen.jg@renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 03/07/2025 02:22, Harshit Shah wrote:
-> Add binding for AX3000 I3C controller. So far, no changes known,
-> so it can fallback to default compatible.
-> 
-> Signed-off-by: Harshit Shah <hshah@axiado.com>
-> ---
+On Thu, 3 Jul 2025 at 06:51, Kuninori Morimoto
+<kuninori.morimoto.gx@renesas.com> wrote:
+> From: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
+>
+> R-Car X5H (R8A78000) SoC has the R-Car Gen5 compatible SCIF and
+> HSCIF ports, so document the SoC specific bindings.
+>
+> [Kuninori: tidyup for upstreaming]
+>
+> Signed-off-by: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
+> Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Best regards,
-Krzysztof
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
