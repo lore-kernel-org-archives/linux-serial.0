@@ -1,151 +1,139 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7C5813D8A4;
-	Thu,  3 Jul 2025 14:13:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9641E19CC02;
+	Thu,  3 Jul 2025 14:21:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751552020; cv=none; b=LHStHKc6MdngsciY5We1Kpa+ZroUm6HFiIFMwdVLmrnElXnUCmtJtf3KVIoBH9xbAXeNsWA1E8JVJGucSy9GukQ5Z8fsb+whUjqRHn1IY043HhmzoVL9EbERLrOi53yC4nlJloObJNcR7ummndFrzqQu+N4LSXrozwhscuUsV30=
+	t=1751552504; cv=none; b=acxbHUsiaMzDrk3sT2kN+Pajz4PBzmukPrRfLoq2GUh9+l67jnWox+LAZJ421dI0fFblFox5f++m7PkNxTppkw4BPRNME/5bOEgPlZ8p6xYzB+5vUmFSkZHihJFhxe9QPG3/LI+zaJcZT1VGaMsMdfSB3QQYJF5zFRDZR1Hsw9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751552020; c=relaxed/simple;
-	bh=Q2ylaOeBTtuJNcCw5v7aJ6VeP3eyBOiwu7/dJRAIPOo=;
+	s=arc-20240116; t=1751552504; c=relaxed/simple;
+	bh=8q/IVKrUxZauGxiUn174NgZfIXYmxkzaKI174acXcJY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T1Z8+7/7JavXgG49gkRTgKj3mt4TEAY1r4UqHRNZufRsaWTtDvG+XVMpfsqqKp+GsMhnpVY/QOnLcJj+hyDNup+b4HQQozydhnDWyfCzRF1PGcdMhjI6ZT4T6VilETueobLAkwKvt50k0zk0mUS/4RvZ+casgODtNbeSHhTgaD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-60bf5a08729so11271804a12.0;
-        Thu, 03 Jul 2025 07:13:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751552013; x=1752156813;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=z18oj+x92MNc/0S9Y8xHuEcemOWJBgJqXoJ/JKjM/Uo=;
-        b=dSTREdfd95NhutSreX3l0j4AHIiS6+Qi5FXVdQ9znXMWnSKBEYSfVfVdkvyRc9P1jv
-         M3tWBaUjp6oGV2flH+a+xbYuLaxa5aTRAwnWPkMKPICHH+C9BWZ4BW/ezizDnZzgtiOV
-         1oUiGvW2HPomg8Lgp6NXFJY/Xjbjmo4ruMYUcVQRGtTonVZPvMfSY0zrSltJ40gaBPDV
-         Gz4W9oDaRD1Ch9NlmKT+x9lulW8+JxRWjPrIblxLGOpbNMZk9nAZO+HdyIdIy8+d6ehO
-         mKsXo5KEt440hsfPs9w0SsMm2feoVKGTAC90B1XrD8cMJY5D2+OVrQNSUsVwKBMeKmKd
-         1tMg==
-X-Forwarded-Encrypted: i=1; AJvYcCUVsyXxwVIuTPA0DhJnD6mhnc27WVHanghTyd8DwalQOhE+OubwQT+x6vD9FLVTCc6qcRIqwS1P+CmG/ag=@vger.kernel.org, AJvYcCXrlnj0BbOCuhBdnvzeV8O3B8KY2LkvEXAY646VvdNSngxQpxA7Hiq3q4Do9VcG8wKuMDo2Y/qS7AeYZfaZ@vger.kernel.org
-X-Gm-Message-State: AOJu0YwIt4yVGnPZyKFJgmtukLW7FUY5Sk0xgVh3RFRpy48UuP2R47Gn
-	cS0zWGIwuer2bWC3EkzJaNjL+f1i1q3eKCUaU0JB/Cr8xbRaybLAWElz
-X-Gm-Gg: ASbGnctFzdxJ0k321QcM8Lbujmyu8ltqO06xzRZLuB+Gutcy/UGfsjRXqTEcrc4Wrb0
-	in94N1CN6GBGIiiEDr7tKO7rCsS8oJyf+rABq4C8PmJgWduPYbj40LVMlNlF4oDkL9Xz1OdwdmU
-	MiMc15oBZzqlc9AzCdORzS5hrQED6wTQIRoG/WoSuP5YBfVJNc9HIAl0Jjb6JwVq6SEyNLVbrMk
-	qnTaNATQ4zxwyngZ1dQ/yUomJq3piNSgd8zVsUrQm9Rdo3yF2NCHBIN1K40M/5OuKJi9F4Hdd3v
-	sVcLZtjz3W0M3LPz3YJUbQur5A1YbBCPrvpeHFYqcqhAjTXHsBxhCuR1hBZ3ICmnh3jiRO8JV3Q
-	=
-X-Google-Smtp-Source: AGHT+IG2W4RiEIKOP1cdVrQs5oIBrb+dGkYJvqPdZKRCaRwD1JVKgzL5Mw0lQq3snaidPWHlUSFbZA==
-X-Received: by 2002:a17:907:3e8b:b0:ade:32fa:739e with SMTP id a640c23a62f3a-ae3c2a904e4mr715630966b.2.1751552012723;
-        Thu, 03 Jul 2025 07:13:32 -0700 (PDT)
-Received: from gmail.com ([2620:10d:c092:500::4:6e61])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae353c01201sm1301680866b.97.2025.07.03.07.13.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jul 2025 07:13:32 -0700 (PDT)
-Date: Thu, 3 Jul 2025 15:13:26 +0100
-From: Breno Leitao <leitao@debian.org>
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: cov@codeaurora.org, rmk+kernel@armlinux.org.uk, catalin.marinas@arm.com,
-	linux-serial@vger.kernel.org, rmikey@meta.com,
-	linux-arm-kernel@lists.infradead.org, usamaarif642@gmail.com,
-	leo.yan@arm.com, linux-kernel@vger.kernel.org, paulmck@kernel.org
-Subject: Re: arm64: csdlock at early boot due to slow serial (?)
-Message-ID: <aGaQBghdAl8VGWmV@gmail.com>
-References: <aGVn/SnOvwWewkOW@gmail.com>
- <aGZbYmV26kUKJwu_@J2N7QTR9R3>
+	 Content-Type:Content-Disposition:In-Reply-To; b=RailLG86oRa+c4S+xVxb/k+9+7xNHKUYP6OTno7DTtdbwj7MN+ZgQ6MHyueT6RDY1cCU4RqMfLGg00bTDBS84eX6U/dSuIuv1XcV4UWiYAvwxhM7mnH8eQDKjnQ3ZNvmuuE4j+JEsRDDexcis0sVwrUcswGTxH5qDAQRCNAZ5ac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gOnfj6Jd; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gOnfj6Jd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FE4AC4CEE3;
+	Thu,  3 Jul 2025 14:21:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1751552504;
+	bh=8q/IVKrUxZauGxiUn174NgZfIXYmxkzaKI174acXcJY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gOnfj6JddvGC2tczpxc5Nhlp+9Z0UiFGRRU3sr4q71VnRB/GwYAQRCLZmuHr4sxxA
+	 vEZU7xqhdgzNxuNCO3jBWjnpljc8VTGcskBdQEC556pU9PhKZcOTRVcBCzaMmQR+bJ
+	 s9+uOMF6FGLhRLlVxnWJqQgXF4lPrSwE7sfN3zlKS0x9xMxXxyfq5b0b/Ys53xJ79N
+	 3/rhDg3aIR2ZYVy29OK+y6hX9gwwhCcLOcDN1+TDIDhuxGHglj5hs8laI0aqAr8uf2
+	 2UxfmVUtfg2N/objv3RDgkIZOnSwMCKi9DT6cACPvZ4UCg5vDGQ6jOT5EC7Tjapg5B
+	 Nu+V/A49DF7fQ==
+Date: Thu, 3 Jul 2025 15:21:36 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Robert Marko <robert.marko@sartura.hr>,
+	Russell King <linux@armlinux.org.uk>,
+	Nicolas Ferre <nicolas.ferre@microchip.com>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Olivia Mackall <olivia@selenic.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S . Miller" <davem@davemloft.net>,
+	Vinod Koul <vkoul@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,
+	Lee Jones <lee@kernel.org>, Mark Brown <broonie@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+	linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Oleksij Rempel <o.rempel@pengutronix.de>,
+	Daniel Machon <daniel.machon@microchip.com>, luka.perkov@sartura.hr
+Subject: Re: [PATCH v8 01/10] arm64: Add config for Microchip SoC platforms
+Message-ID: <20250703-lapped-itunes-1cd711479f75@spud>
+References: <20250702183856.1727275-1-robert.marko@sartura.hr>
+ <20250702183856.1727275-2-robert.marko@sartura.hr>
+ <ea353170-6e03-4231-afc2-3dc45253931d@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="MYqRzWYWScpig/dd"
 Content-Disposition: inline
-In-Reply-To: <aGZbYmV26kUKJwu_@J2N7QTR9R3>
+In-Reply-To: <ea353170-6e03-4231-afc2-3dc45253931d@app.fastmail.com>
 
-On Thu, Jul 03, 2025 at 11:28:50AM +0100, Mark Rutland wrote:
-> On Wed, Jul 02, 2025 at 10:10:21AM -0700, Breno Leitao wrote:
-> > I'm observing two unusual behaviors during the boot process on my SBSA
-> > ARM machine, with upstream kernel (6.16-rc4):
-> 
-> Can you say which SoC in particular that is? Knowing that would help to
-> identify whether there's some known erratum, clocking issue, etc.
 
-This is custom made rack mounted machine based on Grace CPU. Here are
-some info about the hardware:
+--MYqRzWYWScpig/dd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-	# lscpu:
-		Vendor ID:                   ARM
-		  Model name:                Neoverse-V2
-		    Model:                   0
-		    Thread(s) per core:      1
-		    Core(s) per socket:      72
-		    Socket(s):               1
-		    Stepping:                r0p0
+On Wed, Jul 02, 2025 at 09:57:10PM +0200, Arnd Bergmann wrote:
+> On Wed, Jul 2, 2025, at 20:35, Robert Marko wrote:
+> > Currently, Microchip SparX-5 SoC is supported and it has its own symbol.
+> >
+> > However, this means that new Microchip platforms that share drivers need
+> > to constantly keep updating depends on various drivers.
+> >
+> > So, to try and reduce this lets add ARCH_MICROCHIP symbol that drivers
+> > could instead depend on.
+>=20
+> Thanks for updating the series to my suggestion!
+>=20
+> > @@ -174,6 +160,27 @@ config ARCH_MESON
+> >  	  This enables support for the arm64 based Amlogic SoCs
+> >  	  such as the s905, S905X/D, S912, A113X/D or S905X/D2
+> >=20
+> > +menuconfig ARCH_MICROCHIP
+> > +	bool "Microchip SoC support"
+> > +
+> > +if ARCH_MICROCHIP
+> > +
+> > +config ARCH_SPARX5
+> > +	bool "Microchip Sparx5 SoC family"
+>=20
+> This part is the one bit I'm not sure about: The user-visible
+> arm64 CONFIG_ARCH_* symbols are usually a little higher-level,
+> so I don't think we want both ARCH_MICROCHIP /and/ ARCH_SPARX5
+> here, or more generally speaking any of the nested ARCH_*
+> symbols.
+>=20
+> This version of your patch is going to be slightly annoying
+> to existing sparx5 users because updating an old .config
+> breaks when ARCH_MICROCHIP is not enabled.
+>=20
+> The two options that I would prefer here are=20
+>=20
+> a) make ARCH_SPARX5 a hidden symbol in order to keep the
+>    series bisectable, remove it entirely once all references
+>    are moved over to ARCH_MICROCHIP
+>=20
+> b) Make ARCH_MICROCHIP a hidden symbol that is selected by
+>    ARCH_SPARX5 but keep the menu unchanged.
+>=20
+> Let's see what the sparx5 and at91 maintainers think about
+> these options.
+>=20
+> The other patches all look fine to me.
 
-	# /proc/cpuinfo
-		processor	: 71
-		BogoMIPS	: 2000.00
-		Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 sm3 sm4 asimddp sha512 sve asimdfhm dit uscat ilrcpc flagm sb paca pacg dcpodp sve2 sveaes svepmull svebitperm svesha3 svesm4 flagm2 frint svei8mm svebf16 i8mm bf16 dgh bti
-		CPU implementer	: 0x41
-		CPU architecture: 8
-		CPU variant	: 0x0
-		CPU part	: 0xd4f
-		CPU revision	: 0
+One more fun thing to consider is that we ended up defining
+ARCH_MICROCHIP on riscv because people didn't want to have an
+ARCH_MICROCHIP_POLARFIRE symbol enabling the pic64gx SoC. Therefore,
+anything that relies on CONFIG_AT91 to be only selectable by users on
+arm/arm64 when moved to CONFIG_ARCH_MICROCHIP (as this patch does) will
+become selectable on riscv as a result.
 
-	# lshw
-	    description: Rack Mount Chassis
-	    product: <Internal name>
-	    vendor: Quanta
-	    version: <Internal name>
-	    width: 64 bits
-	    capabilities: smbios-3.6.0 dmi-3.6.0 smp sve_default_vector_length tagged_addr_disabled
-	    configuration: boot=normal chassis=rackmount family=Default string sku=Default string uuid=...
+--MYqRzWYWScpig/dd
+Content-Type: application/pgp-signature; name="signature.asc"
 
-How do I find the SoC exactly?
+-----BEGIN PGP SIGNATURE-----
 
-> Likewise that might imply more folk to add to Cc.
-> 
-> [...]
-> 
-> > At timestamp 9.69 seconds, the serial console is still flushing messages from
-> > 0.92 seconds, indicating that the initial 9-second gap is spent looping in
-> > cpu_relax()-about 20,000 times per message, which is clearly suboptimal.
-> > 
-> > Further debugging revealed the following sequence with the pl011 registers:
-> > 
-> > 	1) uart_console_write()
-> > 	2) REG_FR has BUSY | RXFE | TXFF for a while (~1k cpu_relax())
-> > 	3) RXFE and TXFF are cleaned, and BUSY stay on for another 17k-19k cpu_relax()
-> > 
-> > Michael has reported a hardware issue where the BUSY bit could get
-> > stuck (see commit d8a4995bcea1: "tty: pl011: Work around QDF2400 E44 stuck BUSY
-> > bit"), which is very similar. TXFE goes down, but BUSY is(?) still stuck for long.
-> 
-> Looking at the commit message, that was an issue with the a "custom
-> (non-PrimeCell) implementation of the SBSA UART" present on QDF400. I
-> assume that was soemthing that Qualcomm Datacenter Technologies designed
-> themselves.
-> 
-> It's possible that your SoC has a similar issue with whatever IP block
-> is being used as the UART, but the issue in that commit certainly
-> doesn't apply to most PL011 / SBSA-UART implementations.
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaGaRywAKCRB4tDGHoIJi
+0kalAP9rQkzuJjuFkyPd9IlOQj3R+Ld5bQNONlz6IG3u/RaW3wEA1mcw+qjQrIc8
+tzY+P2Bw7n2cprxDhZQKO1xk0ihwGws=
+=qB70
+-----END PGP SIGNATURE-----
 
-That makes total sense. Decoding SPCR I see the following:
-
-	# iasl -d spcr.dat
-	Intel ACPI Component Architecture
-	ASL+ Optimizing Compiler/Disassembler version 20210604
-	Copyright (c) 2000 - 2021 Intel Corporation
-
-	File appears to be binary: found 56 non-ASCII characters, disassembling
-	Binary file appears to be a valid ACPI table, disassembling
-	Input file spcr.dat, Length 0x50 (80) bytes
-	ACPI: SPCR 0x0000000000000000 000050 (v02 NVIDIA A M I    00000001 ARMH 00010000)
-	Acpi Data Table [SPCR] decoded
-	Formatted output:  spcr.dsl - 2624 bytes
-
-Thanks,
---breno
+--MYqRzWYWScpig/dd--
