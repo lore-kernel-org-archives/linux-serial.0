@@ -1,147 +1,180 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2136.outbound.protection.outlook.com [40.107.243.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 871FC1F1306;
-	Wed,  2 Jul 2025 19:57:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751486262; cv=none; b=f9sejaQejhaqyolV8ErsgxRppKx10TsThTj34okgyhxxXA6NkeF3qs/qF2GVI89rTrN6+Pns264Lnm4loXI09g1i2yRlrPW4geRnEen8mKXDNtvVl+Pp9Bm+pVSq9nqluKQ+QkqkA5pXL7klH9ZinTA3Lp4eXWE5GPSU0E5nU3c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751486262; c=relaxed/simple;
-	bh=CaQXOmGi1Q4hapePQLyAziFqod4bCIqfR+jrX6VTL94=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=g0Bncl1gTzQ7NNLPJsa+7pin3Bi3Bbt6ud91+VCtv+TS5ZcrRN6XKjoeS74w/ZdTypY8UfpY726nSonbDfrO4gcYEoDblB9ZnaiDMRvQYA/j6HRf/Chi/NO4nq1TrpTFSytFHwbalZG+Aj2P4Ny6bVsU2UQCPc2fucBsH2nCsrA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iphs3Fr4; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACF373596D;
+	Thu,  3 Jul 2025 00:22:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.136
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751502170; cv=fail; b=kZ+C3/2o7m1+/B9Pg7bPDg8lUsTrFwFucQYS/BDFXQfg+EuvYiAJlg4UGBQkXUyA1U76Kbm7Sg9JZ1mGOCuFdpeS4XtVCF4FpnyVkeWop6+SNDVh4WzjTrkLJqeAQ4sr1QzHYXOM/OZLNQ7IKUBqhAGjk9O6ani4sLS3EVeD9iU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751502170; c=relaxed/simple;
+	bh=76okLidoJP6XC526Dh0oE+YzQ6GEuPrslK8PDO1ML0M=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=XvGVka+vp2npjapK7BT3C3oaRs9DlABfPI/dsf4B+uJbkKET3vmsyo34o9Z6LORyHmWelNn0RYv6PnMdjfthApAIC+H4vgVbTwtAd/B0gtxQNIx5MoKXwt4pMpOBy90sPFIHxRfqIi5e3URusU4BAKgGRKkZVdKydD0d72q81Xs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=fmJmDjAW; arc=fail smtp.client-ip=40.107.243.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iphs3Fr4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A2FDC4CEE7;
-	Wed,  2 Jul 2025 19:57:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751486262;
-	bh=CaQXOmGi1Q4hapePQLyAziFqod4bCIqfR+jrX6VTL94=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=iphs3Fr47nWhPR0TagxlvNifwvoipDSOQbi9gEDaqxer7o5R3rwhexpiw+MxfZQ1u
-	 1T/wgYkjS39E64y2k/kFWowyaORm+eOxHZbPVpm/RyaEX967hz53DKJy8jHVQ74gDD
-	 uxYv/eEKpEdwFhX2SQ0ePE7O73BUjPbA0mPN2ZtvRln7myS8SyAQamergJDu+lNqSy
-	 6MDhVy6t+8DutVkRvYGv0SCDbq+YBdE2cl+3c2VpXE1f2LB1EobYutBkLpw61ULGFm
-	 v0RvrEDiMNc50AMBjt4JOc03BHlzcScYmYQ0Brw7tT7aM967kBApfeLFLMLkEbEN6Q
-	 FCTpcbdusJgyQ==
-Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
-	by mailfauth.phl.internal (Postfix) with ESMTP id 6F059F40068;
-	Wed,  2 Jul 2025 15:57:40 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-05.internal (MEProxy); Wed, 02 Jul 2025 15:57:40 -0400
-X-ME-Sender: <xms:NI9laCs28QYlhPXfNvAXECAXg4qbxhG3NuDCBMXg9YZfRFjAY3ul-w>
-    <xme:NI9laHfO-CyLcRVqKE-_Ol55xS5aXihGQeRdR8XIEc0iMEY1hznDUBHvDOksQBBDG
-    S9-EIZPOlTvXWVMPyI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddukedvlecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpefoggffhffvvefkjghfufgtgfesthejredtredttdenucfhrhhomhepfdetrhhnugcu
-    uegvrhhgmhgrnhhnfdcuoegrrhhnugeskhgvrhhnvghlrdhorhhgqeenucggtffrrghtth
-    gvrhhnpeejjeffteetfeetkeeijedugeeuvdfgfeefiedtudeikeeggeefkefhudfhlefh
-    veenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrh
-    hnugdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidquddvkeehudejtddvgedq
-    vdekjedttddvieegqdgrrhhnugeppehkvghrnhgvlhdrohhrghesrghrnhgusgdruggvpd
-    hnsggprhgtphhtthhopedviedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheptggr
-    thgrlhhinhdrmhgrrhhinhgrshesrghrmhdrtghomhdprhgtphhtthhopehlihhnuhigse
-    grrhhmlhhinhhugidrohhrghdruhhkpdhrtghpthhtoheprghlvgigrghnughrvgdrsggv
-    lhhlohhnihessghoohhtlhhinhdrtghomhdprhgtphhtthhopegurghvvghmsegurghvvg
-    hmlhhofhhtrdhnvghtpdhrtghpthhtohephhgvrhgsvghrthesghhonhguohhrrdgrphgr
-    nhgrrdhorhhgrdgruhdprhgtphhtthhopegrnhguihdrshhhhihtiheskhgvrhhnvghlrd
-    horhhgpdhrtghpthhtohepsghrohhonhhivgeskhgvrhhnvghlrdhorhhgpdhrtghpthht
-    ohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhgvvgeskh
-    gvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:NI9laNwqgy5fmKbVuN6ufKbwO6ci8zaZO8U14JNHCAEgzh5P4AhQcw>
-    <xmx:NI9laNNTDjb8W7aNnQQcl_IMMDlm4R1XJ0V42VSvlKV20oZtIMh-Vg>
-    <xmx:NI9laC8HMWDKpPVud9dKnhSew2dXQKf_9r40M52mqN30aq_C-E9CWA>
-    <xmx:NI9laFXljuNhqBIZQBYp2UflD1FESwb5MFox1kvgplWN5ZIFPu17ig>
-    <xmx:NI9laLeU29iC9nuQZTXb33cj2kzAeIBV2fTVHCIrvSYT0kEtjwVZsWbA>
-Feedback-ID: i36794607:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 4464B700068; Wed,  2 Jul 2025 15:57:40 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="fmJmDjAW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=F0MkxCeLOYukTscl6nlTEIStRPeMdBIQNpPrEcVXzDG2EKK3dYe9uyNtlB8xYflnqNP9GUaRvL9+Acb/JuE9yjKFKRBnGk+Xn5oXElMKJWuH1uXe77xZZZBvMJvJVuUF85pgTgs60lrdekL0W14UHqjjbAfRVQZGFkwk/5nyzzQlEQRxg1gyQSP613saZlLDup1ZhIKIvHXkluYgGluQqprk5jKDBp1jGodiLscdaNTqyogDYKy5jtrPpJApBrTETlJNXLdansi7sWjY+/vzhOMPBOF0z8e7wqclU6YGXRAzDAtTthJZptJPEY9+fIeflnthvI+kdeOw7qWIXUH0nA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fC1wGXkjTgm9sdaH+SO0MwS6z+c/SPQ7G2aTB/7FYSg=;
+ b=j3D/hfr20NTGnXzNDFoYxmkBS4o3pIHxFmPAEna4KhcKG2m8LNgiGyGxgvIej+YOBR3tL7moE5+c7v6LuBDn0ksXy++pt2L6CHM7qBcv/yWOSKfMuPSPApAxBWj+E7BGpM1nJrG2RVFrZxk+1uBXNSnTsTTxqA8r3fkp5sfzrZp9sWzufp31mAw1bIDGK8W1GIrqG+P2M6v63crwCWJzb8plUv0XZ0Voa7H7SKmXFXJlQ2rcZ5A05hfOPDx1vuT6IrrhtE4y45vSW82v7VUULK43aUITms58Y9eLzT6shOxs/Iilj5hQsrlmUPH9DHuaylbLiCGLZBYkecoP7KSlwQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
+ 50.233.182.194) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axiado.com;
+ dmarc=none action=none header.from=axiado.com; dkim=none (message not
+ signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fC1wGXkjTgm9sdaH+SO0MwS6z+c/SPQ7G2aTB/7FYSg=;
+ b=fmJmDjAWDrCg00n6IbQ6Zj6G0PgfOWPkRm+DB0P8soG7zf2nMREzxevFpuDSZDgygzW+KCKFtdY4YmiLq2+kCu9IRv+82lK0bDUVN/GTRk53b4V/qt1Sk7KCPN3XTaFLFUo42l89GFrm1fFA9yg+ct1cay/nISE9Unl+biTq0nmW7pUy8fc+KjhIWhvLCw0yazUC68Wdm6P1N2PLdSlsVoD5b9HKfVX8oaqOuG2v3dfITYkB+vPtnqaCYXXVPypm+LxLF4qEvHw8KvJm648kEzKNFotEl1jjvGCL/+YIMhKBAaLI3nOZ+D13pPPep8EfN10AjwEh2ysnwa+3Kd+Fqg==
+Received: from MW4PR03CA0110.namprd03.prod.outlook.com (2603:10b6:303:b7::25)
+ by BY3PR18MB4803.namprd18.prod.outlook.com (2603:10b6:a03:3ce::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.21; Thu, 3 Jul
+ 2025 00:22:45 +0000
+Received: from SJ1PEPF000026CA.namprd04.prod.outlook.com
+ (2603:10b6:303:b7:cafe::34) by MW4PR03CA0110.outlook.office365.com
+ (2603:10b6:303:b7::25) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.20 via Frontend Transport; Thu,
+ 3 Jul 2025 00:22:45 +0000
+X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 50.233.182.194)
+ smtp.mailfrom=axiado.com; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axiado.com;
+Received-SPF: Fail (protection.outlook.com: domain of axiado.com does not
+ designate 50.233.182.194 as permitted sender)
+ receiver=protection.outlook.com; client-ip=50.233.182.194; helo=[127.0.1.1];
+Received: from [127.0.1.1] (50.233.182.194) by
+ SJ1PEPF000026CA.mail.protection.outlook.com (10.167.244.107) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.15
+ via Frontend Transport; Thu, 3 Jul 2025 00:22:44 +0000
+From: Harshit Shah <hshah@axiado.com>
+Date: Wed, 02 Jul 2025 17:22:30 -0700
+Subject: [PATCH v5 01/10] dt-bindings: vendor-prefixes: Add Axiado
+ Corporation
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: Tf4af6f8839cae169
-Date: Wed, 02 Jul 2025 21:57:10 +0200
-From: "Arnd Bergmann" <arnd@kernel.org>
-To: "Robert Marko" <robert.marko@sartura.hr>,
- "Russell King" <linux@armlinux.org.uk>,
- "Nicolas Ferre" <nicolas.ferre@microchip.com>,
- "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
- "Claudiu Beznea" <claudiu.beznea@tuxon.dev>,
- "Catalin Marinas" <catalin.marinas@arm.com>, "Will Deacon" <will@kernel.org>,
- "Olivia Mackall" <olivia@selenic.com>,
- "Herbert Xu" <herbert@gondor.apana.org.au>,
- "David S . Miller" <davem@davemloft.net>, "Vinod Koul" <vkoul@kernel.org>,
- "Andi Shyti" <andi.shyti@kernel.org>, "Lee Jones" <lee@kernel.org>,
- "Mark Brown" <broonie@kernel.org>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
- dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
- "Oleksij Rempel" <o.rempel@pengutronix.de>,
- "Daniel Machon" <daniel.machon@microchip.com>
-Cc: luka.perkov@sartura.hr
-Message-Id: <ea353170-6e03-4231-afc2-3dc45253931d@app.fastmail.com>
-In-Reply-To: <20250702183856.1727275-2-robert.marko@sartura.hr>
-References: <20250702183856.1727275-1-robert.marko@sartura.hr>
- <20250702183856.1727275-2-robert.marko@sartura.hr>
-Subject: Re: [PATCH v8 01/10] arm64: Add config for Microchip SoC platforms
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20250702-axiado-ax3000-soc-and-evaluation-board-support-v5-1-6ade160ea23b@axiado.com>
+References: <20250702-axiado-ax3000-soc-and-evaluation-board-support-v5-0-6ade160ea23b@axiado.com>
+In-Reply-To: <20250702-axiado-ax3000-soc-and-evaluation-board-support-v5-0-6ade160ea23b@axiado.com>
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Linus Walleij <linus.walleij@linaro.org>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, Arnd Bergmann <arnd@arndb.de>, 
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
+ Jan Kotas <jank@cadence.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Michal Simek <michal.simek@amd.com>, 
+ =?utf-8?q?Przemys=C5=82aw_Gaj?= <pgaj@cadence.com>, 
+ Alexandre Belloni <alexandre.belloni@bootlin.com>, 
+ Frank Li <Frank.Li@nxp.com>, Boris Brezillon <bbrezillon@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, 
+ soc@lists.linux.dev, Jan Kotas <jank@cadence.com>, 
+ linux-serial@vger.kernel.org, linux-i3c@lists.infradead.org, 
+ Harshit Shah <hshah@axiado.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=878; i=hshah@axiado.com;
+ h=from:subject:message-id; bh=76okLidoJP6XC526Dh0oE+YzQ6GEuPrslK8PDO1ML0M=;
+ b=owEB7QES/pANAwAKAfFYcxGhMtX7AcsmYgBoZc1RjoXczerhnzbjp7TGkzM4/pxU/+AOElyjL
+ /eMLdr07c2JAbMEAAEKAB0WIQRO3pC/7SkLS2viWOvxWHMRoTLV+wUCaGXNUQAKCRDxWHMRoTLV
+ +wOOC/9eiQRJGcwDdNkK1meUzArnpsO4ZoK9LrgF0eIjh1LZryuwvYElCtFpHTWFk2+kmcSPT/k
+ q81CcV8qrqT3734G3dN46fUfFqK4NCjgLQBGY4X5C0rgCxBSPVOKieWajflXB43utytgdA6k7+X
+ 7omlIujL+1MbkYHAqfgLHzGLqIFlNWWDqqAn0hUjvAOaztaBQ68BTIgaF4hsyX/CM7uj4otsvuT
+ oNWRhRr9BBjq7VE2iigt/dVwnHGAbR/fxGUIc+1ICT2p6nc5kdK7aAWgG1cwNUcPzauUWQ5K6ps
+ 8Q83O/kKBsKSrDzBOGVUYiyQKCRysumZSe5Kvv6qVZ663mAiO6G89LV9y3G2sp7YJr+HWNXVUMr
+ HFqDpczKq29XUiATo/eZGLWWoNcYx70Q5FlRSLrgpGuDbRvvd0yr6G5/DslUgk4wxhIj6+kliLu
+ TOyKYn/22eDHcUseHiKMw1ppVWW+/nq8CbsnaG67x9jcJ10k6sruHKD1C1qliBAT8oyCg=
+X-Developer-Key: i=hshah@axiado.com; a=openpgp;
+ fpr=4EDE90BFED290B4B6BE258EBF1587311A132D5FB
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF000026CA:EE_|BY3PR18MB4803:EE_
+X-MS-Office365-Filtering-Correlation-Id: 839083d7-d67f-4650-68db-08ddb9c7bb62
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|82310400026|36860700013|921020|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?b3FyT0lleUlzVHZxdHQyTmQvaHIwU3Y5anlsTzBiT0U4RURmdk5SWS9JaHlw?=
+ =?utf-8?B?alF4R24xQVFpQm0wME83QjJZSjNrZTdTWFpNdUgwenB0SU1pK0J2bGh3ZDB4?=
+ =?utf-8?B?Y3NVYVVFK0tCQ3dpS1Vsb0VEc01nZ2FrVTBmRmo1VW9jcUkrRmgvekJoSGJ0?=
+ =?utf-8?B?alpqRENxeFR3VVlZRFk1L05CQm9LS2FHRE9GcW4rY1hsN0k1TDcvWXVKMUlt?=
+ =?utf-8?B?VnVFWWdMSWdkSDNWcE1nbVJmaVF6SHZmRjczSUFDdHpEWnlwMXlhN2JFQ0hv?=
+ =?utf-8?B?OEZTMXVhelBHS3ltSWxKUFFFYlZONVFMWTFJYmpCbm1QQUhhTzJidzJERFhG?=
+ =?utf-8?B?cjlVbHBaU2xudWg0VGEyL3NiSmRYQnVjellXd0p3ajZNUVYvVWVwRTczM1hE?=
+ =?utf-8?B?TWs1QW0wdDFjUjBqUWFSMGN2Y1ZMZWVORTk5RkRiOVk2N0d6cTM2bzdLYi8z?=
+ =?utf-8?B?bVNVd1BMRUw0SU9BK2R6RUVVS1NlTldtNHBEd2JjUzZMWnJSaUg1MjNMYUZh?=
+ =?utf-8?B?VEU5UEZ0U3V4ZGd6dlZYemFWakVaZElNS0hQajdFLzlwbDRmSnd5c1NQMXZY?=
+ =?utf-8?B?OThoWnEvaG1IMkZmdlU5NDA5eXBkM2phcVRib0tsYzQ0OElEbVR2dEtTODRV?=
+ =?utf-8?B?ZUhWQXg0YW85N3hRZUVOOGlGQW8wVGRSTnZtWEJMY2RNeVRsc0YwVDJROFVV?=
+ =?utf-8?B?ZXp1aFFIZ0tvVWZmeHhnNHgvSHpobWVBSDlTWlBCR1RhdUp3K1lObkk5Y1Bq?=
+ =?utf-8?B?dVVqN2FZc0k5UUJvbXNCY0taM3J0dXBKcmdSUi9HWmpqY01aTldUWGhGNm5D?=
+ =?utf-8?B?cUhhRVZJTWdJM1NvZHhYNmVockhOdkF0TURLeXZTWHg4MzRSVTQzVGRQbGdj?=
+ =?utf-8?B?NXVNSy9FeUZibEpFRG9OemovYWZJRnlsSDM1TS9SbkVuaHNDaU43dG9wQWVz?=
+ =?utf-8?B?ZFdDdWkvQ1duZ1NwL1hHRXF2aVFlcElXLzZoWnhHejI4NlFnbmw0NkFVOVV6?=
+ =?utf-8?B?VEhDeWUva2h0OWJ1TFZYVFFjZWhwMnUwbVdiSTAwZlFRRk9OVlBDUEFzb0R3?=
+ =?utf-8?B?QnRkaUMwdDkxeG9xVUlzWXVHVzM5OWh2ajlkS0hndzc3UTYwYlFyaTdXeDZ4?=
+ =?utf-8?B?SXAxK0Roc3BjaUY2TUxTRW5JYjRyYldjdFpEa1l4bXM3MERWa3ZZVzAwek1a?=
+ =?utf-8?B?QXBZWC9MZ0YrVjIyNjF4enZBSTNsL2U2eGFkQWFYWWE1WjVCQXNSV2VjQnNa?=
+ =?utf-8?B?QWM1NUpxOWdoaGducFRFemRLd3U3SFlnLytJR3VhYjVRYVFsU0N2SlRKQlRn?=
+ =?utf-8?B?NU1EVTJsbDI5T3c5a0hremU1aVhCVW0wTlpWbHYzb09IUDViblFMMnZVWEpr?=
+ =?utf-8?B?S2RuelpvZSs2T1BKVjhKOENaK2cyWEVnK1FSeExOd0RWelo3MEZhZ2pqc2JY?=
+ =?utf-8?B?VFVpQktmVFlrVnhJeEVLbDhvbXlQTnNCMDZWMG04ZkJ1THk3akRxWGlQRkx0?=
+ =?utf-8?B?d3EvcVpRWGVZQTJkTklWbmVBaWkzR3dwd1JpdlYzZVJQdFdSMDZTUWlVeW9t?=
+ =?utf-8?B?VjV6MGhCVzMrSWFpUWpyVnBjNWY0L3JqSnc0Y1FKTzhlWnp2RSt5dGNqOGFo?=
+ =?utf-8?B?eGRDbkt4WDVPMEd1SmdQSmNDd3o4d21BLzVMSE53NlVuc3h4K1RZOTRpNHFN?=
+ =?utf-8?B?VkdGSUgwTzdyYnMxejdwS3hhU1NOM2ptRkJ3TjAyY1RMVzVwNDZPTWc2K08w?=
+ =?utf-8?B?Y3NzNHJ5bkFJRWE3SlJBcS93MlQrOGNRbVFUeEswbkxEa0cydXVwRWNRano3?=
+ =?utf-8?B?SEdnK3RZVHlrWDE3NmkyQ2hPVXY3bjFIZUxQUXVxYVE5WU1wV1NZTlpMQVp3?=
+ =?utf-8?B?b2kzelZyRVNQVVBXZm9rL3ptWDRjVWV3Yk8xSFFFR3R4N2xob3V0cUNJeU1V?=
+ =?utf-8?B?WElXa09Yd1YxVkgreE5ObTRYY0xxOVc3RGx3TERoY1kwVCsreXlDZ2hDL0ow?=
+ =?utf-8?B?TFR1dFR1Z21RPT0=?=
+X-Forefront-Antispam-Report:
+	CIP:50.233.182.194;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:[127.0.1.1];PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(82310400026)(36860700013)(921020)(13003099007);DIR:OUT;SFP:1102;
+X-OriginatorOrg: axiado.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2025 00:22:44.8981
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 839083d7-d67f-4650-68db-08ddb9c7bb62
+X-MS-Exchange-CrossTenant-Id: ff2db17c-4338-408e-9036-2dee8e3e17d7
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=ff2db17c-4338-408e-9036-2dee8e3e17d7;Ip=[50.233.182.194];Helo=[[127.0.1.1]]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF000026CA.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR18MB4803
 
-On Wed, Jul 2, 2025, at 20:35, Robert Marko wrote:
-> Currently, Microchip SparX-5 SoC is supported and it has its own symbol.
->
-> However, this means that new Microchip platforms that share drivers need
-> to constantly keep updating depends on various drivers.
->
-> So, to try and reduce this lets add ARCH_MICROCHIP symbol that drivers
-> could instead depend on.
+Link: https://axiado.com
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Signed-off-by: Harshit Shah <hshah@axiado.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Thanks for updating the series to my suggestion!
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 5d2a7a8d3ac6c666c8b557c2ef385918e5e97bf9..5ada930c79e3b32ff1bf194ee66bb4bdb08d539e 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -200,6 +200,8 @@ patternProperties:
+     description: Shanghai Awinic Technology Co., Ltd.
+   "^axentia,.*":
+     description: Axentia Technologies AB
++  "^axiado,.*":
++    description: Axiado Corporation
+   "^axis,.*":
+     description: Axis Communications AB
+   "^azoteq,.*":
 
-> @@ -174,6 +160,27 @@ config ARCH_MESON
->  	  This enables support for the arm64 based Amlogic SoCs
->  	  such as the s905, S905X/D, S912, A113X/D or S905X/D2
-> 
-> +menuconfig ARCH_MICROCHIP
-> +	bool "Microchip SoC support"
-> +
-> +if ARCH_MICROCHIP
-> +
-> +config ARCH_SPARX5
-> +	bool "Microchip Sparx5 SoC family"
+-- 
+2.25.1
 
-This part is the one bit I'm not sure about: The user-visible
-arm64 CONFIG_ARCH_* symbols are usually a little higher-level,
-so I don't think we want both ARCH_MICROCHIP /and/ ARCH_SPARX5
-here, or more generally speaking any of the nested ARCH_*
-symbols.
-
-This version of your patch is going to be slightly annoying
-to existing sparx5 users because updating an old .config
-breaks when ARCH_MICROCHIP is not enabled.
-
-The two options that I would prefer here are 
-
-a) make ARCH_SPARX5 a hidden symbol in order to keep the
-   series bisectable, remove it entirely once all references
-   are moved over to ARCH_MICROCHIP
-
-b) Make ARCH_MICROCHIP a hidden symbol that is selected by
-   ARCH_SPARX5 but keep the menu unchanged.
-
-Let's see what the sparx5 and at91 maintainers think about
-these options.
-
-The other patches all look fine to me.
-
-     Arnd
