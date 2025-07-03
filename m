@@ -1,94 +1,106 @@
-Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com [209.85.222.53])
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9AA52DE6E8;
-	Thu,  3 Jul 2025 08:31:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D50223ABAA;
+	Thu,  3 Jul 2025 10:02:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751531517; cv=none; b=ZEBmyS3+ZA5ePYSC53gR5InipBFn71AjKlJ8KMX03hrVajte5QgF0DxM4t9lEWc0jlszvQSOEhpmBOKwJmuZK0DXCPSohxhtZBdm71ac/Pcm+fBfdbPtCDlveE3TUcpA8uj57YCW8GslgcNcvE7kzxfvMIu/zetDRW5wW83M/xQ=
+	t=1751536967; cv=none; b=IcgRi57hK/2ST8Zxcb3/FvJdGLmRqNEmLtu3aP4WwYQlf+in5REnvBGqSaVfgxdgR+3iw3k292nzdYrERTjQs898T5Ndlw0S5vZe59rA71U0+sdNpusuq0SWIqJAv1nIwMikGQKEDjpU/wLQoUP7923tV0ZkON2cpCcD5Cobcd8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751531517; c=relaxed/simple;
-	bh=1kEHEAtL+xQOR1Xta9OGgGAHb/6BYqBlR21jUZejIn0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=q7Q3Z6Z6gfwydLnHp3NNisFwSBlKw8ykEGU5IMzvsJKlBGemTSV/sYD0bsmLXZWPwszwc08w9dRpjrD7jzcfF2TUpkTCztKzpgCuWoe4lNUE/2QTvs2IQrIES5X30PdjpM9k29mqaGXn17mzIe6pOcbQrf2mHsQNDMJjbX+UcLQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	s=arc-20240116; t=1751536967; c=relaxed/simple;
+	bh=Nw/LLCWjF+BPDHmbxNi3eWC9yqKHjgiMc9aBEX+VBt8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CL85hklNBAxdao8UvwvuSW9O37p6d2F6LdEn6naqms3G/BgS/YUxfoz8QvXQ6ZZsBOqozpqhSEId+0xSE24Vq6SXiZNTHw0Tj3rq+rJbPK3a67iPfYa+G5Gd0W1Tlp2LUeBs8O7y+byfWuTzUcOkW/6jszkXdO/5dMZp3m2L8GM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f53.google.com with SMTP id a1e0cc1a2514c-886c8de5d90so442427241.0;
-        Thu, 03 Jul 2025 01:31:55 -0700 (PDT)
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-60780d74c8cso9038675a12.2;
+        Thu, 03 Jul 2025 03:02:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751531514; x=1752136314;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2Rrnl8A78Ot72qT4JJsETkK35WvjMF8fm1TQ3376urc=;
-        b=RqmSBvno4+HYbMhCzEBnhUsZLEAJPZLSpjQJGZXaG0tS7nK57kjxIX/WTueJEq9l1/
-         XONOSsucQFzwcf6FgvDgcPNk+hwBgs/VqjeDCVJJVRtPPbDP/WfWCyJTQsFvEseb26eT
-         7RT4PuC/7PQBSBMHmAUiUF6nlBg8KXXSRvgI1AxjCQ9txaB9tQ/ytp9uZuZoxcgHsCN/
-         ysQgOrLL46c9bAOOugPhZs8Czv1BTv8Rqh3QyijE8LC90koQRA3W3vGl0iMCMippWK0L
-         ug04nzgETNM8b+foFaTNU8wwClTDyuFkqslV5qRNpf0xKljQa5mro6KxOau0TgEHDFOv
-         xAug==
-X-Forwarded-Encrypted: i=1; AJvYcCUBunbbhD+8JE3Jxq7wEYJ9FMrfIDdz6a5E2gv5CJB4bID6KlVUQb+6sbb7E3DUeAfzanmekNVc3HYy@vger.kernel.org, AJvYcCVF4Xh7NGqBisG10hECTZyg5L3KqBIkgaVH+OmcJ+FkwxhNd7pZ0G/j2MMYdO7E59tVKsc/I1W2dwR1DihVneKLbHM=@vger.kernel.org, AJvYcCW82QgG5Kt8bRCS00u2OxPSQn9bVHV23/ZnWZKQMeebGwzcioaizTbm+xajTUqkJNJX3eQcISAkIvgiKkXG@vger.kernel.org
-X-Gm-Message-State: AOJu0YwUAy4tn9VOI2w1CSrkAVNtdkbX6iW4SXxlC4yni2T/gTEhqyW1
-	wyfus6gHkq8ADzCj8ddHy7dhWH8eSZ5JtTHQEcyPicIdDJyWUIC5km3TsE0jaeUC
-X-Gm-Gg: ASbGnct2UNfwPgg5y+fTL60IGuscJDpzaDuhCTEusb/JKkQtZJvpHtTH29hClgZFQeX
-	xJxUlpxv443NckmGwjHp4/qRjUwp0ND7CIFhGYV8CAz5iGLvD6Fj5A2wPauvSBEl0XVnqopNElw
-	ZT0nbYITz+v7sogEra91EixBpadncI22SB2tumoabkif+0oNVTq/7PnIa6fF/kkKwJZ4A0fg9la
-	W7o2b53qQ9HcwlE+DnNG6+mAvylRl0xF6Yv5iJ/ZJE407wJVNnxUfC+hY4AhDcLuiTtp7t+H+qS
-	jMWTRqwpdxgDXTJJP8O2SyR8XtipoHW11+/fiWa89Y4KRfyHvNPrgjidpsLDmZ90KggadrfiGmi
-	Dj/VOyOYBPE8I/ddOgBAjmum4U7A8ZkKVi+c=
-X-Google-Smtp-Source: AGHT+IHFmlAjymRsAjcOZcUEFPJsX3qwNDNEAcSU1+k+hq/73qQL/T3wQ/9d+m5dhA728+/blinBCA==
-X-Received: by 2002:a05:6102:689a:b0:4e5:a0a9:3ad1 with SMTP id ada2fe7eead31-4f17479c21emr2033747137.2.1751531513896;
-        Thu, 03 Jul 2025 01:31:53 -0700 (PDT)
-Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-884ee766fe7sm1900418241.29.2025.07.03.01.31.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 03 Jul 2025 01:31:53 -0700 (PDT)
-Received: by mail-ua1-f49.google.com with SMTP id a1e0cc1a2514c-87f2a0825e1so457174241.2;
-        Thu, 03 Jul 2025 01:31:53 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVmjEj9k88bx8Py9uQ5/XF12E5wLP0qtXp25GXzzoBar+eerZ85yX7xYsN7OJbk3tB48BSUcRqMJzBGODSi@vger.kernel.org, AJvYcCWjj7/PA3CsNIH6YHIwxog0StIzH/p/Pa7pnmlpjuG/X8Y79xWQLY3907UAJMsh7InJpyyMnSB4fjMSX133MazybiI=@vger.kernel.org, AJvYcCXcNtgjyiYGtLpAopMEGxXH43QMmAZ3ZLogpu2fgbOVzyxMyRTIerd3ixA5trxSGh6oRMD5qRS98Jr5@vger.kernel.org
-X-Received: by 2002:a05:6102:6481:10b0:4e9:a01a:ed57 with SMTP id
- ada2fe7eead31-4f174a08262mr1350401137.20.1751531512921; Thu, 03 Jul 2025
- 01:31:52 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1751536962; x=1752141762;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=R4/rgQkgha5X6rrJzoDSNGEpZWbIHMNm8Tn8er8cB/k=;
+        b=TNcYER3r7NOg0YYpQhZjkGAx4f0mU8hgGANdbX8LJEGyldxv3/2i1c6zM9WYJXK+Ti
+         PIyA4VSR0IynVQWliWMmX0zTvNNqiobuEG9CTVQRTeNXXl33fdvu+xHblsYhyxIU2p3R
+         Gze96r3irfAx+TiqBMCia81R6iQGZvw4htMeuuBKjtIgDmiu6abR8W0m7TDTTP+GEpjE
+         wrwR9A3rJsvJWugMO5rhX8H8tTmOJdljXe8pPawGqtWYVIv3KIaWoCcUSdOb8rZ8Jo6c
+         VU4HiSTzyM7RmqL93mbnJPN1ZffQvP6Gj0icgP1CvOZs/sh/P9HhiVOPUbOOMGIdBwbq
+         7onQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVIApP0ttMAGI4L/gilaV4yV04vk8DYpYjAvaRsQXFy6I0pLLesSRNws6lm3n9S4gzllZ3hjttodNT2xsx8@vger.kernel.org, AJvYcCWFQ7QaAJ5gk1rHoCrQAKyrkVYVOB5TpuEuzpLbjDm7pHYiHrwnQBOu/e5J8fxqcpnZ20HNn5J3NNiLck0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy14LxtYAIDY+BVjOOgpzv69YYOneHWUBlLq1G+1RnPzURl7WJD
+	AJVW3eIbrNz7xZCuI0Y+8l5EYfAqX6ayBGNWPPaFI1Yt5z+M+c9qhV4s
+X-Gm-Gg: ASbGncuWlGDnwhhynX9V2uoWLMjNTC41+9HbDOXR6jWwG4hyPTV9GtplNxtipb0fsn3
+	87HOWTcy1G2AA7dEL44uiAZwzxiMLLdKMlNAqTp+n3P8Af9A08UGKV/4kbuZZ9KQ+t/nauZlHOQ
+	EVhc6QF//0MQvbnlyMaaen+nb3i9vQwYS8fgfpzXWkD6TxAxo2JeuHRNWfBIk5h/HgjHjMvxDiz
+	/yszDEKYo9nxpoQ3Od9d6yT8CI0+ZwXx6pnpylpq7xPA3bxQg7W+w0sW9rojhMTrb6Ur5cPefOj
+	5b6gBNziSfjNaG9aFkdrafSpTLq/etrKlW3/fqqK4K4nTD8KRUqLe2hm+QTBT+G9
+X-Google-Smtp-Source: AGHT+IHrcjexOB74PqvVv9z/9SXhAOIQ2YaJ+lsByNRtlO9RzJ58V2gP8EKrD/Tpey1DUiVDSp7PSw==
+X-Received: by 2002:a17:907:eccb:b0:ae3:7c8c:351d with SMTP id a640c23a62f3a-ae3c2e35d60mr607661766b.56.1751536961821;
+        Thu, 03 Jul 2025 03:02:41 -0700 (PDT)
+Received: from gmail.com ([2a03:2880:30ff:72::])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae353c01620sm1250043566b.103.2025.07.03.03.02.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 03 Jul 2025 03:02:41 -0700 (PDT)
+Date: Thu, 3 Jul 2025 03:02:39 -0700
+From: Breno Leitao <leitao@debian.org>
+To: Leo Yan <leo.yan@arm.com>
+Cc: cov@codeaurora.org, rmk+kernel@armlinux.org.uk, mark.rutland@arm.com,
+	catalin.marinas@arm.com, linux-serial@vger.kernel.org,
+	rmikey@meta.com, linux-arm-kernel@lists.infradead.org,
+	usamaarif642@gmail.com, linux-kernel@vger.kernel.org,
+	paulmck@kernel.org
+Subject: Re: arm64: csdlock at early boot due to slow serial (?)
+Message-ID: <aGZVP8A2a3VVQwzt@gmail.com>
+References: <aGVn/SnOvwWewkOW@gmail.com>
+ <20250702172036.GC1039028@e132581.arm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <87frfddghg.wl-kuninori.morimoto.gx@renesas.com> <87cyahdgfu.wl-kuninori.morimoto.gx@renesas.com>
-In-Reply-To: <87cyahdgfu.wl-kuninori.morimoto.gx@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 3 Jul 2025 10:31:40 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW7bo1-7ChQ1uXJYWSZ2anyM3NU3-jj8evbw+NVRW_1BA@mail.gmail.com>
-X-Gm-Features: Ac12FXzmqA1snx2jD8jqedEwfPi52TfMhZyXCh7LxjUXWZIBTmcnchov9sv5N8I
-Message-ID: <CAMuHMdW7bo1-7ChQ1uXJYWSZ2anyM3NU3-jj8evbw+NVRW_1BA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] serial: sh-sci: Add R-Car Gen5 support
-To: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
-Cc: Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>, devicetree@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, linux-serial@vger.kernel.org, 
-	Nghia Nguyen <nghia.nguyen.jg@renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250702172036.GC1039028@e132581.arm.com>
 
-On Thu, 3 Jul 2025 at 06:52, Kuninori Morimoto
-<kuninori.morimoto.gx@renesas.com> wrote:
-> Add "rcar-gen5-scif" compatible string for R-Car Gen5 support.
->
-> Signed-off-by: Nghia Nguyen <nghia.nguyen.jg@renesas.com>
-> Signed-off-by: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+On Wed, Jul 02, 2025 at 06:20:36PM +0100, Leo Yan wrote:
+> Hi Breno,
+> 
+> On Wed, Jul 02, 2025 at 10:10:21AM -0700, Breno Leitao wrote:
+> 
+> [...]
+> 
+> > Further debugging revealed the following sequence with the pl011 registers:
+> > 
+> > 	1) uart_console_write()
+> > 	2) REG_FR has BUSY | RXFE | TXFF for a while (~1k cpu_relax())
+> > 	3) RXFE and TXFF are cleaned, and BUSY stay on for another 17k-19k cpu_relax()
+> > 
+> > Michael has reported a hardware issue where the BUSY bit could get
+> > stuck (see commit d8a4995bcea1: "tty: pl011: Work around QDF2400 E44 stuck BUSY
+> > bit"), which is very similar. TXFE goes down, but BUSY is(?) still stuck for long.
+> > 
+> > If I am having the same hardware issue, I suppose I need to change that logic
+> > to exist the cpu_relax() loop by checking when Transmit FIFO Empty (TXFE) is 0
+> > instead of BUSY.
+> > 
+> > Anyway, any one familar with this weird behaviour?
+> 
+> To be clear, I am not familiar with pl011 driver.
+> 
+> For the first step, could you confirm the UART port is only used by
+> Linux kernel?
+> 
+> In some cases, if normal world and secure world share the same UART
+> port, it can cause the UART state machine malfunction and long wait.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+I don't know how to check it for sure, but, looking at the serial
+console output, I don't see anything else using the UART. The only
+output I see on the console at that time is coming from linux kernel.
 
-Gr{oetje,eeting}s,
+Would you recommend any additional check?
 
-                        Geert
-
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks for the reply,
+--breno
