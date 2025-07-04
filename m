@@ -1,269 +1,159 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEE842F7D0E;
-	Fri,  4 Jul 2025 07:55:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38FBB239E65
+	for <linux-serial@vger.kernel.org>; Fri,  4 Jul 2025 11:16:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751615715; cv=none; b=NuVF2B5VTDUeoUO/uVV3hRSFkE7ULxvT4CzPcPfWc0nvjUXYC6zncQFO0kXzdcCc+UpG5s0QTfRiIRvhIZZVyELTu4nQYP+y6qwKePmvAFTsUEj8e3LbncXLpJqpp8+ADg88k6dqbUNHZd7XnRvRfk69Dovxlfn/dB0eehQ9448=
+	t=1751627770; cv=none; b=ufFptTGhL68barToqV4NlTK16ki7oPk0Yms8y7H5Md5jlCMPghI9OakAHWz/9RRKhk7MfOR7K9rcb2va1QpKgFZBTeaE0qyvXH6hOTrdSKYZUNqD9oNBv4eBgWJXoB5Fz+hdLZfZNjjUAdkNg1B4TvihLZ4MG9d0xPTAQcqbyug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751615715; c=relaxed/simple;
-	bh=lzOBZYTBavsi2Z34vHlXoBrBjY0eNs9he5kt9Nk32kM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=DdKJDKacAq09zqbByO9BcmpJ3fz9CApaOu44WxeNsVxxsVQ3pXt4GQhY85YJnElNKSJoqQL+LXG38tOfH2XDZCkIPdlo1yM0EuuDJo5ELuFVYNQKf0HWJdjNNK0L3DVVjHjaifNAuS0WJfPsK9jVOXS/N4IGn/Su87HIbTeA9N4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NJ6NX9OS; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1751627770; c=relaxed/simple;
+	bh=b9rtoKDrBAYC3BaF1M9Ck1YA+omLHf3ebvKNPvZnx2s=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Jaa5slROf7KDSz1OqQbNPjnu8Ey8R2VG+YF5x1fDmkERDLy/cViTr8mEOvfMC4kjEYJxiPpDjbLhJG9JgCrkn6x4UDakkAdlu2JwHXgz90rBDY1zsmwy84BBGZrKjuIKkF3vko0nLvuimjQyx9LwKb9VMsYkVADDGekPAFfjdfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=tQyS3S4B; arc=none smtp.client-ip=209.85.128.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NJ6NX9OS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751615713; x=1783151713;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lzOBZYTBavsi2Z34vHlXoBrBjY0eNs9he5kt9Nk32kM=;
-  b=NJ6NX9OSqK2yH49TGJ1/yVF+qy9VHM1ambFydZS4yn9Bd3bZbiKYVwRH
-   DtatMdEV2epfEOmnZpNEBBgjG3+4FJJZ4nxHyVb8OX9gxKuL0RXAd2Fdf
-   FdsWICNO2YZaZadK03b+oXEC7LTtqOZyUgLYdFwGY+Mu1oShnagil8qYe
-   5U7dANefCWdvcduNUdv8BftpBtm0ZUhpzvwnUU/BlX+dRz62eoMuhxvlp
-   CnerzDfDIQOfDV1byNO828Hs0iyzMo6TlZrsYqvPYsVQh7123/PDT4djy
-   ZSik0Ijspc8Nad+6Hngl5mBEHNTN2c4pC6Nqv8dICEK5As+7FrnN1lChf
-   A==;
-X-CSE-ConnectionGUID: yASibvyJRiytjWs64v0WHw==
-X-CSE-MsgGUID: oqHXpyHFQ8SRzHEhKU2g8g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11483"; a="64194328"
-X-IronPort-AV: E=Sophos;i="6.16,286,1744095600"; 
-   d="scan'208";a="64194328"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 00:55:03 -0700
-X-CSE-ConnectionGUID: DyR3FIjPRPqQIAzc1rL3Jw==
-X-CSE-MsgGUID: qJCH8EhASNmI9Sen5dGyBg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,286,1744095600"; 
-   d="scan'208";a="158616672"
-Received: from jkrzyszt-mobl2.ger.corp.intel.com (HELO svinhufvud.fi.intel.com) ([10.245.244.244])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 00:54:55 -0700
-Received: from svinhufvud.lan (localhost [IPv6:::1])
-	by svinhufvud.fi.intel.com (Postfix) with ESMTP id CFDC8447EB;
-	Fri,  4 Jul 2025 10:54:52 +0300 (EEST)
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6 krs, Bertel Jungin Aukio 5, 02600 Espoo
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Peter Korsgaard <jacmet@sunsite.dk>,
-	Michal Simek <michal.simek@amd.com>,
-	Kevin Hilman <khilman@baylibre.com>,
-	Markus Schneider-Pargmann <msp@baylibre.com>,
-	John Ogness <john.ogness@linutronix.de>,
-	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	=?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Sherry Sun <sherry.sun@nxp.com>,
-	Ingo Molnar <mingo@kernel.org>,
-	Peng Fan <peng.fan@nxp.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Petr Mladek <pmladek@suse.com>,
-	Marcos Paulo de Souza <mpdesouza@suse.com>,
-	Nam Cao <namcao@linutronix.de>,
-	Zack Rusin <zack.rusin@broadcom.com>,
-	Jinjie Ruan <ruanjinjie@huawei.com>,
-	Sean Anderson <sean.anderson@linux.dev>
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 66/80] serial: Remove redundant pm_runtime_mark_last_busy() calls
-Date: Fri,  4 Jul 2025 10:54:52 +0300
-Message-Id: <20250704075452.3222201-1-sakari.ailus@linux.intel.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250704075225.3212486-1-sakari.ailus@linux.intel.com>
-References: <20250704075225.3212486-1-sakari.ailus@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tQyS3S4B"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-70e447507a0so6533287b3.0
+        for <linux-serial@vger.kernel.org>; Fri, 04 Jul 2025 04:16:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1751627767; x=1752232567; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=PjpGYVa/Cr3/NCJD8CT9IY6HzXhXvTQMbsQZwOON6l4=;
+        b=tQyS3S4B2wbGP1Dqsu7JNrBtVdj91LQh2w8veoQ7h0MrGDi1p7vqMTB2KnEfYSxOYT
+         nCeOIdg0bzfoUS9fknPL6U/uxlkZoBZmwNkMV4zBDt1GmAfbMkwVeKutU2q2RNlrQDpR
+         6prf8vynMeEeFXAOcHn0YsENBARqw9mHcSL6Sq/8ElrEo3wIGrX7fqJWQ1wie3U8xryT
+         7IezF6IwbQ86ZUR+nRM3Q2oweyf2+uWHTZWLmUmL7uDSz65WecELfxdVUzs3c92fAZIL
+         AGmaOLE0mGwpaUqqqNHdyNAHU9oKyisiMgEfGXhUHqOvRVJrQrtdTvhr+8krET00XqJ5
+         CoMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751627767; x=1752232567;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PjpGYVa/Cr3/NCJD8CT9IY6HzXhXvTQMbsQZwOON6l4=;
+        b=ihO9TnUPgW3UdynqhMjdL1qTx7KWsnQqL9JdcDLxpwZ0MnmhOwA5KVXgPIw42ZkFO+
+         VdcOWBjbiESgOfr0lwZD+3VobnKCc7hacLuX9xUUwhrYlRpsR01LsWbi60OGYnVn99kB
+         L6OR8km3ivXu1F2/DxsEkO08ZyBDsyD0Q4empcQNEOh597wVmlr7eYk9GNXfP2okNcGh
+         nPsEUTS7+IG4t+RXB39lhPa9TiupoN8bR5h7uJQhL4aGZRyUqOrDUfQ0XCnWwdWOVTpQ
+         VM4b9IXjyP3yCF/6Zbd0W9NlkUNNvQaTji5rXCSAtTTXSvCmFOIGarFrKWWJ44YC/+MB
+         iROg==
+X-Forwarded-Encrypted: i=1; AJvYcCXzObH1DAmbp4r59Fc8gnpf28dmGfdVf43hCiWumo1gt4FyP8A2j6fQEKh7z+EcldvJwMhzcfyhR04MBvI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyAKfNWxglMNG9r9HpkbLZOrf4/lg6avS4VEKnV3rXnfqOasmUs
+	z6lVdAUNpc0zcKP/PWXA+rNOYDLzTIGVxy/3Qflt77ykGwQJPLgvQz7zeYTMuTjUVpWk8udMRGl
+	1HtYqJkvnorYxLv9VxseKsrF+Z0wwMWobP39fJ4hBqQ==
+X-Gm-Gg: ASbGncvdQfQMd+30WdWAxQP7fvvelXECL8HQLYQwr76lKcA2Nu89m/tsSUU3gXSXzvQ
+	UjK1eBlF68aMd7X2OfR+L4P7JODyIGrvhxGadeVwXbT2NZ4mHRTc+nlKX5UKg5i3n/a7GROT155
+	vRWUWj3ZQtwlJuhShLB2dBdT7gM2+63ePax/ailSzb+lW1
+X-Google-Smtp-Source: AGHT+IHAW8UyCQ9W+pvHvcTvef9aFULLZGbhQe98R4X9+6EEdiQxhHHKyUMUuOYP0+BDeQPC3PK4UvgN4CdOsI4nxiQ=
+X-Received: by 2002:a05:690c:9c09:b0:70f:9fcd:2075 with SMTP id
+ 00721157ae682-71668c0e0ddmr26398687b3.3.1751627767124; Fri, 04 Jul 2025
+ 04:16:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20250703112708.1621607-1-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20250703112708.1621607-1-claudiu.beznea.uj@bp.renesas.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Fri, 4 Jul 2025 13:15:31 +0200
+X-Gm-Features: Ac12FXwfheYVCqCiLAFVR27m9ptp6dfE-AwljIFg4O16ch_FdabejHZIDOFh5ww
+Message-ID: <CAPDyKFoznqfdX7Dvu3VPa5Me10VHGphnRRHrU17w-fie7HrQ5g@mail.gmail.com>
+Subject: Re: [PATCH v5 0/3] PM: domains: Detach on device_unbind_cleanup()
+To: Claudiu <claudiu.beznea@tuxon.dev>, rafael@kernel.org
+Cc: linux@armlinux.org.uk, gregkh@linuxfoundation.org, 
+	david.m.ertman@intel.com, ira.weiny@intel.com, leon@kernel.org, 
+	dakr@kernel.org, len.brown@intel.com, pavel@kernel.org, andersson@kernel.org, 
+	mturquette@baylibre.com, sboyd@kernel.org, maarten.lankhorst@linux.intel.com, 
+	mripard@kernel.org, tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch, 
+	wsa+renesas@sang-engineering.com, mathieu.poirier@linaro.org, 
+	vkoul@kernel.org, yung-chuan.liao@linux.intel.com, 
+	pierre-louis.bossart@linux.dev, broonie@kernel.org, robh@kernel.org, 
+	jirislaby@kernel.org, saravanak@google.com, jic23@kernel.org, 
+	dmitry.torokhov@gmail.com, linux-kernel@vger.kernel.org, 
+	linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-mmc@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, 
+	linux-serial@vger.kernel.org, bhelgaas@google.com, geert@linux-m68k.org, 
+	linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	fabrizio.castro.jz@renesas.com, 
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 
-pm_runtime_put_autosuspend(), pm_runtime_put_sync_autosuspend(),
-pm_runtime_autosuspend() and pm_request_autosuspend() now include a call
-to pm_runtime_mark_last_busy(). Remove the now-reduntant explicit call to
-pm_runtime_mark_last_busy().
+On Thu, 3 Jul 2025 at 13:27, Claudiu <claudiu.beznea@tuxon.dev> wrote:
+>
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> Hi,
+>
+> Series drops the dev_pm_domain_detach() from platform bus remove and
+> adds it in device_unbind_cleanup() to avoid runtime resumming the device
+> after it was detached from its PM domain.
+>
+> Please provide your feedback.
+>
+> Thank you,
+> Claudiu
+>
+> Changes in v5:
+> - added PD_FLAG_ATTACH_POWER_ON, PD_FLAG_DETACH_POWER_OFF;
+>   due to this a new patch was introduced
+>   "PM: domains: Add flags to specify power on attach/detach"
+>
+> Changes in v4:
+> - added a flag in dev_pm_info that is saved in dev_pm_domain_attach()
+>   and used in device_unbind_cleanup()
+>
+> Changes in v3:
+> - add devm_pm_domain_attach()
+>
+> Changes in v2:
+> - dropped the devres group open/close approach and use
+>   devm_pm_domain_attach()
+> - adjusted patch description to reflect the new approach
+>
+>
+> Claudiu Beznea (3):
+>   PM: domains: Add flags to specify power on attach/detach
+>   PM: domains: Detach on device_unbind_cleanup()
+>   driver core: platform: Drop dev_pm_domain_detach() call
+>
+>  drivers/amba/bus.c                       |  4 ++--
+>  drivers/base/auxiliary.c                 |  2 +-
+>  drivers/base/dd.c                        |  2 ++
+>  drivers/base/platform.c                  |  9 +++------
+>  drivers/base/power/common.c              |  9 ++++++---
+>  drivers/clk/qcom/apcs-sdx55.c            |  2 +-
+>  drivers/gpu/drm/display/drm_dp_aux_bus.c |  2 +-
+>  drivers/i2c/i2c-core-base.c              |  2 +-
+>  drivers/mmc/core/sdio_bus.c              |  2 +-
+>  drivers/rpmsg/rpmsg_core.c               |  2 +-
+>  drivers/soundwire/bus_type.c             |  2 +-
+>  drivers/spi/spi.c                        |  2 +-
+>  drivers/tty/serdev/core.c                |  2 +-
+>  include/linux/pm.h                       |  1 +
+>  include/linux/pm_domain.h                | 10 ++++++++--
+>  15 files changed, 31 insertions(+), 22 deletions(-)
+>
+> --
+> 2.43.0
+>
 
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
----
-The cover letter of the set can be found here
-<URL:https://lore.kernel.org/linux-pm/20250704075225.3212486-1-sakari.ailus@linux.intel.com>.
+The series looks good to me, please add:
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-In brief, this patch depends on PM runtime patches adding marking the last
-busy timestamp in autosuspend related functions. The patches are here, on
-rc2:
+Rafael, do you intend to pick this via your tree?
 
-        git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
-                pm-runtime-6.17-rc1
+Another note, the similar thing that is being done in patch3 from the
+platform bus, is needed for other buses too (at least the amba bus for
+sure). Claudiu, are you planning to do that as a step on top - or are
+you expecting others to help out?
 
- drivers/tty/serial/8250/8250_omap.c | 9 ---------
- drivers/tty/serial/8250/8250_port.c | 2 --
- drivers/tty/serial/fsl_lpuart.c     | 1 -
- drivers/tty/serial/serial_core.c    | 1 -
- drivers/tty/serial/uartlite.c       | 2 --
- drivers/tty/serial/xilinx_uartps.c  | 1 -
- 6 files changed, 16 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
-index 6707f55bdbe7..091afea71b95 100644
---- a/drivers/tty/serial/8250/8250_omap.c
-+++ b/drivers/tty/serial/8250/8250_omap.c
-@@ -207,7 +207,6 @@ static void omap8250_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 
- 	__omap8250_set_mctrl(port, mctrl);
- 
--	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- }
- 
-@@ -516,7 +515,6 @@ static void omap_8250_set_termios(struct uart_port *port,
- 	omap8250_restore_regs(up);
- 
- 	uart_port_unlock_irq(&up->port);
--	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- 
- 	/* calculate wakeup latency constraint */
-@@ -554,7 +552,6 @@ static void omap_8250_pm(struct uart_port *port, unsigned int state,
- 
- 	uart_port_unlock_irq(port);
- 
--	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- }
- 
-@@ -773,7 +770,6 @@ static int omap_8250_startup(struct uart_port *port)
- 
- 	enable_irq(port->irq);
- 
--	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- 	return 0;
- }
-@@ -811,7 +807,6 @@ static void omap_8250_shutdown(struct uart_port *port)
- 		serial_out(up, UART_LCR, up->lcr & ~UART_LCR_SBC);
- 	serial_out(up, UART_FCR, UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT);
- 
--	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- }
- 
-@@ -827,7 +822,6 @@ static void omap_8250_throttle(struct uart_port *port)
- 	priv->throttled = true;
- 	uart_port_unlock_irqrestore(port, flags);
- 
--	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- }
- 
-@@ -848,7 +842,6 @@ static void omap_8250_unthrottle(struct uart_port *port)
- 	serial_out(up, UART_IER, up->ier);
- 	uart_port_unlock_irqrestore(port, flags);
- 
--	pm_runtime_mark_last_busy(port->dev);
- 	pm_runtime_put_autosuspend(port->dev);
- }
- 
-@@ -1594,7 +1587,6 @@ static int omap8250_probe(struct platform_device *pdev)
- 		goto err;
- 	}
- 	priv->line = ret;
--	pm_runtime_mark_last_busy(&pdev->dev);
- 	pm_runtime_put_autosuspend(&pdev->dev);
- 	return 0;
- err:
-@@ -1682,7 +1674,6 @@ static int omap8250_resume(struct device *dev)
- 
- 	serial8250_resume_port(priv->line);
- 	/* Paired with pm_runtime_resume_and_get() in omap8250_suspend() */
--	pm_runtime_mark_last_busy(dev);
- 	pm_runtime_put_autosuspend(dev);
- 
- 	return 0;
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 7eddcab318b4..22ad70117c44 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -519,7 +519,6 @@ static void serial8250_rpm_put(struct uart_8250_port *p)
- {
- 	if (!(p->capabilities & UART_CAP_RPM))
- 		return;
--	pm_runtime_mark_last_busy(p->port.dev);
- 	pm_runtime_put_autosuspend(p->port.dev);
- }
- 
-@@ -659,7 +658,6 @@ static void serial8250_rpm_put_tx(struct uart_8250_port *p)
- 	rpm_active = xchg(&p->rpm_tx_active, 0);
- 	if (!rpm_active)
- 		return;
--	pm_runtime_mark_last_busy(p->port.dev);
- 	pm_runtime_put_autosuspend(p->port.dev);
- }
- 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index c9519e649e82..79050a42cd1b 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -825,7 +825,6 @@ lpuart_uart_pm(struct uart_port *port, unsigned int state, unsigned int oldstate
- {
- 	switch (state) {
- 	case UART_PM_STATE_OFF:
--		pm_runtime_mark_last_busy(port->dev);
- 		pm_runtime_put_autosuspend(port->dev);
- 		break;
- 	default:
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 86d404d649a3..f9fc9afcd845 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -159,7 +159,6 @@ static void __uart_start(struct uart_state *state)
- 	 */
- 	if (!pm_runtime_enabled(port->dev) || pm_runtime_active(&port_dev->dev))
- 		port->ops->start_tx(port);
--	pm_runtime_mark_last_busy(&port_dev->dev);
- 	pm_runtime_put_autosuspend(&port_dev->dev);
- }
- 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 39c1fd1ff9ce..c21cd5f5be27 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -422,7 +422,6 @@ static void ulite_pm(struct uart_port *port, unsigned int state,
- 		if (ret < 0)
- 			dev_err(port->dev, "Failed to enable clocks\n");
- 	} else {
--		pm_runtime_mark_last_busy(port->dev);
- 		pm_runtime_put_autosuspend(port->dev);
- 	}
- }
-@@ -882,7 +881,6 @@ static int ulite_probe(struct platform_device *pdev)
- 
- 	ret = ulite_assign(&pdev->dev, id, res->start, irq, pdata);
- 
--	pm_runtime_mark_last_busy(&pdev->dev);
- 	pm_runtime_put_autosuspend(&pdev->dev);
- 
- 	return ret;
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index fe457bf1e15b..36afa2a8f158 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -1240,7 +1240,6 @@ static void cdns_uart_pm(struct uart_port *port, unsigned int state,
- {
- 	switch (state) {
- 	case UART_PM_STATE_OFF:
--		pm_runtime_mark_last_busy(port->dev);
- 		pm_runtime_put_autosuspend(port->dev);
- 		break;
- 	default:
--- 
-2.39.5
-
+Kind regards
+Uffe
