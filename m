@@ -1,111 +1,150 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D41821D00D
-	for <linux-serial@vger.kernel.org>; Mon,  7 Jul 2025 09:54:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD67F262FF0;
+	Mon,  7 Jul 2025 18:43:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751882066; cv=none; b=kvzJlK13pfYUcLqEczEnQA+n85jurtGAI79QrBQP//sfc78UyiPKgpA3i/ulQCdJAhbDnxSjfuUDI5npHbUKNyh76TmeoBtvf3YfrsHx0vESgIMaOOWJqo4hBxaUPcOB9qZUYqIoW7cN3C8ugd9lfDup4V8VQ16dKjcmB+v9gkI=
+	t=1751913812; cv=none; b=FE+1iLnT6ekWPO/MEBUcl766mMJmVnWSvPQ6at5tOpjK2FPSN+LU65xnlfeQcGvZOoaj5nGAoMvA1+nlfwCHBFnq5KKlA2elJm7iuvOHZTjc03cTPWKjhy9FVDPcE1xhjjvJnsoqIFiktu6Ru1T6Vo2NiO794rzao3bvL96/0Ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751882066; c=relaxed/simple;
-	bh=PMctWqdSUwyJh+vgKsEE3Z5HNCwNGQH1LRJi+dlS/aE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UBXRW+Y6IcuMFy7Xg51KB32Ge32DKaKU0J4KTfuSy0NZ+jHY+OwbCQmlYSa/sSP5EE82ATh5gmlIUaRbtzImp/Jr6PNVj93GflLLPqAnEJFfJ2Cqv0dv3qECs3RVjtYWyEKTt0nuc0H4ZYANrV9q+zMtbjp5CWAn3Daz7PWOO4I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=AfUibJVB; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1751913812; c=relaxed/simple;
+	bh=hrM7TAUwUzWNU7f4k4yx1Gu9ZxX5m6dymI/e327xOKY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=UdH406kFvGLfVRdgv9sRdiXwFre76j8Cm1g9IwyPPjVSqlT1gM35Dxa62cG4UwQ6gjWUs9kJJuXwHVJ7Ch8+RYQANshLK/2aQYXGGEcBb7GidrjKeUfE1l3eX/c6C3wmPbyzcJa3pofG8yRVmUD+hcKrGcd6uWwJA0k9bQzhUvY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I1Gc354h; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AfUibJVB"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-450ce3a2dd5so26122585e9.3
-        for <linux-serial@vger.kernel.org>; Mon, 07 Jul 2025 02:54:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1751882063; x=1752486863; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=WCkV6gDGOoOMF8igB/5H1As4Qg7c4viJIZ8RBw36e10=;
-        b=AfUibJVBFIalQoFvAY+0wZdvcNMIJ6yijMzrnKhoO7uWtfTm4X+aIo8mzrUXN0dtnZ
-         FPZxweitmEr7ZOUxnFEcu6Z/eK0ycSs8/MrluOjNRp3l8Bn+WzfRPwFotVIAonMpkdIb
-         MrcJ8dLcv15/p9VsYjLoSup24sdxKFMPkw1NMPHtMxYXSJswRuWnNer8LHcyrijdHEcl
-         ha6qCgJ0xHkuClyib65oy0SOQjg5rFySXfQyimPsvS/PWxvZMpsXIr8ZxBY+oZ5YAWEn
-         paFUyhr8cqKTdTQOYHf45onAIfnGbtq+zfdCcz3yxRPI4oh0zDBlSy9z+Vo82v+7wU4i
-         CU/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751882063; x=1752486863;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WCkV6gDGOoOMF8igB/5H1As4Qg7c4viJIZ8RBw36e10=;
-        b=YoEifuxrYW1Jh5DVs9iepKvcsuZu0pwIrscoR+RaIyAmmSaEWTuLuDmLfjR87+nAJM
-         usAq5cVxWWKUSz/EUBR4dSw72FJmCfiKrff5KnSV800YKmcXArtckaKzPADTMEoeHgbe
-         MkkzuvI/GOMRTx08Tqy5i8iiQPzFdNjtr3J8Q8IBDIgGyutbOPggrWF9+JMqpSnT+soe
-         itxyWU100YwsfqeQEP5vPkgHMrpkJb9J5Mk39cP2FOylr6v4SqUHhJVM6YYm1N9vTetZ
-         K1X1jbfo69LYx7X20E36e1J9ETxavioJdks/qBpPhlK7+Fl11xH2bP0TBZnoJVwEA1AO
-         +X+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVS4pQACO8GmBEvetnug0RriYBJaCgaa6llJEG/s93kJ4N2MtVZDayvEGm0cr+UdZKs/bQmMwtPHpXkuZM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxkwS59GMyVpQWLt3z/pOCMiA3tESVPD8nlF1e69jwKffiK8VUe
-	a8Qmok1/cN6mfpDhV0Iwk+TCkddWbmYDnc25sxiPmomyjwkX52LMh86jYn4xBS6a0Ug=
-X-Gm-Gg: ASbGncubkmwlpvRrmw+2RToZuToX0xaODVECEJGaZo4oFg4tGCoKMXBt3hJUCEcndwS
-	M4VxcaurFnzrHH0le2qS2REb+eKBazj2gW+8e8S1Soa2OEsWYrQVP05JlPwk7Z5MrmgDsELvBGS
-	BXNFFksc28R8poacdxCPKCWrdOseEfFrMAt+IM+Bwb0u5awyoi8Hs/iwQKhzMQw5aWNyCvEOWrd
-	t+EwvIh+8iByM8pIGMjxPXPS5qVXbM6zDXUFpGmCXh/yPi91djCJCzOgolRo7Vyoegu0KJqr8Bt
-	iylRN5wVEP+zEunyJtE9lqPuFc6z4Ve06ZyazLOsyE2Jny8KR04ZgSwrenvUXYFoVONQteJ53UT
-	CYgUhRf2jjDKDhuaUTKxEKWn4
-X-Google-Smtp-Source: AGHT+IGNA0zQonP2czf5X1Jge+pwADtgl7Io7cV8JOwQeqN86Oye2fUbW6LvrQW+jILiqb5VBqE7Pg==
-X-Received: by 2002:a05:600c:45cf:b0:43d:47b7:b32d with SMTP id 5b1f17b1804b1-454b4eb7f3bmr96048435e9.25.1751882062707;
-        Mon, 07 Jul 2025 02:54:22 -0700 (PDT)
-Received: from mai.linaro.org (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-454a1705ed5sm89436555e9.2.2025.07.07.02.54.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Jul 2025 02:54:22 -0700 (PDT)
-Date: Mon, 7 Jul 2025 11:54:20 +0200
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-To: wctrl@proton.me
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Sean Wang <sean.wang@mediatek.com>,
-	Russell King <linux@armlinux.org.uk>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, linux-watchdog@vger.kernel.org
-Subject: Re: [PATCH v4 03/11] dt-bindings: timer: mediatek: add MT6572
-Message-ID: <aGuZTIP3vo9q7MMV@mai.linaro.org>
-References: <20250702-mt6572-v4-0-bde75b7ed445@proton.me>
- <20250702-mt6572-v4-3-bde75b7ed445@proton.me>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I1Gc354h"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77161C4AF0F;
+	Mon,  7 Jul 2025 18:43:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1751913811;
+	bh=hrM7TAUwUzWNU7f4k4yx1Gu9ZxX5m6dymI/e327xOKY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=I1Gc354hwbuJzz57xuHU0adjTwd//JV0gPzmskPDKzgFi0rUipml8X0O2V6LITrXo
+	 3E8TyhoiOVpRorL5Je7NJYQJm7wFgMsRyX73rzrAPpeRq5Y6mKZ/snvPp9NZnIQljo
+	 EJ/Yb7UdKN5WtGgio8YxdoU+yw6/C05cM08V0Q4zjByYzRZFUAg7rdN4loP5CZ0m7N
+	 DSAIL4wUpN9lWI2/2fezfjt8ic6poJ7CHum+6NsaPgJsidjfva1nIMP/bhQLou0fTs
+	 z74T2zsEVCgOebD+jix36p0L6MdL6vdi5pf9RYqMHBP7hnTRoskg4TuCI+hiEinqgi
+	 MQud3uX4AQx2g==
+Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-61390809a36so956977eaf.1;
+        Mon, 07 Jul 2025 11:43:31 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUHutvs2AN81vZ6J6Q44DnFjKkFGsfTsMHcGCDetQlgfAE+a3iARkRtgaHwExh0oQKXOXqInpwmGaIa@vger.kernel.org, AJvYcCUo0ZaWXpF053kafWae7MwisDyQ0QlbMGyIEojlRqTWsH/zzJUeuZlDZMDfrevYJcfdo2TjWKJ5CQbL@vger.kernel.org, AJvYcCUwOqRHYxAO9vvknUtTXYhqSAWbZaurZJgn+NEYh+zHE2kW38f5gR3qywEvit0301JGgO9OPe5ce/AEDIjF05AVfA==@vger.kernel.org, AJvYcCV3+1Z22IW6zQmqMbl8WjcjY4zpbRxmlnnsWu0AMqaN4wbXtvSPjJJzFnxyPExWJZytA2r8tkWUJepuONNk@vger.kernel.org, AJvYcCV8JgaoCGEwfMiHrZI9nSaZ6n60BzWuf0DRBxy6tTFSkW7l11jFrnR34rCf/f1Sm72JCA8Y4t6ut8nG@vger.kernel.org, AJvYcCVAjpxXZce9ThTnKCtLFdNDBQJ6dFkbn4E1lYjAjfDgOhxZnbF/BdocT3/7/Xx72aeJrrLnR8FzoqmWAIJ6@vger.kernel.org, AJvYcCVgSUnObPlYLwb1yKcxjJ6OtcDsOYjJv8GIJNvHCYWyU9NYVqL0+ibanlbx80WuXgNgecQz/KhWc8qq@vger.kernel.org, AJvYcCVwzyL4hvT+Ci/bldHrMMZ9+H09l9AT17O5r31rmOXV15IztHMs8HrgsQVTID8q/ieBVikSVCnE2l55gEOZSN9dlYo=@vger.kernel.org, AJvYcCWlv+YsG3nt98nHkqFtTTWakByeRqg32/XeY6IA7Pu5cuU4C6uGVF3b4zLWtJtp74SU7eXQcPIOBuVSfiE=@vger.kernel.org, AJvYcCWtB2OrmkOSbK0Vu1CHes+E3pkuD5poesbhjL3HEtVYLVtu4+yn+eOawr5CY21GsbnY2mjbZM5xGzBb@vger.kernel.org, AJvYcCWxW6EtxI1dpYAYx59v5ff2MrnQUsU3u2e+GCDu/FYhc1sWB3lIXnJC2r5lNGqTCeFGSvrgYrVIJkg=@vger.kernel.org, AJvYcCXfL4M0d21XFlYxz9O0xXWGcCpQVj0YtD7X5IBJ7DcmnSDnjD7zrrcwBqRJgWJ992l2yxT/RJNTZmcuOb6i@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx4hAwDnHt3HYo7wiMB+zRmQf8Sg4F2mN7dks+B1034Qjsfrx5G
+	1LZ/VxRskxHsyYVoNLwEdExgiATxzrjleqOwKFoUxo6WcMLXhIuIXgLVmlYYohmWqlJFUla1Smw
+	lZT7gDMfj47W4I/CtgAVjjATrj+5zIW0=
+X-Google-Smtp-Source: AGHT+IGWFo0UcD4MojnRdJcVhqk/giYu4pxqlIjmLkAJEnDd4MWXJ9qI/qzV8bVwGlXxOpEoErWIuer/la1NZ2vHba8=
+X-Received: by 2002:a05:6820:c8d:b0:611:e30a:f9c7 with SMTP id
+ 006d021491bc7-613c0292e6amr496213eaf.7.1751913810559; Mon, 07 Jul 2025
+ 11:43:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250702-mt6572-v4-3-bde75b7ed445@proton.me>
+References: <20250703112708.1621607-1-claudiu.beznea.uj@bp.renesas.com>
+ <CAPDyKFoznqfdX7Dvu3VPa5Me10VHGphnRRHrU17w-fie7HrQ5g@mail.gmail.com> <CAJZ5v0gH9ZAK9br58KB0VEtG+4VdwO7vEKtrKbpcYOKnZPf7bg@mail.gmail.com>
+In-Reply-To: <CAJZ5v0gH9ZAK9br58KB0VEtG+4VdwO7vEKtrKbpcYOKnZPf7bg@mail.gmail.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Mon, 7 Jul 2025 20:43:18 +0200
+X-Gmail-Original-Message-ID: <CAJZ5v0gZK_JYgXYdbJ9pOBgrMO9sBa=VWP8HGOVV4C2mCOSSWg@mail.gmail.com>
+X-Gm-Features: Ac12FXx21d9hRiF0Pqe_4V96M5MioxLeGCoj8OSAh6lGgwSlfReCuBO8e1tghsQ
+Message-ID: <CAJZ5v0gZK_JYgXYdbJ9pOBgrMO9sBa=VWP8HGOVV4C2mCOSSWg@mail.gmail.com>
+Subject: Re: [PATCH v5 0/3] PM: domains: Detach on device_unbind_cleanup()
+To: Ulf Hansson <ulf.hansson@linaro.org>, Claudiu <claudiu.beznea@tuxon.dev>
+Cc: linux@armlinux.org.uk, gregkh@linuxfoundation.org, 
+	david.m.ertman@intel.com, ira.weiny@intel.com, leon@kernel.org, 
+	dakr@kernel.org, len.brown@intel.com, pavel@kernel.org, andersson@kernel.org, 
+	mturquette@baylibre.com, sboyd@kernel.org, maarten.lankhorst@linux.intel.com, 
+	mripard@kernel.org, tzimmermann@suse.de, airlied@gmail.com, simona@ffwll.ch, 
+	wsa+renesas@sang-engineering.com, mathieu.poirier@linaro.org, 
+	vkoul@kernel.org, yung-chuan.liao@linux.intel.com, 
+	pierre-louis.bossart@linux.dev, broonie@kernel.org, robh@kernel.org, 
+	jirislaby@kernel.org, saravanak@google.com, jic23@kernel.org, 
+	dmitry.torokhov@gmail.com, linux-kernel@vger.kernel.org, 
+	linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	linux-mmc@vger.kernel.org, linux-remoteproc@vger.kernel.org, 
+	linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, 
+	linux-serial@vger.kernel.org, bhelgaas@google.com, geert@linux-m68k.org, 
+	linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	fabrizio.castro.jz@renesas.com, 
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 02, 2025 at 01:50:40PM +0300, Max Shevchenko via B4 Relay wrote:
-> From: Max Shevchenko <wctrl@proton.me>
-> 
-> Add a compatible string for timer on the MT6572 SoC.
-> 
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Acked-by: Rob Herring (Arm) <robh@kernel.org>
-> Signed-off-by: Max Shevchenko <wctrl@proton.me>
-> ---
+On Fri, Jul 4, 2025 at 9:53=E2=80=AFPM Rafael J. Wysocki <rafael@kernel.org=
+> wrote:
+>
+> On Fri, Jul 4, 2025 at 1:16=E2=80=AFPM Ulf Hansson <ulf.hansson@linaro.or=
+g> wrote:
+> >
+> > On Thu, 3 Jul 2025 at 13:27, Claudiu <claudiu.beznea@tuxon.dev> wrote:
+> > >
+> > > From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+> > >
+> > > Hi,
+> > >
+> > > Series drops the dev_pm_domain_detach() from platform bus remove and
+> > > adds it in device_unbind_cleanup() to avoid runtime resumming the dev=
+ice
+> > > after it was detached from its PM domain.
+> > >
+> > > Please provide your feedback.
+> > >
+> > > Thank you,
+> > > Claudiu
+> > >
+> > > Changes in v5:
+> > > - added PD_FLAG_ATTACH_POWER_ON, PD_FLAG_DETACH_POWER_OFF;
+> > >   due to this a new patch was introduced
+> > >   "PM: domains: Add flags to specify power on attach/detach"
+> > >
+> > > Changes in v4:
+> > > - added a flag in dev_pm_info that is saved in dev_pm_domain_attach()
+> > >   and used in device_unbind_cleanup()
+> > >
+> > > Changes in v3:
+> > > - add devm_pm_domain_attach()
+> > >
+> > > Changes in v2:
+> > > - dropped the devres group open/close approach and use
+> > >   devm_pm_domain_attach()
+> > > - adjusted patch description to reflect the new approach
+> > >
+> > >
+> > > Claudiu Beznea (3):
+> > >   PM: domains: Add flags to specify power on attach/detach
+> > >   PM: domains: Detach on device_unbind_cleanup()
+> > >   driver core: platform: Drop dev_pm_domain_detach() call
+> > >
+> > >  drivers/amba/bus.c                       |  4 ++--
+> > >  drivers/base/auxiliary.c                 |  2 +-
+> > >  drivers/base/dd.c                        |  2 ++
+> > >  drivers/base/platform.c                  |  9 +++------
+> > >  drivers/base/power/common.c              |  9 ++++++---
+> > >  drivers/clk/qcom/apcs-sdx55.c            |  2 +-
+> > >  drivers/gpu/drm/display/drm_dp_aux_bus.c |  2 +-
+> > >  drivers/i2c/i2c-core-base.c              |  2 +-
+> > >  drivers/mmc/core/sdio_bus.c              |  2 +-
+> > >  drivers/rpmsg/rpmsg_core.c               |  2 +-
+> > >  drivers/soundwire/bus_type.c             |  2 +-
+> > >  drivers/spi/spi.c                        |  2 +-
+> > >  drivers/tty/serdev/core.c                |  2 +-
+> > >  include/linux/pm.h                       |  1 +
+> > >  include/linux/pm_domain.h                | 10 ++++++++--
+> > >  15 files changed, 31 insertions(+), 22 deletions(-)
+> > >
+> > > --
+> > > 2.43.0
+> > >
+> >
+> > The series looks good to me, please add:
+> > Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+> >
+> > Rafael, do you intend to pick this via your tree?
+>
+> I do in general, but I haven't looked at this version yet.  I'll get
+> to it early next week.
 
-Applied, thanks
-
--- 
-
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Now applied as 6.17 material, thanks!
