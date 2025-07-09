@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D397226CE21;
-	Wed,  9 Jul 2025 07:07:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1731D26B743;
+	Wed,  9 Jul 2025 07:07:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752044823; cv=none; b=KRjxVmixIwe/MQU6THJ42wuLbydxWK6dhAY6QIV4KKmNKeu9N9oJpUiNDlpJ2Lr4cf28sNhVZHWZlmdWSIpuOjS6eQZnwdklCcCNADpxRzlOSzC2PKNXn+sjPfHCiZCiVu4JIRz074V5aRKbfBb5MCBC2oSpGtgb8uDdYimq9jg=
+	t=1752044848; cv=none; b=dfm7YHYEMw9YAZVFJT5VUpYvSFNLwuhDn1KuOOKplMruK/q9S0xT5faO1vATn6iophhtLBRXL/faOoZATohY2L7yWIzr/53H2QQ9V+1oUw1EZUjAbmkWtyi42BJjqIUlaOaZQnbH6IRKeXvv5bnhdV2d5g0EZJL6RJmUsPz5mXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752044823; c=relaxed/simple;
-	bh=sCHgypb19BYRbxzEKSsZ4hThhQHTbSwF3jdVOMBf7as=;
+	s=arc-20240116; t=1752044848; c=relaxed/simple;
+	bh=eFitu3XM1K/JAnMSBgMH0zsEkRAZ3dmUgipkjMLB9QM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qVxTDnh/kqkQLlT+9dfubyN6WfyrCSEQmqwF5fjCQPzIqFOTIlRPCSQ9EJt6iUgF6FAYIw3fo0Yw3ou2bbr+dWyuiURfOlXoC35T9vvrOU8ezEDVJgnOB8bM+LWkUCjLAIb0ZRIsFEz0Bj79gGvcF5GxqBsuq9bdH3n0VTfn8wc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RKHNmhDc; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=lm0c9fqqnD8875zd8n3BxbVSEr/hpt3KB8sHuWL6nKqoCxfY6Ox1DTs5wshGMlmMn4I64/i11gXUgzBZf9pB16sEjYu+B9FHJseDRLpnPmW+abcvoAo4VeriboRyBcl3xW1GainYInpKMV79uk6OsRAXeVt7HFH2KUYqde3OWCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EZbLgG3D; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RKHNmhDc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15590C4CEF0;
-	Wed,  9 Jul 2025 07:07:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EZbLgG3D"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66244C4CEF1;
+	Wed,  9 Jul 2025 07:07:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752044823;
-	bh=sCHgypb19BYRbxzEKSsZ4hThhQHTbSwF3jdVOMBf7as=;
+	s=k20201202; t=1752044847;
+	bh=eFitu3XM1K/JAnMSBgMH0zsEkRAZ3dmUgipkjMLB9QM=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=RKHNmhDcHIwTwLOcRAPLo5Bd83eOlrJOZuvmYsTwy9ngkYLUkK0+rgsEM2ProSD2E
-	 qzTeLVr1NpRdRSbgt00LO0r6CjELV1PwoqK2YRyIZySnnVb/0cSMJKNJOSnLmUrFtt
-	 /RwL27cxJeZBMcC5slEKdJwNdyU7IT62yfDfG3wRziyTBWc8FTrBMbq8+b01fT+FEb
-	 WQHuryG1QuocrP6tZTiNXoBVbycPZWJ2/WhVJV4UqE8KKok3CUTn3xN2XxhMw8HOJs
-	 8WTswLReOGUYb1FLyuvwooEV2VczQDLZHcnU2s1x0d9XQDMpHneTWnK6TbuOewM0P9
-	 ElOTfDkasoUWw==
-Message-ID: <d2c9f54e-9171-4970-b9c1-a6c70532e5ad@kernel.org>
-Date: Wed, 9 Jul 2025 09:07:00 +0200
+	b=EZbLgG3Dcbqv1dXoXE+NXDh8TUEsXWOFnGPbOwMeaJ7QPBzKEO4nNW150dnUcepp2
+	 fxMR/omUoBrtAEm8f2G/5otXz58DDUaWKW5Ydp46Y0E/lH6dluVpfZsdrGx3ARp6DG
+	 Y+OChtvtNpWDvZUEACHPrc1PYokSjLh+qnqG4YAg5SkCGH0xbCQ7i5HOLYCVgL4xi0
+	 0e6OaJ1IUbbRQGyggUXZATbrmak0Pnl8YEz7lkr+eosx+PVexmHMHi3MrmYneCAB/v
+	 e1lwwInT+B9DzdVvxOFrg5kQwMG5xJayrPSetH/+o7GAIa0/cXxboa7FIgj+uVtD3Y
+	 QK7STvB7g9Utg==
+Message-ID: <b88b5d86-21dc-428c-a514-9030ffd494a1@kernel.org>
+Date: Wed, 9 Jul 2025 09:07:25 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,11 +36,10 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [Bug] WARNING in vt_do_diacrit in Linux Kernel v6.14
-To: Greg KH <gregkh@linuxfoundation.org>, Luka <luka.2016.cs@gmail.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
+To: Jiri Slaby <jirislaby@kernel.org>, Luka <luka.2016.cs@gmail.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
 References: <CALm_T+2AUcGgb+ukfGg5a3=ibQzRe93gHAzjh6XUubCePk=Mig@mail.gmail.com>
- <2025070805-stoning-overeager-39f1@gregkh>
+ <3dfadb7b-fc5f-4165-a5ad-c3802585805e@kernel.org>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -86,12 +85,12 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <2025070805-stoning-overeager-39f1@gregkh>
+In-Reply-To: <3dfadb7b-fc5f-4165-a5ad-c3802585805e@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 08/07/2025 09:49, Greg KH wrote:
-> On Tue, Jul 08, 2025 at 03:21:36PM +0800, Luka wrote:
+On 08/07/2025 10:46, Jiri Slaby wrote:
+> On 08. 07. 25, 9:21, Luka wrote:
 >> Dear Linux Kernel Maintainers,
 >>
 >> I hope this message finds you well.
@@ -113,16 +112,14 @@ On 08/07/2025 09:49, Greg KH wrote:
 >> The vt_do_diacrit() function in the virtual terminal subsystem
 >> performs a write to a user-space pointer via __put_user_4() without
 >> ensuring that the destination address is mapped and accessible.
+>> Under conditions such as memory allocation failure or page table
+>> unavailability, this leads to a fault during execution of the mov
+>> %eax, (%rcx) instruction.
 > 
-> Where?  I see calls to put_user() happening in that function, and the
-> return value is properly checked.  What lines exactly show the issue?
-
-Greg,
-
-Please don't waste time on this bot. It is AI generated spam. The person
-learnt nothing from previous feedback.
-
-I suggest ignoring completely.
+> Which is exactly how it should behave, right? If #PF, then it jumps to 
+> __put_user_handle_exception and returns EFAULT.
+Jiri,
+Don't waste time. It's AI generated spam. Same as before.
 
 Best regards,
 Krzysztof
