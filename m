@@ -1,57 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2B4C3B280
-	for <linux-serial@vger.kernel.org>; Thu, 10 Jul 2025 06:08:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B59A21D3CC
+	for <linux-serial@vger.kernel.org>; Thu, 10 Jul 2025 06:10:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752127702; cv=none; b=fHK5tmcmqYZB6wg/uqpSCYSkynPmTLFDC6Mk0JFbe2Bx5e2o4jdS75cCJ8BB6w6NDEt0UJe13Uf35pBAUgiHafCY9qmEWIP9tyhCIn+LNVZCvs5/AuBvWH6T7IXbkaxp7y8XTylnzUf0Ib+4mhZwarh0CWqti9Y4Bdvt/C9EN4s=
+	t=1752127823; cv=none; b=u/87RrDE7slGanT6SZyW9zLCXDiVXnHqjWEI7KQ3xnQqB24yIVroHAYpHc0d1elxEkfSeEIdroxP4iN7lFi0p+XChJZYfBkn8RTelmNOhoO9MyXX+NcCLAHdxoDhnnkEQCP6VxYxJrZNq3FyYhVXaVPYmnwzEoBIyN4+twIQztY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752127702; c=relaxed/simple;
-	bh=7CQiE+6bPcWXR9Fbkc+MK/39ICB2uPT1DY3Zq3DUo+I=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=R6E0kiarn2eXrBDRFJjyDzs1Blai3tXDhPn9msl3Ab4gbP0A33HPcGxhsoQL1uQMpUH6CM0hp0QWSvnOy+367VYQMpnSCChkV3aFqgMRTGL5QmT68jLKoCvocMc5vusr+oOmaVw39PzZSKp2Fd1HWKWJzRLegJkVcvLKArtMPKI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TcqdkiXO; arc=none smtp.client-ip=192.198.163.16
+	s=arc-20240116; t=1752127823; c=relaxed/simple;
+	bh=U5D9s4cvVcEgeFyVZUbOo/YqMJmqrJyM0ZcSfyb1ZuQ=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=kDWLqZ7xIxgeiqvKo3FS8DpzdCgmRHf30PizmMbC7SF9eYT4IKPWYx7bru759tU6Jb1p6Cd8kdHElOltG9v25ApDD4Hibtb+MgOIizBri/vIOlstz9GwHH/Aa8xocfG2JjnmrezD6W7RLB2a0GtUlXc0hO6yV1e8vLQHGivOjxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eucCq9Kf; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TcqdkiXO"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eucCq9Kf"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752127700; x=1783663700;
+  t=1752127821; x=1783663821;
   h=date:from:to:cc:subject:message-id;
-  bh=7CQiE+6bPcWXR9Fbkc+MK/39ICB2uPT1DY3Zq3DUo+I=;
-  b=TcqdkiXO1XMdH63Qk3K6qsRvBdyY+P1f0aUxSXXstLJ9WG0JEOTLfOFe
-   R9VfspEEouDffJAvX97icYbBRanfK/epTEzD/tVW4bPIXO1PwM4QHUHhq
-   s73/UqMacKZQhKiVdzpYEJWVDnGudQz9Pnu6uYvcPpL9DL+rBJvSep+rS
-   e5SCoNKN/oTgTqoGhIJW4UdHIO3iKHxBhF28d1GKCMH8QKcMKyp4Jumsz
-   Yde46l9Z+I708dD+jHHdbDOG0jlfXfT9+9xV4dElZsdd5p8ZfnHLKkL2c
-   1Kv7npbgYswPaDYXkXj2MWau82EG9rU+uQeCeTFr2SbzfEXkipbGJSCRQ
+  bh=U5D9s4cvVcEgeFyVZUbOo/YqMJmqrJyM0ZcSfyb1ZuQ=;
+  b=eucCq9Kfu3m2PBfEkIOqWD/2EWh8870iAXneXfsDsuZ0RJRtMum4pSx8
+   ow5X/9i5WkCvLX4HuUrhpKqAbn2i/HBhJ2cIhjJPO7Edq+ThsJzRXm4G+
+   khf9rtE9xHIiQofnTUjr5D9QAO9II1Plv5wvQ4o+SD3NUZtwS1j1JJbTO
+   qP0zDHog1Xci6jBLIfDmaGdrMrs2+0xDw5BsZjBHIp2e8z655W+nvNqi4
+   CG8cN4Tlk6HRFiwitIqQe9Bqt7DcRuB/8jBOz4eNiahxt6OveHkp14FmS
+   nudsXWtBt96GBE1C2aZpJGmLinwKYXhYcKTWx7rSKEK87H2tA6LfS9Kq6
    Q==;
-X-CSE-ConnectionGUID: k6s81xnZQP6g/aQcGjih2w==
-X-CSE-MsgGUID: ZlSkq8IcTByOAK1Ocpqtjw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11489"; a="42026427"
+X-CSE-ConnectionGUID: 5YtsdLjUTXya/np8Va+CvQ==
+X-CSE-MsgGUID: eswVvIzzR6i3F9gT9w1AGQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11489"; a="58203730"
 X-IronPort-AV: E=Sophos;i="6.16,299,1744095600"; 
-   d="scan'208";a="42026427"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2025 23:08:19 -0700
-X-CSE-ConnectionGUID: Nu2DbOExRZmZipMq1VFiWg==
-X-CSE-MsgGUID: Wt2A2uKoQ5CS48uQeYfzUQ==
+   d="scan'208";a="58203730"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2025 23:10:21 -0700
+X-CSE-ConnectionGUID: j8nm4Mc2Q9W3MPfv8M4rzA==
+X-CSE-MsgGUID: F5TYW4iyRSy1xtGd/La2gw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,299,1744095600"; 
-   d="scan'208";a="160000431"
+   d="scan'208";a="161642988"
 Received: from lkp-server01.sh.intel.com (HELO 9ee84586c615) ([10.239.97.150])
-  by fmviesa003.fm.intel.com with ESMTP; 09 Jul 2025 23:08:18 -0700
+  by orviesa005.jf.intel.com with ESMTP; 09 Jul 2025 23:10:18 -0700
 Received: from kbuild by 9ee84586c615 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1uZkS8-0004YV-0Z;
-	Thu, 10 Jul 2025 06:08:16 +0000
-Date: Thu, 10 Jul 2025 14:07:45 +0800
+	id 1uZkU4-0004Yi-2J;
+	Thu, 10 Jul 2025 06:10:16 +0000
+Date: Thu, 10 Jul 2025 14:09:47 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 0666e3fe95ab55c295984f2f51277ec27d3f190c
-Message-ID: <202507101433.wEV49CJB-lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ 6c0e9f05c9d7875995b0e92ace71be947f280bbd
+Message-ID: <202507101435.o4mSU45n-lkp@intel.com>
 User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,10 +59,10 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 0666e3fe95ab55c295984f2f51277ec27d3f190c  serial: sh-sci: Add support for RZ/T2H SCI
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: 6c0e9f05c9d7875995b0e92ace71be947f280bbd  pch_uart: Fix dma_sync_sg_for_device() nents value
 
-elapsed time: 1020m
+elapsed time: 1022m
 
 configs tested: 240
 configs skipped: 4
