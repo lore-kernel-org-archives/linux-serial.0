@@ -1,231 +1,185 @@
-Received: from mx0a-00300601.pphosted.com (mx0a-00300601.pphosted.com [148.163.146.64])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C1C29ACED;
-	Thu, 10 Jul 2025 22:54:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.146.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED8251632DF
+	for <linux-serial@vger.kernel.org>; Fri, 11 Jul 2025 02:19:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752188071; cv=none; b=iAxnlPFaeXWORyMXFbELtWj0xTfnPVZXNDioZpOEtpzBMSAXMy9w3bk8vEcIIslhvSswur0IOsADj5qjTd5S0by4cYqnaIKdAsqROG+LFo87i0KLbjdZRFX809RtavrK0SvFu/9IwmkNCUQZN6oHg4OmQPo37lee2ImczcHA6PQ=
+	t=1752200370; cv=none; b=BbLAQiys0QqbMwygqjmKQI7WSiYp64R836rz98+sPZwLIY9+itT3tPqK1TuRB6A5rlz2yUn5q/vA868evqD2aX/uXbWE9hIVLVQVm3B4pmshh8bYe2lqpYJKhjoI8wbIp1TNyGr8nb2YjsGz/UwF7CNyIJ2/21MA5kggzzVbZ/4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752188071; c=relaxed/simple;
-	bh=ivJCxUCgl243XjRN5WyGeQAZx+zEqsXgZwQIzGfWy1A=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=apRVh/YxVOrbfyXrsrBOBLC7eDp/hVHJ5IoPB0y+myUX+E5Lr5o8HL3AoslrY6KhzaoufNTZwHsO1/a+4duZ2BUBarSvg/EFeVZNU7rgL8/8BJ768o09PSQ/0kRrmv876PdXeGkRFh+95YM3bigoAZMoTPTeKTKSqszNFyZKG4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=emerson.com; spf=pass smtp.mailfrom=emerson.com; dkim=pass (2048-bit key) header.d=emerson.com header.i=@emerson.com header.b=YfkVPAt8; arc=none smtp.client-ip=148.163.146.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=emerson.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emerson.com
+	s=arc-20240116; t=1752200370; c=relaxed/simple;
+	bh=y4jCcuJN7yjOr2y3cVPXJ+KAMqtUM1NbU0hlYIYhLMM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WL5fiBKxa9Jj+6yggNC1mTYpPQRM8caYp09cqQV4tFPA3t+DLuEPTYsF38TYbuvHn1CHH5e6hNapM3MHUW5Lr+FvGRXWxp4aKSCDD/C+zDqALHfOfcXXrkFtwAfhoaiDiW/uTKmWSeIpLgsp40scsXENVS8X0iRWCSQRYuHOq6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=czD+YZ4O; arc=none smtp.client-ip=209.85.167.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=emerson.com header.i=@emerson.com header.b="YfkVPAt8"
-Received: from pps.filterd (m0484890.ppops.net [127.0.0.1])
-	by mx0b-00300601.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 56AFFF2B018228;
-	Thu, 10 Jul 2025 22:39:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emerson.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=email; bh=fcapAq07CM1CDaQ3F+G3TLDDXj
-	xDGQO7C/TUD9IvSSo=; b=YfkVPAt8XGkBNgdwy6S7AHYLNOixzYCUeMo2iO05IF
-	9qxeyQ6l53gbBMUrtV34ci3Zq4BYVD3rz6oG+i9UaxABtTm8TM7caohnOxF7xAiP
-	hPmguA5w+yYnIgnKnq863rzrRNY1LYFj18fm2lqxQhTdGpgj/+kUzIGxgcY33o+V
-	72sOyFnXpA6bOYmN/fbZ9Y60wjaU2H4Yyl/Ay53QOdtDqpQbVDTxExnYrcx1eI1A
-	8DxQEAdRwSPyfQMSM9NJocHf6IkoghNNnZB/mOMdbAUi2h83qxVaps364U0b56B4
-	WlWJVD5XIFVKGThNhRmwWWruWRiRWBDTQ1IIYBiU0byw==
-Received: from us-aus-excas-p2.ni.corp.natinst.com ([130.164.94.74])
-	by mx0b-00300601.pphosted.com (PPS) with ESMTPS id 47tam6wpnf-2
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 10 Jul 2025 22:39:03 +0000 (GMT)
-Received: from us-aus-excas-p1.ni.corp.natinst.com (130.164.68.17) by
- us-aus-excas-p2.ni.corp.natinst.com (130.164.68.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.28; Thu, 10 Jul 2025 17:39:02 -0500
-Received: from cvadrevu-p620.ni.corp.natinst.com (172.18.68.32) by
- us-aus-excas-p1.ni.corp.natinst.com (130.164.68.17) with Microsoft SMTP
- Server id 15.2.1258.28 via Frontend Transport; Thu, 10 Jul 2025 17:39:02
- -0500
-From: Chaitanya Vadrevu <chaitanya.vadrevu@emerson.com>
-To: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>
-CC: <linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Chaitanya
- Vadrevu" <chaitanya.vadrevu@emerson.com>,
-        kernel test robot <lkp@intel.com>,
-        Jason Smith <jason.smith@emerson.com>,
-        Gratian Crisan
-	<gratian.crisan@emerson.com>
-Subject: [PATCH] serial: 8250_ni: Fix build warning
-Date: Thu, 10 Jul 2025 17:38:37 -0500
-Message-ID: <20250710223838.2657261-1-chaitanya.vadrevu@emerson.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="czD+YZ4O"
+Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-40ad1f7c23bso965048b6e.2
+        for <linux-serial@vger.kernel.org>; Thu, 10 Jul 2025 19:19:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1752200368; x=1752805168; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7LguYWqKU69s8fXl+FAzLjDH/VFGVUbcH34uXEnvqnA=;
+        b=czD+YZ4Og7rcEYzX78IQFVIEmFmxyFmKllaVmoCvFSxG62wcF8+7rJlGMnM8tezkJM
+         3JvUJ2il+Z9ud0FX3cyWL3e1mrcTljkjvaL4lFvkZWNmaXiYUTd4LS+LH2BL7FbcY0t1
+         MArj91zZQALa/TkLw0VPzHFJby/4H9awlWXjFcY9XSeybGNtE3bPNV7yj6mb2sF7Vv1A
+         larPhjm/5b+ldI+qO8UQF/XThJ2UJSJ8Kq/xJju5x3XUFlqbZuUmoUOE1AxYSX2hTIbA
+         q3esIf/HOwM94sRyuWH/1/iIkiqR6V41ZixzTxY12zYTTNcf7TdU+jYHAbMRrT71oaSn
+         pPIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752200368; x=1752805168;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7LguYWqKU69s8fXl+FAzLjDH/VFGVUbcH34uXEnvqnA=;
+        b=ep4OAQ/0h79yGAPWbPrw8fExMmLV6zVDjASdP0HC/aNkz15EcHNuv50MXWkUdYThEm
+         8KSHWZdwtJZYb2AC7TvhbjHOIb+F1mVWdphFPtjVijNRSfUyNJhgj/wUB6s2o/1hiQpL
+         asFlM/orZf+LLpxmKCviK5pzxyNC/GCOMudNMuwG68v2VuzTFxMfiHg/vmMuVvfaSC4g
+         XyjN+fe1GALtCp1l+LrIfYyENoAOzY62S7aqyCZbcwBiMfUIpbulsdk4AWKbnKB7N4mw
+         /uHgiLvv3PRmjb8lO9MGrRYmspoI7l0eqgnxxjJ1CvzJ9XrLj+f6eSBr2UP0+014YOex
+         Zy3Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVrjwrQWOJYvrq09Ellyy/thL6NXznSGpRs0LIWG0Zl+t6AVNHfraYVjWkrJkcXnG9m9+f0wwL7YIytxOo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwVza6nit12H2I4tpZbO/Za6P9UjgmOjllxMiY0mezbTxI/vSgk
+	D0RrXnPy4ee62oR+jS5gY/FEMEygdf4JAo7hMzXLuCn2XRiveN93eiHX6iz09WWJQM3QTblKfs2
+	cDa03Rp03eKhi69Zc55s16rUrKexaIdyhN//pUBchjQ==
+X-Gm-Gg: ASbGncviMARfQhf2AK2gkf7+lBEp2y8xGS2LanLqy32ySJq/116IDAYAJ1gOEBjcwIW
+	w/pKhZvmwf4bWxDzlc6ym8NDDBzkJ2DRgT9HVXeQO2Pk0TKl8s9tdtHinT7pyRRncTZu7gGDmS2
+	SH/tv8ys+O3IbnXjLg/M135Cu2fsmllYlYpJZGTk1a1UOu6TzPOomQ6hYaHdiuhpHK2a8KuylT4
+	wL243A4PQ==
+X-Google-Smtp-Source: AGHT+IFBh7LzTFN9rD6gbXHF6ywmERfYcfitKd7WVxt6xE3tRn5i23AvprpdjVhHYknMIA3w2g9HGwRoOBZcHNEc3MQ=
+X-Received: by 2002:a05:6808:16aa:b0:40b:1222:8fd8 with SMTP id
+ 5614622812f47-41539f925c2mr885406b6e.35.1752200367955; Thu, 10 Jul 2025
+ 19:19:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Authority-Analysis: v=2.4 cv=TrvmhCXh c=1 sm=1 tr=0 ts=68704107 cx=c_pps a=VUOoxcgKHUMpfFMIT0tLvw==:117 a=VUOoxcgKHUMpfFMIT0tLvw==:17 a=Wb1JkmetP80A:10 a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8 a=geDs06hvAAAA:8 a=eTsoE9kVQGiD-jAPuUoA:9 a=7yvi0DHx91fDKfvzWsLo:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzEwMDE5MCBTYWx0ZWRfX07SJvoixVHqg fNSiPq3CJr0G3Ke6cnAdn6K+w+GBbsaou7M1fGXlYjCxRP6Z268Wt53lHppG3Cu1inQdHfGmvnZ +adaWcWgFMA519JTAWbH3BwkLA5cRYDfn6x+p+Ct8GiSiIYidjJRmDPOKpKp92KQOLFrx1+mHvZ
- dYqMrFP8B8M6wtGEo2uMRitaHjS3raFIdwL8arc39WpkLxv5TWYyLsaDNwOAWZ7oJQ42nxWR8oZ yOD2qSFETqnXUrBxgT0//C0ml/TY3l89OW8yFO2dwAVNGeKEACgMks3sX/1ZboSlIjeG7EflYP0 GXwwLJ0XlBovQV3ZXmVw291iukw+tN1u1o0S7ACe6qnpt/BYrpmL9xCMT5PRRTurRQrYPpokRiJ
- 4P0Vk+85R9TqFTiLWqJzCk9EvhifJvSn4eLMeNdZWAF1mKGwmfXyhnPLV4cQRRlpWwQvV5A0
-X-Proofpoint-ORIG-GUID: ROE9RDew2f4Edt4xn8gnpSXlZqzHBP-K
-X-Proofpoint-GUID: ROE9RDew2f4Edt4xn8gnpSXlZqzHBP-K
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-07-10_05,2025-07-09_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxlogscore=999
- phishscore=0 bulkscore=0 priorityscore=1501 suspectscore=0 mlxscore=0
- adultscore=0 impostorscore=0 malwarescore=0 spamscore=0 lowpriorityscore=0
- classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2507100190
+References: <20250610092135.28738-1-cuiyunhui@bytedance.com>
+ <20250610092135.28738-3-cuiyunhui@bytedance.com> <CAEEQ3w=pUPEVOM4fG6wr06eOD_uO6_ZBzORaG1zhtPswD8HLNQ@mail.gmail.com>
+ <84cyauq2nc.fsf@jogness.linutronix.de>
+In-Reply-To: <84cyauq2nc.fsf@jogness.linutronix.de>
+From: yunhui cui <cuiyunhui@bytedance.com>
+Date: Fri, 11 Jul 2025 10:19:16 +0800
+X-Gm-Features: Ac12FXxBhZNNUH-29Cczmz3xlktD2RZw1X21GwvxVue8j6YX6ffOS8u3DsWgqNU
+Message-ID: <CAEEQ3w==dO2i+ZSsRZG0L1S+ccHSJQ-aUa9KE638MwnBM4+Jvw@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH v9 2/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
+To: John Ogness <john.ogness@linutronix.de>
+Cc: arnd@arndb.de, andriy.shevchenko@linux.intel.com, 
+	benjamin.larsson@genexis.eu, gregkh@linuxfoundation.org, 
+	heikki.krogerus@linux.intel.com, ilpo.jarvinen@linux.intel.com, 
+	jirislaby@kernel.org, jkeeping@inmusicbrands.com, 
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+	markus.mayer@linaro.org, matt.porter@linaro.org, namcao@linutronix.de, 
+	paulmck@kernel.org, pmladek@suse.com, schnelle@linux.ibm.com, 
+	sunilvl@ventanamicro.com, tim.kryger@linaro.org, stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Allocate memory on heap instead of stack to fix following warning that
-clang version 20.1.2 produces on W=1 build.
+Hi John,
 
-drivers/tty/serial/8250/8250_ni.c:277:12: warning: stack frame size (1072) exceeds limit (1024) in 'ni16550_probe' [-Wframe-larger-than]
-  277 | static int ni16550_probe(struct platform_device *pdev)
-      |            ^
-  1 warning generated.
+On Mon, Jun 23, 2025 at 4:32=E2=80=AFPM John Ogness <john.ogness@linutronix=
+.de> wrote:
+>
+> Hi Yunhui,
+>
+> On 2025-06-23, yunhui cui <cuiyunhui@bytedance.com> wrote:
+> >> The DW UART may trigger the RX_TIMEOUT interrupt without data
+> >> present and remain stuck in this state indefinitely. The
+> >> dw8250_handle_irq() function detects this condition by checking
+> >> if the UART_LSR_DR bit is not set when RX_TIMEOUT occurs. When
+> >> detected, it performs a "dummy read" to recover the DW UART from
+> >> this state.
+> >>
+> >> When the PSLVERR_RESP_EN parameter is set to 1, reading the UART_RX
+> >> while the FIFO is enabled and UART_LSR_DR is not set will generate a
+> >> PSLVERR error, which may lead to a system panic. There are two methods
+> >> to prevent PSLVERR: one is to check if UART_LSR_DR is set before readi=
+ng
+> >> UART_RX when the FIFO is enabled, and the other is to read UART_RX whe=
+n
+> >> the FIFO is disabled.
+> >>
+> >> Given these two scenarios, the FIFO must be disabled before the
+> >> "dummy read" operation and re-enabled afterward to maintain normal
+> >> UART functionality.
+> >>
+> >> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogu=
+s rx timeout interrupt")
+> >> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
+> >> Cc: stable@vger.kernel.org
+> >> ---
+> >>  drivers/tty/serial/8250/8250_dw.c | 10 +++++++++-
+> >>  1 file changed, 9 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/82=
+50/8250_dw.c
+> >> index 1902f29444a1c..082b7fcf251db 100644
+> >> --- a/drivers/tty/serial/8250/8250_dw.c
+> >> +++ b/drivers/tty/serial/8250/8250_dw.c
+> >> @@ -297,9 +297,17 @@ static int dw8250_handle_irq(struct uart_port *p)
+> >>                 uart_port_lock_irqsave(p, &flags);
+> >>                 status =3D serial_lsr_in(up);
+> >>
+> >> -               if (!(status & (UART_LSR_DR | UART_LSR_BI)))
+> >> +               if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
+> >> +                       /* To avoid PSLVERR, disable the FIFO first. *=
+/
+> >> +                       if (up->fcr & UART_FCR_ENABLE_FIFO)
+> >> +                               serial_out(up, UART_FCR, 0);
+> >> +
+> >>                         serial_port_in(p, UART_RX);
+> >>
+> >> +                       if (up->fcr & UART_FCR_ENABLE_FIFO)
+> >> +                               serial_out(up, UART_FCR, up->fcr);
+> >> +               }
+> >> +
+> >>                 uart_port_unlock_irqrestore(p, flags);
+> >>         }
+> >>
+> >> --
+> >> 2.39.5
+> >
+> > Any comments on this patch?
+>
+> I do not know enough about the hardware. Is a dummy read really the only
+> way to exit the RX_TIMEOUT state?
+>
+> What if there are bytes in the TX-FIFO. Are they in danger of being
+> cleared?
+>
+> From [0] I see:
+>
+> "Writing a "0" to bit 0 will disable the FIFOs, in essence turning the
+>  UART into 8250 compatibility mode. In effect this also renders the rest
+>  of the settings in this register to become useless. If you write a "0"
+>  here it will also stop the FIFOs from sending or receiving data, so any
+>  data that is sent through the serial data port may be scrambled after
+>  this setting has been changed. It would be recommended to disable FIFOs
+>  only if you are trying to reset the serial communication protocol and
+>  clearing any working buffers you may have in your application
+>  software. Some documentation suggests that setting this bit to "0" also
+>  clears the FIFO buffers, but I would recommend explicit buffer clearing
+>  instead using bits 1 and 2."
+>
+> Have you performed tests where you fill the TX-FIFO and then
+> disable/enable the FIFO to see if the TX-bytes survive?
 
-Also, reorder variable declarations to follow reverse Christmas tree
-style.
+Sorry, I haven't conducted relevant tests. The reason I made this
+modification is that it clearly contradicts the logic of avoiding
+PSLVERR. Disabling the FIFO can at least prevent the Panic() caused by
+PSVERR.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Closes: https://lore.kernel.org/oe-kbuild-all/202507030557.vIewJJQO-lkp@intel.com/
-Cc: Jason Smith <jason.smith@emerson.com>
-Cc: Gratian Crisan <gratian.crisan@emerson.com>
-Signed-off-by: Chaitanya Vadrevu <chaitanya.vadrevu@emerson.com>
----
- drivers/tty/serial/8250/8250_ni.c | 56 +++++++++++++++++--------------
- 1 file changed, 30 insertions(+), 26 deletions(-)
+>
+> John Ogness
+>
+> [0] https://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programmin=
+g
 
-diff --git a/drivers/tty/serial/8250/8250_ni.c b/drivers/tty/serial/8250/8250_ni.c
-index b0e44fb00b3a4..cb5b42b3609c9 100644
---- a/drivers/tty/serial/8250/8250_ni.c
-+++ b/drivers/tty/serial/8250/8250_ni.c
-@@ -275,76 +275,80 @@ static void ni16550_set_mctrl(struct uart_port *port, unsigned int mctrl)
- 
- static int ni16550_probe(struct platform_device *pdev)
- {
-+	struct uart_8250_port *uart __free(kfree) = NULL;
- 	const struct ni16550_device_info *info;
- 	struct device *dev = &pdev->dev;
--	struct uart_8250_port uart = {};
- 	unsigned int txfifosz, rxfifosz;
--	unsigned int prescaler;
- 	struct ni16550_data *data;
-+	unsigned int prescaler;
- 	const char *portmode;
- 	bool rs232_property;
- 	int ret;
- 
-+	uart = kzalloc(sizeof(*uart), GFP_KERNEL);
-+	if (!uart)
-+		return -ENOMEM;
-+
- 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
- 	if (!data)
- 		return -ENOMEM;
- 
--	spin_lock_init(&uart.port.lock);
-+	spin_lock_init(&uart->port.lock);
- 
--	ret = ni16550_get_regs(pdev, &uart.port);
-+	ret = ni16550_get_regs(pdev, &uart->port);
- 	if (ret < 0)
- 		return ret;
- 
- 	/* early setup so that serial_in()/serial_out() work */
--	serial8250_set_defaults(&uart);
-+	serial8250_set_defaults(uart);
- 
- 	info = device_get_match_data(dev);
- 
--	uart.port.dev		= dev;
--	uart.port.flags		= UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
--	uart.port.startup	= ni16550_port_startup;
--	uart.port.shutdown	= ni16550_port_shutdown;
-+	uart->port.dev		= dev;
-+	uart->port.flags	= UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-+	uart->port.startup	= ni16550_port_startup;
-+	uart->port.shutdown	= ni16550_port_shutdown;
- 
- 	/*
- 	 * Hardware instantiation of FIFO sizes are held in registers.
- 	 */
--	txfifosz = ni16550_read_fifo_size(&uart, NI16550_TFS_OFFSET);
--	rxfifosz = ni16550_read_fifo_size(&uart, NI16550_RFS_OFFSET);
-+	txfifosz = ni16550_read_fifo_size(uart, NI16550_TFS_OFFSET);
-+	rxfifosz = ni16550_read_fifo_size(uart, NI16550_RFS_OFFSET);
- 
- 	dev_dbg(dev, "NI 16550 has TX FIFO size %u, RX FIFO size %u\n",
- 		txfifosz, rxfifosz);
- 
--	uart.port.type		= PORT_16550A;
--	uart.port.fifosize	= txfifosz;
--	uart.tx_loadsz		= txfifosz;
--	uart.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10;
--	uart.capabilities	= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR;
-+	uart->port.type		= PORT_16550A;
-+	uart->port.fifosize	= txfifosz;
-+	uart->tx_loadsz		= txfifosz;
-+	uart->fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10;
-+	uart->capabilities	= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR;
- 
- 	/*
- 	 * Declaration of the base clock frequency can come from one of:
- 	 * - static declaration in this driver (for older ACPI IDs)
- 	 * - a "clock-frequency" ACPI
- 	 */
--	uart.port.uartclk = info->uartclk;
-+	uart->port.uartclk = info->uartclk;
- 
--	ret = uart_read_port_properties(&uart.port);
-+	ret = uart_read_port_properties(&uart->port);
- 	if (ret)
- 		return ret;
- 
--	if (!uart.port.uartclk) {
-+	if (!uart->port.uartclk) {
- 		data->clk = devm_clk_get_enabled(dev, NULL);
- 		if (!IS_ERR(data->clk))
--			uart.port.uartclk = clk_get_rate(data->clk);
-+			uart->port.uartclk = clk_get_rate(data->clk);
- 	}
- 
--	if (!uart.port.uartclk)
-+	if (!uart->port.uartclk)
- 		return dev_err_probe(dev, -ENODEV, "unable to determine clock frequency!\n");
- 
- 	prescaler = info->prescaler;
- 	device_property_read_u32(dev, "clock-prescaler", &prescaler);
- 	if (prescaler) {
--		uart.port.set_mctrl = ni16550_set_mctrl;
--		ni16550_config_prescaler(&uart, (u8)prescaler);
-+		uart->port.set_mctrl = ni16550_set_mctrl;
-+		ni16550_config_prescaler(uart, (u8)prescaler);
- 	}
- 
- 	/*
-@@ -362,7 +366,7 @@ static int ni16550_probe(struct platform_device *pdev)
- 		dev_dbg(dev, "port is in %s mode (via device property)\n",
- 			rs232_property ? "RS-232" : "RS-485");
- 	} else if (info->flags & NI_HAS_PMR) {
--		rs232_property = is_pmr_rs232_mode(&uart);
-+		rs232_property = is_pmr_rs232_mode(uart);
- 
- 		dev_dbg(dev, "port is in %s mode (via PMR)\n",
- 			rs232_property ? "RS-232" : "RS-485");
-@@ -377,10 +381,10 @@ static int ni16550_probe(struct platform_device *pdev)
- 		 * Neither the 'transceiver' property nor the PMR indicate
- 		 * that this is an RS-232 port, so it must be an RS-485 one.
- 		 */
--		ni16550_rs485_setup(&uart.port);
-+		ni16550_rs485_setup(&uart->port);
- 	}
- 
--	ret = serial8250_register_8250_port(&uart);
-+	ret = serial8250_register_8250_port(uart);
- 	if (ret < 0)
- 		return ret;
- 	data->line = ret;
--- 
-2.43.0
-
+Thanks,
+Yunhui
