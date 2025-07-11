@@ -1,38 +1,42 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 788F11C5F35;
-	Fri, 11 Jul 2025 05:51:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B142327E1B1;
+	Fri, 11 Jul 2025 09:50:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752213062; cv=none; b=jP0o0nZIc35Asxqo6LI0WQavDSywia2gJA38gRs85L/cUUyJmwTSJRCj2vpaPttvkHlDZkrj5f+t4fB1hQmOSuQr27cq/8b2BsRWk7wP6LJ2EtUrew3Y9hSbFNoUxd79uN+QrgsHDgqEUF/7Pvh3InLX2fyuumT/BxQ98DdcM0E=
+	t=1752227429; cv=none; b=dXZAQs4VEKuBZTYNnk2qa6yLUxN0yA7XTWxLv0CsXx6+1Ac0Q5NoXZ28zxgRdzij5aFf4lAXUk3xWikGCTb+Ws6VmhZeHRsOOBo/cibK69hucuW4VviKgxYDwyJ9tnU2aMHnaZAllBXnzk0dtZdOR0x6v6jrULUg3+sT3D57Oc0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752213062; c=relaxed/simple;
-	bh=Ic4E52Uu1HtfHOPdJdHFpMixD2yWhl7fDjbIbSHEPhU=;
+	s=arc-20240116; t=1752227429; c=relaxed/simple;
+	bh=dtspvvL/DutC0GPC7MJ47Cq6Dcw0cHiqIGuGdORQV8I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I/BHEzEAwsUQ3Ug054+ava9hpmBQ4UMhf9AfG1iRZng1N2MrQShT4mRtXYn6JduvdeZWw5ungcImiBosh/I47MzrKxRP0qHunJyN90iacNZR5XpIwIrYtcqwwd/DnwOh7/ofF8PnReYzJEJZFSYcb/BAcYxmHRlivX/gm6fp1iw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=BPEPRSVk; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="BPEPRSVk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4472C4CEED;
-	Fri, 11 Jul 2025 05:51:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1752213062;
-	bh=Ic4E52Uu1HtfHOPdJdHFpMixD2yWhl7fDjbIbSHEPhU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BPEPRSVkQLswEVMrLOEndgxRHXGVhL+OfTpw1ltlAk4eB5LOJb5uvfS9CpzR4+mt3
-	 zLgNwskicPaYm7xhFUw2wbb0lfjRDJFq3mJo9V1slMHUeMDszYNPKZzUOkeYQvDLAy
-	 A3O48ze2WImUFaWIrYuIiohF0WsF1ygnhnqC2Dco=
-Date: Fri, 11 Jul 2025 07:50:58 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Chaitanya Vadrevu <chaitanya.vadrevu@emerson.com>
-Cc: jirislaby@kernel.org, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-	Jason Smith <jason.smith@emerson.com>,
-	Gratian Crisan <gratian.crisan@emerson.com>
-Subject: Re: [PATCH] serial: 8250_ni: Fix build warning
-Message-ID: <2025071102-zombie-disbelief-4c38@gregkh>
-References: <20250710223838.2657261-1-chaitanya.vadrevu@emerson.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=lzjHlw48FGreUHn4zgpusRMhHD/3BNVjmEpSY6/uZRP0OAqZCEMGlPutQXrhC/hDAoj70jpQwTnSC8h8RZQwPzAznQMDyIwt+3BVfHn5jEUf0KR/W8dm8hWAeYHSR8Jjldntfy+vWGZfB+IrUCmZk1KcirRjzN0jhAJyghEPjVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 70BB216F2;
+	Fri, 11 Jul 2025 02:50:15 -0700 (PDT)
+Received: from localhost (e132581.arm.com [10.1.196.87])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B26EC3F6A8;
+	Fri, 11 Jul 2025 02:50:25 -0700 (PDT)
+Date: Fri, 11 Jul 2025 10:50:23 +0100
+From: Leo Yan <leo.yan@arm.com>
+To: Breno Leitao <leitao@debian.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, ankita@nvidia.com,
+	bwicaksono@nvidia.com, rmk+kernel@armlinux.org.uk,
+	catalin.marinas@arm.com, linux-serial@vger.kernel.org,
+	rmikey@meta.com, linux-arm-kernel@lists.infradead.org,
+	usamaarif642@gmail.com, linux-kernel@vger.kernel.org,
+	paulmck@kernel.org
+Subject: Re: arm64: csdlock at early boot due to slow serial (?)
+Message-ID: <20250711095023.GB1093654@e132581.arm.com>
+References: <aGVn/SnOvwWewkOW@gmail.com>
+ <aGZbYmV26kUKJwu_@J2N7QTR9R3>
+ <aGaQBghdAl8VGWmV@gmail.com>
+ <aGawTd8N2i8MDCmL@J2N7QTR9R3>
+ <aG0kYjl/sphGqd4r@gmail.com>
+ <juiog3337iozva23zpf4apdydegj4z7jibqykfvcgnkabemw4w@z5g5hhwrqr2w>
+ <20250710133557.GA1093654@e132581.arm.com>
+ <jlhgtwkeezoca34wbqipvsgr4muxov5wmgrswleo2k7zqitzfr@4ngriyb2udra>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -41,163 +45,139 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250710223838.2657261-1-chaitanya.vadrevu@emerson.com>
+In-Reply-To: <jlhgtwkeezoca34wbqipvsgr4muxov5wmgrswleo2k7zqitzfr@4ngriyb2udra>
 
-On Thu, Jul 10, 2025 at 05:38:37PM -0500, Chaitanya Vadrevu wrote:
-> Allocate memory on heap instead of stack to fix following warning that
-> clang version 20.1.2 produces on W=1 build.
+Hi Breno,
+
+On Thu, Jul 10, 2025 at 10:30:45AM -0700, Breno Leitao wrote:
+
+[...]
+
+> > The atomic path is introduced recently by the commit:
+> > 
+> >   2eb2608618ce ("serial: amba-pl011: Implement nbcon console")
+> > 
+> > My conclusion is that changing the initcall will not disable the atomic
+> > path, changing to console_initcall() will cause AMBA device init
+> > failure, and as a result, the clock operations will not be invoked.
+> > Thus, I am curious if you have ruled out the issue is caused by the UART
+> > clock (as I mentioned in another reply).
+> > 
+> > BTW, since the atomic path is enabled in the commit 2eb2608618ce, what
+> > is the result after reverting the commit?
 > 
-> drivers/tty/serial/8250/8250_ni.c:277:12: warning: stack frame size (1072) exceeds limit (1024) in 'ni16550_probe' [-Wframe-larger-than]
->   277 | static int ni16550_probe(struct platform_device *pdev)
->       |            ^
->   1 warning generated.
+> I've reverted commit 2eb2608618ce ("serial: amba-pl011: Implement nbcon
+> console"), and I don't see the CSD locks anymoer. The serial speed is
+> the same and continue to be slow, but, the CSD lock is not there. Here
+> is the time spent on the serial flush when reverting the commit above
 > 
-> Also, reorder variable declarations to follow reverse Christmas tree
-> style.
+> 	[    0.309561] printk: legacy console [ttyAMA0] enabled
+> 	[    8.657938] ACPI: PCI Root Bridge [PCI2] (domain 0002 [bus 00-ff])
 
-When you say "also", that's usually a hint this should be a separate
-patch :(
+From this result, we can know both the atomic path and the thread path
+take a long time polling.
 
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes: https://lore.kernel.org/oe-kbuild-all/202507030557.vIewJJQO-lkp@intel.com/
-> Cc: Jason Smith <jason.smith@emerson.com>
-> Cc: Gratian Crisan <gratian.crisan@emerson.com>
-> Signed-off-by: Chaitanya Vadrevu <chaitanya.vadrevu@emerson.com>
-> ---
->  drivers/tty/serial/8250/8250_ni.c | 56 +++++++++++++++++--------------
->  1 file changed, 30 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_ni.c b/drivers/tty/serial/8250/8250_ni.c
-> index b0e44fb00b3a4..cb5b42b3609c9 100644
-> --- a/drivers/tty/serial/8250/8250_ni.c
-> +++ b/drivers/tty/serial/8250/8250_ni.c
-> @@ -275,76 +275,80 @@ static void ni16550_set_mctrl(struct uart_port *port, unsigned int mctrl)
->  
->  static int ni16550_probe(struct platform_device *pdev)
->  {
-> +	struct uart_8250_port *uart __free(kfree) = NULL;
->  	const struct ni16550_device_info *info;
->  	struct device *dev = &pdev->dev;
-> -	struct uart_8250_port uart = {};
->  	unsigned int txfifosz, rxfifosz;
-> -	unsigned int prescaler;
->  	struct ni16550_data *data;
-> +	unsigned int prescaler;
->  	const char *portmode;
->  	bool rs232_property;
->  	int ret;
->  
-> +	uart = kzalloc(sizeof(*uart), GFP_KERNEL);
-> +	if (!uart)
-> +		return -ENOMEM;
-> +
->  	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
->  	if (!data)
->  		return -ENOMEM;
->  
-> -	spin_lock_init(&uart.port.lock);
-> +	spin_lock_init(&uart->port.lock);
->  
-> -	ret = ni16550_get_regs(pdev, &uart.port);
-> +	ret = ni16550_get_regs(pdev, &uart->port);
->  	if (ret < 0)
->  		return ret;
->  
->  	/* early setup so that serial_in()/serial_out() work */
-> -	serial8250_set_defaults(&uart);
-> +	serial8250_set_defaults(uart);
->  
->  	info = device_get_match_data(dev);
->  
-> -	uart.port.dev		= dev;
-> -	uart.port.flags		= UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-> -	uart.port.startup	= ni16550_port_startup;
-> -	uart.port.shutdown	= ni16550_port_shutdown;
-> +	uart->port.dev		= dev;
-> +	uart->port.flags	= UPF_BOOT_AUTOCONF | UPF_FIXED_PORT | UPF_FIXED_TYPE;
-> +	uart->port.startup	= ni16550_port_startup;
-> +	uart->port.shutdown	= ni16550_port_shutdown;
->  
->  	/*
->  	 * Hardware instantiation of FIFO sizes are held in registers.
->  	 */
-> -	txfifosz = ni16550_read_fifo_size(&uart, NI16550_TFS_OFFSET);
-> -	rxfifosz = ni16550_read_fifo_size(&uart, NI16550_RFS_OFFSET);
-> +	txfifosz = ni16550_read_fifo_size(uart, NI16550_TFS_OFFSET);
-> +	rxfifosz = ni16550_read_fifo_size(uart, NI16550_RFS_OFFSET);
->  
->  	dev_dbg(dev, "NI 16550 has TX FIFO size %u, RX FIFO size %u\n",
->  		txfifosz, rxfifosz);
->  
-> -	uart.port.type		= PORT_16550A;
-> -	uart.port.fifosize	= txfifosz;
-> -	uart.tx_loadsz		= txfifosz;
-> -	uart.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10;
-> -	uart.capabilities	= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR;
-> +	uart->port.type		= PORT_16550A;
-> +	uart->port.fifosize	= txfifosz;
-> +	uart->tx_loadsz		= txfifosz;
-> +	uart->fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10;
-> +	uart->capabilities	= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_EFR;
->  
->  	/*
->  	 * Declaration of the base clock frequency can come from one of:
->  	 * - static declaration in this driver (for older ACPI IDs)
->  	 * - a "clock-frequency" ACPI
->  	 */
-> -	uart.port.uartclk = info->uartclk;
-> +	uart->port.uartclk = info->uartclk;
->  
-> -	ret = uart_read_port_properties(&uart.port);
-> +	ret = uart_read_port_properties(&uart->port);
->  	if (ret)
->  		return ret;
->  
-> -	if (!uart.port.uartclk) {
-> +	if (!uart->port.uartclk) {
->  		data->clk = devm_clk_get_enabled(dev, NULL);
->  		if (!IS_ERR(data->clk))
-> -			uart.port.uartclk = clk_get_rate(data->clk);
-> +			uart->port.uartclk = clk_get_rate(data->clk);
->  	}
->  
-> -	if (!uart.port.uartclk)
-> +	if (!uart->port.uartclk)
->  		return dev_err_probe(dev, -ENODEV, "unable to determine clock frequency!\n");
->  
->  	prescaler = info->prescaler;
->  	device_property_read_u32(dev, "clock-prescaler", &prescaler);
->  	if (prescaler) {
-> -		uart.port.set_mctrl = ni16550_set_mctrl;
-> -		ni16550_config_prescaler(&uart, (u8)prescaler);
-> +		uart->port.set_mctrl = ni16550_set_mctrl;
-> +		ni16550_config_prescaler(uart, (u8)prescaler);
->  	}
->  
->  	/*
-> @@ -362,7 +366,7 @@ static int ni16550_probe(struct platform_device *pdev)
->  		dev_dbg(dev, "port is in %s mode (via device property)\n",
->  			rs232_property ? "RS-232" : "RS-485");
->  	} else if (info->flags & NI_HAS_PMR) {
-> -		rs232_property = is_pmr_rs232_mode(&uart);
-> +		rs232_property = is_pmr_rs232_mode(uart);
->  
->  		dev_dbg(dev, "port is in %s mode (via PMR)\n",
->  			rs232_property ? "RS-232" : "RS-485");
-> @@ -377,10 +381,10 @@ static int ni16550_probe(struct platform_device *pdev)
->  		 * Neither the 'transceiver' property nor the PMR indicate
->  		 * that this is an RS-232 port, so it must be an RS-485 one.
->  		 */
-> -		ni16550_rs485_setup(&uart.port);
-> +		ni16550_rs485_setup(&uart->port);
->  	}
->  
-> -	ret = serial8250_register_8250_port(&uart);
-> +	ret = serial8250_register_8250_port(uart);
+Since both paths configure the UART clock, I'm curious about the
+behaviour if the UART clock is untouched. The relevant code is shown
+below.
 
-So uart is freed after this and that's ok?  Are you sure?
+I may seem a bit stubborn in suspecting a clock issue :) But if you
+have confirmed that a standard pl011 UART IP is being used, then the
+only external factor I am aware of is the clock.
 
-thanks,
+Thanks,
+Leo
 
-greg k-h
+---8<---
+
+diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+index 71482d639a6d..b04773ba2602 100644
+--- a/drivers/amba/bus.c
++++ b/drivers/amba/bus.c
+@@ -64,6 +64,8 @@ static int amba_get_enable_pclk(struct amba_device *pcdev)
+ {
+ 	int ret;
+ 
++	return 0;
++
+ 	pcdev->pclk = clk_get(&pcdev->dev, "apb_pclk");
+ 	if (IS_ERR(pcdev->pclk))
+ 		return PTR_ERR(pcdev->pclk);
+@@ -77,8 +79,8 @@ static int amba_get_enable_pclk(struct amba_device *pcdev)
+ 
+ static void amba_put_disable_pclk(struct amba_device *pcdev)
+ {
+-	clk_disable_unprepare(pcdev->pclk);
+-	clk_put(pcdev->pclk);
++	//clk_disable_unprepare(pcdev->pclk);
++	//clk_put(pcdev->pclk);
+ }
+ 
+ 
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 22939841b1de..9ba24afb6e4f 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1777,7 +1777,7 @@ static int pl011_hwinit(struct uart_port *port)
+ 	/*
+ 	 * Try to enable the clock producer.
+ 	 */
+-	retval = clk_prepare_enable(uap->clk);
++	retval = clk_prepare(uap->clk);
+ 	if (retval)
+ 		return retval;
+ 
+@@ -1934,7 +1934,7 @@ static int pl011_startup(struct uart_port *port)
+ 	return 0;
+ 
+  clk_dis:
+-	clk_disable_unprepare(uap->clk);
++	//clk_disable_unprepare(uap->clk);
+ 	return retval;
+ }
+ 
+@@ -2025,7 +2025,7 @@ static void pl011_shutdown(struct uart_port *port)
+ 	/*
+ 	 * Shut down the clock producer
+ 	 */
+-	clk_disable_unprepare(uap->clk);
++	//clk_disable_unprepare(uap->clk);
+ 	/* Optionally let pins go into sleep states */
+ 	pinctrl_pm_select_sleep_state(port->dev);
+ 
+@@ -2524,7 +2524,7 @@ pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt
+ 	if (!nbcon_enter_unsafe(wctxt))
+ 		return;
+ 
+-	clk_enable(uap->clk);
++	//clk_enable(uap->clk);
+ 
+ 	if (!uap->vendor->always_enabled) {
+ 		old_cr = pl011_read(uap, REG_CR);
+@@ -2542,7 +2542,7 @@ pl011_console_write_atomic(struct console *co, struct nbcon_write_context *wctxt
+ 	if (!uap->vendor->always_enabled)
+ 		pl011_write(old_cr, uap, REG_CR);
+ 
+-	clk_disable(uap->clk);
++	//clk_disable(uap->clk);
+ 
+ 	nbcon_exit_unsafe(wctxt);
+ }
+@@ -2556,7 +2556,7 @@ pl011_console_write_thread(struct console *co, struct nbcon_write_context *wctxt
+ 	if (!nbcon_enter_unsafe(wctxt))
+ 		return;
+ 
+-	clk_enable(uap->clk);
++	//clk_enable(uap->clk);
+ 
+ 	if (!uap->vendor->always_enabled) {
+ 		old_cr = pl011_read(uap, REG_CR);
+@@ -2586,7 +2586,7 @@ pl011_console_write_thread(struct console *co, struct nbcon_write_context *wctxt
+ 	if (!uap->vendor->always_enabled)
+ 		pl011_write(old_cr, uap, REG_CR);
+ 
+-	clk_disable(uap->clk);
++	//clk_disable(uap->clk);
+ 
+ 	nbcon_exit_unsafe(wctxt);
+ }
