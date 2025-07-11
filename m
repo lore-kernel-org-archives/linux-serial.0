@@ -1,185 +1,123 @@
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED8251632DF
-	for <linux-serial@vger.kernel.org>; Fri, 11 Jul 2025 02:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF1B213AA2A;
+	Fri, 11 Jul 2025 05:04:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752200370; cv=none; b=BbLAQiys0QqbMwygqjmKQI7WSiYp64R836rz98+sPZwLIY9+itT3tPqK1TuRB6A5rlz2yUn5q/vA868evqD2aX/uXbWE9hIVLVQVm3B4pmshh8bYe2lqpYJKhjoI8wbIp1TNyGr8nb2YjsGz/UwF7CNyIJ2/21MA5kggzzVbZ/4=
+	t=1752210241; cv=none; b=olSJUmKF3g6SU2lfzG3GHT/G1KlLQo+Ycoq/rM7OhKioEuhk3YoHEzO32setk1UZXfGWciChOfIQ7WDjqOAT6/E/3iNA0wv8zOpNmPthdFrJiCDK83DF91/RoBd5TN4s10kACdPqMY2KwE6RqpZgnqDwy11RlieTkBXsZILN0ZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752200370; c=relaxed/simple;
-	bh=y4jCcuJN7yjOr2y3cVPXJ+KAMqtUM1NbU0hlYIYhLMM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=WL5fiBKxa9Jj+6yggNC1mTYpPQRM8caYp09cqQV4tFPA3t+DLuEPTYsF38TYbuvHn1CHH5e6hNapM3MHUW5Lr+FvGRXWxp4aKSCDD/C+zDqALHfOfcXXrkFtwAfhoaiDiW/uTKmWSeIpLgsp40scsXENVS8X0iRWCSQRYuHOq6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=czD+YZ4O; arc=none smtp.client-ip=209.85.167.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1752210241; c=relaxed/simple;
+	bh=eGnnVvjA7Y/ogNo12DXuvd94kJtENaPXUWxRx5er6gU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nT2SQFMyMnCD3Bc15ia4a4T1idR8OpmIew9s1Aa9MwmRKXOZ35q6Tnpin1fVCQKZfCIgIsl0tN2AZJWNhKZBkFvZlgccj08pecw/A/mDq2/ThNCe0dTpYTCgyIMQs9/g34uoJnbH+4HkpiHsU1DWQr7xyAuRYmBG7uze2TqrwS4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PMnVt5Zg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="czD+YZ4O"
-Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-40ad1f7c23bso965048b6e.2
-        for <linux-serial@vger.kernel.org>; Thu, 10 Jul 2025 19:19:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1752200368; x=1752805168; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7LguYWqKU69s8fXl+FAzLjDH/VFGVUbcH34uXEnvqnA=;
-        b=czD+YZ4Og7rcEYzX78IQFVIEmFmxyFmKllaVmoCvFSxG62wcF8+7rJlGMnM8tezkJM
-         3JvUJ2il+Z9ud0FX3cyWL3e1mrcTljkjvaL4lFvkZWNmaXiYUTd4LS+LH2BL7FbcY0t1
-         MArj91zZQALa/TkLw0VPzHFJby/4H9awlWXjFcY9XSeybGNtE3bPNV7yj6mb2sF7Vv1A
-         larPhjm/5b+ldI+qO8UQF/XThJ2UJSJ8Kq/xJju5x3XUFlqbZuUmoUOE1AxYSX2hTIbA
-         q3esIf/HOwM94sRyuWH/1/iIkiqR6V41ZixzTxY12zYTTNcf7TdU+jYHAbMRrT71oaSn
-         pPIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752200368; x=1752805168;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7LguYWqKU69s8fXl+FAzLjDH/VFGVUbcH34uXEnvqnA=;
-        b=ep4OAQ/0h79yGAPWbPrw8fExMmLV6zVDjASdP0HC/aNkz15EcHNuv50MXWkUdYThEm
-         8KSHWZdwtJZYb2AC7TvhbjHOIb+F1mVWdphFPtjVijNRSfUyNJhgj/wUB6s2o/1hiQpL
-         asFlM/orZf+LLpxmKCviK5pzxyNC/GCOMudNMuwG68v2VuzTFxMfiHg/vmMuVvfaSC4g
-         XyjN+fe1GALtCp1l+LrIfYyENoAOzY62S7aqyCZbcwBiMfUIpbulsdk4AWKbnKB7N4mw
-         /uHgiLvv3PRmjb8lO9MGrRYmspoI7l0eqgnxxjJ1CvzJ9XrLj+f6eSBr2UP0+014YOex
-         Zy3Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVrjwrQWOJYvrq09Ellyy/thL6NXznSGpRs0LIWG0Zl+t6AVNHfraYVjWkrJkcXnG9m9+f0wwL7YIytxOo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwVza6nit12H2I4tpZbO/Za6P9UjgmOjllxMiY0mezbTxI/vSgk
-	D0RrXnPy4ee62oR+jS5gY/FEMEygdf4JAo7hMzXLuCn2XRiveN93eiHX6iz09WWJQM3QTblKfs2
-	cDa03Rp03eKhi69Zc55s16rUrKexaIdyhN//pUBchjQ==
-X-Gm-Gg: ASbGncviMARfQhf2AK2gkf7+lBEp2y8xGS2LanLqy32ySJq/116IDAYAJ1gOEBjcwIW
-	w/pKhZvmwf4bWxDzlc6ym8NDDBzkJ2DRgT9HVXeQO2Pk0TKl8s9tdtHinT7pyRRncTZu7gGDmS2
-	SH/tv8ys+O3IbnXjLg/M135Cu2fsmllYlYpJZGTk1a1UOu6TzPOomQ6hYaHdiuhpHK2a8KuylT4
-	wL243A4PQ==
-X-Google-Smtp-Source: AGHT+IFBh7LzTFN9rD6gbXHF6ywmERfYcfitKd7WVxt6xE3tRn5i23AvprpdjVhHYknMIA3w2g9HGwRoOBZcHNEc3MQ=
-X-Received: by 2002:a05:6808:16aa:b0:40b:1222:8fd8 with SMTP id
- 5614622812f47-41539f925c2mr885406b6e.35.1752200367955; Thu, 10 Jul 2025
- 19:19:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PMnVt5Zg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD0E0C4CEEF;
+	Fri, 11 Jul 2025 05:03:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752210240;
+	bh=eGnnVvjA7Y/ogNo12DXuvd94kJtENaPXUWxRx5er6gU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=PMnVt5ZgsLyK4nwhWpR4JhL504Vc1UZwEVtfcID4XQTswlsmoGtm31YRZl+fYqtcH
+	 msGzcFPK07/KDUIM+CLwp1RSwZstRHCYpcDGRgrqKCw+XTrdpivbJ5wSXK2fly/odi
+	 SKP7znH4dCC5nQtYem02jDBGjccpOriS149eHBrZxcfATJSx3GHh3jqfA5QJ1xH/YN
+	 1Sb2tec6M96MP7HUQZ6QnRFuQdhrb8C3bUz+7xzUQoXfjjbagf5NGT2ODeI50ncdHF
+	 ZFSfRNdmA4Wt+xLqB1XnbTx+iBhuXoknQk0pc2TX+Jwy4D0xC3oc78eZtPz3zjWG7K
+	 b5GhHmrUZqGKw==
+Message-ID: <f84c2ee3-77b4-41c4-8517-26dfb44a2276@kernel.org>
+Date: Fri, 11 Jul 2025 07:03:56 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250610092135.28738-1-cuiyunhui@bytedance.com>
- <20250610092135.28738-3-cuiyunhui@bytedance.com> <CAEEQ3w=pUPEVOM4fG6wr06eOD_uO6_ZBzORaG1zhtPswD8HLNQ@mail.gmail.com>
- <84cyauq2nc.fsf@jogness.linutronix.de>
-In-Reply-To: <84cyauq2nc.fsf@jogness.linutronix.de>
-From: yunhui cui <cuiyunhui@bytedance.com>
-Date: Fri, 11 Jul 2025 10:19:16 +0800
-X-Gm-Features: Ac12FXxBhZNNUH-29Cczmz3xlktD2RZw1X21GwvxVue8j6YX6ffOS8u3DsWgqNU
-Message-ID: <CAEEQ3w==dO2i+ZSsRZG0L1S+ccHSJQ-aUa9KE638MwnBM4+Jvw@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH v9 2/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
-To: John Ogness <john.ogness@linutronix.de>
-Cc: arnd@arndb.de, andriy.shevchenko@linux.intel.com, 
-	benjamin.larsson@genexis.eu, gregkh@linuxfoundation.org, 
-	heikki.krogerus@linux.intel.com, ilpo.jarvinen@linux.intel.com, 
-	jirislaby@kernel.org, jkeeping@inmusicbrands.com, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	markus.mayer@linaro.org, matt.porter@linaro.org, namcao@linutronix.de, 
-	paulmck@kernel.org, pmladek@suse.com, schnelle@linux.ibm.com, 
-	sunilvl@ventanamicro.com, tim.kryger@linaro.org, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: 8250_ni: Fix build warning
+To: Chaitanya Vadrevu <chaitanya.vadrevu@emerson.com>,
+ gregkh@linuxfoundation.org
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ kernel test robot <lkp@intel.com>, Jason Smith <jason.smith@emerson.com>,
+ Gratian Crisan <gratian.crisan@emerson.com>
+References: <20250710223838.2657261-1-chaitanya.vadrevu@emerson.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20250710223838.2657261-1-chaitanya.vadrevu@emerson.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi John,
+On 11. 07. 25, 0:38, Chaitanya Vadrevu wrote:
+> Allocate memory on heap instead of stack to fix following warning that
+> clang version 20.1.2 produces on W=1 build.
+> 
+> drivers/tty/serial/8250/8250_ni.c:277:12: warning: stack frame size (1072) exceeds limit (1024) in 'ni16550_probe' [-Wframe-larger-than]
 
-On Mon, Jun 23, 2025 at 4:32=E2=80=AFPM John Ogness <john.ogness@linutronix=
-.de> wrote:
->
-> Hi Yunhui,
->
-> On 2025-06-23, yunhui cui <cuiyunhui@bytedance.com> wrote:
-> >> The DW UART may trigger the RX_TIMEOUT interrupt without data
-> >> present and remain stuck in this state indefinitely. The
-> >> dw8250_handle_irq() function detects this condition by checking
-> >> if the UART_LSR_DR bit is not set when RX_TIMEOUT occurs. When
-> >> detected, it performs a "dummy read" to recover the DW UART from
-> >> this state.
-> >>
-> >> When the PSLVERR_RESP_EN parameter is set to 1, reading the UART_RX
-> >> while the FIFO is enabled and UART_LSR_DR is not set will generate a
-> >> PSLVERR error, which may lead to a system panic. There are two methods
-> >> to prevent PSLVERR: one is to check if UART_LSR_DR is set before readi=
-ng
-> >> UART_RX when the FIFO is enabled, and the other is to read UART_RX whe=
-n
-> >> the FIFO is disabled.
-> >>
-> >> Given these two scenarios, the FIFO must be disabled before the
-> >> "dummy read" operation and re-enabled afterward to maintain normal
-> >> UART functionality.
-> >>
-> >> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from bogu=
-s rx timeout interrupt")
-> >> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
-> >> Cc: stable@vger.kernel.org
-> >> ---
-> >>  drivers/tty/serial/8250/8250_dw.c | 10 +++++++++-
-> >>  1 file changed, 9 insertions(+), 1 deletion(-)
-> >>
-> >> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/82=
-50/8250_dw.c
-> >> index 1902f29444a1c..082b7fcf251db 100644
-> >> --- a/drivers/tty/serial/8250/8250_dw.c
-> >> +++ b/drivers/tty/serial/8250/8250_dw.c
-> >> @@ -297,9 +297,17 @@ static int dw8250_handle_irq(struct uart_port *p)
-> >>                 uart_port_lock_irqsave(p, &flags);
-> >>                 status =3D serial_lsr_in(up);
-> >>
-> >> -               if (!(status & (UART_LSR_DR | UART_LSR_BI)))
-> >> +               if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
-> >> +                       /* To avoid PSLVERR, disable the FIFO first. *=
-/
-> >> +                       if (up->fcr & UART_FCR_ENABLE_FIFO)
-> >> +                               serial_out(up, UART_FCR, 0);
-> >> +
-> >>                         serial_port_in(p, UART_RX);
-> >>
-> >> +                       if (up->fcr & UART_FCR_ENABLE_FIFO)
-> >> +                               serial_out(up, UART_FCR, up->fcr);
-> >> +               }
-> >> +
-> >>                 uart_port_unlock_irqrestore(p, flags);
-> >>         }
-> >>
-> >> --
-> >> 2.39.5
-> >
-> > Any comments on this patch?
->
-> I do not know enough about the hardware. Is a dummy read really the only
-> way to exit the RX_TIMEOUT state?
->
-> What if there are bytes in the TX-FIFO. Are they in danger of being
-> cleared?
->
-> From [0] I see:
->
-> "Writing a "0" to bit 0 will disable the FIFOs, in essence turning the
->  UART into 8250 compatibility mode. In effect this also renders the rest
->  of the settings in this register to become useless. If you write a "0"
->  here it will also stop the FIFOs from sending or receiving data, so any
->  data that is sent through the serial data port may be scrambled after
->  this setting has been changed. It would be recommended to disable FIFOs
->  only if you are trying to reset the serial communication protocol and
->  clearing any working buffers you may have in your application
->  software. Some documentation suggests that setting this bit to "0" also
->  clears the FIFO buffers, but I would recommend explicit buffer clearing
->  instead using bits 1 and 2."
->
-> Have you performed tests where you fill the TX-FIFO and then
-> disable/enable the FIFO to see if the TX-bytes survive?
+Hmm, OK:
+$ pahole -sy uart_8250_port drivers/tty/serial/8250/8250_port.o
+uart_8250_port  784     4
 
-Sorry, I haven't conducted relevant tests. The reason I made this
-modification is that it clearly contradicts the logic of avoiding
-PSLVERR. Disabling the FIFO can at least prevent the Panic() caused by
-PSVERR.
+That's quite a few. I am not sure why we did not see this earlier? 
+Perhaps because CONFIG_FRAME_WARN is set higher for most use/compilation 
+cases.
 
->
-> John Ogness
->
-> [0] https://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Programmin=
-g
+Should we switch all probes?
 
-Thanks,
-Yunhui
+I have a patchset to move ops to a separate struct (pointer), but that's 
+far from finished and it does not save that much:
+uart_8250_port  624     4
+
+Another question is if we can introduce some lightweight struct for 
+register instead of full uart_8250_port which is copied from (and only 
+small part of it).
+
+So perhaps:
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+thanks,
+-- 
+js
+suse labs
