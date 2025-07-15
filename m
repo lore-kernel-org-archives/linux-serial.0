@@ -1,106 +1,115 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 130642E6136;
-	Tue, 15 Jul 2025 13:50:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA0DC4C83;
+	Tue, 15 Jul 2025 15:11:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752587422; cv=none; b=nSQeM90gmr8QzB2fDyUsA9rujAhSCM7Zs7TDyXu+fn427s7CBNnpQrZ+Zco/f+HyQuzhoEueH2jaAYqu+p5ZEtOnjiOvkRD5i00vfDSjhd+B9mg73Kvtwm4s4v6nW8zCfPo0PzCqzUdWt3wUCzsE7Rha2EVszw0cLnKnaFWcpE0=
+	t=1752592316; cv=none; b=Tn80zKzIgoUxgSppROpoWp8SIHnO1bCx2gpjmU6+DrmzoJvOcFZGn7k4sUGRsjckeQdQsDM2Df9BgSO4QJAgXL71Z8D1CPv0gmRG49Vj53NmS8DDh8dRs6wqmRlDFDlbThb+h8g4ARtwF8cuRSz1SAHQM32XgpGkhs52gZS62LU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752587422; c=relaxed/simple;
-	bh=+0PGXrsSAKe+iUuwlrADb2v3BmRkBV8/GR6xTlwwAMo=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=U/i9oZ8kA3RpLFZSkTm21BRt4negqC3pKfBOvQTOqx9kOzdlDRSUdi6WKUkuyfQm2E2mBtudUcwhUqf0UrlhU+LujNTYqdDs/M1SjfGlF6WWC4BFRCgPqHQIW/hAyaE5LISy/MWwzgAwi8XPzLWD399i59BWUSmxWDVRn+D0qaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.231])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4bhL874BTNz6L4wL;
-	Tue, 15 Jul 2025 21:46:47 +0800 (CST)
-Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
-	by mail.maildlp.com (Postfix) with ESMTPS id 7F934140446;
-	Tue, 15 Jul 2025 21:50:17 +0800 (CST)
-Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
- (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Tue, 15 Jul
- 2025 15:50:15 +0200
-Date: Tue, 15 Jul 2025 14:50:14 +0100
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: WangYuli <wangyuli@uniontech.com>
-CC: <airlied@gmail.com>, <akpm@linux-foundation.org>,
-	<alison.schofield@intel.com>, <andrew+netdev@lunn.ch>,
-	<andriy.shevchenko@linux.intel.com>, <arend.vanspriel@broadcom.com>,
-	<bp@alien8.de>, <brcm80211-dev-list.pdl@broadcom.com>,
-	<brcm80211@lists.linux.dev>, <colin.i.king@gmail.com>, <cvam0000@gmail.com>,
-	<dan.j.williams@intel.com>, <dave.hansen@linux.intel.com>,
-	<dave.jiang@intel.com>, <dave@stgolabs.net>, <davem@davemloft.net>,
-	<dri-devel@lists.freedesktop.org>, <edumazet@google.com>,
-	<gregkh@linuxfoundation.org>, <guanwentao@uniontech.com>, <hpa@zytor.com>,
-	<ilpo.jarvinen@linux.intel.com>, <intel-xe@lists.freedesktop.org>,
-	<ira.weiny@intel.com>, <j@jannau.net>, <jeff.johnson@oss.qualcomm.com>,
-	<jgross@suse.com>, <jirislaby@kernel.org>, <johannes.berg@intel.com>,
-	<kuba@kernel.org>, <kvalo@kernel.org>, <kvm@vger.kernel.org>,
-	<linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
-	<linux@treblig.org>, <lucas.demarchi@intel.com>, <marcin.s.wojtas@gmail.com>,
-	<ming.li@zohomail.com>, <mingo@kernel.org>, <mingo@redhat.com>,
-	<netdev@vger.kernel.org>, <niecheng1@uniontech.com>,
-	<oleksandr_tyshchenko@epam.com>, <pabeni@redhat.com>, <pbonzini@redhat.com>,
-	<quic_ramess@quicinc.com>, <ragazenta@gmail.com>, <rodrigo.vivi@intel.com>,
-	<seanjc@google.com>, <shenlichuan@vivo.com>, <simona@ffwll.ch>,
-	<sstabellini@kernel.org>, <tglx@linutronix.de>,
-	<thomas.hellstrom@linux.intel.com>, <vishal.l.verma@intel.com>,
-	<x86@kernel.org>, <xen-devel@lists.xenproject.org>, <yujiaoliang@vivo.com>,
-	<zhanjun@uniontech.com>
-Subject: Re: [PATCH v2 8/8] scripts/spelling.txt: Add notifer||notifier to
- spelling.txt
-Message-ID: <20250715145014.000075ec@huawei.com>
-In-Reply-To: <A205796B545C4241+20250715134407.540483-8-wangyuli@uniontech.com>
-References: <BD5C52D2838AEA48+20250715134050.539234-1-wangyuli@uniontech.com>
-	<A205796B545C4241+20250715134407.540483-8-wangyuli@uniontech.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1752592316; c=relaxed/simple;
+	bh=GT9YCMpmO/oGbAXwtofhY5F7e46WJk2TBT21YGNxioQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dlmFh192/alda5xZXKqeBHgfRxdwWIzLeMza3dupvtlqs8FFMyB3hrPSVi0/hv3X7G3R1ga6Gr77CXxLeZd44glUGDFaxZGWAh2DVzWuwYtj/JyP8M5W/e2/2x2aM0iDqLKtuI0wwkadALXhW4hOhUk9wYuR7tOefsISSmCyeWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q0ndQ6mS; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q0ndQ6mS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1752592315; x=1784128315;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GT9YCMpmO/oGbAXwtofhY5F7e46WJk2TBT21YGNxioQ=;
+  b=Q0ndQ6mSMIuQOLDINHH5prIeJmLF8CE1RMrncLNEZorDHJMwsB5k2UGx
+   ppy5y8Te1J+hDDTGm8OhLFziwgLr1iNJFK+4t08kEsswbgKeCnEcRvTmk
+   DmksVl3dM1rgQhFw3QaO9pnJpQ0IOagiK4OwOcI055ZxtCEU584dPq6E7
+   wd49OylARGVDaBVphLwWGdUq47vqHJaXlQS67P679iR8OLKVIk+9eNu8H
+   tKdx2ymhVp59Iby8RtNlHBX4zMPd+ozL4GHwhLzVUeT3AY+N6raphXxnr
+   vmqJpAFZ8GOyMenp5cTFEeQPdptb2Ih9ThG/1KmkqIx9z6QwctcuJEnPa
+   g==;
+X-CSE-ConnectionGUID: sk9lAPRSSH+je3lRNl9JQQ==
+X-CSE-MsgGUID: E79l3cX5Sx2XYzLQSlAIdQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="54907821"
+X-IronPort-AV: E=Sophos;i="6.16,313,1744095600"; 
+   d="scan'208";a="54907821"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 08:09:24 -0700
+X-CSE-ConnectionGUID: kRlxMx3/SPu8BGSVLj+Ezg==
+X-CSE-MsgGUID: VgyJUB25RxeWdk6pmX7cWw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,313,1744095600"; 
+   d="scan'208";a="157354678"
+Received: from tcingleb-desk1.amr.corp.intel.com (HELO [10.125.111.148]) ([10.125.111.148])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 08:09:19 -0700
+Message-ID: <841e6d14-e3cc-4c23-9256-96f0c4e2d761@intel.com>
+Date: Tue, 15 Jul 2025 08:09:18 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/8] cxl: mce: Fix typo "notifer"
+To: WangYuli <wangyuli@uniontech.com>
+Cc: airlied@gmail.com, akpm@linux-foundation.org, alison.schofield@intel.com,
+ andrew+netdev@lunn.ch, andriy.shevchenko@linux.intel.com,
+ arend.vanspriel@broadcom.com, bp@alien8.de,
+ brcm80211-dev-list.pdl@broadcom.com, brcm80211@lists.linux.dev,
+ colin.i.king@gmail.com, cvam0000@gmail.com, dan.j.williams@intel.com,
+ dave.hansen@linux.intel.com, dave@stgolabs.net, davem@davemloft.net,
+ dri-devel@lists.freedesktop.org, edumazet@google.com,
+ gregkh@linuxfoundation.org, guanwentao@uniontech.com, hpa@zytor.com,
+ ilpo.jarvinen@linux.intel.com, intel-xe@lists.freedesktop.org,
+ ira.weiny@intel.com, j@jannau.net, jeff.johnson@oss.qualcomm.com,
+ jgross@suse.com, jirislaby@kernel.org, johannes.berg@intel.com,
+ jonathan.cameron@huawei.com, kuba@kernel.org, kvalo@kernel.org,
+ kvm@vger.kernel.org, linux-cxl@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ linux-wireless@vger.kernel.org, linux@treblig.org, lucas.demarchi@intel.com,
+ marcin.s.wojtas@gmail.com, ming.li@zohomail.com, mingo@kernel.org,
+ mingo@redhat.com, netdev@vger.kernel.org, niecheng1@uniontech.com,
+ oleksandr_tyshchenko@epam.com, pabeni@redhat.com, pbonzini@redhat.com,
+ quic_ramess@quicinc.com, ragazenta@gmail.com, rodrigo.vivi@intel.com,
+ seanjc@google.com, shenlichuan@vivo.com, simona@ffwll.ch,
+ sstabellini@kernel.org, tglx@linutronix.de,
+ thomas.hellstrom@linux.intel.com, vishal.l.verma@intel.com, x86@kernel.org,
+ xen-devel@lists.xenproject.org, yujiaoliang@vivo.com, zhanjun@uniontech.com
+References: <BD5C52D2838AEA48+20250715134050.539234-1-wangyuli@uniontech.com>
+ <65FC7B96ECBDB052+20250715134407.540483-2-wangyuli@uniontech.com>
+Content-Language: en-US
+From: Dave Jiang <dave.jiang@intel.com>
+In-Reply-To: <65FC7B96ECBDB052+20250715134407.540483-2-wangyuli@uniontech.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml100002.china.huawei.com (7.191.160.241) To
- frapeml500008.china.huawei.com (7.182.85.71)
 
-On Tue, 15 Jul 2025 21:44:07 +0800
-WangYuli <wangyuli@uniontech.com> wrote:
 
-> This typo was not listed in scripts/spelling.txt, thus it was more
-> difficult to detect. Add it for convenience.
+
+On 7/15/25 6:44 AM, WangYuli wrote:
+> According to the context, "mce_notifer" should be "mce_notifier".
 > 
 > Link: https://lore.kernel.org/all/B3C019B63C93846F+20250715071245.398846-1-wangyuli@uniontech.com/
-
-Adding a link tag to your own previous patch doesn't seem particularly
-useful as something to end up in the git log (which depending on
-maintainer preference may gain a link tag to this version).
-
+> Fixes: 516e5bd0b6bf ("cxl: Add mce notifier to emit aliased address for extended linear cache")
 > Signed-off-by: WangYuli <wangyuli@uniontech.com>
-other than that, LGTM
 
-Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
-
+Reviewed-by: Dave Jiang <dave.jiang@intel.com>
 > ---
->  scripts/spelling.txt | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/cxl/core/mce.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/scripts/spelling.txt b/scripts/spelling.txt
-> index c9a6df5be281..d824c4b17390 100644
-> --- a/scripts/spelling.txt
-> +++ b/scripts/spelling.txt
-> @@ -1099,6 +1099,7 @@ notication||notification
->  notications||notifications
->  notifcations||notifications
->  notifed||notified
-> +notifer||notifier
->  notity||notify
->  notfify||notify
->  nubmer||number
+> diff --git a/drivers/cxl/core/mce.h b/drivers/cxl/core/mce.h
+> index ace73424eeb6..ca272e8db6c7 100644
+> --- a/drivers/cxl/core/mce.h
+> +++ b/drivers/cxl/core/mce.h
+> @@ -7,7 +7,7 @@
+>  
+>  #ifdef CONFIG_CXL_MCE
+>  int devm_cxl_register_mce_notifier(struct device *dev,
+> -				   struct notifier_block *mce_notifer);
+> +				   struct notifier_block *mce_notifier);
+>  #else
+>  static inline int
+>  devm_cxl_register_mce_notifier(struct device *dev,
 
