@@ -1,99 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2357253356;
-	Wed, 16 Jul 2025 09:33:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774B628D845;
+	Wed, 16 Jul 2025 09:44:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752658441; cv=none; b=pju08R5PiGjc4x2fOzv9EsTNfvk4GhANmrubQTezN3gdfrYZHSl1g6OLZhpwbzcDVWriaYZBC/lwcITkmsgjdaoNHOSHRduHIrhSmyHW7h7qBXjTaD5b5bh2iiLjSxRN0pM7yNKFAbtIMYVOMSXfMAqNCANHWqny2/dvgMfoglg=
+	t=1752659080; cv=none; b=ehrqnD9Bp2bJuHcieDL3Izfc7K73wtPR1bIkzwnE+ljXiNM6ysfpaYqWxYJLsAKxlINDIhg6WglgJYTXdrx367B7C3N6mq14nFS2f8nn0g1RGXs/O/AQ8XXnCXCxbRIrKM6M5/OcF0xz0ocagAjjXWMAHG1Y69rIJjF+A/zzynU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752658441; c=relaxed/simple;
-	bh=cHEfhWFXrCybHnY54wFHNIDzIVXMALti3G4z6Ampkx4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pa8tYX7fH4/89BHigRWOaLonChW5Vt2YWHaiJja7ysrY6YY47UZhF9gSjR1D0UDoZfAziqqipsUU9gy6Je7Zb8Tu7gpJJ3HPBYgyrRoXUE30nZf6J9o6arurCmKPZ2Qrj1CcuDGvUdoHFOVy2aZuBayPwes40uOcbP+FVpIxmgY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hux4SLkM; arc=none smtp.client-ip=198.175.65.9
+	s=arc-20240116; t=1752659080; c=relaxed/simple;
+	bh=70dnor/nTD+LjKVjPMg3BV0opu9Xv/9P+qFJTnpt90w=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UuktR7QdYOKv5/MMH9/r+1A9L4PPgF699y5AGFmUioGYN4N5hXnZYUQ+RfPLHZpIqXVhHgfZQ+SifIdfjcuv3LFTN4PcX6+5h9s8LHYgbMFbwP4YU++ZKjyEAgtXC3rMwWmvmjKxE2XlSdZkn6zoHbdhd4xcA/w96efrj8eV6EE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MzNiHclz; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hux4SLkM"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MzNiHclz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752658440; x=1784194440;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cHEfhWFXrCybHnY54wFHNIDzIVXMALti3G4z6Ampkx4=;
-  b=Hux4SLkMt39Qu6MBoQUCgEWyFikTjHGsXP0uJ8Z1OIcykrmu+v29yVk/
-   vck/Q1raZuTzPzGxyqpjHmoYnvYQgnO7r/sTi+/xKhz6tML+JJcx/kSdE
-   wBCqy1C284bp8XZn57r+EPNQtZmlpln4+J54bqIURijc3bAiDYbV9JfCw
-   X8+DQvgG94S9nNUkFj5FpukAeD9EljN7TzNx6M6u6WN77yGrCH7mw068k
-   +xiG2wpZK1VXk1FoIdJv9qGlGsiTwMM/EEVjyWh3jM2GgtQx0gV2kX2jo
-   X23HveKBdUvyGYpJ80vCEmxqI1hKOJCmTsDWUMIla0YGQMbS9xswcSjvJ
-   g==;
-X-CSE-ConnectionGUID: ETTONqHqS1SeSqMHRiXdxQ==
-X-CSE-MsgGUID: ANUpcb+DTsSALceBPUb51g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="77427916"
+  t=1752659079; x=1784195079;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=70dnor/nTD+LjKVjPMg3BV0opu9Xv/9P+qFJTnpt90w=;
+  b=MzNiHclzRTKqjWnfsfayCQgGUPJOJoDeTZuifEnGvYDD6y+OnXD6TUHh
+   J8Uxw34Bw9amP3h8SN8tOQMBQPWUpDTGGQ5zzOE+iUCSQE1QW4fafBAI9
+   l7vFAiIPfx4q4+KkQNdApqOclkE8+JJ2PgajLmcadYFchV31XFSpZMpfe
+   wJnfE3OuXMkV1delqT/d8LmpL6yrg7tc1OuoZP+ys8ce5Ee8FMp2sTD1m
+   RF+UT9CbTCsz6gNGAkCWjZe2ICe7uWiuGnZupObAzmIqe41RvqCm3wFpJ
+   y6rRAXev0Pwttj42GeVR8jpQsT1yEhBdoToQHvzCYVT8/eK/E7lsypsJW
+   A==;
+X-CSE-ConnectionGUID: EDPC3rrrTomCNVI+VkMxVw==
+X-CSE-MsgGUID: dP6jM9zUSxCeTrXwGFRHbQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="54605666"
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="77427916"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 02:33:59 -0700
-X-CSE-ConnectionGUID: m4U72yvrQR2K5QYw9WxicQ==
-X-CSE-MsgGUID: +SA32eI3TFmM0uncvx428w==
+   d="scan'208";a="54605666"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 02:44:38 -0700
+X-CSE-ConnectionGUID: r84Ue1x+TqqT7f1gLzea7A==
+X-CSE-MsgGUID: DC39NBUpRmyecJF4o7yc5Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="161479108"
-Received: from smile.fi.intel.com ([10.237.72.52])
-  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 02:33:57 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1ubyWQ-0000000FtoD-2doD;
-	Wed, 16 Jul 2025 12:33:54 +0300
-Date: Wed, 16 Jul 2025 12:33:54 +0300
+   d="scan'208";a="157125367"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmviesa007.fm.intel.com with ESMTP; 16 Jul 2025 02:44:35 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 744FF15E; Wed, 16 Jul 2025 12:44:34 +0300 (EEST)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
-	Linux Next Mailing List <linux-next@vger.kernel.org>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	linux-serial@vger.kernel.org,
-	"maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-Subject: Re: linux-next: Tree for Jul 15
- (drivers/tty/serial/8250/8250_ce4100.c)
-Message-ID: <aHdyAm8tA64YSdOt@smile.fi.intel.com>
-References: <20250715204504.36f41a8e@canb.auug.org.au>
- <cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH v1 1/1] serial: 8250_ce4100: Fix CONFIG_SERIAL_8250=n build
+Date: Wed, 16 Jul 2025 12:44:33 +0300
+Message-ID: <20250716094433.1611477-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.47.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jul 15, 2025 at 06:42:52PM -0700, Randy Dunlap wrote:
-> On 7/15/25 3:45 AM, Stephen Rothwell wrote:
-> > 
-> > Changes since 20250714:
-> 
-> on i386, when
-> CONFIG_X86_INTEL_CE=y
-> # CONFIG_SERIAL_8250 is not set
-> 
-> ../drivers/tty/serial/8250/8250_ce4100.c:90:13: error: redefinition of 'sdv_serial_fixup'
->    90 | void __init sdv_serial_fixup(void)
->       |             ^~~~~~~~~~~~~~~~
-> In file included from ../drivers/tty/serial/8250/8250_ce4100.c:12:
-> ../arch/x86/include/asm/ce4100.h:10:20: note: previous definition of 'sdv_serial_fixup' with type 'void(void)'
->    10 | static inline void sdv_serial_fixup(void) {};
->       |                    ^~~~~~~~~~~~~~~~
+On i386, when
 
-Indeed, thanks.
-I'll make a fix ASAP.
+  CONFIG_X86_INTEL_CE=y
+  # CONFIG_SERIAL_8250 is not set
 
+will try to compile the driver and use the stub simultaneously.
+This breaks the build. Fix it by making sure that the driver
+compiles only when CONFIG_SERIAL_8250 is also enabled.
+
+Fixes: acc902de05b2 ("serial: 8250: Move CE4100 quirks to a module under 8250 driver")
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Closes: https://lore.kernel.org/r/cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/tty/serial/8250/Makefile | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+index e61dc3f4ca50..1d6633bbcd70 100644
+--- a/drivers/tty/serial/8250/Makefile
++++ b/drivers/tty/serial/8250/Makefile
+@@ -24,7 +24,9 @@ obj-$(CONFIG_SERIAL_8250_ASPEED_VUART)	+= 8250_aspeed_vuart.o
+ obj-$(CONFIG_SERIAL_8250_BCM2835AUX)	+= 8250_bcm2835aux.o
+ obj-$(CONFIG_SERIAL_8250_BCM7271)	+= 8250_bcm7271.o
+ obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
++ifneq ($(CONFIG_SERIAL_8250),)
+ obj-$(CONFIG_X86_INTEL_CE)		+= 8250_ce4100.o
++endif
+ obj-$(CONFIG_SERIAL_8250_DFL)		+= 8250_dfl.o
+ obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
+ obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.47.2
 
