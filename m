@@ -1,38 +1,37 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6AF626FD91;
-	Tue, 15 Jul 2025 21:00:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B67D265629;
+	Wed, 16 Jul 2025 01:42:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752613224; cv=none; b=uIHjTgKhiDu4RDpRUVrfLJ2aPMWidJAbzpCYzNT59AFWXVwBCBwHzCUcjpzVPeBDIK8TbJSZubwUVAfnZfwaqwWjAzQvNglk7pFH75CXYRD0BxPcgLlsOXHddS6N3QI3WJ8M3M9i5ieC5MgT4c6iPlD2VS1NI2J+7tS4SpIXLcQ=
+	t=1752630175; cv=none; b=ctpJVuIOENl39oO2ywQUanjo7Sucp9oAgTJUQYFg7Qi/CMIZHzAts0JeQdo572Dpn4pfMPPriuxZLB5NBUdG2+noMvpt8wO7/WuwI3Zc5p/o34NfES03noyFapxW8+27LuftXQ+ou9rQjpbj8eQO1/RZk3AVC548irfa6gr9SDA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752613224; c=relaxed/simple;
-	bh=NdQnNA3fF02ohjHshOAcpzNoezt4dBDZURm8yQYNoFE=;
-	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=lPDJhtuPCol6aTJ2tf1Dzud5zz2dmqH+Toj+2AlPrFhG2YMQAPSRsNIpLTswCZKGmeIYphhGtWAWQBMjDsBfG0HUSMVW9z2IL0zZIktLfj1+b5e4z3W+5Y5W9Nn3HeL5dDxwt23e80w21trwrRo8cpCp1gW3mt1T9GHrM8MgOCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=Ekin6gO+; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	s=arc-20240116; t=1752630175; c=relaxed/simple;
+	bh=8jrHdDLCectCc7kxbgsKtZpe5CPY6lgHKHvUPyjcm5I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LNxLLqI6zV84wuxzGbJwzaxmIsbZ504b9YCyDaL7pfzyuDNN1Pg3fQlOkw1K6f+UFdnpNEYBIyJs7d4z8Zu5Vp/0VcOpaXBvvg83G6XaJJtbL6gh7h2lV66Ac4KQKlJ8Q1wqQJ1r8VE6I6vQz51LCquiPm+k5z98uqaMDxuQlHs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=L3iS0V2y; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="Ekin6gO+"
-Received: from [IPV6:2601:646:8081:9482:6556:8629:7dba:d48c] ([IPv6:2601:646:8081:9482:6556:8629:7dba:d48c])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 56FL0F0w1148310
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Tue, 15 Jul 2025 14:00:15 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 56FL0F0w1148310
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025062101; t=1752613215;
-	bh=nFH2JFEH395RyzNce7lxw11nURFzbDl8EM5cGZUF/V0=;
-	h=Date:To:Cc:From:Subject:From;
-	b=Ekin6gO+YziYS5cDuQvphQsNWdfBy3QrYYhZzKvZW6oHYxRbtVXGmm19Q5TqGl1mQ
-	 MhGgcWT8H7WlPSJJCVTnkCFEz91vIs7DxrlIrTA5vIH+vRDql4VPmj59LI29qmD9GR
-	 b/MJiRmmqRoy3iZfzzCXJkbovIru2HMJlp5wcUFBkjBds/KOUknARB70c+E4wcfVRs
-	 iwtV5W2qpaIx8/be/XzWNmtWcu2xeWpg0vFWWr+FMl3xs8E4bTlLX745s4gWgbtWm/
-	 rlmZLQMEPTrCygHUh9HcUYtz8J1cgX1kXAhr4+Lh2choq2VOEWUqH4oKRnjL/MnXMN
-	 qbeWaz4mm9vqg==
-Message-ID: <ce54ae11-72bb-4ac7-980b-c1cbc798a209@zytor.com>
-Date: Tue, 15 Jul 2025 14:00:10 -0700
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="L3iS0V2y"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=cI3lXGmPd9uRkmTEC2w5W2FpAay+HKfJYaInML9LnuY=; b=L3iS0V2y/9FTcesSq4n0t0CB5O
+	zffU6qOcpz45pUuTy7Be+ozN0lEHAGvswR7AL+zrObVoZFsGiMpdCQ6biplpsDnObiNNJg+uTsVOw
+	yJ7Cjwllae17ngFt4HMwbnnnfvjYBzbDJgmJJzDWkNR6YQGiA81PR6NDPTbWIv28cYaeSGxuhQ0j5
+	mDwbozx0dxBgzcvBueP79qPSnr/k0JQtn9BH3rpW3AeIYNbFkh2auOP3v2Wvv6xRmfDr9tccW60nR
+	fPydgonhorUPxdfP32N+HJQnqDCT+3clTjXWPdzRmYzVIEa4qw0nPnb9s6zNEWYMNQteTUStH/MpO
+	U6cbeZzw==;
+Received: from [50.53.25.54] (helo=[192.168.254.17])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1ubrAa-00000006Yoc-3mfY;
+	Wed, 16 Jul 2025 01:42:52 +0000
+Message-ID: <cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org>
+Date: Tue, 15 Jul 2025 18:42:52 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,30 +39,43 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
+Subject: Re: linux-next: Tree for Jul 15
+ (drivers/tty/serial/8250/8250_ce4100.c)
+To: Stephen Rothwell <sfr@canb.auug.org.au>,
+ Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ linux-serial@vger.kernel.org,
+ "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+References: <20250715204504.36f41a8e@canb.auug.org.au>
 Content-Language: en-US
-To: Oliver Neukum <oneukum@suse.com>
-Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, Jiri Slaby <jirislaby@kernel.org>,
-        linux-serial@vger.kernel.org
-From: "H. Peter Anvin" <hpa@zytor.com>
-Subject: USB cdc-acm driver: break and command
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20250715204504.36f41a8e@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-Hi,
 
-I noticed looking at the CDC-ACM driver that it uses the assert/local 
-delay/deassert method of sending BREAK.  Given that the CDC model has a 
-delay specifier in the command packet, is there any reason not to set 
-TTY_DRIVER_HARDWARE_BREAK and sending only one packet?
 
-I'm also wondering if it would make sense to support the 
-SEND_ENCAPSULATED_COMMAND and GET_ENCAPSULATED_RESPONSE commands, 
-presumably via an ioctl().  I'm not 100% sure because I'm not sure there 
-aren't potential security issues.
+On 7/15/25 3:45 AM, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Changes since 20250714:
+> 
 
-I'm guessing both of these could be of some use to embedded devices that 
-emulate a ttyACM serial port.
+on i386, when
+CONFIG_X86_INTEL_CE=y
+# CONFIG_SERIAL_8250 is not set
 
-	-hpa
+
+../drivers/tty/serial/8250/8250_ce4100.c:90:13: error: redefinition of 'sdv_serial_fixup'
+   90 | void __init sdv_serial_fixup(void)
+      |             ^~~~~~~~~~~~~~~~
+In file included from ../drivers/tty/serial/8250/8250_ce4100.c:12:
+../arch/x86/include/asm/ce4100.h:10:20: note: previous definition of 'sdv_serial_fixup' with type 'void(void)'
+   10 | static inline void sdv_serial_fixup(void) {};
+      |                    ^~~~~~~~~~~~~~~~
+
+
+-- 
+~Randy
 
