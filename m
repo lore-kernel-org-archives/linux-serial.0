@@ -1,81 +1,66 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B67D265629;
-	Wed, 16 Jul 2025 01:42:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9DBC17B50A;
+	Wed, 16 Jul 2025 06:58:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752630175; cv=none; b=ctpJVuIOENl39oO2ywQUanjo7Sucp9oAgTJUQYFg7Qi/CMIZHzAts0JeQdo572Dpn4pfMPPriuxZLB5NBUdG2+noMvpt8wO7/WuwI3Zc5p/o34NfES03noyFapxW8+27LuftXQ+ou9rQjpbj8eQO1/RZk3AVC548irfa6gr9SDA=
+	t=1752649093; cv=none; b=r5tWjHaCA08P3TSnir6X38UZjiMWnIJ1QS65dYLr6AwCmRacDY+raXdBjOk+AiN7wZkiDkcPwFOTEdYxK8oh6JVvUHJANQbxsPSCZU40eEOaaAVq8A6C4bx688TzgKo+JOd+VBtCsalce+wJW6Aient4PhDCIv8mPosU5pWMBtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752630175; c=relaxed/simple;
-	bh=8jrHdDLCectCc7kxbgsKtZpe5CPY6lgHKHvUPyjcm5I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LNxLLqI6zV84wuxzGbJwzaxmIsbZ504b9YCyDaL7pfzyuDNN1Pg3fQlOkw1K6f+UFdnpNEYBIyJs7d4z8Zu5Vp/0VcOpaXBvvg83G6XaJJtbL6gh7h2lV66Ac4KQKlJ8Q1wqQJ1r8VE6I6vQz51LCquiPm+k5z98uqaMDxuQlHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=L3iS0V2y; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1752649093; c=relaxed/simple;
+	bh=dprRUhqdgfAk9X4hFRnI4ZYwibR+dNU2S1xSkcPS0SY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dnYqAwIL/VlFFkqKzPpyJLKS7fw47n3OHPKMjl/L/DqcXLUB/48fLXQI1y8EQ8+LSJYoLffmwtaakMuJn1sxLKK05XzJmMNCeTCw5F8EJCN9rPkXA4BxVFTGpztTdYZHfZ2T2oatfo7TpPdqNXxAFLmyg3Y5eNRgSjZL8YX+gBc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=lhsbAi6r; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="L3iS0V2y"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=cI3lXGmPd9uRkmTEC2w5W2FpAay+HKfJYaInML9LnuY=; b=L3iS0V2y/9FTcesSq4n0t0CB5O
-	zffU6qOcpz45pUuTy7Be+ozN0lEHAGvswR7AL+zrObVoZFsGiMpdCQ6biplpsDnObiNNJg+uTsVOw
-	yJ7Cjwllae17ngFt4HMwbnnnfvjYBzbDJgmJJzDWkNR6YQGiA81PR6NDPTbWIv28cYaeSGxuhQ0j5
-	mDwbozx0dxBgzcvBueP79qPSnr/k0JQtn9BH3rpW3AeIYNbFkh2auOP3v2Wvv6xRmfDr9tccW60nR
-	fPydgonhorUPxdfP32N+HJQnqDCT+3clTjXWPdzRmYzVIEa4qw0nPnb9s6zNEWYMNQteTUStH/MpO
-	U6cbeZzw==;
-Received: from [50.53.25.54] (helo=[192.168.254.17])
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1ubrAa-00000006Yoc-3mfY;
-	Wed, 16 Jul 2025 01:42:52 +0000
-Message-ID: <cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org>
-Date: Tue, 15 Jul 2025 18:42:52 -0700
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="lhsbAi6r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEF68C4CEF0;
+	Wed, 16 Jul 2025 06:58:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1752649093;
+	bh=dprRUhqdgfAk9X4hFRnI4ZYwibR+dNU2S1xSkcPS0SY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lhsbAi6rdu9+wyhHrTOmLTo3NA+aBHDo9JhVPhBiNLItVg/MY9fxrRrkmqJWrCEIw
+	 15Xfl77zoD/JyAow3UlLS7a9tzZcRB6RwVT1NxESF6Hfqp2q8Sgz1qQJn6YLTcshv8
+	 ug2eURrKZ8U73b7I9gyok0AmUldZDgzBv6ZQroU4=
+Date: Wed, 16 Jul 2025 08:58:10 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: "H. Peter Anvin" <hpa@zytor.com>
+Cc: Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org
+Subject: Re: USB cdc-acm driver: break and command
+Message-ID: <2025071652-afar-cornhusk-0830@gregkh>
+References: <ce54ae11-72bb-4ac7-980b-c1cbc798a209@zytor.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: linux-next: Tree for Jul 15
- (drivers/tty/serial/8250/8250_ce4100.c)
-To: Stephen Rothwell <sfr@canb.auug.org.au>,
- Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- linux-serial@vger.kernel.org,
- "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
-References: <20250715204504.36f41a8e@canb.auug.org.au>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20250715204504.36f41a8e@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ce54ae11-72bb-4ac7-980b-c1cbc798a209@zytor.com>
 
-
-
-On 7/15/25 3:45 AM, Stephen Rothwell wrote:
-> Hi all,
+On Tue, Jul 15, 2025 at 02:00:10PM -0700, H. Peter Anvin wrote:
+> Hi,
 > 
-> Changes since 20250714:
+> I noticed looking at the CDC-ACM driver that it uses the assert/local
+> delay/deassert method of sending BREAK.  Given that the CDC model has a
+> delay specifier in the command packet, is there any reason not to set
+> TTY_DRIVER_HARDWARE_BREAK and sending only one packet?
 > 
+> I'm also wondering if it would make sense to support the
+> SEND_ENCAPSULATED_COMMAND and GET_ENCAPSULATED_RESPONSE commands, presumably
+> via an ioctl().  I'm not 100% sure because I'm not sure there aren't
+> potential security issues.
+> 
+> I'm guessing both of these could be of some use to embedded devices that
+> emulate a ttyACM serial port.
 
-on i386, when
-CONFIG_X86_INTEL_CE=y
-# CONFIG_SERIAL_8250 is not set
+No idea why this is that way, sorry.  Try making the change and see if
+it actually works?
 
+thanks,
 
-../drivers/tty/serial/8250/8250_ce4100.c:90:13: error: redefinition of 'sdv_serial_fixup'
-   90 | void __init sdv_serial_fixup(void)
-      |             ^~~~~~~~~~~~~~~~
-In file included from ../drivers/tty/serial/8250/8250_ce4100.c:12:
-../arch/x86/include/asm/ce4100.h:10:20: note: previous definition of 'sdv_serial_fixup' with type 'void(void)'
-   10 | static inline void sdv_serial_fixup(void) {};
-      |                    ^~~~~~~~~~~~~~~~
-
-
--- 
-~Randy
-
+greg k-h
