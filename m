@@ -1,101 +1,99 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 399922EA72F
-	for <linux-serial@vger.kernel.org>; Wed, 16 Jul 2025 08:29:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2357253356;
+	Wed, 16 Jul 2025 09:33:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752654572; cv=none; b=Lozj95MrhsC9NczY1wXNDlIdm5qL29artLpVGEmnTYorBCClBblipUUlYjXN/PFVzVE50zmuZ8uyybgMKxw9suDNMRy9yhliuUnwzp5jmYoO/EcIlGlSSw84QzmWTIzT1X6jkRQDjbKs0i6yBVguKV+eUIIWtTnMU8FuvCwNA/s=
+	t=1752658441; cv=none; b=pju08R5PiGjc4x2fOzv9EsTNfvk4GhANmrubQTezN3gdfrYZHSl1g6OLZhpwbzcDVWriaYZBC/lwcITkmsgjdaoNHOSHRduHIrhSmyHW7h7qBXjTaD5b5bh2iiLjSxRN0pM7yNKFAbtIMYVOMSXfMAqNCANHWqny2/dvgMfoglg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752654572; c=relaxed/simple;
-	bh=/dVOnKYB8CD/wyyHbMWcCAYLrsRBtnjmn40w6cFnUfA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZaPWa6x9LhpD+W9jSUKyYugxIpxs9y7qcIkNCNvtXxi5MFOuMtABToDQZF95btdyJpwmQ4DR2097OeiI4jb0JkRtJxHbG9w/dgqHY5wU4NspFUYtIEqmuDV4inbNNyts7Mw11ivArYKM9bz8pyGcz/aZC5zrpbiqLIbLAytqris=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=TJ+DqaZf; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1752658441; c=relaxed/simple;
+	bh=cHEfhWFXrCybHnY54wFHNIDzIVXMALti3G4z6Ampkx4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Pa8tYX7fH4/89BHigRWOaLonChW5Vt2YWHaiJja7ysrY6YY47UZhF9gSjR1D0UDoZfAziqqipsUU9gy6Je7Zb8Tu7gpJJ3HPBYgyrRoXUE30nZf6J9o6arurCmKPZ2Qrj1CcuDGvUdoHFOVy2aZuBayPwes40uOcbP+FVpIxmgY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hux4SLkM; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="TJ+DqaZf"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-3a4fb9c2436so3872139f8f.1
-        for <linux-serial@vger.kernel.org>; Wed, 16 Jul 2025 01:29:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1752654568; x=1753259368; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kTS987hZr2/BPWLmY8oveEZ2X67lASpu1Bb54ts50jo=;
-        b=TJ+DqaZfl0zIkqswkSGb6b5pGV9HjXtR9W602M0rVQSG5DF65rjluDPe+4ILj9b0xD
-         dQdGk+32aL1h6rxwo/lmrOc4pUZ/8LUMZ9u/noYWD8KZMRM/qJS6PorYHnu35IVMgeyS
-         9tmAiw9zyY+Y4or08t2QxQm3vpQiZKYyy4yfMlJ8QqYvxbXa1q5KVodNevEzG0lpvLWf
-         zVyAR/H006nurUAGEEZx0AmFMCLmEPeXsYjPfhOW9OASpo3W5S1WX5WSgE1/ZhwYWtlo
-         EDtoSWGFOyIDh2xOD0LCgtbPQhm3fDnEMIg9faXtbQICCpUH3uJflijVdayK9HDzQGbj
-         ZyNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752654568; x=1753259368;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kTS987hZr2/BPWLmY8oveEZ2X67lASpu1Bb54ts50jo=;
-        b=m5pS1MuDXlJ8UPo3eUz/Wx9gKNW0ujWQIa+hApX5GAmXbAyxI8b8/3rvl4JjJiT8Lv
-         N0JY1d6gmP5cUM5Xixu0hESOMjfzB0w4jW28kqcTCNqS1BE8PdYOfWGRk4kUOnN0FjRR
-         vtU24WPIIkeVlV1Pt40Ebw9NFl/Uapxph0FKquPeaGbTPQqgLF+Kc2wWPlLclR61BboR
-         z9TXdIavomAbfGW7Isx9lfdlaZb+FX+LO/5s88E5mKni2yjP+nQplf+E3HYOTt+jm7Lo
-         Ke6Bkrsqpl1ty7NrcWospgrmGzsjhbYUhB2C+TXrnT08LqRo/uqnOxuEyz4Eqv06g7Xs
-         G0Uw==
-X-Forwarded-Encrypted: i=1; AJvYcCWqgr1DSPEYk+ICQXhADu54MeVaKws62xasnyH5N/EwUir61c5DfNBeKo4I0AN8ebfdeRdlTcT9PXv5dd4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxSqIXmnoB+/kLn6K0PS33yGVG63VRUa0F3FGO+DOF9glX/bAYV
-	bKzX6vlcfAf8rNfddPhbfLVAKGGHQGR4VES326gDTQqI+muCWEfqRfue/8gAqFzcwaA=
-X-Gm-Gg: ASbGncs4E1XKrkc/rWRR3P0pfxErOv3kHKi7l+L9Qwe+ZSWIxl82pwq2JfD11b84pf1
-	EkCY0eW3Ad7KipQmj9Hc/xMlK+Y7BD2BeOOSwjo/g+TMm4C8COX8pDO8DpEfagueVo8E5DPE+I8
-	TMi5Iqh+3N5GIu6BjJ0qa5Lzthank9C/13MUzHahY4sCMkvw+T75Vz5aqfK++mwnMQfKejTw6Dm
-	IIbE5RRj9vV9tAPpAR0b7h8o3KdZNVyXjZ5mMacoM8fAY4gVTuldA/AdqfXjJp7uwfkN2lMuAAY
-	cgo2zDO5JunJr6nRc6l6+jci4XrEOvtmeO41exEfAdMDy7/rYzLEO6s3SljGJ8HShhyuq7kmEh5
-	Kr+uNrIud6Qwab1pVHg0tSrKUmBY736FyI6fsog2HNw3fDjLDrH8qhDzglygx5Tx4xQ==
-X-Google-Smtp-Source: AGHT+IFSZH4omeTXZAl7Lh2gjNFC0tMnhjbsZXaH62GbzEcddv2hbbklP4Avf1fLgsmVBRMpxR52/g==
-X-Received: by 2002:adf:9ccb:0:b0:3a5:39d7:3f17 with SMTP id ffacd0b85a97d-3b60dd898c7mr1162606f8f.47.1752654568473;
-        Wed, 16 Jul 2025 01:29:28 -0700 (PDT)
-Received: from ?IPV6:2001:a61:133f:9e01:b1a5:79c8:d196:e761? ([2001:a61:133f:9e01:b1a5:79c8:d196:e761])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8e1e332sm17275063f8f.79.2025.07.16.01.29.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 16 Jul 2025 01:29:28 -0700 (PDT)
-Message-ID: <fa20ab91-5ebf-427d-b938-31ea6fb945cf@suse.com>
-Date: Wed, 16 Jul 2025 10:29:27 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hux4SLkM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1752658440; x=1784194440;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cHEfhWFXrCybHnY54wFHNIDzIVXMALti3G4z6Ampkx4=;
+  b=Hux4SLkMt39Qu6MBoQUCgEWyFikTjHGsXP0uJ8Z1OIcykrmu+v29yVk/
+   vck/Q1raZuTzPzGxyqpjHmoYnvYQgnO7r/sTi+/xKhz6tML+JJcx/kSdE
+   wBCqy1C284bp8XZn57r+EPNQtZmlpln4+J54bqIURijc3bAiDYbV9JfCw
+   X8+DQvgG94S9nNUkFj5FpukAeD9EljN7TzNx6M6u6WN77yGrCH7mw068k
+   +xiG2wpZK1VXk1FoIdJv9qGlGsiTwMM/EEVjyWh3jM2GgtQx0gV2kX2jo
+   X23HveKBdUvyGYpJ80vCEmxqI1hKOJCmTsDWUMIla0YGQMbS9xswcSjvJ
+   g==;
+X-CSE-ConnectionGUID: ETTONqHqS1SeSqMHRiXdxQ==
+X-CSE-MsgGUID: ANUpcb+DTsSALceBPUb51g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="77427916"
+X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
+   d="scan'208";a="77427916"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 02:33:59 -0700
+X-CSE-ConnectionGUID: m4U72yvrQR2K5QYw9WxicQ==
+X-CSE-MsgGUID: +SA32eI3TFmM0uncvx428w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
+   d="scan'208";a="161479108"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 02:33:57 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1ubyWQ-0000000FtoD-2doD;
+	Wed, 16 Jul 2025 12:33:54 +0300
+Date: Wed, 16 Jul 2025 12:33:54 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: Stephen Rothwell <sfr@canb.auug.org.au>,
+	Linux Next Mailing List <linux-next@vger.kernel.org>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	linux-serial@vger.kernel.org,
+	"maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>
+Subject: Re: linux-next: Tree for Jul 15
+ (drivers/tty/serial/8250/8250_ce4100.c)
+Message-ID: <aHdyAm8tA64YSdOt@smile.fi.intel.com>
+References: <20250715204504.36f41a8e@canb.auug.org.au>
+ <cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: USB cdc-acm driver: break and command
-To: "H. Peter Anvin" <hpa@zytor.com>, Oliver Neukum <oneukum@suse.com>
-Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
- gregkh@linuxfoundation.org, Jiri Slaby <jirislaby@kernel.org>,
- linux-serial@vger.kernel.org
-References: <ce54ae11-72bb-4ac7-980b-c1cbc798a209@zytor.com>
-Content-Language: en-US
-From: Oliver Neukum <oneukum@suse.com>
-In-Reply-To: <ce54ae11-72bb-4ac7-980b-c1cbc798a209@zytor.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 15.07.25 23:00, H. Peter Anvin wrote:
-> Hi,
+On Tue, Jul 15, 2025 at 06:42:52PM -0700, Randy Dunlap wrote:
+> On 7/15/25 3:45 AM, Stephen Rothwell wrote:
+> > 
+> > Changes since 20250714:
 > 
-> I noticed looking at the CDC-ACM driver that it uses the assert/local delay/deassert method of sending BREAK.  Given that the CDC model has a delay specifier in the command packet, is there any reason not to set TTY_DRIVER_HARDWARE_BREAK and sending only one packet?
+> on i386, when
+> CONFIG_X86_INTEL_CE=y
+> # CONFIG_SERIAL_8250 is not set
+> 
+> ../drivers/tty/serial/8250/8250_ce4100.c:90:13: error: redefinition of 'sdv_serial_fixup'
+>    90 | void __init sdv_serial_fixup(void)
+>       |             ^~~~~~~~~~~~~~~~
+> In file included from ../drivers/tty/serial/8250/8250_ce4100.c:12:
+> ../arch/x86/include/asm/ce4100.h:10:20: note: previous definition of 'sdv_serial_fixup' with type 'void(void)'
+>    10 | static inline void sdv_serial_fixup(void) {};
+>       |                    ^~~~~~~~~~~~~~~~
 
-1. The existing code is tested and usually works.
-2. The locking goes away. I have no idea what happens if you are
-sending a second break while a break is still going on.
+Indeed, thanks.
+I'll make a fix ASAP.
 
-> I'm also wondering if it would make sense to support the SEND_ENCAPSULATED_COMMAND and GET_ENCAPSULATED_RESPONSE commands, presumably via an ioctl().  I'm not 100% sure because I'm not sure there aren't potential security issues.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Well, one of the purposes of the CDC-ACM driver is to hide that
-you are talking to a USB device.
-In theory we could do that. I don't quite see the value.
-Sending arbitrary data from user space to a control endpoint
-does not make me happy.
 
-	HTH
-		Oliver
-  
