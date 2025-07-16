@@ -1,37 +1,85 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9DBC17B50A;
-	Wed, 16 Jul 2025 06:58:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E84B1289E0B;
+	Wed, 16 Jul 2025 07:36:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752649093; cv=none; b=r5tWjHaCA08P3TSnir6X38UZjiMWnIJ1QS65dYLr6AwCmRacDY+raXdBjOk+AiN7wZkiDkcPwFOTEdYxK8oh6JVvUHJANQbxsPSCZU40eEOaaAVq8A6C4bx688TzgKo+JOd+VBtCsalce+wJW6Aient4PhDCIv8mPosU5pWMBtc=
+	t=1752651369; cv=none; b=WdKZXw8vY8PleqQKLq3zIWv2XxsYV8NzxzYi5jg7s8ESR4uDeb0h8KgCbwuvL1kUhFjAoafeY0CwguuWVgcnL42EmDL1o+9aC4Dc+/ssfMOsbqwYuO9ulQDECoLyZpglpNWcs0J7gpoYkCeAfouksofNJqRhG2zWuat/ieb6F9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752649093; c=relaxed/simple;
-	bh=dprRUhqdgfAk9X4hFRnI4ZYwibR+dNU2S1xSkcPS0SY=;
+	s=arc-20240116; t=1752651369; c=relaxed/simple;
+	bh=SLxwHXEqd1OUWiEYMVIKGR7ibc8WPwr3uMVi8v3Vptw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dnYqAwIL/VlFFkqKzPpyJLKS7fw47n3OHPKMjl/L/DqcXLUB/48fLXQI1y8EQ8+LSJYoLffmwtaakMuJn1sxLKK05XzJmMNCeTCw5F8EJCN9rPkXA4BxVFTGpztTdYZHfZ2T2oatfo7TpPdqNXxAFLmyg3Y5eNRgSjZL8YX+gBc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=lhsbAi6r; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=a3Wy0TUFMUth4bw2g6DQaVAR0NTUpx9Ra6eREI1pkUT6PYDpnO3cJEqGHuYnzN9HRq0MMX+jCX6zcJqZqk7q4FNwYDsWo+zgBrzkIGfUgYrcFg2UZX4ycXNtufUUoeTRCvXZxy5ehVY29Unk0+vUmNIdctBt2N2ot1r0YuRZJ3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Wcivdutf; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="lhsbAi6r"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEF68C4CEF0;
-	Wed, 16 Jul 2025 06:58:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1752649093;
-	bh=dprRUhqdgfAk9X4hFRnI4ZYwibR+dNU2S1xSkcPS0SY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lhsbAi6rdu9+wyhHrTOmLTo3NA+aBHDo9JhVPhBiNLItVg/MY9fxrRrkmqJWrCEIw
-	 15Xfl77zoD/JyAow3UlLS7a9tzZcRB6RwVT1NxESF6Hfqp2q8Sgz1qQJn6YLTcshv8
-	 ug2eURrKZ8U73b7I9gyok0AmUldZDgzBv6ZQroU4=
-Date: Wed, 16 Jul 2025 08:58:10 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jiri Slaby <jirislaby@kernel.org>,
-	linux-serial@vger.kernel.org
-Subject: Re: USB cdc-acm driver: break and command
-Message-ID: <2025071652-afar-cornhusk-0830@gregkh>
-References: <ce54ae11-72bb-4ac7-980b-c1cbc798a209@zytor.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Wcivdutf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1752651368; x=1784187368;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SLxwHXEqd1OUWiEYMVIKGR7ibc8WPwr3uMVi8v3Vptw=;
+  b=WcivdutfNN85F3mKegftkmmAZb+XjPuJfrkFzfKcbSqRtiEm+0FTko9J
+   hOKeWXNTHcZYwbhaSUmZ+Mz/KgvW3b2NSNYMxOytV7D6abEHyQ8IIWZUL
+   0+cdpXvhCjfFZVIDRWRCwGjf2xJyNIrx3hTKEGQ1LeYUJN+e5v5iC9Yda
+   flIFXWihWfs8tV6bsicjiK1hzqYRU15SGcygv1tKOdQsn/mJ2Y9YJkHJ1
+   Ql8Vzef3cszNYdPvrbPCXl1AN12E7eGLEiONwhIY3dJnsyiTRDwt3gs79
+   7gEEwzFz1kajNIhq3bRVmim/owVAOynUWL5R4u4mXj1h2m5zk8wmLpNnQ
+   A==;
+X-CSE-ConnectionGUID: bpCP9Rh7ScihEAKqgEQwvQ==
+X-CSE-MsgGUID: jBrzcU3ZT/SO6uef5YH9TQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="65458026"
+X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
+   d="scan'208";a="65458026"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:36:06 -0700
+X-CSE-ConnectionGUID: hY0dnPHtTOiIv2bf3XuWdg==
+X-CSE-MsgGUID: +jK6Yk6xTfOJ47JGHLkZWQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
+   d="scan'208";a="157985544"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:35:51 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1ubwg6-0000000Fr3T-1IQh;
+	Wed, 16 Jul 2025 10:35:46 +0300
+Date: Wed, 16 Jul 2025 10:35:46 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: WangYuli <wangyuli@uniontech.com>
+Cc: airlied@gmail.com, akpm@linux-foundation.org,
+	alison.schofield@intel.com, andrew+netdev@lunn.ch,
+	arend.vanspriel@broadcom.com, bp@alien8.de,
+	brcm80211-dev-list.pdl@broadcom.com, brcm80211@lists.linux.dev,
+	colin.i.king@gmail.com, cvam0000@gmail.com,
+	dan.j.williams@intel.com, dave.hansen@linux.intel.com,
+	dave.jiang@intel.com, dave@stgolabs.net, davem@davemloft.net,
+	dri-devel@lists.freedesktop.org, edumazet@google.com,
+	gregkh@linuxfoundation.org, guanwentao@uniontech.com, hpa@zytor.com,
+	ilpo.jarvinen@linux.intel.com, intel-xe@lists.freedesktop.org,
+	ira.weiny@intel.com, j@jannau.net, jeff.johnson@oss.qualcomm.com,
+	jgross@suse.com, jirislaby@kernel.org, johannes.berg@intel.com,
+	jonathan.cameron@huawei.com, kuba@kernel.org, kvalo@kernel.org,
+	kvm@vger.kernel.org, linux-cxl@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux@treblig.org,
+	lucas.demarchi@intel.com, marcin.s.wojtas@gmail.com,
+	ming.li@zohomail.com, mingo@kernel.org, mingo@redhat.com,
+	netdev@vger.kernel.org, niecheng1@uniontech.com,
+	oleksandr_tyshchenko@epam.com, pabeni@redhat.com,
+	pbonzini@redhat.com, quic_ramess@quicinc.com, ragazenta@gmail.com,
+	rodrigo.vivi@intel.com, seanjc@google.com, shenlichuan@vivo.com,
+	simona@ffwll.ch, sstabellini@kernel.org, tglx@linutronix.de,
+	thomas.hellstrom@linux.intel.com, vishal.l.verma@intel.com,
+	x86@kernel.org, xen-devel@lists.xenproject.org,
+	yujiaoliang@vivo.com, zhanjun@uniontech.com
+Subject: Re: [PATCH v2 6/8] serial: 8250_dw: Fix typo "notifer"
+Message-ID: <aHdWUu58e_nCadX4@smile.fi.intel.com>
+References: <BD5C52D2838AEA48+20250715134050.539234-1-wangyuli@uniontech.com>
+ <2BF1749F02ADE664+20250715134407.540483-6-wangyuli@uniontech.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -40,27 +88,18 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ce54ae11-72bb-4ac7-980b-c1cbc798a209@zytor.com>
+In-Reply-To: <2BF1749F02ADE664+20250715134407.540483-6-wangyuli@uniontech.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jul 15, 2025 at 02:00:10PM -0700, H. Peter Anvin wrote:
-> Hi,
-> 
-> I noticed looking at the CDC-ACM driver that it uses the assert/local
-> delay/deassert method of sending BREAK.  Given that the CDC model has a
-> delay specifier in the command packet, is there any reason not to set
-> TTY_DRIVER_HARDWARE_BREAK and sending only one packet?
-> 
-> I'm also wondering if it would make sense to support the
-> SEND_ENCAPSULATED_COMMAND and GET_ENCAPSULATED_RESPONSE commands, presumably
-> via an ioctl().  I'm not 100% sure because I'm not sure there aren't
-> potential security issues.
-> 
-> I'm guessing both of these could be of some use to embedded devices that
-> emulate a ttyACM serial port.
+On Tue, Jul 15, 2025 at 09:44:05PM +0800, WangYuli wrote:
+> There is a spelling mistake of 'notifer' in the comment which
+> should be 'notifier'.
 
-No idea why this is that way, sorry.  Try making the change and see if
-it actually works?
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-thanks,
+-- 
+With Best Regards,
+Andy Shevchenko
 
-greg k-h
+
