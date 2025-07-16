@@ -1,39 +1,39 @@
 Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FE3F1114;
-	Wed, 16 Jul 2025 17:30:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DBBA274B30;
+	Wed, 16 Jul 2025 17:50:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752687044; cv=none; b=ASEgRjmJNkTql8JyMnSpU0fzWNnL74//O4oUfp9zn+++4uhNA6Uzyh/Mpgwa4cVONFbvAaPyTY+y9QGnO7VPf2WBvF+vFKzvzT297uMF0jOXdv0XdThNyjAjiD1THWjr/6l/mVKT6kM8vqXXYvEShwiWKnkE53EmIXJe69vh8NQ=
+	t=1752688216; cv=none; b=m2rJfnYUm8fAHTdfIN9lFPXfK9LKuh9xIYmqfeJuAbWbYvCtP1g0TB67fbuv8ql4s62XyXIc9oQDbOalIV7MMeDc4i50kJTkl7G+o3xzQJwulaPtFDvfYYJc7BmI7j7+YUIL/O631V+XxEznuj15IxXV1+2/zQpRvMxCvzpRBdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752687044; c=relaxed/simple;
-	bh=r2DRgij26xF5m6ZdI1q8r2pxawboAB2+pBWnHW4lsNo=;
+	s=arc-20240116; t=1752688216; c=relaxed/simple;
+	bh=9nN0kva0mY9DQb5DenPwdNuxS0qpXv2MXqzIS8Rgu2c=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hTNgENsJP4+c0/KRZszTrNm7ddlDShcw7Jf3xxpJ5cLo0GeSRzA5y6WhrVTxlKNp0knerfpCqC6p1p3/CdgLZZoHX5kq8rIxAGNLHCCQZDlUkQQcJmOntMv0WNPhB7C6GyAlUcoz6oEaPooLL+ojzHCdBwb4HCZxoA6OzOtOQzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=Gy2t0WPv; arc=none smtp.client-ip=198.137.202.136
+	 In-Reply-To:Content-Type; b=HvTNYYHr0mJyZJmfVuBDIbQxrVejGCDgjxRrgL9vcVThLxTqVSeXN9db16GCa0mI3Ma1NFRTEk8Js86Ld6FnDffLj3f2V2oA8wzxfzUen9PTEthoycqnLoUBzGKeTe913mfC+ZamxoBcOEOYxO1iwhyhT589hdNRYh2QOMl29aM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=KydT/K+f; arc=none smtp.client-ip=198.137.202.136
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="Gy2t0WPv"
+	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="KydT/K+f"
 Received: from [IPV6:2601:646:8081:9482:6dc:b955:47cb:dcbb] ([IPv6:2601:646:8081:9482:6dc:b955:47cb:dcbb])
 	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 56GHUYEe1625675
+	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 56GHnnt61633817
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Wed, 16 Jul 2025 10:30:34 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 56GHUYEe1625675
+	Wed, 16 Jul 2025 10:50:04 -0700
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 56GHnnt61633817
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025062101; t=1752687035;
-	bh=0trOfPgTp1BfkTElS9aX20q6MRULueSy68TJTaUES2U=;
+	s=2025062101; t=1752688210;
+	bh=bQLY2XzM/JK8U77oiXwSm5nl5s2y7cLMCH+PlWCqq2o=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Gy2t0WPvdz+He897EQMoQcH0JfPQeIHBqi7z44XsIN5Nrj6G4/vvwFJYYRm27clDo
-	 wettSG+p998Gz9erjq+lCC4bX7EDQCaZC2J6tccHwtKXmMJlAYAkggSHjdwQafbtwB
-	 YMf8KY3V0t4TStJrxg6GbjwY4G96l6b41D1Go02EWCvHFbOZWvIzmKWaIucPeSKZrg
-	 d+TpGHKh7CSjGdMeD7btX/B6WkA/u6RhXn5RhGNTc1c/1ghMNxh71cMozKMrk8UiKO
-	 88hdbru2v4FgWDxViL+nQ9hYQlK1xwJBW65aWDlrsUiSsXBlEYrXfHzn+se/6UWkcg
-	 E7ByWA8+U735A==
-Message-ID: <927f2d40-1004-4738-a1bc-0000d4d3e179@zytor.com>
-Date: Wed, 16 Jul 2025 10:30:28 -0700
+	b=KydT/K+fLzfjBcfN2UZF9/xZfqQfcsu9I6Vdb6HtNwW0n1WlesTFNCeflBGbyRT/N
+	 4AVfVELUE2faah05zLpgUwlvpR5d6PlWWUmpl8Djqs48WQN4ZCccbWpiF4rVX+tR5Q
+	 W4cxdfvuxLoXNVcZud0tumhyCJ7x8rvl6xntCYdhuOErxNJdVjvn8N5Uqn5h7XcXR4
+	 6CI919aBZLtnX6kSic9dI7HqCfMbiRjCoU1JlbvXbf9rG7nXpWw37NZPzTVXHX4IkK
+	 Rg8uOw/pXyMOzDa/qOmzjucQoY48lzhhfwz/tfFBH1aUDbKRF6Z/Czhm2H128DU6g5
+	 tJhuX+q5G+PvQ==
+Message-ID: <f979468c-434a-43e9-8c50-8e92188abc11@zytor.com>
+Date: Wed, 16 Jul 2025 10:49:43 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -57,80 +57,26 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 On 2025-07-16 09:17, Oliver Neukum wrote:
+> On 16.07.25 17:06, H. Peter Anvin wrote:
 > 
-> If you really wanted to use that API as it is right now, you'd
-> have breaks racing with each other and, worse, with open()
-> and close().
-> Are you sure POSIX says nothing about how to handle such cases?
+>> SEND_ENCAPSULATED_COMMAND at least takes a command string – it was
+>> intended, I believe, to be able to send AT commands to a modem while
+>> online without using the +++ escape code and all the potential race
+>> conditions (and security issues, since it is trivial for a user to
+>> generate) associated with that.
 > 
+> Understood. It still seems dirty to me. If you want to send strings to a
+> device
+> the proper way is to use a device node and write().
+>  
 
-This is the POSIX definition for tcsendbreak():
+There is definitely something to be said for that; or at least a file
+descriptor.  We do have cases in the kernel -- notably opening the pts
+corresponding to a ptmx file descriptor -- that do that sort of
+"auxiliary open" kind of thing.
 
-NAME
-
-    tcsendbreak — send a break for a specific duration
-
-SYNOPSIS
-
-    #include <termios.h>
-
-    int tcsendbreak(int fildes, int duration);
-
-DESCRIPTION
-
-    If the terminal is using asynchronous serial data transmission,
-tcsendbreak() shall cause transmission of a continuous stream of
-zero-valued bits for a specific duration. If duration is 0, it shall
-cause transmission of zero-valued bits for at least 0.25 seconds, and
-not more than 0.5 seconds. If duration is not 0, it shall send
-zero-valued bits for an implementation-defined period of time.
-
-    The fildes argument is an open file descriptor associated with a
-terminal.
-
-    If the terminal is not using asynchronous serial data transmission,
-it is implementation-defined whether tcsendbreak() sends data to
-generate a break condition or returns without taking any action.
-
-    Attempts to use tcsendbreak() from a process which is a member of a
-background process group on a fildes associated with its controlling
-terminal shall cause the process group to be sent a SIGTTOU signal. If
-the calling thread is blocking SIGTTOU signals or the process is
-ignoring SIGTTOU signals, the process shall be allowed to perform the
-operation, and no signal is sent.
-
-RETURN VALUE
-
-    Upon successful completion, 0 shall be returned. Otherwise, -1 shall
-be returned and errno set to indicate the error.
-
-ERRORS
-
-    The tcsendbreak() function shall fail if:
-
-    [EBADF]
-        The fildes argument is not a valid file descriptor.
-    [EIO]
-        The process group of the writing process is orphaned, the
-calling thread is not blocking SIGTTOU, and the process is not ignoring
-SIGTTOU.
-    [ENOTTY]
-        The file associated with fildes is not a terminal.
-
---- ---
-
-The only other mentions of BREAK I can find are the BRKINT and IGNBRK
-flags, respectively.
-
->
-> You'd probably have to start a timer in the driver in send_break().
-> That timer would need to be properly handled in disconnect(),
-> pre/post_reset() and suspend()
-> That API is really not nice to use.
-> 
-
-That's why I said if that is what is needed, it really belongs in the
-tty core.  That's where the current internal delay is, after all.
+The big question is how that interacts with the rest of the ACM driver,
+as well as all the lifetime issues you mentioned elsewhere.
 
 	-hpa
 
