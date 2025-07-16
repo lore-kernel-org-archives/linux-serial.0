@@ -1,123 +1,110 @@
-Received: from mail.zytor.com (terminus.zytor.com [198.137.202.136])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C51F52F88;
-	Wed, 16 Jul 2025 18:16:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.136
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE071531E8;
+	Wed, 16 Jul 2025 19:17:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752689765; cv=none; b=MUb+NLDl3umxOA+k0XN3Yt2pg9Mzu5NiLMDPhjCwN9iT8zptoNBLQDXgzjxMweN+Uvp1bV83mTWbefFrPCkikulHkKRd5h1iBFZ/6lWxx1MpRtAeZAmTumhgh6+GXA6fSf7vhnUK85f4Bdnte5Db9MlJGjQrEcDYdE04ITNaSWc=
+	t=1752693422; cv=none; b=dfrmZTHhjvXSxe63j0cDdYdfCoenZxSUwns1W/FTxdiZ2/+GUADItELq6oxsbotEFd5uq0YeAXmcXW6eNo2lDN90EmibSwJdclDs1ri4tr3oRaspjHHk9BLSGK4m5JOV9V1GQflzf1X3S2NygHrMKJpTomKj5AuzZudE712gJN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752689765; c=relaxed/simple;
-	bh=AxYk3hb0otPOpe8iCoKRDXyzipO8+IEj3pxhrwFiias=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=mv36Ox1PVk8hnD3xOC4ArP2C0pFpqq2+z1/sbV9o6l4M56er6JhN0x4fFODYCIdeuwg4xhSxltO5n5HpqPKg640zcUTQ9664JInY5hte0hvnuMaAjcCmPuRlEY2opVZb2MV+TqfJCOl9ogFF1HleuLA0yBegB0kQX4mhiXA0uzQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com; spf=pass smtp.mailfrom=zytor.com; dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b=PdYs1CW7; arc=none smtp.client-ip=198.137.202.136
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=zytor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zytor.com
+	s=arc-20240116; t=1752693422; c=relaxed/simple;
+	bh=Hzb1t+TmWWOfLRa8+ziWIU06vPGMdgiGAmm7vZmrhuA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uU8Heq0vp9MCj/5EpOuJrNQBoxEPKrhRSm1Gk0/6Fbkjiog8PghZJW0tndGxreUD3qWXezlEqtpNfQkta2XPW0wMIVdWTBTib/etMCO4EddOBoWjSYDdRY+z3cIvB9yc5V9+n2OwDuPsNupQPPe3Q8/Kkkm8PaOWPFg0kdzaMGk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=MjsRwwgy; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=zytor.com header.i=@zytor.com header.b="PdYs1CW7"
-Received: from [127.0.0.1] (c-76-133-66-138.hsd1.ca.comcast.net [76.133.66.138])
-	(authenticated bits=0)
-	by mail.zytor.com (8.18.1/8.17.1) with ESMTPSA id 56GI4wZF1640497
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
-	Wed, 16 Jul 2025 11:05:02 -0700
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.zytor.com 56GI4wZF1640497
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zytor.com;
-	s=2025062101; t=1752689107;
-	bh=AxYk3hb0otPOpe8iCoKRDXyzipO8+IEj3pxhrwFiias=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=PdYs1CW7P6NGZ7nqrSTKiw9kGz8+zKtbJLnnYWGn7EmE85IhMRHjUsfqejqSu3NpC
-	 F8mkqPxV94oRfsry8xLqbBh6TIeqEphXrM8IQVQXG98VV0VtmaqRkm8gcHZ1DS8I+Y
-	 9Ud40lsWpWvI8f/Mw4fJttPFSqVPnBxm60MpDadKClPpxIliIxgGgmXKbtvKQmNI4w
-	 9zRbpJ/rGGTy9XhzMH+JGYmHR8cviSmLp4ZAluTl43LX0HJw1hILVpbbrTd8F7h/pQ
-	 VEaChnOfID89c6bfwtXUBb4UKngfABWVJFjrAYzLGKal7C5mVferZwFoGX1uSfry52
-	 xqWYa7EnyTKlQ==
-Date: Wed, 16 Jul 2025 11:04:52 -0700
-From: "H. Peter Anvin" <hpa@zytor.com>
-To: "Russell King (Oracle)" <linux@armlinux.org.uk>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Richard Henderson <richard.henderson@linaro.org>,
-        Matt Turner <mattst88@gmail.com>, Vineet Gupta <vgupta@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Brian Cain <bcain@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Michal Simek <monstr@monstr.eu>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dinh Nguyen <dinguyen@kernel.org>, Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Stafford Horne <shorne@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
-        Alexandre Ghiti <alex@ghiti.fr>, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Yoshinori Sato <ysato@users.osdn.me>, Rich Felker <dalias@libc.org>,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andreas Larsson <andreas@gaisler.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-arch@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
-        Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-alpha@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-hexagon@vger.kernel.org, loongarch@lists.linux.dev,
-        linux-m68k@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-openrisc@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-um@lists.infradead.org
-Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_1/1=5D_uapi/termios=3A_remov?=
- =?US-ASCII?Q?e_struct_ktermios_from_uapi_headers?=
-User-Agent: K-9 Mail for Android
-In-Reply-To: <aHfn9z9_oIVgNGgx@shell.armlinux.org.uk>
-References: <20250716164735.170713-1-hpa@zytor.com> <aHfn9z9_oIVgNGgx@shell.armlinux.org.uk>
-Message-ID: <9AEAF0BE-39D7-4617-9CB5-D0703B3E6DF8@zytor.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="MjsRwwgy"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=ka9LDPdXiKFUk3mtrWNI4vQa1z6M+gCPFWsh9TUXj2s=; b=MjsRwwgy6bAQQceCDNZf6YYTh7
+	2s/g3JjKzpCcWSXXC4ou/Jp5CTzwRhOkNRtt5567ZCUDYwALzUue1igWMdOZS0jq53fd5Kreph6ft
+	4V55ttQLFba7IML5RhRYlYAbvVdLr83IctycGEfJDJUUhFfFUlnEsmK5Nrrrly57XDe9AJwMd9r74
+	Vsb7lEV2texPKlzjXJIUcEMgv47StjvcwXivjZDke5VMxd092F9MMc5gprxJ17KLT6L5bIiojWmw1
+	RPaG9K4ZIUX3xmeNMIa3QxKbZJSL+uOI3Lc3/bzkd+vTfp6R+Vt1hzsHmpwNCAiTcXJfoiNioUQUx
+	t9pgZHbw==;
+Received: from [50.53.25.54] (helo=[192.168.254.17])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1uc7ci-00000008Tft-2NOr;
+	Wed, 16 Jul 2025 19:17:00 +0000
+Message-ID: <1edd39a3-c5ef-41f6-ba7a-57fe24da7376@infradead.org>
+Date: Wed, 16 Jul 2025 12:16:59 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/1] serial: 8250_ce4100: Fix CONFIG_SERIAL_8250=n
+ build
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Cc: Jiri Slaby <jirislaby@kernel.org>
+References: <20250716142412.1667927-1-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20250716142412.1667927-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On July 16, 2025 10:57:11 AM PDT, "Russell King (Oracle)" <linux@armlinux=
-=2Eorg=2Euk> wrote:
->On Wed, Jul 16, 2025 at 09:47:32AM -0700, H=2E Peter Anvin wrote:
->> diff --git a/arch/arm/include/asm/ktermios=2Eh b/arch/arm/include/asm/k=
-termios=2Eh
->> new file mode 100644
->> index 000000000000=2E=2E4320921a82a9
->> --- /dev/null
->> +++ b/arch/arm/include/asm/ktermios=2Eh
->> @@ -0,0 +1 @@
->> +#include <asm-generic/ktermios=2Eh>
->
->Isn't this what arch/arm/include/asm/Kbuild's generic-y is for?
->
->Ditto for other arches=2E
->
 
-Ah, yes, you're right (except for those with nontrivial stubs=2E)
 
-I also found that a handful of drivers and arch/sparc needs <asm/termios=
-=2Eh> =E2=86=92 <linux/termios=2Eh> in <linux/termios_internal=2Eh>=2E
+On 7/16/25 7:23 AM, Andy Shevchenko wrote:
+> On i386, when
+> 
+>   CONFIG_X86_INTEL_CE=y
+>   # CONFIG_SERIAL_8250 is not set
+> 
+> it will try to compile the driver and use the stub simultaneously.
+> This breaks the build. Fix it by making sure that the driver
+> compiles only when CONFIG_SERIAL_8250 is also enabled.
+> 
+> On top of that ensure that CONFIG_SERIAL_8250 is actually set to 'y'
+> and not 'm' as the later makes no sense for this platform. The hook
+> may only be applied during early boot.
+> 
+> Fixes: acc902de05b2 ("serial: 8250: Move CE4100 quirks to a module under 8250 driver")
+> Fixes: 5ec6960f6f0c ("ce4100: Add errata fixes for UART on CE4100")
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Closes: https://lore.kernel.org/r/cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+This solution works but it seems quite hidden to me. I would rather see
+a Kconfig solution, like Jiri mentioned.
+
+Anyway,
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+
+
+Thanks.
+
+> ---
+> 
+> v2: made the fix more readable (Jiri)
+> 
+>  drivers/tty/serial/8250/Makefile | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
+> index e61dc3f4ca50..513a0941c284 100644
+> --- a/drivers/tty/serial/8250/Makefile
+> +++ b/drivers/tty/serial/8250/Makefile
+> @@ -24,7 +24,9 @@ obj-$(CONFIG_SERIAL_8250_ASPEED_VUART)	+= 8250_aspeed_vuart.o
+>  obj-$(CONFIG_SERIAL_8250_BCM2835AUX)	+= 8250_bcm2835aux.o
+>  obj-$(CONFIG_SERIAL_8250_BCM7271)	+= 8250_bcm7271.o
+>  obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
+> +ifeq ($(CONFIG_SERIAL_8250),y)
+>  obj-$(CONFIG_X86_INTEL_CE)		+= 8250_ce4100.o
+> +endif
+>  obj-$(CONFIG_SERIAL_8250_DFL)		+= 8250_dfl.o
+>  obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
+>  obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
+
+-- 
+~Randy
