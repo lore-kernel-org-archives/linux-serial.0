@@ -1,110 +1,126 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE071531E8;
-	Wed, 16 Jul 2025 19:17:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A70FA276050;
+	Wed, 16 Jul 2025 20:29:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752693422; cv=none; b=dfrmZTHhjvXSxe63j0cDdYdfCoenZxSUwns1W/FTxdiZ2/+GUADItELq6oxsbotEFd5uq0YeAXmcXW6eNo2lDN90EmibSwJdclDs1ri4tr3oRaspjHHk9BLSGK4m5JOV9V1GQflzf1X3S2NygHrMKJpTomKj5AuzZudE712gJN0=
+	t=1752697771; cv=none; b=rYo9Tqh1BIFx/UtIknMzkdBzg5qxaM5rMFDPkomU0geeSXgTTfSga110umgFp8y3Kv1KmPkuM4OYuUtc/Gr1zJFExyvANqCtZvzgikHP3RdVheuzMwLpAW1aIoTYogBTkPSXKj1y7Nd/CAXxv61tWhBk7fs47RI5jOEZ2XTEAmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752693422; c=relaxed/simple;
-	bh=Hzb1t+TmWWOfLRa8+ziWIU06vPGMdgiGAmm7vZmrhuA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uU8Heq0vp9MCj/5EpOuJrNQBoxEPKrhRSm1Gk0/6Fbkjiog8PghZJW0tndGxreUD3qWXezlEqtpNfQkta2XPW0wMIVdWTBTib/etMCO4EddOBoWjSYDdRY+z3cIvB9yc5V9+n2OwDuPsNupQPPe3Q8/Kkkm8PaOWPFg0kdzaMGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=MjsRwwgy; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1752697771; c=relaxed/simple;
+	bh=+Os/S0psLbqwRgePy1azhqHWR/ODfIORB/aObUr/CaM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SVTgHUp2hOd4ixb1PbRZ4GIn+Jti9vQCsScSo5y7BPq4TzDnhD1c8boBnBQwL8Zm5yttgmOcvkSTTUUqkX9JRBm2/qAT5gny8OD2EQvxZ34g9r9yjZxZLsU5sIxqUThk4uLEBaoZDowCup0lASQECbf7JUUqmYnI5mLCyos7upM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ws715Onn; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="MjsRwwgy"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=ka9LDPdXiKFUk3mtrWNI4vQa1z6M+gCPFWsh9TUXj2s=; b=MjsRwwgy6bAQQceCDNZf6YYTh7
-	2s/g3JjKzpCcWSXXC4ou/Jp5CTzwRhOkNRtt5567ZCUDYwALzUue1igWMdOZS0jq53fd5Kreph6ft
-	4V55ttQLFba7IML5RhRYlYAbvVdLr83IctycGEfJDJUUhFfFUlnEsmK5Nrrrly57XDe9AJwMd9r74
-	Vsb7lEV2texPKlzjXJIUcEMgv47StjvcwXivjZDke5VMxd092F9MMc5gprxJ17KLT6L5bIiojWmw1
-	RPaG9K4ZIUX3xmeNMIa3QxKbZJSL+uOI3Lc3/bzkd+vTfp6R+Vt1hzsHmpwNCAiTcXJfoiNioUQUx
-	t9pgZHbw==;
-Received: from [50.53.25.54] (helo=[192.168.254.17])
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uc7ci-00000008Tft-2NOr;
-	Wed, 16 Jul 2025 19:17:00 +0000
-Message-ID: <1edd39a3-c5ef-41f6-ba7a-57fe24da7376@infradead.org>
-Date: Wed, 16 Jul 2025 12:16:59 -0700
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ws715Onn"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4561ca74829so2886735e9.0;
+        Wed, 16 Jul 2025 13:29:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1752697768; x=1753302568; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Bv42pwkQ8U2aAJLzyh0onhnRM8bThCgjUOBE6I0x4wk=;
+        b=Ws715OnnuFM+uuirmYP27WgJIA1E9QMWGbrWG0SSnB+y/zM9qD9UpRcOP/NDH6EJEr
+         gsTCoUh6ihFIge6AlG7Z1K00pVZbhJv5ndSHyhzrgQGxYFo4qQ4QIa3Aq5Ucd61bMhL3
+         fh/m/OPypnzwD5YkdkUdcVItg8MEWKUzIQaxNYFvK7WXb5Aly82JSEH2PV40v+aMNU5D
+         27lJRYYxNAr4/BugEF5AoAOeCA+W3EBufyyxIuIkwNi1U5eJr5kBz1+XETGvJFHOhQbD
+         tYUxcCz993jRBO1e5AcrFqPSd3yvXsS0RE0vtyv+aCTHIO8faCIvQ5tOxWImfleJ6j5c
+         odBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752697768; x=1753302568;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Bv42pwkQ8U2aAJLzyh0onhnRM8bThCgjUOBE6I0x4wk=;
+        b=HHnf55XKdozpRoyVm0i+L63+kIICmNwfhxWX5UpI8WMAkYhQpY8HKxRffDEkG/Wi06
+         kvGX9ulz/hkFQT5VNkgQYzSrIHnatZ8vfj2bDsyPnXQ1DiSxGzAORlkonPECC7DbcOoQ
+         Kic7R2LzXsOcJSra0/29go61AUwEjLh+2XLRFiHBmpbWzV6NpPmReWeiK4DlWoKPsqAK
+         y4guq8I6okIdrHH4elaTEcj6Qi8/XgO2mizWZIF6XthilJo7JwlZA+Lm791XGZlsihlW
+         BP8sE76bHDY54yijpIi+XyA1SwDMu/lP+Iu0X+9pk7rcoHWXKtT+WUC9YTuG+/Qc7A41
+         WeeQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX8C9WwGndoe08yFDobKFadVJcJv01UZT0h0HeDQPfbKTOYl6PDeimqcHma+DrTe3D1kXN61UzVceIt85v4@vger.kernel.org, AJvYcCXYho9NER3JbDmKYm7zyfqVoMSjBbLl+QstaYRCyAJCX9l0VHwQ274rpA355qMbNoKVsFqrunK1XH03@vger.kernel.org, AJvYcCXoERFV86CoF3wbI2PpIfKamqJ71AzE3fdHwnA2SFA56LNLpIM8/WQjhgWLIG6nAYo/rtoFI7UzxaF53IAT4lymCTM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw2iTflHDIQ6ktV2r5HcK+nMSMOXKcpxeo5qeNLodHDNQt2G6nb
+	oq1D17Ku8u7X/koROMcP5zfku/W29HboKOkHaYHG5P4/Gn8maD+R0QK2
+X-Gm-Gg: ASbGncvAMwz2PwG4cpyp93iYX5F4q0S8MW+d0dTYJ8bftvtyD3OusmaIPtCWZFSoYwW
+	4URaTNJlqAsqAEQu2PkEFacTsUUNygOR0SvksN7/fJoRAPlgMNaoz3I1wLWdQlhVMv2Y8sxf12H
+	BZL9VPwJBHDGmZbtGzIrCzNX++eQTYutsJc4JUWHM6DKfb/FaFZH6nyXyEo1Eus2eJJkugKLZj3
+	+/Zjx9Z9M4mc3pH9lZYs2DWpMJ+hMv8eBrmbTJ/9CoIPpRI1ZSFOG8vbS4xY3Xf2t8NkBYTt28m
+	Z1PO5RrvC4D+h6RiU1FeXwIRaiY7Co6Xio3ktvmB4XWpzeIuGlysHva4mQG24XZpOn/D8x4QsR3
+	kLzsWVmg6/3cYh6XuwFIDBjnh15z/eLFm4FWRo5s48b1hYkM=
+X-Google-Smtp-Source: AGHT+IH53+0XDdUwczXbl2+ZIfTEYSel7KTLQmeVOmoZuMxA7trRRVuXUk9gWLbPmT3bhXFLUcwCwQ==
+X-Received: by 2002:a05:6000:2006:b0:3b3:9c94:eff8 with SMTP id ffacd0b85a97d-3b60e51c895mr3135256f8f.27.1752697767613;
+        Wed, 16 Jul 2025 13:29:27 -0700 (PDT)
+Received: from iku.Home ([2a06:5906:61b:2d00:7668:11fb:4cef:dbca])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8e0d571sm19068666f8f.57.2025.07.16.13.29.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jul 2025 13:29:27 -0700 (PDT)
+From: Prabhakar <prabhakar.csengg@gmail.com>
+X-Google-Original-From: Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	Prabhakar <prabhakar.csengg@gmail.com>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	Fabrizio Castro <fabrizio.castro.jz@renesas.com>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v3] dt-bindings: serial: renesas: Document RZ/V2N SCIF
+Date: Wed, 16 Jul 2025 21:29:23 +0100
+Message-ID: <20250716202923.163950-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/1] serial: 8250_ce4100: Fix CONFIG_SERIAL_8250=n
- build
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: Jiri Slaby <jirislaby@kernel.org>
-References: <20250716142412.1667927-1-andriy.shevchenko@linux.intel.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20250716142412.1667927-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
+Document SCIF bindings for the Renesas RZ/V2N (a.k.a R9A09G056) SoC.
+The SCIF interface in Renesas RZ/V2N is identical to the one available
+in RZ/V2H(P), so `renesas,scif-r9a09g057` will be used as a fallback,
+allowing reuse of the existing driver without modifications.
 
-On 7/16/25 7:23 AM, Andy Shevchenko wrote:
-> On i386, when
-> 
->   CONFIG_X86_INTEL_CE=y
->   # CONFIG_SERIAL_8250 is not set
-> 
-> it will try to compile the driver and use the stub simultaneously.
-> This breaks the build. Fix it by making sure that the driver
-> compiles only when CONFIG_SERIAL_8250 is also enabled.
-> 
-> On top of that ensure that CONFIG_SERIAL_8250 is actually set to 'y'
-> and not 'm' as the later makes no sense for this platform. The hook
-> may only be applied during early boot.
-> 
-> Fixes: acc902de05b2 ("serial: 8250: Move CE4100 quirks to a module under 8250 driver")
-> Fixes: 5ec6960f6f0c ("ce4100: Add errata fixes for UART on CE4100")
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Closes: https://lore.kernel.org/r/cdf4ee46-7bf8-4379-9245-fed9db72e7e8@infradead.org
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+Hi All,
 
-This solution works but it seems quite hidden to me. I would rather see
-a Kconfig solution, like Jiri mentioned.
+This patch was part of v2 series [1] where rest of the patches were
+applied, so just sending this patch for review.
+[1] https://lore.kernel.org/all/20250407191628.323613-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
 
-Anyway,
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Cheers, Prabhakar
+v2->v3:
+- Added reviewed by tag from Geert.
+---
+ Documentation/devicetree/bindings/serial/renesas,scif.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-
-Thanks.
-
-> ---
-> 
-> v2: made the fix more readable (Jiri)
-> 
->  drivers/tty/serial/8250/Makefile | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-> index e61dc3f4ca50..513a0941c284 100644
-> --- a/drivers/tty/serial/8250/Makefile
-> +++ b/drivers/tty/serial/8250/Makefile
-> @@ -24,7 +24,9 @@ obj-$(CONFIG_SERIAL_8250_ASPEED_VUART)	+= 8250_aspeed_vuart.o
->  obj-$(CONFIG_SERIAL_8250_BCM2835AUX)	+= 8250_bcm2835aux.o
->  obj-$(CONFIG_SERIAL_8250_BCM7271)	+= 8250_bcm7271.o
->  obj-$(CONFIG_SERIAL_8250_BOCA)		+= 8250_boca.o
-> +ifeq ($(CONFIG_SERIAL_8250),y)
->  obj-$(CONFIG_X86_INTEL_CE)		+= 8250_ce4100.o
-> +endif
->  obj-$(CONFIG_SERIAL_8250_DFL)		+= 8250_dfl.o
->  obj-$(CONFIG_SERIAL_8250_DW)		+= 8250_dw.o
->  obj-$(CONFIG_SERIAL_8250_EM)		+= 8250_em.o
-
+diff --git a/Documentation/devicetree/bindings/serial/renesas,scif.yaml b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+index 8e82999e6acb..24819b204ebf 100644
+--- a/Documentation/devicetree/bindings/serial/renesas,scif.yaml
++++ b/Documentation/devicetree/bindings/serial/renesas,scif.yaml
+@@ -86,6 +86,7 @@ properties:
+       - items:
+           - enum:
+               - renesas,scif-r9a09g047      # RZ/G3E
++              - renesas,scif-r9a09g056      # RZ/V2N
+           - const: renesas,scif-r9a09g057   # RZ/V2H fallback
+ 
+   reg:
 -- 
-~Randy
+2.50.1
+
