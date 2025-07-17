@@ -1,242 +1,110 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49E5202996
-	for <linux-serial@vger.kernel.org>; Thu, 17 Jul 2025 09:39:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522D6145B27
+	for <linux-serial@vger.kernel.org>; Thu, 17 Jul 2025 11:28:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752745150; cv=none; b=PeUhHqwpPgsmGapEQmAmYxqodEN1uDd6MZSIiNTQi3n8uRjV+MeAN3t8WVxB13NSIsdo44TrrTAmHyWkzA/OxBaOPleUuAqU5YXg00PgwoCZI8/H1OJcaWTe2mVI/7PV4QtD+wDMh1QJt+2m9JKgU3FUUcf80T/0tkCIpp5/p7E=
+	t=1752751695; cv=none; b=bWk5NtskekMaz0d9cXLcnnk/QL4yDLLydTsS8hlULkUqNrd+jpfAK8OEjQ7t/YG7XsFkaJY3fRRU0gjnejcIzSbtEGe2YPJMqSFo/ssf9LqQFBULJz1poKMWHWKZvDYfQ2BgGguXwXMy1ZkesXHOXenJcPfHJInnBUcMnZoYTUU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752745150; c=relaxed/simple;
-	bh=x/nkF9Kcn8YREMeCauxudVK/2lC24hstmqKLajGCCiI=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=tffWfTCiaYlVb9F8nKlDG7PU4y5KoWJxQcO7qN7GXAvqLXRwgfJdLSWX6gxsiEwcvlQIIonLsRlZlKnMxZg2m8aNr5xC1eDDoyk3HE008dkItdYsMBauow5oSvkFp55ZEDH51sZrN0OTxoJa9XyBRrj9io9ZpnJvPklzVbmv/hg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BsbRl/Rb; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1752751695; c=relaxed/simple;
+	bh=vPsus7n+ZehouuNJIhJaopxKH86tOGKiwPcKPd0ygOU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GDmhCwOa1iGG/0nmVEKtd9M6SYi6HyysEBJjjNcvgaq6M3Jaoz50YM8xPo2bF3y1pnCyiIdeEcJ9ECor3zpf0jjX/n7K9tXdp3Rb4QSbOp3p/mU8SAnUq2MatdFBLUwXSd3kzVWisPSpaKaHziY3i9/6a8VAxKRXerHmoPFX51k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Ugzp4CCh; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BsbRl/Rb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752745147; x=1784281147;
-  h=date:from:to:cc:subject:message-id;
-  bh=x/nkF9Kcn8YREMeCauxudVK/2lC24hstmqKLajGCCiI=;
-  b=BsbRl/RbFsz4voU4IR1E3HlG4BdWPEMNOiROqzLUoI8f7Xd8vnC3SaE4
-   HYGXAKj5EwwfgZ/0revmHr6qeCZSjeRIExc7/hbGFP8dVDS/Q+3XjScpe
-   1SpDKHGbcNsDAe9BtCnIVQiCHVy1TTNPrR8VvOyxMrCyezHfZsJb7rLJo
-   GgkGQ/L69r6uWhX7L6U88L6PvfvXMxW5Bg6z1BYAEOz7I62RCNRZMdFJ/
-   52Rw9/2qoinSXLzOS2tEcd1xV1xpZyn2G0WM570Tt2/lbaGVAJhOpXqIY
-   iBKdBYmD4cpOoDLoda92j569/HQVCCHIVfv9pLeJqZVPxZeEhESU2Zk5j
-   w==;
-X-CSE-ConnectionGUID: E/ZWDASIQVGgu5UtFYDnBg==
-X-CSE-MsgGUID: 4xyq9LzYTQmuZ8WxCQAbog==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="80460345"
-X-IronPort-AV: E=Sophos;i="6.16,318,1744095600"; 
-   d="scan'208";a="80460345"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2025 02:39:07 -0700
-X-CSE-ConnectionGUID: HwncwZy3QHussZ+Tgf7alw==
-X-CSE-MsgGUID: stewcpwFRnync31h4vc7pQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,318,1744095600"; 
-   d="scan'208";a="158456325"
-Received: from lkp-server01.sh.intel.com (HELO 9ee84586c615) ([10.239.97.150])
-  by fmviesa010.fm.intel.com with ESMTP; 17 Jul 2025 02:39:07 -0700
-Received: from kbuild by 9ee84586c615 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1ucL4y-000DTv-2X;
-	Thu, 17 Jul 2025 09:39:04 +0000
-Date: Thu, 17 Jul 2025 17:38:36 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 103f5d8c35b3d22b700f1f6d585e499b2df62df6
-Message-ID: <202507171719.nUVORgnl-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Ugzp4CCh"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-451d41e1ad1so6066745e9.1
+        for <linux-serial@vger.kernel.org>; Thu, 17 Jul 2025 04:28:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1752751692; x=1753356492; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=l4EyBkCfQk118hwy23YpMyJEobctr2YH/JMj7abcP1o=;
+        b=Ugzp4CChlld0bsXq1K3L0t8+UdgvAUk/ojf7/B0Hl2xQOcOcL5uAOZZGuhwPxyHn1E
+         vZVPC8jhdpVZm2mIW/vlGEglM+wi6cczcxFFTfPVPsB7ihsN7wSFk4xw0ndVRi33/vO+
+         loXpFEsNOGNHxgIXOfhSZlTAnFpD5gvwcugw+huxGlzKIfqIR2Q2CZSzGY1slmNdsMxj
+         z0keptv8RvVcuJE1trKnJ9UMTv1fjWXuFc2Cym3WaO1o4Bx1BRm216gMNWlVli1QXb9v
+         cfQB9lffuWMFfoYBxc4qAEm16iBh1jFIOardQVq15oejckLMQkXDGQtBxJNoGBVb46G2
+         R+1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752751692; x=1753356492;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=l4EyBkCfQk118hwy23YpMyJEobctr2YH/JMj7abcP1o=;
+        b=cX098FkZ7tA0933Kx8cY/ADAG3Jo3MjIUAMcrezT5X+9YHkmvijLOslnVNyUSE+/KO
+         Pe4a9wb3IQ+vDtkJXDp0zbmmmPaebR5Y/62x6nU1unTLFiYp0wtsAZpvLvj6YYg9rN4m
+         F8aFOAW/GxACC6LJyvYcLG2SDX2IBrsDp35oTnbvOgWxPZB3Z4zze/vj74UXwycJ/WuM
+         NW3LVoY4VDoJZ4yatazRnYQgF4gs9HS3NcVyDlpVzfIgkwtIshyVKVXmVfEhjYp5L1f6
+         M3RG+Est9ASH2umcd0goeyAWiBwgg7o6ZGZHuVdqoo2hYQnlhSFSxlRq705/SxEccuBv
+         NkJA==
+X-Forwarded-Encrypted: i=1; AJvYcCVL8wGU5vBLcWUQ/2ffzOx8pZjff3nVyTQlVwqjcpwK+daYRQr7/Jhw3zpWsf3DPg0Srs4iCr6ipMgzu0o=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxpREGn1IGuRFdUh6pUCnJFUzWLI2FoEccnZRk0w4LYw3Ln7Zg0
+	k6vfn8Oicnzn+SfkxRCtZgt0moZ3kHK1WQLnj1k4G5m0asJQYOpDpmrOPd6yKvSoGmn/2mOoFwq
+	UyLxE
+X-Gm-Gg: ASbGncuNUBNYCDxD4IyrHrf0IphEMF/ZV5LGu7xmx2Pk44wNI2HCiVMAS00LjK8pINz
+	1DDo2LKw5dF3Xm0bF4L4jbZfYVz4PGn8nIASpCb0JXAUil61lfL4fDDiHU11g6eskmb524vQY/y
+	Szo8tEY73QtCSoIWVonFaxmYXZiD7HSwQBzebUuaArxfQtzX3kGD9NYaHhtjR+c5wG+KfWDhAe7
+	esCfCRJ+xtJz80BG7bVpKN381sQPIYskh96gnz38kvu/tWc41nN8MS9haIFH5dPEw7H2eIBhbe2
+	R/XimQ5SESDyNB7w8n4MCCcwi4Bt0dgBi49gmuXPdKhieCeVmk0OSaJOvSkt6VhYla/S5taXpeu
+	C5WW3cEAtFVp/47ePdGSAbqeXSe/w/vFT9fJKcSr5UwLsh8CHxruKb/6vwIRf2U8kcg==
+X-Google-Smtp-Source: AGHT+IEEj/81mVMNXoPOUWUO7P/YkTI7YWJCQoKZ+jwcD015HAkVi+WItslIOuhDgRa9wqEhexgbsA==
+X-Received: by 2002:a05:600c:3545:b0:456:1a69:94fa with SMTP id 5b1f17b1804b1-4562e03e75cmr63822605e9.13.1752751691688;
+        Thu, 17 Jul 2025 04:28:11 -0700 (PDT)
+Received: from ?IPV6:2001:a61:1347:1201:4432:54ab:26c1:9ebc? ([2001:a61:1347:1201:4432:54ab:26c1:9ebc])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45634f82f29sm19552955e9.23.2025.07.17.04.28.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 17 Jul 2025 04:28:11 -0700 (PDT)
+Message-ID: <c9d07302-37f0-4f0d-8669-094aa6fc2450@suse.com>
+Date: Thu, 17 Jul 2025 13:28:05 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: USB cdc-acm driver: break and command
+To: "H. Peter Anvin" <hpa@zytor.com>, Oliver Neukum <oneukum@suse.com>
+Cc: linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+ gregkh@linuxfoundation.org, Jiri Slaby <jirislaby@kernel.org>,
+ linux-serial@vger.kernel.org
+References: <ce54ae11-72bb-4ac7-980b-c1cbc798a209@zytor.com>
+ <fa20ab91-5ebf-427d-b938-31ea6fb945cf@suse.com>
+ <83B89F79-D28B-4F2C-87EA-F5078BD7ED17@zytor.com>
+ <2c807a7e-d55d-4670-9a86-e3fcaa3e52ba@suse.com>
+ <f979468c-434a-43e9-8c50-8e92188abc11@zytor.com>
+Content-Language: en-US
+From: Oliver Neukum <oneukum@suse.com>
+In-Reply-To: <f979468c-434a-43e9-8c50-8e92188abc11@zytor.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 103f5d8c35b3d22b700f1f6d585e499b2df62df6  tty: omit need_resched() before cond_resched()
+On 16.07.25 19:49, H. Peter Anvin wrote:
+> On 2025-07-16 09:17, Oliver Neukum wrote:
 
-Unverified Warning (likely false positive, kindly check if interested):
+>> Understood. It still seems dirty to me. If you want to send strings to a
+>> device
+>> the proper way is to use a device node and write().
+>>   
+> 
+> There is definitely something to be said for that; or at least a file
+> descriptor.  We do have cases in the kernel -- notably opening the pts
+> corresponding to a ptmx file descriptor -- that do that sort of
+> "auxiliary open" kind of thing.
+> 
+> The big question is how that interacts with the rest of the ACM driver,
+> as well as all the lifetime issues you mentioned elsewhere.
 
-    arch/arm/boot/dts/mediatek/mt7623a-rfb-emmc.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: 'oneOf' conditional failed, one must be fixed:
-    arch/arm/boot/dts/mediatek/mt7623a-rfb-emmc.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: ['main'] is too short
-    arch/arm/boot/dts/mediatek/mt7623a-rfb-nand.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: 'oneOf' conditional failed, one must be fixed:
-    arch/arm/boot/dts/mediatek/mt7623a-rfb-nand.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: ['main'] is too short
-    arch/arm/boot/dts/mediatek/mt7623n-bananapi-bpi-r2.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: 'oneOf' conditional failed, one must be fixed:
-    arch/arm/boot/dts/mediatek/mt7623n-bananapi-bpi-r2.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: ['main'] is too short
-    arch/arm/boot/dts/mediatek/mt7623n-rfb-emmc.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: 'oneOf' conditional failed, one must be fixed:
-    arch/arm/boot/dts/mediatek/mt7623n-rfb-emmc.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: ['main'] is too short
+It would seem to me that CDC already has something very similar in form
+of CDC-WDM. If acm_probe() can call tty_port_register_device(), it can also
+register a secondary character device. Or are you worried about how to tell
+user space which devices belong together?
 
-Warning ids grouped by kconfigs:
+	Regards
+		Oliver
 
-recent_errors
-|-- arm-randconfig-051-20250717
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|-- arm-randconfig-052-20250717
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|-- arm-randconfig-053-20250717
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|-- arm-randconfig-054-20250717
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-`-- arm-randconfig-055-20250717
-    |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-    |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-    |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-    |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-    |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-    |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-    |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-    `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-
-elapsed time: 1447m
-
-configs tested: 105
-configs skipped: 5
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-tested configs:
-alpha                             allnoconfig    gcc-15.1.0
-alpha                            allyesconfig    gcc-15.1.0
-arc                              allmodconfig    gcc-15.1.0
-arc                               allnoconfig    gcc-15.1.0
-arc                              allyesconfig    gcc-15.1.0
-arc                         haps_hs_defconfig    gcc-15.1.0
-arc                            hsdk_defconfig    gcc-15.1.0
-arc                   randconfig-001-20250716    gcc-13.4.0
-arc                   randconfig-002-20250716    gcc-8.5.0
-arm                               allnoconfig    clang-21
-arm                              allyesconfig    gcc-15.1.0
-arm                           omap1_defconfig    gcc-15.1.0
-arm                   randconfig-001-20250716    clang-20
-arm                   randconfig-002-20250716    gcc-12.4.0
-arm                   randconfig-003-20250716    gcc-8.5.0
-arm                   randconfig-004-20250716    gcc-8.5.0
-arm64                            allmodconfig    clang-19
-arm64                             allnoconfig    gcc-15.1.0
-arm64                 randconfig-001-20250716    gcc-9.5.0
-arm64                 randconfig-002-20250716    gcc-8.5.0
-arm64                 randconfig-003-20250716    gcc-8.5.0
-arm64                 randconfig-004-20250716    clang-21
-csky                              allnoconfig    gcc-15.1.0
-csky                  randconfig-001-20250716    gcc-14.3.0
-csky                  randconfig-002-20250716    gcc-15.1.0
-hexagon                          allmodconfig    clang-17
-hexagon                           allnoconfig    clang-21
-hexagon                          allyesconfig    clang-21
-hexagon               randconfig-001-20250716    clang-21
-hexagon               randconfig-002-20250716    clang-21
-i386        buildonly-randconfig-001-20250716    gcc-12
-i386        buildonly-randconfig-002-20250716    clang-20
-i386        buildonly-randconfig-003-20250716    gcc-12
-i386        buildonly-randconfig-004-20250716    gcc-11
-i386        buildonly-randconfig-005-20250716    gcc-12
-i386        buildonly-randconfig-006-20250716    clang-20
-loongarch                        allmodconfig    clang-19
-loongarch                         allnoconfig    clang-21
-loongarch             randconfig-001-20250716    clang-18
-loongarch             randconfig-002-20250716    clang-21
-m68k                             allmodconfig    gcc-15.1.0
-m68k                              allnoconfig    gcc-15.1.0
-m68k                             allyesconfig    gcc-15.1.0
-microblaze                       allmodconfig    gcc-15.1.0
-microblaze                        allnoconfig    gcc-15.1.0
-microblaze                       allyesconfig    gcc-15.1.0
-microblaze                          defconfig    gcc-15.1.0
-mips                              allnoconfig    gcc-15.1.0
-nios2                             allnoconfig    gcc-14.2.0
-nios2                               defconfig    gcc-14.2.0
-nios2                 randconfig-001-20250716    gcc-14.2.0
-nios2                 randconfig-002-20250716    gcc-11.5.0
-openrisc                          allnoconfig    gcc-15.1.0
-openrisc                    or1ksim_defconfig    gcc-15.1.0
-parisc                            allnoconfig    gcc-15.1.0
-parisc                              defconfig    gcc-15.1.0
-parisc                randconfig-001-20250716    gcc-8.5.0
-parisc                randconfig-002-20250716    gcc-8.5.0
-parisc64                            defconfig    gcc-15.1.0
-powerpc                           allnoconfig    gcc-15.1.0
-powerpc                      mgcoge_defconfig    clang-21
-powerpc               randconfig-001-20250716    gcc-8.5.0
-powerpc               randconfig-002-20250716    clang-21
-powerpc               randconfig-003-20250716    gcc-14.3.0
-powerpc64             randconfig-001-20250716    gcc-10.5.0
-powerpc64             randconfig-003-20250716    gcc-13.4.0
-riscv                             allnoconfig    gcc-15.1.0
-riscv                 randconfig-001-20250716    gcc-8.5.0
-riscv                 randconfig-002-20250716    gcc-11.5.0
-s390                             allmodconfig    clang-18
-s390                              allnoconfig    clang-21
-s390                             allyesconfig    gcc-15.1.0
-s390                  randconfig-001-20250716    gcc-11.5.0
-s390                  randconfig-002-20250716    gcc-11.5.0
-sh                               allmodconfig    gcc-15.1.0
-sh                                allnoconfig    gcc-15.1.0
-sh                               allyesconfig    gcc-15.1.0
-sh                          r7780mp_defconfig    gcc-15.1.0
-sh                    randconfig-001-20250716    gcc-15.1.0
-sh                    randconfig-002-20250716    gcc-14.3.0
-sparc                            allmodconfig    gcc-15.1.0
-sparc                             allnoconfig    gcc-15.1.0
-sparc                               defconfig    gcc-15.1.0
-sparc                 randconfig-001-20250716    gcc-8.5.0
-sparc                 randconfig-002-20250716    gcc-14.3.0
-sparc64               randconfig-001-20250716    clang-20
-sparc64               randconfig-002-20250716    clang-21
-um                               allmodconfig    clang-19
-um                                allnoconfig    clang-21
-um                               allyesconfig    gcc-12
-um                    randconfig-001-20250716    gcc-11
-um                    randconfig-002-20250716    gcc-12
-x86_64                            allnoconfig    clang-20
-x86_64      buildonly-randconfig-001-20250716    gcc-12
-x86_64      buildonly-randconfig-002-20250716    clang-20
-x86_64      buildonly-randconfig-003-20250716    clang-20
-x86_64      buildonly-randconfig-004-20250716    clang-20
-x86_64      buildonly-randconfig-005-20250716    clang-20
-x86_64      buildonly-randconfig-006-20250716    gcc-12
-x86_64                              defconfig    gcc-11
-x86_64                          rhel-9.4-rust    clang-20
-xtensa                            allnoconfig    gcc-15.1.0
-xtensa                  cadence_csp_defconfig    gcc-15.1.0
-xtensa                randconfig-001-20250716    gcc-9.3.0
-xtensa                randconfig-002-20250716    gcc-13.4.0
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
