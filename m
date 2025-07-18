@@ -1,180 +1,111 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D996917578
-	for <linux-serial@vger.kernel.org>; Fri, 18 Jul 2025 06:14:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78C1A293C5F;
+	Fri, 18 Jul 2025 07:56:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752819279; cv=none; b=ln+UA6RJep7fbva0GtTcpqeaC8dTVttlvC7UumWA1nVRDZHLqzc3JRp9NFEc+kkSECAg1BETj/ZG0KnX+7Rju+vcpXfOlhRwaDHXUpHZaZHzMFfGB3SAxKn4urNkfWPf0qsUUdIDTPCz6WY17ItAHMfEtSoAYisTkttmh77wCoY=
+	t=1752825405; cv=none; b=QzgIgptQPtuurSXzQ+gi5H5EC4hpCunbuuOb+DpoIoEr0hmhkUtVCmOjyZkzb5qg0yrZ09zDiKGn4NWI79Ax/s2pinUcSnaJ3KfMuCVMmbEAvsHuILyLB9LhNP6pWOTorvcOnPF3pcRYDzy0HKUrT47hxt2/eDXd8YsS9B19+Ng=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752819279; c=relaxed/simple;
-	bh=6S+y/P+II8gQtXm108YJxIXK9ZODMt2aLQR6rh2xuDk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bJ4ntTyoGZ3fODU342lLD8/SeM8q3MeISxRKm3Vr+DjmbydXJzLhQ3DC84U0h1Sfu67p6OG502wW2Pw34C6PWWnOJicosk8cgbYA7fI7yYRDlRbj4XxSMGHet2LrTg5FxaUgf7l1zi9K4xwUgsb5VfJKcHpgGHx3J2qXgAgdhsY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=uLCQ4BrE; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1752825405; c=relaxed/simple;
+	bh=SqSKIIDe8+ekOixpXTHdiPd6Dmh8yHLhYEXFnIva5mQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Q1DpUsHJD/1pLZ9bPLFMJan06y9qrnbZGgFzIE/1zYJdoiAqW+KmnZ2/3ZkWWpXCA6hjIKhW7yU1OtnoEInLSIxZUOYX2OyVmgz4H47JWQs+gA1PNvoAkX6mPU5RuI/3E0/tI+iKbQsWzx6tVho/ktAraeg8seUw9oFD5SCELpA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=Jk8zhgCv; arc=none smtp.client-ip=60.244.123.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uLCQ4BrE"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-60c733792e9so308843a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 17 Jul 2025 23:14:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1752819276; x=1753424076; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=VWiqtcrm3UpqYWicE+Qr3IVBY26YZu591zaNb17vRzc=;
-        b=uLCQ4BrESZ6PeJl5DQAjQIaXCqA+aHYlodIv8+NadCem61jzJtZDaceTsT3JbHS51o
-         KyyNInTcanBz4r5KQS2aRwzcgPibyBHo3t3w8xOjKh4pxVEFPuYLbUKvAkwis77wYppa
-         pp/ulwup/BMf65VIfX3v+F+mXqr2sDb38J7mtt59O2LslUsdkGyQb0gdev5A6dWwoCGM
-         B6c3eTwqIRIlUxW1xsxzMdTdETaYPXUJQqvYBEGsIIkzCvCgxl2oVJV2w2Iy4RdjhqvU
-         5pve0eGUW26QEuuufCmoTi+S0ZKRzoR889Xf/hXVkTX3zmhwHpYPfphaexljmLPqh4HK
-         Lygg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752819276; x=1753424076;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VWiqtcrm3UpqYWicE+Qr3IVBY26YZu591zaNb17vRzc=;
-        b=lQA2LE/P6fWFp2e6uW4afG/1QrgeJJe/0AxE8oPpz8Iv/RVgH5OrYEgl0UrTYPdXYT
-         oBU7Oz7e2AfI1700NDlTiauHvGj6Ov/FGkWl4Vi14KjK8jn/pI1BC9fqWK1GMk+WF8DV
-         M6U5CuOKnc3EvDMQVeuRYdF4GBy0HMRbwwWJH0T6XJElqahlnuK8zubii304TiVIhJbe
-         lN6UMeO/BqGmMgVgvsy+fpJehxlzBdfbm4Z0Wo9/ygnG2/NyCHjHFl1rh6jXw7L+pLgi
-         /hlz668lZCZnvFgYWIBmQTreLRwvJjLaqpYncO4vmnmYsWTbs42GuN/uZ8b45TsOLX2W
-         ytng==
-X-Forwarded-Encrypted: i=1; AJvYcCVDNuvu1y0EpHdE/qkOuTvg4Fjyk3ajoseTJ9Ri0TVqBjMH1IIbXOpI+jh5A4Qpfz4lW08WLhMPXHRfc/I=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxjr/wNkQaRs3WztSWYz7uD/lxxh6blAMUbegcdtaVxNdPiegcf
-	H9m78hb4XdImqzTsGHU0Egsh7zb/LP53YyP85z+Sp0eDkMz8cMACBwj1GAxCergLPR0=
-X-Gm-Gg: ASbGncv5V4df+07KdprBWiEHMKtkudYIIrxmovHd/KexKNm6CJYsRnUnsNUdLhfvkHz
-	nxiXVZlN/oWBmrx/zN7Xaqm0eqSME2ZLqrhl74+3GWGihFRJn5MHtePa0z053SBDdzOKym6r/Pv
-	FL7fTrGATtXrcbkCg6cuqOCKc56EI2/FWGk+86slowwmfnGAfsxiesFvf/6eh7Fw5wMs1CPGBhz
-	0qHhOaibjJ9Q91FBrC8HXPT6tYtvk5hI2ARYbSHNa3vA/NQ4wUyfEVMjk5Q976eRrcmbZLlsf51
-	S3wTvd0CM3Xu42V3XiyfRhFlpI2ThimDw2Ab/jmJB4clzKOUHhCDrzeTddLRA8lj1CZIBCjhvFR
-	++beU5gFk1s9Rjnra8J3hpZLU3LIMF98wZcMSIJcKe/q6rXUbWsYK
-X-Google-Smtp-Source: AGHT+IE9LoG3p8nLyIseKLpQcssOqg7w3tMU8M2AmWdPDwMRm5y5MbuuS+ZNv4TcdwiluHmo/FRJ9Q==
-X-Received: by 2002:a05:6402:4019:b0:612:bd30:d320 with SMTP id 4fb4d7f45d1cf-612bd30d674mr1047426a12.6.1752819276028;
-        Thu, 17 Jul 2025 23:14:36 -0700 (PDT)
-Received: from [192.168.1.29] ([178.197.222.89])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-612c90d671bsm476342a12.73.2025.07.17.23.14.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 17 Jul 2025 23:14:35 -0700 (PDT)
-Message-ID: <e461e5ed-f512-4d3b-9903-8092dab7f81d@linaro.org>
-Date: Fri, 18 Jul 2025 08:14:33 +0200
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Jk8zhgCv"
+X-UUID: b921ee4863ac11f08b7dc59d57013e23-20250718
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:Content-Transfer-Encoding:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=A6rZxWvUrLHvB9zwv8UA0/M5AxIV4dTh7M6ayj7bVKA=;
+	b=Jk8zhgCvEr/EsCw0SiD2otgRtnQnm0vZJrpkkskEv7wVsUlBXt/e05bq089lP4CAQUWKgMrBGF7NK3pvDeTgI62kI0kr4yjXKcV1Vjbd/Z/2lQ0IqCd6QA+DZtvOsGd9fj7nKBdZKrat9SZb90X9fa5ftdTdN7ix7xwfvTtgTOo=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.2,REQID:edb9f155-a626-454a-a3d9-5c3b33e331a7,IP:0,UR
+	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
+	elease,TS:0
+X-CID-META: VersionHash:9eb4ff7,CLOUDID:78272673-f565-4a89-86be-304708e7ad47,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:102,TC:nil,Content:0|50,EDM:-3,IP:ni
+	l,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES
+	:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: b921ee4863ac11f08b7dc59d57013e23-20250718
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
+	(envelope-from <sirius.wang@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1409325406; Fri, 18 Jul 2025 15:56:34 +0800
+Received: from mtkmbs13n2.mediatek.inc (172.21.101.108) by
+ MTKMBS14N1.mediatek.inc (172.21.101.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.39; Fri, 18 Jul 2025 15:56:32 +0800
+Received: from mtksitap99.mediatek.inc (10.233.130.16) by
+ mtkmbs13n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1258.39 via Frontend Transport; Fri, 18 Jul 2025 15:56:32 +0800
+From: Sirius Wang <sirius.wang@mediatek.com>
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>, Sean Wang <sean.wang@mediatek.com>
+CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-mediatek@lists.infradead.org>, <wenst@chromium.org>,
+	<xavier.chang@mediatek.com>, Sirius Wang <sirius.wang@mediatek.com>
+Subject: [PATCH v5 0/3] Add mt8189 dts evaluation board and Makefile
+Date: Fri, 18 Jul 2025 15:56:23 +0800
+Message-ID: <20250718075630.644870-1-sirius.wang@mediatek.com>
+X-Mailer: git-send-email 2.45.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 00/10] Axiado AX3000 SoC and Evaluation Board Support
-To: Harshit Shah <hshah@axiado.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Arnd Bergmann <arnd@arndb.de>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Jan Kotas <jank@cadence.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
- Michal Simek <michal.simek@amd.com>, =?UTF-8?Q?Przemys=C5=82aw_Gaj?=
- <pgaj@cadence.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Frank Li <Frank.Li@nxp.com>, Boris Brezillon <bbrezillon@kernel.org>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "soc@lists.linux.dev" <soc@lists.linux.dev>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- "linux-i3c@lists.infradead.org" <linux-i3c@lists.infradead.org>
-References: <20250703-axiado-ax3000-soc-and-evaluation-board-support-v6-0-cebd810e7e26@axiado.com>
- <b7322d03-2ff9-48a3-bdc6-0e95382ed83f@axiado.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Language: en-US
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- 2+47PN9NZAOyb771QoVr8A==
-In-Reply-To: <b7322d03-2ff9-48a3-bdc6-0e95382ed83f@axiado.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On 18/07/2025 01:48, Harshit Shah wrote:
-> On 7/3/2025 11:20 AM, Harshit Shah wrote:
->> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you recognize the sender and know the content is safe.
->>
->>
->> This patch series adds initial support for the Axiado AX3000 SoC and its
->> evaluation board.
->>
->> The AX3000 is a multi-core system-on-chip featuring four ARM Cortex-A53
->> cores, secure vault, hardware firewall, and AI acceleration engines. This
->> initial support enables basic bring-up of the SoC and evaluation platform
->> with CPU, timer, UART, and I3C functionality.
->>
->> The series begins by adding the "axiado" vendor prefix and compatible
->> strings for the SoC and board. It then introduces the device tree files
->> and minimal ARCH_AXIADO platform support in arm64.
->>
->> Patch breakdown:
->>    - Patch 1 add the vendor prefix entry
->>    - Patch 2 document the SoC and board bindings
->>    - Patch 3 convert cdns,gpio.txt to gpio-cdns.yaml
->>    - Patch 4 add binding for ax3000 gpio controller
->>    - Patch 5 add binding for ax3000 uart controller
->>    - Patch 6 add binding for ax3000 i3c controller
->>    - Patch 7 add Axiado SoC family
->>    - Patch 8 add device tree for the ax3000 & ax3000-evk
->>    - Patch 9 add ARCH_AXIADO in defconfig
->>    - Patch 10 update MAINTAINERS file
-> 
-> Hi all,
-> 
-> This patch series was reviewed by Krzysztof, and I am wondering if it’s 
-> queued for the next merge window. Thanks in advance!
+We add basic chip support for Mediatek MT8189 on evaluation board.
 
-It's not, unless you received clear notice about it. Please read
-maintainer soc profile how to send patches for merging.
+In this series, we also add dt-bindings document definition for MT8189.
 
-Best regards,
-Krzysztof
+This series is based on tag: next-20250717
+
+Changs in v5:
+ - remove unused cpu-dile-state definition.
+ - change memory size in "reg" property which if filled in by bootloader.
+
+Changs in v4:
+ - Correct cpu-idle-states.
+ - Change the "reg" property name of the "memory" node in the
+   device tree source (DTS) to lowercase.
+
+Changs in v3:
+ - Move ulposc and ulposc3 before cpu nodes.
+ - Refactor cpu-map to a single cluster0.
+ - Change cpu nodes name from medium core to big core.
+ - Move psci before timer nodes.
+
+Changs in v2:
+ - Fix warning issues for make CHECK_DTBS=y.
+ - Add mediatek,uart.yaml document.
+
+
+Sirius Wang (3):
+  dt-bindings: arm: Add compatible for MediaTek MT8189
+  dt-bindings: serial: mediatek,uart: Add compatible for MT8189
+  arm64: dts: mt8189: Add mt8189 dts evaluation board and Mafefile
+
+ .../devicetree/bindings/arm/mediatek.yaml     |   4 +
+ .../bindings/serial/mediatek,uart.yaml        |   1 +
+ arch/arm64/boot/dts/mediatek/Makefile         |   1 +
+ arch/arm64/boot/dts/mediatek/mt8189-evb.dts   |  20 +
+ arch/arm64/boot/dts/mediatek/mt8189.dtsi      | 375 ++++++++++++++++++
+ 5 files changed, 401 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8189-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8189.dtsi
+
+-- 
+2.45.2
+
