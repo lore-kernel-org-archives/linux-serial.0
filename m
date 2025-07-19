@@ -1,235 +1,205 @@
-Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2125.outbound.protection.outlook.com [40.107.223.125])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20E7F2DE20E
-	for <linux-serial@vger.kernel.org>; Fri, 18 Jul 2025 15:28:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.48
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752852510; cv=none; b=XWxvnEOHu254wvMX1tG/VCN4gd/RgZZJ+cjSoMEG6WG5+7LeZJCMZf4W+osLv81OjcDY4uBeEnVkPlP5bdpXTDpWkkT8oYFE3Nf6vy4AzKmV8OaqnzgHhV5uFJiHk5GxkwzWagwdH6JiNC19shxWVMRMq0IuDn6zbituRgvydYI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752852510; c=relaxed/simple;
-	bh=W22QNFlT9cO0iyVYgql62b8k0K9WDUNp8XceCjFP1bQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kx2OgAjIH8lntH2rLR/t2s9JKzAwSAjpNDvr05cnW+xeVt3qIsSHYz+QAXWP8ZLiSW/TJ72SCnyoR787pwuQj4e0ZAw63d3WBAnUWoBH0CE4uvdqzBKsqhP2+YTJCjIOCEH4IwqrHsKbdDzgOZIRLYX+e7kxDcXQnC3Mpc7Cw0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=QRWsoGzg; arc=none smtp.client-ip=209.85.166.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D90433C4;
+	Sat, 19 Jul 2025 01:09:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.125
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752887379; cv=fail; b=TRhozx1OVKL+YBLPC2dNJ1v7TbFfFri8ZTDhAhrZuXwN/C10trZgFWV4eN74GnnqXg53/pHFiczECMkWTOk7/t5yrsnaDQnhsqsj8nXSLIAstOR6x8HPk4+iH9hOZASVbsTLz+oh52FEm/OL333GfllQFPaRSbIp2dB7kL0vKUM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752887379; c=relaxed/simple;
+	bh=2I3sRDIucHXyv2SaoIsCqmShiYk+zEXLxR4d6dra/7s=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=J89NtpcvlFZ5ae3K4GTYhQyWn4xveFZFk/S7ejCUF0FIbbf/NISyxVTpgRXNF9feE2WNnb8zrukIXeNITUZJz84rvQ3o1+NbovIPJppv8xW/0EOkx74Z4b4IYsnFy4fPg2ZmzHi8gGNvZZIEjnjCg9Pfn3GtWIpkf5C0vBtMUzI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=uucYd04w; arc=fail smtp.client-ip=40.107.223.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="QRWsoGzg"
-Received: by mail-io1-f48.google.com with SMTP id ca18e2360f4ac-86a052d7897so200590739f.0
-        for <linux-serial@vger.kernel.org>; Fri, 18 Jul 2025 08:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1752852507; x=1753457307; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kwe3p1qor/XYL1F45tt7pYoZyFpjoxAKetD8WTum46M=;
-        b=QRWsoGzgdt1ZbMYAbL8Jp+15BrUHwa2bZSRZU0u8snA/YIcBVAw6ahoOhFIAriQaus
-         FXHMrQuYqY5nBCd+Z3Ggj8lnO+Yl+W52phJ4r5ekIRiqCl+nhA+hB7N57oJif5QNO7Uz
-         5fLA9ouEqc6QJnxzGiFfNaMS8KY33r0y0W0ZY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752852507; x=1753457307;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kwe3p1qor/XYL1F45tt7pYoZyFpjoxAKetD8WTum46M=;
-        b=cWV8WXANLRSEavRrlSPvvOi3GAlQG/6XNcJfd631Fa/ancr0yGjsUuPz4jQnfMbZ+d
-         mItvYF9SQy3lwrlHwBQV7DmBxtwFVIR4gRFBfTqtlQ7rzSZIP1RjWoYFQ9UjiS2BmI4X
-         01NXQXYty4mWA+UBA+Jb4DLnpGA1BLMWkfcPxcMp2ah5Xx4k3c8MAFym9ePfuHvJ6awt
-         AByl3rpvP0gFs4Rn0IK7d3yGmuHGt+TGS/NUh4cMlOvdlC0j6SbmJFey8iBw+buYadSH
-         ImMsBU4eqb8Tbk+lsKYrw+HzSmZFFRSqDeSXmtRW9TaR1uj74vPybFIWhaBTY232S9SR
-         Ha3Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXB8hMzPTelVxiz1/8mR9aqCTGLECg88sV8/oIWLox6PytVXcfWTarNTub3yhoOUlY+8LORg08wEnIdQZ4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx04cGak++nHT7OVOT9ngS2TUgjUP6NBr8/j0pBiJqqVaBuk/4G
-	yorvh/1Qukbm3dSW5qpohnWeMDfRsqLc8YI7GsZSGCP99HdHRu324yzfAjQeGd4/ngi1WDgOJS6
-	sULQ=
-X-Gm-Gg: ASbGncuzOY8y10o8vaoQgDF9hOSymaBZ0dRmy9FmtUXUzFgK+nSQ53c1UTkHzrYarr1
-	hx5XFBE+wfAvClgQXq0bBj6Y5cZ/45lRnjSTqSpF+eD+LBsarvJyBZvvx6h57ee8QCeFu4ABX7x
-	EuOFWpgdvrqD1YWagfvkqvpGUKNb3Hiq9fy+0GgIQ3xjU1iVxgLQfPDeTOMAyt2E/oQ46dLrPB5
-	35TP6ZNTwSATibt310rzVOSUjDgCy1KyUT724SkXs9LTsa5w4X8+SSYB5gXtnU30PDPk0hYLY58
-	JHKJpIXxR4TLkfDwfT2foWtVt3zE9RR2+0D5fbq4Xe3bGhF4OlmtF4f3qhUnidoEdW9If1Fbo0S
-	SsJvdftKPT7HhiqG9pfcjISAJaAlhvRIeoPoA7dlTf10LkTs7JXKj3MDgXIym2JTJlw==
-X-Google-Smtp-Source: AGHT+IHVtrobyFF7TRxw1YSc6Hsc9yw9hca2ppNPxLa0l7tNO1sS0IkLivpDo3K6Ri4bbwFeG8e95Q==
-X-Received: by 2002:a05:6a00:4fc6:b0:74d:3a57:81d9 with SMTP id d2e1a72fcca58-756e8774764mr19330978b3a.8.1752852047738;
-        Fri, 18 Jul 2025 08:20:47 -0700 (PDT)
-Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com. [209.85.215.179])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-759cb76e241sm1373229b3a.126.2025.07.18.08.20.45
-        for <linux-serial@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 18 Jul 2025 08:20:45 -0700 (PDT)
-Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-879d2e419b9so1493074a12.2
-        for <linux-serial@vger.kernel.org>; Fri, 18 Jul 2025 08:20:45 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXwJmge+n2qNiKjlENxbSdZO/+yD/Sg7uRlv1PJXpP5U0FZQ0T0jQf2k6moLfFO62OJi5k+6SMdUio6UBM=@vger.kernel.org
-X-Received: by 2002:a17:90b:50c7:b0:315:aa28:9501 with SMTP id
- 98e67ed59e1d1-31c9e7707e5mr16601949a91.24.1752852044700; Fri, 18 Jul 2025
- 08:20:44 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="uucYd04w"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=tzKk8uqtofR1pEW95qEUxcwK+x8WFcz3nhe4anfvF57zDo1ZOkeBCmarZ2cAx/XfN603M64+EcCw59Kh4DvS6VrS8/B81rmtY7wraI9KQBYIcDjv6w2FV4I/6w37T8VSJdhQYu5RGaeGhVe01k7CmvOSBZM3FSuyeTObMqlnCBaKayj3gWAbyFZ9ziyjBSR73PNuEjTw0ApCXvDZhhf+vvH7ImKEfUJb4R3OU8XRYt71a95czi8mfSsAl+ZvQt4wsI7yw1cLq1JdJGEUfFBedyW61TffRo7x1qEfPd+M2f/SMX1uQZlxCTipLnh1nwn9lGuAgyNZJ3DYqXq61QpFVQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2I3sRDIucHXyv2SaoIsCqmShiYk+zEXLxR4d6dra/7s=;
+ b=SZT/kdhcpCje7HUm168xu2DmaeQ/dJ/dQGxBRZ1rGwGtwTThbOcZ4pMXgBhQKOsvxoj1T+4nSzN7/gm+Oc5WkdSGkwd2qtq6bJzH+xhiRBTCWdLidql1+jh9xp6FFGnI1nlNF3yLxi20HJZYrEO4q42Gy82uqdE0W1ter2HAN46fBEYRnz4T4pHlkfh5xJZ90pMtKhn7yOs0LEgHqAX+GTSHrHaLIKjvf9b6HKKShMx+Bky0KmDuJSADgjumOHMJmRBdQmLZ/ZWf2XoNEez2x2lXyJCNdaYwz45EFeD/2pkdGuHIckL+D4sKqk9wNbzudUhG2VhpkoH3d5DyDxmopQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axiado.com; dmarc=pass action=none header.from=axiado.com;
+ dkim=pass header.d=axiado.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2I3sRDIucHXyv2SaoIsCqmShiYk+zEXLxR4d6dra/7s=;
+ b=uucYd04wNkhhmPIVBeYmE+Nu/1pZxgl01o9XWWVpqyVIgrUZjkKU8kstNBi97mc6L9rabN8CIFKFNr27CMvGH/RCrXLC8V/uYJtK9NVuxrXSumNjW0aHIxTSAFe0feFtHLPzYIxS8yaBt68tDkAuoYCqdaXeUfs67LnM0IHX0BooRnu9Vnn3BT8aQXgeWME7Ovx5JPxcZkUFnwKY8DbPrj9ytLsJjnsJxvjJwGCHjwcUz4qPqiPFAWs0eg3GOqVMYSX/iVa9bG79W70NkQXBO5dzBM/Z5dJ52OT5Me9rJdlDNPV0IajsAd6UfgyiE0aEecuBwLyVzPibTqapjACmug==
+Received: from IA0PPFBEC4B1F8E.namprd18.prod.outlook.com
+ (2603:10b6:20f:fc04::c3d) by CH3PR18MB5859.namprd18.prod.outlook.com
+ (2603:10b6:610:1d8::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8922.39; Sat, 19 Jul
+ 2025 01:09:32 +0000
+Received: from IA0PPFBEC4B1F8E.namprd18.prod.outlook.com
+ ([fe80::ca34:e235:13d9:3f5d]) by IA0PPFBEC4B1F8E.namprd18.prod.outlook.com
+ ([fe80::ca34:e235:13d9:3f5d%5]) with mapi id 15.20.8922.037; Sat, 19 Jul 2025
+ 01:09:32 +0000
+From: Harshit Shah <hshah@axiado.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Rob Herring
+	<robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+	<conor+dt@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, Bartosz
+ Golaszewski <brgl@bgdev.pl>, Arnd Bergmann <arnd@arndb.de>, Catalin Marinas
+	<catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, Jan Kotas
+	<jank@cadence.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri
+ Slaby <jirislaby@kernel.org>, Michal Simek <michal.simek@amd.com>,
+	=?utf-8?B?UHJ6ZW15c8WCYXcgR2Fq?= <pgaj@cadence.com>, Alexandre Belloni
+	<alexandre.belloni@bootlin.com>, Frank Li <Frank.Li@nxp.com>, Boris Brezillon
+	<bbrezillon@kernel.org>
+CC: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-gpio@vger.kernel.org"
+	<linux-gpio@vger.kernel.org>, "soc@lists.linux.dev" <soc@lists.linux.dev>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-i3c@lists.infradead.org" <linux-i3c@lists.infradead.org>
+Subject: Re: [PATCH v6 00/10] Axiado AX3000 SoC and Evaluation Board Support
+Thread-Topic: [PATCH v6 00/10] Axiado AX3000 SoC and Evaluation Board Support
+Thread-Index: AQHb7Ec2EpmYZb1fLEiBSh0CfO/MD7Q3Ee0AgABr+YCAAT0bgA==
+Date: Sat, 19 Jul 2025 01:09:32 +0000
+Message-ID: <06f00d05-b8ca-41fa-9e5e-9cee3cfcfae1@axiado.com>
+References:
+ <20250703-axiado-ax3000-soc-and-evaluation-board-support-v6-0-cebd810e7e26@axiado.com>
+ <b7322d03-2ff9-48a3-bdc6-0e95382ed83f@axiado.com>
+ <e461e5ed-f512-4d3b-9903-8092dab7f81d@linaro.org>
+In-Reply-To: <e461e5ed-f512-4d3b-9903-8092dab7f81d@linaro.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-GB
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axiado.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: IA0PPFBEC4B1F8E:EE_|CH3PR18MB5859:EE_
+x-ms-office365-filtering-correlation-id: 86caa818-044d-409f-cb63-08ddc660eb4c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|7416014|376014|366016|38070700018|921020;
+x-microsoft-antispam-message-info:
+ =?utf-8?B?K0piSkpFNldDU3JKWEM0WkZ4Mi9lT1dNMjlGMFBOSFR2R3V0Ky9PMG9EbDV5?=
+ =?utf-8?B?cm1LL2ttaHZvQlhJbUJzTDREZVp2QTN1NE5HWmNYWHNLemk2WGlRWElvem8v?=
+ =?utf-8?B?VWpQYTZhc2dOWW16ZTdWdkNwTTNQei9LNXRTajRScXd4SXNPeWVEUG8reXRH?=
+ =?utf-8?B?MEUxVUFKOU9RZUxaOUVYcTJWNGUvbFVhOXc2MzBKRU1uNy9IazF2RTNFcUNP?=
+ =?utf-8?B?N3lBVGxZVHo5YjRhdnZrYWk2aGlReGJETjdzTXJnQU9ibmt4eXVqMzBVL3dU?=
+ =?utf-8?B?ZDZGNjhVWW9YT1YvNGtlOUNiM1ZSbndkbUxvcjdJa3ZCUXorUDZ4dFVhYlJm?=
+ =?utf-8?B?bjM0cFBzdnBxVjYvVHduakdaS2RtdyszWUdpdS9oQjkrSEZzTS9kbkRBWExY?=
+ =?utf-8?B?Zmh1UEQ1eW1QeUdZWUFVTTE0U2ZoTGZ6Vnc1eGxuUjZyaFdaUzI2dDRRR2NX?=
+ =?utf-8?B?TWZyUkFLNXVYbDJMMStOQ2FNUE9UUEo3MGQ3ZEJOZlFTZTdLdzZyQjFkVVZ1?=
+ =?utf-8?B?cm5aU2NVb3p0d1FjQ2tGRGFkRHg5K2tVNHpSS3NtaS9jN3VRdWxXcDNSVmVr?=
+ =?utf-8?B?ZDhIcStuVS8rdFVRK0U1aVhhK1BmUEphR1dXY1lzakZYdUdCOStBQ2Ryc0px?=
+ =?utf-8?B?MFNPb3I3RExaWlZDNmpudXVUblBhdkRKZ2psL2Zxc25RNmpCeFRJamRsREc0?=
+ =?utf-8?B?a2ZxcVNuM2g3WERhNXNTcm9PVFZRQlVjRFFncFlHOXMyNnc5T3krYXNSNVdq?=
+ =?utf-8?B?UTc2b0VEL1h6MlJObWlzYlZYeS9FYWRZYlZEZG1jUGNRcUp0S1l2ODU2QlJP?=
+ =?utf-8?B?SXIwTWpXWkk0Wlh2OE9pNk5QWWhNUVh2OWY5ODVGaXZ0Q1ZYOGNTQ29ySWJ0?=
+ =?utf-8?B?NloyaW9iNHJWZmhqcjQvTjl4clNPZldmbVpuYzFBWnpoNzl1T2t3T2NYLzk4?=
+ =?utf-8?B?eVZYQkNPVk1hRE9XRFF1TjlkVVpvcFE4eENLaFZicGtZK2dkV1hYVFFudkhm?=
+ =?utf-8?B?bWx3SHlFeEdMZWxkK2cwRklNd05Qd25PSUNuc0lrMkZuTnNBVm11cE9hUkFa?=
+ =?utf-8?B?UjNWbU5zWHljYWMzaEdlSm8wMFFDOUt5Umh5Z3AyOEVCa3doZnk1Rmk5V0FE?=
+ =?utf-8?B?RWp5aTh5VHNRbWFEdHNpT0ZmTjNGMnhsRDVLenRWcEIzT3ArNUtNaDNtaTZi?=
+ =?utf-8?B?WG1mM3NMbnNkTGd5azB5MWFQdWF0L2Qwd2crNDVNMXZ1cDljdWdRSWF3ZnFs?=
+ =?utf-8?B?MnluV0VCcUROS09SYnowUmQ2cWVKTFQxT0xYVnZ1bUdwT2RVNUlxMXZybnJ3?=
+ =?utf-8?B?L2ZBVUtXa1IxaExOR3dmZExzdkVGazdBYmxncEcxcmV0WkppdGlVdnNyaCtp?=
+ =?utf-8?B?YWZzaWZuYkovVC9XcDhwZGNGS04yMmJqdWJJZlBGNVhaMjQyTDlMSVU0MFZ4?=
+ =?utf-8?B?QzZIMlVYOVcwNXo4WXRocldJRDZwMkhGTFJ4U29BMkRjV1VkNCtUMUdiRWZ0?=
+ =?utf-8?B?UlI3a0NNbC9QTTd4VXpjZWVFQWNPbG45a1QvTnZ2eUNzakQzN0MvU2NRaVE3?=
+ =?utf-8?B?UGFkY3grby9jdm9LcUx4cHJiVXcvSWJ2Q0J2OGo5RVZpZnh0R0dsR1ZLcklW?=
+ =?utf-8?B?a1JodGtONTJtTWplNWxUMkxkcXY1ZlI3aUlsWFRyK1dkYWRpclMyZkc3Y0V6?=
+ =?utf-8?B?VFRueGlQU0c3UElBa3piOTcrang2NmRqd1Q5ejliWDBTaFlWRlFsSVAvVXBQ?=
+ =?utf-8?B?bW5lb0ZBbkFhekZTc1g1SnJIcWFNSmdiTjhSRUFOZEFUazA3ZFpiMWtqZE5F?=
+ =?utf-8?B?eW5Cd1hzdElBRWFRWWFTOERCTlNYOWVoNXpKVXBlSy9CbjNhNlhjc21ocGVy?=
+ =?utf-8?B?elBINnlCOG5QMWZ3QTVYdTFiZDNTaU1SRkY4TXI3bFh6WUhQTHQzUncwM1JR?=
+ =?utf-8?B?RHlvNTJ1ZW5lYlp2d0RyeENMMEI2QS8ySXZ3RFJRU0ZGWEVsZU1FaXJpUDNO?=
+ =?utf-8?B?OUxGaElTU2loS0FPS2NYNnpLM2pyMHluTjhRKy9ZVGx4Q3JqU1dMMkNWcyt0?=
+ =?utf-8?Q?Cj9bxM?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA0PPFBEC4B1F8E.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(38070700018)(921020);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?utf-8?B?bHFOVWlLNHZpVjVOamVqekk0aGVzYVhWeHMxRFVuUm9uWnEzYW9SWmovYlF5?=
+ =?utf-8?B?RW1YdlYxbEZHTlNKdy9kdk5VaUxnS2VvMlNkREVnNUpkQ0YvUGtGU1o5UTZv?=
+ =?utf-8?B?RmswWXdZdzUycGhUa2JVUUlyNnJyS2JBSWJpbkRsUGdLbW9RT24yL2ZrbWov?=
+ =?utf-8?B?MlBXQ2hlNFozdUtrcEJKU09hOFJ5NG9QQmpKNUxTcUJRSnprSE1NdktjU0xp?=
+ =?utf-8?B?ZU1KdVh0MGYzSXdidFhtQUg4bDM2bWVaeVozQ3NyNTBBV1NLSGxqL3NvNmE5?=
+ =?utf-8?B?dlBPTVJpYXhkM3BEYVNhZzMwUll4dVZjbFlaL2hDdStQZGY0TGZjcFFzSzNR?=
+ =?utf-8?B?Zm0wYnFKME9ZVGxJZkx6bHY0ZDNmVzA0aUNta1ROVmRDbjg5M1NBZjZLNzNQ?=
+ =?utf-8?B?N0pzN0djdlpQMkZoK2FiRmRFNTh4SmVFcGIxMndwRzNNVnNBcVdhZytQVVIw?=
+ =?utf-8?B?NXdnajBHL1huNTQ0R0d6bDF1YTVSRWFSdVlVWGw4dUdLb052K2lyMGdlRzFM?=
+ =?utf-8?B?ZElra2dSZjVrQ1JvT3YveVZnZXZKZHdIdU9mUDlVcFhiZzJ6MlpLUklpK1dq?=
+ =?utf-8?B?RFVCZ3Vvc2JhQWh4NGVoTXYrWXNrUldFYWtnRGpTeDZWWTMwRVFuWXFYYzkx?=
+ =?utf-8?B?UWF6UWhKbDdoMElMaGs0NFZUbGViZm5vRjVVUEZiMGVUN1YxVnJNSmdFQXVV?=
+ =?utf-8?B?ZUJhUFhDREh6K1UxTFh4amlQY01jczdOL0hIbnZGdklKL0l1T0hhV3F4WHJw?=
+ =?utf-8?B?OEgvSmF6VjBDQ2ZmRERrQ1E5RlhBNnRFb3pRaXNaYU4veHdhdmlPTEFQTk40?=
+ =?utf-8?B?ZHdMUmlKL1lkbUlLN1FxVGd4OVBaa0k2M1VQZ3MzTHU4NC8zVU1hb215WXBQ?=
+ =?utf-8?B?bjAxQ3lCcHdzejlKWVIvWGh1RFVGRktpSEhwTDFuM01Ca3B3dHRKTkdIZHds?=
+ =?utf-8?B?WlgrTEpPT0x0dFEwS0F6ak1DQTJDUEJ0SysvVVozRHY0UHdyc2FMcG9TTHJl?=
+ =?utf-8?B?dnpmbnRxK2szbTFBbnJWdjJOazYvZ2tCWFdtSkpvYlc1S09OUHZQWEFhbVR3?=
+ =?utf-8?B?RXFCa0hWTmRzNDU1ZjVIWVMxNkdyVEdZdEtCT3YzaHdRR2ROYlI1ZHZBOFJR?=
+ =?utf-8?B?WFNmRGhaKzduVUlXVnd3enB4Qy9IVFJSQXF6SjBvZHRPL21WTnFKaHN2VXpu?=
+ =?utf-8?B?R1FuUmVkaDJPM3lGMmt2MDA5cUdWdmFiR0NNUlpHYm5VRGQ3dE1BRmdCYWtw?=
+ =?utf-8?B?b1JrSTVFY3dFeDVFZDBVQ0ZVeGlpYmRQbEtrelFDdmlUOHY4TFBZUDNQSEhV?=
+ =?utf-8?B?dko0cS9LY3FwazlZREYvSiszMlNDcDErZmp2bXVTZ2pkV1h3ejh3ZUF6aHhF?=
+ =?utf-8?B?djVsZVNCckZhbkZ2bUtGbTN0dkRFcFFaRmVzc3ROSzhuczZIQytLZ3hWS2tn?=
+ =?utf-8?B?cHhhWkdSUGJ0ZW9hSlp3VzF1bGF1ejVYR3dRVU9kaWxyYWZIbk9KTWlRajR6?=
+ =?utf-8?B?RlpkczNqdkJpY3FuMzZqTnpWeWdBaHVlV2tyQlZIVEZFVE5va0cvYWdBcGxD?=
+ =?utf-8?B?RW0zMFpLYi9BazRPZWtpbExCdmttcE42TTVuVmcyOW9ORGRNV1lHNjFaekQv?=
+ =?utf-8?B?ZUdRa0RRT2V0T1RVYzlRK09QZFNVSFBzOWtGaGZKdjdMVmJWZHJId0phcE5U?=
+ =?utf-8?B?ZUdKajNxS2luL3dndGxrQmNDT1FWeENHZjQ4ckNqNFhhOTZid25LR29SQ0Rl?=
+ =?utf-8?B?amFkVXU5elQwcDU5YzJLcXM4YTh2QzBoUmZBbWxURHZkTlM0ZGVWaDhWTmZR?=
+ =?utf-8?B?UWpKeHdhYWVlRUZkR3ltRFdJOGJ0TlBqMDJMVXcwN1NOeWo2MUJVTmhpTEt6?=
+ =?utf-8?B?aXdhZDJQcHhGQVV5Y2xFWUlsZGp0azhkZ1VVUE8vbDFTWHptaUNaT0l1WTU1?=
+ =?utf-8?B?RWRyekdNaUt5ZXYwd2FsMmpLWjNmZWxDQ1F6MjVRWGE1a1ZNT0tZU1diVHJW?=
+ =?utf-8?B?YUxYNUNtZElQSm5nb3BGWS8xSlhRc1FGSCtaSzlkZ3pxelRPeDEvT04vd0ZM?=
+ =?utf-8?B?TDdySHJLa1cvMytCYmcwZXFlZFRPWlFBSFVQSGc2TEQrSFJ3SWlkUGtMSEhq?=
+ =?utf-8?Q?H4ik=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <1D88173927764F41839FD378225038A1@namprd18.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250610092135.28738-1-cuiyunhui@bytedance.com>
- <20250610092135.28738-3-cuiyunhui@bytedance.com> <CAEEQ3w=pUPEVOM4fG6wr06eOD_uO6_ZBzORaG1zhtPswD8HLNQ@mail.gmail.com>
- <84cyauq2nc.fsf@jogness.linutronix.de> <CAEEQ3w==dO2i+ZSsRZG0L1S+ccHSJQ-aUa9KE638MwnBM4+Jvw@mail.gmail.com>
- <84ikjqaoqi.fsf@jogness.linutronix.de>
-In-Reply-To: <84ikjqaoqi.fsf@jogness.linutronix.de>
-From: Doug Anderson <dianders@chromium.org>
-Date: Fri, 18 Jul 2025 08:20:32 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VmYK5PeGXUcbJrnwnhdyfbNJLdRjwhbj7JCN5s-JmTAw@mail.gmail.com>
-X-Gm-Features: Ac12FXzOFOb-NbS_iV3QrEjhDiPv2Bc0pKC7N9uN5sAU0uoh5RMhscF-UsJKoOY
-Message-ID: <CAD=FV=VmYK5PeGXUcbJrnwnhdyfbNJLdRjwhbj7JCN5s-JmTAw@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH v9 2/4] serial: 8250_dw: fix PSLVERR on RX_TIMEOUT
-To: John Ogness <john.ogness@linutronix.de>
-Cc: yunhui cui <cuiyunhui@bytedance.com>, arnd@arndb.de, 
-	andriy.shevchenko@linux.intel.com, benjamin.larsson@genexis.eu, 
-	gregkh@linuxfoundation.org, heikki.krogerus@linux.intel.com, 
-	ilpo.jarvinen@linux.intel.com, jirislaby@kernel.org, 
-	jkeeping@inmusicbrands.com, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, markus.mayer@linaro.org, matt.porter@linaro.org, 
-	namcao@linutronix.de, paulmck@kernel.org, pmladek@suse.com, 
-	schnelle@linux.ibm.com, sunilvl@ventanamicro.com, tim.kryger@linaro.org, 
-	stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: axiado.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: IA0PPFBEC4B1F8E.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86caa818-044d-409f-cb63-08ddc660eb4c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jul 2025 01:09:32.2900
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: ff2db17c-4338-408e-9036-2dee8e3e17d7
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QhZYgn7446TEByb4Nmzq1a0EA7ixQyDuf5uGubS1NpxXvH3k76lNfJv1IvTr8kfk79FckL/qNOlD9tLMw3qRUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR18MB5859
 
-Hi,
-
-On Thu, Jul 17, 2025 at 7:14=E2=80=AFAM John Ogness <john.ogness@linutronix=
-.de> wrote:
->
-> Added Douglas Anderson, author of commit 424d79183af0 ("serial: 8250_dw:
-> Avoid "too much work" from bogus rx timeout interrupt").
->
-> On 2025-07-11, yunhui cui <cuiyunhui@bytedance.com> wrote:
-> >> On 2025-06-23, yunhui cui <cuiyunhui@bytedance.com> wrote:
-> >> >> The DW UART may trigger the RX_TIMEOUT interrupt without data
-> >> >> present and remain stuck in this state indefinitely. The
-> >> >> dw8250_handle_irq() function detects this condition by checking
-> >> >> if the UART_LSR_DR bit is not set when RX_TIMEOUT occurs. When
-> >> >> detected, it performs a "dummy read" to recover the DW UART from
-> >> >> this state.
-> >> >>
-> >> >> When the PSLVERR_RESP_EN parameter is set to 1, reading the UART_RX
-> >> >> while the FIFO is enabled and UART_LSR_DR is not set will generate =
-a
-> >> >> PSLVERR error, which may lead to a system panic. There are two meth=
-ods
-> >> >> to prevent PSLVERR: one is to check if UART_LSR_DR is set before re=
-ading
-> >> >> UART_RX when the FIFO is enabled, and the other is to read UART_RX =
-when
-> >> >> the FIFO is disabled.
-> >> >>
-> >> >> Given these two scenarios, the FIFO must be disabled before the
-> >> >> "dummy read" operation and re-enabled afterward to maintain normal
-> >> >> UART functionality.
-> >> >>
-> >> >> Fixes: 424d79183af0 ("serial: 8250_dw: Avoid "too much work" from b=
-ogus rx timeout interrupt")
-> >> >> Signed-off-by: Yunhui Cui <cuiyunhui@bytedance.com>
-> >> >> Cc: stable@vger.kernel.org
-> >> >> ---
-> >> >>  drivers/tty/serial/8250/8250_dw.c | 10 +++++++++-
-> >> >>  1 file changed, 9 insertions(+), 1 deletion(-)
-> >> >>
-> >> >> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial=
-/8250/8250_dw.c
-> >> >> index 1902f29444a1c..082b7fcf251db 100644
-> >> >> --- a/drivers/tty/serial/8250/8250_dw.c
-> >> >> +++ b/drivers/tty/serial/8250/8250_dw.c
-> >> >> @@ -297,9 +297,17 @@ static int dw8250_handle_irq(struct uart_port =
-*p)
-> >> >>                 uart_port_lock_irqsave(p, &flags);
-> >> >>                 status =3D serial_lsr_in(up);
-> >> >>
-> >> >> -               if (!(status & (UART_LSR_DR | UART_LSR_BI)))
-> >> >> +               if (!(status & (UART_LSR_DR | UART_LSR_BI))) {
-> >> >> +                       /* To avoid PSLVERR, disable the FIFO first=
-. */
-> >> >> +                       if (up->fcr & UART_FCR_ENABLE_FIFO)
-> >> >> +                               serial_out(up, UART_FCR, 0);
-> >> >> +
-> >> >>                         serial_port_in(p, UART_RX);
-> >> >>
-> >> >> +                       if (up->fcr & UART_FCR_ENABLE_FIFO)
-> >> >> +                               serial_out(up, UART_FCR, up->fcr);
-> >> >> +               }
-> >> >> +
-> >> >>                 uart_port_unlock_irqrestore(p, flags);
-> >> >>         }
-> >>
-> >> I do not know enough about the hardware. Is a dummy read really the on=
-ly
-> >> way to exit the RX_TIMEOUT state?
-> >>
-> >> What if there are bytes in the TX-FIFO. Are they in danger of being
-> >> cleared?
-> >>
-> >> From [0] I see:
-> >>
-> >> "Writing a "0" to bit 0 will disable the FIFOs, in essence turning the
-> >>  UART into 8250 compatibility mode. In effect this also renders the re=
-st
-> >>  of the settings in this register to become useless. If you write a "0=
-"
-> >>  here it will also stop the FIFOs from sending or receiving data, so a=
-ny
-> >>  data that is sent through the serial data port may be scrambled after
-> >>  this setting has been changed. It would be recommended to disable FIF=
-Os
-> >>  only if you are trying to reset the serial communication protocol and
-> >>  clearing any working buffers you may have in your application
-> >>  software. Some documentation suggests that setting this bit to "0" al=
-so
-> >>  clears the FIFO buffers, but I would recommend explicit buffer cleari=
-ng
-> >>  instead using bits 1 and 2."
-> >>
-> >> Have you performed tests where you fill the TX-FIFO and then
-> >> disable/enable the FIFO to see if the TX-bytes survive?
-> >
-> > Sorry, I haven't conducted relevant tests. The reason I made this
-> > modification is that it clearly contradicts the logic of avoiding
-> > PSLVERR. Disabling the FIFO can at least prevent the Panic() caused by
-> > PSVERR.
->
-> I am just wondering if there is some other way to avoid this. But since
-> we are talking about a hardware quirk and it is only related to
-> suspend/resume, maybe it is acceptable to risk data corruption in this
-> case. (?)
->
-> I am hoping Douglas can chime in.
->
-> John Ogness
->
-> >> [0] https://en.wikibooks.org/wiki/Serial_Programming/8250_UART_Program=
-ming
-
-I'm not sure I have too much to add here. :( I did the investigation
-and wrote the original patch over 8 years ago and I no longer have
-access to the hardware where the problem first reproduced. I vaguely
-remember the problem, but only because I re-read the commit message I
-wrote 8 years ago. :-P
-
-I will say that for the hardware I was working with, it wouldn't have
-been the end of the world if there was a tiny bit of UART corruption
-around suspend / resume. Of course, nothing about the workaround
-specifically checks for suspend/resume, that was just how we were
-reproducing problems. If there is ever any other way to get a "RX
-timeout with no data" then we'd also potentially cause corruption with
-the new patch. Still better than an interrupt storm or a panic,
-though...
-
-Not to say that I'm NAKing anything (since I'm a bit of a bystander in
-this case), but I wonder if there's anything you could do better?
-Ideas, maybe?
-
-1. Could the PSLVERR be ignored in this case?
-
-2. Could we temporarily disable generation of the PSLVERR for this read?
-
-3. Could we detect when PSLVERR_RESP_EN=3D1 and only do the FIFO
-disable/enable dance in that case?
-
--Doug
+T24gNy8xNy8yMDI1IDExOjE0IFBNLCBLcnp5c3p0b2YgS296bG93c2tpIHdyb3RlOg0KPj4gSGkg
+YWxsLA0KPj4NCj4+IFRoaXMgcGF0Y2ggc2VyaWVzIHdhcyByZXZpZXdlZCBieSBLcnp5c3p0b2Ys
+IGFuZCBJIGFtIHdvbmRlcmluZyBpZiBpdOKAmXMNCj4+IHF1ZXVlZCBmb3IgdGhlIG5leHQgbWVy
+Z2Ugd2luZG93LiBUaGFua3MgaW4gYWR2YW5jZSENCj4gSXQncyBub3QsIHVubGVzcyB5b3UgcmVj
+ZWl2ZWQgY2xlYXIgbm90aWNlIGFib3V0IGl0LiBQbGVhc2UgcmVhZA0KPiBtYWludGFpbmVyIHNv
+YyBwcm9maWxlIGhvdyB0byBzZW5kIHBhdGNoZXMgZm9yIG1lcmdpbmcuDQoNClRoYW5rIHlvdSBL
+cnp5c3p0b2YgZm9yIHRoZSByZWZlcmVuY2UuDQoNCldlIHdlbnQgdGhyb3VnaCBtYWludGFpbmVy
+LXNvYy5yc3QgDQooaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9n
+aXQvdG9ydmFsZHMvbGludXguZ2l0L3RyZWUvRG9jdW1lbnRhdGlvbi9wcm9jZXNzL21haW50YWlu
+ZXItc29jLnJzdD9oPXY2LjE2LXJjMSNuNzMpIA0KDQoNCkl0IG1lbnRpb25zIGFib3V0IHRoZSBz
+cGVjaWFsIGNhc2Ugd2hlcmUgIkludHJvZHVjaW5nIGEgY29tcGxldGVseSBuZXcgDQpTb0MgcGxh
+dGZvcm0uIiB3ZSBjYW4gc3VibWl0IHBhdGNoZXMgdG/CoHNvY0BrZXJuZWwub3JnIGRpcmVjdGx5
+Lg0KDQpIb3dldmVyIEkgc2VlIHR3byBkaWZmZXJlbnQgcG9pbnRzIGluIHRoZSBkb2MuDQoNCjEu
+IFN1Ym1pdHRpbmcgcGF0Y2hlcyBkaXJlY3RseSB0byBzb2NAa2VybmVsLm9yZyB3aXRoIGVtYWls
+DQoNCjIuIFRoZXJlIGlzIGFsc28gbWVudGlvbiBhYm91dCB0aGUgIkJyYW5jaGVzIGFuZCBQdWxs
+IHJlcXVlc3RzIg0KDQooaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5l
+bC9naXQvdG9ydmFsZHMvbGludXguZ2l0L3RyZWUvRG9jdW1lbnRhdGlvbi9wcm9jZXNzL21haW50
+YWluZXItc29jLnJzdD9oPXY2LjE2LXJjMSNuMTg2KS4gDQoNCg0KSSB0aGluayBpZiB3ZSBuZWVk
+IHRvIHVzZSB0aGlzIGFwcHJvYWNoIHRoZW4gd2UgbmVlZCB0byBjcmVhdGUgYSBuZXcgDQpicmFu
+Y2ggb24gc29jIGFuZCBjcmVhdGUgYSBwdWxsIHJlcXVlc3QgYmFzZWQgb24gdGhlIHNhbWUuICh3
+aXRoIHRoZSBzb2MgDQp0cmVlWzFdKQ0KDQoNCldlIGFyZSBub3Qgc3VyZSBpZiB3ZSBzaG91bGQg
+Zm9sbG93IHdoaWNoIG1ldGhvZCBmb3IgdGhpcyBwdXJwb3NlLiBDYW4gDQp5b3UgcGxlYXNlIGhl
+bHAgb24gdGhlIHNhbWU/IEFwb2xvZ2llcyBmb3IgdG9vIGxvbmcgcXVlc3Rpb25zLg0KDQoNClsx
+XSBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9zb2Mvc29j
+LmdpdC8NCg0KUmVnYXJkcywNCg0KSGFyc2hpdC4NCg0K
