@@ -1,63 +1,66 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C96222127C;
-	Sun, 20 Jul 2025 16:30:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAD0C566A;
+	Mon, 21 Jul 2025 00:39:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753029052; cv=none; b=MtZ7VCRXPFLhKcDjQqu5hh5eebqaiyhtt/VdGylRyONT4Xnl7YGGEUERcghIPOdoS3lbzA6Vzz0RN3o3AILLSprVTk8g3tGvR2eUeG+oouvAE9fbu6+CQqot0ZxIy+raj1Iw0e5hIpTYfXV9KP8241Tk21V9iYMw/oZKKwGtUmc=
+	t=1753058388; cv=none; b=m5HAzMvzSK3Aw5/lNsxQMdTh9O5aykaavHHV+6tqtxuMHOfL97B8dJRhT0Egln7C1v04xwarZ7+XN7rjf5J5crUt7kkpaomqlJwF6UUy21+e+2jFNBKwpOsoIfMFL4CrSHdhEc4FAS8RnFc2RlnY6+TP82N/asGvBE46Nfsd8jg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753029052; c=relaxed/simple;
-	bh=p4PbCS6cMZYHLOCV+A63qjm4CDBVy6bshoMjcL7HwzE=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=o/8NZOlkuqXhKVb6/MdI/yI08ODXyyRoyl4PynNHGEtQ3Poj0QRqXgP2sMcJkoDP3VZSpUBVNvxhSiJCRGaP+MXiUMP6SBXJgLJRJGO+Ljw7Ro5OnT1MJuRdKpek70XmjZ13C1MgdxAM81LOxo9AOcMDbflkzfp/uAjsS0u3L0Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Za2IExyb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753058388; c=relaxed/simple;
+	bh=DcAxps/FGdwNvvt1KUL0mg84vdvjjbvyVNUzZyC1NQk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PuMjVf6yHKBL+bGGf0teo1QhCe6LWStDUqBLODKq1LDpkuPG4hVTUzhJoYNrga0U85mASAJnCYEAOif0am2gLFqRKtW0ak/MFW664YDfxUrgLNpU3puOGBf71tXfOoPTueTPtSwm6pjqXrcVAdAsoJx41LBq68tcyhbFAzucV6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EVXOMk0o; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Za2IExyb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C33CC4CEE7;
-	Sun, 20 Jul 2025 16:30:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EVXOMk0o"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3069AC4CEE7;
+	Mon, 21 Jul 2025 00:39:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753029052;
-	bh=p4PbCS6cMZYHLOCV+A63qjm4CDBVy6bshoMjcL7HwzE=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=Za2IExyb/ZZfXrPib165RXMTn+hKMZSb2In6lkNC9MsiDkQe8hUYtkmEj6NHJiTWa
-	 LTg2M9UDz+xUDNQfq0WAI8y+Q1hoapyEMvVv0vP6ZRR2hcHEZXSgY6A404Hds2kuGy
-	 PX1zPOpt5KygU9cLBXxou35qytpbFaTu8qmZH/dYcFjvnZnG03KPX7UMIYiRcla8sB
-	 4zS1yq3E6ATuJklaWf3RkCEwWwv9CO1m0rLTQujrP5rMGTfPLlq/5mmeFWK0v/dZS4
-	 5Cv0TA3zU3/Bmq3+dLcxsNR5kKshYOHGzVH7KH8Zd0i/N1EnJ70TohKW1eETw57X1Z
-	 FdAefEd2jxc0g==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 70CBE383BF51;
-	Sun, 20 Jul 2025 16:31:12 +0000 (UTC)
-Subject: Re: [GIT PULL] Serial driver fixes for 6.16-rc6
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <aHzJDbazSNDl7kv4@kroah.com>
-References: <aHzJDbazSNDl7kv4@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <aHzJDbazSNDl7kv4@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.16-rc6
-X-PR-Tracked-Commit-Id: 6c0e9f05c9d7875995b0e92ace71be947f280bbd
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 673cf893b66a7dd76c9378f4506b3d4a870c80b2
-Message-Id: <175302907106.3241589.8779347621961198605.pr-tracker-bot@kernel.org>
-Date: Sun, 20 Jul 2025 16:31:11 +0000
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+	s=k20201202; t=1753058388;
+	bh=DcAxps/FGdwNvvt1KUL0mg84vdvjjbvyVNUzZyC1NQk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EVXOMk0ouM5Coaraip90bgDOb+w452a4nPgiKLNRQ0k17QLIABHBTRf/Wp9Thtdmw
+	 70ozK9bOxCAhB1n80sYSpx/6ptOWUdf+wNnEpvXhyJ1kk/S5WgsHWlaZZykpX1iun+
+	 Z7U1d9GlukCtkVEQHvG4eEusM4Nr2V4x6x28ayGUXdCjWxCPD8UP51KIObxY9R7ZRO
+	 S9+Fp67BSmq7l/nIhleQrenNVkIdyVaSrbnFL/LaB6Oyl0/vyYYvvNZ7lMH7yG2yS4
+	 sZRKdg8RK4Dt/TbmL3jhj3k6wcC9ih6sPxddMSoiD/e61O42/A7ek38r01yrZSQg+h
+	 6Md0qotk0QBog==
+Date: Sun, 20 Jul 2025 19:39:47 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Yixun Lan <dlan@gentoo.org>
+Cc: linux-riscv@lists.infradead.org, spacemit@lists.linux.dev,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Alex Elder <elder@riscstar.com>, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jiri Slaby <jirislaby@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>
+Subject: Re: [PATCH] dt-bindings: serial: 8250: spacemit: set clocks property
+ as required
+Message-ID: <175305838704.3151611.2882961129510039332.robh@kernel.org>
+References: <20250718-01-k1-uart-binding-v1-1-a92e1e14c836@gentoo.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250718-01-k1-uart-binding-v1-1-a92e1e14c836@gentoo.org>
 
-The pull request you sent on Sun, 20 Jul 2025 12:46:37 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.16-rc6
+On Fri, 18 Jul 2025 23:04:37 +0800, Yixun Lan wrote:
+> In SpacemiT's K1 SoC, the clocks for UART are mandatory needed, so
+> for DT, both clocks and clock-names property should be set as required.
+> 
+> Fixes: 2c0594f9f062 ("dt-bindings: serial: 8250: support an optional second clock")
+> Signed-off-by: Yixun Lan <dlan@gentoo.org>
+> ---
+>  Documentation/devicetree/bindings/serial/8250.yaml | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/673cf893b66a7dd76c9378f4506b3d4a870c80b2
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
