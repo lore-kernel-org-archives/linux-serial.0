@@ -1,153 +1,101 @@
-Received: from fout-b5-smtp.messagingengine.com (fout-b5-smtp.messagingengine.com [202.12.124.148])
+Received: from sender4-op-o15.zoho.com (sender4-op-o15.zoho.com [136.143.188.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D24A7176ADE;
-	Mon, 21 Jul 2025 14:32:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.148
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753108332; cv=none; b=lebVywO4grqesaHB/lMqp9qutBXkE2OP0/+Yy52ppLSvrp+pl+/VcX/sC2Ew13mA7uM3pbRcffTh9ymu77B4Z7dHTlNNoDVQwK64ulU6JyVzWsabbSp2UJHvSnDcCNRCLCkm68jnXb1Ue+wNjybv4OUIvjCR4ckJddJTNI5vARk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753108332; c=relaxed/simple;
-	bh=pE4d2LeBSURR3ZsVuztA3qO4aVwxujLn3qVhRl01dLE=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=iUZoQK+gFt/qLzW6xVl5GnT7JH6yQQx2dhny9EsTA+S7YTOjYwhGnvn3+nmf/zvcOrVlEYTdmH1tGJH/DctFQybo0stKYaUIKgIqBNJBJzZrNJGb1RY/OHDuguD+TCL7kUrl0idDikfuQuFrQg+xqP63MjGedGcm1kdLWDee104=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=D8gMn+Uk; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=dqpzkqFJ; arc=none smtp.client-ip=202.12.124.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A54F42DA755;
+	Mon, 21 Jul 2025 15:50:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1753113061; cv=pass; b=g+Ips96C3ru0PEO8NcbqM0D17ee5pWKgB5lhKtlTICfvvBWlYklWiWA1O+nHhpER4XPp/hSc6qd6wCNKwI43J1GolLhA6YusDVluZ1uIJ3ChPkRvHcG86Ky5zozi83luo6NC81ystcF9xT273pxLKznQ6TyzZ4ZPWZcGSUD+8sM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1753113061; c=relaxed/simple;
+	bh=cdC+gHkr28j2ptGfilNq1eA/ICUbwZpjzhH/BVYbOhg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=UJYENJioqzzuDbQWq5ulRUCxF7PiOHATTihTlsT1jHD73ugmnc7k60IF2TDxXMFB9AMYQnLQW0mTZee/J47/Gfsx2RPlC8MaLVkzYPV9MKZahDrtwi8ngUIHpzUfUHhvfR+1kaLwHf/FXyF2vJR0iniGQu4u++qwjvc86J2bgkM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech; spf=pass smtp.mailfrom=pigmoral.tech; dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b=iGMAK2z/; arc=pass smtp.client-ip=136.143.188.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pigmoral.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="D8gMn+Uk";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="dqpzkqFJ"
-Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
-	by mailfout.stl.internal (Postfix) with ESMTP id 4693F1D001C8;
-	Mon, 21 Jul 2025 10:32:08 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-05.internal (MEProxy); Mon, 21 Jul 2025 10:32:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1753108328;
-	 x=1753194728; bh=gMKNAupfMStz/V14NuXYIcF11MwYemPMaLcl28atUqQ=; b=
-	D8gMn+UkuxGqmrnLQ8bKSYVeDWgcBIbWu6AQ3cAH8vk5ZZeoHYrQ2Pcez4NqUHyW
-	keGowtEEmy/h+fGLJZB7U6oVrgjYq4j1f90Hdeg58Wiv6yS2D6kfWQR3hbjNyW9/
-	SOWX53LBxhRhVUKVg3WsWwIOLj1L88dvT1nEN9eL+P+V4MYg8716mIUz4JjH6Zj2
-	6zJtMfcWOd7afHBeYULRaqT0HZXAfe77NiqSKoFcrUffoGAgHuMXY4J5EOxDzrl+
-	powGW0OTCDyRnzj4F20Rrq6QwrfkMFeYb35nwSMM/TVEBfXUXBSdu+/TbJCUnZvb
-	duE8X8xA/x1gs6j7xq/5bg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1753108328; x=
-	1753194728; bh=gMKNAupfMStz/V14NuXYIcF11MwYemPMaLcl28atUqQ=; b=d
-	qpzkqFJ4nN223b4dzhJW/uWLduEPQJOVtqauWsi6LMG3z18YOFf8da+Thgqs6hpP
-	H4TwLWJ1qt8hspX7c7MG/Nq9CK5v9ST1pElq2fjgAiXEWCoyWaF9u475yxVKcam5
-	EtK9YvcUBVRKpYtVeojHMWOM/5kpxMRqq5kGAhyzc/+1A3Farq5qOE1Atz1uwEmW
-	WOcKHUuf1AweS5eB/w7QDllMGUa3GnhG+rmsqYMZLT/eoR65aPpKzCdATaQxJ/6n
-	lUkyXAG8tF4ePsMx+rDOVS7JzlMd0AYtoM7UBxt+fuWLiAHNl3HjSQ1eJQOe8mqY
-	1UkTPfUY9le4me4oRoNog==
-X-ME-Sender: <xms:Z09-aDjoAtbt4oz_hquLOelYW_hgx3M6__B8GSSDGjYt5jVrjjJLtw>
-    <xme:Z09-aABMdafwrWxno0W-vFk2Iet2VVNakLnH87WDZ27kI6n0GCygNLSskDXRMwCj3
-    q43b51q_U9LmU6re-c>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdejvdeffecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpefoggffhffvvefkjghfufgtgfesthhqredtredtjeenucfhrhhomhepfdetrhhnugcu
-    uegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtthgvrh
-    hnpeekvdeuhfeitdeuieejvedtieeijeefleevffefleekieetjeffvdekgfetuefhgfen
-    ucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomheprghrnhgusegrrhhnuggsrdguvgdpnhgspghrtghp
-    thhtohepvdegpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehmihgthhgrlhdrsh
-    himhgvkhesrghmugdrtghomhdprhgtphhtthhopegtrghtrghlihhnrdhmrghrihhnrghs
-    segrrhhmrdgtohhmpdhrtghpthhtohephhhshhgrhhesrgigihgrughordgtohhmpdhrtg
-    hpthhtohepsghrghhlsegsghguvghvrdhplhdprhgtphhtthhopegrlhgvgigrnhgurhgv
-    rdgsvghllhhonhhisegsohhothhlihhnrdgtohhmpdhrtghpthhtohepjhgrnhhksegtrg
-    guvghntggvrdgtohhmpdhrtghpthhtohepphhgrghjsegtrgguvghntggvrdgtohhmpdhr
-    tghpthhtohepsggsrhgviihilhhlohhnsehkvghrnhgvlhdrohhrghdprhgtphhtthhope
-    gtohhnohhrodgutheskhgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:Z09-aCOaJXULvBvv--IOW8a2yzp5R56DSAKQvyjkEmnC22NyLjA_wg>
-    <xmx:Z09-aKAIMXXASTcUjjEauq50E7V1A-C-J-4qyc57zycYXV4qJifdZg>
-    <xmx:Z09-aCXJjKsNb0OiDfTt1jzNPILfa04Qfx5G5aQCs8B2TMvOSZ7IiA>
-    <xmx:Z09-aOdhpyzR93WWZFbPrLM4vIdzDHha7ZGCG6DUIfqgNQ5XWWh9KA>
-    <xmx:aE9-aO3UqGV5yUTEmzfniPMEzUG6vhDrmrVmbYvdXHAs_euJ3YD_4gDq>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 598F7700068; Mon, 21 Jul 2025 10:32:07 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b="iGMAK2z/"
+ARC-Seal: i=1; a=rsa-sha256; t=1753113037; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=JrgAnJPdtMlyCLy/ncZ2EGwJol7L02Y2NhPfSQqqtSbZdJIn35ZyVSwgxSMU8Y5w8AHVLlOLaDgGBDEnMSWkF0GPOhms7nEdvOFqykaxWYcplTGisTg1kYJC64mMGAPLKTw5ZV4ybNGFCookqlDtNlCSasoCBgwQvfnyg3qBhqg=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1753113037; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=dr0pBN5+6Qa6Jv/l48HU1CzV1Gi4jM0bXP6wQ8s9ah0=; 
+	b=RBJODeqZYx7zJDtvdYcl7O0JaEakRP/0bz3v4iDml9IDtXCFB73IuyT4uGU9ebfrWsdnIAOGCsAmxYtqjjBRfP5L/cz4tXrgiKQ8dRriHfN613LHz2UIAuWfQ1c2jVHA6yxaXJJgfpEU57fJuleqS66cfq8hyefLYygUe36BoLU=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=pigmoral.tech;
+	spf=pass  smtp.mailfrom=junhui.liu@pigmoral.tech;
+	dmarc=pass header.from=<junhui.liu@pigmoral.tech>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1753113037;
+	s=zmail; d=pigmoral.tech; i=junhui.liu@pigmoral.tech;
+	h=From:From:Date:Date:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Message-Id:References:In-Reply-To:To:To:Cc:Cc:Reply-To;
+	bh=dr0pBN5+6Qa6Jv/l48HU1CzV1Gi4jM0bXP6wQ8s9ah0=;
+	b=iGMAK2z/ddfvn4wqS9X+Wubw8bhjIKUlT6d7325jCx6VV1qSsLe5f2zs13g8tOQ2
+	fxHXx+zdw20YKv3bR/LIZJItzawxIqk58zt/pg10dV6NHw2EbsyCOgL457cnzZ8l/1O
+	m9iPPSvVHO+1c2kwr/3zKWigEaCrfWDfRBYD6Ais=
+Received: by mx.zohomail.com with SMTPS id 1753113034418920.8574925901848;
+	Mon, 21 Jul 2025 08:50:34 -0700 (PDT)
+From: Junhui Liu <junhui.liu@pigmoral.tech>
+Date: Mon, 21 Jul 2025 23:46:08 +0800
+Subject: [PATCH RFC 02/10] dt-bindings: riscv: Add Nuclei UX900 compatibles
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-ThreadId: T10195641ff6473d7
-Date: Mon, 21 Jul 2025 16:31:37 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
- "Harshit Shah" <hshah@axiado.com>, "Rob Herring" <robh@kernel.org>,
- "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
- "Conor Dooley" <conor+dt@kernel.org>,
- "Linus Walleij" <linus.walleij@linaro.org>,
- "Bartosz Golaszewski" <brgl@bgdev.pl>,
- "Catalin Marinas" <catalin.marinas@arm.com>, "Will Deacon" <will@kernel.org>,
- "Jan Kotas" <jank@cadence.com>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
- "Jiri Slaby" <jirislaby@kernel.org>, "Michal Simek" <michal.simek@amd.com>,
- =?UTF-8?Q?Przemys=C5=82aw_Gaj?= <pgaj@cadence.com>,
- "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
- "Frank Li" <Frank.Li@nxp.com>,
- "'bbrezillon@kernel.org'" <bbrezillon@kernel.org>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- "soc@lists.linux.dev" <soc@lists.linux.dev>,
- "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
- "linux-i3c@lists.infradead.org" <linux-i3c@lists.infradead.org>
-Message-Id: <4f836d88-80a7-402b-9af0-f0d002e2145d@app.fastmail.com>
-In-Reply-To: <7ddb77bf-173a-4117-80ac-d0f32bf067ee@linaro.org>
-References: 
- <20250703-axiado-ax3000-soc-and-evaluation-board-support-v6-0-cebd810e7e26@axiado.com>
- <b7322d03-2ff9-48a3-bdc6-0e95382ed83f@axiado.com>
- <e461e5ed-f512-4d3b-9903-8092dab7f81d@linaro.org>
- <06f00d05-b8ca-41fa-9e5e-9cee3cfcfae1@axiado.com>
- <7ddb77bf-173a-4117-80ac-d0f32bf067ee@linaro.org>
-Subject: Re: [PATCH v6 00/10] Axiado AX3000 SoC and Evaluation Board Support
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250721-dr1v90-basic-dt-v1-2-5740c5199c47@pigmoral.tech>
+References: <20250721-dr1v90-basic-dt-v1-0-5740c5199c47@pigmoral.tech>
+In-Reply-To: <20250721-dr1v90-basic-dt-v1-0-5740c5199c47@pigmoral.tech>
+To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Paul Walmsley <paul.walmsley@sifive.com>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
+ Thomas Gleixner <tglx@linutronix.de>, 
+ Samuel Holland <samuel.holland@sifive.com>, 
+ Anup Patel <anup@brainfault.org>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Palmer Dabbelt <palmer@sifive.com>, Conor Dooley <conor@kernel.org>, 
+ linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org, 
+ Junhui Liu <junhui.liu@pigmoral.tech>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1753112991; l=946;
+ i=junhui.liu@pigmoral.tech; s=20250507; h=from:subject:message-id;
+ bh=cdC+gHkr28j2ptGfilNq1eA/ICUbwZpjzhH/BVYbOhg=;
+ b=fAPwZIz/SLTjhDnmuDiXkGxPW6eDmJ/wZ25iYTmNlzRpbbjVsh8a0tgl+ExiijV4KRJtZS4zd
+ MMHGM/CTd8sB4rxyUu3shUbCPjalI8VBGnNuZCKLd0e/apS6EOOInL2
+X-Developer-Key: i=junhui.liu@pigmoral.tech; a=ed25519;
+ pk=d3i4H2mg9LUn4SQemoLAjLRQy0nTcyknIv6zgKMwiBA=
+X-ZohoMailClient: External
 
-On Sun, Jul 20, 2025, at 14:09, Krzysztof Kozlowski wrote:
-> On 19/07/2025 03:09, Harshit Shah wrote:
->> On 7/17/2025 11:14 PM, Krzysztof Kozlowski wrote:
->>=20
->> It mentions about the special case where "Introducing a completely ne=
-w=20
->> SoC platform." we can submit patches to=C2=A0soc@kernel.org directly.
->>=20
->> However I see two different points in the doc.
->>=20
->> 1. Submitting patches directly to soc@kernel.org with email
->>=20
->> 2. There is also mention about the "Branches and Pull requests"
->>=20
->> (https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/t=
-ree/Documentation/process/maintainer-soc.rst?h=3Dv6.16-rc1#n186).=20
->>=20
->>=20
->> I think if we need to use this approach then we need to create a new=20
->> branch on soc and create a pull request based on the same. (with the =
-soc=20
->> tree[1])
->
-> You do not create branches on other poeple's trees (like soc). You
-> create branch on your own tree.
+The UX900 is a RISC-V core from Nuclei, used in the Anlogic DR1V90 SoC.
+It features a 64-bit architecture and dual-issue, 9-stage pipeline, with
+lots of optional extensions including V, K, Zc, and more.
 
-Yes, ideally the base should be -rc1, as for any other pull request.
+Signed-off-by: Junhui Liu <junhui.liu@pigmoral.tech>
+---
+ Documentation/devicetree/bindings/riscv/cpus.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-> You can go with 1 or 2, up to you, I don't know which one is preferred
-> by Arnd for new boards.
+diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+index 2c72f148a74b019e46ad5917a0b75d45777c385e..f198d8b1fa328f538b4a2983ca795340337fbd2b 100644
+--- a/Documentation/devicetree/bindings/riscv/cpus.yaml
++++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+@@ -47,6 +47,7 @@ properties:
+               - amd,mbv32
+               - andestech,ax45mp
+               - canaan,k210
++              - nuclei,ux900
+               - sifive,bullet0
+               - sifive,e5
+               - sifive,e7
 
-Separate patches (1) tend to work better for the first contribution
-from a new maintainer, since there is less to know in advance.
+-- 
+2.50.1
 
-      Arnd
