@@ -1,118 +1,108 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8218F189902;
-	Tue, 22 Jul 2025 09:24:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753176272; cv=none; b=DlUlAhNpldZkz0ooqfPapBxY/KnuOA6TrrMT4w0sE6uE1V/ZuM+iGZC/sEMdeniXDgqhatVUoy1nc+Q0XO/MtZyOk+zNL3htQRzS5nAECnc590d4MdaZ+yrD5dPn/SLP6rt6Sw6FnM7u7UY1lU2VH/ZNOnzuGjgw+1iHWXoGOKo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753176272; c=relaxed/simple;
-	bh=Ksr4RcpyiaVxvdAz9Ft+gR94b9IMq2d1CEO85zHMm3o=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=ozdi7zxKbUqjVpS7bhPaGPOyba+XSkcY455kr2390EfonGP85biUUp9cXiGLNr9gVbbeTJ+MgwGtO0D32hkHab3nWo1xwF/bGoaBk/cKjpIi85g6kTgFijANpAAaCz9w+glrzCbw2yUhCsIgjDjHfmCUPY2N4E2iLwGsY0Fld2Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MjJRYeJZ; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E2A930100;
+	Tue, 22 Jul 2025 11:28:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1753183693; cv=pass; b=sRSst3wN240U5lh7fzqlaqg4/dT5MBdxvrb/V29Oby1CAFmSKHheHUfGFlHpW/fFM4Rt8cgxpkJQgmqqT+6MSCNYiVW4M4MJnwWnLKzgtfizkg022mAPdoM+s8V37tftmu0c8oReHpxTlAk5sbq5fW3ZlEYKXvoaA6LcSZs74lQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1753183693; c=relaxed/simple;
+	bh=ikD0rMcKmRVjoAxqulFqg/X3a6tVlFz2ZfIGnWg5/Bk=;
+	h=MIME-Version:From:To:In-Reply-To:Cc:Subject:Message-ID:Date:
+	 Content-Type; b=gRcPJ2LqJ+9gAY/kYQDSwGhMkpM9cPLmyE96dRUeSa7l0WVz0GJOSEidkomQgzf8Hiebnxbg/Qt0fQl7Vyac+ynOKO7iKMK2DC0/ZXzz/HIcewfZypKWpzjvWxoFVF6zzVMerb5/akQCIM0lLhiVvMgZlavCnwGWbj8zQn4e+2w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech; spf=pass smtp.mailfrom=pigmoral.tech; dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b=KuAvm1U7; arc=pass smtp.client-ip=136.143.188.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pigmoral.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MjJRYeJZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1753176271; x=1784712271;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=Ksr4RcpyiaVxvdAz9Ft+gR94b9IMq2d1CEO85zHMm3o=;
-  b=MjJRYeJZpalrlHw+UcPoLhG0hsnDsFWT4Vl198E033SFSD8VB0j88IgK
-   tsdjYlB+nUlOBtv2gmxqzWzz9v+1Vz7qcqmQRLBAvR7KjSNbfuZ3TSzwx
-   6qaTp8+EIIpqjbs7F1OpPp5qYQBh9Dmgn1p5WW0Z46zH98v9JSfFuaIof
-   mP7E3btZygMf7XIArG3cCmTUHgD3AJV5tezE1D566DfnmyOrKeYuvS5xy
-   aEiF4fT4jF51WLsfHPlb0dYBL8C8bnah7e9LuE9zS+DhxKao1yeS5i3uh
-   FKU4YUYIuD8NilU9B5NSz6N2dJHzhdmg7f0JBMvNqHTQ++GDVFQ8Titq4
-   w==;
-X-CSE-ConnectionGUID: dXx7JM3uS8aac5OU3dpXgA==
-X-CSE-MsgGUID: L+02RNx2QLSMDZdllhWsjQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11499"; a="55574717"
-X-IronPort-AV: E=Sophos;i="6.16,331,1744095600"; 
-   d="scan'208";a="55574717"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2025 02:24:30 -0700
-X-CSE-ConnectionGUID: cbehGU95QkWPRtX5+LVZGA==
-X-CSE-MsgGUID: 7OhfXV8JRdOAnLadikdZ1w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,331,1744095600"; 
-   d="scan'208";a="163133052"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO [10.245.244.202]) ([10.245.244.202])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2025 02:24:17 -0700
-Message-ID: <ffd58e1a8b51c98cac9be49e85d367f1a3a24c2d.camel@linux.intel.com>
-Subject: Re: [PATCH v3 3/8] drm/xe: Fix typo "notifer"
-From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
-To: WangYuli <wangyuli@uniontech.com>
-Cc: airlied@gmail.com, akpm@linux-foundation.org,
- alison.schofield@intel.com, 	andrew+netdev@lunn.ch,
- andriy.shevchenko@linux.intel.com, 	arend.vanspriel@broadcom.com,
- bp@alien8.de, brcm80211-dev-list.pdl@broadcom.com, 
-	brcm80211@lists.linux.dev, colin.i.king@gmail.com, cvam0000@gmail.com, 
-	dan.j.williams@intel.com, dave.hansen@linux.intel.com,
- dave.jiang@intel.com, 	dave@stgolabs.net, davem@davemloft.net,
- dri-devel@lists.freedesktop.org, 	edumazet@google.com,
- gregkh@linuxfoundation.org, guanwentao@uniontech.com, 	hpa@zytor.com,
- ilpo.jarvinen@linux.intel.com, intel-xe@lists.freedesktop.org, 
-	ira.weiny@intel.com, j@jannau.net, jeff.johnson@oss.qualcomm.com,
- jgross@suse.com, 	jirislaby@kernel.org, johannes.berg@intel.com,
- jonathan.cameron@huawei.com, 	kuba@kernel.org, kvalo@kernel.org,
- kvm@vger.kernel.org, linux-cxl@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, linux@treblig.org,
- lucas.demarchi@intel.com, 	marcin.s.wojtas@gmail.com, ming.li@zohomail.com,
- mingo@kernel.org, 	mingo@redhat.com, netdev@vger.kernel.org,
- niecheng1@uniontech.com, 	oleksandr_tyshchenko@epam.com, pabeni@redhat.com,
- pbonzini@redhat.com, 	quic_ramess@quicinc.com, ragazenta@gmail.com,
- rodrigo.vivi@intel.com, 	seanjc@google.com, shenlichuan@vivo.com,
- simona@ffwll.ch, sstabellini@kernel.org, 	tglx@linutronix.de,
- vishal.l.verma@intel.com, wangyuli@deepin.org, x86@kernel.org, 
-	xen-devel@lists.xenproject.org, yujiaoliang@vivo.com, zhanjun@uniontech.com
-Date: Tue, 22 Jul 2025 11:24:15 +0200
-In-Reply-To: <94190C5F54A19F3E+20250722073431.21983-3-wangyuli@uniontech.com>
-References: <576F0D85F6853074+20250722072734.19367-1-wangyuli@uniontech.com>
-	 <94190C5F54A19F3E+20250722073431.21983-3-wangyuli@uniontech.com>
-Organization: Intel Sweden AB, Registration Number: 556189-6027
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.3 (3.54.3-1.fc41) 
+	dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b="KuAvm1U7"
+ARC-Seal: i=1; a=rsa-sha256; t=1753183646; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=L8uXSYQxwzi6GnqOKA5+M/zFPG4YsKprlvaiueZ6tyTNaDL5JdRi7F4krtqMduJ4Ag69Rg7U4KPh8r5llGt06szaffvPBwsjPG0Le/CnRbR41qo1u8JBxhK3xiCfh25Qe6QdZrzckGLUiHvZWTJDa2Lh7TQZOFLxLKr6lu3WOQs=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1753183646; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=oSWzK9+1+wJc6wh6CDIQZWQCvimKKJe8O5m5BgUOpHM=; 
+	b=jrZKYr4L4LdOFAuzndQZW5Qz+Lz1wmRU490h2L4eC6Dm7C9X8bR490PUz42rHs55ViumCFNLmb3iufzWwCweDrl45bjqjmsw4JatKBu9sJKx0MY8pNkHVBJRTExu6uVWhYFPEH83ifRRTLuzU0+RPMY/hB1j8jI6sOUcSLnwtLA=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=pigmoral.tech;
+	spf=pass  smtp.mailfrom=junhui.liu@pigmoral.tech;
+	dmarc=pass header.from=<junhui.liu@pigmoral.tech>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1753183646;
+	s=zmail; d=pigmoral.tech; i=junhui.liu@pigmoral.tech;
+	h=MIME-Version:From:From:To:To:In-Reply-To:Cc:Cc:Subject:Subject:Message-ID:Date:Date:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=oSWzK9+1+wJc6wh6CDIQZWQCvimKKJe8O5m5BgUOpHM=;
+	b=KuAvm1U7/rkniCfUxMjB0BR6KZ2ypIXEi2EuO2iqtr7dyL10XVPnZaVwSM6o14Sj
+	38SyFAnkKq7IVnSYBHIVmUJx0CNsrmkcDmyn4geRQiBGTO5bg4Vz8byXslcL198w104
+	zbn14B6zSUpYB83NsJcFigm/jWU7OkcYb3JkyYwg=
+Received: by mx.zohomail.com with SMTPS id 1753183643006882.6847732993253;
+	Tue, 22 Jul 2025 04:27:23 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+From: "Junhui Liu" <junhui.liu@pigmoral.tech>
+To: "Krzysztof Kozlowski" <krzk@kernel.org>
+In-Reply-To: <20250722-berserk-octopus-of-destiny-f4475e@kuoka>
+Cc: "Rob Herring" <robh@kernel.org>, 
+	"Krzysztof Kozlowski" <krzk+dt@kernel.org>, 
+	"Conor Dooley" <conor+dt@kernel.org>, 
+	"Paul Walmsley" <paul.walmsley@sifive.com>, 
+	"Palmer Dabbelt" <palmer@dabbelt.com>, "Albert Ou" <aou@eecs.berkeley.edu>, 
+	"Alexandre Ghiti" <alex@ghiti.fr>, 
+	"Daniel Lezcano" <daniel.lezcano@linaro.org>, 
+	"Thomas Gleixner" <tglx@linutronix.de>, 
+	"Samuel Holland" <samuel.holland@sifive.com>, 
+	"Anup Patel" <anup@brainfault.org>, 
+	"Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, 
+	"Jiri Slaby" <jirislaby@kernel.org>, <devicetree@vger.kernel.org>, 
+	<linux-kernel@vger.kernel.org>, "Palmer Dabbelt" <palmer@sifive.com>, 
+	"Conor Dooley" <conor@kernel.org>, <linux-riscv@lists.infradead.org>, 
+	<linux-serial@vger.kernel.org>
+Subject: Re: [PATCH RFC 07/10] riscv: Add Anlogic SoC famly Kconfig support
+Message-ID: <18548f39bd190d28.fca9acf422f7bf67.f37c65074e24e08a@Jude-Air.local>
+Date: Tue, 22 Jul 2025 11:27:13 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
 
-On Tue, 2025-07-22 at 15:34 +0800, WangYuli wrote:
-> There is a spelling mistake of 'notifer' in the comment which
-> should be 'notifier'.
->=20
-> Signed-off-by: WangYuli <wangyuli@uniontech.com>
-Reviewed-by: Thomas Hellstr=C3=B6m <thomas.hellstrom@linux.intel.com>
 
-> ---
-> =C2=A0drivers/gpu/drm/xe/xe_vm_types.h | 2 +-
-> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
+
+On 22/07/2025 09:29, Krzysztof Kozlowski wrote:
+> On Mon, Jul 21, 2025 at 11:46:13PM +0800, Junhui Liu wrote:
+>> The first SoC in the Anlogic series is DR1V90, which contains a RISC-V
+>> core from Nuclei.
+>>=20
+>> Signed-off-by: Junhui Liu <junhui.liu@pigmoral.tech>
+>> ---
+>>  arch/riscv/Kconfig.socs | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>=20
+>> diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
+>> index a9c3d2f6debca1469f4a912b3414711eb709baab..de163cdddcda1c08e7c9e9871=
+6eaf043d4c4555a 100644
+>> --- a/arch/riscv/Kconfig.socs
+>> +++ b/arch/riscv/Kconfig.socs
+>> @@ -1,5 +1,10 @@
+>>  menu "SoC selection"
+>> =20
+>> +config ARCH_ANLOGIC
+>> +	bool "Anlogic SoCs"
+>> +	help
+>> +		This enables support for Anlogic SoC platform hardware.
 >=20
-> diff --git a/drivers/gpu/drm/xe/xe_vm_types.h
-> b/drivers/gpu/drm/xe/xe_vm_types.h
-> index 1979e9bdbdf3..0ca27579fd1f 100644
-> --- a/drivers/gpu/drm/xe/xe_vm_types.h
-> +++ b/drivers/gpu/drm/xe/xe_vm_types.h
-> @@ -259,7 +259,7 @@ struct xe_vm {
-> =C2=A0		 * up for revalidation. Protected from access with
-> the
-> =C2=A0		 * @invalidated_lock. Removing items from the list
-> =C2=A0		 * additionally requires @lock in write mode, and
-> adding
-> -		 * items to the list requires either the
-> @userptr.notifer_lock in
-> +		 * items to the list requires either the
-> @userptr.notifier_lock in
-> =C2=A0		 * write mode, OR @lock in write mode.
-> =C2=A0		 */
-> =C2=A0		struct list_head invalidated;
+> Wrong indentation. See everything else in this file or just read coding
+> style.
+
+Thanks for pointing this out. I overlooked it and will fix it in the
+next version.
+
+>=20
+> Best regards,
+> Krzysztof
+
+--=20
+Best regards,
+Junhui Liu
 
