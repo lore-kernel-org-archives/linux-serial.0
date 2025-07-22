@@ -1,96 +1,129 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 535C32BE057;
-	Tue, 22 Jul 2025 07:57:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AEF44CE08;
+	Tue, 22 Jul 2025 09:06:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753171057; cv=none; b=b0QgwqwmSRtaM6jviIDragRELjFQzj77bdVaPz9f4OlqpfvJzo5OkEwEyEab/UIBFVZkGQ081Q0ZzNk1XZkch3jz9dMfatnUR11xfWe+d1/q6j7+kI13Pxlch2Ut4/hTaWDGF5muGkglcuZYCgnJSXM0bchjIM1RSzdSFcwTBF8=
+	t=1753175200; cv=none; b=lYNnFp1rTuMd3u6h0Ee36AnfGwLizupGT9dl5u50kpm9I3Ig5+O8QD3/mLHjKGXNFml4mbFHgvQ3pwGsZs0l5YPLAYCZz9q1OOzQbwVDsRf5jEhdClFaMS9kpG6KqL6Jj5T2GRrqyDpU6arLMXYHZnrI0NjTODtmdBONKVCcBQo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753171057; c=relaxed/simple;
-	bh=wEUHDmsgHVPe5kSmdb1Wec3UqL9t1n89LTQEk85htD0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=c+bjYFj5zhts9XqsCmalseJtrMDO/k1FW8hik5jNKWqA9Rmq2m4ZOXUT7WRueMinpHMuWvY5h3g989Um6Kssa8PnGHBwFvXNJMhauuBEAvj+ZQI+ybpLp3U3oEvymHGBZw+Od20RaAa1xjvOPZF4zrmYnuJovCP8sulZaR3ruqs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=JdcFf6pg; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753175200; c=relaxed/simple;
+	bh=odkg/p7QG6NzW4EkAcRJPwercEqAXkQQ8ClGx1S5VVU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fJpVLKLonW0c6FIJC6VIxrUUBErAv8IpbrA3ATmMUkTdJSN9+hKBbdQWvT8d7wITmtoxmYBmi7mRbySHobth0jJeog3W1dSiMsEaCmVjHRHJy8myO3VyMzBir3xsgjfiae1LLRf/8WNACe11PuASx4mLut7VQb+MMKY+g2bN/RM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JPxJxOgM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="JdcFf6pg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E9B5C4CEEB;
-	Tue, 22 Jul 2025 07:57:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1753171056;
-	bh=wEUHDmsgHVPe5kSmdb1Wec3UqL9t1n89LTQEk85htD0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JdcFf6pgjhk/nGBgS+COUsHqDSedZPrRp7PmpD9jj0Sy18W7SgAXvzKROr973tS19
-	 GmDs4Z2sApDs+Xt0VQpiOqw2NeYSo/wv/f2IDtHwKTBYe7ze0KkyW9m1MQ29aRc7hI
-	 g+r9qkREXxILI6FRvwKRc9d4sfo0vJI9m3c+MSdQ=
-Date: Tue, 22 Jul 2025 09:57:33 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: WangYuli <wangyuli@uniontech.com>
-Cc: airlied@gmail.com, akpm@linux-foundation.org,
-	alison.schofield@intel.com, andrew+netdev@lunn.ch,
-	andriy.shevchenko@linux.intel.com, arend.vanspriel@broadcom.com,
-	bp@alien8.de, brcm80211-dev-list.pdl@broadcom.com,
-	brcm80211@lists.linux.dev, colin.i.king@gmail.com,
-	cvam0000@gmail.com, dan.j.williams@intel.com,
-	dave.hansen@linux.intel.com, dave.jiang@intel.com,
-	dave@stgolabs.net, davem@davemloft.net,
-	dri-devel@lists.freedesktop.org, edumazet@google.com,
-	guanwentao@uniontech.com, hpa@zytor.com,
-	ilpo.jarvinen@linux.intel.com, intel-xe@lists.freedesktop.org,
-	ira.weiny@intel.com, j@jannau.net, jeff.johnson@oss.qualcomm.com,
-	jgross@suse.com, jirislaby@kernel.org, johannes.berg@intel.com,
-	jonathan.cameron@huawei.com, kuba@kernel.org, kvalo@kernel.org,
-	kvm@vger.kernel.org, linux-cxl@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux@treblig.org,
-	lucas.demarchi@intel.com, marcin.s.wojtas@gmail.com,
-	ming.li@zohomail.com, mingo@kernel.org, mingo@redhat.com,
-	netdev@vger.kernel.org, niecheng1@uniontech.com,
-	oleksandr_tyshchenko@epam.com, pabeni@redhat.com,
-	pbonzini@redhat.com, quic_ramess@quicinc.com, ragazenta@gmail.com,
-	rodrigo.vivi@intel.com, seanjc@google.com, shenlichuan@vivo.com,
-	simona@ffwll.ch, sstabellini@kernel.org, tglx@linutronix.de,
-	thomas.hellstrom@linux.intel.com, vishal.l.verma@intel.com,
-	x86@kernel.org, xen-devel@lists.xenproject.org,
-	yujiaoliang@vivo.com, zhanjun@uniontech.com
-Subject: Re: [PATCH v2 6/8] serial: 8250_dw: Fix typo "notifer"
-Message-ID: <2025072252-halves-sadness-18dc@gregkh>
-References: <BD5C52D2838AEA48+20250715134050.539234-1-wangyuli@uniontech.com>
- <2BF1749F02ADE664+20250715134407.540483-6-wangyuli@uniontech.com>
- <2025071607-outbid-heat-b0ba@gregkh>
- <634BA467821D37FE+0b2ace38-07d9-4500-8bb7-5a4fa65c4b9f@uniontech.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JPxJxOgM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 920D0C4CEEB;
+	Tue, 22 Jul 2025 09:06:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1753175200;
+	bh=odkg/p7QG6NzW4EkAcRJPwercEqAXkQQ8ClGx1S5VVU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=JPxJxOgMZql613zcAE7v0+8nAa4sZgfrbizMX7j3WSiRCk9itwqGwIeVsTPbqYWtS
+	 Vn4IFJ2a5DG043765qVqpoKQv1xpJUrsaF0rzxrWe1joDHRl6P08GtXi3aNN7AHlJ9
+	 aItBeEpJ7Oldybeu0IYXnMAilS8jXtEXBPf2Xxebcz3qu9KAsCWGUnN4s35G7N2/fH
+	 WkgWrKp0hnAXrYNEMLIDAm1Qd3Q+jQ9MbmZlb4U7vbaS9B3zCC97wF/xnlk6YYy0ER
+	 5yYiNI6XV+x25/clrOEbvDQT5+HHHXZv3B5+ubs8FtqzJvTlNXIKu2alaCopqQvtN4
+	 aUXuKVVBtRT9g==
+Message-ID: <2419b7f3-43d7-42da-a1b7-693631311707@kernel.org>
+Date: Tue, 22 Jul 2025 11:06:36 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <634BA467821D37FE+0b2ace38-07d9-4500-8bb7-5a4fa65c4b9f@uniontech.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] vt: keyboard: Don't process Unicode characters in
+ K_OFF mode
+To: Myrrh Periwinkle <myrrhperiwinkle@qtmlabs.xyz>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Arthur Taylor <art@ified.ca>
+Cc: Greg Kroah-Hartman <gregkh@suse.de>, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, stable@vger.kernel.org
+References: <20250702-vt-misc-unicode-fixes-v1-0-c27e143cc2eb@qtmlabs.xyz>
+ <20250702-vt-misc-unicode-fixes-v1-1-c27e143cc2eb@qtmlabs.xyz>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20250702-vt-misc-unicode-fixes-v1-1-c27e143cc2eb@qtmlabs.xyz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jul 22, 2025 at 03:22:18PM +0800, WangYuli wrote:
-> Hi greg k-h,
-> 
-> On 2025/7/16 16:08, Greg KH wrote:
-> > > Signed-off-by: WangYuli <wangyuli@uniontech.com>
-> > Is your name all one word like that, or should there be a " " between
-> > them?
-> 
-> If I were to follow Western naming conventions, my name would be written as
-> 'Yuli Wang'.
-> 
-> However, frankly, I find it unnecessary and can't be bothered to follow
-> their customs, unless a maintainer strongly insists. (For example, you can
-> see that my signature on commits for the LoongArch subsystem is different
-> from my other contributions).
-> 
-> Since Chinese names are written without any spaces in Chinese characters, I
-> don't think it matters.
+On 02. 07. 25, 16:17, Myrrh Periwinkle wrote:
+> We don't process Unicode characters if the virtual terminal is in raw
+> mode, so there's no reason why we shouldn't do the same for K_OFF
+> (especially since people would expect K_OFF to actually turn off all VT
+> key processing).
 
-Then use your Chinese name, don't feel like you need to change it to any
-other naming convention.  There's no requirement here at all to do so.
+AFAICT
 
-thanks,
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
-greg k-h
+> Fixes: 9fc3de9c8356 ("vt: Add virtual console keyboard mode OFF")
+> Signed-off-by: Myrrh Periwinkle <myrrhperiwinkle@qtmlabs.xyz>
+> Cc: stable@vger.kernel.org
+> ---
+>   drivers/tty/vt/keyboard.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
+> index dc585079c2fb8c92d37284701f15905a24161768..ee1d9c448c7ebf2f1456f6bd18e55a9681b036c2 100644
+> --- a/drivers/tty/vt/keyboard.c
+> +++ b/drivers/tty/vt/keyboard.c
+> @@ -1487,7 +1487,7 @@ static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
+>   		rc = atomic_notifier_call_chain(&keyboard_notifier_list,
+>   						KBD_UNICODE, &param);
+>   		if (rc != NOTIFY_STOP)
+> -			if (down && !raw_mode)
+> +			if (down && !(raw_mode || kbd->kbdmode == VC_OFF))
+>   				k_unicode(vc, keysym, !down);
+>   		return;
+>   	}
+> 
+
+
+-- 
+js
+suse labs
