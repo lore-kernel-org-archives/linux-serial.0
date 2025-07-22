@@ -1,89 +1,163 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtpbgbr2.qq.com (smtpbgbr2.qq.com [54.207.22.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E729F1DF990;
-	Tue, 22 Jul 2025 07:28:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4E3F28B7CC;
+	Tue, 22 Jul 2025 07:28:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=54.207.22.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753169283; cv=none; b=gzCiuMjZ8hT7lNP7gx8cCuFDahVNDIs1vaznOldNXW4SIESjfZO1ccrVAVl/Ju6dOVIuoLoGjKFc+rKToF8LvT7T3EoDeIbT2VXHD5hm7HV3ngBQPwYpUGthVxoPcGVfjbi0eeZwR9wyTAqsauNAp80ssEZ+0nT64mNh69sYK1Y=
+	t=1753169338; cv=none; b=XT5EyAesTKGCuGznTF+IKYZCYhOrBWbqpBIG/yQfgcgOlEitN3reiVfaylOQJiWUGjf8g8pOXY+j8V52wOiYjmjsM/N2lhoQAWBHISdKYiETf6B319zruRdjKjab/XKPCycFTvrWevra1XdRX5CVQCRFTkMk/W3rqo2R9oH1lDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753169283; c=relaxed/simple;
-	bh=OS1W1F3+uicr+BJ96OdK0Fwq1c/V2PKY69jVU9c7b1E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YgoE44USUg0NViRzWKB14d9pRdBb6s1IjCvDlDcBt4eQauv00s/bcwDrrF2CtrYAYv99JgYnNMA/Jj6OJwlESAbN6SZmfRKUDas6mC82LpOMhJQny8y0elJwhxMJMBCdMKc0rrxrYBQyELH5Toooqly9c2+i/zITQZ9RD876ngk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Anb5ftzH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753169338; c=relaxed/simple;
+	bh=BZK13xTTjt/5UmV5jMd6YK/1RBHQ5TbhsdLSTIR7ksA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qhK2u72/iTh72sIebQRIUoge0WjcvJULc6DQvJw/RUU4NlgOwTZlxgBRAqULScnMZqrLIa/3tEiSAh9e0IoWo8sZauI/7jjveVYdervQaMTUIXVi9QZv5mWeOcLzJFgdofeHN7ZyQb0nJH/CtpnYkOv57e9nQIoj5SFov0lYPko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com; spf=pass smtp.mailfrom=uniontech.com; dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b=SEf5Ikf3; arc=none smtp.client-ip=54.207.22.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=uniontech.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=uniontech.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Anb5ftzH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB287C4CEEB;
-	Tue, 22 Jul 2025 07:28:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753169282;
-	bh=OS1W1F3+uicr+BJ96OdK0Fwq1c/V2PKY69jVU9c7b1E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Anb5ftzHQ/yX14xJp8PsiMzrMY9MEeKaMm0E7CtepaK9fz3qD32p+mSm+VxnacIaq
-	 uTed1zP9zxx+3p1YJEHuNUe2M+2hkS5okxg3hAdudS6oaDy8ZDDDvFaJqZ3dBVMJk9
-	 6AVXN5T+UUdkKagrek0uBrKfyB3iEawqBiTFUT6IWFpOKD916pivrYdbwtixibiCqb
-	 5Q/bQZL9I3lESdWUJVbnqQ5R6jm7y7j5ccdH9EcFfWYZ94Zy/WSHnHlMA92qH5cegE
-	 lAjV1zRlqTZ6vnrkcZwbimKHVPc5F0077eA69+0EbWwRC5ikbLCrOqoO12IiyyuPuS
-	 SfB1yGOVJPJyQ==
-Date: Tue, 22 Jul 2025 09:27:59 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Junhui Liu <junhui.liu@pigmoral.tech>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>, 
-	Daniel Lezcano <daniel.lezcano@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	Samuel Holland <samuel.holland@sifive.com>, Anup Patel <anup@brainfault.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>, 
-	Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH RFC 01/10] dt-bindings: vendor-prefixes: Add Anlogic,
- Milianke and Nuclei
-Message-ID: <20250722-elite-topaz-parrot-9c5a5e@kuoka>
-References: <20250721-dr1v90-basic-dt-v1-0-5740c5199c47@pigmoral.tech>
- <20250721-dr1v90-basic-dt-v1-1-5740c5199c47@pigmoral.tech>
+	dkim=pass (1024-bit key) header.d=uniontech.com header.i=@uniontech.com header.b="SEf5Ikf3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniontech.com;
+	s=onoh2408; t=1753169325;
+	bh=x+S0lLyonKMBOYVe3hwfq+3jtrctPFlVfJ/rovDXpoI=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version;
+	b=SEf5Ikf32A4aGlE+OAr8Dh5+t8GSbdDKQOuxCFSVVn+Imhs2GtfwEQtewvKAiGXoo
+	 jA4sdSxpoTl97KN1ufZfz5feDxSF9BxvlQWAyOJE2njO1wLW+TZ1gM8x+HU964jofx
+	 ddqJk/k0JVtDK5Thug2vwxKesIwQD6GF3lEbivto=
+X-QQ-mid: zesmtpip3t1753169263t53df68e6
+X-QQ-Originating-IP: rTOvj0yplF8v1TzV+LE7s5Wipo1URwqutr9CN7Z1bPc=
+Received: from avenger-e500 ( [localhost])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Tue, 22 Jul 2025 15:27:37 +0800 (CST)
+X-QQ-SSF: 0002000000000000000000000000000
+X-QQ-GoodBg: 1
+X-BIZMAIL-ID: 4379188185935626122
+EX-QQ-RecipientCnt: 64
+From: WangYuli <wangyuli@uniontech.com>
+To: seanjc@google.com,
+	pbonzini@redhat.com,
+	tglx@linutronix.de,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	dave@stgolabs.net,
+	jonathan.cameron@huawei.com,
+	dave.jiang@intel.com,
+	alison.schofield@intel.com,
+	vishal.l.verma@intel.com,
+	ira.weiny@intel.com,
+	dan.j.williams@intel.com,
+	lucas.demarchi@intel.com,
+	thomas.hellstrom@linux.intel.com,
+	rodrigo.vivi@intel.com,
+	airlied@gmail.com,
+	simona@ffwll.ch,
+	marcin.s.wojtas@gmail.com,
+	andrew+netdev@lunn.ch,
+	davem@davemloft.net,
+	edumazet@google.com,
+	kuba@kernel.org,
+	pabeni@redhat.com,
+	arend.vanspriel@broadcom.com,
+	ilpo.jarvinen@linux.intel.com,
+	andriy.shevchenko@linux.intel.com,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	jgross@suse.com,
+	sstabellini@kernel.org,
+	oleksandr_tyshchenko@epam.com,
+	akpm@linux-foundation.org
+Cc: kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	wangyuli@uniontech.com,
+	ming.li@zohomail.com,
+	linux-cxl@vger.kernel.org,
+	intel-xe@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org,
+	netdev@vger.kernel.org,
+	kvalo@kernel.org,
+	johannes.berg@intel.com,
+	quic_ramess@quicinc.com,
+	ragazenta@gmail.com,
+	jeff.johnson@oss.qualcomm.com,
+	mingo@kernel.org,
+	j@jannau.net,
+	linux@treblig.org,
+	linux-wireless@vger.kernel.org,
+	brcm80211@lists.linux.dev,
+	brcm80211-dev-list.pdl@broadcom.com,
+	linux-serial@vger.kernel.org,
+	xen-devel@lists.xenproject.org,
+	shenlichuan@vivo.com,
+	yujiaoliang@vivo.com,
+	colin.i.king@gmail.com,
+	cvam0000@gmail.com,
+	zhanjun@uniontech.com,
+	niecheng1@uniontech.com,
+	guanwentao@uniontech.com,
+	wangyuli@deepin.org
+Subject: [PATCH v3 0/8] treewide: Fix typo "notifer"
+Date: Tue, 22 Jul 2025 15:27:34 +0800
+Message-ID: <576F0D85F6853074+20250722072734.19367-1-wangyuli@uniontech.com>
+X-Mailer: git-send-email 2.50.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20250721-dr1v90-basic-dt-v1-1-5740c5199c47@pigmoral.tech>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpip:uniontech.com:qybglogicsvrgz:qybglogicsvrgz8a-1
+X-QQ-XMAILINFO: MDWLyYWhrZ/VSgDYBpGTTfaWvBcvfP8fpLHi2v8+x+sw9UQkcllGdlmP
+	56uh4oGiAPJj/aMzs0e/cAqJ924/hfFMCSwJUNxRH4zkOuX0t9oj41+1nF75vaW5B65J973
+	V47FfialPScBVysbe4ZS4p3/zYGyES424NQck5GvbU3Ty0KCF46yGh6dPYY1YAjDtb+MDzz
+	a8EeF37kwGAjn9LdwgpO8zZeQIdrlbLPXD9oWXORt3ViHBL9W/qGJQw7TmYRXdTAZ+P0Kfm
+	2uLk7z4hrS8Df1MNm31/bh0x9tOg83p5cYcjgNsG7n+PH7KrDWNV9FGU5ejaOl1kGqipq74
+	lCyrBOUd4Jt1KUS2XJdxlGsnrLBECEQYLOB6vc3cdDdLr92D4kAt7SudKQ19nZA3fOaJnuQ
+	pOhGxyCw/FXF3+jpc6GPxaVTiAQ/DgBTu94rczoLx80/fMK1p/kFJjapEMhc++e0qv33TkS
+	CS2xwKmW1K3aymPLigfg3PBRQhfFkzf/i7i8XO1pbknRZgnvAx7im7QQ0y7sjpVkPba7RPl
+	Zit3Rn5swvh9d/KqcWDe7Ki0oF59j5EPOMDbUKm7vom/qyXYLuEr37Cu1akWPp5UrXDC+ol
+	4a5aQwZ2qE6pZ1eyMRPK7pZRyLLs5uhNAglL2Q8rDY7tDfX23dicoLn8TrSLNcmkJMMkg7Q
+	shPWfiuA6aDTmJr00ua9WIQKZ7z6Mfmqpz120cWVMGY2Vl+zH4ZrD/cwss8kqaAYBfnNzjZ
+	BoS2/yQ+75A6VMaM1yTHzrpx1qnylqHQsi/NW4aidb5RLA/FJpxECWTUWxnXqRlBfaDBxRE
+	9g2Bw5Vt7AGlhfHrx3KP/t7IhUsAhml00WWpM23ILcfKE+dhu06D4FvlzIlKX/RW+bTkLRV
+	as8vbxKDlbmEPsPgj+HW5ITAq/1SX5G5C0Xk0b+8/y5JhcGxG83WzG6I1s3kCsMU9ebkZyY
+	3X6fnVq9YWMb6l3/9fbK+CxzYNZW74mXPHzOhbx2a2tnTVnJQhWhqHvBFUAjZnF5g+oydr0
+	Q5jJ4NrpXlKa49L8006wPSquXqBTDz8ZJQjBtxHikovmWuNpC/ZuyibdcLmW97IwdgJMN9t
+	+KWEFH7n6a7cVJtco3BlVsMeOi2ol3YUQ==
+X-QQ-XMRINFO: OWPUhxQsoeAVDbp3OJHYyFg=
+X-QQ-RECHKSPAM: 0
 
-On Mon, Jul 21, 2025 at 11:46:07PM +0800, Junhui Liu wrote:
-> Add vendor prefixes for "anlogic", "milianke" and "nuclei". These are
-> required for describing the Milianke MLKPAI-FS01 board with DR1V90 SoC
-> from Anlogic, which uses a processor core designed by Nuclei.
-> 
-> Signed-off-by: Junhui Liu <junhui.liu@pigmoral.tech>
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
+There are some spelling mistakes of 'notifer' in comments which
+should be 'notifier'.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Fix them and add it to scripts/spelling.txt.
 
-<form letter>
-This is an automated instruction, just in case, because many review
-tags are being ignored. If you know the process, just skip it entirely
-(please do not feel offended by me posting it here - no bad intentions
-intended, no patronizing, I just want to avoid wasted efforts). If you
-do not know the process, here is a short explanation:
+WangYuli (8):
+  KVM: x86: Fix typo "notifer"
+  cxl: mce: Fix typo "notifer"
+  drm/xe: Fix typo "notifer"
+  net: mvneta: Fix typo "notifer"
+  wifi: brcmfmac: Fix typo "notifer"
+  serial: 8250_dw: Fix typo "notifer"
+  xen/xenbus: Fix typo "notifer"
+  scripts/spelling.txt: Add notifer||notifier to spelling.txt
 
-Please add Acked-by/Reviewed-by/Tested-by tags when posting new
-versions of patchset, under or above your Signed-off-by tag, unless
-patch changed significantly (e.g. new properties added to the DT
-bindings). Tag is "received", when provided in a message replied to you
-on the mailing list. Tools like b4 can help here ('b4 trailers -u ...').
-However, there's no need to repost patches *only* to add the tags. The
-upstream maintainer will do that for tags received on the version they
-apply.
+ arch/x86/kvm/i8254.c                                        | 4 ++--
+ drivers/cxl/core/mce.h                                      | 2 +-
+ drivers/gpu/drm/xe/xe_vm_types.h                            | 2 +-
+ drivers/net/ethernet/marvell/mvneta.c                       | 2 +-
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 +-
+ drivers/tty/serial/8250/8250_dw.c                           | 2 +-
+ include/xen/xenbus.h                                        | 2 +-
+ scripts/spelling.txt                                        | 1 +
+ 8 files changed, 9 insertions(+), 8 deletions(-)
+---
+Changelog:
+ *v1->v2: Break patch v1 up into one-patch-per-subsystem.
+  v2->v3: Remove links to my patch v1 and add some "Reviewed-by" tags.
 
-https://elixir.bootlin.com/linux/v6.15/source/Documentation/process/submitting-patches.rst#L591
-</form letter>
-
-Best regards,
-Krzysztof
+-- 
+2.50.0
 
