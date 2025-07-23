@@ -1,61 +1,79 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 087532E54A9;
-	Wed, 23 Jul 2025 12:02:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15D082E6126;
+	Wed, 23 Jul 2025 12:29:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753272167; cv=none; b=re0F0dSx2f6RB9ZBL1XNlvsgcc+aDpXNKaSi7A/1OMOXeblxRtZA+DFRYR6fSvn3Pn+hVoRsNYaqXfoCWFXATgisZxh5tQKZEDiaLOzPOx5Q1gP6ikjnHM12IH++8WB7qbHDFfVUuBrp1r2MdcK6xHIdfjor3bXiTAoWdWLlAGU=
+	t=1753273786; cv=none; b=Osw5x5p+4APDDu4D3U2r+/CPosy5Yx+tahfGqkt5eRuoGPgyieZFIFKJjwAZGfzHJIeFsBaogR5hdM3XP0sIP7i3wIwU2wj2tAp5X8OzhirfBugZGRl//WUvqWhzSdIcz7I1p1elJtM4AXzce5YS60tn+PO3pp2TdB2vFoXxL34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753272167; c=relaxed/simple;
-	bh=bblqVHbE6GMy0W36At9xADnJkEkAEhgM/kfQCLqnx9U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nS57a61x2qsQVeEa9cbNZpLmFH5KV+u3B+dW0vhVU4Qf1oznNr/tBdhEHE9K2oh5taKTO60hk9UlSoIS+Dn22y5P11yfB73IxLL0icxHhu5GTLxjphVlboYGdSP2vd8Aa7QoDn09QALhXZIOgSeJllCS3pZKMBFklcpEv6bbKPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=MXHE70eM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753273786; c=relaxed/simple;
+	bh=a4fvJoudeLBpuYC8iOBx3Lt7u9y0axaehN+8SLluXMA=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=QXShBuD/t6pFaaLW7VJH4/hmQqqtjlFqRQT+nw03u0xX7flcZ4qwWwtiv6qjYTa02GtflrMGZOh8MnwnYTDbHWbcG9lYTHp39VXfZEohg2RE+zcqYcsllN5qKnvW8z/+5ZpKdBV0yESU/fF4rhouYJx1ymyRnFvymyGxLsvliog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BDKXNKuS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="MXHE70eM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C84B3C4CEE7;
-	Wed, 23 Jul 2025 12:02:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1753272166;
-	bh=bblqVHbE6GMy0W36At9xADnJkEkAEhgM/kfQCLqnx9U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=MXHE70eMlsxjEv/VL1hqe/UyuZynQmCUE8pnjSgXPSjxvRqfGXKv4r1TII0dIZNOo
-	 m3OLMUv2cDyLIz/kAWa/Flgblk1BxI3DTyI1cMKratzCNyYa0j2yr5UlXKlbQ0s6Kr
-	 sQOhQz+hxsbUpf4hfj9SjH9A6HMMnTxOC+39cAnw=
-Date: Wed, 23 Jul 2025 14:02:43 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc: Jiri Slaby <jirislaby@kernel.org>, linux-mips@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH] tty: serial: ip22zilog: Use platform device for probing
-Message-ID: <2025072321-scorer-surfacing-1cdf@gregkh>
-References: <20250723115823.76341-1-tsbogend@alpha.franken.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BDKXNKuS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38281C4CEF5;
+	Wed, 23 Jul 2025 12:29:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1753273785;
+	bh=a4fvJoudeLBpuYC8iOBx3Lt7u9y0axaehN+8SLluXMA=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=BDKXNKuSudGsrwbCFls9lMNbGe3HBVy+R7d3MLycJRWLcWzEYfLnDvyNU4MU3RsPF
+	 u+7zPxhRMfOwKd3kfj0WAxcE/L83lYJdVGnlC0Wjd8Xo36b4655zobf8MnN2FVrGRU
+	 y+QPZkGGY4QhCmFw+kXE8EdlZiejwd9llsKKPYujKHcc2IF1v8+2TFMtjgLDvAXCIX
+	 ydcw72rxfEv/KkLLbGN3Usc8tvgaCOikFKvx+2UZgHJ1MNlAg1QdLDqyDezPrJDsKy
+	 hj/Lzvj7apcBLQiy3IxV9yvl+IQMHp0QwDyOWbuPYNPgDC8CVglq+jim+tneF415cw
+	 oSWGV//JX1m+A==
+From: Vinod Koul <vkoul@kernel.org>
+To: linux@armlinux.org.uk, nicolas.ferre@microchip.com, 
+ alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev, 
+ catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com, 
+ herbert@gondor.apana.org.au, davem@davemloft.net, andi.shyti@kernel.org, 
+ lee@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org, 
+ jirislaby@kernel.org, arnd@kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
+ dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org, 
+ linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, 
+ o.rempel@pengutronix.de, daniel.machon@microchip.com, 
+ Robert Marko <robert.marko@sartura.hr>
+Cc: luka.perkov@sartura.hr
+In-Reply-To: <20250702183856.1727275-1-robert.marko@sartura.hr>
+References: <20250702183856.1727275-1-robert.marko@sartura.hr>
+Subject: Re: (subset) [PATCH v8 00/10] arm64: lan969x: Add support for
+ Microchip LAN969x SoC
+Message-Id: <175327377884.189941.15214972441246653208.b4-ty@kernel.org>
+Date: Wed, 23 Jul 2025 17:59:38 +0530
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250723115823.76341-1-tsbogend@alpha.franken.de>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.13.0
 
-On Wed, Jul 23, 2025 at 01:58:23PM +0200, Thomas Bogendoerfer wrote:
-> +static int __init sgi_zilog_devinit(void)
-> +{
-> +	struct resource res;
-> +
-> +	memset(&res, 0, sizeof(res));
-> +	res.start = HPC3_CHIP0_BASE + offsetof(struct hpc3_regs, rtcregs);
-> +	res.end = res.start + sizeof(hpc3c0->rtcregs) - 1;
-> +	res.flags = IORESOURCE_MEM;
-> +
-> +	return platform_device_register(&zilog_device);
 
-Odd function, why do you need "res" at all if you do not do anything
-with it?
+On Wed, 02 Jul 2025 20:35:58 +0200, Robert Marko wrote:
+> This patch series adds basic support for Microchip LAN969x SoC.
+> 
+> It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
+> which allows to avoid the need to change dependencies of the drivers that
+> are shared for Microchip SoC-s in the future.
+> 
+> DTS and further driver will be added in follow-up series.
+> 
+> [...]
 
-thanks,
+Applied, thanks!
 
-greg k-h
+[08/10] dma: xdmac: make it selectable for ARCH_MICROCHIP
+        commit: e56982021f5303b2523ac247e3c79b063459d012
+
+Best regards,
+-- 
+~Vinod
+
+
