@@ -1,111 +1,72 @@
-Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9958527991C
-	for <linux-serial@vger.kernel.org>; Wed, 23 Jul 2025 08:25:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4A8727FB1F;
+	Wed, 23 Jul 2025 08:39:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753259159; cv=none; b=ICts4cfCQasdrA5CtfkVCK8XwanG5XyII3nz50IoACOhu/NZeQyClF3wHGiHIJUP0OcFuw/tx0Jb8RBzUyretrZRBMwKTKCcWNlIVYb11omq8+4ScrdKVTNR8U7InhErocQtN8yozdckGRTzR3NUTs5Wr+ZuRFJKDSWX8SJaCn4=
+	t=1753259965; cv=none; b=u7LGnjBm+nEu7xlIWeUW5oG3VdMoYY0D0ba40wG0j03+JNFcmfmET4OaRnp5byt7ztqI2vh7AyAuireegXiM267ro4IOkYPR/3xXoaepUC5n4YSXF5rsE9isGiNYMuj4D3dr/gbNszmAOJ3ZTgh7hRs6T0XM16yxkGKHLOUjtGU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753259159; c=relaxed/simple;
-	bh=vLCNSJ4DxVZDJPQ7cVNRDySeLw0NidDKviv2DX8YsFo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=BgEUWdFciIG80CRhAjvu5znWlEVO42Ji/HzIu5aQbMvhOYz0OIXOJ8Mnjb1WQdfKfL7eaJqxDGXUOVbbqKAEAh7++9D17MKTk8KEIZ77NxY8NL6wEVJXE0nZoTOWLvZLqCLxfl16EJBiT6WFJsqK0mSmzFTu4W78SGmIPqf+wDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl; spf=none smtp.mailfrom=bgdev.pl; dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b=WF2Xc2ES; arc=none smtp.client-ip=209.85.215.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bgdev.pl
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bgdev.pl
+	s=arc-20240116; t=1753259965; c=relaxed/simple;
+	bh=40/39jNWpR02zi+1YCzS0Yt7kRfWfNcrgO/p13pf4oQ=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=aRNx+De7s5/eh1B1yBqxApoecZF05hOYIZDQGqmHnDDYshelNVQfqVi3a558Cfn9AONn5umwjVu7iPBk9d9Z2jwp8b/VY4hK0KB494OjjI4Ji8EYYkeQcz/lkNo7pEQk5GQnsSEBgBNzmoGAWk4fbjHm7cPKD0arXqbD4tGwt/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jx7G0ZLc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20230601.gappssmtp.com header.i=@bgdev-pl.20230601.gappssmtp.com header.b="WF2Xc2ES"
-Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-b2c4331c50eso5159332a12.3
-        for <linux-serial@vger.kernel.org>; Wed, 23 Jul 2025 01:25:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20230601.gappssmtp.com; s=20230601; t=1753259158; x=1753863958; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vLCNSJ4DxVZDJPQ7cVNRDySeLw0NidDKviv2DX8YsFo=;
-        b=WF2Xc2ESZUXC3I4997szY/O/Q2b8sQFJDwGqigrANiJNjwrQgnWk/KgiUjPftfzFf2
-         YUADAbu9eIdyFhPrkqBiefiC1jjzmUhXODL5cM5E4M+gVRXQLQJNJCAbF5LQAI0FEefj
-         q8MxMVO9ld3BbUf/aaJqD6gt8F++fbHQ/OBNzs7YGg4l1EmRhzW/YAVxoXGzw4MRoUre
-         7p+327nZRUY2hjKCflgCpBZrPK8JaJWKKILr/859g7GVsWIzAzbdinzhOLaP/UOkmAp4
-         W3o0M+K6QAVSrxdF8uS6CNj2+NiV7wNwVJnNH7YJrUx58XVYBith9M8CmJspWHHkuxPW
-         E44Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753259158; x=1753863958;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=vLCNSJ4DxVZDJPQ7cVNRDySeLw0NidDKviv2DX8YsFo=;
-        b=ssMi859yfSpihzyZKhDQvZUdMIvyT3b74AETCkhKtlidBvUZIvFXQAPEqXnA+89kRo
-         L3UFa2qQL5mznHHuX8+6Ze3XaO2+U9/6xsk5HpAcMNnawyS3Nnyjz4+cVdTdkaby1eXX
-         A81umyIRTvGjbKFRX+i9sduJURJwduL+aQWnc38uGW9fKEU2X2xUOFg6q5vb8FbgEgIa
-         X+6WlhX6M+0hfmmHkluQaQMJoHUyW4DLKFvfxvcaFDzqZj2qnPi9HTpmNOaxUmmGbPHn
-         0IoqaF5nKXHnja0MZrNiaEhbf7+58GT5PrRRcq3INK7p87uaizfSY1MvISMw6ncYeTAP
-         k1RQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWe+CJF9SrSjzlbRRLXvSsnB2ps2VvLlw0H+8AUksjRs+h2VreYNglghppL3ni4JJ+ZnDFfclzRTRvrtCc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxlhD5g/85SBzQHWTHIqFkhKPDXpAvkhzjSAs0ENvBH/K2a3Vuj
-	0CA4alFjmhgPNCad0PifjAHrNn2LRSNbeNt7KJfNp/C61HSYMyt0+Jy0fvMaZhG/mx1hc/mjCAQ
-	NyrIkabmHKRz2JFZeG10uUeEghWE9/Baa+NW9Th5nkQ==
-X-Gm-Gg: ASbGncuCbrLAguPjHYkahB7q748jmg1WQCGwguupsByA8yxbGdsSs4wCx6Q+aYfuDvc
-	2a6XBf66jZh9nzjH04UWkJkOkuSUjaShDDsSQJANuE7TpKP7+jRVDy0jZqtnb4lSJi6rOJcdh6+
-	WtPzHRxwAaoh7CJRSTycPLn1jriW789vfiZd2dQalpZfcj8FZGZftFXG0E2RvzqV4pfPAPW6HcC
-	4c8dRIpWrj8WGijA5OA7ivJADoR5GWGRBdqlSXX2q5KCh0g
-X-Google-Smtp-Source: AGHT+IFzwCafFosCdx131zbcEFY3D64m+7mo0loj5vAsYVkMFUgy5UAHuuRGjg5yAkxctR2cI5zO8+e+kqhHgdsFxCw=
-X-Received: by 2002:a17:90b:53d0:b0:315:aa28:9501 with SMTP id
- 98e67ed59e1d1-31e507dc7b4mr4498294a91.24.1753259157929; Wed, 23 Jul 2025
- 01:25:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jx7G0ZLc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0EDC4CEE7;
+	Wed, 23 Jul 2025 08:39:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1753259964;
+	bh=40/39jNWpR02zi+1YCzS0Yt7kRfWfNcrgO/p13pf4oQ=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=jx7G0ZLcQgFNF3ID5+WoRfdJ0/VnqdgixU/vOpXWSzkDr38afhwveEi50Wk/V7rzB
+	 G0zYV/kzhZvALf2nCNkagjKmk7uCJKcGBP/SvFQYFtelQORT/JqBz8wkBzp6TOdtDX
+	 0eJ9QFaouvAU7gIQxPxaZAo0QwaFD0WhaG4doWSMnnWHBFov1JtWHCopKZUI9XVvTh
+	 lCzqAoYty74Q8N8StWcgqy/geXz/uyUQSxcJ75Wj7Iw0Z01dcITZnEjotZ+h1hGMlx
+	 QUS+C+3ojwVVeAWIkVnkyYlNwKqkE68pfnIC1EExylfsEqVOaQvAznfgb3f1LDQFXe
+	 Zk3ca9zWN9eBw==
+From: Lee Jones <lee@kernel.org>
+To: linux@armlinux.org.uk, nicolas.ferre@microchip.com, 
+ alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev, 
+ catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com, 
+ herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org, 
+ andi.shyti@kernel.org, lee@kernel.org, broonie@kernel.org, 
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, arnd@kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
+ linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org, 
+ linux-serial@vger.kernel.org, o.rempel@pengutronix.de, 
+ daniel.machon@microchip.com, Robert Marko <robert.marko@sartura.hr>
+Cc: luka.perkov@sartura.hr
+In-Reply-To: <20250702183856.1727275-5-robert.marko@sartura.hr>
+References: <20250702183856.1727275-5-robert.marko@sartura.hr>
+Subject: Re: (subset) [PATCH v8 04/10] mfd: at91-usart: Make it selectable
+ for ARCH_MICROCHIP
+Message-Id: <175325995961.1695705.8338983998485530536.b4-ty@kernel.org>
+Date: Wed, 23 Jul 2025 09:39:19 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250722-axiado-ax3000-soc-and-evaluation-board-support-v6-0-543979a60ccf@axiado.com>
-In-Reply-To: <20250722-axiado-ax3000-soc-and-evaluation-board-support-v6-0-543979a60ccf@axiado.com>
-From: Bartosz Golaszewski <brgl@bgdev.pl>
-Date: Wed, 23 Jul 2025 10:25:43 +0200
-X-Gm-Features: Ac12FXyLbBDcOzrp8fBxUqR9jIu-gUOTaGAF4LxjwERQBqGacqdoGbliH_T9iv8
-Message-ID: <CAMRc=MdFoAa2omJgL__4mRqX5CYyhZ3VU_Uy-Tf1oPSuZdV93g@mail.gmail.com>
-Subject: Re: [PATCH v6 00/10] Axiado AX3000 SoC and Evaluation Board Support
-To: Harshit Shah <hshah@axiado.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Michal Simek <michal.simek@amd.com>, =?UTF-8?Q?Przemys=C5=82aw_Gaj?= <pgaj@cadence.com>, 
-	Alexandre Belloni <alexandre.belloni@bootlin.com>, Frank Li <Frank.Li@nxp.com>, 
-	Boris Brezillon <bbrezillon@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Linus Walleij <linus.walleij@linaro.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, soc@lists.linux.dev, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, 
-	Jan Kotas <jank@cadence.com>, linux-serial@vger.kernel.org, 
-	linux-i3c@lists.infradead.org, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.15-dev-c81fc
 
-On Tue, Jul 22, 2025 at 10:16=E2=80=AFPM Harshit Shah <hshah@axiado.com> wr=
-ote:
->
-> -------------------------------
-> Hello SoC maintainers,
->
-> This patch series adds initial support for the Axiado AX3000 SoC and its
-> evaluation board.
->
-> Change from v6
-> - Ran "b4 trailer -u" and add reviewed by Krzysztof
->
-> Add soc@lists.linux.dev in the to list and send this series again as per
-> suggestion by Krzysztof and Arnd. Thank you.
->
-> Checked locally and able to apply these patchset to soc git.
-> (git/soc/soc.git, for-next, checked commit: 7dfbf3176d886ff9a0c7786942d3a=
-89809d0641e)
->
-> Sorry for late request, please consider this series for the 6.17.
->
+On Wed, 02 Jul 2025 20:36:02 +0200, Robert Marko wrote:
+> LAN969x uses the Atmel USART, so make it selectable for ARCH_MICROCHIP to
+> avoid needing to update depends in future if other Microchip SoC-s use it
+> as well.
+> 
+> 
 
-I can't speak for the rest but do you want me to take the GPIO
-dt-bindings patches through the GPIO tree for v6.17 separately?
+Applied, thanks!
 
-Bartosz
+[04/10] mfd: at91-usart: Make it selectable for ARCH_MICROCHIP
+        commit: ef37a1e2485724f5287db1584d8aba48e8ba3f41
+
+--
+Lee Jones [李琼斯]
+
