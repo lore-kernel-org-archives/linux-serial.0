@@ -1,249 +1,602 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC8CA41
-	for <linux-serial@vger.kernel.org>; Fri, 25 Jul 2025 06:31:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B11851A705C
+	for <linux-serial@vger.kernel.org>; Fri, 25 Jul 2025 13:40:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753425115; cv=none; b=pfhu7vzcOmuiuPv1cvMSGu9tRrRDfbb9D4SNrvbaT7JU8UNUYDDD/EA3P5mkPJ57aAvbn9Mnk97jBOYWio/BWOqyALmHxRua/8DLpPSBrNXavIdwKhm751IMsfYYfUp24CuiR6mCZaohz/f+4kYNiwQOsNpPXOnEFig7zMf+wV8=
+	t=1753450825; cv=none; b=fn1vQeHEayRtka3A4JcTKwSMAjDHLr8TzynoYnsRtE681D3wO4aY61YuhxQb9lpMsKbdJhQYMHwUb2Q/lp+HhVYFOsFmuRp+elE+KsMdvfE75qmBYzWETb+q7oRSNaSX7T50Z5xmTwpIjeehtsMw/RU0GLh0wiaTd7vBJtZN3VA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753425115; c=relaxed/simple;
-	bh=6Y8KkJwXB2+jaLllrfQXQ8NDoe/BePCRJd7VOhcfzBo=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=WoXnBYKfm1uEXi+2i5lvvff8/QRxVLKwpWN1eqj1ditpty7iCs6V/wKoa8bzvF1bW+q9jynK91trmhwphJBOEh+5SHnR8qcdhKvt8jM15d+rH8LcB1JhH1TY0+L9qo0j2OH5QSTAyzqBAFhQLYkZzmaxgWUu01LbAt3w9XNbhZY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HvrhAYAW; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HvrhAYAW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1753425114; x=1784961114;
-  h=date:from:to:cc:subject:message-id;
-  bh=6Y8KkJwXB2+jaLllrfQXQ8NDoe/BePCRJd7VOhcfzBo=;
-  b=HvrhAYAWzYk0L9XDWe4IZw4TxSlG/HmhlJj4hK5Wz26Whzn3p7k5QH82
-   r5a18NgoHK/U307pepeGW6/3Otir8ufoG+3fL6GYAZ83miw1i+IEa32aC
-   NqVs00j6xivPHGCBIjsHvH7YYaMJ724qbZrU9bhiVUlyVihggSDG+3Usd
-   DmYoZqMcmMeo1O0H8m02t998ucOPkuZ3zKn36+Hlr5nrP3Ry2dW0DPZIa
-   PjPQutwpG6PmuRvFCH+UY5lfiNj29bPI10wI9u8/ytlUHDRJBFDfgAXIv
-   Do/hXQkQ8Avn913YgG/8gB72uvBdcIlQUBZBdDm8uHcueMHFSPMYIXxhN
-   Q==;
-X-CSE-ConnectionGUID: iDpBa0eGSC+rov5PmKg6rg==
-X-CSE-MsgGUID: u42n/haqTguNiTwesDL9IQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11501"; a="59408753"
-X-IronPort-AV: E=Sophos;i="6.16,338,1744095600"; 
-   d="scan'208";a="59408753"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2025 23:31:54 -0700
-X-CSE-ConnectionGUID: 09t8YgqqQKKbDkdKFbCqCA==
-X-CSE-MsgGUID: xgAdwVz7S0Oy7uxzoKtacg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,338,1744095600"; 
-   d="scan'208";a="160918041"
-Received: from lkp-server01.sh.intel.com (HELO 9ee84586c615) ([10.239.97.150])
-  by orviesa007.jf.intel.com with ESMTP; 24 Jul 2025 23:31:51 -0700
-Received: from kbuild by 9ee84586c615 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1ufBy9-000L7D-2C;
-	Fri, 25 Jul 2025 06:31:49 +0000
-Date: Fri, 25 Jul 2025 14:31:45 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 57b4ca42359c63ad61548431c184a7d63efbd0b9
-Message-ID: <202507251429.CDa7bZne-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	s=arc-20240116; t=1753450825; c=relaxed/simple;
+	bh=RGdpSmgxHFF6xYZE0XScte35A7YmK5X2mPyAytSGyCc=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version; b=qTiBPlhhWF39ZCOWEwxnKbtRhKIXHFvjiNJyHeIeoXFupZJJziFkS8xtvmsrx+jbHTN/Twvn4EJ/j74XTbhd8TLpZp9ARjP2GoZCpTUGy7B3IQIQMCHVKnIvj8e17TvuAXDQ/+9qK8S50tYapajmWegXeSIS9pzquzfA10TO59w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=alpha.franken.de; spf=fail smtp.mailfrom=alpha.franken.de; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=alpha.franken.de
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=alpha.franken.de
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id A294021A50;
+	Fri, 25 Jul 2025 13:40:19 +0000 (UTC)
+Authentication-Results: smtp-out1.suse.de;
+	none
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 8755713A8D;
+	Fri, 25 Jul 2025 13:40:19 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id zueVIEOJg2hdQwAAD6G6ig
+	(envelope-from <tsbogend@alpha.franken.de>); Fri, 25 Jul 2025 13:40:19 +0000
+From: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-mips@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: [PATCH v2] tty: serial: ip22zilog: Use platform device for probing
+Date: Fri, 25 Jul 2025 15:40:17 +0200
+Message-ID: <20250725134018.136113-1-tsbogend@alpha.franken.de>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Level: 
+X-Spamd-Result: default: False [-2.80 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_CONTAINS_FROM(1.00)[];
+	R_MISSING_CHARSET(0.50)[];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	ARC_NA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	TO_DN_SOME(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RCVD_COUNT_TWO(0.00)[2];
+	RCPT_COUNT_FIVE(0.00)[5];
+	RCVD_TLS_ALL(0.00)[]
+X-Spam-Flag: NO
+X-Spam-Score: -2.80
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 57b4ca42359c63ad61548431c184a7d63efbd0b9  dt-bindings: serial: snps-dw-apb-uart: Allow use of a power-domain
+After commit 84a9582fd203 ("serial: core: Start managing serial controllers
+to enable runtime PM") serial drivers need to provide a device in
+struct uart_port.dev otherwise an oops happens. To fix this issue
+for ip22zilog driver switch driver to a platform driver and setup
+the serial device in sgi-ip22 code.
 
-Unverified Warning (likely false positive, kindly check if interested):
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+---
+v2: removed copy&pasted useless code form sgi_zilog_devinit()
+v1: https://lore.kernel.org/all/20250723115823.76341-1-tsbogend@alpha.franken.de/
 
-    arch/arm/boot/dts/mediatek/mt7623a-rfb-emmc.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: 'oneOf' conditional failed, one must be fixed:
-    arch/arm/boot/dts/mediatek/mt7623a-rfb-emmc.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: ['main'] is too short
-    arch/arm/boot/dts/mediatek/mt7623a-rfb-nand.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: 'oneOf' conditional failed, one must be fixed:
-    arch/arm/boot/dts/mediatek/mt7623a-rfb-nand.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: ['main'] is too short
-    arch/arm/boot/dts/mediatek/mt7623n-bananapi-bpi-r2.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: 'oneOf' conditional failed, one must be fixed:
-    arch/arm/boot/dts/mediatek/mt7623n-bananapi-bpi-r2.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: ['main'] is too short
-    arch/arm/boot/dts/mediatek/mt7623n-rfb-emmc.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: 'oneOf' conditional failed, one must be fixed:
-    arch/arm/boot/dts/mediatek/mt7623n-rfb-emmc.dtb: serial@1100c000 (mediatek,mt7623-btif): clock-names: ['main'] is too short
+ arch/mips/sgi-ip22/ip22-platform.c |  32 +++
+ drivers/tty/serial/ip22zilog.c     | 360 ++++++++++++-----------------
+ 2 files changed, 179 insertions(+), 213 deletions(-)
 
-Warning ids grouped by kconfigs:
+diff --git a/arch/mips/sgi-ip22/ip22-platform.c b/arch/mips/sgi-ip22/ip22-platform.c
+index 0b2002e02a47..3a53690b4b33 100644
+--- a/arch/mips/sgi-ip22/ip22-platform.c
++++ b/arch/mips/sgi-ip22/ip22-platform.c
+@@ -221,3 +221,35 @@ static int __init sgi_ds1286_devinit(void)
+ }
+ 
+ device_initcall(sgi_ds1286_devinit);
++
++#define SGI_ZILOG_BASE	(HPC3_CHIP0_BASE + \
++			 offsetof(struct hpc3_regs, pbus_extregs[6]) + \
++			 offsetof(struct sgioc_regs, uart))
++
++static struct resource sgi_zilog_resources[] = {
++	{
++		.start	= SGI_ZILOG_BASE,
++		.end	= SGI_ZILOG_BASE + 15,
++		.flags	= IORESOURCE_MEM
++	},
++	{
++		.start	= SGI_SERIAL_IRQ,
++		.end	= SGI_SERIAL_IRQ,
++		.flags	= IORESOURCE_IRQ
++	}
++};
++
++static struct platform_device zilog_device = {
++	.name		= "ip22zilog",
++	.id		= 0,
++	.num_resources	= ARRAY_SIZE(sgi_zilog_resources),
++	.resource	= sgi_zilog_resources,
++};
++
++
++static int __init sgi_zilog_devinit(void)
++{
++	return platform_device_register(&zilog_device);
++}
++
++device_initcall(sgi_zilog_devinit);
+diff --git a/drivers/tty/serial/ip22zilog.c b/drivers/tty/serial/ip22zilog.c
+index c2cae50f06f3..6e19c6713849 100644
+--- a/drivers/tty/serial/ip22zilog.c
++++ b/drivers/tty/serial/ip22zilog.c
+@@ -30,6 +30,7 @@
+ #include <linux/console.h>
+ #include <linux/spinlock.h>
+ #include <linux/init.h>
++#include <linux/platform_device.h>
+ 
+ #include <linux/io.h>
+ #include <asm/irq.h>
+@@ -50,8 +51,9 @@
+ #define ZSDELAY_LONG()		udelay(20)
+ #define ZS_WSYNC(channel)	do { } while (0)
+ 
+-#define NUM_IP22ZILOG		1
+-#define NUM_CHANNELS		(NUM_IP22ZILOG * 2)
++#define NUM_CHANNELS		2
++#define CHANNEL_B		0
++#define CHANNEL_A		1
+ 
+ #define ZS_CLOCK		3672000	/* Zilog input clock rate. */
+ #define ZS_CLOCK_DIVISOR	16      /* Divisor this driver uses. */
+@@ -62,9 +64,6 @@
+ struct uart_ip22zilog_port {
+ 	struct uart_port		port;
+ 
+-	/* IRQ servicing chain.  */
+-	struct uart_ip22zilog_port	*next;
+-
+ 	/* Current values of Zilog write registers.  */
+ 	unsigned char			curregs[NUM_ZSREGS];
+ 
+@@ -72,7 +71,6 @@ struct uart_ip22zilog_port {
+ #define IP22ZILOG_FLAG_IS_CONS		0x00000004
+ #define IP22ZILOG_FLAG_IS_KGDB		0x00000008
+ #define IP22ZILOG_FLAG_MODEM_STATUS	0x00000010
+-#define IP22ZILOG_FLAG_IS_CHANNEL_A	0x00000020
+ #define IP22ZILOG_FLAG_REGS_HELD	0x00000040
+ #define IP22ZILOG_FLAG_TX_STOPPED	0x00000080
+ #define IP22ZILOG_FLAG_TX_ACTIVE	0x00000100
+@@ -84,6 +82,8 @@ struct uart_ip22zilog_port {
+ 	unsigned char			prev_status;
+ };
+ 
++static struct uart_ip22zilog_port ip22zilog_port_table[NUM_CHANNELS];
++
+ #define ZILOG_CHANNEL_FROM_PORT(PORT)	((struct zilog_channel *)((PORT)->membase))
+ #define UART_ZILOG(PORT)		((struct uart_ip22zilog_port *)(PORT))
+ #define IP22ZILOG_GET_CURR_REG(PORT, REGNUM)		\
+@@ -93,7 +93,6 @@ struct uart_ip22zilog_port {
+ #define ZS_IS_CONS(UP)	((UP)->flags & IP22ZILOG_FLAG_IS_CONS)
+ #define ZS_IS_KGDB(UP)	((UP)->flags & IP22ZILOG_FLAG_IS_KGDB)
+ #define ZS_WANTS_MODEM_STATUS(UP)	((UP)->flags & IP22ZILOG_FLAG_MODEM_STATUS)
+-#define ZS_IS_CHANNEL_A(UP)	((UP)->flags & IP22ZILOG_FLAG_IS_CHANNEL_A)
+ #define ZS_REGS_HELD(UP)	((UP)->flags & IP22ZILOG_FLAG_REGS_HELD)
+ #define ZS_TX_STOPPED(UP)	((UP)->flags & IP22ZILOG_FLAG_TX_STOPPED)
+ #define ZS_TX_ACTIVE(UP)	((UP)->flags & IP22ZILOG_FLAG_TX_ACTIVE)
+@@ -423,60 +422,57 @@ static void ip22zilog_transmit_chars(struct uart_ip22zilog_port *up,
+ 
+ static irqreturn_t ip22zilog_interrupt(int irq, void *dev_id)
+ {
+-	struct uart_ip22zilog_port *up = dev_id;
++	struct uart_ip22zilog_port *up;
++	struct zilog_channel *channel;
++	unsigned char r3;
++	bool push = false;
+ 
+-	while (up) {
+-		struct zilog_channel *channel
+-			= ZILOG_CHANNEL_FROM_PORT(&up->port);
+-		unsigned char r3;
+-		bool push = false;
++	up = &ip22zilog_port_table[CHANNEL_A];
++	channel = ZILOG_CHANNEL_FROM_PORT(&up->port);
+ 
+-		uart_port_lock(&up->port);
+-		r3 = read_zsreg(channel, R3);
++	uart_port_lock(&up->port);
++	r3 = read_zsreg(channel, R3);
+ 
+-		/* Channel A */
+-		if (r3 & (CHAEXT | CHATxIP | CHARxIP)) {
+-			writeb(RES_H_IUS, &channel->control);
+-			ZSDELAY();
+-			ZS_WSYNC(channel);
++	/* Channel A */
++	if (r3 & (CHAEXT | CHATxIP | CHARxIP)) {
++		writeb(RES_H_IUS, &channel->control);
++		ZSDELAY();
++		ZS_WSYNC(channel);
+ 
+-			if (r3 & CHARxIP)
+-				push = ip22zilog_receive_chars(up, channel);
+-			if (r3 & CHAEXT)
+-				ip22zilog_status_handle(up, channel);
+-			if (r3 & CHATxIP)
+-				ip22zilog_transmit_chars(up, channel);
+-		}
+-		uart_port_unlock(&up->port);
+-
+-		if (push)
+-			tty_flip_buffer_push(&up->port.state->port);
+-
+-		/* Channel B */
+-		up = up->next;
+-		channel = ZILOG_CHANNEL_FROM_PORT(&up->port);
+-		push = false;
+-
+-		uart_port_lock(&up->port);
+-		if (r3 & (CHBEXT | CHBTxIP | CHBRxIP)) {
+-			writeb(RES_H_IUS, &channel->control);
+-			ZSDELAY();
+-			ZS_WSYNC(channel);
+-
+-			if (r3 & CHBRxIP)
+-				push = ip22zilog_receive_chars(up, channel);
+-			if (r3 & CHBEXT)
+-				ip22zilog_status_handle(up, channel);
+-			if (r3 & CHBTxIP)
+-				ip22zilog_transmit_chars(up, channel);
+-		}
+-		uart_port_unlock(&up->port);
+-
+-		if (push)
+-			tty_flip_buffer_push(&up->port.state->port);
+-
+-		up = up->next;
++		if (r3 & CHARxIP)
++			push = ip22zilog_receive_chars(up, channel);
++		if (r3 & CHAEXT)
++			ip22zilog_status_handle(up, channel);
++		if (r3 & CHATxIP)
++			ip22zilog_transmit_chars(up, channel);
+ 	}
++	uart_port_unlock(&up->port);
++
++	if (push)
++		tty_flip_buffer_push(&up->port.state->port);
++
++	/* Channel B */
++	up = &ip22zilog_port_table[CHANNEL_B];
++	channel = ZILOG_CHANNEL_FROM_PORT(&up->port);
++	push = false;
++
++	uart_port_lock(&up->port);
++	if (r3 & (CHBEXT | CHBTxIP | CHBRxIP)) {
++		writeb(RES_H_IUS, &channel->control);
++		ZSDELAY();
++		ZS_WSYNC(channel);
++
++		if (r3 & CHBRxIP)
++			push = ip22zilog_receive_chars(up, channel);
++		if (r3 & CHBEXT)
++			ip22zilog_status_handle(up, channel);
++		if (r3 & CHBTxIP)
++			ip22zilog_transmit_chars(up, channel);
++	}
++	uart_port_unlock(&up->port);
++
++	if (push)
++		tty_flip_buffer_push(&up->port.state->port);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -692,16 +688,16 @@ static void __ip22zilog_reset(struct uart_ip22zilog_port *up)
+ 		udelay(100);
+ 	}
+ 
+-	if (!ZS_IS_CHANNEL_A(up)) {
+-		up++;
+-		channel = ZILOG_CHANNEL_FROM_PORT(&up->port);
+-	}
++	up = &ip22zilog_port_table[CHANNEL_A];
++	channel = ZILOG_CHANNEL_FROM_PORT(&up->port);
++
+ 	write_zsreg(channel, R9, FHWRES);
+ 	ZSDELAY_LONG();
+ 	(void) read_zsreg(channel, R0);
+ 
+ 	up->flags |= IP22ZILOG_FLAG_RESET_DONE;
+-	up->next->flags |= IP22ZILOG_FLAG_RESET_DONE;
++	up = &ip22zilog_port_table[CHANNEL_B];
++	up->flags |= IP22ZILOG_FLAG_RESET_DONE;
+ }
+ 
+ static void __ip22zilog_startup(struct uart_ip22zilog_port *up)
+@@ -942,47 +938,6 @@ static const struct uart_ops ip22zilog_pops = {
+ 	.verify_port	=	ip22zilog_verify_port,
+ };
+ 
+-static struct uart_ip22zilog_port *ip22zilog_port_table;
+-static struct zilog_layout **ip22zilog_chip_regs;
+-
+-static struct uart_ip22zilog_port *ip22zilog_irq_chain;
+-static int zilog_irq = -1;
+-
+-static void * __init alloc_one_table(unsigned long size)
+-{
+-	return kzalloc(size, GFP_KERNEL);
+-}
+-
+-static void __init ip22zilog_alloc_tables(void)
+-{
+-	ip22zilog_port_table = (struct uart_ip22zilog_port *)
+-		alloc_one_table(NUM_CHANNELS * sizeof(struct uart_ip22zilog_port));
+-	ip22zilog_chip_regs = (struct zilog_layout **)
+-		alloc_one_table(NUM_IP22ZILOG * sizeof(struct zilog_layout *));
+-
+-	if (ip22zilog_port_table == NULL || ip22zilog_chip_regs == NULL) {
+-		panic("IP22-Zilog: Cannot allocate IP22-Zilog tables.");
+-	}
+-}
+-
+-/* Get the address of the registers for IP22-Zilog instance CHIP.  */
+-static struct zilog_layout * __init get_zs(int chip)
+-{
+-	unsigned long base;
+-
+-	if (chip < 0 || chip >= NUM_IP22ZILOG) {
+-		panic("IP22-Zilog: Illegal chip number %d in get_zs.", chip);
+-	}
+-
+-	/* Not probe-able, hard code it. */
+-	base = (unsigned long) &sgioc->uart;
+-
+-	zilog_irq = SGI_SERIAL_IRQ;
+-	request_mem_region(base, 8, "IP22-Zilog");
+-
+-	return (struct zilog_layout *) base;
+-}
+-
+ #define ZS_PUT_CHAR_MAX_DELAY	2000	/* 10 ms */
+ 
+ #ifdef CONFIG_SERIAL_IP22_ZILOG_CONSOLE
+@@ -1070,144 +1025,123 @@ static struct uart_driver ip22zilog_reg = {
+ #endif
+ };
+ 
+-static void __init ip22zilog_prepare(void)
++static void __init ip22zilog_prepare(struct uart_ip22zilog_port *up)
+ {
+ 	unsigned char sysrq_on = IS_ENABLED(CONFIG_SERIAL_IP22_ZILOG_CONSOLE);
+-	struct uart_ip22zilog_port *up;
+-	struct zilog_layout *rp;
+-	int channel, chip;
++	int brg;
+ 
+-	/*
+-	 * Temporary fix.
+-	 */
+-	for (channel = 0; channel < NUM_CHANNELS; channel++)
+-		spin_lock_init(&ip22zilog_port_table[channel].port.lock);
++	spin_lock_init(&up->port.lock);
+ 
+-	ip22zilog_irq_chain = &ip22zilog_port_table[NUM_CHANNELS - 1];
+-        up = &ip22zilog_port_table[0];
+-	for (channel = NUM_CHANNELS - 1 ; channel > 0; channel--)
+-		up[channel].next = &up[channel - 1];
+-	up[channel].next = NULL;
++	up->port.iotype = UPIO_MEM;
++	up->port.uartclk = ZS_CLOCK;
++	up->port.fifosize = 1;
++	up->port.has_sysrq = sysrq_on;
++	up->port.ops = &ip22zilog_pops;
++	up->port.type = PORT_IP22ZILOG;
+ 
+-	for (chip = 0; chip < NUM_IP22ZILOG; chip++) {
+-		if (!ip22zilog_chip_regs[chip]) {
+-			ip22zilog_chip_regs[chip] = rp = get_zs(chip);
+-
+-			up[(chip * 2) + 0].port.membase = (char *) &rp->channelB;
+-			up[(chip * 2) + 1].port.membase = (char *) &rp->channelA;
+-
+-			/* In theory mapbase is the physical address ...  */
+-			up[(chip * 2) + 0].port.mapbase =
+-				(unsigned long) ioremap((unsigned long) &rp->channelB, 8);
+-			up[(chip * 2) + 1].port.mapbase =
+-				(unsigned long) ioremap((unsigned long) &rp->channelA, 8);
+-		}
+-
+-		/* Channel A */
+-		up[(chip * 2) + 0].port.iotype = UPIO_MEM;
+-		up[(chip * 2) + 0].port.irq = zilog_irq;
+-		up[(chip * 2) + 0].port.uartclk = ZS_CLOCK;
+-		up[(chip * 2) + 0].port.fifosize = 1;
+-		up[(chip * 2) + 0].port.has_sysrq = sysrq_on;
+-		up[(chip * 2) + 0].port.ops = &ip22zilog_pops;
+-		up[(chip * 2) + 0].port.type = PORT_IP22ZILOG;
+-		up[(chip * 2) + 0].port.flags = 0;
+-		up[(chip * 2) + 0].port.line = (chip * 2) + 0;
+-		up[(chip * 2) + 0].flags = 0;
+-
+-		/* Channel B */
+-		up[(chip * 2) + 1].port.iotype = UPIO_MEM;
+-		up[(chip * 2) + 1].port.irq = zilog_irq;
+-		up[(chip * 2) + 1].port.uartclk = ZS_CLOCK;
+-		up[(chip * 2) + 1].port.fifosize = 1;
+-		up[(chip * 2) + 1].port.has_sysrq = sysrq_on;
+-		up[(chip * 2) + 1].port.ops = &ip22zilog_pops;
+-		up[(chip * 2) + 1].port.type = PORT_IP22ZILOG;
+-		up[(chip * 2) + 1].port.line = (chip * 2) + 1;
+-		up[(chip * 2) + 1].flags |= IP22ZILOG_FLAG_IS_CHANNEL_A;
+-	}
+-
+-	for (channel = 0; channel < NUM_CHANNELS; channel++) {
+-		struct uart_ip22zilog_port *up = &ip22zilog_port_table[channel];
+-		int brg;
+-
+-		/* Normal serial TTY. */
+-		up->parity_mask = 0xff;
+-		up->curregs[R1] = EXT_INT_ENAB | INT_ALL_Rx | TxINT_ENAB;
+-		up->curregs[R4] = PAR_EVEN | X16CLK | SB1;
+-		up->curregs[R3] = RxENAB | Rx8;
+-		up->curregs[R5] = TxENAB | Tx8;
+-		up->curregs[R9] = NV | MIE;
+-		up->curregs[R10] = NRZ;
+-		up->curregs[R11] = TCBR | RCBR;
+-		brg = BPS_TO_BRG(9600, ZS_CLOCK / ZS_CLOCK_DIVISOR);
+-		up->curregs[R12] = (brg & 0xff);
+-		up->curregs[R13] = (brg >> 8) & 0xff;
+-		up->curregs[R14] = BRENAB;
+-	}
++	/* Normal serial TTY. */
++	up->parity_mask = 0xff;
++	up->curregs[R1] = EXT_INT_ENAB | INT_ALL_Rx | TxINT_ENAB;
++	up->curregs[R4] = PAR_EVEN | X16CLK | SB1;
++	up->curregs[R3] = RxENAB | Rx8;
++	up->curregs[R5] = TxENAB | Tx8;
++	up->curregs[R9] = NV | MIE;
++	up->curregs[R10] = NRZ;
++	up->curregs[R11] = TCBR | RCBR;
++	brg = BPS_TO_BRG(9600, ZS_CLOCK / ZS_CLOCK_DIVISOR);
++	up->curregs[R12] = (brg & 0xff);
++	up->curregs[R13] = (brg >> 8) & 0xff;
++	up->curregs[R14] = BRENAB;
+ }
+ 
+-static int __init ip22zilog_ports_init(void)
++static int ip22zilog_probe(struct platform_device *pdev)
+ {
+-	int ret;
++	struct uart_ip22zilog_port *up;
++	char __iomem *membase;
++	struct resource *res;
++	int irq;
++	int i;
+ 
+-	printk(KERN_INFO "Serial: IP22 Zilog driver (%d chips).\n", NUM_IP22ZILOG);
++	up = &ip22zilog_port_table[CHANNEL_B];
++	if (up->port.dev)
++		return -ENOSPC;
+ 
+-	ip22zilog_prepare();
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
+ 
+-	if (request_irq(zilog_irq, ip22zilog_interrupt, 0,
+-			"IP22-Zilog", ip22zilog_irq_chain)) {
++	membase = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	if (IS_ERR(membase))
++		return PTR_ERR(membase);
++
++	ip22zilog_prepare(up);
++
++	up->port.mapbase = res->start + offsetof(struct zilog_layout, channelB);
++	up->port.membase = membase + offsetof(struct zilog_layout, channelB);
++	up->port.line = 0;
++	up->port.dev = &pdev->dev;
++	up->port.irq = irq;
++
++	up = &ip22zilog_port_table[CHANNEL_A];
++	ip22zilog_prepare(up);
++
++	up->port.mapbase = res->start + offsetof(struct zilog_layout, channelA);
++	up->port.membase = membase + offsetof(struct zilog_layout, channelA);
++	up->port.line = 1;
++	up->port.dev = &pdev->dev;
++	up->port.irq = irq;
++
++	if (request_irq(irq, ip22zilog_interrupt, 0,
++			"IP22-Zilog", NULL)) {
+ 		panic("IP22-Zilog: Unable to register zs interrupt handler.\n");
+ 	}
+ 
+-	ret = uart_register_driver(&ip22zilog_reg);
+-	if (ret == 0) {
+-		int i;
+-
+-		for (i = 0; i < NUM_CHANNELS; i++) {
+-			struct uart_ip22zilog_port *up = &ip22zilog_port_table[i];
+-
+-			uart_add_one_port(&ip22zilog_reg, &up->port);
+-		}
+-	}
+-
+-	return ret;
+-}
+-
+-static int __init ip22zilog_init(void)
+-{
+-	/* IP22 Zilog setup is hard coded, no probing to do.  */
+-	ip22zilog_alloc_tables();
+-	ip22zilog_ports_init();
++	for (i = 0; i < NUM_CHANNELS; i++)
++		uart_add_one_port(&ip22zilog_reg,
++				  &ip22zilog_port_table[i].port);
+ 
+ 	return 0;
+ }
+ 
+-static void __exit ip22zilog_exit(void)
++static void ip22zilog_remove(struct platform_device *pdev)
+ {
+ 	int i;
+-	struct uart_ip22zilog_port *up;
+ 
+ 	for (i = 0; i < NUM_CHANNELS; i++) {
+-		up = &ip22zilog_port_table[i];
+-
+-		uart_remove_one_port(&ip22zilog_reg, &up->port);
++		uart_remove_one_port(&ip22zilog_reg,
++				     &ip22zilog_port_table[i].port);
++		ip22zilog_port_table[i].port.dev = NULL;
+ 	}
++}
+ 
+-	/* Free IO mem */
+-	up = &ip22zilog_port_table[0];
+-	for (i = 0; i < NUM_IP22ZILOG; i++) {
+-		if (up[(i * 2) + 0].port.mapbase) {
+-		   iounmap((void*)up[(i * 2) + 0].port.mapbase);
+-		   up[(i * 2) + 0].port.mapbase = 0;
+-		}
+-		if (up[(i * 2) + 1].port.mapbase) {
+-			iounmap((void*)up[(i * 2) + 1].port.mapbase);
+-			up[(i * 2) + 1].port.mapbase = 0;
+-		}
++static struct platform_driver ip22zilog_driver = {
++	.probe	= ip22zilog_probe,
++	.remove	= ip22zilog_remove,
++	.driver	= {
++		.name = "ip22zilog"
+ 	}
++};
+ 
++static int __init ip22zilog_init(void)
++{
++	int ret;
++
++	ret = uart_register_driver(&ip22zilog_reg);
++	if (ret)
++		return ret;
++
++	ret = platform_driver_register(&ip22zilog_driver);
++	if (ret)
++		uart_unregister_driver(&ip22zilog_reg);
++
++	return ret;
++
++}
++
++static void __exit ip22zilog_exit(void)
++{
+ 	uart_unregister_driver(&ip22zilog_reg);
++	platform_driver_unregister(&ip22zilog_driver);
+ }
+ 
+ module_init(ip22zilog_init);
+-- 
+2.43.0
 
-recent_errors
-|-- arm-randconfig-051-20250725
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|-- arm-randconfig-052-20250725
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|-- arm-randconfig-053-20250725
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|-- arm-randconfig-054-20250725
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-|   |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-|   `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-`-- arm-randconfig-055-20250725
-    |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-    |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-    |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-    |-- arch-arm-boot-dts-mediatek-mt7623a-rfb-nand.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-    |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-    |-- arch-arm-boot-dts-mediatek-mt7623n-bananapi-bpi-r2.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-    |-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:main-is-too-short
-    `-- arch-arm-boot-dts-mediatek-mt7623n-rfb-emmc.dtb:serial-1100c000-(mediatek-mt7623-btif):clock-names:oneOf-conditional-failed-one-must-be-fixed:
-
-elapsed time: 1248m
-
-configs tested: 112
-configs skipped: 3
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-tested configs:
-alpha                             allnoconfig    gcc-15.1.0
-alpha                            allyesconfig    gcc-15.1.0
-arc                              allmodconfig    gcc-15.1.0
-arc                               allnoconfig    gcc-15.1.0
-arc                              allyesconfig    gcc-15.1.0
-arc                   randconfig-001-20250724    gcc-13.4.0
-arc                   randconfig-002-20250724    gcc-15.1.0
-arm                              allmodconfig    gcc-15.1.0
-arm                               allnoconfig    clang-22
-arm                              allyesconfig    gcc-15.1.0
-arm                   randconfig-001-20250724    gcc-10.5.0
-arm                   randconfig-002-20250724    clang-22
-arm                   randconfig-003-20250724    gcc-8.5.0
-arm                   randconfig-004-20250724    gcc-12.5.0
-arm64                            allmodconfig    clang-19
-arm64                             allnoconfig    gcc-15.1.0
-arm64                 randconfig-001-20250724    gcc-8.5.0
-arm64                 randconfig-002-20250724    clang-22
-arm64                 randconfig-003-20250724    gcc-13.4.0
-arm64                 randconfig-004-20250724    clang-22
-csky                              allnoconfig    gcc-15.1.0
-csky                  randconfig-001-20250724    gcc-13.4.0
-csky                  randconfig-002-20250724    gcc-10.5.0
-hexagon                          allmodconfig    clang-17
-hexagon                           allnoconfig    clang-22
-hexagon                          allyesconfig    clang-22
-hexagon               randconfig-001-20250724    clang-22
-hexagon               randconfig-002-20250724    clang-22
-i386                             allmodconfig    gcc-12
-i386                              allnoconfig    gcc-12
-i386                             allyesconfig    gcc-12
-i386        buildonly-randconfig-001-20250724    gcc-12
-i386        buildonly-randconfig-002-20250724    clang-20
-i386        buildonly-randconfig-003-20250724    clang-20
-i386        buildonly-randconfig-004-20250724    clang-20
-i386        buildonly-randconfig-005-20250724    clang-20
-i386        buildonly-randconfig-006-20250724    clang-20
-i386                                defconfig    clang-20
-loongarch                        allmodconfig    clang-19
-loongarch                         allnoconfig    clang-22
-loongarch             randconfig-001-20250724    clang-22
-loongarch             randconfig-002-20250724    gcc-13.4.0
-m68k                             allmodconfig    gcc-15.1.0
-m68k                              allnoconfig    gcc-15.1.0
-m68k                             allyesconfig    gcc-15.1.0
-microblaze                       allmodconfig    gcc-15.1.0
-microblaze                        allnoconfig    gcc-15.1.0
-microblaze                       allyesconfig    gcc-15.1.0
-microblaze                          defconfig    gcc-15.1.0
-mips                              allnoconfig    gcc-15.1.0
-nios2                             allnoconfig    gcc-11.5.0
-nios2                               defconfig    gcc-11.5.0
-nios2                 randconfig-001-20250724    gcc-11.5.0
-nios2                 randconfig-002-20250724    gcc-8.5.0
-openrisc                          allnoconfig    gcc-15.1.0
-openrisc                         allyesconfig    gcc-15.1.0
-parisc                           allmodconfig    gcc-15.1.0
-parisc                            allnoconfig    gcc-15.1.0
-parisc                           allyesconfig    gcc-15.1.0
-parisc                              defconfig    gcc-15.1.0
-parisc                randconfig-001-20250724    gcc-14.3.0
-parisc                randconfig-002-20250724    gcc-8.5.0
-parisc64                            defconfig    gcc-15.1.0
-powerpc                          allmodconfig    gcc-15.1.0
-powerpc                           allnoconfig    gcc-15.1.0
-powerpc                          allyesconfig    clang-22
-powerpc               randconfig-001-20250724    clang-22
-powerpc               randconfig-002-20250724    gcc-8.5.0
-powerpc               randconfig-003-20250724    clang-22
-powerpc64             randconfig-001-20250724    clang-22
-powerpc64             randconfig-002-20250724    gcc-13.4.0
-powerpc64             randconfig-003-20250724    gcc-15.1.0
-riscv                            allmodconfig    clang-22
-riscv                             allnoconfig    gcc-15.1.0
-riscv                            allyesconfig    clang-16
-riscv                 randconfig-001-20250724    gcc-13.4.0
-riscv                 randconfig-002-20250724    gcc-8.5.0
-s390                             allmodconfig    clang-18
-s390                              allnoconfig    clang-22
-s390                             allyesconfig    gcc-15.1.0
-s390                  randconfig-001-20250724    clang-22
-s390                  randconfig-002-20250724    gcc-10.5.0
-sh                               allmodconfig    gcc-15.1.0
-sh                                allnoconfig    gcc-15.1.0
-sh                               allyesconfig    gcc-15.1.0
-sh                    randconfig-001-20250724    gcc-13.4.0
-sh                    randconfig-002-20250724    gcc-15.1.0
-sparc                            allmodconfig    gcc-15.1.0
-sparc                             allnoconfig    gcc-15.1.0
-sparc                               defconfig    gcc-15.1.0
-sparc                 randconfig-001-20250724    gcc-15.1.0
-sparc                 randconfig-002-20250724    gcc-8.5.0
-sparc64               randconfig-001-20250724    gcc-8.5.0
-sparc64               randconfig-002-20250724    clang-22
-um                               allmodconfig    clang-19
-um                                allnoconfig    clang-22
-um                               allyesconfig    gcc-12
-um                    randconfig-001-20250724    clang-22
-um                    randconfig-002-20250724    gcc-12
-x86_64                            allnoconfig    clang-20
-x86_64                           allyesconfig    clang-20
-x86_64      buildonly-randconfig-001-20250724    gcc-12
-x86_64      buildonly-randconfig-002-20250724    clang-20
-x86_64      buildonly-randconfig-003-20250724    gcc-12
-x86_64      buildonly-randconfig-004-20250724    gcc-12
-x86_64      buildonly-randconfig-005-20250724    clang-20
-x86_64      buildonly-randconfig-006-20250724    gcc-12
-x86_64                              defconfig    gcc-11
-x86_64                          rhel-9.4-rust    clang-20
-xtensa                            allnoconfig    gcc-15.1.0
-xtensa                randconfig-001-20250724    gcc-12.5.0
-xtensa                randconfig-002-20250724    gcc-12.5.0
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
