@@ -1,126 +1,103 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp1.iitb.ac.in (smtpd9.iitb.ac.in [103.21.126.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E201F216E24
-	for <linux-serial@vger.kernel.org>; Sun, 27 Jul 2025 12:55:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3DCB198851
+	for <linux-serial@vger.kernel.org>; Mon, 28 Jul 2025 01:44:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.21.126.64
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753620934; cv=none; b=Ku/jAgg2DrOKRU12h2hIgf6hy4ZnPXcISreqrBeQkVtljFQA7D15ILIZ3ICJbDHlcdiOqv+idyYs/qK/gX7gBXF8t3F/80drYcnoHVFC2Bj/k1Odn0H+WYv0wbaHgtVkcwSVoeETt+6R0ICjz9TdXLhwezyFr8siNpWANEmKZN4=
+	t=1753667086; cv=none; b=nxqrPCHK9n7JvgWtxVepWnABAE5lsw+RREr/QBe8jBBUuVlCpQIqZh1BF6l1BeexvGT22K0rVaRnz08hZbDXjOwXetIJZ0h84YFNBvSP/PztvZXniPWZau2dXjV6t4vW0i+VyAdKFTudnuXRsRCnQJUk2V8+XuN80mHdU6rGmio=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753620934; c=relaxed/simple;
-	bh=BQ/JpxXpuSy7PbBgcydNfVF2w4td5TfhH0Fzlc5REsk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KfU/DKc3e2ouGBxt0hqBypvWFMQSiL9OBHUKTgjFVNjEMGAwTWHkN65TwtUGHQ5N6KR4GygoaqG+FOpSqQ2JNoFnXByYi3srVwYQs8FQDjd/BuEiWLLtvL8NlqxKP/3bD0HXwgFYRrdVwYzHzztmTCZoytA3z928ER5tFkNq2HE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=c0uvMYtE; arc=none smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
+	s=arc-20240116; t=1753667086; c=relaxed/simple;
+	bh=3vlZGc/DHNfl1nX+4w/9/X0vKZTTie393s6G3A8xs7c=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=QmvjmY+hip4HSVh2ncWH7svHfChmAMmHawiqeIOze15T0Sh0cNxwVBCUmfGm9Aco86bJnK//ExbmME+o17SkChQmrXTfyzvpQVWxIiHJ5CoJmguA/TJM5MzmZKsX09f4/oQwrXljb3qzqngwpmOjALsYjzs/yfAUdNHhiDeJRAg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ee.iitb.ac.in; spf=pass smtp.mailfrom=ee.iitb.ac.in; dkim=pass (1024-bit key) header.d=iitb.ac.in header.i=@iitb.ac.in header.b=HSkvjIAj; arc=none smtp.client-ip=103.21.126.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ee.iitb.ac.in
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ee.iitb.ac.in
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="c0uvMYtE"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6150be62be4so1575992a12.0
-        for <linux-serial@vger.kernel.org>; Sun, 27 Jul 2025 05:55:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura; t=1753620931; x=1754225731; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jMxifAIqWO9udZ2NZ9E8Ene5GRXydyVi9Idk6pBIlxA=;
-        b=c0uvMYtEJFdVp+74ymehaYZDUS3V+nzKzazfRjmJE/+EjM/hG0j+ExWD5KtIVAt4q8
-         WpIU1wLnfTY9d6P1VCdHTl72WRScOnUW06Oa9K2VQ2YkVRWOsHkHu/l2ayLPgvHOp1jE
-         Z43U+D9AzbHIwn58Yw1mJfIgYZjM8O7z7pQENFkXfsyVgJoaiBp4+cgM0LX9S36ykbjx
-         D7vQwOPooQhha+KSrhae+b76IU8DJME/6pehdSOtQacsxeYuvK66Pc6gs9V2C8A3yPY8
-         MmDhdskiPqiQ2ao0Gw1vJq4x8kRY13jiIYoVu5ihckQrjba6bM7Lq3ND51FZgPP5Btbj
-         lvRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753620931; x=1754225731;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=jMxifAIqWO9udZ2NZ9E8Ene5GRXydyVi9Idk6pBIlxA=;
-        b=m8cjKOSsz/1I/Pm5rT5iO3COYiWv6/W5et6WS+0JHCdSbGj9r/Qhxc2KcnPPX170mX
-         EiMYJlySeTIZHTSECyRPrQaMBXUfojOT0gB5MEXddCUEXzaA607Pv+dJlUx7NhnRI/Ku
-         J2/wrZyQgXMXDCKq6fEnEbImsbKsFP74SxhMNzKQf9UzYqkFGXHj0csRKQHsq6xztX1Q
-         Z7TWAzJm4q2ZqYEO6pVRdB52/ONVFOh76nQGQfyjm9U9Z0pkY6p4mz5ns9dQTNmXv3yb
-         M2b24hxd729Ka/zAiZDPvFdyY9Qb1x7ObVyGmb3nDbJhSP8yvCy3uCSWFJZ5pP1RIQz1
-         u8CQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVrDGbPuMuqcnEAWv1uZ5MBWi2Wvtf88B9/7U0+1+g6X6xNtZuKyLtoq2sZnurzfrIaTFoPydwolQ4RhQI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwT/sJatEiDycI4//2Mi1sdNnEqafWTahc6UzE5CrIHXaSXPJB9
-	jMgp+Y2oEiAdrgzLvamKBxGTDqbl4TDWK7oWCyuT4w0no/i3qk5KuGJ5TITRnWp38pZBiY5ooyh
-	+0hnpEDQpDs0kecwxhKxHbQPp0NHcQLSnksJAjTDOGQ==
-X-Gm-Gg: ASbGncu2noktjMO+Nikr958cbFieeWQQzPiXHM6/RwTnDuabIN/rrpOhiYd5EnFxPaM
-	fcWDyfTB5YlTrQlg3sVPhLHfpXOIMxBh6X1gwtmjbKl30C3XHkC6JvC9JadffwUg4jGXpADJUW6
-	7EjkNjlTT66NZnXRkoa8frkDOcbatBQhHjx3v5Su64SeQS7q7bOahW4d+3Y+FiSp4BNMzv5JzCG
-	ji6Pw==
-X-Google-Smtp-Source: AGHT+IFVYv/O72cHjaH5k5VUlfobYK4W+S80N+a/c4/0HwzwQr74guF3QvQjE4eDoMLi3m7pid4RHeYV0xM1EOGkTOc=
-X-Received: by 2002:a17:907:3d12:b0:ae6:eff6:165c with SMTP id
- a640c23a62f3a-af619601218mr939373066b.48.1753620930791; Sun, 27 Jul 2025
- 05:55:30 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=iitb.ac.in header.i=@iitb.ac.in header.b="HSkvjIAj"
+Received: from ldns1.iitb.ac.in (ldns1.iitb.ac.in [10.200.12.1])
+	by smtp1.iitb.ac.in (Postfix) with SMTP id 691E6104C1D0
+	for <linux-serial@vger.kernel.org>; Mon, 28 Jul 2025 07:14:35 +0530 (IST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.iitb.ac.in 691E6104C1D0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=iitb.ac.in; s=mail;
+	t=1753667075; bh=3vlZGc/DHNfl1nX+4w/9/X0vKZTTie393s6G3A8xs7c=;
+	h=Date:From:To:Cc:Subject:From;
+	b=HSkvjIAj0FH9lAPypfS+1zGszzrC0pimomPqngMfp1bHxDkCeNwe/gQoHUxlLunls
+	 BLXI+tP2XiZjJHfNHXijAHJHv4Q2u+9mdDHQVv7ubE4vfVddLoQS7Rbp1+I61v5tFe
+	 WqUQXrjD4a0QETW0BNZocPts/xs7C60SJvUkTwmY=
+Received: (qmail 10676 invoked by uid 510); 28 Jul 2025 07:14:35 +0530
+X-Qmail-Scanner-Diagnostics: from 10.200.1.25 by ldns1 (envelope-from <akhilesh@ee.iitb.ac.in>, uid 501) with qmail-scanner-2.11
+ spamassassin: 3.4.1. mhr: 1.0. {clamdscan: 0.101.4/26439} 
+ Clear:RC:1(10.200.1.25):SA:0(0.0/7.0):. Processed in 3.718594 secs; 28 Jul 2025 07:14:35 +0530
+X-Spam-Level: 
+X-Spam-Pyzor: Reported 0 times.
+X-Envelope-From: akhilesh@ee.iitb.ac.in
+X-Qmail-Scanner-Mime-Attachments: |
+X-Qmail-Scanner-Zip-Files: |
+Received: from unknown (HELO ldns1.iitb.ac.in) (10.200.1.25)
+  by ldns1.iitb.ac.in with SMTP; 28 Jul 2025 07:14:31 +0530
+Received: from bhairav.ee.iitb.ac.in (bhairav.ee.iitb.ac.in [10.107.1.1])
+	by ldns1.iitb.ac.in (Postfix) with ESMTP id CF33B36003B;
+	Mon, 28 Jul 2025 07:14:30 +0530 (IST)
+Received: from bhairav-test.ee.iitb.ac.in (bhairav.ee.iitb.ac.in [10.107.1.1])
+	(Authenticated sender: akhilesh)
+	by bhairav.ee.iitb.ac.in (Postfix) with ESMTPSA id 900A31E8128E;
+	Mon, 28 Jul 2025 07:14:30 +0530 (IST)
+Date: Mon, 28 Jul 2025 07:14:25 +0530
+From: Akhilesh Patil <akhilesh@ee.iitb.ac.in>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	andriy.shevchenko@linux.intel.com, john.ogness@linutronix.de,
+	pmladek@suse.com, johan@kernel.org, namcao@linutronix.de,
+	timur@kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, akhileshpatilvnit@gmail.com,
+	skhan@linuxfoundation.org
+Subject: [PATCH] tty: serial: ucc_uart: use WARN_ON() instead of BUG()
+Message-ID: <aIbV+WbhFMDamaiW@bhairav-test.ee.iitb.ac.in>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250702183856.1727275-5-robert.marko@sartura.hr>
- <175325995961.1695705.8338983998485530536.b4-ty@kernel.org> <20250724100442.GX11056@google.com>
-In-Reply-To: <20250724100442.GX11056@google.com>
-From: Robert Marko <robert.marko@sartura.hr>
-Date: Sun, 27 Jul 2025 14:55:19 +0200
-X-Gm-Features: Ac12FXzmHtBtU7jmLL2NxVGb2Ntptau88LQnJUIPvAdvZ644oi9yAP7lpOAawqY
-Message-ID: <CA+HBbNGscSseYHT36FqazfH_BXZi9zKdbPkroJGby7Vd+=ZJSA@mail.gmail.com>
-Subject: Re: (subset) [PATCH v8 04/10] mfd: at91-usart: Make it selectable for ARCH_MICROCHIP
-To: Lee Jones <lee@kernel.org>
-Cc: linux@armlinux.org.uk, nicolas.ferre@microchip.com, 
-	alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev, 
-	catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com, 
-	herbert@gondor.apana.org.au, davem@davemloft.net, vkoul@kernel.org, 
-	andi.shyti@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org, 
-	jirislaby@kernel.org, arnd@kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org, 
-	o.rempel@pengutronix.de, daniel.machon@microchip.com, luka.perkov@sartura.hr
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Thu, Jul 24, 2025 at 12:04=E2=80=AFPM Lee Jones <lee@kernel.org> wrote:
->
-> On Wed, 23 Jul 2025, Lee Jones wrote:
->
-> > On Wed, 02 Jul 2025 20:36:02 +0200, Robert Marko wrote:
-> > > LAN969x uses the Atmel USART, so make it selectable for ARCH_MICROCHI=
-P to
-> > > avoid needing to update depends in future if other Microchip SoC-s us=
-e it
-> > > as well.
-> > >
-> > >
-> >
-> > Applied, thanks!
-> >
-> > [04/10] mfd: at91-usart: Make it selectable for ARCH_MICROCHIP
-> >         commit: ef37a1e2485724f5287db1584d8aba48e8ba3f41
->
-> Reverted as it caused issues in -next.
->
-> https://lore.kernel.org/all/20250724115409.030d0d08@canb.auug.org.au/
+Replace BUG() with WARN_ON() as recommended in
+Documentation/process/deprecated.rst
+Fix system entering into unstable/break/undebuggable state due to use
+of BUG(). Follow strict suggestions as per [1] [2].
 
-Hi Lee,
-This patch depends on the first 3 patches in the series, which have
-not yet been merged.
+Link: https://lore.kernel.org/lkml/CA+55aFy6jNLsywVYdGp83AMrXBo_P-pkjkphPGrO=82SPKCpLQ@mail.gmail.com/ [1]
+Link: https://lore.kernel.org/lkml/CAHk-=whDHsbK3HTOpTF=ue_o04onRwTEaK_ZoJp_fjbqq4+=Jw@mail.gmail.com/ [2]
+Signed-off-by: Akhilesh Patil <akhilesh@ee.iitb.ac.in>
+---
+ drivers/tty/serial/ucc_uart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Regards,
-Robert
->
-> --
-> Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
+diff --git a/drivers/tty/serial/ucc_uart.c b/drivers/tty/serial/ucc_uart.c
+index 0613f8c11ab1..6214ab1b67cb 100644
+--- a/drivers/tty/serial/ucc_uart.c
++++ b/drivers/tty/serial/ucc_uart.c
+@@ -223,7 +223,7 @@ static inline dma_addr_t cpu2qe_addr(void *addr, struct uart_qe_port *qe_port)
+ 
+ 	/* something nasty happened */
+ 	printk(KERN_ERR "%s: addr=%p\n", __func__, addr);
+-	BUG();
++	WARN_ON(1);
+ 	return 0;
+ }
+ 
+@@ -242,7 +242,7 @@ static inline void *qe2cpu_addr(dma_addr_t addr, struct uart_qe_port *qe_port)
+ 
+ 	/* something nasty happened */
+ 	printk(KERN_ERR "%s: addr=%llx\n", __func__, (u64)addr);
+-	BUG();
++	WARN_ON(1);
+ 	return NULL;
+ }
+ 
+-- 
+2.34.1
 
-
-
---=20
-Robert Marko
-Staff Embedded Linux Engineer
-Sartura d.d.
-Lendavska ulica 16a
-10000 Zagreb, Croatia
-Email: robert.marko@sartura.hr
-Web: www.sartura.hr
