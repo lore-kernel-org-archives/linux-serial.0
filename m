@@ -1,122 +1,136 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2CC35971
-	for <linux-serial@vger.kernel.org>; Thu, 31 Jul 2025 08:05:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 404E3A94A;
+	Thu, 31 Jul 2025 13:19:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753949113; cv=none; b=X4a6W7mO3KTvNYyO2PjqQvAxyFnjnBz/TMGNP6IpFtIzGMg/tvljMxm4CUVjLAHjQTWj0AVV1L0jd0XGg69XGYb4YQAytQeMGEZYq3wPGdN47zAnwjsWZbI/1ghyXCR+XwLanLFpzjDIRW1CAmvoo9+LLPFXpbN529E3nFzkaO4=
+	t=1753967964; cv=none; b=Je+jZemOqKqqhGy1xv/3hWVoatWdw/7/ZYbViYdHFJ9Nv1z1HD1/nupTMG1bscyZfluDuvqdKmCtebkyem8Cacm6/zDA2RU0H1McZTAsgWbe97Zv9H/tSR0+pOxjrJTNORJbX64R57uwGVKBU/iqTOrN/vCytmuVgW+VDf0TIDA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753949113; c=relaxed/simple;
-	bh=6bi4kRFwbYfyE28UT2me0jvb3Oreb7wCirpdwwV3Gso=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jQ5PZUBj6lkklwzh1tUCp4uxBYb5i5xtnRBOjb6R9D7OcbCDXvz1eXmJk4iXw5c2ivGjpcomaBXJs9IO5p65tAoHJThNdJuo+jcbZDycRanpb03X3RWxkFHVIiAqQTU/ClNFaPDl/0nqPLfBL3U3B1tEyNyCH1t/1SzVRAxCXUk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=GOK/9s7M; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1753967964; c=relaxed/simple;
+	bh=8r3Fv+M4yTGdiz6h5pXNqXQwzpNc8g8rNb0PDyVc9B0=;
+	h=From:To:Cc:Date:Message-Id:MIME-Version:Subject; b=hmLj7MLISinw0BXnS6v7X71iL2VGfhsM8Dw7n+E2xyfVbkiuORN5dhSLSiqvy3XXDMpwOSXUgHGGikvb433wDsjWtqc8/XJXlI8yHvCbta7hVljm22vGnzo/XGPW51vA9bVEftTlNTSlzKFmISQ93iDNP7zGOtFmpeolhQrzOxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=A5cf+gf/; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="GOK/9s7M"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-454f428038eso995125e9.2
-        for <linux-serial@vger.kernel.org>; Thu, 31 Jul 2025 01:05:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1753949110; x=1754553910; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GiWR9YBkQCBk6u1BEFYqq7bF5Tp24tb8A8i+jcDSHqs=;
-        b=GOK/9s7M4IR+kgqShpE31nJt8j2ZH3iU4C+GllNjX9mN1+swh8Vg25JRhLfkAKPh78
-         IdNEbaFb5M5hVisK3nqq5WX2a67aaIwYkEiKP43OtfAQX/kSpX/ZMLRcyo99UhUZSIgD
-         Nj3S8CDa95DPptI3X60aIsPVVRMdBpTs/wm8WuN2U/Fildo1NcJ1dxkoszZd4PJwWEgY
-         pRBsxdTShVlsmCro7A2MM0uvgawAMvn8qXeHp/zAWQ5CDw8tdVz+m9AaWH3kI9W/gSBh
-         O9jqTkbaFeQ2aNyWJNXVARsMSnn7aLV7OMLXn5i8fEMHMk08sQ4/ZUOHYJcl/tePwvrQ
-         v9cA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753949110; x=1754553910;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GiWR9YBkQCBk6u1BEFYqq7bF5Tp24tb8A8i+jcDSHqs=;
-        b=hhhaPUCLppEPxsg9oOXugmrSmBK5bEK/ubMVqaMslsnTg4CXXKjfvSlIbCatKE7m4/
-         Ad6eNmX8osIicGf9b2QZl7WhiMalwSffabmz/TIgoAOUYs8QQmvwS+R9N6bxODkObTxd
-         HYkvzRZFuYgQbbn+kWZkgOSjdT9wocBfgxyFGzULu3wIWed2qB5XfcyfGsbvP2SfT3ww
-         WqdRrwioq+S9UWdEnUjfXaU7TR5K1F7g7Q2v47/1boXiHfn1CrQl/t0hCBfaG9YmHCjj
-         qW/G4K1nOUdcVWMMFSFN2WNxytNjXef9BoMGq6cU5Xc/TxMQPQxEaiZ1mNej1Wq45APR
-         iW3A==
-X-Forwarded-Encrypted: i=1; AJvYcCXc0ZjnhM5C3CEcbuZFYVpGn+ack72b6aLzY+Ti+Ajdx6Avo4YVMWMS65pZMMZY0TN+Ju7d/7sXy0jwO70=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxQv4kbeVDvZUq+G4NVDSRG0LIRnuTmW+ZwyxfqqYlrrlAp9Hey
-	JBcA3ohRMr08DHvCIv7URbrPq69KdWuwYe2iaurKlp1skq1YQEL8UOMq8q0pb3mvpaI=
-X-Gm-Gg: ASbGnctMiehA/DtD+goCG+PN6jM590Xx2p2KbK0+qUcAttWy7ne9HzM3OL43xU9R80G
-	YLEPDQf4rYzzy/oAPElAFBGTUBAf/EqziBkJNs50/rdfKE/6FECHpBlfeCfGZDRS5WdCSpkinlc
-	DsVMkgVaK4akKYkEzEK2tJ1ERURW5RFa5Q37wRZ3oTTglpPjSMVthju8HHRxJBN62yITBUE5zTd
-	QYPTGBHNphAVMNZKx6jJdDexpjoogSq5uDczZ98q/2Lt3dVryl4m3mQbEv4oGeLlTpARXQ938HW
-	cirPvaww9uLRb0e7EeTpCA2m0xw460J+ifil3eEKqcNzfRgS1PZtcOppEOim+fRXQHLcLQbvyBP
-	Z7eAxPrJMQ2uY2Id2vFIDyOQmawE1Hw==
-X-Google-Smtp-Source: AGHT+IH/541SBqMgVRMwq19FcxpTJ84aTjtwL21hMdK7WasoI4YZqc/Qb8aQtoiT1F7mEW4j9xyVmQ==
-X-Received: by 2002:a05:600c:8b83:b0:43c:f8fe:dd82 with SMTP id 5b1f17b1804b1-45892bbf78cmr68783845e9.18.1753949110073;
-        Thu, 31 Jul 2025 01:05:10 -0700 (PDT)
-Received: from [192.168.50.4] ([82.78.167.30])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b79c485444sm1527560f8f.66.2025.07.31.01.05.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Jul 2025 01:05:09 -0700 (PDT)
-Message-ID: <bac5390f-725a-43db-a2b6-17a68d0d733c@tuxon.dev>
-Date: Thu, 31 Jul 2025 11:05:07 +0300
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="A5cf+gf/"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+	:From:subject:date:message-id:reply-to;
+	bh=u6pOakssCsfcxux6WyYCgTIITzfS/oiDlxNCjWk9jPU=; b=A5cf+gf/wJZm1cMoZxuX8lktwK
+	C+JUEEfXjvMmrduGv9hJ7/D7JhrnrSly5ci6pG/PEfsSSL9YqWPd+GpSMPAQzFrHDSP/ShnfLjilr
+	q9iAssrVq07RRtkYddrRkW1TVRyJWw+pZacP2l9N2sV6m1ByjZL7ve0wNhke/Tf1zeCw=;
+Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:49772 helo=localhost.localdomain)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1uhSea-0006PE-Vz; Thu, 31 Jul 2025 08:45:01 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Jon Ringle <jringle@gridpoint.com>
+Cc: hugo@hugovil.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	stable@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Date: Thu, 31 Jul 2025 08:44:50 -0400
+Message-Id: <20250731124451.1108864-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: (subset) [PATCH v8 00/10] arm64: lan969x: Add support for
- Microchip LAN969x SoC
-To: Vinod Koul <vkoul@kernel.org>, linux@armlinux.org.uk,
- nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
- catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com,
- herbert@gondor.apana.org.au, davem@davemloft.net, andi.shyti@kernel.org,
- lee@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
- jirislaby@kernel.org, arnd@kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
- dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
- linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
- o.rempel@pengutronix.de, daniel.machon@microchip.com,
- Robert Marko <robert.marko@sartura.hr>
-Cc: luka.perkov@sartura.hr
-References: <20250702183856.1727275-1-robert.marko@sartura.hr>
- <175327377884.189941.15214972441246653208.b4-ty@kernel.org>
-From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Content-Language: en-US
-In-Reply-To: <175327377884.189941.15214972441246653208.b4-ty@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 184.161.19.61
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+Subject: [PATCH] serial: sc16is7xx: fix bug in flow control levels init
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-Hi, Vinod,
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-On 23.07.2025 15:29, Vinod Koul wrote:
-> 
-> On Wed, 02 Jul 2025 20:35:58 +0200, Robert Marko wrote:
->> This patch series adds basic support for Microchip LAN969x SoC.
->>
->> It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
->> which allows to avoid the need to change dependencies of the drivers that
->> are shared for Microchip SoC-s in the future.
->>
->> DTS and further driver will be added in follow-up series.
->>
->> [...]
-> 
-> Applied, thanks!
-> 
-> [08/10] dma: xdmac: make it selectable for ARCH_MICROCHIP
->         commit: e56982021f5303b2523ac247e3c79b063459d012
+When trying to set MCR[2], XON1 is incorrectly accessed instead. And when
+writing to the TCR register to configure flow control levels, we are
+incorrectly writing to the MSR register. The default value of $00 is then
+used for TCR, which means that selectable trigger levels in FCR are used
+in place of TCR.
 
-As this one depends, as well, on the first 3 patches in the series (Robert,
-please correct me if I'm wrong), and there are still discussions ongoing,
-can you please drop it until all is clear on the first 3 patches?
+TCR/TLR access requires EFR[4] (enable enhanced functions) and MCR[2]
+to be set. EFR[4] is already set in probe().
 
-Otherwise, applying only this patch will lead to AT91 XDMAC driver not
-being built for SAMA5{D2, D3, D4}, SAMA7{G5, D65} SoCs. Linux is not
-booting on SAMA7G5 SoC only with this patch applied.
+MCR access requires LCR[7] to be zero.
 
-Thank you,
-Claudiu
+Since LCR is set to $BF when trying to set MCR[2], XON1 is incorrectly
+accessed instead because MCR shares the same address space as XON1.
+
+Since MCR[2] is unmodified and still zero, when writing to TCR we are in
+fact writing to MSR because TCR/TLR registers share the same address space
+as MSR/SPR.
+
+Fix by first removing useless reconfiguration of EFR[4] (enable enhanced
+functions), as it is already enabled in sc16is7xx_probe() since commit
+43c51bb573aa ("sc16is7xx: make sure device is in suspend once probed").
+Now LCR is $00, which means that MCR access is enabled.
+
+Also remove regcache_cache_bypass() calls since we no longer access the
+enhanced registers set, and TCR is already declared as volatile (in fact
+by declaring MSR as volatile, which shares the same address).
+
+Finally disable access to TCR/TLR registers after modifying them by
+clearing MCR[2].
+
+Note: the comment about "... and internal clock div" is wrong and can be
+      ignored/removed as access to internal clock div registers (DLL/DLH)
+      is permitted only when LCR[7] is logic 1, not when enhanced features
+      is enabled. And DLL/DLH access is not needed in sc16is7xx_startup().
+
+Fixes: dfeae619d781 ("serial: sc16is7xx")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+ drivers/tty/serial/sc16is7xx.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 5ea8aadb6e69c..9056cb82456f1 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1177,17 +1177,6 @@ static int sc16is7xx_startup(struct uart_port *port)
+ 	sc16is7xx_port_write(port, SC16IS7XX_FCR_REG,
+ 			     SC16IS7XX_FCR_FIFO_BIT);
+ 
+-	/* Enable EFR */
+-	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
+-			     SC16IS7XX_LCR_CONF_MODE_B);
+-
+-	regcache_cache_bypass(one->regmap, true);
+-
+-	/* Enable write access to enhanced features and internal clock div */
+-	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
+-			      SC16IS7XX_EFR_ENABLE_BIT,
+-			      SC16IS7XX_EFR_ENABLE_BIT);
+-
+ 	/* Enable TCR/TLR */
+ 	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
+ 			      SC16IS7XX_MCR_TCRTLR_BIT,
+@@ -1199,7 +1188,8 @@ static int sc16is7xx_startup(struct uart_port *port)
+ 			     SC16IS7XX_TCR_RX_RESUME(24) |
+ 			     SC16IS7XX_TCR_RX_HALT(48));
+ 
+-	regcache_cache_bypass(one->regmap, false);
++	/* Disable TCR/TLR access */
++	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG, SC16IS7XX_MCR_TCRTLR_BIT, 0);
+ 
+ 	/* Now, initialize the UART */
+ 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, SC16IS7XX_LCR_WORD_LEN_8);
+
+base-commit: 260f6f4fda93c8485c8037865c941b42b9cba5d2
+-- 
+2.39.5
 
