@@ -1,106 +1,122 @@
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDAF2293462
-	for <linux-serial@vger.kernel.org>; Wed, 30 Jul 2025 11:03:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.67.36.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB2CC35971
+	for <linux-serial@vger.kernel.org>; Thu, 31 Jul 2025 08:05:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753873441; cv=none; b=JkoEPtzt6q9/nK1MFOQcYls/NLVJ3TytQB/iZyb6ItiXCIwiS8vQGtykM0fmyLLMg5QZx9o6f0TkIBX0ScS02o2PhO6xUUkP8LDfaP16/OKshRoGQZGK82n2X3n0Iqu77Duk+fWIsN2IuxgyRct3h23JBE0s6ex8nC4KltUnrCg=
+	t=1753949113; cv=none; b=X4a6W7mO3KTvNYyO2PjqQvAxyFnjnBz/TMGNP6IpFtIzGMg/tvljMxm4CUVjLAHjQTWj0AVV1L0jd0XGg69XGYb4YQAytQeMGEZYq3wPGdN47zAnwjsWZbI/1ghyXCR+XwLanLFpzjDIRW1CAmvoo9+LLPFXpbN529E3nFzkaO4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753873441; c=relaxed/simple;
-	bh=szHfJZabhBzQOJCt7xJakEBSVeQuaISLuhGKPgme3UI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=tl/wYJbh5cYVfmhFBCdE8QGBjoI3CkICgs2Fh8nA1Jrs24sZrK5Ql45TunftsI47/UKVkuI44XdZTZh+8Am4HdJfB07QQBigByxlYSxMAe+8Q6IDeSfOJrxyftZj8Xy+Zq69ef8U4tPgF9AflELJQKG8E39sLMePhhPcQCs/ze0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.net; spf=pass smtp.mailfrom=posteo.net; dkim=pass (3072-bit key) header.d=posteo.net header.i=@posteo.net header.b=hIrludL7; arc=none smtp.client-ip=185.67.36.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=posteo.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=posteo.net
+	s=arc-20240116; t=1753949113; c=relaxed/simple;
+	bh=6bi4kRFwbYfyE28UT2me0jvb3Oreb7wCirpdwwV3Gso=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jQ5PZUBj6lkklwzh1tUCp4uxBYb5i5xtnRBOjb6R9D7OcbCDXvz1eXmJk4iXw5c2ivGjpcomaBXJs9IO5p65tAoHJThNdJuo+jcbZDycRanpb03X3RWxkFHVIiAqQTU/ClNFaPDl/0nqPLfBL3U3B1tEyNyCH1t/1SzVRAxCXUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=GOK/9s7M; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (3072-bit key) header.d=posteo.net header.i=@posteo.net header.b="hIrludL7"
-Received: from submission (posteo.de [185.67.36.169]) 
-	by mout02.posteo.de (Postfix) with ESMTPS id F05E5240101
-	for <linux-serial@vger.kernel.org>; Wed, 30 Jul 2025 13:03:50 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=posteo.net;
-	s=1984.ea087b; t=1753873430;
-	bh=A8Tk31KLWXGEJE8kGQgr7GbyzbSIczErq5KW134DbNk=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:From;
-	b=hIrludL71YOynUay6Y1461uhuCxgot24rOfIw0scNUOQh/d974/U3xbIoLda9pYQc
-	 yHXrHGbGsE+KU/dgx0byg95/nCLlq/ZLScKjKf2/tuiU5smJIg65XQkwR9cqm3p7EJ
-	 gX482UBcX8R//iXp9IuDbIVkc+nTfYn/UKNXx+yuwRM3P5+pRW2/cqi0R8aaAKyTF7
-	 gnmWBimIrPpArt+Bg9RxoA4KHIUIADoySTF07+viWFKZRkErgbCwg0C5FoK88eBAeL
-	 Ur8t9jOzeSVSyc0+Au1Z09/5mbsVpmW66CLOb3C4YBwqxBVAq9cLt/e0SgDMFDaK6K
-	 lDajYWmBr6pIRX4RcrtBTqhpFf43YKZEDjBgB2kigXR+pCor3E1Eq3th6DFpC7Wzmw
-	 QE0qzcdfd+b9rxWSZ3SAqBFSWEWtzqHcGv+2Vn7Fy0r/aCzUSgvmpfeSbGF5s64UYK
-	 fM+t5OpDe7TOUXoapI8ZuJK6Y7HXnxD0mRxDzkviPmsaioIlDzO
-Received: from customer (localhost [127.0.0.1])
-	by submission (posteo.de) with ESMTPSA id 4bsTq945Lfz9rxL;
-	Wed, 30 Jul 2025 13:03:49 +0200 (CEST)
-Date: Wed, 30 Jul 2025 11:03:50 +0000
-From: Wilken Gottwalt <wilken.gottwalt@posteo.net>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Jiri Slaby
- <jirislaby@kernel.org>, Andy Shevchenko
- <andriy.shevchenko@linux.intel.com>, Parker Newman
- <pnewman@connecttech.com>
-Subject: Re: [PATCH] tty: serial: 8250: exar: fix kernel warning in
- default_setup function
-Message-ID: <20250730130348.082ad53d@posteo.net>
-In-Reply-To: <2025072929-distant-hardener-0e75@gregkh>
-References: <aIiDf31HzRBGuMN2@monster.localdomain>
-	<2025072929-distant-hardener-0e75@gregkh>
+	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="GOK/9s7M"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-454f428038eso995125e9.2
+        for <linux-serial@vger.kernel.org>; Thu, 31 Jul 2025 01:05:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tuxon.dev; s=google; t=1753949110; x=1754553910; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=GiWR9YBkQCBk6u1BEFYqq7bF5Tp24tb8A8i+jcDSHqs=;
+        b=GOK/9s7M4IR+kgqShpE31nJt8j2ZH3iU4C+GllNjX9mN1+swh8Vg25JRhLfkAKPh78
+         IdNEbaFb5M5hVisK3nqq5WX2a67aaIwYkEiKP43OtfAQX/kSpX/ZMLRcyo99UhUZSIgD
+         Nj3S8CDa95DPptI3X60aIsPVVRMdBpTs/wm8WuN2U/Fildo1NcJ1dxkoszZd4PJwWEgY
+         pRBsxdTShVlsmCro7A2MM0uvgawAMvn8qXeHp/zAWQ5CDw8tdVz+m9AaWH3kI9W/gSBh
+         O9jqTkbaFeQ2aNyWJNXVARsMSnn7aLV7OMLXn5i8fEMHMk08sQ4/ZUOHYJcl/tePwvrQ
+         v9cA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1753949110; x=1754553910;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=GiWR9YBkQCBk6u1BEFYqq7bF5Tp24tb8A8i+jcDSHqs=;
+        b=hhhaPUCLppEPxsg9oOXugmrSmBK5bEK/ubMVqaMslsnTg4CXXKjfvSlIbCatKE7m4/
+         Ad6eNmX8osIicGf9b2QZl7WhiMalwSffabmz/TIgoAOUYs8QQmvwS+R9N6bxODkObTxd
+         HYkvzRZFuYgQbbn+kWZkgOSjdT9wocBfgxyFGzULu3wIWed2qB5XfcyfGsbvP2SfT3ww
+         WqdRrwioq+S9UWdEnUjfXaU7TR5K1F7g7Q2v47/1boXiHfn1CrQl/t0hCBfaG9YmHCjj
+         qW/G4K1nOUdcVWMMFSFN2WNxytNjXef9BoMGq6cU5Xc/TxMQPQxEaiZ1mNej1Wq45APR
+         iW3A==
+X-Forwarded-Encrypted: i=1; AJvYcCXc0ZjnhM5C3CEcbuZFYVpGn+ack72b6aLzY+Ti+Ajdx6Avo4YVMWMS65pZMMZY0TN+Ju7d/7sXy0jwO70=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxQv4kbeVDvZUq+G4NVDSRG0LIRnuTmW+ZwyxfqqYlrrlAp9Hey
+	JBcA3ohRMr08DHvCIv7URbrPq69KdWuwYe2iaurKlp1skq1YQEL8UOMq8q0pb3mvpaI=
+X-Gm-Gg: ASbGnctMiehA/DtD+goCG+PN6jM590Xx2p2KbK0+qUcAttWy7ne9HzM3OL43xU9R80G
+	YLEPDQf4rYzzy/oAPElAFBGTUBAf/EqziBkJNs50/rdfKE/6FECHpBlfeCfGZDRS5WdCSpkinlc
+	DsVMkgVaK4akKYkEzEK2tJ1ERURW5RFa5Q37wRZ3oTTglpPjSMVthju8HHRxJBN62yITBUE5zTd
+	QYPTGBHNphAVMNZKx6jJdDexpjoogSq5uDczZ98q/2Lt3dVryl4m3mQbEv4oGeLlTpARXQ938HW
+	cirPvaww9uLRb0e7EeTpCA2m0xw460J+ifil3eEKqcNzfRgS1PZtcOppEOim+fRXQHLcLQbvyBP
+	Z7eAxPrJMQ2uY2Id2vFIDyOQmawE1Hw==
+X-Google-Smtp-Source: AGHT+IH/541SBqMgVRMwq19FcxpTJ84aTjtwL21hMdK7WasoI4YZqc/Qb8aQtoiT1F7mEW4j9xyVmQ==
+X-Received: by 2002:a05:600c:8b83:b0:43c:f8fe:dd82 with SMTP id 5b1f17b1804b1-45892bbf78cmr68783845e9.18.1753949110073;
+        Thu, 31 Jul 2025 01:05:10 -0700 (PDT)
+Received: from [192.168.50.4] ([82.78.167.30])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b79c485444sm1527560f8f.66.2025.07.31.01.05.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Jul 2025 01:05:09 -0700 (PDT)
+Message-ID: <bac5390f-725a-43db-a2b6-17a68d0d733c@tuxon.dev>
+Date: Thu, 31 Jul 2025 11:05:07 +0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: (subset) [PATCH v8 00/10] arm64: lan969x: Add support for
+ Microchip LAN969x SoC
+To: Vinod Koul <vkoul@kernel.org>, linux@armlinux.org.uk,
+ nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
+ catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com,
+ herbert@gondor.apana.org.au, davem@davemloft.net, andi.shyti@kernel.org,
+ lee@kernel.org, broonie@kernel.org, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, arnd@kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+ dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+ linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+ o.rempel@pengutronix.de, daniel.machon@microchip.com,
+ Robert Marko <robert.marko@sartura.hr>
+Cc: luka.perkov@sartura.hr
+References: <20250702183856.1727275-1-robert.marko@sartura.hr>
+ <175327377884.189941.15214972441246653208.b4-ty@kernel.org>
+From: Claudiu Beznea <claudiu.beznea@tuxon.dev>
+Content-Language: en-US
+In-Reply-To: <175327377884.189941.15214972441246653208.b4-ty@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Tue, 29 Jul 2025 10:48:17 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+Hi, Vinod,
 
-> > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
-> > index 04a0cbab02c2..5660bb897803 100644
-> > --- a/drivers/tty/serial/8250/8250_exar.c
-> > +++ b/drivers/tty/serial/8250/8250_exar.c
-> > @@ -500,12 +500,13 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
-> >  			 struct uart_8250_port *port)
-> >  {
-> >  	const struct exar8250_board *board = priv->board;
-> > +	unsigned int bar = 0;
-> >  	unsigned char status;
-> > -	int err;
-> >  
-> > -	err = serial8250_pci_setup_port(pcidev, port, 0, offset, board->reg_shift);
-> > -	if (err)
-> > -		return err;
-> > +	port->port.iotype = UPIO_MEM;
-> > +	port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
-> > +	port->port.membase = priv->virt + offset;
-> > +	port->port.regshift = board->reg_shift;
+On 23.07.2025 15:29, Vinod Koul wrote:
 > 
-> And so now serial8250_pci_setup_port() is never called?  Are you sure
-> that's ok?
+> On Wed, 02 Jul 2025 20:35:58 +0200, Robert Marko wrote:
+>> This patch series adds basic support for Microchip LAN969x SoC.
+>>
+>> It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
+>> which allows to avoid the need to change dependencies of the drivers that
+>> are shared for Microchip SoC-s in the future.
+>>
+>> DTS and further driver will be added in follow-up series.
+>>
+>> [...]
+> 
+> Applied, thanks!
+> 
+> [08/10] dma: xdmac: make it selectable for ARCH_MICROCHIP
+>         commit: e56982021f5303b2523ac247e3c79b063459d012
 
-Hi Greg,
+As this one depends, as well, on the first 3 patches in the series (Robert,
+please correct me if I'm wrong), and there are still discussions ongoing,
+can you please drop it until all is clear on the first 3 patches?
 
-I will not provide a second version of this patch, because this is a bigger
-problem involving 8250_exar, 8250_pci and 8250_pci1xxxx. With the changes from
-kernel 6.10 to 6.11 the underlying pcim_* functions where changed. The
-serial8250_pci_setup_port() does checks on pci_dev + BAR where resources were
-already mapped via pcim_iomap(), pci_iomap() or even pci_ioremap_bar(). Not
-sure if mixing this is a good idea after the kernel 6.11 changes.
+Otherwise, applying only this patch will lead to AT91 XDMAC driver not
+being built for SAMA5{D2, D3, D4}, SAMA7{G5, D65} SoCs. Linux is not
+booting on SAMA7G5 SoC only with this patch applied.
 
-serial8250_pci_setup_port() uses pcim_iomap() and pcim_iomap_table() for checking
-these already mapped resources. But the pcim_iomap_table() is deprecated and
-suggests to use pcim_iomap() function to aquire the pointer to the resources
-while at the same time pcim_iomap() description states, don't use this function 
-twice on the same BAR. I think the most sane approach would be to drop the
-pcim_iomap() and pcim_iomap_table() checks from the serial8250_pci_setup_port()
-function. But I can not fully test this, I only have access to some hardware
-used by the 8250_exar driver. I also CC Andy and Parker, both worked on the
-affected code.
+Thank you,
+Claudiu
 
-greetings,
-Wilken
