@@ -1,199 +1,128 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52554258CDC;
-	Tue,  5 Aug 2025 19:51:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F20D1E7C2D;
+	Tue,  5 Aug 2025 21:34:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754423518; cv=none; b=CdvnOmn5xVOwdJg9Avtm/3aIe03P4/YpRWbvmmPttNx2YU3yNQVeR1qMrmYwlucxcq68V+WCDpUqF1BAggKSzJV54mwYURKK/70y/z2g3ttdynikU+5ToRgljCDCr/FSfMLzzZ+EMe1wDnNey3GsY8Y63BYA4N9fXWvl2tmoA/Y=
+	t=1754429692; cv=none; b=eYV2SpREYzfArOo4q92mzonGaCOqtFtByoA1N4Iw/+7+fPM4t2jROPpVVoAeNX/LKJCZJbsNPVBtzOBqJjSe2TFoM/+CfMptjWSo9JnSIuhX8laWgfSP5gxsdQ5IWhVW55yFZMie8g3VIzV9rtoayxq+I0P5RsytusQtahQgZok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754423518; c=relaxed/simple;
-	bh=WKskQjnDuPRfZGq6aVAzNHj7TdUGFaEOiESvhCgPCsA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=U7ryEmif4hZ0Ur9dW5y6H2QKafR2xP0vyUA0J3zvCqO1TzEH7uxvonKtS7wc2P7/V5pKtjheh6wuBByiyHLJDuuCaumlZ9Q512dErFB1sZIfNvy8R5lCe4v1dmyyxXCnUUVPnw5JYU3SCuD6fcwYR5YthP5dkhFV8bi7KVC5lhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HcQreted; arc=none smtp.client-ip=209.85.210.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1754429692; c=relaxed/simple;
+	bh=U1GLvy0RfDC0fOvJ/9NF1wuUkyRXzkHh++g+56ZJGnc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Nw6+eSrjjzmW1N4Pph1FJrjVpLVWoOS7mZntG9N0SSK9/kH7zvGJUbhEEWTHQ5JSlfsPKgn0YDPYRG8TTivnMXVOfEwhMZnU3+RKNMYtqW1DaKK1EmVhVB/lg0/aJJ9Pp7XbhmUTWoNxh9IquTv634CzDXXJuvx0CLsDWLpqaV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W8MNQa+L; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HcQreted"
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-76c18568e5eso1895192b3a.1;
-        Tue, 05 Aug 2025 12:51:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754423516; x=1755028316; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=02zt95JSIZhvyc1m6kLzXG+cJqDtwABL9QPxGxdLnW4=;
-        b=HcQreted7a+CgPX8el4RRDuiwM1uzpgD1KS9NajOL8CIw9Sm6A2N3mkrIWaL6sZLNn
-         HXU7oy+TzjZPDX0Dq2JLHi7zJy5Ds3vnVvk4v2q7RoC7HE0lDZ24l5N8icqrM/OhT8S3
-         gQmk/NhTfFdceRUXBQgUG6aPF+Y4LyuN5A3P/ic+wjW/CI1swTS7bR5DgDVdLwYCgORT
-         isqZSDmCW863J70iPKuoLQso6K1u4fDZCcxZHq4c40eQxuNlMQnljPCGWKvUDakUjO4p
-         QTTEFotmeIVv14FnXtkKTAsJEfQYxfXOqwA4bgBQp8STA4hN0bJStB55N4akoHZvB1M8
-         P1Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754423516; x=1755028316;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=02zt95JSIZhvyc1m6kLzXG+cJqDtwABL9QPxGxdLnW4=;
-        b=jcmpSj+hNWhMkkBJAKQid1onuG2+a7Fmmhlqy9rHIN/Q6P2LFyLpvYBR+9IpFjifMv
-         0LhNTzoPLoxP2SuCDxk8TbDTFf1XJa1Dd9+FddU4lBIy/rOZx5fC7bRKh/vr3pKnZpB/
-         DG1loTVMlgolYcBZWFTnOlbM/1HsLz6MYoKoqNjgToAjznZZ552ah1XgGTMHGFXF0w7p
-         dvFQQF6tI/U9QC/bS7qkD0+oKGWiqkvFEwx1hXQWRXkmfzAsPvM5UAzuiey96NS0i3Oo
-         wEgRX2N2JA3FauL3K9KC2M3bXnHauo67DX4WU0xQKRRj8PSWxpbA1VDrR3a4N47WXYCj
-         tq/A==
-X-Forwarded-Encrypted: i=1; AJvYcCXpH4bNx7QqOKznPeHzAQda8B/hFxizMv0UZL8szH3jln8ACiVC/BpSzu2x+DUkrILRDAQ+CSUKJB00tQc=@vger.kernel.org, AJvYcCXvMKAQU8yKfXP7DHj6rMSci2qfbgPAXb6/Snmva6sINM9qJZQmtOwCyqIa7xLF4YIAUAw54V6NlqyENgv7@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw6kgfooIPV4UuxfkGj0GaQWCIqvQw/LMpSAVrC+nPSANFTDJ4K
-	u2PQ4d2wjO3lX8a7u90J3o0yewUypOEow/fg9yvzE9EH9GaTodBG+I8ayr9jM0zrdM0=
-X-Gm-Gg: ASbGncsC2cFGQMH5ySQhiIhImA+wocUXZHUtQrbT2tZK7xmaKJSkknRS5wpdy+j77Sz
-	fpD7xd6h+4lS/ulLFvIX9Q+Y0sIj32+Dp7hcdsvt2kIfoYKBwA01m49sctnDrq2wVWQosk6TTbf
-	Iv6g/acfIAMikpuXfnIpFpLVFAS6HZObNyoeTHg7HMsG9Ql+BVLsuj0QJlSRdEqXcEGQOOsqJXd
-	uhkkiyO5gRdaNCxWsGPwRFMmaz14dt4SLSQaOzA0sdSr6Kyklx3bcRfS+Tg3AQCmhP7VzKXZpyx
-	C9meB0y+gSDvBB6SZ/Y7bnw9Nu2DG/htzNeO14bBp3c9rA2/uWs+oxI1ke3i13DMtjyjNr9ALGw
-	sySAejxE8kzBEZaxQ2IlWAY9tIl+rsWx2
-X-Google-Smtp-Source: AGHT+IFHc4vG1G/T3XZna5tCJg244PSDXuBclEDuuVzt0iPu7zCV172SLYMKl1Jsz+zFxybtnXKAkw==
-X-Received: by 2002:a05:6a00:2d11:b0:76b:e0d7:c3cf with SMTP id d2e1a72fcca58-76c2a12c06fmr114050b3a.4.1754423516568;
-        Tue, 05 Aug 2025 12:51:56 -0700 (PDT)
-Received: from avinash ([2406:8800:9014:d938:f647:9d6a:9509:bc41])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-76bcce6f319sm13744397b3a.18.2025.08.05.12.51.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Aug 2025 12:51:56 -0700 (PDT)
-From: Abinash Singh <abinashsinghlalotra@gmail.com>
-To: gregkh@linuxfoundation.org
-Cc: jirislaby@kernel.org,
-	andriy.shevchenko@linux.intel.com,
-	sunilvl@ventanamicro.com,
-	arnd@arndb.de,
-	u.kleine-koenig@baylibre.com,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	abinashsinghlalotra@gmail.com
-Subject: [RFC PATCH 2/2]  tty: serial/8250: Fix build warning in serial8250_probe_platform()
-Date: Wed,  6 Aug 2025 01:21:55 +0530
-Message-ID: <20250805195155.742004-2-abinashsinghlalotra@gmail.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20250805195155.742004-1-abinashsinghlalotra@gmail.com>
-References: <20250805195155.742004-1-abinashsinghlalotra@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W8MNQa+L"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1754429691; x=1785965691;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=U1GLvy0RfDC0fOvJ/9NF1wuUkyRXzkHh++g+56ZJGnc=;
+  b=W8MNQa+LrVqE5kjfqdeVhV1xBO8Qw+pZj2i65JvIXlpBAISvfyBcmQ2O
+   Yhe3UuuysyRiYH09AqxDdMPqAxj1wjtr8N96s4OfoiFq8Q5cQwu8eBh08
+   mF7v/u0QMhpiH3BJFwj+Sa5SmVkBhbdtyZa/2TPLesSi+ffgvAwRgKFvn
+   PmpHjEiAJtdIfhDhysf36bv4LUtZc0QXGJNzmTCKQIQFME8Qj0fWgW87O
+   /8h607NDXMp8vW5pPMWB+7ciYioU9z8Ycg5VaCJ039rCuRNCCC6CouvYM
+   xICeJJeuUcVrVvRPz+R4NOOT+qfOCk0dbaaXjF/SSsJXKnMYX+uJofuIk
+   g==;
+X-CSE-ConnectionGUID: wOjytfivThuw88O1RI6lXQ==
+X-CSE-MsgGUID: n+6yjsWGRQaosqYwyU1u3Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11513"; a="60374349"
+X-IronPort-AV: E=Sophos;i="6.17,268,1747724400"; 
+   d="scan'208";a="60374349"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2025 14:34:50 -0700
+X-CSE-ConnectionGUID: BjRInXNaQYi0vhMGgv+a8w==
+X-CSE-MsgGUID: 6mpQ5sidTWWZvbKNuVeCtA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.17,268,1747724400"; 
+   d="scan'208";a="164938840"
+Received: from smile.fi.intel.com ([10.237.72.52])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2025 14:34:48 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1ujPIy-00000003rIN-49Un;
+	Wed, 06 Aug 2025 00:34:44 +0300
+Date: Wed, 6 Aug 2025 00:34:44 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Wilken Gottwalt <wilken.gottwalt@posteo.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Parker Newman <pnewman@connecttech.com>
+Subject: Re: [PATCH] tty: serial: 8250: exar: fix kernel warning in
+ default_setup function
+Message-ID: <aJJ49CSBqGZM_b1Y@smile.fi.intel.com>
+References: <aIiDf31HzRBGuMN2@monster.localdomain>
+ <2025072929-distant-hardener-0e75@gregkh>
+ <20250730130348.082ad53d@posteo.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250730130348.082ad53d@posteo.net>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-    The function serial8250_probe_platform() in 8250_platform.c triggered a
-        frame size warning:
-    drivers/tty/serial/8250/8250_platform.c: In function ‘serial8250_probe_platform.isra’:
-drivers/tty/serial/8250/8250_platform.c:201:1: warning: the frame size of 1184 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+On Wed, Jul 30, 2025 at 11:03:50AM +0000, Wilken Gottwalt wrote:
+> On Tue, 29 Jul 2025 10:48:17 +0200
+> Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+> 
+> > > diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/8250/8250_exar.c
+> > > index 04a0cbab02c2..5660bb897803 100644
+> > > --- a/drivers/tty/serial/8250/8250_exar.c
+> > > +++ b/drivers/tty/serial/8250/8250_exar.c
+> > > @@ -500,12 +500,13 @@ static int default_setup(struct exar8250 *priv, struct pci_dev *pcidev,
+> > >  			 struct uart_8250_port *port)
+> > >  {
+> > >  	const struct exar8250_board *board = priv->board;
+> > > +	unsigned int bar = 0;
+> > >  	unsigned char status;
+> > > -	int err;
+> > >  
+> > > -	err = serial8250_pci_setup_port(pcidev, port, 0, offset, board->reg_shift);
+> > > -	if (err)
+> > > -		return err;
+> > > +	port->port.iotype = UPIO_MEM;
+> > > +	port->port.mapbase = pci_resource_start(pcidev, bar) + offset;
+> > > +	port->port.membase = priv->virt + offset;
+> > > +	port->port.regshift = board->reg_shift;
+> > 
+> > And so now serial8250_pci_setup_port() is never called?  Are you sure
+> > that's ok?
+> 
+> Hi Greg,
+> 
+> I will not provide a second version of this patch, because this is a bigger
+> problem involving 8250_exar, 8250_pci and 8250_pci1xxxx. With the changes from
+> kernel 6.10 to 6.11 the underlying pcim_* functions where changed. The
+> serial8250_pci_setup_port() does checks on pci_dev + BAR where resources were
+> already mapped via pcim_iomap(), pci_iomap() or even pci_ioremap_bar(). Not
+> sure if mixing this is a good idea after the kernel 6.11 changes.
+> 
+> serial8250_pci_setup_port() uses pcim_iomap() and pcim_iomap_table() for checking
+> these already mapped resources. But the pcim_iomap_table() is deprecated and
+> suggests to use pcim_iomap() function to aquire the pointer to the resources
+> while at the same time pcim_iomap() description states, don't use this function 
+> twice on the same BAR. I think the most sane approach would be to drop the
+> pcim_iomap() and pcim_iomap_table() checks from the serial8250_pci_setup_port()
+> function. But I can not fully test this, I only have access to some hardware
+> used by the 8250_exar driver. I also CC Andy and Parker, both worked on the
+> affected code.
 
-This patch reduces the stack usage by dynamically allocating the
-`uart` structure using kmalloc(), rather than placing it on
-the stack. This eliminates the overflow warning and improves kernel
-robustness.
+I'm on vacations right now and I lost context of this a long ago, please Cc me
+to any new version of this change to have a fresh look.
 
-Signed-off-by: Abinash Singh <abinashsinghlalotra@gmail.com>
----
-The stack usage was further confirmed by using -fstack-usage flag.
-it was usiing 1248 bytes:
-..............................
-drivers/tty/serial/8250/8250_platform.c:154:12:serial8250_probe_platform.isra	1248	dynamic,bounded
-drivers/tty/serial/8250/8250_platform.c:208:12:serial8250_probe	16	static
-......................................
-After applying the patch it becomes :
-.........
-It doesn't show up in stack usage  and warning is fixed.
-.......
-This function is used for probing . So dynamic allocation will not create
-any issues.
-
-Thank You
----
- drivers/tty/serial/8250/8250_platform.c | 63 +++++++++++++------------
- 1 file changed, 33 insertions(+), 30 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-index f7f9c5036d39..86816d9b32ce 100644
---- a/drivers/tty/serial/8250/8250_platform.c
-+++ b/drivers/tty/serial/8250/8250_platform.c
-@@ -158,43 +158,46 @@ static int serial8250_probe_acpi(struct platform_device *pdev)
- 
- static int serial8250_probe_platform(struct platform_device *dev, struct plat_serial8250_port *p)
- {
--	struct uart_8250_port uart;
-+	struct uart_8250_port *uart __free(kfree) = NULL;
- 	int ret, i, irqflag = 0;
- 
--	memset(&uart, 0, sizeof(uart));
-+	uart = kmalloc(sizeof(*uart), GFP_KERNEL);
-+	if (!uart)
-+		return -ENOMEM;
-+	memset(uart, 0, sizeof(*uart));
- 
- 	if (share_irqs)
- 		irqflag = IRQF_SHARED;
- 
- 	for (i = 0; p && p->flags != 0; p++, i++) {
--		uart.port.iobase	= p->iobase;
--		uart.port.membase	= p->membase;
--		uart.port.irq		= p->irq;
--		uart.port.irqflags	= p->irqflags;
--		uart.port.uartclk	= p->uartclk;
--		uart.port.regshift	= p->regshift;
--		uart.port.iotype	= p->iotype;
--		uart.port.flags		= p->flags;
--		uart.port.mapbase	= p->mapbase;
--		uart.port.mapsize	= p->mapsize;
--		uart.port.hub6		= p->hub6;
--		uart.port.has_sysrq	= p->has_sysrq;
--		uart.port.private_data	= p->private_data;
--		uart.port.type		= p->type;
--		uart.bugs		= p->bugs;
--		uart.port.serial_in	= p->serial_in;
--		uart.port.serial_out	= p->serial_out;
--		uart.dl_read		= p->dl_read;
--		uart.dl_write		= p->dl_write;
--		uart.port.handle_irq	= p->handle_irq;
--		uart.port.handle_break	= p->handle_break;
--		uart.port.set_termios	= p->set_termios;
--		uart.port.set_ldisc	= p->set_ldisc;
--		uart.port.get_mctrl	= p->get_mctrl;
--		uart.port.pm		= p->pm;
--		uart.port.dev		= &dev->dev;
--		uart.port.irqflags	|= irqflag;
--		ret = serial8250_register_8250_port(&uart);
-+		uart->port.iobase	= p->iobase;
-+		uart->port.membase	= p->membase;
-+		uart->port.irq		= p->irq;
-+		uart->port.irqflags	= p->irqflags;
-+		uart->port.uartclk	= p->uartclk;
-+		uart->port.regshift	= p->regshift;
-+		uart->port.iotype	= p->iotype;
-+		uart->port.flags		= p->flags;
-+		uart->port.mapbase	= p->mapbase;
-+		uart->port.mapsize	= p->mapsize;
-+		uart->port.hub6		= p->hub6;
-+		uart->port.has_sysrq	= p->has_sysrq;
-+		uart->port.private_data	= p->private_data;
-+		uart->port.type		= p->type;
-+		uart->bugs		= p->bugs;
-+		uart->port.serial_in	= p->serial_in;
-+		uart->port.serial_out	= p->serial_out;
-+		uart->dl_read		= p->dl_read;
-+		uart->dl_write		= p->dl_write;
-+		uart->port.handle_irq	= p->handle_irq;
-+		uart->port.handle_break	= p->handle_break;
-+		uart->port.set_termios	= p->set_termios;
-+		uart->port.set_ldisc	= p->set_ldisc;
-+		uart->port.get_mctrl	= p->get_mctrl;
-+		uart->port.pm		= p->pm;
-+		uart->port.dev		= &dev->dev;
-+		uart->port.irqflags	|= irqflag;
-+		ret = serial8250_register_8250_port(uart);
- 		if (ret < 0) {
- 			dev_err(&dev->dev, "unable to register port at index %d "
- 				"(IO%lx MEM%llx IRQ%d): %d\n", i,
 -- 
-2.50.1
+With Best Regards,
+Andy Shevchenko
+
 
