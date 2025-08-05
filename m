@@ -1,63 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7150735959;
-	Tue,  5 Aug 2025 22:17:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AFB31C8603;
+	Tue,  5 Aug 2025 22:20:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754432274; cv=none; b=BR7g6qb/tOk2+XoHPum+fZ4pziUwJKihibjWKQeGICUnrb5UDAg4O01qY7folisHN0tkkKuumNZcbyoN+MZ53eaZ06817wd/6GULieTe8at9C/+U9aDzQ5VfAbjtJYrN6eMo3g8dK7QrpETXhJoRoxsFM1lYuh8BzIDVn4HQNOo=
+	t=1754432430; cv=none; b=TPfS32jXuSmP7CVKpGCe3QREoka7NYy4BMLmgnK/zNc2Fazk4TZbXssw5wIScDPN6emA7dMPRpAC7YxoTVvLXPbJM5NjOYH3R1x7QoB+XgbjkKtpM2JIH9u43SQQK7DrKRg4a41MGqxBpBmDYlH32vdqXpQe93MV1RDRIJiKZug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754432274; c=relaxed/simple;
-	bh=JSNYl2q2aTB8tw37ueJi2WRO5B5U21Q8UtO3vzeWmEo=;
+	s=arc-20240116; t=1754432430; c=relaxed/simple;
+	bh=DvXMuKzlkswWxDWS0FNoCNN4nTMyCzShOVhB6iJKmVM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gQMKiClfR9tFjrg0k9oF5nHlMwFWsW7pwxxAcGYOxaZCDe0ucW1SRUiVqAj1afJ4rjb58LutppRkJ7zSKKc1kp3uH7DGylbBmn6ewJSn3Eia3Jr89kHRpjbJbZmxW42FWR72lAVuZStNx6Ie910MVgOJHvpD5n4Y6yYZjEPtNks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q3vlbc8a; arc=none smtp.client-ip=192.198.163.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=JQK66EXlm6ytvZHEe0g2nwMJPIaU+rl0YYrOvvYkL0RPwjQpzO/1t8Xu/QXf4DHyi9JP3kscwZsehPeqUmchqAblKU2ph8w7Nc6eJ1psn1QskACjEDm4Yn5QL0E0XesHyVejmpyw+/i9iR7Y5EEAI1VH2QnxylrqwfQIRGeOotM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WEst3Q9S; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q3vlbc8a"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WEst3Q9S"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1754432273; x=1785968273;
+  t=1754432429; x=1785968429;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=JSNYl2q2aTB8tw37ueJi2WRO5B5U21Q8UtO3vzeWmEo=;
-  b=Q3vlbc8aJmc31jYhhWj/e9FO1GUveRnRbcqoeExDmkB6o2EHCEyolbK5
-   G697cGGCNYaL6tWMnRUMPWCk824m/ovGmZea0I9YMq2jhNs+HTWI1GmY9
-   z22uyIVDFd2v0oXsjWLz1I4MDLN3+uofJYIZaUoBXj/P7yqI8unQMk7Hm
-   QH6WZQDIgnsnVlYUs5VYo4J97TuLzXDdt5U6r10BVlTL8kqiV3lJTRnEH
-   Ja5C7/oesHyx+Oac9sElz+lojXLLLNjwMFF+bYnQVnV+1w/yPQa8wgXyR
-   IdcQsGgdvB/dChbNTQ800/YOPYBqPLIqppNWUENNxqUoI8u0ZTwGRIWz8
-   g==;
-X-CSE-ConnectionGUID: dTFPxnAHQ0ygPX1vcVqeyQ==
-X-CSE-MsgGUID: 5K7+zzbTTvS8bQ5z6pFDvw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11513"; a="67333355"
+  bh=DvXMuKzlkswWxDWS0FNoCNN4nTMyCzShOVhB6iJKmVM=;
+  b=WEst3Q9SkqciUlsUChIV3w9Wf+57QPspEvVk8cnrmnVyC5nUs13/X8Sp
+   ZjnaVABH5srEkT41tgtGssCpZffOb+mcdkYHVKnjqFgatsfb5Q/oYQiLI
+   T+DNub/7blRU6NX85nUDMfsXI+UL2/i/i1KvkuNJzHJqlDuNrUVZCM1Pg
+   WLHdKYL4GGNnVJt+QWAWmNa68FO3NAOYrwhfzzzKu3VlnACWiymqTziE1
+   yIDZGJkZI96BQgk+lJCBiOu7qXnW4lPTOHuf2Z90udugjiPgBdJkhhgVv
+   gxuZyM76xXoef21s+cqunfgW07jtnLPK6UPcPDJZZdp6k9J5YEgOLEQPi
+   A==;
+X-CSE-ConnectionGUID: RGUeiOECSH2fVSMzT5bUTA==
+X-CSE-MsgGUID: y9KU1fo7T4GOXtTlpkOCiQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11513"; a="44335700"
 X-IronPort-AV: E=Sophos;i="6.17,268,1747724400"; 
-   d="scan'208";a="67333355"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2025 15:17:52 -0700
-X-CSE-ConnectionGUID: TkEinqeNQva1No+t2fus9Q==
-X-CSE-MsgGUID: O75CdWr+S6a0YfmRnEAz6g==
+   d="scan'208";a="44335700"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2025 15:20:29 -0700
+X-CSE-ConnectionGUID: iUmb0UQFRFexwuq89A7bVA==
+X-CSE-MsgGUID: zK07A3/6Qz20ESVQvvpd7w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.17,268,1747724400"; 
-   d="scan'208";a="165371456"
+   d="scan'208";a="164141359"
 Received: from smile.fi.intel.com ([10.237.72.52])
-  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2025 15:17:49 -0700
+  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Aug 2025 15:20:27 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
 	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1ujPyc-00000003ro3-3g03;
-	Wed, 06 Aug 2025 01:17:46 +0300
-Date: Wed, 6 Aug 2025 01:17:46 +0300
+	id 1ujQ19-00000003rpe-2weI;
+	Wed, 06 Aug 2025 01:20:23 +0300
+Date: Wed, 6 Aug 2025 01:20:23 +0300
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Abinash Singh <abinashsinghlalotra@gmail.com>
 Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org,
 	sunilvl@ventanamicro.com, arnd@arndb.de,
 	u.kleine-koenig@baylibre.com, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] tty: serial/8250: Fix build warning in
- serial8250_probe_acpi()
-Message-ID: <aJKDCjFyei1lRYxk@smile.fi.intel.com>
+Subject: Re: [RFC PATCH 2/2]  tty: serial/8250: Fix build warning in
+ serial8250_probe_platform()
+Message-ID: <aJKDp1LBpzswp5lX@smile.fi.intel.com>
 References: <20250805195155.742004-1-abinashsinghlalotra@gmail.com>
+ <20250805195155.742004-2-abinashsinghlalotra@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -67,53 +68,31 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250805195155.742004-1-abinashsinghlalotra@gmail.com>
+In-Reply-To: <20250805195155.742004-2-abinashsinghlalotra@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Aug 06, 2025 at 01:21:54AM +0530, Abinash Singh wrote:
-> The function serial8250_probe_acpi() in 8250_platform.c triggered a
->     frame size warning:
-> drivers/tty/serial/8250/8250_platform.c: In function ‘serial8250_probe_acpi’:
-> drivers/tty/serial/8250/8250_platform.c:152:1: warning: the frame size of 1160 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+On Wed, Aug 06, 2025 at 01:21:55AM +0530, Abinash Singh wrote:
+>     The function serial8250_probe_platform() in 8250_platform.c triggered a
+>         frame size warning:
+>     drivers/tty/serial/8250/8250_platform.c: In function ‘serial8250_probe_platform.isra’:
+> drivers/tty/serial/8250/8250_platform.c:201:1: warning: the frame size of 1184 bytes is larger than 1024 bytes [-Wframe-larger-than=]
 > 
 > This patch reduces the stack usage by dynamically allocating the
->     `uart` structure using kmalloc(), rather than placing it on
->     the stack. This eliminates the overflow warning and improves kernel
->     robustness.
+> `uart` structure using kmalloc(), rather than placing it on
+> the stack. This eliminates the overflow warning and improves kernel
+> robustness.
+
+Same comments as per patch 1.
+Also, here in the Subject you have an extra space. Actually, check output of
+
+git log --oneline --no-merges -- drivers/tty/serial/8250/8250_platform.c
+
+to have a hint how the Subject should look like.
 
 ...
 
->  #include <linux/platform_device.h>
-> -
-
-Stray change.
-
-> +#include <linux/cleanup.h>
-
-Please, keep it ordered.
-
->  #include <linux/serial_8250.h>
-
-...
-
->  	struct device *dev = &pdev->dev;
-> -	struct uart_8250_port uart = { };
-> +	struct uart_8250_port *uart __free(kfree) = NULL;
->  	struct resource *regs;
->  	int ret, line;
->  
-> +	uart = kmalloc(sizeof(*uart), GFP_KERNEL);
-
-Just declare variable here, as the NULL assignment may lead to subtle issues.
-
-> +	if (!uart)
-> +		return -ENOMEM;
-
-> +	memset(uart, 0, sizeof(*uart));
-
-We have kzalloc() for this.
-
+The approach in general is okay to me.
 
 -- 
 With Best Regards,
