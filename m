@@ -1,61 +1,63 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAD323FBB3;
-	Tue,  5 Aug 2025 19:51:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52554258CDC;
+	Tue,  5 Aug 2025 19:51:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754423498; cv=none; b=BFK7jbRmukEEQihICmPMu+b6MGqTXcYm5J8xbj4u/bP54qGIo4nmfiRjimLJCgPKbsYQOr987w0WUbxZaTYRWPFXeYG+DV/pE8G5q2NZQZRP61XESjprQVH4ov7WaIQmbwpzIsZ9vm+AqY4qHb9OnTWEyhusF86hra+8dELd8s4=
+	t=1754423518; cv=none; b=CdvnOmn5xVOwdJg9Avtm/3aIe03P4/YpRWbvmmPttNx2YU3yNQVeR1qMrmYwlucxcq68V+WCDpUqF1BAggKSzJV54mwYURKK/70y/z2g3ttdynikU+5ToRgljCDCr/FSfMLzzZ+EMe1wDnNey3GsY8Y63BYA4N9fXWvl2tmoA/Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754423498; c=relaxed/simple;
-	bh=3aFqBsM6mN5uu+1G1WaVaon7DG3vAbe7Eir3PTlYMk0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dHeemPdKuaYmNKVxi9JsBPx/8uW9awXxbeF/N9+2v+WeCTt5yHcvb4oOC3I53jidSCFqLaktWDJ1GUN9acsj1gAZ+rZZhsvFmBPQuGOSirEChQq8hzdW7/6XXrqmkyKkk+yPzNkFQRFmlSrPNfbm3lfaoDZVsEM4c3GOiI1DwQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f+4M1yQw; arc=none smtp.client-ip=209.85.210.169
+	s=arc-20240116; t=1754423518; c=relaxed/simple;
+	bh=WKskQjnDuPRfZGq6aVAzNHj7TdUGFaEOiESvhCgPCsA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=U7ryEmif4hZ0Ur9dW5y6H2QKafR2xP0vyUA0J3zvCqO1TzEH7uxvonKtS7wc2P7/V5pKtjheh6wuBByiyHLJDuuCaumlZ9Q512dErFB1sZIfNvy8R5lCe4v1dmyyxXCnUUVPnw5JYU3SCuD6fcwYR5YthP5dkhFV8bi7KVC5lhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HcQreted; arc=none smtp.client-ip=209.85.210.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f+4M1yQw"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-74264d1832eso5627868b3a.0;
-        Tue, 05 Aug 2025 12:51:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HcQreted"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-76c18568e5eso1895192b3a.1;
+        Tue, 05 Aug 2025 12:51:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754423496; x=1755028296; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=tybD8dvj3BrHV4ZA0++FRr8ip0ElrmI1dhTrw4vCNaI=;
-        b=f+4M1yQwsbWmVap1weJoApmcxDh5RgYAXzoNlVZFW8dteKXyKARElzWUrJr+pMlgDF
-         uM7NAtQ8eVOEIDgWqWU1BRB4RViGwNUHKlWJ3cdiy/nYaCLOnjf9rid1VDYJQKf1yHlm
-         7Ex1L1dcn09flZG0qcFL8gAQEJUdSctvhcg1sS82VnOPGjgZMI+z4zwl3xKQMi+3J4B7
-         URAqaxsh0R53c8TSWAXT9w3xRywHXo5Rwmg0yH5WCNqcdE3lw6jwGoVgbjdjSodF00w9
-         mEut9DuLffOPYpYNoNoOKrC+frVYfT5V4touL6FNbu7lX82kotqparqSm/88bxgmjk8o
-         LnfQ==
+        d=gmail.com; s=20230601; t=1754423516; x=1755028316; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=02zt95JSIZhvyc1m6kLzXG+cJqDtwABL9QPxGxdLnW4=;
+        b=HcQreted7a+CgPX8el4RRDuiwM1uzpgD1KS9NajOL8CIw9Sm6A2N3mkrIWaL6sZLNn
+         HXU7oy+TzjZPDX0Dq2JLHi7zJy5Ds3vnVvk4v2q7RoC7HE0lDZ24l5N8icqrM/OhT8S3
+         gQmk/NhTfFdceRUXBQgUG6aPF+Y4LyuN5A3P/ic+wjW/CI1swTS7bR5DgDVdLwYCgORT
+         isqZSDmCW863J70iPKuoLQso6K1u4fDZCcxZHq4c40eQxuNlMQnljPCGWKvUDakUjO4p
+         QTTEFotmeIVv14FnXtkKTAsJEfQYxfXOqwA4bgBQp8STA4hN0bJStB55N4akoHZvB1M8
+         P1Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754423496; x=1755028296;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tybD8dvj3BrHV4ZA0++FRr8ip0ElrmI1dhTrw4vCNaI=;
-        b=GS479ZZnrQ2vmhK9S0HQEYoEoJlU0+0l5vpatbiHdRcDXvdzSwMhg8D8CR4IJluBhU
-         sf0/dCkiifPfmh7QBks6jEWL8MBsErAQcRt/kjAAyrZxCSxlr8aPw4PmGVLAnBK0FSHf
-         LLl7x+DUCG3wm1vcKENHxdg3D/IlWfISM/NYyp+vlyXgkdxQ5m4o3I0iHmneBT6TtwzT
-         QpP2sv/89Y7LuJwvNPRRtpcgx9TXcSdj7yFmkF8+EGVfYd6u6ne7rwl1HLYmAXrPAiBV
-         t4+ULhOXCNzK1AcCu69bs5rtIlay3dCcwQJx53ee+rxj+GqlQLp27qrCf6uy8aG4F8IU
-         TYYg==
-X-Forwarded-Encrypted: i=1; AJvYcCXAJAuIzk33ggSXqr3D2it2muwND4ZKHJgFYhx310o765P2kB5SNtsFNYOqFjw55HErbH9GaQBlLggMwkc=@vger.kernel.org, AJvYcCXuCq38hG9DwOyN/gScV45osZdLYwAwAlPw2Wq/uHg5ApD3aCgRNAaPfmVmLapRR29HB3gfKmMV81ESXi1N@vger.kernel.org
-X-Gm-Message-State: AOJu0YzZSpoJBab4WeMrNLlTM1TEncA6MuqA1j2NukM20dc3IyUj73FV
-	4+oEq7VQEtQKIV1BG3KkcQ83iT4oPzFWqQrJ8kuYFX+yDu/0cqn8vcDL76Mo26TIH7k=
-X-Gm-Gg: ASbGncu0hAhHeR8ZhW6EJriD7/FcrUya8TSDx0RveR7sM4sSooTE5DCmLoX11e80Iig
-	Jlxg0Hhkojaku7gtBXJR5akK2286rPSCTkFNTxMQlz6Qas4+c42k17JjMitJv7Y96q4k+dcqKDS
-	GGW3dF5v49LV7iQr8D4ex3F78yemnpiobGgKrp1nUNL1nBxfFzXyZ0AYPUNcgwyTkMgOrz6z+M+
-	x3/Fol1y7runSzviTTYY8KDuSaD608fUWxiBtVhKJVuppQyFtHYs89Agcgq754kD08Zz3AB4Keu
-	l9MQMD9/Qrgz4C6Y1eSNGpBbEw6yK9gGT5iMKdYxJYiugbSxPvAPYxH45Do983rCX5uNThbirXK
-	9eBx0vlTtQwiW6NQt3t6hJiu+7+wFWkej
-X-Google-Smtp-Source: AGHT+IHShzSvmgznm+V5oYi4OS4D6N3iRPuQfIj5sYhBlHvzTYOa8eyC3iXkIC/IGnMWMyQfnD/lqA==
-X-Received: by 2002:a05:6a20:3ca1:b0:240:dc9:71cf with SMTP id adf61e73a8af0-240314fb2f7mr456804637.38.1754423496200;
-        Tue, 05 Aug 2025 12:51:36 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1754423516; x=1755028316;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=02zt95JSIZhvyc1m6kLzXG+cJqDtwABL9QPxGxdLnW4=;
+        b=jcmpSj+hNWhMkkBJAKQid1onuG2+a7Fmmhlqy9rHIN/Q6P2LFyLpvYBR+9IpFjifMv
+         0LhNTzoPLoxP2SuCDxk8TbDTFf1XJa1Dd9+FddU4lBIy/rOZx5fC7bRKh/vr3pKnZpB/
+         DG1loTVMlgolYcBZWFTnOlbM/1HsLz6MYoKoqNjgToAjznZZ552ah1XgGTMHGFXF0w7p
+         dvFQQF6tI/U9QC/bS7qkD0+oKGWiqkvFEwx1hXQWRXkmfzAsPvM5UAzuiey96NS0i3Oo
+         wEgRX2N2JA3FauL3K9KC2M3bXnHauo67DX4WU0xQKRRj8PSWxpbA1VDrR3a4N47WXYCj
+         tq/A==
+X-Forwarded-Encrypted: i=1; AJvYcCXpH4bNx7QqOKznPeHzAQda8B/hFxizMv0UZL8szH3jln8ACiVC/BpSzu2x+DUkrILRDAQ+CSUKJB00tQc=@vger.kernel.org, AJvYcCXvMKAQU8yKfXP7DHj6rMSci2qfbgPAXb6/Snmva6sINM9qJZQmtOwCyqIa7xLF4YIAUAw54V6NlqyENgv7@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw6kgfooIPV4UuxfkGj0GaQWCIqvQw/LMpSAVrC+nPSANFTDJ4K
+	u2PQ4d2wjO3lX8a7u90J3o0yewUypOEow/fg9yvzE9EH9GaTodBG+I8ayr9jM0zrdM0=
+X-Gm-Gg: ASbGncsC2cFGQMH5ySQhiIhImA+wocUXZHUtQrbT2tZK7xmaKJSkknRS5wpdy+j77Sz
+	fpD7xd6h+4lS/ulLFvIX9Q+Y0sIj32+Dp7hcdsvt2kIfoYKBwA01m49sctnDrq2wVWQosk6TTbf
+	Iv6g/acfIAMikpuXfnIpFpLVFAS6HZObNyoeTHg7HMsG9Ql+BVLsuj0QJlSRdEqXcEGQOOsqJXd
+	uhkkiyO5gRdaNCxWsGPwRFMmaz14dt4SLSQaOzA0sdSr6Kyklx3bcRfS+Tg3AQCmhP7VzKXZpyx
+	C9meB0y+gSDvBB6SZ/Y7bnw9Nu2DG/htzNeO14bBp3c9rA2/uWs+oxI1ke3i13DMtjyjNr9ALGw
+	sySAejxE8kzBEZaxQ2IlWAY9tIl+rsWx2
+X-Google-Smtp-Source: AGHT+IFHc4vG1G/T3XZna5tCJg244PSDXuBclEDuuVzt0iPu7zCV172SLYMKl1Jsz+zFxybtnXKAkw==
+X-Received: by 2002:a05:6a00:2d11:b0:76b:e0d7:c3cf with SMTP id d2e1a72fcca58-76c2a12c06fmr114050b3a.4.1754423516568;
+        Tue, 05 Aug 2025 12:51:56 -0700 (PDT)
 Received: from avinash ([2406:8800:9014:d938:f647:9d6a:9509:bc41])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-76bcce6f319sm13744397b3a.18.2025.08.05.12.51.32
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-76bcce6f319sm13744397b3a.18.2025.08.05.12.51.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Aug 2025 12:51:35 -0700 (PDT)
+        Tue, 05 Aug 2025 12:51:56 -0700 (PDT)
 From: Abinash Singh <abinashsinghlalotra@gmail.com>
 To: gregkh@linuxfoundation.org
 Cc: jirislaby@kernel.org,
@@ -66,10 +68,12 @@ Cc: jirislaby@kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	abinashsinghlalotra@gmail.com
-Subject: [RFC PATCH 1/2] tty: serial/8250: Fix build warning in serial8250_probe_acpi()
-Date: Wed,  6 Aug 2025 01:21:54 +0530
-Message-ID: <20250805195155.742004-1-abinashsinghlalotra@gmail.com>
+Subject: [RFC PATCH 2/2]  tty: serial/8250: Fix build warning in serial8250_probe_platform()
+Date: Wed,  6 Aug 2025 01:21:55 +0530
+Message-ID: <20250805195155.742004-2-abinashsinghlalotra@gmail.com>
 X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20250805195155.742004-1-abinashsinghlalotra@gmail.com>
+References: <20250805195155.742004-1-abinashsinghlalotra@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -79,23 +83,23 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The function serial8250_probe_acpi() in 8250_platform.c triggered a
-    frame size warning:
-drivers/tty/serial/8250/8250_platform.c: In function ‘serial8250_probe_acpi’:
-drivers/tty/serial/8250/8250_platform.c:152:1: warning: the frame size of 1160 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+    The function serial8250_probe_platform() in 8250_platform.c triggered a
+        frame size warning:
+    drivers/tty/serial/8250/8250_platform.c: In function ‘serial8250_probe_platform.isra’:
+drivers/tty/serial/8250/8250_platform.c:201:1: warning: the frame size of 1184 bytes is larger than 1024 bytes [-Wframe-larger-than=]
 
 This patch reduces the stack usage by dynamically allocating the
-    `uart` structure using kmalloc(), rather than placing it on
-    the stack. This eliminates the overflow warning and improves kernel
-    robustness.
+`uart` structure using kmalloc(), rather than placing it on
+the stack. This eliminates the overflow warning and improves kernel
+robustness.
 
 Signed-off-by: Abinash Singh <abinashsinghlalotra@gmail.com>
 ---
 The stack usage was further confirmed by using -fstack-usage flag.
-it was using 1200 bytes:
+it was usiing 1248 bytes:
 ..............................
-drivers/tty/serial/8250/8250_platform.c:110:12:serial8250_probe_acpi	1200	static
-drivers/tty/serial/8250/8250_platform.c:351:20:serial8250_exit	16	static
+drivers/tty/serial/8250/8250_platform.c:154:12:serial8250_probe_platform.isra	1248	dynamic,bounded
+drivers/tty/serial/8250/8250_platform.c:208:12:serial8250_probe	16	static
 ......................................
 After applying the patch it becomes :
 .........
@@ -106,80 +110,90 @@ any issues.
 
 Thank You
 ---
- drivers/tty/serial/8250/8250_platform.c | 29 +++++++++++++++----------
- 1 file changed, 17 insertions(+), 12 deletions(-)
+ drivers/tty/serial/8250/8250_platform.c | 63 +++++++++++++------------
+ 1 file changed, 33 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-index c0343bfb8064..f7f9c5036d39 100644
+index f7f9c5036d39..86816d9b32ce 100644
 --- a/drivers/tty/serial/8250/8250_platform.c
 +++ b/drivers/tty/serial/8250/8250_platform.c
-@@ -15,7 +15,7 @@
- #include <linux/moduleparam.h>
- #include <linux/once.h>
- #include <linux/platform_device.h>
--
-+#include <linux/cleanup.h>
- #include <linux/serial_8250.h>
+@@ -158,43 +158,46 @@ static int serial8250_probe_acpi(struct platform_device *pdev)
  
- #ifdef CONFIG_SPARC
-@@ -110,41 +110,46 @@ void __init serial8250_isa_init_ports(void)
- static int serial8250_probe_acpi(struct platform_device *pdev)
+ static int serial8250_probe_platform(struct platform_device *dev, struct plat_serial8250_port *p)
  {
- 	struct device *dev = &pdev->dev;
--	struct uart_8250_port uart = { };
+-	struct uart_8250_port uart;
 +	struct uart_8250_port *uart __free(kfree) = NULL;
- 	struct resource *regs;
- 	int ret, line;
+ 	int ret, i, irqflag = 0;
  
+-	memset(&uart, 0, sizeof(uart));
 +	uart = kmalloc(sizeof(*uart), GFP_KERNEL);
 +	if (!uart)
 +		return -ENOMEM;
 +	memset(uart, 0, sizeof(*uart));
-+
- 	regs = platform_get_mem_or_io(pdev, 0);
- 	if (!regs)
- 		return dev_err_probe(dev, -EINVAL, "no registers defined\n");
  
- 	switch (resource_type(regs)) {
- 	case IORESOURCE_IO:
--		uart.port.iobase = regs->start;
-+		uart->port.iobase = regs->start;
- 		break;
- 	case IORESOURCE_MEM:
--		uart.port.mapbase = regs->start;
--		uart.port.mapsize = resource_size(regs);
--		uart.port.flags = UPF_IOREMAP;
-+		uart->port.mapbase = regs->start;
-+		uart->port.mapsize = resource_size(regs);
-+		uart->port.flags = UPF_IOREMAP;
- 		break;
- 	default:
- 		return -EINVAL;
- 	}
+ 	if (share_irqs)
+ 		irqflag = IRQF_SHARED;
  
- 	/* default clock frequency */
--	uart.port.uartclk = 1843200;
--	uart.port.type = PORT_16550A;
--	uart.port.dev = &pdev->dev;
--	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
-+	uart->port.uartclk = 1843200;
-+	uart->port.type = PORT_16550A;
-+	uart->port.dev = &pdev->dev;
-+	uart->port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
- 
--	ret = uart_read_and_validate_port_properties(&uart.port);
-+	ret = uart_read_and_validate_port_properties(&uart->port);
- 	/* no interrupt -> fall back to polling */
- 	if (ret == -ENXIO)
- 		ret = 0;
- 	if (ret)
- 		return ret;
- 
--	line = serial8250_register_8250_port(&uart);
-+	line = serial8250_register_8250_port(uart);
- 	if (line < 0)
- 		return line;
- 
+ 	for (i = 0; p && p->flags != 0; p++, i++) {
+-		uart.port.iobase	= p->iobase;
+-		uart.port.membase	= p->membase;
+-		uart.port.irq		= p->irq;
+-		uart.port.irqflags	= p->irqflags;
+-		uart.port.uartclk	= p->uartclk;
+-		uart.port.regshift	= p->regshift;
+-		uart.port.iotype	= p->iotype;
+-		uart.port.flags		= p->flags;
+-		uart.port.mapbase	= p->mapbase;
+-		uart.port.mapsize	= p->mapsize;
+-		uart.port.hub6		= p->hub6;
+-		uart.port.has_sysrq	= p->has_sysrq;
+-		uart.port.private_data	= p->private_data;
+-		uart.port.type		= p->type;
+-		uart.bugs		= p->bugs;
+-		uart.port.serial_in	= p->serial_in;
+-		uart.port.serial_out	= p->serial_out;
+-		uart.dl_read		= p->dl_read;
+-		uart.dl_write		= p->dl_write;
+-		uart.port.handle_irq	= p->handle_irq;
+-		uart.port.handle_break	= p->handle_break;
+-		uart.port.set_termios	= p->set_termios;
+-		uart.port.set_ldisc	= p->set_ldisc;
+-		uart.port.get_mctrl	= p->get_mctrl;
+-		uart.port.pm		= p->pm;
+-		uart.port.dev		= &dev->dev;
+-		uart.port.irqflags	|= irqflag;
+-		ret = serial8250_register_8250_port(&uart);
++		uart->port.iobase	= p->iobase;
++		uart->port.membase	= p->membase;
++		uart->port.irq		= p->irq;
++		uart->port.irqflags	= p->irqflags;
++		uart->port.uartclk	= p->uartclk;
++		uart->port.regshift	= p->regshift;
++		uart->port.iotype	= p->iotype;
++		uart->port.flags		= p->flags;
++		uart->port.mapbase	= p->mapbase;
++		uart->port.mapsize	= p->mapsize;
++		uart->port.hub6		= p->hub6;
++		uart->port.has_sysrq	= p->has_sysrq;
++		uart->port.private_data	= p->private_data;
++		uart->port.type		= p->type;
++		uart->bugs		= p->bugs;
++		uart->port.serial_in	= p->serial_in;
++		uart->port.serial_out	= p->serial_out;
++		uart->dl_read		= p->dl_read;
++		uart->dl_write		= p->dl_write;
++		uart->port.handle_irq	= p->handle_irq;
++		uart->port.handle_break	= p->handle_break;
++		uart->port.set_termios	= p->set_termios;
++		uart->port.set_ldisc	= p->set_ldisc;
++		uart->port.get_mctrl	= p->get_mctrl;
++		uart->port.pm		= p->pm;
++		uart->port.dev		= &dev->dev;
++		uart->port.irqflags	|= irqflag;
++		ret = serial8250_register_8250_port(uart);
+ 		if (ret < 0) {
+ 			dev_err(&dev->dev, "unable to register port at index %d "
+ 				"(IO%lx MEM%llx IRQ%d): %d\n", i,
 -- 
 2.50.1
 
