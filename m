@@ -1,63 +1,63 @@
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9401D230D0D;
-	Wed,  6 Aug 2025 21:51:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B840E22C32D;
+	Wed,  6 Aug 2025 21:51:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754517067; cv=none; b=f4HlyNZ/6O9NGaeMU+08WkfQ4ztE4LE3YwNiR7e445elG6eDxR4+FXqyA+Z6H6vAzHo4g2HbBO+7ONwjr05ZodWTsg7tua84FLQK2zttKUqF9fRKHG9MVF5Xc8/PmwtXfssb4x/tP3BtiXOZLkU1A5dv+JjEvSJZTFG8N5gpVio=
+	t=1754517088; cv=none; b=BI95Wzs6gNVse9KE5UXpUifl3t5t9h194iJKqGfus2sHsWNTJD4rYqjrfLojOD2F/XzN+tsMscULDPUxmMGoQ75v+8aR2x8nx/IATHHiRFjo/g1lDykdwJX9NDkATBo9KpncA6auWHWuC+XCNmI42m51Nwnq2LlP8cUTp40ho18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754517067; c=relaxed/simple;
-	bh=mZ5NaOmF6p/vifvC9oqrOEoAj8DJT4fkAC3ITsaP2ug=;
+	s=arc-20240116; t=1754517088; c=relaxed/simple;
+	bh=ueezBJxiEcLZko58BFHUTUcQZIMxe2744O16k3Hklx0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aLnHY9j8TDny1SaNZhrQMUJtpYk0rtMH61IA/BrL1cWBlt1GnLMQ82lmGiN6ujlYvpuwrThWc8JapgJC1lglaURXjfc38Gei/W6Y2EMKv6OCAnRuSMo1qSRIuNczRSypn6Eu//UK0Rt05p9KphA5uMeAioG9pWlVaZRgxhTSkqk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hc9i2v/t; arc=none smtp.client-ip=209.85.210.178
+	 MIME-Version:Content-Type; b=ti6SghtarVTo0xpRproV1Nv5p+kvDA3+lzGCqsOmlUSAiWqjIBsM/XgXCPIdUcqqAy7jPXivu0bOGnHl4WtYLx9crVV5vhGk3i0t4/+EAE0M0jLD7PCvjmTVvuA0vRrapbTWnElE6eAV/7NXWkG2Vs9OBDWKgbrclDyyZca5eDU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FBsXZXbb; arc=none smtp.client-ip=209.85.210.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hc9i2v/t"
-Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-76bc5e68e26so423298b3a.0;
-        Wed, 06 Aug 2025 14:51:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FBsXZXbb"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-76bc68cc9e4so452787b3a.2;
+        Wed, 06 Aug 2025 14:51:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754517065; x=1755121865; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1754517086; x=1755121886; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ByxCqwJkEn6LD06bCiaVsvKmS9NUJGLlvaGzvqPGgxo=;
-        b=Hc9i2v/t1Dllb1Fdc594eS4Kh91AMB6Wtwr6e/LRHqao55fvL+fZfjN0GJSrhA/Zw7
-         Ptdhzd6QvEMgV7Z1sToY91gUQm5Ct1+yxgA6lmYqfmhCrHvTzT8pMkwR+qXq0veFzAxq
-         XgiS5jmXWuaItwLzBuavn2Qaf6JEwUtADBFEqUkt5M0G78sNknaf/53bLD2s7QL0uz1l
-         rh+B6kbWOE0IbqeizZnltNisqbHkO4mu/lULDTeqCPXQ01xhsB3Qrk91hyp2WvLFYp4Q
-         fTDYUM5VTbpvPzP18a0QubQmnIkkjdfTwy76Tr9O/CKrXJbky8PcJaiJwBg1hhTlMcn9
-         dZDQ==
+        bh=XUAMmDH3TUpKHCQOIz+sxh3moL+ynvF9d1SPXfB+dDs=;
+        b=FBsXZXbbjdeKEbnIv9cXK1WzjTBPqOpI2FOJp7yWjPMZATIlETL1rSmp12Fz6kfgNe
+         nkswcUOaL8awrhBA3b/Bc4gs2GJq3rFceKLxDQRIUnBngc7jcvu0/pYN1Evw7kqyTs1K
+         99pugI+EnN1BDmYANTJrK/DKnA+fm+HJ0FnOJOanpyF7R+OApr3sv7ieoByKVYVat18w
+         tkrScCzOoOGjtKU9xp8d9oh4zfhfZs/HVqwlmLhsCFoW+SKCTes+WkocX6zP7MyWpQkV
+         CDGeh4cIfh5w8aC1/JJDuwphBGR4vmE6AoCmAzj8ljcFDC2KEKZy8I5b+KR8dvgq2iFl
+         EuPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754517065; x=1755121865;
+        d=1e100.net; s=20230601; t=1754517086; x=1755121886;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ByxCqwJkEn6LD06bCiaVsvKmS9NUJGLlvaGzvqPGgxo=;
-        b=xK7bfhEs+ur+hg5vXmVnZ0Z6U+HAa2ixNcZdul2U13CdtlXfR+Bt4paay6Ibcw+Xgp
-         SsdVZkrwBiwyX0mjlRBkLrDAzM3pE/pFmfres58qMyAhmPkgHztqPeuZPo71UMA1sN6h
-         4pzOSdcXsQHajcZzeLO3ApDe9u0aCj98W2lj2Qr8MxcnRoPMgWfqZxwbdZcH8Oko10G5
-         xp1mazyqu5XuxNh6E4H3Wu9lbpHCgxwSESPu7lxMaRUQdGu4RoacgX2HWTyqXrjwz/xu
-         EVEh9PctODMxXYvEyKKs306dmaoSTvvgKmi93zEx986RDQrcuy8kOPFYQJVO3w5TOpiu
-         MWrQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVkx5x3HHaDjHypXY8Z+nK1fXbl30xwLbMFrOaJ/ZbZ5XA/M5i/PVRicmfjGPDeMyBdl62HCsuy4z6m6vvC@vger.kernel.org, AJvYcCWF5qAnUQZCdi9kdLSRaqfQn1P7KiZZDG/DAZVs//7VQWK3tMYXDdm7GkkVBbEKQOHuhh+U+7uoOjt4mC4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyR+Qoeq9pCZ3nR3KBpFJtwKivDzAtalMuYE4+l7x8112PEjhFH
-	X+goYOXGnrTzkbBk+vq2ZREbMaw7Vd2+6UZm0OKYGmod80uuv1WL/K64
-X-Gm-Gg: ASbGncv9yZmpgph65AgqlS8GLl9sSD3zBy8w7Y4a3VY/xj+m13rZGXMleKfzU17VEGY
-	6vvBGL62t1SFwARdYOJqYSKMT1oNjxaJXegRFOFa1PfdvjWoogjAzVvjogyABZokzKa9CrOiS4n
-	Eh23jdt4HNy2IUPDo9+OhXdCoVubGqqOc2Sr0NjpOUjgXd8ov0FIZ/hfDZgZgeqJ28lfZlyn3pr
-	INkiXJq3OvCI5Roj5sCnKqwQZcE7dW0Cybqar+Xa/2S3OOSy63qTOBoyqTCUsdroQ59x7eZ2JCN
-	4Oy+fmnui+LygrR/iZaQNjJzWSMy+Kn5oataMXRqQYWbYmyWJ5VHhFEMI6HD1humUtYWFXDjapd
-	o4Avxx5aPRJ5/hPlJARaiDxZ838t8CoyxIL8Wj8iDxl4=
-X-Google-Smtp-Source: AGHT+IEjS0HvIie6wLWDOmihYKJ02fpMlaUQKsKl/a6CVJoAczvJ0u/WizJPtds9oQDMhTEqFGlPhA==
-X-Received: by 2002:a05:6a00:18a8:b0:76b:e936:607 with SMTP id d2e1a72fcca58-76c29b2b12fmr5601048b3a.0.1754517064731;
-        Wed, 06 Aug 2025 14:51:04 -0700 (PDT)
+        bh=XUAMmDH3TUpKHCQOIz+sxh3moL+ynvF9d1SPXfB+dDs=;
+        b=ITHDrH+TgNpyVksbFawWsz4+t2n0afehiFy4uvRUe1txFn1ybR90GkHz1OUJlKjIQG
+         MBMZGTib4VfDlGtT+RMbaSyqAetXOGrc/zIFl4Xj/7xuolWzYFu3wwIDqXaJ/VZrxc7J
+         PnWZJqgDjJu9vhDx/oEToGdSqUsP8e3Mh2U7xoSCeYU/FQTLRIiKX0oaSYNdZM9tEsZr
+         dJXXDeqFInXZtD0ZpCNnMDnxMrg8/e8JxW0wcBmNnxJrJXp8gDwWKadXLoC1vDsj7SRD
+         S5aD30u62gDceXJJJqMY6uMgS5/iRDTbDYok46iKAYhkTIw0rclfls9gS324pB2w+mEq
+         ArHA==
+X-Forwarded-Encrypted: i=1; AJvYcCU0QPldU5e0EdG8ctRW6MR8SFait6yDGjUtNq78vpGaZXjaKFt9sxkQ9IeYPx7FVae1raBm+XRsO00dVw4=@vger.kernel.org, AJvYcCUGACoFTWDeFVxe7Jx6mVyz9QaZKhAfgq46+RqUnZTSlOPxraeEu92bINTM1touHIytmECyS8OPIfay1ki/@vger.kernel.org
+X-Gm-Message-State: AOJu0YwE5zte6iYFtef15lqpKHme3DrC9ivwwC+/qnw2XFJsQryECRgH
+	6y9Dz9pZKcr4VBgiaH096/YG+bGY/MNIAPvPkBkHg75owTssmqpk6r1/
+X-Gm-Gg: ASbGncua2Co5vamBmE9jpGTPGlwEtNpTxbCrLQ02IScYLtuvMNaGDXLdSDGXFvuDsu2
+	mdE2WRhTtupT+b5Uk5gfe7dcAVD83wMeoQmE3z/7rf4XQSyyRhUFv22lTIkjy0bnursQpnYZOH1
+	zdBR4uLLGLVkEeshTgHWRORM77hsPUZz2+wnzexJJe5Lh7UbR6WNLZ7lMPrvmpBtVai/tQfVHgu
+	As6Nja/TANz9XmM1AA4z56EFZ7Jkng2XDHC59MxHpTB19AxhR1V39YcF/UhAPgdrlY2ElSaeciq
+	mUX4S6FIFIy+TO7HW1AZXGXElmRrV6AxY5l5JePWXxQZ13Xtwdkp9vFEaP4ZGmqGXLoJke2B+k4
+	7cU0iG9nkMCMtSR0S4vt3h5yRh+UPWdvR/10p+h5gG6w=
+X-Google-Smtp-Source: AGHT+IFMNR1ZxmTgLulP7ip52oXMzytv6X6Yg2yBqWCn0opIOfanZsaEfU1seHVbYGLqjMe42cwJBw==
+X-Received: by 2002:a05:6300:8045:b0:240:43e9:6cb7 with SMTP id adf61e73a8af0-24043e97001mr381186637.45.1754517086016;
+        Wed, 06 Aug 2025 14:51:26 -0700 (PDT)
 Received: from avinash ([2406:8800:9014:d938:f647:9d6a:9509:bc41])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-76bcce8911asm16252258b3a.36.2025.08.06.14.51.00
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-76bcce8911asm16252258b3a.36.2025.08.06.14.51.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Aug 2025 14:51:04 -0700 (PDT)
+        Wed, 06 Aug 2025 14:51:25 -0700 (PDT)
 From: Abinash Singh <abinashsinghlalotra@gmail.com>
 To: andriy.shevchenko@linux.intel.com
 Cc: abinashsinghlalotra@gmail.com,
@@ -68,9 +68,9 @@ Cc: abinashsinghlalotra@gmail.com,
 	linux-serial@vger.kernel.org,
 	sunilvl@ventanamicro.com,
 	u.kleine-koenig@baylibre.com
-Subject: [PATCH v3 1/2] serial: 8250_platform: Reduce stack usage in serial8250_probe_acpi()
-Date: Thu,  7 Aug 2025 03:21:33 +0530
-Message-ID: <20250806215134.4921-2-abinashsinghlalotra@gmail.com>
+Subject: [PATCH v3 2/2] serial: 8250_platform: Reduce stack usage in serial8250_probe_platform()
+Date: Thu,  7 Aug 2025 03:21:34 +0530
+Message-ID: <20250806215134.4921-3-abinashsinghlalotra@gmail.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20250806215134.4921-1-abinashsinghlalotra@gmail.com>
 References: <aJO9fnbydWqu1RpJ@smile.fi.intel.com>
@@ -84,10 +84,10 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The function serial8250_probe_acpi() in 8250_platform.c triggered a
-    frame size warning:
-drivers/tty/serial/8250/8250_platform.c: In function ‘serial8250_probe_acpi’:
-drivers/tty/serial/8250/8250_platform.c:152:1: warning: the frame size of 1160 bytes is larger than 1024 bytes [-Wframe-larger-than=]
+ The function serial8250_probe_platform() in 8250_platform.c triggered a
+        frame size warning:
+drivers/tty/serial/8250/8250_platform.c: In function ‘serial8250_probe_platform.isra’:
+drivers/tty/serial/8250/8250_platform.c:201:1: warning: the frame size of 1184 bytes is larger than 1024 bytes [-Wframe-larger-than=]
 
 This patch reduces the stack usage by dynamically allocating the
 `uart` structure using kzalloc(), rather than placing it on
@@ -96,77 +96,88 @@ robustness.
 
 Signed-off-by: Abinash Singh <abinashsinghlalotra@gmail.com>
 ---
- drivers/tty/serial/8250/8250_platform.c | 26 ++++++++++++++-----------
- 1 file changed, 15 insertions(+), 11 deletions(-)
+ drivers/tty/serial/8250/8250_platform.c | 61 +++++++++++++------------
+ 1 file changed, 31 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_platform.c b/drivers/tty/serial/8250/8250_platform.c
-index c0343bfb8064..9938aeb917d8 100644
+index 9938aeb917d8..b27981340e76 100644
 --- a/drivers/tty/serial/8250/8250_platform.c
 +++ b/drivers/tty/serial/8250/8250_platform.c
-@@ -10,6 +10,7 @@
-  */
- #include <linux/acpi.h>
- #include <linux/array_size.h>
-+#include <linux/cleanup.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
-@@ -110,41 +111,44 @@ void __init serial8250_isa_init_ports(void)
- static int serial8250_probe_acpi(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
--	struct uart_8250_port uart = { };
- 	struct resource *regs;
- 	int ret, line;
+@@ -157,43 +157,44 @@ static int serial8250_probe_acpi(struct platform_device *pdev)
  
+ static int serial8250_probe_platform(struct platform_device *dev, struct plat_serial8250_port *p)
+ {
+-	struct uart_8250_port uart;
+ 	int ret, i, irqflag = 0;
+ 
+-	memset(&uart, 0, sizeof(uart));
 +	struct uart_8250_port *uart __free(kfree) = kzalloc(sizeof(*uart), GFP_KERNEL);
 +	if (!uart)
 +		return -ENOMEM;
-+
- 	regs = platform_get_mem_or_io(pdev, 0);
- 	if (!regs)
- 		return dev_err_probe(dev, -EINVAL, "no registers defined\n");
  
- 	switch (resource_type(regs)) {
- 	case IORESOURCE_IO:
--		uart.port.iobase = regs->start;
-+		uart->port.iobase = regs->start;
- 		break;
- 	case IORESOURCE_MEM:
--		uart.port.mapbase = regs->start;
--		uart.port.mapsize = resource_size(regs);
--		uart.port.flags = UPF_IOREMAP;
-+		uart->port.mapbase = regs->start;
-+		uart->port.mapsize = resource_size(regs);
-+		uart->port.flags = UPF_IOREMAP;
- 		break;
- 	default:
- 		return -EINVAL;
- 	}
+ 	if (share_irqs)
+ 		irqflag = IRQF_SHARED;
  
- 	/* default clock frequency */
--	uart.port.uartclk = 1843200;
--	uart.port.type = PORT_16550A;
--	uart.port.dev = &pdev->dev;
--	uart.port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
-+	uart->port.uartclk = 1843200;
-+	uart->port.type = PORT_16550A;
-+	uart->port.dev = &pdev->dev;
-+	uart->port.flags |= UPF_SKIP_TEST | UPF_BOOT_AUTOCONF;
- 
--	ret = uart_read_and_validate_port_properties(&uart.port);
-+	ret = uart_read_and_validate_port_properties(&uart->port);
- 	/* no interrupt -> fall back to polling */
- 	if (ret == -ENXIO)
- 		ret = 0;
- 	if (ret)
- 		return ret;
- 
--	line = serial8250_register_8250_port(&uart);
-+	line = serial8250_register_8250_port(uart);
- 	if (line < 0)
- 		return line;
- 
+ 	for (i = 0; p && p->flags != 0; p++, i++) {
+-		uart.port.iobase	= p->iobase;
+-		uart.port.membase	= p->membase;
+-		uart.port.irq		= p->irq;
+-		uart.port.irqflags	= p->irqflags;
+-		uart.port.uartclk	= p->uartclk;
+-		uart.port.regshift	= p->regshift;
+-		uart.port.iotype	= p->iotype;
+-		uart.port.flags		= p->flags;
+-		uart.port.mapbase	= p->mapbase;
+-		uart.port.mapsize	= p->mapsize;
+-		uart.port.hub6		= p->hub6;
+-		uart.port.has_sysrq	= p->has_sysrq;
+-		uart.port.private_data	= p->private_data;
+-		uart.port.type		= p->type;
+-		uart.bugs		= p->bugs;
+-		uart.port.serial_in	= p->serial_in;
+-		uart.port.serial_out	= p->serial_out;
+-		uart.dl_read		= p->dl_read;
+-		uart.dl_write		= p->dl_write;
+-		uart.port.handle_irq	= p->handle_irq;
+-		uart.port.handle_break	= p->handle_break;
+-		uart.port.set_termios	= p->set_termios;
+-		uart.port.set_ldisc	= p->set_ldisc;
+-		uart.port.get_mctrl	= p->get_mctrl;
+-		uart.port.pm		= p->pm;
+-		uart.port.dev		= &dev->dev;
+-		uart.port.irqflags	|= irqflag;
+-		ret = serial8250_register_8250_port(&uart);
++		uart->port.iobase	= p->iobase;
++		uart->port.membase	= p->membase;
++		uart->port.irq		= p->irq;
++		uart->port.irqflags	= p->irqflags;
++		uart->port.uartclk	= p->uartclk;
++		uart->port.regshift	= p->regshift;
++		uart->port.iotype	= p->iotype;
++		uart->port.flags		= p->flags;
++		uart->port.mapbase	= p->mapbase;
++		uart->port.mapsize	= p->mapsize;
++		uart->port.hub6		= p->hub6;
++		uart->port.has_sysrq	= p->has_sysrq;
++		uart->port.private_data	= p->private_data;
++		uart->port.type		= p->type;
++		uart->bugs		= p->bugs;
++		uart->port.serial_in	= p->serial_in;
++		uart->port.serial_out	= p->serial_out;
++		uart->dl_read		= p->dl_read;
++		uart->dl_write		= p->dl_write;
++		uart->port.handle_irq	= p->handle_irq;
++		uart->port.handle_break	= p->handle_break;
++		uart->port.set_termios	= p->set_termios;
++		uart->port.set_ldisc	= p->set_ldisc;
++		uart->port.get_mctrl	= p->get_mctrl;
++		uart->port.pm		= p->pm;
++		uart->port.dev		= &dev->dev;
++		uart->port.irqflags	|= irqflag;
++		ret = serial8250_register_8250_port(uart);
+ 		if (ret < 0) {
+ 			dev_err(&dev->dev, "unable to register port at index %d "
+ 				"(IO%lx MEM%llx IRQ%d): %d\n", i,
 -- 
 2.50.1
 
