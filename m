@@ -1,84 +1,116 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A47828C010;
-	Wed,  6 Aug 2025 15:53:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 431752BE7DF;
+	Wed,  6 Aug 2025 20:10:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754495620; cv=none; b=Ihk7eIlchgEQC/ofo+vdHWMlL+/94LAe/dnLqGE4syRZTQZr2A/Azo6aEtW+W1bfvM9GjmsG0zX1Ve9rzQ0edIoHudJaA8TYU19yINjBYSvjuM/u7r7offgq2AD6HvDuFp3tVXr3uLigBNYvkY7RRj83PqxXOQWQ5EH/Wfs+VGg=
+	t=1754511018; cv=none; b=pCOvNsSGsBdav93lMvO/RXUCQZX+/SUBVNF3lN630CN/8QPJCd4yqvDOnQhIDi7s+GMg+IQXBOC1ppQzLChaJ4qNlg0PLATJadCmwnXnwA3376hemHPw5L3UjEeAFYYZru1zgDMaHJ5fp6oTU6KCHMOA7ZfXnhwkrr/1HljZBL0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754495620; c=relaxed/simple;
-	bh=8lntTrIv1EF6S0OVC6oVHi+a8/05DS+HMH/xwWZDzFY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VpbCZZI0F3WAcac3KLrf/eYOEccYUB/1k8uMDYS5ombIkTXKmgsTtghAC+HBvuLnJi2QCaI7hax0rcHKbGlS2SvvuXSOFe8xGtqOAFCLn7wQdopw82t0+SwyC96HPZq0eu2/s+K0FJ+HgSVx0T5mRFpMWa1KiNfBOH/1js4FHRk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
+	s=arc-20240116; t=1754511018; c=relaxed/simple;
+	bh=2xHMqZHIMPlKDA6tesGYp0kgcpqBPjYtPnsFUve+6Qk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JtnkGTLyTW1XKUgZWwcroMNt22Pni+k2fccmv/E1yW9j+MRK30HjPAfMQvcy7zkQjB2exHimNiuxp37GxvJg4MDue/AHqskhcBKehOYVzRcbB4zaPYt9Jmz5hKOq6G6DVIGhpCD5G7XP7gZneZQJo3CuBWZvpovLQsGqISrWSz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Le9bHgYr; arc=none smtp.client-ip=209.85.210.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-615d1865b2dso83307a12.0;
-        Wed, 06 Aug 2025 08:53:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754495617; x=1755100417;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Le9bHgYr"
+Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-76bdea88e12so348155b3a.0;
+        Wed, 06 Aug 2025 13:10:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1754511015; x=1755115815; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lSAeQ8xKPoGHZfbgMhDEnJIjE+pmVuNSBbErMj5IbBU=;
-        b=YCuhIaKpOnJLdYQ9M+w/P7ARH4iBasaixR4d53DJrh5fXQn3zjex2jdDT4dppnP+b8
-         w6vKDVATOJ5spinf3U2QX9IxHj56B/qTf+Gbs/kf5PFn54oSoJAUcW6CotQ1nCa/CVJN
-         nUKCoNWq5M4BHXpcUtINLQT9yNkqVjPMCKqClZUQTpiLuujKurF1eCq+KLA469Cjq+GE
-         7lDd1dJa8TIFUPMFUFgqu7H7aoFFvj0FqbpY5FbQMEl0hmRMkc7Hlcr2tpmb7iJzr6ex
-         VrzO6SB53GjOL4tPyEr94WgwQ+X2ZpOxdcC8kcZJKJ2kftuoyMHm4hqADcp+MoR1CVBZ
-         EQyw==
-X-Forwarded-Encrypted: i=1; AJvYcCXRm9MZzuGSnyM8V9XeJrlCLBPFlTmh1FejhUQDD8xCPhYU4sEOkKiApITYlvlPFSKKoZJRa3M2V3bONItW@vger.kernel.org, AJvYcCXZBjctuSl90bmQfFFZxjwlTr73kG0vNAHDvb9HLOfr43uSeJqAtb3T+MDrvJqyhNEdtsIj7zMCZapPhjY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzNHF7oAWEKtwuYyprf9IZyYH25OFMqr/DIAO3gPhj5GOpaaZrj
-	RoUJsJX1YpJu4kJTDjRRABa1F6J9E3D2+Qik55MbSF9F1nzeToqnJFhn
-X-Gm-Gg: ASbGnctKtUBsPEg2hFSCB1ZC79safkd9iX6hN3ZuQ68Cf8saqdjKj/5q95174ZPjiZ/
-	5dWx5cjhVQz9xsr5YCH65Eg+2jvAjpouaNikptO58H5BrS2Nf18/dN8reTVYTHfF+dbDR1+YxKU
-	anwe6cn2B5ZtQDmXd7cGwjKxOi73PpUgp7QQrNorM/6jLu8KGkYqaU32i1olg0XyeSVLB80CxS/
-	dcRInhSVm2RlQfVxjFnfkHbP4D12XwAN+3Abf6JfadX8mfHn3mI4syAqL9o2r90ZWJwgUWw8p8+
-	En71eHlubwMQLiibcoF1vrr4f0bGC+ENglAVRLdHvBcSWe1YBnXphe8THkMKQFZpFYGznPi3CVq
-	dQ/7XTcNExkKv
-X-Google-Smtp-Source: AGHT+IHuBBGXbLT6LQjSZys1BSvev5Nwmr6rX2z0GgBOu+Uy6QESOe3NVaVXCJ6mKYT5g9BD1FbwFA==
-X-Received: by 2002:a05:6402:1d49:b0:615:78c6:7aed with SMTP id 4fb4d7f45d1cf-617961be368mr2723204a12.32.1754495616673;
-        Wed, 06 Aug 2025 08:53:36 -0700 (PDT)
-Received: from gmail.com ([2a03:2880:30ff:6::])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-615a8ffd72esm10214364a12.55.2025.08.06.08.53.35
+        bh=I//q3akbwLjNiQDpnbN4pvpbNnx0BFWvRrJA19wLk5Y=;
+        b=Le9bHgYrukcBWSuo6dJ+IhI5lPG37P6AwU+RUjKeI4A+EpjkjCk2aJhcHh6LG6Zxch
+         x1ZHfMNqfkhbWwLatgaK8X0OOh1EFc6AUF2x6WLWDtiLjIOGu2qnMbAJ5RLGhVGd2QCR
+         gSlXaSC6h55rN4FDlbYcpiR+M7kQPW+gFLpn3EwQmIGYuUK0UtRCbT7SOD3VHh+3zKoi
+         mpLnWloLD0IDTTxH2XX0mte4jixbDwMCN4+4z1MijGA/6thgolkiluzpSTPpXPY2ItW+
+         S4F6wFuPIS48GM+5py+kamswLw58fBNFxtLyCBIU5VOH9Iw3ULLEbFDFjCQ4wbxMn+sE
+         3pVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1754511015; x=1755115815;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=I//q3akbwLjNiQDpnbN4pvpbNnx0BFWvRrJA19wLk5Y=;
+        b=Ooo4VI/XdC0WXxiZrgYi62QrhqYtL0vAJnXsciRnTA46MNbmN52kiIQWpkgtF3+z2Z
+         UuUQ1gyX7xqeLv763PAHgHbvBQARwKNJfBLNgxckUesz7zVyUEasQDAbSS7C79aoRK3Q
+         JowSYyOsSbhmtYGhDdr892PdavmK9UyOK+Rb8p/MF2bozZ3M++LuBOIAR+Ba+IHlKWb/
+         zE0cvwUnjkj8x6kc+xW+USyYIQ46ssF1RgqLaUAJqC7Hxw8xNGJxuAVyBkZ4/jzlv1Lg
+         s5V3vvRg11IKswhmEaOwczygU6PUaklTLDc/7G7Y9IUaoPIcOBut/A0xUnJ1b66y/zs2
+         HSlQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU69r6R9BopM2nsCeoKIouA0SBCcgXLdWT18x7BJ5NkJepuBV+YmSa7TxU1ax2Scnd6TuxR/iC9kP+/RCI=@vger.kernel.org, AJvYcCWtyf4c5YOpjJ2iZo0e3iM5KJjUWwiF6i6Rpdslh9n461OV/gsnjd+0j7GHU1mQe/fJSBi0Ju7hbNNp8wGr@vger.kernel.org
+X-Gm-Message-State: AOJu0YzNqEqYhmaloh1xB6kqfdd41C01v0Zh0xy8uvnfzYM72a2QV3nD
+	fQ3fd0HHYAkZn7+eesYPer1lyJYCOqtMVdxxmDpGyKShIay4PZUmOjGR
+X-Gm-Gg: ASbGncuS+8tzP6o1BRdXm+MCkqFW38dkLOLB+hn4axTa2m5bf+OSvkVV+0zrXn0c/pz
+	UCOpZUssRGHDmym1O+yA2umafMXiUV9+ACYbaTRbQ6lxujApZ3wgSIClqI2oubE5kO+EzieA4Jf
+	LKyy1YRhJH6RpAwW2Qxg9KaZfzwJTD0PFF1bZoMuMW/PrZXXfYhwS0cra/d71QBmT5iHy/yZ5wa
+	J0it2dla8R+tkCMjc788xN4bv2CqDFUkBU19b1k3SxLaHX6MF/LzhzkttyvCHuaNPynpE/DPTaM
+	CrPSkcH4hfth6w32bvpMmA0oR7JXvmmhPm1l90YG/T4z/13jddC6/dM8jO+6D8AOcrKPnz53354
+	xMHNqoiLEW6P9sG3btBD9LmEwTh1lDU5j
+X-Google-Smtp-Source: AGHT+IFQvGVbKKCncF6pknXFqDydGZ0JLthM7aDbn/oIytpA2C7vZoA/ShGZDgr+69MFzx2TufndnA==
+X-Received: by 2002:a05:6a00:3d53:b0:76b:f2d9:c760 with SMTP id d2e1a72fcca58-76c3881990fmr458664b3a.7.1754511015521;
+        Wed, 06 Aug 2025 13:10:15 -0700 (PDT)
+Received: from avinash ([2406:8800:9014:d938:f647:9d6a:9509:bc41])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-76c397b87d5sm38882b3a.96.2025.08.06.13.10.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Aug 2025 08:53:36 -0700 (PDT)
-Date: Wed, 6 Aug 2025 08:53:33 -0700
-From: Breno Leitao <leitao@debian.org>
-To: Nirmoy Das <nirmoyd@nvidia.com>
-Cc: catalin.marinas@arm.com, cov@codeaurora.org, leo.yan@arm.com, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	mark.rutland@arm.com, paulmck@kernel.org, rmikey@meta.com, rmk+kernel@armlinux.org.uk, 
-	usamaarif642@gmail.com
-Subject: Re: arm64: csdlock at early boot due to slow serial (?)
-Message-ID: <d6frpsfybjhdu6m77icrduuiqu6p7zfx3sbzfz62dvafkpaj56@sa5y7lvbvivu>
-References: <aGVn/SnOvwWewkOW@gmail.com>
- <20250806114441.1605047-1-nirmoyd@nvidia.com>
+        Wed, 06 Aug 2025 13:10:15 -0700 (PDT)
+From: Abinash Singh <abinashsinghlalotra@gmail.com>
+To: andriy.shevchenko@linux.intel.com
+Cc: abinashsinghlalotra@gmail.com,
+	arnd@arndb.de,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	sunilvl@ventanamicro.com,
+	u.kleine-koenig@baylibre.com
+Subject: [PATCH v2 0/2] serial: 8250_platform: Reduce stack usage in probe functions
+Date: Thu,  7 Aug 2025 01:40:45 +0530
+Message-ID: <20250806201047.754240-1-abinashsinghlalotra@gmail.com>
+X-Mailer: git-send-email 2.50.1
+In-Reply-To: <aJKDp1LBpzswp5lX@smile.fi.intel.com>
+References: <aJKDp1LBpzswp5lX@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250806114441.1605047-1-nirmoyd@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hello Nirmoy,
+Hello,
 
-On Wed, Aug 06, 2025 at 04:44:41AM -0700, Nirmoy Das wrote:
-> Hi Breno,
-> 
-> I tried the latest kernel which seems to contain a fix. Bisecting it led me to https://patch.msgid.link/20250604142045.253301-1-pmladek@suse.com and that indeed fixes it for me.
-> Could you please give it a try.
+I’m very happy and grateful to receive such valuable feedback and
+support from you all.I’ve carefully reviewed the comments and
+have applied the suggested changes in this v2 series.
+Please let me know if there is anything else I can
+improve or correct further. I truly appreciate your
+time and guidance.
 
-That is awesome. I've played a little bit with it, and I see it solving
-my problem as well.
+Changes in v2:
+- Use kzalloc() instead of kmalloc() + memset()
+- Removed unnecessary NULL initialization
+- Fixed include ordering
+- Improved subject line clarity
 
-The machine is booting very fast now, taking 0.8 seconds to hit init.
+Thank you very much !
 
-	[    0.811320] Run /init as init process
+Best regards,
+Abinash
 
-Thanks for the heads-up!
---breno
+Abinash Singh (2):
+  serial: 8250_platform: Reduce stack usage in serial8250_probe_acpi()
+  serial: 8250_platform: Reduce stack usage in
+    serial8250_probe_platform()
+
+ drivers/tty/serial/8250/8250_platform.c | 87 +++++++++++++------------
+ 1 file changed, 46 insertions(+), 41 deletions(-)
+
+-- 
+2.50.1
+
