@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F15A41DF73A;
-	Thu,  7 Aug 2025 05:14:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBFC15A864;
+	Thu,  7 Aug 2025 05:25:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754543700; cv=none; b=YCHimNO143RGHti6UU6kgJCYBSq4kcJR88vtPn7iD9tAU2FOMAK71Gg9Yre0941XDnsEUAV38J5XBKky7KiQFr0S97Bguz864wHGMy4uUk8T3a94hcu5A2Lg3Q2BWvqtY1BdgP9Gq8yB5/G+5lZ8jsaaXPbQTMDOu8bgaF5HrfQ=
+	t=1754544310; cv=none; b=LkuAFmo3529y6a32uLtrzmEn/dhsxzVIkS5/wdt1JbB5sHS9D1OMEaAHAOBYX0/DdZH+I2dB0MrdTJjpyikSMNAN7f5L+la9swSQHI7EsK/Jro5bxtfR0B/FyZWAwbbiA+z/UCY6zMEisAI+HRKcsBczupa7eaKHP9HEtepf5xI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754543700; c=relaxed/simple;
-	bh=ciVFylXTqG/nxTYMvEMzn+66ztMvJbHv34RuWXUpK4s=;
+	s=arc-20240116; t=1754544310; c=relaxed/simple;
+	bh=X5k7uV5ljUNoGk1PHMEF6TPuQYORG2zDlBECBghMlAg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=so2M/41k/Q+0iwNFrILvtx2hbXBfS+gRHCwh72/il61lKpRVXdqXmduw5SWWnbqZpRItXpAImApU2SUOLgbkKshatQOyvhPzSYH8V/fI/AnlcaTrR3VH1JeHR/CJgrtkHyqyTRc+qf8+niiVh9RWHt2i8I2YAaKjw/f6jAKiuPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jUTaLlRa; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=EfqP5Bd25Tqs0soqkO0VwgHYUgiA6uHmF/NTXu1opS+0AOkUSPyi/AB9B3Jwv8auCBYs1VqbN6G4zGnZqOo2CjeC3PX3wZ3V7G1Vht9GNGtLMb0xzMjJs08VhLKVumzL1igIMgQ9bTnQx0rNHQdNRQXOvLxBp2fMzZEusMRQ1wY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wl6juYLt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jUTaLlRa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30995C4CEEB;
-	Thu,  7 Aug 2025 05:14:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wl6juYLt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 705E1C4CEEB;
+	Thu,  7 Aug 2025 05:25:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1754543699;
-	bh=ciVFylXTqG/nxTYMvEMzn+66ztMvJbHv34RuWXUpK4s=;
+	s=k20201202; t=1754544310;
+	bh=X5k7uV5ljUNoGk1PHMEF6TPuQYORG2zDlBECBghMlAg=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=jUTaLlRaP3XZR/8g6hXmw5O/abZTBnGW+qn3VSjymyzmtIjlIO0LkDitMQHa06kl8
-	 Na4Ud+6CxN7/tuggWL/Yh9qSL7PS+DumqGALIA+jHMQzplN0jPbg4RYcbCH0qeisZF
-	 AUIbA/R3SFdSKokHgdCisGozHeKlUyghaRV1w/T4RJW2xkaLm8ob+tzbGNOzRny4h/
-	 ynOaWeclnvdd5oeRWOjbYxOULnmqpfrzekLU24HYZ8KZdo7eKWVGKCgq5UB8FWhSj7
-	 Pi/1KG1ryfMHb4SEnCw0xn2nIAPrWTp1F3CzMvhSX5WDfnV+zP3f+r+J1IB0F5Fk/G
-	 tqVnDxr1S5xQQ==
-Message-ID: <4db2a6cc-0520-4712-b823-df157e71e7f0@kernel.org>
-Date: Thu, 7 Aug 2025 07:14:56 +0200
+	b=Wl6juYLtXIz23F4USucl/4TpTBLR6/EVLfm52TMDgKr8rHzoCm0NeXrX3q5WcugXy
+	 xpvQuSdOWbuf9MFSTgePh4NT7g4YjH+Njb6TmT0q4H5WZi2MID7IFaEig+f11LUYpZ
+	 sUTkED01vvpWi6DCXn+Ngf6mOpk8FeRLvAL11AoJnL0gEznsdh4EH0FBrWOtS84SPN
+	 6DdkTYj8NE1Va3wBDKIPKjFr+fVzy4dni+Ci7uYdPbuWjmhTlMChY5vbKcSRNP8p/o
+	 T5gh5KIDr7x7jenJvMANSegnSq5NTsPFe8RVkk/Ha24/Olwdonf/Nr5t4fUUozfTnX
+	 2cQ7KnLYMO9lQ==
+Message-ID: <b9f715c0-082f-46a3-b332-d5f6bf53ad71@kernel.org>
+Date: Thu, 7 Aug 2025 07:25:06 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,17 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Input: sysrq: delete unnecessary check
-To: Dan Carpenter <dan.carpenter@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Dmitry Safonov <0x7f454c46@gmail.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- kernel-janitors@vger.kernel.org
-References: <aJNAhHtKkhWjosDV@stanley.mountain>
+Subject: Re: [RFC PATCH 1/2] tty: serial/8250: Fix build warning in
+ serial8250_probe_acpi()
+To: Arnd Bergmann <arnd@arndb.de>,
+ Abinash Singh <abinashsinghlalotra@gmail.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Sunil V L <sunilvl@ventanamicro.com>,
+ =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20250805195155.742004-1-abinashsinghlalotra@gmail.com>
+ <f765eae4-f83e-4c25-9697-2705afd7b9b8@app.fastmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -86,19 +90,21 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <aJNAhHtKkhWjosDV@stanley.mountain>
+In-Reply-To: <f765eae4-f83e-4c25-9697-2705afd7b9b8@app.fastmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 06. 08. 25, 13:46, Dan Carpenter wrote:
-> This code checks if (write) is true twice in a row.  It's more
-> readable to delete the first check.
+On 06. 08. 25, 9:01, Arnd Bergmann wrote:
+> Note how serial8250_register_8250_port() ands up just copying
+> individual members of the passed uart_8250_port structure into
+> the global array of the same type, so one way of addressing
+> this would be to use a structure for initialization that only
+> contains a subset of the uart_8250_port members and can still
+> be allocated on the stack, or possibly be constant.
 
-Not sure why "Input" in $SUBJ, but regardless:
+Yes:
+https://lore.kernel.org/all/f84c2ee3-77b4-41c4-8517-26dfb44a2276@kernel.org/
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-thanks,
 -- 
 js
 suse labs
