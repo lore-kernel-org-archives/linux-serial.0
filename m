@@ -1,103 +1,95 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72CB4264A97
-	for <linux-serial@vger.kernel.org>; Thu,  7 Aug 2025 15:54:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92A871FDD;
+	Thu,  7 Aug 2025 21:31:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754582085; cv=none; b=ZuNNg2oG/mmJ5M79mTKXGiUFpPX0BDdlyi96nLvvKpY3QmHu7wmOsjJHMjwWcNW9P+xn71soCncPYxTdqHD0Lv7Fug+0KEfyd1c7waCX15Ym971GUPVcpnlvI/WFwvmwRVpUBd9ymlWHYz/qDD8A3Am9dnMjdJCyAH0DbkevePQ=
+	t=1754602274; cv=none; b=A7IkVGtOtB21+CL9ON80BZucJKbFR9SoD7ITwatUQDqV1+QpOnMrjgbFYArazIifLkZ4hu0vxK6mFR2o8iLI3TEleV+a+dxOw8orjir4Zl0LXLvQRTSMs0+YlVoUfry4AQiEKUKr3TxnMc61QqLK032K6t5FWyr7D6FXWlCFTTU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754582085; c=relaxed/simple;
-	bh=dQnC/rev4tac0Ts401jwqrEOatxbEZjF8FGi4DM7cuE=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=S3sq4cEXq3uxFBVLBEc3fSlqm80WK6reAK4YJPdK7ERbbjXTaFLVtbzaP/axDbKgmu9lrgW7sxKN/DaqdrcF92Tz1u9pPbon9EbZz4/yOIDW3ISLfYNbKyP2Bzhz0c1XNDIapsDcp6W/qsKOFGDLaPirSHyaLZVzi4m5IXlvSv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=pDhSkzzw; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1754602274; c=relaxed/simple;
+	bh=P7WK9QE7p5flsTIPnQzAvPVoV2lI06faOeXSYMAGWwg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qoOEfr3mCkwezwVLXRKgn4bF+MopKWOEDXB044AL3Z2uu1Mh67P62rIKZQTdvfQUCvYu0g5WepDIOVwcsnlagl8zDu8dULYMG6MI8RnAwQeENlfyyYDr7200tMLGRgsRtfjoKDF64YQrHalbbtvIrGx/HSeeVSvIax7anGha0K0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E5vEf8hV; arc=none smtp.client-ip=209.85.208.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pDhSkzzw"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-459ddada9b1so11174145e9.0
-        for <linux-serial@vger.kernel.org>; Thu, 07 Aug 2025 08:54:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E5vEf8hV"
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-60c9d8a169bso2544675a12.1;
+        Thu, 07 Aug 2025 14:31:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1754582082; x=1755186882; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ueKHvcoj//pcE68ugp7qzX4T0VIpPeXJwA1UBSmhQZM=;
-        b=pDhSkzzwsUQOUR01OauCzE+IMQQRfBYHOiGyhqD9G9K4zHjwihWk7kgvgNnp5AZb2f
-         mLbQ8hTSe1TN4ZoE+NdwzQ0U8roQeam3U5gTnv+yfdx+G27kNNMnkcWq/vB6viZ9H0WF
-         /I3eABW8I5UO8zswUYxbSFU0zo8d1hHIVJa5eGD3MfFM65lgYLJRXr85qbkfb/3UmgFn
-         86zKt8Ox/KFit+ZsShPaynooikEJEKjRAbwtxSxEtYRFeRptp7mhM0X4wECqpMaRfHYX
-         5j2l45ACw05K73vaKVn9KGeFb8CKQDD5ClGrEnL9gHvCSf1zQDPy2Sjx6iyWKkoRy+Xc
-         CjRg==
+        d=gmail.com; s=20230601; t=1754602271; x=1755207071; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wgfxSNLXY/uBMR5oXfd5TU83h05FDRu/Eprncb9W5vM=;
+        b=E5vEf8hV6CqiOSsoaDdUbgpM9QA0cved7UIccFayolC++gsVfaJzvxjHATP+8w13Rp
+         Kaou7LG28beaFIs8TVDSh7q0YkXwh6NJLNQLCXYF1VYJGJh4thsipvwiVNj4imJkFLjY
+         mcWtaFAB4Ldb1T2FD+k6/Ej8eyUk2Z1Ph9H+0jGvcJzkjm9x2pLC8AvONGPSKz+yTOZM
+         kAyDnCptgxKiiS+2zeowdqd6ag+fZc4bp6LLe5qNME7jCwBZ+Gp1fr4XWBXtTDomYeti
+         cInqOQ4bcQFj5HDdHJLo01hX6VQFZBdInvBJbqxs7q1q7mUmlEFESQ7sLR4zLqAK47GV
+         7WIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754582082; x=1755186882;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ueKHvcoj//pcE68ugp7qzX4T0VIpPeXJwA1UBSmhQZM=;
-        b=ia52MXBpt4Zpdo3KKT6ntghDSeu1U+JGQjtU0dI/lOpBMB9jCKA/46klEww9SzL4kP
-         dc0sUaL375A1HKxNMPlp39cFJYyYOt0sI4757Rt3EN+6HNsp6HlWjHlUE6T2TeOw9alQ
-         aR2qKruKrb+/XtHVBiI08tZMfmDPZ6jqiSzSkGaHFjehp/y9KbNNLWoEaqydwE/3u+BQ
-         akrr4iEL6dWmcLRGY5apT/OW+xMYIFjm6sNZqL2ssUDy9pyjO6PFqlge7tpFo5pKmm6k
-         Xv/3zVa4vUaqiBd2iyiBmk9i8Z9C/vaO1/mdrjQpgjwkUfkql7gFH1jzP5eCTT2hdyTk
-         tj3g==
-X-Forwarded-Encrypted: i=1; AJvYcCWHowzeWtOG8OJBDadAulwLOSL/eCfIMctrDHEWqqy2551duPaqDQqr/gjAIrreS8hXGD6pBhSfQnCzCgY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzZKS9ic2hg6TI/4Jq/jzo2k1bvw/B8W01fwm6kpkczWTa0nWRt
-	ROxAK1vupCprfyLFSx6Z68G5IrlEH6zvezcEFPvBpT9hA/Pa2jtctTog+mYm9zgQeyU=
-X-Gm-Gg: ASbGncufG+elvptfUvPiMVZ9MTynIV89tj3xpX78Dt/EnnOMiWwj/Vo/MkLwSaKJBok
-	VkUcgSlwLhNFmK9uwxGDJguDgmHY3Z6jBkYKm2mWFlGLgJPCLa6GtlRlLVggl3UENZIgjrAkpcg
-	5fOK79nGxj8bb+kuLbwdQeWFaSvD7duh9v3YdROkM5IlP08jAEQD0XrdVSr1xtiUuLJLs9A6pYV
-	73vRfqGG9PhwrEnzz5CcThaHfL9lJNg4vo8e+ievoHvG77MuudPisfSkorophD4CSmQX3PH/pqc
-	Xta5oI2nxEtYGexdy6aZzaCyTvQ7Hkzo5cjZJzDFE7kJLW/SLwWdPK70tgYggHvna79XE11bcsY
-	ySa9Ftxqs6JtvqKWbT6Wr8dS7qJU=
-X-Google-Smtp-Source: AGHT+IFZ7tU4QT0M69GUy2O5NIPrZtS9sVVhdfW1gHaibbjzTCtPYoGYDhegeuvn9CZmTQptWfLgtA==
-X-Received: by 2002:a05:600c:5254:b0:453:81a:2f3f with SMTP id 5b1f17b1804b1-459e74bc7a7mr74819405e9.30.1754582081709;
-        Thu, 07 Aug 2025 08:54:41 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-459dc900606sm162804165e9.15.2025.08.07.08.54.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Aug 2025 08:54:40 -0700 (PDT)
-Date: Thu, 7 Aug 2025 18:54:37 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: [PATCH] serial: max310x: Add error checking in probe()
-Message-ID: <aJTMPZiKqeXSE-KM@stanley.mountain>
+        d=1e100.net; s=20230601; t=1754602271; x=1755207071;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=wgfxSNLXY/uBMR5oXfd5TU83h05FDRu/Eprncb9W5vM=;
+        b=UCky9s+qWuFGEH6XnEUES/KyAVehKXvPeSYsm5nHTXM7BSjjzfmfEHv0ssOMqoSVg5
+         cixHLju5oJdrdqyNHBBi0m7tDt7zyVTXKizINS5dcA0EzrlvWiNvGzB/3pgzo8sr07RX
+         paL26QNLkJSzO/EOXMaZJ4ZO+Oz90GimE76AWBg8LFDZJS4sabKcF9vWyC5xn/Q8+/HH
+         88QXuLfFy/et6/EpN0pBvm1OOq+46UueatGPSvfNg5rHq0qLeXSI330CoepPHlimp2CR
+         UJGtnsIMt6xYfC3Uen6HWxrt8t3MckZWAjhmXoIgPqUBNv56p1TGmfbhdQC9Vzzu9bl9
+         l/yw==
+X-Forwarded-Encrypted: i=1; AJvYcCWGbWE7UWYIzwBG0J16wpX/a2Ydg+aTH3iQ6Zij2o+ANkdo+ixWJOF+CLrNohla9oDS8cMZiePylCBDaApCef8=@vger.kernel.org, AJvYcCWT3u+NzIZdqvHZPduxZnd5fU4qvByuO7RLYKfGYCO3fXiGq9yW5jlKUw4HM2Pvo/4pu/P0Ady/KkqKU2OC@vger.kernel.org, AJvYcCXZKt8/yAUCtA0esQ9rGoXJkGgs31/qtJR0vKQ50VuTwRG1Q+DDxD7myFr4T5/GppGUd1ByJVM26I/z8xN9@vger.kernel.org
+X-Gm-Message-State: AOJu0YzfVX0HAioPxDokGIlf7MYf+MMOSIgk0aSZ80sibM0TEDDSlqPF
+	T9ekVvRAZJPap4Pvko34+d5S0sO/XJBTz1wqnajg+Z1y9b80gngTnxaYZm2aG4aM6c7rJ0gfalZ
+	NABNup9Z0zvYLdUyN3VVeK646q1lmcx9CnODNJJQ=
+X-Gm-Gg: ASbGncuZ5ITbAMS4XWnLr2fkyuwJe81fy1BzrT/BDSBNge2SjThDYdKhb2f481TE47Q
+	Ozn06HXK2i1ZOrXcEGdO2YTjpuwkl9NApqDT+zZosOuw19nWdiRgmF4yhZuCDDXZdS+oRqZ9RFZ
+	rXK03JkZqDJD1Uk8GLKa1yqVhQEzkDQj+WIFt/eixAvZ67s20WPWMoYYLZJiJhOtJ0aBXyxpPYH
+	UcyFxaGFczqCIvnq4Ifc+1vtWSIj9OEAlqJ5V8ixi35baU/kL1F
+X-Google-Smtp-Source: AGHT+IH1OSj1D0U+HcwnAVYgXw1ssRAWe4/Kyi1Y+QVMHvDklmj5x/83T5iWCB/sL/xFR/od2I9UmItDgFszJEXNe1k=
+X-Received: by 2002:a17:907:7fa4:b0:aec:76c6:6ef6 with SMTP id
+ a640c23a62f3a-af9c6525a10mr32605066b.50.1754602270577; Thu, 07 Aug 2025
+ 14:31:10 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
+References: <aJTMPZiKqeXSE-KM@stanley.mountain>
+In-Reply-To: <aJTMPZiKqeXSE-KM@stanley.mountain>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Thu, 7 Aug 2025 23:30:34 +0200
+X-Gm-Features: Ac12FXwNfnuNMdq6_9-Y0wRL6ipI8DXi0g1PoohCNxW0ckNm3vyw9lpt_0qVtrA
+Message-ID: <CAHp75VcVA+yARTBvcOiKYdhgxtS_YQ82Xd-R4o98OTGp167ZQw@mail.gmail.com>
+Subject: Re: [PATCH] serial: max310x: Add error checking in probe()
+To: Dan Carpenter <dan.carpenter@linaro.org>
+Cc: Cosmin Tanislav <cosmin.tanislav@analog.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Check if devm_i2c_new_dummy_device() fails.
+On Thu, Aug 7, 2025 at 5:54=E2=80=AFPM Dan Carpenter <dan.carpenter@linaro.=
+org> wrote:
+>
+> Check if devm_i2c_new_dummy_device() fails.
 
-Fixes: 2e1f2d9a9bdb ("serial: max310x: implement I2C support")
-Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
----
- drivers/tty/serial/max310x.c | 2 ++
- 1 file changed, 2 insertions(+)
+...
 
-diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-index 541c790c0109..2b42a4c21a9b 100644
---- a/drivers/tty/serial/max310x.c
-+++ b/drivers/tty/serial/max310x.c
-@@ -1644,6 +1644,8 @@ static int max310x_i2c_probe(struct i2c_client *client)
- 		port_client = devm_i2c_new_dummy_device(&client->dev,
- 							client->adapter,
- 							port_addr);
-+		if (IS_ERR(port_client))
-+			return PTR_ERR(port_client);
- 
- 		regcfg_i2c.name = max310x_regmap_name(i);
- 		regmaps[i] = devm_regmap_init_i2c(port_client, &regcfg_i2c);
--- 
-2.47.2
+>                 port_client =3D devm_i2c_new_dummy_device(&client->dev,
+>                                                         client->adapter,
+>                                                         port_addr);
+> +               if (IS_ERR(port_client))
+> +                       return PTR_ERR(port_client);
 
+I'm wondering if this is indeed a critical error in this case, but okay.
+
+--=20
+With Best Regards,
+Andy Shevchenko
