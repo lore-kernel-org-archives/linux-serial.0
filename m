@@ -1,190 +1,172 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f66.google.com (mail-ej1-f66.google.com [209.85.218.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1EB120297C;
-	Mon, 11 Aug 2025 12:21:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8FC118EB0
+	for <linux-serial@vger.kernel.org>; Mon, 11 Aug 2025 15:18:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754914899; cv=none; b=N7yIdtto8H7RttXuXZZG91RZQaPIHvmReq+0B5ywaIb1yw2c1vIEn45aSwWzQyeai2UXUQsxxGyJj16pPR5C+LEAmoikS25D5bIZCqNcjErSRx82Ei3G45NcoVNAYktPqMgjuVdHFQ9ys2JFqUx6cwl6bllG6KQ08mKTrEX4/Jk=
+	t=1754925487; cv=none; b=LntcuRPfjomO0nx1nxzE5Jp08kLqz4yHkS/XG1anMzrx0c9cla8Q01OwK2ijM2b0jDyLLim4+J9UDEOvmnYIMfQ3tsGSszRihO5iAiiCKRp9CnBoTmzXpv308z8rAdgK++Y6meOtNhlSHXc/FaQtaDeHhtltkZmR+8UOo6IV+yM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754914899; c=relaxed/simple;
-	bh=Ql1JCgnCHCe7QLdED93B26Cg21+RnnwnTV77huzWi0s=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qs5yb3LZ9T9r1boC0kmChmGGQgCnOnAYtFC4/872CQZE4MAiL3vP3sNNWHqVosQzV6q5oXKWultRfdNEUgN7ZmidAmoFvz0LQcOyhw8gkRDkdDaiCYKukmP06UCTnEq5bvtXODAzHrLAdWZxiDy44bmwhhGNNYXipg67V3XSw9w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=Gpl0cloj; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1754925487; c=relaxed/simple;
+	bh=6a2jpr8RqbOo+9g1f65WPhHWahy1fmVBwuuQHvaAios=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Tp3jktmhdWevN/5prDFYeVeDKAc3WJj8NdvgHtLPMHw5xR+nHvVBdUNZdvq1WpnwNbnlz46dyZgr12y67J0Gg/H1+GExKo5CSmA2SKT17NmhhKZlS9TMnGx5vw7zM0Zerayo/NCjzaebPaz+dkp1E0y2NE68HSgIRAy4Kjdnx88=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=PTz32NZK; arc=none smtp.client-ip=209.85.218.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="Gpl0cloj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1754914898; x=1786450898;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Ql1JCgnCHCe7QLdED93B26Cg21+RnnwnTV77huzWi0s=;
-  b=Gpl0clojgNadKcllAmuS5qeyr7U61wJHDZdoNrUpvQXfyYR/YcdiLIZZ
-   T/jJBrCdcFKKzgbl3tGf/K1pgZlnW+Wc2VVlRfjOgsTxTC0nXKo4JeT24
-   w6mnq55pqVRBeHTtrE7glPy239HLTPGbZokXHQdr1TeRPb5L4wjt9cgTH
-   BItjbrQ7jbkciy1t/uzQKgEoxZuQhBrpLN2wBn/Wz+MJZCOtQh+n47bpU
-   ELZLDE0f7x2RiAzlNQpwJj/qDLJv2+YdqJX7tCm/sRGy3Sbr1qWmGjXa7
-   kvztThpDlB8CDVKa6CkdGzraZDppxs/7+5hxV7+cCLmBt84aUAVnNWAhV
-   w==;
-X-CSE-ConnectionGUID: wyxru+5XTMK+lbiHaXZ4+w==
-X-CSE-MsgGUID: 5Wwrm8/ITrONPZG1z6ylXA==
-X-IronPort-AV: E=Sophos;i="6.17,278,1747724400"; 
-   d="scan'208";a="45644208"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Aug 2025 05:21:28 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Mon, 11 Aug 2025 05:20:58 -0700
-Received: from DEN-DL-M70577 (10.10.85.11) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
- Transport; Mon, 11 Aug 2025 05:20:53 -0700
-Date: Mon, 11 Aug 2025 12:20:53 +0000
-From: Daniel Machon <daniel.machon@microchip.com>
-To: Robert Marko <robert.marko@sartura.hr>
-CC: Nicolas Ferre <nicolas.ferre@microchip.com>, Arnd Bergmann
-	<arnd@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	"Russell King" <linux@armlinux.org.uk>, Claudiu Beznea
-	<claudiu.beznea@tuxon.dev>, Catalin Marinas <catalin.marinas@arm.com>, Will
- Deacon <will@kernel.org>, Olivia Mackall <olivia@selenic.com>, Herbert Xu
-	<herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>,
-	Vinod Koul <vkoul@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, Lee Jones
-	<lee@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<linux-crypto@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-	<linux-i2c@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-	<linux-serial@vger.kernel.org>, Oleksij Rempel <o.rempel@pengutronix.de>,
-	<luka.perkov@sartura.hr>, Conor Dooley <Conor.Dooley@microchip.com>, "Lars
- Povlsen - M31675" <Lars.Povlsen@microchip.com>
-Subject: Re: [PATCH v8 01/10] arm64: Add config for Microchip SoC platforms
-Message-ID: <20250811122053.4bfyoefln7wpz2a4@DEN-DL-M70577>
-References: <20250702183856.1727275-1-robert.marko@sartura.hr>
- <20250702183856.1727275-2-robert.marko@sartura.hr>
- <ea353170-6e03-4231-afc2-3dc45253931d@app.fastmail.com>
- <CA+HBbNHxiU5+xVJTyPQFuCJLyEs5_MpybSBEgxi25bzaGfiVHA@mail.gmail.com>
- <421d61db-27eb-4ad2-bd98-eb187fd14b1e@microchip.com>
- <CA+HBbNEiKWS71jtF_jqV9bdX9HVroaZSGMaeD-xFM8sm0kLtCw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="PTz32NZK"
+Received: by mail-ej1-f66.google.com with SMTP id a640c23a62f3a-af95ecfbd5bso749961666b.1
+        for <linux-serial@vger.kernel.org>; Mon, 11 Aug 2025 08:18:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1754925484; x=1755530284; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ihP/wnPXyZhWgHPlteto2ft6qT692i4bL35PGC7Kwgs=;
+        b=PTz32NZKUVFpakySMNj8LpNGl769jNxKtf2Wy2ymGDpQ1rdL34X1N0i6Iw8o+o2MM/
+         YgToy6bi3CvB09Thb9NkMbRZgGzIPfjFqW8Tym+y3F2q/UqbFF+c9n1Gce2zRoHdbyqA
+         if5T7ME6CpfQHdBtTWcFmjSFbhz48aK87tXccE6m0GR3KIsthGXl+b+Gma3jOJETjc6i
+         p+y04GYSnB6IuQUMzz0DePBr8f6NK4PzxfEfBOQJ9IXVwqA5p3fBB4uP/CKQkKhRZAt6
+         8yFUS+C1VkvuYKAu9T3zmnUcwVJbSvFpuout3mjbyjYwA3bwoPafqymJZP7KrTEOWrGQ
+         ayYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1754925484; x=1755530284;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ihP/wnPXyZhWgHPlteto2ft6qT692i4bL35PGC7Kwgs=;
+        b=sHab/YnVCqnFin7XEoMcvqmEr7Mn9Izr6BaQLI8TCUAnHuFQG88iuWmbSoqf0185Y9
+         AHfQaXiHwunthfMS+a8uFarntuFoVqmk3nmQIfdRxXbTwXMcCFWB3NzeYiYArQGUDVmc
+         aHv4eHtfgzbgZESbVY/QADHBfXtx78OlSUf0cDF+dE6xUBi8yn9Nxy8JFbJ3ajkmjxLT
+         LgquYt9cKYAiPa0qUNB5eZ60ic+3SpqHHSg/gTaJo6icHm4wXbX2faHwxntapa0YndVV
+         BOthdzQz2aMe0em/WTAxtVqWR5QwYtnILjQ+B10K3sVbPGd14ri9JX/2Wd65LzBReM25
+         29LQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXpcsL7pTNkHa8BokOglU0zZSwjFafjTMZISxlFhfyACJZ+oilJhFI7l+J3J5QTUx+Iql7ZVPeJB8GqKh0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzfJ2edYsAql1kmEdnfWSfHsCkpVhwK4wj8MZa95SkmR78bCULo
+	4EB0Msc6ZKgVxq5etMVbqiZqE5fTu78LuKYrQK9yvLQIbf0ZFhPOtN6uIt91lybcTDI=
+X-Gm-Gg: ASbGncuL2iGP9J9MHyimDAefPd4WnCLhvAtXMDLuwFwOm6h+l9zXnVHg/6/LIROfSbk
+	vy8hEqMldXYMdZ7mDSuqKmFVBZ2RlGqkczwpbUr+8kmrEZr0r4L07e9BJKMATWiVlzNRXHimPgW
+	fbkw0q9aAuHWd/FUlP8wp5iULvUFtYn/Leuz2aoYAvrFpRhlkxCuDpWC+FnlLGi2uDgaVqciBJ4
+	kzP+F/3YZ4T8ugKNWmcT6n2VPW+Q6XucoJ5/ldoRnsXLyqIrRmV90iJKCb27QGWpj2+fH1b7Om0
+	9qjKB683XGUXwLdPWWs9hVZUcg0ClujU8Scm7DOJR0JmKMRqZyt8zbjtYitKVgxQF/HZ9aAfmKq
+	wFqGB+qN176+CZaqvyv26OV1Awg8l1oo6kt0sG5LP5nW52bkLTQQEUlXtH/McFXcykQ==
+X-Google-Smtp-Source: AGHT+IGvJ3ayAmkrGkViVLnbNoPZ1sMap6TBv2tr1d6iu6pDDVV5j4fRLfmHXE5vLfntRBsHIUMHNQ==
+X-Received: by 2002:a17:907:608b:b0:af9:5b1f:b87a with SMTP id a640c23a62f3a-af9c64791a2mr1210151866b.20.1754925484035;
+        Mon, 11 Aug 2025 08:18:04 -0700 (PDT)
+Received: from localhost (host-79-44-170-80.retail.telecomitalia.it. [79.44.170.80])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-af91a21c081sm2014946666b.97.2025.08.11.08.18.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Aug 2025 08:18:03 -0700 (PDT)
+From: Andrea della Porta <andrea.porta@suse.com>
+To: linus.walleij@linaro.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	florian.fainelli@broadcom.com,
+	wahrenst@gmx.net,
+	linux-gpio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	iivanov@suse.de,
+	svarbanov@suse.de,
+	mbrugger@suse.com,
+	Jonathan Bell <jonathan@raspberrypi.com>,
+	Phil Elwell <phil@raspberrypi.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>,
+	linux-mmc@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>,
+	linux-serial@vger.kernel.org
+Cc: Andrea della Porta <andrea.porta@suse.com>
+Subject: [PATCH 0/6] Add peripheral nodes to RaspberryPi 5 DT
+Date: Mon, 11 Aug 2025 17:19:44 +0200
+Message-ID: <cover.1754924348.git.andrea.porta@suse.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+HBbNEiKWS71jtF_jqV9bdX9HVroaZSGMaeD-xFM8sm0kLtCw@mail.gmail.com>
 
-On Fri, Jul 04, 2025 at 07:36:06PM +0200, Robert Marko wrote:
-> 
-> On Thu, Jul 3, 2025 at 3:56 PM Nicolas Ferre
-> <nicolas.ferre@microchip.com> wrote:
-> >
-> > Robert, Arnd,
-> >
-> > On 03/07/2025 at 14:25, Robert Marko wrote:
-> > > On Wed, Jul 2, 2025 at 9:57 PM Arnd Bergmann <arnd@kernel.org> wrote:
-> > >>
-> > >> On Wed, Jul 2, 2025, at 20:35, Robert Marko wrote:
-> > >>> Currently, Microchip SparX-5 SoC is supported and it has its own symbol.
-> > >>>
-> > >>> However, this means that new Microchip platforms that share drivers need
-> > >>> to constantly keep updating depends on various drivers.
-> > >>>
-> > >>> So, to try and reduce this lets add ARCH_MICROCHIP symbol that drivers
-> > >>> could instead depend on.
-> > >>
-> > >> Thanks for updating the series to my suggestion!
-> > >>
-> > >>> @@ -174,6 +160,27 @@ config ARCH_MESON
-> > >>>          This enables support for the arm64 based Amlogic SoCs
-> > >>>          such as the s905, S905X/D, S912, A113X/D or S905X/D2
-> > >>>
-> > >>> +menuconfig ARCH_MICROCHIP
-> > >>> +     bool "Microchip SoC support"
-> > >>> +
-> > >>> +if ARCH_MICROCHIP
-> > >>> +
-> > >>> +config ARCH_SPARX5
-> > >>> +     bool "Microchip Sparx5 SoC family"
-> > >>
-> > >> This part is the one bit I'm not sure about: The user-visible
-> > >> arm64 CONFIG_ARCH_* symbols are usually a little higher-level,
-> > >> so I don't think we want both ARCH_MICROCHIP /and/ ARCH_SPARX5
-> > >> here, or more generally speaking any of the nested ARCH_*
-> > >> symbols.
-> >
-> > Well, having a look at arch/arm64/Kconfig.platforms, I like how NXP is
-> > organized.
-> >
-> > SPARX5, LAN969x or other MPU platforms, even if they share some common
-> > IPs, are fairly different in terms of internal architecture or feature set.
-> > So, to me, different ARCH_SPARX5, ARCH_LAN969X (as Robert proposed) or
-> > future ones make a lot sense.
-> > It will help in selecting not only different device drivers but
-> > different PM architectures, cores or TrustZone implementation...
-> >
-> > >> This version of your patch is going to be slightly annoying
-> > >> to existing sparx5 users because updating an old .config
-> > >> breaks when ARCH_MICROCHIP is not enabled.
-> >
-> > Oh, yeah, indeed. Even if I find Robert's proposal ideal.
-> >
-> > Alexandre, Lars, can you evaluate this level of annoyance?
-> >
-> > >> The two options that I would prefer here are
-> > >>
-> > >> a) make ARCH_SPARX5 a hidden symbol in order to keep the
-> > >>     series bisectable, remove it entirely once all references
-> > >>     are moved over to ARCH_MICROCHIP
-> > >>
-> > >> b) Make ARCH_MICROCHIP a hidden symbol that is selected by
-> > >>     ARCH_SPARX5 but keep the menu unchanged.
-> > >
-> > > Hi Arnd,
-> > > Ok, I see the issue, and I would prefer to go with option b and do
-> > > what I did for
-> > > AT91 with the hidden ARCH_MICROCHIP symbol to avoid breaking current configs.
-> >
-> > Yep, but at the cost of multiple entries for Microchip arm64 SoCs at the
-> > "Platform selection" menu level. Nuvoton or Cavium have this already, so
-> > it's probably fine.
-> 
-> Yes, this is why I went with a menu instead, to me it is much cleaner.
-> 
-> So, how would you guys want me to proceed?
-> 
-> a) Keep the menu-based config symbol
-> or
-> b) Like for AT91, add a hidden symbol and keep the individual SoC-s in
-> the top level
-> platform menu?
-> 
-> Regards,
-> Robert
+Hi,
 
-Hi Robert,
+The following patches add a few peripheral DT nodes and related pin/gpio
+nodes for Raspberry Pi 5.
 
-Sorry for the late reply.
+This brand new patchset (hence it's a V1) is the second part of the split-up
+of the patchset [1]. It tooks patches 3 to 6 from there and adds a couple
+of new patches that amend the DT bindings.
+As a result, patchset [2] is a prerequisite for this patchset.
 
-I appreciate the effort to make the addition of future symbols easier by using
-a common ARCH_MICROCHIP symbol — that makes sense to me.
+- Patch 1 and 2: Amend the bindings to avoid DT compiler warnings.
 
-Regarding the actual symbols, I’m certainly no expert, but I agree with
-Nicolas, that having more granular control with separate ARCH_SPARX5 and
-ARCH_LAN969X could make sense, as opposed to only having ARCH_MICROCHIP, as
-Arnd mentioned.
+- Patch 3: Adds core pinctrl nodes and defines SD pins as a first appliance
+  for the pinctrl.  
 
-As for the goal of using a common symbol for drivers to depend on,  while not
-breaking existing configs (are there any unwritten rules or practices about
-breaking existing configs?), I think option B will work fine. I dont mind the
-symbols being top-level.
+- Patch 4: Wires the gpio-key for power button and related gpio controller.
 
-/Daniel
+- Patch 5: Adds DT node for WiFi.
 
+- Patch 6: Adds Bluetooth DT node.
+
+All comments and suggestions are welcome!
+
+Happy hacking!
+Ivan and Andrea
+
+Links:
+[1] - https://lore.kernel.org/all/cover.1752584387.git.andrea.porta@suse.com/
+[2] - https://lore.kernel.org/all/cover.1754922935.git.andrea.porta@suse.com/
+
+
+CHANGES since [1]:
+
+--- PATCHES ---
+
+- Add two new patches (1 and 2) that amend the DT bindings.
+
+
+--- DTS ---
+
+- bcm2712.dtsi: Added 'interrupt-names' and dropped 'reg-shift' and
+  'reg-io-width' properties in uarta DT node. The latter two are
+  just overridden by driver code so setting them in DT is useless.
+
+- bcm2712-rpi-5-b-ovl-rp1.dts: dropped 'auto-flow-control' property
+  since it's not parsed in driver code.
+
+
+--- DT BINDINGS ---
+
+- brcm,sdhci-brcmstb.yaml: added SDHCI capabilities by including
+  sdhci-common.yaml.
+
+- serial/brcm,bcm7271-uart.yaml: let clock-frequency be an alternative way
+  to specify the clock speed instead of clocks/clock-names.
+
+
+Andrea della Porta (2):
+  dt-bindings: mmc: Add support for capabilities to Broadcom SDHCI
+    controller
+  dt-bindings: serial: Add clock-frequency property as an alternative to
+    clocks
+
+Ivan T. Ivanov (4):
+  arm64: dts: broadcom: bcm2712: Add pin controller nodes
+  arm64: dts: broadcom: bcm2712: Add one more GPIO node
+  arm64: dts: broadcom: bcm2712: Add second SDHCI controller node
+  arm64: dts: broadcom: bcm2712: Add UARTA controller node
+
+ .../bindings/mmc/brcm,sdhci-brcmstb.yaml      |   2 +-
+ .../bindings/serial/brcm,bcm7271-uart.yaml    |  19 ++-
+ .../dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dts  | 133 ++++++++++++++++++
+ arch/arm64/boot/dts/broadcom/bcm2712.dtsi     |  47 +++++++
+ 4 files changed, 198 insertions(+), 3 deletions(-)
+
+-- 
+2.35.3
 
