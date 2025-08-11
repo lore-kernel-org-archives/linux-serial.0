@@ -1,283 +1,190 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 985932D29C2
-	for <linux-serial@vger.kernel.org>; Sun, 10 Aug 2025 22:14:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1EB120297C;
+	Mon, 11 Aug 2025 12:21:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754864090; cv=none; b=kBan2K0scLiQc3KyCk7BwahJWYb1tFrtZRGpECQt234xiHlAX9k0S1zqwqXYaLdUzgBWs0Fd3zxra9gygD4281yfAQZIXFralZsOp+GRqVc8EARA892feEzzG6Tx0Bf7noxx6wdk6jvpH7zyfKUtOc5lem3fY20OHzMTKwNV/0A=
+	t=1754914899; cv=none; b=N7yIdtto8H7RttXuXZZG91RZQaPIHvmReq+0B5ywaIb1yw2c1vIEn45aSwWzQyeai2UXUQsxxGyJj16pPR5C+LEAmoikS25D5bIZCqNcjErSRx82Ei3G45NcoVNAYktPqMgjuVdHFQ9ys2JFqUx6cwl6bllG6KQ08mKTrEX4/Jk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754864090; c=relaxed/simple;
-	bh=jz7/9LA5nqtTc8DEmJ3tySqiNMryRr+zseg+ZWr6gdc=;
-	h=From:Date:Subject:MIME-Version:Message-Id:To:Cc:Content-Type; b=LFwkIJ0D2Ih8qWyH2e0c0RDd2IfUjfrCFa8Rn9UZSVn9qbCVuf8gLVxlcSgNxlWJyGYlBcedwCtSgQGSHGJvCaDkLcpaur+kcz4qb8xbX9PtjIgZRr4TsKqJxJrugZuQYHn1OA6QaQTtXMfqZHDOqbhGgZ5aUzZ/YL6G6RNno4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=LQUeECtV; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1754914899; c=relaxed/simple;
+	bh=Ql1JCgnCHCe7QLdED93B26Cg21+RnnwnTV77huzWi0s=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qs5yb3LZ9T9r1boC0kmChmGGQgCnOnAYtFC4/872CQZE4MAiL3vP3sNNWHqVosQzV6q5oXKWultRfdNEUgN7ZmidAmoFvz0LQcOyhw8gkRDkdDaiCYKukmP06UCTnEq5bvtXODAzHrLAdWZxiDy44bmwhhGNNYXipg67V3XSw9w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=Gpl0cloj; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LQUeECtV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1754864087;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding;
-	bh=2GwKtVFUrlpaPE1JQwv83mROvsduJB26dF0XiBC388g=;
-	b=LQUeECtVdC8fAX+4LEkR3S2K7WUo7XtFqaXXhtWYg5/ZV0lQFgKiaEnaBJ9mMf2T7dBk4I
-	aIbQd8NaZTdJrkSHLEbgNHjuEFZ7fP8xIqr0wtmtO3FLCtR0cs0FSPBEiIqOR8Q/4AuS1t
-	543kT75zcgrRyRX7wTy6VK+QZOQjyek=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-643-gO37-1h3MTuF-mTsMpUoFg-1; Sun, 10 Aug 2025 18:14:44 -0400
-X-MC-Unique: gO37-1h3MTuF-mTsMpUoFg-1
-X-Mimecast-MFC-AGG-ID: gO37-1h3MTuF-mTsMpUoFg_1754864084
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-7e7ffcbce80so867189985a.3
-        for <linux-serial@vger.kernel.org>; Sun, 10 Aug 2025 15:14:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754864084; x=1755468884;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2GwKtVFUrlpaPE1JQwv83mROvsduJB26dF0XiBC388g=;
-        b=qEOFI+Go9D5FXrBa8IiKpJBA65PZAWKnDdFNImXdVlt6/sFF8TEkucNpGoErOwVfwU
-         EY9mGULHonbyJDWerMba1yCZXGOS75fhdQy1LBv2bganqs6p5LP8rMbldKKenFPUg/AP
-         XMHtYDXUdkMyw71JGzmkFlJ0N3QGhTkD27q3IikFwFQ46vs2AUAZfu2HhyzdTXfEsxq4
-         L+k0jWdLkdjPEwc/Vg//WeNzOK/aiT2wvv21fufWDwV1iZSIKyWmrDg9T27mzm5Ox2mm
-         XOR2/4PCA06e2hOvb310swQ8GP/NrAlYHL5d1qSfzB/r2u0aT4Bf4gP7o98xOESX37VZ
-         bAXA==
-X-Forwarded-Encrypted: i=1; AJvYcCWAFSSi7OGpKw5BryoviFrVdnbwA2/q7mwIruOXD6B3cgQcX8jt8Fl8U4o83qDEUiim9Nx8Qkzy9MvGGB0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxTZPVBeAZPw1JFKfNh8TT6hoINoO1NdvHE1PTMhMyDvFHBFttF
-	uZz3yAGIPgM6yVElwyxlkDBvuVF+pNaiY7JbpOCXXxVLIIT3HveXoCHytnRwl+HzOEYRWbtP3fP
-	4wRLYft9TlS6mYvqieYdduwsVjSnhDDanT7JMQAG6vnsqy05D60sSKwEVjMIyb1TsAQ==
-X-Gm-Gg: ASbGncsIUF/n+L7wGRNU3mlAEV+RBrEMOe3V+6ZyOFCnODfFgxqFDp0+wxNIdjOY09F
-	tpyBe7iX+Gdu1D11OJnMvDLisDMJj36hU6fO9Zt2fzRYoV6pahJhN8xR6UieZA0tllvd0DTE8by
-	sYNGxJNQq3yduqWx54MK22HOzkf4P+4n9o2hmVq6lpsuImbSm1VX9xUdQ2mrgPXErhqAFw07o0y
-	pMi/sUY86fXyn60XQX+ipVPmIltv3BiwuIvHxEzF8BhxZ4G1JhNHfsV+m/NvLWEHtSorE6IbGmq
-	0DKhrnf/f8aZ+et6dinxdY+WdoKqCvIBldTEb4JqP1ipkPVGeGNUb1bOGsAuGd1k8pKslBXUgA/
-	bYjDg1Q==
-X-Received: by 2002:a05:620a:4d51:b0:7e7:fc32:f07f with SMTP id af79cd13be357-7e82c69ba2amr1112914685a.22.1754864083682;
-        Sun, 10 Aug 2025 15:14:43 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IG9NI96bWeLh5lxwdnlOadp7uqXcJhAUsM8BjFicctQ3xkj0L8GeIoemwkVa7G3O4MR88fcEg==
-X-Received: by 2002:a05:620a:4d51:b0:7e7:fc32:f07f with SMTP id af79cd13be357-7e82c69ba2amr1112912385a.22.1754864083264;
-        Sun, 10 Aug 2025 15:14:43 -0700 (PDT)
-Received: from [10.144.145.224] (c-73-183-52-120.hsd1.pa.comcast.net. [73.183.52.120])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7e80c0e6ff2sm859068285a.30.2025.08.10.15.14.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Aug 2025 15:14:42 -0700 (PDT)
-From: Brian Masney <bmasney@redhat.com>
-Date: Sun, 10 Aug 2025 18:14:25 -0400
-Subject: [PATCH] tty: serial: mvebu-uart: convert from round_rate() to
- determine_rate()
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="Gpl0cloj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1754914898; x=1786450898;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Ql1JCgnCHCe7QLdED93B26Cg21+RnnwnTV77huzWi0s=;
+  b=Gpl0clojgNadKcllAmuS5qeyr7U61wJHDZdoNrUpvQXfyYR/YcdiLIZZ
+   T/jJBrCdcFKKzgbl3tGf/K1pgZlnW+Wc2VVlRfjOgsTxTC0nXKo4JeT24
+   w6mnq55pqVRBeHTtrE7glPy239HLTPGbZokXHQdr1TeRPb5L4wjt9cgTH
+   BItjbrQ7jbkciy1t/uzQKgEoxZuQhBrpLN2wBn/Wz+MJZCOtQh+n47bpU
+   ELZLDE0f7x2RiAzlNQpwJj/qDLJv2+YdqJX7tCm/sRGy3Sbr1qWmGjXa7
+   kvztThpDlB8CDVKa6CkdGzraZDppxs/7+5hxV7+cCLmBt84aUAVnNWAhV
+   w==;
+X-CSE-ConnectionGUID: wyxru+5XTMK+lbiHaXZ4+w==
+X-CSE-MsgGUID: 5Wwrm8/ITrONPZG1z6ylXA==
+X-IronPort-AV: E=Sophos;i="6.17,278,1747724400"; 
+   d="scan'208";a="45644208"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 11 Aug 2025 05:21:28 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Mon, 11 Aug 2025 05:20:58 -0700
+Received: from DEN-DL-M70577 (10.10.85.11) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
+ Transport; Mon, 11 Aug 2025 05:20:53 -0700
+Date: Mon, 11 Aug 2025 12:20:53 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Robert Marko <robert.marko@sartura.hr>
+CC: Nicolas Ferre <nicolas.ferre@microchip.com>, Arnd Bergmann
+	<arnd@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	"Russell King" <linux@armlinux.org.uk>, Claudiu Beznea
+	<claudiu.beznea@tuxon.dev>, Catalin Marinas <catalin.marinas@arm.com>, Will
+ Deacon <will@kernel.org>, Olivia Mackall <olivia@selenic.com>, Herbert Xu
+	<herbert@gondor.apana.org.au>, "David S . Miller" <davem@davemloft.net>,
+	Vinod Koul <vkoul@kernel.org>, Andi Shyti <andi.shyti@kernel.org>, Lee Jones
+	<lee@kernel.org>, Mark Brown <broonie@kernel.org>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-crypto@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+	<linux-i2c@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, Oleksij Rempel <o.rempel@pengutronix.de>,
+	<luka.perkov@sartura.hr>, Conor Dooley <Conor.Dooley@microchip.com>, "Lars
+ Povlsen - M31675" <Lars.Povlsen@microchip.com>
+Subject: Re: [PATCH v8 01/10] arm64: Add config for Microchip SoC platforms
+Message-ID: <20250811122053.4bfyoefln7wpz2a4@DEN-DL-M70577>
+References: <20250702183856.1727275-1-robert.marko@sartura.hr>
+ <20250702183856.1727275-2-robert.marko@sartura.hr>
+ <ea353170-6e03-4231-afc2-3dc45253931d@app.fastmail.com>
+ <CA+HBbNHxiU5+xVJTyPQFuCJLyEs5_MpybSBEgxi25bzaGfiVHA@mail.gmail.com>
+ <421d61db-27eb-4ad2-bd98-eb187fd14b1e@microchip.com>
+ <CA+HBbNEiKWS71jtF_jqV9bdX9HVroaZSGMaeD-xFM8sm0kLtCw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Message-Id: <20250810-tty-round-rate-v1-1-849009f3bdfd@redhat.com>
-X-B4-Tracking: v=1; b=H4sIAMAZmWgC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDI1MDcyNL3ZKSSt2i/NK8FN2ixJJU3ZQUi2RjIwPLpGTTRCWgpoKi1LTMCrC
- B0bG1tQAL24G8YAAAAA==
-X-Change-ID: 20250729-tty-round-rate-dd8c3209bc5a
-To: =?utf-8?q?Pali_Roh=C3=A1r?= <pali@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Maxime Ripard <mripard@kernel.org>, 
- Stephen Boyd <sboyd@kernel.org>
-Cc: linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-serial@vger.kernel.org, Brian Masney <bmasney@redhat.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1754864081; l=5898;
- i=bmasney@redhat.com; s=20250528; h=from:subject:message-id;
- bh=jz7/9LA5nqtTc8DEmJ3tySqiNMryRr+zseg+ZWr6gdc=;
- b=URcjH7lCRhkpxA2IIBHqR/PqogtMFfXPxQTAFLohl31GisVmeaLicg7w7s+TwY8XZ5al4vX/c
- 8pFak9Mvep6DkuHVlqdJocWOO3x/W5NkOV6arKOAHnVrZR5Mh18Je3d
-X-Developer-Key: i=bmasney@redhat.com; a=ed25519;
- pk=x20f2BQYftANnik+wvlm4HqLqAlNs/npfVcbhHPOK2U=
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: O6cQUZLBk6k0qFdPh4eeNbcd3U8Xm9R7MOjFFl2jp30_1754864084
-X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+HBbNEiKWS71jtF_jqV9bdX9HVroaZSGMaeD-xFM8sm0kLtCw@mail.gmail.com>
 
-The round_rate() clk ops is deprecated, so migrate this driver from
-round_rate() to determine_rate() using the Coccinelle semantic patch
-appended to the "under-the-cut" portion of the patch.
+On Fri, Jul 04, 2025 at 07:36:06PM +0200, Robert Marko wrote:
+> 
+> On Thu, Jul 3, 2025 at 3:56 PM Nicolas Ferre
+> <nicolas.ferre@microchip.com> wrote:
+> >
+> > Robert, Arnd,
+> >
+> > On 03/07/2025 at 14:25, Robert Marko wrote:
+> > > On Wed, Jul 2, 2025 at 9:57 PM Arnd Bergmann <arnd@kernel.org> wrote:
+> > >>
+> > >> On Wed, Jul 2, 2025, at 20:35, Robert Marko wrote:
+> > >>> Currently, Microchip SparX-5 SoC is supported and it has its own symbol.
+> > >>>
+> > >>> However, this means that new Microchip platforms that share drivers need
+> > >>> to constantly keep updating depends on various drivers.
+> > >>>
+> > >>> So, to try and reduce this lets add ARCH_MICROCHIP symbol that drivers
+> > >>> could instead depend on.
+> > >>
+> > >> Thanks for updating the series to my suggestion!
+> > >>
+> > >>> @@ -174,6 +160,27 @@ config ARCH_MESON
+> > >>>          This enables support for the arm64 based Amlogic SoCs
+> > >>>          such as the s905, S905X/D, S912, A113X/D or S905X/D2
+> > >>>
+> > >>> +menuconfig ARCH_MICROCHIP
+> > >>> +     bool "Microchip SoC support"
+> > >>> +
+> > >>> +if ARCH_MICROCHIP
+> > >>> +
+> > >>> +config ARCH_SPARX5
+> > >>> +     bool "Microchip Sparx5 SoC family"
+> > >>
+> > >> This part is the one bit I'm not sure about: The user-visible
+> > >> arm64 CONFIG_ARCH_* symbols are usually a little higher-level,
+> > >> so I don't think we want both ARCH_MICROCHIP /and/ ARCH_SPARX5
+> > >> here, or more generally speaking any of the nested ARCH_*
+> > >> symbols.
+> >
+> > Well, having a look at arch/arm64/Kconfig.platforms, I like how NXP is
+> > organized.
+> >
+> > SPARX5, LAN969x or other MPU platforms, even if they share some common
+> > IPs, are fairly different in terms of internal architecture or feature set.
+> > So, to me, different ARCH_SPARX5, ARCH_LAN969X (as Robert proposed) or
+> > future ones make a lot sense.
+> > It will help in selecting not only different device drivers but
+> > different PM architectures, cores or TrustZone implementation...
+> >
+> > >> This version of your patch is going to be slightly annoying
+> > >> to existing sparx5 users because updating an old .config
+> > >> breaks when ARCH_MICROCHIP is not enabled.
+> >
+> > Oh, yeah, indeed. Even if I find Robert's proposal ideal.
+> >
+> > Alexandre, Lars, can you evaluate this level of annoyance?
+> >
+> > >> The two options that I would prefer here are
+> > >>
+> > >> a) make ARCH_SPARX5 a hidden symbol in order to keep the
+> > >>     series bisectable, remove it entirely once all references
+> > >>     are moved over to ARCH_MICROCHIP
+> > >>
+> > >> b) Make ARCH_MICROCHIP a hidden symbol that is selected by
+> > >>     ARCH_SPARX5 but keep the menu unchanged.
+> > >
+> > > Hi Arnd,
+> > > Ok, I see the issue, and I would prefer to go with option b and do
+> > > what I did for
+> > > AT91 with the hidden ARCH_MICROCHIP symbol to avoid breaking current configs.
+> >
+> > Yep, but at the cost of multiple entries for Microchip arm64 SoCs at the
+> > "Platform selection" menu level. Nuvoton or Cavium have this already, so
+> > it's probably fine.
+> 
+> Yes, this is why I went with a menu instead, to me it is much cleaner.
+> 
+> So, how would you guys want me to proceed?
+> 
+> a) Keep the menu-based config symbol
+> or
+> b) Like for AT91, add a hidden symbol and keep the individual SoC-s in
+> the top level
+> platform menu?
+> 
+> Regards,
+> Robert
 
-Signed-off-by: Brian Masney <bmasney@redhat.com>
----
-Coccinelle semantic patch is below. It's large and I don't want to
-pollute the kernel changelog with the same code hundreds of times,
-so that's why it's included under the cut. For subsystems with more
-than one patch, I've included it on the cover letter.
+Hi Robert,
 
-    virtual patch
+Sorry for the late reply.
 
-    // Look up the current name of the round_rate function
-    @ has_round_rate @
-    identifier round_rate_name =~ ".*_round_rate";
-    identifier hw_param, rate_param, parent_rate_param;
-    @@
+I appreciate the effort to make the addition of future symbols easier by using
+a common ARCH_MICROCHIP symbol — that makes sense to me.
 
-    long round_rate_name(struct clk_hw *hw_param, unsigned long rate_param,
-                  unsigned long *parent_rate_param)
-    {
-    	...
-    }
+Regarding the actual symbols, I’m certainly no expert, but I agree with
+Nicolas, that having more granular control with separate ARCH_SPARX5 and
+ARCH_LAN969X could make sense, as opposed to only having ARCH_MICROCHIP, as
+Arnd mentioned.
 
-    // Rename the route_rate function name to determine_rate()
-    @ script:python generate_name depends on has_round_rate @
-    round_rate_name << has_round_rate.round_rate_name;
-    new_name;
-    @@
+As for the goal of using a common symbol for drivers to depend on,  while not
+breaking existing configs (are there any unwritten rules or practices about
+breaking existing configs?), I think option B will work fine. I dont mind the
+symbols being top-level.
 
-    coccinelle.new_name = round_rate_name.replace("_round_rate", "_determine_rate")
+/Daniel
 
-    // Change rate to req->rate; also change occurrences of 'return XXX'.
-    @ chg_rate depends on generate_name @
-    identifier has_round_rate.round_rate_name;
-    identifier has_round_rate.hw_param;
-    identifier has_round_rate.rate_param;
-    identifier has_round_rate.parent_rate_param;
-    identifier ERR =~ "E.*";
-    expression E;
-    @@
-
-    long round_rate_name(struct clk_hw *hw_param, unsigned long rate_param,
-                  unsigned long *parent_rate_param)
-    {
-    <...
-    (
-    -return -ERR;
-    +return -ERR;
-    |
-    - return rate_param;
-    + return 0;
-    |
-    - return E;
-    + req->rate = E;
-    +
-    + return 0;
-    |
-    - rate_param
-    + req->rate
-    )
-    ...>
-    }
-
-    // Coccinelle only transforms the first occurrence of the rate parameter
-    // Run a second time. FIXME: Is there a better way to do this?
-    @ chg_rate2 depends on generate_name @
-    identifier has_round_rate.round_rate_name;
-    identifier has_round_rate.hw_param;
-    identifier has_round_rate.rate_param;
-    identifier has_round_rate.parent_rate_param;
-    @@
-
-    long round_rate_name(struct clk_hw *hw_param, unsigned long rate_param,
-                  unsigned long *parent_rate_param)
-    {
-    <...
-    - rate_param
-    + req->rate
-    ...>
-    }
-
-    // Change parent_rate to req->best_parent_rate
-    @ chg_parent_rate depends on generate_name @
-    identifier has_round_rate.round_rate_name;
-    identifier has_round_rate.hw_param;
-    identifier has_round_rate.rate_param;
-    identifier has_round_rate.parent_rate_param;
-    @@
-
-    long round_rate_name(struct clk_hw *hw_param, unsigned long rate_param,
-                  unsigned long *parent_rate_param)
-    {
-    <...
-    (
-    - *parent_rate_param
-    + req->best_parent_rate
-    |
-    - parent_rate_param
-    + &req->best_parent_rate
-    )
-    ...>
-    }
-
-    // Convert the function definition from round_rate() to determine_rate()
-    @ func_definition depends on chg_rate @
-    identifier has_round_rate.round_rate_name;
-    identifier has_round_rate.hw_param;
-    identifier has_round_rate.rate_param;
-    identifier has_round_rate.parent_rate_param;
-    identifier generate_name.new_name;
-    @@
-
-    - long round_rate_name(struct clk_hw *hw_param, unsigned long rate_param,
-    -               unsigned long *parent_rate_param)
-    + int new_name(struct clk_hw *hw, struct clk_rate_request *req)
-    {
-        ...
-    }
-
-    // Update the ops from round_rate() to determine_rate()
-    @ ops depends on func_definition @
-    identifier has_round_rate.round_rate_name;
-    identifier generate_name.new_name;
-    @@
-
-    {
-        ...,
-    -   .round_rate = round_rate_name,
-    +   .determine_rate = new_name,
-        ...,
-    }
-
-Note that I used coccinelle 1.2 instead of 1.3 since the newer version
-adds unnecessary braces as described in this post.
-https://lore.kernel.org/cocci/67642477-5f3e-4b2a-914d-579a54f48cbd@intel.com/
----
- drivers/tty/serial/mvebu-uart.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/mvebu-uart.c b/drivers/tty/serial/mvebu-uart.c
-index 5de57b77abdb03f2fd46b2dc7f9bf7f00c34c15e..8e52be2b34ea20634bf45c26773728af1e5e150e 100644
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -1264,14 +1264,16 @@ static unsigned long mvebu_uart_clock_recalc_rate(struct clk_hw *hw,
- 	return parent_rate / uart_clock_base->div;
- }
- 
--static long mvebu_uart_clock_round_rate(struct clk_hw *hw, unsigned long rate,
--					unsigned long *parent_rate)
-+static int mvebu_uart_clock_determine_rate(struct clk_hw *hw,
-+					   struct clk_rate_request *req)
- {
- 	struct mvebu_uart_clock *uart_clock = to_uart_clock(hw);
- 	struct mvebu_uart_clock_base *uart_clock_base =
- 						to_uart_clock_base(uart_clock);
- 
--	return *parent_rate / uart_clock_base->div;
-+	req->rate = req->best_parent_rate / uart_clock_base->div;
-+
-+	return 0;
- }
- 
- static int mvebu_uart_clock_set_rate(struct clk_hw *hw, unsigned long rate,
-@@ -1293,7 +1295,7 @@ static const struct clk_ops mvebu_uart_clock_ops = {
- 	.is_enabled = mvebu_uart_clock_is_enabled,
- 	.save_context = mvebu_uart_clock_save_context,
- 	.restore_context = mvebu_uart_clock_restore_context,
--	.round_rate = mvebu_uart_clock_round_rate,
-+	.determine_rate = mvebu_uart_clock_determine_rate,
- 	.set_rate = mvebu_uart_clock_set_rate,
- 	.recalc_rate = mvebu_uart_clock_recalc_rate,
- };
-
----
-base-commit: 8f5ae30d69d7543eee0d70083daf4de8fe15d585
-change-id: 20250729-tty-round-rate-dd8c3209bc5a
-
-Best regards,
--- 
-Brian Masney <bmasney@redhat.com>
 
