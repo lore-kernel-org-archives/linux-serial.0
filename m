@@ -1,46 +1,46 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1419C2E3AFC;
-	Tue, 12 Aug 2025 05:48:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9372C2E3AFC;
+	Tue, 12 Aug 2025 05:48:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754977728; cv=none; b=Nu/aWdI3HyLRlOw5ilesI+885GPSgY1nbiMGQr9NtbBcROgsjuT8nc5QUcWRJRkhXs/PuwyMMuXQTU++aQ8lKhDIFvKBz2haK1hi0H/yXmeYgvet9/XWfEWX3IwfgHQ3gHGq8KfZQXCyke4oDRj5N/VaAWqx+fK4teu02U/oHvs=
+	t=1754977734; cv=none; b=tUw36sfIIANeTuD4Kx10jDHx6etgbE9djH8iVBaFiqRu429U0D5GCNdAYl8/UO1+zic0SbhtA/9tuK7Mesmt6NgJApA1HVJD+IK3uJCL/Q0xhLZ6QoCbJPvuDaYeyp41kq+h/hzJaxMvmthUTqUUIP8M80lG+7uZzn3WLgLJmuM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754977728; c=relaxed/simple;
-	bh=0Z/McpoyVuCR+KN0hmegWKtulm0ruOwLVSqHqC33EOg=;
+	s=arc-20240116; t=1754977734; c=relaxed/simple;
+	bh=Ly6eLhqFS7+gf123dMHEvhq74lr/N5lDJgipyL0QR8o=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=feqhW7pVkH7xjqMZPNkgK+yLrdFIRpvdIyABSj2psyr0XrWS5si4KOk6l++B4admT9CL2SSokHuNH+iDyntdZEItZ+z/eqMNUzNB/oIY2OfTir2oi1VwVrD2NVdf4WQKiAVoxceOYBnYTVgBSSk2BULol5+ivoevC/IocojJZGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=D78TPvg+; arc=none smtp.client-ip=205.220.168.131
+	 MIME-Version:Content-Type; b=Nh5gLL1qhGX8AN4f+DwDFbsJf0++WhH0dISy3Wjh1pBAL/k1gzXFQokjSpG9xmFZQ1GBUTBGlmDNZVlWHrnsz6d1w87WTvXBub8H2RUF8/bvlEeFX0jDGNhTX1YcBRCWPkF5I34OcRmB6H79qPZW4Dc0/75UvLT+P6CW8n7oMUw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=XMWggOat; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="D78TPvg+"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57C5Hjto022381;
-	Tue, 12 Aug 2025 05:48:45 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="XMWggOat"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57C5ULU1005283;
+	Tue, 12 Aug 2025 05:48:51 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	4pyva962VqNRh4GTZvbrxxWfN16XMSFV7hHsPDGmRGI=; b=D78TPvg+6QWWIBAf
-	B/r/K/xQD5T89TDClXMJqh1y8eKzHg8MdJY9GdKp48HG6pE8OJKtRtfQ4PLYi8+9
-	Y7ccvq3dz6kXEJBmOqNxgMnExNkpQxVA8WwNgQp1zGJAMvKMuBRq4ETMQvoyRQ9x
-	o3qoxcrctfxkh7MHDC3T3FiB5JWDETHwvwcamzP611lGpCZojfxUs4f62PXB1Xss
-	WnvlQFx3NWExPdsSDaeCsylo7ldzfRNVGJ37ZRl0+a2jv61YC/QQpin68wNEE8my
-	xD2Ze/SJ/rYeYXaYdGSlFNsyZzpbwObQg3dLKmjjumCePc+akJIrrux3CweAL6Zx
-	qGg/JQ==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48dxj46y3j-1
+	BadKjfoBxfBUHH0TDrRBXlfbh1hbllAzsvWvxvxazbo=; b=XMWggOatQ2oKTtIn
+	WYx0mB0e4R6nM0kajvUbwWoodhQkH3VNR0VIf67mC6HYrRLU5HE73YZvazKWKb4T
+	Ks85E6T5AZq8abypqmYHY/OBDcA9DkITncsGgsLIJRojGDJkUmw9aCuHM0r/DZ9f
+	/Yzme8UXXkBADWMQ+vpHmj5cjBRcjCZvr42YA+YmLc0+Sri7VTS2fl9v+BsOJRss
+	p1v6GfhIBPXBpXTdr6AFBODVl2PcFWzNMmMfMKmoP1NqLLCYB7OhqCeZ9l1IP2Pm
+	m6N87pi/PYgAgMK6hyaqaukBpiJxwRwQ74g/q3/O9auYyAFbGh4XtS8WzhXiDUZ4
+	wb/N/w==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48eqhx55hj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 12 Aug 2025 05:48:45 +0000 (GMT)
+	Tue, 12 Aug 2025 05:48:50 +0000 (GMT)
 Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 57C5miTR008615
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 57C5moMI028701
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 12 Aug 2025 05:48:44 GMT
+	Tue, 12 Aug 2025 05:48:50 GMT
 Received: from zongjian-gv.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Mon, 11 Aug 2025 22:48:42 -0700
+ 15.2.1748.10; Mon, 11 Aug 2025 22:48:47 -0700
 From: Zong Jiang <quic_zongjian@quicinc.com>
 To: <gregkh@linuxfoundation.org>, <linux-serial@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -48,9 +48,9 @@ CC: <quic_ztu@quicinc.com>, <quic_anupkulk@quicinc.com>,
         <quic_msavaliy@quicinc.com>, <quic_vdadhani@quicinc.com>,
         Zong Jiang
 	<quic_zongjian@quicinc.com>
-Subject: [PATCH 1/2] serial: qcom-geni: Dynamically allocate UART ports
-Date: Tue, 12 Aug 2025 13:48:18 +0800
-Message-ID: <20250812054819.3748649-2-quic_zongjian@quicinc.com>
+Subject: [PATCH 2/2] serial: qcom-geni: Make UART port count configurable via Kconfig
+Date: Tue, 12 Aug 2025 13:48:19 +0800
+Message-ID: <20250812054819.3748649-3-quic_zongjian@quicinc.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250812054819.3748649-1-quic_zongjian@quicinc.com>
 References: <20250812054819.3748649-1-quic_zongjian@quicinc.com>
@@ -66,128 +66,91 @@ X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODA5MDAyNyBTYWx0ZWRfX7fJbHalw+lF9
- Ol2e5tqQ/5RiWIGPXwOoABWQ6LHV3z2/Zb8B3mzhvtJA+uuEJ0TyR4F6c5uxk55xK2womxv+M2k
- dKaNdT7I8MnvZZkUw6Qh4SXXc85lmO7fHCE3PflGWGSI+kYQjLAWhBkWhmMjqKBOqIScwLD/Wzv
- g5CEsQ81k/gAQkZr6kaVOY7QQqBLFnUYYa001Q6oc4PzwWIyZDoHeoBGNFhAeetXpHcsLrFX1gj
- a1aqY8jCYZIG6WSbGd4v20+8TeutqiqJD+ehUsZ31shs14EPykS7cmA4nonzuHF501DVbMm1ebZ
- 1CRaLz+meJ7AcsC4dhM23G5z5G6CeV8EsnSs+Pzv/XiNImVxbaZy7vKaDAs++GrOMFZFnsiAhg2
- W0i6Xdx4
-X-Authority-Analysis: v=2.4 cv=fvDcZE4f c=1 sm=1 tr=0 ts=689ad5bd cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODEwMDA1NyBTYWx0ZWRfX4URKSGvCeEIt
+ Z7Jtu1NS4sV5P7L75bjmWsXWKeCGw/UATGkIfYtnuHTfFJrOtuDaGL3gdk1zTUUBU/t/7gPp6fo
+ ridOrwLaBcWF39vtcE3UF2aAS0RPu/HspbC+y0VW7wpFe3W6HyxK0XM0ld9mYuOyLGd9Z+QqzJk
+ aNdygoh4GcVC15jvWiDJ+nsITp6a0d8ffoZyE8aXFwcIpqQhT8aL1kWi7EX8lHVQC0I6FnWUdPR
+ OdaHIxlJZV92Ja2ALs2GpACVfurj3hzMUazAp7hfZHGfP3WrHREcoqm+s7dTrgthmVzIQJl7hMU
+ 7ppXcZt11fV0frd3jrK+Xjs9xQf3KkeMz/ZSBOUGVk+cB49w9exvw8j0usJYPl2Mul5UfZGphAE
+ QnERT6KK
+X-Proofpoint-GUID: EktRJq2w4V8t5TlhKcD7Ws2U-SwDCxjG
+X-Authority-Analysis: v=2.4 cv=aYNhnQot c=1 sm=1 tr=0 ts=689ad5c3 cx=c_pps
  a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=2OwXVqhp2XgA:10 a=COk6AnOGAAAA:8 a=PvzVzoMQvDNWUbuwUUAA:9
+ a=GEpy-HfZoHoA:10 a=2OwXVqhp2XgA:10 a=COk6AnOGAAAA:8 a=WPGC7FYvddHUjIg9JlYA:9
  a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-ORIG-GUID: ItWgfjdyCBz4YWwxiSo-h8GphCTed5Bl
-X-Proofpoint-GUID: ItWgfjdyCBz4YWwxiSo-h8GphCTed5Bl
+X-Proofpoint-ORIG-GUID: EktRJq2w4V8t5TlhKcD7Ws2U-SwDCxjG
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
  definitions=2025-08-12_02,2025-08-11_01,2025-03-28_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 adultscore=0 priorityscore=1501 spamscore=0 suspectscore=0
- clxscore=1015 phishscore=0 bulkscore=0 impostorscore=0 classifier=typeunknown
- authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2507300000 definitions=main-2508090027
+ spamscore=0 adultscore=0 priorityscore=1501 suspectscore=0 phishscore=0
+ impostorscore=0 bulkscore=0 malwarescore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2508100057
 
-Replace the static allocation of UART ports with dynamic allocation
-using devm_kzalloc. This change removes the fixed-size array and instead
-allocates each UART port structure on demand during probe, improving
-memory efficiency and scalability.
+Replace the hardcoded GENI_UART_PORTS macro with a new Kconfig option
+SERIAL_QCOM_GENI_UART_PORTS to allow platforms to configure the maximum
+number of UART ports supported by the driver at build time.
+
+This improves flexibility for platforms that require more than the
+previously fixed number of UART ports, and avoids unnecessary allocation
+for unused ports.
 
 Signed-off-by: Zong Jiang <quic_zongjian@quicinc.com>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 44 ++++++++-------------------
- 1 file changed, 12 insertions(+), 32 deletions(-)
+ drivers/tty/serial/Kconfig            | 8 ++++++++
+ drivers/tty/serial/qcom_geni_serial.c | 5 ++---
+ 2 files changed, 10 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index 44427415a80d..e661f5951f55 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -928,6 +928,14 @@ config SERIAL_QCOM_GENI_CONSOLE
+ 	  Serial console driver for Qualcomm Technologies Inc's GENI based
+ 	  QUP hardware.
+ 
++config SERIAL_QCOM_GENI_UART_PORTS
++	int "Maximum number of GENI UART ports"
++	depends on SERIAL_QCOM_GENI
++	default "8"
++	help
++	  Set this to the maximum number of serial ports you want the driver
++	  to support.
++
+ config SERIAL_VT8500
+ 	bool "VIA VT8500 on-chip serial port support"
+ 	depends on ARCH_VT8500 || COMPILE_TEST
 diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 32ec632fd080..080c18ddbdde 100644
+index 080c18ddbdde..9c7b1cea7cfe 100644
 --- a/drivers/tty/serial/qcom_geni_serial.c
 +++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -164,33 +164,6 @@ static inline struct qcom_geni_serial_port *to_dev_port(struct uart_port *uport)
- 	return container_of(uport, struct qcom_geni_serial_port, uport);
- }
- 
--static struct qcom_geni_serial_port qcom_geni_uart_ports[GENI_UART_PORTS] = {
--	[0] = {
--		.uport = {
--			.iotype = UPIO_MEM,
--			.ops = &qcom_geni_uart_pops,
--			.flags = UPF_BOOT_AUTOCONF,
--			.line = 0,
--		},
--	},
--	[1] = {
--		.uport = {
--			.iotype = UPIO_MEM,
--			.ops = &qcom_geni_uart_pops,
--			.flags = UPF_BOOT_AUTOCONF,
--			.line = 1,
--		},
--	},
--	[2] = {
--		.uport = {
--			.iotype = UPIO_MEM,
--			.ops = &qcom_geni_uart_pops,
--			.flags = UPF_BOOT_AUTOCONF,
--			.line = 2,
--		},
--	},
--};
--
- static struct qcom_geni_serial_port qcom_geni_console_port = {
- 	.uport = {
- 		.iotype = UPIO_MEM,
-@@ -285,7 +258,7 @@ static const char *qcom_geni_serial_get_type(struct uart_port *uport)
- 	return "MSM";
- }
- 
--static struct qcom_geni_serial_port *get_port_from_line(int line, bool console)
-+static struct qcom_geni_serial_port *get_port_from_line(int line, bool console, struct device *dev)
+@@ -77,7 +77,6 @@
+ #define STALE_TIMEOUT			16
+ #define DEFAULT_BITS_PER_CHAR		10
+ #define GENI_UART_CONS_PORTS		1
+-#define GENI_UART_PORTS			3
+ #define DEF_FIFO_DEPTH_WORDS		16
+ #define DEF_TX_WM			2
+ #define DEF_FIFO_WIDTH_BITS		32
+@@ -261,7 +260,7 @@ static const char *qcom_geni_serial_get_type(struct uart_port *uport)
+ static struct qcom_geni_serial_port *get_port_from_line(int line, bool console, struct device *dev)
  {
  	struct qcom_geni_serial_port *port;
- 	int nr_ports = console ? GENI_UART_CONS_PORTS : GENI_UART_PORTS;
-@@ -306,7 +279,14 @@ static struct qcom_geni_serial_port *get_port_from_line(int line, bool console)
- 		if (line < 0)
- 			return ERR_PTR(-ENXIO);
+-	int nr_ports = console ? GENI_UART_CONS_PORTS : GENI_UART_PORTS;
++	int nr_ports = console ? GENI_UART_CONS_PORTS : CONFIG_SERIAL_QCOM_GENI_UART_PORTS;
  
--		port = &qcom_geni_uart_ports[line];
-+		port = devm_kzalloc(dev, sizeof(*port), GFP_KERNEL);
-+		if (!port)
-+			return ERR_PTR(-ENOMEM);
-+
-+		port->uport.iotype = UPIO_MEM;
-+		port->uport.ops = &qcom_geni_uart_pops;
-+		port->uport.flags = UPF_BOOT_AUTOCONF;
-+		port->uport.line = line;
- 	}
- 	return port;
- }
-@@ -554,7 +534,7 @@ static void qcom_geni_serial_console_write(struct console *co, const char *s,
+ 	if (console) {
+ 		if (line < 0 || line >= nr_ports)
+@@ -1652,7 +1651,7 @@ static struct uart_driver qcom_geni_uart_driver = {
+ 	.owner = THIS_MODULE,
+ 	.driver_name = "qcom_geni_uart",
+ 	.dev_name = "ttyHS",
+-	.nr =  GENI_UART_PORTS,
++	.nr = CONFIG_SERIAL_QCOM_GENI_UART_PORTS,
+ };
  
- 	WARN_ON(co->index < 0 || co->index >= GENI_UART_CONS_PORTS);
- 
--	port = get_port_from_line(co->index, true);
-+	port = get_port_from_line(co->index, true, NULL);
- 	if (IS_ERR(port))
- 		return;
- 
-@@ -1511,7 +1491,7 @@ static int qcom_geni_console_setup(struct console *co, char *options)
- 	if (co->index >= GENI_UART_CONS_PORTS  || co->index < 0)
- 		return -ENXIO;
- 
--	port = get_port_from_line(co->index, true);
-+	port = get_port_from_line(co->index, true, NULL);
- 	if (IS_ERR(port)) {
- 		pr_err("Invalid line %d\n", co->index);
- 		return PTR_ERR(port);
-@@ -1866,7 +1846,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 			line = of_alias_get_id(pdev->dev.of_node, "hsuart");
- 	}
- 
--	port = get_port_from_line(line, data->console);
-+	port = get_port_from_line(line, data->console, &pdev->dev);
- 	if (IS_ERR(port)) {
- 		dev_err(&pdev->dev, "Invalid line %d\n", line);
- 		return PTR_ERR(port);
+ static int geni_serial_resources_on(struct uart_port *uport)
 -- 
 2.34.1
 
