@@ -1,62 +1,63 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE8361C84AB
-	for <linux-serial@vger.kernel.org>; Wed, 13 Aug 2025 17:47:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8743288C38
+	for <linux-serial@vger.kernel.org>; Wed, 13 Aug 2025 17:47:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755107255; cv=none; b=UWNgvcZpneMwxHIQsL/rFyHmU72cYu5Eqy0zgNLvr5j88C2VgN16xgs4lrKYSC0Rob5e2u3C17HonHBG1lio2rOgPw1E/eS/mc9xIV/AOohbL+IILiyW+dYs7YGl/QzaBnPBS8nTk/jTGp8dUf3W4kb/cUfOz+gM5UEUvb3IJhA=
+	t=1755107258; cv=none; b=HV7ZZyzpVTiDDxc/i2jGX5cSFIURp5r6BCDzRDlwINlsZD+lu4LuI4/gv1prtLRXf98FtLjWaRbf0Vfxz1o85g8qoXFk41W3fxlUwAK8H8Wqz7vnhDd8JhtSxxi75oECnWmtL/SRk0t/HWc1gQnqBKPDkp8cJ8zsL8VhPcRSqh4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755107255; c=relaxed/simple;
-	bh=uW7fKb8DACG3fG/pvNEYkjNw8PF/bwmqPTIzgomZ1Ro=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JNevlEL1yRf7upr2aYmKRzqGuNVhk1SAVCWQjTrcLWSf8BOKQnsQO8kzxRWCAh7aLa9HTRbX7nwpoXx1aGA0MoCM6HNeMoY5TYRaL7hKl1G9QAsYwOUed/rlD2H+n4T9/jDzI5D+FU+U9mmPf9ZrKl9QAALpo4vHjRZXxcD9rGg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=aq7MQAhy; arc=none smtp.client-ip=209.85.222.175
+	s=arc-20240116; t=1755107258; c=relaxed/simple;
+	bh=nisRlxMdlxNBw0kJu7miBzfQrgmKYtOuzeITlICZH2g=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=tt6EMjsKJ/SEEqE////r3vLF8C2CVSBOPg41+uOxl12rSmElTqs8VcMeLzAUDBsDNcIARbV6c8NKgeDSUEiEZyDeasfJiBi5PX52Rab128IyUUg+0agZ59orIOmIzHSrVtNVMpu0d02GFDX2y5VOpc0d9IF/FZTeP1Rni620ttU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr; spf=pass smtp.mailfrom=sartura.hr; dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b=lsWU4LcE; arc=none smtp.client-ip=209.85.222.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sartura.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="aq7MQAhy"
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-7e8702fd3b2so8413685a.0
-        for <linux-serial@vger.kernel.org>; Wed, 13 Aug 2025 10:47:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sartura.hr header.i=@sartura.hr header.b="lsWU4LcE"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-7e870666dd4so6609585a.2
+        for <linux-serial@vger.kernel.org>; Wed, 13 Aug 2025 10:47:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura; t=1755107251; x=1755712051; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SBsfJFWg1o3SQZ+JkXCo0QRsi2YIFRfM5g31219RL4A=;
-        b=aq7MQAhyDL4BdBpOk11DfL73d70i++ZqQTI5l7kOrPCgVCdleRIqPLqXPO4lR0lrch
-         dBzBFQ6/BTCjTRvPFFTPvCLKfg2hLtaHNnZR9tCtw8mfaTRydkfwJ3Eu1i4NBi0i7NSL
-         unT9TbNDWqEQMwQL2vI8DOnB6dzpgqwJLGCLz/BiL3SlmStBBdQNA3s7B595yGhZEuon
-         2/FXSsWqQre2RGS1xfzpElc0N4L5ion9vubzzAEd9bHhylBKDFO7/7+J8+SoX0IA/wN+
-         cHqw7o9nbcQ1bHrWGpr8gHhLcNkC3fUDAxsiIjLtqIIGlIyJWGpfSfGzCFpIIlmjBEyr
-         T3DA==
+        d=sartura.hr; s=sartura; t=1755107256; x=1755712056; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TB7OCoBKq4sEt4VQQvcl3aOmJkQhrsxuhQkNyl7xRNw=;
+        b=lsWU4LcE3tyz9SS0aasoM8PuG4+iIDidI4UAAow4D6K8+3iib4hXh/PfQMrkCbMBsx
+         +VWHz2piy4F/K8zOyjL4PPSM4PjBH+GjokhrvzXGXAwzKO8L+SYo14Q++jSH2/VRrcj/
+         M8JZjQ94RAqmJYpgNa5PM3SJk1T36V/MGjqI6cmX6rW/0c3dpWZdJXILFAxP7xSdf5RR
+         ZbusLUke962yAgHFgcn8oMTQN4gJ5znPcja1IwgGVpedcTFKICuk7SyUCrXDKXAbF0yK
+         oVEK3IDXKt+mjqBe/V0rUkzY2n/TUkDiYbgjQhUQmYlqX6k1Qm86jIbzW5Y1yNBDgQYr
+         ukpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755107251; x=1755712051;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SBsfJFWg1o3SQZ+JkXCo0QRsi2YIFRfM5g31219RL4A=;
-        b=QGTU572A/sZfY8XhjE3qtsQ/49BQG60ibkNIATW+yLIuZotwoRbaiO4bFPYVc0Zal+
-         Jt/MOHX02AZxQpWVGHr1hWnR1erEFiAMVIYTSHuh6WgdDhJrm9N9LADS/e+LYLUnMmdI
-         /PCKF3o4fdUHy3CRxiXuhBYzNbUV7j8YtzbJlMU5gXVOCg1NhjjyQDzK5EVIDJR5JZA9
-         u1Ty4YCFYP9jd49RyBhQVmS3ZzDKZTp6388QogR3BOvjp1PMRa6k3zEIvjGt82HcaB7B
-         VKPudmZ+L5XMys4VlTXP+IitB7vyWjT+AKSFG+1erEXnQxaVWg7j3L512sGzf3sT7wfq
-         NkCg==
-X-Forwarded-Encrypted: i=1; AJvYcCXx1aTBFxsqIto1QsVd6v0SumAB2mE2KHY6xJNjxRiHyv65g6Xn/iUOGgfef3pYTFCpkuadHlN7itPmLIM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxNa/NHlJL0vJAmUuDvkvolGxwZutlu+QZjGYREF4Jl/fJwocxi
-	sNifFv03mUiNdIxCwsI6A42WlTp0GtHXhli30TobEUY27BrWMwo0+KsPhQ5CtCpRKhiU9Eh2wE9
-	LdJVuu6I=
-X-Gm-Gg: ASbGncsQtafQomdNNG3JtqVw5h9J5+HOPSWpzo6jd3hB2ERXL/Jspo3uuyToqWaUI85
-	1UvTjqLU2tH38HQq9Tue4xAgLR6CEb98edwIUkLI0GKSIZj/bMAsEXD2ZWKDA4hG16ph+nx0bV6
-	q07BVpJYrt663aSWO6XlSxy/schusFjLSZ4ERb3ycIHaGeQCug+XMc7AL/uHyAgrzQVACqXgu5s
-	2cmKZ83Sl4rSCbKYtgqnSVyh/oamt/Covjv+O2b+tbzS1k6mEH0gj30apZMxhNEuAll6x3KScsJ
-	YNqi8Y2qszwjWTeAk9k4aNcIBIKY1By/OX9l37HsQLh02iRVJj1c3DlKOg8r1WDavjnR8KZo3Jk
-	RXI1nNWQDOzMkO2eWyFXgG5DLlLuOGg6F1OysjDU6pg==
-X-Google-Smtp-Source: AGHT+IEB/95DXkKwomIf9ip6/yfm146L3qIifjKU7bl9DaOBgZQZz5rMpVm/bhHv87pLjMhka3uuqw==
-X-Received: by 2002:a05:620a:a102:b0:7e8:434f:ffa7 with SMTP id af79cd13be357-7e8704761a0mr24882585a.52.1755107251577;
-        Wed, 13 Aug 2025 10:47:31 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1755107256; x=1755712056;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TB7OCoBKq4sEt4VQQvcl3aOmJkQhrsxuhQkNyl7xRNw=;
+        b=VNTnz1nU1fj6muX+Pt1I9vpS9xnnU1BDODzSvCZetPm6aXLhujptAMwuMJJ0woy4vc
+         HeJP1R9egCgQ3NcjshPs2bElnGVg26NfCSpSU/GuYc78w2HcsIuiHdf9ObSTDG/f1s5z
+         cCnuiKuSEGcpc/g2jLHYwj1Ihq5zQvj8sBwnQ4leXDbgocNxNe1fPi/CuwflZP0DkrgL
+         ylo3JjAMm/OWwpfmEkOhHWuXGco/w+8NOtI+GI0c2n3UfIDtmVXksRtLs1hGI92aQDoH
+         Osx+B8KAT/07Lha+K/zKQcBqK+MR2BMb0vIZQMcfM2lW9FLEhLukjrcsmllUoBa+smvU
+         WiSA==
+X-Forwarded-Encrypted: i=1; AJvYcCVx+AorjdytNdI125RxCYnmm87eqEXALnhAi4Y3ZJqkqbMtcZSrI81NhQe7A4sGWFgVym8A8ClCEvJ9w58=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyrcZ1MT2mVLzlhOkvNkcvdlRfv2dVu5UbrlxgmCWJ54lLs3wW1
+	t0Yc+YcMvUarNcuhtOahO+uJJ5ikl+wGUebnoXBke662T+eQXpLf+dZIYCmX+pxZnIo=
+X-Gm-Gg: ASbGncuq0J10t5cSDaBX5zVn1QBTV9xrwVHXqLfz8T7XBW+eREpB3sFNRebz+a40P4x
+	PU9/ii0r0/JQY+5xK80ZQitR1D9R6NFssSNfOfMuBxytcRYny/MjmJ2MO0eFBzCXR7kw6xBPbgn
+	u0INaNuOe1/rnrvCtfni1Anh3jYQa0D8/NDn0eWs8100Z9+FWbyMqn1PukGUTXfGDHXV9WGeIAr
+	C0fMLCEUF0explrNLD3w99/HVnJYUvbNNozW6YOXz0hvdW36gGoxu5l3h72MWUHaBK5w2JlHQvC
+	XcynOB+d+YNhAydNKGRkIa2ATn0fFRskaAgxg9aO6yuQDHbMK6pm+mdrB4+uW5P/QKqNCL34KJw
+	0DMYZi+PImhKS8/cG3Xu/wAzxwGIsqpsU5fMPajfcfg==
+X-Google-Smtp-Source: AGHT+IEToP13G1zvLikrKvReC+w/kXfMQkt8g35fYQ5sGrJ+PpG+DgIXPbBl9bQ7Qc9/37ctzeq7lQ==
+X-Received: by 2002:a05:620a:5e14:b0:7d4:4a26:4065 with SMTP id af79cd13be357-7e870496376mr26868585a.58.1755107255712;
+        Wed, 13 Aug 2025 10:47:35 -0700 (PDT)
 Received: from fedora (d-zg2-251.globalnet.hr. [213.149.37.251])
-        by smtp.googlemail.com with ESMTPSA id af79cd13be357-7e7fa87e7d0sm1627122385a.82.2025.08.13.10.47.27
+        by smtp.googlemail.com with ESMTPSA id af79cd13be357-7e7fa87e7d0sm1627122385a.82.2025.08.13.10.47.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Aug 2025 10:47:31 -0700 (PDT)
+        Wed, 13 Aug 2025 10:47:35 -0700 (PDT)
 From: Robert Marko <robert.marko@sartura.hr>
 To: linux@armlinux.org.uk,
 	nicolas.ferre@microchip.com,
@@ -83,10 +84,12 @@ To: linux@armlinux.org.uk,
 	daniel.machon@microchip.com
 Cc: luka.perkov@sartura.hr,
 	Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH v9 0/9] arm64: lan969x: Add support for Microchip LAN969x SoC
-Date: Wed, 13 Aug 2025 19:44:36 +0200
-Message-ID: <20250813174720.540015-1-robert.marko@sartura.hr>
+Subject: [PATCH v9 1/9] arm64: Add config for Microchip SoC platforms
+Date: Wed, 13 Aug 2025 19:44:37 +0200
+Message-ID: <20250813174720.540015-2-robert.marko@sartura.hr>
 X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20250813174720.540015-1-robert.marko@sartura.hr>
+References: <20250813174720.540015-1-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -95,45 +98,79 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This patch series adds basic support for Microchip LAN969x SoC.
+Currently, Microchip SparX-5 SoC is supported and it has its own symbol.
 
-It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
-which allows to avoid the need to change dependencies of the drivers that
-are shared for Microchip SoC-s in the future.
+However, this means that new Microchip platforms that share drivers need
+to constantly keep updating depends on various drivers.
 
-DTS and further driver will be added in follow-up series.
+So, to try and reduce this lets add ARCH_MICROCHIP symbol that drivers
+could instead depend on.
+
+LAN969x is being worked on and it will be added under ARCH_MICROCHIP.
 
 Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 ---
 Changes in v9:
-* Make ARCH_MICROCHIP hidden symbol that is selected by SparX-5 and LAN969x
-directly, this avoids breaking existing configs with ARCH_SPARX5
+* Make ARCH_MICROCHIP hidden symbol that is selected by SparX-5 directly,
+this avoids breaking existing configs with ARCH_SPARX5
 
-Changes in v8:
-* Move to using ARCH_MICROCHIP as suggested by Arnd
-* Dropped any review tags due to changes
+ arch/arm64/Kconfig.platforms | 36 ++++++++++++++++++++++--------------
+ 1 file changed, 22 insertions(+), 14 deletions(-)
 
-Robert Marko (9):
-  arm64: Add config for Microchip SoC platforms
-  ARM: at91: select ARCH_MICROCHIP
-  arm64: lan969x: Add support for Microchip LAN969x SoC
-  mfd: at91-usart: Make it selectable for ARCH_MICROCHIP
-  tty: serial: atmel: make it selectable for ARCH_MICROCHIP
-  spi: atmel: make it selectable for ARCH_MICROCHIP
-  i2c: at91: make it selectable for ARCH_MICROCHIP
-  char: hw_random: atmel: make it selectable for ARCH_MICROCHIP
-  crypto: atmel-aes: make it selectable for ARCH_MICROCHIP
-
- arch/arm/mach-at91/Kconfig     |  4 +++
- arch/arm64/Kconfig.platforms   | 51 ++++++++++++++++++++++++----------
- drivers/char/hw_random/Kconfig |  2 +-
- drivers/crypto/Kconfig         |  2 +-
- drivers/i2c/busses/Kconfig     |  2 +-
- drivers/mfd/Kconfig            |  2 +-
- drivers/spi/Kconfig            |  2 +-
- drivers/tty/serial/Kconfig     |  2 +-
- 8 files changed, 47 insertions(+), 20 deletions(-)
-
+diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+index a88f5ad9328c..bfea380100a6 100644
+--- a/arch/arm64/Kconfig.platforms
++++ b/arch/arm64/Kconfig.platforms
+@@ -131,20 +131,6 @@ config ARCH_EXYNOS
+ 	help
+ 	  This enables support for ARMv8 based Samsung Exynos SoC family.
+ 
+-config ARCH_SPARX5
+-	bool "Microchip Sparx5 SoC family"
+-	select PINCTRL
+-	select DW_APB_TIMER_OF
+-	help
+-	  This enables support for the Microchip Sparx5 ARMv8-based
+-	  SoC family of TSN-capable gigabit switches.
+-
+-	  The SparX-5 Ethernet switch family provides a rich set of
+-	  switching features such as advanced TCAM-based VLAN and QoS
+-	  processing enabling delivery of differentiated services, and
+-	  security through TCAM-based frame processing using versatile
+-	  content aware processor (VCAP).
+-
+ config ARCH_K3
+ 	bool "Texas Instruments Inc. K3 multicore SoC architecture"
+ 	select SOC_TI
+@@ -186,6 +172,28 @@ config ARCH_MESON
+ 	  This enables support for the arm64 based Amlogic SoCs
+ 	  such as the s905, S905X/D, S912, A113X/D or S905X/D2
+ 
++menu "Microchip SoC support"
++
++config ARCH_MICROCHIP
++	bool
++
++config ARCH_SPARX5
++	bool "Microchip Sparx5 SoC family"
++	select PINCTRL
++	select DW_APB_TIMER_OF
++	select ARCH_MICROCHIP
++	help
++	  This enables support for the Microchip Sparx5 ARMv8-based
++	  SoC family of TSN-capable gigabit switches.
++
++	  The SparX-5 Ethernet switch family provides a rich set of
++	  switching features such as advanced TCAM-based VLAN and QoS
++	  processing enabling delivery of differentiated services, and
++	  security through TCAM-based frame processing using versatile
++	  content aware processor (VCAP).
++
++endmenu
++
+ config ARCH_MMP
+ 	bool "Marvell MMP SoC Family"
+ 	select PINCTRL
 -- 
 2.50.1
 
