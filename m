@@ -1,86 +1,68 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 913F0214232;
-	Wed, 13 Aug 2025 17:48:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32CF62D3A6B
+	for <linux-serial@vger.kernel.org>; Wed, 13 Aug 2025 18:37:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755107330; cv=none; b=NwBq0ajS3kjsqqm21hWDUtfMBgNr9BKcMC7hhq3Tyl8sYTXDVbgdVS0aqwwA2Aj9B2Go/3FGEbYUwV05L3AIk5qmENpX5ViIvbDaTmMbZBaFlhDyb886ALyXFqR93TVybmuX7RV4TEMsiUeuvUy/u83R/LOI9IHilGu25M51YYU=
+	t=1755110266; cv=none; b=FH+oye1qwdGl+8tN3BGNBiSnIDHQeJAMpXOl2NTj70UIT3n3CtKIifdPZrIb9jW2F6aQLRsFoRmuMZ3WrxwTO1F4Qxcs3tn++9cOLH/mNjtWr1sfZ/QGxC0uZHQ3wl5zLnqP+oiW/HZ+QZJATQxPOKxW3jcQVtwgMXEjHtkP71M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755107330; c=relaxed/simple;
-	bh=PKZQpIZ4aFM4Uz6odoT3GA7xbAwznTjRoJh5bhe9kDg=;
+	s=arc-20240116; t=1755110266; c=relaxed/simple;
+	bh=F8Sl2bDnDnjJw+YG6ufvhntOT5nenuZz8vX1IsEg47A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ImA5iovOPmm0E9x2B6wHv0If8w5ebE0HZdpDzVnEfsAP15MGqh8VuJMG5MDs5zrrM9Nck7qYMD5RczKHpH/Nn4w0AOZqjDyuOKwdHCyWcQszfziKR/F1hGxXlddOFx35EXELyLsDw8fpmaTMC2+/RBFUCBOvNaLzMkxZTDPEcLc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=phpPg1Ex; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=aF0EfaUEaLiJpw8ceepIxQLKdMj9WK8oC8lqvFjMeTrSJYZ0xwUET62Ck+bkIE9UA/F/4bJ5RnQK3Yo4tpu0CaA3wPifvUvDXJfOHFt5bkKn/WUiT/XyfOTrqizIFc3R1Tb9ZVL5jYJJ9g72jDsBpf/gIBkoD3vVnik02rQJUts=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=H9azEvDI; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="phpPg1Ex"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C71D5C4CEEB;
-	Wed, 13 Aug 2025 17:48:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755107330;
-	bh=PKZQpIZ4aFM4Uz6odoT3GA7xbAwznTjRoJh5bhe9kDg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=phpPg1Exg3UZg/3X5vqDi0IIoOXur7Ew7OgygBNbeyISgO0CbuT6OwqY8PLlxWnip
-	 6jJ4vTHI04+L0/Lb5acfN1N/1vTw7gcYWXBIgO5u9P4EZIKN2u9VYgRiaZlkXhRkPA
-	 58JuJsn1mFC7L2YHVA0Nz5ZiUveJxME/ZYAoZ/rHcJqataQANA1jVJF+uuVqNRWVWY
-	 hqid1EvlgT92U+hYHlPXGBjwZtnjoUAJh4KsgCPSvicPlSEc9L+ImgCSQUCzR5+RJ3
-	 reF5t+vD478IYy3pT1nnuMHxvpxZhkAYnVWgMKD2N0qa2p9WmWtQ+TDQRDPToAbSiv
-	 P6V6io0ovyyAg==
-Date: Wed, 13 Aug 2025 18:48:43 +0100
-From: Mark Brown <broonie@kernel.org>
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="H9azEvDI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=qLoo
+	IQeM14qVt2R3iNMksVO2OoAxPBm8EDTL1+MXpRQ=; b=H9azEvDIg7LttMudtBUl
+	AA4bNamdTvpOJPCzbrVX86FzCeS0jSfzp6xFjf2Esz5CSxtTxCgw9hbF8qWDjd5X
+	GgNQeZz/tQytXid9g7PqvMHPFqfVQNd53hHIS6E3fq+ewo2Kbi9BOrTOwKVLXd7p
+	ny4dXs9GUbu4p+1ruQfUk3hMcHpX4eVSwL80lXqxD4g5ljUb5652hLJKAweYhzWY
+	Y5PedHtFyv9G9nlRPiw/TORSC3UTfn408axsciOH88WHWQ6xA9zM/tYWVTItdH8l
+	+vKG56KIcJkfcXkedq2fdtFVFJ0jva61javWTIJck1GyfoojpE5wqJL/zQ9kcOuQ
+	cg==
+Received: (qmail 726888 invoked from network); 13 Aug 2025 20:37:39 +0200
+Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Aug 2025 20:37:39 +0200
+X-UD-Smtp-Session: l3s3148p1@jMyLc0M8Rr9tKLNT
+Date: Wed, 13 Aug 2025 20:37:38 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
 To: Robert Marko <robert.marko@sartura.hr>
 Cc: linux@armlinux.org.uk, nicolas.ferre@microchip.com,
 	alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
 	catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com,
 	herbert@gondor.apana.org.au, davem@davemloft.net,
-	andi.shyti@kernel.org, lee@kernel.org, gregkh@linuxfoundation.org,
-	jirislaby@kernel.org, arnd@kernel.org,
+	andi.shyti@kernel.org, lee@kernel.org, broonie@kernel.org,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, arnd@kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	linux-crypto@vger.kernel.org, linux-i2c@vger.kernel.org,
 	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
 	o.rempel@pengutronix.de, daniel.machon@microchip.com,
 	luka.perkov@sartura.hr
-Subject: Re: [PATCH v9 6/9] spi: atmel: make it selectable for ARCH_MICROCHIP
-Message-ID: <e629381c-2ad7-4693-892e-1d896db2bceb@sirena.org.uk>
+Subject: Re: [PATCH v9 7/9] i2c: at91: make it selectable for ARCH_MICROCHIP
+Message-ID: <aJzbclxOoHqQ7QAs@shikoro>
 References: <20250813174720.540015-1-robert.marko@sartura.hr>
- <20250813174720.540015-7-robert.marko@sartura.hr>
+ <20250813174720.540015-8-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="Le9MbVgkKAcD0eI8"
-Content-Disposition: inline
-In-Reply-To: <20250813174720.540015-7-robert.marko@sartura.hr>
-X-Cookie: Turn the other cheek.
-
-
---Le9MbVgkKAcD0eI8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20250813174720.540015-8-robert.marko@sartura.hr>
 
-On Wed, Aug 13, 2025 at 07:44:42PM +0200, Robert Marko wrote:
-> LAN969x uses the Atmel SPI, so make it selectable for ARCH_MICROCHIP to
+On Wed, Aug 13, 2025 at 07:44:43PM +0200, Robert Marko wrote:
+> LAN969x uses the Atmel TWI I2C, so make it selectable for ARCH_MICROCHIP to
 > avoid needing to update depends in future if other Microchip SoC-s use it
 > as well.
+> 
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
 
-Acked-by: Mark Brown <broonie@kernel.org>
+Acked-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
---Le9MbVgkKAcD0eI8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmicz/oACgkQJNaLcl1U
-h9CwBgf9FMNxW0CB5IeMi0N03NdPh3cHrdyQTVznm+0Ttm4BbWAlmjjmhfOAg8JF
-OIXZnvuk0IuAXUYGKYLNVuT4kRGXqgZKY7e1WqpkhsAfEam9ECXsRxc+w45KVL2A
-Yni2+VdRQ+jB9nB84kRCVLpTDfymidB9CtYv//Fuc5YKwLqXPb28HXsnvMyrAQSV
-HvOsLtfR+ImALUhvmAgYLbr1nAgEwdZoEV680HNFdrFVyd6NnFJHyhSZP9br6p68
-KnlRw8CzokHg6rHDkthrZsHzf4x8wPfB/+QBzuzatBkzW/Z1x8Hgec/b4UUgM0hB
-Vtj4AJLk/ypd5d2EH+NEmUdcy7H/UQ==
-=vPOw
------END PGP SIGNATURE-----
-
---Le9MbVgkKAcD0eI8--
