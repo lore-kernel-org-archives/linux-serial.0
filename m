@@ -1,39 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09555266B6F;
-	Thu, 14 Aug 2025 07:25:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7742026C3BF;
+	Thu, 14 Aug 2025 07:25:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755156303; cv=none; b=c95QB88PxUYKWDspwzyWibi4d0uLOve+sMBrcU30NBTZXg+C+/ylPndQ6dctZOnW3LARf1/sQbxSja5pAGpdfa7+nIfVxt1Lpo4eYQpaShlseT7rDuIJmnSC5s+GFNBVVekhYc//j5uH0t9TKFyQZlXC6MYuVDVD0tpQKGwL6fw=
+	t=1755156304; cv=none; b=aAudSLg/8TDHQPdI3KhW8eRzVKtL897AYJVuGTLqLy13c8MtAhhRehcStNgg4TnRGlf2TQuMN0E9NWBk99Mulhyp2PlzPFJTXJUCPcpuIm0k2hJ6mso1lno4dYmQYET1LBCy7xmxUAgvq2WI6X1v+UlVaxOM28TGXN3wqDs70E4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755156303; c=relaxed/simple;
-	bh=TmExkHaDrPFt082jnRuwqDdyWnPnTvNQyfEEU6G328A=;
+	s=arc-20240116; t=1755156304; c=relaxed/simple;
+	bh=+nuDBiZ+xaMkbDUd9Y9iFbfqjNlclFhhFDwVdp/XyJQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=sX3Yvu/6scdI9Ep16jBJC3E3SC5qHFerVhdFF7JbNmc6WTMwSvUrgc2c70E6ON/EN2to4K6l2vvaDl22kLaAJ4OA4uuyOdIAOPZcUVgsoKSKEICNn++Sc+WSYz0u9WkyczVvek8Y4twbqw1EFBHozXDZLyTamPhC0YulaDeq6gY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pipac525; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=Wn3iR9AP4jM7EFPftQGGLnFVXEDbdInUawqMMj2/YD/j7/gfQ0GGwf8ooDNtIW56bcWYGEDhkkI32Si8RBfT+Q2oH8KkSv6XKxN1wYQBo2Xnz+7RRQdFBqSL+ILBT2oyqKhuRm62uXE0Ev/xI7/Rha8Qhv7kmuClP2WqwuwPcys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=duKm8u7V; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pipac525"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 747D9C4CEF4;
-	Thu, 14 Aug 2025 07:25:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="duKm8u7V"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2029C4CEF7;
+	Thu, 14 Aug 2025 07:25:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755156302;
-	bh=TmExkHaDrPFt082jnRuwqDdyWnPnTvNQyfEEU6G328A=;
+	s=k20201202; t=1755156304;
+	bh=+nuDBiZ+xaMkbDUd9Y9iFbfqjNlclFhhFDwVdp/XyJQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=pipac525nZPCujd9tdudUvVn0NXZ1kXkZelqFN3B5bWFjDQYNhtGKW21CRLB04Ww2
-	 YXU6k6QOTesnEGelvk5bnagNEzt5sdbA+WGW8n6dVzs0q15tadDBabGglOWnVMkPcN
-	 Bxh6sBXBAI3rq3Zni/1mACUDNe4VyMGVXEBibewVQuk2vZS5ZZ5NeGjofumPUL054x
-	 tX+hjeDEIofhfLGDSCaMcCJwQ9xD27qde/7IAxNnZdl09srSDmFPQjbzaCZWniOQGr
-	 O7M9pqb0fc4ZLxwYW3R/SgXlWX+QRV+72qeScqDw3BuhQkdEt9dAflEpmqwLpLH5Bt
-	 EInQ7/kcPLC5g==
+	b=duKm8u7VurU5LnjONJDN3HMrabW0ICEYWpdsTzMDbGNlg1HWhcjuJzrnjBbelDbTO
+	 EUVOQhiyqt0Yza9cXhh3BrBX8hDjuYMfVxw17Ocmqo4hTKjWFy1eYrEMkQd7Z0RdRo
+	 LSMrGNtiAWaSat8KHjjFFV9tun4wh96j4EeEPbiqdRsBpdgPNakrwSL0FBKZfgtVhQ
+	 URvEx//mL6xm/TPe83eQtG5EaaoV7WWH1yeeBaIJjt3LXiwPsJh8IglVUcg6ZXKhf5
+	 EBkHlVgaV/Ip/DOgBD47kz3pavGbAP2U54q0DeScmA6Qbm2yI8wdOEGrrFdouLqaQa
+	 4dw9pZ1HjStVw==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 02/16] tty: introduce tty_port_tty guard()
-Date: Thu, 14 Aug 2025 09:24:42 +0200
-Message-ID: <20250814072456.182853-3-jirislaby@kernel.org>
+Subject: [PATCH 03/16] serial: introduce uart_port_lock() guard()s
+Date: Thu, 14 Aug 2025 09:24:43 +0200
+Message-ID: <20250814072456.182853-4-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20250814072456.182853-1-jirislaby@kernel.org>
 References: <20250814072456.182853-1-jirislaby@kernel.org>
@@ -46,43 +46,43 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 Having this, guards like these work:
-  scoped_guard(tty_port_tty, port)
-    tty_wakeup(scoped_tty());
+  guard(uart_port_lock_irq)(&up->port);
+or
+  scoped_guard(uart_port_lock_irqsave, port) {
+    ...
+  }
 
-See e.g. "tty_port: use scoped_guard()" later in this series.
-
-The definitions depend on CONFIG_TTY. It's due to tty_kref_put().
-On !CONFIG_TTY, it is an inline and its declaration would conflict. The
-guards are not needed in that case, of course.
+See e.g. "serial: 8250: use guard()s" later in this series.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- include/linux/tty_port.h | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ include/linux/serial_core.h | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/include/linux/tty_port.h b/include/linux/tty_port.h
-index 332ddb93603e..660c254f1efe 100644
---- a/include/linux/tty_port.h
-+++ b/include/linux/tty_port.h
-@@ -270,4 +270,18 @@ static inline void tty_port_tty_vhangup(struct tty_port *port)
- 	__tty_port_tty_hangup(port, false, false);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index 84b4648ead7e..666430b47899 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -788,6 +788,19 @@ static inline void uart_port_unlock_irqrestore(struct uart_port *up, unsigned lo
+ 	spin_unlock_irqrestore(&up->lock, flags);
  }
  
-+#ifdef CONFIG_TTY
-+void tty_kref_put(struct tty_struct *tty);
-+__DEFINE_CLASS_IS_CONDITIONAL(tty_port_tty, true);
-+__DEFINE_UNLOCK_GUARD(tty_port_tty, struct tty_struct, tty_kref_put(_T->lock));
-+static inline class_tty_port_tty_t class_tty_port_tty_constructor(struct tty_port *tport)
-+{
-+	class_tty_port_tty_t _t = {
-+		.lock = tty_port_tty_get(tport),
-+	};
-+	return _t;
-+}
-+#define scoped_tty()	((struct tty_struct *)(__guard_ptr(tty_port_tty)(&scope)))
-+#endif
++DEFINE_GUARD(uart_port_lock, struct uart_port *, uart_port_lock(_T), uart_port_unlock(_T));
++DEFINE_GUARD_COND(uart_port_lock, _try, uart_port_trylock(_T));
 +
- #endif
++DEFINE_GUARD(uart_port_lock_irq, struct uart_port *, uart_port_lock_irq(_T),
++	     uart_port_unlock_irq(_T));
++
++DEFINE_LOCK_GUARD_1(uart_port_lock_irqsave, struct uart_port,
++                    uart_port_lock_irqsave(_T->lock, &_T->flags),
++                    uart_port_unlock_irqrestore(_T->lock, _T->flags),
++                    unsigned long flags);
++DEFINE_LOCK_GUARD_1_COND(uart_port_lock_irqsave, _try,
++			 uart_port_trylock_irqsave(_T->lock, &_T->flags));
++
+ static inline int serial_port_in(struct uart_port *up, int offset)
+ {
+ 	return up->serial_in(up, offset);
 -- 
 2.50.1
 
