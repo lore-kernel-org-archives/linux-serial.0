@@ -1,39 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A2072798E1;
-	Thu, 14 Aug 2025 07:25:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19135279DC5;
+	Thu, 14 Aug 2025 07:25:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755156321; cv=none; b=FlmYv3LtqgvTMGKOjAiOP55tc61N6EOch93ntBHHOL5NisDWvLBd3vtgwp6OK8ABlUcmwxN4MNLVQRFtdddnCgC/nSLMqQdtwcKgqezQi9WXzZItissI/TbHxjSp9jq2vTi0qKpO7tYGcghWwZtDvmJ8E+Cba6eBtjsQzULK6mA=
+	t=1755156324; cv=none; b=J+qL9XRuTzjT7Ton20nAjSXcsHYe8KR+jeoT4zUbK65Kq0h5PhplY37L1FT6Q4eKLLyuT/KQcnyqbtoYlwrOGxbAYJo09QA4Bij4W+kS3/1uOhajJZ8RIQRsbPyvACGhl1+MCR+rp2q7VlRqeDoYN1oDhdBfWknCLCTcgDnblA4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755156321; c=relaxed/simple;
-	bh=ikP8D9+lVXMFYOcdbTvUdAH0C7+FbtOqJ0QHfm3h56s=;
+	s=arc-20240116; t=1755156324; c=relaxed/simple;
+	bh=dQnUKMcs6b08ZtMwS1mLWORnFN2eoNfA4YNem+Prk4s=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fFw2+nb9+996aSZ7ObZbtEGkZrt3ny5iT6qAYdAeb9lQd+4KcXxiPxOjrBjAMRVWJvjgSWXvG5gLEl2+kgVF+cZNpmq6y8NBLNOdVjinHD2Nu/uOkT96UvKnt/FbeK7KrrxjF+mGztTohvqAqZmnAQSgRBg/AUi/dKDXt3N2hZs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lx+X+Zco; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=rmB54QEEUqg8xoGNZ6PfiPUxIp/s9vPbXBwbo3TYqvn9FyjEZYWjj8Y4C8kjCnqChcxM4Fak/Kd5pk7227Jl4wcQsAbZ6rXT45SoWls0BjlUJ58JpHE4rg1+xvsXmAAIpWZ24jeMZh02KVUnKu9zBecs7Ddtj2xP2a49PZEu2NA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tES5zydb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lx+X+Zco"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD36C4CEF4;
-	Thu, 14 Aug 2025 07:25:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tES5zydb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56A8AC4CEF6;
+	Thu, 14 Aug 2025 07:25:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755156320;
-	bh=ikP8D9+lVXMFYOcdbTvUdAH0C7+FbtOqJ0QHfm3h56s=;
+	s=k20201202; t=1755156322;
+	bh=dQnUKMcs6b08ZtMwS1mLWORnFN2eoNfA4YNem+Prk4s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lx+X+ZcoYMK4SRF+LjGdMB2nmlbx0kSbYgyVH4F+b/iC/ThhKYft87mpMZFg+SY5d
-	 3kh3HNA9eEkARzCA+lYhFwTRZ0oDRXEnJidte6LAIo+AMsIAqpVe5nm0VcNPBMDpbG
-	 VtRS5crBZYc3+JhDyb7QhPL6AE7/kJmRrFhaydSOGqfSfoV9zFVYYw3QiE0C6gIE4T
-	 P1XMIdkjDIfsGQbrTJg51rKHdANqyhPMG85CTBah7Xd8zJ6N0k38oZla5gVeAwvjKt
-	 AQUCKwvDearKpyH4DEQlY6OysbzhUlL8GxZmmAPS81Jzgb6WV7HkhoIMfBEQCMgIRB
-	 v6LhTFExkZYWw==
+	b=tES5zydb+44vZrDZntm9PcIrm2c7YXHv+xRi1Y7gMXcSS4t7xEA/z7B2aeXCcU67i
+	 m5hQEnRcQRSmB8995uZpKkr3wgVBxZSn/LrNS/0rhcgWPtGUi7s5nuf77/KCiwhNzd
+	 Gsdaf0eQozx0Z8n5eetlREejUCwe8xfu7OdpLIyVbuZELpjHrmi9mlkI6PfmFn5EDc
+	 IpysvR3NWFdBuMIxiQjNu4iArjSGFd1dVVOATQ0sL2ADLNlytIfeQsCz0754X1RyaC
+	 KIT9s0BFkRAWbRLyFH3XPA5E4GuESep2bSkMEeKLSjEtSMPcQoQlfinQcCW1xi3tat
+	 uoQjByjcQYkIQ==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 14/16] tty/vt: use guard()s in con_font_set/get() and con_{set,get}_unimap()
-Date: Thu, 14 Aug 2025 09:24:54 +0200
-Message-ID: <20250814072456.182853-15-jirislaby@kernel.org>
+	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>,
+	linux-mm@kvack.org
+Subject: [PATCH 15/16] tty/vt: use guard()s
+Date: Thu, 14 Aug 2025 09:24:55 +0200
+Message-ID: <20250814072456.182853-16-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20250814072456.182853-1-jirislaby@kernel.org>
 References: <20250814072456.182853-1-jirislaby@kernel.org>
@@ -45,335 +46,996 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Having all the new guards, use them in the 8250_rsa code. This improves
+Having all the new guards, use them in the vt code. This improves
 readability, makes error handling easier, and marks locked portions of
 code explicit.
 
-The new __free()-annotated declarations are moved to the allocation points
-as is preferred:
-https://lore.kernel.org/all/CAHk-=wjvh_LUpa=864joG2JJXs3+viO-kLzLidR2JLyMr4MNwA@mail.gmail.com/
-
-Except font_data in con_font_get(). The scope in there would not match
-the expected lifetime. But the declaration is moved closer.
+A local free_page_ptr __free guard is introduced for
+__get_free_page/free_page (with proper casts). This could be made public
+in include/. But I am not sure if there are more possible users, so
+keeping completely private here.
 
 Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
 ---
- drivers/tty/vt/consolemap.c | 84 ++++++++++++++++------------------
- drivers/tty/vt/vt.c         | 89 +++++++++++++++++--------------------
- 2 files changed, 78 insertions(+), 95 deletions(-)
+Cc: linux-mm@kvack.org
+
+MM fellows,
+
+just so you know:
+
+Apart from here included (and easy to define) __get_free_page() guard:
+    DEFINE_FREE(free_page_ptr, void *, if (_T) free_page((unsigned long)_T));
+it also could be extended to __get_free_pages(). But likely the only
+user which would profit from that one is raid6_select_algo(). And it's
+not that straighforward. Adding the free_pages guard for reference:
+
+  struct gfp_holder {
+         union {
+                 unsigned long mem;
+                 void *ptr;
+         };
+         unsigned order;
+  };
+
+  DEFINE_CLASS(get_free_pages, struct gfp_holder, free_pages(_T.mem, _T.order),
+              { .order = order }; t.mem = __get_free_pages(gfp, order),
+              gfp_t gfp, unsigned order);
+
+  #define ___get_free_pages_free(var, what, gfp, order, id)              \
+         CLASS(get_free_pages, id)(gfp, order);                          \
+         var = id.what
+
+  #define __get_free_pages_free(var, gfp, order)                         \
+         ___get_free_pages_free(var, mem, gfp, order, __UNIQUE_ID(xxx))
+
+  #define __get_free_pages_ptr_free(var, gfp, order)                     \
+         ___get_free_pages_free(var, ptr, gfp, order, __UNIQUE_ID(xxx))
+
+Use like:
+  __get_free_pages_ptr_free(char *disk_ptr, GFP_KERNEL, RAID6_TEST_DISKS_ORDER);
+  if (!disk_ptr)
+    return -ENOMEM;
+  disk_ptr[0] = 10;
+---
+ drivers/tty/vt/consolemap.c |  32 +++---
+ drivers/tty/vt/selection.c  |  20 ++--
+ drivers/tty/vt/vc_screen.c  |  74 ++++++--------
+ drivers/tty/vt/vt.c         |  98 ++++++++-----------
+ drivers/tty/vt/vt_ioctl.c   | 190 ++++++++++++++++--------------------
+ 5 files changed, 170 insertions(+), 244 deletions(-)
 
 diff --git a/drivers/tty/vt/consolemap.c b/drivers/tty/vt/consolemap.c
-index bb4bb272ebec..8eb9d745a868 100644
+index 8eb9d745a868..7a11c3f2e875 100644
 --- a/drivers/tty/vt/consolemap.c
 +++ b/drivers/tty/vt/consolemap.c
-@@ -637,32 +637,28 @@ static struct uni_pagedict *con_unshare_unimap(struct vc_data *vc,
- 
- int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
- {
--	int err = 0, err1;
- 	struct uni_pagedict *dict;
--	struct unipair *unilist, *plist;
-+	struct unipair *plist;
-+	int err = 0;
- 
- 	if (!ct)
- 		return 0;
- 
--	unilist = vmemdup_array_user(list, ct, sizeof(*unilist));
-+	struct unipair *unilist __free(kvfree) = vmemdup_array_user(list, ct, sizeof(*unilist));
- 	if (IS_ERR(unilist))
- 		return PTR_ERR(unilist);
+@@ -361,10 +361,10 @@ int con_set_trans_old(unsigned char __user * arg)
+ 		inbuf[i] = UNI_DIRECT_BASE | ch;
+ 	}
  
 -	console_lock();
 +	guard(console_lock)();
- 
- 	/* Save original vc_unipagdir_loc in case we allocate a new one */
- 	dict = *vc->uni_pagedict_loc;
--	if (!dict) {
--		err = -EINVAL;
--		goto out_unlock;
--	}
-+	if (!dict)
-+		return -EINVAL;
- 
- 	if (dict->refcount > 1) {
- 		dict = con_unshare_unimap(vc, dict);
--		if (IS_ERR(dict)) {
--			err = PTR_ERR(dict);
--			goto out_unlock;
--		}
-+		if (IS_ERR(dict))
-+			return PTR_ERR(dict);
- 	} else if (dict == dflt) {
- 		dflt = NULL;
- 	}
-@@ -671,7 +667,7 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
- 	 * Insert user specified unicode pairs into new table.
- 	 */
- 	for (plist = unilist; ct; ct--, plist++) {
--		err1 = con_insert_unipair(dict, plist->unicode, plist->fontpos);
-+		int err1 = con_insert_unipair(dict, plist->unicode, plist->fontpos);
- 		if (err1)
- 			err = err1;
- 	}
-@@ -680,15 +676,12 @@ int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list)
- 	 * Merge with fontmaps of any other virtual consoles.
- 	 */
- 	if (con_unify_unimap(vc, dict))
--		goto out_unlock;
-+		return err;
- 
- 	for (enum translation_map m = FIRST_MAP; m <= LAST_MAP; m++)
- 		set_inverse_transl(vc, dict, m);
- 	set_inverse_trans_unicode(dict);
- 
--out_unlock:
+ 	memcpy(translations[USER_MAP], inbuf, sizeof(inbuf));
+ 	update_user_maps();
 -	console_unlock();
--	kvfree(unilist);
- 	return err;
++
+ 	return 0;
  }
  
-@@ -787,50 +780,49 @@ int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct,
- {
- 	ushort ect;
- 	struct uni_pagedict *dict;
--	struct unipair *unilist;
- 	unsigned int d, r, g;
--	int ret = 0;
- 
--	unilist = kvmalloc_array(ct, sizeof(*unilist), GFP_KERNEL);
-+	struct unipair *unilist __free(kvfree) = kvmalloc_array(ct, sizeof(*unilist), GFP_KERNEL);
- 	if (!unilist)
- 		return -ENOMEM;
+@@ -374,13 +374,11 @@ int con_get_trans_old(unsigned char __user * arg)
+ 	unsigned short *p = translations[USER_MAP];
+ 	unsigned char outbuf[E_TABSZ];
  
 -	console_lock();
--
--	ect = 0;
--	dict = *vc->uni_pagedict_loc;
--	if (!dict)
--		goto unlock;
--
--	for (d = 0; d < UNI_DIRS; d++) {
--		u16 **dir = dict->uni_pgdir[d];
--		if (!dir)
--			continue;
-+	scoped_guard(console_lock) {
-+		ect = 0;
-+		dict = *vc->uni_pagedict_loc;
-+		if (!dict)
-+			break;
+-	for (i = 0; i < ARRAY_SIZE(outbuf); i++)
+-	{
+-		ch = conv_uni_to_pc(vc_cons[fg_console].d, p[i]);
+-		outbuf[i] = (ch & ~0xff) ? 0 : ch;
+-	}
+-	console_unlock();
++	scoped_guard(console_lock)
++		for (i = 0; i < ARRAY_SIZE(outbuf); i++) {
++			ch = conv_uni_to_pc(vc_cons[fg_console].d, p[i]);
++			outbuf[i] = (ch & ~0xff) ? 0 : ch;
++		}
  
--		for (r = 0; r < UNI_DIR_ROWS; r++) {
--			u16 *row = dir[r];
--			if (!row)
-+		for (d = 0; d < UNI_DIRS; d++) {
-+			u16 **dir = dict->uni_pgdir[d];
-+			if (!dir)
- 				continue;
+ 	return copy_to_user(arg, outbuf, sizeof(outbuf)) ? -EFAULT : 0;
+ }
+@@ -392,10 +390,10 @@ int con_set_trans_new(ushort __user * arg)
+ 	if (copy_from_user(inbuf, arg, sizeof(inbuf)))
+ 		return -EFAULT;
  
--			for (g = 0; g < UNI_ROW_GLYPHS; g++, row++) {
--				if (*row >= MAX_GLYPH)
-+			for (r = 0; r < UNI_DIR_ROWS; r++) {
-+				u16 *row = dir[r];
-+				if (!row)
- 					continue;
--				if (ect < ct) {
--					unilist[ect].unicode = UNI(d, r, g);
--					unilist[ect].fontpos = *row;
-+
-+				for (g = 0; g < UNI_ROW_GLYPHS; g++, row++) {
-+					if (*row >= MAX_GLYPH)
-+						continue;
-+					if (ect < ct) {
-+						unilist[ect].unicode = UNI(d, r, g);
-+						unilist[ect].fontpos = *row;
-+					}
-+					ect++;
- 				}
--				ect++;
- 			}
- 		}
- 	}
--unlock:
+-	console_lock();
++	guard(console_lock)();
+ 	memcpy(translations[USER_MAP], inbuf, sizeof(inbuf));
+ 	update_user_maps();
 -	console_unlock();
 +
- 	if (copy_to_user(list, unilist, min(ect, ct) * sizeof(*unilist)))
--		ret = -EFAULT;
-+		return -EFAULT;
- 	if (put_user(ect, uct))
--		ret = -EFAULT;
--	kvfree(unilist);
--	return ret ? ret : (ect <= ct) ? 0 : -ENOMEM;
-+		return -EFAULT;
-+	if (ect > ct)
-+		return -ENOMEM;
+ 	return 0;
+ }
+ 
+@@ -403,9 +401,8 @@ int con_get_trans_new(ushort __user * arg)
+ {
+ 	unsigned short outbuf[E_TABSZ];
+ 
+-	console_lock();
+-	memcpy(outbuf, translations[USER_MAP], sizeof(outbuf));
+-	console_unlock();
++	scoped_guard(console_lock)
++		memcpy(outbuf, translations[USER_MAP], sizeof(outbuf));
+ 
+ 	return copy_to_user(arg, outbuf, sizeof(outbuf)) ? -EFAULT : 0;
+ }
+@@ -571,11 +568,8 @@ static int con_do_clear_unimap(struct vc_data *vc)
+ 
+ int con_clear_unimap(struct vc_data *vc)
+ {
+-	int ret;
+-	console_lock();
+-	ret = con_do_clear_unimap(vc);
+-	console_unlock();
+-	return ret;
++	guard(console_lock)();
++	return con_do_clear_unimap(vc);
+ }
+ 
+ static struct uni_pagedict *con_unshare_unimap(struct vc_data *vc,
+diff --git a/drivers/tty/vt/selection.c b/drivers/tty/vt/selection.c
+index 24b0a53e5a79..07d3b93975d3 100644
+--- a/drivers/tty/vt/selection.c
++++ b/drivers/tty/vt/selection.c
+@@ -127,9 +127,8 @@ int sel_loadlut(u32 __user *lut)
+ 	if (copy_from_user(tmplut, lut, sizeof(inwordLut)))
+ 		return -EFAULT;
+ 
+-	console_lock();
++	guard(console_lock)();
+ 	memcpy(inwordLut, tmplut, sizeof(inwordLut));
+-	console_unlock();
+ 
+ 	return 0;
+ }
+@@ -375,15 +374,9 @@ static int vc_selection(struct vc_data *vc, struct tiocl_selection *v,
+ 
+ int set_selection_kernel(struct tiocl_selection *v, struct tty_struct *tty)
+ {
+-	int ret;
+-
+-	mutex_lock(&vc_sel.lock);
+-	console_lock();
+-	ret = vc_selection(vc_cons[fg_console].d, v, tty);
+-	console_unlock();
+-	mutex_unlock(&vc_sel.lock);
+-
+-	return ret;
++	guard(mutex)(&vc_sel.lock);
++	guard(console_lock)();
++	return vc_selection(vc_cons[fg_console].d, v, tty);
+ }
+ EXPORT_SYMBOL_GPL(set_selection_kernel);
+ 
+@@ -409,9 +402,8 @@ int paste_selection(struct tty_struct *tty)
+ 	const char *bps = bp ? bracketed_paste_start : NULL;
+ 	const char *bpe = bp ? bracketed_paste_end : NULL;
+ 
+-	console_lock();
+-	poke_blanked_console();
+-	console_unlock();
++	scoped_guard(console_lock)
++		poke_blanked_console();
+ 
+ 	ld = tty_ldisc_ref_wait(tty);
+ 	if (!ld)
+diff --git a/drivers/tty/vt/vc_screen.c b/drivers/tty/vt/vc_screen.c
+index 79b33d998d43..c814644ef4ee 100644
+--- a/drivers/tty/vt/vc_screen.c
++++ b/drivers/tty/vt/vc_screen.c
+@@ -53,6 +53,8 @@
+ #define HEADER_SIZE	4u
+ #define CON_BUF_SIZE (IS_ENABLED(CONFIG_BASE_SMALL) ? 256 : PAGE_SIZE)
+ 
++DEFINE_FREE(free_page_ptr, void *, if (_T) free_page((unsigned long)_T));
++
+ /*
+  * Our minor space:
+  *
+@@ -72,7 +74,6 @@
+ #define use_unicode(inode)	(iminor(inode) & 64)
+ #define use_attributes(inode)	(iminor(inode) & 128)
+ 
+-
+ struct vcs_poll_data {
+ 	struct notifier_block notifier;
+ 	unsigned int cons_num;
+@@ -231,15 +232,13 @@ static loff_t vcs_lseek(struct file *file, loff_t offset, int orig)
+ 	struct vc_data *vc;
+ 	int size;
+ 
+-	console_lock();
+-	vc = vcs_vc(inode, NULL);
+-	if (!vc) {
+-		console_unlock();
+-		return -ENXIO;
+-	}
++	scoped_guard(console_lock) {
++		vc = vcs_vc(inode, NULL);
++		if (!vc)
++			return -ENXIO;
+ 
+-	size = vcs_size(vc, use_attributes(inode), use_unicode(inode));
+-	console_unlock();
++		size = vcs_size(vc, use_attributes(inode), use_unicode(inode));
++	}
+ 	if (size < 0)
+ 		return size;
+ 	return fixed_size_llseek(file, offset, orig, size);
+@@ -369,11 +368,10 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	struct vcs_poll_data *poll;
+ 	unsigned int read;
+ 	ssize_t ret;
+-	char *con_buf;
+ 	loff_t pos;
+ 	bool viewed, attr, uni_mode;
+ 
+-	con_buf = (char *) __get_free_page(GFP_KERNEL);
++	char *con_buf __free(free_page_ptr) = (char *)__get_free_page(GFP_KERNEL);
+ 	if (!con_buf)
+ 		return -ENOMEM;
+ 
+@@ -382,17 +380,16 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	/* Select the proper current console and verify
+ 	 * sanity of the situation under the console lock.
+ 	 */
+-	console_lock();
++	guard(console_lock)();
+ 
+ 	uni_mode = use_unicode(inode);
+ 	attr = use_attributes(inode);
+ 
+-	ret = -EINVAL;
+ 	if (pos < 0)
+-		goto unlock_out;
++		return -EINVAL;
+ 	/* we enforce 32-bit alignment for pos and count in unicode mode */
+ 	if (uni_mode && (pos | count) & 3)
+-		goto unlock_out;
++		return -EINVAL;
+ 
+ 	poll = file->private_data;
+ 	if (count && poll)
+@@ -468,10 +465,8 @@ vcs_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+ 	}
+ 	*ppos += read;
+ 	if (read)
+-		ret = read;
+-unlock_out:
+-	console_unlock();
+-	free_page((unsigned long) con_buf);
++		return read;
++
+ 	return ret;
+ }
+ 
+@@ -591,7 +586,6 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ {
+ 	struct inode *inode = file_inode(file);
+ 	struct vc_data *vc;
+-	char *con_buf;
+ 	u16 *org0, *org;
+ 	unsigned int written;
+ 	int size;
+@@ -602,7 +596,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ 	if (use_unicode(inode))
+ 		return -EOPNOTSUPP;
+ 
+-	con_buf = (char *) __get_free_page(GFP_KERNEL);
++	char *con_buf __free(free_page_ptr) = (char *)__get_free_page(GFP_KERNEL);
+ 	if (!con_buf)
+ 		return -ENOMEM;
+ 
+@@ -611,22 +605,18 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ 	/* Select the proper current console and verify
+ 	 * sanity of the situation under the console lock.
+ 	 */
+-	console_lock();
++	guard(console_lock)();
+ 
+ 	attr = use_attributes(inode);
+-	ret = -ENXIO;
+ 	vc = vcs_vc(inode, &viewed);
+ 	if (!vc)
+-		goto unlock_out;
++		return -ENXIO;
+ 
+ 	size = vcs_size(vc, attr, false);
+-	if (size < 0) {
+-		ret = size;
+-		goto unlock_out;
+-	}
+-	ret = -EINVAL;
++	if (size < 0)
++		return size;
+ 	if (pos < 0 || pos > size)
+-		goto unlock_out;
++		return -EINVAL;
+ 	if (count > size - pos)
+ 		count = size - pos;
+ 	written = 0;
+@@ -651,8 +641,7 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ 				 */
+ 				if (written)
+ 					break;
+-				ret = -EFAULT;
+-				goto unlock_out;
++				return -EFAULT;
+ 			}
+ 		}
+ 
+@@ -664,15 +653,13 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ 		if (!vc) {
+ 			if (written)
+ 				break;
+-			ret = -ENXIO;
+-			goto unlock_out;
++			return -ENXIO;
+ 		}
+ 		size = vcs_size(vc, attr, false);
+ 		if (size < 0) {
+ 			if (written)
+ 				break;
+-			ret = size;
+-			goto unlock_out;
++			return size;
+ 		}
+ 		if (pos >= size)
+ 			break;
+@@ -702,9 +689,6 @@ vcs_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+ 	if (written)
+ 		vcs_scr_updated(vc);
+ 
+-unlock_out:
+-	console_unlock();
+-	free_page((unsigned long) con_buf);
+ 	return ret;
+ }
+ 
+@@ -754,17 +738,17 @@ vcs_open(struct inode *inode, struct file *filp)
+ 	unsigned int currcons = console(inode);
+ 	bool attr = use_attributes(inode);
+ 	bool uni_mode = use_unicode(inode);
+-	int ret = 0;
+ 
+ 	/* we currently don't support attributes in unicode mode */
+ 	if (attr && uni_mode)
+ 		return -EOPNOTSUPP;
+ 
+-	console_lock();
+-	if(currcons && !vc_cons_allocated(currcons-1))
+-		ret = -ENXIO;
+-	console_unlock();
+-	return ret;
++	guard(console_lock)();
++
++	if (currcons && !vc_cons_allocated(currcons - 1))
++		return -ENXIO;
 +
 +	return 0;
+ }
+ 
+ static int vcs_release(struct inode *inode, struct file *file)
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 100d6cb26887..869261141535 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1317,12 +1317,9 @@ EXPORT_SYMBOL(__vc_resize);
+ static int vt_resize(struct tty_struct *tty, struct winsize *ws)
+ {
+ 	struct vc_data *vc = tty->driver_data;
+-	int ret;
+ 
+-	console_lock();
+-	ret = vc_do_resize(tty, vc, ws->ws_col, ws->ws_row, false);
+-	console_unlock();
+-	return ret;
++	guard(console_lock)();
++	return vc_do_resize(tty, vc, ws->ws_col, ws->ws_row, false);
+ }
+ 
+ struct vc_data *vc_deallocate(unsigned int currcons)
+@@ -3135,12 +3132,11 @@ static int do_con_write(struct tty_struct *tty, const u8 *buf, int count)
+ 	if (in_interrupt())
+ 		return count;
+ 
+-	console_lock();
++	guard(console_lock)();
+ 	currcons = vc->vc_num;
+ 	if (!vc_cons_allocated(currcons)) {
+ 		/* could this happen? */
+ 		pr_warn_once("con_write: tty %d not allocated\n", currcons+1);
+-		console_unlock();
+ 		return 0;
+ 	}
+ 
+@@ -3184,7 +3180,7 @@ static int do_con_write(struct tty_struct *tty, const u8 *buf, int count)
+ 	con_flush(vc, &draw);
+ 	console_conditional_schedule();
+ 	notify_update(vc);
+-	console_unlock();
++
+ 	return n;
+ }
+ 
+@@ -3199,7 +3195,7 @@ static int do_con_write(struct tty_struct *tty, const u8 *buf, int count)
+  */
+ static void console_callback(struct work_struct *ignored)
+ {
+-	console_lock();
++	guard(console_lock)();
+ 
+ 	if (want_console >= 0) {
+ 		if (want_console != fg_console &&
+@@ -3228,8 +3224,6 @@ static void console_callback(struct work_struct *ignored)
+ 		blank_timer_expired = 0;
+ 	}
+ 	notify_update(vc_cons[fg_console].d);
+-
+-	console_unlock();
+ }
+ 
+ int set_console(int nr)
+@@ -3433,9 +3427,8 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
+ 			return -EPERM;
+ 		return paste_selection(tty);
+ 	case TIOCL_UNBLANKSCREEN:
+-		console_lock();
+-		unblank_screen();
+-		console_unlock();
++		scoped_guard(console_lock)
++			unblank_screen();
+ 		break;
+ 	case TIOCL_SELLOADLUT:
+ 		if (!capable(CAP_SYS_ADMIN))
+@@ -3451,9 +3444,8 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
+ 		data = vt_get_shift_state();
+ 		return put_user(data, p);
+ 	case TIOCL_GETMOUSEREPORTING:
+-		console_lock();	/* May be overkill */
+-		data = mouse_reporting();
+-		console_unlock();
++		scoped_guard(console_lock)	/* May be overkill */
++			data = mouse_reporting();
+ 		return put_user(data, p);
+ 	case TIOCL_SETVESABLANK:
+ 		return set_vesa_blanking(param);
+@@ -3484,15 +3476,14 @@ int tioclinux(struct tty_struct *tty, unsigned long arg)
+ 		 * Needs the console lock here. Note that lots of other calls
+ 		 * need fixing before the lock is actually useful!
+ 		 */
+-		console_lock();
+-		scrollfront(vc_cons[fg_console].d, lines);
+-		console_unlock();
++		scoped_guard(console_lock)
++			scrollfront(vc_cons[fg_console].d, lines);
+ 		break;
+ 	case TIOCL_BLANKSCREEN:	/* until explicitly unblanked, not only poked */
+-		console_lock();
+-		ignore_poke = 1;
+-		do_blank_screen(0);
+-		console_unlock();
++		scoped_guard(console_lock) {
++			ignore_poke = 1;
++			do_blank_screen(0);
++		}
+ 		break;
+ 	case TIOCL_BLANKEDSCREEN:
+ 		return console_blanked;
+@@ -3582,9 +3573,8 @@ static void con_flush_chars(struct tty_struct *tty)
+ 	if (in_interrupt())	/* from flush_to_ldisc */
+ 		return;
+ 
+-	console_lock();
++	guard(console_lock)();
+ 	set_cursor(vc);
+-	console_unlock();
  }
  
  /*
-diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 62049ceb34de..100d6cb26887 100644
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -4801,57 +4801,51 @@ void reset_palette(struct vc_data *vc)
- static int con_font_get(struct vc_data *vc, struct console_font_op *op)
- {
- 	struct console_font font;
--	int rc = -EINVAL;
- 	int c;
- 	unsigned int vpitch = op->op == KD_FONT_OP_GET_TALL ? op->height : 32;
- 
- 	if (vpitch > max_font_height)
- 		return -EINVAL;
- 
-+	void *font_data __free(kvfree) = NULL;
- 	if (op->data) {
--		font.data = kvzalloc(max_font_size, GFP_KERNEL);
-+		font.data = font_data = kvzalloc(max_font_size, GFP_KERNEL);
- 		if (!font.data)
- 			return -ENOMEM;
- 	} else
- 		font.data = NULL;
- 
--	console_lock();
--	if (vc->vc_mode != KD_TEXT)
--		rc = -EINVAL;
--	else if (vc->vc_sw->con_font_get)
--		rc = vc->vc_sw->con_font_get(vc, &font, vpitch);
--	else
--		rc = -ENOSYS;
--	console_unlock();
-+	scoped_guard(console_lock) {
-+		if (vc->vc_mode != KD_TEXT)
-+			return -EINVAL;
-+		if (!vc->vc_sw->con_font_get)
-+			return -ENOSYS;
- 
--	if (rc)
--		goto out;
-+		int ret = vc->vc_sw->con_font_get(vc, &font, vpitch);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	c = (font.width+7)/8 * vpitch * font.charcount;
- 
- 	if (op->data && font.charcount > op->charcount)
--		rc = -ENOSPC;
-+		return -ENOSPC;
- 	if (font.width > op->width || font.height > op->height)
--		rc = -ENOSPC;
--	if (rc)
--		goto out;
-+		return -ENOSPC;
- 
- 	op->height = font.height;
- 	op->width = font.width;
- 	op->charcount = font.charcount;
- 
- 	if (op->data && copy_to_user(op->data, font.data, c))
--		rc = -EFAULT;
-+		return -EFAULT;
- 
--out:
--	kvfree(font.data);
--	return rc;
-+	return 0;
- }
- 
- static int con_font_set(struct vc_data *vc, const struct console_font_op *op)
- {
- 	struct console_font font;
--	int rc = -EINVAL;
- 	int size;
- 	unsigned int vpitch = op->op == KD_FONT_OP_SET_TALL ? op->height : 32;
- 
-@@ -4870,7 +4864,7 @@ static int con_font_set(struct vc_data *vc, const struct console_font_op *op)
- 	if (size > max_font_size)
- 		return -ENOSPC;
- 
--	font.data = memdup_user(op->data, size);
-+	void *font_data __free(kfree) = font.data = memdup_user(op->data, size);
- 	if (IS_ERR(font.data))
- 		return PTR_ERR(font.data);
- 
-@@ -4878,18 +4872,17 @@ static int con_font_set(struct vc_data *vc, const struct console_font_op *op)
- 	font.width = op->width;
- 	font.height = op->height;
+@@ -3596,22 +3586,20 @@ static int con_install(struct tty_driver *driver, struct tty_struct *tty)
+ 	struct vc_data *vc;
+ 	int ret;
  
 -	console_lock();
 +	guard(console_lock)();
-+
- 	if (vc->vc_mode != KD_TEXT)
--		rc = -EINVAL;
--	else if (vc->vc_sw->con_font_set) {
--		if (vc_is_sel(vc))
--			clear_selection();
--		rc = vc->vc_sw->con_font_set(vc, &font, vpitch, op->flags);
--	} else
--		rc = -ENOSYS;
--	console_unlock();
--	kfree(font.data);
--	return rc;
-+		return -EINVAL;
-+	if (!vc->vc_sw->con_font_set)
-+		return -ENOSYS;
-+
-+	if (vc_is_sel(vc))
-+		clear_selection();
-+
-+	return vc->vc_sw->con_font_set(vc, &font, vpitch, op->flags);
- }
+ 	ret = vc_allocate(currcons);
+ 	if (ret)
+-		goto unlock;
++		return ret;
  
- static int con_font_default(struct vc_data *vc, struct console_font_op *op)
-@@ -4897,8 +4890,6 @@ static int con_font_default(struct vc_data *vc, struct console_font_op *op)
- 	struct console_font font = {.width = op->width, .height = op->height};
- 	char name[MAX_FONT_NAME];
- 	char *s = name;
--	int rc;
--
+ 	vc = vc_cons[currcons].d;
  
- 	if (!op->data)
- 		s = NULL;
-@@ -4907,23 +4898,23 @@ static int con_font_default(struct vc_data *vc, struct console_font_op *op)
- 	else
- 		name[MAX_FONT_NAME - 1] = 0;
- 
--	console_lock();
--	if (vc->vc_mode != KD_TEXT) {
--		console_unlock();
--		return -EINVAL;
+ 	/* Still being freed */
+-	if (vc->port.tty) {
+-		ret = -ERESTARTSYS;
+-		goto unlock;
 -	}
--	if (vc->vc_sw->con_font_default) {
-+	scoped_guard(console_lock) {
-+		if (vc->vc_mode != KD_TEXT)
-+			return -EINVAL;
-+		if (!vc->vc_sw->con_font_default)
-+			return -ENOSYS;
-+
- 		if (vc_is_sel(vc))
- 			clear_selection();
--		rc = vc->vc_sw->con_font_default(vc, &font, s);
--	} else
--		rc = -ENOSYS;
++	if (vc->port.tty)
++		return -ERESTARTSYS;
+ 
+ 	ret = tty_port_install(&vc->port, driver, tty);
+ 	if (ret)
+-		goto unlock;
++		return ret;
+ 
+ 	tty->driver_data = vc;
+ 	vc->port.tty = tty;
+@@ -3625,9 +3613,8 @@ static int con_install(struct tty_driver *driver, struct tty_struct *tty)
+ 		tty->termios.c_iflag |= IUTF8;
+ 	else
+ 		tty->termios.c_iflag &= ~IUTF8;
+-unlock:
 -	console_unlock();
--	if (!rc) {
--		op->width = font.width;
--		op->height = font.height;
-+		int ret = vc->vc_sw->con_font_default(vc, &font, s);
-+		if (ret)
-+			return ret;
- 	}
--	return rc;
-+
-+	op->width = font.width;
-+	op->height = font.height;
+-	return ret;
 +
 +	return 0;
  }
  
- int con_font_op(struct vc_data *vc, struct console_font_op *op)
+ static int con_open(struct tty_struct *tty, struct file *filp)
+@@ -3646,9 +3633,9 @@ static void con_shutdown(struct tty_struct *tty)
+ {
+ 	struct vc_data *vc = tty->driver_data;
+ 	BUG_ON(vc == NULL);
+-	console_lock();
++
++	guard(console_lock)();
+ 	vc->port.tty = NULL;
+-	console_unlock();
+ }
+ 
+ static void con_cleanup(struct tty_struct *tty)
+@@ -4137,15 +4124,13 @@ static ssize_t store_bind(struct device *dev, struct device_attribute *attr,
+ 	struct con_driver *con = dev_get_drvdata(dev);
+ 	int bind = simple_strtoul(buf, NULL, 0);
+ 
+-	console_lock();
++	guard(console_lock)();
+ 
+ 	if (bind)
+ 		vt_bind(con);
+ 	else
+ 		vt_unbind(con);
+ 
+-	console_unlock();
+-
+ 	return count;
+ }
+ 
+@@ -4155,9 +4140,8 @@ static ssize_t show_bind(struct device *dev, struct device_attribute *attr,
+ 	struct con_driver *con = dev_get_drvdata(dev);
+ 	int bind;
+ 
+-	console_lock();
+-	bind = con_is_bound(con->con);
+-	console_unlock();
++	scoped_guard(console_lock)
++		bind = con_is_bound(con->con);
+ 
+ 	return sysfs_emit(buf, "%i\n", bind);
+ }
+@@ -4429,7 +4413,7 @@ static void con_driver_unregister_callback(struct work_struct *ignored)
+ {
+ 	int i;
+ 
+-	console_lock();
++	guard(console_lock)();
+ 
+ 	for (i = 0; i < MAX_NR_CON_DRIVER; i++) {
+ 		struct con_driver *con_driver = &registered_con_driver[i];
+@@ -4454,8 +4438,6 @@ static void con_driver_unregister_callback(struct work_struct *ignored)
+ 		con_driver->first = 0;
+ 		con_driver->last = 0;
+ 	}
+-
+-	console_unlock();
+ }
+ 
+ /*
+@@ -4491,9 +4473,8 @@ EXPORT_SYMBOL_GPL(do_take_over_console);
+  */
+ void give_up_console(const struct consw *csw)
+ {
+-	console_lock();
++	guard(console_lock)();
+ 	do_unregister_con_driver(csw);
+-	console_unlock();
+ }
+ EXPORT_SYMBOL(give_up_console);
+ 
+@@ -4541,9 +4522,8 @@ static int set_vesa_blanking(u8 __user *mode_user)
+ 	if (get_user(mode, mode_user))
+ 		return -EFAULT;
+ 
+-	console_lock();
++	guard(console_lock)();
+ 	vesa_blank_mode = (mode <= VESA_BLANK_MAX) ? mode : VESA_NO_BLANKING;
+-	console_unlock();
+ 
+ 	return 0;
+ }
+@@ -4729,7 +4709,7 @@ int con_set_cmap(unsigned char __user *arg)
+ 	if (copy_from_user(colormap, arg, sizeof(colormap)))
+ 		return -EFAULT;
+ 
+-	console_lock();
++	guard(console_lock)();
+ 	for (i = k = 0; i < 16; i++) {
+ 		default_red[i] = colormap[k++];
+ 		default_grn[i] = colormap[k++];
+@@ -4745,7 +4725,6 @@ int con_set_cmap(unsigned char __user *arg)
+ 		}
+ 		set_palette(vc_cons[i].d);
+ 	}
+-	console_unlock();
+ 
+ 	return 0;
+ }
+@@ -4755,13 +4734,12 @@ int con_get_cmap(unsigned char __user *arg)
+ 	int i, k;
+ 	unsigned char colormap[3*16];
+ 
+-	console_lock();
+-	for (i = k = 0; i < 16; i++) {
+-		colormap[k++] = default_red[i];
+-		colormap[k++] = default_grn[i];
+-		colormap[k++] = default_blu[i];
+-	}
+-	console_unlock();
++	scoped_guard(console_lock)
++		for (i = k = 0; i < 16; i++) {
++			colormap[k++] = default_red[i];
++			colormap[k++] = default_grn[i];
++			colormap[k++] = default_blu[i];
++		}
+ 
+ 	if (copy_to_user(arg, colormap, sizeof(colormap)))
+ 		return -EFAULT;
+diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+index 61342e06970a..c9f11c4bd9fe 100644
+--- a/drivers/tty/vt/vt_ioctl.c
++++ b/drivers/tty/vt/vt_ioctl.c
+@@ -373,15 +373,13 @@ static int vt_k_ioctl(struct tty_struct *tty, unsigned int cmd,
+ 		break;
+ 	}
+ 
+-	case KDSETMODE:
++	case KDSETMODE: {
+ 		if (!perm)
+ 			return -EPERM;
+ 
+-		console_lock();
+-		ret = vt_kdsetmode(vc, arg);
+-		console_unlock();
+-		return ret;
+-
++		guard(console_lock)();
++		return vt_kdsetmode(vc, arg);
++	}
+ 	case KDGETMODE:
+ 		return put_user(vc->vc_mode, (int __user *)arg);
+ 
+@@ -601,23 +599,21 @@ static int vt_setactivate(struct vt_setactivate __user *sa)
+ 
+ 	vsa.console--;
+ 	vsa.console = array_index_nospec(vsa.console, MAX_NR_CONSOLES);
+-	console_lock();
+-	ret = vc_allocate(vsa.console);
+-	if (ret) {
+-		console_unlock();
+-		return ret;
+-	}
++	scoped_guard(console_lock) {
++		ret = vc_allocate(vsa.console);
++		if (ret)
++			return ret;
+ 
+-	/*
+-	 * This is safe providing we don't drop the console sem between
+-	 * vc_allocate and finishing referencing nvc.
+-	 */
+-	nvc = vc_cons[vsa.console].d;
+-	nvc->vt_mode = vsa.mode;
+-	nvc->vt_mode.frsig = 0;
+-	put_pid(nvc->vt_pid);
+-	nvc->vt_pid = get_pid(task_pid(current));
+-	console_unlock();
++		/*
++		 * This is safe providing we don't drop the console sem between
++		 * vc_allocate and finishing referencing nvc.
++		 */
++		nvc = vc_cons[vsa.console].d;
++		nvc->vt_mode = vsa.mode;
++		nvc->vt_mode.frsig = 0;
++		put_pid(nvc->vt_pid);
++		nvc->vt_pid = get_pid(task_pid(current));
++	}
+ 
+ 	/* Commence switch and lock */
+ 	/* Review set_console locks */
+@@ -630,19 +626,18 @@ static int vt_setactivate(struct vt_setactivate __user *sa)
+ static int vt_disallocate(unsigned int vc_num)
+ {
+ 	struct vc_data *vc = NULL;
+-	int ret = 0;
+ 
+-	console_lock();
+-	if (vt_busy(vc_num))
+-		ret = -EBUSY;
+-	else if (vc_num)
+-		vc = vc_deallocate(vc_num);
+-	console_unlock();
++	scoped_guard(console_lock) {
++		if (vt_busy(vc_num))
++			return -EBUSY;
++		if (vc_num)
++			vc = vc_deallocate(vc_num);
++	}
+ 
+ 	if (vc && vc_num >= MIN_NR_CONSOLES)
+ 		tty_port_put(&vc->port);
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ /* deallocate all unused consoles, but leave 0 */
+@@ -651,13 +646,12 @@ static void vt_disallocate_all(void)
+ 	struct vc_data *vc[MAX_NR_CONSOLES];
+ 	int i;
+ 
+-	console_lock();
+-	for (i = 1; i < MAX_NR_CONSOLES; i++)
+-		if (!vt_busy(i))
+-			vc[i] = vc_deallocate(i);
+-		else
+-			vc[i] = NULL;
+-	console_unlock();
++	scoped_guard(console_lock)
++		for (i = 1; i < MAX_NR_CONSOLES; i++)
++			if (!vt_busy(i))
++				vc[i] = vc_deallocate(i);
++			else
++				vc[i] = NULL;
+ 
+ 	for (i = 1; i < MAX_NR_CONSOLES; i++) {
+ 		if (vc[i] && i >= MIN_NR_CONSOLES)
+@@ -703,7 +697,7 @@ static int vt_resizex(struct vc_data *vc, struct vt_consize __user *cs)
+ 
+ 		if (!vc_cons[i].d)
+ 			continue;
+-		console_lock();
++		guard(console_lock)();
+ 		vcp = vc_cons[i].d;
+ 		if (vcp) {
+ 			int ret;
+@@ -718,11 +712,9 @@ static int vt_resizex(struct vc_data *vc, struct vt_consize __user *cs)
+ 			if (ret) {
+ 				vcp->vc_scan_lines = save_scan_lines;
+ 				vcp->vc_cell_height = save_cell_height;
+-				console_unlock();
+ 				return ret;
+ 			}
+ 		}
+-		console_unlock();
+ 	}
+ 
+ 	return 0;
+@@ -770,7 +762,7 @@ int vt_ioctl(struct tty_struct *tty,
+ 		if (tmp.mode != VT_AUTO && tmp.mode != VT_PROCESS)
+ 			return -EINVAL;
+ 
+-		console_lock();
++		guard(console_lock)();
+ 		vc->vt_mode = tmp;
+ 		/* the frsig is ignored, so we set it to 0 */
+ 		vc->vt_mode.frsig = 0;
+@@ -778,7 +770,6 @@ int vt_ioctl(struct tty_struct *tty,
+ 		vc->vt_pid = get_pid(task_pid(current));
+ 		/* no switch is required -- saw@shade.msu.ru */
+ 		vc->vt_newvt = -1;
+-		console_unlock();
+ 		break;
+ 	}
+ 
+@@ -787,9 +778,8 @@ int vt_ioctl(struct tty_struct *tty,
+ 		struct vt_mode tmp;
+ 		int rc;
+ 
+-		console_lock();
+-		memcpy(&tmp, &vc->vt_mode, sizeof(struct vt_mode));
+-		console_unlock();
++		scoped_guard(console_lock)
++			memcpy(&tmp, &vc->vt_mode, sizeof(struct vt_mode));
+ 
+ 		rc = copy_to_user(up, &tmp, sizeof(struct vt_mode));
+ 		if (rc)
+@@ -811,12 +801,10 @@ int vt_ioctl(struct tty_struct *tty,
+ 			return -EFAULT;
+ 
+ 		state = 1;	/* /dev/tty0 is always open */
+-		console_lock(); /* required by vt_in_use() */
+-		for (i = 0, mask = 2; i < MAX_NR_CONSOLES && mask;
+-				++i, mask <<= 1)
+-			if (vt_in_use(i))
+-				state |= mask;
+-		console_unlock();
++		scoped_guard(console_lock) /* required by vt_in_use() */
++			for (i = 0, mask = 2; i < MAX_NR_CONSOLES && mask; ++i, mask <<= 1)
++				if (vt_in_use(i))
++					state |= mask;
+ 		return put_user(state, &vtstat->v_state);
+ 	}
+ 
+@@ -824,11 +812,10 @@ int vt_ioctl(struct tty_struct *tty,
+ 	 * Returns the first available (non-opened) console.
+ 	 */
+ 	case VT_OPENQRY:
+-		console_lock(); /* required by vt_in_use() */
+-		for (i = 0; i < MAX_NR_CONSOLES; ++i)
+-			if (!vt_in_use(i))
+-				break;
+-		console_unlock();
++		scoped_guard(console_lock) /* required by vt_in_use() */
++			for (i = 0; i < MAX_NR_CONSOLES; ++i)
++				if (!vt_in_use(i))
++					break;
+ 		i = i < MAX_NR_CONSOLES ? (i+1) : -1;
+ 		return put_user(i, (int __user *)arg);
+ 
+@@ -845,11 +832,11 @@ int vt_ioctl(struct tty_struct *tty,
+ 
+ 		arg--;
+ 		arg = array_index_nospec(arg, MAX_NR_CONSOLES);
+-		console_lock();
+-		ret = vc_allocate(arg);
+-		console_unlock();
+-		if (ret)
+-			return ret;
++		scoped_guard(console_lock) {
++			ret = vc_allocate(arg);
++			if (ret)
++				return ret;
++		}
+ 		set_console(arg);
+ 		break;
+ 
+@@ -880,15 +867,13 @@ int vt_ioctl(struct tty_struct *tty,
+ 	 *	2:	completed switch-to OK
+ 	 */
+ 	case VT_RELDISP:
++	{
+ 		if (!perm)
+ 			return -EPERM;
+ 
+-		console_lock();
+-		ret = vt_reldisp(vc, arg);
+-		console_unlock();
+-
+-		return ret;
+-
++		guard(console_lock)();
++		return vt_reldisp(vc, arg);
++	}
+ 
+ 	 /*
+ 	  * Disallocate memory associated to VT (but leave VT1)
+@@ -917,7 +902,7 @@ int vt_ioctl(struct tty_struct *tty,
+ 		    get_user(cc, &vtsizes->v_cols))
+ 			return -EFAULT;
+ 
+-		console_lock();
++		guard(console_lock)();
+ 		for (i = 0; i < MAX_NR_CONSOLES; i++) {
+ 			vc = vc_cons[i].d;
+ 
+@@ -926,7 +911,6 @@ int vt_ioctl(struct tty_struct *tty,
+ 				__vc_resize(vc_cons[i].d, cc, ll, true);
+ 			}
+ 		}
+-		console_unlock();
+ 		break;
+ 	}
+ 
+@@ -996,20 +980,17 @@ void vc_SAK(struct work_struct *work)
+ 	struct vc_data *vc;
+ 	struct tty_struct *tty;
+ 
+-	console_lock();
++	guard(console_lock)();
+ 	vc = vc_con->d;
+-	if (vc) {
+-		/* FIXME: review tty ref counting */
+-		tty = vc->port.tty;
+-		/*
+-		 * SAK should also work in all raw modes and reset
+-		 * them properly.
+-		 */
+-		if (tty)
+-			__do_SAK(tty);
+-		reset_vc(vc);
+-	}
+-	console_unlock();
++	if (!vc)
++		return;
++
++	/* FIXME: review tty ref counting */
++	tty = vc->port.tty;
++	/* SAK should also work in all raw modes and reset them properly. */
++	if (tty)
++		__do_SAK(tty);
++	reset_vc(vc);
+ }
+ 
+ #ifdef CONFIG_COMPAT
+@@ -1287,31 +1268,29 @@ int vt_move_to_console(unsigned int vt, int alloc)
+ {
+ 	int prev;
+ 
+-	console_lock();
+-	/* Graphics mode - up to X */
+-	if (disable_vt_switch) {
+-		console_unlock();
+-		return 0;
+-	}
+-	prev = fg_console;
++	scoped_guard(console_lock) {
++		/* Graphics mode - up to X */
++		if (disable_vt_switch)
++			return 0;
+ 
+-	if (alloc && vc_allocate(vt)) {
+-		/* we can't have a free VC for now. Too bad,
+-		 * we don't want to mess the screen for now. */
+-		console_unlock();
+-		return -ENOSPC;
+-	}
++		prev = fg_console;
+ 
+-	if (set_console(vt)) {
+-		/*
+-		 * We're unable to switch to the SUSPEND_CONSOLE.
+-		 * Let the calling function know so it can decide
+-		 * what to do.
+-		 */
+-		console_unlock();
+-		return -EIO;
++		if (alloc && vc_allocate(vt)) {
++			/*
++			 * We can't have a free VC for now. Too bad, we don't want to mess the
++			 * screen for now.
++			 */
++			return -ENOSPC;
++		}
++
++		if (set_console(vt)) {
++			/*
++			 * We're unable to switch to the SUSPEND_CONSOLE. Let the calling function
++			 * know so it can decide what to do.
++			 */
++			return -EIO;
++		}
+ 	}
+-	console_unlock();
+ 	if (vt_waitactive(vt + 1)) {
+ 		pr_debug("Suspend: Can't switch VCs.");
+ 		return -EINTR;
+@@ -1328,8 +1307,7 @@ int vt_move_to_console(unsigned int vt, int alloc)
+  */
+ void pm_set_vt_switch(int do_switch)
+ {
+-	console_lock();
++	guard(console_lock)();
+ 	disable_vt_switch = !do_switch;
+-	console_unlock();
+ }
+ EXPORT_SYMBOL(pm_set_vt_switch);
 -- 
 2.50.1
 
