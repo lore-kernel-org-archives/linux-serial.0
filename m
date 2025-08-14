@@ -1,39 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1532266B6F;
-	Thu, 14 Aug 2025 07:24:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 800FC26C3BF;
+	Thu, 14 Aug 2025 07:25:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755156300; cv=none; b=pTyvZ+EPK/fcz0Mrs72L+cLqF+MAbyGXroV11V3olQYnPnnJwd6kMVdBWFdX2fcy5FelLxGFTPLB6IiqSCqPlccu/LDqYQ6OU6UJE75mbKxlBQI7BLyQTj5Bd59CF+wWDHPOzab/L4PBuHfP5/ebrFmBRqoF4tofWDJuRl0y5mM=
+	t=1755156301; cv=none; b=NNFdFrZU+MUH7wQk1c7flrwg6bdk+yEvd27mqAzLdILtvy9Wvi/D7DtdGugej9zymNKiwmTxPsoGFJVUQAW/tTqSggM+7Ur+bfnrNC181zcMju+VBRSBhv83W7X29huQkH/ngR8VWwz48BV4tiXoU59n1hk3yH8X3PLWr/zBFBM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755156300; c=relaxed/simple;
-	bh=XNXHCiEWK5MhZ/JoxcVkCOVT4sKxJhnlMv2tEOMdXt0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Gtb2QpKWzDX3Fp8v4EP3e25uGUYXiNsXEeIoynQDGKs+SBpRsjkJS6iFyL+wjJr8viimJufY6X+dWCq2RQtVRlxwLCYLpiuwH/fsxd24GoLCQS5u6D5r7JsDQJfrLK/ZO7OyW+SAaeQ/7vHkhNQjhFVWaimqxAR3VXh9K+JtQus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pdlUttA+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755156301; c=relaxed/simple;
+	bh=QhsAJGg4mwcRyJtNu+7ib9GBTrB5jjTqiaf6YrykiPc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=qxYRjTv60p+84iUoubmmy+cUsPY61gtDUlRPRk7WvTFMViHCmgOsFR4GkMeG99JOBMhFkiVNpJxkHNt5xCa9cW48VWIApMDgXG+6PuaUbx9r7dbsqa2J2O8yD7yx0u/olCe+ny43ju1SLZ+Qlto4xCusbuQbxhWqpOFtB18Yd3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QcDoDHga; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pdlUttA+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59EA7C4CEF4;
-	Thu, 14 Aug 2025 07:24:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QcDoDHga"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFB1AC4CEEF;
+	Thu, 14 Aug 2025 07:24:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755156299;
-	bh=XNXHCiEWK5MhZ/JoxcVkCOVT4sKxJhnlMv2tEOMdXt0=;
-	h=From:To:Cc:Subject:Date:From;
-	b=pdlUttA+vnFfZdhDZtUFT4gpTBEQ/NupD3p/nWd9xhli6v9AJ7zerS0/QOcTLPTjX
-	 0k3Coq+8rtJPt9wii6nt7hsUvWEUXfRegAoCIhsL//0seohmqRfbRixS5/CKUYQjhZ
-	 R5SOH7OkXT4FmyDa7VCCrFZBMG07+gyMTqUBo8gT5117UwfEX4G/xXolAdFjKGr6rd
-	 H2Fhuq1OvsuD63SRvMUiimi2QVLG4L1Chqjo1mzkbqyvuVhl3pHw6ftcvQb7RXFZWu
-	 AmRb+FU2m7DMaJdmmz2OqyDZvgjHynKYWl0i2sora+FUhQj36ZKLXJDCLRYKsKEEdd
-	 PZo8cLyGy1+7g==
+	s=k20201202; t=1755156301;
+	bh=QhsAJGg4mwcRyJtNu+7ib9GBTrB5jjTqiaf6YrykiPc=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=QcDoDHgaDBzpiZp+U9lIGsJP+PEk8NFwY32z33/dqTI6pXw6MmkMZrRKglhnH0Ibn
+	 6Dz0itjV7bu5BB1CrTTkSlGKT0zIo007lBDKfpB2Zm/odHe7F+qN9X/BH8bPH85L2Z
+	 MJFry6z+FS2vRN13MQdFYh/dLu/wt+IiDe0eewWJRlZwjqnJxh+osjOXyOrqTuOIjk
+	 BRvdep4RWg4K63v5YhdhlyggNkKW1ORCOA6UHfrp3QnJmf8+0OA8lh3ExPXwqoUF3l
+	 C41TKeq29FXG36aTP8o9vL47QxnLYMYY9J49obdcgUrAC5hmOfkgMqqo7lTIYS/Rw9
+	 r+XjH627LrZ+A==
 From: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
 To: gregkh@linuxfoundation.org
 Cc: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	"Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Subject: [PATCH 00/16] tty: use lock, rpm, and free guards
-Date: Thu, 14 Aug 2025 09:24:40 +0200
-Message-ID: <20250814072456.182853-1-jirislaby@kernel.org>
+Subject: [PATCH 01/16] console: introduce console_lock guard()s
+Date: Thu, 14 Aug 2025 09:24:41 +0200
+Message-ID: <20250814072456.182853-2-jirislaby@kernel.org>
 X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20250814072456.182853-1-jirislaby@kernel.org>
+References: <20250814072456.182853-1-jirislaby@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -42,56 +45,33 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The first 4 patches introduce guards for:
-* console_lock/console_unlock
-* tty_port_tty_get/tty_kref_put
-* uart_port_lock/uart_port_unlock in all its variants (_irq, _irqsave,
-  _try)
-* serial8250_rpm_get/serial8250_rpm_put
+Having this, guards like these work:
+  guard(console_lock)();
+or
+  scoped_guard(console_lock) {
+    ...
+  }
 
-"tty/vt: use guard()s" also introduces a local free_page_ptr guard for
-__get_free_page/free_page (with proper casts). This could be made
-public in include/.
+See e.g. "vc_screen: use guard()s" later in this series.
 
-The rest of patches make uses all those guards across the tty code.
+Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
+---
+ include/linux/console.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Jiri Slaby (SUSE) (16):
-  console: introduce console_lock guard()s
-  tty: introduce tty_port_tty guard()
-  serial: introduce uart_port_lock() guard()s
-  serial: 8250: introduce RPM guard()s
-  tty: tty_port: use guard()s
-  mxser: use tty_port_tty guard() in mxser_port_isr()
-  mxser: use guard()s
-  serial: serial_core: use guard()s
-  serial: 8250: use guard()s
-  serial: 8250_core: use guard() in serial_unlink_irq_chain()
-  serial: 8250_omap: extract omap_8250_set_termios_atomic()
-  serial: 8250_omap: use guard()s
-  serial: 8250_rsa: use guard()s
-  tty/vt: use guard()s in con_font_set/get() and con_{set,get}_unimap()
-  tty/vt: use guard()s
-  s390/char/con3270: use tty_port_tty guard()
-
- drivers/s390/char/con3270.c         |  18 +-
- drivers/tty/mxser.c                 | 259 ++++++++++--------------
- drivers/tty/serial/8250/8250.h      |   5 +
- drivers/tty/serial/8250/8250_core.c |  91 ++++-----
- drivers/tty/serial/8250/8250_omap.c | 145 ++++++--------
- drivers/tty/serial/8250/8250_port.c | 298 ++++++++++++----------------
- drivers/tty/serial/8250/8250_rsa.c  |   7 +-
- drivers/tty/serial/serial_core.c    | 143 ++++++-------
- drivers/tty/tty_port.c              | 168 +++++++---------
- drivers/tty/vt/consolemap.c         | 116 +++++------
- drivers/tty/vt/selection.c          |  20 +-
- drivers/tty/vt/vc_screen.c          |  74 +++----
- drivers/tty/vt/vt.c                 | 187 ++++++++---------
- drivers/tty/vt/vt_ioctl.c           | 190 ++++++++----------
- include/linux/console.h             |   2 +
- include/linux/serial_core.h         |  13 ++
- include/linux/tty_port.h            |  14 ++
- 17 files changed, 747 insertions(+), 1003 deletions(-)
-
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 8f10d0a85bb4..031a58dc2b91 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -666,6 +666,8 @@ void vcs_remove_sysfs(int index);
+  */
+ extern atomic_t ignore_console_lock_warning;
+ 
++DEFINE_LOCK_GUARD_0(console_lock, console_lock(), console_unlock());
++
+ extern void console_init(void);
+ 
+ /* For deferred console takeover */
 -- 
 2.50.1
 
