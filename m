@@ -1,85 +1,160 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BE98218AAA
-	for <linux-serial@vger.kernel.org>; Fri, 15 Aug 2025 06:14:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D686A2857CC
+	for <linux-serial@vger.kernel.org>; Fri, 15 Aug 2025 11:33:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755238441; cv=none; b=KbNLHZwFhnD+kDzM3sPNeRVqaOiyiTBpvdws56OzjQxI/mUbB9flXmX/nRK+fpm6sZ7Rwd+956/7iyzJ9VKA0+cu0hTVOaVYA6mto6qKlWFQkTWNNkD4NDvVMi5KTRq2+vp3IG6TuIJ/aDg/jGyPh/ck/P3wLXEJMMyHzwgg7mI=
+	t=1755257618; cv=none; b=DXQfk8sWFhr8hTpAHX+FimiMLziCDtNriC5NgBoOd9w8Hqijq67U3oowIthXO8vFchFwK2CWveMxRrfFAhHKiINnfTm74JQk+Gys+uC5VQFhamTzVBmyKNmrR15WO4MLuCuDxrZDhj6D6z+CV6zGxakV8SfhL6i5yu0SVm+Htkg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755238441; c=relaxed/simple;
-	bh=MTXcAq4EAJiO7VtKYZVIIriTLXwbdxkfm0yd3EqO2Ss=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fsTLn1N32XixH245b/ewfOMQkVonKzcuAOhkRR6n3uW8Q03fXcewkk4LIbs2MJUwg/7HdmQTeX44nBuMs8X9cWAavfx2sqVCYEwWy9LTYPsDk5DixGq2mwxYmvgHLxD2qHXdFh93vdFuX9bl4aPlMo6YvkN9xXdFd12wtY036qs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=PG66S7pJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755257618; c=relaxed/simple;
+	bh=9oDjtyDt5EJbwhsh3gZIG0RVajVKgHnyrfDJlO6eaec=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=J+tYSUCIukoA36V9ybe4ZoYebsmIv7vojqMh5NxjkVr8YvO1Bx0BU5KQ2jP7nj0Qdp17hYprEs6hmxbi1C+Mh7okrYOWR5H/MvDCdUTCzfRk29dTewidawS0g1B7erC+f2ClKagLkRdIfH/IN2nC68bNI7YFTQ2DhQ73xf/Ez8M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=xPurUWsc; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=5XmK2lc6; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=xPurUWsc; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=5XmK2lc6; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="PG66S7pJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13847C4CEEB;
-	Fri, 15 Aug 2025 06:13:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1755238440;
-	bh=MTXcAq4EAJiO7VtKYZVIIriTLXwbdxkfm0yd3EqO2Ss=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=PG66S7pJBEqrgwzU9+J7wj39cn8joJQZFQEnd1IVWDH9yehw5YsUboZbXu0DSL7dm
-	 /jspTi5WEbEdB1FZYeRTB6y/mqeD0fy86RjTdfVi1sbjRwv9xKhNLgiOGDmY9BTyJm
-	 r/G07EPZ7g+VhXroq5kK5FC9f7wFphP/G/cOD7Y4=
-Date: Fri, 15 Aug 2025 08:13:56 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Willem Grant <willemgrant@mailfence.com>
-Cc: linux-serial@vger.kernel.org
-Subject: Re: [PATCH] Cleared out formatting warnings/errors for
- drivers/tty/serial/jsm/jsm_neo.c
-Message-ID: <2025081520-tiring-unvisited-869a@gregkh>
-References: <20250814204509.20777-1-willemgrant@mailfence.com>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="xPurUWsc";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="5XmK2lc6";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="xPurUWsc";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="5XmK2lc6"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id BFD2D1F83C;
+	Fri, 15 Aug 2025 11:33:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1755257608; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=iDHlB238DMOoqzjCGx6+MZYPKvDLXTivDPn8V8OQS5o=;
+	b=xPurUWsclpUEOiXQygn6iHfHsaeL+xkBwLRkbtkJmXME8ku0JywkxhW54cI3um0iw0F7yx
+	fwyuk4Qo00jRWFNidG9np9FcMKlKSgNLJHVsinPJqtOevSk4AXpgacIJNlIHsB/e/i89wF
+	Qih7amPjBb3hrjQ9zaqma93hlC6QcJg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1755257608;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=iDHlB238DMOoqzjCGx6+MZYPKvDLXTivDPn8V8OQS5o=;
+	b=5XmK2lc6PZlnpYpAgTzXXeRZOGTMpvvq1qBAgGiU5epilaUyTCo4SkVgLxSrG8UhwS7JSY
+	5DPn3/fQ3024A6Aw==
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=xPurUWsc;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=5XmK2lc6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1755257608; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=iDHlB238DMOoqzjCGx6+MZYPKvDLXTivDPn8V8OQS5o=;
+	b=xPurUWsclpUEOiXQygn6iHfHsaeL+xkBwLRkbtkJmXME8ku0JywkxhW54cI3um0iw0F7yx
+	fwyuk4Qo00jRWFNidG9np9FcMKlKSgNLJHVsinPJqtOevSk4AXpgacIJNlIHsB/e/i89wF
+	Qih7amPjBb3hrjQ9zaqma93hlC6QcJg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1755257608;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=iDHlB238DMOoqzjCGx6+MZYPKvDLXTivDPn8V8OQS5o=;
+	b=5XmK2lc6PZlnpYpAgTzXXeRZOGTMpvvq1qBAgGiU5epilaUyTCo4SkVgLxSrG8UhwS7JSY
+	5DPn3/fQ3024A6Aw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id B2A5B1368C;
+	Fri, 15 Aug 2025 11:33:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id YrIzKwgbn2jQUAAAD6G6ig
+	(envelope-from <fvogt@suse.de>); Fri, 15 Aug 2025 11:33:28 +0000
+From: Fabian Vogt <fvogt@suse.de>
+To: Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: hvc_console: Call hvc_kick in hvc_write unconditionally
+Date: Fri, 15 Aug 2025 13:33:28 +0200
+Message-ID: <2011735.PYKUYFuaPT@fvogt-thinkpad>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250814204509.20777-1-willemgrant@mailfence.com>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Rspamd-Queue-Id: BFD2D1F83C
+X-Rspamd-Action: no action
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-3.51 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	CTE_CASE(0.50)[];
+	MID_RHS_NOT_FQDN(0.50)[];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_HAS_DN(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	ARC_NA(0.00)[];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	TO_DN_SOME(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_TLS_ALL(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MISSING_XM_UA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RCPT_COUNT_THREE(0.00)[4];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.de:dkim,suse.de:email,opensuse.org:url]
+X-Spam-Score: -3.51
 
-On Thu, Aug 14, 2025 at 04:45:09PM -0400, Willem Grant wrote:
-> Signed-off-by: Willem Grant <willemgrant@mailfence.com>
-> ---
->  drivers/tty/serial/jsm/jsm_neo.c | 49 +++++++++++++++++---------------
->  1 file changed, 26 insertions(+), 23 deletions(-)
+After hvc_write completes, call hvc_kick also in the case the output
+buffer has been drained, to ensure tty_wakeup gets called.
+
+This fixes that functions which wait for a drained buffer got stuck
+occasionally.
+
+Cc: stable@vger.kernel.org
+Closes: https://bugzilla.opensuse.org/show_bug.cgi?id=1230062
+Signed-off-by: Fabian Vogt <fvogt@suse.de>
+---
+ drivers/tty/hvc/hvc_console.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
+index cd1f657f782d..13c663a154c4 100644
+--- a/drivers/tty/hvc/hvc_console.c
++++ b/drivers/tty/hvc/hvc_console.c
+@@ -543,10 +543,10 @@ static ssize_t hvc_write(struct tty_struct *tty, const u8 *buf, size_t count)
+ 	}
+ 
+ 	/*
+-	 * Racy, but harmless, kick thread if there is still pending data.
++	 * Kick thread to flush if there's still pending data
++	 * or to wakeup the write queue.
+ 	 */
+-	if (hp->n_outbuf)
+-		hvc_kick();
++	hvc_kick();
+ 
+ 	return written;
+ }
+-- 
+2.50.1
 
 
-Hi,
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
 
-You are receiving this message because of the following common error(s)
-as indicated below:
 
-- Your patch did many different things all at once, making it difficult
-  to review.  All Linux kernel patches need to only do one thing at a
-  time.  If you need to do multiple things (such as clean up all coding
-  style issues in a file/driver), do it in a sequence of patches, each
-  one doing only one thing.  This will make it easier to review the
-  patches to ensure that they are correct, and to help alleviate any
-  merge issues that larger patches can cause.
 
-- You did not specify a description of why the patch is needed, or
-  possibly, any description at all, in the email body.  Please read the
-  section entitled "The canonical patch format" in the kernel file,
-  Documentation/process/submitting-patches.rst for what is needed in
-  order to properly describe the change.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
