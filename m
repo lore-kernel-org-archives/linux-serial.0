@@ -1,36 +1,36 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CE94317709
-	for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2025 10:02:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3A2220766E
+	for <linux-serial@vger.kernel.org>; Mon, 18 Aug 2025 10:02:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755511326; cv=none; b=j6c7vKsolxZL85l4GeIW1+K1ND/fMO43NKse54zqYOsKX0ScAFtNfd5ZJN2y+EmVzbEcwFjY64bMAAcjpO4Yut7lAaZ34BlzhVknsSmcob4CTPOsJCxg1OmvAeGEx9B/itLRAjFXOF1MHkcUCRNR+VzVhp+Orq7Vdh3d0NjYteU=
+	t=1755511369; cv=none; b=FpSSPckpwcpQslnI1Wh0HbPJa2eATNloFSOatRO98Gn05xHHUb1Xu7UjwNZ1wl3+CTbrT6t0tci6v97/ONsfSpg5bYCJ4+BHLH7stmnGUJVoBWRKGsKMFVxPaqmHfZYWU7PO89xCoTN3kk3qobkoQ3MtOcYqpbJlI6mEAsW0hG0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755511326; c=relaxed/simple;
-	bh=/BOPbMD1Ke1Uklj2oIk0Mzjbid7slIU6XzVxXO2LGRI=;
+	s=arc-20240116; t=1755511369; c=relaxed/simple;
+	bh=6xKDXpd2ox374fTFrWQlJUJLEuaP9tPVwOb0Tfwi/Yc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JI8ReVHNvRHGcN6M+CL58b9mJ51yIBdSwv+AR1fS9bJEEqFS6Kcf2e9lHmtVnFvUyutLKcGifdR/7pJ1LlMP+lXqf4Ez8OQTATPD04W/TfHv3NNKxsfZ2X/QFBE76Wg5aRPuFd6I9rc9YgxNKC2sbGMqbLrJsHhTukI3qxwnEAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=JH8ZYdsU; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=rElyY8m27rsdTAejYLSIGu3nAMwm8Wsz4ejmkk8ewh0nk1F1tLI97YmXeQrAyNJi2wbiEph/AGEgxPt9ow7C5rpeXFYJEFnVxS7m3MdQxiSOo9+Zz3Hao2nU79i2tzkrnAx/Jq4B1+ZA7Fp71h4wMjS2UCPzEq8rZs5MlxBN+mI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=fEX+jXbI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="JH8ZYdsU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0103C4CEEB;
-	Mon, 18 Aug 2025 10:02:05 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="fEX+jXbI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB1C0C4CEEB;
+	Mon, 18 Aug 2025 10:02:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1755511326;
-	bh=/BOPbMD1Ke1Uklj2oIk0Mzjbid7slIU6XzVxXO2LGRI=;
+	s=korg; t=1755511369;
+	bh=6xKDXpd2ox374fTFrWQlJUJLEuaP9tPVwOb0Tfwi/Yc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JH8ZYdsU7+T6B4H3YbYL1IlixZqZ0cgsS8LzZJCH7E8kwpYcSbVunIbtP+d6FR6hQ
-	 5wdWYNOoMqWJqUhdWgyhuZbhfWaoGdRTTDAchIVTUNQmPwwjJ6ly0hPq+Ia8LgAgYX
-	 htEsDdumn/gfrjHAxUTm9c+2mjNq9yVQQkbu6icg=
-Date: Mon, 18 Aug 2025 12:02:03 +0200
+	b=fEX+jXbIK633aCleqER9pBYV/XofKa1PCtmMge4MXVjmi02F5VZKxMZwR6D7tnwkN
+	 sjO7B6BSCI1R9gIPivofkn1gDNxWo9yq6B67K+zVRazrS6V4PgkiXxmRUg4YKE+CCu
+	 t7okQ6BSm2b922zGxyzIucF4i7v+0k5nO2y6dMpU=
+Date: Mon, 18 Aug 2025 12:02:46 +0200
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: Martin Kaistra <martin.kaistra@linutronix.de>
 Cc: Michal Simek <michal.simek@amd.com>, linux-serial@vger.kernel.org,
 	Manikanta Guntupalli <manikanta.guntupalli@amd.com>
 Subject: Re: [PATCH] serial: uartps: do not deassert RS485 RTS GPIO
  prematurely
-Message-ID: <2025081850-washer-outmatch-3037@gregkh>
+Message-ID: <2025081804-bruising-garage-a57b@gregkh>
 References: <20250818095216.795550-1-martin.kaistra@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -70,41 +70,13 @@ On Mon, Aug 18, 2025 at 11:52:16AM +0200, Martin Kaistra wrote:
 > +		/* Wait for the tx fifo to be actually empty */
 > +		while (cdns_uart_tx_empty(port) != TIOCSER_TEMT)
 > +			udelay(1);
-> +
->  		hrtimer_update_function(&cdns_uart->tx_timer, cdns_rs485_rx_callback);
->  		hrtimer_start(&cdns_uart->tx_timer,
->  			      ns_to_ktime(cdns_calc_after_tx_delay(cdns_uart)), HRTIMER_MODE_REL);
-> -- 
-> 2.39.5
-> 
-> 
 
-Hi,
+Having a while look that could potentially never exit?  What could go
+wrong...
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+Seriously, what happens if the port never empties due to flow control
+stuff?
 
 thanks,
 
-greg k-h's patch email bot
+greg k-h
