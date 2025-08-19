@@ -1,141 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D9972253FC
-	for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2025 15:28:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2C0C28BABA
+	for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2025 15:59:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755617286; cv=none; b=u82rR77FZeSYH4XJj+e/ACc7Eij4GPbuZD8NCSH1iD1XgtkwgvGQrwTqnM6HFp4R0rrPfTuVOKVCrbAwws/2suGLAmx1JmgYODqKwjm+fKNvTr+pMlZOxfTU+bcKiuso8T4YPHvVwjwSN3rOFvqmyGSbT4DY4OXgsBb4sywkrNk=
+	t=1755619179; cv=none; b=I5DahZWSBheJAq5XxK9C8vTYZe0ucBlky6XqJ/Xmx49XseUfRAqLZLsLOaTZvQmvcCHeZwV7qP2GoMsJ6rpvonuALqVh5RcCMzLTlsqFdeNQQw30d0Ix67IQvWLnAbzavFe422/ZrQGIqsJ2t99rPOOqcjnSihYsEHETuZFQliA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755617286; c=relaxed/simple;
-	bh=MLTYll2C9BMVNHsQxlgPvf9o/+Owbkp/YClX4nQ2x8Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hB0PfYmjxk/xOen1eHHN6IiDRofRLix9EGl46E2oQds5TF9VWPhQ8WSYv6+ldKtmyI7FwIFt9Ew8Pt/dvoNFm07cu2vcn5/gRj5SWuRlLpWyH2l+mjTbFsj2nPxa9vBWa17FJHTw3BNc0QAt+VdQRkYByC0ps3/lpbkNCeYIAmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Dpw9FE91; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755619179; c=relaxed/simple;
+	bh=sYZI50tt5w0MCYkGl/AkitKiLCrAEgEonAfhaGy/LG4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=olK5JHWitF3rJ6Cgi3Wm5wtZF58oXgd9a8EAYPjydafpS/VkjIkeiUR0M6CCiThSTWoDk24mMNsHGUmfVaOcE680buhzdyDCvfZsHUegkVw72MEb32W7cQLXUxypXtG+zxUslq8f6gSkNss0T1D+ln/Vh7eUPHVfT9pLyPwsJTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=4ub7qQuG; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=baLpMugZ; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Dpw9FE91"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB3E5C4CEF1;
-	Tue, 19 Aug 2025 15:28:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1755617285;
-	bh=MLTYll2C9BMVNHsQxlgPvf9o/+Owbkp/YClX4nQ2x8Y=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Dpw9FE91T//XDUuSxB/YQoSKVMu2OnyCtDuONmFg+1ETW2QlTux/nkmj5/G6HXgoH
-	 btJqzIs65FY2LQheReW/RQJiSNEzdhjxPtq6TNdM51mTF4uu/aL47Lv0w0UI0a5PNL
-	 F8SM+k2aNXZnJzbWoIXvqyJ6HAr2qBezZOSEq1zw=
-Date: Tue, 19 Aug 2025 17:28:01 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Adriana Nicolae <adriana@arista.com>
-Cc: linux-serial@vger.kernel.org, ilpo.jarvinen@linux.intel.com,
-	andriy.shevchenko@linux.intel.com, Prasad Koya <prasad@arista.com>
-Subject: Re: [PATCH] serial: 8250 dw: clear FIFO before writting LCR
-Message-ID: <2025081927-matchbook-chapped-26a4@gregkh>
-References: <CAERbo5wdG_n6sFnYjWL6oqfvDFz4iokhNz-H2XLHCkmfyMWOdw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="4ub7qQuG";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="baLpMugZ"
+Message-ID: <2784dfee-a010-426f-a09e-aadc7abe3148@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1755619174;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=NYHZtcne7/up7Tits1zClLt1DcfsgOXEfNJKwIj0Ntg=;
+	b=4ub7qQuGpCAAHwbppVsKC/AFE9PI06J9X6d0t5UgukUl+8oaXovGhptbF5/YS5NP7x3eFe
+	BP/yjtz/+6psK+cHFpTA4/A3Y5UbV8E5W9fKxG+REhd4dA4xUA9jLOj6aMDGuB5Bje9v5R
+	JlSaMQLko5cQ1U7TZb3bIz9VWWl6LfKd0hgJOC8enBY+b7aXMcoLa6PcEWr1thq63j9QnL
+	yOOi+n9TjHD2XfoFe0X9pFLm6h8SZd4IsQtwI5+Gt0DW8QaaK/crQtyR+h7UFLtcrCbZdV
+	jQxB7YGXgfwauXHiznkMWcZY9zri0Q6TBtuYfu0D+KDpMfe7cAbiCGhZ8WA7Sg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1755619174;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=NYHZtcne7/up7Tits1zClLt1DcfsgOXEfNJKwIj0Ntg=;
+	b=baLpMugZWaVdkxX9fFJBH+H9uv6f23uQ70JFtz9D6zD41IJfQuHFA5I5CKpdVC8UXtx2oR
+	UgZYzk9o2p4V3dCg==
+Date: Tue, 19 Aug 2025 17:59:34 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAERbo5wdG_n6sFnYjWL6oqfvDFz4iokhNz-H2XLHCkmfyMWOdw@mail.gmail.com>
+Subject: Re: [PATCH] serial: uartps: do not deassert RS485 RTS GPIO
+ prematurely
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Michal Simek <michal.simek@amd.com>, linux-serial@vger.kernel.org,
+ Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+References: <20250818095216.795550-1-martin.kaistra@linutronix.de>
+ <2025081804-bruising-garage-a57b@gregkh>
+ <7a33100a-24bd-4bed-b9b2-539fc5a15c2c@linutronix.de>
+ <2025081955-debatable-registrar-3c23@gregkh>
+Content-Language: de-DE
+From: Martin Kaistra <martin.kaistra@linutronix.de>
+In-Reply-To: <2025081955-debatable-registrar-3c23@gregkh>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 19, 2025 at 06:06:55PM +0300, Adriana Nicolae wrote:
-> This patch is proposing a custom configuration for Synopsys DesignWare
-> serial to be used by products with associated compatible string in the
-> device tree.
+Am 19.08.25 um 12:49 schrieb Greg Kroah-Hartman:
+> On Mon, Aug 18, 2025 at 02:00:02PM +0200, Martin Kaistra wrote:
+>> Am 18.08.25 um 12:02 schrieb Greg Kroah-Hartman:
+>>> On Mon, Aug 18, 2025 at 11:52:16AM +0200, Martin Kaistra wrote:
+>>>> After all bytes to be transmitted have been written to the FIFO
+>>>> register, the hardware might still be busy actually sending them.
+>>>>
+>>>> Thus, wait for the TX FIFO to be empty before starting the timer for the
+>>>> RTS after send delay.
+>>>>
+>>>> Fixes: fccc9d9233f9 ("tty: serial: uartps: Add rs485 support to uartps driver")
+>>>> Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+>>>> ---
+>>>> I tried using the TX empty interrupt instead of polling the register,
+>>>> but it doesn't seem to be firing reliably, which is why I chose this
+>>>> implementation instead.
+>>>>
+>>>>    drivers/tty/serial/xilinx_uartps.c | 4 ++++
+>>>>    1 file changed, 4 insertions(+)
+>>>>
+>>>> diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+>>>> index fe457bf1e15bb..38d2b33d0b6c8 100644
+>>>> --- a/drivers/tty/serial/xilinx_uartps.c
+>>>> +++ b/drivers/tty/serial/xilinx_uartps.c
+>>>> @@ -454,6 +454,10 @@ static void cdns_uart_handle_tx(void *dev_id)
+>>>>    	if (cdns_uart->port->rs485.flags & SER_RS485_ENABLED &&
+>>>>    	    (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port))) {
+>>>> +		/* Wait for the tx fifo to be actually empty */
+>>>> +		while (cdns_uart_tx_empty(port) != TIOCSER_TEMT)
+>>>> +			udelay(1);
+>>>
+>>> Having a while look that could potentially never exit?  What could go
+>>> wrong...
+>>>
+>>> Seriously, what happens if the port never empties due to flow control
+>>> stuff?
+>>
+>> I will add a timeout..
+>>
+>> Before sending a v2, however, can I ask: will a solution with udelay() even
+>> be accepted?
 > 
-> The PORT_DWAPB config will be used instead of the default PORT_16550A
-> which does not include the UART_FCR_CLEAR_RCVR and UART_FCR_CLEAR_XMIT
-> bits for the FIFO configuration register. Having those flags is necessary
-> to clear FIFO when the serial port is reconfigured with do_set_termios.
-> 
-> Additionally, inside the do_set_termios we use the LCR (Line Control
-> Register) to enable DLAB bit in order to access DLL/DLM (Divisor Latch
-> Low/High) registers for baud rate setting. These 2 registers are sharing
-> the same address space with UART_TX/UART_RX and UART_IER. The sequence is:
-> 
-> (1) enable DLAB -> (2) set baud -> (3) disable DLAB -> (4) reset FCR
-> 
-> When there is a TX or RX flow on the serial while we attempt to set/clear
-> DLAB, the LCR write will be ignored and we will get a IIR_BUSY interrupt
-> afterwards which is cleared by only reading the USR (UART status register).
-> 
-> The sequence above can leave the serial in an unstable state in two cases:
-> 
->  - if UART is busy while (1), then LCR is still pointing to the normal set of
-> registers, which means the code setting DLL/DLM is actually writing into TX or
-> modifying interrupts in UART_IER which may end with either a garbage char '\'
-> on the console or with serial interrupts disabled.
-> 
->  - if UART is busy while (3), then LCR remains pointing to DLL/DLM instead of
-> moving back to RX/TX. The first transfer on the serial will be stuck because
-> the transmit/receive registers are not accessible unless the DLAB bit
-> is cleared.
-> 
-> The changes in this patch include a specific serial_out function for this UART
-> type similar to the one for Armada-38x devices in commit
-> b7639b0b15ddd1a4686b0142e70dfb122eefc88f with some changes in the tx_wait_empty
-> function to check the UART status by looking at the USR register and actively
-> try to clear FIFO to reduce time before a LCR write since the characters will
-> be lost otherwise after baud rate change.
-> 
-> The USR register may report that UART is busy even if TX/TX FIFO is already
-> empty so we will loop until all USR[0] (UART busy status) is cleared and USR[1]
-> TX FIFO is empty (RX FIFO bits should be 0 in this case).
-> Keeping the same timeout of 20ms as measurements with the 9600 baud when
-> the console was busy it took max 1.9ms to get the UART free state.
-> 
-> Signed-off-by: Adriana Nicolae <adriana@arista.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c   |   52 +++++++++++++++++++++++++++++++++++
->  drivers/tty/serial/8250/8250_port.c |    8 +++++
->  include/uapi/linux/serial_core.h    |    3 ++
->  3 files changed, 63 insertions(+)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c
-> b/drivers/tty/serial/8250/8250_dw.c
-> index ace221afe..337b9a8bf 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -33,10 +33,16 @@
-> 
->  /* Offsets for the DesignWare specific registers */
->  #define DW_UART_USR 0x1f /* UART Status Register */
-> +#define DW_UART_USR_BUSY 0x1 /* UART Busy status */
-> +#define DW_UART_USR_TFNF 0x2 /* UART TX FIFO not full */
-> +#define DW_UART_USR_TFE  0x4 /* UART TX FIFO empty */
-> 
->  /* DesignWare specific register fields */
->  #define DW_UART_MCR_SIRE BIT(6)
-> 
-> +#define DW8250_REG( p, reg ) \
-> + ((void __iomem *)(p->membase + ((reg) << p->regshift)))
-> +
+> Probably not, would you want that called when waiting like this?
 
-Hi,
+It would look like this:
++               /* Wait for the TX FIFO to be empty */
++               for (tmout = 1000000; tmout; tmout--) {
++                       if (cdns_uart_tx_empty(port) == TIOCSER_TEMT)
++                               break;
++                       udelay(1);
++               }
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- Your patch is malformed (tabs converted to spaces, linewrapped, etc.)
-  and can not be applied.  Please read the file,
-  Documentation/process/email-clients.rst in order to fix this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
