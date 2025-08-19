@@ -1,134 +1,88 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3EFA311C3B;
-	Tue, 19 Aug 2025 09:40:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11ECF3112D7
+	for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2025 10:49:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755596457; cv=none; b=D0wYtGVbTdZXqyFnyjX567NaZIGwkthv7tDvd+xVz/34FjdBjF8nGuryX8r3/UfRMTwSga6Tr6TAecUc3dtAG6nGkiafF2kL7kn5jR55lkhtq2Iv2KjmddRo1ORYxypywbNnwIF1lUaUIgD+eVg5AMxaJFclMmOO0XTfGSwsb2E=
+	t=1755600553; cv=none; b=dOFQQ4EVF3DujsAyzr9wUS8t2IIaD9I69rOF0CCvYtvjGDlT9iIcFuUCZgJuEgJyH2PlcuTr5Es5QzT140aGW5zedxqQVy2rwNddCGTa02EDpVHyW8TxcU1PNfPMNJA6Esrvni2RKz7x7/gaWmAjJDv1z1Gb2PMUBpnYiB6n9y8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755596457; c=relaxed/simple;
-	bh=AOLogqr0wKrEfO1K04Ni8A5Y5inphvb/Mm2QnYgDZBc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=d6Qw/UbwpZX/CrSF6i8C8eE/GmTOXuBSon+pMxn8sgG+SKDMaVQ9RPYmPe6D1Up6ylzU97mojRM+bGGsA6frstIZ6pZF5Js/Vn5/NAhyriKKCXiwN8cxXrOgieP+6cBLxGxF/iOh69bvdlhk1kqpkMJGonU+FqdeabYO+845bVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tU211ju7; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755600553; c=relaxed/simple;
+	bh=Ptv/nEe9zz/nK3TvEw8Wux/lx018QB/nbliKYpLQUs0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=g2A6Q6kw4ykFehVkJ3K0FNitqnkGMYlspZ/o15Dme8/yPBgo4eo0FXxv6yQq9pfTby4eaZz1s7tQwQSTZkZCL0Tyx/4nhl52nZMU0L0IYwS914U9WuTZ906eYLmL5mXAJUTY/pTHXswatu8G5SMkg49agZ6/2SjgNmEmo0XuWFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=B8BmJvzc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tU211ju7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 882B5C4CEF1;
-	Tue, 19 Aug 2025 09:40:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755596457;
-	bh=AOLogqr0wKrEfO1K04Ni8A5Y5inphvb/Mm2QnYgDZBc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=tU211ju70zBtNfn24KpkXYGPBqgDiWuujqSuklWHGdjZHd5gMXojh31W0QbJqrxbm
-	 i4+U9Iiuc+0N1DPiw4VJidwkzY46IceIVdFV1NlBZI6qgvzSm+tV9hfaOpFvOcjNEq
-	 JXqDWr/HcWbZFxCCCOGNbE6Kp1Jp5HBsQEY26WDQ7DZwDqWcdn71YCAuFKkr1K/qZN
-	 pU73js0hqKVs58CkuOdxJ7tWZWt0xQbZZNaYEiSB0Xrio/dlIvUVw+T3LkPJcL9Rgl
-	 M9uQ8j+OW5NzbToI9vt59q9UyLcGjYVwSbUqj/RKQ94VXscfSCrxFI/0NJrIjEsdv7
-	 AcdjSoCJzYfig==
-Message-ID: <764f68bc-ba87-4a7e-a150-49d7fdab2ed3@kernel.org>
-Date: Tue, 19 Aug 2025 11:40:54 +0200
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="B8BmJvzc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EBB7C4CEF1;
+	Tue, 19 Aug 2025 10:49:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1755600552;
+	bh=Ptv/nEe9zz/nK3TvEw8Wux/lx018QB/nbliKYpLQUs0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=B8BmJvzca5C6oOp2ny9nTWDYwhA8B7ncqj6QTV6MdCQtCXgWdZzazMkFsK/mgkVbl
+	 eIsCz4/uTZ/65i8O+AcHF6f0ecieL9KAKwfmmD5ROhcdC96Rez66qzLfVoH6tFa4Vk
+	 PVNzOoFw983L02u5DHr0L3FDq/me0G8MzJAMdvRs=
+Date: Tue, 19 Aug 2025 12:49:09 +0200
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Martin Kaistra <martin.kaistra@linutronix.de>
+Cc: Michal Simek <michal.simek@amd.com>, linux-serial@vger.kernel.org,
+	Manikanta Guntupalli <manikanta.guntupalli@amd.com>
+Subject: Re: [PATCH] serial: uartps: do not deassert RS485 RTS GPIO
+ prematurely
+Message-ID: <2025081955-debatable-registrar-3c23@gregkh>
+References: <20250818095216.795550-1-martin.kaistra@linutronix.de>
+ <2025081804-bruising-garage-a57b@gregkh>
+ <7a33100a-24bd-4bed-b9b2-539fc5a15c2c@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: serial: Remove the use of dev_err_probe()
-To: Xichao Zhao <zhao.xichao@vivo.com>, gregkh@linuxfoundation.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250819092437.550759-1-zhao.xichao@vivo.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20250819092437.550759-1-zhao.xichao@vivo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7a33100a-24bd-4bed-b9b2-539fc5a15c2c@linutronix.de>
 
-On 19. 08. 25, 11:24, Xichao Zhao wrote:
-> The dev_err_probe() doesn't do anything when error is '-ENOMEM'. Therefore,
-> remove the useless call to dev_err_probe(), and just return the value instead.
+On Mon, Aug 18, 2025 at 02:00:02PM +0200, Martin Kaistra wrote:
+> Am 18.08.25 um 12:02 schrieb Greg Kroah-Hartman:
+> > On Mon, Aug 18, 2025 at 11:52:16AM +0200, Martin Kaistra wrote:
+> > > After all bytes to be transmitted have been written to the FIFO
+> > > register, the hardware might still be busy actually sending them.
+> > > 
+> > > Thus, wait for the TX FIFO to be empty before starting the timer for the
+> > > RTS after send delay.
+> > > 
+> > > Fixes: fccc9d9233f9 ("tty: serial: uartps: Add rs485 support to uartps driver")
+> > > Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
+> > > ---
+> > > I tried using the TX empty interrupt instead of polling the register,
+> > > but it doesn't seem to be firing reliably, which is why I chose this
+> > > implementation instead.
+> > > 
+> > >   drivers/tty/serial/xilinx_uartps.c | 4 ++++
+> > >   1 file changed, 4 insertions(+)
+> > > 
+> > > diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+> > > index fe457bf1e15bb..38d2b33d0b6c8 100644
+> > > --- a/drivers/tty/serial/xilinx_uartps.c
+> > > +++ b/drivers/tty/serial/xilinx_uartps.c
+> > > @@ -454,6 +454,10 @@ static void cdns_uart_handle_tx(void *dev_id)
+> > >   	if (cdns_uart->port->rs485.flags & SER_RS485_ENABLED &&
+> > >   	    (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port))) {
+> > > +		/* Wait for the tx fifo to be actually empty */
+> > > +		while (cdns_uart_tx_empty(port) != TIOCSER_TEMT)
+> > > +			udelay(1);
+> > 
+> > Having a while look that could potentially never exit?  What could go
+> > wrong...
+> > 
+> > Seriously, what happens if the port never empties due to flow control
+> > stuff?
 > 
-> Signed-off-by: Xichao Zhao <zhao.xichao@vivo.com>
-> ---
->   drivers/tty/serial/max3100.c | 2 +-
->   drivers/tty/serial/max310x.c | 3 +--
->   2 files changed, 2 insertions(+), 3 deletions(-)
+> I will add a timeout..
 > 
-> diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-> index 67d80f8f801e..552b808a1bb2 100644
-> --- a/drivers/tty/serial/max3100.c
-> +++ b/drivers/tty/serial/max3100.c
-> @@ -705,7 +705,7 @@ static int max3100_probe(struct spi_device *spi)
->   			break;
->   	if (i == MAX_MAX3100) {
->   		mutex_unlock(&max3100s_lock);
-> -		return dev_err_probe(dev, -ENOMEM, "too many MAX3100 chips\n");
+> Before sending a v2, however, can I ask: will a solution with udelay() even
+> be accepted?
 
-This one should be turned into ENOSPC instead.
-
-> +		return -ENOMEM;
->   	}
->   
->   	max3100s[i] = kzalloc(sizeof(struct max3100_port), GFP_KERNEL);
-> diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
-> index 541c790c0109..79bec9509154 100644
-> --- a/drivers/tty/serial/max310x.c
-> +++ b/drivers/tty/serial/max310x.c
-> @@ -1269,8 +1269,7 @@ static int max310x_probe(struct device *dev, const struct max310x_devtype *devty
->   	/* Alloc port structure */
->   	s = devm_kzalloc(dev, struct_size(s, p, devtype->nr), GFP_KERNEL);
->   	if (!s)
-> -		return dev_err_probe(dev, -ENOMEM,
-> -				     "Error allocating port structure\n");
-> +		return -ENOMEM;
->   
->   	/* Always ask for fixed clock rate from a property. */
->   	device_property_read_u32(dev, "clock-frequency", &uartclk);
-
-
--- 
-js
-suse labs
+Probably not, would you want that called when waiting like this?
