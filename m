@@ -1,74 +1,74 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8922A261581
-	for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2025 19:06:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 609F7267B92
+	for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2025 19:13:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755630387; cv=none; b=XCJy9kkD5v9xpxjXl/voygtiinZPX5bufixxLJ3huOn+K3NUcSlNQq/1GSuhZDgtwGWGkIzONI6y/ornGH3djU8cln8VSAFJQhMU/reDJ8mhu1IMQJFLx+yP1/BNAClcXfT0qgzePP7DIUHFmkSF9Fm6TGKwPRz1qhHLNrhem0w=
+	t=1755630801; cv=none; b=iKxiNKXzlOOmSDurKm/61+I/hvZ2vr387b2/v33IRoRe5qMwmS5NiEKDbz5D21aAeSE9kvWeRHXOJ2RqWJxTrgEFwuTn0dgF4nCo/NLx5bFmBfufwbfiM+td9I7QybGKNZOnS1T+NEPgBlgBbFqYLl9D5Uj4w9cYa3cyJAMztfo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755630387; c=relaxed/simple;
+	s=arc-20240116; t=1755630801; c=relaxed/simple;
 	bh=0HjZLEDNy/XiBCdGTKkujclxkceWoVchKk0T/18SPHQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Bzoxc40VSUZRPQlovooC/dfsWfoyU52BImqtMlnvfRQmIS5gmTRrSWU1nvBaUrYcUblCMyVgklmNNGiKSe9WSXOtUpCuAY2EulFiuVap5OEFApmFQ4k4GoiXt/HvO4yg3rdrhOYhhpSQM1UyGEzUw1FIX7TmeaOPE0Z8niqXkVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arista.com; spf=pass smtp.mailfrom=arista.com; dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b=SsRFFqkW; arc=none smtp.client-ip=209.85.214.177
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BsZ7aaeMOTc3k9cPNRYJqzVtGn6TWlz2/f0VrDF8sYA3RvTZtFbYZFzjC7G4oHEJOHm9ze8zh2yHbVltvuIcQ9cBehY5e4BDmWgeq02ODqroPasCi33lHPYZnqDsTp9/9DZGrJ/wosNPh4ip5p5hjV1WlFO8vVnDrpA3reNyGig=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arista.com; spf=pass smtp.mailfrom=arista.com; dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b=JLxngPnh; arc=none smtp.client-ip=209.85.214.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arista.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arista.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="SsRFFqkW"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-244581cd020so7067785ad.2
-        for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2025 12:06:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="JLxngPnh"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-24457f3d233so9618695ad.0
+        for <linux-serial@vger.kernel.org>; Tue, 19 Aug 2025 12:13:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google; t=1755630384; x=1756235184; darn=vger.kernel.org;
+        d=arista.com; s=google; t=1755630797; x=1756235597; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
         bh=dsOx0OvQKMVhNp1s/R61/MaUZB+gIxY9tZv1HKf+Kmk=;
-        b=SsRFFqkWe9FmewJpJRaPPDk4X7XKAIbuyhSE+ZubYttE9iVy1rKhjDcBMu4kUaNPsJ
-         3zS298alremUIo9eTHqb/d45utVF4GITLUwVxH7t0xthxWA0CNMK5mLPkMLJaFWYmbP1
-         sP/jjYgoEJOdtMVLCc6y6tpBKXFO3Z7XI9ORyhgxQ291lnLrTmQKb0w7Xq3Yc0YkFYp3
-         3zMHH7EGXoaqYwmlgFX7k8S5nZV+s1DTZe9OHK13jz7z0hMGRmfoP875rB6G93Jc46NM
-         i2U21P6z8uipkVNpjyq6A8pBWGDh959a/CbwulxzZ0BvamOjf2mSDJuxSDfQ5g5mXQwZ
-         icxQ==
+        b=JLxngPnheAjBKZYNkMgtDsGQakNaWAMgbw4PUX3jSGC5CASNQe/yrhb0P7dcJu43Me
+         Ktopql+DUpGORiqsIMHKagMlhz55IAN3ElsqKDAM1NmlNR7wTrN83bWLvRV7SJDVXt4g
+         s/NRhiYx6XK10QVmPD6YcssN98DoMdHNreFT9RbWJ47WsFOOjlqSUKzJ3i43ttTP7qOp
+         6sOyYk5MN0WnGerN84nSW5yB2XRl+BwYxIETRXt9YzL7WdkpAPKG/ROQ46xDF/i1PsgC
+         Gb/EsAPvCQGWwJZZrGLdp5gCyooB3FJALaQtqYN1hMfi3AmTp/nBbvxDvjRmPN1bkwz5
+         6a7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755630384; x=1756235184;
+        d=1e100.net; s=20230601; t=1755630797; x=1756235597;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
         bh=dsOx0OvQKMVhNp1s/R61/MaUZB+gIxY9tZv1HKf+Kmk=;
-        b=Ybeb2CXLSloVaTzUifbEt65RQEFwWTVDL2ezN/a+cCPNisIJomfpfR8sR+WeqSNF5D
-         vbKIfZoD5QjER8jS7wWUTch7ngIpU3ldr7zVJJGah3xlLHVNYymiE3QvAewtbrEslhXz
-         YVwLrQg3OVpuMjFPhYNJ/mrC9wB5SiovN4RtWZq+8tGbniYrGt+Z9MB7zJkcyk57Du7y
-         EgKDfPZ55we44c+XCRCeTqglGX1FJsKDJhmgQo+su7UqWQqJwnMgsW6XFZsJVsCCuENU
-         dMEo7d70tX92oFYnKThDcJ43D5W5orgKuoYUGwlowYe4EjXEKnbTHEsPd0XHA8j1lLwI
-         nprQ==
-X-Gm-Message-State: AOJu0YzLBSMi83XXjleIHH7AEsS31W8Aeo5CS+LhpSPuSd3ldVSBsP6r
-	JcHpKQtxmbyMgac3f2B/CwtRV38MHT95uaNcfHN6PbYsMPsLJL698l0M1LwEqAnuswMHDC9uDLs
-	BSp2uMIOJ
-X-Gm-Gg: ASbGncvr2pg+GlBwHFbb4m/DVR2nME71mYFFzY4Q6y1dUJ7HNsmj+lqVxrPX6iqOhhM
-	Wa4LiRg6yUjuBvA+8iOC56nxL9XkscTWGoNXOu78ZiEj2I7Q5+XwT6lFatyxWjiBr3NgOSI8mgX
-	V49GfZ/+0kqD+xi2/NCPFvOCr6PSf9gr6vR7KEojYDrjftn/pAZI5m19ONGoUbiIz/4NgMA/l/i
-	WHWdUCTGNsnTVLMk+AWJmT8e7n/GfPSc2Ybt4QZSGDCUrAydiyjqGWgAhL3S0BU6kTX4RB38nk2
-	0RGd0IxEje+M8r4lz6K5vRE0iHDjW2BPFpNJo8rPk6+4fDNXtuiuBIIUnPokcQDY/YvveA4CmYl
-	JyLJPEU6nPBIQnta8bvZdDm+TbicQhkFpg6Td14P/D4+OzRbEgZiXL7CcVs2ZDSwTSZt3coYhsw
+        b=BNZeJzS2dSlzaVuE3gkY9J7Nhmti6gwMJAUuZPwRZSnNCQ/RcvihVAgHCkjjByQaTE
+         4Sq3hYIUC/gS0G/X6urRWr/Iz9BLU5SayFD4j4sfkjF1cirBgxGsPtuDIt4896VM7XdD
+         hhlTOtqecT4B9b3lBsqe20PX7BPrDNCN957WM5NGiTU3eBiP38WB+JCPeGFmG9pIjv3V
+         AoTgIwpIxSE8kKPqDNG1DVsbfZfIYZCXtQHuTd7HAcYYOQShWtfd0KdiM28tuepCxTg7
+         6cqAumSsTVHS4AiWVI2D79zYmsRYJCkYPBupdtJ/0beMvlwB26T27OJR5NURQoHR48dr
+         KJsw==
+X-Gm-Message-State: AOJu0YyH8tqg9hkN0o8NDk9j64lCuDkHDeOoXPDyao+pZGAp1jsWMmiS
+	PkZJtJ+uPqm1G6BrNsLMgQb8Nb1t6c1uhIphPL4VRMLCBl3W5UajonZoAKk6j4zSAp+WetXh+HX
+	cEQEM/Hsl
+X-Gm-Gg: ASbGncvn8KN4pjPiBTE+uZiuOD/XGr6cvvRvhZXPduWLCXemfcBJCCxtZJUqWKRAMcP
+	g0Pj0A3CemTzcNBN6cW+s6Xmkgvq70qaUELLtKLBBArF7G7b9wFb+fqZjnFDxOcPaTm4lj6VNAW
+	JlEahxoWKFGxjRJ2Bed1Hnu2AYe4oytunR23c1bCGJGZ8xD+bKPrnV8p/8ql86e9SwHASozELMU
+	l5HdNCrfJbJCC8wqvREDS41jAV5eiCuOFWJP7orrloFuWQQNRcJ8S4+gI5f3QSe/Pg+LwxOnS0U
+	zNzr7CzfHUHm78rqouqYC0eQBMikzaulra+I3KaciFfMviDx1T1TRhyx9U2xSyqWxktn059J0Q9
+	HVKqbYtnV/y9Xv2wdUs/67eWvSNvLu9woickuDPkov7E1UroOzGrsvfgMxxKhDYuY8JyypYH4eg
 	==
-X-Google-Smtp-Source: AGHT+IGQ1Y47ugToV+QdKxgoczu8CUM3bvPrICRb5ZJf2sbhfNHnVp5k7JQ7zd+o9+h+2GBomKPQhA==
-X-Received: by 2002:a17:902:daca:b0:234:a734:4abe with SMTP id d9443c01a7336-245ef1194b6mr621235ad.1.1755630384159;
-        Tue, 19 Aug 2025 12:06:24 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IF1vDGJC+mS2MJjFjz4sQNP2vE3bBRgHYGWjbRJs3Wl6NzgtvUfBGdUncJ+KYdkk+gmGwSxbw==
+X-Received: by 2002:a17:902:bc45:b0:240:725d:dd66 with SMTP id d9443c01a7336-245ef2536b4mr435085ad.11.1755630797367;
+        Tue, 19 Aug 2025 12:13:17 -0700 (PDT)
 Received: from adriana-wh3p-serial-lockup-loop.sjc.aristanetworks.com ([74.123.28.11])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-245ed517bd7sm4169945ad.133.2025.08.19.12.06.23
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-245ed4c6f8bsm4376355ad.79.2025.08.19.12.13.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Aug 2025 12:06:23 -0700 (PDT)
+        Tue, 19 Aug 2025 12:13:17 -0700 (PDT)
 From: adriana@arista.com
 To: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.rg
-Cc: ilpo.jarvinnen@lininux.intel.com,
+Cc: ilpo.jarvinnen@linux.intel.com,
 	andriy.shevchenko@linux.intel.com,
 	gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
 	john.ogness@linutronix.de,
 	Adriana Nicolae <adriana@arista.com>
 Subject: [PATCH v2] serial: 8250 dw: clear FIFO before writting LCR
-Date: Tue, 19 Aug 2025 12:06:21 -0700
-Message-ID: <20250819190621.3452231-1-adriana@arista.com>
+Date: Tue, 19 Aug 2025 12:13:14 -0700
+Message-ID: <20250819191314.3452283-1-adriana@arista.com>
 X-Mailer: git-send-email 2.47.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
