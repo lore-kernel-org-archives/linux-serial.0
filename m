@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DB6135950
-	for <linux-serial@vger.kernel.org>; Wed, 20 Aug 2025 04:01:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23AD535336A;
+	Wed, 20 Aug 2025 04:06:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755662517; cv=none; b=EIr/5+AEAf4fFWf90CmHSsDLudSWYhyxwerDAc5/5A/Vkedhn3LdZa3JdlcEhyGm+0xtOM64WhNlwQ9pUhNvZeXwxkjpOgwulUNV6gjHFfXdLkjphzgjjmKeMvRk7pTA8DOX8Pgy/lEa0EnkU7eYwMPKuoFymDB+jgMLU+pOMqM=
+	t=1755662812; cv=none; b=c1TQ8SMXNNIdy1L+GdQuUA+fQevpt4Fp3ImC//JvQN17UV3vIZUIYndVoKE2jZLHUqrV5t8WFJQv9LBzWDU5AcW7k125kNkCUu2OJ5lqRgwigW1gVzKcc2PoiMsSJwFg0SDJsqqW/SKjU19dLdHmZI9BHbHLBzsi719YE2Oj0xo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755662517; c=relaxed/simple;
-	bh=bga9po//tK+jgB9MU+JqQyTe76EkUC+HradMwovUjP0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c4Coz3Er4LIIRGbnNvKMkHxovFNQEVZopJn1TClJq23OwUfN7d9d106keXFBTwJf+pJH6IWtOBtgu6be7PTkl99FLlreiAhL/7n6wzqB9xrTSBl9O68DxIkZmckx6bsH4vNivSFeNMjKchZawWjCiAHH/4nmaTumIrIl5YWwGnA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qV4Y4X89; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755662812; c=relaxed/simple;
+	bh=8Q3Yn/H7CDkgcz3v0aIj4JvWkVxIIaD9QgAUt3wmjbg=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=gnYKktOt926tRHvrTV0PPPqDUaXGDzpH7h9wRxY1GTEkgKUVkWoSaH0hS6FqAAgFS4Xa3hF03r+mRrsetXfIT7BhBqSD2KiX5DNytUBeGKwQ0JLCEwjB+jKC8VRLJcsSS7iH4M4Q6+N6JWhfpkhEJ3SzJjD0knkNTOUaT1D6xlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J1Kxu23I; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qV4Y4X89"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27EBCC4CEEB;
-	Wed, 20 Aug 2025 04:01:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J1Kxu23I"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37F82C4CEEB;
+	Wed, 20 Aug 2025 04:06:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755662516;
-	bh=bga9po//tK+jgB9MU+JqQyTe76EkUC+HradMwovUjP0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=qV4Y4X89aX9+foKS+H27pByR7A/7sCYOca4tL+pPtkmWWMNNauiq5LW5r0mAKc26O
-	 f3wCZj+QEGpjjWCcA+XmRs2f0AfWjc/o9n2ecHOjIxnxnS3JNM0nGvL8VJzluRwRh1
-	 6OEBVyPYyxWlMLjm5YiIKE25XP+ytc03MvE+4fCY0g+eHT1OVXFvC0A85Po7iebPDM
-	 ATa7bNSyvQlKkltLpl08ZfCpeZL5IugUHoiueua23UcgS0KGQ/24gBm/eqrjT8pmEU
-	 J2yE31CDzAP6CharR3WHQmiNrlo2JQKaPcNRbNDwbXZy0A2cqlE5esg67cIz96ZOM1
-	 +KBh1SCTpX63w==
-Message-ID: <9a3e087c-3a1e-474a-b0ed-c69b5f174c43@kernel.org>
-Date: Wed, 20 Aug 2025 06:01:52 +0200
+	s=k20201202; t=1755662811;
+	bh=8Q3Yn/H7CDkgcz3v0aIj4JvWkVxIIaD9QgAUt3wmjbg=;
+	h=Date:Subject:From:To:Cc:References:In-Reply-To:From;
+	b=J1Kxu23IcVlCFCMIehjDZxGZLFd4BcHT+B64gp0NiOqTSbJsy4HTEbdkQ8l/Pc1bV
+	 0sN6A4D0aSPVZ2sxfxUs0+HDbdwIzlfXo9C/NeBjdZFcjQp7dCPoIGNYSPwkQr3dNQ
+	 8bXjNs/La+Qj4+Wy5aiSByojL6XM7FZBniXp+LnGhhbrd26pP4iLt+QOExw6sP4ipc
+	 Db8hxKA8SpWn4WiTQYn6CWKsoc2j//R6AJlG2wRRdbggczyakzF4l1NBg7BH2EIaQE
+	 SeblJzXkx6rJ1l0KKlkzFSLLvXaR7LipwYljpsrsFZ2eH5nbPCJykkASZBVW9xJmjz
+	 mEOLo3EwXz7bg==
+Message-ID: <3ef823f1-6c4c-4b38-92c4-5077a2d3149e@kernel.org>
+Date: Wed, 20 Aug 2025 06:06:48 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,13 +36,14 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2] serial: 8250 dw: clear FIFO before writting LCR
+From: Jiri Slaby <jirislaby@kernel.org>
 To: adriana@arista.com, linux-serial@vger.kernel.org,
- linux-kernel@vger.kernel.rg
-Cc: ilpo.jarvinnen@linux.intel.com, andriy.shevchenko@linux.intel.com,
+ Linux kernel mailing list <linux-kernel@vger.kernel.org>
+Cc: ilpo.jarvinen@linux.intel.com, andriy.shevchenko@linux.intel.com,
  gregkh@linuxfoundation.org, john.ogness@linutronix.de
 References: <20250819191314.3452283-1-adriana@arista.com>
+ <9a3e087c-3a1e-474a-b0ed-c69b5f174c43@kernel.org>
 Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
  xsFNBE6S54YBEACzzjLwDUbU5elY4GTg/NdotjA0jyyJtYI86wdKraekbNE0bC4zV+ryvH4j
  rrcDwGs6tFVrAHvdHeIdI07s1iIx5R/ndcHwt4fvI8CL5PzPmn5J+h0WERR5rFprRh6axhOk
@@ -85,22 +86,34 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250819191314.3452283-1-adriana@arista.com>
+In-Reply-To: <9a3e087c-3a1e-474a-b0ed-c69b5f174c43@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 19. 08. 25, 21:13, adriana@arista.com wrote:
-> This patch is proposing a custom configuration for Synopsys DesignWare
-> serial to be used by products with associated compatible string in the
-> device tree.
-> 
-> The PORT_DWAPB config will be used instead of the default PORT_16550A
-> which does not include the UART_FCR_CLEAR_RCVR and UART_FCR_CLEAR_XMIT
-> bits for the FIFO configuration register. Having those flags is necessary
-> to clear FIFO when the serial port is reconfigured with do_set_termios.
+Huh, you mangled even e-mails:
 
-How was this tested? I assume it does not even compile.
+5.1.0 - Unknown address error 550-'5.1.1 
+<ilpo.jarvinnen@linux.intel.com>: Recipient address rejected: User 
+unknown in virtual mailbox table'
+
+<linux-kernel@vger.kernel.rg>: Host or domain name not found. Name service
+     error for name=vger.kernel.rg type=AAAA: Host not found
+
+On 20. 08. 25, 6:01, Jiri Slaby wrote:
+> On 19. 08. 25, 21:13, adriana@arista.com wrote:
+>> This patch is proposing a custom configuration for Synopsys DesignWare
+>> serial to be used by products with associated compatible string in the
+>> device tree.
+>>
+>> The PORT_DWAPB config will be used instead of the default PORT_16550A
+>> which does not include the UART_FCR_CLEAR_RCVR and UART_FCR_CLEAR_XMIT
+>> bits for the FIFO configuration register. Having those flags is necessary
+>> to clear FIFO when the serial port is reconfigured with do_set_termios.
+> 
+> How was this tested? I assume it does not even compile.
+> 
 
 -- 
 js
 suse labs
+
