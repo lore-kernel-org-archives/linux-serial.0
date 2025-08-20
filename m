@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9414C42A8C;
-	Wed, 20 Aug 2025 05:19:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10312283FCB;
+	Wed, 20 Aug 2025 05:21:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755667163; cv=none; b=YmrvUAWZDptvTJ9iZfBK5W5vmZ+GWablkcGtstPjIlJ5hK9ApVh97Nmu6zjpteDbBunRzQ8mkN/bINsq0ux9BbUJisLkEf1hQi1bk6CZAVVPKErfXg5i3fSucCSuxbkOesRrBgFJx1ziIEpYXj+ZhHSAhOwJbU0VnRBmMdeTdCM=
+	t=1755667291; cv=none; b=BNAqkN5gn3yy+elffyH1P5zQF4m61MDKBvCszpQ2sBmezMzWx7h+M4nXIyzCJLw6XMgLb22cGN7UGSFkHYXJWI5EQt4xh4abhzeYmb8WHnW7ktHstwI8hgokjyxRdnCtfspcTpA9Wn5YzJ7vilVDJX1gaj6lHeFlAq+z5JV31ys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755667163; c=relaxed/simple;
-	bh=KJmLX9towCm9JWR533STyB/NH7TXEMynFMSQjNrPJM8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aSR0ZOYNi4oXK8Z49xpzBlzP1gort+usL8+2BETilnO9TKTyZINnin0FsH3pXoeA+iw9RXIpiFycYnA737zS/OR+r8AW5pQ/24K5Nv0LPgiTfpCmIF+qxh6/PLKMUAaJHgIOHLJ+VJoRWr49J0xEvArhF2pu6mM4EG82jzkvHPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B4vtmJs2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755667291; c=relaxed/simple;
+	bh=OZBMvhZyp6RwTkbyEPj6vq/x0qcvO4Xm5F2ji5/O2qs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=rhiCGmgr0y2xyVGYsTb2vcihBWrGKUbMTYfTX0eevNmn0MZn5Ep2NCl002slYWe6FQqKpB5X/JBXeTFfhn8pqsYiRfviG45O424mNqoBpqk2LWnv709Cvko24zetRLl6oyhZ/83Km6Y1KZrknkF8XNAxpotD/t/FkVz1PYXU0Yg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IwEoUbFN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B4vtmJs2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D4B5C4CEEB;
-	Wed, 20 Aug 2025 05:19:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IwEoUbFN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A47CFC113CF;
+	Wed, 20 Aug 2025 05:21:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755667163;
-	bh=KJmLX9towCm9JWR533STyB/NH7TXEMynFMSQjNrPJM8=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=B4vtmJs2qmcuXbzfyM/syEZiyiv5QD2YXHz86XfBpiaFjSYN3vgaTyAv54wZpHI1r
-	 iNOQVGRQ1OtHUpxahM1ph3nzl8Cv7t5ZtVkw7GWbDPRr6nEsxjKsNU4bCcqOFjmw+H
-	 aJYq+7tHrsjOYtOs6yLeOOo115tiMAtCqlEACrKjb+lm+TL8iC93WIz2xL1exb8/9X
-	 MIXv7EjqSpLkO6esa22lKUXQub15JekH7ORQMeR/zLYc6LUzW/DU7vOfhXSQaqeUnp
-	 kglXPxMbFw+D6UXusBQdOkFTX1U/4T3kX7ObFGm5noQbYm5sLb4Z2YyNJMYBuVVszH
-	 UODv4wowaYmhg==
-Message-ID: <dd0fbd9d-683f-4dcf-b877-421930908089@kernel.org>
-Date: Wed, 20 Aug 2025 07:19:20 +0200
+	s=k20201202; t=1755667290;
+	bh=OZBMvhZyp6RwTkbyEPj6vq/x0qcvO4Xm5F2ji5/O2qs=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=IwEoUbFNi2yDxUT9XPiRwBwQJbqbzMA4Iv9/5Gqz2G14/pVMNTM41wbcxqdq18grV
+	 eOUBesvqup3AqbXcfZkbay0LI+6HHv+RQpdThGSpGh0li2fBQfJvU264yVoLDZugD/
+	 mooHeaVnBmQnF6I4939c7q5AOfy5EAWtOSnKi8sJMOv0SFq3o/7YoHmEl57156C5w7
+	 7Lat58Pqw4ZgBTGEPULuqVWmfDbNiBcmRUKMPllP8SSg4aHUmBeO49ejJ/17BglpxM
+	 rj99MqNuw4eUBI9uH9nLbSGRyEySiOr4/a7IpWPSzF8+ZKQLF4MSoUqIIiPi8njVEQ
+	 jGi0bh6JFCSYQ==
+Message-ID: <9f4136d7-e973-44ad-b966-b6993f7b9df0@kernel.org>
+Date: Wed, 20 Aug 2025 07:21:27 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,10 +35,12 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] tty: serial: Modify the use of dev_err_probe()
-To: Xichao Zhao <zhao.xichao@vivo.com>, gregkh@linuxfoundation.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250819120927.607744-1-zhao.xichao@vivo.com>
+Subject: Re: [PATCH] tty: hvc_console: Call hvc_kick in hvc_write
+ unconditionally
+To: Fabian Vogt <fvogt@suse.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <2011735.PYKUYFuaPT@fvogt-thinkpad>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -83,19 +85,49 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250819120927.607744-1-zhao.xichao@vivo.com>
+In-Reply-To: <2011735.PYKUYFuaPT@fvogt-thinkpad>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 19. 08. 25, 14:09, Xichao Zhao wrote:
-> The dev_err_probe() doesn't do anything when error is '-ENOMEM'.
-> Make the following two changes:
-> (1) Replace -ENOMEM with -ENOSPC in max3100_probe().
-> (2) Just return -ENOMEM instead in max310x_probe().
+On 15. 08. 25, 13:33, Fabian Vogt wrote:
+> After hvc_write completes, call hvc_kick also in the case the output
+> buffer has been drained, to ensure tty_wakeup gets called.
 > 
-> Signed-off-by: Xichao Zhao <zhao.xichao@vivo.com>
+> This fixes that functions which wait for a drained buffer got stuck
+> occasionally.
+> 
+> Cc: stable@vger.kernel.org
+> Closes: https://bugzilla.opensuse.org/show_bug.cgi?id=1230062
+> Signed-off-by: Fabian Vogt <fvogt@suse.de>
+
+It's hard to tell if it the right thing™ as HVC is a mess. But on the 
+basic code level, LGTM. Let's see if something pops up.
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+> ---
+>   drivers/tty/hvc/hvc_console.c | 6 +++---
+>   1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
+> index cd1f657f782d..13c663a154c4 100644
+> --- a/drivers/tty/hvc/hvc_console.c
+> +++ b/drivers/tty/hvc/hvc_console.c
+> @@ -543,10 +543,10 @@ static ssize_t hvc_write(struct tty_struct *tty, const u8 *buf, size_t count)
+>   	}
+>   
+>   	/*
+> -	 * Racy, but harmless, kick thread if there is still pending data.
+> +	 * Kick thread to flush if there's still pending data
+> +	 * or to wakeup the write queue.
+>   	 */
+> -	if (hp->n_outbuf)
+> -		hvc_kick();
+> +	hvc_kick();
+>   
+>   	return written;
+>   }
+
 
 -- 
 js
