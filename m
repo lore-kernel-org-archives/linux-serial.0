@@ -1,282 +1,196 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com [209.85.208.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0BF52DE702
-	for <linux-serial@vger.kernel.org>; Wed, 20 Aug 2025 10:02:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D191224234
+	for <linux-serial@vger.kernel.org>; Thu, 21 Aug 2025 15:13:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755684183; cv=none; b=gIvV5oSA2kGqKzVgj6Uvxm7ScfoMbmbV/QPi6hUwqvNW3BqWNMIY47sEc+aJIK5lq+SYyChMpyUl5GrAxG2e/XDsouGTXjX6ehBONFqnu/vRXdBRLBcWb3WX+IeYifOpJBAYokhxPZB1TB0nwPUh4d86xOzotoGSM+sZdeg959w=
+	t=1755789192; cv=none; b=F8W3Bt/gFM9XShJZn4yU7Q7zSUVih9k+Ol+Aw1n3aqTl05yDWaPsS+wMcbRV0tzrn/xBfmXcxJyBuzpwfebWoA9sVWXglofYAxbTP0rbuIcTeEsFDamawTqtdCj6UwGjkJDSEy0/MrMU9yxRCBkhYEVlmWe60CTA7nqpKpqeb98=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755684183; c=relaxed/simple;
-	bh=X4S/NLb0dtyHxfB5lpSvZLFhU8IwHkes9DVJ9oTiPWY=;
-	h=From:Date:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=KzMrzmTaalT0G2KMMprv26o/vzYegckvGmllwOs3wcVhO3imJPPsBP0haE9sNc+mExIT4OJrQbWOG4knzZAEsMJmo7lHySI48mK8m2a8VYu8BD1iHKp3Bc5HD/oCyGh9O8LztjLTlVws1Iy+HDtxx401VeJW0EDc8idNOQd/oGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B24QncLI; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1755789192; c=relaxed/simple;
+	bh=9nQwhppjTEwgUcisyV4d7XyXTyKaChRyMGDsYQad9o8=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kw8PVXKeBogmtcEeNTeD8z5HOPKyKolQQ89YIxmVUg396ON7BDS8RxM9/LZwYOu761m46l4Va5gmcmGMGuDMuMqTj7/mjBIOtYAY9OAcCfRn9UUqHA6ePeg3QZqpFZz8Exw1a28R61yDim//ecjpEKXxvCfT+yjB4zNFcMBo0eU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=G4Ns05Zt; arc=none smtp.client-ip=209.85.208.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B24QncLI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1755684178; x=1787220178;
-  h=from:date:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=X4S/NLb0dtyHxfB5lpSvZLFhU8IwHkes9DVJ9oTiPWY=;
-  b=B24QncLIJ2xeJQgxN4i3SWP/CYf/P4OlWD/8HjtlrQJQ63CQryihXSOm
-   MDBKxixNoA92if8+RQ3S87n3kGeYrePxEyaqLbixo/yM2tFNOnUIHNrBN
-   a7XLtrGsp6OY4pPchkfQa9vU1ogTAGsnE4w5Nfw9ru/IPAM87kE7vDfSQ
-   qgvDL0m2aAI6v42eAXk77jnKP0p99nK+FJnmSSy49+nY9aZSOka04qhqP
-   kWdyoOUWd4pMMan8kckM7tPEEG//Nb5TIWOxA0FfZJ+sQZnCMtqJlmgZ6
-   RK5HBm6CN6ielJsgzV/56W5hgc4tz/p75dWiUjH6D8HfSmes0uoJkilEu
-   A==;
-X-CSE-ConnectionGUID: K4qC2T/NTH2mRaPP0G1pqg==
-X-CSE-MsgGUID: znuaNhy/SRyvxl4m6n102Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11527"; a="58094930"
-X-IronPort-AV: E=Sophos;i="6.17,302,1747724400"; 
-   d="scan'208";a="58094930"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2025 03:02:56 -0700
-X-CSE-ConnectionGUID: cyWAGAcrQYWpKgb3hU2ZbQ==
-X-CSE-MsgGUID: 99ACPwUhRC22A3b6kZHocQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,302,1747724400"; 
-   d="scan'208";a="205246558"
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.83])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Aug 2025 03:02:54 -0700
-From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Date: Wed, 20 Aug 2025 13:02:50 +0300 (EEST)
-To: Adriana Nicolae <adriana@arista.com>
-cc: linux-serial <linux-serial@vger.kernel.org>, 
-    Andy Shevchenko <andriy.shevchenko@linux.intel.com>, prasad@arista.com
-Subject: Re: [PATCH] serial: 8250 dw: clear FIFO before writting LCR
-In-Reply-To: <20250819182322.3451959-1-adriana@arista.com>
-Message-ID: <945af1e4-1d43-bd4b-6b07-733c06d18b17@linux.intel.com>
-References: <20250819182322.3451959-1-adriana@arista.com>
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="G4Ns05Zt"
+Received: by mail-ed1-f66.google.com with SMTP id 4fb4d7f45d1cf-6188b5ae1e8so1519540a12.0
+        for <linux-serial@vger.kernel.org>; Thu, 21 Aug 2025 08:13:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1755789188; x=1756393988; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=+xtxRuaoXngMWzDes/bLKJ29G8INr9oKLKpCWom6nFQ=;
+        b=G4Ns05ZtejOdEM1fPpWd1dKNjGt+h7dkwglwxgHpPFOmWbvAsf3OWICaSmQiL3ZFtq
+         sT2gVGjcN4BZbJF7YNgiWsCDIk0ziesqptb8RcUaIxob66oELeYFerX8SU2Dr2KeXMvu
+         5dcp3DTefexDtsPaWuypX1MZgV91Ug6vQT8Nt4s/Wi16DtiAsryb3fPicbeo/YkeVjLT
+         kYc1cyHHwKzEQYNw9Ls+xdjF9IVjxB9zvOKey3oI1b2WstiCMSl5gNYswiwLv3eFmy4+
+         w/NE4w3in73iilQVvtScRGusvocaFJROUmDo+JUksKEWrAC3fdFSOKtZayT52COYMDlK
+         DC7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1755789188; x=1756393988;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+xtxRuaoXngMWzDes/bLKJ29G8INr9oKLKpCWom6nFQ=;
+        b=mew+pfHTwsc0JZpGKKKSUpMfqt1grJAuhcVFvaZb7NVgpdCXnuwlDv1AXeogQCDeY/
+         0+PEzvHzx8EO+ESXcY2aL+A0ARgWSgCr/JZeTF4u2J7wWmnkoNTFwmF/lnD2a18NKRrg
+         8wL6wmCON3vH0yAjPed0qDvZ0Kb6k7Enz1hPAS95Un2wFucYN//B2HxcRkm8YEhlU2Lr
+         ZW5BXAfl/uE9080NkQBTNtwKjT9KTcDDooAkNYZUmR4PYr2gLu1bzpPdleR6j+eL6JGA
+         DDTGYfjNuJH9Bj3V6Ds5QL4ZbzI+nikJb1DESWUTlWJsg8HXjOn01PwqQVXG6+0IUArv
+         Oy8A==
+X-Forwarded-Encrypted: i=1; AJvYcCVyl48T78DFaT/8nDcCS+Bt5Y75VM5vNxuT6lExCJqtqXhghJJ8Y7fTHUCXgVg2f9dCrGq6k2XfkCj+tGU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwyhHzupnUitOI2fEIYHMjcF0o1RML4SlOfibZ9hYKRnB0R1h6w
+	fG7IWZUhFEjy4oyflvO0E1yRpvMGU6bb6PrGnzZNqejqiAvdJLRAPs4bFU2umvscbmI=
+X-Gm-Gg: ASbGnctXB2bpVzXpp3aWddtRrtVp1BCK/tukTHpG0fl2OSKb4NrcPtGuBO9qt5eRiih
+	UfC/6zO5dc0DldUoNN14Jjb4uKiaJq+ba52ghBn6kiMHQztBUQXsWwuFIe1g5dONsRBPjvppeU9
+	U7zuKDOX1DC2G2blVR1atbj1qemnOCBN3XM0rJvoOhlq3kK105TNIIKTITRsMgTfzs+QS0GAqSC
+	r3JuPoFtjFwOhIchJSh/+o84tiVmD5xTayAbpIRw6yRgamZhPzsn7tdZ6NG0NITpG/vMZodlrLv
+	fhnnaQUdFh2pSLmwzIssalhFo2D5RcsGA16O+TVlCEdhlVyzGUKwxPK08IznMmaVF70O8q3QOOI
+	NitsL2dQsI7xhpPxTCHBmXPsnvQbE+W5W1bjiZtJj9x+7npFA+2QOcMlD/OQm
+X-Google-Smtp-Source: AGHT+IET+pViMkmHfWuU+dAIph0lKCRKrp1cWSJUrymAHEUx2uNDRZI8YqflErDfwiyzgFbu3IhI8g==
+X-Received: by 2002:a05:6402:84f:b0:61a:2cac:890c with SMTP id 4fb4d7f45d1cf-61bf86ef69amr2362795a12.13.1755789187656;
+        Thu, 21 Aug 2025 08:13:07 -0700 (PDT)
+Received: from localhost (host-79-36-0-44.retail.telecomitalia.it. [79.36.0.44])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-61a8ca8660esm3796686a12.10.2025.08.21.08.13.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Aug 2025 08:13:07 -0700 (PDT)
+From: Andrea della Porta <andrea.porta@suse.com>
+X-Google-Original-From: Andrea della Porta <aporta@suse.de>
+Date: Thu, 21 Aug 2025 17:14:59 +0200
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Andrea della Porta <andrea.porta@suse.com>, linus.walleij@linaro.org,
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+	florian.fainelli@broadcom.com, wahrenst@gmx.net,
+	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, iivanov@suse.de, svarbanov@suse.de,
+	mbrugger@suse.com, Jonathan Bell <jonathan@raspberrypi.com>,
+	Phil Elwell <phil@raspberrypi.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Al Cooper <alcooperx@gmail.com>, linux-mmc@vger.kernel.org,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Subject: Re: [PATCH 2/6] dt-bindings: serial: Add clock-frequency property as
+ an alternative to clocks
+Message-ID: <aKc38_NsDy4G1uRy@apocalypse>
+References: <cover.1754924348.git.andrea.porta@suse.com>
+ <419658ce1a1009c6f8b7af22a02b278cd695dab0.1754924348.git.andrea.porta@suse.com>
+ <d02626bc-a00e-486a-854e-b4555c11ee85@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d02626bc-a00e-486a-854e-b4555c11ee85@kernel.org>
 
-On Tue, 19 Aug 2025, adriana@arista.com wrote:
+Hi Krzysztof,
 
-> This patch is proposing a custom configuration for Synopsys DesignWare
-
-Please try to avoid starting sentences in the changelog with "This patch" 
-or other wordings with similar meaning. Write imperatively instead.
-
-Preferrable, describe the problem first, then the solution.
-
-> serial to be used by products with associated compatible string in the
-> device tree.
+On 14:02 Tue 12 Aug     , Krzysztof Kozlowski wrote:
+> On 11/08/2025 17:19, Andrea della Porta wrote:
+> > The UARTA controller on BCM2712 connected to Bluetooth chip does not
 > 
-> The PORT_DWAPB config will be used instead of the default PORT_16550A
-> which does not include the UART_FCR_CLEAR_RCVR and UART_FCR_CLEAR_XMIT
-> bits for the FIFO configuration register. Having those flags is necessary
-> to clear FIFO when the serial port is reconfigured with do_set_termios.
+> Bluetooth chip does not ask...
 > 
-> Additionally, inside the do_set_termios we use the LCR (Line Control
-> Register) to enable DLAB bit in order to access DLL/DLM (Divisor Latch
-> Low/High) registers for baud rate setting. These 2 registers are sharing
-> the same address space with UART_TX/UART_RX and UART_IER. The sequence is:
+> > mandiatorily ask for a clock connected to the high speed baud generator.
+> > This is, in fact, an optional clock in the driver.
 > 
-> (1) enable DLAB -> (2) set baud -> (3) disable DLAB -> (4) reset FCR
+> ... or driver does not ask?
 > 
-> When there is a TX or RX flow on the serial while we attempt to set/clear
-> DLAB, the LCR write will be ignored and we will get a IIR_BUSY interrupt
-> afterwards which is cleared by only reading the USR (UART status register).
+> Please describe here hardware.
 > 
-> The sequence above can leave the serial in an unstable state in two cases:
 > 
-> - if UART is busy while (1), then LCR is still pointing to the normal set of
-> registers, which means the code setting DLL/DLM is actually writing into TX or
-> modifying interrupts in UART_IER which may end with either a garbage character
-> on the console or with serial interrupts disabled.
+> > 
+> > As an alternative, the call to uart_read_port_properties() ensures that
+> > just a simple 'clock-frequency' property can be specified for the clock
+> > value.
 > 
-> - if UART is busy while (3), then LCR remains pointing to DLL/DLM instead of
-> moving back to RX/TX. The first transfer on the serial will be stuck because
-> the transmit/receive registers are not accessible unless the DLAB bit
-> is cleared.
+> Don't describe drivers. Describe hardware.
+
+I will try to test whether the driver can just work specifying clock instead of
+clock-frequency in teh DTS, so there will be no need to amend the bindings.
+
+Many thanks,
+Andrea
+
 > 
-> The changes in this patch include a specific serial_out function for this UART
-> type similar to the one for Armada-38x devices in commit
-> b7639b0b15ddd1a4686b0142e70dfb122eefc88f with some changes in the tx_wait_empty
-> function to check the UART status by looking at the USR register and actively
-> try to clear FIFO to reduce time before a LCR write since the characters will
-> be lost otherwise after baud rate change.
+> > 
+> > Amend the bindings to allow to either specify clocks or clock-frequency.
+> > 
+> > Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
+> > ---
+> >  .../bindings/serial/brcm,bcm7271-uart.yaml    | 19 +++++++++++++++++--
 > 
-> The USR register may report that UART is busy even if TX/TX FIFO is already
-> empty so we will loop until all USR[0] (UART busy status) is cleared and USR[1]
-> TX FIFO is empty (RX FIFO bits should be 0 in this case).
-> Keeping the same timeout of 20ms as measurements with the 9600 baud when
-> the console was busy it took max 1.9ms to get the UART free state.
+> Please use subject prefixes matching the subsystem. You can get them for
+> example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
+> your patch is touching. For bindings, the preferred subjects are
+> explained here:
+> https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
 > 
-> Signed-off-by: Adriana Nicolae <adriana@arista.com>
-> ---
->  drivers/tty/serial/8250/8250_dw.c   |   52 +++++++++++++++++++++++++++++++++++
->  drivers/tty/serial/8250/8250_port.c |    8 +++++
->  include/uapi/linux/serial_core.h    |    3 ++
->  3 files changed, 63 insertions(+)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index a53ba04d9770..985a2650f3f3 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -33,6 +33,9 @@
->  /* Offsets for the DesignWare specific registers */
->  #define DW_UART_USR	0x1f /* UART Status Register */
->  #define DW_UART_DMASA	0xa8 /* DMA Software Ack */
-> +#define DW_UART_USR_BUSY 0x1 /* UART Busy status */
-> +#define DW_UART_USR_TFNF 0x2 /* UART TX FIFO not full */
-> +#define DW_UART_USR_TFE  0x4 /* UART TX FIFO empty */
->  
->  #define OCTEON_UART_USR	0x27 /* UART Status Register */
->  
-> @@ -56,6 +59,10 @@
->  #define DW_UART_QUIRK_IS_DMA_FC		BIT(3)
->  #define DW_UART_QUIRK_APMC0D08		BIT(4)
->  #define DW_UART_QUIRK_CPR_VALUE		BIT(5)
-> +#define DW_UART_QUIRK_APB		BIT(6)
-> +
-> +#define DW8250_REG( p, reg ) \
-> +	((void __iomem *)(p->membase + ((reg) << p->regshift)))
-
-What's wrong with dw8250_readl_ext() and dw8250_writel_ext()?
-
->  struct dw8250_platform_data {
->  	u8 usr_reg;
-> @@ -220,6 +227,47 @@ static void dw8250_serial_out38x(struct uart_port *p, unsigned int offset, u32 v
->  	dw8250_serial_out(p, offset, value);
->  }
->  
-> +/* Drain FIFO and wait for USR to be not busy and TX/RX FIFO empty */
-> +static void dw8250_tx_wait_empty_apb(struct uart_port *p)
-> +{
-> +	unsigned int tries = 20000;
-> +	unsigned int delay_threshold = tries - 1000;
-> +	unsigned int usr;
-> +
-> +	while (tries--) {
-> +		usr = readl(DW8250_REG(p, DW_UART_USR));
-> +
-> +		/* Check UART free and TX/RX FIFO empty */
-> +		if ((usr & ~DW_UART_USR_TFNF) == DW_UART_USR_TFE)
-> +			break;
-> +
-> +		/* FIFO is still not empty, try to clear it */
-> +		if (tries < delay_threshold) {
-> +			writel(UART_FCR_ENABLE_FIFO, DW8250_REG(p, UART_FCR));
-> +			writel(UART_FCR_ENABLE_FIFO | UART_FCR_CLEAR_RCVR |
-> +			UART_FCR_CLEAR_XMIT, DW8250_REG(p, UART_FCR));
-
-Please indent any continuation lines properly, in this case to the char 
-after the opening parenthesis.
-
-> +			writel(0, DW8250_REG(p, UART_FCR));
-> +			udelay (1);
-> +		}
-> +	}
-
-This seems to be just rehashing the same non-robust algorithm. There's no 
-way to ensure UART wouldn't become BUSY again because of Rx at any time. 
-Thus, any amount of clearing FIFOs is just never going be fully safe.
-
-Long time ago, I attempted to create a more robust solution to this BUSY
-problem by temporarily enabling loopback which should prevent any new Rx 
-from reaching the UART.
-
-Could you please try my patch that is attached to:
-
-https://lore.kernel.org/linux-serial/079c8fe6-9ce4-fa59-4b44-93e27dd376d6@linux.intel.com/
-
-(I haven't found a way to reproduce this myself and so far all the 
-reporters of this problem have gone oddly quiet when asked to test this 
-patch so it's hasn't moved forward for fea years.)
-
-There are small Tx DMA related bits to add to the patch from robustness 
-perspective (but a sane communication pattern shouldn't need those 
-anyway, ie., no application should be sending something while trying to 
-change these registers).
-
-> +}
-> +
-> +static void dw8250_serial_outapb(struct uart_port *p, int offset, int value)
-> +{
-> +       struct dw8250_data *d = to_dw8250_data(p->private_data);
-> +
-> +	if(offset == UART_LCR && !d->uart_16550_compatible)
-> +		dw8250_tx_wait_empty_apb(p);
-> +
-> +	writel(value, DW8250_REG(p, offset));
-> +
-> +	if (offset == UART_LCR && !d->uart_16550_compatible) {
-> +		/* Check FIFO is left enabled and LCR was written */
-> +		writel(UART_FCR_ENABLE_FIFO, DW8250_REG(p, UART_FCR));
-> +		dw8250_check_lcr(p, value);
-> +	}
-> +}
-> +
->  static u32 dw8250_serial_in(struct uart_port *p, unsigned int offset)
->  {
->  	u32 value = readb(p->membase + (offset << p->regshift));
-> @@ -520,6 +568,12 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
->  		p->serial_in = dw8250_serial_in32;
->  		data->uart_16550_compatible = true;
->  	}
-> +	if (quirks & DW_UART_QUIRK_DWAPB) {
-> +		p->type = PORT_DWAPB;
-> +		p->flags |= UPF_FIXED_TYPE;
-> +		p->serial_out = dw8250_serial_outapb;
-> +		data->skip_autocfg = true;
-> +	}
->  }
->  
->  static void dw8250_reset_control_assert(void *data)
-> @@ -755,6 +809,7 @@ static const struct dev_pm_ops dw8250_pm_ops = {
->  
->  static const struct dw8250_platform_data dw8250_dw_apb = {
->  	.usr_reg = DW_UART_USR,
-> +	.quirks = DW_UART_QUIRK_APB,
->  };
->  
->  static const struct dw8250_platform_data dw8250_octeon_3860_data = {
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 2da9db960d09..3882a71920f6 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -310,6 +310,14 @@ static const struct serial8250_config uart_config[] = {
->  		.rxtrig_bytes	= {1, 8, 16, 30},
->  		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
->  	},
-> +	[PORT_DWAPB] = {
-> +		.name		= "Synopsys DesignWare",
-> +		.fifo_size	= 16,
-> +		.tx_loadsz	= 16,
-> +		.fcr		= UART_FCR_ENABLE_FIFO |
-> +				  UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
-> +		.flags		= UART_CAP_FIFO | UART_CAP_AFE | UART_CAP_IRDA,
-> +	},
->  };
->  
->  /* Uart divisor latch read */
-> diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-> index 9c007a106330..8386436b813f 100644
-> --- a/include/uapi/linux/serial_core.h
-> +++ b/include/uapi/linux/serial_core.h
-> @@ -231,6 +231,9 @@
->  /* Sunplus UART */
->  #define PORT_SUNPLUS	123
->  
-> +/* Synopsys DesignWare */
-> +#define PORT_DWAPB		124
-> +
->  /* Generic type identifier for ports which type is not important to userspace. */
->  #define PORT_GENERIC	(-1)
->  
+> >  1 file changed, 17 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml b/Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml
+> > index 89c462653e2d..96697b1428bd 100644
+> > --- a/Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml
+> > +++ b/Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml
+> > @@ -40,7 +40,15 @@ properties:
+> >            - const: dma_tx
+> >            - const: dma_intr2
+> >  
+> > +  clock-frequency:
+> > +    description:
+> > +      The input clock frequency for the UART, Either this or clocks must be
+> > +      specified.
 > 
-
--- 
- i.
-
+> Anyway, don't open-code schema in free form text.
+> 
+> That's legacy property. You need clear explanation why.
+> 
+> > +
+> >    clocks:
+> > +    description:
+> > +      High speed baud rate clock. Either this or clock-frequency must be
+> > +      specified.
+> 
+> Drop last sentence, Anyway, don't open-code schema in free form text.
+> First sentence seems redundant anyway.
+> 
+> 
+> >      minItems: 1
+> 
+> I'll fix this.
+> 
+> >  
+> >    clock-names:
+> > @@ -61,11 +69,18 @@ required:
+> >    - compatible
+> >    - reg
+> >    - reg-names
+> > -  - clocks
+> > -  - clock-names
+> >    - interrupts
+> >    - interrupt-names
+> >  
+> > +oneOf:
+> > +  - allOf:
+> > +      - required:
+> > +          - clocks
+> > +      - required:
+> > +          - clock-names
+> > +  - required:
+> > +      - clock-frequency
+> > +
+> >  unevaluatedProperties: false
+> >  
+> >  examples:
+> 
+> 
+> Best regards,
+> Krzysztof
