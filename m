@@ -1,85 +1,49 @@
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com [209.85.208.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D191224234
-	for <linux-serial@vger.kernel.org>; Thu, 21 Aug 2025 15:13:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E28562E22BB
+	for <linux-serial@vger.kernel.org>; Thu, 21 Aug 2025 16:41:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755789192; cv=none; b=F8W3Bt/gFM9XShJZn4yU7Q7zSUVih9k+Ol+Aw1n3aqTl05yDWaPsS+wMcbRV0tzrn/xBfmXcxJyBuzpwfebWoA9sVWXglofYAxbTP0rbuIcTeEsFDamawTqtdCj6UwGjkJDSEy0/MrMU9yxRCBkhYEVlmWe60CTA7nqpKpqeb98=
+	t=1755794463; cv=none; b=SugMYxHgxHIfMB7j5eoSUpJ5IImlvdsotEZ+ViAOAeAoslcjPev/7sg9Zx31ujE++Q13JSBxOq8yvXIRLQfEBytpQc/xGW050vHgPZ14CHvnwS+npzK3cSQ09nF3m20Nwl8XuxvXsrnfqBVTp1K2r9+VVtAU5eBq/n4sXfK0mOI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755789192; c=relaxed/simple;
-	bh=9nQwhppjTEwgUcisyV4d7XyXTyKaChRyMGDsYQad9o8=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kw8PVXKeBogmtcEeNTeD8z5HOPKyKolQQ89YIxmVUg396ON7BDS8RxM9/LZwYOu761m46l4Va5gmcmGMGuDMuMqTj7/mjBIOtYAY9OAcCfRn9UUqHA6ePeg3QZqpFZz8Exw1a28R61yDim//ecjpEKXxvCfT+yjB4zNFcMBo0eU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=G4Ns05Zt; arc=none smtp.client-ip=209.85.208.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="G4Ns05Zt"
-Received: by mail-ed1-f66.google.com with SMTP id 4fb4d7f45d1cf-6188b5ae1e8so1519540a12.0
-        for <linux-serial@vger.kernel.org>; Thu, 21 Aug 2025 08:13:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1755789188; x=1756393988; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+xtxRuaoXngMWzDes/bLKJ29G8INr9oKLKpCWom6nFQ=;
-        b=G4Ns05ZtejOdEM1fPpWd1dKNjGt+h7dkwglwxgHpPFOmWbvAsf3OWICaSmQiL3ZFtq
-         sT2gVGjcN4BZbJF7YNgiWsCDIk0ziesqptb8RcUaIxob66oELeYFerX8SU2Dr2KeXMvu
-         5dcp3DTefexDtsPaWuypX1MZgV91Ug6vQT8Nt4s/Wi16DtiAsryb3fPicbeo/YkeVjLT
-         kYc1cyHHwKzEQYNw9Ls+xdjF9IVjxB9zvOKey3oI1b2WstiCMSl5gNYswiwLv3eFmy4+
-         w/NE4w3in73iilQVvtScRGusvocaFJROUmDo+JUksKEWrAC3fdFSOKtZayT52COYMDlK
-         DC7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755789188; x=1756393988;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+xtxRuaoXngMWzDes/bLKJ29G8INr9oKLKpCWom6nFQ=;
-        b=mew+pfHTwsc0JZpGKKKSUpMfqt1grJAuhcVFvaZb7NVgpdCXnuwlDv1AXeogQCDeY/
-         0+PEzvHzx8EO+ESXcY2aL+A0ARgWSgCr/JZeTF4u2J7wWmnkoNTFwmF/lnD2a18NKRrg
-         8wL6wmCON3vH0yAjPed0qDvZ0Kb6k7Enz1hPAS95Un2wFucYN//B2HxcRkm8YEhlU2Lr
-         ZW5BXAfl/uE9080NkQBTNtwKjT9KTcDDooAkNYZUmR4PYr2gLu1bzpPdleR6j+eL6JGA
-         DDTGYfjNuJH9Bj3V6Ds5QL4ZbzI+nikJb1DESWUTlWJsg8HXjOn01PwqQVXG6+0IUArv
-         Oy8A==
-X-Forwarded-Encrypted: i=1; AJvYcCVyl48T78DFaT/8nDcCS+Bt5Y75VM5vNxuT6lExCJqtqXhghJJ8Y7fTHUCXgVg2f9dCrGq6k2XfkCj+tGU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwyhHzupnUitOI2fEIYHMjcF0o1RML4SlOfibZ9hYKRnB0R1h6w
-	fG7IWZUhFEjy4oyflvO0E1yRpvMGU6bb6PrGnzZNqejqiAvdJLRAPs4bFU2umvscbmI=
-X-Gm-Gg: ASbGnctXB2bpVzXpp3aWddtRrtVp1BCK/tukTHpG0fl2OSKb4NrcPtGuBO9qt5eRiih
-	UfC/6zO5dc0DldUoNN14Jjb4uKiaJq+ba52ghBn6kiMHQztBUQXsWwuFIe1g5dONsRBPjvppeU9
-	U7zuKDOX1DC2G2blVR1atbj1qemnOCBN3XM0rJvoOhlq3kK105TNIIKTITRsMgTfzs+QS0GAqSC
-	r3JuPoFtjFwOhIchJSh/+o84tiVmD5xTayAbpIRw6yRgamZhPzsn7tdZ6NG0NITpG/vMZodlrLv
-	fhnnaQUdFh2pSLmwzIssalhFo2D5RcsGA16O+TVlCEdhlVyzGUKwxPK08IznMmaVF70O8q3QOOI
-	NitsL2dQsI7xhpPxTCHBmXPsnvQbE+W5W1bjiZtJj9x+7npFA+2QOcMlD/OQm
-X-Google-Smtp-Source: AGHT+IET+pViMkmHfWuU+dAIph0lKCRKrp1cWSJUrymAHEUx2uNDRZI8YqflErDfwiyzgFbu3IhI8g==
-X-Received: by 2002:a05:6402:84f:b0:61a:2cac:890c with SMTP id 4fb4d7f45d1cf-61bf86ef69amr2362795a12.13.1755789187656;
-        Thu, 21 Aug 2025 08:13:07 -0700 (PDT)
-Received: from localhost (host-79-36-0-44.retail.telecomitalia.it. [79.36.0.44])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-61a8ca8660esm3796686a12.10.2025.08.21.08.13.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Aug 2025 08:13:07 -0700 (PDT)
-From: Andrea della Porta <andrea.porta@suse.com>
-X-Google-Original-From: Andrea della Porta <aporta@suse.de>
-Date: Thu, 21 Aug 2025 17:14:59 +0200
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Andrea della Porta <andrea.porta@suse.com>, linus.walleij@linaro.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	florian.fainelli@broadcom.com, wahrenst@gmx.net,
-	linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, iivanov@suse.de, svarbanov@suse.de,
-	mbrugger@suse.com, Jonathan Bell <jonathan@raspberrypi.com>,
-	Phil Elwell <phil@raspberrypi.com>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Al Cooper <alcooperx@gmail.com>, linux-mmc@vger.kernel.org,
-	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Subject: Re: [PATCH 2/6] dt-bindings: serial: Add clock-frequency property as
- an alternative to clocks
-Message-ID: <aKc38_NsDy4G1uRy@apocalypse>
-References: <cover.1754924348.git.andrea.porta@suse.com>
- <419658ce1a1009c6f8b7af22a02b278cd695dab0.1754924348.git.andrea.porta@suse.com>
- <d02626bc-a00e-486a-854e-b4555c11ee85@kernel.org>
+	s=arc-20240116; t=1755794463; c=relaxed/simple;
+	bh=ZYwP6EYTgnjg6HxsD+JN38KqBRb7MMX62ihDx21HQa8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EUVNtKIzesCAOsWBPJA2LGrH6mtyFi6OdP+TZagTEx16e4wtJxj3B0JZ/IAYh51Xe0tDQL/mw7SPWJ32uyFHYHJItgc/SDeXhwm4CxMIqq2OaCUvMqMT26vHjUe/dXwvJHCJeb4lqyWtq7U7yUzusBFcRewfds/wZecnzRmsk7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1up8LQ-0005mb-J7; Thu, 21 Aug 2025 18:40:56 +0200
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1up8LQ-001ROr-19;
+	Thu, 21 Aug 2025 18:40:56 +0200
+Received: from mfe by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <mfe@pengutronix.de>)
+	id 1up8LQ-0085kK-0l;
+	Thu, 21 Aug 2025 18:40:56 +0200
+Date: Thu, 21 Aug 2025 18:40:56 +0200
+From: Marco Felsch <m.felsch@pengutronix.de>
+To: Johan Hovold <johan@kernel.org>
+Cc: Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+	kernel@pengutronix.de
+Subject: Re: [PATCH 0/3] USB-Serial serdev support
+Message-ID: <20250821164056.6j7spi3vnu66i6bt@pengutronix.de>
+References: <20240807-v6-10-topic-usb-serial-serdev-v1-0-ed2cc5da591f@pengutronix.de>
+ <Zt7kCxawoszunWq3@hovoldconsulting.com>
+ <20240917044948.i2eog4ondf7vna7q@pengutronix.de>
+ <Z8_wcASfJ8SeAQ8l@hovoldconsulting.com>
+ <20250313194044.t2t3c7j6ktvshjhs@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -88,109 +52,158 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d02626bc-a00e-486a-854e-b4555c11ee85@kernel.org>
+In-Reply-To: <20250313194044.t2t3c7j6ktvshjhs@pengutronix.de>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-serial@vger.kernel.org
 
-Hi Krzysztof,
+Hi,
 
-On 14:02 Tue 12 Aug     , Krzysztof Kozlowski wrote:
-> On 11/08/2025 17:19, Andrea della Porta wrote:
-> > The UARTA controller on BCM2712 connected to Bluetooth chip does not
-> 
-> Bluetooth chip does not ask...
-> 
-> > mandiatorily ask for a clock connected to the high speed baud generator.
-> > This is, in fact, an optional clock in the driver.
-> 
-> ... or driver does not ask?
-> 
-> Please describe here hardware.
-> 
-> 
+gentle ping.
+
+Regards,
+  Marco
+
+On 25-03-13, Marco Felsch wrote:
+> On 25-03-11, Johan Hovold wrote:
+> > On Tue, Sep 17, 2024 at 06:49:48AM +0200, Marco Felsch wrote:
+> > > On 24-09-09, Johan Hovold wrote:
+> > > > On Wed, Aug 07, 2024 at 04:08:47PM +0200, Marco Felsch wrote:
+> > > > > this patchset is based on Johan's patches [1] but dropped the need of
+> > > > > the special 'serial' of-node [2].
+> > > > 
+> > > > That's great that you found and referenced my proof-of-concept patches,
+> > > > but it doesn't seem like you tried to understand why this hasn't been
+> > > > merged yet.
 > > 
-> > As an alternative, the call to uart_read_port_properties() ensures that
-> > just a simple 'clock-frequency' property can be specified for the clock
-> > value.
-> 
-> Don't describe drivers. Describe hardware.
-
-I will try to test whether the driver can just work specifying clock instead of
-clock-frequency in teh DTS, so there will be no need to amend the bindings.
-
-Many thanks,
-Andrea
-
-> 
+> > > > First, as the commit message you refer to below explain, we need some
+> > > > way to describe multiport controllers. Just dropping the 'serial' node
+> > > > does not make that issue go away.
+> > > 
+> > > Sorry for asking but isn't the current OF abstraction [1] enough? As far
+> > > as I understood we can describe the whole USB tree within OF. I used [1]
+> > > and the this patchset to describe the following hierarchy:
+> > > 
+> > >  usb-root -> usb-hub port-1 -> usb-serial interface-0 -> serial
+> > >                                                          bt-module
+> > > 
+> > > [1] Documentation/devicetree/bindings/usb/usb-device.yaml
 > > 
-> > Amend the bindings to allow to either specify clocks or clock-frequency.
+> > Again, you still need to consider devices with multiple serial ports
+> > (and they do not always map neatly to one port per interface either).
+> 
+> We use a dual-port FTDI and our USB tree looks as followed:
+> 
+> /:  Bus 001.Port 001: Dev 001, Class=root_hub, Driver=xhci-hcd/1p, 480M
+>     ID 1d6b:0002 Linux Foundation 2.0 root hub
+>     |__ Port 001: Dev 002, If 0, Class=Hub, Driver=hub/4p, 480M
+>         ID 0424:2514 Microchip Technology, Inc. (formerly SMSC) USB 2.0 Hub
+>         |__ Port 001: Dev 003, If 0, Class=Vendor Specific Class, Driver=ftdi_sio, 480M
+>             ID 0403:6010 Future Technology Devices International, Ltd FT2232C/D/H Dual UART/FIFO IC
+>         |__ Port 001: Dev 003, If 1, Class=Vendor Specific Class, Driver=ftdi_sio, 480M
+>             ID 0403:6010 Future Technology Devices International, Ltd FT2232C/D/H Dual UART/FIFO IC
+> 
+> interface-0 is used for the bt-module which is served by the serdev
+> driver.
+> 
+> interface-1 is used by an userspace driver which makes use of the
+> /dev/ttyUSB1 port.
+> 
+> So we do have the multiple serial ports use-case already. Can you please
+> explain what I miss?
+> 
+> > > > Second, and more importantly, you do not address the main obstacle for
+> > > > enabling serdev for USB serial which is that the serdev cannot handle
+> > > > hotplugging.
+> > > 
+> > > Hotplugging is a good point but out-of-scope IMHO (at least for now)
+> > > since the current serdev implementation rely on additional firmware
+> > > information e.g OF node to be present. E.g. if the above mentioned setup
+> > > would connect the "serial bt-module" directly to the UART port you still
+> > > need an OF node to bind the serdev driver. If the node isn't present
+> > > user-space would need to do the hci handling.
 > > 
-> > Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
-> > ---
-> >  .../bindings/serial/brcm,bcm7271-uart.yaml    | 19 +++++++++++++++++--
+> > There's nothing preventing you from adding a devicetree node for a USB
+> > device that can be unplugged.
 > 
-> Please use subject prefixes matching the subsystem. You can get them for
-> example with `git log --oneline -- DIRECTORY_OR_FILE` on the directory
-> your patch is touching. For bindings, the preferred subjects are
-> explained here:
-> https://www.kernel.org/doc/html/latest/devicetree/bindings/submitting-patches.html#i-for-patch-submitters
+> I see and I have to admit that I didn't test this :/ But since you
+> pointed it out I tested it now!
 > 
+> So as explained, our USB tree looks as above and our DTS looks like the
+> one in the cover letter. Of course I run on an embedded system but the
+> USB FTDI based module is powered by the VBUS of the hub. Therefore I
+> ran the test by disabling the downstream port which in turn disabled the
+> VBUS supply. This should come very close to a physical unplug event.
 > 
-> >  1 file changed, 17 insertions(+), 2 deletions(-)
+> 8<----------------------------------------------------------------
+> 
+> ## The test system before the "unplug"
+> 
+> root@test:~# ls -al /sys/class/bluetooth/
+> total 0
+> drwxr-xr-x  2 root root 0 Jan  8 18:31 .
+> drwxr-xr-x 62 root root 0 Jan  8 18:31 ..
+> lrwxrwxrwx  1 root root 0 Jan  8 18:31 hci0 -> ../../devices/platform/soc@0/32f10108.usb/38200000.usb/xhci-hcd.1.auto/usb1/1-1/1-1.1/1-1.1:1.0/ttyUSB0/serial0/serial0-0/bluetooth/hci0
+> 
+> root@test:~# ls -al /sys/bus/serial/devices/
+> total 0
+> drwxr-xr-x 2 root root 0 Jan  8 18:31 .
+> drwxr-xr-x 4 root root 0 Jan  8 18:28 ..
+> lrwxrwxrwx 1 root root 0 Jan  8 18:31 serial0 -> ../../../devices/platform/soc@0/32f10108.usb/38200000.usb/xhci-hcd.1.auto/usb1/1-1/1-1.1/1-1.1:1.0/ttyUSB0/serial0
+> lrwxrwxrwx 1 root root 0 Jan  8 18:31 serial0-0 -> ../../../devices/platform/soc@0/32f10108.usb/38200000.usb/xhci-hcd.1.auto/usb1/1-1/1-1.1/1-1.1:1.0/ttyUSB0/serial0/serial0-0
+> 
+> ## The "unplug" event and the system after the event
+> 
+> root@test:~# echo 1 > /sys/bus/usb/devices/usb1/1-1/1-1\:1.0/1-1-port1/disable
+> 
+> root@test:~# ls -al /sys/class/bluetooth/
+> total 0
+> drwxr-xr-x  2 root root 0 Jan  8 18:40 .
+> drwxr-xr-x 62 root root 0 Jan  8 18:31 ..
+> 
+> root@test:~# ls -al /sys/bus/serial/devices/
+> total 0
+> drwxr-xr-x 2 root root 0 Jan  8 18:40 .
+> drwxr-xr-x 4 root root 0 Jan  8 18:28 ..
+> 
+> ## The "plug" event and the system after the event
+> 
+> root@test:~# echo 0 > /sys/bus/usb/devices/usb1/1-1/1-1\:1.0/1-1-port1/disable
+> root@test:~# [ 1121.297918] btnxpuart serial0-0: supply vcc not found, using dummy regulator
+> 
+> root@test:~# ls -al /sys/class/bluetooth/
+> total 0
+> drwxr-xr-x  2 root root 0 Jan  8 18:41 .
+> drwxr-xr-x 62 root root 0 Jan  8 18:31 ..
+> lrwxrwxrwx  1 root root 0 Jan  8 18:41 hci0 -> ../../devices/platform/soc@0/32f10108.usb/38200000.usb/xhci-hcd.1.auto/usb1/1-1/1-1.1/1-1.1:1.0/ttyUSB0/serial0/serial0-0/bluetooth/hci0
+> 
+> root@test:~# ls -al /sys/bus/serial/devices/
+> total 0
+> drwxr-xr-x 2 root root 0 Jan  8 18:41 .
+> drwxr-xr-x 4 root root 0 Jan  8 18:28 ..
+> lrwxrwxrwx 1 root root 0 Jan  8 18:41 serial0 -> ../../../devices/platform/soc@0/32f10108.usb/38200000.usb/xhci-hcd.1.auto/usb1/1-1/1-1.1/1-1.1:1.0/ttyUSB0/serial0
+> lrwxrwxrwx 1 root root 0 Jan  8 18:41 serial0-0 -> ../../../devices/platform/soc@0/32f10108.usb/38200000.usb/xhci-hcd.1.auto/usb1/1-1/1-1.1/1-1.1:1.0/ttyUSB0/serial0/serial0-0
+> 
+> 8<----------------------------------------------------------------
+> 
+> > > So from my POV the serdev abstraction is for manufacturers which make
+> > > use of "onboard" usb-devices which are always present at the same USB
+> > > tree location. Serdev is not made for general purpose USB ports (yet)
+> > > where a user can plug-in all types of USB devices.
 > > 
-> > diff --git a/Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml b/Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml
-> > index 89c462653e2d..96697b1428bd 100644
-> > --- a/Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml
-> > +++ b/Documentation/devicetree/bindings/serial/brcm,bcm7271-uart.yaml
-> > @@ -40,7 +40,15 @@ properties:
-> >            - const: dma_tx
-> >            - const: dma_intr2
-> >  
-> > +  clock-frequency:
-> > +    description:
-> > +      The input clock frequency for the UART, Either this or clocks must be
-> > +      specified.
+> > Right, but someone need to make sure that serdev can handle devices
+> > going away first as nothing is currently preventing that from happening.
 > 
-> Anyway, don't open-code schema in free form text.
+> Can you please check my above tests? Maybe I do miss something but for
+> me it looks like it's working. Looking forwards for your input.
 > 
-> That's legacy property. You need clear explanation why.
-> 
-> > +
-> >    clocks:
-> > +    description:
-> > +      High speed baud rate clock. Either this or clock-frequency must be
-> > +      specified.
-> 
-> Drop last sentence, Anyway, don't open-code schema in free form text.
-> First sentence seems redundant anyway.
+> Regards,
+>   Marco
 > 
 > 
-> >      minItems: 1
-> 
-> I'll fix this.
-> 
-> >  
-> >    clock-names:
-> > @@ -61,11 +69,18 @@ required:
-> >    - compatible
-> >    - reg
-> >    - reg-names
-> > -  - clocks
-> > -  - clock-names
-> >    - interrupts
-> >    - interrupt-names
-> >  
-> > +oneOf:
-> > +  - allOf:
-> > +      - required:
-> > +          - clocks
-> > +      - required:
-> > +          - clock-names
-> > +  - required:
-> > +      - clock-frequency
-> > +
-> >  unevaluatedProperties: false
-> >  
-> >  examples:
-> 
-> 
-> Best regards,
-> Krzysztof
+> > > > > [1] https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git/log/?h=usb-serial-of
+> > > > > [2] https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git/commit/?h=usb-serial-of&id=b19239022c92567a6a9ed40e8522e84972b0997f
+> > 
+> > Johan
+> > 
