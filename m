@@ -1,117 +1,161 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CA8928AB1E
-	for <linux-serial@vger.kernel.org>; Fri, 22 Aug 2025 12:11:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CF0B24CEE8;
+	Fri, 22 Aug 2025 13:29:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755864700; cv=none; b=uRbzanfWQRwie8hjWpkwPB7Z9U/+H+US81ypvLYGlrH4467Z+Uh1YpKxetcBZRljkQ/YVmVN8OPngaBGPXeuhhBf2Sh1Pn+dGkHXk0SNnBircgBgK8RSJCGBWbhP9/I+uB7s+sat7tzYG1SwabpfY4va1I/auBIZ5nfZQ8acj9o=
+	t=1755869399; cv=none; b=ZiesLgchjYKxvoquf4mqZf8PUvPeMJKjKzY7//ATSiyXzbAOA/OT53oLJnTAIA6MYDuhqgkBROtT4FMeAraU6ir6+yCxnyilpcNVze9tl/MbiEgQKjvYWSPyla07rptESg4yRMRJjwI20qw/6vUT99JLKGS8ELO3APJX4CIEfvo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755864700; c=relaxed/simple;
-	bh=Ddvo9fUrdYmxigcDhHoyWm5kSBOkj+OthkG1en6DMlg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QRfcYa6XO6FaiOpulFMS5Zi7oo1DEQpL23Xuz3nUZDTGIwINmwIws9RC2NXN7i+cQnwzW5AnBI6s/d27FfGnUER0ZFB2riwBfC8FGs2fLnakMoDCwrMZSXDPI9Z/hnmUL4aObS/0DjRgvfcHqmrxt6a9AL8484OaY5nhnjlm19I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=WMZpa0qy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755869399; c=relaxed/simple;
+	bh=JmipXnXVqs0bo7rBOQEowa8CcQd7VSNge6eEHRVSm0g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=YodWyMcBOyypHUwvI2maHuKicbj8Xta83Ipzbes5sE6gSf6aNxxC+zVKZeWpGpg2OZQ1Xxo0aoCpZGIlCxlCR+wKlL5vOh9Vb6AHGSpeIe+CCbEU9pI9d8BpaRKPKP8AiUER1VF665o+2fGoarwdWlVl2KhgIJ1wkTDgv31Pl70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=CoN1EBNR; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="WMZpa0qy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E8E5C4CEED;
-	Fri, 22 Aug 2025 12:11:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1755864699;
-	bh=Ddvo9fUrdYmxigcDhHoyWm5kSBOkj+OthkG1en6DMlg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WMZpa0qyVLDveJLRO+hynBCGtBLib6e+aiD9bOY/buBI9UO/hIx7GIw0Gd7Uz+twn
-	 cHu+nonbicR5iowJCTaX2I6p8HoaMSprGHcwr03QZjDn8t3FfVOyEg/gYV2+BOE0lL
-	 RKopDyKOpaVo13o5e1wwGTNFYe2IW2QlKy1NzQqs=
-Date: Fri, 22 Aug 2025 14:11:36 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Zong Jiang <quic_zongjian@quicinc.com>
-Cc: linux-serial@vger.kernel.org, dan.carpenter@linaro.org,
-	quic_ztu@quicinc.com, quic_msavaliy@quicinc.com,
-	quic_vdadhani@quicinc.com, quic_anupkulk@quicinc.com,
-	quic_haixcui@quicinc.com, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2] serial: qcom-geni: Fix off-by-one error in
- ida_alloc_range()
-Message-ID: <2025082221-impish-carwash-bb4d@gregkh>
-References: <20250822120524.4169865-1-quic_zongjian@quicinc.com>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="CoN1EBNR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1755869398; x=1787405398;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JmipXnXVqs0bo7rBOQEowa8CcQd7VSNge6eEHRVSm0g=;
+  b=CoN1EBNRuApjOIBGwSTCqkl0wNtrGw5KGLH8BQQhSyf7HzfoA13gq6Bq
+   3qvKZR4tJAl0/24VteAr6ZVutVUDi62aYUiOfD/MmRnfA8yqGTX7IKPrx
+   LXXZoVMra8Rc4papdCtciEOdx1RpfOGvgQdgfyty3LCfnexTlyX6ZT5Uv
+   d67Z3HJDSNRHU96bl/lhDyYocJ2QzrPVQCNstHiXo0+X9o13UWBiUUKpT
+   SnVPiqinPAPWD0c8ibXWjuu2eAsUf38ykGjmIRz4+abD3RTcIH1pZloxr
+   NWiQITEk+GyYO0gylzJL91Je+MZ/hb1MkjMcLZdDJL+2SCApMnqdsY8Ok
+   Q==;
+X-CSE-ConnectionGUID: dttGCdfnRrSwT0WQldL3yA==
+X-CSE-MsgGUID: AeSCvjSPQYS0LsPuRv0RiQ==
+X-IronPort-AV: E=Sophos;i="6.17,309,1747724400"; 
+   d="scan'208";a="276925274"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 22 Aug 2025 06:29:56 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Fri, 22 Aug 2025 06:29:25 -0700
+Received: from [10.159.245.205] (10.10.85.11) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
+ Transport; Fri, 22 Aug 2025 06:29:21 -0700
+Message-ID: <76b1062f-a4e3-4392-9549-86d63616a5ca@microchip.com>
+Date: Fri, 22 Aug 2025 15:29:21 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250822120524.4169865-1-quic_zongjian@quicinc.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 1/9] arm64: Add config for Microchip SoC platforms
+To: Robert Marko <robert.marko@sartura.hr>, <linux@armlinux.org.uk>,
+	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
+	<catalin.marinas@arm.com>, <will@kernel.org>, <olivia@selenic.com>,
+	<herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+	<andi.shyti@kernel.org>, <lee@kernel.org>, <broonie@kernel.org>,
+	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <arnd@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-crypto@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<o.rempel@pengutronix.de>, <daniel.machon@microchip.com>
+CC: <luka.perkov@sartura.hr>
+References: <20250813174720.540015-1-robert.marko@sartura.hr>
+ <20250813174720.540015-2-robert.marko@sartura.hr>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Content-Language: en-US, fr
+Organization: microchip
+In-Reply-To: <20250813174720.540015-2-robert.marko@sartura.hr>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Aug 22, 2025 at 08:05:24PM +0800, Zong Jiang wrote:
-> The ida_alloc_range() function expects an inclusive range, meaning both
-> the start and end values are valid allocation targets. Passing nr_ports
-> as the upper bound allows allocation of an ID equal to nr_ports, which
-> is out of bounds when used as an index into the port array.
+On 13/08/2025 at 19:44, Robert Marko wrote:
+> Currently, Microchip SparX-5 SoC is supported and it has its own symbol.
 > 
-> Fix this by subtracting 1 from nr_ports in both calls to ida_alloc_range(),
-> ensuring the allocated ID stays within the valid range
-> [start, nr_ports - 1].
+> However, this means that new Microchip platforms that share drivers need
+> to constantly keep updating depends on various drivers.
 > 
-> This prevents potential out-of-bounds access when the allocated ID is used
-> as an index.
+> So, to try and reduce this lets add ARCH_MICROCHIP symbol that drivers
+> could instead depend on.
 > 
-> Fixes: 9391ab1ed9b3 ("serial: qcom-geni: Make UART port count configurable via Kconfig")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-> Closes: https://lore.kernel.org/r/202508180815.R2nDyajs-lkp@intel.com/
-> Signed-off-by: Zong Jiang <quic_zongjian@quicinc.com>
+> LAN969x is being worked on and it will be added under ARCH_MICROCHIP.
+> 
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+
+Ok, according to the compromise that we discussed during v8 that's fine 
+with me:
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+
+Thanks Robert! Regards,
+   Nicolas
+
 > ---
->  drivers/tty/serial/qcom_geni_serial.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+> Changes in v9:
+> * Make ARCH_MICROCHIP hidden symbol that is selected by SparX-5 directly,
+> this avoids breaking existing configs with ARCH_SPARX5
 > 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-> index 9c7b1cea7cfe..0b474d349531 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -271,9 +271,11 @@ static struct qcom_geni_serial_port *get_port_from_line(int line, bool console,
->  		int max_alias_num = of_alias_get_highest_id("serial");
->  
->  		if (line < 0 || line >= nr_ports)
-> -			line = ida_alloc_range(&port_ida, max_alias_num + 1, nr_ports, GFP_KERNEL);
-> +			line = ida_alloc_range(&port_ida, max_alias_num + 1,
-> +					       nr_ports - 1, GFP_KERNEL);
->  		else
-> -			line = ida_alloc_range(&port_ida, line, nr_ports, GFP_KERNEL);
-> +			line = ida_alloc_range(&port_ida, line,
-> +					       nr_ports - 1, GFP_KERNEL);
->  
->  		if (line < 0)
->  			return ERR_PTR(-ENXIO);
-> -- 
-> 2.34.1
+>   arch/arm64/Kconfig.platforms | 36 ++++++++++++++++++++++--------------
+>   1 file changed, 22 insertions(+), 14 deletions(-)
+> 
+> diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
+> index a88f5ad9328c..bfea380100a6 100644
+> --- a/arch/arm64/Kconfig.platforms
+> +++ b/arch/arm64/Kconfig.platforms
+> @@ -131,20 +131,6 @@ config ARCH_EXYNOS
+>          help
+>            This enables support for ARMv8 based Samsung Exynos SoC family.
+> 
+> -config ARCH_SPARX5
+> -       bool "Microchip Sparx5 SoC family"
+> -       select PINCTRL
+> -       select DW_APB_TIMER_OF
+> -       help
+> -         This enables support for the Microchip Sparx5 ARMv8-based
+> -         SoC family of TSN-capable gigabit switches.
+> -
+> -         The SparX-5 Ethernet switch family provides a rich set of
+> -         switching features such as advanced TCAM-based VLAN and QoS
+> -         processing enabling delivery of differentiated services, and
+> -         security through TCAM-based frame processing using versatile
+> -         content aware processor (VCAP).
+> -
+>   config ARCH_K3
+>          bool "Texas Instruments Inc. K3 multicore SoC architecture"
+>          select SOC_TI
+> @@ -186,6 +172,28 @@ config ARCH_MESON
+>            This enables support for the arm64 based Amlogic SoCs
+>            such as the s905, S905X/D, S912, A113X/D or S905X/D2
+> 
+> +menu "Microchip SoC support"
+> +
+> +config ARCH_MICROCHIP
+> +       bool
+> +
+> +config ARCH_SPARX5
+> +       bool "Microchip Sparx5 SoC family"
+> +       select PINCTRL
+> +       select DW_APB_TIMER_OF
+> +       select ARCH_MICROCHIP
+> +       help
+> +         This enables support for the Microchip Sparx5 ARMv8-based
+> +         SoC family of TSN-capable gigabit switches.
+> +
+> +         The SparX-5 Ethernet switch family provides a rich set of
+> +         switching features such as advanced TCAM-based VLAN and QoS
+> +         processing enabling delivery of differentiated services, and
+> +         security through TCAM-based frame processing using versatile
+> +         content aware processor (VCAP).
+> +
+> +endmenu
+> +
+>   config ARCH_MMP
+>          bool "Marvell MMP SoC Family"
+>          select PINCTRL
+> --
+> 2.50.1
 > 
 
-Hi,
-
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/process/submitting-patches.rst for what
-  needs to be done here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
