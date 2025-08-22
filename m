@@ -1,128 +1,110 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E56793126B1;
-	Fri, 22 Aug 2025 13:34:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 926FB302740;
+	Fri, 22 Aug 2025 13:40:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.132.182.106
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755869645; cv=none; b=JJwEhkKy76R1TmJ+OjybgLk8IvYvKz2iq375SgvZ7nRp/A4YUCFq7BmuRWOi0I7fJvNtc1X7tdaTxpRCAOOaClr37wlHSL5ICFhJNyOQGHJU+Hqx4Z1mrfblEJ9ZL6l10UajpG+qjqaEB20VqdRjq4kWamNptLe1v/sKjkNBsHg=
+	t=1755870060; cv=none; b=WEYplaLOqnx5ecNBmXrlnOXBXd7hvKbSf4Iws8N/399OT/WaS67/FiGh7SgTVBRfkDCnJecfckjyErUtDh/OK6GL2JKTYfxAWTQC5xCB7G4F9u3YeUPHyrfOD+bUqcHzlIY6Bnoc4k93LBB6jlLuBPWuVBhWsJ6jri6MHbgv9So=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755869645; c=relaxed/simple;
-	bh=DAI+FrUvCc1nd3XaCp1uUHDjiklJsHkKKQ/vP8igNbE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=LuDltHzZrxaqzKSryofh7adCty6DBrn9BgNJ4WeSrq5Wu32yEmBA4boaps7rRdicPZRGvC6JW8CqpZenWlwMehSEIc1RF5vvsFnMEEqnE5n/5F2PCaSeAQuYtA8gdPW9R/Wmc989KXNokPLHmztm3Ew4DYfPC2mTa2OeVJEgyKc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=RyoCBZAS; arc=none smtp.client-ip=68.232.153.233
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1755870060; c=relaxed/simple;
+	bh=knZJdMiORCIjH9vmjRbIRCBgi6/8/09MXJyhowg5A2A=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CAX6qFVwABzBnT7Squa+pn7eNEVHXK0k4hlXw4aQm3OJgMuZjh0cFpe78LDHmfQB1Jc12DlCIddfki0uhdWSa1i9M0IspfLQ20qZlHH7dL9GIhu3ejO3oR8vr02Jxk8kbyO08FtUU4JlUnX1DGJVmhaMg7jttWVAoIsVzLg1XT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com; spf=pass smtp.mailfrom=foss.st.com; dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b=0FCSqdzE; arc=none smtp.client-ip=185.132.182.106
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foss.st.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foss.st.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="RyoCBZAS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1755869643; x=1787405643;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=DAI+FrUvCc1nd3XaCp1uUHDjiklJsHkKKQ/vP8igNbE=;
-  b=RyoCBZASwahxxp3tQbXfutaPQeH68Va56Ox+XnuhBcnzagPCJk/Mr18c
-   adz1N3l9bYxlLbs2/ArAMAZQuMyJ9xTrHIiSIGuuFWBHMzyLCXOT3RAge
-   dWD+CTawduPequLzyS8MDHZLo5C6FeIndv/4jGw/AcsPJuON/FwBRU1vf
-   h1oRMObKfG0RLNoG8qERrKrzz+9TL4SYj6Q36EKXV6D6foJCMCHVOY2qW
-   /+ZSRU29BsOF8rG6on+J+7tTaQddzhHFWQTFoMA+Pd/SivuvW0q+w8/vD
-   0wv28fZmk/+/2ngDHkctA57531I5B89cQLIABGY5M30QMehNDrMRehX4m
-   g==;
-X-CSE-ConnectionGUID: FmqUXuSUTY2CcxMMwy3LVw==
-X-CSE-MsgGUID: KxaEALsWRxybjjejTicLnQ==
-X-IronPort-AV: E=Sophos;i="6.17,309,1747724400"; 
-   d="scan'208";a="51133476"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 22 Aug 2025 06:34:02 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Fri, 22 Aug 2025 06:33:58 -0700
-Received: from [10.159.245.205] (10.10.85.11) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
- Transport; Fri, 22 Aug 2025 06:33:54 -0700
-Message-ID: <a59d20d0-5bf5-4bea-9636-1a1afc7cf54a@microchip.com>
-Date: Fri, 22 Aug 2025 15:33:54 +0200
+	dkim=pass (2048-bit key) header.d=foss.st.com header.i=@foss.st.com header.b="0FCSqdzE"
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+	by mx07-00178001.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57MDPiDh019515;
+	Fri, 22 Aug 2025 15:40:29 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=selector1; bh=6vCtagcKIf7omy0DiO+Aki
+	o9Ivyo52kmDNtQdAOWyUY=; b=0FCSqdzElRtGxvCy5qXTSkrsazIcNOJvFl7CXT
+	jJeMTOSiAbalAGOwxbGNOQr75Ze+yF/5A+Rao0SIiF00ADL9AJXLqCQTMR23Wllv
+	0xPceot/LLB1rfxtLz1YOlwufYzU5QeKHfjWGW0yDNlpMzm/iPsfhMKZUnla1b6W
+	9vfsYBVu58KYFe0vyx3OlnfVoIWZsPBhRYlFZKWylfBQeMt9yYkfvylOIc/TZGLw
+	GZrQe0KuZk+L1gUkSHdbdRtSp0yIUB3l3RIHGQ7ThouB4OWmWxeLwkfG2Jz+5tRi
+	Nvvcg3uFf7RUuGcXmuqCx+r0G3wXUC5H+Rg1ec38AaVD+Z1Q==
+Received: from beta.dmz-ap.st.com (beta.dmz-ap.st.com [138.198.100.35])
+	by mx07-00178001.pphosted.com (PPS) with ESMTPS id 48n754ka8s-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 22 Aug 2025 15:40:29 +0200 (MEST)
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+	by beta.dmz-ap.st.com (STMicroelectronics) with ESMTP id 8A7E040046;
+	Fri, 22 Aug 2025 15:38:56 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+	by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 20A0770F88C;
+	Fri, 22 Aug 2025 15:37:56 +0200 (CEST)
+Received: from localhost (10.130.74.180) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 22 Aug
+ 2025 15:37:55 +0200
+From: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>, Arnd Bergmann <arnd@kernel.org>,
+        Andy Shevchenko
+	<andriy.shevchenko@linux.intel.com>,
+        "Maciej W. Rozycki" <macro@orcam.me.uk>,
+        Douglas Anderson <dianders@chromium.org>,
+        Zong Jiang
+	<quic_zongjian@quicinc.com>,
+        Robert Marko <robert.marko@sartura.hr>,
+        "Thierry
+ Bultel" <thierry.bultel.yh@bp.renesas.com>,
+        Raphael Gallais-Pou
+	<raphael.gallais-pou@foss.st.com>,
+        Kartik Rajput <kkartik@nvidia.com>,
+        "Peter
+ Hurley" <peter@hurleysoftware.com>,
+        Maxime Coquelin
+	<mcoquelin.stm32@gmail.com>,
+        Vladimir Zapolskiy
+	<vladimir_zapolskiy@mentor.com>,
+        Antonio Borneo <antonio.borneo@foss.st.com>
+CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+Subject: [PATCH] serial: stm32: allow selecting console when the driver is module
+Date: Fri, 22 Aug 2025 15:37:53 +0200
+Message-ID: <20250822133753.54300-1-raphael.gallais-pou@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 0/9] arm64: lan969x: Add support for Microchip LAN969x
- SoC
-To: Robert Marko <robert.marko@sartura.hr>, <linux@armlinux.org.uk>,
-	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
-	<catalin.marinas@arm.com>, <will@kernel.org>, <olivia@selenic.com>,
-	<herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-	<andi.shyti@kernel.org>, <lee@kernel.org>, <broonie@kernel.org>,
-	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <arnd@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<linux-crypto@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	<o.rempel@pengutronix.de>, <daniel.machon@microchip.com>
-CC: <luka.perkov@sartura.hr>
-References: <20250813174720.540015-1-robert.marko@sartura.hr>
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Content-Language: en-US, fr
-Organization: microchip
-In-Reply-To: <20250813174720.540015-1-robert.marko@sartura.hr>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SHFCAS1NODE1.st.com (10.75.129.72) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-22_04,2025-08-20_03,2025-03-28_01
 
-On 13/08/2025 at 19:44, Robert Marko wrote:
-> This patch series adds basic support for Microchip LAN969x SoC.
-> 
-> It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
-> which allows to avoid the need to change dependencies of the drivers that
-> are shared for Microchip SoC-s in the future.
-> 
-> DTS and further driver will be added in follow-up series.
-> 
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+Console can be enabled on the UART compile as module.
+Change dependency to allow console mode when the driver is built as module.
 
-I added explicitly my Ack to the 3 first patches of the series to be 
-super-specific, but for the whole series:
+Fixes: 48a6092fb41fa ("serial: stm32-usart: Add STM32 USART Driver")
+Signed-off-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
+---
+ drivers/tty/serial/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-
-Thanks for your work on this Robert, it's highly appreciated. Best regards,
-   Nicolas
-
-> ---
-> Changes in v9:
-> * Make ARCH_MICROCHIP hidden symbol that is selected by SparX-5 and LAN969x
-> directly, this avoids breaking existing configs with ARCH_SPARX5
-> 
-> Changes in v8:
-> * Move to using ARCH_MICROCHIP as suggested by Arnd
-> * Dropped any review tags due to changes
-> 
-> Robert Marko (9):
->    arm64: Add config for Microchip SoC platforms
->    ARM: at91: select ARCH_MICROCHIP
->    arm64: lan969x: Add support for Microchip LAN969x SoC
->    mfd: at91-usart: Make it selectable for ARCH_MICROCHIP
->    tty: serial: atmel: make it selectable for ARCH_MICROCHIP
->    spi: atmel: make it selectable for ARCH_MICROCHIP
->    i2c: at91: make it selectable for ARCH_MICROCHIP
->    char: hw_random: atmel: make it selectable for ARCH_MICROCHIP
->    crypto: atmel-aes: make it selectable for ARCH_MICROCHIP
-> 
->   arch/arm/mach-at91/Kconfig     |  4 +++
->   arch/arm64/Kconfig.platforms   | 51 ++++++++++++++++++++++++----------
->   drivers/char/hw_random/Kconfig |  2 +-
->   drivers/crypto/Kconfig         |  2 +-
->   drivers/i2c/busses/Kconfig     |  2 +-
->   drivers/mfd/Kconfig            |  2 +-
->   drivers/spi/Kconfig            |  2 +-
->   drivers/tty/serial/Kconfig     |  2 +-
->   8 files changed, 47 insertions(+), 20 deletions(-)
-> 
-> --
-> 2.50.1
-> 
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index e661f5951f558..1e27a822c1cba 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -1420,7 +1420,7 @@ config SERIAL_STM32
+ 
+ config SERIAL_STM32_CONSOLE
+ 	bool "Support for console on STM32"
+-	depends on SERIAL_STM32=y
++	depends on SERIAL_STM32
+ 	select SERIAL_CORE_CONSOLE
+ 	select SERIAL_EARLYCON
+ 
+-- 
+2.25.1
 
