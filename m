@@ -1,127 +1,132 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 419F222172C
-	for <linux-serial@vger.kernel.org>; Fri, 22 Aug 2025 03:36:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C65233D8;
+	Fri, 22 Aug 2025 04:30:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755833767; cv=none; b=eXOfh2iJLGNwvX6PfPjZWYSLO/bA0L/29MwowxX93OR2ht8TNFChTnJOYH4dlaSZNHPvHQEGnuOx2+b/QLcNbR2g2lrtXRijl8fgOmEtFwdeEWj/CichdLncvw/Dcpg8DZjy09EBAzW/J13yp0an01LtFKArOUt4LZELDt7MyqM=
+	t=1755837054; cv=none; b=JvAUE3OEfHZFuIMnvUgOhBcQDFuyGayGdrT9DtnGhueRQymadD/4Wla/yxtfpHlxqkHghjisbyUkCgIOlytVs51o5xWkMoQygwdD7TpDv71hhsP+vDpqghBmdVvatOJHdF9jGAGq62pOzgumxcdbPWTR0dylqQiL0c6kZh+SPq8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755833767; c=relaxed/simple;
-	bh=Y2zMtaMsNTAxkpne8OLb3ZDp9dLPFhE/RUov7T8zj9M=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=bot97fazW5MtPcOJpI9NqqsG5vixLwQCiauUpa0ODedW56Mu7jkwpIjLMVukRjk09gmM4iZ/ApbRGpBdx+nYB3CsyoATQ1HCE2qX08dN+kAjNfJmKbOSXC/I1sLdxi0AoBXj3mXOIx1oP87cQW6CsKeswonJ1gxS+JTPt0ERMx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=InwIfeIg; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1755837054; c=relaxed/simple;
+	bh=BkcwrTHlS7UZX9+2jLrtqTVuMlyDQzH+aAnT52bfsxE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rUwZZuyHksU2UPFGstRKRfunINvICz5KtTVUtgLnTBkTJ/qNCuc8k2xlQQp7bsInlJBlTWVJonuZLyka5rooZXfuCYpMYpyx/2M34YZWSHGu16MOM0a+4AKiteLLgZfMVsGL07XAr0szfxxesTx2pwg/xDpTEQB/nzgwaGvBm5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n/hcaNSn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="InwIfeIg"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57LI9BdY003079;
-	Fri, 22 Aug 2025 03:36:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=B4TFvoiuoMwVV9xr+gL99J
-	KjGjBwkKNnw5qIewqBg24=; b=InwIfeIgzf+poOIyPWAu+mgTlZ2PhUL7Lu9eyD
-	KkIWVTczVCiifDI3pEAi/U+OZfZhp0YntnA9XhTWMpVfd+kAVyrlQb25l5kXTzPA
-	+ijmKXcbLl1bMFSFoHqfvXm5B+k8Z/UDEu4jWkRXBO86iYE3i+XRAm2GrrOSx/in
-	w7+Y/xWLoV+peMQ0sQ2qT+3p+1BFJ2NfoL7ut/pFTGfALaJMuKXrLqF+/TFGaHik
-	pGREKC9rCZ6diWeClFIgPUzy45FfebOood3PeBUk3FrulkjgPQj7WlsDOwWjEs7d
-	yLHmNQKEaYp+hI1VPQRfBMITvNtVB+X1ZdJo4ma9Z5YBVugA==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48n5297p80-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 22 Aug 2025 03:36:00 +0000 (GMT)
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-	by NALASPPMTA01.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 57M3Zxk2004066
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 22 Aug 2025 03:36:00 GMT
-Received: from zongjian-gv.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Thu, 21 Aug 2025 20:35:57 -0700
-From: Zong Jiang <quic_zongjian@quicinc.com>
-To: <gregkh@linuxfoundation.org>, <linux-serial@vger.kernel.org>,
-        <dan.carpenter@linaro.org>
-CC: <quic_ztu@quicinc.com>, <quic_msavaliy@quicinc.com>,
-        <quic_vdadhani@quicinc.com>, <quic_anupkulk@quicinc.com>,
-        <quic_haixcui@quicinc.com>, Zong Jiang <quic_zongjian@quicinc.com>
-Subject: [PATCH] serial: qcom-geni: Fix off-by-one error in ida_alloc_range()
-Date: Fri, 22 Aug 2025 11:35:32 +0800
-Message-ID: <20250822033532.4074827-1-quic_zongjian@quicinc.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n/hcaNSn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D7A5C4CEF1;
+	Fri, 22 Aug 2025 04:30:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1755837053;
+	bh=BkcwrTHlS7UZX9+2jLrtqTVuMlyDQzH+aAnT52bfsxE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=n/hcaNSnB8m6Z5Jypi501LCqaCYUYGngz/jKAWRzHRYmUI1MRMGQBiUWCrizIw5K7
+	 xJbBSwXE+BrjAy6NO+u7hJFEqAAAbp9vfAnZ9h0bWlIwyBCqHuPiWPZ4RY17yFpzUf
+	 B2HdxNjZqtSeb/5kZfqM1xA4NItd6aiGXVatCuCRVjn/W8PM71fn2nKJ1rQUKUnrqb
+	 2WYQ4tCmPe3rRMMPDKI7PUV7RoxZdyiRXFqim0Odbc7iTCfoOIObOWiG0Xp05X0ocq
+	 jgWjcu0LLm2dyzAU7UXU827hTauqu7wK9YthJx1ujPz6jmXudTOAj0ZmnfjA0E/i2p
+	 Ek2+NpbXCdCjg==
+Message-ID: <ac753910-ff9f-42d6-aaad-74ccecfef681@kernel.org>
+Date: Fri, 22 Aug 2025 06:30:50 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: nHR8yM9bNAzngRznDALFH06ZgOnnjtNu
-X-Proofpoint-ORIG-GUID: nHR8yM9bNAzngRznDALFH06ZgOnnjtNu
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIwMDAxMyBTYWx0ZWRfX3OSuHbHatUbt
- zfIq5HCRGJEpfng2+RuNnqoQd8nE236+WeVjQtySAIbhGSo+yuEF1jP2YRG0L6Go/htk+AM/zI1
- nHwnXmHxCD5a0Cd2TeN2ppHHpv0pWfVnUzeGUVUQyBGS+1L3XdJVgZTkAQivTh1lJ4es/C/y1UI
- DILQgj1OXC7xVUswe0PMTY2ci/la3KtmXIkr7qaMPXJkuU7U5SEVGxDO6Ym8Z+jhq7s9hJufxSq
- 26b4kaPIV3O/FTMKAPv+8KjNL7JLrsfsDwO/JdpHYPtgfpn6y2zTT+OM+8ynmlY6BTeyks9jP8V
- L4EvmN6onHhATqHIaMomfJmpWkLmVNal4/6h2BD4fD17Qt0Bq7sSQCTO+9CPSUFRBDTpm9+bBAk
- swQlSvXIFrYrGaTFAKuclCfc3BokKQ==
-X-Authority-Analysis: v=2.4 cv=SPkblOvH c=1 sm=1 tr=0 ts=68a7e5a0 cx=c_pps
- a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=GEpy-HfZoHoA:10 a=2OwXVqhp2XgA:10 a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8
- a=KKAkSRfTAAAA:8 a=COk6AnOGAAAA:8 a=roy63ODkg0DyNSlNSiUA:9
- a=cvBusfyB2V15izCimMoJ:22 a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-08-22_01,2025-08-20_03,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 priorityscore=1501 bulkscore=0 spamscore=0 phishscore=0
- impostorscore=0 adultscore=0 malwarescore=0 lowpriorityscore=0 clxscore=1011
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2508110000 definitions=main-2508200013
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: 8250_core: fix coding style issues
+To: Osama Abdelkader <osama.abdelkader@gmail.com>,
+ gregkh@linuxfoundation.org, ilpo.jarvinen@linux.intel.com, mingo@kernel.org,
+ john.ogness@linutronix.de, tglx@linutronix.de
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20250821175856.22957-1-osama.abdelkader@gmail.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20250821175856.22957-1-osama.abdelkader@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The ida_alloc_range() function expects an inclusive range, meaning both
-the start and end values are valid allocation targets. Passing nr_ports
-as the upper bound allows allocation of an ID equal to nr_ports, which
-is out of bounds when used as an index into the port array.
+On 21. 08. 25, 19:58, Osama Abdelkader wrote:
+> Fix a few coding style issues in 8250_core.c:
+> 
+> - Remove redundant NULL initialization of a global pointer
+> - Add missing blank line after a variable declaration
+> 
+> Signed-off-by: Osama Abdelkader <osama.abdelkader@gmail.com>
+> ---
+>   drivers/tty/serial/8250/8250_core.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+> index feb920c5b2e8..0d1d2eed2a5c 100644
+> --- a/drivers/tty/serial/8250/8250_core.c
+> +++ b/drivers/tty/serial/8250/8250_core.c
+> @@ -307,7 +307,7 @@ static void univ8250_release_irq(struct uart_8250_port *up)
+>   		serial_unlink_irq_chain(up);
+>   }
+>   
+> -const struct uart_ops *univ8250_port_base_ops = NULL;
+> +const struct uart_ops *univ8250_port_base_ops;
+>   struct uart_ops univ8250_port_ops;
+>   
+>   static const struct uart_8250_ops univ8250_driver_ops = {
+> @@ -773,6 +773,7 @@ int serial8250_register_8250_port(const struct uart_8250_port *up)
+>   	 */
+>   	if (!has_acpi_companion(uart->port.dev)) {
+>   		struct mctrl_gpios *gpios = mctrl_gpio_init(&uart->port, 0);
+> +
+>   		if (IS_ERR(gpios)) {
 
-Fix this by subtracting 1 from nr_ports in both calls to ida_alloc_range(),
-ensuring the allocated ID stays within the valid range
-[start, nr_ports - 1].
+NACK to this one. It's a declaration with an initializer and the 'if' 
+checks its value.
 
-This prevents potential out-of-bounds access when the allocated ID is used
-as an index.
+>   			ret = PTR_ERR(gpios);
+>   			goto err;
 
-| Reported-by: kernel test robot <lkp@intel.com>
-| Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-| Closes: https://lore.kernel.org/r/202508180815.R2nDyajs-lkp@intel.com/
-Signed-off-by: Zong Jiang <quic_zongjian@quicinc.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 9c7b1cea7cfe..0b474d349531 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -271,9 +271,11 @@ static struct qcom_geni_serial_port *get_port_from_line(int line, bool console,
- 		int max_alias_num = of_alias_get_highest_id("serial");
- 
- 		if (line < 0 || line >= nr_ports)
--			line = ida_alloc_range(&port_ida, max_alias_num + 1, nr_ports, GFP_KERNEL);
-+			line = ida_alloc_range(&port_ida, max_alias_num + 1,
-+					       nr_ports - 1, GFP_KERNEL);
- 		else
--			line = ida_alloc_range(&port_ida, line, nr_ports, GFP_KERNEL);
-+			line = ida_alloc_range(&port_ida, line,
-+					       nr_ports - 1, GFP_KERNEL);
- 
- 		if (line < 0)
- 			return ERR_PTR(-ENXIO);
 -- 
-2.34.1
-
+js
+suse labs
