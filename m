@@ -1,211 +1,247 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 096AD296BD0
-	for <linux-serial@vger.kernel.org>; Fri, 22 Aug 2025 06:58:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 895CB2E8880
+	for <linux-serial@vger.kernel.org>; Fri, 22 Aug 2025 07:27:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755845925; cv=none; b=UL8zEJZztI1NbnD4YFmTdErW89bzjROVD7/5I0XE3B/zkkkMzsDfGdAFIwMVUBmomawjcM93gTYxmNc6ijf0kCnPwuwrC58dOBBPXZQUYfvPJlouMATFkSU4Sec8sTcqkJiWbd9pS8lUR++cGLYGdlznxwIcqBwVkV89mpLlLIc=
+	t=1755847626; cv=none; b=qOD1IH6EX9cFx7eIR423fPesF1ZlozVgkStNQ6rPdeFi1j2TLP9rJ1WzvkIKTRLP5MfjmvUg8DXHaZDV8UKTXUBA7w81d/ltsyJCkG06LFKR9+ZqzEq8LXCcXPeR4RTUxF92H5Lx1MIZzu6FQ7WE6PydTqhlxbpJl7JCUQlN0bM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755845925; c=relaxed/simple;
-	bh=5kimt1ySTRX3EsKES2u4plEigUF4IAeGLqc54NqJ0vM=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=dBwhcaoJzLnfd3kHR59T8UXRvpiI+aOAlPcCZggivctNCbBD36nnu/6U0ZKxAzPQDrvr1CfQP5bY2H+VBxPeaREeRXDVdrPD8CK4HFAhZsLujZLJLSdSBtFceYam/qBDUWh0gFSRBU+UJwAw0M6B8ebrOa8T42W+AvrgisqaIpk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HHCwMbnm; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1755847626; c=relaxed/simple;
+	bh=mtFSOmlzUjGRTaOYdonrJbl14kE+CiRkvjabIqtX+tw=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=QAw9mjLPwAfjOsKRRPQVSkR7sIQKOSW3RoosyGz89oi+XiKeprDdr4x6AFkihnOOL3jP4yqDuk0hIh58jKVmhfTaMr0w4WaxcYKKiU3mVNbgvAhEgXv0iGxr0njtN1lFe6kSZkkjHsjz5eGfEvrUVVW8lUaowd1trm+yauNdlsE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Bx1PjLna; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HHCwMbnm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1755845924; x=1787381924;
-  h=date:from:to:cc:subject:message-id;
-  bh=5kimt1ySTRX3EsKES2u4plEigUF4IAeGLqc54NqJ0vM=;
-  b=HHCwMbnmpuN9dWwZZFHBJvRdB8EYYx/wUCQx0AnxVJUmtMfOeih5C13u
-   ccIKNaGI7DXPyIBACE6o3yagzqLnxAvvz8f0sPHL5wKp68C798Y1lvaFm
-   9wUthThJkq3mQn93EsgisgGIfYJLrRkSm6w+auQwCpiOZc8Y7N1irb4Ts
-   8Q4fHvZmQGr+yclE4ctU4hR3W8UgB20E2cm99udpe2ROpuuTlmaezNbhz
-   qLijZdlw7uFOr084Q/3Q3G8y0bHHv1vpGbk8UwOxVUIcl1RxeyJcPprjB
-   1ZOwhE1l21stLdAl0YMX6aNKY36/+SPajTodmpJ8rkteuxlB8MdLk8oXw
-   A==;
-X-CSE-ConnectionGUID: BzeK1LtkRAq+a30vy2NT9A==
-X-CSE-MsgGUID: UqZ5PVxCSEmPtrETjjg+Xg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11529"; a="60777745"
-X-IronPort-AV: E=Sophos;i="6.17,309,1747724400"; 
-   d="scan'208";a="60777745"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2025 23:58:43 -0700
-X-CSE-ConnectionGUID: Fdk1lP7ATAeHGbLKwZpG0w==
-X-CSE-MsgGUID: m0bQEMvgT2eHClm3Ag5J5g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,309,1747724400"; 
-   d="scan'208";a="168247368"
-Received: from lkp-server02.sh.intel.com (HELO 4ea60e6ab079) ([10.239.97.151])
-  by orviesa009.jf.intel.com with ESMTP; 21 Aug 2025 23:58:42 -0700
-Received: from kbuild by 4ea60e6ab079 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1upLjF-000Kzn-1R;
-	Fri, 22 Aug 2025 06:58:31 +0000
-Date: Fri, 22 Aug 2025 14:57:37 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- a84f5bfb715a187e31720530c151a3f05190df5a
-Message-ID: <202508221431.bocYzSHK-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Bx1PjLna"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57M6uR1s004368
+	for <linux-serial@vger.kernel.org>; Fri, 22 Aug 2025 07:27:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=jtJpJ+M9oLoAw7iHlj1pHr8YEqUBvJYMWFP
+	56DMmt+c=; b=Bx1PjLnaOI1r9mgbjEwzBA79y/tkLkc44A7Fe1xwIenE7hWpdui
+	1pY13+7p8Y7pe/91ALWbxW5YHBT0wlExmm20nxBCxlmJgAM5CFpZU4VzgLFm1V2I
+	Ut3neXsd245k3qZWcF+iDegxmNbw5akwNkEunrceC5c5whLhMpSVs4YEjVK7MsWv
+	LcA9PV8+9Zyi+Q46Eqzo6AHVmhHVIDWvUCsEFV+gerddIWKUhNFEfKrCdJeoF7GZ
+	ImBjEkugOo24CBrq294AglQfO5p2lPifwzYwnZVGj2utTCAw0Rhws9G0C5yruwfK
+	DTENQ21Xb1KIy8d5Kqa9tMKQivM2CRyZbpw==
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48n52986as-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <linux-serial@vger.kernel.org>; Fri, 22 Aug 2025 07:27:03 +0000 (GMT)
+Received: by mail-pj1-f72.google.com with SMTP id 98e67ed59e1d1-32326e2506aso1837111a91.3
+        for <linux-serial@vger.kernel.org>; Fri, 22 Aug 2025 00:27:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1755847622; x=1756452422;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jtJpJ+M9oLoAw7iHlj1pHr8YEqUBvJYMWFP56DMmt+c=;
+        b=iwya4mx/hSnyPVzrWB2+IHOh6JE/sRZSMKCyzNH19SOk4/wqkVho5SujLd0CEd3bLw
+         27MBuFKTgXF2OVYYdn9qgNxfV0B69DZFk3CPB8vPLCPV1ZOWwD1CbQBcpOz6YJvyeMXM
+         Df9Jie8mpYjcTbXgJu2mn7MPwo1Or/4TYwcFjBro2gQ97rf+zDyM1fr4USMxUdIirCSO
+         VoBPShq4j0wsT/1VYTqbVshKPD2YMY3q83j4A+U9Hk3eyb+WMBc952mJ80Y9Zw8g8RVc
+         3z+pQVSk5OO71nFxlQ3vm8DPI4xfSSKrJNjrxgt9avqnsW1sWNnaw1aNwx8223J6RzRh
+         PkCg==
+X-Forwarded-Encrypted: i=1; AJvYcCXbQFLYSaOYbifu29MLfR1fJHM/ftRmoKe+H8Mb+cHtZLR7Ebry4azwzyRiX1zBoeFlewiYtjva406cjNE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyYPGFGSlq9NDjlEY8a265bDogZDoXWDCbhvCP/e8vvhb87Z36f
+	2yh1m/ShScbF4/lwfXA/vmZ+ECNR91X6pHJPdsSz/AFXEyunAII947/yQzmg8VAQoGHPSTvr8+a
+	ox9eaKd1lOd3kpPhFPE74U+akuvjDV6DQ0I5WlPZISlpoYiZdzOqBIAeLzrrZflfkLDE=
+X-Gm-Gg: ASbGncsJSuomhHisZ5oU8lwfWhbFJB+BgreteNbDH0ZCPcLZG4uVpZ3rR5vDLk41sbn
+	ZWAfNpX8Tz6Qx05VxBs7DhHefFGKqnsKMQ4t0XyY2mPCMYYa/Zh/N8f+pfHzqY5e7VlnaL1r6K8
+	nkaJZPjbLeWaB9SlvhbFdwzyGzDvU5doAeZodkZknJlV5Q8Hc9Cel0HS1ZzoEzPhXnTslbOgSCE
+	sX039yhxyjKpeZlIa0ICe/iEG1dwdthROlpZOoLUpEJQwsyA/6wdR/9S0PFjMqbFZe5/wyAWC/H
+	ls4pfYEs/cforzKu0OWMMZYnFOOEaVoeoo/5MPllfHV+4JvpjC2PatArGDMLTLuLnBDv7u1UgsH
+	j
+X-Received: by 2002:a17:90b:5443:b0:311:f99e:7f57 with SMTP id 98e67ed59e1d1-3251774b90fmr3079070a91.23.1755847621850;
+        Fri, 22 Aug 2025 00:27:01 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHmLmqFldpv+m0ckTlde4cTh29EiQMTSlLO6BYZehey/5qXgoATAf9+VVUdZui4BbBPF+ggGw==
+X-Received: by 2002:a17:90b:5443:b0:311:f99e:7f57 with SMTP id 98e67ed59e1d1-3251774b90fmr3079029a91.23.1755847621298;
+        Fri, 22 Aug 2025 00:27:01 -0700 (PDT)
+Received: from hu-vdadhani-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b4763fe3047sm6416367a12.17.2025.08.22.00.26.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Aug 2025 00:27:00 -0700 (PDT)
+From: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
+To: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+        conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        andersson@kernel.org, konradybcio@kernel.org, broonie@kernel.org,
+        johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
+Cc: mukesh.savaliya@oss.qualcomm.com,
+        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
+Subject: [PATCH v6 0/6] Add support to load QUP SE firmware from
+Date: Fri, 22 Aug 2025 12:56:45 +0530
+Message-Id: <20250822072651.510027-1-viken.dadhaniya@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Authority-Analysis: v=2.4 cv=Aui3HO9P c=1 sm=1 tr=0 ts=68a81bc7 cx=c_pps
+ a=RP+M6JBNLl+fLTcSJhASfg==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=2OwXVqhp2XgA:10 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=COk6AnOGAAAA:8
+ a=HXvFq9hwUs1lQpdr-HAA:9 a=iS9zxrgQBfv6-_F4QbHw:22 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-ORIG-GUID: 58HF6wZ9rLlGzuLxPPWYnLssj7P2gZ8_
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIwMDAxMyBTYWx0ZWRfX4QvZk+ZPzg21
+ gykpoR0VtOkeyBB/f+6Et4uw6849RcmanA4bL3EHi5dzJg7eEDSBbiNCGClF9TmSTp51rgVtYWx
+ XS192jNWWcE7C+ts1nTaY9QNCZbI71oSQPT4ME+l3mNbl5GMDdXEGw4bcnfmGHTYmVSgYglaeLh
+ GYKsJGQxzYP+9aAitCqTpguemCeiYDXu54366Ic3sXkruSMieUX+msJR0ujmAlh5vMhPHEY+SS+
+ vXXFrPriGEhdoxoJu+ShzZXV+5PiSNcV9v7+WD/x+9EqlWJxvFYaHDbmjPVQTT4+zSFGOJtgU3O
+ V28Rcc6aQmVktf2JFJsI2YUxvMxS8ub3vWqDLGVbkjjQ2kq2ysRXURbXRKQreN+nWnmEchdHl54
+ O9G8ZoMeq6FRzhjE7byKBzd1bBCYSg==
+X-Proofpoint-GUID: 58HF6wZ9rLlGzuLxPPWYnLssj7P2gZ8_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-22_02,2025-08-20_03,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 clxscore=1015 phishscore=0 lowpriorityscore=0
+ priorityscore=1501 adultscore=0 suspectscore=0 malwarescore=0 bulkscore=0
+ spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.19.0-2508110000
+ definitions=main-2508200013
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: a84f5bfb715a187e31720530c151a3f05190df5a  serial: xilinx_uartps: read reg size from DTS
+In Qualcomm SoCs, firmware loading for Serial Engines (SE) in the QUP
+hardware has traditionally been managed by TrustZone (TZ). This setup
+handled Serial Engines(SE) assignments and access control permissions,
+ensuring a high level of security but limiting flexibility and
+accessibility.
+ 
+This limitation poses a significant challenge for developers who need more
+flexibility to enable any protocol on any of the SEs within the QUP
+hardware.
+ 
+To address this, we are introducing a change that opens the firmware
+loading mechanism to the Linux environment. This enhancement increases
+flexibility and allows for more streamlined and efficient management. We
+can now handle SE assignments and access control permissions directly
+within Linux, eliminating the dependency on TZ.
+ 
+We propose an alternative method for firmware loading and SE
+ownership/transfer mode configuration based on device tree configuration.
+This method does not rely on other execution environments, making it
+accessible to all developers.
+ 
+For SEs used prior to the kernel, their firmware will be loaded by the
+respective image drivers (e.g., Debug UART, Secure or trusted SE).
+Additionally, the GSI firmware, which is common to all SEs per QUPV3 core,
+will not be loaded by Linux driver but TZ only. At the kernel level, only
+the SE protocol driver should load the respective protocol firmware.
+---
+v5 -> v6:
 
-elapsed time: 1420m
+- Added extra patch for cleanup in qcom-geni-se.c file.
+- Moved contents of qup-fw-load.h into qcom-geni-se.c.
+- Specified endianness for all members of the se_fw_hdr structure.
+- Changed the return type and arguments of the geni_read_elf function.
+- Renamed geni_read_elf to geni_find_protocol_fw for clarity.
+- Added error logging for corrupt firmware.
+- Passed SE mode and protocol type explicitly to all relevant functions.
+- Replaced writel_relaxed with writel for stricter memory ordering.
+- Renamed variable reg_val to reg for consistency.
+- Moved firmware length validation logic into geni_find_protocol_fw.
+- Updated function documentation for clarity and accuracy.
+- Removed redundant firmware length check.
+- Inlined the qup_fw_load function and removed its definition.
+- Removed the MAX_PROTOCOL macro.
+- Dropped mode and protocol fields from the geni_se structure.
+- Moved unrelated firmware loading code into a separate patch.
+- Added Acked-by tag.
 
-configs tested: 134
-configs skipped: 5
+v5 Link: https://lore.kernel.org/linux-i2c/20250624095102.1587580-1-viken.dadhaniya@oss.qualcomm.com/
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+v4 -> v5:
 
-tested configs:
-alpha                             allnoconfig    gcc-15.1.0
-alpha                            allyesconfig    gcc-15.1.0
-alpha                               defconfig    gcc-15.1.0
-arc                              allmodconfig    gcc-15.1.0
-arc                               allnoconfig    gcc-15.1.0
-arc                              allyesconfig    gcc-15.1.0
-arc                                 defconfig    gcc-15.1.0
-arc                   randconfig-001-20250821    gcc-9.5.0
-arc                   randconfig-002-20250821    gcc-13.4.0
-arm                              allmodconfig    gcc-15.1.0
-arm                               allnoconfig    clang-22
-arm                              allyesconfig    gcc-15.1.0
-arm                     am200epdkit_defconfig    gcc-15.1.0
-arm                                 defconfig    clang-22
-arm                   randconfig-001-20250821    gcc-13.4.0
-arm                   randconfig-002-20250821    clang-22
-arm                   randconfig-003-20250821    clang-22
-arm                   randconfig-004-20250821    clang-22
-arm64                            allmodconfig    clang-19
-arm64                             allnoconfig    gcc-15.1.0
-arm64                               defconfig    gcc-15.1.0
-arm64                 randconfig-001-20250821    clang-22
-arm64                 randconfig-002-20250821    clang-22
-arm64                 randconfig-003-20250821    gcc-11.5.0
-arm64                 randconfig-004-20250821    gcc-13.4.0
-csky                              allnoconfig    gcc-15.1.0
-csky                                defconfig    gcc-15.1.0
-csky                  randconfig-001-20250821    gcc-13.4.0
-csky                  randconfig-002-20250821    gcc-15.1.0
-hexagon                          allmodconfig    clang-17
-hexagon                           allnoconfig    clang-22
-hexagon                          allyesconfig    clang-22
-hexagon                             defconfig    clang-22
-hexagon               randconfig-001-20250821    clang-20
-hexagon               randconfig-002-20250821    clang-22
-i386                             allmodconfig    gcc-12
-i386                              allnoconfig    gcc-12
-i386                             allyesconfig    gcc-12
-i386        buildonly-randconfig-001-20250821    gcc-12
-i386        buildonly-randconfig-002-20250821    gcc-12
-i386        buildonly-randconfig-003-20250821    clang-20
-i386        buildonly-randconfig-004-20250821    gcc-12
-i386        buildonly-randconfig-005-20250821    gcc-12
-i386        buildonly-randconfig-006-20250821    clang-20
-i386                                defconfig    clang-20
-loongarch                        allmodconfig    clang-19
-loongarch                         allnoconfig    clang-22
-loongarch                           defconfig    clang-19
-loongarch             randconfig-001-20250821    gcc-14.3.0
-loongarch             randconfig-002-20250821    gcc-15.1.0
-m68k                             allmodconfig    gcc-15.1.0
-m68k                              allnoconfig    gcc-15.1.0
-m68k                             allyesconfig    gcc-15.1.0
-m68k                                defconfig    gcc-15.1.0
-m68k                        mvme16x_defconfig    gcc-15.1.0
-microblaze                       allmodconfig    gcc-15.1.0
-microblaze                        allnoconfig    gcc-15.1.0
-microblaze                       allyesconfig    gcc-15.1.0
-microblaze                          defconfig    gcc-15.1.0
-mips                              allnoconfig    gcc-15.1.0
-mips                           ip27_defconfig    gcc-15.1.0
-mips                           ip28_defconfig    gcc-15.1.0
-nios2                             allnoconfig    gcc-11.5.0
-nios2                               defconfig    gcc-11.5.0
-nios2                 randconfig-001-20250821    gcc-9.5.0
-nios2                 randconfig-002-20250821    gcc-10.5.0
-openrisc                          allnoconfig    gcc-15.1.0
-openrisc                         allyesconfig    gcc-15.1.0
-openrisc                            defconfig    gcc-15.1.0
-openrisc                    or1ksim_defconfig    gcc-15.1.0
-parisc                           allmodconfig    gcc-15.1.0
-parisc                            allnoconfig    gcc-15.1.0
-parisc                           allyesconfig    gcc-15.1.0
-parisc                              defconfig    gcc-15.1.0
-parisc                randconfig-001-20250821    gcc-12.5.0
-parisc                randconfig-002-20250821    gcc-8.5.0
-parisc64                            defconfig    gcc-15.1.0
-powerpc                          allmodconfig    gcc-15.1.0
-powerpc                           allnoconfig    gcc-15.1.0
-powerpc                          allyesconfig    clang-22
-powerpc                      pcm030_defconfig    clang-22
-powerpc               randconfig-001-20250821    clang-17
-powerpc               randconfig-002-20250821    clang-22
-powerpc               randconfig-003-20250821    gcc-9.5.0
-powerpc                    sam440ep_defconfig    gcc-15.1.0
-powerpc64             randconfig-002-20250821    clang-22
-powerpc64             randconfig-003-20250821    clang-22
-riscv                            allmodconfig    clang-22
-riscv                             allnoconfig    gcc-15.1.0
-riscv                            allyesconfig    clang-16
-riscv                               defconfig    clang-22
-riscv                 randconfig-001-20250821    clang-17
-riscv                 randconfig-002-20250821    gcc-9.5.0
-s390                             allmodconfig    clang-18
-s390                              allnoconfig    clang-22
-s390                             allyesconfig    gcc-15.1.0
-s390                                defconfig    clang-22
-s390                  randconfig-001-20250821    gcc-14.3.0
-s390                  randconfig-002-20250821    clang-18
-sh                               allmodconfig    gcc-15.1.0
-sh                                allnoconfig    gcc-15.1.0
-sh                               allyesconfig    gcc-15.1.0
-sh                                  defconfig    gcc-15.1.0
-sh                    randconfig-001-20250821    gcc-15.1.0
-sh                    randconfig-002-20250821    gcc-13.4.0
-sh                           se7619_defconfig    gcc-15.1.0
-sparc                             allnoconfig    gcc-15.1.0
-sparc                               defconfig    gcc-15.1.0
-sparc                 randconfig-001-20250821    gcc-14.3.0
-sparc                 randconfig-002-20250821    gcc-15.1.0
-sparc64                             defconfig    clang-20
-sparc64               randconfig-001-20250821    gcc-8.5.0
-sparc64               randconfig-002-20250821    clang-22
-um                               allmodconfig    clang-19
-um                                allnoconfig    clang-22
-um                               allyesconfig    gcc-12
-um                                  defconfig    clang-22
-um                             i386_defconfig    gcc-12
-um                    randconfig-001-20250821    clang-19
-um                    randconfig-002-20250821    clang-22
-um                           x86_64_defconfig    clang-22
-x86_64                            allnoconfig    clang-20
-x86_64                           allyesconfig    clang-20
-x86_64      buildonly-randconfig-001-20250821    clang-20
-x86_64      buildonly-randconfig-002-20250821    clang-20
-x86_64      buildonly-randconfig-003-20250821    clang-20
-x86_64      buildonly-randconfig-004-20250821    gcc-12
-x86_64      buildonly-randconfig-005-20250821    clang-20
-x86_64      buildonly-randconfig-006-20250821    clang-20
-x86_64                              defconfig    gcc-11
-x86_64                          rhel-9.4-rust    clang-20
-xtensa                            allnoconfig    gcc-15.1.0
-xtensa                randconfig-001-20250821    gcc-11.5.0
-xtensa                randconfig-002-20250821    gcc-10.5.0
+- Added Reviewd-by tag.
+- Resolved kernel test robot error by including the missing bitfield header file.
+- Updated the SE firmware ELF structure name for consistency.
+- Specified _leb4 format for the magic number definition.
+- Updated the email domain from 'quic' to 'oss'.
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+v4 Link: https://lore.kernel.org/all/20250503111029.3583807-1-quic_vdadhani@quicinc.com/ 
+
+v3 -> v4: 
+
+- Drop patch 1 of the v3 series as it has been reviewed and merged.
+- Update the qcom,gsi-dma-allowed property name to qcom,enable-gsi-dma.
+- Remove the full stop from the title.
+- Add a reference to the common schema YAML in the I2C, SPI, and SERIAL
+  YAML files in a single patch and drop the individual patches for protocol YAML.
+- Update the commit message.
+- Resolve kernel test robot warnings.
+- Add a multiline comment in the Copyright section.
+- Remove valid_seg_size and geni_config_common_control functions and add the code inline.
+- Rename read_elf function to geni_read_elf.
+- Add a firmware size check.
+- Assign *pelfseg after finding a match.
+- Break one large condition check into multiple checks to improve code readability.
+- Remove return type documentation for void functions.
+- Update error messages to be more descriptive.
+- Correct indentation.
+- Rename geni_flash_fw_revision function to geni_write_fw_revision.
+- Remove __func__ from all print statements.
+- Move resource_on to the appropriate section after parsing the firmware file.
+- Update variable names and function arguments as suggested.
+- Use FIELD_GET, FIELD_PREP, and GENMASK.
+- Use memcpy_toio() instead of memcpy.
+- Remove duplicate registers and bitmask macros.
+- Remove rsc struct and add required variables in geni_se struct.
+- Add a patch dependency note.
+
+v3 Link: https://lore.kernel.org/linux-arm-msm/20250303124349.3474185-1-quic_vdadhani@quicinc.com/ 
+
+v2 -> v3:
+
+- Add a new YAML file for QUP peripheral-specific properties for I2C, SPI, and SERIAL buses.
+- Drop the 'qcom,xfer-mode' property and add the 'qcom,gsi-dma-allowed' property in protocol-specific YAML.
+- Add a reference for the QUP peripheral shared YAML to protocol-specific YAML.
+- Enhance error handling and remove redundant if conditions in the qcom-geni-se.c driver.
+- Remove the ternary operator in the qup_fw_load function.
+- Update function descriptions and use imperative mood in qcom-geni-se.c
+- Load firmware during probe only if the protocol is invalid.
+
+v2 Link: https://lore.kernel.org/linux-kernel/20250124105309.295769-1-quic_vdadhani@quicinc.com/ 
+ 
+v1 -> v2:
+
+- Drop the qcom,load-firmware property.
+- Remove the fixed firmware path.
+- Add the 'firmware-name' property in the QUP common driver.
+- Add logic to read the firmware path from the device tree.
+- Resolve kernel test robot warnings.
+- Update the 'qcom,xfer-mode' property description.
+
+v1 Link: https://lore.kernel.org/linux-kernel/20241204150326.1470749-1-quic_vdadhani@quicinc.com/ 
+---
+Viken Dadhaniya (6):
+  dt-bindings: qcom: se-common: Add QUP Peripheral-specific properties
+    for I2C, SPI, and SERIAL bus
+  soc: qcom: geni-se: Cleanup register defines and update copyright
+  soc: qcom: geni-se: Add support to load QUP SE Firmware via Linux
+    subsystem
+  i2c: qcom-geni: Load i2c qup Firmware from linux side
+  spi: geni-qcom: Load spi qup Firmware from linux side
+  serial: qcom-geni: Load UART qup Firmware from linux side
+
+ .../bindings/i2c/qcom,i2c-geni-qcom.yaml      |   1 +
+ .../serial/qcom,serial-geni-qcom.yaml         |   1 +
+ .../soc/qcom/qcom,se-common-props.yaml        |  26 +
+ .../bindings/spi/qcom,spi-geni-qcom.yaml      |   1 +
+ drivers/i2c/busses/i2c-qcom-geni.c            |   8 +-
+ drivers/soc/qcom/qcom-geni-se.c               | 493 +++++++++++++++++-
+ drivers/spi/spi-geni-qcom.c                   |   6 +
+ drivers/tty/serial/qcom_geni_serial.c         |   8 +-
+ include/linux/soc/qcom/geni-se.h              |   4 +
+ 9 files changed, 527 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,se-common-props.yaml
+
+-- 
+2.34.1
+
