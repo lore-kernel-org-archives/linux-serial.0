@@ -1,227 +1,259 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2105.outbound.protection.outlook.com [40.107.223.105])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C83D9393DCB;
-	Fri, 22 Aug 2025 18:58:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.105
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755889112; cv=fail; b=mC7glstAiXaUcW4tzKo71baVsTAYXoohOPk4EodBn0wpc8Pl+Pguud1C0h1A2tGlDBDuJ/n6BDsAJWFDnpreNzXAGU95rejzRshOxTHVyLIGfbsjJ2sMVy/j1IuDQwGczQ2xIxO3XqT8YmEDQJWq6v4VR4ofkYToXeA/ztMwoiw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755889112; c=relaxed/simple;
-	bh=y1S+rSq+8xpLQva+s6FgAa3RwWXXJ/MNSGNfdJkQZus=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=U4MfH7HinyNPs8ZuG8beshagFIGiSdumHjQqOSgJOaTaudZTtgFDLTY+JgcyRF+Hz6NgytZ13rKmDazV0Ca65PPWjt/TxzGPjZldFzljFGCRiF9qtrwnVGEnXQvTd/U4VNoUU5byMTdEQmpwgGk8sRIeNtAltJnS1GrJTjiF9m8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com; spf=pass smtp.mailfrom=axiado.com; dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b=ncWyh5Bh; arc=fail smtp.client-ip=40.107.223.105
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=axiado.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axiado.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B13A1F5838;
+	Sat, 23 Aug 2025 03:12:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755918724; cv=none; b=V16qI0VQWZcRS4Gr3KkfdLTsLqcKeN6bJn0VxokBCJOMqlYDOpbvZAotIPIxKfk7LfCXLTjgC7L22PPn9h9GPQUTtGd0JRMrNYkjP/G52qtRUlwtoSJDgo8LyrdwwZzTPgWlNPP4b+YrT9w2oGDxSsQn6ZzPlevcZeZLxF1xavI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755918724; c=relaxed/simple;
+	bh=Pj9gg4Dzoo7TunFCad7QgQinH/EGNIKEdOOe4IPIAL8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DUL4GCeJEBx8DUUehqi7UXDk1yTnpHXffDtFt5Vo8Q2H4260koOrzSHRZjEOlDYoTyq858AV1Rw5G4DWdt9ZbYmqYOjqybgOvKnvPMheLQT/IKQngY1GkduOa8ZeD6/vJdi28CuN3TEC8r+RKJ+ANa/hYSMgMVQTFv6n40YAZXA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LP9f496j; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=axiado.com header.i=@axiado.com header.b="ncWyh5Bh"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZwmTferZqQSkYx4RkjTqwE7QgImY0iFGTwXV5ux8h9vL+R0+a7PZUb++aHo2SbgKMAt+1Pi+TSltBDBZRVlwT+1yd6dBK15mVMHK/SmjSUC5LqFzrzjhG6qIXACz2QQ55T0Hn+lAHN5+Q84zU8yLWm6v9cwgxz94rpX3w538L62i523Q1/XqjtNqJzpgBuZHCUg5BJSZX0t0Ms5H9pREzTGRJ6FHXVas75Wd5/g39629o7CmeF4Lq/LgzHzGu0L4UttT9tPf0lhvBzd+DqKIzP4CnAf/cFYFqx8QCkVGJvlhinuSpStKw9/fkuS5Nzwl3FhbYZNkQ7wZ1HbdUd83gQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6RYCIM1m6GQJ1TadmLnYtOPqs43NRt5qNsoEZiWC+Do=;
- b=VJnhuOr9lZU/dMb9gxHXWAD3Ssa5zdBXzRzrdQPiDxBz5HDNrWbznZjYxtuFAOdF6gSdXqrFnUiODlIrVRgqmp33zAuXPgxDJqPVjpDbTSie5vvAQy8ovdvmP5/vaBicozZJ6oCdqSG6wMWgIuSu9iRjcTI7voQbwBiI8Jj0RvDygsvlF+erN9+lmiHhAwqKfBvV/kcRScfVDAQvh7ldpeYI58ENGJAzx99b+V7dW9y+Ru7ILSjDWCdyZll3xkMmXRwNLQg0WGgleHFpbBs4+BwfcxOFqgSjy0pFDAbzGkkyhtqnHJshBOtgw4Lh4FQdID9TuFX8FKdqVz40+yIdOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=fail (sender ip is
- 50.233.182.194) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axiado.com;
- dmarc=none action=none header.from=axiado.com; dkim=none (message not
- signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axiado.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6RYCIM1m6GQJ1TadmLnYtOPqs43NRt5qNsoEZiWC+Do=;
- b=ncWyh5BhkGigcolr20RnzHrsVyQ+wqg6Mv0XMTNDjr/ffYmwnF2nY7tGvOv4C7mthdC2747LCk6JgyYSF560K73Up7XWMTOHffuWf2jUW1Ma7MoZSU/McmHZyl7OosTYofCyQve8LAVkpX3buGaWO/mvSi4bDoj+U16UDNPoXapNa5MobCi0snW5R95H2lRme6ZvPixYLc2ncp9NjmiB/Z1SLIA8+H8wX5Z+hQegI1AuKHxcF/mCKoPcUTb3VEy8I3LZjtqC5CnxbU0+PfLGDo5QgWpPYREx60aZkHjBS7H0ilHmGlZj3pz5nF3rPW8Sv+PUtK3PlTSDSdYQj3JUyw==
-Received: from CY5PR10CA0003.namprd10.prod.outlook.com (2603:10b6:930:1c::30)
- by PH8PR18MB5311.namprd18.prod.outlook.com (2603:10b6:510:23a::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9031.24; Fri, 22 Aug
- 2025 18:58:27 +0000
-Received: from CY4PEPF0000FCBE.namprd03.prod.outlook.com
- (2603:10b6:930:1c:cafe::b) by CY5PR10CA0003.outlook.office365.com
- (2603:10b6:930:1c::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9052.17 via Frontend Transport; Fri,
- 22 Aug 2025 18:58:27 +0000
-X-MS-Exchange-Authentication-Results: spf=fail (sender IP is 50.233.182.194)
- smtp.mailfrom=axiado.com; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=axiado.com;
-Received-SPF: Fail (protection.outlook.com: domain of axiado.com does not
- designate 50.233.182.194 as permitted sender)
- receiver=protection.outlook.com; client-ip=50.233.182.194; helo=[127.0.1.1];
-Received: from [127.0.1.1] (50.233.182.194) by
- CY4PEPF0000FCBE.mail.protection.outlook.com (10.167.242.100) with Microsoft
- SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.20.9052.8
- via Frontend Transport; Fri, 22 Aug 2025 18:58:26 +0000
-From: Harshit Shah <hshah@axiado.com>
-Date: Fri, 22 Aug 2025 11:58:14 -0700
-Subject: [PATCH] serial: xilinx_uartps: read reg size from DTS
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LP9f496j"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1755918723; x=1787454723;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Pj9gg4Dzoo7TunFCad7QgQinH/EGNIKEdOOe4IPIAL8=;
+  b=LP9f496j7wPxQi2Xh232E/YyR2kAyQovmpYk7zoWwF4QGzW3WanT3a3e
+   EcalPHzwWEDVkwmioEJHUYZmTHok5+C/R7zgLoVmk2MUe/BFqUyKEUZ/u
+   DvIx1eIhwQPcqC+GFBTp0ZtDmCUSqRLE/j0Aw0mApp1eCKgWdQWZTKzRJ
+   UKlE52JbXrXDKopKhTKhUT/z8O3rZK1VE5TtgwkE6IewJakqNGORkqoQr
+   Nv4/yINJVJaTMcD1uTdxPgYXfgpETFdB1JqMGLm56mWWe6SxIqn/hIRpS
+   hPtoyjjnH8nX5gMGSo7e6rXpOT8QojcFceI2ZuOlMFc1ocTWuIloPlZY8
+   w==;
+X-CSE-ConnectionGUID: ehS5VDeISTG8v1QF4FqshQ==
+X-CSE-MsgGUID: 8rcU76MiR/eQKbSFuwRCXA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11529"; a="69326108"
+X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
+   d="scan'208";a="69326108"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2025 20:12:02 -0700
+X-CSE-ConnectionGUID: eibmkJ0DQxOHz0YJzzxx+Q==
+X-CSE-MsgGUID: 5IUeMJAqTIexkxFl0E01Jg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
+   d="scan'208";a="174155745"
+Received: from lkp-server02.sh.intel.com (HELO 4ea60e6ab079) ([10.239.97.151])
+  by orviesa005.jf.intel.com with ESMTP; 22 Aug 2025 20:11:56 -0700
+Received: from kbuild by 4ea60e6ab079 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1upefV-000M31-1z;
+	Sat, 23 Aug 2025 03:11:50 +0000
+Date: Sat, 23 Aug 2025 11:11:46 +0800
+From: kernel test robot <lkp@intel.com>
+To: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>,
+	andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, gregkh@linuxfoundation.org,
+	jirislaby@kernel.org, andersson@kernel.org, konradybcio@kernel.org,
+	broonie@kernel.org, johan+linaro@kernel.org, dianders@chromium.org,
+	agross@kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	linux-spi@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, mukesh.savaliya@oss.qualcomm.com,
+	Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
+Subject: Re: [PATCH v6 3/6] soc: qcom: geni-se: Add support to load QUP SE
+ Firmware via Linux subsystem
+Message-ID: <202508231007.Lp8v1Xdl-lkp@intel.com>
+References: <20250822072651.510027-4-viken.dadhaniya@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250822-xilinx-uartps-reg-size-v1-1-78a5c63cb6df@axiado.com>
-X-B4-Tracking: v=1; b=H4sIAMW9qGgC/3WNyw6CMBBFf4XM2jF9qKAr/8OwaMsAkyglLZIq4
- d+tJC5dnpPccxeIFJgiXIoFAs0c2Q8Z5K4A15uhI+QmMyihjqKSGhPfeUj4NGEaIwbqMPKb0Gl
- Lp7KpKls6yOMxUMtpC9/qzD3HyYfX9jPLr/0lz/+Ss0SJorWlPkihdGuvJrFp/N75B9Trun4AK
- cKsQr0AAAA=
-X-Change-ID: 20250813-xilinx-uartps-reg-size-c3be67d88b7c
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Michal Simek <michal.simek@amd.com>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, Harshit Shah <hshah@axiado.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3100; i=hshah@axiado.com;
- h=from:subject:message-id; bh=y1S+rSq+8xpLQva+s6FgAa3RwWXXJ/MNSGNfdJkQZus=;
- b=owEB7QES/pANAwAKAfFYcxGhMtX7AcsmYgBoqL3ShANOd0sY/mLGDFmfpTBXpvmFcdgxiOd+/
- EEzjVYMJVmJAbMEAAEKAB0WIQRO3pC/7SkLS2viWOvxWHMRoTLV+wUCaKi90gAKCRDxWHMRoTLV
- +9QlC/91y0TQDRTk0HprpvLw8Bj29zFiJU/ksxXDbv3AZOKkVNuBf/2grP8jUfxNm/BlnoPARhR
- X9LmpM5y70IVJZ5EHxhSi+ryAu/ASeY5+/pqfrKd3qj8Z7Wh5bakDy+R/n4Hy4CYD/5mVrWDPtG
- NukN5XS//kB7xeN5I5kosFGR9bW0EmR5BtZ6gKu4bSpI74hkm7gCvLRFPw9QX4W+45vzYm+GPTW
- GC4zk/BpbKIC/TTqJXZ2KlI4cJROXW/N1dV13v81Z0c/nCJQLCz5+cqBcb6GGXE5I5QNuDIBjLx
- ndLwh1vgk/mf24J5afqZZUEh3ONXJF28J3K2i39x3qwyNrYyv9kf3Vo7xpmazvytQP9xNIIdz2A
- d3a34RQc8sA3xB7juY23/V2JWrcWCirRw4B3MeSWcmh78j+OunvAb3YSTJ6VqMRz/hxPRzBobSz
- fsQOAkP24oKMdumjQ+bOFkYEkoPGENk6JQ9FiYrOn+4jkMM0X5AeG9+FKsFoetFqiBf58=
-X-Developer-Key: i=hshah@axiado.com; a=openpgp;
- fpr=4EDE90BFED290B4B6BE258EBF1587311A132D5FB
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCBE:EE_|PH8PR18MB5311:EE_
-X-MS-Office365-Filtering-Correlation-Id: eb43e413-ebdf-4205-12d1-08dde1ade0bb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|36860700013|82310400026|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Y0R4T2lKVmRpUnJxRUxiYjBwSllXbFhUWHozL0xObnFyS2MwRWlsVUljblNY?=
- =?utf-8?B?NjA0cFZLbDRHUm1mZnlRaGVCRzdPamFrckZ0b3J2dFR6eWMwZEt0bzZocE9x?=
- =?utf-8?B?MU15L3dxWWszNUZLV05ObHBBd25Ld2JTT3dRRUYwVnRJQk1ud2dCbGFvbVlU?=
- =?utf-8?B?dnVFKzB6UkZhSjJkb2JwWUUra2U3WDk4ckxoUXhZaW5qSEE4WThsd1N1empR?=
- =?utf-8?B?L0dod1ZadDdRSi8zTnprcFpZdDhiRGozcitUM2JrUnkzYW8yWDhuTUpSZGtU?=
- =?utf-8?B?aFpIMVRnR040eFQ2OFJlRUNnZ2dndEYzU1Jsek9kMmZxWG96VjlaaXJ6ZEJS?=
- =?utf-8?B?VDRFOTFZUE1WS2V5WkxIeC85TzA4SHc0UHBOTGpTSmF1VzhwS0Qrbnl1aW1n?=
- =?utf-8?B?SGo4dVBWOWQxNm5YdDZvdUZhbW5zOSt6WkQ5T2FxYXVIRkVWb3Q0RGtjdXhl?=
- =?utf-8?B?QXUwWE1sM0N3OHhBaUJqZkNIQ0FHU2ZydlloZlZ5a1V6cXBwRytvYmYyNG1i?=
- =?utf-8?B?RlFzY1hERVA3SE94V0F2ZHdRV0VOWVVxejNTcVBVbVlQeFVBVkZqUEV0U1Uz?=
- =?utf-8?B?VVQzcXFhNlliZHdmeGhPQnZ3WVNPK0dBQUtQVEduSG9DNzdzbC9yU2lhRUFS?=
- =?utf-8?B?eFhqNVBYZklBREJvcmY1TU1zZkJWSDJHQ21iZFVaaUJBQS9EejdvVmlvbDN0?=
- =?utf-8?B?REtzL3RwODhubW9sUHBGcWFaQ0NCSy9ISWhlVE1sT1JOQUNBaDR5UWlsYUZq?=
- =?utf-8?B?K3ArUTN2Vm9JNzlkMHkrR0tWUXMycWpmcHQ5bGdMRDBqeWYyTCs2ZS9yc0Ez?=
- =?utf-8?B?OHNWMjRwY0dFblcrbmJaZGZkUDF4c1Vxa3dLbWl3MmNSdUdqSHVsd2luRVUv?=
- =?utf-8?B?Ym5PSVZEVUN5QU13aGUxTHdzSFhmOXJUMHpiSEFzaVJURDBKNHhoQ1ZOOTJj?=
- =?utf-8?B?ZlVsQlE0SHFWSlg0QlFXK0JDcnZVMkZUU3lYbWJMclVVd2R5SHBaTXFpMldK?=
- =?utf-8?B?WUh6RHlqR2x1ZC9zOGdUR1J6RkE4OWNENFpTbmlaRDVoL3NPYXU0bnpWb2ty?=
- =?utf-8?B?ajk5T25ISEV0NVRMMmIxV3VtSEY5d2wzSy9sYjJic0x5ZitxY1RtQUlQdlI5?=
- =?utf-8?B?dDduVnJnZ0xSUHhxaDVRQTl6QzdUSUVyc2FKODk5dGdKUnV3ZlpRalVieG5S?=
- =?utf-8?B?QkgzeHZ3VEQxNDZ1T0txaHFXcWJyRGszL3dCd3EzWjRQenh0MlBSaHdySXBx?=
- =?utf-8?B?Sm8wSnJnSWMzaTVuQWJERVhkdFZEZTJqZlpwOXVwZUNYaTNlMkl2WVZ4a2t3?=
- =?utf-8?B?VUVaeHRPclUxdkw2UUhQNVpVay9aTnhtRUJleDVtOHd4NFJJTmcwTlp1THdK?=
- =?utf-8?B?Ym5GNUZnSWxIL2s4Sk93V3BLUzV4M2MzUmZiUlFxVk1MZGJ1OTFac1VaYzVH?=
- =?utf-8?B?ekxTdCtYY0MyWGdSU1UxY3ZFY29Gd1BtUk1BLzB2MFkrdW5sZ0hjM29LQWhS?=
- =?utf-8?B?aWJQME05SkdsRXBiVnloTVNLV1V6ZE4zdTR2eWZObDRuN2x3QmJVNVNIcmMr?=
- =?utf-8?B?WlFMdVJEVWdld0I2dXczTGdXRTZVTHBjZ2RqZzNXdkVUYVZRWUhaS0pDZGs0?=
- =?utf-8?B?UmJtajdBdDZucWtOMGN3VVhWQ0w1Zks2OXFva2I5Tk0wODA3TnE3eExhVGo1?=
- =?utf-8?B?a2M3NVZaSXhkWHIrZmJrclNCdXJnR0tPTTNFSXNPZktxNjdDemVkRUd3VFdK?=
- =?utf-8?B?VUczL0JTNTBPczFqL29kTnpqejh3Z3RCM0ZVT1VzM0RnL0U2UFNHODEyQ0wv?=
- =?utf-8?B?WndsVTY2LzFlb3NUK0s0UEdZM3ExV05Rb1BXWmRKQnRGZ0JzS1BhR1VWYUxB?=
- =?utf-8?B?NUlPUUREaWUwTk5Oemttci91SkxWbTl1WHAxTXNicTRLeWpSc2NNejRvelEy?=
- =?utf-8?B?ZWJxaldzRjZxQWpIdExUaWJXbnZMWXJwWnZwcmsvRVZVMUQyRWxIRTlLbldy?=
- =?utf-8?B?QkJ3c1VhWnpOZUlNY3JwRDlQZ0xEWkFIMUZSTWg3Z1NFWXlmUVdzQ3VvV0xv?=
- =?utf-8?Q?xGwUkf?=
-X-Forefront-Antispam-Report:
-	CIP:50.233.182.194;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:[127.0.1.1];PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(36860700013)(82310400026)(1800799024);DIR:OUT;SFP:1102;
-X-OriginatorOrg: axiado.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2025 18:58:26.9988
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: eb43e413-ebdf-4205-12d1-08dde1ade0bb
-X-MS-Exchange-CrossTenant-Id: ff2db17c-4338-408e-9036-2dee8e3e17d7
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=ff2db17c-4338-408e-9036-2dee8e3e17d7;Ip=[50.233.182.194];Helo=[[127.0.1.1]]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000FCBE.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR18MB5311
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250822072651.510027-4-viken.dadhaniya@oss.qualcomm.com>
 
-Current implementation uses `CDNS_UART_REGISTER_SPACE(0x1000)`
-for request_mem_region() and ioremap() in cdns_uart_request_port() API.
+Hi Viken,
 
-The cadence/xilinx IP has register space defined from offset 0x0 to 0x48.
-It also mentions that the register map is defined as [6:0]. So, the upper
-region may/maynot be used based on the IP integration.
+kernel test robot noticed the following build warnings:
 
-Fixes: 1f7055779001 ("arm64: dts: axiado: Add initial support for AX3000 SoC and eval board")
-In Axiado AX3000 SoC two UART instances are defined
-0x100 apart. That is creating issue in some other instance due to overlap
-with addresses.
+[auto build test WARNING on andi-shyti/i2c/i2c-host]
+[also build test WARNING on tty/tty-testing tty/tty-next tty/tty-linus broonie-spi/for-next linus/master v6.17-rc2 next-20250822]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Since, this address space is already being defined in the
-devicetree, use the same when requesting the register space.
+url:    https://github.com/intel-lab-lkp/linux/commits/Viken-Dadhaniya/dt-bindings-qcom-se-common-Add-QUP-Peripheral-specific-properties-for-I2C-SPI-and-SERIAL-bus/20250822-153051
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/andi.shyti/linux.git i2c/i2c-host
+patch link:    https://lore.kernel.org/r/20250822072651.510027-4-viken.dadhaniya%40oss.qualcomm.com
+patch subject: [PATCH v6 3/6] soc: qcom: geni-se: Add support to load QUP SE Firmware via Linux subsystem
+config: sparc64-randconfig-r133-20250823 (https://download.01.org/0day-ci/archive/20250823/202508231007.Lp8v1Xdl-lkp@intel.com/config)
+compiler: sparc64-linux-gcc (GCC) 8.5.0
+reproduce: (https://download.01.org/0day-ci/archive/20250823/202508231007.Lp8v1Xdl-lkp@intel.com/reproduce)
 
-Acked-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Harshit Shah <hshah@axiado.com>
----
-- Add fixes tag in commit msg
-- Link to v1: https://lore.kernel.org/r/20250819-xilinx-uartps-reg-size-v1-1-0fb7341023fb@axiado.com
----
- drivers/tty/serial/xilinx_uartps.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202508231007.Lp8v1Xdl-lkp@intel.com/
 
-diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
-index fe457bf1e15bb4fc77a5c7de2aea8bfbdbaa643a..a66b44d21fba2558d0b2a62864d86d3b73152e26 100644
---- a/drivers/tty/serial/xilinx_uartps.c
-+++ b/drivers/tty/serial/xilinx_uartps.c
-@@ -33,7 +33,6 @@
- #define CDNS_UART_MINOR		0	/* works best with devtmpfs */
- #define CDNS_UART_NR_PORTS	16
- #define CDNS_UART_FIFO_SIZE	64	/* FIFO size */
--#define CDNS_UART_REGISTER_SPACE	0x1000
- #define TX_TIMEOUT		500000
- 
- /* Rx Trigger level */
-@@ -1098,15 +1097,15 @@ static int cdns_uart_verify_port(struct uart_port *port,
-  */
- static int cdns_uart_request_port(struct uart_port *port)
- {
--	if (!request_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE,
-+	if (!request_mem_region(port->mapbase, port->mapsize,
- 					 CDNS_UART_NAME)) {
- 		return -ENOMEM;
- 	}
- 
--	port->membase = ioremap(port->mapbase, CDNS_UART_REGISTER_SPACE);
-+	port->membase = ioremap(port->mapbase, port->mapsize);
- 	if (!port->membase) {
- 		dev_err(port->dev, "Unable to map registers\n");
--		release_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE);
-+		release_mem_region(port->mapbase, port->mapsize);
- 		return -ENOMEM;
- 	}
- 	return 0;
-@@ -1121,7 +1120,7 @@ static int cdns_uart_request_port(struct uart_port *port)
-  */
- static void cdns_uart_release_port(struct uart_port *port)
- {
--	release_mem_region(port->mapbase, CDNS_UART_REGISTER_SPACE);
-+	release_mem_region(port->mapbase, port->mapsize);
- 	iounmap(port->membase);
- 	port->membase = NULL;
- }
-@@ -1780,6 +1779,7 @@ static int cdns_uart_probe(struct platform_device *pdev)
- 	 * and triggers invocation of the config_port() entry point.
- 	 */
- 	port->mapbase = res->start;
-+	port->mapsize = resource_size(res);
- 	port->irq = irq;
- 	port->dev = &pdev->dev;
- 	port->uartclk = clk_get_rate(cdns_uart_data->uartclk);
+sparse warnings: (new ones prefixed by >>)
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast to restricted __le32
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast from restricted __le16
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast to restricted __le32
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast from restricted __le16
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast to restricted __le32
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast from restricted __le16
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast to restricted __le32
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast from restricted __le16
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast to restricted __le32
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast from restricted __le16
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast to restricted __le32
+   drivers/soc/qcom/qcom-geni-se.c:1053:21: sparse: sparse: cast from restricted __le16
+   drivers/soc/qcom/qcom-geni-se.c:1056:25: sparse: sparse: restricted __le16 degrades to integer
+   drivers/soc/qcom/qcom-geni-se.c:1057:47: sparse: sparse: restricted __le16 degrades to integer
+   drivers/soc/qcom/qcom-geni-se.c:1059:25: sparse: sparse: restricted __le16 degrades to integer
+   drivers/soc/qcom/qcom-geni-se.c:1065:43: sparse: sparse: restricted __le16 degrades to integer
+   drivers/soc/qcom/qcom-geni-se.c:1065:25: sparse: sparse: restricted __le16 degrades to integer
+   drivers/soc/qcom/qcom-geni-se.c:1066:48: sparse: sparse: restricted __le16 degrades to integer
+   drivers/soc/qcom/qcom-geni-se.c:1066:25: sparse: sparse: restricted __le16 degrades to integer
+   drivers/soc/qcom/qcom-geni-se.c:1067:48: sparse: sparse: restricted __le16 degrades to integer
+   drivers/soc/qcom/qcom-geni-se.c:1067:25: sparse: sparse: restricted __le16 degrades to integer
+>> drivers/soc/qcom/qcom-geni-se.c:1238:19: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int [usertype] l @@     got restricted __le16 [usertype] cfg_version @@
+   drivers/soc/qcom/qcom-geni-se.c:1238:19: sparse:     expected unsigned int [usertype] l
+   drivers/soc/qcom/qcom-geni-se.c:1238:19: sparse:     got restricted __le16 [usertype] cfg_version
+   drivers/soc/qcom/qcom-geni-se.c:1239:19: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected unsigned int [usertype] l @@     got restricted __le16 [usertype] cfg_version @@
+   drivers/soc/qcom/qcom-geni-se.c:1239:19: sparse:     expected unsigned int [usertype] l
+   drivers/soc/qcom/qcom-geni-se.c:1239:19: sparse:     got restricted __le16 [usertype] cfg_version
 
----
-base-commit: 8742b2d8935f476449ef37e263bc4da3295c7b58
-change-id: 20250813-xilinx-uartps-reg-size-c3be67d88b7c
+vim +1238 drivers/soc/qcom/qcom-geni-se.c
 
-Best regards,
+  1165	
+  1166	/**
+  1167	 * geni_load_se_fw() - Load Serial Engine specific firmware.
+  1168	 * @se: Pointer to the concerned serial engine.
+  1169	 * @fw: Pointer to the firmware structure.
+  1170	 * @mode: SE data transfer mode.
+  1171	 * @protocol: Protocol type to be used with the SE (e.g., UART, SPI, I2C).
+  1172	 *
+  1173	 * Load the protocol firmware into the IRAM of the Serial Engine.
+  1174	 *
+  1175	 * Return: 0 if successful, otherwise return an error value.
+  1176	 */
+  1177	static int geni_load_se_fw(struct geni_se *se, const struct firmware *fw,
+  1178				   enum geni_se_xfer_mode mode, enum geni_se_protocol_type protocol)
+  1179	{
+  1180		const u32 *fw_data, *cfg_val_arr;
+  1181		const u8 *cfg_idx_arr;
+  1182		u32 i, reg_value;
+  1183		int ret;
+  1184		struct se_fw_hdr *hdr;
+  1185	
+  1186		hdr = geni_find_protocol_fw(se->dev, fw, protocol);
+  1187		if (!hdr)
+  1188			return -EINVAL;
+  1189	
+  1190		fw_data = (const u32 *)((u8 *)hdr + le16_to_cpu(hdr->fw_offset));
+  1191		cfg_idx_arr = (const u8 *)hdr + le16_to_cpu(hdr->cfg_idx_offset);
+  1192		cfg_val_arr = (const u32 *)((u8 *)hdr + le16_to_cpu(hdr->cfg_val_offset));
+  1193	
+  1194		ret = geni_icc_set_bw(se);
+  1195		if (ret)
+  1196			return ret;
+  1197	
+  1198		ret = geni_icc_enable(se);
+  1199		if (ret)
+  1200			return ret;
+  1201	
+  1202		ret = geni_se_resources_on(se);
+  1203		if (ret)
+  1204			goto out_icc_disable;
+  1205	
+  1206		/*
+  1207		 * Disable high-priority interrupts until all currently executing
+  1208		 * low-priority interrupts have been fully handled.
+  1209		 */
+  1210		geni_setbits32(se->wrapper->base + QUPV3_COMMON_CFG, FAST_SWITCH_TO_HIGH_DISABLE);
+  1211	
+  1212		/* Set AHB_M_CLK_CGC_ON to indicate hardware controls se-wrapper cgc clock. */
+  1213		geni_setbits32(se->wrapper->base + QUPV3_SE_AHB_M_CFG, AHB_M_CLK_CGC_ON);
+  1214	
+  1215		/* Let hardware to control common cgc. */
+  1216		geni_setbits32(se->wrapper->base + QUPV3_COMMON_CGC_CTRL, COMMON_CSR_SLV_CLK_CGC_ON);
+  1217	
+  1218		/*
+  1219		 * Setting individual bits in GENI_OUTPUT_CTRL activates corresponding output lines,
+  1220		 * allowing the hardware to drive data as configured.
+  1221		 */
+  1222		writel(0x0, se->base + GENI_OUTPUT_CTRL);
+  1223	
+  1224		/* Set SCLK and HCLK to program RAM */
+  1225		geni_setbits32(se->base + SE_GENI_CGC_CTRL, PROG_RAM_SCLK_OFF | PROG_RAM_HCLK_OFF);
+  1226		writel(0x0, se->base + SE_GENI_CLK_CTRL);
+  1227		geni_clrbits32(se->base + SE_GENI_CGC_CTRL, PROG_RAM_SCLK_OFF | PROG_RAM_HCLK_OFF);
+  1228	
+  1229		/* Enable required clocks for DMA CSR, TX and RX. */
+  1230		reg_value = AHB_SEC_SLV_CLK_CGC_ON | DMA_AHB_SLV_CLK_CGC_ON |
+  1231			    DMA_TX_CLK_CGC_ON | DMA_RX_CLK_CGC_ON;
+  1232		geni_setbits32(se->base + SE_DMA_GENERAL_CFG, reg_value);
+  1233	
+  1234		/* Let hardware control CGC by default. */
+  1235		writel(DEFAULT_CGC_EN, se->base + SE_GENI_CGC_CTRL);
+  1236	
+  1237		/* Set version of the configuration register part of firmware. */
+> 1238		writel(hdr->cfg_version, se->base + SE_GENI_INIT_CFG_REVISION);
+  1239		writel(hdr->cfg_version, se->base + SE_GENI_S_INIT_CFG_REVISION);
+  1240	
+  1241		/* Configure GENI primitive table. */
+  1242		for (i = 0; i < le16_to_cpu(hdr->cfg_size_in_items); i++)
+  1243			writel(cfg_val_arr[i],
+  1244			       se->base + SE_GENI_CFG_REG0 + (cfg_idx_arr[i] * sizeof(u32)));
+  1245	
+  1246		/* Configure condition for assertion of RX_RFR_WATERMARK condition. */
+  1247		reg_value = geni_se_get_rx_fifo_depth(se);
+  1248		writel(reg_value - 2, se->base + SE_GENI_RX_RFR_WATERMARK_REG);
+  1249	
+  1250		/* Let hardware control CGC */
+  1251		geni_setbits32(se->base + GENI_OUTPUT_CTRL, DEFAULT_IO_OUTPUT_CTRL_MSK);
+  1252	
+  1253		ret = geni_configure_xfer_mode(se, mode);
+  1254		if (ret)
+  1255			goto out_resources_off;
+  1256	
+  1257		geni_enable_interrupts(se);
+  1258	
+  1259		geni_write_fw_revision(se, le16_to_cpu(hdr->serial_protocol), le16_to_cpu(hdr->fw_version));
+  1260	
+  1261		/* Program RAM address space. */
+  1262		memcpy_toio(se->base + SE_GENI_CFG_RAMN, fw_data,
+  1263			    le16_to_cpu(hdr->fw_size_in_items) * sizeof(u32));
+  1264	
+  1265		/* Put default values on GENI's output pads. */
+  1266		writel_relaxed(0x1, se->base + GENI_FORCE_DEFAULT_REG);
+  1267	
+  1268		/* Toggle SCLK/HCLK from high to low to finalize RAM programming and apply config. */
+  1269		geni_setbits32(se->base + SE_GENI_CGC_CTRL, PROG_RAM_SCLK_OFF | PROG_RAM_HCLK_OFF);
+  1270		geni_setbits32(se->base + SE_GENI_CLK_CTRL, SER_CLK_SEL);
+  1271		geni_clrbits32(se->base + SE_GENI_CGC_CTRL, PROG_RAM_SCLK_OFF | PROG_RAM_HCLK_OFF);
+  1272	
+  1273		/* Serial engine DMA interface is enabled. */
+  1274		geni_setbits32(se->base + SE_DMA_IF_EN, DMA_IF_EN);
+  1275	
+  1276		/* Enable or disable FIFO interface of the serial engine. */
+  1277		if (mode == GENI_SE_FIFO)
+  1278			geni_clrbits32(se->base + SE_FIFO_IF_DISABLE, FIFO_IF_DISABLE);
+  1279		else
+  1280			geni_setbits32(se->base + SE_FIFO_IF_DISABLE, FIFO_IF_DISABLE);
+  1281	
+  1282	out_resources_off:
+  1283		geni_se_resources_off(se);
+  1284	
+  1285	out_icc_disable:
+  1286		geni_icc_disable(se);
+  1287		return ret;
+  1288	}
+  1289	
+
 -- 
-Harshit Shah <hshah@axiado.com>
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
