@@ -1,201 +1,212 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from smtpout02-ext4.partage.renater.fr (smtpout02-ext4.partage.renater.fr [194.254.241.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C667D1E260C
-	for <linux-serial@vger.kernel.org>; Sat, 23 Aug 2025 07:12:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60CEE14F70;
+	Sun, 24 Aug 2025 14:28:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.254.241.31
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755933168; cv=none; b=tg68CgjjoXUIj2jgeoI0mad1iyRQu2AVOssfx7weiS/V/aV6HTt22ELNX6xVMB+zJqwtloY49OBbToc8nz8CyAYHIUmrHh2R9ZbT6NFYwdkZv9SOcQ2jX8wLU7Va5L2HIscQXzChBuI29yupKHaBoyg+xKXv6UpTFKYFlZmZEUU=
+	t=1756045700; cv=none; b=BvZarRB3zR6WLX0VRkzmXMZ9ZRkAQUek4/wTn1Z5Xcnyf+PT6a6szObfU3GxbfGJOP+B7pzbFgf5WQLm5QZHpvcnisAm4Ee20VCwx+cyksaJNUQ6OhjYe5XUc2csiUaWtt28/aXfY477ALwS/0YIeE+QdM5HvMKieeNjxYprAN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755933168; c=relaxed/simple;
-	bh=GQVPPEUWDt2Vz3GbQSt6exvek5GEP6qPyQmKULlTmZU=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=cEGSPxdvWGKJmeIl8fQd3Jcrg5TdZq6uOZgXagvy6zgc/2nm1MxsISChLaYbLBiE38cHJqrzFuRUlv4EQqwJ2g49FZdK9H1dj3vM0HxpYwGVgJoUyAiY0VkvW4ixJxfrOV39+Ocq7XGZ0FP9OE9WJJYAf2gff0gZ19OeD+fiTrY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PUpPk397; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1756045700; c=relaxed/simple;
+	bh=vJDTBLt5vdPr1M74pbae//5I1NtfxD6Q2JwehZPGN+A=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fxbxY+Pl3SLtQsqsJ8QDjcJvcXXF6ZYeqDty8yPT1srFJjoROGOgagUK+PGpWmlnsqWqKETITbzvjf2xvM/jdpAOoeawotR6S8UZwR7WANnV/InHnj7kM4DLAGuH5nWRxhq1IwIiTwuD+SInvp9LHhLVZA13RjZGmkZEvLxoMHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=grenoble-inp.org; spf=none smtp.mailfrom=grenoble-inp.org; dkim=pass (2048-bit key) header.d=grenoble-inp.org header.i=@grenoble-inp.org header.b=vO2r5Jag; arc=none smtp.client-ip=194.254.241.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=grenoble-inp.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=grenoble-inp.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PUpPk397"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1755933166; x=1787469166;
-  h=date:from:to:cc:subject:message-id;
-  bh=GQVPPEUWDt2Vz3GbQSt6exvek5GEP6qPyQmKULlTmZU=;
-  b=PUpPk397WfwOxeMYpkpcUjQhuBF3zE3zcdddRyQkgVOVu4FaZ1+xrzka
-   Fid+mrwjrJsayiH6WgwzhWIDRWNx+meyXsRJyTmf0fqqid6xv9MYjb2lZ
-   +NHwb6WTaXZPd8zG4sxoE+Ufjsz71226kBL+ZhCI6iwixIGRUBHfF+Ybx
-   oBfTAY3yPRbvFH/4VHrZzp+fQ+DXn/6yvCf/9nGO/XViX4z0m+ooRPJNa
-   szi6wCZ4eRUzpVsNxRZG0svx04KxMt3fK/UOAOoSXTYhFXc97pLdjWx9k
-   TZTijTlLDlOllRw0/xBFKZ1E5QIRhwgrry5Gt5zcgbLKl3mbPE5qyKYHr
-   w==;
-X-CSE-ConnectionGUID: XMbP+WKASlSzBJ74f3iAtA==
-X-CSE-MsgGUID: x96wOiNvRHSHRzCeteATDg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11529"; a="57428852"
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="57428852"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2025 00:12:46 -0700
-X-CSE-ConnectionGUID: /elwOPQ7T76m42YdTWkZ5A==
-X-CSE-MsgGUID: btPqKw5VQ8ypGx6oLpnO5g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="206053943"
-Received: from lkp-server02.sh.intel.com (HELO 4ea60e6ab079) ([10.239.97.151])
-  by orviesa001.jf.intel.com with ESMTP; 23 Aug 2025 00:12:45 -0700
-Received: from kbuild by 4ea60e6ab079 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1upiQd-000MA0-0P;
-	Sat, 23 Aug 2025 07:12:43 +0000
-Date: Sat, 23 Aug 2025 15:12:26 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS
- 706c3c02eecd41dc675e9102b3719661cd3e30e2
-Message-ID: <202508231520.N72W8ymn-lkp@intel.com>
-User-Agent: s-nail v14.9.24
+	dkim=pass (2048-bit key) header.d=grenoble-inp.org header.i=@grenoble-inp.org header.b="vO2r5Jag"
+Received: from zmtaauth02.partage.renater.fr (zmtaauth02.partage.renater.fr [194.254.241.25])
+	by smtpout20.partage.renater.fr (Postfix) with ESMTP id A2756BFB38;
+	Sun, 24 Aug 2025 16:21:37 +0200 (CEST)
+Received: from zmtaauth02.partage.renater.fr (localhost [127.0.0.1])
+	by zmtaauth02.partage.renater.fr (Postfix) with ESMTPS id 980C1A05E5;
+	Sun, 24 Aug 2025 16:21:37 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by zmtaauth02.partage.renater.fr (Postfix) with ESMTP id 861F7A0AFC;
+	Sun, 24 Aug 2025 16:21:37 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zmtaauth02.partage.renater.fr 861F7A0AFC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=grenoble-inp.org;
+	s=F42A61D9-9621-4693-8E8E-830FB5F1ED6E; t=1756045297;
+	bh=xbCDonW6R7cqSTW7wbWCW9zlxOi7k9J2nlQQ4grlsAk=;
+	h=From:To:Date:Message-ID:MIME-Version;
+	b=vO2r5JagMVzjuNUlUhXayKHO9hAjnG+b/OWkJ1o1LyUXdOneUK9Pj9tjlAHgts3db
+	 9U/CudN1h3QfY62Ecor5n2poBWY9dbDKXQTvxkbPFGsPKh6WkFb/t6MPUuNIb9FTS/
+	 qT9PFgoWBMSyElLmnbgJcvftd0ZVDTPmwbru7i3ZZD7fN3tIrQAOh8gdD+qhybbajg
+	 kPgxzCyGfGEkGTGIjasmgNR311DVkExhGuSZXR0b+OwvDw24n9J2OD5PDco6K8Ax1M
+	 3JRfTkHjJBdCg6BWp072OTGX23eIjeEM7jQpx5kBFzkQ+p6eu6iLAqBvh2OFoKRZqt
+	 jcq6hA/ZTtj2A==
+Received: from zmtaauth02.partage.renater.fr ([127.0.0.1])
+ by localhost (zmtaauth02.partage.renater.fr [127.0.0.1]) (amavis, port 10026)
+ with ESMTP id xs9vMi_pJ7JY; Sun, 24 Aug 2025 16:21:37 +0200 (CEST)
+Received: from 91.166.147.41 (unknown [194.254.241.251])
+	by zmtaauth02.partage.renater.fr (Postfix) with ESMTPA id 3DC35A05E5;
+	Sun, 24 Aug 2025 16:21:37 +0200 (CEST)
+From: Calixte Pernot <calixte.pernot@grenoble-inp.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Calixte Pernot <calixte.pernot@grenoble-inp.org>
+Subject: [PATCH] vt: add support for smput/rmput escape codes
+Date: Sun, 24 Aug 2025 16:20:16 +0200
+Message-ID: <20250824142016.47219-1-calixte.pernot@grenoble-inp.org>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+X-Virus-Scanned: clamav-milter 0.103.12 at clamav02
+X-Virus-Status: Clean
+X-Renater-Ptge-SpamState: clean
+X-Renater-Ptge-SpamScore: -100
+X-Renater-Ptge-SpamCause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduieeljeegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecutffgpfetvffgtfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepvegrlhhigihtvgcurfgvrhhnohhtuceotggrlhhigihtvgdrphgvrhhnohhtsehgrhgvnhhosghlvgdqihhnphdrohhrgheqnecuggftrfgrthhtvghrnheptdevhedugfeufefgvdeivdeufffgudelveeigeejgfegheegheduhfetteekudegnecukfhppeduleegrddvheegrddvgedurddvhedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepudelgedrvdehgedrvdeguddrvdehuddphhgvlhhopeeluddrudeiiedrudegjedrgedupdhmrghilhhfrhhomheptggrlhhigihtvgdrphgvrhhnohhtsehgrhgvnhhosghlvgdqihhnphdrohhrghdpnhgspghrtghpthhtohephedprhgtphhtthhopehgrhgvghhkhheslhhinhhugihfohhunhgurghtihhonhdrohhrghdprhgtphhtthhopehjihhrihhslhgrsgihsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhsvghrihgrlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphht
+ thhopegtrghlihigthgvrdhpvghrnhhothesghhrvghnohgslhgvqdhinhhprdhorhhg
+Content-Transfer-Encoding: quoted-printable
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: 706c3c02eecd41dc675e9102b3719661cd3e30e2  tty: serial: Modify the use of dev_err_probe()
+Support "\e[?1049h" and "\e[?1049l" escape codes.
+This patch allows programs to enter and leave alternate screens.
+This feature is widely available in graphical terminal emulators and most=
+ly
+used by fullscreen terminal-based user interfaces such as text editors.
+Most editors such as vim and nano assume this escape code in not supporte=
+d
+and will not try to print the escape sequence if TERM=3Dlinux.
+To try out this patch, run `TERM=3Dxterm-256color vim` inside a VT.
 
-elapsed time: 1451m
+Signed-off-by: Calixte Pernot <calixte.pernot@grenoble-inp.org>
+---
+ drivers/tty/vt/vt.c            | 59 ++++++++++++++++++++++++++++++++++
+ include/linux/console_struct.h |  3 ++
+ 2 files changed, 62 insertions(+)
 
-configs tested: 124
-configs skipped: 5
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index 62049ceb3..0e3632aa1 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -141,6 +141,7 @@ static const struct consw *con_driver_map[MAX_NR_CONS=
+OLES];
+ static int con_open(struct tty_struct *, struct file *);
+ static void vc_init(struct vc_data *vc, int do_clear);
+ static void gotoxy(struct vc_data *vc, int new_x, int new_y);
++static void restore_cur(struct vc_data *vc);
+ static void save_cur(struct vc_data *vc);
+ static void reset_terminal(struct vc_data *vc, int do_clear);
+ static void con_flush_chars(struct tty_struct *tty);
+@@ -1344,6 +1345,10 @@ struct vc_data *vc_deallocate(unsigned int currcon=
+s)
+ 		kfree(vc->vc_screenbuf);
+ 		vc_cons[currcons].d =3D NULL;
+ 	}
++	if (vc->vc_saved_screen !=3D NULL) {
++		kfree(vc->vc_saved_screen);
++		vc->vc_saved_screen =3D NULL;
++	}
+ 	return vc;
+ }
+=20
+@@ -1878,6 +1883,46 @@ static int get_bracketed_paste(struct tty_struct *=
+tty)
+ 	return vc->vc_bracketed_paste;
+ }
+=20
++/* console_lock is held */
++static void enter_alt_screen(struct vc_data *vc)
++{
++	unsigned int size =3D vc->vc_rows * vc->vc_cols * 2;
++
++	if (vc->vc_saved_screen !=3D NULL)
++		return; /* Already inside an alt-screen */
++	vc->vc_saved_screen =3D kzalloc(size, GFP_NOWAIT);
++	if (vc->vc_saved_screen =3D=3D NULL)
++		return;
++	memcpy(vc->vc_saved_screen, (u16 *)vc->vc_origin, size);
++	vc->vc_saved_rows =3D vc->vc_rows;
++	vc->vc_saved_cols =3D vc->vc_cols;
++	save_cur(vc);
++	/* clear entire screen */
++	csi_J(vc, CSI_J_FULL);
++}
++
++/* console_lock is held */
++static void leave_alt_screen(struct vc_data *vc)
++{
++	unsigned int rows =3D min(vc->vc_saved_rows, vc->vc_rows);
++	unsigned int cols =3D min(vc->vc_saved_cols, vc->vc_cols);
++	unsigned short *src, *dest;
++
++	if (vc->vc_saved_screen =3D=3D NULL)
++		return; /* Not inside an alt-screen */
++	for (int r =3D 0; r < rows; r++) {
++		src =3D vc->vc_saved_screen + r * vc->vc_saved_cols;
++		dest =3D ((u16 *)vc->vc_origin) + r * vc->vc_cols;
++		memcpy(dest, src, 2 * cols);
++	}
++	restore_cur(vc);
++	/* Update the entire screen */
++	if (con_should_update(vc))
++		do_update_region(vc, vc->vc_origin, vc->vc_screenbuf_size / 2);
++	kfree(vc->vc_saved_screen);
++	vc->vc_saved_screen =3D NULL;
++}
++
+ enum {
+ 	CSI_DEC_hl_CURSOR_KEYS	=3D 1,	/* CKM: cursor keys send ^[Ox/^[[x */
+ 	CSI_DEC_hl_132_COLUMNS	=3D 3,	/* COLM: 80/132 mode switch */
+@@ -1888,6 +1933,7 @@ enum {
+ 	CSI_DEC_hl_MOUSE_X10	=3D 9,
+ 	CSI_DEC_hl_SHOW_CURSOR	=3D 25,	/* TCEM */
+ 	CSI_DEC_hl_MOUSE_VT200	=3D 1000,
++	CSI_DEC_hl_ALT_SCREEN	=3D 1049,
+ 	CSI_DEC_hl_BRACKETED_PASTE =3D 2004,
+ };
+=20
+@@ -1944,6 +1990,12 @@ static void csi_DEC_hl(struct vc_data *vc, bool on=
+_off)
+ 		case CSI_DEC_hl_BRACKETED_PASTE:
+ 			vc->vc_bracketed_paste =3D on_off;
+ 			break;
++		case CSI_DEC_hl_ALT_SCREEN:
++			if (on_off)
++				enter_alt_screen(vc);
++			else
++				leave_alt_screen(vc);
++			break;
+ 		}
+ }
+=20
+@@ -2182,6 +2234,13 @@ static void reset_terminal(struct vc_data *vc, int=
+ do_clear)
+ 	vc->vc_deccm		=3D global_cursor_default;
+ 	vc->vc_decim		=3D 0;
+=20
++	if (vc->vc_saved_screen !=3D NULL) {
++		kfree(vc->vc_saved_screen);
++		vc->vc_saved_screen =3D NULL;
++		vc->vc_saved_rows =3D 0;
++		vc->vc_saved_cols =3D 0;
++	}
++
+ 	vt_reset_keyboard(vc->vc_num);
+=20
+ 	vc->vc_cursor_type =3D cur_default;
+diff --git a/include/linux/console_struct.h b/include/linux/console_struc=
+t.h
+index 59b4fec5f..f9aabc3cf 100644
+--- a/include/linux/console_struct.h
++++ b/include/linux/console_struct.h
+@@ -159,6 +159,9 @@ struct vc_data {
+ 	struct uni_pagedict *uni_pagedict;
+ 	struct uni_pagedict **uni_pagedict_loc; /* [!] Location of uni_pagedict=
+ variable for this console */
+ 	u32 **vc_uni_lines;			/* unicode screen content */
++	unsigned short	*vc_saved_screen;
++	unsigned int	vc_saved_cols;
++	unsigned int	vc_saved_rows;
+ 	/* additional information is in vt_kern.h */
+ };
+=20
+--=20
+2.50.1
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-tested configs:
-alpha                             allnoconfig    gcc-15.1.0
-alpha                            allyesconfig    gcc-15.1.0
-arc                              allmodconfig    gcc-15.1.0
-arc                               allnoconfig    gcc-15.1.0
-arc                              allyesconfig    gcc-15.1.0
-arc                            hsdk_defconfig    gcc-15.1.0
-arc                   randconfig-001-20250822    gcc-8.5.0
-arc                   randconfig-002-20250822    gcc-8.5.0
-arm                              allmodconfig    gcc-15.1.0
-arm                               allnoconfig    clang-22
-arm                              allyesconfig    gcc-15.1.0
-arm                   randconfig-001-20250822    clang-22
-arm                   randconfig-002-20250822    gcc-8.5.0
-arm                   randconfig-003-20250822    clang-22
-arm                   randconfig-004-20250822    gcc-8.5.0
-arm                         socfpga_defconfig    gcc-15.1.0
-arm                         vf610m4_defconfig    gcc-15.1.0
-arm64                            allmodconfig    clang-19
-arm64                             allnoconfig    gcc-15.1.0
-arm64                 randconfig-001-20250822    clang-22
-arm64                 randconfig-002-20250822    clang-22
-arm64                 randconfig-003-20250822    clang-17
-arm64                 randconfig-004-20250822    gcc-8.5.0
-csky                              allnoconfig    gcc-15.1.0
-csky                  randconfig-001-20250822    gcc-9.5.0
-csky                  randconfig-002-20250822    gcc-15.1.0
-hexagon                          allmodconfig    clang-17
-hexagon                           allnoconfig    clang-22
-hexagon                          allyesconfig    clang-22
-hexagon               randconfig-001-20250822    clang-22
-hexagon               randconfig-002-20250822    clang-22
-i386                             allmodconfig    gcc-12
-i386                              allnoconfig    gcc-12
-i386                             allyesconfig    gcc-12
-i386        buildonly-randconfig-001-20250822    gcc-12
-i386        buildonly-randconfig-002-20250822    clang-20
-i386        buildonly-randconfig-003-20250822    gcc-12
-i386        buildonly-randconfig-004-20250822    gcc-12
-i386        buildonly-randconfig-005-20250822    gcc-12
-i386        buildonly-randconfig-006-20250822    gcc-12
-i386                                defconfig    clang-20
-loongarch                        allmodconfig    clang-19
-loongarch                         allnoconfig    clang-22
-loongarch             randconfig-001-20250822    clang-22
-loongarch             randconfig-002-20250822    gcc-15.1.0
-m68k                             allmodconfig    gcc-15.1.0
-m68k                              allnoconfig    gcc-15.1.0
-m68k                             allyesconfig    gcc-15.1.0
-m68k                        m5407c3_defconfig    gcc-15.1.0
-m68k                           sun3_defconfig    gcc-15.1.0
-microblaze                       allmodconfig    gcc-15.1.0
-microblaze                        allnoconfig    gcc-15.1.0
-microblaze                       allyesconfig    gcc-15.1.0
-microblaze                          defconfig    gcc-15.1.0
-mips                              allnoconfig    gcc-15.1.0
-nios2                             allnoconfig    gcc-11.5.0
-nios2                               defconfig    gcc-11.5.0
-nios2                 randconfig-001-20250822    gcc-11.5.0
-nios2                 randconfig-002-20250822    gcc-11.5.0
-openrisc                          allnoconfig    gcc-15.1.0
-openrisc                         allyesconfig    gcc-15.1.0
-openrisc                            defconfig    gcc-15.1.0
-parisc                           allmodconfig    gcc-15.1.0
-parisc                            allnoconfig    gcc-15.1.0
-parisc                           allyesconfig    gcc-15.1.0
-parisc                              defconfig    gcc-15.1.0
-parisc                randconfig-001-20250822    gcc-9.5.0
-parisc                randconfig-002-20250822    gcc-12.5.0
-parisc64                            defconfig    gcc-15.1.0
-powerpc                          allmodconfig    gcc-15.1.0
-powerpc                           allnoconfig    gcc-15.1.0
-powerpc                          allyesconfig    clang-22
-powerpc               randconfig-001-20250822    clang-22
-powerpc               randconfig-002-20250822    gcc-11.5.0
-powerpc               randconfig-003-20250822    clang-18
-powerpc                    socrates_defconfig    gcc-15.1.0
-powerpc64             randconfig-001-20250822    gcc-13.4.0
-powerpc64             randconfig-002-20250822    clang-22
-powerpc64             randconfig-003-20250822    gcc-8.5.0
-riscv                            allmodconfig    clang-22
-riscv                             allnoconfig    gcc-15.1.0
-riscv                            allyesconfig    clang-16
-riscv                               defconfig    clang-22
-riscv                 randconfig-001-20250823    clang-22
-riscv                 randconfig-002-20250823    gcc-8.5.0
-s390                             allmodconfig    clang-18
-s390                              allnoconfig    clang-22
-s390                             allyesconfig    gcc-15.1.0
-s390                  randconfig-001-20250823    gcc-9.5.0
-s390                  randconfig-002-20250823    clang-22
-sh                               allmodconfig    gcc-15.1.0
-sh                                allnoconfig    gcc-15.1.0
-sh                               allyesconfig    gcc-15.1.0
-sh                                  defconfig    gcc-15.1.0
-sh                    randconfig-001-20250823    gcc-15.1.0
-sh                    randconfig-002-20250823    gcc-15.1.0
-sh                          sdk7780_defconfig    gcc-15.1.0
-sh                  sh7785lcr_32bit_defconfig    gcc-15.1.0
-sparc                            allmodconfig    gcc-15.1.0
-sparc                             allnoconfig    gcc-15.1.0
-sparc                               defconfig    gcc-15.1.0
-sparc                 randconfig-001-20250823    gcc-8.5.0
-sparc                 randconfig-002-20250823    gcc-8.5.0
-sparc64                             defconfig    clang-20
-sparc64               randconfig-001-20250823    gcc-8.5.0
-sparc64               randconfig-002-20250823    clang-22
-um                               allmodconfig    clang-19
-um                                allnoconfig    clang-22
-um                               allyesconfig    gcc-12
-um                    randconfig-001-20250823    clang-22
-um                    randconfig-002-20250823    clang-22
-x86_64                            allnoconfig    clang-20
-x86_64                           allyesconfig    clang-20
-x86_64      buildonly-randconfig-001-20250822    clang-20
-x86_64      buildonly-randconfig-002-20250822    gcc-12
-x86_64      buildonly-randconfig-003-20250822    clang-20
-x86_64      buildonly-randconfig-004-20250822    clang-20
-x86_64      buildonly-randconfig-005-20250822    clang-20
-x86_64      buildonly-randconfig-006-20250822    gcc-12
-x86_64                              defconfig    gcc-11
-x86_64                          rhel-9.4-rust    clang-20
-xtensa                            allnoconfig    gcc-15.1.0
-xtensa                randconfig-001-20250823    gcc-15.1.0
-xtensa                randconfig-002-20250823    gcc-13.4.0
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
