@@ -1,185 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7594C393DE2;
-	Mon, 25 Aug 2025 05:47:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE6219C569;
+	Mon, 25 Aug 2025 06:28:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756100834; cv=none; b=diNgbjQhdoDBGq6SOJ4SXq058HfdUINMmHgcHEVCGEwYYnzFAHxRVKPSa8thMG9hrespyABAIbOfeod4KhYZOvPFCQg0LN84UdtECdEu0+6Nq/rMM8fMLsbIUiC1xFVuLx0tJnVsFlisW5H3cH11cEhow0YbBLskC2rFD+JXepI=
+	t=1756103301; cv=none; b=IzCm9igTqcFiyncPpae5KFUqy0jl5XqmeP3T+dkTM4cg/SfV4UeGgHsK6nZ1B3osn/OCe1+mGEE5nTU+XGNEsKUDS7nTRcycMDcdeG2xyPlFctzH2HAl8hAMl51e/M6WdKsKtIN310bTgd9EnGrDDvDbKYWGphbWtRNsWXaDYaE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756100834; c=relaxed/simple;
-	bh=KIpZrilMyDhMs2KjP9vVMOlzp7ua5A9NIoB9V+D8X5w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pc6VvhTYimF/O+0PtFiPOo0L1kAVjnT9RFBn8zIsrbikOX1D93xmGOyzIYvqQbMhy4ajra/irc0v9/5sP5FztYcpWM9ZS8j4qq7j8aQ2zMakKjSEvbDdXDtjxdpIzRbzK6LxJsH2NCSp52wA9yawNAGDEnSa/Y5AA1sz9pJyR1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XCm/YHhD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1756103301; c=relaxed/simple;
+	bh=WQVylS92T3jgMm7p84Z04xb25P92PYQug7wH3/uzZMA=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=S1Vp+CXST8Tyoau3lRnM42AAmiRKrA9V6XMG8WwpirBK7pVjqisabFh2W++6Nagj8oYiVOdTgjJrPhRaDngCqEGH3BJKAFcXb4ciUADdmSkEWb7Tw2Z9J+4ZJJrN6v0iq5QRXQqMndyQp7bd6Z9uk3MS0BsnSYi5lQMGLK6YvTY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=akjIn+wG; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XCm/YHhD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DE9C4CEED;
-	Mon, 25 Aug 2025 05:47:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756100833;
-	bh=KIpZrilMyDhMs2KjP9vVMOlzp7ua5A9NIoB9V+D8X5w=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=XCm/YHhDqpTRviNCUdUMpF2rm8QP466vjAKbuiE9jjqBSA5d+2Asnn571rJ9azQZI
-	 vtc1t0vLIyfA5bYcBGqKqQ9hTcvEMUbVZjl8d0EqwyLjnpgWTdwyrQZV9vY3ta5TZi
-	 B5VHeoFlOjdfds2wZp+eudBGMdMEyWhbf4NLgMzs2ydxYpCNwWj0jyemu0/8uhfTl2
-	 wV0xfca8ZiZ3XP+dDzUxYTyCUHLxCHpKq0/uNK4C1l0ELrbFWHfmLH4nwEbG/qm685
-	 PGKl+PmgnICx3DUeA/e9EYzFE3rA0JvjrakyAbUzl1Kf0Liehzy1vYaOdElLuh5muM
-	 JFqyKGeOyz1JQ==
-Message-ID: <e5f75c37-30a5-4c4e-aae5-a72060be24da@kernel.org>
-Date: Mon, 25 Aug 2025 07:47:10 +0200
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="akjIn+wG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1756103300; x=1787639300;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WQVylS92T3jgMm7p84Z04xb25P92PYQug7wH3/uzZMA=;
+  b=akjIn+wG15LcV1BxG1NwXrF7tftD289/QyhmevycNxc7Ap+TTq27TFgv
+   G2wNjzRchclfr8fXicwA+HuEVRcPBkxm0cfccYhRd+h4nUSaWIibrZKx5
+   t8dvzwa5fILD+FkPxQfok7GfhXpCsT/o4Hryl5DLELchCDLMwdrtZkRIE
+   vzBWaq0ubNayr9kC18v5WbyCMHJDISNdR+493djgNxdyQ+SorYXyEIbr5
+   xk9K7UD7lcQWP8cVp19zYqHYSUl9S26a0y+vDC78V/90lems+gWPB1qfJ
+   QWOkZL4+OhjfL9u9gXK7g3DPL2cxDsPFOPWQHCgEbnQsxFD/vMDClVCCY
+   A==;
+X-CSE-ConnectionGUID: E7GoUgAnRxqBfYFECdyUSQ==
+X-CSE-MsgGUID: 5apMjYN7Q+GTJVOEPqfVXw==
+X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
+   d="scan'208";a="45594060"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 24 Aug 2025 23:28:14 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Sun, 24 Aug 2025 23:27:54 -0700
+Received: from DEN-DL-M70577 (10.10.85.11) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
+ Transport; Sun, 24 Aug 2025 23:27:50 -0700
+Date: Mon, 25 Aug 2025 06:27:49 +0000
+From: Daniel Machon <daniel.machon@microchip.com>
+To: Robert Marko <robert.marko@sartura.hr>
+CC: <linux@armlinux.org.uk>, <nicolas.ferre@microchip.com>,
+	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
+	<catalin.marinas@arm.com>, <will@kernel.org>, <olivia@selenic.com>,
+	<herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+	<andi.shyti@kernel.org>, <lee@kernel.org>, <broonie@kernel.org>,
+	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <arnd@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-crypto@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<o.rempel@pengutronix.de>, <luka.perkov@sartura.hr>
+Subject: Re: [PATCH v9 0/9] arm64: lan969x: Add support for Microchip LAN969x
+ SoC
+Message-ID: <20250825062749.5hjcxwlbmagccqgj@DEN-DL-M70577>
+References: <20250813174720.540015-1-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] vt: add support for smput/rmput escape codes
-To: Calixte Pernot <calixte.pernot@grenoble-inp.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250824142016.47219-1-calixte.pernot@grenoble-inp.org>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20250824142016.47219-1-calixte.pernot@grenoble-inp.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250813174720.540015-1-robert.marko@sartura.hr>
 
-Hi,
-
-On 24. 08. 25, 16:20, Calixte Pernot wrote:
-> Support "\e[?1049h" and "\e[?1049l" escape codes.
-> This patch allows programs to enter and leave alternate screens.
-> This feature is widely available in graphical terminal emulators and mostly
-> used by fullscreen terminal-based user interfaces such as text editors.
-> Most editors such as vim and nano assume this escape code in not supported
-> and will not try to print the escape sequence if TERM=linux.
-> To try out this patch, run `TERM=xterm-256color vim` inside a VT.
+> This patch series adds basic support for Microchip LAN969x SoC.
 > 
-> Signed-off-by: Calixte Pernot <calixte.pernot@grenoble-inp.org>
-...
-> --- a/drivers/tty/vt/vt.c
-> +++ b/drivers/tty/vt/vt.c
-...
-> @@ -1878,6 +1883,46 @@ static int get_bracketed_paste(struct tty_struct *tty)
->   	return vc->vc_bracketed_paste;
->   }
->   
-> +/* console_lock is held */
-> +static void enter_alt_screen(struct vc_data *vc)
-> +{
-> +	unsigned int size = vc->vc_rows * vc->vc_cols * 2;
-> +
-> +	if (vc->vc_saved_screen != NULL)
-> +		return; /* Already inside an alt-screen */
+> It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
+> which allows to avoid the need to change dependencies of the drivers that
+> are shared for Microchip SoC-s in the future.
+> 
+> DTS and further driver will be added in follow-up series.
+> 
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> ---
+> Changes in v9:
+> * Make ARCH_MICROCHIP hidden symbol that is selected by SparX-5 and LAN969x
+> directly, this avoids breaking existing configs with ARCH_SPARX5
+> 
+> Changes in v8:
+> * Move to using ARCH_MICROCHIP as suggested by Arnd
+> * Dropped any review tags due to changes
+> 
+> Robert Marko (9):
+>   arm64: Add config for Microchip SoC platforms
+>   ARM: at91: select ARCH_MICROCHIP
+>   arm64: lan969x: Add support for Microchip LAN969x SoC
+>   mfd: at91-usart: Make it selectable for ARCH_MICROCHIP
+>   tty: serial: atmel: make it selectable for ARCH_MICROCHIP
+>   spi: atmel: make it selectable for ARCH_MICROCHIP
+>   i2c: at91: make it selectable for ARCH_MICROCHIP
+>   char: hw_random: atmel: make it selectable for ARCH_MICROCHIP
+>   crypto: atmel-aes: make it selectable for ARCH_MICROCHIP
+> 
+>  arch/arm/mach-at91/Kconfig     |  4 +++
+>  arch/arm64/Kconfig.platforms   | 51 ++++++++++++++++++++++++----------
+>  drivers/char/hw_random/Kconfig |  2 +-
+>  drivers/crypto/Kconfig         |  2 +-
+>  drivers/i2c/busses/Kconfig     |  2 +-
+>  drivers/mfd/Kconfig            |  2 +-
+>  drivers/spi/Kconfig            |  2 +-
+>  drivers/tty/serial/Kconfig     |  2 +-
+>  8 files changed, 47 insertions(+), 20 deletions(-)
+> 
+> --
+> 2.50.1
+>
 
-All this is protected by console_lock, right?
-
-> +	vc->vc_saved_screen = kzalloc(size, GFP_NOWAIT);
-
-Why GFP_NOWAIT?
-
-> +	if (vc->vc_saved_screen == NULL)
-> +		return;
-> +	memcpy(vc->vc_saved_screen, (u16 *)vc->vc_origin, size);
-
-kmemdup();
-
-> +	vc->vc_saved_rows = vc->vc_rows;
-> +	vc->vc_saved_cols = vc->vc_cols;
-> +	save_cur(vc);
-> +	/* clear entire screen */
-> +	csi_J(vc, CSI_J_FULL);
-> +}
-> +
-> +/* console_lock is held */
-> +static void leave_alt_screen(struct vc_data *vc)
-> +{
-> +	unsigned int rows = min(vc->vc_saved_rows, vc->vc_rows);
-> +	unsigned int cols = min(vc->vc_saved_cols, vc->vc_cols);
-> +	unsigned short *src, *dest;
-
-u16
-
-> +
-> +	if (vc->vc_saved_screen == NULL)
-> +		return; /* Not inside an alt-screen */
-> +	for (int r = 0; r < rows; r++) {
-
-unsigned
-
-> +		src = vc->vc_saved_screen + r * vc->vc_saved_cols;
-> +		dest = ((u16 *)vc->vc_origin) + r * vc->vc_cols;
-> +		memcpy(dest, src, 2 * cols);
-> +	}
-> +	restore_cur(vc);
-> +	/* Update the entire screen */
-> +	if (con_should_update(vc))
-> +		do_update_region(vc, vc->vc_origin, vc->vc_screenbuf_size / 2);
-> +	kfree(vc->vc_saved_screen);
-> +	vc->vc_saved_screen = NULL;
-> +}
-...
-> --- a/include/linux/console_struct.h
-> +++ b/include/linux/console_struct.h
-> @@ -159,6 +159,9 @@ struct vc_data {
->   	struct uni_pagedict *uni_pagedict;
->   	struct uni_pagedict **uni_pagedict_loc; /* [!] Location of uni_pagedict variable for this console */
->   	u32 **vc_uni_lines;			/* unicode screen content */
-> +	unsigned short	*vc_saved_screen;
-
-u16 *
-
-> +	unsigned int	vc_saved_cols;
-> +	unsigned int	vc_saved_rows;
->   	/* additional information is in vt_kern.h */
->   };
->   
-
-thanks,
--- 
-js
-suse labs
+Acked-by: Daniel Machon <daniel.machon@microchip.com> 
