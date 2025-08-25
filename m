@@ -1,227 +1,229 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from smtpout02-ext4.partage.renater.fr (smtpout02-ext4.partage.renater.fr [194.254.241.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B5D3282EE;
-	Mon, 25 Aug 2025 11:00:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFA5A14F125;
+	Mon, 25 Aug 2025 11:41:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.254.241.31
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756119631; cv=none; b=gHM9wNGSi6/NtnNrvaCGqa0cXYivrF6U8Fp4NnCUMWUa3V+4/EOMgKmeKXVGWt0O05Q18KE6sQis7F5DXwir1GN6I/+RIz9CjQvzdeLU0HImtJJdY3+eOMgy7YJbBAZH0VpqDziWJye1EKKCjWRwYt7e/QWZ34Xvu9+aEmkxrbY=
+	t=1756122073; cv=none; b=F0P0v2ww9j72tWQovnc8NrW5NbdMNTvC7v41kcNIoN95LxX8uhDhZhwPP73u1Q4w15wkbjhuRgyZ8ASRU5Mc8sn+1rl56dAGAnlOIFt89av/CXmh7ME39wBLN4FKVAKc/47trrQVABzdqKPEvF4RniPzv00n+ELfSbxM/TeYhbo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756119631; c=relaxed/simple;
-	bh=Y9HgBMHaxiZh9mMVVfJ9fw/zelPq48/16XVKZy3vvVc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=WNH5Ix1crDuuBMF4pUkRzuPsbQ7uHEZ6bKria8I4v5CV0oC6oM7YfHo/do60PHz9v3MYdq7Lmpw1YFAZuvtbg56Qp0xir6ry6MTHf4OhaDq3ffItOGzWF9H0dgtWtrH2ug+IeyIDL8gwf8s/OJIzWfp+rfBkvnFxm52jS+0R+K4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=l9F4rwu+; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=RdDf6MOQ; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1756122073; c=relaxed/simple;
+	bh=qX50VbLoQ13NaBCeyIYENxxCd/IArQmdsbeRnc3ngfI=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=mAJEDtqgJx02VX5vgkqhWrBul4s7LoNTDOO5yVnn/YXOF+Brr/8LnH0rUGYsMxr5wYKcVt+0DafiIvEDbb3sG4VEAgPJyWcGHZQzjF2aVk67tYw3q9nRu4hskhWIw8zGaIFbUfzDrZ8R06ggyGheJTSrjv5A6Qmf4MSrvaRcueE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=grenoble-inp.org; spf=none smtp.mailfrom=grenoble-inp.org; dkim=pass (2048-bit key) header.d=grenoble-inp.org header.i=@grenoble-inp.org header.b=VWW10mal; arc=none smtp.client-ip=194.254.241.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=grenoble-inp.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=grenoble-inp.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="l9F4rwu+";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="RdDf6MOQ"
-From: John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1756119627;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=R6P4IVm59PUG+kLJytwdFfMnwfB2AS14uKrEYIatw30=;
-	b=l9F4rwu+11dlkqknQOq5NHbQV4dvKBd5phfWepZvc1lc8FUWoUmy3u0tD1IlBw+e5A0ktp
-	NMDsI8mstXJV9YaK9IRptjkrASOcXdjIOKOp1Re7j4qdLI0lbF8ETFed1RkNXFwDVDceuz
-	kwE8/oyg+5wVdovthd3LWr20rwECrrknWVekPcIbUAiD/UTL0vkUZ4Gh7R7iq/BsHTXUfY
-	w0EJmiZFnTLUMMfgIEG7+gcEf3YaFvIMBqL+sWJCMIElZO08RURRwxuhPZ+ABkDLyTMd5S
-	WhxlghqVrJ0x+x6+HEQ3avTewmmRrGGEtpHXG19WAlfUAfk7+Yyn5TuJRVkDdg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1756119627;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=R6P4IVm59PUG+kLJytwdFfMnwfB2AS14uKrEYIatw30=;
-	b=RdDf6MOQY8yxH4fnIQ1rVFLHBgdUic0xx3xLzUfLiuWKIdg4PhfwS47sD7nMI1gccRjDCw
-	0KdTqAy+fuKCTGAA==
-To: Petr Mladek <pmladek@suse.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Petr Mladek <pmladek@suse.com>, Sergey Senozhatsky
- <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>, Thomas
- Gleixner <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
- linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy
- Shevchenko <andriy.shevchenko@linux.intel.com>, Arnd Bergmann
- <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>, Niklas Schnelle
- <schnelle@linux.ibm.com>, Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [RFC 0/1] serial: 8250: nbcon_atomic_flush_pending() might
- trigger watchdog warnigns
-In-Reply-To: <20250822142502.69917-1-pmladek@suse.com>
-References: <20250822142502.69917-1-pmladek@suse.com>
-Date: Mon, 25 Aug 2025 13:06:27 +0206
-Message-ID: <84qzwzbr90.fsf@jogness.linutronix.de>
+	dkim=pass (2048-bit key) header.d=grenoble-inp.org header.i=@grenoble-inp.org header.b="VWW10mal"
+Received: from zmtaauth02.partage.renater.fr (zmtaauth02.partage.renater.fr [194.254.241.25])
+	by smtpout20.partage.renater.fr (Postfix) with ESMTP id CA941C0090;
+	Mon, 25 Aug 2025 13:41:03 +0200 (CEST)
+Received: from zmtaauth02.partage.renater.fr (localhost [127.0.0.1])
+	by zmtaauth02.partage.renater.fr (Postfix) with ESMTPS id BAD25A06D7;
+	Mon, 25 Aug 2025 13:41:03 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by zmtaauth02.partage.renater.fr (Postfix) with ESMTP id A76DBA0C56;
+	Mon, 25 Aug 2025 13:41:03 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zmtaauth02.partage.renater.fr A76DBA0C56
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=grenoble-inp.org;
+	s=F42A61D9-9621-4693-8E8E-830FB5F1ED6E; t=1756122063;
+	bh=qX50VbLoQ13NaBCeyIYENxxCd/IArQmdsbeRnc3ngfI=;
+	h=Message-ID:Date:MIME-Version:From:To;
+	b=VWW10malf6pYYqOmW5vJGixqXmMB3VxlYkldGI+CTblOg8IhykmqJtAca3O7I1rZD
+	 lAmlubLY7B71SS/Oq7o/IiD82e7asSgaRUgMm6Fivfz3LzYBDTl14+MDu22tKMUDXS
+	 9I84x2OYmnSuEOmW1oAWALfU3DGJ6iMvhpjctU9h1wNVRJluMy668+2zZnX92U/MQF
+	 XQtJfEYD6Zb88rXYHY4Fvz04jFXA1IJYjsbHsoNwz+VLJsjn5G/RpKdMCS2umiTS4z
+	 oOYmWfU3xY9EAyfUX/BoJ7sNdlpTng4WxDK+HIjMdkzHAAjbOt7fb0W1uMNgNq67Th
+	 sAWMn/MWVsUyA==
+Received: from zmtaauth02.partage.renater.fr ([127.0.0.1])
+ by localhost (zmtaauth02.partage.renater.fr [127.0.0.1]) (amavis, port 10026)
+ with ESMTP id dqTo0IRUplCw; Mon, 25 Aug 2025 13:41:03 +0200 (CEST)
+Received: from 91.166.147.41 (unknown [194.254.241.250])
+	by zmtaauth02.partage.renater.fr (Postfix) with ESMTPA id B0F3BA06D7;
+	Mon, 25 Aug 2025 13:41:02 +0200 (CEST)
+Message-ID: <7f55fd6b-91ed-453c-902a-0f7c74e201f5@grenoble-inp.org>
+Date: Mon, 25 Aug 2025 13:41:02 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+From: Calixte Pernot <calixte.pernot@grenoble-inp.org>
+Subject: Re: [PATCH] vt: add support for smput/rmput escape codes
+To: Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+References: <20250824142016.47219-1-calixte.pernot@grenoble-inp.org>
+ <e5f75c37-30a5-4c4e-aae5-a72060be24da@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=calixte.pernot@grenoble-inp.org; keydata=
+ xsFNBGcPasoBEADHF6CH9NYzvIoq8XdjImuAtA3BL2i3rbUyg6m+sKhdSVXU7qvAYoDCM4JD
+ c/y5mcdPptVwBKsZ4prTQjE1iq9Y5BDUXGE0guess8vqf2uLofbCfuln1o4TW3JpCmqIEJkP
+ 4QLugHprFFk/Dab74xACWxtkR4TJ9zrctZ10Pa5qUwfJHz+VuwZ41gSeCfZeYTX57L9RkfpV
+ Zv4tt69WBXrgeaPjrN95OYZ4mZlZLJy+zqypsPXrqylSP9CwrEpVayopWVXtZrLeF9NeUD5w
+ jWGHqfiLqnfPUd7zZsFMntb7tANLwywRHCTA7WpfF5QOxZfvyS3ZshGvoX6TSWTHZqxs3F7c
+ YKrMawYBFYsA9QxDCDEMWoR/fdY3rOocuZKM4mpft7XFn2+WoQUKD2gYXL3MywSAbcSZ2b/z
+ e/K4M0LWG4hATvMzP+WQgiKAAPlCgRwSmzrZ6mDmZq17Mg0pkD8dUBP2THV8WZjRTFl/I0Bz
+ 2ZTzTy8JKTbUOiZEyTfNROM10cxMR133IQgRhFbFGoBh3Ew8VbfrREFiX3lK4RRNjCZIox5F
+ b2OPSrxyMaFW8fnEVDC46IHgX2w5bFQIRy/qlk1HQncRlVElkAOHn+xM7sZfbsLCCDkss6th
+ zuQZSLk/oGNFrEwwoElVVZ2lr2IVDXc0ULh/T5WOsWlcryX+PwARAQABzTBDYWxpeHRlIFBl
+ cm5vdCA8Y2FsaXh0ZS5wZXJub3RAZ3Jlbm9ibGUtaW5wLm9yZz7CwZIEEwEIADwWIQSpzleK
+ VAGVpGrDg+Gv54H4FlmguAUCZw9qygMbLwQFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AA
+ CgkQr+eB+BZZoLjVDQ//ekbMZwq0bDep8hVLiU55q1OQsI3sQqDlyOCl0yKR5HOiKk/zrMgM
+ KmfvYQH4E60F8dljhFh9rRyk879B3/qbQRcCi9aAB+sdVVAAfGpHlHQAjuyFQXXBJGrpvESt
+ ClEeDrKGBY2Nd1R4KrJGwHXhDJ2QcWW7r2pU/n0o/gJflMpzy7EA2DH4hrU0AS34Hzli2LA3
+ vTtm5vWT2hzrUFAoq+psvnxGryyetQ5hB69rf67zh6iYqR+vUn5JAJh4tmu/fP4x5W1L2jko
+ 1Jsn3TySNnb4mK8RdzOwVKIe+A4Wo9PRLoW6F9GUpTG5T2ojS3mrPwlNJQwJGNxt8QY16RAv
+ i+Qu4apxUvVoHSTrpE8heqIeKFn+g6aA1pC1qxtZOrSpaejXd1x4EuBGngY/yLJg53Z0Mx1P
+ 7fGRzFnl6xubv14jV6cK7MB+hJbjCV4u4gQe+N9EIMB1gfzF7CRuUfLowmprX8ceeO7+sD8t
+ WoaS5A8/rVEfsWa94JPg319ksIAi6YbL1boWkell7fXiiLsZk05ntLXs+7gWzAqFJu4kL63U
+ to83TwjHKkDQu9pZ2qIMwFM/nmUycAmvQ6/S94saUYvLymP4gGecpgijMmMZOKtcVA5k2Vdz
+ ByKSaWT7K5x8dqmsnKQFrg2OcGu53MaQqzAKY4qAruQNGKbbNVKonRXOwU0EZw9qygEQAMeg
+ 7tkXBGO59ZrVcEODgqJvURwijbMOvoVC1uh3PMdUUSUMtMVAgZch8c1HoB0NT7AqRADTG+qw
+ BBQ5aFsxhD6+o6NYcMWIjqcYXX9naNAuaGFBSDIEbrKSlXtfAdLtmKKEiRfLAPgV0Xs63QDq
+ s/0Qg/l9rmGV/yP1uDah+9SHSwYxI2wJb1GgtCWkIYJfOZVZ6yIHk3uQ3hNOWyO0IHjvGkO6
+ JDJdaEVewW2KXm26H1xP2EodNWdwrxRjQENGJWmJcVg3zyvfnJ3P90QrdZ+lkX/eovVrz3uo
+ Laz3n2h9rPH67ip2CpsFwPb+Zd7khShhyqFd+iNKS0xTEEL/TuXK1/kooW9pmLw5HH6j7RRQ
+ VU4xpfO8tyck3MVpfn0C6dD87giJxfeS1ts57sGmAe35Fu0EXzxhGAC3pLb0uoj2GosptoVI
+ 2ZYT9TX3qpcZG2b8LRh2RGjkdNhupZCZL95m43ENb0splQdWqeg1x6y8wqu+3uW5w0nb4hJH
+ 4dqvUJ+uM3OqA8S6jFzuEeNKGd3viM/d9SBJHbaARahyb8vhDrS7qsVO/bnmexabrnr66SaA
+ qe+I+AumflhkVuFHZ1q0wIZSge/63+OjkfKJU4uBaxYo55YTij/lrOx6Ju+SctkUGK2ASsDY
+ 42garTRFcVJznKs3z2J9Dn565+Nr/zDLABEBAAHCw6wEGAEIACAWIQSpzleKVAGVpGrDg+Gv
+ 54H4FlmguAUCZw9qygIbLgJACRCv54H4FlmguMF0IAQZAQgAHRYhBOCvcRhyqX4KREFA3kN9
+ JPe4RIeLBQJnD2rKAAoJEEN9JPe4RIeLHDAP/3xggfEmebvvUJjhUK43Bb4HO/Ste7pZKFcE
+ ldfwAAWlvBc0Vvyqr6RMEI3/gxBXKvYAo6fkEa0jeYHw3p3c1I/9jZwpYF6hyLpsrB29djUI
+ 2eTT5p8ySozlTxcGauc6YDQg7unKk3qRHCib5EOmVLctgul2tVMfDsEqooNWyD9igugtQgTP
+ n+k74KQFIu4o+XJP4j+jVBLuys0BAUANGqSwbyO0Wox2RlpQVzSG9jtKBImXPArxKkWxyzPr
+ jRU8ODuNvW1Pj4wIAscmqijYNfh7GqadUiqecQiGoEfOGN5MhdfzGfbHl7xBRmK26k+zl+qS
+ gTZoOxIBLxphELKTIHKJlIg+RSOlJofNnGyc1qSqZg4sE8Q5IGB4nD3MaGqVfs7nWYgmzC+f
+ j2c4IehNcXp7c0EnSHFTq0/K3+YsT6auTiiiCjpt/aEySYfSe62Q2hACScDq7S76614NN+AU
+ thK6jnXV1YNkn2nMLmfZJl6zudvoFVI3Q6m+vIq6zL3jBv7ajO8EPxJe3fbWRwUdKLXPRizh
+ 7CjHGYv8rxWre0RfMMRo4LXO+fuTIPzrFpAmdqyW+yEUZGKbb+oc0C44/ewQZLzdN0bqJqHk
+ LZw8pLKy6mJ45IDXi2cqkg9lJ4WvIEwuBtDa5tfnxF5VgrrK2vSr4+Tj8D+SMLA8yJMOc+qf
+ U7MP/Rgwegkey0GXNSlp9+mTRsO/jHHsv0mz4Hmfe3UP+enJDBVQ0C/QRErUhctLWuXrU76a
+ 9rH+tnlsoma+6UVxkkxUR/WIcRi9LbLBqrwE3FQ5rbprWgksbSUnjiSt0Ke+6qj5CEZ834wL
+ hGj23mhNFuEcOSsdGa/zOu2IRvhQBtsYtw5BP+KL5g97nwgmhpE8sfPA49Simg637TZxSUCq
+ gtzJfh9ef1SMiine6gvpLMR7L38YtmD1FTWsEYdjZ0FuzB3z7uT/DqsRr85RffPUIzhFeKun
+ pU/s/RMLAoAg8gGqecDGaadjq4wnNvXR8YwdMDrhul2cvePtCHRAOae7wMuki17/64gppHJV
+ L6z+j6NK5rbgqyhTJPOtDkV+HvCSjNZ2Y/H+xs1FlNU4dV2jr1quoojqBaXNU7acQ+GceGLe
+ +hZCeLB/yMnnl6cgt+x5Lr9GMXRe2hT7tjC3Juvk6lvWaiDBdAz2JgUQYxNeT/FUYkUbgjq7
+ HajThdXZBbu+Wpo2JZIqqdwxDxNXMwbTywYVd4/l/kZp+Zcn6ylweNksTFJQHRowr59peM8b
+ a/sv9ll6nqkWDMvHXBNkLAUDo6kyAd+GiFCFG9urte0jL92JqtAJ49OXequt8JzLDTTKTy82
+ jmGZ/HGhGtB2quePDWpaQ8GSGKXaPQURSb99Vuqt
+In-Reply-To: <e5f75c37-30a5-4c4e-aae5-a72060be24da@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-Virus-Scanned: clamav-milter 0.103.12 at clamav02
+X-Virus-Status: Clean
+X-Renater-Ptge-SpamState: clean
+X-Renater-Ptge-SpamScore: -100
+X-Renater-Ptge-SpamCause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddujedvfedtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecutffgpfetvffgtfenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfhffuvfevfhgjtgfgsehtkeertddtvdejnecuhfhrohhmpeevrghlihigthgvucfrvghrnhhothcuoegtrghlihigthgvrdhpvghrnhhothesghhrvghnohgslhgvqdhinhhprdhorhhgqeenucggtffrrghtthgvrhhnpefggfdvheehfeehkeehfeffjeelveejfeekieejtdeiveeiudekieekvddvkeeggfenucfkphepudelgedrvdehgedrvdeguddrvdehtdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpeduleegrddvheegrddvgedurddvhedtpdhhvghlohepledurdduieeirddugeejrdeguddpmhgrihhlfhhrohhmpegtrghlihigthgvrdhpvghrnhhothesghhrvghnohgslhgvqdhinhhprdhorhhgpdhnsggprhgtphhtthhopeegpdhrtghpthhtohepjhhirhhishhlrggshieskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepghhrvghgkhhhsehlihhnuhigfhhouhhnuggrthhiohhnrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqshgvrhhirghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+Content-Transfer-Encoding: quoted-printable
 
-On 2025-08-22, Petr Mladek <pmladek@suse.com> wrote:
+Hi, thanks for your response.
+
+On 8/25/25 07:47, Jiri Slaby wrote:
 > Hi,
 >
-> this is a followup for the patchset which converted serial 8250
-> console driver to nbcon [1]. It was added into upstream but
-> the last two patches were later reverted because they caused
-> regressions.
+> On 24. 08. 25, 16:20, Calixte Pernot wrote:
+>> Support "\e[?1049h" and "\e[?1049l" escape codes.
+>> This patch allows programs to enter and leave alternate screens.
+>> This feature is widely available in graphical terminal emulators and=20
+>> mostly
+>> used by fullscreen terminal-based user interfaces such as text editors=
+.
+>> Most editors such as vim and nano assume this escape code in not=20
+>> supported
+>> and will not try to print the escape sequence if TERM=3Dlinux.
+>> To try out this patch, run `TERM=3Dxterm-256color vim` inside a VT.
+>>
+>> Signed-off-by: Calixte Pernot <calixte.pernot@grenoble-inp.org>
+> ...
+>> --- a/drivers/tty/vt/vt.c
+>> +++ b/drivers/tty/vt/vt.c
+> ...
+>> @@ -1878,6 +1883,46 @@ static int get_bracketed_paste(struct=20
+>> tty_struct *tty)
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return vc->vc_bracketed_paste;
+>> =C2=A0 }
+>> =C2=A0 +/* console_lock is held */
+>> +static void enter_alt_screen(struct vc_data *vc)
+>> +{
+>> +=C2=A0=C2=A0=C2=A0 unsigned int size =3D vc->vc_rows * vc->vc_cols * =
+2;
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (vc->vc_saved_screen !=3D NULL)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return; /* Already inside =
+an alt-screen */
 >
-> We have seen the following hardlockup report when using the converted
-> serial 8250 console driver:
->
-> [    0.000000][    T0] Command line: elfcorehdr=0x145f000000  mitigations=auto security=selinux selinux=1 console=ttyS0,115200 earlyprintk=ttyS0,115200 ignore_loglevel panic=13 intel_iommu=on sysrq=yes reset_devices acpi_no_memhotplug cgroup_disable=memory nokaslr numa=off irqpoll nr_cpus=4 root=kdump rootflags=bind rd.udev.children-max=8 disable_cpu_apicid=0  
-> [...]
-> [    3.771531][    T1] pci 0000:3e:08.1: [8086:324
-> ** replaying previous printk message **
-> [    3.771531][    T1] pci 0000:3e:08.1: [8086:3246] type 00 class 0x088000 PCIe Root Complex Integrated Endpoint
-> [ ... more than 2000 lines, about 200kB messages ... ]
-> [    3.837752][    T1] pci 0000:20:01.0: Adding to iommu group 18
-> [    3.837851][    T
-> ** replaying previous printk message **
-> [    3.837851][    T1] pci 0000:20:03.0: Adding to iommu group 19
-> [    3.837946][    T1] pci 0000:20:05.0: Adding to iommu group 20
-> [ ... more than 500 messages for iommu groups 21-590 ...]
-> [    3.912932][    T1] pci 0000:f6:00.1: Adding to iommu group 591
-> [    3.913070][    T1] pci 0000:f6:00.2: Adding to iommu group 592
-> [    3.913243][    T1] DMAR: Intel(R) Virtualization Technology for Directed I/O
-> [    3.913245][    T1] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
-> [    3.913245][    T1] software IO TLB: mapped [mem 0x000000004f000000-0x0000000053000000] (64MB)
-> [    3.913324][    T1] RAPL PMU: API unit is 2^-32 Joules, 3 fixed counters, 655360 ms ovfl timer
-> [    3.913325][    T1] RAPL PMU: hw unit of domain package 2^-14 Joules
-> [    3.913326][    T1] RAPL PMU: hw unit of domain dram 2^-14 Joules
-> [    3.913327][    T1] RAPL PMU: hw unit of domain psys 2^-0 Joules
-> [    3.933486][    T1] ------------[ cut here ]------------
-> [    3.933488][    T1] WARNING: CPU: 2 PID: 1 at arch/x86/events/intel/uncore.c:1156 uncore_pci_pmu_register+0x15e/0x180
-> [    3.930291][    C0] watchdog: Watchdog detected hard LOCKUP on cpu 0
-> [    3.930291][    C0] Modules linked in:
-> [    3.930291][    C0] Supported: No, Unreleased kernel
-> [    3.930291][    C0] CPU: 0 UID: 0 PID: 18 Comm: pr/ttyS0 Not tainted 6.12.0-160000.18-default #1 PREEMPT(voluntary) SLFO-1.2 (unreleased) dd174c2cca19586eee16eaccfeba02f4d5b57c67
-> [    3.930291][    C0] Hardware name: HPE ProLiant DL560 Gen11/ProLiant DL560 Gen11, BIOS 2.48 03/11/2025
-> [    3.930291][    C0] RIP: 0010:nbcon_reacquire_nobuf+0x11/0x50
-> [    3.930291][    C0] Code: 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 0f 1f 44 00 00 53 48 89 fb eb 02 f3 90 <48> 89 df e8 b7 fc ff ff 84 c0 74 f2 48 8b 03 48 c7 43 28 00 00 00
-> [    3.930291][    C0] RSP: 0000:ffa0000000147d38 EFLAGS: 00000046
-> [    3.930291][    C0] RAX: 0000000000000000 RBX: ffa0000000147e78 RCX: 0000000000000001
-> [    3.930291][    C0] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffa0000000147e78
-> [    3.930291][    C0] RBP: ffa0000000147e78 R08: 0000000000000010 R09: 0000000000000000
-> [    3.930291][    C0] R10: 312e38303a65333a R11: 3030303020696370 R12: ff1100145f53f032
-> [    3.930291][    C0] R13: 0000000000000000 R14: ff1100145f53f032 R15: ff1100145f53f072
-> [    3.930291][    C0] FS:  0000000000000000(0000) GS:ff1100147ea00000(0000) knlGS:0000000000000000
-> [    3.930291][    C0] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [    3.930291][    C0] CR2: ff1100147e402000 CR3: 000000147d238001 CR4: 0000000000f71ef0
-> [    3.930291][    C0] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [    3.930291][    C0] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
-> [    3.930291][    C0] PKRU: 55555554
-> [    3.930291][    C0] Call Trace:
-> [    3.930291][    C0]  <NMI>
-> [    3.930291][    C0]  ? watchdog_hardlockup_check.cold+0xe7/0xec
-> [    3.930291][    C0]  ? __perf_event_overflow+0x11b/0x380
-> [    3.930291][    C0]  ? handle_pmi_common+0x15c/0x3d0
-> [    3.930291][    C0]  ? intel_pmu_handle_irq+0x10f/0x5b0
-> [    3.930291][    C0]  ? perf_event_nmi_handler+0x2a/0x50
-> [    3.930291][    C0]  ? nmi_handle+0x5e/0x120
-> [    3.930291][    C0]  ? default_do_nmi+0x40/0x130
-> [    3.930291][    C0]  ? exc_nmi+0x187/0x240
-> [    3.930291][    C0]  ? end_repeat_nmi+0xf/0x53
-> [    3.930291][    C0]  ? nbcon_reacquire_nobuf+0x11/0x50
-> [    3.930291][    C0]  ? nbcon_reacquire_nobuf+0x11/0x50
-> [    3.930291][    C0]  ? nbcon_reacquire_nobuf+0x11/0x50
-> [    3.930291][    C0]  </NMI>
-> [    3.930291][    C0]  <TASK>
-> [    3.930291][    C0]  serial8250_console_write+0x16d/0x5c0
-> [    3.930291][    C0]  ? asm_sysvec_apic_timer_interrupt+0x1a/0x20
-> [    3.930291][    C0]  nbcon_emit_next_record+0x22c/0x250
-> [    3.930291][    C0]  nbcon_emit_one+0x93/0xe0
-> [    3.930291][    C0]  nbcon_kthread_func+0x13c/0x1c0
-> [    3.930291][    C0]  ? __pfx_nbcon_kthread_func+0x10/0x10
-> [    3.930291][    C0]  kthread+0xcd/0x110
-> [    3.930291][    C0]  ? __pfx_kthread+0x10/0x10
-> [    3.930291][    C0]  ret_from_fork+0x31/0x50
-> [    3.930291][    C0]  ? __pfx_kthread+0x10/0x10
-> [    3.930291][    C0]  ret_from_fork_asm+0x1a/0x30
-> [    3.930291][    C0]  </TASK>
-> [    3.930291][    C0] Kernel panic - not syncing: Hard LOCKUP
-> [    3.930291][    C0] CPU: 0 UID: 0 PID: 18 Comm: pr/ttyS0 Not tainted 6.12.0-160000.18-default #1 PREEMPT(voluntary) SLFO-1.2 (unreleased) dd174c2cca19586eee16eaccfeba02f4d5b57c67
-> [    3.930291][    C0] Hardware name: HPE ProLiant DL560 Gen11/ProLiant DL560 Gen11, BIOS 2.48 03/11/2025
-> [    3.930291][    C0] Call Trace:
-> [    3.930291][    C0]  <NMI>
-> [    3.930291][    C0]  dump_stack_lvl+0x4b/0x70
-> [    3.930291][    C0]  panic+0x106/0x2d3
-> [    3.930291][    C0]  nmi_panic.cold+0xc/0xc
-> [    3.930291][    C0]  watchdog_hardlockup_check.cold+0xca/0xec
-> [    3.930291][    C0]  __perf_event_overflow+0x11b/0x380
-> [    3.930291][    C0]  handle_pmi_common+0x15c/0x3d0
-> [    3.930291][    C0]  intel_pmu_handle_irq+0x10f/0x5b0
-> [    3.930291][    C0]  perf_event_nmi_handler+0x2a/0x50
-> [    3.930291][    C0]  nmi_handle+0x5e/0x120
-> [    3.930291][    C0]  default_do_nmi+0x40/0x130
-> [    3.930291][    C0]  exc_nmi+0x187/0x240
-> [    3.930291][    C0]  end_repeat_nmi+0xf/0x53
-> [    3.930291][    C0] RIP: 0010:nbcon_reacquire_nobuf+0x11/0x50
-> [    3.930291][    C0] Code: 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 0f 1f 44 00 00 53 48 89 fb eb 02 f3 90 <48> 89 df e8 b7 fc ff ff 84 c0 74 f2 48 8b 03 48 c7 43 28 00 00 00
-> [    3.930291][    C0] RSP: 0000:ffa0000000147d38 EFLAGS: 00000046
-> [    3.930291][    C0] RAX: 0000000000000000 RBX: ffa0000000147e78 RCX: 0000000000000001
-> [    3.930291][    C0] RDX: 0000000000000000 RSI: 0000000000000001 RDI: ffa0000000147e78
-> [    3.930291][    C0] RBP: ffa0000000147e78 R08: 0000000000000010 R09: 0000000000000000
-> [    3.930291][    C0] R10: 312e38303a65333a R11: 3030303020696370 R12: ff1100145f53f032
-> [    3.930291][    C0] R13: 0000000000000000 R14: ff1100145f53f032 R15: ff1100145f53f072
-> [    3.930291][    C0]  ? nbcon_reacquire_nobuf+0x11/0x50
-> [    3.930291][    C0]  ? nbcon_reacquire_nobuf+0x11/0x50
-> [    3.930291][    C0]  </NMI>
-> [    3.930291][    C0]  <TASK>
-> [    3.930291][    C0]  serial8250_console_write+0x16d/0x5c0
-> [    3.930291][    C0]  ? asm_sysvec_apic_timer_interrupt+0x1a/0x20
-> [    3.930291][    C0]  nbcon_emit_next_record+0x22c/0x250
-> [    3.930291][    C0]  nbcon_emit_one+0x93/0xe0
-> [    3.930291][    C0]  nbcon_kthread_func+0x13c/0x1c0
-> [    3.930291][    C0]  ? __pfx_nbcon_kthread_func+0x10/0x10
-> [    3.930291][    C0]  kthread+0xcd/0x110
-> [    3.930291][    C0]  ? __pfx_kthread+0x10/0x10
-> [    3.930291][    C0]  ret_from_fork+0x31/0x50
-> [    3.930291][    C0]  ? __pfx_kthread+0x10/0x10
-> [    3.930291][    C0]  ret_from_fork_asm+0x1a/0x30
-> [    3.930291][    C0]  </TASK>
-> [    3.930291][    C0] Shutting down cpus with NMI
-> [    3.930291][    C0] Rebooting in 13 seconds..  
->
->
-> There are clearly visible two points where nbcon_atomic_flush_pending()
-> took over the ownership from a lover priority context. I believe that:
->
->   + 1st occurrence is triggered by the "WARNING: CPU: 2 PID: 1 at
->     arch/x86/..." line printed with NBCON_PRIO_EMERGENCY.
->
->   + 2nd occurrence is triggered by the "Kernel panic - not syncing:
->     Hard LOCKUP" line printed with NBCON_PRIO_PANIC.
->
-> There were flushed more than 2500lines, about 240kB of characters,
-> in the NBCON_PRIO_EMERGENCY before the hardlockup detector
-> triggered panic.
->
-> If I count it correctly, a serial console with the speed 115200 baud/sec
-> would be able to emit about 11.5kB/sec. And it would take about 20sec
-> to emit the 240kB of messages.
->
-> => softlockup is quite realistic
->
-> Solution:
->
-> IMHO, we really should flush all pending messages atomically.
-> It means that the watchdog reports need to be prevented
-> by touching the watchdog. It is not needed in
-> univ8250_console_write_thread()
->
-> => put back touch_nmi_watchdog() into univ8250_console_write_atomic().
+> All this is protected by console_lock, right?=20
 
-I would expect the touch_nmi_watchdog() within wait_for_lsr() to be
-sufficient. After all, that is the loop that leads to the large emit
-times.
+Yes. The 2 functions I added are called by csi_DEC_hl, itself protected=20
+by console_lock.
 
-For QEMU, the touch_nmi_watchdog() within wait_for_lsr() will never be
-called because QEMU does not implement baud rates. So that may be reason
-enough to accept this change.
+console_lock() is called in do_con_write, and the call stack looks like=20
+this:
 
-John
+do_con_write -> do_con_trol -> csi_DEC -> csi_DEC_hl ->=20
+enter/leave_alt_screen
 
-> [1] https://lore.kernel.org/r/20250107212702.169493-1-john.ogness@linutronix.de
+>> +=C2=A0=C2=A0=C2=A0 vc->vc_saved_screen =3D kzalloc(size, GFP_NOWAIT);
+>
+> Why GFP_NOWAIT?
+
+To be honest I used the same flags as vc->vc_screenbuf, but after=20
+"reading the F-ing manual", this seems unappropriate here.
+
+"GFP_KERNEL implies GFP_RECLAIM, which means that direct reclaim may be=20
+triggered under memory pressure; the calling context must be allowed to=20
+sleep"
+
+I guess we are allowed to sleep here (please correct me if i'm wrong),=20
+so GFP_KERNEL must be more appropriate.
+
+>> +=C2=A0=C2=A0=C2=A0 if (vc->vc_saved_screen =3D=3D NULL)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return;
+>> +=C2=A0=C2=A0=C2=A0 memcpy(vc->vc_saved_screen, (u16 *)vc->vc_origin, =
+size);
+>
+> kmemdup();
+>
+>> ed_cols, vc->vc_cols);
+>> +=C2=A0=C2=A0=C2=A0 unsigned short *src, *dest;
+>
+> u16
+>
+>> +
+>> +=C2=A0=C2=A0=C2=A0 if (vc->vc_saved_screen =3D=3D NULL)
+>> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return; /* Not inside an a=
+lt-screen */
+>> +=C2=A0=C2=A0=C2=A0 for (int r =3D 0; r < rows; r++) {
+>
+> unsigned
+>> --- a/include/linux/console_struct.h
+>> +++ b/include/linux/console_struct.h
+>> @@ -159,6 +159,9 @@ struct vc_data {
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct uni_pagedict *uni_pagedict;
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct uni_pagedict **uni_pagedict_loc;=
+ /* [!] Location of=20
+>> uni_pagedict variable for this console */
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 **vc_uni_lines;=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* unicode screen content *=
+/
+>> +=C2=A0=C2=A0=C2=A0 unsigned short=C2=A0=C2=A0=C2=A0 *vc_saved_screen;
+>
+> u16 *
+>
+>> +=C2=A0=C2=A0=C2=A0 unsigned int=C2=A0=C2=A0=C2=A0 vc_saved_cols;
+>> +=C2=A0=C2=A0=C2=A0 unsigned int=C2=A0=C2=A0=C2=A0 vc_saved_rows;
+>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* additional information is in vt_kern=
+.h */
+>> =C2=A0 };
+>
+> thanks,
+
+Thanks for the review, I'll rewrite the patch with the suggested changes=20
+and send it back.
+
