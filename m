@@ -1,95 +1,101 @@
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A77F27080D
-	for <linux-serial@vger.kernel.org>; Mon, 25 Aug 2025 08:44:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69DD72BDC25;
+	Mon, 25 Aug 2025 09:23:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756111480; cv=none; b=FuwmtAxja7sWKxeV4fPZaWzqd2+REABQpRB3RMtRPYf3D8ghw0P4pRKY8H66H2gyrqfvmDtB3thPD2HfZ0pyDhWMy6l2Js/V5Z+XHX5rws8gPqvA0LrU9zb3alGmuLXAo7t/yzAiBoH3p7SEP8BsOgZk1ij5Vzh4tYzirpJx8r8=
+	t=1756113811; cv=none; b=aqVOKupJOJpzOhYddDsF28Xqg5aCtxl52+mT0Gl/WnBdN2TT8kNP+SutAE2HsPpQL5kQOPiVmN9OD9RxgpxWjCDAWCl0yXb0drxp+MVgq4lxZzez9ZUnVFR89R8brIAsK8LtpRS11TbMsTarJG1OIKHSWONqjrsMTERHx83JDBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756111480; c=relaxed/simple;
-	bh=Qx0EHnxhtjRTgy0Yc6CzMXRY5epJDTWnoDhJh5mpf7k=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=MptR+chNdoT2UOh/aVj7aac+s128rJt9Q1GlBVJdzFufpPuecxoqnMCS431cdz7ys9ZNU7Oxl2J0tsUvLchIRRh0oeoPVRluGPfY1+3EXxCrrnWgk0kF2qqcY6sOYydYvcl2ysI4cewgwoKp6CtR5X9W+oCpXhEGCyFsU/KnbGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-3ed8c5ffa82so2878535ab.2
-        for <linux-serial@vger.kernel.org>; Mon, 25 Aug 2025 01:44:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756111477; x=1756716277;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=QejM8CXnArY2Z2VtT+tzHm/yfYtQ1A2A3xEkQg/zxAs=;
-        b=FrLhp3aHE5zxt7+ckuFM4Ok9bXwaJhDH6WOvokV1kmbzbPCwLBkUScJkc4/Np6svth
-         5+DnRadV2cdNbVipIFtFZVTN75lYEaHvKUbnx9X/hsNsfOsioKuRegPz0T6gMcTaYX1r
-         94ZxAtjt1yXSn2qxJBG3M8RmYsKDFQkjB8ec2GZvKXwQUBSEBeSHX6U6sDHSev7ApzWV
-         lrAZiY/SyIe6WQ2Wu5o3vatxpFcXq6Ws6RCz5joMkAZta6GD1jtcN6tR9pi57LvMcjPA
-         boHi6g3S3b0Ciqm6BsUeG3jGYPESfSFyTNYShN7ZCNkwmlMrF1xlROj8NdPwkPmFAfbb
-         cvQw==
-X-Forwarded-Encrypted: i=1; AJvYcCW3ObPhSNDjYMCBE9w+2t9L32TjuPCDSEGKBKXfbNOqszV/cW82W19eHKKTCNVKgqBJHEH5EHa0TenxqWU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwopI8Lu8TKcQRM2W9wUssRUI22vcZpseh2tj0q/GKv3YysCdKp
-	OObDRMXmidjoSKH1MLB8Xwbd5gCG8oD4aDtBWJ7IdnUoXORkXzGx1zn/WldO7RhkJIp/lTkZvri
-	87U35Y8naDBJnNMFnfa3J/EHWHDOABd6b5dlZo6La+5RHubENX1Sug5r3BfY=
-X-Google-Smtp-Source: AGHT+IExklVy4RkzKLt1k1C9yMIcJKDJGXqHdt4hcHiXrGxSYT3tvBS0hk1y8LwOXjRNNcgBcbzg8ObZd7lis7tJrnS+wxk6WZKt
+	s=arc-20240116; t=1756113811; c=relaxed/simple;
+	bh=Vi8IsWr8sfqjbSpr0TipQn/bFejpu2MbrNdIRDZf5cY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ZyHDlVPCRbWX2cvaVapwxi7oqBJY3Opo6QOt79F5tQAfiSEBoATOoLamcLOgKXXquxmEUjpM9FjYdpo6BYLbodjzxgz52zjmj75f2lIk6p8AuqTvYpoz+2BceytkqlcD0SkubRRX8gQz0Y5nScaftuY+4uPHHXAX4KucqTiA+xA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=I+JCGrRu; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=kBjqm/nb; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="I+JCGrRu";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="kBjqm/nb"
+From: Martin Kaistra <martin.kaistra@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1756113808;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=9vNDsLG8yRQa1f6yiPV69gzJlsO/fR4VPwef6lF3Q/U=;
+	b=I+JCGrRuTkBXJyOjaoU9QWAA4kZlP0Lgfc/c+WCo5W2su7hCCnrHCrVXr7dBZEAe43RVRq
+	JdnQ7o+vYKyA2NBspzDlzFQ7sEx5LCr8s/kPk56c9ZOFo8cG/QEcqpiWqgNR8rK41wcqrG
+	9SKGNFiOgZcHlVS3pHOxhCWgwqMbh/Valsbe3MG8McUcbcjJEQITKlfEelwUMFjB6iU69q
+	QlkJxDj7nSodK8pgyAcOv/WqXq2eMdLouLEvXKaH6oEvpCVjT57cFv5hbfCdDQx84MX3u3
+	YQgcpA7Aw6xBC9uBP7a7BcRMRyXRZoasZnKbm5YkjFytlnd/WkImbpNCJpD19A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1756113808;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=9vNDsLG8yRQa1f6yiPV69gzJlsO/fR4VPwef6lF3Q/U=;
+	b=kBjqm/nbuSN7K/X1C+X5U8O2yenC79h6hEgl2XO2Df5ot8rKSbv214FL63nBVU6GkyIk04
+	PC+kSM6j62iFuuBg==
+To: Michal Simek <michal.simek@amd.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-serial@vger.kernel.org
+Cc: Manikanta Guntupalli <manikanta.guntupalli@amd.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] serial: uartps: do not deassert RS485 RTS GPIO prematurely
+Date: Mon, 25 Aug 2025 11:22:51 +0200
+Message-Id: <20250825092251.1444274-1-martin.kaistra@linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1487:b0:3ed:684e:ce05 with SMTP id
- e9e14a558f8ab-3ed684ecf4bmr11871485ab.4.1756111477622; Mon, 25 Aug 2025
- 01:44:37 -0700 (PDT)
-Date: Mon, 25 Aug 2025 01:44:37 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68ac2275.a00a0220.33401d.0404.GAE@google.com>
-Subject: [syzbot] Monthly serial report (Aug 2025)
-From: syzbot <syzbot+list55834a7fc215ffb76396@syzkaller.appspotmail.com>
-To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
-	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-Hello serial maintainers/developers,
+After all bytes to be transmitted have been written to the FIFO
+register, the hardware might still be busy actually sending them.
 
-This is a 31-day syzbot report for the serial subsystem.
-All related reports/information can be found at:
-https://syzkaller.appspot.com/upstream/s/serial
+Thus, wait for the TX FIFO to be empty before starting the timer for the
+RTS after send delay.
 
-During the period, 1 new issues were detected and 0 were fixed.
-In total, 18 issues are still open and 44 have already been fixed.
-
-Some of the still happening issues:
-
-Ref Crashes Repro Title
-<1> 2317    Yes   possible deadlock in console_lock_spinning_enable (5)
-                  https://syzkaller.appspot.com/bug?extid=622acb507894a48b2ce9
-<2> 1530    Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
-                  https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
-<3> 215     Yes   INFO: task can't die in show_free_areas
-                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-<4> 196     Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
-                  https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
-<5> 166     Yes   KASAN: stack-out-of-bounds Read in sched_show_task
-                  https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
-<6> 149     Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
-                  https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
-<7> 97      Yes   possible deadlock in tty_buffer_flush (3)
-                  https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
-<8> 27      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
-                  https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
-<9> 6       Yes   INFO: task hung in paste_selection (2)
-                  https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
-
+Cc: stable@vger.kernel.org
+Fixes: fccc9d9233f9 ("tty: serial: uartps: Add rs485 support to uartps driver")
+Signed-off-by: Martin Kaistra <martin.kaistra@linutronix.de>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Changes in v2:
+- Add cc stable
+- Add timeout
 
-To disable reminders for individual bugs, reply with the following command:
-#syz set <Ref> no-reminders
+ drivers/tty/serial/xilinx_uartps.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-To change bug's subsystems, reply with:
-#syz set <Ref> subsystems: new-subsystem
+diff --git a/drivers/tty/serial/xilinx_uartps.c b/drivers/tty/serial/xilinx_uartps.c
+index fe457bf1e15bb..e1dd3843d563c 100644
+--- a/drivers/tty/serial/xilinx_uartps.c
++++ b/drivers/tty/serial/xilinx_uartps.c
+@@ -429,7 +429,7 @@ static void cdns_uart_handle_tx(void *dev_id)
+ 	struct uart_port *port = (struct uart_port *)dev_id;
+ 	struct cdns_uart *cdns_uart = port->private_data;
+ 	struct tty_port *tport = &port->state->port;
+-	unsigned int numbytes;
++	unsigned int numbytes, tmout;
+ 	unsigned char ch;
+ 
+ 	if (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port)) {
+@@ -454,6 +454,13 @@ static void cdns_uart_handle_tx(void *dev_id)
+ 
+ 	if (cdns_uart->port->rs485.flags & SER_RS485_ENABLED &&
+ 	    (kfifo_is_empty(&tport->xmit_fifo) || uart_tx_stopped(port))) {
++		/* Wait for the tx fifo to be actually empty */
++		for (tmout = 1000000; tmout; tmout--) {
++			if (cdns_uart_tx_empty(port) == TIOCSER_TEMT)
++				break;
++			udelay(1);
++		}
++
+ 		hrtimer_update_function(&cdns_uart->tx_timer, cdns_rs485_rx_callback);
+ 		hrtimer_start(&cdns_uart->tx_timer,
+ 			      ns_to_ktime(cdns_calc_after_tx_delay(cdns_uart)), HRTIMER_MODE_REL);
+-- 
+2.39.5
 
-You may send multiple commands in a single email message.
