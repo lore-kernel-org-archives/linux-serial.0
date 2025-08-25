@@ -1,221 +1,273 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11023093.outbound.protection.outlook.com [40.107.159.93])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021132.outbound.protection.outlook.com [40.107.130.132])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C334C22F75C;
-	Mon, 25 Aug 2025 13:54:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.93
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1BAC2EE60A;
+	Mon, 25 Aug 2025 13:55:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.132
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756130076; cv=fail; b=gAYzZfPx2siPF0T0CPo3XutAP5XN5QFsmQ+GcpgSyR1MgrsXYiX7VWlQW46zKVaYZ9eVK2t4igwdcHYo6/APocQgpIkC3hIu4v48yX2bLFVB4kOiwyWpTKvpaTQtnCTaY7K44+JnZ6gDJFKyOBiM5xMfTMyyZiRXnY+HqP8R81s=
+	t=1756130140; cv=fail; b=De2Smu3hn3GG+VFha4uLvzwJIBZRrSBGcYAZA5b8Vh9XPB6JSumrQQ0qaYJnYAkH25KaM+4YhsUBHEifuwfqiX3aGNrgblk+cBhNgwN5n2mTYpxMoNvr+2lkq5KQdDYRWO1ksWx9rXFUchEAwx3h++ybBsHQ3+ckJfLb9y2Yk+k=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756130076; c=relaxed/simple;
-	bh=CxnThT9y3TSzIgnb/K7buRN1QxBl/v6RVJTWlEPnKs0=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=qXg1/p8YtTfv4pn9Ixq9GI8OoNYN7z+ohOh4VdL+3e3wq0t7BxFIJowWElnL7WyAqWMYZJpU4YWxxaXjcVpcDTslPTNOrwqksCVV7UzzluIErrzVz704g2DGRGUZ9YkfwisZG3WB8g90E0PnCC6VofTbc11vYTtqcCc9hhvsP4k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl; spf=pass smtp.mailfrom=sttls.nl; dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b=WkNJYjt2; arc=fail smtp.client-ip=40.107.159.93
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sttls.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sttls.nl
+	s=arc-20240116; t=1756130140; c=relaxed/simple;
+	bh=zLJ3XoPx+1PDfoTJwtXRU0NJ2OUamrhVW7vBcGS51SM=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=cyjS+XKH6HOTvmKqGRoOHWd5d/bNPMTdYVUrcR1EIxdRThHmKLZN6QMu26JmXYSU27FS82wZ9pS3ns8Ro/Vi0JGUquHpUCj+9+ZIY1K5eQIPSJMR7ZspYDYFMM4zc6UxwrdJduDOkNnWgycdZXrrWG5mf+DsiQUmoO5W+9Hn9XQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nordicsemi.no; spf=pass smtp.mailfrom=nordicsemi.no; dkim=pass (2048-bit key) header.d=nordicsemi.no header.i=@nordicsemi.no header.b=fwRpN46c; arc=fail smtp.client-ip=40.107.130.132
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nordicsemi.no
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nordicsemi.no
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sttls.nl header.i=@sttls.nl header.b="WkNJYjt2"
+	dkim=pass (2048-bit key) header.d=nordicsemi.no header.i=@nordicsemi.no header.b="fwRpN46c"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KiyAOadbkckgY+nXEjiiN+7uAL0zNCh/3OU2uBUGphPQcqg8vij7CI1HQYe0xK0EdMun+utWns70vwd7R2A2+58ITzaFgRhj+tfAbmaJuc8FZrNkbdEnGdIk+DofLCQN/JLoFixWRJlaQfMBFx5c0txnLRjdXxFT9hdeQlMB6pJnNluJ/bjv5Hubh70+dTUXvLZPeG/IF9lj5g+Ss22jkbOgwdIUtSYOJuLRjbCzPkaBXK6dcMZ7fkPXDqiQVYmSGGFJL6o2TceoJthiWNmJQYf3RN5pq3asp7K7FqiI8Hjg1NWKgygo7S4hsvJ4nrp2bQgSTfQxSr3jlXZ5t11LvQ==
+ b=fIoluUttcVrxb0frFMkn7q2KLBFr2CzjZPewGSH2vJtLIi0O1Wy6/dqT/mlZAhwe8/5Z1dDhQX7zB+dvWzM0LOPjhUc5RI6d7ftJGwArQSQtKb7qkBpYktZY66CjEiBtMUS+6W8nZfP283IodFFbLCFA7RRDucV1GHOCoG8Gl0pG9PuM6Ro/o6GV7yI42THr5Z8OGfOHEHDh8DetGfvJkIeh/uunUm8Ehl4muR+Xso/zX/pAXwRcuqJZUws853BOEdIqZY6z2OlBLaeE4DJTdv+1g0jbhpyF5ebW4/snyj5jmpkVAR7OHTOYYrJiVm1DbdqHX6K5vhzcX/w11jVFGA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CxnThT9y3TSzIgnb/K7buRN1QxBl/v6RVJTWlEPnKs0=;
- b=ySLmQnMzY2SVqAAXc0F1dUqd1+I5LARJHTeN1xoeXNp8dI5lbsIv/1f2UGq4KQuWZdbev0EcXRxyL29I2dSxrLMm7lZvkFW39GYENhce+SKalLrN/qEf2B9vNZ4flAakuKBRkL7EpRp9Ov7iXJztCItnkmtzRKqpNstn7yhdo498TanFlVDYp1chviBj6jepKFkjaEUzRH981ff+z8iu1Zpo2y7+pyqrEyALk0nFRNxemn6eLDCiANFlPE3laE21Hda3Bn3sRdj7TyhXF+8KRBvaE9S4DHMwATsYIR1f9MKZiYNs3Qykm/xY3mqOSmUhxiM3/4iGuezjFaD+UKL93g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 20.93.157.195) smtp.rcpttodomain=linutronix.de smtp.mailfrom=sttls.nl;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=sttls.nl;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sttls.nl; s=selector1;
+ bh=bSx2fIYaCFRQ6cwxTyE1LYRwjnZOvxKySa7ZQXbosmk=;
+ b=dply+MjXPHJK2i2Jrn95xU4NyGLIuRNrbNjVHOKg9/oDDOB2EaW7lngB4KVWhc2Tq8V+uwBKITs1JXWgcwrDe0JAce92cTqYQIRUqA2TZdE3QBd6NlYZj1eURVAWIyG7b2DeeZ4lE5Fzff7XO3CtKxmDnnIgTq4l3vzWhRdHSUhyAtU2m65wtQRQV9GaQbzaPM1pfZN8ve6OT4vUO9tzDhAnQMbovCFd8ygurcFW72QMeVvEUwkXxxPxRKIoGIV4HznLLf+j0rgUZ5aUhwXDtCCK4VJzIGGUqlgDle7CK76XEmCYE+D4SLgn70BX1bE8gpxDX3p63ez2pGEYgsgn0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nordicsemi.no; dmarc=pass action=none
+ header.from=nordicsemi.no; dkim=pass header.d=nordicsemi.no; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nordicsemi.no;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CxnThT9y3TSzIgnb/K7buRN1QxBl/v6RVJTWlEPnKs0=;
- b=WkNJYjt2Lh7s3v2TfEw0ZhGzBhO1TSkQs8hFxBw/TMBWf+D5RukvzP4Am9YK+NgRKT9LJCrpNX9eofDjSBL4mLTvhH9m6NtTCBwR2yXIMZ/dLOxvh5Lh+KuSMQ7KqMKXblHua8NobcQ2Cqhme/jCJWDLcZB0bnQPMTTUX5Tr9NS2XFSXtbkKG8mFUaky0X9IuIhP96poYbWQ8OW206kCnRK6HreynvJnSmRM6piq/k4DrU5+xutZmz/o/Sf8r16d13DtjuRiHN2gaRS1/rulL64dY5Kd8BW6PwvjyV8LnH1swqpDPfoaQDYcz29mDWzMHckcdtu1oTaXOc4lhP3uxg==
-Received: from DUZPR01CA0083.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:46a::19) by PA6PR05MB11148.eurprd05.prod.outlook.com
- (2603:10a6:102:3ca::8) with Microsoft SMTP Server (version=TLS1_2,
+ bh=bSx2fIYaCFRQ6cwxTyE1LYRwjnZOvxKySa7ZQXbosmk=;
+ b=fwRpN46cKHieDAYmyhNUMqo2DZWEcm+yYVagFp83iSDwNLe30d6Bs7KCVc/BOaEWMd7dzpIPu8cPJG/6k38gN3mqStFpUgJrHQnkdPJuwptKJCVbCDG+5aoQ1nJJwZiiIm1ILWrhhGyXyib3L1cj+d/QQS6QDSvUfuM+qs9QbTEmldx7i3gxbobhz4JOXnD4eXIzssFuyVCC55USB3fj91K3U9FfnkQfO9LEXR1g84zhZJbkgS+55gQdcBnGK+/4/laKTW/sRrWtx/yjDCPZUNNvceNuMFH4JDLwsDXPc845NuEvjEZYtf9TBaz99CZBclxJRKukMZw7MKp2DG0mOw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nordicsemi.no;
+Received: from DU0PR05MB8949.eurprd05.prod.outlook.com (2603:10a6:10:354::19)
+ by DB9PR05MB10252.eurprd05.prod.outlook.com (2603:10a6:10:450::20) with
+ Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9052.21; Mon, 25 Aug
- 2025 13:54:23 +0000
-Received: from DB5PEPF00014B9E.eurprd02.prod.outlook.com
- (2603:10a6:10:46a:cafe::91) by DUZPR01CA0083.outlook.office365.com
- (2603:10a6:10:46a::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9052.21 via Frontend Transport; Mon,
- 25 Aug 2025 13:54:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 20.93.157.195)
- smtp.mailfrom=sttls.nl; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=sttls.nl;
-Received-SPF: Pass (protection.outlook.com: domain of sttls.nl designates
- 20.93.157.195 as permitted sender) receiver=protection.outlook.com;
- client-ip=20.93.157.195; helo=westeu11-emailsignatures-cloud.codetwo.com;
- pr=C
-Received: from westeu11-emailsignatures-cloud.codetwo.com (20.93.157.195) by
- DB5PEPF00014B9E.mail.protection.outlook.com (10.167.8.171) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9073.11 via Frontend Transport; Mon, 25 Aug 2025 13:54:22 +0000
-Received: from AS8PR04CU009.outbound.protection.outlook.com (40.93.65.29) by westeu11-emailsignatures-cloud.codetwo.com with CodeTwo SMTP Server (TLS12) via SMTP; Mon, 25 Aug 2025 13:54:21 +0000
-Received: from DB6PR05MB4551.eurprd05.prod.outlook.com (2603:10a6:6:4a::24) by
- DB9PR05MB9200.eurprd05.prod.outlook.com (2603:10a6:10:364::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9052.21; Mon, 25 Aug 2025 13:54:20 +0000
-Received: from DB6PR05MB4551.eurprd05.prod.outlook.com
- ([fe80::f854:dcd:a8dc:bc53]) by DB6PR05MB4551.eurprd05.prod.outlook.com
- ([fe80::f854:dcd:a8dc:bc53%4]) with mapi id 15.20.9052.019; Mon, 25 Aug 2025
- 13:54:20 +0000
-From: Maarten Brock <Maarten.Brock@sttls.nl>
-To: Martin Kaistra <martin.kaistra@linutronix.de>, Michal Simek
-	<michal.simek@amd.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>
-CC: Manikanta Guntupalli <manikanta.guntupalli@amd.com>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH v2] serial: uartps: do not deassert RS485 RTS GPIO
- prematurely
-Thread-Topic: [PATCH v2] serial: uartps: do not deassert RS485 RTS GPIO
- prematurely
-Thread-Index: AQHcFaH1MXEkZYlaqEGWd2GEoU/ke7RzQQgdgAAO2gCAAA0U6Q==
-Date: Mon, 25 Aug 2025 13:54:20 +0000
-Message-ID: <DB6PR05MB4551A2BC19AAE2BCE5ACD00A833EA@DB6PR05MB4551.eurprd05.prod.outlook.com>
-References: <20250825092251.1444274-1-martin.kaistra@linutronix.de>
- <DB6PR05MB4551C55567E135005F7E6E95833EA@DB6PR05MB4551.eurprd05.prod.outlook.com>
- <e25ab816-f05a-4fcd-9a71-8b71e4e3c299@linutronix.de>
-In-Reply-To: <e25ab816-f05a-4fcd-9a71-8b71e4e3c299@linutronix.de>
-Accept-Language: en-US, nl-NL
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-msip_labels:
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=sttls.nl;
-x-ms-traffictypediagnostic:
-	DB6PR05MB4551:EE_|DB9PR05MB9200:EE_|DB5PEPF00014B9E:EE_|PA6PR05MB11148:EE_
-X-MS-Office365-Filtering-Correlation-Id: d4b02d82-8e37-465f-f097-08dde3dee563
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|376014|366016|1800799024|38070700018;
-X-Microsoft-Antispam-Message-Info-Original:
- =?iso-8859-1?Q?gWruKtVWfe5VidZF5bBbN5cXwGfVLomXjVfe1P9DP4Lxgi5SdgnIgBr5R5?=
- =?iso-8859-1?Q?gqvw+HFL02jCoS59yJ2BybrjyLLnb8GbZy5m94GZsxYkFCcW4hYUX5ZPMj?=
- =?iso-8859-1?Q?VlhEiRkcLk47LI0LfUYuGrPYBW56aFF4r7afvENwNs288uYJJDd2TlpbYZ?=
- =?iso-8859-1?Q?cBQMagjC2Lf40iCyw6Mfa3EmVPkhiO3AJ+1Hj7TZAADgfI/53iiSs52GyT?=
- =?iso-8859-1?Q?kvKHaqAVDHSxx5wgTZsRtn9wSzrsKhkrtAu3CIi2FVQY75MOb8b8U9St2/?=
- =?iso-8859-1?Q?iLKY2xbRRrHxBkeffwFsfKIoSJ3vEwqzWnJ4Tq1M5xpwgvq74kL+C80xyY?=
- =?iso-8859-1?Q?ZfHZ2J69I3lq7AwsECQ/mcw0OcVQ1Qjsm4xIPS2HIc0toW7ub5a+VtZ0OO?=
- =?iso-8859-1?Q?zjooJ4WYvrFvJccGhXp/S7gUwX2ZriSxIsGocBDU7SFdzu0yPlVBed/4qj?=
- =?iso-8859-1?Q?VKQmEGSenCVJSGzMXnsGexcz4XPEQS/K2YerjGcUjhL0MAm3pEvZc0xXlH?=
- =?iso-8859-1?Q?KZIpBy6r4DAubCnIDznJFYms/76YT76nZIsDg6XaBLdr7ksE2mxEfVon+w?=
- =?iso-8859-1?Q?NXgrtQZBoeJSChy1EBegmsRUiaBsTCNUsiSvdx1EjHmNoyr8T42KGuMa2J?=
- =?iso-8859-1?Q?TeHk9xtAEA/z84TIq8OpKHuee6J5lUVuU81IjnegieQklTxhTHcCA+sBmx?=
- =?iso-8859-1?Q?nfCQ/apPKXgX8Os6UGa3NUXP5H4xMD4rG0W2RSm5BJj+cJ27f23B85CeL/?=
- =?iso-8859-1?Q?KrateyGKKBd8+nU+8YYr8UUiyoe82qcmb5pM7URhkwTKuSJsXxowThBGMb?=
- =?iso-8859-1?Q?dt7IcoUUesp/PNvv7lWa4wNUbZIfNMv92dD1Tr9b+z09e/KSZt1KJu+fgG?=
- =?iso-8859-1?Q?gF22B3JYsI6RHE2vnLQ9x/g0sXP5sVz0yk8hBh0rU1V5ay5ZjRPaA/cB5X?=
- =?iso-8859-1?Q?ppNfylNBPisMc4wlSqpWVbS4gbS7K2z0I15gIZNFPaJQd8SXf9cDUAnyhZ?=
- =?iso-8859-1?Q?7Q9GmKYLgbS3zdSi93zB35Sq1bb9Xtcv6Mo3jwpx5Fkp0h7u8QdIoLawyh?=
- =?iso-8859-1?Q?qL6gjIz0GGKajfPhE+q8fUfB/fQq1jsIOWm6gUgPhIqW7cUCbH66n5b1hg?=
- =?iso-8859-1?Q?9mn+c5+IUiuE9Qh79Bcwfj3wL0LLT2/P/EkMNOCOTishgk+xyFTYrMRv5E?=
- =?iso-8859-1?Q?OHMy+uC63k04K/ANkjH0+VQnGAnEFyj51jM4HrmAfZV6EY1vDyIvfj0Nnv?=
- =?iso-8859-1?Q?+lhOIb2RTPASHxTLqZF1NkyGTS6NLWRKBI9/Bsf0iCDN46D45XYObkTk7R?=
- =?iso-8859-1?Q?pPtgPCt48KrkCcwaldqhalRKLPrmjoo8wNpyGZHnMIJ40x1Cp4/Eh28dys?=
- =?iso-8859-1?Q?gMVczcuBhyQuPqFidl5lgu9Xvzm449hFxK9AtamreJ4xlveJXAFxdNawZY?=
- =?iso-8859-1?Q?nwOoFNGyW+mZtgTXnSPYYjmdpi28np4AohaRPsDoSZSMAvXLX8mklTOCnD?=
- =?iso-8859-1?Q?TAV77M7DK1l0e4Sc1bNrvefGi7FE0UuuBn7dZcLDyEVQ=3D=3D?=
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB6PR05MB4551.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(38070700018);DIR:OUT;SFP:1102;
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+ 2025 13:55:33 +0000
+Received: from DU0PR05MB8949.eurprd05.prod.outlook.com
+ ([fe80::a522:c95:5d9c:15e8]) by DU0PR05MB8949.eurprd05.prod.outlook.com
+ ([fe80::a522:c95:5d9c:15e8%3]) with mapi id 15.20.9052.019; Mon, 25 Aug 2025
+ 13:55:33 +0000
+From: Seppo Takalo <seppo.takalo@nordicsemi.no>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Seppo Takalo <seppo.takalo@nordicsemi.no>
+Subject: [PATCH] tty: n_gsm: Don't block input queue by waiting MSC
+Date: Mon, 25 Aug 2025 16:55:00 +0300
+Message-ID: <20250825135500.881285-1-seppo.takalo@nordicsemi.no>
+X-Mailer: git-send-email 2.43.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: HE1PR08CA0072.eurprd08.prod.outlook.com
+ (2603:10a6:7:2a::43) To DU0PR05MB8949.eurprd05.prod.outlook.com
+ (2603:10a6:10:354::19)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR05MB9200
-X-CodeTwo-MessageID: ea06f0cb-2f4a-4d4e-9796-e70a89de9551.20250825135421@westeu11-emailsignatures-cloud.codetwo.com
-X-CodeTwoProcessed: true
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- DB5PEPF00014B9E.eurprd02.prod.outlook.com
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	b1b39d66-c369-41f5-8912-08dde3dee3ee
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|35042699022|1800799024|36860700013|14060799003|376014|7053199007;
+X-MS-TrafficTypeDiagnostic: DU0PR05MB8949:EE_|DB9PR05MB10252:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2d2f12c1-3134-4e47-f55d-08dde3df0f32
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?iso-8859-1?Q?p7YxJtL3nmkxea9V5KK5i4MB6XF2R4TQxevlXU54lm5SPUhG05s5WSEdQc?=
- =?iso-8859-1?Q?ezUEKx0jgZPiF8vcXEO6sy62MzaPRZsmliG4xwgYBLoQ2A4f+H70+iBrvy?=
- =?iso-8859-1?Q?s62IwAqcpOjsO3DWUQGWaamdDOPiaPvsYUCbgrolp2NMnRqiD3ams7QPJC?=
- =?iso-8859-1?Q?y1dMFxNiT75rQ5692qGpLABGw/XaPyqzPNjDtbuSTuNNmp6QQWtPY55OoW?=
- =?iso-8859-1?Q?gwua76+/qpfM8g8KoEBT+qLDRXuR9Pu7VTXVkDKBXff1bWw2zItZOgXmQL?=
- =?iso-8859-1?Q?R5jFEMP9fF+jEPraefwXsZArRB+klauIyowObTZW2gt9rnV3uLkWS/1LSH?=
- =?iso-8859-1?Q?K3poL/4zEExql0ncxy3ddS8hVz8KsDLF6g7J0JbEDax60PRK82bMVTDCxH?=
- =?iso-8859-1?Q?mQHCkl+k+JGMbeo7oi3MMjP/KdVddUccxRv3CURxoqaYcTuUhRm4qOdFgC?=
- =?iso-8859-1?Q?U0LGqzBHUsw+jxDaHhQJ8AuaUiXlh3NK75aKf2jBw62jsdBItjZHLhGEkw?=
- =?iso-8859-1?Q?BFzxM3AmP6fu0jdoszyYgjo9aqPCSo8rEfLEmUs16+j5EA5JGCs2/nvJl5?=
- =?iso-8859-1?Q?KIKKefLvmNOUXeZZspi6NvK3Hwr85i0vZRuFyE+JsUPLGZsV+8nC+u1s1w?=
- =?iso-8859-1?Q?TJFontM8T5lbC+PBJKxtMwsSUU22PCdCYBF6rIsYmi4gpEJ2UOg62KNILl?=
- =?iso-8859-1?Q?lHbdb9MgRuq/rT56CYpSM/QMNo3dOYPvKusaQzRrG0l6o6lWtZjU4mJmrl?=
- =?iso-8859-1?Q?EhWDtCinynrs/DGn57NfNLdoUwuT0swwstArGV44xLKU7bya3Fh0r8b872?=
- =?iso-8859-1?Q?/eAEcVnt6z1j5S2eClUNI/V/5hzC5ciZWJfIN55oZIDC9TeGbyFh+CW8Z/?=
- =?iso-8859-1?Q?xGtHeNwt7LZmiMzZLJa6zy325seOAg566wA4iq7Z3wZKv2kJDOigttlq2+?=
- =?iso-8859-1?Q?/NjF8TjcOU/kk70RMuHO0+u6iqh7Anl1oGpbELO78NLD3OXk/cNUZK1/T8?=
- =?iso-8859-1?Q?Yyj5yf8I7dnY2yIRwCmP08TsLl0RSVcP5tJ8N06M6wubyV2z8pg3soN2I4?=
- =?iso-8859-1?Q?/rxhX/QyZ3AeXSM44n3fhzCTFsjSaC4E9bWqu1EqgT/ughZz/JCBsPgkfD?=
- =?iso-8859-1?Q?rJ7iZ6TseAVEXynEc6EUJuutkA6YV86OTUMbf+diF2ymQDgnRvBKOfyKvD?=
- =?iso-8859-1?Q?zbvk8VXEQQrHhMPrSt+V+2i1J0WTsIK8yhANjbUE04i1ykSuL3pDNfm6IP?=
- =?iso-8859-1?Q?7NMyrBETTTN9F/RCZ3t+DQEifQq159w27nWvpBkZozBGi7RwXDxaqFe9+4?=
- =?iso-8859-1?Q?+C755ofp4uH0JoIH8EYVcCeqghU6hipu6AsCNUJi0i9EMNszE/JDHVmZ8o?=
- =?iso-8859-1?Q?ypv/gekEzPjwka6bJ8DiymDOG1eKe7dZICMxdL2XvfCKaxV2kD525orVDt?=
- =?iso-8859-1?Q?z38iMxwUEy1ag9HVH6SLq+AWPXmTx/UrhVa7p7/ln2/Yd450fqORZAvAfM?=
- =?iso-8859-1?Q?wWX15iJbPvfLcSmlBiHwlrDl7WPGMpaTWiqSq7qHmyIiCQoZlHC6xKDzol?=
- =?iso-8859-1?Q?b91Qnw5uPia4SqPfqLdYflTk8nFZ?=
+	=?us-ascii?Q?muNeW3EktZcDnX6tVYuw+uevGVcXd0g+XasgHmC8nAz8TGsucpbeJQssN7Vb?=
+ =?us-ascii?Q?411YWIcyRJc2zYTyn2c6Fqu0hxpslxqEqnJBWuqIWvvIBSqWAdMeAhyampUc?=
+ =?us-ascii?Q?1y79l2yStamXRKRKnVB1+TeZSLMrCynY6UEEiw6J/FbRpeHL3LHW1n+uVVfS?=
+ =?us-ascii?Q?vrTkHxrxoPCACuAVDkoiqC1e5SSsxE81waZkAVpCJSA52n5kEf6mdy6TAlHF?=
+ =?us-ascii?Q?hzNOwD+K+z8VzTawcmjuiWPSWDiSOglg+WEQ1LzOtwkO2pjes0hvaKzU/oWb?=
+ =?us-ascii?Q?S9mh3pbE8S+ljT+zxmQkr82Un2qZHzY8y8hmymNfNXeRayw9gj4I8YiV10Cm?=
+ =?us-ascii?Q?VtWuWV4irUVw3ZVPSqW+6LhYtR3RqhxXgD+Va0y33RXSLdj/RLCnxWXD9E7l?=
+ =?us-ascii?Q?cueBknTHiNeFtBYbiT0PzHOrtG52jaIna2Mt2dKEw2PUcUqdNnGF9r7litsz?=
+ =?us-ascii?Q?sPajA2gdv9q2jXJTPmpg6nzjA/rIMxRIm8qQlt6X8ROWnl7dXFEi4Nm85jGv?=
+ =?us-ascii?Q?1ufNy+G6A3r1u9JDi/K81Vqe/yEF80wbsElmPCzqo0Ho7kUFveRr0dXqRRAJ?=
+ =?us-ascii?Q?3zcPXwtG2AeqnsNBqMKN7B6mDPcVf4uf16JE6D4btw0m+TVQhHzJg7v+C+Sf?=
+ =?us-ascii?Q?WFvzTP0q6m44ypNdOrltnsmUBBj0Svp6AT6QjApx0b0XnKZmjuayCOlDineY?=
+ =?us-ascii?Q?3HK4cEyV8maP4X2ceIft7d7TjQ9Gj4cPvndywOrQU7gSgO7RoFFCYrQpzIFE?=
+ =?us-ascii?Q?SOEhPyfI2zMIiPsX/XBtGtGRpHKtZcgMDGFdKidb9OmEfMIjol/WLHBMAs8F?=
+ =?us-ascii?Q?9+YVGEAITytYnTsNohhASu++jl5voyOPX5l7vWdFYvwwyR0zN1kMW2OHo113?=
+ =?us-ascii?Q?n7XW/WXpnYs+3os4OACFtrjcxNyRu6xktrhZopA8/wn3C1+by5GB3TUts44A?=
+ =?us-ascii?Q?ph6rItEYNSsnGo7CaJhaxPMoTLvYlLmRMZV1adv51zPuExrJNBYCrozM5Dpy?=
+ =?us-ascii?Q?P5KdOUeAhS+b7eduHu7IAqSItT8nVAQTL9Swi9mcF/a0faazpDa6y7eT8lVz?=
+ =?us-ascii?Q?tPwrAtFl062lQYv1jdcuzo4lqdo4KMInITTHorl7fjYsU7SwTwsLIFmuhUnP?=
+ =?us-ascii?Q?SCh5LZjqhDg3PwlO66Lq3RFFRBtFJLHT8bh56WhMw0X0h/AQFihsxP8wbwpM?=
+ =?us-ascii?Q?WiMbjBEI8NCr31voSgxMu1DVc7Ks0epokt4j8mfPL6c2ARLToIELk5ufV1su?=
+ =?us-ascii?Q?Vty0XjQCdo6UHlXsQlsBgVKihAE4EkcTA0UuaOLAV6KVfwgQ2Otpxjtxn0J5?=
+ =?us-ascii?Q?lPA1oYn4M32CE47dAsD0Iz8EqoQPLVhEs95bAsOas/+JZ8NQoBZYGfLkUrQb?=
+ =?us-ascii?Q?P1eBOsSc2135VR+NAwmNSvFykGnv6rtH69VlYDaBINjCXCt+D/CU2MrRydnr?=
+ =?us-ascii?Q?gBT5jEVQw6E=3D?=
 X-Forefront-Antispam-Report:
-	CIP:20.93.157.195;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:westeu11-emailsignatures-cloud.codetwo.com;PTR:westeu11-emailsignatures-cloud.codetwo.com;CAT:NONE;SFS:(13230040)(82310400026)(35042699022)(1800799024)(36860700013)(14060799003)(376014)(7053199007);DIR:OUT;SFP:1102;
-X-OriginatorOrg: sttls.nl
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2025 13:54:22.5988
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR05MB8949.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?4GsQ0tYnZ6bmIPtuC2fGI+1nAnFvRoDQeJCL6Y6msH1fi2eKVkGuMNu8v457?=
+ =?us-ascii?Q?AV+n0R1U4PZpFPgoTBS2sbIjGWnHwxa+1zGSpH3M830EAOzhuh3CveyNoefp?=
+ =?us-ascii?Q?g34fZb3dw3zlJbxE1iTSr31/gNuqb17QU+e0lXj9sUson37D0KY0C28/WcyG?=
+ =?us-ascii?Q?l/SbMUGivNeMwAkqOTKE+7bh+TuTvNn33IbQaMGRUNbbq75sndE9gYFf0kCJ?=
+ =?us-ascii?Q?0pPFUr/GeebkWF/A61IBHc5wjhTIAQPevRZPqNhCu4ZwJrY/qMIzXhbONAF8?=
+ =?us-ascii?Q?3EwivtK8NbGIiSO6KaYgl0d6AYrR95NiaiwesdfeN6swMpQd9d4O1Usvh0cS?=
+ =?us-ascii?Q?9ZKG/IOqcrNCeD1wQ1PWUiTwDTF1ywUMA8eM0cjFqUFtGEuVOJjk8RpyW7iA?=
+ =?us-ascii?Q?3czmx5yKr0Yfs6d4EkSPsUia5SENiZCYhc8x0cpix3dIgLljf+s1cEV2MWTs?=
+ =?us-ascii?Q?oIWAQabd+SAIEc1A1fdawaBpCjjH5ClgkrcxKreLBrqg2IAMn8G5tNaikuo4?=
+ =?us-ascii?Q?hmoDR8nSdesOFnj1YfF/w7qZTgwyQVHRaaVHQkEdXRqum4lAIo+pJWqKMdDd?=
+ =?us-ascii?Q?8Ljxx/5H96Y5LwzgNgaEqyQVrQMaFBXBhscYx8XFYk+rBnNjTQDFvWCc2+GB?=
+ =?us-ascii?Q?Kr8iA6+j+zA14Q6/amJ8pMm5ria+AmcV0nEwdiVQwpbticuuc+ucZ1XOfPZp?=
+ =?us-ascii?Q?4Dc+2OnF10l0F+wbDqvxZhSBSRYWK6JUNHzjoat3LIq2SUbYAwFxpw1hxdzn?=
+ =?us-ascii?Q?5GN+iqtqJ6AVob2hC5nAxoN/NkJbMWHfIM5WHpyaf6dxguWyd9JN7JszIscD?=
+ =?us-ascii?Q?EXa7efcfvXxUbvud32whg4TNikPJK179Jsm+vReFmdiooAe2IJHlcd0ojWJ1?=
+ =?us-ascii?Q?Y4avaME0HE8rpxD4YsEEYcZdQpvQAlws5FXtU3TleRG+/2XcpMfnAidP/8sY?=
+ =?us-ascii?Q?1cIV1uzQ/P7wXhK1IYimNepFgQSa5CcBIO3Bk1Fd0BzgcNw35LKoaI2vCNlp?=
+ =?us-ascii?Q?INcHYN4p8p28CkiprRLYcUT0f8obdchyDqA2qCxMdQTR5YQU3NVEyV4T65lP?=
+ =?us-ascii?Q?LiXET4q2FfEZxSV0ZPpuq5fjM8JbbCK+fDPgptLrZ8t8oL9H9JkvnSpuMzYw?=
+ =?us-ascii?Q?bj75kPa+Jv41ZK7RPggjTvB6kGn9xXlMRR4HbLHkYkghoQa7YeMhCxR+mxzR?=
+ =?us-ascii?Q?bd8QoeP/wf3drH/WCXXt2PorEiRoQ2jflTvpRYRNeb9RFReLvdMti4Ud+110?=
+ =?us-ascii?Q?JYRMd/SsvpUHMbO8xgeEWe1nN4QuhyKwP9y212SGEaBRuPRJtkY7SzxqE5oD?=
+ =?us-ascii?Q?esSFqIn6oZqOnVWM6uMyOlUa9kuR23BH3+zSe2CuUUVUy9377r6VLpUN5FXa?=
+ =?us-ascii?Q?s47pi+GyiUIFZeWwrnZN2+JwoMsk8W/oNTQVPjj9DxMc8L6ZtMA2D+Px7Btg?=
+ =?us-ascii?Q?WImddWb7Y7QuMKp8Tdita7p5GarnwNSDKHgKjOd9CD4OREY1XT4EabunfT1t?=
+ =?us-ascii?Q?9K7z/OOaX9vK5IetTVSC2c/klp5vVRad6t5X5Ouu/CecKcBPE2Mks+Udp8SD?=
+ =?us-ascii?Q?/3YVOJDTHwRMX2WecfTGLGpjlVStA8YEAFnYRZk2Dvbah74pYOFx4/gJVz2L?=
+ =?us-ascii?Q?yA=3D=3D?=
+X-OriginatorOrg: nordicsemi.no
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d2f12c1-3134-4e47-f55d-08dde3df0f32
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR05MB8949.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2025 13:55:33.0824
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4b02d82-8e37-465f-f097-08dde3dee563
-X-MS-Exchange-CrossTenant-Id: 86583a9a-af49-4f90-b51f-a573c9641d6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=86583a9a-af49-4f90-b51f-a573c9641d6a;Ip=[20.93.157.195];Helo=[westeu11-emailsignatures-cloud.codetwo.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DB5PEPF00014B9E.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA6PR05MB11148
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 28e5afa2-bf6f-419a-8cf6-b31c6e9e5e8d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2lqwVfhv/Q8JDA8iEdFpGaTijspC4EaMkCkDP9p7rvDuL7IU0mOIBY+p4MEFGdlF/APFAvDD9140bJ/0wPH5/Ds78ViIbcZCJ0sR7j/EVmE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR05MB10252
 
-From: Martin Kaistra <martin.kaistra@linutronix.de>=0A=
-=0A=
-Hello Martin,=0A=
-=0A=
-> Am 25.08.25 um 13:58 schrieb Maarten Brock:=0A=
-> > Hello Martin,=0A=
-> =0A=
-> Hi Maarten,=0A=
-> =0A=
-> > =0A=
-> > Why not just start the timer and check TEMT after it has elapsed and re=
-start the timer if not empty?=0A=
-> > It would prevent busy-loop waiting.=0A=
-> =0A=
-> It would, yes, but couldn't this cause the time between last transmitted =
-byte =0A=
-> and switching the RTS GPIO to be less than the specified RTS delay?=0A=
-> =0A=
-Maybe you can calculate the nominal duration of the transmission and add th=
-at to the delay?=0A=
-But yes, that could still result in a short delay.=0A=
-=0A=
-You stated that the TEMT interrupt is not useable. Why not?=0A=
-=0A=
-But it does trigger the question what the RTS delay is used for?=0A=
-- Is it to overcome the transmission of byte(s) still in the UART?=0A=
-- Is it to overcome the transmission of the stop bit(s)?=0A=
-- Can anyone imagine anything else that requires a delay?=0A=
-- Is the given delay a minimum, typical or maximum value?=0A=
-=0A=
-Maarten=0A=
-> =0A=
-> Martin=0A=
-> =0A=
-> > =0A=
-> > Kind regards,=0A=
-> > Maarten Brock=0A=
+Add parameter "wait" for gsm_modem_update() to indicate if we
+should wait for the response.
+
+Currently gsm_queue() processes incoming frames and when opening
+a DLC channel it calls gsm_dlci_open() which calls gsm_modem_update().
+If basic mode is used it calls gsm_modem_upd_via_msc() and it
+cannot block the input queue by waiting the response to come
+into the same input queue.
+
+Instead allow sending Modem Status Command without waiting for remote
+end to respond.
+
+Signed-off-by: Seppo Takalo <seppo.takalo@nordicsemi.no>
+---
+ drivers/tty/n_gsm.c | 33 +++++++++++++++++++--------------
+ 1 file changed, 19 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 8dd3f23af3d2..8e8475d9fbeb 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -454,7 +454,7 @@ static const u8 gsm_fcs8[256] = {
+ 
+ static void gsm_dlci_close(struct gsm_dlci *dlci);
+ static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
+-static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk);
++static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk, bool wait);
+ static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
+ 								u8 ctrl);
+ static int gsm_send_packet(struct gsm_mux *gsm, struct gsm_msg *msg);
+@@ -2174,7 +2174,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
+ 		pr_debug("DLCI %d goes open.\n", dlci->addr);
+ 	/* Send current modem state */
+ 	if (dlci->addr) {
+-		gsm_modem_update(dlci, 0);
++		gsm_modem_update(dlci, 0, false);
+ 	} else {
+ 		/* Start keep-alive control */
+ 		gsm->ka_num = 0;
+@@ -4138,7 +4138,7 @@ static void gsm_modem_upd_via_data(struct gsm_dlci *dlci, u8 brk)
+  *	@brk: break signal
+  */
+ 
+-static int gsm_modem_upd_via_msc(struct gsm_dlci *dlci, u8 brk)
++static int gsm_modem_upd_via_msc(struct gsm_dlci *dlci, u8 brk, bool wait)
+ {
+ 	u8 modembits[3];
+ 	struct gsm_control *ctrl;
+@@ -4155,10 +4155,15 @@ static int gsm_modem_upd_via_msc(struct gsm_dlci *dlci, u8 brk)
+ 		modembits[2] = (brk << 4) | 2 | EA; /* Length, Break, EA */
+ 		len++;
+ 	}
+-	ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
+-	if (ctrl == NULL)
+-		return -ENOMEM;
+-	return gsm_control_wait(dlci->gsm, ctrl);
++	if (wait) {
++		ctrl = gsm_control_send(dlci->gsm, CMD_MSC, modembits, len);
++		if (!ctrl)
++			return -ENOMEM;
++		return gsm_control_wait(dlci->gsm, ctrl);
++	} else {
++		return gsm_control_command(dlci->gsm, CMD_MSC, (const u8 *)&modembits,
++				  len);
++	}
+ }
+ 
+ /**
+@@ -4167,7 +4172,7 @@ static int gsm_modem_upd_via_msc(struct gsm_dlci *dlci, u8 brk)
+  *	@brk: break signal
+  */
+ 
+-static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
++static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk, bool wait)
+ {
+ 	if (dlci->gsm->dead)
+ 		return -EL2HLT;
+@@ -4177,7 +4182,7 @@ static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk)
+ 		return 0;
+ 	} else if (dlci->gsm->encoding == GSM_BASIC_OPT) {
+ 		/* Send as MSC control message. */
+-		return gsm_modem_upd_via_msc(dlci, brk);
++		return gsm_modem_upd_via_msc(dlci, brk, wait);
+ 	}
+ 
+ 	/* Modem status lines are not supported. */
+@@ -4243,7 +4248,7 @@ static void gsm_dtr_rts(struct tty_port *port, bool active)
+ 		modem_tx &= ~(TIOCM_DTR | TIOCM_RTS);
+ 	if (modem_tx != dlci->modem_tx) {
+ 		dlci->modem_tx = modem_tx;
+-		gsm_modem_update(dlci, 0);
++		gsm_modem_update(dlci, 0, true);
+ 	}
+ }
+ 
+@@ -4449,7 +4454,7 @@ static int gsmtty_tiocmset(struct tty_struct *tty,
+ 
+ 	if (modem_tx != dlci->modem_tx) {
+ 		dlci->modem_tx = modem_tx;
+-		return gsm_modem_update(dlci, 0);
++		return gsm_modem_update(dlci, 0, true);
+ 	}
+ 	return 0;
+ }
+@@ -4531,7 +4536,7 @@ static void gsmtty_throttle(struct tty_struct *tty)
+ 		dlci->modem_tx &= ~TIOCM_RTS;
+ 	dlci->throttled = true;
+ 	/* Send an MSC with RTS cleared */
+-	gsm_modem_update(dlci, 0);
++	gsm_modem_update(dlci, 0, true);
+ }
+ 
+ static void gsmtty_unthrottle(struct tty_struct *tty)
+@@ -4543,7 +4548,7 @@ static void gsmtty_unthrottle(struct tty_struct *tty)
+ 		dlci->modem_tx |= TIOCM_RTS;
+ 	dlci->throttled = false;
+ 	/* Send an MSC with RTS set */
+-	gsm_modem_update(dlci, 0);
++	gsm_modem_update(dlci, 0, true);
+ }
+ 
+ static int gsmtty_break_ctl(struct tty_struct *tty, int state)
+@@ -4561,7 +4566,7 @@ static int gsmtty_break_ctl(struct tty_struct *tty, int state)
+ 		if (encode > 0x0F)
+ 			encode = 0x0F;	/* Best effort */
+ 	}
+-	return gsm_modem_update(dlci, encode);
++	return gsm_modem_update(dlci, encode, true);
+ }
+ 
+ static void gsmtty_cleanup(struct tty_struct *tty)
+-- 
+2.43.0
+
