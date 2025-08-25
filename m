@@ -1,116 +1,95 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEE6219C569;
-	Mon, 25 Aug 2025 06:28:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A77F27080D
+	for <linux-serial@vger.kernel.org>; Mon, 25 Aug 2025 08:44:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756103301; cv=none; b=IzCm9igTqcFiyncPpae5KFUqy0jl5XqmeP3T+dkTM4cg/SfV4UeGgHsK6nZ1B3osn/OCe1+mGEE5nTU+XGNEsKUDS7nTRcycMDcdeG2xyPlFctzH2HAl8hAMl51e/M6WdKsKtIN310bTgd9EnGrDDvDbKYWGphbWtRNsWXaDYaE=
+	t=1756111480; cv=none; b=FuwmtAxja7sWKxeV4fPZaWzqd2+REABQpRB3RMtRPYf3D8ghw0P4pRKY8H66H2gyrqfvmDtB3thPD2HfZ0pyDhWMy6l2Js/V5Z+XHX5rws8gPqvA0LrU9zb3alGmuLXAo7t/yzAiBoH3p7SEP8BsOgZk1ij5Vzh4tYzirpJx8r8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756103301; c=relaxed/simple;
-	bh=WQVylS92T3jgMm7p84Z04xb25P92PYQug7wH3/uzZMA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S1Vp+CXST8Tyoau3lRnM42AAmiRKrA9V6XMG8WwpirBK7pVjqisabFh2W++6Nagj8oYiVOdTgjJrPhRaDngCqEGH3BJKAFcXb4ciUADdmSkEWb7Tw2Z9J+4ZJJrN6v0iq5QRXQqMndyQp7bd6Z9uk3MS0BsnSYi5lQMGLK6YvTY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=akjIn+wG; arc=none smtp.client-ip=68.232.153.233
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="akjIn+wG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1756103300; x=1787639300;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WQVylS92T3jgMm7p84Z04xb25P92PYQug7wH3/uzZMA=;
-  b=akjIn+wG15LcV1BxG1NwXrF7tftD289/QyhmevycNxc7Ap+TTq27TFgv
-   G2wNjzRchclfr8fXicwA+HuEVRcPBkxm0cfccYhRd+h4nUSaWIibrZKx5
-   t8dvzwa5fILD+FkPxQfok7GfhXpCsT/o4Hryl5DLELchCDLMwdrtZkRIE
-   vzBWaq0ubNayr9kC18v5WbyCMHJDISNdR+493djgNxdyQ+SorYXyEIbr5
-   xk9K7UD7lcQWP8cVp19zYqHYSUl9S26a0y+vDC78V/90lems+gWPB1qfJ
-   QWOkZL4+OhjfL9u9gXK7g3DPL2cxDsPFOPWQHCgEbnQsxFD/vMDClVCCY
-   A==;
-X-CSE-ConnectionGUID: E7GoUgAnRxqBfYFECdyUSQ==
-X-CSE-MsgGUID: 5apMjYN7Q+GTJVOEPqfVXw==
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="45594060"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 24 Aug 2025 23:28:14 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.44; Sun, 24 Aug 2025 23:27:54 -0700
-Received: from DEN-DL-M70577 (10.10.85.11) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
- Transport; Sun, 24 Aug 2025 23:27:50 -0700
-Date: Mon, 25 Aug 2025 06:27:49 +0000
-From: Daniel Machon <daniel.machon@microchip.com>
-To: Robert Marko <robert.marko@sartura.hr>
-CC: <linux@armlinux.org.uk>, <nicolas.ferre@microchip.com>,
-	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
-	<catalin.marinas@arm.com>, <will@kernel.org>, <olivia@selenic.com>,
-	<herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-	<andi.shyti@kernel.org>, <lee@kernel.org>, <broonie@kernel.org>,
-	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <arnd@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<linux-crypto@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	<o.rempel@pengutronix.de>, <luka.perkov@sartura.hr>
-Subject: Re: [PATCH v9 0/9] arm64: lan969x: Add support for Microchip LAN969x
- SoC
-Message-ID: <20250825062749.5hjcxwlbmagccqgj@DEN-DL-M70577>
-References: <20250813174720.540015-1-robert.marko@sartura.hr>
+	s=arc-20240116; t=1756111480; c=relaxed/simple;
+	bh=Qx0EHnxhtjRTgy0Yc6CzMXRY5epJDTWnoDhJh5mpf7k=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=MptR+chNdoT2UOh/aVj7aac+s128rJt9Q1GlBVJdzFufpPuecxoqnMCS431cdz7ys9ZNU7Oxl2J0tsUvLchIRRh0oeoPVRluGPfY1+3EXxCrrnWgk0kF2qqcY6sOYydYvcl2ysI4cewgwoKp6CtR5X9W+oCpXhEGCyFsU/KnbGw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-3ed8c5ffa82so2878535ab.2
+        for <linux-serial@vger.kernel.org>; Mon, 25 Aug 2025 01:44:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756111477; x=1756716277;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QejM8CXnArY2Z2VtT+tzHm/yfYtQ1A2A3xEkQg/zxAs=;
+        b=FrLhp3aHE5zxt7+ckuFM4Ok9bXwaJhDH6WOvokV1kmbzbPCwLBkUScJkc4/Np6svth
+         5+DnRadV2cdNbVipIFtFZVTN75lYEaHvKUbnx9X/hsNsfOsioKuRegPz0T6gMcTaYX1r
+         94ZxAtjt1yXSn2qxJBG3M8RmYsKDFQkjB8ec2GZvKXwQUBSEBeSHX6U6sDHSev7ApzWV
+         lrAZiY/SyIe6WQ2Wu5o3vatxpFcXq6Ws6RCz5joMkAZta6GD1jtcN6tR9pi57LvMcjPA
+         boHi6g3S3b0Ciqm6BsUeG3jGYPESfSFyTNYShN7ZCNkwmlMrF1xlROj8NdPwkPmFAfbb
+         cvQw==
+X-Forwarded-Encrypted: i=1; AJvYcCW3ObPhSNDjYMCBE9w+2t9L32TjuPCDSEGKBKXfbNOqszV/cW82W19eHKKTCNVKgqBJHEH5EHa0TenxqWU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwopI8Lu8TKcQRM2W9wUssRUI22vcZpseh2tj0q/GKv3YysCdKp
+	OObDRMXmidjoSKH1MLB8Xwbd5gCG8oD4aDtBWJ7IdnUoXORkXzGx1zn/WldO7RhkJIp/lTkZvri
+	87U35Y8naDBJnNMFnfa3J/EHWHDOABd6b5dlZo6La+5RHubENX1Sug5r3BfY=
+X-Google-Smtp-Source: AGHT+IExklVy4RkzKLt1k1C9yMIcJKDJGXqHdt4hcHiXrGxSYT3tvBS0hk1y8LwOXjRNNcgBcbzg8ObZd7lis7tJrnS+wxk6WZKt
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250813174720.540015-1-robert.marko@sartura.hr>
+X-Received: by 2002:a05:6e02:1487:b0:3ed:684e:ce05 with SMTP id
+ e9e14a558f8ab-3ed684ecf4bmr11871485ab.4.1756111477622; Mon, 25 Aug 2025
+ 01:44:37 -0700 (PDT)
+Date: Mon, 25 Aug 2025 01:44:37 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68ac2275.a00a0220.33401d.0404.GAE@google.com>
+Subject: [syzbot] Monthly serial report (Aug 2025)
+From: syzbot <syzbot+list55834a7fc215ffb76396@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-> This patch series adds basic support for Microchip LAN969x SoC.
-> 
-> It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
-> which allows to avoid the need to change dependencies of the drivers that
-> are shared for Microchip SoC-s in the future.
-> 
-> DTS and further driver will be added in follow-up series.
-> 
-> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> ---
-> Changes in v9:
-> * Make ARCH_MICROCHIP hidden symbol that is selected by SparX-5 and LAN969x
-> directly, this avoids breaking existing configs with ARCH_SPARX5
-> 
-> Changes in v8:
-> * Move to using ARCH_MICROCHIP as suggested by Arnd
-> * Dropped any review tags due to changes
-> 
-> Robert Marko (9):
->   arm64: Add config for Microchip SoC platforms
->   ARM: at91: select ARCH_MICROCHIP
->   arm64: lan969x: Add support for Microchip LAN969x SoC
->   mfd: at91-usart: Make it selectable for ARCH_MICROCHIP
->   tty: serial: atmel: make it selectable for ARCH_MICROCHIP
->   spi: atmel: make it selectable for ARCH_MICROCHIP
->   i2c: at91: make it selectable for ARCH_MICROCHIP
->   char: hw_random: atmel: make it selectable for ARCH_MICROCHIP
->   crypto: atmel-aes: make it selectable for ARCH_MICROCHIP
-> 
->  arch/arm/mach-at91/Kconfig     |  4 +++
->  arch/arm64/Kconfig.platforms   | 51 ++++++++++++++++++++++++----------
->  drivers/char/hw_random/Kconfig |  2 +-
->  drivers/crypto/Kconfig         |  2 +-
->  drivers/i2c/busses/Kconfig     |  2 +-
->  drivers/mfd/Kconfig            |  2 +-
->  drivers/spi/Kconfig            |  2 +-
->  drivers/tty/serial/Kconfig     |  2 +-
->  8 files changed, 47 insertions(+), 20 deletions(-)
-> 
-> --
-> 2.50.1
->
+Hello serial maintainers/developers,
 
-Acked-by: Daniel Machon <daniel.machon@microchip.com> 
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
+
+During the period, 1 new issues were detected and 0 were fixed.
+In total, 18 issues are still open and 44 have already been fixed.
+
+Some of the still happening issues:
+
+Ref Crashes Repro Title
+<1> 2317    Yes   possible deadlock in console_lock_spinning_enable (5)
+                  https://syzkaller.appspot.com/bug?extid=622acb507894a48b2ce9
+<2> 1530    Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
+                  https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
+<3> 215     Yes   INFO: task can't die in show_free_areas
+                  https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<4> 196     Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
+                  https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
+<5> 166     Yes   KASAN: stack-out-of-bounds Read in sched_show_task
+                  https://syzkaller.appspot.com/bug?extid=8d2757d62d403b2d9275
+<6> 149     Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
+                  https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
+<7> 97      Yes   possible deadlock in tty_buffer_flush (3)
+                  https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
+<8> 27      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
+                  https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
+<9> 6       Yes   INFO: task hung in paste_selection (2)
+                  https://syzkaller.appspot.com/bug?extid=275e275bd3f536725dd8
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
+
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
