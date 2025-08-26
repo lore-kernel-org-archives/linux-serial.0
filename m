@@ -1,99 +1,124 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4721618A6AD;
-	Tue, 26 Aug 2025 07:08:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A8371F4CB7;
+	Tue, 26 Aug 2025 08:15:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756192104; cv=none; b=JMVzJFtIXg11AOmpgl8+tvBZ1Bra5KoeNmtH9KNYeFGKbEKoQRb5HOlyFiKrzRrwgZISwpIz8Nf5sj5edmh5ADYBxfSBF5//JLgNtdIJ2mDWL9xQjalivm5JG1tIuDg0+aVW9czRnYfCmRGMwuU4AEU0kGUuxeptDYHg2l7kYpQ=
+	t=1756196154; cv=none; b=h5nibAd8ardgQCh63K0H2Vzh+na4I0o2WIGQ+qzh6x8GhKnCLw29D1yyRNFzHq61VcHCRfC52ef6XgHQG49dRSypMt2CkmLaaqQOZ7Q/09VVUVmHChY9LDz9sRumbbmhcdzQZz9zV3g/ImrjLmjrUgQwGK89q3bnkQj0UyPkudU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756192104; c=relaxed/simple;
-	bh=bz60ZHQMGoOcKZCj6uQPRAQshhck8rgKEursI1Ot91k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=chF+K5rkUczoPasOfTsfFcW7KpkI1GXzJjl2bo+y7Yphj2YEzqc5Uc6SaQHKvLUcO+zzK6wdjwua16MenssE0S44qKGxWzZb+c9iJcenUiSKUG2NfBptuDcyxy8ZPYaznvYgeTzuhhg++qSmMstuJE1w13ZjCKrNBLui262x0M8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=07c9xgeE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1756196154; c=relaxed/simple;
+	bh=jF2eRaWTLzQVNN/wWhkU/56cdh7FxGeTbDXGW0K6zbQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hrI+0JpYotpbEUuootvaD7vzMNddpzjuZWoCdLnHp+VkrpRDqycis5IYUY2G1bURnQ8SUKitzaeAhjLMAb+QqU4DNRZkOlnoELhAHgnO+pzlMulHzcv9A6q7jXpDv2CK/WJqCouWDSsk6jFHgV6O4g6mQnKz4hThawm4pmn3gIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hYKGcC4k; arc=none smtp.client-ip=209.85.210.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="07c9xgeE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54AEBC4CEF1;
-	Tue, 26 Aug 2025 07:08:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1756192103;
-	bh=bz60ZHQMGoOcKZCj6uQPRAQshhck8rgKEursI1Ot91k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=07c9xgeE5nPjIroTAzXxAJMcgX5FoCZTcNMy8B9YSIVtjHJFWj2sO7e2XNE+/hAmG
-	 eynQ8+9nhqiX19/30tNVwsGwt4nI1Fb8a71Fv+mJgitxbSOgffIFskdelczuspg4me
-	 V5Y5hpT9Gu04lV9vmPZM+ubZATAy7S4h7a474ixw=
-Date: Tue, 26 Aug 2025 09:08:21 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Seppo Takalo <seppo.takalo@nordicsemi.no>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] tty: n_gsm: Don't block input queue by waiting MSC
-Message-ID: <2025082617-unjustly-dust-4976@gregkh>
-References: <20250825135500.881285-1-seppo.takalo@nordicsemi.no>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hYKGcC4k"
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-76e39ec6f30so5075004b3a.2;
+        Tue, 26 Aug 2025 01:15:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1756196152; x=1756800952; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=hyveAheAWtDLQRrsw8HdtwofT0F79u3HfS2Z0l05Gr0=;
+        b=hYKGcC4khqGvGKbHwI8l96olUdC9cU0MqK7k90QqwitR2kt/xEXJ9v0vZzwTjrRe/e
+         6mF6mVrOr7rc6veK+WsfxT6peiIt4DYutDMevZqzPEjFqb5EIeEOCqfy3zWl4w+yuZkM
+         V1pRhXVtATtq5bBLV/nSpud4M0QHNtefj5V5fJld83Wq+dOCMmFk36aaMimYVMvBUvhy
+         473Wzi+ULVzxPHjbZIZAnBwpBvKA4lmNxJfYzbWG1fUSegb1hdYfWfmAOP9PPWssCHFI
+         J3QunLEAYbXU6o5PrNvB8FEysRwFl3X58CEYsj/Ghn8WzSNsVUrzj7ok8WKAMd4ns2W1
+         RCXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756196152; x=1756800952;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hyveAheAWtDLQRrsw8HdtwofT0F79u3HfS2Z0l05Gr0=;
+        b=agIVoMNjyb7MNlOZ/SOk7Ruawp509dTN3WTrY+YV/r1qcAG5HFiSN9c4NYuF5Is3B3
+         g5MLCoSL1g2OTaEVRDd1h4zQ53q39CO/NCAdg6H6BSocv9jJdOznA7sTLvhPbcNZ5c9f
+         1K3E5e4WZWhVjx7QDdaXaxDwkEW2sjxv28p3MkzLGmP97eTWNtcsVqTgHWZyvoN3VoKS
+         CoXO4Iqcvx4NYErnZuz/4T4qewLVRyZb7n8o91Akl/HotjCdKpMLO9zzIr+QuguiWMWM
+         Ea60zeslx/ZrKIU3g49VOWNidzklk+WCq+ig0enZg9sqrkEOfHa4uhaC51S/F8xmJq0D
+         mhzg==
+X-Forwarded-Encrypted: i=1; AJvYcCVJRlZDIOAssY/DnMv+j6bLdEtcgcZswhA7alm2RjhXa88DJQUikArs7SwA+7x+uInJZo0283yLGpqpSyoi@vger.kernel.org, AJvYcCVpDvsSuqKALggpbgcegO+jcFNZyobSaEsm0zTEkuUKtoIIyHym7WZTWEActhgUEAU28eInHwyl6U4xpi8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy8OJbT+MawCOwlljIAjhcFPIbQ4w6C0ye7Zibq2FbVxB7Jfl+P
+	B0rOHiTi2anNk/mxadujwvivkLYiriIlxgJUUCp8e+sQNwEtaP/boeYr
+X-Gm-Gg: ASbGncus8NPoKLKQz2G16yqjHSCjjjwqu6ykriTOfdRBt1a3/TCeMkxmIOD7EmSkmvn
+	dRB9IGg8cymnai/3vwzT1aGWNCRjGYWHmLzjfXTQqSefiwnpFuYyI4az2QpAVNlZD0plUJy9i2n
+	hUNxDyhpmuVcNFkKWhwB6wFjWyrII4+K4zw/Ry3TzYiPeYmo1HE4IFc07thSYcZWssmj/75FvF7
+	s+7kE2206GYwje8+9HYM8f8PxW+DgqJg7k7f2r5H2Y0mdKkROKtagvl6d+AwAQHElpGg81Eh809
+	R453HcX40AZUkT2AIvCFeK6XbRMqoCMmV+RKLyQPnbScqrL7+1woqlmwobMtUi3ZmKasgJGJtt5
+	tDBK2E+TUsU6LLKW2+mbBUw/rJw8gXKEj
+X-Google-Smtp-Source: AGHT+IFIiLYvXzCV8qOlHzCvk9o2qk8e5IQODytBqijU6NmKdukcWk92g1zuLfH6UrRFzluufdVV1Q==
+X-Received: by 2002:a05:6a00:4fc4:b0:771:b230:f0ac with SMTP id d2e1a72fcca58-771b230f427mr8262713b3a.28.1756196152295;
+        Tue, 26 Aug 2025 01:15:52 -0700 (PDT)
+Received: from localhost ([2001:19f0:ac00:4eb8:5400:5ff:fe30:7df3])
+        by smtp.gmail.com with UTF8SMTPSA id d2e1a72fcca58-771fd80300csm399567b3a.106.2025.08.26.01.15.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Aug 2025 01:15:51 -0700 (PDT)
+From: Inochi Amaoto <inochiama@gmail.com>
+To: Karol Gugala <kgugala@antmicro.com>,
+	Mateusz Holenko <mholenko@antmicro.com>,
+	Gabriel Somlo <gsomlo@gmail.com>,
+	Joel Stanley <joel@jms.id.au>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Inochi Amaoto <inochiama@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Yixun Lan <dlan@gentoo.org>,
+	Longbin Li <looong.bin@gmail.com>
+Subject: [PATCH] serial: liteuart: polling all interrupts in the IRQ process
+Date: Tue, 26 Aug 2025 16:14:44 +0800
+Message-ID: <20250826081445.505947-1-inochiama@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250825135500.881285-1-seppo.takalo@nordicsemi.no>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 25, 2025 at 04:55:00PM +0300, Seppo Takalo wrote:
-> Add parameter "wait" for gsm_modem_update() to indicate if we
-> should wait for the response.
-> 
-> Currently gsm_queue() processes incoming frames and when opening
-> a DLC channel it calls gsm_dlci_open() which calls gsm_modem_update().
-> If basic mode is used it calls gsm_modem_upd_via_msc() and it
-> cannot block the input queue by waiting the response to come
-> into the same input queue.
-> 
-> Instead allow sending Modem Status Command without waiting for remote
-> end to respond.
-> 
-> Signed-off-by: Seppo Takalo <seppo.takalo@nordicsemi.no>
+When using liteuart with aplic and imsic, the new interrupt will lost
+if the interrupt handler can not handle all the data. This is simply
+because the interrupt line will never be low, and the aplic will not
+send the interrupt to imsic again.
 
-What commit id does this fix?
+Handle all data in the IRQ handler until no data incoming.
 
-> ---
->  drivers/tty/n_gsm.c | 33 +++++++++++++++++++--------------
->  1 file changed, 19 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-> index 8dd3f23af3d2..8e8475d9fbeb 100644
-> --- a/drivers/tty/n_gsm.c
-> +++ b/drivers/tty/n_gsm.c
-> @@ -454,7 +454,7 @@ static const u8 gsm_fcs8[256] = {
->  
->  static void gsm_dlci_close(struct gsm_dlci *dlci);
->  static int gsmld_output(struct gsm_mux *gsm, u8 *data, int len);
-> -static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk);
-> +static int gsm_modem_update(struct gsm_dlci *dlci, u8 brk, bool wait);
+Signed-off-by: Inochi Amaoto <inochiama@gmail.com>
+---
+ drivers/tty/serial/liteuart.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-Adding a random boolean to a function is almost never a good idea.  Now
-every time you call this function, you have to go and look up what that
-boolean means.
+diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
+index 6429e8f11f36..436e8f06fb75 100644
+--- a/drivers/tty/serial/liteuart.c
++++ b/drivers/tty/serial/liteuart.c
+@@ -140,11 +140,17 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
+ 	 * irq[save|restore] spin_lock variants to cover all possibilities
+ 	 */
+ 	uart_port_lock_irqsave(port, &flags);
+-	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
+-	if (isr & EV_RX)
+-		liteuart_rx_chars(port);
+-	if (isr & EV_TX)
+-		liteuart_tx_chars(port);
++
++	isr = litex_read8(port->membase + OFF_EV_PENDING);
++
++	while (isr & uart->irq_reg) {
++		if (isr & EV_RX)
++			liteuart_rx_chars(port);
++		if (isr & EV_TX)
++			liteuart_tx_chars(port);
++		isr = litex_read8(port->membase + OFF_EV_PENDING);
++	}
++
+ 	uart_port_unlock_irqrestore(port, flags);
+ 
+ 	return IRQ_RETVAL(isr);
+-- 
+2.51.0
 
-Please never do that, instead make a "wrapper" function that will then
-call this "core" function with the boolean set properly.  That way you
-can name the wrapper functions in a way that describes what it does.
-
->  static struct gsm_msg *gsm_data_alloc(struct gsm_mux *gsm, u8 addr, int len,
->  								u8 ctrl);
->  static int gsm_send_packet(struct gsm_mux *gsm, struct gsm_msg *msg);
-> @@ -2174,7 +2174,7 @@ static void gsm_dlci_open(struct gsm_dlci *dlci)
->  		pr_debug("DLCI %d goes open.\n", dlci->addr);
->  	/* Send current modem state */
->  	if (dlci->addr) {
-> -		gsm_modem_update(dlci, 0);
-> +		gsm_modem_update(dlci, 0, false);
-
-See, what does false mean?  No clue :(
-
-Why not call gsm_modem_update_and_wait() instead?
-
-thanks,
-
-greg k-h
