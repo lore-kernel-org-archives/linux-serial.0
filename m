@@ -1,221 +1,198 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD23427EFFE
-	for <linux-serial@vger.kernel.org>; Tue, 26 Aug 2025 19:54:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E40A130CDB4;
+	Tue, 26 Aug 2025 22:51:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756238083; cv=none; b=I4PabicKzx/HQ2zXzHXqvC3qXwG2djVy6mOaUYkJPmGowj9dW66F43KU3yHJyW3X/h1WWlYKCcSZVl17DVjo/QWL3yj0xiYsLIE+9MgCKqOEu1eOXiYTLiVeeQ25DCw3+bD7+thp94v8xuNKNJX+oeN8seFCd+B77geg1gUA56s=
+	t=1756248710; cv=none; b=Kqn910s3UB2Lcg7hhv5FY2iuQ5UQh6tdquZM6+Wx+4ibs8b/3vYGoUY0KDcbyL/pmpeXDa0N56hwW7XoaQpjOMR80iCpTTJWame6cthTDefNBJKFtvS2MoA65iOuQTLeUXU3cwEcKMekf8V+5MLI4NfLkBgb6CxoPHvcxjsSz7M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756238083; c=relaxed/simple;
-	bh=nHV+MoADmuu9Flb/SEZp6v3PcnQ8ZAvPvJ2YlUDEGqg=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=Ta7hN1ac9GTjOsvJ0RaqMRwTpoHK5aEPph3MNQ0gJN65/BMAycmyoVvkAMbcQ6wiLEtG6iC2Ru9k6o3rMP0LWe7qWTgeeNHT5jA5Dz56YGSWFAOF9UUcx9qOAVRJO3r2owVVokrmarbry/MijTUYXD+j4ltyyTiE+oFgIBDxB5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=kVo2jcyH; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1756248710; c=relaxed/simple;
+	bh=hgk4XDMvj1XRZUEv0zpCfESAIhrSX8CeXQ0czb2Zh0M=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=sVWMy7DcFaeeYQUoxfto5FhCg+8XHjLuXErAiTWYS/QTtRv5kZY2lZBq9GsROd8BCxubQAIiowpGWQtxeEJKMGW0Sc8k9hgT9FVisC7GjmpV/dnnd9Z7wuZhB39iWb3qmD8nqR1TqBdQhaQwnozSJ6mSj/g57BYzHT/I+eeI7RI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZH210GJO; arc=none smtp.client-ip=209.85.216.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="kVo2jcyH"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-45a1b05ac1eso32780295e9.1
-        for <linux-serial@vger.kernel.org>; Tue, 26 Aug 2025 12:54:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZH210GJO"
+Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-323267872f3so4907928a91.1;
+        Tue, 26 Aug 2025 15:51:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1756238080; x=1756842880; darn=vger.kernel.org;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p5ZZNfqznY43NdEJ8oweClpq/lUKtG6cvHvhI0eKnkw=;
-        b=kVo2jcyHjhJQIYTuA3M/9+RzN7Ft3MDQgkVwqOJKJKQiv03+ApkeCbQKaYGAYs7A6V
-         qhth2u8o2bj53Y48lTwskvQc38tQS/kYI5BMMu5Wh+CluwBu8QhVnT8sTES9/m30ng5k
-         vp7vsTJM+kKboSPZzqQB3WP5ljXCGedd0e6KWNPzC7hYvW5JhTnncYxhOxLVMr+CcCEx
-         DuwfBW3jaCMjtDPYf7uS3VfkuHnUynMGg28QvTNXBTbNeYBrNce1sp1MwfsR0IrBBVKC
-         BiOjFNHDF4IpM62a56M9gGoUa2AVgSM6YiV8OcG4CvKGl9/PS4X4zyeFMfZi9QH0jAbO
-         F8VA==
+        d=gmail.com; s=20230601; t=1756248708; x=1756853508; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nZ1zyXSSIOQ4H4hZM313mvzovTi9cnOMX7vreXvwnt8=;
+        b=ZH210GJOWtoq0n3sxfhXPRw/4mx439U/2mRcSrvPdOeboa7RywbdKnCnjV0GUAJ88K
+         SJ1IUQFwuURXaF/4kzUDVxyHoivDgO0jBgj6VJXeo4N7kI38CWGRmXNJU9EdtOytZhFf
+         Zm9qVHcpNvtfzEwFWoJqBM6TOjGFi0Gkkq2OnxgThdC3Joxx7xtOWACZ0AU40sLdCWax
+         L2VigclYvqaOcfctTDSb9P0IjBLT6sCmwIQkDel/TsSRxX6MO0J4Asbjj37McQxU3hvc
+         AmxUWE+K02TBrxPbPKx5SwQvMuop/0JETjxHP9OToRgCIONHsjqWQeBAW1OynfPaSjUu
+         32XQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756238080; x=1756842880;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=p5ZZNfqznY43NdEJ8oweClpq/lUKtG6cvHvhI0eKnkw=;
-        b=IKbFpSwmVv7yMPtU4lDYCoSu2TsJVbXF8K70BGG1iGCjTUtYIbb8LNxX68KpEm3+h5
-         j+mKDcTHED9kT8g3R8GZiNA+tT3+GTRshxEyCeVElOdzV8jV8sAXgFCR2AWUNNN92hWm
-         OEjbAKghqiX1ILmDI3F2Kxb+6apTg0RJVpMSmOKg4+G6ijYX8Zp45bnojRzsc/kyF9Pq
-         SBUDvnwLEgI8iWu0KXT5z97jFSdc4wQQYUGaDOLHcyKMbvTbJ8X3rYq4ZXwGkT+btfk6
-         LnFTPapFN9fXvdJdoNoaDeYd4f7GmP5Z2jdmhdrHX2whoyS5qRXb+LYjwMwE7Iv2XYRj
-         qvzw==
-X-Forwarded-Encrypted: i=1; AJvYcCUIsO2c7flBcuW1Tidyb9EFbEBTLTcQNqFnL6og1gyKvEY2xLI9fK9V0OLO6RqD0rd/hv+5kytUryjUq3U=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzjmMMvZxTEJatDlmcrAujUMZPaWqEhJhP4m4wsDPOlmyzhUJgY
-	3I1WVqAn7vYjN9hEGY4Kv4RszGuhdEvbbh/k0wYvHuUxx/wpvw5oJ4F8GiHQgELu3Ds=
-X-Gm-Gg: ASbGncv/ieeaYgy4BUtUle2xn3wGGSHU4rY3DpW0l54kL48fm/hoZjFG/dNeTUIc68T
-	vpzTnqcTKRpnDJq49cK36dr2mi1i0gJc8xcnXKLYxvJWkQrFxdDWZjtgUb9jWobA+ifVyYDiKyK
-	eFmNUfNGUe/U/z//kjWhbBKcvv/TYm8YMORPphrrEyRwxcxqqy2ku3nDEn3+A1lsO1cutaROql0
-	e7q57pL2pDSAcbzUrwuQc0tAmYqwq8DTzNISMg+Fv6OgkWYXWqH570WQO19/4r2jbHdkwPUUhQM
-	MSYCshBAciS9ujOLx+bOsgx1UW6BynGlHCh+81kRmIZAvfYJlWiI7R2BCUoYf0NpqIvtp1fUoNm
-	IiuLZsEQM5eyUZ3aZcJxxEGaeILw=
-X-Google-Smtp-Source: AGHT+IGHAaQcE5nk8+2l2gN+bgEDgLzg5nPrVxn2sZgSHR1KIyMJyR1EB3qvooivM+uG4c5VtH8DHw==
-X-Received: by 2002:a05:600c:1392:b0:453:5a04:b60e with SMTP id 5b1f17b1804b1-45b517d4e23mr135380295e9.26.1756238080215;
-        Tue, 26 Aug 2025 12:54:40 -0700 (PDT)
-Received: from localhost ([2a02:c7c:7259:a00:e633:2c7e:2d3c:f5ec])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b6f0f320esm23865e9.16.2025.08.26.12.54.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Aug 2025 12:54:39 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1756248708; x=1756853508;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nZ1zyXSSIOQ4H4hZM313mvzovTi9cnOMX7vreXvwnt8=;
+        b=pOIMRpebSgrNZ9HhQl/suHG1WEJthXelH2+2coWVJtTwNdyZ3Ubo+JU0WzlUp2W1kd
+         JdBGeqdUvvrMLwMxBizKaQ0BQPEXnqDssAPgBr+S/8XPhMnQas3T5/jlOhWDNX8kBZpl
+         tupKKRCDXOkMgxqCX9IghFDkefTP9MxUZaIlR8CSCzX9yCAVCUCR2ECS1kb1rglT5+hI
+         /C33HGOwKkzJQMYHCY+2qItzOk8GW5oM1ywFWrY8mCYZnZMC4Nze44v+eO857ofIxxvS
+         rCIxfLkqS3rCv7npq21C68pY/peI1ZcFpJRQBbWSbyzGYuCSYdw7mWdcqCc3ADaCy+Ro
+         6pQA==
+X-Forwarded-Encrypted: i=1; AJvYcCV5Zsdr3dBN20qKAklXCvwyG4a2R2AVxnhQHnpnY4rQG8tjWro+NAQtYHE5RjkFz1yRzEMgzmHL6DML/4mF99c=@vger.kernel.org, AJvYcCXXxa2yjhAZktjrbS4MVgsl1+fqEkBLGKbEFyVWPJo4JnXEdV3u+aVO9kvgUFOs1AYO22dB0sOZNoRQ6koJ@vger.kernel.org
+X-Gm-Message-State: AOJu0YxYPNWVlgAW/lXtcoh3OtSTcvOnYzhaGYmfuSlRHmAoiidf65wp
+	k0y0iWTsAHMBm3XEgjTTy/gB2oxpNGidFM+/8yqHBSVb3+QtDTSthl0M
+X-Gm-Gg: ASbGncspUl7hgh1vNnKrI0J1pt8nagTQIxedQ7f0yAp65Awv8gDK+iZqUEWq2Kvk0w/
+	9aV4iuGlFAD3PE/jc0fa3dEkuKA3xmqVvJ+vemMjj4mDg51iUdWGuFqBJl4bJxkD/P7/A13UmIs
+	uCllCqrHNcLvKoX1j1xQ/MXCTY79AaW+zU1M9YQf7MyXSGa7lzlew/pIqolgjiRfhABwtABpkA8
+	aPJx5Ge/dpvhC1CzDOeYvBtVvtadkVTTFd/6eJUSgn0iruewPWz6SBxVdI/y1Yd0RcnV1ngtWna
+	GpjEJPepWmMOGUqrODQUQjEtoTcx2fhW+fUDS9Of7wwiOPwl0ZWLSiPsV9lxd/vb3yE33Kd2LML
+	if4RcE0BQiIJKWQS1wdpV
+X-Google-Smtp-Source: AGHT+IG/HzQ4hMId5Yct6mGAhKNYFzfy96p39xqVpexqISKH81EdXf5MkxVWA1nFcqIHqt/EM66QhA==
+X-Received: by 2002:a17:902:ec82:b0:247:7e9:110d with SMTP id d9443c01a7336-24707e91239mr101058735ad.6.1756248708113;
+        Tue, 26 Aug 2025 15:51:48 -0700 (PDT)
+Received: from [0.0.5.57] ([136.159.213.249])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-246688a601esm105340815ad.162.2025.08.26.15.51.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Aug 2025 15:51:47 -0700 (PDT)
+From: Abhinav Saxena <xandfury@gmail.com>
+Subject: [RFC PATCH 0/5] tty: Add KUnit test framework for TTY drivers
+Date: Tue, 26 Aug 2025 16:51:30 -0600
+Message-Id: <20250826-tty-tests-v1-0-e904a817df92@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 26 Aug 2025 20:54:38 +0100
-Message-Id: <DCCMFVC0DW1I.GXZVG2BQEFX7@linaro.org>
-Subject: Re: [PATCH v7 7/8] serial: qcom-geni: Enable PM runtime for serial
- driver
-From: "Alexey Klimov" <alexey.klimov@linaro.org>
-To: "Praveen Talari" <quic_ptalari@quicinc.com>, "Krzysztof Kozlowski"
- <krzk@kernel.org>
-Cc: "Bjorn Andersson" <andersson@kernel.org>, "Konrad Dybcio"
- <konradybcio@kernel.org>, <linux-arm-msm@vger.kernel.org>,
- <linux-serial@vger.kernel.org>, "Greg Kroah-Hartman"
- <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
- <dmitry.baryshkov@oss.qualcomm.com>, <psodagud@quicinc.com>,
- <djaggi@quicinc.com>, <quic_msavaliy@quicinc.com>,
- <quic_vtanuku@quicinc.com>, <quic_arandive@quicinc.com>,
- <quic_cchiluve@quicinc.com>, <quic_shazhuss@quicinc.com>, "Jiri Slaby"
- <jirislaby@kernel.org>, "Rob Herring" <robh@kernel.org>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
- <devicetree@vger.kernel.org>, <bryan.odonoghue@linaro.org>,
- <neil.armstrong@linaro.org>, <srini@kernel.org>
-X-Mailer: aerc 0.20.0
-References: <20250721174532.14022-1-quic_ptalari@quicinc.com>
- <20250721174532.14022-8-quic_ptalari@quicinc.com>
- <DC0D53ZTNOBU.E8LSD5E5Z8TX@linaro.org>
- <577d05d4-789b-4556-a2d2-d0ad15b2c213@quicinc.com>
- <dcad137d-8ac9-4a0b-9b64-de799536fd32@kernel.org>
- <DCC8WLEKNS8W.9GAJHQGYPZIY@linaro.org>
- <8689a8b4-75cb-4f01-ad6c-0a8367851257@kernel.org>
- <DCC9B5C7SSU2.GRI1UY0VUDHF@linaro.org>
- <890ede8a-c049-4332-8f62-5dce2fa0f77b@kernel.org>
- <5ae730f4-5337-49f8-8bec-8605a2495f37@quicinc.com>
-In-Reply-To: <5ae730f4-5337-49f8-8bec-8605a2495f37@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAHI6rmgC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDI1MDCyMT3ZKSSt2S1OKSYl3ztOQUiySjJANL41QloPqCotS0zAqwWdFKQW7
+ OILEAxxBnD6XY2loARpCBXmkAAAA=
+X-Change-ID: 20250824-tty-tests-7fcd8b2b093e
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
+ Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
+ Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
+ Kees Cook <kees@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ llvm@lists.linux.dev, linux-hardening@vger.kernel.org, 
+ Abhinav Saxena <xandfury@gmail.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1756248706; l=4094;
+ i=xandfury@gmail.com; s=20250614; h=from:subject:message-id;
+ bh=hgk4XDMvj1XRZUEv0zpCfESAIhrSX8CeXQ0czb2Zh0M=;
+ b=mSY5yCA3KyC3Jqpzeam3sxhrqhDy9sptr85JvnLMfcV7xFOHeUh1WHDvH6DvdeIHlJNpXm7ph
+ p1EdMuN7iI6AUnv/NRn/HgYTdbqiB4Uy6CHqf9MebJo5XZAOXaGCc0s
+X-Developer-Key: i=xandfury@gmail.com; a=ed25519;
+ pk=YN6w7WNet8skqvMWxhG5BlAmtd1SQmo8If6Mofh4k44=
 
-On Tue Aug 26, 2025 at 11:29 AM BST, Praveen Talari wrote:
-> Hi Alexey/Krzysztof,
->
->
-> On 8/26/2025 3:36 PM, Krzysztof Kozlowski wrote:
->> On 26/08/2025 11:37, Alexey Klimov wrote:
->>> On Tue Aug 26, 2025 at 10:21 AM BST, Krzysztof Kozlowski wrote:
->>>> On 26/08/2025 11:18, Alexey Klimov wrote:
->>>>>>> May i know what is testcase which you are running on target?
->>>>>>
->>>>>> Boot the board?
->>>>>>
->>>>>>> what is target?
->>>>>>
->>>>>> It is written in original report. Did you even read it?
->>>>>>
->>>>>>> Which usecase is this issue occurring in?
->>>>>>
->>>>>> Boot?
->>>>>
->>>>> FWIW, what said above by Krzysztof is correct, there is no usecase, j=
-ust booting the board.
->>>>>
->>>> 12 days and nothing improved, right? if this was not dropped now,
->>>> Alexey, can you send a revert? Author clearly approches stability with=
- a
->>>> very relaxed way and is just happy that patch was thrown over the wall
->>>> and job is done.
->>>>
->>>>
->>>> If you do not want to send revert, let me know, I will do it.
->>>
->>> I am okay with sending revert, just trying to see if there is any inter=
-est
->>> in fixing this.
->>=20
->> Any interest should have happened after 1 day of reporting linux-next
->> breakage. It has been like what? 12 days?
->>=20
->> That's typical throw the patch over the wall. Revert.
->
-> Really sorry for the delay.
->
-> I forgot to mention earlier that I=E2=80=99ve been actively investigating=
- this
-> issue across different platform SoCs. I was able to reproduce the
-> problem on the SC7280.
->
-> Here=E2=80=99s a summary of the observed behavior:
->
-> The issue appears to originate from the qcom_geni_serial driver during
-> device runtime resume. It results in a blocked IRQ thread, which in turn
-> causes system instability.
->
-> The call trace suggests a deadlock scenario where the IRQ
-> thread=E2=80=94responsible for handling wake-up events=E2=80=94becomes un=
-responsive
-> while interacting with the pinctrl subsystem.
->
-> Specifically, the msm_pinmux_set_mux function attempts to invoke
-> disable_irq, which is problematic when called from an IRQ thread context.
-> Since the IRQ itself is a wake-up source, this leads to contention or a
-> self-deadlock situation.
->
-> I have verified below diff and about to post it
+This patch series introduces a KUnit testing framework for the TTY
+subsystem, enabling deterministic, automated testing of TTY drivers and
+core functionality without requiring hardware or userspace interaction.
 
-Was the original patch, that introduced the regression, also created by AI =
-tools?
-Just trying to understand how we ended up with untested commit in -master.
+On an x86_64 build with CONFIG_GCOV enabled, these tests increased
+TTY subsystem coverage to approximately 10.6% line coverage and
+14.7% function coverage [1].
 
-Did you test the change below on real hardware?
+Problem Statement
+-----------------
+Testing TTY drivers today requires:
+- User-space interaction through device nodes
+- Complex setup with ptys or real hardware
+- Limited ability to test error paths reliably and deterministically
 
+This series solves these issues by providing in-kernel KUnit tests that
+exercise real TTY core paths under controlled, deterministic conditions.
 
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c=20
-> b/drivers/tty/serial/qcom_geni_serial.c
-> index c9c52c52a98d..cb3b4febd8c2 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -1848,16 +1848,36 @@ static int __maybe_unused=20
-> qcom_geni_serial_runtime_suspend(struct device *dev)
->   {
->          struct qcom_geni_serial_port *port =3D dev_get_drvdata(dev);
->          struct uart_port *uport =3D &port->uport;
-> +       int ret;
-> +
-> +       ret =3D geni_serial_resources_off(uport);
-> +       if(ret) {
-> +               if (device_may_wakeup(dev))
-> +                       disable_irq_wake(port->wakeup_irq);
-> +       }
->
-> -       return geni_serial_resources_off(uport);
-> +       if (device_may_wakeup(dev))
-> +               enable_irq_wake(port->wakeup_irq);
-> +
-> +       return ret;
->   }
->
->   static int __maybe_unused qcom_geni_serial_runtime_resume(struct=20
-> device *dev)
->   {
->          struct qcom_geni_serial_port *port =3D dev_get_drvdata(dev);
->          struct uart_port *uport =3D &port->uport;
-> +       int ret;
-> +
-> +       if (device_may_wakeup(dev))
-> +               disable_irq_wake(port->wakeup_irq);
->
-> -       return geni_serial_resources_on(uport);
-> +       ret =3D geni_serial_resources_on(uport);
-> +       if(ret) {
-> +               if (device_may_wakeup(dev))
-> +                       enable_irq_wake(port->wakeup_irq);
-> +       }
-> +
-> +       return ret;
->   }
+What This Series Provides
+-------------------------
+1. Reusable test helpers (`tty_test_helpers.h`):
+   - Minimal (~150 LOC) infrastructure that any TTY driver should be
+   able to use
+   - Automatic resource management
+   - Integrated into core files under KUnit guard, with
+     `EXPORT_SYMBOL_IF_KUNIT()` to keep the production symbol table
+     clean
+
+2. Mock TTY driver:
+   - Demonstrates how drivers can leverage the helpers
+   - Enables deterministic scenarios without hardware
+
+3. Core TTY tests:
+   - Validate open/close/read/write/termios paths
+   - Exercise hangup, resize, and error handling
+   - Ensure real kernel paths are tested, not mocked stubs
+
+4. ttynull driver tests:
+   - Validate data sink behavior of the null driver
+   - Provide a minimal driver contract baseline
+
+5. Optional coverage support:
+   - GCOV integration for test coverage analysis
+
+Future Work
+-----------
+With this foundation merged, follow-up work can:
+- Add more coverage of TTY core functions
+- Enable each TTY driver to maintain its own KUnit suite
+- Introduce stress tests and race detection
+- Extend to include more tests for other tty drivers:
+  - UART drivers: test interrupt handling without hardware
+  - USB serial: validate disconnect and reconnect sequences
+  - PTY drivers: test resize, flow control, and hangups
+  - Virtual consoles: test Unicode and input handling
+  
+Testing
+-------
+- All patches pass `checkpatch.pl`
+- Verified on x86_64 with:
+    ./tools/testing/kunit/kunit.py run \
+        --kunitconfig=.kunit/ \
+        --kunitconfig=drivers/tty/tests/.kunitconfig \
+        --arch=x86_64
+- All tests pass (working around tty_read wrapper in progress)
+
+Feedback welcome! :)
+
+References
+----------
+[1] Coverage reports: ttytests.haunted2bwanted.me (alt: linux-9ik.pages.dev)
+[2] kunit.dev/third_party/kernel/docs/usage.html#testing-static-functions
+[3] KUnit: docs.kernel.org/dev-tools/kunit/
+[4] TTY driver API: https://docs.kernel.org/driver-api/serial/
+[5] Big thanks to LDD3! (Ch18 especially!)
+
+Signed-off-by: Abhinav Saxena <xandfury@gmail.com>
+---
+Abhinav Saxena (5):
+      tty: Add KUnit test infrastructure configuration
+      tty: Add KUnit test helper functions
+      tty: Add mock TTY driver for KUnit testing
+      tty: Add KUnit tests for core TTY functionality
+      tty: Add KUnit tests for ttynull driver
+
+ drivers/tty/Kconfig                  |   9 +
+ drivers/tty/Makefile                 |   7 +
+ drivers/tty/tests/.kunitconfig       |  44 ++++
+ drivers/tty/tests/Kconfig            |  44 ++++
+ drivers/tty/tests/Makefile           |   2 +
+ drivers/tty/tests/test_tty_io_core.c | 249 ++++++++++++++++++++++
+ drivers/tty/tests/test_ttynull.c     | 163 +++++++++++++++
+ drivers/tty/tests/tty_mock.c         | 186 +++++++++++++++++
+ drivers/tty/tests/tty_mock.h         |  34 +++
+ drivers/tty/tests/tty_test_helpers.c | 387 +++++++++++++++++++++++++++++++++++
+ drivers/tty/tests/tty_test_helpers.h | 239 +++++++++++++++++++++
+ drivers/tty/tty_io.c                 |   4 +
+ drivers/tty/ttynull.c                |   5 +
+ 13 files changed, 1373 insertions(+)
+---
+base-commit: 8d245acc1e884e89f0808f64d6af3fc91d4903a0
+change-id: 20250824-tty-tests-7fcd8b2b093e
 
 Best regards,
-Alexey
+-- 
+Abhinav Saxena <xandfury@gmail.com>
 
