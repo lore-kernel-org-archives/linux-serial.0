@@ -1,66 +1,66 @@
-Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20BAE2F6581;
-	Tue, 26 Aug 2025 22:51:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A4912F8BE7;
+	Tue, 26 Aug 2025 22:51:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756248716; cv=none; b=gjiZy/vMdocBvsMpsHcn8FKy4gHV39YFLn45gxin7e7hZKDD/mmyvQGnKPbXnH+BrTEX+hlFlmxgEKBbcCnJU30ibgnrT1HesJPlVA2LOjQcdsQM8VV8D55TcZxkk3wWSPMKavBxlHf3dR9cg4MwdGZOdG52K5NRkFq7nmnwj9o=
+	t=1756248717; cv=none; b=dlXTqEezvy1ULwunUf8vOw/XUHLIyRcSpKZIbUnQVekItmNymPS1jqY+IGjUVD0FHY57XHGBV0hw1DpjURjEWpjsW1f1CvTmUa0NNmx9K+ovo5RzvLKna6Yzqi7D962sBGE9aX/pdJCUywcVL8SodLQwl8/poTfP91m/xjul9g0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756248716; c=relaxed/simple;
-	bh=JdXE8vYkTFnIcf9QUL8Bbqunld/9cGDUOO7aLLjXBeU=;
+	s=arc-20240116; t=1756248717; c=relaxed/simple;
+	bh=2sCgtf0iJuHZoEJ+ZjgF8LGfcrJ2jnuz9b44H6Mk4Ks=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=h90BXqXoFyTSJfoJM5q6e0a+mKoiKpC9pgrTtAK4qwJpeslqSy4Iu7fa5hC9e6+/X13+BsBN3x6YTl39uDXHQDKW+HjrPBt7XPRjrFkpgMksyKMyIiBJYNsQ40J5A0DTKrLCyYR+vFXYm9FmN5N8LZmdQk3T+9VybWkIVIYKOAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GPGdXlqf; arc=none smtp.client-ip=209.85.215.177
+	 In-Reply-To:To:Cc; b=Jczd8bseR8U5u2uIu/x8MP2ngLX4DgY4jLgO4tgdrMzqj73LpFF2UM4sRnMncfZuT6mxNRs4xRSbfTw56pn0kxG/LUer7W4Wu+3Mc3DXbD+JxE+Jc/Hu7PAn/zjPEL01bYySgMDErT6riFKN/7SpT3LoKhGJRmVwRn/x2IeXA2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NcVgD9H2; arc=none smtp.client-ip=209.85.215.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GPGdXlqf"
-Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-b4755f37c3eso5376762a12.3;
-        Tue, 26 Aug 2025 15:51:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NcVgD9H2"
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-b4c1aefa8deso1845490a12.0;
+        Tue, 26 Aug 2025 15:51:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756248713; x=1756853513; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1756248714; x=1756853514; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=LHq0wOrjV9AurPX5OQC4kD0MhUkJbDMxr/dKfoG/qIc=;
-        b=GPGdXlqfS7+y9UPy95X6+Qr5W6jCOVrKXcOEPnudc/D+oA0tRsTwsPbIWI95bpySwL
-         XysjN6EeQ6vjWsgTeV5MBkNaBvlr+ZI8RRtth7gnWf115Nt92ieYD9cxs09dZm/c/s2W
-         KXCl6zitnx8d46ief84de7qAPFi/hPNMDUXKEate06XP7xR5rCWnDyt7CrUfkCRQMXep
-         1EM2ZhdVJiqOXAlCI8di+vjniv7cY7ANGSsV2myDLxHAxmWRh17CNjwvuVvnHiBgADd4
-         8BIQpoAMS6Mc7+KOec5qHzVVJerpUTagoLXPnN3Yxz1lbS30R17Pwjgq/AYTklQxPZuc
-         fPGQ==
+        bh=pFHzcEkMkKxjDsW7QyH+21adtRUMu8g3PdBU38OriB8=;
+        b=NcVgD9H2oV+3W3WZgSxk5cF2Q2Vpz5ntRs7Ird924aZ7eg4iGktBEJ8prAAJ30+nDD
+         U0bYB7TBC+2zGfk2Gba81Q5dN+D3yVoLMcB8Bi/dU31mQpcXuewcJjsKZgzML5z9vvcH
+         4dblovf26PwLh8qOTj1HYk1Ne3WdvhPanSQyiCrzLOOZKFzbsfAlgkoLeycmiMy6f3xq
+         2v9qgXFChHxzYcaNmtt4CGjPJ/tIU33sGroyCV/l8CaXAjrkwR2GqmS7kEZVBpvXAsT8
+         hdbGThnLefZGwde2l4p5G5wXFRVqiCnASvGHdnRmzwdrt8GzU7yoWM2XuTy5+AmYEQrX
+         Pr7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756248713; x=1756853513;
+        d=1e100.net; s=20230601; t=1756248714; x=1756853514;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=LHq0wOrjV9AurPX5OQC4kD0MhUkJbDMxr/dKfoG/qIc=;
-        b=kSoVNfEQ28d1CO82QU7mhAOHK6JGp2LRGvZfZT68tWxLqVa0G7Nqnz4zFrDRhJBEgn
-         45MOYFzLrt6lKF46XU6nKkcC2sf8Dpi2LEg1Tul8TycdrSpKTX342PdhpCjejRdNAQm3
-         cWBYppkGrsZOF4gNc0wPmV3IGk6RxQUOOZIqTD9OOuGjnfgxgEDpRNEQsT67etT9h8CR
-         OimTQ2GGoRUo5u1DE+DqaolB9+9TW/9Iv0ykCgG9xaiJ0O5RWmpWiss3MDE4GsbHkBII
-         /FQ8PkLIzALh+5qV5JxEOFL2N8QCX4ikgfPQoRWx/IFwZ4AYv4gHyVKtd7/05p6hjVtp
-         yCqw==
-X-Forwarded-Encrypted: i=1; AJvYcCUYTchQTr+SusTsCt12FrZlLnhJ49UYQ/wV7j9vN1xDe6aOI10B6h4/09u8tWwl/Ewve5CGlh3sv4EU2xGa@vger.kernel.org, AJvYcCVhKKSSqaztU3W5nIAX6LG0pbljek5q0u39cSvtLRWmQwxpV/eoGO2hDwhoFZKZAnRPqGiR16669o4aKQqTKS4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwikkevLsOj6osOAJ8+7AI016t7cYQrx26cFTYmIMnWWG+IZm72
-	fScpPPy+xBERGG39LwoeGX1ZPoSa3z60LpdytIAMLZWfClA7lvKDDqRd
-X-Gm-Gg: ASbGnct2woCpR5xQx2TcZFVlkRf9gypUJbb0TqRozDRjDX2qkjjIV+leOcvCKZW5E3F
-	HsYGHv5diKw2lDO9l2OqO+94YYoFWCQRsQ9DkGEFSumpAuJ/1F3JBS8NUaMpkWumIl6ZkJn+GyF
-	7F1rJ+3g6wIlq4TjoeDPDdet+3xrosfjKu3u75sme3mqV/Q6kqzQk136BV+tWZqkridNOId5trS
-	MNFC61pAiHdYx3Y2I45FV5Y1fmHElFgOI6SrIEE9qrD8SG32kA3LhEIedc3lXIq6YZ/yMfYGKOD
-	SXxQobtdfWJOyE3V6DcL/KvUeSTdGK9eVETAU5Rh4H9H2syTDsde+OItUjTTsBse2a2vztqyW4w
-	KsAbH/z//BN4Z90ZDqlpo
-X-Google-Smtp-Source: AGHT+IEr+9+07tQY/svF8vxrQjSuh6tfMO477xgIAefkyL5oX4CM+zCYiWD5GZXlBL0j65L4qV9sow==
-X-Received: by 2002:a17:902:da47:b0:246:cf6a:f009 with SMTP id d9443c01a7336-246cf6af466mr105265565ad.46.1756248713253;
-        Tue, 26 Aug 2025 15:51:53 -0700 (PDT)
+        bh=pFHzcEkMkKxjDsW7QyH+21adtRUMu8g3PdBU38OriB8=;
+        b=iiuIp22RtFJvslkRpn9799VMrMcxG/UoQEGiXr0bDoXFmTLHKAZao9hlqm+6zLSpu1
+         A03e4rv2L2I3zTCgzSFGaVAMCTTMQQfmvGqW+M92z53NYUmoXHuHPX8UnOtQ7RLaERQ9
+         nO5OJUk3oW+famptrocbF+BplFRVYnsndR9AwipGXpx8w3NbbDmHs7JBxNq+hKBaVu2Y
+         Jv1SFzfu2fKR7W9+jem9LZMvA5aJXDueE50qlMkppf6KjWl+jCaXwsyxnvl4LkG6yDCY
+         UKt7tlLtz6gRdtwiarkKZMXdxSgYUPXqGUACxyl8pjTsKOfih7Ntin8GTeuUAsX9r3Wn
+         8aFw==
+X-Forwarded-Encrypted: i=1; AJvYcCUIPdNAHxEGn6C9zNz/UKtBASMduwOUjczY6NpOPx9Jq1Lz5eyy6N2gZzA4x400+QCFDqp/I04O7wPT6E30KSw=@vger.kernel.org, AJvYcCWHFZ1naGJWILCI95bR+67f6qVhbRcKTP8qIDO588en2ugCi2pOd9eVVjX68FSW1TVDX1sNDJXasyuRSWCc@vger.kernel.org
+X-Gm-Message-State: AOJu0YwABRl/xxCPB4sMUSwXgQZkQpHKD/UdScTH6U4DAsITDbCUw8/I
+	qMlxik9//RWRYAEqYiPUpy7/ufAuS/xObS49opJA9LEs3gEA/9ugErRg
+X-Gm-Gg: ASbGncv+c+BVFNaCsp+y2X3aEX1jZpVft9+10PXpw9QhFhIy2ILrYw+mprGISOoCur5
+	k6crXGl0SnZux7XiMVXxO5N4A/sFBKGvoFYYYPWZyAChEQInyslXDztW1L36wd4a6OYkqvUUYzH
+	x/3cz/U+We3AfDR/zKyjKaliKTBct9p8TlEdo1MqLczhfRUmMMJ9UWPecQ/UPFrtj8s00o7gNdJ
+	Io0pIefYWupPs0HDK82L6yIQVc1HBj8bOvNwOq5vl8slo7a4+Nro8hMZvsfrXcgdZ/YxGpM7kMj
+	bXoCbiv3TA1uagcRJkPsc6kGg/Wqr7XGQNI6icUg3Ipmotv781ngXqNH3A3PwnFu8kGkq2XkGPw
+	D+Szgg7wsg/RVKqaDyl7u
+X-Google-Smtp-Source: AGHT+IHBbRvLzIIWrINVvaClB1b0OPUk6BLcoAKkgULcCrNboGggfEcV+NS6zLTIGPlFc2xR7s/r5w==
+X-Received: by 2002:a17:903:2f50:b0:240:e9d:6c43 with SMTP id d9443c01a7336-2462efa3c78mr199299725ad.51.1756248714470;
+        Tue, 26 Aug 2025 15:51:54 -0700 (PDT)
 Received: from [0.0.5.57] ([136.159.213.249])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-246688a601esm105340815ad.162.2025.08.26.15.51.52
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-246688a601esm105340815ad.162.2025.08.26.15.51.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Aug 2025 15:51:52 -0700 (PDT)
+        Tue, 26 Aug 2025 15:51:54 -0700 (PDT)
 From: Abhinav Saxena <xandfury@gmail.com>
-Date: Tue, 26 Aug 2025 16:51:34 -0600
-Subject: [RFC PATCH 4/5] tty: Add KUnit tests for core TTY functionality
+Date: Tue, 26 Aug 2025 16:51:35 -0600
+Subject: [RFC PATCH 5/5] tty: Add KUnit tests for ttynull driver
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -68,8 +68,8 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20250826-tty-tests-v1-4-e904a817df92@gmail.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250826-tty-tests-v1-5-e904a817df92@gmail.com>
 References: <20250826-tty-tests-v1-0-e904a817df92@gmail.com>
 In-Reply-To: <20250826-tty-tests-v1-0-e904a817df92@gmail.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
@@ -81,50 +81,47 @@ Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  llvm@lists.linux.dev, linux-hardening@vger.kernel.org, 
  Abhinav Saxena <xandfury@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1756248706; l=9255;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1756248707; l=6787;
  i=xandfury@gmail.com; s=20250614; h=from:subject:message-id;
- bh=JdXE8vYkTFnIcf9QUL8Bbqunld/9cGDUOO7aLLjXBeU=;
- b=WqwZ5Q8Yl82sL6CVZHhtWuxnm9v49DBwgCcVpn3exni0niQg2t1WdihaidhjM30HnO9J9OgTt
- fRlYMROK45eADhdp8gP3f9i6TEDiCGm84X9hkycUNzcpusN6cgaCfbN
+ bh=2sCgtf0iJuHZoEJ+ZjgF8LGfcrJ2jnuz9b44H6Mk4Ks=;
+ b=7wonk4jVg8NsrTTBrfr6ESAy6WZFree5W8bJr7L4QLz5S5/8f6osUqGimZhjCM+tfxdsy0G/x
+ 5lMJhbjAnpQAT+KhMfWgRJQVpiNA4sbrEiobc0DSKSK13IqYtS0ervS
 X-Developer-Key: i=xandfury@gmail.com; a=ed25519;
  pk=YN6w7WNet8skqvMWxhG5BlAmtd1SQmo8If6Mofh4k44=
 
-Add comprehensive KUnit tests covering fundamental TTY operations:
-- Driver registration and operation validation
-- Open/close lifecycle with proper cleanup
-- Write operations and buffer management
-- Flow control via write_room() and chars_in_buffer()
-- RX data injection via line discipline
-- Termios configuration for hardware parameters
+Add targeted tests for the TTY null driver covering its data sink
+behavior and driver characteristics. Tests verify that ttynull
+properly discards written data while maintaining standard TTY
+semantics for applications requiring TTY interfaces without
+caring about output.
 
-Tests exercise real kernel code paths using the mock driver to ensure
-TTY subsystem changes don't introduce regressions in core functionality.
+The tests are integrated directly into ttynull.c when
+CONFIG_TTY_KUNIT_NULL_TTY_TESTS=y to test the actual driver
+implementation.
 
 Signed-off-by: Abhinav Saxena <xandfury@gmail.com>
 ---
- drivers/tty/tests/test_tty_io_core.c | 249 +++++++++++++++++++++++++++++++++++
- 1 file changed, 249 insertions(+)
+ drivers/tty/tests/test_ttynull.c | 163 +++++++++++++++++++++++++++++++++++++++
+ drivers/tty/ttynull.c            |   5 ++
+ 2 files changed, 168 insertions(+)
 
-diff --git a/drivers/tty/tests/test_tty_io_core.c b/drivers/tty/tests/test_tty_io_core.c
+diff --git a/drivers/tty/tests/test_ttynull.c b/drivers/tty/tests/test_ttynull.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..626160e6ed738d56575cd340b3662aaa94f46a0a
+index 0000000000000000000000000000000000000000..c062d69bd5d5975ab84442a83426a1d44440b0a6
 --- /dev/null
-+++ b/drivers/tty/tests/test_tty_io_core.c
-@@ -0,0 +1,249 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/drivers/tty/tests/test_ttynull.c
+@@ -0,0 +1,163 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Minimal KUnit tests for TTY core using the mock driver.
++ * KUnit tests for the TTY null driver
 + *
-+ * Scope:
-+ *  - open/close via tty_port_* paths
-+ *  - write() returns cnt, write_room() is large, chars_in_buffer() == 0
-+ *  - stats (writes, bytes, last len) observable via tty_mock_get_stats()
-+ *  - file_ops read functionality with various termios configurations
-+ *  - set_termios operations for practical use cases
-+ *
-+ * Keep this small and obvious—no driver-side buffering or timers.
++ * Tests for the ttynull driver covering basic lifecycle and sink behavior.
++ * The ttynull driver acts as a data sink, discarding all written data
++ * while providing minimal overhead for applications that need a TTY
++ * but don't care about the output.
 + *
 + * Copyright (c) 2025 Abhinav Saxena <xandury@gmail.com>
++ *
 + */
 +
 +#include <kunit/test.h>
@@ -133,233 +130,172 @@ index 0000000000000000000000000000000000000000..626160e6ed738d56575cd340b3662aaa
 +#include <linux/tty_flip.h>
 +#include <linux/string.h>
 +
-+#include "tty_test_helpers.h"
-+#include "tty_mock.h"          /* mock driver API: register/unregister/stats */
++#include "tests/tty_test_helpers.h"
 +
-+/* Single-port driver used across tests (minor 0). */
-+static struct tty_driver *mock_driver;
-+
-+/* ---------- Per-test init: sanity only ---------- */
-+static int tty_core_init(struct kunit *test)
-+{
-+	KUNIT_ASSERT_NOT_NULL(test, mock_driver);
-+
-+	/* Reset mock statistics before each test */
-+	tty_mock_reset_stats();
-+
-+	if (mock_driver && mock_driver->ports)
-+		KUNIT_EXPECT_NOT_NULL(test, mock_driver->ports[0]);
-+	return 0;
-+}
-+
-+/* ---------- Tests ---------- */
-+
-+/*
-+ * Test: Verify mock driver has all required operations wired correctly.
-+ * Expected: All mandatory ops present, ports array initialised, no NULL pointers.
++/**
++ * test_ttynull_write_sink - Verify ttynull acts as data sink
++ * @test: KUnit test context
++ *
++ * ttynull should accept all write data and discard it silently.
++ * This tests the core functionality of the null TTY driver.
 + */
-+static void test_driver_ops_present(struct kunit *test)
++static void test_ttynull_write_sink(struct kunit *test)
 +{
-+	KUNIT_ASSERT_NOT_NULL(test, mock_driver);
-+
-+	/* Basic ops presence and wiring checks via helper. */
-+	tty_test_assert_valid_ops(test, mock_driver);
-+	KUNIT_EXPECT_NOT_NULL(test, mock_driver->ops->write);
-+	KUNIT_EXPECT_NOT_NULL(test, mock_driver->ops->write_room);
-+	KUNIT_EXPECT_NOT_NULL(test, mock_driver->ops->chars_in_buffer);
-+
-+	if (mock_driver->ports)
-+		KUNIT_EXPECT_NOT_NULL(test, mock_driver->ports[0]);
-+}
-+
-+/*
-+ * Test: Basic TTY lifecycle (open/write/close).
-+ * Expected: write() returns byte count, stats increment correctly,
-+ * ldisc/port setup.
-+ */
-+static void test_basic_open_write_close(struct kunit *test)
-+{
-+	unsigned int idx = 0;
++	struct tty_driver *drv = ttynull_driver;
 +	struct tty_test_fixture *fx;
-+	const char *msg = "Hello, tty!\n";
-+	struct tty_mock_stats before, after;
-+	ssize_t ret;
++	const char *msg = "test data; discard me";
++	unsigned int room;
++	ssize_t write_result;
 +
-+	fx = tty_test_create_fixture(test, mock_driver, idx);
++	fx = tty_test_create_fixture(test, drv, 0);
 +	KUNIT_ASSERT_NOT_NULL(test, fx);
++
 +	KUNIT_ASSERT_EQ(test, tty_test_open(fx), 0);
 +	KUNIT_ASSERT_TRUE(test, fx->opened);
 +
-+	KUNIT_EXPECT_TRUE(test,
-+			  fx->tty && fx->tty->ldisc && fx->tty->ldisc->ops);
++	/* Verify TTY is properly initialized */
++	KUNIT_EXPECT_NOT_NULL(test, fx->tty);
++	KUNIT_EXPECT_NOT_NULL(test, fx->tty->ldisc);
 +	KUNIT_EXPECT_TRUE(test, !list_empty(&fx->tty->tty_files));
-+	KUNIT_EXPECT_NOT_NULL(test, fx->tty->port);
 +
-+	before = tty_mock_get_stats();
++	/* Check initial write room - should be available */
++	room = tty_test_get_write_room(fx);
++	KUNIT_EXPECT_GT(test, room, 0U);
 +
-+	ret = tty_test_write(fx, msg, strlen(msg));
-+	KUNIT_EXPECT_EQ(test, ret, (ssize_t)strlen(msg));
++	/* Write data - should be completely accepted */
++	KUNIT_ASSERT_EQ(test, tty_test_write_all(fx, msg, strlen(msg)), 0);
 +
-+	after = tty_mock_get_stats();
++	/* ttynull discards writes; buffer should remain empty */
++	KUNIT_EXPECT_EQ(test, tty_test_get_chars_in_buffer(fx), 0U);
 +
-+	/* Test interface contract, not implementation details */
-+	KUNIT_EXPECT_GT(test, after.total_writes, before.total_writes);
-+	KUNIT_EXPECT_GE(test, after.total_bytes,
-+			before.total_bytes + strlen(msg));
-+	KUNIT_EXPECT_GT(test, after.last_write_len, 0u);
++	/* Write room should remain available for a sink */
++	room = tty_test_get_write_room(fx);
++	KUNIT_EXPECT_GT(test, room, 0U);
 +
-+	KUNIT_EXPECT_EQ(test, tty_test_release(fx), 0);
++	/* ttynull should accept all data */
++	write_result = tty_test_write(fx, msg, strlen(msg));
++	KUNIT_EXPECT_EQ(test, write_result, strlen(msg));
++
++	/* Multiple writes should all succeed */
++	write_result = tty_test_write(fx, msg, strlen(msg));
++	KUNIT_EXPECT_EQ(test, write_result, strlen(msg));
++
++	/*
++	 * TODO: Simulate hangup condition making subsequent writes fail
++	 * For now, just release.
++	 */
++	KUNIT_ASSERT_EQ(test, tty_test_release(fx), 0);
 +}
 +
-+/*
-+ * Test: write_room() and chars_in_buffer() consistency during operations.
-+ * Expected: write_room() > 0, chars_in_buffer() == 0, room unchanged after
-+ * writes.
++/**
++ * test_ttynull_read_behavior - Verify read behavior on null device
++ * @test: KUnit test context
++ *
++ * While ttynull technically supports read (via N_TTY), reading should
++ * behave predictably (likely EOF or blocking).
 + */
-+static void test_write_room_and_chars_in_buffer_invariants(struct kunit *test)
++static void test_ttynull_read_behavior(struct kunit *test)
 +{
-+	unsigned int idx = 0;
++	struct tty_driver *drv = ttynull_driver;
 +	struct tty_test_fixture *fx;
-+	char buf[64];
-+	unsigned int room_before, room_after;
-+	ssize_t ret;
++	struct tty_ldisc *ld;
++	/* char read_buffer[128]; */
++	/* ssize_t bytes_read; */
 +
-+	memset(buf, 'A', sizeof(buf));
-+
-+	fx = tty_test_create_fixture(test, mock_driver, idx);
++	fx = tty_test_create_fixture(test, drv, 0);
 +	KUNIT_ASSERT_NOT_NULL(test, fx);
++
 +	KUNIT_ASSERT_EQ(test, tty_test_open(fx), 0);
++	KUNIT_ASSERT_TRUE(test, fx->opened);
 +
-+	room_before = tty_write_room(fx->tty);
-+	KUNIT_EXPECT_GT(test, room_before, 0u);
-+	KUNIT_EXPECT_EQ(test, fx->tty->ops->chars_in_buffer(fx->tty), 0u);
++	ld = tty_ldisc_ref(fx->tty);
++	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ld);
++	KUNIT_ASSERT_TRUE(test, ld->ops && ld->ops->read);
++	tty_ldisc_deref(ld);
 +
-+	ret = tty_test_write(fx, buf, sizeof(buf));
-+	KUNIT_EXPECT_EQ(test, ret, (ssize_t)sizeof(buf));
++	/*
++	 * Reading from ttynull should behave consistently.
++	 * Depending on implementation, this might:
++	 * - Return 0 (EOF)
++	 * - Block (if no data available)
++	 * - Return -EAGAIN (if non-blocking)
++	 */
++	KUNIT_ASSERT_NOT_NULL(test, fx->tty->disc_data);
++	/* bytes_read = tty_test_read(fx, read_buffer, sizeof(read_buffer)); */
 +
-+	room_after = tty_write_room(fx->tty);
-+	KUNIT_EXPECT_EQ(test, fx->tty->ops->chars_in_buffer(fx->tty), 0u);
-+	KUNIT_EXPECT_GE(test, room_after, room_before);
++	/*
++	 * Document the expected behavior
++	 *  - adjust based on actual ttynull implementation
++	 */
++	/* KUNIT_EXPECT_GE(test, bytes_read, 0); /\* Should not return error *\/ */
 +
-+	KUNIT_EXPECT_EQ(test, tty_test_release(fx), 0);
++	KUNIT_ASSERT_EQ(test, tty_test_release(fx), 0);
 +}
 +
-+/*
-+ * Test: RX data injection via flip buffers if line discipline supports it.
-+ * Expected: tty_test_simulate_rx() returns injected byte count, or test
-+ * skipped.
++/**
++ * test_ttynull_driver_properties - Verify driver characteristics
++ * @test: KUnit test context
++ *
++ * Test the driver's static properties and configuration. Also, ensure that
++ * it implements the required file_operation ops.
 + */
-+static void test_flip_rx_if_supported(struct kunit *test)
++static void test_ttynull_driver_properties(struct kunit *test)
 +{
-+	unsigned int idx = 0;
-+	struct tty_test_fixture *fx;
-+	int rx_result;
++	struct tty_driver *drv = ttynull_driver;
 +
-+	/* Raw byte buffer, not NUL-terminated */
-+	static const unsigned char rx_data[] = "rx-line\n";
++	KUNIT_ASSERT_NOT_NULL(test, drv);
 +
-+	fx = tty_test_create_fixture(test, mock_driver, idx);
-+	KUNIT_ASSERT_NOT_NULL(test, fx);
-+	KUNIT_ASSERT_EQ(test, tty_test_open(fx), 0);
++	/* Verify driver identification */
++	KUNIT_EXPECT_STREQ(test, drv->driver_name, "ttynull");
++	KUNIT_EXPECT_STREQ(test, drv->name, "ttynull");
 +
-+	KUNIT_EXPECT_TRUE(test,
-+			  fx->tty && fx->tty->ldisc && fx->tty->ldisc->ops);
-+	KUNIT_EXPECT_TRUE(test, !list_empty(&fx->tty->tty_files));
-+	KUNIT_EXPECT_NOT_NULL(test, fx->tty->port);
++	/* Ensure that driver implements the required ops. */
++	KUNIT_ASSERT_NOT_NULL(test, drv);
++	tty_test_assert_valid_ops(test, drv);
 +
-+	if (tty_fx_supports_rx(fx)) {
-+		rx_result = tty_test_simulate_rx(fx, rx_data, sizeof(rx_data));
-+		KUNIT_EXPECT_EQ(test, rx_result, (int)sizeof(rx_data));
-+	} else {
-+		kunit_skip(test,
-+			   "ldisc does not support RX; skipping injection");
-+	}
++	/* Verify driver type */
++	KUNIT_EXPECT_EQ(test, drv->type, TTY_DRIVER_TYPE_CONSOLE);
 +
-+	KUNIT_EXPECT_EQ(test, tty_test_release(fx), 0);
++	/* Verify driver flags */
++	KUNIT_EXPECT_TRUE(test, drv->flags & TTY_DRIVER_REAL_RAW);
++	KUNIT_EXPECT_TRUE(test, drv->flags & TTY_DRIVER_RESET_TERMIOS);
 +}
 +
-+/*
-+ * Test: set_termios() for hardware settings (baud rate, character size, parity).
-+ * Expected: c_cflag settings persist correctly, hardware parameters validated.
-+ */
-+static void test_set_termios_baud_rate_and_character_size(struct kunit *test)
-+{
-+	unsigned int idx = 0;
-+	struct tty_test_fixture *fx;
-+	struct ktermios termios_before, termios_after;
-+
-+	fx = tty_test_create_fixture(test, mock_driver, idx);
-+	KUNIT_ASSERT_NOT_NULL(test, fx);
-+	KUNIT_ASSERT_EQ(test, tty_test_open(fx), 0);
-+
-+	/* Get initial termios */
-+	termios_before = fx->tty->termios;
-+
-+	/* Test baud rate changes */
-+	termios_after = termios_before;
-+	termios_after.c_cflag &= ~CBAUD;
-+	termios_after.c_cflag |= B9600;
-+	KUNIT_ASSERT_EQ(test, tty_test_set_termios(fx, &termios_after), 0);
-+	KUNIT_EXPECT_EQ(test, fx->tty->termios.c_cflag & CBAUD, B9600);
-+
-+	/* Test higher baud rate */
-+	termios_after.c_cflag &= ~CBAUD;
-+	termios_after.c_cflag |= B115200;
-+	KUNIT_ASSERT_EQ(test, tty_test_set_termios(fx, &termios_after), 0);
-+	KUNIT_EXPECT_EQ(test, fx->tty->termios.c_cflag & CBAUD, B115200);
-+
-+	/* Test character size changes */
-+	termios_after.c_cflag &= ~CSIZE;
-+	termios_after.c_cflag |= CS7; /* 7-bit characters */
-+	KUNIT_ASSERT_EQ(test, tty_test_set_termios(fx, &termios_after), 0);
-+	KUNIT_EXPECT_EQ(test, fx->tty->termios.c_cflag & CSIZE, CS7);
-+
-+	termios_after.c_cflag &= ~CSIZE;
-+	termios_after.c_cflag |= CS8; /* 8-bit characters */
-+	KUNIT_ASSERT_EQ(test, tty_test_set_termios(fx, &termios_after), 0);
-+	KUNIT_EXPECT_EQ(test, fx->tty->termios.c_cflag & CSIZE, CS8);
-+
-+	/* Test parity settings */
-+	termios_after.c_cflag |= PARENB; /* Enable parity */
-+	termios_after.c_cflag &= ~PARODD; /* Even parity */
-+	KUNIT_ASSERT_EQ(test, tty_test_set_termios(fx, &termios_after), 0);
-+	KUNIT_EXPECT_TRUE(test, fx->tty->termios.c_cflag & PARENB);
-+	KUNIT_EXPECT_FALSE(test, fx->tty->termios.c_cflag & PARODD);
-+
-+	KUNIT_EXPECT_EQ(test, tty_test_release(fx), 0);
-+}
-+
-+/* ---------- Suite registration ---------- */
-+
-+static int tty_core_suite_init(struct kunit_suite *suite)
-+{
-+	return tty_mock_register(&mock_driver, NULL);
-+}
-+
-+static void tty_core_suite_exit(struct kunit_suite *suite)
-+{
-+	tty_mock_unregister(mock_driver);
-+	mock_driver = NULL;
-+}
-+
-+static struct kunit_case tty_core_cases[] = {
-+	KUNIT_CASE(test_driver_ops_present),
-+	KUNIT_CASE(test_basic_open_write_close),
-+	KUNIT_CASE(test_write_room_and_chars_in_buffer_invariants),
-+	KUNIT_CASE(test_flip_rx_if_supported),
-+	KUNIT_CASE(test_set_termios_baud_rate_and_character_size),
++static struct kunit_case ttynull_test_cases[] = {
++	KUNIT_CASE(test_ttynull_write_sink),
++	KUNIT_CASE(test_ttynull_read_behavior),
++	KUNIT_CASE(test_ttynull_driver_properties),
 +	{}
 +};
 +
-+static struct kunit_suite tty_core_suite = {
-+	.name = "tty_io_core",
-+	.init = tty_core_init,
-+	.suite_init = tty_core_suite_init,
-+	.suite_exit = tty_core_suite_exit,
-+	.test_cases = tty_core_cases,
++static struct kunit_suite ttynull_test_suite = {
++	.name = "ttynull",
++	.test_cases = ttynull_test_cases,
 +};
 +
-+kunit_test_suite(tty_core_suite);
++kunit_test_suite(ttynull_test_suite);
+diff --git a/drivers/tty/ttynull.c b/drivers/tty/ttynull.c
+index 6b2f7208b564b659bf7faa4113541fcea7ec6ac0..baad9f0e3d27d97409a571e8da953384b7c64891 100644
+--- a/drivers/tty/ttynull.c
++++ b/drivers/tty/ttynull.c
+@@ -6,6 +6,7 @@
+  *  Copyright (C) 2010 Samo Pogacnik
+  */
+ 
++#include <kunit/visibility.h>
+ #include <linux/console.h>
+ #include <linux/module.h>
+ #include <linux/tty.h>
+@@ -106,5 +107,9 @@ static void __exit ttynull_exit(void)
+ module_init(ttynull_init);
+ module_exit(ttynull_exit);
+ 
++#ifdef CONFIG_TTY_KUNIT_NULL_TTY_TESTS
++#include "tests/test_ttynull.c"
++#endif /* CONFIG_TTY_KUNIT_TTYNULL_TESTS */
++
+ MODULE_DESCRIPTION("NULL TTY driver");
+ MODULE_LICENSE("GPL v2");
 
 -- 
 2.43.0
