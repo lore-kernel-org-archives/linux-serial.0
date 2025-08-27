@@ -1,137 +1,138 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01C64301473
-	for <linux-serial@vger.kernel.org>; Wed, 27 Aug 2025 11:41:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 258CE156F20
+	for <linux-serial@vger.kernel.org>; Wed, 27 Aug 2025 12:03:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756294900; cv=none; b=QaX+kRqMIP8CNyp6QIVCPI0Wa4NOcJAdXbv9MTpZT29Ria/RYcfB7IcMXH6cgbQYaLTAnYUyh6m7dE0T+3ca1fEhSe8aNhF5/zBsHwqtX0PZmzjrZ/OoNHqEKsr+Th3sgo2wcudfESZM/GUbAKXaEIRrE/qmOJRO5CRlXwbEtQc=
+	t=1756296233; cv=none; b=DwSHd95ZtkwesXEhEdNYWjSQjhF5xkukpL6580RQOUXVzTHNR7yPUs6nSViDrZ8hzjrbVBU+wiyrskQ8kRx8sDmkbhao2j6hhqkSc7Ul9fdZ7BLKLY9pJS44mQ0WUqbZmOdkOEPm9oko3HUUkhEkOyft0+/49mO32Sc1WJzC7xg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756294900; c=relaxed/simple;
-	bh=o+saMPd6JTK42Lj4xU6VI14af2qrH3H/yY3IsOVZgWU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=LIf3KOJg3wYnUsV6ltOyNAni1/3XhMNVPbuMqsiLuWi5Ht0iDt/sznn8GpVanMCd9MJKANh4SsPV0LsgZYNt+94j81ZIC2T0wcXS1UnQH/H6PMT/EGtUOFfu0hNgaR6hqxAt7rFznxSzTVEr1mi8FZgy/oZn27CDWb/PrJDPeQ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=RLWox7CS; arc=none smtp.client-ip=209.85.210.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1756296233; c=relaxed/simple;
+	bh=9cBeQjS8JoJ+RAzZ4el0vbg7/RfxL+/8LgI5k6E9oQI=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=miX9nnxknzno8bhxDX0bu5CwXAHH22Xqq55GBWqvSn6zqj4ZZrPMZrQ1FRucKd8RmMG5m56ScN8TlYPnUO0bek8Ww3EaT2RJ4DHvKmZeS5St4EvQqMC0S1hMNJi+cUpWfsaLtiHeUFTvZrWNzMDVyIGinoBQDBLmwT71V+CJpBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=DGzCoYGO; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RLWox7CS"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-74542b1b2bcso302034a34.3
-        for <linux-serial@vger.kernel.org>; Wed, 27 Aug 2025 04:41:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1756294898; x=1756899698; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=j3FLL1am8JkhfJR2LRNu+sWDRKJqjQgg5H9U00XtTUI=;
-        b=RLWox7CSw4yzbwvSO5IYtSIfZQSWJW3l4AUEghSI/5ALA8loknsI3fkr2sfSsNhT35
-         cBMlj49W8CHnjFgjrmeg6dF4sH7jmfeBuRswCfxpCfOkXi8fsS/Kb48v7ZawLvJRo/lL
-         Dy/7c2P6pJ8oblh3mX8zc6/cVxXtdQ/F+cvXvKgX+JDI0qkEI8eYP7JY2WMx8boiGbLj
-         GrCBzSbv2+Z9PvYyPcT6dkN1kuKQqkPTsEQ7ebOstGAtEBajmnz+0sxAFLdxFVDjnr+U
-         oHhqAolWyxgq+8JApLHnHLwFlZDikZ3MHZpJPRFMezuIp1/lkYFTVzRQQZ0364iUwMvs
-         UG8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756294898; x=1756899698;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=j3FLL1am8JkhfJR2LRNu+sWDRKJqjQgg5H9U00XtTUI=;
-        b=AFK4x+pg307f7ErDASlIYrC30fdDrtV2oNJZgyTWn20XxW/tDm4qB5j6BCi2OzD88v
-         4Bu3t0Eli8D7zb4UqTDWgA8SGtAt7akgnU2fQlkHO4mnhjYDDw3xg+VVqDYdwmVAKAjq
-         hdeJqJTk4BaGNbXsRFYefFlCXk5T5FyiQ80uOi5aeghYU+5mOvCkwrfEsFusIQgOPRPV
-         DW4xGQBSQuixzSRMkPsf1ctFM9eidIrP7spKRYPbWLFTSgVFyYM3wSMeP8wG1teqeEHd
-         I6+3LvCbbpK7GZJXnS7bSF/KzXwkEKg06lmouV8RMjh9GWGT1PallDaZqh4d83KFbXzi
-         A4Hg==
-X-Forwarded-Encrypted: i=1; AJvYcCU1Ga7naEfgjN6uYumVqO3CftlVd09g9PllazojupdLPF3gFV+LKwQo3HLgCr8yxFAh2IQ2mjcYPLWSdTo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YztzFd1rmW2nHdC+ccD8rcWyfjRpdjsCQDzFB0/ovXS4lrQJWxA
-	59vMNEK0y1lc6nSYpYsm7P8XJNmygM/tvMNMtaG1Cg5b5gvm6eP5cAtdvofT0drahhtYuYKERPa
-	L0uuO1t70JBU56z689LHZD2JzlUyV3JTOrKirVQooKKpbEwSoea/F
-X-Gm-Gg: ASbGncuYTnEVwoQbXq85l2nwoyw0LOG23WUKcsC4GkIWsERAgO6cQIW8a5zUlbpq9Uo
-	syfI9UYlFFAR9cTm9jaReMGwG0/kG6q6m/s+cztAzzg4VIiwSP4DeDxf1250CwY7Xs7W6PgwUgl
-	lSryHsbN3+3ju3BMwt8zPQf0i1ZgMDLtc32Zh8CZsX4vLOaYMSDCgdYbtnjcmJ/pijwTtr6jh3Y
-	hZmEz4=
-X-Google-Smtp-Source: AGHT+IGJo6FTi6F/n3ItkZ0Xdl8Z3sFRiLTQaDB0ezZp0GYMOSDBOqgG7Yse1giNuoEl4NICfwf7Vh67Mj6+WaPkSyA=
-X-Received: by 2002:a05:690c:6704:b0:721:391d:8ede with SMTP id
- 00721157ae682-721391d9f27mr53538057b3.23.1756294590842; Wed, 27 Aug 2025
- 04:36:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="DGzCoYGO"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57R6kYcV023192;
+	Wed, 27 Aug 2025 12:03:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=xG5TWs40wC1uRk9pc3SKAu
+	Dts9FtjHd+m8+g2xbj67E=; b=DGzCoYGO4FkZof8zzdbJRcY3lVuw5cFkQImJgm
+	ZzutPkywWkn1QD9M12ltgkVPvAUUBUgJg10LKfaQUmrCaOV44o6V/ERkgbwNnr89
+	SvoimD7duPC9JG4SNoEgx2dEeQSX7TxYIPp8/73oq0DUq/NpZbsAR9m6IDq2uabF
+	jPOR/xhOCYvr+tkfKjFUnelqNQaPLDILZL+2yh8r9UFPkHYWavzOeKaYedANPLoe
+	NzcEFzTYU1+lkGJsorlIo/1AcsBz3FN3l6i6DlVB+7hYTNoYklfnPpFhYelYiGTn
+	C5jSbKdiBvjDcdQJfrmZ59A34bTAPrSusI6S83yrxy1NiIKA==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48q5y5mcb4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Aug 2025 12:03:46 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA02.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 57RC3jqE004065
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 27 Aug 2025 12:03:45 GMT
+Received: from zongjian-gv.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.24; Wed, 27 Aug 2025 05:03:42 -0700
+From: Zong Jiang <quic_zongjian@quicinc.com>
+To: <gregkh@linuxfoundation.org>, <linux-serial@vger.kernel.org>,
+        <dan.carpenter@linaro.org>
+CC: <quic_ztu@quicinc.com>, <quic_msavaliy@quicinc.com>,
+        <quic_vdadhani@quicinc.com>, <quic_anupkulk@quicinc.com>,
+        <quic_haixcui@quicinc.com>, Zong Jiang <quic_zongjian@quicinc.com>,
+        "kernel
+ test robot" <lkp@intel.com>
+Subject: [PATCH v3] serial: qcom-geni: Fix off-by-one error in ida_alloc_range()
+Date: Wed, 27 Aug 2025 20:03:19 +0800
+Message-ID: <20250827120319.1682835-1-quic_zongjian@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250827101747.928265-1-claudiu.beznea.uj@bp.renesas.com>
-In-Reply-To: <20250827101747.928265-1-claudiu.beznea.uj@bp.renesas.com>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Wed, 27 Aug 2025 13:35:54 +0200
-X-Gm-Features: Ac12FXyTbgjjBJeT1fnr3vCpCnEUgStrxaU2c_luIHFHEO39_lUM5OYykCs5WaM
-Message-ID: <CAPDyKFpTb9H5i9J0zSrGu5-7evDf4Eay-NJqTmVBy6SyCoWnPg@mail.gmail.com>
-Subject: Re: [PATCH] serdev: Drop dev_pm_domain_detach() call
-To: Claudiu <claudiu.beznea@tuxon.dev>
-Cc: robh@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
-	rafael@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIzMDAzMyBTYWx0ZWRfX8aPwzVkpI2yn
+ iy2UD/gRGwoOhWOBlbo/gNsnrQREel9jVWToXe1GCwgSCq4wN5bSAjAxbwcum0ZahlAr8SuZqRr
+ mkPdOttuphxErP0XdJVnbLiRkae6waGmr9kRl6+6TWWg1aNfVOiR4op39u0Js4J9g0wbbYu0Cie
+ S28Z/ljgc9BVH8wEUS6N1MO+BQXfuT5hGTxvnZLasRcEYdslOZhljG9JlOlkASyJlgTlcKOT4wY
+ cPe4jEAIj1pXaEGMi+rlbJOYsqDIb3dNc4xpkMJ/HzYqgPATPAxLSaLduDY+7ZkTKEA9cECctnL
+ +K3N9N88KoWZuBkso2W7YVSHsOgSLRidZXpWMrnDmb7WHK9a3h54UTJdoDJQ6JFYH+eKEzOkAdo
+ aqNJedv8
+X-Authority-Analysis: v=2.4 cv=Lco86ifi c=1 sm=1 tr=0 ts=68aef422 cx=c_pps
+ a=ouPCqIW2jiPt+lZRy3xVPw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=GEpy-HfZoHoA:10 a=2OwXVqhp2XgA:10 a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8
+ a=KKAkSRfTAAAA:8 a=COk6AnOGAAAA:8 a=roy63ODkg0DyNSlNSiUA:9
+ a=cvBusfyB2V15izCimMoJ:22 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-GUID: Wwe80VlK5zKU9AL4yuComT5Wh0feYAg0
+X-Proofpoint-ORIG-GUID: Wwe80VlK5zKU9AL4yuComT5Wh0feYAg0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-27_02,2025-08-26_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 adultscore=0 clxscore=1015 malwarescore=0 spamscore=0
+ suspectscore=0 phishscore=0 priorityscore=1501 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2508230033
 
-On Wed, 27 Aug 2025 at 12:17, Claudiu <claudiu.beznea@tuxon.dev> wrote:
->
-> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
->
-> Starting with commit f99508074e78 ("PM: domains: Detach on
-> device_unbind_cleanup()"), there is no longer a need to call
-> dev_pm_domain_detach() in the bus remove function. The
-> device_unbind_cleanup() function now handles this to avoid
-> invoking devres cleanup handlers while the PM domain is
-> powered off, which could otherwise lead to failures as
-> described in the above-mentioned commit.
->
-> Drop the explicit dev_pm_domain_detach() call and rely instead
-> on the flags passed to dev_pm_domain_attach() to power off the
-> domain.
->
-> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+The ida_alloc_range() function expects an inclusive range, meaning both
+the start and end values are valid allocation targets. Passing nr_ports
+as the upper bound allows allocation of an ID equal to nr_ports, which
+is out of bounds when used as an index into the port array.
 
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Fix this by subtracting 1 from nr_ports in both calls to ida_alloc_range(),
+ensuring the allocated ID stays within the valid range
+[start, nr_ports - 1].
 
-Kind regards
-Uffe
+This prevents potential out-of-bounds access when the allocated ID is used
+as an index.
 
+Fixes: 9391ab1ed9b3 ("serial: qcom-geni: Make UART port count configurable via Kconfig")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+Closes: https://lore.kernel.org/r/202508180815.R2nDyajs-lkp@intel.com/
+Signed-off-by: Zong Jiang <quic_zongjian@quicinc.com>
+---
+Changes since v2:
+- Added "Changes since v2" section to comply with patch format guidelines
+- No code changes; commit message formatting improved
 
-> ---
->  drivers/tty/serdev/core.c | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index d16c207a1a9b..b33e708cb245 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -399,15 +399,12 @@ static int serdev_drv_probe(struct device *dev)
->         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
->         int ret;
->
-> -       ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON);
-> +       ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
-> +                                       PD_FLAG_DETACH_POWER_OFF);
->         if (ret)
->                 return ret;
->
-> -       ret = sdrv->probe(to_serdev_device(dev));
-> -       if (ret)
-> -               dev_pm_domain_detach(dev, true);
-> -
-> -       return ret;
-> +       return sdrv->probe(to_serdev_device(dev));
->  }
->
->  static void serdev_drv_remove(struct device *dev)
-> @@ -415,8 +412,6 @@ static void serdev_drv_remove(struct device *dev)
->         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
->         if (sdrv->remove)
->                 sdrv->remove(to_serdev_device(dev));
-> -
-> -       dev_pm_domain_detach(dev, true);
->  }
->
->  static const struct bus_type serdev_bus_type = {
-> --
-> 2.43.0
->
+Changes since v1:
+- Removed incorrect "| " prefix from tags
+- Added Fixes tag with correct commit ID
+
+ drivers/tty/serial/qcom_geni_serial.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index 9c7b1cea7cfe..0b474d349531 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -271,9 +271,11 @@ static struct qcom_geni_serial_port *get_port_from_line(int line, bool console,
+ 		int max_alias_num = of_alias_get_highest_id("serial");
+ 
+ 		if (line < 0 || line >= nr_ports)
+-			line = ida_alloc_range(&port_ida, max_alias_num + 1, nr_ports, GFP_KERNEL);
++			line = ida_alloc_range(&port_ida, max_alias_num + 1,
++					       nr_ports - 1, GFP_KERNEL);
+ 		else
+-			line = ida_alloc_range(&port_ida, line, nr_ports, GFP_KERNEL);
++			line = ida_alloc_range(&port_ida, line,
++					       nr_ports - 1, GFP_KERNEL);
+ 
+ 		if (line < 0)
+ 			return ERR_PTR(-ENXIO);
+-- 
+2.34.1
+
