@@ -1,302 +1,163 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from OS8PR02CU002.outbound.protection.outlook.com (mail-japanwestazon11012002.outbound.protection.outlook.com [40.107.75.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A4912F8BE7;
-	Tue, 26 Aug 2025 22:51:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756248717; cv=none; b=dlXTqEezvy1ULwunUf8vOw/XUHLIyRcSpKZIbUnQVekItmNymPS1jqY+IGjUVD0FHY57XHGBV0hw1DpjURjEWpjsW1f1CvTmUa0NNmx9K+ovo5RzvLKna6Yzqi7D962sBGE9aX/pdJCUywcVL8SodLQwl8/poTfP91m/xjul9g0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756248717; c=relaxed/simple;
-	bh=2sCgtf0iJuHZoEJ+ZjgF8LGfcrJ2jnuz9b44H6Mk4Ks=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Jczd8bseR8U5u2uIu/x8MP2ngLX4DgY4jLgO4tgdrMzqj73LpFF2UM4sRnMncfZuT6mxNRs4xRSbfTw56pn0kxG/LUer7W4Wu+3Mc3DXbD+JxE+Jc/Hu7PAn/zjPEL01bYySgMDErT6riFKN/7SpT3LoKhGJRmVwRn/x2IeXA2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NcVgD9H2; arc=none smtp.client-ip=209.85.215.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CC802FCC13;
+	Wed, 27 Aug 2025 02:45:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.75.2
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756262730; cv=fail; b=DmC/GkrQbqy1TP1TWurOAVwBd4JTcOo4gJxdELTb6FzCwR7tawDFcZtZkXon+/KgNpNSYVTkFu/5ObUm53f5btRjodERyX0cvRUyu7hMcYPof/FCrwt72nR/7E41YvT+pU58U16MUeBiChyFuIKlxVAjTegV3wj3SEzP5Vp+rNs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756262730; c=relaxed/simple;
+	bh=+Mf5iMwgBd1pjTEjYarCOSZ3bcZDjQJWbJ3nbmlhb+w=;
+	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=S/H7pBQRe6seRfUVNc6hWvn64lNpx8ns5BnqMn8emkXOSBFKpJD1xag1Fn/vEbxwIfqgmwRvtlShlQI8h7nU73EIy0wC7H2NnRuWgot1izFTaFhW/a/5F9T1u+7vsyeu17S0lfKQpXz/o2bfMaYP16SlHhFY0SKiST7ZwArHEoY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com; spf=pass smtp.mailfrom=vivo.com; dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b=VkN1HxuQ; arc=fail smtp.client-ip=40.107.75.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vivo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NcVgD9H2"
-Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-b4c1aefa8deso1845490a12.0;
-        Tue, 26 Aug 2025 15:51:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756248714; x=1756853514; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pFHzcEkMkKxjDsW7QyH+21adtRUMu8g3PdBU38OriB8=;
-        b=NcVgD9H2oV+3W3WZgSxk5cF2Q2Vpz5ntRs7Ird924aZ7eg4iGktBEJ8prAAJ30+nDD
-         U0bYB7TBC+2zGfk2Gba81Q5dN+D3yVoLMcB8Bi/dU31mQpcXuewcJjsKZgzML5z9vvcH
-         4dblovf26PwLh8qOTj1HYk1Ne3WdvhPanSQyiCrzLOOZKFzbsfAlgkoLeycmiMy6f3xq
-         2v9qgXFChHxzYcaNmtt4CGjPJ/tIU33sGroyCV/l8CaXAjrkwR2GqmS7kEZVBpvXAsT8
-         hdbGThnLefZGwde2l4p5G5wXFRVqiCnASvGHdnRmzwdrt8GzU7yoWM2XuTy5+AmYEQrX
-         Pr7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756248714; x=1756853514;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pFHzcEkMkKxjDsW7QyH+21adtRUMu8g3PdBU38OriB8=;
-        b=iiuIp22RtFJvslkRpn9799VMrMcxG/UoQEGiXr0bDoXFmTLHKAZao9hlqm+6zLSpu1
-         A03e4rv2L2I3zTCgzSFGaVAMCTTMQQfmvGqW+M92z53NYUmoXHuHPX8UnOtQ7RLaERQ9
-         nO5OJUk3oW+famptrocbF+BplFRVYnsndR9AwipGXpx8w3NbbDmHs7JBxNq+hKBaVu2Y
-         Jv1SFzfu2fKR7W9+jem9LZMvA5aJXDueE50qlMkppf6KjWl+jCaXwsyxnvl4LkG6yDCY
-         UKt7tlLtz6gRdtwiarkKZMXdxSgYUPXqGUACxyl8pjTsKOfih7Ntin8GTeuUAsX9r3Wn
-         8aFw==
-X-Forwarded-Encrypted: i=1; AJvYcCUIPdNAHxEGn6C9zNz/UKtBASMduwOUjczY6NpOPx9Jq1Lz5eyy6N2gZzA4x400+QCFDqp/I04O7wPT6E30KSw=@vger.kernel.org, AJvYcCWHFZ1naGJWILCI95bR+67f6qVhbRcKTP8qIDO588en2ugCi2pOd9eVVjX68FSW1TVDX1sNDJXasyuRSWCc@vger.kernel.org
-X-Gm-Message-State: AOJu0YwABRl/xxCPB4sMUSwXgQZkQpHKD/UdScTH6U4DAsITDbCUw8/I
-	qMlxik9//RWRYAEqYiPUpy7/ufAuS/xObS49opJA9LEs3gEA/9ugErRg
-X-Gm-Gg: ASbGncv+c+BVFNaCsp+y2X3aEX1jZpVft9+10PXpw9QhFhIy2ILrYw+mprGISOoCur5
-	k6crXGl0SnZux7XiMVXxO5N4A/sFBKGvoFYYYPWZyAChEQInyslXDztW1L36wd4a6OYkqvUUYzH
-	x/3cz/U+We3AfDR/zKyjKaliKTBct9p8TlEdo1MqLczhfRUmMMJ9UWPecQ/UPFrtj8s00o7gNdJ
-	Io0pIefYWupPs0HDK82L6yIQVc1HBj8bOvNwOq5vl8slo7a4+Nro8hMZvsfrXcgdZ/YxGpM7kMj
-	bXoCbiv3TA1uagcRJkPsc6kGg/Wqr7XGQNI6icUg3Ipmotv781ngXqNH3A3PwnFu8kGkq2XkGPw
-	D+Szgg7wsg/RVKqaDyl7u
-X-Google-Smtp-Source: AGHT+IHBbRvLzIIWrINVvaClB1b0OPUk6BLcoAKkgULcCrNboGggfEcV+NS6zLTIGPlFc2xR7s/r5w==
-X-Received: by 2002:a17:903:2f50:b0:240:e9d:6c43 with SMTP id d9443c01a7336-2462efa3c78mr199299725ad.51.1756248714470;
-        Tue, 26 Aug 2025 15:51:54 -0700 (PDT)
-Received: from [0.0.5.57] ([136.159.213.249])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-246688a601esm105340815ad.162.2025.08.26.15.51.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Aug 2025 15:51:54 -0700 (PDT)
-From: Abhinav Saxena <xandfury@gmail.com>
-Date: Tue, 26 Aug 2025 16:51:35 -0600
-Subject: [RFC PATCH 5/5] tty: Add KUnit tests for ttynull driver
+	dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b="VkN1HxuQ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=QN6yJh9z5Sfg4CIfnJJ/xuI13U8iXPzVucGSM/3TsOaThHYUM+0fWqeiD1YWAeoaXnYm53PO1TvxlG1mYLTHFdn552MLirMMS45Gktp67q/+eXX8GQ+8CoKHD4Rqg+lg2bPrXqBV25JJ01Rd/ExBVuPGs+Vgs0HOAvCVeO2dCuG/gqHM1UovZ4Rwx8dESKeZRrsWE/Y6+6y3AMVdWwpY7Q17ELjpANSGuvxQ1ehcFhN8CloSkeQ4adD3aroCspGQ3rV8Yc2L5laxARgoG8NueESQ0y5eJrYuFV1dKd5BxhBRsvSbFoQwD+KO9wlyyzRMEPz9qvGKV0voFeivMH/aDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SAqPmzXUTwmXoGBqaHwbXX6tJtNe41ozuSWTYz2GAC8=;
+ b=URel8D9C1ZDCBqefJdafJ+kLfs3rARqv0SvfhgJchH5P0k8ZQGUq9kMwfgfzALXVG9/IFV4z7KaNwTbcF9VFcNH6/cGsU8TDoU6kM+qlLc4fhvI1/seuJq9al/FNk8B60jWdXFNKpBZmCnrGv6Zgq709Mf4eeRt3Su4ACa204v+seeMw3Kg/IVgpLKLAJldIpR0sLUj+ANMiGdHFHBeywxo774ARi9/Y15CCrcBBKbXqQZIe9S9GL1cTctsS50XO9zNsTyZg5VkjXRpj/W3Ud1KVFIZNur+Ph+m5tbsKAX0h8cwbYibF7TdTyGENxFRP8s6vho46BEYSNR4KwtGLcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
+ dkim=pass header.d=vivo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SAqPmzXUTwmXoGBqaHwbXX6tJtNe41ozuSWTYz2GAC8=;
+ b=VkN1HxuQFChWMi4PViC6DzRZwZ+5RXv+5FDD9nyP7tgk/vTmmuIqZ//zYyUhWV7efDYKVMAog+lQ0Xyc2kHHdJxGWIYSqyX9QyHWhS7/w5PO4rJN2RTmJT++k8+gx6rV43ulRpHdgGSd5JR+8cuui2Nd3X2198RBT316Sseqxa+0JKVgJD4ioy2Pke/nBU8BYI2zv0WFeDep3hhDF139NsKVttjQoHMwVQ2vsrjU/NwD6trKqgu65B2oBIxJTzZ3breDg2jlYwu3gT4LMTTMUmSFIK7IUcQeUxUenYrwe5f/wzkOysj9374XtL47Rhw6pFsrU3yG1MzCoUyjscnxUQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vivo.com;
+Received: from KL1PR06MB6020.apcprd06.prod.outlook.com (2603:1096:820:d8::5)
+ by TYZPR06MB5805.apcprd06.prod.outlook.com (2603:1096:400:26a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9052.21; Wed, 27 Aug
+ 2025 02:45:23 +0000
+Received: from KL1PR06MB6020.apcprd06.prod.outlook.com
+ ([fe80::4ec9:a94d:c986:2ceb]) by KL1PR06MB6020.apcprd06.prod.outlook.com
+ ([fe80::4ec9:a94d:c986:2ceb%5]) with mapi id 15.20.9073.010; Wed, 27 Aug 2025
+ 02:45:23 +0000
+From: Xichao Zhao <zhao.xichao@vivo.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Xichao Zhao <zhao.xichao@vivo.com>
+Subject: [PATCH] serial: sc16is7xx: drop redundant conversion to bool
+Date: Wed, 27 Aug 2025 10:45:14 +0800
+Message-Id: <20250827024514.76149-1-zhao.xichao@vivo.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TYCP286CA0139.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:31b::7) To KL1PR06MB6020.apcprd06.prod.outlook.com
+ (2603:1096:820:d8::5)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250826-tty-tests-v1-5-e904a817df92@gmail.com>
-References: <20250826-tty-tests-v1-0-e904a817df92@gmail.com>
-In-Reply-To: <20250826-tty-tests-v1-0-e904a817df92@gmail.com>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>, Nathan Chancellor <nathan@kernel.org>, 
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>, 
- Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>, 
- Kees Cook <kees@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- llvm@lists.linux.dev, linux-hardening@vger.kernel.org, 
- Abhinav Saxena <xandfury@gmail.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1756248707; l=6787;
- i=xandfury@gmail.com; s=20250614; h=from:subject:message-id;
- bh=2sCgtf0iJuHZoEJ+ZjgF8LGfcrJ2jnuz9b44H6Mk4Ks=;
- b=7wonk4jVg8NsrTTBrfr6ESAy6WZFree5W8bJr7L4QLz5S5/8f6osUqGimZhjCM+tfxdsy0G/x
- 5lMJhbjAnpQAT+KhMfWgRJQVpiNA4sbrEiobc0DSKSK13IqYtS0ervS
-X-Developer-Key: i=xandfury@gmail.com; a=ed25519;
- pk=YN6w7WNet8skqvMWxhG5BlAmtd1SQmo8If6Mofh4k44=
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: KL1PR06MB6020:EE_|TYZPR06MB5805:EE_
+X-MS-Office365-Filtering-Correlation-Id: 51d4b2b9-c578-46b8-1e68-08dde513c543
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|52116014|376014|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?XjoWe99+ORvrq8gSFY2Ce3IAlwBFp6FRGqX4SzWRR5+PIMqJs0gw3lKtdHSf?=
+ =?us-ascii?Q?eTFo+fOLm09njCirGEu281fdlNtCgeNpqNepP7QGcz4dRHWoX/qsAJSe/KZ6?=
+ =?us-ascii?Q?xoWYvJ11eAxvApHGPRWfB/tKHW991pyiAWrb3BKXRo0Y0wTZbNh2MecQPLY8?=
+ =?us-ascii?Q?eCAU/7UmGV7Gyz54vbVa+AWvtco2dccfLkMnqqMXuRGOdTqWD6ukq2V4V1I2?=
+ =?us-ascii?Q?i0ioWq0CgNl+hcPon4IPwQmxcMufyZt0QPM83731IfVUB4V1YfSCjugQzXZw?=
+ =?us-ascii?Q?64M1F37idrvhhKlTCGL1Aqr2iRYa/E3bqzQ1i1q8ciABB0Jvy2OGIsOkpIyM?=
+ =?us-ascii?Q?DE+QGHTkFet85ZeFTdnHg1J59THSj5Py9g9bol/L3721KryCu/iHlkm1iNw5?=
+ =?us-ascii?Q?2Wvhva4XsTJG7ABkdMGiSXy2Plm7MVgVMNUxqg9qXBUXgzfvOwXjx3qsWWgH?=
+ =?us-ascii?Q?/z89TvHHIfdo2Cs8GiBeXDeCB61mJZFEgIhNSAy9KH4j6eImyKRqTMXgIOD0?=
+ =?us-ascii?Q?JJbR3JES4/TS3snRBSJKR3DRjRu65HaCnRRijGU+ji4TCTqH/uu3gcymbpNq?=
+ =?us-ascii?Q?Ehv20qW3v+z+9Sd5QYyBeASUWcbwVJraGg/OYlgdD5KvF5YLfuYjrzgFKLon?=
+ =?us-ascii?Q?Pwb1C+6bhO786Q1tvBOh5W7oLTVIfzrzG/Yh5VnfFHwrJ0ffbMVD1NeXmZIS?=
+ =?us-ascii?Q?WwZ3m57xUElAwx+IfdfAf4nbF9Vlk6BCEf81kccSSoTOaWUfdzA6Fyqs4Ic4?=
+ =?us-ascii?Q?w8YkOi+sr/gqly/8ao1m+Q0WjI20DNoZ2OwRKZjsPyAwX11n5ocgGfYIXh3c?=
+ =?us-ascii?Q?vtonhUyPiD1CtzXHe1m/36lpQzdHgDn3GWqJ/Axh0UB8QiE7IKbTjPdnua/3?=
+ =?us-ascii?Q?YJiaPQ4S75oNDkIPdoNRQS0gOrh5UEsQ1d59x+ACEyVY/+roiJvzWW/gpktc?=
+ =?us-ascii?Q?lo6p+zrzWrPtbGTOCktLVFJ8hdNPRXqBH6rDOdmNO3Pp0Sn0/gtW+mQvNEot?=
+ =?us-ascii?Q?c0oB62/HOBrhmOaVVqVZB6LfVPfS5F8W2PEd7pd1NKPJ2e770b/LCpqInJdF?=
+ =?us-ascii?Q?sThi+GNmV546baT+4fIMB5ZgM4kFZOUNmq7d/gPnEORwI0Pl3ri9t+WOGLMn?=
+ =?us-ascii?Q?HqH8GHzpJzfmfNNEuiVmJh3QH2ZgeNMgpFP51m+VZbmGwMt5sbeuXEsbuWYZ?=
+ =?us-ascii?Q?2+N79aHrcvo9DuYD33QvNPHfNJNKgm/QGX+TGj00qMBctETMmgeaylVHNpPF?=
+ =?us-ascii?Q?BeA/n7x3uDBaHxqDgKCkxlrX0oVpkRJDlr+or47/GFZaC5xCWbtLvAEdJgf3?=
+ =?us-ascii?Q?PDuX8oUZ1oyZkJoe++c5wxf0AxZo9Q7lseFfR3Qru2pbusRGr2S2bNtFDdHo?=
+ =?us-ascii?Q?qAdsZdIu4dXVlNGH1c1XPv9PL1c1r6Vj1jzCk9iUCNYVRKiNdsZwZIHFlj2h?=
+ =?us-ascii?Q?kPlm5r2Afh1hYWtaFa2sOV1g31uozV34gVE/Ecuta7KvPSVytuGWmA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:KL1PR06MB6020.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(52116014)(376014)(38350700014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?jyAV7bDUwyvytzAZfFjXiIll8MAq0vpg8hFienqTrDhPpbqt4V4njY9xvdOl?=
+ =?us-ascii?Q?CQnsOyM9GWLHsPSRHVvCOq7N/QH0EVncSp+0kLgW8fd+2amtRXgcbxQPwwxx?=
+ =?us-ascii?Q?l+xu5MPWq4WBXLwX6TuFYwE1D5oSNnYAQE7ek42XjahHT9WGNKI10S5JjX2j?=
+ =?us-ascii?Q?gZnDWNK6HPtGLNVjfFWRckDial/IO7Uq0w5wwDe8sQzNdMt8CuXArwGh3a54?=
+ =?us-ascii?Q?oQRK3q5XR8ZbtT5hqqkLhfWrUftfeuVA3b1HjIgZOl4pvqpwNkbZObouN/m9?=
+ =?us-ascii?Q?AyzhPuanDG5d+T8aU6Z/x1uRfUMNWAOiTJA5AEtTF5Y5ZAgMJdYig+DvmaMu?=
+ =?us-ascii?Q?AJGIz0pzP4TjiRDfP9LgXld8a7CGDuZz72vomZiPdMPCOlGQoP9Kuefyd8rD?=
+ =?us-ascii?Q?jr6kNWFpfg9xNIiFUvdNE0y8C6C0DJe93ZVZ2sMLDSFCeWkkCWlS0GmH81Of?=
+ =?us-ascii?Q?5ZJ0qPiYUoFSzKrcHB2T3MY7WZrhvzQMGFyudwH4TCV237gsp84Ph8bH0R7V?=
+ =?us-ascii?Q?31NOhrlJ0PSlUJCjqy78cEgPFbEIvAitQPxOrA3Xy0V8qftT2AwCbytt2+8f?=
+ =?us-ascii?Q?VRHIeE9L85t4zjsiva3YERNmfKeF8ihnLHt9UFsZQLemTn3FQaWMiCd+qkvh?=
+ =?us-ascii?Q?uZx+zErpNGgCyWDaZd+RgwmuK2jU/SxjVgTwBUB1bYVzjC5S7CV6Rf887pjm?=
+ =?us-ascii?Q?Mf2phsCA/9cZs09di2vlj9EP332RE5FRqtEBAqGNcWp2RyBsReHMzujU5DI1?=
+ =?us-ascii?Q?OQ01J4GhlMqAwKXZZx8aRxWUKX5DNa9hZeXp6YhR+1M+idAQ+OYNqJjlExsx?=
+ =?us-ascii?Q?psKaUgJnMqj4DvRJ0HZW3ZGS5VDuk9gqfRBPzFW+DCBcQmt+Zn9JyAm8J5cY?=
+ =?us-ascii?Q?lyk8H3baFAT6U+SFh6qIZ427cnyC3dyI/xpNZnnzZQnutIWeDQbWh9XyEew5?=
+ =?us-ascii?Q?UTbnOwb5wFoiyKX9wrcnntVgMqq8miX/g7X+h7tKs65jOnh+QT+9DoXAT0E0?=
+ =?us-ascii?Q?IOf48rUGwMkxsbk7OfG0Bkx+9a9G5ySSPbDrwd/iTrx80CFmnF7Oy6W8YJWG?=
+ =?us-ascii?Q?c8qbW+xeLYsvnZBOndyV4AsCgm5cNsbbvO3cpvlx8CV2XvY0ZscN/MrLOENT?=
+ =?us-ascii?Q?WAT+9FoI1IkWLtAAj/SAzDqVNz5U5Q7zM+zUISRdwptfz5c44A6KhcgE+Xep?=
+ =?us-ascii?Q?W2l1L5OwQmXlE10oJHKWa5emtjz+qJFQO3e30ihW3ZqIJtN8M7QSDjQPQ5Il?=
+ =?us-ascii?Q?EbQ/f4h3dpCJiK7eGFxel5U/NNyzA1xwfVnHAaOejNS2J0/Lze6AJKwsua9q?=
+ =?us-ascii?Q?8iodU38Q9cAGLFCn2u4YzYjLEu4TsT/ARab60Z3EJSlqm1Vex8m4D9TPGQE/?=
+ =?us-ascii?Q?dQFv3ds7ETVp+Lj/nJXUOkiq7Wfe4tBRTgzFBWYs6CikcBp8DCmlKqROdcrw?=
+ =?us-ascii?Q?gbq+lS/mzGeDk813Gxjr4Mn3MBbVuuTYT8DnlWLq54Tf7t2qoSrv6rTXI/QR?=
+ =?us-ascii?Q?rdx1zLF+q5psLS6t2XILWKV0ChvdZZOpKy79tSO7/AHBY+64aQAu23iAhXSv?=
+ =?us-ascii?Q?d8dRsMae9WOcY+J8XxHOnDCK6mdifb6hmcs+J4J3?=
+X-OriginatorOrg: vivo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51d4b2b9-c578-46b8-1e68-08dde513c543
+X-MS-Exchange-CrossTenant-AuthSource: KL1PR06MB6020.apcprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2025 02:45:23.5576
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HwpuJeRpSRtPvsWhKOI6IqcjEgp5I7+BLyTfINPopt5RXu4DXZ/znBcEIZoPDPjhVR/XluECxdvosMYroi1xOQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR06MB5805
 
-Add targeted tests for the TTY null driver covering its data sink
-behavior and driver characteristics. Tests verify that ttynull
-properly discards written data while maintaining standard TTY
-semantics for applications requiring TTY interfaces without
-caring about output.
+The result of integer comparison already evaluates to bool. No need for
+explicit conversion.
 
-The tests are integrated directly into ttynull.c when
-CONFIG_TTY_KUNIT_NULL_TTY_TESTS=y to test the actual driver
-implementation.
-
-Signed-off-by: Abhinav Saxena <xandfury@gmail.com>
+Signed-off-by: Xichao Zhao <zhao.xichao@vivo.com>
 ---
- drivers/tty/tests/test_ttynull.c | 163 +++++++++++++++++++++++++++++++++++++++
- drivers/tty/ttynull.c            |   5 ++
- 2 files changed, 168 insertions(+)
+ drivers/tty/serial/sc16is7xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/tests/test_ttynull.c b/drivers/tty/tests/test_ttynull.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..c062d69bd5d5975ab84442a83426a1d44440b0a6
---- /dev/null
-+++ b/drivers/tty/tests/test_ttynull.c
-@@ -0,0 +1,163 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * KUnit tests for the TTY null driver
-+ *
-+ * Tests for the ttynull driver covering basic lifecycle and sink behavior.
-+ * The ttynull driver acts as a data sink, discarding all written data
-+ * while providing minimal overhead for applications that need a TTY
-+ * but don't care about the output.
-+ *
-+ * Copyright (c) 2025 Abhinav Saxena <xandury@gmail.com>
-+ *
-+ */
-+
-+#include <kunit/test.h>
-+#include <linux/tty.h>
-+#include <linux/tty_driver.h>
-+#include <linux/tty_flip.h>
-+#include <linux/string.h>
-+
-+#include "tests/tty_test_helpers.h"
-+
-+/**
-+ * test_ttynull_write_sink - Verify ttynull acts as data sink
-+ * @test: KUnit test context
-+ *
-+ * ttynull should accept all write data and discard it silently.
-+ * This tests the core functionality of the null TTY driver.
-+ */
-+static void test_ttynull_write_sink(struct kunit *test)
-+{
-+	struct tty_driver *drv = ttynull_driver;
-+	struct tty_test_fixture *fx;
-+	const char *msg = "test data; discard me";
-+	unsigned int room;
-+	ssize_t write_result;
-+
-+	fx = tty_test_create_fixture(test, drv, 0);
-+	KUNIT_ASSERT_NOT_NULL(test, fx);
-+
-+	KUNIT_ASSERT_EQ(test, tty_test_open(fx), 0);
-+	KUNIT_ASSERT_TRUE(test, fx->opened);
-+
-+	/* Verify TTY is properly initialized */
-+	KUNIT_EXPECT_NOT_NULL(test, fx->tty);
-+	KUNIT_EXPECT_NOT_NULL(test, fx->tty->ldisc);
-+	KUNIT_EXPECT_TRUE(test, !list_empty(&fx->tty->tty_files));
-+
-+	/* Check initial write room - should be available */
-+	room = tty_test_get_write_room(fx);
-+	KUNIT_EXPECT_GT(test, room, 0U);
-+
-+	/* Write data - should be completely accepted */
-+	KUNIT_ASSERT_EQ(test, tty_test_write_all(fx, msg, strlen(msg)), 0);
-+
-+	/* ttynull discards writes; buffer should remain empty */
-+	KUNIT_EXPECT_EQ(test, tty_test_get_chars_in_buffer(fx), 0U);
-+
-+	/* Write room should remain available for a sink */
-+	room = tty_test_get_write_room(fx);
-+	KUNIT_EXPECT_GT(test, room, 0U);
-+
-+	/* ttynull should accept all data */
-+	write_result = tty_test_write(fx, msg, strlen(msg));
-+	KUNIT_EXPECT_EQ(test, write_result, strlen(msg));
-+
-+	/* Multiple writes should all succeed */
-+	write_result = tty_test_write(fx, msg, strlen(msg));
-+	KUNIT_EXPECT_EQ(test, write_result, strlen(msg));
-+
-+	/*
-+	 * TODO: Simulate hangup condition making subsequent writes fail
-+	 * For now, just release.
-+	 */
-+	KUNIT_ASSERT_EQ(test, tty_test_release(fx), 0);
-+}
-+
-+/**
-+ * test_ttynull_read_behavior - Verify read behavior on null device
-+ * @test: KUnit test context
-+ *
-+ * While ttynull technically supports read (via N_TTY), reading should
-+ * behave predictably (likely EOF or blocking).
-+ */
-+static void test_ttynull_read_behavior(struct kunit *test)
-+{
-+	struct tty_driver *drv = ttynull_driver;
-+	struct tty_test_fixture *fx;
-+	struct tty_ldisc *ld;
-+	/* char read_buffer[128]; */
-+	/* ssize_t bytes_read; */
-+
-+	fx = tty_test_create_fixture(test, drv, 0);
-+	KUNIT_ASSERT_NOT_NULL(test, fx);
-+
-+	KUNIT_ASSERT_EQ(test, tty_test_open(fx), 0);
-+	KUNIT_ASSERT_TRUE(test, fx->opened);
-+
-+	ld = tty_ldisc_ref(fx->tty);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ld);
-+	KUNIT_ASSERT_TRUE(test, ld->ops && ld->ops->read);
-+	tty_ldisc_deref(ld);
-+
-+	/*
-+	 * Reading from ttynull should behave consistently.
-+	 * Depending on implementation, this might:
-+	 * - Return 0 (EOF)
-+	 * - Block (if no data available)
-+	 * - Return -EAGAIN (if non-blocking)
-+	 */
-+	KUNIT_ASSERT_NOT_NULL(test, fx->tty->disc_data);
-+	/* bytes_read = tty_test_read(fx, read_buffer, sizeof(read_buffer)); */
-+
-+	/*
-+	 * Document the expected behavior
-+	 *  - adjust based on actual ttynull implementation
-+	 */
-+	/* KUNIT_EXPECT_GE(test, bytes_read, 0); /\* Should not return error *\/ */
-+
-+	KUNIT_ASSERT_EQ(test, tty_test_release(fx), 0);
-+}
-+
-+/**
-+ * test_ttynull_driver_properties - Verify driver characteristics
-+ * @test: KUnit test context
-+ *
-+ * Test the driver's static properties and configuration. Also, ensure that
-+ * it implements the required file_operation ops.
-+ */
-+static void test_ttynull_driver_properties(struct kunit *test)
-+{
-+	struct tty_driver *drv = ttynull_driver;
-+
-+	KUNIT_ASSERT_NOT_NULL(test, drv);
-+
-+	/* Verify driver identification */
-+	KUNIT_EXPECT_STREQ(test, drv->driver_name, "ttynull");
-+	KUNIT_EXPECT_STREQ(test, drv->name, "ttynull");
-+
-+	/* Ensure that driver implements the required ops. */
-+	KUNIT_ASSERT_NOT_NULL(test, drv);
-+	tty_test_assert_valid_ops(test, drv);
-+
-+	/* Verify driver type */
-+	KUNIT_EXPECT_EQ(test, drv->type, TTY_DRIVER_TYPE_CONSOLE);
-+
-+	/* Verify driver flags */
-+	KUNIT_EXPECT_TRUE(test, drv->flags & TTY_DRIVER_REAL_RAW);
-+	KUNIT_EXPECT_TRUE(test, drv->flags & TTY_DRIVER_RESET_TERMIOS);
-+}
-+
-+static struct kunit_case ttynull_test_cases[] = {
-+	KUNIT_CASE(test_ttynull_write_sink),
-+	KUNIT_CASE(test_ttynull_read_behavior),
-+	KUNIT_CASE(test_ttynull_driver_properties),
-+	{}
-+};
-+
-+static struct kunit_suite ttynull_test_suite = {
-+	.name = "ttynull",
-+	.test_cases = ttynull_test_cases,
-+};
-+
-+kunit_test_suite(ttynull_test_suite);
-diff --git a/drivers/tty/ttynull.c b/drivers/tty/ttynull.c
-index 6b2f7208b564b659bf7faa4113541fcea7ec6ac0..baad9f0e3d27d97409a571e8da953384b7c64891 100644
---- a/drivers/tty/ttynull.c
-+++ b/drivers/tty/ttynull.c
-@@ -6,6 +6,7 @@
-  *  Copyright (C) 2010 Samo Pogacnik
-  */
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 5ea8aadb6e69..1c115d9e3b3f 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -626,7 +626,7 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
+ {
+ 	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+ 	unsigned int lsr = 0, bytes_read, i;
+-	bool read_lsr = (iir == SC16IS7XX_IIR_RLSE_SRC) ? true : false;
++	bool read_lsr = (iir == SC16IS7XX_IIR_RLSE_SRC);
+ 	u8 ch, flag;
  
-+#include <kunit/visibility.h>
- #include <linux/console.h>
- #include <linux/module.h>
- #include <linux/tty.h>
-@@ -106,5 +107,9 @@ static void __exit ttynull_exit(void)
- module_init(ttynull_init);
- module_exit(ttynull_exit);
- 
-+#ifdef CONFIG_TTY_KUNIT_NULL_TTY_TESTS
-+#include "tests/test_ttynull.c"
-+#endif /* CONFIG_TTY_KUNIT_TTYNULL_TESTS */
-+
- MODULE_DESCRIPTION("NULL TTY driver");
- MODULE_LICENSE("GPL v2");
-
+ 	if (unlikely(rxlen >= sizeof(one->buf))) {
 -- 
-2.43.0
+2.34.1
 
