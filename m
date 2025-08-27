@@ -1,136 +1,137 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 990D634AAE2
-	for <linux-serial@vger.kernel.org>; Wed, 27 Aug 2025 10:17:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01C64301473
+	for <linux-serial@vger.kernel.org>; Wed, 27 Aug 2025 11:41:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756289877; cv=none; b=qpYjmGgt3DDOpljyERsrIVmkjKgSYOGdtH6DcCWs6vR0G/7GoNS7aRxBas5h9jqRorJ/fvqN3H65mBO29iP36rpDsWwLl/pFuwREQJZRpet6ghfgWHoWMYCVB82F8P886jbMB7ORnVUWBXKhelP07qMMPmOa21MnRkg8somnOw0=
+	t=1756294900; cv=none; b=QaX+kRqMIP8CNyp6QIVCPI0Wa4NOcJAdXbv9MTpZT29Ria/RYcfB7IcMXH6cgbQYaLTAnYUyh6m7dE0T+3ca1fEhSe8aNhF5/zBsHwqtX0PZmzjrZ/OoNHqEKsr+Th3sgo2wcudfESZM/GUbAKXaEIRrE/qmOJRO5CRlXwbEtQc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756289877; c=relaxed/simple;
-	bh=XiCyzRrxnhE3NB2OuwNB4t2/v4Wcgu+fsFnAZJI/iYM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IUot1ZN66TmmCZqtqhZoNFIe+YVLOHcXi2CWudiKbvcO5Y3ZGDLaHU22bkEwBTgtJwUM6ThUf5ZAnd4h7UoyhZPr2GVK/2g2waExkDcJCZUL6InaiPRzK5CBmJp3+kmO50vBL1f0KQQNHjta5jZK/4BfanUF0dUKL6WsSboMruQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev; spf=pass smtp.mailfrom=tuxon.dev; dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b=IojxMeFl; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tuxon.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tuxon.dev
+	s=arc-20240116; t=1756294900; c=relaxed/simple;
+	bh=o+saMPd6JTK42Lj4xU6VI14af2qrH3H/yY3IsOVZgWU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=LIf3KOJg3wYnUsV6ltOyNAni1/3XhMNVPbuMqsiLuWi5Ht0iDt/sznn8GpVanMCd9MJKANh4SsPV0LsgZYNt+94j81ZIC2T0wcXS1UnQH/H6PMT/EGtUOFfu0hNgaR6hqxAt7rFznxSzTVEr1mi8FZgy/oZn27CDWb/PrJDPeQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=RLWox7CS; arc=none smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tuxon.dev header.i=@tuxon.dev header.b="IojxMeFl"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-45b4d8921f2so48836295e9.2
-        for <linux-serial@vger.kernel.org>; Wed, 27 Aug 2025 03:17:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RLWox7CS"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-74542b1b2bcso302034a34.3
+        for <linux-serial@vger.kernel.org>; Wed, 27 Aug 2025 04:41:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tuxon.dev; s=google; t=1756289873; x=1756894673; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LOwtzUYNEN4Yb2Ca5f0BdtO/R5WNfpNb+21iJrIdehs=;
-        b=IojxMeFl1L3EroARozf11RIX8gposU+WCvZcQ+URehodxc0Tw49KPYCdGAMykPHDnA
-         N+OOvMZZKgL7XoIqvJukOmwN9/fqRq+MOSRQEL68L4ZsPHXndCdo1DzdnQDOV+OzOFvG
-         QyTwQzl9xw3DDtyMn74rNzOcB5LINBUQuTDiJtpnFcyG3ssrhxUWpEGs3a6osk7CYe9Q
-         Ev3Z4m48IXuMne8Zivv0VTWfEjDBnoo45lKRv5fDUeeT11/6SlgIqMRKdydbP5oRHZuq
-         GnTIV4MQGdYCaKVelgSAQdgYIBpyaDih6Imse85ucf8CgQYzXjBmTNvLrsTxBrLij36U
-         BZiQ==
+        d=linaro.org; s=google; t=1756294898; x=1756899698; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=j3FLL1am8JkhfJR2LRNu+sWDRKJqjQgg5H9U00XtTUI=;
+        b=RLWox7CSw4yzbwvSO5IYtSIfZQSWJW3l4AUEghSI/5ALA8loknsI3fkr2sfSsNhT35
+         cBMlj49W8CHnjFgjrmeg6dF4sH7jmfeBuRswCfxpCfOkXi8fsS/Kb48v7ZawLvJRo/lL
+         Dy/7c2P6pJ8oblh3mX8zc6/cVxXtdQ/F+cvXvKgX+JDI0qkEI8eYP7JY2WMx8boiGbLj
+         GrCBzSbv2+Z9PvYyPcT6dkN1kuKQqkPTsEQ7ebOstGAtEBajmnz+0sxAFLdxFVDjnr+U
+         oHhqAolWyxgq+8JApLHnHLwFlZDikZ3MHZpJPRFMezuIp1/lkYFTVzRQQZ0364iUwMvs
+         UG8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756289873; x=1756894673;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=1e100.net; s=20230601; t=1756294898; x=1756899698;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=LOwtzUYNEN4Yb2Ca5f0BdtO/R5WNfpNb+21iJrIdehs=;
-        b=HrzDrE4fEij4XFChMfUSmJwA8QizyOtxOuYjPt1uDFCRObtA24ecvaSgSREkCbUZG8
-         zaLPKq3QJtS7ou8MdBvujXRzy4mBifaScvy8TLxKj5m3pJbN8aNYBcKM3I4UBr0bJzdy
-         SKX+Og5xW0pSJjYHVxrewX9hTHCclZmoCQFIMd0XASJQQzqRjl+SoQ6Lz17LxNAoj5Ni
-         Jhbu3UhI9nU0PKXSm7Rd+Qlm9SLyutojqvZYYoWF/jiS++cHgj69s9ECuzKotc1rqw9/
-         uxAeMQbOmbpIEJ6lRv+cp0WJi4Epi7i/Q6Y8dpWdVtPE3cs7knRfVxGaaLRKAGky2wVJ
-         RLHQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUKtU0QavBkyGOcClq+TGHUjVnoar+wsn4Pn6NXT/Exuu5ri3u5pzAxjtrQ4BAVsv5Gdw2QqD/8xU225Pg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxD1i6iExWFUm3da/VKBCJhBpNmfPGV5NdxX0CUK/IfavAq/npt
-	WqrWatkOijzPgNdhuHf/7vInMayfGk5M+fHvHKaZWwyrBd+ADiwd1BGrU3CsIwdEkjY=
-X-Gm-Gg: ASbGncuyQGbABp499qwpfa6Wp+118ZkQLd85rQ15ZbAOQ+A/gplhfUk2aB5wwrL4Akd
-	AHpvTfB4LhEflQJ+CwuCxPCdyU1XPDVAatb5NbnLuNbRfW7Ui641EAX0OchSJQMHKVA+jbq19Bl
-	/3IAHxYm4qJlKFDuVv2BvYDxeSbL6ON2D90qqCXOjQJvYkd3ueZLJCy+9ZYR2gTuzdiSygLx8QG
-	jJi+Hdr0hjhFaNiKWdGS4OQaT+vBCG2cAyK3+Bm467d8gNGdDISzct4VEEu2yfRKfeeCg/mXKeV
-	ylqKvAbHjRdBnGhM95TH0tOXgJ+gNfjtaXBsri8XhzvncQp6Zr+2ySjlpIBkky/HBNmdOjFfP6/
-	5fFHbUQE/0uwADzS1bQXpbgy5y5F9Nju8iLNust5sVxBcgaxpibtDU7mzkcM39YojqBvT3mUOL5
-	aGeSGbV/x1C3XKw0/0
-X-Google-Smtp-Source: AGHT+IGgDVceGJ94gwXiT/IZjg0OTBFL6jcg8M6Oz/orNkYOgSyHMDwEfK7xO6wNc0Yvuz39hPXfyQ==
-X-Received: by 2002:a05:600c:4705:b0:458:bf0a:6061 with SMTP id 5b1f17b1804b1-45b517d49d4mr181322775e9.24.1756289872841;
-        Wed, 27 Aug 2025 03:17:52 -0700 (PDT)
-Received: from claudiu-TUXEDO-InfinityBook-Pro-AMD-Gen9.. ([2a02:2f04:6103:4200:a5a4:15e6:5b6a:a96])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3ccac1b892bsm2293290f8f.67.2025.08.27.03.17.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Aug 2025 03:17:52 -0700 (PDT)
-From: Claudiu <claudiu.beznea@tuxon.dev>
-X-Google-Original-From: Claudiu <claudiu.beznea.uj@bp.renesas.com>
-To: robh@kernel.org,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	ulf.hansson@linaro.org,
-	rafael@kernel.org
-Cc: claudiu.beznea@tuxon.dev,
-	linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
-Subject: [PATCH] serdev: Drop dev_pm_domain_detach() call
-Date: Wed, 27 Aug 2025 13:17:47 +0300
-Message-ID: <20250827101747.928265-1-claudiu.beznea.uj@bp.renesas.com>
-X-Mailer: git-send-email 2.43.0
+        bh=j3FLL1am8JkhfJR2LRNu+sWDRKJqjQgg5H9U00XtTUI=;
+        b=AFK4x+pg307f7ErDASlIYrC30fdDrtV2oNJZgyTWn20XxW/tDm4qB5j6BCi2OzD88v
+         4Bu3t0Eli8D7zb4UqTDWgA8SGtAt7akgnU2fQlkHO4mnhjYDDw3xg+VVqDYdwmVAKAjq
+         hdeJqJTk4BaGNbXsRFYefFlCXk5T5FyiQ80uOi5aeghYU+5mOvCkwrfEsFusIQgOPRPV
+         DW4xGQBSQuixzSRMkPsf1ctFM9eidIrP7spKRYPbWLFTSgVFyYM3wSMeP8wG1teqeEHd
+         I6+3LvCbbpK7GZJXnS7bSF/KzXwkEKg06lmouV8RMjh9GWGT1PallDaZqh4d83KFbXzi
+         A4Hg==
+X-Forwarded-Encrypted: i=1; AJvYcCU1Ga7naEfgjN6uYumVqO3CftlVd09g9PllazojupdLPF3gFV+LKwQo3HLgCr8yxFAh2IQ2mjcYPLWSdTo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YztzFd1rmW2nHdC+ccD8rcWyfjRpdjsCQDzFB0/ovXS4lrQJWxA
+	59vMNEK0y1lc6nSYpYsm7P8XJNmygM/tvMNMtaG1Cg5b5gvm6eP5cAtdvofT0drahhtYuYKERPa
+	L0uuO1t70JBU56z689LHZD2JzlUyV3JTOrKirVQooKKpbEwSoea/F
+X-Gm-Gg: ASbGncuYTnEVwoQbXq85l2nwoyw0LOG23WUKcsC4GkIWsERAgO6cQIW8a5zUlbpq9Uo
+	syfI9UYlFFAR9cTm9jaReMGwG0/kG6q6m/s+cztAzzg4VIiwSP4DeDxf1250CwY7Xs7W6PgwUgl
+	lSryHsbN3+3ju3BMwt8zPQf0i1ZgMDLtc32Zh8CZsX4vLOaYMSDCgdYbtnjcmJ/pijwTtr6jh3Y
+	hZmEz4=
+X-Google-Smtp-Source: AGHT+IGJo6FTi6F/n3ItkZ0Xdl8Z3sFRiLTQaDB0ezZp0GYMOSDBOqgG7Yse1giNuoEl4NICfwf7Vh67Mj6+WaPkSyA=
+X-Received: by 2002:a05:690c:6704:b0:721:391d:8ede with SMTP id
+ 00721157ae682-721391d9f27mr53538057b3.23.1756294590842; Wed, 27 Aug 2025
+ 04:36:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20250827101747.928265-1-claudiu.beznea.uj@bp.renesas.com>
+In-Reply-To: <20250827101747.928265-1-claudiu.beznea.uj@bp.renesas.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Wed, 27 Aug 2025 13:35:54 +0200
+X-Gm-Features: Ac12FXyTbgjjBJeT1fnr3vCpCnEUgStrxaU2c_luIHFHEO39_lUM5OYykCs5WaM
+Message-ID: <CAPDyKFpTb9H5i9J0zSrGu5-7evDf4Eay-NJqTmVBy6SyCoWnPg@mail.gmail.com>
+Subject: Re: [PATCH] serdev: Drop dev_pm_domain_detach() call
+To: Claudiu <claudiu.beznea@tuxon.dev>
+Cc: robh@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org, 
+	rafael@kernel.org, linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 
-From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+On Wed, 27 Aug 2025 at 12:17, Claudiu <claudiu.beznea@tuxon.dev> wrote:
+>
+> From: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
+>
+> Starting with commit f99508074e78 ("PM: domains: Detach on
+> device_unbind_cleanup()"), there is no longer a need to call
+> dev_pm_domain_detach() in the bus remove function. The
+> device_unbind_cleanup() function now handles this to avoid
+> invoking devres cleanup handlers while the PM domain is
+> powered off, which could otherwise lead to failures as
+> described in the above-mentioned commit.
+>
+> Drop the explicit dev_pm_domain_detach() call and rely instead
+> on the flags passed to dev_pm_domain_attach() to power off the
+> domain.
+>
+> Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
 
-Starting with commit f99508074e78 ("PM: domains: Detach on
-device_unbind_cleanup()"), there is no longer a need to call
-dev_pm_domain_detach() in the bus remove function. The
-device_unbind_cleanup() function now handles this to avoid
-invoking devres cleanup handlers while the PM domain is
-powered off, which could otherwise lead to failures as
-described in the above-mentioned commit.
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
 
-Drop the explicit dev_pm_domain_detach() call and rely instead
-on the flags passed to dev_pm_domain_attach() to power off the
-domain.
+Kind regards
+Uffe
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>
----
- drivers/tty/serdev/core.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index d16c207a1a9b..b33e708cb245 100644
---- a/drivers/tty/serdev/core.c
-+++ b/drivers/tty/serdev/core.c
-@@ -399,15 +399,12 @@ static int serdev_drv_probe(struct device *dev)
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
- 	int ret;
- 
--	ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON);
-+	ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
-+					PD_FLAG_DETACH_POWER_OFF);
- 	if (ret)
- 		return ret;
- 
--	ret = sdrv->probe(to_serdev_device(dev));
--	if (ret)
--		dev_pm_domain_detach(dev, true);
--
--	return ret;
-+	return sdrv->probe(to_serdev_device(dev));
- }
- 
- static void serdev_drv_remove(struct device *dev)
-@@ -415,8 +412,6 @@ static void serdev_drv_remove(struct device *dev)
- 	const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
- 	if (sdrv->remove)
- 		sdrv->remove(to_serdev_device(dev));
--
--	dev_pm_domain_detach(dev, true);
- }
- 
- static const struct bus_type serdev_bus_type = {
--- 
-2.43.0
-
+> ---
+>  drivers/tty/serdev/core.c | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
+> index d16c207a1a9b..b33e708cb245 100644
+> --- a/drivers/tty/serdev/core.c
+> +++ b/drivers/tty/serdev/core.c
+> @@ -399,15 +399,12 @@ static int serdev_drv_probe(struct device *dev)
+>         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+>         int ret;
+>
+> -       ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON);
+> +       ret = dev_pm_domain_attach(dev, PD_FLAG_ATTACH_POWER_ON |
+> +                                       PD_FLAG_DETACH_POWER_OFF);
+>         if (ret)
+>                 return ret;
+>
+> -       ret = sdrv->probe(to_serdev_device(dev));
+> -       if (ret)
+> -               dev_pm_domain_detach(dev, true);
+> -
+> -       return ret;
+> +       return sdrv->probe(to_serdev_device(dev));
+>  }
+>
+>  static void serdev_drv_remove(struct device *dev)
+> @@ -415,8 +412,6 @@ static void serdev_drv_remove(struct device *dev)
+>         const struct serdev_device_driver *sdrv = to_serdev_device_driver(dev->driver);
+>         if (sdrv->remove)
+>                 sdrv->remove(to_serdev_device(dev));
+> -
+> -       dev_pm_domain_detach(dev, true);
+>  }
+>
+>  static const struct bus_type serdev_bus_type = {
+> --
+> 2.43.0
+>
