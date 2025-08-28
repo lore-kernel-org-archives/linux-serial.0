@@ -1,64 +1,64 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10E92311975
-	for <linux-serial@vger.kernel.org>; Thu, 28 Aug 2025 13:15:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0015B31194F
+	for <linux-serial@vger.kernel.org>; Thu, 28 Aug 2025 13:15:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756386932; cv=none; b=ptx9Aft1pAqOv5vb9hm2oEyy+r1FNuGkEgCz+u8sU2m6MmDDMmy55K8XXFF7b7O4ygofRo0fWZOVTAGRGrzoXZ6qt9O3YPFS6Ps1J5gz+3TgOC/F6zAypA7y5s0tdpfNB96i3okOBMaNMHNqYl+B2sEyJuuXPauz7YIvWW7vUjw=
+	t=1756386935; cv=none; b=VfkU7EdzaVnHx0SQS5zpVPHylWMMVB7efAZ6aG9DpD+r43f2XLMHvqYIkB4djPoFR7RMMuOXJG2zyOF6omSdj07InFJaKadeWttTfi2J6dBipuuz8M9Z3joFrfuOjyNT8R2zwull+5nXYrJmEGNzFPHJa415kER2CYhXHWIDxYk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756386932; c=relaxed/simple;
-	bh=7tzlDwbCU000uIS22b9GF1Z4Cn4FUZZpaRhqWJq/YAA=;
+	s=arc-20240116; t=1756386935; c=relaxed/simple;
+	bh=1keMc57+QR2CICrcPlWaiGj5bDJ4SG5s8RArDpJq+tI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=XXv+vedKUG7N20xAgvUpDFFN1o4NLMDuFHgR9j9H/BS5sAied3zw/nV5hDUx0zk1zvl/EmTZIQsMYpYeP+H0L05t0G//GdWFIy4TJj4eYegsHnNNE4a5zbCL8GIB7FJPFsmnhvPW/V+MSE908UJJVI6qHP5vnKXnkfUE6NfO7SA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Mgyj2ff1; arc=none smtp.client-ip=209.85.218.52
+	 MIME-Version; b=XYvq3fs6Euz2tr2WVklKLxNFvsJXl0KksALnkXyULrSZyVhpko7d2XvZNErn0Ag+nLwsJUMKeG/0iMdiSap1lGhog/kyrrH2Tu0z/ezBSaV5Ul+6sGTFiWUmU26qUfNeeSF0LJ9Q6sH9D6k/748vQSaERUjfAp0QTCwbCbnprjA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=N80ITG+6; arc=none smtp.client-ip=209.85.218.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Mgyj2ff1"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-afe84202bc2so127140566b.2
-        for <linux-serial@vger.kernel.org>; Thu, 28 Aug 2025 06:15:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="N80ITG+6"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-afcb7ae31caso163539666b.3
+        for <linux-serial@vger.kernel.org>; Thu, 28 Aug 2025 06:15:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1756386928; x=1756991728; darn=vger.kernel.org;
+        d=suse.com; s=google; t=1756386930; x=1756991730; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=AuvwZFkQA9C7qsU3a5Mf07+vt99ZB7O1MdQDYloQZeU=;
-        b=Mgyj2ff1AKN+CDHqNPTL+df30XR5P9+2RteyMpi0iT6Zdeut/hAMgvAso7Lg/FWW8A
-         HMOeJi2rKd84PVBXAYFr4hI44eoG2lxmuXo/5TCqTzu3QwO7PzLGTpAULn5mNWTTQ+2g
-         cZSW1W3tEy2doxIyVMWaEpIPHe14TvNgLDqcsJ+zsO6hskREGfLteVNbJE6IGQl90DIS
-         Qk/yymMulf+Xck8oNiaj/RpvUKV7xXBFIqow9oF2SK0wYENtL8eNfvf1X+LVLysBTZeO
-         MaW+S5TbN+83Ow6mlnPSAyE1uEmAHv9R1UgxJ2by1eFpOFfMDkh0J56EfGN5Wjn2QrgE
-         Q2pw==
+        bh=ukdxjc5DrhlQ7eBdrlN9f+Y4/ViYX/zBdRo4k+wcLt4=;
+        b=N80ITG+6x2Tn5bfvb81vUxELGuDHJx4Ucooqu8aTY6Fp4idr3Yifp7Fl+Tg2gPLWcV
+         yu37Pf7EqDy3c6z1b07B3EgWf6ZCAO6JG8DtYTtK68SLVK14NlfrWwHrQ7+tYcbRP7oT
+         6pPWhYNrDAh4Px9nbvn/rZDfR465Pzezpr/Td0O9Ipby+tP6r9ixNU8h7g+eLWjjxr+D
+         rzCIifCF+WWRCZqkB7RE42cMGNGR5w+QOgykTL0txSFpIlnRkMJZu8qO0uINIg3p8vg/
+         TecaQGRqE3efQ/jZ1/pqow/nkc+lpwwkgfENq7b4DEg+1ZmLMfnDYnR8Bs2h+0r1NfgE
+         zt+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756386928; x=1756991728;
+        d=1e100.net; s=20230601; t=1756386930; x=1756991730;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=AuvwZFkQA9C7qsU3a5Mf07+vt99ZB7O1MdQDYloQZeU=;
-        b=gtLGHz2vzc+CwSxiaYyf+goTdz+bW+ZCAan0cgd+jSSIBgtYjASEQhgW9PQssFejAV
-         tX184+bF7Yf89GN+DiTB0mO2eoNy+FpvJUYu+6QWlrOZ1K88CT+Vc0GGcCgUt9+ZMZLD
-         y9LH6H+dIsqzIftikjY7YDmfkNhQ6jKMSH/35tH6HjBFn5Snle2eedAYNhjUnaFN2zIo
-         eejR4kb5ymjxeokT/1QBAn8/9JPugqGsHlXY8o4HwSamGsKlmlBmGqiZgHn6QW5k1WB8
-         FkG6Rdt68fvmO8OF+T46ylr7qK8gAfx512RYmXHDA+mn5Pv5Y+cRni6E+0irVaVThqX3
-         SvBA==
-X-Forwarded-Encrypted: i=1; AJvYcCUEeBV4bryT/onkSShWYpNoC0tLC0ZoZi0IBx7IPc2HBwmfJ90yRswqsdfi8+0Xd91fHVeEvQ7XI+s38c4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxz04Tm9UiumcL72myUIMeq+I/wF9/7uC1xiC7IfiYWNsde3sRX
-	MG59FgaYkZmhcUMgzQtBmNyjePWh4HxEGEHc3lXqFfFAOfKLLgNGFwY8SjqKrktQ6x4=
-X-Gm-Gg: ASbGncusxGaEeWvxIOUiXuSJRC+W3jmJUps2WL39dtSyFz6w5SMguqrFm14Gg9MsPNq
-	zodmsdtktLhhNXQJdSpjYX3CfqB1XMprMiu7pO4fjIAylJl5xELvSsUdFkuj+I8LHi/uHV2jLms
-	x7dbMqVNWgBB3H+EwmdIpAg/4V2BZT+bwHqbXHGu4Or67iHzsuXeY++ea6CErYenS30lxtj7BP6
-	8dF3PCWbtvfsrhFSZMT65V7QLC2Stw7GPqH7J1OM/JkBxEpI7Q0ABuZ1rggoNAPEj6+B9T1eQGO
-	l5f1Len3Bk7o8YlI45MPobmx6SZsQLZfJoq3EIByjZribOWwy/SWoMMAM+pLcn/4QEuhYogiOgw
-	WawpStrgGv0hEc0GRkhldcPoCis3Uiki39SHqk57JThacyNW14K6Xgml1gTcUasI1ynFxkbB42u
-	w6Qmg7iJ+Ko+kKRqAsS/rjQkBAixE=
-X-Google-Smtp-Source: AGHT+IGSKrLVAbeLo7wxrnx0s+JZT41mA3nP6tlZKBKQmBHaVFPv7RQF2CH2aqOCAJNVh+pwQ/4NwA==
-X-Received: by 2002:a17:907:7e8a:b0:afe:c459:e663 with SMTP id a640c23a62f3a-afec459f209mr508631966b.21.1756386928087;
-        Thu, 28 Aug 2025 06:15:28 -0700 (PDT)
+        bh=ukdxjc5DrhlQ7eBdrlN9f+Y4/ViYX/zBdRo4k+wcLt4=;
+        b=dNoJ3BW+DHGRSFrBZSux03lRauOP5kL9uVaprRdMyv5i5j3H6ZcB7M1ujuTmZr1Ug/
+         cabEyNe9Jgq0r761ntEHIaNDr3IY5VfG2PxoWI3vF7KAPakHGZ1kIX67tdxunU7MViyH
+         +wmS2V0awHkzWQO9aGQnQ4/s1Sk7YjNBwkmSYJ2TyoOZ3M/vMi/B7aaRqmcQfp3NpSBg
+         yzkqWDWlg2JoB1p1pHBaQ/14bG5WuGMHiNipx0pPDqqkKoDqcucIHdagliALiH88elFO
+         XsJsIaf+C8FTvw985q8m//9xODB0AsR6BG2mdsGc52DdObK+P2o84llj5QrMT04YNsWE
+         1K7A==
+X-Forwarded-Encrypted: i=1; AJvYcCUhqcjqh3DJs4vWUREnk1Tvl3HymjIppH9NJbfjdTShviOi5qBDPdJAlL1c9nw/y16JEzfh6hR8hliUkvA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwBcqbuo22ducpLchD7qDEsipC0AnaNpEnlKcRRIpTtDM5B0QU2
+	j5/h4vrpOZfJXyn3K/q84orR/blO5EgFTHH7wVz9Fh5XTvUZUJzVpojiz3Ux1xP/5Io=
+X-Gm-Gg: ASbGncse3G/rfadiKikytaDIIql/03O/OkLr66MiOm/hYYolKiOdolyWv5eKTdUjAyT
+	dWKBebpl6okfvA9Em34YN91ke4K4dxch65mrZAgsgpB7DftRFt3GexCwRt86rzXhv6oKQ5UIU6D
+	xpDJHePWfkourQghHOPJGMCrTyuoQLa9wbkY1wP4GrE3M2/b3WzxuxnFn/cWAdX+rwK8ELsA0G3
+	/sMd/S3CzxUXqN4dc8SHbpnnR+jBS3q6338plj5ennOYATBwgVs3wA5/rHKB9H7DG5nzTB3eRkf
+	ZcJjo+zf9dESfPsKpkNaffl9rN5v2F0eu27viTn51SWPPFSSlpGzfg4Rtu2cWD4aicnxfAhnWiN
+	Zmj/wKFai5alG2BYkpFwIxc+8mBRWp6SuUiQrRmu2rxUPcQh8uRHUd3w/u9znv5qLwaHx/50SAo
+	dICyE+zeReNETPso8Smb0FjlJk0+M=
+X-Google-Smtp-Source: AGHT+IFH1vLiPwLLOjWdncMu9CzzMSagWLiPnUFX55dhZYQCF06QAZ/tGnpnN+tm8vZ99g4CY7S5og==
+X-Received: by 2002:a17:907:a47:b0:afe:ec74:2e2a with SMTP id a640c23a62f3a-afeec747f62mr156302566b.5.1756386930209;
+        Thu, 28 Aug 2025 06:15:30 -0700 (PDT)
 Received: from localhost (host-79-36-0-44.retail.telecomitalia.it. [79.36.0.44])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-afe7e3f63e9sm885782266b.98.2025.08.28.06.15.27
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-afe48fae316sm1222206166b.28.2025.08.28.06.15.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Aug 2025 06:15:27 -0700 (PDT)
+        Thu, 28 Aug 2025 06:15:28 -0700 (PDT)
 From: Andrea della Porta <andrea.porta@suse.com>
 To: linus.walleij@linaro.org,
 	robh@kernel.org,
@@ -83,9 +83,9 @@ To: linus.walleij@linaro.org,
 	Jiri Slaby <jirislaby@kernel.org>,
 	linux-serial@vger.kernel.org
 Cc: Andrea della Porta <andrea.porta@suse.com>
-Subject: [PATCH v2 3/5] arm64: dts: broadcom: bcm2712: Add one more GPIO node
-Date: Thu, 28 Aug 2025 15:17:12 +0200
-Message-ID: <6d311b2f629bbc0e1dd9821e4aa8e5af9f8e5362.1756386531.git.andrea.porta@suse.com>
+Subject: [PATCH v2 4/5] arm64: dts: broadcom: bcm2712: Add second SDHCI controller node
+Date: Thu, 28 Aug 2025 15:17:13 +0200
+Message-ID: <4ff3a58e98d90a43deb2448b23754808afc7153b.1756386531.git.andrea.porta@suse.com>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <cover.1756386531.git.andrea.porta@suse.com>
 References: <cover.1756386531.git.andrea.porta@suse.com>
@@ -99,85 +99,122 @@ Content-Transfer-Encoding: 8bit
 
 From: "Ivan T. Ivanov" <iivanov@suse.de>
 
-Add GPIO and related interrupt controller nodes and wire one
-of the lines to power button.
+Add SDIO2 node. On RPi5 it is connected to WiFi chip.
+Add related pin, gpio and regulator definitions and
+add WiFi node. With this and firmware already provided by
+distributions, at least on openSUSE Tumbleweed, this is
+sufficient to make WiFi operational on RPi5 \o/.
 
 Signed-off-by: Ivan T. Ivanov <iivanov@suse.de>
 Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
 ---
- .../dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dts  | 21 +++++++++++++++++++
- arch/arm64/boot/dts/broadcom/bcm2712.dtsi     | 12 +++++++++++
- 2 files changed, 33 insertions(+)
+ .../dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dts  | 52 +++++++++++++++++++
+ arch/arm64/boot/dts/broadcom/bcm2712.dtsi     | 15 ++++++
+ 2 files changed, 67 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dts b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dts
-index 6091a1ff365c..f0883c903527 100644
+index f0883c903527..411b58c1dddf 100644
 --- a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dts
 +++ b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dts
-@@ -2,6 +2,7 @@
- /dts-v1/;
- 
- #include <dt-bindings/gpio/gpio.h>
-+#include <dt-bindings/input/input.h>
- #include "bcm2712.dtsi"
- 
- / {
-@@ -29,6 +30,20 @@ memory@0 {
- 		reg = <0 0 0 0x28000000>;
+@@ -66,6 +66,18 @@ sd_vcc_reg: sd-vcc-reg {
+ 		enable-active-high;
+ 		gpios = <&gio_aon 4 GPIO_ACTIVE_HIGH>;
  	};
- 
-+	gpio-keys {
-+		compatible = "gpio-keys";
++
++	wl_on_reg: wl-on-reg {
++		compatible = "regulator-fixed";
++		regulator-name = "wl-on-regulator";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		pinctrl-0 = <&wl_on_default>;
 +		pinctrl-names = "default";
-+		pinctrl-0 = <&pwr_button_default>;
-+		status = "okay";
-+
-+		power_button: power-button {
-+			label = "pwr_button";
-+			linux,code = <KEY_POWER>;
-+			gpios = <&gio 20 GPIO_ACTIVE_LOW>;
-+			debounce-interval = <50>;
-+		};
++		gpio = <&gio 28 GPIO_ACTIVE_HIGH>;
++		startup-delay-us = <150000>;
++		enable-active-high;
 +	};
-+
- 	sd_io_1v8_reg: sd-io-1v8-reg {
- 		compatible = "regulator-gpio";
- 		regulator-name = "vdd-sd-io";
-@@ -58,6 +73,12 @@ emmc_sd_default: emmc-sd-default-state {
- 		pins = "emmc_cmd", "emmc_dat0", "emmc_dat1", "emmc_dat2", "emmc_dat3";
+ };
+ 
+ &pinctrl {
+@@ -79,6 +91,29 @@ pwr_button_default: pwr-button-default-state {
+ 		pins = "gpio20";
  		bias-pull-up;
  	};
 +
-+	pwr_button_default: pwr-button-default-state {
++	sdio2_30_default: sdio2-30-default-state {
++		clk-pins {
++			function = "sd2";
++			pins = "gpio30";
++			bias-disable;
++		};
++		cmd-pins {
++			function = "sd2";
++			pins = "gpio31";
++			bias-pull-up;
++		};
++		dat-pins {
++			function = "sd2";
++			pins = "gpio32", "gpio33", "gpio34", "gpio35";
++			bias-pull-up;
++		};
++	};
++
++	wl_on_default: wl-on-default-state {
 +		function = "gpio";
-+		pins = "gpio20";
-+		bias-pull-up;
++		pins = "gpio28";
 +	};
  };
  
  &pinctrl_aon {
+@@ -109,6 +144,23 @@ &sdio1 {
+ 	cd-gpios = <&gio_aon 5 GPIO_ACTIVE_LOW>;
+ };
+ 
++&sdio2 {
++	pinctrl-0 = <&sdio2_30_default>;
++	pinctrl-names = "default";
++	bus-width = <4>;
++	vmmc-supply = <&wl_on_reg>;
++	sd-uhs-ddr50;
++	non-removable;
++	status = "okay";
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	wifi: wifi@1 {
++		reg = <1>;
++		compatible = "brcm,bcm4329-fmac";
++	};
++};
++
+ &soc {
+ 	firmware: firmware {
+ 		compatible = "raspberrypi,bcm2835-firmware", "simple-mfd";
 diff --git a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-index 8a517261841d..f70ec8d3dc4d 100644
+index f70ec8d3dc4d..871537366e96 100644
 --- a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
 +++ b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
-@@ -248,6 +248,18 @@ pinctrl: pinctrl@7d504100 {
- 			reg = <0x7d504100 0x30>;
+@@ -285,6 +285,21 @@ gio_aon: gpio@7d517c00 {
+ 			 */
  		};
  
-+		gio: gpio@7d508500 {
-+			compatible = "brcm,bcm7445-gpio", "brcm,brcmstb-gpio";
-+			reg = <0x7d508500 0x40>;
-+			interrupt-parent = <&main_irq>;
-+			interrupts = <0>;
-+			gpio-controller;
-+			#gpio-cells = <2>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+			brcm,gpio-bank-widths = <32 22>;
++		sdio2: mmc@1100000 {
++			compatible = "brcm,bcm2712-sdhci",
++				     "brcm,sdhci-brcmstb";
++			reg = <0x01100000  0x260>,
++			      <0x01100400  0x200>;
++			reg-names = "host", "cfg";
++			interrupts = <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&clk_emmc2>;
++			clock-names = "sw_sdio";
++			sdhci-caps-mask = <0x0000C000 0x0>;
++			sdhci-caps = <0x0 0x0>;
++			mmc-ddr-3_3v;
++			status = "disabled";
 +		};
 +
- 		pinctrl_aon: pinctrl@7d510700 {
- 			compatible = "brcm,bcm2712c0-aon-pinctrl";
- 			reg = <0x7d510700 0x20>;
+ 		gicv2: interrupt-controller@7fff9000 {
+ 			compatible = "arm,gic-400";
+ 			reg = <0x7fff9000 0x1000>,
 -- 
 2.35.3
 
