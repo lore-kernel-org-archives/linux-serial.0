@@ -1,76 +1,55 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from c64.rulez.org (c64.rulez.org [79.139.58.36])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A326F30CD95;
-	Fri, 29 Aug 2025 18:01:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE5222566;
+	Fri, 29 Aug 2025 19:55:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.139.58.36
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756490468; cv=none; b=udUonEotl78YSj71+M98jIJONHyxcrGG4XfzU6VdcmQWJFEKr2420p4t5eeslv+tY5kIEHuiLl0Fafabb4E0hyKFgpnPJ6cc6+adhwsK5OncjQ3ElxTklEZKVhojo3Q4cQltpcYB7cJzj9j64fCnIb//TVNwZzb3HGhbzsjs0xk=
+	t=1756497329; cv=none; b=D8nFefSWdQCsLiRUDRfuOIvqNFUjwV8xw97qNgBuKJQdOi2vzWMDrQrBi9OPnvKo/PNo43akKMrG68lTP223JUspHGEDRBSsqGhWH6nvqCQOZ/zsJGdrzZPwRqqHz2N+jAS8NTMx4/anKe02VA9UbH2KR2N/mEmN65eMhLLIbW0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756490468; c=relaxed/simple;
-	bh=/UuJhuIUrV4aqujvs/BtKUKwpbhTcdWwtWwkXRQk0yE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UaUo72s/o3g19XP6jmJn5RM/2gu5A1si7H3lnA2DhvpTpsDEgYNFz3V7epD0qsu3CZokapQo5Ot0tPU5bVe0aBLx/YcIB5sUqiubePmOrH9kndSD661TSUiGXpJCIpFYTWeZKmhdMY9UmhJZKvKk8DKe5I0ZiF1la/A1TBIq2pY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CVbRMIWW; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CVbRMIWW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DD6BC4CEF0;
-	Fri, 29 Aug 2025 18:01:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756490468;
-	bh=/UuJhuIUrV4aqujvs/BtKUKwpbhTcdWwtWwkXRQk0yE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CVbRMIWWuYPIxA3N0EY/bzeBYgTLaZB5v4vF9wMKcxl1GIc+zYt0Y2PX3AikSLXkx
-	 OdzOx3in/PFQ1ZYJIK1zulYhUoT4njtMNNlMMv5M9+wE0/zjU6wMToXfFbvPkSnEl2
-	 RFhaKiIAo2kykUSJV8GJSP7A0vs8GmCxVoyfMr29JM8+Hod9ge9Y+u2K21VuTa/E0X
-	 Znx7Q+1C9R3VetOwq+o4Q1BVdUxc4jo8mpM9uMiMXfcggaV4eSnPcsF/991Bg0zjQu
-	 p6gIAdY2v0rA2q/1AKhkmZKN/agfpV4qrhlI0UAHemVK6Izk7hUXdfFLasbdkXxToS
-	 OEGDGSM68rO0Q==
-Date: Fri, 29 Aug 2025 13:01:02 -0500
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Andrea della Porta <andrea.porta@suse.com>
-Cc: Al Cooper <alcooperx@gmail.com>, svarbanov@suse.de,
-	florian.fainelli@broadcom.com,
-	Jonathan Bell <jonathan@raspberrypi.com>,
-	Will Deacon <will@kernel.org>, linus.walleij@linaro.org,
-	linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Ulf Hansson <ulf.hansson@linaro.org>, mbrugger@suse.com,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	devicetree@vger.kernel.org, krzk+dt@kernel.org, wahrenst@gmx.net,
-	conor+dt@kernel.org, linux-serial@vger.kernel.org,
-	Phil Elwell <phil@raspberrypi.com>, iivanov@suse.de,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v2 1/5] dt-bindings: mmc: Add support for capabilities to
- Broadcom SDHCI controller
-Message-ID: <175649046165.1080149.6916098730897099191.robh@kernel.org>
-References: <cover.1756386531.git.andrea.porta@suse.com>
- <181cc905566f2d9b2e5076295cd285230f81ed07.1756386531.git.andrea.porta@suse.com>
+	s=arc-20240116; t=1756497329; c=relaxed/simple;
+	bh=OmuktVN/aEoBARUaD+JbEVwzeH0WNrHXN2lOQdJi6D4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=luSlRBal6tydtAJolgIKlh5Bd3xBKvgcxn1++lUTQO3NEvBHo/4bGTDt0voVhDaOHdHdoqAQJJ31lRTf9k7WDkdvIxngUnSGd/+8Ny0L1mJnnfLByQQNt1hJI6gPuzodiVlUL83H30hLY53fU74xy9QnhlNy9/uDq26bssZeECE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=c64.rulez.org; spf=pass smtp.mailfrom=c64.rulez.org; arc=none smtp.client-ip=79.139.58.36
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=c64.rulez.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=c64.rulez.org
+Received: by c64.rulez.org (Postfix, from userid 1000)
+	id 1F8CF10336; Fri, 29 Aug 2025 21:55:17 +0200 (CEST)
+From: Zsolt Kajtar <soci@c64.rulez.org>
+To: linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org
+Cc: Zsolt Kajtar <soci@c64.rulez.org>
+Subject: [PATCH 0/3] tty/vt: fix various 512 glyph font issues
+Date: Fri, 29 Aug 2025 21:49:05 +0200
+Message-Id: <20250829194908.24852-1-soci@c64.rulez.org>
+X-Mailer: git-send-email 2.30.2
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <181cc905566f2d9b2e5076295cd285230f81ed07.1756386531.git.andrea.porta@suse.com>
+Content-Transfer-Encoding: 8bit
 
+Recently I've run into an issue where a monochrome fbcon behaved strange
+with a 512 glyph font. That's mostly a fbcon problem but will need
+changes in vt as well. However this series is not about that yet.
 
-On Thu, 28 Aug 2025 15:17:10 +0200, Andrea della Porta wrote:
-> The Broadcom BRCMSTB SDHCI Controller device supports Common
-> properties in terms of Capabilities.
-> 
-> Reference sdhci-common schema instead of mmc-controller in order
-> for capabilities to be specified in DT nodes avoiding warnings
-> from the DT compiler.
-> 
-> Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
-> ---
->  Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
+Instead it's about 3 related problems which were found at the same time.
+These are specific to vt only and are a problem with vgacon.
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+These patches were prepared to apply on tty-next.
+
+Zsolt Kajtar (3):
+  tty/vt: 8th bit location in vc_uniscr routines
+  tty/vt: Prevent 8th bit corruption with soft cursor
+  tty/vt: Fix unreadable kernel messages on vgacon
+
+ drivers/tty/vt/vt.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
+
+-- 
+2.30.2
 
