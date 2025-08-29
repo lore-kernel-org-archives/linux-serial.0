@@ -1,30 +1,30 @@
 Received: from c64.rulez.org (c64.rulez.org [79.139.58.36])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06CAB2566;
-	Fri, 29 Aug 2025 19:55:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2549A2472A8;
+	Fri, 29 Aug 2025 19:55:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.139.58.36
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756497335; cv=none; b=lCuPh6BKmC3z2kVydpPz8cw5KSS6wzIUuldWK2QOhw6j4EFsr9S+O/ohwIjjPQ0KP5gk6etVS5utoeiXh2hjz4qNH5iBOwrZ1Ln29bUziQdLgVjgCh/JVDkPIOmsKu/dzMIT+zrm3+r/Q+PGjxkrlugxn7KppDFuAG+ua4vbuQM=
+	t=1756497340; cv=none; b=rUPLbId0FEu/ahR5TzGJRNDqX5o6xHdAPix7u8B0V+/8GQQNqFBU2o995h9bwNtiQSOC07gKXefvE7Pef8A3PaClq3YrW9TVjdkS08EUb4HUK3mVlO1Q6FOt+hEt+U8jj6kt18OWOFWZK7S6Z182u/T1ABkBKbWvlnuDy64RvBo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756497335; c=relaxed/simple;
-	bh=IzhJ2bnYnJTak80Dj2u9IYUqntAtJHZYpFBajvXNfRk=;
+	s=arc-20240116; t=1756497340; c=relaxed/simple;
+	bh=FJnhZmyi28u4LPz67qn3XDOHTDyYRFItIU79kz25L0k=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=c521vwZlqFoF776LAFgIIc4xaBqb1/sg2pyrfVGvpAe5Q0kr/10YK9uYDXQFy4Y51WBH/o5EBB8cID/yRziQ0LsDjavmVR3DYZO2846dMfZHVaX2p/gNfq6Ig2heK6UFvNlHI/UUBJl6c5Nt5Ra+KwicBevh4Om+YZIIDtYRx94=
+	 MIME-Version; b=skzHFeyxTDS2+VR37bmD2TdMZs/K2njioZdS1dheRtAsQnsH/4ZB8TWHdvI1MxkTmmNMrnhdLB5ipBILxF6uzWup1ih72tpxIrs2sQvfd5g9J6BJh/ZzUblftEHJm3qxilIIYwqrzk+2Aqgp5lN6/miMNniotr6dqTeCzwyQEIs=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=c64.rulez.org; spf=pass smtp.mailfrom=c64.rulez.org; arc=none smtp.client-ip=79.139.58.36
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=c64.rulez.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=c64.rulez.org
 Received: by c64.rulez.org (Postfix, from userid 1000)
-	id 22DC41020C; Fri, 29 Aug 2025 21:55:17 +0200 (CEST)
+	id 267FD10338; Fri, 29 Aug 2025 21:55:17 +0200 (CEST)
 From: Zsolt Kajtar <soci@c64.rulez.org>
 To: linux-serial@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	gregkh@linuxfoundation.org,
 	jirislaby@kernel.org
 Cc: Zsolt Kajtar <soci@c64.rulez.org>
-Subject: [PATCH 1/3] tty/vt: 8th bit location in vc_uniscr routines
-Date: Fri, 29 Aug 2025 21:49:06 +0200
-Message-Id: <20250829194908.24852-2-soci@c64.rulez.org>
+Subject: [PATCH 2/3] tty/vt: Prevent 8th bit corruption with soft cursor
+Date: Fri, 29 Aug 2025 21:49:07 +0200
+Message-Id: <20250829194908.24852-3-soci@c64.rulez.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20250829194908.24852-1-soci@c64.rulez.org>
 References: <20250829194908.24852-1-soci@c64.rulez.org>
@@ -36,63 +36,37 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Both vc_uniscr_check and vc_uniscr_copy_line assume that the 8th bit of
-glyph is also the 8th bit in the screen buffer. However this is only the
-case for fbcon at the moment. Vgacon has it on the 11th and so the
-conversion won't work correctly in that case. The patch corrects this
-oversight.
+The attributes of the soft cursor are configurable and one would rightly
+expect that only the attributes are to be affected. But that's not
+guaranteed for a font with 512 glyphs as the 8th bit is in the attribute
+byte. This patch makes sure that really only the attribute bits are
+changed by the cursor and not the glyph's appearance.
 
 Signed-off-by: Zsolt Kajtar <soci@c64.rulez.org>
 ---
- drivers/tty/vt/vt.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/tty/vt/vt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-index 869261141..c6c931047 100644
+index c6c931047..d54f4d24e 100644
 --- a/drivers/tty/vt/vt.c
 +++ b/drivers/tty/vt/vt.c
-@@ -493,7 +493,7 @@ int vc_uniscr_check(struct vc_data *vc)
+@@ -823,6 +823,7 @@ static void add_softcursor(struct vc_data *vc)
  {
- 	u32 **uni_lines;
- 	unsigned short *p;
--	int x, y, mask;
-+	int x, y;
+ 	int i = scr_readw((u16 *) vc->vc_pos);
+ 	u32 type = vc->vc_cursor_type;
++	int mask = vc->vc_hi_font_mask | 0xff;
  
- 	WARN_CONSOLE_UNLOCKED();
- 
-@@ -514,11 +514,14 @@ int vc_uniscr_check(struct vc_data *vc)
- 	 * unicode content will be available after a complete screen refresh.
- 	 */
- 	p = (unsigned short *)vc->vc_origin;
--	mask = vc->vc_hi_font_mask | 0xff;
- 	for (y = 0; y < vc->vc_rows; y++) {
- 		u32 *line = uni_lines[y];
- 		for (x = 0; x < vc->vc_cols; x++) {
--			u16 glyph = scr_readw(p++) & mask;
-+			u16 w = scr_readw(p++);
-+			u16 glyph = w & 0xff;
-+
-+			if (w & vc->vc_hi_font_mask)
-+				glyph |= 0x100;
- 			line[x] = inverse_translate(vc, glyph, true);
- 		}
- 	}
-@@ -561,10 +564,13 @@ void vc_uniscr_copy_line(const struct vc_data *vc, void *dest, bool viewed,
- 		 * buffer of its own.
- 		 */
- 		u16 *p = (u16 *)pos;
--		int mask = vc->vc_hi_font_mask | 0xff;
- 		u32 *uni_buf = dest;
- 		while (nr--) {
--			u16 glyph = scr_readw(p++) & mask;
-+			u16 w = scr_readw(p++);
-+			u16 glyph = w & 0xff;
-+
-+			if (w & vc->vc_hi_font_mask)
-+				glyph |= 0x100;
- 			*uni_buf++ = inverse_translate(vc, glyph, true);
- 		}
- 	}
+ 	if (!(type & CUR_SW))
+ 		return;
+@@ -836,6 +837,7 @@ static void add_softcursor(struct vc_data *vc)
+ 		i ^= CUR_BG;
+ 	if ((type & CUR_INVERT_FG_BG) && (i & CUR_FG) == ((i & CUR_BG) >> 4))
+ 		i ^= CUR_FG;
++	i = (i & ~mask) | (softcursor_original & mask);
+ 	scr_writew(i, (u16 *)vc->vc_pos);
+ 	if (con_should_update(vc))
+ 		con_putc(vc, i, vc->state.y, vc->state.x);
 -- 
 2.30.2
 
