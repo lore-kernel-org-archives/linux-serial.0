@@ -1,199 +1,113 @@
-Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com [209.85.208.68])
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FE712FE065
-	for <linux-serial@vger.kernel.org>; Fri, 29 Aug 2025 09:16:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEF6B1F55F8;
+	Fri, 29 Aug 2025 09:49:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756458968; cv=none; b=qO22xWAhFuR9c2TQzyNCOF3o/bc1tq+PzMbxVnlomW4uiXn32pltT+5VW+K+I/FYz6EbM/3r8GmTIkunWACgwE+Z8tyj2hIXuiTjrS6GBzzK715F+4BQb84wJNp2JdO0BXnZ5qvBrkbbf+vsucxhvsWUEoKZdgdI0idMrTSM4Dc=
+	t=1756460987; cv=none; b=eCojfoJ2a7BU7UhSUTEljfxMievVbEKUYo9Rh3MDBbjchqIgcGn8ooKwNwuTMVemWhdN0boBXudUu7gKzY4ePe2PuwKbWELzLjcRk6s2dzCgGfo5CC3t72T5Uf0AhdUTpnIwk6ETeg64GVovkzV1CbZIZQ1I4+aPWWEcZa0IAow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756458968; c=relaxed/simple;
-	bh=cu6FrOL/sCoOgyl2T9Kd2v0r7CRxft9rcw5dMWCRLCs=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OaZqIkscxJYwOmU9x1mHkZE15NjC9WN4UL7PB8bA+CjcKIc0SpQSpgDwqJkh7m5YPJJkImemXXgqIKhHI3X+TYuaYymDRbhuZyw4RHOjLj3oYJTmSSQQmQDtsZ+K5FishjM08bVigvhY15Iab6vjzPkRWLcr4YPZw1zWcZiJrxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=CVvL8WlP; arc=none smtp.client-ip=209.85.208.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1756460987; c=relaxed/simple;
+	bh=lhmgsrMwvf4liprYG7Ei9+IHq5tb6vM1vmnJcwja0zk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=f0V/UdRTlwtv/otKUjmUcA2JKhYHjTEvTXVWK2K0ug5Hyrdq+vv8TKmnPegfLQ28d6wYLSymNHE7g/lUWpW7mFnj8HsOMqIH/lEXgjW1dHpfh1Gg3u2Iq/ocE0KZCx+KfXqquPDjbubC6GjGjK8yUxKsHMZ9YdFh0n6UH0n5ze0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TcIhqyoz; arc=none smtp.client-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="CVvL8WlP"
-Received: by mail-ed1-f68.google.com with SMTP id 4fb4d7f45d1cf-61a8c134533so3495157a12.3
-        for <linux-serial@vger.kernel.org>; Fri, 29 Aug 2025 02:16:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TcIhqyoz"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-afcb7a16441so272136766b.2;
+        Fri, 29 Aug 2025 02:49:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1756458964; x=1757063764; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GMCKh6ebU0u4Z6oifWcZMdJi/zOPW0SlqzJnGxsRIpQ=;
-        b=CVvL8WlPwKXn0x2qEjaOLRHOB6ls/bIm9K6qwt3eVqADAPVhZgwzOXaflSEmVgbX/o
-         uhAU3WZnEmC/OBFoEcHc+GyQy1KJHwHP882mXGXy6Mhl1Ri58nsPP9Xmelux8hVEnvwX
-         l/pvyK9HOuPP4iXMoMHTKaULG9R1KJhrxqtcvQEcL1Qx15xWivADZ0y6ao40R9Vl6ynt
-         tCPJPeOKTVuIx4SH9qOm2HSXUui/hm3/zt9bd0SkMSNhgTdxB63k9xE3F8TGnimuzYZt
-         m8NCs6SVDNPnnErtN0tAMfQXq1lXIl2coV4zmuzcqpQbsvuBJGWRBsRzsVcOaDTGskPA
-         EeJQ==
+        d=gmail.com; s=20230601; t=1756460984; x=1757065784; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=VPJPzyaAcsYZFWXE+rcGpPO401ZzV1EMLAoIATRnKEA=;
+        b=TcIhqyozKhAVVrtexEqMvMaGpeR3I42SsHEoU4Dc0yCmnhWoCmqBNCbtr9GWv1LrmC
+         IqVLZf1kAjF5a4xYwifk7XkQpvj3u7pxUDYkOrJw0JbV4j5nl5XO16bff3wQqpvL6HZ8
+         G/6ki996SVWG3Yeb4psOBtI7YaZR4zmpPr8T2+phDpPolpZqTg9b9GpZH65wC0RO/3lm
+         +24VITfCVD2Z036Gjzc3zG5/IHqeFgAPhvCJGlWccSpJhj0w59RwTTnwaHMMFJcx1Ul4
+         032qZ6QXwmoxV/EiXH6IXUHMD1ah4Z3QhO5jF//YkMhdAcisAYtiN5C1dkw2rBzvS2zk
+         taOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756458964; x=1757063764;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GMCKh6ebU0u4Z6oifWcZMdJi/zOPW0SlqzJnGxsRIpQ=;
-        b=qo1bdM/itjIdKa6ABVbY0Tu6t5jM1qUWrNEZq5Ter02qomup+yJnq4Iq/q6jWxQWa6
-         k4RPV0H+lzE4xyxCzSyG05/RU5VOVSSN6x8ThZbKCmZXwr6Ltx8jWF1/p9lR4nlbpfOh
-         6fHWGt8j0ygvmfB2A1k8cSNTAgDEPUSLsnYxnmoEmysM+YB2Wycc3gqR5hxKgyE9bgDh
-         QjwFX/UY7ES02Xv/s6YA7bz9dKUWV7wWTGyGsOOkaSWu1u1jXhWnqnW/7e8AQ5XfmbH7
-         qLLX2jCq/cJCFZ4+6vcJ6Mzb5OHSLzk/ABL0QERhqs0eNuyUNjoWLKaT9qBrUZOHZX8P
-         274g==
-X-Forwarded-Encrypted: i=1; AJvYcCWqsHYZWEFhEtu/7FR9qQqyigP+dArF6D++wALBsrg5YnwebmkTm2yLICG3OO5TIT5jivkgGh3n38Kx2tc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxmtxbZcN0YQLa8Tc84ZyL0iZvgiWBgr2ieaZ8ykg8gmJ/2b3B/
-	pGjbGW/W8knfkTUeAv1B2D2JxyYEPfbJjANzfm0oRd4XMZuP3AsjpGr0bK3xQyoBapM=
-X-Gm-Gg: ASbGncvTZAzYzDw/jEsgxDY3lZTlkWnVM+moeNb2ONpJEq86OGU1I2yAemChunbZgys
-	6UVCmqvIxKGj18rH1l3yeEkoPtMW6yCkwYGvm5Xz4upoKD5cOhtZD28ALKYRgt2zpPZ6jUywLtY
-	Wrl48WmhrmVlKMiFPuzyQB+HThsOp9BPvyNtzWJbxoGQJ5GsVDyE5o/jpmQL/o2eNDk7ofwMez1
-	4emg3n0M/gDTwBNZTAmNxt0bs6WpyE7KEKupGdyg7JO9El8PycRQ7C/j7FgII9gh36OzqBMJyxw
-	dmTj7iQI4Wf32VpMWSrzuougshVstiKewCQe19t58TTK0Qf/wE7mv8XA9b5Uz7Ra+UMIlbqiwkx
-	hdu6DSvoP7kpB9gSmS116byWShKnELsjmADSvvUfCmEaR60U1r8FHKL3LYt7uZcGiWU4O4GNZnl
-	5K7UZyF/ZURINgKRMO
-X-Google-Smtp-Source: AGHT+IEHgFynTh/fqQXSlnQVx/CrD8Li2R2KkbetyhBA2XZxZI4OAUkno3CLyIily5/Z/tnr+qqhWw==
-X-Received: by 2002:a17:907:970c:b0:afe:ae6c:411e with SMTP id a640c23a62f3a-afeae6c4776mr1267829366b.30.1756458964378;
-        Fri, 29 Aug 2025 02:16:04 -0700 (PDT)
-Received: from localhost (host-79-36-0-44.retail.telecomitalia.it. [79.36.0.44])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-afefcc1c397sm161585666b.81.2025.08.29.02.16.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Aug 2025 02:16:04 -0700 (PDT)
-From: Andrea della Porta <andrea.porta@suse.com>
-X-Google-Original-From: Andrea della Porta <aporta@suse.de>
-Date: Fri, 29 Aug 2025 11:17:58 +0200
-To: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Andrea della Porta <andrea.porta@suse.com>,
-	linux-arm-kernel@lists.infradead.org, florian.fainelli@broadcom.com,
-	Ulf Hansson <ulf.hansson@linaro.org>, linux-gpio@vger.kernel.org,
-	Jonathan Bell <jonathan@raspberrypi.com>, svarbanov@suse.de,
-	linus.walleij@linaro.org, devicetree@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Catalin Marinas <catalin.marinas@arm.com>, conor+dt@kernel.org,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Jiri Slaby <jirislaby@kernel.org>, krzk+dt@kernel.org,
-	Al Cooper <alcooperx@gmail.com>, linux-mmc@vger.kernel.org,
-	wahrenst@gmx.net, iivanov@suse.de, mbrugger@suse.com,
-	Will Deacon <will@kernel.org>, Phil Elwell <phil@raspberrypi.com>
-Subject: Re: [PATCH v2 0/5] Add peripheral nodes to RaspberryPi 5 DT
-Message-ID: <aLFwRrfjmq1wU8-b@apocalypse>
-References: <cover.1756386531.git.andrea.porta@suse.com>
- <175641306018.2175061.15558471823903740794.robh@kernel.org>
+        d=1e100.net; s=20230601; t=1756460984; x=1757065784;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=VPJPzyaAcsYZFWXE+rcGpPO401ZzV1EMLAoIATRnKEA=;
+        b=hplEzW4dH74kdJA4YfCZD6YJVvSO0NqoIfK5EEWd/0tNLHxpAaNpYeLnqtKO1g32Ty
+         +mIjnNekDBSeLc82so/KEP6JCNRL/aQkBWUXiWXHWkNRgbrzMMtMYLaOjux3YEn6qpeW
+         +Vq/JBFAzZUIogyAv50gsziudOR6nOrzevbwEhyPDA3pNFfognlPQ75CU2I4qlT9RoUY
+         PymyxBPqV//rZzALk6UrmeWTARL3+uKFV8bxRvIGpDzHdpqUYPLc0KkI/cgr+T5r6ysT
+         86MqqUttQDvkif32Wi2b6AmZ2JQX4CSODTUbFnVs2gdbdBUSxFo+VS3ib+WDOi7cdzz0
+         14qg==
+X-Forwarded-Encrypted: i=1; AJvYcCUzT3feplecT7wpey5f+bB/1//iFNqAeFFlocznsVo1aJ1G7gzoyi5tSqnVlfZZBfuxcqojEq3O3GmUnP4=@vger.kernel.org, AJvYcCXhfJbtqwt0+VqthlT1f6r7B5ABciwvoQS0uJCyqf0S3RDJI/8kB16Bmum78QVgsWa8Lm2ntYRPYpAHpyOs@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyn+dcsdHnDSKt2leanm5U58d8pG5vLUQS8tDXbrv499PIRKVNn
+	xPPBdEYqE8mdkxrp4V7K+SZRDHYAeLex3C23unOVzk06Q8VvnlJGDA86
+X-Gm-Gg: ASbGncuDO6cG4E6jZ2z1z36pXMM98p9m9AATJIN91lwCyVbi346oWkb/Kj1tsiY9Adg
+	1nC3U8jrSubr/233xAfADjB8FfIOcTwuOWBm7pbFYXPzA6DV9CklcrSPvu16qH54SZEWJanNosI
+	pFeK9rVOsN5Yt3BgJ18twqvM9WI/rn04/GF2npUTMtj6vpqJYbnabWJG1RsGJE29tv0r+vYXyzg
+	oHVsoWhOuAUd9mlk/1OWNnB8Jf9hf7Jt7rqNx0fCaBluzRUYRs1WLcYOJW4qkusQDDvcRfdiyMs
+	hfjutNp/QNRefmM6ESEv6YMl1Gv7xcslz6EMDZ2tyijPBg7qgDY3Irc/E5zTF9AIkFadlI+14FC
+	3mHjMrrBshaJL16h8blvqxFo6sUiyeAiHrE4dVVF2C+2pfMWtpZkYJYfBolE9eX89OXLJdgFn6R
+	OmaehstdRlb4H7THU0z00DFfiruonDt2R/sbDsqbKHNJaCEUdDJAYBHvzwCg14D4J/3fQ=
+X-Google-Smtp-Source: AGHT+IEDMhih4Y4IAmtD5j+HuRhLKlot2jYM8x0+gNx9CP/3JwypnSwKt2NXE/pRy82v+m7s4s5Zsw==
+X-Received: by 2002:a17:907:97cb:b0:afd:d9e3:953f with SMTP id a640c23a62f3a-afe296b14edmr2617784666b.63.1756460983696;
+        Fri, 29 Aug 2025 02:49:43 -0700 (PDT)
+Received: from ?IPV6:2a02:908:1b0:afe0:17ac:1440:166f:150c? ([2a02:908:1b0:afe0:17ac:1440:166f:150c])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-aff07de1612sm91296666b.105.2025.08.29.02.49.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Aug 2025 02:49:43 -0700 (PDT)
+Message-ID: <27562003-b129-4dea-818c-2e81176f842b@gmail.com>
+Date: Fri, 29 Aug 2025 11:49:41 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <175641306018.2175061.15558471823903740794.robh@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: 8250_of: replace kzalloc with devm_kzalloc
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: jirislaby@kernel.org, andriy.shevchenko@linux.intel.com,
+ elder@riscstar.com, benjamin.larsson@genexis.eu,
+ u.kleine-koenig@baylibre.com, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+References: <20250827231105.126378-1-osama.abdelkader@gmail.com>
+ <2025082817-laborious-provoke-2ac0@gregkh>
+Content-Language: en-US
+From: Osama Abdelkader <osama.abdelkader@gmail.com>
+In-Reply-To: <2025082817-laborious-provoke-2ac0@gregkh>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Rob,
 
-On 15:31 Thu 28 Aug     , Rob Herring (Arm) wrote:
-> 
-> On Thu, 28 Aug 2025 15:17:09 +0200, Andrea della Porta wrote:
-> > Hi,
-> > 
-> > The following patches add a few peripheral DT nodes and related pin/gpio
-> > nodes for Raspberry Pi 5.
-> > 
-> > - Patch 1: Amend the bindings to avoid DT compiler warnings.
-> > 
-> > - Patch 2: Adds core pinctrl nodes and defines SD pins as a first appliance
-> >   for the pinctrl.
-> > 
-> > - Patch 3: Wires the gpio-key for power button and related gpio controller.
-> > 
-> > - Patch 4: Adds DT node for WiFi.
-> > 
-> > - Patch 5: Adds Bluetooth DT node.
-> > 
-> > All comments and suggestions are welcome!
-> > 
-> > Happy hacking!
-> > Ivan and Andrea
-> > 
-> > 
-> > CHANGES in V2:
-> > 
-> > --- DTS ---
-> > 
-> > - bcm2712.dtsi: added a proper clocks node to the uarta serial
-> >   in order to replace the legacy clock-frequency property. As
-> >   a result, the following patch from the previous patchset
-> >   has been dropped since it's now useless:
-> > 
-> >   "dt-bindings: serial: Add clock-frequency property as an alternative to clocks"
-> > 
-> > 
-> > Andrea della Porta (1):
-> >   dt-bindings: mmc: Add support for capabilities to Broadcom SDHCI
-> >     controller
-> > 
-> > Ivan T. Ivanov (4):
-> >   arm64: dts: broadcom: bcm2712: Add pin controller nodes
-> >   arm64: dts: broadcom: bcm2712: Add one more GPIO node
-> >   arm64: dts: broadcom: bcm2712: Add second SDHCI controller node
-> >   arm64: dts: broadcom: bcm2712: Add UARTA controller node
-> > 
-> >  .../bindings/mmc/brcm,sdhci-brcmstb.yaml      |   2 +-
-> >  .../dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dts  | 133 ++++++++++++++++++
-> >  arch/arm64/boot/dts/broadcom/bcm2712.dtsi     |  55 ++++++++
-> >  3 files changed, 189 insertions(+), 1 deletion(-)
-> > 
-> > --
-> > 2.35.3
-> > 
-> > 
-> > 
-> 
-> 
-> My bot found new DTB warnings on the .dts files added or changed in this
-> series.
-> 
-> Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-> are fixed by another series. Ultimately, it is up to the platform
-> maintainer whether these warnings are acceptable or not. No need to reply
-> unless the platform maintainer has comments.
-> 
-> If you already ran DT checks and didn't see these error(s), then
-> make sure dt-schema is up to date:
-> 
->   pip3 install dtschema --upgrade
-> 
-> 
-> This patch series was applied (using b4) to base:
->  Base: attempting to guess base-commit...
->  Base: tags/next-20250828 (exact match)
-> 
-> If this is not the correct base, please add 'base-commit' tag
-> (or use b4 which does this automatically)
-> 
-> New warnings running 'make CHECK_DTBS=y for arch/arm64/boot/dts/broadcom/' for cover.1756386531.git.andrea.porta@suse.com:
-> 
-> arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dtb: /soc@107c000000/pinctrl@7d504100: failed to match any schema with compatible: ['brcm,bcm2712c0-pinctrl']
-> arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dtb: /soc@107c000000/pinctrl@7d504100: failed to match any schema with compatible: ['brcm,bcm2712c0-pinctrl']
-> arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dtb: /soc@107c000000/pinctrl@7d510700: failed to match any schema with compatible: ['brcm,bcm2712c0-aon-pinctrl']
-> arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dtb: /soc@107c000000/pinctrl@7d510700: failed to match any schema with compatible: ['brcm,bcm2712c0-aon-pinctrl']
-> arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-ovl-rp1.dtb: hvs@107c580000 (brcm,bcm2712-hvs): clocks: [[28, 4], [28, 16]] is too long
-> 	from schema $id: http://devicetree.org/schemas/display/brcm,bcm2835-hvs.yaml#
-> arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dtb: hvs@107c580000 (brcm,bcm2712-hvs): clocks: [[28, 4], [28, 16]] is too long
-> 	from schema $id: http://devicetree.org/schemas/display/brcm,bcm2835-hvs.yaml#
-> arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dtb: /soc@107c000000/pinctrl@7d504100: failed to match any schema with compatible: ['brcm,bcm2712c0-pinctrl']
-> arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dtb: /soc@107c000000/pinctrl@7d510700: failed to match any schema with compatible: ['brcm,bcm2712c0-aon-pinctrl']
-> arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dtb: hvs@107c580000 (brcm,bcm2712-hvs): clocks: [[28, 4], [28, 16]] is too long
-> 	from schema $id: http://devicetree.org/schemas/display/brcm,bcm2835-hvs.yaml#
-> 
+On 8/28/25 7:51 AM, Greg KH wrote:
+> On Thu, Aug 28, 2025 at 01:11:05AM +0200, Osama Abdelkader wrote:
+>> Use devm_kzalloc for automatic memory cleanup.
+> Why?
 >
+> I do not see a good reason here as to how this makes anything better
+> overall?  How was it tested?
+>
+> thanks,
+>
+> greg k-h
 
-For some reason I've dropped, from the previous cover letter, the
-phrase mentioning that this patchset depends on this patchset:
+Hi Greg,
 
-https://lore.kernel.org/all/7ed0f2779829f4e63b69d8cf5cedda9f849996bc.1756372805.git.andrea.porta@suse.com/
+Thanks for the feedback, the change to devm_kzalloc ensures the allocated
+memory is tied to the device's lifetime. This removed the need for explicit
+kfree() calls in the remove path and avoids potential leaks in probe error 
+paths. It also aligns the driver with others in the 8250 subsystem which 
+already use devm-managed resources.
 
-which contains the schema. If you apply it as prerequisite, warnings
-should disappear.
+For testing, I built the kernel and booted it on QEMU riscv with of_serial
+enabled. The driver probed successfully and the serial console worked as
+expected, also tested unbinding/rebinding the driver via sysfs to confirm
+no leaks or errors occur.
 
-Many thanks,
-Andrea
+Thanks,
+Osama
+
