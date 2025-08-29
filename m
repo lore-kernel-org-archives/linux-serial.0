@@ -1,132 +1,76 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1586315790;
-	Fri, 29 Aug 2025 14:19:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A326F30CD95;
+	Fri, 29 Aug 2025 18:01:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756477155; cv=none; b=h7iKL+O2OT4l9kgBBAketclpIztLv1IH+U91V90uVtQtDzRMwi2i6c81eLJo3UyThfn7wUCiowQshU4eRinMS8sdVPCmQxEOOpP/6pX/yocXMwXhNEYShuxtmwggz0XB0NWkpEIGp8R7IifCw3BWleIEtKBXgWm2zQoXzvpqVPs=
+	t=1756490468; cv=none; b=udUonEotl78YSj71+M98jIJONHyxcrGG4XfzU6VdcmQWJFEKr2420p4t5eeslv+tY5kIEHuiLl0Fafabb4E0hyKFgpnPJ6cc6+adhwsK5OncjQ3ElxTklEZKVhojo3Q4cQltpcYB7cJzj9j64fCnIb//TVNwZzb3HGhbzsjs0xk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756477155; c=relaxed/simple;
-	bh=/bctECxnyur5FzEzpTeYahNv8xjX0UYOKQX4SJa5AmE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mIiB8Le+axm3kgHu3oRLW+jsCZi6Nznldv9a/EViKd80FE+P0AUCLC2PPF+xvn3MIHcX4VHJ/FiMUVA8IliV9dXeIqZarliI649hbqcot+DrcoFeIacyVS5WCch8cbpU2PKGim636JZEqX4kgzc3hXP86Cm79uwwwf4pQRkGqCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IlUdB8T3; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1756490468; c=relaxed/simple;
+	bh=/UuJhuIUrV4aqujvs/BtKUKwpbhTcdWwtWwkXRQk0yE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UaUo72s/o3g19XP6jmJn5RM/2gu5A1si7H3lnA2DhvpTpsDEgYNFz3V7epD0qsu3CZokapQo5Ot0tPU5bVe0aBLx/YcIB5sUqiubePmOrH9kndSD661TSUiGXpJCIpFYTWeZKmhdMY9UmhJZKvKk8DKe5I0ZiF1la/A1TBIq2pY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CVbRMIWW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IlUdB8T3"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-afcb7a7bad8so299352766b.3;
-        Fri, 29 Aug 2025 07:19:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756477152; x=1757081952; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FZewhOHS/oYbB8CL96NH+4zbtn4JHTwX/wy8X/OvrF4=;
-        b=IlUdB8T3Sb9xWFlG8eopDY6zzOahDZFh210WU3tcdiZkhKPlNUuu5Z/YOwAftL3vQ8
-         Bt9A9zdN2/R/WI1+L71qbLqKx7Wx2Dz4fmopzan/E6EUUqrQBrXMpNkEc5dGo7tBr6le
-         G5GJVAoOtR5m9PqP3FPVobHof6yI1v8LnES2xnFH0E1bq1+884ZKd/P7vo/f6JYDC+q9
-         7SLmSEkKhjwfXx3JFkWOjGS5kAHbyu4lRYpeRWSsOt0SLCXxnGNfCl39kU3dAmbDWGEr
-         UW57rdr/HEg2LBoEg0dCy/q9tWc8tnb7TzkYcIoF/HXXFkzzklXYpWMrhBPWHzVNnMnk
-         eccg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756477152; x=1757081952;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FZewhOHS/oYbB8CL96NH+4zbtn4JHTwX/wy8X/OvrF4=;
-        b=Kazq6ME441WqD+3Lxc5UOi0rabq1mN+PgHYqcXhl/EDxUyb/aNM6F1/xohGZCNGKKb
-         fsPr0vF7II0SiO7X8pgflOJ7lN1Bya3EqLv8NPfyD1pip76T0ldu80D36z27IGRpZySo
-         O1NcWOZ4KYE7vcwVh1hgy+hVgov6FY0vNZZN12it1W+szt0jLBV4Ew/pK7xkzW397dVJ
-         4pcespXcJldDXmYQe8dDZ4KQwDmULFViFWBSWX/oP3FXgPP83EW73WCzAOTlUU6xaBps
-         t/QrHVt5Q564wVIUaF/eOwnkkQly5oizcOvRmXxU31xAKRaUvjNUoP7i6IJ7C8GnILNo
-         UzUg==
-X-Forwarded-Encrypted: i=1; AJvYcCUCZq4dbOM5Gcm/G2TWWaob6YjfRHCBOs9Ny5dZC+Zx00U5AhzAHsSwcj4OPZincXsktoEVlttsFoteWtLF@vger.kernel.org, AJvYcCXqRKXVSEJjdT1YqSa7ANQZslgJFjffgwJgzLCFp8uB6lM9M00Ra1Hv4clra1WF4XH8DAvMmDJ2cqShC70=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwNASK/P3fNAIVqIPP4ROaN2Mk+lpUP8nSxZEUB7Yu0ZbQeJkwo
-	0OKwYHkfOWwsvK0W0uGBJXJIYaHEZmw7Bv1T4GVKGBfGx2Hl5J4Lmw42
-X-Gm-Gg: ASbGncuWc+5morfA+xfH+5zB9WBX+TIIYdYYgXqQhdQpmUUjanjSQb5PFjYrJsD+jJ0
-	l8bfhPcdaSNQkBdZOo/nbrZ7m2Or/+EbiNtF3iKkeOJdGw9TKrPr3mzrijbSGbnMltppog0IZeS
-	zJTAjM6/HQRgrBMNGR1AAEZRt59rp0LTy5DB9/2aoaDkNKdkWa1RRUzCfRQ7cKgsuoCAuAoQBV6
-	P8LZ9sb8PMbPDmrIHSsL0nZv4gP2HaDF8gg24ewq7tG1l40gcMXbVQU0MV8aqIqD0Ugb0YL12GO
-	mdcfxaw6DTWG8UIgdbOcVAOHTKlabgm8xBT9vTkxylCbXMwXoqC17ZnMxkd/lFbO3JZ1NQI8uq0
-	tXfAb8kaowKc3pmlKk/MdVgzJg1r0dNcnRPWeL6UPlBNKSBdqxcanDNEVN4wDimT7pfMlxrgW3a
-	J7APBynPlk2KyoqJxnm6GDNGZS3WHKsMuXA/RgrducDzTS105KszTnJ1gn2VcdtoY7JN0=
-X-Google-Smtp-Source: AGHT+IFUpS6iflpct/0RWQ5RxJwfVBvfVDJIxOyHVtQwHMDp4XvEsdinfMiWdu6rR1nx22P+XeoB1w==
-X-Received: by 2002:a17:907:2d23:b0:afe:b7c3:df29 with SMTP id a640c23a62f3a-afeb7c4a718mr1043120466b.8.1756477151941;
-        Fri, 29 Aug 2025 07:19:11 -0700 (PDT)
-Received: from ?IPV6:2a02:908:1b0:afe0:7f20:afeb:8c24:8d02? ([2a02:908:1b0:afe0:7f20:afeb:8c24:8d02])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-afefca0e0basm211246166b.39.2025.08.29.07.19.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Aug 2025 07:19:11 -0700 (PDT)
-Message-ID: <2c6a3bc2-abd3-4d57-99e9-1c341c13d554@gmail.com>
-Date: Fri, 29 Aug 2025 16:19:10 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CVbRMIWW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DD6BC4CEF0;
+	Fri, 29 Aug 2025 18:01:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1756490468;
+	bh=/UuJhuIUrV4aqujvs/BtKUKwpbhTcdWwtWwkXRQk0yE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CVbRMIWWuYPIxA3N0EY/bzeBYgTLaZB5v4vF9wMKcxl1GIc+zYt0Y2PX3AikSLXkx
+	 OdzOx3in/PFQ1ZYJIK1zulYhUoT4njtMNNlMMv5M9+wE0/zjU6wMToXfFbvPkSnEl2
+	 RFhaKiIAo2kykUSJV8GJSP7A0vs8GmCxVoyfMr29JM8+Hod9ge9Y+u2K21VuTa/E0X
+	 Znx7Q+1C9R3VetOwq+o4Q1BVdUxc4jo8mpM9uMiMXfcggaV4eSnPcsF/991Bg0zjQu
+	 p6gIAdY2v0rA2q/1AKhkmZKN/agfpV4qrhlI0UAHemVK6Izk7hUXdfFLasbdkXxToS
+	 OEGDGSM68rO0Q==
+Date: Fri, 29 Aug 2025 13:01:02 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Andrea della Porta <andrea.porta@suse.com>
+Cc: Al Cooper <alcooperx@gmail.com>, svarbanov@suse.de,
+	florian.fainelli@broadcom.com,
+	Jonathan Bell <jonathan@raspberrypi.com>,
+	Will Deacon <will@kernel.org>, linus.walleij@linaro.org,
+	linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Ulf Hansson <ulf.hansson@linaro.org>, mbrugger@suse.com,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	devicetree@vger.kernel.org, krzk+dt@kernel.org, wahrenst@gmx.net,
+	conor+dt@kernel.org, linux-serial@vger.kernel.org,
+	Phil Elwell <phil@raspberrypi.com>, iivanov@suse.de,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v2 1/5] dt-bindings: mmc: Add support for capabilities to
+ Broadcom SDHCI controller
+Message-ID: <175649046165.1080149.6916098730897099191.robh@kernel.org>
+References: <cover.1756386531.git.andrea.porta@suse.com>
+ <181cc905566f2d9b2e5076295cd285230f81ed07.1756386531.git.andrea.porta@suse.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_of: replace kzalloc with devm_kzalloc
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: jirislaby@kernel.org, andriy.shevchenko@linux.intel.com,
- elder@riscstar.com, benjamin.larsson@genexis.eu,
- u.kleine-koenig@baylibre.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20250827231105.126378-1-osama.abdelkader@gmail.com>
- <2025082817-laborious-provoke-2ac0@gregkh>
- <27562003-b129-4dea-818c-2e81176f842b@gmail.com>
- <2025082908-charbroil-saline-ef5f@gregkh>
-Content-Language: en-US
-From: Osama Abdelkader <osama.abdelkader@gmail.com>
-In-Reply-To: <2025082908-charbroil-saline-ef5f@gregkh>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <181cc905566f2d9b2e5076295cd285230f81ed07.1756386531.git.andrea.porta@suse.com>
 
 
-On 8/29/25 2:44 PM, Greg KH wrote:
-> On Fri, Aug 29, 2025 at 11:49:41AM +0200, Osama Abdelkader wrote:
->> On 8/28/25 7:51 AM, Greg KH wrote:
->>> On Thu, Aug 28, 2025 at 01:11:05AM +0200, Osama Abdelkader wrote:
->>>> Use devm_kzalloc for automatic memory cleanup.
->>> Why?
->>>
->>> I do not see a good reason here as to how this makes anything better
->>> overall?  How was it tested?
->>>
->>> thanks,
->>>
->>> greg k-h
->> Hi Greg,
->>
->> Thanks for the feedback, the change to devm_kzalloc ensures the allocated
->> memory is tied to the device's lifetime. This removed the need for explicit
->> kfree() calls in the remove path and avoids potential leaks in probe error 
->> paths.
-> But there are no existing errors, so why change working code?
->
->> It also aligns the driver with others in the 8250 subsystem which 
->> already use devm-managed resources.
-> This code is older than the devm api :)
->
->> For testing, I built the kernel and booted it on QEMU riscv with of_serial
->> enabled. The driver probed successfully and the serial console worked as
->> expected, also tested unbinding/rebinding the driver via sysfs to confirm
->> no leaks or errors occur.
-> But did you test the error paths?  That is what you changed here.
->
-> And changes like this, for old, working, code, is usually not needed
-> unless you are fixing a bug somewhere.
->
-> thanks,
->
-> greg k-h
+On Thu, 28 Aug 2025 15:17:10 +0200, Andrea della Porta wrote:
+> The Broadcom BRCMSTB SDHCI Controller device supports Common
+> properties in terms of Capabilities.
+> 
+> Reference sdhci-common schema instead of mmc-controller in order
+> for capabilities to be specified in DT nodes avoiding warnings
+> from the DT compiler.
+> 
+> Signed-off-by: Andrea della Porta <andrea.porta@suse.com>
+> ---
+>  Documentation/devicetree/bindings/mmc/brcm,sdhci-brcmstb.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Thanks Greg, totally understandable. I was looking for a simple patch to be honest
-though looked for modernizing some APIs but looks like I chose the wrong driver:D
-If you guide me to a simple bug or a simple contribution here would be much appreciated.
-
-Thanks,
-Osama
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
