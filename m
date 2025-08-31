@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABCDC4A1A;
-	Sun, 31 Aug 2025 06:07:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 037C622156D;
+	Sun, 31 Aug 2025 06:14:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756620434; cv=none; b=daypjGtKcYCwZrQh3wut/dlJLNcFEMBcMkBQcP/WQFH9OQbo3eYknCj7czdJPwwQlwmYdzNG0j8+F4EzSvGgpcrOWpaMyeruBJfwTYlKl6XH/WxwhYxKgZb8DcQPG5sklsm++Om/9afrykVTsJ5IqKuWlncBkO5ikIxAqYWlh9I=
+	t=1756620898; cv=none; b=hDA99IPZh+o68PIzzpTH64ZDiZU8oCM5X7OFfpATgi2JMXve6bkpJBd/XhvSf2b1KbjadIYt0SJtiR257Om2nJ6uGIDD3qLHZNh+xSAPyu6YGbIrzbs/i4Ntiz3dvFoNUiuk5/xY8BjNI+SnzKbfVPR2WCYvDFPcFMJEYXH7qwA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756620434; c=relaxed/simple;
-	bh=ABopUsGvRIKCQV1pVsnu1etx9G+hckoqj745dqdbdv0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bg5nG7xrbnkzrJA6eHSRPzn60NmXHrUv+U6pGG7jdTQUpraT4K1bbcFmYghQNuqSRR/2htMdPF5hjt7sloPW2/EDzpAB6yYioNFrpw8xhKU4dZL04x9f+PBoGNicvHigPyENLCs7OgryATZB79WXYjaYaopymm0i8ihPAt8pIM4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kx3x8bbl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1756620898; c=relaxed/simple;
+	bh=V+YLe5IQWYGwZEbw0X1urY15Dp2x+M8Mc6WWY+aY0y0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=KQPE7THYLpIbU8Tam/nz45xeHiYkA8GkEVUiv3exZjF3+O+fcJshA2T02ug2sxVt0aka6kBfgzkJ+UOrqsygXsu3kb9abOQxfr0l01gYTBrOfFK+szxBJU6C+JiJWOkJF2SnFTuA9fP0hr7zfSYgJUil1pCOWSTcP8wFruuFTpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aZQ+Gjq/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kx3x8bbl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 128C1C4CEED;
-	Sun, 31 Aug 2025 06:07:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aZQ+Gjq/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F2EEC4CEED;
+	Sun, 31 Aug 2025 06:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756620432;
-	bh=ABopUsGvRIKCQV1pVsnu1etx9G+hckoqj745dqdbdv0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Kx3x8bblaAPaf/loZQgl3jUQIte6fkjPaGOyCwNFx+ROwOkvnPZEpoX84JoD37vuZ
-	 l5CW+sopI2FVBFFjvT+j7jOA0a02CBnNjLX7jIClPNDT0VoDxrcESZYywdRB9uii32
-	 m9VxGqSv3eWq60rd3gdhsIjjD0TDc9v6jBmr9U9tKySAPM7gGZHyAaBCPvDafZIh2O
-	 kWjhZ3XZlbCYMr6ZT1rEHCwrjvGNvE+Fm/ZJkLaQdTA7Dv36hClRTcU5k2h+K+F9BN
-	 YxTdj57G3FywFwNHImv7sTEK8nDvnnyFJTf/SXzKtokMskUREaq6qkY6qWoxMztQxr
-	 TRs56u8kdAZuw==
-Message-ID: <49070681-9111-404a-a965-ca2b2eb2988c@kernel.org>
-Date: Sun, 31 Aug 2025 08:07:07 +0200
+	s=k20201202; t=1756620897;
+	bh=V+YLe5IQWYGwZEbw0X1urY15Dp2x+M8Mc6WWY+aY0y0=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=aZQ+Gjq/ef3m78XD3ozlHdLSFzKy77N8v0QcidJK0vVI7mMW3SJsDLzzO548+A6g7
+	 jC6qWva8naW9yyb1gZWbJTqNTVqVV2NDuK//fMuxu+VuO4eWLtOGMU24NP38vt5Jfq
+	 2ag80tGNHS9VsXDFzJo5fAKPrZXEteqlXamVxbYGjKI4eJkmkQ5i470wgeUSdLGUKM
+	 zYvj/HdUjtaHnJYHk+m0U0kXRga+RM0lKMr3lP0JD/xVaFgUKjwzfO0aWlH6EdE9iK
+	 W2+pJMRsMoHaCWDlYc+tAEICPUL6E2IaeEOQMTUamgcqELU3QgE2ZTRYELhQEqAJDv
+	 arwLjohMXHcVQ==
+Message-ID: <339029f2-1f54-40ea-8880-e68fbd351755@kernel.org>
+Date: Sun, 31 Aug 2025 08:14:54 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,16 +35,11 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/5] tty: Add KUnit test framework for TTY drivers
-To: Abhinav Saxena <xandfury@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
- Bill Wendling <morbo@google.com>, Justin Stitt <justinstitt@google.com>,
- Kees Cook <kees@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- llvm@lists.linux.dev, linux-hardening@vger.kernel.org
-References: <20250826-tty-tests-v1-0-e904a817df92@gmail.com>
+Subject: Re: [PATCH 1/3] tty/vt: 8th bit location in vc_uniscr routines
+To: Zsolt Kajtar <soci@c64.rulez.org>, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org
+References: <20250829194908.24852-1-soci@c64.rulez.org>
+ <20250829194908.24852-2-soci@c64.rulez.org>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -89,86 +84,76 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250826-tty-tests-v1-0-e904a817df92@gmail.com>
+In-Reply-To: <20250829194908.24852-2-soci@c64.rulez.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 27. 08. 25, 0:51, Abhinav Saxena wrote:
-> This patch series introduces a KUnit testing framework for the TTY
-> subsystem, enabling deterministic, automated testing of TTY drivers and
-> core functionality without requiring hardware or userspace interaction.
+On 29. 08. 25, 21:49, Zsolt Kajtar wrote:
+> Both vc_uniscr_check and vc_uniscr_copy_line assume that the 8th bit of
+> glyph is also the 8th bit in the screen buffer. However this is only the
+> case for fbcon at the moment. Vgacon has it on the 11th and so the
+> conversion won't work correctly in that case. The patch corrects this
+> oversight.
 > 
-> On an x86_64 build with CONFIG_GCOV enabled, these tests increased
-> TTY subsystem coverage to approximately 10.6% line coverage and
-> 14.7% function coverage [1].
+> Signed-off-by: Zsolt Kajtar <soci@c64.rulez.org>
+> ---
+>   drivers/tty/vt/vt.c | 16 +++++++++++-----
+>   1 file changed, 11 insertions(+), 5 deletions(-)
 > 
-> Problem Statement
-> -----------------
-> Testing TTY drivers today requires:
-> - User-space interaction through device nodes
-> - Complex setup with ptys or real hardware
-> - Limited ability to test error paths reliably and deterministically
-> 
-> This series solves these issues by providing in-kernel KUnit tests that
-> exercise real TTY core paths under controlled, deterministic conditions.
-> 
-> What This Series Provides
-> -------------------------
-> 1. Reusable test helpers (`tty_test_helpers.h`):
->     - Minimal (~150 LOC) infrastructure that any TTY driver should be
->     able to use
->     - Automatic resource management
->     - Integrated into core files under KUnit guard, with
->       `EXPORT_SYMBOL_IF_KUNIT()` to keep the production symbol table
->       clean
-> 
-> 2. Mock TTY driver:
->     - Demonstrates how drivers can leverage the helpers
->     - Enables deterministic scenarios without hardware
-> 
-> 3. Core TTY tests:
->     - Validate open/close/read/write/termios paths
->     - Exercise hangup, resize, and error handling
->     - Ensure real kernel paths are tested, not mocked stubs
-> 
-> 4. ttynull driver tests:
->     - Validate data sink behavior of the null driver
->     - Provide a minimal driver contract baseline
-> 
-> 5. Optional coverage support:
->     - GCOV integration for test coverage analysis
-> 
-> Future Work
-> -----------
-> With this foundation merged, follow-up work can:
-> - Add more coverage of TTY core functions
-> - Enable each TTY driver to maintain its own KUnit suite
-> - Introduce stress tests and race detection
-> - Extend to include more tests for other tty drivers:
->    - UART drivers: test interrupt handling without hardware
->    - USB serial: validate disconnect and reconnect sequences
->    - PTY drivers: test resize, flow control, and hangups
->    - Virtual consoles: test Unicode and input handling
->    
-> Testing
-> -------
-> - All patches pass `checkpatch.pl`
-> - Verified on x86_64 with:
->      ./tools/testing/kunit/kunit.py run \
->          --kunitconfig=.kunit/ \
->          --kunitconfig=drivers/tty/tests/.kunitconfig \
->          --arch=x86_64
-> - All tests pass (working around tty_read wrapper in progress)
-> 
-> Feedback welcome! :)
+> diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+> index 869261141..c6c931047 100644
+> --- a/drivers/tty/vt/vt.c
+> +++ b/drivers/tty/vt/vt.c
+> @@ -493,7 +493,7 @@ int vc_uniscr_check(struct vc_data *vc)
+>   {
+>   	u32 **uni_lines;
+>   	unsigned short *p;
+> -	int x, y, mask;
+> +	int x, y;
+>   
+>   	WARN_CONSOLE_UNLOCKED();
+>   
+> @@ -514,11 +514,14 @@ int vc_uniscr_check(struct vc_data *vc)
+>   	 * unicode content will be available after a complete screen refresh.
+>   	 */
+>   	p = (unsigned short *)vc->vc_origin;
+> -	mask = vc->vc_hi_font_mask | 0xff;
+>   	for (y = 0; y < vc->vc_rows; y++) {
+>   		u32 *line = uni_lines[y];
+>   		for (x = 0; x < vc->vc_cols; x++) {
+> -			u16 glyph = scr_readw(p++) & mask;
+> +			u16 w = scr_readw(p++);
+> +			u16 glyph = w & 0xff;
+> +
+> +			if (w & vc->vc_hi_font_mask)
+> +				glyph |= 0x100;
 
-Wow, looks good. Has it found something yet :)?
+This makes sense, but introduce a helper, please.
+
+>   			line[x] = inverse_translate(vc, glyph, true);
+>   		}
+>   	}
+> @@ -561,10 +564,13 @@ void vc_uniscr_copy_line(const struct vc_data *vc, void *dest, bool viewed,
+>   		 * buffer of its own.
+>   		 */
+>   		u16 *p = (u16 *)pos;
+> -		int mask = vc->vc_hi_font_mask | 0xff;
+>   		u32 *uni_buf = dest;
+>   		while (nr--) {
+> -			u16 glyph = scr_readw(p++) & mask;
+> +			u16 w = scr_readw(p++);
+> +			u16 glyph = w & 0xff;
+> +
+> +			if (w & vc->vc_hi_font_mask)
+> +				glyph |= 0x100;
+
+And use here as well.
+
+>   			*uni_buf++ = inverse_translate(vc, glyph, true);
+>   		}
+>   	}
 
 
-FWIW
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
-
-thanks,
 -- 
 js
 suse labs
