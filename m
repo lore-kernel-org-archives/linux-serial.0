@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EDB942050;
-	Sun, 31 Aug 2025 06:25:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2FA3192B66;
+	Sun, 31 Aug 2025 06:28:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756621549; cv=none; b=NB2KU0H0YVFHTv+96zYJ8fptBFWDNqfAPVCHJZQW3T1VoqTRY1tCAPlrhHhtg9a4f6mLROFJHAVv14s1MA9TsUvw5QG7CSlyvxVKwqhG7UI/y4DC8ryw9XbA1aFxSx/yApElCta7hkSTlUBxdg/951EyPvhBOkjBrSDpAyYD5c0=
+	t=1756621719; cv=none; b=Z5gu0B8/tT1UeWV+q1RAEZ7S60MoSq83Fly0HUjZ1iB1Iz/9WpKMOilLIq79pCVsVRmglS281GLBZSyPdqRYyWDAYxcO/exoHl96RldPxFO3U3O9h2oYrE3msE3KyVYVwMK2lPw8SpAok1/WBkYxr03ICHKGzOfeHFefilCVboc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756621549; c=relaxed/simple;
-	bh=+CDr5CmMVVcfHGgCI//H7hmg0CTkNc1KJZwNEhOZN5U=;
+	s=arc-20240116; t=1756621719; c=relaxed/simple;
+	bh=/T7JsM8BOfI86tMcqz6nXgCKqc2GV1wo1kckH426Vo8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=QqqhWvuT6WvDbBkYAYvV9TubdCoU7P8IeAUVaaaiC6r+hWkHlsgXHLwo3YBc9VQ0lLsgOZU9uEsKlocoZFudoy7p7nMHnhpEYo4X2Tvh6FwyRWk8ErxuhBJp1/2zy7zKpy8WOHESto5jvff4zeLs9ytKA4LvX401xKUuL1ocDtA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Oduuk+63; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=IKUYRbUOe3jrwwy/6yhG9Y+mkI7y/i5L91nVzC6VWCDTOf+qJqsDuSY66cE5Vl+1zP9kdnZfZV+sNFYFyl/GuV0qXWIzIXPhu63ZUVs6eqbqjiPgQWVbYw6CX1XIz1vAjFQFcmBlEpkWU47NJ3MMfxi4JbTEJXEpZPqN3IjvH/Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MFJoIHeL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Oduuk+63"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E842C4CEED;
-	Sun, 31 Aug 2025 06:25:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MFJoIHeL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86957C4CEED;
+	Sun, 31 Aug 2025 06:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756621549;
-	bh=+CDr5CmMVVcfHGgCI//H7hmg0CTkNc1KJZwNEhOZN5U=;
+	s=k20201202; t=1756621718;
+	bh=/T7JsM8BOfI86tMcqz6nXgCKqc2GV1wo1kckH426Vo8=;
 	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=Oduuk+63kXQyoLLGEphjZkDEyT+LZIw5dnHNxQj/n5yFknHWxusjFOyout7addpHx
-	 F0y8uTaazisxsH8wyRsBA2IgE0EW6pRSHbiSIsW06yleRLfoNq28fsLZf0VfR1sNXn
-	 hvnADSXkOMhP/VpCgR20NX2yGKoTPfbI22hpOuYNKOuPP9J7xw9BWupd6hgNIjC3AH
-	 cNT5R2Elo7xxvqn40PNDU+Dkd32/YbUjO07YlcjSxo/IEgRslY4VTauWtKxFA39j5l
-	 sPmZBG05RB5VgppxI6AvH02GY+ZY24rXPZDU59QsYhqyz/xOKDp0b6PXFPbxoMp/Ps
-	 Y2py6jte4WN6Q==
-Message-ID: <6e52d938-3ac2-4779-b70d-9cc58c16c266@kernel.org>
-Date: Sun, 31 Aug 2025 08:25:46 +0200
+	b=MFJoIHeLPj9ZVUF+qevA7zMj3pTIt7lVZZjion3dhuEAkpqc3cHAy13NociCr5jmL
+	 +jH7D43qIJwu7i4RtAXzrRiYM9ZMWbAUJwkGVZm1CLUNBJL/GiO4UBZCnzuqD3/Zp+
+	 z5xIOC46tripD9oGYgxKwMsQSh5ZsoMqrdI2mZYrOuac+J3Sqy/2hV/QjUhRT0ZCfr
+	 G9vV7kspUOdylTG4t84TbTfYb+NnR3v+jzf5jrnvrJJEHeKYXgt/ZuGhdareScNjwl
+	 Oh/qh9EoFgLgwPSVLkukk+krlTTmmygidYSZHc3JWz3QwG91KpdD14umUx2oKcpheT
+	 +05PXlhuxgjkQ==
+Message-ID: <cd96426e-c1e0-4229-be72-feacacf5962b@kernel.org>
+Date: Sun, 31 Aug 2025 08:28:35 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,11 +35,11 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] tty/vt: Prevent 8th bit corruption with soft cursor
+Subject: Re: [PATCH 3/3] tty/vt: Fix unreadable kernel messages on vgacon
 To: Zsolt Kajtar <soci@c64.rulez.org>, linux-serial@vger.kernel.org,
  linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org
 References: <20250829194908.24852-1-soci@c64.rulez.org>
- <20250829194908.24852-3-soci@c64.rulez.org>
+ <20250829194908.24852-4-soci@c64.rulez.org>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -84,49 +84,43 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250829194908.24852-3-soci@c64.rulez.org>
+In-Reply-To: <20250829194908.24852-4-soci@c64.rulez.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 29. 08. 25, 21:49, Zsolt Kajtar wrote:
-> The attributes of the soft cursor are configurable and one would rightly
-> expect that only the attributes are to be affected. But that's not
-> guaranteed for a font with 512 glyphs as the 8th bit is in the attribute
-> byte. This patch makes sure that really only the attribute bits are
-> changed by the cursor and not the glyph's appearance.
+> When a 512 glyph font is loaded on vgacon and the bold attributes are in
+> effect then the kernel console output (printk) becomes unreadable. It is
+> because the brightness bit (used for bold) is at the same place where
+> the 8th bit of the glyph index is. This patch adds the missing masking
+> to ensure the output will be displayed using the lower half of the font.
 > 
 > Signed-off-by: Zsolt Kajtar <soci@c64.rulez.org>
+
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+
+I assume you checked all writes to the gfx mem?
+
 > ---
->   drivers/tty/vt/vt.c | 2 ++
->   1 file changed, 2 insertions(+)
+>   drivers/tty/vt/vt.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
-> index c6c931047..d54f4d24e 100644
+> index d54f4d24e..4c8c87f21 100644
 > --- a/drivers/tty/vt/vt.c
 > +++ b/drivers/tty/vt/vt.c
-> @@ -823,6 +823,7 @@ static void add_softcursor(struct vc_data *vc)
->   {
->   	int i = scr_readw((u16 *) vc->vc_pos);
+> @@ -3356,7 +3356,8 @@ static void vt_console_print(struct console *co, const char *b, unsigned count)
+>   				continue;
+>   		}
+>   		vc_uniscr_putc(vc, c);
+> -		scr_writew((vc->vc_attr << 8) + c, (unsigned short *)vc->vc_pos);
+> +		scr_writew(((vc->vc_attr << 8) & ~vc->vc_hi_font_mask) | c,
+> +			   (unsigned short *)vc->vc_pos);
+>   		notify_write(vc, c);
+>   		cnt++;
+>   		if (vc->state.x == vc->vc_cols - 1) {
 
-It's terrible how the current code uses weird types (int here).
 
->   	u32 type = vc->vc_cursor_type;
-> +	int mask = vc->vc_hi_font_mask | 0xff;
-
-But since you are introducing a new one, use u16, not int. Esp. when it 
-is a mask.
->   	if (!(type & CUR_SW))
->   		return;
-> @@ -836,6 +837,7 @@ static void add_softcursor(struct vc_data *vc)
->   		i ^= CUR_BG;
->   	if ((type & CUR_INVERT_FG_BG) && (i & CUR_FG) == ((i & CUR_BG) >> 4))
->   		i ^= CUR_FG;
-> +	i = (i & ~mask) | (softcursor_original & mask);
->   	scr_writew(i, (u16 *)vc->vc_pos);
->   	if (con_should_update(vc))
->   		con_putc(vc, i, vc->state.y, vc->state.x);
-
-thanks,
 -- 
 js
 suse labs
