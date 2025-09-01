@@ -1,111 +1,226 @@
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AF587262F;
-	Mon,  1 Sep 2025 08:53:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1DB733A025
+	for <linux-serial@vger.kernel.org>; Mon,  1 Sep 2025 14:40:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756716797; cv=none; b=HvIuttY3xu0HS3IjnwIfOka3NBKJWrwEfHBnxyOOo+jOrHv+UhPRuC2xJwqJV5wonM3enJhtJuM1ASEzfxD8ZVyD9fazt+pw9kOVl9IN+EVaBVq+uWTPDN3Tjy/C9S5t8l3Y+qMCwPwYk+32e9xxfnCEZWbDY7BZgnS2a3xJI5U=
+	t=1756737657; cv=none; b=E8QMr1DGPyOUYZ4Z0C0nA7BEAMUG38vCSQ3TB98WUOpvrBzh2IvjZ5+KrdO+avgqV96GIFITgwRWVPifK2B++njkHKLNhG1VyCs3Fg+qGaqqTo5JAcPguBkEKF2EMw/3EhJK6cU5ksnTAed+OBpBa3V9uEtBl1Ck5UsnSo0D9L0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756716797; c=relaxed/simple;
-	bh=xkcIUqU1NHV0DJZXrd/onXacp9Mgwv91i/+bnnqT08M=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aQCotY6cYGIQE9NkGlmlQqhLTfA9cbWC34VemNQxZlxMoFaVdFaSgKLJuqUlOr6Eh7Qzw1ioUy5rDXCm7ueULfR4hNbTkCPeAQiwZMJhNzv2euOP7YBrrxTdytHtygJp8S2OWcewjwbatZZvmLcUGzGxBsCwZ5y1EnX3sAi1NNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-544a1485979so512035e0c.3;
-        Mon, 01 Sep 2025 01:53:16 -0700 (PDT)
+	s=arc-20240116; t=1756737657; c=relaxed/simple;
+	bh=LTmf4g5EKHIqjdApsEp4MvWbFJM2ZuxYprDG+zknpL8=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=ZQj/VWIsQvlCWGsQMEeAihEZ7sVN3blen44z8BzeajRmwAQntI001/4yx/vEIajOtcAcf0pE5UM6wUi5LY7+QPcgxVF6Ej7yNaVmx6aPzSdGPKIKXuhi2lsf0gpgvwMkyEI3XiCAHpQsgvG7oTwReQEZFBftzlmdc0Ids116Dpg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=citymesh.com; spf=pass smtp.mailfrom=citymesh.com; dkim=pass (2048-bit key) header.d=citymesh.com header.i=@citymesh.com header.b=YTI5spLH; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=citymesh.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=citymesh.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=citymesh.com header.i=@citymesh.com header.b="YTI5spLH"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-619487c8865so9579767a12.1
+        for <linux-serial@vger.kernel.org>; Mon, 01 Sep 2025 07:40:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=citymesh.com; s=google; t=1756737653; x=1757342453; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=vmto5euJaY+RG9gZNxyPo3BrUabJTuhM4OWC4TA1V7Q=;
+        b=YTI5spLHB52mISlCmM16VMZEhyr8QNxHkRNQzLNqJF/hVwtPLlSqH1a/vr2dA8dqvu
+         xeYy69ZWfbxr+wbKCJXZXUBnB88iAUuUhfN4wsU7/liH71GrmUOLW+AngOm43A9pAkm8
+         00a/0M0SIgjPVvpi4YoLFFlWGncme7pzvoxffDPe2LOqCWILGA/of30ZciTjqKnhOHUf
+         4ALjTj4of57Fayqa8qWrkJoXT9Mk6Se6FXaKnlo0kGeavHHD81lyUwNWBp5Pb1PWEAKw
+         L5lngGERXREseASGMvPOCjyBNBkFGgtpUT4RkD0tk/ZKTz7EhsPrfJlp+DXO4Ajm2eI3
+         C2LA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756716795; x=1757321595;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=hwV0ZxFlGA9LVCwpYAd/S0jSR5rIjW8cIxXeVwnFYUM=;
-        b=a++8IrxBIJlI0f7O/w+L+Cd2K7VKGwzvR1GMHusVn4BzETRCFA0f1Ev36jcIgiioVL
-         kGcb5UsHZITAQg1ijFRr4zmxay5ZDNLWVO6rU1Y8RWTW1KuksUFklpikqNcybUwzKZrp
-         kPBpzO9MHHfH3nslmJ3YGCV6bXJpFOs+nfOuoJngzPGH55s3Ix8zAiuEbq11HKpdJgiV
-         HaBkr/yCHFGmU1f0gaR64M5BuItscZ+mM2SCG/EnKtXEiFnL2S08lMJh8zJm+jNiPJkq
-         PBwcu0EzjB11kjXvqyE/LdXm+v9TX0X3s0gPMlRCyCLyzVBnDeqczWbQ3wjxg/SM5lHA
-         p9sQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVuBFS9taBSUh+mB+BYTgVYt5xtbTmMkkIzrbxyJLbkDl8RCtVySfmxgig5nwE4lGSqBJeaSar4Akfqfx4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyaz/zesJB/3BcFSwWV8PWZy2cKbEhwv8DIbLRGES5JGQKYcgwj
-	jAVDu1g6gf7lWuwz09fehgUIm0Uifi3FZXAm+zio4g4oLJtcwhzMmjQ95gQd9WVg
-X-Gm-Gg: ASbGncsyqiwHluGSkbCGk2hgsEoXNML0Kli0hPhmx5qbJ5XcTdHT28x84iKetiHfSj2
-	b8J4N1/0+n3l2epxleVqsT7dkzh9cPDHHKxPnrLByvlx+vnV4FldSyRK+cKY517xdhof0VAaYT+
-	0A1m1Q7jkczrSXoEdl+wrfKFUbzSF308eAcYmeQ3a400v5/zxKs3CR5rEqwfzEaFnwZLJNF6NMR
-	vfRSkjv/L8zOcChr6qezGLIHBR+Og/6plsKcZWhyO0yjqNd797cotkm9xGlLQALbrA/5BMBvNs4
-	vnBGWqiWzANh7XANx9t0kgZ7VAB7qT7KAHd2kuwi7Gc7qFExeDm7cxbGRPRl5DbFvUaCw30KNed
-	x8HOFIrtMXgeNrz9bVhj3WeIQ3UurAyuOlxNxRXSpntUeHVaGTatw3P6q0PA+tA82qO1t9UA=
-X-Google-Smtp-Source: AGHT+IHTCli5TjIdcjHsgFRsBoq+JJx7dKPZNS1I+boEX9ZBLdf+eMh98R9FcNcRJhUKQpPDev2qLA==
-X-Received: by 2002:a05:6122:659b:b0:541:2e11:6738 with SMTP id 71dfb90a1353d-544a02a9309mr1661553e0c.9.1756716795249;
-        Mon, 01 Sep 2025 01:53:15 -0700 (PDT)
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com. [209.85.217.48])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-544912ef219sm4294323e0c.7.2025.09.01.01.53.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Sep 2025 01:53:15 -0700 (PDT)
-Received: by mail-vs1-f48.google.com with SMTP id ada2fe7eead31-528d8aa2f3bso1310851137.2;
-        Mon, 01 Sep 2025 01:53:14 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCViA3kUjzxxB96G58PtOPF5rXvq5XVLNoP5+zfhrPVdn5PaMdml4NIngamFE9ddSixNmXn+qOXm0knJ0tE=@vger.kernel.org
-X-Received: by 2002:a05:6102:6889:b0:52a:4268:7618 with SMTP id
- ada2fe7eead31-52b1c246f01mr1657627137.27.1756716794630; Mon, 01 Sep 2025
- 01:53:14 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1756737653; x=1757342453;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vmto5euJaY+RG9gZNxyPo3BrUabJTuhM4OWC4TA1V7Q=;
+        b=UDysPQ8CCLkmDYmyZRSNAb2KxCqtY2PH62pXyTPe740uH4r5Z7dJCKoaKpjW3/hdLj
+         m2Pu+fVA87jniSEQjFDiWJIjW56dQgD1NXU+KnAOelFBBuQz6My+lT25BVIryWNofNTh
+         NSWhv0JLv+J7Iq2atPtdtro05nbC9vm549MRc6/MfFFEzlGUo8HHD73hRBmZ9gkDI3QB
+         r7wZm/XSsDAhiOGLlSakFiN2t1L34x2bZD/86yHHogjQDNqVabY62vJNIcPTZYzZr/4X
+         nEGbnXkKIvHrZIVLLF+LZN5m8ofS1oV+AWYSE/uK/pE0ck8I9MEn88zskRLTfovlXpX3
+         qvIw==
+X-Forwarded-Encrypted: i=1; AJvYcCXTpaiD3rAbd7yTmTlaCjEVmDHuCN9mrqXfbY1oAZe3NfTr3aHI4g7b/OgRW5RBckbDUuDfqX4nPqQRS6M=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx+KBOV8An7tXB06/gPYTY6iu6CNMJVO01HPXpMNF/i9gtmhyGN
+	8NKwoTnSOjg31RzqhBUZ1sJ4k/XMIMynfKFCmlUqntT1ub1A2ualBkTvjZZogoAfj7jg/JR3h3C
+	d+oUobbeCc82oEJSYVBW++UmtKQsiN7CLRsxzXRPeFDhdRsReV0Ra6x/0qQ==
+X-Gm-Gg: ASbGncuT1f56oYOiXFEoF0bofwsfppYQWs6BKQCT1xObAaMwabImJtfF1O2eWeJKIVa
+	LZQI1+Pw3smnqAwazIjjvZWiJjQtt7x642nFZV5wPmfOGjk6hJFKfsdOPbjP5w82/tx+WDMn/OC
+	QGGlj1JG0BWkIKdPlA4zEViLDTg5iWs7vyu9i1xz7a43cHxDjORSlAcmWxOI/tjr8p9riHyhtwV
+	rizX9ajcG4psgD2eJR5A8Y6OiTZOWbtrqs=
+X-Google-Smtp-Source: AGHT+IH0r7ujniAZ9Uf+6yq16NIK67pHKG21617U7SP1UqjS+EAeX0HQpIuYckATKjNckApzC5tsjfMJJXgz+fykCsY=
+X-Received: by 2002:a17:907:d2a:b0:ad2:e08:e9e2 with SMTP id
+ a640c23a62f3a-b01d979f53amr774078366b.27.1756737653217; Mon, 01 Sep 2025
+ 07:40:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250822104208.751191-1-jirislaby@kernel.org>
-In-Reply-To: <20250822104208.751191-1-jirislaby@kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 1 Sep 2025 10:53:02 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdW7e-QOjoWqsccvyBLOeoGgeLrE3ERuHv_o3PXBtKAoRg@mail.gmail.com>
-X-Gm-Features: Ac12FXws79G7sfNDXlYCwBsnRL2gsroj-XTL_Qr7goYhu25uBKLks1ZnLnPmw9c
-Message-ID: <CAMuHMdW7e-QOjoWqsccvyBLOeoGgeLrE3ERuHv_o3PXBtKAoRg@mail.gmail.com>
-Subject: Re: [PATCH] m68k: make HPDCA and HPAPCI bools
-To: "Jiri Slaby (SUSE)" <jirislaby@kernel.org>
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-m68k@lists.linux-m68k.org, Philip Blundell <philb@gnu.org>
+From: Koen Vandeputte <koen.vandeputte@citymesh.com>
+Date: Mon, 1 Sep 2025 16:40:42 +0200
+X-Gm-Features: Ac12FXxRA4jYFba739-yMdA6LZuM3S357nykes56n7Oc1X3iKrJoMOhdUOAva2M
+Message-ID: <CAPh3n81TECn_LRKrsKS4qS3-CQsVTf8LSSiCdn+uNYdnO7h9AQ@mail.gmail.com>
+Subject: Crash in msm serial on kernel 6.12
+To: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, jirislaby@kernel.org, 
+	neil.armstrong@linaro.org, stephan.gerhold@linaro.org, 
+	Robert Marko <robimarko@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 
-CC PhilB
+Hi all,
 
-On Fri, 22 Aug 2025 at 12:42, Jiri Slaby (SUSE) <jirislaby@kernel.org> wrote:
-> The only user -- 8250_hp300 -- tests for CONFIG_HPDCA and CONFIG_HPAPCI.
-> It does not test for *_MODULE variants. That means that if someone sets
-> the configs to =m, the code is not compiled at all.
->
-> There is actually no point having these as tristate. Switch them to
-> bool.
->
-> Signed-off-by: Jiri Slaby (SUSE) <jirislaby@kernel.org>
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: linux-m68k@lists.linux-m68k.org
-> ---
->  arch/m68k/Kconfig.devices | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/m68k/Kconfig.devices b/arch/m68k/Kconfig.devices
-> index e6e3efac1840..e277f1bd2de1 100644
-> --- a/arch/m68k/Kconfig.devices
-> +++ b/arch/m68k/Kconfig.devices
-> @@ -105,14 +105,14 @@ config AMIGA_BUILTIN_SERIAL
->           To compile this driver as a module, choose M here.
->
->  config HPDCA
-> -       tristate "HP DCA serial support"
-> +       bool "HP DCA serial support"
->         depends on DIO && SERIAL_8250
->         help
->           If you want to use the internal "DCA" serial ports on an HP300
->           machine, say Y here.
->
->  config HPAPCI
-> -       tristate "HP APCI serial support"
-> +       bool "HP APCI serial support"
->         depends on HP300 && SERIAL_8250
->         help
->           If you want to use the internal "APCI" serial ports on an HP400
-> --
-> 2.51.0
+I just updated my ipq4019 boards on OpenWRT from kernel 6.6 to 6.12.
+
+When using the serial port (/dev/ttyMSM1) I notice that it keeps
+crashing while using that port.
+
+Going through the commit history, I noticed that not much changed at
+all compared to kernel 6.6:
+
+f6ae572683d4 serial: msm: Configure correct working mode before
+starting earlycon
+f70f95b485d7 serial: msm: check dma_map_sg() return value properly
+1788cf6a91d9 tty: serial: switch from circ_buf to kfifo
+f8fef2fa419f tty: msm_serial: use dmaengine_prep_slave_sg()
+4e5788c0993c serial: msm: Use uart_prepare_sysrq_char().
+173ebdedcd84 serial: msm: Use OPP table for DVFS support
+a63e5a49d596 serial: msm: Convert to platform remove callback returning void
+6cbd979080c7 serial: msm: Use port lock wrappers
+
+As the crash indicates, it has got something to do with DMA transfers,
+which was altered in these 3 commits:
+
+f70f95b485d7 serial: msm: check dma_map_sg() return value properly
+1788cf6a91d9 tty: serial: switch from circ_buf to kfifo
+f8fef2fa419f tty: msm_serial: use dmaengine_prep_slave_sg()
+
+
+file:  ./drivers/tty/serial/msm_serial.c
+crashing function: msm_start_rx_dma()
+
+
+Does someone have a clue what could be the culprit here?
+
+
+
+Splat:
+
+[    0.000000] Linux version 6.12.43 (koen@csbeokps13sv03)
+(arm-openwrt-linux-muslgnueabi-gcc (OpenWrt GCC 14.3.0
+r30901+28-f324bd9e34) 14.3.0, GNU ld (GNU Binutils) 2.44) #0 SMP Fri
+Aug 29 11:31:37 2025
+[    0.000000] CPU: ARMv7 Processor [410fc075] revision 5 (ARMv7), cr=10c5387d
+[    0.000000] CPU: div instructions available: patching division code
+[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing
+instruction cache
+[    0.000000] OF: fdt: Machine model: Wallystech DR40X9
+...
+'Opening Serial port'
+...
+[   83.717008] 8<--- cut here ---
+[   83.717063] Unable to handle kernel paging request at virtual
+address e2d49000 when write
+[   83.718986] [e2d49000] *pgd=83dcf811, *pte=00000000, *ppte=00000000
+[   83.727233] Internal error: Oops: 807 [#1] SMP ARM
+[   83.733304] Modules linked in: ath9k(O) ath9k_common(O) qcserial
+option nft_fib_inet nf_flow_table_inet ebtable_nat ebtable_filter
+ebtable_broute ath9k_hw(O) ath11k_pci(O) ath11k(O) ath10k_pci(O)
+ath10k_core(O) ath(O) wireguard usb_wwan sierra_t
+[   83.733891]  xt_length xt_hl xt_helper xt_ecn xt_dscp xt_conntrack
+xt_connmark xt_connlimit xt_connbytes xt_comment xt_TCPMSS xt_REDIRECT
+xt_MASQUERADE xt_LOG xt_HL xt_FLOWOFFLOAD xt_DSCP xt_CT xt_CLASSIFY
+x_tables wwan usbserial usbnet usbhid m
+[   83.806410]  sd_mod scsi_mod scsi_common gpio_button_hotplug(O)
+vfat fat ext4 mbcache jbd2 mii crc32c_generic
+[   83.917691] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Tainted: G
+  O       6.12.43 #0
+[   83.927759] Tainted: [O]=OOT_MODULE
+[   83.935903] Hardware name: Generic DT based system
+[   83.939121] PC is at mmiocpy+0xb4/0x334
+[   83.943976] LR is at 0x40000400
+[   83.947709] pc : [<c0a42b14>]    lr : [<40000400>]    psr: 00000193
+[   83.950839] sp : c1011e60  ip : 00000018  fp : c1011e70
+[   83.957087] r10: 00100101  r9 : 82addc00  r8 : 00000002
+[   83.962294] r7 : 00000000  r6 : 00000000  r5 : c10cf304  r4 : c115f900
+[   83.967506] r3 : 00000001  r2 : ffffffe8  r1 : c115f968  r0 : e2d49000
+[   83.974104] Flags: nzcv  IRQs off  FIQs on  Mode SVC_32  ISA ARM
+Segment user
+[   83.980616] Control: 10c5387d  Table: 8346006a  DAC: 00000055
+[   83.987816] Register r0 information: vmalloc memory
+[   83.993631] Register r1 information: slab kmalloc-128 start
+c115f900 pointer offset 104 size 128
+[   83.998327] Register r2 information: non-paged memory
+[   84.007346] Register r3 information: non-paged memory
+[   84.012294] Register r4 information: slab kmalloc-128 start
+c115f900 pointer offset 0 size 128
+[   84.017334] Register r5 information: slab kmalloc-4k start c10cf000
+pointer offset 772 size 4096
+[   84.025842] Register r6 information: NULL pointer
+[   84.034776] Register r7 information: NULL pointer
+[   84.039376] Register r8 information: non-paged memory
+[   84.044064] Register r9 information: non-paged memory
+[   84.049100] Register r10 information: non-paged memory
+[   84.054135] Register r11 information: non-slab/vmalloc memory
+[   84.059170] Register r12 information: non-paged memory
+[   84.064986] Process swapper/0 (pid: 0, stack limit = 0x5a960252)
+[   84.070023] Stack: (0xc1011e60 to 0xc1012000)
+[   84.076193] 1e60: c10cf304 00000000 00000002 c115f960 e2d49000
+c115f900 e2d49000 c06ef0ec
+[   84.080449] 1e80: c1011ed0 c10cf374 ffff8000 c1234840 00000002
+c10cf304 20000193 c10cf360
+[   84.088610] 1ea0: c10cf304 00000002 a0000113 00000001 c12ea104
+c06ef244 c0e85000 00000400
+[   84.096769] 1ec0: c06ee290 c071c450 00000001 00000000 00000002
+00000000 00000400 82addc00
+[   84.104929] 1ee0: c0e85000 00000001 c12ea104 00000001 00000000
+c071e5f4 00000000 c0e99010
+[   84.113092] 1f00: c0e01f28 0000f244 c0e85000 c15d7980 c15d79b8
+c1011f04 dfbb10c8 00000000
+[   84.121249] 1f20: c1011f3c 00000122 00000100 c06ed858 00000001
+00000000 c1234954 c1011f3c
+[   84.129410] 1f40: c1011f3c 00000000 00000000 c071e4ac 00000000
+c0e85000 000002c4 c10cf344
+[   84.137567] 1f60: c1234954 c10cf348 dfbb10c8 c0d49c00 00000006
+00000001 c0e0d4c0 c03260e8
+[   84.145729] 1f80: 00000007 00000040 c0e03080 40000006 c0e03098
+00000018 00000100 c0326368
+[   84.153886] 1fa0: c0e99010 c037242c c0e03080 c1011fa0 c0d45140
+0000000a 00000000 c0d49c00
+[   84.162047] 1fc0: c0d49c00 ffffab84 c0e03d40 04200002 c0d49bc4
+c0e0d4c0 60000013 ffffffff
+[   84.170210] 1fe0: c0e01f64 00000000 c0e0d4c0 c0e99010 c0e01f28
+c03267a4 c0a6c0a0 c0a40acc
+[   84.178362] Call trace:
+[   84.178377]  mmiocpy from bam_start_dma+0x220/0x2e8
+[   84.189124]  bam_start_dma from bam_issue_pending+0x90/0xa0
+[   84.193722]  bam_issue_pending from msm_start_rx_dma.part.0+0x134/0x258
+[   84.199279]  msm_start_rx_dma.part.0 from msm_complete_rx_dma+0x148/0x394
+[   84.205879]  msm_complete_rx_dma from vchan_complete+0x1ec/0x228
+[   84.212821]  vchan_complete from tasklet_action_common+0xe0/0x108
+[   84.218897]  tasklet_action_common from handle_softirqs+0xf0/0x250
+[   84.224885]  handle_softirqs from irq_exit+0x8c/0xb8
+[   84.230958]  irq_exit from call_with_stack+0x18/0x20
+[   84.236084]  call_with_stack from __irq_svc+0x6c/0x7c
+[   84.241027] Exception stack(0xc0e01f30 to 0xc0e01f78)
+[   84.245980] 1f20:                                     00000003
+00000001 00063174 40000000
+[   84.251023] 1f40: 00000000 c0e0a0ac c0e0d4c0 c0e0a0c4 00000000
+00000000 c0e99010 c0e0a048
+[   84.259181] 1f60: 00000037 c0e01f80 c0a6b938 c0a6c0a0 60000013 ffffffff
+[   84.267336]  __irq_svc from default_idle_call+0x2c/0x30
+[   84.273757]  default_idle_call from do_idle+0x1d4/0x224
+[   84.278965]  do_idle from cpu_startup_entry+0x28/0x2c
+[   84.284170]  cpu_startup_entry from kernel_init+0x0/0x12c
+[   84.289380]  kernel_init from start_kernel+0x6cc/0x6d0
+[   84.294830] Code: e4804004 e4805004 e4806004 e4808004 (e4809004)
+[   84.299800] ---[ end trace 0000000000000000 ]---
+[   84.305960] Kernel panic - not syncing: Fatal exception in interrupt
+[   85.401617] SMP: failed to stop secondary CPUs
+[   85.401652] Rebooting in 3 seconds..
+
+
+Thanks all,
+
+Koen
