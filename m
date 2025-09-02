@@ -1,83 +1,87 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E7022301;
-	Tue,  2 Sep 2025 04:42:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5B0D2EFDB1;
+	Tue,  2 Sep 2025 10:03:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756788142; cv=none; b=fjgdmhTG4STgR00BP833Qs+0HReDLEy1rqGWC1S4WV43qjir5fhlvQhM81iID9SnxaF9TFAIdd6GOxY7j8UYR3/EUanvRV9foi41akFTsF+ELgKf//P4ErBIEdgY5Kp+WgLd/fDSfT86RYJQclBwOPHRgvSF5pg9yELEmXPKYF8=
+	t=1756807381; cv=none; b=pzrL4dKyBwMtCc5rbUvwSRw2tIqRz2rVxYyWAW92XxJJBKwUMkkIs6V7dPf9VMZ11TXrDBfqqS7vHzGGAnVldqrzrL5uIf2nEHPsYvi/rNlMc44yqiEgJbFV1pEx8ibDGy1HhvcKw3iQW3T8Wwv1YHIqERvMY8R5QfzNQgo+olQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756788142; c=relaxed/simple;
-	bh=rI7sjxxwycfC7pS/4GOnS0bhnDJDQu4k5LP/FweJy1Q=;
+	s=arc-20240116; t=1756807381; c=relaxed/simple;
+	bh=6GGN+vSC6nAw0rmyQPYra2aimD8RCfZCmVauB2qSJ0A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GwqiXvDXuHAfN5lGSasRd/0OzEIWp9bQ1P3XAe+X2zsiO8gYrh+WxW7DHX42Ug98jjrgg4GOsdVuEpbpu5b/ImHKS3CqqKcjU17t4ST5lRY/4Rv6s81B0Xi17Zkpc82sx0GeIlTVwpyxPeksCcpcy8ZeXQBfz6945s3Y+Dz//Q4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=lP3cr/C5; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=MxI7YOwQIyWT6OCAS+9giv9wKBWUhDJ8CXgS+Dl+IAwGe7HuqqNodrqZXEnpJQQ+apBz1iuQrv+ApxSSJ2AGVdPT4tSN+GZtazC/f/rXSoOUvvT6Vp2tN1uOQJHCzoPlkAJOH1o8s7N/jJZdA1tuwme+Yr/KGe7l2+a+WD7qOcY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O8g6WRWj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="lP3cr/C5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 200DBC4CEED;
-	Tue,  2 Sep 2025 04:42:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1756788141;
-	bh=rI7sjxxwycfC7pS/4GOnS0bhnDJDQu4k5LP/FweJy1Q=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O8g6WRWj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E52EFC4CEF5;
+	Tue,  2 Sep 2025 10:02:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1756807381;
+	bh=6GGN+vSC6nAw0rmyQPYra2aimD8RCfZCmVauB2qSJ0A=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=lP3cr/C5iULrTajLJMfwGEArRBqaXoN/zVPlo6H+iCQlazjf5VEYJRH7IkQjOR1Ru
-	 xGa6XbxbMdbh8uen5MBRmTJgSFo7ifv+UUhqjb+EdSbipWXxgld4iQ13nLo7t4tJhc
-	 fHkL5L+ottflYLyH6J+ODJH9UL6uwCWDNqbL7edc=
-Date: Tue, 2 Sep 2025 06:42:18 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Koen Vandeputte <koen.vandeputte@citymesh.com>
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, jirislaby@kernel.org,
-	neil.armstrong@linaro.org, stephan.gerhold@linaro.org,
-	Robert Marko <robimarko@gmail.com>
-Subject: Re: Crash in msm serial on kernel 6.12
-Message-ID: <2025090256-waffle-sip-f1fc@gregkh>
-References: <CAPh3n81TECn_LRKrsKS4qS3-CQsVTf8LSSiCdn+uNYdnO7h9AQ@mail.gmail.com>
+	b=O8g6WRWjnz00IdBM+0NXEGJFvekqwjMUPlmGg9KMT2A+XuL5Ng9/WXfAc8BOeqRHe
+	 wGzkfrgy0RVox5f2jPjW6AvGD47VgGow9LPKn7VetMcjSQfK4iNX2zv81QHCX7/QDl
+	 1Cuks4Y3lPUEwH6GDZ5NJbtfwrz60fBFVWBYmzAIjLZg91ynUig6PI0lBAnbiBauPi
+	 AO3U3NKeiJmr7h53HrKOOY6BGf4/zQoQpwV3Dr8QGm05RSUbwrMFY2MAPfkkIWFMuk
+	 VNOFLgMs2AWCBJNBMpNq3rKsTLL0jmottWFueh5OtiFL2HKTELwPI+MMPwAdPuSoSs
+	 cl3IIs1qBlzMw==
+Date: Tue, 2 Sep 2025 11:02:54 +0100
+From: Lee Jones <lee@kernel.org>
+To: Robert Marko <robert.marko@sartura.hr>
+Cc: linux@armlinux.org.uk, nicolas.ferre@microchip.com,
+	alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
+	catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com,
+	herbert@gondor.apana.org.au, davem@davemloft.net,
+	andi.shyti@kernel.org, broonie@kernel.org,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, arnd@kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-crypto@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+	o.rempel@pengutronix.de, daniel.machon@microchip.com,
+	luka.perkov@sartura.hr
+Subject: Re: [PATCH v9 4/9] mfd: at91-usart: Make it selectable for
+ ARCH_MICROCHIP
+Message-ID: <20250902100254.GD2163762@google.com>
+References: <20250813174720.540015-1-robert.marko@sartura.hr>
+ <20250813174720.540015-5-robert.marko@sartura.hr>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAPh3n81TECn_LRKrsKS4qS3-CQsVTf8LSSiCdn+uNYdnO7h9AQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250813174720.540015-5-robert.marko@sartura.hr>
 
-On Mon, Sep 01, 2025 at 04:40:42PM +0200, Koen Vandeputte wrote:
-> Hi all,
-> 
-> I just updated my ipq4019 boards on OpenWRT from kernel 6.6 to 6.12.
-> 
-> When using the serial port (/dev/ttyMSM1) I notice that it keeps
-> crashing while using that port.
-> 
-> Going through the commit history, I noticed that not much changed at
-> all compared to kernel 6.6:
-> 
-> f6ae572683d4 serial: msm: Configure correct working mode before
-> starting earlycon
-> f70f95b485d7 serial: msm: check dma_map_sg() return value properly
-> 1788cf6a91d9 tty: serial: switch from circ_buf to kfifo
-> f8fef2fa419f tty: msm_serial: use dmaengine_prep_slave_sg()
-> 4e5788c0993c serial: msm: Use uart_prepare_sysrq_char().
-> 173ebdedcd84 serial: msm: Use OPP table for DVFS support
-> a63e5a49d596 serial: msm: Convert to platform remove callback returning void
-> 6cbd979080c7 serial: msm: Use port lock wrappers
-> 
-> As the crash indicates, it has got something to do with DMA transfers,
-> which was altered in these 3 commits:
-> 
-> f70f95b485d7 serial: msm: check dma_map_sg() return value properly
-> 1788cf6a91d9 tty: serial: switch from circ_buf to kfifo
-> f8fef2fa419f tty: msm_serial: use dmaengine_prep_slave_sg()
-> 
-> 
-> file:  ./drivers/tty/serial/msm_serial.c
-> crashing function: msm_start_rx_dma()
+On Wed, 13 Aug 2025, Robert Marko wrote:
 
-Can you do 'git bisect' to track down the offending commit?  And what
-about 6.16?
+> LAN969x uses the Atmel USART, so make it selectable for ARCH_MICROCHIP to
+> avoid needing to update depends in future if other Microchip SoC-s use it
+> as well.
+> 
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> ---
+>  drivers/mfd/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 425c5fba6cb1..8f11b2df1470 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -138,7 +138,7 @@ config MFD_AAT2870_CORE
+>  config MFD_AT91_USART
+>  	tristate "AT91 USART Driver"
+>  	select MFD_CORE
+> -	depends on ARCH_AT91 || ARCH_LAN969X || COMPILE_TEST
+> +	depends on ARCH_MICROCHIP || COMPILE_TEST
+>  	help
+>  	  Select this to get support for AT91 USART IP. This is a wrapper
+>  	  over at91-usart-serial driver and usart-spi-driver. Only one function
 
-thanks,
+Let me know when the deps are in Mainline.
 
-greg k-h
+-- 
+Lee Jones [李琼斯]
