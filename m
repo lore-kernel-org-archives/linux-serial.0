@@ -1,111 +1,120 @@
-Received: from mail.thorsis.com (mail.thorsis.com [217.92.40.78])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF6FF2E4257;
-	Wed,  3 Sep 2025 13:16:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.92.40.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E26102F7441;
+	Wed,  3 Sep 2025 14:02:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756905398; cv=none; b=tTGXlf4/fgkDEDKn144ePxoxrjo4WAQjcRHw87aFliG9/ngrvwOI3W2BThmI6yLonxabVTiuDATMgu5mKvyBZ8SDcMlePAAXhmZSj9UxtpRfCrylA/LAiXk/YXAN9uYPMXRqY7IOGKGw8LYXqBJsN1Gk3MTgUdgK7u2y3DJP+wE=
+	t=1756908177; cv=none; b=GhvhDcUwulzJqXbV3X54YusDQZYCKq976Z8B2p0MNfKb2w5uscWW3WKkgtfbLbfqoXM6kAjSq7H8RVjoCKjU0Sla++Y6f4rCpPDtDwnueqpABI4afBuIBzWr6bfJMsznxPUskDG7DT7BkMouHAMc6CTbMTRVykrTFLOPYX0Wz6c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756905398; c=relaxed/simple;
-	bh=nh/Jvj+3PfiFDjRFpwIMNEZfJ4VoTazjot8RleOlFQg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KbjbBLawTWlEFjEt1hvXjnszJibpQKISg+76OkGxyFv8GLX477kyTwWXFFx+CgMgvd3SPSNmF3s8a3mtjWbZrEDUZw++2hKtdsNfx+xf0bA1aXlf/+WfYvQba+smGnlCceipagfZva5sgbHOm1dOdAtwVQJO3s1zNq9968z/OT0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=thorsis.com; spf=pass smtp.mailfrom=thorsis.com; dkim=pass (2048-bit key) header.d=thorsis.com header.i=@thorsis.com header.b=Mi40bUy3; arc=none smtp.client-ip=217.92.40.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=thorsis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thorsis.com
+	s=arc-20240116; t=1756908177; c=relaxed/simple;
+	bh=+Ou7/TJXaHnviKBEr5ILfWD+oVZwfeeOf3QKT9caAkE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=MEM9EDYXLAK0MnHSXz1I/pArB1ui+oN1N8UXJBSnZIr89BDUHpugwpc8pY7+JDK+qWnUUULCwyFeeL3w4xbSNRDqhBCGGsiK5GBOU7x4mmesIxFLMxyh+QW9A1sMk8l22V4XFcuvVLoktPmafLH1FQjntlP5dgJ6pgdg9UIcTHo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=kuddoeeB; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=thorsis.com header.i=@thorsis.com header.b="Mi40bUy3"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C4D4D1487E25;
-	Wed,  3 Sep 2025 15:16:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=thorsis.com; s=dkim;
-	t=1756905386; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=aHqRa8jsx4scxQoHsogOHYRV2hwQ6tQgcKa606SaBXY=;
-	b=Mi40bUy3Qk6XWegkRfPM2jnv4dDk/bMr2lj8J/pF4Gri48WBAkFX2c8VfueH8QqgCf2Ng8
-	j5AcfYSFfVjl6qZmg4jeiz3c6SMpf4oy8SG4v5oJmU7JXVKjlUK0bGcYIOJWNDqUGyZcms
-	Sff7vKAfUKeT6nvfJzbKbjFGimAEMj1wL7WqwQ3CZM5jPi07ldAlfZilQmSE3wtlrNL8Gv
-	OYP7T1CFZSdYRfuoHH7n6uRcTI+N6s7ysLFA6qazlJP/eibZT1JQi7uKBLnEPtQqfcfvvh
-	qz6NHVk6ppVZmLyBYDYcwkHh/+haGNIMfW6/g/QOTfw6wH67NV3Kug8C4llwIQ==
-Date: Wed, 3 Sep 2025 15:16:10 +0200
-From: Alexander Dahl <ada@thorsis.com>
-To: Claudiu Beznea <claudiu.beznea@tuxon.dev>
-Cc: Vinod Koul <vkoul@kernel.org>, linux@armlinux.org.uk,
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-	catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com,
-	herbert@gondor.apana.org.au, davem@davemloft.net,
-	andi.shyti@kernel.org, lee@kernel.org, broonie@kernel.org,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, arnd@kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-serial@vger.kernel.org, o.rempel@pengutronix.de,
-	daniel.machon@microchip.com, Robert Marko <robert.marko@sartura.hr>,
-	luka.perkov@sartura.hr
-Subject: Re: (subset) [PATCH v8 00/10] arm64: lan969x: Add support for
- Microchip LAN969x SoC
-Message-ID: <20250903-gratify-sustained-9acc011bc3c9@thorsis.com>
-Mail-Followup-To: Claudiu Beznea <claudiu.beznea@tuxon.dev>,
-	Vinod Koul <vkoul@kernel.org>, linux@armlinux.org.uk,
-	nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-	catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com,
-	herbert@gondor.apana.org.au, davem@davemloft.net,
-	andi.shyti@kernel.org, lee@kernel.org, broonie@kernel.org,
-	gregkh@linuxfoundation.org, jirislaby@kernel.org, arnd@kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-	linux-i2c@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-serial@vger.kernel.org, o.rempel@pengutronix.de,
-	daniel.machon@microchip.com, Robert Marko <robert.marko@sartura.hr>,
-	luka.perkov@sartura.hr
-References: <20250702183856.1727275-1-robert.marko@sartura.hr>
- <175327377884.189941.15214972441246653208.b4-ty@kernel.org>
- <bac5390f-725a-43db-a2b6-17a68d0d733c@tuxon.dev>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="kuddoeeB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1756908175; x=1788444175;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=+Ou7/TJXaHnviKBEr5ILfWD+oVZwfeeOf3QKT9caAkE=;
+  b=kuddoeeB7GToGKL1LyvBq/d4T/ZZAafpK8vfzgitgpd5zSsvaDnqWlNC
+   /oYEQuLQwVqp6pMkko5Fc7XMJiDBWwijHcljKRowRNe+w4RJ/gyD3GOCV
+   veXb6sgqF3gSAgl5NTS7QC/sFdh7vBgzuxkw7ZQGj4NlQKmpq1tlIHHa1
+   PcFgQq4fLz+WkeMJkJoTG6L01uIwFwkZj7K4FojdaDeYgMG49yZlneMGI
+   rZrCLf4BmswAFtxUH/WMj4dkbcrTXjgL7lbLg9wHKTwrUW0zMpoSAZyfa
+   Ln+K5zuvEUllL9KkUPvV1B1/UjrCTE116DpdFcld6y5xFa0s725N8DkRI
+   w==;
+X-CSE-ConnectionGUID: v8Jh6wOIR5q2UVBlaHd94g==
+X-CSE-MsgGUID: Ky7Vg2BiRuyQ5qmJAKasTw==
+X-IronPort-AV: E=Sophos;i="6.18,235,1751266800"; 
+   d="scan'208";a="46572767"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 03 Sep 2025 07:01:44 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.44; Wed, 3 Sep 2025 07:01:14 -0700
+Received: from [10.150.206.75] (10.10.85.11) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.44 via Frontend
+ Transport; Wed, 3 Sep 2025 07:01:09 -0700
+Message-ID: <50ca5062-5bbd-4c72-83c6-1d9abc6bde2e@microchip.com>
+Date: Wed, 3 Sep 2025 16:01:08 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bac5390f-725a-43db-a2b6-17a68d0d733c@tuxon.dev>
-User-Agent: Mutt/2.2.12 (2023-09-09)
-X-Last-TLS-Session-Version: TLSv1.3
+User-Agent: Mozilla Thunderbird
+Subject: Re: (subset) [PATCH v8 00/10] arm64: lan969x: Add support for
+ Microchip LAN969x SoC
+To: Claudiu Beznea <claudiu.beznea@tuxon.dev>, Vinod Koul <vkoul@kernel.org>,
+	<linux@armlinux.org.uk>, <alexandre.belloni@bootlin.com>,
+	<catalin.marinas@arm.com>, <will@kernel.org>, <olivia@selenic.com>,
+	<herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+	<andi.shyti@kernel.org>, <lee@kernel.org>, <broonie@kernel.org>,
+	<gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <arnd@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-crypto@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+	<linux-i2c@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+	<linux-serial@vger.kernel.org>, <o.rempel@pengutronix.de>,
+	<daniel.machon@microchip.com>, Robert Marko <robert.marko@sartura.hr>,
+	<luka.perkov@sartura.hr>, Vinod Koul <vinod.koul@intel.com>
+References: <20250702183856.1727275-1-robert.marko@sartura.hr>
+ <175327377884.189941.15214972441246653208.b4-ty@kernel.org>
+ <bac5390f-725a-43db-a2b6-17a68d0d733c@tuxon.dev>
+ <20250903-gratify-sustained-9acc011bc3c9@thorsis.com>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Content-Language: en-US, fr
+Organization: microchip
+In-Reply-To: <20250903-gratify-sustained-9acc011bc3c9@thorsis.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hello,
-
-Am Thu, Jul 31, 2025 at 11:05:07AM +0300 schrieb Claudiu Beznea:
-> Hi, Vinod,
+On 03/09/2025 at 15:16, Alexander Dahl wrote:
+> Hello,
 > 
-> On 23.07.2025 15:29, Vinod Koul wrote:
-> > 
-> > On Wed, 02 Jul 2025 20:35:58 +0200, Robert Marko wrote:
-> >> This patch series adds basic support for Microchip LAN969x SoC.
-> >>
-> >> It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
-> >> which allows to avoid the need to change dependencies of the drivers that
-> >> are shared for Microchip SoC-s in the future.
-> >>
-> >> DTS and further driver will be added in follow-up series.
-> >>
-> >> [...]
-> > 
-> > Applied, thanks!
-> > 
-> > [08/10] dma: xdmac: make it selectable for ARCH_MICROCHIP
-> >         commit: e56982021f5303b2523ac247e3c79b063459d012
+> Am Thu, Jul 31, 2025 at 11:05:07AM +0300 schrieb Claudiu Beznea:
+>> Hi, Vinod,
+>>
+>> On 23.07.2025 15:29, Vinod Koul wrote:
+>>>
+>>> On Wed, 02 Jul 2025 20:35:58 +0200, Robert Marko wrote:
+>>>> This patch series adds basic support for Microchip LAN969x SoC.
+>>>>
+>>>> It introduces the SoC ARCH symbol itself under the ARCH_MICROCHIP symbol
+>>>> which allows to avoid the need to change dependencies of the drivers that
+>>>> are shared for Microchip SoC-s in the future.
+>>>>
+>>>> DTS and further driver will be added in follow-up series.
+>>>>
+>>>> [...]
+>>>
+>>> Applied, thanks!
+>>>
+>>> [08/10] dma: xdmac: make it selectable for ARCH_MICROCHIP
+>>>          commit: e56982021f5303b2523ac247e3c79b063459d012
+>>
+>> As this one depends, as well, on the first 3 patches in the series (Robert,
+>> please correct me if I'm wrong), and there are still discussions ongoing,
+>> can you please drop it until all is clear on the first 3 patches?
+>>
+>> Otherwise, applying only this patch will lead to AT91 XDMAC driver not
+>> being built for SAMA5{D2, D3, D4}, SAMA7{G5, D65} SoCs. Linux is not
+>> booting on SAMA7G5 SoC only with this patch applied.
 > 
-> As this one depends, as well, on the first 3 patches in the series (Robert,
-> please correct me if I'm wrong), and there are still discussions ongoing,
-> can you please drop it until all is clear on the first 3 patches?
-> 
-> Otherwise, applying only this patch will lead to AT91 XDMAC driver not
-> being built for SAMA5{D2, D3, D4}, SAMA7{G5, D65} SoCs. Linux is not
-> booting on SAMA7G5 SoC only with this patch applied.
+> Second that.  Just tested v6.17-rc4 on sam9x60 and DMA is not working
+> at all because this driver can not be selected anymore.  This must be
+> fixed before v6.17 release please!
 
-Second that.  Just tested v6.17-rc4 on sam9x60 and DMA is not working
-at all because this driver can not be selected anymore.  This must be
-fixed before v6.17 release please!
+Yep, I'll try to fast forward patch 02 of this series before 6.17-final 
+(this instead of reverting XDMA patch).
 
-Greets
-Alex
+Regards,
+   Nicolas
