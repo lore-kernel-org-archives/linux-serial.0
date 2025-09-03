@@ -1,260 +1,229 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11021138.outbound.protection.outlook.com [52.101.65.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A55212D3739
-	for <linux-serial@vger.kernel.org>; Wed,  3 Sep 2025 06:31:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756881108; cv=none; b=IpYyHlpJUGm0iYtdMg7KrsFhK861qa9b/V55hQ9Pj/tvM2oDFj1DtXnCu+InCqBE8uXDG37Sb6T7DQ7F0l6/+b3+enFQ+H+ryvJB7qTlwgKYe3H+h+DAEY7Vx3ewXZxwv8uk6dVHBFss6Vcrq3f15uR6RCekJDHsbUDd3d+GQFw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756881108; c=relaxed/simple;
-	bh=gd+e8PkPaHQz4TbcG5ROfS1XVpqPXlZqbngCmfx7qKU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=C46ij8q7sOlV+iOnfNdoUJjFiv1MlG3wP91zREvdRCM6MHzO0f2Nz9/kinmzAUM6WJFr1+JGTBPN9/rhN1k2kVo302ygZzC7fvERHbXdo2t3llAfXrNgnCXLT8ih0OmCNyqnPF75GmA4Fo/Qj6mpTh5UnaV/nEQmNk7G3WJ2yLY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=LeI/YoJb; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2419032F76E;
+	Wed,  3 Sep 2025 09:23:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.138
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756891422; cv=fail; b=NajwP1uWcE2J0dhUHHoJZYTNCmnv3Kd5eQABdofIeF1h+zMAm//9nsLk+Hd7hkolfseOgX0SUpgU9Fcw8w3fYJ2NQD4jXl+cCvQbpUC0d+xKN3OpmB/nKT2kmEDwHn026RNRpmXfM9mgfOchzB84SAID8wPYO9dkkg8u9CwIXFc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756891422; c=relaxed/simple;
+	bh=TZPkz0xXD5quDdkUWkyuvM2LdUuMHFqveFMmda/ddQI=;
+	h=From:Date:Subject:Content-Type:Message-Id:To:Cc:MIME-Version; b=DKHWG4C9PaA8H644Rh5pT50h6jKRuSyeQI7mGUZ4WavymF/XiSYxJopio+iDOzdKSoh2P2f5wEgo2UuXkeC6/mhbFXyF9mF9/eXFQGtUk7SZ9STem7ke4UBRgQ8GgcUE6n3S9TRRGPplDky1DZy/byzhd1busZQXVbgLsygCFiU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=HYJnvaWF; arc=fail smtp.client-ip=52.101.65.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="LeI/YoJb"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58329uxk025278
-	for <linux-serial@vger.kernel.org>; Wed, 3 Sep 2025 06:31:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=Y/J8Cg3ZGSwSv1XTZtLVvIMGVBbC7tLgM/b
-	9mrjrehM=; b=LeI/YoJbAwWl0l275WDyKI8PZ+XuZNntVmgaA85/fPdy9hb6tOg
-	gRDS1NnzSbZdJ4IqbY0NmgWUS9wom6MVs/Uwqv1VqXZPkAX0qNRPuwnIozlMao0D
-	LeKyM6MXUh/Br9dlN+819FBPY05sLgsliQKN3+w3oCFqdIXZ9VVvMP9UAk35ehqn
-	2f2OFRCXbUkmjwQFmv9/5f6qSEDK1e3EBKDDod9dogGnzVY5DjI5qwMDSHyzZx8R
-	1LSYMm8mOKro9Vc/7g49t6CQ2SNEfcolH7TAbbso7d/OUwA14L5Zg3MaJ7t/88ia
-	DqP1jEMZj6JFE/8WZiBTWFTeFZJU27IviYg==
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48uscv2j0s-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Wed, 03 Sep 2025 06:31:45 +0000 (GMT)
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-77253535b2cso3257564b3a.3
-        for <linux-serial@vger.kernel.org>; Tue, 02 Sep 2025 23:31:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756881104; x=1757485904;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Y/J8Cg3ZGSwSv1XTZtLVvIMGVBbC7tLgM/b9mrjrehM=;
-        b=Ukezu+NWHIn/JpVpkwqXg8rrlC3q7NqfUL96wO63bvVGqU/JhiGbIyEYN7nu09J23k
-         3EvBUBdwFp6/tJf84fpYIXxm4EtsWr7pFX9pl7Etb6zmFFz/ej/lcH6S+90jEzRxaya9
-         iWKEKuJgU0NQHwpudrW3OH7fhAy2u701O1KuDxRObJN+J45n7GEzwsldxbjAaZZvwaEL
-         AVDELSotZGO+FwkNqiyNBbA5rqt/iqwjY3vvPPrH16686FIaJYpZlPFRsAySgkukXOfx
-         6CUQsVIXIGXuDJroPfLw8lWX/Spz9IUdqWocmnt1bfk1gu0qOOLdDVDlD2ywUzh7mVVe
-         mTgw==
-X-Forwarded-Encrypted: i=1; AJvYcCXPEIngRKFlrdKuocubwnLqrIwdmgZIcFiy/nqlyYMVB278TQ3vVJcVWYMsWRibHvCkVQNz99zIN8XXFbE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzVcRabwRfbyeNwkKPpti9EUzf1Bw8BOMTEMq80ZB403LSGzsG9
-	9Cfu0DmoNXKwHnpObjJMApzM9oJ8Fd8uddna2yAoYNJDRgVUcx0U4OgI/cAgNaooQupJ8u6auSU
-	JtRyM3Nve5gNLe/ZCdx32jVhJxXiXU9yzAm3iEfiBR/1EoaMYrGmhiUy54O7P9FWlwWs=
-X-Gm-Gg: ASbGncsZjcSNxIFdeQlVjgDbvqX0diAY4r0IfyMv4Lq10hR9c9baQIjbVX4sSCGLbMe
-	WyAOrw8gPPGWDlabkn7bJEBPjWIiCqM0TCTeLQCGPf/tPI2kYdcvPfqG6teWx3VhP9144926Rou
-	Ycx0tnizz3lrH3eHSU3++D79I1nJROw4jCr9ptEo7vIVLARLZ9F3kMoFza5gCV0NtUUbv2oBhCL
-	BwbapGeSU+bw3tshR9lkvsv7mCTwFr0G8i9b7MWv1x4X65LMugUmHKq941ciQtIAdfGSJSiwOPz
-	Sh98Ze6ZcxDsRwWUSGMa+yNw4hrghh6umGHd7UlrUsMSKmlVyxkCvlwffsQ1y1BqpbJgKzGLsM1
-	d
-X-Received: by 2002:a05:6a00:3a16:b0:770:54e6:6c36 with SMTP id d2e1a72fcca58-7723e1f4f41mr15217289b3a.7.1756881104041;
-        Tue, 02 Sep 2025 23:31:44 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGpNGXaOZuyxyrAG6vq4lgWuT/ZgOmFTHhMJL9wIB5ccUUes74PZbJ6twk7++1GBkDckKxQKg==
-X-Received: by 2002:a05:6a00:3a16:b0:770:54e6:6c36 with SMTP id d2e1a72fcca58-7723e1f4f41mr15217265b3a.7.1756881103511;
-        Tue, 02 Sep 2025 23:31:43 -0700 (PDT)
-Received: from hu-vdadhani-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7725e419913sm7506150b3a.55.2025.09.02.23.31.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Sep 2025 23:31:42 -0700 (PDT)
-From: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, johan+linaro@kernel.org,
-        dianders@chromium.org, bryan.odonoghue@linaro.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Cc: mukesh.savaliya@oss.qualcomm.com,
-        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
-Subject: [PATCH 1/1] serial: qcom-geni: Add DFS clock mode support to GENI UART driver
-Date: Wed,  3 Sep 2025 12:01:36 +0530
-Message-Id: <20250903063136.3015237-1-viken.dadhaniya@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="HYJnvaWF"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=MAv04yEWnFj+vjX7jKB7kGzvVVRf9TcCm3TpHnl6887NMcS/YUKwDCBTTdmLjDrOWgvTOIE1ncNcFwuGkcWctTXeMjO12XLiXn43d2p0QhM8EquUh6zgiC2uu5TJjPFUiO+5Q6AU/k9y7s1HL5T2SbjIKppmXKwripp+U8k1Qk6/mWQPzokRP7I9UXaO+eIXAS82PZvN0lY7QPY9s+sJPwBGhPwbcsNEtFTWdPbH64SjYAXIjipwvsH3FOmgw2/u8jds/Rpr0ccgS8QXxRNDq6od7fjJKDD8Vp1dsVzT1yDe+vVgJHLbEUemlSROsNFby6Jd0zup1i4JsYCe68PDwQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=OPmR1591nrOVD9vCLJHMwl03b13R6dSR96UdQCF6NLU=;
+ b=mqXC+kN/90y7aq4H7YUxxNeFXBbvg/ortnic0XnvNz9MW0KErq+Zs9nGOUaZXjz5qyMb4OeQh+20o7fLGLUhWMyvf3X5DM5Jcglbfcv4s2tGWv4Aivc+A72DY17PqTohIun0RNtzR6/nxnnjs49o7h0cFeUlCJfLx5mD9iEcofddlDuCEXoQ8QicLuCq+p9JuSE4UxfOPmF3fhKeXPs+fZ89qaCLX+39aHah4GKFAOy+MlomBr3opGv0imxXjwbzaFgfXTYB+DiHw7id9E3ay7U/+ubKUUyQKBfxRWZqgPLfrmStUqRpfSDvA7SQMP9+k8P/f7LIDsJqgyizMxn6vw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OPmR1591nrOVD9vCLJHMwl03b13R6dSR96UdQCF6NLU=;
+ b=HYJnvaWFca1LlkmMngqJ9vQYBI3/nGCiAcsN4mb7olIlNJLIGeZU8U7DGh4NuzUEhcIaRg1vlueaWG9lvw89g3gV9XiIW3jt1k7vLi+dOUQf6tnTrtXmGv+0r4OeJ70DcA5z1HduK+D/dsGIfG/lDGMHiGJMmzhBsp5OupeMYJ59xLiX4ObYORnzUs9H8tEQP+psz5SGiDXBGXIXxkM/L9fWGhqgxNUOtOo+lD4NmUr6bTLeoNvQ/Pr9vASJ7phGIz3vYMplCZeBBk8vR1CFU+72Z2aqHZqq6nS79wGkxh+qzacGNpV5vi0zlC7yuZW4zgEUzeQjoGi3RQJGWKJvUQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from AS5PR06MB9040.eurprd06.prod.outlook.com (2603:10a6:20b:676::22)
+ by DB8PR06MB6377.eurprd06.prod.outlook.com (2603:10a6:10:12c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.17; Wed, 3 Sep
+ 2025 09:23:35 +0000
+Received: from AS5PR06MB9040.eurprd06.prod.outlook.com
+ ([fe80::f8cf:8122:6cad:4cf7]) by AS5PR06MB9040.eurprd06.prod.outlook.com
+ ([fe80::f8cf:8122:6cad:4cf7%5]) with mapi id 15.20.9094.016; Wed, 3 Sep 2025
+ 09:23:35 +0000
+From: Tapio Reijonen <tapio.reijonen@vaisala.com>
+Date: Wed, 03 Sep 2025 09:23:04 +0000
+Subject: [PATCH] serial: max310x: improve interrupt handling
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250903-master-max310x-improve-interrupt-handling-v1-1-bfb44829e760@vaisala.com>
+X-B4-Tracking: v=1; b=H4sIAPcIuGgC/x2N3QqDMAyFX0VyvUBbGcO9ythFtJkLaC2pSkF8d
+ 4NXh+9wfg4orMIF3s0ByrsUWZKBfzQw/CmNjBKNIbjwdJ1rcaaysprU1ruKMmdddkslc3XLK1o
+ rTpJGJAqhf/XkBx/B9rLyT+r99fme5wU7vZZqewAAAA==
+X-Change-ID: 20250903-master-max310x-improve-interrupt-handling-aa22b7ba1c1d
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Jiri Slaby <jirislaby@kernel.org>, Alexander Shiyan <shc_work@mail.ru>, 
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
+ Tapio Reijonen <tapio.reijonen@vaisala.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1756891414; l=1862;
+ i=tapio.reijonen@vaisala.com; s=20250903; h=from:subject:message-id;
+ bh=TZPkz0xXD5quDdkUWkyuvM2LdUuMHFqveFMmda/ddQI=;
+ b=6HqSWMW/r6HevY+BiyXMtRjHFroH3owiPcIAojGFdAv/KBSJi/sbuCZdBriO+IjHJS/1C3jxN
+ WBwnjRu9Sz/BLdWgJdK053/n+QBc/k3D3nZz1NOOEQ93HTdzDO13nab
+X-Developer-Key: i=tapio.reijonen@vaisala.com; a=ed25519;
+ pk=jWBz3VD84WbWgfEgIqB5iFFiyVIHZr52zVBPOm7qiGo=
+X-ClientProxiedBy: GVZP280CA0098.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:150:275::8) To AS5PR06MB9040.eurprd06.prod.outlook.com
+ (2603:10a6:20b:676::22)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODMwMDAzMSBTYWx0ZWRfX1NYVtOWvsxqh
- H7dHh6ssE7uE4zWXAsSRheemxED4XpBi3JOr6tekZoObcmhFpfMNQ51qL8OedJ79kXRi+De9k/X
- FFhFjR/hCcR4DHeiZrkH/Y2/p2rbnJxWuhC41jcixMH1MkCYqwRxGuZ3unF5gafI9m8W5/TpEQV
- xgKAhqEtgPbkDz4+Ht4XwtiIeA8Ud61Ja5YR9NXWLDn+teaqPlUhHl5wn4B+4HBxpWsynxKBilU
- vsu/VSqkoN2CnzCjCB1XpMlUxwApzFpLaNwfCLc5TrcrQeD+pt3EDvfC3sqwZNdOuSidjgEdYty
- 27Mnbl3PbGNHDM5GYkJmcWIjyRPok7lXSAK2wj/iHK+whqUgUQICQy4FLKQR5Bdct+c4qw+wXT9
- tRuI21Rd
-X-Authority-Analysis: v=2.4 cv=A8xsP7WG c=1 sm=1 tr=0 ts=68b7e0d1 cx=c_pps
- a=mDZGXZTwRPZaeRUbqKGCBw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=yJojWOMRYYMA:10 a=EUspDBNiAAAA:8 a=ZUYIRPIop1y0tegngwgA:9
- a=zc0IvFSfCIW2DFIPzwfm:22
-X-Proofpoint-ORIG-GUID: FQNmQ2efcrKP6PCogmet1UtGyPaSkl6a
-X-Proofpoint-GUID: FQNmQ2efcrKP6PCogmet1UtGyPaSkl6a
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-03_01,2025-08-28_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 spamscore=0 impostorscore=0 bulkscore=0 clxscore=1015
- suspectscore=0 malwarescore=0 priorityscore=1501 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2508300031
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS5PR06MB9040:EE_|DB8PR06MB6377:EE_
+X-MS-Office365-Filtering-Correlation-Id: 37ca5e7e-9a67-4555-6505-08ddeacb8e95
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|52116014|376014|366016|1800799024|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?VHRWeVF6c0pFM21WY2tsNTBHRTRjOFBJejJBYmZJbXVMWW5HMTdyR0J5WFJx?=
+ =?utf-8?B?SFBORU9LQkRrSmJCRXRCTkQ2MkE3MC9oNnhuK08wV1RNd1BSRktrSlZXQnV4?=
+ =?utf-8?B?c3FsZk1DcmFPQlErdnBSYmttYzlVQVJmcGtseW4zWnpsLzlpV1dJVDYyS29O?=
+ =?utf-8?B?RnRTRHpUTTEwZnNCNCt3V2ZuYlRzM3hCT3JqOWpwbUI5YWd5MVVUTkRlUmpt?=
+ =?utf-8?B?T1haaHdEQzlqbWxoaGtwUXRIcWRtMzYzRW5WRENubDFuRTJ3c0VxT0U1TDYx?=
+ =?utf-8?B?cHVYQTNkZENPdmRYRURTeFRtS3hJT2IxM0U5ZnJjenFYV1VSQlM1cklnZnpr?=
+ =?utf-8?B?b2tYV2hNRis3QzBaWWRtOWJPdTAzT2ltc2NVTXdXRkQzdldiQ2tVeTVsVzV0?=
+ =?utf-8?B?N2dHTlpDNE9iNFlQUTZrRnQ1VlVsMWFqT0VNRFgxM3NJSVkwY2hySDFITm5V?=
+ =?utf-8?B?dDI3WHdvci82SS9aMVJFdDUxc2FOUE9lZTRjUXRRREJCbFFadlV6dEVrMDA3?=
+ =?utf-8?B?RzNwb3E2TkFjK2xlWkVQcFo0aHNqMW1pdTgyMGR1UUJwYjh1Ykg4cHllbW0r?=
+ =?utf-8?B?Qkkrc1hoL1lBQXZVRStMaDNIeUlJMU1NRFV5V3M2WHJRaHNyMUExQVBXVVgz?=
+ =?utf-8?B?YnBQZHlSSGd1R2pMNDE3SDFFeEpBNjFZRUR6dEFqcWwwVmJJTXp4bFFDOGRD?=
+ =?utf-8?B?ZzE1SXRSUDFhakhLbldITUhtL0ZSVTRiL3o3d1NNNGJ0TVBjbVJwVlczZzFE?=
+ =?utf-8?B?dDNlOG4vZjdvOWdoZ1BpZ1ZhcWh4YXl3cHo0ZTZXNW1DaEhaaGx0alBZV21z?=
+ =?utf-8?B?cW5ZWFdyMkQrQ2ZiNHNTQWk5dkV4ZERDWW9Db0lLZjRHWlA1WTNhaWtrNlJE?=
+ =?utf-8?B?SEUvZUltTitBY1p5L0RxT3lBTSt1TEF3bFIvWFBNZS9TOVRGR1lwREh3dmov?=
+ =?utf-8?B?dWN5M212WllSOFJPTFRVL0pXcnNNWEx6a1Z5NTV1NmZPQmNuMWJsSTVRb0tk?=
+ =?utf-8?B?M3Y5RnVubkZ5eTduWHJxS1FXdksraVhNeE93QkxjRmE0K1llVUhCeVk0TlVn?=
+ =?utf-8?B?TW5SUVp4YURKT0xCNW8zL25ZT1RDWkhoQmw0b283K0sxZnROS2tFK3FvZU41?=
+ =?utf-8?B?RGd4M3F2WFBzUHhhY3BZMllpTno5QTRSbDJSWGVydmhJS2xhaXFJeHRqVTgw?=
+ =?utf-8?B?OTBhMTlvR0JXWk1OMis0WnM4K0lwNFFJUDgwQWJCNndWTVNURjJDYnZTWEhx?=
+ =?utf-8?B?MFRYeHQ1dzlUWi8zZmVJNlRBMG9Tb0VOTEFJZUhYeXNCbSsvcERWS1dCbVlX?=
+ =?utf-8?B?VERVaGV1dUpFcXJMVmphRlhKckc4OWExYU5HMCtqaVlyV2tsQjh5cUFFVks0?=
+ =?utf-8?B?NmJtaUZUVDBvVDJaRU1aRkk5bHcyT01iYkNMRDI1RWQwUSs4dm9mU3UwWTYv?=
+ =?utf-8?B?Y3BxU01oMElLaUVWVTRkeEhJMzNlTSs1Y3dCZmNEY0tKeHVKMlNKMFAxS1Z1?=
+ =?utf-8?B?dFZtendKSXB2dVdwZ2lqOEZmdnBBYld5NnVTNzgyaGhpV3FXMzF0MVhYOFFm?=
+ =?utf-8?B?SFN4ZXAzeXk4cEpMY3FlYkJ4RGNCNzA3Q295UHpYU3Mrc0ZiUjNyK2FOZkNk?=
+ =?utf-8?B?K0wzdWlqWVBZVkZ2KzFQSmhPQ1dYdzg4M3B1Y0ppRll3YzNnQ1RjV1l4RHVx?=
+ =?utf-8?B?aVNFL0xCZ1ZWM1B1aVVNQnF3NmNIaWxCcStiUlphOERWaFpBWHd1L2pOVU9h?=
+ =?utf-8?B?Szdvc25BZmxXK05Kei8wMitFRC9aTS82bFdzdHBOcGgzTXAwYjF1OUc3N1pF?=
+ =?utf-8?B?MHlTbExkZ1lCYVJmSkQvUVlnYTBmNUFHeFZJSU1RVkYrNWYzR0dnYzRETXhy?=
+ =?utf-8?B?UFBZZXQyVFhUUHFkWndoVGZxdjhGckVwOTNEYm5DdC9PdTdFenpOKzF6dDZM?=
+ =?utf-8?B?SDNPT3l4MUVmeDlqcmxsbEZ6dE9OZllQUHJNTFJRSElteTFDTmZpWGVkZ1pO?=
+ =?utf-8?B?TDNSK3dtSXl3PT0=?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS5PR06MB9040.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(376014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ekwzRGxPYlJRdVhFMHR2MjlZTnB0TG1TVUsybjFmeS9SeWZzUUNSTXBuQllN?=
+ =?utf-8?B?UXhZOUd3RytaYWVsODRObDdhZjRVYzNIOHhERllwYTg2OW14VGI1aFMwc3Nu?=
+ =?utf-8?B?YisvOS80WU1KQzYrbVJKL0RDdkE5UlRxWi93ODVUaVRoT1ltN2Y5VjZ0RS9t?=
+ =?utf-8?B?aHJxVkc4WnpCTitXTGZOK1l1N1pab2g3aEw0ZEVFbjh3aHR1UWQyczRDL0Rn?=
+ =?utf-8?B?QTdxRThDcUJnb2VrYnhTbU9xaDNxUFBQWmhkVW12T085TmJKdXM3VDZPZTNw?=
+ =?utf-8?B?aW1iWTdCVy9nUWRVeFI0Tk5uK0lRQUVDQWk3b0orQ3pNS3ZQOGVkbFY3U0g1?=
+ =?utf-8?B?WGRzMHdQbjF4Qk5oMktlMExuYm1aUmk0MEVidzVJL25HdUVFcmZYbHR1QnU0?=
+ =?utf-8?B?OS9ra05HNDVKdFkyeFovL1pvSmF4WGxQbUw2djZnbnJDaVF2WkNTcGdzRWRz?=
+ =?utf-8?B?ZHJkZjBnQzk0SWdjNktYeUVqaWd4VUhvT2ZLbnZBemY2WHprcEFmSTFVTGpY?=
+ =?utf-8?B?dFNGWkcrM2hRV3h1eUhkZDhJRDVZTHNmTGUvL1JCYWwyZHNMazRmcFpCRFlR?=
+ =?utf-8?B?V0tURDE3d2h3bDFpZGRSR2xKQVkxZXBDcWZMenQxQWdYNFY0VVEvVGtmR0Rs?=
+ =?utf-8?B?WE55d1QxOFcxNlhQb0hWR2Z0YTdGQm9qcXV5VHNJcUF5THBXZDBHaXpxWFlx?=
+ =?utf-8?B?VU5ZdE1WOTN1Q2Z0L2VUaVVsaUI0L2pSallyV01OUUtTMTRRT3NIeVF2a0RC?=
+ =?utf-8?B?Q2hLTG5hTFhndHNyYmFydWdRV2xOYmp3MURreEI1RkVWRlFvNnR0Mkl1TE1F?=
+ =?utf-8?B?NDBIS3h3a0dvdzRYR3NsZ1NXQlh5TEZac1BOUW5CUk9oMnJJV2ZjaXA2VE9H?=
+ =?utf-8?B?YlFFMnF0ZUY2dDkvWkdLdy9Pa1Z3TkJBbnlTUTY2a2k5RDd2Z2tpU1NnVHNT?=
+ =?utf-8?B?MjNudmRDN2lwUkhidmlzRnRZN3RLNGt5MU93cWVrMldBemVuTElDL013VkZE?=
+ =?utf-8?B?TVpOb20xTUo3ZnNxaFN6MmtKNENyTE5TQXJoNWVaeVdMQktMYm1lZnNzb1ow?=
+ =?utf-8?B?N2RZdENjL2lSRUE5U2xVTmtseG1lckRHWlpTZ2ZhOU9SUUVLM1BJUm8xTi9x?=
+ =?utf-8?B?dUtaWlRYU2R4MWhoZEk5SjlZTjZjcmdwbVhhcmY4b2g4OFYvQ3Y2dVNQeFd0?=
+ =?utf-8?B?TnA0bVIrLzBRbWVBbWYxTndjeTFvWlZFTUE3bzc2cjZYNnR4bXV6YUJGWDds?=
+ =?utf-8?B?VzdpRmxTS1plY0hZVGoveU9oa2Q3YVIrcDBTYmRLWEFPdWdPTFc1TGlhNGlT?=
+ =?utf-8?B?b3UxS3k4VEg1eFQyQURwLzZkOXpuQ3p4QTZCS05ZRUJmNE5KNTl5K0s3NmZ3?=
+ =?utf-8?B?czhhSDRyTFhkNTk2TFVHd2gyb1hvcnMyRUE3M1YvMi96S0N0SEkxUkMrcUcw?=
+ =?utf-8?B?MmYvY2pYd1IvYWdIUEY2MFNVRW01Rmo3ZnR0UkhxOWNOaFJ4NHg3Sk8rM0hM?=
+ =?utf-8?B?MG5uQ21oZGNERjJhTGhTS0hJWkw5SFEwQ011dWhxcUlqZFNXZnU4MWwyQzh1?=
+ =?utf-8?B?dVNEZWtsWDJLenRNSWNQOStmSFg2TEVoSWF0UE9IMml0WkVrcUZuM3orTmp5?=
+ =?utf-8?B?d0E0Wk4ycXBZRVFGV1NMZit6VmFWYWNGT3U1YXhaTHhqbktQMVA0SkhKUXZo?=
+ =?utf-8?B?YVpUWDNQSUNmdGRhdnVPbXFMc25LMUlwUnMvOHZxRkZ1SkNESWZGdmVNSVcw?=
+ =?utf-8?B?bzlMZkMzT1FtWjBCMy9sWjdMd1BEcDEzNEY3NzE4ZC9ZUVJIUXU3SGdZVDVV?=
+ =?utf-8?B?VXlGcUtUVWUwcFoyTEQ3UndEclE5dDBvbWc0ZTR3eENDTHhnZHpIMTNLTzdW?=
+ =?utf-8?B?TVY2UjNyd2xZV2M1dkZxOXFsc2V0akRvSlV4QTNkYTBPS1ZITHA3K3pZaEcr?=
+ =?utf-8?B?d1ZzQ1B4Mk1ZZndUOEdhb2MvTWFDVmNHakFsSUtyOXY3QXpuQWNFRjl1K040?=
+ =?utf-8?B?eThheS9VakhybURyTENXYWNNM1A2SVdBTU1HKytHRkl2OGFKNFpPNitqOVRx?=
+ =?utf-8?B?NVZGS01PZ2NuU3BHQ1ZtZndsQ1BpZCtXeEc4NHMxRkZ3cTlXY1FwQzVRTHdB?=
+ =?utf-8?B?K0ZGS3ZUd2ZHbjZEM2J5R0NMNlUxQmZMN2hxMDNnaDZiZnJOcDQ3NFVvK2FV?=
+ =?utf-8?B?NHc9PQ==?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37ca5e7e-9a67-4555-6505-08ddeacb8e95
+X-MS-Exchange-CrossTenant-AuthSource: AS5PR06MB9040.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2025 09:23:34.9528
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IubaUVjslljIbl6QJYtUgMz4O7RIiY3509RXjtu2/UjR5S+bTgYRGfLE2KSQQsH/82HApYacT2hhIicVPAQH7ktFpxSGcqm//O5ZaPpkpZc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR06MB6377
 
-GENI UART driver currently supports only non-DFS (Dynamic Frequency
-Scaling) mode for source frequency selection. However, to operate correctly
-in DFS mode, the GENI SCLK register must be programmed with the appropriate
-DFS index. Failing to do so can result in incorrect frequency selection
+When there is a heavy load of receiving characters to all
+four UART's, the warning 'Hardware RX FIFO overrun' is
+sometimes detected.
+The current implementation always service first UART3 until
+no more interrupt and then service another UARTs.
 
-Add support for Dynamic Frequency Scaling (DFS) mode in the GENI UART
-driver by configuring the GENI_CLK_SEL register with the appropriate DFS
-index. This ensures correct frequency selection when operating in DFS mode.
+This commit improve interrupt service routine to handle all
+interrupt sources, e.g. UARTs when a global IRQ is detected.
 
-Replace the UART driver-specific logic for clock selection with the GENI
-common driver function to obtain the desired frequency and corresponding
-clock index. This improves maintainability and consistency across
-GENI-based drivers.
-
-Signed-off-by: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
+Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
 ---
- drivers/tty/serial/qcom_geni_serial.c | 92 ++++++---------------------
- 1 file changed, 21 insertions(+), 71 deletions(-)
+ drivers/tty/serial/max310x.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 9c7b1cea7cfe..59019fc30e47 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1,5 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
--// Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
-+/*
-+ * Copyright (c) 2017-2018, The Linux foundation. All rights reserved.
-+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-+ */
+diff --git a/drivers/tty/serial/max310x.c b/drivers/tty/serial/max310x.c
+index ce260e9949c3c268e706b2615d6fc01adc21e49b..3234ed7c688ff423d25a007ed8b938b249ae0b82 100644
+--- a/drivers/tty/serial/max310x.c
++++ b/drivers/tty/serial/max310x.c
+@@ -824,15 +824,26 @@ static irqreturn_t max310x_ist(int irq, void *dev_id)
  
- /* Disable MMIO tracing to prevent excessive logging of unwanted MMIO traces */
- #define __DISABLE_TRACE_MMIO__
-@@ -1240,75 +1243,15 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
- 	return 0;
- }
+ 	if (s->devtype->nr > 1) {
+ 		do {
+-			unsigned int val = ~0;
++			unsigned int val;
++			unsigned int global_irq = ~0;
++			int port;
  
--static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
--			unsigned int *clk_div, unsigned int percent_tol)
--{
--	unsigned long freq;
--	unsigned long div, maxdiv;
--	u64 mult;
--	unsigned long offset, abs_tol, achieved;
--
--	abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
--	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
--	div = 1;
--	while (div <= maxdiv) {
--		mult = (u64)div * desired_clk;
--		if (mult != (unsigned long)mult)
--			break;
--
--		offset = div * abs_tol;
--		freq = clk_round_rate(clk, mult - offset);
--
--		/* Can only get lower if we're done */
--		if (freq < mult - offset)
--			break;
--
--		/*
--		 * Re-calculate div in case rounding skipped rates but we
--		 * ended up at a good one, then check for a match.
--		 */
--		div = DIV_ROUND_CLOSEST(freq, desired_clk);
--		achieved = DIV_ROUND_CLOSEST(freq, div);
--		if (achieved <= desired_clk + abs_tol &&
--		    achieved >= desired_clk - abs_tol) {
--			*clk_div = div;
--			return freq;
--		}
--
--		div = DIV_ROUND_UP(freq, desired_clk);
--	}
--
--	return 0;
--}
--
--static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
--			unsigned int sampling_rate, unsigned int *clk_div)
--{
--	unsigned long ser_clk;
--	unsigned long desired_clk;
--
--	desired_clk = baud * sampling_rate;
--	if (!desired_clk)
--		return 0;
--
--	/*
--	 * try to find a clock rate within 2% tolerance, then within 5%
--	 */
--	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
--	if (!ser_clk)
--		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
--
--	return ser_clk;
--}
--
- static int geni_serial_set_rate(struct uart_port *uport, unsigned int baud)
- {
- 	struct qcom_geni_serial_port *port = to_dev_port(uport);
- 	unsigned long clk_rate;
--	unsigned int avg_bw_core;
-+	unsigned int avg_bw_core, clk_idx;
- 	unsigned int clk_div;
- 	u32 ver, sampling_rate;
- 	u32 ser_clk_cfg;
-+	int ret;
- 
- 	sampling_rate = UART_OVERSAMPLING;
- 	/* Sampling rate is halved for IP versions >= 2.5 */
-@@ -1316,17 +1259,22 @@ static int geni_serial_set_rate(struct uart_port *uport, unsigned int baud)
- 	if (ver >= QUP_SE_VERSION_2_5)
- 		sampling_rate /= 2;
- 
--	clk_rate = get_clk_div_rate(port->se.clk, baud,
--		sampling_rate, &clk_div);
--	if (!clk_rate) {
--		dev_err(port->se.dev,
--			"Couldn't find suitable clock rate for %u\n",
--			baud * sampling_rate);
-+	ret = geni_se_clk_freq_match(&port->se, baud * sampling_rate, &clk_idx, &clk_rate, false);
-+	if (ret) {
-+		dev_err(port->se.dev, "Failed to find src clk for baud rate: %d ret: %d\n",
-+			baud, ret);
-+		return ret;
-+	}
+ 			WARN_ON_ONCE(regmap_read(s->regmap,
+-						 MAX310X_GLOBALIRQ_REG, &val));
+-			val = ((1 << s->devtype->nr) - 1) & ~val;
++				MAX310X_GLOBALIRQ_REG, &global_irq));
 +
-+	clk_div = DIV_ROUND_UP(clk_rate, baud * sampling_rate);
-+	/* Check if calculated divider exceeds maximum allowed value */
-+	if (clk_div > (CLK_DIV_MSK >> CLK_DIV_SHFT)) {
-+		dev_err(port->se.dev, "Calculated clock divider %u exceeds maximum\n", clk_div);
- 		return -EINVAL;
- 	}
- 
--	dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div = %u\n",
--			baud * sampling_rate, clk_rate, clk_div);
-+	dev_dbg(port->se.dev, "desired_rate = %u, clk_rate = %lu, clk_div = %u\n, clk_idx = %u\n",
-+		baud * sampling_rate, clk_rate, clk_div, clk_idx);
- 
- 	uport->uartclk = clk_rate;
- 	port->clk_rate = clk_rate;
-@@ -1346,6 +1294,8 @@ static int geni_serial_set_rate(struct uart_port *uport, unsigned int baud)
- 
- 	writel(ser_clk_cfg, uport->membase + GENI_SER_M_CLK_CFG);
- 	writel(ser_clk_cfg, uport->membase + GENI_SER_S_CLK_CFG);
-+	/* Configure clock selection register with the selected clock index */
-+	writel(clk_idx & CLK_SEL_MSK, uport->membase + SE_GENI_CLK_SEL);
- 	return 0;
- }
- 
++			val = ((1 << s->devtype->nr) - 1) & ~global_irq;
++
+ 			if (!val)
+ 				break;
+-			if (max310x_port_irq(s, fls(val) - 1) == IRQ_HANDLED)
+-				handled = true;
++
++			do {
++				port = fls(val) - 1;
++				if (max310x_port_irq(s, port) == IRQ_HANDLED)
++					handled = true;
++
++				global_irq |= 1 << port;
++				val = ((1 << s->devtype->nr) - 1) & ~global_irq;
++			} while (val);
+ 		} while (1);
+ 	} else {
+ 		if (max310x_port_irq(s, 0) == IRQ_HANDLED)
+
+---
+base-commit: c8bc81a52d5a2ac2e4b257ae123677cf94112755
+change-id: 20250903-master-max310x-improve-interrupt-handling-aa22b7ba1c1d
+
+Best regards,
 -- 
-2.34.1
+Tapio Reijonen <tapio.reijonen@vaisala.com>
 
