@@ -1,109 +1,82 @@
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE80227990C;
-	Fri,  5 Sep 2025 20:07:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.154.21.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6BBF270557;
+	Fri,  5 Sep 2025 20:38:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757102843; cv=none; b=j9Bmj5B23CG4IpXdTyDURdWbJQx0LtgDRnA+NTp+kc2RIHwVrSZoc/XZpBlARLw9ue+7B1TWt1S4ZCIBGeTLZLmP7vIRaO8llqCQLCF8q8pR53+uXR2pSomPrUwVGD2mVjUxfAW2VpfATkGqoIOPb3lvjjhttvYKnUOmJaX8GTU=
+	t=1757104711; cv=none; b=BS6EbUMVyY1FcBKM74wb43U2Lc4kqOtxmwaZqZd/6WOQKzaY/Etiw4rSGOukfUYptB2N63wV07Oz5sH8sWTPUaRsWQDfhGQq0IxomK2qPsJ8TPRK8xWqzRcix8KtOqgjPFZz5O46GqmDQU/19AvCxIti3/qWgIEuGVzFWOiPOd0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757102843; c=relaxed/simple;
-	bh=c7Z8AwDrfVSK0Ip17lf53vHcmB+b89NSxKZjLyr8a6Q=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:CC:Content-Type; b=Gm9/GA43JJoZvjSE/QiYVwOEa9HeuTrCfTAXQyQ5gBLY5YEpGiefrjkJyAAFHIHTl6CX/lOgkS72WZdAHPAyKGqFtk1mI7vkKAYJJANebpQU9i4FkCvPVUONqUo0YlboFRrvylEAyUYZsLUj8s5iZaaUDdW3uuFJ0JVFuhje76s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=omp.ru; spf=pass smtp.mailfrom=omp.ru; arc=none smtp.client-ip=90.154.21.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=omp.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=omp.ru
-Received: from [192.168.2.102] (213.87.137.226) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1258.12; Fri, 5 Sep
- 2025 23:07:13 +0300
-Message-ID: <bd8764c5-c43c-4bca-996d-65367805ad5a@omp.ru>
-Date: Fri, 5 Sep 2025 23:07:12 +0300
+	s=arc-20240116; t=1757104711; c=relaxed/simple;
+	bh=1jzKDgZMiPtHutvrnfgdjjHYpvwH6zlRmiSOv9As9Ok=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XR3PNOkTtEd5m+lxivaJ1IrZuAcTqRVAE2pDpgrLZFRDHvbx4nOgfxzvY1E5AdExECh/Ur6dQiLEpS7/V6D7P4eAFH6QtfjnX9OZncr3e3mnKd7DveVCGYUG0cYwGslF0POt5F81tNNG36C8Dg5geMVEhwiAaTcJbkafuvYozfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TboLt5L/; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TboLt5L/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44AAEC4CEF1;
+	Fri,  5 Sep 2025 20:38:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757104710;
+	bh=1jzKDgZMiPtHutvrnfgdjjHYpvwH6zlRmiSOv9As9Ok=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TboLt5L/1XzMHZmVcNRsMUNW+rC2Mh3IDtafTLxBVs7T5elDXTLGZTk7tYDYTztjM
+	 gh7Fwrzl3HxluttGLY4iEb/Rbmq8CK4LOm1BETmJWdetT2UxGT8AScoPqIBL8nDq24
+	 JR35GMOxW9InfEkQNnjfs4IaCXLg2TC7M0pPP0k//z5x0G7Hd0E5TGFK22AiHHqxRS
+	 RECGQv6ZsgHeKNhZhw0uFhG4aFo/nWgYJ95Xl4mipJ5qu+5vYM2DpA+yMDUMhY9oSg
+	 DV+UmAS/AHtiQ0D5nY9txqX31NoM9wO/rg3T8zmrAE+k2TDnvME1k5P+N3rGapD1me
+	 h1Xw//46MNbCg==
+Date: Fri, 5 Sep 2025 15:38:29 -0500
+From: Rob Herring <robh@kernel.org>
+To: Kendall Willis <k-willis@ti.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, vigneshr@ti.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+	d-gole@ti.com, vishalm@ti.com, sebin.francis@ti.com,
+	msp@baylibre.com, khilman@baylibre.com, a-kaur@ti.com,
+	john.ogness@linutronix.de, andriy.shevchenko@linux.intel.com,
+	yujiaoliang@vivo.com, b-liu@ti.com, u.kleine-koenig@baylibre.com
+Subject: Re: [PATCH 1/3] dt-bindings: serial: 8250_omap: Update wakeup-source
+ type property
+Message-ID: <20250905203829.GA1269545-robh@kernel.org>
+References: <20250904212455.3729029-1-k-willis@ti.com>
+ <20250904212455.3729029-2-k-willis@ti.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
-Subject: [PATCH] serial: 8250_mtk: correct max baud rate in the set_termios()
- method
-Organization: Open Mobile Platform
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
-	<jirislaby@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <linux-arm-kernel@lists.infradead.org>,
-	<linux-mediatek@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 6.1.1, Database issued on: 09/05/2025 19:27:58
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 196074 [Sep 05 2025]
-X-KSE-AntiSpam-Info: Version: 6.1.1.11
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 66 0.3.66
- fc5dda3b6b70d34b3701db39319eece2aeb510fb
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info:
-	127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;omp.ru:7.1.1
-X-KSE-AntiSpam-Info: {Tracking_ip_hunter}
-X-KSE-AntiSpam-Info: FromAlignment: s
-X-KSE-AntiSpam-Info: ApMailHostAddress: 213.87.137.226
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 09/05/2025 19:35:00
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 9/5/2025 6:47:00 PM
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250904212455.3729029-2-k-willis@ti.com>
 
-As is obvious from the code calculating the divisor in the set_termios()
-method, the Mediatek UART driver uses 256-time oversampling for the high
-baud rates, so passing port->uartclk to uart_get_baud_rate() for the max
-acceptable baud rate makes no sense, we should divide by 256 first (this
-should also prevent overflow when some arbitrary baud rate is passed via
-termios->c_ospeed)...
+On Thu, Sep 04, 2025 at 04:24:53PM -0500, Kendall Willis wrote:
+> Allow the wakeup-source property to be either of type boolean or of a
+> phandle array. The phandle array points to the system idle states that the
+> UART can wakeup the system from.
+> 
+> Signed-off-by: Kendall Willis <k-willis@ti.com>
+> ---
+>  Documentation/devicetree/bindings/serial/8250_omap.yaml | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+> index 1859f71297ff2..851a5291b4be4 100644
+> --- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
+> +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+> @@ -69,7 +69,13 @@ properties:
+>    clock-frequency: true
+>    current-speed: true
+>    overrun-throttle-ms: true
+> -  wakeup-source: true
+> +
+> +  wakeup-source:
+> +    oneOf:
+> +      - type: boolean
+> +      - $ref: /schemas/types.yaml#/definitions/phandle-array
+> +        description:
+> +          List of phandles to system idle states in which UARTs can wakeup the system.
 
-Found by Linux Verification Center (linuxtesting.org) with the Svace static
-analysis tool.
-
-Fixes: 81bb549fdf14 ("serial: 8250_mtk: support big baud rate.")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-
----
-The patch is against the master branch of Linus Torvalds' linux.git repo.
-
- drivers/tty/serial/8250/8250_mtk.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Index: linux/drivers/tty/serial/8250/8250_mtk.c
-===================================================================
---- linux.orig/drivers/tty/serial/8250/8250_mtk.c
-+++ linux/drivers/tty/serial/8250/8250_mtk.c
-@@ -358,7 +358,7 @@ mtk8250_set_termios(struct uart_port *po
- 	 */
- 	baud = uart_get_baud_rate(port, termios, old,
- 				  port->uartclk / 16 / UART_DIV_MAX,
--				  port->uartclk);
-+				  port->uartclk / 256);
- 
- 	if (baud < 115200) {
- 		serial_port_out(port, MTK_UART_HIGHS, 0x0);
+You don't need to be defining the type here. Did you find either type 
+didn't work?
