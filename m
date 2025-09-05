@@ -1,96 +1,112 @@
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 11AAF2D46D8;
-	Fri,  5 Sep 2025 10:20:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=93.17.235.10
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BBAF17F4F6;
+	Fri,  5 Sep 2025 18:38:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757067638; cv=none; b=jMK2c1EaUDrenhSveF24QOIR8rklW7e2vsQgtuxvwUjVdu8arWc6CrcNTZ8vK6cnPaG6SlmjHuPQnjKgCGbBzRn0ltTLbG6+op0yp2QdOUPIhbgLE+UtatjIP/VJQ7I+1uccizSInoWCiNNpIqfRliiFiNt63scEwN8EfyrFYhA=
+	t=1757097487; cv=none; b=KahHWuyCwVwp4VgFaPcMR2mlIoqxXeHSAAGP7E3DKDtCMBJ10bBDUE7R7oBbtjFRoXBd8AnxolFEWqAL4Cc1GMUm56CcfMlQV2CMXX9+kBaT8uosngYyvBndVED8hh0fUiHBYr7O2g4hUqFco+7kQmyYdLgg9vTNUtPypEhOwfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757067638; c=relaxed/simple;
-	bh=HnPEUWmGMhAPulchLlYkOSU9Nq+SlXkxxTHApPFtel4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EVx+VcbBYc8DJqNqchd5G6aJ8r4UvHI/pTdWziHK6bldrsdgMVTDtsE0VXlO6ixbLYBRkU00mVQorL4H6UVIq6yNcO5pIH1Ii1UbQ7UL0+TN88cyt8p67K8pnFEE5YUpneeRRVbbEKnDLHY+3UXAqmdPjQiTJwmVGG+6uIThDNY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu; spf=pass smtp.mailfrom=csgroup.eu; arc=none smtp.client-ip=93.17.235.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=csgroup.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=csgroup.eu
-Received: from localhost (mailhub4.si.c-s.fr [172.26.127.67])
-	by localhost (Postfix) with ESMTP id 4cJBQF6cZVz9sSh;
-	Fri,  5 Sep 2025 11:49:25 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-	by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RcDlpa8gf6Cl; Fri,  5 Sep 2025 11:49:25 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-	by pegase2.c-s.fr (Postfix) with ESMTP id 4cJBQD56YSz9sSf;
-	Fri,  5 Sep 2025 11:49:24 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id 97D228B774;
-	Fri,  5 Sep 2025 11:49:24 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-	by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-	with ESMTP id RTrywvFHm_LN; Fri,  5 Sep 2025 11:49:24 +0200 (CEST)
-Received: from [192.168.235.99] (unknown [192.168.235.99])
-	by messagerie.si.c-s.fr (Postfix) with ESMTP id D74578B773;
-	Fri,  5 Sep 2025 11:49:23 +0200 (CEST)
-Message-ID: <d5bfa13f-379f-493a-a410-400dd3782207@csgroup.eu>
-Date: Fri, 5 Sep 2025 11:49:23 +0200
+	s=arc-20240116; t=1757097487; c=relaxed/simple;
+	bh=zBznowgcA9KRpPYdFjqyySbRdKkl9xdj5USfqCcnRzE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JbtbhkImDdIC2Yfe9YR5IfDm6G8M+19cdzYKRoD3vO7AGbdKEVWeCR3hsCxP0ESXH1quat/z9ynE75Eg0yTv5HpY593dza+PKSupJLJBeRcBZx2Zn3W8iu2HdBfm7QQ+ld0r/jX/C6JKH4BrkeaTnOEivN1aAsDeMALzQlZpbfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LKX9Ju1m; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LKX9Ju1m"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18486C4CEF1;
+	Fri,  5 Sep 2025 18:38:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757097487;
+	bh=zBznowgcA9KRpPYdFjqyySbRdKkl9xdj5USfqCcnRzE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LKX9Ju1mWOXI6N75KfrsrKrwLfvt94Xo7Jbvycrs9IXgcAFnJc1MoWmjzHNi1e8bV
+	 b7oIiDbtVqIwoFAbp7CuQUaSqsm05FRccpW8RQGc7uBYl1iQ6/ORuE37l+zFqol7tv
+	 N3109/8CwbsVFqDjUOjdmOL+7kqMTH4eLzEgZDLlnaEosbQSwQ3zj4grFA1h9/Egd+
+	 vwKy64+AOVyk8yoWTurZAmQ8WJMj1wHeoRhO1r4v+0x4TxtPsgXpTCf2CA3cGcc9MV
+	 D/TSUGfak+q+Gn1FXUVoAlQ+Mw5uT2M4bk8z2YLK7HCfSQSvZbJA/TR8VyqSbxXxSo
+	 JU8ShV4YUxkMw==
+Date: Fri, 5 Sep 2025 19:38:00 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Kendall Willis <k-willis@ti.com>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, vigneshr@ti.com,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, d-gole@ti.com, vishalm@ti.com,
+	sebin.francis@ti.com, msp@baylibre.com, khilman@baylibre.com,
+	a-kaur@ti.com, john.ogness@linutronix.de,
+	andriy.shevchenko@linux.intel.com, yujiaoliang@vivo.com,
+	b-liu@ti.com, u.kleine-koenig@baylibre.com
+Subject: Re: [PATCH 1/3] dt-bindings: serial: 8250_omap: Update wakeup-source
+ type property
+Message-ID: <20250905-saloon-siesta-77da98d7ae02@spud>
+References: <20250904212455.3729029-1-k-willis@ti.com>
+ <20250904212455.3729029-2-k-willis@ti.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tty: remove redundant condition checks
-To: Xichao Zhao <zhao.xichao@vivo.com>, gregkh@linuxfoundation.org,
- jirislaby@kernel.org
-Cc: linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-arm-msm@vger.kernel.org
-References: <20250905091321.437476-1-zhao.xichao@vivo.com>
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-Content-Language: fr-FR
-In-Reply-To: <20250905091321.437476-1-zhao.xichao@vivo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="YBHU1HQe3eAUtz/k"
+Content-Disposition: inline
+In-Reply-To: <20250904212455.3729029-2-k-willis@ti.com>
 
 
+--YBHU1HQe3eAUtz/k
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Le 05/09/2025 à 11:13, Xichao Zhao a écrit :
-> Remove redundant condition checks and replace else if with else.
-> 
-> Signed-off-by: Xichao Zhao <zhao.xichao@vivo.com>
-
-Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-
+On Thu, Sep 04, 2025 at 04:24:53PM -0500, Kendall Willis wrote:
+> Allow the wakeup-source property to be either of type boolean or of a
+> phandle array. The phandle array points to the system idle states that the
+> UART can wakeup the system from.
+>=20
+> Signed-off-by: Kendall Willis <k-willis@ti.com>
 > ---
->   drivers/tty/hvc/hvc_console.c   | 2 +-
->   drivers/tty/serial/msm_serial.c | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/tty/hvc/hvc_console.c b/drivers/tty/hvc/hvc_console.c
-> index cd1f657f782d..fffc30b9ea54 100644
-> --- a/drivers/tty/hvc/hvc_console.c
-> +++ b/drivers/tty/hvc/hvc_console.c
-> @@ -184,7 +184,7 @@ static void hvc_console_print(struct console *co, const char *b,
->   					hvc_console_flush(cons_ops[index],
->   						      vtermnos[index]);
->   				}
-> -			} else if (r > 0) {
-> +			} else {
->   				i -= r;
->   				if (i > 0)
->   					memmove(c, c+r, i);
-> diff --git a/drivers/tty/serial/msm_serial.c b/drivers/tty/serial/msm_serial.c
-> index 3449945493ce..2e999cb9c974 100644
-> --- a/drivers/tty/serial/msm_serial.c
-> +++ b/drivers/tty/serial/msm_serial.c
-> @@ -1102,7 +1102,7 @@ msm_find_best_baud(struct uart_port *port, unsigned int baud,
->   
->   			if (result == baud)
->   				break;
-> -		} else if (entry->divisor > divisor) {
-> +		} else {
->   			old = target;
->   			target = clk_round_rate(msm_port->clk, old + 1);
->   			/*
+>  Documentation/devicetree/bindings/serial/8250_omap.yaml | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Do=
+cumentation/devicetree/bindings/serial/8250_omap.yaml
+> index 1859f71297ff2..851a5291b4be4 100644
+> --- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
+> +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+> @@ -69,7 +69,13 @@ properties:
+>    clock-frequency: true
+>    current-speed: true
+>    overrun-throttle-ms: true
+> -  wakeup-source: true
+> +
+> +  wakeup-source:
+> +    oneOf:
+> +      - type: boolean
+> +      - $ref: /schemas/types.yaml#/definitions/phandle-array
+> +        description:
+> +          List of phandles to system idle states in which UARTs can wake=
+up the system.
 
+Is there a single other instance of the wakeup-source property being
+used like this?
+
+> =20
+>  required:
+>    - compatible
+> --=20
+> 2.34.1
+>=20
+
+--YBHU1HQe3eAUtz/k
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaLsuCAAKCRB4tDGHoIJi
+0sCOAP0YKRfgNPuWmw0VBD7mFYv3TWGmnWOS9WQUj1ptbhD6ygEA2tj71JTgNmGh
+//hKbMoedfGWmP9EJpLiTCdPihC7agU=
+=B5j5
+-----END PGP SIGNATURE-----
+
+--YBHU1HQe3eAUtz/k--
