@@ -1,57 +1,57 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 089FE25CC75
-	for <linux-serial@vger.kernel.org>; Sun,  7 Sep 2025 11:33:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 907A1221554
+	for <linux-serial@vger.kernel.org>; Sun,  7 Sep 2025 11:34:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757244836; cv=none; b=Vs52govccRB0v6jJr+XfO3L/+M+x4ATq9Wp2KAEu5DJu3vZF8CsKldxBd3p1Rn6hThlFQWc7CPKqXMzAxknN8ibhA2vG4LuQOzBryYxUJzygAQjVaSidKyu2/S4ZMP0ThAawoPPiX1cCj8erq2oyOYU0u5ZSzMxFcqkaBbZ/NQM=
+	t=1757244893; cv=none; b=CC7+f62xFoZk0B/SnR0FdaFZYiKtGF49Qx8FkRg32Xdiwq/V5Cs4RxAFwHw4RblGkSkNPykAwpyLW4rpL9Y+A3qu2GsU9UzMzNDHeoRzSH4wbC/S8ANC9w9LTWmO/EQqvetf8heWYlLMhcoF1Die1UITt85TmwbCk47bclJFbZM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757244836; c=relaxed/simple;
-	bh=JWP8HnMSTgV6OY2AU3YsJB65GVkE/s97ppEVqZDeO9E=;
-	h=Date:From:To:Cc:Subject:Message-ID; b=O/7EJb4suCokUxGEeD9lq0z9UBUEXT8SBb8QkjnSkGtwcBBDqG9arA1w6MtUeWSuJdAJ2dWfnN/bxEJRTCbwhWn1IhuEDWW98b6WvZtauqiMrgLVv7YCSeKbfY9xRbqNNMERoKBR1zjSJgd/yNPsc7Gz+RjEwil7b00XPv6E1xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WEH3dCU/; arc=none smtp.client-ip=192.198.163.14
+	s=arc-20240116; t=1757244893; c=relaxed/simple;
+	bh=83WQP2VlLQmPtg8JgnAat9QgnDRwuprlAejRH1LqmKc=;
+	h=Date:From:To:Cc:Subject:Message-ID; b=Z1eEZ0nRJLgzMLSiwz11LmKBjgWZ8fo9gW6Kct+dubkKxADMdUPRRW0is9kcDjZyBCRElD2oUIJKL/MA6jVekHZjDG7p1nRIyD9Krz8XfzhFGsAolKhWi0NdZoVDRY9TyXdEhbb9hoBCbzwUYfpM/w9Ktpcn7fHIeiYAGqkWaxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eld3vTWb; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WEH3dCU/"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eld3vTWb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1757244834; x=1788780834;
+  t=1757244892; x=1788780892;
   h=date:from:to:cc:subject:message-id;
-  bh=JWP8HnMSTgV6OY2AU3YsJB65GVkE/s97ppEVqZDeO9E=;
-  b=WEH3dCU/RR5d5rxqE1CsVhHfsSWfr7Pfzw5au3PR3YuRGTVYz/K9058q
-   Ip8lFI8FwyzMUBT6CAIl/YzTXBe+vsTgFuE6mn8aN2VTWiGSkm9O7qaiU
-   96pNI23OD+TqiMlLelkJylbsGRM+bqHdrOTgtYIxz28rwOCoK7kwOICdY
-   2joD8l/MtiOXtlo4lRUGtW40+QnR760mD12GCfvobCXO5XDz1XWkSJTqZ
-   qgg5MDY3bcd4nLEmRZyvawQOuJPCcZeGklYkCyOeFWPRUo7hKsiRwYB9B
-   4yfXOFr9uXniSWTliRb5PMV+sVGzECIyTBgOdC2Nf0UH8OKHotMvHqDyd
-   g==;
-X-CSE-ConnectionGUID: tQDhNxOITqejK3t41TFNJg==
-X-CSE-MsgGUID: 5GkvaozBRVOZ5p3b3/lsag==
-X-IronPort-AV: E=McAfee;i="6800,10657,11545"; a="59597709"
-X-IronPort-AV: E=Sophos;i="6.18,246,1751266800"; 
-   d="scan'208";a="59597709"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2025 04:33:51 -0700
-X-CSE-ConnectionGUID: LxAAWpCsQ2qJ74NiR7nStw==
-X-CSE-MsgGUID: jMVd9WAmTLi2qGnz84B9WA==
+  bh=83WQP2VlLQmPtg8JgnAat9QgnDRwuprlAejRH1LqmKc=;
+  b=eld3vTWb/UT9FGELXuYCgZrID3b9dE6Xl47I9UTJYkngMl8gxhXvIxJv
+   fFcjOPKiMqTC4NsFSo2v6Ap+1CiFZATodL9++59NTpySFQWG1W6IoU5Em
+   jvCMqxD4TpgS1tMP154L2EMc59evI8xxy2115ioYAh+PaOJV/PJvDefGJ
+   4HpFK6TKecjjYf+J4wjEWIEufGA3goQnE0u0dSsUSzQkjTAESSUfsZU4F
+   2G4JX1f+3/44Pj+fRcqEyaZsvF8VNxb9rj1mlc7dOtKJUdoT/KFBnjTWz
+   cC3jAWhvWQkser88aiRMeqhA43WU21TDq7C4S909Py0CoGG+gOv9NkDvM
+   Q==;
+X-CSE-ConnectionGUID: CViLBuOPT56FNUKWHdqoSQ==
+X-CSE-MsgGUID: Gs16e+xzQuadPAqLhjmtEg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="59475976"
+X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
+   d="scan'208";a="59475976"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Sep 2025 04:34:51 -0700
+X-CSE-ConnectionGUID: Z5Vwzl4PSiSgMmerBayrjg==
+X-CSE-MsgGUID: LrH66NcbSsmSdMgBgNv3MQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.18,246,1751266800"; 
-   d="scan'208";a="176622098"
+   d="scan'208";a="172426312"
 Received: from lkp-server01.sh.intel.com (HELO 114d98da2b6c) ([10.239.97.150])
-  by orviesa003.jf.intel.com with ESMTP; 07 Sep 2025 04:33:50 -0700
+  by orviesa007.jf.intel.com with ESMTP; 07 Sep 2025 04:34:49 -0700
 Received: from kbuild by 114d98da2b6c with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1uvDeV-0002Dz-01;
-	Sun, 07 Sep 2025 11:33:47 +0000
-Date: Sun, 07 Sep 2025 19:32:52 +0800
+	id 1uvDfT-0002E9-0Z;
+	Sun, 07 Sep 2025 11:34:47 +0000
+Date: Sun, 07 Sep 2025 19:34:11 +0800
 From: kernel test robot <lkp@intel.com>
 To: "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
 Cc: linux-serial@vger.kernel.org
-Subject: [tty:tty-testing] BUILD SUCCESS WITH WARNING
- b601e1f41edd4667062aa7cccb4e5199814979a3
-Message-ID: <202509071934.KpCOxMDL-lkp@intel.com>
+Subject: [tty:tty-linus] BUILD SUCCESS
+ b5e3277c0f1c3439dd02b58997c06201d0ee8dbf
+Message-ID: <202509071905.rljsAEnF-lkp@intel.com>
 User-Agent: s-nail v14.9.24
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -59,158 +59,25 @@ List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-branch HEAD: b601e1f41edd4667062aa7cccb4e5199814979a3  tty: remove redundant condition checks
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-linus
+branch HEAD: b5e3277c0f1c3439dd02b58997c06201d0ee8dbf  serial: xilinx_uartps: read reg size from DTS
 
-Warning (recently discovered and may have been fixed):
+elapsed time: 1284m
 
-    https://lore.kernel.org/oe-kbuild-all/202509070003.ozCgvRti-lkp@intel.com
-
-    Warning: drivers/tty/n_gsm.c:4175 function parameter 'dlci' not described in 'gsm_modem_send_initial_msc'
-
-Warning ids grouped by kconfigs:
-
-recent_errors
-|-- alpha-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arc-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arc-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arc-randconfig-001-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arc-randconfig-002-20250906
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arm-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arm-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arm-randconfig-001-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arm64-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arm64-randconfig-001-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- arm64-randconfig-003-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- csky-randconfig-002-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- hexagon-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- hexagon-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- hexagon-randconfig-002-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- i386-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- i386-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- i386-randconfig-011-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- i386-randconfig-013-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- i386-randconfig-141-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- loongarch-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- m68k-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- m68k-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- microblaze-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- microblaze-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- nios2-randconfig-001-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- openrisc-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- parisc-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- parisc-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- powerpc-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- powerpc-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- powerpc-randconfig-003-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- powerpc64-randconfig-003-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- riscv-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- riscv-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- riscv-randconfig-001-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- riscv-randconfig-r071-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- s390-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- s390-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- sh-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- sh-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- sparc-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- um-allmodconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- um-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- um-randconfig-001-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-allyesconfig
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-buildonly-randconfig-002-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-randconfig-002-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-randconfig-006-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-randconfig-072-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-randconfig-074-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-randconfig-076-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-randconfig-077-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-randconfig-161-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-rhel-9.4
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-rhel-9.4-bpf
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-rhel-9.4-func
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-rhel-9.4-kselftests
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-rhel-9.4-kunit
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-rhel-9.4-ltp
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- x86_64-rhel-9.4-rust
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- xtensa-randconfig-001-20250907
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-|-- xtensa-randconfig-002-20250906
-|   `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-`-- xtensa-randconfig-002-20250907
-    `-- Warning:drivers-tty-n_gsm.c-function-parameter-dlci-not-described-in-gsm_modem_send_initial_msc
-
-elapsed time: 1282m
-
-configs tested: 233
+configs tested: 237
 configs skipped: 4
 
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
 tested configs:
+alpha                             allnoconfig    clang-22
 alpha                             allnoconfig    gcc-15.1.0
 alpha                            allyesconfig    clang-19
 alpha                            allyesconfig    gcc-15.1.0
 alpha                               defconfig    clang-19
 arc                              allmodconfig    clang-19
+arc                               allnoconfig    clang-22
 arc                               allnoconfig    gcc-15.1.0
 arc                              allyesconfig    clang-19
 arc                                 defconfig    clang-19
@@ -232,6 +99,7 @@ arm                   randconfig-003-20250907    clang-22
 arm                   randconfig-004-20250906    gcc-10.5.0
 arm                   randconfig-004-20250907    clang-22
 arm64                            allmodconfig    clang-19
+arm64                             allnoconfig    clang-22
 arm64                             allnoconfig    gcc-15.1.0
 arm64                               defconfig    clang-19
 arm64                 randconfig-001-20250906    gcc-8.5.0
@@ -242,6 +110,7 @@ arm64                 randconfig-003-20250906    clang-22
 arm64                 randconfig-003-20250907    clang-22
 arm64                 randconfig-004-20250906    gcc-9.5.0
 arm64                 randconfig-004-20250907    clang-22
+csky                              allnoconfig    clang-22
 csky                              allnoconfig    gcc-15.1.0
 csky                                defconfig    clang-19
 csky                  randconfig-001-20250907    gcc-11.5.0
