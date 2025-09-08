@@ -1,33 +1,30 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EF471F78E6;
-	Mon,  8 Sep 2025 06:59:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51B552E2EFC;
+	Mon,  8 Sep 2025 07:36:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757314758; cv=none; b=QTHdKr3CdSiyTgXp7Xo32X00OxEE1kMH3e+dFnHLkkCI418HlbdRRvLF8G0InWdcMbN+/hVWHPM8p4myKSWGgmaWbwMsBihzpPVyjVn6dLSWvotOFih+1XlFqR/cl8vlk+cNKvwkUHH24xiaF7a7r/OG78zl3iGzI8OjUKnjt4g=
+	t=1757316978; cv=none; b=FfqIG4uGR9tqjrXw4lLpffcrYOrC8Ivv+Vthuh9BE/ij2zwyGfH5wLIUMCppJ2YHiwBPvSgw1XbxN24vCyBylWyj/ax54wXdcX6kM5Mbx23XYwnCfYIkwfUBdpvOIVvMClAVYQWR35COtqwfQ6h2yWBp8YUopMlN6Idel/EATQs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757314758; c=relaxed/simple;
-	bh=wfUfNXqBPOunBfeYWoPwNrWHov3OI89a4Ng0Cxt2q90=;
+	s=arc-20240116; t=1757316978; c=relaxed/simple;
+	bh=gyazbsxG6Gq+/qGboWGhnRTaMRG1xYrWLEuvVFzuew4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=D7RRXb/mdpqw4K4A1k2xOxyhuNpY/OoGvSv+7MntpMTnGKrlB1m3L5txkuoL0zSqNJ3TAFDTQomoeG26I9JhvDO/WPoIgWT4H4FLzug07NKqyrtUwqo6/MsiJ/0q4yDOjy6yQ/bpWq8Jxs6JAsZpvnGfPStY3nQoqO4/e+QKiUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rvo+pD2H; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rvo+pD2H"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF6EC4CEF5;
-	Mon,  8 Sep 2025 06:59:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757314757;
-	bh=wfUfNXqBPOunBfeYWoPwNrWHov3OI89a4Ng0Cxt2q90=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Rvo+pD2HVzV+gNgse9HYu2WXLFt+v9bvUelJ2WwqFkszeNIbAJK6sN7k4PmRKq7nW
-	 GViUr+BUyOzwVvjSPAwww6NlPKKw94tWTmIRzveMLJtitMCEeaI8A4bpf1GnkoBC50
-	 5/Ow2bPiAAsvA4S1nJG2Ph53SicaJ5Qn2D/O5GpeAgXDunbArnGY/kLLd/rEhnECkm
-	 A/hcNWBV3a0aE3iZuiO5jniO0H28YMBvT79Y/tA8Amw1OPjCt2/eFNRomG5fMfqEp5
-	 E9jGcoYR5Hbap8z39IsAcmw2KBcBKGpDYzLccmlmnHBsQ9iPeMfXY7FmnFXgKzYj53
-	 8mrOuNqot+QUA==
-Message-ID: <ba200bb0-4451-4f06-8875-6fafd62d5f0c@kernel.org>
-Date: Mon, 8 Sep 2025 08:59:14 +0200
+	 In-Reply-To:Content-Type; b=JV+R5ySbcvPr5UDZRe9tdSv+Mg+K+yYrzGLs/EmWBXOzcmKv7fCZ4fHzUDCMFzWNtDToVm79KZh7Q7MlAB/JsBMBycwdPqF5q32VPn8Db8IriVUy5/dyX2bua71IBSB+4V44yoyq4I6SHagVu4WIExfkvlFtaxaep1zbptoq2vU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=45.249.212.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
+Received: from mail.maildlp.com (unknown [172.19.93.142])
+	by dggsgout12.his.huawei.com (SkyGuard) with ESMTPS id 4cKzK56zJKzKHMXN;
+	Mon,  8 Sep 2025 15:36:09 +0800 (CST)
+Received: from mail02.huawei.com (unknown [10.116.40.128])
+	by mail.maildlp.com (Postfix) with ESMTP id 143001A12B1;
+	Mon,  8 Sep 2025 15:36:10 +0800 (CST)
+Received: from [10.174.176.88] (unknown [10.174.176.88])
+	by APP4 (Coremail) with SMTP id gCh0CgCn8Y1mh75oNiApBw--.63375S3;
+	Mon, 08 Sep 2025 15:36:07 +0800 (CST)
+Message-ID: <94b30154-b7c9-436e-bae8-6120bd6d1b78@huaweicloud.com>
+Date: Mon, 8 Sep 2025 15:36:06 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,66 +32,88 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: sc16is7xx: drop redundant conversion to bool
-To: Xichao Zhao <zhao.xichao@vivo.com>, gregkh@linuxfoundation.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250827024514.76149-1-zhao.xichao@vivo.com>
-Content-Language: en-US
-From: Jiri Slaby <jirislaby@kernel.org>
-Autocrypt: addr=jirislaby@kernel.org; keydata=
- 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
-In-Reply-To: <20250827024514.76149-1-zhao.xichao@vivo.com>
+Subject: Re: [PATCH -next] tty/vt: Add missing return value for VT_RESIZE in
+ vt_ioctl()
+To: Jiri Slaby <jirislaby@kernel.org>, gregkh@linuxfoundation.org,
+ npitre@baylibre.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ yangerkun@huawei.com
+References: <20250904023955.3892120-1-wozizhi@huaweicloud.com>
+ <8b01bd0a-e8b3-4e9a-86fb-3005ff5351fd@kernel.org>
+From: Zizhi Wo <wozizhi@huaweicloud.com>
+In-Reply-To: <8b01bd0a-e8b3-4e9a-86fb-3005ff5351fd@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:gCh0CgCn8Y1mh75oNiApBw--.63375S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7tr4DArWkKF15XFW5urWktFb_yoW8tFWkpr
+	s5G3s8CryDKFyxGr1Utw1UZa40qr18Ka17tr1UJ3W3Xrn8Ary29r15WFy2gF1DAr4xKw17
+	tr4q9r10v3WDJ3JanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUylb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+	xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+	0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+	6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+	Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxkF7I0En4kS14v26r126r1DMxAIw28IcxkI7VAK
+	I48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7
+	xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xII
+	jxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw2
+	0EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
+	67AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxUwxhLUUUUU
+X-CM-SenderInfo: pzr2x6tkl6x35dzhxuhorxvhhfrp/
 
-On 27. 08. 25, 4:45, Xichao Zhao wrote:
-> The result of integer comparison already evaluates to bool. No need for
-> explicit conversion.
+
+
+在 2025/9/8 14:50, Jiri Slaby 写道:
+> On 04. 09. 25, 4:39, Zizhi Wo wrote:
+>> In vt_ioctl(), the handler for VT_RESIZE always returns 0, which prevents
+>> users from detecting errors. Add the missing return value so that errors
+>> can be properly reported to users like vt_resizex().
+>>
+>> Signed-off-by: Zizhi Wo <wozizhi@huaweicloud.com>
+>> ---
+>>   drivers/tty/vt/vt_ioctl.c | 4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+>> index c9f11c4bd9fe..28993a3d0acb 100644
+>> --- a/drivers/tty/vt/vt_ioctl.c
+>> +++ b/drivers/tty/vt/vt_ioctl.c
+>> @@ -908,7 +908,9 @@ int vt_ioctl(struct tty_struct *tty,
+>>               if (vc) {
+>>                   /* FIXME: review v tty lock */
+>> -                __vc_resize(vc_cons[i].d, cc, ll, true);
+>> +                ret = __vc_resize(vc_cons[i].d, cc, ll, true);
+>> +                if (ret)
+>> +                    return ret;
 > 
-> Signed-off-by: Xichao Zhao <zhao.xichao@vivo.com>
+> The change looks good per se. But I wonder if userspace users do handle 
+> or ignore errors? Have you checked any of them?
+> 
+> thanks,
 
-Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Thanks for the question.
 
--- 
-js
-suse labs
+In fact, I discovered this while reproducing a syzkaller issue[1]
+myself. When I executed ioctl(tty_fd, KDFONTOP, &op) (setting the width
+and height fields to some extremely unreasonable values), there was no
+error reported, but the expected result did not occur—that is, the size
+was not actually changed.
+
+So, I looked into the code and found that width and height must meet
+certain criteria and constraints. However, because the ioctl call here
+did not check the return value of __vc_resize(), I was unable to quickly
+identify this issue.
+
+I haven’t checked whether other userspace code would check this return
+value. However, even if some userspace programs currently ignore the
+return value, I think it's still beneficial for the kernel to return
+accurate error codes? This makes debugging easier and allows future
+tools or developers to rely on correct behavior.
+
+[1] https://lore.kernel.org/all/20250905024340.337521-1-
+wozizhi@huaweicloud.com/
+
+Thanks,
+Zizhi Wo
+
