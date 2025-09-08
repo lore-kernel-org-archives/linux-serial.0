@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35A0B2DCF61;
-	Mon,  8 Sep 2025 06:46:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CEF021A436;
+	Mon,  8 Sep 2025 06:50:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757314000; cv=none; b=VnQ9KGV+jhRMcfEmaoEerm63L+N6SSa//YKcXN7bwADOcRfdZf0yiMa9XJs8ho0j4N15R/dBZWHaUYeIpG2UvoPW0HIMTg0Oadt3W6/Xsqv/apv+zI0X5A/6jrei81fv7GuJHBIqG4I38di+1KXBd4HrIfc8QiUYVsePAb9fM8M=
+	t=1757314258; cv=none; b=vBjJJoKb2deZvuBKeucMuFb2me4zIyq4Y9iE6MbwrXYkW3zNwo98rtAVFXxR3hlMCs19LKtooKsMtWAMVT9OjqKZjDublUeSH2sFCoThprJCw1NQsZJvBes59E3QbrkCwAzKUgo1b/YsXhuNB49e5pU1WNRVse1v7pHmDYm2eCE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757314000; c=relaxed/simple;
-	bh=fAmV77mb1VoxyeST3l6OxnHQ4ZInPXDlz0o+ONab5TM=;
+	s=arc-20240116; t=1757314258; c=relaxed/simple;
+	bh=vNz9O1IJvduP24kDWxpv6ALY3W7EZEFAi7jfY+fw30k=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YpsjhmFQiyhxHNGMHJ4epULfpVK6vtA9R5ifpxt9o1gTYag6YHr84AKTj8P1ExGlcL3xA+apBoZM5Y2I6EF3LnY+riXpBkqDfJbFvp5M53rT5yHZNaojpkstmZLkPM9ZW9AptKcFYMOPTT1CHAVSjOU/S3LpMgrk3r/Tis/+TzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LnWFyM9Q; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=rmz1kKxUge/CQN55WMm05DC0Apj2rFSj5FtICtEFZDSnuREe7JSYmGaxf9oUrB9u8C9AZfShNG2g3GpFiuV9kNcs8eRhqr8qGDleJ8R48jvsxR2TTQgwIWxuXextz5hhTPmgGmsdmBdCwhDIroYVWGYZDTPIRZjy7sMZ8TCEUWA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ck6krdrd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LnWFyM9Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E2FC4CEF5;
-	Mon,  8 Sep 2025 06:46:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ck6krdrd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB6BFC4CEF5;
+	Mon,  8 Sep 2025 06:50:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757313999;
-	bh=fAmV77mb1VoxyeST3l6OxnHQ4ZInPXDlz0o+ONab5TM=;
+	s=k20201202; t=1757314257;
+	bh=vNz9O1IJvduP24kDWxpv6ALY3W7EZEFAi7jfY+fw30k=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=LnWFyM9QO49hYb/Ue61T50WDBnUZRvUOH+vCsSaMZmYs7ZoeBR92wIFjebxPtVIrG
-	 jLxWe4Pq4Z9SHPFYuF5rLRyjJOAT0VEBUv8Io9A0PXP45Ek2+QVEqBD2v2tTHC6cDZ
-	 065AIrlMa1+SwowbBbW60F8u7xKYM9lQEHn6PqRMXl6USmSL4Zv7qyHZjpqpanRXIw
-	 KOSD65zDVRnlFZk/ZaW761jypsmAzy1bxCuXFS7/fHkTyDk6f4OmPEt2d9mpqe5AUe
-	 wFTUssNlND6Mk527mLHLnOmQB+BtiVfNJxrUXDFLkuvJtIHb7QGLeb40VgrgMrD7Hp
-	 Eb/8PyyKANnnw==
-Message-ID: <3e815b1f-57dc-4c6a-aa73-fb5ab77e7cd7@kernel.org>
-Date: Mon, 8 Sep 2025 08:46:33 +0200
+	b=Ck6krdrdeAtytnWToLnNpbWHexNR3Bv9Gifzn1dprISZLgCw33vT1qPFn64qeVC1b
+	 /Bt3sFhrIWjMpCYoLgYplWxPmMalxxUFo/jPaAxeNuEkwxyEJFZOq+rZ149JrWm8yD
+	 C+Q5JgrFAWJe8GJdD/KZWBj6kCA5NbHuWMROPlLR2N1FWpiC+eI5JPbcKMKdYpJf5A
+	 grjXzr95hYK9QaVeDTSldKz1Ya7/FfkZXDv6Ab/28al0bV+BsMECBpupBHKWR4dR5H
+	 A+HtAAGi+TYMjbTE+bB9BitPBc+cBIZyCrwqnUfi+Mwr6Oi8EhJq2v6FZQENVaf7Qr
+	 6fW004Qv0esUw==
+Message-ID: <8b01bd0a-e8b3-4e9a-86fb-3005ff5351fd@kernel.org>
+Date: Mon, 8 Sep 2025 08:50:54 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,106 +35,88 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/8] arm64: dts: exynos990: Add PERIC0/1 USI, UART and
- HSI2C support
-To: Denzeel Oliva <wachiturroxd150@gmail.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
- Sam Protsenko <semen.protsenko@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Andi Shyti <andi.shyti@kernel.org>
-Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-References: <20250907-perics-add-usinodes-v2-0-58f41796d2d3@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH -next] tty/vt: Add missing return value for VT_RESIZE in
+ vt_ioctl()
+To: Zizhi Wo <wozizhi@huaweicloud.com>, gregkh@linuxfoundation.org,
+ npitre@baylibre.com
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ yangerkun@huawei.com
+References: <20250904023955.3892120-1-wozizhi@huaweicloud.com>
 Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20250907-perics-add-usinodes-v2-0-58f41796d2d3@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20250904023955.3892120-1-wozizhi@huaweicloud.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 08/09/2025 00:13, Denzeel Oliva wrote:
-> Hi,
+On 04. 09. 25, 4:39, Zizhi Wo wrote:
+> In vt_ioctl(), the handler for VT_RESIZE always returns 0, which prevents
+> users from detecting errors. Add the missing return value so that errors
+> can be properly reported to users like vt_resizex().
 > 
-> This series adds device tree support for PERIC0/1 blocks:
-> 
-> - Add sysreg nodes required for peripheral configuration
-> - Add USI, UART and HSI2C controller nodes
-> - Update bindings with Exynos990 compatibles
-> 
-> These changes enable serial communication interfaces
-> (I2C, UART) for Exynos990 SoC.
-> 
-> Changes in v2:
-> - Remove unnecessary blank lines in HSI2C nodes.
-
-One patchset per 24h, allow people to actually review your code.
-
-> 
-> Denzeel Oliva
-> 
-> Signed-off-by: Denzeel Oliva <wachiturroxd150@gmail.com>
+> Signed-off-by: Zizhi Wo <wozizhi@huaweicloud.com>
 > ---
-> Denzeel Oliva (8):
->       dt-bindings: soc: samsung: exynos-sysreg: Add Exynos990 PERIC0/1 compatibles
->       arm64: dts: exynos990: Add sysreg nodes for PERIC0 and PERIC1
->       dt-bindings: soc: samsung: Add Exynos990 USI compatible
->       arm64: dts: exynos990: Add USI nodes for PERIC0 and PERIC1
->       dt-bindings: serial: samsung: Add Exynos990 UART compatible
->       arm64: dts: exynos990: Add UART nodes for PERIC0/1
->       dt-bindings: i2c: exynos5: Add exynos990-hsi2c compatible
+>   drivers/tty/vt/vt_ioctl.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/vt/vt_ioctl.c b/drivers/tty/vt/vt_ioctl.c
+> index c9f11c4bd9fe..28993a3d0acb 100644
+> --- a/drivers/tty/vt/vt_ioctl.c
+> +++ b/drivers/tty/vt/vt_ioctl.c
+> @@ -908,7 +908,9 @@ int vt_ioctl(struct tty_struct *tty,
+>   
+>   			if (vc) {
+>   				/* FIXME: review v tty lock */
+> -				__vc_resize(vc_cons[i].d, cc, ll, true);
+> +				ret = __vc_resize(vc_cons[i].d, cc, ll, true);
+> +				if (ret)
+> +					return ret;
 
-I don't get why you keep sending this in multiple patchsets now. It was
-on the list prviously, but now no versioning and it starts from v1. How
-maintainers can understand this?
+The change looks good per se. But I wonder if userspace users do handle 
+or ignore errors? Have you checked any of them?
 
-Anyway, I went through my queue this weekend and this was probably last
-time I will apply something, maybe except next revision of GS101 ACPM
-clocks. This means this patchset will wait for next merge window.
-
-Best regards,
-Krzysztof
+thanks,
+-- 
+js
+suse labs
