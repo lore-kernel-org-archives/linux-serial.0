@@ -1,81 +1,104 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62EE530C625;
-	Mon,  8 Sep 2025 13:53:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FD787082A;
+	Mon,  8 Sep 2025 14:16:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757339617; cv=none; b=RsjiaXIgnh6FzDqY+M+N16WGZ+Y0rcPljtPrXnrRiBAE3fzSFRRPDC1zbYnaUUL8zFhbhCxlsQpVG7LZFA+vCvbp4uVC43wDi2p0ROmuDQX18ncfmO8DkM/HT0qsvxZrGDB7b3zAyncDovdcdWyDkx+P3fNjGrnIcxJmeEhpyS8=
+	t=1757341001; cv=none; b=PpO9mNCdfkO6kNoNmbPzZN7ykgp5Yhr4k4fR3yMdS4vnfr67Av0s0QGA68J+SIYKwIwdMhuKTtRA8EwA+Kjub166b+EJkZvxznu/T35ucskpRXH+f9bVoU3YXqy2/Q9mflGXP0Ib7w4Uwuqi4OQJ9kGTF5WfwZ++stf0iaCdq4M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757339617; c=relaxed/simple;
-	bh=Umci1imQy3chnb0mQHQQDUq4/7QPVlGljxwmFdMFd0s=;
-	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
-	 Content-Type:Subject; b=ev10ppAIp4JIXNVVIwwuQ4d4CN/vJ8Epf8/f6+53t7z5705mjiWT0z6GTjtRu7vuNr2YydPcS36gkTZEa2YmCtgD9NZuln3Fg1RzV/iZEi8K3vjVeE8ZhXIQrfIQLZzy4x1VvM1XnFHumypWnUzQA30lPk5Z+O1l4baApMHzZiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=a284EV2z; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1757341001; c=relaxed/simple;
+	bh=CBI4suASODhHBC14sipB186eMW1r9Bxk7k0WFgqClrU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OufGSy2yjhyiRfREbVACUZjryM1S1om7wIWWchsemGJLkuAXzejd70CNqvnETDEv7wkGeNoN5OYcISAXTTnLqHssi902h0nM1QtI2bzipHZutIYGZai4nQXNimJaNKejdBeO148s3Rkj4qetSr3MnjU/A6ZmStBptvTzN5QHPmk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tmPa1gkq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="a284EV2z"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
-	:Date:subject:date:message-id:reply-to;
-	bh=umyZGfgtDmDd0ANfroE9M+DpA0XZsT0kLMeY3dIqaEs=; b=a284EV2zzo+fgtPybZUC6p4OgS
-	QCws7wsADxVeku5ENKIipV5Ue6ISIRCZk8l16qsd6W68zX9dqAFPkKH+3Nl/kf/TdZAxd0B8w5qvL
-	dA9vyLq8IoJpno3/Eg39xKSh0APWJPIxBddOSi6Lp2CD3SoLr3ICDXkG+1wCR1bgh3U4=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:46338 helo=pettiford)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1uvcJ2-0002Y7-Ko; Mon, 08 Sep 2025 09:53:17 -0400
-Date: Mon, 8 Sep 2025 09:53:15 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: Tapio Reijonen <tapio.reijonen@vaisala.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
- <jirislaby@kernel.org>, Alexander Shiyan <shc_work@mail.ru>, Hugo
- Villeneuve <hvilleneuve@dimonoff.com>, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-Message-Id: <20250908095315.44f1688153add9ae4c53b16b@hugovil.com>
-In-Reply-To: <20250908-master-max310x-improve-interrupt-handling-v3-1-91985e82ba39@vaisala.com>
-References: <20250908-master-max310x-improve-interrupt-handling-v3-1-91985e82ba39@vaisala.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tmPa1gkq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FB51C4CEF7;
+	Mon,  8 Sep 2025 14:16:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757341001;
+	bh=CBI4suASODhHBC14sipB186eMW1r9Bxk7k0WFgqClrU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=tmPa1gkqzuRx5RyBxCqHbzAfV5G4d4nmjTy6s6i+bt8myOEAOvu9tsR0PlDNaoEHs
+	 sST9fnnK7DNwNwUqjeW5R0YMOuZQPBrj7IDVOInuWfqw122jHn7oe+ryNfpvECbpT8
+	 QGOooXhdorgU/mWM3v6eZG5p0MbFRl7IM4VZVzmhwtupIt/tVZYx/y6bFRkpsf5kLb
+	 jNyXLVEg3krWoHqiJAJeueQguSgXgV502xPIwfMKDsJBq5oTKUw644aWNHdDZ4c4Ui
+	 edKOg88t//Hhs8IVxDpQPqbLQlkysNMXo9z37pCYTNLvn+zGjV6Vip71Pe++vy/BIc
+	 A5EjILmOauKQQ==
+Date: Mon, 8 Sep 2025 15:16:33 +0100
+From: Lee Jones <lee@kernel.org>
+To: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Robert Marko <robert.marko@sartura.hr>, linux@armlinux.org.uk,
+	alexandre.belloni@bootlin.com, claudiu.beznea@tuxon.dev,
+	catalin.marinas@arm.com, will@kernel.org, olivia@selenic.com,
+	herbert@gondor.apana.org.au, davem@davemloft.net,
+	andi.shyti@kernel.org, broonie@kernel.org,
+	gregkh@linuxfoundation.org, jirislaby@kernel.org, arnd@kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-crypto@vger.kernel.org, linux-i2c@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
+	o.rempel@pengutronix.de, daniel.machon@microchip.com,
+	luka.perkov@sartura.hr
+Subject: Re: [PATCH v9 4/9] mfd: at91-usart: Make it selectable for
+ ARCH_MICROCHIP
+Message-ID: <20250908141633.GB9224@google.com>
+References: <20250813174720.540015-1-robert.marko@sartura.hr>
+ <20250813174720.540015-5-robert.marko@sartura.hr>
+ <20250902100254.GD2163762@google.com>
+ <769c8dc4-4db6-4d2e-aa2f-f86aa7ccaf78@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-	* -1.9 NICE_REPLY_A Looks like a legit reply (A)
-Subject: Re: [PATCH v3] serial: max310x: improve interrupt handling
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <769c8dc4-4db6-4d2e-aa2f-f86aa7ccaf78@microchip.com>
 
-On Mon, 08 Sep 2025 06:53:43 +0000
-Tapio Reijonen <tapio.reijonen@vaisala.com> wrote:
+On Thu, 04 Sep 2025, Nicolas Ferre wrote:
 
-> When there is a heavy load of receiving characters to all
-> four UART's, the warning 'Hardware RX FIFO overrun' is
-> sometimes detected.
-> The current implementation always service first the highest UART
-> until no more interrupt and then service another UART
-> (ex: UART3 will be serviced for as long as there are interrupts
-> for it, then UART2, etc).
+> On 02/09/2025 at 12:02, Lee Jones wrote:
+> > On Wed, 13 Aug 2025, Robert Marko wrote:
+> > 
+> > > LAN969x uses the Atmel USART, so make it selectable for ARCH_MICROCHIP to
+> > > avoid needing to update depends in future if other Microchip SoC-s use it
+> > > as well.
+> > > 
+> > > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > > ---
+> > >   drivers/mfd/Kconfig | 2 +-
+> > >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> > > index 425c5fba6cb1..8f11b2df1470 100644
+> > > --- a/drivers/mfd/Kconfig
+> > > +++ b/drivers/mfd/Kconfig
+> > > @@ -138,7 +138,7 @@ config MFD_AAT2870_CORE
+> > >   config MFD_AT91_USART
+> > >        tristate "AT91 USART Driver"
+> > >        select MFD_CORE
+> > > -     depends on ARCH_AT91 || ARCH_LAN969X || COMPILE_TEST
+> > > +     depends on ARCH_MICROCHIP || COMPILE_TEST
+> > >        help
+> > >          Select this to get support for AT91 USART IP. This is a wrapper
+> > >          over at91-usart-serial driver and usart-spi-driver. Only one function
+> > 
+> > Let me know when the deps are in Mainline.
 > 
-> This commit handle all individual interrupt sources before
-> reading the global IRQ register again.
+> Hi Lee,
 > 
-> This commit has also a nice side-effect of improving the efficiency
-> of the driver by reducing the number of reads of the global
-> IRQ register.
-> 
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
+> I have tags from other maintainers, how about you give us your and we make
 
-Reviewed-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+My?  AB?
+
+> this patch travel through arm-soc like the other ones?
+
+Sure.
+
+Acked-by: Lee Jones <lee@kernel.org>
 
 -- 
-Hugo Villeneuve
+Lee Jones [李琼斯]
