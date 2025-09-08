@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 771FC2E22B5;
-	Mon,  8 Sep 2025 06:57:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EF471F78E6;
+	Mon,  8 Sep 2025 06:59:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757314656; cv=none; b=OWD/Xu3LO1mImQ9X0ynfrGv2pow85l77eCLkyoBZDF+L/yQeKYQwG02DcbIhKBrr6N+PJ0Kytat5kqJ7I7pI/qQ6gfYC5EwIIwO34oTJsfAIusQ9AKp+FMRoKQsn//zYTln2L9PmG4oROVI93Xf4/5IZdRKU7hkWtMVdjj3NIZw=
+	t=1757314758; cv=none; b=QTHdKr3CdSiyTgXp7Xo32X00OxEE1kMH3e+dFnHLkkCI418HlbdRRvLF8G0InWdcMbN+/hVWHPM8p4myKSWGgmaWbwMsBihzpPVyjVn6dLSWvotOFih+1XlFqR/cl8vlk+cNKvwkUHH24xiaF7a7r/OG78zl3iGzI8OjUKnjt4g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757314656; c=relaxed/simple;
-	bh=LnEP2hKoqXTMwnMtQXLherWM43m7KFmK365MgdO0IdU=;
+	s=arc-20240116; t=1757314758; c=relaxed/simple;
+	bh=wfUfNXqBPOunBfeYWoPwNrWHov3OI89a4Ng0Cxt2q90=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IYm5IG0z2o3QQUWEkyBwXh46+IKhrL7JcrN3L03AYXByHImgHfE7prDBNXjw8oHw/X96s8ofYjIZ/gQz0ozbt/BAHtTTpSM01jAQ0V8JEnxK+mUbUco7MouC0xV97MZ7NYMDHbcJ67455jsiT7f4le51ve9YV8uxKvwj1xftd+0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u0cdVOEv; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=D7RRXb/mdpqw4K4A1k2xOxyhuNpY/OoGvSv+7MntpMTnGKrlB1m3L5txkuoL0zSqNJ3TAFDTQomoeG26I9JhvDO/WPoIgWT4H4FLzug07NKqyrtUwqo6/MsiJ/0q4yDOjy6yQ/bpWq8Jxs6JAsZpvnGfPStY3nQoqO4/e+QKiUM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rvo+pD2H; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u0cdVOEv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B33F2C4CEF7;
-	Mon,  8 Sep 2025 06:57:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rvo+pD2H"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF6EC4CEF5;
+	Mon,  8 Sep 2025 06:59:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757314656;
-	bh=LnEP2hKoqXTMwnMtQXLherWM43m7KFmK365MgdO0IdU=;
+	s=k20201202; t=1757314757;
+	bh=wfUfNXqBPOunBfeYWoPwNrWHov3OI89a4Ng0Cxt2q90=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=u0cdVOEvH62KKEnmC197tAIN62/8gpDfGdR1uJkRLo1gxydceM6m7VH1btpImdI4H
-	 ldvS4muSlFI7znMa1levzQjkkyJVd9I/9YkQxhNg/eD8crkAoC024fn9kJ2ccNCtqB
-	 jIZIRALL/z9W81viTZqNPxDy0oPRijr8itvlIbHXXtXde++OsrrG8dYS16R5/668mu
-	 gAVrYFEvnQZK1z8ciq4CtM+wkLjRkwKr0oBs7ymY/O+oIToQeijI0KiUppLu3pJ3pC
-	 Whbllk4i8Yf7giBMil2CEW2ZGYwILynUi+s29YH8fpzarYhZpphpRgUCzdhV/bfPii
-	 P2IxWjAckUvFA==
-Message-ID: <d5d5778e-c498-44c5-952b-e9b2f619f58e@kernel.org>
-Date: Mon, 8 Sep 2025 08:57:32 +0200
+	b=Rvo+pD2HVzV+gNgse9HYu2WXLFt+v9bvUelJ2WwqFkszeNIbAJK6sN7k4PmRKq7nW
+	 GViUr+BUyOzwVvjSPAwww6NlPKKw94tWTmIRzveMLJtitMCEeaI8A4bpf1GnkoBC50
+	 5/Ow2bPiAAsvA4S1nJG2Ph53SicaJ5Qn2D/O5GpeAgXDunbArnGY/kLLd/rEhnECkm
+	 A/hcNWBV3a0aE3iZuiO5jniO0H28YMBvT79Y/tA8Amw1OPjCt2/eFNRomG5fMfqEp5
+	 E9jGcoYR5Hbap8z39IsAcmw2KBcBKGpDYzLccmlmnHBsQ9iPeMfXY7FmnFXgKzYj53
+	 8mrOuNqot+QUA==
+Message-ID: <ba200bb0-4451-4f06-8875-6fafd62d5f0c@kernel.org>
+Date: Mon, 8 Sep 2025 08:59:14 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,10 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] serial: max310x: improve interrupt handling
-To: Tapio Reijonen <tapio.reijonen@vaisala.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Alexander Shiyan <shc_work@mail.ru>,
- Hugo Villeneuve <hvilleneuve@dimonoff.com>
+Subject: Re: [PATCH] serial: sc16is7xx: drop redundant conversion to bool
+To: Xichao Zhao <zhao.xichao@vivo.com>, gregkh@linuxfoundation.org
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-References: <20250908-master-max310x-improve-interrupt-handling-v3-1-91985e82ba39@vaisala.com>
+References: <20250827024514.76149-1-zhao.xichao@vivo.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -86,29 +83,15 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250908-master-max310x-improve-interrupt-handling-v3-1-91985e82ba39@vaisala.com>
+In-Reply-To: <20250827024514.76149-1-zhao.xichao@vivo.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 08. 09. 25, 8:53, Tapio Reijonen wrote:
-> When there is a heavy load of receiving characters to all
-> four UART's, the warning 'Hardware RX FIFO overrun' is
-> sometimes detected.
-> The current implementation always service first the highest UART
-> until no more interrupt and then service another UART
-> (ex: UART3 will be serviced for as long as there are interrupts
-> for it, then UART2, etc).
+On 27. 08. 25, 4:45, Xichao Zhao wrote:
+> The result of integer comparison already evaluates to bool. No need for
+> explicit conversion.
 > 
-> This commit handle all individual interrupt sources before
-> reading the global IRQ register again.
-> 
-> This commit has also a nice side-effect of improving the efficiency
-> of the driver by reducing the number of reads of the global
-> IRQ register.
-> 
-> Signed-off-by: Tapio Reijonen <tapio.reijonen@vaisala.com>
-
-Looks/Reads much better now.
+> Signed-off-by: Xichao Zhao <zhao.xichao@vivo.com>
 
 Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 
