@@ -1,107 +1,146 @@
-Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fllvem-ot04.ext.ti.com (fllvem-ot04.ext.ti.com [198.47.19.246])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A747C1D799D
-	for <linux-serial@vger.kernel.org>; Tue,  9 Sep 2025 20:14:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C559A2517AF;
+	Tue,  9 Sep 2025 21:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.246
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757448875; cv=none; b=iWYqrJCo7NAKXx4SF2yhaUlOY9pmOc7tTOZ6wlzhz21u+SpiGnRbNHu7okQWF62k4vXVH/2mPcRD1GbfzctqypKy7LODrXZQ6nX/+gx0j4EZ6kpxPTWpTgMF6ox9CdLLgRNOk9xdM2cL9bmjCScF4ph5ghkJnvr2wQeIe6a1FOw=
+	t=1757453232; cv=none; b=S5D/yKowEkyikI89ib4CG5U4bcoqpfUliqZ9CG8FNmNQbG6UMTPQ6YED7Lavw9zjIQUs2bwprsR4coAy7Q98yYLcIyNSfewX3eNT1ZcsF/HQiQ907b4MdrtekW2Wyi9np64nnoh/BtkaXyGpKEMFMvMjytgsrUhIZCtejr9hDFc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757448875; c=relaxed/simple;
-	bh=pC+qgCrf5oAgUVn4e1xqaTlgujkerEsWE670XtZjcrY=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=qoer3l5JLvA0+7Vx6aOExwrFv+Qd8DO3uSN5bhKYdXsVuOmAVDkeZKOj80JIR2yf+PFnzZKoSJBf5t/RFVQAAhos9WNIL2vM2ANLjDKg5/a9aycKBVPLrorLwlN/C4/0n1fVUWHQfbkwx4rfWQLPLoSPjnT4fed5E5xFHFlamnY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk; spf=pass smtp.mailfrom=thegoodpenguin.co.uk; dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b=gCJEhYd1; arc=none smtp.client-ip=209.85.166.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thegoodpenguin.co.uk
+	s=arc-20240116; t=1757453232; c=relaxed/simple;
+	bh=ztd0PJg3C+b3kWmj9bQ1tSJv6YPxmfQhjNFvXW5kX50=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=kJ7s9BfDLL1rZXTd11O1KkKy0w3AJybI62kXmaiVk2nKVYHJH3Ie/lz2SXe27rjjh4Su8MrRlD/qrgFE1YUGQBm+sQsWshTX3tok0GoI82gGTjIgqkTbo7wAbJ2U5bH9LBTtZ5g0JakLq2tzdYNWL7l/Z3hR/51NZjRxJLOUP10=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=g2ctUQOa; arc=none smtp.client-ip=198.47.19.246
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b="gCJEhYd1"
-Received: by mail-il1-f172.google.com with SMTP id e9e14a558f8ab-411498d92deso10740295ab.1
-        for <linux-serial@vger.kernel.org>; Tue, 09 Sep 2025 13:14:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=thegoodpenguin-co-uk.20230601.gappssmtp.com; s=20230601; t=1757448873; x=1758053673; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=pC+qgCrf5oAgUVn4e1xqaTlgujkerEsWE670XtZjcrY=;
-        b=gCJEhYd1TPbUZOAx6m8o2N/w7CkdbT9S0hiO1VBarNwQUq2LVpcPVcybdn9MfeJ24m
-         PHoesMV8eyxk6wPvpq7SnKYZ2NhrHvvibHKTvndMl+SmqdUCfwda1UmlH5jLpH3WQaMS
-         6csgnjd8OQ+elxHTJ0/NafIOx6Wr0EIbGjDXH+QPCoCTNFNKLJ++M/tcSVttKC7fw1wi
-         3ox4NPFd1xI7pNsfm8G1cd7EzhKfp5guGZJ1CTmLbwbbvrMjY3/wgVW0zFRUgXeKC8zL
-         vFyS2mS0OTGLVHu0oib0JS7PVnea+hVLrwbbuBbXEBCZClOVb3MpYvRSnjKWjV+mtvZg
-         WcDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757448873; x=1758053673;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=pC+qgCrf5oAgUVn4e1xqaTlgujkerEsWE670XtZjcrY=;
-        b=R8vJ/k0sMcIXSY8U9rnouQ8roOoNtrHFqDat663NBCdBlz1PagXderPLfdeLB6e47y
-         rzhNcfcbdmTiKTVvVu09FHLOK9y82wX2W2H9jDW35xx23pcPYOw0YmAIznJRSzhp04em
-         E29KibuBFzbuojjLf8lqZ2FlamHbVZSipwvRg+KnbarK4UHjfaMg64I/aeCN1RG2/RwA
-         dFQ8e02CWbR99ypw4cJTt/1clQwKipRk8oS5sCQSGRC5U/OoK9FQgvg/DD0OKLjCTWs/
-         mnSM4Zftl6hWVWWnjEoIN1DFd/K9y364k45ay+WxiZBYGzzMhYzvTGH69YEOUI+Z8XLA
-         F0fQ==
-X-Gm-Message-State: AOJu0YxNTvWPXpjttaBgJYQ3ZdkwJmAQe+D9Vrsmt2WjZ/KWfMx75KWa
-	tududacZgFpoj5yrTk2oEpo7h4Alv/J+kRQmPhREwwemfwqrBy5LlJWK/lOtrkwa35oxUn66B7y
-	3Ir9TeFFxu+QxHfhzj/aKlg+i02WOiwnD/G/Lw/VTAg==
-X-Gm-Gg: ASbGncvTPuB0PRSpRncYNhJR7bRmODsGZqi5sW6BvzmeQWbgAXLX9u04Q+uTTa4H+RU
-	dW2ysGd7vsW1dS1kNO1t9QizRXFNui6nIC6+OJ92Voo7/wSw3oc4eNZT8u/I4YcydvMYS0bVWC9
-	RxssFm/QeUJUNTF2cfoUHMve/Oyudg/aK9ziE0a7vpAP5KtcPY/8/IFs9XQsIjkDVQ92UmAJQ0D
-	IcF3Kt8x1Octk7arGh/sxcgDGisXlusuwGVDhSP
-X-Google-Smtp-Source: AGHT+IGHIAGmGX8vz05/lHBhytEr4x1XYWfkWmN/DCTUzC9y/eFYWItfXPB20Mf+dZFPdethrOW25+C6zWtIO0sh/1A=
-X-Received: by 2002:a05:6e02:250c:b0:416:c09f:d572 with SMTP id
- e9e14a558f8ab-416c09fddd7mr4303345ab.13.1757448872525; Tue, 09 Sep 2025
- 13:14:32 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="g2ctUQOa"
+Received: from fllvem-sh03.itg.ti.com ([10.64.41.86])
+	by fllvem-ot04.ext.ti.com (8.15.2/8.15.2) with ESMTP id 589LQoIg373674;
+	Tue, 9 Sep 2025 16:26:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1757453210;
+	bh=89R5+36RXu8JOVcLNkTbryKwxB+M9BPBpOmVrnsCMBY=;
+	h=Date:Subject:To:CC:References:From:In-Reply-To;
+	b=g2ctUQOaOI9K7Teuurc3Lw4tnrlDh0jL7TU7ygZt1eWKFRX0oN84gVb5XcL6VZ9A6
+	 YH3mWBDYvaHufdjftu+UUYEg0SD9q/uC2scp58ZmrSv1kkjKSz8P2fY7YUYKRfa1DM
+	 AFA5hvHs89CH8aD4r1rqVbiYBzmKgJWHtAxZIs00=
+Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
+	by fllvem-sh03.itg.ti.com (8.18.1/8.18.1) with ESMTPS id 589LQovh4069382
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-SHA256 bits=128 verify=FAIL);
+	Tue, 9 Sep 2025 16:26:50 -0500
+Received: from DFLE211.ent.ti.com (10.64.6.69) by DFLE109.ent.ti.com
+ (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.55; Tue, 9
+ Sep 2025 16:26:49 -0500
+Received: from lelvem-mr06.itg.ti.com (10.180.75.8) by DFLE211.ent.ti.com
+ (10.64.6.69) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Tue, 9 Sep 2025 16:26:49 -0500
+Received: from [128.247.81.19] (uda0506412.dhcp.ti.com [128.247.81.19])
+	by lelvem-mr06.itg.ti.com (8.18.1/8.18.1) with ESMTP id 589LQnBZ3339983;
+	Tue, 9 Sep 2025 16:26:49 -0500
+Message-ID: <c2fad6ac-d296-4155-b101-bd82defd2e6d@ti.com>
+Date: Tue, 9 Sep 2025 16:26:49 -0500
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: Andrew Murray <amurray@thegoodpenguin.co.uk>
-Date: Tue, 9 Sep 2025 21:14:21 +0100
-X-Gm-Features: Ac12FXzGBMdzlurF2d39aH1H_wq3Uv_KIwQQYmFRcKQ-TLNb2E0PlXq74olWjjU
-Message-ID: <CALqELGwr=XWA2iD-7wa1jOigx3pfEnTnaGWUMQX_A5MWe3DN_g@mail.gmail.com>
-Subject: Lock contention with console kthreads
-To: John Ogness <john.ogness@linutronix.de>, senozhatsky@chromium.org, pmladek@suse.com, 
-	rostedt@goodmis.org
-Cc: linux-serial@vger.kernel.org, Andrew Murray <amurray@thegoodpenguin.co.uk>, 
-	Michael Cobb <mcobb@thegoodpenguin.co.uk>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] dt-bindings: serial: 8250_omap: Add wakeup pinctrl
+ state
+To: Rob Herring <robh@kernel.org>
+CC: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <krzk+dt@kernel.org>,
+        <conor+dt@kernel.org>, <vigneshr@ti.com>,
+        <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <d-gole@ti.com>, <vishalm@ti.com>,
+        <sebin.francis@ti.com>, <msp@baylibre.com>, <khilman@baylibre.com>,
+        <a-kaur@ti.com>, <john.ogness@linutronix.de>,
+        <andriy.shevchenko@linux.intel.com>, <yujiaoliang@vivo.com>,
+        <b-liu@ti.com>, <u.kleine-koenig@baylibre.com>
+References: <20250904212455.3729029-1-k-willis@ti.com>
+ <20250904212455.3729029-3-k-willis@ti.com>
+ <20250905204148.GA1313142-robh@kernel.org>
+Content-Language: en-US
+From: Kendall Willis <k-willis@ti.com>
+In-Reply-To: <20250905204148.GA1313142-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
 
-Hello,
+Hi Rob,
+On 9/5/25 15:41, Rob Herring wrote:
+> On Thu, Sep 04, 2025 at 04:24:54PM -0500, Kendall Willis wrote:
+>> From: Markus Schneider-Pargmann <msp@baylibre.com>
+>>
+>> Pins associated with the 8250 omap unit can be the source of a wakeup in
+>> deep sleep states. To be able to wakeup, these pins have to be
+>> configured in a special way. To support this configuration add the
+>> default and wakeup pinctrl states. Add support for the sleep state as
+>> well which is in use by some devicetrees.
+>>
+>> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+>> Signed-off-by: Kendall Willis <k-willis@ti.com>
+>> ---
+>>   .../devicetree/bindings/serial/8250_omap.yaml   | 17 +++++++++++++++++
+>>   1 file changed, 17 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+>> index 851a5291b4be4..1c4040a9f9d0b 100644
+>> --- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
+>> +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+>> @@ -77,6 +77,23 @@ properties:
+>>           description:
+>>             List of phandles to system idle states in which UARTs can wakeup the system.
+>>   
+>> +  pinctrl-0:
+>> +    description: Default pinctrl state
+>> +
+>> +  pinctrl-1:
+>> +    description: Can be "sleep" or "wakeup" pinctrl state
+>> +
+>> +  pinctrl-names:
+>> +    description:
+>> +      When present should contain at least "default" describing the default pin
+>> +      states. Other states are "sleep" which describes the pinstate when
+>> +      sleeping and "wakeup" describing the pins if wakeup is enabled.
+>> +    minItems: 1
+>> +    items:
+>> +      - const: default
+>> +      - const: sleep
+>> +      - const: wakeup
+> 
+> This doesn't match what 'pinctrl-1' says. Perhaps you want?:
+> 
+> items:
+>    - const: default
+>    - enum: [ sleep, wakeup ]
 
-Since commit 5f53ca3ff83b ("printk: Implement legacy printer kthread
-for PREEMPT_RT"), and only when PREEMPT_RT is enabled, legacy consoles
-use a kthread to write out to the device. This is beneficial for boot
-time when using a slow console such as a serial port. However, this
-gain can be short-lived as console_on_rootfs in init/main.c appears to
-act as a synchronisation point.
+That is my mistake, I should have added another pinctrl-2 which could be 
+either "sleep" or "wakeup" state. This would mean that all three states 
+could be present at the same time so it should stay as separate items. 
+The thought process for the availability of all three states is that if 
+the UART is not wakeup capable, it could use the sleep state when 
+suspending.
 
-legacy_kthread_func holds console_lock when flushing, and is held for
-a long period of time during boot. Towards the end of boot,
-console_on_rootfs is called which calls filp_open("/devconsole"). This
-does a tty_lookup_driver which uses the console_device function to
-obtain the tty_driver. console_device attempts to acquire
-console_lock. At this point in time, with a (very) slow UART, progress
-through kernel_init_freeable is halted waiting for the lock,
-eliminating the gains of offloading to a kthread. If this could be
-avoided, then boot time would be improved.
+However, the serial 8250 omap driver does not use the sleep pinctrl 
+state as of now, so for the next version I think I will remove the sleep 
+state since it is not necessary/used as of this moment.
 
-I also see something similar with an nbcon console (with
-b63e6f60eab45b16a1bf734fef9035a4c4187cd5 on 8250), with
-console_on_rootfs being held up by the writeout, as far as I can tell
-this is due to lock contention in many places, for example with long
-delays acquiring uart_port_lock_irq.
+Thanks for reviewing!
 
-These issues can easily be reproduced by adding 'initcall_debug=1
-loglevel=10' on a 8250 console at 9600 bps.
+Best,
+Kendall
 
-I know the legacy printer and nbcon work relate to PREEMPT_RT rather
-than boot time, and so I thought I'd point out my observations as it
-seems we're pretty close to getting boot time benefits from this work
-as well.
+> 
+>> +
+>>   required:
+>>     - compatible
+>>     - reg
+>> -- 
+>> 2.34.1
+>>
 
-Assuming my observations are correct, are these known issues, is there
-any interest in accepting patches to address them? Or pointers for a
-direction forward?
-
-Andrew Murray
