@@ -1,148 +1,124 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D48627511E
-	for <linux-serial@vger.kernel.org>; Tue,  9 Sep 2025 09:05:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC2BA32C324;
+	Tue,  9 Sep 2025 12:11:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757408727; cv=none; b=dKLW9/6y9FQqMqFZc2TgzbI2GjpvPfiLPgPc52azWDPy6gtI9mQyhp0rxEFEV1KYXDmtb20RozqAc6lG79IVd4jah0NO2gBbidTpLtq+lxisO3NsBTa7TKpqv/0qgAe2kS3Vq1kQvEMn6adfre8EJ2fPDB2AIcqIz1MW8A0G/To=
+	t=1757419902; cv=none; b=Yk6FQGpgXLNtpuMEoRoF+e6JuinA8LT0rFNg9wffbYptRytV1GntCJ7wBEDu6KVN0u/6bRGZ0Ci5zZ+2alitTo6divePZeQAZ95s7MvFX1SORssiaNu2mWANvYMBl+6PVWYx06PrKKwtQ4vd2SgyGQNHB7n3ye9y39Rk6UEPj80=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757408727; c=relaxed/simple;
-	bh=oKt+5SuE9mqrDfjDXh6mBMRn1amqw6YNu8oG74Kyjxg=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=Ro0W5NF0O8iM4l/v/p3HiuAulFJyRBuifPyGdT/OyqfoPN+OhVbncPgO47hWLir4ueRyG3CvLfOZJ6HRtk1g4YCELHkcUFXlKY4yiiKD0eS8FHsQwtelNumL1LFjsK3YeMAdho9JoVJoZ/uxt9dMGXgUxj6gWvommjklrPQCVis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=rxogbAOX; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="rxogbAOX"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-b0473327e70so866925266b.3
-        for <linux-serial@vger.kernel.org>; Tue, 09 Sep 2025 02:05:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1757408723; x=1758013523; darn=vger.kernel.org;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=NLqPkG/6OItE3LNH6o7MdT1z3Tt1LqmCkBoUP1DPapY=;
-        b=rxogbAOXxGWNGch+EPV8UCqdt1kRTPuQ3BJsSAHf3fM1YmJEkTJEjKrC52AN4SHDUm
-         VW/Hf2WNgVInFDQxPTfSJFu8ajqI3isia0VL1OmXHWHhh4MCZo+xKaBpi/iWi5jkeHUK
-         cTBEExHWNo19qcm/cVo6Uj7Y0B1sPCK71zewnskTDtt/3zFkCdTvT2j1mL63RiO7gaYS
-         GnHouhA1R1kcGk0HCgs5uk0URURlONS8N1esYWuqLLMZZ6P8LAEsulDSKRntZtrPfFFh
-         PHcU6whp9kOearMd6ezzJS4us5O+XzuZyfjIJV8yq3yelh42+P1BntKdpdXfXOxIxxEt
-         TL+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757408723; x=1758013523;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NLqPkG/6OItE3LNH6o7MdT1z3Tt1LqmCkBoUP1DPapY=;
-        b=PVCG9JBbL535y1SvK6UD8ajySHp02io6H/0FGMF7HCzSDzdHRezt0jcuHWZAK61F4n
-         0ryZ4osvgBrI28vkpNTgnxeofUItqJjNSdMxxGz2sDMVcghEXgkEajUcWnWHAyPI6q1k
-         S3U3+j8XmQS9ZkVz86EEWQFIhe6bNxZ8j53UIT2z+BZ+ogggB8z9Uw9GKVKILJSzapKe
-         6EHDoS8F5+iVUjPZjIZNZzdeeym7TusBp3urWQxBtsWGVL+NXQTKib1yflCy+/zF1VwQ
-         79zrIN+dWbLWFSiAxt184rr03lo0rITu4pqGQlaAs6BhPWAcQn6DC0CeYG87KaCC9rOZ
-         nNYg==
-X-Forwarded-Encrypted: i=1; AJvYcCULFMLRmZjXAvSBEbhShGsXQSx08V58nCoduIDldhd9gWDuOz+fhUfh/4KccLldd/XAcsYkPHXvKNxx/Mw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzLhe9Xhgud82+LHgMl6fsmkqf+EDTx+h7TfdMcg/HnX5HqP5/u
-	BNymk5qCgYOskFAWcIAymm9AJ6DyQktNYq0MIL8ncUaNuGyRKCb5iaDQh8jNXJgoWJQ=
-X-Gm-Gg: ASbGncs7U1dobnNK3dTiEb9HHRcrHDIbVlyAfpc8vpKy4cNBFWyjQ0CjJIgKXhfX0Kf
-	1uY6d+8eQXcEFVOtkDyGBe7ubDgk1VpYhDHeTZBx+a5PshHSTP2xQNNQ+PcGf+xOX/gqw5IIOlV
-	ToXFuv2YVvKqVrH/Z/lozBg//uEosrGDAMx/fbpzTLOeUmvPuGr2vGutW9D4cjA9D/EFQKrgglI
-	OmmXaHO5kZSUpbYMPsEHyUdXkOJFVRIbP55c660KuHkxBoZ3wr8BxOUwM2iXoV9V1a6ixsRmxpF
-	bx5JnMlRNLbKTJ4oZLoLvRsGzk/pCQX/Nu7NE3E/qbjJQciJieTh0wIzUs5+761d+7/gAgb/SxZ
-	iZp57fyXM7Bgpay/bfPztQLrNzg==
-X-Google-Smtp-Source: AGHT+IGtGald5QrfplS4Quy+YJGLLien3U7oYcfVEvokQ+pid2O27coZ/lipvsj1OLSEf2foHdFxnw==
-X-Received: by 2002:a17:907:86aa:b0:b04:33a1:7f1b with SMTP id a640c23a62f3a-b04b1446e50mr1014087266b.19.1757408723315;
-        Tue, 09 Sep 2025 02:05:23 -0700 (PDT)
-Received: from localhost ([195.52.61.108])
-        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b041565ca98sm2278271866b.86.2025.09.09.02.05.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Sep 2025 02:05:22 -0700 (PDT)
+	s=arc-20240116; t=1757419902; c=relaxed/simple;
+	bh=BSfoKghzggAOe5VKxkV1dMqaczces8DHHG+dxc5P3Y0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HO5qAu+2RSdu0i8//sH+qos/xmZT5+iKIn8yaJIf7+vTdvNym3ME1deDoq/98AqUv2IyCT54aRfG5asAlgOIsrpPOg1psDW5uOifBVbC/g/cmGD09ClNn4li0UteAqwwIFz3v5skeU2zEeCIagtIO8d//GbbEC7XaInraE558MM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
+Received: from loongson.cn (unknown [223.64.68.89])
+	by gateway (Coremail) with SMTP id _____8BxWNF4GcBoa10IAA--.17847S3;
+	Tue, 09 Sep 2025 20:11:36 +0800 (CST)
+Received: from localhost.localdomain (unknown [223.64.68.89])
+	by front1 (Coremail) with SMTP id qMiowJCxH8JzGcBoOzSKAA--.57626S2;
+	Tue, 09 Sep 2025 20:11:35 +0800 (CST)
+From: Binbin Zhou <zhoubinbin@loongson.cn>
+To: Binbin Zhou <zhoubb.aaron@gmail.com>,
+	Huacai Chen <chenhuacai@loongson.cn>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Haowei Zheng <zhenghaowei@loongson.cn>
+Cc: Huacai Chen <chenhuacai@kernel.org>,
+	Xuerui Wang <kernel@xen0n.name>,
+	loongarch@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	Binbin Zhou <zhoubinbin@loongson.cn>
+Subject: [PATCH v4 0/3] uart: Introduce uart driver for the Loongson family
+Date: Tue,  9 Sep 2025 20:11:17 +0800
+Message-ID: <cover.1757318368.git.zhoubinbin@loongson.cn>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Type: multipart/signed;
- boundary=d7ea47f27b94c7fe0e2fcfb85371fcda0229f4569d05d02422f5fc70ce90;
- micalg=pgp-sha512; protocol="application/pgp-signature"
-Date: Tue, 09 Sep 2025 11:05:17 +0200
-Message-Id: <DCO5EBFY39Q7.1AUMHXZPJF96S@baylibre.com>
-Subject: Re: [PATCH 1/3] dt-bindings: serial: 8250_omap: Update
- wakeup-source type property
-From: "Markus Schneider-Pargmann" <msp@baylibre.com>
-To: "Conor Dooley" <conor@kernel.org>, "Kendall Willis" <k-willis@ti.com>
-Cc: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <robh@kernel.org>,
- <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <vigneshr@ti.com>,
- <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <d-gole@ti.com>, <vishalm@ti.com>,
- <sebin.francis@ti.com>, <khilman@baylibre.com>, <a-kaur@ti.com>,
- <john.ogness@linutronix.de>, <andriy.shevchenko@linux.intel.com>,
- <yujiaoliang@vivo.com>, <b-liu@ti.com>, <u.kleine-koenig@baylibre.com>
-X-Mailer: aerc 0.20.1
-References: <20250904212455.3729029-1-k-willis@ti.com>
- <20250904212455.3729029-2-k-willis@ti.com>
- <20250905-saloon-siesta-77da98d7ae02@spud>
-In-Reply-To: <20250905-saloon-siesta-77da98d7ae02@spud>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qMiowJCxH8JzGcBoOzSKAA--.57626S2
+X-CM-SenderInfo: p2kr3uplqex0o6or00hjvr0hdfq/
+X-Coremail-Antispam: 1Uk129KBj93XoW7KF1xtFy3tw1rtFW7Gr1UXFc_yoW8ZryxpF
+	sIk39Ikr4jqF17AwsxAFyrCF4rZr95JF9rWanxGwn5Gr9Yva4UXr1ftFn0yF13Zr4rXFW2
+	vF1rCrWUKa4jy3cCm3ZEXasCq-sJn29KB7ZKAUJUUUU5529EdanIXcx71UUUUU7KY7ZEXa
+	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
+	0xBIdaVrnRJUUUyEb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
+	IYs7xG6rWj6s0DM7CIcVAFz4kK6r1Y6r17M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
+	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
+	0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_
+	GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2xF0cIa020Ex4CE44I27wAqx4
+	xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v2
+	6r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04k20xvY0x0EwI
+	xGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480
+	Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7
+	IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k2
+	6cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxV
+	AFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU8vApUUUUUU==
 
---d7ea47f27b94c7fe0e2fcfb85371fcda0229f4569d05d02422f5fc70ce90
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
+Hi all:
 
-On Fri Sep 5, 2025 at 8:38 PM CEST, Conor Dooley wrote:
-> On Thu, Sep 04, 2025 at 04:24:53PM -0500, Kendall Willis wrote:
->> Allow the wakeup-source property to be either of type boolean or of a
->> phandle array. The phandle array points to the system idle states that t=
-he
->> UART can wakeup the system from.
->>=20
->> Signed-off-by: Kendall Willis <k-willis@ti.com>
->> ---
->>  Documentation/devicetree/bindings/serial/8250_omap.yaml | 8 +++++++-
->>  1 file changed, 7 insertions(+), 1 deletion(-)
->>=20
->> diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/D=
-ocumentation/devicetree/bindings/serial/8250_omap.yaml
->> index 1859f71297ff2..851a5291b4be4 100644
->> --- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
->> +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
->> @@ -69,7 +69,13 @@ properties:
->>    clock-frequency: true
->>    current-speed: true
->>    overrun-throttle-ms: true
->> -  wakeup-source: true
->> +
->> +  wakeup-source:
->> +    oneOf:
->> +      - type: boolean
->> +      - $ref: /schemas/types.yaml#/definitions/phandle-array
->> +        description:
->> +          List of phandles to system idle states in which UARTs can wak=
-eup the system.
->
-> Is there a single other instance of the wakeup-source property being
-> used like this?
+For various reasons, I will be taking over from Haowei and continuing to
+push forward with this patch set. Thanks to Haowei for his efforts so
+far.
 
-This was added to the dt-schema repository:
-  https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/wa=
-keup-source.yaml
+This patchset introduce a generic UART framework driver for Loongson family.
+It can be found on Loongson3 series cpus, Loongson-2K series cpus and Loongson 
+LS7A bridge chips.
 
-I don't think this needs to be repeated in every binding, so I think you
-can just drop this unless there are specifics for this device.
+Thanks.
 
-Best
-Markus
+------
+V4:
+Patch 1:
+  - Rename binding name from loongson,uart.yaml to
+    loongson,ls2k0500-uart.yaml;
+  - Drop ls7a compatible;
+  - According to the manual, ls3a and ls2k uart are the same, so merge their
+    compatible.
 
---d7ea47f27b94c7fe0e2fcfb85371fcda0229f4569d05d02422f5fc70ce90
-Content-Type: application/pgp-signature; name="signature.asc"
+Patch 2:
+  - Format code;
+  - Add the LOONGSON_UART_DLF macro definition to avoid magic numbers;
+  - Simplify the code, merge flags and quirks, and remove struct
+    loongson_uart_config;
+  - Use DEFINE_SIMPLE_DEV_PM_OPS;
+  - Drop loongson,ls7a-uart compatible.
 
------BEGIN PGP SIGNATURE-----
+Patch 3:
+  - Add ls2k* compatible string, and ns16550a as the fallback
+    compatible.
 
-iKMEABYKAEsWIQSJYVVm/x+5xmOiprOFwVZpkBVKUwUCaL/tzRsUgAAAAAAEAA5t
-YW51MiwyLjUrMS4xMSwyLDIRHG1zcEBiYXlsaWJyZS5jb20ACgkQhcFWaZAVSlOf
-fAD8DAQ97AbJ+p0LGAn2867WJ1+6lsRnR/L8zCEhhVRShSIA/RLlcsesqmk0jRon
-0iZUkj/uUh+7HeN8p0ojfkQuG9cD
-=WEOi
------END PGP SIGNATURE-----
+Link to V3:
+https://lore.kernel.org/all/20240826024705.55474-1-zhenghaowei@loongson.cn/
 
---d7ea47f27b94c7fe0e2fcfb85371fcda0229f4569d05d02422f5fc70ce90--
+Binbin Zhou (3):
+  dt-bindings: serial: Add Loongson UART controller
+  serial: 8250: Add Loongson uart driver support
+  LoongArch: dts: Add uart new compatible string
+
+ .../serial/loongson,ls2k0500-uart.yaml        |  60 ++++++
+ MAINTAINERS                                   |   8 +
+ arch/loongarch/boot/dts/loongson-2k0500.dtsi  |   2 +-
+ arch/loongarch/boot/dts/loongson-2k1000.dtsi  |   2 +-
+ arch/loongarch/boot/dts/loongson-2k2000.dtsi  |   2 +-
+ drivers/tty/serial/8250/8250_loongson.c       | 200 ++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c           |   8 +
+ drivers/tty/serial/8250/Kconfig               |  10 +
+ drivers/tty/serial/8250/Makefile              |   1 +
+ include/uapi/linux/serial_core.h              |   1 +
+ 10 files changed, 291 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/serial/loongson,ls2k0500-uart.yaml
+ create mode 100644 drivers/tty/serial/8250/8250_loongson.c
+
+
+base-commit: b601e1f41edd4667062aa7cccb4e5199814979a3
+-- 
+2.47.3
+
