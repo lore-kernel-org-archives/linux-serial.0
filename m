@@ -1,66 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 255621BDCF;
-	Tue,  9 Sep 2025 07:18:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC91B22157F;
+	Tue,  9 Sep 2025 08:35:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757402291; cv=none; b=iMtJNmMD0ACjgzAvDKPyQAn1tLGjtAGW2rCkVYMQQYuyv/aA1fwqcN+yc6goEiNME9HE3ingq72x1vM7zgn/mmln/P/pw/at8e0uu0CmUo7GhDBpZE9V3svJTqn0E1wvxQZWSDtSdUWBYgxlyP3fa6BnMC5oaWZiN9JiTLdU9F8=
+	t=1757406951; cv=none; b=bSuGEMZJ6GlJwcA3VUMIy7VssJrQtrIJC5b7fPdteMm6wZyMiiySw85jusgRVEdGqJrijlXW/BrzdFXoKteqHaJDwTNuOo5PskUpoq241OqYb90FcwIn7CAXfxreVBd4tVAjQD+O+1cP2aYE7NeRvdTNF0snAIJW8xFJ4bCb0XQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757402291; c=relaxed/simple;
-	bh=eoG0JvxQp/KV0F0KtC0hcRUu86Whu+2DoUruzb6EW50=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kMmLYBL1emdb5UHxAQDfykBQPljUtBTs4u6fd/BYGj1bZGj4g8V9OSWuRItm4U1IHvAYrSz8PprrznU04GSiO/95xeZ5JbqJ9M0/fCqXNq/UFIi+d5kY8hcGOy+MeDObppiNYwuurTsZhud2jDPr0iiqeSiBaRxkbPQg3NEW7a8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qsnBOfzH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1757406951; c=relaxed/simple;
+	bh=CXgkJ6vcEYUjaoEsiVysUMOuZtwcZBJNVprV2+pEVls=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=WrG83Qhuot1OtQ+KyT76Rnb5zEBeA0leWyUBHpPWTYNZwgwagZ/4Gzjki9Gbr73XQ+pim9W/T4Ilbu/TUYAu8EdxTRU1SJWIR1vxse9zXc3FHANF4l7eIRrCZxzktOf8TfjeoeFN9iClf01wxMs3PwdzVXuYapd3CgZnA54lBlg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=lYFfQQ0e; arc=none smtp.client-ip=68.232.154.123
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qsnBOfzH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DB84C4CEF4;
-	Tue,  9 Sep 2025 07:18:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757402290;
-	bh=eoG0JvxQp/KV0F0KtC0hcRUu86Whu+2DoUruzb6EW50=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qsnBOfzHqqyo/mfM/vPx5i2NCelOlLzFkiRfORokrOnVNXhbOdDchOM4jSkFmenph
-	 1IRcb10DaTszVCHuDL/wI5znKTXQnCZzMYOjnwJdFt9ta3c5VnxrfSFV6fseExHYbE
-	 Hh2JFaz/egM42Xbsw7h8/omrZuTaWQgvwJMwLQUuZ6HXBEe7filTIEDaVB2gYClzyA
-	 KZHf1xz9X1TXmf9Sy8Jo+N9oI282nNUcWYdT+cv8cpVHkc+y9cKAcAtjcmmHSQxeiN
-	 gNBPfvnH7IP1dcxZZOac6OqQa5d20dw5fD6ER9Ua48eJus8HyGm7rq9j1i9pq4T6Ik
-	 O8N/0A0L/4XAQ==
-Date: Tue, 9 Sep 2025 09:18:08 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Denzeel Oliva <wachiturroxd150@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Alim Akhtar <alim.akhtar@samsung.com>, Sam Protsenko <semen.protsenko@linaro.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Andi Shyti <andi.shyti@kernel.org>, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	linux-i2c@vger.kernel.org
-Subject: Re: [PATCH v2 5/8] dt-bindings: serial: samsung: Add Exynos990 UART
- compatible
-Message-ID: <20250909-sophisticated-urban-goshawk-fc11fb@kuoka>
-References: <20250907-perics-add-usinodes-v2-0-58f41796d2d3@gmail.com>
- <20250907-perics-add-usinodes-v2-5-58f41796d2d3@gmail.com>
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="lYFfQQ0e"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1757406949; x=1788942949;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=CXgkJ6vcEYUjaoEsiVysUMOuZtwcZBJNVprV2+pEVls=;
+  b=lYFfQQ0eYOik+ZNPJYNR53dEizwBJwMaR8aBXcnrDhtIESlu/NTJUgK8
+   soNDonOzblOjqiGnJaXDk3xlbtbydBDdNB94jvcCS7fooSIHaS83QtvH5
+   pZvVNFIS3olsFqhHXbibIVCsc382bQ0tuOaYUgxWsgQrdrsGehbw1xL3x
+   G87EAWKnBa0RetC9fBWwmmlBQ2Q9xH9WPVzcr9Fs9l5lLIiAgnCbMzD2r
+   m0TZGeM2EP3tOctGBZ6y5WsyExTST47WxNg5eaUGD1mOr82BJVQKqO9OR
+   qZvWkmcDkPt65xo6GnabHW3k2OfmCFnLnOazkDraRX888bcS8qvoCpq1J
+   w==;
+X-CSE-ConnectionGUID: ofTAqQfWT8OQ6lC0/N7q+g==
+X-CSE-MsgGUID: xuRAfyugTWW04SVqJa9bTQ==
+X-IronPort-AV: E=Sophos;i="6.18,250,1751266800"; 
+   d="scan'208";a="213640830"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 09 Sep 2025 01:35:42 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.58; Tue, 9 Sep 2025 01:35:17 -0700
+Received: from [10.159.245.205] (10.10.85.11) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
+ Transport; Tue, 9 Sep 2025 01:35:13 -0700
+Message-ID: <1e1b3cbe-ee39-4813-8f17-1844fc9d45f7@microchip.com>
+Date: Tue, 9 Sep 2025 10:35:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20250907-perics-add-usinodes-v2-5-58f41796d2d3@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 4/9] mfd: at91-usart: Make it selectable for
+ ARCH_MICROCHIP
+To: Lee Jones <lee@kernel.org>
+CC: Robert Marko <robert.marko@sartura.hr>, <linux@armlinux.org.uk>,
+	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
+	<catalin.marinas@arm.com>, <will@kernel.org>, <olivia@selenic.com>,
+	<herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+	<andi.shyti@kernel.org>, <broonie@kernel.org>, <gregkh@linuxfoundation.org>,
+	<jirislaby@kernel.org>, <arnd@kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<linux-crypto@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+	<o.rempel@pengutronix.de>, <daniel.machon@microchip.com>,
+	<luka.perkov@sartura.hr>
+References: <20250813174720.540015-1-robert.marko@sartura.hr>
+ <20250813174720.540015-5-robert.marko@sartura.hr>
+ <20250902100254.GD2163762@google.com>
+ <769c8dc4-4db6-4d2e-aa2f-f86aa7ccaf78@microchip.com>
+ <20250908141633.GB9224@google.com>
+From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Content-Language: en-US, fr
+Organization: microchip
+In-Reply-To: <20250908141633.GB9224@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sun, Sep 07, 2025 at 10:13:36PM +0000, Denzeel Oliva wrote:
-> Add samsung,exynos990-uart compatible string to the Samsung UART bindings.
+On 08/09/2025 at 16:16, Lee Jones wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> Signed-off-by: Denzeel Oliva <wachiturroxd150@gmail.com>
-> ---
->  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> On Thu, 04 Sep 2025, Nicolas Ferre wrote:
+> 
+>> On 02/09/2025 at 12:02, Lee Jones wrote:
+>>> On Wed, 13 Aug 2025, Robert Marko wrote:
+>>>
+>>>> LAN969x uses the Atmel USART, so make it selectable for ARCH_MICROCHIP to
+>>>> avoid needing to update depends in future if other Microchip SoC-s use it
+>>>> as well.
+>>>>
+>>>> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+>>>> ---
+>>>>    drivers/mfd/Kconfig | 2 +-
+>>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+>>>> index 425c5fba6cb1..8f11b2df1470 100644
+>>>> --- a/drivers/mfd/Kconfig
+>>>> +++ b/drivers/mfd/Kconfig
+>>>> @@ -138,7 +138,7 @@ config MFD_AAT2870_CORE
+>>>>    config MFD_AT91_USART
+>>>>         tristate "AT91 USART Driver"
+>>>>         select MFD_CORE
+>>>> -     depends on ARCH_AT91 || ARCH_LAN969X || COMPILE_TEST
+>>>> +     depends on ARCH_MICROCHIP || COMPILE_TEST
+>>>>         help
+>>>>           Select this to get support for AT91 USART IP. This is a wrapper
+>>>>           over at91-usart-serial driver and usart-spi-driver. Only one function
+>>>
+>>> Let me know when the deps are in Mainline.
+>>
+>> Hi Lee,
+>>
+>> I have tags from other maintainers, how about you give us your and we make
+> 
+> My?  AB?
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Yep ;-)
 
-Best regards,
-Krzysztof
+>> this patch travel through arm-soc like the other ones?
+> 
+> Sure.
+> 
+> Acked-by: Lee Jones <lee@kernel.org>
 
+Thanks Lee. Queued for at91 PR to arm-soc.
+
+Regards,
+   Nicolas
