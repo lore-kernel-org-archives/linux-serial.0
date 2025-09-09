@@ -1,131 +1,148 @@
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC91B22157F;
-	Tue,  9 Sep 2025 08:35:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.154.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D48627511E
+	for <linux-serial@vger.kernel.org>; Tue,  9 Sep 2025 09:05:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757406951; cv=none; b=bSuGEMZJ6GlJwcA3VUMIy7VssJrQtrIJC5b7fPdteMm6wZyMiiySw85jusgRVEdGqJrijlXW/BrzdFXoKteqHaJDwTNuOo5PskUpoq241OqYb90FcwIn7CAXfxreVBd4tVAjQD+O+1cP2aYE7NeRvdTNF0snAIJW8xFJ4bCb0XQ=
+	t=1757408727; cv=none; b=dKLW9/6y9FQqMqFZc2TgzbI2GjpvPfiLPgPc52azWDPy6gtI9mQyhp0rxEFEV1KYXDmtb20RozqAc6lG79IVd4jah0NO2gBbidTpLtq+lxisO3NsBTa7TKpqv/0qgAe2kS3Vq1kQvEMn6adfre8EJ2fPDB2AIcqIz1MW8A0G/To=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757406951; c=relaxed/simple;
-	bh=CXgkJ6vcEYUjaoEsiVysUMOuZtwcZBJNVprV2+pEVls=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=WrG83Qhuot1OtQ+KyT76Rnb5zEBeA0leWyUBHpPWTYNZwgwagZ/4Gzjki9Gbr73XQ+pim9W/T4Ilbu/TUYAu8EdxTRU1SJWIR1vxse9zXc3FHANF4l7eIRrCZxzktOf8TfjeoeFN9iClf01wxMs3PwdzVXuYapd3CgZnA54lBlg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=lYFfQQ0e; arc=none smtp.client-ip=68.232.154.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
+	s=arc-20240116; t=1757408727; c=relaxed/simple;
+	bh=oKt+5SuE9mqrDfjDXh6mBMRn1amqw6YNu8oG74Kyjxg=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
+	 References:In-Reply-To; b=Ro0W5NF0O8iM4l/v/p3HiuAulFJyRBuifPyGdT/OyqfoPN+OhVbncPgO47hWLir4ueRyG3CvLfOZJ6HRtk1g4YCELHkcUFXlKY4yiiKD0eS8FHsQwtelNumL1LFjsK3YeMAdho9JoVJoZ/uxt9dMGXgUxj6gWvommjklrPQCVis=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=rxogbAOX; arc=none smtp.client-ip=209.85.218.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="lYFfQQ0e"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1757406949; x=1788942949;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=CXgkJ6vcEYUjaoEsiVysUMOuZtwcZBJNVprV2+pEVls=;
-  b=lYFfQQ0eYOik+ZNPJYNR53dEizwBJwMaR8aBXcnrDhtIESlu/NTJUgK8
-   soNDonOzblOjqiGnJaXDk3xlbtbydBDdNB94jvcCS7fooSIHaS83QtvH5
-   pZvVNFIS3olsFqhHXbibIVCsc382bQ0tuOaYUgxWsgQrdrsGehbw1xL3x
-   G87EAWKnBa0RetC9fBWwmmlBQ2Q9xH9WPVzcr9Fs9l5lLIiAgnCbMzD2r
-   m0TZGeM2EP3tOctGBZ6y5WsyExTST47WxNg5eaUGD1mOr82BJVQKqO9OR
-   qZvWkmcDkPt65xo6GnabHW3k2OfmCFnLnOazkDraRX888bcS8qvoCpq1J
-   w==;
-X-CSE-ConnectionGUID: ofTAqQfWT8OQ6lC0/N7q+g==
-X-CSE-MsgGUID: xuRAfyugTWW04SVqJa9bTQ==
-X-IronPort-AV: E=Sophos;i="6.18,250,1751266800"; 
-   d="scan'208";a="213640830"
-X-Amp-Result: SKIPPED(no attachment in message)
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 09 Sep 2025 01:35:42 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.58; Tue, 9 Sep 2025 01:35:17 -0700
-Received: from [10.159.245.205] (10.10.85.11) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
- Transport; Tue, 9 Sep 2025 01:35:13 -0700
-Message-ID: <1e1b3cbe-ee39-4813-8f17-1844fc9d45f7@microchip.com>
-Date: Tue, 9 Sep 2025 10:35:12 +0200
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="rxogbAOX"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-b0473327e70so866925266b.3
+        for <linux-serial@vger.kernel.org>; Tue, 09 Sep 2025 02:05:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1757408723; x=1758013523; darn=vger.kernel.org;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=NLqPkG/6OItE3LNH6o7MdT1z3Tt1LqmCkBoUP1DPapY=;
+        b=rxogbAOXxGWNGch+EPV8UCqdt1kRTPuQ3BJsSAHf3fM1YmJEkTJEjKrC52AN4SHDUm
+         VW/Hf2WNgVInFDQxPTfSJFu8ajqI3isia0VL1OmXHWHhh4MCZo+xKaBpi/iWi5jkeHUK
+         cTBEExHWNo19qcm/cVo6Uj7Y0B1sPCK71zewnskTDtt/3zFkCdTvT2j1mL63RiO7gaYS
+         GnHouhA1R1kcGk0HCgs5uk0URURlONS8N1esYWuqLLMZZ6P8LAEsulDSKRntZtrPfFFh
+         PHcU6whp9kOearMd6ezzJS4us5O+XzuZyfjIJV8yq3yelh42+P1BntKdpdXfXOxIxxEt
+         TL+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757408723; x=1758013523;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=NLqPkG/6OItE3LNH6o7MdT1z3Tt1LqmCkBoUP1DPapY=;
+        b=PVCG9JBbL535y1SvK6UD8ajySHp02io6H/0FGMF7HCzSDzdHRezt0jcuHWZAK61F4n
+         0ryZ4osvgBrI28vkpNTgnxeofUItqJjNSdMxxGz2sDMVcghEXgkEajUcWnWHAyPI6q1k
+         S3U3+j8XmQS9ZkVz86EEWQFIhe6bNxZ8j53UIT2z+BZ+ogggB8z9Uw9GKVKILJSzapKe
+         6EHDoS8F5+iVUjPZjIZNZzdeeym7TusBp3urWQxBtsWGVL+NXQTKib1yflCy+/zF1VwQ
+         79zrIN+dWbLWFSiAxt184rr03lo0rITu4pqGQlaAs6BhPWAcQn6DC0CeYG87KaCC9rOZ
+         nNYg==
+X-Forwarded-Encrypted: i=1; AJvYcCULFMLRmZjXAvSBEbhShGsXQSx08V58nCoduIDldhd9gWDuOz+fhUfh/4KccLldd/XAcsYkPHXvKNxx/Mw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLhe9Xhgud82+LHgMl6fsmkqf+EDTx+h7TfdMcg/HnX5HqP5/u
+	BNymk5qCgYOskFAWcIAymm9AJ6DyQktNYq0MIL8ncUaNuGyRKCb5iaDQh8jNXJgoWJQ=
+X-Gm-Gg: ASbGncs7U1dobnNK3dTiEb9HHRcrHDIbVlyAfpc8vpKy4cNBFWyjQ0CjJIgKXhfX0Kf
+	1uY6d+8eQXcEFVOtkDyGBe7ubDgk1VpYhDHeTZBx+a5PshHSTP2xQNNQ+PcGf+xOX/gqw5IIOlV
+	ToXFuv2YVvKqVrH/Z/lozBg//uEosrGDAMx/fbpzTLOeUmvPuGr2vGutW9D4cjA9D/EFQKrgglI
+	OmmXaHO5kZSUpbYMPsEHyUdXkOJFVRIbP55c660KuHkxBoZ3wr8BxOUwM2iXoV9V1a6ixsRmxpF
+	bx5JnMlRNLbKTJ4oZLoLvRsGzk/pCQX/Nu7NE3E/qbjJQciJieTh0wIzUs5+761d+7/gAgb/SxZ
+	iZp57fyXM7Bgpay/bfPztQLrNzg==
+X-Google-Smtp-Source: AGHT+IGtGald5QrfplS4Quy+YJGLLien3U7oYcfVEvokQ+pid2O27coZ/lipvsj1OLSEf2foHdFxnw==
+X-Received: by 2002:a17:907:86aa:b0:b04:33a1:7f1b with SMTP id a640c23a62f3a-b04b1446e50mr1014087266b.19.1757408723315;
+        Tue, 09 Sep 2025 02:05:23 -0700 (PDT)
+Received: from localhost ([195.52.61.108])
+        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b041565ca98sm2278271866b.86.2025.09.09.02.05.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Sep 2025 02:05:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 4/9] mfd: at91-usart: Make it selectable for
- ARCH_MICROCHIP
-To: Lee Jones <lee@kernel.org>
-CC: Robert Marko <robert.marko@sartura.hr>, <linux@armlinux.org.uk>,
-	<alexandre.belloni@bootlin.com>, <claudiu.beznea@tuxon.dev>,
-	<catalin.marinas@arm.com>, <will@kernel.org>, <olivia@selenic.com>,
-	<herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-	<andi.shyti@kernel.org>, <broonie@kernel.org>, <gregkh@linuxfoundation.org>,
-	<jirislaby@kernel.org>, <arnd@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<linux-crypto@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-	<linux-spi@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-	<o.rempel@pengutronix.de>, <daniel.machon@microchip.com>,
-	<luka.perkov@sartura.hr>
-References: <20250813174720.540015-1-robert.marko@sartura.hr>
- <20250813174720.540015-5-robert.marko@sartura.hr>
- <20250902100254.GD2163762@google.com>
- <769c8dc4-4db6-4d2e-aa2f-f86aa7ccaf78@microchip.com>
- <20250908141633.GB9224@google.com>
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
-Content-Language: en-US, fr
-Organization: microchip
-In-Reply-To: <20250908141633.GB9224@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Content-Type: multipart/signed;
+ boundary=d7ea47f27b94c7fe0e2fcfb85371fcda0229f4569d05d02422f5fc70ce90;
+ micalg=pgp-sha512; protocol="application/pgp-signature"
+Date: Tue, 09 Sep 2025 11:05:17 +0200
+Message-Id: <DCO5EBFY39Q7.1AUMHXZPJF96S@baylibre.com>
+Subject: Re: [PATCH 1/3] dt-bindings: serial: 8250_omap: Update
+ wakeup-source type property
+From: "Markus Schneider-Pargmann" <msp@baylibre.com>
+To: "Conor Dooley" <conor@kernel.org>, "Kendall Willis" <k-willis@ti.com>
+Cc: <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>, <robh@kernel.org>,
+ <krzk+dt@kernel.org>, <conor+dt@kernel.org>, <vigneshr@ti.com>,
+ <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <d-gole@ti.com>, <vishalm@ti.com>,
+ <sebin.francis@ti.com>, <khilman@baylibre.com>, <a-kaur@ti.com>,
+ <john.ogness@linutronix.de>, <andriy.shevchenko@linux.intel.com>,
+ <yujiaoliang@vivo.com>, <b-liu@ti.com>, <u.kleine-koenig@baylibre.com>
+X-Mailer: aerc 0.20.1
+References: <20250904212455.3729029-1-k-willis@ti.com>
+ <20250904212455.3729029-2-k-willis@ti.com>
+ <20250905-saloon-siesta-77da98d7ae02@spud>
+In-Reply-To: <20250905-saloon-siesta-77da98d7ae02@spud>
 
-On 08/09/2025 at 16:16, Lee Jones wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Thu, 04 Sep 2025, Nicolas Ferre wrote:
-> 
->> On 02/09/2025 at 12:02, Lee Jones wrote:
->>> On Wed, 13 Aug 2025, Robert Marko wrote:
->>>
->>>> LAN969x uses the Atmel USART, so make it selectable for ARCH_MICROCHIP to
->>>> avoid needing to update depends in future if other Microchip SoC-s use it
->>>> as well.
->>>>
->>>> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
->>>> ---
->>>>    drivers/mfd/Kconfig | 2 +-
->>>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
->>>> index 425c5fba6cb1..8f11b2df1470 100644
->>>> --- a/drivers/mfd/Kconfig
->>>> +++ b/drivers/mfd/Kconfig
->>>> @@ -138,7 +138,7 @@ config MFD_AAT2870_CORE
->>>>    config MFD_AT91_USART
->>>>         tristate "AT91 USART Driver"
->>>>         select MFD_CORE
->>>> -     depends on ARCH_AT91 || ARCH_LAN969X || COMPILE_TEST
->>>> +     depends on ARCH_MICROCHIP || COMPILE_TEST
->>>>         help
->>>>           Select this to get support for AT91 USART IP. This is a wrapper
->>>>           over at91-usart-serial driver and usart-spi-driver. Only one function
->>>
->>> Let me know when the deps are in Mainline.
->>
->> Hi Lee,
->>
->> I have tags from other maintainers, how about you give us your and we make
-> 
-> My?  AB?
+--d7ea47f27b94c7fe0e2fcfb85371fcda0229f4569d05d02422f5fc70ce90
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
 
-Yep ;-)
+On Fri Sep 5, 2025 at 8:38 PM CEST, Conor Dooley wrote:
+> On Thu, Sep 04, 2025 at 04:24:53PM -0500, Kendall Willis wrote:
+>> Allow the wakeup-source property to be either of type boolean or of a
+>> phandle array. The phandle array points to the system idle states that t=
+he
+>> UART can wakeup the system from.
+>>=20
+>> Signed-off-by: Kendall Willis <k-willis@ti.com>
+>> ---
+>>  Documentation/devicetree/bindings/serial/8250_omap.yaml | 8 +++++++-
+>>  1 file changed, 7 insertions(+), 1 deletion(-)
+>>=20
+>> diff --git a/Documentation/devicetree/bindings/serial/8250_omap.yaml b/D=
+ocumentation/devicetree/bindings/serial/8250_omap.yaml
+>> index 1859f71297ff2..851a5291b4be4 100644
+>> --- a/Documentation/devicetree/bindings/serial/8250_omap.yaml
+>> +++ b/Documentation/devicetree/bindings/serial/8250_omap.yaml
+>> @@ -69,7 +69,13 @@ properties:
+>>    clock-frequency: true
+>>    current-speed: true
+>>    overrun-throttle-ms: true
+>> -  wakeup-source: true
+>> +
+>> +  wakeup-source:
+>> +    oneOf:
+>> +      - type: boolean
+>> +      - $ref: /schemas/types.yaml#/definitions/phandle-array
+>> +        description:
+>> +          List of phandles to system idle states in which UARTs can wak=
+eup the system.
+>
+> Is there a single other instance of the wakeup-source property being
+> used like this?
 
->> this patch travel through arm-soc like the other ones?
-> 
-> Sure.
-> 
-> Acked-by: Lee Jones <lee@kernel.org>
+This was added to the dt-schema repository:
+  https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/wa=
+keup-source.yaml
 
-Thanks Lee. Queued for at91 PR to arm-soc.
+I don't think this needs to be repeated in every binding, so I think you
+can just drop this unless there are specifics for this device.
 
-Regards,
-   Nicolas
+Best
+Markus
+
+--d7ea47f27b94c7fe0e2fcfb85371fcda0229f4569d05d02422f5fc70ce90
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iKMEABYKAEsWIQSJYVVm/x+5xmOiprOFwVZpkBVKUwUCaL/tzRsUgAAAAAAEAA5t
+YW51MiwyLjUrMS4xMSwyLDIRHG1zcEBiYXlsaWJyZS5jb20ACgkQhcFWaZAVSlOf
+fAD8DAQ97AbJ+p0LGAn2867WJ1+6lsRnR/L8zCEhhVRShSIA/RLlcsesqmk0jRon
+0iZUkj/uUh+7HeN8p0ojfkQuG9cD
+=WEOi
+-----END PGP SIGNATURE-----
+
+--d7ea47f27b94c7fe0e2fcfb85371fcda0229f4569d05d02422f5fc70ce90--
