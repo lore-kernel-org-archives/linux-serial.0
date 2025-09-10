@@ -1,129 +1,153 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from lelvem-ot01.ext.ti.com (lelvem-ot01.ext.ti.com [198.47.23.234])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D6BB314B91;
-	Wed, 10 Sep 2025 11:26:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 796F3309F07;
+	Wed, 10 Sep 2025 21:23:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.234
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757503573; cv=none; b=ikIeoxaipgYs7nfNgzRiwi573UT2RG8dyo42yUSt1k6o0askvFcGMN0lQdr+tBdLRONQwfG4ZHuV7uFKd3ZJneRpefUqN7tOl/42YyBfmp2+SUTXQT/1Ra08M0lOu/T3Xgzux2c3yRvv/G1kpA967rx3bbOZMCmwaK0+3x0I4Ug=
+	t=1757539439; cv=none; b=leUbZuey13GYH6iCaLeOpnx6hNy82lRYJC65XmRtm+GkM9rpX2dLZo4kDK2Wb29jc5T4bU8M5iB/pSfJt9HFwISxGhAzkUFgTJQa5CMH9aRjPCvETuqmXZ9KLJALgRgAHQeO8rDmkOR1gBTXIZu9Q+iepGgVv0Pqnlhst4SlCpE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757503573; c=relaxed/simple;
-	bh=g1ZcYK7z0kSGnHDL6z7Fn7KjrnhP0j0B1BZniWcndEk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DkaJ+wuqXYvwQQO+UrN9WxCST2jAE+qAlEys1u3tvsaSEmkeNJ0nUpvLX3GpRNJHazb1dYfNZY1DjBX+dFLFz3xxgY/yEpRkDhYI57hCAtEKobKlYEEg5/dwkEg2gceBRHtq3imJrhsCnQb3E21Y2fUwrNO4tMAj8u9MFHtmhRE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L0FwgFMm; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1757539439; c=relaxed/simple;
+	bh=biTn94UYUWgbB4jzZfQ+pzMLwiSvOn6MtuyjJZkNgKQ=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=Iz1/dnyaaiv+Nn16g0/fuWrVhRsj0sWrjG1uzWTSWxBUtmbHCL5Fm1WDTe4gnLHmefopUggVuJkmvLzj1aVn1XO01tkX3aPfeIWKDrprWjNYqZsO2JzxU2XMRr1UDjJUMkDmMFGg1/dKXZmkUTNyrHNlYWHoazYBG4mZeyN6kmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=Cern/LBe; arc=none smtp.client-ip=198.47.23.234
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L0FwgFMm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1757503571; x=1789039571;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=g1ZcYK7z0kSGnHDL6z7Fn7KjrnhP0j0B1BZniWcndEk=;
-  b=L0FwgFMmr9wn306EF5UN0kBMW0SMoKXFWtKUX6S626JJuKOFdDscU0bl
-   YcQQ6D2ZFWo6W9oE+I2Euaavh6FNLBZFu+j1kjCGqudlgzzIdvvvnYDRJ
-   U1K1h8yOsrSP8K9nYRDBrJNcQprI2bQYoRuFA4m0IW4qiD8npGcRMJxFU
-   LJMO1KsKBp3gF1i4VHLhy/rJtjZw8omaPXcD8f/ZobpL3L8ORn+Ac6axe
-   Y90Xggve/GqoDGn6xlrrxMSB9yvHwhiZ+WgOzFtY016voUizeIR6DeNHn
-   TUs4RZdfEiE1QfVR2CrXtF/G57k4Cio5fooQ+JxRP4IbCqMblfTVNl7uv
-   w==;
-X-CSE-ConnectionGUID: ecn41i2iQ2GLT1L60Zhk7A==
-X-CSE-MsgGUID: UcA4XL2bSCSzCVUgI5veDw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="59731083"
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="59731083"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Sep 2025 04:26:11 -0700
-X-CSE-ConnectionGUID: qM09ER3pRp2gbsaxIz/f+Q==
-X-CSE-MsgGUID: rw4ZeemyT0OvU3znIurURg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,254,1751266800"; 
-   d="scan'208";a="178570009"
-Received: from lkp-server01.sh.intel.com (HELO 114d98da2b6c) ([10.239.97.150])
-  by fmviesa004.fm.intel.com with ESMTP; 10 Sep 2025 04:26:07 -0700
-Received: from kbuild by 114d98da2b6c with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uwIxh-0005sZ-18;
-	Wed, 10 Sep 2025 11:26:05 +0000
-Date: Wed, 10 Sep 2025 19:26:01 +0800
-From: kernel test robot <lkp@intel.com>
-To: Binbin Zhou <zhoubinbin@loongson.cn>,
-	Binbin Zhou <zhoubb.aaron@gmail.com>,
-	Huacai Chen <chenhuacai@loongson.cn>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Haowei Zheng <zhenghaowei@loongson.cn>
-Cc: oe-kbuild-all@lists.linux.dev, Xuerui Wang <kernel@xen0n.name>,
-	loongarch@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 2/3] serial: 8250: Add Loongson uart driver support
-Message-ID: <202509102107.dmwhCV71-lkp@intel.com>
-References: <91ae8cd4f903ac452e337e4662bbabf8a412b061.1757318368.git.zhoubinbin@loongson.cn>
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="Cern/LBe"
+Received: from lelvem-sh02.itg.ti.com ([10.180.78.226])
+	by lelvem-ot01.ext.ti.com (8.15.2/8.15.2) with ESMTP id 58ALNoL4226940;
+	Wed, 10 Sep 2025 16:23:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1757539430;
+	bh=bmEY0WfaxpzoYR06q8U/9vAuoR60sOBVOraHfKIbfgs=;
+	h=From:Subject:Date:To:CC;
+	b=Cern/LBe0Av9vMSEe1cKDTioXiRPAXYG/uW/6j29e90j62M1J5WAhv7GuwFjuBaCv
+	 mqcsIO5Ckp2enUju20rYROuQxab7V8NlNogrlEDNteF5aysSh7UCoyFcSalDNVuO76
+	 H4oiik8YvQkuAd2DGkgiamr45n+lQjronFopDnR0=
+Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
+	by lelvem-sh02.itg.ti.com (8.18.1/8.18.1) with ESMTPS id 58ALNnA2572645
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-SHA256 bits=128 verify=FAIL);
+	Wed, 10 Sep 2025 16:23:49 -0500
+Received: from DFLE202.ent.ti.com (10.64.6.60) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.55; Wed, 10
+ Sep 2025 16:23:49 -0500
+Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DFLE202.ent.ti.com
+ (10.64.6.60) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
+ Transport; Wed, 10 Sep 2025 16:23:49 -0500
+Received: from [127.0.1.1] (uda0506412.dhcp.ti.com [128.247.81.19])
+	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 58ALNnZ31097742;
+	Wed, 10 Sep 2025 16:23:49 -0500
+From: Kendall Willis <k-willis@ti.com>
+Subject: [PATCH v2 0/2] serial: 8250: omap: Add wakeup support
+Date: Wed, 10 Sep 2025 16:23:30 -0500
+Message-ID: <20250910-uart-daisy-chain-8250-omap-v2-0-e90d44c1a9ac@ti.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <91ae8cd4f903ac452e337e4662bbabf8a412b061.1757318368.git.zhoubinbin@loongson.cn>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAFLswWgC/03Myw6CMBCF4Vchs3ZIO7RgXfkexkUDg0wESlq8h
+ fDuNq5c/jkn3waJo3CCU7FB5KckCXMOOhTQDn6+MUqXG0iRVU4rfPi4YuclfTAfZMZjHjBMfsG
+ qNo7b2jfaWsjAErmX9w+/XHP3MUy4DpH9H6kMaTLWllVDTpFDjXd8yThKOq9StmGCff8CBlorG
+ 6cAAAA=
+X-Change-ID: 20250910-uart-daisy-chain-8250-omap-3649ec6a7155
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby
+	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Vignesh Raghavendra
+	<vigneshr@ti.com>
+CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <d-gole@ti.com>, <vishalm@ti.com>,
+        <sebin.francis@ti.com>, <msp@baylibre.com>, <khilman@baylibre.com>,
+        <a-kaur@ti.com>, <andriy.shevchenko@linux.intel.com>,
+        <yujiaoliang@vivo.com>, <b-liu@ti.com>, <u.kleine-koenig@baylibre.com>,
+        Kendall Willis
+	<k-willis@ti.com>
+X-Mailer: b4 0.14.2
+X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
 
-Hi Binbin,
+This series adds wakeup support for the serial 8250_omap driver. On the
+TI K3 AM62 family of devices, the UARTs are able to wakeup the system
+from various low power modes by using I/O daisy-chaining.
 
-kernel test robot noticed the following build warnings:
+The wakeup functionality is implemented by adding the pinctrl state
+'wakeup' in which specific flags are set on the pins to enable wakeup
+via I/O daisy-chain. If the 'wakeup' pinctrl state exists for the serial
+device, the 'wakeup' pinctrl state is selected on suspend. Upon resume,
+the pinctrl 'default' state is selected.
 
-[auto build test WARNING on b601e1f41edd4667062aa7cccb4e5199814979a3]
+The commits "dt-bindings: serial: 8250_omap: Add wakeup pinctrl state"
+and "serial: 8250: omap: Support wakeup pinctrl state on suspend" were
+picked from this series [1]. The commit "dt-bindings: serial: 8250_omap:
+Add wakeup pinctrl state" was updated to follow the structure of a
+similar patch [2] by Markus for the m_can driver. The commit "serial:
+8250: omap: Support wakeup pinctrl state on suspend" was updated to only
+include s2ram functionality instead of a poweroff state.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Binbin-Zhou/dt-bindings-serial-Add-Loongson-UART-controller/20250909-201640
-base:   b601e1f41edd4667062aa7cccb4e5199814979a3
-patch link:    https://lore.kernel.org/r/91ae8cd4f903ac452e337e4662bbabf8a412b061.1757318368.git.zhoubinbin%40loongson.cn
-patch subject: [PATCH v4 2/3] serial: 8250: Add Loongson uart driver support
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20250910/202509102107.dmwhCV71-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 15.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250910/202509102107.dmwhCV71-lkp@intel.com/reproduce)
+Implementation
+--------------
+This series is intended to be implemented along with the following
+series. This patch has no dependencies on any of the other series:
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202509102107.dmwhCV71-lkp@intel.com/
+1. "pmdomain: ti_sci: Handle wakeup constraint if device has pinctrl
+   wakeup state" [3]: Patch which skips setting constraints for wakeup
+   sources that use pinctrl state 'wakeup'.
 
-All warnings (new ones prefixed by >>):
+2. "serial: 8250: omap: Add wakeup support" (this series): Implements
+   wakeup from the UARTs for TI K3 SoCs
 
-   drivers/tty/serial/8250/8250_loongson.c: In function 'loongson_uart_probe':
-   drivers/tty/serial/8250/8250_loongson.c:102:9: error: implicit declaration of function 'device_property_read_u32' [-Wimplicit-function-declaration]
-     102 |         device_property_read_u32(dev, "clock-frequency", &uart.port.uartclk);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/tty/serial/8250/8250_loongson.c:117:28: error: implicit declaration of function 'device_get_match_data'; did you mean 'device_match_any'? [-Wimplicit-function-declaration]
-     117 |         flags = (uintptr_t)device_get_match_data(dev);
-         |                            ^~~~~~~~~~~~~~~~~~~~~
-         |                            device_match_any
-   drivers/tty/serial/8250/8250_loongson.c: At top level:
-   drivers/tty/serial/8250/8250_loongson.c:179:34: error: array type has incomplete element type 'struct of_device_id'
-     179 | static const struct of_device_id loongson_uart_of_ids[] = {
-         |                                  ^~~~~~~~~~~~~~~~~~~~
->> drivers/tty/serial/8250/8250_loongson.c:179:34: warning: 'loongson_uart_of_ids' defined but not used [-Wunused-variable]
+3. "arm64: dts: ti: k3-am62: Support Main UART wakeup" [4]: Implements
+   the functionality to wakeup the system from the Main UART
 
+Testing
+-------
+Tested on a AM62P SK EVM board with all series and dependencies
+implemented. Suspend/resume verified with the Main UART wakeup source
+by entering a keypress on the console.
 
-vim +/loongson_uart_of_ids +179 drivers/tty/serial/8250/8250_loongson.c
+This github branch [5] has all the necessary patches to test the series
+using linux-next.
 
-   175	
-   176	static DEFINE_SIMPLE_DEV_PM_OPS(loongson_uart_pm_ops, loongson_uart_suspend,
-   177					loongson_uart_resume);
-   178	
- > 179	static const struct of_device_id loongson_uart_of_ids[] = {
-   180		{ .compatible = "loongson,ls2k0500-uart", .data = (void *)LS2K0500_UART_FLAG },
-   181		{ .compatible = "loongson,ls2k1500-uart", .data = (void *)LS2K1500_UART_FLAG },
-   182		{ /* sentinel */ },
-   183	};
-   184	MODULE_DEVICE_TABLE(of, loongson_uart_of_ids);
-   185	
+Links
+-----
+[1] https://lore.kernel.org/all/20240523075819.1285554-1-msp@baylibre.com/
+[2] https://lore.kernel.org/all/20250820-topic-mcan-wakeup-source-v6-12-v9-1-0ac13f2ddd67@baylibre.com/
+[3] https://github.com/kwillis01/linux/tree/b4/uart-daisy-chain-pmdomain
+[4] https://github.com/kwillis01/linux/tree/b4/uart-daisy-chain-dts
+[5] https://github.com/kwillis01/linux/tree/uart-daisy-chain
 
+Previous Versions
+-----------------
+v1: https://lore.kernel.org/all/20250904212455.3729029-1-k-willis@ti.com/
+
+Changes from v1 to v2:
+ - Drop patch for updated wakeup-source binding
+ - Update dt binding for pinctrl to only use either default or sleep
+   states and change commit message to reflect the change
+
+base-commit: 4ac65880ebca1b68495bd8704263b26c050ac010
+---
+Markus Schneider-Pargmann (2):
+      dt-bindings: serial: 8250_omap: Add wakeup pinctrl state
+      serial: 8250: omap: Support wakeup pinctrl state on suspend
+
+ .../devicetree/bindings/serial/8250_omap.yaml      | 16 ++++++++++
+ drivers/tty/serial/8250/8250_omap.c                | 36 ++++++++++++++++++++++
+ 2 files changed, 52 insertions(+)
+---
+base-commit: 5f540c4aade9f1d58fb7b9490b4b7d5214ec9746
+change-id: 20250910-uart-daisy-chain-8250-omap-3649ec6a7155
+
+Best regards,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Kendall Willis <k-willis@ti.com>
+
