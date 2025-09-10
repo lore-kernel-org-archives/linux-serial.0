@@ -1,49 +1,50 @@
-Received: from lelvem-ot01.ext.ti.com (lelvem-ot01.ext.ti.com [198.47.23.234])
+Received: from fllvem-ot04.ext.ti.com (fllvem-ot04.ext.ti.com [198.47.19.246])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 796F3309F07;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3150E30FC3D;
 	Wed, 10 Sep 2025 21:23:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.234
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.19.246
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757539439; cv=none; b=leUbZuey13GYH6iCaLeOpnx6hNy82lRYJC65XmRtm+GkM9rpX2dLZo4kDK2Wb29jc5T4bU8M5iB/pSfJt9HFwISxGhAzkUFgTJQa5CMH9aRjPCvETuqmXZ9KLJALgRgAHQeO8rDmkOR1gBTXIZu9Q+iepGgVv0Pqnlhst4SlCpE=
+	t=1757539440; cv=none; b=s9d/s4kYtpSNndutJN/yjpoUufvRxew5DOt/auLx4qZ9tqTXYfcYxsXb9bNTao6kBKkgZXlvP5X83FWctI+fXAzDANFvriPPE2wlHDXaBahw5VBMmJvk5wEjMxr7TunKcsgyWx7cBO5LdULrNZr8UtIVBtXZqMG32lvgmfMnSKs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757539439; c=relaxed/simple;
-	bh=biTn94UYUWgbB4jzZfQ+pzMLwiSvOn6MtuyjJZkNgKQ=;
-	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=Iz1/dnyaaiv+Nn16g0/fuWrVhRsj0sWrjG1uzWTSWxBUtmbHCL5Fm1WDTe4gnLHmefopUggVuJkmvLzj1aVn1XO01tkX3aPfeIWKDrprWjNYqZsO2JzxU2XMRr1UDjJUMkDmMFGg1/dKXZmkUTNyrHNlYWHoazYBG4mZeyN6kmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=Cern/LBe; arc=none smtp.client-ip=198.47.23.234
+	s=arc-20240116; t=1757539440; c=relaxed/simple;
+	bh=u01b/oiLKeGK9/KT8JgvFv/p5W3E/aZpSOzfJMIofiA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=e7ifzOie9I+4HBKDuOfiYw3PqQ3ABzPjwLa+/5LAyvKpP7z/SDJVzaxxgT1tsxeLyLoPUXoWIc3fkCC2nc6r2w0ijERjrB4T5cvqKuf0CsVvrhhuneU2VxhBMLOlr0PTLw47yxJ3+VzyOU1CBO7kJg0rqWvfZkZLHD+j2HJq+7s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=eyZhsvi3; arc=none smtp.client-ip=198.47.19.246
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="Cern/LBe"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="eyZhsvi3"
 Received: from lelvem-sh02.itg.ti.com ([10.180.78.226])
-	by lelvem-ot01.ext.ti.com (8.15.2/8.15.2) with ESMTP id 58ALNoL4226940;
+	by fllvem-ot04.ext.ti.com (8.15.2/8.15.2) with ESMTP id 58ALNoxC600362;
 	Wed, 10 Sep 2025 16:23:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
 	s=ti-com-17Q1; t=1757539430;
-	bh=bmEY0WfaxpzoYR06q8U/9vAuoR60sOBVOraHfKIbfgs=;
-	h=From:Subject:Date:To:CC;
-	b=Cern/LBe0Av9vMSEe1cKDTioXiRPAXYG/uW/6j29e90j62M1J5WAhv7GuwFjuBaCv
-	 mqcsIO5Ckp2enUju20rYROuQxab7V8NlNogrlEDNteF5aysSh7UCoyFcSalDNVuO76
-	 H4oiik8YvQkuAd2DGkgiamr45n+lQjronFopDnR0=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-	by lelvem-sh02.itg.ti.com (8.18.1/8.18.1) with ESMTPS id 58ALNnA2572645
+	bh=iUPPMaqnvzEwIfBCj818WmKjsFyCRvzYa1dHNs7kXjU=;
+	h=From:Date:Subject:References:In-Reply-To:To:CC;
+	b=eyZhsvi3iaznKcVFErdQnz7XSr0MBi7TfhhgHH3baqpln4iRB6LMtVGAbbaAT2vIf
+	 dWzSspz3PLhBpoM4W6ifFUFSzvcbpJbSVaamcr8WUFgzrLd4OQsyqPaOMjQOIZpi5P
+	 0pwF+icWCLVYOoVbLOoT+WaSnbxfIkooqiJve6ww=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+	by lelvem-sh02.itg.ti.com (8.18.1/8.18.1) with ESMTPS id 58ALNnFp572646
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-SHA256 bits=128 verify=FAIL);
 	Wed, 10 Sep 2025 16:23:49 -0500
-Received: from DFLE202.ent.ti.com (10.64.6.60) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DFLE203.ent.ti.com (10.64.6.61) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.55; Wed, 10
  Sep 2025 16:23:49 -0500
-Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DFLE202.ent.ti.com
- (10.64.6.60) with Microsoft SMTP Server (version=TLS1_2,
+Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DFLE203.ent.ti.com
+ (10.64.6.61) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
  Transport; Wed, 10 Sep 2025 16:23:49 -0500
 Received: from [127.0.1.1] (uda0506412.dhcp.ti.com [128.247.81.19])
-	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 58ALNnZ31097742;
+	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 58ALNnZ51097742;
 	Wed, 10 Sep 2025 16:23:49 -0500
 From: Kendall Willis <k-willis@ti.com>
-Subject: [PATCH v2 0/2] serial: 8250: omap: Add wakeup support
-Date: Wed, 10 Sep 2025 16:23:30 -0500
-Message-ID: <20250910-uart-daisy-chain-8250-omap-v2-0-e90d44c1a9ac@ti.com>
+Date: Wed, 10 Sep 2025 16:23:32 -0500
+Subject: [PATCH v2 2/2] serial: 8250: omap: Support wakeup pinctrl state on
+ suspend
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -52,11 +53,9 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAFLswWgC/03Myw6CMBCF4Vchs3ZIO7RgXfkexkUDg0wESlq8h
- fDuNq5c/jkn3waJo3CCU7FB5KckCXMOOhTQDn6+MUqXG0iRVU4rfPi4YuclfTAfZMZjHjBMfsG
- qNo7b2jfaWsjAErmX9w+/XHP3MUy4DpH9H6kMaTLWllVDTpFDjXd8yThKOq9StmGCff8CBlorG
- 6cAAAA=
-X-Change-ID: 20250910-uart-daisy-chain-8250-omap-3649ec6a7155
+Message-ID: <20250910-uart-daisy-chain-8250-omap-v2-2-e90d44c1a9ac@ti.com>
+References: <20250910-uart-daisy-chain-8250-omap-v2-0-e90d44c1a9ac@ti.com>
+In-Reply-To: <20250910-uart-daisy-chain-8250-omap-v2-0-e90d44c1a9ac@ti.com>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby
 	<jirislaby@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -75,79 +74,104 @@ CC: <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
 X-Mailer: b4 0.14.2
 X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
 
-This series adds wakeup support for the serial 8250_omap driver. On the
-TI K3 AM62 family of devices, the UARTs are able to wakeup the system
-from various low power modes by using I/O daisy-chaining.
+From: Markus Schneider-Pargmann <msp@baylibre.com>
 
-The wakeup functionality is implemented by adding the pinctrl state
-'wakeup' in which specific flags are set on the pins to enable wakeup
-via I/O daisy-chain. If the 'wakeup' pinctrl state exists for the serial
-device, the 'wakeup' pinctrl state is selected on suspend. Upon resume,
-the pinctrl 'default' state is selected.
+UART can be used as a wakeup source for am62 from suspend to ram states.
+To enable wakeup from UART am62 requires a wakeup flag being set in the
+pinctrl.
 
-The commits "dt-bindings: serial: 8250_omap: Add wakeup pinctrl state"
-and "serial: 8250: omap: Support wakeup pinctrl state on suspend" were
-picked from this series [1]. The commit "dt-bindings: serial: 8250_omap:
-Add wakeup pinctrl state" was updated to follow the structure of a
-similar patch [2] by Markus for the m_can driver. The commit "serial:
-8250: omap: Support wakeup pinctrl state on suspend" was updated to only
-include s2ram functionality instead of a poweroff state.
+If the device is marked as wakeup enabled, select the 'wakeup' pinctrl
+state on suspend and restore the default pinctrl state on resume.
 
-Implementation
---------------
-This series is intended to be implemented along with the following
-series. This patch has no dependencies on any of the other series:
-
-1. "pmdomain: ti_sci: Handle wakeup constraint if device has pinctrl
-   wakeup state" [3]: Patch which skips setting constraints for wakeup
-   sources that use pinctrl state 'wakeup'.
-
-2. "serial: 8250: omap: Add wakeup support" (this series): Implements
-   wakeup from the UARTs for TI K3 SoCs
-
-3. "arm64: dts: ti: k3-am62: Support Main UART wakeup" [4]: Implements
-   the functionality to wakeup the system from the Main UART
-
-Testing
--------
-Tested on a AM62P SK EVM board with all series and dependencies
-implemented. Suspend/resume verified with the Main UART wakeup source
-by entering a keypress on the console.
-
-This github branch [5] has all the necessary patches to test the series
-using linux-next.
-
-Links
------
-[1] https://lore.kernel.org/all/20240523075819.1285554-1-msp@baylibre.com/
-[2] https://lore.kernel.org/all/20250820-topic-mcan-wakeup-source-v6-12-v9-1-0ac13f2ddd67@baylibre.com/
-[3] https://github.com/kwillis01/linux/tree/b4/uart-daisy-chain-pmdomain
-[4] https://github.com/kwillis01/linux/tree/b4/uart-daisy-chain-dts
-[5] https://github.com/kwillis01/linux/tree/uart-daisy-chain
-
-Previous Versions
------------------
-v1: https://lore.kernel.org/all/20250904212455.3729029-1-k-willis@ti.com/
-
-Changes from v1 to v2:
- - Drop patch for updated wakeup-source binding
- - Update dt binding for pinctrl to only use either default or sleep
-   states and change commit message to reflect the change
-
-base-commit: 4ac65880ebca1b68495bd8704263b26c050ac010
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+Signed-off-by: Kendall Willis <k-willis@ti.com>
 ---
-Markus Schneider-Pargmann (2):
-      dt-bindings: serial: 8250_omap: Add wakeup pinctrl state
-      serial: 8250: omap: Support wakeup pinctrl state on suspend
+ drivers/tty/serial/8250/8250_omap.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
- .../devicetree/bindings/serial/8250_omap.yaml      | 16 ++++++++++
- drivers/tty/serial/8250/8250_omap.c                | 36 ++++++++++++++++++++++
- 2 files changed, 52 insertions(+)
----
-base-commit: 5f540c4aade9f1d58fb7b9490b4b7d5214ec9746
-change-id: 20250910-uart-daisy-chain-8250-omap-3649ec6a7155
+diff --git a/drivers/tty/serial/8250/8250_omap.c b/drivers/tty/serial/8250/8250_omap.c
+index bb23afdd63f29353351aa21fccf6c8de99011a65..9e49ef48b851bf6cd3b04a77a4d0d7b4e064dc5f 100644
+--- a/drivers/tty/serial/8250/8250_omap.c
++++ b/drivers/tty/serial/8250/8250_omap.c
+@@ -27,6 +27,8 @@
+ #include <linux/pm_wakeirq.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/sys_soc.h>
++#include <linux/reboot.h>
++#include <linux/pinctrl/consumer.h>
+ 
+ #include "8250.h"
+ 
+@@ -145,6 +147,9 @@ struct omap8250_priv {
+ 	spinlock_t rx_dma_lock;
+ 	bool rx_dma_broken;
+ 	bool throttled;
++
++	struct pinctrl *pinctrl;
++	struct pinctrl_state *pinctrl_wakeup;
+ };
+ 
+ struct omap8250_dma_params {
+@@ -1349,6 +1354,18 @@ static int omap8250_no_handle_irq(struct uart_port *port)
+ 	return 0;
+ }
+ 
++static int omap8250_select_wakeup_pinctrl(struct device *dev,
++					  struct omap8250_priv *priv)
++{
++	if (IS_ERR_OR_NULL(priv->pinctrl_wakeup))
++		return 0;
++
++	if (!device_may_wakeup(dev))
++		return 0;
++
++	return pinctrl_select_state(priv->pinctrl, priv->pinctrl_wakeup);
++}
++
+ static struct omap8250_dma_params am654_dma = {
+ 	.rx_size = SZ_2K,
+ 	.rx_trigger = 1,
+@@ -1573,6 +1590,11 @@ static int omap8250_probe(struct platform_device *pdev)
+ 	priv->line = ret;
+ 	pm_runtime_mark_last_busy(&pdev->dev);
+ 	pm_runtime_put_autosuspend(&pdev->dev);
++
++	priv->pinctrl = devm_pinctrl_get(&pdev->dev);
++	if (!IS_ERR_OR_NULL(priv->pinctrl))
++		priv->pinctrl_wakeup = pinctrl_lookup_state(priv->pinctrl, "wakeup");
++
+ 	return 0;
+ err:
+ 	pm_runtime_dont_use_autosuspend(&pdev->dev);
+@@ -1630,6 +1652,13 @@ static int omap8250_suspend(struct device *dev)
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	int err = 0;
+ 
++	err = omap8250_select_wakeup_pinctrl(dev, priv);
++	if (err) {
++		dev_err(dev, "Failed to select wakeup pinctrl, aborting suspend %pe\n",
++			ERR_PTR(err));
++		return err;
++	}
++
+ 	serial8250_suspend_port(priv->line);
+ 
+ 	err = pm_runtime_resume_and_get(dev);
+@@ -1651,6 +1680,13 @@ static int omap8250_resume(struct device *dev)
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	int err;
+ 
++	err = pinctrl_select_default_state(dev);
++	if (err) {
++		dev_err(dev, "Failed to select default pinctrl state on resume: %pe\n",
++			ERR_PTR(err));
++		return err;
++	}
++
+ 	if (uart_console(&up->port) && console_suspend_enabled) {
+ 		err = pm_runtime_force_resume(dev);
+ 		if (err)
 
-Best regards,
 -- 
-Kendall Willis <k-willis@ti.com>
+2.34.1
 
