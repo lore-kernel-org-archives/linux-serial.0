@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E7EF2701BB;
-	Wed, 10 Sep 2025 08:27:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91CF130FF02;
+	Wed, 10 Sep 2025 08:28:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757492853; cv=none; b=H23hk28XM+2MPMIWPIBOdw5ltRzkeR1eqkln8tvCVHqXcKxQJLBszwp+pCR0vVwK7KIjZN01yxhATclHRgSNPn9agiAE7MGAY+4CjdClQYrAF9lqtyjiL15om7A9Eykn4TyFehFVROfs7YlW8djqEfkG3Z07x/5nuSAmlxaXqo0=
+	t=1757492936; cv=none; b=Nc4oytsaxjUMV8+FojuQ0MdaSc2oGdtbYsf0/zcKHGF75VD9uyTLoxHL+7U3teRuI0zLstnh4QFRsjthxupzPmhuam+wlV20dbrbP8pKCmscPKrlPTDPMv946FpFzOmukq6Y33EeQ+Myw1lmz5inGd8erb29XF7/THOAdbGJApQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757492853; c=relaxed/simple;
-	bh=IvzOtxbd+u9eMCVRCmDI3BtIPwICPJYHJNrwQij2YNw=;
+	s=arc-20240116; t=1757492936; c=relaxed/simple;
+	bh=Zzz+n+3XnhvvAwKjxQsHO9+m+x/oUwOy4G12ZoV2hV4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=afwUCPzoyWNGE6U/lwczKVoGQ4UAJlQtMHcz6u4mPkqreySBRe1BDEYdCW4/W/wshFzorTVzn0mENXw1TMPIRHV0mNo0DGi/RhvvAZNebHp6fCNAWFsZqedj77oBWMqHUy3apuFacbU2DQ832bD3CeOAYTluzufljs6b8w3hHtk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oxvwdo+m; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=GNenhOEDJQMa+hWXAWXgXs+bqg9DFr2zXFxVXIYjrrcGK8YTomR6xEAr2fkL4YJCr0hu09ZYw5/fhQkw7BatJY3stoX9RWsiQtN21IbGvI3Op3wN+t+XBtX0h5ce/XHgpaw1em4JynG1LfLjSm4f/l8OYLkqvd4ESYUszR/x804=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RjTAPRQ4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oxvwdo+m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EC54C4CEF0;
-	Wed, 10 Sep 2025 08:27:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RjTAPRQ4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D654EC4CEF7;
+	Wed, 10 Sep 2025 08:28:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757492852;
-	bh=IvzOtxbd+u9eMCVRCmDI3BtIPwICPJYHJNrwQij2YNw=;
+	s=k20201202; t=1757492936;
+	bh=Zzz+n+3XnhvvAwKjxQsHO9+m+x/oUwOy4G12ZoV2hV4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oxvwdo+m5fLeqqV/TAtYJ3CrtYMcNyRkPNWfPjSWgJ8OGT+y9d4SmRi7Q82oyMYqe
-	 Zjtpx5rbnPsmkR/f1Ei+1Cf/2iJQVK1W4NN+TDLXrtKp3zAfHgUn7hU9VinrFX1wcE
-	 PzozYAShxzlgqYsGOBZ6AmoD16kKfYKfG8Ck4x9gLN4OfaTk/Ejt08GgLYfmhgl/lF
-	 DDXgcYPb5v6gaMIk/eEutfO7kCYHAHwY2yxD76TUEtGCggr3TOVI6l+fsdW5ILw6Dc
-	 LjGriRdDYOAu5UVaIIQEd8+bgSXqRY+HWTPPhxhFB5lRJOm1obMFbZr6P/7qQ3Fbtd
-	 zSg9N3cxZ+soA==
-Date: Wed, 10 Sep 2025 10:27:30 +0200
+	b=RjTAPRQ4FDT5MZweJjJC+ihc1i5IfQyxrDV091Vzev11Tc0nP0z57Uuin25cK1zXk
+	 YX6xNa73JWwuYzI1IQu9lLD5Er1pYZKPpp1FOVHrm1kMqQDLUwzpUDcRR9H6S6lyM2
+	 ZFHPvb+N66JyG60wqrhp05uGe7fGFoKH2MAWZ/Bzg2X+rYqJ6nAdiPSdY9O+LKSEBu
+	 juCpgf1quUKEEy8iCWZb0nfWK4YpUeBkXlX0ImM+kj5sOOpgFhAlUxFTj+a4mrUCR2
+	 frSr4jnqME6mkxXQv+kKJj+zq3MsQq4CJaXVT+TfbbwUiaWqk+nHF7Do8gq9uvUtjb
+	 +puGkScXW/g/w==
+Date: Wed, 10 Sep 2025 10:28:53 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Binbin Zhou <zhoubinbin@loongson.cn>
 Cc: Binbin Zhou <zhoubb.aaron@gmail.com>, 
@@ -36,10 +36,10 @@ Cc: Binbin Zhou <zhoubb.aaron@gmail.com>,
 	Haowei Zheng <zhenghaowei@loongson.cn>, Huacai Chen <chenhuacai@kernel.org>, 
 	Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev, devicetree@vger.kernel.org, 
 	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 3/3] LoongArch: dts: Add uart new compatible string
-Message-ID: <20250910-fast-seahorse-of-valor-bf6c86@kuoka>
+Subject: Re: [PATCH v4 1/3] dt-bindings: serial: Add Loongson UART controller
+Message-ID: <20250910-knowing-labradoodle-of-protection-d37884@kuoka>
 References: <cover.1757318368.git.zhoubinbin@loongson.cn>
- <2f93b8f20c6e93a15258888998e926814bfd0adf.1757318368.git.zhoubinbin@loongson.cn>
+ <8575ff2d46b701950b1b0da3d3c181db331f79db.1757318368.git.zhoubinbin@loongson.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -48,34 +48,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <2f93b8f20c6e93a15258888998e926814bfd0adf.1757318368.git.zhoubinbin@loongson.cn>
+In-Reply-To: <8575ff2d46b701950b1b0da3d3c181db331f79db.1757318368.git.zhoubinbin@loongson.cn>
 
-On Tue, Sep 09, 2025 at 08:11:20PM +0800, Binbin Zhou wrote:
-> Add loongson,ls2k*-uart compatible string on uarts.
-> 
-> Co-developed-by: Haowei Zheng <zhenghaowei@loongson.cn>
-> Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
-> Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
-> ---
->  arch/loongarch/boot/dts/loongson-2k0500.dtsi | 2 +-
->  arch/loongarch/boot/dts/loongson-2k1000.dtsi | 2 +-
->  arch/loongarch/boot/dts/loongson-2k2000.dtsi | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/loongarch/boot/dts/loongson-2k0500.dtsi b/arch/loongarch/boot/dts/loongson-2k0500.dtsi
-> index 588ebc3bded4..357de4ca7555 100644
-> --- a/arch/loongarch/boot/dts/loongson-2k0500.dtsi
-> +++ b/arch/loongarch/boot/dts/loongson-2k0500.dtsi
-> @@ -380,7 +380,7 @@ tsensor: thermal-sensor@1fe11500 {
->  		};
->  
->  		uart0: serial@1ff40800 {
-> -			compatible = "ns16550a";
-> +			compatible = "loongson,ls2k0500-uart", "ns16550a";
+On Tue, Sep 09, 2025 at 08:11:18PM +0800, Binbin Zhou wrote:
+> Add Loongson UART controller binding with DT schema format using
+> json-schema.
 
-You clearly never bothered to actually test this against own code.
+Why? Your DTS claims this is 8250 / ns16550a.
 
-NAK
+This is just incomplete commit msg. You must explain the bigger picture
+here, not repeat what the patch does. We see what the patch does from
+the patch.
 
 Best regards,
 Krzysztof
