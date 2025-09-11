@@ -1,158 +1,266 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C045A1D8DFB;
-	Thu, 11 Sep 2025 09:00:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D5D02E719D
+	for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2025 09:00:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757581227; cv=none; b=C/yZ5ElxCmyL0svSivVqwdZRCOKs0xw3oxQdHW7p6+FxbZPPAWmJGdmBojfPvlftFQU+3Rt0mcDYxG55JvZH6Q7oSQ9k3yfpBDp0aGuRvuZGIWX/k19BgmiOzwM9Flh7+TxFJxWlWBgmipzXMk78MbH+2in9UieXUbqotbdMam0=
+	t=1757581233; cv=none; b=dm0uWcONWNdETAoffMdbPBozoIxazffc9txvQSzk3I8a1Nba/QgwzgP8MbBYqDmqOyW6obiJp1Ip5/gjHizhwXLQjOtlat6URySsfSpvfl2XVUZEm0B7WokGV9kqUgnteEx0DSlLAGafNluEhSJra3fq2WySShMVLdzX50mKYrA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757581227; c=relaxed/simple;
-	bh=MABwQ3+7+YgcFQDg54W+M2+alk8Qc13M7omCKmNLchA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SItP38qGMzYMHbqBKnaBVI2xP0pA9BQDnU7fjuCx4zto3K3NRvREX52udJdLg2KMclB/vPFD8S6wF9qjOK1BK7KtLsADwopAfW//3HxByhpgPAq8D4nuU0DY3x1LwMRq+0qRC7VPm9sOtEpCMcSVGxzGHxsmdL7E5xAEXz6hyoA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jM9vdag0; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1757581233; c=relaxed/simple;
+	bh=J6JRpUa9Jqmrc9CHAa6uRObdOcP9b5K+xnoxoo1FkLc=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=rwnL65UH2gDo+onGWiANOros9P9nECX5rywsn3QvxRe6ospNf/iQ3CBTEUTjQJBnX7vC6+e9ln9TCdU23se9BNy/gW5ZJPkGnehqX7XpTyLJ8+Uz5N8x29bj4b91bEV7tnEo3zwTmY0r77WJikWw7Xb1V/TNGtL+AljeNHvlQbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=SAtk0Sbg; arc=none smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jM9vdag0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B612C4CEF0;
-	Thu, 11 Sep 2025 09:00:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757581227;
-	bh=MABwQ3+7+YgcFQDg54W+M2+alk8Qc13M7omCKmNLchA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=jM9vdag0netknClNaegVXbSNE5BWspMqNy9BlafJAJ0HELbecIkZwE1ouHRxstzAo
-	 +6ndafzcoP3G/wt1kLeURKBAKr3hakdube+TSEI1Z8tiXE7vU+FkyQqp0ykXyO8F9d
-	 DU2x9BXytTNORNhVb2EIJ/pYJVOQ57NKj833XJ4pxgGAvQbV6PoBq0jXzCZ+8xWQDe
-	 xrJor3WeNnLiF6kxYaI6LyI2Pddm4GCJjORGB23fnCvjRVz/siglJj8kkAjL/c69cC
-	 XPIBkFZAT4TSAgyNMXTXUDpFp5IFv1P9qiQPLqWCXDSnT2ycVvt4QV6Wxfwy7s11V2
-	 4zf50kWU6bbJg==
-Message-ID: <58fd8506-678e-409d-8283-1dc44c9aa8e2@kernel.org>
-Date: Thu, 11 Sep 2025 11:00:22 +0200
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="SAtk0Sbg"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3e34dbc38easo244422f8f.1
+        for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2025 02:00:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1757581229; x=1758186029; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z7ZvTScnMNr1AH24k1ntK2IoMlTzS54Np2T1I7lMRD8=;
+        b=SAtk0SbgQqiUJg+ThigAiE8SIs6mOT4y5KlfJA5OmPJUVZhF5SZwdIqBddLK/cGNjD
+         Xxm92cvhzt2Bo+BI3PMED/ARr4IEmk2QoWf1fDQLInWNfNVJFHe+vdVisds1tNAxoQKA
+         eJD4oIXB/2qesXwqgGWdksheDBBVyU+QZT50scOmsP9Uq+H93YuX9WUdmAZfFvXPETry
+         7K63u0u78Vz+EotORKAjgfiD5DMETQlifv2WX1vD+5+QAqrfYjEpWhuVgfhsfpMDa6ci
+         l4Up6dH+3eiv3y4tZ6JPt3v2yN01TSQ3VDLussoRhtWpi4pk13COwXiiFCZt/kK+2vvM
+         d68w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757581229; x=1758186029;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=z7ZvTScnMNr1AH24k1ntK2IoMlTzS54Np2T1I7lMRD8=;
+        b=m8EfHYaEKQEHHaYdlppUfgDZxji1wgn02eLiF2AQTFVYO2AAQ9vDFO9iV8P/BQf5Mx
+         exynEWCQhxv++jq1GDTYnQpenOvi0GfOE2oUycklfL8ClyuCgYUEfenLnEuoJmOr0TTm
+         Wts3FV+eobI/3vwvIvApNRc7PDj34wtfEPNp35FjM9BtUot1olg1hk3zG451y5jybO/z
+         9S/CTVDxvhaCTIXPYD3ejMwTtcKGieG0YGV0yoHH3LBcTMFmpPyfaWYaSh4Si2zCuGJ8
+         TyTDPSikRa/ountnnhmaZB1jcLMitNq3yz1jJ+LNbUatHeACuZ/yW0uASjpXr78DOpIo
+         4W/A==
+X-Forwarded-Encrypted: i=1; AJvYcCVq5pBB3NPX9fMpgiLHWcrvOH/7EesUJmNd8wAKQgI1EbgCozKIB9uDTH1wRVB8cXLD4Nbegy3xlYcvXZE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywwngo8YObscJPkIxBB89cReYnu/8Ws9AzyRaOGcc418Z4QAzdg
+	PvU5dK51gcLn5vrIXRX6bzfUqOgbrks8VbzoDcytxypjjikKWNE3akRuHGBlqX14wdM=
+X-Gm-Gg: ASbGncsJxhg/ovpu3PiT02GirztHZXSlzmqDXeIFfl6q1RQWQrMoNK50FRL1nUkfwRi
+	GcJj7y+I8Uc9OzlecM2nd0ejiNaqj9y846jIPOsfjWaZ7l6WpHmid5J7Xi9ntgmGzD6FCdz0YHy
+	1ujgCHSHOcswRT7hxg2ZD2+TxGTlQblRf+5691ri5kfy3aHyo87hyLwlLJ/xLSRX4G1zPRtTKAx
+	wj5cxp2Ts5LhvAsB8LecZKsM1Wu7J1zy0lvaglbvIpoa/S5T/yb+kbyUEgbiIDWgocGHaWSP6NL
+	fr3XWXJN2HQpvmYHptmu+TUpqXRn1y/OPuTNHJTVhHqcmGv8AGiiHNJaJDlNuyMlNRLcsJBl1jo
+	/T+2tuIiLnLspt2ANeCnmpYKd4opkmBPDwQ008w==
+X-Google-Smtp-Source: AGHT+IEda48Vss7lyCEE2CSJvlNkx7dZSmRvauNmjJVS6GUI4lzbwbGCwGqB58JM6Y7mIk1wW74mpQ==
+X-Received: by 2002:a05:6000:3101:b0:3e4:f194:2886 with SMTP id ffacd0b85a97d-3e642cadca2mr15196494f8f.19.1757581229312;
+        Thu, 11 Sep 2025 02:00:29 -0700 (PDT)
+Received: from localhost ([2a02:c7c:7259:a00:8a3c:25ae:f06c:6781])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3e7607cd9fasm1619656f8f.35.2025.09.11.02.00.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 11 Sep 2025 02:00:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 3/3] LoongArch: dts: Add uart new compatible string
-To: Binbin Zhou <zhoubb.aaron@gmail.com>
-Cc: Binbin Zhou <zhoubinbin@loongson.cn>, Huacai Chen
- <chenhuacai@loongson.cn>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>, Haowei Zheng <zhenghaowei@loongson.cn>,
- Huacai Chen <chenhuacai@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
- loongarch@lists.linux.dev, devicetree@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <cover.1757318368.git.zhoubinbin@loongson.cn>
- <2f93b8f20c6e93a15258888998e926814bfd0adf.1757318368.git.zhoubinbin@loongson.cn>
- <20250910-fast-seahorse-of-valor-bf6c86@kuoka>
- <CAMpQs4K-6Re=-gELPEg8kP_NKR5_1U=BD6fnXM3wgUF+eMtpGg@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <CAMpQs4K-6Re=-gELPEg8kP_NKR5_1U=BD6fnXM3wgUF+eMtpGg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Date: Thu, 11 Sep 2025 10:00:27 +0100
+Message-Id: <DCPUJPHR8NUB.1SRB4D7ONSRBY@linaro.org>
+Cc: <psodagud@quicinc.com>, <djaggi@quicinc.com>,
+ <quic_msavaliy@quicinc.com>, <quic_vtanuku@quicinc.com>,
+ <quic_arandive@quicinc.com>, <quic_mnaresh@quicinc.com>,
+ <quic_shazhuss@quicinc.com>, <krzk@kernel.org>
+Subject: Re: [PATCH v1] serial: qcom-geni: Fix pinctrl deadlock on runtime
+ resume
+From: "Alexey Klimov" <alexey.klimov@linaro.org>
+To: "Praveen Talari" <praveen.talari@oss.qualcomm.com>, "Greg Kroah-Hartman"
+ <gregkh@linuxfoundation.org>, "Jiri Slaby" <jirislaby@kernel.org>, "Bryan
+ O'Donoghue" <bryan.odonoghue@linaro.org>, "Praveen Talari"
+ <quic_ptalari@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
+X-Mailer: aerc 0.20.0
+References: <20250908164532.2365969-1-praveen.talari@oss.qualcomm.com>
+ <DCNLSFVPCKMV.K1UE3J3K6JQD@linaro.org>
+ <DCOJFRU8KNFL.14VPXK9QZC9T4@linaro.org>
+ <5b7b8c9f-48c5-45cd-8366-c8c048eaa757@oss.qualcomm.com>
+In-Reply-To: <5b7b8c9f-48c5-45cd-8366-c8c048eaa757@oss.qualcomm.com>
 
-On 11/09/2025 09:55, Binbin Zhou wrote:
-> Hi Krzysztof:
-> 
-> Thanks for your reply.
-> 
-> On Wed, Sep 10, 2025 at 4:27 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>
->> On Tue, Sep 09, 2025 at 08:11:20PM +0800, Binbin Zhou wrote:
->>> Add loongson,ls2k*-uart compatible string on uarts.
+Hi Praveen,
+
+On Thu Sep 11, 2025 at 9:34 AM BST, Praveen Talari wrote:
+> Hi Alexy,
+>
+> Thank you for update.
+>
+> On 9/10/2025 1:35 AM, Alexey Klimov wrote:
+>>=20
+>> (adding Krzysztof to c/c)
+>>=20
+>> On Mon Sep 8, 2025 at 6:43 PM BST, Alexey Klimov wrote:
+>>> On Mon Sep 8, 2025 at 5:45 PM BST, Praveen Talari wrote:
+>>>> A deadlock is observed in the qcom_geni_serial driver during runtime
+>>>> resume. This occurs when the pinctrl subsystem reconfigures device pin=
+s
+>>>> via msm_pinmux_set_mux() while the serial device's interrupt is an
+>>>> active wakeup source. msm_pinmux_set_mux() calls disable_irq() or
+>>>> __synchronize_irq(), conflicting with the active wakeup state and
+>>>> causing the IRQ thread to enter an uninterruptible (D-state) sleep,
+>>>> leading to system instability.
+>>>>
+>>>> The critical call trace leading to the deadlock is:
+>>>>
+>>>>      Call trace:
+>>>>      __switch_to+0xe0/0x120
+>>>>      __schedule+0x39c/0x978
+>>>>      schedule+0x5c/0xf8
+>>>>      __synchronize_irq+0x88/0xb4
+>>>>      disable_irq+0x3c/0x4c
+>>>>      msm_pinmux_set_mux+0x508/0x644
+>>>>      pinmux_enable_setting+0x190/0x2dc
+>>>>      pinctrl_commit_state+0x13c/0x208
+>>>>      pinctrl_pm_select_default_state+0x4c/0xa4
+>>>>      geni_se_resources_on+0xe8/0x154
+>>>>      qcom_geni_serial_runtime_resume+0x4c/0x88
+>>>>      pm_generic_runtime_resume+0x2c/0x44
+>>>>      __genpd_runtime_resume+0x30/0x80
+>>>>      genpd_runtime_resume+0x114/0x29c
+>>>>      __rpm_callback+0x48/0x1d8
+>>>>      rpm_callback+0x6c/0x78
+>>>>      rpm_resume+0x530/0x750
+>>>>      __pm_runtime_resume+0x50/0x94
+>>>>      handle_threaded_wake_irq+0x30/0x94
+>>>>      irq_thread_fn+0x2c/xa8
+>>>>      irq_thread+0x160/x248
+>>>>      kthread+0x110/x114
+>>>>      ret_from_fork+0x10/x20
+>>>>
+>>>> To resolve this, explicitly manage the wakeup IRQ state within the
+>>>> runtime suspend/resume callbacks. In the runtime resume callback, call
+>>>> disable_irq_wake() before enabling resources. This preemptively
+>>>> removes the "wakeup" capability from the IRQ, allowing subsequent
+>>>> interrupt management calls to proceed without conflict. An error path
+>>>> re-enables the wakeup IRQ if resource enablement fails.
+>>>>
+>>>> Conversely, in runtime suspend, call enable_irq_wake() after resources
+>>>> are disabled. This ensures the interrupt is configured as a wakeup
+>>>> source only once the device has fully entered its low-power state. An
+>>>> error path handles disabling the wakeup IRQ if the suspend operation
+>>>> fails.
+>>>>
+>>>> Fixes: 1afa70632c39 ("serial: qcom-geni: Enable PM runtime for serial =
+driver")
+>>>> Signed-off-by: Praveen Talari <praveen.talari@oss.qualcomm.com>
 >>>
->>> Co-developed-by: Haowei Zheng <zhenghaowei@loongson.cn>
->>> Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
->>> Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
->>> ---
->>>  arch/loongarch/boot/dts/loongson-2k0500.dtsi | 2 +-
->>>  arch/loongarch/boot/dts/loongson-2k1000.dtsi | 2 +-
->>>  arch/loongarch/boot/dts/loongson-2k2000.dtsi | 2 +-
->>>  3 files changed, 3 insertions(+), 3 deletions(-)
+>>> You forgot:
 >>>
->>> diff --git a/arch/loongarch/boot/dts/loongson-2k0500.dtsi b/arch/loongarch/boot/dts/loongson-2k0500.dtsi
->>> index 588ebc3bded4..357de4ca7555 100644
->>> --- a/arch/loongarch/boot/dts/loongson-2k0500.dtsi
->>> +++ b/arch/loongarch/boot/dts/loongson-2k0500.dtsi
->>> @@ -380,7 +380,7 @@ tsensor: thermal-sensor@1fe11500 {
->>>               };
+>>> Reported-by: Alexey Klimov <alexey.klimov@linaro.org>
 >>>
->>>               uart0: serial@1ff40800 {
->>> -                     compatible = "ns16550a";
->>> +                     compatible = "loongson,ls2k0500-uart", "ns16550a";
->>
->> You clearly never bothered to actually test this against own code.
-> 
-> Sorry, perhaps I should have included more detailed descriptions in
-> the binding file.
-> 
-> As per Chapter 15 of the Loongson-3A5000 manual[1], the Loongson UART
-> registers and functionality are compatible with the NS16550A. However,
-> generic 16550A drivers cannot support full serial port capabilities,
-> such as hardware flow control.
-> 
-> Based on your feedback in the V3 patchset[2], I attempted to use
-> compatible fallbacks to avoid API breakage.
-> 
-> These fallbacks match according to the Makefile's compilation
+>>> Also, not sure where this change will go, via Greg or Jiri, but ideally
+>>> this should be picked for current -rc cycle since regression is
+>>> introduced during latest merge window.
+>>>
+>>> I also would like to test it on qrb2210 rb1 where this regression is
+>>> reproduciable.
+>>=20
+>> It doesn't seem that it fixes the regression on RB1 board:
+>>=20
+>>   INFO: task kworker/u16:3:50 blocked for more than 120 seconds.
+>>         Not tainted 6.17.0-rc5-00018-g9dd1835ecda5-dirty #13
+>>   "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this messa=
+ge.
+>>   task:kworker/u16:3   state:D stack:0     pid:50    tgid:50    ppid:2  =
+    task_flags:0x4208060 flags:0x00000010
+>>   Workqueue: async async_run_entry_fn
+>>   Call trace:
+>>    __switch_to+0xf0/0x1c0 (T)
+>>    __schedule+0x358/0x99c
+>>    schedule+0x34/0x11c
+>>    rpm_resume+0x17c/0x6a0
+>>    rpm_resume+0x2c4/0x6a0
+>>    rpm_resume+0x2c4/0x6a0
+>>    rpm_resume+0x2c4/0x6a0
+>>    __pm_runtime_resume+0x50/0x9c
+>>    __driver_probe_device+0x58/0x120
+>>    driver_probe_device+0x3c/0x154
+>>    __driver_attach_async_helper+0x4c/0xc0
+>>    async_run_entry_fn+0x34/0xe0
+>>    process_one_work+0x148/0x284
+>>    worker_thread+0x2c4/0x3e0
+>>    kthread+0x12c/0x210
+>>    ret_from_fork+0x10/0x20
+>>   INFO: task irq/92-4a8c000.:79 blocked for more than 120 seconds.
+>>         Not tainted 6.17.0-rc5-00018-g9dd1835ecda5-dirty #13
+>>   "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this messa=
+ge.
+>>   task:irq/92-4a8c000. state:D stack:0     pid:79    tgid:79    ppid:2  =
+    task_flags:0x208040 flags:0x00000010
+>>   Call trace:
+>>    __switch_to+0xf0/0x1c0 (T)
+>>    __schedule+0x358/0x99c
+>>    schedule+0x34/0x11c
+>>    __synchronize_irq+0x90/0xcc
+>>    disable_irq+0x3c/0x4c
+>>    msm_pinmux_set_mux+0x3b4/0x45c
+>>    pinmux_enable_setting+0x1fc/0x2d8
+>>    pinctrl_commit_state+0xa0/0x260
+>>    pinctrl_pm_select_default_state+0x4c/0xa0
+>>    geni_se_resources_on+0xe8/0x154
+>>    geni_serial_resource_state+0x8c/0xbc
+>>    qcom_geni_serial_runtime_resume+0x3c/0x88
+>>    pm_generic_runtime_resume+0x2c/0x44
+>>    __rpm_callback+0x48/0x1e0
+>>    rpm_callback+0x74/0x80
+>>    rpm_resume+0x3bc/0x6a0
+>>    __pm_runtime_resume+0x50/0x9c
+>>    handle_threaded_wake_irq+0x30/0x80
+>>    irq_thread_fn+0x2c/0xb0
+>>    irq_thread+0x170/0x334
+>>    kthread+0x12c/0x210
+>>    ret_from_fork+0x10/0x20
+>
+> I can see call stack is mostly similar for yours and mine but not=20
+> completely at initial calls.
+>
+> Yours dump:
+>  >    qcom_geni_serial_runtime_resume+0x3c/0x88
+>  >    pm_generic_runtime_resume+0x2c/0x44
+>  >    __rpm_callback+0x48/0x1e0
+>  >    rpm_callback+0x74/0x80
+>  >    rpm_resume+0x3bc/0x6a0
+>  >    __pm_runtime_resume+0x50/0x9c
+>  >    handle_threaded_wake_irq+0x30/0x80
+>
+> Mine:
+>  >>>      qcom_geni_serial_runtime_resume+0x4c/0x88
+>  >>>      pm_generic_runtime_resume+0x2c/0x44
+>  >>>      __genpd_runtime_resume+0x30/0x80
+>  >>>      genpd_runtime_resume+0x114/0x29c
+>  >>>      __rpm_callback+0x48/0x1d8
+>  >>>      rpm_callback+0x6c/0x78
+>  >>>      rpm_resume+0x530/0x750
+>
+>
+> Can you please share what is DT file for this Board if possible?
+> is there any usecase enabled on this SE instance?
 
-DT bindings and fallbacks in DTS cannot match Makefile. You are mixing
-concepts.
+Well, yeah, sorry, I didn't really compared backtraces line to line and
+behaviour was exactly the same. I thought that the purpose was to fix
+the regression reported earlier.
 
-I said, this was not tested. I am 100% sure. Instead of replying with
-irrelevant build related stuff, please come with actual arguments, e.g.
-output (on some pastebin.com) of entire dtbs_check proving no new
-warnings are there.
+RB1 main dts files are qrb2210-rb1.dts and qcm2290.dtsi.
 
-But even without warnings, I see with my own eyes that DTS is just
-wrong. Or bindings.
+The similar board RB2 uses qrb4210-rb2.dts and sm4250.dtsi+sm6115.dtsi,
+it is worth checking it as well.
+For testing here I didn't use anything extra (the only change was wifi fix
+from Loic); I tested -master and linux-next usually.
+
+If you can tell me what is SE instance I may be able to answer. But
+as far as I know it is not a part of any infrastructure or CI machinery.
+I just boot the board and see if it works, if it does then I rebuild and
+test my changes (audio).
 
 Best regards,
-Krzysztof
+Alexey
+
