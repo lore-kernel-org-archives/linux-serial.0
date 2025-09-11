@@ -1,185 +1,146 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C480425A333
-	for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2025 04:33:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23CFC200BA1
+	for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2025 07:55:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757565231; cv=none; b=r6M6BAT6PYfqOtr3etCCr56Kkj89oXUxikfF1Rseas/Mo6oByimbInTbvnjgqvFhU+Acr5cgn3d0qf4t5suYqlUkGmI/K8qn9nr9wk8+keSykrJHMARYrjs1zuwQxjd4+NULF+gsbM4gZIB31TYP6SqU+liIK7xocc0LDTgJ664=
+	t=1757577319; cv=none; b=GyemLNzyoO1rh4kp44CCrYPPSjCyegZ82uDB6k4/fqlblKW7CMlbUDWBT0NulEXqsDIKO5rMjeTGwiBBMtxU0KbVPucGCqJRHhQLCllwL0SPEPok1ktUhiAOmLEgH+Mpf7iQxe4dnK/DnF5Xx+gwLvsHTswgX2vQeOb8a/poKKc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757565231; c=relaxed/simple;
-	bh=mx4d1AM06bO2S1IONf8a/pO/zrCQyz3bPkPpHgejOOg=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=jgjTq5dmHLOUsfdjt4cRxD0elSkEu0zefqamnprDTc4TqevXT/1dfidFsOaSWBbnsPDi20ZoOx3JRppiZzKuwcx1VyviUOaI2klx8e+xe/xwpxOP0sWxWTtO3LjF1LdxGxDboO9PPUz2Pi4NLr5RbyF4QMsgQ4neyFldOcPThRY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=U/H6jqJN; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1757577319; c=relaxed/simple;
+	bh=uW93kY0+OZCRekYhUWm/qQ0d+bv3Ef14UmeWSYv06cc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MlbTMbQ6wWPb/Xsy4/++fVTV5H4qSOE7yP9G6kaKiKG9JB5oQRnOZB9tdJb5L9jExkZbmmyVhqDX1zQjg+ZYSH9MpQ5+md22EvKNldHrPl5KVTfEHvIILcQ20DjciViyEbQOhYc8srvz6ZS+gubsxu/ftCgwZDdkhnWC8TnGF4E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GOfBmC5S; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="U/H6jqJN"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58B2IV7d008188
-	for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2025 04:33:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=qcppdkim1; bh=kcphrBZS8ap
-	5SJ3Zmdf0DUuuF1sTIEHZQlGDR6UGNHQ=; b=U/H6jqJNTXVfBG/btaflFrby2c5
-	7fuRKskqtI9rpIgBmNvsFCtvNfPhQ5mKFn0ba4eTLfDFaRuyh6Ao4AlNw5AZdP0E
-	k3J1uF7NNnGizXcDrZ7q8c8t5j/7C2ySA54Ro6r2jnXz9JYMjFQrS6ORPmJC+w+U
-	f8lK1Uzy0atFuwJ3TnptBSy1bgk8EvFkJeW3tN0oKxxR0Wm+0hOfz2oFpymQCU1p
-	9rFjxieKXS44b5rmOjzYAgP2GbPpq2+gQV8hLzV2VxaQvIayZfVbnwvBiCLoCsUv
-	Obz3BPq13zNqwh2GtYiuG6WlsyNc/RhmhMx08UXKcWiYBp+2ax0KjfUoQ5w==
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 490aapph1q-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2025 04:33:48 +0000 (GMT)
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-24cda4063easo4113845ad.2
-        for <linux-serial@vger.kernel.org>; Wed, 10 Sep 2025 21:33:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GOfBmC5S"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-6188b5ae1e8so526045a12.0
+        for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2025 00:55:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1757577317; x=1758182117; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c/Zni9gQlrJqNXECo6PJyQCl0lpKWQXeS/S54r6ee38=;
+        b=GOfBmC5S42YcrCrrMbZ5jwxBkT5P+nlczpqfYQy1V22cSJi9KRMqEGkwIH2RJqFFpR
+         jLiK8ujHiMeSN39H22OlgtZWyZIjfbu71ZsZ0tbWn/5RV1u8kTYUiEDEuvX7KWGpg52n
+         LcWS1QQRuGV2gmoELKhEJR1kPHWnTm4wR7Lx1QUA3WBeJOR6gg511RP72wgD9CHlPu0j
+         0Oy0q4KoSt3XVVRYK30YlpzRm9rcpwN3WLt9eJjlVxTtrtI1HuQlRr/+jfn7VbW/eK15
+         EaB2r0vR+Clu+a01t/0E7zpML2n4Sgw3KyWwpnN+Z8y39gkvA8Xj+F5uKNVXwAN35ua0
+         w61g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757565227; x=1758170027;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1757577317; x=1758182117;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=kcphrBZS8ap5SJ3Zmdf0DUuuF1sTIEHZQlGDR6UGNHQ=;
-        b=a3yHdGLPzA0TifwCZOfKz9x88c8f4Zs5h94cb8Q7Xrr9HRcLyio83OxZH+BatAh0LG
-         /ILspnJ78Ao6Ckb1R7YkjTp11iZr1yp0/ISSYYIFqFWC1DF/+4xBxJPoXlnQFBLozU3P
-         IXoNLlHeUzly/W0OttQ8cpfOScdREXMFaPSimtBRiYlin1sJVxOtjDANLQqH3yS0yOza
-         sCaOhAaWP0Re+isrNvAGMCvDDSCJ5vj6h/d6tvH+arAjcBIPZVvi6aJLf5WETcFAYmRl
-         LMepC052X20o8YkY5BISsfR/GaPCQVTTCK1IcRQaLY58cj/S6/f5Nrw0+pl14/Coz7Ft
-         xqcA==
-X-Forwarded-Encrypted: i=1; AJvYcCUOY/If2+4Z6EfemsRN3pgW1CyrO38J1Ybgx1D7WcYMXQVl4Ot4CdF+9QNiyoBJTUfXZQfAZ7aM9YaOyI4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzFHJWmu0T6OUlMP44l/NgRhR+Ntj3rJi3HdZK6xEP2TPBCF2MZ
-	xbHMRPhDc6xOiKEA2Rb2EnUNa7hvMhcjFNLyBfs7YUFOpxQM0T0gpGwLdnq6Tnozt12wg1En5+u
-	ziGTAgW3p+hmFlRqdsyJ5NdEiXX12l80KQlqrAB8kbCKShxC1PabQjkSmi6Ox03yS92w=
-X-Gm-Gg: ASbGncszfHDBQbOdpGjicHg6zBp5iQI/i1yaysgrxVn43gHEnfTnn6jhDctibdqVJ3B
-	jpg6L7yDImVT2NSZBfSyNp4by/PC5IQx15CoSsV6+eAAM6wwRRQ1M7RjLZCg7iS1KEAokdAeYAU
-	nMY4KcEDuEdMIRVxHjmQTNYNpI9k1zHXaP5urfrvsLTo5RzSx1M8Zh9MgoEpQBF0s/jzTWgQVks
-	hmnrfHlLSsGGsPVNpanLbKwuqt+YdwTrvYvjd6A3kjVVtnWBWtvYIZ6uBIc5NOYzbbxLgwmuvja
-	BvUqUPW5rlZ4R8clwoxC8lxPs0mRZc4+ANhq93JIdoa1t1eyrEZ1Osdvj7CihRD2zJTjnqGW+MB
-	b
-X-Received: by 2002:a17:902:db0d:b0:25c:2ed4:fd7f with SMTP id d9443c01a7336-25c2ed50044mr8373345ad.42.1757565227079;
-        Wed, 10 Sep 2025 21:33:47 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEJSDLFBIfEII/dWtZuLvluQE5OM8yus/jL1cVR398t46tsI0mtRTv1Sd8hk0JJ82ColwGboA==
-X-Received: by 2002:a17:902:db0d:b0:25c:2ed4:fd7f with SMTP id d9443c01a7336-25c2ed50044mr8372875ad.42.1757565226545;
-        Wed, 10 Sep 2025 21:33:46 -0700 (PDT)
-Received: from hu-vdadhani-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-25c3a84a46csm4323975ad.91.2025.09.10.21.33.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Sep 2025 21:33:46 -0700 (PDT)
-From: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
-To: andi.shyti@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
-        conor+dt@kernel.org, gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        andersson@kernel.org, konradybcio@kernel.org, broonie@kernel.org,
-        johan+linaro@kernel.org, dianders@chromium.org, agross@kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org
-Cc: mukesh.savaliya@oss.qualcomm.com,
-        Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
-Subject: [PATCH v7 6/6] serial: qcom-geni: Load UART qup Firmware from linux side
-Date: Thu, 11 Sep 2025 10:02:56 +0530
-Message-Id: <20250911043256.3523057-7-viken.dadhaniya@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250911043256.3523057-1-viken.dadhaniya@oss.qualcomm.com>
-References: <20250911043256.3523057-1-viken.dadhaniya@oss.qualcomm.com>
+        bh=c/Zni9gQlrJqNXECo6PJyQCl0lpKWQXeS/S54r6ee38=;
+        b=rJF01gfOV40mBgMAKZdwIhXYH2JeG0FRu5Jz/Cltybwli8KXqjVZUdfduoudzagMTy
+         mMSy9x9RdJeJ7kR3nzadn9PzC4d5Klkvmx5TXZuWLMK2nCEkSt0XMPzhT7G4yIkjCqMQ
+         2W3o3rUT7i4GG1wuuxok3ZqtBzupTby2GMR3jPQuGC6C0oXM82djWTF+xfbp0YcMInj3
+         vjs5LyCeoBqr6H9WksDmxiqpfeWXm3bQfVI9JnLzLJupd/jN6OOt3qR0USvygsRi6oOJ
+         lym6Kjk2epE+bAtgibWfhdjQr/9DtQHOPEFRo+PODJzT6R+ddAjKliRUNhKbXavGOBkS
+         Xd7Q==
+X-Forwarded-Encrypted: i=1; AJvYcCW6KorKIpXWh+eCRGM+f7+uU+SQ4ciZe7XQACA0WR5l3S75DkQiEnb0rj2fMbVYd4awJxe2MboBIXOSbVg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz6iDkVMgvutwG9D4BZPjzHkJXKMhamENh36NeDHTLrPLqo4wiv
+	xocXwJX2co9guwRdt4JxMDMXnysiW7fGYEJgCCtyVAIVTDESpEV/KI9igSvpbIlbeWDqDFvQ84v
+	H+cpYx46K9CzvD8jrWmid0eikASSmILc=
+X-Gm-Gg: ASbGnctXU9YjOBR81Sfv7c7l1o/he6hfG/22t0C21JIAocFvb4Z/+zVugXcHI6PCAmU
+	GygPjTtDfOKre6V7fXpHRa1jfBgRzndaxjzI/kviasUrA7XKQrdFvcSs/ecMhjQMACaCqp1ua+O
+	m4y22xtw/mRfqih14fcgMUs/yUZ4BI2He4SjbDMdMMRwCjsgO3S2LFh88/QFOtAVV8Oi4B53cxQ
+	sNe8Wy1dg==
+X-Google-Smtp-Source: AGHT+IEQYL88af+znhDJjCoMbmK7lED2mZrcyiOVZkFqEOFz4gATF4l90/Zv3H30LLZwTPuhz78xnP1a64hjMASXg/8=
+X-Received: by 2002:a05:6402:4406:b0:62c:34ed:bbed with SMTP id
+ 4fb4d7f45d1cf-62c34edbf2fmr7977478a12.19.1757577316373; Thu, 11 Sep 2025
+ 00:55:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authority-Analysis: v=2.4 cv=eMETjGp1 c=1 sm=1 tr=0 ts=68c2512c cx=c_pps
- a=IZJwPbhc+fLeJZngyXXI0A==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=yJojWOMRYYMA:10 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=COk6AnOGAAAA:8
- a=9JGZuxy38fRfBSF6gCkA:9 a=uG9DUKGECoFWVXl0Dc02:22 a=TjNXssC_j7lpFel5tvFf:22
-X-Proofpoint-GUID: x7bpPWoNBgk1UUncJKmSlBE1fo5nVLMT
-X-Proofpoint-ORIG-GUID: x7bpPWoNBgk1UUncJKmSlBE1fo5nVLMT
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTA2MDAwMCBTYWx0ZWRfX3FrVs9h7qgfn
- NI2zO8aCzfo6oS1zgxMBCcVpFHHeVv84CGEoxHY8oIJlEGd+1yK2I2tbNvYCgWrI9nhMG8I5u5V
- LIw1gB/tseSYiPkhYUSvGqHQpOVKQxmdwVXZMMTqX7Gr3yOMnhSIZiqmsh/LY4LSSM5+8R8soUd
- do8XZFPEZypKH2fQ/cj80jmddzWhmI2Eo+PUi6RkSM0icZ1zPvZxrUDSeSpMKCm0k3cOxT9lKua
- j3oUBvq64wF8TTS9yOauV+qmNnD/0eLr9Dw5tT9cL6lwKKW58PDCq50xnNrc1inFYqdm2KZ7JuW
- lbgIt8xQ5biNS+F4hapYjPaMBAZjfBwsH4j7A93DlX56rYNkGeUccUBoYl9dfLHDBXYJdMk0TEN
- 1xAvNOc4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-10_04,2025-09-10_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 priorityscore=1501 malwarescore=0 clxscore=1015 adultscore=0
- bulkscore=0 phishscore=0 spamscore=0 suspectscore=0 classifier=typeunknown
- authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2507300000 definitions=main-2509060000
+References: <cover.1757318368.git.zhoubinbin@loongson.cn> <2f93b8f20c6e93a15258888998e926814bfd0adf.1757318368.git.zhoubinbin@loongson.cn>
+ <20250910-fast-seahorse-of-valor-bf6c86@kuoka>
+In-Reply-To: <20250910-fast-seahorse-of-valor-bf6c86@kuoka>
+From: Binbin Zhou <zhoubb.aaron@gmail.com>
+Date: Thu, 11 Sep 2025 15:55:03 +0800
+X-Gm-Features: AS18NWBY0ItJVlEtg4-Jrs_bUJGB4ODfYLmQ4u0lZWjWBEGzhnR72KNCiw8ZDmQ
+Message-ID: <CAMpQs4K-6Re=-gELPEg8kP_NKR5_1U=BD6fnXM3wgUF+eMtpGg@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] LoongArch: dts: Add uart new compatible string
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Binbin Zhou <zhoubinbin@loongson.cn>, Huacai Chen <chenhuacai@loongson.cn>, 
+	Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Jiri Slaby <jirislaby@kernel.org>, Haowei Zheng <zhenghaowei@loongson.cn>, 
+	Huacai Chen <chenhuacai@kernel.org>, Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev, 
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Add provision to load firmware of Serial engine for UART protocol from
-Linux Execution Environment on running on APPS processor.
+Hi Krzysztof:
 
-Co-developed-by: Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>
-Signed-off-by: Mukesh Kumar Savaliya <mukesh.savaliya@oss.qualcomm.com>
-Signed-off-by: Viken Dadhaniya <viken.dadhaniya@oss.qualcomm.com>
----
-Dependencies:
+Thanks for your reply.
 
-This patch depends on patch 3 of this series.
+On Wed, Sep 10, 2025 at 4:27=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
+g> wrote:
+>
+> On Tue, Sep 09, 2025 at 08:11:20PM +0800, Binbin Zhou wrote:
+> > Add loongson,ls2k*-uart compatible string on uarts.
+> >
+> > Co-developed-by: Haowei Zheng <zhenghaowei@loongson.cn>
+> > Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
+> > Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
+> > ---
+> >  arch/loongarch/boot/dts/loongson-2k0500.dtsi | 2 +-
+> >  arch/loongarch/boot/dts/loongson-2k1000.dtsi | 2 +-
+> >  arch/loongarch/boot/dts/loongson-2k2000.dtsi | 2 +-
+> >  3 files changed, 3 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/arch/loongarch/boot/dts/loongson-2k0500.dtsi b/arch/loonga=
+rch/boot/dts/loongson-2k0500.dtsi
+> > index 588ebc3bded4..357de4ca7555 100644
+> > --- a/arch/loongarch/boot/dts/loongson-2k0500.dtsi
+> > +++ b/arch/loongarch/boot/dts/loongson-2k0500.dtsi
+> > @@ -380,7 +380,7 @@ tsensor: thermal-sensor@1fe11500 {
+> >               };
+> >
+> >               uart0: serial@1ff40800 {
+> > -                     compatible =3D "ns16550a";
+> > +                     compatible =3D "loongson,ls2k0500-uart", "ns16550=
+a";
+>
+> You clearly never bothered to actually test this against own code.
 
-v6 -> v7:
+Sorry, perhaps I should have included more detailed descriptions in
+the binding file.
 
-- No change.
+As per Chapter 15 of the Loongson-3A5000 manual[1], the Loongson UART
+registers and functionality are compatible with the NS16550A. However,
+generic 16550A drivers cannot support full serial port capabilities,
+such as hardware flow control.
 
-v6 Link: https://lore.kernel.org/all/20250822072651.510027-7-viken.dadhaniya@oss.qualcomm.com/
+Based on your feedback in the V3 patchset[2], I attempted to use
+compatible fallbacks to avoid API breakage.
 
-v5 -> v6:
+These fallbacks match according to the Makefile's compilation
+order[3]. Therefore, if 8250_loongson exists, it will prioritize
+matching ls2k_* compatible; otherwise, it will fallback to ns16550a.
 
-- No change.
+[1]: https://loongson.github.io/LoongArch-Documentation/Loongson-3A5000-use=
+rmanual-EN.pdf
+[2]: https://lore.kernel.org/all/51f564ea-9507-40b4-a943-23bdd330e6d6@kerne=
+l.org/
+[3]: https://elixir.bootlin.com/linux/v6.16/source/drivers/tty/serial/8250/=
+Makefile
 
-v5 Link: https://lore.kernel.org/linux-i2c/20250624095102.1587580-6-viken.dadhaniya@oss.qualcomm.com/
+>
+> NAK
+>
+> Best regards,
+> Krzysztof
+>
 
-v4 -> v5:
-
-- Updated the email domain from 'quic' to 'oss'.
-
-v4 Link: https://lore.kernel.org/all/20250503111029.3583807-6-quic_vdadhani@quicinc.com/
-
-v3 -> v4:
-
-- Add a patch dependency note.
-
-v3 Link: https://lore.kernel.org/linux-arm-msm/20250303124349.3474185-10-quic_vdadhani@quicinc.com/
-
-v2 -> v3:
-
-- Load firmware only if the protocol is invalid.
-
-v2 Link: https://lore.kernel.org/linux-arm-msm/20250124105309.295769-9-quic_vdadhani@quicinc.com/
-
-v1 -> v2:
-
-- No change.
-
-v1 Link: https://lore.kernel.org/linux-arm-msm/20241204150326.1470749-8-quic_vdadhani@quicinc.com/
----
----
- drivers/tty/serial/qcom_geni_serial.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 0fdda3a1e70b..ce5cb97d60a7 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1184,7 +1184,13 @@ static int qcom_geni_serial_port_setup(struct uart_port *uport)
- 	int ret;
- 
- 	proto = geni_se_read_proto(&port->se);
--	if (proto != GENI_SE_UART) {
-+	if (proto == GENI_SE_INVALID_PROTO) {
-+		ret = geni_load_se_firmware(&port->se, GENI_SE_UART);
-+		if (ret) {
-+			dev_err(uport->dev, "UART firmware load failed ret: %d\n", ret);
-+			return ret;
-+		}
-+	} else if (proto != GENI_SE_UART) {
- 		dev_err(uport->dev, "Invalid FW loaded, proto: %d\n", proto);
- 		return -ENXIO;
- 	}
--- 
-2.34.1
-
+--=20
+Thanks.
+Binbin
