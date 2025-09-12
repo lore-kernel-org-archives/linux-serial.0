@@ -1,156 +1,148 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42D76280CD5
-	for <linux-serial@vger.kernel.org>; Fri, 12 Sep 2025 06:23:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8EFE30DD04;
+	Fri, 12 Sep 2025 13:11:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757658181; cv=none; b=fFPNYfhWMT4C2+tX6v4oEnDvbVEUIp1DH/9hLSsFgDkiLVYl/ZBUfK02K+UCYrZnxMD4aNxVnf2dO32ugCONi0W7wJUobSzWjFOSEr+ZJS2VHBMVLlk40uistlD06jzsuaemLgyya+AVwGZ0mN85dJ6H2oTqNWl+tNR5H/pAPKc=
+	t=1757682711; cv=none; b=pANGTI8+NEI74cB/j1adXRnT9Mah7x9UJl0bEF9I7pZFwWxLR/ICxkmMGESK3QG0UhkuZVEFI1u9ETTQwdMX/A2pMCskypAnq49AHwiqHJvwE4tEsnVM+KC2LWCVmyuFJWfiHXTEGWhTE339At2PG4AG39Hs3yNMDXwyRoWW1Co=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757658181; c=relaxed/simple;
-	bh=zWY++i830LvVnaKNwrHxNlZ8d9VBtxLHBranm7dk29s=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=q+aA7XkRinYzL+3HnYHUkQY80EVlo1dmKnqWfFJKdvdY+RwYLxsTqSWLVQ98Tyb/CNsyQ6f+WVLEubSNgOOpnZvj9KmKQBrY7PHZlMiqFqcJla5Nur99hcXmuInRtUGdKJtg3oneG42iftGUy6UM4LcsiijYS1vhB8k7ORhD5U0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IM+db7CH; arc=none smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1757682711; c=relaxed/simple;
+	bh=NWoUK1L6tJ83jZRAUU7n305TX9o/58Nkp8C9PBewDA0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YOWb/c7NCO+JXfBICPYjtJC7occquVVC71PaWm7SJtXxWmEhoSWkUGqsehG4q4EznlNqTR0mumuerzZNslTWFjzz/FRCxEmLiplehlu/Wtd+U5sFol1LS9j6CIcKIRmNYJuaT7A1LSwd5ghR+c4t3EmumypFvOu4zcM+asHUE1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gm/WI1HU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IM+db7CH"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-62ee22c8940so407535a12.2
-        for <linux-serial@vger.kernel.org>; Thu, 11 Sep 2025 23:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1757658179; x=1758262979; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2vd3FO0uowfrzzTtnd+6o2GR4OoJtCyfIGsohefrxVg=;
-        b=IM+db7CHN18P1UBOaxdqnMTeejy92JTiNIUu6s89/WenD/VlO40yh9Yqj7a8foCA/K
-         dyrsrjHCcSlImdsReK66MOtBbpvOU/tFyuRTUybvpxMqA8mRRShUUSVgzCvZtQr0H6PB
-         ZD8KFPnEq+DoFjOLk/dpyhEsrErxKfa89rK0I17EAvcKTfMVgk9btEfqnixxSrDIsF3Q
-         E5SIiuvgMe81M1RGTyTBFi6Biq2udcCLDyjHBB0kz7UUgEQgk9nRwM7hU8EIqrezD6oI
-         Gda4DpKW2JM/u/YPokZeeAA1kudnXxXmrwvGVBQlo86CRxx/8G58tcpNgF1SbMoG6gwM
-         usMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757658179; x=1758262979;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2vd3FO0uowfrzzTtnd+6o2GR4OoJtCyfIGsohefrxVg=;
-        b=NfwuMLXPcu8FcuqPLXu6qApoJANrRocZa77Re1AQP9X94obG293otpz9tIxtUkFvTH
-         WYBJ7oxUkNHUEnWiZYQAC4/uWiZPZwxKL9WdojK5eLPmws+jCECXj8KbEhwZn+jUoHxv
-         aXL6xVtJ8HjWRaqmaDwlMW/EYQ7T9GOn6LBE8v9OdF47daICIWyJXS2iBdL4O/61eiqN
-         bqH4nVdKg6w26ZzXUpqQsHIPd6EF06Z5ohAS3bijcY1LWh3mG5G1LFS4H7MC4LWGPdEI
-         LKoEWu7fxtp03Poblx3eX7fwrwnqTosuhmpyb30O/7rDhOwki7ckToCwx/tFoB8DL0Wb
-         kgnQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW0tkvMg9wpz0WOtF6URJAZ0mbxcwp/SdWNPieClNCMe6Nt8r4QUxN+84/gRBc154QyUFQXyD1EddG67bA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyg1ny6SQYTIfSQuKl4Ux8TdfM38iwidHtRn18scdsaPDGfZANw
-	NCymu+zlD+dlR9bqtLMl+Z+UDZH0ei5sDvUQXMHs1Y6Sibsmk+lPhKR+v5xkWaxzBnyHRHgk8IN
-	03i1MQor/6kOyAkFG0Ev8GztzrZNPhmA=
-X-Gm-Gg: ASbGncuHX5QJnInGXylzvtt7+O2vHHbMisNJiLYP1T7bzOUWFiY3a9NLzHebM1yo9Nm
-	BPszd0IIKbzt8/CS1/jl9ewhTgUD6bF3yG+/CffcPO9qSifwckPl6RjARWrbKlzTEpv8boUxrI6
-	gMkPNt1jOPWCqgSpTuoTOkdVxTMDEvYFL3pujduF8pOnegiRIKwlbNZoVqwL64OVzf8Jo4+BNl9
-	EbvuDE=
-X-Google-Smtp-Source: AGHT+IGdp3hwfo5Kwg99zLqhk776/MuEzEwF5dvS3N2lEAqhArzZMDnQD2cE/bqWuyKoeqbqUDyopoXkkgYUTvQ3O3k=
-X-Received: by 2002:a05:6402:438f:b0:615:a7f4:da26 with SMTP id
- 4fb4d7f45d1cf-62ed8240ff2mr1847667a12.12.1757658178563; Thu, 11 Sep 2025
- 23:22:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gm/WI1HU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F6AC4CEF1;
+	Fri, 12 Sep 2025 13:11:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757682711;
+	bh=NWoUK1L6tJ83jZRAUU7n305TX9o/58Nkp8C9PBewDA0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=gm/WI1HUJ7qodlaUKyUiOPYnTT1YpgeGs6d++xyokuvBZD9aGmAZV007oTMQlbdjD
+	 Z3fUmKlNaPmXeK+doiPaonG1HdZBl+noHbQI+2VojQJuu/TDm/HQMCex6mIIMyeRx+
+	 eovDjV/j7oHY4RobWFiTzqyUdbISnKrCaj1NN7Yc/+wetzYk1hFOUb6yfkdrxhsoRr
+	 KRcflX7gQxRJb2b8TbZWdwc9VYAj2cco0hac2mM61EQPc0Nu6VYP5PRSkkERE1bGk4
+	 K1NvSoQOcGeHLkbOMu9xozchSac5sKXA3BB0zgj4pRj66D8QyUBR23RWEipaZCZLzd
+	 iKDl/xq9ur0ww==
+Message-ID: <94913844-e8d2-41da-ab4b-90f69b021bc2@kernel.org>
+Date: Fri, 12 Sep 2025 15:11:42 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1757318368.git.zhoubinbin@loongson.cn> <2f93b8f20c6e93a15258888998e926814bfd0adf.1757318368.git.zhoubinbin@loongson.cn>
- <20250910-fast-seahorse-of-valor-bf6c86@kuoka> <CAMpQs4K-6Re=-gELPEg8kP_NKR5_1U=BD6fnXM3wgUF+eMtpGg@mail.gmail.com>
- <58fd8506-678e-409d-8283-1dc44c9aa8e2@kernel.org>
-In-Reply-To: <58fd8506-678e-409d-8283-1dc44c9aa8e2@kernel.org>
-From: Binbin Zhou <zhoubb.aaron@gmail.com>
-Date: Fri, 12 Sep 2025 14:22:45 +0800
-X-Gm-Features: AS18NWAFsm3MIrwnLZoEVJYwuVnBuLzeoBSPe2_MKDz4Fo1FlK2hatZH2ik4P8s
-Message-ID: <CAMpQs4LjYPmZh2O5L8V9uKNspjMMq9w3cKCS9iSEStCHVGkg_g@mail.gmail.com>
-Subject: Re: [PATCH v4 3/3] LoongArch: dts: Add uart new compatible string
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Binbin Zhou <zhoubinbin@loongson.cn>, Huacai Chen <chenhuacai@loongson.cn>, 
-	Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Jiri Slaby <jirislaby@kernel.org>, Haowei Zheng <zhenghaowei@loongson.cn>, 
-	Huacai Chen <chenhuacai@kernel.org>, Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev, 
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] tty: serial: samsung: Remove unused artpec-8 specific
+ code
+To: Ravi Patel <ravi.patel@samsung.com>,
+ 'Geert Uytterhoeven' <geert@linux-m68k.org>
+Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, jesper.nilsson@axis.com,
+ lars.persson@axis.com, alim.akhtar@samsung.com, arnd@kernel.org,
+ andriy.shevchenko@linux.intel.com, geert+renesas@glider.be,
+ thierry.bultel.yh@bp.renesas.com, dianders@chromium.org,
+ robert.marko@sartura.hr, schnelle@linux.ibm.com, kkartik@nvidia.com,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-arm-kernel@axis.com,
+ ksk4725@coasia.com, kenkim@coasia.com, smn1196@coasia.com,
+ pjsin865@coasia.com, shradha.t@samsung.com
+References: <CGME20250911141714epcas5p29f591a1d645c9c69dc5b7d2c2d12af50@epcas5p2.samsung.com>
+ <20250911141605.13034-1-ravi.patel@samsung.com>
+ <20250911141605.13034-4-ravi.patel@samsung.com>
+ <CAMuHMdVe-FULHWk3QCBENG7TsbEZyxj0N5shhESxWBWd49JmOw@mail.gmail.com>
+ <6df0e227-896b-438a-913e-95b637aa2b14@kernel.org>
+ <8aeda67e-404e-4deb-ac90-015f2325ef64@kernel.org>
+ <000101dc2335$ccd62f60$66828e20$@samsung.com>
+ <abfaef6f-dd40-441d-86ec-7cd37c1e06b5@kernel.org>
+ <002201dc23a4$e27e29c0$a77a7d40$@samsung.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <002201dc23a4$e27e29c0$a77a7d40$@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Krzysztof:
+On 12/09/2025 07:19, Ravi Patel wrote:
+>>>> Ah, no, I mixed up patches with recent DTS for Artpec-8. This serial ABI
+>>>> was accepted three years ago (!!!), so you are Geert absolutely right -
+>>>> that's ABI break.
+>>>
+>>> Thank you for your review.
+>>>
+>>> The DTS patches for ARTPEC-8 is added recently (https://lore.kernel.org/linux-samsung-soc/20250901051926.59970-1-
+>> ravi.patel@samsung.com/)
+>>> Before that, there was no user (in DT) of "axis,artpec8-uart" compatible.
+>>> So I am not convinced of ABI break (considering patch #1 and #2 goes first with review comment fixes)
+>>
+>>
+>> ABI is defined by bindings and implemented by kernel. Having DTS user is
+>> irrelevant to fact whether ABI is or is not broken.
+>>
+>> Having DTS user determines the known impact of known ABI breakage.
+> 
+> OK. So does that mean if someone adds the ABI then it cannot be reverted,
+> because of it breaks backword compatibility (users are using ABI in their local DTB) ?
+> 
+> Please suggest what should be the proper way.
 
-On Thu, Sep 11, 2025 at 5:00=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
-g> wrote:
->
-> On 11/09/2025 09:55, Binbin Zhou wrote:
-> > Hi Krzysztof:
-> >
-> > Thanks for your reply.
-> >
-> > On Wed, Sep 10, 2025 at 4:27=E2=80=AFPM Krzysztof Kozlowski <krzk@kerne=
-l.org> wrote:
-> >>
-> >> On Tue, Sep 09, 2025 at 08:11:20PM +0800, Binbin Zhou wrote:
-> >>> Add loongson,ls2k*-uart compatible string on uarts.
-> >>>
-> >>> Co-developed-by: Haowei Zheng <zhenghaowei@loongson.cn>
-> >>> Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
-> >>> Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
-> >>> ---
-> >>>  arch/loongarch/boot/dts/loongson-2k0500.dtsi | 2 +-
-> >>>  arch/loongarch/boot/dts/loongson-2k1000.dtsi | 2 +-
-> >>>  arch/loongarch/boot/dts/loongson-2k2000.dtsi | 2 +-
-> >>>  3 files changed, 3 insertions(+), 3 deletions(-)
-> >>>
-> >>> diff --git a/arch/loongarch/boot/dts/loongson-2k0500.dtsi b/arch/loon=
-garch/boot/dts/loongson-2k0500.dtsi
-> >>> index 588ebc3bded4..357de4ca7555 100644
-> >>> --- a/arch/loongarch/boot/dts/loongson-2k0500.dtsi
-> >>> +++ b/arch/loongarch/boot/dts/loongson-2k0500.dtsi
-> >>> @@ -380,7 +380,7 @@ tsensor: thermal-sensor@1fe11500 {
-> >>>               };
-> >>>
-> >>>               uart0: serial@1ff40800 {
-> >>> -                     compatible =3D "ns16550a";
-> >>> +                     compatible =3D "loongson,ls2k0500-uart", "ns165=
-50a";
-> >>
-> >> You clearly never bothered to actually test this against own code.
-> >
-> > Sorry, perhaps I should have included more detailed descriptions in
-> > the binding file.
-> >
-> > As per Chapter 15 of the Loongson-3A5000 manual[1], the Loongson UART
-> > registers and functionality are compatible with the NS16550A. However,
-> > generic 16550A drivers cannot support full serial port capabilities,
-> > such as hardware flow control.
-> >
-> > Based on your feedback in the V3 patchset[2], I attempted to use
-> > compatible fallbacks to avoid API breakage.
-> >
-> > These fallbacks match according to the Makefile's compilation
->
-> DT bindings and fallbacks in DTS cannot match Makefile. You are mixing
-> concepts.
->
-> I said, this was not tested. I am 100% sure. Instead of replying with
-> irrelevant build related stuff, please come with actual arguments, e.g.
-> output (on some pastebin.com) of entire dtbs_check proving no new
-> warnings are there.
->
-> But even without warnings, I see with my own eyes that DTS is just
-> wrong. Or bindings.
 
-Please disregard my previous email. I apologize for wasting your time;
-this was indeed my mistake.
-I'm attempting to correct the issue by changing the binding file.
+Three years ago you (as in plural) submitted the Artpec-8 bindings and
+driver with purpose. I think it was also claimed that DTS might come or
+might not come ever, so the purpose was to supported out of tree users.
 
->
-> Best regards,
-> Krzysztof
+This means you made a contract in the kernel for that support.
 
---
-Thanks.
-Binbin
+You cannot change that ABI, because otherwise the contract you made
+three years ago meant nothing.
+
+You need to keep full backwards compatibility in the kernel. Look at
+mailing list or git log how others dealt with it.
+
+Best regards,
+Krzysztof
