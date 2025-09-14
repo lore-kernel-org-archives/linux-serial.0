@@ -1,93 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 815E124291B;
-	Sun, 14 Sep 2025 11:55:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38FDD221FAE
+	for <linux-serial@vger.kernel.org>; Sun, 14 Sep 2025 13:22:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757850919; cv=none; b=rWrE6IH7aX+0jlrJ52fPOSJFfCSPOQ1lTwp7XXfEB9NhiprGqqX0BGGCmWL80XDd9bgns+laTXyZM9qZdtud18PDKrnqmRpD+OCGtK2qsH0WGOJaz8Sw+P/41IGkLdW85bO/UVOy6qSuKdumCLrNa0xD9uw1TQ9XJTjMU4R+iGc=
+	t=1757856129; cv=none; b=tow2pvI0mQgI+YPjYjfkUzbqqFL4+/Z+7bBkZTYJ8ChEFYCApHlGEkg+vqLESSrxch5nKj6bim+BFHSm/JCHy0ODnv25/1x8kPZ+UJz5FpycuUaENko0cK89mINjwwTMnKjd3AghQq7jfRwUTQ6k4ZEebtPecEm8x8HHdOB5Dwc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757850919; c=relaxed/simple;
-	bh=taIHnvxPpKsVVdKxNWQcAxD/Y7kDSuAL2dKrQGpl7+g=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=VznLmUa7SXFoJFipd+YkE54LxxlsiFyovP0NPOl7/mbUhWGndKSNpFx/oYvcy7CoIgsYmOkriVQ/2vtw0QyPXmVriXkkbND0dPY+lzTn5lIAVDvotCq60lobldYBki6vuBYmzsLd6leBTTT86rwCwP005QTJvjok32Sd/TgAMGM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=KUOH/N1O; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1757856129; c=relaxed/simple;
+	bh=D+jsMAX5sO7tM7JCwP4lIE5kV4IK9JY+U63ovtSevuw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bN5WtXzISa6Fr1ZfkGIUzB2d0DnwA5CPgyPCAaxY7ULSYooAAvwskfEd4PG/qqFJc3U/wugTDVxmdAO0fNobegyjYrdEQbbBXQgTCvdXatXZNzDv+I79xs1Yy14iRQTDzz6UEjD/EEuNaXy9V3QpGiEzk99AIZqAli2RK217zls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H6+UKgGD; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="KUOH/N1O"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D6AC4CEF0;
-	Sun, 14 Sep 2025 11:55:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1757850918;
-	bh=taIHnvxPpKsVVdKxNWQcAxD/Y7kDSuAL2dKrQGpl7+g=;
-	h=Date:From:To:Cc:Subject:From;
-	b=KUOH/N1O2iZZrT5oOHL7+dQBHihuWYapSsqdxfTetDuxyhwrt/ki+4wsbNIHaphyA
-	 g5xG4aI6Ye8n9W+YymvNpUy1Z1MV8MS8g3FAR9mNCoPsCk6cKKqsNxPh+egR4thG4g
-	 Bj1O3ZgzkqKAqAeh52SzZVU+wfd8CmwOvhzUrjAU=
-Date: Sun, 14 Sep 2025 13:55:14 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [GIT PULL] TTY / Serial driver fixes for 6.17-rc6
-Message-ID: <aMatIn1m6zRXmzC-@kroah.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H6+UKgGD"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-3df3be0e098so2001593f8f.1
+        for <linux-serial@vger.kernel.org>; Sun, 14 Sep 2025 06:22:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1757856126; x=1758460926; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0gwU2jvcuEz7Zmi2rF3iYuLef34+LUaEBtsQc2TxOPc=;
+        b=H6+UKgGDXpBjQelfL2yrkcSgIbnVCS+reMOREteoSOhB3VOXmfwkqpmxu6Ie1x2Jlt
+         fig6llTKXCF8mTRU3fqhvxdLwgTkh1rhNwlHmAggvKNNZdI6MKIqh/9iA7ZPMIaNrvsu
+         6X0nQAmqwhGAG/H+jFULf5xVHCzmjRnC5aeXCaY1R51sQp4ojphTqJKVOdqwWozY1mdb
+         8J3kflnotSEtcUFJfqyFKOvh9AMj5mXB4tSsMPUzZE/OEmI+XrshBMF2B1lls6hZ0vvT
+         9FZezbDrWkETuSQnUS4rghdibCXtvvSQj/0i7zSXgljhX/ZVIJHAv+CeWge7mhhScu5E
+         fYUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757856126; x=1758460926;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0gwU2jvcuEz7Zmi2rF3iYuLef34+LUaEBtsQc2TxOPc=;
+        b=vMAHCvsXBzoG2MISl/JxcwMKJRGDQxJCNpG7yvmm0tBmst0tzkkvhOw4cRmyiOmGOU
+         NB7QAKI43zB76uGjUxlcLoSMffiuTAyQqWLin/8LzMj6P98WkUsrUnH1WJFpZpOXT9uh
+         AtoEGX0W9m8IfhcIJCM9MB/tW/NCunyyJMNwhTrP8DtPhUQd2p70SaN56MOr1tRCximb
+         c9dRQeeZav/w7QCBVe5f9PE0Irv1fAXJvLi77aXV2FpmtzVY5sYdPxHVbtoTmkt2wZGq
+         61CG5ZqdQU7WEA2h9u3kpDq1Gk17wKIzkhZOWH2fsxx1nCIM2A7A91qZa+a2HmiRPqtA
+         XOTA==
+X-Forwarded-Encrypted: i=1; AJvYcCU8Lb9NVFki0QnZ89G3EC3UatNb0dZkVQgIeLSEa1pWUVINsjpsdKzoTXUPCjLQApH3P5B/5G/sqIhrZbQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxdUbskMtNBRm8eHkywjhq1Aj87l5nSphjzk/7TvE4BerlwQjEP
+	eyK5hAQpTVKlb9UHbA5xEoo5nJB9Du0qJ6x33DFiWgSVr4lAPGn2bgem
+X-Gm-Gg: ASbGncvvZ1zq/DyP1pQ1IM/b/Bak5+WAmbNZyh+fVayMJGI701AvSx+budJPqYZQWT/
+	PtEhFeT/Mf62gr8Mh5MgkEfGOoO2TaXcQx5SF43ZhCBqQcHiYgiwm6rdWdnu34KtLIWorDaDP0G
+	87GLQ97mbuh0B7U4YzPpKxfpKMKuZABc3K+A9kLsCs5wRLQAsB6cihPvlrAZxF7v4iQP1F+Nccz
+	9PKaYeXrSLv1yEAOZ6RgtThnA/zVy3kxtaAEYI+vglirnjhwwofUp+WfSl0GwAosxt84XowVtOp
+	2Amfa8ZThgYPNMkQZo2Kpi+qhqvK6tRzV3ZqGXQOFCU6MD1r6WF1KRz4R/XBYv5lhyNZg0jHGOL
+	IkiJQt3UqxFHOyIWy4Wc5O26HSbPJ7X75vvQj4v3FjLFwbNig7W1sf87AZfhoz9Rf8HSecgxR1Z
+	nqIlXvVRAE
+X-Google-Smtp-Source: AGHT+IE7WXHLfVH2u4+DSdlsFQ3ngfdBOj6lQTdYHkhX00KlElTNErFlDHZmemjLFy+aNAvICL1RWA==
+X-Received: by 2002:a5d:5f42:0:b0:3e8:68:3a91 with SMTP id ffacd0b85a97d-3e800683aeemr6491401f8f.60.1757856126372;
+        Sun, 14 Sep 2025 06:22:06 -0700 (PDT)
+Received: from ivaylo-T580.. (91-139-201-119.stz.ddns.bulsat.com. [91.139.201.119])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3e80da7f335sm7274707f8f.8.2025.09.14.06.22.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Sep 2025 06:22:06 -0700 (PDT)
+From: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: linux-samsung-soc@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1] dt-bindings: serial: samsung: add samsung,exynos8890-uart compatible
+Date: Sun, 14 Sep 2025 16:22:01 +0300
+Message-ID: <20250914132201.2622955-1-ivo.ivanov.ivanov1@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-The following changes since commit 8f5ae30d69d7543eee0d70083daf4de8fe15d585:
+Add dedicated samsung,exynos8890-uart compatible to the dt-schema for
+representing uart of the exynos8890.
 
-  Linux 6.17-rc1 (2025-08-10 19:41:16 +0300)
+Like exynos8895, it has a required DT property samsung,uart-fifosize,
+so reuse support for it.
 
-are available in the Git repository at:
+Signed-off-by: Ivaylo Ivanov <ivo.ivanov.ivanov1@gmail.com>
+---
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.17-rc6
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 1a1f991d5..6ebe8a869 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -49,6 +49,7 @@ properties:
+       - items:
+           - enum:
+               - samsung,exynos7870-uart
++              - samsung,exynos8890-uart
+           - const: samsung,exynos8895-uart
+ 
+   reg:
+-- 
+2.43.0
 
-for you to fetch changes up to b5e3277c0f1c3439dd02b58997c06201d0ee8dbf:
-
-  serial: xilinx_uartps: read reg size from DTS (2025-09-06 15:51:47 +0200)
-
-----------------------------------------------------------------
-TTY/Serial fixes for 6.17-rc6
-
-Here are some small tty and serial driver fixes for 6.17-rc6 that
-resolve some reported problems.  Included in here are:
-  - 8250 driver dt bindings fixes
-  - broadcom serial driver binding fixes
-  - hvc_console bugfix
-  - xilinx serial driver bugfix
-  - sc16is7xx serial driver bugfix
-
-All of these have been in linux-next for the past week with no reported
-issues.
-
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-----------------------------------------------------------------
-Alex Elder (2):
-      dt-bindings: serial: 8250: move a constraint
-      dt-bindings: serial: 8250: allow "main" and "uart" as clock names
-
-Fabian Vogt (1):
-      tty: hvc_console: Call hvc_kick in hvc_write unconditionally
-
-Harshit Shah (1):
-      serial: xilinx_uartps: read reg size from DTS
-
-Hugo Villeneuve (1):
-      serial: sc16is7xx: fix bug in flow control levels init
-
-Krzysztof Kozlowski (1):
-      dt-bindings: serial: brcm,bcm7271-uart: Constrain clocks
-
- Documentation/devicetree/bindings/serial/8250.yaml | 56 ++++++++++++----------
- .../bindings/serial/brcm,bcm7271-uart.yaml         |  2 +-
- drivers/tty/hvc/hvc_console.c                      |  6 +--
- drivers/tty/serial/sc16is7xx.c                     | 14 +-----
- drivers/tty/serial/xilinx_uartps.c                 | 10 ++--
- 5 files changed, 42 insertions(+), 46 deletions(-)
