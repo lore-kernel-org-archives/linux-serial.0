@@ -1,42 +1,36 @@
-Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73EBD163;
-	Sun, 14 Sep 2025 00:27:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.142.180.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 815E124291B;
+	Sun, 14 Sep 2025 11:55:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757809640; cv=none; b=r9MCBqNubJYMlwaU3s8U8bnm/fjl6TTvW1V9i63vnetX1huNYf1XP1yU6PUxWQeN4O9mIM7YBuo1ZqfgMkE1Aa5D/HRN3RrCFP/I55se4kcF4k4YTeAzMF4JUeSn+HFh+pk6WqUff7FRdbRd4HPGpTg1jxjvZ/dqcY2cQYIb3JU=
+	t=1757850919; cv=none; b=rWrE6IH7aX+0jlrJ52fPOSJFfCSPOQ1lTwp7XXfEB9NhiprGqqX0BGGCmWL80XDd9bgns+laTXyZM9qZdtud18PDKrnqmRpD+OCGtK2qsH0WGOJaz8Sw+P/41IGkLdW85bO/UVOy6qSuKdumCLrNa0xD9uw1TQ9XJTjMU4R+iGc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757809640; c=relaxed/simple;
-	bh=XhAY2Nc3nA6iDpUI121blFa1UrnZBHRgmQH83AHqnJU=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=AzQOonlNNHWvLpITLKhWcv6NI+R+twO//NE2q6wtlCBbtsNsPSmli6QiWuBOcu622XkAqvw4avrXR2h+8ePilni/dpWxHZ3JT7kjX9BnmwXxWeszGdBR+mCf1u7/VdIFDXxnHiUkFw5/U/HSamk9r/NCbkrdskHf8yTOfuaaSkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=makrotopia.org; spf=pass smtp.mailfrom=makrotopia.org; arc=none smtp.client-ip=185.142.180.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=makrotopia.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=makrotopia.org
-Received: from local
-	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
-	 (Exim 4.98.2)
-	(envelope-from <daniel@makrotopia.org>)
-	id 1uxa9C-0000000077z-2TM1;
-	Sat, 13 Sep 2025 23:59:14 +0000
-Date: Sun, 14 Sep 2025 00:59:11 +0100
-From: Daniel Golle <daniel@makrotopia.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Yu Jiaoliang <yujiaoliang@vivo.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>,
-	Daniel Golle <daniel@makrotopia.org>,
-	Changqi Hu <changqi.hu@mediatek.com>,
-	Sam Shih <sam.shih@mediatek.com>,
-	Steven Liu <steven.liu@mediatek.com>,
-	John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org
-Subject: [PATCH] tty: serial: 8250_mtk: enable baud clock
-Message-ID: <5d6acd2273e3c98a5cbc685ad94eff19c6b6d044.1757807642.git.daniel@makrotopia.org>
+	s=arc-20240116; t=1757850919; c=relaxed/simple;
+	bh=taIHnvxPpKsVVdKxNWQcAxD/Y7kDSuAL2dKrQGpl7+g=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=VznLmUa7SXFoJFipd+YkE54LxxlsiFyovP0NPOl7/mbUhWGndKSNpFx/oYvcy7CoIgsYmOkriVQ/2vtw0QyPXmVriXkkbND0dPY+lzTn5lIAVDvotCq60lobldYBki6vuBYmzsLd6leBTTT86rwCwP005QTJvjok32Sd/TgAMGM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=KUOH/N1O; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="KUOH/N1O"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D6AC4CEF0;
+	Sun, 14 Sep 2025 11:55:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1757850918;
+	bh=taIHnvxPpKsVVdKxNWQcAxD/Y7kDSuAL2dKrQGpl7+g=;
+	h=Date:From:To:Cc:Subject:From;
+	b=KUOH/N1O2iZZrT5oOHL7+dQBHihuWYapSsqdxfTetDuxyhwrt/ki+4wsbNIHaphyA
+	 g5xG4aI6Ye8n9W+YymvNpUy1Z1MV8MS8g3FAR9mNCoPsCk6cKKqsNxPh+egR4thG4g
+	 Bj1O3ZgzkqKAqAeh52SzZVU+wfd8CmwOvhzUrjAU=
+Date: Sun, 14 Sep 2025 13:55:14 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [GIT PULL] TTY / Serial driver fixes for 6.17-rc6
+Message-ID: <aMatIn1m6zRXmzC-@kroah.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,44 +40,54 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
-Some MediaTek SoCs got a gated UART baud clock, which currently gets
-disabled as the clk subsystem believes it would be unused. This results in
-the uart freezing right after "clk: Disabling unused clocks" on those
-platforms.
+The following changes since commit 8f5ae30d69d7543eee0d70083daf4de8fe15d585:
 
-To fix this request the "baud" clock as enabled to prevent disabling it
-among with the unused clocks.
-Runtime power management can probably also be restored to the state before
-commit e32a83c70cf9 ("serial: 8250-mtk: modify mtk uart power and clock
-management"), but that isn't strictly needed to fix the regression
-introduced by that commit.
+  Linux 6.17-rc1 (2025-08-10 19:41:16 +0300)
 
-Fixes: e32a83c70cf9 ("serial: 8250-mtk: modify mtk uart power and clock management")
-Suggested-by: Sam Shih <sam.shih@mediatek.com>
-Signed-off-by: Daniel Golle <daniel@makrotopia.org>
----
- drivers/tty/serial/8250/8250_mtk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+are available in the Git repository at:
 
-diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index b44de2ed7413..9329ed1f759d 100644
---- a/drivers/tty/serial/8250/8250_mtk.c
-+++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -475,13 +475,13 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
- 	int dmacnt;
- #endif
- 
--	data->uart_clk = devm_clk_get(&pdev->dev, "baud");
-+	data->uart_clk = devm_clk_get_enabled(&pdev->dev, "baud");
- 	if (IS_ERR(data->uart_clk)) {
- 		/*
- 		 * For compatibility with older device trees try unnamed
- 		 * clk when no baud clk can be found.
- 		 */
--		data->uart_clk = devm_clk_get(&pdev->dev, NULL);
-+		data->uart_clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 		if (IS_ERR(data->uart_clk)) {
- 			dev_warn(&pdev->dev, "Can't get uart clock\n");
- 			return PTR_ERR(data->uart_clk);
--- 
-2.51.0
+  git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.17-rc6
+
+for you to fetch changes up to b5e3277c0f1c3439dd02b58997c06201d0ee8dbf:
+
+  serial: xilinx_uartps: read reg size from DTS (2025-09-06 15:51:47 +0200)
+
+----------------------------------------------------------------
+TTY/Serial fixes for 6.17-rc6
+
+Here are some small tty and serial driver fixes for 6.17-rc6 that
+resolve some reported problems.  Included in here are:
+  - 8250 driver dt bindings fixes
+  - broadcom serial driver binding fixes
+  - hvc_console bugfix
+  - xilinx serial driver bugfix
+  - sc16is7xx serial driver bugfix
+
+All of these have been in linux-next for the past week with no reported
+issues.
+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+----------------------------------------------------------------
+Alex Elder (2):
+      dt-bindings: serial: 8250: move a constraint
+      dt-bindings: serial: 8250: allow "main" and "uart" as clock names
+
+Fabian Vogt (1):
+      tty: hvc_console: Call hvc_kick in hvc_write unconditionally
+
+Harshit Shah (1):
+      serial: xilinx_uartps: read reg size from DTS
+
+Hugo Villeneuve (1):
+      serial: sc16is7xx: fix bug in flow control levels init
+
+Krzysztof Kozlowski (1):
+      dt-bindings: serial: brcm,bcm7271-uart: Constrain clocks
+
+ Documentation/devicetree/bindings/serial/8250.yaml | 56 ++++++++++++----------
+ .../bindings/serial/brcm,bcm7271-uart.yaml         |  2 +-
+ drivers/tty/hvc/hvc_console.c                      |  6 +--
+ drivers/tty/serial/sc16is7xx.c                     | 14 +-----
+ drivers/tty/serial/xilinx_uartps.c                 | 10 ++--
+ 5 files changed, 42 insertions(+), 46 deletions(-)
