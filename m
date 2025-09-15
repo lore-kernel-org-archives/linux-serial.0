@@ -1,16 +1,16 @@
 Received: from pidgin.makrotopia.org (pidgin.makrotopia.org [185.142.180.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5666830C379;
-	Mon, 15 Sep 2025 13:07:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6383128506D;
+	Mon, 15 Sep 2025 13:07:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.142.180.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757941625; cv=none; b=WzrtdvxxM6tN31NpZamUMHF3sgIea9iDCx0dWvSy0NU/jGJ7/qpY3ehQXYQJIpD9EAe8kZjQdt3rW807uDYO3cKbM/BhqYLCJkgUqv5WWhj769/LMSvFpmb5n/MVWyhJo9E1igYAk75doGdA0KUfhXQ++lT4k3pLBt0uw1911QI=
+	t=1757941626; cv=none; b=XCoTDfvonGuZ1/2AIhigOI3bO9VLlZ5lK7cCRwhwvj3Hv0lVs8gp6At6RzVTQXyPUuXJJPqRZ8j5DKWb05A5jKgE15ExYff4iaLZwRw4UBRmlRO0X8Jhyx8aaKwtZ96xapMB5plNaEuRBbByL2VT4y3P6rwGcJHH+tRwPdjouDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757941625; c=relaxed/simple;
-	bh=cqI0vWHyaYllk7GLbCnmovSdMGEeQZe4ENHZ2aks7AY=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=S06hkOcu/9x09EX0lnwgg3QXPZ7DU8brDo+1xeCBE7anOLH42QCwoYD4DExCG3tFbQPuBzTF0KlR0WUEJSphwN5bmfw3HfUDuiS1k9ESXxh8S7QelWXXZ8N+y3h1WVTntw4vR4djs8icKAUT+0/zKjTZaj9WRyYz8VtZM/7GMZo=
+	s=arc-20240116; t=1757941626; c=relaxed/simple;
+	bh=FiTIN3Lu7XEzDVaqOg3dFA61ZLD0/ywl+FoNcLu5GsA=;
+	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=r4EonDX/IgvoV5+qVoqlcsesrCARqnZ8mWdGbrM4oMS3h/x8mzCidV9QIOlqDoC3XyUanYeIt7aJndfBripQZLVDZ+wqCdA/kR8tGgKAaTVweL2CkxUEleqPaDvtvZuEoHs6F4TxitEvOWZ2SInCXeisF+/vZjTKEgFSJF+9res=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=makrotopia.org; spf=pass smtp.mailfrom=makrotopia.org; arc=none smtp.client-ip=185.142.180.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=makrotopia.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=makrotopia.org
@@ -18,9 +18,9 @@ Received: from local
 	by pidgin.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
 	 (Exim 4.98.2)
 	(envelope-from <daniel@makrotopia.org>)
-	id 1uy8uq-000000005ys-1732;
-	Mon, 15 Sep 2025 13:06:44 +0000
-Date: Mon, 15 Sep 2025 14:06:37 +0100
+	id 1uy8v2-000000005zY-3dY8;
+	Mon, 15 Sep 2025 13:06:56 +0000
+Date: Mon, 15 Sep 2025 14:06:53 +0100
 From: Daniel Golle <daniel@makrotopia.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
@@ -36,8 +36,10 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org
-Subject: [PATCH v2 1/2] tty: serial: 8250_mtk: enable baud clock
-Message-ID: <2de07b0a6d51d5d3bf3e55cd03cf75adfc91ee7d.1757941345.git.daniel@makrotopia.org>
+Subject: [PATCH v2 2/2] tty: serial: 8250_mtk: manage baud clock in runtime
+ PM ops
+Message-ID: <4a199adc63de9159865a48b7ded2048d45712d91.1757941345.git.daniel@makrotopia.org>
+References: <2de07b0a6d51d5d3bf3e55cd03cf75adfc91ee7d.1757941345.git.daniel@makrotopia.org>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,42 +48,43 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <2de07b0a6d51d5d3bf3e55cd03cf75adfc91ee7d.1757941345.git.daniel@makrotopia.org>
 
-Some MediaTek SoCs got a gated UART baud clock, which currently gets
-disabled as the clk subsystem believes it would be unused. This results in
-the uart freezing right after "clk: Disabling unused clocks" on those
-platforms.
+The baud clock is gated on some MediaTek SoCs and can be managed by
+runtime power management.
 
-To fix this request the baud clock to be prepared and enabled during probe.
+Disable and unprepare the baud clock when suspending the UART, prepare
+and enable it again when resuming it.
 
 Fixes: e32a83c70cf9 ("serial: 8250-mtk: modify mtk uart power and clock management")
-Suggested-by: Sam Shih <sam.shih@mediatek.com>
+Suggested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 ---
-v2: no changes
+v2: add this patch as suggested by AngeloGioacchino Del Regno in
+https://lore.kernel.org/all/8b1c1796-6de2-4526-9a29-d8649141b878@collabora.com/
 
- drivers/tty/serial/8250/8250_mtk.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/8250/8250_mtk.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/tty/serial/8250/8250_mtk.c b/drivers/tty/serial/8250/8250_mtk.c
-index b44de2ed7413..9329ed1f759d 100644
+index 9329ed1f759d..5875a7b9b4b1 100644
 --- a/drivers/tty/serial/8250/8250_mtk.c
 +++ b/drivers/tty/serial/8250/8250_mtk.c
-@@ -475,13 +475,13 @@ static int mtk8250_probe_of(struct platform_device *pdev, struct uart_port *p,
- 	int dmacnt;
- #endif
+@@ -435,6 +435,7 @@ static int __maybe_unused mtk8250_runtime_suspend(struct device *dev)
+ 	while
+ 		(serial_in(up, MTK_UART_DEBUG0));
  
--	data->uart_clk = devm_clk_get(&pdev->dev, "baud");
-+	data->uart_clk = devm_clk_get_enabled(&pdev->dev, "baud");
- 	if (IS_ERR(data->uart_clk)) {
- 		/*
- 		 * For compatibility with older device trees try unnamed
- 		 * clk when no baud clk can be found.
- 		 */
--		data->uart_clk = devm_clk_get(&pdev->dev, NULL);
-+		data->uart_clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 		if (IS_ERR(data->uart_clk)) {
- 			dev_warn(&pdev->dev, "Can't get uart clock\n");
- 			return PTR_ERR(data->uart_clk);
++	clk_disable_unprepare(data->uart_clk);
+ 	clk_disable_unprepare(data->bus_clk);
+ 
+ 	return 0;
+@@ -445,6 +446,7 @@ static int __maybe_unused mtk8250_runtime_resume(struct device *dev)
+ 	struct mtk8250_data *data = dev_get_drvdata(dev);
+ 
+ 	clk_prepare_enable(data->bus_clk);
++	clk_prepare_enable(data->uart_clk);
+ 
+ 	return 0;
+ }
 -- 
 2.51.0
