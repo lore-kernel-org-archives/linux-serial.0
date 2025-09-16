@@ -1,137 +1,115 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C75B8283FFB
-	for <linux-serial@vger.kernel.org>; Tue, 16 Sep 2025 09:40:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A0B28315A
+	for <linux-serial@vger.kernel.org>; Tue, 16 Sep 2025 14:12:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758015618; cv=none; b=ug+mmBC6yBKzWhv464RlS42JfJFBp/IggayHzqiYkBTWMw8iDpQmkdsE5w6/1gk6W6et28+N3/a/IJUNMHO3c4UKSw3xt2oZbqsSmv0wkBP5EJTijbreU/OZsixSZpDLq1iH0pda/9BDOB9ViQ4X+jUfsM9GP/BAKzGtaIFbCOM=
+	t=1758031944; cv=none; b=iR/Q61ED9otFgz2AGTFR0oK9sg+mg03M+J2KuDXH+BiDEhS/wwF4GIOrGoysv2xDwinG+Ygeu8nTIepxuN1UXrzMEHBaS680i7fjdP8td3oWyV2p/DMR51NRDf+c3cB82eBVgXEI2RYY7vRVoti/HB+dpXNPhXtPdTIQK3tVoH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758015618; c=relaxed/simple;
-	bh=/AN0edio5MaldEncQLvD0kSKxTKUGpgRttz9iXUqZxk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ofI9DiQCW+il1k65srDa+iN3YHX5hPnZCcnSv8t+ziL8g36Y4LhxjI2fCfo+kueTI65vGnGnclxjKFzduJK7+n/7aiecpmNbAZnn2ZCF9VXEAEwiW5pd2X4dK2waQV1DNVbIrGtzPu9Mr3bMpwhlXXy4ocHaaTFz9u+UbfAR7DQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=EZMzOkBu; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1758031944; c=relaxed/simple;
+	bh=fVduY9ChM+XTiJ/WxOZb5vLjE0k0RtwqZkyUiEW8pZ8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QoB6YuhvL/xprn+TGQlqY80B61moraAgO6dALWe3+yWyXsEfaIpRmj4opz9T+z8+iARgjXfl0GTFd3QTEdUftIV94qGQEnNbjsgPS3I0xYERjY1HfmUiJiShM4zFll8usniiFdPz4VgIFspWHZm8JCE9r6NvtxglWWdHox1xU8M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=mOCGnvwg; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="EZMzOkBu"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58G3pn1v005337
-	for <linux-serial@vger.kernel.org>; Tue, 16 Sep 2025 09:40:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=SdbaG+qQMcuHskGeXqpUq0AHk1Ukw/1hxqZ
-	/MRYhBG0=; b=EZMzOkBufAGzt8zUKa+ntj9/CVAth93d+7cckdcF8ZTiDToWPuG
-	CscdwL+BVXtjmkPH0VohXQCskDnrtjelQBRHsrha1Cs9tEyIWYdcx+bvt/YTwIo7
-	Tin5+4pB3Oc2wxQuRsMZGrJn5YRJgZJo5guCmcoihIMAXTLOOx/MRnR0qS4yReuS
-	GNvFAdqE4tox4iHAJajKJfi/VtG4Dr7Fcs9QIJxiHMeP6B2Lj7yzjU2DyoCOseku
-	2q/AqJ50zm6NYDacIUl5AOgoIBShsjEGQO0bAEL9WMkQLLMO9OKdDSGTTHU0NvPx
-	9DnReY10lUbGmEO7gucYkowJ2aJP7ilAylA==
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 496g5n418q-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <linux-serial@vger.kernel.org>; Tue, 16 Sep 2025 09:40:16 +0000 (GMT)
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-25d7c72e163so80468735ad.0
-        for <linux-serial@vger.kernel.org>; Tue, 16 Sep 2025 02:40:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mOCGnvwg"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-45f29e5e89bso33508815e9.2
+        for <linux-serial@vger.kernel.org>; Tue, 16 Sep 2025 07:12:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1758031941; x=1758636741; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=5ihTrH7t7gLzKRumooOOczb4IBjokkGyHJ2+QxNRMxY=;
+        b=mOCGnvwgcrU5KMtGEYRdZSbfkuz1xSxEYBDr0cn6QPZPfHN3Ekbdo2d4sqORAIe5Md
+         BWG3CUqFvXoePD6D2vMNjzRJMlxt/DDkXlXbSKT3p5XRGysYXw98oGzaUSF5L6m8FEMr
+         OzIjEKCneuEMM6RXtPw1JcA8qF/6eUN6Rax4+x3DVn4TB+Lpx5JbC0Tz1QpCl9QGDrlJ
+         jreFR6TE2YU7/XEPu0u7ag1n+bpDl5msFmnjdxhllhSaZT2vxM2Xl6QklzlghUipVSZC
+         HGZ2Ad3FDOmHkSwgdSdNuh0hpoJSHa5xvXNmLqPaVA+zLmlYR1hEyGuK9VPacYtdSF2M
+         K09w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758015615; x=1758620415;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SdbaG+qQMcuHskGeXqpUq0AHk1Ukw/1hxqZ/MRYhBG0=;
-        b=akdO403oOAZgVbYeoFZ/evihgbAirLDEqhMyAn/gPMuEkl/dcB4rp1HjAhkVE4G/w4
-         vAt5oaVsgcMnAE4F2QjWS4cq/mmaO/cSfl57gE5vLDSKoEx7wnFSLCTDIuoHJ5r6jw1D
-         vPwEJJMkhkJJG/rNQi5tg+Ad1FSMXH0eh/4K7XDyeCh+56EH+EmYJbSfjr+wmVS5Jc/6
-         q1S9uwaX1J3ZIR/sdoqrdIGub7uJTKmkTgzLICfb5trl+e6J8GmqXg0cT2sdVpecJ0Cj
-         AGGhIyjs2NxG5jOrNKLiu84C4CAcwBAVve6XE370l5+xCcHM3nc4kDsHJtFnlXLkqGAb
-         D6Tg==
-X-Forwarded-Encrypted: i=1; AJvYcCUnJd8mYHxIz57IG112pqwytWcSIQX0qtq0jvscEAAS5QILkuwomWK6gafl+0toiypZUqvqQ/2lK2MBejw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzUy/gGYdY3oLRFoMOgIjtsxPgAO6iaUXxdEeVZZbn/xxqwaOff
-	nJHj8WmhaSn0DiY5wqm3HgKmEbIkhGjCTLisoujdO3ZTsXonq+fs78X6/SO+O8SH/OTaHSbR/Bs
-	HLfF9buWVX/tV9FOKG0w9CKTby8gcYWkW66qg0R+g2MpQ6rGuK3qmRTZasjCkyBVigi8=
-X-Gm-Gg: ASbGncuQv1DkGuGZpvdFbR6Hj5jqRV8rfHrNXLiZOP9NgEUXXsPrdPlO1PVBWPcXULw
-	zA7aSNbFFUc2zLLHw7lrCDyq3/gz4M3kXSc9OZ/Adh1HARQhDijdRDulq5Cya/WpM8bdglgmllK
-	BOuOZR96/xGzwhh/kYwTflnt+vzbFPA6L2c8/3pCGdlvoKyFCJ9J0G70GHG4X/2YmnmzDTBC//D
-	0SdXJTnb/Epc5QPKthwPcZKpogjYWnW+UDNYh42CRda2CKl0zjO9O2bWih11xFiSFICP8bkJmqv
-	aAtpKu/Xtc1KVDs5RybEOy9Hf2RkBuxl5Nxm7aV/8KoIRRS88poD8YiBafvrczTJQOLZyz4E9A=
-	=
-X-Received: by 2002:a17:903:3c2d:b0:25c:b543:2da7 with SMTP id d9443c01a7336-25d2528c254mr178027525ad.9.1758015615269;
-        Tue, 16 Sep 2025 02:40:15 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IE3iRujT5RyN/Y70BYxNaVIMPtLsc7G5+gxIL9VhuL7Lh/nsZi48blzFd7jfvLmyl8MB9cHzg==
-X-Received: by 2002:a17:903:3c2d:b0:25c:b543:2da7 with SMTP id d9443c01a7336-25d2528c254mr178027315ad.9.1758015614822;
-        Tue, 16 Sep 2025 02:40:14 -0700 (PDT)
-Received: from hu-anupkulk-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2663f633893sm55434465ad.119.2025.09.16.02.40.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Sep 2025 02:40:14 -0700 (PDT)
-From: Anup Kulkarni <anup.kulkarni@oss.qualcomm.com>
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org, johan+linaro@kernel.org,
-        dianders@chromium.org, quic_ptalari@quicinc.com,
-        bryan.odonoghue@linaro.org, quic_zongjian@quicinc.com,
-        anup.kulkarni@oss.qualcomm.com, quic_jseerapu@quicinc.com,
-        quic_vdadhani@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
-Cc: mukesh.savaliya@oss.qualcomm.com, viken.dadhaniya@oss.qualcomm.com,
-        stable@vger.kernel.org
-Subject: [PATCH v1] tty: serial: qcom_geni_serial: Fix error handling for RS485 mode
-Date: Tue, 16 Sep 2025 15:09:57 +0530
-Message-Id: <20250916093957.4058328-1-anup.kulkarni@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
+        d=1e100.net; s=20230601; t=1758031941; x=1758636741;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5ihTrH7t7gLzKRumooOOczb4IBjokkGyHJ2+QxNRMxY=;
+        b=Fb5MhEMyddw43q8n2O2JYir7LUTG8pTErybUve6ufTj7BwhD3iFAtnlr1YFAnKnDs9
+         Vsx9l1e5yARKD2AkOmHGGOW3wdlbMuTvjaywe012OB2A/T3qTE75IF30G+CuLAaAXipM
+         1uC92Lr/KMGlfDdYvqcro6WnqYKKz4sTPFJAcTO3Y/SSKjPFiPogjTl6Cv9Hf2Hkue4X
+         qrcsZIzw58LwIFNn1oA9Q1L7UXtGbFWMLwqALQjNKpkD7aYYHqQG2yhuhcVfM6l55kAr
+         0YPfmkF/Jo4VsNqLl3LToE9WQde9GSo9BunSk9mlzWXaZU2tv2c1SlJ7MAkNFTKify6r
+         qK5g==
+X-Forwarded-Encrypted: i=1; AJvYcCVbyac2OuoA+f0BRcpOLMC19HpnRZ4b4EE+VhhNktxoA/XfGWJWC++bcn+wXIqBTe7U8wY23uwrBbALdMM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywh/9tjcsfTbNjPhHzEin+QgUSyC10Imr6v0glZ6nHkKgoem9mk
+	lHNLfsjGK1XDMNh9+vC8hZhvgJmMUTxDwgsJLdQOps7B2eRKoXG/yh/Qx9Gskc7R1ms=
+X-Gm-Gg: ASbGncuJzMuQxS1UsC8PA/7eizsbilxN5kPrUW0KtYdtdRGfl5IXSFzUZ4zSNQv4+md
+	xPyMaNJNMdK2INg42pX32iG9twSiqudgvA7Ya9xjmJB7bX34voiso70PYAoR5LfgLi2DKWqv9JG
+	GWq8/vlnGpyPaZsJusfYnwugl4eDq3/KSZj9S4vsq+RnGRjl9p+dpYl4i3jbHGts7nWiVaelsOS
+	oIVMJyQIIvneQOKKStA9PKiA08cbFi5np06Uum0BghgEb6X8iE9TfaAZifq8CAdvh8rxGB2fk4C
+	0BxDBRFkGjc7pMw037pSP09zqYmEThMnppEJwYY27ka7As2yoEjhSMLoxo2Cw041Ssr9u374vfO
+	yCW4Zt2XSjik42ZsXUlU0lI5AGBZodCnoNgzhzOop+JnB5XYMX9Lv6seWbf2aLdgXUSqx+jMeoW
+	a/C4aPTWhToduOrNZzk7I=
+X-Google-Smtp-Source: AGHT+IGmb1kHFNHQ4frPlib14MxI7w4SRTDLbyi2XJON83MQa2TxlNaD5uBHUokreLL+hCdD46cN6Q==
+X-Received: by 2002:a05:600c:1546:b0:458:bc3f:6a77 with SMTP id 5b1f17b1804b1-45f211c4c03mr137113085e9.2.1758031941271;
+        Tue, 16 Sep 2025 07:12:21 -0700 (PDT)
+Received: from [192.168.0.19] (188-141-3-146.dynamic.upc.ie. [188.141.3.146])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3e8c7375fb7sm14091558f8f.14.2025.09.16.07.12.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Sep 2025 07:12:20 -0700 (PDT)
+Message-ID: <ca511d42-0381-41d1-bea0-0d766e04f9f4@linaro.org>
+Date: Tue, 16 Sep 2025 15:12:16 +0100
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: 4FmWiZbwVOL7_fXbHqCaIMegJL7oRJfY
-X-Proofpoint-ORIG-GUID: 4FmWiZbwVOL7_fXbHqCaIMegJL7oRJfY
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTE1MDA4NyBTYWx0ZWRfXz/7xB2ExR6C1
- MNmvZN4btJ77NENKFLbfbz1JhSmwuCo9zCoeuKztq3HUJV4dJd6vi3PQ7YAy68dU04eY+knFgHU
- 4jI8x/MgQms7tYbJHa7GPxH1CzwMqWm5bKN09yB0dO/VrK89Kghi/Qwkyk4c4GgNRhnAnUc5a9f
- 6DWvZqf+vRMTipO5WEzDxhzwxuBfGqwtvSUezlZA624drjaOipLmADphg+P7kzcJ0230ebRV0BM
- fYMZlalgLOB2xNNrEHOqY2+HIpWWf755t0lOB61cdJwC3sdPOKcQNqE1bf9aMFfi9LV7z/sXvrH
- vCK++MF6iO2TlAkH0GDjz6738KtXpuSFibd8oL1cqzSp6vsjCJeD7PaI5VPuJm4QFcOlMZvyvMg
- /KowfzV4
-X-Authority-Analysis: v=2.4 cv=SaD3duRu c=1 sm=1 tr=0 ts=68c93080 cx=c_pps
- a=IZJwPbhc+fLeJZngyXXI0A==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
- a=yJojWOMRYYMA:10 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=ZXCm3_ECWB7Dsui8_W4A:9
- a=uG9DUKGECoFWVXl0Dc02:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-16_02,2025-09-12_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1011 adultscore=0 malwarescore=0 phishscore=0 spamscore=0
- priorityscore=1501 bulkscore=0 impostorscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2509150087
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1] tty: serial: qcom_geni_serial: Fix error handling for
+ RS485 mode
+To: Anup Kulkarni <anup.kulkarni@oss.qualcomm.com>,
+ gregkh@linuxfoundation.org, jirislaby@kernel.org, johan+linaro@kernel.org,
+ dianders@chromium.org, quic_ptalari@quicinc.com, quic_zongjian@quicinc.com,
+ quic_jseerapu@quicinc.com, quic_vdadhani@quicinc.com,
+ linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org
+Cc: mukesh.savaliya@oss.qualcomm.com, viken.dadhaniya@oss.qualcomm.com,
+ stable@vger.kernel.org
+References: <20250916093957.4058328-1-anup.kulkarni@oss.qualcomm.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Content-Language: en-US
+In-Reply-To: <20250916093957.4058328-1-anup.kulkarni@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-If uart_get_rs485() fails, the driver returns without detaching
-the PM domain list.
-
-Fix the error handling path in uart_get_rs485_mode() to ensure the
-PM domain list is detached before exiting.
-
-Fixes: 86fa39dd6fb7 ("serial: qcom-geni: Enable Serial on SA8255p Qualcomm platforms")
-Cc: stable@vger.kernel.org
-Signed-off-by: Anup Kulkarni <anup.kulkarni@oss.qualcomm.com>
----
- drivers/tty/serial/qcom_geni_serial.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 9c7b1cea7cfe..0fc0f215b85c 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -1928,7 +1928,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
- 
- 	ret = uart_get_rs485_mode(uport);
- 	if (ret)
--		return ret;
-+		goto error;
- 
- 	devm_pm_runtime_enable(port->se.dev);
- 
--- 
-2.34.1
-
+On 16/09/2025 10:39, Anup Kulkarni wrote:
+> If uart_get_rs485() fails, the driver returns without detaching
+> the PM domain list.
+> 
+> Fix the error handling path in uart_get_rs485_mode() to ensure the
+> PM domain list is detached before exiting.
+> 
+> Fixes: 86fa39dd6fb7 ("serial: qcom-geni: Enable Serial on SA8255p Qualcomm platforms")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Anup Kulkarni <anup.kulkarni@oss.qualcomm.com>
+> ---
+>   drivers/tty/serial/qcom_geni_serial.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+> index 9c7b1cea7cfe..0fc0f215b85c 100644
+> --- a/drivers/tty/serial/qcom_geni_serial.c
+> +++ b/drivers/tty/serial/qcom_geni_serial.c
+> @@ -1928,7 +1928,7 @@ static int qcom_geni_serial_probe(struct platform_device *pdev)
+>   
+>   	ret = uart_get_rs485_mode(uport);
+>   	if (ret)
+> -		return ret;
+> +		goto error;
+>   
+>   	devm_pm_runtime_enable(port->se.dev);
+>   
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
