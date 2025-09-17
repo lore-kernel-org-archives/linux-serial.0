@@ -1,480 +1,106 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C1472E5405
-	for <linux-serial@vger.kernel.org>; Wed, 17 Sep 2025 07:08:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5219A2DA769
+	for <linux-serial@vger.kernel.org>; Wed, 17 Sep 2025 07:13:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758092936; cv=none; b=XIwLP4H0K2GVmJ5SNmBjMIUBsamsZOyJ8Fpe/7PdYhsV2yzFh7IcRvuyeRBFy2bzRhLog4HbV3F/X5Is6vb68zB/TfmH4YvXIBUyCqVUpaRpwByWMLsxcT9rnpZgUBxVlEWyXRkfzjue9jTEQIgMg7raGXIbkmq0JDrP+spioyc=
+	t=1758093237; cv=none; b=IEhJhv53przXCYGd6jkATtsufLcFRX9cYs+OC34IE5A4yPS6E6XNf7DUcZxQYXuGkIbELtuSZ1KRvHpPZMtZiruIk5sjVYOIEy9yqLZf2dStqy5cip1YB8YMtfKVXdS64czuzYmVYAbgHkrie8GY63Jdua8Fu+zKxnelpGeDkMo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758092936; c=relaxed/simple;
-	bh=ghh8f7c7dHgoFU96mLfUg95zZb0yUffRkhQnBIriyD4=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:
-	 References:In-Reply-To; b=kkFkJiZ4jpKvmNIkmPn+X1j4sTjXB+RojxgYmc3dt8cFmytL9bB04x/6crk6462QHXT68Mo9rIFAcOtDltcaHma3cPPJkmvIvj88Lg0GUKW5H7tZXJeIkBWE1LlGYLGFN6I69xwPHyl3zUgE7ZJaxwLvTd9qxqrai5WEaA6zVH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=EuaHPm2y; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1758093237; c=relaxed/simple;
+	bh=Pw6SwIvC5HR9FxU8AOn+X7vEoKNviSLnMBUiSV7KSE4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
+	 References; b=RhBe6u852wPCnJaHa3NIq6vN8gN1AqLLOpkxSPFp0jNPGcC7I5vE1Uh12X8eUNVNJFDgS4mAA7QvWdEZf9WlBHOy8/seDBFpS2dWtoG4Ao0+IFD8RPCjYQ6XxyLTIQVKOPO+wQRA7TZWqTYkKtOGF7XIqQb/k5L3BBLAGdXxrW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=IkhBcOsO; arc=none smtp.client-ip=203.254.224.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EuaHPm2y"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-45dd5e24d16so59678245e9.3
-        for <linux-serial@vger.kernel.org>; Wed, 17 Sep 2025 00:08:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1758092932; x=1758697732; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FJK4r9naNgdoIpAJSQN31kuHKBKYgSYDtK0elIxrPLg=;
-        b=EuaHPm2y/3TXpoEssKVHl3oG2WMcA94pa3wxG72v1WZ7MguLEi6e/hx9sv5QHoumFg
-         eMBDZ/g7VEOprKDesKkyFqWch0Yd4+yssFdis/zhCWj6La4gdWVDCOenlFY1Vti0xMjU
-         0jukFGOKtsQkbnwwMW9bYSVV3qPxAHDKWW6gKWmZUFRHp8c8aeyqvkQqDjrg1tOyw8S6
-         bQlB4+xIyB4DOc4LfLYCyC3K23y+NGfI21BcR81p45zMY/c8eQpbjGswomNa0RpOuXoQ
-         au67wa4zCNJIqDj0Ee7UH8NjblijrMP4R2p1wZc2L3rT5XKTHdzKyCgFfgE5Yld+Phbd
-         QL4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758092932; x=1758697732;
-        h=in-reply-to:references:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=FJK4r9naNgdoIpAJSQN31kuHKBKYgSYDtK0elIxrPLg=;
-        b=ibO9flroa9N06zCTE7+1kvC5bek0ifSMe9HCaf2/iTSejWBcwrRuUsucpnBC6JeCy8
-         kQOJkSbCm9IUNlNN+8q4e/TD9ag339pAj6P+/pTe5KriVt5FHBmRhGyN0zDeJTfxHHgL
-         dJvliAf+t9/6MnplMUp1izONiQNUgp+i/Q3xsUL8vyWHp9oGicsGEuqf12fZK2Fi8wo9
-         6ovprs7YhTl6mTVnjU4hYlhP2VNzEutCN0RWzFTIknEh948Lzd/B0D/yUIZUegBnEr2N
-         mNUZu7gVTgfaNLReNIvFOlw+65QMOv/Fs1uNNoK98mevTrW0fPxgF8+FMFAw5pNRt7ll
-         CuTA==
-X-Forwarded-Encrypted: i=1; AJvYcCWBMJITr3UIY/Osq2DyQBK13xS2ac0Y04msi9IYns4KD9Jhti3GgrP9XLdO1Sz1mkf03o+pjgkxGdrHYCA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1qSJ7+7aNnJVSOZzwktRhC7LtALYkrDNOsG9dftAIXRJi6ecY
-	ZpJDviyPq7e0gWi+35RR0fCB7s0JfgJII3D3B0vacOBlLviD75p1LzQt9DpKYy6qiC4TaUE6ocW
-	6Ocou
-X-Gm-Gg: ASbGnctX2wuMRHOdY1cdfSsry4pSwkP7J7CLqUiITErb2Zqx52SU3PbkCpXiTb6kwwp
-	4tdpGxMwEa5afeHlTDqP99V+lI4zqOoCh/BUUfLHkD25DYgxjTYCwqluscZp2DkarSSoQIKPQHY
-	1P0Tnpt3PjKTMMTyrDWXbWmVboZ+6ETnKaXrG9gL6NnZZAk9k2QGlli3kojvi2N9ykwOn5ZFIkN
-	p9Axs/BurxuUKKIWURX5BH+XEQwsjUhTY0nOsW7szlKu8mecZ3a+FCNZasx1/YKdMoWgRisJfVh
-	cJMQIW5fkpBXwNrH+oNsxpJObC9ghTKnLaP17x5xpQwo7kU+Uhqu5EgHgNtsOkdk3ta8RW8Y+II
-	ti0h5CUCaPU6gUCIaxw5QGSPNfOg=
-X-Google-Smtp-Source: AGHT+IEV0vTT/XNc5OKi7rjTK+jaItMIqenxjHFWCKAa4kCBZcGZsvlMLEbgeMFkL1di8SFusYOkBg==
-X-Received: by 2002:a05:600c:c4b8:b0:45f:2bc5:41c3 with SMTP id 5b1f17b1804b1-46202174cb4mr9532275e9.8.1758092932388;
-        Wed, 17 Sep 2025 00:08:52 -0700 (PDT)
-Received: from localhost ([2a02:c7c:7259:a00:75ac:2ea2:dfdc:89c7])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46137c0f342sm23837645e9.8.2025.09.17.00.08.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Sep 2025 00:08:51 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="IkhBcOsO"
+Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
+	by mailout3.samsung.com (KnoxPortal) with ESMTP id 20250917071353epoutp037f2ce32bfcbeb2e5b437a26572529fa6~mAHsl6WF80464104641epoutp03H
+	for <linux-serial@vger.kernel.org>; Wed, 17 Sep 2025 07:13:53 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20250917071353epoutp037f2ce32bfcbeb2e5b437a26572529fa6~mAHsl6WF80464104641epoutp03H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1758093233;
+	bh=fRXYlmwUu6J4W4Dm8/+PyXnDw1pO78eFLKDecT7iP3Q=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=IkhBcOsO1SthYRbXoWHJz+2L9H/I4JO0BLwsHti1vnokQ98mdeefJSKq5BNsaqMRP
+	 1Z5ros+Sq4hwj/GzIREwGGDFQEJPo5R/UzLlout+Ag5yhshDFoBy7HJquWG9T9jjmC
+	 xL/HCImsuYxb2uxIqo6AKs+BMa5tXZ+p07oZZbTQ=
+Received: from epsnrtp01.localdomain (unknown [182.195.42.153]) by
+	epcas5p1.samsung.com (KnoxPortal) with ESMTPS id
+	20250917071352epcas5p1c5e369c59b060161eb5975ca16bb60cd~mAHrjoBOM3047430474epcas5p1R;
+	Wed, 17 Sep 2025 07:13:52 +0000 (GMT)
+Received: from epcas5p1.samsung.com (unknown [182.195.38.86]) by
+	epsnrtp01.localdomain (Postfix) with ESMTP id 4cRVPC1nfxz6B9mF; Wed, 17 Sep
+	2025 07:13:51 +0000 (GMT)
+Received: from epsmtip2.samsung.com (unknown [182.195.34.31]) by
+	epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+	20250917071350epcas5p339e015f976f63e2df03544679ad6e6cb~mAHqCzFfd1682016820epcas5p3x;
+	Wed, 17 Sep 2025 07:13:50 +0000 (GMT)
+Received: from cheetah.samsungds.net (unknown [107.109.115.53]) by
+	epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250917071347epsmtip206f2559e389a17ba327d8aef0e18009d~mAHnOrkgR3178131781epsmtip2e;
+	Wed, 17 Sep 2025 07:13:47 +0000 (GMT)
+From: Ravi Patel <ravi.patel@samsung.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, krzk@kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, ksk4725@coasia.com, pjsin865@coasia.com,
+	gwk1013@coasia.com, bread@coasia.com, jspark@coasia.com,
+	limjh0823@coasia.com, lightwise@coasia.com, hgkim05@coasia.com,
+	mingyoungbo@coasia.com, smn1196@coasia.com, shradha.t@samsung.com,
+	swathi.ks@samsung.com, kenkim@coasia.com, Ravi Patel
+	<ravi.patel@samsung.com>
+Subject: [PATCH] dt-bindings: serial: samsung: Add compatible for ARTPEC-9
+ SoC
+Date: Wed, 17 Sep 2025 12:43:42 +0530
+Message-ID: <20250917071342.5637-1-ravi.patel@samsung.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Wed, 17 Sep 2025 08:08:51 +0100
-Message-Id: <DCUVXIPKCGFS.E32DN2I35RRR@linaro.org>
-Subject: Re: [PATCH v2] serial: qcom-geni: Fix blocked task
-From: "Alexey Klimov" <alexey.klimov@linaro.org>
-To: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, "Jiri Slaby"
- <jirislaby@kernel.org>, "Praveen Talari" <quic_ptalari@quicinc.com>, "Bryan
- O'Donoghue" <bryan.odonoghue@linaro.org>, <linux-arm-msm@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>
-X-Mailer: aerc 0.20.0
-References: <20250917010437.129912-2-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20250917010437.129912-2-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20250917071350epcas5p339e015f976f63e2df03544679ad6e6cb
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+cpgsPolicy: CPGSC10-541,Y
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20250917071350epcas5p339e015f976f63e2df03544679ad6e6cb
+References: <CGME20250917071350epcas5p339e015f976f63e2df03544679ad6e6cb@epcas5p3.samsung.com>
 
-On Wed Sep 17, 2025 at 2:04 AM BST, Krzysztof Kozlowski wrote:
-> Revert commit 1afa70632c39 ("serial: qcom-geni: Enable PM runtime for
-> serial driver") and its dependent commit 86fa39dd6fb7 ("serial:
-> qcom-geni: Enable Serial on SA8255p Qualcomm platforms") because the
-> first one causes regression - hang task on Qualcomm RB1 board (QRB2210)
-> and unable to use serial at all during normal boot:
->
->   INFO: task kworker/u16:0:12 blocked for more than 42 seconds.
->         Not tainted 6.17.0-rc1-00004-g53e760d89498 #9
->   "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this messag=
-e.
->   task:kworker/u16:0   state:D stack:0     pid:12    tgid:12    ppid:2   =
-   task_flags:0x4208060 flags:0x00000010
->   Workqueue: async async_run_entry_fn
->   Call trace:
->    __switch_to+0xe8/0x1a0 (T)
->    __schedule+0x290/0x7c0
->    schedule+0x34/0x118
->    rpm_resume+0x14c/0x66c
->    rpm_resume+0x2a4/0x66c
->    rpm_resume+0x2a4/0x66c
->    rpm_resume+0x2a4/0x66c
->    __pm_runtime_resume+0x50/0x9c
->    __driver_probe_device+0x58/0x120
->    driver_probe_device+0x3c/0x154
->    __driver_attach_async_helper+0x4c/0xc0
->    async_run_entry_fn+0x34/0xe0
->    process_one_work+0x148/0x290
->    worker_thread+0x2c4/0x3e0
->    kthread+0x118/0x1c0
->    ret_from_fork+0x10/0x20
->
-> The issue was reported on 12th of August and was ignored by author of
-> commits introducing issue for two weeks.  Only after complaining author
-> produced a fix which did not work, so if original commits cannot be
-> reliably fixed for 5 weeks, they obviously are buggy and need to be
-> dropped.
->
-> Fixes: 1afa70632c39 ("serial: qcom-geni: Enable PM runtime for serial dri=
-ver")
-> Reported-by: Alexey Klimov <alexey.klimov@linaro.org>
-> Closes: https://lore.kernel.org/all/DC0D53ZTNOBU.E8LSD5E5Z8TX@linaro.org/
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Add Axis ARTPEC-9 uart compatible to the bindings documentation.
+It is similar to the older samsung,exynos8895-uart design.
 
-Tested-by: Alexey Klimov <alexey.klimov@linaro.org>
-Reviewed-by: Alexey Klimov <alexey.klimov@linaro.org>
+Signed-off-by: Ravi Patel <ravi.patel@samsung.com>
+---
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 1a1f991d5364..3895049c954c 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -48,6 +48,7 @@ properties:
+           - const: samsung,exynos850-uart
+       - items:
+           - enum:
++              - axis,artpec9-uart
+               - samsung,exynos7870-uart
+           - const: samsung,exynos8895-uart
 
-
-> ---
->
-> Changes in v2:
-> 1. Correct reference to cause (proper commit) in the commit msg.
-> ---
->  drivers/tty/serial/qcom_geni_serial.c | 176 +++-----------------------
->  1 file changed, 16 insertions(+), 160 deletions(-)
->
-> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/q=
-com_geni_serial.c
-> index 0fdda3a1e70b..7c5befe5490d 100644
-> --- a/drivers/tty/serial/qcom_geni_serial.c
-> +++ b/drivers/tty/serial/qcom_geni_serial.c
-> @@ -14,7 +14,6 @@
->  #include <linux/irq.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> -#include <linux/pm_domain.h>
->  #include <linux/pm_opp.h>
->  #include <linux/platform_device.h>
->  #include <linux/pm_runtime.h>
-> @@ -102,16 +101,10 @@
->  #define DMA_RX_BUF_SIZE		2048
-> =20
->  static DEFINE_IDA(port_ida);
-> -#define DOMAIN_IDX_POWER	0
-> -#define DOMAIN_IDX_PERF		1
-> =20
->  struct qcom_geni_device_data {
->  	bool console;
->  	enum geni_se_xfer_mode mode;
-> -	struct dev_pm_domain_attach_data pd_data;
-> -	int (*resources_init)(struct uart_port *uport);
-> -	int (*set_rate)(struct uart_port *uport, unsigned int baud);
-> -	int (*power_state)(struct uart_port *uport, bool state);
->  };
-> =20
->  struct qcom_geni_private_data {
-> @@ -149,7 +142,6 @@ struct qcom_geni_serial_port {
-> =20
->  	struct qcom_geni_private_data private_data;
->  	const struct qcom_geni_device_data *dev_data;
-> -	struct dev_pm_domain_list *pd_list;
->  };
-> =20
->  static const struct uart_ops qcom_geni_console_pops;
-> @@ -1301,42 +1293,6 @@ static int geni_serial_set_rate(struct uart_port *=
-uport, unsigned int baud)
->  	return 0;
->  }
-> =20
-> -static int geni_serial_set_level(struct uart_port *uport, unsigned int b=
-aud)
-> -{
-> -	struct qcom_geni_serial_port *port =3D to_dev_port(uport);
-> -	struct device *perf_dev =3D port->pd_list->pd_devs[DOMAIN_IDX_PERF];
-> -
-> -	/*
-> -	 * The performance protocol sets UART communication
-> -	 * speeds by selecting different performance levels
-> -	 * through the OPP framework.
-> -	 *
-> -	 * Supported perf levels for baudrates in firmware are below
-> -	 * +---------------------+--------------------+
-> -	 * |  Perf level value   |  Baudrate values   |
-> -	 * +---------------------+--------------------+
-> -	 * |      300            |      300           |
-> -	 * |      1200           |      1200          |
-> -	 * |      2400           |      2400          |
-> -	 * |      4800           |      4800          |
-> -	 * |      9600           |      9600          |
-> -	 * |      19200          |      19200         |
-> -	 * |      38400          |      38400         |
-> -	 * |      57600          |      57600         |
-> -	 * |      115200         |      115200        |
-> -	 * |      230400         |      230400        |
-> -	 * |      460800         |      460800        |
-> -	 * |      921600         |      921600        |
-> -	 * |      2000000        |      2000000       |
-> -	 * |      3000000        |      3000000       |
-> -	 * |      3200000        |      3200000       |
-> -	 * |      4000000        |      4000000       |
-> -	 * +---------------------+--------------------+
-> -	 */
-> -
-> -	return dev_pm_opp_set_level(perf_dev, baud);
-> -}
-> -
->  static void qcom_geni_serial_set_termios(struct uart_port *uport,
->  					 struct ktermios *termios,
->  					 const struct ktermios *old)
-> @@ -1355,7 +1311,7 @@ static void qcom_geni_serial_set_termios(struct uar=
-t_port *uport,
->  	/* baud rate */
->  	baud =3D uart_get_baud_rate(uport, termios, old, 300, 8000000);
-> =20
-> -	ret =3D port->dev_data->set_rate(uport, baud);
-> +	ret =3D geni_serial_set_rate(uport, baud);
->  	if (ret)
->  		return;
-> =20
-> @@ -1642,27 +1598,8 @@ static int geni_serial_resources_off(struct uart_p=
-ort *uport)
->  	return 0;
->  }
-> =20
-> -static int geni_serial_resource_state(struct uart_port *uport, bool powe=
-r_on)
-> +static int geni_serial_resource_init(struct qcom_geni_serial_port *port)
->  {
-> -	return power_on ? geni_serial_resources_on(uport) : geni_serial_resourc=
-es_off(uport);
-> -}
-> -
-> -static int geni_serial_pwr_init(struct uart_port *uport)
-> -{
-> -	struct qcom_geni_serial_port *port =3D to_dev_port(uport);
-> -	int ret;
-> -
-> -	ret =3D dev_pm_domain_attach_list(port->se.dev,
-> -					&port->dev_data->pd_data, &port->pd_list);
-> -	if (ret <=3D 0)
-> -		return -EINVAL;
-> -
-> -	return 0;
-> -}
-> -
-> -static int geni_serial_resource_init(struct uart_port *uport)
-> -{
-> -	struct qcom_geni_serial_port *port =3D to_dev_port(uport);
->  	int ret;
-> =20
->  	port->se.clk =3D devm_clk_get(port->se.dev, "se");
-> @@ -1707,10 +1644,10 @@ static void qcom_geni_serial_pm(struct uart_port =
-*uport,
->  		old_state =3D UART_PM_STATE_OFF;
-> =20
->  	if (new_state =3D=3D UART_PM_STATE_ON && old_state =3D=3D UART_PM_STATE=
-_OFF)
-> -		pm_runtime_resume_and_get(uport->dev);
-> +		geni_serial_resources_on(uport);
->  	else if (new_state =3D=3D UART_PM_STATE_OFF &&
->  		 old_state =3D=3D UART_PM_STATE_ON)
-> -		pm_runtime_put_sync(uport->dev);
-> +		geni_serial_resources_off(uport);
-> =20
->  }
-> =20
-> @@ -1813,16 +1750,13 @@ static int qcom_geni_serial_probe(struct platform=
-_device *pdev)
->  	port->se.dev =3D &pdev->dev;
->  	port->se.wrapper =3D dev_get_drvdata(pdev->dev.parent);
-> =20
-> -	ret =3D port->dev_data->resources_init(uport);
-> +	ret =3D geni_serial_resource_init(port);
->  	if (ret)
->  		return ret;
-> =20
->  	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	if (!res) {
-> -		ret =3D -EINVAL;
-> -		goto error;
-> -	}
-> -
-> +	if (!res)
-> +		return -EINVAL;
->  	uport->mapbase =3D res->start;
-> =20
->  	uport->rs485_config =3D qcom_geni_rs485_config;
-> @@ -1834,26 +1768,19 @@ static int qcom_geni_serial_probe(struct platform=
-_device *pdev)
->  	if (!data->console) {
->  		port->rx_buf =3D devm_kzalloc(uport->dev,
->  					    DMA_RX_BUF_SIZE, GFP_KERNEL);
-> -		if (!port->rx_buf) {
-> -			ret =3D -ENOMEM;
-> -			goto error;
-> -		}
-> +		if (!port->rx_buf)
-> +			return -ENOMEM;
->  	}
-> =20
->  	port->name =3D devm_kasprintf(uport->dev, GFP_KERNEL,
->  			"qcom_geni_serial_%s%d",
->  			uart_console(uport) ? "console" : "uart", uport->line);
-> -	if (!port->name) {
-> -		ret =3D -ENOMEM;
-> -		goto error;
-> -	}
-> +	if (!port->name)
-> +		return -ENOMEM;
-> =20
->  	irq =3D platform_get_irq(pdev, 0);
-> -	if (irq < 0) {
-> -		ret =3D irq;
-> -		goto error;
-> -	}
-> -
-> +	if (irq < 0)
-> +		return irq;
->  	uport->irq =3D irq;
->  	uport->has_sysrq =3D IS_ENABLED(CONFIG_SERIAL_QCOM_GENI_CONSOLE);
-> =20
-> @@ -1875,18 +1802,16 @@ static int qcom_geni_serial_probe(struct platform=
-_device *pdev)
->  			IRQF_TRIGGER_HIGH, port->name, uport);
->  	if (ret) {
->  		dev_err(uport->dev, "Failed to get IRQ ret %d\n", ret);
-> -		goto error;
-> +		return ret;
->  	}
-> =20
->  	ret =3D uart_get_rs485_mode(uport);
->  	if (ret)
->  		return ret;
-> =20
-> -	devm_pm_runtime_enable(port->se.dev);
-> -
->  	ret =3D uart_add_one_port(drv, uport);
->  	if (ret)
-> -		goto error;
-> +		return ret;
-> =20
->  	if (port->wakeup_irq > 0) {
->  		device_init_wakeup(&pdev->dev, true);
-> @@ -1896,15 +1821,11 @@ static int qcom_geni_serial_probe(struct platform=
-_device *pdev)
->  			device_init_wakeup(&pdev->dev, false);
->  			ida_free(&port_ida, uport->line);
->  			uart_remove_one_port(drv, uport);
-> -			goto error;
-> +			return ret;
->  		}
->  	}
-> =20
->  	return 0;
-> -
-> -error:
-> -	dev_pm_domain_detach_list(port->pd_list);
-> -	return ret;
->  }
-> =20
->  static void qcom_geni_serial_remove(struct platform_device *pdev)
-> @@ -1917,31 +1838,6 @@ static void qcom_geni_serial_remove(struct platfor=
-m_device *pdev)
->  	device_init_wakeup(&pdev->dev, false);
->  	ida_free(&port_ida, uport->line);
->  	uart_remove_one_port(drv, &port->uport);
-> -	dev_pm_domain_detach_list(port->pd_list);
-> -}
-> -
-> -static int __maybe_unused qcom_geni_serial_runtime_suspend(struct device=
- *dev)
-> -{
-> -	struct qcom_geni_serial_port *port =3D dev_get_drvdata(dev);
-> -	struct uart_port *uport =3D &port->uport;
-> -	int ret =3D 0;
-> -
-> -	if (port->dev_data->power_state)
-> -		ret =3D port->dev_data->power_state(uport, false);
-> -
-> -	return ret;
-> -}
-> -
-> -static int __maybe_unused qcom_geni_serial_runtime_resume(struct device =
-*dev)
-> -{
-> -	struct qcom_geni_serial_port *port =3D dev_get_drvdata(dev);
-> -	struct uart_port *uport =3D &port->uport;
-> -	int ret =3D 0;
-> -
-> -	if (port->dev_data->power_state)
-> -		ret =3D port->dev_data->power_state(uport, true);
-> -
-> -	return ret;
->  }
-> =20
->  static int qcom_geni_serial_suspend(struct device *dev)
-> @@ -1979,46 +1875,14 @@ static int qcom_geni_serial_resume(struct device =
-*dev)
->  static const struct qcom_geni_device_data qcom_geni_console_data =3D {
->  	.console =3D true,
->  	.mode =3D GENI_SE_FIFO,
-> -	.resources_init =3D geni_serial_resource_init,
-> -	.set_rate =3D geni_serial_set_rate,
-> -	.power_state =3D geni_serial_resource_state,
->  };
-> =20
->  static const struct qcom_geni_device_data qcom_geni_uart_data =3D {
->  	.console =3D false,
->  	.mode =3D GENI_SE_DMA,
-> -	.resources_init =3D geni_serial_resource_init,
-> -	.set_rate =3D geni_serial_set_rate,
-> -	.power_state =3D geni_serial_resource_state,
-> -};
-> -
-> -static const struct qcom_geni_device_data sa8255p_qcom_geni_console_data=
- =3D {
-> -	.console =3D true,
-> -	.mode =3D GENI_SE_FIFO,
-> -	.pd_data =3D {
-> -		.pd_flags =3D PD_FLAG_DEV_LINK_ON,
-> -		.pd_names =3D (const char*[]) { "power", "perf" },
-> -		.num_pd_names =3D 2,
-> -	},
-> -	.resources_init =3D geni_serial_pwr_init,
-> -	.set_rate =3D geni_serial_set_level,
-> -};
-> -
-> -static const struct qcom_geni_device_data sa8255p_qcom_geni_uart_data =
-=3D {
-> -	.console =3D false,
-> -	.mode =3D GENI_SE_DMA,
-> -	.pd_data =3D {
-> -		.pd_flags =3D PD_FLAG_DEV_LINK_ON,
-> -		.pd_names =3D (const char*[]) { "power", "perf" },
-> -		.num_pd_names =3D 2,
-> -	},
-> -	.resources_init =3D geni_serial_pwr_init,
-> -	.set_rate =3D geni_serial_set_level,
->  };
-> =20
->  static const struct dev_pm_ops qcom_geni_serial_pm_ops =3D {
-> -	SET_RUNTIME_PM_OPS(qcom_geni_serial_runtime_suspend,
-> -			   qcom_geni_serial_runtime_resume, NULL)
->  	SYSTEM_SLEEP_PM_OPS(qcom_geni_serial_suspend, qcom_geni_serial_resume)
->  };
-> =20
-> @@ -2027,18 +1891,10 @@ static const struct of_device_id qcom_geni_serial=
-_match_table[] =3D {
->  		.compatible =3D "qcom,geni-debug-uart",
->  		.data =3D &qcom_geni_console_data,
->  	},
-> -	{
-> -		.compatible =3D "qcom,sa8255p-geni-debug-uart",
-> -		.data =3D &sa8255p_qcom_geni_console_data,
-> -	},
->  	{
->  		.compatible =3D "qcom,geni-uart",
->  		.data =3D &qcom_geni_uart_data,
->  	},
-> -	{
-> -		.compatible =3D "qcom,sa8255p-geni-uart",
-> -		.data =3D &sa8255p_qcom_geni_uart_data,
-> -	},
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, qcom_geni_serial_match_table);
+@@ -168,6 +169,7 @@ allOf:
+         compatible:
+           contains:
+             enum:
++              - axis,artpec9-uart
+               - google,gs101-uart
+               - samsung,exynos8895-uart
+     then:
+--
+2.17.1
 
