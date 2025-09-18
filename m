@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70FF262FD8;
-	Wed, 17 Sep 2025 23:58:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BA3610E9;
+	Thu, 18 Sep 2025 00:14:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758153540; cv=none; b=r+KBLh0qw4QSc3Nla7LTq+Wa5fhI8Ai7tH+2p2pBF+ezFuZG57OWfZih53p5qL19yazzDQoJa0gK0V3PfsyDagxTkxSR04T1knSoCUraQmLBleGwgaabXG8a3+a3uwy09vi9CnofQ537VJyc2UJ26+4OceXzgvYSE+jhDk5JwRk=
+	t=1758154440; cv=none; b=jDXCGYq/EWyXwmwHUfcSEWwPb7qTU+gx/uZHV23AS8ynb0vVDssMx7ACNw+UIS5H2JTnotrKJqVZN/NN39a0+UZV54W8k+z/mDPXiLkzPI3g9NhAvFPPeG+uqK0T0HbH0v6Wipk46Mi3CyPkDM2y7cux7vjhAscJNkqNSqp7jNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758153540; c=relaxed/simple;
-	bh=yUnTqNSlOTSApytbl115zDhyJMMhucx8J4LyCp1ebPQ=;
+	s=arc-20240116; t=1758154440; c=relaxed/simple;
+	bh=hTr6J9VDHbXPhtYR1LDytW4f3i4cGpxo4JbO2JkTn5A=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=O45zDssMNt0pzyVscMI8F/A2aXDxv4C+9bry7+LPUUpkFsIQyabV0Z4d7cRXA5pxHNZTsZybqhIQsD6bl3nHqnBJSHwMf0QuKm2RYW0Ht5NJlySMhx3+pIPLs4UKbxpYdRoVPFovRMsJnAIpaeh1aUnZ0C4QQZfHK4MfDUTKCDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lsDfVDDo; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=OsoCBtdc1iRxv8pX1FYrZzPIjqTcBSC58WH/hM54BPvvJP0C58+rq6KvUCrIK8g624vHRArQiU4GZhWnFRvyWg0Ru0gYQBdBzBwH8XPhJT7c8wXZqwwc3a0E03L8W8+utX7C8Y6AvhTCT5rq14YQtITSDH6fbfQsfpFmNj9Fl1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nSfvdykW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lsDfVDDo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 419E6C4CEE7;
-	Wed, 17 Sep 2025 23:58:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nSfvdykW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFBFFC4CEE7;
+	Thu, 18 Sep 2025 00:13:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758153539;
-	bh=yUnTqNSlOTSApytbl115zDhyJMMhucx8J4LyCp1ebPQ=;
+	s=k20201202; t=1758154440;
+	bh=hTr6J9VDHbXPhtYR1LDytW4f3i4cGpxo4JbO2JkTn5A=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=lsDfVDDohhE1YamjhG8WVFvAN/xlZoIAUJs2qHS5p/o/5ztd0TJqEdkrHBI2BlFqS
-	 MYhD04VeqlX6rFzIfEcs1Qqnl3NUxFfCBhPymNr2PMTwiqRpapXPqgkpfWNbtGvvCf
-	 343GelpotnOIVTrU4LWfmGDf4hKVZG+lMIWCbj5/pLHlkiHDEsrCdsVkRyXhKYQAId
-	 uypx8lPVgiexmDH8W83NIBVao/EiOQRN8g2nG3NzS+oxTQBCSig2J8furg6GedywC9
-	 HVfrweTWfbBushGT/RwaAmxr4pv1qic7pgKi4axHwM412L36jld5ltEwnsTcUtGmc2
-	 0d4x61Eb7mN1g==
-Message-ID: <dab18f70-4017-4c06-92c1-91cfd2229540@kernel.org>
-Date: Thu, 18 Sep 2025 08:58:54 +0900
+	b=nSfvdykW/QAagDbiqu+Jm+EIagRmz+5tOLyORVZH/4cVIex98I1WhXOaP/q4VuJZB
+	 /gZkXEjrouGFqrikMU81RrLmZq17xAameEOH50leGJ2SFEtnjzHA+puOG6oH65tg61
+	 EnhuBYIuNbuU4C8yXQNI+lsiKW6zgVwed8PWszlAq/HsYRI+k+byUAWSRRAwsb0Zw/
+	 Jm1jGaPesKjTF5dZweeMHoq73JFwmtxcBpYkbcYv8Ah/VRYPVIYIUW1HHIoOnmj3py
+	 jcZyZosunQ4HWZJpO8VD7aBELWXoh4UJc8GK8FWVR89UEAy9B6XjEQomY54yfHB0Ma
+	 Vs27wqAwxSxEg==
+Message-ID: <69ac620e-9f2c-4e46-ac93-59fc1b9829ba@kernel.org>
+Date: Thu, 18 Sep 2025 09:13:56 +0900
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,20 +35,20 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] serial: qcom_geni: Fix pinctrl deadlock on runtime
- resume
-To: Praveen Talari <praveen.talari@oss.qualcomm.com>,
+Subject: Re: [PATCH v3 5/7] dt-bindings: serial: samsung: Add Exynos990 UART
+ compatible
+To: Denzeel Oliva <wachiturroxd150@gmail.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+ Sam Protsenko <semen.protsenko@linaro.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Jiri Slaby <jirislaby@kernel.org>,
- Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
- Praveen Talari <quic_ptalari@quicinc.com>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- alexey.klimov@linaro.org, jorge.ramirez@oss.qualcomm.com,
- dmitry.baryshkov@oss.qualcomm.com, andersson@kernel.org
-Cc: psodagud@quicinc.com, djaggi@quicinc.com, quic_msavaliy@quicinc.com,
- quic_vtanuku@quicinc.com, quic_arandive@quicinc.com,
- quic_shazhuss@quicinc.com, quic_cchiluve@quicinc.com
-References: <20250917185102.3763398-1-praveen.talari@oss.qualcomm.com>
+ Jiri Slaby <jirislaby@kernel.org>, Andi Shyti <andi.shyti@kernel.org>
+Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-serial@vger.kernel.org, linux-i2c@vger.kernel.org,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+References: <20250917-perics-add-usinodes-v3-0-a3629e4666ef@gmail.com>
+ <20250917-perics-add-usinodes-v3-5-a3629e4666ef@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -94,53 +94,19 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20250917185102.3763398-1-praveen.talari@oss.qualcomm.com>
+In-Reply-To: <20250917-perics-add-usinodes-v3-5-a3629e4666ef@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 18/09/2025 03:51, Praveen Talari wrote:
-> A stall was observed in disable_irq() during
-> pinctrl_pm_select_default_state(), triggered by wakeup IRQ being active
-> while the UART port was not yet active. This led to a hang in
-> __synchronize_irq(), as shown in the following trace:
+On 18/09/2025 06:04, Denzeel Oliva wrote:
+> Add samsung,exynos990-uart compatible string to the Samsung UART bindings.
 > 
-> Call trace:
->     __switch_to+0xe0/0x120
->     __schedule+0x39c/0x978
->     schedule+0x5c/0xf8
->     __synchronize_irq+0x88/0xb4
->     disable_irq+0x3c/0x4c
->     msm_pinmux_set_mux+0x508/0x644
->     pinmux_enable_setting+0x190/0x2dc
->     pinctrl_commit_state+0x13c/0x208
->     pinctrl_pm_select_default_state+0x4c/0xa4
->     geni_se_resources_on+0xe8/0x154
->     qcom_geni_serial_runtime_resume+0x4c/0x88
->     pm_generic_runtime_resume+0x2c/0x44
->     __genpd_runtime_resume+0x30/0x80
->     genpd_runtime_resume+0x114/0x29c
->     __rpm_callback+0x48/0x1d8
->     rpm_callback+0x6c/0x78
->     rpm_resume+0x530/0x750
->     __pm_runtime_resume+0x50/0x94
->     handle_threaded_wake_irq+0x30/0x94
->     irq_thread_fn+0x2c/0xa8
->     irq_thread+0x160/0x248
->     kthread+0x110/0x114
->     ret_from_fork+0x10/0x20
-> 
-> To fix this, wakeup IRQ setup is moved from probe to UART startup,
-> ensuring it is only configured when the port is active. Correspondingly,
-> the wakeup IRQ is cleared during shutdown. This avoids premature IRQ
-> disable during pinctrl setup and prevents the observed stall. The probe
-> and remove pathsare simplified by removing redundant wakeup IRQ handling.
-> 
-> Fixes: 1afa70632c39 ("serial: qcom-geni: Enable PM runtime for serial driver")
-> Reported-by: Alexey Klimov <alexey.klimov@linaro.org>
-> Closes: https://lore.kernel.org/all/DC0D53ZTNOBU.E8LSD5E5Z8TX@linaro.org/
-> Tested-by: Jorge Ramirez <jorge.ramirez@oss.qualcomm.com>
+> Signed-off-by: Denzeel Oliva <wachiturroxd150@gmail.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 1 +
 
-Where did you receive this tag for this patch exactly?
+This should not be part of this patchset.
 
 Best regards,
 Krzysztof
