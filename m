@@ -1,67 +1,102 @@
-Received: from cdmsr1.hinet.net (210-65-1-144.hinet-ip.hinet.net [210.65.1.144])
+Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C033D239E60
-	for <linux-serial@vger.kernel.org>; Thu, 18 Sep 2025 02:45:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.65.1.144
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B448D23AB87
+	for <linux-serial@vger.kernel.org>; Thu, 18 Sep 2025 03:27:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.254.224.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758163514; cv=none; b=m44AO4A3ZoC4W1/04LsoBvYpENPDnqYuIEiZ0Z6DhzwFFkRcgS43s+6HiR9ETakLLGv32Sev0XNk+blPr8nCdOu3Liv0o1lI9RUhgdO8+ikWqBalHk4oY9oNCCMVft7KwU8i5nJoPleOCDqShs1SPBSHb+qDkjoV1cEj1tTb0bY=
+	t=1758166043; cv=none; b=jf0bZRbydY9dK4G5mmriaulTNK0CklNuCbCDEe+ok8CLfinWTqIPQ3BbQSd4E9+7oi3XmyfklLGixtay3AjpNtNEb4krQ95KiGaWIKGPhvtkUYcBk44EyoPIGoJD93RoDyzRLoBRJny4Oo6MN1gYK+Q9iTW0iy01Bq56FcJ01WU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758163514; c=relaxed/simple;
-	bh=xvXQhPP4ZRqcCri4q8Oi/Im7WM8JfEN515pvr3WL70Y=;
-	h=From:To:Subject:Message-ID:Date:MIME-Version:Content-Type; b=Dhne0Mn72CsIVe0Am3yX+7oQ2RE2JdH4j9lRdSX4TBlXfRY4lUSqp7lGxxDwt5vcn527sp92pi1P6ZhT4SS8dFWs39t2ccrJg9k30WtXaBBjU8I4UwqR+OvGzchL9Htem255T1I4ich2tZVPgNMmG3nLKdyptEKE9rnSJJs8h8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ms29.hinet.net; spf=pass smtp.mailfrom=ms29.hinet.net; dkim=pass (1024-bit key) header.d=ms29.hinet.net header.i=@ms29.hinet.net header.b=4ZVwXpuk; arc=none smtp.client-ip=210.65.1.144
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ms29.hinet.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ms29.hinet.net
+	s=arc-20240116; t=1758166043; c=relaxed/simple;
+	bh=IWAvZc9XNOhKSbefPW6ZuZDu3C9roTl6Uw9ZX8MCcnY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
+	 References; b=rPFYdsJlYc/i16xL+zhGq5gEfwAY8nG2fFxbrb+z9E7Vuy/XNN93EHKLXalDh7y1XcyskhisqGQYGl0ApR6G9qk8NJBx24DTp44e52ynGuFtabLKS1Sw3PlAQrPuUnMHohTiPuBjpHeNJVvjgLqqfFsnLXxjVAp7tJeLa1ukvW4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=Y3yrUWal; arc=none smtp.client-ip=203.254.224.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ms29.hinet.net header.i=@ms29.hinet.net header.b="4ZVwXpuk"
-Received: from cmsr6.hinet.net ([10.199.216.85])
-	by cdmsr1.hinet.net (8.15.2/8.15.2) with ESMTPS id 58I2j8dm156368
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO)
-	for <linux-serial@vger.kernel.org>; Thu, 18 Sep 2025 10:45:10 +0800
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; d=ms29.hinet.net;
-	s=default; t=1758163510; bh=mqgWEPSv27CzYJyNQezNG+Rd4sg=;
-	h=From:To:Subject:Date;
-	b=4ZVwXpukZCMTS9wr9/Sof20zRlsye64t1IBrFlFyPUL6dkH/YHRfirwHly853Iba3
-	 Ig8J4MmM+Dfx320qU3vvu4UXlbMaz82J9IWAzqWdT73y+9Tifxq5o5XhWrQ52odsoE
-	 G6MGZ4PDNy+3BQisBptvAdAD9mWDZTknrxIcSEVk=
-Received: from [127.0.0.1] (114-27-155-219.dynamic-ip.hinet.net [114.27.155.219])
-	by cmsr6.hinet.net (8.15.2/8.15.2) with ESMTPS id 58I2cQOX715684
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO)
-	for <linux-serial@vger.kernel.org>; Thu, 18 Sep 2025 10:41:57 +0800
-From: "Info - Albinayah 639" <Linux-serial@ms29.hinet.net>
-To: linux-serial@vger.kernel.org
-Reply-To: "Info - Albinayah." <europe-sales@albinayah-group.com>
-Subject: =?UTF-8?B?TmV3IFNlcHRlbWJlciBPcmRlci4gNzMyODggVGh1cnNkYXksIFNlcHRlbWJlciAxOCwgMjAyNSBhdCAwNDo0MTo1NiBBTQ==?=
-Message-ID: <74a3bf71-8c8e-c25e-0ba1-d3bb8f5d37cf@ms29.hinet.net>
-Content-Transfer-Encoding: 7bit
-Date: Thu, 18 Sep 2025 02:41:56 +0000
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="Y3yrUWal"
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+	by mailout4.samsung.com (KnoxPortal) with ESMTP id 20250918032717epoutp048a543eb63bddb4e3d4ac7350359035c2~mQrI-RZ-G2988129881epoutp04x
+	for <linux-serial@vger.kernel.org>; Thu, 18 Sep 2025 03:27:17 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20250918032717epoutp048a543eb63bddb4e3d4ac7350359035c2~mQrI-RZ-G2988129881epoutp04x
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1758166037;
+	bh=NE3XfrRkhwEKqjy08lI0S/9Q38XrQ40aHbrikvthnuI=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=Y3yrUWal/rfn3draRh9ilZvKOqQh6Hxx/sLwKVZ/svR5bpPXrgmhbUqRnYQcm2Btz
+	 SQupOnZ8mSJiWLdhzXhZaHihhh0NoNKKsDLlmpx2YQz/oU0f+PNc+RTiBUIW/PrIOa
+	 EEoTgOl6pcgItWuAH9DGB1SNbeUBTcWCDIw3msv8=
+Received: from epsnrtp01.localdomain (unknown [182.195.42.153]) by
+	epcas5p3.samsung.com (KnoxPortal) with ESMTPS id
+	20250918032716epcas5p38f08377a24228c806b6f1569df328559~mQrILNqbe1789717897epcas5p3t;
+	Thu, 18 Sep 2025 03:27:16 +0000 (GMT)
+Received: from epcas5p3.samsung.com (unknown [182.195.38.93]) by
+	epsnrtp01.localdomain (Postfix) with ESMTP id 4cS1KJ03X9z6B9m5; Thu, 18 Sep
+	2025 03:27:16 +0000 (GMT)
+Received: from epsmtip2.samsung.com (unknown [182.195.34.31]) by
+	epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+	20250918032715epcas5p1d1144cc09fa9c301315a5e2778d8668e~mQrGiXWxN3008930089epcas5p1Z;
+	Thu, 18 Sep 2025 03:27:15 +0000 (GMT)
+Received: from cheetah.samsungds.net (unknown [107.109.115.53]) by
+	epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250918032712epsmtip2d9dccd5b8fb088ae2db9766928a16ca5~mQrDm1fkE1525515255epsmtip2V;
+	Thu, 18 Sep 2025 03:27:11 +0000 (GMT)
+From: Ravi Patel <ravi.patel@samsung.com>
+To: gregkh@linuxfoundation.org, jirislaby@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, krzk@kernel.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+	devicetree@vger.kernel.org, ksk4725@coasia.com, pjsin865@coasia.com,
+	gwk1013@coasia.com, bread@coasia.com, jspark@coasia.com,
+	limjh0823@coasia.com, lightwise@coasia.com, hgkim05@coasia.com,
+	mingyoungbo@coasia.com, smn1196@coasia.com, shradha.t@samsung.com,
+	swathi.ks@samsung.com, kenkim@coasia.com, Ravi Patel
+	<ravi.patel@samsung.com>
+Subject: [PATCH v2] dt-bindings: serial: samsung: Add compatible for
+ ARTPEC-9 SoC
+Date: Thu, 18 Sep 2025 08:57:03 +0530
+Message-ID: <20250918032703.8885-1-ravi.patel@samsung.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-X-HiNet-Brightmail: Spam
-X-CMAE-Score: 100
-X-CMAE-Analysis: v=2.4 cv=LvQxyWdc c=0 sm=1 tr=0 ts=68cb7176
-	p=OrFXhexWvejrBOeqCD4A:9 a=vpYE7vhwG9iM6f3whpTWew==:117 a=IkcTkHD0fZMA:10
-	a=5KLPUuaC_9wA:10
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20250918032715epcas5p1d1144cc09fa9c301315a5e2778d8668e
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+cpgsPolicy: CPGSC10-541,Y
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20250918032715epcas5p1d1144cc09fa9c301315a5e2778d8668e
+References: <CGME20250918032715epcas5p1d1144cc09fa9c301315a5e2778d8668e@epcas5p1.samsung.com>
 
-Hi Linux-serial,
+Add Axis ARTPEC-9 uart compatible to the bindings documentation.
+It is similar to the older samsung,exynos8895-uart design.
 
-Please provide a quote for your products:
+Signed-off-by: Ravi Patel <ravi.patel@samsung.com>
+---
+Change in v2:
+- Removed "axis,artpec9-uart" string from allOf section
+Link to v1: https://lore.kernel.org/all/20250917071342.5637-1-ravi.patel@samsung.com/T/#u
+---
+ Documentation/devicetree/bindings/serial/samsung_uart.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Include:
-1.Pricing (per unit)
-2.Delivery cost & timeline
-3.Quote expiry date
+diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+index 1a1f991d5364..d12018aaac9b 100644
+--- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
++++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
+@@ -48,6 +48,7 @@ properties:
+           - const: samsung,exynos850-uart
+       - items:
+           - enum:
++              - axis,artpec9-uart
+               - samsung,exynos7870-uart
+           - const: samsung,exynos8895-uart
 
-Deadline: September
+--
+2.17.1
 
-Thanks!
-
-Kamal Prasad
-
-Albinayah Trading
