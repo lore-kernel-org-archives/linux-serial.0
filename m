@@ -1,44 +1,44 @@
-Received: from sender4-op-o15.zoho.com (sender4-op-o15.zoho.com [136.143.188.15])
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCB1C30101F;
-	Mon, 22 Sep 2025 12:48:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE90D302773;
+	Mon, 22 Sep 2025 12:48:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758545318; cv=pass; b=OlwcQlS/kVxkHacxI/qTwsZHvOd0TyvauR5ah/DiQcy6LN+8pcZikzoSRYJGvfYLv/TY9iW9rHGD/KzITgkoakEnp4oLoq5++ALlvCd+RoGT3uz5TF03aj4tKNaXNGZ/7/hzdrVOX4IOi94JanKi7EmZEsL+VfeGGUDaq+Bs5b0=
+	t=1758545318; cv=pass; b=eYxRaFjpKeYwjQer7cqYSlI6ePvxqK8Nvzp/X8U7ygxHVYw2TeadlHfMoKZdPr/Q8A4ZV9sW7qpCO4dczhKX7o6VjWUXA1sUmb69XEwRnNKEX9pVT0rtafWoFau+Wc/m96pYGthhxh17iBT681s5wmnGRFtdlrD8YbCySlXrG4o=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758545318; c=relaxed/simple;
-	bh=ajgpqeWH1J9OjvBk976S+Q5QHwI27D09dVg+WbxvooQ=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=n0a2ItUIG31cWMneOgw64CsBLWNY63U4h4DqDjo3RIBBZaiGPBd0/Xkp2ipaK4isOrSOcdzH9G6HNIEo3Ns9ROoEjfVlgwCqNVleDH6Q0CuI63Jp2BSDZWhsOSkPxQlRs4N/RbhlLvRGDdXmsoT8wwT6XYycwi+hJOGBxpJ/yG0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech; spf=pass smtp.mailfrom=pigmoral.tech; dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b=bxLN3kHH; arc=pass smtp.client-ip=136.143.188.15
+	bh=tuo3nrLTJo1bILOOpnJ9HgGZGKW1FMMYee3cJTCpPG4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=WQdk+F4GDRma/eZO5yqpknotdFRT/bgfswxbLe7mHilevbqIWVgOMeEA45KFi66FNf469LnYZhEO7Fdm/Q1fAuhVlM5Kl0FQZYgTGtp7/PiH/EXuN7lO2IWdr3CHL+2wnDGpF9Pm6yjME7B5LVfddWt2LpJiR3A337EkhZI8Dp0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech; spf=pass smtp.mailfrom=pigmoral.tech; dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b=IIGbbrvV; arc=pass smtp.client-ip=136.143.188.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pigmoral.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b="bxLN3kHH"
-ARC-Seal: i=1; a=rsa-sha256; t=1758545252; cv=none; 
+	dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b="IIGbbrvV"
+ARC-Seal: i=1; a=rsa-sha256; t=1758545286; cv=none; 
 	d=zohomail.com; s=zohoarc; 
-	b=FLON75iNI9JeHakiKtstQpQY0Ir6xijkmvDbc+pQKZMfTyA9jb5ryUx4wbF9gOxkhEW4ik81Bda4wp+jNwFQ+NhuomroOGnvfuadLWJDjLYIViTCw4MJaqO6+1PvNEsIiH4eXFcbGgLl+mMCnJ3qkCLxdBlRa6JxckaldS4HPL4=
+	b=BuzqTNaQxYZ6TlOOzOcEkC//mFG79IJv4l00qLdq0A+J1JEok8tE7uTkzr0csIhu2HcGbOYJkjM8PwiLE6LwKXOlutCkulUwF9D0swyl5JPcDb43AIIiG3+q2OyLMVxtTYEoXllinocrR1PCQixa1SAA3+rP5YzoQY6aGSVHPcM=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1758545252; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=QQHfWPLq9h9/26EFDezuhABuHqn17sUNy+23WQyGpPU=; 
-	b=H+RUeXyAvuzi51F/NpdpfmgLuct9VvfsjU8iwVR5n9dfR/yQJ3onNE3GNyI3+qV+8Qoxhe1mwGmUxwBrqlQnUcIOTDR2L5hdYn1cBe8w3xhPED4ogT4lPtdkulbQd49LQj2peIalt4yLo8KbHmOCDws7Ui9r5nsi+YWGXBr6QaY=
+	t=1758545286; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=RkLE6Xbyex/7wxIG3u0EMzqVpyF4BUfnfcnLXkhddrE=; 
+	b=Bq/U2sv/CiJfhioeF2Ih7IQKqExSTZ2qKHBwszTxqqyi+t9ixRHHqSQci+IYmrekhDZyOC/rf2pfDb3o0wKyE3BEMO/14ZIoIcZwo+dlmp2NmkeYVkmtVZuHRKC8EcvypZHJA8wK5VFsVzvYQaPQC+DtBljbd+urzfTobDakzpw=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
 	dkim=pass  header.i=pigmoral.tech;
 	spf=pass  smtp.mailfrom=junhui.liu@pigmoral.tech;
 	dmarc=pass header.from=<junhui.liu@pigmoral.tech>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1758545252;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1758545286;
 	s=zmail; d=pigmoral.tech; i=junhui.liu@pigmoral.tech;
-	h=From:From:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:To:To:Cc:Cc:Reply-To;
-	bh=QQHfWPLq9h9/26EFDezuhABuHqn17sUNy+23WQyGpPU=;
-	b=bxLN3kHHHM0PpnR/N/YnowWACvzX+3ZFxQwHdkbgTlvSh/D5DLMcGjmh/gA59zib
-	xF0PLnUAW7kzpyZf+Du4z1D/VuuI/X6OETsEeQSU7xvi4TD3XG0ZSfSdFLb/yjKIPbf
-	3KmDtov5L9MENQ3v6HXWcX2T7WStGiHvj7v5nz84=
-Received: by mx.zohomail.com with SMTPS id 1758545250603407.16427504257217;
-	Mon, 22 Sep 2025 05:47:30 -0700 (PDT)
+	h=From:From:Date:Date:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Message-Id:References:In-Reply-To:To:To:Cc:Cc:Reply-To;
+	bh=RkLE6Xbyex/7wxIG3u0EMzqVpyF4BUfnfcnLXkhddrE=;
+	b=IIGbbrvVUmcelxiFVOXgcZm5h7QemEOkZNgnyHp34seDNtIOyct7/e8OoQf1U9ZF
+	BO9MQ/6lnHNeKaw/UTMymKDqVFa3vT2x6+dHJDqQw11z8HUlFT8yw1KVUJY2tstCfuk
+	b95PM8sz7dtmC18qwWBnv3cPY2UwAlsGyFe8eCI8=
+Received: by mx.zohomail.com with SMTPS id 1758545284971751.4198459987019;
+	Mon, 22 Sep 2025 05:48:04 -0700 (PDT)
 From: Junhui Liu <junhui.liu@pigmoral.tech>
-Subject: [PATCH v2 00/11] riscv: Add initial support for Anlogic DR1V90
-Date: Mon, 22 Sep 2025 20:46:30 +0800
-Message-Id: <20250922-dr1v90-basic-dt-v2-0-64d28500cb37@pigmoral.tech>
+Date: Mon, 22 Sep 2025 20:46:32 +0800
+Subject: [PATCH v2 02/11] dt-bindings: riscv: Add Nuclei UX900 compatibles
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -46,12 +46,10 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIACZF0WgC/2WNQQrCMBBFr1Jm7UgSG2JceQ/pIk3HdkDbkoSgl
- NzdWNy5fA/++xtECkwRLs0GgTJHXuYK6tCAn9w8EvJQGZRQWhgpcAgyW4G9i+xxSHjSiqwj7Xx
- /hrpaA935tRdvXeWJY1rCez/I8mt/LSX/WlmiQG1a4bW01rfmuvL4XIJ7HBP5CbpSygdnsNQ6s
- gAAAA==
-X-Change-ID: 20250710-dr1v90-basic-dt-352e9ae5acb8
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250922-dr1v90-basic-dt-v2-2-64d28500cb37@pigmoral.tech>
+References: <20250922-dr1v90-basic-dt-v2-0-64d28500cb37@pigmoral.tech>
+In-Reply-To: <20250922-dr1v90-basic-dt-v2-0-64d28500cb37@pigmoral.tech>
 To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, 
  Paul Walmsley <paul.walmsley@sifive.com>, 
@@ -64,83 +62,39 @@ To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Jiri Slaby <jirislaby@kernel.org>, Junhui Liu <junhui.liu@pigmoral.tech>
 Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Palmer Dabbelt <palmer@sifive.com>, Conor Dooley <conor@kernel.org>, 
- linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1758545232; l=3345;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1758545232; l=946;
  i=junhui.liu@pigmoral.tech; s=20250910; h=from:subject:message-id;
- bh=ajgpqeWH1J9OjvBk976S+Q5QHwI27D09dVg+WbxvooQ=;
- b=BM1IXkvoJJUJQu9/EIL9IfPkPgdDl/LrRNrn7XaLuR4FQWU3nNPC6jFTkXc8wd1csYCvwteOC
- WQ7F3pEnccFDX2VF6rfBWZeZtllg70wToOUT18ZIDm6M/IcCmRpR03z
+ bh=tuo3nrLTJo1bILOOpnJ9HgGZGKW1FMMYee3cJTCpPG4=;
+ b=sE9FcF4gPZyZr2epKp7IRMNEnQqmxCRpsCf826Q0bGwlGwOTjN9mWNabl2adU0HdQSJsIkHo1
+ Ansfz6o+fYLDVEugRK3oxipsgPunQmA7N78bpTf8n7t6u6fQxWYWvqr
 X-Developer-Key: i=junhui.liu@pigmoral.tech; a=ed25519;
  pk=cgATWSU1KfGWmdwNmkPyHGnWgofhqqhE8Vts58wyxe4=
 X-ZohoMailClient: External
 
-This patch series introduces initial support for the Anlogic DR1V90 SoC
-[1] and the Milianke MLKPAI-FS01 [2] board.
+The UX900 is a RISC-V core from Nuclei, used in the Anlogic DR1V90 SoC.
+It features a 64-bit architecture and dual-issue, 9-stage pipeline, with
+lots of optional extensions including V, K, Zc, and more.
 
-The DR1V90 is a RISC-V based FPSoC from Anlogic, featuring a Nuclei
-UX900 [3] core as its processing system (PS) and 94,464 LUTs in the
-programmable logic (PL) part. The Milianke MLKPAI-FS01 board is one of
-the first platforms based on this SoC, with UART1 routed to a Type-C
-interface for console access.
-
-Tested on the Milianke MLKPAI-FS01 board with both the vendor's OpenSBI
-and the not-yet-upstreamed mainline OpenSBI [4], as well as the vendor’s
-U-Boot. Because the vendor’s OpenSBI is loaded at 0x1f300000, we have
-to additionally reserve the DRAM region 0x1fe00000–0x1fffffff to prevent
-overlap if using vendor's OpenSBI.
-
-Notice: A "no4lvl" bootarg or dependency patch [5] is currently required
-for successful boot on the DR1V90 platform, since the SoC hangs if the
-kernel attempts to use unsupported 4-level or 5-level paging modes.
-
-Link: https://www.anlogic.com/product/fpga/saldragon/dr1 [1]
-Link: https://www.milianke.com/product-item-104.html [2]
-Link: https://nucleisys.com/product/900.php [3]
-Link: https://github.com/pigmoral/opensbi/tree/dr1v90 [4]
-Link: https://lore.kernel.org/linux-riscv/20250722-satp-from-fdt-v1-0-5ba22218fa5f@pigmoral.tech [5]
+Signed-off-by: Junhui Liu <junhui.liu@pigmoral.tech>
 ---
-Changes in v2:
-- Add MAINTAINERS entry for the DR1V90 platform
-- Remove the riscv,isa property of cpu and reorder propertyies
-- Fix clint base address in the dtsi
-- Change the memory node to cover the full 512MB RAM in board dts
-- Link to v1: https://lore.kernel.org/r/20250721-dr1v90-basic-dt-v1-0-5740c5199c47@pigmoral.tech
+ Documentation/devicetree/bindings/riscv/cpus.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
----
-Junhui Liu (11):
-      dt-bindings: vendor-prefixes: Add Anlogic, Milianke and Nuclei
-      dt-bindings: riscv: Add Nuclei UX900 compatibles
-      dt-bindings: riscv: Add Anlogic DR1V90
-      dt-bindings: timer: Add Anlogic DR1V90 CLINT
-      dt-bindings: interrupt-controller: Add Anlogic DR1V90 PLIC
-      dt-bindings: serial: snps-dw-apb-uart: Add Anlogic DR1V90 uart
-      riscv: Add Anlogic SoC famly Kconfig support
-      riscv: dts: Add initial Anlogic DR1V90 SoC device tree
-      riscv: dts: anlogic: Add Milianke MLKPAI FS01 board
-      riscv: defconfig: Enable Anlogic SoC
-      MAINTAINERS: Setup support for Anlogic DR1V90 SoC tree
+diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+index 1a0cf0702a45d2df38c48f50d66b3d2ac3715da5..cd3299490380696fff54a41355c6ecbc75316047 100644
+--- a/Documentation/devicetree/bindings/riscv/cpus.yaml
++++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+@@ -48,6 +48,7 @@ properties:
+               - amd,mbv64
+               - andestech,ax45mp
+               - canaan,k210
++              - nuclei,ux900
+               - sifive,bullet0
+               - sifive,e5
+               - sifive,e7
 
- .../interrupt-controller/sifive,plic-1.0.0.yaml    |  1 +
- .../devicetree/bindings/riscv/anlogic.yaml         | 27 +++++++
- Documentation/devicetree/bindings/riscv/cpus.yaml  |  1 +
- .../bindings/serial/snps-dw-apb-uart.yaml          |  1 +
- .../devicetree/bindings/timer/sifive,clint.yaml    |  1 +
- .../devicetree/bindings/vendor-prefixes.yaml       |  6 ++
- MAINTAINERS                                        |  9 +++
- arch/riscv/Kconfig.socs                            |  5 ++
- arch/riscv/boot/dts/Makefile                       |  1 +
- arch/riscv/boot/dts/anlogic/Makefile               |  2 +
- arch/riscv/boot/dts/anlogic/dr1v90-mlkpai-fs01.dts | 28 +++++++
- arch/riscv/boot/dts/anlogic/dr1v90.dtsi            | 85 ++++++++++++++++++++++
- arch/riscv/configs/defconfig                       |  1 +
- 13 files changed, 168 insertions(+)
----
-base-commit: 07e27ad16399afcd693be20211b0dfae63e0615f
-change-id: 20250710-dr1v90-basic-dt-352e9ae5acb8
-
-Best regards,
 -- 
-Junhui Liu <junhui.liu@pigmoral.tech>
+2.51.0
 
