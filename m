@@ -1,197 +1,230 @@
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010047.outbound.protection.outlook.com [52.101.84.47])
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013071.outbound.protection.outlook.com [52.101.72.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A14692E92BC;
-	Tue, 23 Sep 2025 07:20:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 828665789D;
+	Tue, 23 Sep 2025 07:36:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.71
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758612031; cv=fail; b=cW3GCLcGw1LalgWvg8R8DKZOQwLXoF+09GDjyhiUeBFGKOAgetV3rddmaOufy4TvRz7OU0PxQ/huvQiDjTz2tVWDptZnLFGfAxbBoKelkpuhKW0qVqJt8L+WogHFCEeryAe67H2OvvSpl1QlCv8wDkP+JkJavW4y1ZXntoiBJ3U=
+	t=1758613015; cv=fail; b=PVigEqttOaJl5iwkbWP1zXaBrJkf3yE4j7fhHXFgKnnpcC0Vq5ha6qvxWKlGpgDVe887RyOabY8Q1VWQ7CRFQsdL541YvwHpwbZ5IbzBsqvHY1wKOKPO0bRnBUwsuNGYtbOf/mSHbse/zSu8WJMVhzJGK24jlx6TuXBapoUgii8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758612031; c=relaxed/simple;
-	bh=cefE388Ib2GapiblMktX5NMFxyZKkzPwAdAaPAuGSYQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=AKEhDm/UlotrJr7dj26xYabNzKfNTlP4X9ux+qTss13MfgOF2R8b9TRqrYIdbWhs9CaYGG6IODT/adUc2uMJm8Pzz8lFiVv3PVgR7Z+tiUZ9b9zwbJpWfYe7kR9dEXKkv2tVleTWv/mIBM3+HbAx+bfMeHP/LpABAJkuiojlgnc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=Hu9hy9nU; arc=fail smtp.client-ip=52.101.84.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	s=arc-20240116; t=1758613015; c=relaxed/simple;
+	bh=1dsDPFfhLfTYjWCwy0BmKSfW2CRPkS+yZPJsst4OShw=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=BvZ/H8IB7YzjhWx3f3Q2Yrr/33TcbWfWYonArjoTeF4NxxFcLh7SVzJ8oGxqhtAxtVgAPAIRJ2yR1+CSleWg97U+TQFWBMVJ4pq9seRQCRwmEhDgDyR+uteI3+RaqCGmLjZA+XiT+TErDd+ffABvhKo2wcS3Ep7ssy651Yj07Wo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=kBkVsji0; arc=fail smtp.client-ip=52.101.72.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="Hu9hy9nU"
+	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="kBkVsji0"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TOnYaRv2pgcwmjni7yztU8aexXHbiX+iJtw50RCyu7gjb6js7cO2hDQU3/J7m34zaNiybJcpHzvYwU829hHlm60uc/j5DDkQhQw+gkAW+0u8ApeJO7cw94OaVfdPccPUpRIvjEndOPWEWGratDqOS5EfhKrNvuusciOWRHPS99KQfsN5Nlc7RHUwGZwEY7vBPMgYvtIpSvSZJgE/YQcq7iyiHItoCqpcrNmjbcluVyBPmuojWD1ynRvtm46YgEs7PXbQTYGqOusMMCYA2qePPM2A5B4WFXoHdYldgJN3hZqelpJbzWILKSX6TOOUp7jpNuHUzFAgtMyyqX/mPTAlSg==
+ b=uXD47OzXyUOWkiG/N8hH8OxulmaLPJgjT9oAw8F1Rx7afCJmy2cgsv/lF2kVLUOXnQr3Iz770ws+Fyduh5HiwjoMZmkc4ovac/D6kTueKjP7r1s09B6mDGS9YMgQXYuUZd5pOYBridyUixDW8xvogNBwHjpJ5H/SkOKEqLEtieixmVxcriMEBqm5dJ30Wnqys3bWAH3zx2ietZmEzVKMc+nOYI6pCAnBpLWgzaKSWFUAkTSnvubQ41rhY2PI9XNLRXO4uj1BU1TaE1LGkB3zJf4DVHJiC7UiveMOkOT00n15KQO8dICKXseWtmaa784lEWRENQ2vHQXC2gfrdehEZA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o1dOV3BJtuqz0XGGP99gOsJBQN1wtSL3KnW0fycszSA=;
- b=lGdkb45qfWPdi8R/FAZ32y0liNWGl1GpFiSIq0M6ZxhhWkt0877NCff4iJ/q7vtlkMD8v63C4e8D1UQ9c9cgjX+WbnC3vrCtV5d0DPhQH0JkRQc1ThxnAZv2lJOx1/Y0OXnRj3PRZqug4X5vxuwdeddan6J4mwQMZ3qYVSyKZqe2hL86VexBsIcqfpMEdcRaVW+C56uFgftWvtn0z03es5RMlT3ObonBYZkoFVwzCcuEwnCfg2AmHbArATq6TiHPOAdDt7qm8SC09cJbbBxTD46KpB7f5tOUPhorFRYHW9ZubGhC/tVoc5ch7xMCK9M1QAdLm6sU+bn/PQWNMtcafg==
+ bh=iOfQioJpEmdR2bDy328aGpzZPjyObrBar/IEDhH+cG0=;
+ b=NRZQoz92OdWmZMCcWdNx5DsfKqVG0ijEAMCXnUL8rmUhfex4t5K0gPidBXRh9/8AhBCaz7evXx5eXPHf5lf9nmWjGRoH5OCxbnQQ0iSPF41Q5ouhk6L9Y/8UfJmwiw1wI9STw/q6+GxWAECaPYQ3jCfC1Sgd10RSupmF1Scs+Op/00WC8OJMvqjN/9mbhpJcXQ5R81tKpM4L/hL6/Ggj+oi6ZfYYv1pJBM4lMeGYo34PPhKrrRi+PNLc4Opbc/gv1UcXEWrXBRE/bJDwnpttvJ6xhCfdiDJ9Z5XiPhuTJ5JT2gx8dVrNfREo7gKbXHVCQnGBRfTiOEdanvUDy25+4Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o1dOV3BJtuqz0XGGP99gOsJBQN1wtSL3KnW0fycszSA=;
- b=Hu9hy9nUSJn4NCPPzlxm/Jl13gUjcys2BJiqxe4U5trDntv31/JeHtlWkSzSbYiRDpuJ7kpBfjSzYmazaVuHERYKQi4Rkm/7j/oWaHLkk0yFRJJZxT4Cwp7iEc/2eA3QDq33dy2ScHYGUl++YLmadwE7eH62F8RRsViCdv00zfNqx1nRsOi0e3iBrdImd+E79uZ6CyyM9HyTHzra7QxYgFKuRWse13gxG0rA2unPXm+NEDxzNk9K0yoy5q1qrGhO65ltNikNH3XeW5G1GK3VgGVpHrS7PoMZz+nYsh0x+xR60+4ACfyHImj9AmuWM+BuAT1FTHccf3/mrCq8+5H7Cw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from PAXPR04MB8459.eurprd04.prod.outlook.com (2603:10a6:102:1da::15)
- by GV1PR04MB10427.eurprd04.prod.outlook.com (2603:10a6:150:1d1::22) with
+ bh=iOfQioJpEmdR2bDy328aGpzZPjyObrBar/IEDhH+cG0=;
+ b=kBkVsji0wB6VWqvyC5cd1Xacjb1/jDmZDncYAZPQX7Jbwa/2VWG3hfMxbd4iiAUPvRP+ZQxxQc4KZJWoLXwzNLfeYTnKPk9Cygfl+NqSmUwSUscPHQcKjTwcdqKt0GMlhOWYsp/wXBPbJcqv83Xy2nJOpnELfrAREFkEPXMLGvzBvoXoQYQG6qgnRRg236EIoBcqWhUXTxSZ/diGhyFqfRzdJ+pNZvkiJwZRgb8lLkahnfTbptOHxVUf51A61JptP2QANwkuP3d5CDc5vb4JnXX49PYBNWI8TegD6Bz90qTC+wwpYKdhG260dNQyL8XXVPuMALU/w3sVLuJNSbZeiw==
+Received: from PAXPR04MB8425.eurprd04.prod.outlook.com (2603:10a6:102:1c7::16)
+ by VI1PR04MB9812.eurprd04.prod.outlook.com (2603:10a6:800:1d2::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.9; Tue, 23 Sep
- 2025 07:20:23 +0000
-Received: from PAXPR04MB8459.eurprd04.prod.outlook.com
- ([fe80::165a:30a2:5835:9630]) by PAXPR04MB8459.eurprd04.prod.outlook.com
- ([fe80::165a:30a2:5835:9630%4]) with mapi id 15.20.9160.008; Tue, 23 Sep 2025
- 07:20:22 +0000
-Date: Tue, 23 Sep 2025 16:32:08 +0800
-From: Peng Fan <peng.fan@oss.nxp.com>
-To: Sherry Sun <sherry.sun@nxp.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, shawnguo@kernel.org,
-	s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-	shenwei.wang@nxp.com, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, imx@lists.linux.dev
-Subject: Re: [PATCH 1/2] tty: serial: imx: Only configure the wake register
+ 2025 07:36:49 +0000
+Received: from PAXPR04MB8425.eurprd04.prod.outlook.com
+ ([fe80::9f19:be05:a9e5:2592]) by PAXPR04MB8425.eurprd04.prod.outlook.com
+ ([fe80::9f19:be05:a9e5:2592%2]) with mapi id 15.20.9160.008; Tue, 23 Sep 2025
+ 07:36:49 +0000
+From: Sherry Sun <sherry.sun@nxp.com>
+To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+CC: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"jirislaby@kernel.org" <jirislaby@kernel.org>, "shawnguo@kernel.org"
+	<shawnguo@kernel.org>, "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+	"kernel@pengutronix.de" <kernel@pengutronix.de>, "festevam@gmail.com"
+	<festevam@gmail.com>, Shenwei Wang <shenwei.wang@nxp.com>,
+	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"imx@lists.linux.dev" <imx@lists.linux.dev>
+Subject: RE: [PATCH 1/2] tty: serial: imx: Only configure the wake register
  when device is set as wakeup source
-Message-ID: <20250923083208.GC31170@nxa18884-linux.ap.freescale.net>
+Thread-Topic: [PATCH 1/2] tty: serial: imx: Only configure the wake register
+ when device is set as wakeup source
+Thread-Index: AQHcLDibSr00yq5joEqVcU4Sp+w68LSgcKcA///v6rA=
+Date: Tue, 23 Sep 2025 07:36:49 +0000
+Message-ID:
+ <PAXPR04MB84253F2ECB04AA3B799D2CC4921DA@PAXPR04MB8425.eurprd04.prod.outlook.com>
 References: <20250923031613.2448073-1-sherry.sun@nxp.com>
  <20250923031613.2448073-2-sherry.sun@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250923031613.2448073-2-sherry.sun@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: SI2PR02CA0050.apcprd02.prod.outlook.com
- (2603:1096:4:196::11) To PAXPR04MB8459.eurprd04.prod.outlook.com
- (2603:10a6:102:1da::15)
+ <20250923083208.GC31170@nxa18884-linux.ap.freescale.net>
+In-Reply-To: <20250923083208.GC31170@nxa18884-linux.ap.freescale.net>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PAXPR04MB8425:EE_|VI1PR04MB9812:EE_
+x-ms-office365-filtering-correlation-id: a67bcad9-09b9-48e6-25ad-08ddfa73f50e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|366016|1800799024|19092799006|376014|7053199007|38070700021;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?258lW9iajNnvZ/JbN0Db0s8qycNNykJjZqCPZGeWFXs2AK4/RueUFd8pw/JE?=
+ =?us-ascii?Q?T+ieYwkKvPP4RFxcvkKpUcftx6IkGMsPUMX8u141WDNgqzyboUN52eIqx9dF?=
+ =?us-ascii?Q?FjSGl7bIUy6nk2EVSIqwQLgDsRx05H4rHz47e4c4drvN7pwgyROrhzcOC7i0?=
+ =?us-ascii?Q?5gyqdL5dMSy+YZEt9PixQN+X88wpnVgS25s/KDa6bou9lQuNdiZ+WzTOWgkA?=
+ =?us-ascii?Q?z4djkoBYsK9v6TQvJ9p9wsjwjax6YF45Tdg2/s3nkKm0WIxRS4MnIItctiZD?=
+ =?us-ascii?Q?ououJPE0jOmOlEdZsXqm1/kmsxTocDrOujlR0FoZJc0EsQxFBNu2eW62n4D4?=
+ =?us-ascii?Q?aG9+wAB2kVQZK+kf2GtDAXNEtaMSSAoLSslYO68/bxwskluK3/ZllmpuR82f?=
+ =?us-ascii?Q?SDMAioljxg2NyeQRbLYITu52EMXQ2AgTN4vuGjFdxvhZPtwSxiHSZ3wxogV6?=
+ =?us-ascii?Q?bBvXI5C0fICnoM9u706HQbZzQUeFKZslsEIuM0SI/pChS6dW8vqMsCV4CJQk?=
+ =?us-ascii?Q?cRy/7BJUG0+tCS7yGuYaTLMBRqsAeMexLTYnowBywSlw4H8sgukyh92aBzk+?=
+ =?us-ascii?Q?O3YrhQ6HiaScHv+5UWGZAHizWKivnw4t69M8QcU6O6yTYNmfJI7850mn0J88?=
+ =?us-ascii?Q?82wJiKx2kHuWVl/bUdLUeZ6oJlLjn4MOGA0HMY5ahAggI7IAbp9i5wbvPgHj?=
+ =?us-ascii?Q?gkw4yl5UBWBid3qyVimcSEzbgZuHNsLN8QGXqrQRdyKL+ojCfnlshXuSg38P?=
+ =?us-ascii?Q?AGWxM8+uNJ3lOngXM7sKNvbQLAdemQx+A8GddTw1uLwoxhbA6YwC6/97+Cwq?=
+ =?us-ascii?Q?oLvBMKbKbVL4RSxwQio4kIsV5IpUKv/JNAzNS4+28tP1NvNRAkHHytBhNGHj?=
+ =?us-ascii?Q?r2kzZLUa+xCDBWGEEkD8ZS/UU6+5y7ok3Z0gUGyc7lAZOEUGIe4Cuhl8+G2G?=
+ =?us-ascii?Q?JLgvhv4zJhgOhtYG1ekMj1PHbj6qDgu/IEAGMDzYeuM2wdSdnJYRGXDA7kvD?=
+ =?us-ascii?Q?z0rAjY7lbYNe5WGdNALOcrF3EYleO2PxoRkUlHq8DTRN5JmXZqX+P3B7L5WG?=
+ =?us-ascii?Q?LAFVHEFpQLrDr1y0Q4nMpGuGMB2goRN7tIhcZS/bD8caS2NF9xGrAAbE6xfd?=
+ =?us-ascii?Q?GhB802f8J8MGZbetD97HOZmV6iH4mGMQP5dM1PnGX2iSc5IiVCX4iC3jR0RV?=
+ =?us-ascii?Q?bp5N/6SitHOu2xF9C7QiOA3SdlbvkpxEAAccscFANZIUvRAKILlZezrYNWK/?=
+ =?us-ascii?Q?rx68G9J1ai2y9HwUs2FZijiV6tYdr1ZD5NcPDFgvh0mkrYdffmqzJRHT9Lyu?=
+ =?us-ascii?Q?Xi5o6fc5aIjtxduy15aV7nfS6wwugOoE1YXkYuZ3XZtIUwtRsO4+J4Td7FEb?=
+ =?us-ascii?Q?2hQA8CR6GGgr+6dP8cYOTdHluN43WRzM3AS7lcnxuHStsDb3Pvx8ivNfdURl?=
+ =?us-ascii?Q?iXOz+I71ICLXdCohftbLANNt/tw6br3WEQYAGmI6/zbC/BF2VYZBNw=3D=3D?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB8425.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(19092799006)(376014)(7053199007)(38070700021);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?VZYUwwP5k+wPFhYZ8OdnvaIMFC8hDOIl6FJVQW/rM5N+py47+v8Op/i94z3S?=
+ =?us-ascii?Q?7hP7Y85RY6MzjuUwPcYL8QWXNdN34/DwQs/4Ilso2VZFupnL4Z/XI+BF1yGa?=
+ =?us-ascii?Q?FXO8AUA4zVy8D/opPNtllxRqlCT3qmW9EsxI8i4I43AzyGOI34bBzFOaKiEf?=
+ =?us-ascii?Q?VYHMyD8bqY9IuUvMIt0xOVs7bUW9tt18F3faZxiNPpRbEGAvV71v4H44s0pw?=
+ =?us-ascii?Q?d1O2fZMvDxsLmeQjailBlNJ+f286FpFXX998Issq0UsFC9V+YxAs9kiJYQW1?=
+ =?us-ascii?Q?jePoh/u34mWVBtEtE89L3VTckLwVTl1wa+3MrT4yylGjD+1fVPHeog5T1mnB?=
+ =?us-ascii?Q?yMStxf1Ca+5HG9Dj4QsPWdWG6ZK3WC/ND/WK/hb+JuJFCkJE2PI6oylhjQE0?=
+ =?us-ascii?Q?MAjf3Di+BO7wmhxy6RtVPYLALYKP4E8qIfGXJf3k5qJHn+qzTOYrzXLVZNuR?=
+ =?us-ascii?Q?pstCfVRMdIZtFxNqtQqnjirrBVmuHpaaxQilL5l8lyZF4A2bMKHszqylAVRb?=
+ =?us-ascii?Q?1vKamR8WpgH9G9YER4GEdKn2wY7d7ScY0akUCmx213O0kxMzobaHRFzZa9TP?=
+ =?us-ascii?Q?8Fz/upLeUg1usAh1KL4RjJtlEOvMwhOGPQd0IBMsVjVf+z4OB1NAN5+kEAXy?=
+ =?us-ascii?Q?IljuE9al5XRtVBYkEAwwQimj5APIw0h6qr0LRwm8LVm6hoAtzd9Sclitxlyn?=
+ =?us-ascii?Q?dQ+2+VCWGLYfsj+DOTLrlgO6k88AyhMlrKqMq7AniALs5HM4ZYGflpTQ+oGu?=
+ =?us-ascii?Q?O0OdZ4IvsTdJP+qfSsPruRttWMg3kd3ZF5tgj1Dz5t5j8Zzux61c5G4v+TNU?=
+ =?us-ascii?Q?x6q2hT64pbF9kAAMG962w7qvMWFKbnqZu4SvRcJUiMG479jtefkEmgE/nfu3?=
+ =?us-ascii?Q?Z4HT7bSDins/MFiEvqkZ+/gsnkWKKIiog0Z/8aZZVKVjyflsKoh1r7a+Hxyr?=
+ =?us-ascii?Q?qXRJ7HRoHaC10H68k77Ha6YoV7t8Vf0PcWR+TOoSW105vtWz2CIlGFiAulmV?=
+ =?us-ascii?Q?+Ik6wjto6+3dUjeF2YOVm5mUklmLn07KiJ5uHeSKb6BHZacMxk+1EQzMUlDP?=
+ =?us-ascii?Q?rpchxkHKOkn+ZvveXiElDAKLPia8dq0hn5GvXlDu1b7ILe92GN9gPfO2Lz3e?=
+ =?us-ascii?Q?uTg1CkFpaCqvBk3ku6ZrU2S3p8l5Plask9anBhuPdSjirdptzBBMlUzVwrnS?=
+ =?us-ascii?Q?wV+0bFovRf5zSlVPlrYe0YE5gx3o5pD403vWrDkCC+1vNPGxHBrqP45Epvwf?=
+ =?us-ascii?Q?fGEorY/6LQ1rVfjA6Eki3gUsYBkqcXippkpt4bYQEKj1+5KjvXngzePnLQk3?=
+ =?us-ascii?Q?DsiHKh2f1n0ffNtmWAaZw8CJmPS+7knkmzuZlTMlcWj1PpGIge8aawYBebg5?=
+ =?us-ascii?Q?8AprvZNTVooS2tONrVykjGfqc23D4Ct7WKC721IQYgokJHuCTOOLNiagAU19?=
+ =?us-ascii?Q?lIKtT+NhQR6tRyzQkB9aMNbWTYEwFXFKTEMv/hPhQNV0NiSAiiOnbhVC1xSp?=
+ =?us-ascii?Q?PuJUz6yqXQhOmOnh0s6u0nIk3BHdCekxlDIulporWw3aDB86nfCz1776SJhX?=
+ =?us-ascii?Q?42vsXFCfgaIsXJAKgDY=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAXPR04MB8459:EE_|GV1PR04MB10427:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9cf1cadb-9ea5-4d2c-c359-08ddfa71a86b
-X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|52116014|19092799006|376014|366016|1800799024|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Ny5nZE6Wcomf+6ellMIicN3STiowRRI4eXiOjBb/eDsyWMoa9ZmyP/fXeDQG?=
- =?us-ascii?Q?XY2M+Qr8pz37wivgxeTIfoKjnMON2xfMLNRoCar7b5C/V98pY9hzjIlKm1jm?=
- =?us-ascii?Q?W5G4H0vkVtPN9+BYMjQqhJ/N5gZ6nk+/LVLOITwQa4WKGbAiVCJebLvk+PH4?=
- =?us-ascii?Q?Z+wA+0V0v57Fr9ozuZsldP+Oi3tVqmfC3zLy51dfVi1frV8S9w8qAlOLlDuj?=
- =?us-ascii?Q?yHgYPcVcrDKtnCNJZE199UGY8uoEDDs2/fdaTGTSlS2PR+VZAH/6+FQjYhgN?=
- =?us-ascii?Q?SaOvgrTMGiMRDSPdKHTJCxF314aN3cNT/pHMxg4OMXxvlf5qWMhAtMNg/SfF?=
- =?us-ascii?Q?gRgMsLYtRBNhaHTWWwyWVsu1LtY7rmvomh1Cq+HacDW9VcfcBOMrP0zjI/0m?=
- =?us-ascii?Q?KRmyFFoGXNwaGKuiLj61P8NFnvgGxQ3p1fXYOFn5RXNKYdOUA8yfX59RMsI4?=
- =?us-ascii?Q?bLDf9DTmlq8a6Cm5U2vDpn9NDN/8Paj8FVP1t9jG+9SToOoqFaV8C77xAs/B?=
- =?us-ascii?Q?Jv4GfWI+M/1sNaIcTr5ajLokoO0mx4Vats4NvF0dcp7cJuD/QVZqqSXya0Ms?=
- =?us-ascii?Q?XaU4UexsWOqwiuZfwX5xGHYywVoYZCmms8EKFztHAlFZSHp2BNsWnObxYVnM?=
- =?us-ascii?Q?7S3LSrOvV6bGbztMZcXdYMZHhFVE0LHj4l2XVVhdSqWBlLF0ZN8mnGxPfC1Y?=
- =?us-ascii?Q?B95YNCmu9zIr6wIdFVpylhtnWV7QyGAp65Kt/ho1dn6g13uDm84/CBavg8Nr?=
- =?us-ascii?Q?SS9OJQjlArbpsjHDgH4R2ecG8hqY9obHXd+XH4vcbSPo8FuEqGdmSXpFU1gz?=
- =?us-ascii?Q?zyJmofNjwGG8xFVaUcCuRgta00clxgyTMo7WixK2GE5QKpzhFvy/Eb6+g044?=
- =?us-ascii?Q?FbN1ZuGlDXnUbMvbZMFIcT6v7UQr8HpF1u+2FeJK4Dly1cctIpSQXEBxI0NP?=
- =?us-ascii?Q?lv/N+TvbZ1M9jg8izUXIuzmpUnPGI+ioqD6aHRiAyuOBSfT3OdslYdKkHxPd?=
- =?us-ascii?Q?Y1ZzSeV9oVEoW1FQqjpSVohKql86WQYZNrJWa8NwcWmwbMU/rTP7cHM6UJod?=
- =?us-ascii?Q?ZzlYcwR8m0+vXx92clAenFbhx1tnopFtjwmqn6YRLSoLjdVjclpEdW8u/HUT?=
- =?us-ascii?Q?QEAXKXHU1n1oSjfcaqD4X60/kI2DhI26tRvSsUaZSnENWX+sA4zx6xoTqnxM?=
- =?us-ascii?Q?0ZxpYQNER6d52LhBVtOFVGFycJ9T87Cw1DHEj1xxR5X3Sbdo6bZRRaKWRvyP?=
- =?us-ascii?Q?iFbvpyCciWKH/TGLec75mj3fw9OJE7uQZCYyLpBqnGZRaaYFOa4YmDoZ7SCz?=
- =?us-ascii?Q?AFIdqt/xppcdHdzX6ezDu9p8+iye2iGc1lNYT7KBGgnxjroc62TH3mmJvgNu?=
- =?us-ascii?Q?wdxjz4jcAc1ogXda3jpqlmymzqW5gvsq8zh7rU9k8mWe63AaYFPOAs/sHVxJ?=
- =?us-ascii?Q?zXL28sT9t7Qzr5h6z+cnxSmCsfDFYr88P4S/z/Phqhndw0Gfh0Jn0A=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR04MB8459.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(19092799006)(376014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?WvPOfXMFDCN6eZDYiRTzumiw/SnrxmFi1hv9gKfYNNMeI0GW3wXnTQ2kBQke?=
- =?us-ascii?Q?PtuAj77oB0fl5OfS8lBedJt6c3ku25bOrN8sdVU7+Xbyz34+g0fnLNbPGGAS?=
- =?us-ascii?Q?WpbNjX23floKoZpCDXes53Ivqjrwn2n1mhwYz64Hf7d/7UFM4eJCTeKD1xr1?=
- =?us-ascii?Q?ep2bG5nhKAqViZ+8bNy5TmNhEkD0YZAoY7E+vRLvgC3aSp55lc2HQCxbLE8k?=
- =?us-ascii?Q?kelJkKN/gKpPDyrL9noltj/F3gVVexmKEixsY+rgy75Wm1uJeRbX4yTqwkqT?=
- =?us-ascii?Q?imDqX41n8CFkqq3WfnfuUNcPCyCl8IA9zalw4Qh5y1UCOqC0T97khlxAIO8I?=
- =?us-ascii?Q?S/PgDHlefYnXI82aweTAwr0mEFwjEQciGcInj3pLr346j4KPqUnw7w1QUwYw?=
- =?us-ascii?Q?B/4Mar8geaJeDtwHCufTFIZSy/VXwgx9Pmn7FF2uDh3b4vkBhyIJ68B+QtMH?=
- =?us-ascii?Q?L04hcrmEs8VbUvsfpx/WBL/c14nQiHnAU0V5PciruYCqm0/A9itupEuG0AbR?=
- =?us-ascii?Q?RtgRQI019JHd2yFaojrE1gXFNQ0+MxBkXzDvprDpLHnQeSMaS4yoGICWzySo?=
- =?us-ascii?Q?MoR78wzG1jutSKTrOhlG1ZgPcqTob3qdNLc0Ey7No8u58IrkamBPZDPXffM8?=
- =?us-ascii?Q?zn+ZkV4q4UELIcj3OS55ubaPyCO0TaWj5A1jPGFhdofxJB7ZDMDYH+W7dUP6?=
- =?us-ascii?Q?JkL2qgai+Rlrn25X/VGpaKkp85TufI0Q9IQNZeu0DI2fPQkpMdMPjLcqWANN?=
- =?us-ascii?Q?dgV25h3tRdPVEKmLro+96Qe8KVwt6KO8Yi6ik+slIys7mAIBtxljxbIAOmfw?=
- =?us-ascii?Q?89umQmkcmiuGa2HBRR+ZojW5VMheNr1h6+dQAVTpZI+//cCBrYHJRhtzxceV?=
- =?us-ascii?Q?LY6I3SP4lBYp5luYWtfNZEZ3hM1MK5v0DbjAHDzO/0CGy2WxeVnhbK+EOe0V?=
- =?us-ascii?Q?3wfzMPbsimmnIsRRLKCn0jKwlMv3dguTmppPg1fiV/fARZbr286DTwcwFxHi?=
- =?us-ascii?Q?mwE1dwC81NfJrQLHalOrtIYSh+mIAaXKJDc0CXgV1jwnaQDVHnAy5OREVpTe?=
- =?us-ascii?Q?dnvomyJJ4TWYAelxRuToKcpT98UIprN60AT6U108jOUK0A4biixSiJPml34k?=
- =?us-ascii?Q?m1wNRHcWcuOdUWZe+4+ZOkzWwHr9F2wHQchuPdQTqzQqcbXxC78inpLAjapt?=
- =?us-ascii?Q?9phFS9WVJyG8ef4I3vjaannUthT2ggdEVVS3KRAFCK2YZP22kFYs6PRNsmxE?=
- =?us-ascii?Q?0XaXAj3VdbXHG85W918Vw3hbl/vA+GrAd2vQYpLbkIH7iJl7/LAEP/+09yjx?=
- =?us-ascii?Q?MK6TZ/lET3fgGY40o1igH9FxQErGARt5UChlx+kIGLferoal8alpPdbih8QZ?=
- =?us-ascii?Q?UH+e2GifUN7UnGrNIEFUW/MCG6MnWw+P6wtlM+BSjLJs69mSilZgZhWcG6pa?=
- =?us-ascii?Q?c7jomAUlPPmKLlYu7vIpef/tmVALERiDzJoKyrX4X9ZPoirYQfoZzK2YfV7F?=
- =?us-ascii?Q?ro0/MCLohOPVC+en3Myzm5jdcdNi5Iau2yul7sCG1sgseEMTrmJEw9F8Boe7?=
- =?us-ascii?Q?fhbrf+w++Sf5wz3v4QgPNoEzcWpx7BAgjKcyG+Dr?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9cf1cadb-9ea5-4d2c-c359-08ddfa71a86b
-X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB8459.eurprd04.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2025 07:20:22.6792
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR04MB8425.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a67bcad9-09b9-48e6-25ad-08ddfa73f50e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2025 07:36:49.5977
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7LWGzvqYamCo/Tvm/pBTa95mmTjddySuRvZ3wisluqmcEF5NM0QQGtTABDGNhX7kqrzfr0pkN0UdRtUmD0BPwA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB10427
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: P4Lboh6RFvk4MQZR5kd7lsDrMVarV4c1Dk5vzqvEY2gtQdfGNagewIr2KjTGP/48I86Tz6VNxQxJz0JwAW3w2Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB9812
 
-On Tue, Sep 23, 2025 at 11:16:12AM +0800, Sherry Sun wrote:
->Currently, imx uart defaults to enabling the wake related registers for
->all uart devices. However, it is unnecessary for those devices not
->configured as wakeup source, so add device_may_wakeup() check before
->configuring the uart wake related registers.
 
-I would rewrite as this:
-Currently, the i.MX UART driver enables wake-related registers for all UART
-devices by default. However, this is unnecessary for devices that are not
-configured as wakeup sources. To address this, add a device_may_wakeup()
-check before configuring the UART wake-related registers.
 
->
->Fixes: db1a9b55004c ("tty: serial: imx: Allow UART to be a source for wakeup")
->Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
->---
-> drivers/tty/serial/imx.c | 15 +++++++++++++++
-> 1 file changed, 15 insertions(+)
->
->diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
->index 500dfc009d03..4ddfc89816bf 100644
->--- a/drivers/tty/serial/imx.c
->+++ b/drivers/tty/serial/imx.c
->@@ -2697,7 +2697,22 @@ static void imx_uart_save_context(struct imx_port *sport)
-> /* called with irq off */
-> static void imx_uart_enable_wakeup(struct imx_port *sport, bool on)
-> {
->+	struct tty_port *port = &sport->port.state->port;
->+	struct tty_struct *tty;
->+	struct device *tty_dev;
-> 	u32 ucr3;
->+	bool may_wake;
+> -----Original Message-----
+> From: Peng Fan (OSS) <peng.fan@oss.nxp.com>
+> Sent: Tuesday, September 23, 2025 4:32 PM
+> To: Sherry Sun <sherry.sun@nxp.com>
+> Cc: gregkh@linuxfoundation.org; jirislaby@kernel.org; shawnguo@kernel.org=
+;
+> s.hauer@pengutronix.de; kernel@pengutronix.de; festevam@gmail.com;
+> Shenwei Wang <shenwei.wang@nxp.com>; linux-serial@vger.kernel.org;
+> linux-kernel@vger.kernel.org; imx@lists.linux.dev
+> Subject: Re: [PATCH 1/2] tty: serial: imx: Only configure the wake regist=
+er when
+> device is set as wakeup source
+>=20
+> On Tue, Sep 23, 2025 at 11:16:12AM +0800, Sherry Sun wrote:
+> >Currently, imx uart defaults to enabling the wake related registers for
+> >all uart devices. However, it is unnecessary for those devices not
+> >configured as wakeup source, so add device_may_wakeup() check before
+> >configuring the uart wake related registers.
+>=20
+> I would rewrite as this:
+> Currently, the i.MX UART driver enables wake-related registers for all UA=
+RT
+> devices by default. However, this is unnecessary for devices that are not
+> configured as wakeup sources. To address this, add a device_may_wakeup()
+> check before configuring the UART wake-related registers.
 
-'bool may_wake = false;' otherwise there might be report on using an
-uninitalized value by coverity or other tools.
+Thanks, that's much clearer.
 
->+
->+	tty = tty_port_tty_get(port);
->+	if (tty) {
->+		tty_dev = tty->dev;
->+		may_wake = tty_dev && device_may_wakeup(tty_dev);
->+		tty_kref_put(tty);
->+	}
->+
->+	/* only configure the wake register when device set as wakeup source */
->+	if (!may_wake)
->+		return;
+>=20
+> >
+> >Fixes: db1a9b55004c ("tty: serial: imx: Allow UART to be a source for
+> >wakeup")
+> >Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> >---
+> > drivers/tty/serial/imx.c | 15 +++++++++++++++
+> > 1 file changed, 15 insertions(+)
+> >
+> >diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c index
+> >500dfc009d03..4ddfc89816bf 100644
+> >--- a/drivers/tty/serial/imx.c
+> >+++ b/drivers/tty/serial/imx.c
+> >@@ -2697,7 +2697,22 @@ static void imx_uart_save_context(struct
+> >imx_port *sport)
+> > /* called with irq off */
+> > static void imx_uart_enable_wakeup(struct imx_port *sport, bool on)  {
+> >+	struct tty_port *port =3D &sport->port.state->port;
+> >+	struct tty_struct *tty;
+> >+	struct device *tty_dev;
+> > 	u32 ucr3;
+> >+	bool may_wake;
+>=20
+> 'bool may_wake =3D false;' otherwise there might be report on using an
+> uninitalized value by coverity or other tools.
 
-Regards,
-Peng
+Ok, will fix this in V2.
+
+Best Regards
+Sherry
+
+>=20
+> >+
+> >+	tty =3D tty_port_tty_get(port);
+> >+	if (tty) {
+> >+		tty_dev =3D tty->dev;
+> >+		may_wake =3D tty_dev && device_may_wakeup(tty_dev);
+> >+		tty_kref_put(tty);
+> >+	}
+> >+
+> >+	/* only configure the wake register when device set as wakeup source
+> */
+> >+	if (!may_wake)
+> >+		return;
+>=20
+> Regards,
+> Peng
