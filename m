@@ -1,191 +1,108 @@
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013025.outbound.protection.outlook.com [52.101.72.25])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6AA1D798E;
-	Tue, 23 Sep 2025 19:32:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.25
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758655947; cv=fail; b=b3OdOcSNYfODt3Xfue/P4pcGq/AW/J/bGKSYoSuFTmLt9giOg4RC08EqQZ7B6GXr+knVv/1B448w1hC9M6aN+hKxZDIyfI6gmVSC5ajgIhjPB2bubMRp6lAbToZXho3QVaRQwx+VgSZy9PZlP9t/Sjpo5woB3T0LmCnJWJjA7e0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758655947; c=relaxed/simple;
-	bh=eoOsKNUZ2Sa9pvIGcPJCXeGFfEeaVwwUtDdo8PQoKrs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Y/DRe+9Y40jcZ+TlO75KG8CKf+fvT59n4RF8JP89ag1yHr5ltFYcYk84XfmCZiH3RmXPF87EQ4tQH8mpbhA9D67uqygjuDVLnknXV9XoWI5GWa+Ys12NtN7an9GRzt88SKZIRMKPwSCojdGtZuzwDRnXrwxxXkTI268sQmsat+s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=DwDzWwiL; arc=fail smtp.client-ip=52.101.72.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 099FA26E6E3
+	for <linux-serial@vger.kernel.org>; Tue, 23 Sep 2025 22:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758665993; cv=none; b=Xcw3N6mYGiXVSgevv0onMZtnVMbFquGd/iMaHPEQCIly93kJSsfB5eqfIVLL4SYcvbkrRjmUXaN3eeh2O8EhSv2bJ5XIe2MQ5288lH4He6u24i5641dBQUZAT3miLU8pCSafS8EZmnKzocj55pfZglR4Obgg+45SkcwGPsz1m7g=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758665993; c=relaxed/simple;
+	bh=kuspQguKDMN2QP07Ofn/e8FxPXEd28GZFNAFhZqNgXo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=D/qnSCaiJauG950g67dA1lm94g0K4rvD+z78wnfOdTcNvYp/puzIv1V2/H1yugd33Q9AM1N9p1swlAKXg5EUij46UjcuaPMqVvcmhCGvpW1/iM1sR4IEqd58zsumSXprQLc01+Vf0keOw5+xS4AlBenY93hC1O6BnHytELsygoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=iwell.eu; spf=pass smtp.mailfrom=iwell.eu; dkim=pass (2048-bit key) header.d=iwell-eu.20230601.gappssmtp.com header.i=@iwell-eu.20230601.gappssmtp.com header.b=JRsbc8Lz; arc=none smtp.client-ip=209.85.218.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=iwell.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iwell.eu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="DwDzWwiL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aRjFpW9HgNJLmlfSH9/djAi9wzg8pGaFyP0F5TVBIdv6yQzn8EXSnfMSTLA8IAgNpoEysRF7A1SY+0KjZrSvTY4/mEbj2mlP0bo4vCpKZ35NijTc2vyLwd9loR23P1GB2VZhrStAqRteU2ZFeAtEPYBZOY0kB2E5/gexk37KgHHSvOx2gCu84KjeSTXPgq0DGQnV2sEPiavo6P11uj04cO+dw1PjxFcE0ND2hlyqAZVa2b3pASGv5IM7Mm1TkFBFXYJqa6d94Dk6bUkX2SqfBUd7PaWoPiUsxxWp8BltcRD41V+SVJIZavS69tXyw9HR8s7GOu4P667/esCJ/jxXAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9VTEm3eRjlVsOgvGkSdTi47HGwVGi/wK08OlovcfmH8=;
- b=nVPYUt0271yzKDdfPslXk9e6lajyNz7LrfLv6WxZh0uNWor9Wq5I5/nmupjRw0o+VZLRt8Ywck/sEM5PYUB7AIjA7un6WAIguebw7teVHYus3FBzrEr7j4D5Z+eOvf5GxL+gnvlGtlyeQN4/ZrVf90JJqt9IrGXNadM62wB75T8rFlaS5ri+T2d11sDgHspp2AgAhET8MQY8Bg38pkgVtmQ6moc1YJ2AuHOXveGOT6c2odmrsw7emnxxkLFplq3cpiTZDPSKPRZzj9cS35SJ1sk9odJvu6q7UOA4bKVcFKcb2bhgyOpl+JHM4OUXF7UJgvfSDOLvsGzbtniFDcV6Tg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9VTEm3eRjlVsOgvGkSdTi47HGwVGi/wK08OlovcfmH8=;
- b=DwDzWwiL5i+YrRRhpbXLl5Zcj/wUu4yA3+zj8t1Hd/8xIHA1EMMD18KqZGNccGO/vyPvIXOsEKJhNrhk/r5O1q/ukz2jtE0Og6LJ3h1eO5wnOC6ukp4oBPqH8r/4MzZoIGelouMDCyRWnIJxqnJIgbYF8IL1idXfMgs7cGfSVHwRRTddCW9yD0rnPrak+00i/dYRLL7iqZRhMVrs7ScI4wXx9o4QnujIENVqK0sblEvPmcFaoPmsmy/cdWQwiB3K+5CgZurjC//kJOuLZNssUSSmUbKxZ4U9nfvYzn5Z9M/U1X8Ok962voRzR2PVCCz86FUmj8DZZfolDQJPObqx2A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS4PR04MB9621.eurprd04.prod.outlook.com (2603:10a6:20b:4ff::22)
- by AM7PR04MB6823.eurprd04.prod.outlook.com (2603:10a6:20b:102::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.11; Tue, 23 Sep
- 2025 19:32:22 +0000
-Received: from AS4PR04MB9621.eurprd04.prod.outlook.com
- ([fe80::a84d:82bf:a9ff:171e]) by AS4PR04MB9621.eurprd04.prod.outlook.com
- ([fe80::a84d:82bf:a9ff:171e%4]) with mapi id 15.20.9160.008; Tue, 23 Sep 2025
- 19:32:22 +0000
-Date: Tue, 23 Sep 2025 15:32:14 -0400
-From: Frank Li <Frank.li@nxp.com>
-To: Sherry Sun <sherry.sun@nxp.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, shenwei.wang@nxp.com,
-	peng.fan@nxp.com, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, imx@lists.linux.dev
-Subject: Re: [PATCH] tty: serial: fsl_lpuart: Add missing wakeup event
- reporting
-Message-ID: <aNL1viY113RTSHvg@lizhi-Precision-Tower-5810>
-References: <20250923141051.2508077-1-sherry.sun@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250923141051.2508077-1-sherry.sun@nxp.com>
-X-ClientProxiedBy: BYAPR08CA0008.namprd08.prod.outlook.com
- (2603:10b6:a03:100::21) To AS4PR04MB9621.eurprd04.prod.outlook.com
- (2603:10a6:20b:4ff::22)
+	dkim=pass (2048-bit key) header.d=iwell-eu.20230601.gappssmtp.com header.i=@iwell-eu.20230601.gappssmtp.com header.b="JRsbc8Lz"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-b07883a5feeso1206323366b.1
+        for <linux-serial@vger.kernel.org>; Tue, 23 Sep 2025 15:19:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=iwell-eu.20230601.gappssmtp.com; s=20230601; t=1758665989; x=1759270789; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=pZoDAc2wyhln1U3oJuCYDkDreDeByhBAvuQoDZOwjao=;
+        b=JRsbc8LzoWJwCsKiJq4Aq69W/JIuo33PBqrfTpNfx+32JmAtKbPlVWMWe6D4teO6kn
+         pBHwwKy3HtAV/okeLhnLL9h6au0bllR2l+/KYhtOq60kyZ7If7zWhTDfyvdE9tFv6n3s
+         SjB0SuhZXL+JWL5svwkTl6s1ObPklz6g4n1ADBG3BUFWaZyT0wwxYA52xTYBWBxNnY8C
+         cIzAw+6oIIClTziHnqDwkivpdezua40Q0ZPk4YY9bGT44vRRN65H16HQZlnj2l/Q/9kK
+         jia88MzZgdA+waCml5wolfcL5pWZ6JmYkBKZQsWSJSke6gV0tcqRLsLjWbCGdb+ZFnY4
+         /Abg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758665989; x=1759270789;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pZoDAc2wyhln1U3oJuCYDkDreDeByhBAvuQoDZOwjao=;
+        b=mPax/hrVTMCyRY331esq4JeIaD9NG9D8myDaU6lw9BbtQb0d9zgF81YWDxf+Rbu/I/
+         nQtlgJJd2+BddAsm782qlAcGQVNVglHaqfsNZ0aiEv3HtoOpPWk8hCMpUkdi1j9HqmY4
+         w8JNzcBQ+sxTGITsp82vD88KrOyAF78TK6yHlYcmp7/8/WUwMADvffIDfME2o4idEagq
+         ACLT2ZJZDmajBP7R5opTruCJcoOvleMI38R4AsL2vmC+xp3FW3ESbDfyX2FgyyWqNFU0
+         xGhpr8zL89112m0cfXeSGuqfDOmmCRFzIlnmj6EEh0hVn2Bd3bX3d3rmuJBpswoQ2Kgl
+         NBLw==
+X-Forwarded-Encrypted: i=1; AJvYcCXQn4WTS8TBfZiwHrdPTp51v2KBN407E9TI/Lxdl/OueEOyLy7HTO+klFe7NUVkT71FggwesIeYxhMW+Z4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxwWB+ujlOjxGOAcHrmToKNOWpU9ui5ZOLMaB0i9qDF3/+YOBJm
+	DArCll8R0Hv3NAdZttjqg9S8Fh3In1nobqPG8OgL+ID3qP6sOZOh9ibWnVSGoMbd2fQ=
+X-Gm-Gg: ASbGnctZFENDVE0ym1UAwK5NDygRFnSSwwoI2j5Kw/WxEHWC9XFtbBk+t3G5UCHPKEn
+	w8kefQLckUJKEJ2SheaHNwTsSyRsGTNXT6Er7J2SJjywuaAZ896gBk0GDRLPsU2PQXKCoCDmTU1
+	ZGxUTVk5ERX3z+tLMAz8FInCeLRONsPPuQcioCVYiOmWCq1gR7eYxumLSUGLCL+hVhPRKHobWW7
+	AyK1CVOO9ci+tkJfJEM/QTNlbkXc8Dse8ITbvCWqKLB/rw07q7iuL/E6PGlrppe7IwhieATHR+J
+	ZxUfzIobrMVgKODECK1JcH8B+z6sclOZtVmzLRZpBDa4IixF6gCO47VNOpsqBIONNYIE6vC6tey
+	jXhBVL1vZpc4EdhU9J0+uHD3FjbuW4Uwd5MglxCWxRpFwhP2TQFrE7reK
+X-Google-Smtp-Source: AGHT+IEzCEwbixWOf1mAG9edDAoF9t3pu71R6SaOM3SQN+LM7ZMPhOBWU5qdpOcyem+S8HdoFV3sDA==
+X-Received: by 2002:a17:907:9627:b0:b08:85d0:3d8b with SMTP id a640c23a62f3a-b3026e7495dmr394989166b.21.1758665989378;
+        Tue, 23 Sep 2025 15:19:49 -0700 (PDT)
+Received: from localhost.localdomain ([178.224.220.25])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b2c56c2389fsm581187066b.79.2025.09.23.15.19.48
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Tue, 23 Sep 2025 15:19:49 -0700 (PDT)
+From: Marnix Rijnart <marnix.rijnart@iwell.eu>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>
+Cc: Marnix Rijnart <marnix.rijnart@iwell.eu>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	regressions@lists.linux.dev
+Subject: [REGRESSION][PATCH] serial: 8250_pci: Fix broken RS485 for F81504/508/512
+Date: Wed, 24 Sep 2025 00:17:33 +0200
+Message-ID: <20250923221756.26770-1-marnix.rijnart@iwell.eu>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR04MB9621:EE_|AM7PR04MB6823:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9dd2a092-55ef-4d60-31ac-08ddfad7eaa1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|52116014|19092799006|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?ebZJwq39/X4TFP0R78oLZRPh3mmrYi7coywU2umCg1Ea8Q1PqGjKvHWLcwNM?=
- =?us-ascii?Q?4/a9TJ1mdqzyP0aNDYu7V+8aYd94tFiXdbm66r6jjd9E/AnUT/qn557u0f43?=
- =?us-ascii?Q?DWlmY3nFqYyfXnLJRfzwp76p/EAI45ylxBInSfb8bM/Fc+vIsmEwmBm9T9FQ?=
- =?us-ascii?Q?R6PaMXh0o5Gkfgu2WSRs0f8bHawBQofjfB0OhSEUhS3SlZDtcu/o0KWWKnf5?=
- =?us-ascii?Q?r0pniYXv2kshdWvs0gYw5mo465g8KrPldvR6U5107zt7qhUDdAgfF0M0G48y?=
- =?us-ascii?Q?HXvvRNGF6tz6l9s+hwKVzosrNknIUW0gPlydt5+vLzmSDrankSJ1aQSaJdWQ?=
- =?us-ascii?Q?e0XOC7Wh0VkdBV2jyqS8VEG+1EQQPeSyHrlGnTBz+S4y4+ZSkAhLd+TazqvQ?=
- =?us-ascii?Q?HDmrj1UtHSN9YhEuekvx2f9eTCVg4BvhlJFl4BbRXmTwm9HdiFnmOTVb9lUM?=
- =?us-ascii?Q?vQbsE8KsN+fzJjte3dY3s1PUlB1brfRkxGXVU8ZhSRrB9S5mVpXZfzZ+z+x/?=
- =?us-ascii?Q?WI56vpHuIpyhm0KWdTY1DZagZLk2uWnNItsoDXnZER4Mlz0Dk2Yo1u4iNVac?=
- =?us-ascii?Q?xr+xsn100VdOJaPO0d/HVuFIsWhu85bk8GFehiwdqlNb33y+c8+nhVlbq3Bw?=
- =?us-ascii?Q?/qZMfkuNYF4tXFiDUAE6DyUg4umH+uslPmBiB53NSZfe2Arded4iqKPBFJXD?=
- =?us-ascii?Q?9YMhJLwsJ8gwm0G5NCIE3GEILAXu7gRw6iGzLPBqIqrtnboee/WjfGLwEop2?=
- =?us-ascii?Q?5LmbVznR6M5evsURslmwytHr5SBhEpIIeBQdiyjwYmPcBEkaiaPu1WjX+X7l?=
- =?us-ascii?Q?HDXEE5YOikSjNxhdawSfImvGX/5IcOR848VBpAr19pVxXY321djYIBsQCiDD?=
- =?us-ascii?Q?FjNDVj7CiKCzDrtnApsDL1c9c/RqJvaIfzuqrffjUTB8KK/rmUngi+NYPpgO?=
- =?us-ascii?Q?noI2biosHQExpcAN1bbNfvCkl9j6jaeSI6LciX/gEvyrULOyvgII2nuNwy72?=
- =?us-ascii?Q?IbLEnh+Tr1CWyqsLa7VI+7UwWJMNNiyYruTZ60b7BXNpLCD3jgRG3uaAMF+0?=
- =?us-ascii?Q?VOzg/XWU4uB0bLFqU4E7CtMC2BYVQlm8OUFX4F26zaTgNP4EcUChxpS+pnEW?=
- =?us-ascii?Q?TUczaURBPIHd4PrZ3wlW025EZlFf1gWuoPPWFv+x76CghV4cWWLj5yqHvV+4?=
- =?us-ascii?Q?pMTQyC0ftWh2APYYAha9mDPeSY2sbVIR5Mt4yLkyE0J4vP6/WYhCUTzYCKUM?=
- =?us-ascii?Q?ScUrS+7UBaCGathszeA6fdjToSP6kylFZGin7O9pQYWK9a5SO6TMQlgqi9vG?=
- =?us-ascii?Q?FnhgzUwiZqupD1BXkipf8mJ+ANAnfq4ZN49zKSnjjU+Woowh9+HRQLVEprP9?=
- =?us-ascii?Q?+8XDo/llj9h6GocdjLZh+984ACV0uMSxaTx5IatMq+1QuDnJSSQHYGtvR9OF?=
- =?us-ascii?Q?vRmiW7SULKED/qw8wrhOLltnu7fNezgg6/ihpAVUkKEL0n5K5DqqXQ=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR04MB9621.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(52116014)(19092799006)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?wP2oHZHH4M/BAkdu8dxXzFPgxkaRk30iorJ/Iy50alSjBKezxHsaKP8cnmxa?=
- =?us-ascii?Q?mDRJ4/oj3iXiS8abNpuBZ8ZVOlGJXm5Dv8Ey/6hQupovc/udJJ2EPZ/1XrbL?=
- =?us-ascii?Q?jZikMTsY8GxiEaeHRNOA28TRTT8WlaxaXsL0LE/cMWC0A/tSLHPIRjFnp4jg?=
- =?us-ascii?Q?6jNq7rlFyc9es4IB3bHoNm2qjed3jcxZeS8bvmH4UFIJm9smXf+/3IwfbRy8?=
- =?us-ascii?Q?NsMG6QNuJDHeSGiPZJFSAX+sOSXlZz21n08hI/Faw957m5qkPjsUyuY0pUPr?=
- =?us-ascii?Q?NXOQHKtnB4AK8l6D/U2L2R7tLryABXPW/e2rwPkQfB8PPPj8kzDNL/Dfeayn?=
- =?us-ascii?Q?6ZvbRl96QBGt3E1e2Hw+W/AEJQA43zOQM80HJayvW6Gq0+kiDrgsZhI3lQgX?=
- =?us-ascii?Q?XADAUcfvbW748AgehbqN9WayvjpzOMjVqkiK6fqiBb8D2rMMsOurg+ABchmv?=
- =?us-ascii?Q?kLMC37ehqeJLiIKfYnDvH1w6Uunu6HEMKYOzumNoFvrqnCYf7JJh6rpx0DSX?=
- =?us-ascii?Q?SSP8bga4BxgnxwOIaX5fYHQKiHVkXnGsXTM/AxFMXoKX4kvdXh8E9E5sN8up?=
- =?us-ascii?Q?0yUbaPx7Deq1pO8R/tNl8y8aJeedyoFy7OTMGQxxgh2DJh7EC9Rm2vT5u/hT?=
- =?us-ascii?Q?iDbdAexSIKgFhdJkEf9VRW+/ZskFylDhXBj4rwAghOB/3lX3x3jhsz3JOXAq?=
- =?us-ascii?Q?wlnGHqbli9LLz8ibmWslqA423NqANqD5u4ykTPCyfZSiBSwhpo1bbhCkIvaD?=
- =?us-ascii?Q?zQqoL0Tllh4347O0KeMx5KlopSwAhFfVUH7S15qgXp9rGYkZISzcUgPQWTMq?=
- =?us-ascii?Q?+aRtd2J566JFUTaqaDafy3prP+VQGsoFt3/Bouh56rVRAQqFCTHrM3Fm/g/W?=
- =?us-ascii?Q?2+7lwZR98TXF3DMSxSNrOgA0q5RdP6DunaLPtv7YNWnNuz7OiFB1Y9IcNOYf?=
- =?us-ascii?Q?PwaW038Wev7HjTkEwgd7wcJkiqAQe6yz1M3FSWj/QUfTnA92zHdnoSJjO2Jo?=
- =?us-ascii?Q?C9f30dM95UpcKxUvQgpYUAZJdvLczCsO46zx5M0ZEH1JbqKze+kNTf1xZEGA?=
- =?us-ascii?Q?nPR6gA1UYvQZnslXLZnrMWY+8cMHTYk6mywTXwerdgIezG80px1vUWc67aWw?=
- =?us-ascii?Q?xG3Comj/yRlaAeF+4ZAj2JuKJxwVYNOzzLHztaLBReuxbZct7acPJIyh/Lh9?=
- =?us-ascii?Q?wQD93QcuzrbNx06AVhdlW1sP2tCmabhbPQEl8UHeJctxHaqXJcP6B5bcTyYD?=
- =?us-ascii?Q?TQvx0scNDa49oL3p4nSlcrU1OdTM6x8a0edQ/RQFdsfoYm2DvGJJg+BRYxX3?=
- =?us-ascii?Q?IC6MlLlOTVU3kaOubF/qicL5L4T2i7ux/Znjo3eP2FRfXmyEUJpEaWJkdQNj?=
- =?us-ascii?Q?c/Ps/5itA42stmVu5P0xlT9VHwgYXpMXmOVO6NZgnuEScgXivtNgnywiXmuz?=
- =?us-ascii?Q?WxV0N1cFgvLNxmr+QcsdGNSHvJa8pDlmi1rG8o8snPv9kFle+EmUg6EP2+5A?=
- =?us-ascii?Q?NTlGiTyS7QSuhklpztdcNANlyuc7Z5YUzxL3PYsvW8oCh6h5/ouXrekjvC9u?=
- =?us-ascii?Q?hITWU5p/TIqZkYrZ9r4Rt7Vll7VHE2PbFUBydzn/?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9dd2a092-55ef-4d60-31ac-08ddfad7eaa1
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR04MB9621.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2025 19:32:22.0610
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: I7yookWmvF21asS+GZ8aFBuDKZsBCJxANwoD7CGrZRxw4kpmnw9MYwx9NEWLxXP+Vx1XcMxktiOQYEFksI/YdQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB6823
+Content-Transfer-Encoding: 8bit
 
-On Tue, Sep 23, 2025 at 10:10:51PM +0800, Sherry Sun wrote:
-> Current lpuart wakeup event would not report itself through sysfs as
-> being the source of wakeup, so add pm_wakeup_event() to support this.
+Commit 4afeced ("serial: core: fix sanitizing check for RTS settings")
+introduced a regression making it impossible to unset
+SER_RS485_RTS_ON_SEND from userspace if SER_RS485_RTS_AFTER_SEND is
+unsupported. Because these devices need RTS to be low on TX (fecf27a)
+they are effectively broken.
 
-Current lpuart wakeup event would not report itself as wakeup source
-through sysfs. Add pm_wakeup_event() to support it.
+The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND,
+so fix this by announcing support for SER_RS485_RTS_AFTER_SEND,
+similar to commit 068d35a.
 
->
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index c9519e649e82..9625997758e1 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -3087,7 +3087,9 @@ static int lpuart_suspend_noirq(struct device *dev)
->  static int lpuart_resume_noirq(struct device *dev)
->  {
->  	struct lpuart_port *sport = dev_get_drvdata(dev);
-> +	struct tty_port *port = &sport->port.state->port;
->  	u32 stat;
-> +	bool wake_active;
+Signed-off-by: Marnix Rijnart <marnix.rijnart@iwell.eu>
+---
+ drivers/tty/serial/8250/8250_pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-move wake_active above u32 stat;.
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index 152f914c599d..a9da222bd174 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -1645,7 +1645,7 @@ static int pci_fintek_rs485_config(struct uart_port *port, struct ktermios *term
+ }
+ 
+ static const struct serial_rs485 pci_fintek_rs485_supported = {
+-	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND,
++	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
+ 	/* F81504/508/512 does not support RTS delay before or after send */
+ };
+ 
+-- 
+2.51.0
 
->
->  	pinctrl_pm_select_default_state(dev);
->
-> @@ -3098,6 +3100,12 @@ static int lpuart_resume_noirq(struct device *dev)
->  		if (lpuart_is_32(sport)) {
->  			stat = lpuart32_read(&sport->port, UARTSTAT);
->  			lpuart32_write(&sport->port, stat, UARTSTAT);
-> +
-> +			/* check whether lpuart wakeup was triggered */
-> +			wake_active = stat & UARTSTAT_RDRF || stat & UARTSTAT_RXEDGIF;
-
-wake_active = stat & (UARTSTAT_RDRF | UARTSTAT_RXEDGIF);
-
-Frank
-> +
-> +			if (wake_active && irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq)))
-> +				pm_wakeup_event(tty_port_tty_get(port)->dev, 0);
->  		}
->  	}
->
-> --
-> 2.34.1
->
