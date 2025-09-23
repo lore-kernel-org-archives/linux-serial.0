@@ -1,108 +1,73 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-g3-154.zohomail360.com (sender4-g3-154.zohomail360.com [136.143.188.154])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 099FA26E6E3
-	for <linux-serial@vger.kernel.org>; Tue, 23 Sep 2025 22:19:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758665993; cv=none; b=Xcw3N6mYGiXVSgevv0onMZtnVMbFquGd/iMaHPEQCIly93kJSsfB5eqfIVLL4SYcvbkrRjmUXaN3eeh2O8EhSv2bJ5XIe2MQ5288lH4He6u24i5641dBQUZAT3miLU8pCSafS8EZmnKzocj55pfZglR4Obgg+45SkcwGPsz1m7g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758665993; c=relaxed/simple;
-	bh=kuspQguKDMN2QP07Ofn/e8FxPXEd28GZFNAFhZqNgXo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=D/qnSCaiJauG950g67dA1lm94g0K4rvD+z78wnfOdTcNvYp/puzIv1V2/H1yugd33Q9AM1N9p1swlAKXg5EUij46UjcuaPMqVvcmhCGvpW1/iM1sR4IEqd58zsumSXprQLc01+Vf0keOw5+xS4AlBenY93hC1O6BnHytELsygoM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=iwell.eu; spf=pass smtp.mailfrom=iwell.eu; dkim=pass (2048-bit key) header.d=iwell-eu.20230601.gappssmtp.com header.i=@iwell-eu.20230601.gappssmtp.com header.b=JRsbc8Lz; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=iwell.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iwell.eu
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7AB61A254E
+	for <linux-serial@vger.kernel.org>; Wed, 24 Sep 2025 00:43:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.154
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758674622; cv=pass; b=RDx3826h5rp3cm+y3+qzpQOb39Upx3sZih68W5TgJjd4u5IF+kgWSl9viuGVmFl2ZoNB5Vs9GZMxd1+mTZv3SjS8gG+zSBr9SXJ+nx9SidTE1O/35wI0ALdNibhO8xJPavvuFtfuBEqqhkKR9ZyxvG2hAxETMP5v2X14/JODzEg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758674622; c=relaxed/simple;
+	bh=8SmxW3lABSK7Zz/qq+alC1AQd3LKfeUgKRz58ulMYQg=;
+	h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type; b=ovFXvNGqbH/uoUamajH/J6e+8b32ToO0D0zFpIpBD49JXV3UbhFouoGDUFx39R/GTvRyUjtQfHuwo2at7dKH+60LsKbaGafz8+2VJKhn+JRsJilypLF4M3FZH8xnmjE1EDgnAssUOcQC2jg8JBWDwhwBTB7ni5GH+jvXXt7nuQs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=maguitec.com.mx; spf=pass smtp.mailfrom=bounce-zem.maguitec.com.mx; dkim=pass (1024-bit key) header.d=maguitec.com.mx header.i=@maguitec.com.mx header.b=OmWltUqw; arc=pass smtp.client-ip=136.143.188.154
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=maguitec.com.mx
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bounce-zem.maguitec.com.mx
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=iwell-eu.20230601.gappssmtp.com header.i=@iwell-eu.20230601.gappssmtp.com header.b="JRsbc8Lz"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-b07883a5feeso1206323366b.1
-        for <linux-serial@vger.kernel.org>; Tue, 23 Sep 2025 15:19:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=iwell-eu.20230601.gappssmtp.com; s=20230601; t=1758665989; x=1759270789; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=pZoDAc2wyhln1U3oJuCYDkDreDeByhBAvuQoDZOwjao=;
-        b=JRsbc8LzoWJwCsKiJq4Aq69W/JIuo33PBqrfTpNfx+32JmAtKbPlVWMWe6D4teO6kn
-         pBHwwKy3HtAV/okeLhnLL9h6au0bllR2l+/KYhtOq60kyZ7If7zWhTDfyvdE9tFv6n3s
-         SjB0SuhZXL+JWL5svwkTl6s1ObPklz6g4n1ADBG3BUFWaZyT0wwxYA52xTYBWBxNnY8C
-         cIzAw+6oIIClTziHnqDwkivpdezua40Q0ZPk4YY9bGT44vRRN65H16HQZlnj2l/Q/9kK
-         jia88MzZgdA+waCml5wolfcL5pWZ6JmYkBKZQsWSJSke6gV0tcqRLsLjWbCGdb+ZFnY4
-         /Abg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758665989; x=1759270789;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=pZoDAc2wyhln1U3oJuCYDkDreDeByhBAvuQoDZOwjao=;
-        b=mPax/hrVTMCyRY331esq4JeIaD9NG9D8myDaU6lw9BbtQb0d9zgF81YWDxf+Rbu/I/
-         nQtlgJJd2+BddAsm782qlAcGQVNVglHaqfsNZ0aiEv3HtoOpPWk8hCMpUkdi1j9HqmY4
-         w8JNzcBQ+sxTGITsp82vD88KrOyAF78TK6yHlYcmp7/8/WUwMADvffIDfME2o4idEagq
-         ACLT2ZJZDmajBP7R5opTruCJcoOvleMI38R4AsL2vmC+xp3FW3ESbDfyX2FgyyWqNFU0
-         xGhpr8zL89112m0cfXeSGuqfDOmmCRFzIlnmj6EEh0hVn2Bd3bX3d3rmuJBpswoQ2Kgl
-         NBLw==
-X-Forwarded-Encrypted: i=1; AJvYcCXQn4WTS8TBfZiwHrdPTp51v2KBN407E9TI/Lxdl/OueEOyLy7HTO+klFe7NUVkT71FggwesIeYxhMW+Z4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxwWB+ujlOjxGOAcHrmToKNOWpU9ui5ZOLMaB0i9qDF3/+YOBJm
-	DArCll8R0Hv3NAdZttjqg9S8Fh3In1nobqPG8OgL+ID3qP6sOZOh9ibWnVSGoMbd2fQ=
-X-Gm-Gg: ASbGnctZFENDVE0ym1UAwK5NDygRFnSSwwoI2j5Kw/WxEHWC9XFtbBk+t3G5UCHPKEn
-	w8kefQLckUJKEJ2SheaHNwTsSyRsGTNXT6Er7J2SJjywuaAZ896gBk0GDRLPsU2PQXKCoCDmTU1
-	ZGxUTVk5ERX3z+tLMAz8FInCeLRONsPPuQcioCVYiOmWCq1gR7eYxumLSUGLCL+hVhPRKHobWW7
-	AyK1CVOO9ci+tkJfJEM/QTNlbkXc8Dse8ITbvCWqKLB/rw07q7iuL/E6PGlrppe7IwhieATHR+J
-	ZxUfzIobrMVgKODECK1JcH8B+z6sclOZtVmzLRZpBDa4IixF6gCO47VNOpsqBIONNYIE6vC6tey
-	jXhBVL1vZpc4EdhU9J0+uHD3FjbuW4Uwd5MglxCWxRpFwhP2TQFrE7reK
-X-Google-Smtp-Source: AGHT+IEzCEwbixWOf1mAG9edDAoF9t3pu71R6SaOM3SQN+LM7ZMPhOBWU5qdpOcyem+S8HdoFV3sDA==
-X-Received: by 2002:a17:907:9627:b0:b08:85d0:3d8b with SMTP id a640c23a62f3a-b3026e7495dmr394989166b.21.1758665989378;
-        Tue, 23 Sep 2025 15:19:49 -0700 (PDT)
-Received: from localhost.localdomain ([178.224.220.25])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b2c56c2389fsm581187066b.79.2025.09.23.15.19.48
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 23 Sep 2025 15:19:49 -0700 (PDT)
-From: Marnix Rijnart <marnix.rijnart@iwell.eu>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>
-Cc: Marnix Rijnart <marnix.rijnart@iwell.eu>,
-	linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	regressions@lists.linux.dev
-Subject: [REGRESSION][PATCH] serial: 8250_pci: Fix broken RS485 for F81504/508/512
-Date: Wed, 24 Sep 2025 00:17:33 +0200
-Message-ID: <20250923221756.26770-1-marnix.rijnart@iwell.eu>
-X-Mailer: git-send-email 2.51.0
+	dkim=pass (1024-bit key) header.d=maguitec.com.mx header.i=@maguitec.com.mx header.b="OmWltUqw"
+ARC-Seal: i=1; a=rsa-sha256; t=1758674620; cv=none; 
+	d=us.zohomail360.com; s=zohoarc; 
+	b=cVDHz2S/F8tGokCFJjtEA+wo/V99Oe6cHUNFKp+t80agQrj3AGIyrSQpkdw/78H/yj4Ucm28jdlosgmIojPwagFS08+lkvR7Zi3f570lbCOhG78lx3rpXS+WwsHD8lCWGix+oP8V845Pc8Cr3zf0TbmOr3jEtlWseUbV7qz8iaw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=us.zohomail360.com; s=zohoarc; 
+	t=1758674620; h=Content-Type:Content-Transfer-Encoding:Date:Date:From:From:MIME-Version:Message-ID:Reply-To:Reply-To:Subject:Subject:To:To:Message-Id:Cc; 
+	bh=8SmxW3lABSK7Zz/qq+alC1AQd3LKfeUgKRz58ulMYQg=; 
+	b=OqmDu6xbKjnI8gtXM7VEwmd3/Fib/kX3KodnTEpHIPn2dUSUhA1gMIG8hrZGmy6CIzLeYKm2K6lB/fknsA5D2zG1QOwWxRlTElnXq44SiU7stDrAYbxKRqtDaZNCZoKNmXwnY+q321GaIiqvM8xKH7q0Pm1CA0UibyA8nnRgcl4=
+ARC-Authentication-Results: i=1; mx.us.zohomail360.com;
+	dkim=pass  header.i=maguitec.com.mx;
+	spf=pass  smtp.mailfrom=investorrelations+9ab338c0-98d8-11f0-ace3-525400721611_vt1@bounce-zem.maguitec.com.mx;
+	dmarc=pass header.from=<investorrelations@maguitec.com.mx>
+Received: by mx.zohomail.com with SMTPS id 1758671653201955.3757470755555;
+	Tue, 23 Sep 2025 16:54:13 -0700 (PDT)
+DKIM-Signature: a=rsa-sha256; b=OmWltUqwC04lnhmTlhz8fZ9HgZxjx/MfvVMBkX+LsHuQduomGwrjux5g23MQ733Ew4aFGt3DPnF3efjRImBynik2SRrlkgQj6+25XjNxZl694q3ZytARR3Phcl/5pCn48ju8VUv+YPVEu62p4/kXO2E4s88H6K+SyrTEpu+up0o=; c=relaxed/relaxed; s=15205840; d=maguitec.com.mx; v=1; bh=8SmxW3lABSK7Zz/qq+alC1AQd3LKfeUgKRz58ulMYQg=; h=date:from:reply-to:to:message-id:subject:mime-version:content-type:content-transfer-encoding:date:from:reply-to:to:message-id:subject;
+Date: Tue, 23 Sep 2025 16:54:13 -0700 (PDT)
+From: Al Sayyid Sultan <investorrelations@maguitec.com.mx>
+Reply-To: investorrelations@alhaitham-investment.ae
+To: linux-serial@vger.kernel.org
+Message-ID: <2d6f.1aedd99b146bc1ac.m1.9ab338c0-98d8-11f0-ace3-525400721611.19978ffc64c@bounce-zem.maguitec.com.mx>
+Subject: Thematic Funds Letter Of Intent
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+content-transfer-encoding-Orig: quoted-printable
+content-type-Orig: text/plain;\r\n\tcharset="utf-8"
+Original-Envelope-Id: 2d6f.1aedd99b146bc1ac.m1.9ab338c0-98d8-11f0-ace3-525400721611.19978ffc64c
+X-JID: 2d6f.1aedd99b146bc1ac.s1.9ab338c0-98d8-11f0-ace3-525400721611.19978ffc64c
+TM-MAIL-JID: 2d6f.1aedd99b146bc1ac.m1.9ab338c0-98d8-11f0-ace3-525400721611.19978ffc64c
+X-App-Message-ID: 2d6f.1aedd99b146bc1ac.m1.9ab338c0-98d8-11f0-ace3-525400721611.19978ffc64c
+X-Report-Abuse: <abuse+2d6f.1aedd99b146bc1ac.m1.9ab338c0-98d8-11f0-ace3-525400721611.19978ffc64c@zeptomail.com>
+X-ZohoMailClient: External
 
-Commit 4afeced ("serial: core: fix sanitizing check for RTS settings")
-introduced a regression making it impossible to unset
-SER_RS485_RTS_ON_SEND from userspace if SER_RS485_RTS_AFTER_SEND is
-unsupported. Because these devices need RTS to be low on TX (fecf27a)
-they are effectively broken.
+To: linux-serial@vger.kernel.org
+Date: 24-09-2025
+Thematic Funds Letter Of Intent
 
-The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND,
-so fix this by announcing support for SER_RS485_RTS_AFTER_SEND,
-similar to commit 068d35a.
+It's a pleasure to connect with you
 
-Signed-off-by: Marnix Rijnart <marnix.rijnart@iwell.eu>
----
- drivers/tty/serial/8250/8250_pci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Having been referred to your investment by my team, we would be=20
+honored to review your available investment projects for onward=20
+referral to my principal investors who can allocate capital for=20
+the financing of it.
 
-diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
-index 152f914c599d..a9da222bd174 100644
---- a/drivers/tty/serial/8250/8250_pci.c
-+++ b/drivers/tty/serial/8250/8250_pci.c
-@@ -1645,7 +1645,7 @@ static int pci_fintek_rs485_config(struct uart_port *port, struct ktermios *term
- }
- 
- static const struct serial_rs485 pci_fintek_rs485_supported = {
--	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND,
-+	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
- 	/* F81504/508/512 does not support RTS delay before or after send */
- };
- 
--- 
-2.51.0
+kindly advise at your convenience
 
+Best Regards,
+
+Respectfully,
+Al Sayyid Sultan Yarub Al Busaidi
+Director
