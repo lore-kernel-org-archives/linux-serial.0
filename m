@@ -1,178 +1,160 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011006.outbound.protection.outlook.com [40.107.130.6])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D9542C18A;
-	Tue, 23 Sep 2025 14:12:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.6
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758636740; cv=fail; b=BpZO1NjF3IErNpgzQ/AxI2MZjj9Re4IuWoWDFq2ryiM7p0ITrLSADS8Vc8xS4ZwP5SuDOHzFcUCZy+AApvvbARQfMzl7mM8+RYrX+qWQIlHTSwMW7efQwm2rUGdmU+lzw+1kYIU//q9cBqsQ8JunbCCyP3md84MH7UW3+KJLvjU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758636740; c=relaxed/simple;
-	bh=298n2aeQCZAZUwj6EmNpkUhcIPa8qY+PpD11ViO9/lE=;
-	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=GPu59mg/45Mf6WoO9qY+WajkbfJpsZKzd/bO5yQOmFEc9s6zOckEncT7rePm/FZamo/7Ql4v3hepoFDt1i9/UL55i+wqfsG1jcvko01TuAp2tsIJO3MWe7rr/KMwPt4Qz6fQDnQf434Npc653rGj96wiW7J3OlrzxfByrx9BEVs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=SJYAaQdH; arc=fail smtp.client-ip=40.107.130.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="SJYAaQdH"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=EJcYyn+hsZ57ih2clc4gAMhsmOKaDUZ9zlsW/KUIC8mYkhoOyZuhVtWoAN+t4V3LTrAEpG+AF4L3sbtHuUeU/MAizDiElCRz5Esp9pW/7ohnFuBh78mMEcTDaUwIiN4uqvApRmCW84AVJsCNNroouYQcESpAwU2jezF/dsRhHqcmGzH2bcP+r8xnvrG4S4aKK778WXif34JRNbpQWVpBR1VbMGLxO14zfPzsLYpgCK7MO4cbMeHo9qwB7jdNVwf5/3jizwHDzhRYhvxZN5XUbs7lLczLZlXvfGU74Hr+QCGhq/tEo81srwdEHan99wAj9HClE5gimV6pEIoaLiE1oA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NWcKlAVEuNjbSd8iUzzHxBZucXK824MgU7GYSAe9lZo=;
- b=kAySDYYHcEULRkdsLb6nIhdXS84IFSr5gUDN1SIaDenUfIdJBOleCPbdf5/IPO3mnGRpQF3ReFESQOKXwvnf4j2xHB57ipsqM9cpDYfZI1lnLUAENIkbaiXH5MbwJ6qllwB+TO1rAomX452ZqZZLZrYdW7AK0I2XtA4WJPSaLa/8N1L/coCs2chbTeO7yXQFbqnot8O7jEIMpzU5Q32/Vp9Hf0mtkjIqGKc7q/6uwy3OlmrglJC5qyHdWwqbIk3SOGBiqiH+/qT4i3mgkF73sknN2gz5Ik6ynh1s5B3ZTlNHwl2prQmw5LXWnfzB67Ebot7MQOSQhMWVgD799KAScg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NWcKlAVEuNjbSd8iUzzHxBZucXK824MgU7GYSAe9lZo=;
- b=SJYAaQdHS/vScX8Du2K9FV+jX31HLH2TnDUhb5pkK8kmN2z/+K7cGPUXDlXAYXRasqMHlMIaJCKL9qLSqvYqdYpEIykkS5C/TfE2zL4as3wntmAIzanTadk7YULX0xhwVEUKoSBbMg3iDsB9CaPThmcKUfNcm+h7jr4emnO/y6Fu/Ov+BwDwm3XPBfRKaJ2ugqLQxV9UQSzKzTM8C05xGXIen+Bj98xD745SQYyUJmjlHLwDZbzRE5S9cIE86zxOvlotBieYtm49hiNT2jV5Iw8MOncT973NYsn0wK/i523qk51JEDiEE3Urs/CQxlQonFWAPOinPXJ8Ew7YjLWQHg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS8PR04MB8418.eurprd04.prod.outlook.com (2603:10a6:20b:3fa::15)
- by DB9PR04MB11578.eurprd04.prod.outlook.com (2603:10a6:10:605::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.9; Tue, 23 Sep
- 2025 14:12:08 +0000
-Received: from AS8PR04MB8418.eurprd04.prod.outlook.com
- ([fe80::99c9:99a6:e6f3:7a9f]) by AS8PR04MB8418.eurprd04.prod.outlook.com
- ([fe80::99c9:99a6:e6f3:7a9f%3]) with mapi id 15.20.9160.008; Tue, 23 Sep 2025
- 14:12:08 +0000
-From: Sherry Sun <sherry.sun@nxp.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	shenwei.wang@nxp.com,
-	peng.fan@nxp.com
-Cc: linux-serial@vger.kernel.org,
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2F01A23815C;
+	Tue, 23 Sep 2025 15:47:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758642473; cv=none; b=A0H6eBLxJB6Eca+K5GgcNl4AyXMEllGp5VFQUHcyeHObItW20jjNnaFvZtR3MTOYjWDb5GB0BQS5hHSP1iwVrV/bfgQ4b5WnyDOoEOYw4Qxq0nM+SqzQ7mj3jdOCKE+6CzXXVNim4LQhwulIOJXJMshTeuhi8fdJMPFEn5Fjk4s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758642473; c=relaxed/simple;
+	bh=ExbNrBUxZz4jaMeIL7GyUCv6mgFwjLV9B32HM3yyxuA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ctd9JjPiwP/2BB0ejD3XoQIOno9OCrBuG8iyIixSM4/Z6uE6RA+X4qG8pHTu8FxV4w9h/QAFI87o1LT7j5ui+6nrcTt/vQEF4UGrt2G+yquIfXKvWYNJlK4WGrEAJkDJ2NuOCtIgS1Co/PaB/WjLVnipku9m8Cleb52TFTbS9ws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
+X-CSE-ConnectionGUID: 9/t0SQo+QIqN5T6NqyHqMw==
+X-CSE-MsgGUID: 2CycLQvbQz+ZWDfthuQXRw==
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 24 Sep 2025 00:47:44 +0900
+Received: from demon-pc.localdomain (unknown [10.226.93.64])
+	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 981DE40062C5;
+	Wed, 24 Sep 2025 00:47:40 +0900 (JST)
+From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+To: 
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>,
+	Thierry Bultel <thierry.bultel.yh@bp.renesas.com>,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Nam Cao <namcao@linutronix.de>,
+	Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
 	linux-kernel@vger.kernel.org,
-	imx@lists.linux.dev
-Subject: [PATCH] tty: serial: fsl_lpuart: Add missing wakeup event reporting
-Date: Tue, 23 Sep 2025 22:10:51 +0800
-Message-Id: <20250923141051.2508077-1-sherry.sun@nxp.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SGBP274CA0008.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::20)
- To AS8PR04MB8418.eurprd04.prod.outlook.com (2603:10a6:20b:3fa::15)
+	linux-serial@vger.kernel.org,
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] tty: serial: sh-sci: fix RSCI FIFO overrun handling
+Date: Tue, 23 Sep 2025 18:47:06 +0300
+Message-ID: <20250923154707.1089900-1-cosmin-gabriel.tanislav.xa@renesas.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS8PR04MB8418:EE_|DB9PR04MB11578:EE_
-X-MS-Office365-Filtering-Correlation-Id: aed0710b-4eca-4f2e-041a-08ddfaab2e35
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|19092799006|376014|52116014|1800799024|366016|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?K2ep7EL7QnYb++nbxZ+8B09nkdx9UkIea5D+VFzW0sWBcRxfIFNuqWg9OqWn?=
- =?us-ascii?Q?oms594jPjF99A8jZ1N2aZHabE8eKnD7Umz5ShOkNG3R1sJPCXCLtBISPG+lQ?=
- =?us-ascii?Q?PgIJIaIocmLdVfF8wCDbMB9DbdQ36fwREAd6ZA+fLVzmTCqditaL0eRj73nB?=
- =?us-ascii?Q?BeaVuzzEn1Kl9BGnPCjfnScy7+1AAgL923Z+SEjFFbAIN8ve4qkTamW3Twkm?=
- =?us-ascii?Q?zx9xaXik1JJQ/AVqNPsHYVAVBfxj2oOsr8rbrkbA/6ygiRRugpX+qCxtpoNI?=
- =?us-ascii?Q?T3AgZqGZpcC8o7lZLm+s3+SoUqoXYrNm6++ONnAETSkjdrAvcioWGnixn+7s?=
- =?us-ascii?Q?HBL0flW5xhmgB9WJFcBLvoGrnYjvqPYpC3Ne9y4QFynZv8g+HnjT5vamWeBB?=
- =?us-ascii?Q?5XnJoVwZUXhAdbXBmATIgjBj02lB43DvUy87/RlD3UhaLrFFUS50nVYy2Zzh?=
- =?us-ascii?Q?BL2KGFGMgeYkyttKURtYtiVVApR427fu+9hOp2zFEJKCQqESggC9YYgFvDpS?=
- =?us-ascii?Q?KtGoj4+MruY7V8h4JHH7UQN3HgdxnFY/I75ZNoY+/ypi29N/rtSTr+9CcAHv?=
- =?us-ascii?Q?9M+MCHk+1sDxkoX68SUbSVFprBs/8/FM3ez5QcBviQU7lhqQ7n0ZTXrfKARe?=
- =?us-ascii?Q?HG9rtLlP4XQ5N9sTlD2crUnioYRotSxstrl+1DFC0T5RZ+BjWCruW5Hzm9Sn?=
- =?us-ascii?Q?WisTeMAHiXxM2EASfDMHbORqKEo+EbDTXBaLOfo6xk9+KGYmsIwWBJfQQnwu?=
- =?us-ascii?Q?rFJJQl/w3lm4pAcZi0YEt3R7or+W8shyOlkMQKZRLeNAQaTbIv9R4xmD/TlZ?=
- =?us-ascii?Q?10iWTcguX3T+Wj01dAIyXGMaUEd2VQXum/tI6P58tGnH6mOsafGmzVwxlBYd?=
- =?us-ascii?Q?lDNPLtea8jYnPGxB8t9hG67XTG/8yaTX8mILfy+GNirGokExKCMY2jfMHY/k?=
- =?us-ascii?Q?fJ4ObSCIXjDB3HJswRxXBU8k3BTRiBX/cWkt+Dpfwmp0wECvnLwRGiXL/ZHE?=
- =?us-ascii?Q?rdVeyOIfXemGyeRPao6Bhl0dTj7W6wdkeb3PMUdMIPE43pokjR0Ii7sVq0Wp?=
- =?us-ascii?Q?FN139JT88W6WGpTxZIU19Qu1GvM+0wbTBKq2L0UiY/5657qn4hC1mBgoFRyU?=
- =?us-ascii?Q?wSEdrk/G3lbobyVOjApf4sciiZ+uVO9kN+Slqw4LwecbEpSlsyJRlDRVrIYe?=
- =?us-ascii?Q?yioaNq7f/t+RqP2J7SwhftnxrH9xhJIYT7XvQivRX0g+3ATTwe41Xr/tx4/d?=
- =?us-ascii?Q?G6LZixEMBlDJordCrrXaNSvV5bmzZ5YPQYR38hcLvqR4d956+9skP5ZIbW23?=
- =?us-ascii?Q?zWrHVfFJ4DRsp2T6IALjlfGkL9NCLYN+sdr0JzOVLPYTKBSPSNS3rM5DijBR?=
- =?us-ascii?Q?KL2atkQsVT7bz86BviQV8MhLw2+ARsk/5I9Cx5TBicaKDocUCEnP557MQXwV?=
- =?us-ascii?Q?OLm67al/TLWoFpjz3q/dmUQwZf39neIO6J78vPg+wiwh9cY0gEVGmg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8418.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(376014)(52116014)(1800799024)(366016)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?+d377xegnzoI+s4FAILogILaRzSsED/ALDgIB3431KZzxWLeuATr9jUmKkdW?=
- =?us-ascii?Q?fAETflkstwMkHaUZUqAYxNv0jRGFyME6PTyJ3nHG62tmZ/mIA7SaIKP0iYZ6?=
- =?us-ascii?Q?nRSak6YTCQuAaioH7IcobCjhnA/1m4WOc9rwcB3IC8PRIQkmGFhGWv4ZqtXT?=
- =?us-ascii?Q?xPEsPMKa/moELP76cy19Ni2EU+sEvMjNQ5XIgNCWICRJ9JY/kETuN92wUWfm?=
- =?us-ascii?Q?DSgz+jR3dL+A0JxfSaYDWllXRnKcnANV3o40UQBGtAGBqqfKdayJJ9IS9+x6?=
- =?us-ascii?Q?nrGu9xJzJ7nRAbLaPzlLGyt0sORp7lRtoODadd9wpK5ZG51Q+DAkSKqQzvpe?=
- =?us-ascii?Q?VmIDd9Sm/peUXlA4f+TF7AEquSBZpQM1BPLouyu0gUQdgAZhyWufvH8Wk/hi?=
- =?us-ascii?Q?UrSlnwoWijZUauNauiJuYfVhEQTit1+CJ6G0x/EGQDUlOeZ284jIK89n7Ro2?=
- =?us-ascii?Q?wXq6YmGXooUXMCW0FhKyV5gXOtyx82F8BXtQyz7fkuJWQE2gifrGWMK8ywfi?=
- =?us-ascii?Q?mHW9ZdUOaxDqaMKVcxJaQDMWqndwCHTqd/BiMwZ5ySBID/IMkJcSGQDxSjCS?=
- =?us-ascii?Q?FYg3vFc2BA0329Jwdo04z1qhn3JuuuG7DfAx3Fmw8Of9ONy4z0FoKLibBdOZ?=
- =?us-ascii?Q?H/tANn6G6QXZnJ/3CPBxH+PoiQT4/+F1BPg/HLZkoKS3d4lLhHthhPdMkumR?=
- =?us-ascii?Q?kqdmPn2S1k42WgST2iwn62QUNDxqb1ztJOVP9NOF5hWgR/G1UOeNSdEnFgqV?=
- =?us-ascii?Q?CYC6TxbrW0BxF8XxdQaxkL+fIYt5Ob/wLzHJDWNVfzxCLipb9AShEBYdjg51?=
- =?us-ascii?Q?c6eHRc7Hpax07rDkkbPLk3sXb+hqK2E/EoJIIrXtwk1tpcl/2x19PHo8lbY5?=
- =?us-ascii?Q?IYvK8mgBHTm9T2HgUppIWD0aMdniTcS0K9Ufi3iuQbw9VwmYeTaY3QRgNZcf?=
- =?us-ascii?Q?642d1P5IE5yXtSPZp65rStZx53RTss8WsQyggoRzPYsQgpcHj9Pgg/h/b/UC?=
- =?us-ascii?Q?ixbEQ/i2STaNJKm3vz55Iu/LdQRBQllctWdUDePE7GnIQ8JBmltG7bRGIonR?=
- =?us-ascii?Q?+0agEKqtHLEAqWm+0l2+bGaYpcmAINc64hVlA33TjKAgiOCJ/GdlpLfqh/xB?=
- =?us-ascii?Q?HPFtFzPRXAGILGqkpZS8VKaSobLDPVModVcZ3HxfmmhNOzVKom4X2RdB4mml?=
- =?us-ascii?Q?DSSaRtBKmcGeg28SUXOBpf6e5NoPo0LZMYtMy/SL6bvBgJ8bBE7JcOcNpnUJ?=
- =?us-ascii?Q?ch8n41oyjWnj3xwlM3MiPFrrgdxSGEK63rtDMf28pOfHyojsdrGeyV5Ar0s8?=
- =?us-ascii?Q?hlzYh3tb1ETW/fFu9axaziUsAWm9KcY46GNWHsmrm38Qbmw3eSJDLUAb43QV?=
- =?us-ascii?Q?LEfkwgjybbeX5ZmQzmW2ye6YohefuPNB4UEI/F27osOxWSsk5/P/dm0yGAi+?=
- =?us-ascii?Q?8Jg28gHxOUjOlGvBvDYc+Sg/lGAVvfVOdvgcU3V7UxLirCXOXoBm8hkMscCU?=
- =?us-ascii?Q?v46ozo3uSzLzVapA2mgp4wYdDniU/ydsVwhsndGUD9eJe2oaAkhmvx3fQ5cM?=
- =?us-ascii?Q?z2gMJz0aw27Woka25aqRcsEwBdpmSGBd+y8qUXHH?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aed0710b-4eca-4f2e-041a-08ddfaab2e35
-X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8418.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2025 14:12:08.2913
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2sHQh4N6KFMRG+eTDsbJRQRboZvU+699CmHA5/GMlvEKeuLDnloSjlKe6/zEw2hYrqNt9WVIYY4AmrfwsyYRmw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB11578
+Content-Transfer-Encoding: 8bit
 
-Current lpuart wakeup event would not report itself through sysfs as
-being the source of wakeup, so add pm_wakeup_event() to support this.
+The receive error handling code is shared between RSCI and all other
+SCIF port types, but the RSCI overrun_reg is specified as a memory
+offset, while for other SCIF types it is an enum value used to index
+into the sci_port_params->regs array, as mentioned above the
+sci_serial_in() function.
 
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+For RSCI, the overrun_reg is CSR (0x48), causing the sci_getreg() call
+inside the sci_handle_fifo_overrun() function to index outside the
+bounds of the regs array, which currently has a size of 20, as specified
+by SCI_NR_REGS.
+
+Because of this, we end up accessing memory outside of RSCI's
+rsci_port_params structure, which, when interpreted as a plat_sci_reg,
+happens to have a non-zero size, causing the following WARN when
+sci_serial_in() is called, as the accidental size does not match the
+supported register sizes.
+
+The existence of the overrun_reg needs to be checked because
+SCIx_SH3_SCIF_REGTYPE has overrun_reg set to SCLSR, but SCLSR is not
+present in the regs array.
+
+Avoid calling sci_getreg() for port types which don't use standard
+register handling.
+
+Use the ops->read_reg() and ops->write_reg() functions to properly read
+and write registers for RSCI, and change the type of the status variable
+to accommodate the 32-bit CSR register.
+
+sci_getreg() and sci_serial_in() are also called with overrun_reg in the
+sci_mpxed_interrupt() interrupt handler, but that code path is not used
+for RSCI, as it does not have a muxed interrupt.
+
+------------[ cut here ]------------
+Invalid register access
+WARNING: CPU: 0 PID: 0 at drivers/tty/serial/sh-sci.c:522 sci_serial_in+0x38/0xac
+Modules linked in: renesas_usbhs at24 rzt2h_adc industrialio_adc sha256 cfg80211 bluetooth ecdh_generic ecc rfkill fuse drm backlight ipv6
+CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.17.0-rc1+ #30 PREEMPT
+Hardware name: Renesas RZ/T2H EVK Board based on r9a09g077m44 (DT)
+pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : sci_serial_in+0x38/0xac
+lr : sci_serial_in+0x38/0xac
+sp : ffff800080003e80
+x29: ffff800080003e80 x28: ffff800082195b80 x27: 000000000000000d
+x26: ffff8000821956d0 x25: 0000000000000000 x24: ffff800082195b80
+x23: ffff000180e0d800 x22: 0000000000000010 x21: 0000000000000000
+x20: 0000000000000010 x19: ffff000180e72000 x18: 000000000000000a
+x17: ffff8002bcee7000 x16: ffff800080000000 x15: 0720072007200720
+x14: 0720072007200720 x13: 0720072007200720 x12: 0720072007200720
+x11: 0000000000000058 x10: 0000000000000018 x9 : ffff8000821a6a48
+x8 : 0000000000057fa8 x7 : 0000000000000406 x6 : ffff8000821fea48
+x5 : ffff00033ef88408 x4 : ffff8002bcee7000 x3 : ffff800082195b80
+x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff800082195b80
+Call trace:
+ sci_serial_in+0x38/0xac (P)
+ sci_handle_fifo_overrun.isra.0+0x70/0x134
+ sci_er_interrupt+0x50/0x39c
+ __handle_irq_event_percpu+0x48/0x140
+ handle_irq_event+0x44/0xb0
+ handle_fasteoi_irq+0xf4/0x1a0
+ handle_irq_desc+0x34/0x58
+ generic_handle_domain_irq+0x1c/0x28
+ gic_handle_irq+0x4c/0x140
+ call_on_irq_stack+0x30/0x48
+ do_interrupt_handler+0x80/0x84
+ el1_interrupt+0x34/0x68
+ el1h_64_irq_handler+0x18/0x24
+ el1h_64_irq+0x6c/0x70
+ default_idle_call+0x28/0x58 (P)
+ do_idle+0x1f8/0x250
+ cpu_startup_entry+0x34/0x3c
+ rest_init+0xd8/0xe0
+ console_on_rootfs+0x0/0x6c
+ __primary_switched+0x88/0x90
+---[ end trace 0000000000000000 ]---
+
+Cc: stable@vger.kernel.org
+Fixes: 0666e3fe95ab ("serial: sh-sci: Add support for RZ/T2H SCI")
+Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 ---
- drivers/tty/serial/fsl_lpuart.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/tty/serial/sh-sci.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-index c9519e649e82..9625997758e1 100644
---- a/drivers/tty/serial/fsl_lpuart.c
-+++ b/drivers/tty/serial/fsl_lpuart.c
-@@ -3087,7 +3087,9 @@ static int lpuart_suspend_noirq(struct device *dev)
- static int lpuart_resume_noirq(struct device *dev)
- {
- 	struct lpuart_port *sport = dev_get_drvdata(dev);
-+	struct tty_port *port = &sport->port.state->port;
- 	u32 stat;
-+	bool wake_active;
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index 538b2f991609..62bb62b82cbe 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1014,16 +1014,18 @@ static int sci_handle_fifo_overrun(struct uart_port *port)
+ 	struct sci_port *s = to_sci_port(port);
+ 	const struct plat_sci_reg *reg;
+ 	int copied = 0;
+-	u16 status;
++	u32 status;
  
- 	pinctrl_pm_select_default_state(dev);
+-	reg = sci_getreg(port, s->params->overrun_reg);
+-	if (!reg->size)
+-		return 0;
++	if (s->type != SCI_PORT_RSCI) {
++		reg = sci_getreg(port, s->params->overrun_reg);
++		if (!reg->size)
++			return 0;
++	}
  
-@@ -3098,6 +3100,12 @@ static int lpuart_resume_noirq(struct device *dev)
- 		if (lpuart_is_32(sport)) {
- 			stat = lpuart32_read(&sport->port, UARTSTAT);
- 			lpuart32_write(&sport->port, stat, UARTSTAT);
-+
-+			/* check whether lpuart wakeup was triggered */
-+			wake_active = stat & UARTSTAT_RDRF || stat & UARTSTAT_RXEDGIF;
-+
-+			if (wake_active && irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq)))
-+				pm_wakeup_event(tty_port_tty_get(port)->dev, 0);
- 		}
- 	}
+-	status = sci_serial_in(port, s->params->overrun_reg);
++	status = s->ops->read_reg(port, s->params->overrun_reg);
+ 	if (status & s->params->overrun_mask) {
+ 		status &= ~s->params->overrun_mask;
+-		sci_serial_out(port, s->params->overrun_reg, status);
++		s->ops->write_reg(port, s->params->overrun_reg, status);
+ 
+ 		port->icount.overrun++;
  
 -- 
-2.34.1
+2.51.0
 
