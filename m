@@ -1,365 +1,410 @@
-Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1D210246764;
-	Wed, 24 Sep 2025 06:30:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D1B021ABB9
+	for <linux-serial@vger.kernel.org>; Wed, 24 Sep 2025 09:35:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758695407; cv=none; b=hzZ77Ss8sZjVYI5ppZSBY+Q3G8zks5qElnvKFHlVGzgPC/0n5RlMM42763XyKiS9iq4ETN1PgP1XAgViG7v2A0Hv+ZtAEFtkX7FOdtNVlxWCp3dlMpnlxRu1F9OoSetpeJVa5IZ8dvsFLFwIXZlozs4dAVGCyL+wEbhArXqaSzQ=
+	t=1758706510; cv=none; b=RdYndIsnE7+JFkYc3q7Q4daXXbocO1hrTCSJc6BDXrgUH6AA9604+HML+3PYiI1xoDQThobM42b4kZvQHENMfjuVqgqH+zzNgjQgPd20HYR7UE9d1SA1wnrSijLv6kFjoenZXCy0aBFTKU8VcMIA4aGcqNpSblZMsa3YIjoEnnE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758695407; c=relaxed/simple;
-	bh=j2ZunSF58XuFmp6stuTo1f2NpJfd2g1LJ3l8mvi/7mQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KArCrScHIzPD/M7JRIrBnU6kxOSh48PIEPeix1V/yFbJV4X4uIbunvqP/k4aiSiptt56R3WwA/qapKh4VcdYuKI3C2pJyPz+MwlOOXuK3XaLH67ZCk3yLaEUu/7T+S623Wc8zjW24qAFU90QCFbEsPFSJH/F8EZpPGKf2PjFQ4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
-Received: from loongson.cn (unknown [223.64.68.198])
-	by gateway (Coremail) with SMTP id _____8CxJ9Hlj9NoqvYNAA--.29931S3;
-	Wed, 24 Sep 2025 14:29:57 +0800 (CST)
-Received: from localhost.localdomain (unknown [223.64.68.198])
-	by front1 (Coremail) with SMTP id qMiowJAxVOTbj9NogKyqAA--.21497S4;
-	Wed, 24 Sep 2025 14:29:53 +0800 (CST)
-From: Binbin Zhou <zhoubinbin@loongson.cn>
-To: Binbin Zhou <zhoubb.aaron@gmail.com>,
-	Huacai Chen <chenhuacai@loongson.cn>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	s=arc-20240116; t=1758706510; c=relaxed/simple;
+	bh=dtv6qQSyv8wNo01XrYxi1x44Q05Hfd0zs/RAWWaxCRI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QTN6DPqzgWVN8M0dvFuj7rtFK0SRJV9usdQ++ukQEyfwLO9SZ7L8UhGU+s9YU1NY9gmsWsysoEIfYgFo3dj7/alyGcE84dOw0Z6Rgn1tmCuAzwEXr1Bwc2/UajnQ5hAnmWsvD81Wt1Ifycrpa3SOUllASqAsYjxHx+YzbZZm6N0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=H1wJB2Qd; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="H1wJB2Qd"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b2ee3c13aa4so377812966b.3
+        for <linux-serial@vger.kernel.org>; Wed, 24 Sep 2025 02:35:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1758706501; x=1759311301; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7+ihV7jV/UICW3GYPXjrr7V6munvA5WIXtGqiGQ9m6w=;
+        b=H1wJB2QdJ4HGB2jfyua6uAjg3GIt6plIPqechsrUiUENO5ea3WKs6LBnjkurf4Eh9A
+         ZcieqBMJUVyS3TwHmZvdsHK8rB39jX28glHy+nJzSoA152f+QZNuIzd6yWi33LIDCDQK
+         y1UMlXbHe+EtwJO/zsIbJTv2t1MOvAUfH+OLJeHOv68w+TXJHfk+PFnR4g//o8RoIiEK
+         vC4mcsGgFytnNLq93srqF5qE6V4+lYUoIiSWVb7ggWBDDJ9Iof9hN2XVlsY3OZXRsChJ
+         jckyJl+KO1nVdoZjJpXAboqOjrq/Se5HP8MRdVorfm55M+4BVjjIPyWdxHs5jDccgi1c
+         X4zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758706501; x=1759311301;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7+ihV7jV/UICW3GYPXjrr7V6munvA5WIXtGqiGQ9m6w=;
+        b=JCXdkluLKHXrGKwIa8YRF4AadbyUNpUjGvUz2643CEuiDTAYv9J/+LLKa2ZyVCUciO
+         xW+dymWEoABnO2Onw0bUl+co65EsLHmvrrhqTsCGvIkd396xfB64jL9JCpNytRZ9MT1s
+         NUHV5OqB1ZoNJic6dxo072uCe6Is/QDatXhSLxPCYgFmN7rkNsEL89cs6o86TxVW8cx9
+         jPZZmyLSk7yBDokC4KKPO72pNfXPxxe+sJXpjABaIth1nsqnGKiSrfgtnwdAKeSln+/J
+         c1Z44dBZ42XlYbdqlWu6dhAKknsFJAHvByv3Nj0jvaTxp1ASUYC+DpeIHNMghAq9snVN
+         KLJg==
+X-Forwarded-Encrypted: i=1; AJvYcCXd9dRhHhaeddYLSXjFM7hko9t0qMTrgmMe8u03/vwFbenlAGlinpwjMyXfxDurffBBi18HTgky5wnJDkA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzMIRL1di+nFIyJv+EFjXX2dBRind9X8AuWI+j4WPVAk3Or5c28
+	+PrlEyR84mRG/IEAlgYOpaDjLo+une4VnqpEfkrJ1lyL35xM/U63EiqiktJAJb2Bc9zlExXKeNQ
+	HtWUrPxo=
+X-Gm-Gg: ASbGnctOi+/SVNojjF7G03SbUCTl2Z95yI1lUQgbQOimz6AY1BjnKKvOR7+0lVUuFqx
+	oEFDqQzWXtX+Ex88pHTfbAs6FUWRDbG6x6AwmTPIPW9h6VCexGUZsvvYp8LmvIplrTFnie7s4Gg
+	AH38IwQB4Pe3FVbqFsF2TF4VteN6uRbpkfvVzO3TlqHiOhLoJ1qPwlvo1GoR0SqzaGAQs6g2tRC
+	NRWS4wkyFsWrP3b3LdEwZKn7h37QzQCcX0AuHMGWyCGLJJExwTleEfQAvPbKO0OFLgNCPLhNo3e
+	HKsk/Dl8uYX48m1ehG2dh2m5eZIH1aY9v+28Nop+z50ywS3A/AVGBXBABepMF9GAHcaROfwKPHw
+	Ox6hrSG8bMJl4JuEu9QgMmnDT1w==
+X-Google-Smtp-Source: AGHT+IFOqkCP6uCn+xuTQwfoECo9gdpCJo1Fnr9mCXr8jQsSVZtd2TBLjEJ0j31UiSIYq1cXct6rFA==
+X-Received: by 2002:a17:907:3e04:b0:b04:31c6:a41f with SMTP id a640c23a62f3a-b302af26175mr616109566b.41.1758706501354;
+        Wed, 24 Sep 2025 02:35:01 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b26847b9f37sm1153007366b.18.2025.09.24.02.35.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Sep 2025 02:35:00 -0700 (PDT)
+Date: Wed, 24 Sep 2025 11:34:58 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Jiri Slaby <jirislaby@kernel.org>,
-	Haowei Zheng <zhenghaowei@loongson.cn>
-Cc: Huacai Chen <chenhuacai@kernel.org>,
-	Xuerui Wang <kernel@xen0n.name>,
-	loongarch@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	Binbin Zhou <zhoubinbin@loongson.cn>
-Subject: [PATCH v5 2/3] serial: 8250: Add Loongson uart driver support
-Date: Wed, 24 Sep 2025 14:29:37 +0800
-Message-ID: <9823e7afe713450e210dab9dba6fa18683dc1fe0.1758676290.git.zhoubinbin@loongson.cn>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <cover.1758676290.git.zhoubinbin@loongson.cn>
-References: <cover.1758676290.git.zhoubinbin@loongson.cn>
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>
+Subject: Re: [RFC 0/1] serial: 8250: nbcon_atomic_flush_pending() might
+ trigger watchdog warnigns
+Message-ID: <aNO7Qjv_iSUSifTv@pathway.suse.cz>
+References: <20250822142502.69917-1-pmladek@suse.com>
+ <84qzwzbr90.fsf@jogness.linutronix.de>
+ <aNFR45fL2L4PavNc@pathway.suse.cz>
+ <84348eju8a.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qMiowJAxVOTbj9NogKyqAA--.21497S4
-X-CM-SenderInfo: p2kr3uplqex0o6or00hjvr0hdfq/1tbiAQEPCGjTiCgAowAAs-
-X-Coremail-Antispam: 1Uk129KBj93XoW3Xry8XF17AF48WryfKw1xZwc_yoWfKFWxpF
-	n0k390yrWjgF4093y8Ar4YkF45Z3ZFkasrtFZrG345Kr98t3ykXryFkasFyr4jyryDJFy7
-	ZFWDCFWUCF4UX3cCm3ZEXasCq-sJn29KB7ZKAUJUUUUr529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUUBFb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r126r13M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AK
-	xVW0oVCq3wAaw2AFwI0_Jrv_JF1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqjxCEc2xF0c
-	Ia020Ex4CE44I27wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jw0_
-	WrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwI
-	xGrwCY1x0262kKe7AKxVWUAVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWU
-	JVW8JwCFI7km07C267AKxVWUXVWUAwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
-	vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
-	x2IY67AKxVW5JVW7JwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26c
-	xKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2jsIEc7CjxVAF
-	wI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jzc_-UUUUU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <84348eju8a.fsf@jogness.linutronix.de>
 
-Add the driver for on-chip UART used on Loongson family chips.
+On Mon 2025-09-22 19:08:45, John Ogness wrote:
+> On 2025-09-22, Petr Mladek <pmladek@suse.com> wrote:
+> > On Mon 2025-08-25 13:06:27, John Ogness wrote:
+> >> On 2025-08-22, Petr Mladek <pmladek@suse.com> wrote:
+> >> > There are clearly visible two points where nbcon_atomic_flush_pending()
+> >> > took over the ownership from a lover priority context. I believe that:
+> >> >
+> >> >   + 1st occurrence is triggered by the "WARNING: CPU: 2 PID: 1 at
+> >> >     arch/x86/..." line printed with NBCON_PRIO_EMERGENCY.
+> >> >
+> >> >   + 2nd occurrence is triggered by the "Kernel panic - not syncing:
+> >> >     Hard LOCKUP" line printed with NBCON_PRIO_PANIC.
+> >> >
+> >> > There were flushed more than 2500lines, about 240kB of characters,
+> >> > in the NBCON_PRIO_EMERGENCY before the hardlockup detector
+> >> > triggered panic.
+> >> >
+> >> > If I count it correctly, a serial console with the speed 115200 baud/sec
+> >> > would be able to emit about 11.5kB/sec. And it would take about 20sec
+> >> > to emit the 240kB of messages.
+> >> >
+> >> > => softlockup is quite realistic
+> >> >
+> > Well, the original problem happened on bare metal. And the problem
+> > was reporoducible even with the extra touch_nmi_watchog() in
+> > univ8250_console_write_atomic().
+> >
+> > By other words, touch_nmi_watchog() delays hardlockup report
+> > only on the given CPU.
+> >
+> > An solution is to touch the watchdog also in nbcon_reacquire_nobuf()
+> > because it might get blocked from known reasons. Something like:
+> >
+> > Alternative solution would be to release the console ownership in
+> > __nbcon_atomic_flush_pending_con() between each record. It might
+> > give the kthread a chance to restore the IRQ setting an continue.
+> >
+> > It might be better. But we would need to make sure that the kthread
+> > would stay blocked until the emergency context flushes all messages.
+> > Otherwise, the kthread would repeatedly lose the console ownership
+> > in the middle of the message when __nbcon_atomic_flush_pending_con()
+> > would acquire the context with NBCON_EMERGENCY_PRIO for the next
+> > pending message.
+> >
+> > We might need similar handshake also between panic and emergency
+> > context.
+> >
+> > I am not sure if this is worth the complexity.
+> >
+> > What do you think?
+> 
+> Originally I had implemented the atomic flushing to release between
+> records. The problem is, as you mentioned, that the threaded printers
+> keep jumping back in. So you end up with lots of "replaying previous
+> printk message" from the atomic printer taking over all the time. This
+> is visible from a simple WARN() and it is ugly as hell.
+> 
+> Trying to make the output clean is quite tricky. Mainly because the
+> lower-prio context (which may or may not be the kthread printer) and the
+> higher-prio context need to understand each other's intentions and
+> somehow coordinate. My code started to look like I was implementing a
+> second layer of ownership (indended ownership) and/or some type of
+> bizarre scheduling with "printing-prio boosting" and/or "proxy console
+> ownership". It was a lot of code to make emergency blocks look sane.
 
-The hardware is similar to 8250, but there are the following
-differences:
- - Some chips (such as Loongson-2K2000) have added a fractional division
-   register to obtain the required baud rate accurately, so the
-   {get,set}_divisor callback is overridden.
- - Due to hardware defects, quirk handling is required for
-   UART_MCR/UART_MSR.
+I tried to implement some naive solution, see below. I think that
+it can be described as the 2nd layer of ownership.
 
-Co-developed-by: Haowei Zheng <zhenghaowei@loongson.cn>
-Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
-Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
+It does not look that complicated. It might be because I used it only
+in two paths which do the writing. And it is possible that it does
+not work properly.
+
+Then I got another idea. It might even easier.
+
+> In the end I decided to keep things simple and let the kthread printer
+> busy-wait,
+
+I think that it might actually be enough to block the kthread when
+any CPU is in emergency context, for example, by using a global
+atomit counter.
+
+There should not be problem with panic because
+nbcon_context_try_acquire() fails on non-panic CPUs anyway.
+
+I am going to try this approach.
+
+> possibly with interrupts disabled. Your suggestion of adding
+> touch_nmi_watchdog() to nbcon_reacquire_nobuf() would also follow that
+> line of simplicity. The simplicity comes at the cost of possibly having
+> two CPUs dedicated to atomically flushing a single console (one that is
+> actually printing and one that is the busy-waiting normal-prio printer).
+
+Yup.
+
+> Note that for PREEMPT_RT the hardware interrupts are not actually
+> disabled. That is not an excuse to keep things this way, just a
+> reminder. Non-RT may also want to use that 2nd CPU for something useful,
+> in which case we would need the higher-prio printer to somehow
+> temporarily yield ownership to the lower-prio printer. And quite
+> frankly, that is not something the nbcon console ownership model was
+> designed to support.
+
+Good to know.
+
+> If we can come up with an elegant way to handle the temporary transfer
+> while preserving clean output, I am all for it. I will take another look
+> and see if I can come up with a _proper_ (no duct tape) solution.
+
+I am not sure if you already started working on it. I rather share
+my naive ideas early so that I do not duplicate the effort.
+It is possible that you have been there.
+
+Anyway, here is POC of an API which blocks writing/flushing
+in a context with a lower priority:
+
+From 5d8f9c61c8f67096feca5972c5e7f751c8371b9f Mon Sep 17 00:00:00 2001
+From: Petr Mladek <pmladek@suse.com>
+Date: Wed, 24 Sep 2025 10:42:26 +0200
+Subject: [POC] printk/nbcon: Allow to release console context after each
+ record in atomic_flush
+
+It gives nbcon_reacquire_nobuf() to acquire the ownership to clean up
+the console after the interrupted write_thread() call and allow
+to preempt the printk kthread.
+
+Add an API to block writing/flushing messages in a context with
+lower priority. Otherwise, it would start flushing a pending
+message and get interrupted again by the higher priority context.
+
+The API is used in both code paths which try to acquire the nbcon
+console ownership and try to write a message using
+nbcon_emit_next_record().
+
+The priority field is set in nbcon unsafe context which
+prevents takeovers. The context must not clear it after
+loosing the console ownership.
+
+Failure to reserve the flush priority is handled the same way
+as a failure to get the context ownership. So, it might somehow
+work.
+
+Warning: This is just a POC. The code is not tested.
+
+FIXME: The clearing of the flush priority is racy. It might
+       clear a value set by another context when it was
+       cleared by a higher priority context in the mean
+       time.
+
+       There are ways to fix it.
+
+       But wait! It might be enough to synchronize normal vs. emergency
+       context. Non-panic context won't be able to get
+       the ownership anyway.
+
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 ---
- drivers/tty/serial/8250/8250_loongson.c | 202 ++++++++++++++++++++++++
- drivers/tty/serial/8250/8250_port.c     |   8 +
- drivers/tty/serial/8250/Kconfig         |  10 ++
- drivers/tty/serial/8250/Makefile        |   1 +
- include/uapi/linux/serial_core.h        |   1 +
- 5 files changed, 222 insertions(+)
- create mode 100644 drivers/tty/serial/8250/8250_loongson.c
+ include/linux/console.h |  2 +
+ kernel/printk/nbcon.c   | 86 ++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 86 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_loongson.c b/drivers/tty/serial/8250/8250_loongson.c
-new file mode 100644
-index 000000000000..a114b4e6d5c3
---- /dev/null
-+++ b/drivers/tty/serial/8250/8250_loongson.c
-@@ -0,0 +1,202 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Serial Port driver for Loongson family chips
+diff --git a/include/linux/console.h b/include/linux/console.h
+index 8f10d0a85bb4..51750f92673f 100644
+--- a/include/linux/console.h
++++ b/include/linux/console.h
+@@ -326,6 +326,7 @@ struct nbcon_write_context {
+  * @nbcon_seq:		Sequence number of the next record for nbcon to print
+  * @nbcon_device_ctxt:	Context available for non-printing operations
+  * @nbcon_prev_seq:	Seq num the previous nbcon owner was assigned to print
++ * @nbcon_flush_prio:   Priority of a context flushing the console
+  * @pbufs:		Pointer to nbcon private buffer
+  * @kthread:		Printer kthread for this console
+  * @rcuwait:		RCU-safe wait object for @kthread waking
+@@ -461,6 +462,7 @@ struct console {
+ 	atomic_long_t		__private nbcon_seq;
+ 	struct nbcon_context	__private nbcon_device_ctxt;
+ 	atomic_long_t           __private nbcon_prev_seq;
++	enum nbcon_prio		__private nbcon_flush_prio;
+ 
+ 	struct printk_buffers	*pbufs;
+ 	struct task_struct	*kthread;
+diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
+index 646801813415..575b2628e0b2 100644
+--- a/kernel/printk/nbcon.c
++++ b/kernel/printk/nbcon.c
+@@ -911,6 +911,78 @@ bool nbcon_exit_unsafe(struct nbcon_write_context *wctxt)
+ }
+ EXPORT_SYMBOL_GPL(nbcon_exit_unsafe);
+ 
++/**
++ * nbcon_context_get_flush_prio - Reserve writing by the given context priority
++ * @wctxt:	The write context which wants to write messages
 + *
-+ * Copyright (C) 2020-2025 Loongson Technology Corporation Limited
++ * The function allows to reserve rights for emitting/flushing messages with
++ * the priority of the given context.
++ *
++ * It signalizes an intention to flush pending messages.
++ *
++ * The motivation is to allow releasing the nbcon console ownership after
++ * each emitted message and still block any context with a lower priority
++ * from flushing the pending messages. It prevents repeated interrupts
++ * of the lower priority context in the middle of the message.
++ *
++ * Return:	True when the write context might try to flush messages.
++ *		False when a context with a higher priority is flushing
++ *		messages.
++ *
++ * FIXME: Maybe, only the NORMAL vs. EMERGENCY context is interesting.
++ *	  Both these context will get blocked when there is a panic
++ *	  in progress,
++ *
++ * It might be enough to synchronize kthread vs. emergency_enter/exit API.
++ * Well, there is also the legacy kthread.
 + */
-+
-+#include <linux/bitfield.h>
-+#include <linux/module.h>
-+#include <linux/property.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/reset.h>
-+
-+#include "8250.h"
-+
-+/* Divisor Latch Fraction Register */
-+#define LOONGSON_UART_DLF		0x2
-+
-+/* Flags */
-+#define LOONGSON_UART_HAS_FRAC		BIT(0)
-+#define LOONGSON_UART_QUIRK_MCR		BIT(1)
-+#define LOONGSON_UART_QUIRK_MSR		BIT(2)
-+
-+#define LS2K0500_UART_FLAG	(LOONGSON_UART_QUIRK_MCR | LOONGSON_UART_QUIRK_MSR)
-+#define LS2K1500_UART_FLAG	(LOONGSON_UART_HAS_FRAC | LOONGSON_UART_QUIRK_MCR)
-+
-+struct loongson_uart_data {
-+	int line;
-+	int mcr_invert;
-+	int msr_invert;
-+	struct reset_control *rst;
-+};
-+
-+static unsigned int serial_fixup(struct uart_port *p, unsigned int offset, unsigned int val)
++int nbcon_context_get_flush_prio(struct nbcon_write_context *wctxt)
 +{
-+	struct loongson_uart_data *ddata = p->private_data;
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++	struct console *con = ctxt->console;
++	ret = true;
 +
-+	if (offset == UART_MCR)
-+		val ^= ddata->mcr_invert;
++	if (!nbcon_context_try_acquire(ctxt, false))
++		return false;
 +
-+	if (offset == UART_MSR)
-+		val ^= ddata->msr_invert;
++	if (!nbcon_context_enter_unsafe(ctxt))
++		return false;
 +
-+	return val;
++	if (con->nbcon_flush_prio <= ctxt->prio)
++		con->nbcon_flush_prio = ctxt->prio;
++	else
++		ret = false;
++
++	if (!nbcon_context_exit_unsafe(ctxt))
++		ret = false;
++
++	nbcon_context_release(ctxt);
++
++	return ret;
 +}
 +
-+static u32 loongson_serial_in(struct uart_port *p, unsigned int offset)
++void nbcon_context_put_flush_prio(struct nbcon_write_context *wctxt)
 +{
-+	unsigned int val;
++	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
++	struct console *con = ctxt->console;
++	ret = 0;
 +
-+	val = readb(p->membase + (offset << p->regshift));
++	if (!nbcon_context_try_acquire(ctxt, false))
++		return -EPERM;
 +
-+	return serial_fixup(p, offset, val);
++	if (!nbcon_context_enter_unsafe(ctxt))
++		return -EAGAIN;
++
++	con->nbcon_flush_prio = NBCON_PRIO_NONE;
++
++	if (!nbcon_context_exit_unsafe(ctxt))
++		ret = -EAGAIN;
++
++	nbcon_context_release(ctxt);
++
++	return ret;
 +}
 +
-+static void loongson_serial_out(struct uart_port *p, unsigned int offset, unsigned int value)
-+{
-+	offset <<= p->regshift;
-+	writeb(serial_fixup(p, offset, value), p->membase + offset);
-+}
-+
-+static unsigned int loongson_frac_get_divisor(struct uart_port *port, unsigned int baud,
-+					      unsigned int *frac)
-+{
-+	unsigned int quot;
-+
-+	quot = DIV_ROUND_CLOSEST((port->uartclk << 4), baud);
-+	*frac = FIELD_GET(GENMASK(7, 0), quot);
-+
-+	return FIELD_GET(GENMASK(15, 8), quot);
-+}
-+
-+static void loongson_frac_set_divisor(struct uart_port *port, unsigned int baud,
-+				      unsigned int quot, unsigned int quot_frac)
-+{
-+	struct uart_8250_port *up = up_to_u8250p(port);
-+
-+	serial_port_out(port, UART_LCR, up->lcr | UART_LCR_DLAB);
-+	serial_dl_write(up, quot);
-+	serial_port_out(port, LOONGSON_UART_DLF, quot_frac);
-+}
-+
-+static int loongson_uart_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct uart_8250_port uart = {};
-+	struct loongson_uart_data *ddata;
-+	struct resource *res;
-+	unsigned int flags;
-+	int ret;
-+
-+	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-+	if (!ddata)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -ENODEV;
-+
-+	uart.port.irq = platform_get_irq(pdev, 0);
-+	if (uart.port.irq < 0)
-+		return -EINVAL;
-+
-+	device_property_read_u32(dev, "clock-frequency", &uart.port.uartclk);
-+
-+	spin_lock_init(&uart.port.lock);
-+	uart.port.flags = UPF_SHARE_IRQ | UPF_FIXED_PORT | UPF_FIXED_TYPE | UPF_IOREMAP;
-+	uart.port.iotype = UPIO_MEM;
-+	uart.port.regshift = 0;
-+	uart.port.dev = dev;
-+	uart.port.type = PORT_LOONGSON;
-+	uart.port.private_data = ddata;
-+
-+	uart.port.mapbase = res->start;
-+	uart.port.mapsize = resource_size(res);
-+	uart.port.serial_in = loongson_serial_in;
-+	uart.port.serial_out = loongson_serial_out;
-+
-+	flags = (uintptr_t)device_get_match_data(dev);
-+
-+	if (flags & LOONGSON_UART_HAS_FRAC) {
-+		uart.port.get_divisor = loongson_frac_get_divisor;
-+		uart.port.set_divisor = loongson_frac_set_divisor;
-+	}
-+
-+	if (flags & LOONGSON_UART_QUIRK_MCR)
-+		ddata->mcr_invert |= (UART_MCR_RTS | UART_MCR_DTR);
-+
-+	if (flags & LOONGSON_UART_QUIRK_MSR)
-+		ddata->msr_invert |= (UART_MSR_CTS | UART_MSR_DSR);
-+
-+	ddata->rst = devm_reset_control_get_optional_shared(dev, NULL);
-+	if (IS_ERR(ddata->rst))
-+		return PTR_ERR(ddata->rst);
-+
-+	ret = reset_control_deassert(ddata->rst);
-+	if (ret)
-+		return ret;
-+
-+	ret = serial8250_register_8250_port(&uart);
-+	if (ret < 0) {
-+		reset_control_assert(ddata->rst);
-+		return ret;
-+	}
-+
-+	ddata->line = ret;
-+	platform_set_drvdata(pdev, ddata);
-+
-+	return 0;
-+}
-+
-+static void loongson_uart_remove(struct platform_device *pdev)
-+{
-+	struct loongson_uart_data *ddata = platform_get_drvdata(pdev);
-+
-+	serial8250_unregister_port(ddata->line);
-+	reset_control_assert(ddata->rst);
-+}
-+
-+static int loongson_uart_suspend(struct device *dev)
-+{
-+	struct loongson_uart_data *ddata = dev_get_drvdata(dev);
-+
-+	serial8250_suspend_port(ddata->line);
-+
-+	return 0;
-+}
-+
-+static int loongson_uart_resume(struct device *dev)
-+{
-+	struct loongson_uart_data *data = dev_get_drvdata(dev);
-+
-+	serial8250_resume_port(data->line);
-+
-+	return 0;
-+}
-+
-+static DEFINE_SIMPLE_DEV_PM_OPS(loongson_uart_pm_ops, loongson_uart_suspend,
-+				loongson_uart_resume);
-+
-+static const struct of_device_id loongson_uart_of_ids[] = {
-+	{ .compatible = "loongson,ls2k0500-uart", .data = (void *)LS2K0500_UART_FLAG },
-+	{ .compatible = "loongson,ls2k1500-uart", .data = (void *)LS2K1500_UART_FLAG },
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, loongson_uart_of_ids);
-+
-+static struct platform_driver loongson_uart_driver = {
-+	.probe = loongson_uart_probe,
-+	.remove = loongson_uart_remove,
-+	.driver = {
-+		.name = "loongson-uart",
-+		.pm = pm_ptr(&loongson_uart_pm_ops),
-+		.of_match_table = loongson_uart_of_ids,
-+	},
-+};
-+
-+module_platform_driver(loongson_uart_driver);
-+
-+MODULE_DESCRIPTION("Loongson UART driver");
-+MODULE_AUTHOR("Loongson Technology Corporation Limited.");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 719faf92aa8a..53efe841656f 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -310,6 +310,14 @@ static const struct serial8250_config uart_config[] = {
- 		.rxtrig_bytes	= {1, 8, 16, 30},
- 		.flags		= UART_CAP_FIFO | UART_CAP_AFE,
- 	},
-+	[PORT_LOONGSON] = {
-+		.name		= "Loongson",
-+		.fifo_size	= 16,
-+		.tx_loadsz	= 16,
-+		.fcr		= UART_FCR_ENABLE_FIFO | UART_FCR_R_TRIG_10,
-+		.rxtrig_bytes   = {1, 4, 8, 14},
-+		.flags		= UART_CAP_FIFO,
-+	},
- };
+ /**
+  * nbcon_reacquire_nobuf - Reacquire a console after losing ownership
+  *				while printing
+@@ -1120,6 +1192,8 @@ static bool nbcon_emit_one(struct nbcon_write_context *wctxt, bool use_atomic)
+ 		cant_migrate();
+ 	}
  
- /* Uart divisor latch read */
-diff --git a/drivers/tty/serial/8250/Kconfig b/drivers/tty/serial/8250/Kconfig
-index f64ef0819cd4..98236b3bec10 100644
---- a/drivers/tty/serial/8250/Kconfig
-+++ b/drivers/tty/serial/8250/Kconfig
-@@ -468,6 +468,16 @@ config SERIAL_8250_OMAP_TTYO_FIXUP
- 	  not booting kernel because the serial console remains silent in case
- 	  they forgot to update the command line.
++	if (!nbcon_context_get_flush_prio(wctxt))
++		goto out;
+ 	if (!nbcon_context_try_acquire(ctxt, false))
+ 		goto out;
  
-+config SERIAL_8250_LOONGSON
-+	tristate "Loongson 8250 based serial port"
-+	depends on SERIAL_8250
-+	depends on LOONGARCH || COMPILE_TEST
-+	help
-+	  If you have a machine based on LoongArch CPU you can enable
-+	  its onboard serial ports by enabling this option. The option
-+	  is applicable to both devicetree and ACPI, say Y to this option.
-+	  If unsure, say N.
+@@ -1135,6 +1209,7 @@ static bool nbcon_emit_one(struct nbcon_write_context *wctxt, bool use_atomic)
+ 		goto out;
+ 
+ 	nbcon_context_release(ctxt);
++	nbcon_context_put_flush_prio(wctxt);
+ 
+ 	ret = ctxt->backlog;
+ out:
+@@ -1505,10 +1580,13 @@ static int __nbcon_atomic_flush_pending_con(struct console *con, u64 stop_seq,
+ 	ctxt->prio			= nbcon_get_default_prio();
+ 	ctxt->allow_unsafe_takeover	= allow_unsafe_takeover;
+ 
+-	if (!nbcon_context_try_acquire(ctxt, false))
++	if (!nbcon_context_get_flush_prio(&wctxt);
+ 		return -EPERM;
+ 
+ 	while (nbcon_seq_read(con) < stop_seq) {
++		if (!nbcon_context_try_acquire(ctxt, false))
++			return -EPERM;
 +
- config SERIAL_8250_LPC18XX
- 	tristate "NXP LPC18xx/43xx serial port support"
- 	depends on SERIAL_8250 && OF && (ARCH_LPC18XX || COMPILE_TEST)
-diff --git a/drivers/tty/serial/8250/Makefile b/drivers/tty/serial/8250/Makefile
-index 513a0941c284..e318a3240789 100644
---- a/drivers/tty/serial/8250/Makefile
-+++ b/drivers/tty/serial/8250/Makefile
-@@ -38,6 +38,7 @@ obj-$(CONFIG_SERIAL_8250_HP300)		+= 8250_hp300.o
- obj-$(CONFIG_SERIAL_8250_HUB6)		+= 8250_hub6.o
- obj-$(CONFIG_SERIAL_8250_INGENIC)	+= 8250_ingenic.o
- obj-$(CONFIG_SERIAL_8250_IOC3)		+= 8250_ioc3.o
-+obj-$(CONFIG_SERIAL_8250_LOONGSON)	+= 8250_loongson.o
- obj-$(CONFIG_SERIAL_8250_LPC18XX)	+= 8250_lpc18xx.o
- obj-$(CONFIG_SERIAL_8250_LPSS)		+= 8250_lpss.o
- obj-$(CONFIG_SERIAL_8250_MEN_MCB)	+= 8250_men_mcb.o
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
-index 9c007a106330..607cf060a72a 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -31,6 +31,7 @@
- #define PORT_ALTR_16550_F128 28 /* Altera 16550 UART with 128 FIFOs */
- #define PORT_RT2880	29	/* Ralink RT2880 internal UART */
- #define PORT_16550A_FSL64 30	/* Freescale 16550 UART with 64 FIFOs */
-+#define PORT_LOONGSON	31	/* Loongson 16550 UART */
+ 		/*
+ 		 * nbcon_emit_next_record() returns false when the console was
+ 		 * handed over or taken over. In both cases the context is no
+@@ -1523,10 +1601,14 @@ static int __nbcon_atomic_flush_pending_con(struct console *con, u64 stop_seq,
+ 				err = -ENOENT;
+ 			break;
+ 		}
++
++		nbcon_context_release(ctxt);
+ 	}
  
- /*
-  * ARM specific type numbers.  These are not currently guaranteed
+-	nbcon_context_release(ctxt);
++	nbcon_context_put_flush_prio(&wctxt);
++
+ 	return err;
++
+ }
+ 
+ /**
 -- 
-2.47.3
+2.51.0
 
+I am going to try an easier approach which would just block the
+kthread when any CPU is in emergency context.
+
+Best Regards,
+Petr
