@@ -1,58 +1,62 @@
 Received: from mxout70.expurgate.net (mxout70.expurgate.net [91.198.224.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECE7723A99E;
-	Wed, 24 Sep 2025 13:41:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0814B304BDF;
+	Wed, 24 Sep 2025 13:44:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.198.224.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758721314; cv=none; b=L9ylqH2u2aL0GO5j9/V0sTHPSt6d/2A9smgUrnJUFkk0O9T/nE9oQABNdokRNBCvEKDG/+nBMbNqya834eSACpZnxTB3TJbkTNdwlgE+pihm6pV71uJkqZ03/dxW6BWn+P+woboUzUl506zgR46v3JRt8p3Sh5Eu4/AA+qrzbwU=
+	t=1758721446; cv=none; b=r38G4WereIs6M88SjQkRbLZjHo9G3fsYqjII0Y4iFebJYqXPB0IEs+e0V5+sR37XWr3LbvE4+omVYQeGsrHziVL2gGqxquvrLHd87jp5Tt9dE5yOgqSWC5V+0nUDxMRV7saOSmUZ8e3LWg8hG+YPzFS4fd4SYQ9EK7JbvwkkJUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758721314; c=relaxed/simple;
-	bh=bMfjgt0zuFACnPatM0wC6i0UpEJUWx4nsS7UCSaXjtg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=gaf6AxsU+NWxJiKlw6ue9Y6IRr2V3t/aeVnhsIYBNiW7LJwyrA8s6EDz7dm7/DRL8l4zrQmAq9Zvf+LhQhd95YOt7dh92G7Zro4OJR6IjJtXA77mlNrnMxecpmOCCUg8vlo2WvCpZcW2jDPmS/sd944EAzL/NwMdAHrRq2ApMzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dev.tdt.de; spf=pass smtp.mailfrom=dev.tdt.de; dkim=temperror (0-bit key) header.d=dev.tdt.de header.i=@dev.tdt.de header.b=fH+6Zg7+; arc=none smtp.client-ip=91.198.224.70
+	s=arc-20240116; t=1758721446; c=relaxed/simple;
+	bh=k14L0GDW8becF8NGOUpw+cLrQO/7WBC7qFAlCeJM9Xs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=EMkcmI4W+hpa01nOLRdtUT2B0qewT/QSBfxerj0bQkyHp2jQmcgXi1eRNOxzRP4MhHurvSYRHV7iMsoE7qMi4uz9KzrI3Q2ZQD0zJ4YbkHSfYr/lGh08H90bYmRBMG7uRMvajnx7FpM26Ikui0zsFTjBFv++HPfSEGN2kGJ+DQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dev.tdt.de; spf=pass smtp.mailfrom=dev.tdt.de; dkim=temperror (0-bit key) header.d=dev.tdt.de header.i=@dev.tdt.de header.b=EjxMOUKS; arc=none smtp.client-ip=91.198.224.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dev.tdt.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dev.tdt.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=temperror (0-bit key) header.d=dev.tdt.de header.i=@dev.tdt.de header.b="fH+6Zg7+"
+	dkim=temperror (0-bit key) header.d=dev.tdt.de header.i=@dev.tdt.de header.b="EjxMOUKS"
 Received: from [194.37.255.9] (helo=mxout.expurgate.net)
 	by relay.expurgate.net with smtp (Exim 4.92)
 	(envelope-from <prvs=8376ac7522=fe@dev.tdt.de>)
-	id 1v1Pkc-00BdZR-1e; Wed, 24 Sep 2025 15:41:42 +0200
+	id 1v1Pfa-00BbW5-T8; Wed, 24 Sep 2025 15:36:30 +0200
 Received: from [195.243.126.94] (helo=securemail.tdt.de)
 	by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <fe@dev.tdt.de>)
-	id 1v1Pka-00B8RZ-UQ; Wed, 24 Sep 2025 15:41:40 +0200
+	id 1v1PfZ-00FCuR-Cw; Wed, 24 Sep 2025 15:36:29 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dev.tdt.de;
-	s=z1-selector1; t=1758721300;
-	bh=mlsi0Pk8mNlr2tL7GUgmd79KviwHbO4DTqqn7TGQM18=;
+	s=z1-selector1; t=1758720988;
+	bh=bJYsrHx0nwgEiYUjvvl9QWllyAPYJEPKdCvQ9kU4BB0=;
 	h=From:To:Cc:Subject:Date:From;
-	b=fH+6Zg7+4vEEAH5IeOIZA7nsOPAHY14un66csKhzL9yz17VkiCWBkaMyxtFQa+Eey
-	 bloGmRbiQ52HdLoJ1LbLE7fzoUfHA0PIzXJMNYEm1jr+d5oJfZtMl0OB6m6jvs57Ax
-	 sudR9AE+sOkNnL3Hk23olrO19vbjwMDXEt06b1VX6FfKJL2UlVePWrxLlOqJnYwGb9
-	 U2P3mOStil/s9BSRsgJyqu9csxnSfZaFZqu0srThbApTalhlL7rNa9JBGJrIZMLexx
-	 YjAoHj5C4SQovA0bYCSeq7nC7HStJZsbhggx0FDvOQQAj9V3FcEQFM2al5F746+Gkd
-	 jFTliIM+N1NHA==
+	b=EjxMOUKSkedR2oJ09tBi5+5zoBakAEhABEZg3ymxAin5y1InywSLXOlXueuLh6+co
+	 +d5vh9IHRc+SSxz56j9X4qUoR8RJQKo8DXbGxEaEb0841qHDjjrcjA4WEAyT3aInAJ
+	 I67/JlgqcIlvTv8WBzXFjgX8WZKWqsnroiTg4ouzMtIy+fiiYrKSpRuJH5wm6jj+NM
+	 MkGr8YjveivPMaMu4NF7SqGBvBtEapVFCpizqU8XF72RPDKUd8f/hm4sBky6Q9+DpZ
+	 tiQutrkPrMzjrx1bRfYYa6vjFEGAwfLGDidMNsQ2J9ySIBQtWZUGOy4vtujEvXAIsj
+	 ux844YJXugXLw==
 Received: from securemail.tdt.de (localhost [127.0.0.1])
-	by securemail.tdt.de (Postfix) with ESMTP id 54378240040;
-	Wed, 24 Sep 2025 15:41:40 +0200 (CEST)
+	by securemail.tdt.de (Postfix) with ESMTP id E6C14240041;
+	Wed, 24 Sep 2025 15:36:28 +0200 (CEST)
 Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-	by securemail.tdt.de (Postfix) with ESMTP id 4586D240036;
-	Wed, 24 Sep 2025 15:41:40 +0200 (CEST)
+	by securemail.tdt.de (Postfix) with ESMTP id CE374240036;
+	Wed, 24 Sep 2025 15:36:28 +0200 (CEST)
 Received: from localhost.localdomain (unknown [10.2.3.40])
-	by mail.dev.tdt.de (Postfix) with ESMTPSA id D8FE522FAE;
-	Wed, 24 Sep 2025 15:41:39 +0200 (CEST)
+	by mail.dev.tdt.de (Postfix) with ESMTPSA id 4EA4022FAE;
+	Wed, 24 Sep 2025 15:36:28 +0200 (CEST)
 From: Florian Eckert <fe@dev.tdt.de>
 To: gregkh@linuxfoundation.org, jirislaby@kernel.org,
+	kumaravel.thiagarajan@microchip.com,
+	tharunkumar.pasumarthi@microchip.com,
 	andriy.shevchenko@linux.intel.com, pnewman@connecttech.com,
 	angelogioacchino.delregno@collabora.com, peterz@infradead.org,
-	yujiaoliang@vivo.com, Eckert.Florian@googlemail.com
+	yujiaoliang@vivo.com, arnd@kernel.org, cang1@live.co.uk,
+	macro@orcam.me.uk, schnelle@linux.ibm.com,
+	Eckert.Florian@googlemail.com
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
 	Florian Eckert <fe@dev.tdt.de>
-Subject: [PATCH] serial: 8250_exar: add support for Advantech 2 port card with Device ID 0x0018
-Date: Wed, 24 Sep 2025 15:41:15 +0200
-Message-ID: <20250924134115.2667650-1-fe@dev.tdt.de>
+Subject: [PATCH] serial: 8250_pcilib: Replace deprecated PCI functions
+Date: Wed, 24 Sep 2025 15:35:45 +0200
+Message-ID: <20250924133544.2666514-1-fe@dev.tdt.de>
 X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
@@ -61,63 +65,174 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-purgate-ID: 151534::1758721301-B3D80A68-F8C15D0B/0/0
-X-purgate-type: clean
+X-purgate-ID: 151534::1758720990-B1D84A68-3392869A/0/0
 X-purgate: clean
+X-purgate-type: clean
 
-The Advantech 2-port serial card with PCI vendor=3D0x13fe and device=3D0x=
-0018
-has a 'XR17V35X' chip installed on the circuit board. Therefore, this
-driver can be used instead of theu outdated out-of-tree driver from the
-manufacturer.
+When the '8250_exar' module is loaded in to the kernel, a kernel trace
+with 'WARN_ON(legacy_iomap_table[bar])' is dumped to the console,
+because the old pci table mapping is still used in '8250_pcilib'.
+
+The old function have been deprecated in commit e354bb84a4c1 ("PCI:
+Deprecate pcim_iomap_table(), pcim_iomap_regions_request_all()").
+
+The remapping already takes or must take place in the driver that calls
+the function 'serial8250_pci_setup_port()'. The remapping should only be
+called once via 'pcim_iomap()'. Therefore the remapping moved to the
+caller of 'serial8250_pci_setup_port()'.
+
+To use the new functions in '8250_pcilib' the function signature of
+'serial8250_pci_setup_port()' has been extended with an already iomapped
+address value. So this can be used directly without mapping again.
 
 Signed-off-by: Florian Eckert <fe@dev.tdt.de>
 ---
- drivers/tty/serial/8250/8250_exar.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/tty/serial/8250/8250_exar.c     |  4 ++--
+ drivers/tty/serial/8250/8250_pci.c      | 10 +++++++++-
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 10 +++++-----
+ drivers/tty/serial/8250/8250_pcilib.c   |  7 ++-----
+ drivers/tty/serial/8250/8250_pcilib.h   |  2 +-
+ 5 files changed, 19 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/tty/serial/8250/8250_exar.c b/drivers/tty/serial/825=
 0/8250_exar.c
-index 3c16a849b474..c682c0d0dffa 100644
+index 04a0cbab02c2..3c16a849b474 100644
 --- a/drivers/tty/serial/8250/8250_exar.c
 +++ b/drivers/tty/serial/8250/8250_exar.c
-@@ -40,6 +40,8 @@
- #define PCI_DEVICE_ID_ACCESSIO_COM_4SM		0x10db
- #define PCI_DEVICE_ID_ACCESSIO_COM_8SM		0x10ea
+@@ -503,7 +503,7 @@ static int default_setup(struct exar8250 *priv, struc=
+t pci_dev *pcidev,
+ 	unsigned char status;
+ 	int err;
 =20
-+#define PCI_DEVICE_ID_ADVANTECH_XR17V352	0x0018
-+
- #define PCI_DEVICE_ID_COMMTECH_4224PCI335	0x0002
- #define PCI_DEVICE_ID_COMMTECH_4222PCI335	0x0004
- #define PCI_DEVICE_ID_COMMTECH_2324PCI335	0x000a
-@@ -1622,6 +1624,12 @@ static const struct exar8250_board pbn_fastcom35x_=
-8 =3D {
- 	.exit		=3D pci_xr17v35x_exit,
- };
+-	err =3D serial8250_pci_setup_port(pcidev, port, 0, offset, board->reg_s=
+hift);
++	err =3D serial8250_pci_setup_port(pcidev, port, 0, offset, board->reg_s=
+hift, priv->virt);
+ 	if (err)
+ 		return err;
 =20
-+static const struct exar8250_board pbn_adv_XR17V352 =3D {
-+	.num_ports	=3D 2,
-+	.setup		=3D pci_xr17v35x_setup,
-+	.exit		=3D pci_xr17v35x_exit,
-+};
-+
- static const struct exar8250_board pbn_exar_XR17V4358 =3D {
- 	.num_ports	=3D 12,
- 	.setup		=3D pci_xr17v35x_setup,
-@@ -1696,6 +1704,9 @@ static const struct pci_device_id exar_pci_tbl[] =3D=
+@@ -831,7 +831,7 @@ static int cti_port_setup_common(struct exar8250 *pri=
+v,
+ 	port->port.port_id =3D idx;
+ 	port->port.uartclk =3D priv->osc_freq;
+=20
+-	ret =3D serial8250_pci_setup_port(pcidev, port, 0, offset, 0);
++	ret =3D serial8250_pci_setup_port(pcidev, port, 0, offset, 0, priv->vir=
+t);
+ 	if (ret)
+ 		return ret;
+=20
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250=
+/8250_pci.c
+index 152f914c599d..edd5f28f04c6 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -165,7 +165,15 @@ static int
+ setup_port(struct serial_private *priv, struct uart_8250_port *port,
+ 	   u8 bar, unsigned int offset, int regshift)
  {
- 	USR_DEVICE(XR17C152, 2980, pbn_exar_XR17C15x),
- 	USR_DEVICE(XR17C152, 2981, pbn_exar_XR17C15x),
-=20
-+	/* ADVANTECH devices */
-+	EXAR_DEVICE(ADVANTECH, XR17V352, pbn_adv_XR17V352),
+-	return serial8250_pci_setup_port(priv->dev, port, bar, offset, regshift=
+);
++	void __iomem *iomem =3D NULL;
 +
- 	/* Exar Corp. XR17C15[248] Dual/Quad/Octal UART */
- 	EXAR_DEVICE(EXAR, XR17C152, pbn_exar_XR17C15x),
- 	EXAR_DEVICE(EXAR, XR17C154, pbn_exar_XR17C15x),
++	if (pci_resource_flags(priv->dev, bar) & IORESOURCE_MEM) {
++		iomem =3D pcim_iomap(priv->dev, bar, 0);
++		if (IS_ERR(iomem))
++			return -ENOMEM;
++	}
++
++	return serial8250_pci_setup_port(priv->dev, port, bar, offset, regshift=
+, iomem);
+ }
+=20
+ /*
+diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial=
+/8250/8250_pci1xxxx.c
+index 4c149db84692..feeede164886 100644
+--- a/drivers/tty/serial/8250/8250_pci1xxxx.c
++++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
+@@ -671,7 +671,7 @@ static int pci1xxxx_resume(struct device *dev)
+ }
+=20
+ static int pci1xxxx_setup(struct pci_dev *pdev,
+-			  struct uart_8250_port *port, int port_idx, int rev)
++			  struct uart_8250_port *port, int port_idx, struct pci1xxxx_8250 *pr=
+iv)
+ {
+ 	int ret;
+=20
+@@ -698,12 +698,12 @@ static int pci1xxxx_setup(struct pci_dev *pdev,
+ 	 * C0 and later revisions support Burst operation.
+ 	 * RTS workaround in mctrl is applicable only to B0.
+ 	 */
+-	if (rev >=3D 0xC0)
++	if (priv->dev_rev >=3D 0xC0)
+ 		port->port.handle_irq =3D pci1xxxx_handle_irq;
+-	else if (rev =3D=3D 0xB0)
++	else if (priv->dev_rev =3D=3D 0xB0)
+ 		port->port.set_mctrl =3D pci1xxxx_set_mctrl;
+=20
+-	ret =3D serial8250_pci_setup_port(pdev, port, 0, PORT_OFFSET * port_idx=
+, 0);
++	ret =3D serial8250_pci_setup_port(pdev, port, 0, PORT_OFFSET * port_idx=
+, 0, priv->membase);
+ 	if (ret < 0)
+ 		return ret;
+=20
+@@ -821,7 +821,7 @@ static int pci1xxxx_serial_probe(struct pci_dev *pdev=
+,
+ 		else
+ 			uart.port.irq =3D pci_irq_vector(pdev, 0);
+=20
+-		rc =3D pci1xxxx_setup(pdev, &uart, port_idx, priv->dev_rev);
++		rc =3D pci1xxxx_setup(pdev, &uart, port_idx, priv);
+ 		if (rc) {
+ 			dev_warn(dev, "Failed to setup port %u\n", i);
+ 			continue;
+diff --git a/drivers/tty/serial/8250/8250_pcilib.c b/drivers/tty/serial/8=
+250/8250_pcilib.c
+index d8d0ae0d7238..9d5d2531a33b 100644
+--- a/drivers/tty/serial/8250/8250_pcilib.c
++++ b/drivers/tty/serial/8250/8250_pcilib.c
+@@ -22,19 +22,16 @@ int serial_8250_warn_need_ioport(struct pci_dev *dev)
+ EXPORT_SYMBOL_NS_GPL(serial_8250_warn_need_ioport, "SERIAL_8250_PCI");
+=20
+ int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port=
+ *port,
+-		   u8 bar, unsigned int offset, int regshift)
++		   u8 bar, unsigned int offset, int regshift, void __iomem *iomem)
+ {
+ 	if (bar >=3D PCI_STD_NUM_BARS)
+ 		return -EINVAL;
+=20
+ 	if (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {
+-		if (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))
+-			return -ENOMEM;
+-
+ 		port->port.iotype =3D UPIO_MEM;
+ 		port->port.iobase =3D 0;
+ 		port->port.mapbase =3D pci_resource_start(dev, bar) + offset;
+-		port->port.membase =3D pcim_iomap_table(dev)[bar] + offset;
++		port->port.membase =3D iomem + offset;
+ 		port->port.regshift =3D regshift;
+ 	} else if (IS_ENABLED(CONFIG_HAS_IOPORT)) {
+ 		port->port.iotype =3D UPIO_PORT;
+diff --git a/drivers/tty/serial/8250/8250_pcilib.h b/drivers/tty/serial/8=
+250/8250_pcilib.h
+index 16a274574cde..ab18de8d1355 100644
+--- a/drivers/tty/serial/8250/8250_pcilib.h
++++ b/drivers/tty/serial/8250/8250_pcilib.h
+@@ -12,6 +12,6 @@ struct pci_dev;
+ struct uart_8250_port;
+=20
+ int serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port=
+ *port, u8 bar,
+-		   unsigned int offset, int regshift);
++		   unsigned int offset, int regshift, void __iomem *iomem);
+=20
+ int serial_8250_warn_need_ioport(struct pci_dev *dev);
 
 base-commit: 07e27ad16399afcd693be20211b0dfae63e0615f
-prerequisite-patch-id: d226b2363004eee0962a350752df5facc0637d96
 --=20
 2.39.5
 
