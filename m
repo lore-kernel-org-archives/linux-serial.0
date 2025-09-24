@@ -1,66 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4221B24A05D;
-	Wed, 24 Sep 2025 10:22:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CDB72FD1A1
+	for <linux-serial@vger.kernel.org>; Wed, 24 Sep 2025 12:39:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758709369; cv=none; b=FDs3ImGFbNQsWrypq12cBizZjXLVviv0qkf5oNaSntEq+7or3vtcvpi8WLMQaoubdQloi5RLT7e2bn7x242eDyKm41PrjKWcu9t+O+ifKKdBt3MStaM0PiQfdlLKX0vmgad49B2qARQCdINrQ9NosxjIA1lEVtTJMvMdTLK2oBs=
+	t=1758717578; cv=none; b=f8nVMbWKtrOMsZnjvArMENds+6HEV6+vX3ocX9sRsE5n/X5js5t6i0aGKBYrIkJf/cRX3kI1fck0sIfqsf1nXNXVAppkAKQxckxH1TLSwkopouDrXE/iGvaPpmVyDrWUeXLp1zb0emQPag5cJ9XtLXULHyyylX6dtg0FgPoF+U0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758709369; c=relaxed/simple;
-	bh=i/8c57xJ7LfF5nE7wYPBrai8xtoFVnojUkqn4RkrIhc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Aj/b5VxkKU3k0DCXjNq1PinzwsYw98B0/ks3a9DDd4g9m+2/fOL76SAGkOJiMV6bhfcf/pESVwwOCRjZ+IjsMg6KlXkNgt4gYfzW6iknYoDJofSq936zPhJySRZ/qUL0gW5fX9bdHjcyQmiNcPkIbKkkYx3ALcSDwVHVCGtaDCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=Yfjq5iN2; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="Yfjq5iN2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FC48C113CF;
-	Wed, 24 Sep 2025 10:22:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1758709368;
-	bh=i/8c57xJ7LfF5nE7wYPBrai8xtoFVnojUkqn4RkrIhc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Yfjq5iN2jryJpV0DEAGbzF7A+wALDrpHpP1VcQrOAFnoIxQjU+qFPgVE1ps/tquFz
-	 YSBRPpMpOmEv0W96xuGxBRJeAcvTSSxcRwljyV35FjKPJVDTvI4JHT0EeXBxL0GbeD
-	 aiv6255cTI8kqp8DqazIrudVohFMWnqYuAn7awvQ=
-Date: Wed, 24 Sep 2025 12:22:44 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Binbin Zhou <zhoubinbin@loongson.cn>
-Cc: Binbin Zhou <zhoubb.aaron@gmail.com>,
-	Huacai Chen <chenhuacai@loongson.cn>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Haowei Zheng <zhenghaowei@loongson.cn>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 2/3] serial: 8250: Add Loongson uart driver support
-Message-ID: <2025092428-glade-monologue-3663@gregkh>
-References: <cover.1758676290.git.zhoubinbin@loongson.cn>
- <9823e7afe713450e210dab9dba6fa18683dc1fe0.1758676290.git.zhoubinbin@loongson.cn>
+	s=arc-20240116; t=1758717578; c=relaxed/simple;
+	bh=5BwmEdgvAJeOLJOLJEyAwxDLf/GBX79xvmdWxwHrbtE=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=IosD05wiNosZCJZldC4gfBe7umqx7W7CDlkbzp1woUeT+XbHFEZeSDe11kIrj5hgakGhSqB5xu/X9Hu9lLPXSSMCkw2wb1QGxaqdjleAN7vVUCn8V8ZFThABJNtMOY0GGSLWxOH/Ux4O0zQLytLx5RyvUnLB5WUpTHnyJTExli8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-4257ae42790so45454595ab.1
+        for <linux-serial@vger.kernel.org>; Wed, 24 Sep 2025 05:39:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758717575; x=1759322375;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=TvO3WHZV4cUjsOPSkxBuW5KvvwCRHLzz8NDfDahuqGI=;
+        b=ppCoHXqu7SF7kefxZGpd+lhLT+IkZAkOPlv/fIF8aT5HExKWLK+kv/wGUgxZ17e0i3
+         G+oStlniRs94pTZebjmc6HpJYL4EkYDypagexTCg+mjfNCWthMcsDI/ZcOOyX+/P/KEZ
+         YopqPCI1D60wmvxymxtTbFSG/KiTGGtC36gsJSsgNZYiPuRkDw7I47rPCcHjtqNlNv+T
+         mqj9fvC3dxjnQ7iKLIsytdKgWSJA7eJC3rT/R+rRZ5YhdSKyXXDWbWwQ6DGiKglw6i95
+         hPlYaWcxdDHhUUkZ0kjmEA0wwv8oolBwnXQL7FMZ/jG975u6X7kqdM9URHsXsi6I8UAO
+         e5cQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXB9sMNq7EbrSXnoQwOQgXhsERiZDkv3vIV3wqiPbEYu4oi/hU+lAFM/W8nARv9iLnu9CSrccKmjDpEZ3U=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz6JZv43WsXdTqaReVMcbWcUizxDk1uAK1v2xiTIiGE2foSPbCD
+	RBUwZgn/rD9Wpqs1xw4X+GJ2RheO6BoZB7LO84cuW1NlrYYM4WZHCkT+n3mEH5lvf+62YXJdxOC
+	kmmRkOXuZ22uUNcA7ENnF/WyxymuQoCIsdMJnyhhdFWpidDQZn6CXI0wxTx0=
+X-Google-Smtp-Source: AGHT+IEGveIykwsH6KF8mV4UM8C3AOfoVJfD8lgaDmGPexiehp1Ex32ruLFEFEaX22tmDxjG5SfTXRlc+IYEJiXDODgE/yqrm128
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9823e7afe713450e210dab9dba6fa18683dc1fe0.1758676290.git.zhoubinbin@loongson.cn>
+X-Received: by 2002:a05:6e02:1948:b0:423:f924:c885 with SMTP id
+ e9e14a558f8ab-42581e283d4mr108709865ab.13.1758717575504; Wed, 24 Sep 2025
+ 05:39:35 -0700 (PDT)
+Date: Wed, 24 Sep 2025 05:39:35 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68d3e687.a70a0220.4f78.0026.GAE@google.com>
+Subject: [syzbot] Monthly serial report (Sep 2025)
+From: syzbot <syzbot+list3b642417f17c4ad05039@syzkaller.appspotmail.com>
+To: gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org, 
+	linux-serial@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Sep 24, 2025 at 02:29:37PM +0800, Binbin Zhou wrote:
-> --- a/include/uapi/linux/serial_core.h
-> +++ b/include/uapi/linux/serial_core.h
-> @@ -31,6 +31,7 @@
->  #define PORT_ALTR_16550_F128 28 /* Altera 16550 UART with 128 FIFOs */
->  #define PORT_RT2880	29	/* Ralink RT2880 internal UART */
->  #define PORT_16550A_FSL64 30	/* Freescale 16550 UART with 64 FIFOs */
-> +#define PORT_LOONGSON	31	/* Loongson 16550 UART */
+Hello serial maintainers/developers,
 
-Why does userspace need to have this value exported?
+This is a 31-day syzbot report for the serial subsystem.
+All related reports/information can be found at:
+https://syzkaller.appspot.com/upstream/s/serial
 
-thanks,
+During the period, 0 new issues were detected and 0 were fixed.
+In total, 18 issues are still open and 44 have already been fixed.
 
-greg k-h
+Some of the still happening issues:
+
+Ref  Crashes Repro Title
+<1>  2398    Yes   possible deadlock in console_lock_spinning_enable (5)
+                   https://syzkaller.appspot.com/bug?extid=622acb507894a48b2ce9
+<2>  1662    Yes   KMSAN: uninit-value in n_tty_receive_buf_standard
+                   https://syzkaller.appspot.com/bug?extid=559c7fe4b8bac56d38c2
+<3>  398     Yes   BUG: soft lockup in tx
+                   https://syzkaller.appspot.com/bug?extid=5e87db90e68fbc4707c6
+<4>  219     Yes   INFO: task can't die in show_free_areas
+                   https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
+<5>  210     Yes   KASAN: slab-use-after-free Read in tty_write_room (2)
+                   https://syzkaller.appspot.com/bug?extid=2a81fdd5c6ddffee3894
+<6>  167     Yes   KMSAN: uninit-value in n_tty_receive_buf_closing (3)
+                   https://syzkaller.appspot.com/bug?extid=dd514b5f0cf048aec256
+<7>  105     Yes   possible deadlock in tty_buffer_flush (3)
+                   https://syzkaller.appspot.com/bug?extid=52cf91760dcb1dac6376
+<8>  31      No    KMSAN: uninit-value in gsmld_receive_buf
+                   https://syzkaller.appspot.com/bug?extid=2f64914d6a3a8ce91bdd
+<9>  31      No    KMSAN: uninit-value in n_tty_lookahead_flow_ctrl (2)
+                   https://syzkaller.appspot.com/bug?extid=290abdcd4f509377a0eb
+<10> 18      Yes   INFO: rcu detected stall in console_callback
+                   https://syzkaller.appspot.com/bug?extid=32af18ae7b894a681f2d
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+To disable reminders for individual bugs, reply with the following command:
+#syz set <Ref> no-reminders
+
+To change bug's subsystems, reply with:
+#syz set <Ref> subsystems: new-subsystem
+
+You may send multiple commands in a single email message.
