@@ -1,107 +1,77 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 082593148AF;
-	Wed, 24 Sep 2025 15:38:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E04B021765B;
+	Wed, 24 Sep 2025 19:19:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758728285; cv=none; b=crO5MX4ZVhgxN4GuUUqKTXC4autEJIacc5VNdkHKrGii8YP7Cf/vbSM0ZWocYs8pcTk40oRc3Uz08CKLP3WtXBXaN3EIMifhLS7J3lhhJgvJtA6KRfyoBbCI22a/XGZoVdWRnIlYvtfJXAFxR31niuep9uatMQa5UQLjQkZwhwU=
+	t=1758741554; cv=none; b=D/0IOKtlMsucdiL/8Lt2r/zeNpU9fFgqKA2zIwacH5j6XHQ9O/ZaNTCRfBY1MDXgPZSdYZiY4CwQjztC+E5IVyDiiflwdWm8BI6hJmZ7mRcuGqiRqyshZyV5Ue1kxvqg31fEfTrbc17OFXVhAv0CldMaJQWzeSmMtJEN+gWGI1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758728285; c=relaxed/simple;
-	bh=YbWJgC67kyN9zpskAusizW5T9F9lBZcWEV+qLGl9EwI=;
-	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
-	 Subject; b=rvLLKCnsk6z8ssVnE5OGkXkMvC0yhzaEZXZb1ICrqXnqU5EmHhdw6x6H3n5C5iLTkAEa3jyY04g/YGm13gV/d2HwBeb38G8ygx5x7+tvZA0gllBVlciCs6delnF/E8jgjSymstlXBO2KI3WJqWB1l528VGFTY/lgAITXd+DLHfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=rwXZ522d; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1758741554; c=relaxed/simple;
+	bh=mdCv3RD3cqfZ0s/HDZ28RMQmcKAk9mNqnr5oGlONhDk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cBySYC7mrVYuE08n2pw+6NwNkobk4M9z3aNAUiStHAIhCPcDkvZPXBe+5VEDorRsDSXj7Bqfwf3ShntfBB+m4qa79Gv9xCVhC3sQltLoD02dFTO3wuhbtUfgpw4+pbNd39NuPzza+KDmphVffPiTFJhM1UINTaLG62o2RHlBx/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RUguPH5Q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="rwXZ522d"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-	:From:subject:date:message-id:reply-to;
-	bh=uSpLHXat2jMGBVLTbF5QQfMKAVtoAVNqQ3YP6QhxNYc=; b=rwXZ522deZwQlLT3/mc86qVPkS
-	GNLeAATsU16xcQMYVHymgJc2HTt4Uj6p/ZnoRExZcdEAzBu5ZRw1/9tRRldpaMIUaGNfZ9h/2aPaM
-	O40QG6Wg4OANldXqvPwcXsogxTeGpUkHjbQwzJkeJ0n8s7lPJDtE/rbiAYJdOYxBDFvc=;
-Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:51978 helo=localhost.localdomain)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1v1RZB-0000RT-7O; Wed, 24 Sep 2025 11:38:01 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	fvallee@eukrea.fr
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Wed, 24 Sep 2025 11:37:40 -0400
-Message-Id: <20250924153740.806444-16-hugo@hugovil.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250924153740.806444-1-hugo@hugovil.com>
-References: <20250924153740.806444-1-hugo@hugovil.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RUguPH5Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A1DC4CEE7;
+	Wed, 24 Sep 2025 19:19:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1758741552;
+	bh=mdCv3RD3cqfZ0s/HDZ28RMQmcKAk9mNqnr5oGlONhDk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RUguPH5Q4wqiy4rY5r4C5TxUAecFtgkdEWdBxuFAGkqMFLfsFNd60mOu0VfXgW4my
+	 PbGIgECqxOBUJYHrAV9PRHJHM5HP7l3gA4ME8cS9wi3xvzomCBiLus738dBD0lBsIi
+	 OKpgHXiGvjuupgabqQPB5/Hn7kxfHmKnPgU9PBq1h8vekKzwzClGX3kM5MPjKP94ky
+	 fgtAbRTNallIf5AEwOURJoEO0f2ualY933y17WscGMT6nG/yDuho4J0cwgPni6Y0GI
+	 RBnYzCsk+Pi/HIkqJywfLY+/nkH/MfYxejkClJjkUbYg7jSCIsvptZ0oxsatmbWC/+
+	 wv8DCldfAFhQg==
+Date: Wed, 24 Sep 2025 20:19:07 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Binbin Zhou <zhoubinbin@loongson.cn>
+Cc: Binbin Zhou <zhoubb.aaron@gmail.com>,
+	Huacai Chen <chenhuacai@loongson.cn>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Haowei Zheng <zhenghaowei@loongson.cn>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 1/3] dt-bindings: serial: 8250: Add Loongson uart
+ compatible
+Message-ID: <20250924-reappoint-routing-d5f2bac03d17@spud>
+References: <cover.1758676290.git.zhoubinbin@loongson.cn>
+ <ade57dcdd021de6824a15d4aa11aa9cbeebce169.1758676290.git.zhoubinbin@loongson.cn>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 184.161.19.61
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-Subject: [PATCH 15/15] serial: sc16is7xx: add/improve comments
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="GxWE5Bo9wF1mObcJ"
+Content-Disposition: inline
+In-Reply-To: <ade57dcdd021de6824a15d4aa11aa9cbeebce169.1758676290.git.zhoubinbin@loongson.cn>
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Indicate why lock needs to be asserted when accessing
-MSR register, as this is not immediately obvious when looking at this
-register in the device datasheet.
+--GxWE5Bo9wF1mObcJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/sc16is7xx.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index b3fbe9459303a..09f03edf0e5cb 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -164,7 +164,7 @@
- 						  * - only on 75x/76x
- 						  */
- #define SC16IS7XX_MCR_RTS_BIT		BIT(1)   /* RTS complement */
--#define SC16IS7XX_MCR_TCRTLR_BIT	BIT(2)   /* TCR/TLR register enable */
-+#define SC16IS7XX_MCR_TCRTLR_BIT	BIT(2)   /* TCR/TLR registers enable */
- #define SC16IS7XX_MCR_LOOP_BIT		BIT(4)   /* Enable loopback test mode */
- #define SC16IS7XX_MCR_XONANY_BIT	BIT(5)   /* Enable Xon Any
- 						  * - write enabled
-@@ -545,10 +545,10 @@ EXPORT_SYMBOL_GPL(sc16is762_devtype);
- static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
- {
- 	switch (reg) {
--	case SC16IS7XX_RHR_REG:
--	case SC16IS7XX_IIR_REG:
--	case SC16IS7XX_LSR_REG:
--	case SC16IS7XX_MSR_REG:
-+	case SC16IS7XX_RHR_REG: /* Shared address space with THR & DLL */
-+	case SC16IS7XX_IIR_REG: /* Shared address space with FCR & EFR */
-+	case SC16IS7XX_LSR_REG: /* Shared address space with XON2 */
-+	case SC16IS7XX_MSR_REG: /* Shared address space with TCR & XOFF1 */
- 	case SC16IS7XX_SPR_REG: /* Shared address space with TLR & XOFF2 */
- 	case SC16IS7XX_TXLVL_REG:
- 	case SC16IS7XX_RXLVL_REG:
-@@ -757,6 +757,7 @@ static void sc16is7xx_update_mlines(struct sc16is7xx_one *one)
- 	unsigned long flags;
- 	unsigned int status, changed;
- 
-+	/* Lock required as MSR address is shared with TCR and XOFF1. */
- 	lockdep_assert_held_once(&one->lock);
- 
- 	status = sc16is7xx_get_hwmctrl(port);
--- 
-2.39.5
+--GxWE5Bo9wF1mObcJ
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaNREKwAKCRB4tDGHoIJi
+0htfAQCNlzeTu9RvA3UDJqaCK1bBmzghgSoSEejoGtCvm55t4AEA+90IInlq2gT6
+CN1a6/aOTpDf3UldWxeywTdcW2ToAws=
+=nFLt
+-----END PGP SIGNATURE-----
+
+--GxWE5Bo9wF1mObcJ--
