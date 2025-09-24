@@ -1,31 +1,31 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0B14311C21;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08EBE311C0C;
 	Wed, 24 Sep 2025 15:37:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758728281; cv=none; b=cmW+Y/l4V2cUlDhVxrmN3z/mzb9Xk0ZztCKIvuYsy0yDlTe2oucR1xRh0Nuc6ksg8FApsFteCowsm7DU4X+RfQQw5A/4jqQXiQPGj32sWNm46ZnSuBrR94bbZ2mY6VzKcgkNdSHVvEDWp9LNcUSf6KEsJuKbFz8DoTMSsw5a1pI=
+	t=1758728282; cv=none; b=ADwjpztBZqed8qCaulvOvOgob/El0+M+jmDjim9SbAsHPgjGpsuyi5rwoG98gKwif2yxbp0n62vg+8beqjyw4AVtWQUh5ENkM2J5Twlwo4hd8Da086pmGuok+zj6ynxVL+fUaqiCnTx8HjKkepuZAttPnsjU6Nn3rjl4PUoV9bw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758728281; c=relaxed/simple;
-	bh=YOxbARnHKi+YR7TPmZakIQ7broJCGgGzgpN+9ltjhnI=;
+	s=arc-20240116; t=1758728282; c=relaxed/simple;
+	bh=Nh7aBr5KYkQBsAqKOi50IdV/Xi0XD+m/VjeNMRt6v7U=;
 	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
-	 Subject; b=BWO/7CwhftvT8x/FSmhqWVOzmI8L5yMlJzUdt/Nt/mOyJZMangMcv6xRgCriw+AXIRp6hzKUZfT7cAHT8WgTe5hLu2ccQhD8l/A7ZbsjGPiW6VeCp/yJ9USBMoRhyxoJJyNFvKg2x87QhJCzbtsERb359eN6aOFaZUwMUcZ3qE4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=FIBZ7e5c; arc=none smtp.client-ip=162.243.120.170
+	 Subject; b=jqBhu43a0ZPJrY7cN2oYNmWOtgP+R1Q5fT7nl+vOn6g34KYkUClEwqKu9joXYU4Gif938uJHq5p5n+o/8GMz+YqtH0iYtMtRw8Y/ldj8Io20UfXl+bqY1ORYjwdlhKCXmszWVDICMX08K3bqYddOKeUVzq4LA2UcvvRZDggUIJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=QykmPj/x; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="FIBZ7e5c"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="QykmPj/x"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=xjNEZuUrgC4c7iseOVbtKtXxfPTu9XyKtO4Uq7U9UnY=; b=FIBZ7e5c7IB9BJaInOHCrt/7my
-	vbKiH1SBSOUXFic7KeTPty/2yquK2JChmE4CdMue0X+kKtBVemnfmvI5V3HSN+6ErDHJuMVfpvu8x
-	93DFUHTnGyCSSDGqaWK2Eo4F886aSzjE4wIIa8A2/QY2Z2fjb0vWS/GkzFw7qVsbOX4s=;
+	bh=Lljoat6sYacBPvhSLf9rEDVbXVSpJG4w9X7ZqtrWvYk=; b=QykmPj/xj6AGzk3irdM6SDET8v
+	JwokjD7ojlnPf7EhjHHotAdH+frKH/KpoVN2b7FriemI1tR9qfG9jOFfbAlrrUo4POc4c5IPGSrc9
+	bFELSP/KBVeOCM0Bn6LzY3MUdh5jxYsz141VN8o0Xz5o/x5Nvh0NQgwHf4dcv9HL/8uE=;
 Received: from modemcable061.19-161-184.mc.videotron.ca ([184.161.19.61]:51978 helo=localhost.localdomain)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1v1RZ7-0000RT-Qw; Wed, 24 Sep 2025 11:37:58 -0400
+	id 1v1RZ2-0000RT-Iw; Wed, 24 Sep 2025 11:37:52 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -34,8 +34,8 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Wed, 24 Sep 2025 11:37:36 -0400
-Message-Id: <20250924153740.806444-12-hugo@hugovil.com>
+Date: Wed, 24 Sep 2025 11:37:31 -0400
+Message-Id: <20250924153740.806444-7-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20250924153740.806444-1-hugo@hugovil.com>
 References: <20250924153740.806444-1-hugo@hugovil.com>
@@ -51,32 +51,37 @@ X-SA-Exim-Mail-From: hugo@hugovil.com
 X-Spam-Level: 
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-Subject: [PATCH 11/15] serial: sc16is7xx: remove empty line
+Subject: [PATCH 06/15] serial: sc16is7xx: use dev_err_probe() instead of dev_err()
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-Remove empty line inavertently added in commit d5078509c8b0
-("serial: sc16is7xx: improve do/while loop in sc16is7xx_irq()").
+This simplifies code and standardizes the error output.
 
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/tty/serial/sc16is7xx.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index d1a9fa26e9bdb..a05be92f7e776 100644
+index 7af09535a1563..4384804a4e228 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -834,7 +834,6 @@ static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
- static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
- {
- 	bool keep_polling;
--
- 	struct sc16is7xx_port *s = (struct sc16is7xx_port *)dev_id;
+@@ -1528,10 +1528,9 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
  
- 	do {
+ 	/* Alloc port structure */
+ 	s = devm_kzalloc(dev, struct_size(s, p, devtype->nr_uart), GFP_KERNEL);
+-	if (!s) {
+-		dev_err(dev, "Error allocating port structure\n");
+-		return -ENOMEM;
+-	}
++	if (!s)
++		return dev_err_probe(dev, -ENOMEM,
++				     "Error allocating port structure\n");
+ 
+ 	/* Always ask for fixed clock rate from a property. */
+ 	device_property_read_u32(dev, "clock-frequency", &uartclk);
 -- 
 2.39.5
 
