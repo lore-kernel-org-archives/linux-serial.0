@@ -1,188 +1,240 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011045.outbound.protection.outlook.com [40.107.130.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com [209.85.208.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6604030B505;
-	Wed, 24 Sep 2025 14:53:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758725634; cv=fail; b=rwnyotPJ+z6aKz4Z/CCNvFUFJtHkVt+II0zjQ2D64e0o/Wnty8PDSJxbzalcj3LHfj8N2rZa0b5GPorCojmg6E+Opw7Po2FCtEBpaqvZcIuknv579sa4CZPZra2NiGIu0QMpe/9fVy1Y1V5m8jnx382sE3JkKfv4rXl8h05aMos=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758725634; c=relaxed/simple;
-	bh=xz8rCzCRH9KQoptj238UfACpIe70eN9neskWhJLzqiA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=mP/kq6ljmi6U81dNkZd2vhxOX8v5r0YM811g/ILnSMhEGBLXn6kP45TiDzPRvj//CG3fnSBn4mCvQFiErYMSYszIf2AaJgjehqj9Q9/93nOO7BueFWZX0enYoWtATSx2G1+cs1XG4FPjz8+BQKmmrvyPn3WewG4lqxOOKDaaR/U=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b=mTlVENfm; arc=fail smtp.client-ip=40.107.130.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31EDE311C0C
+	for <linux-serial@vger.kernel.org>; Wed, 24 Sep 2025 15:32:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.66
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758727938; cv=none; b=KsFek7Qa0rY1zv0vampkW1udw9fXEmn0xSG5TRg93qamVEcDrwb90XCayW84thIry69VgSxqVT0HyQ20zagzl/nkcRrLvk2jUA1uiegybDhQ+LDqdqmIe5O4/iEI6lBTn8VMZXOIue+suBGrMZGRhDM0XnnFDZthYGgN9+/+dyE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758727938; c=relaxed/simple;
+	bh=lXkqiFRoO59/Ufx7OxqzsjNwUUA6MMMGcCPsezc9mAI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VW7Pco3D261ejwjVsyIdBacnMY4+fuw13qGlNTd1TI27iSTXxNrnSA7BQ1AkNaM0L8QhN9O7d/IdgZ5XugiOuAAP904bplB2yOXL/JV3MVX+VcHBN2e3q6MQF/CbwQ7rPwjPzWdibIQouz7Dg/bROpsg6u92BmqvSydV24/d1Lc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=KItbkweM; arc=none smtp.client-ip=209.85.208.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nxp.com header.i=@nxp.com header.b="mTlVENfm"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=EjoX579oyjMLVatR3dJuPKZTD5PA9Rzyo7tzlu39FOO0NfNImElAXSReGWNf0jiPHG25or5iU6wsggPjo4gQ9cZA3SGVNBLA4nEbCmHhPpJQzj3bWF5k07gtEgyvihOqzUyY6vgFrxD9Xe4riWv3mEJ5j8dzRAnv0yV8cLKvOBCvkwQGXWHCToqidhCXq1M835QRYYpMoLxzIhh/6Hf3TjyObvS2ghZ8F3kOod8Kh4TfGhb6pD4nGFHnM9YPih1tpnGDRpdYP3qKMlP42R9v34ak9rcTAK3w/QkkUwu2CXZ+G14O1AeZablbjOYQA7LQl9OexjoC0AB1kddpY1fBvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KhWApUfFU3OceBQrw3AvgqUIxlMrhaZBAa20h4GKals=;
- b=rfiAd1BbJwpX4q2n/3ae48qI1RLOYxW/e3GK8ZY1d183mWFDPfRMv/w8HpECWL/PiDk12ANC/CZryccqSzJ5aWhYMohNge9BBwar8/pp9DTeQREvSuIl41k52WTf85jd4Y7GALdGhw3V5oGLZXri9rlW9dFuSC18vm7xQ34rqJXp0TRvmqZFYGZGCwK1i9KDEHRx8BK4Z/BmBi+3NEEdcEWmeBJhpcQHYhs382SqfhqqIBz6nEexGEhRJC5DenRz8jFlzjo2h/1L83jDaQ6I6K3vjwt/corllBu2r/94Nz06uH1CyyQyWPsJDTKFz5b9VeiLYRHoUYOwVETOLt4tOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KhWApUfFU3OceBQrw3AvgqUIxlMrhaZBAa20h4GKals=;
- b=mTlVENfmGJeFwSkB2ZunpTD4c3E/swvIDQTBwH5tEc7nOr5IL8s4zRCPUWFxLo9jufIu3LqZ4iRJnfb0zhDFIm65GHHSIolOYQbO6akczCeyEIt/IXS5K1NtKuzj4eZvHNFeS6JHljSdv09f6YeUXXUFp7NCgRpTF8V97PzLdIeY/X9O+YJZ23DeBQ7TyCAeaY1s+3gMwi6eEyZJOI74hx0yvsGAn4ryPjhzfGJH41V8ENm+TgEGxuFacU1COY6F061sf7d0Kw5IBXNiRtsZO4oMpr1dWZ28KvBIHU7T72Cnl7A/b97SCwkLakoMWWYGTL6am+2biQwT100JCMKEmQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AS4PR04MB9621.eurprd04.prod.outlook.com (2603:10a6:20b:4ff::22)
- by DB9PR04MB9428.eurprd04.prod.outlook.com (2603:10a6:10:368::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9160.9; Wed, 24 Sep
- 2025 14:53:49 +0000
-Received: from AS4PR04MB9621.eurprd04.prod.outlook.com
- ([fe80::a84d:82bf:a9ff:171e]) by AS4PR04MB9621.eurprd04.prod.outlook.com
- ([fe80::a84d:82bf:a9ff:171e%4]) with mapi id 15.20.9160.008; Wed, 24 Sep 2025
- 14:53:49 +0000
-Date: Wed, 24 Sep 2025 10:53:45 -0400
-From: Frank Li <Frank.li@nxp.com>
-To: Sherry Sun <sherry.sun@nxp.com>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, shenwei.wang@nxp.com,
-	peng.fan@nxp.com, linux-serial@vger.kernel.org,
-	linux-kernel@vger.kernel.org, imx@lists.linux.dev
-Subject: Re: [PATCH V2] tty: serial: fsl_lpuart: Add missing wakeup event
- reporting
-Message-ID: <aNQF+alWmTakAmUl@lizhi-Precision-Tower-5810>
-References: <20250924025607.2515833-1-sherry.sun@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250924025607.2515833-1-sherry.sun@nxp.com>
-X-ClientProxiedBy: AS4P189CA0052.EURP189.PROD.OUTLOOK.COM
- (2603:10a6:20b:659::21) To AS4PR04MB9621.eurprd04.prod.outlook.com
- (2603:10a6:20b:4ff::22)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="KItbkweM"
+Received: by mail-ed1-f66.google.com with SMTP id 4fb4d7f45d1cf-62fc89cd630so8528484a12.2
+        for <linux-serial@vger.kernel.org>; Wed, 24 Sep 2025 08:32:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1758727934; x=1759332734; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=J0I65Cdfmrr8vZUIQrq2WUvttPueHtjZMKXuWscVZDM=;
+        b=KItbkweMfMgmPpwvkGWGyBTf/HexmpuHsK+QPFAOqFBcO8TBMW4GPrZ2K3dS5ughAk
+         s607mThzM5INgfL/4gDh2P6SKmHvha7+JTnZC9vIRDlzeh47W2f9O5cVZSh72jlKKY++
+         yHT2ZU7fUeWd2d7z8H0z1UDNCJ98B/o3kQcg3v5BGAzfXfkm55GfhJlmIHIfXVI2+Y3J
+         aVaTczESvTder1+kL4UNJDubOTKD9rAoJIciysqBn9XA4OIgthRb934NhBydjN0VJSDF
+         pBZQqrUuuUvGK4qNV/Ve8tDQ+doGWs8qvryxEIz7K0TjW/9F5Cvn+e1B2kwEzkXV93ev
+         R+oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758727934; x=1759332734;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=J0I65Cdfmrr8vZUIQrq2WUvttPueHtjZMKXuWscVZDM=;
+        b=xBDJ8EUeYyVIjk6aJXEd4RtR2pQo0bOK2yyfCKgNWOjDOWl4qG2670N1vv3w3ZWc0T
+         aCoBrXKWGoA2Xg5X2M9gEgTxt+WYgy4YTYh/EZWUa7C2pWWZxZVMpVl5woADES8Jsihi
+         e/DMbSBBbtnvdWDbEf6yWjd+CMWlfTKIbBQKoLu/fA4IDdL1vKV5j1WSa7Dyi7Iypsfa
+         KZ00EQiQMyfnl7pGeH1XKNfSYnTn1hOBGuQ3cZbfp5cUfL5AP44jShwinvgMlVEXWHwp
+         s/sGMGe9BMI1n75AJCMwAEZu6+9kdb2cm5k/sFa3WwfgxTGKDtMrko9kWz66yCpIo3yD
+         sDYg==
+X-Forwarded-Encrypted: i=1; AJvYcCVNDABnYzpKVV3IjodW9XGTe/uouKKt32QuPl2mQgXD07IsUFi6mZuyS7MG2ljCcA2NA2dtBxJxRw3BBjE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyAPE2q4zyqGa5Q6BjDXYhVkajVTVg1xJtHdbqUGB/poX6WN4k5
+	QMWjzgA/6sPF9BbtZ9hTvPLq8WZxOK0TrS02aqLTT48Xeim/Qebfu6MvkBpsC+Jb8xTzF2J13g7
+	ZxKCM5hsE5g==
+X-Gm-Gg: ASbGnctiEVYjEDuc8jkS4/Zm04GlUwGECfouv1o4XedLZBZgXtfBouT10e1g8GhaGuq
+	aomlRvfgwcVFraq02LFagPpHWLBx6tXC5EcFWmyX6TQh1FEPzFyENxzsq8KUaofHOYP2XIAunU6
+	76PsZ9kHPWfJlQ/UkrSVC+IKz5z4xFKUTqcNVkkpivVl3izUmLyFV9xIze/D2oNoUs8BQixZvQ7
+	4V6S6zhaCQEm4nSeXO9kwbmo/m+Cn+kMKM4mnb1zgqJv/WH6sqBjYUg7iPVahzPtckIMCfd5DS/
+	jq3JIyw1lF1gLQPnOeETo89oOuCwIrltpwI/w2jtoekTWgw+4bNaoAAXJm+Dw3eTZ+ZbqsHjeFU
+	yVTf5eGUW15VN2mpNTI5b/aI1ig==
+X-Google-Smtp-Source: AGHT+IEpn8Hn2X8eRiAhhuk5c3P2Whqu7kOKOowHkUsxQ8AlS3TiHZmNBrhAKSKtCijMma9Ejf27AA==
+X-Received: by 2002:a05:6402:354b:b0:634:505c:fc9a with SMTP id 4fb4d7f45d1cf-63467786e4amr6322787a12.10.1758727934318;
+        Wed, 24 Sep 2025 08:32:14 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-62fa5d06a15sm13439978a12.1.2025.09.24.08.32.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Sep 2025 08:32:13 -0700 (PDT)
+Date: Wed, 24 Sep 2025 17:32:11 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Andrew Murray <amurray@thegoodpenguin.co.uk>
+Subject: Re: [RFC 0/1] serial: 8250: nbcon_atomic_flush_pending() might
+ trigger watchdog warnigns
+Message-ID: <aNQO-zl3k1l4ENfy@pathway.suse.cz>
+References: <20250822142502.69917-1-pmladek@suse.com>
+ <84qzwzbr90.fsf@jogness.linutronix.de>
+ <aNFR45fL2L4PavNc@pathway.suse.cz>
+ <84348eju8a.fsf@jogness.linutronix.de>
+ <aNO7Qjv_iSUSifTv@pathway.suse.cz>
+ <84348crpi3.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR04MB9621:EE_|DB9PR04MB9428:EE_
-X-MS-Office365-Filtering-Correlation-Id: c99b58eb-5637-4f35-368d-08ddfb7a2b98
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|19092799006|376014|52116014|1800799024|366016|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?O+6/jO+bnSprSVRDJdIeH7R44F1NzoCuKaUB5TfifbfkAvs/+pp8hQn4Q/7M?=
- =?us-ascii?Q?ZqhpzgJUXY0v0toG5TlUwXYmhiHQzl3iGi5XGnhehjEDkYuMMRmzXT2p7oVY?=
- =?us-ascii?Q?wK2avcWhm2rn6q55V/OCvhI5JkPBxRobYQhukGPuX5ABSncKpM9TuJPnFmWd?=
- =?us-ascii?Q?1xGvMvjr7+SYOMKGuFpW3hy1AJ8F710+2XJAWNciy7PZx+Ds6PDuE5uYrKB8?=
- =?us-ascii?Q?BCR/QGJpn/7XjBXUejVoGMPjpNFDQlLaVHEE/OErNkRhkxrvlm/h2F8X3WbY?=
- =?us-ascii?Q?iFWVcrJblAcsmvxlabVN3dZ8DitaeZWN0qd3bI+NF2t7zwKhAGuYgaNaVsNF?=
- =?us-ascii?Q?/whRF+fxIbyD2RDgv6cJYwdioLmqMQyWsLTiMFUX8a1lcgfn0u2z7JrGDZKe?=
- =?us-ascii?Q?YfXuHdtCHPAv9EGNPkQUrKkgx8GDp7+gBkaDSE0B7SOuCjXYlVxNAcKoikJM?=
- =?us-ascii?Q?vM4+6YSk3ItGsbCQ9xyKa7xMXkCWKFCs4/HA8ncALcVX0bJr8wVbCr2eclcG?=
- =?us-ascii?Q?JngisElTeGk/DJDScA86Cyhc3RyJrdkn9Yi9BtvaxlozYFDr7vsCLVu+uehr?=
- =?us-ascii?Q?hK27VQJeTw7ThlRMyX7Ks4QNyBGh1beLldjJP/UJLA+635OMog/kXePYSewe?=
- =?us-ascii?Q?aBwOoaEcIaEahtz4QeqFuq2GCas6+fWWFyFvmo4LDzoSy64PzqQ0HYL7Z2tG?=
- =?us-ascii?Q?40pRuvk6f7LHd7g+SUKIGB/POp2e7LxJfL213Gx9e/fKZRBXEmx4Bb2b8u8l?=
- =?us-ascii?Q?qzEtOyfOgM/Q1ifVaWDh3pg7S8ZrolfC4waFZVVpX4qDTiO7XbH42oz1pVuz?=
- =?us-ascii?Q?KJV0iGktMWGXgrz2YAx/uK0G2icuCmMBll3YCCTz/muHV0HIohyKQ4xz0tZY?=
- =?us-ascii?Q?UPISIfOnQRHDSNyXar0Vl5fnYlTt846MhkuK3w55suyVSh+UKprZV9f/BP5H?=
- =?us-ascii?Q?cMsDlBxZB8XhL0txqcjJxH0F8ZlSxzarBFLJdvev5Zt6fWbUrxy8glPm0+s7?=
- =?us-ascii?Q?JUclpAPHNV/APS8ju0yCztU7Qvd4ezrOtrgTDb35hNsb/CpgFaOdHeaIT0Uf?=
- =?us-ascii?Q?yM+LrtV5DhHpOEQYytSfJ3I1Nr3r2kGH7BSl2/DycQl0mi4kchFhE0C/Zxos?=
- =?us-ascii?Q?C76mNzE1VArDa66rlvyWCYipFiXO9SMsw8a5ZtZBmeOBUURs7WGhqH3nCRD5?=
- =?us-ascii?Q?9WvR/UIE1sdMmRhckuyHQq4ey4xAev6WM7b9JxAHRmPqGuAYaarOdwq5Mo9N?=
- =?us-ascii?Q?2sC2JteRXNZUjwXsSCnUOLZ/YguEktaIXoF27Bu87JAFfPjfvBCCl/70Fydl?=
- =?us-ascii?Q?3Cg3flKp1n5N6bR/hyZB5AfihXQqY7wtPn7GLVPBipS6GVgNpFgEtgypfz8U?=
- =?us-ascii?Q?0/0rpRGxTxbyqrO3U73xGMUBRCQjfFt12GJAXS1LjwkdMRy37XfDEUBO6KOf?=
- =?us-ascii?Q?o0oEiFZD9ndNP1YMcB/sQhkbBhBCqfsTb2Mr2243ublb8frjC09s7A=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR04MB9621.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(376014)(52116014)(1800799024)(366016)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?SQxY3hsEi3k+ghtk/BYERLNSAW3h1+m+ajIfZs9C1Epgw4u1uAgUX0yoLSFo?=
- =?us-ascii?Q?NOTt9jkGUQrgJbQ7zdEnpSgq9Gtia43yb6RZev2bmQjAfrWrLQ5KWl3qDlzI?=
- =?us-ascii?Q?zTvZOhBQ3eotsu3M0aeXDR7zDq6DUdEFKRSTsREQd+j2rGQqzPrGwYX3KeSF?=
- =?us-ascii?Q?IJ7ff4B/Q4MlxtLqcGrQWOy6zAyMjF/ACIlje8n3zbBWaLDPYv1jLW3YUD0v?=
- =?us-ascii?Q?jSfZD/y2g7lPMgHs+3ZdaKeZ+Mkb1JktzuDz6EcuWbTtjGwv5Lh6Sexb+h7W?=
- =?us-ascii?Q?UVn3zM4j3i+lLXcwDGf0M1LlAPivx83X9sThefBrrMGZpg45RRcHele6mQDJ?=
- =?us-ascii?Q?0yAYlEKtna6XA12QNuzYZqOsGy2wcgEi9vtpBhSS+7VI5Kn/La/EceycBrFR?=
- =?us-ascii?Q?BQGgj2t4w+ygZRDJ7Kvigp7U0NFTYLz0YGwhW+/iuad0n/vVVZoiOBhFmtoR?=
- =?us-ascii?Q?5t3vlUlz3kR3Kt1oDN/tU4EqzJ1T15R0Y9opYNou6aGq3RIG+yWIUB0tTnZv?=
- =?us-ascii?Q?w755JccyPN6gdf8HsmMKa+CALH3OUqqnph7itrcuyXeDmJaoJUYlq04nPOWa?=
- =?us-ascii?Q?qptnAlYmPvw7EifyHQCzPBBGeGDQaau+m8H9JXCV/e3U71mfQzwJ9a3K5UAG?=
- =?us-ascii?Q?VVSCOpbQPs2pwK91+CBqXuqrgQAnXRf9oE51JaTUgHvr8UqL9wvLcsfMGs36?=
- =?us-ascii?Q?YmfMxSOVSOiCbOPc4py1AmWHLyYj2Ts/xkJORubqUtt3VkacIooLJjMsUVvG?=
- =?us-ascii?Q?HO4ChZSoncr9/bFAK7CpbrlRP9Aveommt0T5WFOYZAS+wiFPEsX/PvCpuYLV?=
- =?us-ascii?Q?MFi713iagB44pTe9eJdxUyWqsgzp+2ZgVtCC9v5BfIKX8mObaNsyI1lT0j/V?=
- =?us-ascii?Q?DSNezDJilFE/mzwv7dj/pUVsmdcy9vhP/HcDS8V8B1uFNSs4pO9lrFBM9+ik?=
- =?us-ascii?Q?U/f6gYWiJY7a/KgGq/6H6nOhcR6Du6UgoRT1xS838Zw9X/K2EyoLKnndypRY?=
- =?us-ascii?Q?nmrwH+3RQFEcdEsiHm3OSJFuonIq4a28h4LwCWYByAFikzkDXgv/lb6+VzJe?=
- =?us-ascii?Q?QCgPvl+5CJxNrbypgl9t1FgZF3Ofl6c4Dw6cdb1R/hryZcdg/Vf7V/mdmXdQ?=
- =?us-ascii?Q?Pxk1I/6AFNxQmBMT3aknBtOpan9Srvv9vPK4iY68QCy4pbWAr8lj2mWlOhaR?=
- =?us-ascii?Q?u+/oc/9lH0WNZTJyL2+8YNjZ2TOvrcI0UVvA9wEzdO8+rwFXbL90xW95yU4a?=
- =?us-ascii?Q?T4R2oj3WZl+zCZlT+ne1i2Du1Zc74uYFxO/uzaaj3fTb2K+7lDC9LjPgi6Cw?=
- =?us-ascii?Q?FVnp4Dn6jinfTYQHHd0Izd3cXNBJbidU3pjBg5UbRBnAG0fn/2aIWG3aKi25?=
- =?us-ascii?Q?Olx0lm6RuwN2mig3Yt0BQWOikuoISkhBtX9GecKO64jmuBraNgwLAojwKtCe?=
- =?us-ascii?Q?kTTqc+/VLM2ODYTpxshbfRBQnyMF9+rr0LrFKAsftg8BFI4dJ3cIbRctnebs?=
- =?us-ascii?Q?cNLep4JYsNn34CErxtfG/UQv3NvtI4JpTuyKiI8XtGhC/w54eWjwuAv1H+Ua?=
- =?us-ascii?Q?E4suItDqHnB0KfTKVYICXC6Udw4Jx2fqwBYObURA?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c99b58eb-5637-4f35-368d-08ddfb7a2b98
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR04MB9621.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Sep 2025 14:53:49.4358
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F6cs7ua7ptgoB3juTS36v3qTzGN2LLlzIE5E6IdQsmDQRrO2XHM3ohjVVwQsQ1LoGTl1jSpLZpvle/6LbrEDng==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9428
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <84348crpi3.fsf@jogness.linutronix.de>
 
-On Wed, Sep 24, 2025 at 10:56:07AM +0800, Sherry Sun wrote:
-> Current lpuart wakeup event would not report itself as wakeup source
-> through sysfs. Add pm_wakeup_event() to support it.
->
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> ---
+Added Andred Murray into Cc.
 
-Reviewed-by: Frank Li <Frank.Li@nxp.com>
+On Wed 2025-09-24 14:48:12, John Ogness wrote:
+> On 2025-09-24, Petr Mladek <pmladek@suse.com> wrote:
+> > I tried to implement some naive solution, see below. I think that
+> > it can be described as the 2nd layer of ownership.
+> >
+> > It does not look that complicated. It might be because I used it only
+> > in two paths which do the writing. And it is possible that it does
+> > not work properly.
+> 
+> It is an interesting approach and is one that I tend to prefer.
+> 
+> > Then I got another idea. It might even easier.
+> >
+> > I think that it might actually be enough to block the kthread when
+> > any CPU is in emergency context, for example, by using a global
+> > atomit counter.
+> 
+> This is the quick idea that usually comes first. Basically introducing
+> an emergency_in_progress() to keep the kthreads out. My problem with
+> this is that it causes _all_ consoles to synchronize with each other,
+> which we worked hard to get away from. Yes, I realize Linus rejected the
+> "store the backtrace, then print it" implementation, which limits the
+> effectiveness of parallel printing. Nevertheless, I would prefer to work
+> towards returning to parallelization, rather than reducing it further.
 
-> Changes in V2:
-> 1. Improve the commit message as Frank suggested.
-> 2. Move wake_active above u32 stat.
-> 3. Use (stat & (UARTSTAT_RDRF | UARTSTAT_RXEDGIF)) instead of (stat &
->    UARTSTAT_RDRF || stat & UARTSTAT_RXEDGIF).
-> ---
->  drivers/tty/serial/fsl_lpuart.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+Let me play the devil advocate for a while.
+
+IMHO, keeping the kthreads running in parallel for a synchronous
+emergency report opens a can of worms.
+
+Yes, the kthreads might be fast enough when the emergency context
+is busy with a slow console. But they might also cause repeated
+takeovers for "every" message when a kthread starts emitting
+each new message just to lose the ownership after few characters.
+
+Honestly, blocking the kthreads during an emergency does not look
+that bad to me.
+
+> > I am not sure if you already started working on it. I rather share
+> > my naive ideas early so that I do not duplicate the effort.
+> > It is possible that you have been there.
+> 
+> Thanks. Yes, I tried various ideas like this. But your version does go
+> about it differently. Although I am seeing the same problems. My
+> comments below.
+> 
+> > +void nbcon_context_put_flush_prio(struct nbcon_write_context *wctxt)
+> > +{
+> > +	struct nbcon_context *ctxt = &ACCESS_PRIVATE(wctxt, ctxt);
+> > +	struct console *con = ctxt->console;
+> > +	ret = 0;
+> > +
+> > +	if (!nbcon_context_try_acquire(ctxt, false))
+> > +		return -EPERM;
+> 
+> This is my main concern. If a context has set the flush_prio to
+> something higher, it _MUST_ set it back down later. This cannot be best
+> effort. A failed acquire does not mean that a context with the same
+> priority is the owner (for example, it could be a NORMAL context that is
+> in an unsafe section). Remember that there are owners that are not
+> printers.
+> 
+> So now we have a similar situation as nbcon_reacquire_nobuf(): we need
+> to regain ownership so that we can undo something we setup. And that is
+> the problem we are trying to solve in the first place. Maybe since this
+> moves the problem from NORMAL to EMERGENCY, the busy-waiting is
+> acceptable.
 >
-> diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
-> index c9519e649e82..1bd7ec9c81ea 100644
-> --- a/drivers/tty/serial/fsl_lpuart.c
-> +++ b/drivers/tty/serial/fsl_lpuart.c
-> @@ -3087,6 +3087,8 @@ static int lpuart_suspend_noirq(struct device *dev)
->  static int lpuart_resume_noirq(struct device *dev)
->  {
->  	struct lpuart_port *sport = dev_get_drvdata(dev);
-> +	struct tty_port *port = &sport->port.state->port;
-> +	bool wake_active;
->  	u32 stat;
->
->  	pinctrl_pm_select_default_state(dev);
-> @@ -3098,6 +3100,12 @@ static int lpuart_resume_noirq(struct device *dev)
->  		if (lpuart_is_32(sport)) {
->  			stat = lpuart32_read(&sport->port, UARTSTAT);
->  			lpuart32_write(&sport->port, stat, UARTSTAT);
-> +
-> +			/* check whether lpuart wakeup was triggered */
-> +			wake_active = stat & (UARTSTAT_RDRF | UARTSTAT_RXEDGIF);
-> +
-> +			if (wake_active && irqd_is_wakeup_set(irq_get_irq_data(sport->port.irq)))
-> +				pm_wakeup_event(tty_port_tty_get(port)->dev, 0);
->  		}
->  	}
->
-> --
-> 2.34.1
->
+> As you mentioned, there is the problem that the flushing context could
+> change hands multiple times before the flush_prio is restored. And there
+> is also the recursive case where a WARN could happen within a WARN, or a
+> WARN could happen and then in an NMI another WARN. All these cases
+> probably mean that it needs to be a per-prio counter rather than simply
+> a single prio so that each context can increment/decrement their prio.
+
+Thanks a lot for showing all the problems.
+
+It might be easier when we combine it with the first approach. I mean
+to block only the console-specific kthread from
+__nbcon_atomic_flush_pending_con(). By other words, block
+the kthread from __nbcon_atomic_flush_pending_con() instead of
+emergency_enter() and store the counter in struct console.
+
+
+Summary:
+
+We currently have the following solutions for the original
+problem (hardlockup in nbcon_reacquire_nobuf()):
+
+
+1. Touch the watchdog in nbcon_reacquire_nobuf()
+
+   Pros:
+	+ trivial
+
+   Cons:
+	+ Two CPUs might be blocked by slow serial consoles.
+
+
+2. Yield nbcon console context ownership between each record
+   and block all kthreads from emergency_enter/exit API
+
+   Pros:
+	+ Only one CPU is blocked by slow serial console
+	+ Prevents repeated takeovers for "every" new message
+
+   Cons:
+	+ More complex than 1
+	+ Completely give up on parallel console handling in emergency
+
+
+3. Yield nbcon console context ownership between each record
+   and block only one kthread from __nbcon_atomic_flush_pending_con()
+
+   Pros:
+	+ Only one CPU is blocked by slow serial console
+	+ Parallel console handling still possible in emergency
+
+   Cons:
+	+ More complex than 1   (similar to 2)
+	+ Possible repeated takeovers for "every" new emergency message
+
+
+Well, releasing the console context ownership after each record
+might solve also some other problems [*]
+
+I am going to try implementing the 3rd solution and see how
+complicated  it would be.
+
+It would be possible to change it two 2nd easily just by
+using a global counter and updating it in emergency_enter/exit API.
+
+
+[*] Andrew Murray is trying to do similar thing with console_lock
+    and the legacy_kthread, see
+    https://lore.kernel.org/r/20250915-printk_legacy_thread_console_lock-v1-0-f34d42a9bcb3@thegoodpenguin.co.uk
+
+    He told me off-list that he saw similar problems also with nbcon_thread.
+    I am not sure but it will likely be related to
+    __nbcon_atomic_flush_pending_con() blocking a nbcon console context
+    for too long.
+
+Best Regards,
+Petr
