@@ -1,77 +1,91 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-m1973174.qiye.163.com (mail-m1973174.qiye.163.com [220.197.31.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E04B021765B;
-	Wed, 24 Sep 2025 19:19:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBF8DE55A;
+	Thu, 25 Sep 2025 03:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758741554; cv=none; b=D/0IOKtlMsucdiL/8Lt2r/zeNpU9fFgqKA2zIwacH5j6XHQ9O/ZaNTCRfBY1MDXgPZSdYZiY4CwQjztC+E5IVyDiiflwdWm8BI6hJmZ7mRcuGqiRqyshZyV5Ue1kxvqg31fEfTrbc17OFXVhAv0CldMaJQWzeSmMtJEN+gWGI1w=
+	t=1758769659; cv=none; b=U0YP/vYe2K6fgaHJOS76U61hmXMoz1U7eEM9lsL5wkXE6bzZiWI23lr7rfWEtCeImUKoHOOqIza8y854OA8Nb7FJRqqBnjO3MO2dP3kEMFj6Sp3sTEDN/iDeI5dfFzFvOmTkIKmlxQ1hGmTlX8LdiakrSdB1ZMtzSPdfXabuKd8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758741554; c=relaxed/simple;
-	bh=mdCv3RD3cqfZ0s/HDZ28RMQmcKAk9mNqnr5oGlONhDk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cBySYC7mrVYuE08n2pw+6NwNkobk4M9z3aNAUiStHAIhCPcDkvZPXBe+5VEDorRsDSXj7Bqfwf3ShntfBB+m4qa79Gv9xCVhC3sQltLoD02dFTO3wuhbtUfgpw4+pbNd39NuPzza+KDmphVffPiTFJhM1UINTaLG62o2RHlBx/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RUguPH5Q; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RUguPH5Q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0A1DC4CEE7;
-	Wed, 24 Sep 2025 19:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758741552;
-	bh=mdCv3RD3cqfZ0s/HDZ28RMQmcKAk9mNqnr5oGlONhDk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=RUguPH5Q4wqiy4rY5r4C5TxUAecFtgkdEWdBxuFAGkqMFLfsFNd60mOu0VfXgW4my
-	 PbGIgECqxOBUJYHrAV9PRHJHM5HP7l3gA4ME8cS9wi3xvzomCBiLus738dBD0lBsIi
-	 OKpgHXiGvjuupgabqQPB5/Hn7kxfHmKnPgU9PBq1h8vekKzwzClGX3kM5MPjKP94ky
-	 fgtAbRTNallIf5AEwOURJoEO0f2ualY933y17WscGMT6nG/yDuho4J0cwgPni6Y0GI
-	 RBnYzCsk+Pi/HIkqJywfLY+/nkH/MfYxejkClJjkUbYg7jSCIsvptZ0oxsatmbWC/+
-	 wv8DCldfAFhQg==
-Date: Wed, 24 Sep 2025 20:19:07 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Binbin Zhou <zhoubinbin@loongson.cn>
-Cc: Binbin Zhou <zhoubb.aaron@gmail.com>,
-	Huacai Chen <chenhuacai@loongson.cn>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Haowei Zheng <zhenghaowei@loongson.cn>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 1/3] dt-bindings: serial: 8250: Add Loongson uart
- compatible
-Message-ID: <20250924-reappoint-routing-d5f2bac03d17@spud>
-References: <cover.1758676290.git.zhoubinbin@loongson.cn>
- <ade57dcdd021de6824a15d4aa11aa9cbeebce169.1758676290.git.zhoubinbin@loongson.cn>
+	s=arc-20240116; t=1758769659; c=relaxed/simple;
+	bh=/PpokXyihOUh3zc12heg8AmTxcQkZ1ISZd9xcUPvoOc=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=KbKRh4LUh0wtfJkfmxwyPEHlPZ2zWiQy3/2xPf4U5LsiCP5/xbgdeZzh54BzTU2rOSyR2KBhXoHJbY8O0a0H18KLqdudQ+RfUSdAOf3jddC4Qbi0rJcRCr8vHOSSXSaxcE7y5TFuECndTqLiUpONbCdtah0xvxz4CInqdoIvZ4k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=anlogic.com; spf=pass smtp.mailfrom=anlogic.com; arc=none smtp.client-ip=220.197.31.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=anlogic.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=anlogic.com
+Received: from leo-wkm.. (unknown [210.22.154.122])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 10b5c3d81;
+	Thu, 25 Sep 2025 11:07:23 +0800 (GMT+08:00)
+From: "fushan.zeng" <fushan.zeng@anlogic.com>
+To: junhui.liu@pigmoral.tech
+Cc: alex@ghiti.fr,
+	anup@brainfault.org,
+	aou@eecs.berkeley.edu,
+	conor+dt@kernel.org,
+	conor@kernel.org,
+	daniel.lezcano@linaro.org,
+	devicetree@vger.kernel.org,
+	gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	krzk+dt@kernel.org,
+	krzysztof.kozlowski@linaro.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-serial@vger.kernel.org,
+	palmer@dabbelt.com,
+	palmer@sifive.com,
+	paul.walmsley@sifive.com,
+	robh@kernel.org,
+	samuel.holland@sifive.com,
+	tglx@linutronix.de
+Subject: Re: [PATCH v2 00/11] riscv: Add initial support for Anlogic DR1V90
+Date: Thu, 25 Sep 2025 11:06:50 +0800
+Message-Id: <20250925030650.35694-1-fushan.zeng@anlogic.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250922-dr1v90-basic-dt-v2-0-64d28500cb37@pigmoral.tech>
+References: <20250922-dr1v90-basic-dt-v2-0-64d28500cb37@pigmoral.tech>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="GxWE5Bo9wF1mObcJ"
-Content-Disposition: inline
-In-Reply-To: <ade57dcdd021de6824a15d4aa11aa9cbeebce169.1758676290.git.zhoubinbin@loongson.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0a997ed7014c0224kunma317f75922ff69
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkaT01JVkMaGE9DH0tCH0geSlYVFAkWGhdVGRETFh
+	oSFyQUDg9ZV1kYEgtZQVlJSktVSUlVSk5PVUpJSVlXWRYaDxIVHRRZQVlPS0hVSktJT09PS1VKS0
+	tVS1kG
 
+On Mon, 22 Sep 2025 20:46:30 +0800, Junhui Liu wrote:
+> This patch series introduces initial support for the Anlogic DR1V90 SoC
+> [1] and the Milianke MLKPAI-FS01 [2] board.
+> 
+> The DR1V90 is a RISC-V based FPSoC from Anlogic, featuring a Nuclei
+> UX900 [3] core as its processing system (PS) and 94,464 LUTs in the
+> programmable logic (PL) part. The Milianke MLKPAI-FS01 board is one of
+> the first platforms based on this SoC, with UART1 routed to a Type-C
+> interface for console access.
+> 
+> Tested on the Milianke MLKPAI-FS01 board with both the vendor's OpenSBI
+> and the not-yet-upstreamed mainline OpenSBI [4], as well as the vendor’s
+> U-Boot. Because the vendor’s OpenSBI is loaded at 0x1f300000, we have
+> to additionally reserve the DRAM region 0x1fe00000–0x1fffffff to prevent
+> overlap if using vendor's OpenSBI.
+> 
+> Notice: A "no4lvl" bootarg or dependency patch [5] is currently required
+> for successful boot on the DR1V90 platform, since the SoC hangs if the
+> kernel attempts to use unsupported 4-level or 5-level paging modes.
 
---GxWE5Bo9wF1mObcJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-
---GxWE5Bo9wF1mObcJ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaNREKwAKCRB4tDGHoIJi
-0htfAQCNlzeTu9RvA3UDJqaCK1bBmzghgSoSEejoGtCvm55t4AEA+90IInlq2gT6
-CN1a6/aOTpDf3UldWxeywTdcW2ToAws=
-=nFLt
------END PGP SIGNATURE-----
-
---GxWE5Bo9wF1mObcJ--
+Thanks first.
+Anloigc already has the open source SDK at https://gitee.com/anlogic/sdk,
+and will submit it to mainline at suitable time.
+It is better that anlogic SOCs are long term maintained and supported
+by Anlogic officially in mainline and for customers.
+The code should be a full feature version after lots of tests, not the
+modified and simplified version from Anlogic open source.
+And we hope that there won't be two different versions code of anlogic SOCs,
+it may confuse customers.
