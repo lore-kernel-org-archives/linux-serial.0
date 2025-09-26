@@ -1,106 +1,135 @@
-Received: from mxout70.expurgate.net (mxout70.expurgate.net [194.37.255.70])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C82A7CA4B;
-	Fri, 26 Sep 2025 12:49:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.37.255.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C381397
+	for <linux-serial@vger.kernel.org>; Fri, 26 Sep 2025 12:49:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758890956; cv=none; b=jwvNQ71e+ff/DXvotQ/F+EDXqccqEZU/Txsqxvs+h/PLrDZZ0xUJzNug59/J7qPRCHmcwhH5BFs7SJNY62rwfk+7laxHpqrGThWHVaMOie+uNL1AuZQ+Gt5hZRMbtYP6UslGF3xRMVi2bH+T96QMACNtMFsCGU9TYsf6+NBU/Wg=
+	t=1758890989; cv=none; b=NLfECF90joL/VzGeAlFWRphGDWYPUpaWBve4+XUgHevZgT7AzfHLYXIF4Ip/ycWH3Idesjw1LGojMG82bvEalX5DNZH0Ow6KdVypXv2T5t4ztop1FRT0Nmdp+KnUyaQNr/89CiOUjn44UR3Us2iXUf6gylXOLKRKazbLGRrU0Z8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758890956; c=relaxed/simple;
-	bh=65DFOZeav1wJdixGj6xUR7lGVpIMaKBOEEE22sttMoo=;
-	h=MIME-Version:Content-Type:Date:From:To:Cc:Subject:In-Reply-To:
-	 References:Message-ID; b=CG/K7fdgvOEUVvz9VHd2mJQLqmFmnwSZNcKhdiiT563aJ1XYgkBGwM0vFb0NIJkcLEuzfhz9Yu/IW9e6K03o3aBQ8iErVDVTeSSZDIvrMI6efwJPlLDw6OQsA4jJhibjN4hIGn1rtCm2Djr0q7/a5MVmrp0PcaYGlanf2t0OKeY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dev.tdt.de; spf=pass smtp.mailfrom=dev.tdt.de; dkim=temperror (0-bit key) header.d=dev.tdt.de header.i=@dev.tdt.de header.b=upISTL8U; arc=none smtp.client-ip=194.37.255.70
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=dev.tdt.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dev.tdt.de
+	s=arc-20240116; t=1758890989; c=relaxed/simple;
+	bh=BJeaK9hUariIirAmBLD2fZWT1DYILlNZjQUDKPs6Gco=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SG27szS2nizT2V79yK+bdrPFQVI9pEUQ0T/JbLyZJT+duY7fTDDgGElSnqRXz8NMRKKjnoJpJtzXnSIrzN6/ewi9OAFa7k1BC7DFRc78ZNijmateeEAJmsmt2bF72+f2tuiP2IUcyJTK08Gjpr45/9lZHaqGa2aAh2eZSH4pXlI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=o8GkX9hc; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=WaOoF8+N; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=temperror (0-bit key) header.d=dev.tdt.de header.i=@dev.tdt.de header.b="upISTL8U"
-Received: from [194.37.255.9] (helo=mxout.expurgate.net)
-	by relay.expurgate.net with smtp (Exim 4.92)
-	(envelope-from <prvs=8378631f71=fe@dev.tdt.de>)
-	id 1v27bm-00HYxG-57; Fri, 26 Sep 2025 14:31:30 +0200
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-	by relay.expurgate.net with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <fe@dev.tdt.de>)
-	id 1v27bl-00GVGB-8P; Fri, 26 Sep 2025 14:31:29 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dev.tdt.de;
-	s=z1-selector1; t=1758889888;
-	bh=rpo3USVtuGtBG/KBK642Z8MdMw03cWYlO1txs/w9bVc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=upISTL8UnGcqp0YbnyJMyULaojhZooayN8u1rJU45KeQaIFecFm3CdwxJEKKIz9Xm
-	 Bd2j7jF07ow5udBFPPQ8ZFf2+Tq2rW+C1agSmnVUS+AjUtheqX2opF/RFjmcXQukpu
-	 ce3sVh4aMj25fBpwuDn0yFrgdeBJfN9aXTtIHEYp3M9QBtDIsRIZx2SuxdTqOdB836
-	 ifrs4GSisYCex5DhfjvuLlJA41f5gX7TwtgQuaab+lduSAponK3ITr7H9ghmWzbcn4
-	 myiKDMJ0fvwdwzQQWt7BJnlGzp6FrX7jIsOitUgaGNt+nqFyw3s419bctVJ2q0fnbT
-	 XLPjbV/gisaEw==
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-	by securemail.tdt.de (Postfix) with ESMTP id C193E240042;
-	Fri, 26 Sep 2025 14:31:28 +0200 (CEST)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-	by securemail.tdt.de (Postfix) with ESMTP id AF091240036;
-	Fri, 26 Sep 2025 14:31:28 +0200 (CEST)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-	by mail.dev.tdt.de (Postfix) with ESMTP id 696F02645F;
-	Fri, 26 Sep 2025 14:31:28 +0200 (CEST)
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="o8GkX9hc";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="WaOoF8+N"
+Received: from pathway.suse.cz (unknown [10.100.208.146])
+	by smtp-out2.suse.de (Postfix) with ESMTP id C89B04106;
+	Fri, 26 Sep 2025 12:49:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1758890986; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=KNJxCh0s4I781vRuxLTEA2h2/xeNRvLyNBgY3kLeN+Q=;
+	b=o8GkX9hcmBtMIN3ryYw5ZcJdytKZ/U59OTvQIJCxqVOZXvlqfBsFVibScDR1QieNqYPVtl
+	zlkS4VjH4Ep00uzD/HjJagzEOJcL0sQFLoJ87EFAUQ+lFsGGUztMkIPjiX1hlKL0PxO98D
+	uDs3MCNMCmAog5qsTW9Wh9nikYP0K/Q=
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1758890985; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+	bh=KNJxCh0s4I781vRuxLTEA2h2/xeNRvLyNBgY3kLeN+Q=;
+	b=WaOoF8+NFTVWd5TEfWaZGd9Bb5b9x2sNu4IhYQYSEm9zZCF4Pp+bkBmXMiRRgnayduCSLR
+	NIs6pVaMFM96SqixOLRRwGgXgf3FQlnjJDa+S1naHwb3mdbX4NB4OfCdtpEEtd1RD7Se12
+	QEKnPlf6WVultnKVY05aulUQEvBCzmc=
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Esben Haabendal <esben@geanix.com>,
+	linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Tony Lindgren <tony@atomide.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Andrew Murray <amurray@thegoodpenguin.co.uk>,
+	Petr Mladek <pmladek@suse.com>
+Subject: [PATCH 0/3] printk/nbcon: Prevent hardlockup reports caused by atomic nbcon flush
+Date: Fri, 26 Sep 2025 14:49:09 +0200
+Message-ID: <20250926124912.243464-1-pmladek@suse.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date: Fri, 26 Sep 2025 14:31:28 +0200
-From: Florian Eckert <fe@dev.tdt.de>
-To: Jiri Slaby <jirislaby@kernel.org>
-Cc: gregkh@linuxfoundation.org, kumaravel.thiagarajan@microchip.com,
-	tharunkumar.pasumarthi@microchip.com,
-	andriy.shevchenko@linux.intel.com, pnewman@connecttech.com,
-	angelogioacchino.delregno@collabora.com, peterz@infradead.org,
-	yujiaoliang@vivo.com, arnd@kernel.org, cang1@live.co.uk,
-	macro@orcam.me.uk, schnelle@linux.ibm.com,
-	Eckert.Florian@googlemail.com, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH] serial: 8250_pcilib: Replace deprecated PCI functions
-In-Reply-To: <5fed7e09-b59f-46b0-be49-881c0c1b61c1@kernel.org>
-References: <20250924133544.2666514-1-fe@dev.tdt.de>
- <5fed7e09-b59f-46b0-be49-881c0c1b61c1@kernel.org>
-Message-ID: <e4d2fa14701092977daa844cf25e7dd7@dev.tdt.de>
-X-Sender: fe@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate-ID: 151534::1758889889-256FD63A-6B86B2C9/0/0
-X-purgate: clean
-X-purgate-type: clean
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [-1.30 / 50.00];
+	BAYES_HAM(-3.00)[99.99%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_CONTAINS_FROM(1.00)[];
+	R_MISSING_CHARSET(0.50)[];
+	NEURAL_HAM_SHORT(-0.20)[-0.999];
+	MIME_GOOD(-0.10)[text/plain];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:mid];
+	ARC_NA(0.00)[];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	FREEMAIL_CC(0.00)[linuxfoundation.org,kernel.org,chromium.org,goodmis.org,linutronix.de,geanix.com,vger.kernel.org,linux.intel.com,arndb.de,atomide.com,linux.ibm.com,gmail.com,thegoodpenguin.co.uk,suse.com];
+	RCPT_COUNT_TWELVE(0.00)[16];
+	MIME_TRACE(0.00)[0:+];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	RCVD_COUNT_ZERO(0.00)[0];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	TO_DN_SOME(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com]
+X-Spam-Flag: NO
+X-Spam-Level: 
+X-Spam-Score: -1.30
 
->> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
-> ...
->> --- a/drivers/tty/serial/8250/8250_pci.c
->> +++ b/drivers/tty/serial/8250/8250_pci.c
->> @@ -165,7 +165,15 @@ static int
->>   setup_port(struct serial_private *priv, struct uart_8250_port *port,
->>   	   u8 bar, unsigned int offset, int regshift)
->>   {
->> -	return serial8250_pci_setup_port(priv->dev, port, bar, offset, 
->> regshift);
->> +	void __iomem *iomem = NULL;
->> +
->> +	if (pci_resource_flags(priv->dev, bar) & IORESOURCE_MEM) {
->> +		iomem = pcim_iomap(priv->dev, bar, 0);
->> +		if (IS_ERR(iomem))
->> +			return -ENOMEM;
-> 
-> Why not to propagate the error?
+This patchset should solve problem which was being discussed
+at https://lore.kernel.org/all/aNFR45fL2L4PavNc@pathway.suse.cz
 
-Most other calls in the kernel of this function return
--ENOMEM on error. Therefore, I thought that this is the
-correct return value. I can fix that in v2 if you like.
-Let me know what you prefer.
+__nbcon_atomic_flush_pending_con() preserves the nbcon console
+ownership all the time when flushing pending messages. It might
+take a long time with slow serial consoles.
 
-> 
-> Other than that, LGTM.
+It might trigger a hardlockup report on another CPU which is
+busy waiting for the nbcon console ownership, for example,
+in nbcon_reacquire_nobuf() or __uart_port_nbcon_acquire().
 
-Thanks for the review :-)
+The problem is solved by the 3rd patch. It releases the console
+context ownership after each record.
+
+The 3rd patch alone would increase the risk of takeovers and repeated
+lines. It is prevented by the 1st patch which blocks the printk kthread
+when any CPU is in an emergency context.
+
+The 2nd patch allows to block the printk kthread also in panic.
+It is not important. It is just an obvious update of the check
+for emergency contexts.
+
+Note: The patchset applies against current Linus' tree (v6.17-rc7).
+
+      The 2nd patch would need an update after the consolisation of
+      the panic state API gets merged via -mm tree,
+      see https://lore.kernel.org/r/20250825022947.1596226-2-wangjinchao600@gmail.com
+
+Petr Mladek (3):
+  printk/nbcon: Block printk kthreads when any CPU is in an emergency
+    context
+  printk/nbcon/panic: Allow printk kthread to sleep when the system is
+    in panic
+  printk/nbcon: Release nbcon consoles ownership in atomic flush after
+    each emitted record
+
+ kernel/printk/internal.h |  1 +
+ kernel/printk/nbcon.c    | 43 +++++++++++++++++++++++++++++++++++-----
+ kernel/printk/printk.c   |  2 +-
+ 3 files changed, 40 insertions(+), 6 deletions(-)
+
+-- 
+2.51.0
 
