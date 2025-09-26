@@ -1,45 +1,45 @@
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDD4B2F60A5
-	for <linux-serial@vger.kernel.org>; Fri, 26 Sep 2025 12:50:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA9A02EAD18
+	for <linux-serial@vger.kernel.org>; Fri, 26 Sep 2025 12:50:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758891004; cv=none; b=MUOWLu7xRJIGjG+0fmR/z7FEp2u7AdDYTtbEu5huj3LDjB3OBWHRemRWSHC5ApDlmSpIm6CCxO3AjD2+0is3BBShyiQU3dsTiy8ljDpQTcw3x5z2aAyimXqFzpAT7Nam4hlkKqrN8cqTgdgukKf4RB0rXf7szKiowm7uXT3N7+E=
+	t=1758891016; cv=none; b=rP8leScsc+hw3vmvlJ92+DA4F0RPH3ki4UX1uN6hWHEYYeWlM+glf5D8qnLoIhqdZCKhbElM/v+f9Xj1TKFZRU2UaT/KwapEuWmq81lGNG9K3hvsdK2C3od9mxumU57Yb60xpKmF6DPyMDzBPPon9MaFQCa0pHyfF87yn0tT9wE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758891004; c=relaxed/simple;
-	bh=TYWTKovEAR/alWiiTH/VGFbGEWwEpfnP/SWlmIhsZLw=;
+	s=arc-20240116; t=1758891016; c=relaxed/simple;
+	bh=x3GAlWgKs0fsAyeT459u49KjKsIE1RObsl76qtK8lRM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=W6P4wjbXDy2tltrT6uogLdSaz97BQNdwB0hWoxsIHaR87IBASvaX8N7fn+K62ugunOMtQZKbbHJ127J2FuB3IvkEjBYMO1KMSQCgWqY46V7bnmYpWc5K3dNPAGrmCd9k7eyjltFvl4hnV9Sd0NIQLUH13jcBvBFUGQwcSKQjPVE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=laBWk+Q1; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=magzUBs+; arc=none smtp.client-ip=195.135.223.131
+	 MIME-Version; b=Z536Meqq2SSOswNZ8X50qq5SB2GMfprJOgqXTjKRjOvzG82U29SGJVxaSAjsz2yKvh57F3+egj5PUFy5d0p/iYhYMy6OsJ8o/Wq+YbJKV3S6kRkQZ+lw7f2KC/7iVN+9ZDVk+48/WpGmnRbCZjhctp2enrquCivw5ncn029fPZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=ga56bOLh; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=mrmxcrsM; arc=none smtp.client-ip=195.135.223.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="laBWk+Q1";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="magzUBs+"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="ga56bOLh";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="mrmxcrsM"
 Received: from pathway.suse.cz (unknown [10.100.208.146])
-	by smtp-out2.suse.de (Postfix) with ESMTP id CCA10241F1;
-	Fri, 26 Sep 2025 12:49:59 +0000 (UTC)
+	by smtp-out2.suse.de (Postfix) with ESMTP id A6D8A4106;
+	Fri, 26 Sep 2025 12:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1758891001; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1758891013; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=0H69nxEsRsFFac/uhvPZcy+qAFfR1+LLSKCCkgNAhic=;
-	b=laBWk+Q1l9neyVbfjpsJ5APAJmW/K7W8XRxKcUluQDXlnekkQiCOAfDSKvZprFjygkin/d
-	Au+2rEl9v83A3fcazIPv4mnjgxK+lwb1wYMujo8+q1jvRt0QxARcItexlZySFgLvRR9nzT
-	slDBnkyFaqbuZMwq2/bTUAbj9RUFhdM=
+	bh=Taai5mKkev2mbhv+qd/m2dXBSKagv/FeTKuZ2WmOyR0=;
+	b=ga56bOLhkYrLc009oAW3+M7ImjG098bJzAbEcfKICJY3qGu3j3iaxe50cJ0BybLcNU4G0j
+	fDDiisUmc97X9QjYIw1w2WGl6NP5B7hgOa1Y1mNC8S/YBW6I/YmEeYUYSgvmd8yXtFcBka
+	V3oo2hGbLEyXAecOxv7mIxQpklHZ5jw=
 Authentication-Results: smtp-out2.suse.de;
 	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1758891000; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1758891011; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=0H69nxEsRsFFac/uhvPZcy+qAFfR1+LLSKCCkgNAhic=;
-	b=magzUBs+NSX/fqPsm/ahEjmQJWZLIv4KXj7k29rvqsIdO7Rjhu6g/0swW6mvYsTkzTS2qX
-	z8UQHtzoO1xnRcYgpOEuH8YvGOSVGHLC2TjP4xOmt7ZfZDM7o/9flFp2pdt4Znrn3uciR/
-	4dTYZYfzrzVb0qKfXYhVpWfJFuwb7g0=
+	bh=Taai5mKkev2mbhv+qd/m2dXBSKagv/FeTKuZ2WmOyR0=;
+	b=mrmxcrsMsj7W/tzQk6YcgWF7GuZJFE9d0jYrzDQyLKk5a+FQEvyUYjm4P/HU9XC60vqHpC
+	ta3nZ38ETp1fvaDcGLTueZdbptLAKQdT/73e0tYgTVDOLeWord9HOiiaELE3DiJekoDBKx
+	RJEABA2maiJYD9sbaav+KuJD58By3bE=
 From: Petr Mladek <pmladek@suse.com>
 To: John Ogness <john.ogness@linutronix.de>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -57,9 +57,9 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Serge Semin <fancer.lancer@gmail.com>,
 	Andrew Murray <amurray@thegoodpenguin.co.uk>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 1/3] printk/nbcon: Block printk kthreads when any CPU is in an emergency context
-Date: Fri, 26 Sep 2025 14:49:10 +0200
-Message-ID: <20250926124912.243464-2-pmladek@suse.com>
+Subject: [PATCH 2/3] printk/nbcon/panic: Allow printk kthread to sleep when the system is in panic
+Date: Fri, 26 Sep 2025 14:49:11 +0200
+Message-ID: <20250926124912.243464-3-pmladek@suse.com>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20250926124912.243464-1-pmladek@suse.com>
 References: <20250926124912.243464-1-pmladek@suse.com>
@@ -98,132 +98,69 @@ X-Spamd-Result: default: False [-5.30 / 50.00];
 X-Spam-Flag: NO
 X-Spam-Score: -5.30
 
-In emergency contexts, printk() tries to flush messages directly even
-on nbcon consoles. And it is allowed to takeover the console ownership
-and interrupt the printk kthread in the middle of a message.
+The printk kthread might be running when there is a panic in progress.
+But it is not able to acquire the console ownership any longer.
 
-Only one takeover and one repeated message should be enough in most
-situations. The first emergency message flushes the backlog and printk
-kthreads get to sleep. Next emergency messages are flushed directly
-and printk() does not wake up the kthreads.
+Prevent the desperate attempts to acquire the ownership and allow sleeping
+in panic. It would make it behave the same as when there is any CPU
+in an emergency context.
 
-However, the one takeover is not guaranteed. Any printk() in normal
-context on another CPU could wake up the kthreads. Or a new emergency
-message might be added before the kthreads get to sleep. Note that
-the interrupted .write_kthread() callbacks usually have to call
-nbcon_reacquire_nobuf() and restore the original device setting
-before checking for pending messages.
-
-The risk of the repeated takeovers will be even bigger because
-__nbcon_atomic_flush_pending_con is going to release the console
-ownership after each emitted record. It will be needed to prevent
-hardlockup reports on other CPUs which are busy waiting for
-the context ownership, for example, by nbcon_reacquire_nobuf() or
-__uart_port_nbcon_acquire().
-
-The repeated takeovers break the output, for example:
-
-    [ 5042.650211][ T2220] Call Trace:
-    [ 5042.6511
-    ** replaying previous printk message **
-    [ 5042.651192][ T2220]  <TASK>
-    [ 5042.652160][ T2220]  kunit_run_
-    ** replaying previous printk message **
-    [ 5042.652160][ T2220]  kunit_run_tests+0x72/0x90
-    [ 5042.653340][ T22
-    ** replaying previous printk message **
-    [ 5042.653340][ T2220]  ? srso_alias_return_thunk+0x5/0xfbef5
-    [ 5042.654628][ T2220]  ? stack_trace_save+0x4d/0x70
-    [ 5042.6553
-    ** replaying previous printk message **
-    [ 5042.655394][ T2220]  ? srso_alias_return_thunk+0x5/0xfbef5
-    [ 5042.656713][ T2220]  ? save_trace+0x5b/0x180
-
-A more robust solution is to block the printk kthread entirely whenever
-*any* CPU enters an emergency context. This ensures that critical messages
-can be flushed without contention from the normal, non-atomic printing
-path.
-
-Link: https://lore.kernel.org/all/aNQO-zl3k1l4ENfy@pathway.suse.cz
 Signed-off-by: Petr Mladek <pmladek@suse.com>
 ---
- kernel/printk/nbcon.c | 32 +++++++++++++++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+ kernel/printk/internal.h | 1 +
+ kernel/printk/nbcon.c    | 6 ++++--
+ kernel/printk/printk.c   | 2 +-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
 
+diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
+index ef282001f200..6e8578102fb3 100644
+--- a/kernel/printk/internal.h
++++ b/kernel/printk/internal.h
+@@ -332,6 +332,7 @@ struct printk_message {
+ 	unsigned long		dropped;
+ };
+ 
++bool panic_in_progress(void);
+ bool other_cpu_in_panic(void);
+ bool printk_get_next_message(struct printk_message *pmsg, u64 seq,
+ 			     bool is_extended, bool may_supress);
 diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-index d5d8c8c657e0..08b196e898cd 100644
+index 08b196e898cd..219ae0c8b5ed 100644
 --- a/kernel/printk/nbcon.c
 +++ b/kernel/printk/nbcon.c
-@@ -117,6 +117,9 @@
-  * from scratch.
-  */
+@@ -1178,7 +1178,8 @@ static bool nbcon_kthread_should_wakeup(struct console *con, struct nbcon_contex
+ 	 * where the context with a higher priority takes over the nbcon console
+ 	 * ownership in the middle of a message.
+ 	 */
+-	if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)))
++	if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)) ||
++	    unlikely(panic_in_progress()))
+ 		return false;
  
-+/* Counter of active nbcon emergency contexts. */
-+atomic_t nbcon_cpu_emergency_cnt;
-+
- /**
-  * nbcon_state_set - Helper function to set the console state
-  * @con:	Console to update
-@@ -1168,6 +1171,16 @@ static bool nbcon_kthread_should_wakeup(struct console *con, struct nbcon_contex
- 	if (kthread_should_stop())
- 		return true;
- 
-+	/*
-+	 * Block the kthread when the system is in an emergency or panic mode.
-+	 * It increases the chance that these contexts would be able to show
-+	 * the messages directly. And it reduces the risk of interrupted writes
-+	 * where the context with a higher priority takes over the nbcon console
-+	 * ownership in the middle of a message.
-+	 */
-+	if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)))
-+		return false;
-+
  	cookie = console_srcu_read_lock();
+@@ -1236,7 +1237,8 @@ static int nbcon_kthread_func(void *__console)
+ 		 * Block the kthread when the system is in an emergency or panic
+ 		 * mode. See nbcon_kthread_should_wakeup() for more details.
+ 		 */
+-		if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)))
++		if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)) ||
++		    unlikely(panic_in_progress()))
+ 			goto wait_for_event;
  
- 	flags = console_srcu_read_flags(con);
-@@ -1219,6 +1232,13 @@ static int nbcon_kthread_func(void *__console)
- 		if (kthread_should_stop())
- 			return 0;
- 
-+		/*
-+		 * Block the kthread when the system is in an emergency or panic
-+		 * mode. See nbcon_kthread_should_wakeup() for more details.
-+		 */
-+		if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)))
-+			goto wait_for_event;
-+
  		backlog = false;
- 
- 		/*
-@@ -1660,6 +1680,8 @@ void nbcon_cpu_emergency_enter(void)
- 
- 	preempt_disable();
- 
-+	atomic_inc(&nbcon_cpu_emergency_cnt);
-+
- 	cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
- 	(*cpu_emergency_nesting)++;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index ebf10352736f..174d42041594 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -345,7 +345,7 @@ static void __up_console_sem(unsigned long ip)
  }
-@@ -1674,10 +1696,18 @@ void nbcon_cpu_emergency_exit(void)
- 	unsigned int *cpu_emergency_nesting;
+ #define up_console_sem() __up_console_sem(_RET_IP_)
  
- 	cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
--
- 	if (!WARN_ON_ONCE(*cpu_emergency_nesting == 0))
- 		(*cpu_emergency_nesting)--;
- 
-+	/*
-+	 * Wake up kthreads because there might be some pending messages
-+	 * added by other CPUs with normal priority since the last flush
-+	 * in the emergency context.
-+	 */
-+	if (!WARN_ON_ONCE(atomic_read(&nbcon_cpu_emergency_cnt) == 0))
-+		if (atomic_dec_return(&nbcon_cpu_emergency_cnt) == 0)
-+			nbcon_kthreads_wake();
-+
- 	preempt_enable();
+-static bool panic_in_progress(void)
++bool panic_in_progress(void)
+ {
+ 	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
  }
- 
 -- 
 2.51.0
 
