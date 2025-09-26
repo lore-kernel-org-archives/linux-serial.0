@@ -1,130 +1,140 @@
-Received: from mail-m15566.qiye.163.com (mail-m15566.qiye.163.com [101.71.155.66])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12EAA13C8EA;
-	Fri, 26 Sep 2025 14:39:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1EC1189B84;
+	Fri, 26 Sep 2025 14:43:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758897557; cv=none; b=Dg03d3pJ6LIUzEtXe7bS1ocf4UIqWlCDd6jnAeF7CAy6rZgatvXpnbpRqTvNSvPHycHg/T5BQwElETQqoUtd3ahW1jq7501VBFgPbWMGggyz82dMkh08e3jnKo0/WP3nVlUSnc558JiC/QbI0M8fYpx2aW5aDY9qpsbb3+ug10I=
+	t=1758897798; cv=none; b=a8BNq/Vlzu7+oPTcF+pngV9LgEYMvM1693ghdZK4/BG7ap6UrpPpNU/VR/s/eVIG9pQnRxmGwtqV2IoeBIpE1/FPSbif3EiNWsRWkKW/LSycVhXhMqI5k2/Oy8OfrVxusoOck9KAKIKbTrT7xJ2i+7t3GvVz9FOW4lCrThhK6Zs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758897557; c=relaxed/simple;
-	bh=od9vShACd/JgNkVYzap2DkAP/CrTcrq1VvOTO30I0UI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=fa7j15ZnHAPLiuBA9ZpnWsQGFMHR5m7nUJ0c3lDwiNvKVtoXbJADyjEhdS8jO7YwFhb2fs0SxfYsPhmbw3NPZnX4KD1rhS9BOP1uEvDmoRcIMFHrvvYPl46y2EOe2wl6eg+bnDpZNcG6lVmYWjdVi5XL0e7MIFRW+a57pA1qh6g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=anlogic.com; spf=pass smtp.mailfrom=anlogic.com; arc=none smtp.client-ip=101.71.155.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=anlogic.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=anlogic.com
-Received: from leo-ubuntu21.localdomain (unknown [114.84.85.30])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 10cd375ea;
-	Fri, 26 Sep 2025 22:39:08 +0800 (GMT+08:00)
-From: "fushan.zeng" <fushan.zeng@anlogic.com>
-To: conor@kernel.org
-Cc: alex@ghiti.fr,
-	anup@brainfault.org,
-	aou@eecs.berkeley.edu,
-	conor+dt@kernel.org,
-	daniel.lezcano@linaro.org,
-	devicetree@vger.kernel.org,
-	fushan.zeng@anlogic.com,
-	gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	junhui.liu@pigmoral.tech,
-	krzk+dt@kernel.org,
-	krzysztof.kozlowski@linaro.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-serial@vger.kernel.org,
-	palmer@dabbelt.com,
-	palmer@sifive.com,
-	paul.walmsley@sifive.com,
-	robh@kernel.org,
-	samuel.holland@sifive.com,
-	tglx@linutronix.de,
-	ruigang.wan@anlogic.com
-Subject: Re: [PATCH v2 00/11] riscv: Add initial support for Anlogic DR1V90
-Date: Fri, 26 Sep 2025 22:38:55 +0800
-Message-Id: <20250926143855.4106-1-fushan.zeng@anlogic.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20250925-jaundice-uneasy-ff8b3b595879@spud>
-References: <20250925-jaundice-uneasy-ff8b3b595879@spud>
+	s=arc-20240116; t=1758897798; c=relaxed/simple;
+	bh=/1wSTGnAQRVt41V2hI0ZzT9+Zwhxg/Rq2OuY8HFG470=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=brrSMPF1jcsQ+ACKYDhecXQpbLfQDQVijzX2sIdVNxcAnkNyNZX5yuJTea0lp1FdRB17fFG8gDUZGS9VO6hQ0Mo1pSiD2afGL8s5QKAkY3qKUb/dYxQNnWcCB6DU1ug28j6y2a/nQIsNkYYBqB9lJKi3wETU49hPhg0h5quFNB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=UoBTlk8n; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=8ph6xF2C; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="UoBTlk8n";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="8ph6xF2C"
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1758897792;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1IBczeEJpVQcM5jLgYJ9cWY9abCJj+XfKLD28bakKl0=;
+	b=UoBTlk8nUa/+SGgQEz/qXMj17X+JLNb1IGtNr4L4r6wzn4uIgbL4eDA0jvDBe7L8+HP930
+	PKu2UsJ134FzmIfYYX6S8g0Db5YdDGxVFaxgPo5VLRv4wMi5FaYyvhfSMV391cXSDhELYp
+	lgR/LS2Na+qFAN30rcvz+HlBGtVKLmEv/3AStcCWei8DJdojfpQRU1uqm+OgrxSX7NxF93
+	0QIdg/b5crgw+HicmNRyK+UCNARu5ZW4H5SSzeLVug0VWqYz0qXjntflRj7ripNqtr6JOp
+	LB91wEHF3XuNk5rMU5rQVnSR08H4imoktMLaDYT3/Vus0YGkRWREPh81J8+8bw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1758897792;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1IBczeEJpVQcM5jLgYJ9cWY9abCJj+XfKLD28bakKl0=;
+	b=8ph6xF2C80BCtGlQfW3tmE8Hq0BUjuTTd0e18wYdBrenUqMzIqwBecYbYgYAuaWRStV5Y3
+	w2FmgYIzRX99NvBg==
+To: Petr Mladek <pmladek@suse.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+ <jirislaby@kernel.org>, Sergey Senozhatsky <senozhatsky@chromium.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Thomas Gleixner
+ <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>,
+ linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org, Andy
+ Shevchenko <andriy.shevchenko@linux.intel.com>, Arnd Bergmann
+ <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>, Niklas Schnelle
+ <schnelle@linux.ibm.com>, Serge Semin <fancer.lancer@gmail.com>, Andrew
+ Murray <amurray@thegoodpenguin.co.uk>, Petr Mladek <pmladek@suse.com>
+Subject: Re: [PATCH 3/3] printk/nbcon: Release nbcon consoles ownership in
+ atomic flush after each emitted record
+In-Reply-To: <20250926124912.243464-4-pmladek@suse.com>
+References: <20250926124912.243464-1-pmladek@suse.com>
+ <20250926124912.243464-4-pmladek@suse.com>
+Date: Fri, 26 Sep 2025 16:49:12 +0206
+Message-ID: <84v7l5gtq7.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0a998676aceb0224kunmdf48913a39ec1b
-X-HM-MType: 1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVlCHR5LVh0fGhlPGEJKTUJJGVYVFAkWGhdVGRETFh
-	oSFyQUDg9ZV1kYEgtZQVlKSk9VQ09VQ05VSEtZV1kWGg8SFR0UWUFZT0tIVUpLSEpPSExVSktLVU
-	pCS0tZBg++
+Content-Type: text/plain
 
-On Thu, 25 Sep 2025 18:09:59 +0100, Conor Dooley wrote:
-> On Thu, Sep 25, 2025 at 11:06:50AM +0800, fushan.zeng wrote:
-> > Thanks first.
-> > Anloigc already has the open source SDK at https://gitee.com/anlogic/sdk,
-> > and will submit it to mainline at suitable time.
-> > The code should be a full feature version after lots of tests, not the
-> > modified and simplified version from Anlogic open source.
-> 
-> The nature of the upstreaming process will require what you have to be
-> broken down into multiple parts and be upstreamed at different times,
-> depending on how long components take to review. This is normal and
-> expected. Of course there should be through testing done, but I don't
-> think that what is in this initial patchset really requires much
-> testing - if it boots then it's probably sufficiently tested!
-> 
-> > And we hope that there won't be two different versions code of anlogic SO=
-> Cs,
-> > it may confuse customers.
-> 
-> If there's ever going to be complete upstream support for your device,
-> then there will be two versions, because looking at just the dts files
-> in the gitee sdk you linked I have noticed things that are not acceptable
-> in upstream. As others have said, you are not entitled to control the
-> upstreaming process for your device. The only way to have some control is
-> to submit patches yourself and to engage with the review process for other
-> components. It's in everybody's interest to keep differences with your
-> SDK to a minimum, but you need to accept that there will always be
-> differences because the upstream community simply has higher standards
-> than those in your SDK as well as a requirement for portable code that
-> you do not have.
-> 
-> > It is better that anlogic SOCs are long term maintained and supported
-> > by Anlogic officially in mainline and for customers.
-> 
-> It's only better if Anlogic submits better quality patches (no evidence
-> for that yet) or submits the patches more promptly than others (which
-> clearly has not happened here), and offers review commentary etc at a
-> higher standard and more frequently than a non-employee maintainer would
-> be able to do (there's no evidence for that so far either, given you're
-> trying to stall this patchset). Your claim seems to have no merit as
-> there is no proof that you'd do a better job.
-> 
-> Thanks,
-> Conor.
+On 2025-09-26, Petr Mladek <pmladek@suse.com> wrote:
+> printk() tries to flush messages with NBCON_PRIO_EMERGENCY on
+> nbcon consoles immediately. It might take seconds to flush all
+> pending lines on slow serial consoles. Note that there might be
+> hundreds of messages, for example:
+>
+> [    3.771531][    T1] pci 0000:3e:08.1: [8086:324
+> ** replaying previous printk message **
+> [    3.771531][    T1] pci 0000:3e:08.1: [8086:3246] type 00 class 0x088000 PCIe Root Complex Integrated Endpoint
+> [ ... more than 2000 lines, about 200kB messages ... ]
+> [    3.837752][    T1] pci 0000:20:01.0: Adding to iommu group 18
+> [    3.837851][    T
+> ** replaying previous printk message **
+> [    3.837851][    T1] pci 0000:20:03.0: Adding to iommu group 19
+> [    3.837946][    T1] pci 0000:20:05.0: Adding to iommu group 20
+> [ ... more than 500 messages for iommu groups 21-590 ...]
+> [    3.912932][    T1] pci 0000:f6:00.1: Adding to iommu group 591
+> [    3.913070][    T1] pci 0000:f6:00.2: Adding to iommu group 592
+> [    3.913243][    T1] DMAR: Intel(R) Virtualization Technology for Directed I/O
+> [    3.913245][    T1] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+> [    3.913245][    T1] software IO TLB: mapped [mem 0x000000004f000000-0x0000000053000000] (64MB)
+> [    3.913324][    T1] RAPL PMU: API unit is 2^-32 Joules, 3 fixed counters, 655360 ms ovfl timer
+> [    3.913325][    T1] RAPL PMU: hw unit of domain package 2^-14 Joules
+> [    3.913326][    T1] RAPL PMU: hw unit of domain dram 2^-14 Joules
+> [    3.913327][    T1] RAPL PMU: hw unit of domain psys 2^-0 Joules
+> [    3.933486][    T1] ------------[ cut here ]------------
+> [    3.933488][    T1] WARNING: CPU: 2 PID: 1 at arch/x86/events/intel/uncore.c:1156 uncore_pci_pmu_register+0x15e/0x180
+> [    3.930291][    C0] watchdog: Watchdog detected hard LOCKUP on cpu 0
+> [    3.930291][    C0] Kernel panic - not syncing: Hard LOCKUP
+> [...]
+> [    3.930291][    C0] CPU: 0 UID: 0 PID: 18 Comm: pr/ttyS0 Not tainted...
+> [...]
+> [    3.930291][    C0] RIP: 0010:nbcon_reacquire_nobuf+0x11/0x50
+> [    3.930291][    C0] Call Trace:
+> [...]
+> [    3.930291][    C0]  <TASK>
+> [    3.930291][    C0]  serial8250_console_write+0x16d/0x5c0
+> [    3.930291][    C0]  nbcon_emit_next_record+0x22c/0x250
+> [    3.930291][    C0]  nbcon_emit_one+0x93/0xe0
+> [    3.930291][    C0]  nbcon_kthread_func+0x13c/0x1c0
+>
+> The are visible two takeovers of the console ownership:
+>
+>   - The 1st one is triggered by the "WARNING: CPU: 2 PID: 1 at
+>     arch/x86/..." line printed with NBCON_PRIO_EMERGENCY.
+>
+>   - The 2nd one is triggered by the "Kernel panic - not syncing:
+>     Hard LOCKUP" line printed with NBCON_PRIO_PANIC.
+>
+> There are more than 2500 lines, at about 240kB, emitted between
+> the takeover and the 1st "WARNING" line in the emergency context.
+> This amount of pending messages had to be flushed by
+> nbcon_atomic_flush_pending() when WARN() printed its first line.
+>
+> The atomic flush was holding the nbcon console context for too long so
+> that it triggered hard lockup on the CPU running the printk kthread
+> "pr/ttyS0". The kthread needed to reacquire the console ownership
+> for restoring the original serial port state in serial8250_console_write().
+>
+> Prevent the hardlockup by releasing the nbcon console ownership after
+> each emitted record.
+>
+> Note that __nbcon_atomic_flush_pending_con() used to hold the console
+> ownership all the time because it blocked the printk kthread. Otherwise
+> the kthread tried to flush the messages in parallel which caused repeated
+> takeovers and more replayed messages.
+>
+> It is not longer a problem because the repeated takeovers are blocked
+> by the counter of emergency contexts, see nbcon_cpu_emergency_cnt.
+>
+> Link: https://lore.kernel.org/all/aNQO-zl3k1l4ENfy@pathway.suse.cz
+> Signed-off-by: Petr Mladek <pmladek@suse.com>
 
-Hi all,
-I realize that my previous message was inappropriate and may have
-given the wrong impression - my apologies.
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
 
-To clarify, I am not trying to control the community
-or block upstream work. I misunderstood the right
-way to express myself before, and I take my
-previous mail back.
-
-Thank you for your guidance and patience. As a
-newcomer to the Linux community, I am still
-learning how to properly contribute.
-
-If Junhui has further technical questions, please
-feel free to contact me in this thread. I am happy to
-help and to welcome contributions from the
-community.
-
-Best regards,
-fushan
-
-
+Looks good and performs as advertised.
