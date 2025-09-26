@@ -1,45 +1,45 @@
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA9A02EAD18
-	for <linux-serial@vger.kernel.org>; Fri, 26 Sep 2025 12:50:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 647C32EBB93
+	for <linux-serial@vger.kernel.org>; Fri, 26 Sep 2025 12:50:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758891016; cv=none; b=rP8leScsc+hw3vmvlJ92+DA4F0RPH3ki4UX1uN6hWHEYYeWlM+glf5D8qnLoIhqdZCKhbElM/v+f9Xj1TKFZRU2UaT/KwapEuWmq81lGNG9K3hvsdK2C3od9mxumU57Yb60xpKmF6DPyMDzBPPon9MaFQCa0pHyfF87yn0tT9wE=
+	t=1758891027; cv=none; b=dukYYbPZVkPBnOGih9szF1Y/nEOmQbwrwCqP8oW8VFtiBoZ2rjyqzDa596K/uLWSbmKawcAB+WAEAmnNV7tt//nifxq6vXbNiWnge7SOftjbRzZoVNcdLjQuIKn6xlJAghxrg+Grlb/zvv5k0Jy0jS+S0rKW4UoB8y6jv7lzBAE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758891016; c=relaxed/simple;
-	bh=x3GAlWgKs0fsAyeT459u49KjKsIE1RObsl76qtK8lRM=;
+	s=arc-20240116; t=1758891027; c=relaxed/simple;
+	bh=oaa4IbHTkX3qzZV9Dbu43B1Du5fNzi1Xr78qTvJfAJ8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Z536Meqq2SSOswNZ8X50qq5SB2GMfprJOgqXTjKRjOvzG82U29SGJVxaSAjsz2yKvh57F3+egj5PUFy5d0p/iYhYMy6OsJ8o/Wq+YbJKV3S6kRkQZ+lw7f2KC/7iVN+9ZDVk+48/WpGmnRbCZjhctp2enrquCivw5ncn029fPZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=ga56bOLh; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=mrmxcrsM; arc=none smtp.client-ip=195.135.223.131
+	 MIME-Version; b=ATIAxArqihRQ2KDh9OQBAox1lUr+q0eFPlQsgJgDTYteNSXvpUKnkeGDDgLIErcZ7oje1FuuT7RYHSDBFP+ykRgErRBVXRnt7yxVu7MgkhDulx0oWrK/q3LPga9k+QSRI3yCJU4sP7xGpdfPdaZvB0sFeTQwvoRwnz2UNTINCeI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=bPp2Pt9h; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=bPp2Pt9h; arc=none smtp.client-ip=195.135.223.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="ga56bOLh";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="mrmxcrsM"
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="bPp2Pt9h";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="bPp2Pt9h"
 Received: from pathway.suse.cz (unknown [10.100.208.146])
-	by smtp-out2.suse.de (Postfix) with ESMTP id A6D8A4106;
-	Fri, 26 Sep 2025 12:50:11 +0000 (UTC)
+	by smtp-out2.suse.de (Postfix) with ESMTP id 749674106;
+	Fri, 26 Sep 2025 12:50:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1758891013; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1758891023; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Taai5mKkev2mbhv+qd/m2dXBSKagv/FeTKuZ2WmOyR0=;
-	b=ga56bOLhkYrLc009oAW3+M7ImjG098bJzAbEcfKICJY3qGu3j3iaxe50cJ0BybLcNU4G0j
-	fDDiisUmc97X9QjYIw1w2WGl6NP5B7hgOa1Y1mNC8S/YBW6I/YmEeYUYSgvmd8yXtFcBka
-	V3oo2hGbLEyXAecOxv7mIxQpklHZ5jw=
+	bh=sip+9wb/wTJvnAddu3/bXoZ34X5T6VBWTKCuAM8BW1o=;
+	b=bPp2Pt9hKxaM2I9A8SYKyWeE1Q7ar2A5jkCpYU1nuZMR+3NOMOLHKc57m5Zb96n7gnPxnQ
+	HmD7FcYmxfqFYar2+XLj1YhgktYlk1Ir/VqqncWmbYbYBa3suvL6NM9JcPTalE86kByMv0
+	l3ZYG4er0le3QuyblSC/I+cxWBiTzgs=
 Authentication-Results: smtp-out2.suse.de;
 	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1758891011; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1758891023; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Taai5mKkev2mbhv+qd/m2dXBSKagv/FeTKuZ2WmOyR0=;
-	b=mrmxcrsMsj7W/tzQk6YcgWF7GuZJFE9d0jYrzDQyLKk5a+FQEvyUYjm4P/HU9XC60vqHpC
-	ta3nZ38ETp1fvaDcGLTueZdbptLAKQdT/73e0tYgTVDOLeWord9HOiiaELE3DiJekoDBKx
-	RJEABA2maiJYD9sbaav+KuJD58By3bE=
+	bh=sip+9wb/wTJvnAddu3/bXoZ34X5T6VBWTKCuAM8BW1o=;
+	b=bPp2Pt9hKxaM2I9A8SYKyWeE1Q7ar2A5jkCpYU1nuZMR+3NOMOLHKc57m5Zb96n7gnPxnQ
+	HmD7FcYmxfqFYar2+XLj1YhgktYlk1Ir/VqqncWmbYbYBa3suvL6NM9JcPTalE86kByMv0
+	l3ZYG4er0le3QuyblSC/I+cxWBiTzgs=
 From: Petr Mladek <pmladek@suse.com>
 To: John Ogness <john.ogness@linutronix.de>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -57,9 +57,9 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Serge Semin <fancer.lancer@gmail.com>,
 	Andrew Murray <amurray@thegoodpenguin.co.uk>,
 	Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 2/3] printk/nbcon/panic: Allow printk kthread to sleep when the system is in panic
-Date: Fri, 26 Sep 2025 14:49:11 +0200
-Message-ID: <20250926124912.243464-3-pmladek@suse.com>
+Subject: [PATCH 3/3] printk/nbcon: Release nbcon consoles ownership in atomic flush after each emitted record
+Date: Fri, 26 Sep 2025 14:49:12 +0200
+Message-ID: <20250926124912.243464-4-pmladek@suse.com>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20250926124912.243464-1-pmladek@suse.com>
 References: <20250926124912.243464-1-pmladek@suse.com>
@@ -75,92 +75,139 @@ X-Spamd-Result: default: False [-5.30 / 50.00];
 	REPLY(-4.00)[];
 	BAYES_HAM(-3.00)[100.00%];
 	SUSPICIOUS_RECIPS(1.50)[];
-	MID_CONTAINS_FROM(1.00)[];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_CONTAINS_FROM(1.00)[];
 	R_MISSING_CHARSET(0.50)[];
-	NEURAL_HAM_SHORT(-0.20)[-0.999];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
 	MIME_GOOD(-0.10)[text/plain];
-	ARC_NA(0.00)[];
 	FUZZY_RATELIMITED(0.00)[rspamd.com];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	FROM_HAS_DN(0.00)[];
+	ARC_NA(0.00)[];
 	RCPT_COUNT_TWELVE(0.00)[16];
 	MIME_TRACE(0.00)[0:+];
-	TO_DN_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	TAGGED_RCPT(0.00)[];
-	FREEMAIL_CC(0.00)[linuxfoundation.org,kernel.org,chromium.org,goodmis.org,linutronix.de,geanix.com,vger.kernel.org,linux.intel.com,arndb.de,atomide.com,linux.ibm.com,gmail.com,thegoodpenguin.co.uk,suse.com];
-	FROM_HAS_DN(0.00)[];
 	RCVD_COUNT_ZERO(0.00)[0];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[pathway.suse.cz:helo,suse.com:email,suse.com:mid];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email,suse.com:mid,pathway.suse.cz:helo];
+	TAGGED_RCPT(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
 	R_RATELIMIT(0.00)[to_ip_from(RLreigq8okzrb3g3qsqhoz9iaq)];
-	DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	TO_DN_SOME(0.00)[];
+	FREEMAIL_CC(0.00)[linuxfoundation.org,kernel.org,chromium.org,goodmis.org,linutronix.de,geanix.com,vger.kernel.org,linux.intel.com,arndb.de,atomide.com,linux.ibm.com,gmail.com,thegoodpenguin.co.uk,suse.com];
 	FREEMAIL_ENVRCPT(0.00)[gmail.com]
 X-Spam-Flag: NO
 X-Spam-Score: -5.30
 
-The printk kthread might be running when there is a panic in progress.
-But it is not able to acquire the console ownership any longer.
+printk() tries to flush messages with NBCON_PRIO_EMERGENCY on
+nbcon consoles immediately. It might take seconds to flush all
+pending lines on slow serial consoles. Note that there might be
+hundreds of messages, for example:
 
-Prevent the desperate attempts to acquire the ownership and allow sleeping
-in panic. It would make it behave the same as when there is any CPU
-in an emergency context.
+[    3.771531][    T1] pci 0000:3e:08.1: [8086:324
+** replaying previous printk message **
+[    3.771531][    T1] pci 0000:3e:08.1: [8086:3246] type 00 class 0x088000 PCIe Root Complex Integrated Endpoint
+[ ... more than 2000 lines, about 200kB messages ... ]
+[    3.837752][    T1] pci 0000:20:01.0: Adding to iommu group 18
+[    3.837851][    T
+** replaying previous printk message **
+[    3.837851][    T1] pci 0000:20:03.0: Adding to iommu group 19
+[    3.837946][    T1] pci 0000:20:05.0: Adding to iommu group 20
+[ ... more than 500 messages for iommu groups 21-590 ...]
+[    3.912932][    T1] pci 0000:f6:00.1: Adding to iommu group 591
+[    3.913070][    T1] pci 0000:f6:00.2: Adding to iommu group 592
+[    3.913243][    T1] DMAR: Intel(R) Virtualization Technology for Directed I/O
+[    3.913245][    T1] PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+[    3.913245][    T1] software IO TLB: mapped [mem 0x000000004f000000-0x0000000053000000] (64MB)
+[    3.913324][    T1] RAPL PMU: API unit is 2^-32 Joules, 3 fixed counters, 655360 ms ovfl timer
+[    3.913325][    T1] RAPL PMU: hw unit of domain package 2^-14 Joules
+[    3.913326][    T1] RAPL PMU: hw unit of domain dram 2^-14 Joules
+[    3.913327][    T1] RAPL PMU: hw unit of domain psys 2^-0 Joules
+[    3.933486][    T1] ------------[ cut here ]------------
+[    3.933488][    T1] WARNING: CPU: 2 PID: 1 at arch/x86/events/intel/uncore.c:1156 uncore_pci_pmu_register+0x15e/0x180
+[    3.930291][    C0] watchdog: Watchdog detected hard LOCKUP on cpu 0
+[    3.930291][    C0] Kernel panic - not syncing: Hard LOCKUP
+[...]
+[    3.930291][    C0] CPU: 0 UID: 0 PID: 18 Comm: pr/ttyS0 Not tainted...
+[...]
+[    3.930291][    C0] RIP: 0010:nbcon_reacquire_nobuf+0x11/0x50
+[    3.930291][    C0] Call Trace:
+[...]
+[    3.930291][    C0]  <TASK>
+[    3.930291][    C0]  serial8250_console_write+0x16d/0x5c0
+[    3.930291][    C0]  nbcon_emit_next_record+0x22c/0x250
+[    3.930291][    C0]  nbcon_emit_one+0x93/0xe0
+[    3.930291][    C0]  nbcon_kthread_func+0x13c/0x1c0
 
+The are visible two takeovers of the console ownership:
+
+  - The 1st one is triggered by the "WARNING: CPU: 2 PID: 1 at
+    arch/x86/..." line printed with NBCON_PRIO_EMERGENCY.
+
+  - The 2nd one is triggered by the "Kernel panic - not syncing:
+    Hard LOCKUP" line printed with NBCON_PRIO_PANIC.
+
+There are more than 2500 lines, at about 240kB, emitted between
+the takeover and the 1st "WARNING" line in the emergency context.
+This amount of pending messages had to be flushed by
+nbcon_atomic_flush_pending() when WARN() printed its first line.
+
+The atomic flush was holding the nbcon console context for too long so
+that it triggered hard lockup on the CPU running the printk kthread
+"pr/ttyS0". The kthread needed to reacquire the console ownership
+for restoring the original serial port state in serial8250_console_write().
+
+Prevent the hardlockup by releasing the nbcon console ownership after
+each emitted record.
+
+Note that __nbcon_atomic_flush_pending_con() used to hold the console
+ownership all the time because it blocked the printk kthread. Otherwise
+the kthread tried to flush the messages in parallel which caused repeated
+takeovers and more replayed messages.
+
+It is not longer a problem because the repeated takeovers are blocked
+by the counter of emergency contexts, see nbcon_cpu_emergency_cnt.
+
+Link: https://lore.kernel.org/all/aNQO-zl3k1l4ENfy@pathway.suse.cz
 Signed-off-by: Petr Mladek <pmladek@suse.com>
 ---
- kernel/printk/internal.h | 1 +
- kernel/printk/nbcon.c    | 6 ++++--
- kernel/printk/printk.c   | 2 +-
- 3 files changed, 6 insertions(+), 3 deletions(-)
+ kernel/printk/nbcon.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/printk/internal.h b/kernel/printk/internal.h
-index ef282001f200..6e8578102fb3 100644
---- a/kernel/printk/internal.h
-+++ b/kernel/printk/internal.h
-@@ -332,6 +332,7 @@ struct printk_message {
- 	unsigned long		dropped;
- };
- 
-+bool panic_in_progress(void);
- bool other_cpu_in_panic(void);
- bool printk_get_next_message(struct printk_message *pmsg, u64 seq,
- 			     bool is_extended, bool may_supress);
 diff --git a/kernel/printk/nbcon.c b/kernel/printk/nbcon.c
-index 08b196e898cd..219ae0c8b5ed 100644
+index 219ae0c8b5ed..e298346111b2 100644
 --- a/kernel/printk/nbcon.c
 +++ b/kernel/printk/nbcon.c
-@@ -1178,7 +1178,8 @@ static bool nbcon_kthread_should_wakeup(struct console *con, struct nbcon_contex
- 	 * where the context with a higher priority takes over the nbcon console
- 	 * ownership in the middle of a message.
- 	 */
--	if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)))
-+	if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)) ||
-+	    unlikely(panic_in_progress()))
- 		return false;
+@@ -1532,10 +1532,10 @@ static int __nbcon_atomic_flush_pending_con(struct console *con, u64 stop_seq,
+ 	ctxt->prio			= nbcon_get_default_prio();
+ 	ctxt->allow_unsafe_takeover	= allow_unsafe_takeover;
  
- 	cookie = console_srcu_read_lock();
-@@ -1236,7 +1237,8 @@ static int nbcon_kthread_func(void *__console)
- 		 * Block the kthread when the system is in an emergency or panic
- 		 * mode. See nbcon_kthread_should_wakeup() for more details.
- 		 */
--		if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)))
-+		if (unlikely(atomic_read(&nbcon_cpu_emergency_cnt)) ||
-+		    unlikely(panic_in_progress()))
- 			goto wait_for_event;
+-	if (!nbcon_context_try_acquire(ctxt, false))
+-		return -EPERM;
+-
+ 	while (nbcon_seq_read(con) < stop_seq) {
++		if (!nbcon_context_try_acquire(ctxt, false))
++			return -EPERM;
++
+ 		/*
+ 		 * nbcon_emit_next_record() returns false when the console was
+ 		 * handed over or taken over. In both cases the context is no
+@@ -1544,6 +1544,8 @@ static int __nbcon_atomic_flush_pending_con(struct console *con, u64 stop_seq,
+ 		if (!nbcon_emit_next_record(&wctxt, true))
+ 			return -EAGAIN;
  
- 		backlog = false;
-diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index ebf10352736f..174d42041594 100644
---- a/kernel/printk/printk.c
-+++ b/kernel/printk/printk.c
-@@ -345,7 +345,7 @@ static void __up_console_sem(unsigned long ip)
++		nbcon_context_release(ctxt);
++
+ 		if (!ctxt->backlog) {
+ 			/* Are there reserved but not yet finalized records? */
+ 			if (nbcon_seq_read(con) < stop_seq)
+@@ -1552,7 +1554,6 @@ static int __nbcon_atomic_flush_pending_con(struct console *con, u64 stop_seq,
+ 		}
+ 	}
+ 
+-	nbcon_context_release(ctxt);
+ 	return err;
  }
- #define up_console_sem() __up_console_sem(_RET_IP_)
  
--static bool panic_in_progress(void)
-+bool panic_in_progress(void)
- {
- 	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
- }
 -- 
 2.51.0
 
