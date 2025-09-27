@@ -1,118 +1,86 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DCB81E3DF2
-	for <linux-serial@vger.kernel.org>; Sat, 27 Sep 2025 13:59:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9669E23C506
+	for <linux-serial@vger.kernel.org>; Sat, 27 Sep 2025 22:16:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758981566; cv=none; b=mdB3mNiseBoplQdeOruVB0wCZ0m/lSZ7H2barmnnWykzM80jFTM3xxYusXQ2KVlQnikQG3vGSq2ZIvUNsVn29XSV5Bsu2Q/Dgwx2AlDWJ+xcmcwgXvG3qGyh29RvVNfw6mggkFNrWBNsvW/ZDN19i9sTU7AEIBMOtZZl9oUhJD0=
+	t=1759011371; cv=none; b=o770np0G2YdHtNT7r25MSY9WRX46n+oQ7fobQ056GDsPYaAZVB6qBlx1VxRTzpe8ugqgEmq9nKdesjYdCot4GjfdqUE5xIj8UnBrSxkKoLXq/DAd+SiakUB0TTPbmC8hKXJHopSSVKAgwYrYN0bwFZnBanRnpZ4e94Qz3TsAMe0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758981566; c=relaxed/simple;
-	bh=fcHiWyXrlFKXvBYGJ+K3ybehrxbtVs47y8UOfxcApoM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=fG0nFMxqShdr8yZtdETgrScSaq/GfS/+vWwrC5tPCvaix8Xcq22fxr9K64FMLc5KZKZgENNMmm9h7HNilypPcTtGokTr9cepbYFC6qc87MboxBp+Ra7iqYqTf+f9eK6gA3g75Lsg5wKRefR+/Y4yimMLWZj1nSnA+EKGWgk0r9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nH10xkyc; arc=none smtp.client-ip=209.85.214.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1759011371; c=relaxed/simple;
+	bh=8vZRA8xRfEWHtkYllia01JpTEqLlFc+lx75FdnO+oo8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tvTFQrTUIdsZ0jdKHMqeV25YFG+aDBIAMrs5Iv1K74jLdJKLk3CmgmEPLSUS9FX0J5YcKRjUbTKOth+aWXoFxok9Ukka8/N0ymUNk3jBturglCvwe91Cc/XjevzhuD1WDY70UWN0r0D3F2sygdayuYk+1Gk94VCr29w8GW9MuN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=ZxDdRP0Q; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nH10xkyc"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-27edcbcd158so28900455ad.3
-        for <linux-serial@vger.kernel.org>; Sat, 27 Sep 2025 06:59:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1758981564; x=1759586364; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AJ2zurBZlXyqU6xN/6EaGXAHpVHgluSazTPc6JBBq6Y=;
-        b=nH10xkyc9cde1tERg2coU9NQpiXEEfU2/xui9bdVZYz8Vr/B1PDFeYxMwkO52MJRPj
-         9blcA1NKKi6o0CaAWsP0DJKelAGW/4osgS5A5kKXVKGRIF9fvHziQ8Fck9cSGr90Njda
-         lCT3Qsq3/Is9L5Q2jsGEHb8koSU2akPc5xiwTjhMpUEadqxcG6l9w7Ia5iF9lFcKQMte
-         hd8B1xQLTgOFpYDqv4iS/bpgN0srNSvca0XkIvc632WrXrszQysFWS8Dgp7v4sc+GPxx
-         CiWVtOP3zzqsCSWLg4eskp46DRmgW3w8OsRHRJzHml8XUNrOEurmnPdKEdvBeBnAXk4q
-         g+kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758981564; x=1759586364;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AJ2zurBZlXyqU6xN/6EaGXAHpVHgluSazTPc6JBBq6Y=;
-        b=r4O/n4MH0RzvA9eqgzI98X/DkiN++LPsxPBF8Vh/H1Ea1yB4rRURcoAOh+kjCJ11TY
-         YN77BPc12rbu/GfiH13EDq5nZs452KU+T/xlYlPq16bECZTreB5C+3fbPoeWybIvJ8nE
-         /OC7vSzyZbav6BdRDyRVToKuzOWKe/UjRltN0FrnjvrTlpmIT/Q8DWUFVYAX9OVE2VQQ
-         R4gaChzN+LK6iC8DW4KZICtO6UwLQ0jPAVXaVC/ac8QAqbwj0sWfPJPHuaNSewyvoMC7
-         tfBHx8scyNwKn8Oli8I9hQD1+Ypw3utE5HGairo/ojex6TmjxwtoVEXyyLIy1xkw7RzY
-         8HQw==
-X-Forwarded-Encrypted: i=1; AJvYcCXFY3ZEZp564lxtAp1O00bOo3a6xQMEzc73TRd9wv7QRhJ+7AsslQu886Wve2RM8gzbgqyQuB6pxAoNPuU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwExrU22/F1AU7maAWwdkbIrydWunFuxd6H+HCcfkXhzB6XeY9d
-	e10msfgM2qqPSUxmJrI7uVzuEQeIeJ1Qncja397jDa9hzYAMa15xVQvx
-X-Gm-Gg: ASbGncsdGTdtA0qmQdk2vJRF9ww+wSEVG4OC02/O4yMt/vfSS8TIf93bV44qfX5/A+X
-	oz9DRbQrPjgj2q3+t1sdxLmCcSExAffk0gUprigfeWrcALhHLbVAxlf9pcbKXrhruXqlRXC+ZQn
-	3xRiwhuT1hCejRNiKW3hoWWtnJxzr8BkQ6MdUAkRYJ5dRDNhRLmZCC6Dh8+1cykNoswyz2jwS/V
-	1EeBw3av/WIdB/s8hxD7Cfco1FruN4nyGgPUfN7Y5bs3iLycBVLVMI6hd5Z5KvzJzpWeV0oNap6
-	eDttb4dMhkIe/jS1pQk8M7NSJKLEvsFv86Vk/SXrPoGmfzphyIL27wYMVEIaXjtYxsRoZaSVqNk
-	XA/5XKaNuMOcFcUwkDRm/wVfT
-X-Google-Smtp-Source: AGHT+IEf78Oq9CDF3Gdqzh+zztJ/1K0sMtW4DnsPMDn/dIyyhBV9SYuiQfoD+F6FHky70q2kK7m2SA==
-X-Received: by 2002:a17:903:2f8c:b0:27e:c27f:b834 with SMTP id d9443c01a7336-27ed4a6dc52mr119233195ad.56.1758981564487;
-        Sat, 27 Sep 2025 06:59:24 -0700 (PDT)
-Received: from gmail.com ([2a09:bac5:1f0b:281e::3ff:4e])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-27ed66cf181sm82444095ad.28.2025.09.27.06.59.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Sep 2025 06:59:24 -0700 (PDT)
-From: Qingfang Deng <dqfext@gmail.com>
-To: Junhui Liu <junhui.liu@pigmoral.tech>
-Cc: Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Alexandre Ghiti <alex@ghiti.fr>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Palmer Dabbelt <palmer@sifive.com>,
-	Conor Dooley <conor@kernel.org>,
-	linux-riscv@lists.infradead.org,
-	linux-serial@vger.kernel.org
-Subject: Re: [PATCH v2 04/11] dt-bindings: timer: Add Anlogic DR1V90 CLINT
-Date: Sat, 27 Sep 2025 21:59:12 +0800
-Message-Id: <20250927135912.3327-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250922-dr1v90-basic-dt-v2-4-64d28500cb37@pigmoral.tech>
-References: <20250922-dr1v90-basic-dt-v2-0-64d28500cb37@pigmoral.tech> <20250922-dr1v90-basic-dt-v2-4-64d28500cb37@pigmoral.tech>
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="ZxDdRP0Q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=8vZR
+	A8xRfEWHtkYllia01JpTEqLlFc+lx75FdnO+oo8=; b=ZxDdRP0Q11za1yd8Vw0S
+	39MC2odiNNSqyQy9M8o++tRzYkll+aTX+jZIG4I9rB+A95mEkRtGIWi/gIeGI5e7
+	7raiklWdW1rMR4zH2k/IJfcp01W/uAxmqGO91NMXOkZx5UtIklw8bj+BqUAzlR02
+	ZycgbVLUAowkFdQMtNj9XjN4O41gXaeWOSlkZaDUrJg/1vBG1zoISTG1zCuwbbXp
+	9AhiMmzjieRoC2wqOEf+DtxvbdE7plcD/YyCHWBhd1osnLbUsfDjgeU5RLIrwagP
+	aGxTaMbnE3+SeoFuXcQslZh4UqQVOmYhvO/wsZUwQ/Vt65KOoS/UMnlN49xC57Ca
+	sw==
+Received: (qmail 2700299 invoked from network); 28 Sep 2025 00:16:02 +0200
+Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 28 Sep 2025 00:16:02 +0200
+X-UD-Smtp-Session: l3s3148p1@YU5jv88/kN0ujnsw
+Date: Sun, 28 Sep 2025 00:16:01 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-kernel@vger.kernel.org
+Cc: linux-i2c@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: delete email for Tharun Kumar P
+Message-ID: <aNhiIcMl7VBk98NK@shikoro>
+References: <20250925204020.4544-2-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="fpi23hzH5U9f6IiJ"
+Content-Disposition: inline
+In-Reply-To: <20250925204020.4544-2-wsa+renesas@sang-engineering.com>
 
-Hi, Junhui,
-On Mon, 22 Sep 2025 20:46:34 +0800, Junhui Liu <junhui.liu@pigmoral.tech> wrote:
-> --- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
-> +++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
-> @@ -29,6 +29,7 @@ properties:
->      oneOf:
->        - items:
->            - enum:
-> +              - anlogic,dr1v90-clint    # Anlogic DR1V90
 
-UX900 uses the ACLINT with SSWI. Please use the new ACLINT binding.
+--fpi23hzH5U9f6IiJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Link: https://www.nucleisys.com/upload/files/doc/Nuclei_RISC-V_ISA_Spec.pdf
+On Thu, Sep 25, 2025 at 10:39:44PM +0200, Wolfram Sang wrote:
+> The email address bounced. I couldn't find a newer one in recent git hist=
+ory,
+> so delete this email entry.
+>=20
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
->                - canaan,k210-clint       # Canaan Kendryte K210
->                - eswin,eic7700-clint     # ESWIN EIC7700
->                - sifive,fu540-c000-clint # SiFive FU540
-> 
-> -- 
-> 2.51.0
+Applied to for-current, thanks!
 
-Regards,
-Qingfang
+
+--fpi23hzH5U9f6IiJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmjYYiEACgkQFA3kzBSg
+KbaZDQ/9G3icVYvY8mxCYm9hx4UxRs563Dd8VyMI5SHYF97mVqj95vtlwoOj1Uz4
+d/UZ7/8/rXtd16vT/soIrUhPGTx7bMe6jbfWpJx+C91Qnn+ZOkVl4Z8DsXQuRXyk
+Co1NuR+MYkrz9cpWS4muZ6WSH+gAUcSKlnGicMFW/T/EE9UwDy//+Z43LyGNBkAY
+CtgdVUKhCQEAxuFJtihcq1Ct7S57elEQBiqPLLy1dEsRXR9ADv9XbiahZe4BgLob
+CiojrpKQislOeWTnC8kb5oyjSUJhu7gCEg0BSvrafkqDMm0VrTj3b4UY/J8HXe6Q
+fBO7wiLCini9kEVzgkhObDiuwAnogwaZ1+iziMnr3XMAL9L5kmFzJ25CH/+g/8fp
+fHxsPu82jbQhHki1cNF2w5QI28oIbYZeKpp2zL5JYCyxsZbgcDtKWpJZT4ONb0kf
+RdsV9f/zIx/wb2GrJuilrh8/a7ogZwFCxLdsvu9QdcGyUQ8lHc/eFNAip2g29ps4
++yg+VJDFLJUXE2AKj30O9m+sxDSfjeoDmBYkWjThPaupEN1eFp1oLPWYKc2syTgX
+TtxqDePB8Ufxhs+y/vKiXPxW4NvtpG9p1NyEmeIMI28NcGMIUIOKe5/tjyipVbEx
+u0XBGQlDHV9HWprecBCzBpNfqPBysAU0SX47CD9wQZphICfs0Mc=
+=Qvgk
+-----END PGP SIGNATURE-----
+
+--fpi23hzH5U9f6IiJ--
