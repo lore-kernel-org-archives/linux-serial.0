@@ -1,123 +1,103 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-op-o12.zoho.com (sender4-op-o12.zoho.com [136.143.188.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B87891B21BD
-	for <linux-serial@vger.kernel.org>; Sun, 28 Sep 2025 02:48:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759027715; cv=none; b=o/bddEQUH9ADxZYhKDVoEJMe6SOs/oyRcrQ8Y33cn0DaFiwOkFZg0Jrfz2hMLnQrgcuEUxOWV0qTbaYc9zgYkqROTpOG16OIP0pZGofH3yQd7IZUSh8bOGFl/SEWHZBZTguoKDMwst82f9n39nF5aGYpP5pefZjsCT29NHSe7os=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759027715; c=relaxed/simple;
-	bh=G27Pgv7iGejxXksjp5F8tvsZrk3N83G7riJRNuh7fwA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=dA45zwf47aVKZHZC3WSUsETXwUteEjyu344fJe5HLDTLiuk0qQwhJewoX44S94/EZvCT+AaeERm0KzJM7+DJfmhGvs+BBeGeUMdHbzJk/CTXDDyI5bgtZPbcNQNe4plBm0d3FG0R3zE9+R95ehZ3gncAp9RTT1t9E5lxUMpfhdM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jwT6uP8G; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F6A01C6A3;
+	Sun, 28 Sep 2025 03:55:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1759031747; cv=pass; b=CWq2TeLMwPh2Ge/XFqRGLOYRUhxV5kE1VA4zLU09DGp7VGrcHuSMmKzrI4Eu47xyjDMvbADV+NG8mHKlcMgAiHKPl9NJoqE4oqri764UdXA+ou/twuxaaRc0YCQFxsZtbA/TyluLFN6XtgfPnVyTIBDzqdstubuxJFg88rCa/nc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1759031747; c=relaxed/simple;
+	bh=T21jfvNUaKJtai3h1JBCeUbst1A5RiHxfpTitoitGtc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Fco0FgHE3ukFyEW0KRy2BKhEuvTVch1laj1m3J15eXbaPrscAXKQnUnM3b33fdo5H/UwnAyldX/ITC9FKFizn0Ko//Jt8I9kLMaeEpIRke4S2KtEWF+mxaiuTii1ahFIHLyu7d2I5ucbITkEfv2htFOp6yfEbJvn066Xo+sdJ9g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech; spf=pass smtp.mailfrom=pigmoral.tech; dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b=Hi2KCnO8; arc=pass smtp.client-ip=136.143.188.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pigmoral.tech
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pigmoral.tech
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jwT6uP8G"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-62fa062a1abso5589869a12.2
-        for <linux-serial@vger.kernel.org>; Sat, 27 Sep 2025 19:48:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1759027712; x=1759632512; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SIqCPbhPlSD4ePjYmkMG9S4moNLTDdS5iBVcgknVqDE=;
-        b=jwT6uP8Gm6G1cuYf3Tv68Bzv49JF83PHEQS770YAk1whDTCkhllVYZqSoaOIy0AIa3
-         nwLYbQ2jFSvZ6m3vE9XbrDoOd/vS0DSKqkM4NlmlGF4v9cgG7z1HNZOy3gw1Ng05Cn8z
-         FXKPnUkeQfwk+WDRMNFvYEuciOeHWtgD9GyCQl6vcRDXAlwb1rycBPVQTcVksXHPJ5ZB
-         utdVcmydS5Fk5PK6ibrzdf02XRzSYmg21kvKKO5SjqRk4TPbCJ1VMix8qpRRYla/fUDY
-         u5KotZQR696VnmROzLURf6syKCnKtGa0m1wZp9/N7uaPFuq7f17JUS0kMAziItLmHUcN
-         cE0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759027712; x=1759632512;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SIqCPbhPlSD4ePjYmkMG9S4moNLTDdS5iBVcgknVqDE=;
-        b=p+L5kJdj4P4O8F1M4QrJhsjX9Ew72xszvJ47RyNi5Q2R9gnb3ghWOmFyFCgYSOKAnl
-         ZHk0qDJvy5Ptl+q8qlkcXelNELNcU674w9ZgRW9cpEFmLrRvT3zeFPW6t43p/CFPWWyb
-         x5pU9DYK+ECUNwfDIypspeO3DaYMfS0NZuSeGPbpveEMtQphJHHB2k4yJgvfaWzofB4+
-         5xj098Cw5grdGnBsCZs1Bhv1vsCPc+ZrufAsps+hYuAVA8y3163kpHK1GCP3k1TNOeD0
-         IHk+nspTwtZdsksJcluAd4F9RpUGvRlCt6fYq/radKWmD2Q0xGdgE5ojrm5+yIIQLAas
-         d0fg==
-X-Forwarded-Encrypted: i=1; AJvYcCUKb4up+ILGRZMZIf3sBPE4BxbBNeRdGpmiC2f1Jo8Z6MAcITwB7zNwHtEasgLmcb8roOn+ChuxiNkYlP8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzPUFS5MuUVi9IaZtSeGB323Jot/QO53eSMsErnA3ly9wVdmAba
-	rT0Ewp9Fro1Qe4enSZDpMfdiBXR3jXnVX6ye7EZCxcI5d8SmrxKvfN8xAtobpxngUrQr1aUBqpG
-	+FPscpQvptGEXmU6QMEF4DVcHvVgLedBg6Vpu
-X-Gm-Gg: ASbGncvQaLtxBz6/KIK5QZbn/N1bzm6rKNg8WH7tU4fRgnQ9GPIJoSz1ieTVrki9wuf
-	PSBR/oLvVt/W+qZxjxnU1b/nYWNsieRqgKLf4tThY24CKMfey9S5OyRBabT3qM0WAO97fHfu3ap
-	o52adlMF5iCHxZ00mXUPZ4Nhu5HboCURmwYLg2PzK3vakQGcRApjiak/ud4wyw7QLRf3TB8SSts
-	IVm4GEARYWgVB4s4VQ=
-X-Google-Smtp-Source: AGHT+IHYFYzoo2FCZ+R42wdMNXg2gGCTC2KWOlpmGLAOuCsIbKMhKvzoC9v375rVavEqRbumDhQ8AHOLgwbwRq6XFWs=
-X-Received: by 2002:a05:6402:5210:b0:634:a546:de45 with SMTP id
- 4fb4d7f45d1cf-634a546e2c6mr9764402a12.23.1759027711786; Sat, 27 Sep 2025
- 19:48:31 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=pigmoral.tech header.i=junhui.liu@pigmoral.tech header.b="Hi2KCnO8"
+ARC-Seal: i=1; a=rsa-sha256; t=1759031705; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=TXfimD2q560aPLho43hi6Uuxe4qW179hIPP7duab3tYoOPl4/vdK1N3N9Ev6u1Mzbm6g3BoD+kn/IBbD/4zEECtK8eld8h4zkBetmzM6Vs8y24CMfbl2lJ/ivkF1MswtYpDA58KLRJyHRf9PlSKr3D26e8Vh5mkqeOewG9TrlvA=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1759031705; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=tKfnmneuohN8coB1a+XGSw3Os4lO+rOJEhg1bdS4Bz8=; 
+	b=fPYT5e4/upYb5xdhouQr/mRM3SIn7M8i76Ia08te8OtWYHjoPBryTcbLS+zVGS77IUqWtQBg7tsuf53TRufWN8lIPEUjjFODNztz3wR/luMEkPcZ7z/TLoz9JuZ8tsDG8bf7hDlD8Bsl8EHHc6Z0cgS8ibWKlOK9RZ1O6Ryi0N0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=pigmoral.tech;
+	spf=pass  smtp.mailfrom=junhui.liu@pigmoral.tech;
+	dmarc=pass header.from=<junhui.liu@pigmoral.tech>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1759031705;
+	s=zmail; d=pigmoral.tech; i=junhui.liu@pigmoral.tech;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=tKfnmneuohN8coB1a+XGSw3Os4lO+rOJEhg1bdS4Bz8=;
+	b=Hi2KCnO8kZjT+5DHvNRBl89zKzpUDfTXWV5rkkForhdx3w6DPQp5WDvbt4UhUXqr
+	jo/9HWV/xKBAHE7dn3XWaoJJ8sEUsAaU3/CbD/g5c+mLwD7Tf2145O/6XXFgu0bs2fi
+	vKoGQiRHSULVmGoLODHlZ14OheQXUMKMUBrrgmjo=
+Received: by mx.zohomail.com with SMTPS id 1759031692647275.44505116756466;
+	Sat, 27 Sep 2025 20:54:52 -0700 (PDT)
+Message-ID: <416407c8-9af0-4331-beaa-f53e1a5cd427@pigmoral.tech>
+Date: Sun, 28 Sep 2025 11:54:42 +0800
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1758676290.git.zhoubinbin@loongson.cn> <9823e7afe713450e210dab9dba6fa18683dc1fe0.1758676290.git.zhoubinbin@loongson.cn>
- <2025092428-glade-monologue-3663@gregkh>
-In-Reply-To: <2025092428-glade-monologue-3663@gregkh>
-From: Binbin Zhou <zhoubb.aaron@gmail.com>
-Date: Sun, 28 Sep 2025 10:48:19 +0800
-X-Gm-Features: AS18NWBz68QzCTskD3KAjHQSqckmCa7a4rjPHTjPL-thUzgT97MtzfY2E2ZY19g
-Message-ID: <CAMpQs4JgR=iG6LAuYeVxOpE31S6n=dC4+FGUJczOYDVfWHDuFw@mail.gmail.com>
-Subject: Re: [PATCH v5 2/3] serial: 8250: Add Loongson uart driver support
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Binbin Zhou <zhoubinbin@loongson.cn>, Huacai Chen <chenhuacai@loongson.cn>, 
-	Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Haowei Zheng <zhenghaowei@loongson.cn>, Huacai Chen <chenhuacai@kernel.org>, 
-	Xuerui Wang <kernel@xen0n.name>, loongarch@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-serial@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 04/11] dt-bindings: timer: Add Anlogic DR1V90 CLINT
+To: Qingfang Deng <dqfext@gmail.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Paul Walmsley
+ <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Samuel Holland <samuel.holland@sifive.com>, Anup Patel
+ <anup@brainfault.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>,
+ Conor Dooley <conor@kernel.org>, linux-riscv@lists.infradead.org,
+ linux-serial@vger.kernel.org
+References: <20250922-dr1v90-basic-dt-v2-0-64d28500cb37@pigmoral.tech>
+ <20250922-dr1v90-basic-dt-v2-4-64d28500cb37@pigmoral.tech>
+ <20250927135912.3327-1-dqfext@gmail.com>
+From: Junhui Liu <junhui.liu@pigmoral.tech>
+In-Reply-To: <20250927135912.3327-1-dqfext@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ZohoMailClient: External
 
-Hi Greg:
+Hi Qingfang,
 
-Thanks for your reply.
-
-On Wed, Sep 24, 2025 at 6:22=E2=80=AFPM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On 9/27/25 9:59 PM, Qingfang Deng wrote:
+> Hi, Junhui,
+> On Mon, 22 Sep 2025 20:46:34 +0800, Junhui Liu <junhui.liu@pigmoral.tech> wrote:
+>> --- a/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+>> +++ b/Documentation/devicetree/bindings/timer/sifive,clint.yaml
+>> @@ -29,6 +29,7 @@ properties:
+>>       oneOf:
+>>         - items:
+>>             - enum:
+>> +              - anlogic,dr1v90-clint    # Anlogic DR1V90
+> UX900 uses the ACLINT with SSWI. Please use the new ACLINT binding.
 >
-> On Wed, Sep 24, 2025 at 02:29:37PM +0800, Binbin Zhou wrote:
-> > --- a/include/uapi/linux/serial_core.h
-> > +++ b/include/uapi/linux/serial_core.h
-> > @@ -31,6 +31,7 @@
-> >  #define PORT_ALTR_16550_F128 28 /* Altera 16550 UART with 128 FIFOs */
-> >  #define PORT_RT2880  29      /* Ralink RT2880 internal UART */
-> >  #define PORT_16550A_FSL64 30 /* Freescale 16550 UART with 64 FIFOs */
-> > +#define PORT_LOONGSON        31      /* Loongson 16550 UART */
->
-> Why does userspace need to have this value exported?
+> Link: https://www.nucleisys.com/upload/files/doc/Nuclei_RISC-V_ISA_Spec.pdf
 
-Sorry, this was a cheap mistake.
-It should follow the existing latest macro definition as follows:
-
-diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_c=
-ore.h
-index 9c007a106330..5221d86d592a 100644
---- a/include/uapi/linux/serial_core.h
-+++ b/include/uapi/linux/serial_core.h
-@@ -231,6 +231,9 @@
- /* Sunplus UART */
- #define PORT_SUNPLUS   123
-
-+/* Loongson UART */
-+#define PORT_LOONGSON  124
-
-I'll double-check and test it again in the next version.
+Thanks for pointing it out. I will verify it in both Kernel and OpenSBI,
+and update in next version.
 
 >
-> thanks,
->
-> greg k-h
+>>                 - canaan,k210-clint       # Canaan Kendryte K210
+>>                 - eswin,eic7700-clint     # ESWIN EIC7700
+>>                 - sifive,fu540-c000-clint # SiFive FU540
+>>
+>> -- 
+>> 2.51.0
+> Regards,
+> Qingfang
 
---
-Thanks.
-Binbin
+-- 
+Best regards,
+Junhui Liu
+
