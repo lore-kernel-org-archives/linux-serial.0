@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AA0B1F5EA;
-	Mon, 29 Sep 2025 06:00:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3041446BF;
+	Mon, 29 Sep 2025 06:09:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759125625; cv=none; b=ezheyznbgK2wJEz9bNm3J6sLGAQfbiHBUytPRTK7OSkBXRZPc580QICrTzNF0Uzh5szbIiBDp6GhUns1Gtk2n2O2UYh4Ogd5To8svM8aW2Oh54wUrv/aDT1Fp+hU5wk7Dhg9Pm5oqyrevfMiTe9/mXX9DKaIHX0+dBVLVrnbry4=
+	t=1759126156; cv=none; b=M8VC5EREjYxKPiKHZzjHfu/HMVcVRlMQVNi0X/1Rzd5U5SjKq3EJTbstE/B15YOdNUEG9YAoytdE3lVAH0HAqnmMyLUsj40MQYx8gMomIuFe97Sa2kuc4kPXkeEJSNzm95V1pB6yoKcD2+gkroAy5y9cQhdoIjWwNYvIxnTI3V0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759125625; c=relaxed/simple;
-	bh=mBZFk8UZ7lxek2kM3lWSsghrg3BUbJ2YXC59VzRhYB0=;
+	s=arc-20240116; t=1759126156; c=relaxed/simple;
+	bh=IG8tzWIrSAtAZZUaasYlx0y8dsNW2En5YbN5RfE8pVA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QEwB8l2MAZroj1WBayRUXcc9fBw1U5rDphyxVE6zzdykiJ/Q4WU5KLPIp3RYRRzUQ+v+tbjHMUFRG48HEffTS1lrdEHU6er/uCJ0xtRbWZFtTG+zSlBehs+v+1CZI/+375LyYm/Za6EK5FlV86+axxk69uE8vZwdTFkfhFr0W+w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KTXgpGmd; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=ZcOYM/bg76q9q958HuJzS+5qZNNIFU9kC6Vggd9/6I2vV8RVpSmp5tuuZXzM+eqveYCYim3s31xkfTZ2Tb53IVPPGzNAiR3DmcVSSl/cEwbFVm+5QhOLYcuRhK7RifsV5iLOTZ6Ga5FpKfBAukYEUCWgROz0oQqP/C65DDu6zAk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XXHz7tVR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KTXgpGmd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B36BCC4CEF4;
-	Mon, 29 Sep 2025 06:00:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XXHz7tVR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AE33C4CEF4;
+	Mon, 29 Sep 2025 06:09:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759125624;
-	bh=mBZFk8UZ7lxek2kM3lWSsghrg3BUbJ2YXC59VzRhYB0=;
+	s=k20201202; t=1759126155;
+	bh=IG8tzWIrSAtAZZUaasYlx0y8dsNW2En5YbN5RfE8pVA=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=KTXgpGmdJMF00Cv9NdwOEAfRbABjmxjaPpNzFPthisGc18Y4hG3mOqXuBcsALMBZJ
-	 Rk/DfHXhTwQAK8AUreBcCJW7pFDuoqF7MfXpJ9557bbjH7kcFZyT4ugGJhSQSr724j
-	 EGEKrjvVj+ECb8+LVjcDsZ+4zFDmnuca1fBog8Rc2sVF25fgTg3yge7MKYYN4idb9U
-	 KrqyPNxYIJmIrM3Gcr1cwy4mA/dp8mPzMYv4zeM3EV6/BclWtmXOPvfFyXpy+dwzI8
-	 Ks36aZMOW3oCpnGGfTh9UAZnALPvxkBmHUeePNned7ZktW+3QIn9FQoS6lbQAVBkRm
-	 HPSyNAAzTEJeQ==
-Message-ID: <da2de297-2c9c-4855-9fb7-553022538cde@kernel.org>
-Date: Mon, 29 Sep 2025 08:00:19 +0200
+	b=XXHz7tVRtlND88PxvcNH+dLgAxfB0HiGNGMlRR4SnY0Fs9zqHR+JLZDUSh3E8z89+
+	 m7hboFgDY5rxnwWbl3saZsy+RdMXvlmhXRPlX5PtNwnsZmKs0ygZcOK/Mr0Q4MZ1Kr
+	 I0hF9ClVoHAUz9N1cwTTa6CjCL+Ti4kYf4esRkv8us6T/iUhAWLtuv52S+q2yrqg+C
+	 n7MTEXN/WbUJU00UlIFb+gn7Mn513cIvHnwxHIV6Wt6xxAzle3tJIv12DV5nO/9FVf
+	 olABFC+dS3GDH9cXk4YUgYTPozBbVoujwkYWCQZCBhfDhyw4MCszsIZC9tJN4VfCCQ
+	 XqN4fMWgas70Q==
+Message-ID: <0a606585-a7fb-4457-99f5-fe9cc75e366a@kernel.org>
+Date: Mon, 29 Sep 2025 08:09:12 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,18 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250_pcilib: Replace deprecated PCI functions
-To: Florian Eckert <fe@dev.tdt.de>
-Cc: gregkh@linuxfoundation.org, kumaravel.thiagarajan@microchip.com,
- tharunkumar.pasumarthi@microchip.com, andriy.shevchenko@linux.intel.com,
- pnewman@connecttech.com, angelogioacchino.delregno@collabora.com,
- peterz@infradead.org, yujiaoliang@vivo.com, arnd@kernel.org,
- cang1@live.co.uk, macro@orcam.me.uk, schnelle@linux.ibm.com,
- Eckert.Florian@googlemail.com, linux-kernel@vger.kernel.org,
- linux-serial@vger.kernel.org
-References: <20250924133544.2666514-1-fe@dev.tdt.de>
- <5fed7e09-b59f-46b0-be49-881c0c1b61c1@kernel.org>
- <e4d2fa14701092977daa844cf25e7dd7@dev.tdt.de>
+Subject: Re: [PATCH 05/15] serial: sc16is7xx: use guards for simple mutex
+ locks
+To: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
+ fvallee@eukrea.fr
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ Hugo Villeneuve <hvilleneuve@dimonoff.com>
+References: <20250924153740.806444-1-hugo@hugovil.com>
+ <20250924153740.806444-6-hugo@hugovil.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -91,37 +87,50 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <e4d2fa14701092977daa844cf25e7dd7@dev.tdt.de>
+In-Reply-To: <20250924153740.806444-6-hugo@hugovil.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 26. 09. 25, 14:31, Florian Eckert wrote:
->>> Signed-off-by: Florian Eckert <fe@dev.tdt.de>
->> ...
->>> --- a/drivers/tty/serial/8250/8250_pci.c
->>> +++ b/drivers/tty/serial/8250/8250_pci.c
->>> @@ -165,7 +165,15 @@ static int
->>>   setup_port(struct serial_private *priv, struct uart_8250_port *port,
->>>          u8 bar, unsigned int offset, int regshift)
->>>   {
->>> -    return serial8250_pci_setup_port(priv->dev, port, bar, offset, 
->>> regshift);
->>> +    void __iomem *iomem = NULL;
->>> +
->>> +    if (pci_resource_flags(priv->dev, bar) & IORESOURCE_MEM) {
->>> +        iomem = pcim_iomap(priv->dev, bar, 0);
->>> +        if (IS_ERR(iomem))
->>> +            return -ENOMEM;
->>
->> Why not to propagate the error?
-> 
-> Most other calls in the kernel of this function return
-> -ENOMEM on error. Therefore, I thought that this is the
-> correct return value. I can fix that in v2 if you like.
-> Let me know what you prefer.
+On 24. 09. 25, 17:37, Hugo Villeneuve wrote:
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+...
+> @@ -829,9 +827,6 @@ static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+>   		break;
+>   	}
+>   
+> -out_port_irq:
+> -	mutex_unlock(&one->lock);
+> -
+>   	return rc;
 
-Ugh, pcim_iomap() returns NULL on error, so the IS_ERR() check is all 
-wrong. What other places in the kernel use IS_ERR()? They need fixing.
+No need for rc now AFAICT.
+
+>   }
+>   
+> @@ -874,9 +869,8 @@ static void sc16is7xx_tx_proc(struct kthread_work *ws)
+>   	    (port->rs485.delay_rts_before_send > 0))
+>   		msleep(port->rs485.delay_rts_before_send);
+>   
+> -	mutex_lock(&one->lock);
+> +	guard(mutex)(&one->lock);
+>   	sc16is7xx_handle_tx(port);
+> -	mutex_unlock(&one->lock);
+>   }
+>   
+>   static void sc16is7xx_reconf_rs485(struct uart_port *port)
+> @@ -943,9 +937,8 @@ static void sc16is7xx_ms_proc(struct kthread_work *ws)
+>   	struct sc16is7xx_port *s = dev_get_drvdata(one->port.dev);
+>   
+>   	if (one->port.state) {
+> -		mutex_lock(&one->lock);
+> +		guard(mutex)(&one->lock);
+>   		sc16is7xx_update_mlines(one);
+> -		mutex_unlock(&one->lock);
+>   
+>   		kthread_queue_delayed_work(&s->kworker, &one->ms_work, HZ);
+
+Now the lock is held till here. R U sure it is OK?
 
 thanks,
 -- 
