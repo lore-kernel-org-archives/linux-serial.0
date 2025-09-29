@@ -1,132 +1,163 @@
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C94A27BF7C
-	for <linux-serial@vger.kernel.org>; Mon, 29 Sep 2025 08:50:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E32A239570
+	for <linux-serial@vger.kernel.org>; Mon, 29 Sep 2025 12:02:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759135843; cv=none; b=WRzApSkCwnswP2nB49n6MwdVWR8N27/6BcAG3dAyU7TBf8+pVmg4RZuGg7zYU2RHOSyKZ7uECJH95RnRKveoqJUWA/LpFQiNQcwcfCjBFdevV1tRm+BNqbg1pI1pYsi9mDlrnMElxZMAekRiMHdhXYdp7CvaAJVte7/SDgN0kLw=
+	t=1759147370; cv=none; b=H4sjUC73oPl9/nakUHhq8gCByNUL6rjwm7OwIRaRY30GULoJI/jjXrh6fLZRiGxGnhYmY+W5BhmYlWCcxrNpd/W9NpMGkX9hHa9jij+edFANVPwUpFb5+jP2BkLpqKiQYC9f1X26Op/MBFCv+w3QOXL0VagzgtWCYfKNMM12af8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759135843; c=relaxed/simple;
-	bh=c+9Zr2OF83HBvaK+XqqJLlx3/W86r07CDhX3cEewtsM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=jlOkjno5D6T8ko6T11HkDLjnBRrCd0teJoTFD6HUxpm2wSmL+a9ouqgBWcmiPGhA9QEQgs3O9ACfwjExDmMdRUHmSjhXCzv/W7lajJ30LRGsiG1ZoY6GUR61nV5IHs5yC4CwxdjCk0IcCBZoxd1oeeONH7JmeN7RCY4IcHywQ8E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk; spf=pass smtp.mailfrom=thegoodpenguin.co.uk; dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b=WSilErLV; arc=none smtp.client-ip=209.85.166.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thegoodpenguin.co.uk
+	s=arc-20240116; t=1759147370; c=relaxed/simple;
+	bh=OLwcOYUdxUpMjIFZ5BGZmv0LLP8AkmkGehIrLfqGQXo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Vlw4EUmvjS38K6DNcBySnBZVUaqnynUL1EbqMQHkSa4H8BQNyzshIm9A59b0HTqrAT69c7MkQpsuDFiWk6E7jaVt0bWmEu+YLMqY3VMr1cCgJSudmWblZKtT8Dg+sTUvRic17E0rHDIj6rHNrnajfEasRcwtGms0EeyjR8weE5U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=Wr+xqsnG; arc=none smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20230601.gappssmtp.com header.i=@thegoodpenguin-co-uk.20230601.gappssmtp.com header.b="WSilErLV"
-Received: by mail-io1-f53.google.com with SMTP id ca18e2360f4ac-8ca2e53c0d3so191902839f.1
-        for <linux-serial@vger.kernel.org>; Mon, 29 Sep 2025 01:50:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="Wr+xqsnG"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-b3d80891c6cso197224866b.1
+        for <linux-serial@vger.kernel.org>; Mon, 29 Sep 2025 05:02:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=thegoodpenguin-co-uk.20230601.gappssmtp.com; s=20230601; t=1759135841; x=1759740641; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=omySSYONQjyq4CRJmwEyfFKCPXkUZxqazybffU9Te1w=;
-        b=WSilErLVg8cZKkL5QDR4LjFXj4GZt3WzGuYNgaB+WUecUemYLKVgmuZcmiPG2AzHK5
-         n9OLKq2sPZE+jErqyk/ri76ocXPqPsXYITEPHKZsTQpktVL1qBrB23rsOYujbigUBHRr
-         sdWZr/YyN1jNO8uoZ+D5okpEeTf4aVfq0PvNeHYK3frzHwScIcGZg2S7d5CIn5pVssuE
-         DEMcmuUdsr7sBxcTpweh5f1YNI1M+bmH2X7ISPTdh9RTINLUPw7tXzdd/rgW+Jnf4Nel
-         CCjA/CmEd0in9TBoJkk6/X5lXym7ES0C4wORBaniFuNTnZvy1fEUzw5qS6xP5LLmtkRb
-         ZDRA==
+        d=suse.com; s=google; t=1759147366; x=1759752166; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=oOuv00OSV8dqBnGq20Wy0KRnlY3nSnPvwEkTxMlG5xg=;
+        b=Wr+xqsnGqANybgMrZr7WYtd7aIfaCZw3PvaZeFgPOrdaFKqZVUNmpgykyAzuYq0CHv
+         8jHR0wbf+2Ap7eaNLbwbNpAwcSxIey12rc74iZ/CufzbDuizIjPPeyVi+O3OdP9jcMIW
+         N1em+SdrkHac/Ig83d8+w7gv6ICp9QP68yuPC2pnsRjQt4aoI9dtNwbpmOC9eECEU2Du
+         wC/iWwUFgKlcReED5geh/Wtc+IxGzo3hU65ttN86PmE0hu/lvOTB36YrKC5P0uf+PaOo
+         GNl8IvOqNLbFIxvshYpHCOZQtSTSYfFFahg0srp1N8vKOcWSeOz1JqMpM8WPhjYLsT7h
+         WJXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759135841; x=1759740641;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=omySSYONQjyq4CRJmwEyfFKCPXkUZxqazybffU9Te1w=;
-        b=HDMwz0hEaiGCEufzbxva0Nsn8EZSj+M1OL/WNx4kjqjl84ex/eGS0FAj3WqSmT3FAj
-         jOhkeL/tQZpSH5ErzL3EWyHQcdbBmRLavMoXU3RS3SoQ8W+f4EfKta76m8xTrm3y7UOl
-         HJPESwjy/P0wUhDIOwWSJv75aMs2Oeg4hEQWi1RW0aF/4RWimnQD+RYRBAc7bXN58ZJp
-         AsY18ZVxKRaoERAYh0FHCOYju+hlShfjUmlAm20CKc21HDqUX/+lXNCGpdjCCV7GJ9nX
-         Wza7pq/WiiFDAMJ1rm9FD38UnR+50gudLKI0Q/8V1iQ9Lbyv+Mx2HgX1XfdrAfSFmx+M
-         +BOQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVD5qMOizCZj9A1WCa26ISyHeZLWRauxVnfGo4OvP3B87WPApUdnKL6wNznbgkjNLxEepTtx4SBArhfqM4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzZabXsH3VVLGYi4uYzF9CzjHUKKBRzpj+04oyhem6wzXcBzx08
-	Js7n2Q481ULKxfHhfMML3nmglDpKPwNdeJpBZh6LLzkkzZgWQkUwROGJN4FZZ4b0N4v1cMjy1gj
-	nY4kpjB8cYOvpejtI8EZFdHL4NCi/fhCHN+JFYtjjyg==
-X-Gm-Gg: ASbGncsFPB4FV3wbHhrC4q83F4jwt+4slQWftgy7PZwM2iiYKydFOjOqerkv+yaH8BT
-	1nikQ1G3kYLEEZFEJomkmUU8gmXdDKAot8PmfAoC29Upv6fOJ0ZHx53wTw5OD2fGB0ACDM1CWxS
-	Ukw1frO5Nobi1ssXLP4PxCNjDYxaiptxiWOgRk8Xl4R0PJYqiHJe0gxQM7/KjsLEXRhF1a9bGvZ
-	LQPeYU0NEAbYsX3M1Gd7sBp7Odf8w4v8yrCEXyo
-X-Google-Smtp-Source: AGHT+IFe2KxVUzzK5sabl2rokVr2v696XAURYfuVjNJ5+CtdiRxH8OO6QdoW1deS8WHtLy12IJabmdlvZ2pPAjcgK3E=
-X-Received: by 2002:a05:6e02:184e:b0:425:8857:6e3c with SMTP id
- e9e14a558f8ab-425955f47f9mr234725575ab.11.1759135841140; Mon, 29 Sep 2025
- 01:50:41 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1759147366; x=1759752166;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oOuv00OSV8dqBnGq20Wy0KRnlY3nSnPvwEkTxMlG5xg=;
+        b=LSQPgoQOEu0E/tisxI5SoL8Dj1E8dgJdSAwCUzv7s6L42eBsXN3N8/4lNUZq6hEqj8
+         VvhZszuT1tgqIpKo7dmA6JGRuGVm9lCQZhLbANM6RlPqfAte7N24aqnyRYKmvtSfRJou
+         iFRcrfkat13WOOTIEDX4Pgv+vS3JVKJ/jsTMJNM+cNspsBFU3U5flKetM38druhf4I7b
+         cRgpvYL7anUhpBLLK7o6jZQZNJFwhhdgKZapHfMgHHZ5bV+1Xm6WxgEnzEnndAuFwBOM
+         da9KxhJG1VJApAEUQ58yyVgaglgYA8zbe7rBerg+RnwJxWT03x6fKiEfULTj3sRy9nln
+         byDA==
+X-Forwarded-Encrypted: i=1; AJvYcCUC64cp8Rs18M6FEwmQi3rPncAxgxnUeB17wlhAMD4UIDZd8rBwhBiqHsFiItYVJXtol4qqB2WP3tLYSNk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxyi0ko9MOWs/idpgJTIOz8bEMZZJWUpBK006AZKR+ZOXE1SVDD
+	m5VgkBauQTP7676iLkdli0O+lL1otniB+hMcqoqvy8TWdk+dtMSbsu5QjM9rmgEiLP4=
+X-Gm-Gg: ASbGncu00Gy9m1FnNiO2pNtvHs9azvYf4xORpcCgii5h7phUInMGwhU8gwttU6sXTih
+	7f3nL97n9POwlzSYNdC54QQS/bXcigrx4DxPXaHFlU0v3jxrJB4zql9/6KPw5r8NtstoBM2WAxt
+	6wBZuLy8lwfvYDJBmB3FcEJ8I3eYxUYY0BzX8l12LFqpJTHNqpkV5TBggOoNlUovDixOq5sX5P8
+	3SNtnZbQabI3QLSkjoXjQ+RPKjL1xfROkar/mDzumV0ctckhnJTSSSyZ5540P+hRGlbfcM8eg4u
+	SlFbzV2VWiRla0tPPKawPO/+uaQws7L4BEZreE6XfdPY1XH+MZ6b9rJxjAIHJEpBvg6Mj+TexDt
+	H75hH6hE/TcEQBiAuK1Np4I/oyDFGl+UXF10H
+X-Google-Smtp-Source: AGHT+IG8g3zFJKrr/fZ6OBwagK+1LzES4rRvE0rabBsl3Q4R+Jm0TAGLlXqVqS/4J8S7RbelSPly8Q==
+X-Received: by 2002:a17:906:f58b:b0:b29:57b0:617f with SMTP id a640c23a62f3a-b4138f4576amr31550066b.1.1759147366306;
+        Mon, 29 Sep 2025 05:02:46 -0700 (PDT)
+Received: from pathway.suse.cz ([176.114.240.130])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b3e4f3844dasm224383566b.45.2025.09.29.05.02.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Sep 2025 05:02:45 -0700 (PDT)
+Date: Mon, 29 Sep 2025 14:02:42 +0200
+From: Petr Mladek <pmladek@suse.com>
+To: John Ogness <john.ogness@linutronix.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Sergey Senozhatsky <senozhatsky@chromium.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Arnd Bergmann <arnd@arndb.de>, Tony Lindgren <tony@atomide.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Serge Semin <fancer.lancer@gmail.com>,
+	Andrew Murray <amurray@thegoodpenguin.co.uk>
+Subject: Re: [PATCH 1/3] printk/nbcon: Block printk kthreads when any CPU is
+ in an emergency context
+Message-ID: <aNp1YogXZh6dObzI@pathway.suse.cz>
+References: <20250926124912.243464-1-pmladek@suse.com>
+ <20250926124912.243464-2-pmladek@suse.com>
+ <841pnti8k2.fsf@jogness.linutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250822142502.69917-1-pmladek@suse.com> <84qzwzbr90.fsf@jogness.linutronix.de>
- <aNFR45fL2L4PavNc@pathway.suse.cz> <84348eju8a.fsf@jogness.linutronix.de>
- <aNO7Qjv_iSUSifTv@pathway.suse.cz> <84348crpi3.fsf@jogness.linutronix.de> <aNQO-zl3k1l4ENfy@pathway.suse.cz>
-In-Reply-To: <aNQO-zl3k1l4ENfy@pathway.suse.cz>
-From: Andrew Murray <amurray@thegoodpenguin.co.uk>
-Date: Mon, 29 Sep 2025 09:50:30 +0100
-X-Gm-Features: AS18NWAWISHd5SmPiAf9UbtWDXG5PoO98UEAf0UXtMSVTMZ2nK4fH6wu2WCgNHE
-Message-ID: <CALqELGycYx7GSVWwoBaWipoF84EG6iYu37F0pWif1MFVEkotaQ@mail.gmail.com>
-Subject: Re: [RFC 0/1] serial: 8250: nbcon_atomic_flush_pending() might
- trigger watchdog warnigns
-To: Petr Mladek <pmladek@suse.com>
-Cc: John Ogness <john.ogness@linutronix.de>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	Sergey Senozhatsky <senozhatsky@chromium.org>, Steven Rostedt <rostedt@goodmis.org>, 
-	Thomas Gleixner <tglx@linutronix.de>, Esben Haabendal <esben@geanix.com>, linux-serial@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, 
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Arnd Bergmann <arnd@arndb.de>, 
-	Tony Lindgren <tony@atomide.com>, Niklas Schnelle <schnelle@linux.ibm.com>, 
-	Serge Semin <fancer.lancer@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <841pnti8k2.fsf@jogness.linutronix.de>
 
-On Wed, 24 Sept 2025 at 16:32, Petr Mladek <pmladek@suse.com> wrote:
->
-> Added Andred Murray into Cc.
->
+On Fri 2025-09-26 16:43:33, John Ogness wrote:
+> On 2025-09-26, Petr Mladek <pmladek@suse.com> wrote:
+> > In emergency contexts, printk() tries to flush messages directly even
+> > on nbcon consoles. And it is allowed to takeover the console ownership
+> > and interrupt the printk kthread in the middle of a message.
+> >
+> > Only one takeover and one repeated message should be enough in most
+> > situations. The first emergency message flushes the backlog and printk
+> > kthreads get to sleep. Next emergency messages are flushed directly
+> > and printk() does not wake up the kthreads.
+> >
+> > However, the one takeover is not guaranteed. Any printk() in normal
+> > context on another CPU could wake up the kthreads. Or a new emergency
+> > message might be added before the kthreads get to sleep. Note that
+> > the interrupted .write_kthread() callbacks usually have to call
+> 
+>                   .write_thread()
 
-Thanks for the CC.
+Oh my muscle memory ;-)
 
+> > nbcon_reacquire_nobuf() and restore the original device setting
+> > before checking for pending messages.
 
->
-> Well, releasing the console context ownership after each record
-> might solve also some other problems [*]
->
-> I am going to try implementing the 3rd solution and see how
-> complicated  it would be.
->
-> It would be possible to change it two 2nd easily just by
-> using a global counter and updating it in emergency_enter/exit API.
->
->
-> [*] Andrew Murray is trying to do similar thing with console_lock
->     and the legacy_kthread, see
->     https://lore.kernel.org/r/20250915-printk_legacy_thread_console_lock-v1-0-f34d42a9bcb3@thegoodpenguin.co.uk
->
->     He told me off-list that he saw similar problems also with nbcon_thread.
->     I am not sure but it will likely be related to
->     __nbcon_atomic_flush_pending_con() blocking a nbcon console context
->     for too long.
+[...]
 
-I replicated my 'slow serial causes delays boot via contention at
-filp_open call in console_on_rootfs' test, both with and without the
-last patch [1] in your "printk/nbcon: Prevent hardlockup reports
-caused by atomic nbcon flush" series. Though I found no obvious
-improvement from your patch. I found without the patch the delay at
-filp_open (with 8250 nbcon and with PREEMPT_RT) would range from 1.6
-second through to 40 seconds, and with the patch from 0.07 through to
-26 seconds. Potentially promising, but the numbers are all over the
-place, so there must be something else going on. I'll continue to
-investigate. In any case, that's not the problem your series was
-trying to solve.
+> > --- a/kernel/printk/nbcon.c
+> > +++ b/kernel/printk/nbcon.c
+> > @@ -1674,10 +1696,18 @@ void nbcon_cpu_emergency_exit(void)
+> >  	unsigned int *cpu_emergency_nesting;
+> >  
+> >  	cpu_emergency_nesting = nbcon_get_cpu_emergency_nesting();
+> > -
+> >  	if (!WARN_ON_ONCE(*cpu_emergency_nesting == 0))
+> >  		(*cpu_emergency_nesting)--;
+> >  
+> > +	/*
+> > +	 * Wake up kthreads because there might be some pending messages
+> > +	 * added by other CPUs with normal priority since the last flush
+> > +	 * in the emergency context.
+> > +	 */
+> > +	if (!WARN_ON_ONCE(atomic_read(&nbcon_cpu_emergency_cnt) == 0))
+> > +		if (atomic_dec_return(&nbcon_cpu_emergency_cnt) == 0)
+> > +			nbcon_kthreads_wake();
+> 
+> Although technically it doesn't hurt to blindly call
+> nbcon_kthreads_wake(), you may want to do it more formally. Maybe like
+> this:
+> 
+> 	if (!WARN_ON_ONCE(atomic_read(&nbcon_cpu_emergency_cnt) == 0)) {
+> 		if (atomic_dec_return(&nbcon_cpu_emergency_cnt) == 0) {
+> 			struct console_flush_type ft;
+> 
+> 			printk_get_console_flush_type(&ft);
+> 			if (ft.nbcon_offload)
+> 				nbcon_kthreads_wake();
+> 		}
+> 	}
+> 
+> I leave it up to you.
 
-[1] https://lore.kernel.org/all/20250926124912.243464-4-pmladek@suse.com/
+I agree that this is better. I'll use it in v2.
 
+> With the static+initializer change:
+> 
+> Reviewed-by: John Ogness <john.ogness@linutronix.de>
 
->
-> Best Regards,
-> Petr
+Thanks a lot for quick review.
 
-Thanks,
+I am going to send v2 when the panic state API patchset (in -mm tree)
+gets accepted upstream.
 
-Andrew Murray
+Best Regards,
+Petr
