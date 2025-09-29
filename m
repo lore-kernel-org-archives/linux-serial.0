@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E870534BA42;
-	Mon, 29 Sep 2025 05:54:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4333670809;
+	Mon, 29 Sep 2025 05:58:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759125263; cv=none; b=X6yb3Bt1voewnhFLGDGW4yVgWYXS+6azBM46xfbx0w7KNv/mmjyFlg2pKPRBZbj6c0vpwGxRXYrWfxZ11ZqAIpYzsvWdt8BBg++r8KYUbHEgIowmIA6HH4Nt3blA1Idjrj9g/NAZCOlWi/D8K+FHENSvxgIVVq3rPIW1qk4X4bY=
+	t=1759125490; cv=none; b=WWzO89Vlqy8/19cBC7pOyltrs5YQJbxqNjpPEqIyQkoA6X18xn1oFAV9UdNmFrMLUKRa8ndQX8lqI09yTpmEnW7u4gFABMiCwH0JF76fT/OyyhW31K1phx89CCn7XxO3yOZ3ZPf7x+Q6quXUAAjiz1cWkkzmDkBJ1+0Wp9nFAmI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759125263; c=relaxed/simple;
-	bh=N5v74NFjIXjx1dRuy1O48U73EwpNUeMve4qTKRMd6H0=;
+	s=arc-20240116; t=1759125490; c=relaxed/simple;
+	bh=NG7a14oog0+qlo8SwUVNFjQbyVCCvdNwpGdcHIFK4oY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kgoMr1TTGVkvQ6zNmhJa2JdzFQ0KTyZXL0ouhAGHH6gi4ON480Pnn+Hi1jNkeULbNHh1rqDXiNVhfLjaNrBGWDHBeaU5/Z/rZ0hfQfL8dJGtp2gSmJEhgDSdh6iA0/IjrUrHLB2q50IHkwxA/CAITjrXVXVvGfHe+26kXHNg6q0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LP2/wZT0; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=Klpn2+H/4ZKzx3Men4Tik1brKi4Uotn6WdVls0M9FomQp2MokkipjECY24SbJwswa4g17wDH/tCVFgpKPaNbkjtv+0xtnQ+RTE9kRnwRCWWUgABQEtVhplmAKaz72Mhgw5eJmSf2HDkL0lp0ICfS+i9cPg4ZE5+HhLONDWYD27o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IZlOjhS2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LP2/wZT0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EC7FC4CEF4;
-	Mon, 29 Sep 2025 05:54:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IZlOjhS2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F8AC4CEF4;
+	Mon, 29 Sep 2025 05:58:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759125262;
-	bh=N5v74NFjIXjx1dRuy1O48U73EwpNUeMve4qTKRMd6H0=;
+	s=k20201202; t=1759125489;
+	bh=NG7a14oog0+qlo8SwUVNFjQbyVCCvdNwpGdcHIFK4oY=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=LP2/wZT0WzI3vs+PlPl5MeZJtR+qSBRX+wQgK1+aQaDheb3xCLzt3tZCPBcntbmEQ
-	 ETVyS7QRFoQ75A6AY4CH0N2eeD6RUP9RoHthh2+B7Szz8JCODFRfkHsDZXvU9BhHLJ
-	 rSTZWM07opbVZt6T4lYdqaDq8WFbdbshnX/xN/IVmLz39ICP8bJ6cj7RPHkHxaCsWU
-	 FNET8enD27Mnn7ms1vBEUScuMQC0b45n4tEzhi7JiffyZILB76+Z2MAufnFaZyxe/3
-	 0E0QWx2Cdlt1sNW6EIrOqPdkkInpGVa8PBO+h0HtsfnR9Z2hS8xYUE99gTMiXk6/pn
-	 dABGLg/UQ163Q==
-Message-ID: <9b603e71-c0a1-46f3-93f2-dd31188dbeff@kernel.org>
-Date: Mon, 29 Sep 2025 07:54:17 +0200
+	b=IZlOjhS2Hg4HySe24KrgXlUoUg8GUddk7NDKcjJbu0SAe/wiZCzCkdUejEbktEld7
+	 B5JMEx7BOPMG6jPd8nAzFFLONeZflD2tmoTWEBl2pW1YoHS/Yeexmo31M9cO4NGYOO
+	 PIKD7bX8zKwlL/TMozE/QotSRBWErL3BCFxVnmCjpFxCR/YR6nDaLliF6PROrVynxY
+	 CI+44DJIlGmHiHRVD3lyo60vCCmLyNrQISXdD1x9N9xY3WJMrtfu4ZtRjEoEsn1AV5
+	 sjWIXzuFhf40Bs1u7E2GpwGwvZR6lKMvgDShyIgyCuuGK2dsi00Z6uZcxBHV2mtAPA
+	 zEd5A2f1WoYkg==
+Message-ID: <bc4beaa6-8391-4ba8-b6c4-bde1c00d0375@kernel.org>
+Date: Mon, 29 Sep 2025 07:58:05 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,15 +35,16 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH V3 1/2] tty: serial: imx: Only configure the wake register
- when device is set as wakeup source
-To: Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org,
- shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
- festevam@gmail.com, shenwei.wang@nxp.com, peng.fan@nxp.com, frank.li@nxp.com
-Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
- imx@lists.linux.dev
+Subject: Re: [PATCH V3 2/2] tty: serial: imx: Add missing wakeup event
+ reporting
+To: Frank Li <Frank.li@nxp.com>, Sherry Sun <sherry.sun@nxp.com>
+Cc: gregkh@linuxfoundation.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+ kernel@pengutronix.de, festevam@gmail.com, shenwei.wang@nxp.com,
+ peng.fan@nxp.com, linux-serial@vger.kernel.org,
+ linux-kernel@vger.kernel.org, imx@lists.linux.dev
 References: <20250925091132.2537430-1-sherry.sun@nxp.com>
- <20250925091132.2537430-2-sherry.sun@nxp.com>
+ <20250925091132.2537430-3-sherry.sun@nxp.com>
+ <aNVkhvmZ4GThHNqD@lizhi-Precision-Tower-5810>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -88,55 +89,23 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250925091132.2537430-2-sherry.sun@nxp.com>
+In-Reply-To: <aNVkhvmZ4GThHNqD@lizhi-Precision-Tower-5810>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 25. 09. 25, 11:11, Sherry Sun wrote:
-> Currently, the i.MX UART driver enables wake-related registers for all
-> UART devices by default. However, this is unnecessary for devices that
-> are not configured as wakeup sources. To address this, add a
-> device_may_wakeup() check before configuring the UART wake-related
-> registers.
+On 25. 09. 25, 17:49, Frank Li wrote:
+>> @@ -2732,10 +2734,14 @@ static void imx_uart_enable_wakeup(struct imx_port *sport, bool on)
+>>   			ucr1 |= UCR1_RTSDEN;
+>>   		} else {
+>>   			ucr1 &= ~UCR1_RTSDEN;
+>> +			wake_active |= !!(usr1 & USR1_RTSD);
 > 
-> Fixes: db1a9b55004c ("tty: serial: imx: Allow UART to be a source for wakeup")
-> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-> Reviewed-by: Frank Li <Frank.Li@nxp.com>
-> ---
->   drivers/tty/serial/imx.c | 15 +++++++++++++++
->   1 file changed, 15 insertions(+)
+> I think you miss understand my means. suppose bool type only support
+> ||, &&, ==, !=, !
 > 
-> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-> index 500dfc009d03..87d841c0b22f 100644
-> --- a/drivers/tty/serial/imx.c
-> +++ b/drivers/tty/serial/imx.c
-> @@ -2697,8 +2697,23 @@ static void imx_uart_save_context(struct imx_port *sport)
->   /* called with irq off */
->   static void imx_uart_enable_wakeup(struct imx_port *sport, bool on)
->   {
-> +	struct tty_port *port = &sport->port.state->port;
-> +	struct tty_struct *tty;
-> +	struct device *tty_dev;
-> +	bool may_wake = false;
->   	u32 ucr3;
->   
-> +	tty = tty_port_tty_get(port);
-> +	if (tty) {
+> 	wake_active = wake_active || (usr1 & USR1_RTSD);
 
-Use scoped_guard(tty_port_tty, port) instead.
-
-> +		tty_dev = tty->dev;
-> +		may_wake = tty_dev && device_may_wakeup(tty_dev);
-> +		tty_kref_put(tty);
-> +	}
-> +
-> +	/* only configure the wake register when device set as wakeup source */
-> +	if (!may_wake)
-> +		return;
-> +
->   	uart_port_lock_irq(&sport->port);
->   
->   	ucr3 = imx_uart_readl(sport, UCR3);
++1 to this. Much easier to understand (for me at least).
 
 thanks,
 -- 
