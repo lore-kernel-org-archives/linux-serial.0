@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D83AC42A99;
-	Mon, 29 Sep 2025 06:19:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B69E1231A21;
+	Mon, 29 Sep 2025 06:27:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759126775; cv=none; b=W3NNkPKGOB3gz9ywaZKXxdNVCs6CG+LmfaBlX+6npIVRAWLgxVLu2HZxftwObjGGV24XIKqtaTHCY8BLbxpTAYh8cMwMuy2iZOefn/yGQPIzppDBMv3GgdM5c7E6fWLqJqPhbUY/SAffFgCBaKV4BeQw+9oBvqrkk3BxbkG8rUc=
+	t=1759127220; cv=none; b=irZRzPZqSknu+qThN0NbCniHNCm87dNmRHGlG7dH4vH+33oT7TzkDAIqhM8ZLS96Mm5mZ+syJ+alVmjap5aoDlkRwKDMIrEJ/a7dtc1Z/zUQQWgtZhbh4gvVB2YZm5IJ+n8iFTeAlaFRay7uO2qdBQ5pdGY8rIDQTqUedydDtqg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759126775; c=relaxed/simple;
-	bh=ATTTsi3fn3UMShIPwjddnQuMazykHc6FR4/lSBTIjXo=;
+	s=arc-20240116; t=1759127220; c=relaxed/simple;
+	bh=YNr2IXX+FEDhdPm3XMK+GnoSYVTDwv1s5NcrSp4kehE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=llEBcSMawaCazui7gYfJuBNmC1q/mUFrzwFh7+4SDvrUJmBeipfb9JJOQfcoh8JZAD5WKq7xFbWnQlmijLBg6G2tr7mUZUoG8m7Kdg32qAf+DIdiq/EOCieN6Y+PFHkeA9c1T1iTU3B4B/4ek7y33seWr3mEiVRQgBLsh7Iq3bw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OzrfqDqt; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=ZTPzGx/DXZ8QPgopK35FEdU6bJx1k8I6tc0KrEhk862rVHB18DlzcuSDgTczXogl28dq+J3J1WDZi240385NLZJUz0BAM2Ir9tPJwMiSAspgEzyceNuq7xfPEX+dOQOjCrS7XlgExtv6DB6D5gjxTCGb4KlmFsDKpA4I0A6tBXU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qHx+XT5l; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OzrfqDqt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4863C4CEF4;
-	Mon, 29 Sep 2025 06:19:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qHx+XT5l"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C40FEC4CEF4;
+	Mon, 29 Sep 2025 06:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759126774;
-	bh=ATTTsi3fn3UMShIPwjddnQuMazykHc6FR4/lSBTIjXo=;
+	s=k20201202; t=1759127220;
+	bh=YNr2IXX+FEDhdPm3XMK+GnoSYVTDwv1s5NcrSp4kehE=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=OzrfqDqtOqt1zA6Xoox5+eOkxBxYaaYCVueVsXy+UVXnjfXr/SlLWrXhSpXo9wZ5l
-	 o4w4oH0Qrz/07w8eGf4sPw0advxuNZVaaamMSTUccCULHDM1VUXpaRri8KNZBxOGrl
-	 ZDUHlCewIpGYrTiOwPBk++uI2t/jpsw3eNPFkpgY6g94crIaw7xb+FbRu3Ibq/2fPf
-	 VJwiK501DLi7wZ4j2/BNvVA4mfOg2bGPBtwsK7zADkM7xuYyPORALit9upNPP3d10X
-	 rw2ujMtOjmGz6FWgEaBK6ZWMGwLuI4MQEQP5SceTE7DP/cVK+0CgFqENxkU6B2Vzu4
-	 5KvNzupMJ7V+g==
-Message-ID: <b862846d-fb2a-4df4-8457-d858aa63031d@kernel.org>
-Date: Mon, 29 Sep 2025 08:19:29 +0200
+	b=qHx+XT5ljIFU/BApDIy0waMYHfa0mwQnhXGgLSTanImnAX2Ef6NA1Wmdhc4AjUb7a
+	 sIEi1OR1R70gH/QJI1bUuiyoRsn9vi+sYTfb5csunWkQOxilfpK4Jzap9ZBEN48yWg
+	 bqutEQ3dUHrvTw0iG7FieSgvRdPpge0fsqAHLrK/Sncb3O0XTSif8ce1e7JLGG7QZZ
+	 n6X9FXKIm3rSRIeKyHgp227sZvvEteDI10HAv+36b29jBcrrcK4C+gmfHFdJQGQX7M
+	 5HRk1RfhfxfactSB6dPJ/f3j4NU6bmhfagAgs6VzkXf+Fa/E48jPQBADfJM1xpGQL2
+	 GTugBYQytAnGA==
+Message-ID: <a985f144-7489-4a99-bcb7-90e7b21d9885@kernel.org>
+Date: Mon, 29 Sep 2025 08:26:56 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -36,19 +36,17 @@ List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v5 2/3] serial: 8250: Add Loongson uart driver support
-To: Binbin Zhou <zhoubb.aaron@gmail.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Binbin Zhou <zhoubinbin@loongson.cn>, Huacai Chen
- <chenhuacai@loongson.cn>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Haowei Zheng <zhenghaowei@loongson.cn>,
- Huacai Chen <chenhuacai@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+To: Binbin Zhou <zhoubinbin@loongson.cn>, Binbin Zhou
+ <zhoubb.aaron@gmail.com>, Huacai Chen <chenhuacai@loongson.cn>,
+ Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Haowei Zheng <zhenghaowei@loongson.cn>
+Cc: Huacai Chen <chenhuacai@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
  loongarch@lists.linux.dev, devicetree@vger.kernel.org,
  linux-serial@vger.kernel.org
 References: <cover.1758676290.git.zhoubinbin@loongson.cn>
  <9823e7afe713450e210dab9dba6fa18683dc1fe0.1758676290.git.zhoubinbin@loongson.cn>
- <2025092428-glade-monologue-3663@gregkh>
- <CAMpQs4JgR=iG6LAuYeVxOpE31S6n=dC4+FGUJczOYDVfWHDuFw@mail.gmail.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -93,36 +91,67 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <CAMpQs4JgR=iG6LAuYeVxOpE31S6n=dC4+FGUJczOYDVfWHDuFw@mail.gmail.com>
+In-Reply-To: <9823e7afe713450e210dab9dba6fa18683dc1fe0.1758676290.git.zhoubinbin@loongson.cn>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Hi,
-
-On 28. 09. 25, 4:48, Binbin Zhou wrote:
-> Hi Greg:
+On 24. 09. 25, 8:29, Binbin Zhou wrote:
+> Add the driver for on-chip UART used on Loongson family chips.
 > 
-> Thanks for your reply.
-> 
-> On Wed, Sep 24, 2025 at 6:22 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
->>
->> On Wed, Sep 24, 2025 at 02:29:37PM +0800, Binbin Zhou wrote:
->>> --- a/include/uapi/linux/serial_core.h
->>> +++ b/include/uapi/linux/serial_core.h
->>> @@ -31,6 +31,7 @@
->>>   #define PORT_ALTR_16550_F128 28 /* Altera 16550 UART with 128 FIFOs */
->>>   #define PORT_RT2880  29      /* Ralink RT2880 internal UART */
->>>   #define PORT_16550A_FSL64 30 /* Freescale 16550 UART with 64 FIFOs */
->>> +#define PORT_LOONGSON        31      /* Loongson 16550 UART */
->>
->> Why does userspace need to have this value exported?
-> 
-> Sorry, this was a cheap mistake.
-> It should follow the existing latest macro definition as follows:
+> The hardware is similar to 8250, but there are the following
+> differences:
+>   - Some chips (such as Loongson-2K2000) have added a fractional division
+>     register to obtain the required baud rate accurately, so the
+>     {get,set}_divisor callback is overridden.
+>   - Due to hardware defects, quirk handling is required for
+>     UART_MCR/UART_MSR.
 
-That was not the point. The point was why do you need that at all?
+So how hard would be to implement this in 8250 using existing (or new) 
+callbacks+quirks?
 
+> --- /dev/null
+> +++ b/drivers/tty/serial/8250/8250_loongson.c
+> @@ -0,0 +1,202 @@
+...
+> +struct loongson_uart_data {
+> +	int line;
+> +	int mcr_invert;
+> +	int msr_invert;
+
+These two should be unsigned. They should be u8, actually.
+
+> +	struct reset_control *rst;
+> +};
+> +
+> +static unsigned int serial_fixup(struct uart_port *p, unsigned int offset, unsigned int val)
+
+Both 'val' and ret type should be u8.
+
+> +{
+> +	struct loongson_uart_data *ddata = p->private_data;
+> +
+> +	if (offset == UART_MCR)
+> +		val ^= ddata->mcr_invert;
+> +
+> +	if (offset == UART_MSR)
+> +		val ^= ddata->msr_invert;
+> +
+> +	return val;
+> +}
+> +
+> +static u32 loongson_serial_in(struct uart_port *p, unsigned int offset)
+> +{
+> +	unsigned int val;
+
+u8
+
+> +
+> +	val = readb(p->membase + (offset << p->regshift));
+> +
+> +	return serial_fixup(p, offset, val);
+> +}
+
+thanks,
 -- 
 js
 suse labs
