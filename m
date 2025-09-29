@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E85F46BF;
-	Mon, 29 Sep 2025 06:14:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D592242D7C;
+	Mon, 29 Sep 2025 06:15:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759126477; cv=none; b=KBVUXaNv0npNkgxjq/tpP/aHVsoaqzuUEHOCpARxj1aN265YP9et2WGbi1tBPGvU4e6KXddN7ESylH0AYqMq+pcfn9bGYXkYJvNx6tRkdd3e1ZzT5fhjpo7pEGHD0fsssxEotNjWcWLCowPyoHJPvONWI0lgS0hUFIz39uLhTck=
+	t=1759126560; cv=none; b=O1/c95/EH62ts2ZQxplOsE9ENXBcRhc4vRotdZPwhIEejJyKza46VhnTWFxgGs1K5wJijKkiN5VmPy5xH+4KAzDjUMvEaqKthvK1Zs95BDdHX1IAP9z/XBoBBPqzc2rm0vWbUT/FSk4c3lpRsKc8a3ZN9PKIBub6iP8Yi0J6Fl4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759126477; c=relaxed/simple;
-	bh=JL+yIl56aK7gs6nv7/RiZgoMdOKs6PuQPe8OhpqgRUM=;
+	s=arc-20240116; t=1759126560; c=relaxed/simple;
+	bh=V2xAZnoJI9imI9AsgXfHdP4c8LALCoysMCQQz19ccwQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Hv6ahyj49yTYrz1PYrD3GJiP8dKVT3CDgPJ6O3eggSV2pte8PEtbdvok1hkWrnYglzy81YBBrg9Y0XYXUJC+PelvQRaTIfS4FYLCThOuGlpKbOmjSJ37F+/6kA3ZVb+Lk2DNHwhLZR9jIly1YFI4e7HqMMofT625L3YB+nlNjMk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pn9FIeDk; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=fBmOAQ2+d/rcJATxgtz6f4vIBX469YeGFT9fqm0Uzl490joCXWpWvb2x43xUoD+8r5wQUaLjRwZLWpN3h/FqNtHoOVDkFtIG/pi4MPqO6bxsNfrncggxdm0T8Oik2Hcd0uOdD1nhTxl2D0ZiIJl/LKgDr37aIJR2sk0QkiN90OY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P1R/Rujk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pn9FIeDk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 664D7C4CEF7;
-	Mon, 29 Sep 2025 06:14:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P1R/Rujk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82269C4CEF4;
+	Mon, 29 Sep 2025 06:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759126476;
-	bh=JL+yIl56aK7gs6nv7/RiZgoMdOKs6PuQPe8OhpqgRUM=;
+	s=k20201202; t=1759126559;
+	bh=V2xAZnoJI9imI9AsgXfHdP4c8LALCoysMCQQz19ccwQ=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=pn9FIeDk3+6H6G9Q/GhcTm0i2sCSiD3FdmY5C0nQ1TsBKb2BD1yqctA+WAAvb4CWm
-	 V5kCCmQrnQrXvnXbgNAnuzavwzKvfZYWIBzpjXA/ZeLFlUzOf45BN/s70XvbY9egcX
-	 gAjOoFgbJwSeLYhRqxVflMOOhwnuQjyBi2HpFOG7l3QRR7vmd6cLV2NKEoHGJ1k1W5
-	 PFrYHdjrghuaIv0D5YwlnO3gBOU8ZmaMgIK2aMKAJ20VBGpKSjTUh00xzvcPxgXokQ
-	 5kEpehjNIqB0kGCNXLQK2XhGdHtVaWyJKSjBf2S3Ua8p8g0KPT/yxRorMbsO0wtBit
-	 9aKvVafGhuqYQ==
-Message-ID: <14a1f14f-f5c7-4d09-9b4b-9248c4f5162c@kernel.org>
-Date: Mon, 29 Sep 2025 08:14:33 +0200
+	b=P1R/RujkZ+ZI6cfQROOATzTUiTmbRFwuT/HBSir1KY0GDVLXEwCzRbqnZ3rQWc6VO
+	 RKyahrKgdQLbrrQu118R4LwJjQq2/StZgrwNGJtufcHcaX/2/xHcSbsmXDK3FES84R
+	 Xaf7cU+P6je4peTd0wtFnIEnITzvx07U1u+7XIDwwzNU80De/z3Y7ucGKrK+bKinCP
+	 Tv6Q+X1MK+zB+JmAQXGoLT6SOq0yAtEY79Qf4UTJTdYhqKv0k4mEuH8ApC56Ki3MX3
+	 VqVL//E2DuoC9AsepCFVeeMvRVEM8wBKlPPpErrqAPjfTivPdAUYddAZYV5fsj4zp7
+	 aoHxW8EnsiYFQ==
+Message-ID: <a6bb8046-1e71-4766-afa8-e9d303ba57b8@kernel.org>
+Date: Mon, 29 Sep 2025 08:15:56 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,13 +35,14 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/15] serial: sc16is7xx: remove empty line
+Subject: Re: [PATCH 12/15] serial: sc16is7xx: add missing space between macro
+ args (checkpatch)
 To: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
  fvallee@eukrea.fr
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  Hugo Villeneuve <hvilleneuve@dimonoff.com>
 References: <20250924153740.806444-1-hugo@hugovil.com>
- <20250924153740.806444-12-hugo@hugovil.com>
+ <20250924153740.806444-13-hugo@hugovil.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -86,37 +87,35 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250924153740.806444-12-hugo@hugovil.com>
+In-Reply-To: <20250924153740.806444-13-hugo@hugovil.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 24. 09. 25, 17:37, Hugo Villeneuve wrote:
 > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> Remove empty line inavertently added in commit d5078509c8b0
-> ("serial: sc16is7xx: improve do/while loop in sc16is7xx_irq()").
+> Fix the following checkpatch error:
+> 
+>      ERROR: space required after that ',' (ctx:VxV)
+>      +#define to_sc16is7xx_one(p,e)...
 > 
 > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > ---
->   drivers/tty/serial/sc16is7xx.c | 1 -
->   1 file changed, 1 deletion(-)
+>   drivers/tty/serial/sc16is7xx.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index d1a9fa26e9bdb..a05be92f7e776 100644
+> index a05be92f7e776..9d04d665ec9ab 100644
 > --- a/drivers/tty/serial/sc16is7xx.c
 > +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -834,7 +834,6 @@ static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
->   static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
->   {
->   	bool keep_polling;
-> -
->   	struct sc16is7xx_port *s = (struct sc16is7xx_port *)dev_id;
+> @@ -365,7 +365,7 @@ static struct uart_driver sc16is7xx_uart = {
+>   	.nr		= SC16IS7XX_MAX_DEVS,
+>   };
+>   
+> -#define to_sc16is7xx_one(p,e)	((container_of((p), struct sc16is7xx_one, e)))
+> +#define to_sc16is7xx_one(p, e)	((container_of((p), struct sc16is7xx_one, e)))
 
-And remove the cast and switch the two definitions, so we have a 
-reversed xmas tree ;).
-
->   	do {
-
+Or perhaps make it type-safe and more obvious by switching it to an inline?
 
 -- 
 js
