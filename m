@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D592242D7C;
-	Mon, 29 Sep 2025 06:15:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8014D248883;
+	Mon, 29 Sep 2025 06:18:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759126560; cv=none; b=O1/c95/EH62ts2ZQxplOsE9ENXBcRhc4vRotdZPwhIEejJyKza46VhnTWFxgGs1K5wJijKkiN5VmPy5xH+4KAzDjUMvEaqKthvK1Zs95BDdHX1IAP9z/XBoBBPqzc2rm0vWbUT/FSk4c3lpRsKc8a3ZN9PKIBub6iP8Yi0J6Fl4=
+	t=1759126685; cv=none; b=AQ3oFb1aoZvvpszv4k4kSbaLJEOL2QdB9GBnAgHoF8FCFWuIemmxYXd5GXSW2LLkM+8pfbivY+kZTZ1NaAGiOGcPfNuL87dyMzJj3bdrLGB4utrE4fHXvv/8Gz7nNwn6t3PzFhH9mD0nhz/kPdwc2pycTKob+ScrothmWIzgwA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759126560; c=relaxed/simple;
-	bh=V2xAZnoJI9imI9AsgXfHdP4c8LALCoysMCQQz19ccwQ=;
+	s=arc-20240116; t=1759126685; c=relaxed/simple;
+	bh=43scWRXEa8d/aw5O06XJoTMLhEU47huQYba/PAWSMHc=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fBmOAQ2+d/rcJATxgtz6f4vIBX469YeGFT9fqm0Uzl490joCXWpWvb2x43xUoD+8r5wQUaLjRwZLWpN3h/FqNtHoOVDkFtIG/pi4MPqO6bxsNfrncggxdm0T8Oik2Hcd0uOdD1nhTxl2D0ZiIJl/LKgDr37aIJR2sk0QkiN90OY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P1R/Rujk; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=nQrAIUaFYSMc3sagZw2vTV1MSAt/g/1UycUvYfjUo+bQJCVtSCEWkL3ChZq9eDPg3JZAPDS6folrzIgEay7Wf1kjTdreLa706PDKRhM2OX44sfm3V+RjSprATvrjBc1la5sYTBiPmUifaWUrtx7oEyJeLIF7HBAd4PX2ZAk6LxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CX6jgmzg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P1R/Rujk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82269C4CEF4;
-	Mon, 29 Sep 2025 06:15:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CX6jgmzg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92AFFC4CEF4;
+	Mon, 29 Sep 2025 06:18:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759126559;
-	bh=V2xAZnoJI9imI9AsgXfHdP4c8LALCoysMCQQz19ccwQ=;
+	s=k20201202; t=1759126685;
+	bh=43scWRXEa8d/aw5O06XJoTMLhEU47huQYba/PAWSMHc=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=P1R/RujkZ+ZI6cfQROOATzTUiTmbRFwuT/HBSir1KY0GDVLXEwCzRbqnZ3rQWc6VO
-	 RKyahrKgdQLbrrQu118R4LwJjQq2/StZgrwNGJtufcHcaX/2/xHcSbsmXDK3FES84R
-	 Xaf7cU+P6je4peTd0wtFnIEnITzvx07U1u+7XIDwwzNU80De/z3Y7ucGKrK+bKinCP
-	 Tv6Q+X1MK+zB+JmAQXGoLT6SOq0yAtEY79Qf4UTJTdYhqKv0k4mEuH8ApC56Ki3MX3
-	 VqVL//E2DuoC9AsepCFVeeMvRVEM8wBKlPPpErrqAPjfTivPdAUYddAZYV5fsj4zp7
-	 aoHxW8EnsiYFQ==
-Message-ID: <a6bb8046-1e71-4766-afa8-e9d303ba57b8@kernel.org>
-Date: Mon, 29 Sep 2025 08:15:56 +0200
+	b=CX6jgmzguI0rhWJTBBbYFfAR/IDuJBFt4CWcRJI9mc7au1vd1yN3wLB1cIuIhns4h
+	 IVZZq2IwFCJvOy2qNjjY0QjAiCFSkZBjM2Rmh3CKWSgzq3+OfSyt9GZtsmvpsyotqP
+	 y7UZYnfkFVkuYmHDtzBB0XZm4iRa6SUwbG8zh8rswso/Dl51a6xYY9WuhQPvRt5dhe
+	 rouF5Ke+pYQshLh4hYVOV3S0u8RQ+8A4W/y/xe8gem4camPf/UHP5zmVIfpK3GRLTV
+	 cGNcwQepfyVVQ5NmANAMJtDs24GBTFV429Zll2lQnXRNsagW+OSyCge8sY7dX3U9gg
+	 ad3imYigFIQYQ==
+Message-ID: <70fc7ca0-a98c-4d1b-9212-c7948607e840@kernel.org>
+Date: Mon, 29 Sep 2025 08:18:01 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -35,14 +35,13 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 12/15] serial: sc16is7xx: add missing space between macro
- args (checkpatch)
+Subject: Re: [PATCH 14/15] serial: sc16is7xx: reformat comments
 To: Hugo Villeneuve <hugo@hugovil.com>, gregkh@linuxfoundation.org,
  fvallee@eukrea.fr
 Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
  Hugo Villeneuve <hvilleneuve@dimonoff.com>
 References: <20250924153740.806444-1-hugo@hugovil.com>
- <20250924153740.806444-13-hugo@hugovil.com>
+ <20250924153740.806444-15-hugo@hugovil.com>
 Content-Language: en-US
 From: Jiri Slaby <jirislaby@kernel.org>
 Autocrypt: addr=jirislaby@kernel.org; keydata=
@@ -87,35 +86,35 @@ Autocrypt: addr=jirislaby@kernel.org; keydata=
  f/bIWIr0cqQmqQ33FgRhrG1+Xml6UXyJ2jExmlO8JljuOGeXYh6ZkIEyzqzffzBLXZCujlYQ
  DFXpyMNVJ2ZwPmX2mWEoYuaBU0JN7wM+/zWgOf2zRwhEuD3A2cO2PxoiIfyUEfB9SSmffaK/
  S4xXoB6wvGENZ85Hg37C7WDNdaAt6Xh2uQIly5grkgvWppkNy4ZHxE+jeNsU7tg=
-In-Reply-To: <20250924153740.806444-13-hugo@hugovil.com>
+In-Reply-To: <20250924153740.806444-15-hugo@hugovil.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 24. 09. 25, 17:37, Hugo Villeneuve wrote:
 > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > 
-> Fix the following checkpatch error:
-> 
->      ERROR: space required after that ',' (ctx:VxV)
->      +#define to_sc16is7xx_one(p,e)...
+> Add missing space at end of comments and reformat to have uniform style.
 > 
 > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > ---
->   drivers/tty/serial/sc16is7xx.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>   drivers/tty/serial/sc16is7xx.c | 14 +++++++++-----
+>   1 file changed, 9 insertions(+), 5 deletions(-)
 > 
 > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> index a05be92f7e776..9d04d665ec9ab 100644
+> index 31d43fc857187..b3fbe9459303a 100644
 > --- a/drivers/tty/serial/sc16is7xx.c
 > +++ b/drivers/tty/serial/sc16is7xx.c
-> @@ -365,7 +365,7 @@ static struct uart_driver sc16is7xx_uart = {
->   	.nr		= SC16IS7XX_MAX_DEVS,
->   };
->   
-> -#define to_sc16is7xx_one(p,e)	((container_of((p), struct sc16is7xx_one, e)))
-> +#define to_sc16is7xx_one(p, e)	((container_of((p), struct sc16is7xx_one, e)))
+> @@ -81,11 +81,14 @@
+>   /* IER register bits */
+>   #define SC16IS7XX_IER_RDI_BIT		BIT(0)   /* Enable RX data interrupt */
+>   #define SC16IS7XX_IER_THRI_BIT		BIT(1)   /* Enable TX holding register
+> -						  * interrupt */
+> +						  * interrupt
+> +						  */
 
-Or perhaps make it type-safe and more obvious by switching it to an inline?
+I am not forcing this, but maybe put it on one line, if it fits into 100 
+columns? I believe people are using 100 columns nowadays (me included).
+
 
 -- 
 js
