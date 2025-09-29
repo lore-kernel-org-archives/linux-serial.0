@@ -1,124 +1,144 @@
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D75D733F9
-	for <linux-serial@vger.kernel.org>; Mon, 29 Sep 2025 04:54:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E870534BA42;
+	Mon, 29 Sep 2025 05:54:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759121677; cv=none; b=sGccRQ+mPTQTBjk3VdWyPPMdb3BJ9L+DKC4bWaCKG8QbBj3bqGnNVB2juzprZvtGTAwWN2wvY/nS9GlMT8IqBZnV5vXB6wI4gZ5qEkaMUTtTJ0XIvGepm5MoybElsDMXJVlguKoWKchS6J0SobtzjsPVuf/oN96bOOSIrp3Z5oY=
+	t=1759125263; cv=none; b=X6yb3Bt1voewnhFLGDGW4yVgWYXS+6azBM46xfbx0w7KNv/mmjyFlg2pKPRBZbj6c0vpwGxRXYrWfxZ11ZqAIpYzsvWdt8BBg++r8KYUbHEgIowmIA6HH4Nt3blA1Idjrj9g/NAZCOlWi/D8K+FHENSvxgIVVq3rPIW1qk4X4bY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759121677; c=relaxed/simple;
-	bh=xSspKJ54Bxlkmwcu2AMNYc4Jg+Rq35XtdgNjnFRQ6AE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SsPyd/UbWj0XRMcQzSLteKpmQpMMce6XkoQKYOL8b+CfwPZQRgkS+jc+ewfyeSHg+bN9dB3MKxUjXicQjZi/EgaanYgdGDwYJ7Djdn7A1ooTEXbE34P6qJx/EWrajCo1qmH0UZUG9IiSyocU/+M3IbeS/NCxNDiRnGwl03xUJgU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CKKZ9zOp; arc=none smtp.client-ip=209.85.210.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1759125263; c=relaxed/simple;
+	bh=N5v74NFjIXjx1dRuy1O48U73EwpNUeMve4qTKRMd6H0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kgoMr1TTGVkvQ6zNmhJa2JdzFQ0KTyZXL0ouhAGHH6gi4ON480Pnn+Hi1jNkeULbNHh1rqDXiNVhfLjaNrBGWDHBeaU5/Z/rZ0hfQfL8dJGtp2gSmJEhgDSdh6iA0/IjrUrHLB2q50IHkwxA/CAITjrXVXVvGfHe+26kXHNg6q0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LP2/wZT0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CKKZ9zOp"
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-782e93932ffso948710b3a.3
-        for <linux-serial@vger.kernel.org>; Sun, 28 Sep 2025 21:54:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1759121675; x=1759726475; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NiGEc+bWHibq3FL8i9zZEO5Fku5US3xDhKukJhzni5k=;
-        b=CKKZ9zOpfbtbyX542FTzltHwKsaKvVA0AN37NMIAhA6pyefMWyjwBqnvvhU9wwdGOj
-         3UlgKoCxS89UNuas6dhdzkFnBEk6NrqIRMwMW4r9n655eHigJynTZFntSK/Wnye8wCsZ
-         5Vh7jpPf9VlWRUZv8h9QA3WBY9RBE1s85MYXcenavtMVVIffZC9KbFnumVob2xztSNTC
-         baqqLhMpoIUav/ax5h08o+gQtdendnNl742V19lc980b+YtLnmmbfhA59jasl7x8OeXL
-         bWy89GLT5GTXQJynFiymlLuQ5zWgUxVDegtc6LPKco3M3W84QVMC1wSSdh2Fskb4xvNJ
-         isUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759121675; x=1759726475;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NiGEc+bWHibq3FL8i9zZEO5Fku5US3xDhKukJhzni5k=;
-        b=o23LvugM15nl5TdNF/hzglqy20tkma6l0CrhtDlEcguESfd7PVHx98CRj2yOdkzlno
-         w7u+NYxc3xH2QlucfdCGlv3Fs7lItNB3VedbSEai8nauzxi7C5dFnZtMbKoy0rt0pAT0
-         TjEP9EXpL9uA9T3+tFfVBhk1b2Yns/wVveMbR2qgjCrhV9+e42Fr8UlF6CUCgyEKQf1B
-         /+T1UI/2VxGO7BCVxPHpoH4gpLiJ79vVnMmPiIKgoZnzaLh7tWThNw/r3AkGevHb1e/g
-         Aw7YI9IIEoA45+Ay4tSeO70EG0SgXrNd4oXbMrSc9mxiRW2BEixKbwZiCbYfvOELqghS
-         tmmQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUaOs+grVHi5I5s8uEXqkqyNto5Da6cjfQGKVzfPwHSjq4iUTGVZCsb6TMEytlPhZed3PBvoQOmSUSIm9U=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw6YRruSqY8bTtgxXdWAug9PYbSziczVbOoSYah6Rhkkd48N3Fm
-	aPmn68cz0qCH0I80UJNhXDc8HOdD6sbJ7znUbCDibIbApc/vG7git5ed
-X-Gm-Gg: ASbGncubi0NMi2YVrun7mzHWpqqC9z97/DHkpGdtJJLIeo6r7wBmFGiUMf9ajL146Av
-	SAVb9xzlfKMgM2YeFsbg9vMzwSqLZsFWFbMXlVSowTK7tVRLKmYTaRlS8jYqGWbuMfhMsQRQ834
-	OcFKzMXW0kpWkRsnJcrACLWRYxH2VPzTuwq1aNd53CgpU7U9IcZjE3dqZjH99Vgg96uCAm4/zJL
-	F01/KrSFSp1+qB5nhlfdQ+JZ7NA9furpEF0EtUHrgn67X1XXpUvioY9VDLt9bJOIgXxYYmvfhoV
-	q1RvN+BylzNd1HtRC5YGCgmmiT/XLp2aUvZ9vhaPypkMxkn+AH4QUC+g0hIBQvULEXXWq0kuJMu
-	48gVcelGW8Uu0PEbNHOlAZxnIp0peOwGJA9+rSVMs0hRquaoefzi19Wv9G0l4YYJhM7GUc9I+50
-	MHza+X3Qu4
-X-Google-Smtp-Source: AGHT+IHlnIMKveRuj+7NJDShOnf/WRzuKghr7uizOQzNqC04F7WkjGrUa4ubUJ/Uj9RfnZMzr1+iOg==
-X-Received: by 2002:a05:6a20:244f:b0:2df:b68d:f73 with SMTP id adf61e73a8af0-2e7cdd9aba1mr20672654637.34.1759121674981;
-        Sun, 28 Sep 2025 21:54:34 -0700 (PDT)
-Received: from google.com ([2a00:79e0:2ebe:8:78a6:bdf8:e03d:d9ea])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b57c5574e99sm10062601a12.35.2025.09.28.21.54.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Sep 2025 21:54:34 -0700 (PDT)
-Date: Sun, 28 Sep 2025 21:54:31 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: pengyu <pengyu@kylinos.cn>
-Cc: gregkh@linuxfoundation.org, jirislaby@kernel.org, legion@kernel.org, 
-	mingo@kernel.org, myrrhperiwinkle@qtmlabs.xyz, tglx@linutronix.de, 
-	changlianzhi@uniontech.com, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
-	syzbot+79c403850e6816dc39cf@syzkaller.appspotmail.com
-Subject: Re: [PATCH] tty/vt: Fix possible deadlock in input_inject_event
-Message-ID: <dltckle3ksus7qojkpiirvush5khk52o36yhqnlfpiymrjjwzt@ev46jjxjhi3p>
-References: <20250928130819.383808-1-pengyu@kylinos.cn>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LP2/wZT0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EC7FC4CEF4;
+	Mon, 29 Sep 2025 05:54:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1759125262;
+	bh=N5v74NFjIXjx1dRuy1O48U73EwpNUeMve4qTKRMd6H0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=LP2/wZT0WzI3vs+PlPl5MeZJtR+qSBRX+wQgK1+aQaDheb3xCLzt3tZCPBcntbmEQ
+	 ETVyS7QRFoQ75A6AY4CH0N2eeD6RUP9RoHthh2+B7Szz8JCODFRfkHsDZXvU9BhHLJ
+	 rSTZWM07opbVZt6T4lYdqaDq8WFbdbshnX/xN/IVmLz39ICP8bJ6cj7RPHkHxaCsWU
+	 FNET8enD27Mnn7ms1vBEUScuMQC0b45n4tEzhi7JiffyZILB76+Z2MAufnFaZyxe/3
+	 0E0QWx2Cdlt1sNW6EIrOqPdkkInpGVa8PBO+h0HtsfnR9Z2hS8xYUE99gTMiXk6/pn
+	 dABGLg/UQ163Q==
+Message-ID: <9b603e71-c0a1-46f3-93f2-dd31188dbeff@kernel.org>
+Date: Mon, 29 Sep 2025 07:54:17 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250928130819.383808-1-pengyu@kylinos.cn>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH V3 1/2] tty: serial: imx: Only configure the wake register
+ when device is set as wakeup source
+To: Sherry Sun <sherry.sun@nxp.com>, gregkh@linuxfoundation.org,
+ shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+ festevam@gmail.com, shenwei.wang@nxp.com, peng.fan@nxp.com, frank.li@nxp.com
+Cc: linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+ imx@lists.linux.dev
+References: <20250925091132.2537430-1-sherry.sun@nxp.com>
+ <20250925091132.2537430-2-sherry.sun@nxp.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <20250925091132.2537430-2-sherry.sun@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi,
-
-On Sun, Sep 28, 2025 at 09:08:19PM +0800, pengyu wrote:
-> syzkaller testing revealed a potential deadlock involving keyboard 
-> handling:
+On 25. 09. 25, 11:11, Sherry Sun wrote:
+> Currently, the i.MX UART driver enables wake-related registers for all
+> UART devices by default. However, this is unnecessary for devices that
+> are not configured as wakeup sources. To address this, add a
+> device_may_wakeup() check before configuring the UART wake-related
+> registers.
 > 
-> CPU0                       CPU1                      CPU2
-> ----                       ----                      ----
-> read_lock(tasklist_lock);  evdev_write
->                           input_inject_event     write_lock(tasklist_lock);
->                          lock(&dev->event_lock);
->                         read_lock(tasklist_lock);
-> <Interrupt>
-> kbd_bh() / kd_sound_helper()
-> input_inject_event
-> lock(&dev->event_lock); // Deadlock risk
+> Fixes: db1a9b55004c ("tty: serial: imx: Allow UART to be a source for wakeup")
+> Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+> Reviewed-by: Frank Li <Frank.Li@nxp.com>
+> ---
+>   drivers/tty/serial/imx.c | 15 +++++++++++++++
+>   1 file changed, 15 insertions(+)
 > 
-> The deadlock occurs because:
-> 1. Both kbd_bh and kd_sound_helper run in interrupt context
-> 2. tasklist_lock is interrupt-unsafe
-> 3. When evdev_write holds both dev->event_lock and tasklist_lock,
->    interrupt context attempts to acquire dev->event_lock create deadlock 
->    risks
-> 
-> Convert both kbd_bh and kd_sound_helper to use workqueues. This moves
-> input_inject_event execution to process context, where it's safe to 
-> acquire locks that may be held by code using interrupt-unsafe locks.
+> diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+> index 500dfc009d03..87d841c0b22f 100644
+> --- a/drivers/tty/serial/imx.c
+> +++ b/drivers/tty/serial/imx.c
+> @@ -2697,8 +2697,23 @@ static void imx_uart_save_context(struct imx_port *sport)
+>   /* called with irq off */
+>   static void imx_uart_enable_wakeup(struct imx_port *sport, bool on)
+>   {
+> +	struct tty_port *port = &sport->port.state->port;
+> +	struct tty_struct *tty;
+> +	struct device *tty_dev;
+> +	bool may_wake = false;
+>   	u32 ucr3;
+>   
+> +	tty = tty_port_tty_get(port);
+> +	if (tty) {
 
-So if we ignore the input code and instead look at the send_sigio()
-(which input core ends up calling) and do_wait() we see that
-send_sigio() disables interrupts and takes the owner's spinlock
-before taking the tasklist_lock, while do_wait() takes the tasklist_lock
-first, without disabling interrupts. This is root of the issue as far as
-I can tell and no amount of changes to the keyboard handler (which is
-just happens to be in the middle) will not solve for all potential cases
-and code paths. 
+Use scoped_guard(tty_port_tty, port) instead.
 
-I believe either do_exit() or send_sigio() have to be changed to fix
-this properly. 
+> +		tty_dev = tty->dev;
+> +		may_wake = tty_dev && device_may_wakeup(tty_dev);
+> +		tty_kref_put(tty);
+> +	}
+> +
+> +	/* only configure the wake register when device set as wakeup source */
+> +	if (!may_wake)
+> +		return;
+> +
+>   	uart_port_lock_irq(&sport->port);
+>   
+>   	ucr3 = imx_uart_readl(sport, UCR3);
 
-Thanks.
-
+thanks,
 -- 
-Dmitry
+js
+suse labs
