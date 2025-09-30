@@ -1,143 +1,96 @@
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D487B242D60
-	for <linux-serial@vger.kernel.org>; Tue, 30 Sep 2025 17:21:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D55462581;
+	Tue, 30 Sep 2025 19:42:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759252864; cv=none; b=TEQq86FLIxxCwfIZtRwDE3/qt2XF9SmBj+H9eMEZ8unbab3DjcmXhMt/nd9/ywR4Dd6uvQwdMyzCEJ3ZPLwXmswnEeMAJYqSueOyIV8SSGyxDrPd3unMpfJDr3kmmLDsKRV8uLrgoKuB12ChNkBtamTGu7u6vQrAN5qrV6njeNQ=
+	t=1759261372; cv=none; b=Sdokzu6Gj1en4ca47wpz7yPHI5MazUwzEnBluwBWO2hyo4KPwXzIwJtQLCSgFpe7zbzOMTurCO6xzKSppzK5dAERxJzgvH4j7emqvSi7QsuD+pSORqxlcA1OcOZs61dqRioIypnVz5VN0tQmrmgF0HLS5xd58iY4nUqnF/hRiZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759252864; c=relaxed/simple;
-	bh=AJLtM91/33fmVR/qlQdypVuIczViZNMesjHgSFxWODs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=r6157zVNFth7T1vGV8gyn5y20IkRXzGfRTds6qzYFuyWEnfw6Ntg7P5wiYe1i1MHPgWX6CxCw8f+GI7/NfmVScKd2TgNN8ytlDIlExViLPhMZzKJotS/IWrtFNxEVsiB89WVhTDvSekZ5SI2ExGwd6mO3OowBd8esconA7CphDc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=iwell.eu; spf=pass smtp.mailfrom=iwell.eu; dkim=pass (2048-bit key) header.d=iwell-eu.20230601.gappssmtp.com header.i=@iwell-eu.20230601.gappssmtp.com header.b=xFbGRuG/; arc=none smtp.client-ip=209.85.208.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=iwell.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iwell.eu
+	s=arc-20240116; t=1759261372; c=relaxed/simple;
+	bh=X1uedMjifch/HBfEA9YdTLc3ZAIYvwShhf/7HuUHoZg=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=rnKI0cl39PMYnpuBf0wWPHPxJ2CJ+p5TTf5eInnHBsoXGUcNg++w0StRxdGje+3wUvkoiXQTdhOEaD2/zwNa+QEHZHPmD35o/hNVOHwCyMyZDRBildFZM42nCMz+p4CkrLqwMKkwheFNB0tqW0+vDx7FC88tkNc4/Z6Xe5zvrmQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=DJeivoFv; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=iwell-eu.20230601.gappssmtp.com header.i=@iwell-eu.20230601.gappssmtp.com header.b="xFbGRuG/"
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-62fc28843ecso8556282a12.1
-        for <linux-serial@vger.kernel.org>; Tue, 30 Sep 2025 10:21:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=iwell-eu.20230601.gappssmtp.com; s=20230601; t=1759252859; x=1759857659; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CBeBiFZ8CYYNIOcno906wggBnrfnmw8kk5vZNSaIIco=;
-        b=xFbGRuG/PMyyMgxQRSfN2ZQD3EySNO6QvfQIwPh8B/XPwGvFYQNUMzDjYMuXGrKIde
-         54rUl/jY1ZoKPdonw9g+2qS1usCH8ofNbUn31f5wFEl/aOU66cr8zCB1MtFBcTjoPz2N
-         Vw810d8ISL+d4NxzlUz0PmA2k5VVNFCEHZZsdqvskRNoWw9n+6i6nGM/UWqIlBBbJIKQ
-         n5wdoppZmtPuSHZQv/xY2PrTJavn0kfEcAu2ik9K3Xzm3jnEsMlzwuPcutM2IRfyrTNe
-         oE/tKbtxeKYYXVtyBh1P/MNHnh8833ojOsKPDO+sJeQD0PqDgz33W9byAMzIEALm9oJJ
-         rqSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759252859; x=1759857659;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=CBeBiFZ8CYYNIOcno906wggBnrfnmw8kk5vZNSaIIco=;
-        b=WRtd1LY9b1D3SvYfV4Rphx8diiFZrjLPgvBzAczmS8VKGoJcgeh3aBN5XAYzNtEuEE
-         XLIH1g7d4LL+Ka2bdDld8479gevPn3UP3buiI3a6Z9VGtCIpnSimQtCX9GyVgnA84sy3
-         FnDzkmYu7vIRp2QQEWEVOawcBCQk3sIhJaWECQZ2ZHYNP/H2YcxisGV+bi7TlVxrVVpv
-         Zu71fO02NUDhPoBsl0KwRnSURpVmqb2IhUrLHadKOatZ4PL5ZrSBwxvxZ9FdOuiPy0X8
-         phIYBBnLSQz/VaFzLnyeXjUf9R+r28Dj2+dTxUv3YYKcr3uISLLWxTlSwp3kosu4z7va
-         gLfQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV4X6SJgXY0eB8t1HrMKPFGyJ9COap+HFjvYAREW33VPnXGRwdyzwkUuNyK+RJgIoXOF0NSX+iKjbiVfZc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzdIhkctDZUPHXI6klW7gF7W9vsx2awQk+RFViFUkBAYBUB9ajg
-	iWtM+MCZfSJqeMyi5uZdSU7trlkvi7SEeAlQ0o9xHUsyWD25qBPRLqvuJW+PWJkiD0jq4uccc6j
-	Bz+Pn2ejkYLuIkflJakB02CwTLVePB0ERzgx9+SZA/g==
-X-Gm-Gg: ASbGnctuGMQgNT6bJJhqEkTUm/o2q/7QFFPN9cNpFHYTPTWtpW8+ZodOcrFKhfyWMB8
-	ElRqt6Z0VJInf+3K5EGzuWe8YrRn2tDqP4vrwNyeLSsznchEj3AiTdQ3kWbafipOVLbKz2zUQ4Z
-	z67RYbXEKPid2cAzQsgh7EZGIBTzSgViKPPwjhdPVJQVtGf6SiBzJ6y5QaNdzOXRb4sglk3Rf+6
-	XltM1xUoUjmG3oKNPGxKybLibVEYyoR
-X-Google-Smtp-Source: AGHT+IF6gmWMMmnvd8SXAqteiQRvavbIiqTU4ziQkpjq2GxFYPnxTuZRkuqmxUhWfFskN7jiuo/ToSuXYLZtYEdbzhQ=
-X-Received: by 2002:a05:6402:4305:b0:634:a584:6e44 with SMTP id
- 4fb4d7f45d1cf-63678ca5df9mr759820a12.18.1759252859032; Tue, 30 Sep 2025
- 10:20:59 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="DJeivoFv"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=3gBJ4nP+qc/A8NDWXpsGP7ab4u1MNsYZezJ46nSXncc=; b=DJeivoFvEOCtWQH+cYJcVCaQmc
+	+zIflskLHmHIiaMVjxRFh59gDZ108JjQxpZ1UWbAdYKBxZSIBrArR/21NcTZPeZTPvaU3qg1g/7+b
+	3prmg5Lifp9nVch6B7tzT3Vi8SDGPFa8ijqlw+WMm0vzxvy4eA2wRrRvadOtteQF++so=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:57168 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1v3gFK-00022k-IV; Tue, 30 Sep 2025 15:42:47 -0400
+Date: Tue, 30 Sep 2025 15:42:45 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, fvallee@eukrea.fr,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>
+Message-Id: <20250930154245.93d0405ac3aaa6baa06dd1d8@hugovil.com>
+In-Reply-To: <70fc7ca0-a98c-4d1b-9212-c7948607e840@kernel.org>
+References: <20250924153740.806444-1-hugo@hugovil.com>
+	<20250924153740.806444-15-hugo@hugovil.com>
+	<70fc7ca0-a98c-4d1b-9212-c7948607e840@kernel.org>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-References: <20250923221756.26770-1-marnix.rijnart@iwell.eu> <0ab2436f-5c0d-966f-7095-d281292c494c@linux.intel.com>
-In-Reply-To: <0ab2436f-5c0d-966f-7095-d281292c494c@linux.intel.com>
-From: Marnix Rijnart <marnix.rijnart@iwell.eu>
-Date: Tue, 30 Sep 2025 19:20:48 +0200
-X-Gm-Features: AS18NWBUxk6JDFUrYMRmquwKP7cxr7696-nl8HLRBqtqZNVEfYHLfT27GfYxE-I
-Message-ID: <CAAn10+fRb8VXnDEsSuCj782rp43ZEeov2yXnB2pYxXGNc-2niQ@mail.gmail.com>
-Subject: Re: [REGRESSION][PATCH] serial: 8250_pci: Fix broken RS485 for F81504/508/512
-To: =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
-	LKML <linux-kernel@vger.kernel.org>, linux-serial <linux-serial@vger.kernel.org>, 
-	regressions@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -2.1 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH 14/15] serial: sc16is7xx: reformat comments
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-This is my first interaction with the kernel community, so I did my
-best to read up on the expected practices but maybe I missed
-something.
+Hi Jiri,
 
-I didn't add a Fixes tag for commit 4afeced because it doesn't cause
-the bug by itself, it's the interaction between it and an older commit
-(456d523) that create the issue together. What's the right way to tag
-this?
+On Mon, 29 Sep 2025 08:18:01 +0200
+Jiri Slaby <jirislaby@kernel.org> wrote:
 
-I didn't Cc stable because I understood this to be only required for
-point release regressions within a stable series
-(https://docs.kernel.org/admin-guide/reporting-regressions.html).
-Release 6.8 introduced this regression. Should I still Cc them?
-
-If these tags need to added, what's the best way to do so? Resubmit
-the patch (as a v2)?
-
-Thanks,
-Marnix
-
-Op di 30 sep 2025 om 13:32 schreef Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com>:
->
-> On Wed, 24 Sep 2025, Marnix Rijnart wrote:
->
-> > Commit 4afeced ("serial: core: fix sanitizing check for RTS settings")
-> > introduced a regression making it impossible to unset
-> > SER_RS485_RTS_ON_SEND from userspace if SER_RS485_RTS_AFTER_SEND is
-> > unsupported. Because these devices need RTS to be low on TX (fecf27a)
-> > they are effectively broken.
-> >
-> > The hardware supports both RTS_ON_SEND and RTS_AFTER_SEND,
-> > so fix this by announcing support for SER_RS485_RTS_AFTER_SEND,
-> > similar to commit 068d35a.
-> >
-> > Signed-off-by: Marnix Rijnart <marnix.rijnart@iwell.eu>
->
-> The Fixes tag is missing?
->
-> (And Cc stable tag will be necessary as well).
->
+> On 24. 09. 25, 17:37, Hugo Villeneuve wrote:
+> > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > 
+> > Add missing space at end of comments and reformat to have uniform style.
+> > 
+> > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > > ---
-> >  drivers/tty/serial/8250/8250_pci.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/82=
-50/8250_pci.c
-> > index 152f914c599d..a9da222bd174 100644
-> > --- a/drivers/tty/serial/8250/8250_pci.c
-> > +++ b/drivers/tty/serial/8250/8250_pci.c
-> > @@ -1645,7 +1645,7 @@ static int pci_fintek_rs485_config(struct uart_po=
-rt *port, struct ktermios *term
-> >  }
-> >
-> >  static const struct serial_rs485 pci_fintek_rs485_supported =3D {
-> > -     .flags =3D SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND,
-> > +     .flags =3D SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_=
-RTS_AFTER_SEND,
-> >       /* F81504/508/512 does not support RTS delay before or after send=
- */
-> >  };
-> >
-> >
->
-> --
->  i.
->
+> >   drivers/tty/serial/sc16is7xx.c | 14 +++++++++-----
+> >   1 file changed, 9 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> > index 31d43fc857187..b3fbe9459303a 100644
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> > @@ -81,11 +81,14 @@
+> >   /* IER register bits */
+> >   #define SC16IS7XX_IER_RDI_BIT		BIT(0)   /* Enable RX data interrupt */
+> >   #define SC16IS7XX_IER_THRI_BIT		BIT(1)   /* Enable TX holding register
+> > -						  * interrupt */
+> > +						  * interrupt
+> > +						  */
+> 
+> I am not forcing this, but maybe put it on one line, if it fits into 100 
+> columns? I believe people are using 100 columns nowadays (me included).
+
+Yes good idea. And since the goal of this commit was to try to
+uniformize all comments accross the driver, I will probably reformat
+most of them to improve readability and follow same convention.
+
+Hugo.
+
+-- 
+Hugo Villeneuve
