@@ -1,121 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C509523A;
-	Mon, 29 Sep 2025 18:46:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E28AC1514F7;
+	Tue, 30 Sep 2025 00:27:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759171600; cv=none; b=l54mueNmMCjxzKHi33i4pSKR5ySbU13kG7StQKGfSrNu4kZeLDNiBMnzd4Q6CUYUNhLmg58sMYmxSJJRJNJ8t5au4226Q5choCVt49IGP9d2UcUVvYTW35BGFl/teuYn73mEobxcFae6SU2udzyWWXRoTG++RlcKUrAizPw8k4U=
+	t=1759192039; cv=none; b=KAgMBvghUWwBrIv40p7/+r6OknlrQIWLhx+3wt3gE1WArzjrAKGVOa4I4MFikr8RHpsYZlInMgP66hFpST1QVtttD5mZePNF+wgF8razFJT0+7nZmBodd4jYRGWj7I3SQC3lHW6i0+F/uDVOQ9AnDGb95Ht3lEbo9xXvNeX3j60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759171600; c=relaxed/simple;
-	bh=TNlhXabPzTPBnmWxeucl0sJUD7WaZdRbq2zbsllnuPk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lM6tJEzhhupmiIstnD4CVvx2eE+J2Y+fIRlMTLTWOi+pBYzKdTSm29lsVe3j6U4V3FcVdHDkcD+FoBpqGByB29uj3t33BYTG/R2FesgdUpkCJb8mdhWTLmXQds/mjgfxSeX2Z8z1Nlc0rb+FC8s/u5kX6re7w4hZA22VWGuZeGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cQcaNUdK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759192039; c=relaxed/simple;
+	bh=KIMSr9El/g5mZ5tswBobA701Foqyxmxfhh8ckYrmHoQ=;
+	h=Date:From:To:Cc:Message-Id:In-Reply-To:References:Mime-Version:
+	 Content-Type:Subject; b=BHq681oNRy/xD5cA+SyNFoxRiASAw0oNcl7p9/Nohcf7p90Tq4Zpml37xxGe//HY2kMGfEucK7m1e6hZB3UEwjTzCqaO+0GXg3J+lTiyl0i2JXh+hiIhboN21q+N0w4T2Nm/eVO91PQG4ZHyhy7aHnMyZ4l2LCVlr5S3hNTmYdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=QUR38N3i; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cQcaNUdK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C7CC4CEF4;
-	Mon, 29 Sep 2025 18:46:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759171599;
-	bh=TNlhXabPzTPBnmWxeucl0sJUD7WaZdRbq2zbsllnuPk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cQcaNUdKQA6pggrC6CKP9nrssk0n+iS1wwK/CpqYxj6HL1Q943J8xN+mHitHJmC/a
-	 7oh8mR2bn3LtHTdPHRf4OmmA43NX1EgE8yC+auScD3r228BBf7XvC1dW41bTuD4uQE
-	 GoPhVWzrQZekO3MrWnwsoj8Q3r1P5tsfLTJwZ44rg80HFP8CuJeRw3rnCw5MdrrtPC
-	 ouxIO4F4vcgb8ybECkfRNtofFg0Fpajv57KKg614+3Vbq86vHjPX9TJKGQwGlzZ0Lc
-	 pyd5a31ZCWnB3Tetlp39lTpA8FIAC0JaWcbqCwC3lQZ68uVW1FKLWt+ZIaGtN0SVwW
-	 +7cJQAuB9qFSg==
-Date: Mon, 29 Sep 2025 19:46:33 +0100
-From: Conor Dooley <conor@kernel.org>
-To: Junhui Liu <junhui.liu@pigmoral.tech>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Samuel Holland <samuel.holland@sifive.com>,
-	Anup Patel <anup@brainfault.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@sifive.com>,
-	linux-riscv@lists.infradead.org, linux-serial@vger.kernel.org,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v2 00/11] riscv: Add initial support for Anlogic DR1V90
-Message-ID: <20250929-unhappily-circulate-5e516175ad0f@spud>
-References: <20250922-dr1v90-basic-dt-v2-0-64d28500cb37@pigmoral.tech>
- <20250925-chowtime-stove-4078dc1af2b0@spud>
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="QUR38N3i"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:Mime-Version:Message-Id:Cc:To:From
+	:Date:subject:date:message-id:reply-to;
+	bh=1/eQsiCVd5lqpEwihop8t2LKjbcv0Ywm6mDBdgGqJLY=; b=QUR38N3iYWRPuyAOk8vpHsWSuY
+	aNtYiPUp0KAA7c4Ok1mBG3SC1rdr5BVW/zFpj0ibMgYeEVaUoJJLGmhL4GhcJJBl6Uer1G4PYsM8I
+	b6JzS6WlnfNFoVXdHrDuuTJK1sIv7QBvpZ5TtHeKT/KgqjBrtWX1Vu/mLj7dpnKu8fBQ=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:34830 helo=pettiford)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1v3OCz-0007ny-CJ; Mon, 29 Sep 2025 20:27:09 -0400
+Date: Mon, 29 Sep 2025 20:27:08 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Jiri Slaby <jirislaby@kernel.org>
+Cc: gregkh@linuxfoundation.org, fvallee@eukrea.fr,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, Hugo Villeneuve
+ <hvilleneuve@dimonoff.com>
+Message-Id: <20250929202708.c81f114be5286eab259aa4c1@hugovil.com>
+In-Reply-To: <0a606585-a7fb-4457-99f5-fe9cc75e366a@kernel.org>
+References: <20250924153740.806444-1-hugo@hugovil.com>
+	<20250924153740.806444-6-hugo@hugovil.com>
+	<0a606585-a7fb-4457-99f5-fe9cc75e366a@kernel.org>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="dz2AhysS4RVYF5ne"
-Content-Disposition: inline
-In-Reply-To: <20250925-chowtime-stove-4078dc1af2b0@spud>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+	* -2.3 NICE_REPLY_A Looks like a legit reply (A)
+Subject: Re: [PATCH 05/15] serial: sc16is7xx: use guards for simple mutex
+ locks
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
+Hi Jiri,
 
---dz2AhysS4RVYF5ne
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Mon, 29 Sep 2025 08:09:12 +0200
+Jiri Slaby <jirislaby@kernel.org> wrote:
 
-On Thu, Sep 25, 2025 at 06:22:41PM +0100, Conor Dooley wrote:
-> On Mon, Sep 22, 2025 at 08:46:30PM +0800, Junhui Liu wrote:
-> > This patch series introduces initial support for the Anlogic DR1V90 SoC
-> > [1] and the Milianke MLKPAI-FS01 [2] board.
->=20
-> It's a bit late for v6.18 content, since the merge window likely opens
-> on Monday, but how do you intend getting the series into mainline?
->=20
-> There is a document https://docs.kernel.org/process/maintainer-soc.html
-> containing information about how the platform maintenance process works.
-> Arnd has suggested that the best way to get a platform initially added
-> is to send the whole patchset, rather than a PR - it leaves you with
-> fewer things to deal with at once. This patchset should be sent to
-> soc@kernel.org, with a note saying that it is ready for inclusion in
-> your cover letter.=20
->=20
-> Ideally, the initial patchset for an SoC should contain clock (and
-> pinctrl) support, rather than use fake fixed-clocks, but you have none of
-> those in your base dts so I have no objections. fixed-clocks can become
-> a problem if the dts is imported into U-Boot via OF_UPSTREAM or
-> elsewhere, since it can cause regressions for them. I would highly
-> suggest that upstreaming the clock/reset controller is the next step
-> that you take, because other peripherals are going to need clocks.
->=20
-> Please let me know if you have any questions - either by email (and it
-> can be off-list if needed if it relates to platform maintenance
-> questions) or on irc (I'm conchuod on libera.chat).
+> On 24. 09. 25, 17:37, Hugo Villeneuve wrote:
+> > --- a/drivers/tty/serial/sc16is7xx.c
+> > +++ b/drivers/tty/serial/sc16is7xx.c
+> ...
+> > @@ -829,9 +827,6 @@ static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+> >   		break;
+> >   	}
+> >   
+> > -out_port_irq:
+> > -	mutex_unlock(&one->lock);
+> > -
+> >   	return rc;
+> 
+> No need for rc now AFAICT.
 
-I had a chat with Junhui on irc the other day, where they expressed
-unwillingness to act as the platform maintainer, to avoid being in
-conflict with the vendor. I'm disappointed of course that the vendor's
-behaviour has had this impact, but of course I understand where Junhui
-is coming from.
+You are right, I will remove it in v2.
 
-Fortunately Junhui is still willing to post patches for the platform, as
-they want to run mainline on their board. I will add the platform to my
-"misc" branch, along with the other platforms I apply patches for until
-either Junhui changes their mind or until people who understand the
-process and standards wish to take it over.
+> 
+> >   }
+> >   
+> > @@ -874,9 +869,8 @@ static void sc16is7xx_tx_proc(struct kthread_work *ws)
+> >   	    (port->rs485.delay_rts_before_send > 0))
+> >   		msleep(port->rs485.delay_rts_before_send);
+> >   
+> > -	mutex_lock(&one->lock);
+> > +	guard(mutex)(&one->lock);
+> >   	sc16is7xx_handle_tx(port);
+> > -	mutex_unlock(&one->lock);
+> >   }
+> >   
+> >   static void sc16is7xx_reconf_rs485(struct uart_port *port)
+> > @@ -943,9 +937,8 @@ static void sc16is7xx_ms_proc(struct kthread_work *ws)
+> >   	struct sc16is7xx_port *s = dev_get_drvdata(one->port.dev);
+> >   
+> >   	if (one->port.state) {
+> > -		mutex_lock(&one->lock);
+> > +		guard(mutex)(&one->lock);
+> >   		sc16is7xx_update_mlines(one);
+> > -		mutex_unlock(&one->lock);
+> >   
+> >   		kthread_queue_delayed_work(&s->kworker, &one->ms_work, HZ);
+> 
+> Now the lock is held till here. R U sure it is OK?
 
-Cheers,
-Conor.
+Now that you mention it, I am sure its not OK :)
 
---dz2AhysS4RVYF5ne
-Content-Type: application/pgp-signature; name="signature.asc"
+I will restore this one to the original lock/unlock code in V2.
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaNrUCQAKCRB4tDGHoIJi
-0qzSAP0cvO1DFs2n6IQ7S/IJRMg2ehNjpGRU7+R8PXLZ24qfwgD/T4EEVP1tHhtS
-C3gmCx92Pnopimxtjl3Swp77c18Csw4=
-=zNQt
------END PGP SIGNATURE-----
-
---dz2AhysS4RVYF5ne--
+Thank you,
+Hugo.
