@@ -1,148 +1,229 @@
 Received: from mail.simonwunderlich.de (mail.simonwunderlich.de [23.88.38.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4F5527703C;
-	Wed,  1 Oct 2025 11:48:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED01E19DF4A;
+	Wed,  1 Oct 2025 12:07:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=23.88.38.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759319297; cv=none; b=EBPcszDu5lGDu8q/W1TC3rilK1bYzg6WE+2UGdafiMV4gq2nemzEXcwQmdFvRqD73h/ujcLlFb9xuvSKCYxouPyxZsGi1HjWp0k4uDQUR9gjNWZ6x9AETcDpFp/fC7ySEfnnup3pa25qPPYXMV5OpgaZjfumIeHoqE8CeHqo+t8=
+	t=1759320478; cv=none; b=XDFAaRgNVZrhqxJYMlyjWaAHbMLq4XUJwwsX69UFIGIVKf6Z6EFeU0VjCMhyXpZs5BdTMfOHVjAe1Twes3ng+7bSFHJ/jmIEQtwN7L4F7+lTsQr+ZTzDudqOeoB35UeGQHEGWu0YiWbtmXeEhpPx5H6uyj0/h951jkaGsFqkxcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759319297; c=relaxed/simple;
-	bh=8voT62oZgp4naNokBhr1QSxLG19Gn93M1T5OgAhUMtM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=MeWuniLh2i2tw2m9g0ffigq8mLees0na+lnxInbwuyRPKtJQeWp/e7NQw5o7UZ2UpwRhaH8zmRvGml85QUDk4+UkmTnj9RhZgfTeOPF2GTxDmGEGE4ncMVZXawLL+upQGQMC41sQU6E/qJay70HE82VK51ofpzYiv+8yJnAHBA4=
+	s=arc-20240116; t=1759320478; c=relaxed/simple;
+	bh=wVfHvtbdTmXkr4S8Xx8DJfP4J2Tkk11mOXXLfVA65Ms=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VYox15LLS3WvikqEigyBk2emr4lsuHnclytIEe2doFEh3nj/Rlzmb4FS367Q+pB6RwMatle+x4y0d4BzPwyM09LIW/YLsNMgC0dWWUSkN/uBDgynP1dyRxnp1JCAC64vOS66NKK3iv0LPLhHWZcN7hJdcN/NhYlBzu+KT0167bQ=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=simonwunderlich.de; spf=pass smtp.mailfrom=simonwunderlich.de; arc=none smtp.client-ip=23.88.38.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=simonwunderlich.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=simonwunderlich.de
-Received: from sven-desktop.home.narfation.org (p200300C5973A2bE00000000000000C00.dip0.t-ipconnect.de [IPv6:2003:c5:973a:2be0::c00])
+Received: from ripper.localnet (p200300c5973a2BE00000000000000C00.dip0.t-ipconnect.de [IPv6:2003:c5:973a:2be0::c00])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.simonwunderlich.de (Postfix) with ESMTPSA id C57DAFA12C;
-	Wed,  1 Oct 2025 13:48:06 +0200 (CEST)
+	by mail.simonwunderlich.de (Postfix) with ESMTPSA id BE8E5FA12C;
+	Wed,  1 Oct 2025 14:07:53 +0200 (CEST)
 From: Sven Eckelmann <se@simonwunderlich.de>
-Date: Wed, 01 Oct 2025 13:47:26 +0200
-Subject: [PATCH] serial: ar933x: Add polling support
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Jiri Slaby <jirislaby@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: ar933x: Add polling support
+Date: Wed, 01 Oct 2025 14:07:53 +0200
+Message-ID: <7867515.MhkbZ0Pkbq@ripper>
+In-Reply-To:
+ <20251001-ar933x-kgdb-support-v1-1-5fffd9e36a01@simonwunderlich.de>
+References:
+ <20251001-ar933x-kgdb-support-v1-1-5fffd9e36a01@simonwunderlich.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20251001-ar933x-kgdb-support-v1-1-5fffd9e36a01@simonwunderlich.de>
-X-B4-Tracking: v=1; b=H4sIAM0U3WgC/x3MMQqAMAxA0atIZgNtNYNeRRyqRg2CllRFKN7d4
- viG/xNEVuEIbZFA+ZYox55hywLG1e8Lo0zZ4Iwja4xFr01VPbgt04DxCuHQEx3NVJMdnKcGchm
- UZ3n+a9e/7wcXSglIZQAAAA==
-X-Change-ID: 20251001-ar933x-kgdb-support-25f5451b2a59
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
- Jiri Slaby <jirislaby@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org, 
- Sven Eckelmann <se@simonwunderlich.de>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3029; i=se@simonwunderlich.de;
- h=from:subject:message-id; bh=8voT62oZgp4naNokBhr1QSxLG19Gn93M1T5OgAhUMtM=;
- b=kA0DAAoWTQ93K9MU9csByyZiAGjdFNCiddfJQBd24bxkVsSADioXXJTzfGqXOAT2bk114CGq2
- Ih1BAAWCgAdFiEEvNRvz7MH7R/zlvHFTQ93K9MU9csFAmjdFNAACgkQTQ93K9MU9cuNxAEA09u2
- OamUKVXw/v1zDdAsze+u+xUnew8rWqbNmNrm+dUBAN6A7vjWbns3h9ZFCcFPGYvxj0DC/stTnYs
- qYm1PVIgK
-X-Developer-Key: i=se@simonwunderlich.de; a=openpgp;
- fpr=522D7163831C73A635D12FE5EC371482956781AF
+Content-Type: multipart/signed; boundary="nextPart10404020.NyiUUSuA9g";
+ micalg="pgp-sha512"; protocol="application/pgp-signature"
 
-KGDB requires at least the polling hooks .poll_get_char and .poll_put_char
-to transmit/receive character via the serial driver.
+--nextPart10404020.NyiUUSuA9g
+Content-Type: multipart/mixed; boundary="nextPart3614437.VLH7GnMWUR";
+ protected-headers="v1"
+Content-Transfer-Encoding: 7Bit
+From: Sven Eckelmann <se@simonwunderlich.de>
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH] serial: ar933x: Add polling support
+Date: Wed, 01 Oct 2025 14:07:53 +0200
+Message-ID: <7867515.MhkbZ0Pkbq@ripper>
+MIME-Version: 1.0
+
+This is a multi-part message in MIME format.
+
+--nextPart3614437.VLH7GnMWUR
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
+
+On Wednesday, 1 October 2025 13:47:26 CEST Sven Eckelmann wrote:
+> KGDB requires at least the polling hooks .poll_get_char and .poll_put_char
+> to transmit/receive character via the serial driver.
+> 
+> Signed-off-by: Sven Eckelmann <se@simonwunderlich.de>
+> ---
+>  drivers/tty/serial/ar933x_uart.c | 62 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+
+I also had a look at break detection to ease the debugging on our side. Just 
+to be able to switch to KGDB mode via gdb.
+
+While I got it working, it is more a hack than a good implementation. I've 
+attached the hack in case someone wants to continue to work on it.
+
+
+On Wednesday, 1 October 2025 14:05:41 CEST Greg Kroah-Hartman wrote:
+> Right now, the development tree you have sent a patch for is "closed"
+> due to the timing of the merge window.  Don't worry, the patch(es) you
+> have sent are not lost, and will be looked at after the merge window is
+> over (after the -rc1 kernel is released by Linus).
+
+*looks at the calendar* Oh, yes, there was something.
+
+Regards,
+	Sven
+--nextPart3614437.VLH7GnMWUR
+Content-Disposition: attachment;
+ filename="RFC-0001-serial-ar933x-Handle-break-events.patch"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/x-patch; charset="utf-8";
+ name="RFC-0001-serial-ar933x-Handle-break-events.patch"
+
+From 7892ef568d7ca4c1c2a0ed9fb8edbadfe8e70177 Mon Sep 17 00:00:00 2001
+From: Sven Eckelmann <se@simonwunderlich.de>
+Date: Mon, 15 Sep 2025 15:35:14 +0200
+Subject: [PATCH RFC] serial: ar933x: Handle break events
 
 Signed-off-by: Sven Eckelmann <se@simonwunderlich.de>
 ---
- drivers/tty/serial/ar933x_uart.c | 62 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+ drivers/tty/serial/ar933x_uart.c | 53 ++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
 diff --git a/drivers/tty/serial/ar933x_uart.c b/drivers/tty/serial/ar933x_uart.c
-index 8bb33556b31208a1707ca7a48db0aa2ca81452bd..5b491db9d2fc01e051f629f224024ac4dc4d35ff 100644
+index 5b491db9d2fc..bc0a63e4934b 100644
 --- a/drivers/tty/serial/ar933x_uart.c
 +++ b/drivers/tty/serial/ar933x_uart.c
-@@ -560,6 +560,64 @@ static int ar933x_uart_verify_port(struct uart_port *port,
- 	return 0;
+@@ -105,6 +105,30 @@ static inline void ar933x_uart_stop_tx_interrupt(struct ar933x_uart_port *up)
+ 	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
  }
  
-+#ifdef CONFIG_CONSOLE_POLL
-+static int ar933x_poll_get_char(struct uart_port *port)
++static inline void ar933x_uart_start_rxbreak_on_interrupt(struct ar933x_uart_port *up)
 +{
-+	struct ar933x_uart_port *up =
-+		container_of(port, struct ar933x_uart_port, port);
-+	unsigned int rdata;
-+	unsigned char ch;
-+	u32 imr;
++	up->ier |= AR933X_UART_INT_RX_BREAK_ON;
++	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++}
 +
-+	/* Disable all interrupts */
-+	imr = ar933x_uart_read(up, AR933X_UART_INT_EN_REG);
-+	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, 0);
++static inline void ar933x_uart_stop_rxbreak_on_interrupt(struct ar933x_uart_port *up)
++{
++	up->ier &= ~AR933X_UART_INT_RX_BREAK_ON;
++	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++}
 +
-+	rdata = ar933x_uart_read(up, AR933X_UART_DATA_REG);
-+	if ((rdata & AR933X_UART_DATA_RX_CSR) == 0) {
-+		/* Enable interrupts */
-+		ar933x_uart_write(up, AR933X_UART_INT_EN_REG, imr);
-+		return NO_POLL_CHAR;
++static inline void ar933x_uart_start_rxbreak_off_interrupt(struct ar933x_uart_port *up)
++{
++	up->ier |= AR933X_UART_INT_RX_BREAK_OFF;
++	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++}
++
++static inline void ar933x_uart_stop_rxbreak_off_interrupt(struct ar933x_uart_port *up)
++{
++	up->ier &= ~AR933X_UART_INT_RX_BREAK_OFF;
++	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, up->ier);
++}
++
+ static inline void ar933x_uart_start_rx_interrupt(struct ar933x_uart_port *up)
+ {
+ 	up->ier |= AR933X_UART_INT_RX_VALID;
+@@ -212,6 +236,7 @@ static void ar933x_uart_stop_rx(struct uart_port *port)
+ 		container_of(port, struct ar933x_uart_port, port);
+ 
+ 	ar933x_uart_stop_rx_interrupt(up);
++	ar933x_uart_stop_rxbreak_on_interrupt(up);
+ }
+ 
+ static void ar933x_uart_break_ctl(struct uart_port *port, int break_state)
+@@ -444,11 +469,14 @@ static irqreturn_t ar933x_uart_interrupt(int irq, void *dev_id)
+ {
+ 	struct ar933x_uart_port *up = dev_id;
+ 	unsigned int status;
++	bool is_break;
+ 
+ 	status = ar933x_uart_read(up, AR933X_UART_CS_REG);
+ 	if ((status & AR933X_UART_CS_HOST_INT) == 0)
+ 		return IRQ_NONE;
+ 
++	is_break = status & AR933X_UART_CS_RX_BREAK;
++
+ 	uart_port_lock(&up->port);
+ 
+ 	status = ar933x_uart_read(up, AR933X_UART_INT_REG);
+@@ -467,6 +495,29 @@ static irqreturn_t ar933x_uart_interrupt(int irq, void *dev_id)
+ 		ar933x_uart_tx_chars(up);
+ 	}
+ 
++	if (status & AR933X_UART_INT_RX_BREAK_ON)
++		ar933x_uart_write(up, AR933X_UART_INT_REG,
++				  AR933X_UART_INT_RX_BREAK_ON);
++
++	if (status & AR933X_UART_INT_RX_BREAK_OFF)
++		ar933x_uart_write(up, AR933X_UART_INT_REG,
++				  AR933X_UART_INT_RX_BREAK_OFF);
++
++	if (is_break) {
++		/* disable "active break" interrupt */
++		ar933x_uart_stop_rxbreak_on_interrupt(up);
++		ar933x_uart_start_rxbreak_off_interrupt(up);
++
++		/* inform serial core about break */
++		up->port.icount.brk++;
++		if (!up->port.sysrq)
++			uart_handle_break(&up->port);
++	} else if (!(up->ier & AR933X_UART_INT_RX_BREAK_ON)) {
++		/* enable "active break" interrupt */
++		ar933x_uart_start_rxbreak_on_interrupt(up);
++		ar933x_uart_stop_rxbreak_off_interrupt(up);
 +	}
 +
-+	/* remove the character from the FIFO */
-+	ar933x_uart_write(up, AR933X_UART_DATA_REG,
-+			  AR933X_UART_DATA_RX_CSR);
-+
-+	ch = rdata & AR933X_UART_DATA_TX_RX_MASK;
-+
-+	/* Enable interrupts */
-+	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, imr);
-+
-+	return ch;
-+}
-+
-+static void ar933x_poll_put_char(struct uart_port *port, unsigned char c)
-+{
-+	struct ar933x_uart_port *up =
-+		container_of(port, struct ar933x_uart_port, port);
-+	u32 imr;
-+
-+	/* Disable all interrupts */
-+	imr = ar933x_uart_read(up, AR933X_UART_INT_EN_REG);
-+	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, 0);
-+
-+	/* Wait until FIFO is empty */
-+	while (!(ar933x_uart_read(up, AR933X_UART_DATA_REG) & AR933X_UART_DATA_TX_CSR))
-+		cpu_relax();
-+
-+	/* Write a character */
-+	ar933x_uart_putc(up, c);
-+
-+	/* Wait until FIFO is empty */
-+	while (!(ar933x_uart_read(up, AR933X_UART_DATA_REG) & AR933X_UART_DATA_TX_CSR))
-+		cpu_relax();
-+
-+	/* Enable interrupts */
-+	ar933x_uart_write(up, AR933X_UART_INT_EN_REG, imr);
-+}
-+#endif
-+
- static const struct uart_ops ar933x_uart_ops = {
- 	.tx_empty	= ar933x_uart_tx_empty,
- 	.set_mctrl	= ar933x_uart_set_mctrl,
-@@ -576,6 +634,10 @@ static const struct uart_ops ar933x_uart_ops = {
- 	.request_port	= ar933x_uart_request_port,
- 	.config_port	= ar933x_uart_config_port,
- 	.verify_port	= ar933x_uart_verify_port,
-+#ifdef CONFIG_CONSOLE_POLL
-+	.poll_get_char	= ar933x_poll_get_char,
-+	.poll_put_char	= ar933x_poll_put_char,
-+#endif
- };
+ 	uart_unlock_and_check_sysrq(&up->port);
  
- static int ar933x_config_rs485(struct uart_port *port, struct ktermios *termios,
-
----
-base-commit: f83ec76bf285bea5727f478a68b894f5543ca76e
-change-id: 20251001-ar933x-kgdb-support-25f5451b2a59
-
-Best regards,
+ 	return IRQ_HANDLED;
+@@ -496,6 +547,7 @@ static int ar933x_uart_startup(struct uart_port *port)
+ 
+ 	/* Enable RX interrupts */
+ 	ar933x_uart_start_rx_interrupt(up);
++	ar933x_uart_start_rxbreak_on_interrupt(up);
+ 
+ 	uart_port_unlock_irqrestore(&up->port, flags);
+ 
+@@ -829,6 +881,7 @@ static int ar933x_uart_probe(struct platform_device *pdev)
+ 	port->ops = &ar933x_uart_ops;
+ 	port->rs485_config = ar933x_config_rs485;
+ 	port->rs485_supported = ar933x_rs485_supported;
++	port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_AR933X_CONSOLE);
+ 
+ 	baud = ar933x_uart_get_baud(port->uartclk, AR933X_UART_MAX_SCALE, 1);
+ 	up->min_baud = max_t(unsigned int, baud, AR933X_UART_MIN_BAUD);
 -- 
-Sven Eckelmann <se@simonwunderlich.de>
+2.47.3
+
+
+--nextPart3614437.VLH7GnMWUR--
+
+--nextPart10404020.NyiUUSuA9g
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQS81G/PswftH/OW8cVND3cr0xT1ywUCaN0ZmQAKCRBND3cr0xT1
+ywGzAPsFCLRPtWjIKKMOPiJgUHt9/a/kB9VLlt9XHQCHww49ogD+OfJtIcZck+YJ
+bMVdW9STk6uGpFRTLgw1FP0KpG6uLQY=
+=vKFC
+-----END PGP SIGNATURE-----
+
+--nextPart10404020.NyiUUSuA9g--
+
+
 
