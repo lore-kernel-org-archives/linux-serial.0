@@ -1,31 +1,31 @@
 Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DAAB13A258;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DB0E13A3ED;
 	Thu,  2 Oct 2025 14:57:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759417074; cv=none; b=qrNVqKcvQTN999t/UEd9OW0DunkYf4FpbnMrgmjLXcUPRBxFUVvK13jbvveS8yAccJipGRaAt79vjvvlXyTQUGW7h011NHxX3SvAMFUf1olItcMLf/mQhzVCed4sdyUfh3BP6qGaKtQL5CKmSiUEVqkwroDOAquxCPsu7kZE5CA=
+	t=1759417074; cv=none; b=U3W3JpP+oHO2Hkl7tJ0eBlbGNOa+xJ6jH4Ujaa1LL7b29YrvxTQ4BeMPZ4iSQBl5/4t904hT2L6di1Y8k1DZgSganem0qJfp7zOaaY5kL29HvHf5tsujaZjDka4umSP+sgBDIZ6L8GrI0zkZVHbv9seFjhxWH10z4PoCwL7a9PQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1759417074; c=relaxed/simple;
-	bh=vRBGm9s/dyL+mafpUYppZ1yooY3Npezr9ZaoASLiS50=;
+	bh=ToQyPN+TlA1UPUy/7j+kBOYM/xKJ643CH87sHP0DMXU=;
 	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
-	 Subject; b=DDVu5cV7hv0+7CBjxJG4fvdNrwEzMZ3NgqRCuwS1YfIh21ubGy5yL9MKvzwNkfs+I8v4ldCC8WvqmgbtlV4YAEQM6v6Zso9gUpTuYOrK3j5vjj7Swxu/9895d2L0EpQedrdrT2uRSkxGJoJghd5y978N4HCptjyrA0lxMLU9q2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=rAp8Vl3v; arc=none smtp.client-ip=162.243.120.170
+	 Subject; b=jvOJ8iBVkgKI7c0TKJNo72Qy3DXB/ec4DEg5QwOCC32vMuLMFyOxV+6Vsaf56VF9h1oSaedmrP7N1TgSwK/UqL1oyM/DQvYYxCVocAANh4Acu0utCGT/Ardj2SvrRbG0vGUJpFAd3iTrRNI1Yy2/KkuA0IGIUBlOZiKNDyLa4Tk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=LMWIuDD1; arc=none smtp.client-ip=162.243.120.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="rAp8Vl3v"
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="LMWIuDD1"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
 	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
 	:From:subject:date:message-id:reply-to;
-	bh=9stedbZ0oenGDNSu79soTv0x9oOzbagK1AmdZRDf5wY=; b=rAp8Vl3vkbH8pXu1cym0w3R8YF
-	PWNFu9eWzudoR6aP8Fjq03vtqrd0obprnGGfTtRjt/3b0xGGvKY49qPfdHJQCS/+FIG8d7Xa3Xv3U
-	rxWeUqx7g82vv2GexZebCp8383EvFJRXddK26YdSUXWc7kJ3vcXWB9jNmZ0Zt7hb8Iqg=;
+	bh=ekdaWYWzuGlTbvIE22/p4Lpz6i0MAI27A3e2yCrkMgE=; b=LMWIuDD1RTztxh+eVhXdtJ561x
+	OWjQAYccUrzGS2kZsUdvuW9vN5zxij3rIwPms8IE7TN2rWDtW+zD/QyzvRwNWxcSd21jiz3eSWSTV
+	ZyefxhYwnaUtyErjwZ2Y/jepIRocExXZz2KWaZ6GnZoitad+jMBoJGs4eh14POtHhNKM=;
 Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:59004 helo=pettiford.lan)
 	by mail.hugovil.com with esmtpa (Exim 4.92)
 	(envelope-from <hugo@hugovil.com>)
-	id 1v4Kkb-0005hy-Au; Thu, 02 Oct 2025 10:57:45 -0400
+	id 1v4Kkh-0005hy-7M; Thu, 02 Oct 2025 10:57:51 -0400
 From: Hugo Villeneuve <hugo@hugovil.com>
 To: gregkh@linuxfoundation.org,
 	jirislaby@kernel.org,
@@ -34,8 +34,8 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
 	hugo@hugovil.com,
 	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Thu,  2 Oct 2025 10:57:25 -0400
-Message-Id: <20251002145738.3250272-3-hugo@hugovil.com>
+Date: Thu,  2 Oct 2025 10:57:32 -0400
+Message-Id: <20251002145738.3250272-10-hugo@hugovil.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20251002145738.3250272-1-hugo@hugovil.com>
 References: <20251002145738.3250272-1-hugo@hugovil.com>
@@ -51,72 +51,174 @@ X-SA-Exim-Mail-From: hugo@hugovil.com
 X-Spam-Level: 
 X-Spam-Report: 
 	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-Subject: [PATCH v2 02/15] serial: sc16is7xx: rename LCR macros to better reflect usage
+Subject: [PATCH v2 09/15] serial: sc16is7xx: move port/channel init to separate function
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
 From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-There is no reference to CONF_MODE_A or CONF_MODE_B in the manufacturer's
-datasheet.
+The sc16is7xx_probe() function is very long. To improve readability, move
+port/channel initialization to a separate function.
 
-Rename register set configuration macros for the LCR register, to better
-show their intended usage to select either the Special register set, or the
-Enhanced register set.
+No functional change intended.
 
 Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 ---
- drivers/tty/serial/sc16is7xx.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/tty/serial/sc16is7xx.c | 127 ++++++++++++++++++---------------
+ 1 file changed, 70 insertions(+), 57 deletions(-)
 
 diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index c7435595dce13..330d95446f1d7 100644
+index 281cbb2274e50..a7a6d613459dc 100644
 --- a/drivers/tty/serial/sc16is7xx.c
 +++ b/drivers/tty/serial/sc16is7xx.c
-@@ -149,10 +149,12 @@
- #define SC16IS7XX_LCR_WORD_LEN_6	(0x01)
- #define SC16IS7XX_LCR_WORD_LEN_7	(0x02)
- #define SC16IS7XX_LCR_WORD_LEN_8	(0x03)
--#define SC16IS7XX_LCR_CONF_MODE_A	SC16IS7XX_LCR_DLAB_BIT /* Special
--								* reg set */
--#define SC16IS7XX_LCR_CONF_MODE_B	0xBF                   /* Enhanced
--								* reg set */
-+#define SC16IS7XX_LCR_REG_SET_SPECIAL	SC16IS7XX_LCR_DLAB_BIT /* Special
-+								* reg set
-+								*/
-+#define SC16IS7XX_LCR_REG_SET_ENHANCED	0xBF                   /* Enhanced
-+								* reg set
-+								*/
+@@ -1499,6 +1499,75 @@ static int sc16is7xx_reset(struct device *dev, struct regmap *regmap)
+ 	return 0;
+ }
  
- /* MCR register bits */
- #define SC16IS7XX_MCR_DTR_BIT		BIT(0)   /* DTR complement
-@@ -442,7 +444,7 @@ static void sc16is7xx_efr_lock(struct uart_port *port)
- 	one->old_lcr = sc16is7xx_port_read(port, SC16IS7XX_LCR_REG);
++static int sc16is7xx_setup_channel(struct sc16is7xx_one *one, int i,
++				   bool *port_registered)
++{
++	struct uart_port *port = &one->port;
++	int ret;
++
++	ret = ida_alloc_max(&sc16is7xx_lines, SC16IS7XX_MAX_DEVS - 1, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
++
++	port->line = ret;
++
++	/* Initialize port data */
++	port->type	= PORT_SC16IS7XX;
++	port->fifosize	= SC16IS7XX_FIFO_SIZE;
++	port->flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
++	port->iobase	= i;
++	/*
++	 * Use all ones as membase to make sure uart_configure_port() in
++	 * serial_core.c does not abort for SPI/I2C devices where the
++	 * membase address is not applicable.
++	 */
++	port->membase	= (void __iomem *)~0;
++	port->iotype	= UPIO_PORT;
++	port->rs485_config = sc16is7xx_config_rs485;
++	port->rs485_supported = sc16is7xx_rs485_supported;
++	port->ops	= &sc16is7xx_ops;
++	one->old_mctrl	= 0;
++
++	mutex_init(&one->lock);
++
++	ret = uart_get_rs485_mode(port);
++	if (ret)
++		return ret;
++
++	/* Enable access to general register set */
++	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, 0x00);
++
++	/* Disable all interrupts */
++	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, 0);
++	/* Disable TX/RX */
++	sc16is7xx_port_write(port, SC16IS7XX_EFCR_REG,
++			     SC16IS7XX_EFCR_RXDISABLE_BIT |
++			     SC16IS7XX_EFCR_TXDISABLE_BIT);
++
++	/* Initialize kthread work structs */
++	kthread_init_work(&one->tx_work, sc16is7xx_tx_proc);
++	kthread_init_work(&one->reg_work, sc16is7xx_reg_proc);
++	kthread_init_delayed_work(&one->ms_work, sc16is7xx_ms_proc);
++
++	/* Register port */
++	ret = uart_add_one_port(&sc16is7xx_uart, port);
++	if (ret)
++		return ret;
++
++	*port_registered = true;
++
++	sc16is7xx_regs_lock(port, SC16IS7XX_LCR_REG_SET_ENHANCED);
++	/* Enable write access to enhanced features */
++	sc16is7xx_port_write(port, SC16IS7XX_EFR_REG,
++			     SC16IS7XX_EFR_ENABLE_BIT);
++	sc16is7xx_regs_unlock(port);
++
++	/* Go to suspend mode */
++	sc16is7xx_power(port, 0);
++
++	return 0;
++}
++
+ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+ 		    struct regmap *regmaps[], int irq)
+ {
+@@ -1582,70 +1651,14 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
+ 	}
  
- 	/* Enable access to Enhanced register set */
--	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, SC16IS7XX_LCR_CONF_MODE_B);
-+	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG, SC16IS7XX_LCR_REG_SET_ENHANCED);
+ 	for (i = 0; i < devtype->nr_uart; ++i) {
+-		ret = ida_alloc_max(&sc16is7xx_lines,
+-				    SC16IS7XX_MAX_DEVS - 1, GFP_KERNEL);
+-		if (ret < 0)
+-			goto out_ports;
+-
+-		s->p[i].port.line = ret;
+-
+-		/* Initialize port data */
+ 		s->p[i].port.dev	= dev;
+ 		s->p[i].port.irq	= irq;
+-		s->p[i].port.type	= PORT_SC16IS7XX;
+-		s->p[i].port.fifosize	= SC16IS7XX_FIFO_SIZE;
+-		s->p[i].port.flags	= UPF_FIXED_TYPE | UPF_LOW_LATENCY;
+-		s->p[i].port.iobase	= i;
+-		/*
+-		 * Use all ones as membase to make sure uart_configure_port() in
+-		 * serial_core.c does not abort for SPI/I2C devices where the
+-		 * membase address is not applicable.
+-		 */
+-		s->p[i].port.membase	= (void __iomem *)~0;
+-		s->p[i].port.iotype	= UPIO_PORT;
+ 		s->p[i].port.uartclk	= freq;
+-		s->p[i].port.rs485_config = sc16is7xx_config_rs485;
+-		s->p[i].port.rs485_supported = sc16is7xx_rs485_supported;
+-		s->p[i].port.ops	= &sc16is7xx_ops;
+-		s->p[i].old_mctrl	= 0;
+ 		s->p[i].regmap		= regmaps[i];
  
- 	/* Disable cache updates when writing to EFR registers */
- 	regcache_cache_bypass(one->regmap, true);
-@@ -598,7 +600,7 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
- 	/* Backup LCR and access special register set (DLL/DLH) */
- 	lcr = sc16is7xx_port_read(port, SC16IS7XX_LCR_REG);
- 	sc16is7xx_port_write(port, SC16IS7XX_LCR_REG,
--			     SC16IS7XX_LCR_CONF_MODE_A);
-+			     SC16IS7XX_LCR_REG_SET_SPECIAL);
+-		mutex_init(&s->p[i].lock);
+-
+-		ret = uart_get_rs485_mode(&s->p[i].port);
++		ret = sc16is7xx_setup_channel(&s->p[i], i, &port_registered[i]);
+ 		if (ret)
+ 			goto out_ports;
+-
+-		/* Enable access to general register set */
+-		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG, 0x00);
+-
+-		/* Disable all interrupts */
+-		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_IER_REG, 0);
+-		/* Disable TX/RX */
+-		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_EFCR_REG,
+-				     SC16IS7XX_EFCR_RXDISABLE_BIT |
+-				     SC16IS7XX_EFCR_TXDISABLE_BIT);
+-
+-		/* Initialize kthread work structs */
+-		kthread_init_work(&s->p[i].tx_work, sc16is7xx_tx_proc);
+-		kthread_init_work(&s->p[i].reg_work, sc16is7xx_reg_proc);
+-		kthread_init_delayed_work(&s->p[i].ms_work, sc16is7xx_ms_proc);
+-
+-		/* Register port */
+-		ret = uart_add_one_port(&sc16is7xx_uart, &s->p[i].port);
+-		if (ret)
+-			goto out_ports;
+-
+-		port_registered[i] = true;
+-
+-		sc16is7xx_regs_lock(&s->p[i].port, SC16IS7XX_LCR_REG_SET_ENHANCED);
+-		/* Enable write access to enhanced features */
+-		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_EFR_REG,
+-				     SC16IS7XX_EFR_ENABLE_BIT);
+-		sc16is7xx_regs_unlock(&s->p[i].port);
+-
+-		/* Go to suspend mode */
+-		sc16is7xx_power(&s->p[i].port, 0);
+ 	}
  
- 	/* Write the new divisor */
- 	regcache_cache_bypass(one->regmap, true);
-@@ -1650,7 +1652,7 @@ int sc16is7xx_probe(struct device *dev, const struct sc16is7xx_devtype *devtype,
- 
- 		/* Enable EFR */
- 		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_LCR_REG,
--				     SC16IS7XX_LCR_CONF_MODE_B);
-+				     SC16IS7XX_LCR_REG_SET_ENHANCED);
- 
- 		regcache_cache_bypass(regmaps[i], true);
- 
+ 	sc16is7xx_setup_irda_ports(s);
 -- 
 2.39.5
 
