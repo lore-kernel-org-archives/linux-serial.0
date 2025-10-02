@@ -1,114 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E155627AC3C;
-	Thu,  2 Oct 2025 05:24:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AABA23185E;
+	Thu,  2 Oct 2025 05:25:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759382685; cv=none; b=TXEfqDeRSdL7RWsXFScj9ItFaCNeSMgs3b3psV8EUmoUh1CzAsbySVlXVPHFVuKoD77gVxCbbOVzYVy6f1AfWGVqtlErMOnQ+EMk+JAeqJdikV2HUK0VAndTjUpGcS3MGfbuxExcBg8QiIcszQffLHW1p6IZXYgzB/P9INK+tPw=
+	t=1759382743; cv=none; b=ICVTnJ/l5XtDbPkvnu8GO/41e/1B8N5F+nwWPI7ZIbZNyfjMt+sRBvA7vJoYwqs7aYcwCBVq7VJGU6yiVItBazsAzfFHOHh22kjblQWOfADQVDZWJdNSLtf9CdritbGF72xPMzhqUdFS7mOvmGIqC3wd3ryxNFX4Bh/M2YrkvAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759382685; c=relaxed/simple;
-	bh=Lg6AYA/WY5SpJYR4iQOQWQ0BpdppzRj8aHtUyceEC1o=;
+	s=arc-20240116; t=1759382743; c=relaxed/simple;
+	bh=py7zf3DJFpF3arsBTXISGOJbdTRppb2z3gvxL02j5Ik=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WfAO1L9wZx/CCEt12zvdfGNu1R+eWDoiRRa6WFJ1HDugMrpxs+qYNCBraJnabZaYPduhAK6T/+H20tjCplY3QT7Ulh/ja3shTB/Uoe72JzuO2BXwIC61AHycKwh1P1IgKiIlS898Dck1yGaXL2zLnlnBAo1rKhXiWGZMsQBozWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=pfAbCO+G; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=mwYXtNdbNHXHVlM3vZv0MXKs7whquxSVbs6jsUa457DbNPQkAtUf9WjJEDgtO7JGBDE9RtltJgWR5lmyzJNbmPF0AHfV7ci8S3k1XGe8j17brt9tWHWRxkrNrV8P4O1dfGCpVqfBEbOJDMENCB75NLnTRwn/gn3f1UxwHdmyZO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=n6NJZ9eu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="pfAbCO+G"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 022EEC4CEF9;
-	Thu,  2 Oct 2025 05:24:43 +0000 (UTC)
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="n6NJZ9eu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230C2C4CEF4;
+	Thu,  2 Oct 2025 05:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1759382684;
-	bh=Lg6AYA/WY5SpJYR4iQOQWQ0BpdppzRj8aHtUyceEC1o=;
+	s=korg; t=1759382742;
+	bh=py7zf3DJFpF3arsBTXISGOJbdTRppb2z3gvxL02j5Ik=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pfAbCO+Gl8yfNAw1Md973H1LnIR6R9N9vdRuW5vlGn9B8LTwIvntjoYnWk4qPVevh
-	 V2ZoTViN081ulrUeCqhk/SrphaZZWIYcXOMGgrcUGpKVwUDPqA1CfejVV26VgvwSX1
-	 yTf9ZjXWUV8dr/2LKhf/+hehJbjWjUo7QUGB2lyQ=
-Date: Thu, 2 Oct 2025 07:24:38 +0200
+	b=n6NJZ9eukZwQvk4UG2Xt7xTvdbGXU/oS9RNFtwzRfa4vZacin5Cn9ln2I6pi3Jxfa
+	 wd5IpqUkDosyqCk0KM5jLSSCpwo1NjEt2x/4RIBiqMtQsdX6K39yBtO7unXab0mSwK
+	 t1TMyOOUkxdr8gf9crjpxoBd2F0GGWMXawx0dQqo=
+Date: Thu, 2 Oct 2025 07:25:37 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
-To: Hugo Villeneuve <hugo@hugovil.com>
-Cc: Jiri Slaby <jirislaby@kernel.org>, fvallee@eukrea.fr,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Subject: Re: [PATCH 12/15] serial: sc16is7xx: add missing space between macro
- args (checkpatch)
-Message-ID: <2025100201-snowiness-goggles-4b43@gregkh>
-References: <20250924153740.806444-1-hugo@hugovil.com>
- <20250924153740.806444-13-hugo@hugovil.com>
- <a6bb8046-1e71-4766-afa8-e9d303ba57b8@kernel.org>
- <20250930160828.546867810b4a17c36a5030c6@hugovil.com>
- <2025100132-usage-sandstone-8a9f@gregkh>
- <20251001092920.e6d5ffa046937fc850f1ab6a@hugovil.com>
+To: Florian Eckert <fe@dev.tdt.de>
+Cc: Jiri Slaby <jirislaby@kernel.org>, kumaravel.thiagarajan@microchip.com,
+	andriy.shevchenko@linux.intel.com, pnewman@connecttech.com,
+	angelogioacchino.delregno@collabora.com, peterz@infradead.org,
+	yujiaoliang@vivo.com, arnd@kernel.org, cang1@live.co.uk,
+	macro@orcam.me.uk, schnelle@linux.ibm.com,
+	Eckert.Florian@googlemail.com, linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Subject: Re: [PATCH v2] serial: 8250_pcilib: Replace deprecated PCI functions
+Message-ID: <2025100248-chunk-diaper-91e2@gregkh>
+References: <20250930072743.791580-1-fe@dev.tdt.de>
+ <f6fe95e5-0dd3-4ce0-b741-06cacf283e4c@kernel.org>
+ <e19fa21955115f4621b47b170c3a2193@dev.tdt.de>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20251001092920.e6d5ffa046937fc850f1ab6a@hugovil.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e19fa21955115f4621b47b170c3a2193@dev.tdt.de>
 
-On Wed, Oct 01, 2025 at 09:29:20AM -0400, Hugo Villeneuve wrote:
-> Hi Greg,
+On Wed, Oct 01, 2025 at 04:45:44PM +0200, Florian Eckert wrote:
 > 
-> On Wed, 1 Oct 2025 07:16:06 +0200
-> Greg KH <gregkh@linuxfoundation.org> wrote:
 > 
-> > On Tue, Sep 30, 2025 at 04:08:28PM -0400, Hugo Villeneuve wrote:
-> > > Hi Jiri,
+> On 2025-09-30 09:34, Jiri Slaby wrote:
+> > On 30. 09. 25, 9:27, Florian Eckert wrote:
+> > > When the '8250_exar' module is loaded into the kernel, a kernel trace
+> > > with 'WARN_ON(legacy_iomap_table[bar])' is dumped to the console,
+> > > because the old pci table mapping is still used in '8250_pcilib'.
 > > > 
-> > > On Mon, 29 Sep 2025 08:15:56 +0200
-> > > Jiri Slaby <jirislaby@kernel.org> wrote:
+> > > The old function have been deprecated in commit e354bb84a4c1 ("PCI:
+> > > Deprecate pcim_iomap_table(), pcim_iomap_regions_request_all()").
 > > > 
-> > > > On 24. 09. 25, 17:37, Hugo Villeneuve wrote:
-> > > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > > 
-> > > > > Fix the following checkpatch error:
-> > > > > 
-> > > > >      ERROR: space required after that ',' (ctx:VxV)
-> > > > >      +#define to_sc16is7xx_one(p,e)...
-> > > > > 
-> > > > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
-> > > > > ---
-> > > > >   drivers/tty/serial/sc16is7xx.c | 2 +-
-> > > > >   1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-> > > > > index a05be92f7e776..9d04d665ec9ab 100644
-> > > > > --- a/drivers/tty/serial/sc16is7xx.c
-> > > > > +++ b/drivers/tty/serial/sc16is7xx.c
-> > > > > @@ -365,7 +365,7 @@ static struct uart_driver sc16is7xx_uart = {
-> > > > >   	.nr		= SC16IS7XX_MAX_DEVS,
-> > > > >   };
-> > > > >   
-> > > > > -#define to_sc16is7xx_one(p,e)	((container_of((p), struct sc16is7xx_one, e)))
-> > > > > +#define to_sc16is7xx_one(p, e)	((container_of((p), struct sc16is7xx_one, e)))
-> > > > 
-> > > > Or perhaps make it type-safe and more obvious by switching it to an inline?
+> > > The remapping already takes or must take place in the driver that
+> > > calls
+> > > the function 'serial8250_pci_setup_port()'. The remapping should
+> > > only be
+> > > called once via 'pcim_iomap()'. Therefore the remapping moved to the
+> > > caller of 'serial8250_pci_setup_port()'.
 > > > 
-> > > Not easy to do, because this macro is also used with the second
-> > > argument "e" not always being used with the same member name. At the
-> > > same time, this is what makes this macro more complex than it should
-> > > be. I will convert it to an inline and simplify it by removing the
-> > > second argument (and of course adapt the code where the new, simpler,
-> > > inline function no longer works).
+> > > To replace the outdated/legacy iomap_table processing in
+> > > '8250_pcilib' the
+> > > function signature of 'serial8250_pci_setup_port()' has been
+> > > extended with
+> > > an already iomapped address value. So this can be used directly
+> > > without
+> > > io mapping again.
+> > > 
+> > > Signed-off-by: Florian Eckert <fe@dev.tdt.de>
+> > > ---
+> > > 
+> > > v2:
+> > > * The function 'pcim_iomap()' returns a NULL pointer in the event of
+> > > an
+> > >    error, so error handling has been adjusted.
 > > 
-> > Please don't use an inline fuction for container_of() as you will just
-> > need to change it later in the future when you really want to use
-> > container_of_const() instead :)
+> > LGTM now.
+> > 
+> > Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
 > 
-> Noted. I will simplify the macro and leave it as a macro then.
-> 
-> Would you suggest to also convert container_of to
-> container_of_const in this patch series?
+> Thanks for the review tag. Will this be included in linux next?
+> Or do I need to do something? I also think that this should be backportet
+> to the latest LTS kernel “6.12.*”. This is where I noticed the problem.
 
-For now, no, it's not needed as I do not think this structure is ever
-marked as const, is it?
-
-I have a long-term plan to move container_of() to be
-container_of_const(), but that's a kernel-wide thing, and not relevant
-here.  I was just trying to point out that when inlining container_of(),
-it can actually cause problems.
+The merge window is currently happening, I can't add any changes to my
+tree until after that closes in 1 1/2 weeks.  And if you need/want it
+backported to stable kernels, can you provide a "Fixes:" tag and a cc:
+stable tag as well?
 
 thanks,
 
