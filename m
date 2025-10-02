@@ -1,98 +1,94 @@
-Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 389621E5B9A;
-	Thu,  2 Oct 2025 14:58:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5239A21348;
+	Thu,  2 Oct 2025 15:43:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759417081; cv=none; b=cGEOhJRBmJxt9EsuA/puCPmYzj0b1Hw28fOnNJ6iWnhMXjfiyFrdN/O9dUJmDIGotWQswKdaV5LdHq0ymjazd/zsqDReVmgLeNMa9j2sP5gUX85p67G/B6DcecCXsjsyrux/wdwy6cQCzJR96c0b9kRo0mYCk2yqITcbps532UE=
+	t=1759419836; cv=none; b=eli+OvuHBNlrVjJNAIc8QAHL3eJ7JLmWWQSlIF9h/VS56bYHixlyqTGY/P91k4sheTOKU0UmdaLEjWqIq+pvxZHKUWB5g7fjFSivGTJ+3pPDNYQaiBVKcGZv3B9ANExn6K3+0cUTUcUqj9ZP2WVlPBvylKkHmEtZTOZNYg/UM0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759417081; c=relaxed/simple;
-	bh=GCQy5NT/ubzrUMsnsLWKJUqAzFWNFZxLFuUUWhKDNjM=;
-	h=From:To:Cc:Date:Message-Id:In-Reply-To:References:MIME-Version:
-	 Subject; b=rVlBhnmuJE/OwamuxTRXMcI8yBMU591JSZFCAufaJ2NStRom/+ynP5wb2ry5EZ7g4Sb6CPgbAMYr9alI6Eetrl+Lef8s71IJe7NQO2mLrvlXq0Dnaq5l9f9TZhTsM9r+WR5PacDkqLQC+T1bsOHl1gKboFsDHoL1k/pUeeDrSek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=BB8ip93G; arc=none smtp.client-ip=162.243.120.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
+	s=arc-20240116; t=1759419836; c=relaxed/simple;
+	bh=Ygig/gwXFfTw25IMNCToOkgFqzdwvG3H+SO9QZbFmBc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XKl9DQaW51WaCxyatVIvCtwYpnnQl/l8V8wXzOp0SW8tScCk752ctO+j58e9qpX5OCMrG7S/Hp08BKwSQgcIPcfu60gYQ9yqqgED9jrA5rpAbS9pCkQCs53ZbtCW209TlHp9c9ApAf+k6r89HvHFbM9mmmEmKgooObwNYfVOMF8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=jyR6lfly; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="BB8ip93G"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
-	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
-	:From:subject:date:message-id:reply-to;
-	bh=0t5o0gJzkUuCKY+o8R4Qgk/Wlxo2O4/jULe6c6ciClI=; b=BB8ip93Gn6p+aZWqbb+vftIfMW
-	XIJ1F6hSBWgsHTCIpXduS7nLwwlyBwG8gqzS5oy2GK330vp4QjpopsaIpk/H88M5V6q73yAStw9o6
-	iCsLWwR9OYGXhLCquTylJu2U1JjnZyrOYme6lR4uNzkhpDj2xhTbWrBqbFDw9E43fhdM=;
-Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:59004 helo=pettiford.lan)
-	by mail.hugovil.com with esmtpa (Exim 4.92)
-	(envelope-from <hugo@hugovil.com>)
-	id 1v4Kko-0005hy-D9; Thu, 02 Oct 2025 10:57:58 -0400
-From: Hugo Villeneuve <hugo@hugovil.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	fvallee@eukrea.fr
-Cc: linux-kernel@vger.kernel.org,
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="jyR6lfly"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60DEAC4CEF4;
+	Thu,  2 Oct 2025 15:43:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1759419835;
+	bh=Ygig/gwXFfTw25IMNCToOkgFqzdwvG3H+SO9QZbFmBc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=jyR6lflyFXF85n+nvxEyp/s4vpX8Ud1Qwm/CtGn2KmGAcj3vSDvLpW8HJOwJcxAGy
+	 tJN7KoCYFDacc7Ub/8m+Qs1bWEvF7HKdKIbTb6Y5aZat2BKQfnUPP1k1GjVJMq49kN
+	 yRUdezcYvHpNbhlbR9wMxXIgaZbnsExUFzVo04nw=
+Date: Thu, 2 Oct 2025 17:43:52 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Hugo Villeneuve <hugo@hugovil.com>
+Cc: jirislaby@kernel.org, fvallee@eukrea.fr, linux-kernel@vger.kernel.org,
 	linux-serial@vger.kernel.org,
-	hugo@hugovil.com,
-	Hugo Villeneuve <hvilleneuve@dimonoff.com>
-Date: Thu,  2 Oct 2025 10:57:38 -0400
-Message-Id: <20251002145738.3250272-16-hugo@hugovil.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20251002145738.3250272-1-hugo@hugovil.com>
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 01/15] serial: sc16is7xx: remove useless enable of
+ enhanced features
+Message-ID: <2025100219-neon-litter-24c0@gregkh>
 References: <20251002145738.3250272-1-hugo@hugovil.com>
+ <20251002145738.3250272-2-hugo@hugovil.com>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 70.80.174.168
-X-SA-Exim-Mail-From: hugo@hugovil.com
-X-Spam-Level: 
-X-Spam-Report: 
-	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
-Subject: [PATCH v2 15/15] serial: sc16is7xx: add comments for lock requirements
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20251002145738.3250272-2-hugo@hugovil.com>
 
-From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+On Thu, Oct 02, 2025 at 10:57:24AM -0400, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> 
+> Commit 43c51bb573aa ("sc16is7xx: make sure device is in suspend once
+> probed") permanently enabled access to the enhanced features in
+> sc16is7xx_probe(), and it is never disabled after that.
+> 
+> Therefore, remove useless re-enable of enhanced features in
+> sc16is7xx_set_baud().
+> 
+> Fixes: 43c51bb573aa ("sc16is7xx: make sure device is in suspend once probed")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> ---
+>  drivers/tty/serial/sc16is7xx.c | 7 -------
+>  1 file changed, 7 deletions(-)
+> 
+> diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+> index 1a2c4c14f6aac..c7435595dce13 100644
+> --- a/drivers/tty/serial/sc16is7xx.c
+> +++ b/drivers/tty/serial/sc16is7xx.c
+> @@ -588,13 +588,6 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+>  		div /= prescaler;
+>  	}
+>  
+> -	/* Enable enhanced features */
+> -	sc16is7xx_efr_lock(port);
+> -	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
+> -			      SC16IS7XX_EFR_ENABLE_BIT,
+> -			      SC16IS7XX_EFR_ENABLE_BIT);
+> -	sc16is7xx_efr_unlock(port);
+> -
+>  	/* If bit MCR_CLKSEL is set, the divide by 4 prescaler is activated. */
+>  	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
+>  			      SC16IS7XX_MCR_CLKSEL_BIT,
+> -- 
+> 2.39.5
+> 
+> 
 
-Indicate why lock needs to be asserted when accessing
-MSR register, as this is not immediately obvious when looking at this
-register in the device datasheet.
+Why is this needed for stable kernels?  It's useless, what is it
+harming?
 
-Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
----
- drivers/tty/serial/sc16is7xx.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+If so, please send it separately, not as a part of a larger series.
 
-diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
-index 4898b4235d0da..1fd64a47341d8 100644
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -499,10 +499,10 @@ EXPORT_SYMBOL_GPL(sc16is762_devtype);
- static bool sc16is7xx_regmap_volatile(struct device *dev, unsigned int reg)
- {
- 	switch (reg) {
--	case SC16IS7XX_RHR_REG:
--	case SC16IS7XX_IIR_REG:
--	case SC16IS7XX_LSR_REG:
--	case SC16IS7XX_MSR_REG:
-+	case SC16IS7XX_RHR_REG: /* Shared address space with THR & DLL */
-+	case SC16IS7XX_IIR_REG: /* Shared address space with FCR & EFR */
-+	case SC16IS7XX_LSR_REG: /* Shared address space with XON2 */
-+	case SC16IS7XX_MSR_REG: /* Shared address space with TCR & XOFF1 */
- 	case SC16IS7XX_SPR_REG: /* Shared address space with TLR & XOFF2 */
- 	case SC16IS7XX_TXLVL_REG:
- 	case SC16IS7XX_RXLVL_REG:
-@@ -711,6 +711,7 @@ static void sc16is7xx_update_mlines(struct sc16is7xx_one *one)
- 	unsigned long flags;
- 	unsigned int status, changed;
- 
-+	/* Lock required as MSR address is shared with TCR and XOFF1. */
- 	lockdep_assert_held_once(&one->lock);
- 
- 	status = sc16is7xx_get_hwmctrl(port);
--- 
-2.39.5
+thanks,
 
+greg k-h
