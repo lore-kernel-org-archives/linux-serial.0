@@ -1,63 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.hugovil.com (mail.hugovil.com [162.243.120.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE28C260592;
-	Sat,  4 Oct 2025 23:42:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30723283FE5;
+	Mon,  6 Oct 2025 14:20:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.243.120.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759621346; cv=none; b=X7kvdEEbMO9/X20PipE9eiq6dMqjFJpEog5W9Tk47ZkL5aBU0N4TQ9i7C/duYvnqYar1bL3cEdboWZQmHtc/o+4OZC5saCWTJVxDKL0dqXyw2cUiGLtw5ovEhjWXV3A4ZKrzJ6jSm89fmyHWX9kJ7DTjOtGaqo/aND5Fixx7OFk=
+	t=1759760444; cv=none; b=ZPoAUr3oXltYr/cNElEX/pd4qJl8zVBJGrlXzrUDFmbvE//c6+OhwTCBtD9bl4TiAvJ04qSjHJM7cAfqlmQxiCdcRkvdl2B5yfEnBJKf5U40NmvN3aDohLyZ+H90VH4DRMMAxy3otr0vzjNAQ+78Y1D73N4QpakzZhfHZvWB34Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759621346; c=relaxed/simple;
-	bh=DH9uYWANC1aFuO2P7AT84Yx81kKtZMAHQs6Jnfi9K18=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=lLVqieQk4gwdDUJXz3FZuNThv+bQ4PPKhpVzN0WHRsgILnUv1LreE9Kuhx0VWuTqDr6P9zD7Il6ttz9a1MIMaEbnau5VMnreCLbr7FGOPcOVK1y2Tz0vUrY8rTmBG9TbXPn+LgthJZKwj0LbNaZuSqWaJ/7eEwDbE72q6Ju9Eo8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jEALVdhd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759760444; c=relaxed/simple;
+	bh=QIMmn3T1KZwC2RE6BCze3N2hdjHyG2Jh9yg8h/UTYNY=;
+	h=From:To:Cc:Date:Message-Id:MIME-Version:Subject; b=RPtL8K4HYYt+S6E8dkJY4zTZpraGqP2EF1uSQ17no7Ht/6z7E0W0yFpk9JXhFTE+P1KynhCuq+LuxjA0LtFtKEuZOUpDdJ9DGqOkOrs6hXOWGv9MTW4HhNtQ0q/FKZhtKP2JEs700C/SrOZN+Mq5i7jjRioOhaQ24ecU74tyx7A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com; spf=pass smtp.mailfrom=hugovil.com; dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b=K0U5KjLr; arc=none smtp.client-ip=162.243.120.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=hugovil.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hugovil.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jEALVdhd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11E5C4CEF9;
-	Sat,  4 Oct 2025 23:42:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759621345;
-	bh=DH9uYWANC1aFuO2P7AT84Yx81kKtZMAHQs6Jnfi9K18=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=jEALVdhdLkN68D8eQWbM0ofEzBWP0MZjvs4rpvYGRJJwbagI7gayRGX0y0HYj8OQS
-	 wG9K0qZdtuyh2mqgWOC5WlWe7OBuUZQIe5yVugA54yLVf7fBrhsCTmJxpHVpx6slCU
-	 p1fOA2IBstlOoDlemPETjryn8ChuvVafI1nnHhSFrR0nrkI7ddOoQsLk1AsBDskym8
-	 aS4xByRyqQc87tNF+kXaWUX8WuX+yyadGh6+ZHfz76LiBczd8/g1sHNWNJG/cTlta3
-	 mtgIMbbliFSTNZGi1s8xYOPk0uJqQix3ZUVy3+juj1ApsLF6eF9NnyvONh0kVaKqtP
-	 IAOYtBbilwCig==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id ADBF639D0C1B;
-	Sat,  4 Oct 2025 23:42:17 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY / Serial driver changes for 6.18-rc1
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <aOEpKp9lSCgoCiId@kroah.com>
-References: <aOEpKp9lSCgoCiId@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <aOEpKp9lSCgoCiId@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.18-rc1
-X-PR-Tracked-Commit-Id: f4abab350840d58d69814c6993736f03ac27df83
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 5d2f4730bb7550d64c87785f1035d0e641dbc979
-Message-Id: <175962133645.472872.15020364018026948476.pr-tracker-bot@kernel.org>
-Date: Sat, 04 Oct 2025 23:42:16 +0000
-To: Greg KH <gregkh@linuxfoundation.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Jiri Slaby <jslaby@suse.cz>, Stephen Rothwell <sfr@canb.auug.org.au>, Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+	dkim=pass (1024-bit key) header.d=hugovil.com header.i=@hugovil.com header.b="K0U5KjLr"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+	; s=x; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Cc:To
+	:From:subject:date:message-id:reply-to;
+	bh=TnVJr+G/negDbYh0moPGGK3iRnZJniEtGgGzi4aX6LM=; b=K0U5KjLrODA2ObH+Tcb0KQI4oV
+	azRNBcN10YUqpgP3lfhloObhkjWNiYX0rPJJLR43/foAoQha7OjWtflX3Ia5uy3yZaLtnEsfCmMdu
+	+T051hypB4Et+RYwmxOs7yRkLKsE43nLF0HVMoWIrnGWSSo6W6Qf48cyjWXUW2+IYCoM=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:42564 helo=pettiford.lan)
+	by mail.hugovil.com with esmtpa (Exim 4.92)
+	(envelope-from <hugo@hugovil.com>)
+	id 1v5m4n-0007jX-Uq; Mon, 06 Oct 2025 10:20:35 -0400
+From: Hugo Villeneuve <hugo@hugovil.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Florian Vallee <fvallee@eukrea.fr>
+Cc: hugo@hugovil.com,
+	Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+	stable@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org
+Date: Mon,  6 Oct 2025 10:20:02 -0400
+Message-Id: <20251006142002.177475-1-hugo@hugovil.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+X-Spam-Level: 
+X-Spam-Report: 
+	* -1.0 ALL_TRUSTED Passed through trusted hosts only via SMTP
+Subject: [PATCH] serial: sc16is7xx: remove useless enable of enhanced features
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 
-The pull request you sent on Sat, 4 Oct 2025 16:03:22 +0200:
+From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-6.18-rc1
+Commit 43c51bb573aa ("sc16is7xx: make sure device is in suspend once
+probed") permanently enabled access to the enhanced features in
+sc16is7xx_probe(), and it is never disabled after that.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/5d2f4730bb7550d64c87785f1035d0e641dbc979
+Therefore, remove re-enable of enhanced features in
+sc16is7xx_set_baud(). This eliminates a potential useless read + write
+cycle each time the baud rate is reconfigured.
 
-Thank you!
+Fixes: 43c51bb573aa ("sc16is7xx: make sure device is in suspend once probed")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+---
+This patch was originally part of this series:
+https://lore.kernel.org/linux-serial/20251002145738.3250272-1-hugo@hugovil.com/raw
+and it is now separate as suggested by Greg to facilitate stable backporting.
+---
+ drivers/tty/serial/sc16is7xx.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 1a2c4c14f6aac..c7435595dce13 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -588,13 +588,6 @@ static int sc16is7xx_set_baud(struct uart_port *port, int baud)
+ 		div /= prescaler;
+ 	}
+ 
+-	/* Enable enhanced features */
+-	sc16is7xx_efr_lock(port);
+-	sc16is7xx_port_update(port, SC16IS7XX_EFR_REG,
+-			      SC16IS7XX_EFR_ENABLE_BIT,
+-			      SC16IS7XX_EFR_ENABLE_BIT);
+-	sc16is7xx_efr_unlock(port);
+-
+ 	/* If bit MCR_CLKSEL is set, the divide by 4 prescaler is activated. */
+ 	sc16is7xx_port_update(port, SC16IS7XX_MCR_REG,
+ 			      SC16IS7XX_MCR_CLKSEL_BIT,
+
+base-commit: fd94619c43360eb44d28bd3ef326a4f85c600a07
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.39.5
+
