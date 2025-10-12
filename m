@@ -1,117 +1,123 @@
-Received: from mail.loongson.cn (mail.loongson.cn [114.242.206.163])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BDC9519CC27
-	for <linux-serial@vger.kernel.org>; Sat, 11 Oct 2025 07:17:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=114.242.206.163
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60C422EFD95;
+	Sun, 12 Oct 2025 18:12:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.154.21.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760167043; cv=none; b=PdXJ2CRQjNmRRc3sHOse/Y8gKCFR9Kk/H6PWYe6zkO+r6Ydirhi7/RaiJWlqD8SgezYGuti3iRBmu2fxmDO3F6D0gAzKEakj3+BD1qBssK2z/9sguT4x6wuVs7ccImC5X8I6oUreLucBa2Kb1fzkCfVz0d3+EYljBNpNeR8NlIE=
+	t=1760292750; cv=none; b=axEHPFx2nyzqwx0COyWrtJv45lxx4pkYYz6gi6850Q2CLbW+rI3JLWsDy2MflZx27Tu+TplTzcapfngT3mwR6t4CjueXVS49b7L1/feCpO4d+/1DyJn4Z/wmZxhhQweKuMNpHqHaToBVQmJWn0WVCgs4DIWFLoUcEAdJMMJmlAU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760167043; c=relaxed/simple;
-	bh=Bqcfq/5hvvyukGL3kkXiQQnws5gX06F+lhFQbamJsBA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KwUNr3SB4eLP0ohfoF2J1MqMnAzyuCYTolgKD2RW9zsqKbDy74WBX7FMqEi/t7xJqZ9P+VhGcHIANDQVxu6XqU1uIp6nZ3cosR7vPk23qpwpvNYZTL2G1H00PcIKR9GLeEDRO8kle2Adf9oYCq7zBZKiUvhLVL3Fy8uPTji5wek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn; spf=pass smtp.mailfrom=loongson.cn; arc=none smtp.client-ip=114.242.206.163
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=loongson.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=loongson.cn
-Received: from loongson.cn (unknown [223.64.68.198])
-	by gateway (Coremail) with SMTP id _____8Dxb_B4BOpoWfkUAA--.45328S3;
-	Sat, 11 Oct 2025 15:17:12 +0800 (CST)
-Received: from localhost.localdomain (unknown [223.64.68.198])
-	by front1 (Coremail) with SMTP id qMiowJDxaMBwBOpo1ebZAA--.1011S5;
-	Sat, 11 Oct 2025 15:17:12 +0800 (CST)
-From: Binbin Zhou <zhoubinbin@loongson.cn>
-To: Binbin Zhou <zhoubb.aaron@gmail.com>,
-	Huacai Chen <chenhuacai@loongson.cn>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>,
-	Haowei Zheng <zhenghaowei@loongson.cn>
-Cc: Huacai Chen <chenhuacai@kernel.org>,
-	Xuerui Wang <kernel@xen0n.name>,
-	loongarch@lists.linux.dev,
-	ilpo.jarvinen@linux.intel.com,
-	linux-serial@vger.kernel.org,
-	Binbin Zhou <zhoubinbin@loongson.cn>
-Subject: [PATCH v6 3/3] LoongArch: dts: Add uart new compatible string
-Date: Sat, 11 Oct 2025 15:16:49 +0800
-Message-ID: <8e0c08459fa5bddefd898648fea28a9f2fde701a.1760166651.git.zhoubinbin@loongson.cn>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <cover.1760166651.git.zhoubinbin@loongson.cn>
-References: <cover.1760166651.git.zhoubinbin@loongson.cn>
+	s=arc-20240116; t=1760292750; c=relaxed/simple;
+	bh=uPMJA6y1kb6LmPS8fuc3+PnIZOvHfdZfmIsgWf92J2o=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:CC:Content-Type; b=uoUI1ujjzDXjGZu+Wjjd+wofbE9bevfsdk1SknXYInh4uUrZKOuKVryINHhZky84Am0tH+OhAri4iLCLVz+rkDn0LlgDSkwLUwh8OZHKNKs//uDebvkTBIqTf+uNVY/64TXJUAS4hzoBQ7H30kJaEMASdzygAVlE4SfrLuJ9VZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=omp.ru; spf=pass smtp.mailfrom=omp.ru; arc=none smtp.client-ip=90.154.21.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=omp.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=omp.ru
+Received: from [192.168.2.104] (213.87.133.64) by msexch01.omp.ru
+ (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1258.12; Sun, 12 Oct
+ 2025 20:56:59 +0300
+Message-ID: <3eb40848-3bec-42ca-845b-c66d4b53cedc@omp.ru>
+Date: Sun, 12 Oct 2025 20:56:58 +0300
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qMiowJDxaMBwBOpo1ebZAA--.1011S5
-X-CM-SenderInfo: p2kr3uplqex0o6or00hjvr0hdfq/1tbiAgEMCGjp8Y8BCgAAsz
-X-Coremail-Antispam: 1Uk129KBj93XoW7urW5KFWkZw4kKFy8ArW7ZFc_yoW8tr45p3
-	sI939rKr4Igr1fCryDJFWUJr4kZF98GFnFga13CFyUGrsIqa4jvr1rJF9IqF1rXw4Fq3y0
-	grnYgrWa9F4UZabCm3ZEXasCq-sJn29KB7ZKAUJUUUU5529EdanIXcx71UUUUU7KY7ZEXa
-	sCq-sGcSsGvfJ3Ic02F40EFcxC0VAKzVAqx4xG6I80ebIjqfuFe4nvWSU5nxnvy29KBjDU
-	0xBIdaVrnRJUUUkYb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2
-	IYs7xG6rWj6s0DM7CIcVAFz4kK6r4j6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48v
-	e4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI
-	0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v2
-	6F4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc804VCY07AIYIkI8VC2zVCFFI0UMc
-	02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUtVWrXwAv7VC2z280aVAF
-	wI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxAIw28IcxkI7V
-	AKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCj
-	r7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6x
-	IIjxv20xvE14v26r4j6ryUMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAI
-	w20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x
-	0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IUbCzuJUUUUU==
+User-Agent: Mozilla Thunderbird
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: [PATCH v2] serial: 8250_mtk: correct max baud rate in set_termios()
+ method
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
+	<jirislaby@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <linux-arm-kernel@lists.infradead.org>,
+	<linux-mediatek@lists.infradead.org>, <lvc-project@linuxtesting.org>, Fedor
+ Pchelkin <pchelkin@ispras.ru>
+Content-Language: en-US
+Organization: Open Mobile Platform
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 6.1.1, Database issued on: 10/12/2025 17:43:35
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 19
+X-KSE-AntiSpam-Info: Lua profiles 197008 [Oct 12 2025]
+X-KSE-AntiSpam-Info: Version: 6.1.1.11
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 71 0.3.71
+ ee78c3da48e828d2b9b16d6d0b31328b8b240a3c
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 213.87.133.64 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info:
+	omp.ru:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: {Tracking_ip_hunter}
+X-KSE-AntiSpam-Info: FromAlignment: s
+X-KSE-AntiSpam-Info: ApMailHostAddress: 213.87.133.64
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 19
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 10/12/2025 17:46:00
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 10/12/2025 3:34:00 PM
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 
-Add loongson,ls2k*-uart compatible string on uarts.
+Mediatek MT798x datasheets (that I was able to get my hands on) claim
+the maximum supported baud rate to be 3 Mbps, while commit 81bb549fdf14
+("serial: 8250_mtk: support big baud rate.") claimed it to be 4 Mbps --
+however, it then passed undivided port->uartclk to uart_get_baud_rate()
+for the maximum baud rate, while the datasheets do mention up to 52 MHz
+as the baud clock's frequency.  This means that an integer overflow will
+happen (when multiplying the baud variable by 256) if a baud rate higher
+than 16777215 bps is passed via termios->c_ospeed. Pass the correct max
+baud rate of 3 Mbps or port->uartclk, whichever happens to be less...
 
-Co-developed-by: Haowei Zheng <zhenghaowei@loongson.cn>
-Signed-off-by: Haowei Zheng <zhenghaowei@loongson.cn>
-Signed-off-by: Binbin Zhou <zhoubinbin@loongson.cn>
+Found by Linux Verification Center (linuxtesting.org) with the Svace static
+analysis tool.
+
+Fixes: 81bb549fdf14 ("serial: 8250_mtk: support big baud rate.")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+
 ---
- arch/loongarch/boot/dts/loongson-2k0500.dtsi | 2 +-
- arch/loongarch/boot/dts/loongson-2k1000.dtsi | 2 +-
- arch/loongarch/boot/dts/loongson-2k2000.dtsi | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+The patch is against the master branch of Linus Torvalds' linux.git repo
+(I'm unable to use the other repos on git.kernel.org and I have to update
+Linus' repo from GitHub).
 
-diff --git a/arch/loongarch/boot/dts/loongson-2k0500.dtsi b/arch/loongarch/boot/dts/loongson-2k0500.dtsi
-index 588ebc3bded4..357de4ca7555 100644
---- a/arch/loongarch/boot/dts/loongson-2k0500.dtsi
-+++ b/arch/loongarch/boot/dts/loongson-2k0500.dtsi
-@@ -380,7 +380,7 @@ tsensor: thermal-sensor@1fe11500 {
- 		};
- 
- 		uart0: serial@1ff40800 {
--			compatible = "ns16550a";
-+			compatible = "loongson,ls2k0500-uart", "ns16550a";
- 			reg = <0x0 0x1ff40800 0x0 0x10>;
- 			clock-frequency = <100000000>;
- 			interrupt-parent = <&eiointc>;
-diff --git a/arch/loongarch/boot/dts/loongson-2k1000.dtsi b/arch/loongarch/boot/dts/loongson-2k1000.dtsi
-index d8e01e2534dd..60ab425f793f 100644
---- a/arch/loongarch/boot/dts/loongson-2k1000.dtsi
-+++ b/arch/loongarch/boot/dts/loongson-2k1000.dtsi
-@@ -297,7 +297,7 @@ dma-controller@1fe00c40 {
- 		};
- 
- 		uart0: serial@1fe20000 {
--			compatible = "ns16550a";
-+			compatible = "loongson,ls2k1000-uart", "loongson,ls2k0500-uart", "ns16550a";
- 			reg = <0x0 0x1fe20000 0x0 0x10>;
- 			clock-frequency = <125000000>;
- 			interrupt-parent = <&liointc0>;
-diff --git a/arch/loongarch/boot/dts/loongson-2k2000.dtsi b/arch/loongarch/boot/dts/loongson-2k2000.dtsi
-index 00cc485b753b..6c77b86ee06c 100644
---- a/arch/loongarch/boot/dts/loongson-2k2000.dtsi
-+++ b/arch/loongarch/boot/dts/loongson-2k2000.dtsi
-@@ -250,7 +250,7 @@ i2c@1fe00130 {
- 		};
- 
- 		uart0: serial@1fe001e0 {
--			compatible = "ns16550a";
-+			compatible = "loongson,ls2k2000-uart", "loongson,ls2k1500-uart", "ns16550a";
- 			reg = <0x0 0x1fe001e0 0x0 0x10>;
- 			clock-frequency = <100000000>;
- 			interrupt-parent = <&liointc>;
--- 
-2.47.3
+Changes in version 2:
+- changed the approach to the problem (and hence rewrote the description);
+- removed "the" article from the subject for brevity.
 
+ drivers/tty/serial/8250/8250_mtk.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux/drivers/tty/serial/8250/8250_mtk.c
+===================================================================
+--- linux.orig/drivers/tty/serial/8250/8250_mtk.c
++++ linux/drivers/tty/serial/8250/8250_mtk.c
+@@ -358,7 +358,7 @@ mtk8250_set_termios(struct uart_port *po
+ 	 */
+ 	baud = uart_get_baud_rate(port, termios, old,
+ 				  port->uartclk / 16 / UART_DIV_MAX,
+-				  port->uartclk);
++				  min(3000000U, port->uartclk));
+ 
+ 	if (baud < 115200) {
+ 		serial_port_out(port, MTK_UART_HIGHS, 0x0);
