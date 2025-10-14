@@ -1,25 +1,37 @@
-Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C43F2877F1;
-	Tue, 14 Oct 2025 16:50:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.154.21.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84236296BA7;
+	Tue, 14 Oct 2025 17:57:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760460631; cv=none; b=lOK6igMgRIcfqkvntGjOjxMKjYPMPY1HdkECkER/YBzFg5UIbpIoCmQQi+kttMl+6oQhpSfMnh8oYFICa7xSUVamaTWyYm+ugtsrmlvD6/LYW0Zf+5qH2zgFB7GQOQVRc1OzTo4+i2NimOFeH5pOgzvZioyGtSOQtX55yBzzzmk=
+	t=1760464668; cv=none; b=anrFmagFqCdmtKEux/Sed90GFh0A/qyFeZADSh2+WD/VlHyBJ/Q3Ezqv3z/P++MPJLCx3rkSRAPr34EO5s/i/cqEhTpEFD6/K75iXWoQ9DWhPfM4VLi/R0+pQkQMJFBV+IpSPCzwh38FM3mtwJJ5cTfntjXdXdckz+uJtCYhQpI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760460631; c=relaxed/simple;
-	bh=lj4+opJ2lf52x3VatQsYL5KWHmN3jms4mtg4SxdF1pM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Kp7gZW8fwwovc5E6B88mepQRhjtlYhMU/t+l76zUYjcFZPNJKvH/MGrR7+ON/ENDsKOMYoqNM6KdMQWocYayXm5s03Zcx7DfwkYgix0T2S8bJFxCMElouGT/L/H+5/EpyhqYWZjf8KxDTzg54c2z72JcRQjUaejHBDuLOAMiHsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=omp.ru; spf=pass smtp.mailfrom=omp.ru; arc=none smtp.client-ip=90.154.21.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=omp.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=omp.ru
-Received: from [192.168.2.104] (213.87.128.219) by msexch01.omp.ru
- (10.188.4.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1258.12; Tue, 14 Oct
- 2025 19:50:16 +0300
-Message-ID: <25e098b2-d786-437c-ad92-eccb90b148f7@omp.ru>
-Date: Tue, 14 Oct 2025 19:50:16 +0300
+	s=arc-20240116; t=1760464668; c=relaxed/simple;
+	bh=+MCW3pWeUmZPyGxMrX0RxPKRd723eQqL7FGWAFlCJcY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BMloozitSiGsv+AnOCcGR9UNBmpcMyzN/wzzi1nSKx5kgOdj7bFqIzCnEoz7aaPYRxczVOdlNhYKmOMIDGM4N7qM+MhvTIlhtTrvQFB60iP7bOSJhBTM8I2njex9W28pnug/V4wEoSAm0FjFSptnPDd0+j8Bhu01Y1N0umvljvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=xU12w+3h; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="xU12w+3h"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=r2+wIsDTT/YrPhAA/dkQ7vm5iMhdp0goW9on/CiFr/g=; b=xU12w+3hNb9ltRQ40yzAiQ8eEX
+	eLwUXtuCe25tCXZsYxXQTs+wkOHgDCKEcULtHzYWGIvnZesaKEsFuXaZrLofohWUYKsGPhrFqV9Z0
+	370bdaiGaI2xWJuJRLXFIOO+Nf3bY728T0JZOGqGLelCLpSOUg+YKO9ojPcADR84Ogh5J4QqY8yRh
+	otLPq8KSHppiyeMt6/JUFFLz9LvwttJ+1ata50ti6Io3BRevw4GldC8lrbjBwLPBr7ZRY1La3BAwx
+	Do0QiyD9dLqIyMbfchLI5eGzjVYYgwn764pH5x6e0iNt+YM905C7sM8dwnHv93J4iuLrzBGdTB9ni
+	EYjoIj7A==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1v8jHN-0000000H7sL-3awZ;
+	Tue, 14 Oct 2025 17:57:45 +0000
+Message-ID: <d6cd375c-dad6-4047-9574-bac7dfc24315@infradead.org>
+Date: Tue, 14 Oct 2025 10:57:45 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
@@ -27,87 +39,71 @@ List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] serial: 8250_mtk: correct max baud rate in
- set_termios() method
-To: Fedor Pchelkin <pchelkin@ispras.ru>
-CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jiri Slaby
-	<jirislaby@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	<linux-serial@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-mediatek@lists.infradead.org>,
-	<lvc-project@linuxtesting.org>, Eddie Huang <eddie.huang@mediatek.com>, Long
- Cheng <long.cheng@mediatek.com>
-References: <3eb40848-3bec-42ca-845b-c66d4b53cedc@omp.ru>
- <20251014130050-5cdb9e464558d609872d38cc-pchelkin@ispras>
+Subject: Re: [PATCH] Documentation: sysrq: Remove contradicting sentence on
+ extra /proc/sysrq-trigger characters
+To: Jonathan Corbet <corbet@lwn.net>, Bagas Sanjaya <bagasdotme@gmail.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Linux Documentation <linux-doc@vger.kernel.org>,
+ Linux Serial <linux-serial@vger.kernel.org>
+Cc: Cengiz Can <cengiz@kernel.wtf>, Tomas Mudrunka
+ <tomas.mudrunka@gmail.com>, Jiri Slaby <jirislaby@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ =?UTF-8?Q?Anselm_Sch=C3=BCler?= <mail@anselmschueler.com>
+References: <20251008112409.33622-1-bagasdotme@gmail.com>
+ <87wm4xbkim.fsf@trenco.lwn.net>
 Content-Language: en-US
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-In-Reply-To: <20251014130050-5cdb9e464558d609872d38cc-pchelkin@ispras>
-Content-Type: text/plain; charset="UTF-8"
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <87wm4xbkim.fsf@trenco.lwn.net>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
- (10.188.4.12)
-X-KSE-ServerInfo: msexch01.omp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 6.1.1, Database issued on: 10/14/2025 16:35:15
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 197067 [Oct 14 2025]
-X-KSE-AntiSpam-Info: Version: 6.1.1.11
-X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
-X-KSE-AntiSpam-Info: LuaCore: 71 0.3.71
- ee78c3da48e828d2b9b16d6d0b31328b8b240a3c
-X-KSE-AntiSpam-Info: {rep_avail}
-X-KSE-AntiSpam-Info: {Tracking_arrow_text}
-X-KSE-AntiSpam-Info: {Tracking_uf_ne_domains}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info:
-	omp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;213.87.128.219:7.1.2;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: {Tracking_References_header}
-X-KSE-AntiSpam-Info: FromAlignment: s
-X-KSE-AntiSpam-Info: ApMailHostAddress: 213.87.128.219
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
- smtp.mailfrom=omp.ru;dkim=none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Heuristic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 10/14/2025 16:39:00
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 10/14/2025 3:29:00 PM
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 
-On 10/14/25 1:07 PM, Fedor Pchelkin wrote:
 
->> Mediatek MT798x datasheets (that I was able to get my hands on) claim
 
-   Thank you, Fedor, BTW! :-)
-
->> the maximum supported baud rate to be 3 Mbps, while commit 81bb549fdf14
->> ("serial: 8250_mtk: support big baud rate.") claimed it to be 4 Mbps --
+On 10/14/25 7:55 AM, Jonathan Corbet wrote:
+> Bagas Sanjaya <bagasdotme@gmail.com> writes:
 > 
-> At least MT7987A datasheet claims to support up to 4 Mbps, so I think 4 Mbps
-> should be chosen for the upper limit.
+>> /proc/sysrq-trigger documentation states that only first character is
+>> processed and the rest is ignored, yet it is not recommended to write
+>> any extra characters to it. The latter statement is contradictive as
+>> these characters are also ignored as implied by preceding sentence.
+>>
+>> Remove it.
+>>
+>> Link: https://lore.kernel.org/lkml/7ca05672-dc20-413f-a923-f77ce0a9d307@anselmschueler.com/
+>> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+>> ---
+>>  Documentation/admin-guide/sysrq.rst | 4 +---
+>>  1 file changed, 1 insertion(+), 3 deletions(-)
+>>
+>> diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
+>> index 9c7aa817adc72d..63ff415ce85d66 100644
+>> --- a/Documentation/admin-guide/sysrq.rst
+>> +++ b/Documentation/admin-guide/sysrq.rst
+>> @@ -77,9 +77,7 @@ On other
+>>  On all
+>>  	Write a single character to /proc/sysrq-trigger.
+>>  	Only the first character is processed, the rest of the string is
+>> -	ignored. However, it is not recommended to write any extra characters
+>> -	as the behavior is undefined and might change in the future versions.
+>> -	E.g.::
+>> +	ignored. E.g.::
+> 
+> I'm not sure this is right - there is a warning here that additional
+> characters may acquire a meaning in the future, so one should not
+> develop the habit of writing them now.  After all these years, I think
+> the chances of fundamental sysrq changes are pretty small, but I still
+> don't see why we would take the warning out?
 
-   FTR, this SoC doesn't seem to be supported by the mainline kernel (looking
-at Linus' repo, at least).
-   I think, we should "parametrize" the max (and maybe even min?) baud rate
-adding more specific compatibles to mtk8250_of_match[] (and probably setting
-this parameter to 4 Mbps for the existing entry)...
+but the following paragraph says:
 
-> + added the authors of 81bb549fdf14 ("serial: 8250_mtk: support big baud rate.")
-> to Cc.
+	Alternatively, write multiple characters prepended by underscore.
+	This way, all characters will be processed. E.g.::
 
-  Just noticed that the author of this "wonderful" patch didn't even sign off
-on it. "Excellent" work! :-/
+		echo _reisub > /proc/sysrq-trigger
 
-> --
-> Fedor
+so it is confuzing.
 
-MBR, Sergey
+
+-- 
+~Randy
 
