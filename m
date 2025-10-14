@@ -1,122 +1,91 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93D40313274
-	for <linux-serial@vger.kernel.org>; Tue, 14 Oct 2025 12:19:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9283A2773F7;
+	Tue, 14 Oct 2025 14:55:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.79.88.28
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760444387; cv=none; b=J6SdC22bdb3Kjt5rgSQo8lMIrKYCg/C2cZgkIrz2u/2lou96KLTyUaKnV+k1e7aku3O1ce5Ag82Gv4PjSXXP8UoREJGYG02TySskvVHsYEiz/APtZr8eRvAdokdMHWe1PxHxHB9kcaf1m4yPT2A2UljFzJvzJXJXauWO+vtat+o=
+	t=1760453733; cv=none; b=A6ztHeq8Uesnc/Ea7HPd8NvqMaNwXeyORxFljyAvAvua7XKmP83M/OZXP0V76ZGVqVJ9VrvjiFtkqkL9Y371qrRNsAjMPFW9Q1mNG0mmJoQK0kBEqM4ugk09VRTwfFfybAqluESv8xuSIreVBcm/6udXHfX3oR67CQaot445JeI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760444387; c=relaxed/simple;
-	bh=9Cgq3/vxKjPa4FSJjaPLjZD4QjTbX4U3nZUHUx9kdvo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DCcIpfG3hSCYTrPoypOqmc68qLvL0Lr+z54Qzd7wxefYQ72e1vsJgKHX+Orpi+UVGt8tUrbPljagh5jWZ+WwvNeDiD2JI+bBchV54Qr3ZO9AywaZ1Uer/uDFaUx9vpZ7cP4SkvQc03s1rpIm/pAipvmTLtZAulglUxQfybVjc0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=Dq4CZnV/; arc=none smtp.client-ip=209.85.214.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	s=arc-20240116; t=1760453733; c=relaxed/simple;
+	bh=oJjRXMYAtYfstJ1Qe7kiRTx+N9SnMeZBjZHi92bWT2w=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=s3p5RR2RomgdnJJD72iRcsiqYxWaxvPy0Vbhg8KTn+1fGDKeHwGbyBpV+lqKYcgsvKOr4alkHmPDsrNi5IdYQMHLaqJZDOhs7wV68hdG87G2UtLsharb9iTdh57lrVvYfPom7n19MrzFU3INsocqbma7hSNJ3/DjU5bHhgrxdJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net; spf=pass smtp.mailfrom=lwn.net; dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b=U0wFU7Gc; arc=none smtp.client-ip=45.79.88.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lwn.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="Dq4CZnV/"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-27ee41e0798so84676845ad.1
-        for <linux-serial@vger.kernel.org>; Tue, 14 Oct 2025 05:19:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1760444385; x=1761049185; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dyztOWHi8asqtnrtL9aOW3mSM7WuQU1xzUJYBCn4JPE=;
-        b=Dq4CZnV//tza7E3FP5gglEEnLiYQEl0PS367PJDMB2Yk2ZUOnyaNuwG/ivneuv+Fk9
-         e8pYY0k0ZnJ0Q82eRec78UYGXUX2DzQcp8rqt2jsFtZlA++LGn/TBU+gZVzYtbcKDE7X
-         r8sJorh/rKuxZz7YeLO9XHY8xD6QcX2jZcrrUoSleap3qSYOrOlhUZ34Vj901AwFSDz6
-         6ruJRsLfNxiXhnzTskfWwoQQhp/ZwGgPrZWad0NShIxIsB5GC1e8ohQSO57b4t91888q
-         E0XDlEWcyicWjDZVfDda4QZczUCzzZ3zmvcSdAV4WU3wGFhf/LDcW/jQQLrZA4YkrDZW
-         lpkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760444385; x=1761049185;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to:subject
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=dyztOWHi8asqtnrtL9aOW3mSM7WuQU1xzUJYBCn4JPE=;
-        b=EcmzKa27lT7M05uiFqbS9D0TXSu2qzL090gsGP4mZLW7QHX7SUJshN11WRPAz+//l9
-         xXMhdzSnt+U52RxWDkKcuipdN4gskIYKS3NbJ260iu1kB+m76j1BD8/ZlS5DaNFZ1018
-         5D1P8mNRnZeMilo0LzFomGs+PWxGEM6A0btV3B1TY1jVdyVmHrks33884qhjKM5KoCmX
-         TetrlLppdyz+755mWRoYsiG1UJjyOEd16u0rmP4zRRblouBOPNkrCYi0pRW63Pi2Cxde
-         /Jk3H4lNduWbGFsDlO84GwJa/eu+EshrxxLvz+TC04S3RaEx+rIHdyBdsW+mv7px+4DM
-         dL0Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXKt9Nrtp1UxFQC6ROhCLQ3nUm98JUUj3JkLJIeX/lqQUx8ok9QUxnKIL4UHJUN2PuJmFaXIUTNMhGEgzA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz7lP8v5zpUO4/a6XP/RTf5d/MtQ0zGoBk1Lq3NoKbie5BdBMqU
-	++Ra6iQ2KzsItF6TVw6rFVPlP6kxYM3vblR8gPSR4N0Wqig8ITE8ArKckyax4pQFVbs=
-X-Gm-Gg: ASbGncvn3Cp/LNz7vA/1ecUY0eAwGR+SPKQbibNXHi/U5YS2dEku2R9bqdSftS0J0Uv
-	RxKtx28bsDCix+QiwF/qDzMdWO4WCs/P/FCdSPk2buEvWnX0yiN4NphlpiDkxyCjG6r9jgGj/og
-	76P+JyD8pUDnyQkqKCpQouI84ItD9e9blTuSyxSdHYmh42p8GpCCYjVps3zaRntgB6lahxPY/aB
-	E3pTFuUwbzzRcOLgtAVYs0oY6aBxdRz3MS5Fv65avm32Ef7LXIZQI1zIMohZ1l7Mk5EoOexTIqw
-	Y5Vew7q6Qnua+Zwfexl07tV7d43htjo9qwjKLeLC9tSbfyfapo/IYmppVl3xIN7nSRk6VRitWUB
-	Sj2NPuSmrElPSPL2sfhu+GqCRSov0KAgm1ERQwIeADpePqImi6bq4CPwgpDjVfRQvxeFRH6cdlN
-	i4Gi28hsk=
-X-Google-Smtp-Source: AGHT+IF3sLetSxQ1m94sJzX4H+YdIKP4pPPwBOsljLuRxv8OwwGf8uQEto0kkirs4QMlkzqClPfJIA==
-X-Received: by 2002:a17:903:3c6c:b0:269:9719:fffd with SMTP id d9443c01a7336-290273567e5mr321957135ad.1.1760444384799;
-        Tue, 14 Oct 2025 05:19:44 -0700 (PDT)
-Received: from [100.82.93.103] ([63.216.146.178])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-29034e44ef9sm161761065ad.52.2025.10.14.05.19.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 14 Oct 2025 05:19:44 -0700 (PDT)
-Message-ID: <94d19d6d-5bb5-4156-8499-0be3d227f478@bytedance.com>
-Date: Tue, 14 Oct 2025 20:19:40 +0800
+	dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b="U0wFU7Gc"
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 8807540B1E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+	t=1760453730; bh=2NhCZaS0JRHpCMdnPaecLqGEPTG+OSiP6xNnzI2UmlA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=U0wFU7Gc5aXlrvnGS2+/0yPHl5lknOISny431eW8j9/31oHjg0V8CqS0veDMbj3Pq
+	 zNXqBUbFkT4E2ZHSz905Ed12lmOfNnqTovYrnFJ9IT4ZAgC638UPzc3+NPT/uyd/e2
+	 PaqT9D/NKZ+ivU/6gQqcfpSTI8am+lGw03CPbe2aGYUO5vShSnGBRlz38uG06FGaoX
+	 PXeiObeHWk5lWK6xyT9xiSodkGzAKghCBhHKeicqVVzd04W8tGlWyyw8+i4YNA1X+A
+	 EM2uuZFuEp72eJPB3hOmOZybWELdSZ2zeyFS72/qteF4Em6A2ViztDKvVdUQ1wBiRG
+	 OsWb0/j+s9rYQ==
+Received: from localhost (unknown [IPv6:2601:280:4600:2da9::1fe])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by ms.lwn.net (Postfix) with ESMTPSA id 8807540B1E;
+	Tue, 14 Oct 2025 14:55:30 +0000 (UTC)
+From: Jonathan Corbet <corbet@lwn.net>
+To: Bagas Sanjaya <bagasdotme@gmail.com>, Linux Kernel Mailing List
+ <linux-kernel@vger.kernel.org>, Linux Documentation
+ <linux-doc@vger.kernel.org>, Linux Serial <linux-serial@vger.kernel.org>
+Cc: Cengiz Can <cengiz@kernel.wtf>, Bagas Sanjaya <bagasdotme@gmail.com>,
+ Tomas Mudrunka <tomas.mudrunka@gmail.com>, Jiri Slaby
+ <jirislaby@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Anselm =?utf-8?Q?Sch=C3=BCler?= <mail@anselmschueler.com>
+Subject: Re: [PATCH] Documentation: sysrq: Remove contradicting sentence on
+ extra /proc/sysrq-trigger characters
+In-Reply-To: <20251008112409.33622-1-bagasdotme@gmail.com>
+References: <20251008112409.33622-1-bagasdotme@gmail.com>
+Date: Tue, 14 Oct 2025 08:55:29 -0600
+Message-ID: <87wm4xbkim.fsf@trenco.lwn.net>
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] serial: 8250: always disable IRQ during THRE test
-To: gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
- songmuchun@bytedance.com
-References: <20251014114727.1186-1-zhangpeng.00@bytedance.com>
-From: Peng Zhang <zhangpeng.00@bytedance.com>
-In-Reply-To: <20251014114727.1186-1-zhangpeng.00@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
+Bagas Sanjaya <bagasdotme@gmail.com> writes:
 
-
-在 2025/10/14 19:47, Peng Zhang 写道:
-> commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
-> has been set up") moved IRQ setup before the THRE test, so the interrupt
-> handler can run during the test and race with its IIR reads. This can
-> produce wrong THRE test results and cause spurious registration of the
-> serial8250_backup_timeout timer. Unconditionally disable the IRQ for the
-> short duration of the test and re-enable it afterwards to avoid the race.
-> 
-> Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq has been set up")
-> Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
+> /proc/sysrq-trigger documentation states that only first character is
+> processed and the rest is ignored, yet it is not recommended to write
+> any extra characters to it. The latter statement is contradictive as
+> these characters are also ignored as implied by preceding sentence.
+>
+> Remove it.
+>
+> Link: https://lore.kernel.org/lkml/7ca05672-dc20-413f-a923-f77ce0a9d307@anselmschueler.com/
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 > ---
->   drivers/tty/serial/8250/8250_port.c | 6 ++----
->   1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-> index 719faf92aa8a..addeef7a0d59 100644
-> --- a/drivers/tty/serial/8250/8250_port.c
-> +++ b/drivers/tty/serial/8250/8250_port.c
-> @@ -2147,8 +2147,7 @@ static void serial8250_THRE_test(struct uart_port *port)
->   	if (up->port.flags & UPF_NO_THRE_TEST)
->   		return;
->   
-> -	if (port->irqflags & IRQF_SHARED)
-> -		disable_irq_nosync(port->irq);
-> +	disable_irq_nosync(port->irq);
-disable_irq_nosync() may need to be changed to disable_irq() to prevent interrupts
-that are currently being handled.>   
->   	/*
->   	 * Test for UARTs that do not reassert THRE when the transmitter is idle and the interrupt
-> @@ -2170,8 +2169,7 @@ static void serial8250_THRE_test(struct uart_port *port)
->   		serial_port_out(port, UART_IER, 0);
->   	}
->   
-> -	if (port->irqflags & IRQF_SHARED)
-> -		enable_irq(port->irq);
-> +	enable_irq(port->irq);
->   
->   	/*
->   	 * If the interrupt is not reasserted, or we otherwise don't trust the iir, setup a timer to
+>  Documentation/admin-guide/sysrq.rst | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
+>
+> diff --git a/Documentation/admin-guide/sysrq.rst b/Documentation/admin-guide/sysrq.rst
+> index 9c7aa817adc72d..63ff415ce85d66 100644
+> --- a/Documentation/admin-guide/sysrq.rst
+> +++ b/Documentation/admin-guide/sysrq.rst
+> @@ -77,9 +77,7 @@ On other
+>  On all
+>  	Write a single character to /proc/sysrq-trigger.
+>  	Only the first character is processed, the rest of the string is
+> -	ignored. However, it is not recommended to write any extra characters
+> -	as the behavior is undefined and might change in the future versions.
+> -	E.g.::
+> +	ignored. E.g.::
 
+I'm not sure this is right - there is a warning here that additional
+characters may acquire a meaning in the future, so one should not
+develop the habit of writing them now.  After all these years, I think
+the chances of fundamental sysrq changes are pretty small, but I still
+don't see why we would take the warning out?
+
+jon
