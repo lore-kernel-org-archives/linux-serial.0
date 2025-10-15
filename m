@@ -1,134 +1,148 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B30C5239E7D
-	for <linux-serial@vger.kernel.org>; Wed, 15 Oct 2025 09:39:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0010432F771;
+	Wed, 15 Oct 2025 15:49:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760521167; cv=none; b=PyH+P5OlgyE+h261pPGOfWrfRjyuHRPU0pb+2GWk4lBrBEgAMbeRY53FoNuJBrrHUq6xq1BDeiEvPzXCoEVqpb6GsonCbyZwIN4Ixv/DPt5B/5UcBLSOLPRxiLd5OGwMX0KpNE7kDo/+FUpGqAdHpatidXAn9JF6f2d2xna0cTw=
+	t=1760543379; cv=none; b=bLOcYMJwRrrz90uAH8XTYcIYfUYrcI7WN8tIHJ3MIoVu/GjT1EB9i/XHKfYlWuInN49xKBBr8x4fQSTtUAZSMmJCjEuhqJWVzmK8l/p6qWXwU0Be5hEGve3uiNNNIkSkDDCDWF68Ia1d7r4fii24zJjIdqGB+ovIb9fWE95htTM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760521167; c=relaxed/simple;
-	bh=u1eJKOWwZghNRxJv0zHXChCsSqbn7vM9VucZ50DOiNI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AogwfCXmGIZxMrJ1bj4OOzI/+b51ZnN1iahqTwwi7t742Oxrc1L1MB2NPcKBryroolL/beeFpIpO8uardTWMxrZK1ZQqXuszTHa2wfs49rEmIu3zg9KF704es6sfYMv/9dmkuSPDFwQjzGKiW4mV3Ik/zduvUaXgXm0BV003qzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vq3Eic35; arc=none smtp.client-ip=209.85.210.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1760543379; c=relaxed/simple;
+	bh=SvJQkrxK8S2FzNYqFRInIPoqJAGTOO1/f98SdCFBCtE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=J/6RZif0+BHyE+MTmB6seGK3Ix5t0pb9BbK8ziSDeQGJyVuECa6KF65VhDwiQL2T6Ykk6tDfIiOvzaAPL7XkJ7TH/doG8j0yK7FWRuIPkKSYz2O1sHEPh1u06yQPu7dGsJu0+tUZwNjhokCHB5MpOCAYXyM0+f4oGQUqIzHvez4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ttyfpz0d; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vq3Eic35"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-7930132f59aso8466064b3a.0
-        for <linux-serial@vger.kernel.org>; Wed, 15 Oct 2025 02:39:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1760521163; x=1761125963; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=u1eJKOWwZghNRxJv0zHXChCsSqbn7vM9VucZ50DOiNI=;
-        b=Vq3Eic35swbvt2ENzbXRVyv1LJm3HT1Q6CIPfG6OhGknsJqgFtyB/Nm0AJjW9+2ol7
-         1yg9WGpzjeNIyl0VnFs/Qs9eg+GOB5UCWGQeXshJgu5GHrPg/79lO2hdqRC+QOczPtc4
-         SMxxBq2KroDP+DEBeaLJDMwcbv1WaGz0HvptQrQz6jF7WyHO1xOf6hpa6EVzIwo8VPca
-         8CfJpfM0QtgLAh1cKAaH6HefVDzW/SqZw68Vcc8bBtmD64BIOMmwDMRv9MPZHIhOomhQ
-         s1mkc3v0qUiVLcN4H4PuxkCpN9xDw1VsyattjVd1FjG40LR68Ln6nFua6dXuyx2gz4rL
-         nVDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760521163; x=1761125963;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=u1eJKOWwZghNRxJv0zHXChCsSqbn7vM9VucZ50DOiNI=;
-        b=GHDFqtOZp760d58m+my6CUxwtyVrRbfKySDoh0gmheCZbJsB1JW+u7eEhlpDS9Gi2b
-         iqawwTVDy+Oz6TsmS3oyt9dz55H8m5lP63nNUK2LcVppYqYm5JwfIXNxTqH0Q8u7ltsJ
-         H2DND48sxc/GxVT5ddbeEVw4LrYcPPHvxIrWkIJKecg/YvbOBnvYhFt7tu+WnfLqH8/c
-         Tmlu2zfXDDERB5S02+AnR0QCJw1SYiuPOQLvqcFzdbNaFV0wiZpI4VXlg9up5YhHJVSJ
-         /3YGwOm4lRdppdtSOg190R0u5Q1M6pF979KDnvBwqes8x7ud6AdgkUSoVKbg+uBB7jS6
-         n6fA==
-X-Forwarded-Encrypted: i=1; AJvYcCUBt9a9aY8wMzF1OafPUrcd+x38cvRVVWZwHM5Q/Ma/YliOCiTs+2knBc9lbDnaS5+M2sCREDXSbc6WlLg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyIl6M3wBntUiGvdzkA68yM0eNSCsgim7ZYh5puYtXrKST3ocQ7
-	/Xdh1PACnbibLM/C0wancgj2C8VNko0imAxyd9PPHSFWrwQ3Q/L1pdcv
-X-Gm-Gg: ASbGncsEkNTDfZcMn8ti/IyXTkjU+7vqbMAYkquEND1sXccK+P85CSiEg9+3jWXGNer
-	8IMsqVGw17+gDRHwI/XC9R3+0QlPg6w//ocV3LjxHcSZ0CYWFMW/Xu8svKd7YK45xwtEAaQ4xdB
-	f28/im6Bz4qsKHYp+B3liK2ajrxLPIbVYDIeTDsP6jRe09bEGxZO0SDJbjg8zBZq6ouHxVSvQkS
-	ldJAwHlrcwXcOpS9Il4ItfGxTB+zylMZofo0EheNLlblhP6QKGesHuG3nQgy7kZzvrELWMWp6Ks
-	FBOFsrLpCGOWKkrrrTL1oZ2USXdy+1ax6TZzj12OVuUDJmSCPlraHeJgrK2tclKAGBLTwBre24l
-	+pYDEnJ1jO9qda/+LYMzQLuhiSuoGfYuWer0MWWXkwZ8dUHdLyK9G+bA=
-X-Google-Smtp-Source: AGHT+IElgVwNPxXRA/tImitB//ntptdYiVe7d9RWZ80dKHs5si0bLCs+yLDawiIS/352iKLuIDMl8A==
-X-Received: by 2002:a05:6a00:4fd4:b0:78a:f784:e8cf with SMTP id d2e1a72fcca58-79387829619mr30080478b3a.27.1760521163332;
-        Wed, 15 Oct 2025 02:39:23 -0700 (PDT)
-Received: from archie.me ([103.124.138.155])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7992b060962sm18269938b3a.1.2025.10.15.02.39.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Oct 2025 02:39:22 -0700 (PDT)
-Received: by archie.me (Postfix, from userid 1000)
-	id 6907D452891F; Wed, 15 Oct 2025 16:39:20 +0700 (WIB)
-Date: Wed, 15 Oct 2025 16:39:20 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Jiri Slaby <jirislaby@kernel.org>, Randy Dunlap <rdunlap@infradead.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Linux Documentation <linux-doc@vger.kernel.org>,
-	Linux Serial <linux-serial@vger.kernel.org>
-Cc: Cengiz Can <cengiz@kernel.wtf>,
-	Tomas Mudrunka <tomas.mudrunka@gmail.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Anselm =?utf-8?Q?Sch=C3=BCler?= <mail@anselmschueler.com>
-Subject: Re: [PATCH] Documentation: sysrq: Remove contradicting sentence on
- extra /proc/sysrq-trigger characters
-Message-ID: <aO9ryPohDdkoFykR@archie.me>
-References: <20251008112409.33622-1-bagasdotme@gmail.com>
- <87wm4xbkim.fsf@trenco.lwn.net>
- <d6cd375c-dad6-4047-9574-bac7dfc24315@infradead.org>
- <aO7mnXCajeIdUYON@archie.me>
- <0cc09ea7-d4f7-4e1c-9cd0-bf310faba217@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ttyfpz0d"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39411C4CEF8;
+	Wed, 15 Oct 2025 15:49:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760543378;
+	bh=SvJQkrxK8S2FzNYqFRInIPoqJAGTOO1/f98SdCFBCtE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ttyfpz0d22MFc/WgqeuQ8VFQn6uGy9JK9dsvqaD3esJ6yrCwGhnD6IIa3LdZu22jE
+	 td5ZqWtRx+nBq30Q5ihELYPpQCO03WatZ+NIQ1Qc/52pOY5ZBMLmMoHrSrRo6Kgoq9
+	 2k82RaLJoAaQSCjdD90QX9GAZfCc12No1us3ylGTCTN3wUupOjY42X2G5PhplZbJ8H
+	 2fmWV860hNDNJjyXp83gNbDV2KcpKmOwSSvtyIA27EuLmxj+hu1KQllN2NcL7pkjDk
+	 Mtpf1ciOvbkJWhVAXrsONBa0hFyn9DYe/1IEybzb6MojkaaedNJZARErJHvS0ykjDs
+	 y4Daadk2JiIlQ==
+Message-ID: <0eb4c357-aafd-42bd-a4fd-687a91831bf4@kernel.org>
+Date: Wed, 15 Oct 2025 17:49:34 +0200
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="fSCHwCyZlDgbl+8D"
-Content-Disposition: inline
-In-Reply-To: <0cc09ea7-d4f7-4e1c-9cd0-bf310faba217@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] serial: 8250: always disable IRQ during THRE test
+To: Peng Zhang <zhangpeng.00@bytedance.com>, gregkh@linuxfoundation.org
+Cc: linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ songmuchun@bytedance.com, =?UTF-8?Q?Ilpo_J=C3=A4rvinen?=
+ <ilpo.jarvinen@linux.intel.com>, buytenh@arista.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+References: <20251014114727.1186-1-zhangpeng.00@bytedance.com>
+ <94d19d6d-5bb5-4156-8499-0be3d227f478@bytedance.com>
+Content-Language: en-US
+From: Jiri Slaby <jirislaby@kernel.org>
+Autocrypt: addr=jirislaby@kernel.org; keydata=
+ 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
+In-Reply-To: <94d19d6d-5bb5-4156-8499-0be3d227f478@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+On 14. 10. 25, 14:19, Peng Zhang wrote:
+> 
+> 
+> 在 2025/10/14 19:47, Peng Zhang 写道:
+>> commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
+>> has been set up") moved IRQ setup before the THRE test, so the interrupt
+>> handler can run during the test and race with its IIR reads. This can
+>> produce wrong THRE test results and cause spurious registration of the
+>> serial8250_backup_timeout timer. Unconditionally disable the IRQ for the
+>> short duration of the test and re-enable it afterwards to avoid the race.
+>>
+>> Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq 
+>> has been set up")
+>> Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
+>> ---
+>>   drivers/tty/serial/8250/8250_port.c | 6 ++----
+>>   1 file changed, 2 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/ 
+>> serial/8250/8250_port.c
+>> index 719faf92aa8a..addeef7a0d59 100644
+>> --- a/drivers/tty/serial/8250/8250_port.c
+>> +++ b/drivers/tty/serial/8250/8250_port.c
+>> @@ -2147,8 +2147,7 @@ static void serial8250_THRE_test(struct 
+>> uart_port *port)
+>>       if (up->port.flags & UPF_NO_THRE_TEST)
+>>           return;
+>> -    if (port->irqflags & IRQF_SHARED)
+>> -        disable_irq_nosync(port->irq);
+>> +    disable_irq_nosync(port->irq);
+> disable_irq_nosync() may need to be changed to disable_irq() to prevent 
+> interrupts that are currently being handled.
+
+Make sense to me. Care to Cc the people from 039d4926379b next time, so 
+that they can comment?
+
+>>       /*
+>>        * Test for UARTs that do not reassert THRE when the transmitter 
+>> is idle and the interrupt
+>> @@ -2170,8 +2169,7 @@ static void serial8250_THRE_test(struct 
+>> uart_port *port)
+>>           serial_port_out(port, UART_IER, 0);
+>>       }
+>> -    if (port->irqflags & IRQF_SHARED)
+>> -        enable_irq(port->irq);
+>> +    enable_irq(port->irq);
+>>       /*
+>>        * If the interrupt is not reasserted, or we otherwise don't 
+>> trust the iir, setup a timer to
+> 
 
 
---fSCHwCyZlDgbl+8D
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Oct 15, 2025 at 08:18:44AM +0200, Jiri Slaby wrote:
-> On 15. 10. 25, 2:11, Bagas Sanjaya wrote:
-> > I guess the whole "On all" description can be rewritten like:
-> >=20
-> > Write a single character to /proc/sysrq-trigger, e.g.::
-> >=20
-> > <snipped>...
-> >=20
-> > If a string (multiple characters) is written instead, only the first ch=
-aracter
-> > is processed unless the string is prepended by an underscore, like::
-> >=20
-> > <snipped>...
->=20
-> Some kind of, yes. So Either:
-> * you write no underscore and a character -- the rest is ignored and you
-> should not write more than one.
-> * you prepend underscore and write more of them -- all are processed.
->=20
-
-OK, thanks!
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---fSCHwCyZlDgbl+8D
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCaO9ryAAKCRD2uYlJVVFO
-o9OUAP9UtfDuga5xwT18A5agR7OavUEpIPgMB3t54ZaS3LQLdAD9FOa3EizTUaQP
-UG9Pgb7JUNguv5lAowSSyRLyW2sECQk=
-=+4Vu
------END PGP SIGNATURE-----
-
---fSCHwCyZlDgbl+8D--
+-- 
+js
+suse labs
