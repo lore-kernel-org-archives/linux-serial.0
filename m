@@ -1,128 +1,150 @@
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx-relay28-hz2.antispameurope.com (mx-relay28-hz2.antispameurope.com [94.100.136.228])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B36343217
-	for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 10:47:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760611632; cv=none; b=lsc6wsv2RtJUM3NvXzlnjCRIuC2x+uOmK2OHfojWVc5T3NLykNaWG7XpT5nM52bkC/inv6lEBwkTMdWD7C7KyZIhmMXXFM3/OM3ni7xVQGhrbkaCpmuRXZbPnkzAivegP8HUQvnq3sdoNJEyBrkGz+WQc5j9XGHlptkJtAfzmq4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760611632; c=relaxed/simple;
-	bh=U4Vw9TFefxHy667IjfemK0KK0KGVnSeJFdgB3++3kP8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LbWLEWXpDe6kyRzSneNWcjzEy2vGXdbIZQkb6kG4VUGjFmvAwXRP5joI3lQVgkFy9vYs4onHIuy4mirgGYbqntVc1Xtq50/NZV7YgNJl04qY42GdlhD32ID4igsrWL/b6ivHJDt5RBGD0vQwXQnIaRB99JuoIeZfDzJSh+LAjA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gL9GascR; arc=none smtp.client-ip=209.85.215.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A18663009F5
+	for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 11:39:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=94.100.136.228
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1760614747; cv=pass; b=pIXiGfOBIBLc0Fyuauyms7PgZIJPtDc7+bM6uONiY4UC37+Azm/cso/eAECXs9bEkYcSGVG6tYp4S37vdCNPs50LTwW7Cyi9KntQK5lIkNfC+S78dntIRW4fA3tNbeaHqVDgFr5v50LhPjWP3/eJsKfCO9i6nc6KzoEmfiBrgm8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1760614747; c=relaxed/simple;
+	bh=GlmFA1e3xgMj4OhgcxyrgU5ao2+BLBIMEKfNxeDhUDE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=WMZIiN9HmNQEtzpjglVhXOyunihatszqrOz195LK94qjarTr8IIPild8Q4dTuUS8Q/IAbkwfpiUwSdIPcbBdju5wNbNg/nzZp1dLhOkhCK2a019ZyC9Yjt+RRIZJe9AIiN/RTo8oE6WaZyJ+VTf2O/wL90TvILjjGRs+rKUrsho=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com; spf=pass smtp.mailfrom=ew.tq-group.com; dkim=pass (2048-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b=KCQw4DfV; arc=pass smtp.client-ip=94.100.136.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ew.tq-group.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ew.tq-group.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gL9GascR"
-Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-b60971c17acso458126a12.3
-        for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 03:47:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1760611630; x=1761216430; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=U4Vw9TFefxHy667IjfemK0KK0KGVnSeJFdgB3++3kP8=;
-        b=gL9GascRemtrbu/pBAvJ9Hy8Tm0TW1APBuRhTUv3keyrzLCsdkavLp8x5FTg4rgYpZ
-         ohaDmNHJNLmWs7gI3HQBJ8UinogKM/qCxMt6kQ6bmEslqhdje+2W94qWZ26AUBvPV7sA
-         qsO7M7o1sQz8k3NcQLXivIYC+3wyrIZoU/2B4UnBQge214J6QioT+lmgNjvnhdd9o3rB
-         nKbv9TrnfkJxUJtm/oO/aH70YIq0mIfAYSmegnVMFTwyQ+9d18DAotLvIfp0vEOEkxn/
-         fITZdLa+taQs8vLutThX2arM6FPOQ+zF3f3RtQR3Tsio7kY6dhWct6YcrqA0BKlE+XSw
-         +/SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760611630; x=1761216430;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U4Vw9TFefxHy667IjfemK0KK0KGVnSeJFdgB3++3kP8=;
-        b=lT/v2mNN8NSMA1DHeVG6iMCfdknJRbzM9pGejkNxeBFhFZu4jtqGby+0SDu0JVSy00
-         TDlfLT7TpDQppZSzEyfDTvQCnZKw2KXLIPriS9lHbVkL1uLsO0n1neYd04jJKmWA0oyF
-         Y7qCd7jBP4HttGVSTh/E2h5/4i+pr//UjcgMVLaZir1fugxTZvwiCd4OCDDLgnf6s3Ek
-         CPSMdQOYyJzCaRctdbhEiJ47S2JE1YC47J04ESjySOGA2cgy+WRKvcc0ZLuctxYXDdid
-         yxpFA+t1ltK+ueZ+1UE/kqmrwUNcTW6B+cm6LRHbcfrATJ7OY3GOkUcRUVwTJnj0CEkg
-         5UKQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVuUqByDcp1STT+m79tBabVCJ+fzATWsVjBjv8/BnwBL80XK3bstr3gK/gNcEMpfP7pHa2/A1s1GKFNzTg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzC4I9yhvE+nSvbnob87ObZSdHxV0vCTaxtJr1l2HTPvQu3KGZi
-	3NIzlAy9TEfywaMdVRlNfp1T4BSWFd9s3Vd+J2frrh73LQ3G6effo+Rn
-X-Gm-Gg: ASbGncta4ncDopmlUgtr1BAsZkZjins8GbOAb0zYyezcRVGdzAjFsaqTj0YgEopqqiL
-	kOixDURYLNDthOpxxdAHHl/LjUd3KbRnrWpNsJzB73TZo7b4SizhNz1v+9MZSwC2WT35fOhKF/a
-	VNVnp9YhcdDAKwnKJ6pdZTxodS2YCPvSjgzsk8oXYEPBVC0Ny4hhHGG7BWBWWjFMtzsO+4oYM2h
-	yTmUM/bwqkJWLmE803unbRM2+r9e0ZyeIwT8M0XR0t3/BuHA+7I1E7HUNRa83sQycjbUbtDRHvh
-	Cfr/EZB4pmuYeytM2S050W26yL0yGQmhMqm9vkZpi5AFIiTxRVM/1xJYrlhwU+lha7EX4yfAXGS
-	iachkHc1u/agRSHO4fviqy/m/ZpyAftV+7v5W1ZZKjgKYplmCoA3N6inE5GfUDdMgNTyiSo0VgX
-	MP+MU=
-X-Google-Smtp-Source: AGHT+IHTuRp5je6WAU5xPxz34jRwwCQlRmcYtd63dQHcWlBJO1BdF4M1kQCtuddlLGvoLVhgrUMy2g==
-X-Received: by 2002:a17:903:ac3:b0:272:dee1:c133 with SMTP id d9443c01a7336-2902723facfmr344914025ad.22.1760611629900;
-        Thu, 16 Oct 2025 03:47:09 -0700 (PDT)
-Received: from archie.me ([103.124.138.155])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2909934fde5sm26007355ad.41.2025.10.16.03.47.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Oct 2025 03:47:08 -0700 (PDT)
-Received: by archie.me (Postfix, from userid 1000)
-	id 9286F40995B9; Thu, 16 Oct 2025 17:47:04 +0700 (WIB)
-Date: Thu, 16 Oct 2025 17:47:03 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Tomas Mudrunka <tomas.mudrunka@gmail.com>, corbet@lwn.net
-Cc: cengiz@kernel.wtf, gregkh@linuxfoundation.org, jirislaby@kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org, mail@anselmschueler.com
-Subject: Re: [PATCH] Documentation: sysrq: Remove contradicting sentence on
- extra /proc/sysrq-trigger characters
-Message-ID: <aPDNJ3f1H_65infk@archie.me>
-References: <87wm4xbkim.fsf@trenco.lwn.net>
- <20251016101758.1441349-1-tomas.mudrunka@gmail.com>
+	dkim=pass (2048-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b="KCQw4DfV"
+ARC-Authentication-Results: i=1; mx-gate28-hz2.hornetsecurity.com 1; spf=pass
+ reason=mailfrom (ip=94.100.132.6, headerfrom=ew.tq-group.com)
+ smtp.mailfrom=ew.tq-group.com
+ smtp.helo=hmail-p-smtp01-out04-hz1.hornetsecurity.com; dmarc=pass
+ header.from=ew.tq-group.com orig.disposition=pass
+ARC-Message-Signature: a=rsa-sha256;
+ bh=CFRIIs060aUTE/XtgbE3U9aNP00cbQnhfyqtNtGSsHY=; c=relaxed/relaxed;
+ d=hornetsecurity.com; h=from:to:date:subject:mime-version:; i=1; s=hse1;
+ t=1760614688;
+ b=Ra4NX6mEdL6Kaug0mnercr1vK+MXtcf6qWdFpMOtX8bwD5xEICrrLKpvDM/MMJkXZEZzS9aV
+ Ir9JMqPxxeHamF4lJTvr1oVpZDh4pcErobvIfVAqmrVCCydTU5TlOXRRC1tBiiH7Q39GbcNVKfv
+ /CxIWwzegnKQVz8UulA+BpffR94MIj0kn1qjaLJYHQn/9uWU5aaU02muV/9i6ZFNnwXxvjrx/z7
+ p/esB5BQAk8B7vPBgIfFrRWjW81mulWYJVJvn5jqOwyi94PUDZVyOpHDm2YUy6x8U1dDJh8chIf
+ 0Bozn7Hdq5m9yA6tebpUXAcMhiEtFXkyjKLC/9pL+rnQA==
+ARC-Seal: a=rsa-sha256; cv=none; d=hornetsecurity.com; i=1; s=hse1;
+ t=1760614688;
+ b=klgVNlu016bGXSjMjvn3siqDONwZPPs3Oi1XFnZ6UFmBjsXLkqZpnsiZCnV7jLqoO7aGL5NI
+ I8Y5FtxwowYaZwvrAURZMyVh7lzK6gzA72CZ4cjtUu4KNrnzbqXix58z/yKqF99g0g2Dyrn/bgn
+ ntrPGuIOX50k/RJb6MmBuO2rPUZhJVbL/eCmI6JZDpkYZxlLtfwsGzhZIrZ+oU/HjaaJqdWMFtQ
+ mM/Roy7JFGcPIynGbL06TwSNfeW4EH1b5eSp52Dz2VbCvnXgbDJH+rU/MEa8+5Bz6db0tindGPH
+ YSes0cJdMsfv8CqumsKhIKl42YJdGG5QfyCPMjPteg5hw==
+Received: from he-nlb01-hz1.hornetsecurity.com ([94.100.132.6]) by mx-relay28-hz2.antispameurope.com;
+ Thu, 16 Oct 2025 13:38:08 +0200
+Received: from schifferm-ubuntu.tq-net.de (host-82-135-125-110.customer.m-online.net [82.135.125.110])
+	(Authenticated sender: matthias.schiffer@ew.tq-group.com)
+	by hmail-p-smtp01-out04-hz1.hornetsecurity.com (Postfix) with ESMTPSA id 3F3EC220BA0;
+	Thu, 16 Oct 2025 13:37:50 +0200 (CEST)
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jiri Slaby <jirislaby@kernel.org>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Fabio Estevam <festevam@gmail.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+	linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	imx@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux@ew.tq-group.com,
+	Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH] serial: imx: allow CRTSCTS with RTS/CTS GPIOs
+Date: Thu, 16 Oct 2025 13:37:30 +0200
+Message-ID: <20251016113730.245341-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="fYTqeHXCD8CdoU8f"
-Content-Disposition: inline
-In-Reply-To: <20251016101758.1441349-1-tomas.mudrunka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-cloud-security-sender:matthias.schiffer@ew.tq-group.com
+X-cloud-security-recipient:linux-serial@vger.kernel.org
+X-cloud-security-crypt: load encryption module
+X-cloud-security-Mailarchiv: E-Mail archived for: matthias.schiffer@ew.tq-group.com
+X-cloud-security-Mailarchivtype:outbound
+X-cloud-security-Virusscan:CLEAN
+X-cloud-security-disclaimer: This E-Mail was scanned by E-Mailservice on mx-relay28-hz2.antispameurope.com with 4cnQtQ6zX8z1QNSK
+X-cloud-security-connect: he-nlb01-hz1.hornetsecurity.com[94.100.132.6], TLS=1, IP=94.100.132.6
+X-cloud-security-Digest:a7531a3aefe8095ad0ffc3e1e5a543aa
+X-cloud-security:scantime:2.247
+DKIM-Signature: a=rsa-sha256;
+ bh=CFRIIs060aUTE/XtgbE3U9aNP00cbQnhfyqtNtGSsHY=; c=relaxed/relaxed;
+ d=ew.tq-group.com;
+ h=content-type:mime-version:subject:from:to:message-id:date; s=hse1;
+ t=1760614687; v=1;
+ b=KCQw4DfVHoklSaLyx2Eebrfmlr604L6JMes3wgXxR0EZOvpTV4nu/sVVNUn70vbee3QIDfNx
+ 9cokUkuqiZaqccuVf5OVQfPTtsBwyDY4HMHWA1e+9mz/Q51FmpvErfRfa7xivFAYJByMaw8fRhu
+ YVnU6BO1icUZE132aRghmeytH3RSNfhEi+IrWAQ9LY8Sa/GjDnyFfEdACVmN8uxQBMXCONPirxF
+ Oy7/SLEVr8WhIqEeVkCc68VCZ6VNgneqlBOcHY2t83u5kaRGTxEA6nzBg4qq/FGrvVrurHBWzAA
+ VbCT1vQeCJ3mteSueyK2YG57wE34jejZ8DjccloEn+AFg==
 
+The CTS GPIO is only evaluated when the CRTSCTS termios flag is enabled;
+it should be possible to enable the flag when only GPIO and no hardware-
+controlled RTS/CTS are available. UCR2_IRTS is kept enabled in this case,
+so the hardware CTS is ignored.
 
---fYTqeHXCD8CdoU8f
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fixes: 58362d5be352 ("serial: imx: implement handshaking using gpios with the mctrl_gpio helper")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/tty/serial/imx.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-On Thu, Oct 16, 2025 at 12:17:58PM +0200, Tomas Mudrunka wrote:
-> Hi. I am author of that sentence and this is NACK from me.
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 500dfc009d03e..4a54a689a0603 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -1117,8 +1117,8 @@ static void imx_uart_set_mctrl(struct uart_port *port, unsigned int mctrl)
+ 			ucr2 |= UCR2_CTS;
+ 			/*
+ 			 * UCR2_IRTS is unset if and only if the port is
+-			 * configured for CRTSCTS, so we use inverted UCR2_IRTS
+-			 * to get the state to restore to.
++			 * configured for hardware-controlled CRTSCTS, so we use
++			 * inverted UCR2_IRTS to get the state to restore to.
+ 			 */
+ 			if (!(ucr2 & UCR2_IRTS))
+ 				ucr2 |= UCR2_CTSC;
+@@ -1780,7 +1780,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if ((termios->c_cflag & CSIZE) == CS8)
+ 		ucr2 |= UCR2_WS;
+ 
+-	if (!sport->have_rtscts)
++	if (!sport->have_rtscts && !sport->have_rtsgpio)
+ 		termios->c_cflag &= ~CRTSCTS;
+ 
+ 	if (port->rs485.flags & SER_RS485_ENABLED) {
+@@ -1794,7 +1794,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 		else
+ 			imx_uart_rts_inactive(sport, &ucr2);
+ 
+-	} else if (termios->c_cflag & CRTSCTS) {
++	} else if ((termios->c_cflag & CRTSCTS) && sport->have_rtscts) {
+ 		/*
+ 		 * Only let receiver control RTS output if we were not requested
+ 		 * to have RTS inactive (which then should take precedence).
+@@ -1803,7 +1803,7 @@ imx_uart_set_termios(struct uart_port *port, struct ktermios *termios,
+ 			ucr2 |= UCR2_CTSC;
+ 	}
+ 
+-	if (termios->c_cflag & CRTSCTS)
++	if ((termios->c_cflag & CRTSCTS) && sport->have_rtscts)
+ 		ucr2 &= ~UCR2_IRTS;
+ 	if (termios->c_cflag & CSTOPB)
+ 		ucr2 |= UCR2_STPB;
+-- 
+TQ-Systems GmbH | Mühlstraße 2, Gut Delling | 82229 Seefeld, Germany
+Amtsgericht München, HRB 105018
+Geschäftsführer: Detlef Schneider, Rüdiger Stahl, Stefan Schneider
+https://www.tq-group.com/
 
-Oops, I didn't see your review when I send v2 [1].
-
-[1]: https://lore.kernel.org/linux-doc/20251016103609.33897-2-bagasdotme@gm=
-ail.com/
-
->=20
-> > I'm not sure this is right - there is a warning here that additional
-> > characters may acquire a meaning in the future, so one should not
-> > develop the habit of writing them now.
->=20
-> As you've said... I don't see anything confusing about that.
-> The warning was added for a reason, because there was discussion
-> about some people writing extra characters in there, which might
-> cause issues down the line if we refactor the code in future.
-
-Any pointers to these discussions? Or do you have any idea on better
-description on /proc/sysrq-trigger itself?
-
-Confused...
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---fYTqeHXCD8CdoU8f
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCaPDNJwAKCRD2uYlJVVFO
-o9KxAPkBTuPUaUuBs6BBHv8+0HhycpaDuHMgX2T2NaHa+3O3OQEAzy5RJ2R7rtkg
-k3VhSpHck6n708zue7aH+EZxpD2w0gw=
-=Kjn2
------END PGP SIGNATURE-----
-
---fYTqeHXCD8CdoU8f--
