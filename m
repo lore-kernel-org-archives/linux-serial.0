@@ -1,92 +1,89 @@
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B97C54C9D;
-	Thu, 16 Oct 2025 15:21:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.32.30.218
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39CAE290F;
+	Thu, 16 Oct 2025 18:51:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760628086; cv=none; b=MjOronKNqYcDOZqphmjKh4GV0wwFr3lSoofX0+KSTOXEGLpCTD2mSU2NfuQsN5XprbrDx8QFOFyMlKPYXYlHDTB3hnaqWAyYJlRCMvUP9Wjbkx6xRcFQ4kQvdYiHZJfSZ1vJ0CITq3LTh26GnBmqKoPqCLtIy7lgm0Hm0y3UoV8=
+	t=1760640712; cv=none; b=gAZFV9wRdGhSbaalKDxY3dyJnXessjnRcXbAw0++LO2IlBDGqB3SlfV01DbAruPKSV1T1olVVI4wAuVj/mgSTJTwsvL10U1UOdVVtU7bd7h9K3L5yD6j0QR8z+C43TvlCgseVoqmgTZgPvNs2HmPmE1sX1lgPo0pxvdWjx4exdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760628086; c=relaxed/simple;
-	bh=z8MA8LUyae+lGsjF1gwHLGWRBNQCFSy54sXprN2LxaA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LySeApiiYDWI2kJxPCQWX3W3gE/HhmuhsVZbYwkJEaYkqq/a5SYN4xatd2hQJL0k/b5GBVPK1rnF7t71EeE47SNDoJZv4lF600eQKXBlfPRJvymujJRKPFTCES9ejG+DLJvqSs/R+SdKQM2GnStVgvSs+S5q8Km44DQ5wQVsOh8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk; spf=none smtp.mailfrom=armlinux.org.uk; dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b=Vx1Go4EP; arc=none smtp.client-ip=78.32.30.218
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=armlinux.org.uk
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=armlinux.org.uk
+	s=arc-20240116; t=1760640712; c=relaxed/simple;
+	bh=1rASaJG6EY5HKd8Wp0j/bvff1gZOgkW+0jAm7wCZJZs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sPJjNM+X9ODoBbMOjykMfGaaYXlSS11n2hA1RWpUO9qFqfhBVln8dU2/zg5+o7o0v6sKHukoPOIB2O8DcUwBaUFwt6LLoVCnK5h/Au9OVBDZSKhgeKPno5FtQR0W2PEh+ufY8OhbnmKR7tNjLFSMu0b0kA9kJjRsDRf36D2BzlE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=J7RanfJx; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="Vx1Go4EP"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="J7RanfJx"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-	MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=zufCpAXCVEwDc/8p4UXog53BnP9tM+43qUpcW1f09iM=; b=Vx1Go4EP3OHyeVIlzAQWHe7TrA
-	q4PyEtofbcg/a89657ONYBOhGme8m01o1I4N46htjcrOUWTIS1p0SAFYDwisxemju5McrvW2L416n
-	5n8LYFZkwTfi0eFEWEZmAbMvNlJkCT5NnT6FaFRcVUEWGRRdUh/GjTkOramECPR1pCz3g5C8Qswte
-	OwJX/mInR0Yhwg3khITa/XhHcy3PEKxW8KogItiPrJSjyOJahDKru1jM/BG+BJ/PHMtqfkxvxt5ax
-	SThwSwUPE4eUEBMVn+vMFMohFFliLU5O44lKMpVZRChieBgc4IlYMUQLXtotPU2knjiWFkcQKd2v+
-	2OCeEeng==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56116)
-	by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.98.2)
-	(envelope-from <linux@armlinux.org.uk>)
-	id 1v9Pn3-000000006dM-2UPG;
-	Thu, 16 Oct 2025 16:21:17 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.98.2)
-	(envelope-from <linux@shell.armlinux.org.uk>)
-	id 1v9Pn1-000000003NP-2Vov;
-	Thu, 16 Oct 2025 16:21:15 +0100
-Date: Thu, 16 Oct 2025 16:21:15 +0100
-From: "Russell King (Oracle)" <linux@armlinux.org.uk>
-To: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jiri Slaby <jirislaby@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@pengutronix.de>,
-	linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
-	imx@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux@ew.tq-group.com
-Subject: Re: [PATCH] serial: imx: allow CRTSCTS with RTS/CTS GPIOs
-Message-ID: <aPENa90OS4ZZA5Rc@shell.armlinux.org.uk>
-References: <20251016113730.245341-1-matthias.schiffer@ew.tq-group.com>
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=Z6u2Qohb/FdORfWoAU/xcVQhrvWbKQssHR/jj3k2Qx0=; b=J7RanfJxne1LwZgG7lCJ8um7fG
+	XNI6OzlG2YJ3m40XsfXG6a9q6ko4TO6fDVBn+cL6FeYYff8B4wW4SrU9f0gap0sfjM5WnNdU1lYsb
+	uceSziZ2RSxtAebv3ozEVlcpePrLTAsK2CDVnC77eneykRJKhoAmd2y4QUD29rw659uwfabwkUQtb
+	SkekCuJxRYUOoNborE8mkmuQJu1r2dqXLVkfGL0Dfxemr5yQL7DaBkJEtBq9Jygh3sz7NbQUH/0sv
+	4yJ7YfQcKBiJzPHmYwCOBmr3co5vlm1zrD4EhEpDyZGIrRE0kIBOGHxMVLIagu4aAx1BmfUzrJejO
+	MHLCnyWw==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1v9T4n-00000005jRQ-3Cgk;
+	Thu, 16 Oct 2025 18:51:49 +0000
+Message-ID: <add429f4-0c22-4228-8cf7-4dfe21630823@infradead.org>
+Date: Thu, 16 Oct 2025 11:51:49 -0700
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251016113730.245341-1-matthias.schiffer@ew.tq-group.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] Documentation: sysrq: Remove contradicting sentence on
+ extra /proc/sysrq-trigger characters
+To: Tomas Mudrunka <tomas.mudrunka@gmail.com>, corbet@lwn.net
+Cc: bagasdotme@gmail.com, cengiz@kernel.wtf, gregkh@linuxfoundation.org,
+ jirislaby@kernel.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org,
+ mail@anselmschueler.com
+References: <87wm4xbkim.fsf@trenco.lwn.net>
+ <20251016101758.1441349-1-tomas.mudrunka@gmail.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20251016101758.1441349-1-tomas.mudrunka@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 16, 2025 at 01:37:30PM +0200, Matthias Schiffer wrote:
-> -	if (!sport->have_rtscts)
-> +	if (!sport->have_rtscts && !sport->have_rtsgpio)
+Hi,
 
-This is fine...
+On 10/16/25 3:17 AM, Tomas Mudrunka wrote:
+> Hi. I am author of that sentence and this is NACK from me.
+> 
+>> I'm not sure this is right - there is a warning here that additional
+>> characters may acquire a meaning in the future, so one should not
+>> develop the habit of writing them now.
+> 
+> As you've said... I don't see anything confusing about that.
+> The warning was added for a reason, because there was discussion
+> about some people writing extra characters in there, which might
+> cause issues down the line if we refactor the code in future.
 
-> -	} else if (termios->c_cflag & CRTSCTS) {
-> +	} else if ((termios->c_cflag & CRTSCTS) && sport->have_rtscts) {
+You have already provided a way to write (enter) multiple characters
+to /proc/sysrq-trigger. Are you suggesting that someone may come
+along and add yet another way to write multiple characters and that
+this paragraph is present in case that happens?
 
-This adds extra parens that do nothing to aid readability. Too many
-parens actually hurt readability.
 
-> -	if (termios->c_cflag & CRTSCTS)
-> +	if ((termios->c_cflag & CRTSCTS) && sport->have_rtscts)
-
-Same here.
-
-Maybe change these to:
-
-	if (sport->have_rtscts && termios->c_cflag & CRTSCTS)
-
-?
+>> After all these years, I think
+>> the chances of fundamental sysrq changes are pretty small,
+> 
+> Actualy it is not that long since the underscore mode was added...
+> 
+>> but I still don't see why we would take the warning out?
+> 
+> Exactly. Thank you.
+> 
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 80Mbps down 10Mbps up. Decent connectivity at last!
+~Randy
+
