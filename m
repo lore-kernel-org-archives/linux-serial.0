@@ -1,122 +1,92 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00D62343B6
-	for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 07:05:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3D3A30C616
+	for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 08:56:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760598328; cv=none; b=iocuLi0T2hQBd3arZGm+NdUQZWZKOo3sHEg5vZ5KTtyP18b8k7CiJkmJ+gbSRA3lQfo/AgLhCEYeH7zpjQPlDsy4T6dm6qjyUJ13Lq2RN/Y+lDaiZ4a0cUG9BHors/neblP09uObCjRcPq1UQjx/kB7+0sg1QprrdEdf1jLTAFg=
+	t=1760604982; cv=none; b=T8/k0Wf7zt/QppcLgBZIiSIx1vj85bUqE1wGxsiLaMXjHBgu9QKgaEvz26ArKuIFyUt8cv8HeQ79x115q2tAAEVDO/sUqKZV81UIuLkGh6Kt2Lj/0Y+4bRg7LQK0UzIZhAmG0vb2Y9cowds0L6PDgb5U6s6AL6u3R48Yy4JQ+Vs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760598328; c=relaxed/simple;
-	bh=p0myo92MmjxlvZuAoHPLrlj0DNjkKh00FfJsrOtYC58=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ddg0e47LMzE9YffDEotryKy3iie2Uo0hGogQ2Q0UaWckXnEK6tNYrYGN+h5bpd9oxkFypdIHa11oyJ/Xx+R2m8Dbm80yFIcASrWxa/NNfHu7ysZEPXgH689ThiaLU7kaheigrvhQxzHZmT5ZakiHgHg9ILsh2ipslssqyhE9vuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=JigxG606; arc=none smtp.client-ip=209.85.210.174
+	s=arc-20240116; t=1760604982; c=relaxed/simple;
+	bh=BTJ5BDmS1jbavXTN8W5DVTEeJJq886cvTMsOxekHMXs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hWbEDfg1yxmIPVUft8A6Jgc1TizFPvwvMAEmeW117rzLKz+k6lBwWvdQfC0+4DNGwAqnKOwugBcfBjSsg8vrS9gXj5QOTYDILkoi4eky4jwBbx+fiF1ukgxG9ucJEX17SSHO1z7r5/o+VgECsFo5ECRtiOxWXdgo98vkP08Zyx0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=jWwWirqE; arc=none smtp.client-ip=209.85.128.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="JigxG606"
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-7a213c3c3f5so588850b3a.3
-        for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 00:05:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="jWwWirqE"
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-7836853a0d6so1212207b3.1
+        for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 01:56:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1760598326; x=1761203126; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=VnADZNtvG2oDzd49JEbUEGirF2sr15sK/4g0V6zan7s=;
-        b=JigxG606i3zg0l9ISOhmVN+m4SBteP6CsnkqooJYr+3V+AJaSXYBgWlJLNO9K8c3mx
-         fLUCkI7a432HKcP9t35SeWN0LL90d5mdffO0eVL+gazccg8OD4BHOTA9F59Udm7kEXXl
-         rvA8HRkMlXZg9QfGjy83uQqXDn/TCzJHmgI3hyQjJD/jCPEnvlf9oLhDpkQVGCoC0fqF
-         zyTFwOCpLwgDLXPDOdM/rOTmOj9Z6EYujXxcaDEqLxQGv+uKdqJD+iPqLiEINzZWZyJJ
-         KDlaXSy+L+AJgsgvB6LzVEAR5S2gCYuxyjSzelDVJuaiOeVIO13a+wLudDbErAbRuNN7
-         vtyQ==
+        d=bytedance.com; s=google; t=1760604979; x=1761209779; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BTJ5BDmS1jbavXTN8W5DVTEeJJq886cvTMsOxekHMXs=;
+        b=jWwWirqE3QEI6lWNFj/7+5RR2L5bxPNe1ud4s2AtPOvfbbS5A6CkYZWza+a6RCNDFH
+         93N+UCon8hBkdIT6saX1iUKgu3f4apc66BBsMJq/MIDKs+TdSz4mspMFfmD0JPfF4+dL
+         WnZU7tbGwhhLhy49RvQbWKJHTunb7Bcd09N4LO8G4o9y8BrlG8LpynOcAKIJRSqy+ib5
+         B61j9QvIGyN7LziizwQQnQVdkf52qyXXiMoUmSOJBiqUAozR9vzOVz6Eo0RvDqg1gyrP
+         QMgnxkv5gBxS7x1BkCnik6MN54stZ0EhLzw870phdeFDMvYuqfNrK6URwWRZtpHIPkSd
+         DbPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760598326; x=1761203126;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=VnADZNtvG2oDzd49JEbUEGirF2sr15sK/4g0V6zan7s=;
-        b=pItQoAnYXP4KDb7Nv1IvtSm+xrsS3njp2YN0gwS1NrC7b0b2PHtgayMOqnrI4etzGq
-         Ic8dzu2C8NfPV2qxm1rF6198Bk30z2bThNP6po5EFqzuKikBh2qBc12bLTzz7x01m6mL
-         W7rcpkEm2GUaKHrD1rsSLvj0fgvrOeYo/sUfFRykabaUQ5xeJT2v81x4Y+jl59rLDp+A
-         hwkDnPzBjAaA9Tg2WAiDq3e8Th7/PHpzNQpVutx6ojFzCFBQozFTOFNSacUaGLrIppvq
-         Ay5QUfXILS0Udh2xQtM9PqkF0PTA23i5cDQtE9rZ6U3sZVTbjlFVmmCv+W/tB5S7rlar
-         kgaA==
-X-Forwarded-Encrypted: i=1; AJvYcCW9Ph1rU1+v5RthDb6WXJsJ67O52ZqfuU4T4Mjwypw8TaQ15CQEBtMWISPMmgoEo8r2MW0E9VSPjoFGTRU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz0TD5etJVaEbq8ksEdi0RQ5LQdXeFYuMfBLCJm2ltoieGOjBoy
-	Pu82QOaXTktelu9sQahqLBkx/8aW8Jp3zWg+lVc+3FpeLESLp19HHkiut94vceJLmkpTQ9sADO8
-	+BC6kr2U=
-X-Gm-Gg: ASbGncsJUMFx9guOkag4pb7mGFj66RZQFpP8a2F3FLGOZY7gcggWsx2O4DFvi7/TQgI
-	UUeOyszZd2leptVWD6tSl5Ur6wARtucIhxPGc+SbCFpg5ow7tOKYw+5jWHxNk/Ti+HUvR+vS7ny
-	l42MuT1n5altM07kTtxwubpWdCBRXgHA5XPGuI0rQBVwoKn4obPHw+kUQS464h1USDwmYjwTysD
-	itO7kXgfhDJiQltNWd1JCDW0u7GjayrYyPwlirxtEVHLOBJ2VfoVxqzQWWQUzCUq8tvYZoneGW/
-	jMNaO9eINvFTgetMZBkHT1ruDY24e8WeymhWTiJhSQ633q3rvTzg/9eyBA6BbPP0fyxV7dO/Cxp
-	5FMZAXrCZBs9TdArv706KbRb6kcGG3ewjuZ+a32iGoNKS1ABxIFw1d+Z1yI81v9Bor6wVJ5yfMs
-	zhkHd35WgCcFpG5RDiq5SnYaKr7CNLwI79HkAsuDn761YUYUfkgCKc
-X-Google-Smtp-Source: AGHT+IF1MUyIStDGYZTHEyg8E2ywDZduM7sqAh10ehYvS4mTZJXKLG3YccUhx6i6ZwBsPOUw0Zd0Wg==
-X-Received: by 2002:a05:6a00:b85:b0:781:2069:1eea with SMTP id d2e1a72fcca58-79387828612mr39359235b3a.24.1760598325971;
-        Thu, 16 Oct 2025 00:05:25 -0700 (PDT)
-Received: from GL4FX4PXWL.bytedance.net ([63.216.146.178])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7992d0e2774sm21105126b3a.63.2025.10.16.00.05.22
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Thu, 16 Oct 2025 00:05:25 -0700 (PDT)
-From: Peng Zhang <zhangpeng.00@bytedance.com>
-To: gregkh@linuxfoundation.org,
-	jirislaby@kernel.org,
-	ilpo.jarvinen@linux.intel.com
-Cc: linux-kernel@vger.kernel.org,
-	linux-serial@vger.kernel.org,
-	songmuchun@bytedance.com,
-	Peng Zhang <zhangpeng.00@bytedance.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v2] serial: 8250: always disable IRQ during THRE test
-Date: Thu, 16 Oct 2025 15:05:16 +0800
-Message-Id: <20251016070516.37549-1-zhangpeng.00@bytedance.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+        d=1e100.net; s=20230601; t=1760604979; x=1761209779;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=BTJ5BDmS1jbavXTN8W5DVTEeJJq886cvTMsOxekHMXs=;
+        b=CdcmOmwCU1pkFTiRgwylZsivFkvZmhL6l6oi1NUXeruQTJ69TG6afmDbqtC0oIn1m+
+         T52yiN+Of76497biDKCfNtG5PHO0PXvRvDOdQrWMsiFoH6nIqBcaZCLl1Id/jSnYJn9a
+         pJfy2sawtxNsIDaQmQmVAaD7Mb5QMAqJiRHUlIAnfWb+fzvPZNlZrf/e+4HzKuTwPUD3
+         7FVhPCQO1YO9s4Jpen12TEIZmypGjFvpWEcuIOPgdvIskJW8RvxIp/MhE255CBwcMoLb
+         yYcKen25HUNhUXi9hUlmBfaSDJ+cwztn8fQOQIkT5KTJ76tWykqxDYBV7aU5RTWDVIMX
+         9lxw==
+X-Forwarded-Encrypted: i=1; AJvYcCVfwBBssUhh7GhCta1C1m27NAnEmVmWUFfM1KfqQ5peiBUpJTssINkx8zXxPFpO1TJ8EyA4BT4kVNfA0X4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzTNfz4k3vWcFKdix6hkBe4IFl82F4pB3ILi8iIOQdv0RIxDyTh
+	BlG6zMUEPRnZM1qjT7f72lf3//kbkT0zqhPb716iDhX8u0SMbkfSk+3dgyvkfwXZZ1tSd4CNSj3
+	SLDiG0F3bWKegHNlnanz1TiscBaEqgd5tq+4DW8zS7Q==
+X-Gm-Gg: ASbGncvPTEUn9ocDtGiiW7IePW1UGRzwu+UFKmpEjEqpXYyeY+G+iG18oi6bLSNDOmw
+	XvUc+R8g12/MrabU7z9BaYqLpERW6vWDUgfjtbfDaphoAGpjUGOFRKgJe4wH5p2Ho2gGkh5Nhxd
+	hkXqIrJz3OXp/OmbVyu0jKfn+ZvG3tzUWaUwt+etRoTbqoFbzf+kGKpB2SwIGpbAsZgrI23gKZS
+	YTNNIQ21SiyqB+N/YOgczx216O4zR5vQrUYYflmgCg6T+vyLC86u1PvepbhaunESfVS
+X-Google-Smtp-Source: AGHT+IGxqTGy5wHmODLi1UF6gIFjWY6sKPakop2EXbRVgjjq12zyCIQCyGdiYtedanfT5A77kDydHAWRiH5qffLKEn8=
+X-Received: by 2002:a05:690e:1686:b0:63e:c3a:ea77 with SMTP id
+ 956f58d0204a3-63e0c3af55dmr1343586d50.14.1760604978793; Thu, 16 Oct 2025
+ 01:56:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20251016070516.37549-1-zhangpeng.00@bytedance.com>
+In-Reply-To: <20251016070516.37549-1-zhangpeng.00@bytedance.com>
+From: Muchun Song <songmuchun@bytedance.com>
+Date: Thu, 16 Oct 2025 16:55:42 +0800
+X-Gm-Features: AS18NWB1MKGKlQ42nxBswbDuR0UxKYudldovqI8s1wflRtIJVP8mzsQzwaKGcuo
+Message-ID: <CAMZfGtWhgHoYU4c2Yz5w6XCXJ0oSoJbm0_kW=YvjFENv+pDj3Q@mail.gmail.com>
+Subject: Re: [PATCH v2] serial: 8250: always disable IRQ during THRE test
+To: Peng Zhang <zhangpeng.00@bytedance.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>, Jiri Slaby <jirislaby@kernel.org>, 
+	ilpo.jarvinen@linux.intel.com, LKML <linux-kernel@vger.kernel.org>, 
+	linux-serial@vger.kernel.org, linux- stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
-has been set up") moved IRQ setup before the THRE test, so the interrupt
-handler can run during the test and race with its IIR reads. This can
-produce wrong THRE test results and cause spurious registration of the
-serial8250_backup_timeout timer. Unconditionally disable the IRQ for the
-short duration of the test and re-enable it afterwards to avoid the race.
+On Thu, Oct 16, 2025 at 3:05=E2=80=AFPM Peng Zhang <zhangpeng.00@bytedance.=
+com> wrote:
+>
+> commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
+> has been set up") moved IRQ setup before the THRE test, so the interrupt
+> handler can run during the test and race with its IIR reads. This can
+> produce wrong THRE test results and cause spurious registration of the
+> serial8250_backup_timeout timer. Unconditionally disable the IRQ for the
+> short duration of the test and re-enable it afterwards to avoid the race.
+>
+> Cc: stable@vger.kernel.org
+> Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq has=
+ been set up")
+> Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
 
-Cc: stable@vger.kernel.org
-Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq has been set up")
-Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
----
- drivers/tty/serial/8250/8250_port.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
-index 719faf92aa8a..f1740cc91143 100644
---- a/drivers/tty/serial/8250/8250_port.c
-+++ b/drivers/tty/serial/8250/8250_port.c
-@@ -2147,8 +2147,7 @@ static void serial8250_THRE_test(struct uart_port *port)
- 	if (up->port.flags & UPF_NO_THRE_TEST)
- 		return;
- 
--	if (port->irqflags & IRQF_SHARED)
--		disable_irq_nosync(port->irq);
-+	disable_irq(port->irq);
- 
- 	/*
- 	 * Test for UARTs that do not reassert THRE when the transmitter is idle and the interrupt
-@@ -2170,8 +2169,7 @@ static void serial8250_THRE_test(struct uart_port *port)
- 		serial_port_out(port, UART_IER, 0);
- 	}
- 
--	if (port->irqflags & IRQF_SHARED)
--		enable_irq(port->irq);
-+	enable_irq(port->irq);
- 
- 	/*
- 	 * If the interrupt is not reasserted, or we otherwise don't trust the iir, setup a timer to
--- 
-2.20.1
-
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
