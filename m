@@ -1,145 +1,122 @@
-Received: from mx15lb.world4you.com (mx15lb.world4you.com [81.19.149.125])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 419053081B7
-	for <linux-serial@vger.kernel.org>; Wed, 15 Oct 2025 19:35:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.19.149.125
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00D62343B6
+	for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 07:05:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760556928; cv=none; b=WO7bMMD0GYwxi8WmBhCM/rkcrYl3PTupD1+x5DWfFglzyM7krlTEQ/CqtYsnvpxM39/+xYt41Cg4ieJdSf9IA/4SAkW8KopJJ8enll3ci+S7Dd2sHMfTLmjFetXDzUrbsAbujaxrMcKf8FFvc1D49xGhu35qooB282l+O2yaeu8=
+	t=1760598328; cv=none; b=iocuLi0T2hQBd3arZGm+NdUQZWZKOo3sHEg5vZ5KTtyP18b8k7CiJkmJ+gbSRA3lQfo/AgLhCEYeH7zpjQPlDsy4T6dm6qjyUJ13Lq2RN/Y+lDaiZ4a0cUG9BHors/neblP09uObCjRcPq1UQjx/kB7+0sg1QprrdEdf1jLTAFg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760556928; c=relaxed/simple;
-	bh=9MbXsUNCntZdddV7entbvcM1K2yDmgBB8O25hAxYvWs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JEn97W1XRJ+F4hL5v76mEgGMPSfKcPvBMShjBZcT1BWQBHl+dpsmUSppE5v7B0/lbkKHBdIJDEPtp8LPyZ3IGBNQuJKuC2BmETB0HNZakvOIqSTQA94AnAdhUOgPRoBmhwFpHY9GyjIF1DkG59tKXX28w5v5Wj6oCH4w6Kga71Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com; spf=pass smtp.mailfrom=engleder-embedded.com; dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b=xQn7sIVa; arc=none smtp.client-ip=81.19.149.125
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=engleder-embedded.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=engleder-embedded.com
+	s=arc-20240116; t=1760598328; c=relaxed/simple;
+	bh=p0myo92MmjxlvZuAoHPLrlj0DNjkKh00FfJsrOtYC58=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ddg0e47LMzE9YffDEotryKy3iie2Uo0hGogQ2Q0UaWckXnEK6tNYrYGN+h5bpd9oxkFypdIHa11oyJ/Xx+R2m8Dbm80yFIcASrWxa/NNfHu7ysZEPXgH689ThiaLU7kaheigrvhQxzHZmT5ZakiHgHg9ILsh2ipslssqyhE9vuU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=JigxG606; arc=none smtp.client-ip=209.85.210.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=engleder-embedded.com header.i=@engleder-embedded.com header.b="xQn7sIVa"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=bUnd1pwCyhkX/cxjtG1Zi0wDRIn1CUyXHrFYYPbHQ64=; b=xQn7sIVaaGAU62aaaRfNV+72Ts
-	0m0uH68FEnGDMv/4VOfcRA2qS7tsjdggJ0UlOWazBCWzz1U8T71G6DyK3K6M3V2yYedl+eCV7ntfm
-	Pm/HeCddOH5PEiYYKxn6zabZe6lNIr/sxoCVYYw6X2FLv6gr0+JwqPjWAaCVgMmH06UU=;
-Received: from [93.82.65.102] (helo=[10.0.0.160])
-	by mx15lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.97.1)
-	(envelope-from <gerhard@engleder-embedded.com>)
-	id 1v96bi-000000002M8-0QXh;
-	Wed, 15 Oct 2025 20:52:18 +0200
-Message-ID: <204ce0ec-6e8e-41b4-afea-7f4890cb3ea2@engleder-embedded.com>
-Date: Wed, 15 Oct 2025 20:52:16 +0200
+	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="JigxG606"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-7a213c3c3f5so588850b3a.3
+        for <linux-serial@vger.kernel.org>; Thu, 16 Oct 2025 00:05:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance.com; s=google; t=1760598326; x=1761203126; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=VnADZNtvG2oDzd49JEbUEGirF2sr15sK/4g0V6zan7s=;
+        b=JigxG606i3zg0l9ISOhmVN+m4SBteP6CsnkqooJYr+3V+AJaSXYBgWlJLNO9K8c3mx
+         fLUCkI7a432HKcP9t35SeWN0LL90d5mdffO0eVL+gazccg8OD4BHOTA9F59Udm7kEXXl
+         rvA8HRkMlXZg9QfGjy83uQqXDn/TCzJHmgI3hyQjJD/jCPEnvlf9oLhDpkQVGCoC0fqF
+         zyTFwOCpLwgDLXPDOdM/rOTmOj9Z6EYujXxcaDEqLxQGv+uKdqJD+iPqLiEINzZWZyJJ
+         KDlaXSy+L+AJgsgvB6LzVEAR5S2gCYuxyjSzelDVJuaiOeVIO13a+wLudDbErAbRuNN7
+         vtyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760598326; x=1761203126;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=VnADZNtvG2oDzd49JEbUEGirF2sr15sK/4g0V6zan7s=;
+        b=pItQoAnYXP4KDb7Nv1IvtSm+xrsS3njp2YN0gwS1NrC7b0b2PHtgayMOqnrI4etzGq
+         Ic8dzu2C8NfPV2qxm1rF6198Bk30z2bThNP6po5EFqzuKikBh2qBc12bLTzz7x01m6mL
+         W7rcpkEm2GUaKHrD1rsSLvj0fgvrOeYo/sUfFRykabaUQ5xeJT2v81x4Y+jl59rLDp+A
+         hwkDnPzBjAaA9Tg2WAiDq3e8Th7/PHpzNQpVutx6ojFzCFBQozFTOFNSacUaGLrIppvq
+         Ay5QUfXILS0Udh2xQtM9PqkF0PTA23i5cDQtE9rZ6U3sZVTbjlFVmmCv+W/tB5S7rlar
+         kgaA==
+X-Forwarded-Encrypted: i=1; AJvYcCW9Ph1rU1+v5RthDb6WXJsJ67O52ZqfuU4T4Mjwypw8TaQ15CQEBtMWISPMmgoEo8r2MW0E9VSPjoFGTRU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz0TD5etJVaEbq8ksEdi0RQ5LQdXeFYuMfBLCJm2ltoieGOjBoy
+	Pu82QOaXTktelu9sQahqLBkx/8aW8Jp3zWg+lVc+3FpeLESLp19HHkiut94vceJLmkpTQ9sADO8
+	+BC6kr2U=
+X-Gm-Gg: ASbGncsJUMFx9guOkag4pb7mGFj66RZQFpP8a2F3FLGOZY7gcggWsx2O4DFvi7/TQgI
+	UUeOyszZd2leptVWD6tSl5Ur6wARtucIhxPGc+SbCFpg5ow7tOKYw+5jWHxNk/Ti+HUvR+vS7ny
+	l42MuT1n5altM07kTtxwubpWdCBRXgHA5XPGuI0rQBVwoKn4obPHw+kUQS464h1USDwmYjwTysD
+	itO7kXgfhDJiQltNWd1JCDW0u7GjayrYyPwlirxtEVHLOBJ2VfoVxqzQWWQUzCUq8tvYZoneGW/
+	jMNaO9eINvFTgetMZBkHT1ruDY24e8WeymhWTiJhSQ633q3rvTzg/9eyBA6BbPP0fyxV7dO/Cxp
+	5FMZAXrCZBs9TdArv706KbRb6kcGG3ewjuZ+a32iGoNKS1ABxIFw1d+Z1yI81v9Bor6wVJ5yfMs
+	zhkHd35WgCcFpG5RDiq5SnYaKr7CNLwI79HkAsuDn761YUYUfkgCKc
+X-Google-Smtp-Source: AGHT+IF1MUyIStDGYZTHEyg8E2ywDZduM7sqAh10ehYvS4mTZJXKLG3YccUhx6i6ZwBsPOUw0Zd0Wg==
+X-Received: by 2002:a05:6a00:b85:b0:781:2069:1eea with SMTP id d2e1a72fcca58-79387828612mr39359235b3a.24.1760598325971;
+        Thu, 16 Oct 2025 00:05:25 -0700 (PDT)
+Received: from GL4FX4PXWL.bytedance.net ([63.216.146.178])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7992d0e2774sm21105126b3a.63.2025.10.16.00.05.22
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Thu, 16 Oct 2025 00:05:25 -0700 (PDT)
+From: Peng Zhang <zhangpeng.00@bytedance.com>
+To: gregkh@linuxfoundation.org,
+	jirislaby@kernel.org,
+	ilpo.jarvinen@linux.intel.com
+Cc: linux-kernel@vger.kernel.org,
+	linux-serial@vger.kernel.org,
+	songmuchun@bytedance.com,
+	Peng Zhang <zhangpeng.00@bytedance.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2] serial: 8250: always disable IRQ during THRE test
+Date: Thu, 16 Oct 2025 15:05:16 +0800
+Message-Id: <20251016070516.37549-1-zhangpeng.00@bytedance.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 Precedence: bulk
 X-Mailing-List: linux-serial@vger.kernel.org
 List-Id: <linux-serial.vger.kernel.org>
 List-Subscribe: <mailto:linux-serial+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-serial+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] serial: 8250: add driver for KEBA UART
-To: Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, Gerhard Engleder <eg@keba.com>,
- Daniel Gierlinger <gida@keba.com>
-References: <20251014191515.75888-1-gerhard@engleder-embedded.com>
- <20251014191515.75888-3-gerhard@engleder-embedded.com>
- <01ea9c8b-08cb-40d0-b550-12eb60e515ab@kernel.org>
-Content-Language: en-US
-From: Gerhard Engleder <gerhard@engleder-embedded.com>
-In-Reply-To: <01ea9c8b-08cb-40d0-b550-12eb60e515ab@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
 
-On 15.10.25 08:14, Jiri Slaby wrote:
-> On 14. 10. 25, 21:15, Gerhard Engleder wrote:
->> +/* flags */
->> +#define KUART_RS485        0x00000001
->> +#define KUART_USE_CAPABILITY    0x00000002
-> 
-> use BIT()
-> 
->> +/* registers */
->> +#define KUART_VERSION        0x0000
->> +#define KUART_REVISION        0x0001
->> +#define KUART_CAPABILITY    0x0002
->> +#define KUART_CONTROL        0x0004
->> +#define KUART_BASE        0x000C
->> +#define KUART_REGSHIFT        2
->> +#define KUART_CLK        1843200
->> +
->> +/* mode flags */
->> +#define KUART_MODE_NONE        0
->> +#define KUART_MODE_RS485    1
->> +#define KUART_MODE_RS422    2
->> +#define KUART_MODE_RS232    3
-> 
-> Use enum.
-> 
->> +/* capability flags */
->> +#define KUART_CAPABILITY_NONE    (1<<KUART_MODE_NONE)
->> +#define KUART_CAPABILITY_RS485    (1<<KUART_MODE_RS485)
->> +#define KUART_CAPABILITY_RS422    (1<<KUART_MODE_RS422)
->> +#define KUART_CAPABILITY_RS232    (1<<KUART_MODE_RS232)
-> 
-> use BIT()
-> 
->> +#define KUART_CAPABILITY_MASK    0x0000000f
-> 
-> Use GENMASK().
-> 
->> +/* Additional Control Register DTR line configuration */
->> +#define UART_ACR_DTRLC_MASK        0x18
->> +#define UART_ACR_DTRLC_COMPAT        0x00
->> +#define UART_ACR_DTRLC_ENABLE_LOW    0x10
->> +
->> +struct kuart {
->> +    struct keba_uart_auxdev *auxdev;
->> +    void __iomem *base;
->> +    int line;
-> 
-> unsigned
-> 
->> +
->> +    unsigned long flags;
-> 
-> I would say unsigned int would be enough.
-> 
->> +    u8 capability;
->> +    int mode;
-> 
-> Use the new enum as a type.
-> 
->> +};
->> +
->> +static void kuart_set_phy_mode(struct kuart *kuart, int mode)
-> 
-> enum too.
-> 
->> +{
->> +    iowrite8(mode, kuart->base + KUART_CONTROL);
->> +}
-> ...
->> +static int kuart_rs485_config(struct uart_port *port, struct ktermios 
->> *termios,
->> +                  struct serial_rs485 *rs485)
->> +{
->> +    struct uart_8250_port *up = up_to_u8250p(port);
->> +    struct kuart *kuart = port->private_data;
->> +    int mode;
-> 
-> enum
-> 
-> ...
->> +    return 0;
->> +}
+commit 039d4926379b ("serial: 8250: Toggle IER bits on only after irq
+has been set up") moved IRQ setup before the THRE test, so the interrupt
+handler can run during the test and race with its IIR reads. This can
+produce wrong THRE test results and cause spurious registration of the
+serial8250_backup_timeout timer. Unconditionally disable the IRQ for the
+short duration of the test and re-enable it afterwards to avoid the race.
 
-I will improve the code as suggested.
+Cc: stable@vger.kernel.org
+Fixes: 039d4926379b ("serial: 8250: Toggle IER bits on only after irq has been set up")
+Signed-off-by: Peng Zhang <zhangpeng.00@bytedance.com>
+---
+ drivers/tty/serial/8250/8250_port.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Thank you for your review!
-
-Gerhard
+diff --git a/drivers/tty/serial/8250/8250_port.c b/drivers/tty/serial/8250/8250_port.c
+index 719faf92aa8a..f1740cc91143 100644
+--- a/drivers/tty/serial/8250/8250_port.c
++++ b/drivers/tty/serial/8250/8250_port.c
+@@ -2147,8 +2147,7 @@ static void serial8250_THRE_test(struct uart_port *port)
+ 	if (up->port.flags & UPF_NO_THRE_TEST)
+ 		return;
+ 
+-	if (port->irqflags & IRQF_SHARED)
+-		disable_irq_nosync(port->irq);
++	disable_irq(port->irq);
+ 
+ 	/*
+ 	 * Test for UARTs that do not reassert THRE when the transmitter is idle and the interrupt
+@@ -2170,8 +2169,7 @@ static void serial8250_THRE_test(struct uart_port *port)
+ 		serial_port_out(port, UART_IER, 0);
+ 	}
+ 
+-	if (port->irqflags & IRQF_SHARED)
+-		enable_irq(port->irq);
++	enable_irq(port->irq);
+ 
+ 	/*
+ 	 * If the interrupt is not reasserted, or we otherwise don't trust the iir, setup a timer to
+-- 
+2.20.1
 
